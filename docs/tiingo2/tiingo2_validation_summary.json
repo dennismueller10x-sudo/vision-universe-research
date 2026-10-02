@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "runId": "gh-36995345322-1",
+  "runId": "gh-36998632570-1",
   "scope": "BOUNDED_LIVE_CANDIDATE_EVIDENCE_NOT_PRODUCT_PUBLICATION",
   "reviewedListings": 631,
   "auditCandidates": {
@@ -58,5 +58,23 @@
     "631 listings checked, not an exhaustive fresh-price revalidation of every current consumer member.",
     "New membership lacks delivered product projections and manifest-bound QA.",
     "Provider symbol-action identifiers unavailable; confirmed alias publication requires durable evidence."
-  ]
+  ],
+  "quantReadiness": {
+    "canonicalQuantReadyAdded": 0,
+    "quantCandidateEligibleAdded": [
+      "HOS"
+    ],
+    "candidateInputEligibleTotal": 4,
+    "privatePriceMetricsAreProductProof": false,
+    "fullQuantScoreEnabled": false
+  },
+  "confidentialCache": {
+    "cipher": "AES-256-GCM",
+    "keyDerivation": "DOMAIN_AND_BRANCH_BOUND_HKDF_EXISTING_TIINGO_API_KEY",
+    "roundTripRunId": "gh-36998632570-1",
+    "restored": true,
+    "providerEvidenceRequestsOnRestore": 0,
+    "plaintextCleanupPassed": true,
+    "legacyPlaintextCachesDeleted": 3
+  }
 }

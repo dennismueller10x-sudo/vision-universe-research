@@ -2,42 +2,57 @@
   "schemaVersion": 1,
   "baselineCommit": "25fbc5d2a584307be0412eb792278741804b1654",
   "acceptedAuditPR": 346,
-  "finalEvidenceCommit": "742687cfab37434bcbdc83018b386379e5a54537",
-  "finalRunId": "gh-36995345322-1",
-  "finalRunUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36995345322",
-  "derivedArtifactId": 11220484555,
-  "derivedArtifactZipSha256": "58a0e0b081dd3e1c2c5262040a24b79cc62e8d12e855d088f6787387e7346a51",
+  "draftPR": 349,
+  "finalEvidenceCommit": "afe12b0d5480195a324968c5af10ace51c54af6d",
+  "finalRunId": "gh-36998632570-1",
+  "finalRunUrl": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36998632570",
+  "derivedArtifactId": 11222693142,
+  "derivedArtifactZipSha256": "092f4abe5e10f6bece52d93ba69423adcaf9703b88bb1052d187972fe407c102",
   "earlierReadOnlyRuns": [
     36992594741,
-    36994175677
+    36994175677,
+    36995345322,
+    36998135407
   ],
   "providerEvidenceRequests": {
     "initial": 1268,
     "second": 0,
-    "final": 0
+    "dividendRevalidation": 0,
+    "encryptedColdStart": 1262,
+    "encryptedRestore": 0
   },
   "providerDiscoveryFetchedInEachRun": true,
+  "confidentialCache": {
+    "cipher": "AES-256-GCM",
+    "keyDerivation": "DOMAIN_AND_BRANCH_BOUND_HKDF_EXISTING_TIINGO_API_KEY",
+    "roundTripRunId": "gh-36998632570-1",
+    "restored": true,
+    "providerEvidenceRequestsOnRestore": 0,
+    "plaintextCleanupPassed": true,
+    "legacyPlaintextCachesDeleted": 3
+  },
+  "finalEvidenceRowsMatchIndependentlyReviewedColdRows": true,
   "productionMutations": 0,
   "savedArtifactSha256": {
-    "VU_FALSE_EXCLUSIONS.json": "639ab72948282581176f90618e7055c261a4a093e4606bded723df97c624a968",
-    "final-classifier-review.json": "901a74449f5a5055e1640290dfc8d120d9098793a3ca88589822fe2a69969a37",
+    "VU_FALSE_EXCLUSIONS.json": "51fd54867e8b5efbe1a86db9ddc749492b94bd44de64acce595764156249cdc1",
+    "final-classifier-review.json": "60e47f1abd8ad8eaf092c9277215f3c7dc62fd1e78240a9dc76fdbab228f78c7",
     "issuer-event-review.json": "c98b8a774eec2181031dfe9580e525b9967f009aa65b27373fa8ee77544184fc",
     "security-form-evidence.json": "7c4619ea4230e5a22838480389e8950816d3c5de9c5d562602b093f8c8988299",
-    "tiingo2_consumer_policy_report.json": "77203e5ab60a60c2342fa5a5c8a6b6c9104b3c9c5376f005c22a141f0e06e18b",
-    "tiingo2_false_exclusions.json": "639ab72948282581176f90618e7055c261a4a093e4606bded723df97c624a968",
-    "tiingo2_final_universe_summary.json": "32d7700e00410e1c68b08b421e96bf9270c423dd4da9feb71c8c9d2eb58b725b",
-    "tiingo2_fresh_discovery.json": "a5fe94680fc927eeb1c25e6b02c351075ac3691ef2aa99b913139180e2fc7f30",
-    "tiingo2_new_listings.json": "8bff5a1238ed7eae5a5b91fc9c256dd302537200c08c75de33e2c99ffd4f0574",
-    "tiingo2_publication_preview.json": "8b555da8a98952d5b4c43b4259dee7bde8eff3e3a9f2972a211006a067244056",
-    "tiingo2_regression_qa.json": "e2ccc49652bf5b48e83fb392bf3d44e4257800f1db8ed9aeddf82c2ad72b8a04",
-    "tiingo2_split_false_rejections.json": "a30682e26726a9faca11ae44333aafac5ef60dcf33b4dbf996d183a5583968c4",
-    "tiingo2_staged_candidates.json": "fe4b2500f15362ee95a827410a058c024fc379eeab4467b986444cc99cdcdfc6",
+    "tiingo2_consumer_policy_report.json": "fbb49f45332f22bcaf6f65c06b1408f399ed33acb28be2e0d24f70fec45414ba",
+    "tiingo2_false_exclusions.json": "51fd54867e8b5efbe1a86db9ddc749492b94bd44de64acce595764156249cdc1",
+    "tiingo2_final_universe_summary.json": "b31c784f4df11b72c217282fb28aba07fa81b7ade17f0c828ff0be2317f13add",
+    "tiingo2_fresh_discovery.json": "c747a802434b5c7905ed9cb2e32fa4ab46923283d5011ff5e772463b7d6460de",
+    "tiingo2_new_listings.json": "1760fc4049afce09d48bdf5f67aacba7df632b7ccb2f5e219db4dd3ace144d91",
+    "tiingo2_publication_preview.json": "19927b7f66631c668f00761cfcf47c0c46cad7465b6c98985f85361cbe2afd51",
+    "tiingo2_regression_qa.json": "6c4a0864828e2884b802cf4085a3511ff634c6e8cb56c8e551761aa50487314b",
+    "tiingo2_split_false_rejections.json": "ae45b53142836f109e97cd39dbdccab02c77d7eca24467d78f956d8d991547be",
+    "tiingo2_staged_candidates.json": "15cb373b926a3b4f9dfbe54ffcdec6bce3e06f3e478f54dccc9b3155b7ccf2e2",
     "tiingo2_symbol_changes.json": "d41cd0297c754fc89c9c326a04dd6ba146ec8dc7d623c3625edff8d6b8d92397",
-    "tiingo2_universe_diff.json": "627f8473f08364aafe3f8b752853996a70253218186e2108df83c3e09a68e483",
-    "tiingo2_validation_summary.json": "4c37879aeaac9672250b1c4279cfbab4ffba10602669619ca80ce9db9e4b69a3"
+    "tiingo2_universe_diff.json": "27868eeb9fff44701af140b586cd10b15d79a3bf9c13b0ec26dd623ba94e5f21",
+    "tiingo2_validation_summary.json": "2ad99d7d0beff0bf88c6f1a7f897797283b835d7fe5344061281f827832d10d3"
   },
   "reportSha256": {
-    "FINAL_REPORT.md": "c6730199b6838110d229e160d86ead1d7c4345e97d6f8bf3c4ffc63e7f19dcab",
-    "README.md": "69d08962e95ed7dce7e77ff0af7dce0991b434625aad5bd3c73548248dd2e261"
+    "FINAL_REPORT.md": "aeab03479ef9a9d7d9b1ef6cf58a1f32b9c098e32fa138cb19a82e3e7f8f6482",
+    "README.md": "9e0f55b856257c1e47fa9384b251214f5e6324c2f7d51d9931a6fc094c39f9fa"
   }
 }

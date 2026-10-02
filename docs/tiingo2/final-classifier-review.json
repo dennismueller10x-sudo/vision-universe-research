@@ -5,8 +5,8 @@
   "scope": "Final live candidate evidence and proposed membership preview; does not prove delivered products, production publication, or factor export",
   "classificationRuleVersion": "us-security-master-rules-1.3.1",
   "reviewInputs": {
-    ".verification/tiingo2-live-final/tiingo2_publication_preview.json": "8b555da8a98952d5b4c43b4259dee7bde8eff3e3a9f2972a211006a067244056",
-    ".verification/tiingo2-live-final/tiingo2_consumer_policy_report.json": "4122a44f78d818c32670c2205850f3f47fa3e3050dc7839e665b2542ffa35632"
+    ".verification/tiingo2-live-hardened/tiingo2_publication_preview.json": "19927b7f66631c668f00761cfcf47c0c46cad7465b6c98985f85361cbe2afd51",
+    ".verification/tiingo2-live-hardened/tiingo2_consumer_policy_report.json": "4a8a310b611aa97906092adf74601d795036459a5f29a717425c0d2ae4e5b314"
   },
   "counts": {
     "reviewedProposedAdditions": 102,
@@ -20,7 +20,9 @@
     "removed": 0,
     "consumerBefore": 6419,
     "consumerProposedAfter": 6521,
-    "classifierBlockingFindings": 0
+    "classifierBlockingFindings": 0,
+    "quantCanonicalReady": 0,
+    "actualDeliveredProductProof": 0
   },
   "previousFalseInclusions": [
     {
@@ -83,6 +85,8 @@
       "decision": "ACCEPT_AFTER_FIX",
       "publicationReady": true,
       "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
+        "FACTORS_NOT_READY",
         "INCLUDED_EQUITY_COMMON"
       ],
       "checks": {
@@ -94,7 +98,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": true,
-        "quantReady": true
+        "quantReady": false,
+        "quantCandidateEligible": true
       },
       "readinessScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
     },
@@ -104,6 +109,7 @@
       "decision": "MANUAL_REVIEW",
       "publicationReady": false,
       "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
         "CORPORATE_ACTION_GATE_FAILED",
         "FACTORS_NOT_READY",
         "INCLUDED_EQUITY_COMMON"
@@ -117,7 +123,8 @@
         "corporateActionValid": false,
         "secMapped": true,
         "fundamentalReady": true,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "readinessScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
     },
@@ -127,6 +134,7 @@
       "decision": "MANUAL_REVIEW",
       "publicationReady": false,
       "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
         "CORPORATE_ACTION_GATE_FAILED",
         "FACTORS_NOT_READY",
         "FUNDAMENTALS_NOT_READY",
@@ -143,7 +151,8 @@
         "corporateActionValid": false,
         "secMapped": false,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "readinessScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
     },
@@ -153,6 +162,7 @@
       "decision": "MANUAL_REVIEW",
       "publicationReady": false,
       "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
         "CORPORATE_ACTION_GATE_FAILED",
         "FACTORS_NOT_READY",
         "INCLUDED_EQUITY_COMMON"
@@ -166,7 +176,8 @@
         "corporateActionValid": false,
         "secMapped": true,
         "fundamentalReady": true,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "readinessScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
     },
@@ -176,6 +187,7 @@
       "decision": "AUTO_ACCEPT",
       "publicationReady": true,
       "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
         "FACTORS_NOT_READY",
         "FUNDAMENTALS_NOT_READY",
         "INCLUDED_EQUITY_COMMON"
@@ -189,7 +201,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "readinessScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
     },
@@ -199,6 +212,7 @@
       "decision": "MANUAL_REVIEW",
       "publicationReady": false,
       "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
         "CORPORATE_ACTION_GATE_FAILED",
         "FACTORS_NOT_READY",
         "FUNDAMENTALS_NOT_READY",
@@ -213,7 +227,8 @@
         "corporateActionValid": false,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "readinessScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
     },
@@ -223,6 +238,7 @@
       "decision": "AUTO_ACCEPT",
       "publicationReady": true,
       "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
         "FACTORS_NOT_READY",
         "FUNDAMENTALS_NOT_READY",
         "INCLUDED_EQUITY_COMMON"
@@ -236,7 +252,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "readinessScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
     },
@@ -246,6 +263,7 @@
       "decision": "AUTO_ACCEPT",
       "publicationReady": true,
       "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
         "FACTORS_NOT_READY",
         "FUNDAMENTALS_NOT_READY",
         "INCLUDED_EQUITY_COMMON"
@@ -259,7 +277,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "readinessScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
     },
@@ -269,6 +288,7 @@
       "decision": "AUTO_ACCEPT",
       "publicationReady": true,
       "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
         "FACTORS_NOT_READY",
         "FUNDAMENTALS_NOT_READY",
         "INCLUDED_EQUITY_COMMON"
@@ -282,7 +302,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "readinessScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
     },
@@ -292,6 +313,7 @@
       "decision": "AUTO_ACCEPT",
       "publicationReady": true,
       "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
         "FACTORS_NOT_READY",
         "FUNDAMENTALS_NOT_READY",
         "INCLUDED_EQUITY_COMMON"
@@ -305,7 +327,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "readinessScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
     },
@@ -315,6 +338,7 @@
       "decision": "AUTO_ACCEPT",
       "publicationReady": true,
       "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
         "FACTORS_NOT_READY",
         "FUNDAMENTALS_NOT_READY",
         "INCLUDED_EQUITY_COMMON"
@@ -328,7 +352,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "readinessScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
     },
@@ -338,6 +363,7 @@
       "decision": "AUTO_ACCEPT",
       "publicationReady": true,
       "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
         "FACTORS_NOT_READY",
         "FUNDAMENTALS_NOT_READY",
         "INCLUDED_ADR"
@@ -351,7 +377,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "readinessScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
     },
@@ -361,6 +388,7 @@
       "decision": "AUTO_ACCEPT",
       "publicationReady": true,
       "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
         "FACTORS_NOT_READY",
         "FUNDAMENTALS_NOT_READY",
         "INCLUDED_EQUITY_COMMON",
@@ -375,7 +403,8 @@
         "corporateActionValid": true,
         "secMapped": false,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "readinessScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
     },
@@ -385,6 +414,7 @@
       "decision": "AUTO_ACCEPT",
       "publicationReady": true,
       "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
         "FACTORS_NOT_READY",
         "FUNDAMENTALS_NOT_READY",
         "INCLUDED_EQUITY_COMMON"
@@ -398,7 +428,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "readinessScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
     },
@@ -408,6 +439,7 @@
       "decision": "AUTO_ACCEPT",
       "publicationReady": true,
       "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
         "FACTORS_NOT_READY",
         "FUNDAMENTALS_NOT_READY",
         "INCLUDED_EQUITY_COMMON",
@@ -422,7 +454,8 @@
         "corporateActionValid": true,
         "secMapped": false,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "readinessScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
     }
@@ -430,7 +463,10 @@
   "readinessLimits": [
     "102 entries are proposed additions only; no production membership changes in this review",
     "Search/chart/watchlist true values are candidate data preconditions, not built product projections or browser proof",
-    "Only one proposed addition satisfies Quant data preconditions; readiness does not itself write SEC/factor or consumer artifacts",
+    "Only HOS satisfies candidate eligibility among proposed additions; none is canonical Quant-ready",
+    "HOS private price metrics are PARTIAL with benchmark SOURCE_MISSING and canonical factors NOT_MATERIALIZED; private calculation is not a published factor result",
+    "DNA private price metrics likewise remain PARTIAL with benchmark SOURCE_MISSING and canonical factors NOT_MATERIALIZED",
+    "Full Quant score is BLOCKED_BY_METHODOLOGY; no actual product materialization is claimed",
     "AMC, BIRD, AMWL and CRCL remain blocked by final live evidence; this classification review does not bypass those gates"
   ],
   "reviewedAdditions": [
@@ -454,7 +490,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -471,7 +508,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "14c789b7a5935a5fb0503a5015a4496ee9abfe89e5d485d741d68e45a0f48ab0",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "ACCL",
@@ -493,7 +539,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -510,7 +557,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "f74eaf716b3b72691988e592690d0102d4b3723130fd174605ddafc8bddf91e2",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "ACCV",
@@ -532,7 +588,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -549,7 +606,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "216b9a3db44787a157143125777fa53838855973cdee66f517b378194fc37620",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "ADRX",
@@ -571,7 +637,8 @@
         "corporateActionValid": true,
         "secMapped": false,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -588,7 +655,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "c41eadec94b9bf9be4abf4fc8b53744ef05c939fc1eff0971f6707a123fc11b6",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "AERO",
@@ -610,7 +686,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -627,7 +704,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "8a9fa17a0a54e716762ca6b46721931519b0999b3201af7d2752a48d52a22f64",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "AESP",
@@ -649,7 +735,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -666,7 +753,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "84d5581a0b0358e208584a5383dfd472f2e3b6d9177b2119a539e06fde8375b3",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "AIBZ",
@@ -688,7 +784,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -705,7 +802,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "ae150cb5d4a8bbf792616dff4c55815902977d5d3e95912819656c2ff620fcd1",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "AIRO",
@@ -727,7 +833,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -744,7 +851,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "2446d7ab487a6e7e8c12237219265a5316ce2d8b27f35e65ded2ddc14f31c100",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "APAC",
@@ -766,7 +882,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -783,7 +900,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "9c24c49e6ee5c21c08319613bf88cd4ba0d09df4a07cd1d49176c58365c54f26",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "APC",
@@ -805,7 +931,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -822,7 +949,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "d165f9ac0f88362c5118923a8a5cf39285dc1ccae40ed15aaf96c03a5c67b041",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "APMC",
@@ -844,7 +980,8 @@
         "corporateActionValid": true,
         "secMapped": false,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -861,7 +998,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "738319eeca05bdec2252bbb9b60e4ea131557070edc0174f9d733b76bc448cd3",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "ASBH",
@@ -883,7 +1029,8 @@
         "corporateActionValid": true,
         "secMapped": false,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -900,7 +1047,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "54075bd82b9b2215f863588c68547192302af4d33f12310201a3718e7fb8bd14",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "AXIN",
@@ -922,7 +1078,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -939,7 +1096,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "4376056ba0e7d040b23051cef9bcfffdfe80679990b2a23b5d24288b6d774e31",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "AZUL",
@@ -961,7 +1127,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -978,7 +1145,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "97c022cf8151a4203309b8e066f8b93a42033de7f11afc08e3ecd57de0a7c884",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "BACC",
@@ -1000,7 +1176,8 @@
         "corporateActionValid": true,
         "secMapped": false,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1017,7 +1194,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "66c0ec4909920d6595b3f0ec14418737716ed4aa6401fc9633f325b78ba83abf",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "BID",
@@ -1039,7 +1225,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1056,7 +1243,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "db133ead3181d816ef4462a0d6df7a976d07597c46fda3c90901f4d31c3624e3",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "BRKH",
@@ -1078,7 +1274,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1095,7 +1292,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "03666f5da469d1b720fb15bc61ab857a074490c39e4dae996bf771726d89db60",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "CAE",
@@ -1117,7 +1323,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1134,7 +1341,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "ff7c35b0e155828251d72fb9d7f2ed7d266b18abed692f7a830f900cba03f710",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "CAI",
@@ -1156,7 +1372,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1173,7 +1390,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "67391b08d57de66a8d6ba950426e9e4c37478e87f63da27369656d53fc6c09da",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "CAPN",
@@ -1195,7 +1421,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1212,7 +1439,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "b577cadb651a28c2aaec030ca62ce49548df644277fed70ebc033fffb98823ce",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "CART",
@@ -1234,7 +1470,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1251,7 +1488,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "bc016609fade61ab956279ed5f2cb1ff1e9b40a8a55bfd0e1189c39e9b71f0c8",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "CBAT",
@@ -1273,7 +1519,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1290,7 +1537,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "f18e2a92b37a426b803585315e220fbd696059ddd4ccabde397db85425ce32aa",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "CCAQ",
@@ -1312,7 +1568,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1329,7 +1586,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "fc39a3afe23954eb98816e77861e0654ac1b3595460c60d10f01f6ca00859b85",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "CHA",
@@ -1351,7 +1617,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1368,7 +1635,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "8bbb3216ee13f9f17970d3b1434f4e4f3a0f3c6900ba2fac7c6931dfe4e58a27",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "CLBK",
@@ -1390,7 +1666,8 @@
         "corporateActionValid": true,
         "secMapped": false,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1407,7 +1684,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "b82bce78ac4539ad255e86435602fa2dbfd06684a5add391e5f717dd21646332",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "CLMT",
@@ -1429,7 +1715,8 @@
         "corporateActionValid": true,
         "secMapped": false,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1446,7 +1733,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "26348b10c182272c40e337a762fd96445118f9f9bf5ffad4bc037a49a8391eae",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "CNTB",
@@ -1468,7 +1764,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1485,7 +1782,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "bc5b1f79313748d963dd9e2968c20590911a7a8781b126d22f363b631a26d40a",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "CRAN",
@@ -1507,7 +1813,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1524,7 +1831,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "d705a9bb532fcea37aa3bd39ed8360ebf1bd806cad86c97a6d8de01038099acf",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "CRTO",
@@ -1546,7 +1862,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1563,7 +1880,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "a5731a365eb2871cdccf67dd70d82f68bfee9179979e76ee931cfb930b72d097",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "CUB",
@@ -1585,7 +1911,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1602,7 +1929,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "7e872f859a2ef4a28216ddb59bd078dab7ed3d1e4ed4b14468e34180fab92dfd",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "DPC",
@@ -1624,7 +1960,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1641,7 +1978,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "20b3afaa0a98904dd9656a6d0486caa53531c40d23556fa71f22281f6963db91",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "EROC",
@@ -1663,7 +2009,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1680,7 +2027,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "7bb6ed5935b956f5dc73dbda42da55708ae40ae6fb039a5cd84ffb7940c36522",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "ETRA",
@@ -1702,7 +2058,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1719,7 +2076,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "0045a089abb613028fa7e825284eb86b12af6c1107796d9cbd4deacb7dc91429",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "FIG",
@@ -1741,7 +2107,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1758,7 +2125,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "600111a1063c04008e7fb18d4249599e185e2ccd85fece4068e28b78f52d98c8",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "FIGR",
@@ -1780,7 +2156,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1797,7 +2174,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "9a54232314d3336b613f6725072f4a860debcf613a1519d629b214d9052dc00d",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "FJDI",
@@ -1819,7 +2205,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1836,7 +2223,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "8bcf4728b376d37aeb0dce482b0a961714cd834f6e136b8088a2c7b710b4b02b",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "FLY",
@@ -1858,7 +2254,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1875,7 +2272,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "484b848dbba872e2613b423931e0c73373ec64e756cb3afd8133b48086be8f0a",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "FOIL",
@@ -1897,7 +2303,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1914,7 +2321,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "3f9e6485971e00063e19d0dec2e44325c1b02a1083e89e74b49f39f6a76d5dbe",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "GLXY",
@@ -1936,7 +2352,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1953,7 +2370,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "f09c71afd9e859507c62fbff27d1a4b05140b3822e76de1bbb8ba5852ab54c1d",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "GOLD",
@@ -1975,7 +2401,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -1992,7 +2419,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "2c69f594284dea1ffa199923792e617c9ede3c5bf422c6f5d20bb58b450901dc",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "GTES",
@@ -2014,7 +2450,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2031,7 +2468,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "c014b85736f7d7cfdf0dc4d18164dbabbaedf1be731dfcf72692d0449e9b9d5e",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "HAWK",
@@ -2053,7 +2499,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2070,7 +2517,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "5ce418fadd2c4d49d6b3c1c64b1ba5e1a8a57ca6506d79327394b1baf4c0ede4",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "HLP",
@@ -2092,7 +2548,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2109,7 +2566,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "2f1e584ebbcc93d324b9d6057ad4072d0847438fc324c73ea8a9cbb1e97a3052",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "HOS",
@@ -2131,7 +2597,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": true,
-        "quantReady": true
+        "quantReady": false,
+        "quantCandidateEligible": true
       },
       "identityChecks": {
         "resolved": true,
@@ -2148,7 +2615,16 @@
       "quantDataPreconditions": true,
       "responseEvidenceSha256": "176a7bfbcef128dfa31f20000671568f86d6472d10ef047f692aae429f27d5a7",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "IGAC",
@@ -2170,7 +2646,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2187,7 +2664,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "faf7cca66eef6136d4c808a64065e243081988aba6d5579a8c19889dc23b8393",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "IMSR",
@@ -2209,7 +2695,8 @@
         "corporateActionValid": true,
         "secMapped": false,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2226,7 +2713,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "8b912da194f5f502b429cc42f9b5e90c08ffb58d76945cb09d7c6ee11a522ce5",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "INR",
@@ -2248,7 +2744,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2265,7 +2762,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "159912397c2d00c1098ff41d2d0dab57c4e38b4a78032f6720c33ec9d7e6d739",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "ITG",
@@ -2287,7 +2793,8 @@
         "corporateActionValid": true,
         "secMapped": false,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2304,7 +2811,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "f72ec9ea7e12f9e2532c8d748a745218b58e3a59b8ab0e7cfb2b079ea624b64d",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "JCAP",
@@ -2326,7 +2842,8 @@
         "corporateActionValid": true,
         "secMapped": false,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2343,7 +2860,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "d5e867ab56727aae19f2c88639d59707a4cb95ec4641a7d6915c757f97b26041",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "LFAC",
@@ -2365,7 +2891,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2382,7 +2909,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "1f9e44c989f8da4bc1673c550c3640089545f4084532866da3c73f7add126851",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "LGCY",
@@ -2404,7 +2940,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2421,7 +2958,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "edc6a0dc2271cc2ee0b38a1bc60e2d415eeb3a7a5c440187dcaba1f4b4b5f18e",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "LIME",
@@ -2443,7 +2989,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2460,7 +3007,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "7fbbbe30a77963b89fc138b0ff15c9e48b83247646b6b20ef331ba978953a4d7",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "LION",
@@ -2482,7 +3038,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2499,7 +3056,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "106d0991f1d323515e25df290ef11ef83de1a32d399e2dd3b5c458205b824049",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "LSBK",
@@ -2521,7 +3087,8 @@
         "corporateActionValid": true,
         "secMapped": false,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2538,7 +3105,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "1959825ba8baf925984224ea620167203742ccaa51fa0c6b70cf37445f9ddb31",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "MBGL",
@@ -2560,7 +3136,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2577,7 +3154,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "11613cb6a7381834e4bcb9a6b084fadd43dc3846852e7922274db98b688ba9c6",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "MOB",
@@ -2599,7 +3185,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2616,7 +3203,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "3afeac0e337c78263c34f5ada3c11b461f965287d5df9c86f815835c0064bdf3",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "MOBI",
@@ -2638,7 +3234,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2655,7 +3252,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "202df8fc5717e0a57054cdd5e43c21fc6f847164dcfc74d39776b0fb9e99b0ac",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "MRX",
@@ -2677,7 +3283,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2694,7 +3301,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "e2f429dcf4b242f0cc4c6a6aa81730c73ca87ef619b0af7bd9ece8fb6b621264",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "MTAK",
@@ -2716,7 +3332,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2733,7 +3350,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "1ea9a0a0584137ed225d868e1564f848a60a8aa4c4c3ea969e05a7c21f803aa1",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "NP",
@@ -2755,7 +3381,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2772,7 +3399,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "8a61742ab17b2bd485059ffc80f6921bdd8f906ba67f4c01b2f2be5b2c27dde4",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "NVRI",
@@ -2794,7 +3430,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2811,7 +3448,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "4adca3ea700598f7e4d7f9f80d3f26c57282aecd21e50a17f80e4ddddf5bbb4b",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "NWCL",
@@ -2833,7 +3479,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2850,7 +3497,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "00b75506064ec89aab128621f7c7d9128bcdf8505691c04acd6d542cd8909b80",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "OCLT",
@@ -2872,7 +3528,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2889,7 +3546,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "8cb7d06cbf9200b232871f945f501dd5d26985b9f206c6f9edec51ef79e2ded4",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "OIG",
@@ -2911,7 +3577,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2928,7 +3595,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "240101d1064a069c9126603fdcd7061e7fb48f7a1c39dfe646654e776f2cd538",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "ONEN",
@@ -2950,7 +3626,8 @@
         "corporateActionValid": true,
         "secMapped": false,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -2967,7 +3644,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "9b3905650f125a65adb773cef39f7ef7fc2d127213e0bb659910bb4837370d53",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "OSPR",
@@ -2989,7 +3675,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3006,7 +3693,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "dec72b92798572c61719b998d1f3655c0f1769dd6e969ba06071882fc596c2ab",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "OTAI",
@@ -3028,7 +3724,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3045,7 +3742,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "614d137d6dd0fbbed1417b0915ea0d4a23a895a4ca29c54c8167e4d48c99d979",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "PAAC",
@@ -3067,7 +3773,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3084,7 +3791,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "e552f4add5f3325c2b994515cf219c3be6e5128633912212b488b837428d59ea",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "PAL",
@@ -3106,7 +3822,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3123,7 +3840,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "8cf380b95f0412ee3f0454d33fb73bb6edb7c5f984c0320748ae715b26ed82fc",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "PASW",
@@ -3145,7 +3871,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3162,7 +3889,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "6a369d3f9b2dcc3a40c6dedb8222ccf35a55fe31bc3547c77fa7def09c724ffa",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "PNAQ",
@@ -3184,7 +3920,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3201,7 +3938,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "ba4a6ce4df6c2a139b95aef632355012c132dc397f0f9a117c44b6fe9a84378f",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "PNFP",
@@ -3223,7 +3969,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3240,7 +3987,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "b451ebc4c1d0ce01d3a7945062023885f498d322752990ba00df3a51edde6fe7",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "Q",
@@ -3262,7 +4018,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3279,7 +4036,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "91e452b4934bc6fc412db23241feac1bb6d053bab18dbd16e053cd348fe47f24",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "RBKB",
@@ -3301,7 +4067,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3318,7 +4085,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "8a9791e1129829346b34ebc85413fdfd3eb2e968e7d3d9b16525c266c2f16a21",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "RNA",
@@ -3340,7 +4116,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3357,7 +4134,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "f484066e7221609605c768ae29a7fdee8378946ecfc5e4b9f15da1bfd641e321",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "RNAQ",
@@ -3379,7 +4165,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3396,7 +4183,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "22e0f653614610d4c735e312554cc1ebcd44a24f2e6df2d7d73ac329b5ba5e30",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "ROC",
@@ -3418,7 +4214,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3435,7 +4232,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "01cb1421c3db29973359d025d47caac8ad5262baeae13c10268b39dd2eae5682",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "RZAI",
@@ -3457,7 +4263,8 @@
         "corporateActionValid": true,
         "secMapped": false,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3474,7 +4281,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "cdbdc719cbf66756114e29f0286e841fe8e67b359e611a8d90a484903eae7ec2",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "SAIL",
@@ -3496,7 +4312,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3513,7 +4330,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "1325225c03b9aa07c210a1a46b0506873b66953c0926398b9540c39d5ae74e9c",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "SEG",
@@ -3535,7 +4361,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3552,7 +4379,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "33936767dd2460d4fa9232d8a72380b8246dfa42223085ce11908424fc7342e2",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "SHOT",
@@ -3574,7 +4410,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3591,7 +4428,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "f1dc0b22b62d33faaa862626b04ffb84c56cd8e56fc7d6572297ce8f89c0c060",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "SIMA",
@@ -3613,7 +4459,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3630,7 +4477,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "6be86485857f335207ffb1fc74e792d7c654fa19cfe8f8dfa0249a53eea2bb9a",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "SIND",
@@ -3652,7 +4508,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3669,7 +4526,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "748933a4d4835ff632eb6a822cfbd7f82e77e03ab95d9b6d8939054b1f31266f",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "SKHY",
@@ -3691,7 +4557,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3708,7 +4575,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "d45ff222d7e35ff5d2d558848d2f78255308d7e0814a929950ceabedf445a903",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "SMA",
@@ -3730,7 +4606,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3747,7 +4624,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "0957fdafa1033d364f8c0bdf671313d38b43363e601da86dc2178f3b6d8bcc49",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "SNDK",
@@ -3769,7 +4655,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3788,7 +4675,16 @@
       "flags": [
         "WHEN_ISSUED_LISTING_METADATA_REVIEW"
       ],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "SOLS",
@@ -3810,7 +4706,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3827,7 +4724,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "45e9cd921037a7f2cd77b75aa14249562226242351ecc3140de656c3be956823",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "STRZ",
@@ -3849,7 +4755,8 @@
         "corporateActionValid": true,
         "secMapped": false,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3866,7 +4773,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "2b890c36927ab818b67579a32e58dc75f1ee0f0ee8617ce4a7adf5563d879c16",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "SZZL",
@@ -3888,7 +4804,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3905,7 +4822,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "03eb7064dcdf0f7214f46f3ecd5c5848fd1893f880432c8782457fc6bdbb8182",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "TACO",
@@ -3927,7 +4853,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3944,7 +4871,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "31bfa57ad9855f4a9e4e28c8df9723f4d0ed0ba08aa1723eaabe40fed624d240",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "TDTH",
@@ -3966,7 +4902,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -3983,7 +4920,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "a956756d1826ad10f575ad06c8c6cb20bfd2abf0a902eb6c55326cd1692565c7",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "TLAC",
@@ -4005,7 +4951,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -4022,7 +4969,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "60c649a4882576e98ce31b8893a605149738b8e58aab5e1f90179b0d671fe788",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "TMTS",
@@ -4044,7 +5000,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -4061,7 +5018,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "d3d59f82ca31c7a8219142b2d035b6969bf5e784cf93d2b82be47336bc7c562a",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "TTGT",
@@ -4083,7 +5049,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -4100,7 +5067,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "b3e22aab6eb26656a1553c4c792b3e5ebea13fff45ec8385f91c54d12ca5b2e6",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "TWLV",
@@ -4122,7 +5098,8 @@
         "corporateActionValid": true,
         "secMapped": false,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -4139,7 +5116,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "b5add86b24a1d9734dc1ee4c81f6ec584e5f6cce8f1cefb0bf173a644dcf5a39",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "UROY",
@@ -4161,7 +5147,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -4178,7 +5165,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "48738632f1a89ec5d38848f861366dee052b6fc0020f112ccbac4b5db842d61c",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "VIA",
@@ -4200,7 +5196,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -4217,7 +5214,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "49954f5007589a63ac244dc36d15642f17c02c2c9f38d47d0f31659bd9890144",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "VII",
@@ -4239,7 +5245,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -4256,7 +5263,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "b6a28914e5288401266c8a847877c52bce324ef394cd319634abaf9db7ad3304",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "VLTO",
@@ -4278,7 +5294,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -4295,7 +5312,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "cf321c014d65ed89f8a11bef1bfea149c1df71747031e74170c9df33a339cc56",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "WLTH",
@@ -4317,7 +5343,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -4334,7 +5361,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "e94135d588624c2757c3c532aa7ae0ac98a1907e56c24b78b713e6bcb1e28324",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "XIII",
@@ -4356,7 +5392,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -4373,7 +5410,16 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "af0b8d9599256c76da88d576dfbc81745164c109fed898d3c71e8680848f4003",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     },
     {
       "ticker": "XPRO",
@@ -4395,7 +5441,8 @@
         "corporateActionValid": true,
         "secMapped": true,
         "fundamentalReady": false,
-        "quantReady": false
+        "quantReady": false,
+        "quantCandidateEligible": false
       },
       "identityChecks": {
         "resolved": true,
@@ -4412,7 +5459,35 @@
       "quantDataPreconditions": false,
       "responseEvidenceSha256": "7fc20ddbf6708799b570a573bf22f0b331fd22a3f6d425aa59e406a2b0efaf4a",
       "flags": [],
-      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF"
+      "reviewScope": "CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF",
+      "quantCanonicalReady": false,
+      "factorEvidence": {
+        "scope": "PRIVATE_PRICE_METRIC_CALCULATION",
+        "privateCalculationState": "PARTIAL",
+        "benchmarkState": "SOURCE_MISSING",
+        "canonicalState": "NOT_MATERIALIZED",
+        "canonicalVerified": false,
+        "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+      }
     }
-  ]
+  ],
+  "sourceCodeCommit": "afe12b0d",
+  "quantEvidenceNamedCases": {
+    "HOS": {
+      "candidateEligible": true,
+      "canonicalQuantReady": false,
+      "privateCalculationState": "PARTIAL",
+      "benchmarkState": "SOURCE_MISSING",
+      "canonicalState": "NOT_MATERIALIZED",
+      "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+    },
+    "DNA": {
+      "candidateEligible": true,
+      "canonicalQuantReady": false,
+      "privateCalculationState": "PARTIAL",
+      "benchmarkState": "SOURCE_MISSING",
+      "canonicalState": "NOT_MATERIALIZED",
+      "fullQuantScoreState": "BLOCKED_BY_METHODOLOGY"
+    }
+  }
 }

@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
-  "runId": "gh-36995345322-1",
+  "runId": "gh-36998632570-1",
   "asOf": "2026-10-02",
   "discovery": {
-    "records": 108925,
+    "records": 108924,
     "tickerStrings": 106557,
     "byAssetType": {
-      "Stock": 49270,
+      "Stock": 49269,
       "ETF": 9775,
       "Mutual Fund": 49880
     },
     "byListingStatus": {
-      "INACTIVE": 43095,
+      "INACTIVE": 43094,
       "ACTIVE": 65830
     }
   },
@@ -29,7 +29,8 @@
     "MANUAL_REVIEW": 503,
     "REJECT_WITH_REASON": 12,
     "publicationReady": 116,
-    "quantReady": 4
+    "quantCandidateEligible": 4,
+    "quantReady": 0
   },
   "proposedConsumer": 6521,
   "added": [
@@ -137,7 +138,8 @@
     "XPRO"
   ],
   "removed": [],
-  "quantReadyAdded": [
+  "quantReadyAdded": [],
+  "quantCandidateEligibleAdded": [
     "HOS"
   ],
   "evidence": {
@@ -164,7 +166,7 @@
     ],
     "automaticProductionPublication": false,
     "canonicalStage": {
-      "manifestSha256": "baa5ff93d0a7885cddddbf6563f4cfd65ce5c998239f1c0e0cfc583757f92d17",
+      "manifestSha256": "a557b56baf61dc919fe6628ecf0586fa42a921c237aa30482d1560f88b300940",
       "additions": 102,
       "files": 86,
       "projectionStatus": "NOT_MATERIALIZED"

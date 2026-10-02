@@ -6,8 +6,8 @@
   "checks": {
     "nodeProducts": {
       "command": "node --test quant/tests/*.test.mjs discover/tests/*.test.mjs scripts/supertrader/tests/*.test.mjs screener/tests/*.test.mjs",
-      "tests": 2638,
-      "passed": 2633,
+      "tests": 2665,
+      "passed": 2660,
       "failed": 0,
       "skipped": 5,
       "status": "PASS"
@@ -21,8 +21,8 @@
     },
     "tiingo2Focused": {
       "command": "node --test quant/tests/tiingo2-*.test.mjs",
-      "tests": 93,
-      "passed": 93,
+      "tests": 120,
+      "passed": 120,
       "failed": 0,
       "status": "PASS"
     },
@@ -34,7 +34,13 @@
     },
     "realTiingoCorporateActionCompatibility": {
       "dividendConvention": "TIINGO_REINVESTMENT_CLOSE",
-      "cases": ["AAPL", "NVDA", "JPM", "MSFT", "XOM"],
+      "cases": [
+        "AAPL",
+        "NVDA",
+        "JPM",
+        "MSFT",
+        "XOM"
+      ],
       "barCountPerCase": 2954,
       "passed": 5,
       "failed": 0,
@@ -50,7 +56,10 @@
       "command": "CHROMIUM_PATH=/usr/bin/chromium node scripts/vu2/production-smoke.mjs <built release> --report <temporary report>",
       "checks": 148,
       "failed": 0,
-      "viewports": [1440, 390],
+      "viewports": [
+        1440,
+        390
+      ],
       "scope": "EXISTING_CANONICAL_PRODUCT_OUTPUTS",
       "status": "PASS"
     },
@@ -73,28 +82,164 @@
       "changedPaths": 0,
       "testSideEffectRestored": "quant/data/providers/total-return-verification.json",
       "status": "PASS"
+    },
+    "encryptedProviderCache": {
+      "tests": 25,
+      "passed": 25,
+      "failed": 0,
+      "encryption": "AES-256-GCM",
+      "keyDerivation": "HKDF-SHA256 using existing provider credential and branch context",
+      "status": "PASS"
+    },
+    "credentialAndPublicationHygiene": {
+      "checks": [
+        "Exact SEC credential assignment grep",
+        "scripts/market/assert-no-secrets.mjs --all",
+        "scripts/market/assert-public-data-hygiene.mjs"
+      ],
+      "status": "PASS"
+    },
+    "canonicalFactorReadiness": {
+      "tests": 23,
+      "passed": 23,
+      "failed": 0,
+      "scope": "POLICY_AND_PUBLICATION_TESTS_OVERLAP_FOCUSED_SUITE",
+      "cases": [
+        "HOS 21 bars/private metrics remain ineligible for delivered Quant proof",
+        "DNA private arithmetic does not certify Factor DNA publication",
+        "Actual canonical factor artifact SHA/schema/methodology/security/CIK/date binding required"
+      ],
+      "status": "PASS"
+    },
+    "githubImplementationCI": {
+      "head": "afe12b0d5480195a324968c5af10ace51c54af6d",
+      "quant": {
+        "status": "PASS",
+        "run": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36998140013"
+      },
+      "sec": {
+        "status": "PASS",
+        "run": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36998140144"
+      },
+      "currency": {
+        "status": "PASS",
+        "run": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36998140062"
+      },
+      "pagesPackage": {
+        "status": "PASS",
+        "run": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36998140039"
+      },
+      "encryptedDiscoveryStaging": {
+        "status": "PASS",
+        "run": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36998135407",
+        "protectedOutputs": "UNCHANGED",
+        "plaintextCleanup": "PASS",
+        "persistedCache": "AUTHENTICATED_CIPHERTEXT_ONLY"
+      },
+      "pagesDeploy": "SKIPPED",
+      "productMaterialization": "SKIPPED"
+    },
+    "broaderGitHubBrowserQA": {
+      "status": "FAIL",
+      "reason": "EXISTING_SCREENER_RESOURCE_BUDGET_GATE",
+      "run": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36998140076",
+      "functionalChecks": 88,
+      "functionalFindings": 0,
+      "accessibilityPages": 76,
+      "accessibilityViolations": 0,
+      "budgetChecks": 8,
+      "failedBudgetChecks": 4,
+      "decodedByteLimit": 30500000,
+      "viewports": [
+        1440,
+        390
+      ],
+      "screenerDecodedBytes": 30537298,
+      "screenerRequests": 29,
+      "screenerProDecodedBytes": 30505842,
+      "screenerProRequests": 19,
+      "baselinePR346Run": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36984747082",
+      "baselineScope": "SAME_KNOWN_FAILED_STEP; EXACT_BASELINE_BYTE_TOTALS_NOT_RETRIEVED"
+    },
+    "externalHostingStatus": {
+      "status": "FAIL",
+      "reason": "VERCEL_BUILD_RATE_LIMIT",
+      "deploymentPerformed": false
     }
   },
   "reviewFindings": [
-    {"finding": "Explicit retired listing status must preserve identity generations on ticker reuse", "status": "FIXED_AND_TESTED"},
-    {"finding": "Duplicate staged candidates must not inflate publication counts or collapse distinct securities", "status": "FIXED_AND_TESTED"},
-    {"finding": "Nonfinite adjustment ratios must fail closed", "status": "FIXED_AND_TESTED"},
-    {"finding": "Classifier rules version must not invalidate unchanged historical artifact schema", "status": "FIXED_AND_TESTED"},
-    {"finding": "A common first word must not certify company or SEC identity", "status": "FIXED_AND_TESTED"},
-    {"finding": "Daily evidence budgets must rotate unprobed candidates and prevent failed symbols from starving later listings", "status": "FIXED_AND_TESTED"},
-    {"finding": "Public reports must drop nested raw prices, provider bodies and bars arrays", "status": "FIXED_AND_TESTED"},
-    {"finding": "Unchanged listing histories require incremental overlap refresh rather than daily full refetch", "status": "FIXED_AND_TESTED"},
-    {"finding": "Interrupted publication must recover a demonstrably dead local lock owner without admitting concurrent writers", "status": "FIXED_AND_TESTED"},
-    {"finding": "Search projections must retain every existing symbol and name shard reference", "status": "FIXED_AND_TESTED"},
-    {"finding": "A subsidiary closed-end fund must not reclassify its operating parent", "status": "FIXED_AND_TESTED"},
-    {"finding": "A first-bar action outside the observed return interval must not reject a legitimate series", "status": "FIXED_AND_TESTED"},
-    {"finding": "Tiingo cash reinvestment must use splitFactor * (1 + divCash / exDayClose), retaining explicit prior-close semantics for generic callers", "status": "FIXED_AND_TESTED"}
+    {
+      "finding": "Explicit retired listing status must preserve identity generations on ticker reuse",
+      "status": "FIXED_AND_TESTED"
+    },
+    {
+      "finding": "Duplicate staged candidates must not inflate publication counts or collapse distinct securities",
+      "status": "FIXED_AND_TESTED"
+    },
+    {
+      "finding": "Nonfinite adjustment ratios must fail closed",
+      "status": "FIXED_AND_TESTED"
+    },
+    {
+      "finding": "Classifier rules version must not invalidate unchanged historical artifact schema",
+      "status": "FIXED_AND_TESTED"
+    },
+    {
+      "finding": "A common first word must not certify company or SEC identity",
+      "status": "FIXED_AND_TESTED"
+    },
+    {
+      "finding": "Daily evidence budgets must rotate unprobed candidates and prevent failed symbols from starving later listings",
+      "status": "FIXED_AND_TESTED"
+    },
+    {
+      "finding": "Public reports must drop nested raw prices, provider bodies and bars arrays",
+      "status": "FIXED_AND_TESTED"
+    },
+    {
+      "finding": "Unchanged listing histories require incremental overlap refresh rather than daily full refetch",
+      "status": "FIXED_AND_TESTED"
+    },
+    {
+      "finding": "Interrupted publication must recover a demonstrably dead local lock owner without admitting concurrent writers",
+      "status": "FIXED_AND_TESTED"
+    },
+    {
+      "finding": "Search projections must retain every existing symbol and name shard reference",
+      "status": "FIXED_AND_TESTED"
+    },
+    {
+      "finding": "A subsidiary closed-end fund must not reclassify its operating parent",
+      "status": "FIXED_AND_TESTED"
+    },
+    {
+      "finding": "A first-bar action outside the observed return interval must not reject a legitimate series",
+      "status": "FIXED_AND_TESTED"
+    },
+    {
+      "finding": "Tiingo cash reinvestment must use splitFactor * (1 + divCash / exDayClose), retaining explicit prior-close semantics for generic callers",
+      "status": "FIXED_AND_TESTED"
+    },
+    {
+      "finding": "Public Actions caches must persist authenticated provider ciphertext rather than plaintext licensed bodies; prior Tiingo2 cache entries removed",
+      "status": "FIXED_AND_TESTED"
+    },
+    {
+      "finding": "Synthetic provider body sentinel must not match the unchanged SEC literal credential guard",
+      "status": "FIXED_AND_TESTED"
+    },
+    {
+      "finding": "Private partial price calculations must not certify canonical Factor DNA materialization or Quant product readiness",
+      "status": "FIXED_AND_TESTED"
+    }
   ],
   "limits": [
     "Browser checks validate the existing canonical product baseline; they do not prove newly staged listings were published.",
     "DNA split-factor and Quant computation regressions use constructed prices; actual provider history readiness is reported separately by the refresh evidence artifacts.",
     "Publication requires QA proof bound to exact staged bytes; baseline regression results alone are insufficient.",
     "Focused and broad suites overlap; their test counts must not be added together.",
-    "Historical provider revisions entirely before the incremental overlap may require the existing periodic long-series refresh."
-  ]
+    "Historical provider revisions entirely before the incremental overlap may require the existing periodic long-series refresh.",
+    "Broader GitHub browser QA on checked implementation head passed 88 functional checks and 76 accessibility pages but exceeded the unchanged 30.5 MB Screener resource budget; the same job failed at that gate on accepted PR346. This is distinct from the passing 148-check production smoke."
+  ],
+  "checkedImplementationHead": "afe12b0d5480195a324968c5af10ace51c54af6d"
 }
