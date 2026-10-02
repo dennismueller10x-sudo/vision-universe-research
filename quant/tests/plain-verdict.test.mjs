@@ -211,19 +211,28 @@ test("die Startseite fuehrt mit einer Antwort, nicht mit einer Erklaerung", () =
   const quelle = readFileSync(join(ROOT, "quant/app/pages.js"), "utf8");
   const kopf = quelle.slice(quelle.indexOf("async function home("), quelle.indexOf("/* ============================================================ SCREENER"));
   assert.ok(kopf.length > 200, "die Startseite ist nicht auffindbar");
-  const hero = kopf.slice(kopf.indexOf('el("section", { class: "qx-hero" }'), kopf.indexOf("]));"));
+  /* Discover-Angleichung (30.09.2026): der erste Bildschirm ist Discovers
+     Intro (header.v2-intro, zusaetzlich .qx-hero), die Tueren sind
+     Discovers v2-world-door. */
+  /* Konzept-Design (Owner, 30.09.2026, Tafel "Quant Home & Einstieg"):
+     der erste Bildschirm ist der Globus-Hero (q-hero) mit der Frage "Was
+     möchtest du heute analysieren?" und der Suche direkt darunter. Die
+     Absicht bleibt: zuerst die Antwort (Suche), keine Erklaerung. */
+  const heroAt = kopf.indexOf('el("header", { class: "q-hero v2-intro qx-intro qx-hero" }');
+  assert.ok(heroAt > 0, "die Startseite hat keinen ersten Bildschirm mehr");
+  const hero = kopf.slice(heroAt, kopf.indexOf("]));", heroAt));
   assert.ok(hero.length > 50, "die Startseite hat keinen ersten Bildschirm mehr");
-  assert.match(hero, /el\("h1", \{ class: "qx-h1", text: "Aktien verstehen/,
+  assert.match(hero, /el\("h1", \{ text: "Was möchtest du heute analysieren\?"/,
     "das Versprechen der Startseite ist verschwunden");
   assert.match(hero, /onclick: ctx\.openSearch/, "der erste Bildschirm bietet keine Antwort an (Suche)");
-  assert.ok(kopf.indexOf('class: "qx-hero"') < kopf.indexOf("doors(["), "die Startseite fuehrt mit den Wegen statt mit dem Versprechen");
+  assert.ok(heroAt < kopf.indexOf("doors(["), "die Startseite fuehrt mit den Wegen statt mit dem Versprechen");
   /* Eine feste, kleine Zahl von Wegen - keine Auswahlwand. Vereinbart
      waren drei; der Frontend-Rebuild-Auftrag des Owners (30.09.2026, Teil 2
      "R. HOME") legt ausdruecklich VIER fest: Aktie analysieren, Quant
      Screener, Strategien, Aktuelle Setups. Die Pruefung bleibt exakt - ein
      fuenfter Weg waere wieder eine Entscheidung. */
   const tueren = kopf.slice(kopf.indexOf("doors(["), kopf.indexOf("])]));", kopf.indexOf("doors([")));
-  const wege = (tueren.match(/\{ icon: "/g) || []).length;
+  const wege = (tueren.match(/\{ kicker: "/g) || []).length;
   assert.equal(wege, 4, "die Startseite bietet " + wege + " Wege an, vier sind vereinbart (Owner-Auftrag R)");
   for (const ziel of ["X.routes.stocks()", "X.routes.screener()", "X.routes.strategies()", 'X.routes.screener("frage=setups")'])
     assert.ok(tueren.includes(ziel), "der vereinbarte Weg fehlt: " + ziel);

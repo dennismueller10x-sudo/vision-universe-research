@@ -44,3 +44,15 @@ test('existing relay OK/WARNING budget verdicts do not stop a subscription',()=>
 test('a stalled connection times out and releases the socket without retrying',()=>{
  const f=fixture();f.client.start();f.advance(21000);assert.equal(f.client.snapshot().reason,'CONNECTION_TIMEOUT');assert.equal(f.closed(),1);assert.equal(f.queue.size,0);
 });
+
+test('the Quant chart moves only on the TRADE-only relay client, never on the Discover hub stream', async () => {
+ const {readFileSync}=await import('node:fs');
+ const src=readFileSync(new URL('../app/chart.js',import.meta.url),'utf8').replace(/\/\*[\s\S]*?\*\//g,'');
+ /* Der Hub liefert nur den Snapshot; sein Strom uebernimmt auch Kursangebote. */
+ assert.equal(/Hub\.live\b/.test(src),false);
+ assert.match(src,/Hub\.subscribe\(/);
+ assert.match(src,/VULiveRelayClient/);
+ assert.match(src,/st\.relay\.stop\(/);
+ const stock=readFileSync(new URL('../app/page-stock.js',import.meta.url),'utf8');
+ assert.match(stock,/realtime: function \(\) \{ return api\.getRealtimeCapability\(ticker\); \}/);
+});

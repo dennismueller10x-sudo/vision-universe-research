@@ -3,7 +3,7 @@
   const groups = [
     ['Discover', [['Start','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]],
     ['Markets & Data', [['Dashboard','/dashboard/','▧'],['Macro','/macro/','≋'],['ETF','/etf/','◫']]],
-    ['Analyse', [['Screener','/screener/','⧩'],['Quant','/quant/','⌁'],['Analysten','/analysten/','◇'],['Hedgefonds','/hedgefonds/','♙']]],
+    ['Analyse', [['Screener','/screener/','⧩'],['Quant','/quant/','⌁'],['Supertrader','/supertrader/','⚑'],['Analysten','/analysten/','◇'],['Hedgefonds','/hedgefonds/','♙']]],
     ['Research', [['News','/news/','▤'],['Morning','/morning/','☼'],['Magazin','/magazin/','▣'],['Reports','/reports/xpeng/','▥']]],
     ['Learn', [['Academy','/academy/','✧'],['Guide','/guide/','◈']]],
     ['Tools & Personal', [['Budget','/budget/','▦']]]
@@ -27,6 +27,7 @@
     '✧':'<path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/>',
     '◈':'<path d="m12 2 10 10-10 10L2 12zM12 7l5 5-5 5-5-5z"/>',
     '⧩':'<path d="M4 5h16l-6 8v5l-4 2v-7z"/>',
+    '⚑':'<rect x="3" y="11" width="8" height="6" rx="1.5"/><path d="M3 21h18M11 12l4-4 2 2 4-5m0 0h-4m4 0v4"/>',
     '▦':'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 9v12m6-12v12"/>'
   };
   /* Die Plattformnavigation ist auf allen Produkten dieselbe Komponente.
@@ -35,12 +36,14 @@
     light: {
       bg: 'rgba(255,255,255,.96)', border: 'rgba(0,0,0,.07)', ink: '#111',
       divider: '#e5e5e2', burgerBg: '#050505', burgerInk: '#fff',
-      panelBg: '#101318', panelBorder: 'rgba(255,255,255,.15)', outline: '#c8f531'
+      panelBg: '#101318', panelBorder: 'rgba(255,255,255,.15)', outline: '#c8f531',
+      atlasBg: '#101318', atlasInk: '#f5f6f2', atlasRing: 'rgba(200,245,49,.35)', atlasGlow: 'rgba(16,19,24,.18)'
     },
     dark: {
       bg: 'rgba(8,8,10,.92)', border: 'rgba(255,255,255,.10)', ink: '#f4f4f1',
       divider: 'rgba(255,255,255,.12)', burgerBg: '#f4f4f1', burgerInk: '#08080a',
-      panelBg: '#101318', panelBorder: 'rgba(255,255,255,.15)', outline: '#c8f531'
+      panelBg: '#101318', panelBorder: 'rgba(255,255,255,.15)', outline: '#c8f531',
+      atlasBg: '#171b21', atlasInk: '#f5f6f2', atlasRing: 'rgba(200,245,49,.55)', atlasGlow: 'rgba(200,245,49,.16)'
     }
   };
 
@@ -57,6 +60,11 @@
         .quick a[aria-current=page]{text-decoration:underline;text-underline-offset:8px}
         a:hover{text-decoration:underline;text-underline-offset:5px}a:focus-visible,button:focus-visible{outline:2px solid ${t.outline};outline-offset:3px}
         button{font:inherit;cursor:pointer}.toggle{flex-shrink:0;border:1px solid ${t.divider};background:transparent;color:${t.ink};padding:10px 16px;border-radius:24px;font-weight:700}
+        .atlas{flex-shrink:0;display:inline-flex;align-items:center;gap:9px;height:42px;padding:0 16px 0 5px;border-radius:24px;background:${t.atlasBg};color:${t.atlasInk};font-size:13px;font-weight:800;letter-spacing:.01em;text-decoration:none;white-space:nowrap;box-shadow:0 0 0 1px ${t.atlasRing},0 6px 22px ${t.atlasGlow};transition:transform .15s,box-shadow .15s}
+        .quick+.atlas{margin-left:4px}.atlas:hover{text-decoration:none;transform:translateY(-1px);box-shadow:0 0 0 1px ${t.atlasRing},0 10px 28px ${t.atlasGlow}}
+        .atlas-icon{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#e9ff7a,#c8f531 55%,#9fc41c);box-shadow:0 0 14px #c8f53199}
+        .atlas-icon svg{width:19px;height:19px;fill:#101318}.atlas-small{opacity:.7}
+        .atlas[aria-current=page]{box-shadow:0 0 0 2px #c8f531,0 6px 22px ${t.atlasGlow}}
         .backdrop{position:fixed;inset:88px 0 0;background:#0009;visibility:hidden;opacity:0;transition:opacity .2s}
         .panel{position:fixed;right:0;top:88px;bottom:0;width:min(420px,100vw);padding:24px 28px calc(34px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;background:${t.panelBg};color:#f5f6f2;border-left:1px solid ${t.panelBorder};box-shadow:-20px 20px 70px #0004;visibility:hidden;transform:translateX(100%);transition:transform .2s,visibility .2s}
         :host([open]) .backdrop,:host([open]) .panel{visibility:visible;opacity:1;transform:none}
@@ -68,8 +76,10 @@
         .choices{display:flex;border:1px solid #ffffff38;border-radius:10px;padding:3px;gap:2px}.choices button,.choices a{display:block;border:0;border-radius:7px;background:transparent;color:#f5f6f2;padding:7px 9px;min-width:40px;font-size:11px;text-align:center;text-decoration:none}.choices [aria-pressed=true]{background:#f5f6f2;color:#101318}
         .panel a:focus-visible,.panel button:focus-visible{outline-color:#c8f531}
         @media(max-width:1120px){.section{display:none}}
-        @media(max-width:760px){.shell{width:calc(100% - 32px)}.row{height:70px;gap:10px;min-width:0}.brand{min-width:0}.brand img{width:min(188px,52vw);max-width:100%}.section{display:none}.quick{display:none}.toggle{margin-left:auto;white-space:nowrap;padding:10px 12px;min-height:44px}.backdrop{inset:70px 0 0}.panel{top:70px;width:min(400px,100vw);padding:22px 24px calc(36px + env(safe-area-inset-bottom))}.links{grid-template-columns:1fr}.links a{min-height:44px;font-size:14px}.groups{gap:25px}}
-        @media(max-width:360px){.shell{width:calc(100% - 24px)}.brand img{width:min(170px,51vw)}.panel{padding-inline:20px}}
+        @media(max-width:760px){.shell{width:calc(100% - 32px)}.row{height:70px;gap:10px;min-width:0}.brand{min-width:0}.brand img{width:min(188px,52vw);max-width:100%}.section{display:none}.quick{display:none}.quick+.atlas,.atlas{margin-left:auto;height:44px}.toggle{margin-left:auto;white-space:nowrap;padding:10px 12px;min-height:44px}.backdrop{inset:70px 0 0}.panel{top:70px;width:min(400px,100vw);padding:22px 24px calc(36px + env(safe-area-inset-bottom))}.links{grid-template-columns:1fr}.links a{min-height:44px;font-size:14px}.groups{gap:25px}}
+        @media(max-width:480px){.row{gap:8px}.brand img{width:min(140px,36vw)}.atlas{gap:7px;padding-right:12px;font-size:12px}}
+        @media(max-width:340px){.atlas-ask{display:none}.toggle{padding:10px 9px}}
+        @media(max-width:360px){.shell{width:calc(100% - 24px)}.brand img{width:min(120px,35vw)}.panel{padding-inline:20px}}
         :host([theme="dark"]) header img{filter:invert(1) brightness(1.08)}
         @media(prefers-reduced-motion:reduce){.backdrop,.panel{transition:none}}
 `;
@@ -95,7 +105,7 @@
          sie sind - sie stehen in Daten, nicht auf dem Bildschirm. */
       const root = this.attachShadow({mode: 'open'});
       const inDiscover = location.pathname.startsWith('/discover/');
-      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo.png" alt="Vision Universe"></a><span class="section">${inDiscover?'Discover':'Entdecken. Verstehen. Investieren.'}</span><nav class="quick" aria-label="Direktzugriff"><a href="/dashboard/">Dashboard</a><a href="/screener/">Screener</a><a href="/news/">News</a><a href="/quant/">Quant</a></nav><button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰ Menü</button></div></div></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><div class="panel-head"><a href="/"><img src="/assets/vision-universe-logo.png" alt="Vision Universe"></a><button class="close" type="button" aria-label="Menü schließen">×</button></div><div class="groups"></div><div class="settings"><h2>Einstellungen</h2><div class="setting"><span>Währung</span><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div><div class="setting"><span>Darstellung</span><div class="choices appearance" role="group" aria-label="Darstellung"></div></div></div></nav>`;
+      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo.png" alt="Vision Universe"></a><span class="section">${inDiscover?'Discover':'Entdecken. Verstehen. Investieren.'}</span><nav class="quick" aria-label="Direktzugriff"><a href="/dashboard/">Dashboard</a><a href="/screener/">Screener</a><a href="/news/">News</a><a href="/quant/">Quant</a></nav><a class="atlas" href="/ask/" aria-label="AI Atlas – KI-Suche"><span class="atlas-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/><path class="atlas-small" d="M18.6 14.6c.2 1.6.9 2.5 2.6 2.8-1.7.3-2.4 1.2-2.6 2.8-.2-1.6-.9-2.5-2.6-2.8 1.7-.3 2.4-1.2 2.6-2.8z"/></svg></span><span class="atlas-label"><span class="atlas-ask">AI </span>Atlas</span></a><button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰ Menü</button></div></div></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><div class="panel-head"><a href="/"><img src="/assets/vision-universe-logo.png" alt="Vision Universe"></a><button class="close" type="button" aria-label="Menü schließen">×</button></div><div class="groups"></div><div class="settings"><h2>Einstellungen</h2><div class="setting"><span>Währung</span><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div><div class="setting"><span>Darstellung</span><div class="choices appearance" role="group" aria-label="Darstellung"></div></div></div></nav>`;
       const host=root.querySelector('.groups');
       groups.forEach(([heading,entries])=>{
         const section=document.createElement('section');section.className='group';
@@ -123,6 +133,7 @@
           if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
         });
       };
+      if(location.pathname.startsWith('/ask/'))root.querySelector('.atlas').setAttribute('aria-current','page');
       root.querySelectorAll('.quick a').forEach(a=>{if(location.pathname.startsWith(a.getAttribute('href')))a.setAttribute('aria-current','page');});
       const panel=root.querySelector('.panel'),button=root.querySelector('.toggle');panel.inert=true;
       const close=()=>{this.removeAttribute('open');panel.inert=true;panel.setAttribute('aria-hidden','true');button.setAttribute('aria-expanded','false');button.setAttribute('aria-label','Menü öffnen');};

@@ -48,15 +48,28 @@ jobs:
             console.log("Stand", s.asOf, "Alter Tage", age.toFixed(1), "Zaehler", JSON.stringify(s.counts));
             if (age > 6) throw new Error("Signalstand aelter als 6 Tage");
             for (const r of b.runs) if (!r.metricsPublishable && r.metrics !== null) throw new Error("Kennzahl ohne Gates: "+r.variantId);'
+          # Zugangsschranke ist laut docs/RESEARCH_ACCESS_GATE.md eine clientseitige
+          # Entwicklungs-/Marketing-Maske, kein Zugriffsschutz: Originaldateien unter
+          # /__research/content/ sind direkt abrufbar, bis eine serverseitige Sperre
+          # (PR #328) existiert. Der Smoke weist den tatsaechlichen Zustand aus.
+          if curl -sf "$SITE/__research/config.json" -o /dev/null; then
+            dc=$(curl -s -o /dev/null -w '%{http_code}' "$SITE/__research/content/supertrader/index.html")
+            echo "Zugangsmaske aktiv; Direktzugriff /__research/content/supertrader/: HTTP $dc (dokumentiert offen, nur serverseitig lösbar)"
+            curl -s "$SITE/supertrader/" | grep -q 'noindex' && echo "Maske mit noindex ausgeliefert" || { echo "Maske ohne noindex"; exit 1; }
+          fi
           curl -sf "$SITE/discover/" -o /dev/null && echo "Discovery erreichbar"
           curl -sf "$SITE/vu2/" -o /dev/null && echo "Quant 2.0 erreichbar"
       - name: Browser QA gegen Produktion
+        env:
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
         run: |
           npm install --prefix /tmp/st-qa --no-audit --no-fund playwright@1.56.1
           node /tmp/st-qa/node_modules/playwright/cli.js install --with-deps chromium
           mkdir -p /tmp/site/supertrader/data
           cp /tmp/signals.json /tmp/registry.json /tmp/site/supertrader/data/
-          node scripts/supertrader/browser-qa.mjs --base="$SITE" --site=/tmp/site --out=/tmp/supertrader-prod-evidence --playwright=/tmp/st-qa/node_modules/playwright
+          gate=""
+          if curl -sf "$SITE/__research/config.json" -o /dev/null; then gate="--access-login"; echo "Research-Zugangsmaske aktiv - Login ueber das Formular"; fi
+          node scripts/supertrader/browser-qa.mjs --base="$SITE" --site=/tmp/site --out=/tmp/supertrader-prod-evidence --playwright=/tmp/st-qa/node_modules/playwright $gate
       - name: Preserve screenshots
         if: always()
         uses: actions/upload-artifact@v4

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-29T21:07:05.128Z",
+  "generatedAt": "2026-10-02T13:09:26.025Z",
   "note": "Rekonstruiert aus den Kommentaren der Request-PRs und dem Invocation Ledger. Keine neue Work-Ausfuehrung. Jede Zeile nennt, woher sie stammt; was nicht geprueft wurde, steht als null und nicht als Schaetzung.",
   "jobs": [
     {
@@ -913,9 +913,9 @@
       "processingKey": "brief_d4b22c35794bba85:vu-post-20260929-d00c2c3d75:c55933fbc79a08b869bd8390d7fc33f5417172a4:1.0",
       "attempt": 1,
       "revision": null,
-      "state": "CREATIVE_JOB_DISPATCHED",
+      "state": "CREATIVE_JOB_FAILED",
       "createdAt": "2026-09-29T21:07:05.128Z",
-      "updatedAt": "2026-09-29T21:07:05.128Z",
+      "updatedAt": "2026-09-30T21:03:33.921Z",
       "prNumber": 303,
       "deliveryIds": [],
       "observedStarts": 0,
@@ -929,6 +929,159 @@
           "state": "CREATIVE_JOB_DISPATCHED",
           "at": "2026-09-29T21:07:05.128Z",
           "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_FAILED",
+          "at": "2026-09-30T21:03:33.921Z",
+          "note": "gh api issues/303/comments — reconciled aus AGENT_ABBRUCH_GEMELDET"
+        }
+      ],
+      "failureType": "AGENT_REPORTED_ASSET_CONTRACT_MISMATCH"
+    },
+    {
+      "creativeJobId": "job_vu-post-20260930-ff50f15081:e62a2258558caecae19b0740b79026d4d3a9664f:attempt1",
+      "contentId": "vu-post-20260930-ff50f15081",
+      "briefId": "brief_e8d29c2421ec7b96",
+      "briefBlobSha": "e62a2258558caecae19b0740b79026d4d3a9664f",
+      "processingKey": "brief_e8d29c2421ec7b96:vu-post-20260930-ff50f15081:e62a2258558caecae19b0740b79026d4d3a9664f:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-09-30T21:04:46.124Z",
+      "updatedAt": "2026-09-30T21:22:38.459Z",
+      "prNumber": 320,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-30T21:04:46.124Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-30T21:04:46.124Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-30T21:22:38.459Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-30T21:22:38.459Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "1604f5fb36a82712ac99df154009d401e996d1d6",
+      "resultRef": "origin/authoring/request/vu-post-20260930-ff50f15081",
+      "resultBlobSha": "09d80c85dd0f6c8ad2c8e7939cc8977edbc0fd55"
+    },
+    {
+      "creativeJobId": "job_vu-post-20261001-d69124c984:8236b8159522f00fa2486fa264b46e8fa73b1b5d:attempt1",
+      "contentId": "vu-post-20261001-d69124c984",
+      "briefId": "brief_e4f40a2bcf6a6353",
+      "briefBlobSha": "8236b8159522f00fa2486fa264b46e8fa73b1b5d",
+      "processingKey": "brief_e4f40a2bcf6a6353:vu-post-20261001-d69124c984:8236b8159522f00fa2486fa264b46e8fa73b1b5d:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-10-01T13:54:03.976Z",
+      "updatedAt": "2026-10-01T14:09:51.930Z",
+      "prNumber": 332,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-10-01T13:54:03.976Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-10-01T13:54:03.976Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-10-01T14:09:51.930Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-10-01T14:09:51.930Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "d45ca9e5842de48f62c94984de0cf742c542d4e3",
+      "resultRef": "origin/authoring/request/vu-post-20261001-d69124c984",
+      "resultBlobSha": "cbc1d304d256c27e90d4891a7974be9f0605c652"
+    },
+    {
+      "creativeJobId": "job_vu-post-20261001-2dc13b600e:80815522e070ab8ea2926319866425118a7e5505:attempt1",
+      "contentId": "vu-post-20261001-2dc13b600e",
+      "briefId": "brief_c6e30a408ab294b0",
+      "briefBlobSha": "80815522e070ab8ea2926319866425118a7e5505",
+      "processingKey": "brief_c6e30a408ab294b0:vu-post-20261001-2dc13b600e:80815522e070ab8ea2926319866425118a7e5505:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-10-01T21:22:03.584Z",
+      "updatedAt": "2026-10-01T21:37:34.773Z",
+      "prNumber": 337,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-10-01T21:22:03.584Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-10-01T21:22:03.584Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-10-01T21:37:34.773Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-10-01T21:37:34.773Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "97cf4b2103b3f8c3bd75364132cad9a88ff8f2de",
+      "resultRef": "origin/authoring/request/vu-post-20261001-2dc13b600e",
+      "resultBlobSha": "9887b4b6993db18991e845a1e83cd8e580ec1918"
+    },
+    {
+      "creativeJobId": "job_vu-post-20261002-f5bab93d15:12ed53bd1daa1f24060909014d78736158ee4d8a:attempt1",
+      "contentId": "vu-post-20261002-f5bab93d15",
+      "briefId": "brief_dcba5a8352739dbc",
+      "briefBlobSha": "12ed53bd1daa1f24060909014d78736158ee4d8a",
+      "processingKey": "brief_dcba5a8352739dbc:vu-post-20261002-f5bab93d15:12ed53bd1daa1f24060909014d78736158ee4d8a:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_DISPATCHED",
+      "createdAt": "2026-10-02T13:09:26.025Z",
+      "updatedAt": "2026-10-02T13:09:26.025Z",
+      "prNumber": 351,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-10-02T13:09:26.025Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-10-02T13:09:26.025Z",
+          "note": "PR vom Orchestrator geoeffnet."
         }
       ]
     }
@@ -940,5 +1093,5 @@
     "maxRevisionsPerContentId": 3,
     "diagnosticJobsInProduction": 0
   },
-  "reconciledAt": "2026-09-29T21:05:45.956Z"
+  "reconciledAt": "2026-10-01T21:37:34.773Z"
 }

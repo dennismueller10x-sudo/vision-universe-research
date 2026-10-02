@@ -79,6 +79,10 @@ test("das Quant-Frontend ruft keine Vercel-Funktion auf", () => {
      produktiv, und die Vorschau-Regel gehoert zurueckgenommen. */
   const html = readFileSync(join(ROOT, "quant/index.html"), "utf8");
   const geladen = [...html.matchAll(/<script src="\/([^"]+)"><\/script>/g)].map((m) => m[1]);
+  /* Nachgeladen statt gebuendelt (Backtesting, 01.10.2026): die Pfade aus
+     den loadScript-Aufrufen in app.js gehoeren genauso dazu. */
+  const appJs = readFileSync(join(ROOT, "quant/app/app.js"), "utf8");
+  geladen.push(...[...appJs.matchAll(/loadScript\("\/([^"]+\.js)"\)/g)].map((m) => m[1]));
   const app = readdirSync(join(ROOT, "quant/app")).filter((d) => d.endsWith(".js")).map((d) => "quant/app/" + d);
   /* Jede App-Datei muss wirklich geladen werden - sonst prueft der Test
      eine Liste, die das Produkt nicht ist. */

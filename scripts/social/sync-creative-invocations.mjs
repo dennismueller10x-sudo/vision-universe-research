@@ -97,6 +97,43 @@ export function parseInvocation(body) {
   };
 }
 
+/* ------------------------------------------------------------------ */
+/* DIE JUENGSTE MELDUNG DES AGENTEN ZU EINEM PROCESSING KEY            */
+/*                                                                     */
+/* Der Agent meldet sich mit VU_CREATIVE_AGENT_<ART> (INVOCATION,      */
+/* FAILURE, ...). Fuer den Abgleich zaehlt nur, was er ZULETZT zu      */
+/* genau diesem Schluessel gesagt hat: ein FAILURE, auf das ein neuer  */
+/* Start folgt, ist kein Abbruch mehr.                                 */
+/* ------------------------------------------------------------------ */
+const AGENT_MARKE = /\bVU_CREATIVE_AGENT_([A-Z_]+)\b/;
+
+/** Liest eine beliebige Agent-Meldung. null, wenn der Text keine ist. */
+export function parseAgentMarker(body) {
+  const text = String(body || "");
+  const marke = text.match(AGENT_MARKE);
+  if (!marke) return null;
+  const felder = {};
+  for (const zeile of text.split(/\r?\n/)) {
+    const treffer = zeile.match(/^\s*([a-z_]+)\s*:\s*(.+?)\s*$/);
+    if (treffer) felder[treffer[1]] = treffer[2];
+  }
+  if (!felder.processing_key) return null;
+  return { art: marke[1], processingKey: felder.processing_key,
+    status: felder.status || null, reason: felder.reason || null };
+}
+
+/** Die juengste Agent-Meldung zu genau diesem Schluessel, oder null. */
+export function letzteAgentMeldung(kommentare, processingKey) {
+  let letzte = null;
+  for (const k of kommentare || []) {
+    const m = parseAgentMarker(k && k.body);
+    if (!m || m.processingKey !== processingKey) continue;
+    const at = String(k.created_at || k.createdAt || "");
+    if (!letzte || at >= letzte.at) letzte = Object.assign({ at }, m);
+  }
+  return letzte;
+}
+
 /** Der Ledger-Zustand zu einem gemeldeten Agent-Status. */
 export function zustandFuer(status) {
   switch (String(status || "").toUpperCase()) {

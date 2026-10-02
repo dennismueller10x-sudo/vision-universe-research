@@ -16,7 +16,8 @@ const bar=(date,close=10)=>({securityId:member.securityId,date,close,adjustedClo
 function fixture(t){
  const dir=mkdtempSync(join(tmpdir(),'vu2-sync-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));
  const files=['scripts/market/sync-history-store.mjs','scripts/market/preflight-zero-cost.mjs','scripts/market/storage/fs-driver.mjs',
- 'quant/engines/history-store.js','quant/engines/bar-codec.js','quant/engines/zero-cost-guard.js','quant/config/tiingo-scale.json'];
+ 'quant/engines/history-store.js','quant/engines/bar-codec.js','quant/engines/zero-cost-guard.js','quant/config/tiingo-scale.json',
+ 'scripts/market/benchmark-reference.mjs'];
  for(const f of files){mkdirSync(dirname(join(dir,f)),{recursive:true});copyFileSync(new URL(f,root),join(dir,f));}
  const universe=join(dir,'quant/data/market/scale/universe-TEST.json');mkdirSync(dirname(universe),{recursive:true});writeFileSync(universe,JSON.stringify({securities:[member]}));
  const workingDir=join(dir,'working'),cache=join(workingDir,'tiingo/daily/ref_TST.json');
@@ -138,4 +139,22 @@ test('offline estimates and missing or corrupt monthly accounting never issue ex
  p=preflight(f);assert.equal(p.result.status,3);assert.equal(p.report.accountingKnown,false);assert.equal(p.report.budgetForRun,null);
  await f.durable.driver.put(f.durable.usageKey.replace('MONTH',Guard.monthKey()),Buffer.from('{invalid'));
  p=preflight(f);assert.equal(p.result.status,3);assert.equal(p.report.measured,false);assert.equal(p.report.budgetForRun,null);
+});
+/* Vorfall 01.10.2026, Lauf 36801050774: erster Lauf im neuen Monat. Die
+   Vorabrechnung verlangte einen Monatsstand, den nur ein freigegebener Lauf
+   schreibt - ein Zirkel, der den ganzen Oktober blockiert haette. Zulaessig
+   ist der Uebergang nur mit belegtem Vormonat und ohne Schreibvorgang im
+   neuen Monat; alles andere bleibt geschlossen. */
+test('month rollover is accepted only with a closed previous month and no writes this month',async t=>{
+ const f=fixture(t),month=Guard.monthKey(),prev=Guard.previousMonthKey(month);
+ await f.durable.putSeries(f.series([bar('2026-09-09')]));
+ const lastMonth=`${prev}-28T22:00:00.000Z`;
+ await f.durable.writeIndex({symbols:{TST:{securityId:'ref_TST',barCount:1,bytes:100,updatedAt:lastMonth}}});
+ let p=preflight(f);assert.equal(p.result.status,3,'ohne Vormonat bleibt es zu');assert.equal(p.report.accountingBasis,'UNKNOWN');
+ await f.durable.writeUsage({...Guard.emptyUsage(prev),classAOperations:12,classBOperations:40});
+ p=preflight(f);assert.equal(p.result.status,0,p.result.stdout+p.result.stderr);
+ assert.equal(p.report.accountingBasis,'MONTH_ROLLOVER_VERIFIED');assert.equal(p.report.executionAllowed,true);assert.ok(p.report.budgetForRun);
+ await f.durable.writeIndex({symbols:{TST:{securityId:'ref_TST',barCount:1,bytes:100,updatedAt:new Date().toISOString()}}});
+ p=preflight(f);assert.equal(p.result.status,3,'Schreibvorgang im Monat ohne Monatsstand = Stand verloren');
+ assert.equal(p.report.accountingBasis,'UNKNOWN');assert.equal(p.report.budgetForRun,null);
 });

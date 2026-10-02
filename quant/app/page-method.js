@@ -28,8 +28,8 @@
   var TEMPLATE_LABEL = { BALANCE_SHEET_FINANCIAL: "Banken und bilanzbasierte Finanzunternehmen", INSURANCE_CARRIER: "Versicherer", REAL_ESTATE_TRUST: "Immobilien-REITs" };
 
   function topicHead(main, t, lead) {
-    main.append(el("a", { class: "qx-back", href: X.routes.method(), text: "← Methodik" }),
-      el("span", { class: "qx-eyebrow", text: "Methodik" }), el("h1", { class: "qx-h1", text: t.title }), lead ? el("p", { class: "qx-lead", text: lead }) : null);
+    main.append(tabs(t.id), el("a", { class: "v2-back qx-back", href: X.routes.method(), text: "← Methodik" }),
+      el("span", { class: "v2-eyebrow", text: "Methodik" }), el("h1", { class: "qx-h1", text: t.title }), lead ? el("p", { class: "v2-lead qx-lead", text: lead }) : null);
   }
   function para(t) { return el("p", { text: t }); }
 
@@ -58,21 +58,74 @@
     return ({ daten: daten, faktoren: faktoren, gewichtung: gewichtung, branchen: branchen, setups: setups, strategien: strategien, historie: historie, grenzen: grenzen, versionen: versionen })[t.id](main, ctx, t, params);
   }
 
+  var TOPIC_ICON = { daten: "data", faktoren: "bars", gewichtung: "filter", branchen: "network", setups: "setups", strategien: "trend", historie: "clock", grenzen: "warn", versionen: "doc" };
+  /* Die Tabs der Konzept-Tafel "Methodik, Vertrauen & Transparenz". */
+  var TABS = [[null, "Überblick"], ["faktoren", "Faktoren"], ["daten", "Daten"], ["historie", "Backtesting"], ["grenzen", "Grenzen"]];
+  function tabs(current) {
+    return el("nav", { class: "q-tabs", "aria-label": "Methodik" }, TABS.map(function (t) {
+      return el("a", { href: X.routes.method(t[0] || undefined), "aria-current": t[0] === current ? "true" : "false", text: t[1] });
+    }));
+  }
+
+  /* Die Stufen-Skala mit den echten Wertgrenzen (VM.BAND_MIN, gespiegelt
+     aus der Engine) - von sehr schwach bis sehr stark. */
+  function bandScale() {
+    var order = VM.BAND_ORDER.slice().reverse(), words = { VERY_WEAK: "sehr schwach", WEAK: "schwach", NEUTRAL: "durchschnittlich", STRONG: "stark", VERY_STRONG: "sehr stark" };
+    return el("div", { class: "q-bands", role: "list", "aria-label": "Stufen eines Faktorwerts" }, order.map(function (b, i) {
+      var lo = VM.BAND_MIN[b], next = order[i + 1], hi = next ? VM.BAND_MIN[next] - 1 : 100;
+      return el("div", { class: "b" + (i + 1), role: "listitem" }, [el("b", { class: "num", text: lo + "–" + hi }), el("small", { text: words[b] })]);
+    }));
+  }
+
   function start(main) {
-    main.append(el("span", { class: "qx-eyebrow", text: "Methodik" }),
-      el("h1", { class: "qx-h1", text: "Warum kann ich dem Ergebnis vertrauen?" }),
-      el("p", { class: "qx-lead", text: "Keine Blackbox. Jede Einschätzung hat einen Grund – und jeder Grund führt bis zu den Daten, aus denen er entsteht." }));
-    main.append(el("div", { class: "qx-grid qx-grid-2", style: "margin-top:8px" }, [
-      X.card([el("h3", { class: "qx-h3", text: "Belegte Daten, mit Stichtag" }), el("p", { class: "qx-small", text: "Geschäftszahlen aus SEC-Meldungen, Kurse von Tiingo. Jede Zahl trägt ihren Stand. Eine Kennzahl zählt erst ab dem Tag, an dem sie öffentlich bekannt war." })]),
-      X.card([el("h3", { class: "qx-h3", text: "Gleiche Regeln für jede Aktie" }), el("p", { class: "qx-small", text: "Faktoren, Setups und Strategien folgen versionierten Regeln. Schwellen werden nicht an Ergebnissen optimiert und nicht für einzelne Titel angepasst." })]),
-      X.card([el("h3", { class: "qx-h3", text: "Lieber keine Aussage als eine falsche" }), el("p", { class: "qx-small", text: "Fehlt eine Kennzahl, wird sie nicht geschätzt. Reicht die Datenlage nicht, sagt Quant das – mit der Zahl, die fehlt (fail-closed)." })]),
-      X.card([el("h3", { class: "qx-h3", text: "Keine Gesamtnote, keine Prognose" }), el("p", { class: "qx-small", text: "Eine einzelne Zahl würde Zielkonflikte verbergen – etwa hohe Qualität bei hohem Preis. Quant zeigt die Eigenschaften einzeln und sagt nie, was passieren wird." })])
-    ]));
-    main.append(X.section("Themen", null, [el("div", { class: "qx-method-grid" }, TOPICS.map(function (t) {
-      return el("a", { class: "qx-row qx-card", style: "border-radius:var(--qx-radius);", href: X.routes.method(t.id) }, [
-        el("div", { class: "qx-row-main" }, [el("strong", { text: t.title }), el("div", { class: "qx-row-why", text: t.text })]), el("span", { "aria-hidden": "true", text: "→" })]);
+    main.append(el("header", { class: "q-hero q-hero--method" }, [X.globe(),
+      el("p", { class: "q-kicker", text: "Methodik" }),
+      el("h1", { class: "qx-h1", text: "Transparenz schafft Vertrauen." }),
+      el("p", { class: "q-hero-lead v2-lead qx-lead", text: "Keine Blackbox. Jede Einschätzung hat einen Grund – und jeder Grund führt bis zu den Daten, aus denen er entsteht." })]),
+      tabs(null));
+    main.append(X.section("So arbeitet Quant", null, [el("div", { class: "q-rows v2-world-directory qx-method-grid" }, TOPICS.map(function (t) {
+      return el("a", { class: "q-rowlink", href: X.routes.method(t.id) }, [el("span", { class: "q-icon", "aria-hidden": "true" }, [X.icon(TOPIC_ICON[t.id] || "doc")]),
+        el("span", {}, [el("strong", { text: t.title }), el("small", { text: t.text })])]);
     }))]));
-    main.append(el("div", { class: "qx-actions" }, [X.btn("Methodik im Detail (technische Dokumentation)", "/quant/methodology/", "secondary"), X.btn("SEC-Dateninspektor", "/quant/data-inspector/", "secondary")]));
+    /* Owner-Auftrag "Quant Daily Usefulness": die Begriffe bleiben intern
+       sauber getrennt - die Oberflaeche erklaert sie in Alltagssprache. */
+    main.append(X.section("Acht Begriffe, sauber getrennt", "Jede Aussage auf Quant gehört zu genau einer dieser Fragen.", [el("dl", { class: "q-terms" }, [].concat.apply([], [
+      ["Faktor", "Wie gut ist die Aktie in einer Eigenschaft – im Vergleich zu allen anderen?"],
+      ["Veränderung", "Was bewegt sich gerade – wird eine Eigenschaft besser oder schlechter?"],
+      ["Setup", "Entsteht im Kursbild eine konkrete Situation – und wie weit ist sie?"],
+      ["Anlagestil", "Zu welcher Strategie passt die Aktie heute?"],
+      ["Rückblick", "Was geschah bei dieser Aktie früher in derselben Kurslage?"],
+      ["Marktmuster", "Was geschah im ganzen Markt in ähnlichen Fällen?"],
+      ["Backtest", "Wie hätte eine fest definierte Regel historisch abgeschnitten? (noch nicht freigegeben)"],
+      ["Radar", "Was ist heute neu – welcher Zustand hat sich seit dem letzten Stand geändert?"]
+    ].map(function (x) { return [el("dt", { text: x[0] }), el("dd", { text: x[1] })]; })))]));
+    main.append(X.section("Unsere Prinzipien", null, [el("div", { class: "q-principles qx-principles" }, [
+      el("span", { class: "q-shield", "aria-hidden": "true" }, [X.icon("shield")]),
+      el("div", {}, [el("b", { text: "Datenbasiert. Nachvollziehbar. Unabhängig." })].concat(
+        ["Belegte Daten mit Stichtag", "Gleiche Regeln für jede Aktie", "Lieber keine Aussage als eine falsche", "Keine Gesamtnote, keine Prognose"].map(function (x) { return el("span", { text: x }); })))]),
+      el("ol", { class: "q-rows q-principle-list" }, [
+        ["Belegte Daten, mit Stichtag", "Geschäftszahlen aus SEC-Meldungen, Kurse von Tiingo. Jede Zahl trägt ihren Stand. Eine Kennzahl zählt erst ab dem Tag, an dem sie öffentlich bekannt war."],
+        ["Gleiche Regeln für jede Aktie", "Faktoren, Setups und Strategien folgen versionierten Regeln. Schwellen werden nicht an Ergebnissen optimiert und nicht für einzelne Titel angepasst."],
+        ["Lieber keine Aussage als eine falsche", "Fehlt eine Kennzahl, wird sie nicht geschätzt. Reicht die Datenlage nicht, sagt Quant das – mit der Zahl, die fehlt."],
+        ["Keine Gesamtnote, keine Prognose", "Eine einzelne Zahl würde Zielkonflikte verbergen – etwa hohe Qualität bei hohem Preis. Quant zeigt die Eigenschaften einzeln und sagt nie, was passieren wird."]
+      ].map(function (p, i) { return el("li", { class: "q-rowlink is-static" }, [el("span", { class: "q-num", text: "0" + (i + 1) }), el("span", {}, [el("strong", { text: p[0] }), el("small", { text: p[1] })])]); }))]));
+    main.append(X.section("Wie ein Faktorwert zu lesen ist", "Jeder Faktor ist ein Wert von 0 bis 100 im Vergleich zu allen anderen US-Aktien. Die Stufen sind feste Wertgrenzen – keine Anteile des Marktes.", [bandScale(),
+      el("p", { class: "qx-small", text: "Weil ein Faktorwert ein Mittel aus mehreren Rangplätzen ist, sammeln sich die Werte in der Mitte – „sehr stark“ ist deshalb deutlich seltener als jede zehnte Aktie. Die gemessene Verteilung steht unter „Faktoren“." })],
+      { href: X.routes.method("faktoren"), label: "Verteilung ansehen" }));
+    main.append(X.section("Grenzen offenlegen", "Was Quant bewusst nicht sagt – und wo die Daten derzeit enden.", [el("div", { class: "q-limits" }, [
+      ["ban", "Keine Empfehlung", "Quant ordnet ein. Keine Kauf- oder Verkaufsempfehlungen, keine Wahrscheinlichkeiten für künftige Kurse. Setup-Marken sind gekennzeichnete Szenarien."],
+      ["nodata", "Fehlende Daten", "Fehlt eine Kennzahl, fällt ihr Gewicht heraus. Unter 80 % Abdeckung entsteht kein Faktorwert."],
+      ["clock", "Datenarme Aktien", "Junge oder selten gehandelte Titel haben oft zu wenig Historie – Quant nennt dann die fehlende Zahl."],
+      ["bars", "Backtesting", "Strategie-Backtests sind noch nicht freigegeben. Deshalb zeigt Quant keine Trefferquoten."]
+    ].map(function (x) { return el("div", {}, [el("span", { class: "q-icon", "aria-hidden": "true" }, [X.icon(x[0])]), el("b", { text: x[1] }), el("span", { text: x[2] })]); }))],
+      { href: X.routes.method("grenzen"), label: "Alle Grenzen" }));
+    main.append(X.section("Transparenz-Matrix", "Was du bei Quant nachprüfen kannst – und was es (noch) nicht gibt.", [el("div", { class: "q-matrix" }, [
+      el("div", { class: "is-yes" }, [el("h3", { text: "Offen gelegt" }), el("ul", {}, [
+        "Datenquellen und Stichtag jeder Zahl (SEC EDGAR, Tiingo)", "Kennzahlen, Gewichte und Rohwerte jedes Faktors", "Bedingungen jedes Setups und jeder Strategie",
+        "Alle Vergleichsfälle im Rückblick – nie ein herausgegriffener", "Versionen jeder Regel"].map(function (x) { return el("li", { text: x }); }))]),
+      el("div", { class: "is-no" }, [el("h3", { text: "Gibt es bewusst nicht – oder noch nicht" }), el("ul", {}, [
+        "Gesamtnote oder Rangliste", "Kursziele und Prognosen", "Trefferquoten (Backtesting noch nicht freigegeben)", "Sentiment- und News-Auswertung", "Erwartungstrend (keine zeitpunktgenaue Quelle)"].map(function (x) { return el("li", { text: x }); }))])])]));
+    main.append(X.actions([X.btn("Methodik im Detail (technische Dokumentation)", "/quant/methodology/", "secondary"), X.btn("SEC-Dateninspektor", "/quant/data-inspector/", "secondary")]));
   }
 
   async function daten(main, ctx, t) {
@@ -82,9 +135,9 @@
       X.card([el("h3", { class: "qx-h3", text: "Geschäftszahlen: SEC EDGAR" }), para("Umsatz, Gewinn, Cashflow, Bilanz – aus den Pflichtmeldungen der Unternehmen (10-K, 10-Q). Maßgeblich ist, wann eine Zahl öffentlich wurde, nicht der Berichtszeitraum."), X.btn("Rohdaten prüfen", "/quant/data-inspector/", "secondary")]),
       X.card([el("h3", { class: "qx-h3", text: "Kurse: Tiingo" }), para("Tagesschlusskurse, splitbereinigt; während der Handelszeit 5-Minuten-Kurse (IEX) und auf der Aktienseite optional ein laufender Kurs. Dividenden sind in Kursentwicklungen nicht enthalten.")])
     ]));
-    if (sum && sum.counts) main.append(X.section("Wie groß ist das Universum?", "Stand " + X.dateDe(sum.asOf || (sum.generatedAt || "").slice(0, 10)) + ".", [el("div", { class: "qx-stats" }, [
+    if (sum && sum.counts) main.append(X.section("Wie groß ist das Universum?", "Stand " + X.dateDe(sum.asOf || (sum.generatedAt || "").slice(0, 10)) + ".", [el("div", { class: "dv2-valuation-grid qx-stats" }, [
       ["US-Titel im Produktuniversum", sum.counts.productUniverse], ["mit veröffentlichter Faktoranalyse", sum.counts.published], ["davon mit Geschäftszahlen", sum.counts.withFundamentals], ["mit belegtem Börsenwert", sum.counts.withMarketCap]
-    ].map(function (p) { return el("div", { class: "qx-stat" }, [el("span", { text: p[0] }), el("b", { class: "num", text: typeof p[1] === "number" ? p[1].toLocaleString("de-DE") : "–" })]); }))]));
+    ].map(function (p) { return el("div", { class: "dv2-valuation-card qx-stat" }, [el("span", { text: p[0] }), el("b", { class: "num", text: typeof p[1] === "number" ? p[1].toLocaleString("de-DE") : "–" })]); }))]));
     main.append(X.section("Wie aktuell?", null, [el("ul", {}, [
       el("li", { text: "Tageskurse und Faktoren werden an jedem Handelstag nach Börsenschluss neu berechnet und veröffentlicht." }),
       el("li", { text: "5-Minuten-Kurse werden während der Sitzung im Takt erneuert; die Seite nennt den Stand mit Uhrzeit." }),
@@ -103,7 +156,7 @@
       var f = VM.FACTORS[id];
       var comps = Object.keys(cs).filter(function (k) { return k.indexOf(id + ":") === 0; }).map(function (k) { return cs[k]; });
       var d = el("details", { class: "qx-factor tone-neutral", id: "m-" + id, open: focus === id ? true : null }, [
-        el("summary", {}, [el("span", { class: "qx-factor-name", text: f.name }), el("span", { class: "qx-tag", text: f.method }), el("span", { class: "qx-factor-q", text: f.question })]),
+        el("summary", {}, [el("span", { class: "qx-factor-name", text: f.name }), el("span", { class: "dx-index-badge qx-tag", text: f.method }), el("span", { class: "qx-factor-q", text: f.question })]),
         el("div", { class: "qx-factor-body" }, [para(f.measures), f.notMeasures ? el("p", { class: "qx-small", text: f.notMeasures }) : null, el("p", { class: "qx-small", text: f.higher }),
           emptyText[id] ? X.notice("Derzeit für keine Aktie ein Wert", emptyText[id]) : null,
           comps.length ? el("div", {}, comps.map(function (c) {
@@ -118,6 +171,7 @@
       el("p", { class: "qx-small", text: "Das Ergebnis wurde nachgerechnet und ist kein Rechenfehler. Es ist eine Aussage über Bilanz- und Ergebnisqualität, nicht über die Qualität des Geschäfts. Deshalb heißt der Faktor so – und deshalb steht er neben der Profitabilität, nicht an ihrer Stelle." })
     ])], null, "Nachgeprüft"));
     var dist = gap.dist;
+    if (dist) main.append(await histogramSection(ctx, dist, focus));
     if (dist) {
       main.append(X.section("Wie die Stufen verteilt sind", "Die Stufen sind feste Wertgrenzen auf dem Faktorwert – keine Anteile des Marktes. Weil ein Faktorwert ein Mittel aus mehreren Rangplätzen ist, sammeln sich die Werte in der Mitte. „Sehr stark“ ist deshalb viel seltener als jede zehnte Aktie. Gezählt über alle veröffentlichten Werte:", [
         el("div", { class: "qx-card qx-table-wrap", tabindex: "0", "aria-label": "Verteilung der Stufen je Faktor" }, [el("table", { class: "qx-table" }, [
@@ -131,6 +185,44 @@
         el("p", { class: "qx-small", text: "Auf jeder Aktienseite steht deshalb zusätzlich die gezählte Position: „höher als bei X % der bewerteten Aktien“. Eine Neukalibrierung der Stufen wäre eine neue, versionierte Methodik – sie wird nicht stillschweigend vorgenommen." })
       ], null, "Offen gelegt"));
     }
+  }
+
+  /* Verteilung eines Faktors als Histogramm (10er-Klassen), gezaehlt aus
+     allen veroeffentlichten Werten; NVIDIA als markiertes Beispiel - der
+     Titel, an dem das Band-Audit gefuehrt wurde. */
+  async function histogramSection(ctx, dist, focus) {
+    var ex = await ctx.api.getFactorEvidence("NVDA").catch(function () { return null; });
+    var exScore = {};
+    ((ex && ex.factors) || []).forEach(function (f) { if (f.state === "AVAILABLE" && typeof f.score === "number") exScore[f.id] = f.score; });
+    var ids = VM.ORDER.filter(function (id) { return dist[id] && dist[id].length; });
+    var cur = ids.indexOf(focus) >= 0 ? focus : ids.indexOf("profitability") >= 0 ? "profitability" : ids[0];
+    var host = el("div", { class: "q-hist" });
+    var pick = el("div", { class: "q-chips", role: "group", "aria-label": "Faktor wählen" });
+    function draw() {
+      var vals = dist[cur] || [], bins = []; for (var k = 0; k < 20; k++) bins.push(0);
+      vals.forEach(function (v) { bins[Math.min(19, Math.max(0, Math.floor(v / 5)))]++; });
+      var max = Math.max.apply(null, bins) || 1, W = 800, H = 220, bw = W / 20;
+      var ns = "http://www.w3.org/2000/svg";
+      function s(tag, a) { var n = document.createElementNS(ns, tag); Object.keys(a).forEach(function (k) { n.setAttribute(k, a[k]); }); return n; }
+      var svg = s("svg", { viewBox: "0 0 " + W + " " + (H + 22), role: "img", "aria-label": "Verteilung " + VM.FACTORS[cur].name + ": " + bins.map(function (b, i) { return (i * 5) + "–" + (i * 5 + 4) + ": " + b; }).join(", ") });
+      bins.forEach(function (b, i) {
+        var h = Math.max(1, b / max * (H - 14));
+        var band = VM.band(i * 5 + 2);
+        svg.append(s("rect", { x: i * bw + 2, y: H - h, width: bw - 4, height: h, rx: 3, fill: { VERY_WEAK: "#f09a90", WEAK: "#f5bf87", NEUTRAL: "#eed977", STRONG: "#b9e46a", VERY_STRONG: "#8fd12a" }[band] || "#ccc" }));
+        if (i % 2 === 0) { var t = s("text", { x: i * bw, y: H + 16, "text-anchor": i ? "middle" : "start", class: "q-hist-axis" }); t.textContent = String(i * 5); svg.append(t); }
+      });
+      var mark = exScore[cur];
+      if (typeof mark === "number") {
+        var x = mark / 100 * W;
+        svg.append(s("line", { x1: x, x2: x, y1: 0, y2: H, stroke: "#111", "stroke-width": 2, "stroke-dasharray": "4 3" }));
+        var lt = s("text", { x: x > W - 90 ? x - 6 : x + 6, y: 12, "text-anchor": x > W - 90 ? "end" : "start", class: "q-hist-axis", "font-weight": "800" }); lt.textContent = "NVDA " + Math.round(mark); svg.append(lt);
+      }
+      host.replaceChildren(el("p", { class: "q-hist-title" }, [el("b", { text: VM.FACTORS[cur].name + " " }), el("span", { text: vals.length.toLocaleString("de-DE") + " bewertete Aktien" })]), svg);
+      pick.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.factor === cur ? "true" : "false"); });
+    }
+    ids.forEach(function (id) { pick.append(el("button", { type: "button", class: "q-chip", dataset: { factor: id }, text: VM.FACTORS[id].name, onclick: function () { cur = id; draw(); } })); });
+    draw();
+    return X.section("Wie sich die Werte verteilen", "Anzahl der Aktien je Wertebereich (Klassen zu 5 Punkten), gezählt aus allen veröffentlichten Faktorwerten. Die Farben sind die Stufen; die gestrichelte Linie zeigt NVIDIA als Beispiel.", [pick, host, bandScale()], null, "Offen gelegt");
   }
 
   async function gewichtung(main, ctx, t) {
@@ -185,6 +277,17 @@
 
   async function historie(main, ctx, t) {
     topicHead(main, t, "Was geschah früher in ähnlichen Situationen? Drei Blickwinkel – und klare Grenzen.");
+    main.append(X.actions([X.btn("Zum Backtesting: Regel oder Setup wählen", X.routes.backtest(), "secondary")]));
+    /* Der gemessene Stand der Evidenzarten (evidence-status-v1). */
+    var ev = await ctx.api.getEvidenceStatus().catch(function () { return null; });
+    if (ev && ev.state === "AVAILABLE") {
+      main.append(X.section(["Null", "Eine", "Zwei", "Drei", "Vier", "Fünf", "Sechs"][ev.kinds.length] + " Arten historischer Evidenz", "Streng getrennt. Zahlen gibt es nur, wo die Methodik sie trägt – sonst steht da, was fehlt.", [el("div", { class: "q-evkinds" }, ev.kinds.map(function (k) {
+        var pub = k.state === "PUBLISHED";
+        return el("div", { class: "q-evkind " + (pub ? "is-on" : "is-off") }, [el("b", { text: k.label }), el("span", { class: "q-evkind-state", text: pub ? "veröffentlicht" : "zurückgehalten" }),
+          el("p", { text: k.question }),
+          pub ? el("p", { class: "qx-small", text: (k.gate && k.gate.rule) || "" }) : el("ul", {}, (k.checks || []).map(function (c) { return el("li", { class: c.state === "PASS" ? "is-pass" : "is-fail" }, [el("span", { text: (c.state === "PASS" ? "✓ " : "✗ ") + c.label }), el("small", { text: " – nötig: " + c.required + " · heute: " + c.measured })]); }))]);
+      })), ev.measures && ev.measures.HISTORICAL_REPLAY_COVERAGE ? el("p", { class: "qx-small", text: "Rückblick heute: für " + ev.measures.HISTORICAL_REPLAY_COVERAGE.sufficient.m6.toLocaleString("de-DE") + " von " + ev.measures.HISTORICAL_REPLAY_COVERAGE.universe.toLocaleString("de-DE") + " Aktien reichen die Vergleichsfälle für Zahlen nach 6 Monaten (mindestens 10 abgeschlossene Fälle); bei " + ev.measures.HISTORICAL_REPLAY_COVERAGE.broad.m6.toLocaleString("de-DE") + " ist die Evidenz breit (ab 30)." }) : null]));
+    }
     main.append(el("div", { class: "qx-grid qx-grid-3" }, [
       X.card([el("h3", { class: "qx-h3", text: "1 · Dieselbe Aktie, dieselbe Kurslage" }), el("p", { class: "qx-small", text: "Wann stand die Aktie schon einmal in genau dieser Kurslage (etwa nahe am Jahreshoch, über der 40-Wochen-Linie)? Gezählt wird die erste Woche jeder zusammenhängenden Phase – eine zwölf Wochen lange Lage ist ein Fall, nicht zwölf." })]),
       X.card([el("h3", { class: "qx-h3", text: "2 · Was danach geschah" }), el("p", { class: "qx-small", text: "Für jeden Fall die Kursentwicklung nach 3, 6 und 12 Monaten: Median, Anteil der Fälle im Plus, typischer Rückgang. Erst ab 10 abgeschlossenen Fällen – darunter wäre ein Median Zufall, und es wird keiner gezeigt." })]),

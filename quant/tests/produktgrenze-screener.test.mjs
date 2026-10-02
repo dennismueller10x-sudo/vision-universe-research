@@ -85,8 +85,9 @@ test("Quant verlinkt niemals das eigenstaendige Screener-Produkt als seinen eige
       "die Bereichsleiste von Quant fuehrt aus dem Produkt heraus in das eigenstaendige Screener-Produkt");
     assert.match(n.href, /^#\//, n.label + " fuehrt aus Quant heraus: " + n.href);
   }
-  /* Kopf- und Tab-Leiste entstehen beide aus dieser Liste. */
-  assert.equal((ohneKommentare(APP).match(/X\.NAV\.map\(/g) || []).length, 2);
+  /* Die Bereichsleiste entsteht aus dieser Liste - seit der Discover-
+     Angleichung ist sie EINE Leiste (Kopf am Desktop, Tab am Handy). */
+  assert.equal((ohneKommentare(APP).match(/X\.NAV\.map\(/g) || []).length, 1);
   /* Und die Routen des Quant Screeners bleiben innerhalb von /quant/. */
   assert.match(QX.routes.screener(), /^#\/screener/);
   assert.match(QX.routes.screenerPro(), /^#\/screener\/profi/);
@@ -136,7 +137,10 @@ test("auch die Knopf-Beschriftungen in den Quant-Screener nennen Quant", () => {
   const beschriftungen = [
     ...[...q.matchAll(new RegExp(String.raw`X\.(?:btn|link)\(\s*"([^"]*)"\s*,\s*` + ziel, "g"))].map((m) => m[1]),
     ...[...q.matchAll(new RegExp(String.raw`cta:\s*"([^"]*)"\s*,\s*href:\s*` + ziel, "g"))].map((m) => m[1]),
-    ...[...q.matchAll(new RegExp(String.raw`el\("a",\s*\{\s*href:\s*` + ziel + String.raw`[^\n]*?text:\s*"([^"]*)"`, "g"))].map((m) => m[1])
+    /* Discover-Angleichung: Discovers Pillen tragen die Klasse VOR dem
+       Ziel (el("a", { class: "v2-pill ...", href: ..., text: ... })) - der
+       Auszug liest deshalb jede Attributfolge innerhalb der Zeile. */
+    ...[...q.matchAll(new RegExp(String.raw`el\("a",\s*\{[^\n]*?href:\s*` + ziel + String.raw`[^\n]*?text:\s*"([^"]*)"`, "g"))].map((m) => m[1])
   ];
   assert.ok(beschriftungen.length >= 5,
     "nur " + beschriftungen.length + " Knopf-Beschriftungen gefunden - der Auszug greift nicht mehr");
@@ -146,8 +150,10 @@ test("auch die Knopf-Beschriftungen in den Quant-Screener nennen Quant", () => {
     assert.match(label, /Quant Screener/,
       'der Knopf "' + label + '" fuehrt in den Quant-Screener und nennt das andere Produkt');
   }
-  /* Auch die Seite selbst nennt sich so (Eyebrow des Screeners). */
-  assert.match(q, /async function screener\([^)]*\) \{\s*main\.append\(el\("span", \{ class: "qx-eyebrow", text: "Quant Screener" \}\)/);
+  /* Auch die Seite selbst nennt sich so (Eyebrow des Screeners, seit der
+     Discover-Angleichung Discovers v2-eyebrow). */
+  /* Konzept-Design: der Titel steht als h1 im Globus-Hero des Screeners. */
+  assert.match(q, /async function screener\([^)]*\) \{\s*main\.append\(el\("header", \{ class: "q-hero[^"]*" \}, \[[\s\S]{0,200}?el\("h1", \{ class: "qx-h1", text: pro \? "Quant Screener · Profi" : "Quant Screener" \}\)/);
 });
 
 test("auch der klassische Quant-Screener traegt den Produktnamen", () => {

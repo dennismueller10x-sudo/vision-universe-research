@@ -1,0 +1,51 @@
+{
+  "schema": "supertrader-validation-prereg-r7-1.0.0",
+  "registeredAt": "2026-10-02",
+  "status": "FROZEN_BEFORE_RUN",
+  "freeze": "Diese Datei wird mit den Engines committet, bevor eine der Runde-7-Versionen auf historischen Daten gerechnet wird. Die Regeln stammen aus der Quellenrecherche (Methodentreue-Matrix, docs/SUPERTRADER_METHOD_FIDELITY.md), nicht aus einer Parametersuche. Es gibt genau einen Lauf je Version; eine weitere Änderung ist eine neue Hypothese mit neuer Version.",
+  "basedOn": "PREREGISTRATION-METHODS.json (supertrader-validation-prereg-methods-1.0.0): gleiches Universum US_PIT_2016_A, gleiche Listing-Identität, gleiche Daten, gleiche Ausführung, gleiche Delisting-Szenarien, gleiche Vergleichsreihen, gleiche Kontrollen, gleiche Akzeptanzkriterien R1-R4 und robustNegative.",
+  "previousResultsStay": "Die Ergebnisse der Versionen KK 1.1.0, Weinstein 1.1.0, Darvas 1.2.0, Minervini 1.1.0 und Donchian 1.1.0 bleiben unverändert gültig und werden nicht ersetzt. Im selben Lauf werden die vier Vorgänger erneut gerechnet (Reproduzierbarkeitsreferenz, ROLE=REFERENCE_REPRODUCTION); weichen sie vom Lauf 36968858290 ab, ist das ein Befund und wird berichtet.",
+  "versions": [
+    {
+      "strategyId": "MOMENTUM_BREAKOUT", "version": "2.0.0", "variant": "KK_COMMON_BREAKOUT_DAILY_R7",
+      "engine": "scripts/supertrader/engine/strategies/kk-breakout-v2.mjs",
+      "change": "Der 10-Tage-Ausstieg gilt nur noch für den Rest nach dem Teilverkauf (KK-BO-TRAIL-02); vorher nur Stop am Tief des Bestätigungstags.",
+      "source": "Kullamägi, qullamaggie.com (3 timeless setups, FAQ): Teilverkauf 1/3-1/2 nach 3-5 Tagen, Stop auf Einstand, Rest an der 10/20-Tage-Linie. Primär, in Runde 7 nur über Suchauszüge lesbar.",
+      "expectedEffect": "Längere Haltedauer der Gewinner, mehr Stopps am Tagestief in den ersten Tagen; Investitionsquote bleibt wegen seltener Setups niedrig.",
+      "portfolio": "riskPerTrade 0,5 %, maxPositionPct 20 %, maxPositions 10"
+    },
+    {
+      "strategyId": "WEINSTEIN_STAGE", "version": "2.0.0", "variant": "WEINSTEIN_STAGE2_WEEKLY_R7",
+      "engine": "scripts/supertrader/engine/strategies/weinstein-v2.mjs",
+      "change": "Marktfilter SPY über steigender/flacher 30-Wochen-Linie (WEIN-MKT-01); Mansfield-RS > 0 beim Ausbruch (WEIN-RS-02) statt 13-Wochen-Änderung bei der Entdeckung; Ausbruchsvolumen >= 2x Schnitt der vier Vorwochen (WEIN-VOL-03) statt 1,5x zehn Wochen; vorbereitete Basis bleibt bis Ausbruch/Bruch/Zeitablauf (WEIN-BASE-02); Ausstieg nur per Wochenschluss unter der 30-Wochen-Linie, ohne VU-Stop 2 % unter der Linie.",
+      "source": "Weinstein 1988 über übereinstimmende Sekundärquellen (Bulkowski, stageanalysis.net, 7circles, TraderLion); Buchtext in Runde 7 nicht zugänglich.",
+      "expectedEffect": "Mehr bestätigte Basis-Ausbrüche (Basis bleibt bestehen), weniger Einstiege in schwachen Märkten, weniger Ausstiege durch Schwankungen innerhalb der Woche.",
+      "portfolio": "VU-Standard (keine belegte Größenregel): 0,5 %, 20 %, 10"
+    },
+    {
+      "strategyId": "DARVAS_BOX", "version": "2.0.0", "variant": "DARVAS_BOX_N3_R7",
+      "engine": "scripts/supertrader/engine/strategies/darvas-v2.mjs",
+      "change": "Anfangsstop 1 % unter der Boxoberkante (DAR-STOP-02) statt an der Boxunterkante; Nachziehen an höhere Boxen unverändert.",
+      "source": "TIME, Mai 1959 ('Business: Pas de Dough'): Stop-Loss 'just below his buy order'. Primär, nur über Suchauszüge lesbar; 1 % ist VU.",
+      "expectedEffect": "Kleinere Verluste je Fehlausbruch, deutlich mehr Stopps, kleineres Risiko je Trade erlaubt größere Positionen bei gleichem Risiko.",
+      "portfolio": "VU-Standard: 0,5 %, 20 %, 10"
+    },
+    {
+      "strategyId": "MINERVINI_VCP", "version": "2.0.0", "variant": "MINERVINI_TT_VCP_R7",
+      "engine": "scripts/supertrader/engine/strategies/minervini-v2.mjs",
+      "change": "52-Wochen-Tief-Abstand 30 % (MIN-LOW-02); Ausbruchsvolumen >= 1,4x 50-Tage-Schnitt (MIN-ENTRY-D2); Stop auf Einstand ab 3R (MIN-BE-01); Ausstieg bei Schluss unter der 50-Tage-Linie mit überdurchschnittlichem Volumen (MIN-EXIT-02) statt jedem Schluss darunter; Portfolio 1,25 % Risiko, 25 % je Position, halbes Risiko nach netto negativen letzten fünf Trades.",
+      "source": "Minervini auf X (primär: 1,25 % Ø-Risiko, 2,5 % max., 25 % Position bei 5 % Stop, Einstand, schrittweise Exposition); Trend Template 30 %, Volumen 40-50 %, 10-%-Höchstverlust, 3R-Einstand, 50-Tage-Linie mit Volumen nur sekundär.",
+      "expectedEffect": "Weniger, volumenbestätigte Einstiege; Gewinner länger gehalten; höhere Investitionsquote durch 1,25 % Risiko; größere Schwankung.",
+      "portfolio": "riskPerTrade 1,25 %, maxPositionPct 25 %, maxPositions 10, progressive {lookback 5, factor 0,5}"
+    }
+  ],
+  "notInThisRound": {
+    "DONCHIAN_TURTLE": "Keine neue Version: fehlende Turtle-Bausteine (System-1-Filter, Unit-Größe 1 % je N, Pyramiding bis 4 Units, Korrelationslimits) sind für Futures-Portfolios definiert; Pyramiding braucht eine Portfolio-Erweiterung. Bleibt Forschung mit dokumentierten Lücken.",
+    "CANSLIM_PIOTROSKI_GREENBLATT": "Keine historischen Fundamentaldaten zum Veröffentlichungszeitpunkt im Prüfdatensatz; keine Backtests."
+  },
+  "evaluation": {
+    "same": "Akzeptanz R1-R4 und robustNegative wie PREREGISTRATION-METHODS.json; zusätzlich (berichtend, nicht entscheidend): Signalqualität je Trade gegen SPY im selben Haltezeitraum, mittlere Investitionsquote, SPY mit gleicher Investitionsquote.",
+    "timeSplit": "Teilzeiträume 2016-2020 und 2021-2026 wie bisher (R2). Ein echter Datenvorlauf vor 2016 ist nicht möglich, weil das Universum nur ab 2016 gelistete Titel ohne Überlebensverzerrung enthält. Echte Außer-Stichprobe-Prüfung: Vorwärtsbeobachtung im Live-Protokoll ab dem Start der Version.",
+    "publication": "Öffentlich nur die Evidenzstufe, keine Kennzahlen, bis die Rechte an abgeleiteten Kennzahlen belegt sind."
+  }
+}

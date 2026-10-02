@@ -3,8 +3,8 @@
  "methodologyVersion": "vu-factor-evidence-2.0.0",
  "derivedFrom": "quant-v2.2.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-09-29T04:24:03.000Z",
- "asOf": "2026-09-28",
+ "generatedAt": "2026-10-02T09:01:55.000Z",
+ "asOf": "2026-10-01",
  "publication": {
   "compositeAllowed": false,
   "rankingAllowed": false,
@@ -76,7 +76,7 @@
    "direction": "lower",
    "unit": "ratio",
    "basis": null,
-   "note": "Mittlere absolute Abweichung der jährlichen operativen Marge vom eigenen Median, über bis zu fünf Geschäftsjahre und erst ab vier.",
+   "note": "Median der absoluten Abweichungen der jährlichen operativen Marge vom eigenen Median, über bis zu fünf Geschäftsjahre und erst ab vier.",
    "window": "last 5 fiscal years; minimum 4",
    "input": "medianAbsoluteDeviation(annualOperatingMargin)"
   },
@@ -366,7 +366,7 @@
    "direction": "lower",
    "unit": "ratio",
    "basis": null,
-   "note": "Mittlere absolute Abweichung der jaehrlichen Rendite auf die Bilanzsumme von ihrem eigenen Median, ueber bis zu fuenf Geschaeftsjahre und erst ab vier.",
+   "note": "Median der absoluten Abweichungen der jaehrlichen Rendite auf die Bilanzsumme von ihrem eigenen Median, ueber bis zu fuenf Geschaeftsjahre und erst ab vier.",
    "window": "last 5 fiscal years; minimum 4",
    "input": "medianAbsoluteDeviation(annualNetIncome/annualTotalAssets)"
   },
@@ -496,7 +496,7 @@
    "direction": "lower",
    "unit": "ratio",
    "basis": null,
-   "note": "Mittlere absolute Abweichung der jaehrlichen Rendite auf die Bilanzsumme von ihrem eigenen Median, ueber bis zu fuenf Geschaeftsjahre und erst ab vier.",
+   "note": "Median der absoluten Abweichungen der jaehrlichen Rendite auf die Bilanzsumme von ihrem eigenen Median, ueber bis zu fuenf Geschaeftsjahre und erst ab vier.",
    "window": "last 5 fiscal years; minimum 4",
    "input": "medianAbsoluteDeviation(annualNetIncome/annualTotalAssets)"
   },
@@ -606,7 +606,7 @@
    "direction": "lower",
    "unit": "ratio",
    "basis": null,
-   "note": "Mittlere absolute Abweichung der jaehrlichen Rendite auf die Bilanzsumme von ihrem eigenen Median, ueber bis zu fuenf Geschaeftsjahre und erst ab vier.",
+   "note": "Median der absoluten Abweichungen der jaehrlichen Rendite auf die Bilanzsumme von ihrem eigenen Median, ueber bis zu fuenf Geschaeftsjahre und erst ab vier.",
    "window": "last 5 fiscal years; minimum 4",
    "input": "medianAbsoluteDeviation(annualNetIncome/annualTotalAssets)"
   },
@@ -717,7 +717,9 @@
    "2026-09-23",
    "2026-09-24",
    "2026-09-25",
-   "2026-09-28"
+   "2026-09-28",
+   "2026-09-30",
+   "2026-10-01"
   ],
   "velocityWindowDays": 30,
   "velocityToleranceDays": 10,
@@ -728,18 +730,18 @@
  "source": {
   "priceFactors": {
    "engine": "market-factors-1.0.0",
-   "generatedAt": "2026-09-29T03:22:57.495Z",
-   "securities": 6442,
+   "generatedAt": "2026-10-02T06:46:17.905Z",
+   "securities": 6453,
    "benchmark": {
     "id": "SPY",
-    "bars": 937,
-    "last": "2026-09-28",
+    "bars": 8476,
+    "last": "2026-10-01",
     "returnBasis": "SPLIT_ADJUSTED_PRICE",
     "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
     "adjustmentStatus": "adjusted",
     "adjustmentClaim": null,
     "maxLagSessions": 1,
-    "newestSecurityDate": "2026-09-28",
+    "newestSecurityDate": "2026-10-01",
     "lagBehindNewestSessions": 0,
     "securitiesWithoutRelativeStrength": 0,
     "state": "CURRENT"
@@ -747,16 +749,16 @@
   },
   "fundamentals": {
    "schema": "vu-consumer-fundamentals-1.0.0",
-   "issuersRead": 4733
+   "issuersRead": 4731
   },
   "peerTaxonomy": {
    "version": "sic-peer-taxonomy-1.0.0",
-   "rows": 5388,
+   "rows": 5395,
    "snapshotMode": "CURRENT_ONLY"
   },
   "quotes": {
    "source": "technical-product-artifact-1.0.0",
-   "tickers": 6810
+   "tickers": 6824
   }
  },
  "notAnEquityListing": {
@@ -920,91 +922,91 @@
  },
  "counts": {
   "productUniverse": 6875,
-  "priceFactorSecurities": 6442,
+  "priceFactorSecurities": 6453,
   "notAnEquityListing": 145,
-  "published": 6297,
-  "withFundamentals": 5027,
-  "withMarketCap": 3758,
-  "quotesFromPublishedSeries": 938,
-  "withMarketCapFromPublishedSeries": 125
+  "published": 6308,
+  "withFundamentals": 5032,
+  "withMarketCap": 3757,
+  "quotesFromPublishedSeries": 942,
+  "withMarketCapFromPublishedSeries": 121
  },
  "factorStates": {
   "quality": {
-   "AVAILABLE": 3621,
-   "UNAVAILABLE": 2676,
+   "AVAILABLE": 3626,
+   "UNAVAILABLE": 2682,
    "NOT_APPLICABLE": 0
   },
   "growth": {
-   "AVAILABLE": 3206,
-   "UNAVAILABLE": 3091,
+   "AVAILABLE": 3211,
+   "UNAVAILABLE": 3097,
    "NOT_APPLICABLE": 0
   },
   "momentum": {
-   "AVAILABLE": 5569,
-   "UNAVAILABLE": 728,
+   "AVAILABLE": 5573,
+   "UNAVAILABLE": 735,
    "NOT_APPLICABLE": 0
   },
   "value": {
-   "AVAILABLE": 2519,
-   "UNAVAILABLE": 3778,
+   "AVAILABLE": 2518,
+   "UNAVAILABLE": 3790,
    "NOT_APPLICABLE": 0
   },
   "profitability": {
-   "AVAILABLE": 1961,
-   "UNAVAILABLE": 4336,
+   "AVAILABLE": 1960,
+   "UNAVAILABLE": 4348,
    "NOT_APPLICABLE": 0
   },
   "revisions": {
    "AVAILABLE": 0,
-   "UNAVAILABLE": 6297,
+   "UNAVAILABLE": 6308,
    "NOT_APPLICABLE": 0
   },
   "risk": {
-   "AVAILABLE": 5569,
-   "UNAVAILABLE": 728,
+   "AVAILABLE": 5573,
+   "UNAVAILABLE": 735,
    "NOT_APPLICABLE": 0
   }
  },
  "reasonCounts": {
-  "INSUFFICIENT_WEIGHTED_COVERAGE": 2022,
-  "BLOCKED_EXTERNAL": 6297,
-  "INSUFFICIENT_COMPONENTS": 4214,
-  "INPUT_NOT_MATERIALIZED": 8610,
-  "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 466,
+  "INSUFFICIENT_WEIGHTED_COVERAGE": 2023,
+  "BLOCKED_EXTERNAL": 6308,
+  "INSUFFICIENT_COMPONENTS": 4219,
+  "INPUT_NOT_MATERIALIZED": 8646,
+  "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 474,
   "MANDATORY_COMPONENT_MISSING": 25
  },
  "componentCoverage": {
-  "quality:accrualRatio": 3007,
-  "quality:equityToAssets": 3898,
-  "quality:positiveFcfYears": 3176,
-  "quality:operatingMarginStability": 2901,
-  "growth:revenueCagr3y": 3657,
-  "growth:epsCagr3y": 2054,
-  "growth:fcfCagr3y": 1943,
-  "growth:revenueGrowthTtmYoy": 3094,
-  "growth:operatingMarginExpansion3y": 3135,
-  "growth:revenueGrowthAcceleration": 3872,
-  "momentum:priceReturn12m1m": 5569,
-  "momentum:priceReturn6m": 5888,
-  "momentum:priceReturn3m": 6214,
-  "momentum:relativeStrength12m1m": 5569,
-  "momentum:distanceTo52wHigh": 5570,
-  "momentum:distanceToSma200": 5672,
-  "value:fcfYield": 2007,
-  "value:earningsYield": 2484,
-  "value:bookToMarket": 3101,
-  "profitability:roicMedian3y": 541,
-  "profitability:operatingMarginTtm": 2356,
-  "profitability:fcfMarginTtm": 2236,
-  "profitability:roaTtm": 3037,
-  "risk:realizedVolatility252d": 5569,
-  "risk:downsideVolatility252d": 5577,
-  "risk:maxDrawdown252d": 5570,
-  "risk:beta252d": 5594,
+  "quality:accrualRatio": 3005,
+  "quality:equityToAssets": 3896,
+  "quality:positiveFcfYears": 3175,
+  "quality:operatingMarginStability": 2900,
+  "growth:revenueCagr3y": 3662,
+  "growth:epsCagr3y": 2061,
+  "growth:fcfCagr3y": 1950,
+  "growth:revenueGrowthTtmYoy": 3093,
+  "growth:operatingMarginExpansion3y": 3134,
+  "growth:revenueGrowthAcceleration": 3877,
+  "momentum:priceReturn12m1m": 5573,
+  "momentum:priceReturn6m": 5898,
+  "momentum:priceReturn3m": 6218,
+  "momentum:relativeStrength12m1m": 5573,
+  "momentum:distanceTo52wHigh": 5576,
+  "momentum:distanceToSma200": 5677,
+  "value:fcfYield": 2006,
+  "value:earningsYield": 2483,
+  "value:bookToMarket": 3100,
+  "profitability:roicMedian3y": 542,
+  "profitability:operatingMarginTtm": 2355,
+  "profitability:fcfMarginTtm": 2235,
+  "profitability:roaTtm": 3035,
+  "risk:realizedVolatility252d": 5573,
+  "risk:downsideVolatility252d": 5583,
+  "risk:maxDrawdown252d": 5576,
+  "risk:beta252d": 5598,
   "quality:netDebtToAssets": 468,
-  "INDUSTRY:quality:equityToAssets": 901,
-  "INDUSTRY:quality:roaStability5y": 857,
-  "INDUSTRY:quality:positiveEarningsYears": 865,
+  "INDUSTRY:quality:equityToAssets": 907,
+  "INDUSTRY:quality:roaStability5y": 863,
+  "INDUSTRY:quality:positiveEarningsYears": 871,
   "INDUSTRY:quality:dividendCoverageByOcf": 508,
   "INDUSTRY:value:bookToMarket": 614,
   "INDUSTRY:value:earningsYield": 545,
@@ -1013,8 +1015,8 @@
   "INDUSTRY:profitability:roaTtm": 769,
   "INDUSTRY:profitability:roeTtm": 559,
   "INDUSTRY:profitability:netMarginTtm": 117,
-  "INDUSTRY:profitability:roaMedian3y": 872,
-  "profitability:grossProfitabilityTtm": 1363,
+  "INDUSTRY:profitability:roaMedian3y": 878,
+  "profitability:grossProfitabilityTtm": 1362,
   "INDUSTRY:value:cashFlowYield": 141,
   "INDUSTRY:profitability:cashReturnOnAssets": 202,
   "INDUSTRY:profitability:ocfMarginTtm": 136,
@@ -1027,7 +1029,7 @@
  "screening": {
   "schemaVersion": "factor-evidence-screening-1.0.0",
   "namespace": "quantV2.factorEvidence",
-  "rows": 6297,
+  "rows": 6308,
   "fields": [
    "quantV2.factorEvidence.quality",
    "quantV2.factorEvidence.growth",
@@ -1054,7 +1056,7 @@
     "INDUSTRY:value:dividendYield (415)",
     "INDUSTRY:value:earningsYield (545)",
     "INDUSTRY:value:pretaxEarningsYield (377)",
-    "profitability:roicMedian3y (541)",
+    "profitability:roicMedian3y (542)",
     "profitability:roicTtm (58)",
     "quality:netDebtToAssets (468)",
     "value:ebitdaYield (82)",
@@ -1089,11 +1091,11 @@
  ],
  "gapCounts": {
   "NOT_AN_EQUITY_LISTING:ETF": 136,
-  "IDENTITY_UNRESOLVED": 922,
-  "FUNDAMENTALS_DOCUMENT_MISSING": 348,
-  "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 466,
+  "IDENTITY_UNRESOLVED": 926,
+  "FUNDAMENTALS_DOCUMENT_MISSING": 350,
+  "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 474,
   "NOT_AN_EQUITY_LISTING:PREFERRED": 9
  },
- "runtimeMs": 11449,
- "contentHash": "3dc8ed30e0383d5e"
+ "runtimeMs": 17721,
+ "contentHash": "7b1c27dfbcca88b4"
 }

@@ -153,7 +153,9 @@ test("the link targets are really tracked files, so the release contains them", 
     .split("\0").filter(Boolean));
   const fehlen = [];
   for (const ziel of [...verlinkteZiele(), ...seitenZiele()]) {
-    const rein = ziel.split("?")[0].replace(/^\/+/, "");
+    /* Wie wirdAusgeliefert(): weder Abfrage noch Fragment gehoeren zum
+       Dateipfad ("/discover/#/s/US_REAL/NVDA" ist die Datei /discover/). */
+    const rein = ziel.split("?")[0].split("#")[0].replace(/^\/+/, "");
     if (!rein) continue;
     /* Der Schraegstrich wird EINMAL gesetzt. Ein frueherer Entwurf hat
        "quant/stock/" + "/index.html" gerechnet und die Seite deshalb fuer
@@ -200,7 +202,11 @@ test("the route builders and the legacy mapping only produce routes QXApp.parse 
   const erwartet = {
     home: ["home"], stock: ["aktie", "NVDA"], screener: ["screener", "frage=setups"], screenerPro: ["screener", "query=x"],
     strategies: ["strategien"], strategy: ["strategien", "quality"], stocks: ["aktien"], method: ["methodik", "faktoren"],
-    technical: ["technik", "NVDA"], fundamentals: ["zahlen", "NVDA"], compare: ["vergleich", ["NVDA", "AAPL"]]
+    technical: ["technik", "NVDA"], fundamentals: ["zahlen", "NVDA"], compare: ["vergleich", ["NVDA", "AAPL"]],
+    /* Quant Radar (01.10.2026): taegliche Ereignisse, Bereich HOME. */
+    radar: ["radar", "filter=setups"],
+    /* Backtest & Signal Intelligence (01.10.2026): Regel oder Setup waehlen. */
+    backtest: ["backtest", "NEW_52W_HIGH"]
   };
   assert.deepEqual(Object.keys(routes).sort(), Object.keys(erwartet).sort(),
     "X.routes hat sich geaendert - dieser Test muss die neue Route kennen");

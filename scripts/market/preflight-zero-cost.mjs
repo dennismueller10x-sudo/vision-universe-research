@@ -27,6 +27,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { withBenchmark } from "./benchmark-reference.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -67,7 +68,9 @@ function universeTickers() {
   const file = join(root, "quant", "data", "market", "scale", `universe-${GATE}.json`);
   const actual = existsSync(file)
     ? (JSON.parse(readFileSync(file, "utf8")).securities || []).map((s) => s.ticker) : [];
-  if (!SYMBOL_OVERRIDE) return actual;
+  /* Die Benchmark-Referenz (SPY) wird in der vollen Ablage mitgeschrieben
+     und deshalb mitgezaehlt - dieselbe Liste wie sync-history-store. */
+  if (!SYMBOL_OVERRIDE) return withBenchmark(GATE, actual.map((t) => ({ ticker: t, securityId: null })), null).map((m) => m.ticker);
   if (SYMBOL_OVERRIDE <= actual.length) return actual.slice(0, SYMBOL_OVERRIDE);
   /* Auffuellen mit Platzhaltern: gezaehlt wird die ANZAHL, und die
      Platzhalter tragen keine Behauptung ueber einen echten Titel. */
@@ -163,6 +166,7 @@ async function main() {
   let storedObjects = 0;
   let index = { symbols: {} };
   let measured = false;
+  let previousUsage = null;
 
   if (!OFFLINE) {
     /* Die Vorabrechnung darf selbst etwas kosten - aber nur wenig, und
@@ -178,6 +182,9 @@ async function main() {
       currentStorageBytes = m.storageBytes;
       storedObjects = m.objectCount;
       index = await store.readIndex();
+      /* Nur fuer die Monatsuebergabe gebraucht: ein neuer Monat ohne
+         eigenen Stand braucht den belegten Abschluss des Vormonats. */
+      if (!usage.updatedAt) previousUsage = await store.readUsage(Guard.previousMonthKey(month));
       measured = true;
     } catch (err) {
       console.log("  Dienst nicht befragt: " + err.message);
@@ -221,14 +228,19 @@ async function main() {
 
   // The calculation is useful offline, but only measured accounting can
   // authorize execution. Missing monthly counters require a verified handoff.
-  const accountingKnown = measured && typeof usage.updatedAt === "string" &&
-    Number.isFinite(Date.parse(usage.updatedAt));
+  const accounting = Guard.accountingBasis({ measured, usage, previousUsage, index });
+  const accountingKnown = accounting.known;
+  console.log(`  Buchfuehrung: ${accounting.basis}` +
+    (accounting.previousMonth ? ` (Vormonat ${accounting.previousMonth}` +
+      (accounting.previousUpdatedAt ? ` abgeschlossen ${accounting.previousUpdatedAt})` : ")") : "") +
+    (accounting.reason ? ` - ${accounting.reason}` : ""));
   const executionAllowed = measured && accountingKnown && !OFFLINE && !SYMBOL_OVERRIDE &&
     verdict.verdict === Guard.ALLOWED;
   const report = {
     generatedAt: new Date().toISOString(),
     operation: OPERATION, gate: GATE, provider: PROVIDER, market: MARKET,
-    measured, offline: OFFLINE || !measured, accountingKnown, executionAllowed,
+    measured, offline: OFFLINE || !measured, accountingKnown, accountingBasis: accounting.basis,
+    executionAllowed,
     basis: {
       bytesPerBar: BYTES_PER_BAR, avgBarsPerSymbol: AVG_BARS_PER_SYMBOL,
       source: "verify-history-store.mjs an fuenf echten Tiingo-Reihen; " +

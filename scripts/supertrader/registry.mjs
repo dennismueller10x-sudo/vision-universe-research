@@ -9,6 +9,8 @@
 // MULTI_SOURCE_CONFIRMED, SECONDARY_ONLY, DISPUTED, VU_FORMALIZATION,
 // VU_EXTENSION, NOT_VERIFIABLE.
 
+import { buildR4 } from './registry-r4.mjs';
+import { applyR7 } from './registry-r7.mjs';
 export const REGISTRY_VERSION = 'supertrader-registry-1.0.0';
 
 export const EVIDENCE = ['PRIMARY_EXPLICIT', 'PRIMARY_INFERRED', 'MULTI_SOURCE_CONFIRMED', 'SECONDARY_ONLY', 'DISPUTED', 'VU_FORMALIZATION', 'VU_EXTENSION', 'NOT_VERIFIABLE'];
@@ -40,11 +42,19 @@ function rule(strategy_version, rule_id, plain, machine, params, sources, eviden
 /* ------------------------------------------------------------------ */
 const LIFECYCLE_COMMON = [
   ['LC-SETUP', 'Ein Titel erfüllt alle Setup-Regeln der Strategie; ab hier wird das Signal dauerhaft protokolliert.', 'scan(t).stage == SETUP'],
-  ['LC-NEAR-TRIGGER', 'Der Kurs steht höchstens 3 % unter dem Trigger.', 'trigger / close(t) - 1 <= 0.03'],
+  ['LC-NEAR-TRIGGER', 'Der Kurs steht höchstens 3 % unter dem Trigger. „Nahe am Trigger“ ist nur eine Vorbereitung — kein Einstieg.', 'trigger / close(t) - 1 <= 0.03'],
   ['LC-AWAY-FROM-TRIGGER', 'Der Kurs hat sich wieder weiter als 3 % vom Trigger entfernt.', 'trigger / close(t) - 1 > 0.03'],
   ['LC-SETUP-LOST', 'Eine Setup-Regel ist am Tagesschluss nicht mehr erfüllt; das Setup ist ungültig.', 'scan(t).stage not in {SETUP, ENTRY_READY}'],
   ['LC-ACTIVE', 'Die Modellposition läuft ohne Warnsignal.', 'position open && !warning'],
   ['LC-RANK-AT-DISCOVERY', 'Rangfilter (Momentum-/RS-Perzentile) gelten bei der Entdeckung. Ein laufendes Setup wird nur durch seine Strukturregeln ungültig — sonst würde ein Rangwechsel von 98 auf 97 ein intaktes Setup täglich beenden.', 'pending: rankRule(t) := rankRule(t) || rankRule(createdAt)'],
+  ['LC-CONFIRM-CLOSE', 'Daten- und Zeitregel: Es liegen nur Tagesbalken vor. Ob intraday über dem Trigger gehandelt wurde, ist nicht belegbar. Ein Einstieg gilt deshalb erst als bestätigt, wenn der Schlusskurs (Weinstein: der Wochenschluss) den Trigger überschreitet.', 'confirmed(t) := close(t) > trigger(t-1)'],
+  ['LC-MODEL-ENTRY', 'Der Modelleinstieg wird zur Eröffnung des nächsten Handelstags erfasst — einem beobachteten Kurs, nie zum idealen Triggerkurs. Das ist keine reale Order.', 'entry = open(t+1) * (1 + slippage)'],
+  ['LC-OPEN-BELOW-STOP', 'Eröffnet der Titel am Einstiegstag auf oder unter dem Stop, wird kein Modelleinstieg erfasst.', 'open(t+1) <= stop -> INVALIDATED'],
+  ['LC-STOP-ORDER-ASSUMPTION', 'Stops werden als ruhende Stop-Order angenommen: Ausführung zum Stopkurs, wenn das Tagestief ihn erreicht; eröffnet der Titel darunter, zur Eröffnung. Ohne Intraday-Daten ist das eine Annahme, keine belegte Ausführung — sie ist je Ausstieg gekennzeichnet.', 'low(t) <= stop -> exit = min(stop, open(t)) * (1 - slippage)'],
+  ['LC-CONFLICT-01', 'Konflikt vor dem Einstieg: Bricht ein Balken die Invalidation und schließt zugleich über dem Trigger, gilt die Invalidation.', 'invalidate(t) before confirm(t)'],
+  ['LC-CONFLICT-02', 'Konflikt in der Position: Stop vor Ausstiegsregel vor Warnung. Ein fixes Kursziel gibt es in keiner Live-Variante; Teilverkäufe laufen zur nächsten Eröffnung, deshalb entsteht keine Stop-/Ziel-Mehrdeutigkeit in derselben Kerze.', 'stop(t) > exitRule(t) > warning(t)'],
+  ['LC-DATA-GAP', 'Fehlt ein Balken oder ein Titel im Datenstand, trifft das Modell keine Entscheidung und erfindet keinen Kurs. Die Lücke wird protokolliert; offene Orders werden zur nächsten verfügbaren Eröffnung ausgeführt und gekennzeichnet.', 'missing bar -> no decision; log gap'],
+  ['LC-VERSION-RETIRED', 'Ändert sich die Regelversion, werden wartende Setups der alten Version protokolliert beendet und nicht rückwirkend umgedeutet. Die neue Version sucht auf demselben Datenstand neu (neue Signal-ID). Modellpositionen laufen nur weiter, wenn die neue Version ihre Positionsführung ausdrücklich übernimmt.', 'version(sig) != version(engine) && pending -> INVALIDATED(LC-VERSION-RETIRED); position -> manageCompatible or fail'],
   ['LC-COOLDOWN-01', 'Nach Abschluss oder Ungültigkeit wird derselbe Titel 5 Sitzungen nicht neu eröffnet, damit ein Setup nicht täglich neu „geboren“ wird.', 'reopen allowed if t > closedAt + 5'],
 ];
 const lifecycleRules = (v) => LIFECYCLE_COMMON.map(([id, plain, m]) => rule(v, id, plain, m, {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true));
@@ -128,7 +138,7 @@ const greenblatt = {
 };
 
 /* ========================= MOMENTUM BREAKOUT ========================= */
-const KK_V = '1.0.0';
+const KK_V = '1.1.0';
 const momentum = {
   strategy_id: 'MOMENTUM_BREAKOUT', strategy_version: KK_V, slug: 'momentum-breakout',
   strategy_name: 'Momentum Breakout Engine', world_name: 'Momentum Breakout', tagline: 'Die stärksten Aktien — erst wenn sie sich beruhigt haben.',
@@ -156,11 +166,11 @@ const momentum = {
   volatility_filters: f('Konsolidierung mit enger werdender Spanne', 'PRIMARY_EXPLICIT', ['KK-BO-BASE-01']),
   volume_filters: f('Volumen als Qualitätsmerkmal, kein starres Vielfaches', 'PRIMARY_EXPLICIT'),
   setup_definition: f('Starker Vorlauf → kontrollierte Konsolidierung → Higher Lows → Volatilitätskontraktion', 'PRIMARY_EXPLICIT', ['KK-BO-BASE-01']),
-  entry_trigger: f('Original: Opening-Range-High (1/5/60 Min.) oder Daily Breakout. Live-Variante V1: Daily Breakout über das Hoch der letzten 5 Sitzungen.', 'PRIMARY_EXPLICIT', ['KK-BO-ENTRY-D1', 'KK-BO-ENTRY-ORH']),
+  entry_trigger: f('Original: Opening-Range-High (1/5/60 Min.) oder Daily Breakout. Live-Variante: Tagesschluss über dem Hoch der vorherigen 5 Sitzungen, Modelleinstieg zur nächsten Eröffnung.', 'PRIMARY_EXPLICIT', ['KK-BO-ENTRY-D1', 'KK-BO-ENTRY-ORH']),
   entry_zone: f('Trigger-nah; Eröffnung weit über dem Trigger (> 0,5 ADR) wird nicht verfolgt', 'VU_FORMALIZATION', ['KK-BO-GAP-01']),
   confirmation_rules: NV('Keine universelle Bestätigungsregel belegt.'),
   invalidation: f('Schluss unter dem Tief der Basis oder Setup älter als 20 Sitzungen', 'VU_FORMALIZATION', ['KK-BO-INV-01', 'KK-BO-INV-02']),
-  initial_stop: f('Tagestief des Einstiegstags, nicht breiter als 1 ADR', 'PRIMARY_EXPLICIT', ['KK-BO-STOP-01']),
+  initial_stop: f('Original: Tagestief des Einstiegstags, nicht breiter als 1 ADR. Daily-Umsetzung: Tief des Bestätigungstags, höchstens 1 ADR unter der Einstiegseröffnung.', 'PRIMARY_EXPLICIT', ['KK-BO-STOP-01', 'KK-BO-STOP-D1']),
   position_sizing: f('Typisch 0,3–0,5 % Kontorisiko je Trade, selten > 1 %', 'PRIMARY_EXPLICIT', ['KK-RISK-01']),
   scaling_in: NV('Keine mechanische Nachkaufregel belegt.'),
   scaling_out: f('1/3–1/2 nach 3–5 Tagen verkaufen, Rest-Stop auf Einstand', 'PRIMARY_EXPLICIT', ['KK-BO-SCALE-01']),
@@ -198,10 +208,11 @@ const momentum = {
     rule(KK_V, 'KK-BO-TREND-01', 'Kurs über steigender 10- und 20-Tage-Linie.', 'close > sma10 && close > sma20 && sma20(t) > sma20(t-5)', {}, ['SRC-KK-SETUPS'], 'PRIMARY_EXPLICIT', false),
     rule(KK_V, 'KK-BO-LIQ-VU', 'Ausreichend handelbar und beweglich: Kurs ab 5 USD, mindestens 5 Mio. USD Tagesumsatz und mindestens 2 % durchschnittliche Tagesspanne (schließt z. B. Titel in laufender Übernahme aus).', 'close >= 5 && sma20(close*volume) >= 5e6 && ADR20 >= 0.02', { minPrice: 5, minDollarVolume: 5e6, minAdr: 0.02 }, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(KK_V, 'KK-BO-REGIME-01', 'Die Methode funktioniert laut Kullamägi am besten in starken Märkten; V1 zeigt das Regime, filtert aber nicht.', 'display(marketRegime)', {}, ['SRC-KK-FAQ'], 'PRIMARY_EXPLICIT', false),
-    rule(KK_V, 'KK-BO-ENTRY-D1', 'Daily-Variante: Einstieg, sobald das Hoch der letzten 5 Sitzungen überschritten wird.', 'high(t) > max(high[t-5..t-1]); fill = max(trigger, open) + slippage', { pivotBars: 5 }, ['SRC-KK-SETUPS'], 'VU_FORMALIZATION', true),
+    rule(KK_V, 'KK-BO-ENTRY-D1', 'Daily-Variante: Einstieg bestätigt, wenn der Tagesschluss über dem Hoch der vorherigen 5 Sitzungen liegt. Modelleinstieg zur nächsten Eröffnung.', 'close(t) > max(high[t-5..t-1]) -> CONFIRMED; entry = open(t+1) * (1 + slippage)', { pivotBars: 5 }, ['SRC-KK-SETUPS', 'SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(KK_V, 'KK-BO-ENTRY-ORH', 'Original: Einstieg über dem Hoch der ersten 1, 5 oder 60 Minuten.', 'high_intraday > openingRangeHigh(1m|5m|60m)', { ranges: ['1m', '5m', '60m'] }, ['SRC-KK-SETUPS'], 'PRIMARY_EXPLICIT', false),
-    rule(KK_V, 'KK-BO-GAP-01', 'Eröffnet die Aktie mehr als eine halbe Tagesspanne über dem Trigger, wird das Setup nicht verfolgt.', 'open > trigger * (1 + 0.5 * ADR20) -> NOT_TAKEN', { adrMultiple: 0.5 }, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
+    rule(KK_V, 'KK-BO-GAP-01', 'Eröffnet die Aktie am Einstiegstag mehr als eine halbe Tagesspanne über dem Trigger, wird kein Modelleinstieg erfasst.', 'open(t+1) > trigger * (1 + 0.5 * ADR20) -> NOT_TAKEN', { adrMultiple: 0.5 }, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(KK_V, 'KK-BO-STOP-01', 'Stop am Tagestief des Einstiegstags, aber nie breiter als eine durchschnittliche Tagesspanne (ADR).', 'stop = max(low(entryDay), fill * (1 - ADR20))', {}, ['SRC-KK-SETUPS', 'SRC-KK-FAQ'], 'PRIMARY_EXPLICIT', false),
+    rule(KK_V, 'KK-BO-STOP-D1', 'Daily-Umsetzung des Stops: Tief des Bestätigungstags, höchstens eine Tagesspanne (ADR) unter der Eröffnung des Einstiegstags.', 'stop = max(low(confirmDay), open(t+1) * (1 - ADR20))', {}, ['SRC-KK-SETUPS', 'SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(KK_V, 'KK-RISK-01', 'Je Trade typischerweise 0,3–0,5 % des Kontos riskieren.', 'shares = equity * riskPct / (entry - stop)', { riskPct: [0.003, 0.005] }, ['SRC-KK-FAQ'], 'PRIMARY_EXPLICIT', false),
     rule(KK_V, 'KK-BO-SCALE-01', 'Nach 3 Sitzungen ein Drittel verkaufen und den Stop für den Rest auf Einstand ziehen.', 'after 3 sessions: sell 1/3 at next open; stop = max(stop, entry)', { sessions: 3, fraction: 0.3333 }, ['SRC-KK-SETUPS'], 'PRIMARY_EXPLICIT', false),
     rule(KK_V, 'KK-BO-TRAIL-01', 'Den Rest beim ersten Schlusskurs unter der 10-Tage-Linie verkaufen (zur nächsten Eröffnung).', 'close(t) < sma10(t) -> sell remainder at open(t+1)', { ma: 10 }, ['SRC-KK-SETUPS'], 'PRIMARY_EXPLICIT', false),
@@ -213,7 +224,7 @@ const momentum = {
 };
 
 /* ============================ WEINSTEIN ============================ */
-const WE_V = '1.0.0';
+const WE_V = '1.1.0';
 const weinstein = {
   strategy_id: 'WEINSTEIN_STAGE', strategy_version: WE_V, slug: 'weinstein-stages',
   strategy_name: 'Weinstein Stage Analysis', world_name: 'Weinstein Stages', tagline: 'Jede Aktie durchläuft vier Phasen. Gekauft wird nur Phase 2.',
@@ -278,6 +289,7 @@ const weinstein = {
     rule(WE_V, 'WEIN-RS-01', 'Relative Stärke (Kurs / SPY) ist über 13 Wochen gestiegen.', 'rs(k)/rs(k-13) - 1 > 0, rs = close/SPY', { weeks: 13 }, ['SRC-SW-STAGE-GUIDE'], 'VU_FORMALIZATION', true),
     rule(WE_V, 'WEIN-ST2-01', 'Stage 2: Wochenschluss über dem Widerstand der Basis; Kauf zur nächsten Eröffnung.', 'weeklyClose(k) > resistance(k-1) -> buy open(next session)', {}, ['SRC-SW-STAGE-GUIDE', 'SRC-SW-TRADERLION-INT'], 'MULTI_SOURCE_CONFIRMED', false),
     rule(WE_V, 'WEIN-VOL-01', 'Der Ausbruch braucht mindestens 1,5× das durchschnittliche Wochenvolumen; ohne Volumendaten bleibt die Regel „nicht prüfbar“.', 'weeklyVolume(k) / avg(weeklyVolume, 10) >= 1.5', { multiple: 1.5, variants: [1.25, 1.5, 2, 3] }, ['SRC-SW-STAGE-GUIDE'], 'SECONDARY_ONLY', true),
+    rule(WE_V, 'WEIN-VOL-02', 'Fehlt das Wochenvolumen im Tagesfenster, gilt der Ausbruch als bestätigt, die Volumenregel aber ausdrücklich als „nicht prüfbar“.', 'weeklyVolume missing -> CONFIRMED, volumeVerified = false', {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(WE_V, 'WEIN-STOP-VU', 'Anfangsstop 2 % unter dem tiefsten Wochenschluss der Basis.', 'stop = baseSupport * 0.98', { buffer: 0.02 }, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(WE_V, 'WEIN-TRAIL-VU', 'Stop wöchentlich auf 2 % unter die 30-Wochen-Linie nachziehen.', 'stop = max(stop, ma30w * 0.98)', {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(WE_V, 'WEIN-EXIT-01', 'Wochenschluss unter der 30-Wochen-Linie: Ausstieg zur nächsten Eröffnung.', 'weeklyClose < ma30w -> sell open(next)', {}, ['SRC-SW-STAGE-GUIDE'], 'MULTI_SOURCE_CONFIRMED', false),
@@ -288,7 +300,7 @@ const weinstein = {
 };
 
 /* ============================== DARVAS ============================== */
-const DA_V = '1.1.0';
+const DA_V = '1.2.0';
 const darvas = {
   strategy_id: 'DARVAS_BOX', strategy_version: DA_V, slug: 'darvas-boxes',
   strategy_name: 'Darvas Box Engine', world_name: 'Darvas Boxes', tagline: 'Steigende Kisten. Kauf beim Ausbruch, Stop an der Kiste.',
@@ -316,8 +328,8 @@ const darvas = {
   volatility_filters: f('Boxhöhe 3–25 %, Box an den Hochs', 'VU_FORMALIZATION', ['DAR-BOX-03', 'DAR-BOX-04']),
   volume_filters: f('Volumen als Ausbruchsindiz; kein belegtes Vielfaches', 'NOT_VERIFIABLE'),
   setup_definition: f('Bestätigte Ober- und Unterkante', 'VU_FORMALIZATION', ['DAR-BOX-01', 'DAR-BOX-02']),
-  entry_trigger: f('Kurs über der Boxoberkante', 'MULTI_SOURCE_CONFIRMED', ['DAR-ENTRY-01']),
-  entry_zone: f('Oberkante; Eröffnung darüber wird zum Eröffnungskurs gefüllt', 'VU_FORMALIZATION'),
+  entry_trigger: f('Original: Kurs über der Boxoberkante. Live: Tagesschluss über der Oberkante, Modelleinstieg zur nächsten Eröffnung.', 'MULTI_SOURCE_CONFIRMED', ['DAR-ENTRY-01', 'DAR-ENTRY-D1']),
+  entry_zone: f('Eröffnung über der Oberkante wird zum Eröffnungskurs erfasst (kein Gap-Ausschluss)', 'VU_FORMALIZATION', ['DAR-ENTRY-D1']),
   confirmation_rules: NV('Kein belegtes Volumenvielfaches.'),
   invalidation: f('Tief unter der Boxunterkante vor dem Einstieg', 'MULTI_SOURCE_CONFIRMED', ['DAR-INV-01']),
   initial_stop: f('Boxunterkante', 'VU_FORMALIZATION', ['DAR-STOP-01']),
@@ -339,10 +351,12 @@ const darvas = {
   lifecycle_mapping: { DISCOVERED: 'nahe 52-Wochen-Hoch', WATCH: 'Oberkante bestätigt', SETUP: 'Box bestätigt (A- oder B-Setup)', ENTRY_READY: 'Kurs ≤ 3 % unter Oberkante', TRIGGERED: 'Oberkante überschritten', ACTIVE: 'steigende Boxen', WARNING: 'zurück in die alte Box', EXIT: 'Stop ausgelöst', CLOSED: 'geschlossen', INVALIDATED: 'Unterkante bricht vor Einstieg' },
   quality_tiers: {
     note: 'A/B ist eine Vision-Universe-Klassifikation innerhalb derselben Setup-Regeln. Sie ist nicht backtest-validiert: ob A-Setups historisch besser waren, ist offen. Sie ordnet nur, wie sauber ein Setup aussieht.',
-    A: 'Alle Kriterien erfüllt: Regime nicht schwach, 6-Monats-Stärke Top 10 %, Box ≤ 12 %, Stop ≥ 4 % und ≥ 1 ADR entfernt; Volumen am Trigger ≥ 1,5× (bis zum Ausbruch offen).',
+    A: 'A-Kandidat (vor dem Ausbruch): Regime nicht schwach, 6-Monats-Stärke Top 10 %, Box ≤ 12 %, Stop ≥ 4 % und ≥ 1 ADR entfernt. A-Einstieg (nach bestätigtem Ausbruch): zusätzlich Volumen am Bestätigungstag ≥ 1,5×.',
+    phases: { A_CANDIDATE: 'A-Kandidat — vor dem Ausbruch, Volumen noch offen', B_SETUP: 'B-Setup — vor dem Ausbruch, mindestens ein Kriterium verfehlt', A_ENTRY: 'A-Einstieg — Ausbruch per Schluss bestätigt, alle Kriterien inkl. Volumen erfüllt', B_ENTRY: 'B-Einstieg — Ausbruch bestätigt, mindestens ein Kriterium verfehlt oder Volumen fehlt' },
+    regimeLock: { rule: 'DAR-Q-REGIME', origin: 'VU', note: 'Keine Darvas-Originalregel. Vision-Universe-Annahme, nicht backtest-geprüft.' },
     B: 'Gültiges Darvas-Setup nach den Grundregeln, aber mindestens ein Qualitätskriterium nicht erfüllt. Nur im Signalzentrum und in der Strategy World sichtbar.',
     rules: ['DAR-Q-REGIME', 'DAR-Q-RS', 'DAR-Q-TIGHT', 'DAR-Q-STOP', 'DAR-Q-VOL'],
-    labels: { 'DAR-Q-REGIME': 'Marktregime nicht schwach', 'DAR-Q-RS': 'Top 10 % Stärke (6 Monate)', 'DAR-Q-TIGHT': 'Enge Box (≤ 12 %)', 'DAR-Q-STOP': 'Stop ≥ 4 % und ≥ 1 ADR entfernt', 'DAR-Q-VOL': 'Volumen am Trigger ≥ 1,5×' },
+    labels: { 'DAR-Q-REGIME': 'Marktregime nicht schwach', 'DAR-Q-RS': 'Top 10 % Stärke (6 Monate)', 'DAR-Q-TIGHT': 'Enge Box (≤ 12 %)', 'DAR-Q-STOP': 'Stop ≥ 4 % und ≥ 1 ADR entfernt', 'DAR-Q-VOL': 'Volumen am Bestätigungstag ≥ 1,5×', 'DAR-Q-REGIME-NOTE': 'Regime-Sperre ist VU, kein Darvas-Original' },
   },
   variants: [
     { variant_id: 'DARVAS_BOX_N3_VU', label: 'Box mit 3-Sitzungen-Bestätigung (VU), Qualitätsstufen A/B', active: true, status: 'LIVE_MONITORING', vu_formalization: true },
@@ -359,14 +373,15 @@ const darvas = {
     rule(DA_V, 'DAR-BOX-02', 'Unterkante: das tiefste Tief nach der Oberkante, das 3 Sitzungen hält.', 'floor = min(low[i+1..t]); floorIndex + 3 <= t', { N: 3 }, ['SRC-ND-DARVAS-SECONDARY'], 'VU_FORMALIZATION', true),
     rule(DA_V, 'DAR-BOX-03', 'Die Box ist zwischen 3 % und 25 % hoch.', '0.03 <= 1 - bottom/top <= 0.25', { minHeight: 0.03, maxHeight: 0.25 }, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(DA_V, 'DAR-BOX-04', 'Die Box bildet sich an den Hochs: Oberkante mindestens 95 % des 52-Wochen-Hochs.', 'boxTop >= 0.95 * high252', { topNearHigh: 0.95 }, ['SRC-ND-DARVAS-SECONDARY'], 'VU_FORMALIZATION', true),
-    rule(DA_V, 'DAR-ENTRY-01', 'Kauf, sobald die Oberkante überschritten wird.', 'high(t) > boxTop; fill = max(boxTop, open) + slippage', {}, ['SRC-ND-DARVAS-SECONDARY', 'SRC-ND-BOOK'], 'MULTI_SOURCE_CONFIRMED', false),
+    rule(DA_V, 'DAR-ENTRY-01', 'Original: Kauf, sobald die Oberkante überschritten wird (Darvas nutzte Stop-Buy-Orders). Mit Tagesbalken nicht belegbar ausführbar — Live wird DAR-ENTRY-D1 gerechnet.', 'high_intraday > boxTop (reference only)', {}, ['SRC-ND-DARVAS-SECONDARY', 'SRC-ND-BOOK'], 'MULTI_SOURCE_CONFIRMED', false),
+    rule(DA_V, 'DAR-ENTRY-D1', 'Einstieg bestätigt, wenn der Tagesschluss über der Boxoberkante liegt. Modelleinstieg zur nächsten Eröffnung; Gaps werden zum Eröffnungskurs erfasst.', 'close(t) > boxTop -> CONFIRMED; entry = open(t+1) * (1 + slippage)', {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(DA_V, 'DAR-STOP-01', 'Stop an der Unterkante; mit jeder höheren bestätigten Box nachziehen.', 'stop = max(stop, latestConfirmedBoxBottom above entry)', {}, ['SRC-ND-DARVAS-SECONDARY'], 'VU_FORMALIZATION', true),
     rule(DA_V, 'DAR-PYR-01', 'In steigende Boxen aufstocken — Version 1 simuliert das nicht.', 'add after new higher box breakout (not simulated v1)', {}, ['SRC-ND-DARVAS-SECONDARY'], 'MULTI_SOURCE_CONFIRMED', false),
-    rule(DA_V, 'DAR-Q-REGIME', 'A-Setup nur, wenn das Marktregime nicht „breite Schwäche“ ist. Darvas’ Ansatz lebt von bullischen Trends.', "marketRegime(runDate) != 'BROAD_WEAKNESS'", { source: 'quant/data/product/market-regime-v1.json', basis: 'Regime zum Laufzeitpunkt; keine Regimehistorie' }, ['SRC-ND-DARVAS-SECONDARY', 'SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
+    rule(DA_V, 'DAR-Q-REGIME', 'Regime-Sperre (Vision Universe, keine Darvas-Originalregel): A nur, wenn das Marktregime nicht „breite Schwäche“ ist. Darvas beschreibt keinen solchen Marktfilter; die Sperre ist eine VU-Qualitätsannahme und nicht backtest-geprüft.', "marketRegime(runDate) != 'BROAD_WEAKNESS'", { source: 'quant/data/product/market-regime-v1.json', basis: 'Regime zum Laufzeitpunkt; keine Regimehistorie' }, ['SRC-INTERNAL-VU'], 'VU_EXTENSION', true),
     rule(DA_V, 'DAR-Q-RS', 'A-Setup nur für die stärksten 10 % über 6 Monate (strenger als die Grundregel mit 20 %).', 'pctRank(ret126) >= 90', { percentile: 90 }, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(DA_V, 'DAR-Q-TIGHT', 'A-Setup nur bei enger Box: höchstens 12 % zwischen Ober- und Unterkante.', '1 - boxBottom/boxTop <= 0.12', { maxHeight: 0.12 }, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(DA_V, 'DAR-Q-STOP', 'A-Setup nur, wenn der Stop weit genug unter dem Trigger liegt, um nicht vom normalen Tagesrauschen ausgelöst zu werden: mindestens 4 % und mindestens eine durchschnittliche Tagesspanne.', '1 - boxBottom/boxTop >= max(0.04, ADR20)', { minStop: 0.04, minStopAdr: 1 }, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
-    rule(DA_V, 'DAR-Q-VOL', 'Volumen am Trigger: Der Ausbruchstag braucht mindestens das 1,5-fache des 50-Tage-Volumens. Vor dem Ausbruch ist das offen; ohne Volumen wird ein A-Setup beim Trigger zu B.', 'volume(t) / sma50(volume)(t-1) >= 1.5', { multiple: 1.5 }, ['SRC-ND-DARVAS-SECONDARY', 'SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
+    rule(DA_V, 'DAR-Q-VOL', 'Volumen am Bestätigungstag: Der Tag, an dem der Schluss über der Oberkante liegt, braucht mindestens das 1,5-fache des 50-Tage-Volumens. Vor dem Ausbruch ist das offen und zählt nicht gegen A-Kandidaten; fehlt das Volumen, wird der Einstieg B.', 'volume(t) / sma50(volume)(t-1) >= 1.5', { multiple: 1.5 }, ['SRC-ND-DARVAS-SECONDARY', 'SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(DA_V, 'DAR-WARN-01', 'Warnung, wenn der Kurs zurück unter die alte Oberkante fällt.', 'close < entryBoxTop', {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(DA_V, 'DAR-INV-01', 'Tief unter der Unterkante vor dem Einstieg: Box gebrochen.', 'low(t) < boxBottom', {}, ['SRC-ND-DARVAS-SECONDARY'], 'MULTI_SOURCE_CONFIRMED', false),
     rule(DA_V, 'DAR-INV-02', 'Box, die 30 Sitzungen nicht ausbricht, verfällt.', 'pendingSessions > 30', {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
@@ -374,7 +389,7 @@ const darvas = {
 };
 
 /* ============================ MINERVINI ============================ */
-const MI_V = '1.0.0';
+const MI_V = '1.1.0';
 const minervini = {
   strategy_id: 'MINERVINI_VCP', strategy_version: MI_V, slug: 'minervini-vcp',
   strategy_name: 'Minervini SEPA / VCP', world_name: 'Minervini VCP', tagline: 'Führende Aktien, die sich zusammenziehen, bevor sie laufen.',
@@ -402,7 +417,7 @@ const minervini = {
   volatility_filters: f('Sukzessiv kleinere Kontraktionen', 'VU_FORMALIZATION', ['MIN-VCP-01']),
   volume_filters: f('Volumen trocknet aus (10/50 < 0,8)', 'VU_FORMALIZATION', ['MIN-VCP-02']),
   setup_definition: f('Trend Template + VCP + Pivot', 'VU_FORMALIZATION', ['MIN-VCP-01', 'MIN-VCP-02']),
-  entry_trigger: f('Durchbruch über den Pivot', 'MULTI_SOURCE_CONFIRMED', ['MIN-ENTRY-01']),
+  entry_trigger: f('Original: Durchbruch über den Pivot. Live: Tagesschluss über dem Pivot, Modelleinstieg zur nächsten Eröffnung.', 'MULTI_SOURCE_CONFIRMED', ['MIN-ENTRY-01', 'MIN-ENTRY-D1']),
   entry_zone: NV('Konkrete zulässige Chase-Zone nicht primär belegt.'),
   confirmation_rules: f('Volumen beim Ausbruch als Qualitätsmerkmal (angezeigt)', 'MULTI_SOURCE_CONFIRMED'),
   invalidation: f('Schluss unter dem Tief der letzten Kontraktion', 'VU_FORMALIZATION', ['MIN-INV-01']),
@@ -439,8 +454,9 @@ const minervini = {
     rule(MI_V, 'MIN-VCP-01', 'Mindestens zwei Rücksetzer, jeder kleiner als der vorige; erster ≤ 35 %, letzter ≤ 10 %.', 'zigzag(4%) contractions >= 2 && depth strictly decreasing && first <= 0.35 && last <= 0.10', { zigzag: 0.04, min: 2, maxFirst: 0.35, maxLast: 0.1 }, ['SRC-MM-X-VCP', 'SRC-MM-VCP-PODCAST'], 'VU_FORMALIZATION', true),
     rule(MI_V, 'MIN-VCP-02', 'Das Volumen trocknet aus: 10-Tage-Schnitt unter 80 % des 50-Tage-Schnitts.', 'avgVol10 / avgVol50 < 0.8', { ratio: 0.8 }, ['SRC-MM-X-VCP'], 'VU_FORMALIZATION', true),
     rule(MI_V, 'MIN-RISK-VU', 'Abstand Pivot zu Kontraktionstief höchstens 10 %.', '1 - contractionLow / pivot <= 0.10', { maxRisk: 0.1 }, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
-    rule(MI_V, 'MIN-ENTRY-01', 'Einstieg beim Durchbruch über den Pivot.', 'high(t) > pivot; fill = max(pivot, open) + slippage', {}, ['SRC-MM-VCP-PODCAST'], 'MULTI_SOURCE_CONFIRMED', false),
-    rule(MI_V, 'MIN-STOP-VU', 'Stop am Tief der letzten Kontraktion, höchstens 10 % unter dem Einstieg.', 'stop = max(contractionLow, fill * 0.90)', {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
+    rule(MI_V, 'MIN-ENTRY-01', 'Original: Einstieg beim Durchbruch über den Pivot (intraday). Mit Tagesbalken nicht belegbar ausführbar — Live wird MIN-ENTRY-D1 gerechnet.', 'high_intraday > pivot (reference only)', {}, ['SRC-MM-VCP-PODCAST'], 'MULTI_SOURCE_CONFIRMED', false),
+    rule(MI_V, 'MIN-ENTRY-D1', 'Einstieg bestätigt, wenn der Tagesschluss über dem Pivot liegt. Modelleinstieg zur nächsten Eröffnung.', 'close(t) > pivot -> CONFIRMED; entry = open(t+1) * (1 + slippage)', {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
+    rule(MI_V, 'MIN-STOP-VU', 'Stop am Tief der letzten Kontraktion, höchstens 10 % unter dem Einstieg.', 'stop = max(contractionLow, open(t+1) * 0.90)', {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(MI_V, 'MIN-EXIT-VU-01', 'Schluss unter der 50-Tage-Linie: Ausstieg zur nächsten Eröffnung.', 'close < sma50 -> sell open(t+1)', {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(MI_V, 'MIN-WARN-01', 'Warnung, wenn der Kurs nach dem Ausbruch wieder unter den Pivot fällt.', 'close < pivot', {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(MI_V, 'MIN-INV-01', 'Schluss unter dem Kontraktionstief vor dem Einstieg: ungültig.', 'close < contractionLow', {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
@@ -448,6 +464,9 @@ const minervini = {
     rule(MI_V, 'MIN-FUND-HYBRID', 'Wachstum wird angezeigt (Umsatz TTM, Gewinnbeschleunigung), aber nicht gefiltert — die Schwellen sind nicht primär belegt.', 'display(f_revenueGrowthTTM, f_earningsAcceleration)', {}, ['SRC-MM-BOOK-TLSMW'], 'MULTI_SOURCE_CONFIRMED', true),
   ],
 };
+
+/* ===================== RUNDE 4: Donchian, CAN SLIM, Piotroski ===================== */
+const { donchian, canslim, piotroski } = buildR4({ f, NONE, NV, rule, DNA_FIELDS });
 
 /* ============================ ADVANCED ============================ */
 function advanced(id, slug, name, originator, family, why, sources, status = ['ADVANCED_RESEARCH']) {
@@ -469,16 +488,185 @@ function advanced(id, slug, name, originator, family, why, sources, status = ['A
 const advancedList = [
   advanced('KK_EPISODIC_PIVOT', 'kullamaegi-episodic-pivot', 'Kullamägi Episodic Pivot', 'Kristjan Kullamägi', 'Event-driven Momentum', 'Überraschender Katalysator, Gap ≥ 10 %, extremes Volumen. Blockiert durch fehlende historische Konsens-, Guidance- und News-Zeitstempel.', ['SRC-KK-SETUPS', 'SRC-KK-FAQ']),
   advanced('KK_PARABOLIC_SHORT', 'kullamaegi-parabolic-short', 'Kullamägi Parabolic Short', 'Kristjan Kullamägi', 'Exhaustion Short', 'Sein riskantestes Setup. Blockiert durch fehlende Borrow-/Locate-, Gebühren- und Intraday-Ausführungsdaten.', ['SRC-KK-SETUPS']),
-  advanced('CANSLIM', 'can-slim', 'CAN SLIM', 'William O’Neil', 'Growth-Momentum', 'Nächste Research-Welle: Vergleichsfamilie für Minervini.', ['SRC-BL-CANSLIM', 'SRC-BL-CANSLIM-IBD']),
-  advanced('PIOTROSKI_F', 'piotroski-f-score', 'Piotroski F-Score', 'Joseph Piotroski', 'Value-Quality', 'Nächste Research-Welle: Vergleichsfamilie für Greenblatt.', ['SRC-BL-PIOTROSKI']),
-  advanced('DONCHIAN_TURTLE', 'donchian-turtle', 'Donchian / Turtle Trend', 'Richard Donchian / Richard Dennis', 'Trendfolge', 'Nächste Research-Welle: Vergleichsfamilie für Darvas.', ['SRC-BL-DONCHIAN', 'SRC-BL-TURTLE']),
   advanced('MARKET_WIZARDS_NEXT', 'market-wizards', 'Weitere Market-Wizards-Modelle', 'Schwager / Coyle (Hrsg.)', 'Diverse', 'Das neue Market-Wizards-Buch ist nur als Vorschau zugänglich und wurde NICHT vollständig gelesen. Keine Regel wird daraus abgeleitet, bevor die Kapitel vorliegen.', ['SRC-MW-NEXTGEN']),
 ];
 
 // Gemeinsame Lifecycle-Regeln gehoeren zu jeder live gerechneten Strategie.
-for (const s of [momentum, weinstein, darvas, minervini]) s.rules.push(...lifecycleRules(s.strategy_version));
+for (const s of [momentum, weinstein, darvas, minervini, donchian]) s.rules.push(...lifecycleRules(s.strategy_version));
 
-export const STRATEGIES = [greenblatt, momentum, weinstein, darvas, minervini, ...advancedList];
+/* ============================ REGELKARTEN ============================ */
+// Eine Regelkarte je live gerechneter Variante: was vorbereitet, was bestaetigt,
+// wo ungueltig, was aussteigt. Jede Sektion nennt ihre Regel-IDs; die Herkunft
+// (Original / VU / gemischt) wird aus den Regeln abgeleitet, nicht behauptet.
+const sec = (id, title, text, rules) => ({ id, title, text, rules });
+const EDGE = {
+  missingData: sec('missingData', 'Fehlende Daten', 'Fehlt ein Balken oder der Titel im Datenstand, trifft das Modell keine Entscheidung. Offene Orders laufen zur nächsten verfügbaren Eröffnung und werden als „nach Datenlücke“ gekennzeichnet.', ['LC-DATA-GAP']),
+  conflictPre: sec('conflictPre', 'Konflikt vor dem Einstieg', 'Bricht derselbe Balken die Invalidation und schließt über dem Trigger, gilt die Invalidation.', ['LC-CONFLICT-01']),
+  conflictPos: sec('conflictPos', 'Konflikt in der Position', 'Stop vor Ausstiegsregel vor Warnung. Kein fixes Kursziel — keine Stop-/Ziel-Mehrdeutigkeit in derselben Kerze.', ['LC-CONFLICT-02']),
+  openBelowStop: sec('openBelowStop', 'Eröffnung unter dem Stop', 'Eröffnet der Titel am Einstiegstag auf oder unter dem Stop, wird kein Einstieg erfasst.', ['LC-OPEN-BELOW-STOP']),
+  version: sec('version', 'Regelversion ändert sich', 'Wartende Setups der alten Version werden protokolliert beendet, nicht umgedeutet; neue Suche unter neuer Version.', ['LC-VERSION-RETIRED']),
+};
+const DAILY_EXEC = sec('execution', 'Ausführung', 'Datenintervall: Tagesbalken (OHLCV, split-adjustiert). Intraday nicht belegbar — deshalb Bestätigung per Tagesschluss und Modelleinstieg zur Eröffnung des nächsten Handelstags, inkl. 10 bp Slippage. Nie zum idealen Triggerkurs.', ['LC-CONFIRM-CLOSE', 'LC-MODEL-ENTRY']);
+
+momentum.rule_cards = [{
+  variant_id: 'KK_COMMON_BREAKOUT_DAILY', rule_version: KK_V, timeframe: 'daily',
+  plan: { confirmRuleId: 'KK-BO-ENTRY-D1', confirmBasis: 'DAILY_CLOSE', confirmText: 'Tagesschluss über', invalidationRuleId: 'KK-BO-INV-01', invalidationBasis: 'CLOSE', invalidationText: 'Tagesschluss unter', expiryRuleId: 'KK-BO-INV-02', exitSummary: 'Stop (Tief des Bestätigungstags, ≤ 1 ADR) · nach 3 Sitzungen 1/3 verkaufen, Rest-Stop auf Einstand · Rest bei Schluss unter der 10-Tage-Linie' },
+  required_data: [
+    { item: 'Tages-OHLCV ≥ 127 Sitzungen', rules: ['KK-BO-MOM-01', 'KK-BO-RUN-01'] },
+    { item: 'Querschnitts-Momentumränge 1/3/6 Monate', rules: ['KK-BO-MOM-01'] },
+    { item: 'ADR20, SMA10, SMA20, Tagesumsatz', rules: ['KK-BO-LIQ-VU', 'KK-BO-TREND-01', 'KK-BO-GAP-01'] },
+  ],
+  sections: [
+    sec('candidate', 'Kandidat', 'Top-2-%-Momentum über 1, 3 oder 6 Monate und mindestens 30 % Vorlauf.', ['KK-BO-MOM-01', 'KK-BO-RUN-01']),
+    sec('prepared', 'Einstieg vorbereitet', 'Enge Basis 10–40 Sitzungen (≤ 25 % tief, steigende Tiefs, engere Spanne), Kurs über steigender 10/20-Tage-Linie, handelbar. Trigger = Hoch der letzten 5 Sitzungen, Invalidation = Basistief.', ['KK-BO-BASE-01', 'KK-BO-TREND-01', 'KK-BO-LIQ-VU', 'LC-SETUP', 'LC-NEAR-TRIGGER']),
+    sec('confirmation', 'Trigger und Bestätigung', 'Bestätigt am Tagesschluss über dem Trigger (Stand Vortag). Ein Hoch über dem Trigger ohne Schluss darüber ist keine Bestätigung.', ['KK-BO-ENTRY-D1', 'LC-CONFIRM-CLOSE']),
+    DAILY_EXEC,
+    sec('initialStop', 'Anfangsstop', 'Tief des Bestätigungstags, höchstens 1 ADR unter der Einstiegseröffnung.', ['KK-BO-STOP-D1', 'KK-BO-STOP-01']),
+    sec('hold', 'Halten', 'Position läuft, solange kein Stop und kein Schluss unter der 10-Tage-Linie. Nach 3 Sitzungen 1/3 zur Eröffnung verkaufen, Rest-Stop auf Einstand.', ['KK-BO-SCALE-01', 'LC-ACTIVE']),
+    sec('warning', 'Warnung', 'Schluss unter Einstand oder weniger als 1 % über der 10-Tage-Linie.', ['KK-BO-WARN-01']),
+    sec('exit', 'Ausstieg', 'Stop (ruhende Stop-Order-Annahme) oder erster Schluss unter der 10-Tage-Linie → Rest zur nächsten Eröffnung.', ['KK-BO-TRAIL-01', 'LC-STOP-ORDER-ASSUMPTION']),
+    sec('invalid', 'Ungültig vor Einstieg', 'Schluss unter dem Basistief oder 20 Sitzungen ohne Bestätigung.', ['KK-BO-INV-01', 'KK-BO-INV-02', 'LC-SETUP-LOST']),
+  ],
+  edge_cases: [
+    sec('gap', 'Gap über den Trigger', 'Eröffnung > Trigger + 0,5 ADR am Einstiegstag: kein Modelleinstieg. Darunter: Einstieg zum Eröffnungskurs (nicht zum Trigger).', ['KK-BO-GAP-01', 'LC-MODEL-ENTRY']),
+    sec('volume', 'Fehlendes Volumen', 'Volumen ist für diese Variante kein Pflichtkriterium; fehlt es, ändert sich nichts an Bestätigung oder Ausstieg.', []),
+    EDGE.missingData, EDGE.conflictPre, EDGE.conflictPos, EDGE.openBelowStop, EDGE.version,
+  ],
+  executable: { status: 'EXECUTABLE', gaps: [], note: 'Alle Phasen von Kandidat bis Ausstieg sind mechanisch definiert und laufen im Simulator.' },
+  source_basis: { status: 'ORIGINAL_PRINCIPLES_VU_EXECUTION', note: 'Momentumfilter, Teilverkauf und 10-Tage-Trailing folgen Kullamägis eigener Beschreibung. Einstieg per Tagesschluss, enge Basis, Gap- und Invalidationsregeln sind VU; der Original-Einstieg (Opening Range) ist mangels Intraday-Historie nicht abgebildet.', fidelityReview: 'NOT_PERFORMED', fidelityNote: 'Quellen nur per Suchtreffer bestätigt, Inhalte nicht direkt abgerufen; der Source-Fidelity-Pass steht aus. Originaltreue ist damit nicht geprüft.' },
+  historical_validation: { status: 'NOT_VALIDATED', note: 'Kein Backtest hat die Datengates bestanden; keine Aussage über historische Wirksamkeit.' },
+}];
+
+weinstein.rule_cards = [{
+  variant_id: 'WEINSTEIN_STAGE2_WEEKLY', rule_version: WE_V, timeframe: 'weekly',
+  plan: { confirmRuleId: 'WEIN-ST2-01', confirmBasis: 'WEEKLY_CLOSE', confirmText: 'Wochenschluss über', invalidationRuleId: 'WEIN-INV-01', invalidationBasis: 'CLOSE', invalidationText: 'Tagesschluss unter', expiryRuleId: 'WEIN-INV-02', exitSummary: 'Stop 2 % unter der Basis, wöchentlich 2 % unter die 30-Wochen-Linie nachgezogen · Wochenschluss unter der 30-Wochen-Linie' },
+  required_data: [
+    { item: 'Wochenschlusskurse (lange Reihe) und 30-Wochen-Linie', rules: ['WEIN-ST1-01', 'WEIN-BASE-01'] },
+    { item: 'SPY-Wochenreihe für relative Stärke', rules: ['WEIN-RS-01'] },
+    { item: 'Wochenvolumen (nur aus dem ~1-Jahres-Tagesfenster)', rules: ['WEIN-VOL-01', 'WEIN-VOL-02'] },
+  ],
+  sections: [
+    sec('candidate', 'Kandidat', 'Stage 1: flache 30-Wochen-Linie nach Abwärtstrend; relative Stärke steigt.', ['WEIN-ST1-01', 'WEIN-RS-01']),
+    sec('prepared', 'Einstieg vorbereitet', 'Basis ≥ 10 Wochen; Trigger = Widerstand der Basis, Invalidation = 2 % unter dem tiefsten Wochenschluss.', ['WEIN-BASE-01', 'LC-SETUP', 'LC-NEAR-TRIGGER']),
+    sec('confirmation', 'Trigger und Bestätigung', 'Bestätigt nur am Wochenschluss (letzter Handelstag der Woche) über dem Widerstand, mit ≥ 1,5× Wochenvolumen. Ein Tagesschluss darüber innerhalb der Woche bestätigt nicht.', ['WEIN-ST2-01', 'WEIN-VOL-01', 'LC-CONFIRM-CLOSE']),
+    sec('execution', 'Ausführung', 'Tagesbalken, zu Wochen aggregiert. Modelleinstieg zur Eröffnung des nächsten Handelstags nach dem Wochenschluss, inkl. Slippage.', ['LC-MODEL-ENTRY']),
+    sec('initialStop', 'Anfangsstop', '2 % unter dem tiefsten Wochenschluss der Basis.', ['WEIN-STOP-VU']),
+    sec('hold', 'Halten', 'Stage 2: Stop wöchentlich auf 2 % unter die 30-Wochen-Linie nachziehen.', ['WEIN-TRAIL-VU', 'LC-ACTIVE']),
+    sec('warning', 'Warnung', 'Stage 3 (Linie flacht ab) oder fallende relative Stärke.', ['WEIN-ST3-01']),
+    sec('exit', 'Ausstieg', 'Wochenschluss unter der 30-Wochen-Linie → zur nächsten Eröffnung; Stop als ruhende Stop-Order-Annahme.', ['WEIN-EXIT-01', 'LC-STOP-ORDER-ASSUMPTION']),
+    sec('invalid', 'Ungültig vor Einstieg', 'Schluss unter dem Stopniveau der Basis, Ausbruch ohne Volumen oder 60 Sitzungen ohne Bestätigung.', ['WEIN-INV-01', 'WEIN-INV-02', 'WEIN-VOL-01', 'LC-SETUP-LOST']),
+  ],
+  edge_cases: [
+    sec('gap', 'Gap über den Trigger', 'Keine Gap-Sperre belegt: Einstieg zum Eröffnungskurs nach dem Wochenschluss, wie hoch er auch ist.', ['LC-MODEL-ENTRY']),
+    sec('volume', 'Fehlendes Volumen', 'Fehlt das Wochenvolumen, gilt der Ausbruch als bestätigt, die Volumenregel wird als „nicht prüfbar“ ausgewiesen.', ['WEIN-VOL-02']),
+    EDGE.missingData, EDGE.conflictPre, EDGE.conflictPos, EDGE.openBelowStop, EDGE.version,
+  ],
+  executable: { status: 'EXECUTABLE', gaps: ['Volumenregel nur im ~1-Jahres-Tagesfenster prüfbar; sonst „nicht prüfbar“ (WEIN-VOL-02)'], note: 'Alle Phasen mechanisch definiert.' },
+  source_basis: { status: 'SECONDARY_SOURCES_VU_THRESHOLDS', note: 'Phasenmodell, Wochenschluss-Ausbruch und 30-Wochen-Ausstieg sind in Sekundärquellen mehrfach beschrieben; das Buch wurde nicht vollständig gelesen. Stage-Klassifikator, Basislänge, Stop-Abstände und Volumenvielfaches sind VU.', fidelityReview: 'NOT_PERFORMED', fidelityNote: 'Quellen nur per Suchtreffer bestätigt, Inhalte nicht direkt abgerufen; der Source-Fidelity-Pass steht aus. Originaltreue ist damit nicht geprüft.' },
+  historical_validation: { status: 'NOT_VALIDATED', note: 'Kein Backtest hat die Datengates bestanden; keine Aussage über historische Wirksamkeit.' },
+}];
+
+darvas.rule_cards = [{
+  variant_id: 'DARVAS_BOX_N3_VU', rule_version: DA_V, timeframe: 'daily',
+  plan: { confirmRuleId: 'DAR-ENTRY-D1', confirmBasis: 'DAILY_CLOSE', confirmText: 'Tagesschluss über', invalidationRuleId: 'DAR-INV-01', invalidationBasis: 'LOW', invalidationText: 'Tagestief unter', expiryRuleId: 'DAR-INV-02', exitSummary: 'Stop an der Boxunterkante, mit jeder höheren bestätigten Box nachgezogen · kein Kursziel' },
+  required_data: [
+    { item: 'Tages-OHLCV mit Hoch/Tief (Boxbildung)', rules: ['DAR-BOX-01', 'DAR-BOX-02'] },
+    { item: '52-Wochen-Hoch, 6-Monats-Rang', rules: ['DAR-MOM-01', 'DAR-MOM-02', 'DAR-BOX-04'] },
+    { item: 'Volumen (nur für Qualitätsstufe am Bestätigungstag)', rules: ['DAR-Q-VOL'] },
+    { item: 'Marktregime (nur für Qualitätsstufe)', rules: ['DAR-Q-REGIME'] },
+  ],
+  sections: [
+    sec('candidate', 'Kandidat', 'Nahe dem 52-Wochen-Hoch, 6-Monats-Stärke Top 20 %.', ['DAR-MOM-01', 'DAR-MOM-02']),
+    sec('prepared', 'Einstieg vorbereitet', 'Box bestätigt: Oberkante hält 3 Sitzungen, Unterkante hält 3 Sitzungen, Höhe 3–25 %, an den Hochs. Trigger = Oberkante, Invalidation = Unterkante. Qualität vor dem Ausbruch: A-Kandidat oder B-Setup.', ['DAR-BOX-01', 'DAR-BOX-02', 'DAR-BOX-03', 'DAR-BOX-04', 'DAR-Q-REGIME', 'DAR-Q-RS', 'DAR-Q-TIGHT', 'DAR-Q-STOP', 'LC-SETUP', 'LC-NEAR-TRIGGER']),
+    sec('confirmation', 'Trigger und Bestätigung', 'Bestätigt am Tagesschluss über der Oberkante. Erst jetzt wird das Volumen des Bestätigungstags geprüft: A-Einstieg oder B-Einstieg.', ['DAR-ENTRY-D1', 'DAR-Q-VOL', 'LC-CONFIRM-CLOSE']),
+    DAILY_EXEC,
+    sec('initialStop', 'Anfangsstop', 'Boxunterkante.', ['DAR-STOP-01']),
+    sec('hold', 'Halten', 'Stop mit jeder höheren, bestätigten Box nachziehen. Pyramiding wird nicht simuliert.', ['DAR-STOP-01', 'DAR-PYR-01', 'LC-ACTIVE']),
+    sec('warning', 'Warnung', 'Schluss zurück unter der alten Oberkante.', ['DAR-WARN-01']),
+    sec('exit', 'Ausstieg', 'Nur der (nachgezogene) Stop; ruhende Stop-Order-Annahme.', ['DAR-STOP-01', 'LC-STOP-ORDER-ASSUMPTION']),
+    sec('invalid', 'Ungültig vor Einstieg', 'Tagestief unter der Unterkante oder 30 Sitzungen ohne Ausbruch.', ['DAR-INV-01', 'DAR-INV-02', 'LC-SETUP-LOST']),
+  ],
+  edge_cases: [
+    sec('gap', 'Gap über den Trigger', 'Keine Gap-Sperre: Einstieg zum Eröffnungskurs, der Abstand zum Trigger wird ausgewiesen.', ['DAR-ENTRY-D1', 'LC-MODEL-ENTRY']),
+    sec('volume', 'Volumen vor und nach dem Ausbruch', 'Vor dem Ausbruch ist das Volumen offen und zählt nicht gegen einen A-Kandidaten. Am Bestätigungstag gemessen; fehlt es, wird der Einstieg B.', ['DAR-Q-VOL']),
+    sec('regime', 'Regimewechsel', 'Die Regime-Sperre ist VU. Der Regimestand wird täglich neu gelesen; ein vorbereitetes Setup kann dadurch zwischen A-Kandidat und B-Setup wechseln. Ab der Bestätigung ist die Stufe eingefroren.', ['DAR-Q-REGIME']),
+    EDGE.missingData, EDGE.conflictPre, EDGE.conflictPos, EDGE.openBelowStop, EDGE.version,
+  ],
+  executable: { status: 'EXECUTABLE', gaps: ['Pyramiding (DAR-PYR-01) nicht simuliert'], note: 'Alle Phasen mechanisch definiert.' },
+  source_basis: { status: 'SECONDARY_SOURCES_VU_BOX_DEFINITION', note: 'Ausbruch über die Box und nachgezogener Stop sind mehrfach belegt; die konkrete Boxdefinition, Qualitätsstufen und die Regime-Sperre sind VU. Darvas’ eigene Ergebnisse sind umstritten.', fidelityReview: 'NOT_PERFORMED', fidelityNote: 'Quellen nur per Suchtreffer bestätigt, Inhalte nicht direkt abgerufen; der Source-Fidelity-Pass steht aus. Originaltreue ist damit nicht geprüft.' },
+  historical_validation: { status: 'NOT_VALIDATED', note: 'Kein Backtest hat die Datengates bestanden; keine Aussage über historische Wirksamkeit.' },
+}];
+
+minervini.rule_cards = [{
+  variant_id: 'MINERVINI_TT_VCP_A', rule_version: MI_V, timeframe: 'daily',
+  plan: { confirmRuleId: 'MIN-ENTRY-D1', confirmBasis: 'DAILY_CLOSE', confirmText: 'Tagesschluss über', invalidationRuleId: 'MIN-INV-01', invalidationBasis: 'CLOSE', invalidationText: 'Tagesschluss unter', expiryRuleId: 'MIN-INV-02', exitSummary: 'Stop am Kontraktionstief (≤ 10 %) · Schluss unter der 50-Tage-Linie (VU-Hilfsregel)' },
+  required_data: [
+    { item: 'Tages-OHLCV ≥ 252 Sitzungen, SMA50/150/200', rules: ['MIN-TREND-01', 'MIN-TREND-02', 'MIN-HIGH-01', 'MIN-LOW-01'] },
+    { item: 'RS-Querschnitt', rules: ['MIN-RS-01'] },
+    { item: 'Volumen 10/50 Tage', rules: ['MIN-VCP-02'] },
+  ],
+  sections: [
+    sec('candidate', 'Kandidat', 'Trend Template erfüllt, RS im oberen 30 %-Bereich.', ['MIN-TREND-01', 'MIN-TREND-02', 'MIN-HIGH-01', 'MIN-LOW-01', 'MIN-RS-01']),
+    sec('prepared', 'Einstieg vorbereitet', 'VCP: mindestens zwei kleiner werdende Kontraktionen, Volumen trocknet aus, Risiko ≤ 10 %. Trigger = Pivot, Invalidation = Kontraktionstief.', ['MIN-VCP-01', 'MIN-VCP-02', 'MIN-RISK-VU', 'LC-SETUP', 'LC-NEAR-TRIGGER']),
+    sec('confirmation', 'Trigger und Bestätigung', 'Bestätigt am Tagesschluss über dem Pivot.', ['MIN-ENTRY-D1', 'LC-CONFIRM-CLOSE']),
+    DAILY_EXEC,
+    sec('initialStop', 'Anfangsstop', 'Kontraktionstief, höchstens 10 % unter der Einstiegseröffnung.', ['MIN-STOP-VU']),
+    sec('hold', 'Halten', 'Position läuft bis Stop oder Schluss unter der 50-Tage-Linie. Minervinis eigene Verkaufsregeln (Stärke-Verkäufe, Einstand) sind nicht mechanisch belegt.', ['LC-ACTIVE']),
+    sec('warning', 'Warnung', 'Schluss zurück unter dem Pivot.', ['MIN-WARN-01']),
+    sec('exit', 'Ausstieg', 'Stop (ruhende Stop-Order-Annahme) oder Schluss unter der 50-Tage-Linie → zur nächsten Eröffnung.', ['MIN-EXIT-VU-01', 'LC-STOP-ORDER-ASSUMPTION']),
+    sec('invalid', 'Ungültig vor Einstieg', 'Schluss unter dem Kontraktionstief oder 20 Sitzungen ohne Bestätigung.', ['MIN-INV-01', 'MIN-INV-02', 'LC-SETUP-LOST']),
+  ],
+  edge_cases: [
+    sec('gap', 'Gap über den Trigger', 'Keine Gap-Sperre belegt: Einstieg zum Eröffnungskurs; der Stop bleibt auf 10 % unter dieser Eröffnung gekappt.', ['MIN-STOP-VU', 'LC-MODEL-ENTRY']),
+    sec('volume', 'Fehlendes Volumen', 'Ohne Volumen ist MIN-VCP-02 nicht erfüllt — es entsteht kein Setup. Das Ausbruchsvolumen wird angezeigt, nicht gefiltert.', ['MIN-VCP-02']),
+    EDGE.missingData, EDGE.conflictPre, EDGE.conflictPos, EDGE.openBelowStop, EDGE.version,
+  ],
+  executable: { status: 'EXECUTABLE', gaps: [], note: 'Technisch ausführbar — der Ausstieg allerdings nur über eine VU-Hilfsregel.' },
+  source_basis: { status: 'EXIT_NOT_SOURCE_BACKED', note: 'Trend Template ist mehrfach belegt; die VCP-Erkennung ist VU. Für den Ausstieg gibt es keine belastbare, mechanisch belegte Originalregel — MIN-EXIT-VU-01 (Schluss unter 50-Tage-Linie) ist eine Hilfsregel.', fidelityReview: 'NOT_PERFORMED', fidelityNote: 'Quellen nur per Suchtreffer bestätigt, Inhalte nicht direkt abgerufen; der Source-Fidelity-Pass steht aus. Originaltreue ist damit nicht geprüft.' },
+  historical_validation: { status: 'NOT_VALIDATED', note: 'Kein Backtest hat die Datengates bestanden; keine Aussage über historische Wirksamkeit.' },
+}];
+
+greenblatt.rule_cards = [{
+  variant_id: 'GREENBLATT_US_ORIGINAL', rule_version: GB_V, timeframe: 'annual', inactive: true, activationStatus: 'DATA_COVERAGE_PENDING',
+  activationCondition: 'Aktiviert erst, wenn Umlaufvermögen, kurzfristige Verbindlichkeiten und Sachanlagen im kanonischen Fundamentaldatensatz vorliegen (ROC-Nenner) und Point-in-Time-Stände je Stichtag verfügbar sind.',
+  plan: null,
+  required_data: [
+    { item: 'EBIT, Marktkapitalisierung, Finanzschulden, Kasse', rules: ['GB-EY-01'] },
+    { item: 'Umlaufvermögen, kurzfristige Verbindlichkeiten, Sachanlagen (fehlen)', rules: ['GB-ROC-01'] },
+    { item: 'SIC für Ausschluss Finanzwerte/Versorger', rules: ['GB-UNIV-01'] },
+  ],
+  sections: [
+    sec('candidate', 'Zulässig', 'US-Aktie, keine Finanzwerte oder Versorger, über der gewählten Mindestgröße.', ['GB-UNIV-01', 'GB-SIZE-01']),
+    sec('ranking', 'Ranking', 'Rang nach Earnings Yield plus Rang nach Return on Capital; kleinste Summe zuerst.', ['GB-EY-01', 'GB-ROC-01', 'GB-RANK-01']),
+    sec('rebalance', 'Rebalancing', '20–30 Titel, gleich gewichtet; große Beträge über 12 Monate gestaffelt. Kein Kurs-Trigger, kein technischer Stop.', ['GB-DIV-01', 'GB-POS-01', 'GB-STAGGER-01']),
+    sec('exit', 'Ausstieg', 'Nach etwa einem Jahr ersetzen: Verlierer kurz vor, Gewinner kurz nach einem Jahr. Kein Stop, kein Kursziel — beides wäre nicht Greenblatt.', ['GB-EXIT-01']),
+  ],
+  edge_cases: [],
+  executable: { status: 'NOT_EXECUTABLE', gaps: ['Pflichtfelder für Return on Capital fehlen', 'Point-in-Time-Fundamentaldaten nur für 5 Titel'], note: 'Eigene Ranking-/Rebalancing-Logik, bewusst ohne Stop/Take-Profit. Keine Signale, bis die Daten vorliegen.' },
+  source_basis: { status: 'OFFICIAL_SITE_AND_REPLICATIONS', note: 'Portfoliomechanik laut offizieller Website; Kennzahlenformel über unabhängige Replikationen bestätigt.', fidelityReview: 'NOT_PERFORMED', fidelityNote: 'Quellen nur per Suchtreffer bestätigt, Inhalte nicht direkt abgerufen; der Source-Fidelity-Pass steht aus. Originaltreue ist damit nicht geprüft.' },
+  historical_validation: { status: 'NOT_VALIDATED', note: 'Kein Backtest hat die Datengates bestanden; keine Aussage über historische Wirksamkeit.' },
+}];
+
+// Herkunft je Sektion aus den Regeln ableiten.
+for (const s of [momentum, weinstein, darvas, minervini, greenblatt, donchian, canslim, piotroski]) {
+  const byId = new Map(s.rules.map((r) => [r.rule_id, r]));
+  for (const card of s.rule_cards) {
+    for (const x of [...card.sections, ...card.edge_cases]) {
+      const flags = x.rules.map((id) => byId.get(id)).filter(Boolean).map((r) => r.VU_formalization_flag);
+      x.provenance = !flags.length ? 'NONE' : flags.every(Boolean) ? 'VU' : flags.some(Boolean) ? 'MIXED' : 'ORIGINAL';
+    }
+    // Quellenlage in Zahlen: wie viele der Regeln dieser Karte sind Original, wie viele VU.
+    const ids = [...new Set([...card.sections, ...card.edge_cases].flatMap((x) => x.rules))].map((id) => byId.get(id)).filter(Boolean);
+    card.source_basis.ruleCounts = { original: ids.filter((r) => !r.VU_formalization_flag).length, vu: ids.filter((r) => r.VU_formalization_flag).length };
+  }
+}
+
+applyR7({ momentum, weinstein, darvas, minervini, donchian, rule });
+export const STRATEGIES = [momentum, weinstein, darvas, minervini, donchian, canslim, piotroski, greenblatt, ...advancedList];
+// Produktmodus: LIVE (Ein-/Ausstiege werden gerechnet), PARTIAL_CHECK (nur
+// pruefbare Kriterien, keine Signale), DATA_PENDING (Regeln beschrieben, Daten
+// fehlen), RESEARCH (nur Namenskarte, keine Regeln).
+for (const s of STRATEGIES) if (!s.mode) s.mode = s.advanced ? 'RESEARCH' : s.strategy_id === 'GREENBLATT_VALUE' ? 'DATA_PENDING' : 'LIVE';
 
 export const INTERNAL_SOURCES = [
   { source_id: 'SRC-INTERNAL-VU', title: 'Vision-Universe-Formalisierung (Supertrader Registry)', author: 'Vision Universe', publisher_or_site: 'research.visionuniverse.de', url: null, source_type: 'VU_INTERNAL', level: null, access: 'PUBLIC_FULL', retrieved_at: null, url_verification: 'NOT_APPLICABLE', content_retrieved_by_vu: true, used_for: [], claims_supported: 'Messbare Übersetzung qualitativer Regeln. Keine Aussage über die Originalmethode.', evidence_status_ceiling: 'VU_FORMALIZATION', notes: 'Jede Regel mit dieser Quelle trägt VU_formalization_flag = true.' },

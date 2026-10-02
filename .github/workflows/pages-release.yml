@@ -5,6 +5,7 @@ on:
       - 'vu2/**'
       - 'quant/**'
       - 'scripts/vu2/**'
+      - 'scripts/access-gate/**'
       - '.github/workflows/pages-release.yml'
   push:
     branches: [main]
@@ -155,6 +156,34 @@ jobs:
           ! grep -F 'location.replace' "$SITE_ROOT/quant/index.html"
           grep -F 'location.replace("/quant/"+location.search+location.hash)' "$SITE_ROOT/vu2/index.html"
           cmp "$SITE_ROOT/vu2/index.html" "$SITE_ROOT/Quant/index.html"
+      - name: Add central client-side Research access gate to every HTML route
+        env:
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+          SITE_ROOT: ${{ runner.temp }}/site
+        run: |
+          node --input-type=module <<'NODE'
+          import {randomBytes} from 'node:crypto';
+          import {writeFileSync} from 'node:fs';
+          import {protectRelease} from './scripts/access-gate/build.mjs';
+          // PR validation uses a disposable password; production has no fallback.
+          const password = process.env.GITHUB_EVENT_NAME === 'pull_request'
+            ? randomBytes(32).toString('hex') : process.env.RESEARCH_ACCESS_PASSWORD;
+          // The smoke below needs the same password to log in (gate v2); kept in
+          // the runner temp directory only, outside the uploaded site.
+          writeFileSync(process.env.RUNNER_TEMP + '/research-access.pass', password || '', {mode: 0o600});
+          console.log(JSON.stringify(await protectRelease({output: process.env.SITE_ROOT, password})));
+          NODE
+      - name: Production smoke through the final access-gated release
+        env:
+          NODE_PATH: /tmp/vu2-smoke/node_modules
+          SITE_ROOT: ${{ runner.temp }}/site
+          RESEARCH_ACCESS_LOGIN_FILE: ${{ runner.temp }}/research-access.pass
+        run: |
+          set +e
+          node scripts/vu2/production-smoke.mjs "$SITE_ROOT" --access-gate
+          rc=$?
+          rm -f "$RESEARCH_ACCESS_LOGIN_FILE"
+          exit $rc
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

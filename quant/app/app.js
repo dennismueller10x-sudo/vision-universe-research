@@ -38,7 +38,7 @@
       technical: okT ? "#/aktie/" + t + "/technik" : "#/aktien", elliott: okT ? "#/aktie/" + t + "/technik?elliott=1" : "#/aktien",
       fundamentals: okT ? "#/aktie/" + t + "/zahlen" : "#/aktien",
       compare: "#/vergleich" + (p.get("tickers") ? "/" + p.get("tickers") : okT ? "/" + t : ""),
-      watchlist: "#/aktien", signals: "#/", radar: "#/", discover: "#/screener", markets: "#/", research: "#/methodik", portfolio: "#/", atlas: "#/methodik"
+      watchlist: "#/aktien", signals: "#/radar", radar: "#/radar", backtest: "#/backtest", backtesting: "#/backtest", discover: "#/screener", markets: "#/", research: "#/methodik", portfolio: "#/", atlas: "#/methodik"
     };
     var target = map[view] || "#/";
     if (view === "screener") {
@@ -58,6 +58,8 @@
       case "screener": r.view = "screener"; r.pro = parts[1] === "profi"; break;
       case "strategien": r.view = "strategien"; r.id = parts[1] || null; break;
       case "aktien": r.view = "aktien"; break;
+      case "radar": r.view = "radar"; break;
+      case "backtest": r.view = "backtest"; r.id = parts[1] ? String(parts[1]).toUpperCase() : null; break;
       case "aktie":
         r.ticker = String(parts[1] || "").toUpperCase();
         r.view = !/^[A-Z0-9.-]{1,12}$/.test(r.ticker) ? "notfound" : parts[2] === "technik" ? "technik" : parts[2] === "zahlen" ? "zahlen" : "aktie";
@@ -68,14 +70,39 @@
     }
     return r;
   }
-  var SECTION = { home: "home", screener: "screener", strategien: "strategien", aktien: "aktien", aktie: "aktien", technik: "aktien", zahlen: "aktien", vergleich: "aktien", methodik: "methodik" };
-  var TITLE = { home: "Quant – Aktien verstehen", screener: "Quant Screener", strategien: "Strategien", aktien: "Aktien", aktie: "Aktienanalyse", technik: "Kursstruktur", zahlen: "Unternehmenszahlen", vergleich: "Vergleich", methodik: "Methodik", notfound: "Nicht gefunden" };
+  var SECTION = { home: "home", radar: "home", backtest: "methodik", screener: "screener", strategien: "strategien", aktien: "aktien", aktie: "aktien", technik: "aktien", zahlen: "aktien", vergleich: "aktien", methodik: "methodik" };
+  var TITLE = { home: "Quant – Aktien verstehen", radar: "Quant Radar", backtest: "Backtesting", screener: "Quant Screener", strategien: "Strategien", aktien: "Aktien", aktie: "Aktienanalyse", technik: "Kursstruktur", zahlen: "Unternehmenszahlen", vergleich: "Vergleich", methodik: "Methodik", notfound: "Nicht gefunden" };
 
   /* -------------------------------------------------------- Kontext */
   var api = global.VUProductServices.create({ loadJSON: S.loadJSON, displayPolicy: global.VUDisplayPolicy, queryEngine: global.VUQuery });
   var namesPromise = null, distPromise = null, wordsPromise = null, langPromise = null, hubPromise = null;
+  /* Backtesting nur dort laden, wo es gebraucht wird (Startseite, Radar,
+     Aktienseite, Backtesting) - nicht im gemeinsamen Buendel, damit der
+     Screener sein Ressourcenbudget behaelt. Version wie das Buendel. */
+  var lazy = {};
+  function loadScript(src) {
+    if (!lazy[src]) lazy[src] = new Promise(function (resolve) {
+      var bundle = document.querySelector('script[src*="release-bundle.js"]'), v = bundle ? (bundle.getAttribute("src").split("?v=")[1] || "") : "";
+      var s = document.createElement("script");
+      s.src = src + (v ? "?v=" + v : ""); s.async = false;
+      s.onload = function () { resolve(true); };
+      s.onerror = function () { delete lazy[src]; resolve(false); };
+      document.head.appendChild(s);
+    });
+    return lazy[src];
+  }
   var ctx = {
     api: api, names: {}, types: {}, entries: {},
+    /* Signal-Engine und Backtest-Ansichten (quant/engines/signal-backtest.js, quant/app/page-backtest.js). */
+    /* Nur die Ansicht (Evidenz auf Karten, Radar-Status) - ohne Engines. */
+    loadBacktestView: function () {
+      if (global.QXEvidence) return Promise.resolve(true);
+      return loadScript("/quant/app/page-evidence.js");
+    },
+    loadBacktest: function () {
+      if (global.QXBacktest && global.VUSignalBacktest && global.VUBacktestCertification) return Promise.resolve(true);
+      return loadScript("/quant/engines/signal-backtest.js").then(function () { return loadScript("/quant/engines/backtest-certification.js"); }).then(function () { return loadScript("/quant/app/page-evidence.js"); }).then(function () { return loadScript("/quant/app/page-backtest.js"); });
+    },
     /* Stammaktien zuerst - Vorzugsaktien und Anleihen bleiben gezaehlt, stehen aber hinten. */
     commonFirst: function (list) { return (list || []).slice().sort(function (a, b) { return (ctx.types[a] === "COMMON_STOCK" ? 0 : 1) - (ctx.types[b] === "COMMON_STOCK" ? 0 : 1); }); },
     openSearch: function () { search.open(); },
@@ -127,47 +154,60 @@
     }
   };
 
-  /* ------------------------------------------------------------ Shell */
-  var main, navLinks = [], tabLinks = [];
+  /* ------------------------------------------------------------ Shell
+     Wie auf den Konzepttafeln: Kopfzeile mit Marke und Suche, EINE Leiste
+     mit den fuenf Bereichen - am Handy unten am Rand, am Desktop in der
+     Kopfzeile -, darunter die Seite und der Fuss. */
+  var main, navLinks = [];
+  function dockItem(n) {
+    var a = el("a", { class: "qx-nav-" + n.id, href: n.href, dataset: { nav: n.id } }, [el("span", { class: "qx-nav-icon", "aria-hidden": "true" }, [X.icon(n.id)]), el("span", { text: n.label })]);
+    navLinks.push(a); return a;
+  }
   function buildShell() {
     var root = document.getElementById("qx-app");
-    var bar = el("header", { class: "qx-bar" }, [el("div", { class: "qx-bar-in" }, [
-      el("a", { class: "qx-brand", href: "#/", "aria-label": "Quant – Startseite" }, [el("b", {}, [document.createTextNode("Quant"), el("i", { text: "." })]), el("span", { class: "qx-beta", text: "Beta" }), el("span", { text: "Aktien verstehen. Mit Gründen." })]),
-      el("nav", { class: "qx-nav", "aria-label": "Quant" }, X.NAV.map(function (n) { var a = el("a", { href: n.href, dataset: { nav: n.id } }, [X.icon(n.id), el("span", { text: n.label })]); navLinks.push(a); return a; })),
-      el("button", { type: "button", class: "qx-search-btn", "aria-label": "Aktie suchen", onclick: function () { search.open(); } }, [X.icon("search"), el("span", { text: "Suchen" }), el("kbd", { text: "/" })])
-    ])]);
-    main = el("main", { class: "qx-main", id: "qx-main", tabindex: "-1" });
-    var tabs = el("nav", { class: "qx-tabbar", "aria-label": "Quant" }, X.NAV.map(function (n) { var a = el("a", { href: n.href, dataset: { nav: n.id } }, [X.icon(n.id), el("span", { text: n.label })]); tabLinks.push(a); return a; }));
-    var foot = el("footer", { class: "qx-foot" }, [
-      el("p", {}, [el("b", { text: "Vision Universe® Quant" }), document.createTextNode(" · Beta: Gesamtnote und historische Strategietests sind noch nicht freigegeben. Keine Anlageempfehlung, keine Prognose, kein Kursziel.")]),
-      el("p", {}, [document.createTextNode("Daten: SEC EDGAR (Geschäftszahlen), Tiingo (Kurse) – jeweils mit Stichtag. "), el("a", { href: "#/methodik", text: "Methodik" }), document.createTextNode(" · "), el("a", { href: "/quant/methodology/", text: "Methodik im Detail" }), document.createTextNode(" · "), el("a", { href: "/quant/data-inspector/", text: "SEC-Dateninspektor" })])
+    var dock = el("nav", { class: "q-dock v2-dock qx-nav qx-tabbar", "aria-label": "Quant" }, X.NAV.map(dockItem));
+    var bar = el("header", { class: "q-top qx-bar" }, [
+      el("a", { class: "q-brand qx-brand", href: "#/", "aria-label": "Quant – Startseite" }, [el("span", { text: "Vision Universe Quant" }), el("span", { class: "q-beta qx-beta", text: "Beta" })]),
+      dock,
+      el("button", { type: "button", class: "q-search-btn qx-search-btn", "aria-label": "Aktie suchen", onclick: function () { search.open(); } }, [X.icon("search"), el("span", { text: "Suchen" })])
     ]);
-    root.replaceChildren(bar, main, foot, tabs);
+    main = el("main", { class: "qx-main", id: "qx-main", tabindex: "-1" });
+    var foot = el("footer", { class: "q-foot qx-foot" }, [
+      el("b", { text: "VISION UNIVERSE® QUANT" }),
+      el("p", { text: "Daten heute. Bessere Entscheidungen für morgen." }),
+      el("p", {}, [el("span", { class: "q-beta", text: "Beta" }), el("span", { text: " Gesamtnote und historische Strategietests sind noch nicht freigegeben. Keine Anlageempfehlung, keine Prognose, kein Kursziel. Einstieg, Stop-Loss und Ziele sind Szenarien der technischen Analyse." })]),
+      el("p", {}, [el("span", { text: "Daten: SEC EDGAR (Geschäftszahlen), Tiingo (Kurse) – jeweils mit Stichtag. " }), el("a", { href: "#/methodik", text: "Methodik" }), el("span", { text: " · " }), el("a", { href: "/quant/methodology/", text: "Methodik im Detail" }), el("span", { text: " · " }), el("a", { href: "/quant/data-inspector/", text: "SEC-Dateninspektor" }), el("span", { text: " · " }), el("a", { href: "/discover/", text: "Discover" })])
+    ]);
+    root.replaceChildren(bar, main, foot);
     document.querySelector(".qx-skip").addEventListener("click", function (e) { e.preventDefault(); main.focus(); main.scrollIntoView(); });
   }
   function markNav(section) {
-    navLinks.concat(tabLinks).forEach(function (a) { if (a.dataset.nav === section) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+    navLinks.forEach(function (a) { if (a.dataset.nav === section) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
   }
 
   /* ------------------------------------------------------------ Suche */
   var search = (function () {
     var dialog = el("dialog", { class: "qx-dialog", "aria-label": "Aktie suchen" });
-    var input = el("input", { type: "search", placeholder: "Name oder Kürzel", "aria-label": "Aktie suchen", autocomplete: "off", role: "combobox", "aria-expanded": "false", "aria-controls": "qx-search-list" });
+    var input = el("input", { type: "search", placeholder: "Aktie, Name oder Kürzel …", "aria-label": "Aktie suchen", autocomplete: "off", role: "combobox", "aria-expanded": "false", "aria-controls": "qx-search-list" });
+    var closeBtn = el("button", { type: "button", class: "q-dialog-close", text: "Schließen", onclick: function () { close(); } });
     var list = el("div", { class: "qx-dialog-results", id: "qx-search-list", role: "listbox" });
     var status = el("p", { class: "qx-dialog-status", role: "status", "aria-live": "polite" });
-    dialog.append(el("div", { class: "qx-dialog-in" }, [input, list, status]));
+    dialog.append(el("div", { class: "q-dialog-in" }, [el("p", { class: "q-kicker", text: "Vision Universe Quant" }), el("h2", { text: "Was möchtest du analysieren?" }),
+      el("div", { class: "q-searchbar" }, [X.icon("search"), input, closeBtn]), status, list]));
     var req = 0, sel = -1;
     function items() { return Array.prototype.slice.call(list.querySelectorAll(".qx-hit")); }
     function select(i) { var it = items(); sel = Math.max(0, Math.min(it.length - 1, i)); it.forEach(function (a, k) { a.setAttribute("aria-selected", k === sel ? "true" : "false"); }); if (it[sel]) it[sel].scrollIntoView({ block: "nearest" }); }
     async function update() {
       var mine = ++req, q = input.value.trim();
-      if (!q) { list.replaceChildren(); status.textContent = "Tippe einen Namen oder ein Kürzel."; input.setAttribute("aria-expanded", "false"); return; }
+      if (!q) { list.replaceChildren(); status.textContent = "Tippe einen Namen oder ein Kürzel · ↑ ↓ zum Auswählen · Enter öffnet die Analyse"; input.setAttribute("aria-expanded", "false"); return; }
       status.textContent = "Wird gesucht …";
       var r = await api.searchInstruments(q, 12).catch(function () { return { state: "SOURCE_MISSING", entries: [] }; });
       if (mine !== req) return;
       if (r.state !== "AVAILABLE") { list.replaceChildren(); status.textContent = "Die Suche ist derzeit nicht verfügbar."; return; }
       list.replaceChildren.apply(list, r.entries.map(function (e) {
-        return el("a", { class: "qx-hit", role: "option", href: X.routes.stock(e.ticker), "aria-selected": "false", onclick: function () { close(); } }, [el("strong", { text: e.ticker }), el("span", { text: X.companyName(e) })]);
+        var name = X.companyName(e) === "Firmenname nicht veröffentlicht" ? e.ticker : e.name;
+        return el("a", { class: "qx-hit", role: "option", href: X.routes.stock(e.ticker), "aria-selected": "false", onclick: function () { close(); } }, [
+          X.logo(e.ticker, name, "sm"), el("span", {}, [el("b", { text: name }), el("em", { text: e.ticker })]), el("span", { class: "val", text: "Analyse →" })]);
       }));
       sel = -1; input.setAttribute("aria-expanded", r.entries.length ? "true" : "false");
       status.textContent = r.entries.length ? r.entries.length + " Treffer – mit Pfeiltasten wählen, Enter öffnet." : "Keine passenden Aktien gefunden.";
@@ -180,12 +220,12 @@
     });
     dialog.addEventListener("click", function (e) { if (e.target === dialog) close(); });
     var opener = null;
-    function open() {
+    function open(prefill) {
       if (!dialog.isConnected) document.body.append(dialog);
       if (dialog.open) { input.focus(); return; }
       opener = document.activeElement;
       dialog.showModal ? dialog.showModal() : dialog.setAttribute("open", "");
-      input.value = ""; update(); input.focus();
+      input.value = typeof prefill === "string" ? prefill : ""; update(); input.focus();
     }
     /* Der Fokus bleibt im Dialog, solange er offen ist. */
     dialog.addEventListener("keydown", function (e) {
@@ -193,13 +233,16 @@
          Browser sonst zuerst nur die Eingabe leeren. */
       if (e.key === "Escape") { e.preventDefault(); close(); return; }
       if (e.key !== "Tab") return;
-      var f = [input].concat(items());
+      var f = [input, closeBtn].concat(items());
       var i = f.indexOf(document.activeElement);
       e.preventDefault();
       var next = e.shiftKey ? (i <= 0 ? f.length - 1 : i - 1) : (i >= f.length - 1 ? 0 : i + 1);
       f[next].focus();
     });
-    dialog.addEventListener("close", function () { if (opener && opener.focus) opener.focus(); });
+    /* Das close-Ereignis kommt verzoegert. Wurde der Dialog inzwischen
+       wieder geoeffnet (Escape, sofort Strg+K), darf es den Fokus nicht
+       wegnehmen. */
+    dialog.addEventListener("close", function () { if (dialog.open) return; if (opener && opener.focus) opener.focus(); });
     function close() { if (dialog.open) dialog.close ? dialog.close() : dialog.removeAttribute("open"); }
     document.addEventListener("keydown", function (e) {
       var typing = /^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || "");
@@ -221,28 +264,33 @@
     main.setAttribute("aria-busy", "true");
     main.dataset.ready = "false";
     main.dataset.view = r.view;
+    /* Die Aktienseite traegt dieselbe Klasse wie in Discover (dx-detail). */
+    main.className = "qx-main";
     global.scrollTo(0, 0);
     try {
       await ctx.language();
       if (gen !== generation) return;
       if (/^(home|screener|strategien|aktien)$/.test(r.view)) await ctx.loadNames();
       switch (r.view) {
-        case "home": await global.QXPages.home(main, ctx); break;
+        case "home": await ctx.loadBacktestView(); await global.QXPages.home(main, ctx); break;
+        case "radar": await Promise.all([ctx.loadNames(), ctx.loadBacktestView()]); await global.QXPages.radar(main, ctx, r.params); break;
+        case "backtest": await ctx.loadBacktest(); await global.QXBacktest.render(main, ctx, r.id); break;
         case "screener": await ctx.loadNames(); await global.QXPages.screener(main, ctx, r.params, r.pro); break;
         case "strategien": await ctx.loadNames(); await global.QXPages.strategies(main, ctx, r.id); break;
         case "aktien": await global.QXPages.stocks(main, ctx); break;
-        case "aktie": dispose = await global.QXStock.render(main, r.ticker, ctx); break;
+        case "aktie": await ctx.loadBacktestView(); dispose = await global.QXStock.render(main, r.ticker, ctx); break;
         case "technik": await global.QXTools.technical(main, ctx, r.ticker, r.params.get("elliott") === "1"); break;
         case "zahlen": await global.QXTools.fundamentals(main, ctx, r.ticker, r.params); break;
         case "vergleich": await global.QXTools.compare(main, ctx, r.list); break;
         case "methodik": await global.QXMethod.render(main, ctx, r.topic, r.params); break;
         default:
-          main.append(el("h1", { class: "qx-h1", text: "Diese Seite gibt es nicht" }), X.notice("Unbekannte Adresse", "Öffne einen der fünf Bereiche von Quant über die Navigation."),
-            el("div", { class: "qx-actions" }, [X.btn("Zur Startseite", "#/")]));
+          main.append(el("section", { class: "v2-message" }, [el("h1", { class: "qx-h1", text: "Diese Seite gibt es nicht" }), X.notice("Unbekannte Adresse", "Diese Adresse gehört zu keinem Bereich von Quant. Öffne einen der fünf Bereiche über die Navigation."),
+            X.actions([X.btn("Zur Startseite", "#/")])]));
       }
     } catch (err) {
       if (gen !== generation) return;
-      main.replaceChildren(el("h1", { class: "qx-h1", text: "Gerade nicht erreichbar" }), X.notice("Die Seite konnte nicht aufgebaut werden", "Die Daten konnten nicht geladen werden. Bitte versuche es noch einmal."), el("div", { class: "qx-actions" }, [el("button", { type: "button", class: "qx-btn", text: "Erneut versuchen", onclick: route })]));
+      main.replaceChildren(el("section", { class: "v2-message" }, [el("h1", { class: "qx-h1", text: "Gerade nicht erreichbar" }), el("p", { class: "v2-lead", text: "Die Seite konnte nicht aufgebaut werden: Die Daten konnten nicht geladen werden. Bitte versuche es noch einmal." }),
+        el("button", { type: "button", class: "v2-button qx-btn", text: "Erneut versuchen", onclick: route })]));
       if (global.console) console.error("Quant route", err);
     } finally {
       if (gen === generation) { main.setAttribute("aria-busy", "false"); main.dataset.ready = "true"; }

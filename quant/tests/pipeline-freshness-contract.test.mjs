@@ -176,9 +176,32 @@ test("die Materialisierung ist aufrufbar und idempotent", () => {
   const yml = readFileSync(MATERIALIZE, "utf8");
   assert.match(yml, /^\s{2}workflow_call:/m,
     "die Stufe ist nicht aufrufbar - dann kann die Kette sie nicht einhaengen");
-  assert.match(yml, /github\.event_name == 'workflow_call'/,
+  /* In einem aufgerufenen Workflow ist github.event_name das Ereignis des
+     AUFRUFERS - 'workflow_call' kommt dort nie vor. Lauf 36655067686
+     (30.09.2026): Marktlauf gruen, Materialisierung "skipped". Der Aufruf
+     wird deshalb ueber eine Eingabe erkannt, die der Aufrufer setzt. */
+  assert.match(yml, /^\s{4}inputs:\s*\n\s{6}orchestrated:\s*\n\s{8}type: boolean/m,
+    "die Stufe hat keine Eingabe, an der sie den Aufruf aus der Kette erkennt");
+  const jobIf = (yml.match(/^\s{2}materialize:\s*\n\s{4}if: >-\n((?:\s{6}.*\n)+)/m) || [])[1] || "";
+  assert.match(jobIf, /inputs\.orchestrated == true/,
     "der Job laesst den Aufruf aus der Kette nicht zu");
+  assert.doesNotMatch(jobIf, /github\.event_name == 'workflow_call'/,
+    "github.event_name ist im aufgerufenen Workflow nie 'workflow_call' - diese Bedingung ist tot");
+  const refresh = readFileSync(REFRESH, "utf8");
+  assert.match(refresh, /product-intelligence-materialization\.yml\s*\n\s+with:\s*\n\s+orchestrated: true/,
+    "der Aufrufer setzt die Kennung nicht");
+  /* Die Idempotenz-Stufe muss den Stand lesen, den der Marktlauf gerade
+     gepusht hat - nicht den ausloesenden Commit (Lauf 36952507489). */
+  const job = yml.slice(yml.search(/^\s{2}materialize:/m));
+  const checkout = (job.match(/uses: actions\/checkout@v4\s*\n\s+with:\s*\n((?:\s{10}.*\n)+)/) || [])[1] || "";
+  assert.match(checkout, /ref: \$\{\{ github\.ref \}\}/,
+    "die Materialisierung checkt den ausloesenden Commit aus und sieht den frischen Ablagestand nicht");
+  assert.ok(job.indexOf("actions/checkout@v4") < job.indexOf("id: noetig"), "die Idempotenz-Stufe laeuft vor dem Checkout");
   assert.match(yml, /id: noetig/, "die Idempotenz-Stufe fehlt");
+  /* Erzwingen nur beim manuellen Start - nie aus der Kette oder dem Zeitplan. */
+  assert.match(yml, /workflow_dispatch:\s*\n\s+inputs:\s*\n(?:\s+#.*\n)*\s+force:\s*\n/, "kein manuelles Erzwingen nach einem Methodik-Wechsel");
+  assert.match(yml, /github\.event_name == 'workflow_dispatch' && inputs\.force == true/,
+    "force muss an den manuellen Start gebunden sein, sonst ist die Kette nicht mehr idempotent");
   assert.match(yml, /noop=true/,
     "es gibt keinen sauberen No-Op - ein Wiederholungslauf kostet dann eine Stunde umsonst");
   /* Die schweren Schritte muessen wirklich an der Bedingung haengen. */

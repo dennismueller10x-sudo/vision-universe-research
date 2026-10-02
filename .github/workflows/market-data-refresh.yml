@@ -103,6 +103,19 @@ jobs:
           node scripts/market/ingest-tiingo.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.initial) && '--initial' || '' }} \
             --scope-from-preview --publish-preview --commercial --request-budget=7500 --concurrency=4
 
+      # SPY als BENCHMARK_REFERENCE (Owner-Entscheid 02.10.2026): die ganze
+      # Reihe ab 1990 in EINER Anfrage, mit einer einzigen Bereinigung. Der
+      # taegliche Anhang behaelt die adjustedClose-Skala des Abruftags und
+      # verliert damit jede spaetere Ausschuettung - fuer die Gesamtrendite
+      # des Vergleichs waere das falsch. Die volle Ablage fuehrt SPY danach
+      # mit (sync-history-store); das Produktuniversum bleibt unveraendert.
+      # Faellt die Pruefung durch, bleibt der Cache wie er ist und die
+      # Backtests bleiben geschlossen bei Kursrendite.
+      - name: Benchmark-Referenz SPY (volle Reihe, eine Bereinigung)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/refresh-benchmark-history.mjs --report "$RUNNER_TEMP/benchmark-refresh.json"
+
       # Der Benchmark ist ein Einzelpunkt, an dem die relative Staerke des
       # GANZEN Universums haengt. Faellt er durch die Qualitaetspruefung,
       # altert seine Reihe, und seit dem Frische-Gate verlieren damit alle
@@ -417,6 +430,8 @@ jobs:
     # veroeffentlichen.
     if: needs.refresh.result == 'success' && github.ref == 'refs/heads/main'
     uses: ./.github/workflows/product-intelligence-materialization.yml
+    with:
+      orchestrated: true
     secrets: inherit
 
   # ===================================================================

@@ -52,6 +52,7 @@ const Q=origin+'/quant/';
    Unterseite ohne axe-Lauf ist eine ungepruefte Unterseite. */
 const ROUTES=[
  ['home','#/','home'],
+ ['radar','#/radar'],
  ['screener','#/screener','screener'],
  ['screener-hoch','#/screener?frage=hoch'],
  ['screener-setups','#/screener?frage=setups'],
@@ -114,49 +115,63 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  page.on('pageerror',e=>errors.push(e.message));
  page.on('requestfailed',r=>{if(!r.url().startsWith(origin))fremd=true;});
  page.on('console',m=>{const t=m.text();if(m.type()!=='error'||t.includes('404')||t.includes('favicon'))return;if(absichtlich>0&&/^Failed to load resource: net::ERR_FAILED/.test(t)){absichtlich--;return;}if(fremd&&/^Failed to load resource: net::ERR_/.test(t))return;errors.push('console: '+t.split('\n')[0]);});
- const leiste=width>=1000?'header nav.qx-nav':'nav.qx-tabbar';
+ /* Discover-Angleichung (30.09.2026): Kopf- und Tab-Leiste sind EINE
+    Leiste wie Discovers v2-dock - am Desktop oben mittig, am Handy unten. */
+ const leiste='nav.v2-dock.qx-nav';
  for(const [view,hash,budgetKey] of ROUTES){await versuch(view,width,async()=>{
   const started=performance.now();await frisch(page,hash);
   const resources=await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,bytes:r.decodedBodySize,durationMs:Math.round(r.duration)})));performanceSamples.push({view,width,renderMs:Math.round(performance.now()-started),decodedBytes:resources.reduce((sum,r)=>sum+r.bytes,0),requests:resources.length});
-  if(budgetKey){const budget=assessResourceBudget(budgetKey,resources);if(budget)resourceBudgets.push({...budget,route:hash,width});}
+  if(budgetKey){const budget=assessResourceBudget(budgetKey,resources);if(budget){resourceBudgets.push({...budget,route:hash,width});
+   /* Bei einer Verletzung die groessten Posten ausgeben - sonst ist ein
+      roter Budget-Lauf in CI nicht ohne das Artefakt zu deuten. */
+   if(!budget.pass)console.log('BUDGET '+view+'@'+width+': '+resources.slice().sort((a,b)=>b.bytes-a.bytes).slice(0,15).map(r=>r.bytes+' '+r.path).join(' | '));}}
   if(view==='home'&&resources.some(r=>r.path.includes('/daily/ref_')||r.path.includes('/fixtures/')))befund(view,width,'Home loads raw history or fixtures');
   const h1=await page.locator('h1').count();
   if(h1!==1)befund(view,width,'H1='+h1);
   /* KEINE SEITE WIEDERHOLT DEN ANSPRUCH AUS DER KOPFZEILE ALS UEBERSCHRIFT.
      Zweimal gefunden (Screener "Chancen finden.", Strategien "Strategien
      verstehen."): dieselben Woerter zweimal, rund 90 px auseinander. Der
-     Anspruch steht jetzt in der Marke (.qx-brand span). */
-  const anspruch=(await page.locator('.qx-brand span').first().innerText().catch(()=>'')).trim();
+     Anspruch steht in der Kopfzeile (Discovers .v2-bar-caption). */
+  /* Konzept-Design: die Kopfzeile traegt keinen Anspruch mehr. Ohne
+     Element nicht 30 s auf textContent warten - gezaehlt wird zuerst. */
+  const anspruchNode=page.locator('.qx-bar .v2-bar-caption').first();
+  const anspruch=(await anspruchNode.count()?(await anspruchNode.textContent().catch(()=>''))||'':'').trim();
   const ueberschrift=(await page.locator('main h1').first().innerText().catch(()=>'')).trim();
   const norm=t=>t.toLowerCase().replace(/[.!?–-]+/g,' ').replace(/\s+/g,' ').trim();
   if(anspruch&&ueberschrift&&norm(anspruch)===norm(ueberschrift))befund(view,width,'"'+ueberschrift+'" steht zweimal: als Anspruch in der Kopfzeile und als Ueberschrift');
   if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))befund(view,width,'page overflow');
-  /* DIE FUENF BEREICHE, UND KEIN FREMDES PRODUKT - in beiden Leisten, und
-     bei jeder Breite ist genau eine davon sichtbar. */
-  for(const nav of ['header nav.qx-nav','nav.qx-tabbar']){
-   const bereiche=(await page.locator(nav+' a').allTextContents()).map(t=>t.trim());
-   if(bereiche.join('|')!==SOLL_BEREICHE.join('|'))befund(view,width,'Quant-Navigation ist nicht die erwartete: '+nav+' '+bereiche.join('|'));
+  /* DIE FUENF BEREICHE, UND KEIN FREMDES PRODUKT - in genau einer Leiste,
+     die bei jeder Breite sichtbar ist und dort steht, wo man sie erwartet. */
+  if(await page.locator('nav.qx-nav, nav.qx-tabbar').count()!==1)befund(view,width,'zwei Navigationen');
+  {
+   const bereiche=(await page.locator(leiste+' a').allTextContents()).map(t=>t.trim());
+   if(bereiche.join('|')!==SOLL_BEREICHE.join('|'))befund(view,width,'Quant-Navigation ist nicht die erwartete: '+leiste+' '+bereiche.join('|'));
    for(const fremdes of ['Discover','Research','Markets','Portfolio','Screener'])
-    if(await page.locator(nav).getByRole('link',{name:fremdes,exact:true}).count())befund(view,width,fremdes+' steht in der Quant-Navigation');
+    if(await page.locator(leiste).getByRole('link',{name:fremdes,exact:true}).count())befund(view,width,fremdes+' steht in der Quant-Navigation');
   }
   if(!await page.locator(leiste).isVisible())befund(view,width,'die Navigation dieser Breite ist nicht sichtbar: '+leiste);
-  if(await page.locator(width>=1000?'nav.qx-tabbar':'header nav.qx-nav').isVisible())befund(view,width,'zwei Navigationen sichtbar');
+  {
+   const box=await page.locator(leiste).boundingBox();
+   const oben=await page.evaluate(()=>window.scrollY);
+   if(box&&width>=1000&&box.y+oben>220)befund(view,width,'die Leiste steht am Desktop nicht oben');
+   if(box&&width<1000&&box.y+box.height<page.viewportSize().height-4)befund(view,width,'die Leiste steht am Handy nicht unten');
+  }
 
   if(view==='home'){
    /* HOME BEANTWORTET ZUERST DIE PRODUKTFRAGE: ein Satz, was Quant ist,
       eine Suche, und die Wege dorthin mit ihrem Ziel. */
    if(!(await page.locator('.qx-hero .qx-lead').innerText()).includes('US-Aktien'))befund(view,width,'Home sagt nicht, was Quant prueft');
    await page.locator('button.qx-searchbox').waitFor();
-   const einstiege=await page.locator('a.qx-door').evaluateAll(ns=>ns.map(n=>({titel:(n.querySelector('strong')||{}).textContent||'',ziel:n.getAttribute('href')||''})));
-   for(const [name,ziel] of [['Aktie analysieren','#/aktien'],['Aktien finden','#/screener'],['Strategien entdecken','#/strategien'],['Aktuelle Setups','#/screener?frage=setups']]){
+   const einstiege=await page.locator('a.qx-door').evaluateAll(ns=>ns.map(n=>({titel:(n.querySelector('h2,strong')||{}).textContent||'',ziel:n.getAttribute('href')||''})));
+   for(const [name,ziel] of [['Aktie analysieren','#/aktien'],['Quant Screener','#/screener'],['Strategien','#/strategien'],['Aktuelle Setups','#/screener?frage=setups']]){
     const treffer=einstiege.find(e=>e.titel.trim()===name);
     if(!treffer)befund(view,width,'Weg "'+name+'" fehlt auf Home');
     else if(treffer.ziel!==ziel)befund(view,width,'Weg "'+name+'" zeigt nicht auf '+ziel+': '+treffer.ziel);
    }
-   /* "HEUTE INTERESSANT" IST KEIN ERFUNDENER FEED. Entweder stehen dort die
+   /* "HEUTE BEI QUANT" IST KEIN ERFUNDENER FEED. Entweder stehen dort die
       ausgewerteten Zustaende MIT ihrem Stichtag, oder der ehrliche Satz,
       dass nichts abrufbar ist. Ein dritter Fall waere erfunden. */
-   const heute=await page.locator('section.qx-section').filter({hasText:'Heute interessant'}).innerText();
+   const heute=await page.locator('section.qx-section').filter({hasText:'Heute bei Quant'}).innerText();
    const mitStand=/\d{2}\.\d{2}\.\d{4}/.test(heute)&&/Stand|→/.test(heute);
    if(!mitStand&&!heute.includes('Gerade keine Veränderungen abrufbar'))befund(view,width,'Heute zeigt weder Zustaende mit Stichtag noch den ehrlichen Rueckfall');
    /* Quellen und die Absage an Empfehlung, Prognose, Kursziel. */
@@ -184,13 +199,15 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const ohneWert=(await page.locator('#qx-main a.qx-row .qx-row-why').allInnerTexts()).filter(t=>!/\d/.test(t));
    if(!await page.locator('#qx-main a.qx-row').count())befund(view,width,'der einfache Einstieg zeigt keine Treffer');
    if(ohneWert.length)befund(view,width,'Trefferzeile ohne gemessenen Wert: '+ohneWert[0]);
-   /* Die rechte Spalte traegt ein URTEIL, keine zweite Zahl. */
-   /* Die Marke darf ein "Gesamt:" voranstellen - geprueft wird das Urteil. */
-   const urteile=(await page.locator('#qx-main a.qx-row .qx-row-side .qx-pill').allTextContents()).map(t=>t.trim().replace(/^Gesamt:\s*/,'').toLowerCase());
+   /* Jede Trefferzeile traegt ein URTEIL in Worten, keine zweite Zahl.
+      Konzept-Design: es steht unter dem Namen (.qx-row-verdict), die rechte
+      Spalte zeigt den Wert der gefilterten Eigenschaft - mit ihrem Namen.
+      Die Marke stellt "Eigenschaften:" voran - geprueft wird das Urteil. */
+   const urteile=(await page.locator('#qx-main a.qx-row .qx-row-verdict .qx-pill').allTextContents()).map(t=>t.trim().replace(/^(Gesamt|Eigenschaften):\s*/,'').toLowerCase());
    const erlaubt=['Überwiegend stark','Mehr Stärken als Schwächen','Gemischtes Bild','Mehr Schwächen als Stärken','Überwiegend schwach'].map(t=>t.toLowerCase());
    const fremdesUrteil=urteile.filter(t=>!erlaubt.includes(t));
    if(!urteile.length)befund(view,width,'keine einzige Trefferzeile traegt ein Urteil');
-   if(fremdesUrteil.length)befund(view,width,'rechte Spalte traegt kein Klartext-Urteil: '+JSON.stringify(fremdesUrteil[0]));
+   if(fremdesUrteil.length)befund(view,width,'Trefferzeile traegt kein Klartext-Urteil: '+JSON.stringify(fremdesUrteil[0]));
    /* Die Methodik der Frage steht dabei: was "stark" heisst. */
    await page.getByText(/„Stark“ heißt hier: Wert 70 oder mehr/).waitFor();
    /* Und der Weg in den Profi-Modus traegt die Regel mit. */
@@ -255,8 +272,17 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const ids=await page.locator('details.qx-factor[data-factor]').evaluateAll(ns=>ns.map(n=>n.dataset.factor));
    if(ids.join('|')!==factorEvidence.FACTOR_ORDER.join('|'))befund(view,width,'factor order drifted: '+ids.join('|'));
    await page.getByText(/Eine Gesamtnote gibt es bewusst nicht/).first().waitFor();
-   const gruppen=(await page.locator('.qx-verdict-card .qx-pc-col h3').allTextContents()).map(t=>t.trim());
-   if(gruppen.join('|')!=='Spricht dafür|Spricht dagegen')befund(view,width,'Einordnung ohne dafuer/dagegen: '+gruppen.join('|'));
+   /* Quant Daily Usefulness: Pro/Contra hat einen eigenen Abschnitt (#dafuer). */
+   const gruppen=(await page.locator('#dafuer .qx-pc-col h3').allTextContents()).map(t=>t.trim());
+   if(gruppen.join('|')!=='Spricht dafür|Spricht dagegen')befund(view,width,'Pro/Contra ohne dafuer/dagegen: '+gruppen.join('|'));
+   /* "Was ist jetzt wichtig?" steht neben dem Chart und traegt den Radar-Stand. */
+   const jetzt=await page.locator('.qx-verdict-card').innerText();
+   if(!/Was ist jetzt wichtig\?/.test(jetzt))befund(view,width,'"Was ist jetzt wichtig?" fehlt neben dem Chart');
+   await page.locator('.qx-verdict-card .q-now').filter({hasText:/Setup|Veränderung|Stand/}).waitFor();
+   /* Setup & Trigger in Alltagssprache; Backtests mit gemessenem Grund. */
+   const setupText=await page.locator('#setup').innerText();
+   for(const w of ['Interessant ab','Ungültig unter'])if(!setupText.includes(w))befund(view,width,'Setup-Karte ohne "'+w+'"');
+   if(!/Backtests – noch keine Zahlen/.test(await page.locator('#historie').innerText()))befund(view,width,'Backtest-Stand fehlt im Rueckblick');
    /* Bedeutung ist zu, bis jemand fragt - und oeffnet dann bis zu den Rohdaten. */
    const first=page.locator('details.qx-factor').first();
    if(await first.evaluate(d=>d.open))befund(view,width,'factor evidence not progressively disclosed');
@@ -275,7 +301,11 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.waitForFunction(()=>document.querySelector('section.qc-chart').dataset.range==='1Y');
    /* Die Abschnitte der Analyse und die Vertiefungen. */
    const abschnitte=await page.locator('#qx-main section[id]').evaluateAll(ns=>ns.map(n=>n.id));
-   for(const id of ['einordnung','veraenderung','setup','strategie','historie','technik','zahlen','grenzen'])if(!abschnitte.includes(id))befund(view,width,'Abschnitt fehlt: '+id);
+   /* Reihenfolge nach Owner-Auftrag "Quant Daily Usefulness" (01.10.2026). */
+   const soll=['setup','historie','dafuer','einordnung','veraenderung','strategie','technik','zahlen','grenzen'];
+   for(const id of soll)if(!abschnitte.includes(id))befund(view,width,'Abschnitt fehlt: '+id);
+   const ist=abschnitte.filter(id=>soll.includes(id));
+   if(ist.join('|')!==soll.filter(id=>ist.includes(id)).join('|'))befund(view,width,'Abschnitte in falscher Reihenfolge: '+ist.join('|'));
    const grenzen=await page.locator('#grenzen').innerText();
    for(const q of ['Tiingo','SEC EDGAR'])if(!grenzen.includes(q))befund(view,width,'Daten und Grenzen ohne '+q);
    if(!/\d{2}\.\d{2}\.\d{4}/.test(await page.locator('.qx-quote').innerText()))befund(view,width,'Kurs ohne Datum');
@@ -283,6 +313,21 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.locator('#technik').getByRole('link',{name:'Technische Analyse & Elliott öffnen',exact:true}).waitFor();
    await page.locator('#zahlen').getByRole('link',{name:'Entwicklung über die Jahre',exact:true}).waitFor();
    if((await page.locator('.qx-stock-hero h1').innerText()).trim()!==nvdaName)befund(view,width,'Name weicht vom Verzeichnis ab');
+  }
+  if(view==='radar'){
+   /* QUANT RADAR: Karten mit Ereignis, Datum und - wo vorhanden - Niveaus;
+      die Sortierregel und die geschlossenen Ereignistypen stehen offen da. */
+   const karten=page.locator('a.q-radar-card');
+   if(!await karten.count())befund(view,width,'Radar ohne Karten');
+   const erste=await karten.first().innerText();
+   if(!/Stand \d{2}\.\d{2}\.\d{4}/.test(erste))befund(view,width,'Radar-Karte ohne Datum');
+   /* "keine Gesamtnote" ist die Absage, nicht die Note. */
+   const radarText=await page.locator('#qx-main').innerText();
+   if(/(?<![Kk]eine )Gesamtnote|\b(Kaufen|Verkaufen|Kursziel)\b/i.test(radarText))befund(view,width,'Radar mit Noten- oder Handlungssprache');
+   const regel=await page.locator('section.qx-section').filter({hasText:'Wie der Radar sortiert'}).innerText();
+   if(!/radar-priority-1\.0\.0/.test(regel))befund(view,width,'Sortierregel nicht offen gelegt');
+   await page.locator('button.q-chip[data-filter="setups"]').click();
+   if(await page.locator('button.q-chip[data-filter="setups"]').getAttribute('aria-pressed')!=='true')befund(view,width,'Filter nicht markiert');
   }
   if(view==='aktie-jpm'){
    /* A bank keeps its industry template instead of inventing factors. */
@@ -396,7 +441,8 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
   await page.unroute(serviceRoute);
   await page.getByRole('button',{name:'Erneut versuchen',exact:true}).click();
   await bereit(page,'home');
-  await page.locator('#qx-main h1').filter({hasText:'Aktien verstehen'}).waitFor();
+  /* Konzept-Design: die Startseite fragt "Was möchtest du heute analysieren?". */
+  await page.locator('#qx-main h1').filter({hasText:'Was möchtest du heute analysieren'}).waitFor();
   checks.push({view:'render-failure-recovery',width,pass:true});
  });
 
@@ -445,7 +491,8 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
     und diese Pruefung bliebe still. */
  await versuch('platform-header',width,async()=>{
   await frisch(page,'#/','home');
-  const quantLinks=await page.locator('header nav.qx-nav a, nav.qx-tabbar a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
+  const quantLinks=await page.locator('nav.v2-dock.qx-nav a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
+  if(quantLinks.length!==5)befund('platform-header',width,'die Quant-Leiste hat nicht fuenf Bereiche: '+quantLinks.length);
   if(quantLinks.some(h=>!h||!h.startsWith('#/')))befund('platform-header',width,'die Quant-Navigation fuehrt aus Quant heraus: '+quantLinks.join(', '));
   const kopf=await page.locator('vu-navigation a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
   for(const path of ['/discover/','/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/morning/','/magazin/','/reports/','/academy/','/screener/'])
@@ -497,15 +544,15 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
   checks.push({view:'trade-only-relay-test-fixture',width,pass:true,productionDataClaim:false,relayOpens:nach.opens,relayClosed:nach.closed});await live.close();
  });}
 
- /* 768 PX: DIE UNTERE LEISTE TRAEGT DIE NAVIGATION. Die Kopfnavigation ist
-    unter 1000 px ausgeblendet, damit nicht beide dieselben Ziele zeigen. */
+ /* 768 PX: DIE LEISTE IST DA UND VOLLSTAENDIG - es gibt genau eine, damit
+    nicht zwei dieselben Ziele zeigen (Discovers v2-dock). */
  const tablet=await browser.newPage({viewport:{width:768,height:1024},deviceScaleFactor:1});
  for(const [view,hash] of [['home','#/'],['vergleich','#/vergleich/NVDA,MSFT'],['methodik','#/methodik'],['aktie-nvda','#/aktie/NVDA']]){await versuch(view,768,async()=>{
   await frisch(tablet,hash);
   if(await tablet.evaluate(()=>document.documentElement.scrollWidth>innerWidth))befund(view,768,'tablet overflow');
   const nav=tablet.locator('nav.qx-tabbar');
   if(!await nav.isVisible()||await nav.locator('a').count()!==5)befund(view,768,'tablet navigation incomplete');
-  if(await tablet.locator('header nav.qx-nav').isVisible())befund(view,768,'zwei Navigationen auf 768 px');
+  if(await tablet.locator('nav.qx-nav, nav.qx-tabbar').count()!==1)befund(view,768,'zwei Navigationen auf 768 px');
   await tablet.screenshot({path:out+'/'+view+'-768.png',fullPage:true});checks.push({view,width:768,pass:true});
  });}
  await tablet.close();

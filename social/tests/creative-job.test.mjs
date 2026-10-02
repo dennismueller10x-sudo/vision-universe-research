@@ -241,8 +241,12 @@ test("CJ11 · Die Vervielfachung haengt am Scheitern, nicht am Ausloesen", () =>
      Starts auf einen Fehler IM Lauf zu schliessen, statt auf einen
      Fehler VOR ihm. */
   const NIE_GELAUFEN = ["CONTRACT_MISMATCH", "NEVER_DISPATCHED"];
+  /* Eine dritte Kategorie seit PR #303: der Agent lief EINMAL und meldete
+     den Abbruch selbst (AGENT_REPORTED_*). Das ist kein Wiederholungssturm -
+     er zaehlt weder hierhin noch zu den nie gelaufenen. */
+  const selbstGemeldet = (j) => /^AGENT_REPORTED_/.test(String(j.failureType || ""));
   const gelaufenUndGescheitert = ECHT.filter((j) =>
-    j.state === "CREATIVE_JOB_FAILED" && !NIE_GELAUFEN.includes(j.failureType));
+    j.state === "CREATIVE_JOB_FAILED" && !NIE_GELAUFEN.includes(j.failureType) && !selbstGemeldet(j));
   assert.ok(gelaufenUndGescheitert.length >= 4);
   gelaufenUndGescheitert.forEach((j) =>
     assert.ok(j.observedStarts >= 5,
@@ -253,6 +257,10 @@ test("CJ11 · Die Vervielfachung haengt am Scheitern, nicht am Ausloesen", () =>
   ECHT.filter((j) => NIE_GELAUFEN.includes(j.failureType)).forEach((j) =>
     assert.equal(j.observedStarts, 0,
       "PR " + j.prNumber + " (" + j.failureType + ") lief nie und zeigt trotzdem Starts"));
+  /* Ein selbst gemeldeter Abbruch ist kein Sturm: weniger als fuenf Starts. */
+  ECHT.filter(selbstGemeldet).forEach((j) =>
+    assert.ok((j.observedStarts || 0) < 5,
+      "PR " + j.prNumber + " meldete den Abbruch selbst und zeigt " + j.observedStarts + " Starts"));
 });
 
 test("CJ12 · Der Ergebnis-Commit des Agenten loest keinen neuen Lauf aus", () => {

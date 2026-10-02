@@ -1,0 +1,76 @@
+# =============================================================================
+# VISION UNIVERSE — workers/vu-ask/wrangler.toml
+#
+# Die Fragefunktion ("Frag Vision Universe"). Cloudflare Workers Free:
+# ein Worker, ein Durable Object (SQLite), kein KV, kein R2, kein D1.
+#
+# DIE KOSTENSICHERUNGEN, VON AUSSEN NACH INNEN
+#
+#   1  Anthropic-Konto: nur Prepaid-Guthaben, automatisches Nachladen AUS.
+#      Ist das Guthaben aufgebraucht, lehnt die API ab - es entsteht keine
+#      Rechnung. Das ist die Sicherung, die auch dann greift, wenn in
+#      diesem Code ein Fehler steckt.
+#   2  VU_ASK_TOTAL_USD    Gesamtgrenze, bewusst unter dem Guthaben
+#   3  VU_ASK_MONTHLY_USD  Monatsgrenze
+#   4  VU_ASK_GLOBAL_DAILY Fragen pro Tag, alle Nutzer zusammen
+#   5  VU_ASK_PER_USER_DAILY  Fragen pro Anschluss und Tag
+#   6  VU_ASK_REQUESTS_PER_IP_DAILY  alle Anfragen pro Anschluss, auch
+#      kostenlose (Cache), gegen Dauerfeuer
+#
+# SECRETS (nie in diese Datei) setzt der Workflow
+# .github/workflows/cloudflare-ask-deploy.yml. Von Hand einzurichten ist nur
+# das GitHub-Secret ANTHROPIC_API_KEY; der Admin-Key wird abgeleitet, das
+# Salz erzeugt der Worker selbst. Optional: TURNSTILE_SECRET.
+# =============================================================================
+
+name = "vu-ask"
+main = "src/index.mjs"
+compatibility_date = "2026-09-17"
+workers_dev = true
+compatibility_flags = []
+
+[observability]
+enabled = true
+
+[[durable_objects.bindings]]
+name = "VU_ASK_GATE"
+class_name = "AskGate"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["AskGate"]
+
+[vars]
+# Hauptschalter. "false" = keine einzige Anfrage an Anthropic.
+VU_ASK_ENABLED = "true"
+VU_ASK_MODEL = "claude-haiku-4-5"
+
+# ---- Schnell aenderbar ------------------------------------------------------
+# Fragen pro Nutzer (Anschluss/Browser) und Tag. Beta ohne Kunden: 10.
+# Aendern: Zahl hier anpassen und mergen - der Worker wird automatisch neu
+# ausgerollt. Oder ohne Code: GitHub -> Settings -> Secrets and variables ->
+# Actions -> Variables -> VU_ASK_PER_USER_DAILY anlegen und den Workflow
+# "Cloudflare — Fragefunktion (vu-ask) ausrollen" starten; die Variable
+# hat Vorrang vor diesem Wert.
+VU_ASK_PER_USER_DAILY = "10"
+VU_ASK_GLOBAL_DAILY = "100"
+
+# ---- Geld --------------------------------------------------------------------
+# DIE HARTE GRENZE IST DAS PREPAID-GUTHABEN BEI ANTHROPIC (ohne Auto-Reload):
+# Ist es aufgebraucht, lehnt Anthropic ab, es entsteht keine Rechnung, und
+# die Seite meldet "Kontingent aufgebraucht". Nach dem Aufladen geht es von
+# selbst weiter - ohne Codeaenderung.
+# Die beiden Werte hier sind nur ein Sicherheitsnetz gegen Fehler in diesem
+# Code und greifen im Normalbetrieb nie.
+VU_ASK_MONTHLY_USD = "100"
+VU_ASK_TOTAL_USD = "100000"
+VU_ASK_MAX_OUTPUT_TOKENS = "1200"
+VU_ASK_REQUESTS_PER_IP_DAILY = "60"
+
+# ---- Zugangsschranke (Beta) --------------------------------------------------
+# SHA-256 des Zugangspassworts. Nur der Hash steht hier - das Passwort hat
+# rund 80 Bit Zufall und laesst sich daraus nicht zurueckrechnen. Leer =
+# ohne Passwort. Eigenes Passwort statt dieses: GitHub-Secret
+# VU_ASK_ACCESS_PASSWORD anlegen und den Workflow starten.
+VU_ASK_ACCESS_HASH = "8bbfbe561f238f94920bb82202a221f4ec7ae0b867d1d1a0500de455aa64a122"
+VU_ASK_ALLOWED_ORIGINS = "https://research.visionuniverse.de,https://vision-universe-research.vercel.app"

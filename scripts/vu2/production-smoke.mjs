@@ -31,6 +31,18 @@ const require=createRequire(import.meta.url);
 const {chromium}=require('playwright');
 const argv=process.argv.slice(2);
 const root=resolve(argv.find((a,i)=>!a.startsWith('--')&&!['--report','--only'].includes(argv[i-1])));
+// Test-only browser state of a successful login. Since gate version 2 the public
+// verifier no longer opens pages, so the state is derived from the build password
+// (RESEARCH_ACCESS_PASSWORD or the file RESEARCH_ACCESS_LOGIN_FILE, never logged)
+// and checked against the release's own config.
+const ACCESS_GATE=argv.includes('--access-gate')?await (async()=>{
+ const config=JSON.parse(await readFile(resolve(root,'__research/config.json'),'utf8'));
+ const password=process.env.RESEARCH_ACCESS_PASSWORD||(process.env.RESEARCH_ACCESS_LOGIN_FILE?(await readFile(process.env.RESEARCH_ACCESS_LOGIN_FILE,'utf8')).trim():'');
+ const {accessStateFor,verifierForKey}=await import(new URL('../access-gate/build.mjs',import.meta.url));
+ const state=accessStateFor(password);
+ if(verifierForKey(state.key)!==config.verifier)throw new Error('--access-gate: Passwort passt nicht zum Release (kein Wert ausgegeben).');
+ return {storageKey:config.storageKey,state};
+})():null;
 /* Die Launch-Gates 7 bis 10 sind nur im Browser messbar. Damit die
    Launch-Messung sie nicht erfinden muss, schreibt der Smoke sein
    Ergebnis auf Wunsch als Bericht - mit dem Commit, gegen den er lief.
@@ -61,7 +73,8 @@ const FORBIDDEN=JSON.parse(await readFile(new URL('../../quant/methodology/produ
    die Themen aus quant/app/page-method.js (TOPICS) und die Strategien aus
    quant/methodology/strategy-profiles-v1.json - und verlangt jede davon in
    dieser Liste. Was der Smoke nicht anschaut, verfaellt (M26, M28, M29). */
-const VIEWS=['/quant/#/',
+const VIEWS=['/quant/#/','/quant/#/radar','/quant/#/radar?filter=setups','/quant/#/radar?filter=historisch',
+ '/quant/#/backtest','/quant/#/backtest/NEW_52W_HIGH','/quant/#/backtest/SETUP_CONFIRMED',
  '/quant/#/screener',
  '/quant/#/screener?frage=qualitaet','/quant/#/screener?frage=momentum','/quant/#/screener?frage=wachstum-qualitaet',
  '/quant/#/screener?frage=guenstig','/quant/#/screener?frage=ruhig','/quant/#/screener?frage=setups','/quant/#/screener?frage=hoch',
@@ -141,9 +154,20 @@ async function allesAufklappen(page){
  }
 }
 
+/* Der Live-Kursdienst (wss://live.visionuniverse.de) laesst nur die
+   veroeffentlichten Domains zu; der Rauchtest laeuft auf 127.0.0.1 und
+   wird waehrend der US-Handelszeit bewusst mit 403 abgewiesen. Das ist
+   dieselbe Lage wie eine gescheiterte Anfrage an einen fremden Host und
+   kein Fehler des Releases. Ein WebSocket zum Release selbst zaehlt
+   weiter als Fehler. */
+const fremdeLiveAbsage=t=>{const m=/^WebSocket connection to '(wss?:\/\/[^']+)' failed/.exec(t);return Boolean(m)&&!m[1].replace(/^ws/,'http').startsWith(origin);};
 let failures=0;
 for(const width of [1440,390]){
  const page=await browser.newPage({viewport:{width,height:900}});
+ if(ACCESS_GATE)await page.addInitScript(config=>{
+  if(!/^https?:$/.test(location.protocol))return;
+  localStorage.setItem(config.storageKey,JSON.stringify(config.state));
+ },ACCESS_GATE);
  const errors=[];let fremdFehlgeschlagen=false;
  page.on('pageerror',e=>errors.push('pageerror: '+e.message));
  /* Nur Anfragen an einen fremden Host (etwa die Schriften von Google) duerfen
@@ -151,7 +175,7 @@ for(const width of [1440,390]){
     das Release selbst ist ein Fehler. 404 bleibt ausgenommen: der
     Produktdienst probiert fuer duenne Titel bewusst mehrere Quellen. */
  page.on('requestfailed',r=>{if(!r.url().startsWith(origin))fremdFehlgeschlagen=true;else errors.push('requestfailed: '+r.url().replace(origin,''));});
- page.on('console',m=>{const t=m.text();if(m.type()!=='error'||t.includes('favicon')||t.includes('404'))return;if(fremdFehlgeschlagen&&/^Failed to load resource: net::ERR_/.test(t))return;errors.push('console: '+t.split('\n')[0]);});
+ page.on('console',m=>{const t=m.text();if(m.type()!=='error'||t.includes('favicon')||t.includes('404'))return;if(fremdFehlgeschlagen&&/^Failed to load resource: net::ERR_/.test(t))return;if(fremdeLiveAbsage(t))return;errors.push('console: '+t.split('\n')[0]);});
  for(const view of VIEWS.filter(v=>!ONLY||v.includes(ONLY))){
   await page.goto('about:blank');
   await page.goto(origin+view);
@@ -215,7 +239,15 @@ for(const width of [1440,390]){
       durch. Dass eine Umbenennung diese Datei mitzieht, ist der Zweck,
       nicht der Preis. */
    const sollBereiche=['Home','Quant Screener','Strategien','Aktien','Methodik'];
-   for(const leiste of ['header nav.qx-nav','nav.qx-tabbar']){
+   /* DISCOVER-ANGLEICHUNG (30.09.2026): Kopf- und Tab-Leiste sind EINE
+      Leiste wie Discovers v2-dock - am Desktop oben mittig im Rahmen, am
+      Handy unten am Bildschirmrand. Geprueft wird dieselbe Absicht wie
+      vorher: genau die fuenf Bereiche, der richtige markiert, kein fremdes
+      Produkt, und die Leiste steht dort, wo man sie bei dieser Breite
+      erwartet. */
+   const leiste='nav.v2-dock.qx-nav.qx-tabbar';
+   if(await page.locator(leiste).count()!==1)bad.push('NAV_ANZAHL:'+await page.locator(leiste).count());
+   {
     const bereiche=(await page.locator(leiste+' a').allTextContents()).map(t=>t.trim());
     if(bereiche.join('|')!==sollBereiche.join('|'))bad.push('NAV:'+leiste+':'+bereiche.join('|'));
     /* Und der Name eines anderen Produkts darf hier ueberhaupt nicht stehen. */
@@ -225,10 +257,12 @@ for(const width of [1440,390]){
     const soll=SECTION[route];
     if(soll&&markiert.map(t=>t.trim()).join('|')!==soll)bad.push('NAV_MARKE:'+leiste+':'+markiert.join('|'));
    }
-   const kopfSichtbar=await page.locator('header nav.qx-nav').isVisible();
-   const leisteSichtbar=await page.locator('nav.qx-tabbar').isVisible();
-   if(width>=1000&&(!kopfSichtbar||leisteSichtbar))bad.push('NAV_SICHTBAR:kopf='+kopfSichtbar+',leiste='+leisteSichtbar);
-   if(width<1000&&(kopfSichtbar||!leisteSichtbar))bad.push('NAV_SICHTBAR:kopf='+kopfSichtbar+',leiste='+leisteSichtbar);
+   const box=await page.locator(leiste).boundingBox();
+   const hoehe=page.viewportSize().height;
+   const sichtbar=await page.locator(leiste).isVisible();
+   if(!sichtbar||!box)bad.push('NAV_SICHTBAR:'+sichtbar);
+   else if(width>=1000&&box.y>220)bad.push('NAV_ORT:desktop_nicht_oben:y='+Math.round(box.y));
+   else if(width<1000&&box.y+box.height<hoehe-4)bad.push('NAV_ORT:handy_nicht_unten:y='+Math.round(box.y));
   }
 
   /* DER SCREENER ZEIGT, WAS ER FINDET (M29).
@@ -282,7 +316,12 @@ for(const width of [1440,390]){
    if(!zeilen)bad.push('KEINE_TREFFER');
   }
   if(route==='aktien'){
-   const zeilen=await page.locator('main#qx-main a.qx-row .qx-row-title').evaluateAll(ns=>ns.map(n=>({t:(n.querySelector('.qx-ticker')||{}).textContent||'',n:(n.querySelector('span')||{}).textContent||''})));
+   /* Discover-Angleichung: #/aktien zeigt Discovers Aktienkarten (dx-poster)
+      in Schienen statt Zeilen. Gezaehlt wird dasselbe: jede Aktie steht mit
+      ihrem Namen da, nicht nur mit dem Kuerzel. */
+   /* Konzept-Design: Karten (a.qx-poster) tragen den Namen in .q-card-name,
+      das Kuerzel im data-symbol. */
+   const zeilen=await page.locator('main#qx-main a.qx-row .qx-row-title, main#qx-main a.qx-poster').evaluateAll(ns=>ns.map(n=>({t:(n.querySelector('.qx-ticker')||{}).textContent||n.dataset.symbol||'',n:(n.querySelector('.qx-row-name,.q-card-name')||n.querySelector('span')||{}).textContent||''})));
    if(!zeilen.length)bad.push('KEINE_ZEILEN');
    const mitName=zeilen.filter(x=>x.n&&x.n!==x.t).length;
    if(zeilen.length&&mitName/zeilen.length<0.95)bad.push('NAMEN='+mitName+'/'+zeilen.length);
@@ -356,7 +395,8 @@ for(const width of [1440,390]){
      if(/\b(kaufen|verkaufen|Kursziel|wird steigen|wird fallen)\b/i.test(ganz))bad.push('HANDLUNGSSPRACHE');
      /* Die Gruppen, in ihrer Reihenfolge. "Noch nicht bewertbar" steht als
         dritte Gruppe nur, wenn etwas offen ist. */
-     const gruppen=(await auskunft.locator('.qx-pc-col h3').allTextContents()).map(t=>t.trim());
+     /* Quant Daily Usefulness: Pro/Contra steht in einem eigenen Abschnitt. */
+     const gruppen=(await page.locator('#dafuer .qx-pc-col h3').allTextContents()).map(t=>t.trim());
      if(gruppen.join('|')!=='Spricht dafür|Spricht dagegen')bad.push('GRUPPEN:'+gruppen.join('|'));
      const oben=await auskunft.evaluate(n=>n.getBoundingClientRect().top+scrollY);
      if(width===390&&oben>1800)bad.push('AUSKUNFT_ZU_TIEF='+Math.round(oben));
@@ -499,7 +539,7 @@ for(const width of [1440,390]){
     Ansicht mit dem richtigen markierten Bereich. */
  {
   const bad=[];
-  const leiste=width>=1000?'header nav.qx-nav':'nav.qx-tabbar';
+  const leiste='nav.v2-dock.qx-nav';
   const ansicht=async(v)=>page.waitForFunction(x=>{const m=document.querySelector('main#qx-main');return m&&m.dataset.view===x&&m.getAttribute('aria-busy')==='false'&&!m.querySelector('.qx-loading');},v,{timeout:45000}).then(()=>true,()=>false);
   const marke=async()=>(await page.locator(leiste+' a[aria-current="page"]').allTextContents()).map(t=>t.trim()).join('|');
   await page.goto('about:blank');await page.goto(origin+'/quant/#/');await bereit(page).catch(()=>bad.push('NICHT_BEREIT'));

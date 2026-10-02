@@ -1,0 +1,116 @@
+{
+ "schema": "supertrader-validation-data-path-1.0.0",
+ "measuredAt": "2026-10-01",
+ "source": "Probeabruf mit bestehendem Tiingo-Zugang (GitHub-Lauf 36838707930, 65 Anfragen) und Auswertung der Tickerliste (Läufe 36839014398 und 36839204792, je 1 Anfrage). Nur Anzahlen, Daten, Verhältnisse; keine Kursniveaus; keine Kurse gespeichert.",
+ "rightsBasis": "quant/config/provider-profiles.json tiingo.licensing: OWNER_DECLARED_LICENSED (2026-09-13); Vertragstext nicht im Repository.",
+ "chosenUniverse": "A: alle an Tag D handelbaren US-Stammaktien (Listing-Beginn ≤ D ≤ Listing-Ende), NYSE/NASDAQ/AMEX",
+ "delistedSample": {
+  "probed": 21,
+  "withPrices": 21,
+  "lastBarWithin7DaysOfListingEnd": 20,
+  "withDividendAndSplitFields": 21
+ },
+ "reusedTickers": {
+  "probed": 7,
+  "oldHistoryReturned": 0,
+  "note": "Abruf per Kürzel liefert nur das neueste Listing (6 Zufallsfälle + MON/Monsanto)."
+ },
+ "anchors": [
+  {
+   "ticker": "TWX",
+   "event": "Übernahme 06/2018",
+   "lastBarVsListingEndDays": 0
+  },
+  {
+   "ticker": "CELG",
+   "event": "Übernahme 11/2019",
+   "lastBarVsListingEndDays": 0
+  },
+  {
+   "ticker": "MON",
+   "event": "Übernahme 06/2018",
+   "result": "alte Historie nicht abrufbar (Kürzel neu vergeben)"
+  },
+  {
+   "ticker": "LEH",
+   "event": "Insolvenz 09/2008",
+   "result": "nicht in der Tickerliste"
+  }
+ ],
+ "delistedListingsByEndYear": {
+  "2008andEarlier": 8,
+  "2009": 41,
+  "2010": 45,
+  "2011": 75,
+  "2012": 56,
+  "2013": 142,
+  "2014": 151,
+  "2015": 298,
+  "2016": 427,
+  "2017": 611,
+  "2018": 609,
+  "2019": 550,
+  "2020": 538,
+  "2021": 884,
+  "2022": 1001,
+  "2023": 1167,
+  "2024": 601,
+  "2025": 434
+ },
+ "aliveAtYearStart": {
+  "2009": 3994,
+  "2010": 4066,
+  "2011": 4256,
+  "2012": 4399,
+  "2013": 4606,
+  "2014": 4802,
+  "2015": 5100,
+  "2016": 5199,
+  "2017": 5413,
+  "2018": 5401,
+  "2019": 5351,
+  "2020": 5412,
+  "2021": 5760,
+  "2022": 7098,
+  "2023": 6881,
+  "2024": 6346,
+  "2025": 6409
+ },
+ "proposedWindow": {
+  "from": "2016-01-01",
+  "to": "2026-09-30",
+  "reason": "Vor 2015/16 ist die Delisting-Abdeckung der Quelle zu dünn."
+ },
+ "firstStrategy": "Donchian/Turtle System 1, Tagesbalken (live v1.1.0)",
+ "acceptanceTests": [
+  "AT1 Abdeckung ≥ 95 % bis Listing-Ende",
+  "AT1b Delisting-Quote je Jahr plausibel, ohne Bruch",
+  "AT2 Universum nur Listings mit Beginn ≤ D ≤ Ende, Test mit Zukunftsbalken",
+  "AT3 nicht abrufbare Alt-Listings < 5 % der Universum-Tage",
+  "AT4 Gesamtrendite aus Rohkurs+Dividende+Split, ≥ 98 % der Ereignisse abgestimmt",
+  "AT5 Preis- und Umsatzfilter auf Rohkursen",
+  "AT6 Delisting-Rendite: letzter Kurs und −30 %-Sensitivität",
+  "AT7 Owner-Freigabe der Rechte",
+  "AT8 Reproduzierbarkeit (Listen-Hash, Regelversion, Kosten)"
+ ],
+ "delistingRatePlainTickers": {
+  "2009": 0.01,
+  "2010": 0.011,
+  "2011": 0.017,
+  "2012": 0.013,
+  "2013": 0.03,
+  "2014": 0.031,
+  "2015": 0.058,
+  "2016": 0.068,
+  "2017": 0.089,
+  "2018": 0.093,
+  "2019": 0.067,
+  "2020": 0.075,
+  "2021": 0.103,
+  "2022": 0.11,
+  "2023": 0.133,
+  "2024": 0.075,
+  "2025": 0.055
+ },
+ "coverageVerdict": "Delisting-Quote 2009–2014 nur 1,0–3,1 % p. a. (Bruch zu 5,8 % 2015 und 6,8 % 2016; danach 5,5–13,3 %). Vor 2015/16 fehlt ein Großteil der Delistings in der Quelle; Fenster ab 2016-01-01."
+}

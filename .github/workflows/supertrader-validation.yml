@@ -1,0 +1,131 @@
+name: Supertrader interner Datentest (Validierung)
+
+# Interner Datentest (scripts/supertrader/validation/, PREREGISTRATION.json).
+# Nur manuell oder ueber eine Marke in der Commit-Nachricht auf claude/**:
+#   [supertrader-validation:subset]   Teilmenge abrufen (~150 Anfragen)
+#   [supertrader-validation:full]     alle offenen Listings abrufen (fortsetzbar)
+#   [supertrader-validation:analyze]  Qualitaet, Universum, Backtest (keine Tiingo-Kursanfragen)
+#   [supertrader-validation:analyze-smoke]  Technischer Probelauf der Auswertung (400 Reihen)
+#   [supertrader-validation:methods]  Momentum, Weinstein, Darvas, Minervini (PREREGISTRATION-METHODS.json)
+#   [supertrader-validation:methods-smoke]  Technischer Probelauf dazu (400 Reihen)
+#   [supertrader-validation:diagnose]  Ursachenanalyse der getesteten Versionen (keine neue Hypothese)
+#   [supertrader-validation:diagnose-smoke]  Technischer Probelauf dazu (400 Reihen)
+#   [supertrader-validation:r7]  Vorab registrierte Runde-7-Versionen (PREREGISTRATION-R7.json)
+#   [supertrader-validation:r7-smoke]  Technischer Probelauf dazu (400 Reihen)
+# Rohreihen nur im privaten Eimer. Das Repository ist oeffentlich: Logs zeigen
+# nur Fortschrittszahlen; Ergebnisse werden verschluesselt (nur der Eigentuemer
+# kann sie lesen) auf den Zweig claude/supertrader-validation-results gelegt.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [subset, full, analyze, methods, diagnose, r7]
+        default: subset
+  push:
+    branches:
+      - 'claude/**'
+permissions:
+  contents: write
+concurrency:
+  group: supertrader-validation-${{ (contains(github.event.head_commit.message, '-smoke]')) && 'smoke' || 'main' }}
+  cancel-in-progress: false
+jobs:
+  run:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[supertrader-validation:')
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Modus bestimmen
+        id: mode
+        env:
+          MSG: ${{ github.event.head_commit.message }}
+          INPUT: ${{ inputs.mode }}
+        run: |
+          m="$INPUT"
+          case "$MSG" in *"[supertrader-validation:r7-smoke]"*) m=r7-smoke;; *"[supertrader-validation:r7]"*) m=r7;; *"[supertrader-validation:diagnose-smoke]"*) m=diagnose-smoke;; *"[supertrader-validation:diagnose]"*) m=diagnose;; *"[supertrader-validation:methods-smoke]"*) m=methods-smoke;; *"[supertrader-validation:methods]"*) m=methods;; *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
+          echo "mode=${m:-subset}" >> "$GITHUB_OUTPUT"
+      - name: Oeffentliche Anbieterangaben zu Abrufgrenzen (Beleg, best effort)
+        if: steps.mode.outputs.mode == 'subset'
+        run: |
+          for u in https://www.tiingo.com/about/pricing https://www.tiingo.com/documentation/general/overview https://www.tiingo.com/about/terms; do
+            echo "== $u"
+            curl -sL --max-time 20 "$u" | sed 's/<[^>]*>/\n/g' | grep -iE "unique symbol|symbols per month|requests per (hour|day)|per hour|per day|internal|commercial|redistribut" | sed 's/^[[:space:]]*//' | sort -u | head -40 || true
+          done
+      - name: Abruf (nur Fortschrittszahlen im Log)
+        if: steps.mode.outputs.mode == 'subset' || steps.mode.outputs.mode == 'full'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/supertrader/validation/fetch.mjs --mode ${{ steps.mode.outputs.mode }} --out "$RUNNER_TEMP/val"
+      - name: Auswertung (verschluesselt)
+        if: steps.mode.outputs.mode == 'analyze' || steps.mode.outputs.mode == 'analyze-smoke'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: node scripts/supertrader/validation/analyze.mjs --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'analyze-smoke' && '--limit 400' || '' }}
+      - name: Auswertung weiterer Methoden (verschluesselt)
+        if: steps.mode.outputs.mode == 'methods' || steps.mode.outputs.mode == 'methods-smoke'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+        run: node scripts/supertrader/validation/analyze-methods.mjs --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'methods-smoke' && '--limit 400' || '' }}
+      - name: Ursachenanalyse (verschluesselt)
+        if: steps.mode.outputs.mode == 'diagnose' || steps.mode.outputs.mode == 'diagnose-smoke'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+        run: node scripts/supertrader/validation/diagnose-methods.mjs --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'diagnose-smoke' && '--limit 400' || '' }}
+      - name: Runde-7-Versionen (verschluesselt)
+        if: steps.mode.outputs.mode == 'r7' || steps.mode.outputs.mode == 'r7-smoke'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+        run: node scripts/supertrader/validation/analyze-methods.mjs --set r7 --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r7-smoke' && '--limit 400' || '' }}
+      - name: Verschluesseltes Ergebnis ablegen
+        if: always()
+        env:
+          TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          MODE: ${{ steps.mode.outputs.mode }}
+        run: |
+          set -e
+          ls "$RUNNER_TEMP/val"/*.sealed.json >/dev/null 2>&1 || { echo "kein Ergebnis"; exit 0; }
+          for f in "$RUNNER_TEMP/val"/*.sealed.json; do grep -q '"schema":"supertrader-sealed-1.0.0"' "$f" || { echo "nicht verschluesselt - Abbruch"; exit 1; }; done
+          mkdir -p "$RUNNER_TEMP/res" && cd "$RUNNER_TEMP/res"
+          git init -q && git remote add origin "https://x-access-token:${TOKEN}@github.com/${REPO}.git"
+          git config user.name "github-actions[bot]" && git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git fetch -q --depth 1 origin claude/supertrader-validation-results; then git checkout -q -b r FETCH_HEAD; else git checkout -q --orphan r; fi
+          stamp=$(date -u +%Y%m%dT%H%M%SZ)
+          for f in "$RUNNER_TEMP/val"/*.sealed.json; do cp "$f" "${stamp}-$(basename "$f")"; done
+          git add -A && git commit -q -m "Validierung ${MODE} ${stamp} (verschluesselt, run ${GITHUB_RUN_ID})"
+          git push -q origin r:claude/supertrader-validation-results
+          echo "abgelegt: ${stamp}"

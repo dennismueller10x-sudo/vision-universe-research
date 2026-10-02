@@ -1,4 +1,12 @@
-# Supertrader — Product Readiness (Stand 29.09.2026, Daten bis 28.09.2026)
+# Supertrader — Product Readiness (Stand 01.10.2026, Daten bis 28.09.2026)
+
+> Runde 4:
+> - Donchian/Turtle ist live.
+> - CAN SLIM (5 von 7 Kriterien) und Piotroski (8 von 9 Signalen) laufen als gekennzeichnete Teilprüfungen.
+> - Ein explorativer Wochen-Pilot liegt vor (Donchian 20/10, nur heute gelistete Titel; Ergebnis: −2,5 % p. a. gegenüber +8,1 % beim Vergleichsuniversum, kein Nachweis).
+> - Die mobile Oberfläche ist neu gestaltet.
+>
+> Die vollständige Matrix steht in `docs/SUPERTRADER_PRODUCT_MATRIX.md`.
 
 Kurzfassung: Supertrader ist als **transparente, regelbasierte Live-Beobachtung** nutzbar.
 Kein Modell ist backtest-validiert; Supertrader zeigt deshalb nirgends Rendite, Drawdown,
@@ -8,12 +16,20 @@ Trefferquote oder Trust Score.
 
 | Welt | Heute | Was der Nutzer bekommt | Einschränkung |
 |---|---|---|---|
-| Momentum Breakout (Daily, research-basiert auf Kullamägi) | 2 × Einstieg bereit | Trigger, Ungültig-Level, Risiko, Chart mit Basis und 10/20-Tage-Linie | Daily-Variante statt Original-Opening-Range; enge Basis = VU-Formalisierung |
-| Weinstein Stages (Wochenbasis) | 1 × Einstieg bereit, 1 × Setup | Stage, 30-Wochen-Linie, Widerstand, RS | Volumenregel nur im Tagesfenster prüfbar; Klassifikator = VU |
-| Darvas Boxes (VU, A/B) | 0 A-Setups, 157 B-Setups | nur A prominent; B im eigenen Reiter | Boxdefinition und A/B-Stufe = VU; Regime „breite Schwäche“ schließt A aus |
-| Minervini VCP (Hybrid) | 0 Setups, 35 Beobachten | Trend Template, Kontraktionen, Pivot | automatische VCP ≠ Minervinis Charturteil |
+| Momentum Breakout (Daily, research-basiert auf Kullamägi) | 2 × Einstieg vorbereitet (nahe Trigger) | Trigger, Ungültig-Level, Risiko, Chart mit Basis und 10/20-Tage-Linie | Daily-Variante statt Original-Opening-Range; enge Basis = VU-Formalisierung |
+| Weinstein Stages (Wochenbasis) | 2 × Einstieg vorbereitet (1 nahe Trigger) | Stage, 30-Wochen-Linie, Widerstand, RS | Volumenregel nur im Tagesfenster prüfbar; Klassifikator = VU |
+| Darvas Boxes (VU, A/B) | 0 A-Kandidaten, 0 A-Einstiege, 157 B-Setups (15 nur wegen Regime-Sperre) — alle 157 sind Neubewertungen nach Regelwechsel auf dem Kursstand 28.09., keine neuen Marktereignisse | nur A prominent; B im eigenen Reiter | Boxdefinition und A/B-Stufe = VU; Regime-Sperre = VU, keine Darvas-Originalregel |
+| Minervini VCP (Hybrid) | 0 vorbereitete Setups | Trend Template, Kontraktionen, Pivot | automatische VCP ≠ Minervinis Charturteil; technisch ausführbar, Ausstieg aber nur VU-Hilfsregel und nicht quellenbelegt |
 | Signalprotokoll | live seit 28.09.2026 | jeder Zustandswechsel ab SETUP, append-only | noch keine abgeschlossenen Signale — Historie wächst täglich |
 | Strategy Lens, Charts, Quellen | — | Titelansicht je Modell, kanonische Kursdaten, 41 Quellen | Quellen per Suchtreffer bestätigt, nicht inhaltlich abgerufen |
+
+Seit Runde 3 hat jede Live-Variante eine maschinenlesbare Regelkarte mit drei getrennten
+Aussagen: technisch ausführbar (alle vier Live-Varianten; Greenblatt nicht), Quellenlage
+(Originaltreue für keine Variante geprüft; Minervini-Ausstieg nicht quellenbelegt) und
+historische Validierung (keine Variante). Einstiege werden per
+Schlusskurs bestätigt und zur nächsten Eröffnung als Modelleinstieg erfasst — nie zum idealen
+Triggerkurs. Details: `docs/SUPERTRADER_ENTRY_EXIT_RULES.md`. Bestätigte Einstiege und
+geschlossene Modelltrades: bisher **keine**.
 
 ## Research-only
 
@@ -36,6 +52,12 @@ Warum diese: Sie schließt auf einen Schlag die harten Gates *Historie*, *Volume
 Varianten. Keine andere einzelne Entscheidung bewegt so viele Varianten Richtung
 `BACKTEST_READY`. Greenblatt bliebe danach noch an den drei fehlenden Bilanzfeldern und der
 PIT-Historie hängen; die Opening-Range-Varianten an historischen Intraday-Balken.
+
+Konkreter erster Schritt ist eine **Machbarkeitsprüfung**, kein Beweis
+(`docs/SUPERTRADER_BACKTEST_DATA_FEASIBILITY.md`): ein nicht veröffentlichender Probeabruf von ~50
+wirklich delisteten Titeln zeigt nur, ob Kursreihen delisteter Titel verfügbar sind. Getrennt
+nachzuweisen bleiben damalige Universumszugehörigkeit, Kapitalmaßnahmen inkl. Delisting-Renditen,
+zeitliche Verfügbarkeit (Point-in-Time) und Nutzungsrechte.
 
 Nicht umgesetzt, weil ausdrücklich ausgeschlossen: keine neue Datenquelle, keine
 Infrastrukturänderung, kein Zugriff auf R2 aus Supertrader.

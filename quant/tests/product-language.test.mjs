@@ -203,7 +203,9 @@ test("the four layers are actually used: a section leads with meaning and folds 
      Komponenten, und die Methodik liegt zugeklappt dahinter. */
   const card = slice(stockPage, "function factorCard(", "function conditions(");
   assert.match(card, /el\("details", \{ class: "qx-factor/);
-  assert.ok(card.indexOf("X.pill(f.label") < card.indexOf("f.why"), "the meaning must lead");
+  /* Discover-Angleichung: die Einordnung ist Discovers Stufen-Chip
+     (X.pill -> dx-zahlen-grade) mit dem Stufenwort, daneben der Wert. */
+  assert.ok(card.indexOf("X.pill(") > 0 && card.indexOf("X.pill(") < card.indexOf("f.why"), "the meaning must lead");
   assert.ok(card.indexOf("f.why") < card.indexOf("f.components.forEach"), "the explanation must precede the evidence");
   assert.match(card, /X\.more\("Rohdaten und Berechnung"/, "the methodology is not folded");
   assert.match(card, /X\.routes\.method\("faktoren"\)/, "the methodology layer does not lead to the methodology");
@@ -211,7 +213,7 @@ test("the four layers are actually used: a section leads with meaning and folds 
   assert.match(stockPage, /X\.more\("Wie die Veränderung gemessen wird"/);
   assert.match(stockPage, /X\.more\("Alle geprüften Bedingungen"/);
   /* X.more ist ein zugeklapptes <details>. */
-  assert.match(app["ui.js"], /function more\([\s\S]*?el\("details", \{ class: "qx-more"/);
+  assert.match(app["ui.js"], /function more\([\s\S]*?el\("details", \{ class: "[^"]*\bqx-more"/);
 });
 
 test("the stock experience answers its questions in the order a person asks them", () => {
@@ -222,8 +224,13 @@ test("the stock experience answers its questions in the order a person asks them
      danach Faktoren, Veraenderung, Setup, Anlagestil, fruehere Faelle
      (inkl. Marktmuster) und zuletzt Daten & Grenzen. */
   const render = slice(stockPage, "async function render(", "global.QXStock");
-  const order = ["verdictCard(vm)", '"einordnung"))', '"veraenderung"))', '"setup"))',
-    '"strategie"))', '"historie"))', '"grenzen"))'];
+  /* Owner-Auftrag "Quant Daily Usefulness" (01.10.2026): 1 Kurs/Chart,
+     2 Was ist jetzt wichtig (verdictCard), 3 Setup & Trigger, 4 Historisch
+     getestet, 5 Pro/Contra, 6 Faktoren (mit Veraenderung), 7 Anlagestil,
+     8 Technik, 9 Daten & Grenzen. Faktorwerte sind nicht mehr die
+     Hauptgeschichte. Geprueft wird weiterhin die Reihenfolge der Fragen. */
+  const order = ["verdictCard(vm", '"setup"))', '"historie"))', '"dafuer"))', '"einordnung"))',
+    '"veraenderung"))', '"strategie"))', '"grenzen"))'];
   let cursor = -1;
   for (const marker of order) {
     const at = render.indexOf(marker, cursor + 1);
@@ -249,7 +256,7 @@ test("both sides are always shown: no upside without its downside", () => {
      Urteil, wenn nicht dabeisteht, was ausdruecklich NICHT bewertet wurde. */
   const balance = slice(stockPage, "function verdictCard(", "function setupSection(");
   assert.match(balance, /col\("Spricht dafür", "good", pc\.pro,[^\n]*\n\s*col\("Spricht dagegen", "bad", pc\.con,/);
-  assert.match(balance, /"Noch nicht bewertbar"/);
+  assert.match(balance, /"Noch nicht bewertbar/);
   /* Am Verhalten: jede der sieben Eigenschaften landet in genau einer
      Gruppe - dafuer, dagegen, Mittelfeld oder nicht bewertbar. */
   const f = (id, score) => VM.factorView(score === null ? { id, state: "UNAVAILABLE", reason: "BLOCKED_EXTERNAL", components: [] } : { id, state: "AVAILABLE", score, components: [] });
@@ -299,7 +306,7 @@ test("the state list is read from the published assignment, never re-derived in 
      list. Die Setup-Frage liefert deshalb keine Abfrage fuer den Editor. */
   assert.equal(/W\.build|VUScreenerWorkspace\.(build|decode)|query:/.test(surfaces.setupHits), false,
     "the setup result hands a rule to the editor");
-  assert.match(slice(pages, "async function screener(", "async function factorHits("), /if \(q\.setups\) result = await setupHits\(ctx\)/);
+  assert.match(slice(pages, "async function screener(", "async function factorHits("), /if \((q && )?q\.setups\) result = await setupHits\(ctx\)/);
 });
 
 test("a state whose tier is closed shows its reason, and never a count", async () => {
@@ -356,10 +363,19 @@ test("the entry page answers the two headline questions itself", async () => {
      quant/app/page-stock.js); beide Antworten stehen dort. */
   const render = slice(stockPage, "async function render(", "global.QXStock");
   /* Staerke: die Quant-Einordnung (verdictCard) auf der Einstiegsseite. */
-  assert.match(render, /layout\.append\(verdictCard\(vm\)\)/, "the entry page does not answer the strength question");
+  assert.match(render, /layout\.append\(verdictCard\(vm[,)]/, "the entry page does not answer the strength question");
+  /* Discover-Angleichung: Kurs, Chart, Einordnung wie auf Discovers
+     Aktienseite - die Einordnung folgt UNMITTELBAR auf den einen Chart,
+     nichts steht dazwischen. Ihre Lage (erste Bildschirmhoehe bei 1440 px,
+     hoechstens zwei bei 390 px) misst der Production-Smoke (M40). */
+  const chartAt = render.indexOf("layout.append(chart.node);");
+  assert.ok(chartAt > 0, "der Chart wird nicht in die Einordnungs-Zeile gesetzt");
+  assert.match(render.slice(chartAt), /^layout\.append\(chart\.node\);\s*layout\.append\(verdictCard\(vm/, "zwischen Chart und Einordnung steht etwas anderes");
   /* Chance gegen Risiko: die Marktmuster (Gewinn- UND Verlustseite) im
      Replay derselben Seite. */
-  assert.match(render, /replaySection\(vm, words\)/, "the entry page carries no opportunity-against-risk answer");
+  /* Quant Daily Usefulness: replaySection bekommt zusaetzlich den
+     Evidenz-Status (Stand der Backtests) - die Antwort bleibt dieselbe. */
+  assert.match(render, /replaySection\(vm, words[,)]/, "the entry page carries no opportunity-against-risk answer");
   /* M40: die Antworten stehen in der oberen Haelfte, VOR dem Chart. Gemessen
      bei 390 px stand dort vorher der Chart, und die Antworten lagen weiter
      unten. Die Einordnung muss im DOM vor dem Chart stehen (einspaltig auf
@@ -390,7 +406,10 @@ test("the opportunity-against-risk answer never shows one side alone", async () 
   const replay = slice(stockPage, "function replaySection(", "function technicalSection(");
   /* Both columns are appended in the same call, so one cannot ship without
      the other. */
-  assert.match(replay, /if \(up && down\) \{\s*c\.push\(el\("div", \{ class: "qx-bars2"/);
+  /* Discover-Angleichung: der Block traegt zusaetzlich Discovers
+     dx-bewertung-bild - geprueft wird weiter, dass beide Seiten in EINEM
+     Aufruf entstehen. */
+  assert.match(replay, /if \(up && down\) \{\s*c\.push\(el\("div", \{ class: "qx-bars2\b[^"]*"/);
   /* The patterns overlap, so they are counted separately and never
      combined into one rate - a combined figure would be invented. */
   assert.equal(/holds\.reduce\(/.test(replay + viewModelSrc), false, "the patterns are aggregated into one number");
@@ -492,10 +511,14 @@ test("the journey starts with the market and ends at a share", () => {
      before the first paint is a wait the reader pays for nothing. */
   assert.match(home, /Promise\.all\(\[[\s\S]*?ctx\.api\.getMarketRegime\(\)[\s\S]*?\]\)/);
   /* And it appears before the reader's own titles. */
-  const todayAt = home.indexOf('X.section("Heute interessant"');
-  const mineAt = home.indexOf('X.section("Deine Aktien"');
-  assert.ok(todayAt > 0 && mineAt > 0 && todayAt < home.indexOf("main.append(mine)"),
+  /* Discover-Angleichung: "Heute bei Quant" (mit der Marktlage als
+     Kachel) ist Discovers "Heute bei Vision Universe" und steht vor den
+     eigenen Titeln ("Deine Aktien"). */
+  const todayAt = home.indexOf('X.world("Heute bei Quant"');
+  const mineAt = home.indexOf('X.world("Deine Aktien"');
+  assert.ok(todayAt > 0 && mineAt > 0 && todayAt < mineAt,
     "the market is placed after the reader's own titles");
+  assert.match(home, /regime && regime\.state === "AVAILABLE"[\s\S]*?tiles\.push\(/, "the market state is not one of the today tiles");
   /* ... and the journey ends at a share: the cards link to the stock page. */
   assert.match(app["ui.js"], /function tickerChips[\s\S]*?routes\.stock\(t\)/);
 });

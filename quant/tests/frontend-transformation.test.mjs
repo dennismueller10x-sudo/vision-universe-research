@@ -108,9 +108,13 @@ test("Die Quant-Navigation führt genau die fünf Bereiche", () => {
   for (const n of QX.NAV) {
     assert.notEqual(routing.parse(n.href).view, "notfound", n.label + " fuehrt ins Leere: " + n.href);
   }
-  /* Kopf- und Tab-Leiste werden beide aus derselben Liste gebaut - keine
-     zweite, abweichende Navigation. */
-  assert.equal((appSrc.match(/X\.NAV\.map\(/g) || []).length, 2, "Kopf- und Tab-Leiste muessen aus X.NAV entstehen");
+  /* Die Bereichsleiste wird aus derselben Liste gebaut - keine zweite,
+     abweichende Navigation. Discover-Angleichung (30.09.2026): Kopf- und
+     Tab-Leiste sind jetzt EINE Leiste wie Discovers v2-dock (am Desktop
+     oben mittig, am Handy unten) - also genau ein Aufbau aus X.NAV, und
+     keine weitere Liste von Bereichen daneben. */
+  assert.equal((appSrc.match(/X\.NAV\.map\(/g) || []).length, 1, "die Bereichsleiste muss aus X.NAV entstehen - genau einmal");
+  assert.match(appSrc, /el\("nav", \{ class: "[^"]*\bv2-dock[^"]*qx-nav[^"]*qx-tabbar"[^\n]*X\.NAV\.map\(/, "Kopf- und Tab-Leiste sind nicht dieselbe, aus X.NAV gebaute Leiste");
 });
 
 test("Kein fremdes Produkt steht in der Quant-Navigation", () => {
@@ -163,7 +167,9 @@ test("Die Navigationsänderung hat keine Ansicht entfernt", () => {
 
 /* ---------------------------------------------------------------- 2 */
 test("Die Vergleichsfall-Engine rechnet mit der Studien-Engine, nicht mit einer zweiten", () => {
-  assert.equal(HistoricalCases.VERSION, "historical-cases-1.0.0");
+  /* 1.1.0 (01.10.2026): 1-Monats-Fenster und weitere Lesarten derselben
+     Faelle - die Rechnung bleibt die der Studien-Engine. */
+  assert.equal(HistoricalCases.VERSION, "historical-cases-1.1.0");
   const quelle = readFileSync(join(ROOT, "quant/engines/historical-cases.js"), "utf8");
   for (const fn of ["featuresAt", "outcomeAfter", "runningMaxOf"]) {
     assert.ok(quelle.includes("PatternResearch." + fn),
@@ -189,6 +195,10 @@ test("Unter zehn abgeschlossenen Fällen entsteht keine Kennzahl", () => {
     assert.equal(h.positive, null);
     assert.equal(h.medianDrawdown, null);
     assert.equal(h.lastCaseDate, null, "ohne Verteilung auch kein Einzelfall");
+    /* 1.1.0: auch die neuen Lesarten bleiben unter der Schwelle leer. */
+    for (const k of ["positiveShare", "meanReturn", "worstReturn", "bestReturn", "quartiles", "worstDrawdown", "medianMaxGain", "chanceRisk", "distribution"])
+      assert.equal(h[k], null, k + " darf unter der Schwelle nicht im Objekt stehen");
+    assert.equal(h.evidence, "WITHHELD");
   }
   assert.equal(nvda.measured, false);
 });
@@ -204,6 +214,13 @@ test("Über der Schwelle entsteht eine vollständige Verteilung", () => {
   assert.ok(Number.isInteger(m12.positive) && m12.positive <= m12.completed);
   assert.match(m12.lastCaseDate, /^\d{4}-\d{2}-\d{2}$/);
   assert.equal(aapl.measured, true);
+  /* 1.1.0: die weiteren Lesarten stehen auf denselben Faellen. */
+  assert.ok(Math.abs(m12.positiveShare - m12.positive / m12.completed) < 1e-12, "Anteil im Plus = positive / abgeschlossene Faelle");
+  assert.equal(m12.distribution.reduce((n, b) => n + b.count, 0), m12.completed, "die Verteilung zaehlt jeden Fall genau einmal");
+  assert.ok(m12.worstDrawdown <= m12.medianDrawdown && m12.worstReturn <= m12.quartiles[0] && m12.quartiles[2] <= m12.bestReturn);
+  assert.ok(m12.chanceRisk === null || m12.chanceRisk > 0);
+  assert.ok(["BROAD", "THIN"].includes(m12.evidence));
+  assert.equal(m12.evidence, m12.completed >= HistoricalCases.BROAD_EPISODES ? "BROAD" : "THIN");
 });
 
 test("Zusammenhängende Trefferwochen zählen als ein Fall", () => {
@@ -323,7 +340,15 @@ test("Der einfache Screener behauptet keine Kriterien, die es nicht gibt", () =>
   }
   /* Die Faktor-Fragen filtern wirklich auf genau diese Felder. */
   const faktor = abschnitt(pagesSrc, "async function factorHits(", "async function setupHits(");
-  assert.match(faktor, /q\.factors\.map\(function \(id\) \{ return \{ field: FIELD\(id\), operator: "gte", value: SIMPLE_THRESHOLD/);
+  /* Konzept-Design: der Screener hat einen Wertebereich (min/max). Die
+     Fragen setzen ihn auf SIMPLE_THRESHOLD..100 - "stark" bleibt dieselbe
+     Schwelle, gefiltert wird weiterhin auf genau diese Felder. */
+  assert.match(faktor, /factors\.map\(function \(id\) \{ return \{ field: FIELD\(id\), operator: "gte", value: min/);
+  const einfach = abschnitt(pagesSrc, "async function screener(", "async function factorHits(");
+  assert.match(einfach, /sel\.min = SIMPLE_THRESHOLD; sel\.max = 100;/, "eine Frage setzt die Schwelle nicht auf SIMPLE_THRESHOLD");
+  /* Keine Marke fuer ein Kriterium, das es nicht gibt - auch nicht als Faktor-Chip. */
+  assert.ok(!/label: "(Größe|Grösse|Region|Marktkapitalisierung)"/.test(einfach + pagesSrc.slice(pagesSrc.indexOf("FILTER_CHIPS"), pagesSrc.indexOf("FILTER_CHIPS") + 1500)),
+    "der Screener zeigt eine Marke fuer ein Kriterium, das es nicht gibt");
   assert.match(pagesSrc, /var FIELD = function \(id\) \{ return "quantV2\.factorEvidence\." \+ id; \}/);
 });
 
@@ -388,6 +413,6 @@ test("Der Einstieg einer Setup-Regel landet nicht in einer zugeklappten Flaeche"
   assert.equal(routing.parse(QX.routes.screener("frage=setups")).pro, false, "Setups landen im Profi-Modus");
   const einfach = abschnitt(pagesSrc, "async function screener(", "async function factorHits(");
   assert.match(einfach, /params\.get\("frage"\)/, "die Frage aus der Adresse wird nicht gelesen");
-  assert.match(einfach, /main\.append\(list, sentence, out\)/, "das Ergebnis gehoert auf die Seite, nicht in den Aufklapper");
+  assert.match(einfach, /main\.append\([^;]*\blist, panel, sentence, results\)/, "das Ergebnis gehoert auf die Seite, nicht in den Aufklapper");
   assert.ok(!/X\.more\(/.test(einfach), "im einfachen Screener liegt das Ergebnis in einem Aufklapper");
 });

@@ -33,7 +33,26 @@ name: Quant 2.0 Product Intelligence Materialization
 # sauberer No-Op statt einer doppelten Materialisierung.
 on:
   workflow_dispatch:
+    inputs:
+      # Ein Methodik-Wechsel (z. B. SPY als Benchmark-Referenz, 02.10.2026)
+      # aendert das Ergebnis bei gleichem Stichtag. Die Idempotenz-Stufe sieht
+      # nur den Stichtag und hielte den Lauf fuer erledigt. `force` gibt es
+      # nur beim manuellen Start; die Kette und der Zeitplan bleiben
+      # idempotent.
+      force:
+        description: 'Trotz gleichem Stichtag neu materialisieren (nach Methodik-Wechsel)'
+        type: boolean
+        default: false
+  # `orchestrated` ist die einzige verlaessliche Kennung des Aufrufs aus der
+  # Kette. In einem aufgerufenen Workflow traegt `github.event_name` das
+  # Ereignis des AUFRUFERS (schedule / workflow_dispatch / push), nie
+  # 'workflow_call' - gemessen am 30.09.2026, Lauf 36655067686: Marktlauf
+  # gruen, Materialisierung "skipped", Produktstand blieb auf dem 28.09.
   workflow_call:
+    inputs:
+      orchestrated:
+        type: boolean
+        default: true
   workflow_run:
     workflows:
       - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
@@ -53,7 +72,7 @@ concurrency:
 jobs:
   materialize:
     if: >-
-      github.event_name == 'workflow_call' ||
+      inputs.orchestrated == true ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'workflow_run' &&
        github.event.workflow_run.conclusion == 'success' &&
@@ -62,8 +81,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 300
     steps:
+      # DIE SPITZE DES BRANCHES, NICHT DER AUSLOESENDE COMMIT.
+      #
+      # Aus der Kette aufgerufen ist github.sha der Commit, der den
+      # Marktlauf gestartet hat - VOR dessen eigenem Push. Ohne ref las die
+      # Idempotenz-Stufe darum den alten Ablagestand, hielt ihn fuer gleich
+      # dem Produktstand und hoerte als No-Op auf. Gemessen am 02.10.2026,
+      # Lauf 36952507489: Marktlauf gruen, Ablage 2026-10-01, Materialisierung
+      # "nichts zu tun", Frische-Vertrag P0_DATA_PIPELINE_FROZEN (Produkt
+      # 2026-09-30). Der Frische-Vertrag checkt `ref: main` aus und sah es.
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.ref }}
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -88,7 +117,10 @@ jobs:
           STORE=$(node -e 'const j=require(process.env.RUNNER_TEMP+"/freshness-vorher.json");console.log(j.LATEST_DURABLE_STORE_ASOF||"")')
           PRODUCT=$(node -e 'const j=require(process.env.RUNNER_TEMP+"/freshness-vorher.json");console.log(j.LATEST_PRODUCT_ASOF||"")')
           echo "Ablage: ${STORE:-unbekannt} · Produkt: ${PRODUCT:-unbekannt}"
-          if [ -n "$STORE" ] && [ "$STORE" = "$PRODUCT" ]; then
+          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.force == true }}" = "true" ]; then
+            echo "noop=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Manuell erzwungen (force) - Stichtag $STORE wird neu materialisiert."
+          elif [ -n "$STORE" ] && [ "$STORE" = "$PRODUCT" ]; then
             echo "noop=true" >> "$GITHUB_OUTPUT"
             echo "::notice::Produktstand entspricht der Ablage ($STORE) - nichts zu materialisieren."
           else
@@ -233,6 +265,74 @@ jobs:
         if: steps.noetig.outputs.noop != 'true'
         run: node scripts/quant/build-market-regime.mjs
 
+      # BACKTEST & SIGNAL INTELLIGENCE.
+      #
+      # Setup-Wiederholung: der Setup-Zustand, wie er an jedem frueheren
+      # Wochenschluss veroeffentlicht worden waere - fuer eine feste
+      # Stichprobe (sha256-Reihenfolge, nicht nach Ergebnis) aus der
+      # kanonischen Historie, die nur hier vorliegt. Inkrementell und mit
+      # Zeitbudget: was heute nicht fertig wird, folgt im naechsten Lauf.
+      # Ein Fehler hier haelt die uebrige Materialisierung nicht auf; die
+      # Auswertung arbeitet dann mit den vorhandenen Replays.
+      - name: Setup replay over a fixed sample of the canonical history
+        if: steps.noetig.outputs.noop != 'true'
+        continue-on-error: true
+        timeout-minutes: 30
+        run: >-
+          node --max-old-space-size=6144 scripts/quant/replay-setup-history.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history" --sample 150 --budget-minutes 15
+
+      - name: Setup backtest from the replay (PIT parity, trust rule)
+        if: steps.noetig.outputs.noop != 'true'
+        run: node --max-old-space-size=6144 scripts/quant/build-setup-backtest.mjs --work-dir "$RUNNER_TEMP/canonical-history"
+
+      - name: Signal backtest over the weekly universe (weekly total return from the canonical history)
+        if: steps.noetig.outputs.noop != 'true'
+        run: node --max-old-space-size=6144 scripts/quant/build-signal-backtest.mjs --work-dir "$RUNNER_TEMP/canonical-history"
+
+      # SETUP-ERGEBNISSE NUR AUS VEROEFFENTLICHTEN STAENDEN. Jeder Stand wird
+      # gegen seinen contentHash geprueft; Kurse nur zur Laufzeit.
+      - name: Setup outcomes from published states
+        if: steps.noetig.outputs.noop != 'true'
+        run: node --max-old-space-size=6144 scripts/quant/build-setup-outcomes.mjs --work-dir "$RUNNER_TEMP/canonical-history"
+
+      # Der maschinenlesbare Zertifizierungs-Check je Backtest-Art. Laeuft
+      # taeglich; eine Art wechselt ohne manuellen Schritt, sobald ihre
+      # Gates bestehen (ausser der Methodikvertrag verlangt eine Freigabe).
+      - name: Backtest certification check
+        if: steps.noetig.outputs.noop != 'true'
+        run: node scripts/quant/build-backtest-certification.mjs
+
+      - name: Measure backtest readiness per kind (A-F)
+        if: steps.noetig.outputs.noop != 'true'
+        run: node scripts/quant/build-backtest-readiness.mjs
+
+      # QUANT RADAR: "Was ist heute neu?" - aus den soeben geschriebenen
+      # Staenden (Setup-Historie, Signale, Strategie-Index, Faktor-Historie,
+      # 52-Wochen-Hoch). Kein Ereignis aus eigener Rechnung; jedes muss den
+      # Alert-Vertrag (quant-alert-event-3.0.0) bestehen, sonst bricht der
+      # Lauf ab. Daneben der Setup-Lebenszyklus je Titel und der gemessene
+      # Stand der vier Evidenzarten.
+      - name: Materialize Quant Radar and setup lifecycle
+        if: steps.noetig.outputs.noop != 'true'
+        run: node --max-old-space-size=6144 scripts/quant/build-quant-radar.mjs
+
+      - name: Measure the evidence status (replay, patterns, backtest gates)
+        if: steps.noetig.outputs.noop != 'true'
+        run: node --max-old-space-size=6144 scripts/quant/build-evidence-status.mjs
+
+      - name: Measure QUANT_DECISION_INTELLIGENCE
+        if: steps.noetig.outputs.noop != 'true'
+        run: node --max-old-space-size=6144 scripts/quant/measure-decision-intelligence.mjs
+
+      - name: Measure QUANT_BACKTEST_CERTIFICATION
+        if: steps.noetig.outputs.noop != 'true'
+        run: node --max-old-space-size=6144 scripts/quant/measure-backtest-certification.mjs
+
+      - name: Measure QUANT_BACKTEST_SIGNAL_INTELLIGENCE
+        if: steps.noetig.outputs.noop != 'true'
+        run: node --max-old-space-size=6144 scripts/quant/measure-backtest-signal-intelligence.mjs
+
       # DIE REISE, VON DER SEITE DES LESERS GEZAEHLT.
       #
       # "Die Stock-Intelligence-Reise ist gebaut" laesst sich nicht pruefen.
@@ -266,7 +366,7 @@ jobs:
       - name: Contract and regression tests
         if: steps.noetig.outputs.noop != 'true'
         run: |
-          node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs quant/tests/factor-evidence.test.mjs quant/tests/setup-engine.test.mjs quant/tests/setup-state-contract.test.mjs quant/tests/pattern-research.test.mjs quant/tests/pit-fundamental-history.test.mjs quant/tests/product-language.test.mjs quant/tests/strategy-history.test.mjs quant/tests/refuted-adjustment-fallback.test.mjs quant/tests/stock-chart-basis.test.mjs quant/tests/technical-unavailability.test.mjs quant/tests/journey-coverage.test.mjs quant/tests/market-calendar.test.mjs quant/tests/assignment-change.test.mjs quant/tests/observation-extension.test.mjs quant/tests/analysis-lag.test.mjs quant/tests/regime-observation-immutability.test.mjs quant/tests/pattern-unavailability.test.mjs
+          node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs quant/tests/factor-evidence.test.mjs quant/tests/setup-engine.test.mjs quant/tests/setup-state-contract.test.mjs quant/tests/pattern-research.test.mjs quant/tests/pit-fundamental-history.test.mjs quant/tests/product-language.test.mjs quant/tests/strategy-history.test.mjs quant/tests/refuted-adjustment-fallback.test.mjs quant/tests/stock-chart-basis.test.mjs quant/tests/technical-unavailability.test.mjs quant/tests/journey-coverage.test.mjs quant/tests/market-calendar.test.mjs quant/tests/assignment-change.test.mjs quant/tests/observation-extension.test.mjs quant/tests/analysis-lag.test.mjs quant/tests/regime-observation-immutability.test.mjs quant/tests/pattern-unavailability.test.mjs quant/tests/quant-radar.test.mjs quant/tests/signal-backtest.test.mjs quant/tests/backtest-certification.test.mjs
           node scripts/vu2/measure-consumer-breadth.mjs
 
       # CRITICAL_PRODUCT_GAPS = 0 ist ein Ziel. In einem Dokument behauptet
@@ -290,7 +390,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           # The snapshot history is append-only; the materializer refuses to
           # rewrite a published date, so this only ever adds a new file.
-          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/providers/return-basis-input-audit.json quant/data/providers/return-basis-universe-study.json docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md quant/data/product/methodology-change-v1.json quant/data/product/journey-coverage-v1.json quant/data/product/universe-list-v1.json.gz quant/methodology/index.html
+          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/product/radar-v1.json.gz quant/data/product/setup-lifecycle-v1.json.gz quant/data/product/radar-ticker-v1 quant/data/product/radar-history quant/data/product/evidence-status-v1.json quant/data/product/decision-intelligence-v1.json quant/data/product/setup-replay-v1 quant/data/product/setup-backtest-v1.json quant/data/product/signal-backtest-v1.json quant/data/product/backtest-readiness-v2.json quant/data/product/backtest-signal-intelligence-v1.json quant/data/product/setup-outcomes-v1.json quant/data/product/backtest-certification-v1.json quant/data/product/backtest-certification-measure-v1.json quant/data/providers/return-basis-input-audit.json quant/data/providers/return-basis-universe-study.json docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md quant/data/product/methodology-change-v1.json quant/data/product/journey-coverage-v1.json quant/data/product/universe-list-v1.json.gz quant/methodology/index.html
           if git diff --cached --quiet; then echo "Product Data unveraendert."; exit 0; fi
           node -e 'const s=require("./quant/data/product/technical-signals-v1/summary.json"); console.log(s.counts)'
           node -e 'const s=require("./quant/data/product/factor-evidence-v1/summary.json"); console.log(s.counts); console.log(s.factorStates); console.log(s.snapshotHistory)'

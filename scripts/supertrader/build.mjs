@@ -21,8 +21,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import { computeIndicators, percentileRanks, isoWeekKey, sma } from './engine/indicators.mjs';
+import { buildWeekly } from './engine/weekly.mjs';
 import { simulate, rescaleSignal } from './engine/simulator.mjs';
-import { STATES, STATE_LABELS, TERMINAL, PENDING } from './engine/lifecycle.mjs';
+import { STATES, STATE_LABELS, TERMINAL, PENDING, PHASES, phaseOf } from './engine/lifecycle.mjs';
 import { describeExecution } from './engine/execution.mjs';
 import { evaluateGates, GATE_DEFS, MIN_HISTORY_YEARS } from './engine/gates.mjs';
 import { PORTFOLIO_DEFAULTS } from './engine/backtest.mjs';
@@ -31,11 +32,27 @@ import darvas from './engine/strategies/darvas.mjs';
 import minervini from './engine/strategies/minervini.mjs';
 import weinstein from './engine/strategies/weinstein.mjs';
 import greenblatt from './engine/strategies/greenblatt.mjs';
+import donchian from './engine/strategies/donchian.mjs';
+import kkBreakout2 from './engine/strategies/kk-breakout-v2.mjs';
+import darvas2 from './engine/strategies/darvas-v2.mjs';
+import minervini2 from './engine/strategies/minervini-v2.mjs';
+import weinstein2 from './engine/strategies/weinstein-v2.mjs';
+import { fidelityFor, FIDELITY_VERSION, RULE_CLASS, SOURCE_ACCESS, PRODUCT_STATUS as FIDELITY_STATUS } from './fidelity.mjs';
+import { buildModelPortfolio, portfolioConfig, MODEL_PORTFOLIO_VERSION } from './model-portfolio.mjs';
+import * as canslim from './engine/partial/canslim.mjs';
+import * as piotroski from './engine/partial/piotroski.mjs';
+import { buildPilotArtifact } from './pilot/donchian-weekly.mjs';
+import { buildReplayArtifact } from './replay.mjs';
 import { STRATEGIES, REGISTRY_VERSION, DNA_FIELDS, INTERNAL_SOURCES } from './registry.mjs';
+import { evidenceFor, EVIDENCE_LEVELS, SOURCE_QUALITY, DATA_QUALITY, NO_PROMISE, EVIDENCE_VERSION } from './evidence.mjs';
 
 export const BUILD_VERSION = 'supertrader-build-1.0.0';
 let CURRENT_REGIME = null;
-export const LIVE_ENGINES = [kkBreakout, weinstein, darvas, minervini];
+// Runde 7: Momentum, Weinstein, Darvas und Minervini laufen in Version 2.0.0
+// (vorab registriert, PREREGISTRATION-R7.json). Offene Positionen der
+// Vorversionen werden mit deren Engine weitergefuehrt (engine.legacy).
+export const LIVE_ENGINES = [kkBreakout2, weinstein2, darvas2, minervini2, donchian];
+export const PREVIOUS_ENGINES = [kkBreakout, weinstein, darvas, minervini];
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
 const ROOT = path.resolve(args.root || '.');
@@ -95,51 +112,6 @@ function loadBenchmarkWeekly() {
   return { byWeek, to: j.to, from: j.from };
 }
 
-// Wochenreihe: lange Wochenschlusskurse + aus Tagesbalken abgeleitete Wochen
-// danach. Volumen nur, wo Tagesbalken existieren. weekAt[t] ist nur an
-// VOLLSTAENDIGEN Wochenenden gesetzt (naechster Balken in neuer Woche, oder
-// letzter Balken an einem Freitag).
-function buildWeekly(inst, longPoints, bench) {
-  const { bars } = inst;
-  const weeks = new Map();
-  for (const [d, c] of longPoints || []) weeks.set(isoWeekKey(String(d).slice(0, 10)), { date: String(d).slice(0, 10), close: c, volume: null });
-  const n = bars.date.length;
-  const weekAt = new Array(n).fill(null);
-  const dailyWeekEnd = new Map();
-  for (let t = 0; t < n; t++) {
-    const wk = isoWeekKey(bars.date[t]);
-    const w = weeks.get(wk) || { date: bars.date[t], close: bars.close[t], volume: 0 };
-    if (w.volume === null) w.volume = 0;
-    w._daily = (w._daily || 0) + 1;
-    w.volume += Number.isFinite(bars.volume[t]) ? bars.volume[t] : 0;
-    w.close = bars.close[t]; w.date = bars.date[t];
-    weeks.set(wk, w);
-    const nextWk = t + 1 < n ? isoWeekKey(bars.date[t + 1]) : null;
-    const complete = nextWk ? nextWk !== wk : new Date(bars.date[t] + 'T12:00:00Z').getUTCDay() === 5;
-    if (complete) dailyWeekEnd.set(t, wk);
-  }
-  const keys = [...weeks.keys()].sort();
-  // Die erste Woche im Tagesfenster ist moeglicherweise unvollstaendig
-  // (Fenster beginnt mitten in der Woche): Volumen dort nicht verwenden.
-  const firstDailyWeek = isoWeekKey(bars.date[0]);
-  const w = { date: [], close: [], volume: [], key: [] };
-  for (const k of keys) {
-    const x = weeks.get(k);
-    w.key.push(k); w.date.push(x.date); w.close.push(x.close);
-    w.volume.push(x._daily && k !== firstDailyWeek ? x.volume : null);
-  }
-  w.ma30 = sma(w.close, 30);
-  w.rs = w.close.map((c, i) => { const b = bench.byWeek.get(w.key[i]); return Number.isFinite(b) && b > 0 ? c / b : null; });
-  w.volAvg = w.volume.map((_, i) => {
-    let s = 0, c = 0;
-    for (let j = i - 10; j < i; j++) if (j >= 0 && Number.isFinite(w.volume[j])) { s += w.volume[j]; c++; }
-    return c >= 8 ? s / c : null;
-  });
-  const keyIndex = new Map(w.key.map((k, i) => [k, i]));
-  for (const [t, wk] of dailyWeekEnd) weekAt[t] = keyIndex.get(wk);
-  return { weekly: w, weekAt };
-}
-
 /* ----------------------------------------------- Querschnittsraenge */
 function crossSection(instruments, calendar) {
   const dateIdx = new Map(calendar.map((d, i) => [d, i]));
@@ -197,6 +169,10 @@ function measureCoverage(instruments, weeklySpans) {
     survivorshipControls: pitGates.declared_capabilities?.survivorshipBiasControls === true,
     historicalMembershipDates: membershipDates,
     splitAdjusted: [...instruments.values()].every((i) => i.priceSeriesType === 'SPLIT_ADJUSTED'),
+    // Dividenden/Total Return: universumsweite Pruefung der Quant-Datenbasis (read-only).
+    totalReturnUniform: (() => { const f = rel('quant/data/providers/return-basis-universe-study.json'); return exists(f) ? readJson(f).totalReturnVerification?.verdict === 'TOTAL_RETURN_UNIFORM' : false; })(),
+    delistingReturns: false,
+    usageRightsConfirmed: false,
     totalReturnSeries: false,
     sources: {
       dailyOhlcv: 'quant/data/product/technical-signals-v1 (kanonische technische Materialisierung, split-adjustiert)',
@@ -284,6 +260,59 @@ function roundDeep(o) {
   }
 }
 
+// Versionspolitik fuer offene Signale (LC-VERSION-RETIRED).
+export function applyVersionPolicy(engine, open, lastProcessed, recordedAt) {
+  const kept = [], retired = [];
+  for (const s of open) {
+    const v = s.version || '1.0.0';
+    if (v === engine.version) { kept.push(s); continue; }
+    if (PENDING.has(s.state) || s.state === 'TRIGGERED') {
+      s.state = 'INVALIDATED';
+      s.transitions.push({ state: 'INVALIDATED', date: lastProcessed, dataAsOf: lastProcessed, ruleId: 'LC-VERSION-RETIRED', ruleVersion: engine.version, recordedAt,
+        note: `Regelversion ${v} durch ${engine.version} abgelöst. Das Setup wurde unter ${v} entdeckt und wird nicht rückwirkend nach neuen Regeln umgedeutet; die neue Version sucht auf demselben Datenstand neu.` });
+      s.retiredBy = { fromVersion: v, toVersion: engine.version, date: lastProcessed };
+      retired.push(s);
+      continue;
+    }
+    // Modellpositionen laufen nur weiter, wenn die neue Version ihre Positionsfuehrung
+    // ausdruecklich uebernimmt - sonst bricht der Build ab, statt still umzudeuten.
+    // Runde 7: Eine neue Version mit anderer Positionsfuehrung fuehrt Positionen
+    // aelterer Versionen mit deren eigener Engine weiter (engine.legacy[v]).
+    if (!(engine.manageCompatible || []).includes(v) && !engine.legacy?.[v]) throw new Error(`${s.id}: Position unter Version ${v}, ${engine.id} ${engine.version} erklärt keine kompatible Positionsführung`);
+    kept.push(s);
+  }
+  return { open: kept, retired };
+}
+
+// Append-only: kein Signal verschwindet, abgeschlossene Signale bleiben
+// unveraendert, offene Signale duerfen ihr Protokoll nur verlaengern.
+export function assertAppendOnly(before, after) {
+  const all = (l) => [...l.open, ...l.closed, ...l.invalidated];
+  const next = new Map(all(after).map((s) => [s.id, s]));
+  const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  for (const s of all(before)) {
+    const n = next.get(s.id);
+    if (!n) throw new Error(`Ledger-Verletzung: ${s.id} fehlt`);
+    if (TERMINAL.has(s.state)) { if (!eq(s, n)) throw new Error(`Ledger-Verletzung: abgeschlossenes Signal ${s.id} verändert`); continue; }
+    const a = s.transitions || [], b = n.transitions || [];
+    if (b.length < a.length || !a.every((x, i) => eq(x, b[i]))) throw new Error(`Ledger-Verletzung: Protokoll von ${s.id} umgeschrieben`);
+    if (n.createdAt !== s.createdAt || n.version !== s.version) throw new Error(`Ledger-Verletzung: Kopf von ${s.id} verändert`);
+  }
+}
+
+// Neubewertung nach Regelwechsel (kein neues Marktereignis): Das unter der neuen
+// Version auf DEMSELBEN Kursstand erkannte Signal verweist auf seinen Vorgaenger,
+// behaelt dessen urspruengliches Entdeckungsdatum und nennt den verwendeten Kursstand.
+export function linkReassessment(prev, sig) {
+  const first = prev.transitions[0] || {};
+  sig.discovery = { ...sig.discovery, kind: 'RULE_VERSION_REASSESSMENT',
+    reassessment: { previousSignalId: prev.id, previousVersion: prev.version, originalDiscoveryDate: prev.createdAt, originalDataAsOf: first.dataAsOf || first.date || prev.createdAt, priceDataAsOf: sig.createdAt, retiredOn: prev.retiredBy.date, note: 'Neubewertung nach Regelwechsel auf unverändertem Kursstand — kein neues Marktereignis.' } };
+  if (sig.transitions[0]) sig.transitions[0].origin = 'RULE_VERSION_REASSESSMENT';
+  prev.retiredBy.successorId = sig.id;
+}
+export const isReassessment = (s) => s.discovery?.kind === 'RULE_VERSION_REASSESSMENT';
+export const isRetired = (s) => s.state === 'INVALIDATED' && s.transitions?.[s.transitions.length - 1]?.ruleId === 'LC-VERSION-RETIRED';
+
 /* ------------------------------------------------------------ Main */
 export function build() {
   const t0 = Date.now();
@@ -322,19 +351,35 @@ export function build() {
   const ledgers = {};
   for (const engine of LIVE_ENGINES) {
     const ledger = loadLedger(engine);
-    const openBySymbol = new Map(ledger.open.map((s) => [s.symbol, s]));
+    const before = JSON.parse(JSON.stringify(ledger));
     const lastProcessed = ledger.lastProcessed;
-    const finishedNow = [];
+    // Regelversionen: ein Signal behaelt die Version, unter der es entdeckt
+    // wurde. Wartende Setups einer alten Version werden nicht still neu
+    // interpretiert, sondern mit LC-VERSION-RETIRED abgeschlossen und unter der
+    // neuen Version auf demselben Datenstand neu gesucht (neue ID).
+    const { open: openKept, retired } = applyVersionPolicy(engine, ledger.open, lastProcessed, barsGeneratedAt);
+    const retiredSymbols = new Set(retired.map((x) => x.symbol));
+    const retiredBySymbol = new Map(retired.map((x) => [x.symbol, x]));
+    const openBySymbol = new Map(openKept.map((s) => [s.symbol, s]));
+    const seen = new Set();
+    const finishedNow = [...retired];
     const stillOpen = [];
     const snap = [];
     for (const inst of instruments.values()) {
       const ctx = ctxOf(inst);
       if (engine.timeframe === 'weekly' && !inst.weekly) continue;
+      seen.add(inst.symbol);
       const n = inst.bars.date.length;
       let from;
       if (lastProcessed) {
         from = inst.bars.date.findIndex((d) => d > lastProcessed);
         if (from < 0) from = n; // nichts Neues
+        if (retiredSymbols.has(inst.symbol)) {
+          // Neu-Erkennung auf demselben Datenstand; Wochenstrategien ab dem letzten vollstaendigen Wochenschluss.
+          let k = inst.indexOf.get(lastProcessed);
+          if (k !== undefined && engine.timeframe === 'weekly') while (k > 0 && inst.weekAt[k] === null) k--;
+          if (k !== undefined) from = Math.min(from, k);
+        }
       } else {
         // Erster Live-Lauf: KEINE Rueckrechnung - das waere ein verdeckter Backtest.
         from = n - 1;
@@ -342,6 +387,7 @@ export function build() {
       }
       const open = openBySymbol.get(inst.symbol) || null;
       if (open) {
+        delete open.dataStatus;
         remapIndexes(open, inst);
         const anchorIdx = open.anchor ? inst.indexOf.get(open.anchor.date) : undefined;
         if (anchorIdx !== undefined && open.anchor.close > 0) {
@@ -351,16 +397,24 @@ export function build() {
       }
       const state = { signal: open, cooldownUntil: -1 };
       let res = { state, finished: [], lastScan: null };
-      if (from < n) res = simulate(engine, ctx, { state, from, to: n - 1 });
+      // Altposition: nach der Regelversion fuehren, unter der sie eroeffnet wurde.
+      // Neue Setups fuer diesen Titel sucht die neue Version erst nach dem
+      // Abschluss (naechster Lauf) - ein Titel hat je Methode ein Signal.
+      const legacyEngine = open && open.version !== engine.version && !(engine.manageCompatible || []).includes(open.version) ? engine.legacy?.[open.version] : null;
+      if (from < n && legacyEngine) res = simulate(legacyEngine, ctx, { state, from, to: n - 1, recordedAt: barsGeneratedAt, manageOnly: true });
+      else if (from < n) res = simulate(engine, ctx, { state, from, to: n - 1, recordedAt: barsGeneratedAt });
       for (const s of res.finished) finishedNow.push(s);
       if (state.signal) {
         const last = n - 1;
         if (!state.signal.regimeAtCreation) state.signal.regimeAtCreation = CURRENT_REGIME;
         state.signal.anchor = { date: inst.bars.date[last], close: inst.bars.close[last] };
-        // Qualitaet wartender Setups wird taeglich neu klassifiziert; ab dem
-        // Trigger ist sie eingefroren (Volumen am Trigger entschieden).
+        // Qualitaet wartender Setups wird taeglich neu klassifiziert (Phase vor
+        // dem Ausbruch); ab der Bestaetigung ist sie eingefroren.
         if (engine.classify && PENDING.has(state.signal.state)) state.signal.quality = engine.classify(ctx, last, state.signal);
         state.signal.lastPrice = inst.bars.close[last];
+        state.signal.lastPriceDate = inst.bars.date[last];
+        const prev = retiredBySymbol.get(inst.symbol);
+        if (prev && !prev.retiredBy.successorId && state.signal.createdAt <= lastProcessed) linkReassessment(prev, state.signal);
         stillOpen.push(state.signal);
       }
       // Scanner-Momentaufnahme (DISCOVERED/WATCH) fuer Titel ohne offenes Signal.
@@ -373,18 +427,34 @@ export function build() {
         }
       }
     }
+    // Offene Signale ohne aktuelle Kursdaten bleiben unveraendert im Ledger
+    // (LC-DATA-GAP) - sie verschwinden nicht und werden nicht fortgeschrieben.
+    for (const s of openKept) {
+      if (seen.has(s.symbol)) continue;
+      s.dataStatus = { status: 'NO_CURRENT_DATA', checkedAsOf: asOf, lastDataDate: s.anchor?.date || s.createdAt, ruleId: 'LC-DATA-GAP', note: 'Für diesen Titel liegen im aktuellen Datenstand keine Kursdaten vor. Keine Entscheidung, bis Daten vorliegen.' };
+      stillOpen.push(s);
+    }
     const closed = [...ledger.closed, ...finishedNow.filter((s) => s.state === 'CLOSED')];
+    for (const r of retired) if (r.retiredBy.successorId === undefined) r.retiredBy.successorId = null;
     const invalidated = [...ledger.invalidated, ...finishedNow.filter((s) => s.state === 'INVALIDATED')];
     ledgers[engine.id] = {
       ...ledger, variant: engine.variant, version: engine.version,
-      liveSince: ledger.liveSince || asOf, lastProcessed: asOf,
+      liveSince: ledger.liveSince || asOf, lastProcessed: asOf, previousDataAsOf: lastProcessed && lastProcessed !== asOf ? lastProcessed : (ledger.previousDataAsOf ?? null),
       open: stillOpen.map(stripForSave).sort((a, b) => a.symbol.localeCompare(b.symbol)),
       closed: closed.map(stripForSave), invalidated: invalidated.map(stripForSave),
     };
+    assertAppendOnly(before, ledgers[engine.id]);
     snap.sort((a, b) => (a.stage === b.stage ? rankFact(b) - rankFact(a) : a.stage === 'WATCH' ? -1 : 1));
-    scanner[engine.id] = { discovered: snap.filter((s) => s.stage === 'DISCOVERED').length, watch: snap.filter((s) => s.stage === 'WATCH').length, top: snap.slice(0, 60) };
+    // symbols: ALLE Titel der Momentaufnahme, nicht nur die Top 60 - die
+    // Fragefunktion (/ask/) prueft damit "erfuellt die Strategie heute" fuer
+    // jeden Titel, ohne dass ein fehlender Eintrag als "nein" gelesen wird.
+    scanner[engine.id] = { discovered: snap.filter((s) => s.stage === 'DISCOVERED').length, watch: snap.filter((s) => s.stage === 'WATCH').length, top: snap.slice(0, 60), symbols: snap.map((s) => s.symbol).sort() };
     log(`${engine.id}: offen ${stillOpen.length}, neu abgeschlossen ${finishedNow.length}, Scanner ${snap.length}`);
   }
+
+  /* --- Teilpruefungen (CAN SLIM, Piotroski) auf SEC-Fundamentaldaten --- */
+  const partial = buildPartialChecks(instruments, cross, asOf);
+  log(`Teilpruefungen: CAN SLIM ${partial.CANSLIM.counts.partialMatch} Teiltreffer, Piotroski ${partial.PIOTROSKI_F.counts.candidates} Kandidaten`);
 
   /* --- Fundamentale Anzeige fuer Minervini-Signale (HYBRID) --- */
   const fundCache = new Map();
@@ -405,14 +475,35 @@ export function build() {
   const registry = buildRegistry(coverage, gbCoverage);
   const sources = buildSources();
   const signals = buildSignals(ledgers, scanner, fundOf, instruments, market);
+  signals.partialChecks = partial;
+  for (const [id, pc] of Object.entries(partial)) for (const c of pc.candidates) (signals.bySymbol[c.symbol] ||= []).push({ strategyId: id, id: null, state: 'PARTIAL_CHECK' });
+  const pilot = args['skip-pilot'] ? null : buildPilotArtifact(ROOT);
+  // Historisches Replay: Demonstration an echten vergangenen Balken, nie im Ledger.
+  const replay = buildReplayArtifact({ engine: donchian, instruments, ctxOf, planOf, asOf, generatedAt: barsGeneratedAt });
   const backtests = buildBacktests(registry, coverage, gbCoverage);
+  // Historische Validierung je Regelkarte aus den gemessenen Gates, nicht behauptet.
+  for (const s of registry.strategies) for (const card of s.rule_cards || []) {
+    const run = backtests.runs.find((r) => r.variantId === card.variant_id);
+    card.historical_validation = { ...card.historical_validation, status: run?.metricsPublishable ? 'GATES_PASSED_RUN_PENDING' : 'NOT_VALIDATED', gateStatus: run?.status || null, failedGates: run?.failedGates || [] };
+  }
 
+  // Laufendes Modellportfolio je Methode aus dem Live-Protokoll (alle Versionen).
+  const portfolios = { schema: MODEL_PORTFOLIO_VERSION, asOf, strategies: {} };
+  for (const engine of LIVE_ENGINES) {
+    const L = ledgers[engine.id];
+    const barsOf = (sym) => instruments.get(sym)?.bars || null;
+    portfolios.strategies[engine.id] = buildModelPortfolio({ engine, signals: [...L.open, ...L.closed], barsOf, calendar, asOf });
+  }
+  writeJson(path.join(DATA, 'portfolio.json'), portfolios);
   writeJson(path.join(DATA, 'registry.json'), registry);
   writeJson(path.join(DATA, 'sources.json'), sources);
   writeJson(path.join(DATA, 'market.json'), market);
   writeJson(path.join(DATA, 'coverage.json'), { schema: 'supertrader-coverage-1.0.0', asOf, coverage, greenblatt: gbCoverage, unavailableInstruments: unavailable, gateDefinitions: GATE_DEFS, minHistoryYears: MIN_HISTORY_YEARS });
   writeJson(path.join(DATA, 'signals.json'), signals);
+  if (pilot) backtests.pilot = { path: '/supertrader/data/pilot-backtest.json', status: pilot.status, id: pilot.spec.id };
   writeJson(path.join(DATA, 'backtests.json'), backtests);
+  if (pilot) writeJson(path.join(DATA, 'pilot-backtest.json'), pilot);
+  writeJson(path.join(DATA, 'replay.json'), replay);
   for (const [id, l] of Object.entries(ledgers)) writeJson(ledgerPath(id), l);
   writeStockPages(signals);
   writeStrategyPages(registry);
@@ -420,6 +511,78 @@ export function build() {
   writeJson(path.join(DATA, 'build.json'), { buildVersion: BUILD_VERSION, registryVersion: REGISTRY_VERSION, asOf, inputsGeneratedAt: barsGeneratedAt });
   log(`fertig in ${((Date.now() - t0) / 1000).toFixed(1)} s, Stand ${asOf}`);
   return { asOf, signals, backtests, coverage };
+}
+
+// Fundamentaldaten aus den SEC-Konsumartefakten (zuletzt berichtete Werte,
+// keine Point-in-Time-Erstmeldungen). Nur die fuer die Teilpruefungen noetigen Reihen.
+function loadSecFundamentals(symbols) {
+  const dir = rel('quant/data/sec/consumer');
+  const out = new Map();
+  if (!exists(dir)) return out;
+  const keepA = ['net_income', 'total_assets', 'operating_cash_flow', 'long_term_debt', 'shares_outstanding', 'gross_profit', 'revenue', 'stockholders_equity'];
+  for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.json')).sort()) {
+    const j = readJson(path.join(dir, f));
+    const sym = (j.tickers || []).find((t) => symbols.has(t));
+    if (!sym || out.has(sym)) continue;
+    const annual = {}; for (const k of keepA) if (j.annual?.[k]) annual[k] = j.annual[k];
+    out.set(sym, { cik: j.cik, name: j.name, annual, quarterly: { net_income: j.quarterly?.net_income || [] }, asOf: j.asOf });
+  }
+  return out;
+}
+
+function lastOf(rows) { const r = (rows || []).filter((x) => x[1] === 'FY' && Number.isFinite(x[3])).sort((a, b) => String(a[2]).localeCompare(String(b[2]))); return r.length ? r[r.length - 1][3] : null; }
+
+export function buildPartialChecks(instruments, cross, asOf) {
+  const fund = loadSecFundamentals(new Set(instruments.keys()));
+  const spy = readJson(rel('quant/data/market/multi-asset/series/SPY.json')).points.filter(([d]) => String(d).slice(0, 10) <= asOf);
+  const market = canslim.evalM(spy);
+  const cs = [], pio = [];
+  const csCount = Object.fromEntries(canslim.CRITERIA.map((c) => [c.id, { PASS: 0, FAIL: 0, NO_DATA: 0 }]));
+  const pioCount = Object.fromEntries(piotroski.SIGNALS.map((c) => [c.id, { PASS: 0, FAIL: 0, NO_DATA: 0 }]));
+  const bm = [];
+  for (const inst of instruments.values()) {
+    const t = inst.bars.date.length - 1;
+    const close = inst.bars.close[t];
+    if (!(close >= 5) || !(inst.ind.dollarVol20[t] >= 5e6)) continue; // gleiche Handelbarkeitsgrenze wie die Live-Strategien
+    const f = fund.get(inst.symbol);
+    const vr = inst.ind.vol20[t] && inst.ind.vol50[t] ? inst.ind.vol20[t] / inst.ind.vol50[t] : null;
+    const shares = f ? lastOf(f.annual.shares_outstanding) : null;
+    const r = canslim.evaluate({ fund: f ? { ...f, sharesOutstanding: shares } : null, close, high252: inst.ind.high252[t], rsPercentile: cross.get(inst.symbol)?.rs?.[t], volumeRatio: vr, market, asOf });
+    for (const k of Object.keys(csCount)) { const st = r.criteria[k].status; if (st in csCount[k]) csCount[k][st]++; }
+    cs.push({ symbol: inst.symbol, name: f?.name || null, close: r4(close), ...r });
+    if (f) {
+      const p = piotroski.evaluate(f.annual, asOf);
+      for (const k of Object.keys(pioCount)) { const st = p.signals[k].status; if (st in pioCount[k]) pioCount[k][st]++; }
+      const eq = lastOf(f.annual.stockholders_equity);
+      const mcap = shares && shares > 0 ? shares * close : null;
+      const btm = eq && mcap ? eq / mcap : null;
+      pio.push({ symbol: inst.symbol, name: f.name, close: r4(close), bookToMarket: r4(btm), ...p });
+      if (btm !== null && btm > 0) bm.push(btm);
+    }
+  }
+  bm.sort((a, b) => a - b);
+  const q80 = bm.length ? bm[Math.floor(bm.length * piotroski.PARAMS.bookToMarketQuintile)] : null;
+  const slimCs = (x) => ({ symbol: x.symbol, name: x.name, close: x.close, passed: x.passed, failed: x.failed, noData: x.noData, criteria: Object.fromEntries(Object.entries(x.criteria).map(([k, v]) => [k, { status: v.status, value: v.value ?? null, periodEnd: v.periodEnd || null, note: v.note || null }])) });
+  const csMatches = cs.filter((x) => x.partialMatch).sort((a, b) => (b.criteria.C.value ?? 0) - (a.criteria.C.value ?? 0));
+  // Ohne bestaetigten Markt (M) bleiben die uebrigen Kriterien sichtbar: "4 von 5, nur M fehlt".
+  const csNear = cs.filter((x) => !x.partialMatch && x.passed.length === canslim.CHECKABLE.length - 1 && x.failed.length === 1).sort((a, b) => (b.criteria.C.value ?? 0) - (a.criteria.C.value ?? 0));
+  const pioCand = pio.filter((x) => x.bookToMarket !== null && q80 !== null && x.bookToMarket >= q80 && x.checked === piotroski.CHECKABLE.length && x.partialScore >= piotroski.PARAMS.minPartialScore)
+    .sort((a, b) => b.partialScore - a.partialScore || b.bookToMarket - a.bookToMarket);
+  const slimPio = (x) => ({ symbol: x.symbol, name: x.name, close: x.close, bookToMarket: x.bookToMarket, partialScore: x.partialScore, checked: x.checked, fiscalYearEnd: x.fiscalYearEnd, signals: x.signals });
+  return {
+    CANSLIM: {
+      mode: 'PARTIAL_CHECK', asOf, priceAsOf: asOf, fundamentalsBasis: 'SEC companyfacts, zuletzt berichtete Werte (keine Erstmeldungen)',
+      criteria: canslim.CRITERIA, checkable: canslim.CHECKABLE, market,
+      counts: { evaluated: cs.length, partialMatch: csMatches.length, near: csNear.length, byCriterion: csCount },
+      candidates: csMatches.slice(0, 60).map(slimCs), near: csNear.slice(0, 40).map(slimCs),
+    },
+    PIOTROSKI_F: {
+      mode: 'PARTIAL_CHECK', asOf, fundamentalsBasis: 'SEC companyfacts, Jahresabschlüsse, zuletzt berichtete Werte',
+      signals: piotroski.SIGNALS, checkable: piotroski.CHECKABLE, valueThreshold: r4(q80), minPartialScore: piotroski.PARAMS.minPartialScore,
+      counts: { evaluated: pio.length, fullyCheckable: pio.filter((x) => x.checked === piotroski.CHECKABLE.length).length, valueUniverse: pio.filter((x) => q80 !== null && x.bookToMarket >= q80).length, candidates: pioCand.length, bySignal: pioCount },
+      candidates: pioCand.slice(0, 60).map(slimPio),
+    },
+  };
 }
 
 function slimFacts(f) {
@@ -443,12 +606,16 @@ function buildMarket(asOf, barsGeneratedAt) {
 }
 
 function buildRegistry(coverage, gbCoverage) {
-  const engineParams = Object.fromEntries(LIVE_ENGINES.map((e) => [e.id, { variant: e.variant, version: e.version, params: e.PARAMS, timeframe: e.timeframe }]));
+  const engineParams = Object.fromEntries(LIVE_ENGINES.map((e) => [e.id, { variant: e.variant, version: e.version, params: e.PARAMS, timeframe: e.timeframe, portfolio: portfolioConfig(e), legacyVersions: Object.keys(e.legacy || {}) }]));
   return {
     schema: 'supertrader-registry-1.0.0', registryVersion: REGISTRY_VERSION, dnaFields: DNA_FIELDS,
-    lifecycle: { states: STATES, labels: STATE_LABELS, persistedFrom: 'SETUP', scannerOnly: ['DISCOVERED', 'WATCH'] },
+    lifecycle: { states: STATES, labels: STATE_LABELS, phases: PHASES, persistedFrom: 'SETUP', scannerOnly: ['DISCOVERED', 'WATCH'] },
     execution: describeExecution(), portfolioDefaults: PORTFOLIO_DEFAULTS,
-    strategies: STRATEGIES.map((s) => ({ ...s, engine: engineParams[s.strategy_id] || null })),
+    strategies: STRATEGIES.map((s) => ({ ...s, engine: engineParams[s.strategy_id] || null, evidence: evidenceFor(s), fidelity: fidelityFor(s.strategy_id) })),
+    fidelityScale: { schema: FIDELITY_VERSION, ruleClass: RULE_CLASS, sourceAccess: SOURCE_ACCESS, status: FIDELITY_STATUS,
+      accessNote: 'Runde 7: Fast alle Primärseiten (Trader-Websites, Bücher, Interviews) waren aus der Arbeitsumgebung nicht abrufbar. Belegt ist, was mehrere unabhängige Suchauszüge übereinstimmend wiedergeben; Wortlaute sind vor einem Zitat am Original zu prüfen.' },
+    evidenceScale: { schema: EVIDENCE_VERSION, levels: EVIDENCE_LEVELS, source: SOURCE_QUALITY, data: DATA_QUALITY, noPromise: NO_PROMISE,
+      publicationNote: 'Intern geprüfte Versionen erscheinen bis zur Klärung der Rechte an abgeleiteten Kennzahlen als „In Prüfung“. Eine Änderung der Einstufung ist kein Marktsignal und ändert kein protokolliertes Signal.' },
     dataRealityNote: `Tages-OHLCV öffentlich ${String(coverage.dailyOhlcvYears).replace('.', ',')} Jahre; Greenblatt-Pflichtfelder fehlend: ${gbCoverage.missingFields.join(', ') || 'keine'}.`,
   };
 }
@@ -466,12 +633,12 @@ function buildSources() {
 function buildSignals(ledgers, scanner, fundOf, instruments, market) {
   const strategiesOut = {};
   const bySymbol = {};
-  const counts = Object.fromEntries(STATES.map((s) => [s, 0]));
+  const counts = { ...Object.fromEntries(STATES.map((s) => [s, 0])), RETIRED_BY_RULE_VERSION: 0, REASSESSED_AFTER_RULE_CHANGE: 0, NEW_SINCE_PREVIOUS_DATA: 0 };
   const decorate = (s) => {
     const fund = fundOf(s.symbol);
     const inst = instruments.get(s.symbol);
     const si = sicInfo().get(s.symbol) || {};
-    const out = { ...s, sicDivision: si.division || null, sicDivisionName: si.name || null, companyName: fund?.companyName || s.symbol, chart: inst ? { shard: inst.shard, weeklyPath: `/quant/data/market/discover-series-long/ref_${s.symbol}.json` } : null };
+    const out = { ...s, plan: planOf(s), sicDivision: si.division || null, sicDivisionName: si.name || null, companyName: fund?.companyName || s.symbol, chart: inst ? { shard: inst.shard, weeklyPath: `/quant/data/market/discover-series-long/ref_${s.symbol}.json` } : null };
     if (s.strategyId === 'MINERVINI_VCP' && fund) out.fundamentalsDisplay = { revenueGrowthTTM: fund.revenueGrowthTTM, earningsAcceleration: fund.earningsAcceleration, asOf: fund.fundamentalsAsOf, filtered: false };
     return out;
   };
@@ -479,13 +646,20 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
     const open = l.open.map(decorate);
     const closed = l.closed.map(decorate).sort((a, b) => lastDate(b).localeCompare(lastDate(a)));
     // Ungueltige Setups: die juengsten 150 im Produktartefakt, alle im Ledger.
-    const invalidated = l.invalidated.slice().sort((a, b) => lastDate(b).localeCompare(lastDate(a))).slice(0, 150).map(decorate);
+    // Durch Regelwechsel abgeloeste Setups sind kein Marktereignis: getrennt von
+    // ungueltig gewordenen Setups gezaehlt und ausgeliefert.
+    const realInvalid = l.invalidated.filter((x) => !isRetired(x));
+    const retiredList = l.invalidated.filter(isRetired);
+    const invalidated = realInvalid.slice().sort((a, b) => lastDate(b).localeCompare(lastDate(a))).slice(0, 150).map(decorate);
+    const retired = retiredList.map((x) => ({ id: x.id, symbol: x.symbol, strategyId: x.strategyId, version: x.version, createdAt: x.createdAt, state: x.state, retiredBy: x.retiredBy, transitions: x.transitions, levels: x.levels, companyName: fundOf(x.symbol)?.companyName || x.symbol }));
     for (const s of open) counts[s.state]++;
-    counts.CLOSED += closed.length; counts.INVALIDATED += l.invalidated.length;
+    counts.CLOSED += closed.length; counts.INVALIDATED += realInvalid.length; counts.RETIRED_BY_RULE_VERSION += retiredList.length;
+    counts.REASSESSED_AFTER_RULE_CHANGE += open.filter(isReassessment).length;
+    counts.NEW_SINCE_PREVIOUS_DATA += open.filter((x) => !isReassessment(x) && x.createdAt > (l.previousDataAsOf || '')).length;
     counts.DISCOVERED += scanner[id].discovered; counts.WATCH += scanner[id].watch;
     const scan = scanner[id].top.map((x) => ({ ...x, sicDivision: sicInfo().get(x.symbol)?.division || null, sicDivisionName: sicInfo().get(x.symbol)?.name || null, companyName: fundOf(x.symbol)?.companyName || x.symbol, chart: instruments.get(x.symbol) ? { shard: instruments.get(x.symbol).shard, weeklyPath: `/quant/data/market/discover-series-long/ref_${x.symbol}.json` } : null }));
-    const quality = { A: open.filter((x) => x.quality?.tier === 'A').length, B: open.filter((x) => x.quality?.tier === 'B').length };
-    strategiesOut[id] = { quality: open.some((x) => x.quality) ? quality : null, liveSince: l.liveSince, lastProcessed: l.lastProcessed, variant: l.variant, version: l.version, open, closed, invalidated, invalidatedTotal: l.invalidated.length, ledgerPath: `/supertrader/data/ledger/${id}.json`, scanner: { discovered: scanner[id].discovered, watch: scanner[id].watch, top: scan } };
+    const quality = qualitySummary(open);
+    strategiesOut[id] = { quality: open.some((x) => x.quality) ? quality : null, liveSince: l.liveSince, lastProcessed: l.lastProcessed, variant: l.variant, version: l.version, open, closed, invalidated, invalidatedTotal: realInvalid.length, retired, retiredTotal: retiredList.length, reassessed: open.filter(isReassessment).length, ledgerPath: `/supertrader/data/ledger/${id}.json`, scanner: { discovered: scanner[id].discovered, watch: scanner[id].watch, top: scan, symbols: scanner[id].symbols } };
     for (const s of [...open, ...closed, ...invalidated]) (bySymbol[s.symbol] ||= []).push({ strategyId: id, id: s.id, state: s.state });
     for (const s of scan) (bySymbol[s.symbol] ||= []).push({ strategyId: id, id: null, state: s.stage });
   }
@@ -496,6 +670,67 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
     counts, strategies: strategiesOut, bySymbol,
   };
 }
+// Ein-/Ausstiegsblock je Signal: Phase, geplante Schwellen mit Datenstand,
+// tatsaechliche Modellausfuehrung (nur wenn vorhanden) und die naechste Handlung.
+const CARD_BY_STRATEGY = new Map(STRATEGIES.filter((x) => x.rule_cards).map((x) => [x.strategy_id, x.rule_cards[0]]));
+const fmtP = (v) => (Number.isFinite(v) ? v.toFixed(2).replace('.', ',') : '—');
+export function planOf(s) {
+  const card = CARD_BY_STRATEGY.get(s.strategyId);
+  const p = card?.plan;
+  if (!p) return null;
+  const last = s.transitions[s.transitions.length - 1] || {};
+  const levelsAsOf = s.levelHistory?.[s.levelHistory.length - 1]?.date || s.createdAt;
+  const phase = phaseOf(s.state);
+  const out = {
+    phase, phaseLabel: PHASES[phase]?.label || s.state, phasePlain: PHASES[phase]?.plain || '',
+    since: last.date || null, sinceRuleId: last.ruleId || null,
+    trigger: { value: r4(s.levels?.trigger), kind: 'PLANNED_THRESHOLD', label: 'geplanter Schwellenwert', basis: p.confirmBasis, dataAsOf: levelsAsOf, ruleId: p.confirmRuleId },
+    invalidation: { value: r4(s.levels?.invalidation), kind: 'PLANNED_THRESHOLD', label: 'geplante Invalidation', basis: p.invalidationBasis, dataAsOf: levelsAsOf, ruleId: p.invalidationRuleId },
+    confirmation: s.confirmation ? { date: s.confirmation.date, close: s.confirmation.close, basis: s.confirmation.basis, ruleId: s.transitions.find((x) => x.state === 'TRIGGERED')?.ruleId || p.confirmRuleId } : null,
+    entry: s.entry ? { date: s.entry.date, price: r4(s.entry.price), rawOpen: s.entry.rawOpen, basis: s.entry.priceBasis, gappedAboveTrigger: !!s.entry.gappedAboveTrigger, kind: 'MODEL_EXECUTION' } : null,
+    stop: Number.isFinite(s.stop) ? { value: r4(s.stop), ruleId: s.stopRuleId, dataAsOf: s.stopHistory?.[s.stopHistory.length - 1]?.date || null } : null,
+    exits: (s.exits || []).map((x) => ({ date: x.date, price: r4(x.price), fraction: x.fraction, ruleId: x.ruleId, basis: x.priceBasis, kind: 'MODEL_EXECUTION' })),
+    exitSummary: p.exitSummary,
+    lastPrice: Number.isFinite(s.lastPrice) ? { value: r4(s.lastPrice), dataAsOf: s.lastPriceDate || s.anchor?.date || null, basis: 'CLOSE' } : null,
+  };
+  let text, ruleId;
+  if (s.dataStatus?.status === 'NO_CURRENT_DATA') {
+    text = 'Keine Entscheidung: im aktuellen Datenstand fehlen Kursdaten für diesen Titel.'; ruleId = 'LC-DATA-GAP';
+  } else if (PENDING.has(s.state)) {
+    const inv = `${p.invalidationText} ${fmtP(s.levels?.invalidation)} → ungültig`;
+    text = `Warten auf ${p.confirmText} ${fmtP(s.levels?.trigger)}. Erst dann gilt der Einstieg als bestätigt; Modelleinstieg zur folgenden Eröffnung. ${inv}.`;
+    ruleId = p.confirmRuleId;
+  } else if (s.state === 'TRIGGERED') {
+    text = 'Modelleinstieg zur nächsten Eröffnung (keine reale Order). Bei Eröffnung auf/unter dem Stop oder außerhalb der Gap-Regel kein Einstieg.'; ruleId = 'LC-MODEL-ENTRY';
+  } else if (s.state === 'ACTIVE' || s.state === 'WARNING') {
+    text = `Modellposition halten, solange keine Ausstiegsregel greift. Stop ${fmtP(s.stop)}. ${p.exitSummary}.`; ruleId = s.stopRuleId;
+  } else if (s.state === 'EXIT') {
+    text = 'Ausstieg ausgelöst — Modellausführung zur nächsten Eröffnung.'; ruleId = last.ruleId;
+  } else if (s.state === 'CLOSED') {
+    text = 'Modellposition geschlossen. Keine weitere Handlung.'; ruleId = last.ruleId;
+  } else {
+    text = 'Setup ungültig — keine weitere Handlung.'; ruleId = last.ruleId;
+  }
+  out.nextAction = { text, ruleId, dataAsOf: s.anchor?.date || last.date || null };
+  out.reason = last.note || null;
+  return out;
+}
+
+function qualitySummary(open) {
+  if (!open.some((x) => x.quality)) return null;
+  const q = open.filter((x) => x.quality);
+  const byLabel = { A_CANDIDATE: 0, B_SETUP: 0, A_ENTRY: 0, B_ENTRY: 0 };
+  for (const x of q) if (x.quality.label in byLabel) byLabel[x.quality.label]++;
+  const b = q.filter((x) => x.quality.tier === 'B');
+  const failedBy = {};
+  for (const x of b) for (const id of x.quality.failed || []) failedBy[id] = (failedBy[id] || 0) + 1;
+  const onlyRegime = b.filter((x) => x.quality.blockedOnlyByRegime).length;
+  return {
+    A: q.filter((x) => x.quality.tier === 'A').length, B: b.length, byLabel,
+    bBreakdown: { total: b.length, blockedOnlyByRegime: onlyRegime, failOtherCriteria: b.length - onlyRegime, failedBy, regimeLockOrigin: 'VU' },
+  };
+}
+
 function lastDate(s) { return s.transitions?.[s.transitions.length - 1]?.date || s.createdAt || ''; }
 
 function buildBacktests(registry, coverage, gbCoverage) {
@@ -508,12 +743,12 @@ function buildBacktests(registry, coverage, gbCoverage) {
       const g = v.status === 'ADVANCED_RESEARCH'
         ? { status: 'ADVANCED_RESEARCH', metricsPublishable: false, gates: [], failedGates: ['ADVANCED_RESEARCH'] }
         : evaluateGates(gateId, coverage, {
-        timeframe, baselines: s.baselines, missingFields: s.strategy_id === 'GREENBLATT_VALUE' ? gbCoverage.missingFields : [],
+        timeframe, baselines: s.baselines, missingFields: s.strategy_id === 'GREENBLATT_VALUE' ? gbCoverage.missingFields : s.strategy_id === 'CANSLIM' ? ['institutional_holdings_history', 'eps_point_in_time'] : s.strategy_id === 'PIOTROSKI_F' ? ['current_assets', 'current_liabilities'] : [],
         });
       out.push({
         strategyId: s.strategy_id, variantId: v.variant_id, label: v.label, active: v.active, vuFormalization: v.vu_formalization,
         status: g.status, metricsPublishable: g.metricsPublishable, metrics: null,
-        gates: g.gates, failedGates: g.failedGates, baselines: s.baselines,
+        gates: g.gates, failedGates: g.failedGates, testPlan: g.testPlan || null, baselines: s.baselines,
         trustScore: { value: null, reason: g.metricsPublishable ? 'Lauf ausstehend' : 'Kein Trust Score ohne bestandene Datengates — eine Zahl würde Evidenz vortäuschen.' },
       });
     }
@@ -525,14 +760,26 @@ function buildBacktests(registry, coverage, gbCoverage) {
     requiredMetrics: ['CAGR', 'Gesamtrendite', 'Benchmark-Rendite', 'Excess Return', 'Volatilität', 'Sharpe', 'Sortino', 'Max. Drawdown', 'Calmar', 'Trefferquote', 'Ø Gewinn', 'Ø Verlust', 'Expectancy', 'Profit Factor', 'Ø Haltedauer', 'Turnover', 'Exposure', 'Verlustserien', 'Tail Losses', 'Jahresergebnisse', 'Marktregime-Ergebnisse', 'Anzahl Trades', 'Datenabdeckung', 'Strategy Trust Score'],
     validationDesign: { inSampleShare: 0.6, outOfSample: 'letzte 40 % unverändert', walkForward: 'Kalenderjahre', sensitivity: 'alle vorab definierten Varianten als Fläche, nie als bester Punkt', benchmark: 'SPY (Kursindex) und gleichgewichtetes Universum inkl. Delistings' },
     runs: out,
+    // Datenstrecke zum ersten validierbaren Backtest - aus dem Probeabruf (nur Anzahlen).
+    dataPath: (() => { const f = rel('scripts/supertrader/probe/results-2026-10-01.json'); return exists(f) ? readJson(f) : null; })(),
+    nextSteps: NEXT_STEPS,
   };
 }
+// Kleinster belegter Schritt zuerst (docs/SUPERTRADER_VALIDATION_DATA_PATH.md).
+const NEXT_STEPS = [
+  ['Rechte an abgeleiteten Kennzahlen klären', 'Ob aus den Kursdaten berechnete Backtest-Ergebnisse veröffentlicht werden dürfen. Bis dahin erscheinen geprüfte Versionen als „In Prüfung“.'],
+  ['Fundamentaldaten zum damaligen Stichtag', 'Erstmeldungen aus den SEC-Abschlüssen statt zuletzt berichteter Werte – Voraussetzung für historische Tests von CAN SLIM, Piotroski und Greenblatt.'],
+  ['Neue Regelversionen nur als neue Hypothese', 'Eine Variante nach Kenntnis eines Ergebnisses wird vorab festgelegt und erst mit späteren Daten unabhängig geprüft.'],
+];
 function mapVariant(v) {
   if (v.startsWith('KK_COMMON_BREAKOUT')) return 'KK_COMMON_BREAKOUT_DAILY';
   if (v.startsWith('WEINSTEIN_STAGE2')) return 'WEINSTEIN_STAGE2_WEEKLY';
   if (v === 'GREENBLATT_GLOBAL_VU') return v; // keine Gate-Definition -> NOT_COMPARABLE
   if (v.startsWith('DARVAS')) return 'DARVAS_BOX_N3_VU';
   if (v.startsWith('MINERVINI')) return 'MINERVINI_TT_VCP_A';
+  if (v.startsWith('DONCHIAN')) return 'DONCHIAN_TURTLE_S1_DAILY';
+  if (v.startsWith('CANSLIM')) return 'CANSLIM_FULL';
+  if (v.startsWith('PIOTROSKI')) return 'PIOTROSKI_F_FULL';
   if (v.startsWith('GREENBLATT')) return 'GREENBLATT_US_ORIGINAL';
   return v;
 }
@@ -580,6 +827,7 @@ function writeStaticPages() {
     ['strategies/index.html', 'strategies', 'Strategien — Supertrader — Vision Universe®', 'Alle Strategy Worlds von Supertrader mit Research-, Daten- und Backteststatus.', 2],
     ['backtests/index.html', 'backtests', 'Backtest Lab — Supertrader — Vision Universe®', 'Backtest Lab: Gates, Datenabdeckung, Ausführungsannahmen und Vergleich der Strategien.', 2],
     ['stock/index.html', 'stock', 'Strategy Lens — Supertrader — Vision Universe®', 'Welche Supertrader-Modelle einen Titel erkennen.', 2],
+    ['beispiel/index.html', 'replay', 'Beispiel eines Modell-Zyklus — Supertrader — Vision Universe®', 'Historisches Beispiel an echten Kursen: wie Bestätigung, Einstieg, Stop und Ausstieg ablaufen. Kein aktuelles Signal.', 2],
     ['sources/index.html', 'sources', 'Quellen — Supertrader — Vision Universe®', 'Source Ledger und Methodik der Supertrader-Strategien.', 2],
   ];
   for (const [file, page, title, description, depth] of pages) writeIfChanged(path.join(OUT, file), pageShell({ title, description, page, depth }));
