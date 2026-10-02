@@ -121,3 +121,14 @@ Sie gilt nicht pauschal für andere Turtle-Varianten (Futures, Pyramiding, Syste
 - **Minervini:** Der Ausstieg (Schluss unter der 50-Tage-Linie) ist eine VU-Regel, keine geprüfte Originalregel.
 - **Gleiche Grundlage wie Donchian:** Daten, Delisting-Szenarien, Kriterien R1–R4 und Kontrollen.
 - **Ergebnisse:** nur verschlüsselt.
+- **Lauf:** Run 36968858290, `20261002T063136Z-analyze-methods.sealed.json` auf `claude/supertrader-validation-results`. Kontrollen C1, C2, C3m und AT5 bestanden.
+- **Interne Einstufung:** Alle vier Versionen: „historisch geprüft ohne überzeugenden Vorteil“. Momentum, Weinstein und Darvas sind robust negativ. Minervini ist nicht belastbar: R1–R4 sind nicht erfüllt, und die Teilzeiträume widersprechen sich.
+- **Einordnung:**
+  - Momentum und Weinstein handeln regelgemäß selten; ihre Investitionsquote ist niedrig.
+  - Bei Darvas zeigt die Kontrolle nur mit überlebenden Titeln einen deutlichen Survivorship-Effekt.
+  - Kennzahlen stehen nur in der verschlüsselten Datei `evidence-internal.sealed.json`.
+- **Produktentscheidung (02.10.2026):**
+  - Alle Versionen sind öffentlich „In Prüfung“ und erscheinen als Forschung bzw. Modellbeobachtung.
+  - Laufende Modellpositionen werden nach ihrer Regelversion weitergeführt.
+  - Damit gibt es derzeit keine aktuelle Methode: Die Startseite zeigt den Beobachtungsmodus.
+- **Geltungsbereich:** Die Aussage gilt jeweils nur für diese Regelversion, das Universum `US_PIT_2016_A`, das Zehn-Positionen-Portfolio und den Zeitraum 2016–2026. Eine geänderte Variante ist eine neue Hypothese mit eigener Präregistrierung.
