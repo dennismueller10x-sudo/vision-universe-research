@@ -6,8 +6,8 @@
   "checks": {
     "nodeProducts": {
       "command": "node --test quant/tests/*.test.mjs discover/tests/*.test.mjs scripts/supertrader/tests/*.test.mjs screener/tests/*.test.mjs",
-      "tests": 2608,
-      "passed": 2603,
+      "tests": 2638,
+      "passed": 2633,
       "failed": 0,
       "skipped": 5,
       "status": "PASS"
@@ -21,9 +21,24 @@
     },
     "tiingo2Focused": {
       "command": "node --test quant/tests/tiingo2-*.test.mjs",
-      "tests": 74,
-      "passed": 74,
+      "tests": 93,
+      "passed": 93,
       "failed": 0,
+      "status": "PASS"
+    },
+    "secDataContractRecheck": {
+      "command": "python -m unittest discover -s scripts/quant/tests -p test_data_contract.py -v",
+      "tests": 17,
+      "failed": 0,
+      "status": "PASS"
+    },
+    "realTiingoCorporateActionCompatibility": {
+      "dividendConvention": "TIINGO_REINVESTMENT_CLOSE",
+      "cases": ["AAPL", "NVDA", "JPM", "MSFT", "XOM"],
+      "barCountPerCase": 2954,
+      "passed": 5,
+      "failed": 0,
+      "scope": "EXISTING_PROVIDER_HISTORY_REPLAY_NO_NETWORK_OR_PRICE_PUBLICATION",
       "status": "PASS"
     },
     "releaseBuild": {
@@ -65,12 +80,21 @@
     {"finding": "Duplicate staged candidates must not inflate publication counts or collapse distinct securities", "status": "FIXED_AND_TESTED"},
     {"finding": "Nonfinite adjustment ratios must fail closed", "status": "FIXED_AND_TESTED"},
     {"finding": "Classifier rules version must not invalidate unchanged historical artifact schema", "status": "FIXED_AND_TESTED"},
-    {"finding": "A common first word must not certify company or SEC identity", "status": "FIXED_AND_TESTED"}
+    {"finding": "A common first word must not certify company or SEC identity", "status": "FIXED_AND_TESTED"},
+    {"finding": "Daily evidence budgets must rotate unprobed candidates and prevent failed symbols from starving later listings", "status": "FIXED_AND_TESTED"},
+    {"finding": "Public reports must drop nested raw prices, provider bodies and bars arrays", "status": "FIXED_AND_TESTED"},
+    {"finding": "Unchanged listing histories require incremental overlap refresh rather than daily full refetch", "status": "FIXED_AND_TESTED"},
+    {"finding": "Interrupted publication must recover a demonstrably dead local lock owner without admitting concurrent writers", "status": "FIXED_AND_TESTED"},
+    {"finding": "Search projections must retain every existing symbol and name shard reference", "status": "FIXED_AND_TESTED"},
+    {"finding": "A subsidiary closed-end fund must not reclassify its operating parent", "status": "FIXED_AND_TESTED"},
+    {"finding": "A first-bar action outside the observed return interval must not reject a legitimate series", "status": "FIXED_AND_TESTED"},
+    {"finding": "Tiingo cash reinvestment must use splitFactor * (1 + divCash / exDayClose), retaining explicit prior-close semantics for generic callers", "status": "FIXED_AND_TESTED"}
   ],
   "limits": [
     "Browser checks validate the existing canonical product baseline; they do not prove newly staged listings were published.",
     "DNA split-factor and Quant computation regressions use constructed prices; actual provider history readiness is reported separately by the refresh evidence artifacts.",
     "Publication requires QA proof bound to exact staged bytes; baseline regression results alone are insufficient.",
-    "Focused and broad suites overlap; their test counts must not be added together."
+    "Focused and broad suites overlap; their test counts must not be added together.",
+    "Historical provider revisions entirely before the incremental overlap may require the existing periodic long-series refresh."
   ]
 }
