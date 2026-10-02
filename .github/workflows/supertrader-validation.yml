@@ -24,7 +24,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [subset, full, analyze, methods, diagnose, r7, sources, r8, r8b]
+        options: [subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c]
         default: subset
   push:
     branches:
@@ -51,7 +51,7 @@ jobs:
           INPUT: ${{ inputs.mode }}
         run: |
           m="$INPUT"
-          case "$MSG" in *"[supertrader-validation:sources]"*) m=sources;; *"[supertrader-validation:r8b]"*) m=r8b;; *"[supertrader-validation:r8-smoke]"*) m=r8-smoke;; *"[supertrader-validation:r8]"*) m=r8;; *"[supertrader-validation:r7-smoke]"*) m=r7-smoke;; *"[supertrader-validation:r7]"*) m=r7;; *"[supertrader-validation:diagnose-smoke]"*) m=diagnose-smoke;; *"[supertrader-validation:diagnose]"*) m=diagnose;; *"[supertrader-validation:methods-smoke]"*) m=methods-smoke;; *"[supertrader-validation:methods]"*) m=methods;; *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
+          case "$MSG" in *"[supertrader-validation:sources]"*) m=sources;; *"[supertrader-validation:r8b]"*) m=r8b;; *"[supertrader-validation:r8c]"*) m=r8c;; *"[supertrader-validation:r8-smoke]"*) m=r8-smoke;; *"[supertrader-validation:r8]"*) m=r8;; *"[supertrader-validation:r7-smoke]"*) m=r7-smoke;; *"[supertrader-validation:r7]"*) m=r7;; *"[supertrader-validation:diagnose-smoke]"*) m=diagnose-smoke;; *"[supertrader-validation:diagnose]"*) m=diagnose;; *"[supertrader-validation:methods-smoke]"*) m=methods-smoke;; *"[supertrader-validation:methods]"*) m=methods;; *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
           echo "mode=${m:-subset}" >> "$GITHUB_OUTPUT"
       - name: Oeffentliche Anbieterangaben zu Abrufgrenzen (Beleg, best effort)
         if: steps.mode.outputs.mode == 'subset'
@@ -115,7 +115,7 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=14000
         run: node scripts/supertrader/validation/analyze-methods.mjs --set r7 --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r7-smoke' && '--limit 400' || '' }}
       - name: Runde-8 Momentum 3.0.0 und Gegenproben (verschluesselt)
-        if: steps.mode.outputs.mode == 'r8' || steps.mode.outputs.mode == 'r8-smoke' || steps.mode.outputs.mode == 'r8b'
+        if: steps.mode.outputs.mode == 'r8' || steps.mode.outputs.mode == 'r8-smoke' || steps.mode.outputs.mode == 'r8b' || steps.mode.outputs.mode == 'r8c'
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -124,7 +124,7 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=14000
-        run: node scripts/supertrader/validation/analyze-methods.mjs --set ${{ steps.mode.outputs.mode == 'r8b' && 'r8b' || 'r8' }} --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r8-smoke' && '--limit 400' || '' }}
+        run: node scripts/supertrader/validation/analyze-methods.mjs --set ${{ (steps.mode.outputs.mode == 'r8b' || steps.mode.outputs.mode == 'r8c') && steps.mode.outputs.mode || 'r8' }} --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r8-smoke' && '--limit 400' || '' }}
       - name: Originalquellen lesen (verschluesselt)
         if: steps.mode.outputs.mode == 'sources'
         run: |

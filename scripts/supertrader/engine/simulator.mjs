@@ -237,7 +237,9 @@ export function simulate(strategy, ctx, opts = {}) {
       lastScan = r;
       if (!r || !PENDING.has(r.stage)) {
         transition(sig, 'INVALIDATED', date, 'LC-SETUP-LOST', { price: round(bars.close[t]), priceBasis: 'CLOSE', failed: r ? Object.keys(r.rules).filter((k) => !r.rules[k]) : [] });
-        finish(sig); state.cooldownUntil = t + COOLDOWN_SESSIONS; continue;
+        // strategy.cooldownAfterSetupLost (Momentum 3.1.0): Sperre nach einem verlorenen
+        // Setup ohne Trade; Standard bleibt LC-COOLDOWN-01 (VU, 5 Sitzungen).
+        finish(sig); state.cooldownUntil = t + (strategy.cooldownAfterSetupLost ?? COOLDOWN_SESSIONS); continue;
       }
       const prevTrigger = sig.levels.trigger, prevInv = sig.levels.invalidation;
       sig.levels = r.levels; sig.facts = r.facts; sig.rules = r.rules;

@@ -61,3 +61,12 @@ test('R8-K5 Restliche Regeln aus dem Originaltext unverändert: 1/3 nach 3 Tagen
   assert.equal(kk3.portfolio.maxPositionPct, 0.25); assert.equal(kk3.portfolio.riskPerTrade, 0.005);
   assert.equal(kk3.PARAMS.momentumPercentile, 98);
 });
+
+test('R8-K6 Momentum 3.1.0: „surfing the rising 10 and 20 day“ – Schluss über einer der Linien genügt; keine Sperre nach verlorenem Setup', async () => {
+  const kk31 = (await import('../engine/strategies/kk-breakout-v31.mjs')).default;
+  assert.equal(kk31.PARAMS.trendMode, 'SURF_10_OR_20');
+  assert.equal(kk31.cooldownAfterSetupLost, 0);
+  assert.equal(kk31.entryMode, 'BUY_STOP_INTRADAY');
+  assert.equal(kk3.cooldownAfterSetupLost, undefined, '3.0.0 bleibt bei LC-COOLDOWN-01');
+  assert.equal(kk3.PARAMS.trendMode, undefined, '3.0.0 bleibt bei „über beiden Linien“');
+});

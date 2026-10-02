@@ -40,6 +40,7 @@ import kkAblation from '../engine/strategies/kk-breakout-ablation-r8.mjs';
 import don1 from '../engine/strategies/donchian.mjs';
 import don2 from '../engine/strategies/donchian-v2.mjs';
 import darvas3 from '../engine/strategies/darvas-v3.mjs';
+import kk31 from '../engine/strategies/kk-breakout-v31.mjs';
 import weinstein3 from '../engine/strategies/weinstein-v3.mjs';
 
 const require = createRequire(import.meta.url);
@@ -68,6 +69,9 @@ const ROLE_R8 = { 'MOMENTUM_BREAKOUT@3.0.0': 'R8_HYPOTHESIS', 'MOMENTUM_BREAKOUT
 export const PREREG_R8B = 'supertrader-validation-prereg-r8b-1.0.0';
 export const ENGINES_R8B = [{ ...kk3, version: '3.0.0-C' }, { ...don2, version: '2.0.0-C' }, darvas3, { ...darvas3, version: '3.0.0-P', simOpts: { sameDayPolicy: 'PESSIMISTIC' } }, darvas2, weinstein3, { ...weinstein3, version: '3.0.0-P', simOpts: { sameDayPolicy: 'PESSIMISTIC' } }, weinstein2];
 const ROLE_R8B = { 'MOMENTUM_BREAKOUT@3.0.0-C': 'R8_CORRECTED_SAME_DAY_CERTAIN', 'DONCHIAN_TURTLE@2.0.0-C': 'R8_CORRECTED_SAME_DAY_CERTAIN', 'DARVAS_BOX@3.0.0': 'R8B_HYPOTHESIS', 'DARVAS_BOX@3.0.0-P': 'SENSITIVITY_PESSIMISTIC', 'DARVAS_BOX@2.0.0': 'REFERENCE_REPRODUCTION', 'WEINSTEIN_STAGE@3.0.0': 'R8B_HYPOTHESIS', 'WEINSTEIN_STAGE@3.0.0-P': 'SENSITIVITY_PESSIMISTIC', 'WEINSTEIN_STAGE@2.0.0': 'REFERENCE_REPRODUCTION' };
+export const PREREG_R8C = 'supertrader-validation-prereg-r8c-1.0.0';
+export const ENGINES_R8C = [kk31, { ...kk31, version: '3.1.0-P', simOpts: { sameDayPolicy: 'PESSIMISTIC' } }, { ...kk3, version: '3.0.0-C' }];
+const ROLE_R8C = { 'MOMENTUM_BREAKOUT@3.1.0': 'R8C_HYPOTHESIS', 'MOMENTUM_BREAKOUT@3.1.0-P': 'SENSITIVITY_PESSIMISTIC', 'MOMENTUM_BREAKOUT@3.0.0-C': 'REFERENCE_R8B' };
 export const portfolioOf = (e) => (e.portfolio ? { ...PORTFOLIO_DEFAULTS, ...e.portfolio } : PORTFOLIO_DEFAULTS);
 const W = L.WINDOW;
 const EXEC2 = { ...DEFAULT_EXECUTION, slippageBps: 20, commissionBps: 2 };
@@ -377,8 +381,8 @@ async function main() {
   const OUT_DIR = arg('--out', path.join(os.tmpdir(), 'supertrader-validation'));
   const LIMIT = Number(arg('--limit', '0'));
   const SET = arg('--set', 'methods');
-  const RUN = SET === 'r8b' ? ENGINES_R8B : SET === 'r8' ? ENGINES_R8 : SET === 'r7' ? [...ENGINES_R7, ...REFERENCE_R7] : ENGINES;
-  const keyOf = (e) => (SET === 'r7' || SET === 'r8' || SET === 'r8b' ? `${e.id}@${e.version}` : e.id);
+  const RUN = SET === 'r8c' ? ENGINES_R8C : SET === 'r8b' ? ENGINES_R8B : SET === 'r8' ? ENGINES_R8 : SET === 'r7' ? [...ENGINES_R7, ...REFERENCE_R7] : ENGINES;
+  const keyOf = (e) => (SET === 'r7' || SET.startsWith('r8') ? `${e.id}@${e.version}` : e.id);
   const examples = {};
   const t0 = Date.now();
   const log = (m) => console.log(`[validation-methods +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
@@ -392,7 +396,7 @@ async function main() {
   k = 0;
   for (const seg of segs) {
     const ctx = segCtx(seg, bench);
-    if (SET === 'r8' && /:(TSLA|NVDA):/.test(seg.id)) Object.assign(examples, exampleTrace(seg, ctx));
+    if ((SET === 'r8' || SET === 'r8c') && /:(TSLA|NVDA):/.test(seg.id)) Object.assign(examples, exampleTrace(seg, ctx, SET === 'r8c' ? kk31 : kk3));
     for (const e of RUN) {
       const base = tradesFor(e, seg, ctx, DEFAULT_EXECUTION);
       R[keyOf(e)].base.push(...base);
@@ -443,17 +447,17 @@ async function main() {
     const c5 = r0.taken.filter((p) => p.returnPct !== undefined).sort((a, b) => Math.abs(b.returnPct) - Math.abs(a.returnPct)).slice(0, 10).map((p) => ({ id: p.tr.id, returnPct: p.returnPct, entry: p.tr.entry, lastExit: p.tr.exits[p.tr.exits.length - 1] || null, terminal: p.tr.terminal ? { ...p.tr.terminal } : null, rawCloseAtConfirm: p.tr.rawCloseAtConfirm }));
     const at5 = all.filter((t) => !(t.rawCloseAtConfirm >= e.PARAMS.minPrice)).length;
     results[keyOf(e)] = {
-      variant: e.variant, version: e.version, params: e.PARAMS, portfolio: cfg, role: SET === 'r8b' ? ROLE_R8B[keyOf(e)] : SET === 'r8' ? ROLE_R8[keyOf(e)] : SET === 'r7' ? (ENGINES_R7.includes(e) ? 'R7_HYPOTHESIS' : 'REFERENCE_REPRODUCTION') : 'PREREGISTERED', engineTrades: all.length, portfolioTrades: runs.S0_LAST_PRICE.taken,
+      variant: e.variant, version: e.version, params: e.PARAMS, portfolio: cfg, role: SET === 'r8c' ? ROLE_R8C[keyOf(e)] : SET === 'r8b' ? ROLE_R8B[keyOf(e)] : SET === 'r8' ? ROLE_R8[keyOf(e)] : SET === 'r7' ? (ENGINES_R7.includes(e) ? 'R7_HYPOTHESIS' : 'REFERENCE_REPRODUCTION') : 'PREREGISTERED', engineTrades: all.length, portfolioTrades: runs.S0_LAST_PRICE.taken,
       runs, judgement: judge(runs), at5Violations: at5,
       controls: { C1max: Math.max(...['S0_LAST_PRICE', 'S1_MINUS_30', 'S2_DISTRESS_ZERO', 'COST2_S1', 'SURVIVORS_ONLY'].map((x) => runs[x].reconciliation.relDiff)), C2maxRelDiff: c2, C3m: R[keyOf(e)].c3, C5: c5 },
       diagnostics: { allTrades: diag(all), survivorTrades: diag(surv), delistedTrades: diag(all.filter((t) => !t.survivor)), takenS0: diag(r0.taken.map((p) => p.tr)), maxPositionsSkipped: r0.skipped.filter((x) => x.reason === 'MAX_POSITIONS').length },
     };
-    if (SET === 'r7' || SET === 'r8' || SET === 'r8b') {
+    if (SET === 'r7' || SET.startsWith('r8')) {
       const { signalQuality, exposureScenarios, theoreticalMaxExposure } = await import('./diagnose-methods.mjs');
       const spyIdx = new Map(spyTR.map((p, i) => [p.date, i]));
       results[keyOf(e)].signalQuality = signalQuality(all, spyIdx, spyTR);
       results[keyOf(e)].capital = { ...exposureScenarios(r0.equity, spyIdx, spyTR), ...theoreticalMaxExposure(all, cfg) };
-      if (SET === 'r8' || SET === 'r8b') results[keyOf(e)].signalQualityBySubperiod = SPLIT_PERIODS.map(([a, b]) => ({ from: a, to: b, ...signalQuality(all.filter((t) => t.entry.date >= a && t.entry.date <= b), spyIdx, spyTR) }));
+      if (SET.startsWith('r8')) results[keyOf(e)].signalQualityBySubperiod = SPLIT_PERIODS.map(([a, b]) => ({ from: a, to: b, ...signalQuality(all.filter((t) => t.entry.date >= a && t.entry.date <= b), spyIdx, spyTR) }));
     }
     R[keyOf(e)] = null;
     log(`${keyOf(e)}: Portfolio fertig`);
@@ -463,7 +467,7 @@ async function main() {
     const sp = budget.spent, u = await mine.readUsage();
     await mine.writeUsage(Guard.applyUsage(u, { classAOperations: sp.classA + 1, classBOperations: sp.classB, bytesDownloaded: sp.bytesDownloaded, run: { at: new Date().toISOString(), kind: 'VALIDATION_ANALYZE_METHODS', classB: sp.classB } }));
   }
-  const result = { schema: 'supertrader-validation-methods-result-1.0.0', set: SET, at: new Date().toISOString(), prereg: SET === 'r8b' ? PREREG_R8B : SET === 'r8' ? PREREG_R8 : SET === 'r7' ? PREREG_R7 : PREREG_METHODS, examples: SET === 'r8' ? examples : undefined, tableHash: hash, commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
+  const result = { schema: 'supertrader-validation-methods-result-1.0.0', set: SET, at: new Date().toISOString(), prereg: SET === 'r8c' ? PREREG_R8C : SET === 'r8b' ? PREREG_R8B : SET === 'r8' ? PREREG_R8 : SET === 'r7' ? PREREG_R7 : PREREG_METHODS, examples: SET === 'r8' || SET === 'r8c' ? examples : undefined, tableHash: hash, commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
     counts: { listings: listings.length, members: members.length, segments: segs.length, duplicates: dup.size, offCalendar }, execution: DEFAULT_EXECUTION, portfolio: cfg,
     spy: { cagr: cagrBetween(spyTR, W.from, W.to, 'value'), maxDrawdown: maxDrawdown(spyTR, 'value') }, results, budget: budget.spent };
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
