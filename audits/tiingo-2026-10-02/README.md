@@ -101,6 +101,8 @@ Combined suites: **2,586 passed, zero failed, five skipped**. SEC Python: **484 
 
 The full packaged-input offline reproduction passes without provider requests. ESEF is absent from the protected main baseline; its unmerged prior branch was read only. [Exact test summary](published/test_results.json)
 
+GitHub Quant CI, SEC Fundamentals CI, currency contract and release packaging passed. The separate full browser QA passed 88 functional checks and found no accessibility violations, but **failed four resource-budget checks**. A clean build of the untouched baseline reproduces the same Screener/Screener Pro overrun at both viewports. The existing 30.5 MB gate is unchanged; this audit does not fix that protected performance issue. See [baseline comparison](published/browser_budget_baseline_comparison.json).
+
 ## 17. REGRESSIONS
 
 **48,207 protected tracked files are byte-identical to baseline.** No production data, routes, provider routing, Cloudflare configuration, existing workflows or IDs changed. One additive bounded read-only diagnostic workflow has no schedule/deployment/publication and uploads authenticated ciphertext only. Six initial diagnostic payload artifacts were unencrypted; after verified local preservation, only those task-created artifacts were removed. Credentials were never included. [Baseline verification](published/protected_baseline.json) · [independent review](published/independent_review.json)

@@ -104,6 +104,22 @@
       "name": "Dashboard adjustment positive/negative gate",
       "command": "python3 scripts/dashboard/verify_adjustment_gate.py",
       "result": "PASS"
+    },
+    {
+      "name": "GitHub Quant CI",
+      "result": "PASS"
+    },
+    {
+      "name": "GitHub SEC Fundamentals CI",
+      "result": "PASS"
+    },
+    {
+      "name": "GitHub production Pages package",
+      "result": "PASS_DEPLOYMENT_SKIPPED"
+    },
+    {
+      "name": "Full browser resource/accessibility QA",
+      "result": "FAIL_EXISTING_BASELINE_RESOURCE_BUDGET"
     }
   ],
   "esefPresentOnBaseline": false,
