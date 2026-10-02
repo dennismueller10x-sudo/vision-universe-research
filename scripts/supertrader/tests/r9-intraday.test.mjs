@@ -128,3 +128,25 @@ test('R9-I9 Live: Kandidaten nur aus wartenden Kauf-Stop-Setups mit erreichtem T
   assert.equal(r.status, 'RESOLVED'); assert.equal(r.exitSameDay, true); assert.equal(r.entryMinute, undefined, 'keine Uhrzeit ins öffentliche Protokoll');
   assert.equal(liveOracleFrom(path.join(os.tmpdir(), 'gibt-es-nicht.json')), null);
 });
+
+test('R9-I10 Offizielle Eröffnung zählt: kein Gap, wenn nur der erste IEX-Druck über dem Trigger liegt; Tief bis zum Kauf schließt die Eröffnung ein', () => {
+  // Wie CBAY 19.01.2024: offizielle Eröffnung 24,18 < Trigger 24,33, erster IEX-Druck 24,40.
+  const r = { trigger: 24.33, fill: 24.33, stop: 23.43, open: 24.18, high: 24.86, low: 23.43, close: 24.5, rawFactor: 1, adr: 0.05 };
+  const bars = [m(0, 24.40, 24.45, 24.36, 24.40), m(1, 24.40, 24.42, 24.30, 24.35), m(2, 24.35, 24.86, 23.43, 24.5)];
+  const x = resolve(r, bars, 'MOMENTUM_BREAKOUT');
+  assert.equal(x.gap, false, 'Gap nach offizieller Eröffnung');
+  assert.equal(x.iexGapAgrees, false);
+  assert.equal(x.stopAdj, 24.18, 'Tief bis zum Kauf = offizielle Eröffnung');
+  assert.equal(x.exitMinute, '09:32', 'Stop 24,18 erst durch das spätere Tief erreicht, nicht nach einer Minute');
+});
+
+test('R9-I11 Gap über dem Trigger: Kauf in der Eröffnungsauktion, Stop ohne Blick auf spätere Minuten, erste Minute zählt für den Ausstieg', () => {
+  const r = { trigger: 10, fill: 10.5, stop: 9.5, open: 10.5, high: 11, low: 10.2, close: 10.8, rawFactor: 1, adr: 0.05 };
+  const bars = [m(0, 10.5, 10.6, 10.2, 10.4), m(1, 10.4, 11, 10.3, 10.8)];
+  const x = resolve(r, bars, 'MOMENTUM_BREAKOUT');
+  assert.equal(x.gap, true);
+  assert.ok(Math.abs(x.stopAdj - 10.5 * 0.9999) < 1e-9, 'Tagestief beim Kauf = Eröffnung');
+  assert.equal(x.exitSameDay, true);
+  assert.equal(x.exitMinute, '09:30');
+  assert.equal(x.dayLowAfterEntry, true);
+});
