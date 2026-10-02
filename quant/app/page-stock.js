@@ -652,10 +652,18 @@
       global.VUTechnicalIntelligence.getAnalysis(ticker).then(function (r) {
         if (!cbHost.isConnected || r.state !== "AVAILABLE") return;
         var a = r.analysis, Ex = global.VUTechnical && global.VUTechnical.TIExplain, p = a.scenarios[0];
-        cbHost.append(el("a", { class: "cb-teaser", href: X.routes.chartbild(ticker) }, [
-          el("b", { text: "Chartbild: " + ((Ex && Ex.OUTLOOK[a.outlook.label]) || a.outlook.label) }),
-          el("span", { text: ((Ex && Ex.STRUCTURE[a.outlook.structure]) || "") + (p && p.entryZone ? " · Zone " + Ex.fmt(p.entryZone.zoneLow) + "–" + Ex.fmt(p.entryZone.zoneHigh) : "") + (p && p.invalidation ? " · ungültig " + (p.invalidation.direction === "below" ? "unter " : "über ") + Ex.fmt(p.invalidation.price) : "") }),
-          el("span", { text: "Szenarien, Zonen und Wellen ansehen →" })]));
+        /* §55: kompakte Karte — Ausblick, Schluesselzone, Ungueltig-Linie, Strukturklarheit. */
+        var tone = { BULLISH: "up", BEARISH: "down", MIXED: "mixed" }[a.outlook.label] || "flat";
+        var cl = a.clarity ? { CLEAR: "klar", MODERATE: "mittel", AMBIGUOUS: "unklar" }[a.clarity.level] : null;
+        cbHost.append(el("a", { class: "cb-teaser cb-tone-" + tone, href: X.routes.chartbild(ticker) }, [
+          el("span", { class: "cb-teaser-k", text: "Technischer Ausblick" }),
+          el("b", { class: "cb-teaser-o" }, [el("span", { class: "cb-dot", "aria-hidden": "true" }), el("span", { text: (Ex && Ex.STRUCTURE[a.outlook.structure]) || ((Ex && Ex.OUTLOOK[a.outlook.label]) || a.outlook.label) })]),
+          el("span", { class: "cb-teaser-grid" }, [
+            p && p.entryZone ? el("span", {}, [el("small", { text: "Schlüsselzone" }), el("strong", { class: "num", text: Ex.fmt(p.entryZone.zoneLow) + "–" + Ex.fmt(p.entryZone.zoneHigh) })]) : null,
+            p && p.invalidation ? el("span", {}, [el("small", { text: p.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über" }), el("strong", { class: "num", text: Ex.fmt(p.invalidation.price) })]) : null,
+            cl ? el("span", {}, [el("small", { text: "Struktur" }), el("strong", { text: cl })]) : null
+          ]),
+          el("span", { class: "cb-teaser-go", text: "Technische Analyse öffnen →" })]));
       }).catch(function () { return null; });
     }
     bodyHost.append(X.section("Wie weit ist die Aktie im Setup?", "Wo ein Einstieg im Szenario ansetzt, was ihn bestätigt und wo es ungültig wird – keine Empfehlung.",

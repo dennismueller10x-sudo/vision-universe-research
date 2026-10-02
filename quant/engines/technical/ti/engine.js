@@ -64,7 +64,7 @@
   }
 
   /** Alle Engines auf einem Kontext. */
-  function engines(ctx, meth) {
+  function engines(ctx, meth, elliottPrevious) {
     meth = meth || {};
     var dow = Dow.analyze(ctx);
     var momentum = MV.analyzeMomentum(ctx, "scale-2");
@@ -73,7 +73,7 @@
     var levels = { sr: Lv.supportResistance(ctx), fib: Lv.fibonacci(ctx) };
     var patterns = Pat.analyze(ctx, {});
     var wyckoff = Wy.analyze(ctx, {});
-    var elliott = EV2.analyzeElliottV2({ series: ctx.series, features: ctx.prep.features, pivots: ctx.prep.pivots, asOfIndex: ctx.t, methodology: meth.elliottV2 || null, barsPerYear: ctx.profile.barsPerYear });
+    var elliott = EV2.analyzeElliottV2({ series: ctx.series, features: ctx.prep.features, pivots: ctx.prep.pivots, asOfIndex: ctx.t, methodology: meth.elliottV2 || null, barsPerYear: ctx.profile.barsPerYear, previous: elliottPrevious || null });
     return { dow: dow, momentum: momentum, volatility: volatility, volume: volume, levels: levels, patterns: patterns, wyckoff: wyckoff, elliott: elliott };
   }
 
@@ -94,7 +94,7 @@
     var t0 = Date.now();
     var ctx = Ctx.at(P.main, t);
     var meth = o.methodology || {};
-    var E = engines(ctx, meth);
+    var E = engines(ctx, meth, o.elliottPrevious || null);
     var wk = null, wkCtx = null, wi = -1;
     if (P.weekly && !o.skipHigher) {
       wi = completedWeek(P.weekly, ctx.t);

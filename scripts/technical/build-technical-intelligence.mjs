@@ -1,10 +1,17 @@
 #!/usr/bin/env node
 /* =========================================================================
-   VU Technical Intelligence — Praekomputation der Produktdaten (API v2)
+   VU Technical Intelligence — Praekomputation der Produktdaten (API v3)
+
+   v3 (Master Mission II): Datenvertrag fuer Chart-Overlays (overlays),
+   Strukturklarheit und Evidenz-Status als getrennte Ebenen, Elliott-
+   Transparenz (Count Quality, Anwendbarkeit, Erkennungsverzug, Neu-
+   zuordnungs-Risiko), Elliott-Persistenz ueber ein kausales Replay und
+   Replay-Schnappschuesse (Zeitachse) fuer Indexmitglieder.
+   Migration v2 → v3: siehe docs/technical-intelligence/API_V3_MIGRATION.md.
 
    Die Seiten rechnen nicht; sie lesen, was dieser Build schreibt:
 
-     quant/data/technical-intelligence/v2/
+     quant/data/technical-intelligence/v3/
        meta.json                  Versionen, Zaehler, Evidenzstand
        index.json.gz              eine Zeile je Titel (Screener, Listen, Alerts)
        shards/<XX>.json.gz        Ergebnis je Titel (Konsument + Profi + Chart)
@@ -27,15 +34,17 @@ import { join } from "node:path";
 import { gzipSync, gunzipSync } from "node:zlib";
 import { createRequire } from "node:module";
 import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload } from "./lib/ti-data.mjs";
+import { analyzeProduct, replaySnapshots, clarityOf, evidenceBadge, overlaysOf, elliottTransparency } from "./lib/ti-product.mjs";
 
 const require = createRequire(import.meta.url);
 const TI = require(join(ROOT, "quant/engines/technical/ti/engine.js"));
 const Explain = require(join(ROOT, "quant/engines/technical/ti/explain.js"));
 const Alerts = require(join(ROOT, "quant/engines/technical/ti/alerts.js"));
 
-const OUT = join(ROOT, "quant/data/technical-intelligence/v2");
+const OUT = join(ROOT, "quant/data/technical-intelligence/v3");
+const Patterns = require(join(ROOT, "quant/engines/technical/elliott/patterns.js"));
 const EVID = join(ROOT, "quant/data/technical-intelligence/evidence");
-const API_VERSION = "vu-ti-api-2.0.0";
+const API_VERSION = "vu-ti-api-3.0.0";
 function arg(name, def) { const i = process.argv.indexOf("--" + name); return i >= 0 ? process.argv[i + 1] : def; }
 function r(v, d = 4) { return typeof v === "number" && Number.isFinite(v) ? Math.round(v * 10 ** d) / 10 ** d : v; }
 export function shardKey(ticker) { return (String(ticker).toUpperCase() + "_").slice(0, 2).replace(/[^A-Z0-9._-]/g, "_"); }
@@ -57,13 +66,14 @@ export function slim(res) {
     waves: c.waves.map((w) => ({ label: w.label, notation: w.notation, fromTime: w.fromTime, toTime: w.toTime, fromPrice: w.fromPrice, toPrice: w.toPrice, status: w.status, subdivision: w.subdivision })),
     /* Regeltext und Quelle stehen einmal im Regelkatalog (rules-catalog.json), hier nur Ergebnis. */
     rules: c.rules.map((x) => { catalogRule(x); return { id: x.ruleId, cls: x.class, passed: x.passed }; }), guidelines: c.guidelines, subdivision: c.subdivision,
-    invalidation: c.invalidation, revision: c.revision, caps: c.caps, zones: c.projection.zones.slice(0, 6), rank: c.rank, rankComponents: c.rankComponents, source: c.source };
+    invalidation: c.invalidation, revision: c.revision, caps: c.caps, zones: c.projection.zones.slice(0, 6), rank: c.rank, rankComponents: c.rankComponents, source: c.source,
+    countQuality: c.countQuality || null, detection: c.detection || null, persistenceKey: c.persistenceKey || null };
   return {
     schemaVersion: res.schemaVersion, symbol: res.symbol, timeframe: res.timeframe, asOf: res.asOf, price: res.price, dataQuality: res.dataQuality,
     outlook: res.outlook, regime: res.regime, scenarios: res.scenarios, confidence: res.confidence, confluence: res.confluence, signature: res.signature,
     evidence: res.evidence, timeframes: res.timeframes, alerts: res.alerts,
     pro: {
-      elliott: E && E.primary ? { status: E.status, degrees: E.degrees, structuralScore: E.structuralScore, structuralLevel: E.structuralLevel, clarity: E.clarity, clarityLevel: E.clarityLevel,
+      elliott: E && E.primary ? { status: E.status, degrees: E.degrees, structuralScore: E.structuralScore, structuralLevel: E.structuralLevel, clarity: E.clarity, clarityLevel: E.clarityLevel, applicability: E.applicability,
                                   primary: count(E.primary), alternatives: E.alternatives.map((a) => { const c = count(a); delete c.rules; delete c.guidelines; delete c.subdivision; c.zones = c.zones.slice(0, 3); return c; }), higherDegree: E.higherDegree && { pattern: E.higherDegree.pattern, patternName: E.higherDegree.patternName, current: E.higherDegree.current, waves: E.higherDegree.waves },
                                   historicalMap: E.historicalMap && { coverage: E.historicalMap.coverage, unlabeledLegs: E.historicalMap.unlabeledLegs, patterns: E.historicalMap.patterns.slice(-6) }, ruleSetVersion: E.ruleSetVersion }
                               : { status: E ? E.status : "UNAVAILABLE", reason: E ? E.reason : null, detail: E ? E.detail : null },
@@ -94,11 +104,19 @@ function casesFor(tf, sym) {
   if (!(f in CASES)) CASES[f] = existsSync(f) ? JSON.parse(gunzipSync(readFileSync(f)).toString()).symbols : {};
   return (CASES[f][sym] || []).slice().reverse();
 }
-function payload(series, res, currency) {
-  const s = slim(res);
+function payload(series, out, currency, withReplay) {
+  const res = out.res, s = slim(res), E = res.methods.elliott;
+  const abstain = !!(E && E.applicability && E.applicability.abstain);
   s.history = casesFor(series.timeframe, res.symbol);
-  s.explain = { summary: Explain.summary(res, currency), wave: Explain.waveConsumer(res.methods.elliott.primary), evidence: Explain.evidenceLine(res), facts: Explain.facts(res, currency) };
-  s.chart = chartOf(series, series.timeframe === "1D" ? 260 : 260);
+  /* Konsument: Wellen-Satz nur, wenn die Struktur fuer Elliott taugt (sonst ehrlich "Struktur unklar"). */
+  s.explain = { summary: Explain.summary(res, currency), wave: abstain ? null : Explain.waveConsumer(E.primary), evidence: Explain.evidenceLine(res), facts: Explain.facts(res, currency) };
+  s.clarity = clarityOf(res);
+  s.evidenceBadge = evidenceBadge(res);
+  s.overlays = overlaysOf(res);
+  s.pro.elliottTransparency = elliottTransparency(res, out.replay);
+  s.chart = chartOf(series, 260);
+  if (withReplay) s.replay = { every: 1, unit: series.timeframe === "1W" ? "Woche" : "Tag", steps: replaySnapshots(series, out.P, out.replay, withReplay, 1),
+                               note: "Jeder Schritt zeigt, was die Analyse an diesem Tag mit den damals verfügbaren Daten gezeigt hätte." };
   return s;
 }
 
@@ -111,6 +129,9 @@ function indexRow(p) {
     entry: s && s.entryZone ? [s.entryZone.zoneLow, s.entryZone.zoneHigh] : null, invalidation: s && s.invalidation ? s.invalidation.price : null,
     t1: s && s.targets && s.targets[0] ? [s.targets[0].zoneLow, s.targets[0].zoneHigh] : null, rr: s ? s.rewardRiskT1 : null, distAtr: dist,
     elliott: E && E.primary ? E.primary.pattern + ":" + (E.primary.complete ? "done" : E.primary.currentWave.label) : null, elliottClarity: E ? E.clarityLevel || null : null,
+    elliottApplicable: E && E.applicability ? E.applicability.level : null, countQuality: E && E.primary && E.primary.countQuality ? E.primary.countQuality.level : null,
+    relabelRisk: p.pro.elliottTransparency && p.pro.elliottTransparency.relabeling ? p.pro.elliottTransparency.relabeling.risk : null,
+    clarity: p.clarity.level, evidence: p.evidenceBadge.level, higherAligned: E && E.primary && E.primary.rankComponents ? E.primary.rankComponents.higherDegree >= 0.8 : null,
     patterns: p.pro.patterns.patterns.filter((x) => x.status !== "FAILED").map((x) => x.type + ":" + x.status), wyckoff: p.pro.wyckoff.phase ? p.pro.wyckoff.schematic + ":" + p.pro.wyckoff.phase : null,
     stage: p.regime.stage, vol: p.regime.volatility, alignment: p.timeframes.alignment, empirical: p.confidence.empirical && p.confidence.empirical.status === "OK" ? { n: p.confidence.empirical.n, hit: p.confidence.empirical.t1HitRate, base: p.confidence.empirical.baselineRate } : null,
     alerts: p.alerts
@@ -138,15 +159,24 @@ export function discoverRows(allRows) {
   return {
     generatedAt: new Date().toISOString(),
     rows: [
-      { id: "near-entry", title: "Nahe einer Einstiegszone", rule: "Aufwärtsszenario, Kurs in der Zone oder höchstens 1 ATR darüber", tickers: by(bull.filter((x) => x.distAtr !== null && x.distAtr <= 1 && x.status !== "INVALIDATED"), (a, b) => b.agreement - a.agreement) },
-      { id: "breakouts", title: "Frische Ausbrüche", rule: "Chartformation mit bestätigtem Ausbruch oder gehaltenem Rücktest", tickers: by(rows.filter((x) => x.patterns.some((p) => /BREAKOUT/.test(p)) && x.direction === "BULLISH"), (a, b) => b.agreement - a.agreement) },
-      { id: "strong-structure", title: "Stärkste Aufwärtsstrukturen", rule: "Aufwärtstrend intakt, Konfidenz hoch, Wochen- und Tagesbild gleichgerichtet (sofern vorhanden)", tickers: by(rows.filter((x) => x.structure === "UPTREND_ADVANCING" && x.confidence === "HIGH" && x.alignment !== "COUNTER_TREND"), (a, b) => b.agreement - a.agreement) },
-      { id: "reversal", title: "Mögliche Trendwenden", rule: "Abwärtstrend, aber bullische Formation in Bildung oder Ausbruch bzw. Wyckoff-Akkumulation ab Phase C", tickers: by(rows.filter((x) => (x.structure === "DOWNTREND_ADVANCING" || x.structure === "RALLY_IN_DOWNTREND") && (x.patterns.some((p) => /DOUBLE_BOTTOM|INVERSE_HEAD|CUP/.test(p)) || /ACCUMULATION:(C|D)/.test(x.wyckoff || ""))), (a, b) => b.agreement - a.agreement) },
-      { id: "elliott-wave3", title: "Wellenstruktur: Welle 3 möglich", rule: "Elliott-Hauptzählung Impuls, Welle 2 abgeschlossen bzw. Welle 3 läuft, Klarheit mindestens mittel", tickers: by(rows.filter((x) => /^IMPULSE:(2|3)$/.test(x.elliott || "") && x.elliottClarity !== "LOW"), (a, b) => b.agreement - a.agreement) },
-      { id: "high-confluence", title: "Hohe Einigkeit der Verfahren", rule: "Betrag des Agreements >= 0,6, kein gemischtes Bild", tickers: by(rows.filter((x) => Math.abs(x.agreement || 0) >= 0.6 && x.outlook !== "MIXED"), (a, b) => Math.abs(b.agreement) - Math.abs(a.agreement)) }
+      { id: "near-zone", title: "Nahe einer Schlüsselzone", rule: "Aufwärtsszenario, Kurs in der Einstiegszone oder höchstens 1 ATR darüber, Szenario gültig", evidence: "DESCRIPTIVE",
+        tickers: by(bull.filter((x) => x.distAtr !== null && x.distAtr <= 1 && x.status !== "INVALIDATED"), (a, b) => b.agreement - a.agreement) },
+      { id: "pullback-uptrend", title: "Rücksetzer im Aufwärtstrend", rule: "Übergeordneter Aufwärtstrend intakt, aktuell Korrektur; Aufwärtsszenario", evidence: "DESCRIPTIVE",
+        tickers: by(bull.filter((x) => x.structure === "CORRECTION_IN_UPTREND"), (a, b) => (a.distAtr === null ? 99 : Math.abs(a.distAtr)) - (b.distAtr === null ? 99 : Math.abs(b.distAtr))) },
+      { id: "clearest", title: "Klarste Strukturen", rule: "Strukturklarheit „klar“: Verfahren gleichgerichtet, kein gemischtes Bild", evidence: "DESCRIPTIVE",
+        tickers: by(rows.filter((x) => x.clarity === "CLEAR" && x.outlook !== "MIXED"), (a, b) => Math.abs(b.agreement) - Math.abs(a.agreement)) },
+      { id: "breakouts", title: "Ausbrüche beobachten", rule: "Chartformation mit bestätigtem Ausbruch oder gehaltenem Rücktest, Aufwärtsszenario", evidence: "DESCRIPTIVE",
+        tickers: by(rows.filter((x) => x.patterns.some((p) => /BREAKOUT/.test(p)) && x.direction === "BULLISH"), (a, b) => b.agreement - a.agreement) },
+      { id: "clear-elliott", title: "Klare Elliott-Strukturen", rule: "Elliott anwendbar (hoch), Count Quality hoch, geringes Neuzuordnungs-Risiko — experimentell, kein belegter Prognosevorteil", evidence: "EXPERIMENTAL",
+        tickers: by(rows.filter((x) => x.elliottApplicable === "HIGH" && x.countQuality === "HIGH" && x.relabelRisk === "LOW"), (a, b) => Math.abs(b.agreement) - Math.abs(a.agreement)) },
+      { id: "higher-degree", title: "Großes und kleines Bild gleichgerichtet", rule: "Elliott-Zählung passt zum höheren Grad; Wochen- und Tagesbild nicht gegenläufig", evidence: "EXPERIMENTAL",
+        tickers: by(rows.filter((x) => x.higherAligned && x.alignment !== "COUNTER_TREND" && x.elliottApplicable !== "LOW" && x.outlook !== "MIXED"), (a, b) => Math.abs(b.agreement) - Math.abs(a.agreement)) },
+      { id: "reversal", title: "Mögliche Trendwenden", rule: "Abwärtstrend, aber bullische Formation in Bildung oder Ausbruch bzw. Wyckoff-Akkumulation ab Phase C", evidence: "DESCRIPTIVE",
+        tickers: by(rows.filter((x) => (x.structure === "DOWNTREND_ADVANCING" || x.structure === "RALLY_IN_DOWNTREND") && (x.patterns.some((p) => /DOUBLE_BOTTOM|INVERSE_HEAD|CUP/.test(p)) || /ACCUMULATION:(C|D)/.test(x.wyckoff || ""))), (a, b) => b.agreement - a.agreement) }
     ],
     universe: "Mitglieder von S&P 500, Nasdaq-100 oder Dow Jones mit Kurs ab 5 $",
-    note: "Reihen beschreiben technische Lagen, keine Empfehlungen. Historische Trefferquoten je Lage im Evidenzbericht."
+    note: "Reihen beschreiben technische Lagen, keine Empfehlungen. Für keine Reihe ist ein Prognosevorteil belegt (siehe Evidenzbericht).",
+    evidenceLevels: { DESCRIPTIVE: "Beschreibt die Lage, ohne Prognoseanspruch", EXPERIMENTAL: "Neue Analyse, Wirkung nicht belegt" }
   };
 }
 
@@ -186,8 +216,8 @@ async function main() {
     try {
       const j = readJson(join(dailyDir, f)), series = dailySeriesFromPayload(j, j.ticker);
       if (series.length < 300) continue;
-      const res = TI.analyzeAt(TI.prepare(series), series.length - 1, { evidenceTable: ev1D, weeklyEvidenceTable: ev1W, calibration: ev1D && ev1D.calibration, symbol: j.ticker });
-      add(payload(series, res, "$")); dailyDone.add(j.ticker);
+      const opts = { evidenceTable: ev1D, weeklyEvidenceTable: ev1W, calibration: ev1D && ev1D.calibration, symbol: j.ticker };
+      add(payload(series, analyzeProduct(series, opts), "$", opts)); dailyDone.add(j.ticker);
     } catch (e) { process.stderr.write("daily " + f + ": " + e.message + "\n"); }
   }
   // ---- Wochenanalyse fuer alle uebrigen Titel
@@ -201,9 +231,9 @@ async function main() {
       if (dailyDone.has(j.ticker)) continue;
       const series = weeklySeriesFromPoints(j.points || [], j.ticker);
       if (series.length < 160) { skipped++; continue; }
-      const res = TI.analyzeAt(TI.prepare(series), series.length - 1, { evidenceTable: ev1W, calibration: ev1W && ev1W.calibration, symbol: j.ticker });
-      add(payload(series, res, j.currency === "USD" || !j.currency ? "$" : j.currency)); weekly++;
-    } catch (e) { skipped++; }
+      const opts = { evidenceTable: ev1W, calibration: ev1W && ev1W.calibration, symbol: j.ticker };
+      add(payload(series, analyzeProduct(series, opts), j.currency === "USD" || !j.currency ? "$" : j.currency, members[j.ticker] ? opts : null)); weekly++;
+    } catch (e) { skipped++; process.stderr.write("weekly " + f + ": " + e.message + "\n"); }
   }
   // ---- Alerts gegen den vorherigen Index
   let prev = {};
@@ -217,7 +247,7 @@ async function main() {
   mkdirSync(join(OUT, "shards"), { recursive: true });
   Object.entries(shards).forEach(([k, inst]) => gz(join(OUT, "shards", k + ".json.gz"), { schemaVersion: API_VERSION, shard: k, instruments: inst }));
   gz(idxPath, { schemaVersion: API_VERSION, generatedAt: new Date().toISOString(), rows });
-  writeFileSync(join(OUT, "rules-catalog.json"), JSON.stringify({ schemaVersion: API_VERSION, ruleSet: "elliott-rules-2.0.1", rules: RULES }, null, 1));
+  writeFileSync(join(OUT, "rules-catalog.json"), JSON.stringify({ schemaVersion: API_VERSION, ruleSet: Patterns.RULE_SET_VERSION, rules: RULES }, null, 1));
   writeFileSync(join(OUT, "discover-rows.json"), JSON.stringify(discoverRows(rows), null, 1));
   writeFileSync(join(OUT, "alerts.json"), JSON.stringify({ schemaVersion: API_VERSION, generatedAt: new Date().toISOString(), previousIndex: Object.keys(prev).length > 0, events: alerts.slice(0, 2000) }, null, 1));
   const meta = {
@@ -226,11 +256,14 @@ async function main() {
     counts: { daily: dailyDone.size, weekly, skipped, shards: Object.keys(shards).length },
     sources: { daily: workDir ? "kanonische Tageshistorie (work-dir)" : "golden-preview (5 Titel)", weekly: "discover-series-long (Wochenschluss, ohne Volumen)" },
     evidence: { weekly: ev1W ? { file: ev1W.source, generatedAt: ev1W.generatedAt, calibrationPassed: ev1W.calibration.passed } : null, daily: ev1D ? { file: ev1D.source, generatedAt: ev1D.generatedAt, calibrationPassed: ev1D.calibration.passed } : null },
-    paths: { evidenceSummary: "/quant/data/technical-intelligence/v2/evidence-summary.json", rulesCatalog: "/quant/data/technical-intelligence/v2/rules-catalog.json", index: "/quant/data/technical-intelligence/v2/index.json.gz", shard: "/quant/data/technical-intelligence/v2/shards/<XX>.json.gz", discoverRows: "/quant/data/technical-intelligence/v2/discover-rows.json", alerts: "/quant/data/technical-intelligence/v2/alerts.json" },
+    paths: Object.fromEntries(Object.entries({ evidenceSummary: "evidence-summary.json", rulesCatalog: "rules-catalog.json", index: "index.json.gz", shard: "shards/<XX>.json.gz", discoverRows: "discover-rows.json", alerts: "alerts.json", methodEvidence: "method-evidence.json" }).map(([k, v]) => [k, "/quant/data/technical-intelligence/v3/" + v])),
+    migration: "docs/technical-intelligence/API_V3_MIGRATION.md",
     runtimeSec: Math.round((Date.now() - t0) / 1000)
   };
   writeFileSync(join(OUT, "meta.json"), JSON.stringify(meta, null, 1));
   writeFileSync(join(OUT, "evidence-summary.json"), JSON.stringify(evidenceSummary(), null, 1));
+  const me = join(ROOT, "quant/methodology/technical-method-evidence.json");
+  if (existsSync(me)) writeFileSync(join(OUT, "method-evidence.json"), JSON.stringify(Object.assign({ schemaVersion: API_VERSION }, readJson(me)), null, 1));
   console.log(JSON.stringify(meta.counts), meta.runtimeSec + " s", alerts.length + " Alerts");
 }
 

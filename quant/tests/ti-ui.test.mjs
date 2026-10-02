@@ -50,9 +50,11 @@ test("UI-3 · Seite laedt nur Anzeige-Bausteine (keine rechnenden Engines) in de
 test("UI-4 · Datenzugriff nur ueber erlaubte Pfade", async () => {
   const g = {}; new Function("window", "globalThis", read("quant/api/technical-intelligence-workspace.js"))(g, g);
   const TI = g.VUTechnicalIntelligence;
-  assert.ok(TI.ALLOWED.test("/quant/data/technical-intelligence/v2/shards/NV.json.gz"));
-  assert.ok(!TI.ALLOWED.test("/quant/data/technical-intelligence/v2/../../sec/x.json"));
-  assert.ok(!TI.ALLOWED.test("https://example.com/quant/data/technical-intelligence/v2/meta.json"));
+  assert.ok(TI.ALLOWED.test("/quant/data/technical-intelligence/v3/shards/NV.json.gz"));
+  assert.ok(TI.ALLOWED.test("/quant/data/technical-intelligence/v3/method-evidence.json"));
+  assert.ok(!TI.ALLOWED.test("/quant/data/technical-intelligence/v3/../../sec/x.json"));
+  assert.ok(!TI.ALLOWED.test("/quant/data/technical-intelligence/v2/meta.json"), "v2 ist abgeloest");
+  assert.ok(!TI.ALLOWED.test("https://example.com/quant/data/technical-intelligence/v3/meta.json"));
   assert.equal(TI.shardKey("nvda"), "NV"); assert.equal(TI.shardKey("A"), "A_");
   assert.equal((await TI.getAnalysis("../../x")).state, "NOT_AVAILABLE");
 });
@@ -60,17 +62,20 @@ test("UI-4 · Datenzugriff nur ueber erlaubte Pfade", async () => {
 test("UI-5 · Chart-Beschreibung fuer Screenreader nennt Zonen und Szenario-Charakter", () => {
   const g = {}; new Function("window", read("quant/ui/ti-chart.js"))(g);
   const d = g.VUTIChart.describe({ entryZone: { zoneLow: 10, zoneHigh: 11 }, targets: [{ zoneLow: 13, zoneHigh: 14 }], invalidation: { price: 9, direction: "below" } }, "$");
-  assert.match(d, /Einstiegszone/); assert.match(d, /Zielzone 1/); assert.match(d, /ungültig unter/); assert.match(d, /keine Vorhersage/);
-  assert.ok(read("quant/ui/ti-chart.js").includes("Szenario · keine Vorhersage"));
+  assert.match(d, /Schlüsselzone/); assert.match(d, /Zielbereich 1/); assert.match(d, /ungültig unter/); assert.match(d, /ohne Zeitangabe/);
+  assert.ok(read("quant/ui/ti-chart.js").includes("Szenario · keine Zeitangabe"));
+  /* Datenvertrag v3: Pfad mit wachsendem Korridor aus overlays */
+  const v = g.VUTIChart.viewOf({ scenarioKind: "ALTERNATIVE", overlays: { zones: [{ scenario: "ALTERNATIVE", kind: "ENTRY", low: 1, high: 2 }, { scenario: "PRIMARY", kind: "ENTRY", low: 5, high: 6 }], invalidations: [{ scenario: "ALTERNATIVE", price: 0.5, direction: "below" }], projectedPaths: [] } });
+  assert.equal(v.entry.low, 1); assert.equal(v.invalidation.price, 0.5);
 });
 
 // ---------------------------------------------------------------- Datenvertrag
-const V2 = "quant/data/technical-intelligence/v2/";
+const V2 = "quant/data/technical-intelligence/v3/";
 const hasData = existsSync(join(ROOT, V2, "meta.json"));
 
 test("API-1 · meta, index, Reihen und Evidenzsumme vorhanden und konsistent", { skip: !hasData }, () => {
   const meta = JSON.parse(read(V2 + "meta.json"));
-  assert.equal(meta.schemaVersion, "vu-ti-api-2.0.0");
+  assert.equal(meta.schemaVersion, "vu-ti-api-3.0.0");
   assert.ok(meta.counts.daily >= 1 && meta.counts.weekly >= 100);
   const idx = gz(V2 + "index.json.gz");
   assert.equal(idx.rows.length, meta.counts.daily + meta.counts.weekly);
@@ -93,6 +98,11 @@ test("API-2 · Payload: keine Wahrscheinlichkeit ohne Kalibrierung, jede Einstie
       for (const re of FORBIDDEN) assert.ok(!re.test(a.explain.summary), a.symbol + ": " + a.explain.summary);
       assert.ok(a.chart.timestamps.length === a.chart.close.length && a.chart.close.length > 50);
       if (a.confidence.empirical && a.confidence.empirical.status === "OK") assert.ok(a.confidence.empirical.n >= 30);
+      /* v3: zwei getrennte Ebenen, Datenvertrag, Elliott nur mit Enthaltung, keine "hohe Konfidenz"-Sprache */
+      assert.ok(["CLEAR", "MODERATE", "AMBIGUOUS"].includes(a.clarity.level));
+      assert.ok(["NOT_ESTABLISHED", "EXPERIMENTAL", "NO_DATA"].includes(a.evidenceBadge.level), "VALIDATED ist ohne bestandenen Bestaetigungstest nicht zulaessig");
+      a.overlays.projectedPaths.forEach((p) => { for (let k = 2; k < p.points.length; k++) assert.ok(p.points[k].half >= p.points[k - 1].half, "Korridor waechst"); });
+      if (a.pro.elliott.applicability && a.pro.elliott.applicability.abstain) { assert.equal(a.explain.wave, null); assert.equal(a.overlays.waves.consumerVisible, false); }
       checked++;
     }
   }

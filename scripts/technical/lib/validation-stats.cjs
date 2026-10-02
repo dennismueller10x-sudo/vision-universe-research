@@ -340,6 +340,9 @@ function analyze(R, meta) {
   const d2 = ev.filter((r) => r.y2 === 0 || r.y2 === 1).map((r) => Object.assign({}, r, { y: r.y2 }));
   const extension = { contRate: rate(d2.filter(isCont)), matched: stratified(d2, isCont, (r) => [r.d, r.trend, r.mom, r.volT, r.regime, r.fold, r.legT, r.depthB].join("|"), 81) };
 
+  // ---------------- Vorab registrierte Hypothesen (docs/technical-intelligence/PREREGISTRATION.md)
+  const hyp = hypotheses(done, WF, ev, ids);
+
   return {
     schemaVersion: "vu-elliott-validation-1.0.0", generatedAt: new Date().toISOString(), meta: Object.assign({}, meta, { runtimeSec: R.runtimeSec }),
     definitions: {
@@ -348,9 +351,51 @@ function analyze(R, meta) {
       labels: "CONT: Engine erwartet nach der laufenden Gegenbewegung Fortsetzung in Richtung L (L = W1/W3/A/W…); REV: L ist letzte Welle bzw. Gegenrichtung erwartet; NONE: L nicht unmittelbar gezaehlt.",
       ci: "95 %-Intervalle: Cluster-Bootstrap nach Titel und nach Kalenderjahr, das breitere wird berichtet."
     },
-    funnel, stability, latency, developingVsConfirmed: devVsConf, ladder, models, excess, abstention: abst, segments: seg, extension,
+    preregisteredHypotheses: hyp, funnel, stability, latency, developingVsConfirmed: devVsConf, ladder, models, excess, abstention: abst, segments: seg, extension,
     errorsSample: R.errors.slice(0, 10)
   };
 }
 
-module.exports = { analyze, mean, median, quantile, clusterBoot, bothBoot, fitLogit, predict, designer, auc, walkForward, modelMetrics, stratified, benjaminiHochberg, rng };
+
+/** Kontrast zweier Gruppen im Ueberschuss ueber das Basismodell (Cluster-Bootstrap Titel/Jahr). */
+function excessContrast(oos, isA, isB, seed) {
+  const rows = oos.filter((o) => isA(o.r) || isB(o.r)).map((o) => ({ sym: o.r.sym, date: o.r.date, a: isA(o.r), e: o.r.y - o.p.BASE }));
+  return bothBoot(rows, (x) => (x.a ? [x.e, 1, 0, 0] : [0, 0, x.e, 1]), (s) => (s[1] && s[3] ? s[0] / s[1] - s[2] / s[3] : null), seed);
+}
+/**
+ * H1–H7 exakt wie in PREREGISTRATION.md festgelegt. Ergebnis je Hypothese: Schaetzer, 95 %-KI (breiteres aus
+ * Titel- und Jahres-Cluster), Rohentscheidung (KI schliesst 0 in erwarteter Richtung aus) und Holm-Entscheidung.
+ */
+function hypotheses(done, WF, ev, ids) {
+  const isCont = (r) => r.lab === "CONT";
+  const H = {};
+  const inc = modelDelta(WF.oos, "BASE", "BASE_ELLIOTT").deltaLogLoss;
+  H.H1 = { name: "Elliott-Merkmale verbessern das Nicht-Elliott-Modell out-of-sample (Delta-LogLoss < 0)", est: inc.est, lo: inc.lo, hi: inc.hi, pass: isNum(inc.hi) && inc.hi < 0 };
+  const m = stratified(done, isCont, (r) => [r.d, r.trend, r.mom, r.volT, r.regime, r.fold, r.legT, r.depthB, r.geomB].join("|"), 101);
+  H.H2 = { name: "Gleiche Struktur mit Fortsetzungs-Label (CONT) erreicht das Leg-Ende haeufiger als ohne (geschichtet)", est: m.diff, lo: m.lo, hi: m.hi, pass: isNum(m.lo) && m.lo > 0 };
+  /* H3: Top 20 % Count Quality (Schwelle aus frueheren Bloecken) — Ueberschuss ueber BASE > 0 */
+  const sel = [];
+  for (let k = 1; k < ids.length; k++) {
+    const thr = quantile(done.filter((r) => isCont(r) && ids.indexOf(r.fold) < k).map((r) => r.cq), 0.8);
+    WF.oos.forEach((o) => { if (o.r.fold === ids[k] && isCont(o.r) && isNum(o.r.cq) && isNum(thr) && o.r.cq >= thr) sel.push({ sym: o.r.sym, date: o.r.date, e: o.r.y - o.p.BASE }); });
+  }
+  const h3 = bothBoot(sel, (x) => [x.e, 1], (s) => s[0] / s[1], 103);
+  H.H3 = { name: "Beste 20 % nach Count Quality uebertreffen das Basismodell", n: sel.length, est: h3.est, lo: h3.lo, hi: h3.hi, pass: isNum(h3.lo) && h3.lo > 0 };
+  const h4 = excessContrast(WF.oos, (r) => isCont(r) && r.hd >= 0.8, (r) => isCont(r) && r.hd < 0.5, 104);
+  H.H4 = { name: "Hoeherer Grad konsistent > im Konflikt (Ueberschuss ueber Basismodell)", est: h4.est, lo: h4.lo, hi: h4.hi, pass: isNum(h4.lo) && h4.lo > 0 };
+  const h5 = excessContrast(WF.oos, (r) => isCont(r) && r.volT === "T3", (r) => isCont(r) && r.volT === "T1", 105);
+  H.H5 = { name: "Elliott-Fortsetzung bei hoher Volatilitaet (oberes Drittel) besser als bei niedriger (unteres Drittel)", est: h5.est, lo: h5.lo, hi: h5.hi, pass: isNum(h5.lo) && h5.lo > 0 };
+  /* H6: Entwicklungs-Einstieg schlaegt den Einstieg erst bei Engine-Bestaetigung (je gegen Zufall gleicher Geometrie) */
+  const rowsD = done.filter((r) => isCont(r) && r.bA && r.bA.length && r.lat && r.lat.cbA && r.lat.cbA.length && (r.lat.confirmedEntryRes === 0 || r.lat.confirmedEntryRes === 1));
+  const h6 = bothBoot(rowsD, (r) => [(r.y - mean(r.bA)) - (r.lat.confirmedEntryRes - mean(r.lat.cbA)), 1], (s) => s[0] / s[1], 106);
+  H.H6 = { name: "Einstieg in der laufenden Gegenbewegung schlaegt den Einstieg nach Engine-Bestaetigung (je gegen Zufall)", n: rowsD.length, est: h6.est, lo: h6.lo, hi: h6.hi, pass: isNum(h6.lo) && h6.lo > 0 };
+  const h7 = excessContrast(WF.oos, (r) => r.fibConf >= 2, (r) => r.fibConf === 0, 107);
+  H.H7 = { name: "Fibonacci-Konfluenz (>= 2 Niveaus) am Einstieg besser als keine (Ueberschuss ueber Basismodell)", est: h7.est, lo: h7.lo, hi: h7.hi, pass: isNum(h7.lo) && h7.lo > 0 };
+  /* Holm: p aus Normalnaeherung des KI (einseitig in erwarteter Richtung) */
+  const keys = Object.keys(H), ps = keys.map((k) => { const h = H[k], se = (h.hi - h.lo) / 3.92, z = se > 0 ? (k === "H1" ? -h.est : h.est) / se : 0; return { k, p: 1 - normCdf(z) }; }).sort((a, b) => a.p - b.p);
+  let stop = false;
+  ps.forEach((x, i) => { const thr = 0.05 / (ps.length - i); H[x.k].pOneSided = r4(x.p); H[x.k].passHolm = !stop && x.p <= thr; if (H[x.k].passHolm === false) stop = true; });
+  return H;
+}
+
+module.exports = { hypotheses, analyze, mean, median, quantile, clusterBoot, bothBoot, fitLogit, predict, designer, auc, walkForward, modelMetrics, stratified, benjaminiHochberg, rng };

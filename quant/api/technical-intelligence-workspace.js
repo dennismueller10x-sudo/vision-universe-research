@@ -1,23 +1,23 @@
 /* =========================================================================
    VISION UNIVERSE QUANT — api/technical-intelligence-workspace.js
-   Lesezugriff auf die praekomputierte Technical-Intelligence-API (v2)
+   Lesezugriff auf die praekomputierte Technical-Intelligence-API (v3)
 
    Die Seite rechnet nicht. Sie liest, was scripts/technical/
    build-technical-intelligence.mjs geschrieben hat:
 
-     /quant/data/technical-intelligence/v2/meta.json
-     /quant/data/technical-intelligence/v2/index.json.gz
-     /quant/data/technical-intelligence/v2/shards/<XX>.json.gz
-     /quant/data/technical-intelligence/v2/discover-rows.json
-     /quant/data/technical-intelligence/v2/rules-catalog.json
+     /quant/data/technical-intelligence/v3/meta.json
+     /quant/data/technical-intelligence/v3/index.json.gz
+     /quant/data/technical-intelligence/v3/shards/<XX>.json.gz
+     /quant/data/technical-intelligence/v3/discover-rows.json
+     /quant/data/technical-intelligence/v3/rules-catalog.json
 
    Nur diese Pfade sind erlaubt (Whitelist), gzip wird im Browser entpackt
    (DecompressionStream) — dieselbe Technik wie product-services.js.
    ========================================================================= */
 (function (global) {
   "use strict";
-  var BASE = "/quant/data/technical-intelligence/v2/";
-  var ALLOWED = /^\/quant\/data\/technical-intelligence\/v2\/(meta\.json|index\.json\.gz|discover-rows\.json|rules-catalog\.json|alerts\.json|evidence-summary\.json|shards\/[A-Z0-9._-]{2}\.json\.gz)$/;
+  var BASE = "/quant/data/technical-intelligence/v3/";
+  var ALLOWED = /^\/quant\/data\/technical-intelligence\/v3\/(meta\.json|index\.json\.gz|discover-rows\.json|rules-catalog\.json|alerts\.json|evidence-summary\.json|method-evidence\.json|shards\/[A-Z0-9._-]{2}\.json\.gz)$/;
   var cache = {};
 
   function shardKey(ticker) { return (String(ticker).toUpperCase() + "_").slice(0, 2).replace(/[^A-Z0-9._-]/g, "_"); }
@@ -59,6 +59,8 @@
   function getMeta() { return load(BASE + "meta.json"); }
   function getEvidenceSummary() { return load(BASE + "evidence-summary.json"); }
   function getAlerts() { return load(BASE + "alerts.json"); }
+  /** Evidenz-Status je Methode (Validierungsstudie): fehlt die Datei, zeigt die Seite neutrale Standardtexte. */
+  function getMethodEvidence() { return load(BASE + "method-evidence.json").catch(function () { return null; }); }
 
-  global.VUTechnicalIntelligence = { BASE: BASE, shardKey: shardKey, getAnalysis: getAnalysis, getIndex: getIndex, getDiscoverRows: getDiscoverRows, getRulesCatalog: getRulesCatalog, getMeta: getMeta, getEvidenceSummary: getEvidenceSummary, getAlerts: getAlerts, ALLOWED: ALLOWED };
+  global.VUTechnicalIntelligence = { BASE: BASE, shardKey: shardKey, getAnalysis: getAnalysis, getIndex: getIndex, getDiscoverRows: getDiscoverRows, getRulesCatalog: getRulesCatalog, getMeta: getMeta, getEvidenceSummary: getEvidenceSummary, getAlerts: getAlerts, getMethodEvidence: getMethodEvidence, ALLOWED: ALLOWED };
 })(typeof window !== "undefined" ? window : globalThis);
