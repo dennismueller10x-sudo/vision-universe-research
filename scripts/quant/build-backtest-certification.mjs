@@ -47,24 +47,30 @@ const factorIndex = json("quant/data/product/factor-evidence-history/index.json"
 const factorVersion = Object.keys(factorIndex.series).sort().pop();
 const factor = PB.historyCoverage(factorIndex.series[factorVersion], today);
 
-/* ---------- Survivorship: Gate und Kontrolle getrennt ---------- */
-const sm = json("quant/data/market/security-master/us-security-master.json");
-const inactiveCommon = sm.rows.filter((r) => r.active_status === "INACTIVE" && r.instrument_type === "EQUITY_COMMON");
-let delistedWithHistory = 0, ambiguousReuse = 0;
-for (const r of inactiveCommon) {
-  const f = P("quant/data/market/discover-series-long", (r.baseline_security_id || "ref_" + r.ticker) + ".json");
-  if (!existsSync(f)) continue;
-  const s = JSON.parse(readFileSync(f, "utf8"));
-  /* Eine Reihe gehoert nur dann zum delisteten Titel, wenn sie um sein Enddatum endet; laeuft sie weiter, ist das Kuerzel neu vergeben. */
-  if (r.end_date && s.to <= r.end_date && Math.abs(Date.parse(s.to) - Date.parse(r.end_date)) < 15 * 86400000) delistedWithHistory++; else ambiguousReuse++;
-}
+/* ---------- Survivorship: Gate und Kontrolle getrennt ----------
+   Inventar und Identitaet kommen aus build-survivorship-control.mjs
+   (Listing-Kennung, nie das Kuerzel). Das Gate schuetzt vor einer
+   Zertifizierung ohne Kontrolle; die Kontrolle heisst nur dann vorhanden,
+   wenn delistete Titel tatsaechlich in einer Studie stecken. */
+const SC = require(P("quant/engines/survivorship-control.js"));
+const inventory = existsSync(P("quant/data/product/survivorship-control-v1.json")) ? json("quant/data/product/survivorship-control-v1.json") : null;
+const sens = signal.survivorshipSensitivity || { computed: false };
 const highTrustWithoutControl = signal.rules.some((r) => r.checks.survivorship.state !== "PASS" && ["USABLE", "ROBUST"].includes(r.trust));
+const scStatus = SC.status({ highTrustWithoutControl, delistedInStudy: sens.computed ? sens.delistedInVariant : 0, coverageFrom: sens.computed ? sens.window.from : null,
+  studyFrom: signal.source && signal.source.from, unfetchableShare: inventory && inventory.delisted && inventory.delisted.available ? inventory.delisted.unfetchableReusedShare : null });
+const smInv = inventory ? inventory.securityMaster : null, dInv = inventory && inventory.delisted && inventory.delisted.available ? inventory.delisted : null;
 const survivorship = {
-  gate: !highTrustWithoutControl ? "PASS" : "FAIL",
-  control: delistedWithHistory > 0 ? "PARTIAL" : "FAIL",
-  DELISTED_IDENTIFIED: inactiveCommon.length, DELISTED_WITH_HISTORY: delistedWithHistory, DELISTED_BACKTEST_ELIGIBLE: delistedWithHistory,
-  tickerReuseAmbiguous: ambiguousReuse,
-  plain: "Gate: keine Auswertung ohne Kontrolle steht über „eingeschränkt“, der Strategie-Backtest bleibt ohne historische Zugehörigkeit geschlossen. Kontrolle: im Repository gibt es keine Kursreihe eines delisteten Titels mit sauberer Identität - die Reihen inaktiver Kürzel laufen weiter, das Kürzel ist neu vergeben.",
+  version: SC.VERSION,
+  gate: scStatus.gate.state, control: scStatus.control.state,
+  SURVIVORSHIP_GATE: scStatus.gate, SURVIVORSHIP_CONTROL: scStatus.control,
+  DELISTED_IDENTIFIED: (smInv ? smInv.inactiveCommon : 0) + (dInv ? dInv.delistedListings : 0),
+  DELISTED_WITH_HISTORY: (smInv ? smInv.backtestEligible : 0) + (dInv ? dInv.classes.A + dInv.classes.B : 0),
+  DELISTED_BACKTEST_ELIGIBLE: sens.computed ? sens.delistedInVariant : 0,
+  tickerReuseAmbiguous: (smInv ? smInv.classes.D + smInv.classes.F : 0) + (dInv ? dInv.classes.D + dInv.classes.F : 0),
+  securityMasterClasses: smInv ? smInv.classes : null, delistedStoreClasses: dInv ? dInv.classes : null,
+  plain: "Gate: keine Auswertung ohne Kontrolle steht über „eingeschränkt“; das Gate löst den Überlebenden-Effekt nicht. Kontrolle: " +
+    (scStatus.control.state === "PARTIAL" ? "delistete Titel ab 2016 sind in einer Sensitivitätsrechnung enthalten, nicht in der Hauptstudie; vor 2016 fehlen sie, der Ausgang eines Delistings ist unbekannt." :
+      "keine delistete Kursreihe mit sauberer Identität in einer Studie."),
   forwardCollected: "Vorwärts gesammelte Stände (Setup-Historie, Index-Zugehörigkeit) enthalten das Universum des jeweiligen Tages und sind damit überlebensfrei, solange kein Fall weggelassen wird."
 };
 
@@ -104,7 +110,7 @@ const signalRules = signal.rules.map((r) => {
 const sigKind = kind("SIGNAL_BACKTEST", "Signal-Backtest", [
   G("pit", "Point-in-Time (alle Regeln)", "HARD", signalRules.every((r) => r.gates.find((x) => x.id === "pit").state === "PASS"), "abgeschnittene und verfälschte Zukunft"),
   G("lookahead", "Einstieg nach dem Signal", "HARD", signalRules.every((r) => r.gates.find((x) => x.id === "lookahead").state === "PASS"), "Schluss der Folgewoche"),
-  G("survivorship", "Überlebende-Kontrolle", "STRUCTURAL", survivorship.control === "PASS", survivorship.control === "PASS" ? "aktiv" : "nicht vorhanden", null, "TODAYS_UNIVERSE_ONLY"),
+  G("survivorship", "Überlebende-Kontrolle", "STRUCTURAL", survivorship.control === "PASS", survivorship.control === "PASS" ? "aktiv" : survivorship.control === "PARTIAL" ? "teilweise (Sensitivität ab 2016, nicht in der Hauptstudie)" : "nicht vorhanden", null, survivorship.control === "PARTIAL" ? "PARTIAL_SENSITIVITY_ONLY" : "TODAYS_UNIVERSE_ONLY"),
   G("returnBasis", "Gesamtrendite", "STRUCTURAL", signal.returnType === "TOTAL_RETURN", signal.returnType === "TOTAL_RETURN" ? "Gesamtrendite" : "Kursrendite (Pipeline rechnet mit Gesamtrendite)", null, "TOTAL_RETURN_SERIES_NOT_PUBLISHED"),
   G("ruleCertified", "mindestens eine Regel zertifiziert", "QUALITY", signalRules.some((r) => r.status === "CERTIFIED"), signalRules.filter((r) => r.status === "CERTIFIED").length + " von " + signalRules.length, null, "NO_RULE_CERTIFIED")
 ], { trust: signalRules.map((r) => r.trust).sort((a, b) => C.TRUST_RANK[b] - C.TRUST_RANK[a])[0], published: signalRules.some((r) => r.published), more: { rules: signalRules,

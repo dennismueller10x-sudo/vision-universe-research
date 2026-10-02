@@ -116,6 +116,28 @@ jobs:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: node scripts/market/refresh-benchmark-history.mjs --report "$RUNNER_TEMP/benchmark-refresh.json"
 
+      # Gesamtrendite-Vertrag fuer Aktien (Owner-Programm 02.10.2026): der
+      # taegliche Anhang behaelt die adjustedClose-Skala des Abruftags, also
+      # kommt jede spaetere Ausschuettung in der bereinigten Spalte nicht an.
+      # Dieselbe Pruefung wie fuer SPY (market-quality.js totalReturnVerdict)
+      # findet diese Reihen; fuer sie gibt es denselben vollen Abruf wie fuer
+      # SPY, juengste Luecke zuerst, hoechstens 1500 je Lauf (Commercial: 5.000/h). Uebernommen wird
+      # nur eine Reihe, die den Vertrag besteht und die Rohschluesse
+      # bestaetigt. Faellt etwas durch, bleibt die Reihe abgelehnt und rechnet
+      # in keinem Backtest als Gesamtrendite. Der Lauf wird davon nicht rot.
+      - name: Gesamtrendite-Reparatur (Aktien, voller Abruf nur bei Vertragsbruch)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node scripts/market/repair-total-return-history.mjs --max 1500 --report "$RUNNER_TEMP/total-return-repair.json"
+          node -e '
+            const r = require(process.env.RUNNER_TEMP + "/total-return-repair.json");
+            const l = ["### Gesamtrendite-Vertrag (Aktien)", "", "Zustand: " + r.state + (r.reason ? " (" + r.reason + ")" : ""),
+              "Vorher: " + JSON.stringify(r.before), "Nachher: " + JSON.stringify(r.after),
+              "Repariert: " + (r.repairedCount ?? 0) + " · fehlgeschlagen: " + (r.failedCount ?? 0) + " " + JSON.stringify(r.failReasons || {}) + " · offen: " + (r.remainingRepairable ?? r.repairable)];
+            require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY, l.join("\n") + "\n");
+          ' || true
+
       # Der Benchmark ist ein Einzelpunkt, an dem die relative Staerke des
       # GANZEN Universums haengt. Faellt er durch die Qualitaetspruefung,
       # altert seine Reihe, und seit dem Frische-Gate verlieren damit alle

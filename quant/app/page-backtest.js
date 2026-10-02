@@ -78,9 +78,54 @@
   }
 
   /* ------------------------------------------------------------ Seite */
+  /* Die acht Bausteine des Vertrauens einzeln, in fester Reihenfolge - nie
+     nur eine Gesamtplakette. Klartext statt interner Codes. */
+  var COMPONENTS = [["returnBasis", "Gesamtrendite"], ["pit", "Point-in-Time"], ["lookahead", "Kein Blick in die Zukunft"], ["survivorship", "Überlebende"],
+    ["oos", "Test außerhalb des Lernzeitraums"], ["walkForward", "Walk-Forward"], ["sample", "Stichprobe"], ["independence", "Unabhängige Fälle"]];
+  function componentWord(id, k) {
+    if (!k || !k.state) return "nicht gemessen";
+    if (k.state === "PASS") return "erfüllt";
+    if (id === "survivorship") return "nicht vollständig kontrolliert";
+    return "nicht erfüllt";
+  }
+  function trustComponents(r) {
+    return el("ul", { class: "q-trustparts", "aria-label": "Vertrauen nach Bausteinen" }, COMPONENTS.map(function (c) {
+      var k = r.checks[c[0]] || {};
+      return el("li", { class: k.state === "PASS" ? "is-pass" : "is-fail" }, [el("b", { text: c[1] }), el("span", { text: componentWord(c[0], k) })]);
+    }));
+  }
+  function evidenceFlags(r, study) {
+    var flags = [el("span", { class: "q-flag is-tested", text: "Historisch getestet" })];
+    if (r.trust !== "ROBUST" && r.trust !== "USABLE") flags.push(el("span", { class: "q-flag is-limited", text: "Evidenz eingeschränkt" }));
+    if (!r.checks.survivorship || r.checks.survivorship.state !== "PASS") flags.push(el("span", { class: "q-flag is-surv", text: "Überlebenden-Effekt nicht vollständig kontrolliert" }));
+    return el("p", { class: "q-flags" }, flags);
+  }
+  var SURVIVORSHIP_PLAIN = "Historische Ergebnisse können verzerrt sein, wenn Unternehmen fehlen, die damals existierten, heute aber nicht mehr gelistet sind.";
+  function sensitivityBlock(r, study) {
+    var z = study.survivorshipSensitivity;
+    if (!z || !z.computed) return el("p", { class: "qx-small", text: SURVIVORSHIP_PLAIN + " Für diese Studie liegt noch keine Vergleichsrechnung mit delisteten Titeln vor." });
+    var row = (z.rules || []).filter(function (x) { return x.id === r.id; })[0];
+    if (!row) return null;
+    var A = row.CURRENT_SURVIVORS_ONLY, B = row.HISTORICAL_ELIGIBLE_SUBSET, D = row.historicalMinusSurvivors;
+    var line = function (label, a, b, d, f) { return el("tr", {}, [el("th", { text: label }), el("td", { class: "num", text: f(a) }), el("td", { class: "num", text: f(b) }), el("td", { class: "num", text: f(d) })]); };
+    return el("div", {}, [el("p", { class: "qx-small", text: SURVIVORSHIP_PLAIN + " Deshalb rechnen wir ab " + X.dateDe(z.window.from) + " zweimal: nur mit heute gelisteten Aktien und mit allen damals gehandelten, die wir sauber zuordnen können (" + int(z.delistedInVariant) + " delistete Titel)." }),
+      el("div", { class: "q-bt-table", role: "region", "aria-label": "Vergleich mit und ohne delistete Titel", tabindex: "0" }, [el("table", {}, [
+        el("caption", { class: "qx-small", text: "Nach 6 Monaten, ab " + X.dateDe(z.window.from) }),
+        el("thead", {}, [el("tr", {}, ["", "Nur heutige Aktien", "Mit delisteten Titeln", "Unterschied"].map(function (t) { return el("th", { text: t }); }))]),
+        el("tbody", {}, [
+          line("Fälle", A.cases, B.cases, B.cases - A.cases, int),
+          line("Anteil im Plus", A.positiveShare, B.positiveShare, D.positiveShare, function (v) { return share(v); }),
+          line("Base Rate", A.baseRate, B.baseRate, D.baseRate, function (v) { return share(v); }),
+          line("Abstand zur Base Rate", A.delta, B.delta, D.delta, function (v) { return pp(v); }),
+          line("Median", A.median, B.median, D.median, function (v) { return pct(v, 1, true); }),
+          line("Rückgang (Median)", A.maxDrawdownMedian, B.maxDrawdownMedian, D.maxDrawdownMedian, function (v) { return pct(v, 1, true); })])])]),
+      el("p", { class: "qx-small", text: int(B.censored) + " Fälle reichen über das Ende eines delisteten Titels hinaus. Ihr Ausgang (Übernahme, Insolvenz oder Rückzug) ist unbekannt; sie werden nicht gewertet. Vor 2016 fehlen delistete Titel ganz. Aus diesem Vergleich folgt keine höhere Vertrauensstufe." })]);
+  }
+
   function ruleBody(r, study, kind) {
     var out = [], h = r.horizons, m6 = h.m6, unitDays = kind === "setup";
     var hz = ["m1", "m3", "m6", "m12"];
+    if (kind === "signal") out.push(X.section("Vertrauen auf einen Blick", null, [evidenceFlags(r, study), trustComponents(r)]));
     out.push(X.section("Regel", null, [el("p", { class: "dx-bewertung-lesart", text: r.plain }),
       el("dl", { class: "qx-kv" }, [].concat.apply([], [
         ["Version", (r.version ? r.id + " " + r.version : r.id) + " · " + (study.engineVersion || "")],
@@ -96,6 +141,7 @@
       ["Titel mit Signal", int(r.titles)],
       ["Überlebende", study.survivorship ? study.survivorship.plain : "Nur heute gelistete Titel – Ergebnisse eher zu günstig."]
     ].map(function (x) { return [el("dt", { text: x[0] }), el("dd", { text: x[1] })]; })))]));
+    if (kind === "signal") { var sb = sensitivityBlock(r, study); if (sb) out.push(X.section("Überlebenden-Effekt", null, [sb])); }
 
     var years = (r.rolling || []);
     var timeline = years.length ? bars(years.map(function (y) { return { label: y.year.slice(2), value: y.n, tone: "" }; }), { label: "Signale je Jahr", fmt: int }) : null;
@@ -249,8 +295,8 @@
         k.reason ? el("p", { class: "qx-small", text: reasonText(k.reason) }) : null,
         eta && eta.date ? el("p", { class: "qx-small", text: "Voraussichtlich genug Historie: " + X.dateDe(eta.date) + " (wird täglich neu geprüft)." }) : null,
         k.ownerApproval && k.ownerApproval.required ? el("p", { class: "qx-small", text: "Nach bestandenen Gates ist eine Owner-Freigabe nötig." }) : null]);
-    })), el("p", { class: "qx-small", text: "Überlebende: Gate " + (cert.survivorship.gate === "PASS" ? "bestanden (kein Backtest steht deshalb über „eingeschränkt“)" : "nicht bestanden") + ", Kontrolle " + (cert.survivorship.control === "PASS" ? "aktiv" : "nicht vorhanden – delistete Titel fehlen in den Ergebnissen, sie wirken eher zu günstig") + ". " +
-      int(cert.survivorship.DELISTED_IDENTIFIED) + " delistete Titel bekannt, davon " + int(cert.survivorship.DELISTED_WITH_HISTORY) + " mit sauberer Kurshistorie." })], { href: X.routes.method("historie"), label: "Methodik" }));
+    })), el("p", { class: "qx-small", text: "Überlebende: Gate " + (cert.survivorship.gate === "PASS" ? "bestanden (kein Backtest steht deshalb über „eingeschränkt“)" : "nicht bestanden") + ", Kontrolle " + (cert.survivorship.control === "PASS" ? "aktiv" : cert.survivorship.control === "PARTIAL" ? "teilweise – delistete Titel ab 2016 nur in einer Vergleichsrechnung, nicht in den Ergebnissen" : "nicht vorhanden – delistete Titel fehlen in den Ergebnissen, sie wirken eher zu günstig") + ". " +
+      int(cert.survivorship.DELISTED_IDENTIFIED) + " delistete Titel bekannt, davon " + int(cert.survivorship.DELISTED_WITH_HISTORY) + " mit sauberer Kurshistorie. " + SURVIVORSHIP_PLAIN })], { href: X.routes.method("historie"), label: "Methodik" }));
   }
 
   global.QXBacktest = { TRUST_WORD: TRUST_WORD, STATUS_WORD: STATUS_WORD, tierWord: tierWord, statusBadge: statusBadge, reasonText: reasonText, evidenceBlock: evidenceBlock, trackingSection: trackingSection, render: render, pathChart: pathChart };

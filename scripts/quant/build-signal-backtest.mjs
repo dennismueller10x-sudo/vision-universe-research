@@ -31,6 +31,7 @@ import { fromBars } from "./lib/daily-prices.mjs";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SB = require(join(ROOT, "quant/engines/signal-backtest.js"));
+const MarketQuality = require(join(ROOT, "quant/engines/market-quality.js"));
 /* VU_SIGNAL_LONG_DIR / VU_SIGNAL_OUT sind ausschliesslich fuer Tests da (ein
    kleines Universum mit synthetischer Historie). Fehlen sie, gilt der
    Produktpfad - es gibt keinen stillen Testmodus. */
@@ -92,15 +93,37 @@ function spyTotalReturnCheck(tr, priced) {
   if (!need || have < need) return { state: "FAIL", reason: "SPY_TOTAL_RETURN_COVERAGE_SHORT", ...out };
   return { state: "PASS", reason: null, ...out };
 }
+/* Gesamtrendite-Vertrag (market-quality.js totalReturnVerdict): gezaehlt
+   wird VORHER (alte Regel: jede Bar hat adjustedClose) und NACHHER (Vertrag
+   bestanden), mit dem Ablehnungsgrund je Titel. Veraltet ist eine
+   Gesamtrendite, die mehr als 10 Tage vor dem letzten Wochenschluss des
+   Titels endet. */
+const TR_STALE_DAYS = 10;
+let trRejected = [];
 if (WORK) {
-  let have = 0;
+  let have = 0, legacy = 0;
+  const reasons = { TOTAL_RETURN_REJECTED_DIVIDEND_GAP: 0, TOTAL_RETURN_REJECTED_SPLIT_GAP: 0, TOTAL_RETURN_REJECTED_STALE: 0, TOTAL_RETURN_REJECTED_OTHER: 0, NO_CANONICAL_SERIES: 0 };
+  const rejectedIds = [];
   for (const T of titles) {
     const f = join(WORK, "tiingo", "daily", T.securityId + ".json");
-    if (!existsSync(f)) { T.tr = null; continue; }
-    try { const d = fromBars(JSON.parse(readFileSync(f, "utf8"))); T.tr = d.totalReturn ? weeklyFromDaily(d.dates, d.tr, IDX, W) : null; } catch { T.tr = null; }
+    if (!existsSync(f)) { T.tr = null; reasons.NO_CANONICAL_SERIES++; continue; }
+    let lastWeek = W - 1; while (lastWeek >= 0 && !(T.c[lastWeek] > 0)) lastWeek--;
+    try {
+      const d = fromBars(JSON.parse(readFileSync(f, "utf8")), { asOf: lastWeek >= 0 ? WEEKS[lastWeek] : asOf, maxStaleDays: TR_STALE_DAYS });
+      if (d.legacyTotalReturn) legacy++;
+      T.tr = d.totalReturn ? weeklyFromDaily(d.dates, d.tr, IDX, W) : null;
+      if (!d.totalReturn) {
+        const r = d.trVerdict.reason;
+        const k = r === "DIVIDEND_GAP" ? "TOTAL_RETURN_REJECTED_DIVIDEND_GAP" : r === "SPLIT_GAP" ? "TOTAL_RETURN_REJECTED_SPLIT_GAP" : r === "STALE" ? "TOTAL_RETURN_REJECTED_STALE" : "TOTAL_RETURN_REJECTED_OTHER";
+        reasons[k]++;
+        rejectedIds.push([T.securityId, r || "LEGACY_MISSING", d.trVerdict.lastGap || null]);
+      }
+    } catch { T.tr = null; reasons.TOTAL_RETURN_REJECTED_OTHER++; }
     if (T.tr) have++;
   }
-  trCoverage = { titles: titles.length, withTotalReturn: have, share: SB.round(have / titles.length, 3) };
+  trCoverage = { titles: titles.length, withTotalReturn: have, share: SB.round(have / titles.length, 3), contract: MarketQuality.TR_CONTRACT_VERSION,
+    TOTAL_RETURN_CONFIRMED_BEFORE: legacy, TOTAL_RETURN_CONFIRMED_AFTER: have, ...reasons, minimumShare: 0.95 };
+  trRejected = rejectedIds.sort((a, b) => a[0].localeCompare(b[0]));
   const spyFile = join(WORK, "tiingo", "daily", BENCHMARK.securityId + ".json");
   if (existsSync(spyFile)) { const d = fromBars(JSON.parse(readFileSync(spyFile, "utf8"))); if (d.totalReturn) spyTR = weeklyFromDaily(d.dates, d.tr, IDX, W); }
   spyCheck = spyTotalReturnCheck(spyTR, pricedSpy);
@@ -111,11 +134,41 @@ if (WORK) {
 }
 console.log("titles", titles.length, "weeks", W, WEEKS[0], "→", asOf, "returnType", returnType, secs());
 
+/* 2b. Delistete Listings (privates Wochenbuendel aus build-survivorship-
+   control.mjs, nur zur Laufzeit). Sie gehen NICHT in die Hauptstudie - die
+   reicht bis 1993 zurueck, delistete Reihen erst ab 2015. Sie tragen die
+   Ueberlebenden-Sensitivitaet ab 2016 (Abschnitt 6b). */
+const di = argv.indexOf("--delisted"), DELISTED_FILE = di >= 0 ? argv[di + 1] : null;
+const SENS_FROM = "2016-01-04";
+let delisted = [], delistedMeta = null;
+if (DELISTED_FILE && existsSync(DELISTED_FILE)) {
+  const b = JSON.parse(readFileSync(DELISTED_FILE, "utf8"));
+  let offAxis = 0;
+  for (const l of b.listings || []) {
+    const c = new Float64Array(W).fill(NaN), tr = l.t ? new Float64Array(W).fill(NaN) : null;
+    let k = IDX.get(l.w0);
+    if (k === undefined) { offAxis++; continue; }
+    /* Das Buendel fuehrt lueckenlose Freitage ab w0 (Wochen ohne Handel null). */
+    const t0w = Date.parse(l.w0 + "T00:00:00Z");
+    for (let i = 0; i < l.c.length; i++) {
+      const w = IDX.get(new Date(t0w + i * 7 * 864e5).toISOString().slice(0, 10));
+      if (w === undefined) continue;
+      if (l.c[i] > 0) c[w] = l.c[i];
+      if (tr && l.t[i] > 0) tr[w] = l.t[i];
+    }
+    let first = 0; while (first < W && !(c[first] > 0)) first++;
+    let last = W - 1; while (last >= 0 && !(c[last] > 0)) last--;
+    delisted.push({ securityId: l.id, ticker: l.ticker, c, tr, trOk: l.tr === "TOTAL_RETURN_CONFIRMED", first, last, delisted: true });
+  }
+  delistedMeta = { file: "runner-privat", version: b.version, asOf: b.asOf, listings: (b.listings || []).length, offAxis };
+  console.log("delisted listings", delisted.length, "off-axis", offAxis, secs());
+}
+
 /* 3./4. Je Renditebasis: Ergebnisreihe, Vergleich (SPY) und Base Rate je
    Woche und Horizont (alle Titel, Einstieg w+1, passiv). Beide Basen laufen
    ueber dieselben Titel, damit der Vergleich nur die Basis aendert. */
 const H = SB.HORIZONS, F = SB.frictionFactor();
-let spy, baseMedian, basePos, basePooled, basePath, basis;
+let spy, baseMedian, basePos, basePooled, basePath, basis, baseBasis;
 function prepare(b) {
   basis = b;
   for (const T of titles) T.out = b === "TOTAL_RETURN" ? T.tr : T.c;
@@ -126,6 +179,7 @@ function prepare(b) {
   computeBase();
 }
 function computeBase() {
+baseBasis = basis;
 for (let w = 0; w < W - 1; w++) {
   const e = w + 1;
   H.forEach((h, hi) => {
@@ -289,7 +343,9 @@ function study(rule) {
     sample: { state: SB.sampleLevel(sample.n, sample.titles) === "NOT_READY" ? "FAIL" : "PASS", value: sample.n + " Fälle mit 6-Monats-Ergebnis aus " + sample.titles + " Titeln", level: SB.sampleLevel(sample.n, sample.titles) },
     oos: { state: oosPass ? "PASS" : "FAIL", reason: oosPass ? null : "OOS_DIRECTION_NOT_CONFIRMED", value: oos },
     walkForward: { state: agreeShare >= 0.75 ? "PASS" : "FAIL", reason: agreeShare >= 0.75 ? null : "FOLDS_DISAGREE", value: Math.round(agreeShare * folds.length) + " von " + folds.length + " Folds in derselben Richtung" },
-    survivorship: { state: "FAIL", reason: "TODAYS_UNIVERSE_ONLY", value: "Nur heute gelistete Titel; " + endedEarly + " Reihen enden früher. Delistete Titel mit sauberer Identität und Historie: 0" },
+    survivorship: delisted.length
+      ? { state: "FAIL", reason: "MAIN_STUDY_SURVIVORS_ONLY", value: "Hauptstudie: nur heute gelistete Titel. " + delisted.length + " delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis." }
+      : { state: "FAIL", reason: "TODAYS_UNIVERSE_ONLY", value: "Nur heute gelistete Titel; " + endedEarly + " Reihen enden früher. Delistete Titel mit sauberer Identität und Historie: 0" },
     returnBasis: basis === "TOTAL_RETURN" ? { state: "PASS", value: "Gesamtrendite (" + WEEKLY_TOTAL_RETURN_VERSION + ")" } : { state: "FAIL", reason: "TOTAL_RETURN_SERIES_NOT_PUBLISHED", value: "Kursrendite ohne Dividenden" },
     costs: { state: "PASS", value: "BASE " + SB.COST_SCENARIOS.BASE + " bps je Runde; LOW " + SB.COST_SCENARIOS.LOW + ", HIGH " + SB.COST_SCENARIOS.HIGH + " gemessen" },
     slippage: { state: "PASS", value: SB.FRICTIONS.slippageBps + " bps je Runde (in BASE enthalten)" },
@@ -313,7 +369,7 @@ function study(rule) {
   const n6 = opp.rets.length, m = horizons.m6;
   return {
     id: rule.id, version: rule.version, family: rule.family, plain: rule.plain, dailyDefinition: rule.dailyDefinition, params: rule.params, opposite: rule.opposite,
-    returnType: basis, grain: "WEEKLY", semantics: { version: SB.SEMANTICS.version, entry: "NEXT_CLOSE", exit: "TIME_EXIT", cooldownWeeks: SB.COOLDOWN_WEEKS, frictionsBps: SB.COST_SCENARIOS.BASE },
+    returnType: basis, baseRateReturnType: baseBasis, grain: "WEEKLY", semantics: { version: SB.SEMANTICS.version, entry: "NEXT_CLOSE", exit: "TIME_EXIT", cooldownWeeks: SB.COOLDOWN_WEEKS, frictionsBps: SB.COST_SCENARIOS.BASE },
     occurrences: events.length, titles: new Set(events.map((e) => e.t)).size, firstEvent: firstW !== null ? WEEKS[firstW] : null, lastEvent: lastW !== null ? WEEKS[lastW] : null,
     independence: { uniqueTitles: titleSetM6.size, uniquePeriods: weekSet.size, independentClusters: quarterSet.size, clusterUnit: "Quartal", effectiveN: ind ? ind.effectiveN : null, designEffect: ind ? ind.designEffect : null },
     horizons,
@@ -360,6 +416,102 @@ for (const rule of SB.RULES) {
     "effN", r.independence.effectiveN, "edgeOOS", r.edgeOutOfSample, "trust", r.trust, "fails", r.trustReasons.map((x) => x.id).join(","), secs());
 }
 
+/* 6b. UEBERLEBENDEN-SENSITIVITAET (Owner-Programm 02.10.2026, §9).
+
+   Dieselben Regeln, dieselbe Renditebasis, dieselbe Wochenachse, ab 2016:
+     CURRENT_SURVIVORS_ONLY     nur die heutigen Titel der Studie
+     HISTORICAL_ELIGIBLE_SUBSET dazu jedes delistete Listing in der Woche, in
+                                der es gehandelt wurde (Universum je Woche)
+   Die Base Rate wird je Variante ueber GENAU deren Universum gerechnet.
+   Reicht ein Horizont ueber das Ende einer delisteten Reihe, ist der Fall
+   ZENSIERT (Ausgang unbekannt, gezaehlt) - keine pauschale 0 %/-100 %.
+   LAST_PRICE_ASSUMPTION rechnet zusaetzlich mit dem letzten Kurs als Ausgang;
+   das ist eine Annahme und kein Ergebnis. Aus der Sensitivitaet folgt keine
+   Zertifizierung. */
+const EVENT_CACHE = new WeakMap();
+function eventsOf(c, rule) {
+  let m = EVENT_CACHE.get(c); if (!m) EVENT_CACHE.set(c, (m = new Map()));
+  if (!m.has(rule.id)) m.set(rule.id, SB.detectEvents(c, rule));
+  return m.get(rule.id);
+}
+function sensitivity() {
+  if (!delisted.length) return { computed: false, reason: DELISTED_FILE ? "DELISTED_BUNDLE_EMPTY" : "DELISTED_HISTORY_UNAVAILABLE" };
+  const w0 = WEEKS.findIndex((d) => d >= SENS_FROM), h = 26, hi = H.findIndex((x) => x.weeks === h);
+  const useTR = basis === "TOTAL_RETURN";
+  const dl = delisted.filter((T) => !useTR || (T.trOk && T.tr));
+  const excludedTR = delisted.length - dl.length;
+  const outOf = (T, pad) => {
+    const a = useTR ? T.tr : T.c;
+    if (!pad) return a;
+    const p = Float64Array.from(a); let lastV = NaN;
+    for (let w = 0; w < W; w++) { if (p[w] > 0) lastV = p[w]; else if (w > T.last && lastV > 0) p[w] = lastV; }
+    return p;
+  };
+  const survivors = titles.map((T) => ({ c: T.c, out: T.out, first: T.first, delisted: false }));
+  const variants = {
+    CURRENT_SURVIVORS_ONLY: survivors,
+    HISTORICAL_ELIGIBLE_SUBSET: survivors.concat(dl.map((T) => ({ c: T.c, out: outOf(T, false), first: T.first, last: T.last, delisted: true }))),
+    LAST_PRICE_ASSUMPTION: survivors.concat(dl.map((T) => ({ c: T.c, out: outOf(T, true), first: T.first, last: T.last, delisted: true })))
+  };
+  const result = { computed: true, window: { from: WEEKS[w0], to: asOf }, horizon: "m6", returnType: basis, delistedListings: delisted.length, delistedInVariant: dl.length,
+    delistedExcludedNoConfirmedTotalReturn: excludedTR, universe: {}, rules: [] };
+  const per = {};
+  for (const [name, list] of Object.entries(variants)) {
+    const pos = new Float64Array(W).fill(NaN), med = new Float64Array(W).fill(NaN), members = new Int32Array(W);
+    for (let w = w0; w + 1 + h < W; w++) {
+      const vals = [];
+      for (const T of list) {
+        if (T.c[w] > 0) members[w]++;
+        if (w - T.first < SB.WARMUP_WEEKS) continue;
+        /* Mitglied ist nur, wer in der Einstiegswoche gehandelt wurde: ein
+           delisteter Titel gehoert nach seinem Ende nicht mehr zur Base Rate
+           (sonst zaehlte die Annahme "letzter Kurs" ihn mit 0 % weiter). */
+        if (!(T.c[w + 1] > 0)) continue;
+        const a = T.out[w + 1], b = T.out[w + 1 + h];
+        if (a > 0 && b > 0) vals.push(b / a - 1);
+      }
+      if (vals.length >= 30) { pos[w] = vals.filter((x) => x > 0).length / vals.length; med[w] = SB.median(vals); }
+    }
+    const yearStart = {};
+    for (let w = w0; w < W; w++) { const y = WEEKS[w].slice(0, 4); if (!(y in yearStart)) yearStart[y] = members[w]; }
+    result.universe[name] = { titles: list.length, delisted: list.filter((T) => T.delisted).length, membersAtYearStart: yearStart };
+    per[name] = { pos, med, list };
+  }
+  for (const rule of SB.RULES) {
+    const row = { id: rule.id };
+    for (const [name, { pos, med, list }] of Object.entries(per)) {
+      const rets = [], dd = [], hit = [], cl = [], ex = [];
+      let raw = 0, censored = 0, delistedCases = 0;
+      for (const T of list) {
+        for (const w of eventsOf(T.c, rule)) {
+          if (w < w0 || w - T.first < SB.WARMUP_WEEKS || w + 1 >= W || !(T.c[w + 1] > 0)) continue;
+          raw++;
+          const o = SB.outcome(T.out, w + 1, h);
+          if (!o) { if (T.delisted && w + 1 + h > T.last && w + 1 + h < W) censored++; continue; }
+          if (T.delisted) delistedCases++;
+          rets.push(o.ret); dd.push(o.maxDrawdown);
+          if (Number.isFinite(pos[w])) { hit.push((o.ret > 0 ? 1 : 0) - pos[w]); cl.push(quarterOf(w)); }
+          if (Number.isFinite(med[w])) ex.push(o.ret - med[w]);
+        }
+      }
+      const s = SB.summarize(rets), cm = SB.clusterMean(hit, cl);
+      row[name] = { rawCases: raw, cases: s.n, delistedCases, censored, independentCases: cm ? cm.effectiveN : null, positiveShare: s.positiveShare,
+        baseRate: cm ? SB.round(s.positiveShare - cm.mean) : null, delta: cm ? cm.mean : null, ci: cm ? cm.ci : null, median: s.median,
+        medianExcess: SB.round(SB.median(ex)), maxDrawdownMedian: SB.round(SB.median(dd)),
+        edge: cm && cm.ci ? (cm.ci[0] > 0 ? "POSITIVE" : cm.ci[1] < 0 ? "NEGATIVE" : "NONE") : null };
+    }
+    const A = row.CURRENT_SURVIVORS_ONLY, B = row.HISTORICAL_ELIGIBLE_SUBSET, d = (k) => (A[k] === null || B[k] === null ? null : SB.round(B[k] - A[k]));
+    row.historicalMinusSurvivors = { positiveShare: d("positiveShare"), baseRate: d("baseRate"), delta: d("delta"), median: d("median"), maxDrawdownMedian: d("maxDrawdownMedian"),
+      edgeChanged: A.edge !== B.edge };
+    result.rules.push(row);
+    console.log("sens", rule.id.padEnd(22), "A pos", A.positiveShare, "Δ", A.delta, "B pos", B.positiveShare, "Δ", B.delta, "cens", B.censored, secs());
+  }
+  result.plain = "Ab 2016 einmal nur mit heute gelisteten Titeln und einmal mit allen damals gehandelten Titeln, die wir sauber zuordnen können. Der Unterschied zeigt, wie stark das Fehlen delisteter Titel das Ergebnis verschiebt. Fälle, deren Ausgang nach einem Delisting unbekannt ist, werden nicht gewertet.";
+  result.certification = "Aus der Sensitivität folgt keine Zertifizierung: die Hauptstudie bleibt ein Universum heute gelisteter Titel, vor 2016 gibt es keine delisteten Reihen, und der Ausgang eines Delistings ist unbekannt.";
+  return result;
+}
+const survivorshipSensitivity = sensitivity();
+
 const COLLECTING = {
   RISK_RISING: { source: "factor-evidence-history", unit: "Faktor-Snapshots" }, FACTOR_CHANGED: { source: "factor-evidence-history", unit: "Faktor-Snapshots" },
   SETUP_NEW: { source: "setup-observation-history", unit: "Setup-Stände" }, SETUP_CONFIRMED: { source: "setup-observation-history", unit: "Setup-Stände" }, SETUP_WEAKENED: { source: "setup-observation-history", unit: "Setup-Stände" },
@@ -368,6 +520,7 @@ const COLLECTING = {
 };
 const out = {
   schemaVersion: SB.STUDY_SCHEMA, engineVersion: SB.VERSION, generatedAt: new Date().toISOString(), asOf,
+  basisContract: "same-return-basis-1.0.0",
   source: { detection: "quant/data/market/discover-series-long (Wochenschluss, splitbereinigt)", outcome: returnType === "TOTAL_RETURN" ? "kanonische Tageshistorie → " + WEEKLY_TOTAL_RETURN_VERSION + " (nur zur Laufzeit)" : "Wochenschluss, splitbereinigt",
     grain: "WEEKLY", titles: titles.length, weeks: W, from: WEEKS[0], to: asOf, totalReturnCoverage: trCoverage,
     benchmark: returnType === "TOTAL_RETURN" ? "SPY Gesamtrendite (kanonische Historie, BENCHMARK_REFERENCE)" : "quant/data/market/multi-asset/series/SPY.json (split-bereinigt, Kurs)",
@@ -377,12 +530,18 @@ const out = {
     rules: rules.map((r) => ({ id: r.id, priceReturn: priceBrief[r.id], totalReturn: brief(r) })) }
     : { compared: false, reason: spyCheck.state === "PASS" ? "TITLE_TOTAL_RETURN_COVERAGE_SHORT" : spyCheck.reason },
   returnType, requiredReturnType: SB.REQUIRED_RETURN_TYPE,
-  returnTypeNote: returnType === "TOTAL_RETURN" ? "Gesamtrendite inklusive Dividenden aus der bestätigten Tagesreihe." : "Kursrendite ohne Dividenden. Die Pipeline rechnet mit Gesamtrendite, sobald sie die kanonische Historie bereitstellt.",
+  returnTypeNote: returnType === "TOTAL_RETURN" ? "Gesamtrendite inklusive Dividenden aus der bestätigten Tagesreihe."
+    : trCoverage && trCoverage.share < 0.95 ? "Kursrendite ohne Dividenden: Gesamtrendite ist nur für " + Math.round(trCoverage.share * 1000) / 10 + " % der Titel bestätigt (nötig 95 %). Gemischt wird nicht."
+    : trCoverage ? "Kursrendite ohne Dividenden: die Gesamtrendite des Vergleichsmaßstabs SPY ist nicht bestätigt (" + spyCheck.reason + "). Gemischt wird nicht."
+    : "Kursrendite ohne Dividenden. Die Pipeline rechnet mit Gesamtrendite, sobald sie die kanonische Historie bereitstellt.",
   semantics: SB.SEMANTICS, horizons: SB.HORIZONS, frictions: SB.FRICTIONS, costScenarios: SB.COST_SCENARIOS, cooldownWeeks: SB.COOLDOWN_WEEKS, warmupWeeks: SB.WARMUP_WEEKS,
   oosSplit: OOS_SPLIT, trustRule: SB.TRUST_RULE, trustChecks: SB.TRUST_CHECKS,
   regime: { used: false, reason: "REGIME_HISTORY_NOT_CERTIFIED" },
   survivorship: { state: "NOT_CONTROLLED", endedBeforeAsOf: endedEarly, titles: titles.length,
+    gate: "Das Gate verhindert nur, dass ein Ergebnis ohne Kontrolle über „eingeschränkt“ steht. Es löst den Überlebenden-Effekt nicht.",
+    control: survivorshipSensitivity.computed ? "PARTIAL" : "NOT_AVAILABLE",
     plain: "Das Universum besteht aus heute gelisteten Aktien. Später delistete Titel fehlen; das macht Ergebnisse eher zu günstig. Die Base Rate derselben Woche trägt denselben Fehler und dämpft ihn im Abstand." },
+  survivorshipSensitivity,
   rules,
   withoutHistory: Object.entries(SB.WITHOUT_HISTORY).map(([eventType, reason]) => ({ eventType, reason, trust: "NOT_READY", status: COLLECTING[eventType] ? "COLLECTING_HISTORY" : "WITHHELD", collecting: COLLECTING[eventType] || null })),
   noOptimization: "Alle Regeln und Parameter stehen vor dem Lauf fest. Nachbarparameter und Einstiegsverzug werden nur gemessen, nie ausgewählt."
@@ -390,4 +549,12 @@ const out = {
 const errors = SB.studyViolations(out);
 if (errors.length) { console.error(errors); process.exit(1); }
 writeFileSync(OUT, JSON.stringify(out) + "\n");
+/* Ablehnungen des Gesamtrendite-Vertrags je Titel: eigenes Artefakt, damit
+   die Studie (vom Frontend geladen) nicht waechst. Nur Kennungen, Gruende
+   und Daten - keine Kurse. */
+if (WORK && trCoverage) {
+  writeFileSync(join(dirname(OUT), "total-return-quality-v1.json"), JSON.stringify({ schemaVersion: "total-return-quality-1.0.0", generatedAt: out.generatedAt, asOf,
+    contract: MarketQuality.TR_CONTRACT_VERSION, rule: "Gesamtrendite gilt nur, wenn jede Ausschüttung und jeder Split in der bereinigten Spalte angekommen ist (market-quality.js totalReturnVerdict).",
+    signalStudy: { returnType, ...trCoverage }, rejected: { columns: ["securityId", "reason", "lastGap"], rows: trRejected } }) + "\n");
+}
 console.log("wrote", OUT, (JSON.stringify(out).length / 1024).toFixed(0) + " KB", secs());
