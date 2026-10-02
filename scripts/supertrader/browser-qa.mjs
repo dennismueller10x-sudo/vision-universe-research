@@ -89,7 +89,11 @@ async function main() {
       await p.reload({ waitUntil: 'domcontentloaded' });
       await p.waitForTimeout(2500);
       if (await p.locator('.st-hero').count()) failures.push(`${vpName} Zugangsmaske: oeffentlicher Pruefwert oeffnet das Produkt`);
+      // Gefaelschten Zustand entfernen, damit der Login wirklich ueber das Formular geht.
+      await p.evaluate((c) => localStorage.removeItem(c.storageKey), cfg);
+      await p.reload({ waitUntil: 'domcontentloaded' });
       if (!pass) failures.push(`${vpName} Zugangsmaske aktiv, aber kein Testpasswort (Secret RESEARCH_ACCESS_PASSWORD) verfuegbar`);
+      else if (!(await p.locator('#research-password').count())) failures.push(`${vpName} Zugangsmaske: Formular nicht gefunden`);
       else {
         await p.locator('#research-password').fill(pass);
         await p.locator('#research-access-form button').click();
