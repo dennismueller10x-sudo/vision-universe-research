@@ -530,11 +530,11 @@
     }
   },
   "browser": {
-    "adversarial": 12,
+    "adversarial": 14,
     "disabled": 2,
     "responsive": 56,
     "status": "PASS",
-    "total": 70,
+    "total": 72,
     "widths": [
       390,
       430,
@@ -1235,6 +1235,17 @@
     "vu2Python": 32
   },
   "timedEventRegression": {
+    "berlinDateBoundaryBeforeDstFallback": {
+      "displayDate": "2026-10-25",
+      "displayTime": "01:30",
+      "products": [
+        "Quant",
+        "Discover"
+      ],
+      "source": "2026-10-24T23:30:00Z",
+      "status": "PASS",
+      "timezone": "Europe/Berlin"
+    },
     "dateOnlyEventsRetainDate": true,
     "durableProducerUnchangedSinceRunnerD": true,
     "pastTimedCallCannotBecomeUpcoming": true,
