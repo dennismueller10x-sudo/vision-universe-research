@@ -117,9 +117,18 @@ jobs:
           STORE=$(node -e 'const j=require(process.env.RUNNER_TEMP+"/freshness-vorher.json");console.log(j.LATEST_DURABLE_STORE_ASOF||"")')
           PRODUCT=$(node -e 'const j=require(process.env.RUNNER_TEMP+"/freshness-vorher.json");console.log(j.LATEST_PRODUCT_ASOF||"")')
           echo "Ablage: ${STORE:-unbekannt} · Produkt: ${PRODUCT:-unbekannt}"
+          # Gleicher Stichtag ist nicht gleicher methodischer Stand: weicht der
+          # Fingerabdruck von Methodik, Evidenz-Engines, Benchmark-Vertrag oder
+          # Gesamtrendite-Vertrag vom zuletzt materialisierten ab, wird neu
+          # gerechnet - ohne force (scripts/quant/methodology-fingerprint.mjs).
+          METHOD=$(node scripts/quant/methodology-fingerprint.mjs --compare | sed 's/^changed=//')
+          echo "Methodik geaendert: ${METHOD:-nein}"
           if [ "${{ github.event_name == 'workflow_dispatch' && inputs.force == true }}" = "true" ]; then
             echo "noop=false" >> "$GITHUB_OUTPUT"
             echo "::notice::Manuell erzwungen (force) - Stichtag $STORE wird neu materialisiert."
+          elif [ -n "$METHOD" ]; then
+            echo "noop=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Methodikwechsel ($METHOD) - Stichtag $STORE wird neu materialisiert."
           elif [ -n "$STORE" ] && [ "$STORE" = "$PRODUCT" ]; then
             echo "noop=true" >> "$GITHUB_OUTPUT"
             echo "::notice::Produktstand entspricht der Ablage ($STORE) - nichts zu materialisieren."
@@ -286,9 +295,26 @@ jobs:
         if: steps.noetig.outputs.noop != 'true'
         run: node --max-old-space-size=6144 scripts/quant/build-setup-backtest.mjs --work-dir "$RUNNER_TEMP/canonical-history"
 
+      # UEBERLEBENDEN-KONTROLLE (Owner-Programm 02.10.2026). Inventar der
+      # delisteten Titel ueber die Listing-Kennung (nie das Kuerzel) und das
+      # private Wochenbuendel aus dem internen Delisting-Abruf (R2,
+      # tiingo-delisted). Kein Anbieter-Abruf; das Buendel bleibt im Runner.
+      - name: Survivorship control inventory and private delisted weekly bundle
+        if: steps.noetig.outputs.noop != 'true'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node --max-old-space-size=6144 scripts/quant/build-survivorship-control.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --bundle-out "$RUNNER_TEMP/delisted-weekly.json"
+
       - name: Signal backtest over the weekly universe (weekly total return from the canonical history)
         if: steps.noetig.outputs.noop != 'true'
-        run: node --max-old-space-size=6144 scripts/quant/build-signal-backtest.mjs --work-dir "$RUNNER_TEMP/canonical-history"
+        run: node --max-old-space-size=7168 scripts/quant/build-signal-backtest.mjs --work-dir "$RUNNER_TEMP/canonical-history" --delisted "$RUNNER_TEMP/delisted-weekly.json"
 
       # SETUP-ERGEBNISSE NUR AUS VEROEFFENTLICHTEN STAENDEN. Jeder Stand wird
       # gegen seinen contentHash geprueft; Kurse nur zur Laufzeit.
@@ -383,6 +409,13 @@ jobs:
         if: steps.noetig.outputs.noop != 'true'
         run: node scripts/market/assert-public-data-hygiene.mjs
 
+      # Der Fingerabdruck wird erst NACH einer vollstaendigen Materialisierung
+      # festgeschrieben: bricht ein Schritt vorher ab, erkennt der naechste
+      # Lauf den Methodikwechsel weiterhin.
+      - name: Record the methodology fingerprint of this materialization
+        if: steps.noetig.outputs.noop != 'true'
+        run: node scripts/quant/methodology-fingerprint.mjs --write
+
       - name: Commit materialized Product Data to the current branch
         if: steps.noetig.outputs.noop != 'true'
         run: |
@@ -390,7 +423,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           # The snapshot history is append-only; the materializer refuses to
           # rewrite a published date, so this only ever adds a new file.
-          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/product/radar-v1.json.gz quant/data/product/setup-lifecycle-v1.json.gz quant/data/product/radar-ticker-v1 quant/data/product/radar-history quant/data/product/evidence-status-v1.json quant/data/product/decision-intelligence-v1.json quant/data/product/setup-replay-v1 quant/data/product/setup-backtest-v1.json quant/data/product/signal-backtest-v1.json quant/data/product/backtest-readiness-v2.json quant/data/product/backtest-signal-intelligence-v1.json quant/data/product/setup-outcomes-v1.json quant/data/product/backtest-certification-v1.json quant/data/product/backtest-certification-measure-v1.json quant/data/providers/return-basis-input-audit.json quant/data/providers/return-basis-universe-study.json docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md quant/data/product/methodology-change-v1.json quant/data/product/journey-coverage-v1.json quant/data/product/universe-list-v1.json.gz quant/methodology/index.html
+          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/product/radar-v1.json.gz quant/data/product/setup-lifecycle-v1.json.gz quant/data/product/radar-ticker-v1 quant/data/product/radar-history quant/data/product/evidence-status-v1.json quant/data/product/decision-intelligence-v1.json quant/data/product/setup-replay-v1 quant/data/product/setup-backtest-v1.json quant/data/product/signal-backtest-v1.json quant/data/product/backtest-readiness-v2.json quant/data/product/backtest-signal-intelligence-v1.json quant/data/product/setup-outcomes-v1.json quant/data/product/backtest-certification-v1.json quant/data/product/backtest-certification-measure-v1.json quant/data/product/total-return-quality-v1.json quant/data/product/survivorship-control-v1.json quant/data/product/methodology-fingerprint-v1.json quant/data/providers/return-basis-input-audit.json quant/data/providers/return-basis-universe-study.json docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md quant/data/product/methodology-change-v1.json quant/data/product/journey-coverage-v1.json quant/data/product/universe-list-v1.json.gz quant/methodology/index.html
           if git diff --cached --quiet; then echo "Product Data unveraendert."; exit 0; fi
           node -e 'const s=require("./quant/data/product/technical-signals-v1/summary.json"); console.log(s.counts)'
           node -e 'const s=require("./quant/data/product/factor-evidence-v1/summary.json"); console.log(s.counts); console.log(s.factorStates); console.log(s.snapshotHistory)'

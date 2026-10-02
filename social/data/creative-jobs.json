@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-01T21:22:03.584Z",
+  "generatedAt": "2026-10-02T13:09:26.025Z",
   "note": "Rekonstruiert aus den Kommentaren der Request-PRs und dem Invocation Ledger. Keine neue Work-Ausfuehrung. Jede Zeile nennt, woher sie stammt; was nicht geprueft wurde, steht als null und nicht als Schaetzung.",
   "jobs": [
     {
@@ -1057,6 +1057,46 @@
       "resultCommitSha": "97cf4b2103b3f8c3bd75364132cad9a88ff8f2de",
       "resultRef": "origin/authoring/request/vu-post-20261001-2dc13b600e",
       "resultBlobSha": "9887b4b6993db18991e845a1e83cd8e580ec1918"
+    },
+    {
+      "creativeJobId": "job_vu-post-20261002-f5bab93d15:12ed53bd1daa1f24060909014d78736158ee4d8a:attempt1",
+      "contentId": "vu-post-20261002-f5bab93d15",
+      "briefId": "brief_dcba5a8352739dbc",
+      "briefBlobSha": "12ed53bd1daa1f24060909014d78736158ee4d8a",
+      "processingKey": "brief_dcba5a8352739dbc:vu-post-20261002-f5bab93d15:12ed53bd1daa1f24060909014d78736158ee4d8a:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-10-02T13:09:26.025Z",
+      "updatedAt": "2026-10-02T13:26:48.316Z",
+      "prNumber": 351,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-10-02T13:09:26.025Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-10-02T13:09:26.025Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-10-02T13:26:48.316Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-10-02T13:26:48.316Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "534bb64f4532547f1a5132b83f84440fb1ede07a",
+      "resultRef": "origin/authoring/request/vu-post-20261002-f5bab93d15",
+      "resultBlobSha": "3027381c133bfc024c93ec33f74733321bfc1107"
     }
   ],
   "budget": {
@@ -1066,5 +1106,5 @@
     "maxRevisionsPerContentId": 3,
     "diagnosticJobsInProduction": 0
   },
-  "reconciledAt": "2026-10-01T21:37:34.773Z"
+  "reconciledAt": "2026-10-02T13:26:48.316Z"
 }

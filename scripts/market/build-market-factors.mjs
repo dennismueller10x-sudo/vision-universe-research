@@ -441,9 +441,14 @@ writeFileSync(summaryFile, JSON.stringify(Object.assign({}, provenance, {
   canary: canaryRows
 }), null, 2) + "\n");
 
+/* Kompakt, nicht eingerueckt: die Detaildatei ist das groesste Artefakt der
+   Seite (Quant-Screener laedt sie ganz). Die Einrueckung machte 30 % ihrer
+   Groesse aus (27,55 MB eingerueckt, 19,28 MB kompakt, 02.10.2026) und hat das
+   Ressourcenbudget des Screeners gerissen. Inhalt und Feldreihenfolge bleiben
+   gleich. */
 const detailPayload = JSON.stringify(Object.assign({}, provenance, {
   coverage, skipped, securities: rows
-}), null, 2) + "\n";
+})) + "\n";
 
 let detailFile;
 if (detailInRepo) {

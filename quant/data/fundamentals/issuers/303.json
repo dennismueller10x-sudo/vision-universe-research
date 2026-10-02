@@ -798,10 +798,10 @@
       "cik": "0001707303",
       "name": "Dogness (International) Corp",
       "sic": "3990",
-      "rawFacts": 3529,
-      "mappedFacts": 1090,
-      "unmappedFacts": 2521,
-      "calendarYears": 10,
+      "rawFacts": 3944,
+      "mappedFacts": 1201,
+      "unmappedFacts": 2833,
+      "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0630",
@@ -809,32 +809,32 @@
         "DOGZ"
       ],
       "status": "INGESTED",
-      "annualPeriods": 11,
-      "quarterlyPeriods": 11,
+      "annualPeriods": 12,
+      "quarterlyPeriods": 12,
       "firstPeriodEnd": "2015-06-30",
-      "lastPeriodEnd": "2025-06-30",
-      "historyYears": 10.0,
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 10,
+          "annualPeriods": 11,
           "quarterlyPeriods": 2,
           "firstAvailablePeriod": "2016-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 9.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 10.0
         },
         "eps_diluted": {
-          "annualPeriods": 10,
+          "annualPeriods": 11,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2016-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 9.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 10.0
         },
         "free_cash_flow": {
-          "annualPeriods": 10,
+          "annualPeriods": 11,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2016-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 9.0,
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 10.0,
           "derivedFrom": [
             [
               "operating_cash_flow",
@@ -850,25 +850,25 @@
           "historyYears": 3.0
         },
         "net_income": {
-          "annualPeriods": 10,
+          "annualPeriods": 11,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2016-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 9.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 10.0
         },
         "operating_cash_flow": {
-          "annualPeriods": 10,
+          "annualPeriods": 11,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2016-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 9.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 10.0
         },
         "revenue": {
-          "annualPeriods": 10,
+          "annualPeriods": 11,
           "quarterlyPeriods": 0,
           "firstAvailablePeriod": "2016-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 9.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 10.0
         },
         "short_term_debt": {
           "annualPeriods": 6,
@@ -878,18 +878,18 @@
           "historyYears": 6.0
         },
         "stockholders_equity": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 11,
+          "annualPeriods": 12,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2015-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 10.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 11.0
         },
         "total_assets": {
-          "annualPeriods": 9,
-          "quarterlyPeriods": 9,
+          "annualPeriods": 10,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2017-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 8.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 9.0
         },
         "total_debt": {
           "annualPeriods": 3,
@@ -909,37 +909,38 @@
         }
       },
       "quality": {
-        "HIGH": 100,
+        "HIGH": 109,
         "MEDIUM": 12
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 112,
-        "resolvedValues": 112
+        "datableValues": 121,
+        "resolvedValues": 121
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2664,
+        "total": 2994,
         "by_severity": {
-          "INFO": 2521,
-          "WARNING": 143
+          "INFO": 2833,
+          "WARNING": 161
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 124,
+          "CONCEPT_DISAGREEMENT": 135,
           "PERIOD_MISMATCH": 2,
-          "RESTATEMENT_CONFLICT": 17,
-          "UNKNOWN_CONCEPT": 2521
+          "RESTATEMENT_CONFLICT": 24,
+          "UNKNOWN_CONCEPT": 2833
         }
       },
       "latestFiling": {
-        "accession": "0001493152-25-018363",
-        "filing_date": "2025-10-17",
+        "accession": "0001493152-26-045181",
+        "filing_date": "2026-10-01",
         "form": "20-F",
-        "periodic_filings": 9
+        "periodic_filings": 10,
+        "acceptance_datetime": "2026-10-01T04:07:43.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -948,7 +949,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "0eb7f5879e49b86dcf4168c0723937f2cc5d2095474c59c39259689a9c3303ca",
+      "sourceDigest": "1d4ebebb714b55ec91389a921a47bbb07f97e639b13a260252f6916383255480",
       "issuerId": "iss_cik_0001707303"
     },
     {

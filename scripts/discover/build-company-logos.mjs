@@ -394,7 +394,14 @@ if (!args["no-web"] && !DRY) {
     collectItems(await sparql(SPARQL_SITE_BY_TICKER), siteItems);
     const siteMatches = matchUniverse(ohne, siteItems).matches;
     const siteOf = new Map();
+    /* Von Hand gepflegte Adressen gehen vor (discover/config/logo-sites.json). */
+    const kuratiert = readJson(join(root, "discover", "config", "logo-sites.json"), { symbols: {} }).symbols || {};
     for (const r of ohne) {
+      const site = kuratiert[r.symbol] && normalizeSite(kuratiert[r.symbol]);
+      if (site) siteOf.set(r.symbol, { ...site, via: "KURATIERT" });
+    }
+    for (const r of ohne) {
+      if (siteOf.has(r.symbol)) continue;
       const quelle = siteMatches.get(r.symbol) || matches.get(r.symbol);
       const site = quelle && (quelle.sites || []).map(normalizeSite).find(Boolean);
       if (site) siteOf.set(r.symbol, { ...site, via: "WIKIDATA_" + quelle.via });
@@ -565,6 +572,22 @@ const breitePfade = new Set(Object.entries(credits).filter(([s, c]) => c.wide &&
 if (existsSync(join(FILES, "wide"))) for (const f of readdirSync(join(FILES, "wide"))) if (!breitePfade.has(f)) rmSync(join(FILES, "wide", f));
 for (const c of Object.values(credits)) if (!c.wide) delete c.wide;
 
+/* Freigabe: Ein Logo geht erst live, wenn genau dieses Bild (sha1) von Hand
+   gesichtet ist (discover/config/logo-reviewed.json). Neue Titel und
+   geaenderte Bilder warten - Datei und Nachweis bleiben, aber die
+   Oberflaeche (index.json) kennt sie noch nicht. So erscheint kein
+   ungesehenes Bild neben einer Aktie (Unterschriften, Partnerlogos, Fotos). */
+const FREIGABE = readJson(join(root, "discover", "config", "logo-reviewed.json"), { symbols: {} }).symbols || {};
+const wartend = [];
+for (const [sym, c] of Object.entries(credits)) {
+  if (files[sym] && FREIGABE[sym] !== c.sha1) {
+    c.pending = true; wartend.push(sym);
+    delete files[sym]; reasons.set(sym, "WARTET_AUF_SICHTPRUEFUNG");
+  } else delete c.pending;
+}
+if (wartend.length) console.log(`     Warten auf Sichtpruefung: ${wartend.length} (${wartend.slice(0, 40).join(", ")}${wartend.length > 40 ? " …" : ""})`);
+const live = Object.values(credits).filter((c) => !c.pending);
+
 /* Helle Logos auf transparentem Grund bekommen in der Oberflaeche eine dunkle Flaeche. */
 const dunkel = [];
 try {
@@ -609,7 +632,7 @@ if (webSites) writeFileSync(join(OUT, "sites.json"), JSON.stringify({
 }, null, 1) + "\n");
 writeFileSync(join(OUT, "missing.json"), JSON.stringify({
   generatedAt,
-  note: "Titel ohne Logo und der Grund. KEIN_WIKIDATA_LOGO: Wikidata kennt fuer die Firma kein Logo (oder die Firma nicht). NAME_ODER_CIK_WIDERSPRICHT / MEHRERE_ITEMS: Zuordnung unklar, deshalb bewusst ohne Logo. LIZENZ_NICHT_FREI / EINSCHRAENKUNG / URHEBER_FEHLT: kein Logo der Firma mit freier Lizenz. WEB_*: die Website brachte kein brauchbares Icon (keins, zu klein, generisch).",
+  note: "Titel ohne Logo und der Grund. KEIN_WIKIDATA_LOGO: Wikidata kennt fuer die Firma kein Logo (oder die Firma nicht). NAME_ODER_CIK_WIDERSPRICHT / MEHRERE_ITEMS: Zuordnung unklar, deshalb bewusst ohne Logo. LIZENZ_NICHT_FREI / EINSCHRAENKUNG / URHEBER_FEHLT: kein Logo der Firma mit freier Lizenz. WEB_*: die Website brachte kein brauchbares Icon (keins, zu klein, generisch). WARTET_AUF_SICHTPRUEFUNG: Logo gefunden, geht nach der Sichtpruefung live.",
   reasons: sortiert(Object.fromEntries([...reasons].filter(([sym]) => !files[sym])))
 }, null, 1) + "\n");
 writeFileSync(join(OUT, "summary.json"), JSON.stringify({
@@ -618,10 +641,11 @@ writeFileSync(join(OUT, "summary.json"), JSON.stringify({
   withLogo: Object.keys(files).length,
   pct: Math.round((Object.keys(files).length / Math.max(1, universe.length)) * 1000) / 10,
   downloaded: geladen + webNeu, unchanged: behalten + webBehalten,
-  bySource: Object.values(credits).reduce((a, c) => ((a[c.source] = (a[c.source] || 0) + 1), a), {}),
-  byVia: Object.values(credits).reduce((a, c) => ((a[c.via] = (a[c.via] || 0) + 1), a), {}),
+  pending: wartend.sort(),
+  bySource: live.reduce((a, c) => ((a[c.source] = (a[c.source] || 0) + 1), a), {}),
+  byVia: live.reduce((a, c) => ((a[c.via] = (a[c.via] || 0) + 1), a), {}),
   indexCoverage: indexAbdeckung,
-  byLicense: Object.values(credits).filter((c) => c.license).reduce((a, c) => ((a[c.license] = (a[c.license] || 0) + 1), a), {}),
+  byLicense: live.filter((c) => c.license).reduce((a, c) => ((a[c.license] = (a[c.license] || 0) + 1), a), {}),
   excluded: grundZaehler
 }, null, 1) + "\n");
 

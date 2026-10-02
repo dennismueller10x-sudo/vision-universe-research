@@ -14,8 +14,14 @@ name: Firmenlogos (Wikimedia Commons und Firmen-Websites fuer Discover)
 # Die Laufzeitumgebung der Entwicklung erreicht Wikimedia nicht; der Abruf
 # laeuft deshalb hier. Aendert nichts ausser discover/logos/.
 #
-# Ausloeser: Dispatch, woechentlich montags, oder ein Push mit der Marke
-# `[company-logos]`.
+# Ausloeser: nach jedem Marktdaten-Refresh (neue Titel im Universum
+# bekommen ihr Logo am selben Abend), woechentlich montags, per Dispatch
+# oder bei einem Push mit der Marke `[company-logos]`.
+#
+# Neue oder geaenderte Logos gehen NICHT sofort live: Sie warten auf die
+# Sichtpruefung (discover/config/logo-reviewed.json,
+# scripts/discover/review-logos.mjs). Alle Sperrlisten und Regeln aus den
+# bisherigen Pruefungen gelten fuer neue Titel automatisch.
 
 on:
   workflow_dispatch:
@@ -30,6 +36,11 @@ on:
         default: false
   schedule:
     - cron: '17 4 * * 1'
+  workflow_run:
+    workflows:
+      - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
+    types: [completed]
+    branches: [main]
   push:
     branches:
       - 'claude/**'
@@ -43,13 +54,15 @@ concurrency:
 
 jobs:
   logos:
-    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[company-logos]')
+    if: >-
+      (github.event_name != 'push' || contains(github.event.head_commit.message, '[company-logos]')) &&
+      (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 240
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref_name }}
+          ref: ${{ github.event_name == 'workflow_run' && 'main' || github.ref_name }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -84,8 +97,9 @@ jobs:
           if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
           Z=$(node -e 'const s=require("./discover/logos/summary.json"); console.log(s.withLogo+"/"+s.universe+" ("+s.pct+" %)")')
           git commit -m "Firmenlogos: $Z Titel mit Logo (Wikimedia Commons und Firmen-Websites)"
-          git pull --rebase origin "${{ github.ref_name }}"
-          git push origin HEAD:"${{ github.ref_name }}"
+          ZIEL="${{ github.event_name == 'workflow_run' && 'main' || github.ref_name }}"
+          git pull --rebase origin "$ZIEL"
+          git push origin HEAD:"$ZIEL"
 
       - name: Zusammenfassung
         if: always()
@@ -94,6 +108,6 @@ jobs:
             echo '### Firmenlogos'
             echo ''
             if [ -f discover/logos/summary.json ]; then
-              node -e 'const s=require("./discover/logos/summary.json"); console.log("| Kennzahl | Wert |"); console.log("|---|---|"); console.log("| Universum | "+s.universe+" |"); console.log("| mit Logo | "+s.withLogo+" ("+s.pct+" %) |"); console.log("| neu geladen | "+s.downloaded+" |"); console.log("| nach Zuordnung | "+JSON.stringify(s.byVia)+" |"); console.log("| nach Quelle | "+JSON.stringify(s.bySource)+" |"); console.log("| nach Lizenz (Commons) | "+JSON.stringify(s.byLicense)+" |"); console.log("| ohne Logo | "+JSON.stringify(s.excluded)+" |"); for (const [k,v] of Object.entries(s.indexCoverage||{})) console.log("| "+k+" | "+v.withLogo+"/"+v.members+" "+(v.missing.length?"fehlen: "+v.missing.join(", "):"")+" |");'
+              node -e 'const s=require("./discover/logos/summary.json"); console.log("| Kennzahl | Wert |"); console.log("|---|---|"); console.log("| Universum | "+s.universe+" |"); console.log("| mit Logo | "+s.withLogo+" ("+s.pct+" %) |"); console.log("| neu geladen | "+s.downloaded+" |"); console.log("| nach Zuordnung | "+JSON.stringify(s.byVia)+" |"); console.log("| nach Quelle | "+JSON.stringify(s.bySource)+" |"); console.log("| nach Lizenz (Commons) | "+JSON.stringify(s.byLicense)+" |"); console.log("| ohne Logo | "+JSON.stringify(s.excluded)+" |"); console.log("| warten auf Sichtpruefung | "+(s.pending||[]).length+" "+(s.pending||[]).join(", ")+" |"); for (const [k,v] of Object.entries(s.indexCoverage||{})) console.log("| "+k+" | "+v.withLogo+"/"+v.members+" "+(v.missing.length?"fehlen: "+v.missing.join(", "):"")+" |");'
             fi
           } >> "$GITHUB_STEP_SUMMARY"

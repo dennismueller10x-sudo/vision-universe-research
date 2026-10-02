@@ -52,7 +52,14 @@ test("Veroeffentlichter Stand: keine Art ist zertifiziert, ohne dass jedes Gate 
   const strat = doc.kinds.find((k) => k.id === "STRATEGY_BACKTEST");
   assert.notEqual(strat.status, "CERTIFIED");
   assert.equal(doc.survivorship.gate, "PASS");
-  assert.equal(doc.survivorship.control, "FAIL");
+  /* Gate und Kontrolle getrennt (survivorship-control-1.0.0): solange delistete
+     Titel nicht in der Hauptstudie stecken, ist die Kontrolle nie PASS - hoechstens
+     PARTIAL (Sensitivitaet ab 2016) oder NOT_AVAILABLE. */
+  assert.ok(["NOT_AVAILABLE", "PARTIAL"].includes(doc.survivorship.control), doc.survivorship.control);
+  assert.equal(doc.survivorship.SURVIVORSHIP_GATE.solvesSurvivorship, false);
+  assert.equal(doc.survivorship.SURVIVORSHIP_CONTROL.inMainStudy, false);
+  const sig = doc.kinds.find((k) => k.id === "SIGNAL_BACKTEST");
+  assert.ok(sig.rules.every((r) => r.status !== "CERTIFIED"), "keine Regel ohne Kontrolle zertifiziert");
 });
 
 /* ---------- Strategie-/Faktor-Engine an Fixtures ---------- */

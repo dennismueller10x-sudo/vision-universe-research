@@ -15,8 +15,15 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const Canonical = require(join(ROOT, "quant/engines/technical/canonical-bars.js"));
+const MarketQuality = require(join(ROOT, "quant/engines/market-quality.js"));
 
-export function fromBars(payload) {
+/* Gesamtrendite nur mit bestandenem Vertrag (market-quality.js
+   totalReturnVerdict, dieselbe Pruefung wie Abruf und Vergleichsmassstab).
+   Eine Reihe, deren bereinigte Spalte eine Ausschuettung oder einen Split
+   nicht mitgemacht hat, liefert tr = null - nie eine Kursrendite unter dem
+   Namen Gesamtrendite. trVerdict nennt den Grund; legacyTotalReturn ist die
+   alte Regel (nur "jede Bar hat adjustedClose") fuer die Vorher-Messung. */
+export function fromBars(payload, opts = {}) {
   const bars = payload.bars || [];
   const actions = [];
   for (const b of bars) {
@@ -25,8 +32,10 @@ export function fromBars(payload) {
   }
   const w = Canonical.fromPriceBars(bars, actions, { instrumentId: payload.ticker, source: "tiingo", sourceRevision: payload.updatedAt, currency: payload.currency || "USD", exchange: payload.exchange || "US" });
   const SA = w.SPLIT_ADJUSTED, TR = w.TOTAL_RETURN || null;
-  const totalReturn = !!TR && bars.length > 0 && bars.every((_, i) => TR.close[i] > 0);
-  return { dates: bars.map((b) => b.date), close: Float64Array.from(SA.close), high: Float64Array.from(SA.high), tr: totalReturn ? Float64Array.from(TR.close) : null, totalReturn };
+  const legacyTotalReturn = !!TR && bars.length > 0 && bars.every((_, i) => TR.close[i] > 0);
+  const trVerdict = MarketQuality.totalReturnVerdict(bars, opts);
+  const totalReturn = legacyTotalReturn && trVerdict.confirmed;
+  return { dates: bars.map((b) => b.date), close: Float64Array.from(SA.close), high: Float64Array.from(SA.high), tr: totalReturn ? Float64Array.from(TR.close) : null, totalReturn, legacyTotalReturn, trVerdict };
 }
 
 export function dailyOf(securityId, workDir, { allowPublicPriceOnly = false } = {}) {
