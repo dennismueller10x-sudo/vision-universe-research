@@ -14,7 +14,11 @@ export function resolve(rec, bars, engineId) {
   const iexH = Math.max(...bars.map((b) => b.high)), iexL = Math.min(...bars.map((b) => b.low));
   if (Math.abs(iexH / rawH - 1) > 0.01 || Math.abs(iexL / rawL - 1) > 0.01) return { status: 'IDENTITY_MISMATCH', iexHighGap: iexH / rawH - 1, iexLowGap: iexL / rawL - 1 };
   const trig = rec.trigger * f;
-  const gap = bars[0].open >= trig;
+  // Nachtrag R9-A4: Ob ein Gap vorliegt, entscheidet die offizielle Eroeffnung (Tagesbalken,
+  // Eroeffnungsauktion der Heimatboerse) - nicht der erste IEX-Druck. Die Auktion ist der
+  // erste Handel des Tages; IEX nimmt daran nicht teil.
+  const officialOpen = rec.open * f;
+  const gap = officialOpen >= trig;
   let e = gap ? 0 : bars.findIndex((b) => b.high >= trig);
   if (e < 0) return { status: 'IEX_HIGH_BELOW_TRIGGER', shortfall: iexH / trig - 1 };
   // Nachtrag A1 (vor dem Hauptlauf): IEX druckt bei weniger liquiden Titeln nicht jede
@@ -22,24 +26,27 @@ export function resolve(rec, bars, engineId) {
   // Minuten bestimmen deshalb nur die REIHENFOLGE; der Preis bleibt beim Tagesbalken-
   // Modell (max(Eroeffnung, Trigger)). Der Sprung wird als Diagnose berichtet.
   const printJump = gap ? null : bars[e].open > trig ? bars[e].open / trig - 1 : 0;
+  const iexGap = bars[0].open >= trig;
   const fill = rec.fill * f;
   let stop;
   if (engineId === 'MOMENTUM_BREAKOUT') {
-    let pre = Infinity; for (let i = 0; i <= e; i++) pre = Math.min(pre, bars[i].low);
-    if (gap) pre = Math.min(pre, bars[0].open);
+    // Tief bis zum Kauf: offizielle Eroeffnung plus IEX-Tiefs bis zur Kaufminute. Beim Gap
+    // faellt der Kauf in die Eroeffnungsauktion - vor jeder IEX-Minute (A4).
+    let pre = officialOpen; if (!gap) for (let i = 0; i <= e; i++) pre = Math.min(pre, bars[i].low);
     const cap = Number.isFinite(rec.adr) ? fill * (1 - rec.adr) : -Infinity;
     stop = Math.max(Math.min(pre, fill * 0.9999), cap);
   } else stop = rec.stop * f;
   let exitIdx = -1;
-  for (let i = e + 1; i < bars.length; i++) if (bars[i].low <= stop) { exitIdx = i; break; }
+  // Beim Gap liegt schon die erste Minute vollstaendig nach dem Kauf (A4).
+  for (let i = gap ? 0 : e + 1; i < bars.length; i++) if (bars[i].low <= stop) { exitIdx = i; break; }
   const minuteAmbiguous = exitIdx < 0 && bars[e].low <= stop && !gap && engineId !== 'MOMENTUM_BREAKOUT';
   const minOf = (i) => etClock(bars[i].date);
   return {
     status: 'RESOLVED', gap, entryMinute: minOf(e), entryIndex: e,
-    fillRaw: fill, fillAdj: fill / f, modelFillAdj: rec.fill, fillDiff: printJump ?? 0, printJump, iexGapAgrees: gap === (rec.open >= rec.trigger),
+    fillRaw: fill, fillAdj: fill / f, modelFillAdj: rec.fill, fillDiff: printJump ?? 0, printJump, iexGapAgrees: iexGap === gap,
     stopAdj: stop / f, engineStopAdj: rec.stop, stopDiff: stop / f / rec.stop - 1,
     exitSameDay: exitIdx >= 0 || minuteAmbiguous, minuteAmbiguous, exitMinute: exitIdx >= 0 ? minOf(exitIdx) : null,
-    dayLowAfterEntry: (() => { let lo = Infinity, at = -1; for (let i = 0; i < bars.length; i++) if (bars[i].low < lo) { lo = bars[i].low; at = i; } return at > e; })(),
+    dayLowAfterEntry: (() => { let lo = Infinity, at = -1; for (let i = 0; i < bars.length; i++) if (bars[i].low < lo) { lo = bars[i].low; at = i; } return gap ? lo < officialOpen : at > e; })(),
     iexOpenVsRaw: bars[0].open / (rec.open * f) - 1,
   };
 }

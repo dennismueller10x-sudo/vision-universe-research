@@ -14,5 +14,12 @@
   "A3_identity": {
     "finding": "Die meisten Ausschlüsse (Identitätsprüfung) entstehen, weil das konsolidierte Tagestief aus der Eröffnungsauktion der Heimatbörse stammt, an der IEX nicht teilnimmt (IEX-Tief 1,1-3,6 % höher).",
     "change": "Keine Änderung der Schwelle (1 %); der Anteil und die Richtung der Abweichung werden berichtet. Mögliche Verzerrung: Fälle mit Auktions-Tief fallen heraus."
+  },
+  "A4_officialOpen": {
+    "registeredAt": "2026-10-02",
+    "timing": "NACH dem Hauptlauf (Run 37034413841/37041293109) bei der Durchsicht von Berichtsbeispielen gefunden - kein Vorab-Nachtrag. Die Ergebnisse vor A4 bleiben unverändert archiviert (evidence-internal: intradayStudyR9, r9b) und werden neben den Ergebnissen nach A4 berichtet.",
+    "finding": "resolve() entschied den Gap nach dem ersten IEX-Druck statt nach der offiziellen Eröffnung. Beispiel CBAY 19.01.2024: offizielle Eröffnung unter dem Trigger, erster IEX-Druck darüber -> fälschlich Gap, Kauf 09:30, Stop = Trigger. Zusätzlich wertete der Gap-Fall das Tief der ersten Minute als 'Tief bis zum Kauf' (Blick nach vorn: die Auktion liegt vor jeder IEX-Minute) und prüfte die erste Minute nicht auf den Stop.",
+    "change": "Gap = offizielle Eröffnung (Tagesbalken) >= Trigger, wie im Simulator und im Tagesbalken-Modell. Tief bis zum Kauf = min(offizielle Eröffnung, IEX-Tiefs bis zur Kaufminute); beim Gap nur die Eröffnung. Beim Gap zählt die erste Minute für den Stop-Treffer. Auswahl, Schwellen, Ergebnisdefinitionen und Entscheidungsregeln unverändert.",
+    "notAThreshold": "Keine Schwelle verändert; die Korrektur stellt die Übereinstimmung mit der bereits registrierten Definition (Kauf zu max(Eröffnung, Trigger); Momentum-Stop = Tagestief bis zum Kauf) her."
   }
 }

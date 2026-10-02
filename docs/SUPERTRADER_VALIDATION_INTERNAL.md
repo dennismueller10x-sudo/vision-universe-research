@@ -274,3 +274,27 @@ die neutrale Variante verbuchte diesen Fall zunächst nicht. Korrigiert in r8b, 
   - Ins öffentliche Protokoll gehen nur Belegart und Entscheidung, keine Minutenwerte und keine Uhrzeit.
   - Ohne Minuten gilt die Tagesbalken-Annahme. Die Seite kennzeichnet sie als „angenommen“ bzw. „Reihenfolge offen“.
 - **iPhone:** Jede Kauf-Stop-Ausführung trägt ihre Belegart. Bei offener Reihenfolge nennt der Hinweis den Befund der Minutenprüfung je Methode, qualitativ und ohne Kennzahlen.
+
+### Nachtrag A4 (nach dem Hauptlauf): offizielle Eröffnung entscheidet den Gap
+
+Bei der Durchsicht von Berichtsbeispielen (CBAY 19.01.2024) fiel auf: Die Minutenauflösung
+entschied den Gap nach dem ersten IEX-Druck statt nach der offiziellen Eröffnung und nahm am
+Gap-Tag das Tief der ersten Minute als „Tief bis zum Kauf" (Blick nach vorn). Korrektur und
+Begründung: `PREREGISTRATION-R9-INTRADAY-AMENDMENT.json` → `A4_officialOpen`. Keine Schwelle
+geändert. Studie und r9b laufen mit A4 erneut; die Ergebnisse vor A4 bleiben archiviert und
+werden daneben berichtet.
+
+**Studie nach A4** (Run 37051824868, `20261002T194226Z-intraday-study.sealed.json`; dieselben 1 821 Fälle):
+- Strittige Tage, tatsächlicher Ausstieg am Kauftag: Momentum 63 % (vorher 64 %), Darvas 29 % (unverändert),
+  Turtle 66 % (vorher 63 %). Kontrollfälle weiter 99–100 % in Übereinstimmung.
+- Momentum: Tagestief nach dem Kauf in 48 % (vorher 46 %); Stop zum Kaufzeitpunkt im Median 0,35 % über dem
+  Tagestief (vorher 0,5 %). Aufgelöst 891 statt 882 Fälle.
+- 52 von 1 821 Einzelentscheidungen änderten sich; die Befunde je Methode (MOSTLY_EXIT / MOSTLY_HOLD) bleiben.
+- Beispiele (AXON, MNKD, TSLA) unverändert.
+
+**r9b nach A4** (Run 37051901456, `20261002T220429Z-analyze-r9b.sealed.json`; Vergleich mit Run 37041293109):
+- Aus Minuten entschieden: Momentum 898 Trades (vorher 889), Darvas leicht mehr. Referenzen unverändert reproduziert.
+- Momentum 3.1.0: beide Schranken weiter ROBUST_NEGATIVE; 2016–2020 bleibt in beiden Schranken unter SPY.
+  Die R8-Korrektur („2016–2020 über SPY“ beruhte auf der Tagesbalken-Annahme) gilt unverändert.
+- Darvas 3.0.0: beide Schranken weiter robust negativ; Ursachenregel weiter unerfüllt.
+- Ergebnisse vor A4 bleiben als `#r9b`, nach A4 als `#r9b-a4` in `evidence-internal.sealed.json`.
