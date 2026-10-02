@@ -186,24 +186,41 @@ export function simulate(strategy, ctx, opts = {}) {
           finish(sig); state.cooldownUntil = t + COOLDOWN_SESSIONS; continue;
         }
         if (e) {
-          const fill = e.price * (1 + slip);
+          // opts.intradayOracle (Runde 9): Minutenbalken des Einstiegstags bestimmen Einstieg,
+          // Stop (Kullamaegi: Tagestief bis zum Kauf) und Gleichtags-Ausstieg. Ohne aufgeloeste
+          // Minuten gilt die Tagesbalken-Annahme (neutral bzw. opts.sameDayPolicy).
+          const io = opts.intradayOracle ? opts.intradayOracle(ctx, t, sig, e) : null;
+          const resolved = io && io.status === 'RESOLVED';
+          const entryPx = resolved ? io.fill : e.price;
+          const stop0 = resolved ? io.stop : e.stop;
+          const stopRule = resolved && strategy.id === 'MOMENTUM_BREAKOUT' ? (io.stop > e.stop + 1e-9 ? 'KK-BO-STOP-LOD' : e.stopRuleId) : e.stopRuleId;
+          const fill = entryPx * (1 + slip);
           sig.confirmation = { date, index: t, basis: 'INTRADAY_BUY_STOP', close: round(bars.close[t]), high: round(bars.high[t]), low: round(bars.low[t]), volume: bars.volume[t] ?? null, volumeRatio: e.volumeRatio ?? null };
-          transition(sig, 'TRIGGERED', date, e.ruleId, { price: round(e.price), priceBasis: 'INTRADAY_BUY_STOP', trigger: round(sig.levels.trigger), note: 'Kauf-Stop über dem Trigger im Tagesverlauf ausgelöst' });
-          sig.entry = { date, index: t, price: fill, priceBasis: 'BUY_STOP', rawOpen: round(bars.open[t]), gappedAboveTrigger: bars.open[t] > sig.levels.trigger, slippageBps: exec.slippageBps };
-          sig.stop = e.stop; sig.initialStop = e.stop; sig.stopRuleId = e.stopRuleId;
-          sig.stopHistory = [{ date, stop: round(e.stop), ruleId: e.stopRuleId, ruleVersion: meta.ruleVersion }];
+          transition(sig, 'TRIGGERED', date, e.ruleId, { price: round(entryPx), priceBasis: 'INTRADAY_BUY_STOP', trigger: round(sig.levels.trigger), note: 'Kauf-Stop über dem Trigger im Tagesverlauf ausgelöst' });
+          // evidence (Runde 9): woraus die Ausfuehrung folgt. Tagesbalken belegen, DASS der
+          // Trigger erreicht wurde (Hoch >= Trigger bzw. Eroeffnung darueber), nicht WANN.
+          // sameDayOrder: Reihenfolge von Kauf und Stop am Einstiegstag aus Tagesbalken
+          // nicht bestimmbar (vorsichtige und neutrale Annahme widersprechen sich).
+          const gapped = bars.open[t] >= sig.levels.trigger;
+          sig.entry = { date, index: t, price: fill, priceBasis: 'BUY_STOP', rawOpen: round(bars.open[t]), gappedAboveTrigger: bars.open[t] > sig.levels.trigger, slippageBps: exec.slippageBps,
+            evidence: resolved ? 'INTRADAY_1MIN' : gapped ? 'DAILY_BAR_OPEN_ABOVE_TRIGGER' : 'DAILY_BAR_HIGH_REACHED_TRIGGER',
+            sameDayOrder: resolved ? 'INTRADAY_1MIN' : e.pessimisticSameDayExit && !(bars.close[t] <= e.stop) ? 'AMBIGUOUS' : 'DETERMINED',
+            ...(resolved ? { entryMinute: io.entryMinute } : {}) };
+          sig.stop = stop0; sig.initialStop = stop0; sig.stopRuleId = stopRule;
+          sig.stopHistory = [{ date, stop: round(stop0), ruleId: stopRule, ruleVersion: meta.ruleVersion }];
           sig.remaining = 1; sig.exits = [];
-          transition(sig, 'ACTIVE', date, 'LC-MODEL-ENTRY', { price: round(fill), priceBasis: 'BUY_STOP', stop: round(e.stop), note: 'Modelleinstieg per Kauf-Stop (keine reale Order).' });
+          transition(sig, 'ACTIVE', date, 'LC-MODEL-ENTRY', { price: round(fill), priceBasis: 'BUY_STOP', stop: round(stop0), note: 'Modelleinstieg per Kauf-Stop (keine reale Order).' });
           // Sicherer Gleichtags-Ausstieg (Nachtrag Runde 8, vor der Auswertung):
           // schliesst der Einstiegstag auf oder unter dem Stop, wurde der Stop nach
           // dem Kauf sicher durchschritten (Kurs lief vom Trigger ueber dem Stop
           // zum Schluss darunter) - unabhaengig von der Reihenfolge-Annahme.
           // opts.sameDayCertain === false bildet den eingefrorenen r8-Lauf nach.
-          const certain = opts.sameDayCertain !== false && bars.close[t] <= e.stop;
-          if (certain || (opts.sameDayPolicy === 'PESSIMISTIC' && e.pessimisticSameDayExit)) {
-            const basis = certain ? 'SAME_DAY_CERTAIN' : 'SAME_DAY_PESSIMISTIC';
-            const px = X.stopSellFill(e.stop, bars.open[t], exec);
-            const sp = Math.min(px.price, e.stop * (1 - slip));
+          const certain = !resolved && opts.sameDayCertain !== false && bars.close[t] <= e.stop;
+          const exitNow = resolved ? io.exitSameDay : (certain || (opts.sameDayPolicy === 'PESSIMISTIC' && e.pessimisticSameDayExit));
+          if (exitNow) {
+            const basis = resolved ? 'SAME_DAY_INTRADAY' : certain ? 'SAME_DAY_CERTAIN' : 'SAME_DAY_PESSIMISTIC';
+            const px = X.stopSellFill(stop0, bars.open[t], exec);
+            const sp = resolved ? Math.min(io.exitPrice ?? stop0, stop0) * (1 - slip) : Math.min(px.price, stop0 * (1 - slip));
             sig.exits.push({ date, index: t, price: sp, fraction: 1, ruleId: sig.stopRuleId, priceBasis: basis });
             sig.remaining = 0;
             transition(sig, 'EXIT', date, sig.stopRuleId, { price: round(sp), priceBasis: basis });

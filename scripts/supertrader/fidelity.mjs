@@ -96,8 +96,9 @@ export const FIDELITY = Object.freeze({
     neededMaterial: ['Secrets for Profiting in Bull and Bear Markets (1988): Kapitel Kaufzeitpunkt, Verkauf, Langfristindikatoren', 'Stocks & Commodities Interview V.39:11 (2021)'],
   },
   MOMENTUM_BREAKOUT: {
-    status: 'VU_VARIANT', mechanizable: 'PARTLY',
-    mechanizableNote: 'Kullamägi kauft am Hoch der ersten Minuten (Opening Range); historisch liegen nur Tageskurse vor. Er erlaubt ausdrücklich den Einstieg nach Tageschart („just look at the daily chart and enter when the stock is starting to break out“) – das bildet 3.0.0 ab. Die Basisqualität beurteilt er nach Augenmaß.',
+    status: 'VU_VARIANT',
+    sameDayFinding: 'MOSTLY_EXIT', // Runde 9: interne Minutenprüfung strittiger Kauf-Stop-Tage mechanizable: 'PARTLY',
+    mechanizableNote: 'Kullamägi kauft am Hoch der ersten Minuten (Opening Range). Er erlaubt ausdrücklich den Einstieg nach Tageschart („just look at the daily chart and enter when the stock is starting to break out“) – das bildet 3.x ab. Sein Stop am Tagestief hängt davon ab, wann im Tagesverlauf gekauft wird; das ist nur mit Minutenkursen prüfbar (intern ab 2017 vorhanden). Die Basisqualität beurteilt er nach Augenmaß.',
     chain: [
       { step: 'Deep Research', text: 'Gab Auswahl, Basis, Einstieg am Opening-Range-Hoch, Stop am Tagestief (≤ ADR), Teilverkauf und Trailing korrekt wieder.' },
       { step: 'Code bis 2.0.0', text: 'Einstieg erst nach Tagesschluss über dem Trigger, Kauf zur nächsten Eröffnung; Stop am Tief des Vortags; Gap-Sperre 0,5 ADR (nicht in der Quelle); Höchstgewicht 20 % statt bis 25 %.' },
@@ -108,7 +109,7 @@ export const FIDELITY = Object.freeze({
       r('Auswahl', 'Die 1–2 % stärksten Aktien über 1, 3, 6 Monate', 'PRIMARY_FULL', 'Perzentil ≥ 98 über 1/3/6 Monate', 'ORIGINAL'),
       r('Basis', 'Vorlauf 30–100 % in 1–3 Monaten, 2 Wochen bis 2 Monate geordnete Konsolidierung mit höheren Tiefs; der Kurs „surft“ die steigende 10- und 20-Tage-Linie', 'PRIMARY_FULL', 'Vorlauf ≥ 30 %, Basis 10–40 Sitzungen, Tiefe ≤ 25 %, höhere Tiefs, enger werdende Spanne · bis 3.0.0: Kurs über beiden Linien, Setup endet bei einem Schluss darunter, dann 5 Sitzungen Sperre · 3.1.0: über mindestens einer Linie, keine Sperre', 'OPERATIONALIZATION', 'Tiefe 25 % und der Basis-Algorithmus sind VU. Die strengere Linienregel und die Sperre bis 3.0.0 waren VU-Zusätze – an ihnen scheiterte Kullamägis TSLA-Beispiel (Juni 2020).'),
       r('Einstieg', 'Opening-Range-Hoch (1/5/60 Min.) oder nach Tageschart „when the stock is starting to break out“', 'PRIMARY_FULL', '2.0.0: Schluss über dem 5-Tage-Hoch, Kauf zur nächsten Eröffnung · 3.0.0: Kauf-Stop am 5-Tage-Hoch im Tagesverlauf', 'OPERATIONALIZATION', 'Bis 2.0.0 Umsetzungsfehler (Schlusskurs-Konvention). Trigger = 5-Tage-Hoch ist VU.'),
-      r('Stop', '„Stop is always lows of the day“, nicht weiter als ATR/ADR', 'PRIMARY_FULL', '2.0.0: Tief des Bestätigungstags · 3.0.0: Tagestief des Einstiegstags, höchstens 1 ADR', 'ORIGINAL', 'Bis 2.0.0 Ersatz-Stop am Vortag (Folge des Schlusskurs-Einstiegs).'),
+      r('Stop', '„Stop is always lows of the day“, nicht weiter als ATR/ADR – gemeint ist das Tief bis zum Kauf', 'PRIMARY_FULL', '2.0.0: Tief des Bestätigungstags · ab 3.0.0: Tagestief des Einstiegstags, höchstens 1 ADR', 'OPERATIONALIZATION', 'Mit Tageskursen nur angenähert: Eine interne Prüfung mit Minutenkursen (2017–2026) zeigt, dass das Tagestief oft erst nach dem Kauf entsteht. Dann lag der echte Stop höher und wurde noch am Kauftag erreicht. Historische Ergebnisse auf Tagesbasis sind für diese Methode deshalb zu günstig; die Minutenprüfung ist die maßgebliche Lesart.'),
       r('Gap', 'keine Gap-Regel in der Quelle', 'PRIMARY_FULL', '2.0.0: Gap > 0,5 ADR ausgelassen · 3.0.0: keine Sperre', 'ORIGINAL', 'Die Sperre bis 2.0.0 war eine unbelegte VU-Annahme.'),
       r('Ausstieg', '1/3–1/2 nach 3–5 Tagen verkaufen, Stop auf Einstand', 'PRIMARY_FULL', '1/3 nach 3 Sitzungen, Rest auf Einstand', 'ORIGINAL'),
       r('Ausstieg', 'Rest mit der 10/20-Tage-Linie; Anfänger: erster Schluss unter der 10-Tage-Linie', 'PRIMARY_FULL', '1.1.0: 10-Tage-Ausstieg ab Tag 1 für die ganze Position · ab 2.0.0: nur für den Rest', 'ORIGINAL', 'Umsetzungsfehler in 1.1.0, in 2.0.0 korrigiert – im Test fast ohne Wirkung.'),
@@ -120,16 +121,23 @@ export const FIDELITY = Object.freeze({
     missing: ['Einstieg am Opening-Range-Hoch der ersten Minuten (Intraday-Historie fehlt)', 'Episodic Pivots als eigenes Modell (Gap-Ursache und Analystenschätzungen fehlen)', 'Parabolic Shorts'],
     data: { historical: 'Tageskurse ab 2016 (inkl. delisteter)', live: 'Tageskurse', gaps: 'keine Intraday-Historie; keine Nachrichten-/Schätzungsdaten' },
     neededMaterial: ['Historische 1-/5-Minuten-Kurse (kostenpflichtig) für den Opening-Range-Einstieg'],
+    examples: [
+      { case: 'AXON (AAXN), Ausbruch 09.01.2004', role: 'Unabhängig – für keine Regel verwendet', result: 'Version 3.1.0 kauft genau am markierten Tag; 3.0.0 verfehlte ihn (Setup endete am Vortag wegen eines Schlusses unter der 10-Tage-Linie).' },
+      { case: 'MNKD, Ausbruch 10.05.2013', role: 'Unabhängig – für keine Regel verwendet', result: 'Verfehlt (3.0.0 und 3.1.0): Nach einem Monat Seitwärtsbewegung stieg die 20-Tage-Linie nicht mehr; die Trendregel war nicht erfüllt. Keine Regeländerung, um das Beispiel nicht nachträglich passend zu machen.' },
+      { case: 'TSLA, Ausbruch 01.06.2020', role: 'Entwicklungsbeispiel – zählt nicht als Bestätigung', result: 'Version 3.1.0 kauft einen Handelstag früher: Am 29.05. wurde der Trigger erst kurz vor Handelsschluss knapp überschritten. Der eigentliche Ausbruch mit Kurslücke kam am 01.06.' },
+      { case: 'NVDA, Episodic Pivots 2016/2017', role: 'Regelidentität (kein laufendes Modell)', result: 'Die 10-%-Gap-Regel ordnet alle drei Tage so ein wie Kullamägi.' },
+    ],
     sourcesRead: ['qullamaggie.com: „3 TIMELESS setups“ (08.01.2021) mit allen Beispielcharts', 'qullamaggie.com: FAQ', 'qullamaggie.com: „How to master a setup: Episodic Pivots“'],
   },
   DARVAS_BOX: {
-    status: 'VU_VARIANT', mechanizable: 'PARTLY',
+    status: 'VU_VARIANT',
+    sameDayFinding: 'MOSTLY_HOLD', // Runde 9: interne Minutenprüfung strittiger Kauf-Stop-Tage mechanizable: 'PARTLY',
     mechanizableNote: 'Was eine Box ist, beschreibt Darvas nicht als Formel; die verbreitete 3-Tage-Regel ist eine spätere Rekonstruktion. Sein Buch (1960) ist nicht frei zugänglich.',
     chain: [
       { step: 'Deep Research', text: 'Nannte Box, Kauf über der Oberkante und Stop-Loss; die Zeitungsquelle war in Runde 7 nur als Auszug lesbar.' },
       { step: 'Code bis 2.0.0', text: 'Kauf erst nach Tagesschluss über der Oberkante zur nächsten Eröffnung; Stop bis 1.2.0 an der Unterkante, 2.0.0 knapp unter der Oberkante – mit Schlusskurs-Einstieg liegt dieser Stop oft schon unter dem Kaufkurs des Vortags.' },
       { step: 'Fehlerart', text: 'Übertragungsfehler: Darvas „places buy orders at breakout points“ (TIME 1959) – eine Kauforder, keine Schlusskurs-Bestätigung.' },
-      { step: 'Wirkung', text: '2.0.0 kombinierte einen engen Stop (an der Kauforder) mit einem späten Einstieg (nächste Eröffnung). 3.0.0 setzt Order und Stop wie beschrieben zusammen und schneidet je Signal besser ab – doch ein Stop 1 % unter der Kauforder liegt meist innerhalb der Tagesspanne: Ob er am Kauftag hielt, zeigen Tageskurse nicht. Die Ursache ist damit nicht belegbar.' },
+      { step: 'Wirkung', text: '2.0.0 kombinierte einen engen Stop (an der Kauforder) mit einem späten Einstieg (nächste Eröffnung). 3.0.0 setzt Order und Stop wie beschrieben zusammen und schneidet je Signal besser ab – doch ein Stop 1 % unter der Kauforder liegt meist innerhalb der Tagesspanne: Ob er am Kauftag hielt, zeigen Tageskurse nicht. Eine interne Minutenprüfung zeigt: Die neutrale Annahme (Tief vor dem Kauf) trifft öfter zu, aber ein erheblicher Teil der strittigen Tage endet tatsächlich am Kauftag.' },
     ],
     rules: [
       r('Auswahl', 'Aktien, die mit starkem Volumen gut steigen; Wachstumsunternehmen, deren Gewinne sich verdoppeln oder verdreifachen könnten', 'PRIMARY_FULL', 'Nahe 52-Wochen-Hoch + 6-Monats-Perzentil ≥ 80; Gewinnfilter fehlt', 'OPERATIONALIZATION'),
@@ -146,7 +154,8 @@ export const FIDELITY = Object.freeze({
     sourcesRead: ['TIME, 25.05.1959, „Business: Pas de Dough“', 'TIME, 01.08.1960, „The Darvas Effect“'],
   },
   DONCHIAN_TURTLE: {
-    status: 'VU_VARIANT', mechanizable: 'YES',
+    status: 'VU_VARIANT',
+    sameDayFinding: 'MOSTLY_EXIT', // Runde 9: interne Minutenprüfung strittiger Kauf-Stop-Tage mechanizable: 'YES',
     mechanizableNote: 'Die Turtle-Regeln sind vollständig mechanisch und liegen im Volltext vor – geschrieben für ein gestreutes Futures-Portfolio, nicht für Einzelaktien.',
     chain: [
       { step: 'Deep Research', text: 'System 1/2, 2N-Stop, 10-Tage-Ausstieg, Unit-Größe und Filter korrekt genannt (Sekundärquellen).' },
@@ -216,7 +225,7 @@ export function fidelityFor(id) {
   const f = FIDELITY[id];
   if (!f) return { schema: FIDELITY_VERSION, status: 'RESEARCH', statusLabel: PRODUCT_STATUS.RESEARCH.label, statusPlain: PRODUCT_STATUS.RESEARCH.plain, rules: [], missing: [], counts: {} };
   return {
-    schema: FIDELITY_VERSION, chain: f.chain || [], sourcesRead: f.sourcesRead || [], failedAttempts: f.failedAttempts || [],
+    schema: FIDELITY_VERSION, chain: f.chain || [], sameDayFinding: f.sameDayFinding || null, examples: f.examples || [], sourcesRead: f.sourcesRead || [], failedAttempts: f.failedAttempts || [],
     status: f.status, statusLabel: PRODUCT_STATUS[f.status].label, statusPlain: PRODUCT_STATUS[f.status].plain,
     mechanizable: f.mechanizable, mechanizableNote: f.mechanizableNote,
     rules: f.rules.map((x) => ({ ...x, clsLabel: RULE_CLASS[x.cls].label, accessLabel: SOURCE_ACCESS[x.access] })),
