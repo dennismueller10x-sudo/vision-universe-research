@@ -47,7 +47,7 @@
           !payload.listings?.some(l => l.symbol === symbol && listings.some(m => m.instrumentId === l.instrumentId && m.companyId === companyId))) return unavailable('IDENTITY_MISMATCH');
       for (const key of ['news', 'events', 'earnings', 'filings', 'calls', 'timeline']) if (!Array.isArray(payload[key]) || payload[key].length > 200) return unavailable('INVALID_SECTIONS');
       if (['news', 'events', 'earnings', 'filings', 'calls', 'timeline'].some(key => payload[key].some(item => !item || item.companyId !== companyId))) return unavailable('SECTION_IDENTITY_MISMATCH');
-      for (const key of ['materials', 'presentations']) if (payload[key] !== undefined && (!Array.isArray(payload[key]) || payload[key].length > 200 || payload[key].some(item => !item || item.companyId !== companyId))) return unavailable('INVALID_MATERIALS');
+      for (const key of ['materials', 'presentations', 'materialEvents']) if (payload[key] !== undefined && (!Array.isArray(payload[key]) || payload[key].length > 200 || payload[key].some(item => !item || item.companyId !== companyId))) return unavailable('INVALID_MATERIALS');
       if (payload.latestFinancials !== undefined && (!payload.latestFinancials || !['AVAILABLE', 'UNAVAILABLE'].includes(payload.latestFinancials.state))) return unavailable('INVALID_FINANCIAL_SUMMARY');
       const generated = Date.parse(payload.generatedAt), now = options.now === undefined ? Date.now() : Date.parse(options.now);
       if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(payload.generatedAt) || !Number.isFinite(generated) || !Number.isFinite(now) || generated > now + 300000 || new Date(generated).toISOString().replace('.000Z', 'Z') !== payload.generatedAt) return unavailable('INVALID_TIMESTAMP');

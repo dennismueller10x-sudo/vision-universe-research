@@ -80,9 +80,12 @@ def parse_feed(body, url):
     for entry in [e for e in root.iter() if local(e.tag) in ('item', 'entry')][:500]:
         fields = {}
         links = []
+        stocks = []
         for child in entry:
             name = local(child.tag)
             fields[name] = ''.join(child.itertext())
+            if name == 'category' and child.get('domain') == 'https://www.globenewswire.com/rss/stock':
+                stocks.append(clean(child.text, 100))
             if name == 'link':
                 href = child.get('href') or child.text
                 if href and child.get('rel', 'alternate') == 'alternate':
@@ -97,6 +100,8 @@ def parse_feed(body, url):
                     'eventUid': fields.get('guid') or fields.get('id'),
                     'materialLinks': [{'url': l['url'], 'label': clean(l['text'], 100)} for l in materials],
                     'publisher': clean(fields.get('source'), 80) or None,
+                    'language': clean(fields.get('language'), 20) or None,
+                    'distributionMetadata': {'stocks': stocks[:20], 'contributor': clean(fields.get('contributor'), 200)},
                     'evidenceText': clean(fields.get('summary') or fields.get('description') or fields.get('content'), 2000)})
     return out
 

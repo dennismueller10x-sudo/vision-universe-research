@@ -6,6 +6,18 @@ import { join } from 'node:path';
 import { createFsDriver } from '../../market/storage/fs-driver.mjs';
 import { createS3Driver } from '../../market/storage/s3-driver.mjs';
 import { sync, prefixFor } from '../sync-state.mjs';
+import { inspectPrivacy } from '../privacy.mjs';
+
+test('privacy proof fails closed for missing credentials, public domains and denied account reads', async () => {
+  assert.equal((await inspectPrivacy({})).reason, 'MISSING_R2_BINDINGS');
+  const env = {VU_HISTORY_S3_ENDPOINT: 'https://' + 'a'.repeat(32) + '.r2.cloudflarestorage.com', VU_HISTORY_S3_BUCKET: 'fixture', VU_HISTORY_S3_ACCESS_KEY_ID: 'fixture', VU_HISTORY_S3_SECRET_ACCESS_KEY: 'fixture', CLOUDFLARE_API_TOKEN: 'fixture'};
+  const response = (enabled, domains) => async url => new Response(JSON.stringify({success: true, result: url.endsWith('managed') ? {enabled} : {domains}}));
+  assert.equal((await inspectPrivacy(env, response(false, []))).status, 'VERIFIED_NON_PUBLIC');
+  assert.equal((await inspectPrivacy(env, response(true, []))).status, 'BLOCKED');
+  assert.equal((await inspectPrivacy(env, response(false, [{enabled: false}]))).status, 'BLOCKED');
+  assert.equal((await inspectPrivacy(env, async () => new Response(null, {status: 403}))).reason, 'BUCKET_PRIVACY_READ_DENIED');
+  assert.equal((await inspectPrivacy(env, async () => new Response(JSON.stringify({success: true, result: {}})))).reason, 'BUCKET_PRIVACY_RESPONSE_INVALID');
+});
 
 test('fresh runner durability, bounded slots, digest failure and previous recovery', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'vu-intelligence-'));

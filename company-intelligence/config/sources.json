@@ -4,7 +4,9 @@
     "companyId": "iss_cik_0000320193",
     "type": "IR_FEED",
     "url": "https://www.apple.com/newsroom/rss-feed.rss",
-    "allowedSites": ["https://apple.com/"],
+    "allowedSites": [
+      "https://apple.com/"
+    ],
     "verified": true,
     "verificationEvidence": "Official Apple newsroom advertises this Atom feed",
     "provider": "FIRST_PARTY",
@@ -19,6 +21,34 @@
     "provider": "PUBLIC_RSS",
     "active": true,
     "intervalHours": 6,
-    "metadata": {"reuse": "Existing dashboard source documents headline/excerpt/backlink permission; intelligence retains only headlines and links"}
+    "metadata": {
+      "reuse": "Existing dashboard source documents headline/excerpt/backlink permission; intelligence retains only headlines and links"
+    }
+  },
+  {
+    "sourceId": "globenewswire-united-states",
+    "type": "RSS",
+    "url": "https://www.globenewswire.com/RssFeed/country/United%20States/feedTitle/GlobeNewswire%20-%20United%20States",
+    "verified": false,
+    "provider": "GLOBENEWSWIRE_RSS",
+    "active": true,
+    "intervalHours": 1,
+    "metadata": {
+      "access": "Public RSS distribution; headlines/links only; robots checked. Stock category + contributor/master identity required.",
+      "coverage": "20-item rolling window; not complete market news or guaranteed outage backfill."
+    }
+  },
+  {
+    "sourceId": "globenewswire-earnings",
+    "type": "RSS",
+    "url": "https://www.globenewswire.com/RssFeed/subjectcode/06-Earnings%20Releases%20and%20Operating%20Results/feedTitle/GlobeNewswire%20-%20Earnings%20Releases%20and%20Operating%20Results",
+    "verified": false,
+    "provider": "GLOBENEWSWIRE_RSS",
+    "active": true,
+    "intervalHours": 1,
+    "metadata": {
+      "access": "Public RSS distribution; headlines/links only; robots checked. Stock category + contributor/master identity required.",
+      "coverage": "20-item rolling window; not complete market news or guaranteed outage backfill."
+    }
   }
 ]

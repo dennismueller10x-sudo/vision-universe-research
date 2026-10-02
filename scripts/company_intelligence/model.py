@@ -103,6 +103,8 @@ class Resolver:
         self.names = {}
         self.tickers = {}
         self.by_token = {}
+        from .distribution import issuer_name
+        self.distribution_index = {}
         for cid, c in companies.items():
             for name in c['names']:
                 n = normalize(name)
@@ -112,12 +114,20 @@ class Resolver:
                         self.names.setdefault(alias, set()).add(cid)
             for listing in c['listings']:
                 self.tickers.setdefault(listing['symbol'], set()).add(cid)
+                for name in c['names']:
+                    self.distribution_index.setdefault((issuer_name(name), listing['symbol'], listing.get('exchange')), set()).add(cid)
 
         for name in self.names:
             self.by_token.setdefault(name.split()[0], set()).add(name)
 
     def resolve(self, item, source):
         """Query context alone never authorizes a match. Only verified first-party sources do."""
+        from .distribution import resolve as distribution_resolve
+        distributed = distribution_resolve(item, source, self.distribution_index)
+        if distributed is not None:
+            # An issuer-specific metadata conflict must not fall back to an
+            # incidental title mention of a customer, exchange or subsidiary.
+            return distributed
         url = item.get('canonicalUrl') or item.get('url')
         cid = source.get('companyId')
         if source.get('verified') and cid in self.companies and source.get('type') in ('IR_FEED', 'IR_EVENTS', 'SEC'):
@@ -139,6 +149,8 @@ class Resolver:
             if name in AMBIGUOUS_ALIASES:
                 continue
             if len(words) == 1 and (name in AMBIGUOUS or len(name) <= 3):
+                continue
+            if name == 'nasdaq' and re.search(r'\bnasdaq[ -](?:100|composite|index)\b', title):
                 continue
             if len(words) == 1 and not FINANCIAL.search(item.get('headline', '')):
                 continue
@@ -192,6 +204,9 @@ def make_item(raw, source, match, discovered):
                 'discoveryUrl': source['url'], 'originalSource': raw.get('publisher') or domain(url),
                 'originalUrl': url, 'publishedAt': published, 'discoveredAt': discovered,
                 'match': match, 'headline': headline}
+    if source.get('provider') == 'GLOBENEWSWIRE_RSS':
+        evidence.update(originalSource=(raw.get('distributionMetadata') or {}).get('contributor') or domain(url),
+                        distributor='GlobeNewswire', issuerMetadata=raw.get('distributionMetadata'))
     item = {'newsId': stable_id(match['companyId'], url, headline, published),
             'companyId': match['companyId'], 'headline': headline, 'canonicalUrl': url,
             'publishedAt': published, 'discoveredAt': discovered, 'language': raw.get('language'),

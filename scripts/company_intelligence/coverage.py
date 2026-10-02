@@ -25,7 +25,7 @@ def source_status(source, now):
     latest = source.get('latestContentAt')
     # A successful HTTP response does not establish fresh company news.
     content_cutoff = (datetime.fromisoformat(now.replace('Z', '+00:00')) - timedelta(days=180)).isoformat().replace('+00:00', 'Z')
-    if source['lastSuccess'] < cutoff or (source['type'] in ('IR_FEED', 'IR_MATERIALS') and (not latest or latest < content_cutoff)):
+    if source['lastSuccess'] < cutoff or (source['type'] in ('IR_FEED', 'IR_MATERIALS', 'RSS') and (not latest or latest < content_cutoff or latest > now)):
         return 'STALE'
     return 'ACTIVE' if source.get('active', True) else 'INACTIVE'
 
@@ -36,9 +36,15 @@ def report(store, companies, now):
     for s in sources:
         grouped[s.get('companyId')].append(s)
     events = defaultdict(list)
+    all_events, news_items = defaultdict(list), defaultdict(list)
+    recent = (datetime.fromisoformat(now.replace('Z', '+00:00')) - timedelta(days=180)).isoformat().replace('+00:00', 'Z')
+    material_cutoff = (datetime.fromisoformat(now.replace('Z', '+00:00')) - timedelta(days=90)).date().isoformat()
+    for row in store.db.execute('SELECT company,payload FROM items'):
+        news_items[row[0]].append(json.loads(row[1]))
     calls = set()
     for row in store.db.execute('SELECT company,payload FROM events'):
         e = json.loads(row[1])
+        all_events[row[0]].append(e)
         if e['eventType'] == 'EARNINGS_CALL':
             calls.add(row[0])
         if (e.get('dateEnd') or e.get('date') or '') >= now[:10]:
@@ -57,6 +63,10 @@ def report(store, companies, now):
         discovery_statuses['BLOCKED' if failed and any(code in ir.get('reason', '') for code in ('403', 'ROBOTS')) else 'DEGRADED' if failed else 'VALIDATED' if ir.get('lastSuccess') else 'NOT_CHECKED'] += 1
         endpoints = {k: [cfg[k] for cfg in configs if cfg.get(k)] for k in ('newsroom', 'pressReleaseUrl', 'eventsUrl', 'earningsUrl', 'presentationsUrl', 'reportsUrl', 'callsUrl')}
         news = [s for s in registry if s['type'] in ('IR_FEED', 'RSS')]
+        fresh_news = [i for i in news_items[cid] if recent <= (i.get('publishedAt') or '') <= now]
+        active_ids = {s['sourceId'] for s in sources if source_status(s, now) == 'ACTIVE'}
+        fresh_external = [i for i in fresh_news if any(p.get('sourceId') in active_ids and p.get('discoverySource') in ('RSS', 'GDELT') for p in i.get('provenance', []))]
+        docs = [d for cfg in configs for d in cfg.get('documents', [])] + [d for e in all_events[cid] for d in e.get('sourceDocuments', [])]
         flags = {
             'officialDomainFound': bool(c.get('officialSites') or state.get('officialSite:' + cid, {}).get('status') == 'VALIDATED'),
             'officialDomainCandidate': bool(state.get('siteCandidates:' + cid, {}).get('candidates')),
@@ -65,6 +75,15 @@ def report(store, companies, now):
             'newsSourceDiscovered': bool(news),
             'newsSourceValidated': any(s.get('verified') and (s.get('lastVerified') or s.get('lastSuccess')) for s in news),
             'newsSourceActive': any(source_status(s, now) == 'ACTIVE' for s in news),
+            'activeFirstPartyNews': any(s['type'] == 'IR_FEED' and s.get('verified') and source_status(s, now) == 'ACTIVE' and s.get('lastAcceptedMatches', 0) > 0 for s in news),
+            'activeExternalNews': bool(fresh_external),
+            'anyNews': bool(fresh_news),
+            'recentMaterialSEC': any(e['eventType'] == 'MATERIAL_SEC_EVENT' and material_cutoff <= e.get('date', '') <= now[:10] for e in all_events[cid]),
+            'calls': cid in calls,
+            'webcasts': any(e.get('webcastUrl') or e.get('replayUrl') for e in all_events[cid]),
+            'presentations': any(d.get('type') == 'PRESENTATION' for d in docs),
+            'transcriptLinks': any(d.get('type') == 'COMPANY_TRANSCRIPT' for d in docs) or any(e.get('transcriptUrl') for e in all_events[cid]),
+            'consumerPayloadAvailable': bool(news_items[cid] or all_events[cid] or state.get('financials:' + cid, {}).get('state') == 'AVAILABLE'),
             'eventSourceFound': any(s['type'] == 'IR_EVENTS' for s in registry),
             'eventSourceActive': any(s['type'] == 'IR_EVENTS' and source_status(s, now) == 'ACTIVE' for s in registry),
             'earningsPageFound': bool(endpoints['earningsUrl']),
@@ -79,6 +98,11 @@ def report(store, companies, now):
             'noNewsOrSubmissionSource': not registry and not state.get('sec:' + cid, {}).get('hasSubmissions'),
             'noCompanySource': not registry and not state.get('sec:' + cid, {}).get('hasSubmissions') and not c.get('officialSites') and state.get('financials:' + cid, {}).get('state') != 'AVAILABLE',
         }
+        flags['anyMaterialIntelligence'] = bool(flags['financialSummaryCurrent'] or flags['anyNews'] or flags['confirmedUpcomingEarnings'] or flags['recentMaterialSEC'] or any(e['eventType'] in ('EARNINGS_PUBLISHED', 'PERIODIC_REPORT_PUBLISHED', 'OPERATING_RESULTS_PUBLISHED', 'PRESENTATION_PUBLISHED') and recent[:10] <= e.get('date', '') <= now[:10] for e in all_events[cid]))
+        flags['noRecentMaterialIntelligence'] = not flags['anyMaterialIntelligence']
+        flags['noNews'] = not flags['anyNews']
+        flags['noConsumerPayload'] = not flags['consumerPayloadAvailable']
+        flags['secOnlyEvents'] = bool(all_events[cid]) and not fresh_news and not configs and all(e.get('form') or e['eventType'] == 'EARNINGS_ESTIMATED' for e in all_events[cid])
         counts.update(k for k, v in flags.items() if v)
         families = {cfg.get('providerType', 'GENERIC') for cfg in ir_configs}
         platforms.update(families)
@@ -96,4 +120,5 @@ def report(store, companies, now):
             'counts': {k: {'companies': counts[k], 'percent': round(100 * counts[k] / total, 2)} for k in flags},
             'sourceStatuses': dict(statuses), 'parserFailures': sum(any(code in (s.get('lastError') or '') for code in ('MALFORMED', 'INVALID_JSON', 'NOT_FEED', 'UNSAFE_OR_OVERSIZED_XML')) for s in sources), 'discoveryStatuses': dict(discovery_statuses), 'platformCompanies': dict(platforms),
             'byExchange': dict(exchanges), 'byMasterListingCountry': dict(countries), 'companies': rows,
-            'interpretation': 'CIK identity and local financial facts are not active news/filing-feed coverage. Unattempted discovery is explicit. Sparse first-party news is stale, never counted as active.'}
+            'freshnessWindowsDays': {'news': 180, 'materialSEC': 90, 'financials': 180},
+            'interpretation': 'Material intelligence includes current financials, verified recent reports/material events, current accepted news or confirmed upcoming earnings. CIK identity alone is not coverage. External news requires accepted issuer matches from a healthy global source; feeds and domain candidates are not issuer coverage. Document/call references may be historical. noConsumerPayload is unsupported intelligence, not an unsupported master listing.'}

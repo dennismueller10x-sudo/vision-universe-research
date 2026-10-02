@@ -76,6 +76,10 @@ class Pipeline:
             accepted = 0
             rejected = 0
             response = self.http.get(source['url'], robots=source['type'] != 'GDELT')
+            if source.get('provider') == 'GLOBENEWSWIRE_RSS':
+                from .model import domain
+                if domain(response['finalUrl']) != 'www.globenewswire.com':
+                    raise SourceError('DISTRIBUTOR_REDIRECT_REQUIRES_REVALIDATION')
             if source.get('verified') and source['type'] != 'SEC':
                 if not any(within_domain(response['finalUrl'], site) for site in source.get('allowedSites', [])):
                     raise SourceError('SOURCE_REDIRECT_REQUIRES_REVALIDATION')
@@ -202,6 +206,7 @@ class Pipeline:
                 return
             from quant.sec.store import JsonRawStore
             submissions = JsonRawStore(self.root / 'quant/data/sec/raw').get_latest(cik, 'submissions')
+            submissions = submissions or self.store.state('sec-submissions:' + cid)
             if fetch_sec:
                 from quant.sec.http_client import SECHttpClient, DiskCache, RateLimiter
                 from quant.sec.provider import SECProvider
@@ -216,6 +221,12 @@ class Pipeline:
                 client._opener = bounded_sec_open
                 # No companyfacts downloads. Optional document inspection also uses this same client.
                 submissions = SECProvider(client).get_submissions(cik, include_history=False)
+                # Persist bounded metadata, not downloaded filings, so a new
+                # runner can reproject item rules without refetching SEC.
+                columns = submissions.get('filings', {}).get('recent', {})
+                eligible = [i for i, form in enumerate(columns.get('form', [])) if form in ('8-K','8-K/A','6-K','6-K/A','10-Q','10-Q/A','10-K','10-K/A','20-F','20-F/A','DEF 14A')][:100]
+                compact = {'cik': cik, 'filings': {'recent': {k: [v[i] if i < len(v) else None for i in eligible] for k, v in columns.items() if isinstance(v, list)}}}
+                self.store.set_state('sec-submissions:' + cid, compact)
                 if sec_documents:
                     from .sec_documents import enrich_submissions
                     previous = {row[0].rsplit(':', 1)[1]: json.loads(row[1]) for row in self.store.db.execute('SELECT key,payload FROM state WHERE key LIKE ?', ('sec-document:' + cid + ':%',))}

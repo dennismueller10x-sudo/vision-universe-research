@@ -9,6 +9,10 @@ on:
     paths: ['company-intelligence/**', 'scripts/company_intelligence/**', 'docs/COMPANY_INTELLIGENCE.md', '.github/workflows/company-intelligence.yml']
   workflow_dispatch:
     inputs:
+      acceptance:
+        description: 'Isolated authenticated R2 acceptance across three fresh runners; no deployment'
+        type: boolean
+        default: false
       tickers:
         description: 'Comma-separated master tickers (blank = resumable batch)'
         type: string
@@ -64,7 +68,7 @@ jobs:
           changed=$(git diff --name-only "origin/$BASE_REF...HEAD" -- quant discover supertrader screener dashboard providers scripts/quant scripts/universe scripts/market scripts/vu2 api server vercel.json)
           if [ -n "$changed" ]; then echo "$changed"; exit 1; fi
   preview:
-    if: always() && ((github.event_name == 'workflow_dispatch' && needs.validate.result == 'success') || (github.event_name == 'schedule' && vars.COMPANY_INTELLIGENCE_ENABLED == 'true' && vars.COMPANY_INTELLIGENCE_STATE_READY == 'true'))
+    if: always() && ((github.event_name == 'workflow_dispatch' && !inputs.acceptance && needs.validate.result == 'success') || (github.event_name == 'schedule' && vars.COMPANY_INTELLIGENCE_ENABLED == 'true' && vars.COMPANY_INTELLIGENCE_STATE_READY == 'true'))
     needs: validate
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -161,4 +165,130 @@ jobs:
             .company-intelligence/latest-run.json
             .company-intelligence/coverage.json
             .company-intelligence/state.sqlite
+          retention-days: 14
+  acceptance-a:
+    if: github.event_name == 'workflow_dispatch' && inputs.acceptance
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prove private bucket configuration before any state write
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API }}
+        run: node scripts/company_intelligence/privacy.mjs
+      - name: Independent durable runner (no cache or state artifact transfer)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NAMESPACE: acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          mkdir -p .verification/acceptance
+          state="$RUNNER_TEMP/intelligence-a"
+          snapshot="$RUNNER_TEMP/acceptance.tar.gz"
+          evidence=.verification/acceptance/evidence.json
+          node scripts/company_intelligence/sync-state.mjs pull --namespace "$NAMESPACE" --file "$snapshot" --initialize
+          if [ -f "$snapshot" ]; then echo 'Acceptance namespace already exists; refuse replacement.'; exit 1; fi
+          python3 scripts/company_intelligence/acceptance.py prepare --state "$state" --evidence "$evidence"
+          python3 scripts/company_intelligence/checkpoint.py pack --state "$state" --snapshot "$snapshot"
+          node scripts/company_intelligence/sync-state.mjs push --namespace "$NAMESPACE" --file "$snapshot" --initialize
+      - uses: actions/upload-artifact@v4
+        with:
+          name: intelligence-acceptance-a-${{ github.run_id }}
+          path: .verification/acceptance/evidence.json
+          retention-days: 14
+  acceptance-b:
+    if: github.event_name == 'workflow_dispatch' && inputs.acceptance
+    needs: acceptance-a
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          name: intelligence-acceptance-a-${{ github.run_id }}
+          path: .verification/acceptance
+      - name: Independent durable runner (no cache or state artifact transfer)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NAMESPACE: acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          mkdir -p .verification/acceptance
+          state="$RUNNER_TEMP/intelligence-b"
+          snapshot="$RUNNER_TEMP/acceptance.tar.gz"
+          evidence=.verification/acceptance/evidence.json
+          node scripts/company_intelligence/sync-state.mjs pull --namespace "$NAMESPACE" --file "$snapshot"
+          python3 scripts/company_intelligence/checkpoint.py restore --state "$state" --snapshot "$snapshot"
+          python3 scripts/company_intelligence/acceptance.py advance --state "$state" --evidence "$evidence"
+          python3 scripts/company_intelligence/checkpoint.py pack --state "$state" --snapshot "$snapshot"
+          node scripts/company_intelligence/sync-state.mjs push --namespace "$NAMESPACE" --file "$snapshot"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: intelligence-acceptance-b-${{ github.run_id }}
+          path: .verification/acceptance/evidence.json
+          retention-days: 14
+  acceptance-c:
+    if: github.event_name == 'workflow_dispatch' && inputs.acceptance
+    needs: acceptance-b
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          name: intelligence-acceptance-b-${{ github.run_id }}
+          path: .verification/acceptance
+      - name: Independent durable runner (no cache or state artifact transfer)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NAMESPACE: acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          mkdir -p .verification/acceptance
+          state="$RUNNER_TEMP/intelligence-c"
+          snapshot="$RUNNER_TEMP/acceptance.tar.gz"
+          evidence=.verification/acceptance/evidence.json
+          node scripts/company_intelligence/sync-state.mjs pull --namespace "$NAMESPACE" --file "$snapshot"
+          python3 scripts/company_intelligence/checkpoint.py restore --state "$state" --snapshot "$snapshot"
+          python3 scripts/company_intelligence/acceptance.py verify --state "$state" --evidence "$evidence"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: intelligence-acceptance-c-${{ github.run_id }}
+          path: .verification/acceptance/evidence.json
           retention-days: 14

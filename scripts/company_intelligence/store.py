@@ -15,7 +15,8 @@ def timeline_entry(value):
     # Timeline links to the richer section instead of repeating every financial metric/exhibit.
     keys = ('companyId', 'newsId', 'eventId', 'eventType', 'headline', 'publishedAt', 'publishedDate', 'observedAt',
             'timestampPrecision', 'date', 'dateStart', 'dateEnd', 'startsAt', 'timezone', 'canonicalUrl', 'sourceUrl',
-            'importance', 'categories', 'confidence', 'confirmationStatus', 'eventStatus', 'fiscalYear', 'fiscalQuarter', 'reportingPeriod')
+            'importance', 'categories', 'confidence', 'confirmationStatus', 'eventStatus', 'fiscalYear', 'fiscalQuarter', 'reportingPeriod',
+            'secItems', 'verificationState', 'classificationVersion')
     return {key: value[key] for key in keys if key in value}
 
 
@@ -280,7 +281,7 @@ class Store:
                 related.setdefault(release['eventId'], []).append(item['newsId'])
             else:
                 timeline_items.append(item)
-        result_filings = {e.get('filingId') for e in events if e['eventType'] in ('EARNINGS_PUBLISHED', 'PERIODIC_REPORT_PUBLISHED') and e.get('filingId')}
+        result_filings = {e.get('filingId') for e in events if e['eventType'] in ('EARNINGS_PUBLISHED', 'PERIODIC_REPORT_PUBLISHED', 'MATERIAL_SEC_EVENT') and e.get('filingId')}
         timeline_events = [e for e in events if e['eventType'] != 'SEC_FILING' or e.get('filingId') not in result_filings]
         timeline = [timeline_entry(e) for e in sorted(timeline_items + timeline_events, key=lambda e: e.get('publishedAt') or e.get('observedAt') or e.get('date') or '', reverse=True)[:100]]
         for entry in timeline:
@@ -309,6 +310,7 @@ class Store:
                 'events': [e for e in events if e['eventType'] in ('EARNINGS_SCHEDULED', 'EARNINGS_ESTIMATED', 'EARNINGS_CALL', 'IR_EVENT') and (e.get('dateEnd') or e.get('date', '')) >= now[:10]][:30],
                 'calls': [e for e in events if e['eventType'] == 'EARNINGS_CALL'][:20],
                 'timeline': timeline,
+                'materialEvents': [e for e in events if e['eventType'] == 'MATERIAL_SEC_EVENT'][:30],
                 'latestFinancials': financials,
                 'materials': materials[:50],
                 'presentations': [d for d in materials if d.get('type') == 'PRESENTATION'][:50],
@@ -339,7 +341,7 @@ class Store:
             # A noisy issuer cannot prevent publishing all other companies.
             # Trim only the disposable consumer view; ledger/history remain intact.
             while len(dumps(payload).encode()) > 1024 * 1024:
-                arrays = [key for key in ('news', 'earnings', 'filings', 'events', 'calls', 'timeline', 'materials', 'presentations') if payload[key]]
+                arrays = [key for key in ('news', 'earnings', 'filings', 'events', 'calls', 'timeline', 'materials', 'presentations', 'materialEvents') if payload.get(key)]
                 if not arrays:
                     payload = {k: payload[k] for k in ('schema', 'companyId', 'listings', 'companyName', 'generatedAt')}
                     payload.update(state='NO_DATA', reason='COMPANY_PAYLOAD_BUDGET_EXCEEDED', news=[], earnings=[], filings=[], events=[], calls=[], timeline=[], materials=[], presentations=[])

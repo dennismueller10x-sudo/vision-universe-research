@@ -262,6 +262,10 @@ def project_sec(company, canonical, submissions, consumer, now, canonical_cik=No
                 'fiscalYear': fiscal.get(acc, {}).get('fiscalYear'), 'eventStatus': 'PUBLISHED', 'isAmendment': form.endswith('/A')}
         events.append({**base, 'eventId': stable_id(cid, acc, 'SEC_FILING'), 'eventType': 'SEC_FILING', 'headline': form + ' filing'})
         items = set(re.findall(r'\d+\.\d{2}', str(f.get('items') or '')))
+        from .sec_events import material_event
+        material = material_event(base, items)
+        if material:
+            events.append(material)
         release = form.startswith('8-K') and '2.02' in items
         # 6-K is not itself proof of earnings. Require explicit primary-document metadata.
         foreign_release = form.startswith('6-K') and bool(re.search(r'earnings|(?:quarter|financial|annual).{0,25}results', f.get('description') or '', re.I))
