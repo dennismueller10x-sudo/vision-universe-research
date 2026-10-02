@@ -129,3 +129,12 @@ class CalendarRerunIntegrityTests(unittest.TestCase):
             self.assertEqual(value()['discoveredAt'],estimate['discoveredAt']);self.assertEqual(value()['estimationHistory'][0]['previousDateEnd'],'2026-11-20');self.assertEqual(value()['updatedAt'],pipe.now)
             self.assertEqual(store.db.execute("select count(*) from audit where json_extract(payload,'$.code')='ESTIMATE_WINDOW_CHANGED'").fetchone()[0],1)
             store.close()
+
+class SnippetCallTests(unittest.TestCase):
+    def test_call_requires_explicit_same_date_in_its_own_clause(self):
+        from company_intelligence.ir_events import from_announcement
+        source={'sourceId':'nsc','companyId':'iss_cik_0000702165','verified':True,'type':'IR_FEED','url':'https://norfolksouthern.investorroom.com/feed','allowedSites':['https://norfolksouthern.investorroom.com/']}
+        item={'headline':'Norfolk Southern to announce third quarter 2026 earnings results on October 22, 2026','url':'https://norfolksouthern.investorroom.com/announcement','publishedAt':'2026-10-02T12:00:00Z','evidenceText':'Norfolk Southern Corporation (NYSE: NSC) will announce its third quarter 2026 financial results during a live conference call and internet webcast at 10:00 a.m. ET on Thursday, October 22, 2026.'}
+        events=from_announcement(item,source,'2026-10-02T13:00:00Z');self.assertEqual([e['eventType'] for e in events],['EARNINGS_SCHEDULED','EARNINGS_CALL']);self.assertIsNone(events[0]['startsAt']);self.assertEqual(events[1]['startsAt'],'2026-10-22T14:00:00Z');self.assertEqual(events[1]['relatedCalendarEventId'],events[0]['eventId'])
+        for body in ['A related conference call will follow.','A conference call at 10:00 a.m. ET on October 23.', 'A conference call at 10:00 a.m. ET on October 23, 2026.']:
+            events=from_announcement({**item,'evidenceText':body},source,'2026-10-02T13:00:00Z');self.assertFalse(any(e['eventType']=='EARNINGS_CALL' for e in events));self.assertTrue(all(e.get('startsAt') is None for e in events))

@@ -1,0 +1,541 @@
+{
+  "authenticatedPilots": {
+    "A": {
+      "afterLogicalHash": "8a893d2b5b08aefea550b375b32e76817c793ae7f4ab9207578e05dbc7cefe5f",
+      "afterTables": {
+        "audit": {
+          "count": 12,
+          "identitySha256": "91d771d6c2f555d280ae7b35aac87390472e036d77af2387a994395f35afb0b8",
+          "sha256": "42d15aef3a5e1c2781794bef4f1ab8eca9ded9d6bf44d521a7cb99e08303e745"
+        },
+        "event_alias": {
+          "count": 0,
+          "identitySha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "events": {
+          "count": 127,
+          "identitySha256": "6e8a1116d5481e88d255c5ec65776466d3a062f102cde7e2d808e579b80d1cb2",
+          "sha256": "62ea4885ceef6505cce5b25b4c99c5bfad7be2c52f316d9b96e895f44a94078d"
+        },
+        "items": {
+          "count": 97,
+          "identitySha256": "d4c8acc4302ad34ea08fd13e380cfc567c6eb6706d59d2aac5dd9f154dc8de95",
+          "sha256": "5687688b640893e81f2ad2bc3b3f487bf91949afbbe7d73c096c192aa9d63d9d"
+        },
+        "sources": {
+          "count": 34,
+          "identitySha256": "76fdc1eb1e068695577a96de619251dc0189a0678849e20494f94a36b8667195",
+          "sha256": "fa04620add69d9a12ad47e9020104ce3e553df4c997075d8eb0a9827fd7e13ea"
+        },
+        "state": {
+          "count": 44,
+          "identitySha256": "d7d0f33cf274b7e9a81e6b788f7c09c499a7cbdbb128af37dbf381e1d963f164",
+          "sha256": "f278ed81e9719297f51552e6198bce12f4334ba2e1582b19520e716d046bd10d"
+        }
+      },
+      "beforeLogicalHash": null,
+      "beforeTables": {},
+      "consumer": {
+        "assets": 42,
+        "bytes": 633375,
+        "companies": 20,
+        "generation": "40fdf91eaddc10fa889dbb69",
+        "maxPayloadBytes": 148874
+      },
+      "delivery": {
+        "availableTickers": 21,
+        "privatePathsRejected": 3,
+        "status": "PASS",
+        "transport": "AUTHENTICATED_R2_TO_LOOPBACK_API_TO_BROWSER_CONTRACT",
+        "unavailableTickers": 1
+      },
+      "pages": {
+        "bytes": 633375,
+        "files": 42,
+        "generation": "40fdf91eaddc10fa889dbb69",
+        "privateObjectsRead": 0,
+        "retainedGenerations": 1,
+        "status": "PASS"
+      },
+      "preserve": {
+        "bytes": 247772,
+        "operations": 5,
+        "sha256": "dc3273889f56d854018692de1866883cb957a76cb0c55b4db24cf85d2dc9bfa8",
+        "status": "PRESERVED"
+      },
+      "publication": {
+        "generation": "40fdf91eaddc10fa889dbb69",
+        "retainedGenerations": 1,
+        "status": "PUBLISHED",
+        "unchangedObjects": 0,
+        "uploadedBytes": 633375,
+        "uploadedObjects": 42
+      },
+      "restore": {
+        "operations": 1,
+        "status": "INITIALIZE"
+      },
+      "run": {
+        "databaseBytes": 2830336,
+        "export": {
+          "exportedCompanies": 29,
+          "generation": "d902a9b058478bb66246ed45"
+        },
+        "httpStats": {
+          "bytesDownloaded": 192675,
+          "cacheHits": 0,
+          "memoHits": 0,
+          "notModified": 0,
+          "retries": 7
+        },
+        "publicRequests": 31,
+        "run": {
+          "discoveryFailures": 0,
+          "documentFailures": 0,
+          "duplicate": 10,
+          "invalid": 0,
+          "new": 97,
+          "processedCompanies": 0,
+          "secFailures": 0,
+          "sourceFailures": 3,
+          "unmatched": 0
+        },
+        "runtimeSeconds": 241.554,
+        "secRequests": 0,
+        "status": "DEFERRED"
+      },
+      "runId": 37022843050
+    },
+    "B": {
+      "afterLogicalHash": "93ceb35d1d991406253ef9a1617056b8e0ebc3c7a255711026862569063a524f",
+      "afterTables": {
+        "audit": {
+          "count": 18,
+          "identitySha256": "05019deab8e5cbee0d9d281d2d686c59d5baf7e1201d06e4a94e179171f6a715",
+          "sha256": "7cab3ebacf2b5233011c103d3d2cd9587b7d42db6bdcac40423bac22089186ac"
+        },
+        "event_alias": {
+          "count": 0,
+          "identitySha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "events": {
+          "count": 130,
+          "identitySha256": "25b4f6c0c92521210b31bc36203dfb3dc4753a70b6cede80ee1a21ec04fc1648",
+          "sha256": "31792e8ea194d2351ec393a4009898c8a50a14664b76c1b87a97b0696234d8d4"
+        },
+        "items": {
+          "count": 157,
+          "identitySha256": "74cfe32d9f1de574d6502a5488059074106b7b3db6941c9b6244539afad6c95f",
+          "sha256": "40c774db109d93bf38d485166d5a1bacad9a90d7bb8efe70980909d36f1063dc"
+        },
+        "sources": {
+          "count": 34,
+          "identitySha256": "76fdc1eb1e068695577a96de619251dc0189a0678849e20494f94a36b8667195",
+          "sha256": "793afcf64d18ba8be395375dd6871f06644affecbcbdbcbe099b35ad82be5bcc"
+        },
+        "state": {
+          "count": 44,
+          "identitySha256": "d7d0f33cf274b7e9a81e6b788f7c09c499a7cbdbb128af37dbf381e1d963f164",
+          "sha256": "132659dc26fdcde281aab20c8c6abc53cef8de32c753e203ada459e5475d89b0"
+        }
+      },
+      "beforeLogicalHash": "8a893d2b5b08aefea550b375b32e76817c793ae7f4ab9207578e05dbc7cefe5f",
+      "beforeTables": {
+        "audit": {
+          "count": 12,
+          "identitySha256": "91d771d6c2f555d280ae7b35aac87390472e036d77af2387a994395f35afb0b8",
+          "sha256": "42d15aef3a5e1c2781794bef4f1ab8eca9ded9d6bf44d521a7cb99e08303e745"
+        },
+        "event_alias": {
+          "count": 0,
+          "identitySha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "events": {
+          "count": 127,
+          "identitySha256": "6e8a1116d5481e88d255c5ec65776466d3a062f102cde7e2d808e579b80d1cb2",
+          "sha256": "62ea4885ceef6505cce5b25b4c99c5bfad7be2c52f316d9b96e895f44a94078d"
+        },
+        "items": {
+          "count": 97,
+          "identitySha256": "d4c8acc4302ad34ea08fd13e380cfc567c6eb6706d59d2aac5dd9f154dc8de95",
+          "sha256": "5687688b640893e81f2ad2bc3b3f487bf91949afbbe7d73c096c192aa9d63d9d"
+        },
+        "sources": {
+          "count": 34,
+          "identitySha256": "76fdc1eb1e068695577a96de619251dc0189a0678849e20494f94a36b8667195",
+          "sha256": "fa04620add69d9a12ad47e9020104ce3e553df4c997075d8eb0a9827fd7e13ea"
+        },
+        "state": {
+          "count": 44,
+          "identitySha256": "d7d0f33cf274b7e9a81e6b788f7c09c499a7cbdbb128af37dbf381e1d963f164",
+          "sha256": "f278ed81e9719297f51552e6198bce12f4334ba2e1582b19520e716d046bd10d"
+        }
+      },
+      "consumer": {
+        "assets": 42,
+        "bytes": 678476,
+        "companies": 20,
+        "generation": "eac62e5f758c65b8ea2d7aeb",
+        "maxPayloadBytes": 182483
+      },
+      "delivery": {
+        "availableTickers": 21,
+        "privatePathsRejected": 3,
+        "status": "PASS",
+        "transport": "AUTHENTICATED_R2_TO_LOOPBACK_API_TO_BROWSER_CONTRACT",
+        "unavailableTickers": 1
+      },
+      "pages": {
+        "bytes": 1311521,
+        "files": 83,
+        "generation": "eac62e5f758c65b8ea2d7aeb",
+        "privateObjectsRead": 0,
+        "retainedGenerations": 2,
+        "status": "PASS"
+      },
+      "preserve": {
+        "bytes": 280594,
+        "operations": 7,
+        "sha256": "ffa4ec6b2622f32dabb0e016894f41c448ac1b0ef97371c72416171280c1493c",
+        "status": "PRESERVED"
+      },
+      "publication": {
+        "generation": "eac62e5f758c65b8ea2d7aeb",
+        "retainedGenerations": 2,
+        "status": "PUBLISHED",
+        "unchangedObjects": 0,
+        "uploadedBytes": 678476,
+        "uploadedObjects": 42
+      },
+      "restore": {
+        "bytes": 247772,
+        "operations": 3,
+        "sha256": "dc3273889f56d854018692de1866883cb957a76cb0c55b4db24cf85d2dc9bfa8",
+        "status": "RESTORED"
+      },
+      "run": {
+        "databaseBytes": 2830336,
+        "export": {
+          "exportedCompanies": 32,
+          "generation": "9573a16b854a38a8f2584c4f"
+        },
+        "httpStats": {
+          "bytesDownloaded": 66914,
+          "cacheHits": 1,
+          "memoHits": 0,
+          "notModified": 0,
+          "retries": 8
+        },
+        "publicRequests": 23,
+        "run": {
+          "discoveryFailures": 0,
+          "documentFailures": 0,
+          "duplicate": 10,
+          "invalid": 0,
+          "new": 60,
+          "processedCompanies": 0,
+          "secFailures": 0,
+          "sourceFailures": 4,
+          "unmatched": 0
+        },
+        "runtimeSeconds": 240.657,
+        "secRequests": 0,
+        "status": "DEFERRED"
+      },
+      "runId": 37024197756
+    },
+    "C": {
+      "afterLogicalHash": "2ef7eeb96a6e724a9bd06eeb73f6783ac155cc5b93e3985315ddc0510425d9f3",
+      "afterTables": {
+        "audit": {
+          "count": 18,
+          "identitySha256": "05019deab8e5cbee0d9d281d2d686c59d5baf7e1201d06e4a94e179171f6a715",
+          "sha256": "7cab3ebacf2b5233011c103d3d2cd9587b7d42db6bdcac40423bac22089186ac"
+        },
+        "event_alias": {
+          "count": 0,
+          "identitySha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "events": {
+          "count": 130,
+          "identitySha256": "25b4f6c0c92521210b31bc36203dfb3dc4753a70b6cede80ee1a21ec04fc1648",
+          "sha256": "69e7893d2492eb88448300ee2d91298940b889efc35c80ac4e0630707f9d0909"
+        },
+        "items": {
+          "count": 157,
+          "identitySha256": "74cfe32d9f1de574d6502a5488059074106b7b3db6941c9b6244539afad6c95f",
+          "sha256": "40c774db109d93bf38d485166d5a1bacad9a90d7bb8efe70980909d36f1063dc"
+        },
+        "sources": {
+          "count": 34,
+          "identitySha256": "76fdc1eb1e068695577a96de619251dc0189a0678849e20494f94a36b8667195",
+          "sha256": "793afcf64d18ba8be395375dd6871f06644affecbcbdbcbe099b35ad82be5bcc"
+        },
+        "state": {
+          "count": 44,
+          "identitySha256": "d7d0f33cf274b7e9a81e6b788f7c09c499a7cbdbb128af37dbf381e1d963f164",
+          "sha256": "c775cc5daceae99d7cd17f0a73776ffd214f17e917b0da03b9f8611878d2558a"
+        }
+      },
+      "beforeLogicalHash": "93ceb35d1d991406253ef9a1617056b8e0ebc3c7a255711026862569063a524f",
+      "beforeTables": {
+        "audit": {
+          "count": 18,
+          "identitySha256": "05019deab8e5cbee0d9d281d2d686c59d5baf7e1201d06e4a94e179171f6a715",
+          "sha256": "7cab3ebacf2b5233011c103d3d2cd9587b7d42db6bdcac40423bac22089186ac"
+        },
+        "event_alias": {
+          "count": 0,
+          "identitySha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "events": {
+          "count": 130,
+          "identitySha256": "25b4f6c0c92521210b31bc36203dfb3dc4753a70b6cede80ee1a21ec04fc1648",
+          "sha256": "31792e8ea194d2351ec393a4009898c8a50a14664b76c1b87a97b0696234d8d4"
+        },
+        "items": {
+          "count": 157,
+          "identitySha256": "74cfe32d9f1de574d6502a5488059074106b7b3db6941c9b6244539afad6c95f",
+          "sha256": "40c774db109d93bf38d485166d5a1bacad9a90d7bb8efe70980909d36f1063dc"
+        },
+        "sources": {
+          "count": 34,
+          "identitySha256": "76fdc1eb1e068695577a96de619251dc0189a0678849e20494f94a36b8667195",
+          "sha256": "793afcf64d18ba8be395375dd6871f06644affecbcbdbcbe099b35ad82be5bcc"
+        },
+        "state": {
+          "count": 44,
+          "identitySha256": "d7d0f33cf274b7e9a81e6b788f7c09c499a7cbdbb128af37dbf381e1d963f164",
+          "sha256": "132659dc26fdcde281aab20c8c6abc53cef8de32c753e203ada459e5475d89b0"
+        }
+      },
+      "consumer": {
+        "assets": 42,
+        "bytes": 674684,
+        "companies": 20,
+        "generation": "32405b9a43e17d76a36103f9",
+        "maxPayloadBytes": 181235
+      },
+      "delivery": {
+        "availableTickers": 21,
+        "privatePathsRejected": 3,
+        "status": "PASS",
+        "transport": "AUTHENTICATED_R2_TO_LOOPBACK_API_TO_BROWSER_CONTRACT",
+        "unavailableTickers": 1
+      },
+      "pages": {
+        "bytes": 1352830,
+        "files": 83,
+        "generation": "32405b9a43e17d76a36103f9",
+        "privateObjectsRead": 0,
+        "retainedGenerations": 2,
+        "status": "PASS"
+      },
+      "preserve": {
+        "bytes": 289807,
+        "operations": 7,
+        "sha256": "5361b77959ecc2e3c053f1644a7e2610f6daa066708fb437512c5e6dbe82bae8",
+        "status": "PRESERVED"
+      },
+      "publication": {
+        "generation": "32405b9a43e17d76a36103f9",
+        "retainedGenerations": 2,
+        "status": "PUBLISHED",
+        "unchangedObjects": 0,
+        "uploadedBytes": 674684,
+        "uploadedObjects": 42
+      },
+      "restore": {
+        "bytes": 280594,
+        "operations": 3,
+        "sha256": "ffa4ec6b2622f32dabb0e016894f41c448ac1b0ef97371c72416171280c1493c",
+        "status": "RESTORED"
+      },
+      "run": {
+        "databaseBytes": 3223552,
+        "export": {
+          "exportedCompanies": 32,
+          "generation": "a6517a08efa2cb72fdc10fa2"
+        },
+        "httpStats": {
+          "bytesDownloaded": 0,
+          "cacheHits": 0,
+          "memoHits": 0,
+          "notModified": 0,
+          "retries": 0
+        },
+        "publicRequests": 0,
+        "run": {
+          "discoveryFailures": 0,
+          "documentFailures": 0,
+          "duplicate": 0,
+          "invalid": 0,
+          "new": 0,
+          "processedCompanies": 21,
+          "secFailures": 0,
+          "sourceFailures": 0,
+          "unmatched": 0
+        },
+        "runtimeSeconds": 1.318,
+        "secRequests": 0,
+        "status": "PASS"
+      },
+      "runId": 37026887351
+    }
+  },
+  "browser": {
+    "adversarial": 10,
+    "disabled": 2,
+    "responsive": 56,
+    "status": "PASS",
+    "total": 68,
+    "widths": [
+      390,
+      430,
+      768,
+      1440
+    ]
+  },
+  "discovery": {
+    "BLOCKED": 10,
+    "DEGRADED": 4,
+    "NOT_CHECKED": 5987,
+    "VALIDATED": 77
+  },
+  "foundationMerge": "3a13a31dd41efd65ce34f3b975030d3f715f7d51",
+  "registeredSources": {
+    "ACTIVE": 59,
+    "BLOCKED": 0,
+    "EMPTY": 2,
+    "INACTIVE": 1,
+    "STALE": 0,
+    "total": 62
+  },
+  "repeatedUniverse": {
+    "runs": [
+      {
+        "databaseBytes": 366600192,
+        "export": {
+          "exportedCompanies": 4973,
+          "generation": "94c050526a0430f9d6d92575"
+        },
+        "httpStats": {
+          "bytesDownloaded": 0,
+          "cacheHits": 0,
+          "memoHits": 0,
+          "notModified": 0,
+          "retries": 0
+        },
+        "publicRequests": 0,
+        "run": {
+          "discoveryFailures": 0,
+          "documentFailures": 0,
+          "duplicate": 0,
+          "invalid": 0,
+          "new": 0,
+          "processedCompanies": 6078,
+          "secFailures": 0,
+          "sourceFailures": 0,
+          "unmatched": 0
+        },
+        "runtimeSeconds": 41.989,
+        "secRequests": 0
+      },
+      {
+        "databaseBytes": 366710784,
+        "export": {
+          "exportedCompanies": 4973,
+          "generation": "8a40303c8933117638df3977"
+        },
+        "httpStats": {
+          "bytesDownloaded": 0,
+          "cacheHits": 0,
+          "memoHits": 0,
+          "notModified": 0,
+          "retries": 0
+        },
+        "publicRequests": 0,
+        "run": {
+          "discoveryFailures": 0,
+          "documentFailures": 0,
+          "duplicate": 0,
+          "invalid": 0,
+          "new": 0,
+          "processedCompanies": 6078,
+          "secFailures": 0,
+          "sourceFailures": 0,
+          "unmatched": 0
+        },
+        "runtimeSeconds": 44.44,
+        "secRequests": 0
+      }
+    ],
+    "stableTables": {
+      "checkpoints": {
+        "count": 6,
+        "sha256": "e14d36d52b3bc107812463a72afa8bd1e6846853a3717eba3f66c5e07d2d13e2"
+      },
+      "event_alias": {
+        "count": 87,
+        "sha256": "b2f2264878455d001b1f3c4871bacf11e9709f0ede99c73d68c3101aed9bb64c"
+      },
+      "events": {
+        "count": 154424,
+        "sha256": "eb2a49dd3580e886f9af96981b32c58bf00fb64c09978fe6aa1b7e3df942c782"
+      },
+      "items": {
+        "count": 436,
+        "sha256": "a69b4fb714cbb94bad3186a26fcdd0afd923438816507f264312308b9847bfaf"
+      },
+      "sources": {
+        "count": 62,
+        "sha256": "b30691fc251fa9683415df1ffbddefe8e18bca76f8b61cee7e113aa05338e41a"
+      }
+    },
+    "status": "PASS"
+  },
+  "schema": "vu-intelligence-rollout-validation-1",
+  "scope": "Bounded authenticated R2 pilot and separate local full-universe projection; not public or long-running acceptance",
+  "sourceResearch": {
+    "accessNewswire": "HTTP_403",
+    "businessWireTestedPath": "ROBOTS_DISALLOWED",
+    "gdelt": "ROBOTS_UNAVAILABLE_HTTP_503",
+    "prNewswire": "RSS_USABLE_BUT_EXCLUDED_DUE_TO_TERMS_NO_PRODUCTION_INGESTION"
+  },
+  "tests": {
+    "additionalNode": 63,
+    "currencyTargeted": 77,
+    "existingNodePass": 2569,
+    "existingNodeSkips": 5,
+    "featureNode": 29,
+    "featurePython": 144,
+    "sec": 484,
+    "vu2Python": 32
+  },
+  "universe": {
+    "activeExternalNews": 53,
+    "activeFirstPartyNews": 35,
+    "callIssuers": 14,
+    "confirmedUpcomingEarningsOrCalls": 4,
+    "consumerPayloads": 4973,
+    "currentNewsIssuers": 87,
+    "estimatedEarningsWindows": 186,
+    "freshFinancialSummaries": 3722,
+    "irPages": 50,
+    "issuers": 6078,
+    "materialIntelligence": 3984,
+    "noPayload": 1105,
+    "officialDomains": 91,
+    "presentationIssuers": 25,
+    "recentMaterialSecIssuers": 594,
+    "secIdentities": 5412,
+    "transcriptIssuers": 10,
+    "webcastIssuers": 8
+  },
+  "validatedAt": "2026-10-02"
+}

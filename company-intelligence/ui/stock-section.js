@@ -19,7 +19,7 @@ function render(host,payload){
  if(payload.state!=='AVAILABLE'){host.append(node('p','Unternehmensmeldungen sind derzeit nicht verfügbar.','ci-meta'));return;}
  if(payload.stale)host.append(node('p','Letzter Datenstand: '+day(payload.generatedAt)+'. Neue Meldungen können fehlen.','ci-warning'));
  const recentCutoff=new Date(Date.now()-90*86400000).toISOString().slice(0,10);
- const latest=[...payload.news.filter(n=>['HIGH','CRITICAL'].includes(n.importance)),...(payload.materialEvents||[]),...payload.earnings.filter(e=>['EARNINGS_PUBLISHED','PERIODIC_REPORT_PUBLISHED'].includes(e.eventType)&&(e.date||'')>=recentCutoff)].sort((a,b)=>(b.publishedAt||b.date||'').localeCompare(a.publishedAt||a.date||''))[0];
+ const latest=[...payload.news.filter(n=>['HIGH','CRITICAL'].includes(n.importance)),...(payload.materialEvents||[]).filter(e=>['HIGH','CRITICAL'].includes(e.importance)),...payload.earnings.filter(e=>!e.isAmendment&&['EARNINGS_PUBLISHED','PERIODIC_REPORT_PUBLISHED'].includes(e.eventType)&&(e.date||'')>=recentCutoff)].sort((a,b)=>(b.publishedAt||b.date||'').localeCompare(a.publishedAt||a.date||''))[0];
  if(latest)block(host,'Aktuell wichtig').append(story(latest));
  const today = new Date().toISOString().slice(0,10);
  const liveEvents = payload.events.filter(e => (e.dateEnd || e.date || '') >= today);

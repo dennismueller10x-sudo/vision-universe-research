@@ -6,7 +6,7 @@
   function unavailable(reason, extra = {}) { return { schema: SCHEMA, state: 'UNAVAILABLE', reason, ...extra }; }
   function validDay(value) { const parsed = Date.parse(value); return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && Number.isFinite(parsed) && new Date(parsed).toISOString().slice(0, 10) === value; }
   function safeLink(value) {
-    try { const url = new URL(value); const host = url.hostname.toLowerCase(); const privateHost = /^(?:localhost|127\.|0\.|10\.|192\.168\.|169\.254\.|172\.(?:1[6-9]|2[0-9]|3[01])\.|\[|metadata\.)/.test(host) || /\.(?:local|internal)$/.test(host); return ['https:', 'http:'].includes(url.protocol) && !url.username && !url.password && !privateHost && (!url.port || ['80','443'].includes(url.port)) ? url.href : null; }
+    try { const url = new URL(value); const host = url.hostname.toLowerCase().replace(/\.$/, ''); const privateHost = host.endsWith('.localhost') || /^(?:localhost|127\.|0\.|10\.|192\.168\.|169\.254\.|172\.(?:1[6-9]|2[0-9]|3[01])\.|\[|metadata\.)/.test(host) || /\.(?:local|internal)$/.test(host); return ['https:', 'http:'].includes(url.protocol) && !url.username && !url.password && !privateHost && (!url.port || ['80','443'].includes(url.port)) ? url.href : null; }
     catch { return null; }
   }
   async function load(ticker, options = {}) {

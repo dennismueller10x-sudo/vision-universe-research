@@ -108,7 +108,28 @@ def from_announcement(item, source, now):
                 result['presentationUrl'] = url
             elif re.search(r'transcript', label, re.I) and any(within_domain(url, s) for s in source.get('allowedSites', [])):
                 result['transcriptUrl'] = url
-    return [result] if result else []
+    if result and result['eventType'] == 'EARNINGS_SCHEDULED' and not structured and not TIME.search(name) and re.search(r'conference call|earnings call|webcast', item.get('evidenceText', ''), re.I):
+        # A call's body time does not establish the separate release time.
+        result.update(startsAt=None, time=None, timezone=None)
+    values = [result] if result else []
+    # A release headline can omit a call explicitly dated in the feed snippet.
+    # Require the call clause itself to contain the same full date; proximity or
+    # an undated/different-day mention never creates a second calendar event.
+    if result and result['eventType'] == 'EARNINGS_SCHEDULED':
+        snippet = clean(item.get('evidenceText', ''), 2000)
+        call = re.search(r'\b(?:conference call|earnings call|live call|internet webcast)\b', snippet, re.I)
+        if call:
+            clause = snippet[call.start():call.start() + 300]
+            explicit = DATE.search(clause)
+            if explicit and f'{explicit[3]}-{MONTHS[explicit[1].lower()]:02d}-{int(explicit[2]):02d}' == day:
+                call_item = {**item, 'headline': clean(TIME.sub('', name)) + ' · Earnings conference call', 'evidenceText': clause}
+                calls = from_announcement(call_item, source, now)
+                for value in calls:
+                    if value['eventType'] == 'EARNINGS_CALL':
+                        value['relatedCalendarEventId'] = result['eventId']
+                        value['evidence']['method'] = 'EXPLICIT_FIRST_PARTY_CALL_CLAUSE_WITH_SAME_FULL_DATE'
+                        values.append(value)
+    return values
 
 
 class JsonLD(HTMLParser):

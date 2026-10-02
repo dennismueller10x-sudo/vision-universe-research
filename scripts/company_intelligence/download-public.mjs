@@ -8,19 +8,23 @@ import {validateManifest,prefixFor,readAsset,MAX} from './public-delivery.mjs';
 import {createS3DriverFromEnv} from '../market/storage/s3-driver.mjs';
 import {createFsDriver} from '../market/storage/fs-driver.mjs';
 export async function download(driver,{namespace,output,now=Date.now()}){
- const prefix=prefixFor(namespace), manifests=[];
+ const prefix=prefixFor(namespace), manifests=[], pinned=new Map();
  for(const file of ['manifest.json','previous.json']){
-  const bytes=await driver.get(prefix+file);if(!bytes){if(file==='manifest.json')throw Error('CONSUMER_NOT_PUBLISHED');continue;}
+  const bytes=await driver.get(prefix+file);pinned.set(prefix+file,bytes);if(!bytes){if(file==='manifest.json')throw Error('CONSUMER_NOT_PUBLISHED');continue;}
   if(bytes.length>MAX)throw Error('INVALID_MANIFEST');manifests.push(validateManifest(JSON.parse(bytes)));
  }
  const current=manifests[0], files=new Map();let total=0;
+ // Pin the two small manifests once instead of rereading them for every object.
+ const view={get:async key=>pinned.has(key)?pinned.get(key):driver.get(key)};
  // Verify the entire retained view before writing the release, including the current index.
  for(const [i,m] of manifests.entries())for(const asset of Object.keys(m.assets)){
   if(i>0&&asset==='index.json')continue;
-  const result=await readAsset(driver,{namespace,asset,now});
+  const result=await readAsset(view,{namespace,asset,now});
   if(result.generation!==m.generation)throw Error('GENERATION_CHANGED_DURING_DOWNLOAD');
   files.set(asset,result.bytes);total+=result.bytes.length;if(total>128*1024*1024)throw Error('PUBLIC_EXPORT_BUDGET_EXCEEDED');
  }
+ const finalPointer=await driver.get(prefix+'manifest.json');
+ if(!finalPointer||!Buffer.from(finalPointer).equals(Buffer.from(pinned.get(prefix+'manifest.json'))))throw Error('GENERATION_CHANGED_DURING_DOWNLOAD');
  const stage=await mkdtemp(join(tmpdir(),'intelligence-public-'));
  try{
   for(const [asset,bytes] of files){const p=resolve(stage,asset);await mkdir(dirname(p),{recursive:true});await writeFile(p,bytes);}
