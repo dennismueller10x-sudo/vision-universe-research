@@ -396,13 +396,31 @@
       var faktorAenderung = Math.abs(cur.factor / prev.factor - 1);
       if (faktorAenderung > config.adjustmentRatioTolerance) observed.factorChanges++;
 
-      /* Split: die rohe Reihe springt, die bereinigte nicht. Die Richtung
-         der Konvention ist dabei gleichgueltig - geprueft wird der
-         Unterschied zwischen den Spalten, nicht ihr Vorzeichen. */
+      /* A split changes the adjustment factor by splitFactor, independent
+         of the day's genuine market return. DNA's 1:40 reverse split on
+         2024-08-20 had a coherent factor of 0.025 and a real -17.6% move;
+         the former 15% residual heuristic incorrectly rejected it.
+         For simultaneous cash dividends retain the existing event path:
+         its combined adjustment needs separate attributable evidence. */
       if (istSplittag && isNum(prev.close) && prev.close > 0) {
         var rohSprung = Math.abs(cur.close / prev.close - 1) * 100;
         var bereinigtSprung = Math.abs(cur.adjustedClose / prev.adjustedClose - 1) * 100;
-        if (rohSprung >= config.splitJumpPct && bereinigtSprung <= config.splitResidualPct) {
+        var splitOnly = !istDividendentag && cur.splitFactor > 0;
+        var splitStep = cur.factor / prev.factor;
+        var splitFactorError = splitOnly
+          ? Math.abs(splitStep / cur.splitFactor - 1) : null;
+        if (splitOnly && splitFactorError <= config.adjustmentRatioTolerance) {
+          observed.splitEvidence.push({ date: cur.date, rawMovePct: round(rohSprung, 2),
+            adjustedMovePct: round(bereinigtSprung, 2),
+            expectedFactorStep: cur.splitFactor, observedFactorStep: splitStep,
+            factorRelativeError: splitFactorError });
+        } else if (splitOnly) {
+          findings.push(finding("warning", "split_not_adjusted",
+            "Am " + cur.date + " passt der Bereinigungsfaktor " + splitStep +
+            " nicht zum gemeldeten Splitfaktor " + cur.splitFactor +
+            " (relative Abweichung " + round(splitFactorError * 100, 4) + " %).",
+            { date: cur.date }));
+        } else if (rohSprung >= config.splitJumpPct && bereinigtSprung <= config.splitResidualPct) {
           observed.splitEvidence.push({ date: cur.date, rawMovePct: round(rohSprung, 2),
                                         adjustedMovePct: round(bereinigtSprung, 2) });
         } else if (rohSprung >= config.splitJumpPct && bereinigtSprung > config.splitResidualPct) {

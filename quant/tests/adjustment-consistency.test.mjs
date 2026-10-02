@@ -93,6 +93,63 @@ test("A3 · Ein Split, den nur die rohe Spalte mitmacht, belegt Splitbereinigung
   assert.ok(res.observed.splitEvidence[0].adjustedMovePct < 5, "die bereinigte Spalte darf nicht springen");
 });
 
+function splitPair(previous, current, factor, dividend = 0) {
+  return [
+    { date: "2024-08-19", close: previous[0], adjustedClose: previous[1], splitFactor: 1, dividend: 0 },
+    { date: "2024-08-20", close: current[0], adjustedClose: current[1], splitFactor: factor, dividend }
+  ];
+}
+
+test("Split geometry accepts a genuine large reverse-split-day market move", () => {
+  const res = Quality.validateAdjustmentConsistency(
+    splitPair([100, 4000], [3300, 3300], 0.025), { claimedStatus: "TOTAL_RETURN" });
+  assert.equal(res.ok, true);
+  assert.equal(res.inferredStatus, "SPLIT_ADJUSTED");
+  assert.ok(res.observed.splitEvidence[0].adjustedMovePct > 15);
+  assert.equal(res.observed.splitEvidence[0].factorRelativeError, 0);
+});
+
+test("Split geometry accepts a forward split with a genuine 40% market move", () => {
+  const res = Quality.validateAdjustmentConsistency(
+    splitPair([100, 100], [35, 140], 4), { claimedStatus: "SPLIT_ADJUSTED" });
+  assert.equal(res.ok, true);
+  assert.equal(res.observed.splitEvidence[0].observedFactorStep, 4);
+});
+
+test("A small adjusted move cannot conceal a wrong split factor", () => {
+  const res = Quality.validateAdjustmentConsistency(
+    splitPair([100, 100], [25, 110], 4), { claimedStatus: "TOTAL_RETURN" });
+  assert.equal(res.ok, false);
+  assert.equal(res.observed.splitEvidence.length, 0);
+  assert.ok(res.findings.some((f) => f.code === "split_not_adjusted"));
+  assert.ok(res.findings.some((f) => f.code === "adjustment_status_contradicted"));
+});
+
+test("Copied raw prices at a reverse split remain rejected", () => {
+  const res = Quality.validateAdjustmentConsistency(
+    splitPair([100, 100], [4000, 4000], 0.025), { claimedStatus: "TOTAL_RETURN" });
+  assert.equal(res.ok, false);
+  assert.ok(res.findings.some((f) => f.code === "split_not_adjusted"));
+});
+
+test("Split factor tolerance is not increased", () => {
+  const good = Quality.validateAdjustmentConsistency(
+    splitPair([100, 100], [25, 100.05], 4), { claimedStatus: "SPLIT_ADJUSTED" });
+  const bad = Quality.validateAdjustmentConsistency(
+    splitPair([100, 100], [25, 100.2], 4), { claimedStatus: "SPLIT_ADJUSTED" });
+  assert.equal(good.ok, true);
+  assert.equal(bad.ok, false);
+});
+
+test("A simultaneous split and dividend retains the existing event path", () => {
+  const res = Quality.validateAdjustmentConsistency(
+    splitPair([100, 100], [25, 100.5], 4, 0.125), { claimedStatus: "TOTAL_RETURN" });
+  assert.equal(res.ok, true);
+  assert.equal(res.observed.splitEvidence.length, 1);
+  assert.equal(res.observed.splitEvidence[0].factorRelativeError, undefined);
+  assert.equal(res.observed.dividendEvidence.length, 1);
+});
+
 test("A4 · Eine Ausschuettung im Faktor belegt die Gesamtrendite", () => {
   const res = Quality.validateAdjustmentConsistency(
     reihe({ divAt: 15 }), { claimedStatus: "TOTAL_RETURN" });

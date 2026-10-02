@@ -257,7 +257,9 @@
     /* Die Form des Papiers vor der Art des Emittenten: "Centurion
        Acquisition Corp - Units" ist eine Unit (eines SPAC), "US Bancorp
        Depositary Shares ... Pfd" ein Vorzugspapier (kein ADR). */
-    { type: "PREFERRED",   re: /\b(PREFERRED|PFD|PREF\.)/i },
+    /* Wie im Basisklassierer: "Preferred Bank" ist ein Emittentenname.
+       Eine gesondert genannte Vorzugsgattung bleibt erkennbar. */
+    { type: "PREFERRED",   re: /\b(PREFERRED(?!\s+BANK\b)|PFD|PREF\.)/i },
     { type: "WARRANT",     re: /\bWARRANTS?\b/i },
     { type: "RIGHT",       re: /\bRIGHTS?\b/i },
     { type: "UNIT",        re: /\bUNITS?\b/i },
