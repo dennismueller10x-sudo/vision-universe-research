@@ -110,3 +110,21 @@ test('R9-I8 Produkt: Belegart je Kauf-Stop-Ausführung und methodenbezogener Hin
   assert.match(js, /Reihenfolge am Kauftag offen/); assert.match(js, /Ausführung angenommen/);
   assert.doesNotMatch(js.slice(js.indexOf('function evidenceNote'), js.indexOf('function qualityRow')), /\d+\s?%/, 'keine Kennzahlen aus Tiingo-Daten im Hinweis');
 });
+
+test('R9-I9 Live: Kandidaten nur aus wartenden Kauf-Stop-Setups mit erreichtem Trigger; Protokoll ohne Minutenwerte', async () => {
+  const { candidates } = await import('../intraday-prefetch.mjs');
+  const { liveOracleFrom } = await import('../build.mjs');
+  const eng = [{ id: 'MOMENTUM_BREAKOUT', entryMode: 'BUY_STOP_INTRADAY' }, { id: 'MINERVINI_VCP' }];
+  const ledgerOf = (e) => (e.id === 'MOMENTUM_BREAKOUT' ? { lastProcessed: '2026-10-01', open: [{ symbol: 'AAA', state: 'ENTRY_READY', levels: { trigger: 10 } }, { symbol: 'BBB', state: 'ACTIVE', levels: { trigger: 10 } }, { symbol: 'CCC', state: 'SETUP', levels: { trigger: 50 } }] } : { lastProcessed: '2026-10-01', open: [{ symbol: 'AAA', state: 'SETUP', levels: { trigger: 1 } }] });
+  const bars = new Map([['AAA', { bars: { date: ['2026-10-01', '2026-10-02'], high: [11, 10.5] } }], ['BBB', { bars: { date: ['2026-10-02'], high: [20] } }], ['CCC', { bars: { date: ['2026-10-02'], high: [40] } }]]);
+  assert.deepEqual(candidates(eng, ledgerOf, bars), ['AAA|2026-10-02'], 'nur neuer Tag, nur wartend, nur Kauf-Stop-Methode, nur Trigger erreicht');
+  const fs = await import('node:fs'), os = await import('node:os'), path = await import('node:path');
+  const f = path.join(os.tmpdir(), 'st-intraday-test.json');
+  const { compactBars } = await import('../validation/intraday-oracle.mjs');
+  fs.writeFileSync(f, JSON.stringify({ days: { 'X|2026-10-02': compactBars([m(0, 98, 99, 97, 98.5), m(1, 98.5, 100.5, 98, 100), m(2, 100, 105, 99, 104), m(3, 104, 104, 95, 101)]) } }));
+  const oracle = liveOracleFrom(f);
+  const ctx = { symbol: 'X', bars: { date: ['2026-10-01', '2026-10-02'], open: [97, 98], high: [99, 105], low: [96, 95], close: [98, 101] }, ind: { adr20: [0.1, 0.1] } };
+  const r = oracle(ctx, 1, { strategyId: 'MOMENTUM_BREAKOUT', levels: { trigger: 100 } }, { price: 100, stop: 95 });
+  assert.equal(r.status, 'RESOLVED'); assert.equal(r.exitSameDay, true); assert.equal(r.entryMinute, undefined, 'keine Uhrzeit ins öffentliche Protokoll');
+  assert.equal(liveOracleFrom(path.join(os.tmpdir(), 'gibt-es-nicht.json')), null);
+});

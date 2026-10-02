@@ -47,6 +47,7 @@ import { buildModelPortfolio, portfolioConfig, MODEL_PORTFOLIO_VERSION } from '.
 import * as canslim from './engine/partial/canslim.mjs';
 import * as piotroski from './engine/partial/piotroski.mjs';
 import { buildPilotArtifact } from './pilot/donchian-weekly.mjs';
+import { createOracle } from './validation/intraday-oracle.mjs';
 import { buildReplayArtifact } from './replay.mjs';
 import { STRATEGIES, REGISTRY_VERSION, DNA_FIELDS, INTERNAL_SOURCES } from './registry.mjs';
 import { evidenceFor, EVIDENCE_LEVELS, SOURCE_QUALITY, DATA_QUALITY, NO_PROMISE, EVIDENCE_VERSION } from './evidence.mjs';
@@ -76,12 +77,12 @@ function writeJson(file, obj) {
 }
 
 /* ------------------------------------------------------------ Laden */
-function loadUniverse() {
+export function loadUniverse() {
   const idx = readJson(rel('discover/data/stock-index/US_REAL.json'));
   return new Set(idx.symbols);
 }
 
-function loadBars(universe) {
+export function loadBars(universe) {
   const dir = rel('quant/data/product/technical-signals-v1');
   const out = new Map();
   let generatedAt = null, unavailable = 0;
@@ -237,7 +238,7 @@ function greenblattCoverage() {
 
 /* ------------------------------------------------------- Ledger */
 function ledgerPath(id) { return path.join(DATA, 'ledger', `${id}.json`); }
-function loadLedger(engine) {
+export function loadLedger(engine) {
   const p = ledgerPath(engine.id);
   if (exists(p)) return readJson(p);
   return { schema: 'supertrader-ledger-1.0.0', strategyId: engine.id, variant: engine.variant, liveSince: null, lastProcessed: null, open: [], closed: [], invalidated: [] };
@@ -319,7 +320,21 @@ export const isReassessment = (s) => s.discovery?.kind === 'RULE_VERSION_REASSES
 export const isRetired = (s) => s.state === 'INVALIDATED' && s.transitions?.[s.transitions.length - 1]?.ruleId === 'LC-VERSION-RETIRED';
 
 /* ------------------------------------------------------------ Main */
+// Runde 9: Minutenquelle fuer Kauf-Stop-Tage im Live-Lauf. intraday-prefetch.mjs legt
+// IEX-Minuten der wartenden Setups, deren Tageshoch den Trigger erreichte, in eine Datei
+// AUSSERHALB des Repositorys (SUPERTRADER_INTRADAY_CACHE). Ohne Datei (lokal, CI) gilt die
+// Tagesbalken-Annahme. Ins Protokoll gelangen nur Belegart und Entscheidung, keine
+// Minutenwerte oder Uhrzeiten.
+let LIVE_ORACLE = null;
+export function liveOracleFrom(file) {
+  if (!file || !exists(file)) return null;
+  const j = readJson(file);
+  const { oracle } = createOracle(j.days || {}, { from: '2017-01-01' });
+  return (ctx, t, sig, e) => { const r = oracle(ctx, t, sig, e); if (r && r.status === 'RESOLVED') delete r.entryMinute; return r; };
+}
+
 export function build() {
+  LIVE_ORACLE = liveOracleFrom(process.env.SUPERTRADER_INTRADAY_CACHE);
   const t0 = Date.now();
   const universe = loadUniverse();
   const { instruments, generatedAt: barsGeneratedAt, unavailable } = loadBars(universe);
@@ -407,7 +422,7 @@ export function build() {
       // Abschluss (naechster Lauf) - ein Titel hat je Methode ein Signal.
       const legacyEngine = open && open.version !== engine.version && !(engine.manageCompatible || []).includes(open.version) ? engine.legacy?.[open.version] : null;
       if (from < n && legacyEngine) res = simulate(legacyEngine, ctx, { state, from, to: n - 1, recordedAt: barsGeneratedAt, manageOnly: true });
-      else if (from < n) res = simulate(engine, ctx, { state, from, to: n - 1, recordedAt: barsGeneratedAt });
+      else if (from < n) res = simulate(engine, ctx, { state, from, to: n - 1, recordedAt: barsGeneratedAt, ...(LIVE_ORACLE && engine.entryMode === 'BUY_STOP_INTRADAY' ? { intradayOracle: LIVE_ORACLE } : {}) });
       for (const s of res.finished) finishedNow.push(s);
       if (state.signal) {
         const last = n - 1;

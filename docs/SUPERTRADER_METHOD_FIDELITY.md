@@ -47,6 +47,14 @@ Weitere Abweichungen je Methode (Details in `fidelity.mjs`, Methodenseite „Von
 | Darvas 2.0.0 | Stop knapp unter der Kauforder **mit** Kauf zur nächsten Eröffnung | Mischung aus Quelle und Konvention | sehr viele Sofort-Ausstiege |
 | Weinstein | Widerstand = höchster Wochenschluss; Volumen als Filter vor dem Kauf | Konvention | Einstieg bis eine Woche später; Volumenregel falsch verortet |
 
+## Korrektur nach Runde 9 (Minutenkurse)
+
+Die Annahme „Tagestief vor dem Kauf“ war für Kullamägi systematisch zu günstig: Das Tagestief entstand oft erst nach
+dem Kauf, der Stop „lows of the day“ zum Kaufzeitpunkt lag dann höher und wurde am selben Tag erreicht. Mit Minutenkursen
+(intern, ab 2017) ist Momentum 3.1.0 auch 2016–2020 unter SPY; Darvas 3.0.0 bleibt ohne Vorteil. Die frühere Aussage
+„Momentum 3.x nicht robust, 2016–2020 über SPY“ ist damit zurückgenommen. Unabhängige Beispielprüfung: AXON 2004 trifft
+3.1.0 am markierten Tag, MNKD 2013 verfehlen beide Versionen; TSLA 2020 ist ein Entwicklungsbeispiel und kauft einen Tag zu früh.
+
 ## Ergebnis in einem Satz
 
 Die Übertragung ist korrigiert, die Kette Quelle → Regel → Code → Trade ist je Regel sichtbar. Keine quellennähere Version

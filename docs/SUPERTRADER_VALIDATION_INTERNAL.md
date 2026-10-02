@@ -254,3 +254,23 @@ die neutrale Variante verbuchte diesen Fall zunächst nicht. Korrigiert in r8b, 
   - **3.1.0 kauft genau am markierten Tag.** Das ist die einzige unabhängige Bestätigung der 3.1.0-Änderung.
 - **MNKD 10.05.2013 (unabhängig):** Beide Versionen verfehlen den Tag. Am 09./10.05. lag der Kurs unter beiden Linien, und die 20-Tage-Linie stieg nach einer monatelangen Basis nicht. Keine Regeländerung.
 - **TSLA:** 3.1.0 überschreitet den Trigger am 29.05.2020 erst um 15:55 ET, um 0,05 %. Kullamägis Ausbruch war der 01.06. (Gap). Das Beispiel diente der Entwicklung von 3.1.0 und zählt nicht als Bestätigung.
+
+### Minutenaufgelöster Prüflauf r9b (PREREGISTRATION-R9B-RESOLVED.json)
+- **Lauf:** Run 37041293109, Ergebnisdatei `20261002T184337Z-analyze-r9b.sealed.json`.
+- **Erster Versuch:** Run 37034413841 brach ohne Ergebnis ab, weil der Minuten-Cache als Objekte zu groß für einen String war. Neu gestartet mit kompaktem Format und Sicherung je Durchgang; Protokoll und Engines unverändert.
+- **Minutendaten:**
+  - 19 712 Kauf-Stop-Tage im privaten Eimer. Durchgänge mit fehlenden Tagen: 17 898, dann 1, dann 0.
+  - Aus Minuten entschieden: Momentum 72 % der Trades, Darvas 80 %.
+  - Rest (2016, fehlende Daten, Identitätsprüfung) als Schranke: neutral (-I) bzw. vorsichtig (-IP).
+- **Reproduktion:** Die Referenzen 3.1.0 (r8c) und Darvas 3.0.0 (r8b) sind exakt reproduziert.
+- **Ergebnis:**
+  - **Momentum 3.1.0:** Beide Schranken robust negativ, auch 2016–2020 unter SPY. Die Aussage aus R8 („nicht robust, 2016–2020 über SPY“) beruhte auf der zu günstigen Tagesbalken-Annahme und ist **korrigiert**.
+  - **Darvas 3.0.0:** In beiden Schranken robust negativ. „Mit Tagesbalken nicht entscheidbar“ (R8) ist jetzt entschieden: kein Vorteil.
+  - Die Ursachenregel für Darvas (3.0.0 je Trade besser als 2.0.0, neutral **und** vorsichtig) bleibt unerfüllt: Mit vorsichtigem Rückfall ist 2016–2020 schlechter.
+- **Turtle und Weinstein:** nicht neu gerechnet. Strittige Tage betreffen bei Turtle unter 1 % der Einstiege, bei Weinstein keine; die R8-Aussagen bleiben.
+
+### Folgen im Produkt
+- **Live-Lauf:** `intraday-prefetch.mjs` lädt vor dem täglichen Strategie-Lauf IEX-Minuten nur für wartende Kauf-Stop-Setups, deren Tageshoch den Trigger erreichte. Der Simulator bestimmt daraus Stop und Gleichtags-Ausstieg.
+  - Ins öffentliche Protokoll gehen nur Belegart und Entscheidung, keine Minutenwerte und keine Uhrzeit.
+  - Ohne Minuten gilt die Tagesbalken-Annahme. Die Seite kennzeichnet sie als „angenommen“ bzw. „Reihenfolge offen“.
+- **iPhone:** Jede Kauf-Stop-Ausführung trägt ihre Belegart. Bei offener Reihenfolge nennt der Hinweis den Befund der Minutenprüfung je Methode, qualitativ und ohne Kennzahlen.

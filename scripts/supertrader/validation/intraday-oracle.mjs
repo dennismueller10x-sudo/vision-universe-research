@@ -59,7 +59,7 @@ export async function getJson(url, key) {
 export const fetchMinutes = (t, d, key) => getJson(`https://api.tiingo.com/iex/${encodeURIComponent(t)}/prices?startDate=${d}&endDate=${d}&resampleFreq=1min&columns=open,high,low,close,volume`, key);
 
 
-const tickerOf = (id) => String(id).split(':')[2];
+const tickerOf = (id) => (String(id).includes(':') ? String(id).split(':')[2] : String(id));
 
 // Kompaktes Cache-Format (Runde 9b): je Tag Startzeit und Spalten statt Objekten - der
 // erste r9b-Lauf scheiterte, weil ~20 000 Tage als Objekte nicht in einen String passten.
@@ -86,7 +86,7 @@ export function createOracle(cache, { from = '2017-01-01' } = {}) {
     const k = `${ticker}|${date}`;
     if (!(k in cache)) { misses.add(k); return { status: 'NOT_FETCHED' }; }
     const rec = { trigger: sig.levels.trigger, fill: e.price, stop: e.stop, open: ctx.bars.open[t], high: ctx.bars.high[t], low: ctx.bars.low[t], close: ctx.bars.close[t],
-      rawFactor: ctx.raw.close[t] / ctx.bars.close[t], adr: ctx.ind.adr20[t - 1] };
+      rawFactor: ctx.raw ? ctx.raw.close[t] / ctx.bars.close[t] : 1, adr: ctx.ind.adr20[t - 1] }; // live: juengste Tage ohne spaeteren Split, Identitaetspruefung faengt Abweichungen
     const r = resolve(rec, expandBars(cache[k]), sig.strategyId);
     if (r.status !== 'RESOLVED') return r;
     return { status: 'RESOLVED', fill: e.price, stop: r.stopAdj, exitSameDay: r.exitSameDay, exitPrice: r.stopAdj, entryMinute: r.entryMinute };
