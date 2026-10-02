@@ -27,6 +27,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { withBenchmark } from "./benchmark-reference.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -67,7 +68,9 @@ function universeTickers() {
   const file = join(root, "quant", "data", "market", "scale", `universe-${GATE}.json`);
   const actual = existsSync(file)
     ? (JSON.parse(readFileSync(file, "utf8")).securities || []).map((s) => s.ticker) : [];
-  if (!SYMBOL_OVERRIDE) return actual;
+  /* Die Benchmark-Referenz (SPY) wird in der vollen Ablage mitgeschrieben
+     und deshalb mitgezaehlt - dieselbe Liste wie sync-history-store. */
+  if (!SYMBOL_OVERRIDE) return withBenchmark(GATE, actual.map((t) => ({ ticker: t, securityId: null })), null).map((m) => m.ticker);
   if (SYMBOL_OVERRIDE <= actual.length) return actual.slice(0, SYMBOL_OVERRIDE);
   /* Auffuellen mit Platzhaltern: gezaehlt wird die ANZAHL, und die
      Platzhalter tragen keine Behauptung ueber einen echten Titel. */

@@ -31,8 +31,13 @@ import { fromBars } from "./lib/daily-prices.mjs";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SB = require(join(ROOT, "quant/engines/signal-backtest.js"));
-const OUT = join(ROOT, "quant/data/product/signal-backtest-v1.json");
-const LONG = join(ROOT, "quant/data/market/discover-series-long");
+/* VU_SIGNAL_LONG_DIR / VU_SIGNAL_OUT sind ausschliesslich fuer Tests da (ein
+   kleines Universum mit synthetischer Historie). Fehlen sie, gilt der
+   Produktpfad - es gibt keinen stillen Testmodus. */
+const OUT = process.env.VU_SIGNAL_OUT || join(ROOT, "quant/data/product/signal-backtest-v1.json");
+const LONG = process.env.VU_SIGNAL_LONG_DIR || join(ROOT, "quant/data/market/discover-series-long");
+/* Die Benchmark (SPY) ist BENCHMARK_REFERENCE, nie ein Titel der Studie. */
+const BENCHMARK = JSON.parse(readFileSync(join(ROOT, "quant/config/tiingo-scale.json"), "utf8")).benchmark || {};
 const argv = process.argv.slice(2);
 const wi = argv.indexOf("--work-dir"), WORK = wi >= 0 ? argv[wi + 1] : null;
 const t0 = Date.now();
@@ -42,6 +47,7 @@ const secs = () => ((Date.now() - t0) / 1000).toFixed(1) + "s";
 const raw = [], keys = new Set();
 for (const f of readdirSync(LONG).filter((f) => f.endsWith(".json") && f !== "index.json").sort()) {
   const j = JSON.parse(readFileSync(join(LONG, f), "utf8"));
+  if (j.securityId === BENCHMARK.securityId || j.ticker === BENCHMARK.symbol) continue;
   if (j.priceSeriesType !== "SPLIT_ADJUSTED" || !Array.isArray(j.points)) throw Error("UNEXPECTED_SERIES " + f);
   const pts = j.points.map(([d, v]) => [weekKey(d), v]);
   for (const [k] of pts) keys.add(k);
@@ -60,7 +66,32 @@ const asOf = WEEKS[W - 1];
 /* 2. Ergebnisreihe: Gesamtrendite aus der kanonischen Historie, wenn sie
    fuer fast alle Titel vorliegt. Titel ohne sie fallen in diesem Modus
    heraus (gezaehlt) - es wird nie gemischt. */
-let returnType = "SPLIT_ADJUSTED_PRICE", trCoverage = null, spyTR = null;
+let returnType = "SPLIT_ADJUSTED_PRICE", trCoverage = null, spyTR = null, spyCheck = { state: "FAIL", reason: "NO_CANONICAL_HISTORY" };
+/* SPY als Kurs (Vergleich im Kursmodus und Massstab fuer die Abdeckung). */
+const pricedSpy = (() => {
+  const s = JSON.parse(readFileSync(join(ROOT, "quant/data/market/multi-asset/series/SPY.json"), "utf8"));
+  if (!/split-bereinigt/.test(s.seriesTitle || "")) throw Error("SPY_SERIES_NOT_SPLIT_ADJUSTED");
+  const a = new Float64Array(W).fill(NaN);
+  for (const [d, v] of s.points) { const i = IDX.get(weekKey(d)); if (i !== undefined && v > 0) a[i] = v; }
+  return a;
+})();
+/* Gesamtrendite des Vergleichs nur, wenn sie auf DERSELBEN Wochenachse
+   (weekly-total-return, letzter Handelstag der Woche) jede Woche traegt, in
+   der SPY als Kurs vorliegt, ohne Luecke und bis zum Stichtag. Sonst
+   bleibt die ganze Studie bei Kursrendite - nie eine Mischung. */
+function spyTotalReturnCheck(tr, priced) {
+  if (!tr) return { state: "FAIL", reason: "SPY_TOTAL_RETURN_MISSING" };
+  let need = 0, have = 0, first = -1, last = -1, gaps = 0;
+  for (let w = 0; w < W; w++) {
+    if (tr[w] > 0) { if (first < 0) first = w; if (last >= 0 && w - last > 1) gaps++; last = w; }
+    if (priced[w] > 0) { need++; if (tr[w] > 0) have++; }
+  }
+  const out = { weeks: have, priceWeeks: need, from: first >= 0 ? WEEKS[first] : null, to: last >= 0 ? WEEKS[last] : null, gaps };
+  if (gaps) return { state: "FAIL", reason: "SPY_TOTAL_RETURN_GAPS", ...out };
+  if (last !== W - 1) return { state: "FAIL", reason: "SPY_TOTAL_RETURN_STALE", ...out };
+  if (!need || have < need) return { state: "FAIL", reason: "SPY_TOTAL_RETURN_COVERAGE_SHORT", ...out };
+  return { state: "PASS", reason: null, ...out };
+}
 if (WORK) {
   let have = 0;
   for (const T of titles) {
@@ -70,30 +101,31 @@ if (WORK) {
     if (T.tr) have++;
   }
   trCoverage = { titles: titles.length, withTotalReturn: have, share: SB.round(have / titles.length, 3) };
-  const spyFile = existsSync(join(WORK, "tiingo", "daily", "ref_SPY.json")) ? join(WORK, "tiingo", "daily", "ref_SPY.json") : null;
-  if (spyFile) { const d = fromBars(JSON.parse(readFileSync(spyFile, "utf8"))); if (d.totalReturn) spyTR = weeklyFromDaily(d.dates, d.tr, IDX, W); }
-  if (have / titles.length >= 0.95 && spyTR) {
+  const spyFile = join(WORK, "tiingo", "daily", BENCHMARK.securityId + ".json");
+  if (existsSync(spyFile)) { const d = fromBars(JSON.parse(readFileSync(spyFile, "utf8"))); if (d.totalReturn) spyTR = weeklyFromDaily(d.dates, d.tr, IDX, W); }
+  spyCheck = spyTotalReturnCheck(spyTR, pricedSpy);
+  if (have / titles.length >= 0.95 && spyCheck.state === "PASS") {
     returnType = "TOTAL_RETURN";
     titles = titles.filter((T) => T.tr);
-    for (const T of titles) T.out = T.tr;
   }
 }
 console.log("titles", titles.length, "weeks", W, WEEKS[0], "→", asOf, "returnType", returnType, secs());
 
-/* 3. SPY (Vergleich): Gesamtrendite im TR-Modus, sonst Kurs. */
-let spy = spyTR;
-if (returnType !== "TOTAL_RETURN") {
-  const s = JSON.parse(readFileSync(join(ROOT, "quant/data/market/multi-asset/series/SPY.json"), "utf8"));
-  if (!/split-bereinigt/.test(s.seriesTitle || "")) throw Error("SPY_SERIES_NOT_SPLIT_ADJUSTED");
-  spy = new Float64Array(W).fill(NaN);
-  for (const [d, v] of s.points) { const i = IDX.get(weekKey(d)); if (i !== undefined && v > 0) spy[i] = v; }
-}
-
-/* 4. Base Rate je Woche und Horizont: alle Titel, Einstieg w+1, passiv. */
+/* 3./4. Je Renditebasis: Ergebnisreihe, Vergleich (SPY) und Base Rate je
+   Woche und Horizont (alle Titel, Einstieg w+1, passiv). Beide Basen laufen
+   ueber dieselben Titel, damit der Vergleich nur die Basis aendert. */
 const H = SB.HORIZONS, F = SB.frictionFactor();
-const baseMedian = H.map(() => new Float64Array(W).fill(NaN));
-const basePos = H.map(() => new Float64Array(W).fill(NaN));
-const basePooled = H.map(() => []);
+let spy, baseMedian, basePos, basePooled, basePath, basis;
+function prepare(b) {
+  basis = b;
+  for (const T of titles) T.out = b === "TOTAL_RETURN" ? T.tr : T.c;
+  spy = b === "TOTAL_RETURN" ? spyTR : pricedSpy;
+  baseMedian = H.map(() => new Float64Array(W).fill(NaN));
+  basePos = H.map(() => new Float64Array(W).fill(NaN));
+  basePooled = H.map(() => []);
+  computeBase();
+}
+function computeBase() {
 for (let w = 0; w < W - 1; w++) {
   const e = w + 1;
   H.forEach((h, hi) => {
@@ -108,7 +140,7 @@ for (let w = 0; w < W - 1; w++) {
     if (vals.length >= 30) { baseMedian[hi][w] = SB.median(vals); basePos[hi][w] = vals.filter((x) => x > 0).length / vals.length; }
   });
 }
-const basePath = Array.from({ length: 53 }, () => []);
+basePath = Array.from({ length: 53 }, () => []);
 for (let t = 0; t < titles.length; t++) {
   const T = titles[t];
   for (let w = T.first + SB.WARMUP_WEEKS + (t % 52); w + 1 + 52 < W; w += 52) {
@@ -116,7 +148,8 @@ for (let t = 0; t < titles.length; t++) {
     for (let k = 0; k <= 52; k++) { const v = T.out[w + 1 + k]; if (v > 0) basePath[k].push(v / T.out[w + 1] - 1); }
   }
 }
-console.log("base done", secs());
+console.log("base done (" + basis + ")", secs());
+}
 
 const endedEarly = titles.filter((T) => { let last = W - 1; while (last >= 0 && !(T.c[last] > 0)) last--; return last < W - 27; }).length;
 const sign = (x) => (x === null || !Number.isFinite(x) ? null : Math.abs(x) < 0.0025 ? 0 : x > 0 ? 1 : -1);
@@ -257,7 +290,7 @@ function study(rule) {
     oos: { state: oosPass ? "PASS" : "FAIL", reason: oosPass ? null : "OOS_DIRECTION_NOT_CONFIRMED", value: oos },
     walkForward: { state: agreeShare >= 0.75 ? "PASS" : "FAIL", reason: agreeShare >= 0.75 ? null : "FOLDS_DISAGREE", value: Math.round(agreeShare * folds.length) + " von " + folds.length + " Folds in derselben Richtung" },
     survivorship: { state: "FAIL", reason: "TODAYS_UNIVERSE_ONLY", value: "Nur heute gelistete Titel; " + endedEarly + " Reihen enden früher. Delistete Titel mit sauberer Identität und Historie: 0" },
-    returnBasis: returnType === "TOTAL_RETURN" ? { state: "PASS", value: "Gesamtrendite (" + WEEKLY_TOTAL_RETURN_VERSION + ")" } : { state: "FAIL", reason: "TOTAL_RETURN_SERIES_NOT_PUBLISHED", value: "Kursrendite ohne Dividenden" },
+    returnBasis: basis === "TOTAL_RETURN" ? { state: "PASS", value: "Gesamtrendite (" + WEEKLY_TOTAL_RETURN_VERSION + ")" } : { state: "FAIL", reason: "TOTAL_RETURN_SERIES_NOT_PUBLISHED", value: "Kursrendite ohne Dividenden" },
     costs: { state: "PASS", value: "BASE " + SB.COST_SCENARIOS.BASE + " bps je Runde; LOW " + SB.COST_SCENARIOS.LOW + ", HIGH " + SB.COST_SCENARIOS.HIGH + " gemessen" },
     slippage: { state: "PASS", value: SB.FRICTIONS.slippageBps + " bps je Runde (in BASE enthalten)" },
     benchmark: { state: "PASS", value: "Base Rate derselben Woche und SPY über dasselbe Fenster, beide passiv" },
@@ -280,7 +313,7 @@ function study(rule) {
   const n6 = opp.rets.length, m = horizons.m6;
   return {
     id: rule.id, version: rule.version, family: rule.family, plain: rule.plain, dailyDefinition: rule.dailyDefinition, params: rule.params, opposite: rule.opposite,
-    returnType, grain: "WEEKLY", semantics: { version: SB.SEMANTICS.version, entry: "NEXT_CLOSE", exit: "TIME_EXIT", cooldownWeeks: SB.COOLDOWN_WEEKS, frictionsBps: SB.COST_SCENARIOS.BASE },
+    returnType: basis, grain: "WEEKLY", semantics: { version: SB.SEMANTICS.version, entry: "NEXT_CLOSE", exit: "TIME_EXIT", cooldownWeeks: SB.COOLDOWN_WEEKS, frictionsBps: SB.COST_SCENARIOS.BASE },
     occurrences: events.length, titles: new Set(events.map((e) => e.t)).size, firstEvent: firstW !== null ? WEEKS[firstW] : null, lastEvent: lastW !== null ? WEEKS[lastW] : null,
     independence: { uniqueTitles: titleSetM6.size, uniquePeriods: weekSet.size, independentClusters: quarterSet.size, clusterUnit: "Quartal", effectiveN: ind ? ind.effectiveN : null, designEffect: ind ? ind.designEffect : null },
     horizons,
@@ -298,10 +331,26 @@ function study(rule) {
     display: { allowed: SB.displayAllowed(trust), sentence: SB.observedSentence(m.n), caveats: SB.trustReasons(checks).map((r) => r.label) },
     card: { n: m.n, positiveShare: m.positiveShare, median: m.median, typicalDrawdown: m.maxDrawdown.median, chanceRisk: m.chanceRisk, medianExcess: m.vsMarket.medianExcess,
       basePositiveShare: m.baseRate ? m.baseRate.matchedPositiveShare : null, deltaPositiveShare: m.baseRate ? m.baseRate.deltaPositiveShare : null, deltaCi: m.baseRate ? m.baseRate.ci : null,
-      effectiveN: m.baseRate ? m.baseRate.effectiveN : null, trust, horizon: "m6", returnType }
+      effectiveN: m.baseRate ? m.baseRate.effectiveN : null, trust, horizon: "m6", returnType: basis }
   };
 }
 
+/* Vorher/Nachher: im Gesamtrendite-Modus dieselben Regeln einmal mit
+   Kursrendite ueber dieselben Titel. Nicht angenommen, dass die
+   Gesamtrendite die Aussage verbessert - beide Ergebnisse stehen im
+   Artefakt, veroeffentlicht wird die Studie der bestaetigten Basis. */
+const brief = (r) => { const m = r.horizons.m6, b = m.baseRate || {};
+  return { positiveShare: m.positiveShare, basePositiveShare: b.matchedPositiveShare ?? null, deltaPositiveShare: b.deltaPositiveShare ?? null, deltaCi: b.ci ?? null,
+    median: m.median, maxDrawdownMedian: m.maxDrawdown.median, medianExcessVsMarket: m.vsMarket.medianExcess, medianExcessVsSpy: m.vsSpy.medianExcess,
+    oos: r.checks.oos.state, oosTestDelta: r.oos.test.deltaPositiveShare, edgeOutOfSample: r.edgeOutOfSample,
+    walkForward: r.walkForward.agreeShare, trust: r.trust, effectiveN: r.independence.effectiveN }; };
+let priceBrief = null;
+if (returnType === "TOTAL_RETURN") {
+  prepare("SPLIT_ADJUSTED_PRICE");
+  priceBrief = Object.fromEntries(SB.RULES.map((rule) => [rule.id, brief(study(rule))]));
+  console.log("price-return comparison done", secs());
+}
+prepare(returnType);
 const rules = [];
 for (const rule of SB.RULES) {
   const r = study(rule);
@@ -321,7 +370,12 @@ const out = {
   schemaVersion: SB.STUDY_SCHEMA, engineVersion: SB.VERSION, generatedAt: new Date().toISOString(), asOf,
   source: { detection: "quant/data/market/discover-series-long (Wochenschluss, splitbereinigt)", outcome: returnType === "TOTAL_RETURN" ? "kanonische Tageshistorie → " + WEEKLY_TOTAL_RETURN_VERSION + " (nur zur Laufzeit)" : "Wochenschluss, splitbereinigt",
     grain: "WEEKLY", titles: titles.length, weeks: W, from: WEEKS[0], to: asOf, totalReturnCoverage: trCoverage,
-    benchmark: returnType === "TOTAL_RETURN" ? "SPY Gesamtrendite (kanonische Historie)" : "quant/data/market/multi-asset/series/SPY.json (split-bereinigt, Kurs)" },
+    benchmark: returnType === "TOTAL_RETURN" ? "SPY Gesamtrendite (kanonische Historie, BENCHMARK_REFERENCE)" : "quant/data/market/multi-asset/series/SPY.json (split-bereinigt, Kurs)",
+    spyTotalReturn: spyCheck },
+  returnBasisComparison: priceBrief ? { compared: true, titles: titles.length, horizon: "m6",
+    plain: "Dieselben Regeln, dieselben Titel, dieselbe Wochenachse - nur die Renditebasis ist anders. Veröffentlicht wird die Gesamtrendite.",
+    rules: rules.map((r) => ({ id: r.id, priceReturn: priceBrief[r.id], totalReturn: brief(r) })) }
+    : { compared: false, reason: spyCheck.state === "PASS" ? "TITLE_TOTAL_RETURN_COVERAGE_SHORT" : spyCheck.reason },
   returnType, requiredReturnType: SB.REQUIRED_RETURN_TYPE,
   returnTypeNote: returnType === "TOTAL_RETURN" ? "Gesamtrendite inklusive Dividenden aus der bestätigten Tagesreihe." : "Kursrendite ohne Dividenden. Die Pipeline rechnet mit Gesamtrendite, sobald sie die kanonische Historie bereitstellt.",
   semantics: SB.SEMANTICS, horizons: SB.HORIZONS, frictions: SB.FRICTIONS, costScenarios: SB.COST_SCENARIOS, cooldownWeeks: SB.COOLDOWN_WEEKS, warmupWeeks: SB.WARMUP_WEEKS,

@@ -31,6 +31,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { isDeepStrictEqual } from "node:util";
+import { withBenchmark } from "./benchmark-reference.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -157,7 +158,11 @@ function universeMembers() {
     ids.add(s.securityId); tickers.add(s.ticker);
   }
   if (LIMIT) list = list.slice(0, LIMIT);
-  return list.map((s) => ({ ticker: s.ticker, securityId: s.securityId }));
+  /* Die Benchmark (SPY) fuehrt die volle Ablage als BENCHMARK_REFERENCE
+     mit - fuer Gesamtrendite-Vergleiche in Backtests. Sie wird dadurch kein
+     Aktienprodukt: das Gate- und das Produktuniversum bleiben unveraendert. */
+  return withBenchmark(GATE, list.map((s) => ({ ticker: s.ticker, securityId: s.securityId })), SCALE)
+    .map((s) => ({ ticker: s.ticker, securityId: s.securityId }));
 }
 
 // An identity mismatch is a handoff failure, never an implicit ticker alias.
