@@ -211,3 +211,46 @@ die neutrale Variante verbuchte diesen Fall zunächst nicht. Korrigiert in r8b, 
   - Historisch weiter TESTED_NO_EDGE: geringfügig besser als 3.0.0, aber unter SPY; die vorsichtige Variante ist robust negativ.
   - 3.0.0-C wurde exakt reproduziert.
 - **Live seit 02.10.2026:** Momentum 3.1.0, Turtle 2.0.0, Darvas 3.0.0, Weinstein 3.0.0, Minervini 2.0.0. Das ist Vorwärtsbeobachtung außerhalb der Stichprobe. Positionen älterer Versionen laufen nach ihren eigenen Regeln weiter.
+
+## Runde 9 (02.10.2026): Reihenfolge am Kauf-Stop-Tag mit Minutenkursen
+
+### Zugang (ohne neue Kosten)
+- **Probe:** `intraday-probe.mjs`, Run 37027212417, 16 Fälle.
+- **Verfügbarkeit:** Der bestehende Tiingo-Commercial-Zugang liefert historische **IEX-1-Minuten-Balken ab 2017**; 2016 ist leer.
+  - Delistete Titel teils verfügbar (TWTR, ATVI, CELG ja; SIVB 404).
+- **Qualität:** IEX ist ein Handelsplatz mit 1–3 % des Volumens. Tageshoch und -tief stimmen trotzdem meist auf 0,1 % mit dem konsolidierten Balken überein.
+- **Rechte:** Nur interne, nicht anzeigende Nutzung. Auf der Website erscheinen keine Minutenwerte.
+
+### Studie (PREREGISTRATION-R9-INTRADAY.json + Nachtrag vor dem Hauptlauf)
+- **Lauf:** Run 37028625281, Ergebnisdatei `20261002T162821Z-intraday-study.sealed.json`.
+- **Umfang:**
+  - Momentum 3.1.0: Vollerhebung, 1 096 Einstiege 2017–2026.
+  - Darvas, Turtle, Weinstein: geschichtete Hash-Stichproben.
+  - Dazu 50 Split-Fälle; zusammen 1 821 Fälle.
+- **Nachtrag vor dem Hauptlauf:**
+  - IEX druckt bei kleinen Werten lückenhaft. Deshalb bestimmen Minuten nur die Reihenfolge, der Preis bleibt beim Tagesbalken-Modell.
+  - Die Beispiel-Charts sind bis zum Veröffentlichungstag split-bereinigt.
+- **Kontrollfälle:** „sicher“ (Schluss ≤ Stop) zu 100 % und „klar“ (fester Stop nicht erreicht) zu 99–100 % in Übereinstimmung. Die Methode trägt.
+- **Strittige Tage, tatsächlicher Ausstieg am Kauftag** (neutral nimmt 0 % an, vorsichtig 100 %):
+  - Momentum 64 %
+  - Darvas 29 %
+  - Turtle 63 % (betrifft unter 1 % der Turtle-Einstiege)
+- **Momentum zusätzlich:**
+  - Das Tagestief entstand in 46 % aller aufgelösten Kauftage **nach** dem Kauf. Der Stop „lows of the day“ zum Kaufzeitpunkt lag dann höher als das Tagestief, im Median 0,5 %.
+  - Auch auf „klaren“ Tagen endete die Position zu 28 % am selben Tag.
+  - Das Tagesbalken-Modell (Stop = Tagestief) ist für Kullamägi damit nicht nur unsicher, sondern systematisch zu günstig.
+- **Ausschlüsse:**
+  - Identitätsprüfung: Momentum 13 %, meist Auktions-Tiefs, an denen IEX nicht teilnimmt.
+  - IEX-Hoch unter dem Trigger: 5 %.
+  - Keine Daten: 1 %.
+- **Rohdaten-Kontrollen:**
+  - 45 von 50 Split-Fällen korrekt umgerechnet.
+  - Gap-Tage: 265 von 313 stimmen zwischen IEX und Tagesbalken überein.
+  - Bekannte Grenze: einzelne IEX-Drucke liegen knapp unter dem konsolidierten Tief (1 Fall).
+
+### Beispielprüfung
+- **AXON 09.01.2004 (unabhängig):**
+  - 3.0.0 verfehlt den Tag: Setup endete am 08.01., danach Sperre.
+  - **3.1.0 kauft genau am markierten Tag.** Das ist die einzige unabhängige Bestätigung der 3.1.0-Änderung.
+- **MNKD 10.05.2013 (unabhängig):** Beide Versionen verfehlen den Tag. Am 09./10.05. lag der Kurs unter beiden Linien, und die 20-Tage-Linie stieg nach einer monatelangen Basis nicht. Keine Regeländerung.
+- **TSLA:** 3.1.0 überschreitet den Trigger am 29.05.2020 erst um 15:55 ET, um 0,05 %. Kullamägis Ausbruch war der 01.06. (Gap). Das Beispiel diente der Entwicklung von 3.1.0 und zählt nicht als Bestätigung.
