@@ -36,3 +36,15 @@
 21. VU Ask: Werkzeugdefinitionen (`ti/ai-tools.js`) vorhanden, Anbindung an den Worker `vu-ask` noch nicht verdrahtet.
 22. Die bestehende V1-Technikseite (`/technik`) läuft parallel; zwei Szenario-Darstellungen existieren, bis V1 abgelöst wird.
 23. Regulatorische Prüfung (MAR/MiFID) der Szenario-Darstellung bleibt ein separates Gate vor öffentlichem Start (wie bei V1).
+
+## Master Mission II (Elliott-Validierung, Produkt v3)
+
+24. **Elliott ohne Prognosebeitrag.** Vorab registrierter Test auf unabhängigen Titeln: kein inkrementeller Wert gegenüber gleicher Kursstruktur (H1/H2). Elliott ist im Produkt Kontext ohne Richtungsstimme.
+25. **Count Quality ist nicht kalibriert.** Hohe Qualität heißt nur bessere Übereinstimmung mit den dokumentierten Regeln, nicht höhere Trefferwahrscheinlichkeit (hoch − niedrig +1,4 Pp., nicht signifikant).
+26. **Gradwahl bleibt die größte Lücke.** Die Engine zählt in der Audit-Stichprobe nur in 37/80 Fällen auf dem Grad der betrachteten Struktur; Flats werden eine Skala zu tief gezählt (0/3 Lehrbuch-Flats erkannt).
+27. **Zwangszählung.** Zählung an 99,9 % aller Wochen; Enthaltung nur bei 12 %. Strengere Enthaltung würde die Prognose nicht verbessern (Studie), aber ehrlicher wirken — Abwägung offen.
+28. **Neuzuordnungen.** Trotz Persistenz wechselt die Lesart an 6,4 % aller Wochen ohne Abschluss oder Bruch; mittlere Lebensdauer 5 Wochen.
+29. **Fundstellen nur auf Kapitelebene.** Regelquellen (Frost & Prechter, EWI) wurden nicht gegen den Volltext geprüft (nicht im Zugriff).
+30. **Referenzsammlung synthetisch.** Lehrbuchstrukturen sind aus Textbeschreibungen rekonstruiert, keine echten dokumentierten Marktbeispiele (Rechte, Datenverfügbarkeit).
+31. **Persistenz macht die Analyse pfadabhängig.** Das Ergebnis an t hängt (kausal) vom Vortageszustand ab; die Produktdaten nutzen 52 Wochen Vorlauf. `TI.analyzeAt` ohne Vorzustand kann in seltenen Fällen eine andere, gleich gute Lesart zeigen.
+32. **Replay nur für Indexmitglieder** (Datenmenge); andere Titel ohne Zeitreise.

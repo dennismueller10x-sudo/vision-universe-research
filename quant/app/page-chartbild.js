@@ -556,6 +556,7 @@
     topicHead(main, t, "Wie das Chartbild entsteht, welche Regeln gelten – und was die eigene historische Prüfung zeigt.");
     var host = el("div", {}, [X.loading()]); main.append(host);
     var ev = await TI.getEvidenceSummary().catch(function () { return null; });
+    var mev = TI.getMethodEvidence ? await TI.getMethodEvidence() : null;
     host.replaceChildren();
     function para(text) { return el("p", { class: "qx-small", text: text }); }
     host.append(el("div", { class: "qx-grid qx-grid-2" }, [
@@ -592,10 +593,21 @@
           return el("li", { text: name + ": " + pct(e.confirmRate) + " (Zufall gleicher Abstände " + pct(e.baselineRate) + ", n = " + e.n.toLocaleString("de-DE") + ")" });
         })), para("Hohe Quoten entstehen aus der Geometrie (Ziel nah, Grenze fern). Gegen den Zufall gemessen trafen die Lehrbuch-Erwartungen " + (Object.keys(st.elliott.bySetup).every(function (k) { return !(st.elliott.bySetup[k].lift > 0); }) ? "in keinem Setup häufiger ein – Elliott-Zählungen sind hier Beschreibung, keine Vorhersage." : "nur teilweise häufiger ein.")) ]) : null,
         ev.elliottValidation && ev.elliottValidation.confirmatory ? elliottValidationCard(ev.elliottValidation.confirmatory) : null,
+        mev && mev.methods ? methodEvidenceCard(mev) : null,
         st.fibonacci ? X.card([el("h3", { class: "qx-h3", text: "Fibonacci-Niveaus" }), para("In " + st.fibonacci.n.toLocaleString("de-DE") + " bestätigten Gegenbewegungen endeten Rückläufe an 38,2 %, 50 % und 61,8 % nicht häufiger als knapp daneben (Verhältnis zum Nachbarbereich: " + Object.keys(st.fibonacci.levels).map(function (k) { return (k * 100).toFixed(1).replace(".", ",") + " % → " + String(st.fibonacci.levels[k].ratio).replace(".", ","); }).join(" · ") + "). Fibonacci zählt deshalb nur, wo mehrere Anker zusammenfallen.")]) : null
       ], null, null, "evidenz"));
     }
     host.append(el("div", { class: "qx-actions" }, [X.btn("Technische Lagen ansehen", X.routes.chartlagen(), "secondary"), X.btn("Alle Methodikdateien", "/quant/methodology/", "secondary")]));
+  }
+
+  /** Evidenz-Status je Methode (§59): aus den Studien abgeleitet (scripts/technical/derive-method-evidence.mjs). */
+  function methodEvidenceCard(mev) {
+    var NAME = { TREND: "Trend", MOMENTUM: "Bewegungsstärke", STRUCTURE: "Hochs und Tiefs", CONFLUENCE: "Einigkeit der Verfahren", PATTERN: "Chartformationen", ELLIOTT: "Elliott-Wellen", FIBONACCI: "Fibonacci", TIMING_EARLY: "Früher Einstieg im Rücklauf", WYCKOFF: "Wyckoff", VOLUME: "Volumen" };
+    var ROLE = { CORE: "Kern", CONTEXT: "Kontext", EXPERIMENTAL: "experimentell", REMOVE: "entfernt" };
+    return X.card([el("h3", { class: "qx-h3", text: "Was jede Methode leisten kann" }),
+      el("div", { class: "cb-table-wrap" }, [el("table", { class: "cb-table" }, [el("thead", {}, [el("tr", {}, [el("th", { text: "Methode" }), el("th", { text: "Evidenz" }), el("th", { text: "Rolle" }), el("th", { text: "In Worten" })])]),
+        el("tbody", {}, Object.keys(mev.methods).map(function (k) { var m = mev.methods[k]; return el("tr", {}, [el("td", { text: NAME[k] || k }), el("td", {}, [el("span", { class: "cb-badge cb-badge-" + String(m.level).toLowerCase(), text: m.label })]), el("td", { text: ROLE[m.role] || m.role }), el("td", { text: m.consumer })]); }))])]),
+      el("p", { class: "cb-small cb-dim", text: "Bestätigt = vorab registrierter Test auf unabhängigen Daten bestanden · Gestützt (schwach) = statistisch messbar, aber nicht vorab registriert bestätigt und wirtschaftlich gering · Kein Vorteil belegt = geprüft, ohne belastbaren Effekt · Beschreibend = ohne Prognoseanspruch." })]);
   }
 
   /** Ergebnis der vorab registrierten Elliott-Validierung (Bestaetigungsstichprobe) — rein aus den Daten. */

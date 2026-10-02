@@ -1,0 +1,342 @@
+{
+ "schemaVersion": "vu-elliott-quality-calibration-1.0.0",
+ "generatedAt": "2026-10-02T19:42:43.893Z",
+ "source": "raw-confirmatory-v22-sticky.json.gz",
+ "engine": "elliott-2.2.0 + persistence",
+ "note": "Count Quality = methodische Übereinstimmung mit Elliott; Ergebnis = späteres Marktverhalten. Getrennt gemessen. Überschuss = Ergebnisquote minus Zufallszeitpunkte mit gleichen Abständen.",
+ "forcedVsAbstain": {
+  "barsAnalysed": 1110566,
+  "barsWithCount": 1109129,
+  "barsAbstain": 134531,
+  "shareCount": 0.9987,
+  "shareAbstain": 0.1211,
+  "shareCountedDespiteAmbiguous": 0.4716
+ },
+ "continuationByCountQuality": {
+  "LOW": {
+   "n": 2813,
+   "hitRate": 0.4511,
+   "hitCi": [
+    0.43,
+    0.474
+   ],
+   "randomSameGeometry": 0.4419,
+   "excessOverRandom": 0.0092,
+   "excessCi": [
+    -0.0134,
+    0.0338
+   ]
+  },
+  "MODERATE": {
+   "n": 10758,
+   "hitRate": 0.4481,
+   "hitCi": [
+    0.4367,
+    0.4584
+   ],
+   "randomSameGeometry": 0.4332,
+   "excessOverRandom": 0.0149,
+   "excessCi": [
+    0.0033,
+    0.0267
+   ]
+  },
+  "HIGH": {
+   "n": 7964,
+   "hitRate": 0.4623,
+   "hitCi": [
+    0.4459,
+    0.4778
+   ],
+   "randomSameGeometry": 0.4387,
+   "excessOverRandom": 0.0236,
+   "excessCi": [
+    0.0074,
+    0.0411
+   ]
+  }
+ },
+ "continuationHighMinusLow": {
+  "est": 0.0144,
+  "lo": -0.016,
+  "hi": 0.0402,
+  "ciBy": "YEAR",
+  "symbolCi": [
+   -0.0081,
+   0.0376
+  ],
+  "yearCi": [
+   -0.016,
+   0.0402
+  ],
+  "clusters": 1218
+ },
+ "labeledByApplicability": {
+  "MODERATE": {
+   "n": 7650,
+   "hitRate": 0.4429,
+   "hitCi": [
+    0.4292,
+    0.456
+   ],
+   "randomSameGeometry": 0.4342,
+   "excessOverRandom": 0.0087,
+   "excessCi": [
+    -0.0077,
+    0.0236
+   ]
+  },
+  "HIGH": {
+   "n": 20887,
+   "hitRate": 0.4655,
+   "hitCi": [
+    0.4554,
+    0.4756
+   ],
+   "randomSameGeometry": 0.4536,
+   "excessOverRandom": 0.0119,
+   "excessCi": [
+    0.0009,
+    0.0226
+   ]
+  },
+  "NO_RELIABLE_COUNT": {
+   "n": 876,
+   "hitRate": 0.4372,
+   "hitCi": [
+    0.4032,
+    0.4691
+   ],
+   "randomSameGeometry": 0.4206,
+   "excessOverRandom": 0.0164,
+   "excessCi": [
+    -0.0158,
+    0.0553
+   ]
+  }
+ },
+ "continuationByApplicability": {
+  "MODERATE": {
+   "n": 5464,
+   "hitRate": 0.4398,
+   "hitCi": [
+    0.4217,
+    0.4553
+   ],
+   "randomSameGeometry": 0.4263,
+   "excessOverRandom": 0.0135,
+   "excessCi": [
+    -0.0058,
+    0.0312
+   ]
+  },
+  "HIGH": {
+   "n": 15481,
+   "hitRate": 0.4589,
+   "hitCi": [
+    0.4476,
+    0.4699
+   ],
+   "randomSameGeometry": 0.4409,
+   "excessOverRandom": 0.018,
+   "excessCi": [
+    0.006,
+    0.0316
+   ]
+  },
+  "NO_RELIABLE_COUNT": {
+   "n": 590,
+   "hitRate": 0.4492,
+   "hitCi": [
+    0.4107,
+    0.4863
+   ],
+   "randomSameGeometry": 0.411,
+   "excessOverRandom": 0.0379,
+   "excessCi": [
+    -0.0069,
+    0.0804
+   ]
+  }
+ },
+ "selectiveApplication": {
+  "applicableOnly": {
+   "CONT, Elliott anwendbar": {
+    "n": 20945,
+    "hitRate": 0.4539,
+    "hitCi": [
+     0.443,
+     0.4644
+    ],
+    "randomSameGeometry": 0.4371,
+    "excessOverRandom": 0.0168,
+    "excessCi": [
+     0.0059,
+     0.0297
+    ]
+   }
+  },
+  "all": {
+   "CONT, alle": {
+    "n": 21535,
+    "hitRate": 0.4538,
+    "hitCi": [
+     0.4433,
+     0.4642
+    ],
+    "randomSameGeometry": 0.4364,
+    "excessOverRandom": 0.0174,
+    "excessCi": [
+     0.0066,
+     0.0304
+    ]
+   }
+  }
+ },
+ "byStability": {
+  "0": {
+   "n": 12065,
+   "hitRate": 0.4438,
+   "hitCi": [
+    0.4332,
+    0.4555
+   ],
+   "randomSameGeometry": 0.4282,
+   "excessOverRandom": 0.0157,
+   "excessCi": [
+    0.0032,
+    0.0288
+   ]
+  },
+  "4-12": {
+   "n": 3541,
+   "hitRate": 0.4612,
+   "hitCi": [
+    0.4424,
+    0.4802
+   ],
+   "randomSameGeometry": 0.4448,
+   "excessOverRandom": 0.0164,
+   "excessCi": [
+    -0.0045,
+    0.0376
+   ]
+  },
+  "13+": {
+   "n": 1233,
+   "hitRate": 0.4923,
+   "hitCi": [
+    0.4673,
+    0.5178
+   ],
+   "randomSameGeometry": 0.4855,
+   "excessOverRandom": 0.0068,
+   "excessCi": [
+    -0.0203,
+    0.0369
+   ]
+  },
+  "1-3": {
+   "n": 4696,
+   "hitRate": 0.4636,
+   "hitCi": [
+    0.4428,
+    0.4844
+   ],
+   "randomSameGeometry": 0.4381,
+   "excessOverRandom": 0.0255,
+   "excessCi": [
+    0.0068,
+    0.045
+   ]
+  }
+ },
+ "byHigherDegree": {
+  "NEUTRAL": {
+   "n": 10424,
+   "hitRate": 0.446,
+   "hitCi": [
+    0.436,
+    0.4575
+   ],
+   "randomSameGeometry": 0.4284,
+   "excessOverRandom": 0.0176,
+   "excessCi": [
+    0.0071,
+    0.0299
+   ]
+  },
+  "CONFLICT": {
+   "n": 6471,
+   "hitRate": 0.4495,
+   "hitCi": [
+    0.4323,
+    0.467
+   ],
+   "randomSameGeometry": 0.4425,
+   "excessOverRandom": 0.007,
+   "excessCi": [
+    -0.013,
+    0.0268
+   ]
+  },
+  "CONSISTENT": {
+   "n": 4640,
+   "hitRate": 0.4772,
+   "hitCi": [
+    0.4619,
+    0.4932
+   ],
+   "randomSameGeometry": 0.4456,
+   "excessOverRandom": 0.0315,
+   "excessCi": [
+    0.0118,
+    0.0515
+   ]
+  }
+ },
+ "byLabel": {
+  "CONT": {
+   "n": 21535,
+   "hitRate": 0.4538,
+   "hitCi": [
+    0.4433,
+    0.4642
+   ],
+   "randomSameGeometry": 0.4364,
+   "excessOverRandom": 0.0174,
+   "excessCi": [
+    0.0066,
+    0.0304
+   ]
+  },
+  "NONE": {
+   "n": 36985,
+   "hitRate": 0.459,
+   "hitCi": [
+    0.4497,
+    0.4684
+   ],
+   "randomSameGeometry": 0.4516,
+   "excessOverRandom": 0.0074,
+   "excessCi": [
+    -0.0017,
+    0.017
+   ]
+  },
+  "REV": {
+   "n": 7878,
+   "hitRate": 0.4725,
+   "hitCi": [
+    0.4566,
+    0.4884
+   ],
+   "randomSameGeometry": 0.4782,
+   "excessOverRandom": -0.0058,
+   "excessCi": [
+    -0.0229,
+    0.0091
+   ]
+  }
+ }
+}

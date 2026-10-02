@@ -22,3 +22,13 @@
 12. Intraday-Historie (Ausführungs-Zeitrahmen, echter AVWAP).
 13. Point-in-Time-Sektor/Marktkapitalisierung (Segmente).
 14. Historische Indexmitgliedschaft (Universum zum Stichtag).
+
+## Nach Master Mission II (Elliott-Validierung)
+
+1. **Grad-Hierarchie neu bauen** — „größter vollständiger Grad zuerst": eine fertige Struktur auf der gröberen Skala, die die feinere Zählung enthält, gewinnt (behebt Flats/Unterwellen-Zählung). Prüfung nur auf Synthetik/Referenzsammlung, Bewertung auf neuem Holdout.
+2. **Start an markanten Extremen** und **Preis-Proportion** gleicher Grade als Rangkriterium (heute nur Audit).
+3. **Strengere, vorab registrierte Enthaltung** (z. B. Mehrdeutigkeit + Neuzuordnungen) — Ziel Ehrlichkeit, nicht Trefferquote.
+4. **H4 (höherer Grad) auf neuem Holdout** — einzige knapp verfehlte Elliott-Hypothese (p = 0,06); vorab registrieren, Daten ab 2026-10 abwarten oder Tagesdaten-Universum.
+5. **Zeitpunkt-Wissen produktiv machen** — H6 bestätigt: früher Einstieg in der laufenden Gegenbewegung schlägt späte Bestätigung (unabhängig von Elliott). Im Produkt als Erklärung der Schlüsselzone, nicht als Signal.
+6. **Echte Referenzbeispiele** — dokumentierte historische Zählungen (Indizes) mit Rechteklärung; manuelle Prüfung der 80er-Audit-Stichprobe durch einen Elliott-Praktiker.
+7. **Survivorship** — Delisting-Bündel anbinden und Studie wiederholen.
