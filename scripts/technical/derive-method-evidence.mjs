@@ -28,7 +28,7 @@ function direction(key) {
   return { level: sup ? "SUPPORTED" : "NOT_ESTABLISHED", stat: "Richtung nach 13 Wochen im Prüfzeitraum ab 2019: " + pct(a.hitRate) + " (95 %-KI " + pct(a.ci[0]) + "–" + pct(a.ci[1]) + ", n = " + a.n.toLocaleString("de-DE") + "); vorzeichenbereinigte Ø-Rendite " + pct(a.meanSignedReturn) + " gegenüber „immer long“ " + pct(ho.ALWAYS_LONG.meanSignedReturn) };
 }
 const LABEL = { VALIDATED: "Bestätigt", SUPPORTED: "Gestützt (schwach)", NOT_ESTABLISHED: "Kein Vorteil belegt", DESCRIPTIVE_ONLY: "Beschreibend" };
-const out = { generatedAt: new Date().toISOString(), definitions: {
+const out = { schemaVersion: "vu-technical-method-evidence-1.0.0", purpose: "Evidenzstufe und Produktrolle je technischer Methode, abgeleitet aus den Holdout-Studien (Szenario-Evidenz, vorab registrierte Elliott-Validierung). Keine Zahl ist eine Wahrscheinlichkeit; Stufen werden nur aus Studienergebnissen abgeleitet, nie von Hand gesetzt.", generatedAt: new Date().toISOString(), definitions: {
   VALIDATED: "vorab registrierte Hypothese auf unabhängiger Stichprobe bestätigt", SUPPORTED: "Holdout-Effekt statistisch von null verschieden, aber nicht vorab registriert bestätigt; wirtschaftlich gering",
   NOT_ESTABLISHED: "geprüft, kein belastbarer Effekt", DESCRIPTIVE_ONLY: "ohne Prognoseanspruch" }, methods: {} };
 function add(key, level, role, stat, consumer, pro) { out.methods[key] = { level, label: LABEL[level], role, stat, consumer, pro }; }
