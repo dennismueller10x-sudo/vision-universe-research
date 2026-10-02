@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "marketstack-screener-fitness-1.0.0",
+  "scope": "ASSOCIATED_REFERENCE_METADATA_SHADOW_DATASET_NOT_PRODUCTION_CONSUMER_UNIVERSE",
+  "sampledListings": 790,
+  "quarantinedIssuerDomicileRows": 7,
+  "metadataDiagnostics": [
+    {
+      "field": "country",
+      "operator": "in",
+      "value": [
+        "DE"
+      ],
+      "matches": 783,
+      "missing": 7
+    },
+    {
+      "field": "exchange",
+      "operator": "in",
+      "value": [
+        "XETR"
+      ],
+      "matches": 350,
+      "missing": 0
+    }
+  ],
+  "unavailableMetricDiagnostics": [
+    {
+      "field": "marketCap",
+      "operator": "gte",
+      "value": 0,
+      "matches": 0,
+      "missing": 790
+    },
+    {
+      "field": "revenueGrowth",
+      "operator": "gte",
+      "value": 0,
+      "matches": 0,
+      "missing": 790
+    },
+    {
+      "field": "epsGrowth",
+      "operator": "gte",
+      "value": 0,
+      "matches": 0,
+      "missing": 790
+    },
+    {
+      "field": "pe",
+      "operator": "gte",
+      "value": 0,
+      "matches": 0,
+      "missing": 790
+    },
+    {
+      "field": "priceVsSma200",
+      "operator": "gte",
+      "value": 0,
+      "matches": 0,
+      "missing": 790
+    }
+  ],
+  "missingValuesBecomeZero": false,
+  "productionAdmission": false,
+  "technical": "BLOCKED",
+  "fundamental": "BLOCKED",
+  "currencySafety": "EXISTING_PRICE_AND_DOLLAR_VOLUME_FIELDS_ARE_USD_SPECIFIC_NON_USD_RAW_VALUES_NOT_INJECTED",
+  "caveat": "Reference domicile association is exercised as input metadata, not independently certified investable issuer domicile. Only accepted Search/Watchlist/Chart coverage is currently served.",
+  "generatedAt": "2026-10-02T04:53:55.667917+00:00",
+  "inputProvenance": {
+    "path": "reports/marketstack/germany_company_master.json",
+    "sha256": "998c9a631f3db69f88ec8c851c86dd57dd64467ed453cc68e5a8f5144e1c3b80"
+  }
+}

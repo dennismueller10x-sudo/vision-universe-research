@@ -1,0 +1,323 @@
+{
+  "schemaVersion": "marketstack-product-fitness-tests-1.0.0",
+  "generatedAt": "2026-10-02T05:18:58.015Z",
+  "scope": "LOCAL_FINAL_RESEARCH_BRANCH_SUITES_AND_RELEASE_BROWSER_SMOKES",
+  "acceptedBaseline": "bf84b7ae99b1d291de6b61d1f7ba42ef262c6eb1",
+  "scopes": {
+    "quant": {
+      "tests": 2675,
+      "pass": 2675,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "durationMilliseconds": 76300.226263,
+      "command": "node --test quant/tests/*.test.mjs",
+      "result": "PASS",
+      "logFile": "/workspace/scratch/marketstack-product-fitness-quant-verified-final.log",
+      "logSHA256": "d5b9ce0a86ead6c3d7d1b97e475caf8df268d7461b95f884f170c889ed5ecff7"
+    },
+    "product": {
+      "tests": 460,
+      "pass": 455,
+      "fail": 0,
+      "skipped": 5,
+      "cancelled": 0,
+      "todo": 0,
+      "durationMilliseconds": 15891.70719,
+      "command": "node --test discover/tests/*.test.mjs screener/tests/*.test.mjs scripts/supertrader/tests/*.test.mjs worker/tests/*.test.mjs",
+      "result": "PASS",
+      "logFile": "/workspace/scratch/marketstack-product-fitness-product-final.log",
+      "logSHA256": "f3678cf0ed71e67f565ea47b803f2896fea25284a04b0aa6e42d20aaf3cdeabe"
+    },
+    "sec": {
+      "tests": 484,
+      "pass": 484,
+      "fail": 0,
+      "skipped": 0,
+      "durationSeconds": 29.268,
+      "command": "python3 -m unittest discover -s scripts/quant/tests",
+      "result": "PASS",
+      "logFile": "/workspace/scratch/marketstack-product-fitness-sec-final.log",
+      "logSHA256": "e44de8d8ac596c8ece9b331b209188d0941fdd7bca914c0da085b62aa6dfa926"
+    },
+    "esef": {
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "skipped": 0,
+      "durationSeconds": 1.2,
+      "command": "python3 -m unittest discover -s scripts/fundamentals/tests",
+      "result": "PASS",
+      "logFile": "/workspace/scratch/marketstack-product-fitness-esef-final.log",
+      "logSHA256": "750e7854e5aed917dbab249f501b54769851fdf51d9bc52418c4ce7018836079"
+    },
+    "release": {
+      "result": "PASS",
+      "command": "node scripts/vu2/build-release.mjs --output=PRIVATE_RELEASE; pinned esbuild whitespace minification",
+      "scope": "EXISTING_RELEASE_AND_SEC_RESOURCE_GATES_UNCHANGED"
+    },
+    "serving": {
+      "tests": 32,
+      "pass": 32,
+      "fail": 0,
+      "result": "PASS",
+      "command": "python3 -m unittest discover -s scripts/vu2"
+    },
+    "resourceUnit": {
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "command": "node --test scripts/vu2/resource-budget.test.mjs"
+    },
+    "productionSmoke": {
+      "checks": 140,
+      "pass": 140,
+      "fail": 0,
+      "command": "node scripts/vu2/production-smoke.mjs PRIVATE_RELEASE --report PRIVATE_REPORT"
+    },
+    "quantBrowser": {
+      "checks": 90,
+      "pass": 90,
+      "fail": 0,
+      "findings": 0,
+      "command": "node scripts/vu2/browser-qa.mjs (release cwd, pinned Playwright 1.58.2 / axe 4.10.3)"
+    },
+    "resourceBudgets": {
+      "checks": 8,
+      "pass": 8,
+      "fail": 0,
+      "measurement": {
+        "scope": "Cold isolated browser context, initial viewport before interaction; all fetched subresources counted",
+        "browserVersion": "145.0.7632.6",
+        "browserArgs": [
+          "--no-sandbox",
+          "--blink-settings=lazyImageLoadingDistanceThresholdPxUnknown=0,lazyImageLoadingDistanceThresholdPxOffline=0,lazyImageLoadingDistanceThresholdPxSlow2G=0,lazyImageLoadingDistanceThresholdPx2G=0,lazyImageLoadingDistanceThresholdPx3G=0,lazyImageLoadingDistanceThresholdPx4G=0"
+        ],
+        "nativeLazyImagePrefetchDistancePx": 0,
+        "isolatedContextPerBudgetRoute": true,
+        "waitForUsedLayoutFonts": true,
+        "productNetworkImprovementClaim": false
+      },
+      "scope": "Decoded subresource bytes and request count; not production latency"
+    },
+    "quantAccessibility": {
+      "audits": 76,
+      "violations": 0,
+      "scope": "AUTOMATED_AUDIT_NOT_MANUAL_CERTIFICATION"
+    },
+    "discoverBrowser": {
+      "checks": 201,
+      "pass": 201,
+      "fail": 0,
+      "errors": 0
+    },
+    "discoverAccessibility": {
+      "audits": 16,
+      "violations": 0,
+      "scope": "AUTOMATED_AUDIT_NOT_MANUAL_CERTIFICATION"
+    },
+    "globalCanonicalBrowser": {
+      "api": {
+        "checks": 290,
+        "pass": 290,
+        "fail": 0
+      },
+      "ui": {
+        "checks": 8,
+        "pass": 8,
+        "fail": 0
+      },
+      "pageErrors": 0,
+      "result": "PASS",
+      "coverage": {
+        "listings": 6922,
+        "priced": 278,
+        "metadataOnly": 6644
+      },
+      "scope": "DELIVERY_IDENTITY_NATIVE_CURRENCY_WATCHLIST_SMOKE_NOT_CURRENT_PRICE_OR_ADJUSTMENT_CERTIFICATION"
+    },
+    "namedJourneys": {
+      "checks": 12,
+      "result": "PASS",
+      "command": "node scripts/vu2/verify-journey-surfaces.mjs --site PRIVATE_RELEASE"
+    },
+    "publicDataHygiene": {
+      "result": "PASS",
+      "command": "node scripts/market/assert-public-data-hygiene.mjs"
+    }
+  },
+  "priorIntroducedFailure": {
+    "scope": "Earlier expanded Quant attempt",
+    "test": "fresh75response action/history audit source origin",
+    "cause": "Replay-container identifier was incorrectly used instead of explicit original endpoint sourceRunId",
+    "resolved": true,
+    "finalSuiteFailureCount": 0
+  },
+  "esefSampleComparison": {
+    "path": "/workspace/scratch/marketstack-product-fitness-esef-comparison.json",
+    "sha256": "e2c890b020a45e88622de3b3b0f7dc99f959ea169178d13aa39d41df5571304d",
+    "result": {
+      "facts": 12,
+      "diagnostics": 543,
+      "factsAndProvenanceIdenticalExceptRetrievalTimes": true,
+      "issuesIdenticalAsMultiset": true,
+      "documentSha256": "72f36f9a80dad1ca16f4f9627dc79d88d358a30264b78c74e8bcd2ccf3adc41d",
+      "availableAt": "2025-03-25T23:59:59.999999+00:00"
+    }
+  },
+  "protectedOutputs": {
+    "result": "PASS",
+    "acceptedBaselineCommit": "bf84b7ae99b1d291de6b61d1f7ba42ef262c6eb1",
+    "manifestSHA256": {
+      "before": "cda658c5a1744d2dcd7516ee79ed2e0c94e38de92f53b7e39e9aaf8431cb0475",
+      "after": "95bc0850eb7c6be9b3ab7477bd7c7c6a1fd4b70ac9f901ce974d2f61dc26f888"
+    },
+    "groups": {
+      "accepted_global_foundation": {
+        "files": 2688,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "all_quant_data": {
+        "files": 38543,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "discover": {
+        "files": 12065,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "global_market": {
+        "files": 2687,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "identity_universe": {
+        "files": 2875,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "official_fundamentals": {
+        "files": 6,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "production_code_and_workflows": {
+        "files": 8076,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "quant_products": {
+        "files": 41,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "sec_fundamentals": {
+        "files": 6221,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "us_market": {
+        "files": 23538,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      }
+    }
+  },
+  "sourceEvidence": [
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-regression-final-tests.json",
+      "sha256": "86792bccccef59703186cd6233c46ea4708c72727f1029ad46229e68ef00ccff"
+    },
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-protected-comparison.json",
+      "sha256": "53a9e2c81a74078a24594dfba00f60c67639d741278a1b25c986fa3a05a035b0"
+    },
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-quant-browser/results.json",
+      "sha256": "08fd8aae3f557f4cce7797f14f06af0911771c87ff7e0df362b245d89a2cf051"
+    },
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-quant-browser/resource-budgets.json",
+      "sha256": "5c576204de5d9fa05ae8a28251351ee9e22e457b226b1c58e300269cf7f269bd"
+    },
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-quant-browser/accessibility.json",
+      "sha256": "5b63c100238db222773005735b2fe3edb2a86828f794f414307ca3d91ba9ffb8"
+    },
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-discover-browser/report.json",
+      "sha256": "400c5e9489c1c65a824aec94c77da8f91ce8c7bd42bcbd60e16191274a422048"
+    },
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-discover-browser/accessibility.json",
+      "sha256": "fa41ff24f1f9e00a468e11839a59c130cd601706bd56eb802a89c73d48d2b900"
+    },
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-global-browser.json",
+      "sha256": "d2ebc4f5cb71309e0b4f2127293fe438ef7892154f6a8b04110e88687df9fe79"
+    },
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-production-smoke.json",
+      "sha256": "4f06e531297cb388627e7202fadcbbe017423dc5e06769cf2bc76bc8cccefa7e"
+    },
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-serving.log",
+      "sha256": "da1ad2ab3af8e146b9d234b6875554e3d8f45b5cd5136a44d37ec4df3afc89ec"
+    },
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-resource-unit.log",
+      "sha256": "7ec793739293fe7da8b42a5ebcc662394bf7ef04d6456ceeb1ee15a1a63681b9"
+    },
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-journeys.log",
+      "sha256": "9745b10ef719be13e5f7115f800d38e02b64857d8812676339c402710b91999a"
+    },
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-public-hygiene.log",
+      "sha256": "80d527d9e925431f607938a7809ccb36c04ece461c8cb775c5e1e96fefa822f3"
+    },
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-release-build.log",
+      "sha256": "5addf3aff70de5fdf7a72bad12497e680e36a3aebabe329f0f6fce65f2d2cd3c"
+    },
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-quant-verified-final.log",
+      "sha256": "d5b9ce0a86ead6c3d7d1b97e475caf8df268d7461b95f884f170c889ed5ecff7"
+    },
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-product-final.log",
+      "sha256": "f3678cf0ed71e67f565ea47b803f2896fea25284a04b0aa6e42d20aaf3cdeabe"
+    },
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-sec-final.log",
+      "sha256": "e44de8d8ac596c8ece9b331b209188d0941fdd7bca914c0da085b62aa6dfa926"
+    },
+    {
+      "path": "/workspace/scratch/marketstack-product-fitness-esef-final.log",
+      "sha256": "750e7854e5aed917dbab249f501b54769851fdf51d9bc52418c4ce7018836079"
+    }
+  ]
+}
