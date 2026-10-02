@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "tiingo2-independent-qa-1.0.0",
+  "asOf": "2026-10-02",
+  "scope": "INDEPENDENT_REGRESSION_AND_STAGING_REVIEW",
+  "productionPublicationPerformed": false,
+  "checks": {
+    "nodeProducts": {
+      "command": "node --test quant/tests/*.test.mjs discover/tests/*.test.mjs scripts/supertrader/tests/*.test.mjs screener/tests/*.test.mjs",
+      "tests": 2608,
+      "passed": 2603,
+      "failed": 0,
+      "skipped": 5,
+      "status": "PASS"
+    },
+    "secPython": {
+      "command": "python -m unittest discover -s scripts/quant/tests -v",
+      "tests": 484,
+      "failed": 0,
+      "errors": 0,
+      "status": "PASS"
+    },
+    "tiingo2Focused": {
+      "command": "node --test quant/tests/tiingo2-*.test.mjs",
+      "tests": 74,
+      "passed": 74,
+      "failed": 0,
+      "status": "PASS"
+    },
+    "releaseBuild": {
+      "command": "node scripts/vu2/build-release.mjs --output=<external temporary release directory>",
+      "screenerSecurities": 5409,
+      "status": "PASS"
+    },
+    "chromiumReleaseSmoke": {
+      "command": "CHROMIUM_PATH=/usr/bin/chromium node scripts/vu2/production-smoke.mjs <built release> --report <temporary report>",
+      "checks": 148,
+      "failed": 0,
+      "viewports": [1440, 390],
+      "scope": "EXISTING_CANONICAL_PRODUCT_OUTPUTS",
+      "status": "PASS"
+    },
+    "additionalBrowserChecks": {
+      "checks": 6,
+      "failed": 0,
+      "cases": [
+        "Discover home renders without page errors",
+        "SuperTrader home renders without page errors",
+        "Canonical Search returns DNA",
+        "Canonical Search preserves GOOG",
+        "Canonical Search preserves GOOGL",
+        "DNA Watchlist selection survives page reload"
+      ],
+      "scope": "EXISTING_CANONICAL_PRODUCT_OUTPUTS",
+      "status": "PASS"
+    },
+    "protectedPublicData": {
+      "command": "git diff --stat -- quant/data discover/data",
+      "changedPaths": 0,
+      "testSideEffectRestored": "quant/data/providers/total-return-verification.json",
+      "status": "PASS"
+    }
+  },
+  "reviewFindings": [
+    {"finding": "Explicit retired listing status must preserve identity generations on ticker reuse", "status": "FIXED_AND_TESTED"},
+    {"finding": "Duplicate staged candidates must not inflate publication counts or collapse distinct securities", "status": "FIXED_AND_TESTED"},
+    {"finding": "Nonfinite adjustment ratios must fail closed", "status": "FIXED_AND_TESTED"},
+    {"finding": "Classifier rules version must not invalidate unchanged historical artifact schema", "status": "FIXED_AND_TESTED"},
+    {"finding": "A common first word must not certify company or SEC identity", "status": "FIXED_AND_TESTED"}
+  ],
+  "limits": [
+    "Browser checks validate the existing canonical product baseline; they do not prove newly staged listings were published.",
+    "DNA split-factor and Quant computation regressions use constructed prices; actual provider history readiness is reported separately by the refresh evidence artifacts.",
+    "Publication requires QA proof bound to exact staged bytes; baseline regression results alone are insufficient.",
+    "Focused and broad suites overlap; their test counts must not be added together."
+  ]
+}

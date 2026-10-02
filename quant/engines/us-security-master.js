@@ -56,7 +56,7 @@
      carry separate provenance so staging builders can rejudge an old
      cache without rewriting its schema or production membership. */
   var VERSION = "us-security-master-1.2.0";
-  var CLASSIFICATION_RULE_VERSION = "us-security-master-rules-1.3.0";
+  var CLASSIFICATION_RULE_VERSION = "us-security-master-rules-1.3.1";
 
   /* Die Gattungen. Reihenfolge ist die Berichtsreihenfolge. */
   var CLASSES = [
@@ -266,7 +266,8 @@
     { type: "WARRANT",     re: /\bWARRANTS?\b/i },
     { type: "RIGHT",       re: /\bRIGHTS?\b/i },
     { type: "UNIT",        re: /\bUNITS?\b/i },
-    { type: "ADR",         re: /\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY (SHARE|RECEIPT))/i },
+    { type: "ADR",         re: /\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY RECEIPTS?)\b/i },
+    { type: "UNKNOWN",     re: /\bDEPOSIT[AO]RY SHARES?\b/i },
     { type: "REIT",        re: /\b(REIT|REAL ESTATE INVESTMENT TRUST)\b/i },
     { type: "SPAC",        re: /\b(SPAC|ACQUISITION CORP|ACQUISITION COMPANY|BLANK CHECK)\b/i },
     { type: "ETF",         re: /\b(ETF|INDEX FUND|SHARES? ETF)\b/i },
@@ -331,6 +332,9 @@
     var marker = tickerMarker(ticker);
     var fifth = nasdaqFifthLetter(ticker, opts.listedRoots);
     var byName = nameRule(name);
+    var byDescription = Base.securityDescriptionRule(row.providerDescription || row.description);
+    var bareDepositary = /\bDEPOSIT[AO]RY SHARES?\b/i.test(name) &&
+      !/\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY RECEIPTS?)\b/i.test(name);
 
     /* 1. Grobklasse aus dem Basis-Klassierer uebernehmen. */
     var cls, confidence;
@@ -359,7 +363,7 @@
     } else if (looksLikeIndex(ticker)) {
       cls = "INDEX"; confidence = "HIGH";
       reasons.push("Tickerpraefix '" + ticker.charAt(0) + "' weist das Symbol als Index aus.");
-    } else if (fifth && cls === "EQUITY_COMMON") {
+    } else if (fifth && (cls === "EQUITY_COMMON" || cls === "UNKNOWN" && bareDepositary)) {
       /* Der fuenfte Buchstabe der NASDAQ. Mit Stammbeleg ist es ein
          Befund, ohne ihn ein Verdacht - und ein Verdacht wird als
          solcher gefuehrt, nicht als Ausschluss. */
@@ -421,6 +425,16 @@
         confidence = "HIGH";
         reasons.push("Name bestaetigt die Gattung " + cls + ".");
       }
+    }
+
+    if (byDescription && ["PREFERRED", "WARRANT", "UNIT", "RIGHT", "TEST_SECURITY", "INDEX", "ETF", "ETN"].indexOf(cls) < 0) {
+      cls = "CEF"; confidence = "HIGH";
+      flags.push("PROVIDER_DESCRIPTION_CLOSED_END_FUND");
+      reasons.push("Provider security description explicitly identifies a closed-end investment-company wrapper.");
+    }
+    if (/\bWHEN[- ]ISSUED\b/i.test(name)) {
+      flags.push("WHEN_ISSUED_LISTING_METADATA_REVIEW");
+      reasons.push("Provider security name carries When-Issued status; publication requires current trading-period evidence.");
     }
 
     /* 5. Beleglage fuer die Gattungen, die nur ein Name trennt. */

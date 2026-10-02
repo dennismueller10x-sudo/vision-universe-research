@@ -12,12 +12,38 @@ const row = (ticker, name, extra = {}) => ({ ticker, name, assetType: 'Stock', e
 
 test('schema compatibility and new classification rule provenance remain independent', () => {
   assert.equal(Master.VERSION, 'us-security-master-1.2.0');
-  assert.equal(Master.CLASSIFICATION_RULE_VERSION, 'us-security-master-rules-1.3.0');
+  assert.equal(Master.CLASSIFICATION_RULE_VERSION, 'us-security-master-rules-1.3.1');
   const input = row('PFBC', 'Preferred Bank');
   assert.equal(Master.classifySecurity(input, opts).classificationRuleVersion, Master.CLASSIFICATION_RULE_VERSION);
   const master = Master.buildSecurityMaster({ providerRows: [input], baseline: [], today: opts.today });
   assert.equal(master.version, Master.VERSION);
   assert.equal(master.classificationRuleVersion, Master.CLASSIFICATION_RULE_VERSION);
+});
+
+test('bare domestic depositary shares do not become American ADRs or override preferred suffix evidence', () => {
+  for (const [ticker, name] of [
+    ['MNSBP', 'MainStreet Bancshares, Inc. - Depositary Shares'],
+    ['WAFDP', 'WaFd, Inc. - Depositary Shares']
+  ]) {
+    const roots = { MNSB: true, WAFD: true };
+    assert.equal(Base.classify(row(ticker, name), opts).instrumentType, 'UNKNOWN', ticker);
+    for (const exchange of ['NASDAQ', 'NYSE']) {
+      const c = Master.classifySecurity(row(ticker, name, { exchange }), { ...opts, listedRoots: roots });
+      assert.equal(c.instrumentType, 'PREFERRED', ticker);
+      assert.equal(isConsumerInstrument(c.instrumentType), false, ticker);
+      assert.equal(c.classificationStatus, exchange === 'NASDAQ' ? 'CLASSIFIED' : 'REVIEW');
+    }
+  }
+  const unknown = Master.classifySecurity(row('ZZZZ', 'Domestic Issuer - Depositary Shares'), opts);
+  assert.equal(unknown.instrumentType, 'UNKNOWN');
+  assert.equal(unknown.classificationStatus, 'UNKNOWN');
+  assert.equal(Master.classifySecurity(row('ZZZZ', 'Domestic Realty Trust - Depositary Shares'), opts).instrumentType, 'UNKNOWN');
+  for (const [ticker, name] of [['MNSB', 'MainStreet Bancshares Inc - Common Stock'], ['WAFD', 'WaFd Inc - Common Stock']]) {
+    assert.equal(Master.classifySecurity(row(ticker, name), opts).instrumentType, 'EQUITY_COMMON');
+  }
+  const adr = Master.classifySecurity(row('SKHY', 'SK hynix Inc. - American Depositary Shares'), opts);
+  assert.equal(adr.instrumentType, 'ADR');
+  assert.equal(Base.classify(row('PREF', 'Foreign Issuer American Depositary Shares representing Preferred Stock'), opts).instrumentType, 'PREFERRED');
 });
 
 test('PFBC Preferred Bank names its issuer; a separately evidenced preferred still fails consumer policy', () => {
@@ -75,6 +101,27 @@ test('Tiingo compact MutualFund labels are funds, including on a US venue', () =
     assert.equal(c.instrumentType, 'MUTUAL_FUND');
     assert.equal(isConsumerInstrument(c.instrumentType), false);
   }
+});
+
+test('explicit provider investment-company form overrides Common Stock but fund-management businesses remain common', () => {
+  for (const description of [
+    'Ives Ultra AI Opportunities Inc. is a listed closed-end fund structured to invest in a targeted portfolio.',
+    'Ives Ultra AI Opportunities Inc. is a non-diversified, closed-end management investment company registered under the Investment Company Act of 1940.'
+  ]) {
+    const r = row('IVAI', 'Ives Ultra AI Opportunities Inc. Common Stock', { description });
+    assert.equal(Base.classify(r, opts).instrumentType, 'FUND');
+    const c = Master.classifySecurity(r, opts);
+    assert.equal(c.instrumentType, 'CEF');
+    assert.equal(isConsumerInstrument(c.instrumentType), false);
+    assert.ok(c.flags.includes('PROVIDER_DESCRIPTION_CLOSED_END_FUND'));
+  }
+  const manager = row('BLK', 'BlackRock Inc. Common Stock', {
+    description: 'BlackRock provides asset management services to institutional clients and manages closed-end funds.'
+  });
+  assert.equal(Master.classifySecurity(manager, opts).instrumentType, 'EQUITY_COMMON');
+  const issued = Master.classifySecurity(row('SNDK', 'Sandisk Corporation - Common Stock When-Issued'), opts);
+  assert.equal(issued.instrumentType, 'EQUITY_COMMON');
+  assert.ok(issued.flags.includes('WHEN_ISSUED_LISTING_METADATA_REVIEW'));
 });
 
 test('legitimate classes, Test Systems issuer words and bank/REIT industry data preserve current consumer policy', () => {

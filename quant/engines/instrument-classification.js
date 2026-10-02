@@ -35,7 +35,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
 
-  var VERSION = "instrument-classification-1.1.0";
+  var VERSION = "instrument-classification-1.1.1";
 
   /* Die Klassen aus §7. OTHER ist die Sammelklasse fuer Gattungen, die
      erkannt, aber nicht einzeln gefuehrt werden (Units, Bezugsrechte);
@@ -169,18 +169,18 @@
        bleibt es, egal was darin liegt. */
     { type: "ETN",       re: /\b(ETN|EXCHANGE[- ]TRADED NOTE)S?\b/i },
     { type: "ETF",       re: /\b(ETF|INDEX FUND|SHARES? ETF)\b/i },
-    /* Dann die ausdrueckliche Hinterlegung auf eine auslaendische Aktie. */
-    { type: "ADR",       re: /\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY RECEIPT)/i },
     /* Dann der Inhalt. Eine Hinterlegung auf Vorzugsaktien landet hier - und
        das ist richtig: sie ist ein Vorzugspapier, kein ADR. */
     /* Preferred Bank is an issuer name; a separately named preferred
        stock or an explicit symbol marker still identifies the security. */
     { type: "PREFERRED", re: /\b(PREFERRED(?!\s+BANK\b)|PFD|PREF\.)/i },
+    /* A bare domestic depositary share is often a fractional preferred;
+       only an affirmative American/receipt designation establishes ADR. */
+    { type: "ADR",       re: /\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY RECEIPTS?)\b/i },
     { type: "WARRANT",   re: /\bWARRANTS?\b/i },
     { type: "FUND",      re: /\b(FUND|TRUST FUND|CLOSED[- ]END)\b/i },
-    /* Eine Hinterlegung, deren Name weder ADR noch eine Gattung nennt, bleibt
-       zuletzt eine Hinterlegung - besser als Stammaktie. */
-    { type: "ADR",       re: /\bDEPOSITARY SHARES?\b/i }
+    /* Bare depositary shares do not establish the underlying security. */
+    { type: "UNKNOWN",   re: /\bDEPOSIT[AO]RY SHARES?\b/i }
   ];
 
   /* Der AUSDRUECKLICHE Fondsmantel - und nur er. Diese Zeichenkette ist die
@@ -198,6 +198,19 @@
       if (NAME_RULES[i].re.test(n)) {
         return { type: NAME_RULES[i].type, basis: "name" };
       }
+    }
+    return null;
+  }
+
+  /* Provider descriptions can identify an investment-company wrapper
+     even when an exchange directory calls its issued shares Common
+     Stock. Require an explicit issuer-form statement, not a mention
+     of funds managed, held or served by an operating business. */
+  function securityDescriptionRule(description) {
+    var d = norm(description);
+    if (/\b(?:is|operates as|is organized as|is registered as)\s+(?:an?\s+)?(?:listed\s+|publicly listed\s+|non[- ]diversified[,\s]+|registered\s+)*closed[- ]end\s+(?:management\s+)?(?:investment\s+)?(?:fund|company)\b/i.test(d) ||
+        /^\s*(?:A |The )?(?:non[- ]diversified[,\s]+)?closed[- ]end\s+(?:management\s+)?(?:investment\s+)?(?:fund|company)\b/i.test(d)) {
+      return { type: "FUND", subtype: "CLOSED_END", basis: "PROVIDER_SECURITY_DESCRIPTION" };
     }
     return null;
   }
@@ -237,6 +250,7 @@
 
     var pattern = tickerPattern(ticker);
     var byName = nameRule(row.name);
+    var byDescription = securityDescriptionRule(row.providerDescription || row.description);
     var at = upper(assetType);
 
     var type = null, confidence = null, typeBasis = null;
@@ -287,8 +301,11 @@
           type = "ETN";
           reasons.push("Name weist das Papier als Exchange Traded Note aus.");
         }
+      } else if (byDescription) {
+        type = "FUND"; confidence = "HIGH"; typeBasis = byDescription.basis;
+        reasons.push("Provider description explicitly identifies a closed-end investment-company security wrapper.");
       } else if (byName && byName.type !== "ETF" && byName.type !== "FUND") {
-        type = byName.type; confidence = "HIGH"; typeBasis = "SECURITY_NAME";
+        type = byName.type; confidence = type === "UNKNOWN" ? "LOW" : "HIGH"; typeBasis = "SECURITY_NAME";
         reasons.push("Name weist das Papier als " + byName.type + " aus.");
       } else {
         /* HIER STAND "HIGH", UND DAS WAR EINE KONFIDENZ OHNE BELEG.
@@ -464,6 +481,7 @@
     US_EXCHANGES: US_EXCHANGES,
     OTC_EXCHANGES: OTC_EXCHANGES,
     tickerPattern: tickerPattern,
+    securityDescriptionRule: securityDescriptionRule,
     /* Damit die Messung und der Test dieselbe Grenze lesen wie der
        Klassifikator - zwei Kopien dieses Musters waeren zwei Freigaben. */
     EXPLICIT_FUND_WRAPPER: EXPLICIT_FUND_WRAPPER,

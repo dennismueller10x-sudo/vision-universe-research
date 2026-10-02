@@ -411,7 +411,19 @@
         continue;
       }
       var evidence = { splitFactor: b.splitFactor, hasDividend: dividend,
-        expectedFactorStep: expected, observedFactorStep: step, factorRelativeError: error };
+        hasSplit: split, expectedFactorStep: expected, observedFactorStep: step,
+        factorRelativeError: error, relativeError: error,
+        rawMovePct: Math.abs(b.close / p.close - 1) * 100,
+        adjustedMovePct: Math.abs(b.adjustedClose / p.adjustedClose - 1) * 100,
+        dividendYield: b.dividend / previousInExDayShares,
+        finiteFactorEvidence: true,
+        providerActionColumnsComplete: true,
+        ohlcValid: [b.open, b.high, b.low, b.close].every(function (v) { return isNum(v) && v > 0; }) &&
+          b.high >= Math.max(b.open, b.close, b.low) && b.low <= Math.min(b.open, b.close),
+        adjustmentStepIsStable: Math.abs(step - 1) <= cfg.corporateActionTolerance,
+        splitOnlyFactorMatches: Math.abs(step / b.splitFactor - 1) <= cfg.corporateActionTolerance,
+        previousCloseDividendFactorMatches: error <= cfg.corporateActionTolerance,
+        exDayCloseDividendFactorMatches: Math.abs(step / (b.splitFactor * (1 + b.dividend / b.close)) - 1) <= cfg.corporateActionTolerance };
       if (error > cfg.corporateActionTolerance) {
         event(split || dividend ? "BAD_SERIES" : "MISSING_PROVIDER_ACTION", b,
           split || dividend ? "ACTION_FACTOR_MISMATCH" : "UNEXPLAINED_ADJUSTMENT_STEP", evidence);
