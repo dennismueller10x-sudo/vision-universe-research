@@ -572,6 +572,18 @@ export function build() {
   writeJson(path.join(DATA, 'market.json'), market);
   writeJson(path.join(DATA, 'coverage.json'), { schema: 'supertrader-coverage-1.0.0', asOf, coverage, greenblatt: gbCoverage, unavailableInstruments: unavailable, gateDefinitions: GATE_DEFS, minHistoryYears: MIN_HISTORY_YEARS });
   writeJson(path.join(DATA, 'signals.json'), signals);
+  /* Ausschnitte (Payload-Audit 03.10.2026: jede der 822 Seiten lud 3,3 MB):
+     signals-core.json fuer Start, Strategien, Methodik, Backtests (ohne die
+     Historienlisten), stock/<SYM>.json fuer die Aktienseite. signals.json
+     bleibt vollstaendig fuer die Signalliste. */
+  writeJson(path.join(DATA, 'signals-core.json'), signalsCore(signals));
+  const slices = signalsBySymbol(signals, [...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)]);
+  /* Ein Ausschnitt eines Symbols, das heraus faellt, darf nicht stehen
+     bleiben - er zeigte sonst alte Signale. Ohne Ausschnitt laedt die Seite
+     die vollstaendige Datei. */
+  const sliceDir = path.join(DATA, 'stock');
+  if (exists(sliceDir)) for (const f of fs.readdirSync(sliceDir)) if (f.endsWith('.json') && !slices[f.slice(0, -5)]) fs.rmSync(path.join(sliceDir, f));
+  for (const [sym, slice] of Object.entries(slices)) writeIfChanged(path.join(sliceDir, sym + '.json'), JSON.stringify(slice) + '\n');
   if (pilot) backtests.pilot = { path: '/supertrader/data/pilot-backtest.json', status: pilot.status, id: pilot.spec.id };
   writeJson(path.join(DATA, 'backtests.json'), backtests);
   if (pilot) writeJson(path.join(DATA, 'pilot-backtest.json'), pilot);
@@ -935,6 +947,44 @@ export function symbolsIn(x, out = new Set()) {
   else if (x && typeof x === 'object') {
     if (typeof x.symbol === 'string') out.add(x.symbol);
     for (const v of Object.values(x)) if (v && typeof v === 'object') symbolsIn(v, out);
+  }
+  return out;
+}
+
+/* Die Listen, die nur Signalliste und Aktienseite brauchen. */
+export const HISTORY_LISTS = ['invalidated', 'retired', 'scanner'];
+
+/** signals.json ohne die Historienlisten; Zaehler (invalidatedTotal ...) bleiben. */
+export function signalsCore(signals) {
+  const strategies = {};
+  for (const [id, st] of Object.entries(signals.strategies || {})) {
+    const c = { ...st };
+    for (const k of HISTORY_LISTS) delete c[k];
+    strategies[id] = c;
+  }
+  return { ...signals, slice: 'core', strategies };
+}
+
+/** Je Symbol genau die Eintraege, die die Aktienseite liest (renderStock). */
+export function signalsBySymbol(signals, extra = []) {
+  const out = {};
+  const syms = new Set([...Object.keys(signals.bySymbol || {}), ...extra].filter((x) => /^[A-Z0-9.\-]+$/.test(x)));
+  /* Ohne asOf/inputsGeneratedAt/counts: die wechseln jeden Tag und haetten
+     sonst jeden Ausschnitt taeglich neu geschrieben (Repo-Wachstum). Den
+     Stand liefert build.json; die Seite setzt ihn ein. */
+  const head = { schema: signals.schema, policy: signals.policy, disclaimer: signals.disclaimer };
+  for (const sym of syms) {
+    const strategies = {};
+    for (const [id, st] of Object.entries(signals.strategies || {})) {
+      const mine = (list) => (list || []).filter((x) => x.symbol === sym);
+      const scanner = st.scanner ? { ...st.scanner, top: mine(st.scanner.top) } : { top: [] };
+      strategies[id] = { ...st, open: mine(st.open), closed: mine(st.closed), invalidated: mine(st.invalidated), retired: mine(st.retired), scanner };
+    }
+    const partialChecks = {};
+    for (const [id, pc] of Object.entries(signals.partialChecks || {})) {
+      partialChecks[id] = { ...pc, candidates: (pc.candidates || []).filter((r) => r.symbol === sym), near: (pc.near || []).filter((r) => r.symbol === sym) };
+    }
+    out[sym] = { ...head, slice: 'stock', symbol: sym, bySymbol: signals.bySymbol && signals.bySymbol[sym] ? { [sym]: signals.bySymbol[sym] } : {}, strategies, partialChecks };
   }
   return out;
 }
