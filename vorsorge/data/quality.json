@@ -1,64 +1,140 @@
 {
  "schemaVersion": "vu-vorsorge-data-qa-2.0.0",
  "asOf": "2026-10-02",
- "scope": "REPOSITORY_DELIVERED_EXTRACT",
+ "scope": "TIINGO_ETF_INGEST",
  "ingest": {
-  "status": "NOT_RUN",
-  "report": null,
-  "catalog": null,
-  "failedCount": null
+  "status": "PARTIAL",
+  "report": {
+   "schemaVersion": "vu-vorsorge-ingest-report-1.0.0",
+   "ingest": "vorsorge-ingest-2.0.0",
+   "activeTickers": 7273,
+   "processedOk": 39,
+   "notFound": 0,
+   "noPrices": 1,
+   "failed": 1,
+   "pending": 7233,
+   "complete": false,
+   "stoppedBecause": "LIMIT",
+   "thisRun": {
+    "requests": 81,
+    "rateLimited": 0,
+    "minutes": 1,
+    "newlyAttempted": 40
+   }
+  },
+  "catalog": {
+   "schemaVersion": "vu-vorsorge-catalog-stats-1.0.0",
+   "source": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip",
+   "catalogRows": 108934,
+   "etfRows": 9777,
+   "malformedRows": 117,
+   "activeRows": 7280,
+   "inactiveRows": 2380,
+   "rowsWithoutPriceDates": 0,
+   "uniqueTickers": 9451,
+   "tickersWithMultipleRows": 205,
+   "activeUniqueTickers": 7273,
+   "byExchange": {
+    "SHE": 403,
+    "SHG": 420,
+    "NYSE": 2996,
+    "BATS": 1785,
+    "NASDAQ": 1620,
+    "NYSE MKT": 24,
+    "NYSE ARCA": 1526,
+    "PINK": 586,
+    "AMEX": 50,
+    "OTCQB": 8,
+    "OTCGREY": 112,
+    "OTCMKTS": 78,
+    "NMFQS": 14,
+    "OTCBB": 9,
+    "EXPM": 23,
+    "OTCD": 5,
+    "OTCCE": 1
+   },
+   "byCurrency": {
+    "USD": 8905,
+    "CNY": 753,
+    "AUD": 2
+   },
+   "activeByExchange": {
+    "SHE": 377,
+    "SHG": 420,
+    "NYSE": 2699,
+    "BATS": 1532,
+    "NASDAQ": 1360,
+    "NYSE ARCA": 240,
+    "PINK": 523,
+    "AMEX": 31,
+    "OTCQB": 8,
+    "OTCMKTS": 62,
+    "OTCD": 2,
+    "OTCGREY": 15,
+    "EXPM": 9,
+    "OTCBB": 1,
+    "NMFQS": 1
+   },
+   "otherAssetTypes": {
+    "Stock": 49277,
+    "Mutual Fund": 49880
+   },
+   "staleBefore": "2026-09-02",
+   "maxEndDate": "2026-10-02"
+  },
+  "failedCount": 1
  },
  "layers": {
-  "raw": null,
-  "canonical": 164,
-  "listings": 164,
-  "publicAnalysis": 76,
-  "complex": 74,
+  "raw": 9777,
+  "canonical": 203,
+  "listings": 203,
+  "publicAnalysis": 83,
+  "complex": 89,
   "archive": 8,
-  "review": 6
+  "review": 23
  },
  "counts": {
-  "rowsRead": 7825,
-  "listings": 164,
-  "canonicalFunds": 164,
-  "shareClasses": 164,
-  "uniqueTickers": 163,
-  "publicAnalysis": 76,
-  "complex": 74,
+  "rowsRead": 7864,
+  "listings": 203,
+  "canonicalFunds": 203,
+  "shareClasses": 203,
+  "uniqueTickers": 202,
+  "publicAnalysis": 83,
+  "complex": 89,
   "archive": 8,
-  "review": 6,
-  "consumerVisible": 150,
-  "withPriceHistory": 155,
+  "review": 23,
+  "consumerVisible": 172,
+  "withPriceHistory": 194,
   "withHistory1Y": 48,
   "withHistory3Y": 10,
   "withHistory5Y": 8,
   "withHistory10Y": 7,
-  "withTotalReturn": 0,
+  "withTotalReturn": 38,
   "leveragedOrInverse": 22,
   "inactive": 8
  },
  "priceCoverage": {
-  "withAnyHistory": 155,
-  "ratio": 0.9451219512195121,
+  "withAnyHistory": 194,
+  "ratio": 0.9556650246305419,
   "y1": 48,
   "y3": 10,
   "y5": 8,
   "y10": 7,
-  "totalReturn": 0
+  "totalReturn": 38
  },
  "metadataCoverage": {
   "symbol": 1,
-  "name": 0.963,
+  "name": 0.97,
   "exchange": 1,
   "currency": 1,
-  "country": 1,
-  "assetClass": 0.884,
-  "issuer": 0.896,
-  "index": 0.067,
+  "country": 0.808,
+  "assetClass": 0.828,
+  "issuer": 0.734,
+  "index": 0.054,
   "category": 1,
-  "region": 0.354,
+  "region": 0.315,
   "sector": 0,
-  "theme": 0.287,
+  "theme": 0.3,
   "leverage": 1,
   "inverse": 1,
   "distributionPolicy": 0,
@@ -67,28 +143,29 @@
   "fundSize": 0,
   "inceptionDate": 0,
   "holdingsCount": 0,
-  "benchmark": 0.067,
+  "benchmark": 0.054,
   "isin": 0,
   "wkn": 0,
   "tiingoAvailable": 1,
   "priceHistoryAvailable": 1
  },
  "missingMetadata": {
-  "index": 153,
-  "region": 106,
-  "sector": 164,
-  "theme": 117,
-  "distributionPolicy": 164,
-  "replicationMethod": 164,
-  "ter": 164,
-  "fundSize": 164,
-  "inceptionDate": 164,
-  "holdingsCount": 164,
-  "benchmark": 153,
-  "isin": 164,
-  "wkn": 164,
-  "assetClass": 19,
-  "issuer": 17,
+  "country": 39,
+  "assetClass": 35,
+  "issuer": 54,
+  "index": 192,
+  "region": 139,
+  "sector": 203,
+  "theme": 142,
+  "distributionPolicy": 203,
+  "replicationMethod": 203,
+  "ter": 203,
+  "fundSize": 203,
+  "inceptionDate": 203,
+  "holdingsCount": 203,
+  "benchmark": 192,
+  "isin": 203,
+  "wkn": 203,
   "name": 6
  },
  "missingName": 6,
@@ -116,6 +193,14 @@
   "multiListingFunds": []
  },
  "conflicts": [
+  {
+   "symbol": "158063",
+   "exchange": "SHE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "China Southern ChiNext Computing Power Infrastructure Exchange Traded"
+   ]
+  },
   {
    "symbol": "BNY",
    "exchange": "NYSE",
@@ -154,17 +239,17 @@
  "tickerReuseSuspected": [],
  "priceAnomalies": [],
  "productTypes": {
-  "ETF": 161,
+  "ETF": 200,
   "ETN": 1,
   "ETP": 2
  },
  "strategies": {
+  "UNKNOWN": 30,
+  "EQUITY": 43,
+  "THEMATIC": 27,
   "BOND": 32,
-  "UNKNOWN": 14,
   "BUFFER": 10,
-  "THEMATIC": 11,
   "LEVERAGED": 20,
-  "EQUITY": 36,
   "LEVERAGED_INVERSE": 2,
   "CRYPTO": 12,
   "DEFINED_OUTCOME": 19,
@@ -173,36 +258,40 @@
   "OPTION_INCOME": 3
  },
  "retirementClasses": {
-  "STANDARD": 76,
-  "NICHT_EINORDENBAR": 13,
-  "KOMPLEX": 53,
+  "NICHT_EINORDENBAR": 29,
+  "STANDARD": 83,
+  "KOMPLEX": 69,
   "SEHR_KOMPLEX": 22
  },
  "leveragedInverse": 22,
  "singleStock": 11,
  "currencies": {
-  "USD": 164
+  "USD": 194,
+  "CNY": 9
  },
  "exchanges": {
+  "SHE": 39,
   "NYSE": 68,
   "NYSE ARCA": 12,
   "NASDAQ": 30,
   "BATS": 54
  },
  "countries": {
+  "UNKNOWN": 39,
   "US": 164
  },
  "assetClasses": {
+  "UNKNOWN": 35,
+  "EQUITY": 113,
   "BOND": 32,
-  "UNKNOWN": 19,
-  "EQUITY": 90,
   "CRYPTO": 14,
   "REAL_ESTATE": 1,
   "MONEY_MARKET": 4,
   "COMMODITY": 4
  },
  "regions": {
-  "UNKNOWN": 106,
+  "UNKNOWN": 139,
+  "CHINA": 6,
   "EMERGING_MARKETS": 5,
   "GLOBAL": 4,
   "INTERNATIONAL": 5,
@@ -212,6 +301,8 @@
   "VIETNAM": 1
  },
  "issuers": {
+  "UNKNOWN": 54,
+  "Invesco": 4,
   "Columbia Threadneedle": 7,
   "PGIM": 4,
   "Pacer": 2,
@@ -221,7 +312,6 @@
   "GraniteShares": 2,
   "Defiance": 6,
   "REX Shares (T-Rex)": 1,
-  "UNKNOWN": 17,
   "American Century": 1,
   "Baron": 4,
   "Grayscale": 5,
@@ -247,7 +337,6 @@
   "Alger": 1,
   "KraneShares": 1,
   "Nuveen": 3,
-  "Invesco": 2,
   "Touchstone": 1,
   "T. Rowe Price": 1,
   "21Shares": 2,
@@ -255,8 +344,9 @@
   "Tema": 1
  },
  "statuses": {
-  "ACTIVE": 156,
+  "ACTIVE": 194,
+  "REVIEW": 1,
   "INACTIVE": 8
  },
- "unknownClassification": 19
+ "unknownClassification": 35
 }
