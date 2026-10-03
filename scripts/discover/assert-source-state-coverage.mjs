@@ -34,6 +34,11 @@ const SourceState = require(join(engines, "realtime", "source-state.js"));
 const MarketHours = require(join(engines, "realtime", "market-hours.js"));
 const TradingSession = require(join(engines, "realtime", "trading-session.js"));
 const kalender = require(join(root, "quant", "config", "market-calendar.json"));
+/* Dateinamen ueber die eine Identitaetsregel (core/identity.js, ADR-001):
+   die rohe Bildung aus Praefix und Ticker fand BRK-B, MOG-A usw. nie
+   (11 Titel im Live-Scope). */
+const Identity = require(join(root, "core", "identity.js"));
+const datei = (t) => Identity.securityIdForTicker(t) + ".json";
 
 const arg = (name, fallback) => {
   const t = process.argv.find((a) => a.startsWith("--" + name + "="));
@@ -48,7 +53,7 @@ const PFLICHT = ["NBIS", "AAPL", "NVDA", "MSFT", "PANW", "VLO"];
    illiquide ist, kann es morgen nicht mehr sein. */
 function ersterUnvollstaendiger(scopeListe, ordnerPfad) {
   for (const t of scopeListe) {
-    const f = join(ordnerPfad, "ref_" + t + ".json");
+    const f = join(ordnerPfad, datei(t));
     if (!existsSync(f)) continue;
     try {
       const s = JSON.parse(readFileSync(f, "utf8"));
@@ -82,7 +87,7 @@ function streuung(liste, n, saat) {
   return gewaehlt;
 }
 const kandidaten = scope.filter((t) => !PFLICHT.includes(t) &&
-  existsSync(join(ordner, "ref_" + t + ".json")));
+  existsSync(join(ordner, datei(t))));
 const teilweise = ersterUnvollstaendiger(scope, ordner);
 const pflicht = teilweise && !PFLICHT.includes(teilweise) ? PFLICHT.concat([teilweise]) : PFLICHT.slice();
 if (!teilweise) {
@@ -106,7 +111,7 @@ const zeilen = [];
 const zaehler = {};
 
 for (const ticker of stichprobe) {
-  const pfad = join(ordner, "ref_" + ticker + ".json");
+  const pfad = join(ordner, datei(ticker));
   if (!existsSync(pfad)) { befunde.push(`${ticker}: kein Snapshot ausgeliefert`); continue; }
   const snap = JSON.parse(readFileSync(pfad, "utf8"));
   /* Kein Strom: die Boerse ist beim Pruefen geschlossen, und erfundene
