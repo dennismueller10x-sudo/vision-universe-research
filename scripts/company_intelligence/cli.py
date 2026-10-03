@@ -62,6 +62,7 @@ def main(argv=None):
     p.add_argument('--state', type=Path)
     p.add_argument('--out', type=Path)
     p.add_argument('--tickers')
+    p.add_argument('--source-tickers', help='Limit feed sources to master tickers without filtering the global SEC stream')
     p.add_argument('--all-offline', action='store_true', help='Project existing facts for the entire master, without external requests')
     p.add_argument('--updated-issuers', type=Path, help='Consume the existing SEC daily updated-issuer manifest without fetching a universe')
     p.add_argument('--limit', type=int, default=25)
@@ -100,6 +101,8 @@ def main(argv=None):
         p.error('sec-stream requires --network --sec-fetch, no ticker/manifest filters, and stream-days 1..5')
     if not 30 <= args.stream_history_days <= 366:
         p.error('stream-history-days must be 30..366')
+    if args.source_tickers and args.command not in ('poll', 'sec-stream'):
+        p.error('source-tickers is only supported for poll and sec-stream')
     root = args.root.resolve()
     state_dir = (args.state or root / '.company-intelligence').resolve()
     output = (args.out or state_dir / 'public/company-intelligence/data').resolve()
@@ -108,6 +111,8 @@ def main(argv=None):
     if any(output == path or output.is_relative_to(path) or state_dir == path or state_dir.is_relative_to(path) for path in protected) or output == root or state_dir == root:
         p.error('state/output must not overwrite protected repository paths')
     companies = load_universe(root)
+    source_tickers = args.source_tickers or (args.tickers if args.command == 'poll' else None)
+    source_scope = {c['companyId'] for c in select(companies, source_tickers, len(companies))} if source_tickers else None
     state_dir.mkdir(parents=True, exist_ok=True)
     import fcntl
     lock = (state_dir / 'run.lock').open('a')
@@ -251,7 +256,7 @@ def main(argv=None):
             if args.network and inventory_results is None:
                 pipeline.seed_sources(json.loads((config_dir / 'sources.json').read_text()))
                 try:
-                    pipeline.ingest_due_sources(selected_ids, all_sources=not args.tickers and args.command in ('run', 'backfill', 'discover-backfill', 'sec-stream', 'poll'), force=args.force_sources)
+                    pipeline.ingest_due_sources(selected_ids if source_scope is None else source_scope, all_sources=source_scope is None and not args.tickers and args.command in ('run', 'backfill', 'discover-backfill', 'sec-stream', 'poll'), force=args.force_sources)
                 except BudgetExhausted:
                     deferred = True
                     store.audit(now, 'runner', 'FEED_BUDGET_DEFERRED', requestBudget=args.request_budget)
@@ -295,7 +300,7 @@ def main(argv=None):
                     store.set_state('irPending', list(dict.fromkeys(store.state('irPending', []) + [c['companyId'] for c in selected if c['officialSites']])))
                 try:
                     # Existing feeds first; discovery is lower priority and cannot exhaust their request budget.
-                    pipeline.ingest_due_sources(selected_ids, all_sources=not args.tickers and args.command in ('run', 'backfill', 'discover-backfill', 'sec-stream', 'poll'), force=args.force_sources)
+                    pipeline.ingest_due_sources(selected_ids if source_scope is None else source_scope, all_sources=source_scope is None and not args.tickers and args.command in ('run', 'backfill', 'discover-backfill', 'sec-stream', 'poll'), force=args.force_sources)
                     if args.discover_sites:
                         try:
                             candidates = {} if all(store.state('siteCandidates:' + c['companyId']) is not None for c in selected[:25]) else wikidata_sites(selected[:25], http)
