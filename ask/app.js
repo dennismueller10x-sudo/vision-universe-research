@@ -597,7 +597,7 @@
   function chartbildBlock(res) {
     var usd = function (v) { return v === null || v === undefined ? '–' : Fields.format('price', v); };
     var zone = function (z) { return z ? usd(z[0]) + ' – ' + usd(z[1]) : '–'; };
-    var box = h('div', { class: 'ak-card' }, [h('h3', { text: 'Chartbild (Wochenchart)' })]);
+    var box = h('div', { class: 'ak-card' }, [h('h3', { text: 'Chartbild' })]);
     res.stocks.forEach(function (x) {
       if (!x.found) { box.appendChild(h('p', { text: x.symbol + ': Für diesen Titel liegt kein Chartbild vor.' })); return; }
       var p = x.primaryScenario || {};

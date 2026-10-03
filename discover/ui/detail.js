@@ -1737,10 +1737,10 @@
       el("p", { style: "margin:14px 0 0;font-size:13px;color:var(--discover-muted);line-height:1.6",
         text: "Ausblick, Zonen, Szenarien und die experimentelle Elliott-Strukturdeutung stehen im Chartbild. " +
               "Für die meisten Titel gibt es dort bewusst keine verlässliche Wellenzählung." }),
-      el("p", { style: "margin:10px 0 0;font-size:13px" }, [
-        el("a", { href: "/quant/#/aktie/" + encodeURIComponent(detail.symbol || "") + "/chartbild", text: "Chartbild öffnen" })
-      ])
-    ];
+      detail.symbol ? el("p", { style: "margin:10px 0 0;font-size:13px" }, [
+        el("a", { href: "/quant/#/aktie/" + encodeURIComponent(detail.symbol) + "/chartbild", text: "Chartbild öffnen" })
+      ]) : null
+    ].filter(Boolean);
 
     var weitere = [];
     ["marketStructure", "supportResistance"].forEach(function (key) {

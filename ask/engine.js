@@ -115,12 +115,12 @@
    */
   function runChartbild(index, meta, result) {
     var rows = index && Array.isArray(index.rows) ? index.rows : [];
-    var by = Object.create(null), latest = '';
-    rows.forEach(function (r) { if (r && r.t) { by[r.t] = r; if (r.asOf > latest) latest = r.asOf; } });
+    var by = Object.create(null);
+    rows.forEach(function (r) { if (r && r.t) by[r.t] = r; });
     return {
       tool: 'getChartbildLage',
       stocks: (result.tickers || []).map(function (sym) {
-        return TITools.situation(by[sym] || null, { symbol: sym, index: index, meta: meta, latestAsOf: latest || null });
+        return TITools.situation(by[sym] || null, { symbol: sym, index: index, meta: meta, latestAsOf: new Date().toISOString().slice(0, 10) });   // Bezug heute: ein veralteter Index gilt nicht als frisch
       })
     };
   }

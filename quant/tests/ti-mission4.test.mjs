@@ -43,6 +43,8 @@ test("M4-2 alerts: no events from a methodology change or unchanged data date", 
   assert.equal(same.events.length, 0, "gleicher Datenstand → keine Ereignisse"); assert.equal(same.skippedUnchanged, 1);
   const moved = Alerts.diffRun(prev, { methodologyKey: "A", rows: [row("X", "2026-10-08", { inEntryZone: true })] });
   assert.equal(moved.events.length, 1); assert.equal(moved.events[0].type, "ENTRY_ZONE_REACHED");
+  /* neuer Titel ohne vorige Zeile: Ausgangszustand, kein Ereignis (Code-Review M1) */
+  assert.equal(Alerts.diffRun(prev, { methodologyKey: "A", rows: [row("X", "2026-10-01", { inEntryZone: false }), row("NEW", "2026-10-08", { inEntryZone: true })] }).events.length, 0);
   assert.equal(Alerts.diffRun(null, { methodologyKey: "A", rows: [row("X", "2026-10-08", { inEntryZone: true })] }).suppressed, "BASELINE");
   /* der veroeffentlichte Index traegt den Methodenschluessel, sonst greift der Schutz beim naechsten Lauf nicht */
   const idx = join(ROOT, "quant/data/technical-intelligence/v3/index.json.gz");

@@ -133,11 +133,13 @@ const TI_ENUMS = {
   elliottApplicable: ['HIGH', 'MODERATE', 'LOW']
 };
 /** index.json.gz (vu-ti-api-3) -> Map(ticker -> { tiOut, tiStr, tiEw }) und Metadaten. */
-export function technicalIntelligenceColumns(index) {
+export function technicalIntelligenceColumns(index, opts = {}) {
   const byTicker = new Map();
   const rows = Array.isArray(index?.rows) ? index.rows : [];
   const latest = rows.reduce((m, r) => (typeof r.asOf === 'string' && r.asOf > m ? r.asOf : m), '');
-  const cutoff = latest ? new Date(Date.parse(latest) - TI_MAX_AGE_DAYS * 864e5).toISOString().slice(0, 10) : '';
+  /* Bezug: Baudatum (opts.now), sonst juengster Stand – ein insgesamt veralteter Index gilt sonst als frisch (Code-Review M3). */
+  const ref = opts.now || latest;
+  const cutoff = ref ? new Date(Date.parse(ref) - TI_MAX_AGE_DAYS * 864e5).toISOString().slice(0, 10) : '';
   let stale = 0;
   const pick = (k, v) => (TI_ENUMS[k].includes(v) ? v : null);
   for (const r of rows) {
@@ -202,7 +204,7 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
   } catch (err) { log('Faktorevidenz fehlt: ' + err.message); }
   // Chartbild
   let ti = { byTicker: new Map(), meta: null };
-  try { ti = technicalIntelligenceColumns(JSON.parse(gunzipSync(await readFile(join(root, 'quant/data/technical-intelligence/v3/index.json.gz'))).toString('utf8'))); }
+  try { ti = technicalIntelligenceColumns(JSON.parse(gunzipSync(await readFile(join(root, 'quant/data/technical-intelligence/v3/index.json.gz'))).toString('utf8')), { now: new Date().toISOString().slice(0, 10) }); }
   catch (err) { log('Chartbild-Index fehlt: ' + err.message); }
   // Redaktionelle Einzeiler
   let recognition = { companies: {}, businessDescriptions: {} };

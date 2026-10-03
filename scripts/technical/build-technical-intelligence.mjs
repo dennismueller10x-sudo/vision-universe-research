@@ -39,6 +39,7 @@ import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload } from "
 import { analyzeProduct, replaySnapshots, clarityOf, evidenceBadge, overlaysOf, elliottTransparency, PRODUCT_METHODOLOGY } from "./lib/ti-product.mjs";
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
 import { cpus } from "node:os";
+import { createHash } from "node:crypto";
 
 const require = createRequire(import.meta.url);
 const TI = require(join(ROOT, "quant/engines/technical/ti/engine.js"));
@@ -286,7 +287,12 @@ async function main() {
   Object.keys(shards).forEach((k) => { shards[k] = Object.fromEntries(Object.keys(shards[k]).sort().map((t) => [t, shards[k][t]])); });
   // ---- Alerts gegen den vorherigen Index (Mission IV §51: nie aus Methoden-/Engine-Wechsel, nur bei neuen Marktdaten)
   const idxPath = join(OUT, "index.json.gz");
-  const methodologyKey = JSON.stringify({ bundle: TI.BUNDLE_VERSION, api: API_VERSION, methodology: PRODUCT_METHODOLOGY, elliott: EV3.ENGINE_VERSION, rules: Patterns.RULE_SET_VERSION, scenario: Scenario.ENGINE_VERSION });
+  /* Code-Review M2: Versionsnummern allein reichen nicht (Levels, Dow, Muster, Momentum ohne eigene Version). Der Schluessel
+     enthaelt deshalb zusaetzlich einen Hash ueber alle Engine-Dateien und die verwendeten Evidenz-Tabellen. */
+  const codeHash = createHash("sha256");
+  for (const d of ["quant/engines/technical/ti", "quant/engines/technical/elliott"]) readdirSync(join(ROOT, d)).filter((f) => f.endsWith(".js")).sort().forEach((f) => codeHash.update(f).update(readFileSync(join(ROOT, d, f))));
+  ["evidence-1W.json", "evidence-1D-golden.json", "evidence-1D-universe.json"].forEach((f) => { if (existsSync(join(EVID, f))) codeHash.update(f).update(readFileSync(join(EVID, f))); });
+  const methodologyKey = JSON.stringify({ bundle: TI.BUNDLE_VERSION, api: API_VERSION, methodology: PRODUCT_METHODOLOGY, elliott: EV3.ENGINE_VERSION, rules: Patterns.RULE_SET_VERSION, scenario: Scenario.ENGINE_VERSION, code: codeHash.digest("hex").slice(0, 16) });
   let prevIdx = null;
   if (existsSync(idxPath)) { try { const j = JSON.parse(gunzipSync(readFileSync(idxPath)).toString()); prevIdx = { methodologyKey: j.methodologyKey || null, rows: j.rows }; } catch (e) { prevIdx = null; } }
   const run = Alerts.diffRun(prevIdx, { methodologyKey, rows });

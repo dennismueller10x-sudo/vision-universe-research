@@ -49,6 +49,9 @@ test('Chartbild-Spalten: nur bekannte Zustaende, veraltete Titel bleiben leer', 
   assert.deepEqual(byTicker.get('DDD'), { tiOut: null, tiStr: null, tiEw: null });
   assert.equal(meta.asOf, '2026-10-01'); assert.equal(meta.stale, 1);
   assert.equal(technicalIntelligenceColumns(null).meta, null);
+  /* Bezug Baudatum: ein insgesamt veralteter Index liefert keine Zustaende (Code-Review M3) */
+  const old = technicalIntelligenceColumns({ rows: [{ t: 'AAA', asOf: '2026-10-01', outlook: 'BULLISH', structure: 'UPTREND_ADVANCING', elliottApplicable: 'LOW' }] }, { now: '2027-01-15' });
+  assert.equal(old.byTicker.size, 0); assert.equal(old.meta.stale, 1);
 });
 
 const tiIndex = new URL('../../quant/data/technical-intelligence/v3/index.json.gz', import.meta.url);
