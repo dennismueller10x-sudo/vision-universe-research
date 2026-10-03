@@ -80,9 +80,10 @@ MAX_RETRIES = 3
 BULK_VALUE_TOLERANCE = 0.15
 UNCHANGED_PCT = 0.5          # Stückzahländerung darunter gilt als unverändert
 UNIVERSE_PATH = DATA_DIR / "universe.json"
-CACHE_VERSION = 5            # erhöhen, wenn sich die Berechnung ändert -> alles neu laden
+CACHE_VERSION = 6            # erhöhen, wenn sich die Berechnung ändert -> alles neu laden
 # Weitere Hedgefonds ("zweite und dritte Reihe") aus dem Sammeldatensatz
-TIER2_MAX = 1000             # höchstens so viele zusätzliche Fonds
+TIER2_MAX = 1000             # höchstens so viele zusätzliche Hedgefonds
+TIER2_OTHER_MAX = 150        # dazu die größten Long-only-Vermögensverwalter (eigene Kategorie)
 TIER2_MIN_AUM = 200e6        # Mindestgröße des 13F-Portfolios
 TIER2_MAX_ETF_SHARE = 0.35   # mehr ETF-Anteil = Vermögensberater, kein Hedgefonds
 TIER2_DETAIL_HOLDINGS = 50
@@ -274,31 +275,33 @@ THOUSANDS_FILERS = set()  # CIKs, deren Positionen nachweislich in Tausend USD g
 def normalize_units(rows):
     """Korrigiert falsch skalierte <value>-Angaben einzelner Filer.
 
-    Erkennung über den impliziten Stückpreis (Wert / Stückzahl): Bei echten
-    Portfolios liegt der Median der Aktienpositionen zwischen etwa 1 und
-    einigen hundert USD.
-      Median < 1 USD     -> Werte in Tausend gemeldet, x1000
-                            (real beobachtet: Duquesne, Baupost)
-      Median > 2.000 USD -> Werte 1000-fach zu hoch gemeldet, /1000
-                            (real beobachtet: Banque Cantonale Vaudoise,
-                            Meteora mit SPAC-Aktien zu "10.000 USD")
-    Besteht ein Portfolio fast nur aus Anleihen (PRN, z.B. Wandelanleihen),
-    wird Wert / Nennwert geprüft: über 50 -> /1000."""
-    def med(xs):
-        xs = sorted(xs)
-        return xs[len(xs) // 2] if xs else None
-    sh = med(h["valueUSD"] / h["shares"] for h in rows
-             if h.get("shares") and not h.get("putCall") and h.get("shareType", "SH") in ("SH", "") and h["valueUSD"] > 0)
-    n_sh = sum(1 for h in rows if h.get("shares") and not h.get("putCall") and h.get("shareType", "SH") in ("SH", ""))
+    Erkennung über den impliziten Stückpreis (Wert / Stückzahl) der
+    Aktienpositionen, gewichtet nach Wert: Liegen mindestens 80 % des
+    Aktienwerts bei einem Stückpreis
+      unter 1 USD      -> Werte in Tausend gemeldet, x1000
+                          (real beobachtet: Duquesne, Baupost)
+      über 2.000 USD   -> Werte 1000-fach zu hoch gemeldet, /1000
+                          (real beobachtet: Banque Cantonale Vaudoise)
+    Die Gewichtung ist wichtig: SPAC- und Wandelanleihe-Fonds (Meteora,
+    Tenor) halten viele Optionsscheine/Rechte unter 1 USD, die aber kaum
+    Wert tragen – ein einfacher Median hätte sie fälschlich x1000 gerechnet.
+    Besteht ein Portfolio fast nur aus Anleihen (PRN), wird Wert / Nennwert
+    geprüft: Median über 50 -> /1000."""
+    eq = [h for h in rows if h.get("shares") and not h.get("putCall")
+          and h.get("shareType", "SH") in ("SH", "") and h["valueUSD"] > 0]
+    eq_value = sum(h["valueUSD"] for h in eq)
     factor = 1
-    if n_sh >= 3 and sh is not None:
-        if sh < 1.0:
+    if len(eq) >= 3 and eq_value > 0:
+        low = sum(h["valueUSD"] for h in eq if h["valueUSD"] / h["shares"] < 1.0) / eq_value
+        high = sum(h["valueUSD"] for h in eq if h["valueUSD"] / h["shares"] > 2000) / eq_value
+        if low >= 0.8:
             factor = 1000
-        elif sh > 2000:
+        elif high >= 0.8:
             factor = 0.001
     else:
-        prn = med(h["valueUSD"] / h["shares"] for h in rows if h.get("shares") and h.get("shareType") == "PRN" and h["valueUSD"] > 0)
-        if prn is not None and prn > 50:
+        prn = sorted(h["valueUSD"] / h["shares"] for h in rows
+                     if h.get("shares") and h.get("shareType") == "PRN" and h["valueUSD"] > 0)
+        if prn and prn[len(prn) // 2] > 50:
             factor = 0.001
     if factor != 1:
         for h in rows:
@@ -1355,6 +1358,17 @@ NON_HF_RE = re.compile(
 ETF_RE = re.compile(
     r"\bETF\b|ISHARES|SPDR|VANGUARD|SELECT SECTOR|INVESCO QQQ|PROSHARES|DIREXION|WISDOMTREE|SCHWAB STRATEGIC|"
     r"INDEX FD|INDEX FUND|ETF TR|EXCHANGE TRADED|GLOBAL X|VANECK|FIRST TR ")
+# Hedgefonds-Merkmale: Rechtsform LP (typisch für Fondsmanager-Strukturen)
+# oder gemeldete Optionspositionen. Geprüft an echten Daten: erfasst ~80 %
+# der Hedgefonds, aber nur ~25 % der Long-only-Fondshäuser.
+LP_RE = re.compile(r"\bL\.?\s?L?\.?P\.?(?=$|[\s,./)])|\bLLLP\b", re.I)
+HF_HINT_RE = re.compile(r"ARBITRAGE|MACRO|\bQUANT|EVENT DRIVEN|OPPORTUNIT|MASTER FUND|\bALPHA\b|RESEARCH & TECHNOLOGIES")
+# Bekannte Long-only-/ETF-Häuser, die trotzdem ein Merkmal tragen
+LONG_ONLY_NAMES = ["BRANDES", "WASATCH", "ROYCE", "WESTFIELD", "PROSHARE", "PACER ADVISORS", "TIDAL INVESTMENTS",
+                   "RAFFERTY", "EMPOWERED FUNDS", "VIDENT", "NEOS INVESTMENT", "ALPS ADVISORS", "ROCKEFELLER",
+                   "ENSIGN PEAK", "GQG", "GRANTHAM, MAYO", "SANDERS CAPITAL", "SANDS CAPITAL", "POLEN CAPITAL",
+                   "CLEAR STREET", "MAREX", "PEAK6", "BROWN BROTHERS HARRIMAN", "BLAIR WILLIAM", "DAVENPORT",
+                   "ADVENT INTERNATIONAL", "INVESTOR AB", "PUBLIC INVESTMENT FUND", "MUBADALA"]
 _UPPER_WORDS = {"LP", "LLC", "LLP", "LTD", "AG", "SA", "SE", "NV", "PLC", "GMBH", "KG", "II", "III", "IV", "USA",
                 "US", "UK", "AB", "AS", "SAS", "LTDA", "KGAA", "CO.", "L.P.", "L.L.C.", "N.A."}
 
@@ -1388,7 +1402,7 @@ def select_universe(bulk, scale, exclude):
     großen Vermögensverwaltern, Marktmachern, Pensionskassen, Stiftungen
     und ETF-lastigen Vermögensberatern. Melder aus Deutschland, Österreich
     und der Schweiz werden (ab kleinerer Größe) immer aufgenommen."""
-    hf, dach = [], []
+    hf, dach, other = [], [], []
     for cik, f in bulk.items():
         if cik in exclude:
             continue
@@ -1408,14 +1422,18 @@ def select_universe(bulk, scale, exclude):
             continue  # breit gestreute Großverwalter (Index-/Fondsgesellschaften)
         if etf_share(f["holdings"]) > TIER2_MAX_ETF_SHARE:
             continue
-        hf.append(entry)
+        entry["hf"] = (not any(n in name for n in LONG_ONLY_NAMES)) and bool(
+            LP_RE.search(name) or HF_HINT_RE.search(name) or any(h.get("putCall") for h in f["holdings"]))
+        (hf if entry["hf"] else other).append(entry)
     hf.sort(key=lambda e: -e["bulkValueUSD"])
+    other.sort(key=lambda e: -e["bulkValueUSD"])
     dach.sort(key=lambda e: -e["bulkValueUSD"])
     print(f"Universum: {len(hf)} Hedgefonds-Kandidaten (genutzt: {min(len(hf), TIER2_MAX)}), "
+          f"{len(other)} Vermögensverwalter (genutzt: {min(len(other), TIER2_OTHER_MAX)}), "
           f"{len(dach)} Melder aus DACH", file=sys.stderr)
     for e in dach:
         print(f"  DACH {e['region']}: {e['name']} ({e['city']}) {e['bulkValueUSD'] / 1e9:.2f} Mrd USD", file=sys.stderr)
-    return hf[:TIER2_MAX] + dach
+    return hf[:TIER2_MAX] + other[:TIER2_OTHER_MAX] + dach
 
 
 def reuse_detail(old):
@@ -1461,7 +1479,7 @@ def fetch_universe_fund(entry, deadline):
     name = sub.get("name") or entry["name"]
     style = classify_bulk_fund(name)
     if style == "Sonstige":
-        style = "Vermögensverwaltung" if entry.get("region") else "Hedgefonds"
+        style = "Hedgefonds" if entry.get("hf") else "Vermögensverwaltung"
     meta = {"slug": slug, "name": pretty_name(name), "manager": None, "style": style,
             "region": entry.get("region"), "city": pretty_name(entry.get("city") or "") or None}
     rec, pos, trades = build_fund_record(meta, cik, sub, filings, history_quarters=2, category="Hedgefonds")

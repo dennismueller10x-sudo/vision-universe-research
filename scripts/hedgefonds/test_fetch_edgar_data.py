@@ -93,6 +93,12 @@ class Units(unittest.TestCase):
         self.assertEqual(f, 0.001)
         self.assertAlmostEqual(out[0]["valueUSD"], 34781400)
 
+    def test_spac_fund_with_cheap_warrants_untouched(self):
+        rows = [{"valueUSD": 34781400, "shares": 3390000, "putCall": "", "shareType": "SH"},
+                {"valueUSD": 31568503, "shares": 2948729, "putCall": "", "shareType": "SH"}] + \
+               [{"valueUSD": 50000, "shares": 200000, "putCall": "", "shareType": "SH"} for _ in range(20)]
+        self.assertEqual(m.normalize_units(rows)[1], 1)
+
     def test_bond_portfolio_too_high(self):
         rows = [{"valueUSD": 321607659000, "shares": 176537000, "putCall": "", "shareType": "PRN"},
                 {"valueUSD": 181304798000, "shares": 186000000, "putCall": "", "shareType": "PRN"}]
@@ -158,8 +164,18 @@ class Universe(unittest.TestCase):
             "5": {"name": "TINY FUND LP", "country": "NY", "holdings": [h("APPLE INC", 1e7)]},
             "6": {"name": "BLACKROCK INC", "country": "NY", "holdings": [h("APPLE INC", 9e9)]},
         }
-        got = {e["cik"]: e["region"] for e in m.select_universe(bulk, 1, exclude=set())}
-        self.assertEqual(got, {"1": None, "4": "DE"})
+        got = {e["cik"]: (e["region"], e.get("hf")) for e in m.select_universe(bulk, 1, exclude=set())}
+        self.assertEqual(got, {"1": (None, True), "4": ("DE", None)})
+
+    def test_hedgefund_signal(self):
+        h = lambda issuer, v, pc="": {"issuer": issuer, "valueUSD": v, "putCall": pc}  # noqa: E731
+        bulk = {
+            "1": {"name": "LONGONLY INVESTMENT MANAGEMENT LLC", "country": "NY", "holdings": [h("APPLE INC", 5e8)]},
+            "2": {"name": "ZETA ADVISORS LLC", "country": "NY", "holdings": [h("APPLE INC", 5e8), h("APPLE INC", 1e7, "PUT")]},
+            "3": {"name": "BRANDES INVESTMENT PARTNERS, LP", "country": "CA", "holdings": [h("APPLE INC", 5e8)]},
+        }
+        got = {e["cik"]: e["hf"] for e in m.select_universe(bulk, 1, exclude=set())}
+        self.assertEqual(got, {"1": False, "2": True, "3": False})
 
 
 class Meta(unittest.TestCase):
