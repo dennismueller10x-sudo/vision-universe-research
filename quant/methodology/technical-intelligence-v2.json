@@ -4,7 +4,7 @@
   "status": "BETA",
   "frozenAt": "2026-10-02",
   "frozenAtCommit": "ce9be420a",
-  "purpose": "Alle Parameter der TI-Schicht (quant/engines/technical/ti/*, elliott/elliott-v2.js). Zahlen sind Designparameter oder aus Literatur-Evidenzgraden abgeleitet; keine wurde auf dem TEST-Zeitraum optimiert. Keine Zahl ist eine Wahrscheinlichkeit.",
+  "purpose": "Alle Parameter der TI-Schicht (quant/engines/technical/ti/*). Die Elliott-Strukturschicht des Produkts ist seit Mission III elliott-3.2.1 (quant/engines/technical/elliott/elliott-v3.js, Regelwerk elliott-rules-3.1.0) mit Konfluenzgewicht 0; sie hat das vorab registrierte Qualitaets-Gate (HOLDOUT-3) NICHT bestanden und ist nicht von Experten validiert. Zahlen sind Designparameter oder aus Literatur-Evidenzgraden abgeleitet; keine wurde auf dem TEST-Zeitraum optimiert. Keine Zahl ist eine Wahrscheinlichkeit.",
   "protocol": {
     "splits": {
       "train": "< 2013-01-01",
@@ -164,5 +164,15 @@
     },
     "intraday": "nicht verfuegbar (keine Intraday-Historie im Bestand)"
   },
-  "sources": "docs/technical-intelligence/METHOD_RESEARCH.md"
+  "sources": "docs/technical-intelligence/METHOD_RESEARCH.md",
+  "elliottProduction": {
+    "engine": "elliott-3.2.1",
+    "source": "quant/engines/technical/elliott/elliott-v3.js",
+    "ruleSet": "elliott-rules-3.1.0",
+    "status": "EXPERIMENTAL_STRUCTURE_MODEL",
+    "confluenceWeight": 0,
+    "qualityGate": "HOLDOUT-3 FAIL (docs/technical-intelligence/ELLIOTT_ENGINE32_REPORT.md)",
+    "expertValidated": false,
+    "note": "Der Abschnitt elliottV2 beschreibt die Vorgaenger-Engine 2.2 und bleibt als Nachweis erhalten; er bestimmt das Produkt nicht mehr."
+  }
 }
