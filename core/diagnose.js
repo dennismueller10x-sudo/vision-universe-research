@@ -31,7 +31,10 @@
   "use strict";
 
   var VERSION = "core-diagnose-1.0.0";
-  var Identity = (typeof module === "object" && module.exports) ? require("./identity.js") : (root.VUCore && root.VUCore.Identity);
+  var isNode = typeof module === "object" && module.exports;
+  var Identity = isNode ? require("./identity.js") : (root.VUCore && root.VUCore.Identity);
+  var Client = isNode ? require("./client.js") : (root.VUCore && root.VUCore.Client);
+  var P = Client.PATHS; /* Pfade nur aus dem Vertrag (core/client.js) */
 
   var REPAIR = {
     identity: "Ticker pruefen (Grossschrift, Trennzeichen wie beim Anbieter, z. B. BRK-B).",
@@ -73,11 +76,10 @@
     /* 2 Produktuniversum: Company Master (Instrument) und Discover-Index */
     var s2 = step("universe", "Produktuniversum (Company Master, Discover-Index)");
     steps.push(s2);
-    var shard = Identity.shardKey(t);
-    var master = await tryLoad(load, "/quant/data/universe/instruments/" + shard + ".json");
+    var master = await tryLoad(load, P.instrumentShard(t));
     var inst = master.ok ? (master.data.instruments || []).filter(function (i) { return i.symbol === t; }) : [];
     var active = inst.filter(function (i) { return i.active; });
-    var index = await tryLoad(load, "/discover/data/stock-index/" + universe + ".json");
+    var index = await tryLoad(load, P.discoverIndex(universe));
     var inIndex = index.ok && (index.data.symbols || []).indexOf(t) >= 0;
     if (!inst.length) fail(s2, "FAILED", "Nicht im Company Master.", "Wertpapier unbekannt oder nicht im Universum", "universe");
     else if (!active.length) fail(s2, "WARN", "Im Company Master nur inaktiv (" + inst.map(function (i) { return i.instrumentId; }).join(", ") + ").", "Als inaktiv/delistet gefuehrt", "universe");
@@ -88,7 +90,7 @@
     /* 3 Tageskurse */
     var s3 = step("eod", "Tageskurse (discover-series)");
     steps.push(s3);
-    var series = await tryLoad(load, "/quant/data/market/discover-series/" + id + ".json");
+    var series = await tryLoad(load, P.dailySeries(id));
     var last = null;
     if (!series.ok) fail(s3, "FAILED", "Keine veroeffentlichte Tagesreihe " + id + ".", "Kurse fehlen", "eod");
     else {
@@ -104,14 +106,14 @@
     /* 4 lange Reihe */
     var s4 = step("long", "Lange Reihe (5J/Max)");
     steps.push(s4);
-    var longS = await tryLoad(load, "/quant/data/market/discover-series-long/" + id + ".json");
+    var longS = await tryLoad(load, P.weeklySeries(id));
     if (!longS.ok) fail(s4, "WARN", "Keine Wochenreihe " + id + ".", "5J/Max-Chart leer", "long");
     else s4.detail = "Stand " + longS.data.to + " · " + (longS.data.barCount || (longS.data.points || []).length) + " Wochen";
 
     /* 5 Aktienseite */
     var s5 = step("payload", "Aktienseite (discover/data/stocks)");
     steps.push(s5);
-    var payload = await tryLoad(load, "/discover/data/stocks/" + universe + "/" + t + ".json");
+    var payload = await tryLoad(load, P.stockPage(universe, t));
     if (!payload.ok) {
       if (inIndex) fail(s5, "FAILED", "Index nennt die Seite, die Datei fehlt.", "Generierte Aktienseite fehlt", "payload");
       else fail(s5, "SKIPPED", "Keine Discover-Seite (nicht im Umfang).", null, null);
@@ -133,7 +135,7 @@
     /* 7 Faehigkeiten (Quant) */
     var s7 = step("capabilities", "Faehigkeiten (Quant/Discover)");
     steps.push(s7);
-    var caps = await tryLoad(load, "/quant/data/product/capabilities-v1.json");
+    var caps = await tryLoad(load, P.capabilities());
     if (!caps.ok) fail(s7, "WARN", "Capability-Projektion nicht lesbar.", "Faehigkeiten unbekannt", "capabilities");
     else {
       var row = caps.data.rows && caps.data.rows[t];
@@ -151,7 +153,7 @@
     /* 8 Intraday */
     var s8 = step("intraday", "Intraday");
     steps.push(s8);
-    var intra = await tryLoad(load, "/quant/data/market/intraday/index.json");
+    var intra = await tryLoad(load, P.intradayIndex());
     if (!intra.ok) fail(s8, "WARN", "Intraday-Verzeichnis nicht lesbar.", "Intraday unbekannt", "intraday");
     else {
       var e = (intra.data.entries || {})[t];
