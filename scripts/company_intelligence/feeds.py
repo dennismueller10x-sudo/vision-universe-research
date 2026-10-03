@@ -158,7 +158,15 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
             return False
         return bool(re.search(r'investor|investor.relations', link['text'] + ' ' + parts.path, re.I) or
                     (parts.path in ('', '/') and re.match(r'(?:ir|investors?)\.', parts.hostname or '', re.I)))
-    ir_links = [l for l in links if ir_page(l)]
+    def ir_rank(link):
+        # Navigation order often puts investor FAQs/governance before the hub.
+        # Rank observed links only; never expand the bounded page walk.
+        parts=urlsplit(link['url']);text=link['text'].strip().casefold()
+        if re.fullmatch(r'investors?|investor relations|investor overview',text) or (parts.path in ('','/') and re.match(r'(?:ir|investors?)\.',parts.hostname or '',re.I)):return 0
+        if re.search(r'faq|governance|contact|tools|why.invest',text+' '+parts.path,re.I):return 4
+        if re.search(r'financial|quarterly|results|earnings|events|calendar|presentations',text+' '+parts.path,re.I):return 1
+        return 2
+    ir_links = sorted((l for l in links if ir_page(l)),key=ir_rank)
     pages = list(dict.fromkeys([homepage['finalUrl']] + [l['url'] for l in ir_links if l['url'] != homepage['finalUrl']]))[:max_pages]
     trusted_pages = set(pages)
     sources, configs = partial['sources'], partial['configurations']
@@ -264,7 +272,7 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
                         actual_response = http.get(actual['url'], ttl=86400)
                         actual_entries = parse_feed(actual_response['body'], actual_response['finalUrl'])
                         from .news_quality import eligible,wordpress_feed
-                        wp=wordpress_feed(actual_response['body'])
+                        wp=(wordpress_feed(actual_response['body']) or provider=='WORDPRESS') and not (is_event_feed(actual['url']) or is_material_feed(actual['url']))
                         valid_entries = [i for i in actual_entries if eligible(i,company,wp) and i.get('url') and i.get('headline') and (i.get('publishedAt') or i.get('updatedAt') or (re.search(r'events|financialevent', actual['url'], re.I) and re.search(r'\b20\d{2}\b', i['headline']))) and any(within_domain(i['url'], u) for u in [official_site, page, actual['url']])]
                         if valid_entries:
                             sid = stable_id(company['companyId'], actual['url'])
@@ -280,7 +288,7 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
                 allowed.append(link['url'])
                 is_events = is_event_feed(link['url'])
                 from .news_quality import eligible,wordpress_feed
-                wp=wordpress_feed(feed['body'])
+                wp=(wordpress_feed(feed['body']) or provider=='WORDPRESS') and not (is_events or is_material_feed(link['url']))
                 valid = [i for i in entries if eligible(i,company,wp) and i.get('url') and i.get('headline') and (i.get('publishedAt') or i.get('updatedAt') or (is_events and re.search(r'\b20\d{2}\b', i['headline']))) and any(within_domain(i['url'], u) for u in allowed)]
                 if not valid:
                     continue
@@ -323,7 +331,9 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
                 owner = normalize(owner)
                 ownership = any(resolver.resolve(e, {'type': 'RSS'}) for e in entries)
                 ownership = ownership or any(normalize(SUFFIX.sub('', n)) and re.search(r'(?<!\w)' + re.escape(normalize(SUFFIX.sub('', n))) + r'(?!\w)', owner) for n in company['names'])
-                valid = [e for e in entries if e.get('headline') and e.get('url') and (e.get('publishedAt') or e.get('updatedAt')) and within_domain(e['url'], candidate)]
+                from .news_quality import eligible,wordpress_feed
+                wp=wordpress_feed(response['body'])
+                valid = [e for e in entries if eligible(e,company,wp) and e.get('headline') and e.get('url') and (e.get('publishedAt') or e.get('updatedAt')) and within_domain(e['url'], candidate)]
                 if not ownership or not valid:
                     continue
                 sid = stable_id(company['companyId'], candidate)

@@ -165,7 +165,8 @@ class Pipeline:
                 else:
                     entries = parse_gdelt(response['body']) if source['type'] == 'GDELT' else news_index(response['body'], source, response['finalUrl']) if source.get('format') == 'JSONLD_NEWS' else parse_feed(response['body'], response['finalUrl'])
             from .news_quality import wordpress_feed,eligible
-            wordpress=wordpress_feed(response['body']) if source['type']=='IR_FEED' else False
+            wordpress=(wordpress_feed(response['body']) or source.get('provider')=='WORDPRESS' or source.get('cmsNewsPolicy')=='WORDPRESS_EXPLICIT_ISSUER_ACTOR') if source['type']=='IR_FEED' else False
+            if wordpress:source['cmsNewsPolicy']='WORDPRESS_EXPLICIT_ISSUER_ACTOR'
             for entry in entries:
                 if source['type']=='IR_FEED' and not eligible(entry,self.companies[source['companyId']],wordpress):
                     rejected+=1
@@ -298,6 +299,7 @@ class Pipeline:
             elif source.get('companyId') and source['type'] == 'IR_FEED':
                 content_dates = accepted_dates
             source.update(latestContentAt=max(content_dates) if content_dates else None, lastItemCount=len(entries) if source['type'] != 'IR_EVENTS' else len(events), lastAcceptedMatches=accepted, lastRejectedItems=rejected, lastSuccess=self.now, lastChecked=self.now, failureCount=0, lastError=None, nextCheck=advance(self.now, source.get('intervalHours', 6)))
+            if wordpress and not accepted:source['nextCheck']=advance(self.now,max(24,source.get('intervalHours',6)))
             self.store.source(source)
             log('SOURCE_SUCCESS', sourceId=sid, items=source['lastItemCount'])
         except BudgetExhausted:

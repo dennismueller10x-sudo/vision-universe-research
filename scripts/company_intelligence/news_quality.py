@@ -4,7 +4,34 @@ Ownership of a site does not make every CMS entry a company announcement.
 This filter is intentionally conservative and does not fetch article bodies.
 """
 import re
-from .model import classify, Resolver
+from .model import Resolver,normalize,SUFFIX,AMBIGUOUS,AMBIGUOUS_ALIASES
+
+
+def owned_actor(title,company):
+    """Explicit authoritative name on an already verified corporate CMS feed.
+
+    External matching needs financial context for a single word. Here ownership
+    is independently proven, so a non-ambiguous corporate name can also identify
+    ordinary company announcements. No category keyword alone proves an actor.
+    """
+    text=normalize(title)
+    def legal(value):
+        value=normalize(re.sub(r'/[A-Z]{2,3}/?$', '', value, flags=re.I))
+        for long,short in [('corporation','corp'),('incorporated','inc'),('limited','ltd'),('company','co')]:
+            value=re.sub(r'\b'+long+r'\b',short,value)
+        return value
+    legal_title=legal(title)
+    for name in company['names']:
+        full=legal(name)
+        if len(full.split())>=2 and re.search(r'(?<!\w)'+re.escape(full)+r'(?!\w)',legal_title):return True
+        base=normalize(SUFFIX.sub('',re.sub(r'/[A-Z]{2,3}/?$', '',name,flags=re.I)))
+        if base in AMBIGUOUS or base in AMBIGUOUS_ALIASES:continue
+        if len(base.split())>=2 or len(base)>=4:
+            if base and re.search(r'(?<!\w)'+re.escape(base)+r'(?!\w)',text):return True
+        words=[w for w in normalize(SUFFIX.sub('',name)).split() if w not in ('the','co','company','group')]
+        acronym=''.join(w[0] for w in words)
+        if 3<=len(acronym)<=5 and acronym not in AMBIGUOUS and re.search(r'(?<!\w)'+re.escape(acronym.upper())+r'(?!\w)',title):return True
+    return False
 
 
 def wordpress_feed(body):
@@ -16,7 +43,6 @@ def eligible(entry, company, wordpress=False):
     if re.fullmatch(r'\s*hello world[!.\s]*',title,re.I) or re.match(r'\s*comment on\b',title,re.I):
         return False
     if not wordpress:return True
-    if classify(title)['categories']!=['Other']:return True
     # A general CMS blog item needs an explicit high-confidence issuer actor.
     # Source ownership alone cannot turn an agency podcast into company news.
-    return bool(Resolver({company['companyId']:company}).resolve(entry,{'type':'RSS','verified':False}))
+    return owned_actor(title,company) or bool(Resolver({company['companyId']:company}).resolve(entry,{'type':'RSS','verified':False}))
