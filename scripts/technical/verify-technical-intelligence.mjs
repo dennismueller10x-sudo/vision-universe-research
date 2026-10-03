@@ -23,7 +23,7 @@ if (meta.sources && /work-dir/.test(meta.sources.daily)) { console.log("Daten st
 const table = (f) => { if (!existsSync(join(EVID, f))) return null; const e = readJson(join(EVID, f)); return { setups: e.setups, calibration: { passed: !!e.calibration.passed } }; };
 const ev1W = table("evidence-1W.json"), ev1D = table("evidence-1D-golden.json");
 const shard = {};
-const get = (t) => { const k = (t + "_").slice(0, 2).replace(/[^A-Z0-9._-]/g, "_"); if (!shard[k]) shard[k] = JSON.parse(gunzipSync(readFileSync(join(V2, "shards", k + ".json.gz"))).toString()).instruments; return shard[k][t]; };
+const get = (t) => { const k = (t + "_").slice(0, 2).replace(/[^A-Z0-9._-]/g, "_"); if (!shard[k]) { const f = join(V2, "shards", k + ".json.gz"); shard[k] = existsSync(f) ? JSON.parse(gunzipSync(readFileSync(f)).toString()).instruments : {}; } return shard[k][t]; };
 const key = (a) => JSON.stringify({ o: a.outlook, s: (a.scenarios || []).map((s) => [s.kind, s.direction, s.template, s.entryZone && [s.entryZone.zoneLow, s.entryZone.zoneHigh], s.invalidation && s.invalidation.price, (s.targets || []).map((z) => [z.zoneLow, z.zoneHigh])]), c: a.confidence.overall });
 let checked = 0, drift = [];
 const gdir = join(ROOT, "quant/data/market/golden-preview/daily");
@@ -34,7 +34,8 @@ for (const f of readdirSync(gdir).filter((x) => x.endsWith(".json"))) {
   if (key(res) !== key(pub)) drift.push(j.ticker + " (Tag)"); checked++;
 }
 const wdir = join(ROOT, "quant/data/market/discover-series-long");
-const sample = readdirSync(wdir).filter((f) => f.startsWith("ref_")).sort().filter((_, i) => i % 400 === 7);
+const EVERY = (() => { const i = process.argv.indexOf("--every"); return i >= 0 ? +process.argv[i + 1] : 400; })();   // Mission III §38: --every 50 ≈ 130 Titel
+const sample = readdirSync(wdir).filter((f) => f.startsWith("ref_")).sort().filter((_, i) => i % EVERY === 7);
 for (const f of sample) {
   const j = readJson(join(wdir, f)), pub = get(j.ticker);
   if (!pub || pub.timeframe !== "1W") continue;

@@ -1,0 +1,890 @@
+{
+ "schemaVersion": "vu-ti-product-regression-1.0.0",
+ "generatedAt": "2026-10-03T11:21:29.734Z",
+ "before": "/tmp/claude-0/-home-user-vision-universe-research/50ba73d0-bec1-517f-bd25-0895f5892536/scratchpad/v3-before-22",
+ "after": "quant/data/technical-intelligence/v3",
+ "titles": 5292,
+ "onlyBefore": 0,
+ "onlyAfter": 0,
+ "applicability": {
+  "before": {
+   "MODERATE": 1591,
+   "LOW": 639,
+   "HIGH": 2998,
+   "NONE": 64
+  },
+  "after": {
+   "LOW": 5079,
+   "MODERATE": 178,
+   "HIGH": 35
+  }
+ },
+ "engineVersionsSample": {
+  "before": {
+   "elliott-2.2": 212
+  },
+  "after": {
+   "elliott-3.2.0": 212
+  }
+ },
+ "segments": {
+  "ALL": {
+   "n": 5292,
+   "changedSharePct": {
+    "elliottCount": 95,
+    "applicability": 86.9,
+    "abstainAfter": 96,
+    "abstainBefore": 13.3,
+    "template": 4.6,
+    "target1": 19.5,
+    "invalidation": 5.6,
+    "entry": 2
+   }
+  },
+  "LARGE_CAP": {
+   "n": 503,
+   "changedSharePct": {
+    "elliottCount": 96,
+    "applicability": 89.5,
+    "abstainAfter": 97.8,
+    "template": 6.8,
+    "target1": 21.1,
+    "invalidation": 7.8,
+    "abstainBefore": 10.3,
+    "entry": 3
+   }
+  },
+  "TRENDING": {
+   "n": 2929,
+   "changedSharePct": {
+    "elliottCount": 95.9,
+    "applicability": 87.5,
+    "abstainAfter": 95.6,
+    "template": 6.4,
+    "target1": 19.8,
+    "abstainBefore": 12.7,
+    "invalidation": 5.8,
+    "entry": 2.4
+   }
+  },
+  "SMALL_OR_NON_INDEX": {
+   "n": 4789,
+   "changedSharePct": {
+    "elliottCount": 94.9,
+    "abstainAfter": 95.8,
+    "abstainBefore": 13.6,
+    "applicability": 86.6,
+    "template": 4.4,
+    "target1": 19.3,
+    "invalidation": 5.4,
+    "entry": 1.9
+   }
+  },
+  "NOISY": {
+   "n": 545,
+   "changedSharePct": {
+    "applicability": 81.8,
+    "abstainAfter": 95.8,
+    "elliottCount": 94.5,
+    "template": 1.8,
+    "target1": 20.4,
+    "abstainBefore": 17.8,
+    "invalidation": 6.1,
+    "entry": 1.5
+   }
+  },
+  "SIDEWAYS": {
+   "n": 378,
+   "changedSharePct": {
+    "applicability": 85.7,
+    "abstainAfter": 96.6,
+    "elliottCount": 92.6,
+    "template": 3.4,
+    "target1": 10.8,
+    "abstainBefore": 19.6,
+    "invalidation": 1.6
+   }
+  },
+  "VOLATILE_TECH": {
+   "n": 36,
+   "changedSharePct": {
+    "elliottCount": 97.2,
+    "applicability": 91.7,
+    "abstainAfter": 100,
+    "invalidation": 5.6,
+    "abstainBefore": 8.3,
+    "target1": 11.1
+   }
+  },
+  "DEFENSIVE": {
+   "n": 57,
+   "changedSharePct": {
+    "elliottCount": 96.5,
+    "applicability": 93,
+    "template": 10.5,
+    "abstainAfter": 94.7,
+    "invalidation": 12.3,
+    "target1": 17.5,
+    "abstainBefore": 5.3,
+    "entry": 3.5
+   }
+  }
+ },
+ "samples": [
+  {
+   "t": "AACI",
+   "before": {
+    "outlook": "BEARISH",
+    "template": "CONTINUATION",
+    "inv": 10.3,
+    "elliott": "DOUBLE_ZIGZAG:Y·b"
+   },
+   "after": {
+    "outlook": "BEARISH",
+    "template": "PULLBACK",
+    "inv": 10.3,
+    "elliott": "TRIANGLE:D"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "ABCL",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 10.4,
+    "elliott": "IMPULSE:3"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 9.2,
+    "elliott": "WXY:Y"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "ABOS",
+   "before": {
+    "outlook": "BEARISH",
+    "template": "PULLBACK",
+    "inv": 3.2,
+    "elliott": "DOUBLE_ZIGZAG:Y·b"
+   },
+   "after": {
+    "outlook": "BEARISH",
+    "template": "CONTINUATION",
+    "inv": 3.2,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "NOISY",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "ACCO",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 3.25,
+    "elliott": "ENDING_DIAGONAL:4"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 3.25,
+    "elliott": "TRIANGLE:E"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "ACGL",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 89,
+    "elliott": "TRIANGLE:E"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 89,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "LARGE_CAP",
+    "DEFENSIVE",
+    "SIDEWAYS"
+   ]
+  },
+  {
+   "t": "ACHV",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 6.25,
+    "elliott": "IMPULSE:4"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 4.85,
+    "elliott": "WXY:Y"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "ACIC",
+   "before": {
+    "outlook": "BEARISH",
+    "template": "CONTINUATION",
+    "inv": 10.4,
+    "elliott": "IMPULSE:3"
+   },
+   "after": {
+    "outlook": "BEARISH",
+    "template": "PULLBACK",
+    "inv": 10.4,
+    "elliott": "TRIANGLE:E"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "ACIU",
+   "before": {
+    "outlook": "BEARISH",
+    "template": "PULLBACK",
+    "inv": 3.3,
+    "elliott": "ENDING_DIAGONAL:5"
+   },
+   "after": {
+    "outlook": "BEARISH",
+    "template": "PULLBACK",
+    "inv": 3.05,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX"
+   ]
+  },
+  {
+   "t": "ACNB",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 56.5,
+    "elliott": "IMPULSE:4"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 56.5,
+    "elliott": "FLAT:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "ADP",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 211,
+    "elliott": "IMPULSE:5"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 211,
+    "elliott": "WXY:Y"
+   },
+   "segments": [
+    "LARGE_CAP"
+   ]
+  },
+  {
+   "t": "ADPT",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 19,
+    "elliott": "IMPULSE:3"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 19,
+    "elliott": "WXY:Y"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX"
+   ]
+  },
+  {
+   "t": "ADSK",
+   "before": {
+    "outlook": "MIXED",
+    "template": "PULLBACK",
+    "inv": 189,
+    "elliott": "IMPULSE:3"
+   },
+   "after": {
+    "outlook": "MIXED",
+    "template": "PULLBACK",
+    "inv": 184.5,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "LARGE_CAP",
+    "VOLATILE_TECH"
+   ]
+  },
+  {
+   "t": "ADUS",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 98,
+    "elliott": "ENDING_DIAGONAL:4"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 98,
+    "elliott": "TRIPLE_ZIGZAG:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "AERT",
+   "before": {
+    "outlook": "BEARISH",
+    "template": "PULLBACK",
+    "inv": 8.6,
+    "elliott": "ZIGZAG:B"
+   },
+   "after": {
+    "outlook": "BEARISH",
+    "template": "PULLBACK",
+    "inv": 8.55,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX"
+   ]
+  },
+  {
+   "t": "AFGB",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 20.2,
+    "elliott": "DOUBLE_ZIGZAG:done"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 20.4,
+    "elliott": "ZIGZAG:C"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "NOISY"
+   ]
+  },
+  {
+   "t": "AGI",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 27.8,
+    "elliott": "DOUBLE_ZIGZAG:Y·b"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 27.8,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "AGMH",
+   "before": {
+    "outlook": "BEARISH",
+    "template": "CONTINUATION",
+    "inv": 1.1,
+    "elliott": "IMPULSE:3"
+   },
+   "after": {
+    "outlook": "BEARISH",
+    "template": "CONTINUATION",
+    "inv": 0.97,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "AGNCM",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 23.8,
+    "elliott": "DOUBLE_ZIGZAG:Y·c"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 24.2,
+    "elliott": "TRIPLE_ZIGZAG:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "AGNT",
+   "before": {
+    "outlook": "BEARISH",
+    "template": "CONTINUATION",
+    "inv": 4.6,
+    "elliott": "IMPULSE:5"
+   },
+   "after": {
+    "outlook": "BEARISH",
+    "template": "CONTINUATION",
+    "inv": 4.8,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "AHG",
+   "before": {
+    "outlook": "BEARISH",
+    "template": "PULLBACK",
+    "inv": 1.35,
+    "elliott": "IMPULSE:4"
+   },
+   "after": {
+    "outlook": "BEARISH",
+    "template": "CONTINUATION",
+    "inv": 1.45,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX"
+   ]
+  },
+  {
+   "t": "AIG",
+   "before": {
+    "outlook": "MIXED",
+    "template": "PULLBACK",
+    "inv": 69.5,
+    "elliott": "WXY:Y"
+   },
+   "after": {
+    "outlook": "MIXED",
+    "template": "PULLBACK",
+    "inv": 70.5,
+    "elliott": "TRIANGLE:done"
+   },
+   "segments": [
+    "LARGE_CAP",
+    "DEFENSIVE",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "AIO",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 21.1,
+    "elliott": "DOUBLE_ZIGZAG:Y·b"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 21.1,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "AIZ",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 243,
+    "elliott": "IMPULSE:4"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 240,
+    "elliott": "TRIPLE_ZIGZAG:done"
+   },
+   "segments": [
+    "LARGE_CAP",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "AKR",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 17.5,
+    "elliott": "DOUBLE_ZIGZAG:X"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 16.3,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "AKTX",
+   "before": {
+    "outlook": "BEARISH",
+    "template": "CONTINUATION",
+    "inv": 18.3,
+    "elliott": "IMPULSE:5"
+   },
+   "after": {
+    "outlook": "BEARISH",
+    "template": "PULLBACK",
+    "inv": 18.3,
+    "elliott": "WXY:Y"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "ALGM",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 25.2,
+    "elliott": "IMPULSE:done"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 24,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX"
+   ]
+  },
+  {
+   "t": "ALL-P-J",
+   "before": {
+    "outlook": "BEARISH",
+    "template": "CONTINUATION",
+    "inv": 25.7,
+    "elliott": "IMPULSE:3"
+   },
+   "after": {
+    "outlook": "BEARISH",
+    "template": "CONTINUATION",
+    "inv": 26.2,
+    "elliott": "ZIGZAG:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "NOISY",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "AME",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 224,
+    "elliott": "IMPULSE:3"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 209,
+    "elliott": "TRIANGLE:done"
+   },
+   "segments": [
+    "LARGE_CAP",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "AMGN",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 337,
+    "elliott": "IMPULSE:3"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 326,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "LARGE_CAP",
+    "VOLATILE_TECH",
+    "NOISY"
+   ]
+  },
+  {
+   "t": "AMLX",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 18.3,
+    "elliott": "IMPULSE:4"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 17.4,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "NOISY"
+   ]
+  },
+  {
+   "t": "ANF",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 123.5,
+    "elliott": "TRIANGLE:E"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 123.5,
+    "elliott": "ZIGZAG:C"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "ANVS",
+   "before": {
+    "outlook": "BEARISH",
+    "template": "PULLBACK",
+    "inv": 2.3,
+    "elliott": "IMPULSE:4"
+   },
+   "after": {
+    "outlook": "BEARISH",
+    "template": "CONTINUATION",
+    "inv": 2.3,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX"
+   ]
+  },
+  {
+   "t": "APD",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 239,
+    "elliott": "ZIGZAG:C"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 239,
+    "elliott": "TRIANGLE:E"
+   },
+   "segments": [
+    "LARGE_CAP",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "APG",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 37.3,
+    "elliott": "ZIGZAG:done"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 33.4,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX"
+   ]
+  },
+  {
+   "t": "APOG",
+   "before": {
+    "outlook": "BEARISH",
+    "template": "CONTINUATION",
+    "inv": 49,
+    "elliott": "DOUBLE_ZIGZAG:Y·b"
+   },
+   "after": {
+    "outlook": "BEARISH",
+    "template": "CONTINUATION",
+    "inv": 43.6,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX"
+   ]
+  },
+  {
+   "t": "APPN",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 26.1,
+    "elliott": "IMPULSE:5"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 25.8,
+    "elliott": "FLAT:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "SIDEWAYS"
+   ]
+  },
+  {
+   "t": "ARD",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 24.6,
+    "elliott": "TRIANGLE:C"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 24.6,
+    "elliott": "WXY:Y"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "SIDEWAYS"
+   ]
+  },
+  {
+   "t": "ARMK",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 43.8,
+    "elliott": "IMPULSE:4"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 43.1,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "ARQQ",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 12,
+    "elliott": "DOUBLE_ZIGZAG:X"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "CONTINUATION",
+    "inv": 12,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "SMALL_OR_NON_INDEX",
+    "TRENDING"
+   ]
+  },
+  {
+   "t": "ASML",
+   "before": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 1675,
+    "elliott": "TRIANGLE:D"
+   },
+   "after": {
+    "outlook": "BULLISH",
+    "template": "PULLBACK",
+    "inv": 1625,
+    "elliott": "WXY:done"
+   },
+   "segments": [
+    "LARGE_CAP"
+   ]
+  }
+ ]
+}

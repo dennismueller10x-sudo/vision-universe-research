@@ -2,8 +2,14 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-10-02T21:20:40.351Z",
+ "generatedAt": "2026-10-03T11:21:18.376Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
+ "elliott": {
+  "engine": "v3",
+  "status": "EXPERIMENTAL_STRUCTURE_MODEL",
+  "confluenceWeight": 0,
+  "report": "docs/technical-intelligence/ELLIOTT_ENGINE32_REPORT.md"
+ },
  "counts": {
   "daily": 5,
   "weekly": 5287,
@@ -36,5 +42,5 @@
   "methodEvidence": "/quant/data/technical-intelligence/v3/method-evidence.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 1296
+ "runtimeSec": 4032
 }
