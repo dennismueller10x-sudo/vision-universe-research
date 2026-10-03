@@ -134,8 +134,13 @@
       "O4_darvas_marketFilter": "DARVAS_BOX: mit Marktampel besser als ohne (A > C6) (DEV: erfüllt).",
       "O5_weinstein_sizing": "WEINSTEIN_STAGE: Gleichgewicht 1/10 (C2) besser als die Live-Größenregel (A) (DEV: erfüllt).",
       "O6_orderDispersion": "DARVAS_BOX und DONCHIAN_TURTLE: Spannweite der 20 Zufallsreihenfolgen > 5 Prozentpunkte (DEV: 14 bzw. 15 Punkte) – Portfolio-Ergebnis hängt wesentlich von der Auswahl unter gleichzeitigen Signalen ab.",
-      "O7_trend52": "VU_TREND_52W: A > 0 (DEV: verfehlt) und C1 > SPY (DEV: knapp erfüllt)."
+      "O7_trend52": "VU_TREND_52W: A > 0 (DEV: verfehlt) und C1 > SPY (DEV: knapp erfüllt).",
+      "O8_cashInSpy_all": "Für jede Methode: C1 (unverändertes Modellportfolio, ungenutztes Kapital in SPY, 1 bp je Umschichtung) > SPY (DEV: Momentum und Minervini knapp erfüllt, VU Trendfolge 52W siehe O7; Weinstein, Darvas, Turtle verfehlt)."
     },
-    "noOtherChanges": "Keine weitere Variante. Der Holdout-Lauf nutzt denselben Code (audit-r14.mjs) mit ST_WINDOW=HOLDOUT."
+    "noOtherChanges": "Keine weitere Variante. Der Holdout-Lauf nutzt denselben Code (audit-r14.mjs) mit ST_WINDOW=HOLDOUT.",
+    "secondAmendment": {
+      "date": "2026-10-03",
+      "status": "Vor jedem Holdout-Ergebnis (Abruf läuft noch). Nur O8 ergänzt, nachdem die DEV-Werte von C1 bekannt waren – O8 ist daher eine aus DEV abgeleitete Beobachtung."
+    }
   }
 }
