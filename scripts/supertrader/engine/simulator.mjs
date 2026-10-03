@@ -216,7 +216,9 @@ export function simulate(strategy, ctx, opts = {}) {
           // zum Schluss darunter) - unabhaengig von der Reihenfolge-Annahme.
           // opts.sameDayCertain === false bildet den eingefrorenen r8-Lauf nach.
           const certain = !resolved && opts.sameDayCertain !== false && bars.close[t] <= e.stop;
-          const exitNow = resolved ? io.exitSameDay : (certain || (opts.sameDayPolicy === 'PESSIMISTIC' && e.pessimisticSameDayExit));
+          // opts.sameDayPolicy === 'ALWAYS_UNRESOLVED' (Runde 10, nur Validierung): ohne aufgeloeste
+          // Minuten endet jeder Kauf-Stop-Tag mit Ausstieg zum Tagesbalken-Stop (aeusserste Schranke).
+          const exitNow = resolved ? io.exitSameDay : (certain || (opts.sameDayPolicy === 'PESSIMISTIC' && e.pessimisticSameDayExit) || opts.sameDayPolicy === 'ALWAYS_UNRESOLVED');
           if (exitNow) {
             const basis = resolved ? 'SAME_DAY_INTRADAY' : certain ? 'SAME_DAY_CERTAIN' : 'SAME_DAY_PESSIMISTIC';
             const px = X.stopSellFill(stop0, bars.open[t], exec);
