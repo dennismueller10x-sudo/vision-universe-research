@@ -1,6 +1,7 @@
 # Vision Universe: Platform Hardening, Abschlussbericht
 
-**Datum:** 03.10.2026 · **Branch:** `claude/platform-hardening` · **Basis:** `main` @ `ea0ca6578b`
+**Datum:** 03.10.2026 · **Branch:** `claude/platform-hardening` (PR #386) · **Basis:** `main` @ `ea0ca6578b`, zuletzt mit `main` zusammengeführt am 03.10.2026
+**Folge-PRs:** #387 (Supertrader), #388 (Core Consolidation 1), #389 (Company Intelligence). Aufteilung siehe [§ Merge-Readiness](#merge-readiness-pr-386).
 **Einstieg für alle weiteren Arbeiten:** [docs/VISION_UNIVERSE_ARCHITECTURE.md](VISION_UNIVERSE_ARCHITECTURE.md)
 
 ---
@@ -24,10 +25,10 @@ Der Audit hat **reale Produktionsfehler** gefunden und behoben. Jeder ist mit ei
 5. **Kurse von 0** (CPTAF, DMN) und Präzisionsverlust bei 367 Titeln unter 1 $ durch Cent-Rundung.
 6. **Ein eingefrorener Intraday-Stand wurde als „heute“ gezeigt,** neben einem anderen Schlusskurs auf derselben Seite. Am Split-Tag wären −50 % bzw. −90 % angezeigt worden.
 7. **Die News-Seite behauptete „Maximal 24 Stunden alt“** bei einem 12 Tage alten Feed mit einer Meldung.
-8. **Discover sprang beim Start und bei jedem Währungswechsel nach oben;** Zurück landete immer oben.
-9. **Script-Injection** über Workflow-Eingaben in 12 Workflows, **11 tote Supertrader-Links**, eine **leere Academy-Seite** bei Ladefehlern.
+8. **Discover sprang beim Start und bei jedem Währungswechsel nach oben** (behoben). Dass Zurück immer oben landet, ist noch offen (§ UI).
+9. **Script-Injection** über Workflow-Eingaben in 12 Workflows (11 in #386, 1 in #389), **11 tote Supertrader-Links** (Fix in #387), eine **leere Academy-Seite** bei Ladefehlern.
 
-Alle Änderungen sind getestet. Neu sind 53 Core-Tests und 13 Regressionstests in bestehenden Suiten. Alle bestehenden Suiten sind grün (§ Tests).
+Alle Änderungen sind getestet. Neu sind 52 Core-Tests und 13 Regressionstests in bestehenden Suiten (dazu je ein Test in #387 und #388). Alle bestehenden Suiten sind grün (§ Tests).
 Fachliche Modelle (Quant-Scores, Rankings, Supertrader-Strategien, Regime, Technical) wurden **nicht** verändert.
 
 ---
@@ -76,11 +77,14 @@ ADRs:
 | `f7d54b050f` | Selbstdiagnose, `/status/`, `core-ci.yml`, `repositoryOnly` |
 | `a09dd10c77` | Datenverträge `core/client.js`, Golden-Path-Tests |
 | `22b2ddbc2c` | News ehrlich datiert, `safeUrl`; Discover-Karten mit Stand-Kennzeichnung; Penny-Darstellung |
-| `dbf9724fad` | Supertrader-Seiten für alle verlinkten Symbole; „heute“ nur am Sitzungstag; Academy-Fehlerzustand; Chart-Guards; Legacy-Chart split-bereinigt |
-| `35bddc449c` | Discover: Scroll bleibt erhalten, Zurück stellt die Position wieder her |
+| `dbf9724fad` | „heute“ nur am Sitzungstag; Academy-Fehlerzustand; Chart-Guards; Legacy-Chart split-bereinigt. Der Supertrader-Teil (Seiten für alle verlinkten Symbole, Wochenchart-ID) liegt jetzt in #387. |
+| `35bddc449c` | Discover: Scroll bleibt beim Start, bei FX-Kursen und beim Währungswechsel erhalten. Die Wiederherstellung bei Zurück wurde in `a35ad6ffe6` wieder entfernt (Budget). |
 | `8c88cfac42` | `pages-release` liefert 12 weitere Datenläufe aus; `api/intraday` meldet das Alter |
 | `779ba22938` | Red-Team-Fixes (Split-Tag, Pfad-Härtung, Ticker-Toleranz), Dokumentation, App-Readiness |
 | `ab238a2de9` | Revert eines Nachweis-Datencommits, den ein Workflow auf den Branch geschrieben hatte. Damit bringt der PR keine pipeline-eigenen Artefakte mit. |
+| `5964887f42` | CI: Discover-Reproduzierbarkeit (CPTAF, DMN mit der neuen Rundung neu gebaut) und Währungsschulden-Register (eine verschobene Zeile, Schuldenzahl unverändert) |
+| `a35ad6ffe6` | CI: Discover-View-Budget eingehalten (179.978 von 180.000 Byte); Supertrader-Dateien zurück auf `main`, Fix in #387 |
+| (dieser Commit) | CI: `supertrader-validation.yml` nach #387 und `company-intelligence.yml` nach #389 verschoben (Isolations-Gates); Bericht aktualisiert |
 
 ---
 
@@ -101,14 +105,14 @@ ADRs:
 | H3 | Eingefrorener Intraday-Stand als „heute“, zwei Kurse auf einer Seite | Screenshot Quant NVDA, 03.10. | behoben |
 | H4 | Intraday-Split-Tag: Vortagesschluss vor dem Split ergibt −50 %/−90 % | Red Team | abgesichert |
 | H5 | Discover-Siegel nie zu, kein Universums-Nachzug nach Ausfällen | `ingest-intraday.mjs:196` | behoben |
-| H6 | Script-Injection über `workflow_dispatch`-Eingaben (Schreibrecht nötig) | 12 Workflows | behoben (außer Social) |
+| H6 | Script-Injection über `workflow_dispatch`-Eingaben (Schreibrecht nötig) | 12 Workflows | behoben (außer Social): 11 in #386, Company Intelligence in #389 |
 | H7 | News behaupten Frische, Feed 12 Tage alt | `news/news.js` | behoben (UI); Zeitplan ist eine Owner-Entscheidung |
 
 ### Medium
 | # | Bug | Status |
 |---|---|---|
-| M1 | Discover springt beim Start und bei Währungswechsel nach oben, Zurück verliert die Position | behoben |
-| M2 | 11 tote Supertrader-Links, 4 tote Wochenchart-Pfade | behoben im Erzeuger |
+| M1 | Discover springt beim Start und bei Währungswechsel nach oben, Zurück verliert die Position | Sprünge behoben; Zurück offen (gemeinsames Navigationsmodul, FRONTEND.md) |
+| M2 | 11 tote Supertrader-Links, 4 tote Wochenchart-Pfade | behoben im Erzeuger, PR #387 |
 | M3 | Veraltete Kurse auf Discover-Karten ohne Kennzeichnung | behoben |
 | M4 | Wochenend-Datenläufe erst montags ausgeliefert | behoben |
 | M5 | Concurrency-Gruppen über Branches hinweg | behoben |
@@ -142,7 +146,7 @@ Erster Lauf von `scripts/core/data-quality.mjs` (Repository, Sitzung 02.10.2026)
 | Tag/Woche-Übereinstimmung | 5.952 Paare, 0 Abweichungen |
 | Aktienseite = Reihe | 5.982, 0 Abweichungen |
 | Discover-Index = Seiten | 5.982, deckungsgleich |
-| tote ausgelieferte Pfade | 15 (Supertrader, behoben im Erzeuger) |
+| tote ausgelieferte Pfade | 15 (Supertrader, behoben im Erzeuger mit #387) |
 | Indexmitglieder inaktiv / nicht zuordenbar | 7 / 7 |
 
 Systemzustand (Repository, 03.10.2026 12:16 UTC):
@@ -161,7 +165,8 @@ Systemzustand (Repository, 03.10.2026 12:16 UTC):
 
 ## UI
 
-Behoben: Scroll-Sprünge, Scroll-Wiederherstellung, Kennzeichnung veralteter Stände (Karten, Intraday, News), Penny-Darstellung, tote Links, leere Fehlerseite, Chart-Guards, URL-Schemata.
+Behoben: Scroll-Sprünge (Start, FX, Währung), Kennzeichnung veralteter Stände (Karten, Intraday, News), Penny-Darstellung, tote Links, leere Fehlerseite, Chart-Guards, URL-Schemata.
+Offen: Scroll-Position bei Zurück. Der Fix (+1.115 Byte) passt nicht in das Discover-View-Budget (180.000 Byte, auf `main` 117 Byte frei). Er gehört in ein gemeinsames Navigationsmodul außerhalb des Budgets.
 Browser-Smoke auf 16 Kernseiten bei 390 px und 1.280 px: keine JS-Fehler, kein horizontales Überlaufen.
 Komponentenvereinheitlichung bewusst nur dort, wo ein inhaltlicher Fehler entstand; Begründung in [FRONTEND.md](frontend/FRONTEND.md).
 
@@ -189,9 +194,9 @@ Konkrete Maßnahmen mit erwarteter Wirkung stehen in [FRONTEND.md](frontend/FRON
 
 | Suite | Baseline (vor dem Audit) | Nachher |
 |---|---|---|
-| Core (`core/tests`) | – | **53/53** |
+| Core (`core/tests`) | – | **52/52** |
 | Quant und Plattform (`quant/tests`) | 2.302 grün | **2.315/2.315** (+13 neue) |
-| Discover, Supertrader, Screener | 494 grün | **494/494** |
+| Discover, Supertrader, Screener | 494 grün | **494/494** (5 übersprungen, wie Baseline) |
 | Social + Social-Worker | – | **2.319/2.319** |
 | vu-ask, Ask, Academy, vu-live, Waker, Access-Gate, Resource-Budget, Company Intelligence (JS) | – | **135/135** |
 | SEC (Python) | 486 grün | **486/486** |
@@ -202,7 +207,8 @@ Neue Regressionstests:
 - `push-with-retry` PR4–PR7
 - Intraday-Siegel (3), Split-Tag (1)
 - Rundung (4), Freshness-Label (1)
-- Identität (5), Health (17), Datenqualität (10), Diagnose (8), Verträge (8), Golden Paths (5)
+- Identität (5), Health (17), Datenqualität (10), Diagnose (8), Verträge (8), Golden Paths (4)
+- in #387: Supertrader-Identität und Links; in #388: eine Split-Bereinigung (3)
 
 **Gesamt:** 5.316 Node-Tests und 644 Python-Tests, alle grün. Kein Testlauf hat eine Datei unter `quant/data`, `discover/data` oder `social/data` verändert (`git status` nach dem Lauf sauber).
 
@@ -216,7 +222,7 @@ Neue Regressionstests:
    - Produkt-Builder verknüpfen per Ticker („first match wins“).
 2. **Universum veraltet** ohne geplanten Erzeuger. Delistings bleiben ACTIVE, Neuemissionen und S&P-Neuzugänge fehlen.
 3. **Mehrfache Kennzahldefinitionen:**
-   - Split-Bereinigung 5×, 52W-Hoch 4×, Tagesänderung in Markets, Gesamtrendite 2×.
+   - Split-Bereinigung 5× (Discover-Publisher und -Build in #388 auf `return-series.js#splitFactors`, bitgleich), 52W-Hoch 4×, Tagesänderung in Markets, Gesamtrendite 2×.
    - Zusammenführen nur mit Vorher/Nachher-Vergleich und Methodik-Version.
 4. **`discover/data/`** hat sechs Schreiber in fünf Concurrency-Gruppen, und der Build löscht das Verzeichnis komplett.
 5. **Social-Workflows:** nackte Pushes, interpolierte Eingaben, Admin-Schlüssel per `?key=`.
@@ -229,9 +235,9 @@ Neue Regressionstests:
 
 ## Recommended Next Steps
 
-1. **Nach dem Merge:**
-   - `market-data-refresh.yml` und `supertrader-signals.yml` einmal manuell starten. Das macht BRK-B, die Penny-Kurse und die Supertrader-Seiten in den Daten wirksam.
-   - Danach `node scripts/core/data-quality.mjs` muss ohne ERROR laufen.
+1. **Nach dem Merge von #386** (genaue Reihenfolge in [§ Merge-Readiness](#merge-readiness-pr-386)):
+   - #387 mergen, dann `supertrader-signals.yml` und `market-data-refresh.yml` einmal manuell starten. Das macht BRK-B, die Penny-Kurse und die Supertrader-Seiten in den Daten wirksam.
+   - Danach muss `node scripts/core/data-quality.mjs` ohne ERROR laufen.
 2. **Intraday 02.10. nachziehen:** `intraday-snapshots.yml` mit `scope=universe` für die Sitzung, oder auf die nächste Sitzung warten.
 3. **Universum aktuell halten:** einen Zeitplan für `build-us-eligibility.mjs` und `universe-master.yml` (wöchentlich) mit DQ-IX-1 als Gate.
 4. **News-Zeitplan** (Owner-Entscheidung: externe RSS-Abfragen), zum Beispiel alle 6 Stunden.
@@ -250,7 +256,7 @@ Gemessen am 03.10.2026 auf dem finalen Stand des Branches.
 
 | Prüfung | Ergebnis |
 |---|---|
-| Alle Testsuiten (Node, Python) | 5.316 + 644 grün |
+| Alle Testsuiten (Node, Python) | 5.316 + 644 grün (Stand vor der CI-Aufteilung; Core 52, Quant 2.315, Discover/Supertrader/Screener 494 am Endstand erneut grün) |
 | Testisolation | keine Produktionsdatei verändert |
 | Workflow-YAML (73 Dateien) | alle parsebar; workflow-bezogene Tests 312/312 |
 | Systemzustand (Repository) | Intraday STALE, News STALE, Security Master/SEC-Consumer DEGRADED, Rest OK. Das ist der reale Datenstand, nicht eine Folge dieses Branches. |
@@ -260,3 +266,47 @@ Gemessen am 03.10.2026 auf dem finalen Stand des Branches.
 | Browser-Smoke | 16 Kernseiten × 390 px/1.280 px: 0 JS-Fehler, 0 horizontales Überlaufen |
 | Nachweislauf in Produktion | `sec-fundamentals-daily.yml` lief mit der Injection-Härtung auf diesem Branch erfolgreich (Lauf 37122420202) |
 | Live-Seite | aus dieser Sandbox nicht erreichbar (Netzwerk-Policy); `core-ci.yml` prüft sie täglich in Actions |
+
+---
+
+## Merge-Readiness PR #386
+
+### CI-Korrekturen seit dem ersten Bericht
+
+| Check | Ursache | Korrektur |
+|---|---|---|
+| Discover CI (Reproduzierbarkeit) | Die neue Rundung (≥ 1 $ auf Cent, darunter 4 signifikante Stellen, ≤ 0 → kein Kurs) ändert die Seiten von CPTAF und DMN | beide Seiten neu gebaut (`5964887f42`), sonst kein Diff |
+| Currency & FX (Schulden-Register) | Die Geldzeile in `discover/ui/cards.js` verschob sich (Zeile 108 → 112, `dec` statt 2) | Register mit `build-currency-debt-register.mjs --publish` neu erzeugt; Zahl der Schulden unverändert |
+| Discover Frontend Quality Gates (Budget) | Discover-Views 180.998 > 180.000 Byte | Fix auf das Nötige reduziert (179.978 Byte); Zurück-Wiederherstellung offen |
+| Supertrader Quality Gates (Gate A) | #386 änderte Supertrader-Pfade und `supertrader-validation.yml` | beides nach #387 verschoben |
+| Company Intelligence (`validate`) | #386 änderte `company-intelligence.yml` zusammen mit Quant/Discover-Pfaden | Änderung nach #389 verschoben |
+
+Kein Gate wurde abgeschwächt oder deaktiviert. Jede Korrektur hält die Gate-Regel ein, entweder durch neu erzeugte Daten aus dem Erzeuger oder durch die Aufteilung in produkteigene PRs.
+
+### Externe Fehler
+
+- **Vercel `api-deployments-free-per-day`:** das Tageslimit des kostenlosen Vercel-Plans für Deployments. Das ist kein Fehler des Codes, und der Produktcode wurde deshalb nicht geändert. Es löst sich nach 24 Stunden oder mit einem anderen Plan.
+
+### Red-Team-Prüfung vor dem Merge
+
+| Frage | Ergebnis |
+|---|---|
+| Unbeabsichtigte generierte Daten im Diff | nur drei Dateien, alle von einem Gate verlangt: `CPTAF.json`, `DMN.json`, `currency-debt-register.json` |
+| Modelllogik verändert | nein: keine Datei unter Quant-Scores, Rankings, Supertrader-Engine, Regime oder Technical-Modell. Die Rundung betrifft nur die Darstellung veröffentlichter Schlusskurse. |
+| Workflow-Sicherheit | Eingaben über `env`, `permissions` gesetzt, Checkout der Spitze, Concurrency je Branch; YAML parst |
+| `push-with-retry.sh`: Deadlock oder Endlosschleife | Rebase-Schleife auf 200 Halte begrenzt, Push-Versuche begrenzt; Abbruch bei unbekanntem Konflikt; Tests PR4–PR7 |
+| Core bei fehlenden oder veralteten Daten | Umschlag `UNAVAILABLE` mit Grund statt `null`; Health meldet STALE/NOT_DELIVERED; fehlgeschlagene Ladevorgänge werden nicht gemerkt |
+| `/status/` und Diagnose | nur lesend, DOM über `textContent`, Ticker vor jeder Pfadbildung geprüft (`pathSafe`) |
+| Zentrale `securityId` | byte-gleich zur bisherigen Regel für alle 25.071 geprüften IDs; einzige gewollte Änderung BRK-B |
+| Konflikte mit `main` | keine; zuletzt zusammengeführt am 03.10.2026 |
+
+### Reihenfolge nach dem Merge
+
+1. #386 mergen.
+2. #387 mergen (Supertrader, unabhängig von #386).
+3. `supertrader-signals.yml` manuell starten. Das erzeugt die fehlenden Aktienseiten und die korrekten Wochenchart-Pfade.
+4. `market-data-refresh.yml` manuell starten. BRK-B und die Penny-Kurse werden damit in den Daten wirksam.
+5. `node scripts/core/data-quality.mjs` lokal oder über `core-ci.yml` (`workflow_dispatch`) ausführen. Erwartet wird kein ERROR.
+6. `/status/` prüfen. Erwartet: Marktdaten OK. News und Security Master bleiben STALE bzw. DEGRADED, bis ihr Erzeuger läuft.
+7. #388 und #389 unabhängig davon mergen.
+

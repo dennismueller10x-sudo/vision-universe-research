@@ -8,7 +8,7 @@ Provider-Abrufe laufen nur in Actions (Tiingo über Header, FMP mit redigierter 
 | # | Schwere | Befund | Status |
 |---|---|---|---|
 | H1 | High (falls als Zugriffsschutz verstanden) | Research-Zugangsmaske arbeitet nur clientseitig (`scripts/access-gate/runtime.js`). Daten und Originalseiten sind direkt abrufbar. Der Verifier ist öffentlich und hat einen festen Salt, also ist das Passwort offline angreifbar. | dokumentiert, Owner-Entscheidung: echte Durchsetzung am Edge (Cloudflare Access/Worker) oder langes Zufallspasswort |
-| H2 | High | Script-Injection: `workflow_dispatch`-Eingaben direkt in `run:` (12 Workflows; braucht Schreibrecht) | **behoben** (`env:` + Formatprüfung), ausgenommen Social-Workflows |
+| H2 | High | Script-Injection: `workflow_dispatch`-Eingaben direkt in `run:` (12 Workflows; braucht Schreibrecht) | **behoben** (`env:` + Formatprüfung; Company Intelligence in PR #389), ausgenommen Social-Workflows |
 | M1 | Medium | Actions nicht auf SHA gepinnt; `npx wrangler@4` floatet in Jobs mit Cloudflare-, Anthropic- und Tiingo-Secrets | offen. Empfehlung: SHA-Pins + Dependabot, `wrangler@<exakt>` |
 | M2 | Medium | 6 CI-Workflows ohne `permissions:` | **behoben** (`contents: read`) |
 | M3 | Medium | Social-Worker akzeptiert den Admin-Schlüssel auch als `?key=` (landet in Logs und Referer) | offen (Social-Workstream). Empfehlung: nur `Authorization: Bearer` |

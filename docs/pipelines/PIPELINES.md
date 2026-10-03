@@ -32,12 +32,12 @@ Systemzustand der Daten: `node scripts/core/system-health.mjs`.
 
 | Problem | Beleg | Änderung |
 |---|---|---|
-| Ein wartender Lauf checkte den Auslöse-Commit aus und lief garantiert in einen Rebase-Konflikt | Lauf 37085599297; Refresh 4/5 rot | 26 committende Workflows: `ref: ${{ github.ref }}` |
+| Ein wartender Lauf checkte den Auslöse-Commit aus und lief garantiert in einen Rebase-Konflikt | Lauf 37085599297; Refresh 4/5 rot | 26 committende Workflows: `ref: ${{ github.ref }}` (25 in #386, `supertrader-validation.yml` in #387) |
 | `push-with-retry.sh` schob halb rebaste Stände | Test PR4/PR5 reproduziert | jeder Rebase-Halt wird geprüft |
 | Konflikt in `intraday/index.json` warf 5.237 Tagesverläufe weg | Lauf 37083168221 (PR #366 brachte die Datei mit) | Verzeichnis, Status und Ledger unter Erzeugerhoheit (PR6/PR7) |
 | 20 Push-Stellen mit `|| true` oder ohne Retry | Audit | `push-with-retry.sh` |
 | Concurrency über Branches hinweg | Audit | `-<ref_name>` |
-| Script-Injection über `workflow_dispatch`-Eingaben | 12 Workflows | `env:` plus Formatprüfung |
+| Script-Injection über `workflow_dispatch`-Eingaben | 12 Workflows | `env:` plus Formatprüfung (11 in #386, `company-intelligence.yml` in #389) |
 | CI ohne `permissions:` | 6 Workflows | `contents: read` |
 | Datenläufe vom Wochenende erreichten die Seite erst am Montag | `pages-release` lauschte auf 6 Läufe | 12 weitere Läufe in `workflow_run` |
 
