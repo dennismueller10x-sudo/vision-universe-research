@@ -155,7 +155,10 @@ test("signal study: titles without a complete corporate-action record drop out o
   const c = study.source.totalReturnCoverage;
   assert.equal(study.returnType, "TOTAL_RETURN");
   assert.equal(study.returnBasis, "CANONICAL_TOTAL_RETURN");
-  assert.equal(c.TOTAL_RETURN_CONFIRMED_BEFORE, 60, "Gegenprobe: die Anbieterspalte allein hielt alle 60 fuer Gesamtrendite");
+  /* Vorher-Zaehlung nach altem Vertrag (Anbieterspalte, Tiingo-Konvention
+     aus #349): auch er erkennt seit #349 einen Faktorschritt ohne erfasstes
+     Ereignis als fehlende Aktion - die beiden Titel fallen dort ebenfalls. */
+  assert.equal(c.TOTAL_RETURN_CONFIRMED_BEFORE, 58);
   assert.equal(c.TOTAL_RETURN_RECONSTRUCTED, 58);
   assert.equal(c.TOTAL_RETURN_CONFIRMED_AFTER, 58);
   assert.equal(c.REJECTED_DIVIDEND_GAP, 2);
