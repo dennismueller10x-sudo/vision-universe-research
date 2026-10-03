@@ -31,6 +31,14 @@ const ChangeEngine = require(join(ROOT, "quant/engines/change-engine.js"));
 const FundamentalInputs = require(join(ROOT, "quant/engines/fundamental-inputs.js"));
 const PublishedClose = require(join(ROOT, "quant/engines/published-close.js"));
 const Catalog = require(join(ROOT, "quant/engines/catalog.js"));
+const Radar = require(join(ROOT, "quant/engines/quant-radar.js"));
+const SecurityMaster = require(join(ROOT, "quant/engines/us-security-master.js"));
+const Survivorship = require(join(ROOT, "quant/engines/survivorship-control.js"));
+/* Wer zur Grundgesamtheit der Perzentile gehoert (seit 02.10.2026: das
+   kanonische Produktuniversum, nicht die Faktordatei). Teil der Methodik
+   jedes Stands - aendert sich die Regel, ist ein Rangwechsel keine
+   Aenderung der Aktie. */
+const POPULATION_RULE = "canonical-product-universe-1.0.0";
 
 const OUT_DIR = join(ROOT, "quant/data/product/factor-evidence-v1");
 /* Deliberately a sibling of OUT_DIR, not a child: the current artifact is
@@ -974,7 +982,12 @@ function main() {
     namespace: FactorEvidence.NAMESPACE,
     asOf: cutoff,
     fields: factorColumns,
-    rows: Object.fromEntries(Object.entries(screeningRows).map(([ticker, values]) => [ticker, values.slice(0, factorColumns.length)]))
+    rows: Object.fromEntries(Object.entries(screeningRows).map(([ticker, values]) => [ticker, values.slice(0, factorColumns.length)])),
+    /* Die Methodik dieses Stands (quant-radar.js snapshotMethod): der Radar
+       vergleicht nur Staende gleicher Methodik (METHOD_REBASE sonst). */
+    method: Radar.snapshotMethod({ factorMethodology: FactorEvidence.METHODOLOGY_VERSION, derivedFrom: FactorEvidence.DERIVED_FROM,
+      population: POPULATION_RULE, securityMaster: SecurityMaster.VERSION, listingRule: Survivorship.VERSION,
+      marketFactors: priceFactors.engine || null })
   };
   snapshot.contentHash = snapshotHash(snapshot);
   let recomputationDrift = null;

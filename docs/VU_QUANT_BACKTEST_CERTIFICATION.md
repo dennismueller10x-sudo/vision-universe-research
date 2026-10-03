@@ -187,3 +187,23 @@ Die Mindestquote von 95 % ist nicht erreicht. Die Studie bleibt deshalb fail-clo
 - 337 der 551 Splitluecken lehnt schon der Abruf als `adjustmentContradicted` ab: Die bereinigte Spalte des Anbieters hat den Split nicht mitgemacht.
 - 66 Reihen behalten die Dividendenluecke auch nach vollem Neuabruf (`STILL_DIVIDEND_GAP`).
 - Beides bleibt `TOTAL_RETURN_REJECTED`, mit Grund. Es wird nicht geglaettet.
+
+## Methodikwechsel ist kein Marktereignis (quant-radar 1.3.0, 03.10.2026)
+
+**Befund.** Der Radar vom 02.10. meldete 571 „Evidenz veraendert“, 670 „neues Muster“, 117 Faktor- und 55 Strategie-Wechsel. Sie entstanden aus der DEBT-Umstufung und aus der neuen Grundgesamtheit der Faktorevidenz, nicht aus der Aktie.
+
+**Regel.**
+- Jeder verglichene Stand traegt seine Methodik (`snapshotMethod`). Das gilt fuer Faktor-Evidenz-Historie, Musterstand und Rueckblick-Evidenz.
+- Zur Methodik gehoeren Engine- und Methodikversionen, die Gattungsregel des Wertpapierstamms, die Listing-Regel der Reihen und die Grundgesamtheit der Perzentile.
+- Weichen zwei Staende ab, oder fehlt einem die Angabe (Gleichheit nicht belegt), entsteht **kein** Ereignis: kein Radar, keine Karte, keine Watchlist-Historie, kein Alert.
+- Stattdessen fuehrt der Radar ein internes `METHOD_REBASE` (`methodRebase`, `measures.METHOD_REBASES`) mit der Zahl der unterdrueckten Uebergaenge. Der juengere Stand ist die neue Vergleichsbasis.
+
+**Gemessen am Radar vom 02.10.**
+- 4 Rebases (EVIDENCE 571, PATTERN 670, FACTOR 117, STRATEGY 55): 1.413 unterdrueckte Uebergaenge.
+- Es bleiben 679 Ereignisse aus Markt und Setup: 52-Wochen-Hoch, Momentum, Trend, Setups.
+- Der Radar schrumpft von 211 auf 88 KB.
+
+**Gegenprobe und Tests.**
+- Bei gleicher Methodik werden Uebergaenge zu Ereignissen (MC1).
+- Ein unabhaengiger Nachrechner liest die Staende selbst (MC4).
+- Mit abgeschalteter Regel schlagen MC2 und MC4 fehl.
