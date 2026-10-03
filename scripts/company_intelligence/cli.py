@@ -55,7 +55,8 @@ def manifest_batch(document, companies, store, now, limit, tickers=None):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('command', choices=['run', 'backfill', 'export', 'quality', 'probe', 'coverage', 'discover-catalogue', 'discover-backfill', 'sec-stream', 'poll'])
+    p.add_argument('command', choices=['run', 'backfill', 'export', 'quality', 'probe', 'coverage', 'discover-catalogue', 'discover-backfill', 'verify-domains', 'news-archive', 'materials-backfill', 'sec-stream', 'poll'])
+    p.add_argument('--archive-month', help='Explicit YYYY-MM publisher-advertised archive; bounded weekly/backfill metadata lane')
     p.add_argument('--stream-days', type=int, default=3, help='Bounded completed EDGAR index days per material stream run (1..5)')
     p.add_argument('--stream-history-days', type=int, default=180, help='Initial submission import horizon for the incremental stream (30..366); retained history is preserved')
     p.add_argument('--root', type=Path, default=ROOT)
@@ -81,11 +82,11 @@ def main(argv=None):
     args = p.parse_args(argv)
     if not 1 <= args.limit <= 100 or not 1 <= args.request_budget <= 200 or not 30 <= args.max_seconds <= 1800:
         p.error('limit must be 1..100; request budget 1..200; max seconds 30..1800')
-    if not 1 <= args.discovery_workers <= 4 or (args.discovery_workers > 1 and args.command != 'discover-backfill'):
+    if not 1 <= args.discovery_workers <= 4 or (args.discovery_workers > 1 and args.command not in ('discover-backfill', 'verify-domains')):
         p.error('discovery-workers must be 1..4 and requires discover-backfill')
     if args.all_offline and (args.network or args.tickers):
         p.error('--all-offline requires offline full-universe mode')
-    if args.command == 'discover-catalogue' and not args.network:
+    if args.command in ('discover-catalogue', 'verify-domains', 'news-archive', 'materials-backfill') and not args.network:
         p.error('discover-catalogue requires --network')
     if args.command == 'discover-backfill' and not (args.network and args.discover_sites and args.discover_ir):
         p.error('discover-backfill requires --network --discover-sites --discover-ir')
@@ -164,9 +165,46 @@ def main(argv=None):
                 verified = store.state('officialSite:' + company['companyId'], {})
                 if verified.get('status') == 'VALIDATED':
                     company['officialSites'] = [verified['url']]
-        if args.command in ('discover-backfill', 'discover-catalogue'):
+        if args.command in ('discover-backfill', 'discover-catalogue', 'verify-domains'):
             from company_intelligence.site_inventory import import_inventory
             import_inventory(root, companies, store, now)
+        if args.command=='news-archive':
+            import re
+            if not args.archive_month or not re.fullmatch(r'\d{4}-(?:0[1-9]|1[0-2])',args.archive_month) or not '2000-01'<=args.archive_month<=now[:7]:p.error('news-archive requires a valid non-future --archive-month YYYY-MM')
+            source={'sourceId':'gnn-archive-'+args.archive_month,'url':'https://sitemaps.globenewswire.com/news/en/'+args.archive_month+'.xml',
+                    'type':'RSS','format':'GNN_ARCHIVE','provider':'GLOBENEWSWIRE_ARTICLE','verified':False,'active':False,'intervalHours':168,'batchSize':args.limit,
+                    'metadata':{'access':'Publisher robots-advertised public archive/NewsArticle metadata; headline/date/link and bounded scheduling evidence only. Full article body cache deleted.',
+                                'mode':'EXPLICIT_RESUMABLE_BACKFILL_NOT_FOUR_HOUR_POLL'}}
+            pipeline.ensure_aliases(companies.keys());pipeline.ingest_source(source)
+            print(json.dumps({'run':pipeline.run,'requests':http.requests,'httpStats':http.stats,'checkpoint':store.state('distributorArchiveRun:'+source['sourceId'])},sort_keys=True));return 0
+        if args.command=='materials-backfill':
+            from company_intelligence.q4_reports import from_validated_events
+            derived=[candidate for source in store.sources() if (not args.tickers or source.get('companyId') in selected_ids)
+                     and (candidate:=from_validated_events(source,now)) and not any(s['sourceId']==candidate['sourceId'] and s.get('lastSuccess') for s in store.sources())][:args.limit]
+            for source in derived:
+                store.source(source)
+                try:pipeline.ingest_source(source)
+                except BudgetExhausted:break
+            print(json.dumps({'derivedSources':len(derived),'run':pipeline.run,'requests':http.requests,'httpStats':http.stats},sort_keys=True));return 0
+        if args.command == 'verify-domains':
+            # Weekly candidate validation is separate from expensive IR discovery
+            # and from four-hour feed ingestion. No financial/export rebuild.
+            eligible = [c for c in (selected if args.tickers else companies.values()) if not c['officialSites']
+                        and store.state('siteCandidates:' + c['companyId'], {}).get('status') == 'CANDIDATE'
+                        and store.state('officialSite:' + c['companyId'], {}).get('retryAfter', '') <= now
+                        and store.state('domainValidation:' + c['companyId'], {}).get('nextAttempt', '') <= now]
+            eligible = sorted(eligible, key=lambda c: c['companyId'])[:args.limit]
+            pipeline.ensure_aliases({c['companyId'] for c in eligible})
+            from company_intelligence.discovery_batch import run as validate_domains, persist
+            results = validate_domains(eligible, {c['companyId']:store.state('siteCandidates:' + c['companyId'], {}) for c in eligible},
+                                       http, now, args.request_budget, args.max_seconds, args.discovery_workers, domain_only=True)
+            persist(results, store, companies, now)
+            report = {'generatedAt': now, 'domainValidation': results, 'publicRequests': sum(r['requests'] for r in results),
+                      'httpStats': {k:sum(r['stats'].get(k, 0) for r in results) for k in http.stats},
+                      'runtimeSeconds': round(time.monotonic()-started,3), 'interpretation':'Verified ownership only; IR/news coverage requires subsequent validated discovery and ingestion.'}
+            atomic_json(state_dir / 'domain-validation.json', report)
+            print(json.dumps(report, sort_keys=True))
+            return 0
         if args.command == 'discover-backfill' and not args.tickers:
             # Per-candidate attempt state is a checkpoint separate from SEC/master.
             eligible = []

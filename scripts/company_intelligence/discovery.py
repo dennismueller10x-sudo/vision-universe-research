@@ -62,18 +62,48 @@ def wikidata_sites(companies, http):
 def validate_candidate(company, candidate, http, now):
     """Wikidata is discovery evidence only: require corporate header and legal-name ownership."""
     from .model import normalize, clean, SUFFIX, within_domain
+    import hashlib
+    from .feeds import parse_links
+    from .platforms import fingerprint
     import re
-    response = http.get(candidate['url'], ttl=86400)
+    # Old repository candidates often use HTTP. Prefer the same host over TLS
+    # to avoid repeated scheme redirects and re-fetching robots metadata.
+    request_url = re.sub(r'^http:', 'https:', candidate['url'])
+    response = http.get(request_url, ttl=86400)
     if not within_domain(response['finalUrl'], candidate['url']):
         raise SourceError('OFFICIAL_SITE_CANDIDATE_REDIRECT')
     body = response['body'].decode('utf-8', 'replace')
     title = re.search(r'<title[^>]*>(.*?)</title>', body, re.I | re.S)
     header = normalize(title[1] if title else '')
+    def legal_normalize(value):
+        value = re.sub(r'/[A-Z]{2,3}/?$', '', str(value), flags=re.I)
+        value = re.sub(r'[^\w]+', ' ', clean(value, 2 * 1024 * 1024).casefold()).strip()
+        value = re.sub(r'\b(?:[a-z]\s+){1,3}[a-z]\b', lambda m: m[0].replace(' ', ''), value)
+        for long, short in [('corporation','corp'),('incorporated','inc'),('limited','ltd'),('company','co')]:
+            value = re.sub(r'\b'+long+r'\b',short,value)
+        return re.sub(r'^the\s+', '', value)
     visible_body = re.sub(r'<(?:script|style)\b[^>]*>.*?</(?:script|style)>|<!--.*?-->', '', body, flags=re.I | re.S)
     visible = re.sub(r'[^\w]+', ' ', clean(visible_body, 2 * 1024 * 1024).casefold()).strip()
-    legal = any(re.search(r'(?<!\w)' + re.escape(normalize(n)) + r'(?!\w)', visible) for n in company['names'] if normalize(n))
+    visible = legal_normalize(visible)
+    legal = any(re.search(r'(?<!\w)' + re.escape(legal_normalize(n)) + r'(?!\w)', visible) for n in company['names'] if legal_normalize(n))
     branded = any(re.search(r'(?<!\w)' + re.escape(normalize(SUFFIX.sub('', n))) + r'(?!\w)', header) for n in company['names'] if normalize(SUFFIX.sub('', n)))
-    if not legal or not branded:
+    # Many public-company titles use a short brand (Meta, H&P, Frost),
+    # while the copyright footer discloses the precise parent/legal owner.
+    # A customer mention in the page body is not this ownership evidence.
+    copyright_text = re.sub(r'<[^>]*>', ' ', visible_body)
+    copyright_regions = [legal_normalize(m[0]) for m in re.finditer(r'(?:©|&copy;|copyright).{0,300}', copyright_text, re.I | re.S)]
+    footer_owner = any(re.search(r'(?<!\w)' + re.escape(legal_normalize(n)) + r'(?!\w)', region)
+                       for n in company['names'] for region in copyright_regions if legal_normalize(n))
+    stop = {'inc','corp','corporation','co','company','ltd','plc','holdings','group','global','national','first','bank','financial','resources','therapeutics','industries','technologies','international','trust','properties','healthcare'}
+    brand_tokens = {w for n in company['names'] for w in normalize(n).split() if len(w) >= 4 and w not in stop}
+    short_brand = any(re.search(r'(?<!\w)' + re.escape(w) + r'(?!\w)', header) for w in brand_tokens)
+    acronyms = {''.join(w[0] for w in normalize(n).split() if w not in stop and len(w)>1) for n in company['names']}
+    header_compact = re.sub(r'(?<!\w)([a-z])\s+([a-z])(?!\w)', r'\1\2', header)
+    short_brand = short_brand or any(2 <= len(a) <= 4 and re.search(r'(?<!\w)' + re.escape(a) + r'(?!\w)', header_compact) for a in acronyms)
+    method = 'CORPORATE_TITLE_AND_LEGAL_COMPANY_NAME' if legal and branded else 'EXACT_LEGAL_COPYRIGHT_OWNER_AND_CORPORATE_BRAND'
+    if not (legal and branded) and not (footer_owner and short_brand):
         raise SourceError('OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED')
     return {'status': 'VALIDATED', 'url': response['finalUrl'], 'lastVerified': now, 'confidence': .95,
-            'evidence': [candidate['evidence'], 'CORPORATE_TITLE_AND_LEGAL_COMPANY_NAME'], 'title': clean(title[1], 150)}
+            'evidence': [candidate['evidence'], method], 'title': clean(title[1], 150),
+            'contentHash': hashlib.sha256(response['body']).hexdigest(), 'platformHint': fingerprint(response['body']),
+            'irCandidates': list(dict.fromkeys(l['url'] for l in parse_links(response['body'],response['finalUrl']) if re.search(r'investor.relations|\binvestors?\b',l['text'],re.I) and not re.search(r'\.(?:pdf|zip|xml|js)(?:\?|$)',l['url'],re.I)))[:5]}

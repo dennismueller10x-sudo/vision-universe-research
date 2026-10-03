@@ -189,15 +189,17 @@ def discover_ir(company, official_site, http, now, max_pages=3):
                 sources[structured_source['sourceId']] = {**structured_source, 'type': 'IR_FEED', 'format': 'JSONLD_NEWS', 'active': True, 'intervalHours': 4, 'lastVerified': now, 'verificationEvidence': 'OFFICIAL_SCHEMA_ORG_NEWS_INDEX'}
         if provider == 'Q4':
             from .q4_events import discover as discover_q4
-            try:
-                q4_source = discover_q4(response['body'], response['finalUrl'], {**structured_source, 'provider': provider}, http, now)
-                if q4_source:
-                    sources[q4_source['sourceId']] = q4_source
-            except (SourceError, ValueError) as exc:
-                from .transport import BudgetExhausted
-                if isinstance(exc, BudgetExhausted):
-                    raise
-                warnings.append({'url': response['finalUrl'], 'reason': str(exc)[:200], 'provider': 'Q4'})
+            from .q4_reports import discover as discover_q4_reports
+            # Each endpoint fails independently; an event schema change cannot
+            # suppress otherwise healthy financial-document discovery.
+            for adapter in (discover_q4,discover_q4_reports):
+                try:
+                    q4_source=adapter(response['body'],response['finalUrl'],{**structured_source,'provider':provider},http,now)
+                    if q4_source:sources[q4_source['sourceId']]=q4_source
+                except (SourceError,ValueError) as exc:
+                    from .transport import BudgetExhausted
+                    if isinstance(exc,BudgetExhausted):raise
+                    warnings.append({'url':response['finalUrl'],'reason':str(exc)[:200],'provider':'Q4'})
         event_links = [l for l in links if re.search(r'events|calendar', l['text'], re.I) and not re.search(r'news[-_/]?releases|/static-files/|\.(?:pdf|zip)(?:\?|$)', l['url'], re.I) and within_domain(l['url'], page)]
         from .ir_events import parse_jsonld, parse_ics
         for link in event_links[:1]:

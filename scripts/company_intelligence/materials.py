@@ -12,11 +12,20 @@ def page_documents(company, links, page, now):
     from urllib.parse import unquote
     out, seen = [], set()
     for link in links:
-        if link['url'] in seen or not re.search(r'\.pdf(?:\?|$)|/static-files/', link['url'], re.I):
+        if link['url'] in seen:
             continue
         label = link['text']
-        kind = 'PRESENTATION' if re.search(r'presentation|slides|earnings deck', label, re.I) else 'PREPARED_REMARKS' if re.search(r'prepared remarks|earnings script', label, re.I) else 'COMPANY_TRANSCRIPT' if re.search(r'transcript', label, re.I) else 'SHAREHOLDER_LETTER' if re.search(r'shareholder letter|letter to shareholders', label, re.I) else 'FINANCIAL_REPORT' if re.search(r'annual report|quarterly report|10-[KQ]', label, re.I) else 'EARNINGS_RELEASE' if re.search(r'earnings release', label, re.I) else None
+        kind = 'PRESENTATION' if re.search(r'presentation|slides|earnings deck', label, re.I) else 'PREPARED_REMARKS' if re.search(r'prepared remarks|earnings script', label, re.I) else 'COMPANY_TRANSCRIPT' if re.search(r'transcript', label, re.I) else 'SHAREHOLDER_LETTER' if re.search(r'shareholder letter|letter to shareholders', label, re.I) else 'MANAGEMENT_COMMENTARY' if re.search(r'management commentary|management discussion|ceo letter|letter from (?:the )?(?:ceo|chief executive)', label, re.I) else 'CALL_RECORDING' if re.search(r'(?:earnings|conference) call (?:recording|replay)|(?:webcast|audio) replay', label, re.I) else 'FINANCIAL_REPORT' if re.search(r'annual report|quarterly report|10-[KQ]', label, re.I) else 'EARNINGS_RELEASE' if re.search(r'earnings release', label, re.I) else None
         if not kind:
+            continue
+        if re.fullmatch(r'presentations?|annual reports?(?: and prox(?:y|ies))?|quarterly reports?|financial reports?|transcripts?',label.strip(),re.I) and not re.search(r'\.pdf(?:\?|$)|/static-files/',link['url'],re.I):
+            continue  # Navigation hubs are not individual document evidence.
+        # HTML management materials must stay on the validated issuer host.
+        # Explicit PDF/static-file attachments may be delegated to a CDN.
+        if not within_domain(link['url'], page) and not re.search(r'\.pdf(?:\?|$)|/static-files/', link['url'], re.I):
+            continue
+        from .q4_events import public_link
+        if not public_link(link['url']):
             continue
         period = release_period(re.sub(r'[_+]', ' ', label + ' ' + unquote(link['url']))) or {}
         seen.add(link['url'])

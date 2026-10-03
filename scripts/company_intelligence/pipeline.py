@@ -5,7 +5,7 @@ import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlencode
-from .model import Resolver, canonical_url, make_item, stable_id, within_domain, issuer_results_actor, issuer_earnings_announcement, financial_release_evidence
+from .model import domain, Resolver, canonical_url, make_item, stable_id, within_domain, issuer_results_actor, issuer_earnings_announcement, financial_release_evidence
 from .transport import BudgetExhausted, SourceError
 from .feeds import parse_feed, parse_gdelt, discover_ir
 from .structured_sources import news_index, gcs_events
@@ -45,7 +45,7 @@ class Pipeline:
         self.resolver = Resolver(self.companies)
         self._alias_loaded = set()
         self._processed_sources = set()
-        self.run = {'new': 0, 'duplicate': 0, 'unmatched': 0, 'invalid': 0, 'sourceFailures': 0, 'secFailures': 0, 'documentFailures': 0, 'processedCompanies': 0, 'discoveryFailures': 0}
+        self.run = {'new': 0, 'promotionalRejected': 0, 'duplicate': 0, 'unmatched': 0, 'invalid': 0, 'sourceFailures': 0, 'secFailures': 0, 'documentFailures': 0, 'processedCompanies': 0, 'discoveryFailures': 0}
 
     def ensure_aliases(self, company_ids):
         for cid in company_ids:
@@ -103,14 +103,35 @@ class Pipeline:
             accepted = 0
             rejected = 0
             accepted_dates = []
-            response = self.http.get(source['url'], robots=source['type'] != 'GDELT')
+            if source.get('format') == 'GNN_ARCHIVE':
+                from .distributor_archive import pinned_archive
+                if not pinned_archive(source['url']):raise SourceError('UNSAFE_DISTRIBUTOR_ARCHIVE')
+                original_limit=self.http.MAX_BYTES
+                try:
+                    self.http.MAX_BYTES=8*1024*1024
+                    response=self.http.get(source['url'])
+                finally:self.http.MAX_BYTES=original_limit
+            else:
+                response = self.http.get(source['url'], robots=source['type'] != 'GDELT')
             if source.get('provider') == 'GLOBENEWSWIRE_RSS':
-                from .model import domain
                 if domain(response['finalUrl']) != 'www.globenewswire.com':
                     raise SourceError('DISTRIBUTOR_REDIRECT_REQUIRES_REVALIDATION')
             if source.get('verified') and source['type'] != 'SEC':
                 if not any(within_domain(response['finalUrl'], site) for site in source.get('allowedSites', [])):
                     raise SourceError('SOURCE_REDIRECT_REQUIRES_REVALIDATION')
+            if source.get('format') == 'Q4_REPORTS':
+                from .q4_reports import parse as parse_reports
+                documents = parse_reports(response['body'], source, self.now)
+                cid=source['companyId'];ir=self.store.state('ir:'+cid,{})
+                configs=[c for c in ir.get('configurations',[]) if c.get('materialsSourceId')!=sid]
+                configs.append({'companyId':cid,'irHomepage':source['allowedSites'][-1], 'pageRole':'IR', 'providerType':'Q4',
+                                'documents':documents,'materialsSourceId':sid,'lastVerified':self.now,'confidence':.95,
+                                'evidence':'VALIDATED_ISSUER_FINANCIAL_DOCUMENT_INDEX'})
+                self.store.set_state('ir:'+cid,{**ir,'configurations':configs})
+                self.store.source({**source,'lastChecked':self.now,'lastSuccess':self.now,'failureCount':0,'lastError':None,
+                                   'lastItemCount':len(documents),'contentDateStatus':'PUBLICATION_DATE_NOT_PROVIDED',
+                                   'nextCheck':advance(self.now,source.get('intervalHours',24))})
+                return
             if source['type'] == 'IR_EVENTS':
                 if source.get('format') == 'RSS_EVENTS':
                     events = []
@@ -135,8 +156,20 @@ class Pipeline:
                     accepted += 1
                 entries = []
             else:
-                entries = parse_gdelt(response['body']) if source['type'] == 'GDELT' else news_index(response['body'], source, response['finalUrl']) if source.get('format') == 'JSONLD_NEWS' else parse_feed(response['body'], response['finalUrl'])
+                if source.get('format') == 'GNN_ARCHIVE':
+                    from .distributor_archive import collect
+                    entries = collect(source,response,self.http,self.store,self.resolver,self.now)
+                elif source.get('format') == 'GNN_NEWS_SITEMAP':
+                    from .news_sitemap import parse as parse_news_sitemap
+                    entries = parse_news_sitemap(response['body'], response['finalUrl'])
+                else:
+                    entries = parse_gdelt(response['body']) if source['type'] == 'GDELT' else news_index(response['body'], source, response['finalUrl']) if source.get('format') == 'JSONLD_NEWS' else parse_feed(response['body'], response['finalUrl'])
             for entry in entries:
+                if entry.get('promotionalSolicitation'):
+                    rejected += 1
+                    self.run['promotionalRejected'] += 1
+                    self.store.audit(self.now, sid, 'PROMOTIONAL_SOLICITATION_REJECTED', headline=entry.get('headline'), url=entry.get('url'))
+                    continue
                 entry_time = entry.get('publishedAt') or entry.get('updatedAt')
                 if not entry.get('headline') or not entry.get('url') or not entry_time or entry_time > self.now:
                     self.run['invalid'] += 1
@@ -199,10 +232,20 @@ class Pipeline:
                         item['provenance'][0]['timestampPrecision'] = 'DISCOVERY_TIME'
                         item['provenance'][0]['observedAt'] = entry['publishedAt']
                         item['provenance'][0]['publishedAt'] = None
-                    distributed_author = source.get('provider') == 'GLOBENEWSWIRE_RSS' and any(signal.startswith('EXACT_MASTER_CONTRIBUTOR:') for signal in match.get('evidence', []))
+                    distributed_author = source.get('provider') in ('GLOBENEWSWIRE_RSS','GLOBENEWSWIRE_ARTICLE') and any(signal.startswith('EXACT_MASTER_CONTRIBUTOR:') for signal in match.get('evidence', []))
                     if (effective.get('verified') and match['companyId'] == effective.get('companyId')) or distributed_author:
                         announcer = {**effective, 'verified': True, 'type': 'IR_FEED', 'companyId': match['companyId']} if distributed_author else effective
                         announcements = from_announcement(entry, announcer, self.now) if issuer_earnings_announcement(entry['headline'], self.companies[match['companyId']]) else []
+                        if distributed_author and entry.get('callEvidence'):
+                            call_entry={**entry,'headline':entry['distributionMetadata']['contributor']+' Earnings Conference Call','evidenceText':entry['callEvidence']}
+                            announcements += from_announcement(call_entry,announcer,self.now)
+                        if distributed_author and entry.get('authorSiteCandidate'):
+                            candidate=entry['authorSiteCandidate']
+                            key='siteCandidates:'+match['companyId'];prior=self.store.state(key,{})
+                            if self.store.state('officialSite:'+match['companyId'],{}).get('status')!='VALIDATED':
+                                candidates=prior.get('candidates',[])
+                                if not any(c.get('url')==candidate for c in candidates):candidates.append({'url':candidate,'evidence':'EXACT_MASTER_DISTRIBUTOR_AUTHOR_AND_EXCHANGE_TICKER','evidenceUrl':entry['url']})
+                                self.store.set_state(key,{**prior,'status':'CANDIDATE' if len({domain(c['url']) for c in candidates})==1 else 'AMBIGUOUS','candidates':candidates[:5]})
                         for e in announcements:
                             if distributed_author:
                                 e.update(confidence=.99, confirmationEvidence='ISSUER_AUTHORED_DISTRIBUTOR_ANNOUNCEMENT', issuerMatchEvidence=match['evidence'])
@@ -232,6 +275,10 @@ class Pipeline:
                             item['guidanceEvidence'] = guidance
                     outcome = self.store.ingest(item)
                     self.run['duplicate' if outcome == 'DUPLICATE' else 'new'] += 1
+            if source.get('format')=='GNN_ARCHIVE':
+                for entry in entries:
+                    key='distributorArchive:'+entry['url'];prior=self.store.state(key,{})
+                    self.store.set_state(key,{k:v for k,v in {**prior,'status':'INGESTED'}.items() if k!='entry'})
             content_dates = [i.get('publishedAt') or i.get('updatedAt') for i in entries if (i.get('publishedAt') or i.get('updatedAt')) and (i.get('publishedAt') or i.get('updatedAt')) <= self.now]
             if source['type'] == 'IR_EVENTS':
                 content_dates += [e.get('date') for e in events if e.get('date')]

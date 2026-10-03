@@ -374,9 +374,9 @@ class Store:
         paths, tickers = {}, {}
         for cid, company in sorted(companies.items()):
             payload = self.company_payload(company, now)
-            if payload['state'] == 'NO_DATA' and payload['latestFinancials'].get('state') != 'AVAILABLE':
+            if payload['state'] == 'NO_DATA' and not payload['materials'] and payload['latestFinancials'].get('state') != 'AVAILABLE':
                 continue
-            if payload['latestFinancials'].get('state') == 'AVAILABLE':
+            if payload['materials'] or payload['latestFinancials'].get('state') == 'AVAILABLE':
                 payload['state'] = 'AVAILABLE'
             path = 'snapshots/' + generation + '/' + cid + '.json'
             # A noisy issuer cannot prevent publishing all other companies.

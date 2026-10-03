@@ -14,7 +14,7 @@ from .model import domain
 from .pipeline import advance
 
 
-def run(companies, candidates, http, now, request_budget, max_seconds, workers=4):
+def run(companies, candidates, http, now, request_budget, max_seconds, workers=4, domain_only=False):
     if not 1<=workers<=4 or not 1<=request_budget<=200:raise ValueError('INVALID_DISCOVERY_BATCH_LIMITS')
     selected,hosts=[],set()
     # Reserve enough requests to reach IR/news/events, rather than spending one
@@ -25,7 +25,7 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
         host=domain(evidence['candidates'][0]['url'])
         if host in hosts:continue
         selected.append((c,evidence['candidates'][0]));hosts.add(host)
-        if len(selected)>=max(1,request_budget//12):break
+        if len(selected)>=max(1,request_budget//(4 if domain_only else 12)):break
     if not selected:return []
     allowance=request_budget//len(selected);deadline=time.time()+max_seconds
     gate=threading.Lock();last=[0];host_last={}
@@ -41,13 +41,13 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
     def work(pair):
         c,candidate=pair;remaining=deadline-time.time()
         if remaining<=0:return {'companyId':c['companyId'],'status':'DEFERRED','reason':'DISCOVERY_DEADLINE','requests':0,'stats':{}}
-        client=BoundedHTTP(http.cache,budget=allowance,timeout=min(http.timeout,10),interval=2,max_seconds=min(remaining,180))
-        result={'companyId':c['companyId'],'status':'DEFERRED'}
+        client=BoundedHTTP(http.cache,budget=allowance,timeout=min(http.timeout,10),interval=2,max_seconds=min(remaining,60 if domain_only else 180))
+        result={'companyId':c['companyId'],'status':'DEFERRED','domainOnly':domain_only}
         try:
             site = {'status':'VALIDATED','url':c['officialSites'][0]} if c.get('officialSites') else validate_candidate(c,candidate,client,now)
             if not c.get('officialSites'):result['site']=site
-            sources,configs=discover_ir(c,site['url'],client,now)
-            result.update(status='VALIDATED',sources=sources,configurations=configs)
+            sources,configs=([],[]) if domain_only else discover_ir(c,site['url'],client,now)
+            result.update(status='VALIDATED',sources=sources,configurations=configs,domainOnly=domain_only)
         except BudgetExhausted as e:result['reason']=str(e)
         except (SourceError,ValueError,TypeError,KeyError) as e:result.update(status='DEGRADED' if c.get('officialSites') or result.get('site') else 'REJECTED',reason=str(e)[:250])
         except Exception as e:result.update(status='DEGRADED',reason='UNEXPECTED_DISCOVERY_ERROR:'+type(e).__name__)
@@ -64,8 +64,12 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
 def persist(results,store,companies,now):
     for r in results:
         cid=r['companyId']
+        if r.get('domainOnly'):
+            reason=r.get('reason') or ''
+            category='VERIFIED' if r['status']=='VALIDATED' else 'BLOCKED' if any(code in reason for code in ('403','ROBOTS_DISALLOWED')) else 'UNAVAILABLE' if any(code in reason for code in ('404','DNS','NETWORK_UNAVAILABLE')) else 'DEFERRED' if r['status']=='DEFERRED' else 'IDENTITY_NOT_CORROBORATED' if 'OWNER_NOT_VALIDATED' in reason else 'FAILED'
+            store.set_state('domainValidation:'+cid,{'status':r['status'],'category':category,'reason':reason,'checkedAt':now,'nextAttempt':advance(now,24 if category in ('DEFERRED','UNAVAILABLE') else 7*24)})
         if r.get('site'):store.set_state('officialSite:'+cid,r['site']);companies[cid]['officialSites']=[r['site']['url']]
-        if r['status']=='VALIDATED':
+        if r['status']=='VALIDATED' and not r.get('domainOnly'):
             for source in r['sources']:store.source(source)
             store.set_state('ir:'+cid,{'lastSuccess':now,'configurations':r['configurations'],'sources':len(r['sources']),'nextVerify':advance(now,7*24)})
         elif r['status']=='REJECTED':

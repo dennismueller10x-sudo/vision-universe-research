@@ -105,11 +105,16 @@ class Resolver:
         self.names = {}
         self.tickers = {}
         self.by_token = {}
+        self.name_prefix_issuers = {}
+        self.legal_names = {}
         from .distribution import issuer_name
         self.distribution_index = {}
         for cid, c in companies.items():
             for name in c['names']:
                 n = normalize(name)
+                if n:
+                    self.name_prefix_issuers.setdefault(n.split()[0], set()).add(cid)
+                    self.legal_names.setdefault(n, set()).add(cid)
                 aliases = {n, normalize(SUFFIX.sub('', re.sub(r'\bclass\s+[a-z]\b.*', '', name, flags=re.I)))}
                 for alias in aliases:
                     if alias:
@@ -129,6 +134,10 @@ class Resolver:
         if name in c['names']:
             return
         c['names'].append(name)
+        normalized = normalize(name)
+        if normalized:
+            self.name_prefix_issuers.setdefault(normalized.split()[0], set()).add(cid)
+            self.legal_names.setdefault(normalized, set()).add(cid)
         aliases = {normalize(name), normalize(SUFFIX.sub('', re.sub(r'\bclass\s+[a-z]\b.*', '', name, flags=re.I)))}
         for alias in aliases:
             if alias:
@@ -155,6 +164,9 @@ class Resolver:
         matches = {}
         for ticker in re.findall(r'(?:\$|\b(?:NASDAQ|NYSE|AMEX)\s*:\s*)([A-Z][A-Z0-9.-]{0,9})\b', item.get('headline', '')):
             ids = self.tickers.get(ticker, set())
+            # A cryptocurrency cashtag can collide with an equity symbol.
+            if '$' + ticker in item.get('headline', '') and re.search(r'\b(?:wallets?|tokens?|crypto|blockchain|utility)\b', item.get('headline',''), re.I):
+                continue
             if len(ids) == 1:
                 matches[next(iter(ids))] = {'confidence': .98, 'evidence': ['EXPLICIT_TICKER:' + ticker]}
         candidates = {name for token in title.split() for name in self.by_token.get(token, set())}
@@ -162,13 +174,26 @@ class Resolver:
             ids = self.names[name]
             if len(ids) != 1 or not re.search(r'(?<!\w)' + re.escape(name) + r'(?!\w)', title):
                 continue
+            spans = list(re.finditer(r'(?<!\w)' + re.escape(name) + r'(?!\w)', title))
+            # A shorter alias embedded in another issuer's more specific name
+            # is not a second company mention (Provident Financial Services).
+            other_spans = [m.span() for longer in candidates if len(longer) > len(name) and self.names[longer] != ids
+                           for m in re.finditer(r'(?<!\w)' + re.escape(longer) + r'(?!\w)', title)]
+            if all(any(a <= m.start() and b >= m.end() for a,b in other_spans) for m in spans):
+                continue
             words = name.split()
             if name in AMBIGUOUS_ALIASES:
                 continue
             if len(words) == 1 and (name in AMBIGUOUS or len(name) <= 3):
                 continue
-            if name == 'nasdaq' and re.search(r'\bnasdaq[ -](?:100|composite|index)\b', title):
-                continue
+            if name == 'nasdaq' and not re.match(r'^nasdaq\s+(?:inc|announces?|reports?|launches?|unveils?|acquires?|partners?|to hold|to report)\b', title):
+                continue  # Exchange/listing references do not concern NDAQ.
+            if len(words) == 1 and len(self.name_prefix_issuers.get(name, set())) > 1:
+                continue  # Rogers Corp and Rogers Communications share a brand.
+            if name not in self.legal_names:
+                tail = title.split(name, 1)[-1].lstrip()
+                if re.match(r'(?:properties|holdings|group|trust|bancorp|bank|international|technologies|software|services)\b', tail):
+                    continue  # National Healthcare Properties is not NHC.
             if len(words) == 1 and not FINANCIAL.search(item.get('headline', '')):
                 continue
             cid = next(iter(ids))
