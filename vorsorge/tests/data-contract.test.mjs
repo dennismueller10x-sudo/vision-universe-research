@@ -1,55 +1,73 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { createRequire } from "node:module";
+const Codec = createRequire(import.meta.url)("../engines/series-codec.js");
 const root = new URL("../", import.meta.url);
 const read = (p) => JSON.parse(readFileSync(new URL(p, root), "utf8"));
+const index = read("data/etf-index.json");
+const rows = index.rows.map((r) => Object.fromEntries(index.fields.map((f, i) => [f, r[i]])));
 
-test("ETF-Master: Schema, Pflichtfelder, keine erfundenen Kosten", () => {
-  const m = read("data/etf-master.json");
-  assert.equal(m.schemaVersion, "vu-vorsorge-etf-master-1.0.0");
-  assert.ok(m.etfs.length >= 100, "mindestens das ausgelieferte Tiingo-ETF-Universum");
-  for (const e of m.etfs) {
-    assert.ok(e.symbol && e.listingId && e.canonicalETFId, e.symbol);
-    assert.equal(e.ter, null, "TER hat keine Quelle: " + e.symbol);
-    assert.equal(e.isin, null);
-    if (e.complex) assert.ok(e.structure !== "INDEX_OR_UNSPECIFIED" || e.assetClass === "CRYPTO", e.symbol);
-    if (e.m) assert.ok(e.m.basis === "PRICE_RETURN" || e.m.basis === "TOTAL_RETURN");
+test("ETF-Index: Schema, Spalten, Schichten, keine erfundenen Kosten", () => {
+  assert.equal(index.schemaVersion, "vu-vorsorge-etf-index-2.0.0");
+  assert.ok(rows.length >= 100);
+  for (const r of index.rows) assert.equal(r.length, index.fields.length);
+  for (const r of rows) {
+    assert.ok(["PUBLIC_ANALYSIS", "COMPLEX", "ARCHIVE", "REVIEW"].includes(r.layer), r.symbol);
+    assert.ok(["STANDARD", "KOMPLEX", "SEHR_KOMPLEX", "NICHT_EINORDENBAR"].includes(r.retirementClass), r.symbol);
+    if (r.layer === "PUBLIC_ANALYSIS") { assert.equal(r.retirementClass, "STANDARD", r.symbol); assert.equal(r.status, "ACTIVE"); assert.ok(r.hy !== null, r.symbol); }
+    if (r.leverage > 1 || r.inverse) assert.equal(r.retirementClass, "SEHR_KOMPLEX", r.symbol);
+    if (r.status === "INACTIVE") assert.equal(r.layer, "ARCHIVE");
   }
-  assert.equal(m.counts.listings, m.etfs.length);
+  assert.equal(index.counts.listings, rows.length);
 });
 
-test("ETF-Detaildateien existieren fuer jeden Eintrag und haben Reihen ohne Luecken-Erfindung", () => {
-  const m = read("data/etf-master.json");
-  for (const e of m.etfs) {
-    const d = read("data/etf/" + e.symbol + ".json");
-    assert.equal(d.symbol, e.symbol);
-    assert.equal(d.holdings.status, "DATA_PENDING");
-    if (d.series) for (const p of d.series.daily.concat(d.series.weekly)) assert.ok(p[1] > 0);
+test("Detaildateien: Provenienz, Taxonomie, keine TER/ISIN ohne Quelle, Holdings ehrlich", () => {
+  for (const r of rows) {
+    const d = read("data/etf/" + r.slug + ".json");
+    assert.equal(d.symbol, r.symbol);
+    assert.equal(d.ter, null); assert.equal(d.isin, null);
+    assert.equal(d.holdings.status, "SOURCE_NOT_CONNECTED");
+    for (const k of ["source", "sourceId", "asOf", "classificationMethod", "classificationConfidence", "coverage", "missingFields", "canonicalizationMethod"]) assert.ok(k in d.provenance, k);
+    if (d.metrics) assert.ok(d.metrics.basis === "PRICE_RETURN");
+    if (d.metricsTotal) assert.equal(d.metricsTotal.basis, "TOTAL_RETURN");
+    if (d.seriesPath) assert.ok(existsSync(new URL("." + d.seriesPath.replace("/vorsorge", ""), root)), d.seriesPath);
   }
 });
 
-test("Data-QA ist vollstaendig", () => {
+test("Reihen: dekodierbar, positiv, aufsteigend", () => {
+  const files = readdirSync(new URL("data/series/", root));
+  for (const f of files.slice(0, 80)) {
+    const s = read("data/series/" + f);
+    for (const part of [s.price.daily, s.price.weekly].concat(s.total ? [s.total.weekly] : [])) {
+      const pts = Codec.decode(part);
+      for (let i = 0; i < pts.length; i++) { assert.ok(pts[i][1] > 0, f); if (i) assert.ok(pts[i][0] > pts[i - 1][0], f); }
+    }
+  }
+});
+
+test("Data-QA, UCITS-Report und Lückenmatrix sind vollständig", () => {
   const q = read("data/quality.json");
-  for (const k of ["tiingoEtfSymbols", "canonicalETFs", "listings", "priceCoverage", "metadataCoverage", "missingMetadata", "duplicates", "leveragedInverse", "currencies", "exchanges"]) assert.ok(k in q, k);
+  for (const k of ["ingest", "layers", "counts", "priceCoverage", "metadataCoverage", "duplicates", "conflicts", "productTypes", "retirementClasses", "currencies", "exchanges"]) assert.ok(k in q, k);
+  const u = read("data/ucits-coverage.json");
+  assert.ok(typeof u.listingsOnEuropeanExchanges === "number" && typeof u.isinAvailable === "number");
+  const g = read("data/data-gaps.json");
+  for (const f of ["Price History", "ISIN", "TER", "Holdings", "UCITS", "Tracking Difference"]) assert.ok(g.fields.some((x) => x.field === f), f);
 });
 
-test("SEO-Seiten fuer alle sichtbaren ETFs mit Disclaimer", () => {
-  const m = read("data/etf-master.json");
-  const visible = m.etfs.filter((e) => e.consumerVisible);
-  for (const e of visible.slice(0, 20)) {
-    const html = readFileSync(new URL("etf/" + e.symbol + "/index.html", root), "utf8");
-    assert.match(html, /keine individuelle Anlage-, Steuer- oder Rechtsberatung/);
-    assert.match(html, /vu-navigation/);
-  }
+test("SEO-Seiten nur für das Public Analysis Universe, mit Disclaimer und Sitemap", () => {
+  const pages = existsSync(new URL("etf/", root)) ? readdirSync(new URL("etf/", root)) : [];
+  const pub = new Set(rows.filter((r) => r.layer === "PUBLIC_ANALYSIS").map((r) => r.slug));
+  for (const p of pages) assert.ok(pub.has(p), p + " ist nicht öffentlich");
+  for (const p of pages.slice(0, 10)) assert.match(readFileSync(new URL("etf/" + p + "/index.html", root), "utf8"), /keine individuelle Anlage-, Steuer- oder Rechtsberatung/);
+  const sm = readFileSync(new URL("sitemap.xml", root), "utf8");
+  assert.equal((sm.match(/<url>/g) || []).length, pages.length + 1);
 });
 
-test("Anbieter- und Modellportfolio-Daten: kein Fake", () => {
+test("Anbieter- und Strategiemodell-Daten: kein Fake", () => {
   const p = read("data/providers.json");
-  assert.ok(Array.isArray(p.providers));
-  for (const x of p.providers) assert.ok(x.source && x.asOf, "jede Anbieterzeile braucht Quelle und Stand");
+  for (const x of p.providers) assert.ok(x.source && x.sourceDate && x.verified !== undefined);
   const mp = read("data/model-portfolios.json");
-  for (const pf of mp.portfolios) {
-    const sum = pf.positions.reduce((a, x) => a + x.weight, 0);
-    assert.ok(Math.abs(sum - 1) < 1e-9, pf.id);
-  }
+  for (const pf of mp.portfolios) assert.ok(Math.abs(pf.positions.reduce((a, x) => a + x.weight, 0) - 1) < 1e-9, pf.id);
+  assert.doesNotMatch(JSON.stringify(mp), /empfohlen|kaufen|bestes/i);
 });

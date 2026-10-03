@@ -62,7 +62,7 @@ test("Duplicate Detection: gleiche Zeile aus zwei Quellen = ein Listing", () => 
 });
 
 test("Mehrere Listings: gleicher Ticker an zwei Boersen = zwei Listings, ein Duplikat-Hinweis", () => {
-  const m = M.buildMaster([row({ symbol: "CHAI", name: "Example AI ETF", exchange: "NASDAQ" }), row({ symbol: "CHAI", name: "Example AI ETF", exchange: "NYSE ARCA" })]);
+  const m = M.buildMaster([row({ symbol: "CHAI", name: "iShares Example AI ETF", exchange: "NASDAQ" }), row({ symbol: "CHAI", name: "iShares Example AI ETF", exchange: "NYSE ARCA" })]);
   assert.equal(m.counts.listings, 2);
   assert.equal(m.duplicateTickers.length, 1);
   assert.equal(m.counts.funds, 1, "derselbe Fonds wird nicht doppelt gezaehlt");

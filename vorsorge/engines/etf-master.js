@@ -240,7 +240,7 @@
           if (nameIsFundLike(raw.name) && !nameIsFundLike(existing.name)) { existing.name = raw.name; }
           existing.nameVariants = (existing.nameVariants || [existing.name]).concat(raw.name).filter(function (v, i, a) { return a.indexOf(v) === i; });
         }
-        ["firstTradeDate", "lastTradeDate", "trackedIndex", "assetClassHint", "currency", "country"].forEach(function (f) { if (!existing.raw[f] && raw[f]) existing.raw[f] = raw[f]; });
+        ["firstTradeDate", "lastTradeDate", "trackedIndex", "assetClassHint", "currency", "country", "description"].forEach(function (f) { if (!existing.raw[f] && raw[f]) existing.raw[f] = raw[f]; });
         if (raw.active === false && existing.raw.active !== true) existing.raw.active = false;
         if (raw.active === true) existing.raw.active = true;
         return;
@@ -256,14 +256,24 @@
     Object.keys(listings).sort().forEach(function (k) {
       var L = listings[k], raw = Object.assign({}, L.raw, { name: L.name });
       var c = classify(raw);
-      var fk = (c.issuer || "unknown") + "|" + fundKey(raw.name || raw.symbol);
+      // Fonds-Identitaet nur bei belegtem Anbieter UND Namen; sonst kein Merge
+      var key = fundKey(raw.name || "");
+      var mergeable = !!(c.issuer && raw.name && key.split(" ").length >= 2);
+      var fk = mergeable ? c.issuer + "|" + key : "listing|" + raw.symbol + "@" + (raw.exchange || "UNKNOWN");
       var fundId = "vu-etf-" + hash(fk);
       var conflict = L.evidence.conflict;
       if (!conflict && L.nameVariants && L.nameVariants.some(function (n) { return !nameIsFundLike(n); })) conflict = "NAME_VARIANTS_DISAGREE";
       if (conflict) conflicts.push({ symbol: raw.symbol, exchange: raw.exchange, conflict: conflict, names: L.nameVariants || [L.name] });
       var active = raw.active !== false && !raw.lastTradeDate;
+      var override = opts.overrides && (opts.overrides[raw.symbol + "@" + raw.exchange] || opts.overrides[raw.symbol]);
+      if (override && override.conflict && conflict !== override.conflict) { conflict = override.conflict; conflicts.push({ symbol: raw.symbol, exchange: raw.exchange, conflict: conflict, names: [L.name], manualOverride: true }); }
       var entry = {
         canonicalETFId: fundId,
+        shareClassId: fundId + ":" + (shareClassOf(raw.name) || "default").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+        canonicalizationMethod: mergeable ? "ISSUER_AND_NORMALIZED_NAME" : "LISTING_ONLY",
+        canonicalizationConfidence: mergeable ? "MEDIUM" : "HIGH",
+        manualOverride: override ? override.note || true : null,
+        description: raw.description || null,
         listingId: "tiingo:" + (raw.exchange || "UNKNOWN") + ":" + raw.symbol,
         shareClass: shareClassOf(raw.name),
         symbol: raw.symbol, name: c.name, exchange: c.exchange, currency: c.currency, country: c.country,

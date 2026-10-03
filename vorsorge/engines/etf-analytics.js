@@ -72,7 +72,7 @@
     { id: "1D", needs: "daily" }, { id: "1W", unit: "D", n: 7 }, { id: "1M", unit: "M", n: 1 },
     { id: "3M", unit: "M", n: 3 }, { id: "6M", unit: "M", n: 6 }, { id: "YTD" },
     { id: "1Y", unit: "Y", n: 1 }, { id: "3Y", unit: "Y", n: 3, annualize: true },
-    { id: "5Y", unit: "Y", n: 5, annualize: true }, { id: "MAX", annualize: true }
+    { id: "5Y", unit: "Y", n: 5, annualize: true }, { id: "10Y", unit: "Y", n: 10, annualize: true }, { id: "MAX", annualize: true }
   ];
 
   /**
@@ -164,6 +164,8 @@
       value: best.dd, status: "CALCULATED", peakDate: best.peak[0], troughDate: best.trough[0],
       recoveredDate: recovery ? recovery[0] : null,
       recoveryDays: recovery ? Math.round((t(recovery[0]) - t(best.trough[0])) / DAY) : null,
+      recoveryMonths: recovery ? Math.round((t(recovery[0]) - t(best.trough[0])) / DAY / 30.44) : null,
+      durationDays: Math.round((t(best.trough[0]) - t(best.peak[0])) / DAY),
       recovered: best.dd === 0 ? true : !!recovery
     };
   }
@@ -213,6 +215,40 @@
     out.monthlyReturns = mRets;
     out.yearlyReturns = yRets;
     return out;
+  }
+
+  /**
+   * Rollierende Renditen ueber `years` Jahre (Endpunkt je Beobachtung).
+   * Liefert Verteilung: schlechteste, Median, beste, Anteil positiver Zeitraeume.
+   */
+  function rolling(rawPoints, years) {
+    var points = clean(rawPoints), out = [];
+    if (points.length < 3) return { status: "NO_HISTORY", count: 0 };
+    var span = years * 365.25 * DAY, tol = 10 * DAY;
+    for (var i = 0; i < points.length; i++) {
+      var target = t(points[i][0]) - span;
+      if (target < t(points[0][0]) - tol) continue;
+      var j = indexAtOrBefore(points, target);
+      if (j < 0) continue;
+      if (target - t(points[j][0]) > tol) continue;
+      var r = points[i][1] / points[j][1] - 1;
+      out.push(years > 1 ? Math.pow(1 + r, 1 / years) - 1 : r);
+    }
+    if (out.length < 12) return { status: "INSUFFICIENT_HISTORY", count: out.length };
+    var sorted = out.slice().sort(function (a, b) { return a - b; });
+    return { status: "CALCULATED", count: out.length, years: years, annualized: years > 1,
+      worst: sorted[0], median: sorted[Math.floor(sorted.length / 2)], best: sorted[sorted.length - 1],
+      positiveShare: out.filter(function (x) { return x > 0; }).length / out.length };
+  }
+
+  /** Abwaertsschwankung: annualisierte Standardabweichung nur der negativen Periodenrenditen (Ziel 0). */
+  function downsideDeviation(rawPoints) {
+    var points = clean(rawPoints), grain = grainOf(points);
+    var factor = grain === "daily" ? 252 : grain === "weekly" ? 52 : grain === "monthly" ? 12 : null;
+    var r = periodReturns(points);
+    if (!factor || r.length < (grain === "daily" ? 60 : 26)) return { status: "INSUFFICIENT_HISTORY", value: null };
+    var sq = r.reduce(function (a, x) { return a + (x < 0 ? x * x : 0); }, 0) / r.length;
+    return { status: "CALCULATED", value: Math.sqrt(sq) * Math.sqrt(factor) };
   }
 
   /** Trend: Abstand zum gleitenden Durchschnitt (200 Tage bzw. 40 Wochen). */
@@ -308,7 +344,7 @@
 
   var api = {
     VERSION: VERSION, WINDOWS: WINDOWS.map(function (w) { return w.id; }),
-    clean: clean, grainOf: grainOf, performance: performance, risk: risk,
+    clean: clean, grainOf: grainOf, performance: performance, risk: risk, rolling: rolling, downsideDeviation: downsideDeviation,
     maxDrawdown: maxDrawdown, trend: trend, toWeekly: toWeekly, splice: splice,
     relativeStrength: relativeStrength, correlation: correlation, portfolioSeries: portfolioSeries
   };
