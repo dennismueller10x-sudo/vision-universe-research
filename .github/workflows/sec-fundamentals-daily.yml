@@ -132,12 +132,15 @@ jobs:
 
       - name: Neue und geaenderte Filings verarbeiten
         env:
+          IN_CIKS: ${{ inputs.ciks }}
+          IN_DRY_RUN: ${{ inputs.dry_run }}
+          IN_SINCE: ${{ inputs.since }}
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
         run: |
           args=""
-          [ -n "${{ inputs.since }}" ] && args="$args --since ${{ inputs.since }}"
-          [ -n "${{ inputs.ciks }}" ] && args="$args --ciks ${{ inputs.ciks }}"
-          [ "${{ inputs.dry_run }}" = "true" ] && args="$args --dry-run"
+          [ -n "$IN_SINCE" ] && args="$args --since ${IN_SINCE}"
+          [ -n "$IN_CIKS" ] && args="$args --ciks ${IN_CIKS}"
+          [ "$IN_DRY_RUN" = "true" ] && args="$args --dry-run"
           python3 scripts/quant/cli.py daily $args
 
       - name: Wie viele Emittenten wurden aktualisiert?

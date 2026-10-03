@@ -168,9 +168,11 @@ jobs:
         run: node scripts/universe/build-universe-indexes.mjs
 
       - name: SEC-Universum aus dem Master
+        env:
+          IN_SECMAX: ${{ inputs.secMax }}
         run: |
-          if [ -n "${{ inputs.secMax }}" ]; then
-            node scripts/universe/build-sec-universe.mjs --max "${{ inputs.secMax }}"
+          if [ -n "$IN_SECMAX" ]; then
+            node scripts/universe/build-sec-universe.mjs --max "$IN_SECMAX"
           else
             node scripts/universe/build-sec-universe.mjs
           fi
