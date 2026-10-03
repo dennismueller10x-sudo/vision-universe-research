@@ -238,4 +238,113 @@ Die Erkennung ist nur leicht besser, die Gradfehler sind leicht schlechter (31,3
 Der Erkennungsverzug wurde für 3.2 nicht neu gemessen. Hysterese und Suche sind gegenüber 3.1 unverändert; 3.0.0 lag bei 3 bzw. 4 Bars.
 
 
-{{MIGRATION}}
+## 11. Produktmigration (Track C)
+
+**Entscheidung (§33/§34):** Produktion läuft auf **Engine 3.2.1**, als „Experimentelles Strukturmodell“ ohne Richtungsgewicht. Begründung:
+* 3.2 ist 2.2 in jeder gemessenen Dimension überlegen: Regeltreue, Muster, Grad, falsche Sicherheit, Stabilität und Enthaltung (§10).
+* Es gibt keine bekannten Regel-Bugs.
+* Das UI kennzeichnet den experimentellen Status.
+* Es gibt keinen Prognoseanspruch.
+
+Das verfehlte Quality-Gate spricht nicht gegen die Migration. Es spricht gegen einen Prognose-Test.
+
+| Punkt | Stand |
+|---|---|
+| Methodik | `PRODUCT_METHODOLOGY = { elliottEngine: "v3" }` in `scripts/technical/lib/ti-product.mjs`, gemeinsam für Build und Drift-Prüfung |
+| Engine-Version | `elliott-3.2.1` = 3.2.0 + Datenlage-Fix für Tagesreihen (Wochenenden zählten als „Lücken“; alle Tagesreihen enthielten sich fälschlich). Auf 3.140 Wochen-Validierungsfällen identisch mit 3.2.0 (`freeze-elliott-3.2.1.json`). |
+| Neu berechnet | alle Titel: 5.292 Wochen- und 5 Tagesanalysen, 623 Shards, `index.json.gz`, `discover-rows.json`, Regelkatalog, Methoden-Evidenz, Replay-Schnappschüsse für Indexmitglieder (26 Schritte, Persistenz-Replay 52 Schritte je Titel) |
+| API (§37) | je Titel `versions: { api, analysis, resultSchema, elliott, ruleSet, elliottStatus, dataAsOf }`; `meta.json` mit `elliott: { engine, status, confluenceWeight: 0, report }` (`API_V3_MIGRATION.md`) |
+| Build | parallel in Worker-Threads (4 Kerne): 4.032 s (67 min); vorher seriell auf 2.2, kein Vergleichslauf |
+| Datenmenge | 52 MB (vorher 49 MB) |
+| Alerts | Die Migration erzeugte 132 scheinbare Ereignisse bei gleichem Datenstand (Zonenwechsel aus der Methodik, nicht aus Kursbewegung). Zurückgesetzt auf den Ausgangszustand mit Hinweis, damit Nutzer keine Fehlalarme sehen. |
+| Drift-Prüfung (§38) | Build und Neuberechnung identisch für **106 Titel** (`verify-technical-intelligence.mjs --every 50`, vorher 18) |
+
+**Produkt-Regression 2.2 → 3.2** (`product-regression-v22-to-v32.json`, alle 5.292 Titel):
+
+| Segment | n | Elliott-Zählung geändert | Elliott enthält sich (vorher → nachher) | Szenario-Vorlage geändert | Ungültig-Linie geändert | Zielzone 1 geändert |
+|---|---|---|---|---|---|---|
+| alle | 5.292 | 95 % | 13 % → 96 % | 4,6 % | 5,6 % | 19,5 % |
+| Large Cap (Indexmitglied) | 503 | 96 % | 10 % → 98 % | 6,8 % | 7,8 % | 21,1 % |
+| volatile Technologie | 36 | 97 % | 8 % → 100 % | 0 % | 5,6 % | 11,1 % |
+| defensiv | 57 | 97 % | 5 % → 95 % | 10,5 % | 12,3 % | 17,5 % |
+| Small Cap / Nicht-Index | 4.789 | 95 % | 14 % → 96 % | 4,4 % | 5,4 % | 19,3 % |
+| verrauscht | 545 | 95 % | 18 % → 96 % | 1,8 % | 6,1 % | 20,4 % |
+| Trend | 2.929 | 96 % | 13 % → 96 % | 6,4 % | 5,8 % | 19,8 % |
+| seitwärts | 378 | 93 % | 20 % → 97 % | 3,4 % | 1,6 % | 10,8 % |
+
+Lesart:
+* Elliott meldet jetzt fast überall „keine verlässliche Zählung“. Anwendbarkeit HOCH bei 35 statt 2.998 Titeln, MITTEL bei 178 statt 1.591.
+* Szenarien, Ungültig-Linien und Einstiegszonen ändern sich nur bei rund 2–6 % der Titel; Elliott hat Konfluenzgewicht 0. Zielzonen ändern sich häufiger (Elliott-Projektionen fließen in die Zonen-Konfluenz ein).
+* **Auffälligkeit:** Alle 11 Indexmitglieder mit Elliott-Anwendbarkeit über NIEDRIG sind abgeschlossene WXY-Korrekturen. Das ist ein Hinweis auf eine Schieflage des Anwendbarkeitsmodells zugunsten abgeschlossener Kombinationen und ist als Fehlerquelle für HOLDOUT-4 vermerkt.
+
+## 12. UI (Track D)
+
+**Neu im Chartbild:**
+
+| Element | Missionspunkt | Inhalt |
+|---|---|---|
+| Elliott-Struktur-Karte | §41, §44, §47, §57 | „Mögliche Welle 4 · Impuls“; Modellstatus „Experimentell“, Strukturklarheit, Lesarten („Mehrere gültige Lesarten“). **Falsch, wenn:** Schlusskurs unter/über X. Hinweis: „Hauptlesart = derzeit bevorzugte Interpretation, nicht die richtige Zählung“. |
+| Lesart-Umschalter | §45, §56 | Hauptlesart/Alternative im Chart (Alternative violett), nie beide gleichzeitig |
+| „Was die Szenarien unterscheidet“ | §46 | ein Satz mit beiden Grenzen |
+| Marktstruktur statt leerer Stelle | §98–§100 | bei Enthaltung: übergeordneter und mittelfristiger Trend, nächste Unterstützung und nächster Widerstand |
+| Wellen-Inspektor | §60 | Status, Rücklauf, Ungültig-Grenze, höherer Grad, Zahl der Alternativen, Modellversion |
+| Zeitreise | §61 | Marken für jeden Lesartwechsel auf der Leiste; Liste der Wechsel mit Grund |
+| Profi-Ansicht | §35 | Engine-, Regel- und Datenversion aus `versions` statt fest im Code |
+| Chart | UI-Audit | Wellenmarken weichen einander aus; Bedienleiste bricht um; Desktop-Hero zweispaltig, damit der Chart im ersten Bildschirm liegt |
+
+**Bildschirm-Audit** (`scripts/technical/chartbild-ui-audit.mjs`; echte Daten, Chromium):
+* 9 Bildschirme × 4 Breiten (390, 430, 768, 1280) × 2 Titel: AAPL (Tag, Elliott enthält sich) und ABBV (Woche, Elliott MITTEL), insgesamt 72 Aufnahmen.
+* Ausgewählte Aufnahmen: `docs/technical-intelligence/ui-audit/`.
+
+| Breite | Ergebnis | Befunde | Behoben |
+|---|---|---|---|
+| 390 | kein horizontaler Überlauf, keine Konsolenfehler | Bedienleiste abgeschnitten („Wellen a…“); Wellenmarken der Alternative überlappten; Zurück-Link 38 × 38 px; doppelter Bedingungssatz; Rücklauf im Inspektor doppelt; Tagesreihen mit falscher Enthaltungsbegründung | alle |
+| 430 | wie 390 | wie 390 | alle |
+| 768 | kein Überlauf | – | – |
+| 1280 | kein Überlauf | Chart erst unterhalb der ersten Bildschirmhöhe | zweispaltiger Hero |
+
+Weitere Werte:
+* Ladezeit Chartbild (Median, lokal, inklusive Replay-Schnappschüsse): rund 0,5 s, höchstens 0,74 s.
+* Offen: Die Aktienseite (Teaser) lädt für ABBV eine fehlende Ressource (404); das betrifft nicht die Chartbild-Daten.
+
+**Design-Selbstkritik (§92):**
+* *Stärkster Bildschirm:*
+  * Chartbild „Einfach“ auf 390 px: großer Ausblick, zwei getrennte Ebenen („Was der Chart zeigt“ / „Was die Historie nahelegt“), Szenario-Tabs direkt über dem Chart, Zonen beschriftet.
+  * Die Ungültig-Linie ist sichtbar, aber nicht dominant. Die Elliott-Karte sagt ehrlich „mögliche“ bzw. „keine verlässliche Zählung“.
+* *Schwächster Bildschirm:*
+  * Profi-Ansicht: Sie ist vollständig, aber textlastig und wenig hierarchisch (Tabellen und Listen hintereinander).
+  * „Struktur: Klar“ (Einigkeit der Verfahren) und „Mehrere gültige Lesarten“ (Elliott) stehen nah beieinander und können verwirren.
+* *Verbleibende UI-Schulden:*
+  * Profi-Ansicht visuell gliedern (Sektionen Zählung, Grad, Regeln, Richtlinien, Fibonacci, höherer Grad, Historie, Erkennungsverzug, Evidenz, Quellen als eigene Karten).
+  * Szenario-zuerst-Darstellung (§43) mit sprechenden Titeln („Fortsetzung“, „Korrektur dehnt sich aus“, „Umkehr höheren Grades“) statt Haupt/Alternative/Rand.
+  * Zeitreise-Leiste mit Datumsmarken auch für Gradwechsel.
+  * Tablet-Layout ist eine gestreckte Mobilansicht.
+* Ob das Produkt „Premium“ ist, entscheidet am Ende ein Nutzertest. Dieser Bericht bewertet nur gegen die Kriterien aus §51.
+
+## 13. Expertenvalidierung
+
+* **Status: BLOCKIERT.** Es liegen keine Annotationen echter Elliott-Praktiker vor. Die Engine ist nicht expert-validiert und heißt nirgends so.
+* **Vorbereitet:**
+  * Werkbank mit **Blindmodus** (`quant/research/elliott-workbench/index.html?blind=1`): Engine-Zählung, Alternativen, Historie und Referenzen sind verborgen, bis die eigene Zählung gespeichert ist. Pflichtfeld Person.
+  * Neue Felder für Wellenenden, Ungültig-Grenze, Richtung und Status.
+  * Auswertung `scripts/technical/elliott-expert-agreement.mjs`:
+    * Engine ↔ Mensch: Muster, Wellenenden-F1, Grad über das Spannenverhältnis, Richtung, Ungültig-Niveau, Enthaltung.
+    * Mensch ↔ Mensch: paarweise und Krippendorffs α.
+    * Nur MANUAL_VU_REVIEW und EXTERNAL_PRACTITIONER zählen; AUTOMATED wird nie als Expertenurteil gezählt.
+  * Ergebnisdatei derzeit `status: BLOCKED`.
+* Praktiker-Referenzen (Mission II) bleiben ungeprüfte Suchzusammenfassungen.
+
+## 14. Prognose-Evidenz
+
+* Nicht neu geprüft: Das Quality-Gate ist nicht bestanden (§31, §105).
+* Stand aus Mission II: kein Prognosebeitrag des Elliott-Labels (H1–H5, H7 nicht bestätigt); Konfluenzgewicht 0.
+
+## 15. Abschlussstatus
+
+| | Status |
+|---|---|
+| ENGINE QUALITY | **FAIL** (HOLDOUT-3: G2–G5, G9, G13, D2 verfehlt) |
+| PRODUCT MIGRATION | **DONE** (Engine 3.2.1 in Produktion, versioniert, Drift-Prüfung 106 Titel OK) |
+| UI AUDIT | **ISSUES** (alle gefundenen Mobil- und Desktop-Probleme behoben; offen: Profi-Ansicht-Hierarchie, szenario-zuerst-Titel, 404 auf der Aktienseite) |
+| PROGNOSIS TEST | **NOT RUN** (Gate nicht bestanden) |
+
