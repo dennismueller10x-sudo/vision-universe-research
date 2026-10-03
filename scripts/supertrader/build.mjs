@@ -596,7 +596,9 @@ export function build() {
   writeStockPages(signals, [...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)]);
   writeStrategyPages(registry);
   writeStaticPages();
-  writeJson(path.join(DATA, 'build.json'), { buildVersion: BUILD_VERSION, registryVersion: REGISTRY_VERSION, asOf, inputsGeneratedAt: barsGeneratedAt });
+  /* slices: die Seite fragt nur Ausschnitte an, die dieser Lauf geschrieben hat. */
+  writeJson(path.join(DATA, 'build.json'), { buildVersion: BUILD_VERSION, registryVersion: REGISTRY_VERSION, asOf, inputsGeneratedAt: barsGeneratedAt,
+    slices: { version: SLICES_VERSION, stock: Object.keys(slices).sort() } });
   log(`fertig in ${((Date.now() - t0) / 1000).toFixed(1)} s, Stand ${asOf}`);
   return { asOf, signals, backtests, coverage };
 }
@@ -953,6 +955,9 @@ export function symbolsIn(x, out = new Set()) {
 
 /* Die Listen, die nur Signalliste und Aktienseite brauchen. */
 export const HISTORY_LISTS = ['invalidated', 'retired', 'scanner'];
+
+/* Steht in build.json, sobald signals-core.json und stock/<SYM>.json geschrieben sind. */
+export const SLICES_VERSION = 'signals-slices-1';
 
 /** signals.json ohne die Historienlisten; Zaehler (invalidatedTotal ...) bleiben. */
 export function signalsCore(signals) {
