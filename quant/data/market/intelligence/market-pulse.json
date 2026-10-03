@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-10-03T05:25:57.676Z",
+ "generatedAt": "2026-10-03T11:46:56.252Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-10-03T05:25:57.676Z",
+  "generatedAt": "2026-10-03T11:46:56.252Z",
   "dataAsOf": "2026-10-02",
   "previousDataAsOf": "2026-10-01",
   "schedule": {
@@ -146,7 +146,7 @@
     "change": "UNCHANGED",
     "fromValue": "27 % über 50 Tage",
     "toValue": "29 % über 50 Tage",
-    "delta": 2.6
+    "delta": 2.53
    },
    {
     "key": "MOMENTUM",
@@ -332,7 +332,7 @@
    "previousDate": "2026-10-01"
   },
   "BREADTH": {
-   "value": 29.25,
+   "value": 29.18,
    "min": 0,
    "max": 100,
    "unit": "PERCENT",
@@ -516,9 +516,9 @@
     {
      "key": "above50",
      "label": "Über 50-Tage-Linie",
-     "text": "29,2 % (1635 von 5590)",
-     "value": 29.25,
-     "matched": 1635,
+     "text": "29,2 % (1631 von 5590)",
+     "value": 29.18,
+     "matched": 1631,
      "evaluated": 5590,
      "asOf": "2026-10-02",
      "current": true
@@ -526,28 +526,28 @@
     {
      "key": "above200",
      "label": "Über 200-Tage-Linie",
-     "text": "40,4 % (2043 von 5057)",
-     "value": 40.4,
-     "matched": 2043,
-     "evaluated": 5057,
+     "text": "40,2 % (2004 von 4981)",
+     "value": 40.23,
+     "matched": 2004,
+     "evaluated": 4981,
      "asOf": "2026-10-02",
      "current": true
     },
     {
      "key": "newHighs",
      "label": "Neue 52-Wochen-Hochs",
-     "text": "119 von 4962",
-     "value": 119,
-     "evaluated": 4962,
+     "text": "116 von 4884",
+     "value": 116,
+     "evaluated": 4884,
      "asOf": "2026-10-02",
      "current": true
     },
     {
      "key": "newLows",
      "label": "Neue 52-Wochen-Tiefs",
-     "text": "56 von 4962",
-     "value": 56,
-     "evaluated": 4962,
+     "text": "54 von 4884",
+     "value": 54,
+     "evaluated": 4884,
      "asOf": "2026-10-02",
      "current": true
     },
@@ -569,8 +569,8 @@
    "explanation": "Eine Bewegung ist breiter getragen, wenn viele Aktien gleichzeitig mitziehen. Steigen die großen Indizes, während nur wenige Aktien zulegen, hängt der Anstieg an wenigen Titeln.",
    "methodology": "Grundlage: US-Aktienuniversum von Vision Universe (Stammaktien, ADR und REIT mit Faktorzeile). Anteil der Titel mit Schlusskurs über dem 50- bzw. 200-Tage-Durchschnitt (Nenner: Titel mit ausreichender Historie). Breit, wenn jeweils mehr als die Hälfte darüber liegt; schmal, wenn jeweils weniger als die Hälfte; sonst gemischt. Die 50-%-Schwelle ist die Mehrheit, keine optimierte Zahl. Neue 52-Wochen-Hochs/-Tiefs und steigende/fallende Titel werden gezeigt, fließen aber nicht in den Zustand ein. Veraltete Daten ergeben keinen Zustand.",
    "raw": {
-    "above50Pct": 29.25,
-    "above200Pct": 40.4,
+    "above50Pct": 29.18,
+    "above200Pct": 40.23,
     "state": "NARROW"
    },
    "asOf": "2026-10-02",

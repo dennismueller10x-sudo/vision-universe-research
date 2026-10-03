@@ -74,7 +74,7 @@
     if (/-WARN-/.test(id)) return 'Warnsignal';
     return 'Regel';
   }
-  var MODE = { LIVE: ['Läuft live', 'good'], PARTIAL_CHECK: ['Teilprüfung', 'warn'], DATA_PENDING: ['Daten fehlen', 'bad'], RESEARCH: ['In Vorbereitung', 'mute'] };
+  var MODE = { LIVE: ['Läuft live', 'good'], MODEL: ['Modelldepot · monatlich', 'good'], PARTIAL_CHECK: ['Teilprüfung', 'warn'], DATA_PENDING: ['Daten fehlen', 'bad'], RESEARCH: ['In Vorbereitung', 'mute'] };
   var SOURCE_SHORT = {
     ORIGINAL_PRINCIPLES_VU_EXECUTION: ['Original + VU-Umsetzung', 'good'], PRIMARY_RULES_VU_TRANSFER: ['Originalregeln + VU-Übertragung', 'good'],
     SECONDARY_SOURCES_VU_THRESHOLDS: ['Sekundärquellen + VU-Schwellen', 'warn'], SECONDARY_SOURCES_VU_BOX_DEFINITION: ['Sekundärquellen + VU-Boxen', 'warn'],
@@ -296,7 +296,7 @@
 
     // Methoden mit aktuellen Setups
     main.appendChild(sec('Methoden', [
-      h('div', { class: 'st-rail' }, current.concat(partial).map(function (s) { return methodTile(s, D); })),
+      h('div', { class: 'st-rail' }, current.concat(reg.strategies.filter(function (x) { return x.mode === 'MODEL'; }), partial).map(function (s) { return methodTile(s, D); })),
       pending.length ? h('p', { class: 'st-hint' }, ['In Vorbereitung (keine Signale): ' + pending.map(function (s) { return s.world_name; }).join(' · ') + '. ', h('a', { href: BASE + 'strategies/#vorbereitung', text: 'Warum?' })]) : null,
     ], { kicker: current.length + ' mit aktuellen Setups · ' + partial.length + ' Teilprüfung', more: more(BASE + 'strategies/', 'Vergleichen') }));
 
@@ -358,6 +358,8 @@
         h('div', { class: 'st-obsnums' }, [obsNum(prep, 'in Vorbereitung'), obsNum(conf, 'Einstieg bestätigt'), obsNum(pos, 'Modellpositionen'), obsNum(st.closed.length, 'geschlossen')]),
       ]);
     }), { kicker: stale ? 'Kurse veraltet – Stand ' + dateDe(sig.asOf) : 'Modellbeobachtung · Kurse vom ' + dateDe(sig.asOf), more: more(BASE + 'signals/', 'Alle Signale') }));
+    var models = reg.strategies.filter(function (x) { return x.mode === 'MODEL'; });
+    if (models.length) main.appendChild(sec('Modelldepots', [h('div', { class: 'st-rail' }, models.map(function (x) { return methodTile(x, D); }))], { kicker: 'Monatliche Umschichtung · Positionen, Orders und Gründe' }));
     if (D.replay) main.appendChild(replayTeaser(D.replay));
     if (partial.length) main.appendChild(sec('Teilprüfung', [h('div', { class: 'st-rail' }, partial.map(function (s) { return methodTile(s, D); })),
       pending.length ? h('p', { class: 'st-hint' }, ['In Vorbereitung (keine Signale): ' + pending.map(function (s) { return s.world_name; }).join(' · ') + '. ', h('a', { href: BASE + 'strategies/#vorbereitung', text: 'Warum?' })]) : null], { kicker: 'Kandidaten ohne Ein- und Ausstieg' }));
@@ -374,6 +376,7 @@
 
   function countFor(s, D) {
     var sig = D.signals;
+    if (s.mode === 'MODEL') { var t = D.trend52; if (!t) return [null, '']; return t.portfolio.used ? [t.portfolio.used, 'im Modelldepot'] : [t.prepared.candidates.length, 'Kandidaten']; }
     if (s.mode === 'PARTIAL_CHECK') { var pc = sig.partialChecks && sig.partialChecks[s.strategy_id]; return pc ? [pc.counts.partialMatch != null ? pc.counts.partialMatch : pc.counts.candidates, 'Teiltreffer'] : [0, 'Teiltreffer']; }
     var st = sig.strategies[s.strategy_id];
     if (!st) return [null, ''];
@@ -396,7 +399,7 @@
   function renderStrategies(D) {
     var reg = D.registry;
     main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Methoden vergleichen' }), h('h1', { text: 'Was sucht welche Methode?' }), h('p', { class: 'st-lead', text: 'Jede Methode zeigt drei getrennte Aussagen: ob ihre Regeln laufen, wie gut ihre Quellen sind und ob sie historisch geprüft ist.' })]));
-    var groups = [['LIVE', 'Aktuelle Setups — mit Ein- und Ausstiegen'], ['LIVE_RESEARCH', 'Forschung · Modellbeobachtung — weiter protokolliert, nicht hervorgehoben'], ['PARTIAL_CHECK', 'Teilprüfung — Kandidaten ohne Signale'], ['DATA_PENDING', 'Regeln beschrieben — Daten fehlen'], ['RESEARCH', 'In Vorbereitung']];
+    var groups = [['LIVE', 'Aktuelle Setups — mit Ein- und Ausstiegen'], ['LIVE_RESEARCH', 'Forschung · Modellbeobachtung — weiter protokolliert, nicht hervorgehoben'], ['MODEL', 'Modelldepots — monatliche Umschichtung, Positionen mit Begründung'], ['PARTIAL_CHECK', 'Teilprüfung — Kandidaten ohne Signale'], ['DATA_PENDING', 'Regeln beschrieben — Daten fehlen'], ['RESEARCH', 'In Vorbereitung']];
     groups.forEach(function (g) {
       var list = reg.strategies.filter(function (s) { return g[0] === 'LIVE' ? s.mode === 'LIVE' && !isResearchS(s) : g[0] === 'LIVE_RESEARCH' ? s.mode === 'LIVE' && isResearchS(s) : s.mode === g[0]; });
       if (!list.length) return;
@@ -411,8 +414,8 @@
       ['Sucht', s.how_it_thinks && s.how_it_thinks[0] ? s.how_it_thinks.slice(0, 2).join(' ') : s.tagline],
       ['Daten', c && c.required_data ? c.required_data.map(function (d) { return d.item; }).join(' · ') : '–'],
       ['Evidenz', ev(s).levelLabel + (ev(s).note ? ' – ' + ev(s).note : '')],
-      ['Einstieg vorbereitet', s.mode === 'LIVE' ? sectionText(c, 'prepared') : (s.mode === 'PARTIAL_CHECK' ? 'Keine Ein- und Ausstiege — nur Teilprüfung der Kriterien.' : 'Erst wenn die Daten vorliegen.')],
-      ['Setup endet', s.mode === 'LIVE' ? (sectionText(c, 'invalid') + ' Ausstieg: ' + (c.plan ? c.plan.exitSummary : '')) : (c && c.executable && c.executable.gaps ? 'Offen: ' + c.executable.gaps.join(' · ') : '–')],
+      ['Einstieg vorbereitet', s.mode === 'LIVE' || s.mode === 'MODEL' ? sectionText(c, 'prepared') : (s.mode === 'PARTIAL_CHECK' ? 'Keine Ein- und Ausstiege — nur Teilprüfung der Kriterien.' : 'Erst wenn die Daten vorliegen.')],
+      ['Setup endet', s.mode === 'MODEL' ? 'Ausstieg: ' + (c.plan ? c.plan.exitSummary : '') : s.mode === 'LIVE' ? (sectionText(c, 'invalid') + ' Ausstieg: ' + (c.plan ? c.plan.exitSummary : '')) : (c && c.executable && c.executable.gaps ? 'Offen: ' + c.executable.gaps.join(' · ') : '–')],
     ];
     return h('a', { class: 'st-cmp', href: stratUrl(s), style: worldVars(s) }, [
       h('div', { class: 'top' }, [h('div', null, [h('h3', { text: s.world_name }), h('div', { class: 'who', text: s.originator })]), cnt[0] !== null ? h('div', { class: 'cnt' }, [h('strong', { text: String(cnt[0]) }), h('span', { text: cnt[1] })]) : null]),
@@ -449,10 +452,14 @@
     main.appendChild(sec('So denkt die Methode', [h('p', { class: 'st-p', text: s.story }), s.mode === 'LIVE' ? steps(s, c) : null], { kicker: s.strategy_family }));
 
     if (s.mode === 'LIVE') { var mp = D.portfolio && D.portfolio.strategies[s.strategy_id]; if (mp) main.appendChild(portfolioSection(mp, s, D)); renderLiveMethod(D, s, c); }
+    else if (s.mode === 'MODEL') renderModelMethod(D, s, c);
     else if (s.mode === 'PARTIAL_CHECK') renderPartialMethod(D, s, c);
     else main.appendChild(sec('Warum heute keine Kandidaten?', [emptyBox('Pflichtdaten fehlen', (c && c.activationCondition) || 'Die Methode braucht Daten, die noch nicht vorliegen.'), c ? gapList(c) : null]));
 
     if (s.fidelity && s.fidelity.rules && s.fidelity.rules.length) main.appendChild(sec('Was stammt vom Trader, was von Vision Universe?', [fidelityList(s, D)], { kicker: 'Methodentreue je Regel' }));
+    if (s.processChain) { var PCL = { ORIGINAL: ['Original', 'good'], DOCUMENTED_VARIANT: ['dokumentierte Variante', 'info'], OPERATIONALIZATION: ['umgesetzt', 'info'], VU_EXTENSION: ['VU-Annahme', 'warn'], MISSING: ['fehlt', 'mute'] };
+      main.appendChild(sec('Vom Kandidaten bis zur Portfoliorendite', [h('ol', { class: 'st-chain' }, s.processChain.steps.map(function (x) { var c = PCL[x.cls] || [x.cls, 'mute']; return h('li', null, [h('div', { class: 'h' }, [h('strong', { text: x.step }), h('span', { class: 'st-tag', 'data-t': c[1], text: c[0] })]), h('p', { text: x.rule }), h('p', { class: 'st-hint', text: 'Quelle: ' + x.source })]); })),
+        s.processChain.finding ? h('p', { class: 'st-p', text: s.processChain.finding }) : null], { kicker: 'Prozesskette v' + s.processChain.version + ' · Regel, Quelle, Herkunft' })); }
     // Drei Aussagen im Detail
     if (c) main.appendChild(sec('Was ist belegt?', [assessments(s, c, D)], { kicker: 'Regel · Quellen · Daten · Evidenz' }));
     // Details
@@ -467,10 +474,10 @@
     main.appendChild(disclaimer(sig));
   }
   // Methodentreue (registry.fidelity): Produktstatus und Einordnung je Regel.
-  var FCLS = { ORIGINAL: 'good', OPERATIONALIZATION: 'info', VU_EXTENSION: 'warn', UNBACKED: 'bad', MISSING: 'mute' };
+  var FCLS = { ORIGINAL: 'good', DOCUMENTED_VARIANT: 'info', OPERATIONALIZATION: 'info', VU_EXTENSION: 'warn', UNBACKED: 'bad', MISSING: 'mute' };
   function fidelityBanner(s) {
     var f = s.fidelity, n = f.counts || {};
-    var parts = [['ORIGINAL', 'Original'], ['OPERATIONALIZATION', 'umgesetzt'], ['VU_EXTENSION', 'VU-eigen'], ['UNBACKED', 'unbelegt'], ['MISSING', 'fehlt']].filter(function (x) { return n[x[0]]; });
+    var parts = [['ORIGINAL', 'Original'], ['DOCUMENTED_VARIANT', 'dokumentierte Variante'], ['OPERATIONALIZATION', 'umgesetzt'], ['VU_EXTENSION', 'VU-eigen'], ['UNBACKED', 'unbelegt'], ['MISSING', 'fehlt']].filter(function (x) { return n[x[0]]; });
     return h('div', { class: 'st-fidban', 'data-s': f.status }, [
       h('div', { class: 'h' }, [h('span', { class: 'k', text: 'Methodentreue' }), h('strong', { text: f.statusLabel })]),
       h('p', { text: f.statusPlain }),
@@ -519,11 +526,87 @@
         h('div', { class: 'r2', text: 'Einstieg ' + dateShort(p.entryDate) + ' zu ' + num(p.entryPrice) + ' · Stop ' + num(p.stop) + ' · Risiko bis Stop ' + pct(p.riskToStopPct || 0, 2) + (p.version !== s.strategy_version ? ' · Regel v' + p.version : '') }),
       ])]);
     })));
-    if (mp.notTaken && mp.notTaken.length) kids.push(details('Nicht übernommen (' + mp.notTaken.length + ')', [h('p', { class: 'st-hint', text: 'Diese Modelleinstiege stehen im Protokoll, bekamen im Modellportfolio aber keinen Platz.' }), h('ul', { class: 'st-ul' }, mp.notTaken.slice(0, 60).map(function (x) { return h('li', { text: x.symbol + ' · ' + dateShort(x.entryDate) + ' · ' + ({ MAX_POSITIONS: 'alle Plätze belegt', NO_CASH: 'kein Kapital frei', NO_RISK: 'Stop nicht unter dem Einstieg' }[x.reason] || x.reason) }); }))]));
+    if (mp.notTaken && mp.notTaken.length) kids.push(details('Nicht übernommen (' + mp.notTaken.length + ')', [h('p', { class: 'st-hint', text: 'Diese Modelleinstiege stehen im Protokoll, bekamen im Modellportfolio aber keinen Platz.' }), h('ul', { class: 'st-ul' }, mp.notTaken.slice(0, 60).map(function (x) { return h('li', { text: x.symbol + ' · ' + dateShort(x.entryDate) + ' · ' + ({ MAX_POSITIONS: 'alle Plätze belegt', NO_CASH: 'kein Kapital frei', NO_RISK: 'Stop nicht unter dem Einstieg', MARKET_FILTER: 'Marktampel rot – keine neue Position' }[x.reason] || x.reason) }); }))]));
     if (mp.closed && mp.closed.length) kids.push(details('Abgeschlossen (' + mp.closed.length + ')', [h('ul', { class: 'st-ul' }, mp.closed.map(function (x) { return h('li', { text: x.symbol + ' · ' + dateShort(x.entryDate) + ' → ' + dateShort(x.exitDate) + ' · ' + ruleText(x.exitRuleId) + ' · ' + pct(x.returnPct, 1, true) }); }))]));
     kids.push(rules);
     kids.push(h('p', { class: 'st-hint', text: mp.publication || '' }));
     return sec('Modellportfolio', kids, { kicker: 'Laufend · alle Ein- und Ausstiege nach Regel' });
+  }
+
+  /* ============================================== MODELLDEPOT (Runde 12) */
+  function t52Rule(id, t) { return (t && t.text) || ({ 'TR52-SELL-STALE': 'kein neues 52-Wochen-Hoch in 65 Handelstagen', 'TR52-SELL-PERF': 'weniger als 100 % über dem 52-Wochen-Tief', 'TR52-SELL-WEIGHT': 'Gewicht unter 3 %', 'TR52-TRIM': 'auf 15 % reduziert', 'TR52-CAP-MARKET': 'Marktampel rot: auf 5 % reduziert', DELISTED: 'Notierung beendet', NO_SLOT: 'kein freier Platz', MARKET_FILTER: 'Marktampel rot', NO_CASH: 'zu wenig Bargeld' }[id] || id); }
+  function renderModelMethod(D, s, c) {
+    var t = D.trend52;
+    if (!t) { main.appendChild(emptyBox('Modelldepot noch nicht berechnet', 'Die Daten des Modelldepots liegen noch nicht vor.')); return; }
+    var mk = t.market || {};
+    main.appendChild(sec('Marktampel und Termine', [
+      h('div', { class: 'st-mphead' }, [
+        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Marktampel' }), h('strong', { text: mk.green === true ? 'Grün' : mk.green === false ? 'Rot' : '–' })]),
+        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Nächste Entscheidung' }), h('strong', { text: dateDe(t.schedule.nextDecision) })]),
+        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Ausführung' }), h('strong', { text: dateDe(t.schedule.nextExecution) })]),
+        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Plätze belegt' }), h('strong', { text: t.portfolio.used + ' / ' + t.portfolio.slots })]),
+      ]),
+      h('p', { class: 'st-p', text: mk.text || '' }),
+      h('p', { class: 'st-hint', text: t.schedule.note }),
+    ], { kicker: 'Stand ' + dateDe(t.asOf) + ' · live seit ' + dateDe(t.liveSince) }));
+    // Offene Positionen
+    var pk = [h('div', { class: 'st-mphead' }, [
+      h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Investiert' }), h('strong', { text: pct(t.portfolio.investedPct || 0, 0) })]),
+      h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Cash' }), h('strong', { text: pct(t.portfolio.cashPct == null ? 1 : t.portfolio.cashPct, 0) })]),
+      h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Positionen' }), h('strong', { text: t.portfolio.used + ' / ' + t.portfolio.slots })]),
+      h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Zielgewicht' }), h('strong', { text: '10 %' })]),
+    ])];
+    if (!t.portfolio.positions.length) pk.push(h('p', { class: 'st-p', text: 'Noch keine Position. Die erste Monatsentscheidung fällt am ' + dateDe(t.schedule.nextDecision) + ' nach Handelsschluss; gekauft wird zur Eröffnung am ' + dateDe(t.schedule.nextExecution) + '. Bis dahin liegt das Modellkapital (100.000 USD) in Cash.' }));
+    else pk.push(h('ul', { class: 'st-mplist' }, t.portfolio.positions.map(function (p) {
+      var hold = p.holdChecks ? (p.holdChecks.perf && p.holdChecks.freshHigh ? 'Halteregeln erfüllt' : 'Verkauf am Monatsende droht: ' + (!p.holdChecks.perf ? 'unter 100 % seit Tief' : 'kein neues Hoch in 65 Tagen')) : '';
+      return h('li', null, [h('a', { href: stockUrl(p.symbol) }, [
+        h('div', { class: 'r1' }, [h('strong', { text: p.symbol }), h('span', { class: 'w', text: pct(p.weight, 1) })]),
+        h('div', { class: 'r2', text: 'Kauf ' + dateShort(p.entryDate) + ' zu ' + num(p.entryPrice) + ' (Rang ' + (p.rankAtEntry || '–') + ') · ' + pct(p.perfSinceLow, 0) + ' über 52-W-Tief · ' + hold }),
+      ])]);
+    })));
+    pk.push(h('p', { class: 'st-hint', text: t.publication }));
+    main.appendChild(sec('Modelldepot', pk, { kicker: 'Offene Positionen · ohne Stop, Prüfung zum Monatsende' }));
+    // Ausgeloeste Modellorders
+    if (t.orders && (t.orders.buys.length || t.orders.sells.length)) main.appendChild(sec('Ausgelöste Modellorders', [
+      h('p', { class: 'st-p', text: 'Am ' + dateDe(t.orders.decidedOn) + ' beschlossen, Ausführung zur ' + t.orders.executesAt + '.' }),
+      h('ul', { class: 'st-ul' }, t.orders.sells.map(function (x) { return h('li', { text: 'Verkauf ' + x.symbol + (x.target ? ' auf ' + pct(x.target, 0) : '') + ' · ' + t52Rule(x.ruleId, x) }); }).concat(t.orders.buys.map(function (x) { return h('li', { text: 'Kauf ' + x.symbol + ' · Rang ' + x.rank + ' · 10 %' }); }))),
+    ], { kicker: 'Beschlossen, noch nicht ausgeführt' }));
+    // Vorbereitete Einstiege
+    var pr = t.prepared || { candidates: [] };
+    main.appendChild(sec('Vorbereitete Einstiege', [
+      h('p', { class: 'st-p', text: pr.green === false ? 'Marktampel rot: Am Monatsende würde nicht gekauft.' : pr.free + ' freie Plätze. Diese Aktien erfüllen heute alle Kaufregeln, sortiert nach Gleichmäßigkeit des Aufwärtstrends.' }),
+      pr.candidates.length ? h('ul', { class: 'st-mplist' }, pr.candidates.map(function (x) {
+        return h('li', null, [h('a', { href: stockUrl(x.symbol) }, [
+          h('div', { class: 'r1' }, [h('strong', { text: x.rank + '. ' + x.symbol }), h('span', { class: 'w', text: x.wouldGetSlot ? 'bekäme Platz' : 'kein Platz' })]),
+          h('div', { class: 'r2', text: pct(x.perfSinceLow, 0) + ' über 52-Wochen-Tief · Trendmaß ' + num(x.score, 2) + (x.wouldGetSlot ? '' : ' · ' + (pr.green === false ? 'Marktampel rot' : 'alle freien Plätze an höhere Ränge')) }),
+        ])]);
+      })) : emptyBox('Heute kein Kandidat', 'Keine Aktie erfüllt alle Kaufregeln.'),
+      (pr.sellsIfToday || []).length ? h('p', { class: 'st-hint', text: 'Wäre heute Monatsende: ' + pr.sellsIfToday.map(function (x) { return x.symbol + ' (' + t52Rule(x.ruleId, x) + ')'; }).join(' · ') }) : null,
+      h('p', { class: 'st-hint', text: pr.note }),
+    ], { kicker: 'Rangliste mit dem Schlusskurs vom ' + dateDe(pr.asOf) }));
+    if (t.nearMisses && t.nearMisses.length) main.appendChild(sec('Knapp nicht aufgenommen', [
+      h('p', { class: 'st-p', text: 'Starke Aktien, denen genau eine Kaufregel fehlt — deshalb nicht in der Rangliste.' }),
+      h('ul', { class: 'st-ul' }, t.nearMisses.map(function (x) { return h('li', null, [h('a', { href: stockUrl(x.symbol), text: x.symbol }), ' · ' + pct(x.perfSinceLow, 0) + ' über Tief · fehlt: ' + x.text]); })),
+    ], { kicker: 'Interessant, aber regelwidrig' }));
+    var hist = [];
+    if (t.closed && t.closed.length) hist.push(details('Geschlossene Trades (' + t.closed.length + ')', [h('ul', { class: 'st-ul' }, t.closed.map(function (x) { return h('li', { text: x.symbol + ' · ' + dateShort(x.entryDate) + ' → ' + dateShort(x.exitDate) + ' · ' + t52Rule(x.exitRuleId, { text: x.exitText }) + ' · ' + pct(x.returnPct, 1, true) }); }))]));
+    if (t.notTaken && t.notTaken.length) hist.push(details('Nicht übernommen (' + t.notTaken.length + ')', [h('ul', { class: 'st-ul' }, t.notTaken.map(function (x) { return h('li', { text: dateShort(x.date) + ' · ' + x.symbol + ' · ' + t52Rule(x.reason, x) }); }))]));
+    if (t.executions && t.executions.length) hist.push(details('Ausführungen (' + t.executions.length + ')', [h('ul', { class: 'st-ul' }, t.executions.map(function (x) { return h('li', { text: dateShort(x.date) + ' · ' + (x.side === 'BUY' ? 'Kauf ' : 'Verkauf ') + x.symbol + ' zu ' + num(x.price) + (x.text ? ' · ' + x.text : '') }); }))]));
+    if (t.decisions && t.decisions.length) hist.push(details('Monatsentscheidungen (' + t.decisions.length + ')', [h('ul', { class: 'st-ul' }, t.decisions.map(function (d) { return h('li', { text: dateShort(d.date) + ' · Ampel ' + (d.green ? 'grün' : 'rot') + ' · ' + d.candidates + ' Kandidaten · Kauf: ' + (d.buys.join(', ') || '–') + ' · Verkauf: ' + (d.sells.map(function (x) { return x.symbol; }).join(', ') || '–') }); }))]));
+    if (!hist.length) hist.push(h('p', { class: 'st-hint', text: 'Noch keine Monatsentscheidung im Protokoll — das Ledger beginnt am ' + dateDe(t.liveSince) + ' und rechnet nicht zurück.' }));
+    main.appendChild(sec('Protokoll', hist, { kicker: 'Jede Entscheidung mit Regel' }));
+  }
+  function trend52For(D, sym) {
+    var t = D.trend52; if (!t) return null;
+    var p = t.portfolio.positions.filter(function (x) { return x.symbol === sym; })[0];
+    if (p) return ['Im Modelldepot', 'good', 'Gewicht ' + pct(p.weight, 1) + ' · Kauf ' + dateShort(p.entryDate) + ' zu ' + num(p.entryPrice) + ' · ' + pct(p.perfSinceLow, 0) + ' über 52-Wochen-Tief'];
+    var c = (t.prepared.candidates || []).filter(function (x) { return x.symbol === sym; })[0];
+    if (c) return ['Kandidat · Rang ' + c.rank, 'warn', c.wouldGetSlot ? 'Würde am Monatsende einen Platz bekommen (Entscheidung ' + dateDe(t.schedule.nextDecision) + ').' : 'Erfüllt alle Kaufregeln, aber kein freier Platz.'];
+    var n = (t.nearMisses || []).filter(function (x) { return x.symbol === sym; })[0];
+    if (n) return ['Knapp nicht aufgenommen', 'mute', 'Fehlt: ' + n.text + '.'];
+    var x = (t.closed || []).filter(function (q) { return q.symbol === sym; })[0];
+    if (x) return ['Verkauft', 'mute', dateShort(x.exitDate) + ' · ' + t52Rule(x.exitRuleId, { text: x.exitText })];
+    return null;
   }
   function portfolioCell(D, s) {
     var mp = D.portfolio && D.portfolio.strategies[s.strategyId];
@@ -531,7 +614,7 @@
     var p = (mp.positions || []).filter(function (x) { return x.signalId === s.id; })[0];
     if (p) return ['Positionsgröße', pct(p.weightPct, 1), 'Modellportfolio · Risiko ' + pct(p.initialRiskPct || 0, 2)];
     var n = (mp.notTaken || []).filter(function (x) { return x.signalId === s.id; })[0];
-    if (n) return ['Positionsgröße', 'kein Platz', 'Modellportfolio voll (' + (mp.config.maxPositions || 10) + ' Positionen)'];
+    if (n) return n.reason === 'MARKET_FILTER' ? ['Positionsgröße', 'nicht übernommen', 'Marktampel rot (SPY unter dem 200-Tage-Durchschnitt)'] : ['Positionsgröße', 'kein Platz', 'Modellportfolio voll (' + (mp.config.maxPositions || 10) + ' Positionen)'];
     return null;
   }
   function evidenceBanner(s, D) {
@@ -744,7 +827,9 @@
     entries.sort(function (a, b) { return rank(a) - rank(b) || PHASE_ORDER.indexOf(ph(a)) - PHASE_ORDER.indexOf(ph(b)) || dist(a.s) - dist(b.s); });
     var name = (entries[0] && (entries[0].s.companyName || entries[0].s.name)) || (history[0] && history[0].s.companyName) || '';
     main.appendChild(h('header', { class: 'st-lens-h' }, [h('div', null, [h('h1', { text: sym || '–' }), h('div', { class: 'co', text: name })]), h('div', { class: 'st-price', id: 'st-live' })]));
-    if (!sym || (!entries.length && !history.length)) {
+    var t52 = trend52For(D, sym), t52s = (reg.strategies.filter(function (x) { return x.strategy_id === 'VU_TREND_52W'; })[0]);
+    if (t52 && t52s) main.appendChild(h('a', { class: 'st-research', href: stratUrl(t52s), style: worldVars(t52s) }, [h('div', { class: 'r1' }, [h('strong', { text: t52s.world_name }), h('span', { class: 'st-tag', 'data-t': t52[1], text: t52[0] })]), h('p', { text: t52[2] })]));
+    if (!sym || (!entries.length && !history.length && !t52)) {
       main.appendChild(emptyBox('Kein Supertrader-Modell erkennt ' + (sym || 'diesen Titel'), 'Heute sieht keine Methode ein Setup, einen Kandidaten oder einen Teiltreffer.'));
       main.appendChild(h('p', null, [h('a', { class: 'st-more', href: '/discover/#/s/US_REAL/' + encodeURIComponent(sym) }, ['In Discovery öffnen', icon(IC.arrow)])]));
       main.appendChild(disclaimer(sig)); return;
@@ -1056,10 +1141,10 @@
   }
 
   /* ============================================================= BOOT */
-  var NEED = { home: ['registry', 'signals', 'market', 'pilot', 'replay'], strategies: ['registry', 'signals', 'market', 'pilot'], strategy: ['registry', 'signals', 'market', 'pilot', 'sources', 'backtests', 'portfolio'], signals: ['registry', 'signals', 'market'], stock: ['registry', 'signals', 'market', 'portfolio'], backtests: ['registry', 'signals', 'market', 'backtests', 'pilot'], replay: ['registry', 'signals', 'market', 'replay'], sources: ['registry', 'signals', 'market', 'sources'] };
-  var FILE = { registry: 'registry.json', signals: 'signals.json', market: 'market.json', backtests: 'backtests.json', pilot: 'pilot-backtest.json', replay: 'replay.json', sources: 'sources.json', portfolio: 'portfolio.json' };
+  var NEED = { home: ['registry', 'signals', 'market', 'pilot', 'replay', 'trend52'], strategies: ['registry', 'signals', 'market', 'pilot', 'trend52'], strategy: ['registry', 'signals', 'market', 'pilot', 'sources', 'backtests', 'portfolio', 'trend52'], signals: ['registry', 'signals', 'market'], stock: ['registry', 'signals', 'market', 'portfolio', 'trend52'], backtests: ['registry', 'signals', 'market', 'backtests', 'pilot'], replay: ['registry', 'signals', 'market', 'replay'], sources: ['registry', 'signals', 'market', 'sources'] };
+  var FILE = { registry: 'registry.json', signals: 'signals.json', market: 'market.json', backtests: 'backtests.json', pilot: 'pilot-backtest.json', replay: 'replay.json', sources: 'sources.json', portfolio: 'portfolio.json', trend52: 'trend52.json' };
   var need = NEED[page] || NEED.home;
-  Promise.all(need.map(function (k) { return getJSON(FILE[k]).catch(function (e) { if (k === 'pilot' || k === 'replay' || k === 'portfolio') return null; throw e; }); })).then(function (res) {
+  Promise.all(need.map(function (k) { return getJSON(FILE[k]).catch(function (e) { if (k === 'pilot' || k === 'replay' || k === 'portfolio' || k === 'trend52') return null; throw e; }); })).then(function (res) {
     var D = {}; need.forEach(function (k, i) { D[k] = res[i]; });
     D.srcMap = D.sources ? byId(D.sources.sources, 'source_id') : {};
     if (D.registry) D.registry.strategies.forEach(function (x) { if (x.pending_semantics === 'WATCHLIST' && !isResearchS(x)) WATCH[x.strategy_id] = x.watchlist_label || 'Beobachtung'; if (isResearchS(x)) RESEARCH[x.strategy_id] = true; }); if (D.registry) HAS_CURRENT = D.registry.strategies.some(function (x) { return x.mode === 'LIVE' && !isResearchS(x); });

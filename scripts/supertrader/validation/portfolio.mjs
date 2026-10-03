@@ -90,6 +90,8 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
       void prevDate;
       const eq = cash + mv;
       const risk = tr.entry.price - tr.initialStop;
+      // Runde 12 (PORT-MARKET-200): keine neue Position, wenn die Marktampel am Vortag rot war.
+      if (cfg.marketFilter && opts.marketOk && opts.marketOk.get(date) === false) { skipped.push({ id: tr.id, reason: 'MARKET_FILTER' }); continue; }
       if (open.length >= cfg.maxPositions || !(risk > 0)) { skipped.push({ id: tr.id, reason: open.length >= cfg.maxPositions ? 'MAX_POSITIONS' : 'NO_RISK' }); continue; }
       // Runde 7: schrittweise Exposition (cfg.progressive): nach netto negativen
       // letzten n abgeschlossenen Trades gilt das verminderte Risiko.
@@ -163,4 +165,14 @@ export function maxDrawdown(curve, key = 'equity') {
   let peak = -Infinity, mdd = 0;
   for (const p of curve) { peak = Math.max(peak, p[key]); mdd = Math.min(mdd, p[key] / peak - 1); }
   return mdd;
+}
+
+// Runde 12 (PORT-MARKET-200): SPY ueber GD 200 am Vortag je Handelstag (Marktampel).
+export function marketOkMap(spyAdj, days = 200) {
+  const out = new Map(); let sum = 0; const d = spyAdj.date, c = spyAdj.close;
+  for (let i = 0; i < d.length; i++) {
+    sum += c[i]; if (i >= days) sum -= c[i - days];
+    if (i + 1 < d.length) out.set(d[i + 1], i >= days - 1 ? c[i] > sum / days : null);
+  }
+  return out;
 }
