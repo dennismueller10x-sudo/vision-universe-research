@@ -75,7 +75,7 @@
   function prettyIssuer(s) {
     // SEC-Namen sind GROSS geschrieben – für die Anzeige behutsam normalisieren
     if (!s || s !== s.toUpperCase()) return s || "";
-    return s.toLowerCase().replace(/\b([a-z])/g, function (m) { return m.toUpperCase(); })
+    return s.toLowerCase().replace(/(^|[\s\-\/(&.])([a-z])/g, function (m, a, b) { return a + b.toUpperCase(); })
       .replace(/\b(Inc|Corp|Co|Ltd|Plc|Llc|Lp|Nv|Sa|Ag|Se|Etf|Tr|Spdr|Adr|Reit)\b/g, function (m) {
         return { Inc: "Inc", Corp: "Corp", Co: "Co", Ltd: "Ltd", Plc: "plc", Llc: "LLC", Lp: "LP", Nv: "NV", Sa: "SA", Ag: "AG", Se: "SE", Etf: "ETF", Tr: "Tr", Spdr: "SPDR", Adr: "ADR", Reit: "REIT" }[m];
       })
