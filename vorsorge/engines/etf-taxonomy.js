@@ -50,7 +50,7 @@
     bond: /\bbond\b|government securities|treasury|fixed income|\bmuni|municipal|credit|\bclo\b|\babs\b|mortgage|floating rate|inflation[- ]protected|\btips\b|ibonds|high yield|investment grade|securitized|ultrashort income|short duration|aggregate|corporate|preferred|loan/i,
     multi: /allocation|multi[- ]asset|balanced|target (date|retirement) \d{4}|\b60\/40\b|risk parity/i,
     thematic: /\bai\b|artificial intelligence|robot|cyber|cloud|semiconductor|space|clean energy|solar|hydrogen|electrif|lithium|battery|genomic|biotech|fintech|blockchain|metaverse|gaming|esports|cannabis|defen[cs]e|war machine|infrastructure|innovation|disrupt|internet|ecommerce|coffee|energy drinks|billionaires|nyc based|uranium|water|pet care|travel|sports/i,
-    equity: /emerging markets|international|global|world|health ?care|natural resources|durable|free cash flow|miners|mining|equit|stock|s&p|nasdaq|russell|dow jones|msci|ftse|stoxx|\bcap\b|growth|value|dividend|quality|small|mid ?cap|large|companies|leaders|momentum|low volatility|minimum volatility|factor|qqq/i
+    equity: /\bindex\b|industry|sector|machinery|chemical|medical|financials|software|semiconductor|consumer|utilities|materials|banks?\b|insurance|brokerage|livestock|rare metals|new energy|aerospace|military|pharma|biotech|technology|tech\b|dividend|low volatility|growth|value|emerging markets|international|global|world|health ?care|natural resources|durable|free cash flow|miners|mining|equit|stock|s&p|nasdaq|russell|dow jones|msci|ftse|stoxx|\bcap\b|growth|value|dividend|quality|small|mid ?cap|large|companies|leaders|momentum|low volatility|minimum volatility|factor|qqq/i
   };
 
   function leverageOf(name) {

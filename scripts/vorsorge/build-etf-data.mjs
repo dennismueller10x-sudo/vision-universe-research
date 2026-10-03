@@ -236,6 +236,10 @@ export function build() {
     const twoYearsAgo = priceM ? new Date(Date.parse(priceM.asOf) - 730 * 864e5).toISOString().slice(0, 10) : null;
     const dist = rec && rec.dividendEvents !== null && rec.dividendEvents !== undefined && rec.dividendEvents > 0 ? "DISTRIBUTING_OBSERVED" : null;
     const ucits = /\bucits\b/i.test(e.name || "") ? "NAME" : null;
+    const exch = String(e.exchange || "").toUpperCase();
+    const countryFromExchange = /^(SHE|SHG|SHEB|SHGB)$/.test(exch) ? "CN" : /^(NYSE|NYSE ARCA|NASDAQ|BATS|AMEX|NYSE MKT|PINK|OTC.*|EXPM|NMFQS)$/.test(exch) ? "US" : null;
+    if (!e.country && countryFromExchange) e.country = countryFromExchange;
+    if (!e.region && countryFromExchange === "CN") { e.region = "CHINA"; e.derivation = Object.assign({}, e.derivation, { region: "EXCHANGE_COUNTRY" }); }
     const full = Object.assign({}, e, {
       assetClass, productType: tax.productType, productTypeBasis: tax.productTypeBasis, productTypeConfidence: tax.productTypeConfidence,
       strategies: tax.strategies, primaryStrategy: tax.primaryStrategy,

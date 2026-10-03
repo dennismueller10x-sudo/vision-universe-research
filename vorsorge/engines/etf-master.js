@@ -61,7 +61,10 @@
     [/dow jones industrial average/i, "Dow Jones Industrial Average"], [/msci world/i, "MSCI World"],
     [/msci acwi|all country world/i, "MSCI ACWI"], [/msci emerging markets/i, "MSCI Emerging Markets"],
     [/msci eafe/i, "MSCI EAFE"], [/euro stoxx 50/i, "EURO STOXX 50"], [/ftse all-world/i, "FTSE All-World"],
-    [/msci usa small-cap quality/i, "MSCI USA Small-Cap Quality Factor"], [/msci usa/i, "MSCI USA"]
+    [/msci usa small-cap quality/i, "MSCI USA Small-Cap Quality Factor"], [/msci usa/i, "MSCI USA"],
+    [/csi 300\b/i, "CSI 300"], [/csi 500\b/i, "CSI 500"], [/csi 1000\b/i, "CSI 1000"], [/csi 800\b/i, "CSI 800"],
+    [/chinext 50\b/i, "ChiNext 50"], [/star 50\b/i, "STAR 50"], [/hang seng tech/i, "Hang Seng TECH"], [/hang seng/i, "Hang Seng (Familie)"],
+    [/sse 50\b/i, "SSE 50"], [/\bcsi\b/i, "CSI (Indexfamilie)"], [/\bcni\b/i, "CNI (Indexfamilie)"], [/chinext/i, "ChiNext (Familie)"]
   ];
 
   var REGIONS = [
@@ -73,7 +76,7 @@
   ];
   var REGION_LABEL = { EMERGING_MARKETS: "Schwellenländer", DEVELOPED_EX_US: "Industrieländer ohne USA", EUROPE: "Europa",
     GLOBAL: "Welt", INTERNATIONAL: "International", VIETNAM: "Vietnam", JAPAN: "Japan", CHINA: "China", INDIA: "Indien",
-    GERMANY: "Deutschland", USA: "USA" };
+    GERMANY: "Deutschland", USA: "USA", HONG_KONG: "Hongkong" };
 
   var THEMES = [
     [/\bagentic ai\b|artificial intelligence|\bai\b/i, "Künstliche Intelligenz"], [/electrification|power|thermal cooling/i, "Energie & Elektrifizierung"],
