@@ -2,9 +2,10 @@
   "schemaVersion": "tiingo2-current-baseline-staging-1",
   "productionCommit": "268d4c89750ac682a0acc2f6ddbb7b5143fb2959",
   "productionConsumer": 6397,
-  "runId": "gh-37112575695-1",
+  "runId": "gh-37114183148-1",
+  "sourceCommit": "507fa883093367520557bd7f7fae42ff2bf86e3d",
   "providerSourceTimestamp": "Sat, 03 Oct 2026 03:05:06 GMT",
-  "discoveryTimestamp": "2026-10-03T09:19:14.644Z",
+  "discoveryTimestamp": "2026-10-03T09:47:45.280Z",
   "discoveryCounts": {
     "records": 108934,
     "tickerStrings": 106565,
@@ -21,21 +22,21 @@
   "candidateEvidenceBudget": 750,
   "stagedCounts": {
     "total": 631,
-    "AUTO_ACCEPT": 114,
+    "AUTO_ACCEPT": 115,
     "ACCEPT_AFTER_FIX": 3,
-    "MANUAL_REVIEW": 495,
+    "MANUAL_REVIEW": 494,
     "REJECT_WITH_REASON": 19,
-    "publicationReady": 117,
+    "publicationReady": 118,
     "quantCandidateEligible": 4,
     "quantReady": 0
   },
   "stagedEvidence": {
-    "requests": 1286,
+    "requests": 0,
     "completed": 631,
     "pending": 0,
     "stopped": null
   },
-  "proposedConsumerBeforeProductGates": 6500,
+  "proposedConsumerBeforeProductGates": 6501,
   "candidateAdditions": [
     "AAC",
     "ACCL",
@@ -61,6 +62,7 @@
     "CBAT",
     "CCAQ",
     "CHA",
+    "CHWM",
     "CLBK",
     "CLMT",
     "CNTB",
@@ -141,7 +143,7 @@
     "XIII",
     "XPRO"
   ],
-  "candidateAdditionCount": 103,
+  "candidateAdditionCount": 104,
   "candidateRemovals": [],
   "prior113NoLongerSafe": [
     {
@@ -274,6 +276,16 @@
   ],
   "newlyStagedSincePriorSet": [
     {
+      "ticker": "CHWM",
+      "decision": "AUTO_ACCEPT",
+      "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
+        "FACTORS_NOT_READY",
+        "FUNDAMENTALS_NOT_READY",
+        "INCLUDED_ADR"
+      ]
+    },
+    {
       "ticker": "VYLR",
       "decision": "AUTO_ACCEPT",
       "reasonCodes": [
@@ -285,9 +297,21 @@
       ]
     }
   ],
+  "CHWM": {
+    "bars": 2,
+    "evidenceQuality": "FAIL",
+    "historyFindingCodes": [
+      "insufficient_history"
+    ],
+    "chartStatusOnSourceCommit": "OVERCLAIM_FIXED_IN_FOLLOWUP_POLICY",
+    "membershipCandidateReady": true,
+    "searchCandidateReady": true,
+    "watchlistCandidateReady": true,
+    "deliveredProductProof": false
+  },
   "canonicalProjection": {
-    "manifestSha256": "b04a5fa4a746809c0bc3429baaf3aa771aae649aeca91bbe6b634a20a811e037",
-    "additions": 103,
+    "manifestSha256": "e23565d4e98d53bda7cdd00517badd3e2f3c23082447adbae91bf2da5385c63d",
+    "additions": 104,
     "files": 87,
     "projectionStatus": "NOT_MATERIALIZED"
   },
@@ -295,17 +319,18 @@
   "publicationBlockers": [
     "PRODUCTION_BASELINE_6397_NOT_6419",
     "OLD_PRODUCT_PACKAGE_CAS_MISMATCH",
-    "FRESH_103_TITLE_PRODUCT_MATERIALIZATION_MISSING",
+    "FRESH_104_TITLE_PRODUCT_MATERIALIZATION_MISSING",
     "OFFICIAL_PRODUCTION_APPLY_PATH_MISSING",
     "EXTERNAL_VERCEL_RATE_LIMIT"
   ],
   "quantReproducibilityReplay": {
-    "method": "Native build-factor-evidence on the same committed baseline inputs; only AA/PF master shards varied; generated factor outputs restored after comparison",
+    "method": "Native build-factor-evidence on same committed baseline inputs with AA/PF master shards varied; generated factor outputs restored after comparison",
     "beforeCohort": 6288,
     "afterCohort": 6289,
     "newCohortTicker": "PFBC",
-    "existingRowsWithChangedNormalizationFields": 5977,
-    "maximumExistingNonPopulationSizeAbsolutePointChange": 0.02,
+    "existingRowsWithChangedNormalizationOrPeerSize": 5977,
+    "existingRowsWithChangedScoreOrPercentile": 5875,
+    "maximumExistingScoreOrPercentileAbsolutePointChange": 0.02,
     "factorArtifactPublication": false
   },
   "productionMutations": 0

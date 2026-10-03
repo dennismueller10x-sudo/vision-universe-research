@@ -131,6 +131,9 @@ export function classifyCandidate(row, options = {}) {
   const priceReady = historyValid && latestValid && actionValid;
   const identityReady = identity.passed;
   const membershipReady = active && policy.included && identityReady && priceReady;
+  // The canonical product projection needs five real daily points for a
+  // chart. A shorter listing can still enter Search and Watchlists.
+  const chartHistoryReady = Number.isSafeInteger(price.bars) && price.bars >= 5;
   const products = evidence.products ?? {};
   const quantCandidateEligible = membershipReady && fundamentalReady && factors.materialized === true && factors.basisValid === true;
   const canonicalFactorEvidence = verifyCanonicalFactorEvidenceProof(row, { root: options.root ?? PROJECT_ROOT, today });
@@ -146,7 +149,7 @@ export function classifyCandidate(row, options = {}) {
     fullQuantScoreState: 'BLOCKED_BY_EXISTING_METHODOLOGY', fullQuantScoreReady: false
   };
   const productReadiness = {
-    canonical: membershipReady, search: membershipReady, chart: membershipReady,
+    canonical: membershipReady, search: membershipReady, chart: membershipReady && chartHistoryReady,
     watchlist: membershipReady, fundamentals: fundamentalReady,
     quant: quantReady, discover: quantReady && products.discoverReady === true,
     screener: membershipReady && products.screenerReady === true,
@@ -159,6 +162,7 @@ export function classifyCandidate(row, options = {}) {
   if (inactive) reasons.push('EXCLUDED_INACTIVE');
   else if (!active) reasons.push('REVIEW_ACTIVE_STATUS');
   if (!historyValid) reasons.push(price.historyValid === false ? 'INVALID_PRICE_HISTORY' : 'MISSING_PRICE_HISTORY');
+  if (membershipReady && !chartHistoryReady) reasons.push('INSUFFICIENT_CHART_HISTORY');
   if (price.latestValid !== true) reasons.push(price.latestValid === false ? 'INVALID_LATEST_PRICE' : 'MISSING_LATEST_PRICE');
   if (!latestFresh) reasons.push(priceAgeDays < 0 ? 'FUTURE_PRICE_DATE' : 'STALE_OR_MISSING_LATEST_DATE');
   if (!actionValid) reasons.push(price.corporateActionValid === false ? 'CORPORATE_ACTION_GATE_FAILED' : 'CORPORATE_ACTION_NOT_CHECKED');
