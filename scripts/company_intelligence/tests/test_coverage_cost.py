@@ -56,3 +56,19 @@ class CoverageCostTests(unittest.TestCase):
         self.assertNotIn("cron: '43 * * * *'", workflow)
         self.assertIn("cron: '43 */4 * * *'", workflow)
         self.assertIn('% 4', (root / 'scripts/company_intelligence/pilot.sh').read_text())
+
+    def test_bootstrap_configuration_contains_no_private_health_and_uses_current_issuers(self):
+        import json
+        from company_intelligence.model import load_universe, within_domain
+        from company_intelligence.q4_events import public_link
+        root=Path(__file__).resolve().parents[3]; companies=load_universe(root)
+        sources=json.loads((root/'company-intelligence/config/sources.json').read_text())
+        keys=[]
+        for source in sources:
+            self.assertTrue(public_link(source['url']))
+            self.assertFalse({'lastSuccess','lastFailure','failureCount','checkpoints','lastError'} & source.keys())
+            if source.get('verified'):
+                self.assertIn(source['companyId'],companies)
+                self.assertTrue(any(within_domain(source['url'],u) for u in source['allowedSites']))
+            keys.append((source.get('companyId'),source['url']))
+        self.assertEqual(len(keys),len(set(keys)))

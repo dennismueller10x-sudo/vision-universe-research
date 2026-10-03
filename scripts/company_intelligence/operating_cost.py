@@ -5,18 +5,20 @@ import math
 from pathlib import Path
 
 
-def estimate(sources, payloads, consumer_bytes, checkpoint_bytes, runtime_minutes=4):
+def estimate(sources, payloads, consumer_bytes, checkpoint_bytes, runtime_minutes=4, asset_count=None):
     if any(type(n) not in (int, float) or n < 0 for n in (payloads, consumer_bytes, checkpoint_bytes, runtime_minutes)):
         raise ValueError('INVALID_COST_ASSUMPTION')
     # Four-hour wakeups cap polling at six daily runs. Twelve-hour event feeds
     # remain twice daily; weekly discovery is a separate bounded operation.
+    assets = 2 * payloads + 1 if asset_count is None else asset_count
+    if type(assets) is not int or assets < 0: raise ValueError('INVALID_ASSET_COUNT')
     requests = sum(min(6, math.ceil(24 / max(4, s.get('intervalHours', 4))))
                    for s in sources if s.get('active', True))
     runs = 6 * 30
     return {
         'assumptions': {'daysPerMonth': 30, 'runsPerDay': 6,
                         'runtimeMinutesPerRun': runtime_minutes,
-                        'payloadsPerGeneration': payloads,
+                        'payloadsPerGeneration': payloads, 'consumerAssetsPerGeneration': assets,
                         'consumerBytesPerGeneration': consumer_bytes,
                         'compressedCheckpointBytes': checkpoint_bytes,
                         'retainedPublicSlots': 2, 'retainedPrivateSlots': 2},
@@ -27,9 +29,9 @@ def estimate(sources, payloads, consumer_bytes, checkpoint_bytes, runtime_minute
         'excludedRequestCosts': 'SEC changed-issuer metadata/index, robots refresh, bounded retries and weekly discovery; quantify separately from observed runs.',
         # Conservative upper bound: all payloads change every run. Publisher
         # skips identical objects already in the destination slot by hash.
-        'publicPutUpperBoundPerMonth': runs * (2 * payloads + 5),
+        'publicPutUpperBoundPerMonth': runs * (assets + 4),
         'privatePutUpperBoundPerMonth': runs * 3,
-        'publicVerificationGetUpperBoundPerMonth': runs * (2 * payloads + 5),
+        'publicVerificationGetUpperBoundPerMonth': runs * (2 * assets + 4),
         'privateRestoreGetUpperBoundPerMonth': runs * 5,
         'retainedSnapshotGB': round((2 * consumer_bytes + 2 * checkpoint_bytes) / 1e9, 6),
         'generationRetention': 'Two public and two private slots; generation count does not multiply retained snapshot storage.',
@@ -42,10 +44,11 @@ def main():
     p.add_argument('--payloads', type=int, required=True)
     p.add_argument('--consumer-bytes', type=int, required=True)
     p.add_argument('--checkpoint-bytes', type=int, required=True)
+    p.add_argument('--assets', type=int)
     p.add_argument('--runtime-minutes', type=float, default=4)
     a = p.parse_args()
     print(json.dumps(estimate(json.loads(a.sources.read_text()), a.payloads, a.consumer_bytes,
-                             a.checkpoint_bytes, a.runtime_minutes), sort_keys=True))
+                             a.checkpoint_bytes, a.runtime_minutes, a.assets), sort_keys=True))
 
 
 if __name__ == '__main__':
