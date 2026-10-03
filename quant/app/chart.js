@@ -98,6 +98,24 @@
     return copy;
   }
 
+  /* Vortagesschluss aus der Tagesreihe, sobald sie die Sitzung enthaelt
+     (Splits dieser Sitzung sind dann eingerechnet). Der Snapshot haelt den
+     Wert beim Abholen fest; ein spaeter veroeffentlichter Split machte ihn
+     falsch (BGM 01.10.2026: +3.928 %). Dieselbe Regel wie
+     discover/ui/detail.js#vortagAusReihe (ADR-002). */
+  function vortagAusReihe(snap, punkte) {
+    if (!snap || !snap.sessionDate || !punkte || !punkte.length) return snap;
+    if (punkte[punkte.length - 1][0] < snap.sessionDate) return snap;
+    var vor = null;
+    for (var i = 0; i < punkte.length && punkte[i][0] < snap.sessionDate; i++) vor = punkte[i][1];
+    if (!isNum(vor) || !(vor > 0) || vor === snap.previousClose) return snap;
+    var kopie = {};
+    Object.keys(snap).forEach(function (k) { kopie[k] = snap[k]; });
+    kopie.previousClose = vor;
+    kopie.previousCloseSource = "DAILY_SERIES";
+    return kopie;
+  }
+
   /**
    * @param {object} o {ticker, eod:[[date,close]], currency, adjusted, splitEvents,
    *                    longPath, loadJSON, onPrice(fn)}
@@ -214,7 +232,7 @@
     }
 
     function drawIntraday() {
-      var p = st.intraday, snap = withLive(p, st.trade);
+      var p = st.intraday, snap = vortagAusReihe(withLive(p, st.trade), o.adjusted ? eod : null);
       var pts = (snap.points || []).filter(function (x) { return x && isNum(x[1]); });
       var last = pts.length ? pts[pts.length - 1][1] : null;
       var base = isNum(snap.previousClose) ? snap.previousClose : (pts.length ? pts[0][1] : null);
