@@ -6,11 +6,11 @@
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { AskGate, cleanQuestion, cacheText } from "../src/gate.mjs";
+import { AskGate, cleanQuestion, cacheText, followUpPrompt } from "../src/gate.mjs";
 import worker from "../src/index.mjs";
 import { admit, costOf, limitsFrom, worstCase } from "../src/budget.mjs";
 import { translate, statusOf } from "../src/translate.mjs";
-import { OUTPUT_SCHEMA, FIELD_IDS, SYSTEM_PROMPT } from "../src/catalog.mjs";
+import { OUTPUT_SCHEMA, FIELD_IDS, SYSTEM_PROMPT, CHARTBILD_TOOL } from "../src/catalog.mjs";
 import { buildRequest, cleanWorkspaceId } from "../src/claude.mjs";
 
 function memoryStorage() {
@@ -36,7 +36,7 @@ const MINERVINI_ANSWER = {
     { field: "marketCap", op: "between", value: 3e8, value2: 2e9, values: [], flag: null },
   ],
   tickers: [], show: ["qualityFactor", "growthFactor", "momentumFactor", "valueFactor"],
-  supertrader: { strategy: "MINERVINI_VCP", mode: "require" },
+  supertrader: { strategy: "MINERVINI_VCP", mode: "require" }, chartbild: false,
   sort: { field: "marketCap", dir: "desc" }, limit: 25,
   missing: [{ wish: "Quant-Gesamtscore", type: "withheld" }], notes: [],
 };
@@ -112,6 +112,24 @@ test("Einzelwertfrage: Ticker werden geprueft, Luecken fuehren zu 'gap'", () => 
   assert.equal(statusOf(stock), "ok");
   const gap = translate({ ...MINERVINI_ANSWER, kind: "stock", filters: [], tickers: [], show: [], missing: [{ wish: "Insiderkaeufe", type: "field" }] });
   assert.equal(statusOf(gap), "gap");
+});
+
+test("Chartbild-Werkzeug: registriert, nur lesend, nur fuer bestimmte Aktien", () => {
+  assert.equal(CHARTBILD_TOOL.name, "getChartbildLage");
+  assert.equal(CHARTBILD_TOOL.readOnly, true);
+  assert.ok(OUTPUT_SCHEMA.required.includes("chartbild"));
+  assert.match(SYSTEM_PROMPT, /getChartbildLage/);
+  assert.match(SYSTEM_PROMPT, /soll ich kaufen.*bleibt forecast/);
+  assert.match(SYSTEM_PROMPT, /tiStructure: .*CORRECTION_IN_UPTREND \(Rücksetzer im Aufwärtstrend\)/);
+  for (const id of ["tiOutlook", "tiStructure", "tiElliottApplicable"]) assert.ok(FIELD_IDS.includes(id), id);
+  const stock = { ...MINERVINI_ANSWER, kind: "stock", filters: [], tickers: ["nvda"], show: [], supertrader: { strategy: "NONE", mode: "none" }, missing: [] };
+  assert.equal(translate({ ...stock, chartbild: true }).chartbild, true);
+  assert.equal(translate({ ...stock, chartbild: "ja" }).chartbild, false, "nur echtes true");
+  assert.equal(translate({ ...stock, tickers: [], chartbild: true }).chartbild, false, "ohne Ticker kein Werkzeug");
+  assert.equal(translate({ ...MINERVINI_ANSWER, chartbild: true }).chartbild, false, "Suche ruft das Werkzeug nicht auf");
+  const screen = translate({ ...MINERVINI_ANSWER, supertrader: { strategy: "NONE", mode: "none" }, filters: [{ field: "tiStructure", op: "in", value: null, value2: null, values: ["CORRECTION_IN_UPTREND"], flag: null }] });
+  assert.deepEqual(screen.query.groups[0].filters.map((f) => [f.field, f.value]), [["tiStructure", ["CORRECTION_IN_UPTREND"]]]);
+  assert.match(followUpPrompt("und Elliott?", { question: "Chartbild NVDA", kind: "stock", tickers: ["NVDA"], chartbild: true }), /"chartbild":true/);
 });
 
 test("Fuellwoerter und Satzzeichen teilen sich einen Cache-Eintrag", () => {

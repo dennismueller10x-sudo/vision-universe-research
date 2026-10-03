@@ -136,6 +136,27 @@ test('Histogramm und Enum-Optionen stammen aus dem Universum', () => {
   assert.deepEqual(Engine.enumOptions(ds, 'index').map((x) => x.value).sort(), ['NDX', 'SP500']);
 });
 
+test('Chartbild-Felder: Enum-Filter, deutsche Etiketten, Elliott als experimentell gekennzeichnet', () => {
+  const cols = { s: ['AAA', 'BBB', 'CCC'], n: ['A', 'B', 'C'], co: ['US', 'US', 'US'], ipo: [null, null, null],
+    tiOut: ['BULLISH', 'BEARISH', null], tiStr: ['CORRECTION_IN_UPTREND', 'DOWNTREND_ADVANCING', null], tiEw: ['LOW', 'HIGH', null] };
+  const ds = Engine.createDataset({ schema: 'vu-screener-universe-1.0.0', cols });
+  const r = Engine.evaluate(ds, q([{ field: 'tiOutlook', op: 'in', value: ['BULLISH'] }, { field: 'tiStructure', op: 'in', value: ['CORRECTION_IN_UPTREND'] }]));
+  assert.deepEqual(r.indices, [0]);
+  assert.deepEqual(Object.values(r.perFilter).map((p) => p.missing), [1, 1]); // fehlendes Chartbild erfuellt nichts
+  assert.equal(Fields.enumLabel('tiOutlook', 'BULLISH'), 'Aufwärts');
+  assert.equal(Fields.enumLabel('tiStructure', 'CORRECTION_IN_UPTREND'), 'Rücksetzer im Aufwärtstrend');
+  assert.deepEqual(Engine.enumOptions(ds, 'tiElliottApplicable').map((x) => x.value).sort(), ['HIGH', 'LOW']);
+  const ew = Fields.field('tiElliottApplicable');
+  assert.equal(ew.group, 'technical');
+  assert.match(ew.desc, /Experimentell/); assert.match(ew.desc, /keine Prognose/); assert.match(ew.desc, /keine belastbare Zählung/);
+  for (const id of ['tiOutlook', 'tiStructure', 'tiElliottApplicable']) {
+    const f = Fields.field(id);
+    assert.doesNotMatch(f.desc + ' ' + f.label, /kaufen|verkaufen|Kaufsignal|Wahrscheinlichkeit von/i, id);
+  }
+  // Ohne Chartbild-Spalten (aelteres Artefakt) ist das Kriterium nicht auswaehlbar statt leer
+  assert.equal(Engine.isAvailable(fixture(), 'tiOutlook'), false);
+});
+
 test('Monitoring: Diff und Laeufe nur bei neuem Datenstand', () => {
   const mem = new Map();
   const storage = { getItem: (k) => mem.get(k) ?? null, setItem: (k, v) => mem.set(k, String(v)) };

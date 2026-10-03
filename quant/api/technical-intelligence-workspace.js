@@ -59,8 +59,38 @@
   function getMeta() { return load(BASE + "meta.json"); }
   function getEvidenceSummary() { return load(BASE + "evidence-summary.json"); }
   function getAlerts() { return load(BASE + "alerts.json"); }
+  /* Chartbild-Ereignisse fuer die Merkliste (in der App, kein Push, keine
+     E-Mail). Neutrale Beschreibung dessen, was der Kurs getan hat - keine
+     Handlungsaufforderung. Unbekannte Typen werden nicht gezeigt. */
+  var ALERT_TEXT = {
+    ENTRY_ZONE_REACHED: "Kurs hat die Einstiegszone des Hauptszenarios erreicht",
+    BREAKOUT_CONFIRMED: "Kurs hat das Bestätigungsniveau des Hauptszenarios per Schlusskurs überwunden",
+    TARGET_REACHED: "Kurs hat Zielzone 1 des Hauptszenarios erreicht",
+    INVALIDATED: "Hauptszenario ist per Schlusskurs ungültig geworden",
+    SCENARIO_CHANGED: "Hauptszenario hat die Richtung gewechselt",
+    CONFIDENCE_CHANGED: "Einigkeit der Verfahren hat sich deutlich verändert"
+  };
+  /**
+   * alerts.json + Merkliste -> { state, events }. Ereignisse nur aus einem
+   * sauberen Lauf: voriger Index vorhanden UND suppressed ausdruecklich null.
+   * BASELINE, METHODOLOGY_CHANGED oder eine Datei ohne diese Angabe (z. B.
+   * nach einer Engine-Migration) ergeben nichts Neues - nie Migrationsartefakte.
+   * state: AVAILABLE | NONE | SUPPRESSED | UNAVAILABLE
+   */
+  function watchlistAlerts(doc, tickers) {
+    if (!doc || !Array.isArray(doc.events)) return { state: "UNAVAILABLE", events: [] };
+    if (doc.previousIndex !== true || doc.suppressed !== null) return { state: "SUPPRESSED", reason: doc.suppressed || "UNVERIFIED_RUN", events: [] };
+    var want = {}; (tickers || []).forEach(function (t) { want[String(t).toUpperCase()] = true; });
+    var events = doc.events.filter(function (e) { return e && want[e.symbol] && ALERT_TEXT[e.type]; }).map(function (e) {
+      return { symbol: e.symbol, type: e.type, asOf: e.asOf || null, text: ALERT_TEXT[e.type] };
+    });
+    return { state: events.length ? "AVAILABLE" : "NONE", generatedAt: doc.generatedAt || null, events: events };
+  }
+  function getWatchlistAlerts(tickers) {
+    return getAlerts().then(function (d) { return watchlistAlerts(d, tickers); }, function () { return { state: "UNAVAILABLE", events: [] }; });
+  }
   /** Evidenz-Status je Methode (Validierungsstudie): fehlt die Datei, zeigt die Seite neutrale Standardtexte. */
   function getMethodEvidence() { return load(BASE + "method-evidence.json").catch(function () { return null; }); }
 
-  global.VUTechnicalIntelligence = { BASE: BASE, shardKey: shardKey, getAnalysis: getAnalysis, getIndex: getIndex, getDiscoverRows: getDiscoverRows, getRulesCatalog: getRulesCatalog, getMeta: getMeta, getEvidenceSummary: getEvidenceSummary, getAlerts: getAlerts, getMethodEvidence: getMethodEvidence, ALLOWED: ALLOWED };
+  global.VUTechnicalIntelligence = { BASE: BASE, shardKey: shardKey, getAnalysis: getAnalysis, getIndex: getIndex, getDiscoverRows: getDiscoverRows, getRulesCatalog: getRulesCatalog, getMeta: getMeta, getEvidenceSummary: getEvidenceSummary, getAlerts: getAlerts, getWatchlistAlerts: getWatchlistAlerts, watchlistAlerts: watchlistAlerts, ALERT_TEXT: ALERT_TEXT, getMethodEvidence: getMethodEvidence, ALLOWED: ALLOWED };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -31,7 +31,7 @@ function toFilter(raw) {
 
 /**
  * @param {object} out  die vom Schema erzwungene Modellantwort
- * @returns {{kind, understood, query, tickers, show, supertrader, missing, notes, dropped}}
+ * @returns {{kind, understood, query, tickers, show, supertrader, chartbild, missing, notes, dropped}}
  */
 export function translate(out) {
   const kind = KINDS.includes(out && out.kind) ? out.kind : "unclear";
@@ -83,7 +83,10 @@ export function translate(out) {
 
   return {
     kind, understood: text(out && out.understood, 300), query,
-    tickers: kind === "stock" ? tickers : [], show, supertrader, missing, notes, dropped,
+    tickers: kind === "stock" ? tickers : [], show, supertrader,
+    /* Chartbild-Werkzeug (getChartbildLage): nur fuer bestimmte Aktien */
+    chartbild: kind === "stock" && tickers.length > 0 && out.chartbild === true,
+    missing, notes, dropped,
   };
 }
 

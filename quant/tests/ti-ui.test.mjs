@@ -154,3 +154,47 @@ test("AI-1 · KI-Werkzeuge liefern nur praekomputierte Fakten mit Regel, keine B
   const miss = await reg.call("getChartbild", { symbol: "NO" });
   assert.equal(miss.data.found, false);
 });
+
+test("AI-2 · getChartbildLage: lesend aus dem Index, Elliott-Enthaltung, Hinweis, keine Quoten", async () => {
+  const AiTools = require("../engines/ai-tools.js");
+  const TIAI = require("../engines/technical/ti/ai-tools.js");
+  const reg = AiTools.createToolRegistry({});
+  const index = gz("quant/data/technical-intelligence/v3/index.json.gz");
+  const meta = JSON.parse(read("quant/data/technical-intelligence/v3/meta.json"));
+  const by = Object.fromEntries(index.rows.map((r) => [r.t, r]));
+  TIAI.register(reg, { getAnalysis: () => ({ state: "NOT_AVAILABLE" }), getIndexRow: (s) => ({ row: by[s] || null, index, meta }) });
+  const low = index.rows.find((r) => r.elliottApplicable === "LOW");
+  const out = (await reg.call("getChartbildLage", { symbol: low.t })).data;
+  assert.equal(out.found, true);
+  assert.equal(out.elliott.abstained, true); assert.equal(out.elliott.count, null);
+  assert.equal(out.elliott.expertValidated, false); assert.equal(out.elliott.confluenceWeight, 0); assert.equal(out.elliott.status, "EXPERIMENTAL");
+  assert.match(out.disclaimer, /keine Anlageberatung/); assert.equal(out.status.isProbability, false);
+  assert.ok(!/"hit"|"base"|empirical|"rr"/.test(JSON.stringify(out)));
+  FORBIDDEN.forEach((re) => assert.ok(!re.test(out.disclaimer + out.elliott.note + out.primaryScenario.rule), re));
+  /* Ueber den echten Index: Niveaus nie <= 0 und nie weiter als Faktor 10 vom Kurs (Artefakte werden zurueckgehalten) */
+  for (const r of index.rows) {
+    const p = TIAI.situation(r, { index, meta }).primaryScenario;
+    if (!p) continue;
+    [p.invalidation, p.confirmation].concat(p.entryZone || [], p.target1 || []).filter((v) => v !== null).forEach((v) => assert.ok(v > 0 && v <= r.close * 10 && v >= r.close / 10, r.t + " " + v));
+  }
+  assert.equal((await reg.call("getChartbildLage", { symbol: "ZZZZZZ" })).data.found, false);
+});
+
+test("AL-2 · Merkliste: Chartbild-Ereignisse nur aus sauberem Lauf, nur beobachtete Titel, neutral formuliert", () => {
+  const g = {}; new Function("window", "globalThis", read("quant/api/technical-intelligence-workspace.js"))(g, g);
+  const TI = g.VUTechnicalIntelligence;
+  const ev = [{ type: "ENTRY_ZONE_REACHED", symbol: "AAA", asOf: "2026-10-08" }, { type: "INVALIDATED", symbol: "BBB", asOf: "2026-10-08" },
+    { type: "ENTRY_ZONE_REACHED", symbol: "CCC", asOf: "2026-10-08" }, { type: "SOMETHING_NEW", symbol: "AAA" }];
+  const ok = TI.watchlistAlerts({ previousIndex: true, suppressed: null, events: ev }, ["AAA", "bbb"]);
+  assert.equal(ok.state, "AVAILABLE");
+  assert.deepEqual(ok.events.map((e) => [e.symbol, e.text]), [["AAA", "Kurs hat die Einstiegszone des Hauptszenarios erreicht"], ["BBB", "Hauptszenario ist per Schlusskurs ungültig geworden"]]);
+  for (const s of ["BASELINE", "METHODOLOGY_CHANGED"]) assert.deepEqual(TI.watchlistAlerts({ previousIndex: true, suppressed: s, events: ev }, ["AAA"]), { state: "SUPPRESSED", reason: s, events: [] });
+  assert.equal(TI.watchlistAlerts({ previousIndex: false, suppressed: null, events: ev }, ["AAA"]).state, "SUPPRESSED");
+  assert.equal(TI.watchlistAlerts({ previousIndex: true, events: ev }, ["AAA"]).state, "SUPPRESSED", "ohne suppressed-Angabe kein Vertrauen");
+  assert.equal(TI.watchlistAlerts({ previousIndex: true, suppressed: null, events: ev }, ["ZZZ"]).state, "NONE");
+  assert.equal(TI.watchlistAlerts(null, ["AAA"]).state, "UNAVAILABLE");
+  Object.values(TI.ALERT_TEXT).forEach((t) => FORBIDDEN.forEach((re) => assert.ok(!re.test(t), t)));
+  /* Die ausgelieferte Datei (Migrationslauf Elliott 2.2 -> 3.2.1) meldet nichts Neues */
+  assert.equal(TI.watchlistAlerts(JSON.parse(read("quant/data/technical-intelligence/v3/alerts.json")), ["NVDA", "AAPL", "A"]).state, "SUPPRESSED");
+  assert.match(read("quant/app/pages.js"), /getWatchlistAlerts\(watched\)/);
+});
