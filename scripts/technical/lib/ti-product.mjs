@@ -81,7 +81,7 @@ export function elliottReplay(series, P, steps = REPLAY_STEPS, warm = WARMUP, me
       if (why) history.push({ d: series.timestamps[t], from: prevInfo ? prevInfo.name + " · " + prevInfo.wave : null, to: cur ? cur.name + " · " + cur.wave : null, tr, why });
     }
     prevInfo = cur;
-    prevState = E.primary ? { key: E.primary.persistenceKey, scaleId: E.degrees.analysis } : null;
+    prevState = E.primary ? { key: E.primary.persistenceKey, scaleId: E.degrees.analysis, pivots: E.primary.persistencePivots } : null;
   }
   const relabels = seq.filter((x) => x.tr === "RELABEL").length;
   let lifetime = 0; for (let k = seq.length - 1; k >= 0 && seq[k].tr === "SAME"; k--) lifetime++;

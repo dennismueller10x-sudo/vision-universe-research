@@ -48,7 +48,7 @@ function processSeries(series, opt) {
                                   : EV2.analyzeElliottV2({ series, features: P.features, pivots: P.pivots, asOfIndex: t, barsPerYear: 52, previous: prevState });
     ms += Date.now() - t0;
     const c = r.primary || null;
-    prevState = c ? { key: c.persistenceKey, scaleId: r.degrees.analysis } : null;
+    prevState = c ? { key: c.persistenceKey, scaleId: r.degrees.analysis, pivots: c.persistencePivots } : null;
     if (t < from) { prev = c; continue; }
     bars++;
     status[r.status] = (status[r.status] || 0) + 1;

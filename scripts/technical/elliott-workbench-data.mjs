@@ -31,7 +31,7 @@ function analyze(s, bpy) {
     const info = p ? { key: p.persistenceKey, complete: p.complete, inv: p.invalidation ? p.invalidation.price : null, invDir: p.invalidation ? p.invalidation.direction : null, name: p.patternName, wave: p.complete ? "abgeschlossen" : p.currentWave.label,
                         span: [p.waves[0].fromIndex, p.waves[p.waves.length - 1].toIndex], waveStarts: p.waves.map((w) => w.fromIndex) } : null;
     if (t >= n - 26) { const tr = transition(prevInfo, info, s.close[t]); const why = reasonOf(prevInfo, info, tr, s.close[t], s.close[t - 1], P.features.columns.atr[t]); hist.push({ d: s.timestamps[t], c: r4(s.close[t]), to: info ? info.name + " · " + info.wave : null, tr, why, ab: !!(E.applicability && E.applicability.abstain) }); }
-    prev = p ? { key: p.persistenceKey } : null; prevInfo = info;
+    prev = p ? { key: p.persistenceKey, pivots: p.persistencePivots } : null; prevInfo = info;
   }
   const E3 = EV3.analyzeElliottV3({ series: s, features: P.features, pivots: P.pivots, barsPerYear: bpy, previous: prev });
   const E2 = EV2.analyzeElliottV2({ series: s, features: P.features, pivots: P.pivots, barsPerYear: bpy });

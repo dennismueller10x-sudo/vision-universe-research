@@ -32,10 +32,10 @@ for (const k of ks) {
     let e = null, c = null, prev = null;
     const eng = sticky === null ? { poolAtr: k } : { poolAtr: k, stickiness: sticky };
     /* mit Persistenz: Zustand ab 26 Wochen vor dem Ende durchreichen (wie im Produkt) */
-    if (sticky !== null) for (let t = Math.max(1, Te - 26); t < Te; t++) { const r0 = EV3.analyzeElliottV3({ series: s, features: P.features, pivots: P.pivots, asOfIndex: t, barsPerYear: 52, engine: eng, previous: prev }); prev = r0.primary ? { key: r0.primary.persistenceKey } : null; }
+    if (sticky !== null) for (let t = Math.max(1, Te - 26); t < Te; t++) { const r0 = EV3.analyzeElliottV3({ series: s, features: P.features, pivots: P.pivots, asOfIndex: t, barsPerYear: 52, engine: eng, previous: prev }); prev = r0.primary ? { key: r0.primary.persistenceKey, pivots: r0.primary.persistencePivots } : null; }
     for (let t = Te; t <= Math.min(last, Te + 20) && c === null; t++) {
       const r = EV3.analyzeElliottV3({ series: s, features: P.features, pivots: P.pivots, asOfIndex: t, barsPerYear: 52, engine: eng, previous: prev });
-      if (sticky !== null) prev = r.primary ? { key: r.primary.persistenceKey } : null;
+      if (sticky !== null) prev = r.primary ? { key: r.primary.persistenceKey, pivots: r.primary.persistencePivots } : null;
       const cands = [r.primary, ...(r.alternatives || [])].filter(Boolean);
       if (e === null && cands.some((x) => hitOf(x, cs))) { e = t - Te; progEarly.push(Math.abs(s.close[t] - s.close[Te]) / confMove); }
       if (c === null && hitOf(r.primary, cs)) { c = t - Te; progConf.push(Math.abs(s.close[t] - s.close[Te]) / confMove); }

@@ -63,7 +63,7 @@
        ELLIOTT_ENGINE3_REPORT.md). Keine VALIDATION- oder HOLDOUT-Faelle verwendet. */
     weights: { guidelines: 0.03, subdivision: 0.2, separation: 0.06, anchor: 0.45, dominance: 0.45, similarity: 0, trendContext: 0, coverage: 0.3, prior: 0.06, higherDegree: 0.06, tail: 0.1, residual: 0.1 },
     typePrior: { IMPULSE: 1, ZIGZAG: 1, FLAT: 0.85, TRIANGLE: 0.7, LEADING_DIAGONAL: 0.6, ENDING_DIAGONAL: 0.65, WXY: 0.65, DOUBLE_ZIGZAG: 0.7, TRIPLE_ZIGZAG: 0.5 },
-    stickiness: 0.03, maxAlternatives: 2, alternativeMinInvalidationGapAtr: 0.5,
+    stickiness: 0.03, stickinessQuiet: 0.15, maxAlternatives: 2, alternativeMinInvalidationGapAtr: 0.5,
     clarity: { high: 0.1, moderate: 0.04 }, structural: { high: 0.68, moderate: 0.55 },
     noise: { abstainBelow: 1.3, full: 3.0 },
     /* Eichung Korpus DEVELOPMENT (scripts: elliott-corpus-eval, Bericht ELLIOTT_ENGINE3_REPORT.md): [1, countQuality, clarity/0,15, z/4, Strukturmehrdeutigkeit, laufend] */
@@ -459,13 +459,20 @@
                                                  primary: null, alternatives: [], higherDegree: null, historicalMap: null, applicability: { score: null, level: "LOW", abstain: true, components: {}, reasons: ["Keine regelkonforme Lesart"] } });
     /* Persistenz (kausal, aus dem Vortag) */
     var prev = input.previous || null;
+    /* Informationsabhaengige Hysterese (§23): Solange seit dem Vortag kein neuer Wendepunkt bestaetigt wurde, hat sich die
+       Struktur nicht geaendert — dann haelt die Engine ihre Lesart (stickinessQuiet). Mit neuer Information konkurrieren alle
+       Lesarten fast frei (stickiness), damit an einer ueberholten Zaehlung nicht festgehalten wird. */
+    var confirmedNow = pool.dev ? n - 1 : n;
     if (prev && prev.key) {
+      var quiet = isNum(prev.pivots) && prev.pivots === confirmedNow;
+      var st = quiet ? cfg.stickinessQuiet : cfg.stickiness;
       var keep = top.filter(function (c) { return V2.candidateKey(c) === prev.key; })[0];
-      if (keep && keep !== top[0] && keep.rank >= top[0].rank - cfg.stickiness) { top.splice(top.indexOf(keep), 1); top.unshift(keep); }
+      if (keep && keep !== top[0] && keep.rank >= top[0].rank - st) { top.splice(top.indexOf(keep), 1); top.unshift(keep); }
     }
     var best0 = top[0];
     var primary = V2.buildCount(best0, ctx, atr);
     primary.persistenceKey = V2.candidateKey(best0);
+    primary.persistencePivots = confirmedNow;
     decorate(primary, best0);
     var alternatives = [];
     for (var k = 1; k < top.length && alternatives.length < cfg.maxAlternatives; k++) {
