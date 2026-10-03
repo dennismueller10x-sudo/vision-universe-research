@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-10-03T02:12:50.579Z",
+  "generatedAt": "2026-10-03T03:24:44.503Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.3.0",
@@ -12,7 +12,7 @@
     "ingestStatus": "2026-10-03T02:08:36.359Z",
     "factors": "2026-10-03T02:10:28.254Z",
     "intradaySession": "2026-10-02",
-    "discover": "2026-10-03T02:12:47.070Z"
+    "discover": "2026-10-03T03:24:39.854Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
@@ -21,7 +21,7 @@
     "tiingoResolved": 6853,
     "tiingoUnresolved": 0,
     "marketDataFetched": 6852,
-    "historicalAvailable": 5660,
+    "historicalAvailable": 5543,
     "historicalQualityAccepted": 6507,
     "intradayAvailable": 1364,
     "liveCapable": 1312,
@@ -38,8 +38,8 @@
   "gapReasons": {
     "NO_INTRADAY_SNAPSHOT": 5413,
     "NO_FUNDAMENTALS:NO_CIK": 1355,
+    "INSUFFICIENT_HISTORY": 939,
     "NO_STOCK_PAGE": 871,
-    "INSUFFICIENT_HISTORY": 822,
     "NOT_CONSUMER_INSTRUMENT:PREFERRED": 441,
     "NO_DISCOVER_CARD": 415,
     "NO_FACTOR_ROW:SOURCE_MISSING": 348,
