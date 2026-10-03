@@ -8,7 +8,7 @@ const X = require("../engines/xray.js");
 const Mo = require("../engines/monitor.js");
 const M = require("../engines/vorsorge-math.js");
 const dir = new URL("../data/funding-rules/", import.meta.url);
-const rules = readdirSync(dir).map((f) => JSON.parse(readFileSync(new URL(f, dir), "utf8")));
+const rules = readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => JSON.parse(readFileSync(new URL(f, dir), "utf8")));
 const avd = rules.find((r) => r.ruleId === "DE-ALTERSVORSORGEDEPOT");
 const ri = rules.find((r) => r.ruleId === "DE-RIESTER");
 const fr = rules.find((r) => r.ruleId === "DE-FRUEHSTART");
@@ -21,7 +21,7 @@ test("Alle Regeldateien sind gueltig und haben Quelle, Version, Gueltigkeit", ()
 test("selectRule waehlt nach Stichtag", () => {
   assert.equal(F.selectRule(rules, "DE-ALTERSVORSORGEDEPOT", "2026-06-01"), null);
   assert.equal(F.selectRule(rules, "DE-ALTERSVORSORGEDEPOT", "2027-02-01").ruleVersion, avd.ruleVersion);
-  assert.equal(F.selectRule(rules, "DE-RIESTER", "2027-02-01"), null);
+  assert.ok(F.selectRule(rules, "DE-RIESTER", "2027-02-01"), "Bestandsverträge laufen nach § 52 Abs. 50a weiter");
   assert.ok(F.selectRule(rules, "DE-RIESTER", "2026-06-01"));
 });
 
@@ -53,13 +53,17 @@ test("Riester: Kuerzung bei zu geringem Eigenbeitrag", () => {
 });
 
 test("Fruehstart: Jahre und Summe aus der Regel", () => {
-  const r = F.fruehstart(fr, { childAge: 2 });
+  const r = F.fruehstart(fr, { childAge: 2, referenceYear: 2027 });
   assert.equal(r.startAge, fr.childRules.fromAge);
   assert.equal(r.total, (fr.childRules.untilAgeExclusive - fr.childRules.fromAge) * 12 * fr.childRules.stateContributionMonthly);
   assert.equal(F.fruehstart(fr, { childAge: 20 }).years, 0);
-  const path = F.childWealthPath(fr, { childAge: 0, parentMonthly: 25, annualReturn: 0.05, annualCost: 0.002 });
+  const path = F.childWealthPath(fr, { childAge: 2, referenceYear: 2027, parentMonthly: 25, annualReturn: 0.05, annualCost: 0.002 });
   assert.ok(path.path[18].value < path.path[30].value && path.path[30].value < path.path[67].value);
   assert.equal(path.path[18].state, r.total);
+  // Gesetzentwurf: Kinder vor Geburtsjahrgang 2020 erhalten keine staatliche Einzahlung
+  const old = F.fruehstart(fr, { childAge: 10, referenceYear: 2027 });
+  assert.equal(old.eligible, false); assert.equal(old.total, 0); assert.match(old.reason, /2020/);
+  assert.equal(F.childWealthPath(fr, { childAge: 10, referenceYear: 2027, parentMonthly: 0, annualReturn: 0.05 }).path[18].state, 0);
 });
 
 test("Overlap: gewichteter Overlap, gemeinsame Holdings; ohne Daten DATA_PENDING", () => {
@@ -131,4 +135,66 @@ test("Riester-Analyse: zwei Szenarien, keine Empfehlung", () => {
   assert.equal(r.realign.startAfterCosts, 14500);
   assert.ok(r.breakEvenNote);
   assert.ok(!("recommendation" in r));
+});
+
+
+test("Förderregeln 2027: primär verifiziert, Prüfsumme, Fundstellen, gesetzliche Werte", () => {
+  assert.equal(avd.verification.primaryVerified, true);
+  assert.ok(avd.primarySource && /bgbl/.test(avd.primarySource.url) && avd.primarySource.sha256);
+  assert.equal(avd.ruleHash, F.ruleHash(avd));
+  for (const k of ["incomeRules.basicAllowance", "childRules.perChild", "contributionRules.minimumAnnualOwnContribution", "bonusRules.careerStarter", "productRules.standardDepotCostCap"]) assert.ok(avd.verification.fields[k], k);
+  const max = F.altersvorsorgedepot(avd, { ownContribution: 1800 });
+  assert.equal(max.basicAllowance, 540, "§ 84: 0,5 × 360 + 0,25 × 1 440");
+  assert.equal(F.altersvorsorgedepot(avd, { ownContribution: 360 }).basicAllowance, 180);
+  assert.equal(F.altersvorsorgedepot(avd, { ownContribution: 120 }).basicAllowance, 60);
+  assert.equal(F.altersvorsorgedepot(avd, { ownContribution: 119 }).total, 0, "§ 86: Mindesteigenbeitrag 120 €");
+  assert.equal(F.altersvorsorgedepot(avd, { ownContribution: 1800, indirectSpouse: true }).basicAllowance, 175, "§ 84 Satz 3");
+  assert.equal(F.altersvorsorgedepot(avd, { ownContribution: 200, children: [{ hasChildBenefit: true }] }).childAllowance, 200, "§ 85: 100 %");
+  assert.equal(F.altersvorsorgedepot(avd, { ownContribution: 1800, children: [{ hasChildBenefit: true }] }).childAllowance, 300, "§ 85: höchstens 300 €");
+  assert.equal(F.altersvorsorgedepot(avd, { ownContribution: 1200, age: 24, firstContract: true }).careerStarterBonus, 200);
+  assert.equal(F.altersvorsorgedepot(avd, { ownContribution: 1200, age: 25, firstContract: true }).careerStarterBonus, 0, "25. Lebensjahr vollendet");
+  assert.equal(avd.productRules.standardDepotCostCap, 0.01);
+});
+
+test("Regeldateien: Manipulation ohne neue Version fällt über die Prüfsumme auf", () => {
+  const t = JSON.parse(JSON.stringify(avd));
+  t.incomeRules.basicAllowance.tiers[0].rate = 0.6;
+  assert.ok(F.validateRules(t).includes("RULE_HASH_MISMATCH"));
+  const u = JSON.parse(JSON.stringify(fr)); u.verification.primaryVerified = true; delete u.primarySource;
+  assert.ok(F.validateRules(u).includes("PRIMARY_VERIFIED_WITHOUT_PRIMARY_SOURCE"));
+});
+
+test("Frühstart bleibt Entwurf: primaryVerified false, Status GESETZENTWURF", () => {
+  assert.equal(fr.verification.primaryVerified, false);
+  assert.equal(fr.legalStatus, "GESETZENTWURF");
+});
+
+test("Holdings-Vertrag v2 und Provider-Mapping-Vertrag", () => {
+  const P = require("../engines/etf-provider.js");
+  assert.deepEqual(X.validateHoldingsFile({ asOf: "2026-09-30", source: "issuer", holdings: [{ name: "NVIDIA", weight: 0.07, holdingIdentifier: "US67066G1040" }] }), []);
+  assert.ok(X.validateHoldingsFile({ holdings: [{ weight: 2 }] }).length >= 3);
+  assert.deepEqual(P.validateMapped({ isin: "IE00B4L5Y983", ter: 0.002, distributionPolicy: "ACCUMULATING" }), []);
+  assert.ok(P.validateMapped({ ter: 0.5 }).includes("MISSING_isin"));
+  assert.equal(P.STATUS_MATRIX.tiingo.holdings, "NOT_AVAILABLE");
+});
+
+test("Portfolio-X-Ray: Datenzustand PRICE_ONLY ohne Holdings, FULL mit Holdings", () => {
+  const pts = Array.from({ length: 40 }, (_, i) => [new Date(Date.UTC(2025, 0, 1 + i * 7)).toISOString().slice(0, 10), 100 + i]);
+  const x = X.portfolioXRay([{ symbol: "A", weight: 1 }], { A: {} }, { A: pts }, {});
+  assert.equal(x.dataState, "PRICE_ONLY_DATA");
+  const h = { asOf: "x", source: "y", holdings: [{ name: "N", weight: 1 }] };
+  assert.equal(X.portfolioXRay([{ symbol: "A", weight: 1 }], { A: {} }, { A: pts }, { holdingsBySymbol: { A: h } }).dataState, "FULL_DATA");
+  const o = X.overlap({ holdings: [{ id: "a", name: "a", weight: 0.5 }, { id: "b", name: "b", weight: 0.5 }] }, { holdings: [{ id: "a", name: "a", weight: 0.2 }, { id: "c", name: "c", weight: 0.8 }] });
+  assert.ok(Math.abs(o.simpleOverlap - 1 / 3) < 1e-12); assert.ok(Math.abs(o.weightedOverlap - 0.2) < 1e-12);
+});
+
+test("Monitor: Kategorien und Sammelmeldung bei Massen-Neuaufnahme", () => {
+  const next = { etfs: Array.from({ length: 80 }, (_, i) => ({ listingId: "n" + i, symbol: "N" + i, name: "n", status: "ACTIVE" })) };
+  const d = Mo.diffMasters({ etfs: [] }, next, "2026-10-02");
+  assert.equal(d.events.length, 1); assert.equal(d.events[0].count, 80); assert.equal(d.events[0].category, "PRODUCT_CHANGE");
+  const v = Mo.diffMasters({ etfs: [{ listingId: "a", symbol: "A", name: "A", status: "ACTIVE", vol: 0.1 }] }, { etfs: [{ listingId: "a", symbol: "A", name: "A", status: "ACTIVE", vol: 0.2 }] }, "x");
+  assert.equal(v.events[0].type, "VOLATILITY_CHANGE"); assert.equal(v.events[0].category, "MARKET_CHANGE");
+  const p1 = M.plan({ age: 30, monthly: 200 });
+  const diff = Mo.diffPlan(Mo.snapshotPlan(p1, [], "a", { ruleVersions: { R: "1" }, dataAsOf: "2026-09-01" }), Mo.snapshotPlan(p1, [], "b", { ruleVersions: { R: "2" }, dataAsOf: "2026-10-01" }));
+  assert.ok(diff.some((e) => e.category === "REGULATORY_CHANGE")); assert.ok(diff.some((e) => e.category === "DATA_UPDATE"));
 });

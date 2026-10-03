@@ -8,12 +8,16 @@
   var VS = global.VS, V = global.VUVorsorge, Fd = V.Funding, M = V.Math, F = VS.fmt, esc = VS.esc;
 
   function ruleBox(rule) {
-    var st = { BUNDESTAG_BESCHLUSS: "Bundestagsbeschluss", GELTENDES_RECHT: "Geltendes Recht", ANGEKUENDIGT: "Angekündigt – noch nicht verifiziert" }[rule.legalStatus] || rule.legalStatus;
-    return '<div class="vs-card soft"><p class="vs-label">Regelstand</p><div class="vs-row"><span>Regel</span><span>' + esc(rule.ruleId) + ' · Version ' + esc(rule.ruleVersion) + '</span></div>' +
+    var st = { GESETZ_VERKUENDET: "Gesetz verkündet", BUNDESTAG_BESCHLUSS: "Bundestagsbeschluss", GELTENDES_RECHT: "Geltendes Recht", GESETZENTWURF: "Gesetzentwurf – noch nicht beschlossen", ANGEKUENDIGT: "Angekündigt" }[rule.legalStatus] || rule.legalStatus;
+    var v = rule.verification || {};
+    return '<div class="vs-card soft"><p class="vs-label">Regelstand & Quelle</p><div class="vs-row"><span>Regel</span><span>' + esc(rule.ruleId) + ' · Version ' + esc(rule.ruleVersion) + '</span></div>' +
       '<div class="vs-row"><span>Gültig</span><span>ab ' + F.date(rule.validFrom) + (rule.validUntil ? " bis " + F.date(rule.validUntil) : "") + '</span></div>' +
       '<div class="vs-row"><span>Rechtsstand</span><span>' + esc(st) + '</span></div>' +
-      '<div class="vs-row"><span>Primärquelle geprüft</span><span>' + (rule.verification && rule.verification.primaryVerified ? "ja" : "nein – vor Nutzung prüfen") + '</span></div>' +
-      '<p class="vs-fine" style="margin-top:8px">Quellen: ' + (rule.sources || rule.ruleSource || []).map(function (s) { return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title) + '</a>'; }).join(" · ") + '</p></div>';
+      '<div class="vs-row"><span>Primärquelle geprüft</span><span>' + (v.primaryVerified ? '<span class="vs-badge ok">ja, am ' + F.date(v.verifiedAt) + '</span>' : '<span class="vs-badge complex">nein</span>') + '</span></div>' +
+      (rule.primarySource ? '<div class="vs-row"><span>Primärquelle</span><span style="text-align:right"><a href="' + esc(rule.primarySource.url) + '" target="_blank" rel="noopener">' + esc(rule.primarySource.title) + '</a></span></div>' : "") +
+      '<div class="vs-row"><span>Prüfsumme</span><span class="vs-fine">' + esc(rule.ruleHash || "–") + '</span></div>' +
+      (v.fields ? '<details style="margin-top:8px"><summary class="vs-fine" style="cursor:pointer">Fundstellen je Wert anzeigen</summary>' + Object.keys(v.fields).map(function (k) { return '<p class="vs-fine" style="margin-top:6px"><b>' + esc(k) + ':</b> ' + esc(v.fields[k]) + '</p>'; }).join("") + '</details>' : "") +
+      '<p class="vs-fine" style="margin-top:8px">Weitere Quellen: ' + (rule.sources || rule.ruleSource || []).map(function (x) { return '<a href="' + esc(x.url) + '" target="_blank" rel="noopener">' + esc(x.title) + '</a>'; }).join(" · ") + '</p></div>';
   }
 
   /* ============================================================ FOERDERUNG */
@@ -30,15 +34,18 @@
         VS.field("own", "Eigenbeitrag pro Jahr", 1200, { min: 0, unit: "€ / Jahr" }) + VS.field("age", "Alter bei Vertragsbeginn", VS.state.plan.age, { min: 16, max: 80, unit: "Jahre" }) +
         VS.field("kids", "Kinder mit Kindergeld", 0, { min: 0, max: 10, unit: "Anzahl" }) + VS.field("years", "Einzahljahre", Math.max(1, VS.state.plan.targetAge - VS.state.plan.age), { min: 1, max: 60, unit: "Jahre" }) +
         VS.field("ret", "Rendite vor Kosten", (VS.state.plan.returns.basis * 100).toFixed(1), { step: 0.5, unit: "% p.a." }) + VS.field("cost", "Produktkosten", "0.50", { step: 0.05, unit: "% p.a." }) +
-        '<label class="vs-check vs-field full"><input type="checkbox" id="first" checked> Erster geförderter Vertrag</label></div></form><div id="vs-fd-out"></div></div>' +
+        '<label class="vs-check vs-field full"><input type="checkbox" id="first" checked> Erster geförderter Vertrag (Berufseinsteigerbonus prüfen)</label>' +
+        '<label class="vs-check vs-field full"><input type="checkbox" id="spouse"> Nur mittelbar zulageberechtigt (Ehegatte, § 79 Satz 2)</label></div></form><div id="vs-fd-out"></div></div>' +
+        '<div class="vs-grid g3" style="margin-top:14px"><div class="vs-card"><p class="vs-label">Was darf ins Altersvorsorgedepot?</p><p style="margin-top:6px">' + esc(avd.contributionRules.eligibleAssets) + '</p><p class="vs-fine" style="margin-top:8px">Die ETFs in „ETF Intelligence“ sind derzeit US-Listings und damit dort nicht zulässig. Sie zeigen Marktverhalten, keine förderfähigen Produkte.</p></div>' +
+        '<div class="vs-card"><p class="vs-label">Kostendeckel Standarddepot</p><p class="vs-kpi small" style="margin-top:6px">höchstens ' + F.pct(avd.productRules.standardDepotCostCap, 1) + ' Effektivkosten</p><p class="vs-fine" style="margin-top:8px">' + esc(avd.productRules.standardDepot) + '</p></div>' +
+        '<div class="vs-card"><p class="vs-label">Auszahlung</p><p style="margin-top:6px">Beginn frühestens mit ' + avd.payoutRules.earliestAge + ', spätestens mit ' + avd.payoutRules.latestStartAge + '. Ein Auszahlungsplan läuft mindestens bis ' + avd.payoutRules.withdrawalPlanUntilAtLeastAge + '.</p><p class="vs-fine" style="margin-top:8px">Bestehende Riester-Verträge behalten ihr altes Recht; ein neuer geförderter Vertrag ab 2027 bringt alle Verträge ins neue Recht (§ 52 Abs. 50a EStG).</p></div></div>' +
         '<div style="margin-top:14px">' + ruleBox(avd) + '</div>' +
-        (avd.childRules && avd.childRules.assumption ? '<div class="vs-note" style="margin-top:14px">Annahme Kinderzulage: ' + esc(avd.childRules.assumption) + '</div>' : "") +
-        '<div class="vs-warnbox" style="margin-top:14px">' + esc(avd.legalStatusNote) + '</div>';
+        '<div class="' + (avd.verification && avd.verification.primaryVerified ? "vs-note" : "vs-warnbox") + '" style="margin-top:14px">' + esc(avd.legalStatusNote) + '</div>';
       var form = host.querySelector("#vs-fd-form");
       function draw() {
         var n = function (id, f, s) { return VS.readNum(form, id, f, s); };
         var kids = Math.max(0, Math.round(n("kids", 0))), children = []; for (var i = 0; i < kids; i++) children.push({ hasChildBenefit: true });
-        var r = Fd.altersvorsorgedepot(avd, { ownContribution: n("own", 0), age: n("age", 30), children: children, firstContract: form.querySelector("#first").checked });
+        var r = Fd.altersvorsorgedepot(avd, { ownContribution: n("own", 0), age: n("age", 30), children: children, firstContract: form.querySelector("#first").checked, indirectSpouse: form.querySelector("#spouse").checked });
         var years = n("years", 30), ret = n("ret", 5, 0.01), cost = n("cost", 0.5, 0.01);
         var yearly = r.basicAllowance + r.childAllowance;
         var withF = M.futureValue({ start: r.careerStarterBonus, monthly: (r.ownContribution + yearly) / 12, years: years, annualReturn: ret, annualCost: cost }).nominal;
@@ -59,7 +66,7 @@
 
   /* ============================================================ FRUEHSTART */
   VS.views.fruehstart = function () {
-    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Frühstart / Kinder</p><h1>Früh anfangen.<br>Zeit arbeiten lassen.</h1><p class="vs-lead">Was aus einem kleinen monatlichen Betrag bis 18, 30, 50 und 67 werden kann – mit dem angekündigten staatlichen Beitrag als versionierter Annahme.</p>' +
+    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Frühstart / Kinder</p><h1>Früh anfangen.<br>Zeit arbeiten lassen.</h1><p class="vs-lead">Was aus einem kleinen monatlichen Betrag bis 18, 30, 50 und 67 werden kann – mit dem geplanten staatlichen Beitrag aus dem Gesetzentwurf als gekennzeichneter Annahme.</p>' +
       '<div class="vs-tabs"><a class="vs-pill" href="#/foerderung">Förderrechner</a><a class="vs-pill primary" href="#/fruehstart">Frühstart / Kinder</a></div></section><section class="vs-section" id="vs-fs"><div class="vs-loading">…</div></section>');
     VS.rules().then(function (rules) {
       var fr = rules.filter(function (r) { return r.ruleId === "DE-FRUEHSTART"; })[0];
@@ -73,12 +80,13 @@
       function draw() {
         var n = function (id, f, s) { return VS.readNum(form, id, f, s); };
         var useState = form.querySelector("#state").checked;
-        var res = Fd.childWealthPath(useState ? fr : null, { childAge: n("age", 0), parentMonthly: n("parent", 0), annualReturn: n("ret", 5, 0.01), annualCost: n("cost", 0.3, 0.01) });
-        var fs = Fd.fruehstart(fr, { childAge: n("age", 0) });
+        var refYear = Math.max(2027, new Date().getFullYear());
+        var res = Fd.childWealthPath(useState ? fr : null, { childAge: n("age", 0), referenceYear: refYear, parentMonthly: n("parent", 0), annualReturn: n("ret", 5, 0.01), annualCost: n("cost", 0.3, 0.01) });
+        var fs = Fd.fruehstart(fr, { childAge: n("age", 0), referenceYear: refYear });
         host.querySelector("#vs-fs-out").innerHTML = '<div class="vs-card"><div class="vs-grid g4">' + res.targets.map(function (t) {
           var p = res.path[t];
           return '<div class="vs-card soft"><p class="vs-label">Mit ' + t + '</p><p class="vs-kpi small">' + F.eurK(p.value) + '</p><p class="vs-fine">eingezahlt: Staat ' + F.eur(p.state) + ' · Eltern ' + F.eur(p.parent) + '</p></div>';
-        }).join("") + '</div>' + (useState ? '<div class="vs-note" style="margin-top:14px">Staatlicher Beitrag für dieses Kind laut Regel: ' + fs.years + ' Jahre × 12 × ' + F.eur(fs.monthly) + ' = <b>' + F.eur(fs.total) + '</b>.</div>' : "") +
+        }).join("") + '</div>' + (useState ? (fs.eligible === false ? '<div class="vs-warnbox" style="margin-top:14px">' + esc(fs.reason) + ' (Geburtsjahr rechnerisch ' + fs.birthYear + ')</div>' : '<div class="vs-note" style="margin-top:14px">Staatlicher Beitrag laut Gesetzentwurf: ' + fs.years + ' Jahre × 12 × ' + F.eur(fs.monthly) + ' = <b>' + F.eur(fs.total) + '</b>. Kein Anspruch, solange das Gesetz nicht beschlossen ist.</div>') : "") +
           '<p class="vs-fine" style="margin-top:10px">Nach 18 keine weiteren Einzahlungen; das Vermögen wächst mit der Annahme weiter. Nominale Werte ohne Inflation, Steuern und Entnahmeregeln.</p></div>';
       }
       form.addEventListener("input", draw); form.addEventListener("submit", function (e) { e.preventDefault(); }); draw();
@@ -97,7 +105,8 @@
         VS.field("kr", "Rendite Fonds/Vertrag", "2.0", { step: 0.5, unit: "% p.a. vor Kosten" }) + VS.field("kc", "Kosten Vertrag", "1.50", { step: 0.05, unit: "% p.a. Effektivkosten" }) +
         VS.field("nr", "Rendite Neuausrichtung", (VS.state.plan.returns.basis * 100).toFixed(1), { step: 0.5, unit: "% p.a. vor Kosten" }) + VS.field("nc", "Kosten Neuausrichtung", "0.50", { step: 0.05, unit: "% p.a." }) +
         VS.field("sw", "Wechselkosten", 300, { min: 0, unit: "€ einmalig" }) + VS.field("income", "Einkommen Vorjahr (brutto)", 40000, { min: 0, unit: "€ – für Mindestbeitrag" }) +
-        VS.field("kids", "Kinder ab Jg. 2008", 0, { min: 0, max: 10, unit: "Anzahl" }) + '</div></form><div id="vs-ri-out"></div></div><div style="margin-top:14px">' + ruleBox(ri) + '</div>';
+        VS.field("kids", "Kinder ab Jg. 2008", 0, { min: 0, max: 10, unit: "Anzahl" }) + '</div></form><div id="vs-ri-out"></div></div>' +
+        '<div class="vs-note" style="margin-top:14px"><b>Übergang ab 2027:</b> ' + esc(ri.validUntilNote) + '</div><div style="margin-top:14px">' + ruleBox(ri) + '</div>';
       var form = host.querySelector("#vs-ri-form");
       function draw() {
         var n = function (id, f, s) { return VS.readNum(form, id, f, s); };

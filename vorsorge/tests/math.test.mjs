@@ -130,3 +130,59 @@ test("leverAnalysis sortiert nach Wirkung", () => {
   const l = M.leverAnalysis({ age: 35, targetAge: 67, monthly: 200, cost: 0.01, desiredIncome: 2500, existingIncome: 1500 });
   for (let i = 1; i < l.levers.length; i++) assert.ok(l.levers[i - 1].delta >= l.levers[i].delta);
 });
+
+test("Audit: monatliche Verzinsung entspricht exakt dem Jahreszins (geometrisch)", () => {
+  const r = M.futureValue({ start: 1000, years: 1, annualReturn: 0.06 });
+  close(r.nominal, 1060, 1e-9);
+  close(Math.pow(1 + M.monthlyRate(0.06), 12), 1.06, 1e-12);
+});
+
+test("Audit: Einzahlung am Monatsende – erste Rate wird 11 Monate verzinst", () => {
+  const r = M.futureValue({ monthly: 100, years: 1, annualReturn: 0.12 });
+  const m = Math.pow(1.12, 1 / 12) - 1;
+  let v = 0; for (let i = 0; i < 12; i++) v = v * (1 + m) + 100;
+  close(r.nominal, v, 1e-9);
+});
+
+test("Audit: Einmalanlage und Startkapital verhalten sich gleich", () => {
+  close(M.futureValue({ start: 5000, years: 10, annualReturn: 0.05 }).nominal, M.futureValue({ lumpSum: 5000, years: 10, annualReturn: 0.05 }).nominal, 1e-9);
+});
+
+test("Audit: sehr kurze (1 Monat) und sehr lange (60 Jahre) Laufzeit bleiben endlich und monoton", () => {
+  const s = M.futureValue({ start: 1000, monthly: 100, years: 1 / 12, annualReturn: 0.05 });
+  assert.equal(s.months, 1); assert.ok(s.nominal > 1100 && s.nominal < 1110);
+  const l = M.futureValue({ start: 1000, monthly: 100, years: 60, annualReturn: 0.07 });
+  assert.ok(Number.isFinite(l.nominal) && l.nominal > l.invested);
+});
+
+test("Audit: Kostenanalyse – Endvermögen vor Kosten > nach Kosten, Summe der Kostenteile stimmt", () => {
+  const r = M.feeImpact({ start: 20000, monthly: 300, years: 35, annualReturn: 0.06, costA: 0, costB: 0.01 });
+  close(r.a.endValue, r.withoutCosts, 1e-6);
+  assert.ok(r.withoutCosts > r.b.endValue);
+  close(r.withoutCosts - r.b.endValue, r.b.directFees + r.b.lostCompounding, 1e-6);
+  // 1 % Kosten über 35 Jahre kosten grob ein Fünftel bis ein Drittel des Endvermögens
+  assert.ok(r.b.costsRelative > 0.15 && r.b.costsRelative < 0.35, String(r.b.costsRelative));
+});
+
+test("Audit: Kosten im Planer (Nettorendite) und in der Kostenanalyse (Monatsabzug) sind konsistent", () => {
+  const plan = M.futureValue({ start: 10000, years: 20, annualReturn: 0.06, annualCost: 0.01 }).nominal;
+  const fee = M.feeImpact({ start: 10000, years: 20, annualReturn: 0.06, costA: 0.01, costB: 0.01 }).a.endValue;
+  close(plan, fee, 1);
+});
+
+test("Audit: Entnahme ist inflationsbereinigt modelliert, Kapital nach Laufzeit aufgebraucht", () => {
+  const cap = 300000;
+  const inc = M.retirementIncome({ capital: cap, years: 25, annualReturn: 0.01 });
+  const w = M.withdrawalScenario({ capital: cap, monthlyWithdrawal: inc, annualReturn: 0.01, years: 30, indexToInflation: false });
+  assert.ok(Math.abs(w.depletedAfterMonths - 300) <= 1);
+  const wi = M.withdrawalScenario({ capital: cap, monthlyWithdrawal: inc, annualReturn: 0.01, inflation: 0.02, years: 30 });
+  assert.ok(wi.depletedAfterMonths < w.depletedAfterMonths, "mit Inflation wachsende Entnahme reicht kürzer");
+});
+
+test("Audit: Vorsorgelücke – Kapitalbedarf real, Sparrate ab heute erreicht das nominale Ziel", () => {
+  const inp = { age: 35, targetAge: 67, desiredIncome: 3000, existingIncome: 1800, inflation: 0.02, cost: 0.003, annualReturn: 0.05, payoutYears: 25 };
+  const g = M.retirementGap(inp);
+  const fv = M.futureValue({ monthly: g.starts[0].monthly, years: g.years, annualReturn: 0.05, annualCost: 0.003 }).nominal;
+  close(fv, g.requiredCapitalNominal, 1);
+  close(M.inflate(g.requiredCapitalReal, g.years, 0.02), g.requiredCapitalNominal, 1e-6);
+});

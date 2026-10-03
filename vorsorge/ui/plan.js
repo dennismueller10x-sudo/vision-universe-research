@@ -184,14 +184,14 @@
       row("Endvermögen real (Kaufkraft heute)", p.scenarios.map(function (s) { return F.eur(s.real); })) +
       row("davon eingezahlt", p.scenarios.map(function (s) { return F.eur(s.invested); })) +
       row("Kaufkraftverlust durch Inflation", p.scenarios.map(function (s) { return F.eur(s.purchasingPowerLoss); })) +
-      row("Mögliche Entnahme / Monat (real, " + p.input.payoutYears + " J.)", p.scenarios.map(function (s) { return F.eur(s.monthlyIncomeReal); })) +
+      row("Modellierte Entnahme / Monat (heutige Kaufkraft, " + p.input.payoutYears + " J.)", p.scenarios.map(function (s) { return F.eur(s.monthlyIncomeReal); })) +
       row("Zielerreichung", p.scenarios.map(function (s) { return F.pct(s.goalAttainment, 0); })) +
       row("Verbleibende Lücke / Monat", p.scenarios.map(function (s) { return F.eur(s.gapMonthlyReal); })) +
       row("Nötige Sparrate fürs Ziel", p.scenarios.map(function (s) { return s.requiredMonthly === null ? "–" : F.eur(s.requiredMonthly); })) +
       '</tbody></table></div>' +
       '<h3 style="margin-top:22px">Vermögensverlauf in heutiger Kaufkraft</h3><div id="vs-plan-chart" style="margin-top:8px"></div>' +
       '<div class="vs-note" style="margin-top:16px"><b>Modellrechnung Schwankung:</b> Bei 15 % jährlicher Schwankung (grob ein breiter Aktien-ETF) erreichen in ' + prob.paths.toLocaleString("de-DE") + ' simulierten Verläufen <b>' + F.pct(prob.probability, 0) + '</b> das Kapitalziel von ' + F.eurK(M.inflate(base.requiredCapitalReal, p.years, pl.inflation)) + ' (nominal). Spanne (10 %–90 %): ' + F.eurK(prob.percentiles ? prob.percentiles.p10 : null) + ' bis ' + F.eurK(prob.percentiles ? prob.percentiles.p90 : null) + '. Feste Saat – gleiche Eingabe, gleiches Ergebnis.</div>' +
-      '<p class="vs-fine" style="margin-top:12px">Rechenweg: monatliche Verzinsung, Sparrate am Monatsende, Kosten als laufender Abzug ((1+Rendite)×(1−Kosten)−1), Entnahme als gleichbleibende reale Rente über ' + p.input.payoutYears + ' Jahre. Steuern und Sozialabgaben sind nicht berücksichtigt.</p></div>';
+      '<p class="vs-fine" style="margin-top:12px">Rechenweg: monatliche Verzinsung, Sparrate am Monatsende, Kosten als laufender Abzug ((1+Rendite)×(1−Kosten)−1), Entnahme: gleichbleibende Kaufkraft über ' + p.input.payoutYears + ' Jahre, danach ist das Kapital aufgebraucht; das Restkapital bleibt in der Auszahlphase mit derselben Rendite nach Kosten und Inflation angelegt. Das ist eine modellierte Entnahme, keine garantierte Rente. Steuern und Sozialabgaben sind nicht berücksichtigt.</p></div>';
     VS.lineChart(out.querySelector("#vs-plan-chart"), paths, { label: "Vermögensverlauf je Szenario", zero: true, fmtY: function (v) { return F.eurK(v); }, fmtX: function (v) { return Math.round(v) + " J."; }, fmtTipX: function (v) { return "Alter " + Math.round(v); } });
   }
   function row(label, cells) { return '<tr><td>' + esc(label) + '</td>' + cells.map(function (c) { return '<td class="num">' + c + '</td>'; }).join("") + '</tr>'; }
