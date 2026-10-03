@@ -277,9 +277,11 @@ jobs:
           node scripts/universe/build-issuer-master.mjs
 
       - name: SEC-Universum aus dem Master
+        env:
+          IN_LIMIT: ${{ inputs.limit }}
         run: |
-          if [ -n "${{ inputs.limit }}" ]; then
-            node scripts/universe/build-sec-universe.mjs --max "${{ inputs.limit }}"
+          if [ -n "$IN_LIMIT" ]; then
+            node scripts/universe/build-sec-universe.mjs --max "$IN_LIMIT"
           else
             node scripts/universe/build-sec-universe.mjs
           fi
@@ -292,14 +294,15 @@ jobs:
 
       - name: Ingest ueber den Sammelweg
         env:
+          IN_SINCE: ${{ inputs.since }}
           # Ein nicht gesetztes Secret wuerde die Variable auf "" setzen und
           # damit den sprechenden Standard-User-Agent ueberschreiben - die
           # SEC weist Anfragen ohne Kontaktadresse ab.
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
         run: |
-          if [ -n "${{ inputs.since }}" ]; then
+          if [ -n "$IN_SINCE" ]; then
             python3 scripts/quant/cli.py update \
-              --since "${{ inputs.since }}" \
+              --since "$IN_SINCE" \
               --universe quant/data/universe/sec-universe.json
           else
             python3 scripts/quant/cli.py ingest \

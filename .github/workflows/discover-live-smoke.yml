@@ -37,34 +37,42 @@ jobs:
       - name: Freshness der veroeffentlichten Seite (streng)
         id: freshness
         continue-on-error: true
+        env:
+          IN_SITE: ${{ inputs.site }}
         run: |
           set -o pipefail
-          node scripts/market/check-freshness.mjs --strict --site='${{ inputs.site }}' | tee smoke-freshness.txt
+          node scripts/market/check-freshness.mjs --strict --site="$IN_SITE" | tee smoke-freshness.txt
 
       - name: Browser-QA Discover (Start, Welten, Suche, Feed, Aktienseite, Barrierefreiheit)
         id: qa
         continue-on-error: true
+        env:
+          IN_SITE: ${{ inputs.site }}
         run: |
           set -o pipefail
-          node scripts/discover/browser-qa.mjs --url '${{ inputs.site }}' --out smoke-shots/discover | tee smoke-qa.txt
+          node scripts/discover/browser-qa.mjs --url "$IN_SITE" --out smoke-shots/discover | tee smoke-qa.txt
 
       - name: Browser-QA Live (Tagesverlauf, Frische, Zeitraeume, Verbraucher-Chart)
         id: qalive
         continue-on-error: true
+        env:
+          IN_SITE: ${{ inputs.site }}
         run: |
           set -o pipefail
-          node scripts/discover/browser-qa-live.mjs '${{ inputs.site }}' smoke-shots/live | tee smoke-qalive.txt
+          node scripts/discover/browser-qa-live.mjs "$IN_SITE" smoke-shots/live | tee smoke-qalive.txt
 
       - name: Browser-QA Maerkte (Uebersicht, Markt jetzt, Pulse, Details; Chromium + WebKit)
         id: qamaerkte
         continue-on-error: true
+        env:
+          IN_SITE: ${{ inputs.site }}
         run: |
           # Beide Engines laufen immer - ein roter Chromium-Lauf darf den
           # WebKit-Befund nicht verdecken. Rot, wenn eine der beiden rot ist.
           set -o pipefail
           chromium=0; webkit=0
-          node scripts/discover/browser-qa-maerkte.mjs --url '${{ inputs.site }}' --out smoke-shots/maerkte --realtime | tee smoke-qamaerkte.txt || chromium=$?
-          node scripts/discover/browser-qa-maerkte.mjs --url '${{ inputs.site }}' --out smoke-shots/maerkte --engine webkit | tee -a smoke-qamaerkte.txt || webkit=$?
+          node scripts/discover/browser-qa-maerkte.mjs --url "$IN_SITE" --out smoke-shots/maerkte --realtime | tee smoke-qamaerkte.txt || chromium=$?
+          node scripts/discover/browser-qa-maerkte.mjs --url "$IN_SITE" --out smoke-shots/maerkte --engine webkit | tee -a smoke-qamaerkte.txt || webkit=$?
           test "$chromium" -eq 0 && test "$webkit" -eq 0
 
       - name: Screenshots und Protokolle
@@ -79,9 +87,11 @@ jobs:
 
       - name: Zusammenfassung
         if: always()
+        env:
+          IN_SITE: ${{ inputs.site }}
         run: |
           {
-            echo '### Discover Live-Rauchtest gegen ${{ inputs.site }}'
+            echo "### Discover Live-Rauchtest gegen ${IN_SITE}"
             echo ''
             echo "| Pruefung | Ergebnis |"; echo "|---|---|"
             echo "| Freshness (streng) | ${{ steps.freshness.outcome }} |"

@@ -104,11 +104,12 @@ jobs:
       - name: Drei Takte mithoeren
         working-directory: worker-waker
         env:
+          IN_MINUTEN: ${{ inputs.minuten }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          echo "Zuhoeren ab $(date -u '+%H:%M:%S') UTC fuer ${{ inputs.minuten }} Minuten."
+          echo "Zuhoeren ab $(date -u '+%H:%M:%S') UTC fuer ${IN_MINUTEN} Minuten."
           set +e
-          timeout "${{ inputs.minuten }}m" npx --yes wrangler@4 tail --format json \
+          timeout "${IN_MINUTEN}m" npx --yes wrangler@4 tail --format json \
             > /tmp/tail-roh.txt 2>/tmp/tail-fehler.txt
           CODE=$?
           set -e

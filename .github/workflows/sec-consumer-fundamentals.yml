@@ -76,10 +76,11 @@ jobs:
 
       - name: Consumer-Fundamentals aus companyfacts.zip
         env:
+          IN_LIMIT: ${{ github.event.inputs.limit }}
           SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
           SEC_CACHE_DIR: ${{ runner.temp }}/sec-cache
         run: |
-          LIMIT="${{ github.event.inputs.limit }}"
+          LIMIT="$IN_LIMIT"
           python3 scripts/quant/cli.py --log-level WARNING consumer --archive "$SEC_CACHE_DIR/bulk/companyfacts.zip" --as-of "$(date -u +%F)" ${LIMIT:+--limit $LIMIT}
           du -sh quant/data/sec/consumer
           node -e 'const c=require("./quant/data/sec/consumer_coverage.json"); console.log(JSON.stringify({productUniverse:c.productUniverse,cikMapped:c.cikMapped,secAvailable:c.secAvailable,annual:c.annualHistory,quarterly:c.quarterlyHistory,ttm:c.ttmPossible,h3:c.history3y,h5:c.history5y,h10:c.history10y,failures:c.failures.length}))'

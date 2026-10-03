@@ -57,11 +57,14 @@ jobs:
 
       - name: Aktienseiten in Produktion beobachten
         id: smoke
+        env:
+          IN_SYMBOLS: ${{ inputs.symbols }}
+          IN_WATCHSECONDS: ${{ inputs.watchSeconds }}
         run: |
           set -o pipefail
           node scripts/discover/browser-qa-realtime.mjs --live \
-            --symbols '${{ inputs.symbols }}' \
-            --watch-seconds '${{ inputs.watchSeconds }}' \
+            --symbols "$IN_SYMBOLS" \
+            --watch-seconds "$IN_WATCHSECONDS" \
             --shots production-shots | tee production-smoke.txt
 
       - name: Cloudflare-Zustand nach dem Lauf (Budget-Waechter, keine Schluessel)
