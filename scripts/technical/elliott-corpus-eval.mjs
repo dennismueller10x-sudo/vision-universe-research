@@ -121,7 +121,9 @@ export function evaluateCase(cs, engineOpts) {
   const g8 = cands.reduce((a, c) => a + intraViolations(c, cs.closes).length, 0);
   return { g8, obs, id: cs.id, mid: !!cs.mid, structureOnly: js[0] && js[0].structure && !js[0].hit, cls: cs.truth.cls, scale: r.degrees.analysis, status: r.status, abstain: !!(r.applicability && r.applicability.abstain), applicability: r.applicability ? r.applicability.level : null, applScore: r.applicability ? r.applicability.score : null,
            primary: js[0] || { label: "NONE", degree: "NONE" }, rank: k, falseAccept: js.some((j) => j.asNegTarget), quality: r.primary && r.primary.countQuality ? r.primary.countQuality.level : null,
-           clarity: r.clarity, ms };
+           clarity: r.clarity, ms,
+           /* Mission IV (nur zusaetzliche Ausgabe, Urteil unveraendert): Anwendbarkeitswert, Abschluss und Muster der Hauptzaehlung */
+           applScore: r.applicability && typeof r.applicability.score === "number" ? r.applicability.score : null, primaryComplete: r.primary ? !!r.primary.complete : null, primaryPattern: r.primary ? r.primary.pattern : null };
 }
 /** Gate-Kennzahlen laut ELLIOTT_ENGINE_QUALITY_PREREG.md §5 (Ende-Faelle; Rauschen none/low/medium, wo vorgesehen). */
 export function gate(rowsAll) {

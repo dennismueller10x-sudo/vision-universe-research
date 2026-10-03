@@ -1,0 +1,491 @@
+{
+ "schemaVersion": "vu-elliott-engine33-research-1.0.0",
+ "generatedAt": "2026-10-03T15:33:34.317Z",
+ "split": "VALIDATION",
+ "layouts": {
+  "C1": {
+   "developing": {
+    "n": 1620,
+    "recognizedDeveloping": 49.6,
+    "correct": 6.2,
+    "prematureComplete": 50.4,
+    "confident": 24,
+    "falseConfidence": 100,
+    "byStage": {
+     "P60": {
+      "n": 400,
+      "correct": 0,
+      "recognizedDeveloping": 58.3
+     },
+     "P75": {
+      "n": 580,
+      "correct": 6.4,
+      "recognizedDeveloping": 45.5
+     },
+     "P90": {
+      "n": 640,
+      "correct": 10,
+      "recognizedDeveloping": 48
+     }
+    }
+   },
+   "completed": {
+    "n": 698,
+    "correctNlm": 28.9,
+    "falseDeveloping": 32.2
+   },
+   "abstention": {
+    "rate": 96.6,
+    "rateCompleted": 91,
+    "rateDeveloping": 98.5,
+    "correctWhenNotAbstained": 85.7,
+    "correctWhenAbstained": 21.1,
+    "correctAmongAbstainedAllStages": 8.4
+   },
+   "qualityModel": {
+    "aucAllStages": {
+     "auc": 0.686,
+     "n": 2318,
+     "pos": 289
+    },
+    "aucCompletedOnly": {
+     "auc": 0.888,
+     "n": 698,
+     "pos": 188
+    },
+    "aucDevelopingOnly": {
+     "auc": 0.314,
+     "n": 1620,
+     "pos": 101
+    },
+    "aucCompletedNlm": {
+     "auc": 0.892,
+     "n": 636,
+     "pos": 184
+    }
+   },
+   "patternBalanceCompleted": {
+    "chosen": {
+     "WXY": {
+      "chosen": 211,
+      "correct": 40
+     },
+     "IMPULSE": {
+      "chosen": 59,
+      "correct": 52
+     },
+     "DOUBLE_ZIGZAG": {
+      "chosen": 6,
+      "correct": 0
+     },
+     "TRIANGLE": {
+      "chosen": 80,
+      "correct": 22
+     },
+     "FLAT": {
+      "chosen": 222,
+      "correct": 37
+     },
+     "ZIGZAG": {
+      "chosen": 74,
+      "correct": 7
+     },
+     "LEADING_DIAGONAL": {
+      "chosen": 7,
+      "correct": 3
+     },
+     "TRIPLE_ZIGZAG": {
+      "chosen": 23,
+      "correct": 15
+     },
+     "ENDING_DIAGONAL": {
+      "chosen": 16,
+      "correct": 12
+     }
+    },
+    "truth": {
+     "IMPULSE": 200,
+     "LEADING_DIAGONAL": 32,
+     "ENDING_DIAGONAL": 24,
+     "ZIGZAG": 54,
+     "DOUBLE_ZIGZAG": 56,
+     "TRIPLE_ZIGZAG": 42,
+     "FLAT": 154,
+     "TRIANGLE": 76,
+     "WXY": 60
+    },
+    "familyChosen": {
+     "CORRECTIVE": 616,
+     "MOTIVE": 82
+    },
+    "familyTruth": {
+     "MOTIVE": 256,
+     "CORRECTIVE": 442
+    }
+   }
+  },
+  "C2": {
+   "developing": {
+    "n": 1636,
+    "recognizedDeveloping": 55,
+    "correct": 13.4,
+    "prematureComplete": 45,
+    "confident": 12,
+    "falseConfidence": 100,
+    "byStage": {
+     "P60": {
+      "n": 400,
+      "correct": 1.5,
+      "recognizedDeveloping": 60.3
+     },
+     "P75": {
+      "n": 596,
+      "correct": 14.4,
+      "recognizedDeveloping": 52.5
+     },
+     "P90": {
+      "n": 640,
+      "correct": 20,
+      "recognizedDeveloping": 53.9
+     }
+    }
+   },
+   "completed": {
+    "n": 862,
+    "correctNlm": 59.4,
+    "falseDeveloping": 19.8
+   },
+   "abstention": {
+    "rate": 94.9,
+    "rateCompleted": 84.6,
+    "rateDeveloping": 99.3,
+    "correctWhenNotAbstained": 91.7,
+    "correctWhenAbstained": 46.2,
+    "correctAmongAbstainedAllStages": 20.1
+   },
+   "qualityModel": {
+    "aucAllStages": {
+     "auc": 0.711,
+     "n": 2498,
+     "pos": 679
+    },
+    "aucCompletedOnly": {
+     "auc": 0.874,
+     "n": 862,
+     "pos": 459
+    },
+    "aucDevelopingOnly": {
+     "auc": 0.336,
+     "n": 1636,
+     "pos": 220
+    },
+    "aucCompletedNlm": {
+     "auc": 0.864,
+     "n": 754,
+     "pos": 448
+    }
+   },
+   "patternBalanceCompleted": {
+    "chosen": {
+     "IMPULSE": {
+      "chosen": 116,
+      "correct": 108
+     },
+     "FLAT": {
+      "chosen": 198,
+      "correct": 90
+     },
+     "TRIANGLE": {
+      "chosen": 98,
+      "correct": 65
+     },
+     "ZIGZAG": {
+      "chosen": 112,
+      "correct": 31
+     },
+     "WXY": {
+      "chosen": 245,
+      "correct": 97
+     },
+     "LEADING_DIAGONAL": {
+      "chosen": 21,
+      "correct": 18
+     },
+     "DOUBLE_ZIGZAG": {
+      "chosen": 6,
+      "correct": 0
+     },
+     "TRIPLE_ZIGZAG": {
+      "chosen": 43,
+      "correct": 33
+     },
+     "ENDING_DIAGONAL": {
+      "chosen": 23,
+      "correct": 17
+     }
+    },
+    "truth": {
+     "IMPULSE": 238,
+     "LEADING_DIAGONAL": 38,
+     "ENDING_DIAGONAL": 36,
+     "ZIGZAG": 60,
+     "DOUBLE_ZIGZAG": 72,
+     "TRIPLE_ZIGZAG": 50,
+     "FLAT": 184,
+     "TRIANGLE": 114,
+     "WXY": 70
+    },
+    "familyChosen": {
+     "MOTIVE": 160,
+     "CORRECTIVE": 702
+    },
+    "familyTruth": {
+     "MOTIVE": 312,
+     "CORRECTIVE": 550
+    }
+   }
+  },
+  "C3": {
+   "developing": {
+    "n": 1620,
+    "recognizedDeveloping": 49.7,
+    "correct": 6.4,
+    "prematureComplete": 50.3,
+    "confident": 9,
+    "falseConfidence": 100,
+    "byStage": {
+     "P60": {
+      "n": 400,
+      "correct": 0,
+      "recognizedDeveloping": 58.3
+     },
+     "P75": {
+      "n": 580,
+      "correct": 5.9,
+      "recognizedDeveloping": 45.7
+     },
+     "P90": {
+      "n": 640,
+      "correct": 10.8,
+      "recognizedDeveloping": 48
+     }
+    }
+   },
+   "completed": {
+    "n": 764,
+    "correctNlm": 28.4,
+    "falseDeveloping": 31
+   },
+   "abstention": {
+    "rate": 97.2,
+    "rateCompleted": 91.1,
+    "rateDeveloping": 99.4,
+    "correctWhenNotAbstained": 86.8,
+    "correctWhenAbstained": 20.1,
+    "correctAmongAbstainedAllStages": 8.6
+   },
+   "qualityModel": {
+    "aucAllStages": {
+     "auc": 0.695,
+     "n": 2384,
+     "pos": 302
+    },
+    "aucCompletedOnly": {
+     "auc": 0.883,
+     "n": 764,
+     "pos": 199
+    },
+    "aucDevelopingOnly": {
+     "auc": 0.319,
+     "n": 1620,
+     "pos": 103
+    },
+    "aucCompletedNlm": {
+     "auc": 0.883,
+     "n": 676,
+     "pos": 192
+    }
+   },
+   "patternBalanceCompleted": {
+    "chosen": {
+     "WXY": {
+      "chosen": 205,
+      "correct": 38
+     },
+     "IMPULSE": {
+      "chosen": 61,
+      "correct": 52
+     },
+     "DOUBLE_ZIGZAG": {
+      "chosen": 7,
+      "correct": 0
+     },
+     "TRIANGLE": {
+      "chosen": 87,
+      "correct": 27
+     },
+     "FLAT": {
+      "chosen": 290,
+      "correct": 43
+     },
+     "ZIGZAG": {
+      "chosen": 66,
+      "correct": 9
+     },
+     "ENDING_DIAGONAL": {
+      "chosen": 21,
+      "correct": 14
+     },
+     "TRIPLE_ZIGZAG": {
+      "chosen": 22,
+      "correct": 12
+     },
+     "LEADING_DIAGONAL": {
+      "chosen": 5,
+      "correct": 4
+     }
+    },
+    "truth": {
+     "IMPULSE": 206,
+     "LEADING_DIAGONAL": 34,
+     "ENDING_DIAGONAL": 30,
+     "ZIGZAG": 54,
+     "DOUBLE_ZIGZAG": 68,
+     "TRIPLE_ZIGZAG": 44,
+     "FLAT": 162,
+     "TRIANGLE": 104,
+     "WXY": 62
+    },
+    "familyChosen": {
+     "CORRECTIVE": 677,
+     "MOTIVE": 87
+    },
+    "familyTruth": {
+     "MOTIVE": 270,
+     "CORRECTIVE": 494
+    }
+   }
+  }
+ },
+ "pooled": {
+  "developing": {
+   "n": 4876,
+   "recognizedDeveloping": 51.4,
+   "correct": 8.7,
+   "prematureComplete": 48.6,
+   "confident": 45,
+   "falseConfidence": 100,
+   "byStage": {
+    "P60": {
+     "n": 1200,
+     "correct": 0.5,
+     "recognizedDeveloping": 58.9
+    },
+    "P75": {
+     "n": 1756,
+     "correct": 8.9,
+     "recognizedDeveloping": 47.9
+    },
+    "P90": {
+     "n": 1920,
+     "correct": 13.6,
+     "recognizedDeveloping": 49.9
+    }
+   }
+  },
+  "completed": {
+   "n": 2324,
+   "correctNlm": 39.9,
+   "falseDeveloping": 27.2
+  },
+  "abstention": {
+   "rate": 96.2,
+   "rateCompleted": 88.6,
+   "rateDeveloping": 99.1,
+   "correctWhenNotAbstained": 89,
+   "correctWhenAbstained": 29.7,
+   "correctAmongAbstainedAllStages": 12.3
+  },
+  "qualityModel": {
+   "aucAllStages": {
+    "auc": 0.701,
+    "n": 7200,
+    "pos": 1270
+   },
+   "aucCompletedOnly": {
+    "auc": 0.881,
+    "n": 2324,
+    "pos": 846
+   },
+   "aucDevelopingOnly": {
+    "auc": 0.326,
+    "n": 4876,
+    "pos": 424
+   },
+   "aucCompletedNlm": {
+    "auc": 0.88,
+    "n": 2066,
+    "pos": 824
+   }
+  },
+  "patternBalanceCompleted": {
+   "chosen": {
+    "WXY": {
+     "chosen": 661,
+     "correct": 175
+    },
+    "IMPULSE": {
+     "chosen": 236,
+     "correct": 212
+    },
+    "DOUBLE_ZIGZAG": {
+     "chosen": 19,
+     "correct": 0
+    },
+    "TRIANGLE": {
+     "chosen": 265,
+     "correct": 114
+    },
+    "FLAT": {
+     "chosen": 710,
+     "correct": 170
+    },
+    "ZIGZAG": {
+     "chosen": 252,
+     "correct": 47
+    },
+    "LEADING_DIAGONAL": {
+     "chosen": 33,
+     "correct": 25
+    },
+    "TRIPLE_ZIGZAG": {
+     "chosen": 88,
+     "correct": 60
+    },
+    "ENDING_DIAGONAL": {
+     "chosen": 60,
+     "correct": 43
+    }
+   },
+   "truth": {
+    "IMPULSE": 644,
+    "LEADING_DIAGONAL": 104,
+    "ENDING_DIAGONAL": 90,
+    "ZIGZAG": 168,
+    "DOUBLE_ZIGZAG": 196,
+    "TRIPLE_ZIGZAG": 136,
+    "FLAT": 500,
+    "TRIANGLE": 294,
+    "WXY": 192
+   },
+   "familyChosen": {
+    "CORRECTIVE": 1995,
+    "MOTIVE": 329
+   },
+   "familyTruth": {
+    "MOTIVE": 838,
+    "CORRECTIVE": 1486
+   }
+  }
+ }
+}

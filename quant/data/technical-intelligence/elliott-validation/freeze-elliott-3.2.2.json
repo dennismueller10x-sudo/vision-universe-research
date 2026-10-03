@@ -1,0 +1,17 @@
+{
+ "schemaVersion": "vu-elliott-freeze-1.0.0",
+ "engineVersion": "elliott-3.2.2",
+ "basedOn": "elliott-3.2.1 (freeze-elliott-3.2.1.json)",
+ "change": "Anwendbarkeit: abgeschlossene WXY-Hauptzaehlungen hoechstens NIEDRIG (capPatterns [\"WXY\"]). Zaehlung, Rang, Alternativen und Invalidation unveraendert; nur weniger Aussagen.",
+ "afterHoldout": true,
+ "evidence": {
+  "split": "VALIDATION C1/C2/C3, alle Stufen (nicht HOLDOUT)",
+  "source": "elliott-validation/engine33/research-validation-m4-research.json vs. -m4-research-322.json",
+  "confidentWxy321": { "completedCorrect": 96, "completedWrong": 33, "runningWrong": 137 },
+  "confidentOnRunningPatterns": { "v321": 182, "v322": 45, "correct": 0 },
+  "precisionNonAbstainedCompleted": { "v321": 84.2, "v322": 89.0 },
+  "abstentionAllStages": { "v321": 92.4, "v322": 96.2 }
+ },
+ "holdout": "Kein HOLDOUT-4: Die Aenderung senkt nur Anwendbarkeit; Musterquote, Grad und hohes Rauschen (G2–G5, G9) und G13 bleiben unveraendert – ein HOLDOUT-4 wuerde vorhersehbar erneut FAIL ergeben (Mission IV §109). HOLDOUT-3-Urteil FAIL gilt unveraendert.",
+ "note": "Engine-Qualitaet weiterhin FAIL; Status EXPERIMENTAL_STRUCTURE_MODEL; nicht expert-validiert."
+}

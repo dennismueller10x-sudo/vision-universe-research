@@ -45,7 +45,7 @@
   var P = isNode ? require("./patterns.js") : global.VUTechnical.ElliottPatterns;
   var V2 = isNode ? require("./elliott-v2.js") : global.VUTechnical.ElliottV2;
 
-  var ENGINE_VERSION = "elliott-3.2.1";   // 3.2.1 = 3.2.0 + Datenlage-Fix fuer Tagesreihen (nach HOLDOUT-3; Wochenreihen identisch)
+  var ENGINE_VERSION = "elliott-3.2.2";   // 3.2.1 = 3.2.0 + Datenlage-Fix fuer Tagesreihen (nach HOLDOUT-3); 3.2.2 = abgeschlossene WXY hoechstens NIEDRIG (Mission IV, nur Anwendbarkeit, Zaehlung unveraendert)
 
   var DEFAULTS = {
     poolAtr: 1.0,                 // Monowellen-Schwelle in ATR
@@ -77,7 +77,7 @@
        [1, Zaehlqualitaet, Klarheit (nur Strukturmehrdeutigkeit), z/4, (Strukturmehrdeutigkeit: fest 0), laufend, Hierarchie-Widerspruch,
         Zeit-Preis-Proportion, laufend × Wellenanteil]. HOCH ab 0,75 (falsch im Entwicklungssplit: A 16 %, B 21 %), MITTEL ab 0,55
        (A 23 %, B 24 %, C1/C3 41–50 %). Laufende Zaehlungen hoechstens NIEDRIG (developingCap). */
-    applicability: { coef: [-9.665, 7.516, 0.852, 1.339, 0, -2.677, -0.801, 3.151, -2.667], high: 0.75, moderate: 0.55, highMinZ: null, developingCap: true }
+    applicability: { coef: [-9.665, 7.516, 0.852, 1.339, 0, -2.677, -0.801, 3.151, -2.667], high: 0.75, moderate: 0.55, highMinZ: null, developingCap: true, capPatterns: ["WXY"] }
   };
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -637,7 +637,7 @@
     var snr = isNum(zMed) ? { ratio: round(zMed, 3), score: round(clamp((zMed - cfg.noise.abstainBelow) / (cfg.noise.full - cfg.noise.abstainBelow), 0, 1), 3) } : null;
     var wFrac = primary.complete ? 1 : (primary.currentWave ? primary.currentWave.wave : best0.waves.length) / Math.max(1, P.PATTERNS[best0.type].waves);
     var appl = applicability3(primary.countQuality, alternatives.length && amb.kind === "STRUCTURE" ? clarity : null, snr, cfg, amb, primary.complete,
-                              { hier: best0.components.hierarchy, prop: best0.components.proportion, waveFrac: wFrac });
+                              { hier: best0.components.hierarchy, prop: best0.components.proportion, waveFrac: wFrac, pattern: primary.pattern });
     if (dq.blocking) { appl.level = "LOW"; appl.abstain = true; appl.reasons.unshift(dq.note); }
     /* 3.2 (Red-Team 3.2 M3): Grad- oder Etikett-Mehrdeutigkeit ist nicht "klar" (solche Hauptzaehlungen stimmten im Korpus nur in 12–14 %) */
     var clarityLevel = amb.kind === "NONE" ? "HIGH" : amb.kind !== "STRUCTURE" ? "MODERATE" : clarity >= cfg.clarity.high ? "HIGH" : clarity >= cfg.clarity.moderate ? "MODERATE" : "LOW";
@@ -736,12 +736,18 @@
     /* 3.2 (Red-Team 3.2 H3): laufende Zaehlungen hoechstens NIEDRIG — im Korpus (DEVELOPMENT und VALIDATION, alle Layouts) war keine
        laufende Hauptzaehlung mit MITTEL/HOCH richtig. Sie werden als "moegliche Welle" gezeigt, nicht als verlaessliche Zaehlung. */
     if (!complete && A.developingCap) level = "LOW";
+    /* 3.2.2 (Mission IV, Engine-3.3-Vorstudie, VALIDATION): abgeschlossene WXY mit MITTEL/HOCH waren in 170 von 266 Faellen falsch –
+       meist laufende Impulse, Diagonalen oder Dreiecke, die als fertige Doppelkorrektur gelesen wurden. Nur Absenkung (weniger
+       Aussagen), keine neue Behauptung; die Zaehlung selbst bleibt unveraendert. */
+    var capped = (A.capPatterns || []).indexOf(ex.pattern) >= 0 && level !== "LOW";
+    if (capped) level = "LOW";
     /* Wellen kaum groesser als ein Zufallspfad gleicher Dauer: hoechstens MITTEL (Korpus DEVELOPMENT, hohes Rauschen) */
     if (level === "HIGH" && snr && isNum(A.highMinZ) && snr.ratio < A.highMinZ) level = "MODERATE";
     var reasons = [];
     if (amb && amb.kind === "STRUCTURE" && isNum(clarity) && clarity < 0.05) reasons.push("Mehrere Lesarten mit anderen Wellenenden liegen fast gleichauf");
     if (q && q.level === "LOW") reasons.push("Die beste Zählung erfüllt die Richtlinien nur schwach");
     if (snr && snr.ratio < 1.3) reasons.push("Die Wellen sind kaum größer als ein Zufallspfad gleicher Dauer");
+    if (capped) reasons.push("Doppelte Korrekturen (W-X-Y) sind oft ein noch laufendes Muster – deshalb nie als verlässliche Zählung");
     if (!complete) reasons.push("Das Muster läuft noch – laufende Zählungen sind seltener richtig als abgeschlossene");
     if (isNum(ex.prop) && ex.prop < 0.5) reasons.push("Die Wellen sind in Zeit und Preis ungleich groß – möglicherweise werden verschiedene Grade vermischt");
     if (isNum(ex.hier) && ex.hier < 1) reasons.push("Die Zählung schneidet eine andere vollständige Struktur – Gradzuordnung unsicher");
