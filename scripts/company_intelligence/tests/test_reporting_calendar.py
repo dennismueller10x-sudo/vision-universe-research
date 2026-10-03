@@ -7,6 +7,48 @@ from company_intelligence.reporting_calendar import fact_history, forecast, obse
 from test_engine import company, consumer, NOW
 
 class ReportingCalendarTests(unittest.TestCase):
+    def test_obsolete_estimate_retirement_preserves_audit_and_actual_report(self):
+        import json, tempfile
+        from company_intelligence.pipeline import Pipeline
+        from company_intelligence.transport import PublicHTTP
+        from company_intelligence.store import Store
+        c=company();now='2026-10-03T12:00:00Z'
+        with tempfile.TemporaryDirectory() as tmp:
+            store=Store(Path(tmp)/'state.sqlite')
+            for y in (2023,2024,2025):
+                store.event({'eventId':str(y),'companyId':c['companyId'],'eventType':'PERIODIC_REPORT_PUBLISHED','date':f'{y}-09-26','fiscalYear':y+1,'fiscalQuarter':'Q1'},now)
+            pipeline=Pipeline(Path(tmp),{c['companyId']:c},store,PublicHTTP(Path(tmp)/'http'),now)
+            pipeline.refresh_estimates(c)
+            self.assertEqual(store.db.execute("SELECT count(*) FROM events WHERE kind='EARNINGS_ESTIMATED'").fetchone()[0],1)
+            store.event({'eventId':'actual','companyId':c['companyId'],'eventType':'PERIODIC_REPORT_PUBLISHED','date':'2026-09-29','fiscalYear':2027,'fiscalQuarter':'Q1','sourceUrl':'https://www.sec.gov/Archives/actual.htm'},now)
+            pipeline.refresh_estimates(c);pipeline.refresh_estimates(c)
+            self.assertEqual(store.db.execute("SELECT count(*) FROM events WHERE kind='EARNINGS_ESTIMATED'").fetchone()[0],0)
+            audits=[json.loads(r[0]) for r in store.db.execute('SELECT payload FROM audit') if json.loads(r[0])['code']=='ESTIMATE_RETIRED']
+            self.assertEqual(len(audits),1);self.assertEqual(audits[0]['reason'],'ALREADY_REPORTED')
+            self.assertEqual(audits[0]['reportingEvidence'][0]['eventId'],'actual')
+            self.assertTrue(store.db.execute("SELECT 1 FROM events WHERE id='actual'").fetchone())
+            store.close()
+
+    def test_legacy_window_is_retired_after_noncalendar_quarter_already_reported(self):
+        from company_intelligence.earnings import estimate_calendar
+        history=[{'eventType':'PERIODIC_REPORT_PUBLISHED','date':f'{y}-09-26','fiscalYear':y+1,'fiscalQuarter':'Q1'} for y in (2023,2024,2025)]
+        now='2026-10-03T12:00:00Z'
+        self.assertTrue(estimate_calendar(company(),history,now))
+        released={'eventType':'PERIODIC_REPORT_PUBLISHED','date':'2026-09-29','fiscalYear':2027,'fiscalQuarter':'Q1'}
+        self.assertFalse(estimate_calendar(company(),history+[released],now))
+        self.assertFalse(estimate_calendar(company(),history+[{**released,'fiscalYear':None}],now))
+
+    def test_future_report_cannot_enter_legacy_estimator_or_suppress_current_window(self):
+        from company_intelligence.earnings import estimate_calendar
+        history=[{'eventType':'PERIODIC_REPORT_PUBLISHED','date':f'{y}-10-30','fiscalYear':y,'fiscalQuarter':'Q3'} for y in (2023,2024,2025)]
+        future={'eventType':'PERIODIC_REPORT_PUBLISHED','date':'2026-10-30','fiscalYear':2026,'fiscalQuarter':'Q3'}
+        self.assertEqual(estimate_calendar(company(),history,'2026-10-03T12:00:00Z'),estimate_calendar(company(),history+[future],'2026-10-03T12:00:00Z'))
+
+    def test_published_other_quarter_does_not_suppress_next_quarter(self):
+        from company_intelligence.earnings import estimate_calendar
+        history=[{'eventType':'PERIODIC_REPORT_PUBLISHED','date':f'{y}-10-30','fiscalYear':y,'fiscalQuarter':'Q3'} for y in (2023,2024,2025)]
+        prior={'eventType':'PERIODIC_REPORT_PUBLISHED','date':'2026-10-02','fiscalYear':2026,'fiscalQuarter':'Q2'}
+        self.assertTrue(estimate_calendar(company(),history+[prior],'2026-10-03T12:00:00Z'))
     def test_comparative_restatement_dates_cannot_be_original_reports(self):
         d=consumer();h=fact_history(d,company()['cik'],NOW)
         self.assertTrue(h)

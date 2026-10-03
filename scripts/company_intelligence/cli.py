@@ -250,8 +250,10 @@ def main(argv=None):
                     store.set_state('secStreamHealth', {**store.state('secStreamHealth', {}), 'lastFailure': now, 'reason': str(exc)[:250]})
                     store.audit(now, 'sec-stream', 'SEC_STREAM_SCAN_FAILURE', reason=str(exc)[:250])
                 pending_stream = store.state('secStreamPending', {})
-                # Oldest work first; failed issuers respect the existing cooldown.
-                selected = [companies[cid] for cid in sorted(pending_stream, key=lambda cid: (pending_stream[cid]['filedAt'], cid)) if cid in companies and (store.state('sec:' + cid, {}).get('retryAfter') or '') <= now and pending_stream[cid].get('nextAttempt', '') <= now][:args.limit]
+                # An explicit pilot scope gets first use of its bounded SEC
+                # batch; other pending work remains queued and can fill spare
+                # capacity. Unscoped operation retains oldest-first ordering.
+                selected = [companies[cid] for cid in sorted(pending_stream, key=lambda cid: (source_scope is not None and cid not in source_scope, pending_stream[cid]['filedAt'], cid)) if cid in companies and (store.state('sec:' + cid, {}).get('retryAfter') or '') <= now and pending_stream[cid].get('nextAttempt', '') <= now][:args.limit]
                 selected_ids = {c['companyId'] for c in selected}
             if args.network and inventory_results is None:
                 pipeline.seed_sources(json.loads((config_dir / 'sources.json').read_text()))

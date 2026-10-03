@@ -55,3 +55,18 @@ class PollScopeTests(unittest.TestCase):
                     main(['poll', '--root', str(ROOT), '--state', str(state), '--network', '--source-tickers', 'UNKNOWN'])
             self.assertFalse(state.exists())
             ingest.assert_not_called()
+
+    def test_changed_pilot_issuer_precedes_older_unrelated_pending_work(self):
+        a, b, companies = self.universe()
+        def scan(store, *_):
+            store.set_state('secStreamPending', {
+                a['companyId']: {'filedAt': '2026-10-02', 'latestAccession': '0000320193-26-000001'},
+                b['companyId']: {'filedAt': '2026-09-20', 'latestAccession': '0000789019-26-000001'}})
+            return {'unresolvedIndexDays': []}
+        with tempfile.TemporaryDirectory() as tmp:
+            with patch('company_intelligence.cli.load_universe', return_value=companies), patch('company_intelligence.sec_stream.scan', side_effect=scan), patch.object(Pipeline, 'sec_client'), patch.object(Pipeline, 'project_company') as project, patch.object(Pipeline, 'ingest_source'), contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(main(['sec-stream', '--root', str(ROOT), '--state', tmp, '--network', '--sec-fetch', '--source-tickers', 'AAPL', '--limit', '1', '--request-budget', '20']), 0)
+            self.assertEqual([call.args[0]['companyId'] for call in project.call_args_list], [a['companyId']])
+            store = Store(Path(tmp) / 'state.sqlite')
+            self.assertIn(b['companyId'], store.state('secStreamPending'))
+            store.close()

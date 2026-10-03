@@ -400,6 +400,13 @@ class Pipeline:
         retained = {e['eventId'] for e in estimates}
         with self.store.db:
             for prior in [e for e in all_events if e['eventType'] == 'EARNINGS_ESTIMATED' and e['eventId'] not in retained]:
+                reported = [e for e in all_events if e['eventType'] in ('EARNINGS_PUBLISHED', 'PERIODIC_REPORT_PUBLISHED')
+                            and not e.get('isAmendment') and e.get('fiscalQuarter') == prior.get('fiscalQuarter')
+                            and prior['dateStart'] <= e.get('date', '') <= min(prior['dateEnd'], self.now[:10])]
+                self.store.audit(self.now, cid, 'ESTIMATE_RETIRED', eventId=prior['eventId'],
+                                 previousDateStart=prior['dateStart'], previousDateEnd=prior['dateEnd'],
+                                 reason='ALREADY_REPORTED' if reported else 'WINDOW_NO_LONGER_SUPPORTED',
+                                 reportingEvidence=[{'eventId': e['eventId'], 'date': e['date'], 'sourceUrl': e.get('sourceUrl')} for e in reported])
                 self.store.db.execute('DELETE FROM events WHERE id=?', (prior['eventId'],))
         previous = {e['eventId']: e for e in all_events if e['eventType'] == 'EARNINGS_ESTIMATED'}
         volatile = {'discoveredAt', 'updatedAt', 'dateHistory', 'confirmationHistory', 'estimationHistory'}
