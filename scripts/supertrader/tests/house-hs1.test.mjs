@@ -218,3 +218,25 @@ test('HS3 end-to-end: Kontrolle C00, Datenpruefung G0, Auswahl relativ zur Kontr
   assert.ok(r.trials.M01.vsControl);
   assert.ok(r.trials.C00.meanPositions <= 29.5, 'doppelte CIK zaehlt einmal');
 });
+
+test('HS3-D1: ADR, IFRS und Mehrgattung mit Kursabstand > 2x fallen aus dem Universum', async () => {
+  const { indexTiltWeights } = await import('../house/engine.mjs');
+  const mk = (id, mcap, opts = {}) => ({ st: { id, cls: opts.cls || 'EQUITY_COMMON', fund: { cik: opts.cik || id, taxonomy: opts.tax || 'us-gaap' }, rawClose: [opts.px || 50] }, t: 0, MCAP: mcap, dv: 1, dvW: 1 });
+  const elig = [mk('ADR1', 900, { cls: 'ADR' }), mk('IFRS1', 800, { tax: 'ifrs-full' }), mk('BRKA', 700, { cik: 'B', px: 400000 }), mk('BRKB', 600, { cik: 'B', px: 270 }), mk('GOOGL', 500, { cik: 'G', px: 100 }), mk('GOOG', 490, { cik: 'G', px: 101 }), mk('X', 100)];
+  const w = indexTiltWeights(elig, { sizeBy: 'MCAP', mcapRule: 'D1', factors: [] });
+  assert.deepEqual([...w.keys()].sort(), ['GOOGL', 'X']);
+  const w0 = indexTiltWeights(elig, { sizeBy: 'MCAP', factors: [] });
+  assert.ok(w0.has('ADR1') && w0.has('BRKA'), 'ohne D1 unveraendert (HS3 reproduzierbar)');
+});
+
+test('HS3-D1 end-to-end zaehlt 31 Versuche', async () => {
+  const { runAnalysis } = await import('../house/analyze.mjs');
+  const cal = []; const dd = new Date('2015-01-01T00:00:00Z');
+  while (dd.toISOString().slice(0, 10) <= '2026-09-30') { const wd = dd.getUTCDay(); if (wd && wd !== 6) cal.push(dd.toISOString().slice(0, 10)); dd.setUTCDate(dd.getUTCDate() + 1); }
+  const mkRaw = (i) => { let p = 20 + i; return cal.map((date, k) => { p *= 1 + (i - 15) * 0.00004 + Math.sin(k * 0.3 + i) * 0.006; return { date, open: p * 0.999, high: p * 1.01, low: p * 0.99, close: p, volume: 1e6 * (1 + i / 10), adjClose: p, dividend: 0, splitFactor: 1 }; }); };
+  const shares = (i) => cal.filter((d, k) => k % 63 === 0).map((d) => [d, 1e6 * (1 + i), d, 'dei']);
+  const segs = Array.from({ length: 30 }, (_, i) => ({ id: `tiingo:NYSE:T${i}:2000-01-01`, raw: mkRaw(i), survivor: true, delisted: false, cls: i === 0 ? 'ADR' : 'EQUITY_COMMON', fund: { eps: [], rev: [], shares: shares(i), cik: 'C' + i } }));
+  const r = runAnalysis({ segs, spyAdj: L.adjustSeries(mkRaw(3)), hash: 'x', nonEquityExcluded: 0, secCoverage: null }, { MODE: 'dev', SET: 'hs3d1' });
+  assert.equal(r.stats.trialsCounted, 31);
+  assert.ok(r.trials.C00.meanPositions <= 29.5);
+});

@@ -30,6 +30,10 @@ export const SETS = {
   hs3: { prereg: 'PREREGISTRATION-HS3.json', frozen: 'FROZEN-HS3.json', secPitKey: 'r13', cfg: (t) => ({ weighting: 'INDEX_TILT', sizeBy: 'MCAP', factors: t.factors, tau: t.tau || 0, cut: !!t.cut }),
     selectable: (t) => t.def.id !== 'C00' && t.turnover <= 1 && t.metrics.excessCagr > 0 && t.vsControl?.excessCagr > 0, pboIds: (ids) => ids.filter((id) => id !== 'C00'),
     priorSets: ['hs1', 'hs2'], control: 'C00', relative: true, gateTE: 0.03 },
+  // HS3-D1 (PREREGISTRATION-HS3-D1.json): Datennachtrag nach gescheitertem G0; gleiche Versuche, erneut gezaehlt.
+  hs3d1: { prereg: 'PREREGISTRATION-HS3.json', frozen: 'FROZEN-HS3-D1.json', secPitKey: 'r13', cfg: (t) => ({ weighting: 'INDEX_TILT', sizeBy: 'MCAP', mcapRule: 'D1', factors: t.factors, tau: t.tau || 0, cut: !!t.cut }),
+    selectable: (t) => t.def.id !== 'C00' && t.turnover <= 1 && t.metrics.excessCagr > 0 && t.vsControl?.excessCagr > 0, pboIds: (ids) => ids.filter((id) => id !== 'C00'),
+    priorSets: ['hs1', 'hs2', 'hs3'], control: 'C00', relative: true, gateTE: 0.03 },
 };
 
 const slimMonthly = (m) => m.monthly.map((x) => [x.month, +x.r.toFixed(6), +x.b.toFixed(6)]);
@@ -40,7 +44,7 @@ async function main() {
   const arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
   const MODE = arg('--mode', 'dev');
   const SET = arg('--set', 'hs1');
-  if (!SETS[SET]) throw new Error('--set hs1|hs2|hs3');
+  if (!SETS[SET]) throw new Error('--set hs1|hs2|hs3|hs3d1');
   const OUT = arg('--out', path.join(os.tmpdir(), 'house'));
   const LIMIT = Number(arg('--limit', '0'));
   if (!['dev', 'holdout'].includes(MODE)) throw new Error('--mode dev|holdout');
@@ -84,7 +88,7 @@ export function runAnalysis(d, { MODE, SET = 'hs1', LIMIT = 0, frozen = null, lo
     if (raw.length < 30) continue;
     const a = L.adjustSeries(raw);
     if (seg.fund) fundSegs++;
-    stocks.push(prepareStock({ id: seg.id, survivor: seg.survivor, delisted: seg.delisted, date: a.date, open: a.open, high: a.high, close: a.close,
+    stocks.push(prepareStock({ id: seg.id, survivor: seg.survivor, delisted: seg.delisted, cls: seg.cls || null, date: a.date, open: a.open, high: a.high, close: a.close,
       rawClose: a.rawClose, rawVolume: a.rawVolume, divAdj: a.divAdj, split: a.split, fund: seg.fund || null }, calIndex));
     seg.raw = null;
   }

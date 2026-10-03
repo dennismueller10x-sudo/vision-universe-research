@@ -183,7 +183,16 @@ export function indexTiltWeights(elig, cfg, P = HS1) {
   if (cfg.sizeBy === 'MCAP') {
     // HS3: je CIK ein Listing (hoechster 63-Tage-Umsatz; elig ist danach sortiert), dann die 500 groessten.
     const seen = new Set(); const one = [];
-    for (const e of elig) { if (!Number.isFinite(e.MCAP)) continue; const c = e.st.fund?.cik || e.st.id; if (seen.has(c)) continue; seen.add(c); one.push(e); }
+    let pool = elig.filter((e) => Number.isFinite(e.MCAP));
+    if (cfg.mcapRule === 'D1') {
+      // HS3-D1: keine ADR und keine IFRS-Emittenten (Aktienanzahl passt nicht zum Hinterlegungsschein, nicht im S&P 500);
+      // Mehrgattungs-CIK mit Kursabstand > 2x zwischen ihren Listings an D wird ausgelassen (Stueckzahl nicht einer Gattung zuordenbar).
+      pool = pool.filter((e) => e.st.cls !== 'ADR' && e.st.fund?.taxonomy !== 'ifrs-full');
+      const px = new Map();
+      for (const e of elig) { const c = e.st.fund?.cik; if (!c) continue; const p = e.st.rawClose[e.t]; const v = px.get(c) || [Infinity, 0]; px.set(c, [Math.min(v[0], p), Math.max(v[1], p)]); }
+      pool = pool.filter((e) => { const v = px.get(e.st.fund?.cik); return !v || v[1] <= 2 * v[0]; });
+    }
+    for (const e of pool) { const c = e.st.fund?.cik || e.st.id; if (seen.has(c)) continue; seen.add(c); one.push(e); }
     uni = one.sort((a, b) => b.MCAP - a.MCAP || a.st.id.localeCompare(b.st.id)).slice(0, P.indexTop);
     base = capWeights(new Map(uni.map((e) => [e.st.id, e.MCAP])), P.mcapCap);
   } else {

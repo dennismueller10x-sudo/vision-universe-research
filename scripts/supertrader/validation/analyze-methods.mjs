@@ -343,14 +343,15 @@ export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity 
       if (!L.INCLUDED_CLASSES.has(l.storeClass)) continue;
       const r = companyOf.get(l.ticker);
       if (excludeNonEquity && L.nonStockProduct({ ticker: l.ticker, exchange: l.exchange, name: r?.companyName })) { nonEquityExcluded++; continue; }
-      members.push({ l, from: 'STORE' }); continue;
+      members.push({ l, from: 'STORE', cls: l.storeClass }); continue;
     }
     const e = manifest[l.id];
     if (e && (e.status === 'OK' || e.status === 'PARTIAL')) {
-      const inc = l.source === 'UNFETCHABLE_REUSED' ? e.included : L.classifyListing(Master, l, e.name, listedRoots).included;
+      const c = l.source === 'UNFETCHABLE_REUSED' ? { included: e.included, cls: e.cls || null } : L.classifyListing(Master, l, e.name, listedRoots);
+      const inc = c.included;
       // Runde 10 (PREREGISTRATION-R10-FIXES U1): Nicht-Aktien nach Name ausschliessen (ETN/ETF/Hebel, auch Plural).
       if (inc && excludeNonEquity && L.nonStockProduct({ ticker: l.ticker, exchange: l.exchange, name: e.name })) { nonEquityExcluded++; continue; }
-      if (inc) members.push({ l, from: 'R2' });
+      if (inc) members.push({ l, from: 'R2', cls: c.cls || null });
     }
   }
   const todo = LIMIT ? members.slice(0, LIMIT) : members;
@@ -381,7 +382,7 @@ export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity 
     const inWin = raw.filter((b) => b.date >= m.l.startDate && b.date <= (m.l.listEnd || W.to) && (masterIdx.has(b.date) || (offCalendar++, false)));
     L.splitSegments(inWin).forEach((seg, i, all) => {
       if (seg.length < 30) return;
-      segs.push({ id: i ? `${m.l.id}#${i}` : m.l.id, raw: seg, delisted: !m.l.active || i < all.length - 1, survivor: m.from === 'STORE' });
+      segs.push({ id: i ? `${m.l.id}#${i}` : m.l.id, raw: seg, delisted: !m.l.active || i < all.length - 1, survivor: m.from === 'STORE', cls: m.cls || null });
     });
   }
   r2Raw.clear(); storeRaw.clear();
@@ -392,7 +393,7 @@ export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity 
     const sbuf = await driver.get(mine.seriesPrefix + secPitKey);
     const pit = sbuf ? JSON.parse(zlib.gunzipSync(sbuf).toString('utf8')) : {};
     let withFund = 0;
-    for (const seg of segs) { const f = pit[seg.id.split('#')[0]]; if (f) { seg.fund = { eps: f.eps, rev: f.rev, ...(f.shares ? { shares: f.shares, cik: f.cik } : {}) }; withFund++; } }
+    for (const seg of segs) { const f = pit[seg.id.split('#')[0]]; if (f) { seg.fund = { eps: f.eps, rev: f.rev, ...(f.shares ? { shares: f.shares, cik: f.cik, taxonomy: f.taxonomy || null } : {}) }; withFund++; } }
     secCoverage = { segments: segs.length, withFund, delisted: segs.filter((s) => s.delisted).length, delistedWithFund: segs.filter((s) => s.delisted && s.fund).length };
     log(`SEC-Gewinnhistorie: ${withFund}/${segs.length} Segmente, delistet ${secCoverage.delistedWithFund}/${secCoverage.delisted}`);
   }
