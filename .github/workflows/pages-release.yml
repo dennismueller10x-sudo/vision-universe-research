@@ -80,9 +80,13 @@ permissions:
   pages: write
   id-token: write
 
+# PR-Laeufe bekommen eine eigene Gruppe je PR. Die gemeinsame Gruppe
+# 'pages-production' bleibt den Laeufen vorbehalten, die sie brauchen (main,
+# Zeitplan, Dispatch). Vorher konnte ein wartender PR-Lauf einen
+# wartenden Lauf dieser Gruppe verdraengen (Audit 03.10.2026).
 concurrency:
-  group: pages-production
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('pages-production-pr-{0}', github.event.pull_request.number) || 'pages-production' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   package:
