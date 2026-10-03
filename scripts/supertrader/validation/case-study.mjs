@@ -28,10 +28,18 @@ import darvas3 from '../engine/strategies/darvas-v3.mjs';
 import minervini2 from '../engine/strategies/minervini-v2.mjs';
 import donchian2 from '../engine/strategies/donchian-v2.mjs';
 import { trendTemplate } from '../engine/strategies/minervini.mjs';
+import darvas301 from '../engine/strategies/darvas-v301.mjs';
+import kk32 from '../engine/strategies/kk-breakout-v32.mjs';
+import weinstein4 from '../engine/strategies/weinstein-v4.mjs';
+import minervini3 from '../engine/strategies/minervini-v3.mjs';
+import donchian21 from '../engine/strategies/donchian-v21.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 export const PREREG = 'supertrader-validation-prereg-r10-cases-1.0.0';
 export const ENGINES = [kk31, weinstein3, darvas3, minervini2, donchian2];
+// Runde 11 (PREREGISTRATION-R11): aktuelle Live-Versionen (Referenz, mit R10-Portfoliorang) und neue Versionen.
+const rs = (e) => ({ ...e, portfolio: { ...portfolioOf(e), priority: 'RS' } });
+export const ENGINES_R11 = [rs(kk31), rs(kk32), rs(weinstein3), rs(weinstein4), darvas301, rs(minervini2), rs(minervini3), donchian2, donchian21];
 const keyOf = (e) => `${e.id}@${e.version}`;
 const tickerOf = (id) => String(id).split(':')[2];
 const H = 252, MIN_GAIN = 3.0, PRE = 63;
@@ -105,11 +113,13 @@ async function main() {
   const OUT = arg('--out', path.join(os.tmpdir(), 'r10-cases'));
   const LIMIT = Number(arg('--limit', '0'));
   const HOLDOUT = argv.includes('--holdout'); // Runde 10 K3: versiegelte Pruefmenge W3
+  const R11 = argv.includes('--r11'); // Runde 11: neue Fallmenge W4 + Diagnose-Neupruefung
+  const RUN_ENGINES = R11 ? ENGINES_R11 : ENGINES;
   fs.mkdirSync(OUT, { recursive: true });
   const t0 = Date.now();
   const log = (m) => console.log(`[cases +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   const sicMap = loadSic();
-  const { segs, bench, calendar, budget, mine } = await loadPitData({ LIMIT, log });
+  const { segs, bench, calendar, budget, mine, secCoverage } = await loadPitData({ LIMIT, log, secPit: R11 });
 
   // 2. Auswahl
   const info = new Map();
@@ -152,6 +162,10 @@ async function main() {
   // Rang 2 erst nach allen Diagnosefaellen, damit Rang 1 unabhaengig bleibt.
   const usedDiag = new Set(used);
   for (const y of YEARS) { const r = []; for (const cls of ['SURVIVOR', 'DELISTED']) { const c = regular.filter((e) => e.year === y && (cls === 'DELISTED') === info.get(e.seg).delisted && !usedDiag.has(e.seg)).sort((x, z) => z.gain - x.gain || L.sha256(x.seg).localeCompare(L.sha256(z.seg))); for (const e of c) { const div = info.get(e.seg).sicDiv; if (div && r.some((o) => info.get(o.seg).sicDiv === div)) continue; r.push({ ...e, cls }); used.add(e.seg); break; } } holdout.push(...r); }
+  // Runde 11: W4 = naechster Rang derselben Regel nach Diagnose- und Pruefmenge (bisher ungenutzt).
+  const usedHold = new Set(used);
+  const w4 = [];
+  for (const y of YEARS) { const r = []; for (const cls of ['SURVIVOR', 'DELISTED']) { const c = regular.filter((e) => e.year === y && (cls === 'DELISTED') === info.get(e.seg).delisted && !usedHold.has(e.seg)).sort((x, z) => z.gain - x.gain || L.sha256(x.seg).localeCompare(L.sha256(z.seg))); for (const e of c) { const div = info.get(e.seg).sicDiv; if (div && r.some((o) => info.get(o.seg).sicDiv === div)) continue; r.push({ ...e, cls }); used.add(e.seg); break; } } w4.push(...r); }
   if (smci) winners.unshift({ ...smci, cls: 'SMCI' });
   log(`Gewinner Diagnose ${winners.length}, Pruefmenge ${holdout.length}`);
 
@@ -193,21 +207,22 @@ async function main() {
   };
   const losers = winners.map(matchLoser);
   const holdoutLosers = holdout.map(matchLoser);
+  const w4Losers = w4.map(matchLoser);
   log(`Fehlkandidaten ${losers.filter((x) => !x.none).length}/${winners.length}, Pruefmenge ${holdoutLosers.filter((x) => !x.none).length}/${holdout.length}`);
   for (const seg of segs) delete seg.sel;
 
   // 3. Methoden ueber alle Reihen + Spur fuer Diagnosefaelle
   const caseSegs = new Map();
-  const cw = HOLDOUT ? holdout : winners, cl = HOLDOUT ? holdoutLosers : losers;
+  const cw = HOLDOUT ? holdout : R11 ? [...w4, ...winners] : winners, cl = HOLDOUT ? holdoutLosers : R11 ? [...w4Losers, ...losers] : losers;
   for (const w of cw) caseSegs.set(w.seg, { role: 'WINNER', w });
   for (const l of cl) if (!l.none) caseSegs.set(l.seg, { role: 'LOSER', l, w: cw.find((x) => x.seg === l.forWinner) });
-  const allTrades = Object.fromEntries(ENGINES.map((e) => [keyOf(e), []]));
+  const allTrades = Object.fromEntries(RUN_ENGINES.map((e) => [keyOf(e), []]));
   const traces = {};
   let k = 0;
   for (const seg of segs) {
     const ctx = segCtx(seg, bench);
     const cs = caseSegs.get(seg.id);
-    for (const e of ENGINES) {
+    for (const e of RUN_ENGINES) {
       allTrades[keyOf(e)].push(...tradesFor(e, seg, ctx, DEFAULT_EXECUTION));
       if (!cs) continue;
       const d = ctx.bars.date;
@@ -235,15 +250,15 @@ async function main() {
     }
     if (++k % 2000 === 0) log(`simuliert ${k}/${segs.length}`);
   }
-  log('Simulation fertig: ' + ENGINES.map((e) => `${keyOf(e)} ${allTrades[keyOf(e)].length}`).join(', '));
+  log('Simulation fertig: ' + RUN_ENGINES.map((e) => `${keyOf(e)} ${allTrades[keyOf(e)].length}`).join(', '));
 
   // 4. Methodenportfolio S0
   const portfolios = {};
   // Runde 10: Portfoliovarianten - alphabetisch (bisher), Rang nach relativer Staerke (K3),
   // Darvas mit Hoechstgewicht 1/6 (K1). Signale und Trades identisch.
   const variants = [];
-  for (const e of ENGINES) {
-    variants.push({ e, key: keyOf(e), cfg: portfolioOf(e), priority: 'ALPHA' });
+  for (const e of RUN_ENGINES) {
+    variants.push({ e, key: keyOf(e), cfg: portfolioOf(e), priority: R11 ? (portfolioOf(e).priority || 'ALPHA') : 'ALPHA' });
     if (HOLDOUT) variants.push({ e, key: keyOf(e) + '#RS', cfg: portfolioOf(e), priority: 'RS' });
     if (HOLDOUT && e.id === 'DARVAS_BOX') { const k1 = { ...portfolioOf(e), maxPositionPct: 1 / 6 }; variants.push({ e, key: keyOf(e) + '#K1', cfg: k1, priority: 'ALPHA' }, { e, key: keyOf(e) + '#K1RS', cfg: k1, priority: 'RS' }); }
   }
@@ -294,12 +309,12 @@ async function main() {
 
   const brief = (e) => ({ seg: e.seg, ticker: info.get(e.seg).ticker, cls: e.cls, year: e.year, start: e.start, peak: e.peak, gain: e.gain, sicDiv: info.get(e.seg).sicDiv, delisted: info.get(e.seg).delisted, lookDate: e.lookDate || null });
   const result = { schema: 'supertrader-case-study-1.0.0', prereg: PREREG, at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
-    holdoutAnalyzed: HOLDOUT,
+    holdoutAnalyzed: HOLDOUT, r11: R11 ? { w4: w4.map((e) => e.seg), w4Losers: w4Losers.map((l) => l.seg || null), secCoverage } : null,
     selection: { episodes: eps.filter((e) => !e.smci).length, winners: winners.map(brief), losers, holdout: { winners: holdout.map(brief), losers: holdoutLosers } },
     caseInfo: Object.fromEntries([...caseSegs.keys()].map((sid) => [sid, info.get(sid)])),
     traces, portfolios, fundamentals };
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
-  fs.writeFileSync(path.join(OUT, `case-study${HOLDOUT ? '-holdout' : ''}${LIMIT ? '-smoke' : ''}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify(result))));
+  fs.writeFileSync(path.join(OUT, `case-study${HOLDOUT ? '-holdout' : ''}${R11 ? '-r11' : ''}${LIMIT ? '-smoke' : ''}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify(result))));
   log('Verschluesseltes Ergebnis geschrieben');
 }
 

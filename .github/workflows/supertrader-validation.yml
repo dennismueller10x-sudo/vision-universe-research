@@ -25,7 +25,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m]
+        options: [subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4]
         default: subset
   push:
     branches:
@@ -120,7 +120,7 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=14000
         run: node scripts/supertrader/validation/analyze-methods.mjs --set r7 --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r7-smoke' && '--limit 400' || '' }}
       - name: Runde-8 Momentum 3.0.0 und Gegenproben (verschluesselt)
-        if: steps.mode.outputs.mode == 'r8' || steps.mode.outputs.mode == 'r8-smoke' || steps.mode.outputs.mode == 'r8b' || steps.mode.outputs.mode == 'r8c' || steps.mode.outputs.mode == 'r9b' || steps.mode.outputs.mode == 'r10b' || steps.mode.outputs.mode == 'r10c' || steps.mode.outputs.mode == 'r10m'
+        if: steps.mode.outputs.mode == 'r8' || steps.mode.outputs.mode == 'r8-smoke' || steps.mode.outputs.mode == 'r8b' || steps.mode.outputs.mode == 'r8c' || steps.mode.outputs.mode == 'r9b' || steps.mode.outputs.mode == 'r10b' || steps.mode.outputs.mode == 'r10c' || steps.mode.outputs.mode == 'r10m' || steps.mode.outputs.mode == 'r11'
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -129,7 +129,7 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=14000
-        run: node scripts/supertrader/validation/analyze-methods.mjs --set ${{ (steps.mode.outputs.mode == 'r8b' || steps.mode.outputs.mode == 'r8c' || steps.mode.outputs.mode == 'r9b' || steps.mode.outputs.mode == 'r10b' || steps.mode.outputs.mode == 'r10c' || steps.mode.outputs.mode == 'r10m') && steps.mode.outputs.mode || 'r8' }} --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r8-smoke' && '--limit 400' || '' }}
+        run: node scripts/supertrader/validation/analyze-methods.mjs --set ${{ (steps.mode.outputs.mode == 'r8b' || steps.mode.outputs.mode == 'r8c' || steps.mode.outputs.mode == 'r9b' || steps.mode.outputs.mode == 'r10b' || steps.mode.outputs.mode == 'r10c' || steps.mode.outputs.mode == 'r10m' || steps.mode.outputs.mode == 'r11') && steps.mode.outputs.mode || 'r8' }} --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r8-smoke' && '--limit 400' || '' }}
       - name: Intraday-Zugangsprobe (verschluesselt)
         if: steps.mode.outputs.mode == 'intraday-probe'
         env:
@@ -158,7 +158,7 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=14000
         run: node scripts/supertrader/validation/venue-probe.mjs --out "$RUNNER_TEMP/val"
       - name: Fallpruefung Gewinner und Fehlkandidaten (Runde 10, verschluesselt)
-        if: steps.mode.outputs.mode == 'cases' || steps.mode.outputs.mode == 'cases-smoke' || steps.mode.outputs.mode == 'cases-holdout'
+        if: steps.mode.outputs.mode == 'cases' || steps.mode.outputs.mode == 'cases-smoke' || steps.mode.outputs.mode == 'cases-holdout' || steps.mode.outputs.mode == 'cases-w4'
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -167,7 +167,18 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=14000
-        run: node scripts/supertrader/validation/case-study.mjs --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'cases-smoke' && '--limit 600' || '' }} ${{ steps.mode.outputs.mode == 'cases-holdout' && '--holdout' || '' }}
+        run: node scripts/supertrader/validation/case-study.mjs --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'cases-smoke' && '--limit 600' || '' }} ${{ steps.mode.outputs.mode == 'cases-holdout' && '--holdout' || '' }} ${{ steps.mode.outputs.mode == 'cases-w4' && '--r11' || '' }}
+      - name: SEC-Gewinnhistorie zum damaligen Stand (Runde 11, privat + verschluesselt)
+        if: steps.mode.outputs.mode == 'sec-pit'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+        run: node scripts/supertrader/validation/sec-pit.mjs --out "$RUNNER_TEMP/val"
       - name: Universumspruefung Nicht-Aktien (Runde 10, verschluesselt)
         if: steps.mode.outputs.mode == 'universe-audit'
         env:
