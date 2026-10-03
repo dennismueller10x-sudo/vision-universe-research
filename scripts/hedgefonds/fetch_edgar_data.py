@@ -1,111 +1,130 @@
 #!/usr/bin/env python3
-"""Fetch hedge fund 13F-HR holdings from SEC EDGAR and write hedgefonds/data/hedgefonds.json.
+"""Hedgefonds-Daten (SEC-13F) für /hedgefonds/ erzeugen.
 
-Runs server-side (GitHub Actions), not in the visitor's browser. That matters
-for two reasons:
-  - CORS is a browser-only restriction; a plain server-to-server request to
-    www.sec.gov needs no proxy at all.
-  - Browsers refuse to let JavaScript set a custom User-Agent header, but the
-    SEC asks automated clients to identify themselves with a contact address.
-    A server-side script has no such restriction, so this sends a proper,
-    SEC-compliant User-Agent.
+Läuft serverseitig in GitHub Actions, nicht im Browser des Besuchers:
+CORS gilt nur im Browser, und die SEC verlangt einen User-Agent mit
+Kontaktadresse, den Browser-JavaScript nicht setzen darf.
 
-For each fund this fetches the two most recent distinct 13F-HR reporting
-periods (not just the latest), so the frontend can show real quarter-over-
-quarter AUM change and a "new / closed positions" feed derived from a
-CUSIP-level diff between the two quarters. 13F has no transaction log, so
-that diff is the standard convention used by public 13F trackers: a position
-appearing = opened, disappearing = closed.
+Ablauf
+  1. SEC-Sammeldatensatz (Form-13F-Data-Sets) des jüngsten veröffentlichten
+     Quartals laden. Er dient zur CIK-Prüfung der kuratierten Fonds und für
+     die Liste "Weitere Institutionen".
+  2. Für jeden kuratierten Fonds (fund_meta.py) die zwei jüngsten
+     13F-HR-Perioden einzeln von EDGAR holen, Zeilen je CUSIP und
+     Put/Call zusammenfassen (ein Filer meldet eine Aktie oft mehrfach,
+     einmal je Untermanager) und daraus die Trades ableiten:
+        neu / aufgestockt / reduziert / verkauft
+     13F kennt kein Transaktionsprotokoll; der Vergleich der Stückzahlen
+     zweier Quartale ist die übliche Konvention aller 13F-Tracker.
+  3. Portfoliowert der letzten acht Quartale aus dem Deckblatt
+     (primary_doc.xml, tableValueTotal) für den Verlauf.
+  4. Porträts der Manager aus Wikipedia/Wikimedia Commons, nur frei
+     lizenzierte Commons-Dateien, lokal gespeichert (keine Drittanbieter-
+     Anfrage beim Besucher) und mit Urheber/Lizenz.
+  5. CUSIP -> Ticker über OpenFIGI (zwischengespeichert), damit Positionen
+     mit Logo und Link auf die Discover-Aktienseite erscheinen.
+  6. Übergreifende Auswertungen der Star-Investoren: meistgehaltene Aktien,
+     größte Käufe, größte Verkäufe.
+
+Ausgabe
+  hedgefonds/data/hedgefonds.json      Übersicht aller Fonds + Auswertungen
+  hedgefonds/data/funds/<slug>.json    Detail je Fonds (lädt bei Bedarf)
+  hedgefonds/data/cusip-map.json       Cache CUSIP -> Ticker
+  hedgefonds/data/manager-photos.json  Cache Porträts (Lizenz, Urheber)
+  hedgefonds/img/managers/<slug>.jpg   Porträts
 """
 import calendar
 import csv
+import html
 import io
 import json
+import os
+import re
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 import zipfile
-from datetime import datetime, timezone
+from collections import Counter
+from datetime import date, datetime, timezone
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from fund_meta import FUND_META  # noqa: E402
+
 USER_AGENT = "VisionUniverseResearch info@visionuniverse.de"
-OUTPUT_PATH = Path(__file__).resolve().parents[2] / "hedgefonds" / "data" / "hedgefonds.json"
-TOP_HOLDINGS_STORE = 150
-TOP_TRADES_STORE = 40
-REQUEST_DELAY = 0.3  # SEC allows ~10 req/sec; we stay far under that
+ROOT = Path(__file__).resolve().parents[2]
+HF_DIR = ROOT / "hedgefonds"
+DATA_DIR = HF_DIR / "data"
+OUTPUT_PATH = DATA_DIR / "hedgefonds.json"
+FUND_DIR = DATA_DIR / "funds"
+CUSIP_MAP_PATH = DATA_DIR / "cusip-map.json"
+PHOTO_MANIFEST_PATH = DATA_DIR / "manager-photos.json"
+PHOTO_DIR = HF_DIR / "img" / "managers"
+DISCOVER_STOCKS = ROOT / "discover" / "data" / "stocks" / "US_REAL"
+DISCOVER_LOGOS = ROOT / "discover" / "logos" / "files"
+
+SCHEMA = "hedgefonds-2.0.0"
+DETAIL_HOLDINGS = 250        # Positionen je Fonds in der Detaildatei
+DETAIL_TRADES = 60           # je Trade-Art in der Detaildatei
+INDEX_TOP = 10               # Top-Positionen je Fonds in der Übersicht
+HISTORY_QUARTERS = 8
+BULK_EXTRA = 40              # "Weitere Institutionen"
+BULK_DETAIL_HOLDINGS = 100
+REQUEST_DELAY = 0.15         # SEC erlaubt ~10 Anfragen/s
 MAX_RETRIES = 3
-BULK_TOP_N = 100  # Ziel-Gesamtzahl an Fonds inkl. der kuratierten 9
-BULK_VALUE_TOLERANCE = 0.15  # Toleranz für die empirische Werte-Kalibrierung (siehe unten)
+BULK_VALUE_TOLERANCE = 0.15
+UNCHANGED_PCT = 0.5          # Stückzahländerung darunter gilt als unverändert
+# Stile, deren Portfolios aus tausenden, algorithmisch gehandelten Positionen
+# bestehen. Sie bleiben einzeln sichtbar, verzerren aber die übergreifenden
+# Auswertungen ("was kaufen die Star-Investoren"), daher dort ausgenommen.
+AGG_EXCLUDED_STYLES = {"Quant", "Multi-Strategy"}
+
+# Für die Kompatibilität der bestehenden CI-Tests
+TOP_HOLDINGS_STORE = DETAIL_HOLDINGS
+TOP_TRADES_STORE = DETAIL_TRADES
 
 
-# founder / currentLead / managerLabel / photoUrl / photoCredit sind statische,
-# redaktionelle Angaben (keine SEC-Daten) — verifiziert per Web-Recherche am
-# 2026-09-04, da sich Fonds-Führung schnell ändert (siehe z.B. Bridgewater:
-# Dalio verkaufte seinen letzten Anteil erst im Aug. 2025).
-#
-# photoUrl ist nur für Personen gesetzt, für die ein frei lizenziertes Foto
-# auf Wikimedia Commons verifiziert werden konnte (CC BY / CC BY-SA); die
-# anderen bleiben None und fallen im Frontend auf einen Initialen-Avatar
-# zurück — für die meisten Hedgefonds-Manager (anders als z.B. Politiker)
-# gibt es schlicht kein frei lizenziertes Pressefoto. CC BY(-SA) verlangt
-# Namensnennung, daher photoCredit + Link zur Commons-Dateiseite bei jedem
-# gesetzten Foto. Direkter Abruf von commons.wikimedia.org war aus dieser
-# Sandbox blockiert; Lizenzangaben stammen aus Suchergebnis-Snippets, nicht
-# aus einem direkten Seitenabruf — vor Veröffentlichung stichprobenartig auf
-# commons.wikimedia.org gegenprüfen.
-FUND_META = [
-    {"cik": "0001423053", "abbr": "CITADEL", "name": "Citadel Advisors LLC", "type": "Multi-Strategy",
-     "founder": "Ken Griffin", "currentLead": None,
-     "photoUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Kenneth_C._Griffin_photo.jpg",
-     "photoCredit": "Wikimedia Commons, CC BY-SA 4.0",
-     "photoSourceUrl": "https://commons.wikimedia.org/wiki/File:Kenneth_C._Griffin_photo.jpg"},
-    {"cik": "0001009207", "abbr": "DESHAW", "name": "D. E. Shaw & Co., Inc.", "type": "Quantitativ",
-     "founder": "David E. Shaw", "currentLead": "Executive Committee (D. Shaw seit 2002 primär bei D. E. Shaw Research)", "photoUrl": None},
-    {"cik": "0001179392", "abbr": "TWOSIG", "name": "Two Sigma Investments, LP", "type": "Quantitativ",
-     "founder": "John Overdeck & David Siegel", "currentLead": "Führung seit 2024 mehrfach verändert (zuletzt Co-CEO-Rücktritt, Apr. 2026)", "photoUrl": None},
-    {"cik": "0001273087", "abbr": "MILLENM", "name": "Millennium Management LLC", "type": "Multi-Strategy",
-     "founder": "Israel Englander", "currentLead": None, "photoUrl": None},
-    {"cik": "0001637460", "abbr": "MGROUP", "name": "Man Group plc", "type": "Quantitativ",
-     "founder": "Robyn Grew", "managerLabel": "CEO", "currentLead": None, "photoUrl": None},
-    {"cik": "0001350694", "abbr": "BRDGWTR", "name": "Bridgewater Associates, LP", "type": "Macro",
-     "founder": "Ray Dalio", "currentLead": "Seit Aug. 2025 nicht mehr operativ beteiligt; geführt von Co-CIOs Karniol-Tambour, Prince, Jensen",
-     "photoUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ray_Dalio_Sept_23_2017_NYC.jpg",
-     "photoCredit": "Wikimedia Commons, CC BY 3.0",
-     "photoSourceUrl": "https://commons.wikimedia.org/wiki/File:Ray_Dalio_Sept_23_2017_NYC.jpg"},
-    {"cik": "0001037389", "abbr": "RENTEC", "name": "Renaissance Technologies LLC", "type": "Quantitativ",
-     "founder": "Jim Simons (†2024)", "currentLead": "Peter Brown (CEO)",
-     "photoUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/James_Simons_2007.jpg",
-     "photoCredit": "Oberwolfach Photo Collection / Wikimedia Commons, CC BY-SA 2.0 DE",
-     "photoSourceUrl": "https://commons.wikimedia.org/wiki/File:James_Simons_2007.jpg"},
-    {"cik": "0001603466", "abbr": "PT72", "name": "Point72 Asset Management, L.P.", "type": "Long/Short",
-     "founder": "Steven A. Cohen", "currentLead": None, "photoUrl": None},
-    {"cik": "0001067983", "abbr": "BRK", "name": "Berkshire Hathaway Inc", "type": "Value",
-     "founder": "Warren Buffett", "currentLead": "Greg Abel (CEO seit 1. Jan. 2026); Buffett bleibt Chairman",
-     "photoUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Warren_Buffett_at_the_2015_SelectUSA_Investment_Summit_(cropped).jpg",
-     "photoCredit": "US Department of Commerce / Wikimedia Commons, gemeinfrei (PD-USGov)",
-     "photoSourceUrl": "https://commons.wikimedia.org/wiki/File:Warren_Buffett_at_the_2015_SelectUSA_Investment_Summit_(cropped).jpg"},
-]
-
-
-def http_get(url):
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept-Encoding": "identity"})
+# ----------------------------------------------------------------- HTTP
+def http_get(url, headers=None, data=None, timeout=60):
+    h = {"User-Agent": USER_AGENT, "Accept-Encoding": "identity"}
+    h.update(headers or {})
+    req = urllib.request.Request(url, headers=h, data=data)
     last_err = None
     for attempt in range(MAX_RETRIES):
         try:
-            with urllib.request.urlopen(req, timeout=30) as resp:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
                 return resp.read()
-        except (urllib.error.URLError, TimeoutError) as exc:
+        except urllib.error.HTTPError as exc:
+            last_err = exc
+            if exc.code == 404:
+                break
+            if exc.code == 429:
+                time.sleep(20 * (attempt + 1))
+                continue
+            time.sleep(1.5 * (attempt + 1))
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as exc:
             last_err = exc
             time.sleep(1.5 * (attempt + 1))
-    raise RuntimeError(f"Abruf fehlgeschlagen nach {MAX_RETRIES} Versuchen: {url} ({last_err})")
+    raise RuntimeError(f"Abruf fehlgeschlagen: {url} ({last_err})")
 
 
-def http_get_json(url):
-    return json.loads(http_get(url))
+def http_get_json(url, **kw):
+    return json.loads(http_get(url, **kw))
 
 
+def sec_get(url):
+    time.sleep(REQUEST_DELAY)
+    return http_get(url)
+
+
+def sec_get_json(url):
+    return json.loads(sec_get(url))
+
+
+# ------------------------------------------------------------- XML-Helfer
 def local_name(tag):
     return tag.split("}", 1)[1] if "}" in tag else tag
 
@@ -117,10 +136,23 @@ def find_child_text(el, name):
     return ""
 
 
+def to_float(raw):
+    try:
+        return float(str(raw or "0").replace(",", "").strip() or 0)
+    except ValueError:
+        return 0.0
+
+
+# --------------------------------------------------------- 13F-Perioden
 def find_recent_13fs(filings_recent, n=2):
     """Liefert die n zuletzt gemeldeten, DISTINKTEN 13F-HR-Berichtsperioden.
     Bei einer Änderung (13F-HR/A) zu einer bereits erfassten Periode wird die
-    zuletzt eingereichte Version bevorzugt."""
+    zuletzt eingereichte Version bevorzugt.
+
+    Hinweis: Eine 13F-HR/A kann auch nur ergänzende Zeilen enthalten
+    ("new holdings"-Amendment). Solche Ergänzungen sind selten und klein;
+    für die Darstellung zählt das jüngste vollständige Filing der Periode,
+    siehe pick_filing_for_period()."""
     forms = filings_recent.get("form", [])
     accs = filings_recent.get("accessionNumber", [])
     filed = filings_recent.get("filingDate", [])
@@ -129,16 +161,38 @@ def find_recent_13fs(filings_recent, n=2):
     for i, f in enumerate(forms):
         if f in ("13F-HR", "13F-HR/A"):
             rd = report[i]
+            if not rd:
+                continue
             if rd not in by_period or filed[i] > by_period[rd]["filedDate"]:
                 by_period[rd] = {"form": f, "accession": accs[i], "filedDate": filed[i], "reportDate": rd}
     periods = sorted(by_period.keys(), reverse=True)
     return [by_period[p] for p in periods[:n]]
 
 
+def all_13f_filings(filings_recent):
+    """Alle 13F-HR(/A)-Einreichungen als Liste, neueste zuerst."""
+    out = []
+    forms = filings_recent.get("form", [])
+    for i, f in enumerate(forms):
+        if f in ("13F-HR", "13F-HR/A") and filings_recent["reportDate"][i]:
+            out.append({"form": f, "accession": filings_recent["accessionNumber"][i],
+                        "filedDate": filings_recent["filingDate"][i],
+                        "reportDate": filings_recent["reportDate"][i]})
+    out.sort(key=lambda x: (x["reportDate"], x["filedDate"]), reverse=True)
+    return out
+
+
+def merge_filings(a, b):
+    """Zwei 'filings.recent'-artige Spaltenobjekte aneinanderhängen."""
+    keys = ("form", "accessionNumber", "filingDate", "reportDate")
+    return {k: list(a.get(k, [])) + list(b.get(k, [])) for k in keys}
+
+
 def acc_no_dashes(acc):
     return acc.replace("-", "")
 
 
+# ------------------------------------------------------- Info-Table-Parser
 def parse_info_table_xml(xml_bytes):
     root = ET.fromstring(xml_bytes)
     holdings = []
@@ -148,51 +202,88 @@ def parse_info_table_xml(xml_bytes):
         issuer = find_child_text(el, "nameOfIssuer")
         if not issuer:
             continue
-        cls = find_child_text(el, "titleOfClass")
-        cusip = find_child_text(el, "cusip")
-        try:
-            # SEC's 13F XML technical spec was updated in 2023: <value> is now
-            # reported in whole USD, not thousands as in the pre-2023 spec (this
-            # dashboard only ever fetches the current and prior quarter, so it
-            # will never hit an old-format filing). Confirmed against a real
-            # GitHub Actions run: without this, every fund's AUM came back
-            # inflated by exactly 1000x (e.g. D.E. Shaw as $210T instead of
-            # a plausible $210B).
-            value_usd = float(find_child_text(el, "value") or 0)
-        except ValueError:
-            value_usd = 0.0
-        shares = 0.0
+        # Seit der 13F-XML-Spezifikation von 2023 steht <value> in ganzen USD
+        # (vorher in Tausend). Alle hier verarbeiteten Perioden sind neuer.
+        value_usd = to_float(find_child_text(el, "value"))
+        shares, share_type = 0.0, ""
         for child in el:
             if local_name(child.tag) == "shrsOrPrnAmt":
-                try:
-                    shares = float(find_child_text(child, "sshPrnamt") or 0)
-                except ValueError:
-                    shares = 0.0
+                shares = to_float(find_child_text(child, "sshPrnamt"))
+                share_type = find_child_text(child, "sshPrnamtType").upper()
+        put_call = find_child_text(el, "putCall").upper()
         holdings.append({
-            "issuer": issuer, "cls": cls, "cusip": cusip,
+            "issuer": issuer, "cls": find_child_text(el, "titleOfClass"),
+            "cusip": find_child_text(el, "cusip").upper(),
             "valueUSD": value_usd, "shares": shares,
+            "shareType": share_type, "putCall": put_call if put_call in ("PUT", "CALL") else "",
         })
     return holdings
 
 
-def fetch_filing_holdings(cik_int, accession):
-    acc_dashes = acc_no_dashes(accession)
-    idx = http_get_json(f"https://www.sec.gov/Archives/edgar/data/{cik_int}/{acc_dashes}/index.json")
-    items = idx.get("directory", {}).get("item", [])
-    names = [it["name"] for it in items]
+def parse_cover_totals(xml_bytes):
+    """tableValueTotal / tableEntryTotal aus primary_doc.xml."""
+    root = ET.fromstring(xml_bytes)
+    value = entries = None
+    for el in root.iter():
+        n = local_name(el.tag)
+        if n == "tableValueTotal":
+            value = to_float(el.text)
+        elif n == "tableEntryTotal":
+            entries = int(to_float(el.text))
+    return value, entries
+
+
+def filing_index(cik_int, accession):
+    idx = sec_get_json(f"https://www.sec.gov/Archives/edgar/data/{cik_int}/{acc_no_dashes(accession)}/index.json")
+    return [it["name"] for it in idx.get("directory", {}).get("item", [])]
+
+
+def fetch_filing_holdings(cik_int, accession, names=None):
+    names = names if names is not None else filing_index(cik_int, accession)
     candidates = [n for n in names if n.lower().endswith(".xml") and n.lower() != "primary_doc.xml"]
     if not candidates:
         candidates = [n for n in names if n.lower().endswith(".xml")]
     if not candidates:
         raise RuntimeError("Keine Info-Table-XML im Filing gefunden.")
-
     for fname in candidates:
-        time.sleep(REQUEST_DELAY)
-        xml_bytes = http_get(f"https://www.sec.gov/Archives/edgar/data/{cik_int}/{acc_dashes}/{fname}")
+        xml_bytes = sec_get(f"https://www.sec.gov/Archives/edgar/data/{cik_int}/{acc_no_dashes(accession)}/{fname}")
         holdings = parse_info_table_xml(xml_bytes)
         if holdings:
             return holdings
     raise RuntimeError("Info-Table-XML konnte nicht geparst werden.")
+
+
+def fetch_cover_total(cik_int, filing):
+    names = filing_index(cik_int, filing["accession"])
+    if "primary_doc.xml" not in names:
+        return None
+    value, entries = parse_cover_totals(
+        sec_get(f"https://www.sec.gov/Archives/edgar/data/{cik_int}/{acc_no_dashes(filing['accession'])}/primary_doc.xml"))
+    if value is None:
+        return None
+    if filing["filedDate"] < "2023-01-03":  # alte Spezifikation: Tausend USD
+        value *= 1000
+    return {"period": filing["reportDate"], "valueUSD": value, "positions": entries}
+
+
+# ------------------------------------------------- Positionen & Trades
+def position_key(h):
+    return (h.get("cusip") or h.get("issuer", "").upper(), h.get("putCall", ""))
+
+
+def aggregate_positions(rows):
+    """Fasst Zeilen gleicher CUSIP + Put/Call zusammen (Untermanager,
+    mehrere Verwahrstellen) und sortiert nach Wert."""
+    agg = {}
+    for h in rows:
+        k = position_key(h)
+        if k not in agg:
+            agg[k] = {"issuer": h["issuer"], "cls": h.get("cls", ""), "cusip": h.get("cusip", ""),
+                      "putCall": h.get("putCall", ""), "shareType": h.get("shareType", ""),
+                      "valueUSD": 0.0, "shares": 0.0}
+        agg[k]["valueUSD"] += h.get("valueUSD", 0.0)
+        agg[k]["shares"] += h.get("shares", 0.0)
+    return sorted(agg.values(), key=lambda h: -h["valueUSD"])
 
 
 def diff_holdings(current, previous):
@@ -215,27 +306,65 @@ def diff_holdings(current, previous):
     return opened, closed
 
 
+def compute_trades(current, previous):
+    """Vergleicht zwei (bereits aggregierte) Quartale je Position.
+
+    Liefert dict key -> trade mit status new/added/reduced/sold/unchanged,
+    Stückzahländerung, Änderung in Prozent und dem geschätzten Volumen
+    (Stückzahländerung x Quartalsendkurs; für Verkäufe der Vorquartalswert)."""
+    cur = {position_key(h): h for h in current}
+    prev = {position_key(h): h for h in previous}
+    trades = {}
+    for k in set(cur) | set(prev):
+        c, p = cur.get(k), prev.get(k)
+        base = c or p
+        t = {"issuer": base["issuer"], "cls": base.get("cls", ""), "cusip": base.get("cusip", ""),
+             "putCall": base.get("putCall", ""),
+             "shares": c["shares"] if c else 0.0, "prevShares": p["shares"] if p else 0.0,
+             "valueUSD": c["valueUSD"] if c else 0.0, "prevValueUSD": p["valueUSD"] if p else 0.0}
+        if c and not p:
+            t.update(status="new", deltaShares=c["shares"], deltaPct=None, estValueUSD=c["valueUSD"])
+        elif p and not c:
+            t.update(status="sold", deltaShares=-p["shares"], deltaPct=-100.0, estValueUSD=-p["valueUSD"])
+        else:
+            ds = c["shares"] - p["shares"]
+            pct = (ds / p["shares"] * 100) if p["shares"] else None
+            price = (c["valueUSD"] / c["shares"]) if c["shares"] else 0.0
+            if pct is None or abs(pct) < UNCHANGED_PCT:
+                status = "unchanged"
+            else:
+                status = "added" if ds > 0 else "reduced"
+            t.update(status=status, deltaShares=ds, deltaPct=pct, estValueUSD=ds * price)
+        trades[k] = t
+    return trades
+
+
+def trade_lists(trades, limit):
+    by = {"new": [], "added": [], "reduced": [], "sold": []}
+    for t in trades.values():
+        if t["status"] in by:
+            by[t["status"]].append(t)
+    for k in by:
+        by[k].sort(key=lambda t: -abs(t["estValueUSD"]))
+    counts = {k: len(v) for k, v in by.items()}
+    return {k: v[:limit] for k, v in by.items()}, counts
+
+
+# ------------------------------------------------ SEC-Sammeldatensatz
 _MONTH_ABBR = ["", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
-_REPORT_MONTH_TO_DEADLINE_MONTH = {3: 5, 6: 8, 9: 11, 12: 2}  # Quartalsende-Monat -> Meldefrist-Monat
+_REPORT_MONTH_TO_DEADLINE_MONTH = {3: 5, 6: 8, 9: 11, 12: 2}
 
 
 def bulk_window_for_report_period(report_date):
-    """Bildet ein 13F-Berichtsdatum (Quartalsende, z.B. '2026-06-30') auf das
-    SEC-Sammel-Datensatz-Fenster ab, das dessen Filings enthält.
-
-    Das Namensschema der SEC-Bulk-13F-ZIPs wechselte irgendwann zwischen 2021
-    und 2024 von '{jahr}q{quartal}_form13f.zip' auf ein Datumsfenster-Format
-    wie '01jun2024-31aug2024_form13f.zip' — verifiziert per Web-Suche anhand
-    zweier echter Beispiel-URLs: '01jun2024-31aug2024' (zur Meldefrist 14.
-    Aug) und '01sep2025-30nov2025' (zur Meldefrist 14. Nov). Das Fenster
-    beginnt jeweils 2 Kalendermonate vor dem Meldefrist-Monat und endet am
-    letzten Tag des Meldefrist-Monats."""
+    """Berichtsdatum (Quartalsende) -> Fenster des SEC-Bulk-ZIPs, z.B.
+    '2026-06-30' -> '01jun2026-31aug2026'. Das Fenster beginnt 2 Monate vor
+    dem Meldefrist-Monat und endet an dessen letztem Tag."""
     y, m, _ = report_date.split("-")
     y, m = int(y), int(m)
     deadline_month = _REPORT_MONTH_TO_DEADLINE_MONTH.get(m)
     if deadline_month is None:
         raise ValueError(f"Unerwartetes Berichts-Quartalsende: {report_date}")
-    deadline_year = y + 1 if (m == 12) else y  # Q4-Ende (Dez) -> Meldefrist im Februar des Folgejahres
+    deadline_year = y + 1 if (m == 12) else y
     start_month = deadline_month - 2
     start_year = deadline_year
     if start_month <= 0:
@@ -252,30 +381,34 @@ def bulk_zip_url_for_period(report_date):
 
 def download_bulk_zip(report_date):
     time.sleep(REQUEST_DELAY)
-    data = http_get(bulk_zip_url_for_period(report_date))
+    data = http_get(bulk_zip_url_for_period(report_date), timeout=300)
     return zipfile.ZipFile(io.BytesIO(data))
 
 
 def previous_report_period(report_date):
-    """Quartalsende-Datum des VORHERIGEN Quartals, z.B. '2026-06-30' -> '2026-03-31'."""
     y, m, _ = report_date.split("-")
     y, m = int(y), int(m)
-    prev_m = m - 3
-    prev_y = y
+    prev_m, prev_y = m - 3, y
     if prev_m <= 0:
         prev_m += 12
         prev_y -= 1
-    last_day = calendar.monthrange(prev_y, prev_m)[1]
-    return f"{prev_y:04d}-{prev_m:02d}-{last_day:02d}"
+    return f"{prev_y:04d}-{prev_m:02d}-{calendar.monthrange(prev_y, prev_m)[1]:02d}"
 
 
-# Die exakten Spaltennamen der SEC-Bulk-13F-Datensätze konnten aus dieser
-# Sandbox nicht direkt verifiziert werden (sec.gov-Zugriff blockiert; nur
-# Suchergebnis-Snippets verfügbar). Daher hier bewusst KEINE feste
-# Spaltenreihenfolge, sondern Header-basiertes Nachschlagen mit mehreren
-# plausiblen Namensvarianten — bricht der echte Header ab, wird das unten
-# in parse_bulk_quarter() klar geloggt und die Bulk-Erweiterung übersprungen
-# (die 8 kuratierten Fonds bleiben davon unberührt).
+def latest_closed_report_period(today):
+    """Jüngstes Quartalsende, dessen Bulk-Fenster (Meldefrist-Monat) bereits
+    abgeschlossen ist."""
+    q_end = f"{today.year:04d}-12-31"
+    while True:
+        y, m, _ = (int(x) for x in q_end.split("-"))
+        dm = _REPORT_MONTH_TO_DEADLINE_MONTH[m]
+        dy = y + 1 if m == 12 else y
+        window_end = date(dy, dm, calendar.monthrange(dy, dm)[1])
+        if window_end < today:
+            return q_end
+        q_end = previous_report_period(q_end)
+
+
 BULK_COLUMNS = {
     "accession": ["ACCESSION_NUMBER", "ACCESSIONNUMBER"],
     "cik": ["CIK", "FILER_CIK", "FILERCIK"],
@@ -288,6 +421,7 @@ BULK_COLUMNS = {
     "value": ["VALUE"],
     "title_of_class": ["TITLEOFCLASS", "TITLE_OF_CLASS"],
     "shares": ["SSHPRNAMT", "SSH_PRNAMT"],
+    "put_call": ["PUTCALL", "PUT_CALL"],
 }
 
 
@@ -311,13 +445,7 @@ _BULK_DATE_FORMATS = ["%Y-%m-%d", "%d-%b-%Y", "%Y%m%d", "%m/%d/%Y"]
 
 
 def normalize_bulk_date(raw):
-    """Normalisiert ein Datum aus den Bulk-TSVs auf ISO 'YYYY-MM-DD'. Das
-    Format ist real als '31-MAR-2026' (Tag-Monatskürzel-Jahr) beobachtet
-    worden — abweichend vom ISO-Format der data.sec.gov-JSON-API, die für
-    die kuratierten Fonds verwendet wird. Mehrere Formate werden versucht,
-    damit ein Client (der ISO 'YYYY-MM-DD' erwartet) nicht an einem
-    unerwarteten Format zerbricht; liefert bei Fehlschlag den Rohwert
-    unverändert zurück (besser sichtbar falsch als ein Absturz)."""
+    """Bulk-Datum ('31-MAR-2026') -> ISO 'YYYY-MM-DD'; Rohwert bei Fehlschlag."""
     raw = (raw or "").strip()
     if not raw:
         return raw
@@ -330,11 +458,6 @@ def normalize_bulk_date(raw):
 
 
 def parse_coverpage_names(zf):
-    """Liefert dict ACCESSION_NUMBER -> Name des Filing-Managers aus
-    COVERPAGE.tsv. SUBMISSION.tsv selbst enthält bei den bislang beobachteten
-    Bulk-Datensätzen keine verwertbare Namensspalte (COVERPAGE.tsv trägt den
-    Namen); optionaler, best-effort Zusatzschritt — liefert {} statt zu
-    werfen, wenn die Datei/Spalten fehlen."""
     cp_f = open_tsv_from_zip(zf, "COVERPAGE.tsv")
     if not cp_f:
         return {}
@@ -354,8 +477,8 @@ def parse_coverpage_names(zf):
 
 
 def parse_bulk_quarter(zf):
-    """Liefert dict cik10 -> {name, accession, filingDate, reportDate, holdings:[...]}
-    für alle 13F-HR/-A-Filer eines Quartals aus dem offiziellen SEC-Bulk-Datensatz."""
+    """dict cik10 -> {name, accession, filingDate, reportDate, holdings:[...]}
+    für alle 13F-HR/-A-Filer eines Quartals aus dem SEC-Bulk-Datensatz."""
     sub_f = open_tsv_from_zip(zf, "SUBMISSION.tsv")
     info_f = open_tsv_from_zip(zf, "INFOTABLE.tsv")
     if not sub_f or not info_f:
@@ -375,17 +498,13 @@ def parse_bulk_quarter(zf):
     if missing:
         raise RuntimeError(f"SUBMISSION.tsv: Spalten fehlen {missing}. Vorhanden: {fn}")
 
-    by_period = {}  # (cik10, period) -> meta
+    by_period = {}
     for row in sub_reader:
         subtype = (row.get(col_subtype) or "").strip().upper()
         if subtype not in ("13F-HR", "13F-HR/A"):
             continue
-        cik_raw = (row.get(col_cik) or "").strip().lstrip("0")
-        cik10 = (cik_raw or "0").zfill(10)
+        cik10 = ((row.get(col_cik) or "").strip().lstrip("0") or "0").zfill(10)
         acc = (row.get(col_acc) or "").strip()
-        # ISO-normalisieren VOR dem Stringvergleich unten — die real beobachtete
-        # Rohform ('31-MAR-2026') sortiert als String nicht chronologisch
-        # (z.B. '01-APR-2026' < '15-JAN-2026' alphabetisch, aber nicht zeitlich).
         filed = normalize_bulk_date(row.get(col_filed))
         period = normalize_bulk_date(row.get(col_period))
         name = coverpage_names.get(acc) or ((row.get(col_filername) or "").strip() if col_filername else "")
@@ -403,6 +522,7 @@ def parse_bulk_quarter(zf):
     icol_value = find_column(ifn, BULK_COLUMNS["value"])
     icol_class = find_column(ifn, BULK_COLUMNS["title_of_class"])
     icol_shares = find_column(ifn, BULK_COLUMNS["shares"])
+    icol_pc = find_column(ifn, BULK_COLUMNS["put_call"])
     imissing = [n for n, v in [("accession", icol_acc), ("issuer", icol_issuer),
                                 ("cusip", icol_cusip), ("value", icol_value)] if not v]
     if imissing:
@@ -413,20 +533,14 @@ def parse_bulk_quarter(zf):
         acc = (row.get(icol_acc) or "").strip()
         if acc not in accepted_accessions:
             continue
-        try:
-            value_raw = float((row.get(icol_value) or "0").replace(",", "") or 0)
-        except ValueError:
-            value_raw = 0.0
-        try:
-            shares = float((row.get(icol_shares) or "0").replace(",", "") or 0) if icol_shares else 0.0
-        except ValueError:
-            shares = 0.0
+        pc = (row.get(icol_pc) or "").strip().upper() if icol_pc else ""
         holdings_by_acc.setdefault(acc, []).append({
             "issuer": (row.get(icol_issuer) or "").strip(),
-            "cusip": (row.get(icol_cusip) or "").strip(),
+            "cusip": (row.get(icol_cusip) or "").strip().upper(),
             "cls": (row.get(icol_class) or "").strip() if icol_class else "",
-            "valueUSD": value_raw,  # noch unkalibriert, siehe calibrate_bulk_scale()
-            "shares": shares,
+            "valueUSD": to_float(row.get(icol_value)),  # noch unkalibriert
+            "shares": to_float(row.get(icol_shares)) if icol_shares else 0.0,
+            "putCall": pc if pc in ("PUT", "CALL") else "",
         })
 
     result = {}
@@ -434,23 +548,17 @@ def parse_bulk_quarter(zf):
         holdings = holdings_by_acc.get(meta["accession"], [])
         if not holdings:
             continue
-        # bei mehreren Perioden je CIK im selben Datensatz die neueste behalten
         if cik10 in result and result[cik10]["reportDate"] > meta["reportDate"]:
             continue
-        result[cik10] = {
-            "name": meta["name"], "accession": meta["accession"],
-            "filingDate": meta["filingDate"], "reportDate": meta["reportDate"],
-            "holdings": holdings,
-        }
+        result[cik10] = {"name": meta["name"], "accession": meta["accession"],
+                         "filingDate": meta["filingDate"], "reportDate": meta["reportDate"],
+                         "holdings": holdings}
     return result
 
 
 def calibrate_bulk_scale(bulk_quarter, curated_records):
-    """Bestimmt EMPIRISCH (nicht aus Doku, die für die einzelnen XML-Filings
-    nachweislich veraltet war — siehe Value-Bug weiter oben) den Skalierungs-
-    faktor der Bulk-VALUE-Spalte, indem die Summenwerte der kuratierten,
-    bereits individuell verifizierten Fonds mit den Bulk-Werten derselben
-    CIKs verglichen werden."""
+    """Skalierung der Bulk-VALUE-Spalte EMPIRISCH gegen die einzeln geladenen
+    Fonds bestimmen (x1 oder x1000), statt der Doku zu trauen."""
     ratios = []
     for rec in curated_records:
         bulk_fund = bulk_quarter.get(rec["cik"])
@@ -461,9 +569,10 @@ def calibrate_bulk_scale(bulk_quarter, curated_records):
             ratios.append(rec["totalValueUSD"] / bulk_total)
     if not ratios:
         return None, 0
-    avg_ratio = sum(ratios) / len(ratios)
+    ratios.sort()
+    median = ratios[len(ratios) // 2]
     for candidate in (1, 1000):
-        if abs(avg_ratio - candidate) / candidate < BULK_VALUE_TOLERANCE:
+        if abs(median - candidate) / candidate < BULK_VALUE_TOLERANCE:
             return candidate, len(ratios)
     return None, len(ratios)
 
@@ -474,13 +583,6 @@ def abbr_from_name(name):
     return "".join(w[0] for w in words[:4]).upper() or (name or "")[:6].upper()
 
 
-# Grobe Klassifikation für Bulk-Fonds (die kuratierten Fonds sind alle fest
-# "Hedgefonds"): der SEC-Sammeldatensatz enthält JEDEN institutionellen
-# Manager >100M USD AUM, nicht nur Hedgefonds — u.a. Banken, Vermögensver-
-# walter und Marktmacher, die ihre eigenen/Kunden-Positionen melden. Der
-# Nutzer möchte alle behalten, aber im Frontend nach Kategorie filtern
-# können. Musterabgleich auf Basis bekannter Institutsnamen; alles
-# Unbekannte fällt auf "Sonstige" (kein Hedgefonds-Ausschluss).
 BULK_CATEGORY_PATTERNS = [
     ("Bank & Broker", ["MORGAN STANLEY", "BANK OF AMERICA", "GOLDMAN SACHS", "UBS GROUP", "UBS AG",
         "ROYAL BANK OF CANADA", "JPMORGAN", "JP MORGAN", "WELLS FARGO", "CITIGROUP",
@@ -488,7 +590,7 @@ BULK_CATEGORY_PATTERNS = [
         "BNY MELLON", "NORTHERN TRUST", "CHARLES SCHWAB", "TORONTO-DOMINION",
         "BANK OF MONTREAL", "SCOTIABANK", "NOMURA", "MIZUHO", "SUMITOMO MITSUI",
         "MITSUBISHI UFJ", "SOCIETE GENERALE", "BNP PARIBAS", "STANDARD CHARTERED",
-        "RAYMOND JAMES", "STIFEL", "TRUIST", "U.S. BANCORP", "US BANCORP"]),
+        "RAYMOND JAMES", "STIFEL", "TRUIST", "U.S. BANCORP", "US BANCORP", "BANK"]),
     ("Marktmacher / Trading", ["SUSQUEHANNA", "JANE STREET", "CITADEL SECURITIES", "VIRTU FINANCIAL",
         "IMC CHICAGO", "IMC-CHICAGO", "OPTIVER", "DRW HOLDINGS", "FLOW TRADERS",
         "HUDSON RIVER TRADING", "JUMP TRADING", "TWO SIGMA SECURITIES", "WOLVERINE TRADING"]),
@@ -513,208 +615,569 @@ def classify_bulk_fund(name):
     return "Sonstige"
 
 
-def fetch_bulk_expansion(curated_records, target_total):
-    if not curated_records:
-        print("Bulk-Erweiterung übersprungen: keine kuratierten Fonds als Kalibrierungs-Basis.", file=sys.stderr)
-        return []
-
-    cur_report_date = curated_records[0]["reportDate"]
-    prev_report_date = previous_report_period(cur_report_date)
-
-    # Kalibrierungs-Sets MÜSSEN zur jeweiligen Bulk-Periode passen: ein Fonds'
-    # AUM kann sich zwischen zwei Quartalen leicht (real, nicht Skalierungs-
-    # Artefakt) um mehr als BULK_VALUE_TOLERANCE ändern — würde man das
-    # aktuelle Quartal gegen Bulk-Daten eines ANDEREN Quartals kalibrieren,
-    # bekäme man ein verfälschtes, evtl. fälschlich "eindeutiges" Verhältnis.
-    current_calib = [{"cik": r["cik"], "totalValueUSD": r["totalValueUSD"]} for r in curated_records]
-    prev_calib = [{"cik": r["cik"], "totalValueUSD": r["prevTotalValueUSD"]}
-                  for r in curated_records if r.get("prevTotalValueUSD") is not None]
-
-    # SEC veröffentlicht den Bulk-Datensatz für ein Quartal erst mit Verzögerung
-    # NACH dessen Meldefrist — das aktuelle Quartal kann daher noch fehlen,
-    # während das vorherige (dessen Fenster schon vor Monaten schloss) mit
-    # hoher Wahrscheinlichkeit bereits verfügbar ist. Fallback ist bewusst auf
-    # genau eine Periode begrenzt (kein unbegrenztes Rückwärtssuchen).
-    candidates = [(cur_report_date, current_calib, False)]
-    if prev_calib:
-        candidates.append((prev_report_date, prev_calib, True))
-
-    bulk_report_date, bulk_data, scale, used_fallback = None, None, None, False
-    for candidate_date, calib_set, is_fallback in candidates:
-        print(f"Bulk-Erweiterung: lade SEC-Sammeldatensatz für Berichtsperiode {candidate_date} "
-              f"({bulk_zip_url_for_period(candidate_date)})...", file=sys.stderr)
+def load_latest_bulk(today):
+    """Lädt den jüngsten veröffentlichten Bulk-Datensatz (max. 2 Versuche)."""
+    period = latest_closed_report_period(today)
+    for candidate in (period, previous_report_period(period)):
+        print(f"Bulk: lade {bulk_zip_url_for_period(candidate)}", file=sys.stderr)
         try:
-            zf = download_bulk_zip(candidate_date)
-            data = parse_bulk_quarter(zf)
+            data = parse_bulk_quarter(download_bulk_zip(candidate))
+            print(f"  OK: {len(data)} Filer", file=sys.stderr)
+            return candidate, data
         except Exception as exc:  # noqa: BLE001
-            print(f"  nicht ladbar/parsebar: {exc}", file=sys.stderr)
-            continue
-        s, calib_n = calibrate_bulk_scale(data, calib_set)
-        if s is None:
-            print(f"  Werte-Kalibrierung nicht eindeutig ({calib_n} Vergleichsfonds). Format weicht evtl. ab.",
-                  file=sys.stderr)
-            continue
-        bulk_report_date, bulk_data, scale, used_fallback = candidate_date, data, s, is_fallback
-        print(f"  OK, Skalierungsfaktor x{s} (anhand {calib_n} bekannter Fonds)"
-              + (" [Vorquartal als Fallback — aktuelles Quartal von der SEC noch nicht veröffentlicht]"
-                 if is_fallback else ""), file=sys.stderr)
-        break
+            print(f"  nicht ladbar: {exc}", file=sys.stderr)
+    return None, {}
 
-    if bulk_data is None:
-        print("Bulk-Erweiterung übersprungen: kein Quartal ladbar/kalibrierbar.", file=sys.stderr)
-        return []
 
-    # QoQ-Diff für die Bulk-Fonds nur möglich, wenn wir das AKTUELLE Quartal
-    # bekommen haben — beim Vorquartals-Fallback gäbe es kein noch früheres
-    # Quartal, gegen das die kuratierten Fonds selbst kalibriert werden könnten.
-    prev_data = {}
-    if not used_fallback:
+# ------------------------------------------------------ CIK-Auflösung
+def bulk_candidates(bulk, match):
+    out = []
+    for cik, f in bulk.items():
+        if match in (f.get("name") or "").upper():
+            out.append((sum(h["valueUSD"] for h in f["holdings"]), cik, f["name"]))
+    out.sort(reverse=True)
+    return out
+
+
+def load_submissions(cik):
+    sub = sec_get_json(f"https://data.sec.gov/submissions/CIK{cik}.json")
+    filings = sub.get("filings", {}).get("recent", {})
+    if len(find_recent_13fs(filings, HISTORY_QUARTERS)) < HISTORY_QUARTERS:
+        for extra in sub.get("filings", {}).get("files", [])[:1]:
+            try:
+                older = sec_get_json(f"https://data.sec.gov/submissions/{extra['name']}")
+                filings = merge_filings(filings, older)
+            except Exception as exc:  # noqa: BLE001
+                print(f"  ältere Filings nicht ladbar: {exc}", file=sys.stderr)
+    return sub, filings
+
+
+def resolve_fund(meta, bulk):
+    """Liefert (cik, submissions, filings) – geprüft gegen meta['match']."""
+    match = meta["match"]
+    tried = []
+    if meta.get("cik"):
         try:
-            prev_zip = download_bulk_zip(prev_report_date)
-            prev_data = parse_bulk_quarter(prev_zip)
+            sub, filings = load_submissions(meta["cik"])
+            name = (sub.get("name") or "").upper()
+            if match in name:
+                return meta["cik"], sub, filings
+            print(f"  WARNUNG: CIK {meta['cik']} gehört zu '{sub.get('name')}', erwartet '{match}'", file=sys.stderr)
         except Exception as exc:  # noqa: BLE001
-            print(f"Vorquartals-Bulk-Daten nicht verfügbar, QoQ-Vergleich für Bulk-Fonds entfällt: {exc}",
-                  file=sys.stderr)
-
-    curated_ciks = {r["cik"] for r in curated_records}
-    ranked = sorted(
-        ((cik, f) for cik, f in bulk_data.items() if cik not in curated_ciks),
-        key=lambda t: -sum(h["valueUSD"] for h in t[1]["holdings"])
-    )
-    need = max(0, target_total - len(curated_records))
-    selected = ranked[:need]
-
-    extra = []
-    for cik, f in selected:
-        holdings = sorted(f["holdings"], key=lambda h: -h["valueUSD"])
-        total_value = sum(h["valueUSD"] for h in holdings) * scale
-        position_count = len(holdings)
-        top_holdings = [
-            {"issuer": h["issuer"], "cls": h["cls"], "cusip": h["cusip"],
-             "valueUSD": h["valueUSD"] * scale, "shares": h["shares"],
-             "weightPct": (h["valueUSD"] / sum(x["valueUSD"] for x in holdings) * 100) if holdings else 0}
-            for h in holdings[:TOP_HOLDINGS_STORE]
-        ]
-
-        category = classify_bulk_fund(f["name"])
-        record = {
-            "cik": cik, "name": f["name"] or f"Institutioneller Manager (CIK {cik})",
-            "type": category, "category": category, "abbr": abbr_from_name(f["name"]),
-            "founder": None, "currentLead": None, "managerLabel": None,
-            "photoUrl": None, "photoCredit": None, "photoSourceUrl": None,
-            "reportDate": f["reportDate"], "filedDate": f["filingDate"], "accession": f["accession"],
-            "totalValueUSD": total_value, "positionCount": position_count, "topHoldings": top_holdings,
-            "prevReportDate": None, "prevTotalValueUSD": None, "prevPositionCount": None, "aumChangePct": None,
-            "newPositions": [], "closedPositions": [], "newCount": 0, "closedCount": 0,
-            "error": None, "source": "bulk",
-        }
-
-        prev_fund = prev_data.get(cik)
-        if prev_fund:
-            prev_holdings = prev_fund["holdings"]
-            prev_total = sum(h["valueUSD"] for h in prev_holdings) * scale
-            opened, closed = diff_holdings(
-                [{**h, "valueUSD": h["valueUSD"] * scale} for h in holdings],
-                [{**h, "valueUSD": h["valueUSD"] * scale} for h in prev_holdings],
-            )
-            record["prevReportDate"] = prev_fund["reportDate"]
-            record["prevTotalValueUSD"] = prev_total
-            record["prevPositionCount"] = len(prev_holdings)
-            record["aumChangePct"] = ((total_value - prev_total) / prev_total * 100) if prev_total else None
-            record["newPositions"] = opened[:TOP_TRADES_STORE]
-            record["closedPositions"] = closed[:TOP_TRADES_STORE]
-            record["newCount"] = len(opened)
-            record["closedCount"] = len(closed)
-
-        extra.append(record)
-
-    return extra
+            print(f"  CIK {meta['cik']} nicht ladbar: {exc}", file=sys.stderr)
+        tried.append(meta["cik"])
+    for _value, cik, name in bulk_candidates(bulk, match):
+        if cik in tried:
+            continue
+        print(f"  Auflösung über Sammeldatensatz: {name} -> CIK {cik}", file=sys.stderr)
+        sub, filings = load_submissions(cik)
+        return cik, sub, filings
+    raise RuntimeError(f"Keine passende CIK für '{match}' gefunden")
 
 
-def fetch_fund(meta):
-    cik = meta["cik"]
+# ------------------------------------------------------------- Fonds
+def compact_position(h, total):
+    return {"issuer": h["issuer"], "cls": h.get("cls", ""), "cusip": h.get("cusip", ""),
+            "putCall": h.get("putCall", ""), "valueUSD": round(h["valueUSD"]),
+            "shares": h["shares"], "weightPct": (h["valueUSD"] / total * 100) if total else 0.0}
+
+
+def compact_trade(t):
+    return {"issuer": t["issuer"], "cls": t.get("cls", ""), "cusip": t.get("cusip", ""), "putCall": t.get("putCall", ""),
+            "status": t["status"], "shares": t["shares"], "prevShares": t["prevShares"],
+            "deltaShares": t["deltaShares"], "deltaPct": t["deltaPct"],
+            "valueUSD": round(t["valueUSD"]), "prevValueUSD": round(t["prevValueUSD"]),
+            "estValueUSD": round(t["estValueUSD"])}
+
+
+def build_fund_record(meta, cik, sub, filings):
     cik_int = str(int(cik))
-    sub = http_get_json(f"https://data.sec.gov/submissions/CIK{cik}.json")
-    periods = find_recent_13fs(sub.get("filings", {}).get("recent", {}), 2)
+    filings_13f = all_13f_filings(filings)
+    periods = find_recent_13fs(filings, HISTORY_QUARTERS)
     if not periods:
         raise RuntimeError("Kein 13F-HR Filing gefunden.")
-    current, prev = periods[0], (periods[1] if len(periods) > 1 else None)
+    current = periods[0]
+    prev = periods[1] if len(periods) > 1 else None
 
-    time.sleep(REQUEST_DELAY)
-    current_holdings = fetch_filing_holdings(cik_int, current["accession"])
-    current_holdings.sort(key=lambda h: -h["valueUSD"])
-    total_value = sum(h["valueUSD"] for h in current_holdings)
-    position_count = len(current_holdings)
-    top_holdings = [
-        {**h, "weightPct": (h["valueUSD"] / total_value * 100) if total_value else 0}
-        for h in current_holdings[:TOP_HOLDINGS_STORE]
-    ]
+    cur_rows = fetch_filing_holdings(cik_int, current["accession"])
+    cur_pos = aggregate_positions(cur_rows)
+    total = sum(h["valueUSD"] for h in cur_pos)
+
+    # Ein 13F-HR/A ergänzt manchmal nur einzelne Zeilen. Hat das jüngste
+    # Filing einer Periode deutlich weniger Positionen als das ursprüngliche,
+    # wird das ursprüngliche 13F-HR verwendet.
+    if current["form"] == "13F-HR/A":
+        originals = [f for f in filings_13f if f["reportDate"] == current["reportDate"] and f["form"] == "13F-HR"]
+        if originals:
+            orig_pos = aggregate_positions(fetch_filing_holdings(cik_int, originals[0]["accession"]))
+            if len(orig_pos) > len(cur_pos) * 2:
+                cur_pos, current = orig_pos, {**originals[0]}
+                total = sum(h["valueUSD"] for h in cur_pos)
 
     record = {
-        "cik": cik, "name": sub.get("name") or sub.get("entityName") or meta["name"],
-        "type": meta["type"], "category": "Hedgefonds", "abbr": meta["abbr"],
-        "founder": meta.get("founder"), "currentLead": meta.get("currentLead"),
-        "managerLabel": meta.get("managerLabel"), "photoUrl": meta.get("photoUrl"),
-        "photoCredit": meta.get("photoCredit"), "photoSourceUrl": meta.get("photoSourceUrl"),
-        "reportDate": current["reportDate"], "filedDate": current["filedDate"], "accession": current["accession"],
-        "totalValueUSD": total_value, "positionCount": position_count, "topHoldings": top_holdings,
+        "slug": meta["slug"], "cik": cik, "name": meta["name"],
+        "secName": sub.get("name") or meta["name"],
+        "manager": meta.get("manager"), "role": meta.get("role"), "style": meta.get("style"),
+        "bio": meta.get("bio"), "note": meta.get("note"), "wiki": meta.get("wiki"),
+        "category": "Investoren", "source": "individual",
+        "reportDate": current["reportDate"], "filedDate": current["filedDate"],
+        "accession": current["accession"], "form": current["form"],
+        "totalValueUSD": round(total), "positionCount": len(cur_pos),
+        "optionCount": sum(1 for h in cur_pos if h["putCall"]),
         "prevReportDate": prev["reportDate"] if prev else None,
         "prevTotalValueUSD": None, "prevPositionCount": None, "aumChangePct": None,
-        "newPositions": [], "closedPositions": [], "newCount": 0, "closedCount": 0,
-        "error": None, "source": "individual",
     }
 
+    trades = {}
     if prev:
-        time.sleep(REQUEST_DELAY)
-        prev_holdings = fetch_filing_holdings(cik_int, prev["accession"])
-        prev_total = sum(h["valueUSD"] for h in prev_holdings)
-        opened, closed = diff_holdings(current_holdings, prev_holdings)
-        record["prevTotalValueUSD"] = prev_total
-        record["prevPositionCount"] = len(prev_holdings)
-        record["aumChangePct"] = ((total_value - prev_total) / prev_total * 100) if prev_total else None
-        record["newPositions"] = opened[:TOP_TRADES_STORE]
-        record["closedPositions"] = closed[:TOP_TRADES_STORE]
-        record["newCount"] = len(opened)
-        record["closedCount"] = len(closed)
+        prev_pos = aggregate_positions(fetch_filing_holdings(cik_int, prev["accession"]))
+        prev_total = sum(h["valueUSD"] for h in prev_pos)
+        record["prevTotalValueUSD"] = round(prev_total)
+        record["prevPositionCount"] = len(prev_pos)
+        record["aumChangePct"] = ((total - prev_total) / prev_total * 100) if prev_total else None
+        trades = compute_trades(cur_pos, prev_pos)
 
-    return record
-
-
-def main():
-    funds = []
-    for meta in FUND_META:
-        print(f"Lade {meta['name']} (CIK {meta['cik']})...", file=sys.stderr)
+    # Verlauf: Deckblatt-Summen älterer Perioden (aktuelle/vorige berechnet)
+    history = [{"period": current["reportDate"], "valueUSD": round(total), "positions": len(cur_pos)}]
+    if prev:
+        history.append({"period": prev["reportDate"], "valueUSD": record["prevTotalValueUSD"],
+                        "positions": record["prevPositionCount"]})
+    for f in periods[2:]:
         try:
-            record = fetch_fund(meta)
-            funds.append(record)
-            print(f"  OK: {record['positionCount']} Positionen, {record['totalValueUSD']:.0f} USD", file=sys.stderr)
-        except Exception as exc:  # noqa: BLE001 - ein fehlgeschlagener Fonds soll die anderen nicht blockieren
-            print(f"  Fehler: {exc}", file=sys.stderr)
-            funds.append({
-                "cik": meta["cik"], "name": meta["name"], "type": meta["type"], "category": "Hedgefonds", "abbr": meta["abbr"],
-                "founder": meta.get("founder"), "currentLead": meta.get("currentLead"),
-                "managerLabel": meta.get("managerLabel"), "photoUrl": meta.get("photoUrl"),
-                "photoCredit": meta.get("photoCredit"), "photoSourceUrl": meta.get("photoSourceUrl"),
-                "error": str(exc),
-            })
-        time.sleep(REQUEST_DELAY)
+            h = fetch_cover_total(cik_int, f)
+            if h:
+                history.append({**h, "valueUSD": round(h["valueUSD"])})
+        except Exception as exc:  # noqa: BLE001
+            print(f"  Verlauf {f['reportDate']} nicht ladbar: {exc}", file=sys.stderr)
+    history.sort(key=lambda x: x["period"])
+    record["history"] = history
 
-    curated_ok = [f for f in funds if not f.get("error")]
+    return record, cur_pos, trades
+
+
+def build_bulk_record(cik, f, scale, prev_fund):
+    pos = aggregate_positions([{**h, "valueUSD": h["valueUSD"] * scale} for h in f["holdings"]])
+    total = sum(h["valueUSD"] for h in pos)
+    category = classify_bulk_fund(f["name"])
+    name = f["name"] or f"Institutioneller Manager (CIK {cik})"
+    record = {
+        "slug": f"cik-{int(cik)}", "cik": cik, "name": name.title() if name.isupper() else name, "secName": name,
+        "manager": None, "role": None, "style": category, "bio": None, "note": None, "wiki": None,
+        "category": "Institutionen", "source": "bulk",
+        "reportDate": f["reportDate"], "filedDate": f["filingDate"], "accession": f["accession"], "form": "13F-HR",
+        "totalValueUSD": round(total), "positionCount": len(pos),
+        "optionCount": sum(1 for h in pos if h["putCall"]),
+        "prevReportDate": None, "prevTotalValueUSD": None, "prevPositionCount": None, "aumChangePct": None,
+        "history": [{"period": f["reportDate"], "valueUSD": round(total), "positions": len(pos)}],
+    }
+    trades = {}
+    if prev_fund:
+        prev_pos = aggregate_positions([{**h, "valueUSD": h["valueUSD"] * scale} for h in prev_fund["holdings"]])
+        prev_total = sum(h["valueUSD"] for h in prev_pos)
+        record.update(prevReportDate=prev_fund["reportDate"], prevTotalValueUSD=round(prev_total),
+                      prevPositionCount=len(prev_pos),
+                      aumChangePct=((total - prev_total) / prev_total * 100) if prev_total else None)
+        record["history"].insert(0, {"period": prev_fund["reportDate"], "valueUSD": round(prev_total),
+                                     "positions": len(prev_pos)})
+        trades = compute_trades(pos, prev_pos)
+    return record, pos, trades
+
+
+# ------------------------------------------------------------- Porträts
+def strip_html(s):
+    return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", "", s or ""))).strip()
+
+
+FREE_LICENSE = re.compile(r"^(CC0|CC BY|CC-BY|Public domain|PD|Attribution|GFDL)", re.I)
+
+
+def fetch_manager_photo(slug, wiki, manifest):
+    """Holt ein frei lizenziertes Commons-Porträt zum Wikipedia-Artikel.
+    Nicht-freie (lokal auf en.wikipedia hochgeladene) Dateien werden
+    verworfen. Gibt Manifest-Eintrag oder None zurück."""
+    cached = manifest.get(slug)
+    if cached and cached.get("wiki") == wiki and (PHOTO_DIR / cached["file"]).exists():
+        return cached
+    summary = http_get_json(f"https://en.wikipedia.org/api/rest_v1/page/summary/{urllib.parse.quote(wiki)}")
+    src = (summary.get("originalimage") or summary.get("thumbnail") or {}).get("source", "")
+    if "/wikipedia/commons/" not in src:
+        return None
+    path = urllib.parse.urlparse(src).path
+    if "/thumb/" in path:  # .../commons/thumb/a/ab/Name.jpg/320px-Name.jpg
+        filename = path.split("/thumb/", 1)[1].split("/")[2]
+    else:
+        filename = path.rsplit("/", 1)[1]
+    filename = urllib.parse.unquote(filename)
+    api = ("https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo"
+           "&iiprop=url|extmetadata&iiurlwidth=480&titles=" + urllib.parse.quote("File:" + filename))
+    pages = http_get_json(api).get("query", {}).get("pages", {})
+    info = next(iter(pages.values()), {}).get("imageinfo", [{}])[0]
+    meta = info.get("extmetadata", {})
+    license_short = strip_html(meta.get("LicenseShortName", {}).get("value", ""))
+    if not FREE_LICENSE.match(license_short):
+        print(f"  Foto {filename}: Lizenz '{license_short}' nicht frei – übersprungen", file=sys.stderr)
+        return None
+    thumb = info.get("thumburl") or info.get("url")
+    if not thumb:
+        return None
+    ext = ".png" if thumb.lower().endswith(".png") else ".jpg"
+    PHOTO_DIR.mkdir(parents=True, exist_ok=True)
+    out_name = slug + ext
+    (PHOTO_DIR / out_name).write_bytes(http_get(thumb))
+    artist = strip_html(meta.get("Artist", {}).get("value", "")) or "unbekannt"
+    return {"wiki": wiki, "file": out_name, "license": license_short,
+            "licenseUrl": strip_html(meta.get("LicenseUrl", {}).get("value", "")) or None,
+            "artist": artist[:140], "sourceUrl": info.get("descriptionurl")}
+
+
+def update_photos(funds_meta):
+    manifest = load_json(PHOTO_MANIFEST_PATH, {})
+    for meta in funds_meta:
+        slug, wiki = meta["slug"], meta.get("wiki")
+        if not wiki:
+            continue
+        try:
+            entry = fetch_manager_photo(slug, wiki, manifest)
+            if entry:
+                manifest[slug] = entry
+            else:
+                print(f"  kein freies Porträt für {meta.get('manager')} ({wiki})", file=sys.stderr)
+        except Exception as exc:  # noqa: BLE001
+            print(f"  Porträt {wiki} nicht ladbar: {exc}", file=sys.stderr)
+        time.sleep(0.2)
+    write_json_if_changed(PHOTO_MANIFEST_PATH, manifest, indent=1)
+    return manifest
+
+
+# ----------------------------------------------------- CUSIP -> Ticker
+OPENFIGI_URL = "https://api.openfigi.com/v3/mapping"
+FIGI_MAX_REQUESTS = 400
+
+
+def update_cusip_map(cusips_by_priority):
+    cmap = load_json(CUSIP_MAP_PATH, {})
+    todo = [c for c in cusips_by_priority if c and len(c) == 9 and c not in cmap]
+    key = os.environ.get("OPENFIGI_API_KEY")
+    batch = 100 if key else 10
+    pause = 0.3 if key else 2.6
+    headers = {"Content-Type": "application/json"}
+    if key:
+        headers["X-OPENFIGI-APIKEY"] = key
+    requests_done = 0
+    print(f"OpenFIGI: {len(todo)} neue CUSIPs (Cache: {len(cmap)})", file=sys.stderr)
+    for i in range(0, len(todo), batch):
+        if requests_done >= FIGI_MAX_REQUESTS:
+            print("  Limit pro Lauf erreicht; Rest folgt beim nächsten Lauf.", file=sys.stderr)
+            break
+        chunk = todo[i:i + batch]
+        body = json.dumps([{"idType": "ID_CUSIP", "idValue": c, "exchCode": "US"} for c in chunk]).encode()
+        try:
+            res = json.loads(http_get(OPENFIGI_URL, headers=headers, data=body))
+        except Exception as exc:  # noqa: BLE001
+            print(f"  OpenFIGI-Fehler: {exc}", file=sys.stderr)
+            time.sleep(10)
+            requests_done += 1
+            continue
+        for c, r in zip(chunk, res):
+            if "data" in r and r["data"]:
+                d = next((x for x in r["data"] if x.get("marketSector") == "Equity"), r["data"][0])
+                cmap[c] = {"ticker": (d.get("ticker") or "").replace("/", "-"), "name": d.get("name")}
+            elif "warning" in r:
+                cmap[c] = None  # nicht zuordenbar (z.B. Anleihe, Optionsschein)
+        requests_done += 1
+        time.sleep(pause)
+    write_json_if_changed(CUSIP_MAP_PATH, cmap, indent=0)
+    return cmap
+
+
+def discover_sets():
+    stocks = {p.stem for p in DISCOVER_STOCKS.glob("*.json")} if DISCOVER_STOCKS.exists() else set()
+    logos = {p.stem for p in DISCOVER_LOGOS.glob("*.png")} if DISCOVER_LOGOS.exists() else set()
+    return stocks, logos
+
+
+def enrich(item, cmap, stocks, logos):
+    m = cmap.get(item.get("cusip") or "")
+    if m and m.get("ticker"):
+        t = m["ticker"]
+        item["ticker"] = t
+        if t in stocks:
+            item["discover"] = True
+        if t in logos:
+            item["logo"] = True
+    return item
+
+
+# ---------------------------------------------------------- Auswertungen
+def quarter_label(iso):
+    y, m, _ = iso.split("-")
+    return f"Q{(int(m) - 1) // 3 + 1} {y}"
+
+
+def latest_period(records):
+    """Jüngste Periode, die mindestens 30 % der Fonds gemeldet haben."""
+    c = Counter(r["reportDate"] for r in records)
+    n = len(records)
+    for p in sorted(c, reverse=True):
+        if c[p] >= 0.3 * n:
+            return p
+    return max(c) if c else None
+
+
+def build_aggregates(entries, period):
+    """entries: [(record, positions, trades)] der Star-Investoren."""
+    hold, buys, sells = {}, {}, {}
+    used = []
+    for rec, pos, trades in entries:
+        used.append(rec["slug"])
+        total = rec["totalValueUSD"] or 1
+        for h in pos:
+            if h["putCall"] or not h["cusip"]:
+                continue
+            a = hold.setdefault(h["cusip"], {"issuer": h["issuer"], "cusip": h["cusip"], "funds": [],
+                                             "valueUSD": 0.0, "weightSum": 0.0})
+            a["funds"].append({"slug": rec["slug"], "weightPct": h["valueUSD"] / total * 100})
+            a["valueUSD"] += h["valueUSD"]
+            a["weightSum"] += h["valueUSD"] / total * 100
+        for t in trades.values():
+            if t["putCall"] or not t["cusip"] or t["status"] == "unchanged":
+                continue
+            target = buys if t["estValueUSD"] > 0 else sells
+            a = target.setdefault(t["cusip"], {"issuer": t["issuer"], "cusip": t["cusip"], "funds": [],
+                                               "estValueUSD": 0.0, "newCount": 0, "soldCount": 0})
+            a["funds"].append({"slug": rec["slug"], "status": t["status"], "estValueUSD": round(t["estValueUSD"]),
+                               "deltaPct": t["deltaPct"]})
+            a["estValueUSD"] += t["estValueUSD"]
+            a["newCount"] += t["status"] == "new"
+            a["soldCount"] += t["status"] == "sold"
+
+    consensus = sorted(hold.values(), key=lambda a: (-len(a["funds"]), -a["weightSum"]))[:40]
+    for a in consensus:
+        a["fundCount"] = len(a["funds"])
+        a["avgWeightPct"] = a["weightSum"] / len(a["funds"])
+        a["valueUSD"] = round(a["valueUSD"])
+        a["funds"].sort(key=lambda f: -f["weightPct"])
+        del a["weightSum"]
+
+    def finish(d):
+        lst = sorted(d.values(), key=lambda a: (-abs(a["estValueUSD"])))[:40]
+        for a in lst:
+            a["fundCount"] = len(a["funds"])
+            a["estValueUSD"] = round(a["estValueUSD"])
+            a["funds"].sort(key=lambda f: -abs(f["estValueUSD"]))
+        return lst
+
+    return {"period": period, "funds": used, "consensus": consensus,
+            "buys": finish(buys), "sells": finish(sells)}
+
+
+# -------------------------------------------------------------- Dateien
+def load_json(path, default):
     try:
-        extra = fetch_bulk_expansion(curated_ok, target_total=BULK_TOP_N)
-        funds.extend(extra)
-        print(f"Bulk-Erweiterung: {len(extra)} zusätzliche Fonds ergänzt "
-              f"({len(funds)} gesamt, Ziel: Top {BULK_TOP_N}).", file=sys.stderr)
-    except Exception as exc:  # noqa: BLE001 - die kuratierten Fonds dürfen dadurch nicht gefährdet werden
-        print(f"Bulk-Erweiterung fehlgeschlagen, kuratierte Fonds bleiben unberührt: {exc}", file=sys.stderr)
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        return default
 
-    output = {"generatedAt": datetime.now(timezone.utc).isoformat(), "funds": funds}
-    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT_PATH.write_text(json.dumps(output, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    print(f"Geschrieben: {OUTPUT_PATH} ({OUTPUT_PATH.stat().st_size} bytes)", file=sys.stderr)
 
-    if all(f.get("error") for f in funds):
-        sys.exit(1)  # alle Fonds fehlgeschlagen -> Workflow-Run als fehlgeschlagen markieren
+def write_json_if_changed(path, obj, indent=None, ignore=("generatedAt",)):
+    """Schreibt nur bei inhaltlicher Änderung (ohne Zeitstempel), damit der
+    wöchentliche Lauf keine leeren Daten-Commits erzeugt."""
+    old = load_json(path, None)
+    strip = lambda o: {k: v for k, v in o.items() if k not in ignore} if isinstance(o, dict) else o  # noqa: E731
+    if old is not None and strip(old) == strip(json.loads(json.dumps(obj))):
+        return False
+    path.parent.mkdir(parents=True, exist_ok=True)
+    seps = (",", ":") if indent is None else None
+    path.write_text(json.dumps(obj, ensure_ascii=False, indent=indent, separators=seps), encoding="utf-8")
+    return True
+
+
+def summarize(rec, pos, trades, photo):
+    lists, counts = trade_lists(trades, 3)
+    total = rec["totalValueUSD"]
+    s = {k: rec[k] for k in ("slug", "cik", "name", "secName", "manager", "role", "style", "bio", "note",
+                             "category", "source", "reportDate", "filedDate", "totalValueUSD",
+                             "positionCount", "prevReportDate", "prevTotalValueUSD", "aumChangePct", "history")}
+    s["photo"] = photo
+    s["top"] = [{k: v for k, v in compact_position(h, total).items() if k in
+                 ("issuer", "cusip", "putCall", "valueUSD", "weightPct")} for h in pos[:INDEX_TOP]]
+    s["tradeCounts"] = counts if trades else None
+    s["topBuys"] = [compact_trade(t) for t in sorted(lists["new"] + lists["added"], key=lambda t: -t["estValueUSD"])[:3]]
+    s["topSells"] = [compact_trade(t) for t in sorted(lists["sold"] + lists["reduced"], key=lambda t: t["estValueUSD"])[:3]]
+    return s
+
+
+def detail(rec, pos, trades, photo, limit_holdings):
+    total = rec["totalValueUSD"]
+    lists, counts = trade_lists(trades, DETAIL_TRADES)
+    holdings = []
+    for h in pos[:limit_holdings]:
+        item = compact_position(h, total)
+        t = trades.get(position_key(h))
+        if t:
+            item.update(status=t["status"], deltaShares=t["deltaShares"], deltaPct=t["deltaPct"])
+        holdings.append(item)
+    return {"schema": SCHEMA, **rec, "photo": photo, "holdings": holdings,
+            "holdingsTruncated": len(pos) > limit_holdings,
+            "tradeCounts": counts if trades else None,
+            "trades": {k: [compact_trade(t) for t in v] for k, v in lists.items()}}
+
+
+# ------------------------------------------------------------------ main
+def main():
+    today = datetime.now(timezone.utc).date()
+    bulk_period, bulk = load_latest_bulk(today)
+
+    curated = []  # (meta, record, positions, trades)
+    errors = []
+    seen_ciks = set()
+    for meta in FUND_META:
+        print(f"Lade {meta['name']} ...", file=sys.stderr)
+        try:
+            cik, sub, filings = resolve_fund(meta, bulk)
+            if cik in seen_ciks:
+                raise RuntimeError(f"CIK {cik} doppelt")
+            rec, pos, trades = build_fund_record(meta, cik, sub, filings)
+            seen_ciks.add(cik)
+            curated.append((meta, rec, pos, trades))
+            print(f"  OK {rec['reportDate']}: {rec['positionCount']} Positionen, {rec['totalValueUSD'] / 1e9:.2f} Mrd USD",
+                  file=sys.stderr)
+        except Exception as exc:  # noqa: BLE001 - ein Fonds darf die anderen nicht blockieren
+            print(f"  FEHLER: {exc}", file=sys.stderr)
+            errors.append({"slug": meta["slug"], "name": meta["name"], "error": str(exc)})
+
+    if not curated:
+        print("Kein einziger Fonds geladen – Abbruch ohne Schreiben.", file=sys.stderr)
+        sys.exit(1)
+
+    # Weitere Institutionen aus dem Sammeldatensatz
+    bulk_entries = []
+    if bulk:
+        calib = [{"cik": r["cik"], "totalValueUSD": r["totalValueUSD"]} for _, r, _, _ in curated
+                 if r["reportDate"] == bulk_period]
+        scale, n = calibrate_bulk_scale(bulk, calib)
+        if scale is None:
+            print(f"Bulk: Kalibrierung nicht eindeutig ({n} Vergleichsfonds) – übersprungen", file=sys.stderr)
+        else:
+            print(f"Bulk: Skalierung x{scale} anhand {n} Fonds", file=sys.stderr)
+            prev_bulk = {}
+            try:
+                prev_bulk = parse_bulk_quarter(download_bulk_zip(previous_report_period(bulk_period)))
+            except Exception as exc:  # noqa: BLE001
+                print(f"Bulk-Vorquartal nicht ladbar: {exc}", file=sys.stderr)
+            # auch CIKs fehlgeschlagener kuratierter Fonds ausschließen, damit
+            # sie nicht doppelt (alt kuratiert + neu als Institution) erscheinen
+            excluded = seen_ciks | {m["cik"] for m in FUND_META if m.get("cik")}
+            ranked = sorted(((c, f) for c, f in bulk.items() if c not in excluded),
+                            key=lambda t: -sum(h["valueUSD"] for h in t[1]["holdings"]))[:BULK_EXTRA]
+            for c, f in ranked:
+                bulk_entries.append(build_bulk_record(c, f, scale, prev_bulk.get(c)))
+            del prev_bulk
+    del bulk
+
+    # Porträts & Ticker
+    photos = update_photos([m for m, *_ in curated])
+    priority = []
+    for _, rec, pos, trades in curated:
+        priority += [h["cusip"] for h in pos[:60]]
+    for _, rec, pos, trades in curated:
+        lists, _ = trade_lists(trades, 25)
+        priority += [t["cusip"] for v in lists.values() for t in v]
+    for _, rec, pos, trades in curated:
+        priority += [h["cusip"] for h in pos[60:DETAIL_HOLDINGS]]
+    for rec, pos, trades in bulk_entries:
+        priority += [h["cusip"] for h in pos[:INDEX_TOP]]
+    priority = list(dict.fromkeys(priority))
+    try:
+        cmap = update_cusip_map(priority)
+    except Exception as exc:  # noqa: BLE001
+        print(f"Ticker-Zuordnung übersprungen: {exc}", file=sys.stderr)
+        cmap = load_json(CUSIP_MAP_PATH, {})
+    stocks, logos = discover_sets()
+
+    def photo_for(slug):
+        p = photos.get(slug)
+        if not p:
+            return None
+        return {"src": f"img/managers/{p['file']}", "artist": p["artist"], "license": p["license"],
+                "licenseUrl": p.get("licenseUrl"), "sourceUrl": p.get("sourceUrl")}
+
+    records = [r for _, r, _, _ in curated]
+    period = latest_period(records)
+    min_period = previous_report_period(period) if period else None
+    for r in records:
+        r["stale"] = bool(period and r["reportDate"] < min_period)
+
+    agg_entries = [(r, p, t) for m, r, p, t in curated
+                   if not r["stale"] and r["style"] not in AGG_EXCLUDED_STYLES]
+    aggregates = build_aggregates(agg_entries, period)
+    for key in ("consensus", "buys", "sells"):
+        for a in aggregates[key]:
+            enrich(a, cmap, stocks, logos)
+
+    summaries = []
+    FUND_DIR.mkdir(parents=True, exist_ok=True)
+    written_slugs = set()
+    for _, rec, pos, trades in curated:
+        ph = photo_for(rec["slug"])
+        s = summarize(rec, pos, trades, ph)
+        s["stale"] = rec["stale"]
+        for lst in (s["top"], s["topBuys"], s["topSells"]):
+            for it in lst:
+                enrich(it, cmap, stocks, logos)
+        summaries.append(s)
+        d = detail(rec, pos, trades, ph, DETAIL_HOLDINGS)
+        for it in d["holdings"]:
+            enrich(it, cmap, stocks, logos)
+        for v in d["trades"].values():
+            for it in v:
+                enrich(it, cmap, stocks, logos)
+        write_json_if_changed(FUND_DIR / f"{rec['slug']}.json", d)
+        written_slugs.add(rec["slug"])
+    for rec, pos, trades in bulk_entries:
+        rec["stale"] = False
+        s = summarize(rec, pos, trades, None)
+        s["stale"] = False
+        for lst in (s["top"], s["topBuys"], s["topSells"]):
+            for it in lst:
+                enrich(it, cmap, stocks, logos)
+        summaries.append(s)
+        d = detail(rec, pos, trades, None, BULK_DETAIL_HOLDINGS)
+        for it in d["holdings"]:
+            enrich(it, cmap, stocks, logos)
+        for v in d["trades"].values():
+            for it in v:
+                enrich(it, cmap, stocks, logos)
+        write_json_if_changed(FUND_DIR / f"{rec['slug']}.json", d)
+        written_slugs.add(rec["slug"])
+
+    # Detaildateien von Fonds, die nicht mehr geführt werden, entfernen.
+    # Fehlgeschlagene kuratierte Fonds behalten ihre letzte Datei.
+    keep = written_slugs | {e["slug"] for e in errors}
+    for p in FUND_DIR.glob("*.json"):
+        if p.stem not in keep:
+            p.unlink()
+
+    # Fehlgeschlagene kuratierte Fonds: letzte bekannte Übersicht weiterführen
+    old_index = load_json(OUTPUT_PATH, {})
+    old_by_slug = {f.get("slug"): f for f in old_index.get("funds", []) if f.get("slug")}
+    for e in errors:
+        if e["slug"] in old_by_slug:
+            summaries.append({**old_by_slug[e["slug"]], "fetchError": e["error"]})
+
+    output = {
+        "schema": SCHEMA,
+        "generatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "latestPeriod": period, "latestPeriodLabel": quarter_label(period) if period else None,
+        "bulkPeriod": bulk_period if bulk_entries else None,
+        "source": "SEC EDGAR Form 13F-HR (data.sec.gov / www.sec.gov), OpenFIGI, Wikimedia Commons",
+        "funds": summaries, "aggregates": aggregates, "errors": errors,
+    }
+    changed = write_json_if_changed(OUTPUT_PATH, output)
+    print(f"{'Geschrieben' if changed else 'Unverändert'}: {OUTPUT_PATH} – {len(curated)} Investoren, "
+          f"{len(bulk_entries)} Institutionen, {len(errors)} Fehler", file=sys.stderr)
+    for e in errors:
+        print(f"  Fehler {e['slug']}: {e['error']}", file=sys.stderr)
 
 
 if __name__ == "__main__":
