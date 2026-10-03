@@ -518,3 +518,45 @@ test("WOP25 · Owner 03.10.: aggressive Hook, Text auf jedem Slide, drei Bilder 
   assert.ok(Work.verifyCarousel(ohneText).map((x) => x.id).includes("slideTextMissing"));
   assert.deepEqual(Work.verifyCarousel(ergebnis({ visual_variants: [slide(1), slide(2), slide(3)] })), []);
 });
+
+test("WOP26 · Owner-Storno: nur ein nie gestarteter Auftrag, nur mit gemessener Stille", () => {
+  const Job = require("../engines/creative-job.js");
+  const KEY = "brief_s:vu-post-s:abc:1.0";
+  const storno = { contentId: "vu-post-s", processingKey: KEY, decidedBy: "OWNER",
+    decidedAt: "2026-10-03T05:50:00Z" };
+  const job = (extra) => Object.assign({ creativeJobId: "job_s", contentId: "vu-post-s",
+    processingKey: KEY, state: "CREATIVE_JOB_DISPATCHED", prNumber: 364, observedStarts: 0,
+    history: [], createdAt: "2026-10-02T21:00:45Z", updatedAt: "2026-10-02T21:00:45Z" }, extra || {});
+  const gemessen = { now: "2026-10-03T06:00:00Z", ownerStorno: storno,
+    agentMeldungGemessen: true, agentMeldungVorhanden: false };
+
+  assert.equal(Job.EVIDENZ.OWNER_STORNO_NIE_GESTARTET, "CREATIVE_JOB_SUPERSEDED");
+  const reg = Job.createRegistry([job()]);
+  const r = reg.reconcile("job_s", "OWNER_STORNO_NIE_GESTARTET", gemessen);
+  assert.equal(r.ok, true, r.message);
+  assert.equal(r.to, "CREATIVE_JOB_SUPERSEDED");
+  assert.equal(Job.OFFEN.includes(reg.all()[0].state), false, "der Slot ist frei");
+
+  const abgewiesen = (j, opt) => {
+    const x = Job.createRegistry([job(j)]).reconcile("job_s", "OWNER_STORNO_NIE_GESTARTET",
+      Object.assign({}, gemessen, opt));
+    assert.equal(x.ok, false);
+    assert.equal(x.geaendert, false);
+    return x.message;
+  };
+  assert.match(abgewiesen({}, { agentMeldungVorhanden: true }), /Agent-Meldung/);
+  assert.match(abgewiesen({}, { agentMeldungGemessen: undefined }), /nicht gemessen/);
+  assert.match(abgewiesen({ observedStarts: 2 }), /Start/);
+  assert.match(abgewiesen({ state: "CREATIVE_JOB_IN_FLIGHT" }), /CREATIVE_JOB_IN_FLIGHT/);
+  assert.match(abgewiesen({ processingKey: "brief_s:vu-post-s:anderer:1.0" }), /Storno-Entscheidung nennt/);
+  assert.match(abgewiesen({}, { ownerStorno: Object.assign({}, storno, { decidedBy: "SCRIPT" }) }),
+    /Owner-Entscheidung/);
+  assert.ok(Job.KEINE_EVIDENZ.includes("OWNER_VERMUTUNG"), "eine Vermutung bleibt unzulaessig");
+
+  /* Die echte Entscheidung nennt genau den Auftrag aus PR #364. */
+  const datei = JSON.parse(readFileSync(join(ROOT, "social/data/owner-job-storno.json"), "utf8"));
+  const e = datei.entries.find((x) => x.prNumber === 364);
+  assert.equal(e.decidedBy, "OWNER");
+  assert.equal(e.contentId, "vu-post-20261002-fd3c1bcd00");
+  assert.ok(e.processingKey.startsWith("brief_6c4b03d96db69f6d:vu-post-20261002-fd3c1bcd00:"));
+});
