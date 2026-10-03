@@ -190,6 +190,52 @@ Weitere Werte:
 * Eine neue Engine braucht einen neuen Holdout (HOLDOUT-4).
 * Kein Prognose-Backtest.
 
-{{BEFORE_AFTER}}
+## 10. Vorher/Nachher 2.2 · 3.0 · 3.1 · 3.2
+
+### Synthetische Fälle
+
+* Gleiche Fälle (VALIDATION, Seeds 10–19, C1/C2/C3 gepoolt), gleicher Auswerter und gleicher Gate-Code wie HOLDOUT-3.
+* 3.0.0 und 3.1.0 laufen aus ihren Freeze-Commits.
+* Datei: `engine-comparison-validation-C.json`.
+* Muster und Grad: beobachtbar, abgeschlossen, Rauschen n/l/m; strikte Werte in Klammern.
+
+| Kennzahl | 2.2 | 3.0.0 | 3.1.0 | **3.2.0** |
+|---|---|---|---|---|
+| Regelverstöße (unabhängiger Prüfer, neue Motivwellen-Regel) | 5 | 3.399 | 1.784 | **0** |
+| Hauptzählung | 5,5 % (3,8) | 20,6 % (15,0) | 37,8 % (27,1) | **39,9 %** (28,6) |
+| Haupt- oder Alternativzählung | 6,7 % | 37,8 % | 51,7 % | **52,9 %** |
+| Grad exakt | 5,8 % | 21,2 % | 39,0 % | **41,1 %** |
+| Grober Gradfehler | 58,1 % | 41,1 % | **31,3 %** | 34,1 % |
+| Flats (Haupt+Alt) | 13,9 % | 44,3 % | 52,6 % | **53,8 %** |
+| Truncation | 0 % | 17,5 % | 29,2 % | **30,8 %** |
+| Dreiecke | 0,8 % | 48,8 % | 60,0 % | **62,7 %** |
+| Hohes Rauschen | 2,3 % | 5,2 % | 8,1 % | **8,5 %** |
+| Falsche Sicherheit (HOCH) | 97,2 % (n = 1.696) | 33,5 % (n = 328) | 31,0 % (n = 290) | **20,8 %** (n = 96) |
+| Präzision unter HOCH+MITTEL | 2,9 % | 41,2 % | 50,6 % | **69,6 %** |
+| Trennschärfe Anwendbarkeit (AUC) | 0,47 | **0,92** | 0,86 | 0,88 |
+| Enthaltung (abgeschlossen) | 23 % | 76 % | 72 % | 88 % |
+| Laufende Muster erkannt (D1) | 3,3 % | 11,0 % | 10,9 % | 10,9 % |
+| Laufende Muster, falsche Sicherheit HOCH | 96,9 % (n = 1.930) | 100 % (n = 153) | 79,6 % (n = 186) | 100 % (n = 22) |
+| Laufzeit Median je Analyse | 1 ms | 29 ms | 28 ms | 27 ms |
+
+### Echte Wochencharts (Neuzuordnungen je Woche)
+
+| | 2.2 | 3.0.0 | 3.1.0 | 3.2.0 |
+|---|---|---|---|---|
+| Fenster bis 2026 (HOLDOUT-1/2): gesamt / instabil | 11,4 % / 1,00 % | 6,4 % / 0,64 % | 5,1 % / 0,55 % | – |
+| Fenster bis 2016 (HOLDOUT-3): gesamt / instabil | 10,2 % / 0,87 % | – | – | **4,8 % / 0,43 %** |
+| Anwendbarkeit HOCH | 63 % bzw. 57 % der Wochen | 4,6 % | 2,5 % | 0,5 % |
+
+### Lesart
+
+3.2 ist gegenüber 3.1 vor allem **ehrlicher**:
+* keine Regelverstöße;
+* falsche Sicherheit 31 % → 21 %;
+* Präzision unter HOCH+MITTEL 51 % → 70 %.
+
+Die Erkennung ist nur leicht besser, die Gradfehler sind leicht schlechter (31,3 → 34,1 %). Die neue Motivwellen-Regel verwirft auch Lesarten, die 3.1 zufällig richtig hatte.
+
+Der Erkennungsverzug wurde für 3.2 nicht neu gemessen. Hysterese und Suche sind gegenüber 3.1 unverändert; 3.0.0 lag bei 3 bzw. 4 Bars.
+
 
 {{MIGRATION}}
