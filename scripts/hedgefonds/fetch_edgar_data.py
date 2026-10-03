@@ -242,6 +242,9 @@ def parse_cover_totals(xml_bytes):
     return c["value"], c["entries"]
 
 
+THOUSANDS_FILERS = set()  # CIKs, deren Positionen nachweislich in Tausend USD gemeldet sind
+
+
 def normalize_units(rows):
     """Manche Filer melden <value> trotz neuer Spezifikation weiter in
     Tausend USD (real beobachtet: Duquesne, Baupost mit "10 Mio. USD").
@@ -276,6 +279,7 @@ def fetch_filing_holdings(cik_int, accession, names=None):
         if holdings:
             holdings, factor = normalize_units(holdings)
             if factor != 1:
+                THOUSANDS_FILERS.add(str(cik_int))
                 print(f"  Werte in Tausend USD gemeldet ({accession}) – x{factor} korrigiert", file=sys.stderr)
             return holdings
     raise RuntimeError("Info-Table-XML konnte nicht geparst werden.")
@@ -861,10 +865,11 @@ def build_fund_record(meta, cik, sub, filings):
                 history.append({**h, "valueUSD": round(h["valueUSD"])})
         except Exception as exc:  # noqa: BLE001
             print(f"  Verlauf {f['reportDate']} nicht ladbar: {exc}", file=sys.stderr)
-    for h in history[2:]:
-        # gleiche Tausender-Korrektur wie bei den Positionen, falls nötig
-        if h["valueUSD"] and h["valueUSD"] * 200 < total:
-            h["valueUSD"] = round(h["valueUSD"] * 1000)
+    if cik_int in THOUSANDS_FILERS:
+        # Deckblatt-Summen desselben Filers stehen dann ebenfalls in Tausend
+        for h in history[2:]:
+            if h["valueUSD"] and h["valueUSD"] * 200 < total:
+                h["valueUSD"] = round(h["valueUSD"] * 1000)
     history.sort(key=lambda x: x["period"])
     record["history"] = history
 
@@ -1065,6 +1070,8 @@ def discover_sets():
 
 def enrich(item, cmap, stocks, logos):
     m = cmap.get(item.get("cusip") or "")
+    if m and m.get("name"):
+        item["displayName"] = m["name"]
     if m and m.get("ticker"):
         t = m["ticker"]
         if m.get("exch") and m["exch"] not in ("US", "UN", "UW", "UQ", "UA", "UR", "UP"):

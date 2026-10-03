@@ -78,7 +78,8 @@
     return s.toLowerCase().replace(/\b([a-z])/g, function (m) { return m.toUpperCase(); })
       .replace(/\b(Inc|Corp|Co|Ltd|Plc|Llc|Lp|Nv|Sa|Ag|Se|Etf|Tr|Spdr|Adr|Reit)\b/g, function (m) {
         return { Inc: "Inc", Corp: "Corp", Co: "Co", Ltd: "Ltd", Plc: "plc", Llc: "LLC", Lp: "LP", Nv: "NV", Sa: "SA", Ag: "AG", Se: "SE", Etf: "ETF", Tr: "Tr", Spdr: "SPDR", Adr: "ADR", Reit: "REIT" }[m];
-      });
+      })
+      .replace(/ (Of|And|The|For|De) /g, function (m) { return m.toLowerCase(); });
   }
   function secLink(f) {
     if (!f.accession) return "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&type=13F-HR&CIK=" + f.cik;
@@ -104,8 +105,9 @@
     }
     return '<span class="hf-logo' + (big ? " lg" : "") + '" aria-hidden="true">' + txt + "</span>";
   }
+  function issuerName(item) { return prettyIssuer(item.displayName || item.issuer); }
   function stockName(item) {
-    var name = esc(prettyIssuer(item.issuer));
+    var name = esc(issuerName(item));
     if (item.discover && item.ticker) {
       return '<a href="/discover/#/s/US_REAL/' + encodeURIComponent(item.ticker) + '" title="In Discover ansehen">' + name + "</a>";
     }
@@ -191,7 +193,7 @@
       '<div class="hf-card-val"><b class="num">' + usd(f.totalValueUSD) + "</b>" +
       (chg != null ? '<small class="num ' + (chg >= 0 ? "pos" : "neg") + '">' + pct(chg, true) + " ggü. Vorquartal</small>" : "<small>Portfoliowert</small>") + "</div>" +
       '<div class="hf-card-hold">' + top.map(function (h) {
-        return '<div class="row">' + logo(h) + "<span>" + esc(h.ticker || prettyIssuer(h.issuer)) + '</span><em>' + pct(h.weightPct) + "</em></div>";
+        return '<div class="row">' + logo(h) + "<span>" + esc(h.ticker || issuerName(h)) + '</span><em>' + pct(h.weightPct) + "</em></div>";
       }).join("") + "</div>" +
       '<div class="hf-card-foot">' + foot.join("") + "</div></a>";
   }
@@ -374,7 +376,7 @@
     var top = hs.slice(0, 8);
     var rest = total - top.reduce(function (s, h) { return s + h.valueUSD; }, 0);
     var segs = top.map(function (h, i) {
-      return { label: h.ticker || prettyIssuer(h.issuer), sub: h.ticker ? prettyIssuer(h.issuer) : "", value: h.valueUSD,
+      return { label: h.ticker || issuerName(h), sub: h.ticker ? issuerName(h) : "", value: h.valueUSD,
         color: cssVar(SERIES[i]), put: h.putCall };
     });
     if (rest / total > 0.0005) segs.push({ label: "Sonstige", sub: nf0.format(Math.max(0, d.positionCount - top.length)) + " Positionen", value: rest, color: cssVar("--s-other") });
