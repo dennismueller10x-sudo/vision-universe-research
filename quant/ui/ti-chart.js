@@ -173,11 +173,16 @@
     if (o.waves && o.waves.length) {
       var idx = {}; ts.forEach(function (d0, k0) { idx[d0] = k0; });
       var wg = svg("g", { class: "ti-waves" + (o.waveTone === "alt" ? " is-alt" : "") });
+      var placed = [];
       o.waves.forEach(function (w, wi) {
         var k1 = idx[w.time]; if (k1 === undefined || k1 > cut) return;
         var prev = wi > 0 ? o.waves[wi - 1].price : w.fromPrice;
         var upLeg = isNum(prev) ? w.price >= prev : true, wy = y(w.price) + (upLeg ? -14 : 20);
-        var dev = w.status === "DEVELOPING";
+        var dev = w.status === "DEVELOPING", rB = narrow ? 11 : 10, cx0 = x(k1);
+        /* Kollisionen vermeiden (UI-Audit Mission III): liegt eine Marke auf einer bereits gesetzten, wird sie vom Kurs weg verschoben */
+        var cy0 = Math.max(padT + 9, Math.min(padT + plotH - 6, wy));
+        for (var tries = 0; tries < 4 && placed.some(function (p0) { return Math.abs(p0[0] - cx0) < 2 * rB + 1 && Math.abs(p0[1] - cy0) < 2 * rB + 1; }); tries++) cy0 = Math.max(padT + 9, Math.min(padT + plotH - 6, cy0 + (upLeg ? -1 : 1) * (2 * rB + 2)));
+        wy = cy0; placed.push([cx0, cy0]);
         var g3 = svg("g", { class: "ti-wave" + (dev ? " is-dev" : "") + (o.onWave ? " is-tap" : ""), tabindex: o.onWave ? "0" : null, role: o.onWave ? "button" : null, "aria-label": o.onWave ? "Welle " + w.label + " erklären" : null });
         g3.appendChild(svg("circle", { cx: x(k1), cy: y(w.price), r: 3, class: "ti-wave-pt" }));
         g3.appendChild(svg("circle", { cx: x(k1), cy: Math.max(padT + 9, Math.min(padT + plotH - 6, wy)) - 4, r: narrow ? 11 : 10, class: "ti-wave-badge" }));
