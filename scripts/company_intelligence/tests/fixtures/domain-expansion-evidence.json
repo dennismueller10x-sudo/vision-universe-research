@@ -1042,5 +1042,34 @@
         "windowHitRate": 0.96
       }
     }
+  },
+  "finalCIComparison": {
+    "featureHead": "9a94d65b1488ed6482bce54768fbd1aca8de658f",
+    "mainHead": "cf23c427665e15c7479998450ef6c7fccc3c217e",
+    "featurePythonPassed": 267,
+    "featureNodePassed": 29,
+    "secPythonPassedOnMergeTree": 486,
+    "combinedNode": {
+      "passed": 2794,
+      "failed": 2,
+      "skipped": 5
+    },
+    "mainIsolatedTargetedNode": {
+      "passed": 11,
+      "failed": 2,
+      "unchangedTests": true
+    },
+    "preExistingMainFailures": [
+      {
+        "test": "quant/tests/launch-gates.test.mjs",
+        "evidence": "26 rows claim factor coverage without corresponding stock-page evidence"
+      },
+      {
+        "test": "quant/tests/screener-surface.test.mjs",
+        "evidence": "Only 45 of 50 rows have prices; required ratio is greater than 90%"
+      }
+    ],
+    "canonicalMarketMainAssertionsPassed": 13,
+    "scope": "Exact current-main native Git archive; missing harness dependencies corrected before final reproduction; no protected producer changes."
   }
 }

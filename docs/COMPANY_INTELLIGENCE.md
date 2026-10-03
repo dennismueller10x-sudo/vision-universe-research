@@ -217,6 +217,11 @@ Broad Node: **2,569 passed, five existing skips**; SEC/Quant Python: **484 passe
 
 The previous Quant reconciliation failures are **resolved on current main**. GitHub current-main SHA `cf23c427665e15c7479998450ef6c7fccc3c217e` and relevant test/data Git blobs (including all 646 instrument records, with two changed records fetched) were hash-verified and tested separately: **13/13 assertions pass**. Native fetch later recovered; an isolated archive of the exact current-main test and its eight data inputs, including all instrument records, also passes 13/13. This is targeted main evidence, not a full-main regression checkout. No unrelated Quant changes were made to this feature. GitHub CI for the first preserved phase commit passed eight workflows. The following structured-identity commit passed six; two unrelated workflow runs were cancelled. Cancellation is recorded separately from failure. Final remote preservation is verified through authenticated Git objects/ref reads with exact local-tree and HEAD comparison; native push lacked usable credentials, and the authenticated connector was used without exposing secrets.
 
+
+Final remote CI on feature HEAD `9a94d65b1488ed6482bce54768fbd1aca8de658f` passed the isolated **267 Python + 29 Node** feature step. Five workflows passed, including Discover CI/frontend, Quant Browser QA, Quant production pages and Currency/FX. Three workflows failed on the same two unrelated Node assertions: [Quant CI](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37133888785), [SEC CI](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37133888837) and [the combined intelligence check](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37133888790). The SEC Python step passed **486 tests** in that newer merge-tree run. Overall combined product Node results were 2,794 passed / two failed / five skipped; this is distinct from the earlier green local branch baseline.
+
+Both new failures were reproduced with unmodified tests and exact current-main `cf23c427665e15c7479998450ef6c7fccc3c217e` code/data in an isolated native-Git archive: `quant/tests/launch-gates.test.mjs` reports **26 factor-evidence coverage mismatches**; `quant/tests/screener-surface.test.mjs` reports **45 of 50 rows with prices**, below its >90% requirement. The remaining 11 assertions in those two files pass. Initial archive attempts lacked ancillary methodology/smoke source files; those harness omissions were corrected before claiming the final 11-pass/two-failure reproduction. The tests are byte-identical on branch and main. These are different failures from the now-resolved 13 canonical-market assertions, and no unrelated Quant producer, data or assertion was changed. The intelligence workflow's pilot depends on `validate`, so the current combined check prevents a new pilot acceptance run; required GitHub checks are not represented as green.
+
 ## 30. Limitations
 
 Large unchecked candidate inventory, common tunnel failures and unproven owner/redirect cohorts remain. Verification is deliberately conservative; legal aliases/official delegated identity may need additional public evidence. No new global licensing permission was obtained. Broad news, calls, materials and transcripts remain sparse; no 80–90% claim is made. Current research data is not a multi-day unattended pilot or broad public publication. Newly expanded private state still needs authenticated workflow/R2 preservation before it can be considered remotely durable production data.
@@ -227,14 +232,14 @@ Resume the remaining 1,925 unchecked candidates when outbound requests work reli
 
 ## 32. Readiness
 
-Domains (2.51×), IR (2.10×), webcasts (2.18×), presentations (2.23×) and management content (2.07×) improved substantially. News (1.39×) remains short of the requested breakthrough. Code can merge behind the existing controlled gate; the existing controlled pilot remains technically supported. This phase does not certify broad rollout or complete the deep candidate-pool mission. Missing new R2 upload credentials and widespread outbound failures limit fresh operational evidence; coverage remains far below the intended rich product.
+Domains (2.51×), IR (2.10×), webcasts (2.18×), presentations (2.23×) and management content (2.07×) improved substantially. News (1.39×) remains short of the requested breakthrough. Code can merge behind the existing controlled gate; the existing controlled pilot remains implemented, but a new current pilot run is blocked by its combined validation dependency. This phase does not certify broad rollout or complete the deep candidate-pool mission. Unrelated current-main Node failures block the pilot validation dependency; missing new R2 upload credentials and widespread outbound failures also limit fresh operational evidence; coverage remains far below the intended rich product.
 
 ```text
 DOMAIN-COVERAGE-BREAKTHROUGH: YES
 NEWS-COVERAGE-BREAKTHROUGH: NO
 CALLS-MATERIALS-BREAKTHROUGH: YES
 CODE-MERGE-READY: YES
-PILOT-READY: YES
+PILOT-READY: NO
 BROAD-ROLLOUT-READY: NO
 ```
 
