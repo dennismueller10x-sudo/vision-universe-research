@@ -75,7 +75,8 @@
     var dir = s.direction === "BULLISH" ? "aufwärts" : s.direction === "BEARISH" ? "abwärts" : "seitwärts";
     var kids = [
       el("div", { class: "cb-sc-head" }, [el("span", { class: "cb-sc-kind", text: kindLabel }), el("span", { class: "cb-dir cb-dir-" + (TONE[s.direction] || "flat"), text: dir })]),
-      el("h3", { text: (Ex && Ex.TEMPLATE[s.template]) || s.template }),
+      el("h3", { text: scenarioTitle(s, s.kind === "PRIMARY" ? s : null) }),
+      el("p", { class: "cb-sc-note", text: (Ex && Ex.TEMPLATE[s.template]) || s.template }),
       s.status ? el("p", { class: "cb-sc-status", text: statusText(s) }) : null
     ];
     var dl = el("dl", { class: "cb-sc-dl" });
@@ -96,81 +97,290 @@
     return card;
   }
 
-  // ================================================================ Profi
-  function proView(a, rules) {
-    var P = a.pro, out = [];
-    var E = P.elliott;
-    if (E && E.primary) {
-      var countBox = function (c, title) {
-        var w = el("ol", { class: "cb-waves" }, c.waves.map(function (x) {
+  // ================================================================ Profi (Mission IV §58–§60): Schichten statt Textwand
+  /* Aufbau: 1 Elliott-Ueberblick (Kacheln) → 2 Reiter (Regeln, Alternativen, Grad & Kontext, Historie, Evidenz, Quellen),
+     immer nur einer offen → 3 weitere Verfahren als kompakte Karten (2–4 Kennzahlen, Details aufklappbar).
+     Nichts entfaellt: jede fruehere Angabe steht in einem Reiter oder hinter "Details". */
+  var LVL = { HIGH: "hoch", MODERATE: "mittel", LOW: "niedrig", UNKNOWN: "–" };
+  var V2NAMES = { IMPULSE: "Impuls", LEADING_DIAGONAL: "Leading Diagonal", ENDING_DIAGONAL: "Ending Diagonal", ZIGZAG: "Zigzag", FLAT: "Flat", TRIANGLE: "Dreieck", WXY: "Doppelte Korrektur", DOUBLE_ZIGZAG: "Doppel-Zigzag", TRIPLE_ZIGZAG: "Dreifach-Zigzag" };
+  var COMP = { subdivision: "Unterteilung", anchor: "Ursprung", dominance: "Dominanz des Ursprungs", coverage: "Vollständigkeit", tail: "Anschluss an heute", residual: "Restpfad", separation: "Grad-Trennung", guidelines: "Richtlinien", higherDegree: "höherer Grad", prior: "Musterhäufigkeit", similarity: "Ähnlichkeit" };
+  var RCLS = { HARD_RULE: "harte Regel", HARD: "harte Regel", DEFINITION: "Definition", GUIDELINE: "Richtlinie", VU_OPERATIONAL: "VU-Grenzwert" };
+  function dec(x, n) { return isNum(x) ? (typeof n === "number" ? x.toFixed(n) : String(x)).replace(".", ",") : "–"; }
+  function dirWord(d) { return d === "UP" || d === "BULLISH" || d > 0 ? "aufwärts" : d === "DOWN" || d === "BEARISH" || d < 0 ? "abwärts" : "seitwärts"; }
+  function dirArrow(d) { return d === "UP" || d === "BULLISH" || d > 0 ? "↗" : d === "DOWN" || d === "BEARISH" || d < 0 ? "↘" : "→"; }
+  function dirTone(d) { return d === "UP" || d === "BULLISH" || d > 0 ? "up" : d === "DOWN" || d === "BEARISH" || d < 0 ? "down" : "flat"; }
+  function boundText(b) { return b ? "Schluss " + (b.direction === "below" ? "unter " : "über ") + fmt(b.price) : null; }
+  function proTile(label, value, sub, tone) {
+    return el("div", { class: "cb-pt" + (tone ? " cb-pt-" + tone : "") }, [el("span", { class: "cb-pt-k", text: label }), el("strong", { class: "cb-pt-v", text: value }), sub ? el("span", { class: "cb-pt-s", text: sub }) : null]);
+  }
+  function kv(rows) { return el("dl", { class: "cb-kv2" }, [].concat.apply([], rows.filter(Boolean).map(function (r) { return [el("dt", { text: r[0] }), el("dd", { class: "num", text: r[1] })]; }))); }
+  function markOf(passed) { return passed === true ? ["✓", "erfüllt", "ok"] : passed === false ? ["✕", "verletzt", "bad"] : ["○", "offen", "open"]; }
+
+  /** Reiter nach WAI-ARIA (tablist/tab/tabpanel, Pfeiltasten, Pos1/Ende); Inhalte entstehen erst beim ersten Oeffnen. */
+  var tabSeq = 0;
+  function tabset(label, items, initial) {
+    var uid = "cb-tabs-" + (++tabSeq), list = el("div", { class: "cb-tabs", role: "tablist", "aria-label": label }), box = el("div", { class: "cb-tabset" }, [list]);
+    var btns = [], panels = [], built = [];
+    function select(i) {
+      btns.forEach(function (b, q) { var on = q === i; b.setAttribute("aria-selected", on ? "true" : "false"); b.tabIndex = on ? 0 : -1; panels[q].hidden = !on; });
+      if (!built[i]) { built[i] = true; var k = items[i].build(); (Array.isArray(k) ? k : [k]).forEach(function (n) { if (n) panels[i].append(n); }); }
+    }
+    items.forEach(function (it, i) {
+      var b = el("button", { type: "button", role: "tab", class: "cb-tab", id: uid + "-t" + i, "aria-controls": uid + "-p" + i, "aria-selected": "false", tabindex: "-1" },
+        [el("span", { text: it.label }), isNum(it.count) ? el("small", { class: "cb-tab-n num", "aria-hidden": "true", text: String(it.count) }) : null]);
+      var p = el("div", { role: "tabpanel", class: "cb-tabpanel", id: uid + "-p" + i, "aria-labelledby": b.id, tabindex: "0", hidden: true });
+      b.addEventListener("click", function () { select(i); });
+      b.addEventListener("keydown", function (e) {
+        var n = items.length, j = e.key === "ArrowRight" ? (i + 1) % n : e.key === "ArrowLeft" ? (i - 1 + n) % n : e.key === "Home" ? 0 : e.key === "End" ? n - 1 : -1;
+        if (j < 0) return;
+        e.preventDefault(); select(j); btns[j].focus();
+      });
+      btns.push(b); panels.push(p); list.append(b); box.append(p);
+    });
+    select(Math.max(0, Math.min(items.length - 1, initial || 0)));
+    return box;
+  }
+
+  /** Eine Regelzeile: Zeichen (✓ ✕ ○) + Aussage, Quelle erst auf Wunsch. */
+  function ruleItem(passed, statement, clsLabel, source, value) {
+    var m = markOf(passed);
+    var head = [el("span", { class: "cb-rule-mark cb-mark-" + m[2], "aria-hidden": "true", text: m[0] }), el("span", { class: "cb-rule-text" }, [el("span", { text: statement }), el("span", { class: "cb-sr", text: " (" + m[1] + ")" })]),
+      value ? el("span", { class: "cb-rule-val num", text: value }) : null];
+    if (!source) return el("li", { class: "cb-rule" }, [el("div", { class: "cb-rule-head" }, head)]);
+    return el("li", { class: "cb-rule" }, [el("details", {}, [el("summary", { class: "cb-rule-head" }, head.concat([el("span", { class: "cb-rule-src-btn", text: "Quelle" })])),
+      el("p", { class: "cb-rule-src", text: (clsLabel ? clsLabel + " · " : "") + source })])]);
+  }
+
+  /** Zaehl-Karte (Haupt- oder Alternativlesart): Muster, Stand, was sie widerlegt; Wellen und Zonen aufklappbar. */
+  function countCard(c, title, primary, rules) {
+    var stand = c.complete ? "Muster abgeschlossen · danach nach Lehrbuch Bewegung " + dirWord(c.nextMove) : "Aktuell Welle " + c.currentWave.label + " von " + c.currentWave.of + " (" + (c.currentWave.role === "MOTIVE" ? "Bewegung in Musterrichtung" : "Korrektur") + ")";
+    var kill = c.invalidation ? ["Widerlegt bei", boundText(c.invalidation)] : null;
+    var killRule = c.invalidation && c.invalidation.ruleId ? ["Regel", ((rules && rules[c.invalidation.ruleId]) || {}).statement || c.invalidation.ruleId] : null;
+    var rev = c.revision ? ["Neuzuordnung bei", boundText(c.revision)] : null;
+    return el("article", { class: "cb-count" + (primary ? " is-primary" : "") }, [
+      el("div", { class: "cb-count-head" }, [el("span", { class: "cb-count-k", text: title }), el("span", { class: "cb-dir cb-dir-" + dirTone(c.direction) }, [el("span", { "aria-hidden": "true", text: dirArrow(c.direction) + " " }), el("span", { text: dirWord(c.direction) })])]),
+      el("p", { class: "cb-count-name", text: c.patternName + (c.variant ? " (" + c.variant.toLowerCase() + ")" : "") }),
+      el("p", { class: "cb-count-stand", text: stand }),
+      el("div", { class: "cb-count-bound" }, [el("span", { class: "cb-bound-icon", "aria-hidden": "true" }), kv([kill, killRule, rev, !kill && !rev ? ["Grenze", "keine harte Grenze in Reichweite"] : null])]),
+      X.more("Wellen und Zonen (" + c.waves.length + ")", function () {
+        var zones = (c.zones || []).map(function (z) { return el("li", {}, [el("b", { class: "num", text: zoneText(z) }), el("span", { text: " · Welle " + z.phase + (z.kind === "COMPLETION" ? " (Abschluss)" : " (Ziel)") + " · " + (z.relations || []).slice(0, 2).join("; ") })]); });
+        return [el("ol", { class: "cb-waves" }, c.waves.map(function (x) {
           return el("li", { class: x.status === "DEVELOPING" ? "is-dev" : "" }, [el("b", { text: x.notation || x.label }), el("span", { class: "num", text: " " + X.dateDe(x.fromTime) + " → " + (x.status === "DEVELOPING" ? "läuft" : X.dateDe(x.toTime)) + " · " + fmt(x.fromPrice) + " → " + fmt(x.toPrice) }),
             x.subdivision && x.subdivision.count > 1 ? el("small", { text: " · " + x.subdivision.count + " Unterwellen" + (x.subdivision.pattern ? " (" + x.subdivision.pattern + ")" : "") }) : null]);
-        }));
-        var inv = c.invalidation ? el("p", { class: "cb-small", text: "Harte Regelgrenze: " + (c.invalidation.direction === "below" ? "unter " : "über ") + fmt(c.invalidation.price) + " (" + c.invalidation.ruleId + ")" }) : null;
-        var rev = c.revision ? el("p", { class: "cb-small", text: "Neuzuordnung der Wellen: " + (c.revision.direction === "below" ? "unter " : "über ") + fmt(c.revision.price) }) : null;
-        var zones = (c.zones || []).map(function (z) { return el("li", {}, [el("b", { class: "num", text: zoneText(z) }), el("span", { text: " · Welle " + z.phase + (z.kind === "COMPLETION" ? " (Abschluss)" : " (Ziel)") + " · " + z.relations.slice(0, 2).join("; ") })]); });
-        return X.card([el("h4", { text: title + ": " + c.patternName + (c.variant ? " (" + c.variant.toLowerCase() + ")" : "") + " · " + (c.direction === "UP" ? "aufwärts" : "abwärts") }),
-          el("p", { class: "cb-small", text: c.complete ? "Muster abgeschlossen; nächste Bewegung " + (c.nextMove === "UP" ? "aufwärts" : "abwärts") + " erwartet." : "Aktuell: Welle " + c.currentWave.label + " von " + c.currentWave.of + " (" + (c.currentWave.role === "MOTIVE" ? "Bewegung in Musterrichtung" : "Korrektur") + ")" }),
-          w, inv, rev, zones.length ? el("ul", { class: "cb-zlist" }, zones) : null,
-          el("p", { class: "cb-small cb-dim", text: "Rang " + c.rank + " · Bestandteile: " + Object.keys(c.rankComponents || {}).map(function (k) { return k + " " + c.rankComponents[k]; }).join(", ") })]);
-      };
-      var parts = [el("p", { class: "cb-small", text: "Struktur-Klarheit: " + ({ HIGH: "hoch", MODERATE: "mittel", LOW: "niedrig (Alternativen liegen nah)" }[E.clarityLevel] || "–") + " · Rangwert " + E.structuralScore + " · Abstand zur besten Alternative " + E.clarity + ". Keine Wahrscheinlichkeit." }),
-        countBox(E.primary, "Hauptzählung")];
-      (E.alternatives || []).forEach(function (c, q) { parts.push(countBox(c, "Alternative " + (q + 1))); });
-      if (E.higherDegree) parts.push(el("p", { class: "cb-small", text: "Höherer Grad: " + (E.higherDegree.patternName || E.higherDegree.pattern) + ", aktuell Welle " + E.higherDegree.current.notation + " (" + (E.higherDegree.current.direction > 0 ? "aufwärts" : "abwärts") + ")" }));
-      if (E.primary.rules) {
-        var tbl = el("table", { class: "cb-table" }, [el("thead", {}, [el("tr", {}, [el("th", { text: "Regel" }), el("th", { text: "Klasse" }), el("th", { text: "Ergebnis" })])]),
-          el("tbody", {}, E.primary.rules.map(function (r) {
-            var cat = (rules && rules[r.id]) || {};
-            return el("tr", {}, [el("td", {}, [el("span", { text: cat.statement || r.id }), cat.source ? el("small", { class: "cb-dim", text: " — " + cat.source }) : null]),
-              el("td", { text: r.cls === "HARD" ? "harte Regel" : "Definition" }), el("td", { text: r.passed === true ? "erfüllt" : r.passed === false ? "verletzt" : "offen (Welle läuft)" })]);
-          }))]);
-        parts.push(el("h4", { text: "Regelprüfung der Hauptzählung" }), el("div", { class: "cb-table-wrap" }, [tbl]));
-        var g = E.primary.guidelines || {};
-        if (Object.keys(g).length) parts.push(el("p", { class: "cb-small", text: "Richtlinien (0–1, beeinflussen nur den Rang): " + Object.keys(g).map(function (k) { return k + " " + g[k]; }).join(" · ") }));
-      }
-      if (E.historicalMap) parts.push(el("p", { class: "cb-small", text: "Historische Karte: " + E.historicalMap.patterns.length + " zuletzt bestätigte Muster, Abdeckung " + pct(E.historicalMap.coverage) + " der Swings. Bestätigte Zählungen werden nie rückwirkend umgeschrieben." }));
-      out.push(X.more("Elliott-Wellen", function () { return parts; }, { open: true, hint: E.ruleSetVersion }));
-    } else out.push(X.notice("Elliott-Wellen", E && E.detail ? E.detail : "Keine regelkonforme Zählung der jüngsten Swings."));
+        })), zones.length ? el("ul", { class: "cb-zlist" }, zones) : null,
+          el("p", { class: "cb-small cb-dim", text: "Rang " + dec(c.rank) + " · Bestandteile: " + Object.keys(c.rankComponents || {}).map(function (k) { return k + " " + c.rankComponents[k]; }).join(", ") })];
+      })
+    ]);
+  }
 
-    out.push(X.more("Hochs, Tiefs und Trend", function () {
-      var t = P.trend, lv = function (name, x) { return el("li", {}, [el("b", { text: name + ": " }), el("span", { text: x.state === "UP" ? "steigend" : x.state === "DOWN" ? "fallend" : x.state === "MIXED" ? "gemischt" : "unbestimmt" }), x.flipLevel ? el("span", { class: "num", text: " · kippt bei Schluss " + (x.state === "UP" ? "unter " : "über ") + fmt(x.flipLevel) }) : null]); };
-      return [el("ul", { class: "cb-list" }, [lv("Übergeordnet", t.primary), lv("Mittelfristig", t.secondary), lv("Kurzfristig", t.shortTerm)]),
-        el("p", { class: "cb-small", text: "Phase: " + ({ TREND_ADVANCING: "Trend schreitet voran", SECONDARY_REACTION: "Gegenbewegung zum übergeordneten Trend", PULLBACK: "Rücksetzer", NO_PRIMARY_TREND: "kein übergeordneter Trend" }[t.phase] || t.phase) + (t.stage && t.stage.stage ? " · Weinstein-Stufe " + t.stage.stage : "") }),
-        el("p", { class: "cb-small cb-dim", text: t.source })];
+  /** Elliott in Schichten: Ueberblick-Kacheln, dann Reiter. Immer „Experimentell“; keine Wahrscheinlichkeit. */
+  function elliottPro(a, rules, methodEv) {
+    var E = a.pro.elliott, T = a.pro.elliottTransparency || {};
+    if (!E || !E.primary) return X.card([el("div", { class: "cb-ewp-head" }, [el("h3", { class: "cb-ewp-title", text: "Elliott-Wellen" }), el("span", { class: "cb-badge cb-badge-experimental", text: "Experimentell" })]),
+      el("p", { class: "cb-small", text: E && E.detail ? E.detail : "Keine regelkonforme Zählung der jüngsten Swings." })], "cb-ew-panel cb-ewp");
+    var c = E.primary, alts = E.alternatives || [], RA = c.ruleAudit, ev = methodEv && methodEv.methods && methodEv.methods.ELLIOTT;
+    var AP = E.applicability || T.applicability, abstain = !!(AP && AP.abstain), v3 = E.engineVersion && /^elliott-3/.test(E.engineVersion);
+    var developing = T.status ? T.status === "DEVELOPING" : !c.complete;
+    var cq = c.countQuality || T.countQuality, deg = T.degree || {}, hist = (T.relabeling && T.relabeling.history) || [];
+    var countMain = abstain ? "Keine verlässliche Zählung" : c.patternName + (c.complete ? " · abgeschlossen" : " · " + (developing && AP && AP.level !== "HIGH" ? "mögliche " : "") + "Welle " + c.currentWave.label);
+    var countSub = abstain ? "Rechnerisch beste Lesart: " + c.patternName + " – bewusst nicht als Zählung gezeigt" : c.complete ? "Muster " + dirWord(c.direction) + ", danach Bewegung " + dirWord(c.nextMove) : "Welle " + c.currentWave.label + " von " + c.currentWave.of;
+    var bound = boundText(c.invalidation), revB = boundText(c.revision);
+
+    var overview = el("div", { class: "cb-ewp-over", role: "group", "aria-label": "Überblick Elliott" }, [
+      el("div", { class: "cb-ewp-count" + (abstain ? " is-abstain" : "") }, [el("span", { class: "cb-pt-k", text: "Derzeit bevorzugte Lesart" }), el("strong", { class: "cb-ewp-count-v", text: countMain }), el("span", { class: "cb-pt-s", text: countSub })]),
+      el("div", { class: "cb-pt-grid" }, [
+        proTile("Grad", v3 ? "Hauptgrad" : String(deg.analysis || "–"), (deg.analysis ? "Skala " + deg.analysis : "") + (E.higherDegree ? " · darüber " + (E.higherDegree.patternName || E.higherDegree.pattern) : deg.higher ? " · höherer Grad " + deg.higher : "")),
+        proTile("Status", developing ? "Entwickelnd" : "Abgeschlossen", developing ? "laufende Welle, Ende offen" : "letzte Welle bestätigt"),
+        proTile("Strukturklarheit", ({ HIGH: "Hoch", MODERATE: "Mittel", LOW: "Niedrig" }[E.clarityLevel] || "–"), "Eindeutigkeit der Zählung · keine Wahrscheinlichkeit", E.clarityLevel === "LOW" ? "warn" : null),
+        proTile("Anwendbarkeit", AP ? (abstain ? "Keine verlässliche Zählung" : (LVL[AP.level] || "–").replace(/^./, function (m) { return m.toUpperCase(); })) : "–", AP && AP.reasons && AP.reasons.length ? AP.reasons[0] : null, abstain ? "warn" : null),
+        proTile("Modellstatus", "Experimentell", (E.engineVersion || "–") + " · Prognosevorteil nicht belegt", "exp")
+      ]),
+      bound || revB ? el("p", { class: "cb-ewp-bound" }, [el("span", { class: "cb-bound-icon", "aria-hidden": "true" }), el("span", {}, [el("b", { text: bound ? "Widerlegt bei " : "Neuzuordnung der Wellen bei " }), el("span", { class: "num", text: bound || revB }), bound && revB ? el("span", { class: "cb-dim", text: " · Neuzuordnung bei " + revB }) : null])]) : null,
+      el("p", { class: "cb-small cb-dim", text: "Hauptlesart = derzeit bevorzugte Interpretation, nicht „die richtige Zählung“. Strukturklarheit beschreibt die Eindeutigkeit des Charts, nicht die Wahrscheinlichkeit eines Ergebnisses." })
+    ]);
+
+    // ---- Regeln
+    function buildRules() {
+      var out = [];
+      if (RA) out.push(el("div", { class: "cb-pt-row" }, [
+        proTile("Regel-Audit", RA.validity === "VALID" ? "gültig" : "UNGÜLTIG", null, RA.validity === "VALID" ? "ok" : "bad"),
+        proTile("Harte Regeln", RA.hardRules.satisfied + "/" + RA.hardRules.total, (RA.hardRules.open ? RA.hardRules.open + " offen · " : "") + (RA.hardRules.violated ? RA.hardRules.violated + " verletzt" : "keine verletzt")),
+        proTile("Definitionen", RA.definitions.satisfied + "/" + RA.definitions.total, (RA.definitions.open ? RA.definitions.open + " offen" : "erfüllt") + (RA.vuOperational && RA.vuOperational.total ? " · VU-Grenzen " + RA.vuOperational.satisfied + "/" + RA.vuOperational.total : "")),
+        proTile("Richtlinien", RA.guidelines.matched + "/" + RA.guidelines.total, "erfüllt (Wert ≥ 0,7) · nur Rang"),
+        cq ? proTile("Count Quality", (LVL[cq.level] || "–") + " · " + dec(cq.score), "Regeltreue, keine Trefferquote") : null
+      ]));
+      else out.push(el("div", { class: "cb-pt-row" }, [proTile("Regelverletzungen", String(T.ruleViolations || 0), T.openRules ? T.openRules + " offen" : null), isNum(T.guidelineFit) ? proTile("Richtlinienpassung", dec(T.guidelineFit), "0–1 · nur Rang") : null, cq ? proTile("Count Quality", (LVL[cq.level] || "–") + " · " + dec(cq.score), "Regeltreue, keine Trefferquote") : null]));
+      var list = RA ? RA.rules.map(function (x) { return { passed: x.passed, statement: x.statement || x.id, cls: x.class, source: (x.source || "") + (x.locator ? " " + x.locator : "") }; })
+        : (c.rules || []).map(function (r) { var cat = (rules && rules[r.id]) || {}; return { passed: r.passed, statement: cat.statement || r.id, cls: r.cls === "HARD" ? "HARD_RULE" : "DEFINITION", source: cat.source || "" }; });
+      var hard = list.filter(function (x) { return x.cls === "HARD_RULE"; }), defs = list.filter(function (x) { return x.cls !== "HARD_RULE"; });
+      var li = function (x) { return ruleItem(x.passed, x.statement, RCLS[x.cls] || x.cls, x.source.trim() || null); };
+      out.push(el("div", { class: "cb-rule-cols" }, [
+        el("div", {}, [el("h4", { class: "cb-rule-h", text: "Harte Regeln" }), hard.length ? el("ul", { class: "cb-rules" }, hard.map(li)) : el("p", { class: "cb-small", text: "Keine harte Regel für dieses Muster geprüft." }),
+          defs.length ? el("h4", { class: "cb-rule-h", text: "Definitionen und VU-Grenzwerte" }) : null, defs.length ? el("ul", { class: "cb-rules" }, defs.map(li)) : null]),
+        el("div", {}, [el("h4", { class: "cb-rule-h", text: "Richtlinien – beeinflussen nur den Rang" }),
+          RA ? el("ul", { class: "cb-rules" }, RA.guidelines.items.map(function (x) { return ruleItem(x.matched ? true : null, x.statement || x.id, "Richtlinie", ((x.source || "") + " " + (x.locator || "")).trim() || null, dec(x.value)); }))
+            : el("ul", { class: "cb-rules" }, Object.keys(c.guidelines || {}).map(function (k) { return ruleItem(c.guidelines[k] >= 0.7 ? true : null, k, "Richtlinie", null, dec(c.guidelines[k])); }))])
+      ]));
+      out.push(el("p", { class: "cb-legend-marks" }, [el("span", { text: "✓ erfüllt" }), el("span", { text: "✕ verletzt" }), el("span", { text: "○ offen bzw. nicht erfüllt (Richtlinie)" })]));
+      if (RA) {
+        var dm = RA.dimensions || {}, d3 = function (x) { return x && isNum(x.value) ? dec(x.value) : "–"; };
+        out.push(X.more("Audit-Dimensionen (0–1)", function () {
+          return [kv([["Fibonacci-Passung", d3(dm.fibonacci)], ["Proportion Zeit / Preis", d3(dm.timeProportion) + " / " + d3(dm.priceProportion)],
+            ["Alternation · Kanal · Extension", d3(dm.alternation) + " · " + d3(dm.channel) + " · " + d3(dm.extension)], ["Unterteilung", d3(dm.subdivision)],
+            ["Momentum · Volumen", d3(dm.momentum) + " · " + (dm.volume && dm.volume.note ? "nicht verfügbar" : d3(dm.volume))], ["Richtlinienpassung", dec(T.guidelineFit)],
+            ["Regelverletzungen", String(T.ruleViolations || 0) + (T.openRules ? " · " + T.openRules + " offen" : "")]])];
+        }));
+      }
+      out.push(el("p", { class: "cb-small cb-dim", text: "Count Quality beschreibt, wie sauber der Chart den Elliott-Regeln entspricht – keine Trefferwahrscheinlichkeit." }));
+      return out;
+    }
+
+    // ---- Alternativen
+    function buildAlts() {
+      var amb = E.ambiguity ? ({ NONE: "keine materiell andere Lesart", DEGREE: "nur Grad (dieselbe Struktur, andere Ebene)", LABEL: "nur Etikett (gleiche Wellenenden)", STRUCTURE: "strukturell (andere Wellenenden)" }[E.ambiguity.kind] || E.ambiguity.kind) : null;
+      var tree = (E.candidateTree || T.candidateTree || []).map(function (b) { return el("li", { text: ({ PRIMARY: "Hauptweg", EXTENSION: "Ausdehnung", ALTERNATIVE_1: "Alternative 1", ALTERNATIVE_2: "Alternative 2" }[b.branch] || b.branch) + ": " + b.text + (isNum(b.invalidation) ? " · ungültig bei " + fmt(b.invalidation) : "") }); });
+      return [
+        abstain ? el("p", { class: "cb-unclear" }, [el("b", { text: "Keine verlässliche Zählung. " }), el("span", { text: "Die Lesarten unten sind rechnerisch regelkonform, aber nicht deutlich genug, um sie als Zählung zu zeigen – nur zur Transparenz." })]) : null,
+        el("div", { class: "cb-count-grid" }, [countCard(c, "Hauptlesart · derzeit bevorzugt", true, rules)].concat(alts.map(function (x, q) { return countCard(x, "Alternative " + (q + 1), false, rules); }))),
+        !alts.length ? el("p", { class: "cb-small", text: "Keine materiell andere Lesart gefunden." }) : null,
+        amb ? el("p", { class: "cb-small" }, [el("b", { text: "Mehrdeutigkeit: " }), el("span", { text: amb + (E.ambiguity.note ? " – " + E.ambiguity.note : "") })]) : null,
+        tree.length ? el("h4", { class: "cb-rule-h", text: "Mögliche Entwicklungen aus dem aktuellen Stand" }) : null, tree.length ? el("ul", { class: "cb-list" }, tree) : null,
+        E.trace ? X.more("Warum diese Zählung? (" + (E.trace.candidates || 0) + " regelkonforme Lesarten geprüft)", function () {
+          var ch = E.trace.chosen && E.trace.chosen.components ? Object.keys(E.trace.chosen.components).filter(function (k) { return COMP[k]; }).map(function (k) { return el("li", { text: COMP[k] + ": " + dec(E.trace.chosen.components[k]) }); }) : [];
+          var rej = (E.trace.rejectedTop || []).map(function (r) { return el("li", { text: (V2NAMES[r.pattern] || r.pattern) + (r.complete ? " (abgeschlossen)" : "") + " ab " + X.dateDe(r.from) + " – " + r.why.replace(/\b(\w+)\b/g, function (m) { return COMP[m] || m; }) }); });
+          return [el("h4", { text: "Merkmale der gewählten Lesart (0–1)" }), el("ul", { class: "cb-list" }, ch), rej.length ? el("h4", { text: "Nächste verworfene Lesarten" }) : null, rej.length ? el("ul", { class: "cb-list" }, rej) : null,
+            el("p", { class: "cb-small cb-dim", text: "Struktur-Rangwert " + dec(E.structuralScore) + " · Abstand zur besten Alternative " + dec(E.clarity) + ". Keine Wahrscheinlichkeit." })];
+        }) : null
+      ];
+    }
+
+    // ---- Grad & Kontext
+    function buildDegree() {
+      var H = E.higherDegree, agr = T.higherDegreeAgreement;
+      var amb = E.ambiguity ? ({ NONE: "Keine", DEGREE: "Nur Grad", LABEL: "Nur Etikett", STRUCTURE: "Strukturell" }[E.ambiguity.kind] || E.ambiguity.kind) : "–";
+      return [el("div", { class: "cb-pt-row" }, [
+        proTile("Analysegrad", v3 ? "Hauptgrad" : String(deg.analysis || "–"), "Skalennähe " + (deg.analysis || "–")),
+        proTile("Höherer Grad", H ? (H.patternName || H.pattern) : deg.higher || "–", H ? "aktuell Welle " + H.current.notation + " · " + dirWord(H.current.direction) : null),
+        proTile("Passung zum höheren Grad", isNum(agr) ? (agr >= 0.8 ? "passt" : agr >= 0.5 ? "neutral" : "widerspricht") : "–", isNum(agr) ? "Wert " + dec(agr) : null, isNum(agr) && agr < 0.5 ? "warn" : null),
+        proTile("Mehrdeutigkeit", amb, E.ambiguity && E.ambiguity.note ? E.ambiguity.note : null)
+      ]),
+        kv([["Suche", (deg.engine || "–") + (isNum(deg.poolPivots) ? " · " + deg.poolPivots + " Pivots" : "") + (isNum(deg.candidates) ? " · " + deg.candidates + " Kandidaten" : "") + (deg.searchTruncated ? " · Suche gekürzt" : "")],
+          ["Elliott anwendbar", AP ? (AP.abstain ? "keine verlässliche Zählung" : LVL[AP.level]) + (AP.reasons && AP.reasons.length ? " · " + AP.reasons.join("; ") : "") : "–"],
+          ["Struktur-Klarheit", ({ HIGH: "hoch", MODERATE: "mittel", LOW: "niedrig (Alternativen liegen nah)" }[E.clarityLevel] || "–") + " · Rangwert " + dec(E.structuralScore) + " · Abstand zur besten Alternative " + dec(E.clarity) + " (keine Wahrscheinlichkeit)"],
+          E.historicalMap ? ["Historische Karte", E.historicalMap.patterns.length + " zuletzt bestätigte Muster · Abdeckung " + pct(E.historicalMap.coverage) + " der Swings"] : null]),
+        H && H.waves ? X.more("Wellen des höheren Grades (" + H.waves.length + ")", function () {
+          return el("ol", { class: "cb-waves" }, H.waves.map(function (x) { return el("li", {}, [el("b", { text: x.notation || x.label }), el("span", { class: "num", text: " " + X.dateDe(x.fromTime) + " → " + X.dateDe(x.toTime) + " · " + fmt(x.fromPrice) + " → " + fmt(x.toPrice) })]); }));
+        }) : null,
+        el("p", { class: "cb-small cb-dim", text: "Bestätigte Zählungen werden nie rückwirkend umgeschrieben." })];
+    }
+
+    // ---- Historie
+    function buildHistory() {
+      var d = T.detection, R = T.relabeling;
+      return [el("div", { class: "cb-pt-row" }, [
+        proTile("Neuzuordnungs-Risiko", R ? ({ LOW: "gering", MEDIUM: "mittel", HIGH: "hoch" }[R.risk] || R.risk) : "–", R ? R.relabelsLast26 + " Wechsel in 26 Schritten" : null, R && R.risk === "HIGH" ? "warn" : null),
+        R && isNum(R.stableFor) ? proTile("Stabil seit", R.stableFor + " Schritten", isNum(R.resetsLast26) ? R.resetsLast26 + " Neustarts in 26 Schritten" : null) : null,
+        d ? proTile("Erkennungsverzug", d.barsToEngine + (d.barsToEngine === 1 ? " Bar" : " Bars"), "Welle " + d.wave + " · frühestens nach " + (isNum(d.barsToEarliest) ? d.barsToEarliest : "–")) : null,
+        d && isNum(d.moveAtEngineConfirmPct) ? proTile("Kursweg bis Bestätigung", dec(d.moveAtEngineConfirmPct * 100, 1) + " %", "ab Wellenende " + X.dateDe(d.waveEndTime)) : null
+      ]),
+        hist.length ? el("ol", { class: "cb-timeline" }, hist.slice().reverse().map(function (h) { return el("li", {}, [el("span", { class: "cb-tl-d num", text: X.dateDe(h.d) }), el("span", { class: "cb-tl-t" }, [el("b", { text: h.to || "keine Zählung" }), el("span", { text: h.why })])]); }))
+          : el("p", { class: "cb-small", text: "Keine Zählungswechsel im betrachteten Zeitraum." })];
+    }
+
+    // ---- Evidenz
+    function buildEvidence() {
+      return [el("div", { class: "cb-ev-head" }, [el("span", { class: "cb-badge cb-badge-" + String(ev ? ev.level : "not_established").toLowerCase(), text: ev ? ev.label : "Nicht belegt" }), el("span", { class: "cb-badge cb-badge-experimental", text: ev && ev.methodStatus ? ev.methodStatus.label : "Experimentell" })]),
+        el("p", { class: "cb-ev-text", text: ev ? ev.consumer : "Für Elliott-Zählungen ist kein historischer Prognosevorteil belegt." }),
+        ev && ev.pro ? kv([["Befund (Profi)", ev.pro], ev.methodStatus && ev.methodStatus.note ? ["Methodenstatus", ev.methodStatus.note] : null]) : null,
+        el("p", { class: "cb-small cb-dim", text: "Die Zählung beschreibt Struktur. Sie ist keine Vorhersage und kein Signal." }),
+        el("p", {}, [X.link("Methodik und Validierung →", X.routes.method("chartbild"))])];
+    }
+
+    // ---- Quellen
+    function buildSources() {
+      var items = RA ? RA.rules.map(function (x) { return [markOf(x.passed)[0], x.statement || x.id, RCLS[x.class] || x.class, ((x.source || "–") + " " + (x.locator || "")).trim()]; })
+        .concat(RA.guidelines.items.map(function (x) { return [x.matched ? "✓" : "○", (x.statement || x.id) + " (" + dec(x.value) + ")", "Richtlinie", ((x.source || "–") + " " + (x.locator || "")).trim()]; }))
+        : (c.rules || []).map(function (r) { var cat = (rules && rules[r.id]) || {}; return [markOf(r.passed)[0], cat.statement || r.id, r.cls === "HARD" ? "harte Regel" : "Definition", cat.source || "–"]; });
+      return [el("ul", { class: "cb-src" }, items.map(function (x) { return el("li", {}, [el("span", { class: "cb-src-m", "aria-hidden": "true", text: x[0] }), el("span", {}, [el("b", { text: x[1] }), el("small", { text: x[2] + " · " + x[3] })])]); })),
+        el("p", { class: "cb-small cb-dim", text: (RA && RA.verification ? "Fundstellen: " + RA.verification + ". " : "") + "Quellen: EWP = Frost & Prechter, Elliott Wave Principle; EWI = Gorman & Kennedy, Visual Guide; VU = Vision-Universe-Festlegung (keine Elliott-Regel)." }),
+        kv([["Regelwerk", E.ruleSetVersion || "–"], ["Engine", E.engineVersion || "–"]])];
+    }
+
+    var nRules = RA ? RA.rules.length + RA.guidelines.items.length : (c.rules || []).length;
+    var tabs = tabset("Elliott-Details", [
+      { label: "Regeln", count: nRules, build: buildRules },
+      { label: "Alternativen", count: alts.length, build: buildAlts },
+      { label: "Grad & Kontext", build: buildDegree },
+      { label: "Historie", count: hist.length, build: buildHistory },
+      { label: "Evidenz", build: buildEvidence },
+      { label: "Quellen", build: buildSources }
+    ], 0);
+    return el("section", { class: "qx-card cb-ew-panel cb-ewp", "aria-label": "Elliott-Wellen (Profi)" }, [
+      el("div", { class: "cb-ewp-head" }, [el("h3", { class: "cb-ewp-title", text: "Elliott-Wellen" }), el("span", { class: "cb-badge cb-badge-experimental", text: "Experimentell" })]),
+      overview, tabs]);
+  }
+
+  /** Kompakte Verfahrenskarte: Ueberschrift, 2–4 Kennzahlen, Details aufklappbar. */
+  function proCard(title, kpis, note, detail) {
+    return el("article", { class: "cb-pc" }, [el("h3", { class: "cb-pc-h", text: title }),
+      el("div", { class: "cb-pc-kpis" }, kpis.filter(Boolean).map(function (k) { return el("div", { class: "cb-pc-kpi" }, [el("span", { class: "cb-pc-k", text: k[0] }), el("strong", { class: "num" + (k[2] ? " cb-tone-" + k[2] : ""), text: k[1] })]); })),
+      note ? el("p", { class: "cb-pc-note", text: note }) : null, detail ? X.more("Details", detail) : null]);
+  }
+  function proView(a, rules, methodEv) {
+    var P = a.pro, cards = [];
+    var tState = function (x) { return x ? dirArrow(x.state) + " " + (x.state === "UP" ? "steigend" : x.state === "DOWN" ? "fallend" : x.state === "MIXED" ? "gemischt" : "unbestimmt") : "–"; };
+    var tTone = function (x) { return x && x.state === "UP" ? "up" : x && x.state === "DOWN" ? "down" : null; };
+    var t = P.trend, PHASE = { TREND_ADVANCING: "Trend schreitet voran", SECONDARY_REACTION: "Gegenbewegung zum übergeordneten Trend", PULLBACK: "Rücksetzer", NO_PRIMARY_TREND: "kein übergeordneter Trend" };
+    cards.push(proCard("Hochs, Tiefs und Trend", [["Übergeordnet", tState(t.primary), tTone(t.primary)], ["Mittelfristig", tState(t.secondary), tTone(t.secondary)], ["Kurzfristig", tState(t.shortTerm), tTone(t.shortTerm)]],
+      (PHASE[t.phase] || t.phase) + (t.stage && t.stage.stage ? " · Weinstein-Stufe " + t.stage.stage : ""), function () {
+        var lv = function (name, x) { return x && x.flipLevel ? [name + " kippt bei", "Schluss " + (x.state === "UP" ? "unter " : "über ") + fmt(x.flipLevel)] : null; };
+        return [kv([lv("Übergeordnet", t.primary), lv("Mittelfristig", t.secondary), lv("Kurzfristig", t.shortTerm)]), el("p", { class: "cb-small cb-dim", text: t.source })];
+      }));
+    var SR = P.supportResistance, res = SR.resistances || [], sup = SR.supports || [];
+    var zli = function (x) { return el("li", {}, [el("b", { class: "num", text: zoneText(x) }), el("span", { text: " · " + x.touches + " Berührungen · Stärke " + x.strength })]); };
+    cards.push(proCard("Unterstützungen und Widerstände", [["Nächster Widerstand", res[0] ? zoneText(res[0]) : "–"], ["Nächste Unterstützung", sup[0] ? zoneText(sup[0]) : "–"], ["Zonen oben / unten", res.length + " / " + sup.length]], null, function () {
+      return [el("h4", { text: "Widerstände" }), el("ul", { class: "cb-list" }, res.map(zli)), el("h4", { text: "Unterstützungen" }), el("ul", { class: "cb-list" }, sup.map(zli))];
     }));
-    out.push(X.more("Unterstützungen, Widerstände, Fibonacci", function () {
-      var z = function (x) { return el("li", {}, [el("b", { class: "num", text: zoneText(x) }), el("span", { text: " · " + x.touches + " Berührungen · Stärke " + x.strength })]); };
-      return [el("h4", { text: "Widerstände" }), el("ul", { class: "cb-list" }, P.supportResistance.resistances.map(z)), el("h4", { text: "Unterstützungen" }), el("ul", { class: "cb-list" }, P.supportResistance.supports.map(z)),
-        el("h4", { text: "Fibonacci-Konfluenz" }), el("ul", { class: "cb-list" }, (P.fibonacci.clusters || []).map(function (c) { return el("li", {}, [el("b", { class: "num", text: zoneText(c) }), el("span", { text: " · " + c.anchors + " Anker" })]); })),
+    var cl = (P.fibonacci && P.fibonacci.clusters) || [], best = cl.slice().sort(function (x, y) { return (y.anchors || 0) - (x.anchors || 0); })[0];
+    cards.push(proCard("Fibonacci-Konfluenz", [["Cluster", String(cl.length)], ["Stärkster Cluster", best ? zoneText(best) : "–"], ["Anker im stärksten", best ? String(best.anchors) : "–"]], "Zählt nur, wo mehrere Anker zusammenfallen.", function () {
+      return [el("ul", { class: "cb-list" }, cl.map(function (x) { return el("li", {}, [el("b", { class: "num", text: zoneText(x) }), el("span", { text: " · " + x.anchors + " Anker" })]); })),
         el("p", { class: "cb-small cb-dim", text: "Hinweis: In der VU-Studie (über 300.000 Gegenbewegungen) enden Rückläufe an 38,2/50/61,8 % nicht häufiger als knapp daneben. Fibonacci zählt deshalb nur als Konfluenz mehrerer Anker." })];
     }));
-    out.push(X.more("Bewegungsstärke, Schwankung, Volumen", function () {
-      var m = P.momentum, v = P.volatility, vo = P.volume;
+    var m = P.momentum, v = P.volatility, vo = P.volume;
+    var MS = { POSITIVE: "positiv", NEGATIVE: "negativ", NEUTRAL: "neutral", UNDETERMINED: "unbestimmt" }, VR = { COMPRESSED: "ruhig", NORMAL: "normal", ELEVATED: "erhöht", EXTREME: "extrem", UNDETERMINED: "unbestimmt" };
+    cards.push(proCard("Bewegungsstärke, Schwankung, Volumen", [
+      ["Momentum", (m.state === "POSITIVE" ? "↗ " : m.state === "NEGATIVE" ? "↘ " : "") + (MS[m.state] || "–"), m.state === "POSITIVE" ? "up" : m.state === "NEGATIVE" ? "down" : null],
+      ["RSI 14", isNum(m.rsi14) ? String(Math.round(m.rsi14)) : "–"], ["ATR", pct(v.atrPct) + " · " + (VR[v.regime] || "–")],
+      ["Rel. Volumen", vo.status ? "nicht verfügbar" : fmt(vo.relativeVolume)]], m.divergence && (m.divergence.bearish || m.divergence.bullish) ? (m.divergence.bearish ? "Bärische Divergenz: neues Hoch bei schwächerem RSI" : "Bullische Divergenz: neues Tief bei stärkerem RSI") : null, function () {
       return [el("ul", { class: "cb-list" }, [
-        el("li", { text: "Momentum: " + ({ POSITIVE: "positiv", NEGATIVE: "negativ", NEUTRAL: "neutral", UNDETERMINED: "unbestimmt" }[m.state]) + (m.dynamics ? " · " + ({ ACCELERATING: "beschleunigt", DECELERATING: "lässt nach", STEADY: "stetig" }[m.dynamics]) : "") + (isNum(m.rsi14) ? " · RSI 14: " + Math.round(m.rsi14) : "") }),
+        el("li", { text: "Momentum: " + MS[m.state] + (m.dynamics ? " · " + ({ ACCELERATING: "beschleunigt", DECELERATING: "lässt nach", STEADY: "stetig" }[m.dynamics]) : "") + (isNum(m.rsi14) ? " · RSI 14: " + Math.round(m.rsi14) : "") }),
         m.divergence && m.divergence.bearish ? el("li", { text: "Bärische Divergenz: neues Hoch bei schwächerem RSI" }) : null,
         m.divergence && m.divergence.bullish ? el("li", { text: "Bullische Divergenz: neues Tief bei stärkerem RSI" }) : null,
-        el("li", { text: "Schwankung (ATR): " + fmt(v.atr) + " (" + pct(v.atrPct) + " des Kurses) · Regime " + ({ COMPRESSED: "ruhig", NORMAL: "normal", ELEVATED: "erhöht", EXTREME: "extrem", UNDETERMINED: "unbestimmt" }[v.regime]) }),
+        el("li", { text: "Schwankung (ATR): " + fmt(v.atr) + " (" + pct(v.atrPct) + " des Kurses) · Regime " + VR[v.regime] }),
         vo.status ? el("li", { text: "Volumen: nicht verfügbar (" + (vo.detail || "keine Daten") + ")" }) : el("li", { text: "Relatives Volumen " + fmt(vo.relativeVolume) + " · Volumen an steigenden/fallenden Tagen " + fmt(vo.upDownVolumeRatio) + " · " + ({ ACCUMULATION: "Akkumulation", DISTRIBUTION: "Distribution", BALANCED: "ausgeglichen" }[vo.accumulation] || "") }),
         vo.profile ? el("li", { text: "Volumenprofil (6 Monate, tagesbasiert): Schwerpunkt " + fmt(vo.profile.poc) + ", Wertbereich " + fmt(vo.profile.valueAreaLow) + "–" + fmt(vo.profile.valueAreaHigh) }) : null
       ].concat((vo.anchoredVwap || []).map(function (x) { return el("li", { text: "Anchored VWAP seit " + (x.anchor === "MAJOR_LOW" ? "großem Tief" : "großem Hoch") + " " + X.dateDe(x.anchorTime) + ": " + fmt(x.vwap) + (x.priceAbove ? " (Kurs darüber)" : " (Kurs darunter)") }); })))];
     }));
-    out.push(X.more("Chartformationen und Wyckoff", function () {
-      var pats = P.patterns.patterns || [], w = P.wyckoff;
-      return [pats.length ? el("ul", { class: "cb-list" }, pats.map(function (p) { return el("li", {}, [el("b", { text: p.name }), el("span", { text: " · " + ({ FORMING: "in Bildung", BREAKOUT: "Ausbruch", BREAKOUT_RETEST: "Ausbruch mit Rücktest", FAILED: "gescheitert", FAILED_BREAKOUT: "Fehlausbruch" }[p.status] || p.status) + (p.breakoutLevel ? " · Ausbruchsniveau " + fmt(p.breakoutLevel) : "") + " · Formationsziel " + zoneText(p.target) }) ]); })) : el("p", { class: "cb-small", text: "Keine aktive Formation." }),
-        w.status === "TRADING_RANGE" ? el("p", { class: "cb-small", text: "Wyckoff: Spanne " + fmt(w.range.support) + "–" + fmt(w.range.resistance) + " · " + ({ ACCUMULATION: "Akkumulation", DISTRIBUTION: "Distribution", REACCUMULATION_OR_ACCUMULATION: "Akkumulation oder Re-Akkumulation", REDISTRIBUTION_OR_DISTRIBUTION: "Distribution oder Re-Distribution", UNDETERMINED: "offen" }[w.schematic] || w.schematic) + " · Phase " + w.phase + " · Ereignisse: " + (w.events || []).map(function (e) { return e.event; }).join(", ") }) : el("p", { class: "cb-small", text: "Wyckoff: keine Handelsspanne erkannt." }),
+    var pats = P.patterns.patterns || [], w = P.wyckoff;
+    var PST = { FORMING: "in Bildung", BREAKOUT: "Ausbruch", BREAKOUT_RETEST: "Ausbruch mit Rücktest", FAILED: "gescheitert", FAILED_BREAKOUT: "Fehlausbruch" };
+    var WS = { ACCUMULATION: "Akkumulation", DISTRIBUTION: "Distribution", REACCUMULATION_OR_ACCUMULATION: "Akkumulation oder Re-Akkumulation", REDISTRIBUTION_OR_DISTRIBUTION: "Distribution oder Re-Distribution", UNDETERMINED: "offen" };
+    cards.push(proCard("Chartformationen und Wyckoff", [["Aktive Formationen", String(pats.length)], pats[0] ? ["Formation", pats[0].name + " · " + (PST[pats[0].status] || pats[0].status)] : null,
+      ["Wyckoff", w.status === "TRADING_RANGE" ? "Spanne · Phase " + w.phase : "keine Spanne"]], "Wyckoff ist beschreibend und fließt nicht in die Richtung ein.", function () {
+      return [pats.length ? el("ul", { class: "cb-list" }, pats.map(function (p) { return el("li", {}, [el("b", { text: p.name }), el("span", { text: " · " + (PST[p.status] || p.status) + (p.breakoutLevel ? " · Ausbruchsniveau " + fmt(p.breakoutLevel) : "") + " · Formationsziel " + zoneText(p.target) })]); })) : el("p", { class: "cb-small", text: "Keine aktive Formation." }),
+        w.status === "TRADING_RANGE" ? el("p", { class: "cb-small", text: "Wyckoff: Spanne " + fmt(w.range.support) + "–" + fmt(w.range.resistance) + " · " + (WS[w.schematic] || w.schematic) + " · Phase " + w.phase + " · Ereignisse: " + (w.events || []).map(function (e) { return e.event; }).join(", ") }) : el("p", { class: "cb-small", text: "Wyckoff: keine Handelsspanne erkannt." }),
         el("p", { class: "cb-small cb-dim", text: "Wyckoff ist beschreibend und fließt nicht in die Richtung ein (keine belastbare Evidenz; in der VU-Studie lag die Richtungstrefferquote unter 50 %)." })];
     }));
-    out.push(X.more("Konfluenz und Methodik", function () {
-      var cf = a.confluence;
+    var cf = a.confluence;
+    cards.push(proCard("Konfluenz und Methodik", [["Einigkeit", (cf.agreement > 0 ? "+" : "") + dec(cf.agreement, 2), cf.agreement > 0.1 ? "up" : cf.agreement < -0.1 ? "down" : null], ["Abdeckung", pct(cf.coverage)], ["Verfahren", String(cf.families.length)]],
+      "Gewichtete Richtung der Verfahren; Wyckoff ohne Stimmgewicht.", function () {
       return [el("div", { class: "cb-table-wrap" }, [el("table", { class: "cb-table" }, [el("thead", {}, [el("tr", {}, [el("th", { text: "Verfahren" }), el("th", { text: "Richtung" }), el("th", { text: "Gewicht" })])]),
         el("tbody", {}, cf.families.map(function (f) { return el("tr", {}, [el("td", { text: (Ex && Ex.FAMILY[f.family]) || f.family }), el("td", { class: "num", text: (f.direction > 0 ? "+" : "") + f.direction.toFixed(2).replace(".", ",") }), el("td", { class: "num", text: f.weight.toFixed(2).replace(".", ",") })]); }))])]),
         el("p", { class: "cb-small", text: "Einigkeit (gewichtete Richtung): " + (cf.agreement > 0 ? "+" : "") + String(cf.agreement).replace(".", ",") + " · Abdeckung " + pct(cf.coverage) + ". Gewichte aus Evidenzgraden der Literatur; Wyckoff ohne Stimmgewicht." }),
         el("p", { class: "cb-small cb-dim", text: "Alle Werte aus Daten bis " + X.dateDe(a.asOf) + "; nur bestätigte Swings; dieselbe Rechnung wie im Backtest. Methodik: quant/methodology/technical-intelligence-v2.json · Elliott " + ((a.versions && a.versions.elliott) || (a.pro.elliott && a.pro.elliott.engineVersion) || "–") + " · Regelwerk " + ((a.versions && a.versions.ruleSet) || (a.pro.elliott && a.pro.elliott.ruleSetVersion) || "–") + " · Datenstand " + X.dateDe((a.versions && a.versions.dataAsOf) || a.asOf) + "." }),
         el("p", {}, [X.link("Methodik und Quellen →", X.routes.method("chartbild"))])];
     }));
-    return out;
+    return [el("h2", { class: "cb-pro-title", text: "Profi-Ansicht" }), elliottPro(a, rules, methodEv),
+      el("h3", { class: "cb-pro-sub", text: "Weitere Verfahren auf einen Blick" }), el("div", { class: "cb-pro-grid" }, cards)];
   }
 
   // ================================================================ Seite
@@ -188,6 +398,22 @@
   var CLARITY = { CLEAR: "Klar", MODERATE: "Mittel", AMBIGUOUS: "Unklar" };
   var EVIDENCE = { NOT_ESTABLISHED: "Kein Vorteil belegt", EXPERIMENTAL: "Experimentell", NO_DATA: "Zu wenig Fälle", VALIDATED: "Bestätigt", SUPPORTED: "Gestützt", DESCRIPTIVE: "Beschreibend" };
   var KIND = { PRIMARY: "Hauptszenario", ALTERNATIVE: "Alternative", TAIL: "Randszenario" };
+  /** Szenario zuerst in Alltagssprache (§61): Titel aus Richtung, Vorlage und Rolle; "Hauptszenario/Alternative" nur als Zweitlabel,
+      Wellen-Fachsprache erst darunter. Die Alternative gegen die Richtung des Hauptszenarios ist eine Trendwende. */
+  function scenarioTitle(s, primary) {
+    if (!s) return "";
+    var up = s.direction === "BULLISH", down = s.direction === "BEARISH";
+    if (s.template === "RANGE" || s.range || (!up && !down)) return "Seitwärtsphase hält an";
+    if (s.kind === "ALTERNATIVE" && primary && primary !== s && (primary.direction === "BULLISH" || primary.direction === "BEARISH") && primary.direction !== s.direction) return "Größere Trendwende";
+    return ({
+      CONTINUATION: up ? "Aufwärtstrend setzt sich fort" : "Abwärtstrend setzt sich fort",
+      PULLBACK: up ? "Rücksetzer, dann weiter aufwärts" : "Erholung, dann weiter abwärts",
+      BREAKOUT_RETEST: up ? "Ausbruch nach oben hält" : "Ausbruch nach unten hält",
+      DEEPER_CORRECTION: up ? "Tiefere Korrektur" : "Stärkere Erholung",
+      EXTENDED_MOVE: up ? "Ausgedehnter Anstieg" : "Ausgedehnter Rückgang"
+    })[s.template] || (up ? "Bewegung aufwärts" : "Bewegung abwärts");
+  }
+  function scenarioRole(s) { return [el("span", { text: (KIND[s.kind] || s.kind) + " " }), el("span", { "aria-hidden": "true", text: dirArrow(s.direction) }), el("span", { class: "cb-switch-dw", text: " " + dirWord(s.direction) })]; }
 
   function waveKey(label) { return String(label || "").replace(/^.*·/, "").charAt(0).toUpperCase(); }
 
@@ -299,9 +525,9 @@
     function scenarioSentence(s) {
       if (!s) return "";
       var t = (Ex && Ex.TEMPLATE[s.template]) || s.template;
-      var dir = s.direction === "BULLISH" ? "aufwärts" : s.direction === "BEARISH" ? "abwärts" : "seitwärts";
+      var role = { PRIMARY: "die derzeit bevorzugte Lesart", ALTERNATIVE: "die Alternative zur bevorzugten Lesart", TAIL: "ein Randszenario" }[s.kind] || "";
       var cond = s.invalidation && !(s.kind === "PRIMARY" && scenarioOf("ALTERNATIVE")) ? " Die Lesart gilt, solange kein Schlusskurs " + (s.invalidation.direction === "below" ? "unter " : "über ") + fmt(s.invalidation.price) + " liegt." : "";
-      return KIND[s.kind] + " (" + dir + "): " + String(t).split(" —")[0] + "." + cond + (s.note ? " " + s.note + "." : "");
+      return scenarioTitle(s, scenarioOf("PRIMARY")) + (role ? " – " + role : "") + "." + cond + (s.note ? " " + s.note + "." : "") + " Fachlich: " + String(t).split(" —")[0] + ".";
     }
     function selectKind(k) {
       kind = k;
@@ -310,9 +536,15 @@
       fillLevels(scenarioOf(k)); draw();
     }
     kinds.forEach(function (k) {
-      var b = el("button", { type: "button", role: "tab", class: "cb-switch-btn", dataset: { kind: k }, text: KIND[k] || k });
+      var sk = scenarioOf(k);
+      var b = el("button", { type: "button", role: "tab", class: "cb-switch-btn", dataset: { kind: k }, "aria-label": sk ? scenarioTitle(sk, scenarioOf("PRIMARY")) + " – " + (KIND[k] || k) + ", " + dirWord(sk.direction) : null }, [el("span", { class: "cb-switch-t", text: scenarioTitle(sk, scenarioOf("PRIMARY")) }),
+        el("small", { class: "cb-switch-k" }, sk ? scenarioRole(sk) : [KIND[k] || k])]);
       b.addEventListener("click", function () { selectKind(k); });
-      b.addEventListener("keydown", function (e) { var i = kinds.indexOf(kind); if (e.key === "ArrowRight") selectKind(kinds[(i + 1) % kinds.length]); if (e.key === "ArrowLeft") selectKind(kinds[(i - 1 + kinds.length) % kinds.length]); });
+      b.addEventListener("keydown", function (e) {
+        var i = kinds.indexOf(kind), n = kinds.length, j = e.key === "ArrowRight" ? (i + 1) % n : e.key === "ArrowLeft" ? (i - 1 + n) % n : e.key === "Home" ? 0 : e.key === "End" ? n - 1 : -1;
+        if (j < 0) return;
+        e.preventDefault(); selectKind(kinds[j]); var nb = tabs.querySelector('[data-kind="' + kinds[j] + '"]'); if (nb) nb.focus();
+      });
       tabs.append(b);
     });
 
@@ -427,7 +659,7 @@
     function setView(v) {
       view = v; writeView(v);
       if (v === "pro") wavesOn = true;
-      if (v === "pro" && !proHost.firstChild) [elliottPanel(a, methodEv)].concat(proView(a, rules)).forEach(function (n) { if (n) proHost.append(n); });
+      if (v === "pro" && !proHost.firstChild) proView(a, rules, methodEv).forEach(function (n) { if (n) proHost.append(n); });
       proHost.hidden = v !== "pro"; proOpen.hidden = v === "pro";
       viewSeg.querySelectorAll("button").forEach(function (b, q) { b.setAttribute("aria-pressed", (q === 1) === (v === "pro") ? "true" : "false"); });
       draw();
@@ -459,7 +691,7 @@
   function scenarioDifference(p, alt) {
     if (!p || !alt) return null;
     var parts = [];
-    if (p.invalidation) parts.push("Das Hauptszenario gilt, solange der Schlusskurs " + (p.invalidation.direction === "below" ? "über " : "unter ") + fmt(p.invalidation.price) + " bleibt.");
+    if (p.invalidation) parts.push("Die derzeit bevorzugte Lesart (Hauptszenario) gilt, solange der Schlusskurs " + (p.invalidation.direction === "below" ? "über " : "unter ") + fmt(p.invalidation.price) + " bleibt.");
     if (alt.trigger && isNum(alt.trigger.price)) parts.push("Die Alternative rückt in den Vordergrund " + (alt.direction === "BEARISH" ? "unter " : "über ") + fmt(alt.trigger.price) + ".");
     else if (alt.invalidation) parts.push("Die Alternative wäre " + (alt.invalidation.direction === "below" ? "unter " : "über ") + fmt(alt.invalidation.price) + " widerlegt.");
     return parts.length ? el("p", { class: "cb-sc-diff" }, [el("b", { text: "Was die Szenarien unterscheidet: " }), el("span", { text: parts.join(" ") })]) : null;
@@ -508,63 +740,6 @@
     }
     kids.push(el("p", { class: "cb-small cb-dim", text: "Hauptlesart = derzeit bevorzugte Interpretation, nicht „die richtige Zählung“. Keine Wahrscheinlichkeit, kein Signal." }));
     return el("section", { class: "cb-ew-card", "aria-label": "Elliott-Struktur" }, kids);
-  }
-
-  /** Elliott-Transparenz (§54/§123): Zaehlung, Grad, Status, Count Quality, Verzug, Regeln, Grad-Passung, Evidenz. */
-  var V2NAMES = { IMPULSE: "Impuls", LEADING_DIAGONAL: "Leading Diagonal", ENDING_DIAGONAL: "Ending Diagonal", ZIGZAG: "Zigzag", FLAT: "Flat", TRIANGLE: "Dreieck", WXY: "Doppelte Korrektur", DOUBLE_ZIGZAG: "Doppel-Zigzag", TRIPLE_ZIGZAG: "Dreifach-Zigzag" };
-  function elliottPanel(a, methodEv) {
-    var E = a.pro.elliott, T = a.pro.elliottTransparency;
-    if (!E || !E.primary || !T) return null;
-    var c = E.primary, alt = (E.alternatives || [])[0];
-    var lvl = { HIGH: "hoch", MODERATE: "mittel", LOW: "niedrig", UNKNOWN: "–" };
-    var d = T.detection, ev = methodEv && methodEv.methods && methodEv.methods.ELLIOTT;
-    var rows = [
-      ["Methodenstatus", "Experimentelles Strukturmodell · " + (E.engineVersion || "") + " · historischer Prognosevorteil nicht belegt"],
-      ["Hauptzählung", c.patternName + " · " + (c.complete ? "abgeschlossen" : (T.status === "DEVELOPING" && E.applicability && E.applicability.level !== "HIGH" ? "mögliche " : "") + "Welle " + c.currentWave.label + " von " + c.currentWave.of)],
-      ["Alternative", alt ? alt.patternName + " · " + (alt.complete ? "abgeschlossen" : "Welle " + alt.currentWave.label) : "keine materiell andere"],
-      ["Grad", E.engineVersion && /^elliott-3/.test(E.engineVersion) ? "Hauptgrad" + (E.higherDegree ? " · höherer Grad: " + E.higherDegree.patternName + ", Welle " + E.higherDegree.current.notation : "") + " (Skalennähe " + T.degree.analysis + ")" : T.degree.analysis + (T.degree.higher ? " · höherer Grad " + T.degree.higher : "")],
-      ["Mehrdeutigkeit", E.ambiguity ? ({ NONE: "keine materiell andere Lesart", DEGREE: "nur Grad (dieselbe Struktur, andere Ebene)", LABEL: "nur Etikett (gleiche Wellenenden)", STRUCTURE: "strukturell (andere Wellenenden)" }[E.ambiguity.kind] || E.ambiguity.kind) : "–"],
-      ["Status", T.status === "DEVELOPING" ? "entwickelnd (laufende Welle)" : "abgeschlossen"],
-      ["Count Quality", c.countQuality ? lvl[c.countQuality.level] + " (" + String(c.countQuality.score).replace(".", ",") + ")" : "–"],
-      ["Elliott anwendbar", E.applicability ? (E.applicability.abstain ? "keine verlässliche Zählung" : lvl[E.applicability.level]) + (E.applicability.reasons.length ? " · " + E.applicability.reasons.join("; ") : "") : "–"],
-      ["Regelverletzungen", String(T.ruleViolations) + (T.openRules ? " · " + T.openRules + " offen" : "")],
-      ["Richtlinienpassung", isNum(T.guidelineFit) ? String(T.guidelineFit).replace(".", ",") : "–"],
-      ["Höherer Grad", isNum(T.higherDegreeAgreement) ? (T.higherDegreeAgreement >= 0.8 ? "passt" : T.higherDegreeAgreement >= 0.5 ? "neutral" : "widerspricht") + " (" + String(T.higherDegreeAgreement).replace(".", ",") + ")" : "–"],
-      ["Erkennungsverzug", d ? "Welle " + d.wave + ": bestätigt nach " + d.barsToEngine + " Bars (frühestens möglich nach " + (isNum(d.barsToEarliest) ? d.barsToEarliest : "–") + "); Kurs bis dahin " + (isNum(d.moveAtEngineConfirmPct) ? (d.moveAtEngineConfirmPct * 100).toFixed(1).replace(".", ",") + " %" : "–") : "–"],
-      ["Neuzuordnungs-Risiko", T.relabeling ? ({ LOW: "gering", MEDIUM: "mittel", HIGH: "hoch" }[T.relabeling.risk]) + " (" + T.relabeling.relabelsLast26 + " Wechsel in 26 Schritten)" : "–"],
-      ["Historische Evidenz", ev ? ev.label + " – " + ev.pro : "nicht belegt"]
-    ];
-    var RA = c.ruleAudit;
-    if (RA) {
-      var dm = RA.dimensions || {}, v3 = function (x) { return x && isNum(x.value) ? String(x.value).replace(".", ",") : "–"; };
-      rows.splice(6, 1, ["Regel-Audit", RA.validity === "VALID" ? "gültig" : "UNGÜLTIG"],
-        ["Harte Regeln", RA.hardRules.satisfied + "/" + RA.hardRules.total + " erfüllt" + (RA.hardRules.open ? " · " + RA.hardRules.open + " offen" : "") + (RA.hardRules.violated ? " · " + RA.hardRules.violated + " verletzt" : "")],
-        ["Definitionen", RA.definitions.satisfied + "/" + RA.definitions.total + " erfüllt" + (RA.definitions.open ? " · " + RA.definitions.open + " offen" : "") + (RA.vuOperational && RA.vuOperational.total ? " · VU-Grenzen " + RA.vuOperational.satisfied + "/" + RA.vuOperational.total : "")],
-        ["Richtlinien", RA.guidelines.matched + "/" + RA.guidelines.total + " erfüllt (Wert ≥ 0,7)"],
-        ["Fibonacci-Passung", v3(dm.fibonacci)], ["Proportion Zeit / Preis", v3(dm.timeProportion) + " / " + v3(dm.priceProportion)],
-        ["Alternation · Kanal · Extension", v3(dm.alternation) + " · " + v3(dm.channel) + " · " + v3(dm.extension)],
-        ["Unterteilung", v3(dm.subdivision)], ["Momentum · Volumen", v3(dm.momentum) + " · " + (dm.volume && dm.volume.note ? "nicht verfügbar" : v3(dm.volume))]);
-    }
-    var dl = el("dl", { class: "qx-kv cb-ew-kv" }, [].concat.apply([], rows.map(function (r) { return [el("dt", { text: r[0] }), el("dd", { class: "num", text: r[1] })]; })));
-    var srcBox = RA ? X.more("Quellen je Regel und Richtlinie (" + (RA.rules.length + RA.guidelines.items.length) + ")", function () {
-      var cls = { HARD_RULE: "harte Regel", DEFINITION: "Definition", GUIDELINE: "Richtlinie", VU_OPERATIONAL: "VU-Grenzwert" };
-      var li = function (x, res) { return el("li", { text: res + " " + (x.statement || x.id) + " — " + (cls[x.class] || x.class) + " · " + (x.source || "–") + " " + (x.locator || "") }); };
-      return [el("ul", { class: "cb-list" }, RA.rules.map(function (x) { return li(x, x.passed === true ? "✓" : x.passed === false ? "✕" : "○"); }).concat(RA.guidelines.items.map(function (x) { return li(x, (x.matched ? "✓ " : "○ ") + String(x.value).replace(".", ",")); }))),
-        el("p", { class: "cb-small cb-dim", text: "Fundstellen: " + (RA.verification || "") + ". Quellen: EWP = Frost & Prechter, Elliott Wave Principle; EWI = Gorman & Kennedy, Visual Guide; VU = Vision-Universe-Festlegung (keine Elliott-Regel)." })];
-    }) : null;
-    var COMP = { subdivision: "Unterteilung", anchor: "Ursprung", dominance: "Dominanz des Ursprungs", coverage: "Vollständigkeit", tail: "Anschluss an heute", residual: "Restpfad", separation: "Grad-Trennung", guidelines: "Richtlinien", higherDegree: "höherer Grad", prior: "Musterhäufigkeit", similarity: "Ähnlichkeit" };
-    var why = E.trace ? X.more("Warum diese Zählung? (" + (E.trace.candidates || 0) + " regelkonforme Lesarten geprüft)", function () {
-      var ch = E.trace.chosen && E.trace.chosen.components ? Object.keys(E.trace.chosen.components).filter(function (k) { return COMP[k]; }).map(function (k) { return el("li", { text: COMP[k] + ": " + String(E.trace.chosen.components[k]).replace(".", ",") }); }) : [];
-      var rej = (E.trace.rejectedTop || []).map(function (r) { return el("li", { text: (V2NAMES[r.pattern] || r.pattern) + (r.complete ? " (abgeschlossen)" : "") + " ab " + X.dateDe(r.from) + " – " + r.why.replace(/\b(\w+)\b/g, function (m) { return COMP[m] || m; }) }); });
-      return [el("h4", { text: "Merkmale der gewählten Lesart (0–1)" }), el("ul", { class: "cb-list" }, ch), rej.length ? el("h4", { text: "Nächste verworfene Lesarten" }) : null, rej.length ? el("ul", { class: "cb-list" }, rej) : null];
-    }) : null;
-    var hist = T.relabeling && T.relabeling.history && T.relabeling.history.length ? X.more("Zählungs-Historie (" + T.relabeling.history.length + " Änderungen)", function () {
-      return [el("ol", { class: "cb-list cb-ew-history" }, T.relabeling.history.slice().reverse().map(function (h) { return el("li", {}, [el("b", { text: X.dateDe(h.d) + ": " }), el("span", { text: (h.to || "keine Zählung") + " — " + h.why })]); }))];
-    }) : null;
-    var tree = (E.candidateTree || T.candidateTree || []).map(function (b) { return el("li", { text: ({ PRIMARY: "Hauptweg", EXTENSION: "Ausdehnung", ALTERNATIVE_1: "Alternative 1", ALTERNATIVE_2: "Alternative 2" }[b.branch] || b.branch) + ": " + b.text + (isNum(b.invalidation) ? " · ungültig bei " + fmt(b.invalidation) : "") }); });
-    return X.card([el("h3", { class: "qx-h3" }, [el("span", { text: "So wurde gerechnet – Elliott " }), el("span", { class: "cb-badge cb-badge-experimental", text: "Experimentell" })]), dl, srcBox, why, hist,
-      tree.length ? el("h4", { text: "Mögliche Entwicklungen aus dem aktuellen Stand" }) : null, tree.length ? el("ul", { class: "cb-list" }, tree) : null,
-      el("p", { class: "cb-small cb-dim", text: "Count Quality beschreibt, wie sauber der Chart den Elliott-Regeln entspricht – keine Trefferwahrscheinlichkeit." })], "cb-ew-panel");
   }
 
   function stat(label, value, sub) { return value ? el("div", { class: "cb-stat" }, [el("span", { class: "cb-stat-label", text: label }), el("strong", { class: "num", text: value }), el("span", { class: "cb-stat-sub", text: sub })]) : null; }

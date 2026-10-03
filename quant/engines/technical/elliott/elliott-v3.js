@@ -216,7 +216,7 @@
     var m = (input.methodology && input.methodology.elliottV3) || {};
     var cfg = Object.assign({}, DEFAULTS, m.engine || {}, input.engine || {});
     cfg.weights = Object.assign({}, DEFAULTS.weights, (m.engine && m.engine.weights) || (input.engine && input.engine.weights) || {});
-    cfg.typePrior = Object.assign({}, DEFAULTS.typePrior, (m.engine && m.engine.typePrior) || {});
+    cfg.typePrior = Object.assign({}, DEFAULTS.typePrior, (m.engine && m.engine.typePrior) || {}, (input.engine && input.engine.typePrior) || {});
     var series = input.series, features = input.features, close = series.close;
     var asOf = isNum(input.asOfIndex) ? Math.min(input.asOfIndex, series.length - 1) : series.length - 1;
     var bpy = input.barsPerYear || (series.timeframe === "1W" ? 52 : 252);
