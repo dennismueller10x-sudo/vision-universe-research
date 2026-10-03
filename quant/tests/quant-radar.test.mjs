@@ -208,3 +208,30 @@ test("alert ledger: a key alarms once, a re-run of the same radar date keeps it 
   const k2 = {}; broken(k2, ev()); const again = ev(); broken(k2, again);
   assert.notDeepEqual(again.map((e) => e.isNew), rerun.map((e) => e.isNew));
 });
+
+test("Startseite: die Radar-Projektion ist eine Teilmenge desselben Radars, beobachtete Titel kommen aus den Scherben", async () => {
+  /* Gemessen 03.10.2026: der ganze Radar (211 KB) hob die Startseite ueber
+     ihr Ressourcenbudget. Die Projektion darf nichts Eigenes rechnen. */
+  const home = gz("quant/data/product/radar-home-v1.json.gz");
+  assert.equal(home.schemaVersion, Radar.HOME_PROJECTION_SCHEMA);
+  assert.equal(home.asOf, radar.asOf);
+  assert.deepEqual(home.summary, radar.summary);
+  assert.deepEqual(home.sources, radar.sources);
+  assert.equal(home.cardCount, radar.cards.length);
+  assert.deepEqual(home.cards, radar.cards.slice(0, Radar.HOME_CARDS));
+  const ids = new Set(home.cards.flatMap((c) => c.events.map((e) => e.id)));
+  assert.deepEqual(home.events.map((e) => e.id).sort(), [...ids].sort(), "die Projektion traegt genau die Ereignisse ihrer Karten");
+  assert.deepEqual(Radar.homeProjection(radar), { ...home, generatedAt: radar.generatedAt });
+  const svc = await api.getQuantRadarHome();
+  assert.equal(svc.state, "AVAILABLE");
+  assert.ok(svc.cards.length >= 1 && svc.cards.length <= Radar.HOME_CARDS);
+  /* Beobachtete Titel: dieselben Karten wie im ganzen Radar. */
+  const watched = radar.cards.slice(10, 14).map((c) => c.ticker).concat(["ZZZZZZ"]);
+  const cards = await api.getRadarCards(watched);
+  assert.deepEqual(cards.map((c) => c.ticker).sort(), radar.cards.slice(10, 14).map((c) => c.ticker).sort());
+  for (const c of cards) assert.deepEqual(c, radar.cards.find((x) => x.ticker === c.ticker));
+  /* Die Startseite laedt den ganzen Radar nicht mehr. */
+  const pages = readFileSync(new URL("quant/app/pages.js", root), "utf8");
+  const start = pages.indexOf("async function home("), end = pages.indexOf("async function", start + 10);
+  assert.ok(start > 0 && !/getQuantRadar\(\)/.test(pages.slice(start, end)), "die Startseite liest wieder den ganzen Radar");
+});

@@ -206,7 +206,28 @@
     return keys;
   }
 
+  /* DIE STARTSEITE BRAUCHT NICHT DEN GANZEN RADAR.
+     Sie zeigt die Kennzahlen und die sechs ersten Karten; beobachtete
+     Titel holt sie aus ihren Ticker-Scherben. Gemessen am 03.10.2026: der
+     ganze Radar wuchs mit zwei neu geoeffneten Ereignisarten (Muster,
+     Evidenz) von 120 auf 211 KB und hob die Startseite ueber ihr
+     Ressourcenbudget (1.879.569 von 1.820.000 Byte). Die Projektion ist
+     eine Teilmenge desselben Artefakts - keine zweite Rechnung. */
+  var HOME_PROJECTION_SCHEMA = "quant-radar-home-1.0.0";
+  var HOME_CARDS = 6;
+  function homeProjection(radar) {
+    var cards = (radar.cards || []).slice(0, HOME_CARDS);
+    var ids = {};
+    cards.forEach(function (c) { (c.events || []).forEach(function (e) { ids[e.id] = true; }); });
+    return { schemaVersion: HOME_PROJECTION_SCHEMA, engineVersion: VERSION, generatedAt: radar.generatedAt, asOf: radar.asOf,
+      sources: radar.sources, summary: radar.summary, cardCount: (radar.cards || []).length,
+      /* Die vollstaendigen Ereignisse der Karten: der Dienst prueft sie gegen
+         den Alert-Vertrag wie beim ganzen Radar. */
+      events: (radar.events || []).filter(function (e) { return ids[e.id]; }), cards: cards };
+  }
+
   var api = {
+    HOME_PROJECTION_SCHEMA: HOME_PROJECTION_SCHEMA, HOME_CARDS: HOME_CARDS, homeProjection: homeProjection,
     VERSION: VERSION, ALERT_EVENT_SCHEMA: ALERT_EVENT_SCHEMA,
     EVENT_TYPES: EVENT_TYPES, TYPE: TYPE, EVENT_FIELDS: EVENT_FIELDS,
     LIFECYCLE: LIFECYCLE, MATURITY: MATURITY, PRIORITY_RULE: PRIORITY_RULE,

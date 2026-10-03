@@ -525,6 +525,7 @@ const radar = {
 };
 if (violations.length) throw Error("ALERT_CONTRACT_VIOLATED: " + JSON.stringify(Radar.eventViolations(violations[0])) + " " + violations[0].id);
 writeGz(P("quant/data/product/radar-v1.json.gz"), radar);
+writeGz(P("quant/data/product/radar-home-v1.json.gz"), Radar.homeProjection(radar));
 
 writeGz(P("quant/data/product/setup-lifecycle-v1.json.gz"), {
   schemaVersion: "setup-lifecycle-1.0.0", engineVersion: Radar.VERSION, generatedAt: radar.generatedAt, asOf: latest.date,

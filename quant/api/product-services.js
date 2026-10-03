@@ -476,6 +476,32 @@ function create(options){
   })();
   return radarPromise;
  }
+ /* Die Startseite liest nur die Projektion (Kennzahlen + erste Karten,
+  * quant-radar-home-1.0.0, ~3 KB) statt des ganzen Radars (bis 211 KB).
+  * Die Ereignisse der Karten gehen durch denselben Alert-Vertrag. */
+ let radarHomePromise=null;
+ async function getQuantRadarHome(){
+  if(!QuantRadar)return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};
+  if(!radarHomePromise)radarHomePromise=(async()=>{
+   try{
+    const r=await compressedJSON('/quant/data/product/radar-home-v1.json.gz');
+    if(r?.schemaVersion!==QuantRadar.HOME_PROJECTION_SCHEMA||r.engineVersion!==QuantRadar.VERSION||!validDate(r.asOf))return {state:'UNAVAILABLE',reason:'INVALID_RADAR_ARTIFACT'};
+    const ok=new Set((r.events||[]).filter(e=>QuantRadar.eventViolations(e).length===0).map(e=>e.id));
+    const cards=(r.cards||[]).map(c=>({...c,events:(c.events||[]).filter(e=>ok.has(e.id))})).filter(c=>c.events.length);
+    return {state:'AVAILABLE',asOf:r.asOf,generatedAt:r.generatedAt,sources:r.sources,summary:r.summary,cardCount:r.cardCount,cards};
+   }catch{radarHomePromise=null;return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
+  })();
+  return radarHomePromise;
+ }
+ /* Radar-Karten beobachteter Titel - je Titel aus seiner Scherbe, nicht aus
+  * dem ganzen Radar. Ohne Karte (heute nichts Neues) faellt der Titel weg. */
+ async function getRadarCards(tickers){
+  const list=[...new Set((tickers||[]).map(t=>String(t||'').toUpperCase()))].slice(0,200);
+  const rows=await Promise.all(list.map(t=>radarTicker(t).catch(()=>null)));
+  /* Dieselbe Karte, die getRadarCard je Titel liefert (der Radar-Lauf bricht
+     bei jeder Vertragsverletzung ab, bevor er Scherben schreibt). */
+  return rows.filter(r=>r&&r.state==='AVAILABLE'&&r.row.card&&(r.row.card.events||[]).length).map(r=>r.row.card);
+ }
  /* Lebenszyklus und Radar-Karte EINES Titels - aus seinem Shard (~1 KB),
   * nicht aus dem ganzen Radar. */
  async function radarTicker(ticker){
@@ -1287,7 +1313,7 @@ function create(options){
   return {state:'AVAILABLE',ticker,...IntelligenceBrief.build({stock,factors,setup,patterns,match,technical}),
    sources:{stock,factors,setup,patterns,match,technical}};
  }
- return {searchInstruments,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getSetupLifecycle,getRadarCard,getSignalTracking,getBacktest,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
+ return {searchInstruments,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getQuantRadarHome,getRadarCards,getSetupLifecycle,getRadarCard,getSignalTracking,getBacktest,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);
