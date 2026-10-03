@@ -10,6 +10,8 @@ import {resolveListingIdentities,trackNewListings} from './tiingo2-identity.mjs'
 import {buildPolicyReport,previewPublication,evaluateConsumerPolicy} from './tiingo2-policy.mjs';
 import {collectEvidence} from './tiingo2-evidence.mjs';
 import {stageCanonicalPublication} from './tiingo2-publication.mjs';
+import {loadHistoricalExclusions,loadProtectedConsumerBaseline} from './tiingo2-historical-exclusions.mjs';
+import {securityFormReviewTickers} from './tiingo2-security-form-review.mjs';
 const require=createRequire(import.meta.url),Master=require('../../quant/engines/us-security-master.js'),History=require('../../quant/api/fundamentals-contract.js');
 const sha=x=>createHash('sha256').update(x).digest('hex');
 const read=p=>JSON.parse(readFileSync(p,'utf8'));
@@ -45,13 +47,18 @@ export function selectCurrentListings(records,today){
   if(unique.size===1)selected.push([...unique.values()][0]);else ambiguous.push({ticker:rows[0].ticker,reason:'MULTIPLE_ACTIVE_LISTING_PERIODS',records:rows.map(r=>r.recordId)});}
  return {selected:selected.sort((a,b)=>a.ticker.localeCompare(b.ticker)),ambiguous};
 }
-export async function runRefresh({root=process.cwd(),workDir=join(root,'.market-cache/tiingo2'),runId,today=new Date().toISOString().slice(0,10),fromZip,offline=false,probe=false,maxSymbols=750,fetchImpl=fetch,onProgress=()=>{},symbolActions=[]}={}){
+export async function runRefresh({root=process.cwd(),workDir=join(root,'.market-cache/tiingo2'),runId,today=new Date().toISOString().slice(0,10),fromZip,offline=false,probe=false,maxSymbols=750,fetchImpl=fetch,onProgress=()=>{},symbolActions=[],historicalExclusions:fixtureHistoricalExclusions}={}){
  root=resolve(root);workDir=resolve(workDir);
  if(!workDir.startsWith(join(root,'.market-cache')+'/'))throw Error('PRIVATE_WORK_DIR_REQUIRED');
  const baselineFiles=['quant/data/market/scale/universe-FULL_UNIVERSE.json','quant/data/market/security-master/eligibility.json','quant/data/market/security-master/company-names.json','quant/data/universe/cik-map.json'];
  const baselineHashes=Object.fromEntries(baselineFiles.map(p=>[p,sha(readFileSync(join(root,p)))]));
  const rawDoc=read(join(root,baselineFiles[0])),raw=rawDoc.securities,product=resolveProductUniverse(root).securities,consumer=product.filter(r=>r.consumer),
   decisions=read(join(root,baselineFiles[1])).decisions,names=read(join(root,baselineFiles[2])).rows,ciks=read(join(root,baselineFiles[3])).byTicker;
+ const historicalExclusions=fixtureHistoricalExclusions??loadHistoricalExclusions(root);
+ const securityFormReview=fixtureHistoricalExclusions===undefined?securityFormReviewTickers(root):new Set();
+ if(fixtureHistoricalExclusions!==undefined&&existsSync(join(root,'quant/config/tiingo2-historical-exclusions.json')))throw Error('HISTORICAL_EXCLUSION_OVERRIDE_FORBIDDEN');
+ const protectedConsumer=fixtureHistoricalExclusions===undefined?loadProtectedConsumerBaseline(root,consumer):{original:consumer.length,current:consumer.length,additions:0,removals:0};
+ if((fixtureHistoricalExclusions===undefined&&historicalExclusions.size!==22)||consumer.some(row=>historicalExclusions.has(row.ticker)))throw Error('HISTORICAL_EXCLUSION_CONSUMER_BASELINE_MISMATCH');
  const current=readdirSync(join(root,'quant/data/universe/instruments')).filter(x=>x.endsWith('.json')).flatMap(p=>read(join(root,'quant/data/universe/instruments',p)).instruments);
  if(offline&&!fromZip)throw Error('OFFLINE_DISCOVERY_SOURCE_REQUIRED');
  const priorPath=join(workDir,'discovery/latest.json');
@@ -106,10 +113,12 @@ export async function runRefresh({root=process.cwd(),workDir=join(root,'.market-
   const evidence={identity:{resolved:identityOK,symbolCollision:idCollision,staleAlias:!!meta&&!providerSymbolMatched,wrongExchange:!!official&&!venueOK,listingPeriodMatched:periodOK,providerSymbolMatched,nameAgreement:namesAgree,explicitShareForm:explicitForm,state:identityDecision?.state||'UNKNOWN'},
    price:observed?.price||{},corporateActions:observed?.corporateActions||null,securityForm:reviewedForm||{instrumentType:classification.instrumentType,source:classification.flags?.includes('PROVIDER_DESCRIPTION_CLOSED_END_FUND')?'TIINGO_METADATA_DESCRIPTION':'EXCHANGE_DIRECTORY_AND_CLASSIFIER'},sec:{cik:secNameOK?sec?.cik:null,available:secReady,pitValid},factors:observed?.marketFactors||{},products:{discoverReady:false,screenerReady:false,superTraderReady:false},source:observed?.source||null};
   candidateRows.push({...listing,securityId:legacyId,companyName:meta?.name||name,instrument_type:classification.instrumentType,classification,
+   historicallyExcluded:historicalExclusions.has(t),
+   securityFormReviewRequired:securityFormReview.has(t),
    reason:gapTickers.has(t)?'STATIC_SNAPSHOT_MISS':!consumer.some(c=>c.ticker===t)?'CLASSIFICATION_REVIEW':'CORPORATE_ACTION_GATE_REVALIDATION',existingDecision:old||null,evidence});
  }
  // Every historical audit candidate is accounted for, including unresolved active collisions.
- for(const r of auditCandidates)if(!candidateRows.some(c=>c.ticker===r.ticker))candidateRows.push({ticker:r.ticker,exchange:r.exchange,startDate:r.start_date,securityId:null,instrument_type:r.instrument_type,active_status:r.active_status,evidence:{identity:{resolved:false,symbolCollision:true}},reason:'SYMBOL_COLLISION'});
+ for(const r of auditCandidates)if(!candidateRows.some(c=>c.ticker===r.ticker))candidateRows.push({ticker:r.ticker,exchange:r.exchange,startDate:r.start_date,securityId:null,instrument_type:r.instrument_type,active_status:r.active_status,historicallyExcluded:historicalExclusions.has(r.ticker),securityFormReviewRequired:securityFormReview.has(r.ticker),evidence:{identity:{resolved:false,symbolCollision:true}},reason:'SYMBOL_COLLISION'});
  const policy=buildPolicyReport(candidateRows,{today,root,baselineConsumerRows:consumer,peers:raw});
  policy.baseline={scope:'CURRENT_CANONICAL_PROTECTED',counts:{raw:raw.length,product:product.length,consumer:consumer.length},rows:decisions.map(r=>({ticker:r.ticker,securityId:r.securityId,status:consumerSet.has(r.ticker)?'INCLUDED':'EXCLUDED',
   reasonCodes:evaluateConsumerPolicy(r,{baselineConsumer:consumerSet.has(r.ticker)}).reasonCodes,instrumentType:r.instrument_type,productEligibility:r.product_eligibility,priorReason:r.product_eligibility_reason,refreshAction:'RETAIN_EXISTING_IDENTITY'}))};
@@ -118,6 +127,7 @@ export async function runRefresh({root=process.cwd(),workDir=join(root,'.market-
   original.reason==='CORPORATE_ACTION_GATE_REVALIDATION'?'CORPORATE_ACTION_GATE_REVALIDATION':original.existingDecision?.instrument_type==='PREFERRED'&&row.policy.included?'PREFERRED_FALSE_POSITIVE':'OTHER';
   row.previousExclusionReason=original.existingDecision?.product_eligibility_reason||null;row.previousInstrumentType=original.existingDecision?.instrument_type||null;}
  const preview=previewPublication(consumer,policy.rows),diff=diffUniverses({discovery,raw,product,consumer,previousDiscovery:prior,symbolChanges:identity.symbolChanges});
+ if(preview.ADDED.some(row=>historicalExclusions.has(row.ticker)))throw Error('HISTORICAL_EXCLUSION_REINTRODUCTION');
  const staged=policy.rows.filter(r=>gapTickers.has(r.ticker)),falseExclusions=policy.rows.filter(r=>!consumer.some(c=>c.ticker===r.ticker)||targets.slice(0,4).includes(r.ticker));
  const newListings=trackNewListings({fresh:selected,previous:existsSync(join(workDir,'listing-registry.json'))?read(join(workDir,'listing-registry.json')):[],discoveredAt:discovery.discoveryTimestamp,runId:discovery.runId});
  const appendable=preview.ADDED.filter(r=>!rawMap.has(r.ticker)&&!current.some(c=>c.symbol===r.ticker));
@@ -126,7 +136,7 @@ export async function runRefresh({root=process.cwd(),workDir=join(root,'.market-
  catch(error){stageBlocker=error.message;}
  const unchanged=baselineFiles.every(p=>sha(readFileSync(join(root,p)))===baselineHashes[p]);
  if(!unchanged)throw Error('PROTECTED_BASELINE_CHANGED');
- const summary={schemaVersion:1,runId:discovery.runId,asOf:today,discovery:discovery.counts,current:{raw:raw.length,product:product.length,consumer:consumer.length},auditCandidateRecords:auditCandidates.length,auditCandidateSymbols:gapTickers.size,
+ const summary={schemaVersion:1,runId:discovery.runId,asOf:today,discovery:discovery.counts,current:{raw:raw.length,product:product.length,consumer:consumer.length},protectedConsumer,historicalExclusions:{count:historicalExclusions.size,readditions:0,rows:[...historicalExclusions.values()]},auditCandidateRecords:auditCandidates.length,auditCandidateSymbols:gapTickers.size,
   staged:policy.counts,proposedConsumer:preview.counts.after,added:preview.ADDED.map(r=>r.ticker),removed:[],quantReadyAdded:preview.ADDED.filter(r=>r.quantReady).map(r=>r.ticker),quantCandidateEligibleAdded:policy.rows.filter(r=>preview.ADDED.some(a=>a.ticker===r.ticker)&&r.checks.quantCandidateEligible).map(r=>r.ticker),
   evidence:{requests:collected.requests,completed:collected.completed,pending:collected.pending,stopped:collected.stopped},protectedBaseline:{unchanged,hashes:baselineHashes},productionMutations:0,
   publication:{state:'BLOCKED',reasons:['CANONICAL_PROJECTION_AND_RELEASE_QA_REQUIRED','PRODUCT_CAPABILITY_CHECKS_PENDING',...(stageBlocker?[stageBlocker]:[])],automaticProductionPublication:false,

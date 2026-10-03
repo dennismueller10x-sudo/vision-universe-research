@@ -459,8 +459,9 @@ def load_canonical_bundles(root):
             if row.get("ticker") and row.get("cik"):
                 ticker_to_cik[row["ticker"]] = str(row["cik"]).zfill(10)
     out = {}
-    for path in sorted(base.glob("*.json")):
-        bundle = _read_json(path)
+    from .artifacts import artifact_paths, read_artifact
+    for path in artifact_paths(base):
+        bundle = read_artifact(path)
         ticker = (bundle.get("security") or {}).get("ticker") or path.stem
         cik = ticker_to_cik.get(ticker)
         if not cik:

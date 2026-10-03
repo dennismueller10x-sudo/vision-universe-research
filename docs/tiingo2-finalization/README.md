@@ -1,5 +1,20 @@
 # Tiingo 2.0 finalization — current-baseline safety stop
 
+## Current publish-path assessment (2026-10-03)
+
+The current-main productization preview is read-only. Its final QA manifest and
+private history source remain on the preview runner; only derived JSON is
+exported. The existing HistoryStore sync writes the full universe, while the
+Tiingo 2.0 scoped history preflight has no writer. The canonical apply API has
+no production workflow caller. Pages deploys Git-tracked main without a Tiingo 2.0
+index activation barrier. A merge could therefore expose a chart-ready title
+before its R2 index entry is active. Publication remains blocked; no production
+write was made by this assessment. The exact handoff, CAS and rollback
+requirements are in [tiingo2_current_publish_blocker.json](tiingo2_current_publish_blocker.json).
+
+The historical observations below describe the earlier Foundation integration
+and must not be treated as a current production package.
+
 The live Pages release currently reports source `33e0938fadd4c035002631d537e363bb9017ffd4`, while repository `main` advanced to `41d1381c5bbe3725d817d0bb7878ab2ebbe1d710` with independent SuperTrader work. The delivered eligibility and repository membership still agree at 7,803 raw, 6,853 product and **6,397 consumer** titles. PR #366 intentionally excluded 22 named debt listings; no security IDs changed. Applying the old 113-title set would yield **6,510**, not the previously proposed 6,532. The latest authenticated Tiingo staging run (`37114183148`) proposes **104** candidate additions and 6,501 consumer titles before product materialization; eleven older additions moved back to review, while VYLR and CHWM newly passed candidate checks. Neither set is approved for publication. No publication, membership removal or production storage write was performed by this finalization verification.
 
 ## Foundation merge preparation

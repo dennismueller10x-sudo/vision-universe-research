@@ -37,7 +37,7 @@ async function fixture(fn) {
     save(root, '.market-cache/tiingo2/directories/' + today + '-nasdaqlisted.txt', 'Symbol|Security Name|ETF|Test Issue\nNEW|New Corporation common stock|N|N\n');
     save(root, '.market-cache/tiingo2/directories/' + today + '-otherlisted.txt', 'ACT Symbol|Security Name|Exchange|ETF|Test Issue\nDNA|Ginkgo Bioworks Holdings, Inc. Class A common stock|N|N|N\n');
     const fromZip = save(root, '.market-cache/tiingo2/input.zip', zip('ticker,exchange,assetType,priceCurrency,startDate,endDate\nDNA,NYSE,Stock,USD,2021-09-17,2026-10-01\nDNA,NYSE,Stock,USD,2000-01-01,2009-01-01\nNEW,NASDAQ,Stock,USD,2026-09-30,2026-10-01\n'));
-    await fn({ root, workDir, fromZip });
+    await fn({ root, workDir, fromZip, historicalExclusions: new Map() });
   } finally { rmSync(root, { recursive: true, force: true }); }
 }
 
@@ -63,8 +63,8 @@ test('incremental refresh stages every gap and keeps consumer baseline without e
   assert.deepEqual(JSON.parse(readFileSync(join(resumed.out, 'tiingo2_universe_diff.json'), 'utf8')).records, first.records);
 }));
 
-test('offline refresh without a local provider source cannot make network requests', async () => fixture(async ({ root, workDir }) => {
-  await assert.rejects(runRefresh({ root, workDir, today, offline: true, fetchImpl: () => { throw Error('UNEXPECTED_NETWORK'); } }), /OFFLINE_DISCOVERY_SOURCE_REQUIRED/);
+test('offline refresh without a local provider source cannot make network requests', async () => fixture(async ({ root, workDir, historicalExclusions }) => {
+  await assert.rejects(runRefresh({ root, workDir, today, historicalExclusions, offline: true, fetchImpl: () => { throw Error('UNEXPECTED_NETWORK'); } }), /OFFLINE_DISCOVERY_SOURCE_REQUIRED/);
 }));
 
 test('current listing selection keeps live DNA generation and blocks two simultaneous active periods', () => {
