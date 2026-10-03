@@ -22,7 +22,8 @@
       "finding": "Fallprüfung R10: kein Gewinnfilter; SMCI wurde trotz EPS-Wachstum von 300–600 % nicht gekauft, gleichzeitig fehlten Fundamentaldaten für delistete Titel.",
       "change": "MIN-EPS-01 am Bestätigungstag, nur mit Werten, deren erste Einreichung bei der SEC vor diesem Tag lag: (a) EPS (verwässert, sonst unverwässert) des zuletzt gemeldeten Quartals ≥ +25 % gegenüber dem Vorjahresquartal, Vorjahreswert > 0; (b) dieses Wachstum höher als das des vorherigen Quartals (Beschleunigung); (c) Umsatz des Quartals über dem Vorjahresquartal. Fehlen die Daten, gibt es keinen Einstieg (MIN-EPS-NA). Alle übrigen Regeln wie 2.0.0.",
       "data": "SEC-XBRL (public domain): bestehende Factbooks (erste Einreichung) für gelistete Emittenten; für delistete Titel Zuordnung Ticker/Name -> CIK über SEC-Namensliste (cik-lookup-data) und EDGAR-Bulk companyfacts, nur erste Einreichung je Periode. Abdeckung wird je Jahr und getrennt für delistete Titel berichtet; Zuordnungsgüte an gelisteten Titeln mit bekannter CIK gemessen.",
-      "sensitivity": "3.0.0-NA: fehlende Daten blockieren nicht (nur Sensitivität, nicht live)."
+      "sensitivity": "3.0.0-NA: fehlende Daten blockieren nicht (nur Sensitivität, nicht live).",
+      "clarificationBeforeFirstRun": "Präzisierung vor dem ersten Lauf (2026-10-03): Ist das Vorquartal nicht vergleichbar, weil dessen Vorjahreswert ≤ 0 war, gilt (b) als erfüllt (Wachstum aus Verlust); fehlt das Vorquartal ganz, gilt MIN-EPS-NA. Werte sind erst am Tag nach ihrer Einreichung sichtbar."
     },
     "DONCHIAN_TURTLE@2.1.0": {
       "kind": "Neue Regel (Quelle wörtlich)",
