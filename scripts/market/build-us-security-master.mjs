@@ -43,6 +43,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import {pinSecurityMasterBaseline,readSecurityMasterBaseline} from './us-security-master-baseline.mjs';
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -386,7 +387,8 @@ async function main() {
     console.error("Kein Bestand unter " + BASELINE_FILE + ".");
     process.exit(1);
   }
-  const baselineDoc = JSON.parse(readFileSync(BASELINE_FILE, "utf8"));
+  const baselineInput = readSecurityMasterBaseline(BASELINE_FILE);
+  const baselineDoc = baselineInput.document;
   const baseline = baselineDoc.securities || [];
   console.log(`  Bestand:  ${baseline.length} Titel aus ${BASELINE_FILE.replace(root + "/", "")}`);
 
@@ -408,6 +410,7 @@ async function main() {
   });
 
   const c = result.counts;
+  const pinnedBaseline = pinSecurityMasterBaseline({root,outDir:OUT_DIR,sourceBytes:baselineInput.bytes});
   const newEligible = result.rows.filter((r) => r.reconciliation_status === "ADDED");
 
   /* MATCHED_EXISTING und REVIEW_EXISTING zaehlen TITEL, nicht Zeilen -
@@ -566,7 +569,8 @@ async function main() {
   writeFileSync(workFile, JSON.stringify({
     generatedAt: stamp, version: Master.VERSION, provider: "tiingo",
     today: TODAY, source: providerSource, providerError,
-    baselineFile: BASELINE_FILE.replace(root + "/", ""),
+    baselineFile: pinnedBaseline.file,
+    baselineSha256: pinnedBaseline.sha256,
     counts: c, rows: result.rows
   }));
   console.log(`  Arbeitsablage: ${workFile.replace(root + "/", "")} (${result.rows.length} Zeilen)`);
@@ -618,7 +622,9 @@ async function main() {
     counts: c,
     invariants: result.invariants,
     nonDestructive: {
-      baselineFile: BASELINE_FILE.replace(root + "/", ""),
+      baselineFile: pinnedBaseline.file,
+      baselineSourceFile: BASELINE_FILE.replace(root + "/", ""),
+      baselineSha256: pinnedBaseline.sha256,
       baselineCount: baseline.length,
       baselinePreserved: c.baselinePreserved,
       baselineRemoved: 0,

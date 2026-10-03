@@ -164,7 +164,7 @@ class GeneratedArtifactTests(unittest.TestCase):
     @classmethod
     def paths(cls):
         root = ROOT / "quant" / "data" / "sec"
-        return sorted(root.glob("*.json")) + sorted(root.glob("*/*.json"))
+        return sorted(root.glob("*.json")) + sorted(root.glob("*/*.json")) + sorted(root.glob("*/*.json.gz"))
 
     def test_generated_artifacts_exist(self):
         self.assertTrue(self.paths(), "no generated SEC artifacts to check")
@@ -172,7 +172,8 @@ class GeneratedArtifactTests(unittest.TestCase):
     def test_every_artifact_is_stamped_and_versioned(self):
         for path in self.paths():
             with self.subTest(path=path.name):
-                payload = json.loads(path.read_text(encoding="utf-8"))
+                from quant.sec.artifacts import read_artifact
+                payload = read_artifact(path)
                 self.assertIsInstance(payload, dict)
                 self.assertTrue(
                     any(key in payload for key in self.SNAKE + self.CAMEL),

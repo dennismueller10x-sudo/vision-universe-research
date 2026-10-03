@@ -3,7 +3,8 @@
    Auftrags sind auffindbar und weisen ihre Faehigkeiten korrekt aus. */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import {tmpdir} from 'node:os';
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildCapabilityMatrix, CAPABILITIES, SPOT_CHECK } from "../../scripts/market/build-capability-matrix.mjs";
@@ -59,4 +60,23 @@ test("CM4 · Stichprobe: Apple bis Micron sind im Master, im Produktuniversum un
     const page = join(root, "discover", "data", "stocks", "US_REAL", s.ticker + ".json");
     assert.equal(row.HAS_STOCK_PAGE, existsSync(page), s.name + ": HAS_STOCK_PAGE widerspricht der Datei");
   }
+});
+test('incremental Tiingo provider mapping requires the exact verified canonical listing, while unverified historical sources remain missing',()=>{
+ const dir=mkdtempSync(join(tmpdir(),'vu-capability-listing-'));
+ try{
+  const decision={ticker:'IPO',securityId:'ref_IPO',exchange:'NYSE',instrument_type:'EQUITY_COMMON',product_eligibility:'ELIGIBLE',product_eligibility_reason:'TIINGO2_VERIFIED_INCREMENTAL_ADDITION',evidence_source:'TIINGO2_STAGED_QA',start_date:'2026-10-01'};
+  const instrument={symbol:'IPO',masterMemberId:'ref_IPO',legacyIds:['ref_IPO'],exchange:'NYSE',firstTradeDate:'2026-10-01',providerIds:{tiingo:{symbol:'IPO',exchange:'NYSE',assetType:'Stock'}}};
+  mkdirSync(join(dir,'quant/data/market/security-master'),{recursive:true});mkdirSync(join(dir,'quant/data/universe/instruments'),{recursive:true});
+  const build=(d=decision,i=instrument)=>{
+   writeFileSync(join(dir,'quant/data/market/security-master/eligibility.json'),JSON.stringify({decisions:[d],counts:{productUniverse:1,ELIGIBLE:1,SEPARATE_CLASS:0,REVIEW:0,EXCLUDED:0}}));
+   writeFileSync(join(dir,'quant/data/universe/instruments/IP.json'),JSON.stringify({instruments:[i]}));
+   return buildCapabilityMatrix({root:dir,dryRun:true}).rows[0];
+  };
+  assert.equal(build().HAS_PROVIDER_MAPPING,true);
+  for(const change of [i=>i.providerIds.tiingo.symbol='OTHER',i=>i.providerIds.tiingo.exchange='NASDAQ',i=>i.exchange='NASDAQ',i=>i.masterMemberId='ref_OTHER',i=>i.symbol='OTHER',i=>i.firstTradeDate='2020-01-01',i=>i.legacyIds=[]]){
+   const invalid=structuredClone(instrument);change(invalid);const row=build(decision,invalid);assert.equal(row.HAS_PROVIDER_MAPPING,false);assert.ok(row.gaps.includes('PROVIDER_MAPPING_MISSING'));
+  }
+  assert.equal(build({...decision,evidence_source:'UNVERIFIED_HISTORICAL_SOURCE'}).HAS_PROVIDER_MAPPING,false,'a matching symbol alone cannot upgrade an unverified historical mapping');
+  assert.equal(build({...decision,product_eligibility_reason:'UNVERIFIED_ADDITION'}).HAS_PROVIDER_MAPPING,false);
+ }finally{rmSync(dir,{recursive:true,force:true});}
 });

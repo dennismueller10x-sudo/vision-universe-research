@@ -17,7 +17,7 @@
   "use strict";
 
   var BASE = "/discover/logos/";
-  var files = null, dunkel = {}, breit = {}, credits = null, creditsLaden = null, warten = [];
+  var files = null, dunkel = {}, breit = {}, breitePfade = {}, credits = null, creditsLaden = null, warten = [];
 
   function laden() {
     if (!global.fetch) { files = {}; return; }
@@ -28,6 +28,7 @@
         files = (data && data.files) || {};
         ((data && data.dark) || []).forEach(function (s) { dunkel[s] = true; });
         breit = (data && data.wide) || {};
+        breitePfade = (data && data.wideFiles) || {};
         var offen = warten; warten = [];
         offen.forEach(function (fn) { fn(); });
       });
@@ -47,7 +48,7 @@
        gedaempft mit dem Seitenverhaeltnis (hoechstens das Dreifache). */
     var r = weit && breit[symbol];
     if (r) {
-      pfad = "files/wide/" + symbol + ".png";
+      pfad = breitePfade[symbol] || "files/wide/" + symbol + ".png";
       node.style.setProperty("--logo-w", String(Math.min(3, Math.max(1, Math.pow(r, 0.6))).toFixed(2)));
     }
     /* Das Bild haengt sofort im Knoten (sonst stellt der Browser ein

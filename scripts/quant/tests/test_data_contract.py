@@ -16,6 +16,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from quant.sec.artifacts import artifact_paths, read_artifact
 
 ROOT = Path(__file__).resolve().parents[3]
 VERTRAG = ROOT / "docs" / "VU_FUNDAMENTAL_DATA_CONTRACT.md"
@@ -26,8 +27,7 @@ FUNDAMENTALS = ROOT / "quant" / "data" / "fundamentals"
 def bundles():
     if not CANONICAL.exists():
         return []
-    return [json.loads(p.read_text(encoding="utf-8"))
-            for p in sorted(CANONICAL.glob("*.json"))]
+    return [read_artifact(p) for p in artifact_paths(CANONICAL)]
 
 
 class VertragExistiertTests(unittest.TestCase):

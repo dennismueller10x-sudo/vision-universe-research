@@ -92,6 +92,12 @@ def rowdict(row):
     return dict(zip(ROW_COLUMNS, row))
 
 
+def _chronology_valid(fact):
+    filed = getattr(getattr(fact, "provenance", None), "filed", None)
+    return bool(fact.period_end and filed and
+                str(filed)[:10] >= str(fact.period_end)[:10])
+
+
 def _facts_for_period(resolver, registry, fiscal_year, fiscal_period, as_of, policy):
     """{metric: NormalizedFact} for one period: reported metrics + derived."""
     out = {}
@@ -102,12 +108,12 @@ def _facts_for_period(resolver, registry, fiscal_year, fiscal_period, as_of, pol
             fact = resolver.annual(metric, fiscal_year, as_of, policy=policy)
         else:
             fact = resolver.quarter(metric, fiscal_year, int(fiscal_period[1]), as_of, policy=policy)
-        if fact.available:
+        if fact.available and _chronology_valid(fact):
             out[metric] = (fact, False)
     derived = reconstruct(resolver, fiscal_year, fiscal_period, as_of, policy=policy)
     for metric in DERIVED_METRICS + ("gross_profit", "total_debt"):
         fact = derived.get(metric)
-        if fact is not None and fact.available and metric not in out:
+        if fact is not None and fact.available and _chronology_valid(fact) and metric not in out:
             out[metric] = (fact, True)
     return out
 
@@ -120,7 +126,7 @@ def _ttm(resolver, registry, as_of, policy):
         if metric in DERIVED_METRICS:
             continue
         fact = resolver.ttm(metric, as_of, policy=policy)
-        if not fact.available:
+        if not fact.available or not _chronology_valid(fact):
             continue
         row = rowdict(_row(fact))
         row.pop("fy", None); row.pop("derived", None)

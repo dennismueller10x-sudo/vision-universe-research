@@ -1,0 +1,117 @@
+{
+  "scope": "Decoded subresource bytes and request count; not production latency",
+  "results": [
+    {
+      "view": "home",
+      "decodedBytes": 1795985,
+      "requests": 22,
+      "budget": {
+        "decodedBytes": 1820000,
+        "requests": 45,
+        "history": false
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/",
+      "width": 1440
+    },
+    {
+      "view": "screener",
+      "decodedBytes": 22590635,
+      "requests": 29,
+      "budget": {
+        "decodedBytes": 30500000,
+        "requests": 30,
+        "history": false
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/screener",
+      "width": 1440
+    },
+    {
+      "view": "screenerPro",
+      "decodedBytes": 22559149,
+      "requests": 19,
+      "budget": {
+        "decodedBytes": 30500000,
+        "requests": 30,
+        "history": false
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/screener/profi",
+      "width": 1440
+    },
+    {
+      "view": "stock",
+      "decodedBytes": 5535377,
+      "requests": 39,
+      "budget": {
+        "decodedBytes": 5700000,
+        "requests": 45,
+        "history": true
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/aktie/NVDA",
+      "width": 1440
+    },
+    {
+      "view": "home",
+      "decodedBytes": 1795985,
+      "requests": 22,
+      "budget": {
+        "decodedBytes": 1820000,
+        "requests": 45,
+        "history": false
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/",
+      "width": 390
+    },
+    {
+      "view": "screener",
+      "decodedBytes": 22590635,
+      "requests": 29,
+      "budget": {
+        "decodedBytes": 30500000,
+        "requests": 30,
+        "history": false
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/screener",
+      "width": 390
+    },
+    {
+      "view": "screenerPro",
+      "decodedBytes": 22559149,
+      "requests": 19,
+      "budget": {
+        "decodedBytes": 30500000,
+        "requests": 30,
+        "history": false
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/screener/profi",
+      "width": 390
+    },
+    {
+      "view": "stock",
+      "decodedBytes": 5535377,
+      "requests": 39,
+      "budget": {
+        "decodedBytes": 5700000,
+        "requests": 45,
+        "history": true
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/aktie/NVDA",
+      "width": 390
+    }
+  ]
+}

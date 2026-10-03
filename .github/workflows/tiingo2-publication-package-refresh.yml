@@ -1,0 +1,186 @@
+name: Tiingo 2.0 final publication package QA
+on:
+  pull_request:
+    branches: [main, codex/tiingo2-universe-hardening]
+    paths:
+      - '.github/workflows/tiingo2-publication-package-refresh.yml'
+      - 'scripts/market/tiingo2-refresh-publication-package.mjs'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: tiingo2-final-package-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  prepare:
+    # This one-time review-package refresh never applies data or deploys.
+    # The regular weekday incremental workflow retains its NO_CHANGES path.
+    if: github.event_name == 'pull_request' && github.head_ref == 'codex/tiingo2-productization' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      TIINGO2_FINAL_SOURCE: ${{ github.event.pull_request.head.sha }}
+      TIINGO2_ORIGINAL_SOURCE: 029efa7cf8d30e98c72b540aef1f189e342465fe
+      TIINGO2_ORIGINAL_MANIFEST: 3911665582ac1c44a60dd2d5636e8178612a7dffd7db9dd22d082f0baf447367
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Regressions for refreshed transactions and native projections
+        run: node --test --test-reporter=dot quant/tests/tiingo2-*.test.mjs quant/tests/us-security-master-baseline.test.mjs quant/tests/release-delivery.test.mjs
+      - name: Download authenticated original publication ciphertext
+        uses: actions/download-artifact@v4
+        with:
+          name: tiingo2-productization-prepared-encrypted-37036367074-1
+          run-id: 37036367074
+          github-token: ${{ github.token }}
+          path: .market-cache/refresh-ciphertext
+      - name: Download original derived readiness evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: tiingo2-productization-derived-37036367074-1
+          run-id: 37036367074
+          github-token: ${{ github.token }}
+          path: .verification/refresh-seed
+      - name: Authenticate and open original private histories and rollback images
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/tiingo2-cache.mjs open --work-dir .market-cache/refresh-seed/tiingo2 --file .market-cache/refresh-ciphertext/tiingo2-publication.enc --context codex/tiingo2-productization
+      - name: Bind final committed public bytes and reuse exact private histories
+        run: |
+          node scripts/market/tiingo2-refresh-publication-package.mjs --root "$GITHUB_WORKSPACE" --original-prepared .market-cache/refresh-seed/tiingo2 --work-dir .market-cache/publication-refresh --prepared-root .market-cache/refreshed/tiingo2 --original-manifest-sha "$TIINGO2_ORIGINAL_MANIFEST" --original-source-commit "$TIINGO2_ORIGINAL_SOURCE" --source-commit "$TIINGO2_FINAL_SOURCE" --run-id "gh-package-refresh-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+      - name: Rebind derived readiness to this transaction without fabricating coverage
+        run: |
+          node --input-type=module <<'NODE'
+          import {readFileSync,writeFileSync,mkdirSync,readdirSync} from 'node:fs';
+          import {join} from 'node:path';
+          import {rebindCurrentFundamentalsArtifacts,rebindCurrentQuantEvidenceArtifacts} from './scripts/market/tiingo2-refresh-publication-package.mjs';
+          const load=p=>JSON.parse(readFileSync(p));
+          const refreshed=load('.market-cache/publication-refresh/run-result.json');
+          const seed='.verification/refresh-seed',out='.verification/tiingo2-publication-refresh';
+          const original=load(join(seed,'tiingo2_productization_status.json'));
+          if(original.sourceCommit!==process.env.TIINGO2_ORIGINAL_SOURCE||original.manifestSha256!==process.env.TIINGO2_ORIGINAL_MANIFEST||original.canonicalMaterialized!==refreshed.additions||refreshed.state!=='STAGED_REQUIRES_FINAL_QA')throw Error('DERIVED_ORIGINAL_SOURCE_BINDING_FAILED');
+          mkdirSync(out,{recursive:true});
+          for(const name of readdirSync(seed).filter(n=>n.startsWith('tiingo2_')&&n.endsWith('.json'))){
+            if(['tiingo2_publication_qa.json','tiingo2_product_shadow_qa.json','tiingo2_review_branch_materialization.json','tiingo2_replay_preflight.json','tiingo2_history_publication_plan.json'].includes(name))continue;
+            const report=load(join(seed,name));
+            if(report.runId)report.runId=refreshed.runId;
+            if(report.sourceCommit)report.sourceCommit=refreshed.sourceCommit;
+            if(report.manifestSha256)report.manifestSha256=refreshed.manifestSha256;
+            if(report.publicationState)report.publicationState='STAGED_REQUIRES_FINAL_QA';
+            delete report.qa;delete report.qaManifestSha256;
+            writeFileSync(join(out,name),JSON.stringify(report,null,2)+'\n');
+          }
+          const status=load(join(out,'tiingo2_productization_status.json'));
+          status.publicationRefresh={originalManifestSha256:refreshed.originalManifestSha256,sourceCommit:refreshed.sourceCommit,privateHistoriesRebuilt:0,providerCalls:0};
+          writeFileSync(join(out,'tiingo2_productization_status.json'),JSON.stringify(status,null,2)+'\n');
+          const history=load('.market-cache/refreshed/tiingo2/history-publication-plan.json');
+          writeFileSync(join(out,'tiingo2_history_publication_plan.json'),JSON.stringify(history,null,2)+'\n');
+          const finalManifest=load(refreshed.stage),diff=load(join(out,'tiingo2_publication_diff.json'));
+          diff.files=finalManifest.files;diff.manifestSha256=refreshed.manifestSha256;
+          diff.ADDED=rebindCurrentQuantEvidenceArtifacts({root:refreshed.shadowRoot,rows:rebindCurrentFundamentalsArtifacts({root:refreshed.shadowRoot,rows:diff.ADDED})});
+          writeFileSync(join(out,'tiingo2_publication_diff.json'),JSON.stringify(diff,null,2)+'\n');
+          const index=load(join(refreshed.shadowRoot,'discover/logos/index.json'));
+          const dark=new Set(Array.isArray(index.dark)?index.dark:Object.keys(index.dark||{}).filter(k=>index.dark[k]));
+          for(const name of ['tiingo2_product_readiness.json','tiingo2_productization_status.json','tiingo2_accepted_materialization.json','tiingo2_logo_status.json','tiingo2_quant_readiness.json']){
+            const report=load(join(out,name));
+            if(report.rows)report.rows=rebindCurrentQuantEvidenceArtifacts({root:refreshed.shadowRoot,rows:rebindCurrentFundamentalsArtifacts({root:refreshed.shadowRoot,rows:report.rows})});
+            for(const row of report.rows||[]){
+              const logo=row.logo||(row.status?.startsWith('LOGO_')?row:null);
+              if(!logo)continue;
+              logo.darkBackground=dark.has(row.ticker);
+              if(logo.canonicalPath&&!index.files?.[row.ticker])throw Error('CURRENT_CANONICAL_LOGO_MAPPING_MISSING:'+row.ticker);
+            }
+            writeFileSync(join(out,name),JSON.stringify(report,null,2)+'\n');
+          }
+          const safeKeys=['schemaVersion','runId','state','sourceCommit','originalSourceCommit','originalManifestSha256','manifestSha256','files','additions','privateHistories','privateHistoriesRebuilt','omittedNewAssets','canonicalStorageMigrations','providerCalls','productionWrites','productionPublishAllowed','requiredGates'];
+          writeFileSync(join(out,'tiingo2_publication_package_refresh.json'),JSON.stringify(Object.fromEntries(safeKeys.map(k=>[k,refreshed[k]])),null,2)+'\n');
+          NODE
+      - name: Measure current history storage without granting a write budget
+        continue-on-error: true
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/market/preflight-zero-cost.mjs --operation READ_ONLY --gate FULL_UNIVERSE --out .verification/tiingo2-publication-refresh/tiingo2_current_read_only_storage_preflight.json
+      - name: Install existing isolated release QA dependencies
+        run: |
+          npm install --prefix /tmp/tiingo2-qa playwright@1.58.2 axe-core@4.10.3 esbuild@0.25.10
+          /tmp/tiingo2-qa/node_modules/.bin/playwright install --with-deps chromium webkit
+      - name: Capture and compare the original protected baseline against final canonical data
+        run: |
+          node scripts/market/tiingo2-current-baseline.mjs --root "$GITHUB_WORKSPACE/.market-cache/publication-refresh/baseline-root" --out "$GITHUB_WORKSPACE/.market-cache/publication-refresh/baseline-root/.market-cache/tiingo2-qa/current-baseline"
+          node scripts/market/tiingo2-product-shadow-qa.mjs --root "$GITHUB_WORKSPACE/.market-cache/publication-refresh/baseline-root" --shadow "$GITHUB_WORKSPACE/.market-cache/publication-refresh/shadow-root" --readiness .verification/tiingo2-publication-refresh/tiingo2_product_readiness.json --baseline .market-cache/publication-refresh/baseline-root/.market-cache/tiingo2-qa/current-baseline --out .verification/tiingo2-publication-refresh/tiingo2_product_shadow_qa.json
+      - name: Build exact final static delivery and preserve existing encoding
+        run: |
+          cd .market-cache/publication-refresh/shadow-root
+          node "$GITHUB_WORKSPACE/scripts/vu2/build-release.mjs" --output="$RUNNER_TEMP/tiingo2-final-release"
+          /tmp/tiingo2-qa/node_modules/.bin/esbuild "$RUNNER_TEMP/tiingo2-final-release/quant/release-bundle.js" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$RUNNER_TEMP/tiingo2-final-release/quant/release-bundle.js"
+      - name: Actual final release, accessibility, mobile and unchanged byte budgets
+        env:
+          NODE_PATH: /tmp/tiingo2-qa/node_modules
+          VU_QA_OUTPUT: ${{ github.workspace }}/.verification/tiingo2-publication-refresh/browser
+        run: |
+          cd "$RUNNER_TEMP/tiingo2-final-release"
+          node "$GITHUB_WORKSPACE/scripts/vu2/browser-qa.mjs"
+          node "$GITHUB_WORKSPACE/scripts/vu2/production-smoke.mjs" "$RUNNER_TEMP/tiingo2-final-release" --report "$GITHUB_WORKSPACE/.verification/tiingo2-publication-refresh/release-smoke.json"
+      - name: All scoped titles against final data in Chromium and mobile WebKit
+        env:
+          NODE_PATH: /tmp/tiingo2-qa/node_modules
+        run: |
+          node scripts/market/tiingo2-product-browser-qa.mjs --site "$RUNNER_TEMP/tiingo2-final-release" --root .market-cache/publication-refresh/shadow-root --readiness .verification/tiingo2-publication-refresh/tiingo2_product_readiness.json --out .verification/tiingo2-publication-refresh/browser-products --engine chromium
+          node scripts/market/tiingo2-product-browser-qa.mjs --site "$RUNNER_TEMP/tiingo2-final-release" --root .market-cache/publication-refresh/shadow-root --readiness .verification/tiingo2-publication-refresh/tiingo2_product_readiness.json --out .verification/tiingo2-publication-refresh/browser-products --engine webkit
+      - name: Bind fresh QA to exact final public and unchanged private bytes
+        env:
+          TIINGO2_RELEASE: ${{ runner.temp }}/tiingo2-final-release
+        run: |
+          node --input-type=module <<'NODE'
+          import {readFileSync,writeFileSync,cpSync} from 'node:fs';
+          import {join} from 'node:path';
+          import {finalizeProductizationPreview} from './scripts/market/tiingo2-finalize-preview.mjs';
+          const workDir=join(process.cwd(),'.market-cache/publication-refresh');
+          const run=JSON.parse(readFileSync(join(workDir,'run-result.json')));
+          const result=finalizeProductizationPreview({root:run.baselineRoot,workDir,out:join(process.cwd(),'.verification/tiingo2-publication-refresh'),releaseOutput:process.env.TIINGO2_RELEASE,preparedRoot:run.preparedRoot});
+          cpSync(join(workDir,'canonical-stage'),join(run.preparedRoot,'canonical-stage'),{recursive:true});
+          const reportPath='.verification/tiingo2-publication-refresh/tiingo2_publication_package_refresh.json';
+          const report=JSON.parse(readFileSync(reportPath));
+          report.state='FINAL_EXACT_BYTE_QA_PASSED';report.qaManifestSha256=result.manifestSha256;
+          report.productionPublishAllowed=false;
+          report.requiredGates=['CURRENT_PRODUCTION_BASELINE_CAS','CURRENT_STORAGE_PREFLIGHT','CURRENT_INDEX_CAS'];
+          writeFileSync(reportPath,JSON.stringify(report,null,2)+'\n');
+          console.log(JSON.stringify({state:report.state,manifestSha256:result.manifestSha256,productionWrites:0,productionPublishAllowed:false}));
+          NODE
+      - name: Seal refreshed authenticated publication and rollback package
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/tiingo2-cache.mjs seal --work-dir .market-cache/refreshed/tiingo2 --file .market-cache/tiingo2-final-publication.enc --context codex/tiingo2-productization
+      - name: Export only derived final QA and hashes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiingo2-final-package-derived-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .verification/tiingo2-publication-refresh/**/*.json
+          retention-days: 14
+      - name: Retain only ciphertext for publication preparation
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiingo2-final-package-encrypted-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .market-cache/tiingo2-final-publication.enc
+          retention-days: 14
+      - name: Source checkout and production data were never mutated
+        if: always()
+        run: |
+          test "$(git rev-parse HEAD)" = "$TIINGO2_FINAL_SOURCE"
+          git diff --exit-code -- quant/data discover/data discover/logos assets/logos screener/data supertrader/data dashboard/config
+      - name: Remove all ephemeral plaintext histories and before-images
+        if: always()
+        run: |
+          git worktree remove --force .market-cache/publication-refresh/baseline-root || true
+          git worktree remove --force .market-cache/publication-refresh/shadow-root || true
+          rm -rf -- .market-cache/refresh-seed .market-cache/publication-refresh .market-cache/refreshed

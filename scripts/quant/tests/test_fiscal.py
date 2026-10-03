@@ -116,10 +116,13 @@ class CalendarLearningTests(unittest.TestCase):
 
 
 def _fact(concept, start, end, form="10-K", fp="FY", fy=2008, accession="a1",
-          taxonomy="us-gaap"):
+          taxonomy="us-gaap", filed=None):
+    # Calendar cases include recent years; an old hard-coded 2009 filing date
+    # would now correctly reject those fixture contexts as impossible.
+    filed = filed or str(date.fromisoformat(end) + timedelta(days=60))
     return RawFact(cik="1", taxonomy=taxonomy, concept=concept, unit="USD", value=1.0,
                    start=start, end=end, accession=accession, form=form,
-                   filed="2009-03-01", filing_fy=fy, filing_fp=fp)
+                   filed=filed, filing_fy=fy, filing_fp=fp)
 
 
 class PeriodsOutsideTheLearnedYearsTests(unittest.TestCase):

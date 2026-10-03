@@ -549,10 +549,13 @@
       var e = entries[i];
       var s = upper(e.s);
       var n = upper(e.n || "");
+      var aliases = (e.al || []).map(upper);
       if (s === q) exact.push(e);
+      else if (aliases.indexOf(q) >= 0) exact.push(e);
       else if (s.indexOf(q) === 0) starts.push(e);
       else if (n.indexOf(q) === 0) nameStarts.push(e);
-      else if (n.indexOf(q) !== -1 || s.indexOf(q) !== -1) contains.push(e);
+      else if (aliases.some(function (a) { return a.indexOf(q) === 0; })) nameStarts.push(e);
+      else if (n.indexOf(q) !== -1 || s.indexOf(q) !== -1 || aliases.some(function (a) { return a.indexOf(q) !== -1; })) contains.push(e);
     }
     var byActiveThenSymbol = function (a, b) {
       if ((b.a === 0 ? 0 : 1) !== (a.a === 0 ? 0 : 1)) return (b.a === 0 ? 0 : 1) - (a.a === 0 ? 0 : 1);

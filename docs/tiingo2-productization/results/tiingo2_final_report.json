@@ -1,0 +1,828 @@
+{
+  "schemaVersion": "tiingo2-productization-final-report-1",
+  "baseline": {
+    "acceptedPr": 349,
+    "consumer": 6419,
+    "freshDiscoveryRecords": 108924,
+    "freshDiscoveryTickers": 106557
+  },
+  "reviewPr": 353,
+  "verifiedWorkflowRun": 37100301897,
+  "verifiedSourceCommit": "cb9e4b2965e0e18d6242b20d68d85364b9042c87",
+  "materializedReviewCommit": "663238b726a4a2e9264c97cba9e1ee82d7599bef",
+  "decision": "CANONICAL_PUBLICATION_PREPARED_REQUIRES_CURRENT_PRODUCTION_CAS_AND_EXTERNAL_PREVIEW",
+  "productionPublishAllowed": false,
+  "manifestSha256": "a00c70f036760c6cfe852a881d50a5355377c52d8ef915d6fb3926afe46aa161",
+  "original102": {
+    "canonical": 102,
+    "quant": {
+      "BLOCKED": 59,
+      "PARTIAL": 32,
+      "TECHNICAL_ONLY": 11
+    },
+    "charts": 99
+  },
+  "review148": {
+    "reviewed": 148,
+    "autoResolved": 11,
+    "rejected": 9,
+    "manualReview": 128
+  },
+  "accepted113": {
+    "canonical": 113,
+    "quant": {
+      "QUANT_FULL": 0,
+      "BLOCKED": 68,
+      "PARTIAL": 33,
+      "TECHNICAL_ONLY": 12
+    },
+    "products": {
+      "search": 113,
+      "chart": 110,
+      "watchlist": 113,
+      "discover": 93,
+      "screener": 70,
+      "supertrader": 25,
+      "markets": 70
+    },
+    "logos": {
+      "LOGO_FALLBACK": 54,
+      "LOGO_VALID": 57,
+      "LOGO_SUSPECT": 2
+    },
+    "fundamentals": {
+      "PARTIAL": 71,
+      "NONE": 19,
+      "FULL": 23
+    },
+    "unmappedCompanyIds": [
+      "ASBH"
+    ]
+  },
+  "proposedConsumer": 6532,
+  "added": [
+    "AAC",
+    "ACCL",
+    "ACCV",
+    "ADRX",
+    "AERO",
+    "AESP",
+    "AIBZ",
+    "AIRO",
+    "APAC",
+    "APC",
+    "APMC",
+    "ASBH",
+    "AXIN",
+    "AZUL",
+    "BACC",
+    "BID",
+    "BRBI",
+    "BRKH",
+    "CAE",
+    "CAI",
+    "CAPN",
+    "CART",
+    "CATL",
+    "CBAT",
+    "CCAQ",
+    "CHA",
+    "CLBK",
+    "CLMT",
+    "CNTB",
+    "CRAN",
+    "CRTO",
+    "CUB",
+    "DPC",
+    "EMIS",
+    "EROC",
+    "ETRA",
+    "FIG",
+    "FIGR",
+    "FJDI",
+    "FLY",
+    "FOIL",
+    "FTW",
+    "GLAS",
+    "GLXY",
+    "GOLD",
+    "GORO",
+    "GTES",
+    "HAWK",
+    "HLP",
+    "HOS",
+    "HOST",
+    "IGAC",
+    "IMSR",
+    "INR",
+    "ITG",
+    "JCAP",
+    "KTWO",
+    "LFAC",
+    "LGCY",
+    "LIME",
+    "LION",
+    "LSBK",
+    "MBGL",
+    "MOB",
+    "MOBI",
+    "MRX",
+    "MTAK",
+    "NP",
+    "NVA",
+    "NVRI",
+    "NWCL",
+    "OCLT",
+    "OIG",
+    "ONEN",
+    "OSPR",
+    "OTAI",
+    "PAAC",
+    "PAL",
+    "PASW",
+    "PNAQ",
+    "PNFP",
+    "Q",
+    "RBKB",
+    "RNA",
+    "RNAQ",
+    "ROC",
+    "RZAI",
+    "SAIL",
+    "SEG",
+    "SHOT",
+    "SIMA",
+    "SIND",
+    "SKHY",
+    "SMA",
+    "SNDK",
+    "SOLS",
+    "STRZ",
+    "SZZL",
+    "TACO",
+    "TDTH",
+    "TLAC",
+    "TMTS",
+    "TRLV",
+    "TTGT",
+    "TWLV",
+    "UROY",
+    "VIA",
+    "VII",
+    "VLTO",
+    "WLTH",
+    "WSTN",
+    "XIII",
+    "XPRO"
+  ],
+  "removed": [],
+  "regressions": {
+    "DNA": {
+      "companyId": "iss_cik_0001830214",
+      "securityId": "ref_DNA",
+      "instrumentId": "vu_f4c48467a5f4ef",
+      "chart": {
+        "ready": true,
+        "priceReady": true,
+        "reasonCodes": [],
+        "priceProjectionPath": "/quant/data/market/discover-series/ref_DNA.json",
+        "eligibilityEvidence": null,
+        "freshValidationState": "VALIDATED",
+        "baselinePublished": {
+          "state": "PRESERVED_BASELINE",
+          "priceHistoryDeclared": true,
+          "priceSnapshotDeclared": true,
+          "technicalState": "TECHNICAL_READY",
+          "factorReadyDeclared": true,
+          "dailyPath": null,
+          "dailyArtifactSha256": null,
+          "longPath": "/quant/data/market/discover-series-long/ref_DNA.json",
+          "longArtifactSha256": "acc6075d8cee59995f95c77bea31ddb099c7c4f77b20a5802ab2a5af02da00a7",
+          "source": "EXISTING_PUBLISHED_BASELINE",
+          "freshValidationIncluded": false
+        },
+        "dailyPath": "/quant/data/market/discover-series/ref_DNA.json",
+        "longPath": "/quant/data/market/discover-series-long/ref_DNA.json",
+        "longReady": true,
+        "longReasonCodes": [],
+        "canonicalProof": {
+          "dataHash": "ec2215b4eef53570",
+          "sourceRevision": "2026-10-02T16:51:53.154Z",
+          "bars": 1371,
+          "currency": "USD",
+          "priceSeriesType": "SPLIT_ADJUSTED",
+          "corporateActionStatus": "PASS",
+          "firstDate": "2021-04-19",
+          "lastDate": "2026-10-01",
+          "historyCoverage": "STANDARD_HISTORY",
+          "totalReturnAvailable": true,
+          "splitActions": 1,
+          "dividendActions": 0
+        }
+      },
+      "watchlist": {
+        "ready": true,
+        "reasonCodes": [],
+        "persistentSelectionRoundtrip": true,
+        "canonicalIdPreserved": true,
+        "legacyIdResolved": true,
+        "identitySource": "EXISTING_CANONICAL_BROWSER_DIRECTORY",
+        "serverEligibilityState": "AVAILABLE",
+        "existingUserStorageTouched": false
+      },
+      "quantStatus": "PARTIAL",
+      "availableFactors": [
+        "quality",
+        "growth",
+        "momentum",
+        "value",
+        "risk"
+      ],
+      "fundamentals": "FULL",
+      "pitValid": true,
+      "logo": "LOGO_VALID",
+      "supertrader": {
+        "ready": true,
+        "status": "SUPERTRADER_READY",
+        "technical": "AVAILABLE",
+        "signals": "AVAILABLE",
+        "bars": 1371
+      },
+      "discover": {
+        "ready": true,
+        "eligible": true,
+        "artifact": "discover/data/stocks/US_REAL/DNA.json"
+      },
+      "screener": {
+        "ready": true,
+        "missingValuesRemainNull": true
+      },
+      "markets": {
+        "ready": true,
+        "exchange": "NYSE",
+        "sector": "health",
+        "industry": null
+      }
+    },
+    "AMC": {
+      "companyId": "iss_cik_0001411579",
+      "securityId": "ref_AMC",
+      "instrumentId": "vu_d35c9c81d2a9ff",
+      "chart": {
+        "ready": false,
+        "priceReady": false,
+        "reasonCodes": [
+          "INSUFFICIENT_CHART_HISTORY"
+        ],
+        "priceProjectionPath": null,
+        "eligibilityEvidence": null,
+        "freshValidationState": "BLOCKED",
+        "baselinePublished": {
+          "state": "PRESERVED_BASELINE",
+          "priceHistoryDeclared": true,
+          "priceSnapshotDeclared": true,
+          "technicalState": "TECHNICAL_READY",
+          "factorReadyDeclared": true,
+          "dailyPath": null,
+          "dailyArtifactSha256": null,
+          "longPath": "/quant/data/market/discover-series-long/ref_AMC.json",
+          "longArtifactSha256": "5890aee8453ef28758b63a2d615d3a05816adfb51f08e5fb764f318cc4e49bea",
+          "source": "EXISTING_PUBLISHED_BASELINE",
+          "freshValidationIncluded": false
+        },
+        "dailyPath": null,
+        "longPath": null,
+        "longReady": false,
+        "longReasonCodes": [],
+        "canonicalProof": null
+      },
+      "watchlist": {
+        "ready": true,
+        "reasonCodes": [],
+        "persistentSelectionRoundtrip": true,
+        "canonicalIdPreserved": true,
+        "legacyIdResolved": true,
+        "identitySource": "EXISTING_CANONICAL_BROWSER_DIRECTORY",
+        "serverEligibilityState": "AVAILABLE",
+        "existingUserStorageTouched": false
+      },
+      "quantStatus": "BLOCKED",
+      "availableFactors": [],
+      "fundamentals": "FULL",
+      "pitValid": true,
+      "logo": "LOGO_SUSPECT",
+      "supertrader": {
+        "ready": false,
+        "status": "BLOCKED",
+        "technical": "SOURCE_MISSING",
+        "signals": "SOURCE_MISSING",
+        "bars": null
+      },
+      "discover": {
+        "ready": false,
+        "eligible": null,
+        "artifact": null
+      },
+      "screener": {
+        "ready": false,
+        "missingValuesRemainNull": true
+      },
+      "markets": {
+        "ready": false,
+        "exchange": null,
+        "sector": null,
+        "industry": null
+      }
+    },
+    "BIRD": {
+      "companyId": "iss_cik_0001653909",
+      "securityId": "ref_BIRD",
+      "instrumentId": "vu_ec15fd9ca42c23",
+      "chart": {
+        "ready": false,
+        "priceReady": false,
+        "reasonCodes": [
+          "INSUFFICIENT_CHART_HISTORY"
+        ],
+        "priceProjectionPath": null,
+        "eligibilityEvidence": null,
+        "freshValidationState": "BLOCKED",
+        "baselinePublished": {
+          "state": "PRESERVED_BASELINE",
+          "priceHistoryDeclared": true,
+          "priceSnapshotDeclared": true,
+          "technicalState": "TECHNICAL_READY",
+          "factorReadyDeclared": true,
+          "dailyPath": null,
+          "dailyArtifactSha256": null,
+          "longPath": "/quant/data/market/discover-series-long/ref_BIRD.json",
+          "longArtifactSha256": "dd406bb13ae4426d0d3272ee9463c855adc751257dc5ae5ad4f86eb65c91afe3",
+          "source": "EXISTING_PUBLISHED_BASELINE",
+          "freshValidationIncluded": false
+        },
+        "dailyPath": null,
+        "longPath": null,
+        "longReady": false,
+        "longReasonCodes": [],
+        "canonicalProof": null
+      },
+      "watchlist": {
+        "ready": true,
+        "reasonCodes": [],
+        "persistentSelectionRoundtrip": true,
+        "canonicalIdPreserved": true,
+        "legacyIdResolved": true,
+        "identitySource": "EXISTING_CANONICAL_BROWSER_DIRECTORY",
+        "serverEligibilityState": "AVAILABLE",
+        "existingUserStorageTouched": false
+      },
+      "quantStatus": "BLOCKED",
+      "availableFactors": [],
+      "fundamentals": "FULL",
+      "pitValid": true,
+      "logo": "LOGO_SUSPECT",
+      "supertrader": {
+        "ready": false,
+        "status": "BLOCKED",
+        "technical": "SOURCE_MISSING",
+        "signals": "SOURCE_MISSING",
+        "bars": null
+      },
+      "discover": {
+        "ready": false,
+        "eligible": null,
+        "artifact": null
+      },
+      "screener": {
+        "ready": false,
+        "missingValuesRemainNull": true
+      },
+      "markets": {
+        "ready": false,
+        "exchange": null,
+        "sector": null,
+        "industry": null
+      }
+    },
+    "AMWL": {
+      "companyId": "iss_cik_0001393584",
+      "securityId": "ref_AMWL",
+      "instrumentId": "vu_b53a55b10a13ad",
+      "chart": {
+        "ready": false,
+        "priceReady": false,
+        "reasonCodes": [
+          "INSUFFICIENT_CHART_HISTORY"
+        ],
+        "priceProjectionPath": null,
+        "eligibilityEvidence": null,
+        "freshValidationState": "BLOCKED",
+        "baselinePublished": {
+          "state": "PRESERVED_BASELINE",
+          "priceHistoryDeclared": true,
+          "priceSnapshotDeclared": true,
+          "technicalState": "TECHNICAL_READY",
+          "factorReadyDeclared": true,
+          "dailyPath": null,
+          "dailyArtifactSha256": null,
+          "longPath": "/quant/data/market/discover-series-long/ref_AMWL.json",
+          "longArtifactSha256": "bce8303b90ba56579d9d1e8a4400cc92dd74b2c62bd19d39d2525c703532366d",
+          "source": "EXISTING_PUBLISHED_BASELINE",
+          "freshValidationIncluded": false
+        },
+        "dailyPath": null,
+        "longPath": null,
+        "longReady": false,
+        "longReasonCodes": [],
+        "canonicalProof": null
+      },
+      "watchlist": {
+        "ready": true,
+        "reasonCodes": [],
+        "persistentSelectionRoundtrip": true,
+        "canonicalIdPreserved": true,
+        "legacyIdResolved": true,
+        "identitySource": "EXISTING_CANONICAL_BROWSER_DIRECTORY",
+        "serverEligibilityState": "AVAILABLE",
+        "existingUserStorageTouched": false
+      },
+      "quantStatus": "BLOCKED",
+      "availableFactors": [],
+      "fundamentals": "FULL",
+      "pitValid": true,
+      "logo": "LOGO_SUSPECT",
+      "supertrader": {
+        "ready": false,
+        "status": "BLOCKED",
+        "technical": "SOURCE_MISSING",
+        "signals": "SOURCE_MISSING",
+        "bars": null
+      },
+      "discover": {
+        "ready": false,
+        "eligible": null,
+        "artifact": null
+      },
+      "screener": {
+        "ready": false,
+        "missingValuesRemainNull": true
+      },
+      "markets": {
+        "ready": false,
+        "exchange": null,
+        "sector": null,
+        "industry": null
+      }
+    }
+  },
+  "qa": {
+    "focusedSourceTests": 270,
+    "masterSourceTests": 57,
+    "protectedChecks": 21,
+    "protectedFindings": 0,
+    "scopedBrowsers": {
+      "chromium": {
+        "engine": "chromium",
+        "titles": 117,
+        "checks": 1432,
+        "findings": 0
+      },
+      "webkit": {
+        "engine": "webkit",
+        "titles": 117,
+        "checks": 1432,
+        "findings": 0
+      }
+    },
+    "resourceBudgets": [
+      {
+        "view": "home",
+        "decodedBytes": 1795985,
+        "requests": 22,
+        "budget": {
+          "decodedBytes": 1820000,
+          "requests": 45,
+          "history": false
+        },
+        "pass": true,
+        "failures": [],
+        "route": "#/",
+        "width": 1440
+      },
+      {
+        "view": "screener",
+        "decodedBytes": 22590635,
+        "requests": 29,
+        "budget": {
+          "decodedBytes": 30500000,
+          "requests": 30,
+          "history": false
+        },
+        "pass": true,
+        "failures": [],
+        "route": "#/screener",
+        "width": 1440
+      },
+      {
+        "view": "screenerPro",
+        "decodedBytes": 22559149,
+        "requests": 19,
+        "budget": {
+          "decodedBytes": 30500000,
+          "requests": 30,
+          "history": false
+        },
+        "pass": true,
+        "failures": [],
+        "route": "#/screener/profi",
+        "width": 1440
+      },
+      {
+        "view": "stock",
+        "decodedBytes": 5535377,
+        "requests": 39,
+        "budget": {
+          "decodedBytes": 5700000,
+          "requests": 45,
+          "history": true
+        },
+        "pass": true,
+        "failures": [],
+        "route": "#/aktie/NVDA",
+        "width": 1440
+      },
+      {
+        "view": "home",
+        "decodedBytes": 1795985,
+        "requests": 22,
+        "budget": {
+          "decodedBytes": 1820000,
+          "requests": 45,
+          "history": false
+        },
+        "pass": true,
+        "failures": [],
+        "route": "#/",
+        "width": 390
+      },
+      {
+        "view": "screener",
+        "decodedBytes": 22590635,
+        "requests": 29,
+        "budget": {
+          "decodedBytes": 30500000,
+          "requests": 30,
+          "history": false
+        },
+        "pass": true,
+        "failures": [],
+        "route": "#/screener",
+        "width": 390
+      },
+      {
+        "view": "screenerPro",
+        "decodedBytes": 22559149,
+        "requests": 19,
+        "budget": {
+          "decodedBytes": 30500000,
+          "requests": 30,
+          "history": false
+        },
+        "pass": true,
+        "failures": [],
+        "route": "#/screener/profi",
+        "width": 390
+      },
+      {
+        "view": "stock",
+        "decodedBytes": 5535377,
+        "requests": 39,
+        "budget": {
+          "decodedBytes": 5700000,
+          "requests": 45,
+          "history": true
+        },
+        "pass": true,
+        "failures": [],
+        "route": "#/aktie/NVDA",
+        "width": 390
+      }
+    ],
+    "quantCompositePublicationAllowed": false,
+    "postMaterializationQuantTests": 2393,
+    "postMaterializationDiscoverTests": 322,
+    "legacyBrowserChecks": 88,
+    "accessibilityChecks": 76,
+    "releaseSmokeChecks": 148,
+    "refreshedExactByteQa": "PASS",
+    "originalFocusedTestsEvidence": "Historical initial workflow37036367074/source029efa7; current native source totals are recorded in currentSourceCi."
+  },
+  "factorPopulation": {
+    "before": 6308,
+    "after": 6402,
+    "removed": [],
+    "maxScoreDeltas": {
+      "quality": 1.55,
+      "growth": 1.31,
+      "momentum": 1.58,
+      "value": 6.64,
+      "profitability": 2.34,
+      "revisions": 0,
+      "risk": 4.87
+    }
+  },
+  "productionWrites": 0,
+  "productionHistoryWrites": 0,
+  "productionPreparation": {
+    "basePrMergeOrder": [
+      349,
+      353
+    ],
+    "storage": "113 exact private histories and rollback before-images in authenticated encrypted artifact; additive-only writer requires current storage preflight/index CAS",
+    "retentionDays": 14,
+    "historicalArtifactId": 11241273148,
+    "historicalPackageSuperseded": true,
+    "refreshedPackageRequired": true,
+    "artifactId": 11266490605,
+    "derivedArtifactId": 11265779665,
+    "requiredGates": [
+      "CURRENT_PRODUCTION_BASELINE_CAS",
+      "CURRENT_STORAGE_PREFLIGHT",
+      "CURRENT_INDEX_CAS"
+    ],
+    "sourceCommit": "cb9e4b2965e0e18d6242b20d68d85364b9042c87",
+    "privateHistoriesUnchanged": 113,
+    "historyRebuilds": 0
+  },
+  "externalPreviewBlockers": [
+    {
+      "sourceCommit": "cb9e4b2965e0e18d6242b20d68d85364b9042c87",
+      "context": "Vercel",
+      "state": "failure",
+      "reason": "Deployment rate limited \u2014 retry in 24 hours.",
+      "productionRoutingChanged": false
+    }
+  ],
+  "remainingConditionalBlockers": {
+    "reviewCandidates": 128,
+    "shortChartHistories": [
+      "ACCV",
+      "ONEN",
+      "RZAI"
+    ],
+    "suspectNewLogos": [
+      "PASW",
+      "SEG"
+    ],
+    "freshExistingActionValidation": [
+      "AMC",
+      "BIRD",
+      "AMWL"
+    ],
+    "fullQuant": "Existing quant-v2 methodology globally disables composite publication; no fabricated score",
+    "missingFundamentals": [
+      "ACCV",
+      "ADRX",
+      "AERO",
+      "AIBZ",
+      "ASBH",
+      "CBAT",
+      "ETRA",
+      "FOIL",
+      "NWCL",
+      "OCLT",
+      "OIG",
+      "RNAQ",
+      "RZAI",
+      "SKHY",
+      "TLAC",
+      "XIII",
+      "XPRO",
+      "BRBI",
+      "GORO"
+    ]
+  },
+  "previewStatus": {
+    "sourceCommit": "bf3a0a96342b45b2229cf3b9f670ff5b177a0931",
+    "context": "Vercel",
+    "state": "success",
+    "previousRateLimitResolved": true
+  },
+  "nativeSecFollowup": {
+    "canonicalFactsWithheld": {
+      "AMC": 1,
+      "ONEN": 1
+    },
+    "validFactsPreserved": true,
+    "compressedNewCanonicalHistories": 98,
+    "protectedCanonicalJsonFiles": 5,
+    "secSourceKiB": 8095,
+    "secSourceBudgetKiB": 8192,
+    "addedConsumerRoutes": 94,
+    "protectedConsumerRoutes": 5378,
+    "companyFactsAvailable": 5540,
+    "providerRequestsForCoverage": 0,
+    "historyRebuildsForCoverage": 0,
+    "historicalInvalidContexts": 17,
+    "historicalInvalidIssuers": 10,
+    "protectedFactorArtifactsRebuilt": 0,
+    "pythonTests": 495,
+    "quantTests": 2423,
+    "finalExactHeadQaPending": false,
+    "discoverTests": 323
+  },
+  "nativeFactorFollowup": {
+    "source": "EXISTING_NATIVE_FACTOR_EVIDENCE",
+    "publicationOrdering": "TECHNICAL_THEN_FACTOR_EVIDENCE_THEN_PRODUCTS",
+    "cohortBefore": 6402,
+    "cohortAfter": 6402,
+    "peerRowsBefore": 5395,
+    "peerRowsAfter": 5489,
+    "peerRowsAdded": 94,
+    "peerRowsChanged": 0,
+    "rawCorrectedTitles": [
+      "AAL",
+      "ASLE",
+      "AXR",
+      "DNA",
+      "JCAP"
+    ],
+    "rawCorrectedComponents": 16,
+    "rawUnchangedTitles": 6397,
+    "factorScoresChanged": 294,
+    "factorScoreTitlesChanged": 290,
+    "componentRankMetadataTitlesChanged": 718,
+    "componentRankMetadataOnlyTitles": 714,
+    "immutableHistoryChanged": 0,
+    "fullCompositeAllowed": false,
+    "independentReview": "PASS",
+    "producerRuntime": "Node22.23.3",
+    "growthScoreChanges": 0,
+    "staleHyphenNormalizationScoresCorrected": 10,
+    "nativeDiscoverReproducibility": {
+      "runtime": "Node22.23.3",
+      "artifactsCompared": 6182,
+      "differingArtifacts": 0,
+      "allowedMetadataTimestampOnly": true
+    }
+  },
+  "historicalInitialCertification": {
+    "verifiedWorkflowRun": 37036367074,
+    "verifiedSourceCommit": "029efa7cf8d30e98c72b540aef1f189e342465fe",
+    "manifestSha256": "3911665582ac1c44a60dd2d5636e8178612a7dffd7db9dd22d082f0baf447367",
+    "productionPreparation": {
+      "basePrMergeOrder": [
+        349,
+        353
+      ],
+      "storage": "113 exact private histories and rollback before-images in authenticated encrypted artifact; additive-only writer requires current storage preflight/index CAS",
+      "retentionDays": 14,
+      "historicalArtifactId": 11241273148,
+      "historicalPackageSuperseded": true,
+      "refreshedPackageRequired": true
+    }
+  },
+  "currentSourceCi": {
+    "sourceCommit": "cb9e4b2965e0e18d6242b20d68d85364b9042c87",
+    "quant": {
+      "total": 2430,
+      "passed": 2427,
+      "skipped": 3,
+      "failed": 0
+    },
+    "secPython": {
+      "total": 495,
+      "passed": 494,
+      "skipped": 1,
+      "failed": 0
+    },
+    "discover": {
+      "total": 323,
+      "passed": 319,
+      "skipped": 4,
+      "failed": 0
+    },
+    "fxRegisterMetadataFollowup": "HISTORICAL_CB9_FAILURE_REPRODUCED_FIXED_AND_INDEPENDENTLY_VERIFIED_REQUIRE_LATEST_PR_HEAD_CI",
+    "protectedPagesDeploy": "SKIPPED"
+  },
+  "currentStorageReadOnly": {
+    "workflowRun": 37100301897,
+    "operation": "READ_ONLY",
+    "measured": true,
+    "executionAllowed": true,
+    "verdict": "ZERO_COST_GUARD_PASSED",
+    "writeBudgetGranted": false,
+    "productionWrites": 0
+  },
+  "idempotentReplay": {
+    "workflowRun": 37100301883,
+    "artifactId": 11266150543,
+    "state": "NO_CHANGES",
+    "referenceLayer": "REVIEW_SOURCE_CANONICAL",
+    "currentSourceMembers": 6532,
+    "productionMembers": 6419,
+    "canonicalMaterialized": 0,
+    "removed": 0,
+    "productionWrites": 0
+  }
+}

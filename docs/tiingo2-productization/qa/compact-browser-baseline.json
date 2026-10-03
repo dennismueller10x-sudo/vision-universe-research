@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "tiingo2-productization-browser-baseline-1",
+  "sourceCommit": "1cf199eb54f13dcf96226c5c86c75431a9446c68",
+  "scope": "EXISTING_BASELINE_WITH_COMPACT_DELIVERY_ENCODING",
+  "command": "CHROMIUM_PATH=/usr/bin/chromium NODE_PATH=<isolated pinned CI dependencies> VU_QA_OUTPUT=<external report directory> node scripts/vu2/browser-qa.mjs (cwd built release)",
+  "dependencies": {
+    "playwright": "1.58.2",
+    "axe-core": "4.10.3",
+    "esbuild": "0.25.10"
+  },
+  "functionalChecks": 88,
+  "functionalFindings": 0,
+  "accessibilityPages": 76,
+  "accessibilityViolations": 0,
+  "resourceBudgets": [
+    {
+      "view": "home",
+      "decodedBytes": 1787095,
+      "requests": 22,
+      "budget": {
+        "decodedBytes": 1820000,
+        "requests": 45,
+        "history": false
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/",
+      "width": 1440
+    },
+    {
+      "view": "screener",
+      "decodedBytes": 22221156,
+      "requests": 28,
+      "budget": {
+        "decodedBytes": 30500000,
+        "requests": 30,
+        "history": false
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/screener",
+      "width": 1440
+    },
+    {
+      "view": "screenerPro",
+      "decodedBytes": 22235712,
+      "requests": 19,
+      "budget": {
+        "decodedBytes": 30500000,
+        "requests": 30,
+        "history": false
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/screener/profi",
+      "width": 1440
+    },
+    {
+      "view": "stock",
+      "decodedBytes": 5499088,
+      "requests": 39,
+      "budget": {
+        "decodedBytes": 5700000,
+        "requests": 45,
+        "history": true
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/aktie/NVDA",
+      "width": 1440
+    },
+    {
+      "view": "home",
+      "decodedBytes": 1783256,
+      "requests": 19,
+      "budget": {
+        "decodedBytes": 1820000,
+        "requests": 45,
+        "history": false
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/",
+      "width": 390
+    },
+    {
+      "view": "screener",
+      "decodedBytes": 22261508,
+      "requests": 26,
+      "budget": {
+        "decodedBytes": 30500000,
+        "requests": 30,
+        "history": false
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/screener",
+      "width": 390
+    },
+    {
+      "view": "screenerPro",
+      "decodedBytes": 22235712,
+      "requests": 19,
+      "budget": {
+        "decodedBytes": 30500000,
+        "requests": 30,
+        "history": false
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/screener/profi",
+      "width": 390
+    },
+    {
+      "view": "stock",
+      "decodedBytes": 5499088,
+      "requests": 39,
+      "budget": {
+        "decodedBytes": 5700000,
+        "requests": 45,
+        "history": true
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/aktie/NVDA",
+      "width": 390
+    }
+  ],
+  "budgetLimitsChanged": false,
+  "newListingDeliveryTested": false,
+  "productionDeploymentPerformed": false,
+  "status": "PASS"
+}

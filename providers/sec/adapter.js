@@ -26,6 +26,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const zlib = require("zlib");
 
 const ROOT = path.join(__dirname, "..", "..");
 const ENGINES = path.join(ROOT, "quant", "engines");
@@ -126,11 +127,16 @@ function fileLoader(directory) {
   return function loadAll() {
     let names;
     try {
-      names = fs.readdirSync(dir).filter((n) => n.endsWith(".json"));
+      names = fs.readdirSync(dir).filter((n) => /\.json(?:\.gz)?$/.test(n));
     } catch (err) {
       return [];              /* noch nicht ingestiert — kein Fehler, nur leer */
     }
-    return names.map((name) => JSON.parse(fs.readFileSync(path.join(dir, name), "utf8")));
+    const identities = names.map((name) => name.replace(/\.gz$/, ""));
+    if (new Set(identities).size !== identities.length) throw Error("DUPLICATE_CANONICAL_STORAGE_IDENTITY");
+    return names.map((name) => {
+      const bytes = fs.readFileSync(path.join(dir, name));
+      return JSON.parse(name.endsWith(".gz") ? zlib.gunzipSync(bytes) : bytes);
+    });
   };
 }
 

@@ -24,6 +24,36 @@ test("FU1 · Lesemodell: Jahresreihen aus dem kompakten Bundle, nur FY, aufsteig
   assert.equal(F.fromBundle(null), null);
 });
 
+test("PIT · unended or invalid periods cannot enter annual or quarterly consumer projections", () => {
+  const invalid = structuredClone(wachsend);
+  invalid.annual.revenue.push([2027, "FY", "2027-12-31", 9e15, "2026-02-03", "future-period"]);
+  invalid.annual.diluted_eps = [...(invalid.annual.diluted_eps || []), [2027, "FY", "2027-12-31", 1e9, "2026-02-03", "future-eps"]];
+  invalid.annual.shares_outstanding = [...(invalid.annual.shares_outstanding || []),
+    [2033, "FY", "2034-03-05", 52990947, "2024-03-27", "future-shares"]];
+  const quarterMetric = Object.keys(wachsend.quarterly)[0];
+  invalid.quarterly[quarterMetric].push([2027, "Q1", "2027-03-31", 9e15, "2026-02-03", "future-quarter"]);
+  invalid.annual.revenue.push([2027, "FY", "2027-02-30", 9e15, "2027-03-01", "invalid-calendar-date"]);
+  const model = F.fromBundle(invalid);
+  assert.deepEqual(model.annual.revenue, M.annual.revenue);
+  assert.deepEqual(model.quarterly[quarterMetric], M.quarterly[quarterMetric]);
+  assert.ok(!model.annual.diluted_eps.some(row => row.accn === "future-eps"));
+  assert.deepEqual(model.annual.shares_outstanding, M.annual.shares_outstanding || [],
+    "valuation inputs cannot select a future-period shares count");
+  for (const method of ["compare", "journey", "story", "health", "latest", "signals", "capabilities", "staleness"]) {
+    assert.deepEqual(F[method](model), F[method](M), method + " preserves valid consumer output");
+  }
+});
+
+test("PIT · same-day period and filing and valid historical rows remain eligible", () => {
+  const valid = structuredClone(wachsend);
+  valid.annual.revenue = [[2024, "FY", "2024-12-31", 100, "2024-12-31", "same-day"],
+    [2025, "FY", "2025-12-31", 200, "2026-02-03", "valid-filing"]];
+  const model = F.fromBundle(valid);
+  assert.deepEqual(model.years, [2024, 2025]);
+  assert.equal(F.latest(model).annual.revenue.v, 200);
+  assert.deepEqual(model.annual.revenue.map(row => row.accn), ["same-day", "valid-filing"]);
+});
+
 test("FU2 · Horizont: 10 Jahre wenn valide, sonst 5, sonst 3, sonst erste vs. letzte Periode", () => {
   assert.deepEqual(F.horizon(M), { years: 10, from: 2015, to: 2025, kind: "FIXED" });
   assert.deepEqual(F.horizon(J), { years: 3, from: 2022, to: 2025, kind: "FIXED" });

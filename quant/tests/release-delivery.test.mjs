@@ -7,9 +7,21 @@
    (vu2 gebündelt, quant/ leitete nach /vu2/ um); die Fixture baut deshalb
    jetzt quant/index.html mit Skript statt vu2/index.html. */
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {createRequire} from 'node:module';
-import {projectInspector,permitted,SEC_BUDGET} from '../../scripts/vu2/build-release.mjs';
+import {projectInspector,permitted,SEC_BUDGET,compactDeliveryJSON} from '../../scripts/vu2/build-release.mjs';
 const require=createRequire(import.meta.url),History=require('../api/fundamentals-contract.js');
 const load=p=>JSON.parse(readFileSync(new URL('../data/sec/'+p,import.meta.url)));
+test('delivery compaction preserves market factors, null semantics and identities without expanding source or SEC access',()=>{
+ const path='quant/data/market/factors/factors-FULL_UNIVERSE.json';
+ const source=readFileSync(new URL('../data/market/factors/factors-FULL_UNIVERSE.json',import.meta.url),'utf8');
+ const result=compactDeliveryJSON(path,source);
+ assert.deepEqual(JSON.parse(result.bytes),JSON.parse(source));
+ assert.ok(result.bytes.length<result.sourceBytes*0.7,'large existing payload must meaningfully shrink');
+ assert.equal(readFileSync(new URL('../data/market/factors/factors-FULL_UNIVERSE.json',import.meta.url),'utf8'),source);
+ const fixture={securityId:'equity-1',cik:'0000123456',missing:null,zero:0,negative:-2,unicode:'München',nested:[null,0,{v:2.5}]};
+ assert.deepEqual(JSON.parse(compactDeliveryJSON('quant/data/universe/instruments/00.json',JSON.stringify(fixture,null,2)).bytes),fixture);
+ assert.equal(compactDeliveryJSON('quant/data/sec/canonical/private.json','{}'),null);
+ assert.equal(compactDeliveryJSON('quant/config/feature-gates.json','{}'),null);
+});
 test('release projection preserves every existing history metric and period result without source-only fields',()=>{
  for(const c of load('inspector_index.json').companies){const original=load('inspector/'+c.ticker+'.json'),projected=projectInspector(original);
  assert.equal(projected.rows.length,original.rows.length);assert.equal(projected.rows.some(r=>'inputs'in r),false);

@@ -215,7 +215,7 @@
     var b = s.best, art = strategyArt(b.id);
     var kids = [el("p", { class: "dx-bewertung-satz qx-strategy-sentence" }, [el("b", { text: s.sentence })])];
     kids.push(el("a", { class: "v2-collection-link qx-strategy-link", href: X.routes.strategy(b.id) }, [
-      el("span", { class: "v2-collection-art" + (art ? " has-image" : ""), "aria-hidden": "true" }, [art ? el("img", { class: "v2-collection-image", src: art, alt: "", width: "1254", height: "1254", loading: "lazy", decoding: "async" }) : el("span", { class: "v2-collection-glyph", text: "↗" }),
+      el("span", { class: "v2-collection-art" + (art ? " has-image" : ""), "aria-hidden": "true" }, [art ? X.visibleImage(art, { class: "v2-collection-image", alt: "", width: "1254", height: "1254", loading: "lazy", decoding: "async" }) : el("span", { class: "v2-collection-glyph", text: "↗" }),
         el("span", { class: "v2-collection-art-label", text: b.label.split(" · ")[0] })]),
       el("span", { class: "v2-collection-copy" }, [el("strong", { text: b.label }), el("span", { text: b.countText + ". " + b.plain })]),
       el("span", { class: "v2-collection-arrow", text: "→" })]));
@@ -528,7 +528,7 @@
     function watchText(on) { return on ? "★ Beobachtet" : "☆ Beobachten"; }
     var watchBtn = el("button", { type: "button", class: "v2-watch-button qx-watch", "aria-pressed": X.watch.has(ticker) ? "true" : "false",
       text: watchText(X.watch.has(ticker)) });
-    watchBtn.addEventListener("click", function () { var on = X.watch.toggle(ticker); watchBtn.setAttribute("aria-pressed", on ? "true" : "false"); watchBtn.textContent = watchText(on); });
+    watchBtn.addEventListener("click", function () { var on = X.watch.toggle(ticker, s); watchBtn.setAttribute("aria-pressed", on ? "true" : "false"); watchBtn.textContent = watchText(on); });
     var eodBars = s.chart && s.chart.state === "AVAILABLE" ? (s.chart.bars || []) : [];
     var eod = eodBars.map(function (b) { return [b.date, b.close]; });
     var last = eod.length ? eod[eod.length - 1] : null, prev = eod.length > 1 ? eod[eod.length - 2] : null;

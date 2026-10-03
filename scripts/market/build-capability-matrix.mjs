@@ -54,6 +54,14 @@ export function buildCapabilityMatrix(opt) {
   const master = readJSON(join(root, SECURITY_MASTER_FILE));
   const produkt = resolveProductUniverse(root);
   const produktIds = new Set(produkt.securities.map((s) => s.securityId));
+  const canonicalBySymbol = new Map();
+  const canonicalDir = join(root, 'quant/data/universe/instruments');
+  if (existsSync(canonicalDir)) for (const file of readdirSync(canonicalDir).filter((name) => name.endsWith('.json'))) {
+    for (const instrument of readJSON(join(canonicalDir, file)).instruments || []) {
+      const current = canonicalBySymbol.get(instrument.symbol) || [];
+      current.push(instrument); canonicalBySymbol.set(instrument.symbol, current);
+    }
+  }
 
   /* Quellen - jede optional; fehlt eine, faellt die Spalte auf false mit Grund. */
   const status = maybeJSON(join(root, "quant", "data", "market", "tiingo-status.json"));
@@ -103,7 +111,19 @@ export function buildCapabilityMatrix(opt) {
     const gaps = [];
     const cap = {};
 
-    cap.HAS_PROVIDER_MAPPING = !!e.ticker && String(e.evidence_source || "").startsWith("SECURITY_MASTER");
+    // Incremental discovery has a distinct evidence source. Its mapping is
+    // proved by the canonical listing, not by a historical source prefix.
+    const canonical = canonicalBySymbol.get(sym) || [];
+    const instrument = canonical.length === 1 ? canonical[0] : null;
+    const provider = instrument?.providerIds?.tiingo;
+    const incrementalMapping = e.evidence_source === 'TIINGO2_STAGED_QA' &&
+      e.product_eligibility_reason === 'TIINGO2_VERIFIED_INCREMENTAL_ADDITION' &&
+      !!e.securityId && instrument?.masterMemberId === e.securityId &&
+      (instrument.legacyIds || []).includes(e.securityId) && instrument.symbol === sym &&
+      !!e.exchange && instrument.exchange === e.exchange && provider?.exchange === e.exchange &&
+      provider?.symbol === sym && provider.assetType === 'Stock' &&
+      /^\d{4}-\d{2}-\d{2}$/.test(e.start_date || '') && instrument.firstTradeDate === e.start_date;
+    cap.HAS_PROVIDER_MAPPING = !!e.ticker && (String(e.evidence_source || "").startsWith("SECURITY_MASTER") || incrementalMapping);
     if (!cap.HAS_PROVIDER_MAPPING) gaps.push("PROVIDER_MAPPING_MISSING");
     if (!inProduct) gaps.push("NOT_IN_PRODUCT_UNIVERSE:" + (e.instrument_type || e.product_eligibility));
     if (e.active_status === "INACTIVE") gaps.push("INACTIVE");

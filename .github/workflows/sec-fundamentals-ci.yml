@@ -1,3 +1,5 @@
+# Keep this workflow visible in large canonical-materialization PRs: GitHub
+# evaluates path filters against only the first 300 changed files.
 name: SEC Fundamentals CI
 
 on:
@@ -112,7 +114,7 @@ jobs:
       - name: Validate the generated SEC data JSON
         run: |
           python3 - <<'PY'
-          import json, pathlib
+          import json, pathlib, gzip
           # Only what THIS pipeline generates. quant/data/*.json belongs to the
           # earlier phases and follows their own convention (asOf,
           # methodologyVersion, dataSnapshotId); asserting the SEC convention
@@ -120,7 +122,7 @@ jobs:
           # wrote. The check had never run before the first pull request, which
           # is exactly how it survived that long.
           root = pathlib.Path("quant/data/sec")
-          paths = sorted(root.glob("*.json")) + sorted(root.glob("*/*.json"))
+          paths = sorted(root.glob("*.json")) + sorted(root.glob("*/*.json")) + sorted(root.glob("*/*.json.gz"))
           assert paths, "no generated SEC artifacts found"
           # Two naming conventions, on purpose. Below the canonical boundary the
           # SEC layer uses snake_case; at and above it the payload follows
@@ -129,7 +131,8 @@ jobs:
           SNAKE = ("schema_version", "generated_at_utc")
           CAMEL = ("schema", "generatedAtUtc")
           for path in paths:
-              payload = json.loads(path.read_text(encoding="utf-8"))
+              body = path.read_bytes()
+              payload = json.loads(gzip.decompress(body) if path.name.endswith('.gz') else body)
               assert isinstance(payload, dict), path
               stamped = any(key in payload for key in SNAKE + CAMEL)
               assert stamped, f"{path} carries neither {SNAKE} nor {CAMEL}"

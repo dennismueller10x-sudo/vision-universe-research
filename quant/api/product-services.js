@@ -973,6 +973,8 @@ function create(options){
    const member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member)return identityOnlyStock(ticker);
    const panelCandidate=c.panel?.securities?.[ticker];if(panelCandidate&&panelCandidate.securityId!=='sec_'+ticker)return unavailable('INVALID_IDENTITY');
    let stock=await row(c,ticker)||broadRow(c,member);if(!stock)return identityOnlyStock(ticker);
+   if(stock.instrumentId!==canonical.instrumentId||stock.masterMemberId!==canonical.masterMemberId)return unavailable('INVALID_IDENTITY');
+   stock.issuerId=canonical.issuerId||null;
    const consumer=await consumerFor(ticker);if(consumer)stock=applyConsumer(stock,consumer);if(!permission(c,ticker,'raw').allowed)stock.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'};
    try{const p=await load('/quant/data/market/golden-preview/daily/'+stock.masterMemberId+'.json');
     if(p.securityId!==stock.masterMemberId||p.provider!=='tiingo'||p.isMock===true||p.dataMode==='mock'||!p.publishBasis||!Array.isArray(p.bars))throw Error('identity');
@@ -1007,6 +1009,7 @@ function create(options){
      priceSource:splitbereinigt?'RECONSTRUCTED_FROM_SPLIT_FACTOR':'PROVIDER_RAW_CLOSE',
      providedAdjustmentStatus:p.adjustmentStatus,splitEvents};
    }catch{const history=await getHistoricalPriceHistory(ticker);stock.chart=history.state==='AVAILABLE'?history:{state:'UNAVAILABLE',bars:[],reason:history.reason||'HISTORY_NOT_PUBLISHED'};}
+   if(stock.chart.state==='AVAILABLE'&&stock.chart.bars.length<5)stock.chart={state:'UNAVAILABLE',bars:[],reason:'INSUFFICIENT_CHART_HISTORY'};
    /* DIE ANTWORT AUF "WAS KOSTET SIE?" STAND IM CHART DANEBEN.
     *
     * Gemessen am 26.09.2026 ueber die 500er-Stichprobe: 52 Titel bekamen

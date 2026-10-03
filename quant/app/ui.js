@@ -14,6 +14,22 @@
   "use strict";
   var S = global.QuantShell, el = S.el;
 
+  // Native loading="lazy" may still download images several screens away.
+  // Keep decorative stock-section artwork dormant until its viewport is reached.
+  function visibleImage(src, attrs) {
+    var image = el("img", Object.assign({}, attrs, { "data-src": src }));
+    function load() { image.src = src; image.removeAttribute("data-src"); }
+    if (global.IntersectionObserver) {
+      var observer = new global.IntersectionObserver(function (entries) {
+        if (entries.some(function (entry) { return entry.target === image && entry.isIntersecting; })) {
+          observer.disconnect(); load();
+        }
+      });
+      observer.observe(image);
+    } else load();
+    return image;
+  }
+
   /* DIE FUENF BEREICHE VON QUANT - Owner-Entscheid 29.09.2026.
      "Quant Screener", nicht "Screener": so heisst das eigenstaendige
      Produkt unter /screener/, das NICHT zu Quant gehoert. */
@@ -224,16 +240,52 @@
   /* ----------------------------------------------------------- Merkliste
      Der Schluessel ist Quants eigener (vu.quant.watchlist.v1) - geteilt mit
      den klassischen Quant-Seiten, nicht mit dem eigenstaendigen Screener. */
-  var WATCH_KEY = "vu.quant.watchlist.v1", RECENT_KEY = "vu.quant.recent.v1";
+  var WATCH_KEY = "vu.quant.watchlist.v1", WATCH_IDENTITIES_KEY = "vu.quant.watchlist.identities.v1", RECENT_KEY = "vu.quant.recent.v1";
   function readList(key) {
     try { var v = JSON.parse(global.localStorage.getItem(key) || "[]"); return Array.isArray(v) ? v.filter(function (x) { return typeof x === "string" && /^[A-Z0-9.-]{1,12}$/.test(x); }) : []; }
     catch (e) { return []; }
   }
-  function writeList(key, list) { try { global.localStorage.setItem(key, JSON.stringify(list)); } catch (e) { /* privat oder voll */ } }
+  function writeList(key, list) { try { global.localStorage.setItem(key, JSON.stringify(list)); return true; } catch (e) { return false; /* privat oder voll */ } }
+  function validBinding(ticker, binding) {
+    return binding && binding.ticker === ticker && /^[A-Z0-9.-]{1,12}$/.test(ticker) &&
+      /^vu_[a-f0-9]+$/.test(binding.listingId || "") && /^ref_[A-Za-z0-9_.-]+$/.test(binding.securityId || "") &&
+      (binding.companyId === null || /^iss_cik_\d{10}$/.test(binding.companyId || ""));
+  }
+  function canonicalBinding(ticker, stock) {
+    if (!stock || stock.ticker !== ticker || stock.identityState === "UNAVAILABLE" ||
+        (stock.identityState !== "AVAILABLE" && stock.state !== "AVAILABLE") || stock.securityId !== stock.instrumentId) return null;
+    var binding = { ticker: ticker, listingId: stock.instrumentId, securityId: stock.masterMemberId, companyId: stock.issuerId == null ? null : stock.issuerId };
+    return validBinding(ticker, binding) ? binding : null;
+  }
+  function readBindings() {
+    // Reading never migrates or repairs a user's existing storage. Bindings
+    // describe selected canonical identities, not an alternative watchlist.
+    var selected = readList(WATCH_KEY), result = {};
+    try {
+      var saved = JSON.parse(global.localStorage.getItem(WATCH_IDENTITIES_KEY) || "{}");
+      if (!saved || typeof saved !== "object" || Array.isArray(saved)) return result;
+      selected.forEach(function (ticker) { if (validBinding(ticker, saved[ticker])) result[ticker] = {
+        ticker: ticker, listingId: saved[ticker].listingId, securityId: saved[ticker].securityId, companyId: saved[ticker].companyId
+      }; });
+    } catch (e) { /* privat, voll oder alter unlesbarer Wert */ }
+    return result;
+  }
   var watch = {
     list: function () { return readList(WATCH_KEY); },
     has: function (t) { return readList(WATCH_KEY).indexOf(t) >= 0; },
-    toggle: function (t) { var l = readList(WATCH_KEY), i = l.indexOf(t); if (i >= 0) l.splice(i, 1); else l.unshift(t); writeList(WATCH_KEY, l.slice(0, 50)); return i < 0; }
+    identities: readBindings,
+    toggle: function (t, canonicalStockIdentity) {
+      var l = readList(WATCH_KEY), i = l.indexOf(t), bindings = readBindings();
+      if (i >= 0) l.splice(i, 1); else l.unshift(t);
+      l = l.slice(0, 50);
+      if (!writeList(WATCH_KEY, l)) return watch.has(t);
+      Object.keys(bindings).forEach(function (ticker) { if (l.indexOf(ticker) < 0) delete bindings[ticker]; });
+      delete bindings[t];
+      var binding = i < 0 ? canonicalBinding(t, canonicalStockIdentity) : null;
+      if (binding && l.indexOf(t) >= 0) bindings[t] = binding;
+      writeList(WATCH_IDENTITIES_KEY, bindings);
+      return i < 0;
+    }
   };
   var recent = {
     list: function () { return readList(RECENT_KEY); },
@@ -245,6 +297,6 @@
     pill: pill, more: more, loading: loading, dateDe: dateDe, money: money, signed: signed, companyName: companyName, logo: logo,
     stockRow: stockRow, poster: poster, rail: rail, tickerChips: tickerChips, stat: stat, stats: stats, toneClass: toneClass,
     tile: tile, scoreBox: scoreBox, globe: globe,
-    watch: watch, recent: recent, el: el
+    watch: watch, recent: recent, el: el, visibleImage: visibleImage
   };
 })(window);

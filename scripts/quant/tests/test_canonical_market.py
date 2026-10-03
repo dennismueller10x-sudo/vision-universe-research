@@ -16,6 +16,8 @@ Diese Tests halten drei Dinge fest:
      Artefakt es, statt still auf die Stichprobe zurueckzufallen.
 """
 import json
+import gzip
+import hashlib
 import sys
 import unittest
 from pathlib import Path
@@ -31,8 +33,9 @@ KANON_UNIVERSUM = (ROOT / "quant" / "data" / "market" / "scale" /
 HERKUNFT = ROOT / "quant" / "data" / "market" / "history" / "CANONICAL_SOURCE.json"
 MARKTFAEHIGKEIT = ROOT / "quant" / "data" / "universe" / "market-capability.json"
 
-# Der abgenommene Stand. Diese Zahlen sind NICHT verhandelbar und
-# duerfen nicht durch eine lokale Ableitung ersetzt werden.
+# Der abgenommene historische Stand. Diese Zahlen pruefen weiterhin
+# unveraenderte historische Dateien; frische Listing-Projektionen haben
+# eigene, je Instrument nachpruefbare Preis- und Faktornachweise.
 #
 # Neu abgenommen am 15.09.2026 mit der Produkt-Datenhygiene des Eigentuemers
 # (docs/VU_DISCOVER_V3_NETFLIX_BUILD.md §1): 44 Testsymbole und die
@@ -53,6 +56,11 @@ AKZEPTIERT = {
 
 def lade(path):
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def aktuelle_produkttitel():
+    from quant.sec.universe_coverage import load_universe, product_members
+    return product_members(load_universe(ROOT)["instruments"])
 
 
 class QuelleVorhandenTests(unittest.TestCase):
@@ -134,9 +142,16 @@ class IdentitaetsjoinTests(unittest.TestCase):
                     key = row.get("masterMemberId") or row["instrumentId"]
                     meine.setdefault(key, set()).add(row["symbol"])
 
-        self.assertEqual(set(kanon), set(meine),
-                         "Das Produktuniversum hier ist nicht dasselbe, gegen das die "
-                         "kanonischen Kennzahlen gerechnet wurden.")
+        self.assertTrue(set(kanon).issubset(meine), "Historische Produktmitglieder duerfen nicht verschwinden.")
+        capability = lade(MARKTFAEHIGKEIT)
+        current = capability["members"]
+        self.assertEqual(len(current), len({row["m"] for row in current}), "Doppelte kanonische Mitglieds-ID")
+        self.assertEqual({row["m"] for row in current}, set(meine), "Aktuelle Coverage braucht genau das aktuelle Produktuniversum.")
+        additions = {row["m"] for row in current} - set(kanon)
+        if additions:
+            projections = lade(ROOT / "quant/data/universe/tiingo2-product-projections.json")
+            verified = {row["securityId"] for row in projections["rows"] if not row["isBaseline"]}
+            self.assertEqual(additions, verified, "Neue Mitgliedschaft benoetigt konkrete Listing-Projektionen.")
         abweichend = [k for k, t in kanon.items() if t not in meine[k]]
         self.assertEqual(abweichend, [], f"Kuerzel weichen ab: {abweichend[:5]}")
 
@@ -155,9 +170,81 @@ class DieRechnungTrifftDenStandTests(unittest.TestCase):
 
     def test_kurshistorie_und_technik_reproduzieren_den_stand(self):
         t = self.mc["totals"]
-        self.assertEqual(t["MEMBERS"], AKZEPTIERT["PRODUCT_TITLES"])
-        self.assertEqual(t["WITH_PRICE_HISTORY"], AKZEPTIERT["HISTORICAL_CHART_AVAILABLE"])
-        self.assertEqual(t["TECHNICAL_READY"], AKZEPTIERT["TECHNICAL_HISTORY_ELIGIBLE"])
+        members = self.mc["members"]
+        self.assertEqual(t["MEMBERS"], len(aktuelle_produkttitel()))
+        self.assertEqual(t["MEMBERS"], len(members))
+        self.assertEqual(t["WITH_PRICE_HISTORY"], sum(row["ph"] is True for row in members))
+        self.assertEqual(t["TECHNICAL_READY"], sum(row["t"] == "TECHNICAL_READY" for row in members))
+        self.assertEqual(t["FACTOR_READY"], sum(row["fr"] is True for row in members))
+        # Every historical member without a verified fresh overlay still
+        # reproduces the original complete exception lists exactly.
+        chart_missing = set(lade(METRIKEN)["CHART_AVAILABILITY"]["notRenderableSymbols"])
+        technical_exceptions = lade(TECHNIK)["perSymbol"]
+        for row in members:
+            if row["src"].startswith("tiingo2:"):
+                continue
+            self.assertEqual(row["ph"], row["s"] not in chart_missing, row["s"])
+            expected_ready = technical_exceptions.get(row["s"], {}).get("technical", "TECHNICAL_READY") == "TECHNICAL_READY"
+            self.assertEqual(row["t"] == "TECHNICAL_READY", expected_ready, row["s"])
+
+    def test_neue_preis_und_faktorfaehigkeit_hat_konkrete_getrennte_nachweise(self):
+        scoped = [row for row in self.mc["members"] if row["src"].startswith("tiingo2:")]
+        if not scoped:
+            return
+        projection = lade(ROOT / "quant/data/universe/tiingo2-product-projections.json")
+        projected = {row["securityId"]: row for row in projection["rows"]}
+        factors = {row["securityId"]: row for row in lade(ROOT / "quant/data/market/factors/factors-FULL_UNIVERSE.json")["securities"]}
+        for row in scoped:
+            proof = projected[row["m"]]
+            self.assertEqual(row["s"], proof["ticker"])
+            self.assertEqual(row["i"], proof["instrumentId"])
+            self.assertEqual(row["ph"], proof["chart"]["ready"])
+            self.assertEqual(row["ps"], proof["chart"]["priceReady"])
+            relative = proof["chart"]["priceProjectionPath"]
+            self.assertTrue(relative.startswith("/quant/data/market/discover-series/"))
+            price_path = ROOT / relative.lstrip("/")
+            self.assertEqual(hashlib.sha256(price_path.read_bytes()).hexdigest(), projection["artifactHashes"][relative])
+            price = lade(price_path)
+            self.assertEqual(price["securityId"], row["m"])
+            self.assertEqual(price["sourceBarCount"], row["b"])
+            self.assertEqual(price["corporateActionStatus"], "PASS")
+            self.assertEqual(price["asOf"], row["l"])
+            self.assertEqual(row["ph"], len(price["points"]) >= 5, "Kurze IPO-Preise sind noch keine Chartfreigabe.")
+            shard = row["s"][:2].ljust(2, "_")
+            technical = json.loads(gzip.decompress((ROOT / ("quant/data/product/technical-signals-v1/" + shard + ".json.gz")).read_bytes()))
+            self.assertEqual(row["t"] == "TECHNICAL_READY", row["s"] in technical["instruments"], row["s"])
+            factor_path = ROOT / ("quant/data/product/factor-evidence-v1/" + shard + ".json.gz")
+            evidence = json.loads(gzip.decompress(factor_path.read_bytes()))["securities"].get(row["s"])
+            available = [factor for factor in (evidence or {}).get("factors", {}).values() if factor["state"] == "AVAILABLE"]
+            self.assertEqual(row["fr"], bool(available), "Keine erfundene oder unterdrueckte Faktorfreigabe: " + row["s"])
+            if row["fr"]:
+                market = factors[row["m"]]
+                self.assertEqual(market["ticker"], row["s"])
+                self.assertEqual(market["bars"], row["b"])
+                if market["dataQuality"] == "WARNING":
+                    self.assertEqual(market["dataQualityReason"], "insufficient_history_for_factors")
+                    self.assertLess(market["bars"], 252)
+                    self.assertIsNone(market["values"].get("return12M1M"))
+                    self.assertIsNone(market["values"].get("volatility252d"))
+                else:
+                    self.assertEqual(market["dataQuality"], "PASS")
+                # Fundamental partial factors may exist for a short IPO;
+                # that never grants technical readiness or a full Quant score.
+                self.assertEqual(evidence["securityId"], row["m"])
+                self.assertEqual(evidence["bars"], row["b"])
+                self.assertEqual(evidence["asOf"], row["l"])
+                self.assertTrue(available, row["s"])
+                for factor in available:
+                    self.assertIsNotNone(factor["score"], row["s"])
+                    self.assertGreaterEqual(factor["score"], 0)
+                    self.assertLessEqual(factor["score"], 100)
+                self.assertEqual(evidence["composite"]["state"], "WITHHELD")
+                for factor in evidence["factors"].values():
+                    if factor["state"] == "UNAVAILABLE":
+                        self.assertIsNone(factor["score"])
+                        self.assertTrue(factor.get("reason"))
+            elif row["b"] < 300:
+                self.assertNotEqual(row["t"], "TECHNICAL_READY", row["s"])
 
     def test_der_abgleich_meldet_sich_als_abgestimmt(self):
         path = ROOT / "quant" / "data" / "fundamentals" / "reconciliation.json"

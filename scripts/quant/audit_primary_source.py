@@ -25,6 +25,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from quant.sec.canonical import METRIC_MAP
+from quant.sec.artifacts import artifact_paths, read_artifact
 from quant.sec.pipeline import _rehydrate
 from quant.sec.provider import PERIODIC_FORMS, SECProvider, normalize_cik
 from quant.sec.registry import MetricRegistry
@@ -190,8 +191,8 @@ def main(argv=None):
     store = JsonFactStore(compress=True)
 
     checks = []
-    for path in sorted(CANONICAL_DIR.glob("*.json")):
-        canonical = json.loads(path.read_text(encoding="utf-8"))
+    for path in artifact_paths(CANONICAL_DIR):
+        canonical = read_artifact(path)
         cik = normalize_cik(canonical["security"]["securityId"].replace("sec_", "")) \
             if canonical["security"]["securityId"].replace("sec_", "").isdigit() else None
         if cik is None:

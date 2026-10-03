@@ -36,7 +36,7 @@ function doc(overrides = {}) {
     },
     quarterly: {
       revenue: ["2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"]
-        .map((end, index) => quarter(end, 300 + index * 10, "2026-02-15"))
+        .map((end, index) => quarter(end, 300 + index * 10, end === "2026-03-31" ? "2026-05-07" : "2026-02-15"))
     },
     ttm: {
       revenue: ttm("2025-12-31", 1500, "2026-02-15"),
@@ -53,6 +53,41 @@ function doc(overrides = {}) {
 }
 
 const CUTOFF = "2026-09-18";
+
+test("future provider contexts cannot change valid annual/quarterly inputs or shares", () => {
+  const valid = doc(), poisoned = structuredClone(valid);
+  for (const [metric, rows] of Object.entries(poisoned.annual)) rows.push(row(2028, "2028-12-31", 999999, "2026-05-07"));
+  poisoned.quarterly.revenue.push(quarter("2026-12-31", 999999, "2026-05-07"));
+  assert.deepEqual(Inputs.compute(poisoned,CUTOFF,1000), Inputs.compute(valid,CUTOFF,1000), "invalid cached rows never alter valid factor basis or change calculations");
+  poisoned.ttm.shares_outstanding = {fp:"FY",end:"2028-12-31",v:999999,filed:"2026-05-07",unit:"shares",kind:"INSTANT"};
+  const filtered=Inputs.compute(poisoned,CUTOFF,1000);
+  assert.equal(filtered.shares,null,"future share context cannot create capitalization proof");
+  assert.ok(filtered.fundamentalsAsOf <= "2026-03-31","a future balance sheet cannot move the model's actual period");
+});
+
+test("derived TTM cannot borrow filing evidence from a future input context", () => {
+  const invalid=doc();
+  invalid.annual.operating_cash_flow=[row(2028,"2028-12-31",1000000,"2026-05-07")];
+  invalid.annual.capital_expenditures=[row(2028,"2028-12-31",100,"2026-05-07")];
+  invalid.ttm.free_cash_flow=ttm("2028-12-31",999900,null,{derived:true,inputs:["operating_cash_flow","capital_expenditures"]});
+  const model=Inputs.compute(invalid,CUTOFF,1000);
+  assert.equal(model.raws.fcfYield,undefined,"unsupported derived cash flow remains absent, never zero");
+});
+
+test("only an impossible cached instant share context selects the latest valid visible filing", () => {
+  const source=doc();source.annual.shares_outstanding=[row(2025,"2025-12-31",47221513,"2026-08-07")];
+  source.quarterly.shares_outstanding=[quarter("2026-03-31",47252829,"2026-05-08"),quarter("2026-06-30",47726763,"2026-08-07")];
+  source.ttm.shares_outstanding={fp:"FY",end:"2034-03-05",v:52990947,filed:"2024-03-27",kind:"INSTANT",unit:"shares"};
+  const selected=Inputs.compute(source,CUTOFF,null).shares;
+  assert.deepEqual(selected,{value:47726763,end:"2026-06-30",filed:"2026-08-07",derived:false},"use actual latest quarterly instant, not an annual proxy or a repaired future date");
+  assert.equal(Inputs.compute(source,"2026-08-01",null).shares.value,47252829,"the August share observation cannot leak into July");
+  const unchanged=structuredClone(source);unchanged.ttm.shares_outstanding={fp:"Q1",end:"2026-03-31",v:100,filed:"2026-05-08",kind:"INSTANT",unit:"shares"};
+  assert.equal(Inputs.compute(unchanged,CUTOFF,null).shares.value,100,"a valid existing TTM selection retains its original semantics");
+  delete unchanged.ttm.shares_outstanding;
+  assert.equal(Inputs.compute(unchanged,CUTOFF,null).shares,null,"missing TTM does not enable a new broad fallback");
+  source.quarterly.shares_outstanding.push(quarter("2026-06-30",50000000,"2026-08-07"));
+  assert.equal(Inputs.compute(source,CUTOFF,null).shares,null,"conflicting filing evidence is withheld rather than arbitrarily selected");
+});
 
 test("a document that is not the consumer contract produces nothing", () => {
   assert.equal(Inputs.compute({ schema: "something-else" }, CUTOFF, 1000), null);

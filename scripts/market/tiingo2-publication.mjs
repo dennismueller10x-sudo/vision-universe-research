@@ -8,8 +8,14 @@ import { createRequire } from 'node:module';
 import { gunzipSync } from 'node:zlib';
 import { hostname } from 'node:os';
 import { classifyCandidate } from './tiingo2-policy.mjs';
+import { resolveName, summarizeCompanyNames, SUMMARY_FILE as NAME_SUMMARY_FILE } from './build-company-names.mjs';
+import {verifyConsumerBinding,CONSUMER_INDEX_PATH} from './tiingo2-consumer-index.mjs';
 const Company = createRequire(import.meta.url)('../../quant/engines/company-master.js');
+const FactorEvidence = createRequire(import.meta.url)('../../quant/engines/factor-evidence.js');
 export const REQUIRED_PUBLICATION_QA = ['IDENTITY', 'BASELINE', 'PROJECTIONS', 'SEARCH', 'CHARTS', 'WATCHLIST', 'QUANT', 'DISCOVER', 'SCREENER', 'SUPERTRADER', 'SEC', 'RELEASE', 'BROWSER'];
+export const PRODUCTIZATION_QA_SCHEMA = 'tiingo2-productization-qa-1.0.0';
+export const REQUIRED_PRODUCTIZATION_QA = ['IDENTITY', 'BASELINE', 'PROJECTIONS', 'SEARCH', 'CHARTS', 'WATCHLIST', 'RELEASE', 'BROWSER'];
+export const CONDITIONAL_PRODUCTIZATION_QA = ['QUANT', 'DISCOVER', 'SCREENER', 'SUPERTRADER', 'SEC'];
 export const REQUIRED_CANONICAL_PROJECTIONS = ['quant/data/universe/master-manifest.json', 'quant/data/universe/search/manifest.json', 'quant/data/universe/market-capability.json', 'quant/data/product/universe-list-v1.json.gz', 'discover/data/meta.json'];
 export const CANONICAL_PUBLICATION_PATHS = {
   raw: 'quant/data/market/scale/universe-FULL_UNIVERSE.json',
@@ -17,10 +23,12 @@ export const CANONICAL_PUBLICATION_PATHS = {
   names: 'quant/data/market/security-master/company-names.json',
   instruments: 'quant/data/universe/instruments'
 };
+export const EXISTING_ELIGIBILITY_CORRECTIONS_PATH = 'quant/data/universe/tiingo2-existing-eligibility-corrections.json';
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const jsonBytes = (data) => Buffer.from(JSON.stringify(data, null, 2) + '\n');
 const symbol = (row) => String(row.ticker ?? row.symbol ?? row.listing?.ticker ?? '').toUpperCase().trim();
 const currentHash = (file) => existsSync(file) ? sha(readFileSync(file)) : null;
+const validSecDate = value => /^\d{4}-\d{2}-\d{2}$/.test(value || '') && Number.isFinite(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
 function guardedPath(root, path) {
   if (typeof path !== 'string' || !path || path.includes('\\')) throw new Error('INVALID_PUBLICATION_PATH');
   const full = resolve(root, path), rel = relative(resolve(root), full);
@@ -36,7 +44,44 @@ function guardedPath(root, path) {
 function canonicalPath(path) {
   return Object.values(CANONICAL_PUBLICATION_PATHS).slice(0, 3).includes(path) || /^quant\/data\/universe\/instruments\/[A-Z0-9_-]+\.json$/.test(path) || projectionPath(path);
 }
-function projectionPath(path) { return REQUIRED_CANONICAL_PROJECTIONS.includes(path) || /^quant\/data\/universe\/search\/(sym|name)\/[A-Za-z0-9_-]+\.json$/.test(path); }
+/** Only actual public product projections, never provider history, raw SEC,
+ * executable code, configuration, methodology or routing. */
+export function isProductizationProjectionPath(path) {
+  if (typeof path !== 'string' || path.includes('..') || path.includes('\\')) return false;
+  if (REQUIRED_CANONICAL_PROJECTIONS.includes(path)) return true;
+  if (path === CANONICAL_PUBLICATION_PATHS.names) return true;
+  if (path === NAME_SUMMARY_FILE) return true;
+  if (path === CANONICAL_PUBLICATION_PATHS.eligibility || path === EXISTING_ELIGIBILITY_CORRECTIONS_PATH) return true;
+  return [
+    /^quant\/data\/universe\/instruments\/[A-Z0-9_-]+\.json$/,
+    /^quant\/data\/universe\/search\/(sym|name)\/[A-Za-z0-9_-]+\.json$/,
+    /^quant\/data\/universe\/(cik-map|capability-summary|coverage-report|tiingo2-product-projections)\.json$/,
+    /^quant\/data\/market\/discover-series(?:-long)?\/(?:ref_[A-Z0-9_.-]+|index)\.json$/,
+    /^quant\/data\/market\/factors\/(?:factors|screener)-FULL_UNIVERSE(?:-summary)?\.json$/,
+    /^quant\/data\/market\/capabilities\/(?:matrix|summary)\.json$/,
+    /^quant\/data\/product\/(?:capabilities|capabilities-summary)-v1\.json$/,
+    /^quant\/data\/product\/strategy-index-v1\.json\.gz$/,
+    /^quant\/data\/product\/sic-peer-taxonomy-v1\.json$/,
+    /^quant\/data\/product\/pattern-match-v1\/(?:[A-Z0-9_-]{2}\.json\.gz|summary\.json)$/,
+    /^quant\/data\/product\/(?:factor-evidence-v1|technical-signals-v1)\/(?:[A-Z0-9_-]{2}|screening|signals-(?:5|20|60))\.json\.gz$/,
+    /^quant\/data\/product\/(?:factor-evidence-v1|technical-signals-v1)\/(?:summary|index|manifest)\.json$/,
+    /^quant\/data\/product\/factor-evidence-history\/(?:index\.json|vu-factor-evidence-\d+\.\d+\.\d+\/\d{4}-\d{2}-\d{2}\.json\.gz)$/,
+    /^quant\/data\/sec\/consumer\/(?:CIK\d{10}|index)\.json$/,
+    /^quant\/data\/sec\/canonical\/[A-Z0-9_.-]+\.json(?:\.gz)?$/,
+    /^quant\/data\/sec\/(?:canonical_index|consumer_coverage|quant-factor-inputs|pit_gates|sic-peer-taxonomy)\.json$/,
+    /^quant\/data\/fundamentals\/issuers\/\d{3}\.json$/,
+    /^quant\/data\/fundamentals\/(?:manifest|coverage-report|history-coverage|overlap|quality|gaps|canonical-index)\.json$/,
+    /^screener\/data\/universe-US_REAL\.json$/,
+    /^discover\/data\/(?:home|featured|stock-index|search|feed|live-scope)\/(?:US_REAL|US_MODEL)(?:\.\d+)?\.json$/,
+    /^discover\/data\/(?:rows|stocks|series)\/(?:US_REAL|US_MODEL)\/[A-Za-z0-9_.-]+\.json$/,
+    /^discover\/data\/(?:logos|logo-index|logo-credits|credits)\.json$/,
+    /^discover\/logos\/(?:index|credits|sites|missing|name-search|summary)\.json$/,
+    /^discover\/logos\/files\/(?:wide\/)?[A-Za-z0-9_.-]+\.(?:svg|png|webp)$/,
+    /^assets\/logos\/(?:[A-Z0-9_.-]+\.(?:svg|png|webp)|index\.json|credits\.json)$/
+  ].some((pattern) => pattern.test(path));
+}
+function projectionPath(path) { return isProductizationProjectionPath(path); }
+export function productizationReadinessHash(readiness) { return sha(jsonBytes(readiness)); }
 function readDocument(root, path) { return JSON.parse(readFileSync(guardedPath(root, path), 'utf8')); }
 function assertPrefix(before, after, field) {
   if (after[field].length < before[field].length) throw new Error('BASELINE_REMOVAL');
@@ -122,10 +167,15 @@ export function stageCanonicalPublication({ root, output, candidates, preview, b
     const cik = candidate.evidence?.sec?.cik ?? candidate.cik;
     if (/^\d{10}$/.test(String(cik ?? ''))) { instrument.cik = cik; instrument.cikSource = 'TIINGO2_VERIFIED_SEC_MAPPING'; instrument.issuerId = Company.issuerIdFromCik(cik); instrument.issuerIdSource = instrument.cikSource; }
     const name = candidate.companyName ?? listing.name ?? listing.companyName ?? null;
-    const resolvedName = typeof name === 'string' && name.trim() && name.trim().toUpperCase() !== t ? name : null;
+    // Persist the provider candidate, so the native name builder can resume
+    // without fetching again and reproduce its normal validity/priority rules.
+    const nameCandidates = { TIINGO_METADATA: { name, asOf: stageDate, providerSymbol: t, exchange: listing.exchange,
+      securityId: candidate.securityId, startDate: listing.startDate ?? null, cik: instrument.cik ?? null, cikSource: instrument.cikSource ?? null, identity: 'SECURITY_ID+TICKER+EXCHANGE+LISTING_START',
+      source: 'TIINGO2_VERIFIED_INCREMENTAL_ADDITION', runId } };
+    const nameResolution = resolveName(t, nameCandidates), resolvedName = nameResolution.companyName;
     raw.securities.push({ securityId: candidate.securityId, ticker: t, company: resolvedName, exchange: listing.exchange, country: instrument.country ?? 'US', currency: instrument.currency ?? null, assetType: listing.assetType ?? 'Stock', instrumentType: instrument.securityType, active: true, providerSymbol: t, provider: 'tiingo', sector: null, sectorStatus: 'SOURCE_MISSING', industry: null, industryStatus: 'SOURCE_MISSING', startDate: listing.startDate ?? null, selection: 'tiingo2:' + runId });
     eligibility.decisions.push(decision);
-    names.rows.push({ securityId: candidate.securityId, ticker: t, exchange: listing.exchange, providerSymbol: t, inProductUniverse: true, companyName: resolvedName, displayName: resolvedName, nameSource: resolvedName ? 'TIINGO_METADATA' : null, nameAsOf: stageDate, cik: instrument.cik, status: resolvedName ? 'RESOLVED' : 'UNRESOLVED', reason: resolvedName ? null : 'PROVIDER_HAS_NO_NAME', nameConflict: null, confirmedBy: null, candidates: {} });
+    names.rows.push({ securityId: candidate.securityId, ticker: t, exchange: listing.exchange, providerSymbol: t, inProductUniverse: true, companyName: resolvedName, displayName: nameResolution.displayName, nameSource: nameResolution.nameSource, nameAsOf: nameResolution.nameAsOf, cik: instrument.cik, status: resolvedName ? 'RESOLVED' : 'UNRESOLVED', reason: resolvedName ? null : 'PROVIDER_HAS_NO_NAME', nameConflict: nameResolution.nameConflict, confirmedBy: nameResolution.confirmedBy ?? null, candidates: nameCandidates });
     const shardPath = paths.instruments + '/' + Company.shardKey(t) + '.json';
     if (!shards.has(shardPath)) { capture(shardPath); shards.set(shardPath, { shard: Company.shardKey(t), engine: Company.VERSION, count: 0, instruments: [] }); }
     const shard = shards.get(shardPath); shard.instruments.push(instrument); shard.count = shard.instruments.length; changedShards.add(shardPath);
@@ -156,6 +206,11 @@ export function stageCanonicalPublication({ root, output, candidates, preview, b
     }
     names.master = { ...names.master, file: paths.eligibility, sha256: sha(jsonBytes(eligibility)), productUniverse: eligibility.counts.productUniverse };
     const prepared = new Map([[paths.raw, raw], [paths.eligibility, eligibility], [paths.names, names], ...[...changedShards].map((path) => [path, shards.get(path)])]);
+    if (existsSync(guardedPath(root, NAME_SUMMARY_FILE))) {
+      capture(NAME_SUMMARY_FILE);
+      prepared.set(NAME_SUMMARY_FILE, summarizeCompanyNames(names, { counts: eligibility.counts,
+        securities: eligibility.decisions.filter((row) => row.product_eligibility !== 'EXCLUDED').map((row) => ({ securityId: row.securityId, eligibility: row.product_eligibility })) }));
+    }
     for (const [path, doc] of prepared) {
       const field = path === paths.raw ? 'securities' : path === paths.eligibility ? 'decisions' : path === paths.names ? 'rows' : 'instruments';
       if (originals.has(path)) assertPrefix(originals.get(path), doc, field);
@@ -212,7 +267,7 @@ function publicationLock(root) {
   return () => { closeSync(fd); unlinkSync(file); };
 }
 
-function verifyCanonicalProjections({ root, output, manifest }) {
+export function verifyCanonicalProjections({ root, output, manifest }) {
   const entries = new Map(manifest.files.map((file) => [file.path, file]));
   const bytesFor = (path) => {
     const entry = entries.get(path);
@@ -275,7 +330,12 @@ function verifyCanonicalProjections({ root, output, manifest }) {
     const search = docFor('quant/data/universe/search/sym/' + shard + '.json');
     if (!searchManifest.sym?.some((row) => row.shard === shard && row.count === search.entries?.length)) throw new Error('SEARCH_PROJECTION_MANIFEST_MISMATCH');
     if (!search.entries?.some((row) => row.s === addition.ticker && row.i === addition.instrumentId)) throw new Error('SEARCH_ADDITION_NOT_INDEXED');
-    if (!capability.members?.some((row) => row.s === addition.ticker && row.m === addition.securityId && row.i === addition.instrumentId && row.ph === true)) throw new Error('CHART_ADDITION_NOT_MATERIALIZED');
+    if (!capability.members?.some((row) => row.s === addition.ticker && row.m === addition.securityId && row.i === addition.instrumentId && row.ph === true)) {
+      const proof = manifest.productizationReadiness?.find((row) => row.ticker === addition.ticker)?.products?.CHARTS;
+      if (manifest.productizationQASchema !== PRODUCTIZATION_QA_SCHEMA || proof?.state !== 'UNAVAILABLE') throw new Error('CHART_ADDITION_NOT_MATERIALIZED');
+      verifyShortListingPrice({ manifest, row: addition, instrument: docFor(instrumentPath).instruments?.find((row) => row.instrumentId === addition.instrumentId), proof,
+        parse: (path) => ({ entry: entries.get(path), document: JSON.parse(path.endsWith('.gz') ? gunzipSync(bytesFor(path)) : bytesFor(path)) }) });
+    }
     if (!universe.entries?.some((row) => row.s === addition.ticker && Number.isFinite(row.c) && row.c > 0 && typeof row.d === 'string')) throw new Error('UNIVERSE_LIST_ADDITION_NOT_MATERIALIZED');
     const instrument = docFor(instrumentPath).instruments?.find((row) => row.instrumentId === addition.instrumentId);
     if (!instrument) throw new Error('CANONICAL_ADDITION_NOT_MATERIALIZED');
@@ -284,9 +344,282 @@ function verifyCanonicalProjections({ root, output, manifest }) {
   return true;
 }
 
+/** A single accepted legacy false-inactive correction, bound to exact public
+ * evidence bytes and exact before/after rows. This cannot admit another symbol,
+ * change identity fields or waive a corporate-action/SEC gate. */
+export function verifyExistingEligibilityCorrections({root,output,manifest}) {
+  const entries=new Map(manifest.files.map(entry=>[entry.path,entry]));
+  const proofEntry=entries.get(EXISTING_ELIGIBILITY_CORRECTIONS_PATH),allowed=new Map();
+  if(!proofEntry){if(manifest.existingEligibilityCorrectionsSha256)throw Error('EXISTING_ELIGIBILITY_PROOF_MISSING');return allowed;}
+  const parse=path=>{
+    const entry=entries.get(path);if(!entry)throw Error('EXISTING_ELIGIBILITY_EVIDENCE_MISSING:'+path);
+    const bytes=readFileSync(guardedPath(output,entry.stagedPath));if(sha(bytes)!==entry.stagedSha256)throw Error('EXISTING_ELIGIBILITY_EVIDENCE_HASH_MISMATCH');
+    return JSON.parse(bytes);
+  };
+  if(manifest.existingEligibilityCorrectionsSha256!==proofEntry.stagedSha256)throw Error('EXISTING_ELIGIBILITY_PROOF_BINDING_FAILED');
+  const proof=parse(EXISTING_ELIGIBILITY_CORRECTIONS_PATH);
+  if(proof.schemaVersion!=='tiingo2-existing-eligibility-correction-1'||proof.asOf!==manifest.asOf||!/^\d{4}-\d{2}-\d{2}$/.test(proof.asOf||'')||!Number.isFinite(Date.parse(proof.asOf))||!Array.isArray(proof.corrections)||proof.corrections.length>1)throw Error('INVALID_EXISTING_ELIGIBILITY_PROOF');
+  for(const correction of proof.corrections){
+    const e=correction.evidence||{},fields=['productEligibility','productEligibilityReason','screenerEligible','screenerReason'];
+    if(correction.ticker!=='DNA'||correction.securityId!=='ref_DNA'||correction.listingKey!=='DNA|NYSE|2021-04-19'||correction.corporateActionGateWaived!==false||
+      manifest.additions.some(r=>r.ticker==='DNA'||r.securityId==='ref_DNA')||manifest.removals?.length||
+      JSON.stringify([...(correction.allowedInstrumentFields||[])].sort())!==JSON.stringify(fields.sort())||
+      ['listingActive','identityMatched','commonEquity','priceHistoryValid','latestPriceValid','corporateActionsValid','secIdentityVerified'].some(k=>e[k]!==true)||
+      ['providerMetadataSha256','providerResponseSha256','officialEvidenceSha256','secIdentitySha256'].some(k=>!/^[a-f0-9]{64}$/.test(e[k]||''))||
+      e.cik!=='0001830214'||e.asOf!==proof.asOf||!Number.isSafeInteger(e.bars)||e.bars<1371||
+      !/^\d{4}-\d{2}-\d{2}$/.test(e.latestDate||'')||!Number.isFinite(Date.parse(e.latestDate))||Date.parse(e.latestDate)>Date.parse(proof.asOf)||Date.parse(proof.asOf)-Date.parse(e.latestDate)>7*86400000)throw Error('UNVERIFIED_EXISTING_ELIGIBILITY_CORRECTION');
+    const instrumentPath=CANONICAL_PUBLICATION_PATHS.instruments+'/DN.json',beforeInstruments=readDocument(root,instrumentPath).instruments,
+      beforeDecisions=readDocument(root,CANONICAL_PUBLICATION_PATHS.eligibility).decisions;
+    const instruments=beforeInstruments.filter(r=>r.symbol==='DNA'),decisions=beforeDecisions.filter(r=>r.ticker==='DNA');
+    if(instruments.length!==1||decisions.length!==1)throw Error('EXISTING_ELIGIBILITY_IDENTITY_AMBIGUOUS');
+    const before=instruments[0],decision=decisions[0];
+    if(before.instrumentId!==correction.instrumentId||before.masterMemberId!=='ref_DNA'||before.exchange!=='NYSE'||before.firstTradeDate!=='2021-04-19'||
+      before.cik!==e.cik||before.issuerId!=='iss_cik_'+e.cik||before.securityType!=='COMMON_STOCK'||before.active!==true||
+      before.productEligibility!=='REVIEW'||before.productEligibilityReason!=='UNCONFIRMED:LISTING_INACTIVE'||
+      decision.securityId!=='ref_DNA'||decision.exchange!=='NYSE'||decision.start_date!=='2021-04-19'||decision.instrument_type!=='EQUITY_COMMON'||
+      decision.active_status!=='INACTIVE'||decision.product_eligibility!=='REVIEW'||decision.product_eligibility_reason!=='UNCONFIRMED:LISTING_INACTIVE'||
+      sha(JSON.stringify(before))!==correction.beforeInstrumentSha256||sha(JSON.stringify(decision))!==correction.beforeDecisionSha256)throw Error('EXISTING_ELIGIBILITY_BASELINE_MISMATCH');
+    const expectedDecision={...decision,active_status:'ACTIVE',product_eligibility:'ELIGIBLE',product_eligibility_reason:'TIINGO2_VERIFIED_CURRENT_LISTING',evidence_source:'TIINGO2_EXISTING_LISTING_REVERIFIED'};
+    const expectedInstrument=Company.applyEligibility(structuredClone(before),expectedDecision);
+    const after=parse(instrumentPath).instruments.filter(r=>r.instrumentId===before.instrumentId),afterDecision=parse(CANONICAL_PUBLICATION_PATHS.eligibility).decisions.filter(r=>r.securityId==='ref_DNA');
+    if(after.length!==1||afterDecision.length!==1||JSON.stringify(after[0])!==JSON.stringify(expectedInstrument)||JSON.stringify(afterDecision[0])!==JSON.stringify(expectedDecision)||
+      sha(JSON.stringify(after[0]))!==correction.afterInstrumentSha256||sha(JSON.stringify(afterDecision[0]))!==correction.afterDecisionSha256)throw Error('EXISTING_ELIGIBILITY_ROW_CHANGE_NOT_PROVED');
+    const chart=parse('quant/data/market/discover-series/ref_DNA.json');
+    if(chart.securityId!=='ref_DNA'||chart.ticker!=='DNA'||chart.source!=='tiingo'||chart.dataMode!=='real'||chart.priceSeriesType!=='SPLIT_ADJUSTED'||chart.corporateActionStatus!=='PASS'||
+      chart.sourceBarCount!==e.bars||chart.sourceResponseSha256!==e.providerResponseSha256||chart.asOf!==e.latestDate||chart.publishCheckedAt!==proof.asOf||chart.publishBasis!=='ISOLATED_TIINGO2_CANONICAL_PROJECTION'||chart.currency!==before.currency||
+      !Array.isArray(chart.points)||chart.points.length<5||chart.barCount!==chart.points.length||chart.points.at(-1)?.[0]!==e.latestDate||
+      chart.points.some((r,i)=>!Array.isArray(r)||!/^\d{4}-\d{2}-\d{2}$/.test(r[0]||'')||!Number.isFinite(Date.parse(r[0]))||r[0]>proof.asOf||!Number.isFinite(r[1])||r[1]<=0||(i&&r[0]<=chart.points[i-1][0])))throw Error('EXISTING_ELIGIBILITY_FRESH_CHART_NOT_PROVED');
+    const sec=parse('quant/data/sec/canonical_index.json').companies?.filter(r=>r.ticker==='DNA')||[],consumer=parse('quant/data/sec/consumer/CIK0001830214.json');
+    const pitRows=['annual','quarterly'].flatMap(scope=>Object.values(consumer[scope]||{}).flat());
+    if(sec.length!==1||sec[0].cik!==e.cik||sec[0].securityId!=='sec_DNA'||!['canonical/DNA.json','canonical/DNA.json.gz'].includes(sec[0].file)||
+      consumer.cik!==e.cik||consumer.dataSource?.isMock!==false||consumer.dataSource?.provider!=='sec_edgar'||!consumer.securityIds?.includes('ref_DNA')||!consumer.tickers?.includes('DNA')||!pitRows.length||
+      pitRows.some(r=>!Array.isArray(r)||!/^\d{4}-\d{2}-\d{2}$/.test(r[2]||'')||!/^\d{4}-\d{2}-\d{2}$/.test(r[4]||'')||r[2]>r[4]||r[4]>proof.asOf||!r[5]))throw Error('EXISTING_ELIGIBILITY_SEC_PIT_NOT_PROVED');
+    allowed.set(instrumentPath,new Map([[before.instrumentId,{before,after:expectedInstrument}]]));
+    allowed.set(CANONICAL_PUBLICATION_PATHS.eligibility,new Map([['ref_DNA',{before:decision,after:expectedDecision}]]));
+  }
+  return allowed;
+}
+export function verifyReconciledCanonicalRows({ root, output, manifest }) {
+  const corrections=verifyExistingEligibilityCorrections({root,output,manifest});
+  for (const entry of manifest.files) {
+    const path = entry.path;
+    const field = path === CANONICAL_PUBLICATION_PATHS.names ? 'rows' : path === CANONICAL_PUBLICATION_PATHS.eligibility ? 'decisions'
+      : /^quant\/data\/universe\/instruments\//.test(path) ? 'instruments' : null;
+    if (!field || !existsSync(guardedPath(root, path))) continue;
+    const before = readDocument(root, path);
+    const after = JSON.parse(readFileSync(guardedPath(output, entry.stagedPath)));
+    if (!Array.isArray(before[field]) || !Array.isArray(after[field])) throw Error('INVALID_RECONCILED_CANONICAL_ROWS');
+    if(after[field].length<before[field].length)throw Error('BASELINE_REMOVAL');
+    for(let i=0;i<before[field].length;i++){
+      if(JSON.stringify(before[field][i])===JSON.stringify(after[field][i]))continue;
+      const row=before[field][i],exception=corrections.get(path)?.get(field==='instruments'?row.instrumentId:row.securityId);
+      if(!exception||JSON.stringify(exception.before)!==JSON.stringify(row)||JSON.stringify(exception.after)!==JSON.stringify(after[field][i]))throw Error('BASELINE_ROW_CHANGED');
+    }
+  }
+  const cikEntry = manifest.files.find((entry) => entry.path === 'quant/data/universe/cik-map.json');
+  if (cikEntry && existsSync(guardedPath(root, cikEntry.path))) {
+    const before = readDocument(root, cikEntry.path), after = JSON.parse(readFileSync(guardedPath(output, cikEntry.stagedPath)));
+    for (const [ticker, row] of Object.entries(before.byTicker || {})) {
+      if (JSON.stringify(after.byTicker?.[ticker]) !== JSON.stringify(row)) throw Error('BASELINE_CIK_MAPPING_CHANGED:' + ticker);
+    }
+  }
+  for (const entry of manifest.files) {
+    if (/^quant\/data\/product\/factor-evidence-history\/[^/]+\/\d{4}-\d{2}-\d{2}\.json\.gz$/.test(entry.path) &&
+        entry.baselineSha256 !== null && entry.stagedSha256 !== entry.baselineSha256) throw Error('IMMUTABLE_FACTOR_SNAPSHOT_CHANGED');
+  }
+  const historyIndex = manifest.files.find((entry) => entry.path === 'quant/data/product/factor-evidence-history/index.json');
+  if (historyIndex && existsSync(guardedPath(root, historyIndex.path))) {
+    const before = readDocument(root, historyIndex.path), after = JSON.parse(readFileSync(guardedPath(output, historyIndex.stagedPath)));
+    for (const [method, dates] of Object.entries(before.series || {})) if (dates.some((date) => !after.series?.[method]?.includes(date))) throw Error('BASELINE_FACTOR_HISTORY_REFERENCE_DROPPED');
+  }
+}
+
+function verifyScopedPublicProjections({ root, output, manifest }) {
+  const rawEntry = manifest.files.find((entry) => entry.path === CANONICAL_PUBLICATION_PATHS.raw);
+  const raw = rawEntry ? JSON.parse(readFileSync(guardedPath(output, rawEntry.stagedPath))) : readDocument(root, CANONICAL_PUBLICATION_PATHS.raw);
+  const tickers = new Set((raw.securities || []).map(symbol)), ids = new Set((raw.securities || []).map((row) => row.securityId));
+  for (const entry of manifest.files) {
+    // Unchanged historical artifacts may remain addressable even if their
+    // securities are no longer current members. No new orphan is admitted.
+    if (entry.baselineSha256 !== null && entry.stagedSha256 === entry.baselineSha256) continue;
+    const chart = /^quant\/data\/market\/discover-series(?:-long)?\/(ref_[A-Z0-9_.-]+)\.json$/.exec(entry.path);
+    const stock = /^discover\/data\/(?:stocks|series)\/(?:US_REAL|US_MODEL)\/([A-Z0-9_.-]+)\.json$/.exec(entry.path);
+    const canonicalSEC = /^quant\/data\/sec\/canonical\/([A-Z0-9_.-]+)\.json(?:\.gz)?$/.exec(entry.path);
+    if ((chart && !ids.has(chart[1])) || (stock && !tickers.has(stock[1])) || (canonicalSEC && !tickers.has(canonicalSEC[1]))) throw Error('UNSCOPED_PUBLIC_PRODUCT_PROJECTION:' + entry.path);
+  }
+  const consumerIndexEntry=manifest.files.find(entry=>entry.path===CONSUMER_INDEX_PATH);
+  if(consumerIndexEntry&&consumerIndexEntry.stagedSha256!==consumerIndexEntry.baselineSha256){
+    const documentFor=path=>{const entry=manifest.files.find(row=>row.path===path),bytes=readFileSync(entry?guardedPath(output,entry.stagedPath):guardedPath(root,path));return JSON.parse(path.endsWith('.gz')?gunzipSync(bytes):bytes);};
+    const before=existsSync(guardedPath(root,CONSUMER_INDEX_PATH))?readDocument(root,CONSUMER_INDEX_PATH):{byTicker:{}},after=documentFor(CONSUMER_INDEX_PATH);
+    if(!after.byTicker||!before.byTicker)throw Error('INVALID_CONSUMER_INDEX');
+    for(const [ticker,row]of Object.entries(before.byTicker))if(JSON.stringify(row)!==JSON.stringify(after.byTicker[ticker]))throw Error('BASELINE_CONSUMER_INDEX_MAPPING_CHANGED:'+ticker);
+    const allowed=new Set(manifest.additions.map(symbol)),canonicalRows=documentFor('quant/data/sec/canonical_index.json').companies;
+    for(const [ticker,row]of Object.entries(after.byTicker))if(!Object.hasOwn(before.byTicker,ticker)){
+      if(!allowed.has(ticker))throw Error('UNSCOPED_CONSUMER_INDEX_MAPPING:'+ticker);
+      const canonical=canonicalRows.filter(row=>row.ticker===ticker),security=raw.securities.filter(row=>row.ticker===ticker);
+      const shard=documentFor('quant/data/universe/instruments/'+Company.shardKey(ticker)+'.json'),instruments=shard.instruments.filter(row=>row.symbol===ticker);
+      if(canonical.length!==1||security.length!==1||instruments.length!==1)throw Error('CONSUMER_INDEX_AMBIGUOUS_IDENTITY:'+ticker);
+      const expected=verifyConsumerBinding({ticker,security:security[0],instrument:instruments[0],canonical:canonical[0],document:documentFor('quant/data/sec/'+canonical[0].file),bundle:documentFor('quant/data/sec/consumer/CIK'+canonical[0].cik+'.json'),asOf:manifest.asOf});
+      if(JSON.stringify(row)!==JSON.stringify(expected))throw Error('CONSUMER_INDEX_MAPPING_SUMMARY_MISMATCH:'+ticker);
+    }
+    if(after.count!==new Set(Object.values(after.byTicker).map(row=>row.cik)).size)throw Error('CONSUMER_INDEX_COUNT_MISMATCH');
+  }
+}
+
+const PRODUCT_ARTIFACT_PATTERNS = {
+  SEARCH: /^quant\/data\/universe\/search\/sym\/[A-Z0-9_-]+\.json$/,
+  CHARTS: /^quant\/data\/market\/discover-series\/ref_[A-Z0-9_.-]+\.json$/,
+  WATCHLIST: /^quant\/data\/universe\/instruments\/[A-Z0-9_-]+\.json$/,
+  QUANT: /^quant\/data\/product\/factor-evidence-v1\/[A-Z0-9_-]{2}\.json\.gz$/,
+  DISCOVER: /^discover\/data\/stocks\/US_REAL\/[A-Z0-9_.-]+\.json$/,
+  SCREENER: /^screener\/data\/universe-US_REAL\.json$/,
+  SUPERTRADER: /^quant\/data\/product\/technical-signals-v1\/[A-Z0-9_-]{2}\.json\.gz$/,
+  SEC: /^quant\/data\/sec\/(?:consumer\/CIK\d{10}\.json|canonical\/[A-Z0-9_.-]+\.json(?:\.gz)?|canonical_index\.json)$/
+};
+const hasIdentity = (document, row) => {
+  if (!document || typeof document !== 'object') return false;
+  if (symbol(document) === row.ticker || document.s === row.ticker ||
+      document.securityId === row.securityId || document.masterMemberId === row.securityId || document.i === row.instrumentId) return true;
+  for (const [key, value] of Object.entries(document)) {
+    if ([row.ticker, row.securityId, row.instrumentId].includes(key) && value && typeof value === 'object') return true;
+    if (value && typeof value === 'object' && hasIdentity(value, row)) return true;
+  }
+  return false;
+};
+
+/** A two-to-four-session IPO can supply an actual latest quote while the
+ * unchanged chart reader remains unavailable. This is a listing-bound price
+ * exception, never a blanket waiver of the ordinary chart publication gate. */
+function verifyShortListingPrice({ manifest, row, instrument, proof, parse }) {
+  const reasons = proof.reasonCodes || [], path = proof.eligibilityEvidence?.priceArtifactPath;
+  if (reasons.length !== 1 || reasons[0] !== 'INSUFFICIENT_CHART_HISTORY' ||
+      path !== 'quant/data/market/discover-series/' + row.securityId + '.json') throw Error('SHORT_LISTING_PRICE_EVIDENCE_REQUIRED');
+  const { entry, document } = parse(path), points = document.points;
+  const validDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(value || '') && Number.isFinite(Date.parse(value)) && new Date(Date.parse(value)).toISOString().slice(0, 10) === value;
+  const last = Array.isArray(points) ? points.at(-1)?.[0] : null, age = (Date.parse(manifest.asOf) - Date.parse(last)) / 86400000;
+  if (!instrument || document.ticker !== row.ticker || document.securityId !== row.securityId || document.provider !== 'tiingo' || document.source !== 'tiingo' ||
+      document.status !== 'CALCULATED' || document.priceSeriesType !== 'SPLIT_ADJUSTED' || !document.currency || document.currency !== instrument.currency ||
+      document.historyCoverage !== 'SHORT_HISTORY' || document.corporateActionStatus !== 'PASS' || document.publishCheckedAt !== manifest.asOf ||
+      !Array.isArray(points) || points.length < 2 || points.length > 4 || document.barCount !== points.length || document.sourceBarCount !== points.length ||
+      points.some((point, i) => !Array.isArray(point) || point.length !== 2 || !validDate(point[0]) || typeof point[1] !== 'number' || !Number.isFinite(point[1]) || point[1] <= 0 || (i && point[0] <= points[i - 1][0])) ||
+      !validDate(instrument.firstTradeDate) || points[0][0] < instrument.firstTradeDate ||
+      document.from !== points[0][0] || document.to !== last || document.asOf !== last || !Number.isFinite(age) || age < 0 || age > 7) throw Error('SHORT_LISTING_PRICE_NOT_MATERIALIZED');
+  const capability = parse('quant/data/universe/market-capability.json').document;
+  const members = (capability.members || []).filter((member) => member.s === row.ticker && member.m === row.securityId && member.i === row.instrumentId);
+  if (members.length !== 1 || members[0].ph !== false || members[0].ps !== true || members[0].b !== points.length ||
+      members[0].f !== points[0][0] || members[0].l !== last) throw Error('SHORT_LISTING_PRICE_CAPABILITY_MISMATCH');
+  const universe = parse('quant/data/product/universe-list-v1.json.gz').document;
+  const quotes = (universe.entries || []).filter((quote) => quote.s === row.ticker);
+  if (quotes.length !== 1 || quotes[0].c !== points.at(-1)[1] || quotes[0].d !== last) throw Error('SHORT_LISTING_PUBLISHED_QUOTE_MISMATCH');
+  if (proof.eligibilityEvidence.priceArtifactSha256 && proof.eligibilityEvidence.priceArtifactSha256 !== entry.stagedSha256) throw Error('SHORT_LISTING_PRICE_EVIDENCE_INTEGRITY_FAILED');
+  return { priceArtifactPath: path, priceArtifactSha256: entry.stagedSha256 };
+}
+
+function verifyProductizationReadiness({ root, output, manifest, readiness }) {
+  if (!Array.isArray(readiness)) throw Error('INVALID_PRODUCTIZATION_READINESS');
+  const entries = new Map(manifest.files.map((entry) => [entry.path, entry])), seen = new Set();
+  const parse = (path) => {
+    const entry = entries.get(path);
+    if (!entry) throw Error('PRODUCT_READINESS_ARTIFACT_NOT_STAGED:' + path);
+    const bytes = readFileSync(guardedPath(output, entry.stagedPath));
+    if (sha(bytes) !== entry.stagedSha256) throw Error('PRODUCT_READINESS_ARTIFACT_INTEGRITY_FAILED');
+    return { entry, document: JSON.parse(path.endsWith('.gz') ? gunzipSync(bytes) : bytes) };
+  };
+  const normalized = [];
+  for (const input of readiness) {
+    const row = { ticker: symbol(input), securityId: input.securityId, instrumentId: input.instrumentId, products: {} };
+    if (!row.ticker || seen.has(row.ticker)) throw Error('DUPLICATE_PRODUCT_READINESS_IDENTITY');
+    seen.add(row.ticker);
+    const addition = manifest.additions.find((item) => item.ticker === row.ticker);
+    const instrumentPath = CANONICAL_PUBLICATION_PATHS.instruments + '/' + Company.shardKey(row.ticker) + '.json';
+    const instrumentEntry = entries.get(instrumentPath);
+    const instrumentDocument = instrumentEntry ? parse(instrumentPath).document : readDocument(root, instrumentPath);
+    const instrument = instrumentDocument.instruments?.find((item) => item.symbol === row.ticker && item.instrumentId === row.instrumentId);
+    if (!instrument || instrument.masterMemberId !== row.securityId || !(instrument.legacyIds || []).includes(row.securityId) ||
+        (addition && (addition.securityId !== row.securityId || addition.instrumentId !== row.instrumentId))) throw Error('PRODUCT_READINESS_IDENTITY_MISMATCH');
+    for (const product of ['SEARCH', 'CHARTS', 'WATCHLIST', ...CONDITIONAL_PRODUCTIZATION_QA]) {
+      const proof = input.products?.[product];
+      if (!proof || !['PASS', 'UNAVAILABLE'].includes(proof.state)) throw Error('PRODUCT_READINESS_STATE_REQUIRED:' + product);
+      const reasonCodes = [...new Set(proof.reasonCodes || [])].sort();
+      const artifactPaths = [...new Set(proof.artifactPaths || [])].sort();
+      if (proof.state === 'UNAVAILABLE') {
+        if (!reasonCodes.length || reasonCodes.some((reason) => typeof reason !== 'string' || !reason.trim()) || artifactPaths.length) throw Error('UNAVAILABLE_PRODUCT_REQUIRES_EXPLICIT_REASON:' + product);
+        let eligibilityEvidence;
+        if (addition && product === 'CHARTS') eligibilityEvidence = verifyShortListingPrice({ manifest, row, instrument, proof: { ...proof, reasonCodes }, parse });
+        else if (addition && ['SEARCH', 'WATCHLIST'].includes(product)) throw Error('CRITICAL_ADDITION_PRODUCT_UNAVAILABLE:' + product);
+        row.products[product] = { state: 'UNAVAILABLE', reasonCodes, artifactPaths: [], artifactHashes: {}, ...(eligibilityEvidence ? { eligibilityEvidence } : {}) };
+        continue;
+      }
+      if (!artifactPaths.length || !artifactPaths.some((path) => PRODUCT_ARTIFACT_PATTERNS[product].test(path))) throw Error('AVAILABLE_PRODUCT_REQUIRES_ACTUAL_ARTIFACT:' + product);
+      if (product === 'SEC' && !artifactPaths.some(path => path === 'quant/data/sec/canonical/' + row.ticker + '.json' || path === 'quant/data/sec/canonical/' + row.ticker + '.json.gz')) throw Error('SEC_READINESS_FACTS_NOT_MATERIALIZED');
+      const artifactHashes = {};
+      for (const path of artifactPaths) {
+        if (!projectionPath(path)) throw Error('UNSAFE_PRODUCT_READINESS_ARTIFACT');
+        const { entry, document } = parse(path); artifactHashes[path] = entry.stagedSha256;
+        if (!PRODUCT_ARTIFACT_PATTERNS[product].test(path)) continue;
+        if (product === 'SEARCH' && !document.entries?.some((entry) => entry.s === row.ticker && entry.i === row.instrumentId)) throw Error('SEARCH_READINESS_IDENTITY_MISSING');
+        else if (product === 'WATCHLIST' && !document.instruments?.some((entry) => entry.symbol === row.ticker && entry.instrumentId === row.instrumentId && entry.masterMemberId === row.securityId)) throw Error('WATCHLIST_READINESS_IDENTITY_MISSING');
+        else if (product === 'CHARTS' && (document.ticker !== row.ticker || document.securityId !== row.securityId || document.status !== 'CALCULATED' || document.priceSeriesType !== 'SPLIT_ADJUSTED' || !document.currency || !Array.isArray(document.points) || document.points.length < (document.historyCoverage === 'SHORT_HISTORY' ? 5 : 30) || document.points.some((point) => !(point[1] > 0)) || (document.historyCoverage === 'SHORT_HISTORY' && (document.sourceBarCount < document.points.length || document.from !== document.points[0][0] || document.to !== document.points.at(-1)[0])))) throw Error('CHART_READINESS_NOT_MATERIALIZED');
+        else if (product === 'QUANT') {
+          const coverage = proof.coverage || 'FULL', factorRecord = document.securities?.[row.ticker];
+          if (!['FULL', 'PARTIAL', 'TECHNICAL_ONLY'].includes(coverage) || !factorRecord) throw Error('QUANT_COVERAGE_NOT_MATERIALIZED');
+          if (factorRecord.securityId !== row.securityId || symbol(factorRecord) !== row.ticker) throw Error('QUANT_READINESS_IDENTITY_MISMATCH');
+          const violations = [document.publicationViolations, document.evidence?.publicationViolations, factorRecord.publicationViolations, factorRecord.evidence?.publicationViolations].filter(Boolean);
+          if (violations.some((value) => Array.isArray(value) ? value.length > 0 : value !== 0)) throw Error('QUANT_PUBLICATION_VIOLATIONS');
+          if (coverage === 'FULL') {
+            const methodologyPath = join(root, 'quant/methodology/quant-v2.json');
+            if (!existsSync(methodologyPath) || JSON.parse(readFileSync(methodologyPath)).publication?.allowed !== true) throw Error('FULL_QUANT_READINESS_NOT_MATERIALIZED');
+            if (document.publication?.compositeAllowed !== true) throw Error('FULL_QUANT_READINESS_NOT_MATERIALIZED');
+          } else {
+            if (!FactorEvidence.validShard(document, Company.shardKey(row.ticker))) throw Error('PARTIAL_QUANT_SHARD_CONTRACT_INVALID');
+            const available = Object.entries(factorRecord.factors || {}).filter(([, factor]) => factor.state === 'AVAILABLE' && typeof factor.score === 'number' && Number.isFinite(factor.score) && factor.score >= 0 && factor.score <= 100);
+            const composite = factorRecord.composite;
+            if (document.publication?.compositeAllowed === true || typeof composite === 'number' || Number.isFinite(composite?.score) || Number.isFinite(composite?.value) || !available.length) throw Error('PARTIAL_QUANT_READINESS_NOT_MATERIALIZED');
+            // Re-run the canonical engine's contract rather than trusting a
+            // producer-supplied empty violations list in the staged document.
+            if (FactorEvidence.publicationViolations(factorRecord).length) throw Error('QUANT_PUBLICATION_VIOLATIONS');
+            if (coverage === 'TECHNICAL_ONLY' && available.some(([factor]) => !['momentum', 'risk', 'liquidity'].includes(factor))) throw Error('TECHNICAL_ONLY_QUANT_COVERAGE_MISMATCH');
+          }
+        }
+        else if (product === 'SUPERTRADER' && !document.instruments?.[row.ticker]) throw Error('SUPERTRADER_READINESS_NOT_MATERIALIZED');
+        else if (product === 'SCREENER') {
+          const columns = document.columns, values = document.cols;
+          if (Array.isArray(columns) && values && Array.isArray(values.s)) {
+            if (!values.s.includes(row.ticker) || columns.some((column) => !Array.isArray(values[column]) || values[column].length !== values.s.length)) throw Error('SCREENER_READINESS_NOT_MATERIALIZED');
+          } else if (!hasIdentity(document, row)) throw Error('PRODUCT_READINESS_IDENTITY_MISSING:SCREENER');
+        }
+        else if (product === 'SEC') {
+          if (document.dataSource?.isMock === true || !/^\d{10}$/.test(instrument.cik || '')) throw Error('SEC_READINESS_ISSUER_MISMATCH');
+          if (path.startsWith('quant/data/sec/canonical/') || path === 'quant/data/sec/canonical_index.json') {
+            const index = parse('quant/data/sec/canonical_index.json').document;
+            const bindings = (index.companies || []).filter((entry) => entry.ticker === row.ticker);
+            if (bindings.length !== 1 || String(bindings[0].cik).padStart(10, '0') !== instrument.cik || !['canonical/' + row.ticker + '.json', 'canonical/' + row.ticker + '.json.gz'].includes(bindings[0].file) || bindings[0].securityId !== 'sec_' + row.ticker) throw Error('SEC_READINESS_ISSUER_MISMATCH');
+            if (path !== 'quant/data/sec/canonical_index.json' && (path !== 'quant/data/sec/' + bindings[0].file || document.schema !== 'vu-canonical-v1' || document.security?.securityId !== bindings[0].securityId || document.security?.ticker !== row.ticker || document.security?.isMock === true)) throw Error('SEC_READINESS_ISSUER_MISMATCH');
+            if (path.startsWith('quant/data/sec/canonical/')) {
+              const facts = [...(document.facts || []), ...(document.industrySpecificMetrics?.facts || [])];
+              if (!facts.length || facts.some(f => !validSecDate(f.periodEnd) || !validSecDate(f.filedAt) || !validSecDate(f.availableAt) || f.periodEnd > f.filedAt || f.filedAt > f.availableAt || f.availableAt > manifest.asOf)) throw Error('SEC_READINESS_PIT_CHRONOLOGY_INVALID');
+            }
+          } else {
+            if (String(document.cik).padStart(10, '0') !== instrument.cik) throw Error('SEC_READINESS_ISSUER_MISMATCH');
+            const consumerIndex = parse('quant/data/sec/consumer/index.json').document;
+            const routing = consumerIndex.byTicker?.[row.ticker];
+            if (!routing || routing.cik !== instrument.cik || routing.file !== 'consumer/CIK' + instrument.cik + '.json' || path !== 'quant/data/sec/' + routing.file) throw Error('SEC_READINESS_CONSUMER_ROUTING_MISMATCH');
+            const observations = ['annual', 'quarterly'].flatMap(scope => Object.values(document[scope] || {}).flat());
+            if (observations.some(r => !Array.isArray(r) || !validSecDate(r[2]) || !validSecDate(r[4]) || r[2] > r[4] || r[4] > manifest.asOf || !r[5])) throw Error('SEC_READINESS_PIT_CHRONOLOGY_INVALID');
+          }
+        } else if (!['SEARCH', 'WATCHLIST', 'CHARTS', 'QUANT', 'SUPERTRADER'].includes(product) && !hasIdentity(document, row)) throw Error('PRODUCT_READINESS_IDENTITY_MISSING:' + product);
+      }
+      row.products[product] = { state: 'PASS', reasonCodes, artifactPaths, artifactHashes, ...(product === 'QUANT' ? { coverage: proof.coverage || 'FULL' } : {}) };
+    }
+    normalized.push(row);
+  }
+  if (manifest.additions.some((addition) => !seen.has(addition.ticker))) throw Error('ADDITION_PRODUCT_READINESS_MISSING');
+  return normalized.sort((a, b) => a.ticker.localeCompare(b.ticker));
+}
+
 /** Attach actual outputs from existing canonical builders. Missing price or
  * projection outputs stay blockers; arbitrary QA PASS cannot bypass them. */
-export function attachCanonicalProjections({ root, staged, preparedFiles }) {
+export function attachCanonicalProjections({ root, staged, preparedFiles, productizationReadiness }) {
   root = resolve(root);
   const { manifest, output } = loadStage(staged);
   if (existsSync(join(output, 'applied.json'))) throw new Error('CANNOT_CHANGE_APPLIED_TRANSACTION');
@@ -313,6 +646,18 @@ export function attachCanonicalProjections({ root, staged, preparedFiles }) {
   // Immutable content blobs leave any prior valid stage intact even if a
   // new attachment fails. Advance the manifest only after real reader checks.
   for (const [path, bytes] of contents) atomicWrite(guardedPath(output, path), bytes);
+  const correctionsEntry=proposed.files.find(entry=>entry.path===EXISTING_ELIGIBILITY_CORRECTIONS_PATH);
+  if(correctionsEntry)proposed.existingEligibilityCorrectionsSha256=correctionsEntry.stagedSha256;
+  verifyReconciledCanonicalRows({ root, output, manifest: proposed });
+  verifyScopedPublicProjections({ root, output, manifest: proposed });
+  if (productizationReadiness !== undefined) {
+    proposed.productizationReadiness = verifyProductizationReadiness({ root, output, manifest: proposed, readiness: productizationReadiness });
+    proposed.productizationReadinessSha256 = productizationReadinessHash(proposed.productizationReadiness);
+    proposed.productizationQASchema = PRODUCTIZATION_QA_SCHEMA;
+  } else if (proposed.productizationReadiness) {
+    proposed.productizationReadiness = verifyProductizationReadiness({ root, output, manifest: proposed, readiness: proposed.productizationReadiness });
+    proposed.productizationReadinessSha256 = productizationReadinessHash(proposed.productizationReadiness);
+  }
   verifyCanonicalProjections({ root, output, manifest: proposed });
   proposed.projectionStatus = 'MATERIALIZED_AND_VERIFIED';
   proposed.files.sort((a, b) => a.path.localeCompare(b.path));
@@ -320,12 +665,44 @@ export function attachCanonicalProjections({ root, staged, preparedFiles }) {
   return { ...proposed, manifestPath, manifestSha256: sha(bytes) };
 }
 
+/** Finalizers can recheck the exact staged bytes and listing-bound readiness
+ * without acquiring a publication lock, writing receipts, or applying files. */
+export function verifyStagedCanonicalPublication({ root, staged }) {
+  root = resolve(root);
+  const { manifest, manifestSha256, output } = loadStage(staged);
+  if (manifest.projectionStatus !== 'MATERIALIZED_AND_VERIFIED') throw Error('CANONICAL_PROJECTIONS_NOT_MATERIALIZED');
+  for (const [path, expected] of Object.entries(manifest.baselineHashes)) if (currentHash(guardedPath(root, path)) !== expected) throw Error('PUBLICATION_BASELINE_CAS_FAILED:' + path);
+  for (const entry of manifest.files) {
+    if (!canonicalPath(entry.path)) throw Error('UNSUPPORTED_CANONICAL_PUBLICATION_PATH');
+    const bytes = readFileSync(guardedPath(output, entry.stagedPath));
+    if (sha(bytes) !== entry.stagedSha256 || manifest.baselineHashes[entry.path] !== entry.baselineSha256) throw Error('STAGED_CONTENT_INTEGRITY_FAILED');
+  }
+  verifyReconciledCanonicalRows({ root, output, manifest });
+  verifyScopedPublicProjections({ root, output, manifest });
+  verifyCanonicalProjections({ root, output, manifest });
+  if (manifest.productizationQASchema === PRODUCTIZATION_QA_SCHEMA) {
+    const normalized = verifyProductizationReadiness({ root, output, manifest, readiness: manifest.productizationReadiness });
+    if (productizationReadinessHash(normalized) !== manifest.productizationReadinessSha256) throw Error('PRODUCT_READINESS_DIGEST_MISMATCH');
+  }
+  return { status: 'VERIFIED_READ_ONLY', manifestSha256, productReadinessSha256: manifest.productizationReadinessSha256 || null,
+    files: manifest.files.length, additions: manifest.additions.length, productionMutations: 0 };
+}
+
 /** Explicit QA proof must be {manifestSha256,checks:{IDENTITY:'PASS',...}}.
  * No absent check, SKIPPED result or proof for another stage is accepted. */
 export function applyCanonicalPublication({ root, staged, qaProof }) {
   root = resolve(root);
   const { manifest, manifestSha256, output } = loadStage(staged);
-  if (qaProof?.manifestSha256 !== manifestSha256 || REQUIRED_PUBLICATION_QA.some((check) => qaProof.checks?.[check] !== 'PASS')) throw new Error('PUBLICATION_QA_NOT_GREEN');
+  if (qaProof?.manifestSha256 !== manifestSha256) throw new Error('PUBLICATION_QA_NOT_GREEN');
+  if (qaProof.schemaVersion === PRODUCTIZATION_QA_SCHEMA) {
+    if (REQUIRED_PRODUCTIZATION_QA.some((check) => qaProof.checks?.[check] !== 'PASS') ||
+        CONDITIONAL_PRODUCTIZATION_QA.some((check) => qaProof.checks?.[check] !== undefined && !['PASS', 'UNAVAILABLE'].includes(qaProof.checks[check])) ||
+        manifest.productizationQASchema !== PRODUCTIZATION_QA_SCHEMA ||
+        qaProof.productReadinessSha256 !== manifest.productizationReadinessSha256 ||
+        manifest.productizationReadinessSha256 !== productizationReadinessHash(manifest.productizationReadiness)) throw new Error('PUBLICATION_QA_NOT_GREEN');
+    verifyProductizationReadiness({ root, output, manifest, readiness: manifest.productizationReadiness });
+    for (const product of CONDITIONAL_PRODUCTIZATION_QA) if (qaProof.checks?.[product] === 'UNAVAILABLE' && manifest.productizationReadiness.some((row) => row.products[product].state !== 'UNAVAILABLE')) throw new Error('PUBLICATION_QA_NOT_GREEN');
+  } else if (REQUIRED_PUBLICATION_QA.some((check) => qaProof.checks?.[check] !== 'PASS')) throw new Error('PUBLICATION_QA_NOT_GREEN');
   if (manifest.projectionStatus !== 'MATERIALIZED_AND_VERIFIED') throw new Error('CANONICAL_PROJECTIONS_NOT_MATERIALIZED');
   const unlock = publicationLock(root), receiptPath = join(output, 'applied.json');
   try {
