@@ -124,6 +124,39 @@ export function investedReturns(equity, spyRet, minExp = 0.02) {
   const reg = olsNW(rs, ri);
   return { days: ri.length, invAnn: geo(ri), spyAnnSameDays: geo(rs), excessAnn: geo(ri) - geo(rs), alphaAnn: reg ? annualize(reg.alpha) : null, beta: reg?.beta ?? null, tAlpha: reg?.tAlpha ?? null, meanDailyInv: m(ri), meanDailySpy: m(rs) };
 }
+// Ebene B2 (positionsgenau, Messkorrektur R14): Tagesrendite des eingesetzten Kapitals aus den Positionen selbst.
+// Kapital am Tagesanfang = Vortagesschluss x Stueck (am Einstiegstag: Einstiegskosten); Ende = Stueck x Schluss + Verkaufserloese + Dividenden.
+// weightMode 'SHARES' = wie gehalten (Depot), 'EQUAL' = jeder offene Trade gleich gewichtet (Signalportfolio ohne Kapazitaetsgrenze, B4).
+export function positionDailyReturns(positions, scenarioPx, comm = COMM, weightMode = 'SHARES') {
+  const day = new Map(); // date -> [sumStart, sumEnd] bzw. [n, sumRet]
+  for (const p of positions) {
+    const tr = p.tr || p, sh0 = weightMode === 'EQUAL' ? 1 / tr.entry.price : p.entryShares;
+    const exits = new Map(); for (const x of tr.exits) { if (x.ruleId === 'OPEN_AT_END_MARK') continue; const b = exits.get(x.date) || exits.set(x.date, []).get(x.date); b.push(x); }
+    let shares = sh0, prev = null;
+    for (const [dt, close] of tr.marks) { // Maps sind nach Datum aufgebaut (tradesFor/holdTrades)
+      if (dt < tr.entry.date) continue;
+      if (shares <= 1e-12) break;
+      const start = prev === null ? sh0 * tr.entry.price * (1 + comm) : shares * prev;
+      let end = 0;
+      if (prev !== null) { const dv = tr.divs?.get(dt); if (dv > 0) end += shares * dv; }
+      for (const x of exits.get(dt) || []) { const q = sh0 * x.fraction; end += q * x.price * (1 - comm); shares -= q; }
+      if (tr.terminal?.kind === 'DELISTED' && tr.terminal.date === dt && shares > 1e-12) { end += shares * scenarioPx(tr.terminal) * (1 - comm); shares = 0; }
+      end += shares * close;
+      const b = day.get(dt) || day.set(dt, [0, 0, 0]).get(dt);
+      if (weightMode === 'EQUAL') { b[0]++; b[1] += end / start - 1; } else { b[0] += start; b[1] += end; }
+      prev = close;
+    }
+  }
+  return new Map([...day].map(([dt, b]) => [dt, weightMode === 'EQUAL' ? b[1] / b[0] : b[1] / b[0] - 1]));
+}
+export function compareDaily(ret, spyRet, n0 = 30) {
+  const ri = [], rs = [];
+  for (const [dt, r] of [...ret].sort((a, b) => a[0].localeCompare(b[0]))) { const s = spyRet.get(dt); if (!Number.isFinite(s) || !Number.isFinite(r)) continue; ri.push(r); rs.push(s); }
+  if (ri.length < n0) return { days: ri.length };
+  const geo = (a) => Math.exp(a.reduce((x, y) => x + Math.log(1 + Math.max(y, -0.99)), 0) / a.length * 252) - 1;
+  const reg = olsNW(rs, ri);
+  return { days: ri.length, invAnn: geo(ri), spyAnnSameDays: geo(rs), excessAnn: geo(ri) - geo(rs), alphaAnn: reg ? annualize(reg.alpha) : null, beta: reg?.beta ?? null, tAlpha: reg?.tAlpha ?? null };
+}
 function quickA(equity, spyTR) {
   const n = equity.length, yrs = (Date.parse(equity[n - 1].date) - Date.parse(equity[0].date)) / (365.25 * 864e5);
   const cagr = (equity[n - 1].equity / equity[0].equity) ** (1 / yrs) - 1, spy = cagrBetween(spyTR, equity[0].date, equity[n - 1].date, 'value');
@@ -296,6 +329,10 @@ async function main() {
     const expo = exposureStats(base.equity);
     const weights = base.taken.map((p) => (p.entryShares * p.tr.entry.price) / p.eqAtEntry);
     const B2 = investedReturns(base.equity, spyRet);
+    const scenPx = (t) => (t.delistClass === 'ACQUISITION' ? t.lastClose * (1 - SLIP) : t.lastClose * 0.7);
+    const B2exact = compareDaily(positionDailyReturns(base.taken, scenPx), spyRet);
+    // B4: Signalportfolio ohne Kapazitaetsgrenze (alle Engine-Trades gleich gewichtet) mit Methodenausstieg bzw. 126 Sitzungen gehalten.
+    const B4 = { methodExits: compareDaily(positionDailyReturns(r.base, scenPx, COMM, 'EQUAL'), spyRet), hold126: compareDaily(positionDailyReturns(r.holds[126], scenPx, COMM, 'EQUAL'), spyRet) };
     const B3 = { exposureMatchedSpy: exposureMatched(base.equity, spyRet), contributionPp: A.cagr - exposureMatched(base.equity, spyRet), s0ContributionPp: quickA(s0.equity, spyTR).cagr - exposureMatched(s0.equity, spyRet) };
     // Signalqualitaet
     const recs = r.rec, mon = recs.map((x) => x.e.slice(0, 7));
@@ -354,7 +391,7 @@ async function main() {
       cfg: { riskPerTrade: cfg.riskPerTrade, maxPositionPct: cfg.maxPositionPct, maxPositions: cfg.maxPositions, priority: cfg.priority, marketFilter: !!cfg.marketFilter, progressive: cfg.progressive || null, turtleNotional: cfg.turtleNotional || null },
       engineTrades: r.base.length, taken: base.taken.length, skippedByReason: base.skipped.reduce((a, x) => ((a[x.reason] = (a[x.reason] || 0) + 1), a), {}),
       A: { ...A, s0: quickA(s0.equity, spyTR), cost2: quickA(cost2.equity, spyTR), subperiods: null },
-      B: { B1, B2, B3 }, C: { C1_cashInSpy_noCost: C1hi, C1_cashInSpy_1bp: C1lo, C2_equalWeight: quickA(C2.equity, spyTR), C2_exposure: exposureStats(C2.equity).mean, C3_equalWeight_cashInSpy: C3, C4_unlimitedSlots: quickA(C4.equity, spyTR), C4_exposure: exposureStats(C4.equity).mean, C5_hold: C5, C6_noMarketFilter: C6, C7_rank: C7 },
+      B: { B1, B2_prereg: B2, B2_exact: B2exact, B3, B4 }, C: { C1_cashInSpy_noCost: C1hi, C1_cashInSpy_1bp: C1lo, C2_equalWeight: quickA(C2.equity, spyTR), C2_exposure: exposureStats(C2.equity).mean, C3_equalWeight_cashInSpy: C3, C4_unlimitedSlots: quickA(C4.equity, spyTR), C4_exposure: exposureStats(C4.equity).mean, C5_hold: C5, C6_noMarketFilter: C6, C7_rank: C7 },
       exposure: { ...expo, weightAtEntry: summarize(weights), idle: attributeIdle(base, cfg) }, chain,
       signal: { n: recs.length, byHorizon: sig, distribution: dist, edgeByYear120vsUni: Object.fromEntries(Object.entries(edgeByYear).map(([y, b]) => [y, { n: b.n, mean: b.s / b.n }])) },
       exitAudit, portfolioConstruction: pc, failures, winnerCases, regimes: segmentReturns(base.equity), costs, tradability };

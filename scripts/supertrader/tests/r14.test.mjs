@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { summarize, clusterT, cashInSpy, exposureStats, attributeIdle, investedReturns, olsNW } from '../validation/audit-r14.mjs';
+import { summarize, clusterT, cashInSpy, exposureStats, attributeIdle, investedReturns, olsNW, positionDailyReturns } from '../validation/audit-r14.mjs';
 import { runPortfolioTR } from '../validation/portfolio.mjs';
 
 test('R14-S1 summarize/clusterT: Quantile, Trefferquote, Cluster-t über Monatsmittel', () => {
@@ -53,4 +53,14 @@ test('R14-W2 Holdout-Listings: aktiv = über 2015 hinaus gelistet, alle aus dem 
     const t=L.buildListingTable(rows,new Map([['AAA',{startDate:'2005-01-03',instrumentType:'EQUITY_COMMON'}]]));console.log(JSON.stringify(t.map(l=>[l.ticker,l.active,l.source]).sort()))})`;
   const out = JSON.parse(spawnSync(process.execPath, ['-e', code], { env: { ...process.env, ST_WINDOW: 'HOLDOUT' }, encoding: 'utf8' }).stdout);
   assert.deepEqual(out, [['AAA', true, 'FETCH'], ['BBB', false, 'FETCH']]);
+});
+
+test('R14-B2x Positionsgenaue Tagesrendite: Einstiegstag zählt ab Einstiegskurs, Stop am selben Tag wird erfasst', () => {
+  const tr = { entry: { date: 'd1', price: 10 }, exits: [{ date: 'd1', price: 9.5, fraction: 1, ruleId: 'STOP' }], marks: new Map([['d1', 9.8]]), divs: new Map(), terminal: null };
+  const r = positionDailyReturns([{ tr, entryShares: 100 }], () => 0, 0);
+  assert.ok(Math.abs(r.get('d1') - (-0.05)) < 1e-12); // Rechnung über Exposition des Vortags sähe diesen Verlust nicht
+  const tr2 = { entry: { date: 'd1', price: 10 }, exits: [{ date: 'd3', price: 12, fraction: 1, ruleId: 'X' }], marks: new Map([['d0', 9], ['d1', 11], ['d2', 11], ['d3', 12]]), divs: new Map([['d2', 0.5]]), terminal: null };
+  const r2 = positionDailyReturns([{ tr: tr2, entryShares: 1 }], () => 0, 0);
+  assert.deepEqual([...r2.keys()], ['d1', 'd2', 'd3']);
+  assert.ok(Math.abs(r2.get('d1') - 0.1) < 1e-12 && Math.abs(r2.get('d2') - 0.5 / 11) < 1e-12 && Math.abs(r2.get('d3') - 1 / 11) < 1e-12);
 });
