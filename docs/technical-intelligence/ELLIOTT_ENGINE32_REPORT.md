@@ -254,7 +254,7 @@ Das verfehlte Quality-Gate spricht nicht gegen die Migration. Es spricht gegen e
 | Engine-Version | `elliott-3.2.1` = 3.2.0 + Datenlage-Fix für Tagesreihen (Wochenenden zählten als „Lücken“; alle Tagesreihen enthielten sich fälschlich). Auf 3.140 Wochen-Validierungsfällen identisch mit 3.2.0 (`freeze-elliott-3.2.1.json`). |
 | Neu berechnet | alle Titel: 5.292 Wochen- und 5 Tagesanalysen, 623 Shards, `index.json.gz`, `discover-rows.json`, Regelkatalog, Methoden-Evidenz, Replay-Schnappschüsse für Indexmitglieder (26 Schritte, Persistenz-Replay 52 Schritte je Titel) |
 | API (§37) | je Titel `versions: { api, analysis, resultSchema, elliott, ruleSet, elliottStatus, dataAsOf }`; `meta.json` mit `elliott: { engine, status, confluenceWeight: 0, report }` (`API_V3_MIGRATION.md`) |
-| Build | parallel in Worker-Threads (4 Kerne): 4.032 s (67 min); vorher seriell auf 2.2, kein Vergleichslauf |
+| Build | parallel in Worker-Threads (4 Kerne): 4.032 s (3.2.0) bzw. 3.678 s (3.2.1, 61 min); vorher seriell auf 2.2, kein Vergleichslauf |
 | Datenmenge | 52 MB (vorher 49 MB) |
 | Alerts | Die Migration erzeugte 132 scheinbare Ereignisse bei gleichem Datenstand (Zonenwechsel aus der Methodik, nicht aus Kursbewegung). Zurückgesetzt auf den Ausgangszustand mit Hinweis, damit Nutzer keine Fehlalarme sehen. |
 | Drift-Prüfung (§38) | Build und Neuberechnung identisch für **106 Titel** (`verify-technical-intelligence.mjs --every 50`, vorher 18) |
@@ -294,7 +294,7 @@ Lesart:
 
 **Bildschirm-Audit** (`scripts/technical/chartbild-ui-audit.mjs`; echte Daten, Chromium):
 * 9 Bildschirme × 4 Breiten (390, 430, 768, 1280) × 2 Titel: AAPL (Tag, Elliott enthält sich) und ABBV (Woche, Elliott MITTEL), insgesamt 72 Aufnahmen.
-* Ausgewählte Aufnahmen: `docs/technical-intelligence/ui-audit/`.
+* Ausgewählte Aufnahmen: `docs/technical-intelligence/ui-audit/` (Endstand nach dem Neubau mit 3.2.1: Chartbild-Bildschirme ohne Befund; offen nur Aktienseite: „Kursverlauf“-Überschrift abgeschnitten, 404 bei ABBV).
 
 | Breite | Ergebnis | Befunde | Behoben |
 |---|---|---|---|
