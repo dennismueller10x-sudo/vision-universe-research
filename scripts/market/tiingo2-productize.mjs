@@ -126,7 +126,17 @@ export function materializeExistingDnaEligibilityCorrection({root,shadowRoot,sou
  const sourceInstrument=instruments(root).find(row=>row.symbol==='DNA'&&row.masterMemberId==='ref_DNA'),sourceEligibility=read(join(root,CANONICAL_PUBLICATION_PATHS.eligibility)),beforeDecision=sourceEligibility.decisions.find(row=>row.ticker==='DNA'&&row.securityId==='ref_DNA');
  if(!sourceInstrument||sourceInstrument.productEligibility==='ELIGIBLE'&&sourceInstrument.screenerEligible===true){write(join(shadowRoot,path),artifact);return {state:sourceInstrument?'ALREADY_CORRECT':'NOT_APPLICABLE',path,corrections:[],proof:artifact};}
  const candidate=candidates.find(row=>row.ticker==='DNA'&&row.securityId==='ref_DNA'),input=candidate&&loadCandidatePriceInputs({sourceCache,candidates:[candidate],today:asOf}).get('DNA'),sec=byTicker instanceof Map?byTicker.get('DNA'):byTicker?.DNA;
- if(!input||input.state!=='READY'||sec?.cik!=='0001830214'||sec.identityVerified!==true||sec.pitValid!==true||sec.identityEvidence?.provider!=='sec_edgar'||sec.identityEvidence?.tickerMapMatched!==true||sec.identityEvidence?.submissionsTickerMatched!==true||sec.identityEvidence?.submissionsCikMatched!==true)throw Error('DNA_CURRENT_PRICE_SEC_PROOF_NOT_GREEN');
+ if(!input||input.state!=='READY'||sec?.cik!=='0001830214'||sec.identityVerified!==true||sec.pitValid!==true||sec.identityEvidence?.provider!=='sec_edgar'||sec.identityEvidence?.tickerMapMatched!==true||sec.identityEvidence?.submissionsTickerMatched!==true||sec.identityEvidence?.submissionsCikMatched!==true){
+  const diagnostic={schemaVersion:'tiingo2-dna-current-proof-diagnostic-1',asOf,price:{state:input?.state??'MISSING',reason:input?.reason??null,
+   bars:input?.entry?.rows?.length??null,latestDate:input?.assessed?.price?.latestDate??null,
+   historyValid:input?.assessed?.price?.historyValid??null,latestValid:input?.assessed?.price?.latestValid??null,
+   corporateActionValid:input?.assessed?.price?.corporateActionValid??null},
+   sec:{status:sec?.fundamentalsStatus??'NONE',reason:sec?.reason??'SEC_ROW_MISSING',cikMatched:sec?.cik==='0001830214',
+    identityVerified:sec?.identityVerified===true,pitValid:sec?.pitValid===true,providerVerified:sec?.identityEvidence?.provider==='sec_edgar',
+    tickerMapMatched:sec?.identityEvidence?.tickerMapMatched===true,submissionsTickerMatched:sec?.identityEvidence?.submissionsTickerMatched===true,
+    submissionsCikMatched:sec?.identityEvidence?.submissionsCikMatched===true},productionWrites:0};
+  const error=Error('DNA_CURRENT_PRICE_SEC_PROOF_NOT_GREEN');error.diagnostic=diagnostic;throw error;
+ }
  const metadata=input.entry.metadata,provider={...metadata,ticker:'DNA',exchange:String(metadata.exchangeCode||metadata.exchange).toUpperCase(),assetType:'Stock',active:true,cik:sec.cik};
  const identity=resolveListingIdentities({fresh:[provider],current:instruments(root),asOf}).decisions;
  if(identity.length!==1||identity[0].state!=='EXISTING'||identity[0].identity?.instrumentId!==sourceInstrument.instrumentId)throw Error('DNA_CURRENT_PROVIDER_IDENTITY_NOT_EXACT');
