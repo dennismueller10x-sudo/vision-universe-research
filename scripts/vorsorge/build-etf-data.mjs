@@ -252,6 +252,14 @@ export function build() {
       distributionBasis: dist ? "Ausschüttungen in der Kursreihe beobachtet (" + rec.dividendEvents + " Ereignisse)" : null,
       ucits, otc: /^(PINK|OTC|OTCGREY|OTCMKTS|OTCBB|OTCQB|OTCQX|OTCD|OTCCE|EXPM|NMFQS)$/.test(String(e.exchange || "").toUpperCase())
     });
+    // Einordnung aus den ZUSAMMENGEFUEHRTEN Werten (Master + Taxonomie), nie aus nur einer Quelle
+    const ret = Tax.retirementClass({ productType: full.productType, assetClass: full.assetClass, strategies: full.strategies,
+      leverage: full.leverage, inverse: full.inverse, singleStockUnderlying: full.singleStockUnderlying }, { historyYears: priceM ? priceM.historyYears : null });
+    full.retirementClass = ret.class; full.retirementReasons = ret.reasons;
+    if ((full.leverage > 1 || full.inverse) && !/LEVERAGED|INVERSE/.test(full.primaryStrategy)) {
+      full.strategies = [full.leverage > 1 && full.inverse ? "LEVERAGED_INVERSE" : full.leverage > 1 ? "LEVERAGED" : "INVERSE"].concat(full.strategies.filter((x) => x !== "EQUITY" && x !== "UNKNOWN"));
+      full.primaryStrategy = full.strategies[0];
+    }
     full.complex = full.retirementClass !== "STANDARD";
     const layer = Tax.layerOf(full);
     full.layer = layer.layer; full.layerReasons = layer.reasons;
