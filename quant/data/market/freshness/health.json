@@ -1,12 +1,12 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-10-02T23:37:22.255Z",
+  "checkedAt": "2026-10-03T02:12:52.010Z",
   "target": "repository",
   "market": {
-    "state": "AFTER_HOURS",
+    "state": "CLOSED",
     "localDate": "2026-10-02",
-    "localTime": "19:37:22",
+    "localTime": "22:12:52",
     "lastCompletedSession": "2026-10-02",
     "currentSession": "2026-10-02",
     "expectedIntradaySession": "2026-10-02"
@@ -80,7 +80,7 @@
   },
   "daily": {
     "universeAsOf": "2026-10-02",
-    "generatedAt": "2026-10-02T23:37:16.167Z",
+    "generatedAt": "2026-10-03T02:12:47.070Z",
     "state": "LAST_SESSION",
     "basis": "series",
     "summaryState": "LAST_SESSION",
@@ -101,13 +101,13 @@
         "lastCompletedSession": 40
       },
       "staleSample": [],
-      "seriesIndexCount": 6471
+      "seriesIndexCount": 6484
     }
   },
   "overall": "STALE",
   "findings": [
     "Intraday STALE: Datenstand 2026-10-02, erwartet 2026-10-02 (closeMissing)",
-    "Universumslauf fehlt: Sitzung 2026-10-02 liegt nur fuer den Discover-Umfang vor (3.6 h nach Schluss)"
+    "Universumslauf fehlt: Sitzung 2026-10-02 liegt nur fuer den Discover-Umfang vor (6.2 h nach Schluss)"
   ],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }

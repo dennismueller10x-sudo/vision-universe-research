@@ -1,6 +1,6 @@
 {
   "version": "sic-peer-taxonomy-1.0.0",
-  "generatedAt": "2026-10-02T23:34:48.048Z",
+  "generatedAt": "2026-10-03T02:10:28.254Z",
   "classificationTime": {
     "observedAt": "2026-10-02T12:36:56+00:00",
     "effectiveAt": null,
@@ -42,7 +42,7 @@
     "provider": "SEC",
     "artifact": "fundamentals-issuer-summary",
     "factors": "quant/data/market/factors/factors-FULL_UNIVERSE.json",
-    "factorsGeneratedAt": "2026-10-02T23:34:48.048Z",
+    "factorsGeneratedAt": "2026-10-03T02:10:28.254Z",
     "instruments": "quant/data/universe/instruments",
     "fundamentals": "quant/data/fundamentals/issuers",
     "fundamentalsState": "quant/data/fundamentals/daily/state.json",
@@ -68,7 +68,7 @@
     "D": {
       "name": "Manufacturing",
       "range": "2000-3999",
-      "memberIssuers": 1862
+      "memberIssuers": 1864
     },
     "E": {
       "name": "Transportation, Communications, Electric, Gas, And Sanitary Services",
@@ -88,12 +88,12 @@
     "H": {
       "name": "Finance, Insurance, And Real Estate",
       "range": "6000-6799",
-      "memberIssuers": 1213
+      "memberIssuers": 1217
     },
     "I": {
       "name": "Services",
       "range": "7000-8999",
-      "memberIssuers": 867
+      "memberIssuers": 868
     },
     "J": {
       "name": "Public Administration",
@@ -293,7 +293,7 @@
     "3826": 21,
     "3827": 6,
     "3829": 9,
-    "3841": 104,
+    "3841": 105,
     "3842": 25,
     "3843": 2,
     "3844": 5,
@@ -305,7 +305,7 @@
     "3942": 1,
     "3944": 4,
     "3949": 11,
-    "3990": 7,
+    "3990": 8,
     "4011": 6,
     "4210": 7,
     "4213": 13,
@@ -406,7 +406,7 @@
     "6162": 5,
     "6163": 3,
     "6189": 11,
-    "6199": 104,
+    "6199": 107,
     "6200": 11,
     "6211": 30,
     "6221": 20,
@@ -426,7 +426,7 @@
     "6519": 2,
     "6531": 14,
     "6552": 4,
-    "6770": 240,
+    "6770": 241,
     "6792": 10,
     "6794": 11,
     "6795": 6,
@@ -479,7 +479,7 @@
     "8351": 2,
     "8700": 3,
     "8711": 8,
-    "8731": 11,
+    "8731": 12,
     "8734": 3,
     "8741": 5,
     "8742": 29,
@@ -490,11 +490,11 @@
     "0900": 1
   },
   "counts": {
-    "factorSecurities": 6425,
-    "projectedSecurities": 5371,
-    "classifiedSecurities": 5223,
+    "factorSecurities": 6433,
+    "projectedSecurities": 5379,
+    "classifiedSecurities": 5231,
     "classificationMissing": 148,
-    "distinctIssuers": 5064,
+    "distinctIssuers": 5071,
     "identityRejected": 1054,
     "duplicateMasterMembers": 6,
     "duplicateFundamentalsIssuers": 0
@@ -1784,6 +1784,7 @@
     ["AISP","ref_AISP","iss_cik_0001842566","0001842566","7372","7372","I","sic4_industry","HIGH",false,"566.json","2026-10-02"],
     ["AIT","ref_AIT","iss_cik_0000109563","0000109563","5080","5080","F","sic_division","MEDIUM",false,"563.json","2026-10-02"],
     ["AIV","ref_AIV","iss_cik_0000922864","0000922864","6798","6798","H","sic4_industry","HIGH",false,"864.json","2026-10-02"],
+    ["AIXC","ref_AIXC","iss_cik_0001460702","0001460702","6199","6199","H","sic4_industry","HIGH",false,"702.json","2026-09-29"],
     ["AIZ","ref_AIZ","iss_cik_0001267238","0001267238","6399","6399","H","sic_division","MEDIUM",false,"238.json","2026-10-02"],
     ["AIZN","ref_AIZN","iss_cik_0001267238","0001267238","6399","6399","H","sic_division","MEDIUM",false,"238.json","2026-10-02"],
     ["AJG","ref_AJG","iss_cik_0000354190","0000354190","6411","6411","H","sic4_industry","HIGH",false,"190.json","2026-10-02"],
@@ -3386,6 +3387,8 @@
     ["FGI","ref_FGI","iss_cik_0001864943","0001864943","3430","3430","D","sic_division","MEDIUM",false,"943.json","2026-10-02"],
     ["FGII","ref_FGII","iss_cik_0002090452","0002090452","6770","6770","H","sic4_industry","HIGH",false,"452.json","2026-10-02"],
     ["FGN","ref_FGN","iss_cik_0001934850","0001934850","6311","6311","H","sic_division","MEDIUM",false,"850.json","2026-10-02"],
+    ["FGNX","ref_FGNX","iss_cik_0001591890","0001591890","6199","6199","H","sic4_industry","HIGH",false,"890.json","2026-09-29"],
+    ["FGNXP","ref_FGNXP","iss_cik_0001591890","0001591890","6199","6199","H","sic4_industry","HIGH",false,"890.json","2026-09-28"],
     ["FGSN","ref_FGSN","iss_cik_0001934850","0001934850","6311","6311","H","sic_division","MEDIUM",false,"850.json","2026-10-02"],
     ["FHB","ref_FHB","iss_cik_0000036377","0000036377","6022","6022","H","sic4_industry","HIGH",false,"377.json","2026-10-02"],
     ["FHI","ref_FHI","iss_cik_0001056288","0001056288","6282","6282","H","sic4_industry","HIGH",false,"288.json","2026-10-02"],
@@ -4168,6 +4171,7 @@
     ["JBSS","ref_JBSS","iss_cik_0000880117","0000880117","2060","2060","D","sic_division","MEDIUM",false,"117.json","2026-10-02"],
     ["JBTM","ref_JBTM","iss_cik_0001433660","0001433660","3550","3550","D","sic_division","MEDIUM",false,"660.json","2026-10-02"],
     ["JCI","ref_JCI","iss_cik_0000833444","0000833444","3585","3585","D","sic_division","MEDIUM",false,"444.json","2026-10-02"],
+    ["JCSE","ref_JCSE","iss_cik_0001905511","0001905511","3990","3990","D","sic_division","MEDIUM",false,"511.json","2026-10-02"],
     ["JCTC","ref_JCTC","iss_cik_0000885307","0000885307","5211","5211","G","sic_division","MEDIUM",false,"307.json","2026-10-02"],
     ["JD","ref_JD","iss_cik_0001549802","0001549802","5990","5990","G","sic_division","MEDIUM",false,"802.json","2026-10-02"],
     ["JEF","ref_JEF","iss_cik_0000096223","0000096223","6211","6211","H","sic4_industry","HIGH",false,"223.json","2026-10-02"],
@@ -5164,6 +5168,7 @@
     ["ONFO","ref_ONFO","iss_cik_0001825452","0001825452","7374","7374","I","sic4_industry","HIGH",false,"452.json","2026-10-02"],
     ["ONIT","ref_ONIT","iss_cik_0000873860","0000873860","6162","6162","H","sic_division","MEDIUM",false,"860.json","2026-10-02"],
     ["ONL","ref_ONL","iss_cik_0001873923","0001873923","6798","6798","H","sic4_industry","HIGH",false,"923.json","2026-10-02"],
+    ["ONMD","ref_ONMD","iss_cik_0001849380","0001849380","8731","8731","I","sic_division","MEDIUM",false,"380.json","2026-09-28"],
     ["ONON","ref_ONON","iss_cik_0001858985","0001858985","3021","3021","D","sic_division","MEDIUM",false,"985.json","2026-10-02"],
     ["ONT","ref_ONT","iss_cik_0001643615","0001643615","8742","8742","I","sic4_industry","HIGH",false,"615.json","2026-10-02"],
     ["ONTO","ref_ONTO","iss_cik_0000704532","0000704532","3829","3829","D","sic_division","MEDIUM",false,"532.json","2026-10-02"],
@@ -5412,6 +5417,7 @@
     ["PMA","ref_PMA","iss_cik_0001956166","0001956166","1700","1700","C","sic_division","MEDIUM",false,"166.json","2026-10-02"],
     ["PMCB","ref_PMCB","iss_cik_0001157075","0001157075","2836","2836","D","sic4_industry","HIGH",false,"075.json","2026-10-02"],
     ["PMEC","ref_PMEC","iss_cik_0001891944","0001891944","7340","7340","I","sic_division","MEDIUM",false,"944.json","2026-10-02"],
+    ["PMI","ref_PMI","iss_cik_0002030617","0002030617","3841","3841","D","sic4_industry","HIGH",false,"617.json","2026-10-02"],
     ["PMN","ref_PMN","iss_cik_0001374339","0001374339","2834","2834","D","sic4_industry","HIGH",false,"339.json","2026-10-02"],
     ["PMNT","ref_PMNT","iss_cik_0001849221","0001849221","2300","2300","D","sic_division","MEDIUM",false,"221.json","2026-10-02"],
     ["PMT","ref_PMT","iss_cik_0001464423","0001464423","6798","6798","H","sic4_industry","HIGH",false,"423.json","2026-10-02"],
@@ -5846,6 +5852,7 @@
     ["SBSI","ref_SBSI","iss_cik_0000705432","0000705432","6022","6022","H","sic4_industry","HIGH",false,"432.json","2026-10-02"],
     ["SBSW","ref_SBSW","iss_cik_0001786909","0001786909","1040","1040","B","sic4_industry","HIGH",false,"909.json","2026-10-02"],
     ["SBUX","ref_SBUX","iss_cik_0000829224","0000829224","5810","5810","G","sic_division","MEDIUM",false,"224.json","2026-10-02"],
+    ["SBXD","ref_SBXD","iss_cik_0002015947","0002015947","6770","6770","H","sic4_industry","HIGH",false,"947.json","2026-09-29"],
     ["SBXE","ref_SBXE","iss_cik_0002081909","0002081909","6770","6770","H","sic4_industry","HIGH",false,"909.json","2026-10-02"],
     ["SCAG","ref_SCAG","iss_cik_0002000366","0002000366","3713","3713","D","sic_division","MEDIUM",false,"366.json","2026-10-02"],
     ["SCCD","ref_SCCD","iss_cik_0001682220","0001682220","6798","6798","H","sic4_industry","HIGH",false,"220.json","2026-10-02"],
@@ -6578,7 +6585,7 @@
     ["V","ref_V","iss_cik_0001403161","0001403161","7389","7389","I","sic4_industry","HIGH",false,"161.json","2026-10-02"],
     ["VABK","ref_VABK","iss_cik_0001572334","0001572334","6021","6021","H","sic4_industry","HIGH",false,"334.json","2026-10-02"],
     ["VAC","ref_VAC","iss_cik_0001524358","0001524358","6531","6531","H","sic_division","MEDIUM",false,"358.json","2026-10-02"],
-    ["VACI","ref_VACI","iss_cik_0002080023","0002080023","4899","4899","E","sic_division","MEDIUM",false,"023.json","2026-10-01"],
+    ["VACI","ref_VACI","iss_cik_0002080023","0002080023","4899","4899","E","sic_division","MEDIUM",false,"023.json","2026-10-02"],
     ["VAI","ref_VAI","iss_cik_0001711012","0001711012","7510","7510","I","sic_division","MEDIUM",false,"012.json","2026-10-02"],
     ["VAL","ref_VAL","iss_cik_0000314808","0000314808","1381","1381","B","sic_division","MEDIUM",false,"808.json","2026-10-02"],
     ["VALE","ref_VALE","iss_cik_0000917851","0000917851","1000","1000","B","sic4_industry","HIGH",false,"851.json","2026-10-02"],
@@ -6668,6 +6675,7 @@
     ["VRDN","ref_VRDN","iss_cik_0001590750","0001590750","2834","2834","D","sic4_industry","HIGH",false,"750.json","2026-10-02"],
     ["VREX","ref_VREX","iss_cik_0001681622","0001681622","3679","3679","D","sic_division","MEDIUM",false,"622.json","2026-10-02"],
     ["VRM","ref_VRM","iss_cik_0001580864","0001580864","5500","5500","G","sic_division","MEDIUM",false,"864.json","2026-10-02"],
+    ["VRME","ref_VRME","iss_cik_0001104038","0001104038","6199","6199","H","sic4_industry","HIGH",false,"038.json","2026-09-30"],
     ["VRNS","ref_VRNS","iss_cik_0001361113","0001361113","7372","7372","I","sic4_industry","HIGH",false,"113.json","2026-10-02"],
     ["VRRM","ref_VRRM","iss_cik_0001682745","0001682745","4700","4700","E","sic_division","MEDIUM",false,"745.json","2026-10-02"],
     ["VRSK","ref_VRSK","iss_cik_0001442145","0001442145","7374","7374","I","sic4_industry","HIGH",false,"145.json","2026-10-02"],

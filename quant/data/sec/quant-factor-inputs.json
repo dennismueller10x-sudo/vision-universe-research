@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtUtc": "2026-10-02T23:35:39.508Z",
+  "generatedAtUtc": "2026-10-03T02:11:08.484Z",
   "note": "Praekomputierte SEC- und (wenn veroeffentlicht) Tiingo-basierte Faktor-Rohwerte fuer das Golden Universe (Phase 5). Kein VU Quant Score: eine Peer-Perzentilierung ueber fuenf Titel aus vier Sektoren waere scheinpraezise, keine echte Kennzahl (normalization.js verlangt eine Mindest-Peergroesse von 12). Value/Momentum/Risk nutzen echte Tiingo-EOD-Kurse, wenn quant/data/market/golden-preview/daily/ eine Reihe fuer den Titel enthaelt, sonst bleiben sie UNAVAILABLE statt einen Kurs zu erfinden. beta/relativeStrength bleiben immer UNAVAILABLE: der gleichgewichtete Durchschnitt dieser fuenf Titel ist kein echter Marktindex.",
   "methodologyReference": "quant/methodology/quant-v1.json",
   "source": "providers/sec/adapter.js + quant/data/market/golden-preview/ -> quant/engines/{sec-fact-panel,panel-builder}.js -> quant/engines/factors.js",
@@ -75,7 +75,7 @@
         "volatility": 24.644,
         "downsideVolatility": 24.944,
         "maxDrawdown": 13.799,
-        "avgDollarVolume": 14822.044
+        "avgDollarVolume": 14793.134
       },
       "coverage": {
         "quality": {
@@ -380,7 +380,7 @@
         "volatility": 32.705,
         "downsideVolatility": 29.651,
         "maxDrawdown": 34.496,
-        "avgDollarVolume": 13109.185
+        "avgDollarVolume": 13088.779
       },
       "coverage": {
         "quality": {
@@ -685,7 +685,7 @@
         "volatility": 37.653,
         "downsideVolatility": 36.084,
         "maxDrawdown": 20.215,
-        "avgDollarVolume": 26437.851
+        "avgDollarVolume": 26408.457
       },
       "coverage": {
         "quality": {
@@ -990,7 +990,7 @@
         "volatility": 22.481,
         "downsideVolatility": 23.904,
         "maxDrawdown": 15.472,
-        "avgDollarVolume": 2562.863
+        "avgDollarVolume": 2541.89
       },
       "coverage": {
         "quality": {
@@ -1295,7 +1295,7 @@
         "volatility": 25.911,
         "downsideVolatility": 25.987,
         "maxDrawdown": 20.133,
-        "avgDollarVolume": 2241.244
+        "avgDollarVolume": 2235.386
       },
       "coverage": {
         "quality": {
