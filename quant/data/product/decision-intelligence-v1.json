@@ -1,25 +1,25 @@
 {
  "schemaVersion": "decision-intelligence-1.0.0",
- "generatedAt": "2026-10-03T00:35:30.037Z",
+ "generatedAt": "2026-10-03T07:05:23.335Z",
  "asOf": "2026-10-02",
  "measures": {
-  "RADAR_EVENTS_TOTAL": 2091,
+  "RADAR_EVENTS_TOTAL": 674,
   "RADAR_EVENTS_BY_TYPE": {
    "SETUP_CONFIRMED": 9,
    "SETUP_NEW": 102,
-   "STRATEGY_MATCH_NEW": 28,
-   "NEW_52W_HIGH": 143,
+   "STRATEGY_MATCH_NEW": 0,
+   "NEW_52W_HIGH": 140,
    "MOMENTUM_IMPROVED": 80,
    "TREND_UP": 106,
-   "PATTERN_MATCH_NEW": 670,
-   "FACTOR_CHANGED": 115,
-   "RISK_RISING": 2,
+   "PATTERN_MATCH_NEW": 0,
+   "FACTOR_CHANGED": 0,
+   "RISK_RISING": 0,
    "SETUP_WEAKENED": 70,
    "SETUP_INVALIDATED": 0,
-   "STRATEGY_MATCH_LOST": 27,
+   "STRATEGY_MATCH_LOST": 0,
    "MOMENTUM_DETERIORATED": 108,
-   "TREND_DOWN": 60,
-   "EVIDENCE_CHANGED": 571
+   "TREND_DOWN": 59,
+   "EVIDENCE_CHANGED": 0
   },
   "SETUPS_TRACKED": 1397,
   "SETUP_TRANSITIONS": 2337,
@@ -27,32 +27,32 @@
   "BACKTEST_ELIGIBLE_RULES": 69,
   "BACKTEST_WITHHELD_RULES": 62,
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5876,
-   "covered": 5556,
-   "available": 5365,
+   "universe": 5751,
+   "covered": 5400,
+   "available": 4561,
    "sufficient": {
-    "m1": 2245,
-    "m3": 2162,
-    "m6": 2083,
-    "m12": 1983
+    "m1": 2150,
+    "m3": 2081,
+    "m6": 2008,
+    "m12": 1906
    },
    "broad": {
-    "m6": 622
+    "m6": 665
    },
    "reasons": {
-    "NOT_COVERED": 320,
-    "NO_COMPARABLE_CASE": 71,
-    "NO_PRICE_CONDITION_TODAY": 120
+    "NOT_COVERED": 351,
+    "NO_PRICE_CONDITION_TODAY": 778,
+    "NO_COMPARABLE_CASE": 61
    }
   },
   "WATCHLIST_TRACKABLE_TITLES": 5876,
-  "ALERT_READY_EVENTS": 2091
+  "ALERT_READY_EVENTS": 674
  },
  "criteria": [
   {
    "question": "welche Aktien heute interessant werden",
    "pass": true,
-   "measured": "1590 Karten aus 2091 Ereignissen"
+   "measured": "631 Karten aus 674 Ereignissen"
   },
   {
    "question": "warum",
@@ -77,7 +77,7 @@
   {
    "question": "was historisch bei derselben Lage geschah",
    "pass": true,
-   "measured": "2083 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
+   "measured": "2008 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
   },
   {
    "question": "wie belastbar diese Evidenz ist",
@@ -130,11 +130,11 @@
     "direction": "BULLISH"
    },
    "replay": {
-    "episodes": 3,
-    "horizon": null,
-    "evidence": "WITHHELD",
-    "positiveShare": null,
-    "medianReturn": null
+    "episodes": 56,
+    "horizon": "m6",
+    "evidence": "BROAD",
+    "positiveShare": 0.6981132075471698,
+    "medianReturn": 0.19478527607361973
    },
    "factors": 6
   },
@@ -175,11 +175,11 @@
     "direction": "BULLISH"
    },
    "replay": {
-    "episodes": 32,
+    "episodes": 77,
     "horizon": "m6",
     "evidence": "BROAD",
-    "positiveShare": 0.8333333333333334,
-    "medianReturn": 0.1397550351406306
+    "positiveShare": 0.7945205479452054,
+    "medianReturn": 0.15059760956175294
    },
    "factors": 6
   },
@@ -220,11 +220,11 @@
     "direction": "BULLISH"
    },
    "replay": {
-    "episodes": 7,
-    "horizon": null,
-    "evidence": "WITHHELD",
-    "positiveShare": null,
-    "medianReturn": null
+    "episodes": 21,
+    "horizon": "m6",
+    "evidence": "THIN",
+    "positiveShare": 0.65,
+    "medianReturn": 0.16357571279771888
    },
    "factors": 6
   },
@@ -265,11 +265,11 @@
     "direction": "BULLISH"
    },
    "replay": {
-    "episodes": 58,
+    "episodes": 57,
     "horizon": "m6",
     "evidence": "BROAD",
-    "positiveShare": 0.5964912280701754,
-    "medianReturn": 0.03909304143862391
+    "positiveShare": 0.5714285714285714,
+    "medianReturn": 0.035667427520319483
    },
    "factors": 5
   },
@@ -353,10 +353,7 @@
   {
    "ticker": "META",
    "kind": "Großwert",
-   "radarEvents": [
-    "PATTERN_MATCH_NEW",
-    "EVIDENCE_CHANGED"
-   ],
+   "radarEvents": [],
    "setup": {
     "state": "SETUP_FORMING",
     "since": "2026-09-24",
@@ -390,11 +387,11 @@
     "direction": "BULLISH"
    },
    "replay": {
-    "episodes": 22,
+    "episodes": 44,
     "horizon": "m6",
-    "evidence": "THIN",
-    "positiveShare": 0.7272727272727273,
-    "medianReturn": 0.10094691551545132
+    "evidence": "BROAD",
+    "positiveShare": 0.8863636363636364,
+    "medianReturn": 0.1710465377685937
    },
    "factors": 4
   },
@@ -402,8 +399,7 @@
    "ticker": "DXPE",
    "kind": "Small Cap",
    "radarEvents": [
-    "SETUP_WEAKENED",
-    "EVIDENCE_CHANGED"
+    "SETUP_WEAKENED"
    ],
    "setup": {
     "state": "SETUP_FORMING",
@@ -483,11 +479,11 @@
     "direction": "BEARISH"
    },
    "replay": {
-    "episodes": 26,
+    "episodes": 21,
     "horizon": "m6",
     "evidence": "THIN",
-    "positiveShare": 0.72,
-    "medianReturn": 0.14696485623003186
+    "positiveShare": 0.7619047619047619,
+    "medianReturn": 0.17316530763528526
    },
    "factors": 5
   },
@@ -528,11 +524,7 @@
     "direction": "BEARISH"
    },
    "replay": {
-    "episodes": 5,
-    "horizon": null,
-    "evidence": "WITHHELD",
-    "positiveShare": null,
-    "medianReturn": null
+    "reason": "NO_PRICE_CONDITION_TODAY"
    },
    "factors": 6
   },
@@ -571,22 +563,12 @@
     "previous": null
    },
    "levels": {
-    "entry": null,
-    "stop": null,
-    "invalidation": 9.49,
-    "targets": [],
-    "trigger": "Ein Close ueber 11.13 oder unter 9.5 beendet die Range; bis dahin keine richtungsgebende Hypothese.",
-    "rr": null,
-    "direction": "NEUTRAL"
+    "reason": "SOURCE_MISSING"
    },
    "replay": {
-    "episodes": 1,
-    "horizon": null,
-    "evidence": "WITHHELD",
-    "positiveShare": null,
-    "medianReturn": null
+    "reason": "NOT_COVERED_BY_PATTERN_MATCH"
    },
-   "factors": 2
+   "factors": 0
   },
   {
    "ticker": "SPY",

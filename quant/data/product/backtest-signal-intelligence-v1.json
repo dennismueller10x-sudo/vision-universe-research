@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-signal-intelligence-1.0.0",
- "generatedAt": "2026-10-03T00:35:30.717Z",
+ "generatedAt": "2026-10-03T07:05:23.745Z",
  "radarAsOf": "2026-10-02",
  "signalAsOf": "2026-10-02",
  "setupAsOf": "2026-10-02",
@@ -15,7 +15,7 @@
     "SETUP_OUTCOMES_NOT_CERTIFIED"
    ],
    "replayTitles": 155,
-   "parity": "1012/1012"
+   "parity": "992/992"
   },
   "SIGNAL_BACKTEST_READY": {
    "ready": true,
@@ -57,8 +57,8 @@
   },
   "SIGNALS_WITH_HISTORICAL_EVIDENCE": 5,
   "SIGNAL_TYPES_TOTAL": 15,
-  "RADAR_EVENTS_WITH_BACKTEST": 497,
-  "RADAR_EVENTS_TOTAL": 2091,
+  "RADAR_EVENTS_WITH_BACKTEST": 493,
+  "RADAR_EVENTS_TOTAL": 674,
   "WATCHLIST_EVENTS_TRACKABLE": 5876,
   "ALERT_CONTRACT_READY": "PASS",
   "PIT_PASS": "PASS",
@@ -66,7 +66,7 @@
   "SURVIVORSHIP_PASS": "PASS",
   "SURVIVORSHIP_CONTROLLED": false,
   "TRUST_PASS": "PASS",
-  "DISCOVER_CHANGED": true
+  "DISCOVER_CHANGED": false
  },
  "criteria": [
   {
@@ -115,10 +115,10 @@
   },
   {
    "criterion": "Discover unverändert",
-   "pass": false
+   "pass": true
   }
  ],
- "verdict": "FAIL",
+ "verdict": "PASS",
  "sample": [
   {
    "ticker": "NVDA",
@@ -127,9 +127,9 @@
    "durationDays": 8,
    "invalidation": 206,
    "next": "Setup bestätigt (2/5)",
-   "evidence": "WITHHELD",
+   "evidence": "BROAD",
    "events": [
-    "NEW_52W_HIGH:LIMITED n=59122"
+    "NEW_52W_HIGH:LIMITED n=58251"
    ]
   },
   {
@@ -149,7 +149,7 @@
    "durationDays": 22,
    "invalidation": 343,
    "next": "Setup entsteht (1/4)",
-   "evidence": "WITHHELD",
+   "evidence": "THIN",
    "events": []
   },
   {
@@ -171,7 +171,7 @@
    "next": "Beobachten (1/1)",
    "evidence": "BROAD",
    "events": [
-    "TREND_UP:LIMITED n=90595"
+    "TREND_UP:LIMITED n=89218"
    ]
   },
   {
@@ -183,7 +183,7 @@
    "next": "Setup bestätigt (3/5)",
    "evidence": "WITHHELD",
    "events": [
-    "NEW_52W_HIGH:LIMITED n=59122"
+    "NEW_52W_HIGH:LIMITED n=58251"
    ]
   },
   {
@@ -193,11 +193,8 @@
    "durationDays": 8,
    "invalidation": 525,
    "next": "Setup bestätigt (3/5)",
-   "evidence": "THIN",
-   "events": [
-    "PATTERN_MATCH_NEW:WITHHELD PATTERN_MATCH_HISTORY_TOO_SHORT",
-    "EVIDENCE_CHANGED:WITHHELD NOT_A_TRADABLE_EVENT"
-   ]
+   "evidence": "BROAD",
+   "events": []
   },
   {
    "ticker": "DXPE",
@@ -208,8 +205,7 @@
    "next": "Setup bestätigt (1/5)",
    "evidence": "BROAD",
    "events": [
-    "SETUP_WEAKENED:WITHHELD SETUP_HISTORY_TOO_SHORT",
-    "EVIDENCE_CHANGED:WITHHELD NOT_A_TRADABLE_EVENT"
+    "SETUP_WEAKENED:WITHHELD SETUP_HISTORY_TOO_SHORT"
    ]
   },
   {
@@ -229,7 +225,7 @@
    "durationDays": 22,
    "invalidation": null,
    "next": "Beobachten (1/1)",
-   "evidence": "WITHHELD",
+   "evidence": "UNAVAILABLE",
    "events": []
   },
   {
@@ -248,8 +244,8 @@
    "since": "2026-09-24",
    "durationDays": 8,
    "invalidation": null,
-   "next": "Beobachten (1/1)",
-   "evidence": "WITHHELD",
+   "next": null,
+   "evidence": "NONE",
    "events": []
   },
   {
