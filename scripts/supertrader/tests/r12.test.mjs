@@ -62,3 +62,25 @@ test('R12-SEC IFRS-EPS und Ursache bei nur jährlichen Werten', () => {
   assert.equal(extractFactsR12(annual).cause, 'ANNUAL_ONLY');
   assert.equal(extractFactsR12({ facts: { 'us-gaap': { Assets: {} } } }).cause, 'NO_EPS_TAG');
 });
+
+test('R12-T4 Ledger: stückweises Fortschreiben (Live) ergibt denselben Stand wie ein Durchlauf', () => {
+  const cal = calendar(800);
+  const stocks = [];
+  for (let k = 0; k < 14; k++) {
+    const s = mk('S' + k, cal, (i) => 10 * Math.exp((k < 8 ? 0.004 * Math.min(i, 400 + 30 * k) - 0.003 * Math.max(0, i - 400 - 30 * k) : -0.0005 * i) + 0.05 * Math.sin(i / (7 + k))));
+    for (let i = 20; i < 800; i += 37 + k) s.bars.open[i] = s.bars.close[i - 1] * 1.07;
+    stocks.push(s);
+  }
+  const spy = { date: cal, close: cal.map((_, i) => 100 + i + 15 * Math.sin(i / 40)) };
+  const full = simulateRotation(stocks, cal, spy, { variant: 'PP' });
+  let state = null, trades = [];
+  for (const cut of [300, 301, 455, 620, 799]) {
+    const from = state ? cal[cal.indexOf(state.lastDate) + 1] : cal[0];
+    const r = simulateRotation(stocks, cal, spy, { variant: 'PP', from, to: cal[cut], state });
+    state = r.state; trades = trades.concat(r.trades);
+  }
+  assert.ok(Math.abs(state.cash - full.state.cash) < 1e-6);
+  assert.deepEqual(state.positions.map((q) => q.listingId).sort(), full.state.positions.map((q) => q.listingId).sort());
+  assert.equal(trades.length, full.trades.length);
+  assert.ok(full.trades.length > 0);
+});

@@ -89,54 +89,32 @@ export function simulateRotation(stocks, calendar, spy, opts = {}) {
   const idx = stocks.map((s) => new Map(s.bars.date.map((d, i) => [d, i])));
   const spyIdx = new Map(spy.date.map((d, i) => [d, i]));
   const lastPx = stocks.map(() => null);
+  const lastPx_init = new Map();
   let cash = opts.initialEquity ?? 100000;
   const pos = new Map(); // si -> {shares, entryDate, entryPrice, cost, proceeds, dividends, exits[]}
+  // Live (Ledger): Fortsetzung aus gespeichertem Zustand - fruehere Entscheidungen werden nie neu gerechnet.
+  const siOf = new Map(stocks.map((s, i) => [s.id, i]));
+  let pendingIn = null;
+  if (opts.state) {
+    cash = opts.state.cash;
+    for (const q of opts.state.positions || []) { const si = siOf.get(q.listingId); if (si === undefined) { (opts.state.missing ||= []).push(q.listingId); continue; } pos.set(si, { ...q, exits: [...(q.exits || [])] }); }
+    for (const [id, px] of Object.entries(opts.state.lastPx || {})) { const si = siOf.get(id); if (si !== undefined) lastPx_init.set(si, px); }
+    if (opts.state.pending) pendingIn = { sells: opts.state.pending.sells.map((o) => ({ ...o, si: siOf.get(o.listingId) })).filter((o) => o.si !== undefined), buys: opts.state.pending.buys.map((o) => ({ ...o, si: siOf.get(o.listingId) })).filter((o) => o.si !== undefined) };
+  }
   const equity = [], trades = [], decisions = [], skipped = [];
   const book = { commissions: 0, dividends: 0, terminalCount: 0 };
   const cal = calendar.filter((d) => d >= from && d <= to);
-  let pending = null; // Entscheidung vom Monatsende -> Ausfuehrung zur naechsten Eroeffnung
+  for (const [si, px] of lastPx_init) lastPx[si] = px;
+  let pending = pendingIn; // Entscheidung vom Monatsende -> Ausfuehrung zur naechsten Eroeffnung
   const value = (date) => { let mv = 0; for (const [si, q] of pos) { const i = idx[si].get(date); const px = i !== undefined ? stocks[si].bars.close[i] : lastPx[si]; mv += q.shares * (px ?? q.entryPrice); } return cash + mv; };
   const sell = (si, frac, price, date, ruleId) => {
     const q = pos.get(si); const sh = q.shares * frac; const g = sh * price, c = g * comm;
     cash += g - c; book.commissions += c; q.proceeds += g - c; q.shares -= sh; q.exits.push({ date, price, fraction: frac * q.remaining, ruleId }); q.remaining *= (1 - frac);
     if (q.shares <= 1e-9) { pos.delete(si); const pnl = q.proceeds + q.dividends - q.cost; trades.push({ id: `${stocks[si].id}:${q.entryDate}`, listingId: stocks[si].id, symbol: stocks[si].symbol, entry: { date: q.entryDate, price: q.entryPrice }, exits: q.exits, weightAtEntry: q.weightAtEntry, rankAtEntry: q.rankAtEntry, returnPct: pnl / q.cost }); }
   };
-  for (let di = 0; di < cal.length; di++) {
-    const date = cal[di];
-    // Dividenden (gehalten zum Vortag)
-    for (const [si, q] of pos) { const i = idx[si].get(date); const d = i !== undefined && stocks[si].divAdj ? stocks[si].divAdj[i] : 0; if (d > 0 && q.entryDate < date) { cash += q.shares * d; q.dividends += q.shares * d; book.dividends += q.shares * d; } }
-    // Ausfuehrung der Monatsentscheidung zur Eroeffnung
-    if (pending) {
-      const eqOpen = (() => { let mv = 0; for (const [si, q] of pos) { const i = idx[si].get(date); const px = i !== undefined ? stocks[si].bars.open[i] : lastPx[si]; mv += q.shares * (px ?? q.entryPrice); } return cash + mv; })();
-      const still = [];
-      for (const o of pending.sells) {
-        if (!pos.has(o.si)) continue;
-        const i = idx[o.si].get(date); if (i === undefined) { still.push(o); continue; }
-        const px = stocks[o.si].bars.open[i] * (1 - slip);
-        if (o.target === 0) sell(o.si, 1, px, date, o.ruleId);
-        else { const q = pos.get(o.si); const w = q.shares * stocks[o.si].bars.open[i] / eqOpen; if (w > o.target) sell(o.si, 1 - o.target / w, px, date, o.ruleId); }
-      }
-      for (const o of pending.buys) {
-        if (pos.size >= p.slots) { skipped.push({ date, listingId: stocks[o.si].id, reason: 'NO_SLOT' }); continue; }
-        const i = idx[o.si].get(date); if (i === undefined) { skipped.push({ date, listingId: stocks[o.si].id, reason: 'NO_BAR' }); continue; }
-        const px = stocks[o.si].bars.open[i] * (1 + slip);
-        const want = eqOpen * p.targetWeight, afford = cash / (1 + comm);
-        const amt = Math.min(want, afford);
-        if (amt < eqOpen * p.minWeight) { skipped.push({ date, listingId: stocks[o.si].id, reason: 'NO_CASH' }); continue; }
-        const sh = amt / px, c = amt * comm; cash -= amt + c; book.commissions += c;
-        pos.set(o.si, { shares: sh, entryDate: date, entryPrice: px, cost: amt + c, proceeds: 0, dividends: 0, exits: [], remaining: 1, weightAtEntry: amt / eqOpen, rankAtEntry: o.rank });
-      }
-      pending = still.length ? { sells: still, buys: [] } : null;
-    }
-    // Delisting: Rest am letzten Handelstag nach Szenario
-    for (const [si] of [...pos]) { const t = stocks[si].terminal; if (t && t.kind === 'DELISTED' && t.date === date) { sell(si, 1, scen(t, slip), date, 'DELISTED'); book.terminalCount++; } }
-    for (const [si] of pos) { const i = idx[si].get(date); if (i !== undefined) lastPx[si] = stocks[si].bars.close[i]; }
+  // Monatsentscheidung mit den Schlusskursen von `date` (letzter Handelstag des Monats).
+  const decide = (date, record = true) => {
     const eq = value(date);
-    equity.push({ date, equity: eq, exposure: eq > 0 ? (eq - cash) / eq : 0, positions: pos.size });
-    // Monatsende? (naechster Handelstag in anderem Monat)
-    const next = cal[di + 1];
-    if (!next || next.slice(0, 7) === date.slice(0, 7)) continue;
-    if (opts.startDate && date < opts.startDate) continue;
     const si0 = spyIdx.get(date); const green = si0 !== undefined ? spyMaOk(spy, si0, p) : null;
     const sells = [], heldAfter = new Set(pos.keys());
     for (const [si, q] of pos) {
@@ -175,13 +153,56 @@ export function simulateRotation(stocks, calendar, spy, opts = {}) {
     cands.sort((a, b) => b.score - a.score || stocks[a.si].id.localeCompare(stocks[b.si].id));
     const free = p.slots - heldAfter.size;
     const buys = green === true ? cands.slice(0, Math.max(0, free)).map((c, k) => ({ si: c.si, rank: k + 1 })) : [];
-    for (const c of (green === true ? cands.slice(Math.max(0, free)) : cands)) skipped.push({ date, listingId: stocks[c.si].id, reason: green === true ? 'NO_SLOT' : 'MARKET_FILTER', decision: true });
-    decisions.push({ date, green, universe: uni.length, candidates: cands.length, sells: sells.map((s) => ({ listingId: stocks[s.si].id, ruleId: s.ruleId, target: s.target })), buys: buys.map((b) => ({ listingId: stocks[b.si].id, rank: b.rank })),
-      top: cands.slice(0, 15).map((c, k) => ({ listingId: stocks[c.si].id, symbol: stocks[c.si].symbol, rank: k + 1, score: c.score, perf: c.m.perf, adv20: c.m.adv20 })) });
-    pending = { sells, buys };
+    if (record) for (const c of (green === true ? cands.slice(Math.max(0, free)) : cands)) skipped.push({ date, listingId: stocks[c.si].id, reason: green === true ? 'NO_SLOT' : 'MARKET_FILTER', decision: true });
+    const dec = { date, green, universe: uni.length, candidates: cands.length, sells: sells.map((s) => ({ listingId: stocks[s.si].id, ruleId: s.ruleId, target: s.target })), buys: buys.map((b) => ({ listingId: stocks[b.si].id, rank: b.rank })),
+      top: cands.slice(0, 15).map((c, k) => ({ listingId: stocks[c.si].id, symbol: stocks[c.si].symbol, rank: k + 1, score: c.score, perf: c.m.perf, adv20: c.m.adv20, newHigh20: c.m.newHigh20, gap20: c.m.gap20 })) };
+    if (record) decisions.push(dec);
+    return { dec, cands, pending: { sells: sells.map((o) => ({ ...o, listingId: stocks[o.si].id })), buys: buys.map((o) => ({ ...o, listingId: stocks[o.si].id })) } };
+  };
+  for (let di = 0; di < cal.length; di++) {
+    const date = cal[di];
+    // Monatswechsel: Entscheidung mit dem Schluss des Vortags (Monatsende), Ausfuehrung zur heutigen Eroeffnung.
+    const prevDate = di > 0 ? cal[di - 1] : (opts.state?.lastDate || null);
+    if (prevDate && prevDate.slice(0, 7) !== date.slice(0, 7) && (!opts.startDate || prevDate >= opts.startDate)) {
+      const d0 = decide(prevDate);
+      pending = { sells: [...(pending?.sells || []), ...d0.pending.sells], buys: d0.pending.buys };
+    }
+    // Dividenden (gehalten zum Vortag)
+    for (const [si, q] of pos) { const i = idx[si].get(date); const d = i !== undefined && stocks[si].divAdj ? stocks[si].divAdj[i] : 0; if (d > 0 && q.entryDate < date) { cash += q.shares * d; q.dividends += q.shares * d; book.dividends += q.shares * d; } }
+    // Ausfuehrung der Monatsentscheidung zur Eroeffnung
+    if (pending) {
+      const eqOpen = (() => { let mv = 0; for (const [si, q] of pos) { const i = idx[si].get(date); const px = i !== undefined ? stocks[si].bars.open[i] : lastPx[si]; mv += q.shares * (px ?? q.entryPrice); } return cash + mv; })();
+      const still = [];
+      for (const o of pending.sells) {
+        if (!pos.has(o.si)) continue;
+        const i = idx[o.si].get(date); if (i === undefined) { still.push(o); continue; }
+        const px = stocks[o.si].bars.open[i] * (1 - slip);
+        if (o.target === 0) sell(o.si, 1, px, date, o.ruleId);
+        else { const q = pos.get(o.si); const w = q.shares * stocks[o.si].bars.open[i] / eqOpen; if (w > o.target) sell(o.si, 1 - o.target / w, px, date, o.ruleId); }
+      }
+      for (const o of pending.buys) {
+        if (pos.size >= p.slots) { skipped.push({ date, listingId: stocks[o.si].id, reason: 'NO_SLOT' }); continue; }
+        const i = idx[o.si].get(date); if (i === undefined) { skipped.push({ date, listingId: stocks[o.si].id, reason: 'NO_BAR' }); continue; }
+        const px = stocks[o.si].bars.open[i] * (1 + slip);
+        const want = eqOpen * p.targetWeight, afford = cash / (1 + comm);
+        const amt = Math.min(want, afford);
+        if (amt < eqOpen * p.minWeight) { skipped.push({ date, listingId: stocks[o.si].id, reason: 'NO_CASH' }); continue; }
+        const sh = amt / px, c = amt * comm; cash -= amt + c; book.commissions += c;
+        pos.set(o.si, { shares: sh, entryDate: date, entryPrice: px, cost: amt + c, proceeds: 0, dividends: 0, exits: [], remaining: 1, weightAtEntry: amt / eqOpen, rankAtEntry: o.rank });
+      }
+      pending = still.length ? { sells: still, buys: [] } : null;
+    }
+    // Delisting: Rest am letzten Handelstag nach Szenario
+    for (const [si] of [...pos]) { const t = stocks[si].terminal; if (t && t.kind === 'DELISTED' && t.date === date) { sell(si, 1, scen(t, slip), date, 'DELISTED'); book.terminalCount++; } }
+    for (const [si] of pos) { const i = idx[si].get(date); if (i !== undefined) lastPx[si] = stocks[si].bars.close[i]; }
+    const eq = value(date);
+    equity.push({ date, equity: eq, exposure: eq > 0 ? (eq - cash) / eq : 0, positions: pos.size });
   }
   const openAtEnd = [...pos].map(([si, q]) => ({ listingId: stocks[si].id, symbol: stocks[si].symbol, entryDate: q.entryDate, entryPrice: q.entryPrice, shares: q.shares, remaining: q.remaining, lastPrice: lastPx[si], cost: q.cost, proceeds: q.proceeds, dividends: q.dividends, exits: q.exits, weightAtEntry: q.weightAtEntry, rankAtEntry: q.rankAtEntry }));
-  return { equity, trades, decisions, skipped, book, openAtEnd, cashEnd: cash };
+  const preview = opts.preview && cal.length ? decide(cal[cal.length - 1], false) : null;
+  const state = { cash, positions: [...pos].map(([si, q]) => ({ ...q, listingId: stocks[si].id, symbol: stocks[si].symbol })), lastPx: Object.fromEntries([...pos.keys()].map((si) => [stocks[si].id, lastPx[si]])),
+    pending: pending ? { sells: pending.sells.map(({ si, ...o }) => ({ ...o, listingId: o.listingId || stocks[si].id })), buys: pending.buys.map(({ si, ...o }) => ({ ...o, listingId: o.listingId || stocks[si].id })) } : null, lastDate: cal[cal.length - 1] || null };
+  return { equity, trades, decisions, skipped, book, openAtEnd, cashEnd: cash, state, preview: preview ? { ...preview.dec, sells: preview.pending.sells, candidates: preview.cands.map((c, k) => ({ listingId: stocks[c.si].id, symbol: stocks[c.si].symbol, rank: k + 1, score: c.score, perf: c.m.perf })) } : null };
 }
 
 export default { id: 'VU_TREND_52W', version: VERSION, variant: 'VU_TREND_52W_PP', PARAMS, simulateRotation, metricsAt, clenow, buyReasons };
