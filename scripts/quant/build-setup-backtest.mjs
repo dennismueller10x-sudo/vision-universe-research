@@ -26,12 +26,12 @@ import { gunzipSync } from "node:zlib";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
-import { fromBars } from "./lib/daily-prices.mjs";
+import { fromBars, WORKING_STORE_IDENTITY } from "./lib/daily-prices.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SB = require(join(ROOT, "quant/engines/signal-backtest.js"));
-const MarketQualityVersion = () => require(join(ROOT, "quant/engines/market-quality.js")).TR_CONTRACT_VERSION;
+const MarketQualityVersion = () => require(join(ROOT, "quant/engines/canonical-total-return.js")).VERSION;
 const REPLAY = join(ROOT, "quant/data/product/setup-replay-v1");
 const OUT = join(ROOT, "quant/data/product/setup-backtest-v1.json");
 const HIST = join(ROOT, "quant/data/product/setup-observation-history/setup-mapping-1.0.0");
@@ -91,14 +91,13 @@ export function contractExit(obs, j, dayIndexOf, sa, e, maxHold) {
 /* Tageskurse eines Replays: splitbereinigt (Marken, Ausloeser) und
    Gesamtrendite (Ergebnis). Nur zur Laufzeit, nie im Artefakt. Derselbe
    Lader und derselbe Gesamtrendite-Vertrag wie die Signal-Studie
-   (scripts/quant/lib/daily-prices.mjs fromBars -> market-quality.js
-   totalReturnVerdict): eine Reihe mit nicht eingerechneter Ausschuettung
-   traegt keine Gesamtrendite. */
-function dailyOf(securityId, workDir) {
+   (scripts/quant/lib/daily-prices.mjs fromBars -> canonical-total-return.js):
+   Gesamtrendite aus Rohkurs, Split und Dividende, fail closed. */
+function dailyOf(securityId, workDir, opts = {}) {
   const candidates = [workDir ? join(workDir, "tiingo", "daily", securityId + ".json") : null, join(ROOT, "quant/data/market/golden-preview/daily", securityId + ".json")].filter(Boolean);
   const file = candidates.find((f) => existsSync(f));
   if (!file) return null;
-  const d = fromBars(JSON.parse(readFileSync(file, "utf8")));
+  const d = fromBars(JSON.parse(readFileSync(file, "utf8")), { identity: WORKING_STORE_IDENTITY, ...opts });
   return { rows: d.dates.map((date, i) => [date, d.close[i], d.high[i], d.tr ? d.tr[i] : null]), totalReturn: d.totalReturn, legacyTotalReturn: d.legacyTotalReturn, trVerdict: d.trVerdict };
 }
 
@@ -115,7 +114,7 @@ function main() {
   /* SPY taeglich: Vergleich und Marktphase (126 Handelstage, +-5 %). */
   const spyPts = JSON.parse(readFileSync(join(ROOT, "quant/data/market/multi-asset/series/SPY.json"), "utf8")).points;
   const spyIdx = new Map(spyPts.map(([d], i) => [d, i]));
-  const spyRet = (d0, d1) => { const a = spyIdx.get(d0), b = spyIdx.get(d1); return a !== undefined && b !== undefined ? (spyPts[b][1] / spyPts[a][1]) * F - 1 : null; };
+  let spyRet = (d0, d1) => { const a = spyIdx.get(d0), b = spyIdx.get(d1); return a !== undefined && b !== undefined ? (spyPts[b][1] / spyPts[a][1]) * F - 1 : null; };
   const regimeAt = (d) => { const i = spyIdx.get(d); if (i === undefined || i < 126) return null; const r = spyPts[i][1] / spyPts[i - 126][1] - 1; return r > 0.05 ? "UP" : r < -0.05 ? "DOWN" : "SIDEWAYS"; };
 
   /* Paritaet: dieselben Stichtage wie die veroeffentlichte Setup-Historie. */
@@ -145,7 +144,18 @@ function main() {
   const trConfirmed = replays.filter((r) => r.totalReturn === "AVAILABLE");
   const trQuality = { contract: MarketQualityVersion(), replays: replays.length, confirmed: trConfirmed.length, legacyConfirmed: replays.filter((r) => r.daily.legacyTotalReturn).length,
     share: replays.length ? SB.round(trConfirmed.length / replays.length, 3) : null, reasons: trReasons, excluded: [] };
-  const allTR = replays.length > 0 && trConfirmed.length / replays.length >= 0.95;
+  /* SPY als Vergleich auf DERSELBEN Basis: in Gesamtrendite durch dieselbe
+     Engine (Rolle BENCHMARK_REFERENCE). Fehlt sie, rechnet die ganze Studie
+     in Kursrendite - nie Aktie in Gesamtrendite gegen SPY als Kurs. */
+  const bench = JSON.parse(readFileSync(join(ROOT, "quant/config/tiingo-scale.json"), "utf8")).benchmark || {};
+  const spyDaily = bench.securityId ? dailyOf(bench.securityId, workDir, { role: "BENCHMARK_REFERENCE" }) : null;
+  const spyTotalReturn = !!(spyDaily && spyDaily.totalReturn);
+  trQuality.benchmark = { securityId: bench.securityId || null, totalReturn: spyTotalReturn, reason: spyDaily ? spyDaily.trVerdict.reason : "NO_CANONICAL_HISTORY" };
+  const allTR = replays.length > 0 && trConfirmed.length / replays.length >= 0.95 && spyTotalReturn;
+  if (allTR) {
+    const idx = new Map(spyDaily.rows.map(([d], i) => [d, i]));
+    spyRet = (d0, d1) => { const a = idx.get(d0), b = idx.get(d1); return a !== undefined && b !== undefined ? (spyDaily.rows[b][3] / spyDaily.rows[a][3]) * F - 1 : null; };
+  }
   if (allTR && trConfirmed.length < replays.length) {
     trQuality.excluded = replays.filter((r) => r.totalReturn !== "AVAILABLE").map((r) => ({ ticker: r.ticker, reason: r.daily.trVerdict.reason }));
     replays.splice(0, replays.length, ...trConfirmed);
@@ -247,7 +257,9 @@ function main() {
       oos: { state: oosPass ? "PASS" : "FAIL", reason: oosPass ? null : "OOS_DIRECTION_NOT_CONFIRMED", value: oos },
       walkForward: { state: agreeShare >= 0.75 ? "PASS" : "FAIL", reason: agreeShare >= 0.75 ? null : "FOLDS_DISAGREE", value: Math.round(agreeShare * folds.length) + " von " + folds.length + " Folds in derselben Richtung" },
       survivorship: { state: "FAIL", reason: "HAND_PICKED_SURVIVORS", value: "Nur Titel mit vollständiger Tageshistorie im Repository (" + replays.map((r) => r.ticker).join(", ") + "); alle heute gelistet" },
-      returnBasis: allTR ? { state: "PASS", value: "Gesamtrendite mit Dividenden" } : { state: "FAIL", reason: "TOTAL_RETURN_COVERAGE_SHORT", value: "Kursrendite ohne Dividenden (Gesamtrendite nur für " + trQuality.confirmed + " von " + trQuality.replays + " Titeln bestätigt)" },
+      returnBasis: allTR ? { state: "PASS", value: "Gesamtrendite mit Dividenden (eigene Rekonstruktion aus Kurs, Split und Dividende)" }
+        : trQuality.share >= 0.95 ? { state: "FAIL", reason: "BENCHMARK_TOTAL_RETURN_UNAVAILABLE", value: "Kursrendite ohne Dividenden (Gesamtrendite des Vergleichs SPY nicht verfügbar)" }
+        : { state: "FAIL", reason: "TOTAL_RETURN_COVERAGE_SHORT", value: "Kursrendite ohne Dividenden (Gesamtrendite nur für " + trQuality.confirmed + " von " + trQuality.replays + " Titeln bestätigt)" },
       costs: { state: "PASS", value: SB.FRICTIONS.roundTripBps + " bps je Runde" },
       slippage: { state: "PASS", value: SB.FRICTIONS.slippageBps + " bps je Runde" },
       benchmark: { state: "PASS", value: "SPY-Kurs über dasselbe Fenster; Basis aller Beobachtungstage derselben Titel" },

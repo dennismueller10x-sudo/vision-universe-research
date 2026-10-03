@@ -227,3 +227,17 @@ Die Mindestquote von 95 % ist nicht erreicht. Die Studie bleibt deshalb fail-clo
 - Bei gleicher Methodik werden Uebergaenge zu Ereignissen (MC1).
 - Ein unabhaengiger Nachrechner liest die Staende selbst (MC4).
 - Mit abgeschalteter Regel schlagen MC2 und MC4 fehl.
+
+## Eigene Gesamtrendite (canonical-total-return-1.0.0, 03.10.2026)
+
+Owner-Entscheidung zu Punkt 8: Option (a). Der Vertrag `total-return-contract-1.0.0` (Abschnitt oben) bewertete die bereinigte Spalte des Anbieters und kam nicht über 86,1 % – bei 334 Titeln widersprach die Spalte den eigenen Split- und Dividendenangaben des Anbieters. Ab jetzt ist die Gesamtrendite eine eigene Rekonstruktion; der alte Vertrag bleibt nur als Vorher-Messung und Gegenprobe.
+
+- **Engine:** `quant/engines/canonical-total-return.js` – eine Funktion (`reconstruct`) für Aktien, delistete Listings und SPY (Rolle `BENCHMARK_REFERENCE`, keine Sondermethodik). Inputs: Rohkurs, Splitfaktor, Bardividende, Handelstag. Methodik: `quant/methodology/canonical-total-return-v1.json`.
+- **Semantik:** Kursrendite `g = s·P_t/P_(t-1)`, Gesamtrendite `g = s·(P_t + D_t)/P_(t-1)`, reinvestiert am Ex-Tag. Keine Mischbasis: `assertSingleBasis` bricht die Studie ab, sobald ein Titel oder SPY nicht auf der kanonischen Reihe rechnet.
+- **Fail closed:** fehlendes Feld, ein Ereignis, das die Anbieterspalte zeigt und uns fehlt (auch kumuliert über 0,5 % aus kleinen Schritten), widersprüchliche Ereignisse, unbestätigte Lücke ohne Gegenprobe, unsichere Listing-Identität → `TOTAL_RETURN_UNAVAILABLE`, keine Reihe.
+- **Gegenprobe:** Weicht der Anbieter ab, weil *er* ein Ereignis verpasst oder seine Spalte aus zwei Abrufen zusammensetzt, gilt der Kanon (`CONFLICT_CANONICAL_WINS`). Gemessen: Tagesabweichung je Titel (Median, p95, Max), Niveauabweichung, Dividenden- und Split-Parität, übereinstimmende und widersprechende Titel (`quant/data/product/total-return-quality-v1.json`, Schema 2.0.0).
+- **Vergleich A/B/C:** Die Signal-Studie rechnet über die Titel, die alle drei Basen tragen, Kursrendite (A), Anbieterspalte (B) und eigene Gesamtrendite (C) und veröffentlicht C (`returnBasisComparison`).
+- **Setup-Studie:** SPY rechnet im Gesamtrendite-Modus ebenfalls in kanonischer Gesamtrendite; vorher wurde dort gegen SPY als Kurs verglichen.
+- **Überlebende:** unverändert getrennt; delistete Listings bekommen eine Gesamtrendite nur mit bestätigtem Listing-Fenster (Klassen A/B). Gate PASS und Kontrolle PARTIAL bleiben, was sie sind.
+- **Fingerabdruck:** neue Gruppe `contracts` (Gesamtrendite-, Corporate-Action-, Benchmark-Vertragsversion); `canonical-total-return.js` und `refresh-benchmark-history.mjs` gehören zu ihren Gruppen. Ein Vertragswechsel rechnet bei gleichem Stichtag neu.
+- **Seite:** Die Backtesting-Seite nennt die Renditebasis in Klartext („Gesamtrendite mit Dividenden (selbst berechnet)“ oder „Nur Kursrendite, ohne Dividenden“).

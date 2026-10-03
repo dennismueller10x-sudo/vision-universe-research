@@ -252,6 +252,17 @@
     return out;
   }
 
+  /* Renditebasis der Signal-Studie in Klartext: eigene Gesamtrendite (aus
+     Kurs, Splits und Dividenden) oder nur Kursrendite - nie gemischt. */
+  function returnBasisLine(study) {
+    var tr = study.returnBasis === "CANONICAL_TOTAL_RETURN";
+    var cov = study.source && study.source.totalReturnCoverage;
+    var detail = cov && cov.titles ? " Gesamtrendite vollständig belegt für " + int(cov.TOTAL_RETURN_CONFIRMED_AFTER) + " von " + int(cov.titles) + " Aktien." : "";
+    return el("p", { class: "q-bt-basis qx-small", "data-return-basis": tr ? "total" : "price" }, [
+      el("b", { text: "Renditebasis: " + (tr ? "Gesamtrendite mit Dividenden (selbst berechnet)" : "Nur Kursrendite, ohne Dividenden") }),
+      el("span", { text: " " + (study.returnTypeNote || "") + detail })]);
+  }
+
   async function render(main, ctx, ruleId) {
     main.append(el("header", { class: "q-hero q-hero--page" }, [X.globe(), el("p", { class: "q-kicker", text: "Backtesting" }),
       el("h1", { class: "qx-h1", text: "Wähle eine Regel oder ein Setup" }),
@@ -272,6 +283,7 @@
     ["STRATEGY_BACKTEST", "FACTOR_RANKING_BACKTEST"].forEach(function (id) { var k = kindOf(id);
       picks.push(el("div", { class: "q-bt-pick is-off" }, [el("small", { text: id === "STRATEGY_BACKTEST" ? "Anlagestil" : "Faktor-Ranking" }), el("b", { text: k.label }), el("span", { text: STATUS_WORD[k.status] })])); });
     main.append(el("nav", { class: "q-bt-picks", "aria-label": "Regel oder Setup wählen" }, picks));
+    main.append(returnBasisLine(signal));
 
     var rule = ruleId ? signal.rules.filter(function (r) { return r.id === ruleId; })[0] || null : null;
     main.querySelectorAll(".q-bt-pick").forEach(function (a) { if (ruleId && a.getAttribute("href") === X.routes.backtest(ruleId)) a.setAttribute("aria-current", "page"); });
