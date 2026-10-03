@@ -207,12 +207,12 @@
       el("p", { class: "qx-small", text: "Quant gibt keine Anlageempfehlungen und macht keine Prognosen. Einstieg, Stop-Loss und Ziele sind Szenarien der technischen Analyse." }));
 
     var r = await Promise.all([ctx.api.getSetupScreenIndex().catch(function () { return null; }), ctx.api.getStrategyIndex().catch(function () { return null; }),
-      /* Der alte Signal-Radar (getRadarIntelligence) laedt das ganze
-         Faehigkeitsverzeichnis; der Quant Radar ist ein eigenes, kleines
-         Artefakt (radar-v1, rund 90 KB). */
+      /* Die Startseite liest nur die Radar-Projektion (Kennzahlen und
+         erste Karten, ~3 KB); der ganze Radar (bis 211 KB, gemessen
+         03.10.2026) bleibt der Radar-Seite. */
       null, ctx.api.getMarketRegime().catch(function () { return null; }),
       ctx.api.getStrategyProfiles().catch(function () { return null; }), screeningRows(ctx),
-      ctx.api.getQuantRadar().catch(function () { return null; })]);
+      ctx.api.getQuantRadarHome().catch(function () { return null; })]);
     var setupIdx = r[0], stratIdx = r[1], regime = r[3], profiles = r[4], rowBy = r[5], radarState = r[6];
     var tiles = [], sections = [];
     var open = function (st) { return st && st.availability && st.availability.state === "AVAILABLE" && typeof st.count === "number"; };
@@ -250,7 +250,7 @@
          keine Depotverwaltung - nur "zeig mir, wenn sich hier etwas tut". */
       var watchedList = X.watch.list();
       if (watchedList.length) {
-        var hits = radarState.cards.filter(function (c) { return watchedList.indexOf(c.ticker) >= 0; });
+        var hits = await ctx.api.getRadarCards(watchedList).catch(function () { return []; });
         watchHost.replaceChildren(X.world("Deine beobachteten Aktien", hits.length ? hits.length + " von " + watchedList.length + " beobachteten Aktien melden eine Veränderung." : "Bei deinen " + watchedList.length + " beobachteten Aktien hat sich zum letzten Stand nichts geändert.",
           hits.length ? [el("div", { class: "q-radar-grid" }, hits.slice(0, 6).map(function (c) { return radarCard(ctx, c, { compact: true }); }))] : [], { href: X.routes.radar("filter=beobachtet"), label: "Alle beobachteten" }));
       }
