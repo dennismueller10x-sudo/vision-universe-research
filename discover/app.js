@@ -114,8 +114,22 @@
       capabilities:dir.capabilities(hits&&hits.entries&&hits.entries[0]),masterVersion:manifest&&manifest.version,asOf:manifest&&manifest.asOf},ctx);
     watchButton(root,symbol);
   }
-  async function route() {
+  /* SCROLL (Plattform-Audit 03.10.2026): jede Neuberechnung sprang nach
+     oben - auch die zweite beim Start (vu-fx-ready) und jeder
+     Waehrungswechsel; Zurueck landete immer oben. Jetzt: Neuberechnung am
+     Platz behaelt die Position, Zurueck/Vor stellt sie wieder her, nur
+     eine neue Navigation beginnt oben. */
+  const scrollMemo=new Map();let historyNav=false;
+  function restoreScroll(y,active,tries=0){
+    if(!active())return;
+    const max=document.documentElement.scrollHeight-global.innerHeight;
+    if(max>=y-2||tries>=30){global.scrollTo(0,Math.min(y,Math.max(0,max)));return;}
+    global.requestAnimationFrame(()=>restoreScroll(y,active,tries+1));
+  }
+  async function route(opts) {
     if(!meta)return;
+    const keep=!!(opts&&opts.keepScroll===true);
+    const ziel=keep?global.scrollY:(historyNav?(scrollMemo.get(location.hash)||0):0);historyNav=false;
     const id=++generation,active=()=>generation===id;
     if(homeDispose){homeDispose();homeDispose=null;}
     if(marketDispose){marketDispose();marketDispose=null;}
@@ -124,7 +138,7 @@
     document.body.classList.toggle('dx-feed-aktiv',parts[0]==='einzeln');
     document.body.classList.toggle('v2-feed-active',parts[0]==='einzeln');
     const root=shell();root.setAttribute('aria-busy','true');
-    document.title='Discover — Vision Universe®';global.scrollTo(0,0);
+    document.title='Discover — Vision Universe®';if(!ziel)global.scrollTo(0,0);
     try {
       await D.LiveHub.loadIndex().catch(()=>null);if(!active())return;
       if(parts[0]==='s'&&parts[2]){
@@ -259,7 +273,8 @@
       }
       if(active()){
         D.Cards.revealOnScroll(root);
-        if(parts[0]==='c'||parts[0]==='thema')global.requestAnimationFrame(()=>{if(active())global.scrollTo(0,0);});
+        if(ziel>0)restoreScroll(ziel,active);
+        else if(parts[0]==='c'||parts[0]==='thema')global.requestAnimationFrame(()=>{if(active())global.scrollTo(0,0);});
       }
     } catch(err) {
       if(active())message(root,'Gerade nicht erreichbar','Die Daten konnten nicht geladen werden. Bitte versuche es noch einmal.',true);
@@ -278,10 +293,12 @@
       theme=D.Theme.create({storage,document});D.theme=theme;D.memory=D.Memory.create();
       theme.onChange(state=>{syncThemeChrome(state);document.dispatchEvent(new Event('vu-theme-change'));});syncThemeChrome({resolved:theme.resolved()});
       document.querySelector('vu-navigation')?.renderSettings();
-      setupSearch();global.addEventListener('hashchange',route);
+      setupSearch();
+      global.addEventListener('popstate',()=>{historyNav=true;});
+      global.addEventListener('hashchange',e=>{try{scrollMemo.set(new URL(e.oldURL).hash,global.scrollY);}catch(_){}route();});
       if('scrollRestoration' in history)history.scrollRestoration='manual';
-      document.addEventListener('vu-currency-change',route);
-      document.addEventListener('vu-fx-ready',route);
+      document.addEventListener('vu-currency-change',()=>route({keepScroll:true}));
+      document.addEventListener('vu-fx-ready',()=>route({keepScroll:true}));
       if(global.VUFx&&global.VUFx.Bootstrap){
         global.VUFx.Bootstrap.boot().catch(()=>{ /* ohne Kurse bleibt die Originalwaehrung */ });
       }
