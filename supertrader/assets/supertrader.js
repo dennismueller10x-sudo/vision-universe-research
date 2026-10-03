@@ -1150,6 +1150,8 @@
      vollstaendige Datei. */
   var SYM = (body.getAttribute('data-symbol') || new URLSearchParams(location.search).get('s') || '').toUpperCase();
   function load(k) {
+    /* Regeltexte braucht nur die Strategie-Detailseite. */
+    if (k === 'registry' && page !== 'strategy') return getJSON('registry-core.json').catch(function () { return getJSON(FILE.registry); });
     if (k !== 'signals' || page === 'signals') return getJSON(FILE[k]);
     var part = page === 'stock' ? (/^[A-Z0-9.\-]+$/.test(SYM) ? 'stock/' + SYM + '.json' : null) : 'signals-core.json';
     if (!part) return getJSON(FILE.signals);
