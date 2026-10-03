@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-03T02:10:28.254Z",
+  "generatedAt": "2026-10-03T05:32:57.865Z",
   "gate": "FULL_UNIVERSE",
   "universeSource": "SECURITY_MASTER",
   "universeFile": "quant/data/market/security-master/eligibility.json",
@@ -21,10 +21,10 @@
   },
   "run": {
     "source": "github-actions",
-    "runId": "37084192151",
-    "commit": "891270d2d77468e3817114a282d00a556f644bc7",
-    "runtimeMs": 18941,
-    "msPerSymbol": 3
+    "runId": "37096292852",
+    "commit": "164fe3369d053e9e69c9f2d6917dc30d45a6f0ed",
+    "runtimeMs": 24238,
+    "msPerSymbol": 4
   },
   "redistribution": {
     "priceLevels": "WITHHELD",
@@ -39,8 +39,8 @@
       "id": "aboveSMA20",
       "label": "Alle Aktien ueber SMA20",
       "kind": "boolean",
-      "matched": 2013,
-      "notMatched": 4420,
+      "matched": 2011,
+      "notMatched": 4422,
       "notEvaluable": 0,
       "evaluatedOf": 6433,
       "tickers": [
@@ -103,8 +103,8 @@
       "id": "aboveSMA50",
       "label": "Alle Aktien ueber SMA50",
       "kind": "boolean",
-      "matched": 1883,
-      "notMatched": 4483,
+      "matched": 1876,
+      "notMatched": 4490,
       "notEvaluable": 67,
       "evaluatedOf": 6433,
       "tickers": [
@@ -178,9 +178,9 @@
       "id": "aboveSMA100",
       "label": "Alle Aktien ueber SMA100",
       "kind": "boolean",
-      "matched": 2089,
-      "notMatched": 4027,
-      "notEvaluable": 317,
+      "matched": 2076,
+      "notMatched": 4026,
+      "notEvaluable": 331,
       "evaluatedOf": 6433,
       "tickers": [
         "A",
@@ -202,7 +202,6 @@
         "ACEI",
         "ACHL",
         "ACHV",
-        "ACII",
         "ACIU",
         "ACLS",
         "ACMR",
@@ -232,20 +231,21 @@
         "AEO",
         "AERT",
         "AES",
-        "AEYE"
+        "AEYE",
+        "AFBI"
       ],
       "tickersTruncated": true,
       "notEvaluableSample": [
         "AAAD",
+        "AAAP",
         "AACP",
         "AADX",
         "ABL",
         "ACGC",
         "ACGO",
+        "ACII",
         "ACLZ",
-        "ACMM",
-        "ADAMK",
-        "ADIG"
+        "ACMM"
       ],
       "notEvaluableNote": "Fuer diese Titel ist die Frage nicht entscheidbar - meist zu kurze Historie. Sie zaehlen ausdruecklich weder als Treffer noch als Nichttreffer."
     },
@@ -253,9 +253,9 @@
       "id": "aboveSMA200",
       "label": "Alle Aktien ueber SMA200",
       "kind": "boolean",
-      "matched": 2251,
-      "notMatched": 3486,
-      "notEvaluable": 696,
+      "matched": 2194,
+      "notMatched": 3431,
+      "notEvaluable": 808,
       "evaluatedOf": 6433,
       "tickers": [
         "A",
@@ -277,7 +277,6 @@
         "ACHC",
         "ACHL",
         "ACHV",
-        "ACII",
         "ACIW",
         "ACLO",
         "ACLS",
@@ -307,20 +306,21 @@
         "AES",
         "AFAR",
         "AFBI",
-        "AFCG"
+        "AFCG",
+        "AFG"
       ],
       "tickersTruncated": true,
       "notEvaluableSample": [
         "AAAD",
+        "AAAP",
+        "AACI",
         "AACO",
         "AACP",
         "AADX",
         "AAOG",
         "AAPGV",
         "ABL",
-        "ACAA",
-        "ACGC",
-        "ACGO"
+        "ACAA"
       ],
       "notEvaluableNote": "Fuer diese Titel ist die Frage nicht entscheidbar - meist zu kurze Historie. Sie zaehlen ausdruecklich weder als Treffer noch als Nichttreffer."
     },
@@ -328,9 +328,9 @@
       "id": "aboveSMA20And50And200",
       "label": "Ueber SMA20 und SMA50 und SMA200",
       "kind": "boolean",
-      "matched": 953,
-      "notMatched": 4784,
-      "notEvaluable": 696,
+      "matched": 944,
+      "notMatched": 4681,
+      "notEvaluable": 808,
       "evaluatedOf": 6433,
       "tickers": [
         "A",
@@ -387,15 +387,15 @@
       "tickersTruncated": true,
       "notEvaluableSample": [
         "AAAD",
+        "AAAP",
+        "AACI",
         "AACO",
         "AACP",
         "AADX",
         "AAOG",
         "AAPGV",
         "ABL",
-        "ACAA",
-        "ACGC",
-        "ACGO"
+        "ACAA"
       ],
       "notEvaluableNote": "Fuer diese Titel ist die Frage nicht entscheidbar - meist zu kurze Historie. Sie zaehlen ausdruecklich weder als Treffer noch als Nichttreffer."
     },
@@ -403,9 +403,9 @@
       "id": "aboveAllSMA",
       "label": "Ueber allen vier Durchschnitten",
       "kind": "boolean",
-      "matched": 875,
-      "notMatched": 4862,
-      "notEvaluable": 696,
+      "matched": 871,
+      "notMatched": 4754,
+      "notEvaluable": 808,
       "evaluatedOf": 6433,
       "tickers": [
         "A",
@@ -462,15 +462,15 @@
       "tickersTruncated": true,
       "notEvaluableSample": [
         "AAAD",
+        "AAAP",
+        "AACI",
         "AACO",
         "AACP",
         "AADX",
         "AAOG",
         "AAPGV",
         "ABL",
-        "ACAA",
-        "ACGC",
-        "ACGO"
+        "ACAA"
       ],
       "notEvaluableNote": "Fuer diese Titel ist die Frage nicht entscheidbar - meist zu kurze Historie. Sie zaehlen ausdruecklich weder als Treffer noch als Nichttreffer."
     },
@@ -478,9 +478,9 @@
       "id": "newHigh52w",
       "label": "Neue 52-Wochen-Hochs",
       "kind": "boolean",
-      "matched": 144,
-      "notMatched": 5471,
-      "notEvaluable": 818,
+      "matched": 140,
+      "notMatched": 5360,
+      "notEvaluable": 933,
       "evaluatedOf": 6433,
       "tickers": [
         "ABLV",
@@ -510,12 +510,10 @@
         "CBNK",
         "CDNA",
         "CEO",
-        "CETH",
         "CFFS",
         "CHEF",
         "CHL",
         "CHU",
-        "CITE",
         "CMPOV",
         "CNXN",
         "COHU",
@@ -532,20 +530,22 @@
         "EQC",
         "EVAC",
         "EVE",
-        "FBLA"
+        "FBLA",
+        "FERA",
+        "FOSL"
       ],
       "tickersTruncated": true,
       "notEvaluableSample": [
         "AAAC",
         "AAAD",
+        "AAAP",
+        "AACI",
         "AACO",
         "AACP",
         "AADX",
         "AAOG",
         "AAPGV",
-        "ABL",
-        "ACAA",
-        "ACGC"
+        "ABL"
       ],
       "notEvaluableNote": "Fuer diese Titel ist die Frage nicht entscheidbar - meist zu kurze Historie. Sie zaehlen ausdruecklich weder als Treffer noch als Nichttreffer."
     },
@@ -553,9 +553,9 @@
       "id": "within5PctOf52wHigh",
       "label": "Innerhalb 5 % vom 52-Wochen-Hoch",
       "kind": "boolean",
-      "matched": 671,
-      "notMatched": 4944,
-      "notEvaluable": 818,
+      "matched": 623,
+      "notMatched": 4877,
+      "notEvaluable": 933,
       "evaluatedOf": 6433,
       "tickers": [
         "AACB",
@@ -567,7 +567,6 @@
         "ABM",
         "ACA",
         "ACHL",
-        "ACII",
         "ACLO",
         "ACU",
         "ACVA",
@@ -585,18 +584,15 @@
         "AGNCN",
         "AGNCO",
         "AGNCP",
-        "AGR",
         "AII",
         "AITR",
         "AL",
         "ALDF",
         "ALE",
         "ALF",
-        "ALIM",
         "ALL-P-B",
         "ALNT",
         "ALOT",
-        "ALPN",
         "ALTG-P-A",
         "AMD",
         "AME",
@@ -607,20 +603,24 @@
         "ANET",
         "ANSC",
         "AOMD",
-        "AOMN"
+        "AOMN",
+        "APH",
+        "APLE",
+        "APOS",
+        "AQNB"
       ],
       "tickersTruncated": true,
       "notEvaluableSample": [
         "AAAC",
         "AAAD",
+        "AAAP",
+        "AACI",
         "AACO",
         "AACP",
         "AADX",
         "AAOG",
         "AAPGV",
-        "ABL",
-        "ACAA",
-        "ACGC"
+        "ABL"
       ],
       "notEvaluableNote": "Fuer diese Titel ist die Frage nicht entscheidbar - meist zu kurze Historie. Sie zaehlen ausdruecklich weder als Treffer noch als Nichttreffer."
     },
@@ -705,8 +705,8 @@
       "kind": "ranked",
       "direction": "desc",
       "metric": "returns.12M",
-      "evaluated": 5576,
-      "notEvaluable": 824,
+      "evaluated": 5466,
+      "notEvaluable": 938,
       "quarantined": [
         {
           "ticker": "AEMD",
@@ -775,54 +775,6 @@
           ]
         },
         {
-          "ticker": "CCOM",
-          "value": 12.997059,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 12.997059,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 13.091176,
-              "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "CETH",
-          "value": 569.25,
-          "reasons": [
-            {
-              "metric": "returns.6M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 6.333471,
-              "bound": 5
-            }
-          ]
-        },
-        {
           "ticker": "CPHI",
           "value": -0.66064,
           "reasons": [
@@ -879,24 +831,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 7.185165,
               "bound": 5
-            }
-          ]
-        },
-        {
-          "ticker": "FLXI",
-          "value": 111.535714,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 111.535714,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 114.383095,
-              "bound": 10
             }
           ]
         },
@@ -987,36 +921,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 21.978118,
               "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "MINE",
-          "value": 2649999,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 2649999,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 3179999,
-              "bound": 10
-            },
-            {
-              "metric": "relativeStrength.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.649109,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 15.303201,
-              "bound": 5
             }
           ]
         },
@@ -1261,7 +1165,7 @@
           ]
         }
       ],
-      "quarantinedCount": 33,
+      "quarantinedCount": 29,
       "rankingHygiene": {
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
@@ -1271,10 +1175,6 @@
         {
           "ticker": "CMRX",
           "value": 8.930233
-        },
-        {
-          "ticker": "AUC",
-          "value": 8.633333
         },
         {
           "ticker": "ANL",
@@ -1287,10 +1187,6 @@
         {
           "ticker": "SLS",
           "value": 5.946746
-        },
-        {
-          "ticker": "STBX",
-          "value": 5.931669
         },
         {
           "ticker": "MRNA",
@@ -1461,25 +1357,33 @@
           "value": 2.85301
         },
         {
-          "ticker": "GRCL",
-          "value": 2.796296
-        },
-        {
           "ticker": "XRPN",
           "value": 2.765043
+        },
+        {
+          "ticker": "DELL",
+          "value": 2.758151
+        },
+        {
+          "ticker": "CHRN",
+          "value": 2.733722
+        },
+        {
+          "ticker": "OESX",
+          "value": 2.730392
         }
       ],
       "notEvaluableSample": [
         "AAAC",
         "AAAD",
+        "AAAP",
+        "AACI",
         "AACO",
         "AACP",
         "AADX",
         "AAOG",
         "AAPGV",
-        "ABL",
-        "ACAA",
-        "ACGC"
+        "ABL"
       ]
     },
     {
@@ -1488,8 +1392,8 @@
       "kind": "ranked",
       "direction": "desc",
       "metric": "returns.6M",
-      "evaluated": 5934,
-      "notEvaluable": 465,
+      "evaluated": 5921,
+      "notEvaluable": 482,
       "quarantined": [
         {
           "ticker": "AEMD",
@@ -1570,54 +1474,6 @@
           ]
         },
         {
-          "ticker": "CCOM",
-          "value": -0.03605,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 12.997059,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 13.091176,
-              "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "CETH",
-          "value": 569.25,
-          "reasons": [
-            {
-              "metric": "returns.6M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 6.333471,
-              "bound": 5
-            }
-          ]
-        },
-        {
           "ticker": "CPHI",
           "value": 0.042857,
           "reasons": [
@@ -1674,24 +1530,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 7.185165,
               "bound": 5
-            }
-          ]
-        },
-        {
-          "ticker": "FLXI",
-          "value": -0.032545,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 111.535714,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 114.383095,
-              "bound": 10
             }
           ]
         },
@@ -1782,36 +1620,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 21.978118,
               "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "MINE",
-          "value": -0.161392,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 2649999,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 3179999,
-              "bound": 10
-            },
-            {
-              "metric": "relativeStrength.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.649109,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 15.303201,
-              "bound": 5
             }
           ]
         },
@@ -2056,17 +1864,13 @@
           ]
         }
       ],
-      "quarantinedCount": 34,
+      "quarantinedCount": 30,
       "rankingHygiene": {
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
       },
       "evaluatedOf": 6433,
       "top": [
-        {
-          "ticker": "AUC",
-          "value": 9.703704
-        },
         {
           "ticker": "AGL",
           "value": 6.834264
@@ -2262,10 +2066,15 @@
         {
           "ticker": "CORT",
           "value": 1.735467
+        },
+        {
+          "ticker": "OTLK",
+          "value": 1.707763
         }
       ],
       "notEvaluableSample": [
         "AAAD",
+        "AAAP",
         "AACO",
         "AACP",
         "AADX",
@@ -2273,8 +2082,7 @@
         "ABL",
         "ACAA",
         "ACGC",
-        "ACGO",
-        "ACLZ"
+        "ACGO"
       ]
     },
     {
@@ -2283,8 +2091,8 @@
       "kind": "ranked",
       "direction": "desc",
       "metric": "return12M1M",
-      "evaluated": 5576,
-      "notEvaluable": 824,
+      "evaluated": 5466,
+      "notEvaluable": 938,
       "quarantined": [
         {
           "ticker": "AEMD",
@@ -2353,54 +2161,6 @@
           ]
         },
         {
-          "ticker": "CCOM",
-          "value": 13.091176,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 12.997059,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 13.091176,
-              "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "CETH",
-          "value": 569.25,
-          "reasons": [
-            {
-              "metric": "returns.6M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 6.333471,
-              "bound": 5
-            }
-          ]
-        },
-        {
           "ticker": "CPHI",
           "value": -0.563533,
           "reasons": [
@@ -2457,24 +2217,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 7.185165,
               "bound": 5
-            }
-          ]
-        },
-        {
-          "ticker": "FLXI",
-          "value": 114.383095,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 111.535714,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 114.383095,
-              "bound": 10
             }
           ]
         },
@@ -2565,36 +2307,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 21.978118,
               "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "MINE",
-          "value": 3179999,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 2649999,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 3179999,
-              "bound": 10
-            },
-            {
-              "metric": "relativeStrength.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.649109,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 15.303201,
-              "bound": 5
             }
           ]
         },
@@ -2839,7 +2551,7 @@
           ]
         }
       ],
-      "quarantinedCount": 33,
+      "quarantinedCount": 29,
       "rankingHygiene": {
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
@@ -2873,14 +2585,6 @@
         {
           "ticker": "ERAS",
           "value": 6.40724
-        },
-        {
-          "ticker": "AUC",
-          "value": 6
-        },
-        {
-          "ticker": "STBX",
-          "value": 5.931669
         },
         {
           "ticker": "PRAX",
@@ -3007,10 +2711,6 @@
           "value": 2.873288
         },
         {
-          "ticker": "GRCL",
-          "value": 2.796296
-        },
-        {
           "ticker": "REPL",
           "value": 2.795724
         },
@@ -3045,19 +2745,31 @@
         {
           "ticker": "GLBS",
           "value": 2.638095
+        },
+        {
+          "ticker": "AAOI",
+          "value": 2.628783
+        },
+        {
+          "ticker": "PRLD",
+          "value": 2.596026
+        },
+        {
+          "ticker": "BDSX",
+          "value": 2.541069
         }
       ],
       "notEvaluableSample": [
         "AAAC",
         "AAAD",
+        "AAAP",
+        "AACI",
         "AACO",
         "AACP",
         "AADX",
         "AAOG",
         "AAPGV",
-        "ABL",
-        "ACAA",
-        "ACGC"
+        "ABL"
       ]
     },
     {
@@ -3066,8 +2778,8 @@
       "kind": "ranked",
       "direction": "desc",
       "metric": "relativeStrength.12M",
-      "evaluated": 5576,
-      "notEvaluable": 824,
+      "evaluated": 5466,
+      "notEvaluable": 938,
       "quarantined": [
         {
           "ticker": "AEMD",
@@ -3136,54 +2848,6 @@
           ]
         },
         {
-          "ticker": "CCOM",
-          "value": 2.497886,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 12.997059,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 13.091176,
-              "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "CETH",
-          "value": 6.205114,
-          "reasons": [
-            {
-              "metric": "returns.6M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 6.333471,
-              "bound": 5
-            }
-          ]
-        },
-        {
           "ticker": "CPHI",
           "value": -1.221657,
           "reasons": [
@@ -3240,24 +2904,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 7.185165,
               "bound": 5
-            }
-          ]
-        },
-        {
-          "ticker": "FLXI",
-          "value": 4.582309,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 111.535714,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 114.383095,
-              "bound": 10
             }
           ]
         },
@@ -3348,36 +2994,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 21.978118,
               "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "MINE",
-          "value": 14.649109,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 2649999,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 3179999,
-              "bound": 10
-            },
-            {
-              "metric": "relativeStrength.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.649109,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 15.303201,
-              "bound": 5
             }
           ]
         },
@@ -3622,7 +3238,7 @@
           ]
         }
       ],
-      "quarantinedCount": 33,
+      "quarantinedCount": 29,
       "rankingHygiene": {
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
@@ -3632,10 +3248,6 @@
         {
           "ticker": "CMRX",
           "value": 2.154623
-        },
-        {
-          "ticker": "AUC",
-          "value": 2.124268
         },
         {
           "ticker": "ANL",
@@ -3648,10 +3260,6 @@
         {
           "ticker": "SLS",
           "value": 1.797312
-        },
-        {
-          "ticker": "STBX",
-          "value": 1.795139
         },
         {
           "ticker": "MRNA",
@@ -3822,25 +3430,33 @@
           "value": 1.207893
         },
         {
-          "ticker": "GRCL",
-          "value": 1.193065
-        },
-        {
           "ticker": "XRPN",
           "value": 1.184798
+        },
+        {
+          "ticker": "DELL",
+          "value": 1.182966
+        },
+        {
+          "ticker": "CHRN",
+          "value": 1.176444
+        },
+        {
+          "ticker": "OESX",
+          "value": 1.175552
         }
       ],
       "notEvaluableSample": [
         "AAAC",
         "AAAD",
+        "AAAP",
+        "AACI",
         "AACO",
         "AACP",
         "AADX",
         "AAOG",
         "AAPGV",
-        "ABL",
-        "ACAA",
-        "ACGC"
+        "ABL"
       ]
     },
     {
@@ -3849,7 +3465,7 @@
       "kind": "ranked",
       "direction": "desc",
       "metric": "momentumAcceleration",
-      "evaluated": 6313,
+      "evaluated": 6317,
       "notEvaluable": 86,
       "quarantined": [
         {
@@ -3931,54 +3547,6 @@
           ]
         },
         {
-          "ticker": "CCOM",
-          "value": -0.006679,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 12.997059,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 13.091176,
-              "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "CETH",
-          "value": 0,
-          "reasons": [
-            {
-              "metric": "returns.6M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 6.333471,
-              "bound": 5
-            }
-          ]
-        },
-        {
           "ticker": "CPHI",
           "value": -0.209937,
           "reasons": [
@@ -4035,24 +3603,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 7.185165,
               "bound": 5
-            }
-          ]
-        },
-        {
-          "ticker": "FLXI",
-          "value": -0.011015,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 111.535714,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 114.383095,
-              "bound": 10
             }
           ]
         },
@@ -4143,36 +3693,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 21.978118,
               "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "MINE",
-          "value": -0.181103,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 2649999,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 3179999,
-              "bound": 10
-            },
-            {
-              "metric": "relativeStrength.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.649109,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 15.303201,
-              "bound": 5
             }
           ]
         },
@@ -4417,7 +3937,7 @@
           ]
         }
       ],
-      "quarantinedCount": 34,
+      "quarantinedCount": 30,
       "rankingHygiene": {
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
@@ -4644,7 +4164,7 @@
       "kind": "ranked",
       "direction": "desc",
       "metric": "volatility60d",
-      "evaluated": 6318,
+      "evaluated": 6322,
       "notEvaluable": 81,
       "quarantined": [
         {
@@ -4726,54 +4246,6 @@
           ]
         },
         {
-          "ticker": "CCOM",
-          "value": 0.121062,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 12.997059,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 13.091176,
-              "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "CETH",
-          "value": 0,
-          "reasons": [
-            {
-              "metric": "returns.6M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 6.333471,
-              "bound": 5
-            }
-          ]
-        },
-        {
           "ticker": "CPHI",
           "value": 5.731232,
           "reasons": [
@@ -4830,24 +4302,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 7.185165,
               "bound": 5
-            }
-          ]
-        },
-        {
-          "ticker": "FLXI",
-          "value": 0.0544,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 111.535714,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 114.383095,
-              "bound": 10
             }
           ]
         },
@@ -4938,36 +4392,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 21.978118,
               "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "MINE",
-          "value": 0.558883,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 2649999,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 3179999,
-              "bound": 10
-            },
-            {
-              "metric": "relativeStrength.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.649109,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 15.303201,
-              "bound": 5
             }
           ]
         },
@@ -5212,7 +4636,7 @@
           ]
         }
       ],
-      "quarantinedCount": 34,
+      "quarantinedCount": 30,
       "rankingHygiene": {
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
@@ -5439,7 +4863,7 @@
       "kind": "ranked",
       "direction": "asc",
       "metric": "volatility60d",
-      "evaluated": 6318,
+      "evaluated": 6322,
       "notEvaluable": 81,
       "quarantined": [
         {
@@ -5521,54 +4945,6 @@
           ]
         },
         {
-          "ticker": "CCOM",
-          "value": 0.121062,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 12.997059,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 13.091176,
-              "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "CETH",
-          "value": 0,
-          "reasons": [
-            {
-              "metric": "returns.6M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 6.333471,
-              "bound": 5
-            }
-          ]
-        },
-        {
           "ticker": "CPHI",
           "value": 5.731232,
           "reasons": [
@@ -5625,24 +5001,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 7.185165,
               "bound": 5
-            }
-          ]
-        },
-        {
-          "ticker": "FLXI",
-          "value": 0.0544,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 111.535714,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 114.383095,
-              "bound": 10
             }
           ]
         },
@@ -5733,36 +5091,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 21.978118,
               "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "MINE",
-          "value": 0.558883,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 2649999,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 3179999,
-              "bound": 10
-            },
-            {
-              "metric": "relativeStrength.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.649109,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 15.303201,
-              "bound": 5
             }
           ]
         },
@@ -6007,7 +5335,7 @@
           ]
         }
       ],
-      "quarantinedCount": 34,
+      "quarantinedCount": 30,
       "rankingHygiene": {
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
@@ -6234,8 +5562,8 @@
       "kind": "ranked",
       "direction": "desc",
       "metric": "distanceTo52wHigh",
-      "evaluated": 5582,
-      "notEvaluable": 818,
+      "evaluated": 5471,
+      "notEvaluable": 933,
       "quarantined": [
         {
           "ticker": "AEMD",
@@ -6304,54 +5632,6 @@
           ]
         },
         {
-          "ticker": "CCOM",
-          "value": -0.128707,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 12.997059,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 13.091176,
-              "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "CETH",
-          "value": 0,
-          "reasons": [
-            {
-              "metric": "returns.6M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 6.333471,
-              "bound": 5
-            }
-          ]
-        },
-        {
           "ticker": "CPHI",
           "value": -0.965763,
           "reasons": [
@@ -6408,24 +5688,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 7.185165,
               "bound": 5
-            }
-          ]
-        },
-        {
-          "ticker": "FLXI",
-          "value": -0.059285,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 111.535714,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 114.383095,
-              "bound": 10
             }
           ]
         },
@@ -6516,36 +5778,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 21.978118,
               "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "MINE",
-          "value": -0.456967,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 2649999,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 3179999,
-              "bound": 10
-            },
-            {
-              "metric": "relativeStrength.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.649109,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 15.303201,
-              "bound": 5
             }
           ]
         },
@@ -6790,7 +6022,7 @@
           ]
         }
       ],
-      "quarantinedCount": 33,
+      "quarantinedCount": 29,
       "rankingHygiene": {
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
@@ -6862,10 +6094,6 @@
           "value": 0
         },
         {
-          "ticker": "CITE",
-          "value": 0
-        },
-        {
           "ticker": "CMPOV",
           "value": 0
         },
@@ -6907,10 +6135,6 @@
         },
         {
           "ticker": "GIFI",
-          "value": 0
-        },
-        {
-          "ticker": "HUDA",
           "value": 0
         },
         {
@@ -6996,19 +6220,27 @@
         {
           "ticker": "SDHI",
           "value": 0
+        },
+        {
+          "ticker": "SDM",
+          "value": 0
+        },
+        {
+          "ticker": "SVA",
+          "value": 0
         }
       ],
       "notEvaluableSample": [
         "AAAC",
         "AAAD",
+        "AAAP",
+        "AACI",
         "AACO",
         "AACP",
         "AADX",
         "AAOG",
         "AAPGV",
-        "ABL",
-        "ACAA",
-        "ACGC"
+        "ABL"
       ]
     },
     {
@@ -7017,8 +6249,8 @@
       "kind": "ranked",
       "direction": "asc",
       "metric": "maxDrawdown252d",
-      "evaluated": 5582,
-      "notEvaluable": 818,
+      "evaluated": 5471,
+      "notEvaluable": 933,
       "quarantined": [
         {
           "ticker": "AEMD",
@@ -7087,54 +6319,6 @@
           ]
         },
         {
-          "ticker": "CCOM",
-          "value": -0.08559,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 12.997059,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 13.091176,
-              "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "CETH",
-          "value": 0,
-          "reasons": [
-            {
-              "metric": "returns.6M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 569.25,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 6.333471,
-              "bound": 5
-            }
-          ]
-        },
-        {
           "ticker": "CPHI",
           "value": -0.919728,
           "reasons": [
@@ -7191,24 +6375,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 7.185165,
               "bound": 5
-            }
-          ]
-        },
-        {
-          "ticker": "FLXI",
-          "value": -0.068337,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 111.535714,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 114.383095,
-              "bound": 10
             }
           ]
         },
@@ -7299,36 +6465,6 @@
               "reason": "IMPLAUSIBLE_VALUE",
               "value": 21.978118,
               "bound": 10
-            }
-          ]
-        },
-        {
-          "ticker": "MINE",
-          "value": -0.534483,
-          "reasons": [
-            {
-              "metric": "returns.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 2649999,
-              "bound": 10
-            },
-            {
-              "metric": "return12M1M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 3179999,
-              "bound": 10
-            },
-            {
-              "metric": "relativeStrength.12M",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.649109,
-              "bound": 10
-            },
-            {
-              "metric": "volatility252d",
-              "reason": "IMPLAUSIBLE_VALUE",
-              "value": 15.303201,
-              "bound": 5
             }
           ]
         },
@@ -7573,7 +6709,7 @@
           ]
         }
       ],
-      "quarantinedCount": 33,
+      "quarantinedCount": 29,
       "rankingHygiene": {
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
@@ -7587,10 +6723,6 @@
         {
           "ticker": "IPW",
           "value": -0.999465
-        },
-        {
-          "ticker": "MYHA",
-          "value": -0.999
         },
         {
           "ticker": "CMND",
@@ -7607,10 +6739,6 @@
         {
           "ticker": "LNKS",
           "value": -0.9976
-        },
-        {
-          "ticker": "SMTK",
-          "value": -0.997554
         },
         {
           "ticker": "LGCL",
@@ -7721,10 +6849,6 @@
           "value": -0.984819
         },
         {
-          "ticker": "GOEV",
-          "value": -0.984579
-        },
-        {
           "ticker": "VSME",
           "value": -0.98445
         },
@@ -7779,19 +6903,31 @@
         {
           "ticker": "OMH",
           "value": -0.977021
+        },
+        {
+          "ticker": "BGM",
+          "value": -0.976413
+        },
+        {
+          "ticker": "MSS",
+          "value": -0.976038
+        },
+        {
+          "ticker": "MENS",
+          "value": -0.975987
         }
       ],
       "notEvaluableSample": [
         "AAAC",
         "AAAD",
+        "AAAP",
+        "AACI",
         "AACO",
         "AACP",
         "AADX",
         "AAOG",
         "AAPGV",
-        "ABL",
-        "ACAA",
-        "ACGC"
+        "ABL"
       ]
     }
   ]

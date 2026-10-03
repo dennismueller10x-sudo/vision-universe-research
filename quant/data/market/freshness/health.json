@@ -1,14 +1,14 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-10-03T02:12:52.010Z",
+  "checkedAt": "2026-10-03T05:35:43.719Z",
   "target": "repository",
   "market": {
     "state": "CLOSED",
-    "localDate": "2026-10-02",
-    "localTime": "22:12:52",
+    "localDate": "2026-10-03",
+    "localTime": "01:35:43",
     "lastCompletedSession": "2026-10-02",
-    "currentSession": "2026-10-02",
+    "currentSession": null,
     "expectedIntradaySession": "2026-10-02"
   },
   "intraday": {
@@ -33,7 +33,7 @@
     },
     "dataState": "STALE",
     "dataReason": "closeMissing",
-    "dataLabel": "Heute · Stand 14:25 · nicht aktuell",
+    "dataLabel": "Stand Fr., 02.10. · nicht aktuell",
     "entries": 1388,
     "byState": {
       "LIVE": 0,
@@ -80,12 +80,12 @@
   },
   "daily": {
     "universeAsOf": "2026-10-02",
-    "generatedAt": "2026-10-03T02:12:47.070Z",
+    "generatedAt": "2026-10-03T05:35:37.786Z",
     "state": "LAST_SESSION",
     "basis": "series",
     "summaryState": "LAST_SESSION",
     "reason": "lastCompletedSession",
-    "label": "Schluss Heute",
+    "label": "Schluss Freitag",
     "seriesState": "LAST_SESSION",
     "summaryContradictsSeries": false,
     "expectedSession": "2026-10-02",
@@ -107,7 +107,7 @@
   "overall": "STALE",
   "findings": [
     "Intraday STALE: Datenstand 2026-10-02, erwartet 2026-10-02 (closeMissing)",
-    "Universumslauf fehlt: Sitzung 2026-10-02 liegt nur fuer den Discover-Umfang vor (6.2 h nach Schluss)"
+    "Universumslauf fehlt: Sitzung 2026-10-02 liegt nur fuer den Discover-Umfang vor (9.6 h nach Schluss)"
   ],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
