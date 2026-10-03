@@ -17,7 +17,7 @@ const require = createRequire(import.meta.url);
 const Ctx = require(join(ROOT, "quant/engines/technical/ti/context.js"));
 const EV3 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js"));
 function arg(n, d) { const i = process.argv.indexOf("--" + n); return i >= 0 ? process.argv[i + 1] : d; }
-const split = arg("split", "DEVELOPMENT"), ks = arg("k", "0.6,0.8,1,1.3,1.6").split(",").map(Number);
+const split = arg("split", "DEVELOPMENT"), ks = arg("k", "0.6,0.8,1,1.3,1.6").split(",").map(Number), sticky = arg("sticky", null) === null ? null : +arg("sticky");
 const classes = Object.keys(CLASSES).filter((c) => !CLASSES[c].negativeOf && !CLASSES[c].unsupported);
 const med = (a) => { const b = a.slice().sort((x, y) => x - y); return b.length ? b[Math.floor(b.length / 2)] : null; };
 const hitOf = (c, cs) => c && c.complete && cs.truth.expect.includes(c.pattern) && degreeClass(c, cs.truth) === "EXACT";
@@ -29,9 +29,13 @@ for (const k of ks) {
     const s = weeklySeriesFromPoints(cs.dates.map((d, i) => [d, cs.closes[i]]), "SYN"), P = Ctx.prepare(s);
     const Te = cs.truth.patternEnd, last = s.length - 1, confMove = Math.abs(s.close[last] - s.close[Te]) || 1;
     n++;
-    let e = null, c = null;
+    let e = null, c = null, prev = null;
+    const eng = sticky === null ? { poolAtr: k } : { poolAtr: k, stickiness: sticky };
+    /* mit Persistenz: Zustand ab 26 Wochen vor dem Ende durchreichen (wie im Produkt) */
+    if (sticky !== null) for (let t = Math.max(1, Te - 26); t < Te; t++) { const r0 = EV3.analyzeElliottV3({ series: s, features: P.features, pivots: P.pivots, asOfIndex: t, barsPerYear: 52, engine: eng, previous: prev }); prev = r0.primary ? { key: r0.primary.persistenceKey } : null; }
     for (let t = Te; t <= Math.min(last, Te + 20) && c === null; t++) {
-      const r = EV3.analyzeElliottV3({ series: s, features: P.features, pivots: P.pivots, asOfIndex: t, barsPerYear: 52, engine: { poolAtr: k } });
+      const r = EV3.analyzeElliottV3({ series: s, features: P.features, pivots: P.pivots, asOfIndex: t, barsPerYear: 52, engine: eng, previous: prev });
+      if (sticky !== null) prev = r.primary ? { key: r.primary.persistenceKey } : null;
       const cands = [r.primary, ...(r.alternatives || [])].filter(Boolean);
       if (e === null && cands.some((x) => hitOf(x, cs))) { e = t - Te; progEarly.push(Math.abs(s.close[t] - s.close[Te]) / confMove); }
       if (c === null && hitOf(r.primary, cs)) { c = t - Te; progConf.push(Math.abs(s.close[t] - s.close[Te]) / confMove); }
@@ -49,5 +53,5 @@ for (const k of ks) {
   console.log("k=" + k, JSON.stringify(result["k=" + k]));
 }
 mkdirSync(join(ROOT, "quant/data/technical-intelligence/elliott-validation/corpus"), { recursive: true });
-writeFileSync(join(ROOT, "quant/data/technical-intelligence/elliott-validation/corpus", "latency-frontier-" + split.toLowerCase() + ".json"),
+writeFileSync(join(ROOT, "quant/data/technical-intelligence/elliott-validation/corpus", "latency-frontier-" + split.toLowerCase() + (sticky === null ? "" : "-sticky" + sticky) + ".json"),
   JSON.stringify({ schemaVersion: "vu-elliott-latency-frontier-1.0.0", generatedAt: new Date().toISOString(), engine: EV3.ENGINE_VERSION, split, result }, null, 1));
