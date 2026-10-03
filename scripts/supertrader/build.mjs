@@ -46,6 +46,7 @@ import minervini2 from './engine/strategies/minervini-v2.mjs';
 import weinstein2 from './engine/strategies/weinstein-v2.mjs';
 import { fidelityFor, FIDELITY_VERSION, RULE_CLASS, SOURCE_ACCESS, PRODUCT_STATUS as FIDELITY_STATUS } from './fidelity.mjs';
 import { buildModelPortfolio, portfolioConfig, MODEL_PORTFOLIO_VERSION } from './model-portfolio.mjs';
+import { runTrend52Live, trend52View } from './trend52-live.mjs';
 import * as canslim from './engine/partial/canslim.mjs';
 import * as piotroski from './engine/partial/piotroski.mjs';
 import { buildPilotArtifact } from './pilot/donchian-weekly.mjs';
@@ -57,6 +58,7 @@ import { evidenceFor, EVIDENCE_LEVELS, SOURCE_QUALITY, DATA_QUALITY, NO_PROMISE,
 
 export const BUILD_VERSION = 'supertrader-build-1.0.0';
 let CURRENT_REGIME = null;
+let TREND52_SYMBOLS = [];
 // Runde 7: Momentum, Weinstein, Darvas und Minervini laufen in Version 2.0.0
 // (vorab registriert, PREREGISTRATION-R7.json). Offene Positionen der
 // Vorversionen werden mit deren Engine weitergefuehrt (engine.legacy).
@@ -537,6 +539,19 @@ export function build() {
     portfolios.strategies[engine.id] = buildModelPortfolio({ engine, signals: [...L.open, ...L.closed], barsOf, calendar, asOf, rsOf });
   }
   writeJson(path.join(DATA, 'portfolio.json'), portfolios);
+  // Runde 12: VU Trendfolge 52W - Modelldepot mit monatlicher Umschichtung (eigenes Ledger, keine Rueckrechnung).
+  {
+    const spyPts = readJson(rel('quant/data/market/multi-asset/series/SPY.json')).points.filter(([d]) => String(d).slice(0, 10) <= asOf);
+    const spy = { date: spyPts.map(([d]) => String(d).slice(0, 10)), close: spyPts.map(([, v]) => v) };
+    const lp = ledgerPath('VU_TREND_52W');
+    const prev = exists(lp) ? readJson(lp) : null;
+    const { ledger: tl, preview, stocks } = runTrend52Live({ instruments, spy, ledger: prev, asOf });
+    writeJson(lp, tl);
+    const t52 = trend52View({ ledger: tl, preview, stocks, spy, asOf });
+    writeJson(path.join(DATA, 'trend52.json'), t52);
+    TREND52_SYMBOLS = [...new Set([...t52.portfolio.positions, ...t52.prepared.candidates, ...t52.nearMisses, ...t52.closed].map((x) => x.symbol))];
+    log(`VU_TREND_52W: Positionen ${tl.state.positions.length}, Entscheidungen ${tl.decisions.length}, Rangliste ${preview?.candidates?.length ?? 0}`);
+  }
   writeJson(path.join(DATA, 'registry.json'), registry);
   writeJson(path.join(DATA, 'sources.json'), sources);
   writeJson(path.join(DATA, 'market.json'), market);
@@ -547,7 +562,7 @@ export function build() {
   if (pilot) writeJson(path.join(DATA, 'pilot-backtest.json'), pilot);
   writeJson(path.join(DATA, 'replay.json'), replay);
   for (const [id, l] of Object.entries(ledgers)) writeJson(ledgerPath(id), l);
-  writeStockPages(signals);
+  writeStockPages(signals, TREND52_SYMBOLS);
   writeStrategyPages(registry);
   writeStaticPages();
   writeJson(path.join(DATA, 'build.json'), { buildVersion: BUILD_VERSION, registryVersion: REGISTRY_VERSION, asOf, inputsGeneratedAt: barsGeneratedAt });
@@ -895,8 +910,8 @@ function writeStrategyPages(registry) {
   }
 }
 
-function writeStockPages(signals) {
-  for (const sym of Object.keys(signals.bySymbol)) {
+function writeStockPages(signals, extra = []) {
+  for (const sym of new Set([...Object.keys(signals.bySymbol), ...extra])) {
     if (!/^[A-Z0-9.\-]+$/.test(sym)) continue;
     writeIfChanged(path.join(OUT, 'stock', sym, 'index.html'), pageShell({ title: `${sym} — Strategy Lens — Supertrader — Vision Universe®`, description: `Welche Supertrader-Modelle ${sym} erkennen — Status, Trigger, Risiko und Historie.`, page: 'stock', depth: 3, attrs: ` data-symbol="${sym}"` }));
   }

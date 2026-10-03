@@ -949,5 +949,73 @@
     },
     "claims_supported": "August 1960: Stop-Loss-Order als Kernbaustein von Darvas’ System (Beispiel 40 → 38); bei dünnem Markt wird deutlich unter dem Stop verkauft.",
     "notes": "Runde 8: Volltext gelesen."
+  },
+  {
+    "source_id": "SRC-TF-NEO-2018",
+    "title": "TraderFox entwickelt NEO-DARVAS-SCREENING mit Marktampel und 20-Jahre-Backtest",
+    "author": "TraderFox GmbH",
+    "publisher_or_site": "traderfox.de",
+    "url": "https://traderfox.de/blog/aktuelles/traderfox-entwickelt-neo-darvas-screening-mit-marktampel-und-20-jahre-backtest-780.html",
+    "source_type": "PUBLISHER_PAGE",
+    "level": 2,
+    "access": "PUBLIC_FULL",
+    "retrieved_at": "2026-10-03",
+    "url_verification": "FETCHED_HTTP_200",
+    "content_retrieved_by_vu": true,
+    "used_for": [
+      "VU_TREND_52W"
+    ],
+    "claims_supported": "TraderFox-Variante (nicht Darvas-Original), 24.03.2018: Kauf bei neuem 52-Wochen-Hoch in 4 Wochen, mindestens 70 % seit 52-Wochen-Tief, S&P 500 über GD 200; 10 Aktien mit höchster 'Trendstabilität' (nicht öffentlich definiert); Verkauf bei kein neues Hoch in 65 Handelstagen, < 70 % seit Tief, S&P 500 < GD 200.",
+    "evidence_status_ceiling": "SECONDARY_ONLY",
+    "notes": "Runde 12: Volltext gelesen. Dokumentierte Variante eines Drittanbieters; Renditeangaben von TraderFox wurden nicht von VU reproduziert.",
+    "retrieval": {
+      "date": "2026-10-03",
+      "via": "GitHub-Actions-Runner (Workflow supertrader-validation, Modus sources-r12), da die Arbeitsumgebung die Seiten sperrt",
+      "storage": "SEALED_OWNER_KEY",
+      "inRepo": false
+    }
+  },
+  {
+    "source_id": "SRC-TF-NEO-PP",
+    "title": "NEO-DARVAS mit Pivotal-Points: exakte Regeln (aktien Magazin / Beitrag zu QualitInvest)",
+    "author": "TraderFox GmbH",
+    "publisher_or_site": "mobile.traderfox.com",
+    "url": "https://mobile.traderfox.com/blog/aktien-magazin/das-comeback-des-neo-darvas-systems-diese-10-aktien-sind-im-depot/p-55974/",
+    "source_type": "PUBLISHER_PAGE",
+    "level": 2,
+    "access": "PUBLIC_FULL",
+    "retrieved_at": "2026-10-03",
+    "url_verification": "FETCHED_HTTP_200",
+    "content_retrieved_by_vu": true,
+    "used_for": [
+      "VU_TREND_52W"
+    ],
+    "claims_supported": "Größte 1.800 US-Unternehmen, monatliche Umschichtung, Zielgewicht 10 % (10 Positionen), Rang nach Trendstabilität; Kauf: ≥ 1 Mio. USD Tagesumsatz, ≥ 100 % seit Jahrestief, neues Jahreshoch in 20 Handelstagen, S&P 500 > GD 200, Up-Gap ≥ 6 % in 20 Handelstagen; Verkauf: Gewicht < 3 %, < 100 % seit Jahrestief, bei S&P 500 < GD 200 alle Positionen auf ≤ 5 %, kein neues Hoch in 65 Handelstagen, Gewicht > 20 % auf 15 %. TraderFox nennt einen Point-in-Time-Backtest seit 1999 und ein Live-Musterdepot seit 2018.",
+    "evidence_status_ceiling": "SECONDARY_ONLY",
+    "notes": "Runde 12: Volltext gelesen (gleichlautend im QualitInvest-Beitrag). Backtest-Kosten und Trendstabilität nicht öffentlich.",
+    "retrieval": {
+      "date": "2026-10-03",
+      "via": "GitHub-Actions-Runner (Workflow supertrader-validation, Modus sources-r12), da die Arbeitsumgebung die Seiten sperrt",
+      "storage": "SEALED_OWNER_KEY",
+      "inRepo": false
+    }
+  },
+  {
+    "source_id": "SRC-CLENOW-2015",
+    "title": "Stocks on the Move: Beating the Market with Hedge Fund Momentum Strategies",
+    "author": "Andreas F. Clenow",
+    "publisher_or_site": "Buch (2015)",
+    "source_type": "BOOK_BIBLIOGRAPHIC",
+    "level": 2,
+    "access": "BIBLIOGRAPHIC_ONLY",
+    "retrieved_at": "2026-10-03",
+    "url_verification": "NO_URL_FOUND",
+    "content_retrieved_by_vu": false,
+    "used_for": [
+      "VU_TREND_52W"
+    ],
+    "claims_supported": "Trendmaß: annualisierte Steigung einer exponentiellen Regression über 90 Tage multipliziert mit dem Bestimmtheitsmaß R² (vielfach zitiert). In VU als offengelegter Ersatz für TraderFox' nicht öffentliche 'Trendstabilität' verwendet.",
+    "evidence_status_ceiling": "SECONDARY_ONLY",
+    "notes": "Runde 12: Formel nur sekundär belegt; Buchinhalt nicht von VU eingesehen."
   }
 ]

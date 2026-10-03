@@ -103,7 +103,7 @@ export function simulateRotation(stocks, calendar, spy, opts = {}) {
   }
   const equity = [], trades = [], decisions = [], skipped = [];
   const book = { commissions: 0, dividends: 0, terminalCount: 0 };
-  const cal = calendar.filter((d) => d >= from && d <= to);
+  const cal = opts.previewOnly ? [] : calendar.filter((d) => d >= from && d <= to);
   for (const [si, px] of lastPx_init) lastPx[si] = px;
   let pending = pendingIn; // Entscheidung vom Monatsende -> Ausfuehrung zur naechsten Eroeffnung
   const value = (date) => { let mv = 0; for (const [si, q] of pos) { const i = idx[si].get(date); const px = i !== undefined ? stocks[si].bars.close[i] : lastPx[si]; mv += q.shares * (px ?? q.entryPrice); } return cash + mv; };
@@ -199,9 +199,10 @@ export function simulateRotation(stocks, calendar, spy, opts = {}) {
     equity.push({ date, equity: eq, exposure: eq > 0 ? (eq - cash) / eq : 0, positions: pos.size });
   }
   const openAtEnd = [...pos].map(([si, q]) => ({ listingId: stocks[si].id, symbol: stocks[si].symbol, entryDate: q.entryDate, entryPrice: q.entryPrice, shares: q.shares, remaining: q.remaining, lastPrice: lastPx[si], cost: q.cost, proceeds: q.proceeds, dividends: q.dividends, exits: q.exits, weightAtEntry: q.weightAtEntry, rankAtEntry: q.rankAtEntry }));
-  const preview = opts.preview && cal.length ? decide(cal[cal.length - 1], false) : null;
+  const pvDate = opts.previewOnly ? to : cal[cal.length - 1];
+  const preview = opts.preview && pvDate ? decide(pvDate, false) : null;
   const state = { cash, positions: [...pos].map(([si, q]) => ({ ...q, listingId: stocks[si].id, symbol: stocks[si].symbol })), lastPx: Object.fromEntries([...pos.keys()].map((si) => [stocks[si].id, lastPx[si]])),
-    pending: pending ? { sells: pending.sells.map(({ si, ...o }) => ({ ...o, listingId: o.listingId || stocks[si].id })), buys: pending.buys.map(({ si, ...o }) => ({ ...o, listingId: o.listingId || stocks[si].id })) } : null, lastDate: cal[cal.length - 1] || null };
+    pending: pending ? { sells: pending.sells.map(({ si, ...o }) => ({ ...o, listingId: o.listingId || stocks[si].id })), buys: pending.buys.map(({ si, ...o }) => ({ ...o, listingId: o.listingId || stocks[si].id })) } : null, lastDate: cal[cal.length - 1] || opts.state?.lastDate || null };
   return { equity, trades, decisions, skipped, book, openAtEnd, cashEnd: cash, state, preview: preview ? { ...preview.dec, sells: preview.pending.sells, candidates: preview.cands.map((c, k) => ({ listingId: stocks[c.si].id, symbol: stocks[c.si].symbol, rank: k + 1, score: c.score, perf: c.m.perf })) } : null };
 }
 
