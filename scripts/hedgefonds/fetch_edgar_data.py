@@ -1598,7 +1598,11 @@ def main():
             for c, f in ranked:
                 bulk_entries.append(build_bulk_record(c, f, scale, prev_bulk.get(c)))
             del prev_bulk
-            universe_entries = select_universe(bulk, scale, excluded | {c for c, _ in ranked})
+            # Schwestergesellschaften kuratierter Fonds (z.B. "Situational Awareness
+            # Partners LP" neben "Situational Awareness LP") nicht doppelt führen
+            patterns = [p for m in FUND_META for p in [m["match"]] + list(m.get("altMatch") or [])]
+            siblings = {c for c, f in bulk.items() if any(p in (f.get("name") or "").upper() for p in patterns)}
+            universe_entries = select_universe(bulk, scale, excluded | {c for c, _ in ranked} | siblings)
     del bulk
 
     universe, universe_failed = fetch_universe(universe_entries) if universe_entries else ([], [])
