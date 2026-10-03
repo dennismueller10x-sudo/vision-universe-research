@@ -45,7 +45,7 @@
   var P = isNode ? require("./patterns.js") : global.VUTechnical.ElliottPatterns;
   var V2 = isNode ? require("./elliott-v2.js") : global.VUTechnical.ElliottV2;
 
-  var ENGINE_VERSION = "elliott-3.1.0";
+  var ENGINE_VERSION = "elliott-3.2.0";
 
   var DEFAULTS = {
     poolAtr: 1.0,                 // Monowellen-Schwelle in ATR
@@ -58,17 +58,26 @@
     anchorMinRatio: 0.3,
     orthodoxMax: 0.4,             // Ueberschiessen der Folgewelle (B eines expandierten Flats) relativ zu ihrer Laenge
     orthodoxShortMax: 0.7,        // Ende hinter dem Extrem (Dreieck-E, Running-Flat-C): Abstand zum Extrem relativ zur Ausdehnung
-    anchorMinAtr: 4,              // Ursprung schliesst eine Bewegung >= 4 ATR ab (Suchbudget; Korpus DEVELOPMENT: keine Genauigkeitseinbusse, 34 → 23 ms)
+    anchorMinAtr: 4,
+    subNoise: 0,                  // 3.2: Rauschschwelle der Unterteilung in σ·√Dauer (0 = aus)              // Ursprung schliesst eine Bewegung >= 4 ATR ab (Suchbudget; Korpus DEVELOPMENT: keine Genauigkeitseinbusse, 34 → 23 ms)
     /* 3.1: kalibriert auf Korpus DEVELOPMENT, Layout A und B (Ende + Mitte; scripts/technical/elliott-calibration/calibrate-weights.mjs; Koordinatensuche, Sensitivitaet ±50 % dokumentiert in
        ELLIOTT_ENGINE3_REPORT.md). Keine VALIDATION- oder HOLDOUT-Faelle verwendet. */
-    weights: { guidelines: 0.06, subdivision: 0.45, separation: 0.03, anchor: 0.45, dominance: 0.45, similarity: 0, trendContext: 0, coverage: 0.45, prior: 0.15, higherDegree: 0, tail: 0.2, residual: 0 },
+    weights: { guidelines: 0.06, subdivision: 0.45, separation: 0.03, anchor: 0.45, dominance: 0.45, similarity: 0, trendContext: 0, coverage: 0.45, prior: 0.15, higherDegree: 0, tail: 0.2, residual: 0, hierarchy: 0, proportion: 0 },
+    hierMargin: 0.1, hierChild: 0.5,
+    subShrink: null,              // 3.2: { a, b, rMin } Zuverlaessigkeit der Unterteilung nach Unterwellen-Rauschabstand (null = aus)
     typePrior: { IMPULSE: 1, ZIGZAG: 1, FLAT: 0.85, TRIANGLE: 0.7, LEADING_DIAGONAL: 0.6, ENDING_DIAGONAL: 0.65, WXY: 0.65, DOUBLE_ZIGZAG: 0.7, TRIPLE_ZIGZAG: 0.5 },
     stickiness: 0.05, stickinessQuiet: 0.05, maxAlternatives: 2,   // Hysterese-Studie DEVELOPMENT: 0,05 = instabile Wechsel 0,66 %/Woche (V2 0,92 %), Erkennung −5 % ggü. 0,03; hoeher haelt an ueberholten Zaehlungen fest
     alternativeMinInvalidationGapAtr: 0.5,
     clarity: { high: 0.1, moderate: 0.04 }, structural: { high: 0.68, moderate: 0.55 },
     noise: { abstainBelow: 1.3, full: 3.0 },
     /* Eichung Korpus DEVELOPMENT (scripts: elliott-corpus-eval, Bericht ELLIOTT_ENGINE3_REPORT.md): [1, countQuality, clarity/0,15, z/4, Strukturmehrdeutigkeit, laufend] */
-    applicability: { coef: [-7.44, 7.273, 1.597, 1.089, 0.865, -1.348], high: 0.6, moderate: 0.35, highMinZ: null }
+    /* 3.2 (Mission III §19–§21): geeicht auf Korpus DEVELOPMENT, Layouts A, B, C1, C3 (je Layout gleich gewichtet), abgeschlossene und
+       laufende Stufen, alle Rauschstufen (scripts/technical/elliott-calibration/applicability32-*.mjs). Merkmale:
+       [1, Zaehlqualitaet, Klarheit (nur Strukturmehrdeutigkeit), z/4, Strukturmehrdeutigkeit, laufend, Hierarchie-Widerspruch,
+        Zeit-Preis-Proportion, laufend × Wellenanteil]. HOCH ab 0,75 (falsche Sicherheit im Entwicklungssplit gepoolt ≈ 20 %, Layout A/B
+       10–19 %), MITTEL ab 0,6 (A/B ≤ 26 %). Auf Layout C trennt KEIN Merkmal richtige von falschen Hauptzaehlungen (≥ 57 % falsch bei
+       jeder Schwelle) — dort enthaelt sich die Engine fast immer. */
+    applicability: { coef: [-10.748, 7.095, 1.402, 0.896, 0.911, -0.198, -0.776, 3.225, -1.06], high: 0.75, moderate: 0.6, highMinZ: null }
   };
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -104,6 +113,15 @@
     return { pts: dev ? pts.concat([dev]) : pts, dev: dev };
   }
 
+  /** Trendfreie Rauschstaerke je Bar: 1,4826·MAD der zweiten Differenzen / √2 (Zufallspfad mit Drift: Δ²x = σ(e_t − e_{t−1})),
+      relativ zum Kurs (mittlerer Kurs im Fenster) wieder in Preiseinheiten. Kausal: nur Bars bis asOf. */
+  function noiseSigma(close, asOf, win) {
+    var d = [], from = Math.max(2, asOf - win);
+    for (var i = from; i <= asOf; i++) { var x = (close[i] - close[i - 1]) - (close[i - 1] - close[i - 2]); if (isNum(x)) d.push(Math.abs(x)); }
+    if (d.length < 10) return null;
+    d.sort(function (x, y) { return x - y; });
+    return 1.4826 * d[Math.floor(d.length / 2)] / Math.SQRT2;
+  }
   // =================================================================
   //  4. UNTERTEILUNG IM SKALENRAUM
   // =================================================================
@@ -142,8 +160,12 @@
     var res = { count: 1, cls: "?", motive: 0, corrective: 0, pattern: null, points: null, maxCounter: 0, resolved: false };
     if (L <= 0 || bars < 3) { memo[key] = res; return res; }
     var counts = {}, readings = {}, levels = 0, finest = null;
+    /* 3.2 (Mission III §13, Fehler-Taxonomie hohes Rauschen): Unterwellen zaehlen nur, wenn sie groesser als das Rauschen sind.
+       Schwelle = max(Anteil der Wellenlaenge, subNoise · σ · √(Unterwellendauer)). σ = trendfreie Rauschstaerke je Bar (robust aus den
+       zweiten Differenzen der Schlusskurse bis zum Analysezeitpunkt, siehe noiseSigma) — ATR misst auf Schlusskursen den Trend mit. */
+    var noiseFloor = cfg.subNoise && isNum(cfg._sigma) ? cfg.subNoise * cfg._sigma * Math.sqrt(Math.max(2, bars / 5)) : 0;
     cfg.subGrid.forEach(function (th) {
-      var z = zigzagSegment(close, a, b, th * L), m = z.length - 1;
+      var z = zigzagSegment(close, a, b, Math.max(th * L, noiseFloor)), m = z.length - 1;
       if (!finest) finest = z;
       if (m > 9) return;
       levels++;
@@ -200,6 +222,7 @@
     var bpy = input.barsPerYear || (series.timeframe === "1W" ? 52 : 252);
     var atrCol = features.columns.atr, atr = isNum(atrCol[asOf]) ? atrCol[asOf] : close[asOf] * 0.02;
     var pool = buildPool(close, atrCol, asOf, cfg.poolAtr), pts = pool.pts, n = pts.length;
+    cfg._sigma = noiseSigma(close, asOf, 260);
     var ctx = { cfg: Object.assign({}, V2.DEFAULTS, { clarity: cfg.clarity, structural: cfg.structural, maxAlternatives: cfg.maxAlternatives, alternativeMinInvalidationGapAtr: cfg.alternativeMinInvalidationGapAtr }), trendDir: V2.trendDirection(series, asOf, bpy) };
     /* Suffix-Extreme fuer "seither nicht ueberschritten" */
     var sufMax = new Array(asOf + 2), sufMin = new Array(asOf + 2);
@@ -442,10 +465,22 @@
       });
       var simN = 0, simOk = 0;
       for (var q = 1; q < legs.length; q++) { simN++; if (legs[q].status === "DEVELOPING" || (Math.min(Math.abs(legs[q].toPrice - legs[q].fromPrice), Math.abs(legs[q - 1].toPrice - legs[q - 1].fromPrice)) >= cfg.similarity * Math.max(Math.abs(legs[q].toPrice - legs[q].fromPrice), Math.abs(legs[q - 1].toPrice - legs[q - 1].fromPrice)))) simOk++; }
+      /* 3.2 ZEIT UND PREIS GEMEINSAM (Mission III §4, §6; Taxonomie Layout C: kleine Kontextschwuenge + ganzer Impuls als W-X-Y):
+         benachbarte Wellen desselben Grades sind in Preis UND Zeit vergleichbar. Je Paar r = √(Preisverhaeltnis · Zeitverhaeltnis)
+         (jeweils klein/gross); Bewertung ueber das ungünstigste Paar, P.band(r, [1/3, 1], [0,1, 1]). Keine harte Regel: NEoWave
+         (Neely, Rule of Similarity) verlangt nur Preis ODER Zeit ≥ 1/3 — das bleibt die Suchschranke. Laufende Welle ausgenommen. */
+      var prop = [];
+      for (var q2 = 1; q2 < legs.length; q2++) {
+        var la = legs[q2 - 1], lb = legs[q2];
+        if (la.status === "DEVELOPING" || lb.status === "DEVELOPING") continue;
+        var pa2 = Math.abs(la.toPrice - la.fromPrice), pb2 = Math.abs(lb.toPrice - lb.fromPrice);
+        var rp = Math.min(pa2, pb2) / Math.max(1e-9, Math.max(pa2, pb2)), rt = Math.min(la.duration, lb.duration) / Math.max(la.duration, lb.duration);
+        prop.push(P.band(Math.sqrt(rp * rt), [1 / 3, 1], [0.1, 1]));
+      }
       var dw = f.complete ? spec.waves : legs.length, pp = f.parts;
       var c = {
         guidelines: isNum(e.guidelineFit) ? e.guidelineFit : 0.5,
-        subdivision: subs.length ? mean(subs) : cfg.unresolvedFit,
+        subdivision: subShrink(subs.length ? mean(subs) : cfg.unresolvedFit, legs, spec),
         separation: sep.length ? mean(sep) : 0.5,
         anchor: pp.anchor,
         dominance: pp.dominance,
@@ -455,7 +490,8 @@
         prior: pp.prior,
         higherDegree: 0.5,
         tail: pp.tail,
-        residual: pp.residual
+        residual: pp.residual,
+        proportion: prop.length ? Math.min.apply(null, prop) : 0.5
       };
       e.waves = legs; e.complete = f.complete; e.internal = !!f.internal; e.developingWave = dw; e.startLeg = f.path[0];
       e.subdivisionFit = c.subdivision;
@@ -463,6 +499,20 @@
       e.prior = c.prior; e.components = c; e.span = [legs[0].fromIndex, legs[legs.length - 1].toIndex];
       e.base = baseRank(c);
       return e;
+    }
+    /* 3.2 (Mission III §12, Taxonomie hohes Rauschen: falsche Sieger gewinnen vor allem ueber die Unterteilung): die Unterteilungs-
+       evidenz wird zum neutralen Wert hin gezogen, wenn die erwarteten Unterwellen kaum groesser als das Rauschen sind.
+       zSub = (|Welle|/n) / (σ·√(Dauer/n)), n = erwartete Unterwellenzahl; Zuverlaessigkeit r = clamp((zSub − a)/(b − a), rMin, 1). */
+    function subShrink(v, legs, spec) {
+      var S = cfg.subShrink;
+      if (!S || !isNum(cfg._sigma) || cfg._sigma <= 0) return v;
+      var zs = [];
+      legs.forEach(function (l, k) { if (l.status === "DEVELOPING") return; var nn = spec.subdivision[k] === "M" ? 5 : 3, d = Math.max(1, l.toIndex - l.fromIndex);
+        zs.push((Math.abs(l.toPrice - l.fromPrice) / nn) / (cfg._sigma * Math.sqrt(Math.max(1, d / nn)))); });
+      if (!zs.length) return v;
+      zs.sort(function (x, y) { return x - y; });
+      var r = clamp((zs[Math.floor(zs.length / 2)] - S.a) / (S.b - S.a), S.rMin, 1);
+      return cfg.unresolvedFit + r * (v - cfg.unresolvedFit);
     }
     function baseRank(c) { var r = 0; Object.keys(cfg.weights).forEach(function (k) { r += cfg.weights[k] * (isNum(c[k]) ? c[k] : 0.5); }); return r; }
     /* 6. hoeherer Grad: Lesart Y, in der X eine einzelne (abgeschlossene oder laufende) Welle ist */
@@ -493,12 +543,46 @@
       x.rank = round(baseRank(x.components), 4);
     });
     top.sort(function (x, y) { return y.rank - x.rank || (y.span[1] - y.span[0]) - (x.span[1] - x.span[0]) || (x.type < y.type ? -1 : 1); });
+    /* 3.2 HIERARCHIE ZUERST (Mission III §5, §8; Fehler-Taxonomie HOLDOUT-2/DEVELOPMENT: 59 % der echten groben Gradfehler bauen die
+       Bestaetigungsbewegung ein). Eine Lesart Y widerspricht einer abgeschlossenen Struktur X, wenn
+         (a) Y an einem INNEREN Wellenende von X beginnt und ueber das Ende von X hinauslaeuft — Y macht die letzte(n) Welle(n) von X
+             zu Gleichrangigen der Bewegung danach (Grad gemischt), oder
+         (b) Y genau am Ende von X beginnt, aber deutlich kleiner ist (Zeit UND Preis < hierChild von X): Y ist dann eine Unterwelle
+             der Bewegung nach X, nicht die Struktur gleichen Grades.
+       Gezaehlt wird nur gegen X mit mindestens vergleichbarem Rangwert (X.base >= Y.base − hierMargin). Komponente "hierarchy":
+       1 ohne Widerspruch, 0 bei (a), 0,5 bei (b). */
+    /* immer berechnet (Merkmal der Anwendbarkeit 3.2); in den Rangwert nur mit Gewicht > 0 (VALIDATION: Gewicht 0, siehe Bericht) */
+    {
+      var compl = top.filter(function (x) { return x.complete; });
+      var sizeOf = function (x) { if (x._size) return x._size; var hi = -Infinity, lo = Infinity; x.waves.forEach(function (w) { hi = Math.max(hi, w.fromPrice, w.toPrice); lo = Math.min(lo, w.fromPrice, w.toPrice); }); return (x._size = { t: x.span[1] - x.span[0], p: hi - lo }); };
+      top.forEach(function (y) { y.components.hierarchy = 1; y.hierConflict = null; });
+      top.forEach(function (y) {
+        compl.forEach(function (x) {
+          if (x === y) return;
+          /* (a) Kreuzung: Y beginnt an einem inneren Wellenende von X und laeuft ueber das Ende von X hinaus. Symmetrisch: bestraft
+             wird jede der beiden Lesarten, gegen die die andere mindestens vergleichbar stark ist (bei Gleichstand beide). */
+          var inner = x.waves.slice(0, -1).some(function (w) { return w.toIndex === y.span[0]; });
+          if (inner && y.span[1] > x.span[1]) {
+            if (x.base >= y.base - cfg.hierMargin) { y.components.hierarchy = 0; y.hierConflict = { with: x.type, span: x.span, kind: "CROSSES" }; }
+            if (y.complete && y.base >= x.base - cfg.hierMargin) { x.components.hierarchy = 0; x.hierConflict = { with: y.type, span: y.span, kind: "CROSSED" }; }
+            return;
+          }
+          /* (b) Y beginnt am Ende von X und ist in Zeit UND Preis deutlich kleiner: Unterwelle der Bewegung nach X */
+          if (y.span[0] === x.span[1] && x.base >= y.base - cfg.hierMargin && y.components.hierarchy > 0.5) {
+            var sx = sizeOf(x), sy = sizeOf(y);
+            if (sy.t < cfg.hierChild * sx.t && sy.p < cfg.hierChild * sx.p) { y.components.hierarchy = 0.5; y.hierConflict = { with: x.type, span: x.span, kind: "CHILD_AFTER_PARENT" }; }
+          }
+        });
+      });
+      if (cfg.weights.hierarchy) top.forEach(function (y) { y.rank = round(baseRank(y.components), 4); });
+      top.sort(function (x, y) { return y.rank - x.rank || (y.span[1] - y.span[0]) - (x.span[1] - x.span[0]) || (x.type < y.type ? -1 : 1); });
+    }
 
     if (truthDiag) { truthDiag.rank = truthDiag.cands.length ? Math.min.apply(null, truthDiag.cands.map(function (c) { var ix = top.indexOf(c); return ix < 0 ? 9999 : ix; })) : null;
                      truthDiag.best = truthDiag.cands.length ? truthDiag.cands.slice().sort(function (x, y) { return (y.rank || y.base) - (x.rank || x.base); })[0] : null; }
     var degreesInfo = { analysis: "ew3", engine: "hierarchical", poolPivots: n, candidates: cands.length, searchTruncated: truncated, nodes: nodes };
     var base = { engineVersion: ENGINE_VERSION, ruleSetVersion: P.RULE_SET_VERSION, repaintingPolicy: "CONFIRMS_WITH_DELAY", isProbability: false,
-                 parametersHash: Hash.hashValue({ v: ENGINE_VERSION, cfg: cfg }), asOfIndex: asOf, asOf: series.timestamps[asOf], degrees: degreesInfo };
+                 parametersHash: Hash.hashValue({ v: ENGINE_VERSION, cfg: Object.assign({}, cfg, { _sigma: undefined }) }), asOfIndex: asOf, asOf: series.timestamps[asOf], degrees: degreesInfo };
     if (!top.length) return Object.assign(base, { status: "UNAVAILABLE", reason: n < 6 ? "TOO_FEW_SWINGS" : "NO_VALID_COUNT", detail: n < 6 ? "Zu wenige Schwünge für eine Wellenzählung" : "Keine regelkonforme Lesart der jüngsten Schwünge",
                                                  primary: null, alternatives: [], higherDegree: null, historicalMap: null, applicability: { score: null, level: "LOW", abstain: true, components: {}, reasons: ["Keine regelkonforme Lesart"] } });
     /* Persistenz (kausal, aus dem Vortag) */
@@ -539,7 +623,9 @@
     zs.sort(function (x, y) { return x - y; });
     var zMed = zs.length ? zs[Math.floor(zs.length / 2)] : null;
     var snr = isNum(zMed) ? { ratio: round(zMed, 3), score: round(clamp((zMed - cfg.noise.abstainBelow) / (cfg.noise.full - cfg.noise.abstainBelow), 0, 1), 3) } : null;
-    var appl = applicability3(primary.countQuality, alternatives.length && amb.kind === "STRUCTURE" ? clarity : null, snr, cfg, amb, primary.complete);
+    var wFrac = primary.complete ? 1 : (primary.currentWave ? primary.currentWave.wave : best0.waves.length) / Math.max(1, P.PATTERNS[best0.type].waves);
+    var appl = applicability3(primary.countQuality, alternatives.length && amb.kind === "STRUCTURE" ? clarity : null, snr, cfg, amb, primary.complete,
+                              { hier: best0.components.hierarchy, prop: best0.components.proportion, waveFrac: wFrac });
     if (dq.blocking) { appl.level = "LOW"; appl.abstain = true; appl.reasons.unshift(dq.note); }
     var clarityLevel = amb.kind !== "STRUCTURE" ? "HIGH" : clarity >= cfg.clarity.high ? "HIGH" : clarity >= cfg.clarity.moderate ? "MODERATE" : "LOW";
     var status = primary.currentWave.wave === 1 && !primary.complete ? "EARLY" : clarityLevel === "LOW" ? "AMBIGUOUS" : "OK";
@@ -624,9 +710,10 @@
    * Praezisionsziele: HOCH ab 0,6 (3.1: falsche Sicherheit 13 % im Entwicklungssplit, Layout A+B), MITTEL ab 0,35, darunter
    * KEINE VERLAESSLICHE ZAEHLUNG. Keine Prognose ueber den Kurs — die Eichung misst Methodentreue, nicht Ergebnis.
    */
-  function applicability3(q, clarity, snr, cfg, amb, complete) {
-    var A = cfg.applicability;
+  function applicability3(q, clarity, snr, cfg, amb, complete, ex) {
+    var A = cfg.applicability; ex = ex || {};
     var x = [1, q && isNum(q.score) ? q.score : 0.5, isNum(clarity) ? clamp(clarity / 0.15, 0, 1) : 1, snr ? Math.min(4, snr.ratio) / 4 : 0.3, amb && amb.kind === "STRUCTURE" ? 1 : 0, complete ? 0 : 1];
+    if (A.coef.length > 6) x.push(isNum(ex.hier) ? 1 - ex.hier : 0, isNum(ex.prop) ? ex.prop : 0.5, complete ? 0 : (isNum(ex.waveFrac) ? ex.waveFrac : 0));
     var eta = 0; for (var k = 0; k < x.length; k++) eta += x[k] * A.coef[k];
     var score = 1 / (1 + Math.exp(-eta));
     var level = score >= A.high ? "HIGH" : score >= A.moderate ? "MODERATE" : "LOW";
@@ -637,9 +724,11 @@
     if (q && q.level === "LOW") reasons.push("Die beste Zählung erfüllt die Richtlinien nur schwach");
     if (snr && snr.ratio < 1.3) reasons.push("Die Wellen sind kaum größer als ein Zufallspfad gleicher Dauer");
     if (!complete) reasons.push("Das Muster läuft noch – laufende Zählungen sind seltener richtig als abgeschlossene");
+    if (isNum(ex.prop) && ex.prop < 0.5) reasons.push("Die Wellen sind in Zeit und Preis ungleich groß – möglicherweise werden verschiedene Grade vermischt");
+    if (isNum(ex.hier) && ex.hier < 1) reasons.push("Die Zählung schneidet eine andere vollständige Struktur – Gradzuordnung unsicher");
     if (amb && amb.kind === "DEGREE") reasons.push("Alternative zählt dieselbe Struktur nur auf einer anderen Ebene (kein Widerspruch)");
     return { score: round(score, 3), level: level, abstain: level === "LOW", basis: "synthetic-calibrated structural clarity",
-             components: { countQuality: x[1], clarity: round(x[2], 3), signalToNoise: snr ? snr.ratio : null, structureAmbiguity: x[4] === 1, developing: x[5] === 1 },
+             components: { countQuality: x[1], clarity: round(x[2], 3), signalToNoise: snr ? snr.ratio : null, structureAmbiguity: x[4] === 1, developing: x[5] === 1, hierarchyConflict: x[6] > 0, proportion: isNum(x[7]) ? round(x[7], 3) : null },
              signalToNoise: snr ? snr.ratio : null, reasons: level === "HIGH" ? reasons.filter(function (r) { return /Ebene/.test(r); }) : reasons };
   }
   function nearestScale(e, pivots) {

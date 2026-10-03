@@ -11,11 +11,25 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { createRequire } from "node:module";
 import { ROOT, weeklySeriesFromPoints } from "./lib/ti-data.mjs";
-import { CLASSES, NOISES, corpusCase, seedsOf } from "../../quant/tests/elliott-corpus.mjs";
+import { CLASSES, NOISES, corpusCase, seedsOf, observedPivots } from "../../quant/tests/elliott-corpus.mjs";
 const require = createRequire(import.meta.url);
 const Ctx = require(join(ROOT, "quant/engines/technical/ti/context.js"));
 const EV2 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v2.js"));
 const EV3 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js"));
+import { corpusCaseC, STAGES, seedsOfC } from "../../quant/tests/elliott-corpus-c.mjs";
+import { caseC2 } from "../../quant/tests/elliott-corpus-c2.mjs";
+/** Ein Fall eines C-Layouts (C1/C3 eigener Generator, C2 unabhaengiger Generator); laufende Stufen P60/P75/P90 als "mid". */
+export function caseC(layout, cls, seed, noise, stage) {
+  const cs = layout === "C2" ? caseC2(cls, seed, noise, { stage }) : corpusCaseC(cls, seed, noise, { layout, stage });
+  if (stage[0] === "P") {
+    const T = cs.truth.topIdx, cut = cs.closes.length - 1; let k0 = 0;
+    for (let k = 1; k < T.length; k++) if (T[k] < cut - 1) k0 = k;
+    cs.mid = k0 >= 2 && k0 + 1 <= T.length - 1 ? { completedWaves: k0, currentWave: k0 + 1, pts: T.slice(0, k0 + 1) } : null;
+    if (!cs.mid) return null;                     // weniger als zwei abgeschlossene Wellen: nicht als laufendes Muster pruefbar
+  } else cs.mid = null;
+  return cs;
+}
+const PAT = require(join(ROOT, "quant/engines/technical/elliott/patterns.js"));
 const USE_V3 = process.argv.includes("--v3");
 function arg(n, d) { const i = process.argv.indexOf("--" + n); return i >= 0 ? process.argv[i + 1] : d; }
 
@@ -71,6 +85,15 @@ export function intraViolations(c, closes) {
   if (c.pattern === "IMPULSE" && W.length === 5 && W[4].status !== "DEVELOPING") { const L = W.map((w) => Math.abs(w.toPrice - w.fromPrice)); if (L[2] < Math.min(L[0], L[4])) v.push("W3_SHORTEST"); }
   return v;
 }
+/** Beobachtbare Wahrheit: Pivots am sichtbaren Extrem; gueltig nur, wenn das Zielmuster auf den sichtbaren Kursen regelkonform ist
+    (Wellenenden und Extreme innerhalb der Wellen). Ungueltig = Rauschen/Kontext hat das Muster im Kursbild zerstoert. */
+export function observableTruth(cs) {
+  if (cs.mid || !cs.truth.expect.length) return null;
+  const idx = observedPivots(cs), c = cs.closes;
+  const waves = idx.slice(1).map((b, k) => ({ fromIndex: idx[k], toIndex: b, fromPrice: c[idx[k]], toPrice: c[b], duration: Math.max(1, b - idx[k]), status: "CONFIRMED" }));
+  const valid = cs.truth.expect.some((t) => PAT.PATTERNS[t] && PAT.checkRules(t, waves) && intraViolations({ pattern: t, waves }, c).length === 0);
+  return { topIdx: idx, valid, shifted: idx.filter((x, k) => x !== cs.truth.topIdx[k]).length };
+}
 export function evaluateCase(cs, engineOpts) {
   const s = weeklySeriesFromPoints(cs.dates.map((d, i) => [d, cs.closes[i]]), "SYN");
   const P = Ctx.prepare(s);
@@ -81,8 +104,11 @@ export function evaluateCase(cs, engineOpts) {
   const cands = [r.primary, ...(r.alternatives || [])].filter(Boolean);
   const js = cands.map((c) => (cs.mid ? judgeMid(c, cs) : judge(c, cs.truth)));
   const k = js.findIndex((j) => j.hit);
+  const ot = observableTruth(cs), tObs = ot ? Object.assign({}, cs.truth, { topIdx: ot.topIdx }) : null;
+  const jo = tObs ? cands.map((c) => judge(c, tObs)) : null;
+  const obs = ot ? { valid: ot.valid, shifted: ot.shifted, rank: jo.findIndex((j) => j.hit), degree: jo[0] ? jo[0].degree : "NONE" } : null;
   const g8 = cands.reduce((a, c) => a + intraViolations(c, cs.closes).length, 0);
-  return { g8, id: cs.id, mid: !!cs.mid, structureOnly: js[0] && js[0].structure && !js[0].hit, cls: cs.truth.cls, scale: r.degrees.analysis, status: r.status, abstain: !!(r.applicability && r.applicability.abstain), applicability: r.applicability ? r.applicability.level : null,
+  return { g8, obs, id: cs.id, mid: !!cs.mid, structureOnly: js[0] && js[0].structure && !js[0].hit, cls: cs.truth.cls, scale: r.degrees.analysis, status: r.status, abstain: !!(r.applicability && r.applicability.abstain), applicability: r.applicability ? r.applicability.level : null,
            primary: js[0] || { label: "NONE", degree: "NONE" }, rank: k, falseAccept: js.some((j) => j.asNegTarget), quality: r.primary && r.primary.countQuality ? r.primary.countQuality.level : null,
            clarity: r.clarity, ms };
 }
@@ -110,8 +136,21 @@ export function gate(rowsAll) {
   const hi = end.filter((r) => sup(r) && r.id.split("|")[1] === "high"), hiHigh = hi.filter((r) => r.applicability === "HIGH");
   g.high_G1_primary = pct(hi.filter((r) => r.rank === 0).length, hi.length); g.high_G7_falseCertainty = pct(hiHigh.filter((r) => r.rank !== 0).length, hiHigh.length); g.high_nHigh = hiHigh.length;
   g.high_abstain = pct(hi.filter((r) => r.abstain).length, hi.length);
+  /* laufende Muster (Mitte bzw. P-Stufen): Wiedererkennung und falsche Sicherheit, Rauschen none/low/medium */
+  const mids = rowsAll.filter((r) => r.mid && !CLASSES[r.cls].negativeOf && r.id.split("|")[1] !== "high");
+  g.dev_primary = pct(mids.filter((r) => r.rank === 0).length, mids.length); g.dev_n = mids.length;
+  const midHigh = mids.filter((r) => r.applicability === "HIGH"); g.dev_falseHigh = pct(midHigh.filter((r) => r.rank !== 0).length, midHigh.length); g.dev_nHigh = midHigh.length;
   pass.high_G1 = g.high_G1_primary >= 20; pass.high_G7 = hiHigh.length === 0 || g.high_G7_falseCertainty <= 30;
   return { metrics: g, pass };
+}
+/** Dieselben Kennzahlen gegen die beobachtbare Wahrheit (nur Faelle, deren Muster im Kursbild regelkonform sichtbar ist). */
+export function gateObservable(rowsAll) {
+  const conv = rowsAll.filter((r) => !r.mid && (CLASSES[r.cls].negativeOf || (r.obs && r.obs.valid))).map((r) => r.obs ? Object.assign({}, r, { rank: r.obs.rank, primary: Object.assign({}, r.primary, { degree: r.obs.degree }) }) : r);
+  const g = gate(conv);
+  const pos = rowsAll.filter((r) => !r.mid && r.obs);
+  g.metrics.observableValidShare = pos.length ? +(100 * pos.filter((r) => r.obs.valid).length / pos.length).toFixed(1) : null;
+  g.metrics.observableValidHigh = (() => { const h = pos.filter((r) => r.id.split("|")[1] === "high"); return h.length ? +(100 * h.filter((r) => r.obs.valid).length / h.length).toFixed(1) : null; })();
+  return g;
 }
 export function summarize(rowsAll) {
   const rows = rowsAll.filter((r) => !r.mid), mids = rowsAll.filter((r) => r.mid);
@@ -135,20 +174,29 @@ if (import.meta.url === "file://" + process.argv[1]) {
   const classes = arg("classes") ? arg("classes").split(",") : Object.keys(CLASSES);
   const noises = arg("noise") ? arg("noise").split(",") : NOISES;
   const rows = [];
+  if (/^C[123]$/.test(layout)) {
+    const stages = arg("stages") ? arg("stages").split(",") : STAGES;
+    for (const cls of classes) for (const nz of noises) for (const seed of seedsOfC(split)) for (const st of stages) {
+      if (CLASSES[cls].negativeOf && st[0] === "P") continue;
+      const cs = caseC(layout, cls, seed, nz, st); if (!cs) continue;
+      const r = evaluateCase(cs, engineOpts); r.stage = st; rows.push(r);
+    }
+  } else
   for (const cls of classes) for (const nz of noises) for (const seed of seedsOf(split)) {
     rows.push(evaluateCase(corpusCase(cls, seed, nz, { layout }), engineOpts));
     if (!process.argv.includes("--end-only") && !CLASSES[cls].negativeOf) rows.push(evaluateCase(corpusCase(cls, seed, nz, { cut: "mid", layout }), engineOpts));
   }
   const sum = summarize(rows);
-  const gt = gate(rows);
-  const out = { schemaVersion: "vu-elliott-corpus-eval-1.0.0", generatedAt: new Date().toISOString(), engine: USE_V3 ? EV3.ENGINE_VERSION : EV2.ENGINE_VERSION, engineOpts, split, layout, tag, gate: gt, summary: sum, rows };
+  const gt = gate(rows), go = gateObservable(rows);
+  const out = { schemaVersion: "vu-elliott-corpus-eval-1.0.0", generatedAt: new Date().toISOString(), engine: USE_V3 ? EV3.ENGINE_VERSION : EV2.ENGINE_VERSION, engineOpts, split, layout, tag, gate: gt, gateObservable: go, summary: sum, rows };
   const dir = join(ROOT, "quant/data/technical-intelligence/elliott-validation/corpus");
   mkdirSync(dir, { recursive: true });
-  if (!process.argv.includes("--no-write")) writeFileSync(join(dir, "corpus-" + split.toLowerCase() + (layout === "B" ? "-layoutB" : "") + "-" + tag + ".json"), JSON.stringify(out));
+  if (!process.argv.includes("--no-write")) writeFileSync(join(dir, "corpus-" + split.toLowerCase() + (layout !== "A" ? "-layout" + layout : "") + "-" + tag + ".json"), JSON.stringify(out));
   const pct = (a, b) => (b ? (100 * a / b).toFixed(1) : "-") + "%";
   console.log(`  MID: n ${sum.mid.n} primary ${sum.mid.primary} (${pct(sum.mid.primary, sum.mid.n)}) p+a ${sum.mid.primaryOrAlt} structure-right-label-wrong ${sum.mid.structureOnly}`);
   console.log(`split ${split} tag ${tag}: positives ${sum.positives} primary ${sum.primary} (${pct(sum.primary, sum.positives)}) primary+alt ${sum.primaryOrAlt} (${pct(sum.primaryOrAlt, sum.positives)}) | degree ${JSON.stringify(sum.degree)} | negatives ${sum.negatives} falseAccept ${sum.falseAccepts} | abstain(pos) ${sum.abstainPositives} | ${sum.medianMs} ms`);
   for (const [k, v] of Object.entries(sum.byClass)) console.log("  ", k.padEnd(22), "n", v.n, "prim", v.primary, "p+a", v.primaryOrAlt, "exactDeg", v.exactDegree, "abst", v.abstain, v.falseAccept ? "FA " + v.falseAccept : "");
   console.log("  GATE", JSON.stringify(gt.metrics), JSON.stringify(gt.pass));
+  console.log("  GATE-OBS", JSON.stringify(Object.fromEntries(Object.entries(go.metrics).filter(([k]) => k !== "G3_byClass"))), JSON.stringify(go.pass));
   console.log("  byNoise", JSON.stringify(Object.fromEntries(Object.entries(sum.byNoise).map(([k, v]) => [k, v.primary + "/" + v.n]))));
 }

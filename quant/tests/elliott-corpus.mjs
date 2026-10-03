@@ -126,10 +126,10 @@ export const CLASSES = {
   NEG_W3_SHORTEST:      { shape: (R) => negImpulse(R, "W3_SHORTEST"), motive: true, expect: [], negativeOf: "IMPULSE" },
   NEG_W4_OVERLAP:       { shape: (R) => negImpulse(R, "W4_OVERLAP"), motive: true, expect: [], negativeOf: "IMPULSE" }
 };
-const SUBSHAPE = { IMPULSE: (R) => impulse(R, R.pick(["NORMAL", "NORMAL", "EXT3", "EXT5"])), ZIGZAG: zigzag, FLAT: (R) => flat(R, R.pick(["REGULAR", "EXPANDED", "REGULAR"])), TRIANGLE: (R) => triangle(R, "CONTRACTING") };
+export const SUBSHAPE = { IMPULSE: (R) => impulse(R, R.pick(["NORMAL", "NORMAL", "EXT3", "EXT5"])), ZIGZAG: zigzag, FLAT: (R) => flat(R, R.pick(["REGULAR", "EXPANDED", "REGULAR"])), TRIANGLE: (R) => triangle(R, "CONTRACTING") };
 
 /** Wellen einer Form zu Punktfolge (relativ: Start 0, Richtung dir, Welle-1-Laenge 1, Bars relativ). */
-function walk(waves, dir) {
+export function walk(waves, dir) {
   const pts = [[0, 0]];
   let x = 0, y = 0;
   waves.forEach((w, k) => { const sg = k % 2 === 0 ? dir : -dir; x += w.bars; y += sg * w.len; pts.push([x, y]); });
@@ -140,7 +140,7 @@ function walk(waves, dir) {
  * Baut ein Muster mit Unterteilung in absoluten Koordinaten.
  * @returns {{top: number[][], sub: number[][], all: number[][]}} Punkte [bar(float), preis]
  */
-function build(R, waves, x0, y0, dir, unitLen, unitBars, depth) {
+export function build(R, waves, x0, y0, dir, unitLen, unitBars, depth) {
   const top = [[x0, y0]], all = [[x0, y0]], sub = [];
   let x = x0, y = y0;
   waves.forEach((w, k) => {
@@ -257,7 +257,7 @@ export function corpusCase(cls, seed, noise, opts = {}) {
   return {
     id: cls + "|" + noise + "|" + seed + (mid ? "|mid" : "") + (LB ? "|B" : ""), closes, dates, mid, layout: LB ? "B" : "A",
     truth: { cls, expect: C.expect, motive: C.motive, negativeOf: C.negativeOf || null, unsupported: !!C.unsupported, dir,
-             topIdx, topPrice: tgt.top.map((p) => p[1]), subIdx, contextTopIdx: map(ctx.top), patternEnd: topIdx[topIdx.length - 1], legs: shapeW.length, sizePct: g }
+             topIdx, topPrice: tgt.top.map((p) => p[1]), subIdx, contextTopIdx: map(ctx.top), patternEnd: topIdx[topIdx.length - 1], legs: shapeW.length, sizePct: g, confIdx: map(confPts), cutAt }
   };
 }
 
@@ -265,3 +265,25 @@ export function corpusCase(cls, seed, noise, opts = {}) {
 export const SPLITS = { DEVELOPMENT: [0, 9], VALIDATION: [10, 19], HOLDOUT: [20, 29], HOLDOUT2: [40, 49] };   // HOLDOUT2: nur Layout B (Aenderung 1)
 export const NOISES = ["none", "low", "medium", "high"];
 export function seedsOf(split) { const [a, b] = SPLITS[split]; const out = []; for (let s = a; s <= b; s++) out.push(s); return out; }
+
+/**
+ * Beobachtbare Wahrheit (Mission III, Fehler-Taxonomie): Rauschen und der Kontext verschieben das sichtbare Kursextrem gegenueber
+ * dem erzeugten Pivot. Ein Analyst (und die Regel "Wellen beginnen und enden an Extremen", EWP Kap. 1) zaehlt am sichtbaren
+ * Extrem. Je Musterpivot k: Extrem in Pivotrichtung im Fenster ±35 % der angrenzenden Wellendauer (am Ursprung nach links mit der
+ * Dauer von Welle 1, am Ende nach rechts hoechstens bis zum Auswertungszeitpunkt). Gibt die Pivots zurueck; die Gueltigkeit
+ * (Regeln auf den sichtbaren Kursen) prueft der Aufrufer.
+ */
+export function observedPivots(cs, share = 0.35) {
+  const T = cs.truth.topIdx, c = cs.closes, d = cs.truth.dir, last = c.length - 1, out = [];
+  for (let k = 0; k < T.length; k++) {
+    const dl = k > 0 ? T[k] - T[k - 1] : T[1] - T[0], dr = k < T.length - 1 ? T[k + 1] - T[k] : T[k] - T[k - 1];
+    const lo = Math.max(0, k > 0 ? Math.max(out[k - 1] + 1, T[k] - Math.floor(share * dl)) : T[k] - Math.floor(share * dl));
+    const hi = Math.min(last, k < T.length - 1 ? T[k] + Math.floor(share * dr) : T[k] + Math.floor(share * dr));
+    const low = (k % 2 === 0) === (d > 0);           // Pivot 0 ist Tief bei Aufwaertsmuster
+    let best = Math.min(Math.max(T[k], lo), hi);
+    for (let i = lo; i <= hi; i++) if (low ? c[i] < c[best] : c[i] > c[best]) best = i;
+    out.push(best);
+  }
+  return out;
+}
+
