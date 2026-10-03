@@ -79,3 +79,11 @@ Logs zeigen nur Zählwerte.
 - Öffentlich erscheinen nur Entscheidungen ohne Kennzahlen, bis die Rechte an abgeleiteten Kennzahlen (Tiingo) geklärt sind.
 - Ein späteres Modelldepot zeigt Positionen und Regeln nach dem Muster von VU Trendfolge 52W.
 - Es ist eine regelbasierte Modellbeobachtung, keine Anlageempfehlung.
+
+## Läufe
+
+| Lauf | Ergebnis (ohne Kennzahlen) |
+|---|---|
+| dev-smoke (Run 37132495954, 600 Reihen) | Technisch bestanden: alle 12 Versuche und Kontrollen gerechnet, Endwert = Barmittel + Positionen (Abweichung 0), Entwicklungssperre aktiv (Zeitraum endet 2021-12-31). |
+
+**Bekannte Eigenschaft (keine Regeländerung):** Die Vorlaufzeit beginnt am 02.01.2015; mit der Mindesthistorie von 273 Handelstagen ist zum ersten Stichtag (29.01.2016) noch kein Titel zulässig. Das Depot ist deshalb im Februar 2016 vollständig in bar, während SPY ab dem 29.01.2016 zählt. Der Effekt wirkt gegen die Strategie.
