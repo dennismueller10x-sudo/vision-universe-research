@@ -182,6 +182,7 @@ export function tradesFor(engine, seg, ctx, exec, sink = null, simOpts = {}) {
       trigger: s.levels?.trigger ?? null, confirmClose: s.confirmation?.close ?? null, rawOpenEntry: s.entry.rawOpen ?? null, evidence: s.entry.evidence || null, sameDayOrder: s.entry.sameDayOrder || null,
       terminal, marks, divs, heldSessions: lastIdx - ei, survivor: seg.survivor,
       rsAtEntry: seg.cross?.rs?.[ei - 1] ?? null, // Runde 10: Rang im Portfolio (Stand Vortag)
+      rankScore: engine.rankScore ? engine.rankScore(ctx, ei) : null, // Runde 11: methodeneigener Rang (Turtle: Staerke/N)
     };
   };
   if (sink) for (const s of res.finished) if (!s.entry) sink(s);

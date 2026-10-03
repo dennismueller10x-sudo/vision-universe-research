@@ -37,6 +37,7 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
   for (const list of byEntry.values()) {
     if (opts.seed) list.sort((a, b) => seededKey(opts.seed, a.listingId) - seededKey(opts.seed, b.listingId) || a.listingId.localeCompare(b.listingId));
     // Runde 10 (PREREGISTRATION-R10-FIXES K3): Rang nach relativer Staerke am Vortag, Gleichstand alphabetisch.
+    else if ((opts.priority || cfg.priority) === 'SCORE') list.sort((a, b) => (Number.isFinite(b.rankScore) ? b.rankScore : -Infinity) - (Number.isFinite(a.rankScore) ? a.rankScore : -Infinity) || a.listingId.localeCompare(b.listingId));
     else if ((opts.priority || cfg.priority) === 'RS') list.sort((a, b) => (Number.isFinite(b.rsAtEntry) ? b.rsAtEntry : -1) - (Number.isFinite(a.rsAtEntry) ? a.rsAtEntry : -1) || a.listingId.localeCompare(b.listingId));
     else list.sort((a, b) => a.listingId.localeCompare(b.listingId));
   }
