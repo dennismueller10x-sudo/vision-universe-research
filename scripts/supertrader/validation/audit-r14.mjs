@@ -254,6 +254,8 @@ async function main() {
   const context = {};
   for (const t of CONTEXT_ETFS) {
     let s = null; try { s = await mainStore.getSeries(t); } catch { s = null; }
+    // ETFs liegen nicht im Aktienspeicher: 1 Anfrage je Reihe ueber den bestehenden Tiingo-Zugang, nur im Speicher (nicht abgelegt).
+    if (!s?.bars?.length && process.env.TIINGO_API_KEY) { try { const res = await fetch(`https://api.tiingo.com/tiingo/daily/${t}/prices?startDate=${W.warmupFrom}&endDate=${W.to}&format=json`, { headers: { Authorization: 'Token ' + process.env.TIINGO_API_KEY } }); if (res.ok) { const j = await res.json(); if (Array.isArray(j)) s = { bars: j.map((b) => ({ date: String(b.date).slice(0, 10), close: b.close, dividend: b.divCash || 0, splitFactor: b.splitFactor || 1 })) }; } } catch { s = null; } }
     if (!s?.bars?.length) { context[t] = { available: false }; continue; }
     const raw = s.bars.map((b) => ({ date: b.date, close: b.close, dividend: b.dividend ?? 0, splitFactor: b.splitFactor ?? 1 })).filter((b) => b.close != null).sort((a, b) => a.date.localeCompare(b.date));
     const a = L.adjustSeries(raw.map((b) => ({ ...b, open: b.close, high: b.close, low: b.close, volume: 0 })));
