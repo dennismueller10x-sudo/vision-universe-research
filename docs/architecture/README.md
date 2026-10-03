@@ -25,7 +25,7 @@ Die vollständigen Befunde mit Belegen und Severity stehen im [Abschlussbericht]
 - Keine dauerhafte Identität: ISIN, FIGI und CUSIP sind in 0 von 7.809 Instrumenten befüllt. Umbenennungen werden nicht geliefert (`symbolActions=[]`).
 - Produkt-Builder verknüpfen per Tickerstring („first match wins“).
 - Der Company Master entsteht aus den Gate-Universen. Gemessen ist er also eine Projektion einer kuratierten Tickerliste (7.810 von 108.573 Anbieterzeilen).
-- Das Produktuniversum (`eligibility.json`) wurde seit 15.09. nicht neu gebaut. 53 Reihen (z. B. AVB, LEG, WBS) stehen seit Wochen still, weil die Titel übernommen oder delistet sind, im Universum aber weiter als ACTIVE geführt werden.
+- Das Produktuniversum (`eligibility.json`) wurde seit 15.09. nicht neu veröffentlicht (Publikation über Tiingo 2.0 wartet auf den QA-Nachweis). 53 Reihen (z. B. AVB, LEG, WBS) stehen seit Wochen still, weil die Titel übernommen oder delistet sind, im Universum aber weiter als ACTIVE geführt werden.
 
 ### Preiswahrheit
 - Eine Ablage (Tiingo EOD), aber mehrere Ableitungen: Split-Bereinigung fünfmal, 52-Wochen-Hoch viermal, Tagesänderung dreimal, Gesamtrendite zweimal (ADR-002).
@@ -84,5 +84,5 @@ VISION UNIVERSE CORE       Securities (core/identity.js, Company Master)
 | Produkte lesen über Verträge | ⏳ inkrementell (ADR-003 §Migration) |
 | Eine Split-Bereinigung, eine 52W-Definition, eine Gesamtrendite | ⏳ braucht Vorher/Nachher-Vergleich je Produkt |
 | Stabile Identität (`instrumentId`, ISIN/FIGI) | ⏳ eigenes Projekt |
-| Universum aktuell halten (Neuemissionen, Delistings) | ⏳ geplanter Erzeuger für `eligibility.json` fehlt |
+| Universum aktuell halten (Neuemissionen, Delistings) | ⏳ Tiingo 2.0: Discovery/Staging laufen werktags, Publikation wartet auf QA-Nachweis ([tiingo2](../tiingo2/README.md)) |
 | PWA, `/v1`, User Data, App | ⏳ (APP_READINESS §7) |

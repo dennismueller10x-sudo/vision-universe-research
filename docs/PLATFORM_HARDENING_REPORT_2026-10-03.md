@@ -120,7 +120,7 @@ ADRs:
 | M7 | `javascript:`-URLs im News-Feed | behoben |
 | M8 | Markets-Movers mit eigener Tagesänderung (IEX statt EOD) | offen (ADR-002) |
 | M9 | Zwei Gesamtrendite-Definitionen | offen (ADR-002, Methodik-Version nötig) |
-| M10 | Universum seit 15.09. nicht neu gebaut: 53 delistete oder übernommene Titel ACTIVE, S&P-Neuzugänge fehlen (NRG, VLTO, SNDK, Q, BNY falsch) | offen; geplanter Erzeuger fehlt |
+| M10 | Universum seit 15.09. nicht neu gebaut: 53 delistete oder übernommene Titel ACTIVE, S&P-Neuzugänge fehlen (NRG, VLTO, SNDK, Q, BNY falsch) | offen; Eigentümer ist der Tiingo-2.0-Workstream: `tiingo2-universe-refresh.yml` läuft werktags (Discovery, Staging, nur lesend), die Publikation nach `eligibility.json` verlangt einen QA-Nachweis je Manifest (docs/tiingo2/README.md). Bewusst kein zweiter Erzeuger. |
 | M11 | Supertrader lädt 3,6 MB je Seite; Quant-Screener 18,8 MB | offen (FRONTEND.md) |
 
 ### Low
@@ -220,7 +220,7 @@ Neue Regressionstests:
    - Umbenennungen (FB→META) erzeugen eine neue `securityId`; der Umbenennungspfad bekommt keine Eingaben.
    - ISIN, FIGI und CUSIP sind leer.
    - Produkt-Builder verknüpfen per Ticker („first match wins“).
-2. **Universum veraltet** ohne geplanten Erzeuger. Delistings bleiben ACTIVE, Neuemissionen und S&P-Neuzugänge fehlen.
+2. **Universum veraltet,** bis die Tiingo-2.0-Publikation freigegeben ist. Delistings bleiben ACTIVE, Neuemissionen und S&P-Neuzugänge fehlen.
 3. **Mehrfache Kennzahldefinitionen:**
    - Split-Bereinigung 5× (Discover-Publisher und -Build in #388 auf `return-series.js#splitFactors`, bitgleich), 52W-Hoch 4×, Tagesänderung in Markets, Gesamtrendite 2×.
    - Zusammenführen nur mit Vorher/Nachher-Vergleich und Methodik-Version.
@@ -239,7 +239,7 @@ Neue Regressionstests:
    - #387 mergen, dann `supertrader-signals.yml` und `market-data-refresh.yml` einmal manuell starten. Das macht BRK-B, die Penny-Kurse und die Supertrader-Seiten in den Daten wirksam.
    - Danach muss `node scripts/core/data-quality.mjs` ohne ERROR laufen.
 2. **Intraday 02.10. nachziehen:** `intraday-snapshots.yml` mit `scope=universe` für die Sitzung, oder auf die nächste Sitzung warten.
-3. **Universum aktuell halten:** einen Zeitplan für `build-us-eligibility.mjs` und `universe-master.yml` (wöchentlich) mit DQ-IX-1 als Gate.
+3. **Universum aktuell halten:** die gestagte Tiingo-2.0-Publikation mit QA-Nachweis freigeben (Owner-Entscheidung, `tiingo2-publication.mjs`). Danach `universe-master.yml` und `node scripts/core/data-quality.mjs` (DQ-IX-1) als Kontrolle. Keinen konkurrierenden Zeitplan für `build-us-eligibility.mjs` anlegen.
 4. **News-Zeitplan** (Owner-Entscheidung: externe RSS-Abfragen), zum Beispiel alle 6 Stunden.
 5. **Supertrader `signals.json` sharden** (je Symbol). Abstimmung mit dem Supertrader-Workstream.
 6. **Quant-Screener auf `screening.json.gz`** umstellen, mit Ergebnisvergleich.

@@ -52,6 +52,7 @@ Namen (Tiingo, SEC, kuratiert)      ──▶ build-company-names.mjs       ─�
 
 Verbraucher: Abrufumfang (`universe-source.mjs`), Faktoren, Discover, Screener (`screenerEligible`), Supertrader (über den Discover-Index), Suche (`instrument-directory.js`).
 **Identität:** `core/identity.js` (ADR-001).
+**Aktualität:** Kein geplanter Lauf baut `us-security-master.json` oder `eligibility.json` neu. Neuemissionen und Delistings kommen über Tiingo 2.0: `tiingo2-universe-refresh.yml` (werktags 08:20 UTC, nur lesend) erzeugt Discovery und Staging, `tiingo2-publication.mjs` veröffentlicht erst mit einem QA-Nachweis je Manifest ([docs/tiingo2/README.md](../tiingo2/README.md)). Der Systemzustand meldet das Alter (`securityMaster` in `core/registry/domains.json`).
 
 ## Index Membership
 
