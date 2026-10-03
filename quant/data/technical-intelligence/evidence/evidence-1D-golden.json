@@ -1,19 +1,19 @@
 {
  "schemaVersion": "vu-ti-evidence-1.0.0",
- "generatedAt": "2026-10-03T19:39:56.634Z",
+ "generatedAt": "2026-10-03T23:18:49.144Z",
  "mode": "daily",
  "timeframe": "1D",
  "engine": {
   "bundle": "ti-bundle-2.0.0",
   "outcomes": "ti-outcomes-1.0.0",
-  "scenario": "ti-scenario-1.2.0",
+  "scenario": "ti-scenario-1.2.1",
   "methodology": {
    "elliottEngine": "v3"
   },
   "files": {
    "elliott-v3.js": "8570a079aa351961",
    "elliott-v2.js": "5fda575b4ad4612f",
-   "scenario.js": "e90ae5eabe214c61",
+   "scenario.js": "a876f3d42a6247c1",
    "engine.js": "95889ba053fc2065",
    "outcomes.js": "8fdafb77d76f3f8b"
   },
@@ -110,8 +110,7 @@
     "rows": 3,
     "registration": "EXPLORATORY",
     "significantBH": [
-     "LOW",
-     "MODERATE"
+     "LOW"
     ]
    },
    {
@@ -179,6 +178,7 @@
      "MOMENTUM",
      "HIGHER_TIMEFRAME",
      "VOLUME",
+     "PATTERN",
      "ALWAYS_LONG",
      "WITHOUT_TREND",
      "WITHOUT_MOMENTUM",
@@ -238,10 +238,10 @@
   "bootstrapSec": 3
  },
  "counts": {
-  "events": 345,
-  "withScenario": 323,
+  "events": 346,
+  "withScenario": 322,
   "byOutcome": {
-   "INVALIDATED": 94,
+   "INVALIDATED": 93,
    "TARGET1": 122,
    "NO_ENTRY": 103,
    "OPEN": 1,
@@ -250,230 +250,230 @@
   }
  },
  "overall": {
-  "signals": 320,
-  "n": 217,
+  "signals": 319,
+  "n": 216,
   "symbols": 5,
-  "fillRate": 0.6781,
-  "t1HitRate": 0.5622,
+  "fillRate": 0.6771,
+  "t1HitRate": 0.5648,
   "t1Ci": [
-   0.4703,
-   0.645
+   0.4726,
+   0.6465
   ],
-  "invalidationRate": 0.4332,
+  "invalidationRate": 0.4306,
   "timeoutRate": 0.0046,
-  "t2HitRate": 0.3548,
-  "baselineRate": 0.5561,
-  "baselineN": 651,
-  "martingaleRate": 0.475,
-  "lift": 0.0061,
-  "liftCiLow": -0.0857,
-  "liftCiHigh": 0.0936,
+  "t2HitRate": 0.3565,
+  "baselineRate": 0.5617,
+  "baselineN": 648,
+  "martingaleRate": 0.4772,
+  "lift": 0.0031,
+  "liftCiLow": -0.0874,
+  "liftCiHigh": 0.0866,
   "medianBarsToT1": 14,
   "p25BarsToT1": 5.25,
   "p75BarsToT1": 29,
-  "medianReturn": 0.0317,
-  "meanReturn": 0.008,
-  "medianMfeR": 0.824,
-  "medianMaeR": 0.8254,
-  "medianMfePct": 0.0475,
-  "medianMaePct": 0.0415,
+  "medianReturn": 0.0318,
+  "meanReturn": 0.0094,
+  "medianMfeR": 0.8283,
+  "medianMaeR": 0.8154,
+  "medianMfePct": 0.0479,
+  "medianMaePct": 0.0411,
   "medianRiskPct": 0.0593,
-  "medianRewardPct": 0.068,
-  "meanForwardReturnH": 0.1119,
+  "medianRewardPct": 0.0671,
+  "meanForwardReturnH": 0.1117,
   "t1CiWilson": [
-   0.4957,
-   0.6266
+   0.4981,
+   0.6292
   ],
-  "liftCiLowNormal": -0.0701,
-  "liftCiHighNormal": 0.0824,
-  "pLift": 0.89076,
+  "liftCiLowNormal": -0.0733,
+  "liftCiHighNormal": 0.0794,
+  "pLift": 0.94466,
   "ciCluster": {
    "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
    "clusters": {
     "symbols": 5,
     "timeBlocks": 44,
-    "cells": 151
+    "cells": 150
    },
    "timeBlock": "QUARTER",
    "B": 1000,
    "lift": {
-    "lo": -0.0857,
-    "hi": 0.0936,
-    "se": 0.0447,
+    "lo": -0.0874,
+    "hi": 0.0866,
+    "se": 0.0445,
     "by": "TIME",
     "symbol": [
-     -0.0643,
-     0.0714
+     -0.0732,
+     0.0717
     ],
     "time": [
-     -0.0857,
-     0.0936
+     -0.0874,
+     0.0866
     ],
     "twoWay": [
-     -0.0815,
-     0.0938
+     -0.0841,
+     0.0902
     ],
     "iidCell": [
-     -0.0782,
-     0.083
+     -0.0769,
+     0.0796
     ],
     "pigeonhole": [
-     -0.1292,
+     -0.1344,
      0.1519
     ]
    },
    "t1HitRate": {
-    "lo": 0.4703,
-    "hi": 0.645,
-    "se": 0.0437,
+    "lo": 0.4726,
+    "hi": 0.6465,
+    "se": 0.0436,
     "by": "TIME",
     "symbol": [
      0.4932,
      0.6182
     ],
     "time": [
-     0.4703,
-     0.645
+     0.4726,
+     0.6465
     ],
     "twoWay": [
-     0.4766,
-     0.6478
+     0.4794,
+     0.6503
     ],
     "iidCell": [
-     0.4826,
-     0.6341
+     0.4887,
+     0.6343
     ],
     "pigeonhole": [
-     0.4239,
-     0.6947
+     0.4272,
+     0.6957
     ]
    }
   },
   "sensitivityBaselinePeriod": {
    "status": "SENSITIVITY_NOT_PREREGISTERED",
-   "baselineRate": 0.5929,
-   "baselineN": 651,
-   "lift": -0.0307,
+   "baselineRate": 0.591,
+   "baselineN": 648,
+   "lift": -0.0262,
    "liftCi": [
-    -0.12,
-    0.0599
+    -0.1153,
+    0.0622
    ]
   },
   "registration": "DESCRIPTIVE"
  },
  "byPeriod": {
   "TEST": {
-   "signals": 226,
-   "n": 161,
+   "signals": 225,
+   "n": 160,
    "symbols": 5,
-   "fillRate": 0.7124,
-   "t1HitRate": 0.5901,
+   "fillRate": 0.7111,
+   "t1HitRate": 0.5938,
    "t1Ci": [
-    0.4903,
-    0.6862
+    0.494,
+    0.6897
    ],
-   "invalidationRate": 0.4037,
-   "timeoutRate": 0.0062,
-   "t2HitRate": 0.3665,
-   "baselineRate": 0.559,
-   "baselineN": 483,
-   "martingaleRate": 0.4737,
-   "lift": 0.0311,
-   "liftCiLow": -0.0566,
-   "liftCiHigh": 0.1241,
-   "medianBarsToT1": 13,
+   "invalidationRate": 0.4,
+   "timeoutRate": 0.0063,
+   "t2HitRate": 0.3688,
+   "baselineRate": 0.5625,
+   "baselineN": 480,
+   "martingaleRate": 0.4743,
+   "lift": 0.0313,
+   "liftCiLow": -0.0567,
+   "liftCiHigh": 0.1226,
+   "medianBarsToT1": 14,
    "p25BarsToT1": 5,
    "p75BarsToT1": 29,
-   "medianReturn": 0.0326,
-   "meanReturn": 0.0119,
-   "medianMfeR": 0.8326,
-   "medianMaeR": 0.7533,
-   "medianMfePct": 0.0509,
-   "medianMaePct": 0.0415,
-   "medianRiskPct": 0.0609,
-   "medianRewardPct": 0.0708,
-   "meanForwardReturnH": 0.1142,
+   "medianReturn": 0.0328,
+   "meanReturn": 0.0139,
+   "medianMfeR": 0.8332,
+   "medianMaeR": 0.7458,
+   "medianMfePct": 0.0511,
+   "medianMaePct": 0.0406,
+   "medianRiskPct": 0.0605,
+   "medianRewardPct": 0.0706,
+   "meanForwardReturnH": 0.1137,
    "t1CiWilson": [
-    0.5129,
-    0.6631
+    0.5163,
+    0.6668
    ],
-   "liftCiLowNormal": -0.0569,
-   "liftCiHighNormal": 0.119,
-   "pLift": 0.510524,
+   "liftCiLowNormal": -0.0568,
+   "liftCiHighNormal": 0.1193,
+   "pLift": 0.506963,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
      "symbols": 5,
      "timeBlocks": 31,
-     "cells": 111
+     "cells": 110
     },
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.0566,
-     "hi": 0.1241,
-     "se": 0.0472,
+     "lo": -0.0567,
+     "hi": 0.1226,
+     "se": 0.0471,
      "by": "TIME",
      "symbol": [
       -0.1024,
-      0.148
+      0.1499
      ],
      "time": [
-      -0.0566,
-      0.1241
+      -0.0567,
+      0.1226
      ],
      "twoWay": [
-      -0.1062,
-      0.1683
+      -0.1033,
+      0.1658
      ],
      "iidCell": [
-      -0.0497,
-      0.1125
+      -0.0526,
+      0.1186
      ],
      "pigeonhole": [
-      -0.1542,
-      0.2065
+      -0.1517,
+      0.2069
      ]
     },
     "t1HitRate": {
-     "lo": 0.4903,
-     "hi": 0.6862,
-     "se": 0.0505,
+     "lo": 0.494,
+     "hi": 0.6897,
+     "se": 0.0501,
      "by": "TIME",
      "symbol": [
       0.488,
-      0.675
+      0.6824
      ],
      "time": [
-      0.4903,
-      0.6862
+      0.494,
+      0.6897
      ],
      "twoWay": [
-      0.4768,
-      0.7033
+      0.4817,
+      0.7058
      ],
      "iidCell": [
-      0.5065,
-      0.6689
+      0.5116,
+      0.6753
      ],
      "pigeonhole": [
       0.4347,
-      0.7304
+      0.7371
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.5839,
-    "baselineN": 483,
-    "lift": 0.0062,
+    "baselineRate": 0.5813,
+    "baselineN": 480,
+    "lift": 0.0125,
     "liftCi": [
-     -0.0857,
-     0.1094
+     -0.0773,
+     0.1128
     ]
    },
    "registration": "PREREGISTERED",
-   "qBH": 0.516494,
+   "qBH": 0.506963,
    "significantBH": false
   },
   "VALIDATION": {
@@ -489,31 +489,31 @@
    "invalidationRate": 0.5179,
    "timeoutRate": 0,
    "t2HitRate": 0.3214,
-   "baselineRate": 0.5476,
+   "baselineRate": 0.5595,
    "baselineN": 168,
-   "martingaleRate": 0.4787,
-   "lift": -0.0655,
+   "martingaleRate": 0.4853,
+   "lift": -0.0774,
    "liftCiLow": -0.2668,
-   "liftCiHigh": 0.1361,
+   "liftCiHigh": 0.1224,
    "medianBarsToT1": 14,
    "p25BarsToT1": 7,
    "p75BarsToT1": 28.5,
    "medianReturn": -0.027,
-   "meanReturn": -0.0031,
+   "meanReturn": -0.0036,
    "medianMfeR": 0.7484,
    "medianMaeR": 1.0526,
    "medianMfePct": 0.0405,
-   "medianMaePct": 0.0413,
-   "medianRiskPct": 0.0574,
+   "medianMaePct": 0.047,
+   "medianRiskPct": 0.0582,
    "medianRewardPct": 0.0515,
-   "meanForwardReturnH": 0.1059,
+   "meanForwardReturnH": 0.1065,
    "t1CiWilson": [
     0.3567,
     0.6099
    ],
-   "liftCiLowNormal": -0.2164,
-   "liftCiHighNormal": 0.0855,
-   "pLift": 0.516494,
+   "liftCiLowNormal": -0.2283,
+   "liftCiHighNormal": 0.0735,
+   "pLift": 0.433073,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
@@ -525,28 +525,28 @@
     "B": 1000,
     "lift": {
      "lo": -0.2668,
-     "hi": 0.1361,
-     "se": 0.1009,
+     "hi": 0.1224,
+     "se": 0.0987,
      "by": "TIME",
      "symbol": [
       -0.2303,
-      0.1287
+      0.117
      ],
      "time": [
       -0.2668,
-      0.1361
+      0.1224
      ],
      "twoWay": [
-      -0.2656,
-      0.1346
+      -0.2708,
+      0.1161
      ],
      "iidCell": [
-      -0.2373,
-      0.1155
+      -0.2485,
+      0.1013
      ],
      "pigeonhole": [
-      -0.3572,
-      0.2425
+      -0.3617,
+      0.2354
      ]
     },
     "t1HitRate": {
@@ -587,7 +587,7 @@
     ]
    },
    "registration": "DESCRIPTIVE",
-   "qBH": 0.516494,
+   "qBH": 0.506963,
    "significantBH": false
   }
  },
@@ -1159,7 +1159,7 @@
     ]
    },
    "registration": "PREREGISTERED_PRODUCT_LOOKUP",
-   "qBH": 0.511887,
+   "qBH": 0.522374,
    "significantBH": false
   },
   "1D|CONTINUATION|BULLISH|HIGH": {
@@ -1167,113 +1167,113 @@
    "n": 90,
    "symbols": 5,
    "fillRate": 0.5844,
-   "t1HitRate": 0.6111,
+   "t1HitRate": 0.6222,
    "t1Ci": [
-    0.4943,
-    0.7111
+    0.5217,
+    0.7191
    ],
-   "invalidationRate": 0.3889,
+   "invalidationRate": 0.3778,
    "timeoutRate": 0,
-   "t2HitRate": 0.3667,
-   "baselineRate": 0.6037,
+   "t2HitRate": 0.3778,
+   "baselineRate": 0.6148,
    "baselineN": 270,
-   "martingaleRate": 0.4713,
+   "martingaleRate": 0.4766,
    "lift": 0.0074,
-   "liftCiLow": -0.1011,
-   "liftCiHigh": 0.1124,
-   "medianBarsToT1": 19,
+   "liftCiLow": -0.0959,
+   "liftCiHigh": 0.1111,
+   "medianBarsToT1": 20,
    "p25BarsToT1": 6,
-   "p75BarsToT1": 40.5,
-   "medianReturn": 0.0325,
-   "meanReturn": 0.0164,
-   "medianMfeR": 0.874,
-   "medianMaeR": 0.8033,
-   "medianMfePct": 0.0511,
-   "medianMaePct": 0.0398,
+   "p75BarsToT1": 38.75,
+   "medianReturn": 0.0344,
+   "meanReturn": 0.0208,
+   "medianMfeR": 0.8831,
+   "medianMaeR": 0.7974,
+   "medianMfePct": 0.0516,
+   "medianMaePct": 0.0395,
    "medianRiskPct": 0.0615,
-   "medianRewardPct": 0.0609,
-   "meanForwardReturnH": 0.1747,
+   "medianRewardPct": 0.0608,
+   "meanForwardReturnH": 0.1803,
    "t1CiWilson": [
-    0.5078,
-    0.7053
+    0.519,
+    0.7154
    ],
-   "liftCiLowNormal": -0.109,
-   "liftCiHighNormal": 0.1238,
-   "pLift": 0.891567,
+   "liftCiLowNormal": -0.1084,
+   "liftCiHighNormal": 0.1232,
+   "pLift": 0.890575,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
      "symbols": 5,
-     "timeBlocks": 37,
+     "timeBlocks": 36,
      "cells": 82
     },
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.1011,
-     "hi": 0.1124,
-     "se": 0.0543,
+     "lo": -0.0959,
+     "hi": 0.1111,
+     "se": 0.0538,
      "by": "TIME",
      "symbol": [
-      -0.0521,
+      -0.066,
       0.0698
      ],
      "time": [
-      -0.1011,
-      0.1124
+      -0.0959,
+      0.1111
      ],
      "twoWay": [
-      -0.0991,
-      0.1139
+      -0.0981,
+      0.1129
      ],
      "iidCell": [
-      -0.1037,
-      0.1124
+      -0.1008,
+      0.1161
      ],
      "pigeonhole": [
-      -0.1648,
-      0.1593
+      -0.1596,
+      0.1648
      ]
     },
     "t1HitRate": {
-     "lo": 0.4943,
-     "hi": 0.7111,
-     "se": 0.0546,
+     "lo": 0.5217,
+     "hi": 0.7191,
+     "se": 0.0516,
      "by": "TIME",
      "symbol": [
-      0.5313,
+      0.5417,
       0.6977
      ],
      "time": [
-      0.4943,
-      0.7111
+      0.5217,
+      0.7191
      ],
      "twoWay": [
-      0.5041,
-      0.7182
+      0.521,
+      0.7234
      ],
      "iidCell": [
-      0.5114,
-      0.7128
+      0.5227,
+      0.7191
      ],
      "pigeonhole": [
-      0.4367,
-      0.7551
+      0.4554,
+      0.7667
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.663,
+    "baselineRate": 0.6593,
     "baselineN": 270,
-    "lift": -0.0519,
+    "lift": -0.0371,
     "liftCi": [
-     -0.1667,
-     0.0606
+     -0.1515,
+     0.0668
     ]
    },
    "registration": "PREREGISTERED_PRODUCT_LOOKUP",
-   "qBH": 0.891567,
+   "qBH": 0.890575,
    "significantBH": false
   },
   "1D|CONTINUATION|BULLISH|LOW": {
@@ -1501,7 +1501,7 @@
     ]
    },
    "registration": "PREREGISTERED_PRODUCT_LOOKUP",
-   "qBH": 0.511887,
+   "qBH": 0.522374,
    "significantBH": false
   },
   "1D|PULLBACK|BEARISH|HIGH": {
@@ -1847,117 +1847,117 @@
    "significantBH": false
   },
   "1D|PULLBACK|BULLISH|HIGH": {
-   "signals": 49,
-   "n": 32,
+   "signals": 48,
+   "n": 31,
    "symbols": 5,
-   "fillRate": 0.6531,
-   "t1HitRate": 0.5,
+   "fillRate": 0.6458,
+   "t1HitRate": 0.4839,
    "t1Ci": [
-    0.3429,
-    0.7
+    0.3331,
+    0.6667
    ],
-   "invalidationRate": 0.5,
+   "invalidationRate": 0.5161,
    "timeoutRate": 0,
-   "t2HitRate": 0.3438,
-   "baselineRate": 0.6979,
-   "baselineN": 96,
-   "martingaleRate": 0.4507,
-   "lift": -0.1979,
-   "liftCiLow": -0.3434,
-   "liftCiHigh": -0.0119,
-   "medianBarsToT1": 13.5,
-   "p25BarsToT1": 6.75,
-   "p75BarsToT1": 18.25,
-   "medianReturn": -0.0017,
-   "meanReturn": 0.008,
-   "medianMfeR": 0.7918,
-   "medianMaeR": 1.0956,
-   "medianMfePct": 0.0538,
-   "medianMaePct": 0.0591,
-   "medianRiskPct": 0.0583,
-   "medianRewardPct": 0.0724,
-   "meanForwardReturnH": 0.2392,
+   "t2HitRate": 0.3226,
+   "baselineRate": 0.6882,
+   "baselineN": 93,
+   "martingaleRate": 0.4496,
+   "lift": -0.2043,
+   "liftCiLow": -0.3549,
+   "liftCiHigh": -0.0256,
+   "medianBarsToT1": 14,
+   "p25BarsToT1": 6.5,
+   "p75BarsToT1": 18.5,
+   "medianReturn": -0.033,
+   "meanReturn": 0.0047,
+   "medianMfeR": 0.7893,
+   "medianMaeR": 1.1062,
+   "medianMfePct": 0.0525,
+   "medianMaePct": 0.0593,
+   "medianRiskPct": 0.0577,
+   "medianRewardPct": 0.0708,
+   "meanForwardReturnH": 0.2257,
    "t1CiWilson": [
-    0.3363,
-    0.6637
+    0.3197,
+    0.6516
    ],
-   "liftCiLowNormal": -0.394,
-   "liftCiHighNormal": -0.0018,
-   "pLift": 0.017105,
+   "liftCiLowNormal": -0.4038,
+   "liftCiHighNormal": -0.0048,
+   "pLift": 0.014387,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
      "symbols": 5,
      "timeBlocks": 22,
-     "cells": 29
+     "cells": 28
     },
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.3434,
-     "hi": -0.0119,
-     "se": 0.083,
+     "lo": -0.3549,
+     "hi": -0.0256,
+     "se": 0.0835,
      "by": "TIME",
      "symbol": [
       -0.3667,
-      -0.0762
+      -0.0808
      ],
      "time": [
-      -0.3434,
-      -0.0119
+      -0.3549,
+      -0.0256
      ],
      "twoWay": [
-      -0.3606,
-      -0.0352
+      -0.3679,
+      -0.0407
      ],
      "iidCell": [
-      -0.3656,
-      -0.0322
+      -0.3854,
+      -0.0417
      ],
      "pigeonhole": [
-      -0.4763,
-      0.0667
+      -0.4792,
+      0.0584
      ]
     },
     "t1HitRate": {
-     "lo": 0.3429,
-     "hi": 0.7,
-     "se": 0.0917,
+     "lo": 0.3331,
+     "hi": 0.6667,
+     "se": 0.0884,
      "by": "TIME",
      "symbol": [
       0.25,
-      0.6581
+      0.6391
      ],
      "time": [
-      0.3429,
-      0.7
+      0.3331,
+      0.6667
      ],
      "twoWay": [
-      0.2879,
-      0.7121
+      0.2835,
+      0.6843
      ],
      "iidCell": [
-      0.3224,
-      0.6667
+      0.2903,
+      0.6552
      ],
      "pigeonhole": [
       0.1667,
-      0.7895
+      0.7826
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.625,
-    "baselineN": 96,
-    "lift": -0.125,
+    "baselineRate": 0.6237,
+    "baselineN": 93,
+    "lift": -0.1398,
     "liftCi": [
-     -0.3001,
-     0.0444
+     -0.3195,
+     0.0445
     ]
    },
    "registration": "PREREGISTERED_PRODUCT_LOOKUP",
-   "qBH": 0.10263,
+   "qBH": 0.086322,
    "significantBH": false
   },
   "1D|PULLBACK|BULLISH|LOW": {
@@ -2087,12 +2087,12 @@
    "invalidationRate": 0.3333,
    "timeoutRate": 0,
    "t2HitRate": 0.381,
-   "baselineRate": 0.5397,
+   "baselineRate": 0.5714,
    "baselineN": 63,
    "martingaleRate": 0.4737,
-   "lift": 0.127,
-   "liftCiLow": -0.1305,
-   "liftCiHigh": 0.3914,
+   "lift": 0.0952,
+   "liftCiLow": -0.1587,
+   "liftCiHigh": 0.3509,
    "medianBarsToT1": 12,
    "p25BarsToT1": 5.25,
    "p75BarsToT1": 26.75,
@@ -2109,9 +2109,9 @@
     0.4537,
     0.8281
    ],
-   "liftCiLowNormal": -0.1092,
-   "liftCiHighNormal": 0.3632,
-   "pLift": 0.341258,
+   "liftCiLowNormal": -0.1405,
+   "liftCiHighNormal": 0.331,
+   "pLift": 0.468196,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
@@ -2122,29 +2122,29 @@
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.1305,
-     "hi": 0.3914,
-     "se": 0.1334,
+     "lo": -0.1587,
+     "hi": 0.3509,
+     "se": 0.1313,
      "by": "TIME",
      "symbol": [
-      -0.0152,
+      -0.0435,
       0.2593
      ],
      "time": [
-      -0.1305,
-      0.3914
+      -0.1587,
+      0.3509
      ],
      "twoWay": [
-      -0.1345,
-      0.3885
+      -0.1621,
+      0.3526
      ],
      "iidCell": [
-      -0.1159,
-      0.3667
+      -0.1305,
+      0.3167
      ],
      "pigeonhole": [
-      -0.2363,
-      0.5334
+      -0.2543,
+      0.5002
      ]
     },
     "t1HitRate": {
@@ -2185,7 +2185,7 @@
     ]
    },
    "registration": "PREREGISTERED_PRODUCT_LOOKUP",
-   "qBH": 0.511887,
+   "qBH": 0.678922,
    "significantBH": false
   }
  },
@@ -2531,124 +2531,124 @@
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.525517,
+   "qBH": 0.529253,
    "significantBH": false,
-   "qBHPooled": 0.910221
+   "qBHPooled": 0.938665
   },
   "CONTINUATION|BULLISH": {
    "signals": 177,
    "n": 109,
    "symbols": 5,
    "fillRate": 0.6158,
-   "t1HitRate": 0.6239,
+   "t1HitRate": 0.633,
    "t1Ci": [
-    0.5139,
-    0.7248
+    0.5221,
+    0.7322
    ],
-   "invalidationRate": 0.3761,
+   "invalidationRate": 0.367,
    "timeoutRate": 0,
-   "t2HitRate": 0.4037,
-   "baselineRate": 0.5902,
+   "t2HitRate": 0.4128,
+   "baselineRate": 0.5994,
    "baselineN": 327,
-   "martingaleRate": 0.4767,
+   "martingaleRate": 0.4812,
    "lift": 0.0336,
-   "liftCiLow": -0.0747,
-   "liftCiHigh": 0.1327,
-   "medianBarsToT1": 15.5,
-   "p25BarsToT1": 5.75,
+   "liftCiLow": -0.0722,
+   "liftCiHigh": 0.1358,
+   "medianBarsToT1": 16,
+   "p25BarsToT1": 6,
    "p75BarsToT1": 36,
-   "medianReturn": 0.0326,
-   "meanReturn": 0.0151,
-   "medianMfeR": 0.8654,
-   "medianMaeR": 0.7625,
-   "medianMfePct": 0.0487,
+   "medianReturn": 0.0363,
+   "meanReturn": 0.0187,
+   "medianMfeR": 0.8706,
+   "medianMaeR": 0.7533,
+   "medianMfePct": 0.0504,
    "medianMaePct": 0.0391,
    "medianRiskPct": 0.0605,
    "medianRewardPct": 0.0567,
-   "meanForwardReturnH": 0.1743,
+   "meanForwardReturnH": 0.1789,
    "t1CiWilson": [
-    0.5302,
-    0.7091
+    0.5395,
+    0.7175
    ],
-   "liftCiLowNormal": -0.0718,
-   "liftCiHighNormal": 0.1391,
-   "pLift": 0.525517,
+   "liftCiLowNormal": -0.0713,
+   "liftCiHighNormal": 0.1386,
+   "pLift": 0.529253,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
      "symbols": 5,
-     "timeBlocks": 38,
+     "timeBlocks": 37,
      "cells": 96
     },
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.0747,
-     "hi": 0.1327,
-     "se": 0.053,
+     "lo": -0.0722,
+     "hi": 0.1358,
+     "se": 0.0535,
      "by": "TIME",
      "symbol": [
-      -0.0459,
-      0.1145
+      -0.0467,
+      0.1254
      ],
      "time": [
-      -0.0747,
-      0.1327
+      -0.0722,
+      0.1358
      ],
      "twoWay": [
-      -0.0702,
-      0.1375
+      -0.0712,
+      0.1384
      ],
      "iidCell": [
-      -0.0748,
-      0.1339
+      -0.0765,
+      0.1358
      ],
      "pigeonhole": [
-      -0.1283,
-      0.1994
+      -0.1474,
+      0.198
      ]
     },
     "t1HitRate": {
-     "lo": 0.5139,
-     "hi": 0.7248,
-     "se": 0.0528,
+     "lo": 0.5221,
+     "hi": 0.7322,
+     "se": 0.053,
      "by": "TIME",
      "symbol": [
-      0.5472,
-      0.6975
+      0.5596,
+      0.699
      ],
      "time": [
-      0.5139,
-      0.7248
+      0.5221,
+      0.7322
      ],
      "twoWay": [
-      0.5204,
-      0.7273
+      0.5291,
+      0.7369
      ],
      "iidCell": [
-      0.5283,
-      0.7094
+      0.5392,
+      0.7207
      ],
      "pigeonhole": [
-      0.4615,
-      0.7739
+      0.4671,
+      0.7736
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.6606,
+    "baselineRate": 0.6575,
     "baselineN": 327,
-    "lift": -0.0367,
+    "lift": -0.0245,
     "liftCi": [
-     -0.1443,
-     0.0673
+     -0.1333,
+     0.0776
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.525517,
+   "qBH": 0.529253,
    "significantBH": false,
-   "qBHPooled": 0.910221
+   "qBHPooled": 0.938665
   },
   "PULLBACK|BEARISH": {
    "signals": 16,
@@ -2761,124 +2761,124 @@
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.525517,
+   "qBH": 0.529253,
    "significantBH": false,
-   "qBHPooled": 0.901145
+   "qBHPooled": 0.938665
   },
   "PULLBACK|BULLISH": {
-   "signals": 85,
-   "n": 61,
+   "signals": 84,
+   "n": 60,
    "symbols": 5,
-   "fillRate": 0.7176,
-   "t1HitRate": 0.5246,
+   "fillRate": 0.7143,
+   "t1HitRate": 0.5167,
    "t1Ci": [
-    0.3944,
-    0.6731
+    0.3866,
+    0.6667
    ],
-   "invalidationRate": 0.4754,
+   "invalidationRate": 0.4833,
    "timeoutRate": 0,
-   "t2HitRate": 0.3279,
-   "baselineRate": 0.6503,
-   "baselineN": 183,
-   "martingaleRate": 0.4629,
-   "lift": -0.1257,
-   "liftCiLow": -0.2656,
-   "liftCiHigh": 0.0189,
-   "medianBarsToT1": 13.5,
-   "p25BarsToT1": 5.75,
-   "p75BarsToT1": 20.25,
-   "medianReturn": 0.0299,
-   "meanReturn": 0.016,
-   "medianMfeR": 0.7943,
-   "medianMaeR": 1.0436,
-   "medianMfePct": 0.0485,
-   "medianMaePct": 0.0497,
-   "medianRiskPct": 0.0596,
-   "medianRewardPct": 0.0708,
-   "meanForwardReturnH": 0.187,
+   "t2HitRate": 0.3167,
+   "baselineRate": 0.6556,
+   "baselineN": 180,
+   "martingaleRate": 0.4625,
+   "lift": -0.1389,
+   "liftCiLow": -0.2762,
+   "liftCiHigh": 0,
+   "medianBarsToT1": 14,
+   "p25BarsToT1": 5.5,
+   "p75BarsToT1": 20.5,
+   "medianReturn": 0.0298,
+   "meanReturn": 0.0144,
+   "medianMfeR": 0.7928,
+   "medianMaeR": 1.0552,
+   "medianMfePct": 0.0479,
+   "medianMaePct": 0.0485,
+   "medianRiskPct": 0.0595,
+   "medianRewardPct": 0.0706,
+   "meanForwardReturnH": 0.179,
    "t1CiWilson": [
-    0.4016,
-    0.6447
+    0.3931,
+    0.6383
    ],
-   "liftCiLowNormal": -0.2688,
-   "liftCiHighNormal": 0.0174,
-   "pLift": 0.086328,
+   "liftCiLowNormal": -0.2831,
+   "liftCiHighNormal": 0.0054,
+   "pLift": 0.054501,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
      "symbols": 5,
      "timeBlocks": 30,
-     "cells": 51
+     "cells": 50
     },
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.2656,
-     "hi": 0.0189,
-     "se": 0.0733,
+     "lo": -0.2762,
+     "hi": 0,
+     "se": 0.0722,
      "by": "TIME",
      "symbol": [
       -0.226,
-      -0.037
+      -0.0635
      ],
      "time": [
-      -0.2656,
-      0.0189
-     ],
-     "twoWay": [
-      -0.2693,
-      0.0179
-     ],
-     "iidCell": [
-      -0.2587,
+      -0.2762,
       0
      ],
+     "twoWay": [
+      -0.2805,
+      0.0027
+     ],
+     "iidCell": [
+      -0.2813,
+      -0.0109
+     ],
      "pigeonhole": [
-      -0.3376,
-      0.1143
+      -0.3443,
+      0.086
      ]
     },
     "t1HitRate": {
-     "lo": 0.3944,
-     "hi": 0.6731,
-     "se": 0.071,
+     "lo": 0.3866,
+     "hi": 0.6667,
+     "se": 0.0716,
      "by": "TIME",
      "symbol": [
       0.4068,
-      0.6081
+      0.5915
      ],
      "time": [
-      0.3944,
-      0.6731
+      0.3866,
+      0.6667
      ],
      "twoWay": [
-      0.3854,
-      0.6637
+      0.3764,
+      0.6569
      ],
      "iidCell": [
-      0.4,
-      0.6508
+      0.3871,
+      0.6442
      ],
      "pigeonhole": [
-      0.3249,
-      0.7551
+      0.3143,
+      0.7447
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.6011,
-    "baselineN": 183,
-    "lift": -0.0765,
+    "baselineRate": 0.6,
+    "baselineN": 180,
+    "lift": -0.0833,
     "liftCi": [
-     -0.2103,
-     0.0682
+     -0.2202,
+     0.0688
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.345312,
+   "qBH": 0.218004,
    "significantBH": false,
-   "qBHPooled": 0.537152
+   "qBHPooled": 0.436008
   }
  },
  "byTemplateTest": {
@@ -3223,124 +3223,124 @@
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.581416,
+   "qBH": 0.439031,
    "significantBH": false,
-   "qBHPooled": 0.899421
+   "qBHPooled": 0.938665
   },
   "CONTINUATION|BULLISH": {
    "signals": 125,
    "n": 84,
    "symbols": 5,
    "fillRate": 0.672,
-   "t1HitRate": 0.6548,
+   "t1HitRate": 0.6667,
    "t1Ci": [
-    0.5308,
-    0.7641
+    0.5342,
+    0.7792
    ],
-   "invalidationRate": 0.3452,
+   "invalidationRate": 0.3333,
    "timeoutRate": 0,
-   "t2HitRate": 0.4167,
-   "baselineRate": 0.6151,
+   "t2HitRate": 0.4286,
+   "baselineRate": 0.619,
    "baselineN": 252,
-   "martingaleRate": 0.4832,
-   "lift": 0.0397,
-   "liftCiLow": -0.0855,
-   "liftCiHigh": 0.1586,
-   "medianBarsToT1": 16,
+   "martingaleRate": 0.4846,
+   "lift": 0.0476,
+   "liftCiLow": -0.0769,
+   "liftCiHigh": 0.1614,
+   "medianBarsToT1": 17.5,
    "p25BarsToT1": 5,
-   "p75BarsToT1": 33.5,
-   "medianReturn": 0.0381,
-   "meanReturn": 0.0188,
-   "medianMfeR": 0.868,
-   "medianMaeR": 0.6518,
-   "medianMfePct": 0.0518,
-   "medianMaePct": 0.0362,
-   "medianRiskPct": 0.0634,
+   "p75BarsToT1": 32.25,
+   "medianReturn": 0.0386,
+   "meanReturn": 0.0238,
+   "medianMfeR": 0.874,
+   "medianMaeR": 0.6213,
+   "medianMfePct": 0.0523,
+   "medianMaePct": 0.0345,
+   "medianRiskPct": 0.0608,
    "medianRewardPct": 0.0594,
-   "meanForwardReturnH": 0.188,
+   "meanForwardReturnH": 0.1937,
    "t1CiWilson": [
-    0.5483,
-    0.7477
+    0.5605,
+    0.7582
    ],
-   "liftCiLowNormal": -0.0784,
-   "liftCiHighNormal": 0.1578,
-   "pLift": 0.520219,
+   "liftCiLowNormal": -0.0697,
+   "liftCiHighNormal": 0.1649,
+   "pLift": 0.434179,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
      "symbols": 5,
-     "timeBlocks": 27,
+     "timeBlocks": 26,
      "cells": 73
     },
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.0855,
-     "hi": 0.1586,
-     "se": 0.0617,
+     "lo": -0.0769,
+     "hi": 0.1614,
+     "se": 0.0609,
      "by": "TIME",
      "symbol": [
-      -0.1071,
-      0.1833
+      -0.1042,
+      0.1905
      ],
      "time": [
-      -0.0855,
-      0.1586
+      -0.0769,
+      0.1614
      ],
      "twoWay": [
-      -0.1114,
-      0.1908
+      -0.102,
+      0.1973
      ],
      "iidCell": [
-      -0.0873,
-      0.1508
+      -0.0792,
+      0.1588
      ],
      "pigeonhole": [
-      -0.179,
-      0.2406
+      -0.1948,
+      0.2388
      ]
     },
     "t1HitRate": {
-     "lo": 0.5308,
-     "hi": 0.7641,
-     "se": 0.0618,
+     "lo": 0.5342,
+     "hi": 0.7792,
+     "se": 0.0619,
      "by": "TIME",
      "symbol": [
-      0.55,
-      0.75
+      0.575,
+      0.7503
      ],
      "time": [
-      0.5308,
-      0.7641
+      0.5342,
+      0.7792
      ],
      "twoWay": [
-      0.5337,
-      0.7759
+      0.5453,
+      0.788
      ],
      "iidCell": [
-      0.5375,
-      0.7609
+      0.5529,
+      0.7674
      ],
      "pigeonhole": [
-      0.4634,
-      0.8219
+      0.4699,
+      0.8133
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.6468,
+    "baselineRate": 0.6429,
     "baselineN": 252,
-    "lift": 0.008,
+    "lift": 0.0238,
     "liftCi": [
-     -0.1197,
-     0.1265
+     -0.1042,
+     0.1371
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.581416,
+   "qBH": 0.439031,
    "significantBH": false,
-   "qBHPooled": 0.910221
+   "qBHPooled": 0.938665
   },
   "PULLBACK|BEARISH": {
    "signals": 10,
@@ -3458,119 +3458,119 @@
    "qBHPooled": null
   },
   "PULLBACK|BULLISH": {
-   "signals": 62,
-   "n": 46,
+   "signals": 61,
+   "n": 45,
    "symbols": 5,
-   "fillRate": 0.7419,
-   "t1HitRate": 0.6087,
+   "fillRate": 0.7377,
+   "t1HitRate": 0.6,
    "t1Ci": [
-    0.48,
-    0.7751
+    0.4706,
+    0.7715
    ],
-   "invalidationRate": 0.3913,
+   "invalidationRate": 0.4,
    "timeoutRate": 0,
-   "t2HitRate": 0.3696,
-   "baselineRate": 0.6522,
-   "baselineN": 138,
-   "martingaleRate": 0.4619,
-   "lift": -0.0435,
-   "liftCiLow": -0.1787,
-   "liftCiHigh": 0.1282,
+   "t2HitRate": 0.3556,
+   "baselineRate": 0.6593,
+   "baselineN": 135,
+   "martingaleRate": 0.4613,
+   "lift": -0.0593,
+   "liftCiLow": -0.193,
+   "liftCiHigh": 0.1081,
    "medianBarsToT1": 14,
-   "p25BarsToT1": 5.75,
-   "p75BarsToT1": 22.25,
-   "medianReturn": 0.0335,
-   "meanReturn": 0.0299,
-   "medianMfeR": 0.8426,
-   "medianMaeR": 0.7356,
-   "medianMfePct": 0.0557,
-   "medianMaePct": 0.0478,
-   "medianRiskPct": 0.0629,
-   "medianRewardPct": 0.0796,
-   "meanForwardReturnH": 0.1742,
+   "p25BarsToT1": 5.5,
+   "p75BarsToT1": 24.5,
+   "medianReturn": 0.0329,
+   "meanReturn": 0.0282,
+   "medianMfeR": 0.8338,
+   "medianMaeR": 0.7383,
+   "medianMfePct": 0.0525,
+   "medianMaePct": 0.0458,
+   "medianRiskPct": 0.0627,
+   "medianRewardPct": 0.0783,
+   "meanForwardReturnH": 0.163,
    "t1CiWilson": [
-    0.4646,
-    0.7361
+    0.4545,
+    0.7298
    ],
-   "liftCiLowNormal": -0.2054,
-   "liftCiHighNormal": 0.1184,
-   "pLift": 0.581416,
+   "liftCiLowNormal": -0.2232,
+   "liftCiHighNormal": 0.1047,
+   "pLift": 0.439031,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
      "symbols": 5,
      "timeBlocks": 21,
-     "cells": 38
+     "cells": 37
     },
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.1787,
-     "hi": 0.1282,
-     "se": 0.0789,
+     "lo": -0.193,
+     "hi": 0.1081,
+     "se": 0.0766,
      "by": "TIME",
      "symbol": [
       -0.1333,
-      0.0903
+      0.0519
      ],
      "time": [
-      -0.1787,
-      0.1282
+      -0.193,
+      0.1081
      ],
      "twoWay": [
-      -0.198,
-      0.1111
+      -0.2094,
+      0.0908
      ],
      "iidCell": [
-      -0.1837,
-      0.1088
+      -0.2102,
+      0.0895
      ],
      "pigeonhole": [
-      -0.2566,
-      0.227
+      -0.2682,
+      0.2069
      ]
     },
     "t1HitRate": {
-     "lo": 0.48,
-     "hi": 0.7751,
-     "se": 0.0756,
+     "lo": 0.4706,
+     "hi": 0.7715,
+     "se": 0.0769,
      "by": "TIME",
      "symbol": [
       0.449,
-      0.7551
+      0.7391
      ],
      "time": [
-      0.48,
-      0.7751
+      0.4706,
+      0.7715
      ],
      "twoWay": [
-      0.4448,
-      0.7726
+      0.4442,
+      0.7558
      ],
      "iidCell": [
-      0.4782,
-      0.7442
+      0.4565,
+      0.7381
      ],
      "pigeonhole": [
-      0.387,
-      0.8751
+      0.3833,
+      0.8724
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.6014,
-    "baselineN": 138,
-    "lift": 0.0073,
+    "baselineRate": 0.6,
+    "baselineN": 135,
+    "lift": 0,
     "liftCi": [
-     -0.12,
-     0.1539
+     -0.1316,
+     0.1516
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.581416,
+   "qBH": 0.439031,
    "significantBH": false,
-   "qBHPooled": 0.930266
+   "qBHPooled": 0.938665
   }
  },
  "byConfidence": {
@@ -3687,239 +3687,239 @@
    "registration": "EXPLORATORY",
    "qBH": 0.326544,
    "significantBH": false,
-   "qBHPooled": 0.609549
+   "qBHPooled": 0.831203
   },
   "MODERATE": {
-   "signals": 294,
-   "n": 194,
+   "signals": 293,
+   "n": 193,
    "symbols": 5,
-   "fillRate": 0.6599,
-   "t1HitRate": 0.5722,
+   "fillRate": 0.6587,
+   "t1HitRate": 0.5751,
    "t1Ci": [
-    0.4847,
-    0.651
+    0.4868,
+    0.6535
    ],
-   "invalidationRate": 0.4227,
+   "invalidationRate": 0.4197,
    "timeoutRate": 0.0052,
-   "t2HitRate": 0.3557,
-   "baselineRate": 0.5447,
-   "baselineN": 582,
-   "martingaleRate": 0.471,
-   "lift": 0.0275,
-   "liftCiLow": -0.0587,
-   "liftCiHigh": 0.1076,
+   "t2HitRate": 0.3575,
+   "baselineRate": 0.5509,
+   "baselineN": 579,
+   "martingaleRate": 0.4734,
+   "lift": 0.0242,
+   "liftCiLow": -0.0626,
+   "liftCiHigh": 0.1038,
    "medianBarsToT1": 14,
    "p25BarsToT1": 6,
    "p75BarsToT1": 29.5,
    "medianReturn": 0.0318,
-   "meanReturn": 0.0093,
-   "medianMfeR": 0.8426,
-   "medianMaeR": 0.8049,
-   "medianMfePct": 0.0479,
+   "meanReturn": 0.0109,
+   "medianMfeR": 0.8513,
+   "medianMaeR": 0.8044,
+   "medianMfePct": 0.0483,
    "medianMaePct": 0.0399,
-   "medianRiskPct": 0.0591,
-   "medianRewardPct": 0.0676,
-   "meanForwardReturnH": 0.1166,
+   "medianRiskPct": 0.0588,
+   "medianRewardPct": 0.0671,
+   "meanForwardReturnH": 0.1163,
    "t1CiWilson": [
-    0.5018,
-    0.6397
+    0.5046,
+    0.6427
    ],
-   "liftCiLowNormal": -0.053,
-   "liftCiHighNormal": 0.108,
-   "pLift": 0.520958,
+   "liftCiLowNormal": -0.0565,
+   "liftCiHighNormal": 0.1048,
+   "pLift": 0.572048,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
      "symbols": 5,
      "timeBlocks": 44,
-     "cells": 144
+     "cells": 143
     },
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.0587,
-     "hi": 0.1076,
+     "lo": -0.0626,
+     "hi": 0.1038,
      "se": 0.0428,
      "by": "TIME",
      "symbol": [
-      -0.0484,
+      -0.0587,
       0.094
      ],
      "time": [
-      -0.0587,
-      0.1076
+      -0.0626,
+      0.1038
      ],
      "twoWay": [
-      -0.0565,
-      0.1114
+      -0.0597,
+      0.1081
      ],
      "iidCell": [
-      -0.057,
-      0.1135
+      -0.0565,
+      0.1047
      ],
      "pigeonhole": [
-      -0.1128,
-      0.1604
+      -0.1242,
+      0.1593
      ]
     },
     "t1HitRate": {
-     "lo": 0.4847,
-     "hi": 0.651,
-     "se": 0.0431,
+     "lo": 0.4868,
+     "hi": 0.6535,
+     "se": 0.0428,
      "by": "TIME",
      "symbol": [
-      0.4921,
+      0.4922,
       0.6298
      ],
      "time": [
-      0.4847,
-      0.651
+      0.4868,
+      0.6535
      ],
      "twoWay": [
-      0.4876,
-      0.6567
+      0.49,
+      0.6602
      ],
      "iidCell": [
-      0.5,
-      0.6476
+      0.4999,
+      0.6515
      ],
      "pigeonhole": [
-      0.422,
-      0.699
+      0.4234,
+      0.6995
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.5962,
-    "baselineN": 582,
-    "lift": -0.024,
+    "baselineRate": 0.5941,
+    "baselineN": 579,
+    "lift": -0.019,
     "liftCi": [
-     -0.1096,
-     0.0619
+     -0.1036,
+     0.0674
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.520958,
+   "qBH": 0.572048,
    "significantBH": false,
-   "qBHPooled": 0.910221
+   "qBHPooled": 0.940727
   }
  },
  "byAgreement": {
   "HIGH": {
-   "signals": 229,
-   "n": 141,
+   "signals": 228,
+   "n": 140,
    "symbols": 5,
-   "fillRate": 0.6157,
-   "t1HitRate": 0.5603,
+   "fillRate": 0.614,
+   "t1HitRate": 0.5643,
    "t1Ci": [
-    0.4687,
-    0.6591
+    0.4741,
+    0.6601
    ],
-   "invalidationRate": 0.4397,
+   "invalidationRate": 0.4357,
    "timeoutRate": 0,
-   "t2HitRate": 0.3404,
-   "baselineRate": 0.5839,
-   "baselineN": 423,
-   "martingaleRate": 0.4638,
-   "lift": -0.0236,
-   "liftCiLow": -0.1124,
-   "liftCiHigh": 0.0733,
+   "t2HitRate": 0.3429,
+   "baselineRate": 0.5881,
+   "baselineN": 420,
+   "martingaleRate": 0.4671,
+   "lift": -0.0238,
+   "liftCiLow": -0.1175,
+   "liftCiHigh": 0.0738,
    "medianBarsToT1": 15,
    "p25BarsToT1": 6.5,
    "p75BarsToT1": 37,
    "medianReturn": 0.0317,
-   "meanReturn": 0.0098,
-   "medianMfeR": 0.8513,
-   "medianMaeR": 0.9554,
-   "medianMfePct": 0.0487,
-   "medianMaePct": 0.0415,
-   "medianRiskPct": 0.0587,
-   "medianRewardPct": 0.0684,
+   "meanReturn": 0.012,
+   "medianMfeR": 0.8516,
+   "medianMaeR": 0.9242,
+   "medianMfePct": 0.0495,
+   "medianMaePct": 0.0411,
+   "medianRiskPct": 0.0582,
+   "medianRewardPct": 0.0676,
    "meanForwardReturnH": 0.1614,
    "t1CiWilson": [
-    0.4778,
-    0.6395
+    0.4815,
+    0.6436
    ],
-   "liftCiLowNormal": -0.1181,
-   "liftCiHighNormal": 0.0708,
-   "pLift": 0.624193,
+   "liftCiLowNormal": -0.1185,
+   "liftCiHighNormal": 0.0709,
+   "pLift": 0.625959,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
      "symbols": 5,
      "timeBlocks": 43,
-     "cells": 113
+     "cells": 112
     },
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.1124,
-     "hi": 0.0733,
-     "se": 0.0483,
+     "lo": -0.1175,
+     "hi": 0.0738,
+     "se": 0.0488,
      "by": "TIME",
      "symbol": [
-      -0.0766,
-      0.0246
+      -0.0862,
+      0.0251
      ],
      "time": [
-      -0.1124,
-      0.0733
+      -0.1175,
+      0.0738
      ],
      "twoWay": [
-      -0.1182,
-      0.0709
+      -0.1196,
+      0.0719
      ],
      "iidCell": [
       -0.1119,
-      0.0695
+      0.0657
      ],
      "pigeonhole": [
-      -0.1637,
-      0.096
+      -0.1641,
+      0.1
      ]
     },
     "t1HitRate": {
-     "lo": 0.4687,
-     "hi": 0.6591,
-     "se": 0.0482,
+     "lo": 0.4741,
+     "hi": 0.6601,
+     "se": 0.0478,
      "by": "TIME",
      "symbol": [
-      0.4832,
-      0.6328
+      0.4865,
+      0.6378
      ],
      "time": [
-      0.4687,
-      0.6591
+      0.4741,
+      0.6601
      ],
      "twoWay": [
-      0.4659,
-      0.6547
+      0.4707,
+      0.6579
      ],
      "iidCell": [
-      0.4706,
-      0.6475
+      0.4817,
+      0.6459
      ],
      "pigeonhole": [
-      0.4091,
-      0.6945
+      0.4161,
+      0.7014
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.6265,
-    "baselineN": 423,
-    "lift": -0.0662,
+    "baselineRate": 0.6238,
+    "baselineN": 420,
+    "lift": -0.0595,
     "liftCi": [
-     -0.1634,
-     0.0255
+     -0.156,
+     0.0309
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.624193,
+   "qBH": 0.625959,
    "significantBH": false,
-   "qBHPooled": 0.944725
+   "qBHPooled": 0.940727
   },
   "LOW": {
    "signals": 16,
@@ -4049,12 +4049,12 @@
    "invalidationRate": 0.371,
    "timeoutRate": 0.0161,
    "t2HitRate": 0.4032,
-   "baselineRate": 0.4516,
+   "baselineRate": 0.4624,
    "baselineN": 186,
    "martingaleRate": 0.4968,
-   "lift": 0.1613,
-   "liftCiLow": 0.0218,
-   "liftCiHigh": 0.3019,
+   "lift": 0.1505,
+   "liftCiLow": 0.0143,
+   "liftCiHigh": 0.2957,
    "medianBarsToT1": 9,
    "p25BarsToT1": 4.25,
    "p75BarsToT1": 17.5,
@@ -4071,9 +4071,9 @@
     0.4885,
     0.7242
    ],
-   "liftCiLowNormal": 0.0205,
-   "liftCiHighNormal": 0.3021,
-   "pLift": 0.025241,
+   "liftCiLowNormal": 0.0097,
+   "liftCiHighNormal": 0.2914,
+   "pLift": 0.040426,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
@@ -4084,29 +4084,29 @@
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": 0.0218,
-     "hi": 0.3019,
-     "se": 0.0721,
+     "lo": 0.0143,
+     "hi": 0.2957,
+     "se": 0.0735,
      "by": "TIME",
      "symbol": [
-      0.0621,
-      0.2603
+      0.0476,
+      0.256
      ],
      "time": [
-      0.0218,
-      0.3019
+      0.0143,
+      0.2957
      ],
      "twoWay": [
-      0.02,
-      0.3026
+      0.0066,
+      0.2945
      ],
      "iidCell": [
-      0.0106,
-      0.2995
+      0,
+      0.2904
      ],
      "pigeonhole": [
-      -0.0649,
-      0.3786
+      -0.0939,
+      0.3676
      ]
     },
     "t1HitRate": {
@@ -4147,9 +4147,9 @@
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.037862,
-   "significantBH": true,
-   "qBHPooled": 0.353374
+   "qBH": 0.060639,
+   "significantBH": false,
+   "qBHPooled": 0.377309
   }
  },
  "byMarketRegime": {
@@ -4266,7 +4266,7 @@
    "registration": "EXPLORATORY",
    "qBH": 0.80457,
    "significantBH": false,
-   "qBHPooled": 0.910221
+   "qBHPooled": 0.938665
   },
   "NEUTRAL|BULLISH": {
    "signals": 69,
@@ -4281,12 +4281,12 @@
    "invalidationRate": 0.5116,
    "timeoutRate": 0,
    "t2HitRate": 0.3023,
-   "baselineRate": 0.6279,
+   "baselineRate": 0.6434,
    "baselineN": 129,
    "martingaleRate": 0.4611,
-   "lift": -0.1395,
-   "liftCiLow": -0.2721,
-   "liftCiHigh": 0.029,
+   "lift": -0.155,
+   "liftCiLow": -0.2768,
+   "liftCiHigh": 0,
    "medianBarsToT1": 14,
    "p25BarsToT1": 5,
    "p75BarsToT1": 31,
@@ -4303,9 +4303,9 @@
     0.3462,
     0.6325
    ],
-   "liftCiLowNormal": -0.3107,
-   "liftCiHighNormal": 0.0316,
-   "pLift": 0.067646,
+   "liftCiLowNormal": -0.3258,
+   "liftCiHighNormal": 0.0157,
+   "pLift": 0.026152,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
@@ -4316,29 +4316,29 @@
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.2721,
-     "hi": 0.029,
-     "se": 0.0764,
+     "lo": -0.2768,
+     "hi": 0,
+     "se": 0.0697,
      "by": "TIME",
      "symbol": [
-      -0.2632,
-      0.0167
+      -0.2982,
+      0.0079
      ],
      "time": [
-      -0.2721,
-      0.029
+      -0.2768,
+      0
      ],
      "twoWay": [
-      -0.2892,
-      0.0101
+      -0.3113,
+      0.0012
      ],
      "iidCell": [
-      -0.2766,
-      0.0002
+      -0.2899,
+      -0.0232
      ],
      "pigeonhole": [
-      -0.3725,
-      0.1232
+      -0.381,
+      0.0989
      ]
     },
     "t1HitRate": {
@@ -4379,9 +4379,9 @@
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.202938,
+   "qBH": 0.078456,
    "significantBH": false,
-   "qBHPooled": 0.537152
+   "qBHPooled": 0.292902
   },
   "RISK_OFF|BEARISH": {
    "signals": 9,
@@ -4729,119 +4729,119 @@
    "qBHPooled": null
   },
   "RISK_ON|BULLISH": {
-   "signals": 182,
-   "n": 120,
+   "signals": 181,
+   "n": 119,
    "symbols": 5,
-   "fillRate": 0.6593,
-   "t1HitRate": 0.6167,
+   "fillRate": 0.6575,
+   "t1HitRate": 0.6218,
    "t1Ci": [
-    0.514,
-    0.7163
+    0.5221,
+    0.7213
    ],
-   "invalidationRate": 0.3833,
+   "invalidationRate": 0.3782,
    "timeoutRate": 0,
-   "t2HitRate": 0.4,
-   "baselineRate": 0.6139,
-   "baselineN": 360,
-   "martingaleRate": 0.4789,
+   "t2HitRate": 0.4034,
+   "baselineRate": 0.619,
+   "baselineN": 357,
+   "martingaleRate": 0.4829,
    "lift": 0.0028,
-   "liftCiLow": -0.1212,
-   "liftCiHigh": 0.1164,
+   "liftCiLow": -0.1154,
+   "liftCiHigh": 0.1188,
    "medianBarsToT1": 14,
    "p25BarsToT1": 6,
    "p75BarsToT1": 28.5,
    "medianReturn": 0.0322,
-   "meanReturn": 0.0162,
-   "medianMfeR": 0.8516,
-   "medianMaeR": 0.7356,
-   "medianMfePct": 0.0461,
-   "medianMaePct": 0.0382,
-   "medianRiskPct": 0.0566,
-   "medianRewardPct": 0.0542,
-   "meanForwardReturnH": 0.1793,
+   "meanReturn": 0.0188,
+   "medianMfeR": 0.8519,
+   "medianMaeR": 0.733,
+   "medianMfePct": 0.0463,
+   "medianMaePct": 0.0374,
+   "medianRiskPct": 0.0564,
+   "medianRewardPct": 0.0533,
+   "meanForwardReturnH": 0.1795,
    "t1CiWilson": [
-    0.5273,
-    0.6988
+    0.5322,
+    0.7039
    ],
-   "liftCiLowNormal": -0.0977,
-   "liftCiHighNormal": 0.1033,
-   "pLift": 0.963535,
+   "liftCiLowNormal": -0.0978,
+   "liftCiHighNormal": 0.1034,
+   "pLift": 0.963127,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
      "symbols": 5,
      "timeBlocks": 31,
-     "cells": 88
+     "cells": 87
     },
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.1212,
-     "hi": 0.1164,
-     "se": 0.0608,
+     "lo": -0.1154,
+     "hi": 0.1188,
+     "se": 0.0606,
      "by": "TIME",
      "symbol": [
-      -0.0523,
-      0.045
+      -0.0639,
+      0.0565
      ],
      "time": [
-      -0.1212,
-      0.1164
+      -0.1154,
+      0.1188
      ],
      "twoWay": [
-      -0.1163,
-      0.1219
+      -0.116,
+      0.1216
      ],
      "iidCell": [
-      -0.1111,
-      0.1111
+      -0.112,
+      0.1129
      ],
      "pigeonhole": [
-      -0.1746,
-      0.17
+      -0.1824,
+      0.1756
      ]
     },
     "t1HitRate": {
-     "lo": 0.514,
-     "hi": 0.7163,
-     "se": 0.0526,
+     "lo": 0.5221,
+     "hi": 0.7213,
+     "se": 0.0521,
      "by": "TIME",
      "symbol": [
-      0.5478,
-      0.6607
+      0.55,
+      0.6638
      ],
      "time": [
-      0.514,
-      0.7163
+      0.5221,
+      0.7213
      ],
      "twoWay": [
-      0.5137,
-      0.7197
+      0.5197,
+      0.724
      ],
      "iidCell": [
-      0.5214,
-      0.7108
+      0.5263,
+      0.7131
      ],
      "pigeonhole": [
-      0.4674,
-      0.7623
+      0.47,
+      0.7685
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.6472,
-    "baselineN": 360,
-    "lift": -0.0305,
+    "baselineRate": 0.6443,
+    "baselineN": 357,
+    "lift": -0.0225,
     "liftCi": [
-     -0.1321,
-     0.0703
+     -0.1244,
+     0.0811
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.963535,
+   "qBH": 0.963127,
    "significantBH": false,
-   "qBHPooled": 1
+   "qBHPooled": 0.983346
   }
  },
  "byVolatility": {
@@ -4958,46 +4958,46 @@
    "registration": "EXPLORATORY",
    "qBH": 0.445127,
    "significantBH": false,
-   "qBHPooled": 0.910221
+   "qBHPooled": 0.938665
   },
   "ELEVATED": {
    "signals": 63,
    "n": 46,
    "symbols": 5,
    "fillRate": 0.7302,
-   "t1HitRate": 0.6304,
+   "t1HitRate": 0.6522,
    "t1Ci": [
-    0.4667,
-    0.7838
+    0.4998,
+    0.8
    ],
-   "invalidationRate": 0.3696,
+   "invalidationRate": 0.3478,
    "timeoutRate": 0,
-   "t2HitRate": 0.3696,
-   "baselineRate": 0.471,
+   "t2HitRate": 0.3913,
+   "baselineRate": 0.4783,
    "baselineN": 138,
-   "martingaleRate": 0.4655,
-   "lift": 0.1594,
-   "liftCiLow": 0.0076,
-   "liftCiHigh": 0.3011,
-   "medianBarsToT1": 15,
-   "p25BarsToT1": 7,
-   "p75BarsToT1": 37,
-   "medianReturn": 0.0373,
-   "meanReturn": 0.0276,
-   "medianMfeR": 0.8993,
-   "medianMaeR": 0.7974,
-   "medianMfePct": 0.0539,
-   "medianMaePct": 0.0494,
-   "medianRiskPct": 0.065,
+   "martingaleRate": 0.468,
+   "lift": 0.1739,
+   "liftCiLow": 0.0302,
+   "liftCiHigh": 0.3163,
+   "medianBarsToT1": 15.5,
+   "p25BarsToT1": 7.25,
+   "p75BarsToT1": 36.25,
+   "medianReturn": 0.0396,
+   "meanReturn": 0.0369,
+   "medianMfeR": 0.9308,
+   "medianMaeR": 0.7894,
+   "medianMfePct": 0.0553,
+   "medianMaePct": 0.0479,
+   "medianRiskPct": 0.0616,
    "medianRewardPct": 0.0743,
-   "meanForwardReturnH": 0.085,
+   "meanForwardReturnH": 0.0956,
    "t1CiWilson": [
-    0.486,
-    0.7548
+    0.5077,
+    0.7732
    ],
-   "liftCiLowNormal": -0.003,
-   "liftCiHighNormal": 0.3219,
-   "pLift": 0.032063,
+   "liftCiLowNormal": 0.013,
+   "liftCiHighNormal": 0.3348,
+   "pLift": 0.021212,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
@@ -5008,187 +5008,187 @@
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": 0.0076,
-     "hi": 0.3011,
-     "se": 0.0744,
+     "lo": 0.0302,
+     "hi": 0.3163,
+     "se": 0.0755,
      "by": "TIME",
      "symbol": [
-      0.0897,
-      0.2685
+      0.0926,
+      0.2982
      ],
      "time": [
-      0.0076,
-      0.3011
+      0.0302,
+      0.3163
      ],
      "twoWay": [
-      0.0137,
-      0.3052
+      0.026,
+      0.3218
      ],
      "iidCell": [
-      0,
-      0.3007
+      0.0213,
+      0.3126
      ],
      "pigeonhole": [
-      -0.0588,
-      0.3908
+      -0.0433,
+      0.4118
      ]
     },
     "t1HitRate": {
-     "lo": 0.4667,
-     "hi": 0.7838,
-     "se": 0.0787,
+     "lo": 0.4998,
+     "hi": 0.8,
+     "se": 0.0776,
      "by": "TIME",
      "symbol": [
       0.5614,
-      0.7429
+      0.8
      ],
      "time": [
-      0.4667,
-      0.7838
+      0.4998,
+      0.8
      ],
      "twoWay": [
-      0.4761,
-      0.7847
+      0.5,
+      0.8043
      ],
      "iidCell": [
-      0.475,
-      0.766
+      0.5099,
+      0.7827
      ],
      "pigeonhole": [
-      0.4166,
-      0.8401
+      0.4375,
+      0.881
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.6087,
+    "baselineRate": 0.6014,
     "baselineN": 138,
-    "lift": 0.0217,
+    "lift": 0.0508,
     "liftCi": [
-     -0.1561,
-     0.2064
+     -0.1333,
+     0.2461
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.128252,
+   "qBH": 0.084848,
    "significantBH": false,
-   "qBHPooled": 0.359106
+   "qBHPooled": 0.292902
   },
   "EXTREME": {
-   "signals": 45,
-   "n": 31,
+   "signals": 44,
+   "n": 30,
    "symbols": 5,
-   "fillRate": 0.6889,
-   "t1HitRate": 0.4516,
+   "fillRate": 0.6818,
+   "t1HitRate": 0.4333,
    "t1Ci": [
-    0.2498,
-    0.6286
+    0.2,
+    0.6098
    ],
-   "invalidationRate": 0.5161,
-   "timeoutRate": 0.0323,
-   "t2HitRate": 0.2903,
-   "baselineRate": 0.5806,
-   "baselineN": 93,
-   "martingaleRate": 0.4269,
-   "lift": -0.129,
-   "liftCiLow": -0.3581,
-   "liftCiHigh": 0.0494,
+   "invalidationRate": 0.5333,
+   "timeoutRate": 0.0333,
+   "t2HitRate": 0.2667,
+   "baselineRate": 0.5889,
+   "baselineN": 90,
+   "martingaleRate": 0.425,
+   "lift": -0.1556,
+   "liftCiLow": -0.3952,
+   "liftCiHigh": 0.0208,
    "medianBarsToT1": 14,
-   "p25BarsToT1": 6.5,
-   "p75BarsToT1": 28.25,
-   "medianReturn": -0.0441,
-   "meanReturn": -0.011,
-   "medianMfeR": 0.7913,
-   "medianMaeR": 1.0436,
-   "medianMfePct": 0.0711,
-   "medianMaePct": 0.07,
-   "medianRiskPct": 0.0925,
-   "medianRewardPct": 0.1124,
-   "meanForwardReturnH": 0.1777,
+   "p25BarsToT1": 6,
+   "p75BarsToT1": 29,
+   "medianReturn": -0.0444,
+   "meanReturn": -0.015,
+   "medianMfeR": 0.7889,
+   "medianMaeR": 1.0611,
+   "medianMfePct": 0.067,
+   "medianMaePct": 0.0711,
+   "medianRiskPct": 0.0894,
+   "medianRewardPct": 0.1144,
+   "meanForwardReturnH": 0.1604,
    "t1CiWilson": [
-    0.2916,
-    0.6223
+    0.2738,
+    0.608
    ],
-   "liftCiLowNormal": -0.3309,
-   "liftCiHighNormal": 0.0728,
-   "pLift": 0.219351,
+   "liftCiLowNormal": -0.36,
+   "liftCiHighNormal": 0.0488,
+   "pLift": 0.144313,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
      "symbols": 5,
-     "timeBlocks": 14,
-     "cells": 28
+     "timeBlocks": 13,
+     "cells": 27
     },
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.3581,
-     "hi": 0.0494,
-     "se": 0.1051,
+     "lo": -0.3952,
+     "hi": 0.0208,
+     "se": 0.1066,
      "by": "TIME",
      "symbol": [
-      -0.2323,
-      0.0101
+      -0.2797,
+      0.0003
      ],
      "time": [
-      -0.3581,
-      0.0494
+      -0.3952,
+      0.0208
      ],
      "twoWay": [
-      -0.3349,
-      0.0769
+      -0.3644,
+      0.0533
      ],
      "iidCell": [
-      -0.3222,
-      0.0667
+      -0.3333,
+      0.0556
      ],
      "pigeonhole": [
-      -0.4667,
-      0.1471
+      -0.4737,
+      0.16
      ]
     },
     "t1HitRate": {
-     "lo": 0.2498,
-     "hi": 0.6286,
-     "se": 0.0981,
+     "lo": 0.2,
+     "hi": 0.6098,
+     "se": 0.1026,
      "by": "TIME",
      "symbol": [
-      0.3333,
-      0.5558
+      0.3077,
+      0.5517
      ],
      "time": [
-      0.2498,
-      0.6286
+      0.2,
+      0.6098
      ],
      "twoWay": [
-      0.2592,
-      0.644
+      0.2323,
+      0.6343
      ],
      "iidCell": [
-      0.2727,
-      0.6333
+      0.2646,
+      0.6207
      ],
      "pigeonhole": [
-      0.1427,
-      0.6925
+      0.1333,
+      0.7143
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.5376,
-    "baselineN": 93,
-    "lift": -0.086,
+    "baselineRate": 0.5444,
+    "baselineN": 90,
+    "lift": -0.1111,
     "liftCi": [
-     -0.3333,
-     0.0572
+     -0.3492,
+     0.0381
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.406797,
+   "qBH": 0.288626,
    "significantBH": false,
-   "qBHPooled": 0.767728
+   "qBHPooled": 0.808153
   },
   "NORMAL": {
    "signals": 173,
@@ -5203,31 +5203,31 @@
    "invalidationRate": 0.4771,
    "timeoutRate": 0,
    "t2HitRate": 0.3578,
-   "baselineRate": 0.581,
+   "baselineRate": 0.5872,
    "baselineN": 327,
-   "martingaleRate": 0.4913,
-   "lift": -0.0581,
-   "liftCiLow": -0.1616,
-   "liftCiHigh": 0.0577,
+   "martingaleRate": 0.4947,
+   "lift": -0.0642,
+   "liftCiLow": -0.1683,
+   "liftCiHigh": 0.0528,
    "medianBarsToT1": 13,
    "p25BarsToT1": 6,
    "p75BarsToT1": 23,
    "medianReturn": 0.0304,
-   "meanReturn": -0.0006,
+   "meanReturn": -0.0009,
    "medianMfeR": 0.738,
    "medianMaeR": 0.9554,
    "medianMfePct": 0.0447,
    "medianMaePct": 0.0399,
-   "medianRiskPct": 0.0572,
+   "medianRiskPct": 0.0573,
    "medianRewardPct": 0.0533,
-   "meanForwardReturnH": 0.0936,
+   "meanForwardReturnH": 0.0939,
    "t1CiWilson": [
     0.43,
     0.6143
    ],
-   "liftCiLowNormal": -0.166,
-   "liftCiHighNormal": 0.0498,
-   "pLift": 0.305098,
+   "liftCiLowNormal": -0.1721,
+   "liftCiHighNormal": 0.0437,
+   "pLift": 0.260858,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
@@ -5238,29 +5238,29 @@
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.1616,
-     "hi": 0.0577,
-     "se": 0.0567,
+     "lo": -0.1683,
+     "hi": 0.0528,
+     "se": 0.0571,
      "by": "TIME",
      "symbol": [
-      -0.1637,
+      -0.177,
       0.0381
      ],
      "time": [
-      -0.1616,
-      0.0577
+      -0.1683,
+      0.0528
      ],
      "twoWay": [
-      -0.1691,
-      0.0529
+      -0.1816,
+      0.0532
      ],
      "iidCell": [
-      -0.1626,
-      0.0535
+      -0.1696,
+      0.0476
      ],
      "pigeonhole": [
-      -0.221,
-      0.1201
+      -0.2356,
+      0.12
      ]
     },
     "t1HitRate": {
@@ -5292,18 +5292,18 @@
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.6055,
+    "baselineRate": 0.6024,
     "baselineN": 327,
-    "lift": -0.0826,
+    "lift": -0.0795,
     "liftCi": [
-     -0.1821,
-     0.0135
+     -0.177,
+     0.0141
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.406797,
+   "qBH": 0.347811,
    "significantBH": false,
-   "qBHPooled": 0.899236
+   "qBHPooled": 0.913003
   },
   "UNDETERMINED": {
    "signals": 5,
@@ -5423,119 +5423,119 @@
  },
  "bySector": {
   "D": {
-   "signals": 193,
-   "n": 135,
+   "signals": 192,
+   "n": 134,
    "symbols": 3,
-   "fillRate": 0.6995,
-   "t1HitRate": 0.5333,
+   "fillRate": 0.6979,
+   "t1HitRate": 0.5373,
    "t1Ci": [
-    0.4375,
-    0.6394
+    0.4388,
+    0.6409
    ],
-   "invalidationRate": 0.4593,
-   "timeoutRate": 0.0074,
-   "t2HitRate": 0.3333,
-   "baselineRate": 0.5358,
-   "baselineN": 405,
-   "martingaleRate": 0.4652,
-   "lift": -0.0025,
-   "liftCiLow": -0.1102,
-   "liftCiHigh": 0.1149,
-   "medianBarsToT1": 14,
+   "invalidationRate": 0.4552,
+   "timeoutRate": 0.0075,
+   "t2HitRate": 0.3358,
+   "baselineRate": 0.5448,
+   "baselineN": 402,
+   "martingaleRate": 0.4687,
+   "lift": -0.0075,
+   "liftCiLow": -0.1165,
+   "liftCiHigh": 0.1111,
+   "medianBarsToT1": 14.5,
    "p25BarsToT1": 6,
    "p75BarsToT1": 26,
-   "medianReturn": 0.0317,
-   "meanReturn": 0.008,
-   "medianMfeR": 0.7943,
-   "medianMaeR": 0.8637,
-   "medianMfePct": 0.0458,
-   "medianMaePct": 0.0467,
+   "medianReturn": 0.0318,
+   "meanReturn": 0.0102,
+   "medianMfeR": 0.8135,
+   "medianMaeR": 0.8603,
+   "medianMfePct": 0.0465,
+   "medianMaePct": 0.0463,
    "medianRiskPct": 0.0605,
-   "medianRewardPct": 0.0713,
+   "medianRewardPct": 0.0709,
    "meanForwardReturnH": 0.1558,
    "t1CiWilson": [
-    0.4494,
-    0.6154
+    0.453,
+    0.6195
    ],
-   "liftCiLowNormal": -0.0996,
-   "liftCiHighNormal": 0.0947,
-   "pLift": 0.964644,
+   "liftCiLowNormal": -0.1049,
+   "liftCiHighNormal": 0.09,
+   "pLift": 0.895171,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
      "symbols": 3,
      "timeBlocks": 42,
-     "cells": 94
+     "cells": 93
     },
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.1102,
-     "hi": 0.1149,
-     "se": 0.0557,
+     "lo": -0.1165,
+     "hi": 0.1111,
+     "se": 0.0566,
      "by": "TIME",
      "symbol": [
-      -0.1135,
+      -0.1277,
       0.1111
      ],
      "time": [
-      -0.1102,
-      0.1149
+      -0.1165,
+      0.1111
      ],
      "twoWay": [
-      -0.1172,
-      0.1122
+      -0.1334,
+      0.1185
      ],
      "iidCell": [
-      -0.1078,
-      0.096
+      -0.1048,
+      0.0864
      ],
      "pigeonhole": [
-      -0.1678,
-      0.1834
+      -0.1814,
+      0.1872
      ]
     },
     "t1HitRate": {
-     "lo": 0.4375,
-     "hi": 0.6394,
-     "se": 0.0501,
+     "lo": 0.4388,
+     "hi": 0.6409,
+     "se": 0.0498,
      "by": "TIME",
      "symbol": [
       0.4255,
       0.625
      ],
      "time": [
-      0.4375,
-      0.6394
+      0.4388,
+      0.6409
      ],
      "twoWay": [
-      0.4295,
-      0.6372
+      0.4313,
+      0.6433
      ],
      "iidCell": [
-      0.4418,
-      0.6194
+      0.4468,
+      0.626
      ],
      "pigeonhole": [
-      0.3668,
-      0.6851
+      0.3669,
+      0.6858
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.5679,
-    "baselineN": 405,
-    "lift": -0.0346,
+    "baselineRate": 0.5647,
+    "baselineN": 402,
+    "lift": -0.0274,
     "liftCi": [
-     -0.1303,
-     0.0642
+     -0.1258,
+     0.0704
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.964644,
+   "qBH": 0.920986,
    "significantBH": false,
-   "qBHPooled": 1
+   "qBHPooled": 0.983346
   },
   "H": {
    "signals": 64,
@@ -5648,9 +5648,9 @@
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.964644,
+   "qBH": 0.920986,
    "significantBH": false,
-   "qBHPooled": 1
+   "qBHPooled": 0.957752
   },
   "I": {
    "signals": 63,
@@ -5763,9 +5763,9 @@
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.964644,
+   "qBH": 0.920986,
    "significantBH": false,
-   "qBHPooled": 1
+   "qBHPooled": 0.983346
   }
  },
  "byYear": {
@@ -6127,30 +6127,30 @@
    "invalidationRate": 0.619,
    "timeoutRate": 0,
    "t2HitRate": 0.3333,
-   "baselineRate": 0.5238,
+   "baselineRate": 0.5556,
    "baselineN": 63,
-   "martingaleRate": 0.445,
-   "lift": -0.1429,
+   "martingaleRate": 0.4625,
+   "lift": -0.1746,
    "liftCiLow": null,
    "liftCiHigh": null,
    "medianBarsToT1": 10.5,
    "p25BarsToT1": 5.75,
    "p75BarsToT1": 14.5,
-   "medianReturn": -0.0447,
-   "meanReturn": -0.0172,
+   "medianReturn": -0.0513,
+   "meanReturn": -0.0186,
    "medianMfeR": 0.7893,
    "medianMaeR": 1.0854,
    "medianMfePct": 0.0442,
-   "medianMaePct": 0.0526,
-   "medianRiskPct": 0.0479,
+   "medianMaePct": 0.0685,
+   "medianRiskPct": 0.0577,
    "medianRewardPct": 0.0519,
-   "meanForwardReturnH": 0.0774,
+   "meanForwardReturnH": 0.0788,
    "t1CiWilson": [
     0.2075,
     0.5912
    ],
-   "liftCiLowNormal": -0.3844,
-   "liftCiHighNormal": 0.0987,
+   "liftCiLowNormal": -0.4158,
+   "liftCiHighNormal": 0.0666,
    "pLift": null,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
@@ -6167,24 +6167,24 @@
      "se": null,
      "by": null,
      "symbol": [
-      -0.4074,
-      0.0972
+      -0.4259,
+      0.087
      ],
      "time": [
       -0.4667,
-      0.0621
+      -0.012
      ],
      "twoWay": [
-      -0.4016,
-      0.1159
+      -0.4302,
+      0.081
      ],
      "iidCell": [
-      -0.463,
-      0.1596
+      -0.4815,
+      0.1389
      ],
      "pigeonhole": [
-      -0.6061,
-      0.2857
+      -0.6154,
+      0.2709
      ]
     },
     "t1HitRate": {
@@ -6805,49 +6805,49 @@
    "qBHPooled": null
   },
   "2024": {
-   "signals": 34,
-   "n": 22,
+   "signals": 33,
+   "n": 21,
    "symbols": 5,
-   "fillRate": 0.6471,
-   "t1HitRate": 0.6364,
+   "fillRate": 0.6364,
+   "t1HitRate": 0.6667,
    "t1Ci": [
     null,
     null
    ],
-   "invalidationRate": 0.3636,
+   "invalidationRate": 0.3333,
    "timeoutRate": 0,
-   "t2HitRate": 0.4091,
-   "baselineRate": 0.6212,
-   "baselineN": 66,
-   "martingaleRate": 0.4747,
-   "lift": 0.0152,
+   "t2HitRate": 0.4286,
+   "baselineRate": 0.619,
+   "baselineN": 63,
+   "martingaleRate": 0.4796,
+   "lift": 0.0476,
    "liftCiLow": null,
    "liftCiHigh": null,
-   "medianBarsToT1": 13,
+   "medianBarsToT1": 13.5,
    "p25BarsToT1": 5.25,
-   "p75BarsToT1": 19.75,
-   "medianReturn": 0.0303,
-   "meanReturn": 0.0141,
-   "medianMfeR": 0.8725,
-   "medianMaeR": 0.5518,
-   "medianMfePct": 0.047,
-   "medianMaePct": 0.0333,
-   "medianRiskPct": 0.0453,
-   "medianRewardPct": 0.0405,
-   "meanForwardReturnH": 0.0978,
+   "p75BarsToT1": 22.25,
+   "medianReturn": 0.0304,
+   "meanReturn": 0.0299,
+   "medianMfeR": 0.9112,
+   "medianMaeR": 0.4894,
+   "medianMfePct": 0.0471,
+   "medianMaePct": 0.0188,
+   "medianRiskPct": 0.0448,
+   "medianRewardPct": 0.0389,
+   "meanForwardReturnH": 0.0935,
    "t1CiWilson": [
-    0.4295,
-    0.8027
+    0.4537,
+    0.8281
    ],
-   "liftCiLowNormal": -0.2175,
-   "liftCiHighNormal": 0.2478,
+   "liftCiLowNormal": -0.187,
+   "liftCiHighNormal": 0.2822,
    "pLift": null,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
      "symbols": 5,
      "timeBlocks": 4,
-     "cells": 16
+     "cells": 15
     },
     "timeBlock": "QUARTER",
     "B": 1000,
@@ -6857,24 +6857,24 @@
      "se": null,
      "by": null,
      "symbol": [
-      -0.1483,
-      0.1235
+      -0.1296,
+      0.1754
      ],
      "time": [
-      -0.1667,
-      0.1954
-     ],
-     "twoWay": [
-      -0.1818,
-      0.2121
-     ],
-     "iidCell": [
-      -0.1515,
+      -0.2121,
       0.2
      ],
+     "twoWay": [
+      -0.1495,
+      0.2447
+     ],
+     "iidCell": [
+      -0.1589,
+      0.2501
+     ],
      "pigeonhole": [
-      -0.3153,
-      0.2609
+      -0.3333,
+      0.2899
      ]
     },
     "t1HitRate": {
@@ -6884,31 +6884,31 @@
      "by": null,
      "symbol": [
       0.5,
-      0.7
+      0.8
      ],
      "time": [
-      0.2143,
+      0.2727,
       0.8276
      ],
      "twoWay": [
-      0.3564,
-      0.9163
+      0.4151,
+      0.9182
      ],
      "iidCell": [
-      0.4499,
-      0.8
+      0.4706,
+      0.8336
      ],
      "pigeonhole": [
-      0.2,
-      0.875
+      0.25,
+      0.8801
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.6364,
-    "baselineN": 66,
-    "lift": 0,
+    "baselineRate": 0.6508,
+    "baselineN": 63,
+    "lift": 0.0159,
     "liftCi": [
      null,
      null
@@ -6932,10 +6932,10 @@
    "invalidationRate": 0.4706,
    "timeoutRate": 0.0588,
    "t2HitRate": 0.1765,
-   "baselineRate": 0.549,
+   "baselineRate": 0.5882,
    "baselineN": 51,
    "martingaleRate": 0.4426,
-   "lift": -0.0784,
+   "lift": -0.1176,
    "liftCiLow": null,
    "liftCiHigh": null,
    "medianBarsToT1": 14,
@@ -6954,8 +6954,8 @@
     0.2616,
     0.6904
    ],
-   "liftCiLowNormal": -0.3522,
-   "liftCiHighNormal": 0.1953,
+   "liftCiLowNormal": -0.3907,
+   "liftCiHighNormal": 0.1554,
    "pLift": null,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
@@ -6973,23 +6973,23 @@
      "by": null,
      "symbol": [
       -0.4,
-      0.3125
+      0.2292
      ],
      "time": [
       -0.2,
-      0.0952
+      0
      ],
      "twoWay": [
-      -0.4359,
-      0.279
+      -0.4422,
+      0.2069
      ],
      "iidCell": [
-      -0.4,
-      0.2669
+      -0.4244,
+      0.2222
      ],
      "pigeonhole": [
-      -0.5241,
-      0.3785
+      -0.5294,
+      0.3005
      ]
     },
     "t1HitRate": {
@@ -7136,9 +7136,9 @@
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.5385,
+    "baselineRate": 0.4872,
     "baselineN": 39,
-    "lift": 0,
+    "lift": 0.0513,
     "liftCi": [
      null,
      null
@@ -7379,7 +7379,7 @@
    "registration": "EXPLORATORY",
    "qBH": 0.823642,
    "significantBH": false,
-   "qBHPooled": 1
+   "qBHPooled": 0.979718
   },
   "COMPLETE|IMPULSE": {
    "signals": 12,
@@ -7497,119 +7497,119 @@
    "qBHPooled": null
   },
   "COMPLETE|TRIANGLE": {
-   "signals": 64,
-   "n": 39,
+   "signals": 63,
+   "n": 38,
    "symbols": 4,
-   "fillRate": 0.6094,
-   "t1HitRate": 0.6154,
+   "fillRate": 0.6032,
+   "t1HitRate": 0.6316,
    "t1Ci": [
-    0.4571,
-    0.7556
+    0.4694,
+    0.7667
    ],
-   "invalidationRate": 0.3846,
+   "invalidationRate": 0.3684,
    "timeoutRate": 0,
-   "t2HitRate": 0.2821,
-   "baselineRate": 0.5812,
-   "baselineN": 117,
-   "martingaleRate": 0.435,
-   "lift": 0.0342,
-   "liftCiLow": -0.1525,
-   "liftCiHigh": 0.1842,
-   "medianBarsToT1": 13,
+   "t2HitRate": 0.2895,
+   "baselineRate": 0.5965,
+   "baselineN": 114,
+   "martingaleRate": 0.4366,
+   "lift": 0.0351,
+   "liftCiLow": -0.1539,
+   "liftCiHigh": 0.1905,
+   "medianBarsToT1": 13.5,
    "p25BarsToT1": 5.75,
-   "p75BarsToT1": 22.5,
-   "medianReturn": 0.0421,
-   "meanReturn": 0.0224,
-   "medianMfeR": 0.9619,
-   "medianMaeR": 0.733,
-   "medianMfePct": 0.052,
-   "medianMaePct": 0.0561,
-   "medianRiskPct": 0.0627,
-   "medianRewardPct": 0.0836,
-   "meanForwardReturnH": 0.1589,
+   "p75BarsToT1": 25.5,
+   "medianReturn": 0.0432,
+   "meanReturn": 0.0313,
+   "medianMfeR": 0.9671,
+   "medianMaeR": 0.7028,
+   "medianMfePct": 0.055,
+   "medianMaePct": 0.0544,
+   "medianRiskPct": 0.0607,
+   "medianRewardPct": 0.0809,
+   "meanForwardReturnH": 0.158,
    "t1CiWilson": [
-    0.459,
-    0.7511
+    0.4728,
+    0.7662
    ],
-   "liftCiLowNormal": -0.1427,
-   "liftCiHighNormal": 0.2111,
-   "pLift": 0.685855,
+   "liftCiLowNormal": -0.1428,
+   "liftCiHighNormal": 0.2129,
+   "pLift": 0.695383,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
      "symbols": 4,
-     "timeBlocks": 20,
-     "cells": 31
+     "timeBlocks": 19,
+     "cells": 30
     },
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.1525,
-     "hi": 0.1842,
-     "se": 0.0845,
+     "lo": -0.1539,
+     "hi": 0.1905,
+     "se": 0.0896,
      "by": "TIME",
      "symbol": [
       -0.1863,
       0.1667
      ],
      "time": [
-      -0.1525,
-      0.1842
+      -0.1539,
+      0.1905
      ],
      "twoWay": [
-      -0.1653,
-      0.2337
+      -0.1776,
+      0.2478
      ],
      "iidCell": [
-      -0.1296,
-      0.1818
+      -0.1262,
+      0.181
      ],
      "pigeonhole": [
-      -0.3036,
-      0.2941
+      -0.2889,
+      0.2796
      ]
     },
     "t1HitRate": {
-     "lo": 0.4571,
-     "hi": 0.7556,
-     "se": 0.0785,
+     "lo": 0.4694,
+     "hi": 0.7667,
+     "se": 0.0754,
      "by": "TIME",
      "symbol": [
       0.4412,
-      0.7143
+      0.75
      ],
      "time": [
-      0.4571,
-      0.7556
+      0.4694,
+      0.7667
      ],
      "twoWay": [
-      0.4615,
-      0.7692
+      0.4749,
+      0.7882
      ],
      "iidCell": [
-      0.4594,
-      0.7619
+      0.4857,
+      0.7675
      ],
      "pigeonhole": [
-      0.3076,
-      0.8294
+      0.3213,
+      0.8334
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.5214,
-    "baselineN": 117,
-    "lift": 0.094,
+    "baselineRate": 0.5088,
+    "baselineN": 114,
+    "lift": 0.1228,
     "liftCi": [
-     -0.0858,
-     0.2614
+     -0.0417,
+     0.2979
     ]
    },
    "registration": "EXPLORATORY",
    "qBH": 0.823642,
    "significantBH": false,
-   "qBHPooled": 0.960197
+   "qBHPooled": 0.940727
   },
   "COMPLETE|WXY": {
    "signals": 124,
@@ -7724,7 +7724,7 @@
    "registration": "EXPLORATORY",
    "qBH": 0.823642,
    "significantBH": false,
-   "qBHPooled": 1
+   "qBHPooled": 0.983346
   },
   "COMPLETE|ZIGZAG": {
    "signals": 9,
@@ -8149,31 +8149,31 @@
    "invalidationRate": 0.4138,
    "timeoutRate": 0,
    "t2HitRate": 0.2414,
-   "baselineRate": 0.5172,
+   "baselineRate": 0.5402,
    "baselineN": 87,
-   "martingaleRate": 0.4292,
-   "lift": 0.069,
-   "liftCiLow": -0.1611,
-   "liftCiHigh": 0.2778,
+   "martingaleRate": 0.4419,
+   "lift": 0.046,
+   "liftCiLow": -0.1724,
+   "liftCiHigh": 0.2425,
    "medianBarsToT1": 21,
    "p25BarsToT1": 14,
    "p75BarsToT1": 37,
    "medianReturn": 0.0317,
-   "meanReturn": 0.0149,
+   "meanReturn": 0.0139,
    "medianMfeR": 1.1841,
    "medianMaeR": 1.0436,
    "medianMfePct": 0.0527,
-   "medianMaePct": 0.0406,
-   "medianRiskPct": 0.0448,
-   "medianRewardPct": 0.0714,
-   "meanForwardReturnH": 0.1006,
+   "medianMaePct": 0.0415,
+   "medianRiskPct": 0.0457,
+   "medianRewardPct": 0.068,
+   "meanForwardReturnH": 0.1016,
    "t1CiWilson": [
     0.4074,
     0.7449
    ],
-   "liftCiLowNormal": -0.1388,
-   "liftCiHighNormal": 0.2767,
-   "pLift": 0.529235,
+   "liftCiLowNormal": -0.1616,
+   "liftCiHighNormal": 0.2536,
+   "pLift": 0.653958,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
@@ -8184,28 +8184,28 @@
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.1611,
-     "hi": 0.2778,
-     "se": 0.1096,
+     "lo": -0.1724,
+     "hi": 0.2425,
+     "se": 0.1026,
      "by": "TIME",
      "symbol": [
-      -0.0505,
+      -0.093,
       0.2941
      ],
      "time": [
-      -0.1611,
-      0.2778
+      -0.1724,
+      0.2425
      ],
      "twoWay": [
-      -0.1459,
-      0.2838
+      -0.1632,
+      0.2552
      ],
      "iidCell": [
-      -0.115,
-      0.2667
+      -0.1429,
+      0.2501
      ],
      "pigeonhole": [
-      -0.2667,
+      -0.2695,
       0.3868
      ]
     },
@@ -8249,7 +8249,7 @@
    "registration": "EXPLORATORY",
    "qBH": 0.823642,
    "significantBH": false,
-   "qBHPooled": 0.910221
+   "qBHPooled": 0.940727
   },
   "MOTIVE|ZIGZAG": {
    "signals": 11,
@@ -8484,158 +8484,158 @@
    "qBHPooled": null
   },
   "LOW": {
-   "signals": 244,
-   "n": 166,
+   "signals": 242,
+   "n": 164,
    "symbols": 5,
-   "fillRate": 0.6803,
-   "t1HitRate": 0.5843,
+   "fillRate": 0.6777,
+   "t1HitRate": 0.5915,
    "t1Ci": [
-    0.487,
-    0.6667
+    0.5031,
+    0.6824
    ],
-   "invalidationRate": 0.4096,
-   "timeoutRate": 0.006,
-   "t2HitRate": 0.3614,
-   "baselineRate": 0.5442,
-   "baselineN": 498,
-   "martingaleRate": 0.471,
-   "lift": 0.0402,
-   "liftCiLow": -0.0493,
-   "liftCiHigh": 0.1244,
+   "invalidationRate": 0.4024,
+   "timeoutRate": 0.0061,
+   "t2HitRate": 0.3659,
+   "baselineRate": 0.5488,
+   "baselineN": 492,
+   "martingaleRate": 0.4736,
+   "lift": 0.0427,
+   "liftCiLow": -0.0514,
+   "liftCiHigh": 0.1354,
    "medianBarsToT1": 14,
    "p25BarsToT1": 5,
    "p75BarsToT1": 26,
    "medianReturn": 0.0322,
-   "meanReturn": 0.0112,
-   "medianMfeR": 0.8516,
-   "medianMaeR": 0.7659,
-   "medianMfePct": 0.0479,
-   "medianMaePct": 0.0411,
-   "medianRiskPct": 0.0588,
-   "medianRewardPct": 0.0711,
-   "meanForwardReturnH": 0.1256,
+   "meanReturn": 0.0135,
+   "medianMfeR": 0.8537,
+   "medianMaeR": 0.7356,
+   "medianMfePct": 0.0484,
+   "medianMaePct": 0.0402,
+   "medianRiskPct": 0.0585,
+   "medianRewardPct": 0.0709,
+   "meanForwardReturnH": 0.1253,
    "t1CiWilson": [
-    0.5083,
-    0.6566
+    0.515,
+    0.6638
    ],
-   "liftCiLowNormal": -0.0466,
-   "liftCiHighNormal": 0.127,
-   "pLift": 0.360287,
+   "liftCiLowNormal": -0.0445,
+   "liftCiHighNormal": 0.1298,
+   "pLift": 0.35959,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
      "symbols": 5,
      "timeBlocks": 43,
-     "cells": 119
+     "cells": 117
     },
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.0493,
-     "hi": 0.1244,
-     "se": 0.0439,
+     "lo": -0.0514,
+     "hi": 0.1354,
+     "se": 0.0466,
      "by": "TIME",
      "symbol": [
-      -0.0785,
+      -0.0753,
       0.1268
      ],
      "time": [
-      -0.0493,
-      0.1244
+      -0.0514,
+      0.1354
      ],
      "twoWay": [
-      -0.0633,
-      0.1436
+      -0.0609,
+      0.1463
      ],
      "iidCell": [
-      -0.0456,
-      0.1264
+      -0.0437,
+      0.1337
      ],
      "pigeonhole": [
-      -0.1228,
-      0.1982
+      -0.0999,
+      0.2092
      ]
     },
     "t1HitRate": {
-     "lo": 0.487,
-     "hi": 0.6667,
-     "se": 0.0457,
+     "lo": 0.5031,
+     "hi": 0.6824,
+     "se": 0.045,
      "by": "TIME",
      "symbol": [
-      0.4764,
-      0.6643
+      0.4892,
+      0.669
      ],
      "time": [
-      0.487,
-      0.6667
+      0.5031,
+      0.6824
      ],
      "twoWay": [
-      0.4804,
-      0.6882
+      0.4928,
+      0.6901
      ],
      "iidCell": [
-      0.5,
-      0.6667
+      0.5125,
+      0.673
      ],
      "pigeonhole": [
-      0.4342,
-      0.736
+      0.4562,
+      0.7356
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.5823,
-    "baselineN": 498,
-    "lift": 0.002,
+    "baselineRate": 0.5833,
+    "baselineN": 492,
+    "lift": 0.0082,
     "liftCi": [
-     -0.0994,
-     0.1033
+     -0.0956,
+     0.1056
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.360287,
+   "qBH": 0.35959,
    "significantBH": false,
-   "qBHPooled": 0.901145
+   "qBHPooled": 0.938665
   },
   "MODERATE": {
-   "signals": 71,
-   "n": 47,
+   "signals": 72,
+   "n": 48,
    "symbols": 5,
-   "fillRate": 0.662,
-   "t1HitRate": 0.4681,
+   "fillRate": 0.6667,
+   "t1HitRate": 0.4583,
    "t1Ci": [
-    0.3182,
-    0.6155
+    0.3125,
+    0.6087
    ],
-   "invalidationRate": 0.5319,
+   "invalidationRate": 0.5417,
    "timeoutRate": 0,
-   "t2HitRate": 0.3191,
-   "baselineRate": 0.5887,
-   "baselineN": 141,
-   "martingaleRate": 0.4826,
-   "lift": -0.1206,
-   "liftCiLow": -0.2807,
-   "liftCiHigh": 0.0397,
+   "t2HitRate": 0.3125,
+   "baselineRate": 0.5972,
+   "baselineN": 144,
+   "martingaleRate": 0.4831,
+   "lift": -0.1389,
+   "liftCiLow": -0.2883,
+   "liftCiHigh": 0.0213,
    "medianBarsToT1": 10.5,
    "p25BarsToT1": 6,
    "p75BarsToT1": 30.75,
-   "medianReturn": -0.0319,
-   "meanReturn": -0.0063,
-   "medianMfeR": 0.7578,
-   "medianMaeR": 1.0436,
-   "medianMfePct": 0.0472,
-   "medianMaePct": 0.0422,
-   "medianRiskPct": 0.0677,
-   "medianRewardPct": 0.0524,
-   "meanForwardReturnH": 0.0656,
+   "medianReturn": -0.0335,
+   "meanReturn": -0.0075,
+   "medianMfeR": 0.7302,
+   "medianMaeR": 1.0505,
+   "medianMfePct": 0.0457,
+   "medianMaePct": 0.0431,
+   "medianRiskPct": 0.0676,
+   "medianRewardPct": 0.0529,
+   "meanForwardReturnH": 0.0674,
    "t1CiWilson": [
-    0.3333,
-    0.6077
+    0.3258,
+    0.5971
    ],
-   "liftCiLowNormal": -0.2847,
-   "liftCiHighNormal": 0.0436,
-   "pLift": 0.138134,
+   "liftCiLowNormal": -0.301,
+   "liftCiHighNormal": 0.0232,
+   "pLift": 0.077647,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
@@ -8646,72 +8646,72 @@
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.2807,
-     "hi": 0.0397,
-     "se": 0.0813,
+     "lo": -0.2883,
+     "hi": 0.0213,
+     "se": 0.0787,
      "by": "TIME",
      "symbol": [
-      -0.2139,
-      -0.0083
+      -0.2479,
+      -0.0417
      ],
      "time": [
-      -0.2807,
-      0.0397
+      -0.2883,
+      0.0213
      ],
      "twoWay": [
-      -0.2799,
-      0.0388
+      -0.2932,
+      0.0154
      ],
      "iidCell": [
-      -0.2955,
-      0.0508
+      -0.305,
+      0.0196
      ],
      "pigeonhole": [
-      -0.375,
-      0.1667
+      -0.3751,
+      0.1059
      ]
     },
     "t1HitRate": {
-     "lo": 0.3182,
-     "hi": 0.6155,
-     "se": 0.0761,
+     "lo": 0.3125,
+     "hi": 0.6087,
+     "se": 0.0739,
      "by": "TIME",
      "symbol": [
-      0.3333,
-      0.5429
+      0.3235,
+      0.5352
      ],
      "time": [
-      0.3182,
-      0.6155
-     ],
-     "twoWay": [
-      0.3189,
-      0.6173
-     ],
-     "iidCell": [
-      0.3261,
+      0.3125,
       0.6087
      ],
+     "twoWay": [
+      0.3135,
+      0.6032
+     ],
+     "iidCell": [
+      0.3182,
+      0.5962
+     ],
      "pigeonhole": [
-      0.2121,
-      0.6774
+      0.2105,
+      0.6572
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.6312,
-    "baselineN": 141,
-    "lift": -0.1631,
+    "baselineRate": 0.6181,
+    "baselineN": 144,
+    "lift": -0.1598,
     "liftCi": [
-     -0.2955,
-     -0.0392
+     -0.2908,
+     -0.0388
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.276268,
+   "qBH": 0.155294,
    "significantBH": false,
-   "qBHPooled": 0.555384
+   "qBHPooled": 0.543529
   }
  },
  "byElliottShaped": {
@@ -8828,239 +8828,239 @@
    "registration": "EXPLORATORY",
    "qBH": 0.51192,
    "significantBH": false,
-   "qBHPooled": 0.797319
+   "qBHPooled": 0.913003
   },
   "OTHER_ENTRY|BULLISH": {
-   "signals": 264,
-   "n": 172,
+   "signals": 263,
+   "n": 171,
    "symbols": 5,
-   "fillRate": 0.6515,
-   "t1HitRate": 0.593,
+   "fillRate": 0.6502,
+   "t1HitRate": 0.5965,
    "t1Ci": [
-    0.4915,
-    0.6881
+    0.4942,
+    0.6893
    ],
-   "invalidationRate": 0.407,
+   "invalidationRate": 0.4035,
    "timeoutRate": 0,
-   "t2HitRate": 0.3837,
-   "baselineRate": 0.6124,
-   "baselineN": 516,
-   "martingaleRate": 0.4729,
-   "lift": -0.0194,
-   "liftCiLow": -0.1118,
-   "liftCiHigh": 0.0748,
+   "t2HitRate": 0.386,
+   "baselineRate": 0.6199,
+   "baselineN": 513,
+   "martingaleRate": 0.4756,
+   "lift": -0.0234,
+   "liftCiLow": -0.1189,
+   "liftCiHigh": 0.0691,
    "medianBarsToT1": 14,
    "p25BarsToT1": 6,
    "p75BarsToT1": 30.75,
    "medianReturn": 0.0322,
-   "meanReturn": 0.0156,
-   "medianMfeR": 0.8516,
-   "medianMaeR": 0.7894,
-   "medianMfePct": 0.0486,
+   "meanReturn": 0.0174,
+   "medianMfeR": 0.8519,
+   "medianMaeR": 0.7852,
+   "medianMfePct": 0.0487,
    "medianMaePct": 0.0406,
-   "medianRiskPct": 0.06,
-   "medianRewardPct": 0.0661,
-   "meanForwardReturnH": 0.1773,
+   "medianRiskPct": 0.0596,
+   "medianRewardPct": 0.0616,
+   "meanForwardReturnH": 0.1774,
    "t1CiWilson": [
-    0.5183,
-    0.6636
+    0.5216,
+    0.6671
    ],
-   "liftCiLowNormal": -0.104,
-   "liftCiHighNormal": 0.0652,
-   "pLift": 0.684122,
+   "liftCiLowNormal": -0.1081,
+   "liftCiHighNormal": 0.0613,
+   "pLift": 0.62094,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
      "symbols": 5,
      "timeBlocks": 41,
-     "cells": 124
+     "cells": 123
     },
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.1118,
-     "hi": 0.0748,
-     "se": 0.0476,
+     "lo": -0.1189,
+     "hi": 0.0691,
+     "se": 0.0473,
      "by": "TIME",
      "symbol": [
-      -0.0838,
-      0.0235
+      -0.0958,
+      0.0237
      ],
      "time": [
-      -0.1118,
-      0.0748
+      -0.1189,
+      0.0691
      ],
      "twoWay": [
-      -0.1127,
-      0.074
+      -0.1161,
+      0.0693
      ],
      "iidCell": [
-      -0.1002,
-      0.0745
+      -0.1072,
+      0.0667
      ],
      "pigeonhole": [
-      -0.1546,
-      0.1182
+      -0.1596,
+      0.1163
      ]
     },
     "t1HitRate": {
-     "lo": 0.4915,
-     "hi": 0.6881,
-     "se": 0.0499,
+     "lo": 0.4942,
+     "hi": 0.6893,
+     "se": 0.0498,
      "by": "TIME",
      "symbol": [
       0.515,
-      0.6566
+      0.6567
      ],
      "time": [
-      0.4915,
-      0.6881
+      0.4942,
+      0.6893
      ],
      "twoWay": [
-      0.4952,
-      0.6909
+      0.4988,
+      0.6942
      ],
      "iidCell": [
-      0.522,
-      0.673
+      0.52,
+      0.6786
      ],
      "pigeonhole": [
-      0.4529,
-      0.7258
+      0.4571,
+      0.7329
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.6415,
-    "baselineN": 516,
-    "lift": -0.0485,
+    "baselineRate": 0.6394,
+    "baselineN": 513,
+    "lift": -0.0429,
     "liftCi": [
-     -0.1488,
-     0.0499
+     -0.1443,
+     0.053
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 0.684122,
+   "qBH": 0.62094,
    "significantBH": false,
-   "qBHPooled": 0.960197
+   "qBHPooled": 0.940727
   }
  },
  "byAlignment": {
   "ALIGNED": {
-   "signals": 260,
-   "n": 168,
+   "signals": 259,
+   "n": 167,
    "symbols": 5,
-   "fillRate": 0.6462,
-   "t1HitRate": 0.5774,
+   "fillRate": 0.6448,
+   "t1HitRate": 0.5808,
    "t1Ci": [
-    0.4848,
-    0.6648
+    0.4892,
+    0.6706
    ],
-   "invalidationRate": 0.4226,
+   "invalidationRate": 0.4192,
    "timeoutRate": 0,
-   "t2HitRate": 0.375,
-   "baselineRate": 0.5794,
-   "baselineN": 504,
-   "martingaleRate": 0.4713,
+   "t2HitRate": 0.3772,
+   "baselineRate": 0.5828,
+   "baselineN": 501,
+   "martingaleRate": 0.4741,
    "lift": -0.002,
-   "liftCiLow": -0.089,
-   "liftCiHigh": 0.0911,
+   "liftCiLow": -0.0907,
+   "liftCiHigh": 0.0905,
    "medianBarsToT1": 14,
    "p25BarsToT1": 6,
    "p75BarsToT1": 30,
    "medianReturn": 0.0322,
-   "meanReturn": 0.0098,
-   "medianMfeR": 0.8426,
-   "medianMaeR": 0.8285,
-   "medianMfePct": 0.0474,
-   "medianMaePct": 0.0398,
+   "meanReturn": 0.0116,
+   "medianMfeR": 0.8513,
+   "medianMaeR": 0.8254,
+   "medianMfePct": 0.0475,
+   "medianMaePct": 0.0391,
    "medianRiskPct": 0.0593,
-   "medianRewardPct": 0.0661,
-   "meanForwardReturnH": 0.1453,
+   "medianRewardPct": 0.0616,
+   "meanForwardReturnH": 0.1452,
    "t1CiWilson": [
-    0.5018,
-    0.6495
+    0.505,
+    0.653
    ],
-   "liftCiLowNormal": -0.0882,
-   "liftCiHighNormal": 0.0843,
-   "pLift": 0.966115,
+   "liftCiLowNormal": -0.0884,
+   "liftCiHighNormal": 0.0844,
+   "pLift": 0.965786,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
      "symbols": 5,
      "timeBlocks": 43,
-     "cells": 125
+     "cells": 124
     },
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.089,
-     "hi": 0.0911,
-     "se": 0.0467,
+     "lo": -0.0907,
+     "hi": 0.0905,
+     "se": 0.0465,
      "by": "TIME",
      "symbol": [
-      -0.0594,
-      0.0546
+      -0.0693,
+      0.0588
      ],
      "time": [
-      -0.089,
-      0.0911
+      -0.0907,
+      0.0905
      ],
      "twoWay": [
-      -0.0935,
-      0.0896
+      -0.0932,
+      0.0892
      ],
      "iidCell": [
-      -0.0883,
-      0.0799
+      -0.0882,
+      0.0862
      ],
      "pigeonhole": [
-      -0.1366,
+      -0.1361,
       0.1544
      ]
     },
     "t1HitRate": {
-     "lo": 0.4848,
-     "hi": 0.6648,
+     "lo": 0.4892,
+     "hi": 0.6706,
      "se": 0.0465,
      "by": "TIME",
      "symbol": [
-      0.5225,
-      0.6266
+      0.5233,
+      0.6282
      ],
      "time": [
-      0.4848,
-      0.6648
+      0.4892,
+      0.6706
      ],
      "twoWay": [
-      0.4862,
-      0.6686
+      0.4896,
+      0.6721
      ],
      "iidCell": [
       0.4999,
-      0.6552
+      0.6572
      ],
      "pigeonhole": [
-      0.4464,
-      0.7044
+      0.4539,
+      0.7069
      ]
     }
    },
    "sensitivityBaselinePeriod": {
     "status": "SENSITIVITY_NOT_PREREGISTERED",
-    "baselineRate": 0.619,
-    "baselineN": 504,
-    "lift": -0.0416,
+    "baselineRate": 0.6168,
+    "baselineN": 501,
+    "lift": -0.036,
     "liftCi": [
-     -0.1379,
-     0.0556
+     -0.1323,
+     0.0577
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 1,
+   "qBH": 0.965786,
    "significantBH": false,
-   "qBHPooled": 1
+   "qBHPooled": 0.983346
   },
   "COUNTER_TREND": {
    "signals": 3,
@@ -9190,12 +9190,12 @@
    "invalidationRate": 0.4737,
    "timeoutRate": 0.0263,
    "t2HitRate": 0.2895,
-   "baselineRate": 0.5,
+   "baselineRate": 0.5175,
    "baselineN": 114,
    "martingaleRate": 0.488,
-   "lift": 0,
-   "liftCiLow": -0.1985,
-   "liftCiHigh": 0.1721,
+   "lift": -0.0175,
+   "liftCiLow": -0.2096,
+   "liftCiHigh": 0.1522,
    "medianBarsToT1": 11,
    "p25BarsToT1": 4,
    "p75BarsToT1": 20,
@@ -9212,9 +9212,9 @@
     0.3485,
     0.6515
    ],
-   "liftCiLowNormal": -0.1836,
-   "liftCiHighNormal": 0.1836,
-   "pLift": 1,
+   "liftCiLowNormal": -0.2011,
+   "liftCiHighNormal": 0.166,
+   "pLift": 0.849442,
    "ciCluster": {
     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
     "clusters": {
@@ -9225,29 +9225,29 @@
     "timeBlock": "QUARTER",
     "B": 1000,
     "lift": {
-     "lo": -0.1985,
-     "hi": 0.1721,
-     "se": 0.094,
+     "lo": -0.2096,
+     "hi": 0.1522,
+     "se": 0.0924,
      "by": "TIME",
      "symbol": [
-      -0.125,
-      0.098
+      -0.1316,
+      0.0588
      ],
      "time": [
-      -0.1985,
-      0.1721
+      -0.2096,
+      0.1522
      ],
      "twoWay": [
-      -0.1842,
-      0.1842
+      -0.1987,
+      0.1636
      ],
      "iidCell": [
-      -0.1892,
-      0.187
+      -0.2095,
+      0.1627
      ],
      "pigeonhole": [
-      -0.2976,
-      0.2735
+      -0.3132,
+      0.2484
      ]
     },
     "t1HitRate": {
@@ -9288,9 +9288,9 @@
     ]
    },
    "registration": "EXPLORATORY",
-   "qBH": 1,
+   "qBH": 0.965786,
    "significantBH": false,
-   "qBHPooled": 1
+   "qBHPooled": 0.983346
   },
   "UNAVAILABLE": {
    "signals": 10,
@@ -9411,119 +9411,119 @@
  "conditionalLift": {
   "TREND": {
    "supports": {
-    "signals": 315,
-    "n": 213,
+    "signals": 314,
+    "n": 212,
     "symbols": 5,
-    "fillRate": 0.6762,
-    "t1HitRate": 0.554,
+    "fillRate": 0.6752,
+    "t1HitRate": 0.5566,
     "t1Ci": [
-     0.4651,
-     0.6347
+     0.468,
+     0.6372
     ],
-    "invalidationRate": 0.4413,
+    "invalidationRate": 0.4387,
     "timeoutRate": 0.0047,
-    "t2HitRate": 0.3474,
-    "baselineRate": 0.5618,
-    "baselineN": 639,
-    "martingaleRate": 0.4757,
-    "lift": -0.0078,
-    "liftCiLow": -0.0882,
-    "liftCiHigh": 0.0733,
+    "t2HitRate": 0.3491,
+    "baselineRate": 0.5676,
+    "baselineN": 636,
+    "martingaleRate": 0.478,
+    "lift": -0.011,
+    "liftCiLow": -0.0952,
+    "liftCiHigh": 0.0704,
     "medianBarsToT1": 14,
     "p25BarsToT1": 6,
     "p75BarsToT1": 29,
-    "medianReturn": 0.0314,
-    "meanReturn": 0.0068,
-    "medianMfeR": 0.7943,
-    "medianMaeR": 0.8569,
-    "medianMfePct": 0.0472,
-    "medianMaePct": 0.0422,
+    "medianReturn": 0.0315,
+    "meanReturn": 0.0082,
+    "medianMfeR": 0.8077,
+    "medianMaeR": 0.8443,
+    "medianMfePct": 0.0473,
+    "medianMaePct": 0.0419,
     "medianRiskPct": 0.0594,
-    "medianRewardPct": 0.068,
-    "meanForwardReturnH": 0.1098,
+    "medianRewardPct": 0.0671,
+    "meanForwardReturnH": 0.1096,
     "t1CiWilson": [
-     0.4869,
-     0.6192
+     0.4893,
+     0.6219
     ],
-    "liftCiLowNormal": -0.0849,
-    "liftCiHighNormal": 0.0692,
-    "pLift": 0.84824,
+    "liftCiLowNormal": -0.0882,
+    "liftCiHighNormal": 0.0662,
+    "pLift": 0.787273,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "clusters": {
       "symbols": 5,
       "timeBlocks": 44,
-      "cells": 150
+      "cells": 149
      },
      "timeBlock": "QUARTER",
      "B": 1000,
      "lift": {
-      "lo": -0.0882,
-      "hi": 0.0733,
-      "se": 0.0409,
+      "lo": -0.0952,
+      "hi": 0.0704,
+      "se": 0.0408,
       "by": "TIME",
       "symbol": [
-       -0.0694,
-       0.0545
+       -0.0784,
+       0.0548
       ],
       "time": [
-       -0.0882,
-       0.0733
+       -0.0952,
+       0.0704
       ],
       "twoWay": [
-       -0.088,
-       0.0723
+       -0.0909,
+       0.0689
       ],
       "iidCell": [
-       -0.0876,
-       0.0676
+       -0.0924,
+       0.0691
       ],
       "pigeonhole": [
-       -0.1399,
-       0.1105
+       -0.1463,
+       0.1099
       ]
      },
      "t1HitRate": {
-      "lo": 0.4651,
-      "hi": 0.6347,
-      "se": 0.0433,
+      "lo": 0.468,
+      "hi": 0.6372,
+      "se": 0.043,
       "by": "TIME",
       "symbol": [
-       0.4846,
+       0.4867,
        0.6075
       ],
       "time": [
-       0.4651,
-       0.6347
+       0.468,
+       0.6372
       ],
       "twoWay": [
-       0.4691,
-       0.6389
+       0.4723,
+       0.6409
       ],
       "iidCell": [
-       0.4746,
-       0.6278
+       0.4833,
+       0.636
       ],
       "pigeonhole": [
-       0.4249,
-       0.6727
+       0.4266,
+       0.6749
       ]
      }
     },
     "sensitivityBaselinePeriod": {
      "status": "SENSITIVITY_NOT_PREREGISTERED",
-     "baselineRate": 0.5931,
-     "baselineN": 639,
-     "lift": -0.0391,
+     "baselineRate": 0.5912,
+     "baselineN": 636,
+     "lift": -0.0346,
      "liftCi": [
-      -0.1177,
-      0.0488
+      -0.1127,
+      0.0521
      ]
     },
     "registration": "EXPLORATORY",
     "qBH": 1,
     "significantBH": false,
-    "qBHPooled": 1
+    "qBHPooled": 0.979718
    },
    "opposes": {
     "signals": 0,
@@ -9593,119 +9593,119 @@
   },
   "MOMENTUM": {
    "supports": {
-    "signals": 266,
-    "n": 170,
+    "signals": 265,
+    "n": 169,
     "symbols": 5,
-    "fillRate": 0.6391,
-    "t1HitRate": 0.5706,
+    "fillRate": 0.6377,
+    "t1HitRate": 0.574,
     "t1Ci": [
-     0.4794,
-     0.6575
+     0.4839,
+     0.6594
     ],
-    "invalidationRate": 0.4235,
+    "invalidationRate": 0.4201,
     "timeoutRate": 0.0059,
-    "t2HitRate": 0.3471,
-    "baselineRate": 0.5412,
-    "baselineN": 510,
-    "martingaleRate": 0.4732,
-    "lift": 0.0294,
-    "liftCiLow": -0.056,
-    "liftCiHigh": 0.1174,
+    "t2HitRate": 0.3491,
+    "baselineRate": 0.5444,
+    "baselineN": 507,
+    "martingaleRate": 0.476,
+    "lift": 0.0296,
+    "liftCiLow": -0.0548,
+    "liftCiHigh": 0.1139,
     "medianBarsToT1": 13,
     "p25BarsToT1": 6,
     "p75BarsToT1": 30,
     "medianReturn": 0.0318,
-    "meanReturn": 0.0087,
-    "medianMfeR": 0.8426,
-    "medianMaeR": 0.8285,
-    "medianMfePct": 0.0486,
-    "medianMaePct": 0.0402,
-    "medianRiskPct": 0.0591,
-    "medianRewardPct": 0.0676,
-    "meanForwardReturnH": 0.1151,
+    "meanReturn": 0.0104,
+    "medianMfeR": 0.8513,
+    "medianMaeR": 0.8254,
+    "medianMfePct": 0.0487,
+    "medianMaePct": 0.0399,
+    "medianRiskPct": 0.0588,
+    "medianRewardPct": 0.0671,
+    "meanForwardReturnH": 0.1149,
     "t1CiWilson": [
-     0.4954,
-     0.6426
+     0.4986,
+     0.6461
     ],
     "liftCiLowNormal": -0.0567,
-    "liftCiHighNormal": 0.1155,
-    "pLift": 0.506818,
+    "liftCiHighNormal": 0.1158,
+    "pLift": 0.50221,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "clusters": {
       "symbols": 5,
       "timeBlocks": 43,
-      "cells": 127
+      "cells": 126
      },
      "timeBlock": "QUARTER",
      "B": 1000,
      "lift": {
-      "lo": -0.056,
-      "hi": 0.1174,
-      "se": 0.0443,
+      "lo": -0.0548,
+      "hi": 0.1139,
+      "se": 0.0441,
       "by": "TIME",
       "symbol": [
-       -0.0404,
+       -0.0476,
        0.1035
       ],
       "time": [
-       -0.056,
-       0.1174
+       -0.0548,
+       0.1139
       ],
       "twoWay": [
-       -0.0574,
-       0.1163
+       -0.0568,
+       0.116
       ],
       "iidCell": [
-       -0.0576,
-       0.1165
+       -0.0503,
+       0.1098
       ],
       "pigeonhole": [
-       -0.1045,
-       0.1677
+       -0.1093,
+       0.1718
       ]
      },
      "t1HitRate": {
-      "lo": 0.4794,
-      "hi": 0.6575,
-      "se": 0.0457,
+      "lo": 0.4839,
+      "hi": 0.6594,
+      "se": 0.0452,
       "by": "TIME",
       "symbol": [
        0.4974,
-       0.632
+       0.6352
       ],
       "time": [
-       0.4794,
-       0.6575
+       0.4839,
+       0.6594
       ],
       "twoWay": [
-       0.481,
-       0.6602
+       0.4854,
+       0.6625
       ],
       "iidCell": [
-       0.4908,
-       0.646
+       0.4972,
+       0.6512
       ],
       "pigeonhole": [
-       0.4395,
-       0.7084
+       0.4452,
+       0.711
       ]
      }
     },
     "sensitivityBaselinePeriod": {
      "status": "SENSITIVITY_NOT_PREREGISTERED",
-     "baselineRate": 0.6059,
-     "baselineN": 510,
-     "lift": -0.0353,
+     "baselineRate": 0.6036,
+     "baselineN": 507,
+     "lift": -0.0296,
      "liftCi": [
-      -0.1221,
-      0.0473
+      -0.1124,
+      0.0503
      ]
     },
     "registration": "EXPLORATORY",
     "qBH": 1,
     "significantBH": false,
-    "qBHPooled": 0.910221
+    "qBHPooled": 0.938665
    },
    "opposes": {
     "signals": 22,
@@ -9820,124 +9820,124 @@
     "registration": "EXPLORATORY",
     "qBH": 0.216711,
     "significantBH": false,
-    "qBHPooled": 0.353374
+    "qBHPooled": 0.292902
    }
   },
   "STRUCTURE": {
    "supports": {
-    "signals": 232,
-    "n": 151,
+    "signals": 231,
+    "n": 150,
     "symbols": 5,
-    "fillRate": 0.6509,
-    "t1HitRate": 0.5629,
+    "fillRate": 0.6494,
+    "t1HitRate": 0.5667,
     "t1Ci": [
-     0.4475,
-     0.6689
+     0.4538,
+     0.6712
     ],
-    "invalidationRate": 0.4305,
-    "timeoutRate": 0.0066,
-    "t2HitRate": 0.3377,
-    "baselineRate": 0.5629,
-    "baselineN": 453,
-    "martingaleRate": 0.4728,
-    "lift": 0,
-    "liftCiLow": -0.1026,
-    "liftCiHigh": 0.1,
-    "medianBarsToT1": 14,
+    "invalidationRate": 0.4267,
+    "timeoutRate": 0.0067,
+    "t2HitRate": 0.34,
+    "baselineRate": 0.5711,
+    "baselineN": 450,
+    "martingaleRate": 0.4759,
+    "lift": -0.0044,
+    "liftCiLow": -0.1077,
+    "liftCiHigh": 0.0976,
+    "medianBarsToT1": 15,
     "p25BarsToT1": 6,
     "p75BarsToT1": 31,
     "medianReturn": 0.0317,
-    "meanReturn": 0.0083,
-    "medianMfeR": 0.8338,
-    "medianMaeR": 0.8929,
-    "medianMfePct": 0.05,
-    "medianMaePct": 0.0439,
-    "medianRiskPct": 0.0609,
-    "medianRewardPct": 0.0708,
-    "meanForwardReturnH": 0.1264,
+    "meanReturn": 0.0103,
+    "medianMfeR": 0.8426,
+    "medianMaeR": 0.8783,
+    "medianMfePct": 0.0502,
+    "medianMaePct": 0.0432,
+    "medianRiskPct": 0.0607,
+    "medianRewardPct": 0.0704,
+    "meanForwardReturnH": 0.1262,
     "t1CiWilson": [
-     0.4832,
-     0.6395
+     0.4867,
+     0.6433
     ],
-    "liftCiLowNormal": -0.0914,
-    "liftCiHighNormal": 0.0914,
-    "pLift": 1,
+    "liftCiLowNormal": -0.096,
+    "liftCiHighNormal": 0.0871,
+    "pLift": 0.931507,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "clusters": {
       "symbols": 5,
       "timeBlocks": 43,
-      "cells": 114
+      "cells": 113
      },
      "timeBlock": "QUARTER",
      "B": 1000,
      "lift": {
-      "lo": -0.1026,
-      "hi": 0.1,
-      "se": 0.0514,
+      "lo": -0.1077,
+      "hi": 0.0976,
+      "se": 0.0517,
       "by": "TIME",
       "symbol": [
-       -0.053,
-       0.0501
+       -0.0649,
+       0.0504
       ],
       "time": [
-       -0.1026,
-       0.1
+       -0.1077,
+       0.0976
       ],
       "twoWay": [
-       -0.1007,
-       0.1007
+       -0.1058,
+       0.0969
       ],
       "iidCell": [
-       -0.0844,
-       0.0921
+       -0.0867,
+       0.0769
       ],
       "pigeonhole": [
-       -0.1284,
+       -0.1387,
        0.1453
       ]
      },
      "t1HitRate": {
-      "lo": 0.4475,
-      "hi": 0.6689,
-      "se": 0.0556,
+      "lo": 0.4538,
+      "hi": 0.6712,
+      "se": 0.0557,
       "by": "TIME",
       "symbol": [
-       0.503,
-       0.6151
+       0.506,
+       0.6161
       ],
       "time": [
-       0.4475,
-       0.6689
+       0.4538,
+       0.6712
       ],
       "twoWay": [
-       0.4539,
-       0.6719
+       0.4576,
+       0.6758
       ],
       "iidCell": [
-       0.4825,
-       0.6467
+       0.4797,
+       0.649
       ],
       "pigeonhole": [
-       0.4318,
-       0.704
+       0.4347,
+       0.7112
       ]
      }
     },
     "sensitivityBaselinePeriod": {
      "status": "SENSITIVITY_NOT_PREREGISTERED",
-     "baselineRate": 0.5982,
-     "baselineN": 453,
-     "lift": -0.0353,
+     "baselineRate": 0.5956,
+     "baselineN": 450,
+     "lift": -0.0289,
      "liftCi": [
-      -0.1375,
-      0.0639
+      -0.129,
+      0.0704
      ]
     },
     "registration": "EXPLORATORY",
     "qBH": 1,
     "significantBH": false,
-    "qBHPooled": 1
+    "qBHPooled": 0.983346
    },
    "opposes": {
     "signals": 62,
@@ -10052,124 +10052,124 @@
     "registration": "EXPLORATORY",
     "qBH": 1,
     "significantBH": false,
-    "qBHPooled": 0.960197
+    "qBHPooled": 0.940727
    }
   },
   "HIGHER_TIMEFRAME": {
    "supports": {
-    "signals": 286,
-    "n": 190,
+    "signals": 285,
+    "n": 189,
     "symbols": 5,
-    "fillRate": 0.6643,
-    "t1HitRate": 0.5789,
+    "fillRate": 0.6632,
+    "t1HitRate": 0.582,
     "t1Ci": [
-     0.4831,
-     0.6734
+     0.4856,
+     0.6759
     ],
-    "invalidationRate": 0.4211,
+    "invalidationRate": 0.418,
     "timeoutRate": 0,
-    "t2HitRate": 0.3684,
-    "baselineRate": 0.5807,
-    "baselineN": 570,
-    "martingaleRate": 0.471,
-    "lift": -0.0018,
-    "liftCiLow": -0.1035,
-    "liftCiHigh": 0.0935,
+    "t2HitRate": 0.3704,
+    "baselineRate": 0.5873,
+    "baselineN": 567,
+    "martingaleRate": 0.4735,
+    "lift": -0.0053,
+    "liftCiLow": -0.1026,
+    "liftCiHigh": 0.09,
     "medianBarsToT1": 14,
     "p25BarsToT1": 6,
     "p75BarsToT1": 29.75,
     "medianReturn": 0.0322,
-    "meanReturn": 0.0122,
-    "medianMfeR": 0.8537,
-    "medianMaeR": 0.7974,
-    "medianMfePct": 0.0479,
-    "medianMaePct": 0.0398,
-    "medianRiskPct": 0.0588,
-    "medianRewardPct": 0.0661,
-    "meanForwardReturnH": 0.1372,
+    "meanReturn": 0.0138,
+    "medianMfeR": 0.8554,
+    "medianMaeR": 0.7935,
+    "medianMfePct": 0.0483,
+    "medianMaePct": 0.0391,
+    "medianRiskPct": 0.0587,
+    "medianRewardPct": 0.0616,
+    "meanForwardReturnH": 0.1371,
     "t1CiWilson": [
-     0.5079,
-     0.6469
+     0.5107,
+     0.65
     ],
-    "liftCiLowNormal": -0.0828,
-    "liftCiHighNormal": 0.0793,
-    "pLift": 0.971396,
+    "liftCiLowNormal": -0.0865,
+    "liftCiHighNormal": 0.0759,
+    "pLift": 0.913211,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "clusters": {
       "symbols": 5,
       "timeBlocks": 43,
-      "cells": 136
+      "cells": 135
      },
      "timeBlock": "QUARTER",
      "B": 1000,
      "lift": {
-      "lo": -0.1035,
-      "hi": 0.0935,
-      "se": 0.0489,
+      "lo": -0.1026,
+      "hi": 0.09,
+      "se": 0.0485,
       "by": "TIME",
       "symbol": [
-       -0.0713,
-       0.0536
+       -0.082,
+       0.0541
       ],
       "time": [
-       -0.1035,
-       0.0935
+       -0.1026,
+       0.09
       ],
       "twoWay": [
-       -0.0977,
-       0.0941
+       -0.1004,
+       0.0899
       ],
       "iidCell": [
-       -0.0833,
-       0.0802
+       -0.0935,
+       0.082
       ],
       "pigeonhole": [
-       -0.1463,
-       0.1404
+       -0.1537,
+       0.136
       ]
      },
      "t1HitRate": {
-      "lo": 0.4831,
-      "hi": 0.6734,
-      "se": 0.0471,
+      "lo": 0.4856,
+      "hi": 0.6759,
+      "se": 0.0472,
       "by": "TIME",
       "symbol": [
        0.5105,
-       0.6269
+       0.6313
       ],
       "time": [
-       0.4831,
-       0.6734
+       0.4856,
+       0.6759
       ],
       "twoWay": [
-       0.4866,
-       0.6713
+       0.4895,
+       0.6745
       ],
       "iidCell": [
-       0.5026,
-       0.6508
+       0.5,
+       0.6592
       ],
       "pigeonhole": [
-       0.4439,
-       0.7118
+       0.4476,
+       0.7159
       ]
      }
     },
     "sensitivityBaselinePeriod": {
      "status": "SENSITIVITY_NOT_PREREGISTERED",
-     "baselineRate": 0.607,
-     "baselineN": 570,
-     "lift": -0.0281,
+     "baselineRate": 0.6049,
+     "baselineN": 567,
+     "lift": -0.0229,
      "liftCi": [
-      -0.113,
-      0.0697
+      -0.1066,
+      0.0725
      ]
     },
     "registration": "EXPLORATORY",
     "qBH": 1,
     "significantBH": false,
-    "qBHPooled": 1
+    "qBHPooled": 0.983346
    },
    "opposes": {
     "signals": 18,
@@ -10289,158 +10289,158 @@
   },
   "VOLUME": {
    "supports": {
-    "signals": 237,
-    "n": 151,
+    "signals": 235,
+    "n": 149,
     "symbols": 5,
-    "fillRate": 0.6371,
-    "t1HitRate": 0.5563,
+    "fillRate": 0.634,
+    "t1HitRate": 0.5638,
     "t1Ci": [
-     0.4637,
-     0.637
+     0.4671,
+     0.6577
     ],
-    "invalidationRate": 0.4371,
-    "timeoutRate": 0.0066,
-    "t2HitRate": 0.351,
-    "baselineRate": 0.5563,
-    "baselineN": 453,
-    "martingaleRate": 0.4713,
-    "lift": 0,
-    "liftCiLow": -0.0845,
-    "liftCiHigh": 0.087,
-    "medianBarsToT1": 15.5,
+    "invalidationRate": 0.4295,
+    "timeoutRate": 0.0067,
+    "t2HitRate": 0.3557,
+    "baselineRate": 0.557,
+    "baselineN": 447,
+    "martingaleRate": 0.4742,
+    "lift": 0.0067,
+    "liftCiLow": -0.0839,
+    "liftCiHigh": 0.0996,
+    "medianBarsToT1": 16,
     "p25BarsToT1": 6,
     "p75BarsToT1": 32.25,
     "medianReturn": 0.0322,
-    "meanReturn": 0.0087,
-    "medianMfeR": 0.8513,
-    "medianMaeR": 0.8054,
-    "medianMfePct": 0.05,
-    "medianMaePct": 0.0422,
-    "medianRiskPct": 0.06,
-    "medianRewardPct": 0.0705,
-    "meanForwardReturnH": 0.1508,
+    "meanReturn": 0.0111,
+    "medianMfeR": 0.8519,
+    "medianMaeR": 0.8044,
+    "medianMfePct": 0.0504,
+    "medianMaePct": 0.0415,
+    "medianRiskPct": 0.0594,
+    "medianRewardPct": 0.07,
+    "meanForwardReturnH": 0.1507,
     "t1CiWilson": [
-     0.4766,
-     0.6332
+     0.4835,
+     0.6408
     ],
-    "liftCiLowNormal": -0.0915,
-    "liftCiHighNormal": 0.0915,
-    "pLift": 1,
+    "liftCiLowNormal": -0.0853,
+    "liftCiHighNormal": 0.0987,
+    "pLift": 0.886554,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "clusters": {
       "symbols": 5,
       "timeBlocks": 44,
-      "cells": 123
+      "cells": 121
      },
      "timeBlock": "QUARTER",
      "B": 1000,
      "lift": {
-      "lo": -0.0845,
-      "hi": 0.087,
-      "se": 0.0457,
+      "lo": -0.0839,
+      "hi": 0.0996,
+      "se": 0.047,
       "by": "TIME",
       "symbol": [
-       -0.0707,
-       0.069
+       -0.0658,
+       0.0744
       ],
       "time": [
-       -0.0845,
-       0.087
+       -0.0839,
+       0.0996
       ],
       "twoWay": [
-       -0.0896,
-       0.0896
+       -0.0855,
+       0.0989
       ],
       "iidCell": [
-       -0.093,
-       0.0878
+       -0.0876,
+       0.0994
       ],
       "pigeonhole": [
-       -0.14,
-       0.1519
+       -0.1352,
+       0.1479
       ]
      },
      "t1HitRate": {
-      "lo": 0.4637,
-      "hi": 0.637,
-      "se": 0.0455,
+      "lo": 0.4671,
+      "hi": 0.6577,
+      "se": 0.0476,
       "by": "TIME",
       "symbol": [
-       0.4817,
-       0.6259
+       0.4938,
+       0.6391
       ],
       "time": [
-       0.4637,
-       0.637
+       0.4671,
+       0.6577
       ],
       "twoWay": [
-       0.4671,
-       0.6455
+       0.4705,
+       0.657
       ],
       "iidCell": [
-       0.4722,
-       0.641
+       0.48,
+       0.6458
       ],
       "pigeonhole": [
-       0.4044,
-       0.6891
+       0.4217,
+       0.7023
       ]
      }
     },
     "sensitivityBaselinePeriod": {
      "status": "SENSITIVITY_NOT_PREREGISTERED",
-     "baselineRate": 0.6071,
-     "baselineN": 453,
-     "lift": -0.0508,
+     "baselineRate": 0.6085,
+     "baselineN": 447,
+     "lift": -0.0447,
      "liftCi": [
-      -0.1371,
-      0.0427
+      -0.1255,
+      0.0439
      ]
     },
     "registration": "EXPLORATORY",
     "qBH": 1,
     "significantBH": false,
-    "qBHPooled": 1
+    "qBHPooled": 0.983346
    },
    "opposes": {
-    "signals": 83,
-    "n": 66,
+    "signals": 84,
+    "n": 67,
     "symbols": 5,
-    "fillRate": 0.7952,
-    "t1HitRate": 0.5758,
+    "fillRate": 0.7976,
+    "t1HitRate": 0.5672,
     "t1Ci": [
-     0.4286,
-     0.7143
+     0.4225,
+     0.7049
     ],
-    "invalidationRate": 0.4242,
+    "invalidationRate": 0.4328,
     "timeoutRate": 0,
-    "t2HitRate": 0.3636,
-    "baselineRate": 0.5556,
-    "baselineN": 198,
-    "martingaleRate": 0.4834,
-    "lift": 0.0202,
-    "liftCiLow": -0.1552,
-    "liftCiHigh": 0.1897,
+    "t2HitRate": 0.3582,
+    "baselineRate": 0.5721,
+    "baselineN": 201,
+    "martingaleRate": 0.4838,
+    "lift": -0.005,
+    "liftCiLow": -0.1784,
+    "liftCiHigh": 0.1667,
     "medianBarsToT1": 10,
     "p25BarsToT1": 5,
     "p75BarsToT1": 17.5,
-    "medianReturn": 0.0308,
-    "meanReturn": 0.0065,
-    "medianMfeR": 0.7889,
-    "medianMaeR": 0.9553,
-    "medianMfePct": 0.0443,
+    "medianReturn": 0.0301,
+    "meanReturn": 0.0054,
+    "medianMfeR": 0.7865,
+    "medianMaeR": 1.0177,
+    "medianMfePct": 0.0442,
     "medianMaePct": 0.0406,
-    "medianRiskPct": 0.0586,
-    "medianRewardPct": 0.0576,
-    "meanForwardReturnH": 0.0251,
+    "medianRiskPct": 0.0588,
+    "medianRewardPct": 0.0578,
+    "meanForwardReturnH": 0.027,
     "t1CiWilson": [
-     0.4556,
-     0.6876
+     0.4481,
+     0.679
     ],
-    "liftCiLowNormal": -0.1177,
-    "liftCiHighNormal": 0.1581,
-    "pLift": 0.822273,
+    "liftCiLowNormal": -0.1419,
+    "liftCiHighNormal": 0.132,
+    "pLift": 0.954441,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "clusters": {
@@ -10451,304 +10451,304 @@
      "timeBlock": "QUARTER",
      "B": 1000,
      "lift": {
-      "lo": -0.1552,
-      "hi": 0.1897,
-      "se": 0.0899,
+      "lo": -0.1784,
+      "hi": 0.1667,
+      "se": 0.0871,
       "by": "TIME",
       "symbol": [
-       -0.096,
-       0.1204
+       -0.1475,
+       0.1142
       ],
       "time": [
-       -0.1552,
-       0.1897
+       -0.1784,
+       0.1667
       ],
       "twoWay": [
-       -0.1561,
-       0.1965
+       -0.1757,
+       0.1657
       ],
       "iidCell": [
-       -0.1437,
-       0.1741
+       -0.1583,
+       0.1528
       ],
       "pigeonhole": [
-       -0.2371,
-       0.2667
+       -0.2514,
+       0.2389
       ]
      },
      "t1HitRate": {
-      "lo": 0.4286,
-      "hi": 0.7143,
-      "se": 0.0727,
+      "lo": 0.4225,
+      "hi": 0.7049,
+      "se": 0.0716,
       "by": "TIME",
       "symbol": [
-       0.4237,
+       0.4098,
        0.6986
       ],
       "time": [
-       0.4286,
-       0.7143
+       0.4225,
+       0.7049
       ],
       "twoWay": [
-       0.4255,
-       0.726
+       0.4112,
+       0.7231
       ],
       "iidCell": [
-       0.4461,
-       0.7097
+       0.4393,
+       0.697
       ],
       "pigeonhole": [
-       0.3281,
-       0.7822
+       0.3231,
+       0.7778
       ]
      }
     },
     "sensitivityBaselinePeriod": {
      "status": "SENSITIVITY_NOT_PREREGISTERED",
-     "baselineRate": 0.5606,
-     "baselineN": 198,
-     "lift": 0.0152,
+     "baselineRate": 0.5522,
+     "baselineN": 201,
+     "lift": 0.015,
      "liftCi": [
-      -0.1401,
-      0.1667
+      -0.1389,
+      0.164
      ]
     },
     "registration": "EXPLORATORY",
     "qBH": 1,
     "significantBH": false,
-    "qBHPooled": 1
+    "qBHPooled": 0.983346
    }
   },
   "PATTERN": {
    "supports": {
-    "signals": 70,
-    "n": 48,
+    "signals": 68,
+    "n": 46,
     "symbols": 5,
-    "fillRate": 0.6857,
-    "t1HitRate": 0.5417,
+    "fillRate": 0.6765,
+    "t1HitRate": 0.5435,
     "t1Ci": [
-     0.4166,
-     0.6818
+     0.4091,
+     0.6819
     ],
-    "invalidationRate": 0.4583,
+    "invalidationRate": 0.4565,
     "timeoutRate": 0,
-    "t2HitRate": 0.2708,
-    "baselineRate": 0.5,
-    "baselineN": 144,
-    "martingaleRate": 0.4936,
-    "lift": 0.0417,
-    "liftCiLow": -0.0901,
-    "liftCiHigh": 0.1906,
+    "t2HitRate": 0.2609,
+    "baselineRate": 0.4928,
+    "baselineN": 138,
+    "martingaleRate": 0.5014,
+    "lift": 0.0507,
+    "liftCiLow": -0.087,
+    "liftCiHigh": 0.2076,
     "medianBarsToT1": 14,
     "p25BarsToT1": 10,
-    "p75BarsToT1": 19.75,
+    "p75BarsToT1": 20,
     "medianReturn": 0.0317,
-    "meanReturn": -0.0039,
+    "meanReturn": -0.0057,
     "medianMfeR": 0.7944,
     "medianMaeR": 0.9553,
     "medianMfePct": 0.0453,
-    "medianMaePct": 0.0398,
+    "medianMaePct": 0.0371,
     "medianRiskPct": 0.0575,
-    "medianRewardPct": 0.0572,
-    "meanForwardReturnH": 0.0725,
+    "medianRewardPct": 0.0554,
+    "meanForwardReturnH": 0.0587,
     "t1CiWilson": [
-     0.4029,
-     0.6742
+     0.4018,
+     0.6785
     ],
-    "liftCiLowNormal": -0.1212,
-    "liftCiHighNormal": 0.2046,
-    "pLift": 0.564852,
+    "liftCiLowNormal": -0.1156,
+    "liftCiHighNormal": 0.2171,
+    "pLift": 0.498076,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "clusters": {
       "symbols": 5,
       "timeBlocks": 27,
-      "cells": 42
+      "cells": 41
      },
      "timeBlock": "QUARTER",
      "B": 1000,
      "lift": {
-      "lo": -0.0901,
-      "hi": 0.1906,
-      "se": 0.0724,
+      "lo": -0.087,
+      "hi": 0.2076,
+      "se": 0.0749,
       "by": "TIME",
       "symbol": [
-       -0.0362,
-       0.1159
+       -0.037,
+       0.1348
       ],
       "time": [
-       -0.0901,
-       0.1906
+       -0.087,
+       0.2076
       ],
       "twoWay": [
-       -0.1002,
-       0.1835
+       -0.096,
+       0.1975
       ],
       "iidCell": [
-       -0.0993,
-       0.1896
+       -0.1038,
+       0.2148
       ],
       "pigeonhole": [
-       -0.1744,
-       0.2393
+       -0.1778,
+       0.2615
       ]
      },
      "t1HitRate": {
-      "lo": 0.4166,
-      "hi": 0.6818,
-      "se": 0.0683,
+      "lo": 0.4091,
+      "hi": 0.6819,
+      "se": 0.0711,
       "by": "TIME",
       "symbol": [
-       0.4909,
-       0.6098
+       0.5094,
+       0.5897
       ],
       "time": [
-       0.4166,
-       0.6818
+       0.4091,
+       0.6819
       ],
       "twoWay": [
-       0.4077,
-       0.6756
+       0.4042,
+       0.6828
       ],
       "iidCell": [
-       0.413,
-       0.6809
+       0.4047,
+       0.6875
       ],
       "pigeonhole": [
-       0.3653,
-       0.7353
+       0.3529,
+       0.7347
       ]
      }
     },
     "sensitivityBaselinePeriod": {
      "status": "SENSITIVITY_NOT_PREREGISTERED",
-     "baselineRate": 0.6181,
-     "baselineN": 144,
-     "lift": -0.0764,
+     "baselineRate": 0.6377,
+     "baselineN": 138,
+     "lift": -0.0942,
      "liftCi": [
-      -0.2127,
-      0.0621
+      -0.2364,
+      0.0526
      ]
     },
     "registration": "EXPLORATORY",
     "qBH": 1,
     "significantBH": false,
-    "qBHPooled": 0.930266
+    "qBHPooled": 0.938665
    },
    "opposes": {
-    "signals": 62,
-    "n": 48,
+    "signals": 63,
+    "n": 49,
     "symbols": 5,
-    "fillRate": 0.7742,
-    "t1HitRate": 0.5417,
+    "fillRate": 0.7778,
+    "t1HitRate": 0.551,
     "t1Ci": [
-     0.3776,
-     0.6977
+     0.3864,
+     0.7
     ],
-    "invalidationRate": 0.4583,
+    "invalidationRate": 0.449,
     "timeoutRate": 0,
-    "t2HitRate": 0.3333,
-    "baselineRate": 0.5903,
-    "baselineN": 144,
-    "martingaleRate": 0.5033,
-    "lift": -0.0486,
-    "liftCiLow": -0.2445,
-    "liftCiHigh": 0.1347,
-    "medianBarsToT1": 9,
-    "p25BarsToT1": 4.25,
-    "p75BarsToT1": 18.25,
-    "medianReturn": 0.0221,
-    "meanReturn": -0.0073,
-    "medianMfeR": 0.6471,
-    "medianMaeR": 0.9322,
-    "medianMfePct": 0.044,
-    "medianMaePct": 0.039,
-    "medianRiskPct": 0.0588,
-    "medianRewardPct": 0.0547,
-    "meanForwardReturnH": -0.0045,
+    "t2HitRate": 0.3469,
+    "baselineRate": 0.585,
+    "baselineN": 147,
+    "martingaleRate": 0.4965,
+    "lift": -0.034,
+    "liftCiLow": -0.2274,
+    "liftCiHigh": 0.1379,
+    "medianBarsToT1": 10,
+    "p25BarsToT1": 4.5,
+    "p75BarsToT1": 19,
+    "medianReturn": 0.0225,
+    "meanReturn": -0.002,
+    "medianMfeR": 0.6942,
+    "medianMaeR": 0.8316,
+    "medianMfePct": 0.0447,
+    "medianMaePct": 0.038,
+    "medianRiskPct": 0.0583,
+    "medianRewardPct": 0.0564,
+    "meanForwardReturnH": 0.0127,
     "t1CiWilson": [
-     0.4029,
-     0.6742
+     0.4131,
+     0.6815
     ],
-    "liftCiLowNormal": -0.2108,
-    "liftCiHighNormal": 0.1136,
-    "pLift": 0.610429,
+    "liftCiLowNormal": -0.1945,
+    "liftCiHighNormal": 0.1264,
+    "pLift": 0.705545,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "clusters": {
       "symbols": 5,
-      "timeBlocks": 31,
-      "cells": 43
+      "timeBlocks": 32,
+      "cells": 44
      },
      "timeBlock": "QUARTER",
      "B": 1000,
      "lift": {
-      "lo": -0.2445,
-      "hi": 0.1347,
-      "se": 0.0954,
+      "lo": -0.2274,
+      "hi": 0.1379,
+      "se": 0.09,
       "by": "TIME",
       "symbol": [
-       -0.2128,
-       0.122
+       -0.189,
+       0.1349
       ],
       "time": [
-       -0.2445,
-       0.1347
+       -0.2274,
+       0.1379
       ],
       "twoWay": [
-       -0.2356,
-       0.1384
+       -0.2105,
+       0.1424
       ],
       "iidCell": [
-       -0.237,
-       0.1242
+       -0.2157,
+       0.1429
       ],
       "pigeonhole": [
-       -0.3104,
-       0.2417
+       -0.3031,
+       0.2602
       ]
      },
      "t1HitRate": {
-      "lo": 0.3776,
-      "hi": 0.6977,
-      "se": 0.0839,
+      "lo": 0.3864,
+      "hi": 0.7,
+      "se": 0.0794,
       "by": "TIME",
       "symbol": [
-       0.45,
-       0.62
+       0.4722,
+       0.6216
       ],
       "time": [
-       0.3776,
-       0.6977
+       0.3864,
+       0.7
       ],
       "twoWay": [
-       0.3773,
-       0.706
+       0.3955,
+       0.7066
       ],
       "iidCell": [
-       0.383,
-       0.6982
+       0.3921,
+       0.6939
       ],
       "pigeonhole": [
-       0.2982,
-       0.7451
+       0.3265,
+       0.7561
       ]
      }
     },
     "sensitivityBaselinePeriod": {
      "status": "SENSITIVITY_NOT_PREREGISTERED",
-     "baselineRate": 0.5694,
-     "baselineN": 144,
-     "lift": -0.0277,
+     "baselineRate": 0.5646,
+     "baselineN": 147,
+     "lift": -0.0136,
      "liftCi": [
-      -0.1986,
-      0.1407
+      -0.18,
+      0.1346
      ]
     },
     "registration": "EXPLORATORY",
     "qBH": 1,
     "significantBH": false,
-    "qBHPooled": 0.944725
+    "qBHPooled": 0.940727
    }
   },
   "ELLIOTT": {
@@ -11020,17 +11020,17 @@
   "horizonBars": 63,
   "all": {
    "CONFLUENCE": {
-    "n": 316,
-    "hitRate": 0.6108,
+    "n": 317,
+    "hitRate": 0.6088,
     "ci": [
-     0.5387,
-     0.6843
+     0.5368,
+     0.6823
     ],
     "ciWilson": [
-     0.556,
-     0.6629
+     0.5541,
+     0.6609
     ],
-    "pVs50": 0.003655,
+    "pVs50": 0.004234,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -11040,46 +11040,46 @@
       "timeBlocks": 44
      },
      "hitRate": {
-      "lo": 0.5387,
-      "hi": 0.6843,
+      "lo": 0.5368,
+      "hi": 0.6823,
       "se": 0.0381,
       "by": "TIME",
       "symbol": [
-       0.5523,
-       0.6821
+       0.5484,
+       0.681
       ],
       "time": [
-       0.5387,
-       0.6843
+       0.5368,
+       0.6823
       ],
       "twoWay": [
-       0.5356,
-       0.6859
+       0.5324,
+       0.6853
       ],
       "iidCell": [
-       0.544,
-       0.6656
+       0.542,
+       0.6645
       ],
       "pigeonhole": [
-       0.5,
-       0.7234
+       0.4968,
+       0.7222
       ]
      }
     },
-    "meanSignedReturn": 0.0492
+    "meanSignedReturn": 0.0495
    },
    "CONFLUENCE_STRONG": {
-    "n": 226,
-    "hitRate": 0.6504,
+    "n": 227,
+    "hitRate": 0.6476,
     "ci": [
-     0.5773,
-     0.7222
+     0.5772,
+     0.7195
     ],
     "ciWilson": [
-     0.5862,
-     0.7096
+     0.5834,
+     0.7068
     ],
-    "pVs50": 0.000071,
+    "pVs50": 0.000095,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -11089,95 +11089,46 @@
       "timeBlocks": 43
      },
      "hitRate": {
-      "lo": 0.5773,
-      "hi": 0.7222,
-      "se": 0.0379,
+      "lo": 0.5772,
+      "hi": 0.7195,
+      "se": 0.0378,
       "by": "TIME",
       "symbol": [
-       0.5517,
-       0.753
+       0.5466,
+       0.75
       ],
       "time": [
-       0.5773,
-       0.7222
-      ],
-      "twoWay": [
-       0.5454,
-       0.7555
-      ],
-      "iidCell": [
-       0.5794,
+       0.5772,
        0.7195
       ],
-      "pigeonhole": [
-       0.5121,
-       0.7879
-      ]
-     }
-    },
-    "meanSignedReturn": 0.0637
-   },
-   "TREND": {
-    "n": 331,
-    "hitRate": 0.6012,
-    "ci": [
-     0.5277,
-     0.6727
-    ],
-    "ciWilson": [
-     0.5476,
-     0.6525
-    ],
-    "pVs50": 0.006103,
-    "ciCluster": {
-     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
-     "timeBlock": "QUARTER",
-     "B": 1000,
-     "clusters": {
-      "symbols": 5,
-      "timeBlocks": 44
-     },
-     "hitRate": {
-      "lo": 0.5277,
-      "hi": 0.6727,
-      "se": 0.0369,
-      "by": "TIME",
-      "symbol": [
-       0.5521,
-       0.6627
-      ],
-      "time": [
-       0.5277,
-       0.6727
-      ],
       "twoWay": [
-       0.5289,
-       0.6735
+       0.5412,
+       0.7539
       ],
       "iidCell": [
-       0.5307,
-       0.6619
+       0.5772,
+       0.7162
       ],
       "pigeonhole": [
-       0.5,
-       0.7107
+       0.5106,
+       0.7872
       ]
      }
     },
-    "meanSignedReturn": 0.0454
+    "meanSignedReturn": 0.0641
    },
-   "MOMENTUM": {
-    "n": 304,
-    "hitRate": 0.625,
+   "TREND": {
+    "n": 332,
+    "hitRate": 0.5994,
     "ci": [
-     0.5591,
-     0.6879
+     0.5256,
+     0.6705
     ],
     "ciWilson": [
-     0.5693,
-     0.6775
+     0.5458,
+     0.6507
     ],
-    "pVs50": 0.00018,
+    "pVs50": 0.00696,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -11187,46 +11138,95 @@
       "timeBlocks": 44
      },
      "hitRate": {
-      "lo": 0.5591,
-      "hi": 0.6879,
-      "se": 0.0334,
+      "lo": 0.5256,
+      "hi": 0.6705,
+      "se": 0.0368,
       "by": "TIME",
       "symbol": [
-       0.5333,
+       0.5504,
+       0.6607
+      ],
+      "time": [
+       0.5256,
+       0.6705
+      ],
+      "twoWay": [
+       0.5272,
+       0.6716
+      ],
+      "iidCell": [
+       0.5289,
+       0.6595
+      ],
+      "pigeonhole": [
+       0.4983,
+       0.7101
+      ]
+     }
+    },
+    "meanSignedReturn": 0.0457
+   },
+   "MOMENTUM": {
+    "n": 305,
+    "hitRate": 0.623,
+    "ci": [
+     0.5559,
+     0.6866
+    ],
+    "ciWilson": [
+     0.5673,
+     0.6755
+    ],
+    "pVs50": 0.000224,
+    "ciCluster": {
+     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
+     "timeBlock": "QUARTER",
+     "B": 1000,
+     "clusters": {
+      "symbols": 5,
+      "timeBlocks": 44
+     },
+     "hitRate": {
+      "lo": 0.5559,
+      "hi": 0.6866,
+      "se": 0.0333,
+      "by": "TIME",
+      "symbol": [
+       0.5298,
        0.7143
       ],
       "time": [
-       0.5591,
-       0.6879
+       0.5559,
+       0.6866
       ],
       "twoWay": [
-       0.5327,
-       0.7173
+       0.5292,
+       0.7167
       ],
       "iidCell": [
-       0.5629,
-       0.6899
+       0.5596,
+       0.6877
       ],
       "pigeonhole": [
-       0.4952,
-       0.7375
+       0.4905,
+       0.7357
       ]
      }
     },
-    "meanSignedReturn": 0.0458
+    "meanSignedReturn": 0.0462
    },
    "STRUCTURE": {
-    "n": 310,
-    "hitRate": 0.5677,
+    "n": 311,
+    "hitRate": 0.5659,
     "ci": [
-     0.4968,
-     0.6233
+     0.4953,
+     0.6228
     ],
     "ciWilson": [
-     0.5121,
-     0.6217
+     0.5104,
+     0.6199
     ],
-    "pVs50": 0.037056,
+    "pVs50": 0.042537,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -11236,46 +11236,46 @@
       "timeBlocks": 44
      },
      "hitRate": {
-      "lo": 0.4968,
-      "hi": 0.6233,
+      "lo": 0.4953,
+      "hi": 0.6228,
       "se": 0.0325,
       "by": "TIME",
       "symbol": [
-       0.4983,
+       0.4934,
        0.6563
       ],
       "time": [
-       0.4968,
-       0.6233
+       0.4953,
+       0.6228
       ],
       "twoWay": [
-       0.4812,
-       0.6543
+       0.4778,
+       0.6541
       ],
       "iidCell": [
-       0.5098,
-       0.6281
+       0.5084,
+       0.6242
       ],
       "pigeonhole": [
-       0.4577,
-       0.6845
+       0.4554,
+       0.6836
       ]
      }
     },
-    "meanSignedReturn": 0.037
+    "meanSignedReturn": 0.0374
    },
    "HIGHER_TIMEFRAME": {
-    "n": 321,
-    "hitRate": 0.6449,
+    "n": 322,
+    "hitRate": 0.6429,
     "ci": [
-     0.5588,
-     0.7264
+     0.5576,
+     0.7236
     ],
     "ciWilson": [
-     0.5911,
-     0.6952
+     0.5891,
+     0.6932
     ],
-    "pVs50": 0.000389,
+    "pVs50": 0.000459,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -11285,46 +11285,46 @@
       "timeBlocks": 43
      },
      "hitRate": {
-      "lo": 0.5588,
-      "hi": 0.7264,
+      "lo": 0.5576,
+      "hi": 0.7236,
       "se": 0.0408,
       "by": "TIME",
       "symbol": [
-       0.5852,
-       0.7028
+       0.5815,
+       0.7009
       ],
       "time": [
-       0.5588,
-       0.7264
+       0.5576,
+       0.7236
       ],
       "twoWay": [
-       0.5638,
-       0.7259
+       0.5614,
+       0.7243
       ],
       "iidCell": [
-       0.5891,
-       0.7061
+       0.5859,
+       0.7042
       ],
       "pigeonhole": [
-       0.5349,
-       0.7621
+       0.5337,
+       0.762
       ]
      }
     },
-    "meanSignedReturn": 0.0617
+    "meanSignedReturn": 0.062
    },
    "VOLUME": {
-    "n": 338,
-    "hitRate": 0.5976,
+    "n": 339,
+    "hitRate": 0.5988,
     "ci": [
-     0.5425,
-     0.6541
+     0.5451,
+     0.6555
     ],
     "ciWilson": [
-     0.5445,
-     0.6485
+     0.5458,
+     0.6496
     ],
-    "pVs50": 0.000374,
+    "pVs50": 0.000283,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -11334,46 +11334,46 @@
       "timeBlocks": 44
      },
      "hitRate": {
-      "lo": 0.5425,
-      "hi": 0.6541,
-      "se": 0.0274,
+      "lo": 0.5451,
+      "hi": 0.6555,
+      "se": 0.0272,
       "by": "TIME",
       "symbol": [
-       0.5195,
-       0.6812
+       0.5224,
+       0.6821
       ],
       "time": [
-       0.5425,
-       0.6541
+       0.5451,
+       0.6555
       ],
       "twoWay": [
-       0.5148,
-       0.6805
+       0.5175,
+       0.6802
       ],
       "iidCell": [
-       0.541,
-       0.6529
+       0.5433,
+       0.6533
       ],
       "pigeonhole": [
-       0.4946,
+       0.4958,
        0.7139
       ]
      }
     },
-    "meanSignedReturn": 0.0335
+    "meanSignedReturn": 0.0341
    },
    "PATTERN": {
     "n": 137,
-    "hitRate": 0.4891,
+    "hitRate": 0.4818,
     "ci": [
-     0.4189,
-     0.5659
+     0.4133,
+     0.5538
     ],
     "ciWilson": [
-     0.4068,
-     0.5719
+     0.3997,
+     0.5648
     ],
-    "pVs50": 0.767034,
+    "pVs50": 0.615084,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -11383,33 +11383,33 @@
       "timeBlocks": 42
      },
      "hitRate": {
-      "lo": 0.4189,
-      "hi": 0.5659,
-      "se": 0.037,
+      "lo": 0.4133,
+      "hi": 0.5538,
+      "se": 0.0363,
       "by": "TIME",
       "symbol": [
        0.3972,
-       0.5907
+       0.5817
       ],
       "time": [
-       0.4189,
-       0.5659
+       0.4133,
+       0.5538
       ],
       "twoWay": [
-       0.3859,
-       0.5922
+       0.3889,
+       0.5746
       ],
       "iidCell": [
-       0.3999,
-       0.5694
+       0.3953,
+       0.5662
       ],
       "pigeonhole": [
-       0.3431,
-       0.6407
+       0.3428,
+       0.6331
       ]
      }
     },
-    "meanSignedReturn": 0.0229
+    "meanSignedReturn": 0.0175
    },
    "ELLIOTT": {
     "n": 0,
@@ -11470,17 +11470,17 @@
     "meanSignedReturn": null
    },
    "ALWAYS_LONG": {
-    "n": 338,
-    "hitRate": 0.6627,
+    "n": 339,
+    "hitRate": 0.6608,
     "ci": [
-     0.5752,
-     0.7421
+     0.5736,
+     0.7398
     ],
     "ciWilson": [
-     0.6107,
-     0.711
+     0.6088,
+     0.7091
     ],
-    "pVs50": 0.000094,
+    "pVs50": 0.000105,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -11490,46 +11490,46 @@
       "timeBlocks": 44
      },
      "hitRate": {
-      "lo": 0.5752,
-      "hi": 0.7421,
-      "se": 0.0417,
+      "lo": 0.5736,
+      "hi": 0.7398,
+      "se": 0.0414,
       "by": "TIME",
       "symbol": [
-       0.5788,
+       0.577,
        0.723
       ],
       "time": [
-       0.5752,
-       0.7421
+       0.5736,
+       0.7398
       ],
       "twoWay": [
-       0.5692,
-       0.7563
+       0.5677,
+       0.7539
       ],
       "iidCell": [
-       0.6064,
-       0.7207
+       0.6035,
+       0.7188
       ],
       "pigeonhole": [
-       0.5412,
-       0.7854
+       0.5374,
+       0.7853
       ]
      }
     },
-    "meanSignedReturn": 0.0713
+    "meanSignedReturn": 0.0715
    },
    "WITHOUT_TREND": {
-    "n": 289,
-    "hitRate": 0.6332,
+    "n": 290,
+    "hitRate": 0.631,
     "ci": [
-     0.5631,
-     0.6923
+     0.5597,
+     0.691
     ],
     "ciWilson": [
-     0.5762,
-     0.6867
+     0.5741,
+     0.6845
     ],
-    "pVs50": 0.000095,
+    "pVs50": 0.000125,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -11539,46 +11539,46 @@
       "timeBlocks": 44
      },
      "hitRate": {
-      "lo": 0.5631,
-      "hi": 0.6923,
-      "se": 0.0341,
+      "lo": 0.5597,
+      "hi": 0.691,
+      "se": 0.0342,
       "by": "TIME",
       "symbol": [
-       0.5504,
-       0.7252
+       0.5464,
+       0.7235
       ],
       "time": [
-       0.5631,
-       0.6923
+       0.5597,
+       0.691
       ],
       "twoWay": [
-       0.5455,
-       0.721
+       0.5419,
+       0.7201
       ],
       "iidCell": [
-       0.5636,
-       0.6942
+       0.5621,
+       0.6923
       ],
       "pigeonhole": [
-       0.5215,
+       0.5172,
        0.7627
       ]
      }
     },
-    "meanSignedReturn": 0.0554
+    "meanSignedReturn": 0.0558
    },
    "WITHOUT_MOMENTUM": {
-    "n": 333,
-    "hitRate": 0.6156,
+    "n": 334,
+    "hitRate": 0.6138,
     "ci": [
-     0.5449,
+     0.5428,
      0.6824
     ],
     "ciWilson": [
-     0.5623,
-     0.6663
+     0.5605,
+     0.6644
     ],
-    "pVs50": 0.001117,
+    "pVs50": 0.00127,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -11588,144 +11588,46 @@
       "timeBlocks": 44
      },
      "hitRate": {
-      "lo": 0.5449,
+      "lo": 0.5428,
       "hi": 0.6824,
-      "se": 0.0355,
+      "se": 0.0353,
       "by": "TIME",
       "symbol": [
-       0.564,
-       0.6706
+       0.5606,
+       0.6686
       ],
       "time": [
-       0.5449,
+       0.5428,
        0.6824
       ],
       "twoWay": [
-       0.5461,
-       0.6851
+       0.5446,
+       0.683
       ],
       "iidCell": [
-       0.5542,
-       0.6728
+       0.5527,
+       0.6709
       ],
       "pigeonhole": [
-       0.5126,
+       0.5118,
        0.7307
       ]
      }
     },
-    "meanSignedReturn": 0.0492
+    "meanSignedReturn": 0.0495
    },
    "WITHOUT_STRUCTURE": {
-    "n": 334,
-    "hitRate": 0.6108,
+    "n": 335,
+    "hitRate": 0.609,
     "ci": [
-     0.5354,
-     0.6806
-    ],
-    "ciWilson": [
-     0.5575,
-     0.6615
-    ],
-    "pVs50": 0.003393,
-    "ciCluster": {
-     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
-     "timeBlock": "QUARTER",
-     "B": 1000,
-     "clusters": {
-      "symbols": 5,
-      "timeBlocks": 44
-     },
-     "hitRate": {
-      "lo": 0.5354,
-      "hi": 0.6806,
-      "se": 0.0378,
-      "by": "TIME",
-      "symbol": [
-       0.5657,
-       0.6648
-      ],
-      "time": [
-       0.5354,
-       0.6806
-      ],
-      "twoWay": [
-       0.5367,
-       0.6849
-      ],
-      "iidCell": [
-       0.55,
-       0.6696
-      ],
-      "pigeonhole": [
-       0.5126,
-       0.7122
-      ]
-     }
-    },
-    "meanSignedReturn": 0.0472
-   },
-   "WITHOUT_HIGHER_TIMEFRAME": {
-    "n": 313,
-    "hitRate": 0.6166,
-    "ci": [
-     0.5471,
-     0.6833
-    ],
-    "ciWilson": [
-     0.5616,
-     0.6688
-    ],
-    "pVs50": 0.000941,
-    "ciCluster": {
-     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
-     "timeBlock": "QUARTER",
-     "B": 1000,
-     "clusters": {
-      "symbols": 5,
-      "timeBlocks": 44
-     },
-     "hitRate": {
-      "lo": 0.5471,
-      "hi": 0.6833,
-      "se": 0.0353,
-      "by": "TIME",
-      "symbol": [
-       0.5555,
-       0.6803
-      ],
-      "time": [
-       0.5471,
-       0.6833
-      ],
-      "twoWay": [
-       0.5432,
-       0.69
-      ],
-      "iidCell": [
-       0.5577,
-       0.68
-      ],
-      "pigeonhole": [
-       0.5097,
-       0.7236
-      ]
-     }
-    },
-    "meanSignedReturn": 0.051
-   },
-   "WITHOUT_VOLUME": {
-    "n": 322,
-    "hitRate": 0.6056,
-    "ci": [
-     0.5244,
+     0.5333,
      0.6778
     ],
     "ciWilson": [
-     0.5513,
-     0.6574
+     0.5557,
+     0.6597
     ],
-    "pVs50": 0.008444,
+    "pVs50": 0.003775,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -11735,46 +11637,46 @@
       "timeBlocks": 44
      },
      "hitRate": {
-      "lo": 0.5244,
+      "lo": 0.5333,
       "hi": 0.6778,
-      "se": 0.0401,
+      "se": 0.0376,
       "by": "TIME",
       "symbol": [
-       0.5489,
-       0.6737
+       0.5617,
+       0.6647
       ],
       "time": [
-       0.5244,
+       0.5333,
        0.6778
       ],
       "twoWay": [
-       0.527,
-       0.6842
+       0.5352,
+       0.6827
       ],
       "iidCell": [
-       0.5408,
-       0.6718
+       0.548,
+       0.6667
       ],
       "pigeonhole": [
-       0.5015,
-       0.7174
+       0.5104,
+       0.7074
       ]
      }
     },
-    "meanSignedReturn": 0.0484
+    "meanSignedReturn": 0.0476
    },
-   "WITHOUT_PATTERN": {
-    "n": 318,
-    "hitRate": 0.6101,
+   "WITHOUT_HIGHER_TIMEFRAME": {
+    "n": 314,
+    "hitRate": 0.6146,
     "ci": [
-     0.5345,
-     0.6798
+     0.5457,
+     0.6829
     ],
     "ciWilson": [
-     0.5554,
-     0.6621
+     0.5597,
+     0.6668
     ],
-    "pVs50": 0.002692,
+    "pVs50": 0.001073,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -11784,95 +11686,193 @@
       "timeBlocks": 44
      },
      "hitRate": {
-      "lo": 0.5345,
-      "hi": 0.6798,
-      "se": 0.0367,
-      "by": "TIME",
-      "symbol": [
-       0.5498,
-       0.6677
-      ],
-      "time": [
-       0.5345,
-       0.6798
-      ],
-      "twoWay": [
-       0.5364,
-       0.6837
-      ],
-      "iidCell": [
-       0.5505,
-       0.6708
-      ],
-      "pigeonhole": [
-       0.5074,
-       0.7258
-      ]
-     }
-    },
-    "meanSignedReturn": 0.0483
-   },
-   "WITHOUT_ELLIOTT": {
-    "n": 316,
-    "hitRate": 0.6108,
-    "ci": [
-     0.5335,
-     0.6819
-    ],
-    "ciWilson": [
-     0.556,
-     0.6629
-    ],
-    "pVs50": 0.003367,
-    "ciCluster": {
-     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
-     "timeBlock": "QUARTER",
-     "B": 1000,
-     "clusters": {
-      "symbols": 5,
-      "timeBlocks": 44
-     },
-     "hitRate": {
-      "lo": 0.5335,
-      "hi": 0.6819,
-      "se": 0.0378,
+      "lo": 0.5457,
+      "hi": 0.6829,
+      "se": 0.0351,
       "by": "TIME",
       "symbol": [
        0.5519,
-       0.681
+       0.6803
       ],
       "time": [
-       0.5335,
-       0.6819
+       0.5457,
+       0.6829
       ],
       "twoWay": [
-       0.5365,
-       0.685
+       0.5402,
+       0.6891
       ],
       "iidCell": [
-       0.5449,
-       0.6758
+       0.5552,
+       0.6782
       ],
       "pigeonhole": [
-       0.4999,
+       0.5048,
+       0.7235
+      ]
+     }
+    },
+    "meanSignedReturn": 0.0513
+   },
+   "WITHOUT_VOLUME": {
+    "n": 323,
+    "hitRate": 0.6037,
+    "ci": [
+     0.5226,
+     0.6744
+    ],
+    "ciWilson": [
+     0.5495,
+     0.6555
+    ],
+    "pVs50": 0.009655,
+    "ciCluster": {
+     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
+     "timeBlock": "QUARTER",
+     "B": 1000,
+     "clusters": {
+      "symbols": 5,
+      "timeBlocks": 44
+     },
+     "hitRate": {
+      "lo": 0.5226,
+      "hi": 0.6744,
+      "se": 0.0401,
+      "by": "TIME",
+      "symbol": [
+       0.5455,
+       0.6718
+      ],
+      "time": [
+       0.5226,
+       0.6744
+      ],
+      "twoWay": [
+       0.5252,
+       0.6823
+      ],
+      "iidCell": [
+       0.5392,
+       0.6687
+      ],
+      "pigeonhole": [
+       0.4983,
+       0.7139
+      ]
+     }
+    },
+    "meanSignedReturn": 0.0487
+   },
+   "WITHOUT_PATTERN": {
+    "n": 319,
+    "hitRate": 0.6082,
+    "ci": [
+     0.534,
+     0.6769
+    ],
+    "ciWilson": [
+     0.5536,
+     0.6601
+    ],
+    "pVs50": 0.003093,
+    "ciCluster": {
+     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
+     "timeBlock": "QUARTER",
+     "B": 1000,
+     "clusters": {
+      "symbols": 5,
+      "timeBlocks": 44
+     },
+     "hitRate": {
+      "lo": 0.534,
+      "hi": 0.6769,
+      "se": 0.0366,
+      "by": "TIME",
+      "symbol": [
+       0.5463,
+       0.6677
+      ],
+      "time": [
+       0.534,
+       0.6769
+      ],
+      "twoWay": [
+       0.5336,
+       0.6827
+      ],
+      "iidCell": [
+       0.5484,
+       0.6708
+      ],
+      "pigeonhole": [
+       0.5055,
+       0.7252
+      ]
+     }
+    },
+    "meanSignedReturn": 0.0486
+   },
+   "WITHOUT_ELLIOTT": {
+    "n": 317,
+    "hitRate": 0.6088,
+    "ci": [
+     0.5318,
+     0.6811
+    ],
+    "ciWilson": [
+     0.5541,
+     0.6609
+    ],
+    "pVs50": 0.003971,
+    "ciCluster": {
+     "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
+     "timeBlock": "QUARTER",
+     "B": 1000,
+     "clusters": {
+      "symbols": 5,
+      "timeBlocks": 44
+     },
+     "hitRate": {
+      "lo": 0.5318,
+      "hi": 0.6811,
+      "se": 0.0378,
+      "by": "TIME",
+      "symbol": [
+       0.5484,
+       0.68
+      ],
+      "time": [
+       0.5318,
+       0.6811
+      ],
+      "twoWay": [
+       0.5334,
+       0.6842
+      ],
+      "iidCell": [
+       0.5425,
+       0.674
+      ],
+      "pigeonhole": [
+       0.4966,
        0.7336
       ]
      }
     },
-    "meanSignedReturn": 0.0492
+    "meanSignedReturn": 0.0495
    },
    "WITHOUT_WYCKOFF": {
-    "n": 316,
-    "hitRate": 0.6108,
+    "n": 317,
+    "hitRate": 0.6088,
     "ci": [
-     0.5349,
-     0.6804
+     0.5327,
+     0.6783
     ],
     "ciWilson": [
-     0.556,
-     0.6629
+     0.5541,
+     0.6609
     ],
-    "pVs50": 0.00353,
+    "pVs50": 0.004077,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -11882,33 +11882,33 @@
       "timeBlocks": 44
      },
      "hitRate": {
-      "lo": 0.5349,
-      "hi": 0.6804,
-      "se": 0.038,
+      "lo": 0.5327,
+      "hi": 0.6783,
+      "se": 0.0379,
       "by": "TIME",
       "symbol": [
-       0.5523,
+       0.5484,
        0.681
       ],
       "time": [
-       0.5349,
-       0.6804
+       0.5327,
+       0.6783
       ],
       "twoWay": [
-       0.5352,
-       0.6863
+       0.5322,
+       0.6855
       ],
       "iidCell": [
        0.5457,
-       0.6699
+       0.6678
       ],
       "pigeonhole": [
-       0.5053,
-       0.7256
+       0.5048,
+       0.7235
       ]
      }
     },
-    "meanSignedReturn": 0.0492
+    "meanSignedReturn": 0.0495
    }
   },
   "holdout": {
@@ -11959,7 +11959,7 @@
       ]
      }
     },
-    "meanSignedReturn": 0.0447,
+    "meanSignedReturn": 0.0455,
     "registration": "EXPLORATORY",
     "qBH": 0.023254,
     "significantBH": true
@@ -12011,7 +12011,7 @@
       ]
      }
     },
-    "meanSignedReturn": 0.0573,
+    "meanSignedReturn": 0.0585,
     "registration": "EXPLORATORY",
     "qBH": 0.005236,
     "significantBH": true
@@ -12063,7 +12063,7 @@
       ]
      }
     },
-    "meanSignedReturn": 0.0409,
+    "meanSignedReturn": 0.0418,
     "registration": "EXPLORATORY",
     "qBH": 0.023254,
     "significantBH": true
@@ -12115,7 +12115,7 @@
       ]
      }
     },
-    "meanSignedReturn": 0.0326,
+    "meanSignedReturn": 0.0335,
     "registration": "EXPLORATORY",
     "qBH": 0.023254,
     "significantBH": true
@@ -12167,9 +12167,9 @@
       ]
      }
     },
-    "meanSignedReturn": 0.0385,
+    "meanSignedReturn": 0.0394,
     "registration": "EXPLORATORY",
-    "qBH": 0.075079,
+    "qBH": 0.070663,
     "significantBH": false
    },
    "HIGHER_TIMEFRAME": {
@@ -12219,7 +12219,7 @@
       ]
      }
     },
-    "meanSignedReturn": 0.0639,
+    "meanSignedReturn": 0.0647,
     "registration": "EXPLORATORY",
     "qBH": 0.010285,
     "significantBH": true
@@ -12271,23 +12271,23 @@
       ]
      }
     },
-    "meanSignedReturn": 0.0297,
+    "meanSignedReturn": 0.0305,
     "registration": "EXPLORATORY",
     "qBH": 0.023254,
     "significantBH": true
    },
    "PATTERN": {
     "n": 90,
-    "hitRate": 0.4333,
+    "hitRate": 0.4222,
     "ci": [
-     0.3604,
-     0.5116
+     0.3535,
+     0.4946
     ],
     "ciWilson": [
-     0.3358,
-     0.5364
+     0.3254,
+     0.5254
     ],
-    "pVs50": 0.083743,
+    "pVs50": 0.028955,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -12297,36 +12297,36 @@
       "timeBlocks": 29
      },
      "hitRate": {
-      "lo": 0.3604,
-      "hi": 0.5116,
-      "se": 0.0385,
+      "lo": 0.3535,
+      "hi": 0.4946,
+      "se": 0.0356,
       "by": "TIME",
       "symbol": [
        0.3505,
-       0.5301
+       0.506
       ],
       "time": [
-       0.3604,
-       0.5116
+       0.3535,
+       0.4946
       ],
       "twoWay": [
-       0.3416,
-       0.5251
+       0.3438,
+       0.5007
       ],
       "iidCell": [
-       0.3333,
-       0.5341
+       0.3258,
+       0.5227
       ],
       "pigeonhole": [
-       0.2906,
-       0.5981
+       0.2841,
+       0.5653
       ]
      }
     },
-    "meanSignedReturn": -0.0086,
+    "meanSignedReturn": -0.0168,
     "registration": "EXPLORATORY",
-    "qBH": 0.083743,
-    "significantBH": false
+    "qBH": 0.030765,
+    "significantBH": true
    },
    "ELLIOTT": {
     "n": 0,
@@ -12439,7 +12439,7 @@
       ]
      }
     },
-    "meanSignedReturn": 0.0727,
+    "meanSignedReturn": 0.0735,
     "registration": "EXPLORATORY",
     "qBH": 0.005236,
     "significantBH": true
@@ -12491,7 +12491,7 @@
       ]
      }
     },
-    "meanSignedReturn": 0.0489,
+    "meanSignedReturn": 0.0499,
     "registration": "EXPLORATORY",
     "qBH": 0.012563,
     "significantBH": true
@@ -12543,7 +12543,7 @@
       ]
      }
     },
-    "meanSignedReturn": 0.0457,
+    "meanSignedReturn": 0.0465,
     "registration": "EXPLORATORY",
     "qBH": 0.023254,
     "significantBH": true
@@ -12595,7 +12595,7 @@
       ]
      }
     },
-    "meanSignedReturn": 0.043,
+    "meanSignedReturn": 0.0438,
     "registration": "EXPLORATORY",
     "qBH": 0.023254,
     "significantBH": true
@@ -12647,7 +12647,7 @@
       ]
      }
     },
-    "meanSignedReturn": 0.046,
+    "meanSignedReturn": 0.0468,
     "registration": "EXPLORATORY",
     "qBH": 0.023254,
     "significantBH": true
@@ -12699,7 +12699,7 @@
       ]
      }
     },
-    "meanSignedReturn": 0.0448,
+    "meanSignedReturn": 0.0456,
     "registration": "EXPLORATORY",
     "qBH": 0.023254,
     "significantBH": true
@@ -12751,7 +12751,7 @@
       ]
      }
     },
-    "meanSignedReturn": 0.0438,
+    "meanSignedReturn": 0.0447,
     "registration": "EXPLORATORY",
     "qBH": 0.023254,
     "significantBH": true
@@ -12803,7 +12803,7 @@
       ]
      }
     },
-    "meanSignedReturn": 0.0447,
+    "meanSignedReturn": 0.0455,
     "registration": "EXPLORATORY",
     "qBH": 0.023254,
     "significantBH": true
@@ -12855,7 +12855,7 @@
       ]
      }
     },
-    "meanSignedReturn": 0.0447,
+    "meanSignedReturn": 0.0455,
     "registration": "EXPLORATORY",
     "qBH": 0.023254,
     "significantBH": true
@@ -12865,14 +12865,14 @@
  "calibration": {
   "method": "CELL_RATE_SHRUNK_BETA20",
   "trainN": 0,
-  "testN": 161,
+  "testN": 160,
   "baseRateTrain": null,
   "reliability": {
    "bins": [],
    "brier": null,
    "n": 0
   },
-  "constantBrier": 0.5901,
+  "constantBrier": 0.5938,
   "brierSkill": null,
   "maxReliabilityGap": 0,
   "passed": false,
@@ -13199,12 +13199,12 @@
      0.4775
     ],
     "invalidationRate": 0.5636,
-    "baselineRate": 0.4129,
-    "lift": -0.0674,
-    "liftCiLow": -0.1583,
-    "liftCiHigh": 0.0153,
-    "liftCiLowNormal": -0.2151,
-    "pLift": 0.135501,
+    "baselineRate": 0.3871,
+    "lift": -0.0416,
+    "liftCiLow": -0.137,
+    "liftCiHigh": 0.0365,
+    "liftCiLowNormal": -0.1889,
+    "pLift": 0.361082,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -13214,29 +13214,29 @@
       "timeBlocks": 25
      },
      "lift": {
-      "lo": -0.1583,
-      "hi": 0.0153,
-      "se": 0.0452,
+      "lo": -0.137,
+      "hi": 0.0365,
+      "se": 0.0456,
       "by": "TIME",
       "symbol": [
-       -0.1669,
-       0.0124
+       -0.1111,
+       0.0333
       ],
       "time": [
-       -0.1583,
-       0.0153
+       -0.137,
+       0.0365
       ],
       "twoWay": [
-       -0.1638,
-       0.0289
+       -0.131,
+       0.0477
       ],
       "iidCell": [
-       -0.1599,
-       0.046
+       -0.1329,
+       0.0608
       ],
       "pigeonhole": [
-       -0.25,
-       0.0989
+       -0.1927,
+       0.1142
       ]
      },
      "confirmRate": {
@@ -13280,9 +13280,9 @@
      "1.618": 12
     },
     "registration": "EXPLORATORY",
-    "qBH": 0.135501,
+    "qBH": 0.361082,
     "significantBH": false,
-    "qBHPooled": 0.555384
+    "qBHPooled": 0.938665
    },
    "ZIGZAG_C_AFTER_B": {
     "n": 16,
@@ -13297,12 +13297,12 @@
      0.769
     ],
     "invalidationRate": 0.4375,
-    "baselineRate": 0.3958,
-    "lift": 0.1667,
+    "baselineRate": 0.4375,
+    "lift": 0.125,
     "liftCiLow": -0.0208,
-    "liftCiHigh": 0.3547,
-    "liftCiLowNormal": -0.113,
-    "pLift": 0.084572,
+    "liftCiHigh": 0.2708,
+    "liftCiLowNormal": -0.1557,
+    "pLift": 0.111221,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -13313,28 +13313,28 @@
      },
      "lift": {
       "lo": -0.0208,
-      "hi": 0.3547,
-      "se": 0.0966,
+      "hi": 0.2708,
+      "se": 0.0785,
       "by": "TIME",
       "symbol": [
-       0.0667,
-       0.2222
+       0.037,
+       0.1741
       ],
       "time": [
        -0.0208,
-       0.3547
+       0.2708
       ],
       "twoWay": [
-       -0.0227,
-       0.3561
+       -0.0288,
+       0.2788
       ],
       "iidCell": [
        -0.0208,
-       0.3542
+       0.2708
       ],
       "pigeonhole": [
-       -0.0589,
-       0.417
+       -0.0669,
+       0.3183
       ]
      },
      "confirmRate": {
@@ -13378,9 +13378,9 @@
      "1.618": 29
     },
     "registration": "EXPLORATORY",
-    "qBH": 0.135501,
+    "qBH": 0.222442,
     "significantBH": false,
-    "qBHPooled": 0.537152
+    "qBHPooled": 0.692042
    }
   },
   "bySetupDirection": {
@@ -13397,12 +13397,12 @@
      0.4026
     ],
     "invalidationRate": 0.6304,
-    "baselineRate": 0.3516,
-    "lift": -0.0907,
-    "liftCiLow": -0.1821,
-    "liftCiHigh": -0.0084,
-    "liftCiLowNormal": -0.2422,
-    "pLift": 0.041818,
+    "baselineRate": 0.3203,
+    "lift": -0.0594,
+    "liftCiLow": -0.164,
+    "liftCiHigh": 0.0246,
+    "liftCiLowNormal": -0.2099,
+    "pLift": 0.228525,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -13412,29 +13412,29 @@
       "timeBlocks": 24
      },
      "lift": {
-      "lo": -0.1821,
-      "hi": -0.0084,
-      "se": 0.0446,
+      "lo": -0.164,
+      "hi": 0.0246,
+      "se": 0.0494,
       "by": "TIME",
       "symbol": [
-       -0.1717,
-       -0.0454
+       -0.0874,
+       -0.0238
       ],
       "time": [
-       -0.1821,
-       -0.0084
+       -0.164,
+       0.0246
       ],
       "twoWay": [
-       -0.178,
-       -0.0034
+       -0.1562,
+       0.0373
       ],
       "iidCell": [
-       -0.1865,
-       0.0124
+       -0.1529,
+       0.0346
       ],
       "pigeonhole": [
-       -0.2539,
-       0.0548
+       -0.2105,
+       0.077
       ]
      },
      "confirmRate": {
@@ -13478,9 +13478,9 @@
      "1.618": 4.5
     },
     "registration": "EXPLORATORY",
-    "qBH": 0.083636,
+    "qBH": 0.45705,
     "significantBH": false,
-    "qBHPooled": 0.390301
+    "qBHPooled": 0.913003
    },
    "FLAT_C_AFTER_B|UP": {
     "n": 9,
@@ -13593,12 +13593,12 @@
      0.7086
     ],
     "invalidationRate": 0.5385,
-    "baselineRate": 0.359,
-    "lift": 0.1026,
+    "baselineRate": 0.4103,
+    "lift": 0.0513,
     "liftCiLow": -0.1026,
-    "liftCiHigh": 0.3333,
-    "liftCiLowNormal": -0.2074,
-    "pLift": 0.335276,
+    "liftCiHigh": 0.2051,
+    "liftCiLowNormal": -0.2606,
+    "pLift": 0.517521,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -13609,28 +13609,28 @@
      },
      "lift": {
       "lo": -0.1026,
-      "hi": 0.3333,
-      "se": 0.1064,
+      "hi": 0.2051,
+      "se": 0.0792,
       "by": "TIME",
       "symbol": [
        0,
-       0.2143
+       0.0784
       ],
       "time": [
        -0.1026,
-       0.3333
+       0.2051
       ],
       "twoWay": [
-       -0.1061,
-       0.3112
+       -0.104,
+       0.2066
       ],
       "iidCell": [
-       -0.0769,
-       0.3077
+       -0.1026,
+       0.2051
       ],
       "pigeonhole": [
-       -0.193,
-       0.4103
+       -0.1946,
+       0.2381
       ]
      },
      "confirmRate": {
@@ -13674,9 +13674,9 @@
      "1.618": 28
     },
     "registration": "EXPLORATORY",
-    "qBH": 0.335276,
+    "qBH": 0.517521,
     "significantBH": false,
-    "qBHPooled": 0.899421
+    "qBHPooled": 0.938665
    },
    "ZIGZAG_C_AFTER_B|UP": {
     "n": 3,
@@ -13889,12 +13889,12 @@
      0.5049
     ],
     "invalidationRate": 0.525,
-    "baselineRate": 0.3571,
-    "lift": -0.0071,
-    "liftCiLow": -0.1271,
-    "liftCiHigh": 0.1012,
-    "liftCiLowNormal": -0.1795,
-    "pLift": 0.90451,
+    "baselineRate": 0.3214,
+    "lift": 0.0286,
+    "liftCiLow": -0.0889,
+    "liftCiHigh": 0.1249,
+    "liftCiLowNormal": -0.1427,
+    "pLift": 0.599908,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -13904,29 +13904,29 @@
       "timeBlocks": 22
      },
      "lift": {
-      "lo": -0.1271,
-      "hi": 0.1012,
-      "se": 0.0595,
+      "lo": -0.0889,
+      "hi": 0.1249,
+      "se": 0.0545,
       "by": "TIME",
       "symbol": [
-       -0.1395,
-       0.0857
+       -0.0405,
+       0.0968
       ],
       "time": [
-       -0.1271,
-       0.1012
+       -0.0889,
+       0.1249
       ],
       "twoWay": [
-       -0.1238,
-       0.1096
+       -0.0782,
+       0.1353
       ],
       "iidCell": [
-       -0.1361,
-       0.1029
+       -0.0829,
+       0.1319
       ],
       "pigeonhole": [
-       -0.2123,
-       0.1971
+       -0.1186,
+       0.206
       ]
      },
      "confirmRate": {
@@ -13970,9 +13970,9 @@
      "1.618": 24
     },
     "registration": "EXPLORATORY",
-    "qBH": 0.90451,
+    "qBH": 0.599908,
     "significantBH": false,
-    "qBHPooled": 1
+    "qBHPooled": 0.940727
    },
    "FLAT_C_AFTER_B|MODERATE": {
     "n": 14,
@@ -14166,9 +14166,9 @@
      "1.618": 70.5
     },
     "registration": "EXPLORATORY",
-    "qBH": 0.787797,
+    "qBH": 0.599908,
     "significantBH": false,
-    "qBHPooled": 0.910221
+    "qBHPooled": 0.938665
    },
    "ZIGZAG_C_AFTER_B|MODERATE": {
     "n": 4,
@@ -14183,11 +14183,11 @@
      0.9544
     ],
     "invalidationRate": 0.25,
-    "baselineRate": 0.25,
-    "lift": 0.5,
+    "baselineRate": 0.4167,
+    "lift": 0.3333,
     "liftCiLow": null,
     "liftCiHigh": null,
-    "liftCiLowNormal": 0.01,
+    "liftCiLowNormal": -0.1745,
     "pLift": null,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
@@ -14203,24 +14203,24 @@
       "se": null,
       "by": null,
       "symbol": [
-       0.5,
+       0.1667,
        0.5
       ],
       "time": [
-       0.1667,
-       0.8333
+       0.0833,
+       0.5833
       ],
       "twoWay": [
-       0.1298,
-       0.8702
+       0.0978,
+       0.5689
       ],
       "iidCell": [
-       0.1667,
-       0.8333
+       0.0833,
+       0.5833
       ],
       "pigeonhole": [
        0,
-       1
+       0.6667
       ]
      },
      "confirmRate": {
@@ -14283,12 +14283,12 @@
      0.4785
     ],
     "invalidationRate": 0.56,
-    "baselineRate": 0.4143,
-    "lift": -0.0743,
-    "liftCiLow": -0.1677,
-    "liftCiHigh": 0.0217,
-    "liftCiLowNormal": -0.2289,
-    "pLift": 0.117661,
+    "baselineRate": 0.3857,
+    "lift": -0.0457,
+    "liftCiLow": -0.1478,
+    "liftCiHigh": 0.0484,
+    "liftCiLowNormal": -0.1998,
+    "pLift": 0.346566,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -14298,29 +14298,29 @@
       "timeBlocks": 23
      },
      "lift": {
-      "lo": -0.1677,
-      "hi": 0.0217,
-      "se": 0.0475,
+      "lo": -0.1478,
+      "hi": 0.0484,
+      "se": 0.0486,
       "by": "TIME",
       "symbol": [
-       -0.1779,
-       -0.0019
-      ],
-      "time": [
-       -0.1677,
-       0.0217
-      ],
-      "twoWay": [
-       -0.1682,
+       -0.1167,
        0.0196
       ],
+      "time": [
+       -0.1478,
+       0.0484
+      ],
+      "twoWay": [
+       -0.1409,
+       0.0495
+      ],
       "iidCell": [
-       -0.2086,
-       0.0429
+       -0.1666,
+       0.0642
       ],
       "pigeonhole": [
-       -0.2398,
-       0.0769
+       -0.2067,
+       0.0977
       ]
      },
      "confirmRate": {
@@ -14364,9 +14364,9 @@
      "1.618": 12
     },
     "registration": "EXPLORATORY",
-    "qBH": 0.235322,
+    "qBH": 0.346566,
     "significantBH": false,
-    "qBHPooled": 0.555384
+    "qBHPooled": 0.938665
    },
    "FLAT_C_AFTER_B|SUBDIVISION_UNRESOLVED": {
     "n": 5,
@@ -14479,11 +14479,11 @@
      0.8824
     ],
     "invalidationRate": 0.4,
-    "baselineRate": 0.3333,
-    "lift": 0.2667,
+    "baselineRate": 0.4667,
+    "lift": 0.1333,
     "liftCiLow": null,
     "liftCiHigh": null,
-    "liftCiLowNormal": -0.2246,
+    "liftCiLowNormal": -0.3648,
     "pLift": null,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
@@ -14500,23 +14500,23 @@
       "by": null,
       "symbol": [
        0,
-       1
+       0.3333
       ],
       "time": [
        0,
-       0.6667
+       0.2667
       ],
       "twoWay": [
-       -0.1607,
-       0.694
+       -0.0085,
+       0.2752
       ],
       "iidCell": [
        0,
-       0.6667
+       0.2667
       ],
       "pigeonhole": [
        0,
-       1
+       0.3333
       ]
      },
      "confirmRate": {
@@ -14658,9 +14658,9 @@
      "1.618": 70.5
     },
     "registration": "EXPLORATORY",
-    "qBH": 0.256281,
+    "qBH": 0.346566,
     "significantBH": false,
-    "qBHPooled": 0.797319
+    "qBHPooled": 0.913003
    }
   },
   "byHigherDegree": {
@@ -14677,12 +14677,12 @@
      0.4775
     ],
     "invalidationRate": 0.5636,
-    "baselineRate": 0.4129,
-    "lift": -0.0674,
-    "liftCiLow": -0.1613,
-    "liftCiHigh": 0.0143,
-    "liftCiLowNormal": -0.2151,
-    "pLift": 0.138846,
+    "baselineRate": 0.3871,
+    "lift": -0.0416,
+    "liftCiLow": -0.1395,
+    "liftCiHigh": 0.0374,
+    "liftCiLowNormal": -0.1889,
+    "pLift": 0.354963,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -14692,29 +14692,29 @@
       "timeBlocks": 25
      },
      "lift": {
-      "lo": -0.1613,
-      "hi": 0.0143,
-      "se": 0.0456,
+      "lo": -0.1395,
+      "hi": 0.0374,
+      "se": 0.045,
       "by": "TIME",
       "symbol": [
-       -0.1667,
-       0.0124
+       -0.1111,
+       0.0271
       ],
       "time": [
-       -0.1613,
-       0.0143
+       -0.1395,
+       0.0374
       ],
       "twoWay": [
-       -0.1578,
-       0.0229
+       -0.1299,
+       0.0466
       ],
       "iidCell": [
-       -0.168,
-       0.0339
+       -0.1373,
+       0.0561
       ],
       "pigeonhole": [
-       -0.2373,
-       0.1016
+       -0.2007,
+       0.1167
       ]
      },
      "confirmRate": {
@@ -14758,9 +14758,9 @@
      "1.618": 12
     },
     "registration": "EXPLORATORY",
-    "qBH": 0.138846,
+    "qBH": 0.354963,
     "significantBH": false,
-    "qBHPooled": 0.555384
+    "qBHPooled": 0.938665
    },
    "ZIGZAG_C_AFTER_B|HIGHER_CONFLICT": {
     "n": 1,
@@ -14873,12 +14873,12 @@
      0.7519
     ],
     "invalidationRate": 0.4667,
-    "baselineRate": 0.3778,
-    "lift": 0.1556,
+    "baselineRate": 0.4222,
+    "lift": 0.1111,
     "liftCiLow": -0.0444,
-    "liftCiHigh": 0.3339,
-    "liftCiLowNormal": -0.1339,
-    "pLift": 0.108949,
+    "liftCiHigh": 0.2667,
+    "liftCiLowNormal": -0.1797,
+    "pLift": 0.189623,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -14889,28 +14889,28 @@
      },
      "lift": {
       "lo": -0.0444,
-      "hi": 0.3339,
-      "se": 0.097,
+      "hi": 0.2667,
+      "se": 0.0847,
       "by": "TIME",
       "symbol": [
        0,
-       0.2281
+       0.1739
       ],
       "time": [
        -0.0444,
-       0.3339
+       0.2667
       ],
       "twoWay": [
-       -0.0347,
-       0.3458
+       -0.0549,
+       0.2771
       ],
       "iidCell": [
-       -0.0444,
-       0.3333
+       -0.0667,
+       0.2667
       ],
       "pigeonhole": [
        -0.0957,
-       0.4327
+       0.3148
       ]
      },
      "confirmRate": {
@@ -14954,9 +14954,9 @@
      "1.618": 28
     },
     "registration": "EXPLORATORY",
-    "qBH": 0.138846,
+    "qBH": 0.354963,
     "significantBH": false,
-    "qBHPooled": 0.555384
+    "qBHPooled": 0.884907
    }
   },
   "byPeriod": {
@@ -14973,12 +14973,12 @@
      0.4211
     ],
     "invalidationRate": 0.5862,
-    "baselineRate": 0.2857,
-    "lift": -0.0443,
-    "liftCiLow": -0.1531,
-    "liftCiHigh": 0.0642,
-    "liftCiLowNormal": -0.2299,
-    "pLift": 0.414102,
+    "baselineRate": 0.2727,
+    "lift": -0.0313,
+    "liftCiLow": -0.1459,
+    "liftCiHigh": 0.0789,
+    "liftCiLowNormal": -0.2162,
+    "pLift": 0.593829,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -14988,29 +14988,29 @@
       "timeBlocks": 16
      },
      "lift": {
-      "lo": -0.1531,
-      "hi": 0.0642,
-      "se": 0.0543,
+      "lo": -0.1459,
+      "hi": 0.0789,
+      "se": 0.0588,
       "by": "TIME",
       "symbol": [
-       -0.1335,
-       0.0533
+       -0.0848,
+       0.0667
       ],
       "time": [
-       -0.1531,
-       0.0642
+       -0.1459,
+       0.0789
       ],
       "twoWay": [
-       -0.1507,
-       0.0621
+       -0.1466,
+       0.0839
       ],
       "iidCell": [
-       -0.1609,
-       0.0808
+       -0.1406,
+       0.0859
       ],
       "pigeonhole": [
-       -0.2382,
-       0.132
+       -0.1947,
+       0.1434
       ]
      },
      "confirmRate": {
@@ -15054,9 +15054,9 @@
      "1.618": 7
     },
     "registration": "EXPLORATORY",
-    "qBH": 0.792229,
+    "qBH": 0.703646,
     "significantBH": false,
-    "qBHPooled": 0.910221
+    "qBHPooled": 0.940727
    },
    "FLAT_C_AFTER_B|VALIDATION": {
     "n": 26,
@@ -15071,11 +15071,11 @@
      0.6454
     ],
     "invalidationRate": 0.5385,
-    "baselineRate": 0.5385,
-    "lift": -0.0769,
+    "baselineRate": 0.5,
+    "lift": -0.0385,
     "liftCiLow": null,
     "liftCiHigh": null,
-    "liftCiLowNormal": -0.2982,
+    "liftCiLowNormal": -0.2599,
     "pLift": null,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
@@ -15091,24 +15091,24 @@
       "se": null,
       "by": null,
       "symbol": [
-       -0.2778,
-       0.0884
+       -0.2174,
+       0.1253
       ],
       "time": [
-       -0.2708,
-       0.0575
+       -0.2292,
+       0.0878
       ],
       "twoWay": [
-       -0.2546,
-       0.1008
+       -0.2111,
+       0.1342
       ],
       "iidCell": [
-       -0.25,
-       0.0642
+       -0.2,
+       0.1035
       ],
       "pigeonhole": [
-       -0.3651,
-       0.1795
+       -0.3,
+       0.2106
       ]
      },
      "confirmRate": {
@@ -15169,12 +15169,12 @@
      0.6032
     ],
     "invalidationRate": 0.7,
-    "baselineRate": 0.2667,
-    "lift": 0.0333,
-    "liftCiLow": -0.2,
-    "liftCiHigh": 0.3,
-    "liftCiLowNormal": -0.2918,
-    "pLift": 0.792229,
+    "baselineRate": 0.3333,
+    "lift": -0.0333,
+    "liftCiLow": -0.2333,
+    "liftCiHigh": 0.1,
+    "liftCiLowNormal": -0.3637,
+    "pLift": 0.703646,
     "ciCluster": {
      "method": "TWO_WAY_CLUSTER_BOOTSTRAP",
      "timeBlock": "QUARTER",
@@ -15184,29 +15184,29 @@
       "timeBlocks": 10
      },
      "lift": {
-      "lo": -0.2,
-      "hi": 0.3,
-      "se": 0.1265,
+      "lo": -0.2333,
+      "hi": 0.1,
+      "se": 0.0876,
       "by": "TIME",
       "symbol": [
        -0.2,
-       0.2051
+       0.0556
       ],
       "time": [
-       -0.2,
-       0.3
+       -0.2333,
+       0.1
       ],
       "twoWay": [
-       -0.2147,
-       0.2814
+       -0.2051,
+       0.1384
       ],
       "iidCell": [
        -0.2,
-       0.3333
+       0.1333
       ],
       "pigeonhole": [
        -0.3333,
-       0.4771
+       0.1946
       ]
      },
      "confirmRate": {
@@ -15250,9 +15250,9 @@
      "1.618": 29
     },
     "registration": "EXPLORATORY",
-    "qBH": 0.792229,
+    "qBH": 0.703646,
     "significantBH": false,
-    "qBHPooled": 1
+    "qBHPooled": 0.940727
    },
    "ZIGZAG_C_AFTER_B|VALIDATION": {
     "n": 6,
@@ -15355,8 +15355,8 @@
   }
  },
  "survivorshipSensitivity": null,
- "runtimeSec": 45,
- "simulationSec": 42,
+ "runtimeSec": 47,
+ "simulationSec": 44,
  "fromRecords": false,
  "workers": 4,
  "errorsSample": []
