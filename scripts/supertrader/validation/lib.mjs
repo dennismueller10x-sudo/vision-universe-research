@@ -202,6 +202,23 @@ const NAME_FORM = [
 export const NON_EQUITY_NAME = /(\bETNs?\b|\bETFs?\b|\bETPs?\b|\bEXCHANGE[- ]TRADED\b|\bINDEX[- ]LINKED\b|\bLEVERAGED\b|\bINVERSE\b|[-\s]\d+(\.\d+)?X\b|\bULTRA ?(PRO|SHORT)\b|\bDAILY TARGET\b)/i;
 export function nonEquityName(name) { return NON_EQUITY_NAME.test(String(name || '')); }
 
+// Runde 10 (PREREGISTRATION-R10-FIXES U1): Die Stammdaten fuehren rund 200 ETFs, ETNs und
+// geschlossene Fonds als EQUITY_COMMON. ETNs tragen den Namen der emittierenden Bank
+// (NRGU, FNGU, BULZ: "Bank of Montreal"), daher greift die Namenspruefung allein nicht.
+// Supertrader schliesst sie aus: Produktnamen, Fonds-/Puffer-/Autocall-Konstrukte, ETN-Emittenten
+// (ausser der eigenen Aktie der Bank) und Notierung an NYSE Arca (dort nur Produkte gefunden).
+export const FUND_NAME = /(\bFUND\b|\bBUFFER\b|\bAUTOCALLABLE\b|\bCLO\b|\bMONEY MARKET\b|\bK-1 FREE\b|\bTARGET INCOME\b|\bSTRUCTURED\b)/i;
+export const ETN_ISSUER = /^(BANK OF MONTREAL|UBS AG|CREDIT SUISSE AG|BARCLAYS BANK|CITIGROUP GLOBAL MARKETS|MORGAN STANLEY FINANCE|JPMORGAN CHASE FINANCIAL|ROYAL BANK OF CANADA|CANADIAN IMPERIAL BANK|DEUTSCHE BANK AG|GOLDMAN SACHS BANK)/i;
+const ISSUER_OWN = new Set(['BMO', 'UBS', 'CS', 'BCS', 'C', 'MS', 'JPM', 'RY', 'CM', 'DB', 'GS']);
+export function nonStockProduct({ ticker, exchange, name }) {
+  const n = String(name || '').trim();
+  if (exchange === 'NYSE ARCA') return 'EXCHANGE_NYSE_ARCA';
+  if (nonEquityName(n)) return 'PRODUCT_NAME';
+  if (FUND_NAME.test(n) && !/LENDING FUND/i.test(n)) return 'FUND_NAME'; // BDCs (Direct Lending) bleiben Aktien
+  if (ETN_ISSUER.test(n) && !ISSUER_OWN.has(ticker)) return 'ETN_ISSUER';
+  return null;
+}
+
 export function classifyListing(Master, listing, name, listedRoots, today = '2026-10-01') {
   const r = Master.classifySecurity({ ticker: listing.ticker, exchange: listing.exchange, assetType: 'Stock', priceCurrency: 'USD', name: name || '', startDate: listing.startDate, endDate: listing.listEnd || '' }, { today, listedRoots });
   let cls = r.instrumentType, basis = 'classifySecurity';

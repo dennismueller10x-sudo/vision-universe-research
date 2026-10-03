@@ -104,6 +104,7 @@ async function main() {
   const arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
   const OUT = arg('--out', path.join(os.tmpdir(), 'r10-cases'));
   const LIMIT = Number(arg('--limit', '0'));
+  const HOLDOUT = argv.includes('--holdout'); // Runde 10 K3: versiegelte Pruefmenge W3
   fs.mkdirSync(OUT, { recursive: true });
   const t0 = Date.now();
   const log = (m) => console.log(`[cases +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
@@ -197,8 +198,9 @@ async function main() {
 
   // 3. Methoden ueber alle Reihen + Spur fuer Diagnosefaelle
   const caseSegs = new Map();
-  for (const w of winners) caseSegs.set(w.seg, { role: 'WINNER', w });
-  for (const l of losers) if (!l.none) caseSegs.set(l.seg, { role: 'LOSER', l, w: winners.find((x) => x.seg === l.forWinner) });
+  const cw = HOLDOUT ? holdout : winners, cl = HOLDOUT ? holdoutLosers : losers;
+  for (const w of cw) caseSegs.set(w.seg, { role: 'WINNER', w });
+  for (const l of cl) if (!l.none) caseSegs.set(l.seg, { role: 'LOSER', l, w: cw.find((x) => x.seg === l.forWinner) });
   const allTrades = Object.fromEntries(ENGINES.map((e) => [keyOf(e), []]));
   const traces = {};
   let k = 0;
@@ -237,27 +239,36 @@ async function main() {
 
   // 4. Methodenportfolio S0
   const portfolios = {};
+  // Runde 10: Portfoliovarianten - alphabetisch (bisher), Rang nach relativer Staerke (K3),
+  // Darvas mit Hoechstgewicht 1/6 (K1). Signale und Trades identisch.
+  const variants = [];
   for (const e of ENGINES) {
-    const cfg = portfolioOf(e);
+    variants.push({ e, key: keyOf(e), cfg: portfolioOf(e), priority: 'ALPHA' });
+    if (HOLDOUT) variants.push({ e, key: keyOf(e) + '#RS', cfg: portfolioOf(e), priority: 'RS' });
+    if (HOLDOUT && e.id === 'DARVAS_BOX') { const k1 = { ...portfolioOf(e), maxPositionPct: 1 / 6 }; variants.push({ e, key: keyOf(e) + '#K1', cfg: k1, priority: 'ALPHA' }, { e, key: keyOf(e) + '#K1RS', cfg: k1, priority: 'RS' }); }
+  }
+  for (const v of variants) {
+    const e = v.e, cfg = v.cfg;
     const all = allTrades[keyOf(e)];
     const cal = [...new Set([...calendar, ...all.flatMap((t) => [t.entry.date, ...t.exits.map((x) => x.date)]).filter((dd) => dd >= L.WINDOW.from && dd <= L.WINDOW.to)])].sort();
-    const run = runPortfolioTR(all, cal, cfg, { scenario: 'S0_LAST_PRICE' });
+    const run = runPortfolioTR(all, cal, cfg, { scenario: 'S0_LAST_PRICE', priority: v.priority });
     const takenById = new Map(run.taken.map((p) => [p.tr.id, p]));
     const skippedById = new Map(run.skipped.map((x) => [x.id, x]));
-    const sameDay = new Map(); for (const t of all) (sameDay.get(t.entry.date) || sameDay.set(t.entry.date, []).get(t.entry.date)).push(t.listingId);
-    for (const v of sameDay.values()) v.sort();
+    const sameDay = new Map(); for (const t of all) (sameDay.get(t.entry.date) || sameDay.set(t.entry.date, []).get(t.entry.date)).push(t);
+    for (const list of sameDay.values()) list.sort(v.priority === 'RS' ? (a, b) => (Number.isFinite(b.rsAtEntry) ? b.rsAtEntry : -1) - (Number.isFinite(a.rsAtEntry) ? a.rsAtEntry : -1) || a.listingId.localeCompare(b.listingId) : (a, b) => a.listingId.localeCompare(b.listingId));
+    for (const [d0, list] of sameDay) sameDay.set(d0, list.map((t) => t.listingId));
     const openAt = (date) => run.taken.filter((p) => p.tr.entry.date < date && (p.tr.exits.length ? p.tr.exits[p.tr.exits.length - 1].date >= date : true)).map((p) => p.tr.listingId);
-    portfolios[keyOf(e)] = { cfg: { riskPerTrade: cfg.riskPerTrade, maxPositionPct: cfg.maxPositionPct, maxPositions: cfg.maxPositions, progressive: cfg.progressive || null }, taken: run.taken.length, skipped: run.skipped.length,
+    portfolios[v.key] = { priority: v.priority, cfg: { riskPerTrade: cfg.riskPerTrade, maxPositionPct: cfg.maxPositionPct, maxPositions: cfg.maxPositions, progressive: cfg.progressive || null }, taken: run.taken.length, skipped: run.skipped.length,
       skippedReasons: run.skipped.reduce((a, x) => ((a[x.reason] = (a[x.reason] || 0) + 1), a), {}),
       cases: Object.fromEntries([...caseSegs.keys()].map((sid) => [sid, all.filter((t) => t.listingId === sid).map((t) => {
         const p = takenById.get(t.id), s = skippedById.get(t.id);
-        return { id: t.id, entry: t.entry, initialStop: t.initialStop, exits: t.exits, terminal: t.terminal ? { kind: t.terminal.kind, date: t.terminal.date } : null,
+        return { id: t.id, rsAtEntry: t.rsAtEntry ?? null, entry: t.entry, initialStop: t.initialStop, exits: t.exits, terminal: t.terminal ? { kind: t.terminal.kind, date: t.terminal.date } : null,
           taken: !!p, skipReason: s?.reason || null, weightAtEntry: p ? (p.entryShares * t.entry.price) / p.eqAtEntry : null, riskAtEntry: p ? ((t.entry.price - t.initialStop) * p.entryShares) / p.eqAtEntry : null,
           returnPct: p?.returnPct ?? null, sameDayRank: (sameDay.get(t.entry.date) || []).indexOf(sid) + 1, sameDayCount: (sameDay.get(t.entry.date) || []).length,
           openPositionsAtEntry: s ? openAt(t.entry.date).length : null };
       })])) };
   }
-  log('Portfolios fertig: ' + ENGINES.map((e) => `${keyOf(e)} aufgenommen ${portfolios[keyOf(e)].taken}, ohne Platz ${portfolios[keyOf(e)].skipped}`).join(' | '));
+  log('Portfolios fertig: ' + Object.entries(portfolios).map(([k, p]) => `${k} aufgenommen ${p.taken}, ohne Platz ${p.skipped}`).join(' | '));
 
   // Fundamentaldaten (SEC-Factbook, Stand <= Stichtag)
   const fundamentals = {};
@@ -283,11 +294,12 @@ async function main() {
 
   const brief = (e) => ({ seg: e.seg, ticker: info.get(e.seg).ticker, cls: e.cls, year: e.year, start: e.start, peak: e.peak, gain: e.gain, sicDiv: info.get(e.seg).sicDiv, delisted: info.get(e.seg).delisted, lookDate: e.lookDate || null });
   const result = { schema: 'supertrader-case-study-1.0.0', prereg: PREREG, at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
+    holdoutAnalyzed: HOLDOUT,
     selection: { episodes: eps.filter((e) => !e.smci).length, winners: winners.map(brief), losers, holdout: { winners: holdout.map(brief), losers: holdoutLosers } },
     caseInfo: Object.fromEntries([...caseSegs.keys()].map((sid) => [sid, info.get(sid)])),
     traces, portfolios, fundamentals };
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
-  fs.writeFileSync(path.join(OUT, `case-study${LIMIT ? '-smoke' : ''}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify(result))));
+  fs.writeFileSync(path.join(OUT, `case-study${HOLDOUT ? '-holdout' : ''}${LIMIT ? '-smoke' : ''}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify(result))));
   log('Verschluesseltes Ergebnis geschrieben');
 }
 

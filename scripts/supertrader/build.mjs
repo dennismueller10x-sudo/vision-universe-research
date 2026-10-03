@@ -48,6 +48,7 @@ import * as canslim from './engine/partial/canslim.mjs';
 import * as piotroski from './engine/partial/piotroski.mjs';
 import { buildPilotArtifact } from './pilot/donchian-weekly.mjs';
 import { createOracle } from './validation/intraday-oracle.mjs';
+import { nonStockProduct } from './validation/lib.mjs';
 import { buildReplayArtifact } from './replay.mjs';
 import { STRATEGIES, REGISTRY_VERSION, DNA_FIELDS, INTERNAL_SOURCES } from './registry.mjs';
 import { evidenceFor, EVIDENCE_LEVELS, SOURCE_QUALITY, DATA_QUALITY, NO_PROMISE, EVIDENCE_VERSION } from './evidence.mjs';
@@ -79,8 +80,20 @@ function writeJson(file, obj) {
 /* ------------------------------------------------------------ Laden */
 export function loadUniverse() {
   const idx = readJson(rel('discover/data/stock-index/US_REAL.json'));
-  return new Set(idx.symbols);
+  // Runde 10 (PREREGISTRATION-R10-FIXES U1): ETFs, bankemittierte ETNs und geschlossene Fonds,
+  // die die Stammdaten als Aktie fuehren, gehoeren nicht ins Aktienuniversum der Methoden.
+  const names = exists(rel('quant/data/market/security-master/company-names.json')) ? readJson(rel('quant/data/market/security-master/company-names.json')).rows || [] : [];
+  const byTicker = new Map(names.map((r) => [r.ticker, r]));
+  const out = new Set();
+  UNIVERSE_EXCLUDED.length = 0;
+  for (const sym of idx.symbols) {
+    const r = byTicker.get(sym);
+    const why = r ? nonStockProduct({ ticker: sym, exchange: r.exchange, name: r.companyName }) : null;
+    if (why) UNIVERSE_EXCLUDED.push([sym, why]); else out.add(sym);
+  }
+  return out;
 }
+export const UNIVERSE_EXCLUDED = [];
 
 export function loadBars(universe) {
   const dir = rel('quant/data/product/technical-signals-v1');
