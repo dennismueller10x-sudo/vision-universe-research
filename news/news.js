@@ -20,11 +20,15 @@
   };
   const fallback = (item) => item.market === 'Deutschland' ? '/dashboard/assets/news-dax.jpg' : item.market === 'Weltmärkte' ? '/dashboard/assets/news-small-caps.jpg' : '/dashboard/assets/news-us-tech.jpg';
   try {
-    const response = await fetch('/dashboard/data/news_feed.json', { cache: 'no-store' });
-    if (!response.ok) throw new Error('Feed nicht erreichbar');
-    const feed = await response.json();
-    const items = Array.isArray(feed.items) ? feed.items : [];
-    const maxAge = Number(feed.freshness_hours) || 24;
+    /* Der Feed kommt ueber den Core-Vertrag (core/client.js#getNews):
+       ein Umschlag {state, reason, data} statt eines eigenen fetch. */
+    const client = window.VUCore.Client.create({ load: (path) => fetch(path, { cache: 'no-store' })
+      .then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }) });
+    const news = await client.getNews();
+    if (news.state !== 'AVAILABLE') throw new Error(news.reason || 'Feed nicht erreichbar');
+    const feed = { updated_at: news.data.updatedAt, sources: news.data.sources };
+    const items = Array.isArray(news.data.items) ? news.data.items : [];
+    const maxAge = Number(news.data.maxAgeHours) || 24;
     const ageH = (Date.now() - new Date(feed.updated_at).getTime()) / 3600000;
     const stale = !Number.isFinite(ageH) || ageH > maxAge;
     const TAG_ORDER = ['US-Märkte', 'Deutschland', 'Tech', 'Weltmärkte'];

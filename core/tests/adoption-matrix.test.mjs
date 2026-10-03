@@ -17,6 +17,10 @@ test("Quant, Screener und Technical nutzen die Core-Identitaet", () => {
   for (const p of ["Quant", "Screener", "Technical"]) assert.equal(rows[p].identity.state, "CORE", p);
 });
 
+test("News liest ueber den Core-Vertrag", () => {
+  assert.equal(rows.News.coreClient.state, "CORE");
+});
+
 test("Kein Produkt bekommt eine neue eigene Split-Bereinigung", () => {
   const bekannt = new Set(["providers/tiingo/adapter.js", "quant/engines/mock-generator.js", "quant/engines/return-series.js",
     "quant/engines/technical/canonical-bars.js", "scripts/discover/build-discover-data.mjs", "scripts/market/publish-discover-series.mjs",
