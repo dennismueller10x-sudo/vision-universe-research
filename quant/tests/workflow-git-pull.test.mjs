@@ -20,3 +20,11 @@ test("WG1 · kein Workflow holt mit einem blanken git pull alle Zweige", () => {
   }
   assert.deepEqual(blank, []);
 });
+
+test("WG2 · Daten-Workflows, die nach main schreiben, pushen mit Wiederholung", () => {
+  for (const f of ["long-series.yml", "index-membership.yml"]) {
+    const text = readFileSync(join(DIR, f), "utf8");
+    assert.match(text, /scripts\/ci\/push-with-retry\.sh "\$\{GITHUB_REF_NAME\}"/, f + ": Push ohne Wiederholung");
+    assert.equal(/^\s*git push\b/m.test(text.replace(/#.*$/gm, "")), false, f + ": blanker git push");
+  }
+});
