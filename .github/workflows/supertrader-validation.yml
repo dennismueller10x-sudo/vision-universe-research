@@ -35,7 +35,9 @@ permissions:
 concurrency:
   # Laeufe ohne Auftragsmarke (Pushes anderer Zweige, Job wird uebersprungen) bekommen eine eigene
   # Gruppe: sonst verdraengen sie wartende Pruefauftraege (Runde 10, zweimal beobachtet).
-  group: supertrader-validation-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[supertrader-validation:')) && github.run_id || ((contains(github.event.head_commit.message, '-smoke]')) && 'smoke' || 'main') }}
+  # Manuell gestartete Laeufe (workflow_dispatch) laufen in eigener Gruppe: Pushes anderer Zweige
+  # mit aelterer Workflow-Fassung koennen sie sonst als wartende Laeufe verdraengen (Runde 10).
+  group: supertrader-validation-${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && !contains(github.event.head_commit.message, '[supertrader-validation:'))) && github.run_id || ((contains(github.event.head_commit.message, '-smoke]')) && 'smoke' || 'main') }}
   cancel-in-progress: false
 jobs:
   run:
