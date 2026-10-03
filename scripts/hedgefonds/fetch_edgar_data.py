@@ -81,6 +81,7 @@ UNCHANGED_PCT = 0.5          # Stückzahländerung darunter gilt als unveränder
 # bestehen. Sie bleiben einzeln sichtbar, verzerren aber die übergreifenden
 # Auswertungen ("was kaufen die Star-Investoren"), daher dort ausgenommen.
 AGG_EXCLUDED_STYLES = {"Quant", "Multi-Strategy"}
+AGG_MAX_POSITIONS = 800      # breit gestreute Fonds (z.B. Gotham, Tudor) ebenso
 
 # Für die Kompatibilität der bestehenden CI-Tests
 TOP_HOLDINGS_STORE = DETAIL_HOLDINGS
@@ -233,6 +234,22 @@ def parse_cover_totals(xml_bytes):
     return value, entries
 
 
+def normalize_units(rows):
+    """Manche Filer melden <value> trotz neuer Spezifikation weiter in
+    Tausend USD (real beobachtet: Duquesne, Baupost mit "10 Mio. USD").
+    Erkennung über den impliziten Stückpreis: Der Median aus Wert/Stück der
+    Aktienpositionen liegt bei echten Portfolios weit über 1 USD; bei
+    Tausender-Meldungen darunter. Dann wird x1000 korrigiert."""
+    prices = sorted(h["valueUSD"] / h["shares"] for h in rows
+                    if h.get("shares") and not h.get("putCall") and h.get("shareType", "SH") in ("SH", "")
+                    and h["valueUSD"] > 0)
+    if len(prices) >= 3 and prices[len(prices) // 2] < 1.0:
+        for h in rows:
+            h["valueUSD"] *= 1000
+        return rows, 1000
+    return rows, 1
+
+
 def filing_index(cik_int, accession):
     idx = sec_get_json(f"https://www.sec.gov/Archives/edgar/data/{cik_int}/{acc_no_dashes(accession)}/index.json")
     return [it["name"] for it in idx.get("directory", {}).get("item", [])]
@@ -249,6 +266,9 @@ def fetch_filing_holdings(cik_int, accession, names=None):
         xml_bytes = sec_get(f"https://www.sec.gov/Archives/edgar/data/{cik_int}/{acc_no_dashes(accession)}/{fname}")
         holdings = parse_info_table_xml(xml_bytes)
         if holdings:
+            holdings, factor = normalize_units(holdings)
+            if factor != 1:
+                print(f"  Werte in Tausend USD gemeldet ({accession}) – x{factor} korrigiert", file=sys.stderr)
             return holdings
     raise RuntimeError("Info-Table-XML konnte nicht geparst werden.")
 
@@ -652,27 +672,70 @@ def load_submissions(cik):
     return sub, filings
 
 
-def resolve_fund(meta, bulk):
-    """Liefert (cik, submissions, filings) – geprüft gegen meta['match']."""
-    match = meta["match"]
-    tried = []
+def latest_13f_period(filings):
+    p = find_recent_13fs(filings, 1)
+    return p[0]["reportDate"] if p else ""
+
+
+def resolve_fund(meta, bulk, bulk_period=None, exclude=()):
+    """Liefert (cik, submissions, filings) – geprüft gegen meta['match'].
+
+    Meldet die hinterlegte CIK nicht mehr (jüngstes 13F älter als der
+    Sammeldatensatz), wird nach einer neueren Meldestelle mit passendem
+    Namen gesucht (match oder altMatch). Fonds wechseln gelegentlich die
+    meldende Gesellschaft, z.B. Greenlight Capital -> DME Capital Management."""
+    patterns = [meta["match"]] + list(meta.get("altMatch") or [])
+    tried = list(exclude)
+    fallback = None
     if meta.get("cik"):
         try:
             sub, filings = load_submissions(meta["cik"])
             name = (sub.get("name") or "").upper()
-            if match in name:
-                return meta["cik"], sub, filings
-            print(f"  WARNUNG: CIK {meta['cik']} gehört zu '{sub.get('name')}', erwartet '{match}'", file=sys.stderr)
+            if any(p in name for p in patterns):
+                latest = latest_13f_period(filings)
+                if not bulk_period or latest >= bulk_period:
+                    return meta["cik"], sub, filings
+                print(f"  CIK {meta['cik']} meldete zuletzt {latest} – suche neuere Meldestelle", file=sys.stderr)
+                fallback = (meta["cik"], sub, filings)
+            else:
+                print(f"  WARNUNG: CIK {meta['cik']} gehört zu '{sub.get('name')}', erwartet {patterns}", file=sys.stderr)
         except Exception as exc:  # noqa: BLE001
             print(f"  CIK {meta['cik']} nicht ladbar: {exc}", file=sys.stderr)
         tried.append(meta["cik"])
-    for _value, cik, name in bulk_candidates(bulk, match):
-        if cik in tried:
+    for pattern in patterns:
+        for _value, cik, name in bulk_candidates(bulk, pattern):
+            if cik in tried:
+                continue
+            print(f"  Auflösung über Sammeldatensatz: {name} -> CIK {cik}", file=sys.stderr)
+            sub, filings = load_submissions(cik)
+            return cik, sub, filings
+    if fallback:
+        return fallback
+    raise RuntimeError(f"Keine passende CIK für {patterns} gefunden")
+
+
+def fts_newer_ciks(meta, min_period, exclude):
+    """EDGAR-Volltextsuche nach 13F-HR-Meldungen mit dem Fondsnamen ab einer
+    Periode. Liefert Kandidaten (cik, name, period) – für Fonds, deren
+    hinterlegte Meldestelle das aktuelle Quartal (noch) nicht gemeldet hat."""
+    out = []
+    for pattern in [meta["match"]] + list(meta.get("altMatch") or []):
+        q = urllib.parse.quote(f'"{pattern.title()}"')
+        try:
+            res = sec_get_json(f"https://efts.sec.gov/LATEST/search-index?q={q}&forms=13F-HR,13F-HR/A")
+        except Exception as exc:  # noqa: BLE001
+            print(f"  Volltextsuche nicht möglich: {exc}", file=sys.stderr)
             continue
-        print(f"  Auflösung über Sammeldatensatz: {name} -> CIK {cik}", file=sys.stderr)
-        sub, filings = load_submissions(cik)
-        return cik, sub, filings
-    raise RuntimeError(f"Keine passende CIK für '{match}' gefunden")
+        for hit in res.get("hits", {}).get("hits", [])[:40]:
+            src = hit.get("_source", {})
+            period = src.get("period_ending") or ""
+            for cik, name in zip(src.get("ciks", []), src.get("display_names", [])):
+                cik = str(cik).zfill(10)
+                if pattern in name.upper() and cik not in exclude and period >= min_period:
+                    out.append((cik, name, period))
+    if out:
+        print(f"  Volltextsuche: {sorted(set(out))[:5]}", file=sys.stderr)
+    return sorted(set(out), key=lambda t: t[2], reverse=True)
 
 
 # ------------------------------------------------------------- Fonds
@@ -749,6 +812,10 @@ def build_fund_record(meta, cik, sub, filings):
                 history.append({**h, "valueUSD": round(h["valueUSD"])})
         except Exception as exc:  # noqa: BLE001
             print(f"  Verlauf {f['reportDate']} nicht ladbar: {exc}", file=sys.stderr)
+    for h in history[2:]:
+        # gleiche Tausender-Korrektur wie bei den Positionen, falls nötig
+        if h["valueUSD"] and h["valueUSD"] * 200 < total:
+            h["valueUSD"] = round(h["valueUSD"] * 1000)
     history.sort(key=lambda x: x["period"])
     record["history"] = history
 
@@ -791,43 +858,74 @@ def strip_html(s):
 FREE_LICENSE = re.compile(r"^(CC0|CC BY|CC-BY|Public domain|PD|Attribution|GFDL)", re.I)
 
 
-def fetch_manager_photo(slug, wiki, manifest):
-    """Holt ein frei lizenziertes Commons-Porträt zum Wikipedia-Artikel.
-    Nicht-freie (lokal auf en.wikipedia hochgeladene) Dateien werden
-    verworfen. Gibt Manifest-Eintrag oder None zurück."""
-    cached = manifest.get(slug)
-    if cached and cached.get("wiki") == wiki and (PHOTO_DIR / cached["file"]).exists():
-        return cached
-    summary = http_get_json(f"https://en.wikipedia.org/api/rest_v1/page/summary/{urllib.parse.quote(wiki)}")
-    src = (summary.get("originalimage") or summary.get("thumbnail") or {}).get("source", "")
+def commons_file_from_url(src):
     if "/wikipedia/commons/" not in src:
         return None
     path = urllib.parse.urlparse(src).path
     if "/thumb/" in path:  # .../commons/thumb/a/ab/Name.jpg/320px-Name.jpg
-        filename = path.split("/thumb/", 1)[1].split("/")[2]
-    else:
-        filename = path.rsplit("/", 1)[1]
-    filename = urllib.parse.unquote(filename)
-    api = ("https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo"
-           "&iiprop=url|extmetadata&iiurlwidth=480&titles=" + urllib.parse.quote("File:" + filename))
-    pages = http_get_json(api).get("query", {}).get("pages", {})
-    info = next(iter(pages.values()), {}).get("imageinfo", [{}])[0]
-    meta = info.get("extmetadata", {})
-    license_short = strip_html(meta.get("LicenseShortName", {}).get("value", ""))
-    if not FREE_LICENSE.match(license_short):
-        print(f"  Foto {filename}: Lizenz '{license_short}' nicht frei – übersprungen", file=sys.stderr)
-        return None
-    thumb = info.get("thumburl") or info.get("url")
-    if not thumb:
-        return None
-    ext = ".png" if thumb.lower().endswith(".png") else ".jpg"
-    PHOTO_DIR.mkdir(parents=True, exist_ok=True)
-    out_name = slug + ext
-    (PHOTO_DIR / out_name).write_bytes(http_get(thumb))
-    artist = strip_html(meta.get("Artist", {}).get("value", "")) or "unbekannt"
-    return {"wiki": wiki, "file": out_name, "license": license_short,
-            "licenseUrl": strip_html(meta.get("LicenseUrl", {}).get("value", "")) or None,
-            "artist": artist[:140], "sourceUrl": info.get("descriptionurl")}
+        return urllib.parse.unquote(path.split("/thumb/", 1)[1].split("/")[2])
+    return urllib.parse.unquote(path.rsplit("/", 1)[1])
+
+
+def photo_candidates(wiki):
+    """Commons-Dateinamen in dieser Reihenfolge: Leitbild der englischen
+    Wikipedia, Bild (P18) des Wikidata-Eintrags, Leitbild der deutschen
+    Wikipedia. Lokale, nicht-freie Wikipedia-Dateien fallen heraus."""
+    files, qid = [], None
+    try:
+        summary = http_get_json(f"https://en.wikipedia.org/api/rest_v1/page/summary/{urllib.parse.quote(wiki)}")
+        qid = summary.get("wikibase_item")
+        f = commons_file_from_url((summary.get("originalimage") or summary.get("thumbnail") or {}).get("source", ""))
+        if f:
+            files.append(f)
+    except Exception as exc:  # noqa: BLE001
+        print(f"  Wikipedia {wiki}: {exc}", file=sys.stderr)
+    if qid:
+        try:
+            ent = http_get_json(f"https://www.wikidata.org/wiki/Special:EntityData/{qid}.json")["entities"][qid]
+            for claim in ent.get("claims", {}).get("P18", []):
+                v = claim.get("mainsnak", {}).get("datavalue", {}).get("value")
+                if v:
+                    files.append(v)
+            de_title = ent.get("sitelinks", {}).get("dewiki", {}).get("title")
+            if de_title:
+                summary = http_get_json("https://de.wikipedia.org/api/rest_v1/page/summary/" + urllib.parse.quote(de_title.replace(" ", "_")))
+                f = commons_file_from_url((summary.get("originalimage") or {}).get("source", ""))
+                if f:
+                    files.append(f)
+        except Exception as exc:  # noqa: BLE001
+            print(f"  Wikidata {qid}: {exc}", file=sys.stderr)
+    return list(dict.fromkeys(f.replace("_", " ") for f in files))
+
+
+def fetch_manager_photo(slug, wiki, manifest):
+    """Holt ein frei lizenziertes Commons-Porträt (mit Urheber und Lizenz).
+    Gibt Manifest-Eintrag oder None zurück."""
+    cached = manifest.get(slug)
+    if cached and cached.get("wiki") == wiki and (PHOTO_DIR / cached["file"]).exists():
+        return cached
+    for filename in photo_candidates(wiki):
+        api = ("https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo"
+               "&iiprop=url|extmetadata&iiurlwidth=480&titles=" + urllib.parse.quote("File:" + filename))
+        pages = http_get_json(api).get("query", {}).get("pages", {})
+        info = (next(iter(pages.values()), {}).get("imageinfo") or [{}])[0]
+        meta = info.get("extmetadata", {})
+        license_short = strip_html(meta.get("LicenseShortName", {}).get("value", ""))
+        if not FREE_LICENSE.match(license_short):
+            print(f"  Foto {filename}: Lizenz '{license_short}' nicht frei", file=sys.stderr)
+            continue
+        thumb = info.get("thumburl") or info.get("url")
+        if not thumb:
+            continue
+        ext = ".png" if thumb.lower().endswith(".png") else ".jpg"
+        PHOTO_DIR.mkdir(parents=True, exist_ok=True)
+        out_name = slug + ext
+        (PHOTO_DIR / out_name).write_bytes(http_get(thumb))
+        artist = strip_html(meta.get("Artist", {}).get("value", "")) or "unbekannt"
+        return {"wiki": wiki, "file": out_name, "license": license_short,
+                "licenseUrl": strip_html(meta.get("LicenseUrl", {}).get("value", "")) or None,
+                "artist": artist[:140], "sourceUrl": info.get("descriptionurl")}
+    return None
 
 
 def update_photos(funds_meta):
@@ -1034,7 +1132,7 @@ def main():
     for meta in FUND_META:
         print(f"Lade {meta['name']} ...", file=sys.stderr)
         try:
-            cik, sub, filings = resolve_fund(meta, bulk)
+            cik, sub, filings = resolve_fund(meta, bulk, bulk_period, exclude=seen_ciks)
             if cik in seen_ciks:
                 raise RuntimeError(f"CIK {cik} doppelt")
             rec, pos, trades = build_fund_record(meta, cik, sub, filings)
@@ -1049,6 +1147,27 @@ def main():
     if not curated:
         print("Kein einziger Fonds geladen – Abbruch ohne Schreiben.", file=sys.stderr)
         sys.exit(1)
+
+    # Zweiter Durchgang: Fonds ohne Meldung zum aktuellen Quartal über die
+    # EDGAR-Volltextsuche auf eine neuere Meldestelle prüfen.
+    period_now = latest_period([r for _, r, _, _ in curated])
+    for i, (meta, rec, pos, trades) in enumerate(curated):
+        if not period_now or rec["reportDate"] >= period_now or meta.get("note"):
+            continue
+        print(f"{meta['name']}: letzte Meldung {rec['reportDate']} < {period_now}", file=sys.stderr)
+        for cik, name, period in fts_newer_ciks(meta, period_now, seen_ciks):
+            try:
+                sub, filings = load_submissions(cik)
+                if latest_13f_period(filings) < period_now:
+                    continue
+                new = build_fund_record(meta, cik, sub, filings)
+                seen_ciks.discard(rec["cik"])
+                seen_ciks.add(cik)
+                curated[i] = (meta, *new)
+                print(f"  -> ersetzt durch {name} (CIK {cik}, {new[0]['reportDate']})", file=sys.stderr)
+                break
+            except Exception as exc:  # noqa: BLE001
+                print(f"  Kandidat {cik} nicht nutzbar: {exc}", file=sys.stderr)
 
     # Weitere Institutionen aus dem Sammeldatensatz
     bulk_entries = []
@@ -1109,7 +1228,8 @@ def main():
         r["stale"] = bool(period and r["reportDate"] < min_period)
 
     agg_entries = [(r, p, t) for m, r, p, t in curated
-                   if not r["stale"] and r["style"] not in AGG_EXCLUDED_STYLES]
+                   if not r["stale"] and r["style"] not in AGG_EXCLUDED_STYLES
+                   and r["positionCount"] <= AGG_MAX_POSITIONS]
     aggregates = build_aggregates(agg_entries, period)
     for key in ("consensus", "buys", "sells"):
         for a in aggregates[key]:

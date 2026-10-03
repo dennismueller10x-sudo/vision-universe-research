@@ -7,6 +7,8 @@ Alles hier ist KEINE SEC-Angabe, sondern redaktionell gepflegt:
            SEC-Sammeldatensatz (COVERPAGE.tsv) per Namensabgleich neu auf.
   match    Großgeschriebener Namensbestandteil, der im SEC-Filernamen
            vorkommen muss.
+  altMatch weitere Namen, unter denen der Fonds heute melden kann
+           (z.B. Greenlight Capital -> DME Capital Management).
   manager  bekannteste Person hinter dem Fonds (Gründer/CIO).
   role     Rolle dieser Person heute.
   wiki     Titel des englischen Wikipedia-Artikels; daraus holt das
@@ -49,7 +51,7 @@ FUND_META = [
      "name": "Third Point", "manager": "Daniel Loeb", "role": "Gründer & CEO",
      "wiki": "Daniel_S._Loeb", "style": "Aktivist",
      "bio": "Event-Driven und Aktivismus, oft mit offenen Briefen an Vorstände."},
-    {"slug": "greenlight", "cik": "0001079114", "match": "GREENLIGHT CAPITAL",
+    {"slug": "greenlight", "cik": "0001079114", "match": "GREENLIGHT CAPITAL", "altMatch": ["DME CAPITAL"],
      "name": "Greenlight Capital", "manager": "David Einhorn", "role": "Gründer & Präsident",
      "wiki": "David_Einhorn_(hedge_fund_manager)", "style": "Value",
      "bio": "Value-Investor, bekannt für Short-Thesen wie Lehman Brothers."},
@@ -87,7 +89,7 @@ FUND_META = [
      "bio": "„Dreibeiniger Hocker“: Qualität, Management, Reinvestition."},
     {"slug": "fundsmith", "cik": "0001569205", "match": "FUNDSMITH",
      "name": "Fundsmith", "manager": "Terry Smith", "role": "Gründer & CEO",
-     "wiki": "Terry_Smith_(fund_manager)", "style": "Qualität",
+     "wiki": "Terry_Smith_(businessman)", "style": "Qualität",
      "bio": "„Kaufe gute Unternehmen, zahle nicht zu viel, tue nichts.“"},
     {"slug": "gotham", "cik": "0001510387", "match": "GOTHAM ASSET",
      "name": "Gotham Asset Management", "manager": "Joel Greenblatt", "role": "Co-CIO",
@@ -160,7 +162,7 @@ FUND_META = [
      "bio": "Tech-Investor mit großen Positionen in Plattform- und KI-Werten."},
     {"slug": "d1", "cik": "0001747057", "match": "D1 CAPITAL",
      "name": "D1 Capital Partners", "manager": "Dan Sundheim", "role": "Gründer",
-     "wiki": "Daniel_Sundheim", "style": "Long/Short",
+     "wiki": "Dan_Sundheim", "style": "Long/Short",
      "bio": "Früherer CIO von Viking, gemischte Public- und Private-Strategie."},
     {"slug": "situational-awareness", "cik": None, "match": "SITUATIONAL AWARENESS",
      "name": "Situational Awareness", "manager": "Leopold Aschenbrenner", "role": "Gründer",
@@ -198,7 +200,7 @@ FUND_META = [
      "bio": "Nachfolger von SAC Capital, Eigentümer der New York Mets."},
     {"slug": "balyasny", "cik": "0001218710", "match": "BALYASNY",
      "name": "Balyasny Asset Management", "manager": "Dmitry Balyasny", "role": "Gründer",
-     "wiki": "Dmitry_Balyasny", "style": "Multi-Strategy",
+     "wiki": None, "style": "Multi-Strategy",
      "bio": "Multi-Strategy-Plattform aus Chicago."},
     {"slug": "marshall-wace", "cik": "0001318757", "match": "MARSHALL WACE",
      "name": "Marshall Wace", "manager": "Paul Marshall", "role": "Mitgründer",

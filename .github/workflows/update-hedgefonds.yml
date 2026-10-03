@@ -36,7 +36,7 @@ jobs:
       - name: Verify generated-file-only scope
         shell: bash
         run: |
-          unexpected="$(git status --porcelain | awk '{print $2}' | grep -vE '^hedgefonds/(data|img/managers)/' || true)"
+          unexpected="$(git status --porcelain -uall | awk '{print $2}' | grep -vE '^hedgefonds/(data|img/managers)/' || true)"
           if [ -n "$unexpected" ]; then
             echo "Unexpected modified files:"
             echo "$unexpected"

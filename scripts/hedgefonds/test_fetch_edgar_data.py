@@ -78,6 +78,20 @@ class Positions(unittest.TestCase):
         self.assertEqual((h["cusip"], h["putCall"], h["valueUSD"], h["shares"]), ("ABC", "PUT", 10.0, 2.0))
 
 
+class Units(unittest.TestCase):
+    def test_thousands_reporting_is_scaled(self):
+        rows = [{"valueUSD": v, "shares": sh, "putCall": "", "shareType": "SH"}
+                for v, sh in [(150, 1000), (90, 2000), (4000, 50000)]]   # 0,15 $/Stück -> Tausender
+        out, f = m.normalize_units(rows)
+        self.assertEqual(f, 1000)
+        self.assertEqual(out[0]["valueUSD"], 150000)
+
+    def test_dollar_reporting_untouched(self):
+        rows = [{"valueUSD": v, "shares": sh, "putCall": "", "shareType": "SH"}
+                for v, sh in [(150000, 1000), (90000, 2000), (4e6, 50000)]]
+        self.assertEqual(m.normalize_units(rows)[1], 1)
+
+
 class Meta(unittest.TestCase):
     def test_fund_meta_unique_and_complete(self):
         slugs = [f["slug"] for f in FUND_META]
