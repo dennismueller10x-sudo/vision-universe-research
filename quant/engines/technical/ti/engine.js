@@ -176,7 +176,7 @@
       schemaVersion: SCHEMA_VERSION, bundleVersion: BUNDLE_VERSION,
       symbol: o.symbol || s.instrumentId, timeframe: s.timeframe, asOf: ctx.time, asOfIndex: ctx.t, dataCutoff: ctx.time,
       price: { close: r4(ctx.close), atr: r4(ctx.atr), atrPct: r4(ctx.atr / ctx.close) },
-      dataQuality: { bars: ctx.t + 1, closeOnly: ctx.closeOnly, hasVolume: ctx.hasVolume, priceSeriesType: s.priceSeriesType, dataVersion: s.dataVersion, source: s.source },
+      dataQuality: { bars: ctx.t + 1, stalePriceBars: scenario.dataStatus && scenario.dataStatus.stale ? scenario.dataStatus.flatBars : null, closeOnly: ctx.closeOnly, hasVolume: ctx.hasVolume, priceSeriesType: s.priceSeriesType, dataVersion: s.dataVersion, source: s.source },
       outlook: { label: scenario.outlook, structure: structureLabel(E, scenario), confidence: scenario.confidence.overall },
       regime: { volatility: E.volatility.regime, trendPhase: E.dow.phase, stage: E.dow.stage.stage },
       scenarios: scenario.scenarios, primaryScenario: scenario.primary, alternativeScenario: scenario.alternative, tailScenario: scenario.tail,

@@ -136,7 +136,7 @@ function indexRow(p) {
   const s = p.scenarios[0] || null, E = p.pro.elliott;
   const dist = s && s.entryZone && p.price.atr ? r((s.direction === "BULLISH" ? p.price.close - s.entryZone.zoneHigh : s.entryZone.zoneLow - p.price.close) / p.price.atr, 2) : null;
   return {
-    t: p.symbol, tf: p.timeframe, asOf: p.asOf, close: p.price.close, outlook: p.outlook.label, structure: p.outlook.structure, confidence: p.outlook.confidence, agreement: p.confluence.agreement,
+    t: p.symbol, tf: p.timeframe, asOf: p.asOf, close: p.price.close, stale: p.dataQuality && p.dataQuality.stalePriceBars ? p.dataQuality.stalePriceBars : undefined, outlook: p.outlook.label, structure: p.outlook.structure, confidence: p.outlook.confidence, agreement: p.confluence.agreement,
     template: s ? s.template : null, status: s ? s.status : null, direction: s ? s.direction : null,
     entry: s && s.entryZone ? [s.entryZone.zoneLow, s.entryZone.zoneHigh] : null, invalidation: s && s.invalidation ? s.invalidation.price : null,
     t1: s && s.targets && s.targets[0] ? [s.targets[0].zoneLow, s.targets[0].zoneHigh] : null, rr: s ? s.rewardRiskT1 : null, distAtr: dist,

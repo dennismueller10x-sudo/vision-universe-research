@@ -12,7 +12,7 @@ Das System ist **nicht expert-validiert**. Die Elliott-Engine hat ihr vorab regi
 | Cluster-Bootstrap für Lift-KIs | KL 6a, RM 3b | offen | ja | nein | – | zweiseitiger Cluster-Bootstrap (Titel, Quartal, Cameron–Gelbach–Miller), B = 1000, breitestes Intervall | TEST-Lift −0,32 pp, KI −1,73 … +1,09 (vorher ±0,5); kein Setup und keine Methode mehr signifikant | DONE |
 | Überlappende Fenster / Mehrfachtests | KL 6, Mission IV | offen | ja | nein | – | jede Zeile als vorab registriert / beschreibend / explorativ markiert, BH-q-Werte je Tabelle und gepoolt | 9 von 11 früher signifikanten explorativen Zeilen entfallen | DONE |
 | Survivorship | KL 2, RM 2 | offen | Code ja | ja (Delisting-Bündel nur privat in CI) | Daten nur in R2/CI | Code-Pfad vorbereitet | Lauf nur in CI | PARTIAL → BLOCKED (Daten) |
-| Tagesstudie Universum | KL 4, RM 1 | offen | ja | ja (R2-Daten, Workflow nur auf Default-Branch auslösbar) | `technical-intelligence-evidence.yml` ist auf GitHub nicht registriert (404), solange der Branch nicht gemergt ist | – | Owner-Aktion: Merge oder manueller Start | BLOCKED |
+| Tagesstudie Universum | KL 4, RM 1 | offen | ja | Owner-Aktion (Merge/Start) und R2-Daten nur in CI | `technical-intelligence-evidence.yml` ist auf GitHub nicht registriert (404), solange der Branch nicht gemergt ist | – | Owner-Aktion: Merge oder manueller Start | BLOCKED |
 | TEST zweimal angesehen | KL 6b | dokumentiert | nein (Vergangenheit) | – | – | – | bleibt offengelegt | REJECTED (nicht rückgängig zu machen) |
 | Baseline über alle Zeiträume | KL 6c | offen | ja | nein | – | siehe STATISTICS_AUDIT.md | – | siehe STATISTICS_AUDIT.md |
 | Elliott-Konditionierung | RM 3 | offen | ja | nein | – | Elliott hat Konfluenzgewicht 0; Prognosetest erst nach bestandenem Gate | – | REJECTED (Prognoseprüfung vor Gate verboten) |
@@ -26,7 +26,7 @@ Details: STATISTICS_AUDIT.md. Der TEST-Zeitraum ist inzwischen viermal angesehen
 |---|---|---|---|---|---|---|---|---|
 | Quality Gate HOLDOUT-3 FAIL (G2–G5, G9, G13, D2) | KL 38 | FAIL | teilweise | nein | – | Engine-3.3-Vorstudie (VALIDATION) | keine Verbesserung von Muster/Grad/Rauschen gefunden | REJECTED: kein 3.3, kein HOLDOUT-4 (§107–§109); Urteil FAIL bleibt |
 | WXY-Schieflage | Mission IV §19 | offen | ja | nein | – | Ursache: laufende Impulse/Diagonalen/Dreiecke als fertige WXY; Prior-Sweep ohne Gewinn | 3.2.2: abgeschlossene WXY höchstens NIEDRIG; sichere Aussagen auf laufenden Mustern 182 → 45 | DONE (Absenkung), Mustererkennung bleibt Grenze |
-| Woche/Tag-Konsistenz 60 % | KL 38, §20 | offen | ja (Messung) | nein | – | hierarchiegerechte Kennzahl + Permutationsbasis | naiv 60–65 % vs. Zufall ≈ 50 %; hierarchisch 52–59 % vs. ≈ 49 %; Gate nicht „zu naiv“, Konsistenz real schwach | DONE (Audit); Gate-Urteil unverändert |
+| Woche/Tag-Konsistenz 60 % | KL 38, §20 | offen | ja (Messung) | nein | – | hierarchiegerechte Kennzahl + Permutationsbasis | naiv 60–65 % vs. Zufall ≈ 50 %; hierarchisch 52–59 % vs. ≈ 49 %; je nach Spezifikation 40–69 % bei n ≈ 80 ohne Intervall (Red-Team 2 M3) – nicht robust; Gate nicht „zu naiv“, Konsistenz real schwach | DONE (Audit); Gate-Urteil unverändert |
 | Laufende Zählungen (D2) | KL 38, RM-III 3 | offen | ja | nein | – | Validierung: Erkennung, Präzision, vorzeitiger Abschluss | 8,7 % richtig, 48,6 % vorzeitig „abgeschlossen“; Anwendbarkeit auf laufenden Stufen invers (AUC 0,33) | DONE (gemessen, offengelegt) |
 | Über-Enthaltung (96 %) | Mission III | offen | ja | nein | – | Enthaltungsaudit | ohne Enthaltung 89 % richtig (abgeschlossen), mit Enthaltung 30 %: Enthaltung trennt; hohe Quote ist ehrlich | REJECTED (Absenkung würde falsche Sicherheit erzeugen) |
 | Qualitätsmodell nur „fertig vs. laufend“? | §23 | offen | ja | nein | – | AUC innerhalb der Stufen | abgeschlossen 0,88 (trennt echt), laufend 0,33 (versagt) | DONE (Befund; laufend ohnehin NIEDRIG) |
@@ -41,7 +41,9 @@ Details: STATISTICS_AUDIT.md. Der TEST-Zeitraum ist inzwischen viermal angesehen
 
 | Item | Ursprung | Status vorher | technisch lösbar? | externe Abhängigkeit? | Blocker | Aktion | Ergebnis | finaler Status |
 |---|---|---|---|---|---|---|---|---|
-| Unmögliche Kursniveaus (6 % der Titel, z. B. ACON Ziel −2.695) | Mission IV (Integration) | unentdeckt | ja | nein | – | ti-scenario-1.1.0: Measured Move prozentual, Plausibilitätsgrenzen, kein Szenario bei ≤ 0, Zielzonen ohne Berührung; Test M4-5 | – | DONE |
+| Unmögliche Kursniveaus (6 % der Titel, z. B. ACON Ziel −2.695) | Mission IV (Integration), Red-Team 2 C1/H2 | unentdeckt | ja | nein | – | ti-scenario-1.2.0: Measured Move prozentual, Ziele innerhalb Kurs/3 … Kurs×3, Einstieg ≤ 30 % und Risiko ≤ 50 % vom Kurs, ATR zwischen 0,5 % und 25 % des Kurses, kein Szenario auf toten Reihen (≥ 4 gleiche Wochenschlüsse), Zielzonen ohne Berührung; Tests M4-5, M4-6 | – | DONE |
+| Enthaltene Elliott-Zählung formte Szenarien | Red-Team 2 H1/M5 | unentdeckt | ja | nein | – | Elliott formt Einstieg, Invalidation, Ziele, „Erwartete Struktur“ nur bei Anwendbarkeit ≥ MITTEL; strukturelle Konfidenz aus der Anwendbarkeit statt der Klarheit | – | DONE |
+| 3.2.2 nach Holdout geändert | Red-Team 2 H3 | – | – | – | – | Abweichung von der Vorab-Registrierung offengelegt (Freeze-Record, Methodik-Vertrag); kein Holdout-Urteil für 3.2.2 | – | DONE (offengelegt) |
 | ABBV 404 | Mission III UI-Audit | offen | ja | nein | – | Golden-Daily nur für vorhandene Titel | – | DONE |
 | „Kursverlauf“-Überschrift abgeschnitten | Mission III UI-Audit | offen | – | – | – | geprüft: absichtlich nur für Screenreader (`app.css`) | kein Fehler | REJECTED (kein Bug) |
 | Migrations-Alarme (132) | Mission III | manuell zurückgesetzt | ja | nein | – | `diffRun`: BASELINE/METHODOLOGY_CHANGED unterdrückt, gleicher Datenstand übersprungen; Methodenschlüssel inkl. Szenario-Version; Test M4-2 | – | DONE |
@@ -53,7 +55,7 @@ Details: STATISTICS_AUDIT.md. Der TEST-Zeitraum ist inzwischen viermal angesehen
 | Methodikseite (veraltet elliott-v2) | Mission IV | offen | ja | nein | – | Verträge und erzeugte Seite nennen elliott-3.2.2, Gate FAIL, nicht expert-validiert | – | DONE |
 | Datenumfang (52 MB gz) | KL 19 | offen | ja | nein | – | gemessen: 37 % sind Elliott-Daten enthaltender Titel | Pro-Ansicht zeigt bewusst die Hypothese auch bei Enthaltung (Transparenz) | REJECTED (bewusst; Option dokumentiert) |
 | Professionelle Ansicht / szenario-first | Mission IV P0 | offen | ja | nein | – | Elliott-Übersichtskarte, Tabs, Methodenkarten, Szenario-Titel in Klartext | – | DONE |
-| Earnings-Hinweis | KL 16, RM 5 | offen | ja | ja (kein Earnings-Kalender im Datenbestand) | Datenquelle fehlt | – | – | BLOCKED |
+| Earnings-Hinweis | KL 16, RM 5 | offen | teilweise (vergangene Berichtstermine aus SEC-Daten) | ja (künftige Termine) | kein Kalender künftiger Termine | Schätzung aus dem Berichtsrhythmus geprüft und verworfen: ein falscher Termin ist schlechter als keiner | – | REJECTED (Schätzung) / BLOCKED (Kalender) |
 | Regulatorische Prüfung | KL 23 | offen | Sprachaudit ja | ja (Jurist) | keine juristische Prüfung | Sprachaudit (Kauf-/Verkaufssprache, Prognosen) | – | LEGAL REVIEW REQUIRED |
 | Nutzerstudie | Mission IV | offen | nein | ja (echte Nutzer) | – | – | – | BLOCKED |
 

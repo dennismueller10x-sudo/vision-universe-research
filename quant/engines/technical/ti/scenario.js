@@ -36,7 +36,7 @@
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
   var Hash = isNode ? require("../../hash.js") : global.VUHash;
-  var ENGINE_VERSION = "ti-scenario-1.1.1";   // 1.1.0 (Mission IV): Kursniveaus nur positiv und plausibel, Measured Move prozentual; 1.1.1: ATR-Deckel 25 % des Kurses
+  var ENGINE_VERSION = "ti-scenario-1.2.0";   // 1.1.0 (Mission IV): Kursniveaus nur positiv und plausibel, Measured Move prozentual; 1.1.1: ATR-Deckel 25 % des Kurses; 1.2.0 (Red-Team 2): keine Szenarien auf toten Reihen, Elliott formt nur bei Anwendbarkeit ≥ MITTEL, Abstandsgrenzen relativ zum Kurs
 
   var DEFAULTS = {
     /* Prior aus Evidenzgraden (METHOD_RESEARCH.md). WYCKOFF = 0: keine Literatur-Evidenz (Grad D) UND in der
@@ -45,13 +45,17 @@
     biasThreshold: 0.15, mixedConflictShare: 0.35,
     agreementLevels: { high: 0.5, moderate: 0.25 },
     zone: { minWidthAtr: 0.6, maxWidthAtr: 2.0, clusterTolAtr: 0.75 },
-    entry: { maxDistanceAtr: 4.0, retracementBand: [0.382, 0.618] },
-    invalidation: { minGapAtr: 0.3, maxRiskAtr: 4.5, bufferAtr: 0.25 },
-    targets: { minDistanceAtr: 1.5, separationAtr: 1.5, maxFactor: 10 },
+    entry: { maxDistanceAtr: 4.0, retracementBand: [0.382, 0.618], maxShareOfClose: 0.3 },
+    invalidation: { minGapAtr: 0.3, maxRiskAtr: 4.5, bufferAtr: 0.25, maxShareOfClose: 0.5 },
+    targets: { minDistanceAtr: 1.5, separationAtr: 1.5, maxFactor: 3 },
     confirmation: { maxDistanceAtr: 8 },
     /* Nach einem Einbruch traegt die ATR noch die alten Kursniveaus (AIXI: Kurs 3,10, Einstiegszone 14,60–20,50). Fuer die
        Szenario-Geometrie hoechstens 25 % des Kurses je Bar. */
     atrMaxShareOfClose: 0.25,
+    /* Untergrenze: auf fast flachen Reihen faellt die ATR gegen 0 und das Chance/Risiko-Verhaeltnis wird absurd (Red-Team 2 C1). */
+    atrMinShareOfClose: 0.005,
+    /* Tote Reihe (uebernommen, delistet, ausgesetzt): so viele gleiche Schlusskurse am Ende → kein Szenario. */
+    staleFlatBars: { "1W": 4, "1D": 10 },
     empirical: { minSample: 30 }
   };
 
@@ -152,6 +156,7 @@
   }
 
   function directional(x, d, cfg, kind) {
+    if (x.ctx.stale) return null;
     var ctx = x.ctx, atr = ctx.atr, close = ctx.close, E = x.elliott;
     var ref = referenceSwing(x, d);
     if (!ref) return null;
@@ -166,7 +171,7 @@
       elliottUsed = true;
     }
     (x.levels.fib.clusters || []).forEach(function (fc) { ent.push({ price: fc.center, weight: 0.4 * fc.anchors, type: "FIB_CLUSTER", relation: "Fibonacci-Konfluenz aus " + fc.anchors + " Ankern" }); });
-    ent = ent.filter(function (e) { return isNum(e.price) && e.price > 0; });
+    ent = ent.filter(function (e) { return isNum(e.price) && e.price > 0 && Math.abs(e.price - close) <= cfg.entry.maxShareOfClose * close; });
     var near = ent.filter(function (e) { return d > 0 ? e.price <= close + 0.5 * atr && e.price >= close - cfg.entry.maxDistanceAtr * atr : e.price >= close - 0.5 * atr && e.price <= close + cfg.entry.maxDistanceAtr * atr; });
     var cl = cluster(near, atr, cfg.zone.clusterTolAtr).sort(function (a, b) { return b.weight - a.weight || Math.abs(a.center - close) - Math.abs(b.center - close); });
     var template, entry;
@@ -192,7 +197,7 @@
     });
     (d > 0 ? x.levels.sr.supports : x.levels.sr.resistances).forEach(function (z) { inv.push({ price: d > 0 ? z.zoneLow - cfg.invalidation.bufferAtr * atr : z.zoneHigh + cfg.invalidation.bufferAtr * atr, basis: "ZONE_EDGE", rule: "Rand der " + (d > 0 ? "Unterstützungszone" : "Widerstandszone") }); });
     if (activePattern) inv.push({ price: activePattern.invalidation.price, basis: "PATTERN", rule: activePattern.name + " ungültig" });
-    var valid = inv.filter(function (c) { return isNum(c.price) && (d > 0 ? c.price <= entryEdgeFar - cfg.invalidation.minGapAtr * atr : c.price >= entryEdgeFar + cfg.invalidation.minGapAtr * atr) && Math.abs(entryEdgeFar - c.price) <= cfg.invalidation.maxRiskAtr * atr; })
+    var valid = inv.filter(function (c) { return isNum(c.price) && (d > 0 ? c.price <= entryEdgeFar - cfg.invalidation.minGapAtr * atr : c.price >= entryEdgeFar + cfg.invalidation.minGapAtr * atr) && Math.abs(entryEdgeFar - c.price) <= cfg.invalidation.maxRiskAtr * atr && Math.abs(entryEdgeFar - c.price) <= cfg.invalidation.maxShareOfClose * close; })
       .sort(function (a, b) { return d > 0 ? b.price - a.price : a.price - b.price; });
     /* Regelbasierte Grenzen (Elliott/Swing) haben Vorrang vor Zonenraendern, wenn sie nicht mehr als 1,5 ATR weiter liegen. */
     var invalidation = valid[0] || null;
@@ -266,6 +271,7 @@
   }
 
   function rangeScenario(x, cfg) {
+    if (x.ctx.stale) return null;
     var sr = x.levels.sr, atr = x.ctx.atr, close = x.ctx.close;
     var sup = sr.nearestSupport, res = sr.nearestResistance;
     if (!sup || !res) return null;
@@ -322,10 +328,20 @@
     var cfg = Object.assign({}, DEFAULTS, cfgIn || {});
     cfg.familyWeights = Object.assign({}, DEFAULTS.familyWeights, (cfgIn && cfgIn.familyWeights) || {});
     ["zone", "entry", "invalidation", "targets", "confirmation"].forEach(function (k) { cfg[k] = Object.assign({}, DEFAULTS[k], (cfgIn && cfgIn[k]) || {}); });
-    if (x.ctx && isNum(x.ctx.atr) && isNum(x.ctx.close) && x.ctx.close > 0 && x.ctx.atr > cfg.atrMaxShareOfClose * x.ctx.close)
-      x = Object.assign({}, x, { ctx: Object.assign({}, x.ctx, { atr: cfg.atrMaxShareOfClose * x.ctx.close, atrCapped: true }) });
+    if (x.ctx && isNum(x.ctx.atr) && isNum(x.ctx.close) && x.ctx.close > 0) {
+      var c0 = x.ctx.close, atr0 = Math.min(Math.max(x.ctx.atr, cfg.atrMinShareOfClose * c0), cfg.atrMaxShareOfClose * c0);
+      var cl = x.ctx.series && x.ctx.series.close, flat = 0;
+      var tEnd = isNum(x.ctx.t) ? x.ctx.t : (cl ? cl.length - 1 : -1);   // nur bis zum Analysebar (kausal, Test TI-C2)
+      if (cl) for (var i = tEnd; i > 0 && cl[i] === cl[i - 1]; i--) flat++;
+      var staleN = cfg.staleFlatBars[x.timeframe || (x.ctx.series && x.ctx.series.timeframe)] || 4;
+      x = Object.assign({}, x, { ctx: Object.assign({}, x.ctx, { atr: atr0, atrAdjusted: atr0 !== x.ctx.atr, stale: flat + 1 >= staleN, flatBars: flat + 1 }) });
+    }
     var conf = confluence(x, cfg);
-    var structuralLevel = x.elliott && x.elliott.primary ? x.elliott.clarityLevel : "LOW";
+    /* Red-Team 2 H1: Eine enthaltene Elliott-Zaehlung (Anwendbarkeit NIEDRIG) darf das Szenario nicht formen – weder Einstieg,
+       Invalidation, Ziele noch "Erwartete Struktur". Sie bleibt in der Elliott-Ansicht sichtbar, nicht in den Szenarien. */
+    var E0 = x.elliott, shapes = !!(E0 && E0.primary && E0.applicability && !E0.applicability.abstain);
+    x = Object.assign({}, x, { elliott: shapes ? E0 : null });
+    var structuralLevel = shapes ? (E0.applicability.level === "HIGH" ? "HIGH" : "MODERATE") : "LOW";
     var scenarios = [];
     var d = conf.direction;
     if (d !== 0) {
@@ -359,19 +375,21 @@
     }
     var empirical = null, sig = null;
     if (p && p.direction !== "NEUTRAL") {
-      sig = signature(p, conf, x.elliott, x.timeframe);
+      sig = signature(p, conf, E0, x.timeframe);
       empirical = empiricalLookup(x.evidenceTable, sig, cfg);
     }
     var calibrated = null;
     if (empirical && empirical.status === "OK" && x.calibration && x.calibration.passed && isNum(empirical.calibratedProbability)) calibrated = { probability: empirical.calibratedProbability, method: x.calibration.method, brier: x.calibration.brier };
     var overall = overallConfidence(conf, structuralLevel, empirical);
+    if (x.ctx.stale) overall = { level: "LOW", reasons: ["STALE_PRICE"] };
     scenarios.forEach(function (s) { s.scenarioId = "tis_" + Hash.hashValue({ k: s.kind, d: s.direction, t: s.template, e: s.entryZone && [s.entryZone.zoneLow, s.entryZone.zoneHigh], i: s.invalidation && s.invalidation.price }).slice(0, 12); });   // ohne Zeitstempel: gleiche Lesart → gleiche ID (Alerts)
     return {
       engineVersion: ENGINE_VERSION, isProbability: !!calibrated,
       outlook: conf.outlook, confluence: conf, scenarios: scenarios,
       primary: scenarios[0] || null, alternative: scenarios.filter(function (s) { return s.kind === "ALTERNATIVE"; })[0] || null, tail: scenarios.filter(function (s) { return s.kind === "TAIL"; })[0] || null,
       confidence: { overall: overall.level, reasons: overall.reasons, structural: structuralLevel, agreement: conf.level, agreementValue: conf.agreement, empirical: empirical, calibrated: calibrated },
-      signature: sig
+      signature: sig,
+      dataStatus: { stale: !!x.ctx.stale, flatBars: x.ctx.flatBars || null, atrAdjusted: !!x.ctx.atrAdjusted, elliottShapesScenarios: shapes }
     };
   }
 

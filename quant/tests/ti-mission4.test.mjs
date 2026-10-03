@@ -102,3 +102,23 @@ test("M4-5 scenario levels are positive and plausible after a collapse", async (
     if (existsSync(f)) { const s2 = weeklySeriesFromPoints(JSON.parse(readFileSync(f, "utf8")).points, t); check(analyzeProduct(s2, {}).res, s2.close[s2.length - 1], t); }
   }
 });
+
+/* Red-Team 2 (Mission IV): C1 tote Reihen (ALPN: Ziel 457 bei Kurs 65, CRV 392:1), H1 enthaltene Elliott-Zaehlung formte
+   Szenarien, H2 Einstiegszonen bis zum Doppelten des Kurses (VLCN). */
+test("M4-6 no scenarios on dead series; abstained Elliott never shapes scenarios; entry and risk bounded", async () => {
+  const { analyzeProduct } = await import(join(ROOT, "scripts/technical/lib/ti-product.mjs"));
+  const pts = []; let d = Date.UTC(2016, 0, 1), v = 50;
+  for (let i = 0; i < 480; i++) { if (i < 470) v *= 1 + 0.03 * Math.sin(i / 4) + 0.002; pts.push([new Date(d).toISOString().slice(0, 10), +v.toFixed(2)]); d += 7 * 86400000; }
+  const dead = analyzeProduct(weeklySeriesFromPoints(pts, "DEAD"), {}).res;
+  assert.equal(dead.scenarios.length, 0, "Szenario auf toter Reihe"); assert.equal(dead.confidence.overall, "LOW");
+  for (const t of ["ALPN", "VLCN", "AIXI", "ACON", "HCTI", "AAPL", "MSFT"]) {
+    const f = join(ROOT, "quant/data/market/discover-series-long/ref_" + t + ".json"); if (!existsSync(f)) continue;
+    const s = weeklySeriesFromPoints(JSON.parse(readFileSync(f, "utf8")).points, t), out = analyzeProduct(s, {}), r = out.res, close = s.close[s.length - 1];
+    const E = r.methods && r.methods.elliott, abst = !E || !E.applicability || E.applicability.abstain;
+    for (const sc of r.scenarios) {
+      if (abst) { assert.ok(!sc.elliottShaped, t + ": enthaltene Zaehlung formt das Szenario"); assert.equal(sc.expectedStructure || null, null, t + ": Erwartete Struktur trotz Enthaltung"); }
+      if (sc.entryZone && sc.kind !== "TAIL") { assert.ok(Math.abs(sc.entryZone.center - close) <= 0.35 * close, t + ": Einstieg " + sc.entryZone.center + " bei Kurs " + close); }
+      if (sc.rewardRiskT1 !== null && sc.rewardRiskT1 !== undefined) assert.ok(sc.rewardRiskT1 < 25, t + ": CRV " + sc.rewardRiskT1);
+    }
+  }
+});

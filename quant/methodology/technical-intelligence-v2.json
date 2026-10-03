@@ -4,7 +4,7 @@
   "status": "BETA",
   "frozenAt": "2026-10-02",
   "frozenAtCommit": "ce9be420a",
-  "purpose": "Alle Parameter der TI-Schicht (quant/engines/technical/ti/*). Die Elliott-Strukturschicht des Produkts ist seit Mission III elliott-3.2.2 (quant/engines/technical/elliott/elliott-v3.js, Regelwerk elliott-rules-3.1.0) mit Konfluenzgewicht 0; sie hat das vorab registrierte Qualitaets-Gate (HOLDOUT-3) NICHT bestanden und ist nicht von Experten validiert. Zahlen sind Designparameter oder aus Literatur-Evidenzgraden abgeleitet; keine wurde auf dem TEST-Zeitraum optimiert. Keine Zahl ist eine Wahrscheinlichkeit.",
+  "purpose": "Alle Parameter der TI-Schicht (quant/engines/technical/ti/*). Die Elliott-Strukturschicht des Produkts ist elliott-3.2.2 (quant/engines/technical/elliott/elliott-v3.js, Regelwerk elliott-rules-3.1.0) mit Konfluenzgewicht 0. Das vorab registrierte Qualitaets-Gate (HOLDOUT-3, gemessen an 3.2.0) wurde NICHT bestanden; 3.2.1 und 3.2.2 sind danach vorgenommene Aenderungen ohne eigene Holdout-Pruefung. Nicht von Experten validiert. Szenarien formt Elliott nur bei Anwendbarkeit mindestens MITTEL. Zahlen sind Designparameter oder aus Literatur-Evidenzgraden abgeleitet; keine wurde auf dem TEST-Zeitraum optimiert. Keine Zahl ist eine Wahrscheinlichkeit.",
   "protocol": {
     "splits": {
       "train": "< 2013-01-01",
@@ -69,29 +69,36 @@
       "retracementBand": [
         0.382,
         0.618
-      ]
+      ],
+      "maxShareOfClose": 0.3
     },
     "invalidation": {
       "minGapAtr": 0.3,
       "maxRiskAtr": 4.5,
       "bufferAtr": 0.25,
-      "basis": "Schlusskurs"
+      "basis": "Schlusskurs",
+      "maxShareOfClose": 0.5
     },
     "targets": {
       "minDistanceAtr": 1.5,
       "separationAtr": 1.5,
       "max": 3,
-      "maxFactor": 10,
-      "note": "Seit ti-scenario-1.1.0: Measured Move prozentual (gleiche prozentuale Laenge des letzten Swings), nur positive Ziele zwischen Kurs/10 und Kurs×10."
+      "maxFactor": 3,
+      "note": "Seit ti-scenario-1.2.0: Measured Move prozentual, Ziele und Zielzonen-Raender zwischen Kurs/3 und Kurs×3."
     },
     "confirmation": {
       "maxDistanceAtr": 8,
       "note": "Bestaetigungsmarke nur, wenn hoechstens 8 ATR vom Kurs entfernt; sonst keine."
     },
-    "plausibility": "Liegt Einstiegszone oder Invalidation bei ≤ 0 (Volatilitaet groesser als Kursniveau), wird fuer diese Richtung kein Szenario ausgegeben. Seit ti-scenario-1.1.1: ATR fuer die Szenario-Geometrie hoechstens 25 % des Kurses (nach Einbruechen); Zielzonen-Raender innerhalb Kurs/10 … Kurs×10.",
+    "plausibility": "ti-scenario-1.2.0: Einstieg hoechstens 30 % und Risiko hoechstens 50 % vom Kurs; ATR fuer die Geometrie zwischen 0,5 % und 25 % des Kurses; liegen Einstiegszone oder Invalidation bei ≤ 0, kein Szenario; tote Reihe (≥ 4 gleiche Wochen- bzw. ≥ 10 gleiche Tagesschluesse) → kein Szenario; Elliott formt Szenarien nur bei Anwendbarkeit ≥ MITTEL.",
     "empiricalMinSample": 30,
     "overallConfidenceRule": "HIGH: Agreement HIGH und Struktur nicht LOW und (keine Empirie oder unterer KI-Rand des Uplifts > 0). LOW: Agreement LOW oder MIXED oder Empirie ohne Vorteil (Uplift <= 2 pp und unterer KI-Rand <= 0). Sonst MODERATE.",
-    "atrMaxShareOfClose": 0.25
+    "atrMaxShareOfClose": 0.25,
+    "atrMinShareOfClose": 0.005,
+    "staleFlatBars": {
+      "1W": 4,
+      "1D": 10
+    }
   },
   "elliottV2": {
     "engine": {
@@ -179,8 +186,9 @@
     "ruleSet": "elliott-rules-3.1.0",
     "status": "EXPERIMENTAL_STRUCTURE_MODEL",
     "confluenceWeight": 0,
-    "qualityGate": "HOLDOUT-3 FAIL (docs/technical-intelligence/ELLIOTT_ENGINE32_REPORT.md)",
+    "qualityGate": "HOLDOUT-3 FAIL, gemessen an elliott-3.2.0 (docs/technical-intelligence/ELLIOTT_ENGINE32_REPORT.md). 3.2.1 (Datenlage Tagesreihen) und 3.2.2 (abgeschlossene WXY hoechstens NIEDRIG) wurden nach dem Holdout geaendert und nur auf VALIDATION gemessen – Abweichung von ELLIOTT_HOLDOUT3_PREREG.md §5, offengelegt; kein Holdout-Urteil fuer 3.2.2.",
     "expertValidated": false,
-    "note": "Der Abschnitt elliottV2 beschreibt die Vorgaenger-Engine 2.2 und bleibt als Nachweis erhalten; er bestimmt das Produkt nicht mehr."
+    "note": "Der Abschnitt elliottV2 beschreibt die Vorgaenger-Engine 2.2 und bleibt als Nachweis erhalten; er bestimmt das Produkt nicht mehr.",
+    "scenarioShaping": "Nur bei Anwendbarkeit MITTEL/HOCH (ti-scenario-1.2.0); eine enthaltene Zaehlung formt weder Einstieg, Invalidation, Ziele noch die erwartete Struktur."
   }
 }

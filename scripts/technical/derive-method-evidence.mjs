@@ -47,11 +47,11 @@ add("ELLIOTT", elliottValidated ? "VALIDATED" : "NOT_ESTABLISHED", elliottValida
   "Vorab registrierter Test auf unabhängigen Titeln: " + ["H1", "H2", "H3", "H4", "H5"].map(h).join("; "),
   "Experimentelles Strukturmodell: Die Elliott-Zählung beschreibt die Wellenstruktur. In der vorab festgelegten Prüfung auf unabhängigen Aktien brachte sie keinen Prognosevorteil gegenüber derselben Kursstruktur ohne Zählung.",
   "Kontext, kein Prognosebeitrag (" + ["H1", "H2", "H3"].map(h).join("; ") + ")");
-add("FIBONACCI", H.H7 && H.H7.confirmed ? "SUPPORTED" : "NOT_ESTABLISHED", "CONTEXT", "Häufung an Fibonacci-Niveaus: keine (Verhältnis ≈ 1); " + h("H7"),
+add("FIBONACCI", H.H7 && H.H7.confirmed ? "SUPPORTED" : "NOT_ESTABLISHED", "CONTEXT", "Häufung an Fibonacci-Niveaus insgesamt: keine (Verhältnis ≈ 1; einzelne Niveaus siehe Studie, explorativ); " + h("H7"),
   "Wendepunkte häufen sich nicht an Fibonacci-Niveaus; Fibonacci zählt nur, wo mehrere Anker zusammenfallen.", h("H7"));
 add("TIMING_EARLY", H.H6 && H.H6.confirmed ? "VALIDATED" : "NOT_ESTABLISHED", "CONTEXT", h("H6"),
-  "Wer früh in der laufenden Gegenbewegung einsteigt, lag historisch besser als beim Einstieg nach der späten Bestätigung durch die Engine. Das ist eine Aussage über den Zeitpunkt, kein Prognosevorteil der Zählung.",
-  h("H6") + " — Effekt des Zeitpunkts; bei Rückläufen ohne Fortsetzungs-Lesart zeigt sich dieselbe Richtung (Differenz +2,2 Pp., nicht separat getestet)");
+  "Wer früh in der laufenden Gegenbewegung einsteigt, lag historisch besser als beim Einstieg nach der späten Bestätigung durch die Engine. Das ist eine Aussage über den Zeitpunkt, kein Prognosevorteil der Zählung. Gemessen mit der Vorgänger-Engine 2.2; für die aktuelle Engine 3.x nicht neu gemessen.",
+  h("H6") + " — gemessen mit elliott-2.2 (Mission II), unter 3.x nicht neu gemessen (Red-Team 2 M1); Effekt des Zeitpunkts; bei Rückläufen ohne Fortsetzungs-Lesart zeigt sich dieselbe Richtung (Differenz +2,2 Pp., nicht separat getestet)");
 add("WYCKOFF", "DESCRIPTIVE_ONLY", "CONTEXT", "keine Richtungsstimme (Gewicht 0)", "Wyckoff beschreibt Handelsspannen.", "Gewicht 0; Richtungstrefferquote in TRAIN/VALIDATION < 50 %");
 add("VOLUME", "DESCRIPTIVE_ONLY", "CONTEXT", "Wochenreihen ohne Volumen; Tagesstudie zu klein", "Volumen ergänzt die Beschreibung, wo vorhanden.", "nicht belastbar geprüft (Volumen nur in Tagesdaten)");
 writeFileSync(join(ROOT, "quant/methodology/technical-method-evidence.json"), JSON.stringify(out, null, 1));

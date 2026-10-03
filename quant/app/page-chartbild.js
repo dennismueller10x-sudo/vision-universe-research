@@ -496,7 +496,15 @@
         el("div", { class: "qx-actions" }, [X.btn("Zur Aktienanalyse", X.routes.stock(ticker), "secondary")]));
       return;
     }
-    var a = res.analysis, rules = (await TI.getRulesCatalog()).rules, methodEv = await (TI.getMethodEvidence ? TI.getMethodEvidence() : Promise.resolve(null));
+    var a = res.analysis;
+    /* Red-Team 2 C1: unveraenderter Schlusskurs ueber mehrere Bars (Uebernahme, Delisting, Aussetzung) – kein Chartbild. */
+    if (a.dataQuality && a.dataQuality.stalePriceBars) {
+      host.append(el("p", { class: "v2-eyebrow", text: "Chartbild · " + ticker }), el("h1", { class: "qx-h1", text: "Für " + ticker + " gibt es kein aktuelles Chartbild" }),
+        X.notice("Warum?", "Der Schlusskurs ist seit " + a.dataQuality.stalePriceBars + (a.timeframe === "1W" ? " Wochen" : " Handelstagen") + " unverändert – etwa nach einer Übernahme, einem Delisting oder einer Handelsaussetzung. Für eine solche Kursreihe gibt es keine Szenarien."),
+        el("div", { class: "qx-actions" }, [X.btn("Zur Aktienanalyse", X.routes.stock(ticker), "secondary")]));
+      return;
+    }
+    var rules = (await TI.getRulesCatalog()).rules, methodEv = await (TI.getMethodEvidence ? TI.getMethodEvidence() : Promise.resolve(null));
     var tfLabel = a.timeframe === "1W" ? "Wochenchart" : "Tageschart";
     var scen = a.scenarios || [], kinds = scen.map(function (s) { return s.kind; });
     var kind = kinds[0] || "PRIMARY", E = a.pro.elliott, T = a.pro.elliottTransparency;

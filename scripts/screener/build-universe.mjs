@@ -144,7 +144,7 @@ export function technicalIntelligenceColumns(index, opts = {}) {
   const pick = (k, v) => (TI_ENUMS[k].includes(v) ? v : null);
   for (const r of rows) {
     if (!r || typeof r.t !== 'string') continue;
-    if (!r.asOf || r.asOf < cutoff) { stale++; continue; }
+    if (!r.asOf || r.asOf < cutoff || r.stale) { stale++; continue; }   // r.stale: unveraenderter Schlusskurs (tote Reihe)
     byTicker.set(r.t, { tiOut: pick('outlook', r.outlook), tiStr: pick('structure', r.structure), tiEw: pick('elliottApplicable', r.elliottApplicable) });
   }
   return { byTicker, meta: rows.length ? { schemaVersion: index.schemaVersion || null, generatedAt: index.generatedAt || null, asOf: latest || null, maxAgeDays: TI_MAX_AGE_DAYS, stale } : null };
