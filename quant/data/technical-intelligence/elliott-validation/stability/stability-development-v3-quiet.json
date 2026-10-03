@@ -1,0 +1,69 @@
+{
+ "schemaVersion": "vu-elliott-stability-1.0.0",
+ "generatedAt": "2026-10-03T06:15:04.717Z",
+ "split": "DEVELOPMENT",
+ "engine": "v3",
+ "engineOpts": {},
+ "series": 27,
+ "errors": 0,
+ "years": 4,
+ "bars": 4671,
+ "transitions": {
+  "SAME": 3972,
+  "PROGRESS": 378,
+  "JUSTIFIED": 198,
+  "DEGREE": 74,
+  "UNSTABLE": 49,
+  "LOST": 0,
+  "FOUND": 0,
+  "NONE": 0
+ },
+ "perWeek": {
+  "SAME": 0.8504,
+  "PROGRESS": 0.0809,
+  "JUSTIFIED": 0.0424,
+  "DEGREE": 0.0158,
+  "UNSTABLE": 0.0105,
+  "LOST": 0,
+  "FOUND": 0,
+  "NONE": 0
+ },
+ "unstablePerWeek": 0.0105,
+ "relabelPerWeek": 0.0687,
+ "ambiguity": {
+  "NONE": 0,
+  "DEGREE": 2162,
+  "LABEL": 0,
+  "STRUCTURE": 2509,
+  "OTHER": 0
+ },
+ "applicability": {
+  "HIGH": 2072,
+  "MODERATE": 181,
+  "LOW": 2418
+ },
+ "status": {
+  "OK": 2415,
+  "AMBIGUOUS": 2256
+ },
+ "lifetimeMedianByQuality": {
+  "HIGH": {
+   "n": 97,
+   "median": 7
+  },
+  "MODERATE": {
+   "n": 144,
+   "median": 6
+  },
+  "LOW": {
+   "n": 56,
+   "median": 5
+  },
+  "OTHER": {
+   "n": 23,
+   "median": 13
+  }
+ },
+ "msPerBar": 57.64,
+ "runtimeSec": 83
+}

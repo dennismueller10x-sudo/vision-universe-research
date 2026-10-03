@@ -30,7 +30,7 @@ for (const k of ks) {
     const Te = cs.truth.patternEnd, last = s.length - 1, confMove = Math.abs(s.close[last] - s.close[Te]) || 1;
     n++;
     let e = null, c = null, prev = null;
-    const eng = sticky === null ? { poolAtr: k } : { poolAtr: k, stickiness: sticky };
+    const eng = sticky === null ? { poolAtr: k } : { poolAtr: k, stickiness: sticky, stickinessQuiet: sticky };
     /* mit Persistenz: Zustand ab 26 Wochen vor dem Ende durchreichen (wie im Produkt) */
     if (sticky !== null) for (let t = Math.max(1, Te - 26); t < Te; t++) { const r0 = EV3.analyzeElliottV3({ series: s, features: P.features, pivots: P.pivots, asOfIndex: t, barsPerYear: 52, engine: eng, previous: prev }); prev = r0.primary ? { key: r0.primary.persistenceKey, pivots: r0.primary.persistencePivots } : null; }
     for (let t = Te; t <= Math.min(last, Te + 20) && c === null; t++) {
