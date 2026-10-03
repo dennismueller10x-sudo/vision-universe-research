@@ -69,8 +69,8 @@ const BOOT = { B: 1000, timeBlock: "QUARTER" };
 
 const SPLITS = { trainEnd: "2013-01-01", testStart: "2019-01-01" };
 const PROFILES = {
-  weekly: { setupScale: "scale-2", entryWindow: 8, horizon: 26, fwd: 13, baselineDraws: 3, minBars: 160 },
-  daily: { setupScale: "scale-2", entryWindow: 20, horizon: 126, fwd: 63, baselineDraws: 3, minBars: 520 }
+  weekly: { setupScale: "scale-2", entryWindow: 8, horizon: 26, fwd: 13, baselineDraws: 3, minBars: 160, periodWindow: 104 },
+  daily: { setupScale: "scale-2", entryWindow: 20, horizon: 126, fwd: 63, baselineDraws: 3, minBars: 520, periodWindow: 504 }
 };
 
 /** SHA-256 (gekuerzt) der Engine-Dateien, die das Ergebnis bestimmen — belegt, mit welchem Stand gerechnet wurde. */
@@ -100,6 +100,8 @@ function processSeries(series, meta, prof, spy) {
   const piv = P.main.pivots.scales[prof.setupScale].pivots;
   const events = Array.from(new Set(piv.map((p) => p.confirmedIndex))).filter((t) => t >= Math.min(prof.minBars, 200) && t < series.length - 2).sort((a, b) => a - b);
   const rand = Hash.mulberry32(Hash.seedFromString("ti-evidence|" + meta.symbol));
+  /* Eigener Zufallsstrom fuer die Zeitraum-Baseline (KL 6c), damit die vorab registrierte Baseline bitgleich bleibt. */
+  const randP = Hash.mulberry32(Hash.seedFromString("ti-evidence-period|" + meta.symbol));
   let busyUntil = -1;
   /* Elliott-Ergebnis je Erkennungsbar wiederverwenden (identische Eingaben: Ctx.at(P.main, t), gleiche Methodik, ohne Vorzustand) —
      reine Laufzeitersparnis fuer die Elliott-Studie unten, kein Einfluss auf Ergebnisse. */
@@ -124,7 +126,7 @@ function processSeries(series, meta, prof, spy) {
     const g = { dir: p.direction === "BULLISH" ? 1 : -1, entryLow: p.entryZone.zoneLow, entryHigh: p.entryZone.zoneHigh, invalidation: p.invalidation.price,
                 t1Low: p.targets[0].zoneLow, t1High: p.targets[0].zoneHigh, t2Low: p.targets[1] ? p.targets[1].zoneLow : undefined, t2High: p.targets[1] ? p.targets[1].zoneHigh : undefined };
     const sim = Out.simulate(series, t, g, { entryWindow: prof.entryWindow, horizon: prof.horizon });
-    let baselineHit = null, baselineDraws = 0;
+    let baselineHit = null, baselineDraws = 0, periodHits = null, periodDraws = 0;
     const rg = Out.relativeGeometry(sim, g);
     if (rg && (sim.outcome === "TARGET1" || sim.outcome === "INVALIDATED" || sim.outcome === "TIMEOUT")) {
       let hits = 0, draws = 0;
@@ -135,11 +137,21 @@ function processSeries(series, meta, prof, spy) {
         if (b.outcome === "TARGET1" || b.outcome === "INVALIDATED" || b.outcome === "TIMEOUT") { draws++; if (b.outcome === "TARGET1") hits++; }
       }
       if (draws) { baselineHit = hits; baselineDraws = draws; }
+      /* Sensitivitaet (KL 6c): Zufallseinstiege nur im Zeitraum ±periodWindow Bars um das Signal statt aus der ganzen Historie. */
+      const lo = Math.max(61, t - prof.periodWindow), hi = Math.min(series.length - prof.horizon - 3, t + prof.periodWindow);
+      if (hi > lo) {
+        let pHits = 0, pDraws = 0;
+        for (let k = 0; k < prof.baselineDraws * 4 && pDraws < prof.baselineDraws; k++) {
+          const b = Out.baseline(series, lo + Math.floor(randP() * (hi - lo + 1)), rg, { horizon: prof.horizon });
+          if (b.outcome === "TARGET1" || b.outcome === "INVALIDATED" || b.outcome === "TIMEOUT") { pDraws++; if (b.outcome === "TARGET1") pHits++; }
+        }
+        if (pDraws) { periodHits = pHits; periodDraws = pDraws; }
+      }
       busyUntil = sim.exitIndex;
     } else if (sim.outcome === "NO_ENTRY") busyUntil = t + prof.entryWindow;
     recs.push(Object.assign(base, { scenario: { direction: p.direction, template: p.template, key: res.signature ? res.signature.key : null, riskAtr: p.riskAtr, rr: p.rewardRiskT1, elliottShaped: p.elliottShaped },
                                      outcome: sim.outcome, barsToT1: sim.barsToT1, barsToExit: sim.barsToExit, mfeR: sim.mfeR, maeR: sim.maeR, mfePct: sim.mfePct, maePct: sim.maePct,
-                                     returnPct: sim.returnPct, forwardReturnH: sim.forwardReturnH, riskPct: sim.riskPct, rewardPct: sim.rewardPct, target2: sim.target2, baselineHits: baselineHit, baselineDraws }));
+                                     returnPct: sim.returnPct, forwardReturnH: sim.forwardReturnH, riskPct: sim.riskPct, rewardPct: sim.rewardPct, target2: sim.target2, baselineHits: baselineHit, baselineDraws, baselinePeriodHits: periodHits, baselinePeriodDraws: periodDraws }));
   }
   /* ---- Empirisches Elliott: alle Erkennungszeitpunkte (auch ueberlappend), Ausgang der Lehrbuch-Erwartung ---- */
   const ew = [];
@@ -254,6 +266,16 @@ function agg(arr, label) {
   a.pLift = L.p;
   a.ciCluster = { method: "TWO_WAY_CLUSTER_BOOTSTRAP", clusters: { symbols: bs.symbols, timeBlocks: bs.timeBlocks, cells: bs.cells }, timeBlock: BOOT.timeBlock, B: BOOT.B,
                   lift: ciOf(L), t1HitRate: ciOf(H) };
+  /* Sensitivitaet KL 6c: Baseline aus dem Zeitraum um das Signal (nicht vorab registriert, nur berichtet). */
+  const pf = filled.filter((r) => typeof r.baselinePeriodDraws === "number" && r.baselinePeriodDraws > 0);
+  if (pf.length) {
+    const kp = pf.reduce((x, r) => x + r.baselinePeriodHits, 0), np = pf.reduce((x, r) => x + r.baselinePeriodDraws, 0);
+    const bp = VS.twoWayBoot(filled, (r) => r.symbol, (r) => blockOf(r.date),
+      (r) => { const ok = typeof r.baselinePeriodDraws === "number" && r.baselinePeriodDraws > 0; return [r.outcome === "TARGET1" ? 1 : 0, 1, ok ? r.baselinePeriodHits : 0, ok ? r.baselinePeriodDraws : 0]; },
+      { lift: (s) => (s[1] && s[3] ? s[0] / s[1] - s[2] / s[3] : null) }, { B: BOOT.B, seed: VS.seedOf("period|" + label) });
+    a.sensitivityBaselinePeriod = { status: "SENSITIVITY_NOT_PREREGISTERED", baselineRate: +(kp / np).toFixed(4), baselineN: np,
+      lift: a.t1HitRate !== null ? +(a.t1HitRate - kp / np).toFixed(4) : null, liftCi: [bp.stats.lift.lo, bp.stats.lift.hi] };
+  }
   return a;
 }
 function summarize(recs, keyFn, name) {
@@ -545,7 +567,8 @@ async function main() {
                 delisted: delistedMeta, delistedRecords: recs.filter((r) => r.delisted).length,
                 dateRange: [recs.reduce((a, r) => (a && a < r.date ? a : r.date), null), recs.reduce((a, r) => (a && a > r.date ? a : r.date), null)] },
     rules: { profile: prof, splits: SPLITS, entry: "Limit an der nahen Zonenkante, gueltig " + prof.entryWindow + " Bars; Ziel 1 = Zonen-Untergrenze; Invalidation per Schlusskurs; gleiche Bar → Invalidation; Kosten 10 bp je Seite",
-             nonOverlapping: true, baseline: "gleiche Geometrie, sofortiger Einstieg an 3 Zufallsbars desselben Titels" },
+             nonOverlapping: true, baseline: "gleiche Geometrie, sofortiger Einstieg an 3 Zufallsbars desselben Titels",
+             baselinePeriodSensitivity: "zusaetzlich (nicht vorab registriert): 3 Zufallsbars nur im Zeitraum ±" + prof.periodWindow + " Bars um das Signal; Feld sensitivityBaselinePeriod" },
     inference: {
       method: "TWO_WAY_CLUSTER_BOOTSTRAP", B: BOOT.B, timeBlock: BOOT.timeBlock, seed: "FNV-1a(Tabelle|Zeile)",
       schemes: { SYMBOL: "Titel mit Zuruecklegen", TIME: "Kalenderquartale (Signaldatum) mit Zuruecklegen", TWO_WAY: "Cameron-Gelbach-Miller: se² = se²_Titel + se²_Quartal − se²_Zelle, Intervall ± 1,96 se",
