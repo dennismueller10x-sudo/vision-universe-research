@@ -10,7 +10,7 @@ on:
     branches: [main]
     paths: ['vorsorge/**', 'scripts/vorsorge/**', '.github/workflows/vorsorge-ci.yml']
   pull_request:
-    paths: ['vorsorge/**', 'scripts/vorsorge/**', '.github/workflows/vorsorge-ci.yml', 'assets/site-navigation.js']
+    paths: ['vorsorge/**', 'scripts/vorsorge/**', '.github/workflows/vorsorge-ci.yml', '.github/workflows/vorsorge-etf-universe.yml', 'assets/site-navigation.js']
   workflow_dispatch:
 
 jobs:
@@ -38,6 +38,15 @@ jobs:
           grep -q 'vu-navigation' "$page"
           grep -q 'site-navigation.css' "$page"
           grep -q 'keine individuelle Anlage-, Steuer- oder Rechtsberatung' vorsorge/app.js
-          for e in vorsorge-math etf-analytics etf-master etf-provider xray funding monitor; do grep -q "engines/$e.js" "$page" || { echo "$e fehlt"; exit 1; }; done
+          for e in vorsorge-math series-codec etf-taxonomy etf-analytics etf-master etf-provider xray funding monitor; do grep -q "engines/$e.js" "$page" || { echo "$e fehlt"; exit 1; }; done
+      - name: Qualitaets- und Regressions-Gates der Vorsorge-Daten
+        run: node scripts/vorsorge/assert-vorsorge-data.mjs
+      - name: Foerderregeln - Pruefsumme und Primaerquellen
+        run: |
+          node -e "
+          const F=require('./vorsorge/engines/funding.js'),fs=require('fs');
+          for(const f of fs.readdirSync('vorsorge/data/funding-rules').filter(x=>x.endsWith('.json'))){
+            const r=JSON.parse(fs.readFileSync('vorsorge/data/funding-rules/'+f));const e=F.validateRules(r);
+            if(e.length){console.error(f,e);process.exit(1)}console.log(f,r.ruleVersion,r.verification.primaryVerified?'primaer geprueft':'nicht primaer geprueft')}"
       - name: Public-Data-Hygiene
         run: node scripts/market/assert-public-data-hygiene.mjs

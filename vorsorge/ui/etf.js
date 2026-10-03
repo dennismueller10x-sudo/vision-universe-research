@@ -133,7 +133,7 @@
           return st.dir * (x - y);
         });
         var nComplex = all.filter(function (e) { return e.layer === "COMPLEX"; }).length, nArch = all.filter(function (e) { return e.layer === "ARCHIVE"; }).length;
-        host.innerHTML = '<div class="vs-section-head"><div><h2>' + list.length.toLocaleString("de-DE") + ' ETFs</h2><p class="vs-sub">' + (st.complex ? "" : nComplex.toLocaleString("de-DE") + ' komplexe Produkte ausgeblendet · ') + (st.inactive ? "" : nArch + ' inaktive ausgeblendet · ') + 'Stand ' + F.date(m.asOf) + ' · Kursentwicklung ohne Ausschüttungen · Quelle Tiingo</p></div><a class="vs-pill small" href="#/daten">Datenabdeckung</a></div>' +
+        host.innerHTML = '<div class="vs-section-head"><div><h2>' + list.length.toLocaleString("de-DE") + ' ETFs</h2><p class="vs-sub">' + (st.complex ? "" : nComplex.toLocaleString("de-DE") + ' komplexe Produkte ausgeblendet · ') + (st.inactive ? "" : nArch + ' inaktive ausgeblendet · ') + 'Stand ' + F.date(m.asOf) + VS.stale(m.asOf) + ' · Kursentwicklung ohne Ausschüttungen · Quelle Tiingo</p></div><a class="vs-pill small" href="#/daten">Datenabdeckung</a></div>' +
           controls(all) +
           '<div class="vs-table-wrap"><table class="vs-table"><caption class="vs-sr">ETF-Screener, sortierbar</caption><thead><tr>' + COLS.map(function (c) {
             return '<th scope="col" data-sort="' + c.id + '"' + (c.id === st.sort ? ' aria-sort="' + (st.dir < 0 ? "descending" : "ascending") + '"' : "") + ' tabindex="0">' + esc(c.label) + '</th>';
@@ -237,7 +237,7 @@
     var q = d.quality || {}, mt = d.metrics, pv = d.provenance || {};
     return '<div class="vs-card soft"><p class="vs-label">Datenqualität & Stand</p>' +
       '<div class="vs-row"><span>Quelle</span><span>' + esc((pv.sources || d.sources || []).join(", ")) + '</span></div>' +
-      '<div class="vs-row"><span>Stand der Kurse</span><span>' + F.date(mt && mt.asOf) + '</span></div>' +
+      '<div class="vs-row"><span>Stand der Kurse</span><span>' + F.date(mt && mt.asOf) + VS.stale(mt && mt.asOf, d.status === "INACTIVE" ? 100000 : 7) + '</span></div>' +
       '<div class="vs-row"><span>Stand der Stammdaten</span><span>' + (pv.retrievedAt ? F.date(pv.retrievedAt) : "Repository-Auszug") + '</span></div>' +
       '<div class="vs-row"><span>Klassifikation</span><span style="text-align:right">' + esc(pv.classificationMethod || "–") + ' · Konfidenz ' + esc(pv.classificationConfidence || "–") + '</span></div>' +
       '<div class="vs-row"><span>Renditebasis</span><span>' + esc(mt ? mt.basisLabel : "–") + (d.metricsTotal ? " + Gesamtrendite" : "") + '</span></div>' +

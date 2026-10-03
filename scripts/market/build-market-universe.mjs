@@ -65,7 +65,7 @@ const WORK_DIR = arg("--work-dir") || join(root, SCALE.storage.workingDir, "tiin
    fuer dreissig Zeilen. Er liest das zentrale Verzeichnis (nicht die
    lokalen Kopfsaetze), weil dort die Groessen auch dann stehen, wenn der
    Erzeuger einen Data Descriptor benutzt hat. */
-export function readSingleFileFromZip(buffer) {
+function readSingleFileFromZip(buffer) {
   const EOCD = 0x06054b50;
   let eocd = -1;
   for (let i = buffer.length - 22; i >= 0 && i > buffer.length - 65558; i--) {

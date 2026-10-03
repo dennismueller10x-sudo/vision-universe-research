@@ -74,6 +74,12 @@
     years: function (y) { return y === null || y === undefined ? "–" : y < 1 ? Math.round(y * 12) + " Monate" : y.toLocaleString("de-DE", { maximumFractionDigits: 1 }) + " Jahre"; }
   };
 
+  /** Veralteter Datenstand: mehr als `days` Kalendertage seit dem letzten Kurstag. */
+  VS.stale = function (asOf, days) {
+    if (!asOf) return '<span class="vs-badge bad">Datenstand unbekannt</span>';
+    var age = Math.floor((Date.now() - Date.parse(asOf + "T00:00:00Z")) / 864e5);
+    return age > (days || 7) ? ' <span class="vs-badge complex" title="Der letzte Kurstag liegt ' + age + ' Tage zurück.">Daten ' + age + ' Tage alt</span>' : "";
+  };
   VS.esc = function (s) { return String(s === null || s === undefined ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   VS.REGION = (V.Master && V.Master.REGION_LABEL) || {};
   VS.ASSET = { EQUITY: "Aktien", BOND: "Anleihen", MONEY_MARKET: "Geldmarkt", COMMODITY: "Rohstoffe", CRYPTO: "Krypto", REAL_ESTATE: "Immobilien", MULTI_ASSET: "Mischfonds", UNKNOWN: "Nicht zugeordnet" };

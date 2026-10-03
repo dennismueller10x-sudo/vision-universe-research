@@ -188,7 +188,7 @@ async function main() {
   }
 
   // Phase A
-  const { parseCsv, readSingleFileFromZip } = await import("../market/build-market-universe.mjs");
+  const { parseCsv, readSingleFileFromZip } = await import("./tiingo-catalog.mjs");
   const zip = await get(TICKERS_URL, true);
   if (!zip.ok) { console.error("Tickerliste nicht abrufbar: HTTP " + zip.status); process.exit(1); }
   const cat = catalog(parseCsv(readSingleFileFromZip(zip.body).text).rows);
