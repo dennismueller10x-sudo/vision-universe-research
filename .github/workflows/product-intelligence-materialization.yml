@@ -122,6 +122,11 @@ jobs:
           # Gesamtrendite-Vertrag vom zuletzt materialisierten ab, wird neu
           # gerechnet - ohne force (scripts/quant/methodology-fingerprint.mjs).
           METHOD=$(node scripts/quant/methodology-fingerprint.mjs --compare | sed 's/^changed=//')
+          # Eingabe gegen Ausgabe: wann entstanden die Faktorzeilen, wann die
+          # daraus gerechnete Evidenz? (ISO-Zeitstempel, lexikografisch vergleichbar)
+          FACTORS_AT=$(node -e 'try{console.log(require("./quant/data/market/factors/factors-FULL_UNIVERSE.json").generatedAt||"")}catch{console.log("")}')
+          EVIDENCE_AT=$(node -e 'try{const z=require("zlib"),fs=require("fs");console.log(JSON.parse(z.gunzipSync(fs.readFileSync("quant/data/product/factor-evidence-v1/screening.json.gz"))).generatedAt||"")}catch{console.log("")}')
+          echo "Faktorzeilen: ${FACTORS_AT:-unbekannt} · Faktor-Evidenz: ${EVIDENCE_AT:-unbekannt}"
           echo "Methodik geaendert: ${METHOD:-nein}"
           if [ "${{ github.event_name == 'workflow_dispatch' && inputs.force == true }}" = "true" ]; then
             echo "noop=false" >> "$GITHUB_OUTPUT"
@@ -129,6 +134,13 @@ jobs:
           elif [ -n "$METHOD" ]; then
             echo "noop=false" >> "$GITHUB_OUTPUT"
             echo "::notice::Methodikwechsel ($METHOD) - Stichtag $STORE wird neu materialisiert."
+          elif [ -n "$FACTORS_AT" ] && { [ -z "$EVIDENCE_AT" ] || [[ "$FACTORS_AT" > "$EVIDENCE_AT" ]]; }; then
+            # Gleicher Stichtag, neuere Eingabe: der Marktlauf hat Faktorzeilen
+            # nachgeliefert (03.10.2026: 6.433 -> 6.745 Zeilen am Stichtag
+            # 02.10., Evidenz blieb bei 6.289 - Liste und Aktienseite waren
+            # uneins, launch-gates/screener-surface auf main rot).
+            echo "noop=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Faktorzeilen ($FACTORS_AT) neuer als die Faktor-Evidenz (${EVIDENCE_AT:-keine}) - Stichtag $STORE wird nachgezogen."
           elif [ -n "$STORE" ] && [ "$STORE" = "$PRODUCT" ]; then
             echo "noop=true" >> "$GITHUB_OUTPUT"
             echo "::notice::Produktstand entspricht der Ablage ($STORE) - nichts zu materialisieren."
