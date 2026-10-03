@@ -1,7 +1,7 @@
 {
  "schemaVersion": "backtest-certification-1.0.0",
- "generatedAt": "2026-10-02T22:16:46.786Z",
- "asOf": "2026-10-02",
+ "generatedAt": "2026-10-03T00:34:58.011Z",
+ "asOf": "2026-10-03",
  "methodology": "backtest-certification-1.0.0",
  "kinds": [
   {
@@ -1327,7 +1327,7 @@
      "label": "Stände unverändert (contentHash)",
      "category": "HARD",
      "state": "PASS",
-     "value": "6 von 6 geprüft",
+     "value": "7 von 7 geprüft",
      "required": null,
      "reason": null
     },
@@ -1345,7 +1345,7 @@
      "label": "veröffentlichte Stichtage",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": 6,
+     "value": 7,
      "required": 120,
      "reason": "SETUP_HISTORY_TOO_SHORT"
     },
@@ -1354,7 +1354,7 @@
      "label": "Spanne der Historie",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "21 Tage",
+     "value": "22 Tage",
      "required": "180 Tage",
      "reason": "SETUP_HISTORY_SPAN_TOO_SHORT"
     },
@@ -1438,14 +1438,14 @@
      "id": "historyDates",
      "category": "HISTORY",
      "reason": "SETUP_HISTORY_TOO_SHORT",
-     "value": 6,
+     "value": 7,
      "required": 120
     },
     {
      "id": "historySpan",
      "category": "HISTORY",
      "reason": "SETUP_HISTORY_SPAN_TOO_SHORT",
-     "value": "21 Tage",
+     "value": "22 Tage",
      "required": "180 Tage"
     },
     {
@@ -1493,25 +1493,25 @@
    ],
    "eta": {
     "historyDates": {
-     "remaining": 114,
+     "remaining": 113,
      "date": "2027-03-10"
     },
     "firstCompletedM6": "2027-03-26"
    },
    "progress": {
-    "historyDates": 6,
-    "spanDays": 21,
+    "historyDates": 7,
+    "spanDays": 22,
     "transitions": {
-     "SETUP_CONFIRMED": 60,
-     "SETUP_NEW": 541,
-     "SETUP_WEAKENED": 859
+     "SETUP_CONFIRMED": 69,
+     "SETUP_NEW": 643,
+     "SETUP_WEAKENED": 929
     },
     "completedM6": 0,
-    "contractTradesCompleted": 147
+    "contractTradesCompleted": 192
    },
    "replay": {
     "role": "PIT-Nachweis der Engine (rekonstruiert, keine Ergebnisquelle)",
-    "parity": "871/871",
+    "parity": "1012/1012",
     "mismatches": 0
    }
   },
@@ -1552,7 +1552,7 @@
      "label": "Monate mit Faktor-Snapshots",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "2 (6 Stände seit 2026-09-23)",
+     "value": "2 (7 Stände seit 2026-09-23)",
      "required": 24,
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
@@ -1606,7 +1606,7 @@
      "id": "factorHistory",
      "category": "HISTORY",
      "reason": "FACTOR_HISTORY_TOO_SHORT",
-     "value": "2 (6 Stände seit 2026-09-23)",
+     "value": "2 (7 Stände seit 2026-09-23)",
      "required": 24
     }
    ],
@@ -1618,7 +1618,7 @@
      "latest": "2026-09-26",
      "maxGapDays": 11,
      "medianGapDays": 11,
-     "staleDays": 6
+     "staleDays": 7
     },
     "NDX": {
      "snapshots": 2,
@@ -1627,7 +1627,7 @@
      "latest": "2026-09-26",
      "maxGapDays": 11,
      "medianGapDays": 11,
-     "staleDays": 6
+     "staleDays": 7
     },
     "DJIA": {
      "snapshots": 2,
@@ -1636,15 +1636,15 @@
      "latest": "2026-09-26",
      "maxGapDays": 11,
      "medianGapDays": 11,
-     "staleDays": 6
+     "staleDays": 7
     }
    },
    "factor": {
     "version": "vu-factor-evidence-2.0.0",
-    "snapshots": 6,
+    "snapshots": 7,
     "months": 2,
     "earliest": "2026-09-23",
-    "latest": "2026-10-01",
+    "latest": "2026-10-02",
     "maxGapDays": 3,
     "medianGapDays": 1,
     "staleDays": 1
@@ -1656,7 +1656,7 @@
     },
     "factor": {
      "remaining": 22,
-     "date": "2028-07-31"
+     "date": "2028-08-01"
     }
    }
   },
@@ -1756,7 +1756,7 @@
    "eta": {
     "factor": {
      "remaining": 22,
-     "date": "2028-07-31"
+     "date": "2028-08-01"
     }
    }
   }

@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-10-02T22:06:40.000Z",
- "asOf": "2026-10-01",
+ "generatedAt": "2026-10-03T00:20:10.000Z",
+ "asOf": "2026-10-02",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -323,13 +323,13 @@
    "predicateHash": null
   }
  ],
- "universe": 5874,
- "observed": 5874,
+ "universe": 5876,
+ "observed": 5876,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4502,
-  "WATCH": 811,
-  "SETUP_FORMING": 537,
+  "NO_SETUP": 4479,
+  "WATCH": 796,
+  "SETUP_FORMING": 577,
   "CONFIRMED": 24,
   "ACTIVE": 0,
   "RISK_RISING": 0,
@@ -337,10 +337,10 @@
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 537,
-  "setup.none.fallback": 4502,
-  "setup.watch.bullish-trend": 506,
-  "setup.watch.confirmed-structure-near-high": 305,
+  "setup.forming.complete-setup-awaiting-trigger": 577,
+  "setup.none.fallback": 4479,
+  "setup.watch.bullish-trend": 488,
+  "setup.watch.confirmed-structure-near-high": 308,
   "setup.confirmed.structure-trend-volume": 24
  },
  "pathTier": {
@@ -365,14 +365,15 @@
    "2026-09-25",
    "2026-09-28",
    "2026-09-30",
-   "2026-10-01"
+   "2026-10-01",
+   "2026-10-02"
   ],
   "minimumRequired": 2
  },
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5874
+   "instruments": 5876
   }
  },
  "shards": [
@@ -1013,16 +1014,5 @@
   "ZZ",
   "Z_"
  ],
- "observationDrift": {
-  "asOf": "2026-10-01",
-  "publishedHash": "740788e63ad316791925b64d5563c460",
-  "recomputedHash": "c637ad98528f7f30f511a7ef0ed9c454",
-  "rowsPublished": 5882,
-  "rowsToday": 5874,
-  "rowsAdded": 0,
-  "rowsChanged": 8,
-  "addedOnly": false,
-  "columnsDiffer": false,
-  "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt - auch nicht durch eine, die nur Zeilen hinzufuegen wuerde."
- }
+ "observationDrift": null
 }
