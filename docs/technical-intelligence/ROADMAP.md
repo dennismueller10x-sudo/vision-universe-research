@@ -48,3 +48,14 @@
 3. **Abschluss vs. laufend** — die häufigste sichere Fehlentscheidung: drei Wellen eines laufenden Impulses als fertiges Zigzag (D2). Zusatzmerkmal für Anwendbarkeit; HOLDOUT-4.
 4. **Rauschgenerator mit Random-Walk-Anteil** (Generator-Audit M1) und ein Generator eines externen Autors.
 5. **Mehrere Zeitebenen** (Woche/Tag-Konsistenz 60 %): Tagesstruktur als Unterteilung der laufenden Wochenwelle prüfen.
+
+## Nach Mission IV (nur externe Abhängigkeiten)
+
+1. **Blinde Expertenannotation** — Werkbank `quant/research/elliott-workbench/` (210 Fälle, 30 versiegelt), ≥ 2 Personen je Fall; Auswertung `node scripts/technical/elliott-expert-agreement.mjs <exports>`.
+2. **Tagesdaten-Evidenz für das Universum** — `technical-intelligence-evidence.yml` nach Merge auf den Default-Branch manuell starten (R2-Daten).
+3. **Survivorship** — Delisting-Bündel in CI an `ti-evidence.mjs` anbinden.
+4. **Earnings-Kalender, Corporate Events, historische Indexmitgliedschaft** — Datenquellen beschaffen.
+5. **Juristische Prüfung** der Szenario-Begriffe und Watchlist-Ereignisse.
+6. **Push/E-Mail-Zustellung** der Watchlist-Ereignisse (Infrastruktur).
+7. **Nutzerstudie** zur Verständlichkeit von Szenario, Invalidation und Enthaltung.
+8. **Neue Elliott-Engine nur mit unabhängigem Maßstab** (Experten-Referenz statt Eigen-Generator); erst dann ein neuer Holdout.

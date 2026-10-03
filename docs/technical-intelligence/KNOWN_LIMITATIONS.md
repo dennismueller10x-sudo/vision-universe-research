@@ -65,3 +65,14 @@
 41. **Beobachtbare Wahrheit selektiert.** Das Gate wertet nur Fälle, deren Muster im Kursbild regelkonform ist (69,5 % bei n/l/m, 27,7 % bei hohem Rauschen); strikte Werte liegen 10–15 Punkte niedriger und werden immer mitberichtet.
 42. **Generatoren vom selben Projekt.** C2 ist im Code unabhängig, im Entwurf an dieselbe Aufgabenbeschreibung gebunden; Rauschen mean-revertierend (Varianzverhältnis 0,1 statt 0,56 bei echten Aktien).
 43. **Keine Expertenvalidierung.** Blindmodus und Übereinstimmungsauswertung sind gebaut (`?blind=1`, `elliott-expert-agreement.mjs`), aber es liegen keine Annotationen vor (Status BLOCKED).
+
+## Mission IV (Abschluss, siehe FINAL_OPEN_ITEM_MATRIX.md)
+
+44. **Kein Engine 3.3, kein HOLDOUT-4.** Die Vorstudie auf VALIDATION fand keine Änderung, die Muster, Grad oder hohes Rauschen verbessert (WXY-Prior-Sweep ohne Gewinn). Ein HOLDOUT-4 wäre vorhersehbar erneut FAIL. Das HOLDOUT-3-Urteil FAIL gilt.
+45. **Laufende Muster werden kaum erkannt.** Auf VALIDATION sind laufende Hauptzählungen zu 8,7 % richtig; 48,6 % werden als abgeschlossen gelesen (meist als WXY). Der Anwendbarkeitswert ist auf laufenden Stufen invers (AUC 0,33). Engine 3.2.2 senkt deshalb abgeschlossene WXY auf NIEDRIG; verbleibende sichere Aussagen auf laufenden Mustern: 45 (alle falsch) statt 182.
+46. **Korpus taugt nicht als Qualitäts-Gate** (Generator-Audit 2): Generator und Engine teilen Annahmen (Unterteilung, Ursprungsextreme), Rauschen ist mean-revertierend (Varianzverhältnis 0,07–0,12 statt 0,61–0,80 echt), die beobachtbare Wahrheit nutzt den Unterteilungsklassifikator der Engine und schließt fast nur Fehlschläge aus. Er bleibt Regressions- und Plausibilitätsprüfung.
+47. **Woche/Tag-Konsistenz real schwach.** Hierarchiegerechte Kennzahl 52–59 % gegenüber Zufallsbasis ≈ 49 %; kein Titel ist auf beiden Zeitebenen gleichzeitig anwendbar.
+48. **Unmögliche Kursniveaus bis Mission IV.** Rund 6 % der Titel trugen Ziele ≤ 0 oder Niveaus > Faktor 10 vom Kurs; behoben in ti-scenario-1.1.0 (Produktneubau nötig, siehe Bericht).
+49. **Alerts nur in der App.** Push/E-Mail fehlen (keine Zustell-Infrastruktur).
+50. **VU Ask:** Das Sprachmodell sieht die Chartbild-Werte nicht; die Werte stammen deterministisch aus dem Index im Browser.
+51. **Regulatorik:** Begriffe „Einstiegszone“, „Ziel“ und personalisierte Watchlist-Ereignisse — LEGAL REVIEW REQUIRED.

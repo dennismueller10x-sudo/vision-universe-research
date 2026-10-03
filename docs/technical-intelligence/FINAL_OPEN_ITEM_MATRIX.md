@@ -32,6 +32,7 @@ Das System ist **nicht expert-validiert**. Die Elliott-Engine hat ihr vorab regi
 | Qualitätsmodell nur „fertig vs. laufend“? | §23 | offen | ja | nein | – | AUC innerhalb der Stufen | abgeschlossen 0,88 (trennt echt), laufend 0,33 (versagt) | DONE (Befund; laufend ohnehin NIEDRIG) |
 | Gradwahl / hohes Rauschen | KL 26, 33, 39 | offen | nur mit neuer Methode | nein | keine tragfähige Idee ohne Generator-Overfit | – | – | REJECTED (§108) |
 | typePrior über input.engine ignoriert | Mission IV | Bug | ja | nein | – | behoben (Standard unverändert) | – | DONE |
+| Korpus als Qualitäts-Gate | Generator-Audit 2 (Mission IV) | Gate-Grundlage | nur teilweise | ja (unabhängige Labels, echte Basisraten) | Generator–Engine-Kopplung (Unterteilung, Ursprungsextreme), unrealistisches Rauschen, zirkuläre beobachtbare Wahrheit | Audit 2 dokumentiert; Korpus auf Regressions-/Plausibilitätsprüfung zurückgestuft | Gate-Ergebnisse aller Holdouts sind nur eingeschränkt aussagekräftig | PARTIAL → BLOCKED (unabhängiger Maßstab) |
 | Expertenvalidierung | KL 35, 43 | BLOCKED | Infrastruktur ja | ja (echte Experten) | keine Annotationen | blinde Werkbank: 210 Fälle, versiegelte Antworten, Doppelannotation, Kappas, Audit-Log | Status BLOCKED – no expert annotations | BLOCKED |
 | Quellen nur Kapitelebene | KL 29 | offen | nein | ja (Volltext/Rechte) | – | – | – | BLOCKED |
 | Referenzsammlung synthetisch | KL 30 | offen | nein | ja (Rechte, Experten) | – | – | – | BLOCKED |
