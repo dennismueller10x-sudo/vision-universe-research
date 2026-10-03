@@ -87,3 +87,6 @@ Logs zeigen nur Zählwerte.
 | dev-smoke (Run 37132495954, 600 Reihen) | Technisch bestanden: alle 12 Versuche und Kontrollen gerechnet, Endwert = Barmittel + Positionen (Abweichung 0), Entwicklungssperre aktiv (Zeitraum endet 2021-12-31). |
 
 **Bekannte Eigenschaft (keine Regeländerung):** Die Vorlaufzeit beginnt am 02.01.2015; mit der Mindesthistorie von 273 Handelstagen ist zum ersten Stichtag (29.01.2016) noch kein Titel zulässig. Das Depot ist deshalb im Februar 2016 vollständig in bar, während SPY ab dem 29.01.2016 zählt. Der Effekt wirkt gegen die Strategie.
+| dev HS1 (Run 37132733753) | Alle 12 gleichgewichteten Versuche unter SPY → TESTED_NO_EDGE, Holdout nicht geöffnet (DECISION-HS1.json). |
+| dev HS2 (Run 37134594360) | Überrendite stammt aus dem Größenersatz, nicht aus der Faktorneigung; PBO > 0,5 → TESTED_NO_EDGE, Holdout nicht geöffnet (DECISION-HS2.json). |
+| SEC r13 (Run 37136875082) | Aktienanzahl zum Einreichungsdatum für 7 242 von 9 533 Listings (dei 6 724, Durchschnittsaktien 518); Grundlage für HS3. |
