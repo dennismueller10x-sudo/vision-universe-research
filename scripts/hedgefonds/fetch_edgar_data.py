@@ -221,17 +221,25 @@ def parse_info_table_xml(xml_bytes):
     return holdings
 
 
-def parse_cover_totals(xml_bytes):
-    """tableValueTotal / tableEntryTotal aus primary_doc.xml."""
+def parse_cover(xml_bytes):
+    """Deckblatt (primary_doc.xml): tableValueTotal, tableEntryTotal und bei
+    Änderungsmeldungen die Art (RESTATEMENT ersetzt, NEW HOLDINGS ergänzt)."""
     root = ET.fromstring(xml_bytes)
-    value = entries = None
+    out = {"value": None, "entries": None, "amendmentType": ""}
     for el in root.iter():
         n = local_name(el.tag)
         if n == "tableValueTotal":
-            value = to_float(el.text)
+            out["value"] = to_float(el.text)
         elif n == "tableEntryTotal":
-            entries = int(to_float(el.text))
-    return value, entries
+            out["entries"] = int(to_float(el.text))
+        elif n == "amendmentType":
+            out["amendmentType"] = (el.text or "").strip().upper()
+    return out
+
+
+def parse_cover_totals(xml_bytes):
+    c = parse_cover(xml_bytes)
+    return c["value"], c["entries"]
 
 
 def normalize_units(rows):
@@ -273,17 +281,69 @@ def fetch_filing_holdings(cik_int, accession, names=None):
     raise RuntimeError("Info-Table-XML konnte nicht geparst werden.")
 
 
-def fetch_cover_total(cik_int, filing):
+def fetch_cover(cik_int, filing):
     names = filing_index(cik_int, filing["accession"])
     if "primary_doc.xml" not in names:
+        return None, names
+    cover = parse_cover(sec_get(
+        f"https://www.sec.gov/Archives/edgar/data/{cik_int}/{acc_no_dashes(filing['accession'])}/primary_doc.xml"))
+    if cover["value"] is not None and filing["filedDate"] < "2023-01-03":  # alte Spezifikation: Tausend USD
+        cover["value"] *= 1000
+    return cover, names
+
+
+def period_filings(filings_13f, period):
+    return sorted((f for f in filings_13f if f["reportDate"] == period), key=lambda f: f["filedDate"])
+
+
+def is_restatement(filing, cover):
+    return filing["form"] == "13F-HR" or "RESTATEMENT" in (cover or {}).get("amendmentType", "")
+
+
+def fetch_period_positions(cik_int, filings_13f, period):
+    """Positionen einer Periode inkl. Änderungsmeldungen: 13F-HR/A vom Typ
+    RESTATEMENT ersetzen das Portfolio, NEW HOLDINGS ergänzen es (real
+    beobachtet: Jana Q1 2026 – die jüngste Meldung enthielt nur eine
+    nachgereichte Position). Liefert (Positionen, jüngstes Filing)."""
+    rows, used = None, None
+    for f in period_filings(filings_13f, period):
+        cover = None
+        if f["form"] != "13F-HR":
+            cover, names = fetch_cover(cik_int, f)
+        else:
+            names = None
+        try:
+            new_rows = fetch_filing_holdings(cik_int, f["accession"], names)
+        except RuntimeError as exc:
+            print(f"  {f['form']} {f['accession']} ohne Positionen ({exc}) – übersprungen", file=sys.stderr)
+            continue
+        if rows is None or is_restatement(f, cover):
+            rows = new_rows
+        else:
+            rows = rows + new_rows
+            print(f"  {f['accession']}: Ergänzung ({(cover or {}).get('amendmentType') or 'NEW HOLDINGS'}) "
+                  f"mit {len(new_rows)} Zeilen zusammengeführt", file=sys.stderr)
+        used = f
+    if rows is None:
+        raise RuntimeError(f"Keine Positionen für {period}")
+    return aggregate_positions(rows), used
+
+
+def fetch_period_total(cik_int, filings_13f, period):
+    """Portfoliowert einer Periode aus den Deckblättern (gleiche Regel)."""
+    total = entries = None
+    for f in period_filings(filings_13f, period):
+        cover, _ = fetch_cover(cik_int, f)
+        if not cover or cover["value"] is None:
+            continue
+        if total is None or is_restatement(f, cover):
+            total, entries = cover["value"], cover["entries"]
+        else:
+            total += cover["value"]
+            entries = (entries or 0) + (cover["entries"] or 0)
+    if total is None:
         return None
-    value, entries = parse_cover_totals(
-        sec_get(f"https://www.sec.gov/Archives/edgar/data/{cik_int}/{acc_no_dashes(filing['accession'])}/primary_doc.xml"))
-    if value is None:
-        return None
-    if filing["filedDate"] < "2023-01-03":  # alte Spezifikation: Tausend USD
-        value *= 1000
-    return {"period": filing["reportDate"], "valueUSD": value, "positions": entries}
+    return {"period": period, "valueUSD": total, "positions": entries}
 
 
 # ------------------------------------------------- Positionen & Trades
@@ -722,7 +782,8 @@ def fts_newer_ciks(meta, min_period, exclude):
     for pattern in [meta["match"]] + list(meta.get("altMatch") or []):
         q = urllib.parse.quote(f'"{pattern.title()}"')
         try:
-            res = sec_get_json(f"https://efts.sec.gov/LATEST/search-index?q={q}&forms=13F-HR,13F-HR/A")
+            res = sec_get_json(f"https://efts.sec.gov/LATEST/search-index?q={q}&forms=13F-HR,13F-HR/A"
+                               f"&dateRange=custom&startdt={min_period}&enddt={date.today().isoformat()}")
         except Exception as exc:  # noqa: BLE001
             print(f"  Volltextsuche nicht möglich: {exc}", file=sys.stderr)
             continue
@@ -733,8 +794,7 @@ def fts_newer_ciks(meta, min_period, exclude):
                 cik = str(cik).zfill(10)
                 if pattern in name.upper() and cik not in exclude and period >= min_period:
                     out.append((cik, name, period))
-    if out:
-        print(f"  Volltextsuche: {sorted(set(out))[:5]}", file=sys.stderr)
+    print(f"  Volltextsuche: {sorted(set(out))[:5] or 'keine neuere Meldung gefunden'}", file=sys.stderr)
     return sorted(set(out), key=lambda t: t[2], reverse=True)
 
 
@@ -762,20 +822,9 @@ def build_fund_record(meta, cik, sub, filings):
     current = periods[0]
     prev = periods[1] if len(periods) > 1 else None
 
-    cur_rows = fetch_filing_holdings(cik_int, current["accession"])
-    cur_pos = aggregate_positions(cur_rows)
+    cur_pos, latest_filing = fetch_period_positions(cik_int, filings_13f, current["reportDate"])
+    current = {**current, **latest_filing}
     total = sum(h["valueUSD"] for h in cur_pos)
-
-    # Ein 13F-HR/A ergänzt manchmal nur einzelne Zeilen. Hat das jüngste
-    # Filing einer Periode deutlich weniger Positionen als das ursprüngliche,
-    # wird das ursprüngliche 13F-HR verwendet.
-    if current["form"] == "13F-HR/A":
-        originals = [f for f in filings_13f if f["reportDate"] == current["reportDate"] and f["form"] == "13F-HR"]
-        if originals:
-            orig_pos = aggregate_positions(fetch_filing_holdings(cik_int, originals[0]["accession"]))
-            if len(orig_pos) > len(cur_pos) * 2:
-                cur_pos, current = orig_pos, {**originals[0]}
-                total = sum(h["valueUSD"] for h in cur_pos)
 
     record = {
         "slug": meta["slug"], "cik": cik, "name": meta["name"],
@@ -793,7 +842,7 @@ def build_fund_record(meta, cik, sub, filings):
 
     trades = {}
     if prev:
-        prev_pos = aggregate_positions(fetch_filing_holdings(cik_int, prev["accession"]))
+        prev_pos, _ = fetch_period_positions(cik_int, filings_13f, prev["reportDate"])
         prev_total = sum(h["valueUSD"] for h in prev_pos)
         record["prevTotalValueUSD"] = round(prev_total)
         record["prevPositionCount"] = len(prev_pos)
@@ -807,7 +856,7 @@ def build_fund_record(meta, cik, sub, filings):
                         "positions": record["prevPositionCount"]})
     for f in periods[2:]:
         try:
-            h = fetch_cover_total(cik_int, f)
+            h = fetch_period_total(cik_int, filings_13f, f["reportDate"])
             if h:
                 history.append({**h, "valueUSD": round(h["valueUSD"])})
         except Exception as exc:  # noqa: BLE001
@@ -952,9 +1001,27 @@ OPENFIGI_URL = "https://api.openfigi.com/v3/mapping"
 FIGI_MAX_REQUESTS = 400
 
 
+def figi_pick(data):
+    eq = [x for x in data if x.get("marketSector") == "Equity"] or data
+    us = [x for x in eq if x.get("exchCode") in ("US", "UN", "UW", "UQ", "UA", "UR", "UP")]
+    return (us or eq)[0]
+
+
 def update_cusip_map(cusips_by_priority):
+    """CUSIP -> Ticker über OpenFIGI, zwischengespeichert.
+
+    Cache-Werte: {"ticker": ...} gefunden, {"ticker": None} endgültig nicht
+    zuordenbar, null = mit US-CUSIP nicht gefunden, zweiter Versuch steht
+    aus. Nummern mit Buchstaben vorne sind CINS (ausländische Emittenten,
+    z.B. ASML N07059210) und brauchen idType ID_CINS; ohne Börsenfilter
+    wird dann die Heimatbörse gefunden."""
     cmap = load_json(CUSIP_MAP_PATH, {})
-    todo = [c for c in cusips_by_priority if c and len(c) == 9 and c not in cmap]
+    wanted = [c for c in dict.fromkeys(cusips_by_priority) if c and len(c) == 9]
+    jobs = [(c, {"idType": "ID_CUSIP", "idValue": c, "exchCode": "US"}) for c in wanted if c not in cmap]
+    for c in wanted:
+        if c in cmap and cmap[c] is None:
+            kind = "ID_CINS" if c[0].isalpha() else "ID_CUSIP"
+            jobs.append((c, {"idType": kind, "idValue": c}))
     key = os.environ.get("OPENFIGI_API_KEY")
     batch = 100 if key else 10
     pause = 0.3 if key else 2.6
@@ -962,13 +1029,13 @@ def update_cusip_map(cusips_by_priority):
     if key:
         headers["X-OPENFIGI-APIKEY"] = key
     requests_done = 0
-    print(f"OpenFIGI: {len(todo)} neue CUSIPs (Cache: {len(cmap)})", file=sys.stderr)
-    for i in range(0, len(todo), batch):
+    print(f"OpenFIGI: {len(jobs)} Abfragen offen (Cache: {len(cmap)})", file=sys.stderr)
+    for i in range(0, len(jobs), batch):
         if requests_done >= FIGI_MAX_REQUESTS:
             print("  Limit pro Lauf erreicht; Rest folgt beim nächsten Lauf.", file=sys.stderr)
             break
-        chunk = todo[i:i + batch]
-        body = json.dumps([{"idType": "ID_CUSIP", "idValue": c, "exchCode": "US"} for c in chunk]).encode()
+        chunk = jobs[i:i + batch]
+        body = json.dumps([j for _, j in chunk]).encode()
         try:
             res = json.loads(http_get(OPENFIGI_URL, headers=headers, data=body))
         except Exception as exc:  # noqa: BLE001
@@ -976,12 +1043,14 @@ def update_cusip_map(cusips_by_priority):
             time.sleep(10)
             requests_done += 1
             continue
-        for c, r in zip(chunk, res):
-            if "data" in r and r["data"]:
-                d = next((x for x in r["data"] if x.get("marketSector") == "Equity"), r["data"][0])
-                cmap[c] = {"ticker": (d.get("ticker") or "").replace("/", "-"), "name": d.get("name")}
+        for (c, job), r in zip(chunk, res):
+            if r.get("data"):
+                d = figi_pick(r["data"])
+                cmap[c] = {"ticker": (d.get("ticker") or "").replace("/", "-") or None, "name": d.get("name"),
+                           "exch": d.get("exchCode")}
             elif "warning" in r:
-                cmap[c] = None  # nicht zuordenbar (z.B. Anleihe, Optionsschein)
+                # erster Versuch (US) -> null, zweiter Versuch -> endgültig
+                cmap[c] = None if "exchCode" in job else {"ticker": None}
         requests_done += 1
         time.sleep(pause)
     write_json_if_changed(CUSIP_MAP_PATH, cmap, indent=0)
@@ -998,6 +1067,9 @@ def enrich(item, cmap, stocks, logos):
     m = cmap.get(item.get("cusip") or "")
     if m and m.get("ticker"):
         t = m["ticker"]
+        if m.get("exch") and m["exch"] not in ("US", "UN", "UW", "UQ", "UA", "UR", "UP"):
+            item["ticker"] = t  # Heimatbörsen-Kürzel, kein Discover-Link
+            return item
         item["ticker"] = t
         if t in stocks:
             item["discover"] = True

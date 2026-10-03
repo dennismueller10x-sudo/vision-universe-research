@@ -177,12 +177,14 @@
     var top = (f.top || []).filter(function (h) { return !h.putCall; }).slice(0, 3);
     var tc = f.tradeCounts;
     var foot = [];
-    foot.push('<span class="hf-badge">' + quarter(f.reportDate) + "</span>");
+    var behind = S.data.latestPeriod && f.reportDate < S.data.latestPeriod;
+    foot.push('<span class="hf-badge' + (behind ? " warn" : "") + '"' + (behind ? ' title="Für ' + esc(S.data.latestPeriodLabel) + ' liegt noch keine Meldung vor"' : "") + ">" +
+      (behind ? "Stand " : "") + quarter(f.reportDate) + "</span>");
     if (tc) {
       if (tc["new"]) foot.push('<span class="hf-badge new">' + tc["new"] + " neu</span>");
       if (tc.sold) foot.push('<span class="hf-badge down">' + tc.sold + " verkauft</span>");
     }
-    if (f.stale || f.note) foot.push('<span class="hf-badge warn">' + (f.stale ? "Meldet nicht mehr aktuell" : "Hinweis") + "</span>");
+    if (f.stale) foot.push('<span class="hf-badge warn">Meldet nicht mehr</span>');
     return '<a class="hf-card' + (featured ? " featured" : "") + '" href="#/fonds/' + esc(f.slug) + '" style="--tt:var(' + hueVar(f.slug) + ')">' +
       '<div class="hf-card-top">' + avatar(f) + "<div><h3>" + esc(f.manager || f.name) + '</h3><div class="fund">' + esc(f.name) +
       '</div><span class="style">' + esc(f.style || "") + "</span></div></div>" +
@@ -486,7 +488,8 @@
           "<h1>" + esc(f.manager || f.name) + "</h1>" +
           '<p class="sub">' + esc(f.manager ? f.name : d.secName) + (d.secName && f.manager ? ' · <span style="color:var(--muted)">SEC-Filer: ' + esc(d.secName) + "</span>" : "") + "</p>" +
           (f.bio ? '<p class="bio">' + esc(f.bio) + "</p>" : "") +
-          (f.note ? '<p class="hf-note">' + esc(f.note) + "</p>" : f.stale ? '<p class="hf-note">Letzte Meldung ' + quarter(f.reportDate) + " – dieser Fonds hat für das aktuelle Quartal noch nicht gemeldet.</p>" : "") +
+          (f.note ? '<p class="hf-note">' + esc(f.note) + "</p>" : f.reportDate < S.data.latestPeriod ? '<p class="hf-note">Für ' + esc(S.data.latestPeriodLabel) +
+            " liegt von diesem Fonds bei der SEC noch keine 13F-Meldung vor. Gezeigt wird der Stand " + quarter(f.reportDate) + ".</p>" : "") +
           '<div class="tags"><a class="hf-pill dark" href="' + secLink(d) + '" target="_blank" rel="noopener">13F bei der SEC ↗</a></div>' +
           (photo ? '<p class="hf-credit">Foto: ' + esc(photo.artist) + ", " + (photo.licenseUrl ? '<a href="' + esc(photo.licenseUrl) + '" target="_blank" rel="noopener">' + esc(photo.license) + "</a>" : esc(photo.license)) +
             (photo.sourceUrl ? ' · <a href="' + esc(photo.sourceUrl) + '" target="_blank" rel="noopener">Wikimedia Commons</a>' : "") + "</p>" : "") +

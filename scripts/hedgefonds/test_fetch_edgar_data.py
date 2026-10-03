@@ -92,6 +92,35 @@ class Units(unittest.TestCase):
         self.assertEqual(m.normalize_units(rows)[1], 1)
 
 
+class Amendments(unittest.TestCase):
+    def setUp(self):
+        self.orig = (m.fetch_cover, m.fetch_filing_holdings)
+        rows = {"orig": [{"issuer": "A", "cusip": "A", "valueUSD": 100, "shares": 1, "putCall": ""},
+                         {"issuer": "B", "cusip": "B", "valueUSD": 200, "shares": 2, "putCall": ""}],
+                "add": [{"issuer": "C", "cusip": "C", "valueUSD": 50, "shares": 1, "putCall": ""}],
+                "rest": [{"issuer": "D", "cusip": "D", "valueUSD": 70, "shares": 1, "putCall": ""}]}
+        types = {"add": "NEW HOLDINGS", "rest": "RESTATEMENT"}
+        m.fetch_cover = lambda cik, f: ({"value": 1, "entries": 1, "amendmentType": types.get(f["accession"], "")}, [])
+        m.fetch_filing_holdings = lambda cik, acc, names=None: [dict(r) for r in rows[acc]]
+
+    def tearDown(self):
+        m.fetch_cover, m.fetch_filing_holdings = self.orig
+
+    def f(self, form, acc, filed):
+        return {"form": form, "accession": acc, "filedDate": filed, "reportDate": "2026-03-31"}
+
+    def test_new_holdings_amendment_is_merged(self):
+        fl = [self.f("13F-HR/A", "add", "2026-06-01"), self.f("13F-HR", "orig", "2026-05-15")]
+        pos, used = m.fetch_period_positions("1", fl, "2026-03-31")
+        self.assertEqual(sorted(p["cusip"] for p in pos), ["A", "B", "C"])
+        self.assertEqual(used["accession"], "add")
+
+    def test_restatement_replaces(self):
+        fl = [self.f("13F-HR", "orig", "2026-05-15"), self.f("13F-HR/A", "rest", "2026-06-01")]
+        pos, _ = m.fetch_period_positions("1", fl, "2026-03-31")
+        self.assertEqual([p["cusip"] for p in pos], ["D"])
+
+
 class Meta(unittest.TestCase):
     def test_fund_meta_unique_and_complete(self):
         slugs = [f["slug"] for f in FUND_META]
