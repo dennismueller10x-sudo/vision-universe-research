@@ -179,7 +179,7 @@ function breadthInput(expectedAsOf) {
   const asOfCount = {};
   for (const s of rows) asOfCount[s.asOf] = (asOfCount[s.asOf] || 0) + 1;
   const asOf = Object.entries(asOfCount).sort((a, b) => b[1] - a[1])[0][0];
-  const lows = cnt("distanceTo52wLow", (v) => v <= 0);
+  const extremes = MP.breadthExtremes(rows);
   return {
     rows,
     input: {
@@ -187,8 +187,7 @@ function breadthInput(expectedAsOf) {
       asOf, expectedAsOf,
       above50: cnt("priceAboveSMA50", (v) => v === true),
       above200: cnt("priceAboveSMA200", (v) => v === true),
-      newHighs: (() => { const c = cnt("newHigh52w", (v) => v === true); return { count: c.matched, evaluated: c.evaluated }; })(),
-      newLows: { count: lows.matched, evaluated: lows.evaluated }
+      extremesVersion: extremes.version, newHighs: extremes.newHighs, newLows: extremes.newLows
     }
   };
 }
@@ -303,7 +302,7 @@ function breadthLogUpdate(prev, input, raw) {
   if (raw && input.asOf && !log.some((x) => x.asOf === input.asOf)) {
     log.push({ asOf: input.asOf, state: raw.state, above50Pct: raw.above50Pct, above200Pct: raw.above200Pct,
                newHighs: input.newHighs ? input.newHighs.count : null, newLows: input.newLows ? input.newLows.count : null,
-               evaluated: input.above50.evaluated, source: input.universe.source, sourceGeneratedAt: input.universe.generatedAt,
+               extremesVersion: input.extremesVersion || null, evaluated: input.above50.evaluated, source: input.universe.source, sourceGeneratedAt: input.universe.generatedAt,
                recordedAt: new Date().toISOString() });
   }
   log.sort((a, b) => (a.asOf < b.asOf ? -1 : 1));
