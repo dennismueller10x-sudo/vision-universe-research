@@ -927,7 +927,7 @@
   function renderBacktests(D) {
     var bt = D.backtests, pl = D.pilot, reg = D.registry;
     var sc = reg.evidenceScale || {};
-    main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Backtest Lab' }), h('h1', { text: 'Wie belastbar ist welche Methode?' }), h('p', { class: 'st-lead', text: 'Jede Regelversion trägt eine eigene Evidenzstufe – getrennt von der Qualität ihrer Quellen und ihrer Daten. ' + (sc.noPromise || '') })]));
+    main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Backtest Lab' }), h('h1', { text: 'Wie belastbar ist welche Methode?' }), h('p', { class: 'st-lead', text: 'Jeder Test prüft unsere VU-Version einer Methode – die im Code umgesetzte Lesart der Quellen –, nicht den Trader selbst und nicht seine Wettbewerbsergebnisse. Jede Regelversion trägt eine eigene Evidenzstufe, getrennt von der Qualität ihrer Quellen und ihrer Daten. ' + (sc.noPromise || '') })]));
     // Skala
     if (sc.levels) main.appendChild(sec('Die vier Stufen', [h('div', { class: 'st-scale' }, Object.keys(sc.levels).map(function (k) { var l = sc.levels[k]; return h('div', { class: 'lv', 'data-t': l.tone }, [h('strong', { text: l.label }), h('span', { text: l.plain })]); })), sc.publicationNote ? h('p', { class: 'st-hint', text: sc.publicationNote }) : null], { kicker: 'Evidenz' }));
     // Je Strategieversion
@@ -935,7 +935,7 @@
     main.appendChild(sec('Je Strategieversion', [h('div', { class: 'st-list' }, core.map(function (s) {
       var e = ev(s);
       return h('div', { class: 'st-btrow', style: worldVars(s) }, [
-        h('div', { class: 'h' }, [h('a', { href: stratUrl(s), text: s.world_name + ' v' + (e.version || s.strategy_version) }), evidenceTag(s)]),
+        h('div', { class: 'h' }, [h('a', { href: stratUrl(s), text: 'Test unserer VU-Version: ' + s.world_name + ' v' + (e.version || s.strategy_version) }), evidenceTag(s)]),
         h('div', { class: 'st-three' }, [pill('Methodentreue', fidelityOf(s)), pill('Daten', dataOf(s)), pill('Darstellung', [e.presentationLabel || '–', e.presentation === 'RESEARCH' ? 'warn' : 'mute'])]),
         e.note ? h('p', { class: 'st-hint', text: e.note }) : null,
       ]);

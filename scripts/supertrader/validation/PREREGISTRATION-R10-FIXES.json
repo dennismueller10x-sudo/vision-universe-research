@@ -21,5 +21,10 @@
       "decisionRule": "Übernahme ins Live-Produkt je Methode nur, wenn (a) in der Prüfmenge W3 die Zahl der Gewinner-Einstiege ohne Platz nicht steigt und (b) im Vollportfolio die Überrendite in keinem der fünf Szenarien unter den fünftschlechtesten der 20 Zufallsreihenfolgen fällt. Ein Vorteil gegenüber dem Markt wird nur nach den bestehenden Kriterien R1-R4 behauptet."
     }
   },
-  "notChanged": "Keine Signal-, Stop- oder Ausstiegsschwelle wird geändert. Befunde, die neue Signalregeln nahelegen (Weinstein-Fortsetzungskäufe in Stufe 2, Kullamägi-Basisformalisierung, Minervini-VCP-Erkennung, Gewinnfilter), werden dokumentiert und nicht an den Diagnosefällen kalibriert."
+  "notChanged": "Keine Signal-, Stop- oder Ausstiegsschwelle wird geändert. Befunde, die neue Signalregeln nahelegen (Weinstein-Fortsetzungskäufe in Stufe 2, Kullamägi-Basisformalisierung, Minervini-VCP-Erkennung, Gewinnfilter), werden dokumentiert und nicht an den Diagnosefällen kalibriert.",
+  "minerviniDiagnosis": {
+    "purpose": "Einfluss der Bausteine von Minervini 2.0.0 (Test unserer VU-Version) auf Kandidaten und Trades messen – Diagnose, keine neue Version, keine Renditeoptimierung.",
+    "run": "r10m (bereinigtes Universum U1): Trichter je Jahr (Liquidität -> Trend Template je Regel -> VCP-Erkennung -> Volumenrückgang -> Risiko <= 10 % -> Setup) und Ablationen: ohne Ausbruchsvolumen-Regel (NOVOL), ohne RS-Filter (NORS), ohne Volumenrückgang (NODRY), 25 statt 30 % über 52-Wochen-Tief (LOW25).",
+    "reading": "Gemeldet werden Kandidaten- und Tradezahlen sowie die bestehenden Prüfgrößen je Variante. Keine Variante wird als neue Live-Version übernommen; eine daraus begründete Regel bräuchte eine eigene Präregistrierung und unabhängige Prüfung."
+  }
 }

@@ -26,8 +26,8 @@ export const NO_PROMISE = 'Keine Stufe ist ein Versprechen für künftige Ergebn
 export const EVIDENCE_LEVELS = Object.freeze({
   NOT_TESTED: { order: 0, label: 'Noch nicht geprüft', tone: 'mute', plain: 'Für diese Regelversion gibt es noch keinen historischen Test.' },
   IN_REVIEW: { order: 1, label: 'In Prüfung', tone: 'warn', plain: 'Diese Regelversion wird historisch geprüft oder ihr Ergebnis ist noch nicht zur Veröffentlichung freigegeben.' },
-  TESTED_NO_EDGE: { order: 2, label: 'Geprüft, ohne überzeugenden Vorteil', tone: 'bad', plain: 'Die Version wurde mit vorab festgelegten Kriterien historisch getestet und hat sie nicht erfüllt.' },
-  CRITERIA_MET: { order: 3, label: 'Vorab festgelegte Kriterien erfüllt', tone: 'good', plain: 'Die Version hat die vorab festgelegten historischen Kriterien erfüllt. Das ist kein Versprechen für künftige Ergebnisse.' },
+  TESTED_NO_EDGE: { order: 2, label: 'Geprüft, ohne überzeugenden Vorteil', tone: 'bad', plain: 'Unsere VU-Version der Methode wurde mit vorab festgelegten Kriterien historisch getestet und hat sie nicht erfüllt. Getestet ist unsere Umsetzung, nicht der Trader und nicht seine Wettbewerbsergebnisse.' },
+  CRITERIA_MET: { order: 3, label: 'Vorab festgelegte Kriterien erfüllt', tone: 'good', plain: 'Unsere VU-Version hat die vorab festgelegten historischen Kriterien erfüllt. Das ist kein Versprechen für künftige Ergebnisse.' },
 });
 
 export const SOURCE_QUALITY = Object.freeze({
