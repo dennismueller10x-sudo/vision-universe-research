@@ -120,7 +120,7 @@ if (existsSync(MASTER_FILE)) {
      anzuwenden, wo sie gebraucht wird: bei den Zeilen, die der alte
      Klassierer falsch eingeordnet hat. Er wird deshalb nicht
      "vorsichtshalber" benutzt, sondern abgelehnt - laut. */
-  if (m.version !== Master.VERSION) {
+  if (m.version !== Master.VERSION || m.classificationRuleVersion !== Master.CLASSIFICATION_RULE_VERSION) {
     /* Eine aeltere Klassiererversion traegt aeltere Urteile. Sie werden
        nicht uebernommen - aber die Anbieterzeilen selbst (Ticker, Boerse,
        Gattung, Name, Laufzeit, Aktivitaet) sind Belege, keine Urteile.
@@ -129,7 +129,9 @@ if (existsSync(MASTER_FILE)) {
        ohne die Anbieterliste neu zu erheben (Lizenz, Netz). */
     masterRejudge = { file: MASTER_FILE.replace(root + "/", ""),
                       found: m.version || null, expected: Master.VERSION,
-                      rows: (m.rows || []).length };
+                      rows: (m.rows || []).length,
+                      foundRules: m.classificationRuleVersion || null,
+                      expectedRules: Master.CLASSIFICATION_RULE_VERSION };
     console.log(`  Arbeitsablage aus Version ${m.version} != ${Master.VERSION}: ` +
                 "die Anbieterzeilen werden mit dem aktuellen Klassierer neu beurteilt.");
   }
@@ -160,7 +162,8 @@ if (masterRows) {
   for (const r of masterRows) {
     const t = String(r.ticker || "").toUpperCase();
     const k = t + "|" + String(r.exchange || "").toUpperCase();
-    if (!masterByKey.has(k)) masterByKey.set(k, r);
+    if (!masterByKey.has(k)) masterByKey.set(k, []);
+    masterByKey.get(k).push(r);
     if (!masterByTicker.has(t)) masterByTicker.set(t, []);
     masterByTicker.get(t).push(r);
   }
@@ -227,16 +230,39 @@ function judge(sec) {
   const ex = String(sec.exchange || "").toUpperCase();
 
   /* Erst der Stamm. Er hat die Anbieterzeile gesehen, samt endDate. */
-  let row = masterByKey.get(t + "|" + ex) || null;
+  const exactVenueRows = masterByKey.get(t + "|" + ex) || [];
+  /* Ein Ticker kann am selben Handelsplatz fuer mehrere Emittenten
+     wiederverwendet worden sein (DNA: Genentech, dann Ginkgo). Der
+     Beginn des bereits gelieferten Listings identifiziert dessen
+     Anbieterzeile. Nur ein EINDEUTIGER Datumsbeleg darf die bisherige
+     Auswahl ersetzen; ohne Beleg bleibt die bestehende Reihenfolge.
+     Weder das neueste Listing noch die aktive Zeile allein beweist,
+     dass sie zu diesem securityId gehoert. */
+  const matchingPeriod = sec.startDate
+    ? exactVenueRows.filter((r) => r.start_date === sec.startDate)
+    : [];
+  let row = matchingPeriod.length === 1 ? matchingPeriod[0] : exactVenueRows[0] || null;
   if (!row) {
     const group = masterByTicker.get(t);
     if (group && group.length === 1) row = group[0];
   }
 
-  if (row && masterRejudge) {
+  /* Der enge Namensregel-Fix fuer "Preferred Bank" betrifft auch einen
+     Cache aus derselben Schemaversion. Genau diese alten PREFERRED-
+     Urteile muessen neu beurteilt werden, bevor withName seine FORM-
+     Schutzregel anwendet. Ein explizites Vorzugssuffix bleibt staerker;
+     ein Name mit tatsaechlich genannten Preferred Shares wird vom
+     aktuellen Klassierer weiterhin als Vorzug bestaetigt. */
+  const canonicalName = layerNames.get(sec.securityId) || (row && row.security_name) || sec.company || null;
+  const explicitPreferredRowName = /\b(PREFERRED|PFD|PREF\.)/i.test(
+    String((row && row.security_name) || "").replace(/\bPREFERRED\s+BANK\b/gi, ""));
+  const preferredIssuerCacheInvalidated = row && row.instrument_type === "PREFERRED" &&
+    /\bPREFERRED\s+BANK\b/i.test(canonicalName || "") && !Master.tickerMarker(t)?.type && !explicitPreferredRowName;
+  if (row && (masterRejudge || preferredIssuerCacheInvalidated)) {
     const c = Master.classifySecurity({
       ticker: row.ticker || sec.ticker, exchange: row.exchange || sec.exchange,
-      assetType: row.asset_type || sec.assetType, name: row.security_name || sec.company || null,
+      assetType: row.asset_type || sec.assetType,
+      name: preferredIssuerCacheInvalidated ? canonicalName : row.security_name || sec.company || null,
       currency: row.currency || sec.currency, startDate: row.start_date || sec.startDate,
       endDate: row.end_date || sec.endDate || null,
       active: row.active_status === "ACTIVE" ? true : row.active_status === "INACTIVE" ? false : undefined
@@ -269,7 +295,8 @@ function judge(sec) {
       policyBucket: c.policyBucket,
       eligible: c.eligibleUsEquity === true,
       reason: c.eligibilityReason,
-      flags: (c.flags || []).concat(["MASTER_REJUDGED:" + (row.instrument_type || "?")]),
+      flags: (c.flags || []).concat(["MASTER_REJUDGED:" + (row.instrument_type || "?")],
+        preferredIssuerCacheInvalidated ? ["NAME_RULE_CACHE_INVALIDATED:PREFERRED_BANK_ISSUER"] : []),
       source: "SECURITY_MASTER_REJUDGED"
     };
   }
@@ -445,6 +472,7 @@ const productMembers = members.filter((s) =>
 const eligibility = {
   generatedAt: stamp,
   version: Master.VERSION,
+  classificationRuleVersion: Master.CLASSIFICATION_RULE_VERSION,
   coverageEngine: require(join(root, "quant", "engines", "coverage-metrics.js")).VERSION,
   today: TODAY,
   phase: "POST_BACKFILL_CLEANUP_NO_PRICE_REQUESTS",

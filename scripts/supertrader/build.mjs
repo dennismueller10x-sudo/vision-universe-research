@@ -36,6 +36,7 @@ import donchian from './engine/strategies/donchian.mjs';
 import kkBreakout2 from './engine/strategies/kk-breakout-v2.mjs';
 import kkBreakout3 from './engine/strategies/kk-breakout-v3.mjs';
 import kkBreakout31 from './engine/strategies/kk-breakout-v31.mjs';
+import kkBreakout32 from './engine/strategies/kk-breakout-v32.mjs';
 import donchian2 from './engine/strategies/donchian-v2.mjs';
 import darvas3 from './engine/strategies/darvas-v3.mjs';
 import darvas301 from './engine/strategies/darvas-v301.mjs';
@@ -59,7 +60,9 @@ let CURRENT_REGIME = null;
 // Runde 7: Momentum, Weinstein, Darvas und Minervini laufen in Version 2.0.0
 // (vorab registriert, PREREGISTRATION-R7.json). Offene Positionen der
 // Vorversionen werden mit deren Engine weitergefuehrt (engine.legacy).
-export const LIVE_ENGINES = [kkBreakout31, weinstein3, darvas301, minervini2, donchian2];
+// Runde 11: Momentum 3.2.0 (Fehlerkorrektur Einstand). Weinstein 4.0.0, Minervini 3.0.0 und Turtle 2.1.0
+// verfehlten die vorab festgelegten Uebernahmebedingungen und bleiben Forschung (PREREGISTRATION-R11).
+export const LIVE_ENGINES = [kkBreakout32, weinstein3, darvas301, minervini2, donchian2];
 export const PREVIOUS_ENGINES = [kkBreakout, kkBreakout2, kkBreakout3, weinstein, weinstein2, darvas, darvas2, darvas3, minervini, donchian];
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));

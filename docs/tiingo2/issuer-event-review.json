@@ -1,0 +1,303 @@
+{
+  "schemaVersion": "tiingo2-issuer-event-review-1",
+  "asOf": "2026-10-02",
+  "reviewedAt": "2026-10-02T10:26:07Z",
+  "scope": [
+    "BIRD",
+    "AMWL",
+    "CRCL"
+  ],
+  "method": "Read-only retrieval of SEC submissions, primary Forms 8-K/424B4 and issuer earnings exhibits. No new price provider or production mutation. Sanitized evidence excludes raw market prices and bars.",
+  "verificationBoundary": {
+    "issuerEvents": "VERIFIED_PRIMARY_SEC_EVIDENCE",
+    "priceSeries": "NOT_INDEPENDENTLY_VERIFIED_BY_THIS_REVIEW",
+    "diagnosticNameLabels": "REPORTED_BY_REFRESH_NOT_INDEPENDENTLY_REFETCHED",
+    "automaticGateOverride": false,
+    "productionMutations": 0,
+    "preserveExistingIdentities": true
+  },
+  "hashEncoding": "SHA256 of each source evidence object excluding id, accessedAt and sanitizedEvidenceSha256; UTF-8 JSON with recursively sorted keys and compact separators, ensure_ascii=false.",
+  "sources": [
+    {
+      "id": "bird-submissions",
+      "url": "https://data.sec.gov/submissions/CIK0001653909.json",
+      "kind": "SEC_SUBMISSIONS",
+      "excerpt": "Current name: Smartbird, Inc.; CIK 0001653909; ticker BIRD; exchange Nasdaq; former name Allbirds, Inc. from 2016-03-11 through 2026-06-15.",
+      "accessedAt": "2026-10-02T10:26:07Z",
+      "sanitizedEvidenceSha256": "4af20966331c8c97a3be22fef2a52c3f958f8f665865660f826b13635740aa46"
+    },
+    {
+      "id": "bird-name-change",
+      "url": "https://www.sec.gov/Archives/edgar/data/1653909/000119312526273417/d178962d8k.htm",
+      "kind": "SEC_FORM_8K",
+      "excerpt": "On June 15, 2026, Allbirds, Inc. filed a Certificate of Amendment to change the name to Smartbird, Inc. All references to Allbirds refer to Smartbird, Inc. (f/k/a Allbirds, Inc.). Registered security: Class A common stock; symbol BIRD; Nasdaq.",
+      "accession": "0001193125-26-273417",
+      "filedAt": "2026-06-17",
+      "accessedAt": "2026-10-02T10:26:07Z",
+      "sanitizedEvidenceSha256": "3377612fab07aea2eba3ec61782b7010d8dd835bf7efdd818846e9a9a52f1a9c"
+    },
+    {
+      "id": "bird-asset-sale",
+      "url": "https://www.sec.gov/Archives/edgar/data/1653909/000162828026043145/bird-20260609.htm",
+      "kind": "SEC_FORM_8K",
+      "excerpt": "Footwear-related asset sale to Allbirds IP LLC, affiliated with American Exchange Group, closed on June 9, 2026.",
+      "accession": "0001628280-26-043145",
+      "filedAt": "2026-06-15",
+      "accessedAt": "2026-10-02T10:26:07Z",
+      "sanitizedEvidenceSha256": "5368386750c444904690bdfb7795a2a9e8c13b950bbc07fcfdb7ddc5848fc4d0"
+    },
+    {
+      "id": "bird-current-name-confirmation",
+      "url": "https://www.sec.gov/Archives/edgar/data/1653909/000143774926031745/bird20260929_8k.htm",
+      "kind": "SEC_FORM_8K",
+      "excerpt": "Registrant Smartbird, Inc. reports its September 30, 2026 annual stockholder meeting.",
+      "accession": "0001437749-26-031745",
+      "filedAt": "2026-10-01",
+      "accessedAt": "2026-10-02T10:26:07Z",
+      "sanitizedEvidenceSha256": "563444e62255b5267af22743c297abaa08e69e7c4af51cf734f10ad6a06c4c68"
+    },
+    {
+      "id": "amwl-submissions",
+      "url": "https://data.sec.gov/submissions/CIK0001393584.json",
+      "kind": "SEC_SUBMISSIONS",
+      "excerpt": "Current name: American Well Corp; CIK 0001393584; ticker AMWL; exchange NYSE.",
+      "accessedAt": "2026-10-02T10:26:07Z",
+      "sanitizedEvidenceSha256": "40a40c9ab9c84fd357ff36c4b2bf9bf3584fdc20bc87a5dd769d49d1399a3c36"
+    },
+    {
+      "id": "amwl-reverse-split",
+      "url": "https://www.sec.gov/Archives/edgar/data/1393584/000095017024083685/amwl-20240710.htm",
+      "kind": "SEC_FORM_8K",
+      "excerpt": "Reverse split 1-for-20 effective July 10, 2024 at 5:00 p.m. Eastern; Class A common stock began split-adjusted trading July 11, 2024 under AMWL.",
+      "accession": "0000950170-24-083685",
+      "filedAt": "2024-07-16",
+      "accessedAt": "2026-10-02T10:26:07Z",
+      "sanitizedEvidenceSha256": "8e1b707a86aaad88306971c9be4774c81525bcbd53221b378b977baf41c80660"
+    },
+    {
+      "id": "amwl-earnings-event",
+      "url": "https://www.sec.gov/Archives/edgar/data/1393584/000095017024088603/amwl-20240731.htm",
+      "kind": "SEC_FORM_8K",
+      "excerpt": "Item 2.02: American Well announced financial results for the quarter ended June 30, 2024 on July 31, 2024; earnings conference call July 31 at 5 p.m. ET.",
+      "accession": "0000950170-24-088603",
+      "filedAt": "2024-07-31",
+      "accessedAt": "2026-10-02T10:26:07Z",
+      "sanitizedEvidenceSha256": "f63f27ff2036b176cc6b4f39acdf7b6ff41d3d0cc52cb3bf1d2264c88f66b140"
+    },
+    {
+      "id": "amwl-earnings-release",
+      "url": "https://www.sec.gov/Archives/edgar/data/1393584/000095017024088603/amwl-ex99_1.htm",
+      "kind": "SEC_ISSUER_EARNINGS_EXHIBIT",
+      "excerpt": "July 31, 2024 earnings release: deployment for the U.S. Military Health System and cost alignment resulted in an improved 2024 adjusted EBITDA outlook; financial outlook improved adjusted EBITDA guidance.",
+      "accession": "0000950170-24-088603",
+      "filedAt": "2024-07-31",
+      "accessedAt": "2026-10-02T10:26:07Z",
+      "sanitizedEvidenceSha256": "bbb04e9e0297287576e77e1ea0504dd0ac461578a15f03668f39329e3520eb45"
+    },
+    {
+      "id": "crcl-submissions",
+      "url": "https://data.sec.gov/submissions/CIK0001876042.json",
+      "kind": "SEC_SUBMISSIONS",
+      "excerpt": "Current name: Circle Internet Group, Inc.; CIK 0001876042; ticker CRCL; exchange NYSE.",
+      "accessedAt": "2026-10-02T10:26:07Z",
+      "sanitizedEvidenceSha256": "46561f34cb3061ef02d25ee22ada78b33b80cbfbfae112cc40e7dc503f064a31"
+    },
+    {
+      "id": "crcl-ipo-prospectus",
+      "url": "https://www.sec.gov/Archives/edgar/data/1876042/000119312525135795/d737521d424b4.htm",
+      "kind": "SEC_FORM_424B4",
+      "excerpt": "Prospectus dated June 4, 2025, filed June 5, 2025: Class A common stock approved for NYSE listing under CRCL.",
+      "accession": "0001193125-25-135795",
+      "filedAt": "2025-06-05",
+      "accessedAt": "2026-10-02T10:26:07Z",
+      "sanitizedEvidenceSha256": "ac3b1307bdd16ab5080b9bfc473039835cb34f23b9072bed867df90f7ae30136"
+    },
+    {
+      "id": "crcl-ipo-completion",
+      "url": "https://www.sec.gov/Archives/edgar/data/1876042/000095010325007107/dp229888_8k.htm",
+      "kind": "SEC_FORM_8K",
+      "excerpt": "Item 8.01: Circle completed its initial public offering of Class A common stock on June 6, 2025.",
+      "accession": "0000950103-25-007107",
+      "filedAt": "2025-06-06",
+      "accessedAt": "2026-10-02T10:26:07Z",
+      "sanitizedEvidenceSha256": "aec862a5e56b980ebbe49981421841bd78ed7b57ef6a16d2ed7351a26d7d5e26"
+    },
+    {
+      "id": "crcl-earnings-event",
+      "url": "https://www.sec.gov/Archives/edgar/data/1876042/000187604226000032/crcl-20260225.htm",
+      "kind": "SEC_FORM_8K",
+      "excerpt": "Item 2.02: Circle issued a press release on February 25, 2026 announcing fourth-quarter and full-year 2025 financial results.",
+      "accession": "0001876042-26-000032",
+      "filedAt": "2026-02-25",
+      "accessedAt": "2026-10-02T10:26:07Z",
+      "sanitizedEvidenceSha256": "3aede58f4cdfcc605f23aa458a678a3e3e4d23473676173eabc45dde4234b4f2"
+    },
+    {
+      "id": "crcl-earnings-release",
+      "url": "https://www.sec.gov/Archives/edgar/data/1876042/000187604226000032/final_circlereportsfourt.htm",
+      "kind": "SEC_ISSUER_EARNINGS_EXHIBIT",
+      "excerpt": "Circle reports Q4 and full fiscal year 2025 results on February 25, 2026, with growth in USDC circulation, transaction volume, revenue/reserve income and adjusted EBITDA; earnings call scheduled 8:00 a.m. ET.",
+      "accession": "0001876042-26-000032",
+      "filedAt": "2026-02-25",
+      "accessedAt": "2026-10-02T10:26:07Z",
+      "sanitizedEvidenceSha256": "fb10726ab97116dbc901cb1880a79d6706315c005666cb596d14e2dc3a5db204"
+    }
+  ],
+  "securities": [
+    {
+      "ticker": "BIRD",
+      "cik": "0001653909",
+      "verifiedLegalIssuer": "Smartbird, Inc.",
+      "formerIssuerNames": [
+        "Allbirds, Inc."
+      ],
+      "verifiedEvents": [
+        {
+          "date": "2026-06-09",
+          "type": "FOOTWEAR_ASSET_SALE_COMPLETED",
+          "sourceIds": [
+            "bird-asset-sale"
+          ]
+        },
+        {
+          "date": "2026-06-15",
+          "type": "LEGAL_ISSUER_NAME_CHANGED",
+          "oldName": "Allbirds, Inc.",
+          "newName": "Smartbird, Inc.",
+          "sameRegistrantCik": true,
+          "tickerChanged": false,
+          "sourceIds": [
+            "bird-submissions",
+            "bird-name-change",
+            "bird-current-name-confirmation"
+          ]
+        }
+      ],
+      "diagnosticNameMismatch": {
+        "tiingoLabelReportedByRefresh": "Allbirds",
+        "exchangeDirectoryLabelReportedByRefresh": "NewBirdAI",
+        "independentlyRefetchedInThisReview": false,
+        "verifiedCurrentLegalName": "Smartbird, Inc.",
+        "interpretation": "NewBirdAI must not be treated as the current legal registrant name or proof of a new security. SEC proves legal continuity, not provider metadata correctness."
+      },
+      "decision": "KEEP_MANUAL_REVIEW",
+      "reasonCodes": [
+        "STALE_OR_CONFLICTING_ISSUER_METADATA",
+        "SEC_NAME_RECONCILIATION_REQUIRED",
+        "SECURITY_CONTINUITY_AND_PRODUCT_QA_REQUIRED"
+      ],
+      "nextSteps": [
+        "Reconcile Tiingo and exchange-directory names to the effective June 15 legal change using a dated, sourced issuer-name alias record.",
+        "Retain existing company/issuer/security/listing IDs and historical Allbirds name; verify Class A listing continuity rather than minting a new issuer based on a branding label.",
+        "Reassess fundamental/factor semantics after disposal of the footwear business without rewriting historic PIT filings."
+      ],
+      "sourceIds": [
+        "bird-submissions",
+        "bird-name-change",
+        "bird-asset-sale",
+        "bird-current-name-confirmation"
+      ]
+    },
+    {
+      "ticker": "AMWL",
+      "cik": "0001393584",
+      "verifiedLegalIssuer": "American Well Corp",
+      "verifiedEvents": [
+        {
+          "date": "2024-07-10",
+          "type": "REVERSE_SPLIT_EFFECTIVE_AFTER_CLOSE",
+          "ratio": "1-for-20",
+          "firstSplitAdjustedSession": "2024-07-11",
+          "sourceIds": [
+            "amwl-reverse-split"
+          ]
+        },
+        {
+          "date": "2024-07-31",
+          "type": "Q2_EARNINGS_AND_IMPROVED_GUIDANCE",
+          "conferenceTime": "17:00 America/New_York",
+          "sourceIds": [
+            "amwl-earnings-event",
+            "amwl-earnings-release"
+          ]
+        }
+      ],
+      "reviewedPriceBreakDates": [
+        "2024-08-01"
+      ],
+      "interpretation": "The July 31 after-close earnings/guidance event is credible context for the following session move. It is separate from the July 11 reverse-split session. SEC filings do not independently certify the size or correctness of the August 1 Tiingo return.",
+      "decision": "KEEP_SUSPICIOUS_PRICE_BREAK_REVIEW",
+      "reasonCodes": [
+        "ISSUER_EVENT_CONFIRMED",
+        "MARKET_MOVE_NOT_INDEPENDENTLY_VERIFIED",
+        "SERIES_CONTINUITY_QA_REQUIRED"
+      ],
+      "sourceIds": [
+        "amwl-submissions",
+        "amwl-reverse-split",
+        "amwl-earnings-event",
+        "amwl-earnings-release"
+      ]
+    },
+    {
+      "ticker": "CRCL",
+      "cik": "0001876042",
+      "verifiedLegalIssuer": "Circle Internet Group, Inc.",
+      "verifiedEvents": [
+        {
+          "date": "2025-06-05",
+          "type": "IPO_PROSPECTUS_FILED_AND_NYSE_LISTING_APPROVED",
+          "securityClass": "Class A common stock",
+          "sourceIds": [
+            "crcl-ipo-prospectus"
+          ]
+        },
+        {
+          "date": "2025-06-06",
+          "type": "IPO_COMPLETED",
+          "sourceIds": [
+            "crcl-ipo-completion"
+          ]
+        },
+        {
+          "date": "2026-02-25",
+          "type": "Q4_AND_FULL_YEAR_2025_EARNINGS",
+          "conferenceTime": "08:00 America/New_York",
+          "sourceIds": [
+            "crcl-earnings-event",
+            "crcl-earnings-release"
+          ]
+        }
+      ],
+      "reviewedPriceBreakPeriods": [
+        "IPO_AND_EARLY_TRADING_2025_06",
+        "2026-02-25"
+      ],
+      "interpretation": "The IPO and February 25 earnings events are verified. Listing approval/prospectus date and IPO completion date are different observations; these filings alone do not establish first traded bar or provider availability date. Offering transaction values must never become a prior daily market bar. Neither event independently verifies large returns in the Tiingo series.",
+      "decision": "KEEP_SUSPICIOUS_PRICE_BREAK_REVIEW",
+      "reasonCodes": [
+        "ISSUER_EVENTS_CONFIRMED",
+        "IPO_DAILY_SERIES_BASELINE_CHECK_REQUIRED",
+        "MARKET_MOVES_NOT_INDEPENDENTLY_VERIFIED",
+        "PRODUCT_QA_PENDING"
+      ],
+      "sourceIds": [
+        "crcl-submissions",
+        "crcl-ipo-prospectus",
+        "crcl-ipo-completion",
+        "crcl-earnings-event",
+        "crcl-earnings-release"
+      ]
+    }
+  ],
+  "futurePriceBreakVerificationRequirements": [
+    "Persist exact security ID, provider symbol, exchange, listing period and trading-session date for each reviewed price break.",
+    "Link primary issuer/SEC event evidence with accession, event timestamp/timezone, retrieval timestamp and immutable evidence hash; event context does not prove market prices.",
+    "Reconcile Tiingo raw OHLC against split/dividend adjustment changes and volume; reject missing or inconsistent action fields and impossible OHLC.",
+    "Confirm the bars on both sides belong to the same listing/share class; do not splice an old issuer, offering transaction, stale alias or distinct share class into traded daily history.",
+    "Recheck the same Tiingo sessions and metadata through its existing endpoints; retain response hashes and run IDs without adding a price provider.",
+    "Keep SUSPICIOUS_PRICE_BREAK unresolved until exact-session market-move evidence and series continuity are reviewed; use a narrowly scoped, immutable adjudication record rather than raising a universal gap threshold.",
+    "An event approval cannot bypass identity, latest-price, corporate-action, fundamental PIT, factor or product release gates.",
+    "No production publication, routing change, ID remint or deletion is authorized by this review artifact."
+  ]
+}

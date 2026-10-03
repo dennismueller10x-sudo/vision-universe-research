@@ -126,8 +126,8 @@ async function main() {
      fuer jede Aktie. Die Anbieterspalte (market-quality.js
      totalReturnVerdict) steht nur als Gegenprobe im Bericht. Fuer den
      Vergleichsmassstab ist ein Nein ein Abbruch, keine Warnung. */
-  const providerVerdict = validation.ok ? MarketQuality.totalReturnVerdict(validation.bars) : null;
-  const semantics = validation.ok ? MarketQuality.validateAdjustmentConsistency(validation.bars, { claimedStatus: "TOTAL_RETURN" }) : null;
+  const providerVerdict = validation.ok ? MarketQuality.totalReturnVerdict(validation.bars, { dividendConvention: "TIINGO_REINVESTMENT_CLOSE" }) : null;
+  const semantics = validation.ok ? MarketQuality.validateAdjustmentConsistency(validation.bars, { claimedStatus: "TOTAL_RETURN", dividendConvention: "TIINGO_REINVESTMENT_CLOSE" }) : null;
   const canonical = validation.ok ? totalReturnState(validation.bars) : null;
   if (canonical && canonical.state !== "AVAILABLE") {
     report({ ...base, state: "FAIL", reason: "TOTAL_RETURN_NOT_RECONSTRUCTED", contract: canonical.contract || null, canonicalReason: canonical.reason, date: canonical.date || null,
