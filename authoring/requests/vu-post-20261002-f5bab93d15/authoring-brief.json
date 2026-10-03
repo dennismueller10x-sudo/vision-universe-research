@@ -1,0 +1,706 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "production_authoring_request",
+  "request_type": "FULL_CREATIVE",
+  "creative_format": "CAROUSEL",
+  "visual": {
+    "mode": "GENERATE_NEW_ASSET",
+    "regeneration_allowed": true
+  },
+  "test_fixture": false,
+  "brief_id": "brief_dcba5a8352739dbc",
+  "content_id": "vu-post-20261002-f5bab93d15",
+  "attempt": 1,
+  "supersedes_attempt": null,
+  "attempt_reason": null,
+  "created_at": "2026-10-02T13:09:26.025Z",
+  "trigger": "AUTO",
+  "brand": "Vision Universe",
+  "language": "de",
+  "channel": "instagram",
+  "format": "carousel",
+  "role": "Du bist Social Editor, Creative Director und Visual Designer von Vision Universe.",
+  "objective": "Recherchiere die aktuell relevantesten Boersen-, Aktien-, Unternehmens-, Makro-, Technologie- und Finanznachrichten und finde daraus selbststaendig die beste Story fuer einen Vision-Universe-Post. Das Recherchepaket unten ist Startmaterial: pruefe die Storys an der Originalquelle, suche ergaenzend selbst und nimm eine bessere Story, wenn du eine findest. Kannst du in diesem Lauf keine Webseiten oeffnen, arbeite ausschliesslich mit dem Paket (Originalartikel-Auszuege sind enthalten) und melde das ehrlich in research.web_access. Verstehe zuerst, was fuer Anleger daran wirklich interessant ist. Entwickle daraus eine starke deutsche Social Story. Erwaege mehrere unterschiedliche Hook-Richtungen und waehle die staerkste. Schreibe eine hochwertige deutsche Caption und bis zu 5 Hashtags. Plane ein zusammenhaengendes Carousel (Standard: 3 Slides) in der Designsprache der Referenzbilder. Erzeuge in diesem Auftrag das Cover (Slide 1) als vollendetes, finales 4:5-Creative und beschreibe Slide 2 und 3 so vollstaendig, dass sie ohne neue Redaktion umgesetzt werden koennen. Ziel: ein Vision-Universe-Post, den ein deutscher Anleger im Feed anhaelt und den der Owner freiwillig posten wuerde.",
+  "audience": "Deutschsprachige Anleger, die aktuelle Markt-, Unternehmens- und Technologieentwicklungen verfolgen",
+  "research": {
+    "mode": "WORK_WEB_RESEARCH",
+    "instruction": "Nicht die erste News nehmen. Pruefe mehrere aktuelle Storys und bewerte sie redaktionell: Aktualitaet, Anlegerrelevanz, Ueberraschung, Verstaendlichkeit, Neuigkeitswert, Diskussions-, Share- und Save-Potenzial, visuelles Potenzial, Staerke der Belege. Keine Story nehmen, nur weil sie leicht zu verarbeiten ist. Moegliche Felder (nicht abschliessend): Aktien, Unternehmen, Earnings, Maerkte, Makro, Zinsen, Inflation, Rohstoffe, KI, Halbleiter, Cloud, Rechenzentren, Cybersecurity, Robotik, Mobilitaet, Energie, Zukunftstechnologien, ETFs, aussergewoehnliche Unternehmensentwicklungen.",
+    "honesty": "Gib in `research.web_access` ehrlich an, ob du in diesem Lauf wirklich Webseiten geoeffnet hast, und je Quelle `opened_by_agent`. Keine Behauptung von Recherche, die nicht stattgefunden hat.",
+    "no_material_rule": null,
+    "do_not_repeat": "Die URLs in `package.already_covered_urls` wurden bereits behandelt - keine davon erneut als Hauptstory.",
+    "owner_topic": null,
+    "package": {
+      "generated_at": "2026-10-02T13:09:26.025Z",
+      "note": "Startmaterial, keine Vorauswahl. Die Reihenfolge sortiert nur nach Frische und Belegdichte - welche Story erzaehlt wird, entscheidet der Creative Agent.",
+      "feeds_checked": [
+        {
+          "source": "MarketWatch Top Stories",
+          "ok": true,
+          "items": 10
+        },
+        {
+          "source": "CNBC Top News",
+          "ok": true,
+          "items": 30
+        },
+        {
+          "source": "Yahoo Finance",
+          "ok": true,
+          "items": 49
+        },
+        {
+          "source": "Investing.com News",
+          "ok": true,
+          "items": 10
+        },
+        {
+          "source": "Seeking Alpha Market Currents",
+          "ok": true,
+          "items": 7
+        },
+        {
+          "source": "Nasdaq Markets",
+          "ok": false,
+          "items": 0
+        },
+        {
+          "source": "tagesschau Wirtschaft",
+          "ok": true,
+          "items": 32
+        },
+        {
+          "source": "Handelsblatt Finanzen",
+          "ok": true,
+          "items": 20
+        }
+      ],
+      "stories": [
+        {
+          "id": "s1",
+          "title": "Dax aktuell: Dax schließt deutlich im Minus – Ölpreis wieder über 100 Dollar",
+          "source": "Handelsblatt Finanzen",
+          "url": "https://www.handelsblatt.com/finanzen/maerkte/marktberichte/dax-aktuell-dax-schliesst-deutlich-im-minus-oelpreis-wieder-ueber-100-dollar/100258866.html",
+          "published_at": "2026-10-01T15:53:17.000Z",
+          "age_hours": 21.3,
+          "description": "Anleger zeigen sich am Donnerstag wenig optimistisch, der Dax fällt unter die 25.000 Punkte. Auf die Aktienkurse drücken hohe Ölpreise und steigende Anleiherenditen.",
+          "extracted_numbers": [
+            {
+              "value": "100",
+              "unit": "Dollar",
+              "sentence": "Dax aktuell: Dax schließt deutlich im Minus – Ölpreis wieder über 100 Dollar."
+            },
+            {
+              "value": "25.000",
+              "unit": null,
+              "sentence": "Anleger zeigen sich am Donnerstag wenig optimistisch, der Dax fällt unter die 25.000 Punkte."
+            }
+          ],
+          "article_excerpt": "Düsseldorf. Der Dax hat am Donnerstag rund ein Prozent im Minus geschlossen, knapp unterhalb der 25.000-Punkte-Marke, bei 24.939 Punkten. Den Großteil des Tages hatte er sich noch über der Marke halten können. Am Mittwoch hatte der deutsche Leitindex 0,8 Prozent tiefer bei 25.199 Punkten geschlossen .\n\nFür fallende Kurse an den Börsen in Europa sorgte der überraschend starke Anstieg der deutschen Verbraucherpreise. Im September kosteten Waren und Dienstleistungen nach einer am Mittwoch veröffentlichten ersten Schätzung 3,3 Prozent mehr als vor einem Jahr.\n\nAn der Wall Street schlossen die wichtigsten Indizes uneinheitlich. In Japan schnellte der Nikkei-Index dank einer Rally bei Chipwerten am Donnerstag zeitweise um drei Prozent in die Höhe. Robuste Geschäftszahlen des Chipherstellers Micron schürten Optimismus hinsichtlich KI-bezogener Investitionen.\n\nDie französische Regierung stellte am Donnerstag ihren Haushaltsentwurf für das Jahr 2027 vor. Sie will mit einem harten Sparkurs das hohe Haushaltsdefizit senken und das Vertrauen der Finanzmärkte zurückgewinnen. Der Haushalt sieht auch unpopuläre Maßnahmen vor, um die Nervosität der Anleiheinvestoren vor der Präsidentschaftswahl im kommenden Jahr zu besänftigen.\n\nIntuitiv, schnell und immer aktuell - jetzt Handelsblatt App installieren.",
+          "article_meta_description": "Anleger zeigen sich am Donnerstag wenig optimistisch, der Dax fällt unter die 25.000 Punkte. Auf die Aktienkurse drücken hohe Ölpreise und steigende Anleiherenditen.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 1307,
+            "note": null
+          }
+        },
+        {
+          "id": "s2",
+          "title": "Dow Jones, S&P 500, Nasdaq: Wall Street schließt kaum verändert – Ölpreis steigt",
+          "source": "Handelsblatt Finanzen",
+          "url": "https://www.handelsblatt.com/finanzen/maerkte/marktberichte/dow-jones-sp-500-nasdaq-wall-street-schliesst-kaum-veraendert-oelpreis-steigt/100259034.html",
+          "published_at": "2026-10-01T19:10:01.000Z",
+          "age_hours": 18,
+          "description": "Die Ölpreise steigen, auch US-Anleiherenditen erreichen den höchsten Stand seit 2002. Die Hoffnung auf einen Zinsschritt weniger in diesem Jahr stimmt Anleger dennoch zuversichtlich.",
+          "extracted_numbers": [
+            {
+              "value": "500",
+              "unit": null,
+              "sentence": "Dow Jones, S&P 500, Nasdaq: Wall Street schließt kaum verändert – Ölpreis steigt."
+            },
+            {
+              "value": "2002",
+              "unit": null,
+              "sentence": "Die Ölpreise steigen, auch US-Anleiherenditen erreichen den höchsten Stand seit 2002."
+            }
+          ],
+          "article_excerpt": "Düsseldorf. Die US-Börsen haben am Donnerstag anfängliche leichte Verluste größtenteils wettgemacht. Für etwas Erleichterung sorgte, dass die Renditen am Anleihenmarkt zuletzt wieder sanken. Deren Anstieg hatte jüngst Befürchtungen mit Blick auf die Tragfähigkeit der exorbitant hohen Staatsschulden geweckt. Insgesamt hielten sich die Bewegungen an der Wall Street am ersten Tag des neuen Quartals in engen Grenzen.\n\nAm gestrigen Mittwoch veröffentlichte das US-Handelsministerium für die US-Notenbank Federal Reserve ( Fed ) wichtige Inflationsdaten. So verharrt der Preisindex für die persönlichen Konsumausgaben (PCE) im August bei 3,4 Prozent. Das war ein niedrigerer Wert als von Analysten erwartet – das Niveau verbleibt aber hoch. Die Daten nähren die Hoffnung, dass die Fed auf eine weitere Zinserhöhung im Oktober verzichten könnte.\n\nUnterdessen ignoriert die Wall Street die jüngsten Impulse von Micron . Der US-Speicherchiphersteller hatte am Mittwoch nach dem Börsenschluss in New York überraschend hohe Ziele für das laufende Geschäftsquartal ausgegeben. Die Papiere notieren nach Handelsstart am Donnerstag gut drei Prozent im Minus.\n\nIntuitiv, schnell und immer aktuell - jetzt Handelsblatt App installieren.",
+          "article_meta_description": "Die Ölpreise steigen, auch US-Anleiherenditen erreichen den höchsten Stand seit 2002. Die Hoffnung auf einen Zinsschritt weniger in diesem Jahr stimmt Anleger dennoch zuversichtlich.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 1224,
+            "note": null
+          }
+        },
+        {
+          "id": "s3",
+          "title": "I’m 71 and still working. I earn $108,000 a year. Am I doing the right thing?",
+          "source": "MarketWatch Top Stories",
+          "url": "https://www.marketwatch.com/story/im-71-and-still-working-i-earn-108-000-a-year-am-i-doing-the-right-thing-aaedcaa4?mod=mw_rss_topstories",
+          "published_at": "2026-10-02T13:00:00.000Z",
+          "age_hours": 0.2,
+          "description": "“I have $152,000 in my IRA and Roth accounts.”",
+          "extracted_numbers": [
+            {
+              "value": "71",
+              "unit": null,
+              "sentence": "I’m 71 and still working."
+            },
+            {
+              "value": "108,000",
+              "unit": null,
+              "sentence": "I earn $108,000 a year."
+            },
+            {
+              "value": "152,000",
+              "unit": null,
+              "sentence": "“I have $152,000 in my IRA and Roth accounts.”"
+            }
+          ],
+          "article_excerpt": null,
+          "article_meta_description": null,
+          "article_fetch": {
+            "ok": false,
+            "status": 401,
+            "excerpt_chars": 0,
+            "note": "Kein Artikeltext lesbar (Paywall, Bot-Sperre oder Skriptseite) - nur Titel/Teaser."
+          }
+        },
+        {
+          "id": "s4",
+          "title": "Labor market faltered in September as jobs increased by just 29,000, unemployment rate rose to 4.2%",
+          "source": "CNBC Top News",
+          "url": "https://www.cnbc.com/2026/10/02/jobs-report-september-2026.html",
+          "published_at": "2026-10-02T13:07:22.000Z",
+          "age_hours": 0,
+          "description": "Nonfarm payrolls were expected to increase by 84,000 in September while the unemployment rate held at 4.1%.",
+          "extracted_numbers": [
+            {
+              "value": "29,000",
+              "unit": null,
+              "sentence": "Labor market faltered in September as jobs increased by just 29,000, unemployment rate rose to 4.2%."
+            },
+            {
+              "value": "4.2",
+              "unit": "%",
+              "sentence": "Labor market faltered in September as jobs increased by just 29,000, unemployment rate rose to 4.2%."
+            },
+            {
+              "value": "84,000",
+              "unit": null,
+              "sentence": "Nonfarm payrolls were expected to increase by 84,000 in September while the unemployment rate held at 4.1%."
+            },
+            {
+              "value": "4.1",
+              "unit": "%",
+              "sentence": "Nonfarm payrolls were expected to increase by 84,000 in September while the unemployment rate held at 4.1%."
+            }
+          ],
+          "article_excerpt": "The U.S. economy created far fewer jobs than expected in September, pointing to a surprising soft spot in the labor market and broader economy.\n\nNonfarm payrolls rose a seasonally adjusted 29,000 for the month while the unemployment rate increased to 4.2%, the Bureau of Labor Statistics reported Friday. Economists surveyed by Dow Jones had been looking for job growth of 84,000 and an unemployment rate of 4.1%.\n\nIn addition to the weakness in September, the August jobs count was revised lower to reflect a gain of 133,000 while July switched from a gain to a loss as payrolls fell by 10,000. The revisions in total showed 60,000 fewer jobs than previously reported.\n\nMarket reaction was swift to the report, with traders interpreting the soft jobs numbers as good news as they likely further cemented the Federal Reserve staying put at its October meeting.\n\nStock futures rose sharply after the release while Treasury yields slumped after recently rising to levels not seen since the early part of the century. Market-implied odds that the Fed will hold rates steady at its Oct. 27-28 meeting jumped to 83.7%.\n\n\"For the Fed, this number should be the nail in the coffin for an October hike,\" Thomas Simons, chief U.S. economist at Jefferies, said in a note.\n\n\"The payroll data surged in August, and we had expected the momentum to continue this month, given the historically low prints on jobless claims in recent weeks,\" he added. \"However, it now appears that the August number was nothing more than a rebound from very weak hiring in June and July.\"\n\nFed officials more closely watch the unemployment rate than the headline payrolls numbers.\n\nThe household survey, which is used to calculate the jobless level, was a bit better than the establishment survey, which is used to derive the payrolls count.\n\nHousehold employment rose by 78,000 for the month, while the labor force swelled by 485,000 and the participation rate, which counts those working or actively searching for a job as a share of the total labor force, increased 0.2 percentage point to 61.8%, its highest since May.\n\nAn alternative measure of unemployment, which includes discouraged workers and those holding part-time jobs for economic reasons, edged down to 7.6%, its lowest since January 2025.\n\nThe report comes with Federal Reserve officials weighing the state of the economy and how it should impact their next interest rate move.\n\nFollowing statements in recent days from central bank policymakers, markets have recalibrated expectations and now expect the rate-setting Federal Open Market Committee to hold off until December for their next hike. The FOMC raised benchmark rates a quarter percentage point in September.\n\nPolicymakers largely see inflation a larger threat to the economy than the labor market, which had shown resilience in recent months. The data has painted a picture of a low-hire low-fire economy, with weekly jobless claims low and one indicator showing layoffs at their lowest rate in four years.\n\nInflation, though, has held well above the Fed's 2% target. The most recent indicator of the central bank's preferred gauge showed core inflation at a 3% annual rate.\n\nWages, though, continued to show signs of disinflation.\n\nAverage hourly earnings increased just 0.1% in September, putting the 12-month gain at 3%, the lowest since May 2021. Wall Street had been looking for respective readings of 0.3% and 3.1%. The average work week was unchanged at 34.6 hours.",
+          "article_meta_description": "Nonfarm payrolls were expected to increase by 84,000 in September while the unemployment rate held at 4.1%.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 3467,
+            "note": null
+          }
+        },
+        {
+          "id": "s5",
+          "title": "Rivian tops Q3 delivery expectations, reconfirms 2026 guidance",
+          "source": "CNBC Top News",
+          "url": "https://www.cnbc.com/2026/10/02/q3-vehicle-deliveries.html",
+          "published_at": "2026-10-02T12:38:04.000Z",
+          "age_hours": 0.5,
+          "description": "Rivian reported a year-over-year increase in vehicle deliveries of 46% during the third quarter.",
+          "extracted_numbers": [
+            {
+              "value": "3",
+              "unit": null,
+              "sentence": "Rivian tops Q3 delivery expectations, reconfirms 2026 guidance."
+            },
+            {
+              "value": "2026",
+              "unit": null,
+              "sentence": "Rivian tops Q3 delivery expectations, reconfirms 2026 guidance."
+            },
+            {
+              "value": "46",
+              "unit": "%",
+              "sentence": "Rivian reported a year-over-year increase in vehicle deliveries of 46% during the third quarter."
+            }
+          ],
+          "article_excerpt": "Rivian Automotive on Friday reconfirmed its 2026 vehicle delivery guidance after reporting a year-over-year increase of 46% during the third quarter, topping Wall Street's expectations.\n\nThe electric vehicle company reported delivery of 19,248 units from July through September, up from 13,201 a year earlier. Wall Street was expecting 18,000 units, according to average estimates compiled by FactSet.\n\nRivian's 2026 guidance for vehicle deliveries, which it raised earlier this year, is between 65,000 and 70,000 vehicles. To achieve that target, the company would need to increase deliveries from the third to fourth quarters by at least 20.5%, to 23,193 vehicles.\n\nThe growth in deliveries comes as the company continues a ramp-up in production of its entry-level Rivian R2 SUV that launched earlier this year as a smaller, less expensive sibling to its flagship R1 SUV.",
+          "article_meta_description": "Rivian reported a year-over-year increase in vehicle deliveries of 46% during the third quarter.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 873,
+            "note": null
+          }
+        },
+        {
+          "id": "s6",
+          "title": "Google has been playing catch up with OpenAI and Anthropic. Does its new flagship model really compete at the frontier?",
+          "source": "CNBC Top News",
+          "url": "https://www.cnbc.com/2026/10/02/tech-download-google-argon-frontier-openai-anthropic.html",
+          "published_at": "2026-10-02T11:00:01.000Z",
+          "age_hours": 2.2,
+          "description": "Google has been trailing OpenAI and Anthropic for much of 2026, analysts say Gemini 4 puts it back in the frontier AI conversation.",
+          "extracted_numbers": [
+            {
+              "value": "2026",
+              "unit": null,
+              "sentence": "Google has been trailing OpenAI and Anthropic for much of 2026, analysts say Gemini 4 puts it back in the frontier AI conversation."
+            },
+            {
+              "value": "4",
+              "unit": null,
+              "sentence": "Google has been trailing OpenAI and Anthropic for much of 2026, analysts say Gemini 4 puts it back in the frontier AI conversation."
+            }
+          ],
+          "article_excerpt": "2026 has been a turbulent year for Google's AI hopes and dreams.\n\nThings started well. Gemini 3, which launched towards the end of 2025, put Google very much in the frontier AI conversation.\n\nBut for much of the rest of this year, it's Anthropic and OpenAI that have been at the forefront of AI advances.\n\nGoogle will undoubtedly be hoping the release of a new flagship model, Gemini 4 Argon, changes that.\n\nWhen Demis Hassabis stepped down as CEO of DeepMind, Google's AI lab, in August, I wrote that new boss Koray Kavukcuoglu was inheriting a race to catch-up with Sam Altman and Dario Amodei's companies.\n\nNow Google has touted the model as performing better than top OpenAI and Anthropic offerings in some benchmarks.\n\nArtificial Analysis Intelligence Index, a composite benchmark score, places Gemini 4 as lagging behind only Claude Opus 5.5 and Claude Sonnet 5.5 on its leaderboard.\n\n\"Google Gemini 4 Argon shows advanced reasoning on critical tasks, according to benchmarks, particularly legal reasoning, finance and other aspects of enterprise knowledge work, including long-running tasks,\" Tim Law, director of research for AI at IDC , told me.\n\nLian Jye Su, chief analyst at Omdia, said that while Google was \"late to the cybersecurity and coding game,\" Gemini 4 took the company to the frontier in AI, particularly in cybersecurity.\n\nThe company plans to launch the new model in phases, starting with trusted cybersecurity partners while working with the U.S. government on pre-release safety evaluations.\n\n\"Starting this rollout in this way gives us more confidence, but also enables us to put a model that is trained and strong in cyber defense in the hands of defenders as soon as possible,\" Tulsee Doshi, Google's Gemini model product lead, told CNBC.\n\nThe numerous security incidents caused by rogue AI systems made by OpenAI and Anthropic have created an opportunity for Google to \"stake its claims as the trusted model provider for safe and secure AI operations,\" Su said.\n\nBut while Argon has made Google competitive again in AI, said Nick Patience, AI lead at the Futurum Group, the model doesn't make it the \"leader.\"\n\n\"At a minimum, though, Gemini 4 Argon opens up another competitive front for enterprise knowledge work with other leading frontier models,\" said Law.\n\nGoogle said in its release that its new model is already being used internally to optimize memory at Google's data centers, freeing up hundreds of terabytes of memory without buying additional hardware. Quantum computing researchers have also utilized the model.\n\nBut the real test, as it always is with new models, is when it sees the cold light of day and is launched more widely. The company has given no indication when that could be.\n\n\"While Google touts the success of internal use cases, the final proof will be in enterprise production environments once the model is fully released,\" said Law.\n\nOpenAI abandoned the release of an upcoming model after determining that it did not adequately meet the company's safety standards.\n\nSpaceX launched Google AI chips into orbit in a push toward space-based data centers .\n\nOpenAI has been sued by a non-profit organization over its models' cyberattack against startup Hugging Face in July.\n\nCalifornia Gov. Gavin Newsom is banning AI 'robo bosses' in landmark state law , reversing his earlier veto.\n\nFormer LinkedIn chief Roslansky is set to leave Microsoft , following other exec departures.",
+          "article_meta_description": "Google has been trailing OpenAI and Anthropic for much of 2026, analysts say Gemini 4 puts it back in the frontier AI conversation.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 3436,
+            "note": null
+          }
+        },
+        {
+          "id": "s7",
+          "title": "Inflation im Euroraum steigt stärker als erwartet - auf 3,8 Prozent",
+          "source": "tagesschau Wirtschaft",
+          "url": "https://www.tagesschau.de/wirtschaft/konjunktur/inflation-eurozone-anstieg-102.html",
+          "published_at": "2026-10-02T10:52:03.000Z",
+          "age_hours": 2.3,
+          "description": "Die Inflationsrate in der Eurozone ist im September auf 3,8 Prozent gestiegen. Das ist die höchste Inflationsrate seit September 2023. Der Grund sind die hohen Energiepreise.",
+          "extracted_numbers": [
+            {
+              "value": "3,8",
+              "unit": "Prozent",
+              "sentence": "Inflation im Euroraum steigt stärker als erwartet - auf 3,8 Prozent."
+            },
+            {
+              "value": "2023",
+              "unit": null,
+              "sentence": "Das ist die höchste Inflationsrate seit September 2023."
+            }
+          ],
+          "article_excerpt": "Die Inflationsrate in der Eurozone ist im September auf 3,8 Prozent gestiegen. Das ist die höchste Inflationsrate seit September 2023. Der Grund sind die hohen Energiepreise.\n\nDie hohen Energiepreise haben die Inflationsrate im Euro-Raum auf den höchsten Stand seit drei Jahren getrieben. Die Verbraucherpreise stiegen im September um 3,8 Prozent gegenüber dem Vorjahresmonat. Im August waren es 3,2 Prozent, wie das EU-Statistikamt auf Basis vorläufiger Daten mitteilte. Damit war der Anstieg stärker als erwartet: Von Reuters befragte Experten hatten nur mit einem Wert von 3,6 Prozent gerechnet.\n\nHauptgrund für den Anstieg sind in der gesamten Eurozone die hohen Energiepreise: Energie verteuerte sich gegenüber dem Vorjahresmonat um 18,8 Prozent. Im August hatte die Steigerungsrate bei 14,3 Prozent gelegen.\n\nSchuld daran sind vor allem die massiv gestiegenen Energiepreise. mehr\n\nAußerdem mehrten sich die Anzeichen, dass die Unternehmen die höheren Energiepreise an ihre Kunden weitergeben, urteilt Jörg Krämer, Chefvolkswirt der Commerzbank mit Blick auf die Daten. \"In den letzten drei Monaten sind die Verbraucherpreise ohne Energie und Nahrungsmittel auf Jahresrate hochgerechnet bereits um schätzungsweise drei Prozent gestiegen.\"\n\nDienstleistungen waren um 3,2 Prozent teurer, auch hier fiel der Anstieg höher aus als im August mit 3,0 Prozent. Die Preise für Lebensmittel, Alkohol und Tabak stiegen um 1,4 Prozent und damit um 0,3 Prozentpunkte mehr als im August.\n\nLangsam normalisiert sich der Wasserstand des Rhein. Doch was passiert mit den Verbraucherpreisen? mehr\n\nDas erhöht nun den Druck auf die Europäische Zentralbank: Sie will vermeiden, dass der Ölpreisschock das Preisgefüge nachhaltig verändert. Denn die vom Iran-Krieg angeheizten hohen Energiekosten für Verbraucher und Unternehmen bergen die Gefahr, dass sich Löhne und Preise gegenseitig hochschaukeln und sich die Inflation so festsetzt.\n\nMitte der Woche waren bereits die Daten für Deutschland veröffentlicht worden . Auch hierzulande haben rekordhohe Spritpreise die Inflation im September auf den höchsten Stand seit Ende 2023 getrieben. Waren und Dienstleistungen verteuerten sich um 3,3 Prozent im Vergleich zum Vorjahresmonat.\n\nEZB-Direktorin Isabel Schnabel betonte jüngst, dass man nicht abwarten könne, bis diese Effekte tatsächlich einträten. Es gelte zu beurteilen, wie sich Schocks auf die zugrunde liegende Inflation übertrügen, und die Geldpolitik entsprechend auszurichten. Die Zentralbank achtet dabei insbesondere auf die sogenannte Kernrate, bei der die schwankungsanfälligen Preise für Energie und Nahrungsmittel ausgeklammert werden. Diese Rate stieg im September auf 2,5 Prozent, nach 2,4 Prozent im Vormonat.\n\nWeizen, Mais und Zucker werden an den Rohstoffbörsen immer teurer. Wann spüren Verbraucher den Preisschub? mehr\n\nAlexander Krüger, Chefvolkswirt der Bethmann Hal betont, dass die aktuelle Inflationsentwicklung \"Wasser auf die Mühlen der EZB\" sei, um \"die Leitzinsen weiter zu erhöhen. Daran dürfte auch die noch recht niedrige Kernrate nichts ändern, ist die Gefahr von Zweitrundeneffekten doch groß.\"\n\nAus Sicht der Finanzmärkte dürfte sich die EZB angesichts dieser Daten bis zum Jahresende mit einer weiteren Zinserhöhung gegen den Preisauftrieb in der Euro-Zone stemmen. Sie hatte bereits im Juni und September auf den Inflationsschub infolge des anhaltenden Iran-Krieges reagiert und den Leitzins auf aktuell 2,5 Prozent angehoben.",
+          "article_meta_description": "Die Inflationsrate in der Eurozone ist im September auf 3,8 Prozent gestiegen. Das ist die höchste Inflationsrate seit September 2023. Der Grund sind die hohen Energiepreise.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 3452,
+            "note": null
+          }
+        },
+        {
+          "id": "s8",
+          "title": "Eurozone inflation hits its highest level in three years at 3.8% as energy costs soar",
+          "source": "CNBC Top News",
+          "url": "https://www.cnbc.com/2026/10/02/eurozone-inflation-ecb.html",
+          "published_at": "2026-10-02T09:39:51.000Z",
+          "age_hours": 3.5,
+          "description": "Annual euro zone inflation hit 3.8% last month, its highest level since September 2023.",
+          "extracted_numbers": [
+            {
+              "value": "3.8",
+              "unit": "%",
+              "sentence": "Eurozone inflation hits its highest level in three years at 3.8% as energy costs soar."
+            },
+            {
+              "value": "2023",
+              "unit": null,
+              "sentence": "Annual euro zone inflation hit 3.8% last month, its highest level since September 2023."
+            }
+          ],
+          "article_excerpt": "Annual inflation in the euro zone rose to 3.8% in September, beating market expectations to hit its highest level since September 2023.\n\nLast month's print is up from the 3.2% recorded in August, above the 3.6% forecast by markets and well ahead of the European Central Bank's 2% target. Core inflation came in at 2.5%, in line with expectations.\n\nEnergy inflation reached its highest level since January 2023, at 18.8%, as the ongoing Middle East conflict continues to drive prices higher.\n\nHarry Woolman, global capital markets analyst at Validus Risk Management, said that while energy remains the main driver, September's jump suggests it is now \"more than an energy story\" —making the next ECB meeting on Oct. 29 critical.\n\n\"Markets had pared back expectations of consecutive rate rises in recent days, after President Lagarde suggested that higher bond yields were doing some of the tightening for the ECB. Today's inflation reading makes that argument harder to sustain,\" Woolman said.\n\n\"A central bank mindful of the experience of 2022 will not want to wait for second-round effects to become entrenched before acting.\"",
+          "article_meta_description": "Annual euro zone inflation hit 3.8% last month, its highest level since September 2023.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 1127,
+            "note": null
+          }
+        },
+        {
+          "id": "s9",
+          "title": "I’m in my 20s and keep getting laid off. Should I invest in my employer’s 401(k) or look into other options?",
+          "source": "MarketWatch Top Stories",
+          "url": "https://www.marketwatch.com/story/im-in-my-20s-and-keep-getting-laid-off-should-i-invest-in-my-employers-401-k-or-look-into-other-options-387b34d3?mod=mw_rss_topstories",
+          "published_at": "2026-10-02T11:30:00.000Z",
+          "age_hours": 1.7,
+          "description": "“I have lost faith that the traditional career spanning decades at one company even exists anymore.”",
+          "extracted_numbers": [
+            {
+              "value": "20",
+              "unit": null,
+              "sentence": "I’m in my 20s and keep getting laid off."
+            },
+            {
+              "value": "401",
+              "unit": null,
+              "sentence": "Should I invest in my employer’s 401(k) or look into other options?"
+            }
+          ],
+          "article_excerpt": null,
+          "article_meta_description": null,
+          "article_fetch": {
+            "ok": false,
+            "status": 401,
+            "excerpt_chars": 0,
+            "note": "Kein Artikeltext lesbar (Paywall, Bot-Sperre oder Skriptseite) - nur Titel/Teaser."
+          }
+        },
+        {
+          "id": "s10",
+          "title": "Kaufhauskette Galeria taumelt in die vierte Insolvenz",
+          "source": "tagesschau Wirtschaft",
+          "url": "https://www.tagesschau.de/wirtschaft/galeria-insolvenz-100.html",
+          "published_at": "2026-10-02T11:18:53.000Z",
+          "age_hours": 1.8,
+          "description": "Deutschlands letzte große Warenhauskette Galeria hat erneut Insolvenz angemeldet - es ist bereits die vierte innerhalb von sechs Jahren. Wie es mit den etwa 12.000 Mitarbeitenden in den 83 Warenhäusern weitergeht, ist unklar.",
+          "extracted_numbers": [
+            {
+              "value": "12.000",
+              "unit": null,
+              "sentence": "Wie es mit den etwa 12.000 Mitarbeitenden in den 83 Warenhäusern weitergeht, ist unklar."
+            },
+            {
+              "value": "83",
+              "unit": null,
+              "sentence": "Wie es mit den etwa 12.000 Mitarbeitenden in den 83 Warenhäusern weitergeht, ist unklar."
+            }
+          ],
+          "article_excerpt": "Deutschlands letzte große Warenhauskette Galeria hat erneut Insolvenz angemeldet - es ist bereits die vierte innerhalb von sechs Jahren. Wie es mit den etwa 12.000 Mitarbeitenden in den 83 Warenhäusern weitergeht, ist unklar.\n\nDie angeschlagene Warenhauskette Galeria hat beim Amtsgericht Düsseldorf die Eröffnung eines Insolvenzverfahrens beantragt. Der Geschäftsbetrieb in den 83 Filialen soll vorerst weiterlaufen, erklärte das Unternehmen in einer Mitteilung.\n\nDer Antrag schaffe den rechtlichen Rahmen, um die aktuelle Situation zu ordnen, das Unternehmen zu stabilisieren und die Voraussetzungen für eine nachhaltige Zukunft zu schaffen, so Galeria.\n\nDie rund 12.000 Beschäftigten müssen nun um ihre Arbeitsplätze bangen. Ob sie Insolvenzgeld erhalten und ob beziehungsweise welche Standorte schließen müssen, ist bislang unklar.\n\nDie Dienstleistungsgewerkschaft ver.di sieht für die Galeria-Beschäftigten \"eine völlige Ungewissheit\". Laut ver.di-Bundesfachbereichsleiterin Handel, Silke Zimmer, hätten \"haarsträubende Managementfehler\" zu der erneuten Insolvenz geführt.\n\nIn den letzten Jahren seien durch die Gesellschafter keine nachhaltigen Investitionen geflossen. Schnelle Aufklärung sei nötig, wie es für die Beschäftigten weitergehe. \"Die Beschäftigten brauchen jetzt einen Plan für die Zukunft und keine Nebelkerzen\", so Zimmer weiter.\n\nFür Galeria ist es nach 2020, 2022 und 2024 der vierte Insolvenzantrag innerhalb von sechs Jahren. Zahlreiche Filialen wurden infolge der zurückliegenden Verfahren geschlossen. Die Gläubiger verzichteten auf Milliardenforderungen, um der Warenhauskette den Weg aus der Krise zu ermöglichen.\n\nVor gut zweieinhalb Jahren hatte das Unternehmen, damals noch unter dem Namen Galeria Karstadt Kaufhof, den bislang letzten Antrag gestellt. Vorausgegangen war die Schieflage des damaligen Mutterkonzerns Signa. Im Zuge der Insolvenz mussten damals neun der 92 Warenhäuser schließen.\n\nSeit Sommer 2024 gehört Galeria der US-Investmentgesellschaft NRDC und einer Beteiligungsfirma des Unternehmers Bernd Beetz. Die Namen Kaufhof und Karstadt verschwanden aus dem Firmennamen.\n\nAn insgesamt 33 Standorten will das Unternehmen den Fortbestand seiner Filialen prüfen. mehr\n\nIm Juli kündigte Galeria an, 33 Warenhäuser auf den Prüfstand zu stellen und mit Vermietern über Mietkonditionen zu verhandeln. Ohne tragfähige Lösungen sei die Fortführung der jeweiligen Filiale gefährdet, hieß es. Alle Warenhäuser müssten nachhaltig profitabel wirtschaften.\n\nDie Bedeutung von Kauf- und Warenhäusern im Einzelhandel ist in den vergangenen Jahren stark gesunken. Ihre Marktanteile sanken nach Angaben des Handelsforschungsinstituts EHI seit 2020 von 4,2 Prozent auf zuletzt 1,2 Prozent. In diesen Zahlen sind neben Galeria unter anderem die Handelsketten Müller und Woolworth enthalten. Zwar gibt es noch kleinere Anbieter wie Breuninger, die KaDeWe-Gruppe und das Kaufhaus Stolz. Ein Aus für Galeria würde jedoch zugleich das Ende der Ära klassischer Warenhäuser markieren.\n\nDieses Thema im Programm: tagesschau24 | Nachrichten | 02.10.2026 | 10:40 Uhr",
+          "article_meta_description": "Deutschlands letzte große Warenhauskette Galeria hat erneut Insolvenz angemeldet - es ist bereits die vierte innerhalb von sechs Jahren. Wie es mit den etwa 12.000 Mitarbeitenden in den 83 Warenhäusern weitergeht, ist unklar.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 3084,
+            "note": null
+          }
+        }
+      ],
+      "already_covered_urls": [
+        "https://seekingalpha.com/news/4646208-us10y-tops-5_1-percent-marking-its-highest-level-since-2007?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+        "https://www.marketwatch.com/story/my-husband-and-i-are-in-our-50s-and-have-no-kids-we-have-2-million-do-we-need-a-will-62fb422f?mod=mw_rss_topstories",
+        "https://www.reuters.com/business/bonds-teeter-after-us-treasuries-worst-quarter-since-1994-2026-10-01/",
+        "https://www.reuters.com/world/10-year-us-treasury-yield-hits-highest-since-2002-2026-10-01/",
+        "https://www.cnbc.com/2026/10/01/us-treasury-bond-yield.html",
+        "https://www.handelsblatt.com/finanzen/maerkte/anleihen/anleihen-us-staatsbonds-erleben-ein-fatales-quartal/100258428.html",
+        "https://news.synopsys.com/2026-09-30-OpenAI-and-Synopsys-Announce-GPT-Synopsys-Frontier-Intelligence-to-Revolutionize-Chip-Design?tags=SocialMedia",
+        "https://investor.synopsys.com/news/news-details/2026/Synopsys-and-Amazon-Announce-Strategic-Multi-year-IP-Agreement-for-Custom-Silicon-Collaboration-Also-Extends-to-Cloud-and-AI-Powered-Engineering/default.aspx",
+        "https://www.reuters.com/business/synopsys-shares-jump-robust-growth-outlook-openai-aws-deals-2026-10-01/",
+        "https://www.destatis.de/DE/Presse/Pressemitteilungen/2026/09/PD26_348_611.html",
+        "https://www.tagesschau.de/wirtschaft/inflation-september-energiepreise-100.html",
+        "https://www.reuters.com/business/german-inflation-accelerates-slightly-more-than-expected-september-2026-09-30/",
+        "https://www.marketwatch.com/story/from-6-eggs-to-50-000-cars-these-charts-show-how-inflation-has-defined-the-past-5-years-3c7b9ab9?mod=mw_rss_topstories",
+        "https://www.cnbc.com/2026/09/25/treasury-yield-buy-bonds.html"
+      ]
+    }
+  },
+  "social_learnings": {
+    "status": "AVAILABLE",
+    "items": [
+      {
+        "id": "format:VIDEO",
+        "n": 10,
+        "statement": "Reels/Videos (n=10 gemessene Posts): Median-Reichweite 25.5, Likes 5, Saves 0, Shares 0."
+      },
+      {
+        "id": "format:CAROUSEL_ALBUM",
+        "n": 12,
+        "statement": "Carousels (n=12 gemessene Posts): Median-Reichweite 9, Likes 4, Saves 0, Shares 0."
+      },
+      {
+        "id": "format:IMAGE",
+        "n": 3,
+        "statement": "Einzelbilder (n=3 gemessene Posts): Median-Reichweite 10, Likes 3, Saves 0, Shares 0."
+      },
+      {
+        "id": "saves-shares",
+        "n": 25,
+        "statement": "Ueber alle 25 gemessenen Posts zusammen: 0 Saves und 0 Shares - weniger als eine solche Interaktion pro Post; Inhalte, die man speichern oder weiterschicken will, sind bisher die groesste Luecke."
+      },
+      {
+        "id": "not-yet-measured",
+        "n": 0,
+        "statement": "Thema, Hook-Art und Carousel-Struktur der frueheren Posts sind noch nicht erfasst - dazu gibt es noch keine belastbaren Learnings."
+      }
+    ],
+    "note": "Feedback aus der Performance frueherer Vision-Universe-Posts, keine Vorgabe. Weiche ab, wenn die aktuelle Story eine bessere redaktionelle Loesung verlangt."
+  },
+  "editorial_process": [
+    "1. Story recherchieren und verstehen: Was ist tatsaechlich passiert? Was ist neu?",
+    "2. Relevanz bestimmen: Warum interessiert das einen Anleger? Was ist ueberraschend?",
+    "3. Social Angle entwickeln: Welche Konsequenz oder Spannung traegt den Post?",
+    "4. Mehrere Hook-Ideen intern erwaegen.",
+    "5. Die staerkste deutsche Hook auswaehlen.",
+    "6. Caption schreiben.",
+    "7. Carousel-Dramaturgie entwickeln.",
+    "8. Erst danach Bilder erzeugen."
+  ],
+  "hook_strategy": {
+    "strategy_id": "vu-carousel-editorial-v1",
+    "hook_type": "carousel_cover_hook_de",
+    "instruction": "Die Hook entsteht aus der Story, nicht mechanisch aus einer Zahl oder Headline. Erwaege intern mehrere wirklich unterschiedliche Richtungen (ueberraschende Erkenntnis, Konsequenz, starke Zahl, Widerspruch, historische Einordnung, Konflikt, belegte provokante Aussage, Frage, Vergleich) - nicht fuenf Varianten desselben Satzes - und waehle selbst die staerkste. Liefere GENAU EINE finale Hook: Deutsch, kurz, sofort verstaendlich, anlegerrelevant, social-first, mobile-first, faktisch korrekt. Die verworfenen Richtungen gehoeren in `hook_exploration`.",
+    "negative_fixtures": [
+      "BÖRSENGANG MIT EXISTENZWARNUNG",
+      "50.000 DOLLAR FÜR EIN AUTO?",
+      "493,78 USD SCHLUSSKURS – MSFT",
+      "420 VON 5954 GEPRÜFTEN TITELN",
+      "10-year U.S. Treasury yield tops ..."
+    ],
+    "negative_fixture_note": "Diese Hooks gelten ausdruecklich NICHT als gelungene Social Hooks: Headline-Verdichtung, isolierte Zahl, Systemsprache, englischer Quelltitel."
+  },
+  "editorial_gate": {
+    "rule": "Bevor du ein Bild erzeugst: waere Hook + Caption auch OHNE Bild bereits ein guter Vision-Universe-Post? Wenn nein, KEIN Bild erzeugen - Story, Angle, Hook und Caption zuerst verbessern. Ein schoenes Bild kaschiert keine schwache Redaktion.",
+    "required": [
+      "story_quality",
+      "hook_standalone_quality",
+      "caption_standalone_quality",
+      "fact_grounding"
+    ]
+  },
+  "caption_guidance": "Eine deutsche Caption fuer den ganzen Beitrag: verstaendlich, informativ, social-tauglich, kompakt, redaktionell hochwertig. Erklaert, was passiert ist, warum es interessant ist, welche belegten Fakten zaehlen und was das fuer Anleger bedeutet. Sie muss auch allein zum Cover funktionieren - keine Wisch-Aufforderung. Keine internen Scores, keine Quant-, Screener- oder Systemsprache, keine erfundenen Fakten, keine Anlageberatung vortaeuschen. Endet mit dem Hinweis, dass es keine Anlageberatung ist.",
+  "hashtag_guidance": "Bis zu 5 relevante Hashtags, dynamisch aus der Story, ohne #-Zeichen im Array. Keine Standardliste, keine internen Systembegriffe.",
+  "art_direction": {
+    "principle": "Kein starres Template. Nicht: jeder Vision-Universe-Post sieht gleich aus. Sondern: jeder Post sieht aus, als kaeme er von derselben hochwertigen Marke. Du entwickelst je Story eigene Layouts, Perspektiven, Bildideen und Kompositionen - auf der Qualitaetsstufe und in der Designsprache der Referenzbilder.",
+    "design_language": "PREMIUM FINANCE EDITORIAL x HIGH-END TECHNOLOGY x MODERN CAMPAIGN DESIGN",
+    "characteristics": [
+      "tiefschwarze bzw. sehr dunkle, hochwertige Grundflaeche",
+      "starke Kontraste",
+      "grosse, selbstbewusste Typografie",
+      "klare Informationshierarchie",
+      "wenige dominante Elemente, kontrollierter Negativraum",
+      "hochwertige Produkt-, Technologie- oder Finanzvisualisierung",
+      "Weiss als primaere Schriftfarbe",
+      "wenige gezielte Akzentfarben - bevorzugt Vision-Universe-Blau; Rot nur, wenn es inhaltlich traegt (z. B. Risiko)",
+      "hochwertige Licht- und Materialwirkung",
+      "klare mobile Lesbarkeit, keine visuelle Ueberladung"
+    ],
+    "not_wanted": [
+      "billige Flat-Vector-Grafiken",
+      "Comic-Poster",
+      "Canva-Look",
+      "klassische Infografik",
+      "Finfluencer-Thumbnail",
+      "ueberladene Collagen",
+      "zehn kleine Zahlen gleichzeitig",
+      "zahlreiche Pfeile, Kaesten und Icons",
+      "generische Stockbilder",
+      "zufaellige KI-Landschaften",
+      "surrealistische Metaphern nur um kreativ zu wirken",
+      "aufgerissene Buecher, Abgruende und aehnliche KI-Klischees, wenn die Story sie nicht traegt",
+      "generische Serverraeume fuer jedes KI-Thema",
+      "Text einfach auf ein beliebiges Bild gelegt"
+    ],
+    "one_idea_per_slide": "ONE SLIDE = ONE IDEA = ONE VISUAL HIERARCHY. Jede Slide hat genau eine dominante Aussage (etwa eine grosse Zahl oder ein kurzer Satz) - nicht sechs Zahlen, drei Headlines, vier Icons, Diagramm und Karte auf derselben Seite.",
+    "typography": "Typografie ist Gestaltungselement. Die Hook darf gross und selbstbewusst sein. Keine Bandwurmsaetze, keine winzige Textwueste, keine schlechte Worttrennung, keine Woerter ueber Bildkanten oder Falze zerlegt, keine drei konkurrierenden Headlines. Auf dem Smartphone muss innerhalb einer Sekunde klar sein: WAS IST DIE AUSSAGE?",
+    "brand_system": "Vision-Universe-Logo auf ALLEN Slides, bevorzugt oben links, innerhalb eines Carousels in identischer Position, Groesse und Sicherheitsabstand. Atlas NUR auf Slide 1 - als Host und Markenfigur hochwertig in die Komposition integriert, nicht wie ein Sticker auf ein fertiges Bild gesetzt.",
+    "carousel_coherence": "Die Slides duerfen unterschiedliche Layouts haben (z. B. Slide 1 Atlas + grosses Motiv + Hook, Slide 2 dominante Zahl + Produkt-/Technologievisual, Slide 3 Split Chance/Risiko) - erwuenscht. Gemeinsam teilen sie Logo-System, Typografie-Familie, Farbwelt, Material- und Lichtqualitaet, Designniveau und visuelle Sprache. Pruefe: lege ich die Slides nebeneinander, erkenne ich sofort EINEN Vision-Universe-Post?",
+    "story_decides_motif": "Die Referenzen definieren die Designsprache, nicht das Motiv. Das Motiv entsteht aus der Story (Halbleiter: Wafer, Lithografie, Chip-Strukturen; Rohstoffe: Material, industrielle Anwendung; Unternehmen: Produkt, Technologie, Infrastruktur, Geschaeftsmodell; Makro: hochwertige, nachvollziehbare finanzielle Visualisierung). Keine mechanische Zuordnung: erst die Story verstehen, dann das Visual Concept entwickeln.",
+    "creative_director": "Das ist ein Rahmen, keine Schablone. Du bleibst Creative Director und entscheidest Komposition, Bildidee, Perspektive, Motiv, Typografie-Hierarchie, den Einsatz von Zahlen und die Layouts von Slide 2 und 3 - innerhalb der Qualitaetswelt der Referenzen.",
+    "success": "Nicht: drei Bilder wurden technisch erzeugt. Sondern: das sieht aus wie ein professionelles Vision-Universe-Carousel, das der Owner freiwillig posten wuerde."
+  },
+  "style_references": {
+    "files": [
+      {
+        "path": "social/brand/style-references/vu-style-ref-01.png",
+        "sha256": "899023720e2ec0446e2cf401dee72ae8aa9c91ae36a94626efe08ce80e9b4890",
+        "width": 1122,
+        "height": 1402,
+        "shows": "Cover: Atlas als Host, dominante Hook, Motiv aus der Story"
+      },
+      {
+        "path": "social/brand/style-references/vu-style-ref-02.png",
+        "sha256": "71210b60cc575e9c8e53f45704c6bda7d08fd5d1060f2712a83b756d792653ad",
+        "width": 1122,
+        "height": 1402,
+        "shows": "Cover-Variante ohne Atlas: eine grosse Aussage ueber einem Story-Motiv"
+      },
+      {
+        "path": "social/brand/style-references/vu-style-ref-03.png",
+        "sha256": "500ffc334a1cfd5baf3fd5d60b59fa6eb49f7bf48d011dd113ecbe74fa1c7679",
+        "width": 1122,
+        "height": 1402,
+        "shows": "Key Insight: eine dominante Zahl, ruhiges Technologie-Motiv, knappe Einordnung"
+      },
+      {
+        "path": "social/brand/style-references/vu-style-ref-04.png",
+        "sha256": "b7b8235ce3b847ec005a1d74713b435c901a48036281f1c62fb79cb78bdc1d53",
+        "width": 1122,
+        "height": 1402,
+        "shows": "Einordnung: Chance/Risiko als Split-Layout, klare Leitfrage"
+      }
+    ],
+    "instruction": "Oeffne und betrachte diese Bilddateien selbst, BEVOR du gestaltest - sie liegen unveraendert im selben Checkout wie dieser Brief. Sie sind die visuelle Qualitaetsreferenz (Art Direction, Typografie, Hierarchie, Komposition, Markenwirkung, Informationsdichte, Atlas- und Logo-Integration). Nicht pixelgenau kopieren - diese Qualitaetswelt treffen.",
+    "not_facts": "Inhalte, Unternehmen, Aktien, Zahlen und Aussagen dieser Bilder sind KEINE Faktenquelle und KEIN Themenvorschlag. Die Story kommt ausschliesslich aus der Recherche.",
+    "check_required": "Gib in `style_references_check` je Referenzdatei { path, dominant_text } an: alle gut lesbaren Textzeilen des Bildes wortwoertlich (Headline und Zeilen darunter). Kannst du eine Datei nicht oeffnen, schreibe dominant_text: null - nichts erfinden.",
+    "delivered_in_checkout": true,
+    "delivery_measurement": "4 Referenzbilder liegen unveraendert im Checkout des Briefs."
+  },
+  "carousel": {
+    "slide_count": "Standard: 3 Slides. Einen vierten nur, wenn die Story ihn wirklich braucht - keine Fuellfolie.",
+    "plan_first": "Plane ZUERST das ganze Carousel als eine Geschichte (`carousel_plan`), dann erst das Bild. Die Slides sind eine Serie, keine unabhaengigen Einzelbilder.",
+    "slides": [
+      {
+        "slide_index": 1,
+        "role": "HOOK / COVER",
+        "task": "Scroll Stop.",
+        "contains": "staerkste deutsche Hook, starkes Hauptmotiv aus der Story, Vision-Universe-Logo, Atlas - moeglichst wenig weiterer Text."
+      },
+      {
+        "slide_index": 2,
+        "role": "KEY INSIGHT",
+        "task": "Die staerkste Information der Story vermitteln: dominante Zahl, Vergleich, ueberraschender Fakt, Entwicklung oder zentrale Erkenntnis.",
+        "contains": "Vision-Universe-Logo, KEIN Atlas."
+      },
+      {
+        "slide_index": 3,
+        "role": "EINORDNUNG",
+        "task": "Warum ist das fuer Anleger relevant? Chance/Risiko, Konsequenz, was jetzt wichtig wird, Vergleich, Ausblick oder die entscheidende Frage.",
+        "contains": "Vision-Universe-Logo, KEIN Atlas."
+      }
+    ],
+    "atlas_contract": "Atlas erscheint AUSSCHLIESSLICH auf Slide 1 - als Host und Markenfigur, natuerlich integriert, nicht aufgeklebt. Nutze die echte Datei brand_assets.atlas; keine neu erfundene Roboterfigur, Gesicht und Mimik wie im Referenzbild.",
+    "logo_contract": "Das echte Vision-Universe-Logo (brand_assets.logo) auf ALLEN Slides, bevorzugt oben links, in identischer Position, Groesse und Safe Area. Kein approximiertes Logo, kein neu generierter Schriftzug.",
+    "text_on_image": "Text im Bild ist Pflicht, vor allem die Hook auf Slide 1. Keine Worttrennung ueber Bildfalze, harte Kanten, Gesichter, Objekte oder Kompositionsbrueche (Negativbeispiel: BÖRSE|NGANG, EXISTENZ|WARNUNG ueber einen Buchfalz)."
+  },
+  "delivery": {
+    "mode": "COVER_FIRST",
+    "deliver_now": "Slide 1 (Cover) als EIN finales Bild. Slide 2 und 3 NICHT zeichnen - keine Mini-Slides auf einer Leinwand, kein Bogen.",
+    "plan_all": "carousel_plan beschreibt ALLE Slides vollstaendig (headline_de, key_content, visual_concept), damit sie spaeter ohne neue Redaktion entstehen koennen.",
+    "why": "Der aktive Work-Vertrag erlaubt ein Asset je Auftrag (PR #300); ein Mehr-Paneel-Bogen haelt die exakten Masse nicht (PR #303). Qualitaet vor Carousel-Mechanik: zuerst EIN perfektes Cover."
+  },
+  "visual_strategy": {
+    "strategy_id": "VU_EDITORIAL_PREMIUM",
+    "instruction": "Premium Finance Editorial x High-End Technology x Modern Campaign Design, in der Qualitaetswelt der Referenzbilder (style_references, art_direction). Eine dominante Aussage je Slide, Motiv aus der Story.",
+    "creative_freedom": "Komposition, Bildidee, Perspektive, Motiv, Typografie-Hierarchie und Layout entscheidest du aus der Story heraus.",
+    "restrictions": [
+      "Kein Template, keine pixelgenaue Kopie der Referenzen",
+      "Atlas nur auf Slide 1, Logo auf allen Slides an derselben Stelle",
+      "Keine Worttrennung ueber Kanten, Falze oder Motive",
+      "Keine erfundenen Zahlen im Bild",
+      "Nichts aus der Liste art_direction.not_wanted"
+    ]
+  },
+  "quality_references": {
+    "positive": [],
+    "positive_note": "Die Owner-Referenzbilder stehen unter style_references - sie sind der Massstab. Nicht kopieren, nicht als Template.",
+    "negative": [
+      {
+        "content_id": "vu-web-4e4d3aaef2a999a2-20260926",
+        "hook": "50.000 DOLLAR FÜR EIN AUTO?",
+        "why": [
+          "isolierte Zahl statt Story",
+          "generisches Auto auf Preisschild",
+          "billige Flat-/Vektor-Anmutung",
+          "Atlas wirkt aufgeklebt",
+          "Logo fast unsichtbar"
+        ]
+      },
+      {
+        "content_id": "vu-web-15e2974b16c8dc4c-20260929",
+        "hook": "BÖRSENGANG MIT EXISTENZWARNUNG",
+        "why": [
+          "Hook ist eine Verdichtung der englischen Headline, keine redaktionelle Aussage",
+          "Worttrennung ueber den Buchfalz (BÖRSE|NGANG, EXISTENZ|WARNUNG)",
+          "Risiko-Story -> Abgrund ist eine naheliegende, keine eigene Metapher"
+        ]
+      }
+    ]
+  },
+  "brand_assets": {
+    "logo": "assets/vision-universe-logo.png",
+    "atlas": "assets/atlas.png",
+    "instruction": "Beide Dateien liegen unveraendert im selben Checkout wie dieser Brief. Als echte Bildreferenz verwenden und nur skaliert, zugeschnitten oder neu positioniert einsetzen - keine Neuzeichnung, keine Farb- oder Stiltransformation. Atlas' Gesicht, Mimik und Proportionen exakt wie im Referenzbild; Pose und Blickwinkel sind frei."
+  },
+  "asset_requirements": {
+    "count": 1,
+    "preferred_mime_type": "image/png",
+    "preferred_width": 1080,
+    "preferred_height": 1350,
+    "deterministic_path": "authoring/requests/vu-post-20261002-f5bab93d15/assets/visual-01.png",
+    "format_note": "Hochformat 4:5 (Ziel 1080x1350). Das Bildwerkzeug liefert eigene Pixelmasse - waehle das Hochformat, skaliere oder beschneide nicht nachtraeglich, und halte Hook, Logo und Atlas mit Sicherheitsabstand vom Rand, damit ein 4:5-Ausschnitt nichts Wichtiges verliert. Melde die tatsaechlichen Masse ehrlich.",
+    "announced_fields_required": [
+      "slide_index",
+      "asset_path",
+      "mime_type",
+      "width",
+      "height",
+      "asset_byte_size",
+      "asset_sha256",
+      "brand_elements"
+    ],
+    "announcement_note": "asset_byte_size ist die Groesse der geschriebenen Datei in Bytes, asset_sha256 ihr SHA-256 ueber den gesamten Inhalt. Beides wird nach dem finalen Commit frisch zurueckgelesen und verglichen. brand_elements: { includes_logo, includes_atlas, includes_hook_text_de } als Booleans."
+  },
+  "authoring_requirements": {
+    "hook_variant_count": 1,
+    "internal_hook_exploration": true,
+    "stable_hook_variant_ids": true,
+    "hook_ids_bound_to_brief_blob_sha": true,
+    "visual_variant_ids_bound_to_brief_blob_sha": true,
+    "recommended_hook_allowed": true,
+    "canonical_selected_hook_allowed": false,
+    "actual_image_asset_required": true,
+    "brand_elements_announcement_required": true,
+    "sources_required": true,
+    "editorial_gate_required": true,
+    "style_references_check_required": true,
+    "publishing_allowed": false
+  },
+  "output_contract": {
+    "path": "authoring/requests/vu-post-20261002-f5bab93d15/authoring-result.json",
+    "fields": {
+      "schema_version": "1.0",
+      "brief_id": "wie in diesem Brief",
+      "content_id": "wie in diesem Brief",
+      "request_type": "FULL_CREATIVE",
+      "creative_format": "CAROUSEL",
+      "delivery_mode": "COVER_FIRST",
+      "research": "{ web_access: bool, mode_used, stories_considered: [{ title, url, decision, reason }] }",
+      "story": "{ title_de, what_happened, why_interesting }",
+      "sources": "[{ source, url, published_at, facts_used: [..], opened_by_agent: bool }] - mindestens eine",
+      "hook_exploration": "[{ direction, text, rejected_because }] - die intern verworfenen Richtungen",
+      "hook_variants": "[GENAU EINE: { hook_variant_id, hook_type: 'carousel_cover_hook_de', text, language: 'de', brief_revision, evidence_refs }]",
+      "recommended_hook": "{ recommended_hook_variant_id, recommendation_reason, is_canonical_selection: false }",
+      "caption": "deutsche Caption fuer den ganzen Beitrag",
+      "hashtags": "[bis zu 5 Strings ohne #]",
+      "carousel_plan": "[je Slide: { slide_index, role, headline_de, key_content, visual_concept, atlas: bool }] - alle Slides, auch die noch nicht gezeichneten",
+      "slide_count": "Zahl der geplanten Slides (Standard 3)",
+      "editorial_gate": "{ story_quality, hook_standalone_quality, caption_standalone_quality, fact_grounding } - je 'PASS'",
+      "visual_variants": "[GENAU EINE: { visual_variant_id, visual_strategy, slide_index: 1, slide_role: 'cover', brief_revision, asset_path, mime_type, width, height, asset_byte_size, asset_sha256, brand_elements }]",
+      "carousel_checks": "{ atlas_only_on_slide_1, logo_on_all_slides, logo_position_consistent } - je true (bei COVER_FIRST: so geplant)",
+      "style_references_check": "[je Referenzdatei: { path, dominant_text }]",
+      "processing": "{ status: 'completed', ... }",
+      "publishing_allowed": false
+    }
+  },
+  "constraints": [
+    "Keine erfundenen Zahlen, Fakten oder Quellen. Jede Zahl im Text stammt aus einer genannten Quelle.",
+    "Keine Fakten aus den Referenzbildern.",
+    "Keine Prognose, keine Kauf- oder Verkaufsempfehlung.",
+    "Alle sichtbaren Woerter Deutsch - Ausnahmen nur fuer Eigennamen, Ticker und Markennamen.",
+    "Kein `selected_hook` - nur `recommended_hook`.",
+    "Keine Placeholder- oder programmatisch erzeugte Ersatzgrafik.",
+    "Die Bilder sind FINALE Social Creatives, keine Rohbilder.",
+    "Keine Veroeffentlichung."
+  ],
+  "must_not_claim": [
+    {
+      "id": "forecast",
+      "text": "Keine Prognose ueber Kurse oder Geschaeftsentwicklung."
+    },
+    {
+      "id": "recommendation",
+      "text": "Keine Empfehlung, keine Handlungsaufforderung zum Kaufen oder Verkaufen."
+    }
+  ],
+  "publishing_allowed": false
+}
