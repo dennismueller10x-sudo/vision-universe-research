@@ -121,6 +121,26 @@ class Amendments(unittest.TestCase):
         self.assertEqual([p["cusip"] for p in pos], ["D"])
 
 
+class Universe(unittest.TestCase):
+    def test_pretty_name(self):
+        self.assertEqual(m.pretty_name("MUSTER KAPITAL GMBH"), "Muster Kapital GmbH")
+        self.assertEqual(m.pretty_name("VIKING GLOBAL INVESTORS LP"), "Viking Global Investors LP")
+        self.assertEqual(m.pretty_name("Already Fine LLC"), "Already Fine LLC")
+
+    def test_select_universe_filters(self):
+        h = lambda issuer, v: {"issuer": issuer, "valueUSD": v}  # noqa: E731
+        bulk = {
+            "1": {"name": "ALPHA CAPITAL LP", "country": "NY", "holdings": [h("NVIDIA CORP", 5e8)]},
+            "2": {"name": "SMITH WEALTH ADVISORS", "country": "OH", "holdings": [h("APPLE INC", 5e8)]},
+            "3": {"name": "BETA PARTNERS", "country": "CA", "holdings": [h("ISHARES TR", 4e8), h("APPLE INC", 1e8)]},
+            "4": {"name": "MUSTER KAPITAL GMBH", "country": "2M", "holdings": [h("APPLE INC", 6e7)]},
+            "5": {"name": "TINY FUND LP", "country": "NY", "holdings": [h("APPLE INC", 1e7)]},
+            "6": {"name": "BLACKROCK INC", "country": "NY", "holdings": [h("APPLE INC", 9e9)]},
+        }
+        got = {e["cik"]: e["region"] for e in m.select_universe(bulk, 1, exclude=set())}
+        self.assertEqual(got, {"1": None, "4": "DE"})
+
+
 class Meta(unittest.TestCase):
     def test_fund_meta_unique_and_complete(self):
         slugs = [f["slug"] for f in FUND_META]

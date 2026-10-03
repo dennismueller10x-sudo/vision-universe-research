@@ -54,6 +54,11 @@ jobs:
                   assert os.path.exists(f"hedgefonds/data/funds/{f['slug']}.json"), f["slug"]
                   if f.get("photo"):
                       assert os.path.exists("hedgefonds/" + f["photo"]["src"]), f["photo"]["src"]
+          if os.path.exists("hedgefonds/data/universe.json"):
+              u = json.load(open("hedgefonds/data/universe.json"))
+              for f in u["funds"]:
+                  assert os.path.exists(f"hedgefonds/data/funds/{f['slug']}.json"), f["slug"]
+              print("universe.json OK:", len(u["funds"]), "Fonds")
           print("hedgefonds.json OK:", len(d["funds"]), "Fonds")
           PY
 
