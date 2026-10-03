@@ -78,8 +78,10 @@ jobs:
         env:
           SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
           SEC_CACHE_DIR: ${{ runner.temp }}/sec-cache
+          IN_LIMIT: ${{ github.event.inputs.limit }}
         run: |
-          LIMIT="${{ github.event.inputs.limit }}"
+          LIMIT="$IN_LIMIT"
+          case "$LIMIT" in *[!0-9]*) echo "::error::limit muss eine Zahl sein"; exit 1;; esac
           python3 scripts/quant/cli.py --log-level WARNING consumer --archive "$SEC_CACHE_DIR/bulk/companyfacts.zip" --as-of "$(date -u +%F)" ${LIMIT:+--limit $LIMIT}
           du -sh quant/data/sec/consumer
           node -e 'const c=require("./quant/data/sec/consumer_coverage.json"); console.log(JSON.stringify({productUniverse:c.productUniverse,cikMapped:c.cikMapped,secAvailable:c.secAvailable,annual:c.annualHistory,quarterly:c.quarterlyHistory,ttm:c.ttmPossible,h3:c.history3y,h5:c.history5y,h10:c.history10y,failures:c.failures.length}))'
@@ -153,8 +155,8 @@ jobs:
           if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
           Z=$(node -e 'const c=require("./quant/data/sec/consumer_coverage.json"); console.log(c.secAvailable+"/"+c.productUniverse+" Unternehmen, 10J "+c.history10y+", 5J "+c.history5y+", TTM "+c.ttmPossible)')
           git commit -m "SEC Consumer-Fundamentals: $Z"
-          git pull --rebase origin "${{ github.ref_name }}"
-          git push origin HEAD:"${{ github.ref_name }}"
+          # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
 
       - name: Zusammenfassung
         if: always()
