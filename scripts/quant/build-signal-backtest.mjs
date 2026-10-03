@@ -26,7 +26,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { weekKey, weeklyFromDaily, WEEKLY_TOTAL_RETURN_VERSION } from "./lib/weekly-total-return.mjs";
-import { fromBars, TR_BASIS, WORKING_STORE_IDENTITY, BENCHMARK_IDENTITY, assertSingleBasis } from "./lib/daily-prices.mjs";
+import { fromBars, TR_BASIS, BENCHMARK_IDENTITY, assertSingleBasis, workingStoreFromBars, currentListingPayload } from "./lib/daily-prices.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -107,14 +107,15 @@ function spyTotalReturnCheck(tr, priced) {
 const TR_STALE_DAYS = 10;
 let trRejected = [], ctrSummary = null, spyProviderTR = null, spyCtr = null;
 if (WORK) {
-  let legacy = 0, provider = 0, usable = 0;
+  let legacy = 0, provider = 0, usable = 0, listingCuts = 0;
   const results = [], rejectedIds = [];
   for (const T of titles) {
     const f = join(WORK, "tiingo", "daily", T.securityId + ".json");
     if (!existsSync(f)) { T.tr = null; T.ptr = null; results.push({ reconstructed: false, reason: "NO_CANONICAL_SERIES", bucket: "REJECTED_OTHER" }); rejectedIds.push([T.securityId, "NO_CANONICAL_SERIES", null]); continue; }
     let lastWeek = W - 1; while (lastWeek >= 0 && !(T.c[lastWeek] > 0)) lastWeek--;
     try {
-      const d = fromBars(JSON.parse(readFileSync(f, "utf8")), { identity: WORKING_STORE_IDENTITY, asOf: lastWeek >= 0 ? WEEKS[lastWeek] : asOf, maxStaleDays: TR_STALE_DAYS });
+      const d = workingStoreFromBars(JSON.parse(readFileSync(f, "utf8")), { asOf: lastWeek >= 0 ? WEEKS[lastWeek] : asOf, maxStaleDays: TR_STALE_DAYS });
+      if (d.listingCut) listingCuts++;
       if (d.legacyTotalReturn) legacy++;
       if (d.providerTr) provider++;
       T.tr = d.totalReturn ? weeklyFromDaily(d.dates, d.tr, IDX, W) : null;
@@ -128,12 +129,13 @@ if (WORK) {
   trCoverage = { titles: titles.length, withTotalReturn: usable, share: SB.round(usable / titles.length, 3), contract: CTR.VERSION, corporateActionContract: CTR.CORPORATE_ACTION_CONTRACT,
     basis: TR_BASIS, TOTAL_RETURN_CONFIRMED_BEFORE: provider, TOTAL_RETURN_RECONSTRUCTED: ctrSummary.TOTAL_RETURN_RECONSTRUCTED, TOTAL_RETURN_CONFIRMED_AFTER: usable,
     REJECTED_DIVIDEND_GAP: ctrSummary.REJECTED_DIVIDEND_GAP, REJECTED_SPLIT_GAP: ctrSummary.REJECTED_SPLIT_GAP, REJECTED_IDENTITY: ctrSummary.REJECTED_IDENTITY, REJECTED_OTHER: ctrSummary.REJECTED_OTHER,
-    reasons: ctrSummary.reasons, legacyAdjustedColumnPresent: legacy, beforeContract: MarketQuality.TR_CONTRACT_VERSION, minimumShare: 0.95 };
+    reasons: ctrSummary.reasons, listingSegmentCuts: listingCuts, legacyAdjustedColumnPresent: legacy, beforeContract: MarketQuality.TR_CONTRACT_VERSION, minimumShare: 0.95 };
   trRejected = rejectedIds.sort((a, b) => a[0].localeCompare(b[0]));
   /* SPY: dieselbe Engine, Rolle BENCHMARK_REFERENCE. */
   const spyFile = join(WORK, "tiingo", "daily", BENCHMARK.securityId + ".json");
   if (existsSync(spyFile)) {
-    const d = fromBars(JSON.parse(readFileSync(spyFile, "utf8")), { identity: BENCHMARK_IDENTITY, role: "BENCHMARK_REFERENCE" });
+    const sp = currentListingPayload(JSON.parse(readFileSync(spyFile, "utf8")));
+    const d = fromBars(sp, { identity: BENCHMARK_IDENTITY, role: "BENCHMARK_REFERENCE" });
     spyCtr = d.ctr;
     if (d.totalReturn) spyTR = weeklyFromDaily(d.dates, d.tr, IDX, W);
     if (d.providerTr) spyProviderTR = weeklyFromDaily(d.dates, d.providerTr, IDX, W);

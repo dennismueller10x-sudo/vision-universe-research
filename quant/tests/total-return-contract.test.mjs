@@ -15,7 +15,7 @@ import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
-import { fromBars, WORKING_STORE_IDENTITY, assertSingleBasis } from "../../scripts/quant/lib/daily-prices.mjs";
+import { fromBars, WORKING_STORE_IDENTITY, assertSingleBasis, workingStoreFromBars } from "../../scripts/quant/lib/daily-prices.mjs";
 import { barsWithDividends } from "./total-return-fixtures.mjs";
 import { tally, rawCloseAgreement, adjustedOnly, replacedWholesale, REPAIR_MODE } from "../../scripts/market/repair-total-return-history.mjs";
 
@@ -80,7 +80,8 @@ test("one engine: the shared loader, the setup study and the benchmark refresh r
   const ok = fromBars({ ticker: "X", bars: series() }, ID);
   assert.equal(ok.totalReturn, true); assert.equal(ok.ctr.crossCheck.state, "MATCH");
   assert.ok(ok.providerTr, "Anbieterspalte bestanden: als Vergleichsbasis B gefuehrt");
-  assert.match(read("scripts/quant/build-setup-backtest.mjs"), /import \{ fromBars, WORKING_STORE_IDENTITY \} from "\.\/lib\/daily-prices\.mjs"/);
+  assert.match(read("scripts/quant/build-setup-backtest.mjs"), /import \{ workingStoreFromBars \} from "\.\/lib\/daily-prices\.mjs"/);
+  assert.match(read("scripts/quant/build-signal-backtest.mjs"), /workingStoreFromBars\(JSON\.parse/);
   assert.doesNotMatch(read("scripts/quant/build-setup-backtest.mjs"), /fromPriceBars/, "kein zweiter Lader mit eigener Regel");
   assert.match(read("scripts/market/refresh-benchmark-history.mjs"), /CanonicalTR\.reconstruct/);
   assert.match(read("scripts/quant/lib/daily-prices.mjs"), /CanonicalTR\.reconstruct/);
@@ -187,6 +188,22 @@ test("fail closed: below 95 % reconstructed total return the whole study stays o
   assert.match(study.returnTypeNote, /nur für 93\.3 % der Titel vollständig belegt/);
   assert.ok(study.rules.every((r) => r.returnType === "SPLIT_ADJUSTED_PRICE" && r.baseRateReturnType === "SPLIT_ADJUSTED_PRICE" && r.checks.returnBasis.state === "FAIL"));
   assert.equal(study.returnBasisComparison.compared, false);
+});
+
+test("listing window: the loader reconstructs only the latest listing, the engine still refuses a series spanning two", () => {
+  /* Altes Listing 2015, Luecke ueber ein Jahr, heutiges Listing ab 2024 -
+     gemessen bei 72 Titeln der Signal-Studie (03.10.2026), deren dauerhafte
+     Reihe die alte Kurshistorie vor der Luecke noch traegt. */
+  const old = series().map((b) => ({ ...b, date: "2015" + b.date.slice(4), close: b.close * 3, adjustedClose: b.adjustedClose * 3 }));
+  const joined = old.concat(series());
+  const raw = fromBars({ ticker: "X", bars: joined }, { identity: WORKING_STORE_IDENTITY });
+  assert.equal(raw.trVerdict.reason, "LISTING_DISCONTINUITY", "Gegenprobe: ohne Schnitt keine Gesamtrendite ueber zwei Listings");
+  const d = workingStoreFromBars({ ticker: "X", bars: joined });
+  assert.equal(d.totalReturn, true);
+  assert.equal(d.dates[0], "2024-01-01", "nur das juengste Listing");
+  assert.equal(d.listingCut.droppedBars, old.length);
+  assert.equal(d.ctr.identity.listingCut.keptFrom, "2024-01-01", "der Schnitt steht im Urteil, nicht still");
+  assert.equal(workingStoreFromBars({ ticker: "X", bars: series() }).listingCut, null);
 });
 
 test("mixed-basis guard: a total-return study refuses any title or SPY not on the canonical series", () => {

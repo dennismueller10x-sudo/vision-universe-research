@@ -17,6 +17,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const Canonical = require(join(ROOT, "quant/engines/technical/canonical-bars.js"));
 const MarketQuality = require(join(ROOT, "quant/engines/market-quality.js"));
 const CanonicalTR = require(join(ROOT, "quant/engines/canonical-total-return.js"));
+const SurvivorshipControl = require(join(ROOT, "quant/engines/survivorship-control.js"));
 
 /* Gesamtrendite ist ab canonical-total-return-1.0.0 (Owner-Entscheidung
    03.10.2026) eine EIGENE Rekonstruktion aus Rohkurs, Splitfaktor und
@@ -62,6 +63,27 @@ export function fromBars(payload, opts = {}) {
    (guard-listing-continuity.mjs, Luecke > 365 Tage = neues Listing).
    Damit ist die Identitaet einer Reihe dort die des Produkttitels. */
 export const WORKING_STORE_IDENTITY = { state: "CONFIRMED", via: "WORKING_STORE_CURRENT_LISTING" };
+
+/* Nur das juengste Listing einer Reihe - dieselbe Regel wie die
+   Veroeffentlichung der Kursreihen (survivorship-control.js
+   currentListingSegment, Luecke > 365 Tage = neues Listing). Die Regel
+   beim Abruf (guard-listing-continuity.mjs) sieht nur das Arbeitsfenster;
+   liegt die Luecke aelter, traegt die dauerhafte Ablage noch das alte
+   Listing davor. Gemessen 03.10.2026: 72 Titel der Signal-Studie. Ohne
+   diesen Schnitt lehnt die Rekonstruktion sie als LISTING_DISCONTINUITY ab;
+   mit ihm rechnet sie nur, was zum heutigen Titel gehoert. listingCut nennt
+   den Schnitt, nie still. */
+export function currentListingPayload(payload) {
+  const bars = (payload.bars || []).slice().sort((a, b) => (String(a.date) < String(b.date) ? -1 : 1));
+  const seg = SurvivorshipControl.currentListingSegment(bars);
+  return { ...payload, bars: seg.bars, listingCut: seg.cut };
+}
+/** Arbeitsablage oder Golden Preview: juengstes Listing, Identitaet bestaetigt. */
+export function workingStoreFromBars(payload, opts = {}) {
+  const p = currentListingPayload(payload);
+  const d = fromBars(p, { identity: { ...WORKING_STORE_IDENTITY, listingCut: p.listingCut || null }, ...opts });
+  return { ...d, listingCut: p.listingCut || null };
+}
 /* SPY ist ueber die Konfiguration (quant/config/tiingo-scale.json benchmark)
    eindeutig benannt; seine Rolle ist BENCHMARK_REFERENCE, nie Studientitel. */
 export const BENCHMARK_IDENTITY = { state: "CONFIRMED", via: "BENCHMARK_CONFIG" };
@@ -76,9 +98,9 @@ export function assertSingleBasis(list, spySeries, canonicalSpy) {
 
 export function dailyOf(securityId, workDir, { allowPublicPriceOnly = false } = {}) {
   const priv = workDir ? join(workDir, "tiingo", "daily", securityId + ".json") : null;
-  if (priv && existsSync(priv)) return { source: "CANONICAL_HISTORY", ...fromBars(JSON.parse(readFileSync(priv, "utf8")), { identity: WORKING_STORE_IDENTITY }) };
+  if (priv && existsSync(priv)) return { source: "CANONICAL_HISTORY", ...workingStoreFromBars(JSON.parse(readFileSync(priv, "utf8"))) };
   const golden = join(ROOT, "quant/data/market/golden-preview/daily", securityId + ".json");
-  if (existsSync(golden)) return { source: "GOLDEN_PREVIEW", ...fromBars(JSON.parse(readFileSync(golden, "utf8")), { identity: WORKING_STORE_IDENTITY }) };
+  if (existsSync(golden)) return { source: "GOLDEN_PREVIEW", ...workingStoreFromBars(JSON.parse(readFileSync(golden, "utf8"))) };
   if (!allowPublicPriceOnly) return null;
   const pub = join(ROOT, "quant/data/market/discover-series", securityId + ".json");
   if (!existsSync(pub)) return null;

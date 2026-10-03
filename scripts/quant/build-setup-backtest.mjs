@@ -26,7 +26,7 @@ import { gunzipSync } from "node:zlib";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
-import { fromBars, WORKING_STORE_IDENTITY } from "./lib/daily-prices.mjs";
+import { workingStoreFromBars } from "./lib/daily-prices.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -97,7 +97,7 @@ function dailyOf(securityId, workDir, opts = {}) {
   const candidates = [workDir ? join(workDir, "tiingo", "daily", securityId + ".json") : null, join(ROOT, "quant/data/market/golden-preview/daily", securityId + ".json")].filter(Boolean);
   const file = candidates.find((f) => existsSync(f));
   if (!file) return null;
-  const d = fromBars(JSON.parse(readFileSync(file, "utf8")), { identity: WORKING_STORE_IDENTITY, ...opts });
+  const d = workingStoreFromBars(JSON.parse(readFileSync(file, "utf8")), opts);
   return { rows: d.dates.map((date, i) => [date, d.close[i], d.high[i], d.tr ? d.tr[i] : null]), totalReturn: d.totalReturn, legacyTotalReturn: d.legacyTotalReturn, trVerdict: d.trVerdict };
 }
 
