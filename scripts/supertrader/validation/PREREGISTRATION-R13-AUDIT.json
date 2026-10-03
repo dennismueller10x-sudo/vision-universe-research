@@ -4,14 +4,32 @@
   "status": "Eingefroren vor jedem Audit-Lauf. Runde 13 ist ein forensischer Audit: keine neuen Handelsregeln, keine Schwellenänderung. Korrigiert werden nur Fehler, die ein konkreter Trade oder eine Buchung beweist.",
   "naming": "Geprüft werden VU-Versionen. Ein negatives Ergebnis widerlegt weder den Trader noch ein fremdes Musterdepot; ein Gewinnerbeispiel ersetzt keinen Portfoliotest.",
   "scope": {
-    "live": ["MOMENTUM_BREAKOUT@3.2.0", "WEINSTEIN_STAGE@3.0.0", "DARVAS_BOX@3.0.2", "MINERVINI_VCP@2.0.0", "DONCHIAN_TURTLE@2.0.1", "VU_TREND_52W@1.0.0"],
-    "research": ["WEINSTEIN_STAGE@4.0.0", "MINERVINI_VCP@3.0.0", "DONCHIAN_TURTLE@2.1.0"],
+    "live": [
+      "MOMENTUM_BREAKOUT@3.2.0",
+      "WEINSTEIN_STAGE@3.0.0",
+      "DARVAS_BOX@3.0.2",
+      "MINERVINI_VCP@2.0.0",
+      "DONCHIAN_TURTLE@2.0.1",
+      "VU_TREND_52W@1.0.0"
+    ],
+    "research": [
+      "WEINSTEIN_STAGE@4.0.0",
+      "MINERVINI_VCP@3.0.0",
+      "DONCHIAN_TURTLE@2.1.0"
+    ],
     "window": "2016-01-04 bis 2026-09-30, bereinigtes Point-in-Time-Universum (U1) inklusive delisteter Titel",
     "costs": "10 bp Slippage + 1 bp Gebühr je Seite (COST2: 20 + 2)",
     "benchmark": "SPY-Gesamtrendite (Schluss + Dividende, splitbereinigt)"
   },
   "A_reproduction": "Live-Versionen identisch zu Lauf r12 (37118295375) neu rechnen; Abweichung der S0/S1-Kennzahlen muss 0 sein, sonst ist der Unterschied selbst ein Befund.",
-  "B_invariants": ["Einstiegs- und Ausstiegskurse innerhalb der Tagesspanne (inklusive Slippage)", "Ausstieg nicht vor Einstieg; Anteile summieren auf 1", "keine überlappenden Trades derselben Notierung je Methode", "Delisting-Abschluss nur am letzten Balken delisteter Reihen", "Einstieg nur an Handelstagen der Reihe", "Ticker-Wiederverwendung: gleiche Kürzel mit überlappender Notierung"],
+  "B_invariants": [
+    "Einstiegs- und Ausstiegskurse innerhalb der Tagesspanne (inklusive Slippage)",
+    "Ausstieg nicht vor Einstieg; Anteile summieren auf 1",
+    "keine überlappenden Trades derselben Notierung je Methode",
+    "Delisting-Abschluss nur am letzten Balken delisteter Reihen",
+    "Einstieg nur an Handelstagen der Reihe",
+    "Ticker-Wiederverwendung: gleiche Kürzel mit überlappender Notierung"
+  ],
   "C_accounting": "Unabhängige zweite Buchung des Modellportfolios aus den aufgenommenen Positionen (eigener Code): Tageswert muss mit runPortfolioTR übereinstimmen. SPY-Gesamtrendite aus Tiingo-adjClose gegen die eigene Rechnung.",
   "D_delisting": {
     "finding": "Szenario S1 rechnet jede Delistung mit −30 % ab. Bewiesene Gegenfälle: SYNT (Delistung 10.10.2018 zu 40,99 USD bei Barübernahme durch Atos zu 41 USD) und SCMP (Delistung 13.02.2018 zu 18 USD bei Barübernahme durch Mallinckrodt zu 18 USD) – beide wurden in S1 mit −30 % gebucht.",
@@ -31,5 +49,11 @@
     "fixes": "Live-Korrektur nur bei bewiesenem Implementierungs- oder Datenfehler; Versionierung, alte Ergebnisse bleiben archiviert.",
     "evaluation": "S1C wird Entscheidungsszenario (siehe D); Urteil R1–R4 wird für alle Methoden mit S1C neu berichtet.",
     "claims": "Öffentlich weiter keine Kennzahlen aus Tiingo-Daten; kein Vorteil ohne R1–R4."
+  },
+  "amendmentBeforeResults": {
+    "date": "2026-10-03",
+    "status": "Ergänzt, bevor ein Audit-Ergebnis mit S1C vorlag (Lauf audit13 lief noch, nur der technische Probelauf ohne Delisting-Klassen war bekannt).",
+    "reapplication": "Die eingefrorenen Entscheidungsregeln aus PREREGISTRATION-R11 (Weinstein 4.0.0, Bedingung b), PREREGISTRATION-R12 (Marktampel je Methode; VU Trendfolge 52W R1–R4) werden unverändert mit S1C statt S1 erneut angewendet (Lauf r13b). Ändert sich eine Entscheidung, wird sie entsprechend korrigiert (Übernahme oder Rücknahme); beide Ergebnisse werden berichtet. Fall-basierte Bedingungen (W4) sind von der Delisting-Buchung unabhängig und bleiben bestehen.",
+    "noOtherChanges": "Keine weitere Regel, Schwelle oder Variante wird hinzugefügt."
   }
 }
