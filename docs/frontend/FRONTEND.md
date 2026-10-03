@@ -18,15 +18,15 @@ Kein Service Worker, kein Manifest, keine Content-Hashes an JS/CSS (Ausnahmen: `
 
 | Fehler | Ort | Fix |
 |---|---|---|
-| Startseite sprang nach dem Laden nach oben (zweites Rendern durch `vu-fx-ready`); jeder Währungswechsel sprang nach oben; Zurück landete oben | `discover/app.js` | Scroll bleibt erhalten, Zurück stellt die Position wieder her |
+| Startseite sprang nach dem Laden nach oben (zweites Rendern durch `vu-fx-ready`); jeder Währungswechsel sprang nach oben | `discover/app.js` | Neuberechnung am Platz behält die Position. **Offen:** Zurück landet weiter oben; die Wiederherstellung passt nicht in das Budget der Discover-View-Dateien (180 KB, `browser-qa.mjs`) und gehört in ein gemeinsames Navigationsmodul | Zurück stellt die Position wieder her |
 | Veraltete Kurse auf Karten ohne Kennzeichnung (AIXC −39 % vom 29.09.) | `discover/ui/cards.js` | „Stand 29.09.“, keine Tagesänderung |
 | Penny-Kurse als „0,00 $“ | Karten, Aktienkopf, Chartachse | unter 1 $ vier Nachkommastellen |
 | Eingefrorener Intraday-Stand als „heute“, neben einem anderen Schlusskurs | `source-state.js`, `quant/app/chart.js` | Wochentag statt „Heute“, nicht live heißt datiert |
 | News: „Maximal 24 Stunden alt“ bei einem 12 Tage alten Feed | `news/news.js` | echtes Alter, Hinweis bei Veraltung |
 | News: `javascript:`-URLs aus dem Feed ausführbar | `news/news.js` | nur http(s) bzw. eigener Pfad |
-| 11 Supertrader-Links auf nicht erzeugte Seiten (404) | `scripts/supertrader/build.mjs` | Seiten für alle verlinkten Symbole |
+| 11 Supertrader-Links auf nicht erzeugte Seiten (404) | `scripts/supertrader/build.mjs` | Seiten für alle verlinkten Symbole (**PR #387**) |
 | Leere Academy-Seite bei einem Ladefehler | `academy/app.js` | Hinweis mit „Neu laden“ |
-| Tooltip-Absturz bei fehlendem Datum | `supertrader/assets/st-chart.js` | Guard |
+| Tooltip-Absturz bei fehlendem Datum | `supertrader/assets/st-chart.js` | Guard (**PR #387**) |
 | „undefined.undefined.26“ in Achsen | `quant/ui/charts.js` | Guard |
 | Legacy-Chart mit Rohkursen über Splits | `quant/stock/app.js` | Split-Bereinigung (`return-series.js`) |
 

@@ -68,7 +68,10 @@ test("Bestand · keine doppelte securityId und kein doppelter Ticker im Produktu
 test("Kein Produktskript bildet die securityId mehr roh aus dem Ticker", () => {
   /* Die rohe Verkettung "ref_" + ticker ergab fuer BF-B, BRK-A, MOG-A ...
      Pfade, die es nicht gibt (Supertrader-Charts, Intraday-Siegel). */
-  const dateien = ["scripts/supertrader/build.mjs", "scripts/market/preview-scope.mjs", "scripts/market/universe-source.mjs",
+  /* Supertrader (scripts/supertrader/build.mjs) folgt im eigenen PR - der
+     Supertrader-Workstream erlaubt in seinen PRs nur Supertrader-Pfade
+     (Gate A) und umgekehrt. */
+  const dateien = ["scripts/market/preview-scope.mjs", "scripts/market/universe-source.mjs",
     "scripts/market/build-capability-matrix.mjs", "scripts/market/check-freshness.mjs", "scripts/social/visual-data.mjs"];
   for (const f of dateien) {
     const src = readFileSync(join(ROOT, f), "utf8");

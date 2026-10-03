@@ -65,12 +65,3 @@ test("Supertrader · Signal-Stand liegt nicht vor dem Kursstand der Plattform zu
   const d = (a, b) => (Date.parse(b) - Date.parse(a)) / 86400000;
   assert.ok(d(st, eod) <= 4, "Supertrader " + st + " vs Kurse " + eod);
 });
-
-test("Supertrader · Chartpfade folgen der kanonischen Identitaet (Regel im Erzeuger)", () => {
-  /* Der ausgelieferte Bestand traegt noch Pfade aus dem alten Lauf
-     (DQ-PR-2, bis zum naechsten supertrader-signals-Lauf); der Erzeuger
-     bildet sie jetzt ueber core/identity.js. */
-  const src = readFileSync(join(ROOT, "scripts/supertrader/build.mjs"), "utf8");
-  assert.ok(src.includes("Identity.securityIdForTicker(s.symbol)"));
-  assert.equal(Identity.securityIdForTicker("BRK-A"), "ref_BRK_A");
-});
