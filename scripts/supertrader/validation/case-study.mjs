@@ -27,6 +27,7 @@ import weinstein3 from '../engine/strategies/weinstein-v3.mjs';
 import darvas3 from '../engine/strategies/darvas-v3.mjs';
 import minervini2 from '../engine/strategies/minervini-v2.mjs';
 import donchian2 from '../engine/strategies/donchian-v2.mjs';
+import { trendTemplate } from '../engine/strategies/minervini.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 export const PREREG = 'supertrader-validation-prereg-r10-cases-1.0.0';
@@ -35,6 +36,21 @@ const keyOf = (e) => `${e.id}@${e.version}`;
 const tickerOf = (id) => String(id).split(':')[2];
 const H = 252, MIN_GAIN = 3.0, PRE = 63;
 const YEARS = [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
+
+// Warum liefert ein Scan null? Die Engines verbergen fruehe Ausschluesse; hier werden
+// dieselben Pruefungen in derselben Reihenfolge nachgerechnet (nur Diagnose).
+export function explainNull(e, ctx, t) {
+  const p = e.PARAMS, { bars, ind, cross } = ctx, out = [];
+  if (!(ctx.raw.close[t] >= p.minPrice)) out.push('RAW_PRICE');
+  if (!(ind.dollarVol20[t] >= p.minDollarVolume)) out.push('LIQ_DOLLAR_VOLUME');
+  if (p.minAdr != null && !(ind.adr20[t] >= p.minAdr)) out.push('LIQ_ADR');
+  if (e.id === 'MOMENTUM_BREAKOUT') { const v = [cross.mom21?.[t], cross.mom63?.[t], cross.mom126?.[t]].filter(Number.isFinite); if (!(v.length && Math.max(...v) >= p.momentumPercentile)) out.push('KK-BO-MOM-01'); }
+  if (e.id === 'DARVAS_BOX') { const hi = ind.high252[t]; if (!(bars.close[t] >= p.nearHighPct * hi)) out.push('DAR-MOM-01'); const m = cross.mom126?.[t]; if (!(m >= p.momentumPercentile)) out.push('DAR-MOM-02'); }
+  if (e.id === 'MINERVINI_VCP') { if (t < 252) out.push('HISTORY_252'); else { const tt = trendTemplate(ctx, t, p); for (const [k, v] of Object.entries(tt.rules)) if (!v) out.push(k); } }
+  if (e.id === 'WEINSTEIN_STAGE') out.push('WEIN-NO-STAGE');
+  if (e.id === 'DONCHIAN_TURTLE') out.push('DON-NOT-NEAR-CHANNEL');
+  return out.length ? out : ['UNEXPLAINED'];
+}
 
 // SIC-Division aus SIC-Code (SEC-Divisionsgrenzen).
 export function sicDivision(sic) {
@@ -203,7 +219,7 @@ async function main() {
         const r = g.scan(ctx, t, { ...e.PARAMS, minPrice: 0 }, {});
         if (r === undefined) continue; // Wochenmethode ohne Wochenentscheidung
         const rawOk = ctx.raw.close[t] >= e.PARAMS.minPrice;
-        days.push([d[t], r ? r.stage : (rawOk ? null : 'RAW_GATE'), r && r.rules ? Object.entries(r.rules).filter(([, v]) => !v).map(([x]) => x) : [], seg.cross.rs?.[t] ?? null, ctx.bars.close[t]]);
+        days.push([d[t], r ? r.stage : (rawOk ? null : 'RAW_GATE'), r && r.rules ? Object.entries(r.rules).filter(([, v]) => !v).map(([x]) => x) : explainNull(e, ctx, t), seg.cross.rs?.[t] ?? null, ctx.bars.close[t]]);
       }
       const startIdx = d.findIndex((x) => x >= L.WINDOW.from);
       const sim = simulate(g, ctx, { from: startIdx, exec: DEFAULT_EXECUTION, params: { ...e.PARAMS, minPrice: 0 }, ...(e.simOpts || {}) });
