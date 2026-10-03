@@ -186,7 +186,18 @@ def discover_ir(company, official_site, http, now, max_pages=3):
         for news_page in [response] + ([extra] if extra else []):
             structured_source.update(url=news_page['finalUrl'], sourceId=stable_id(company['companyId'], news_page['finalUrl'], 'schema-news'))
             if news_index(news_page['body'], structured_source, news_page['finalUrl']):
-                sources[structured_source['sourceId']] = {**structured_source, 'type': 'IR_FEED', 'format': 'JSONLD_NEWS', 'active': True, 'intervalHours': 6, 'lastVerified': now, 'verificationEvidence': 'OFFICIAL_SCHEMA_ORG_NEWS_INDEX'}
+                sources[structured_source['sourceId']] = {**structured_source, 'type': 'IR_FEED', 'format': 'JSONLD_NEWS', 'active': True, 'intervalHours': 4, 'lastVerified': now, 'verificationEvidence': 'OFFICIAL_SCHEMA_ORG_NEWS_INDEX'}
+        if provider == 'Q4':
+            from .q4_events import discover as discover_q4
+            try:
+                q4_source = discover_q4(response['body'], response['finalUrl'], {**structured_source, 'provider': provider}, http, now)
+                if q4_source:
+                    sources[q4_source['sourceId']] = q4_source
+            except (SourceError, ValueError) as exc:
+                from .transport import BudgetExhausted
+                if isinstance(exc, BudgetExhausted):
+                    raise
+                warnings.append({'url': response['finalUrl'], 'reason': str(exc)[:200], 'provider': 'Q4'})
         event_links = [l for l in links if re.search(r'events|calendar', l['text'], re.I) and not re.search(r'news[-_/]?releases|/static-files/|\.(?:pdf|zip)(?:\?|$)', l['url'], re.I) and within_domain(l['url'], page)]
         from .ir_events import parse_jsonld, parse_ics
         for link in event_links[:1]:
@@ -197,7 +208,7 @@ def discover_ir(company, official_site, http, now, max_pages=3):
                 sid = stable_id(company['companyId'], link['url'], 'events')
                 event_source = {'sourceId': sid, 'companyId': company['companyId'], 'type': 'IR_EVENTS', 'url': link['url'],
                                 'verified': True, 'allowedSites': [official_site, page, link['url']], 'provider': provider,
-                                'active': True, 'intervalHours': 24, 'lastVerified': now, 'verificationEvidence': 'LINKED_BY_VERIFIED_IR_PAGE'}
+                                'active': True, 'intervalHours': 12, 'lastVerified': now, 'verificationEvidence': 'LINKED_BY_VERIFIED_IR_PAGE'}
                 content = structured['body']
                 events = parse_ics(content, event_source, now) if content.lstrip().startswith(b'BEGIN:VCALENDAR') else parse_jsonld(content, event_source, now) + gcs_events(content, event_source, now)
                 if events:
@@ -218,6 +229,15 @@ def discover_ir(company, official_site, http, now, max_pages=3):
                         **endpoints(links, response['finalUrl']),
                         'providerType': provider, 'lastVerified': now,
                         'confidence': 1 if within_domain(page, official_site) else .95, 'evidence': 'LINK_FROM_VERIFIED_OFFICIAL_SITE'})
+        # One directly linked IR materials/results hub, not an unbounded crawl.
+        if configs[-1]['pageRole'] == 'IR' and not configs[-1]['documents']:
+            materials_page = next((l for l in links if within_domain(l['url'], page) and re.search(r'presentations|quarterly results|financial results|shareholder letters', l['text'], re.I) and not re.search(r'\.(?:pdf|zip)(?:\?|$)', l['url'], re.I)), None)
+            if materials_page and materials_page['url'] != response['finalUrl']:
+                materials_response = optional_page(materials_page['url'])
+                if materials_response and within_domain(materials_response['finalUrl'], page):
+                    material_links = parse_links(materials_response['body'], materials_response['finalUrl'])
+                    configs[-1]['documents'].extend(page_documents(company, material_links, materials_response['finalUrl'], now))
+                    configs[-1]['materialsPage'] = materials_response['finalUrl']
         for link in feed_links[:3]:
             try:
                 feed = http.get(link['url'], ttl=86400)
@@ -233,7 +253,7 @@ def discover_ir(company, official_site, http, now, max_pages=3):
                             is_events = is_event_feed(actual['url'])
                             sources[sid] = {'sourceId': sid, 'companyId': company['companyId'], 'type': 'IR_EVENTS' if is_events else 'IR_FEED',
                                             'format': 'RSS_EVENTS' if is_events else 'RSS', 'url': actual['url'], 'verified': True, 'allowedSites': [official_site, page, actual['url']],
-                                            'provider': provider, 'active': True, 'priority': 1, 'intervalHours': 24 if is_events else 6, 'lastVerified': now,
+                                            'provider': provider, 'active': True, 'priority': 1, 'intervalHours': 12 if is_events else 6, 'lastVerified': now,
                                             'verificationEvidence': {'officialSite': official_site, 'linkedFrom': feed['finalUrl'], 'validItems': len(valid_entries)}}
                     continue
                 entries = parse_feed(feed['body'], feed['finalUrl'])
@@ -246,7 +266,7 @@ def discover_ir(company, official_site, http, now, max_pages=3):
                     continue
                 sid = stable_id(company['companyId'], link['url'])
                 sources[sid] = {'sourceId': sid, 'companyId': company['companyId'], 'type': 'IR_EVENTS' if is_events else 'IR_FEED', 'format': 'RSS_EVENTS' if is_events else 'RSS', 'url': link['url'], 'verified': True,
-                                'allowedSites': allowed, 'provider': provider, 'active': True, 'priority': 1, 'intervalHours': 6,
+                                'allowedSites': allowed, 'provider': provider, 'active': True, 'priority': 1, 'intervalHours': 4,
                                 'lastVerified': now, 'verificationEvidence': {'officialSite': official_site, 'linkedFrom': page, 'validItems': len(valid)}}
             except (SourceError, ValueError, TypeError, KeyError) as exc:
                 from .transport import BudgetExhausted
@@ -255,10 +275,13 @@ def discover_ir(company, official_site, http, now, max_pages=3):
                 configs[-1].setdefault('feedFailures', []).append({'url': link['url'], 'reason': str(exc)})
     # Hosted GCS/Q4 RSS endpoints are reusable provider contracts, not per-company scrapers.
     # Only probe under a successfully fetched verified IR host, and validate ownership + contents.
-    if not sources and configs:
+    if not any(s['type'] == 'IR_FEED' for s in sources.values()) and configs:
         from urllib.parse import urlsplit, urlunsplit
         origin = urlsplit(configs[-1]['irHomepage'])
-        for provider, path in [('GCS', '/rss/news-releases.xml'), ('Q4', '/rss/PressRelease.aspx?LanguageId=1')]:
+        family = configs[-1]['providerType']
+        patterns = [('GCS', '/rss/news-releases.xml'), ('Q4', '/rss/PressRelease.aspx?LanguageId=1')]
+        patterns = [(vendor, path) for vendor, path in patterns if vendor == family or (family == 'GENERIC' and configs[-1]['pageRole'] == 'IR')]
+        for provider, path in patterns:
             candidate = origin.scheme + '://' + origin.netloc + path
             try:
                 response = http.get(candidate, ttl=86400)
@@ -286,7 +309,7 @@ def discover_ir(company, official_site, http, now, max_pages=3):
                 sid = stable_id(company['companyId'], candidate)
                 sources[sid] = {'sourceId': sid, 'companyId': company['companyId'], 'type': 'IR_FEED', 'url': candidate, 'verified': True,
                                 'allowedSites': [official_site, configs[-1]['irHomepage']], 'provider': provider, 'active': True, 'priority': 1,
-                                'intervalHours': 6, 'lastVerified': now, 'verificationEvidence': {'method': 'VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION', 'validItems': len(valid)}}
+                                'intervalHours': 4, 'lastVerified': now, 'verificationEvidence': {'method': 'VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION', 'validItems': len(valid)}}
                 configs[-1]['providerType'] = provider
                 break
             except SourceError as exc:

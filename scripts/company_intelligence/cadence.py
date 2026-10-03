@@ -4,8 +4,9 @@ from datetime import datetime, timedelta
 
 def interval_hours(source, upcoming=False):
     if source.get('provider') == 'GLOBENEWSWIRE_RSS':
-        return .5
-    base = max(.5, source.get('intervalHours', 6))
+        return 4
+    default = 12 if source.get('type') in ('IR_EVENTS', 'IR_MATERIALS') else 4
+    base = max(4, source.get('intervalHours', default))
     if upcoming and source.get('verified') and source.get('type') in ('IR_EVENTS', 'IR_FEED'):
         return min(base, 2)
     return base

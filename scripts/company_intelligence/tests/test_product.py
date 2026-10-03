@@ -28,7 +28,7 @@ class CadenceTests(unittest.TestCase):
         self.assertFalse(due(s,'2026-10-02T03:00:00Z'))
         self.assertTrue(due(s,'2026-10-02T03:00:00Z',True))
         self.assertFalse(due({**s,'failureCount':1},'2026-10-02T03:00:00Z',True))
-        self.assertEqual(interval_hours({'provider':'GLOBENEWSWIRE_RSS'}),.5)
+        self.assertEqual(interval_hours({'provider':'GLOBENEWSWIRE_RSS'}),4)
 
 class StructuredSourceTests(unittest.TestCase):
     def source(self):

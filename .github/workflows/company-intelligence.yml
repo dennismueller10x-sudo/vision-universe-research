@@ -1,8 +1,8 @@
 name: Company Intelligence (isolated preview)
 on:
   schedule:
-    - cron: '17 */6 * * *'
-    - cron: '43 * * * *'
+    - cron: '17 */4 * * *'
+    - cron: '43 */4 * * *'
   pull_request:
     paths: ['company-intelligence/**', 'scripts/company_intelligence/**', 'docs/COMPANY_INTELLIGENCE.md', '.github/workflows/company-intelligence.yml']
   push:
@@ -100,7 +100,7 @@ jobs:
           unexpected=$(printf '%s\n' "$changed" | sed '/^quant\/index.html$/d; /^quant\/app\/page-stock.js$/d; /^quant\/data\/market\/fx\/currency-debt-register.json$/d; /^discover\/index.html$/d; /^discover\/ui\/detail.js$/d;  /^$/d')
           if [ -n "$unexpected" ]; then echo "$unexpected"; exit 1; fi
   preview:
-    if: always() && ((github.event_name == 'workflow_dispatch' && !inputs.acceptance && !inputs.pilot && needs.validate.result == 'success') || (github.event_name == 'schedule' && github.event.schedule == '17 */6 * * *' && vars.COMPANY_INTELLIGENCE_ENABLED == 'true' && vars.COMPANY_INTELLIGENCE_STATE_READY == 'true'))
+    if: always() && ((github.event_name == 'workflow_dispatch' && !inputs.acceptance && !inputs.pilot && needs.validate.result == 'success') || (github.event_name == 'schedule' && github.event.schedule == '17 */4 * * *' && vars.COMPANY_INTELLIGENCE_ENABLED == 'true' && vars.COMPANY_INTELLIGENCE_PILOT_ENABLED != 'true' && vars.COMPANY_INTELLIGENCE_STATE_READY == 'true'))
     needs: validate
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -347,7 +347,7 @@ jobs:
           retention-days: 14
 
   pilot:
-    if: always() && ((github.event_name == 'workflow_dispatch' && inputs.pilot && !inputs.acceptance && needs.validate.result == 'success') || (github.event_name == 'schedule' && github.event.schedule == '43 * * * *' && vars.COMPANY_INTELLIGENCE_PILOT_ENABLED == 'true' && vars.COMPANY_INTELLIGENCE_STATE_READY == 'true'))
+    if: always() && ((github.event_name == 'workflow_dispatch' && inputs.pilot && !inputs.acceptance && needs.validate.result == 'success') || (github.event_name == 'schedule' && github.event.schedule == '43 */4 * * *' && vars.COMPANY_INTELLIGENCE_PILOT_ENABLED == 'true' && vars.COMPANY_INTELLIGENCE_STATE_READY == 'true'))
     needs: validate
     runs-on: ubuntu-latest
     timeout-minutes: 15

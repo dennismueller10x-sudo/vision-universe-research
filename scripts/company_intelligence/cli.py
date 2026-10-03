@@ -3,6 +3,7 @@
 import argparse
 import json
 import logging
+from urllib.parse import urlsplit
 import sys
 from pathlib import Path
 
@@ -72,12 +73,15 @@ def main(argv=None):
     p.add_argument('--sec-document-issuers', type=int, default=2, help='Maximum issuers receiving optional document inspection in a run (0..10)')
     p.add_argument('--sec-fetch', action='store_true', help='Refresh selected issuer submissions through existing SEC client')
     p.add_argument('--discover-ir', action='store_true')
+    p.add_argument('--discovery-workers', type=int, default=1, help='Inventory backfill only: 1..4 independent hosts under one total request budget')
     p.add_argument('--materials', action='store_true', help='Inspect one official call/event material page per selected issuer')
     p.add_argument('--discover-sites', action='store_true', help='Exact CIK Wikidata candidates, automatically used only if unique')
     p.add_argument('--gdelt', action='store_true', help='Optional, unreliable discovery metadata')
     args = p.parse_args(argv)
     if not 1 <= args.limit <= 100 or not 1 <= args.request_budget <= 200 or not 30 <= args.max_seconds <= 1800:
         p.error('limit must be 1..100; request budget 1..200; max seconds 30..1800')
+    if not 1 <= args.discovery_workers <= 4 or (args.discovery_workers > 1 and args.command != 'discover-backfill'):
+        p.error('discovery-workers must be 1..4 and requires discover-backfill')
     if args.all_offline and (args.network or args.tickers):
         p.error('--all-offline requires offline full-universe mode')
     if args.command == 'discover-catalogue' and not args.network:
@@ -155,6 +159,9 @@ def main(argv=None):
                 verified = store.state('officialSite:' + company['companyId'], {})
                 if verified.get('status') == 'VALIDATED':
                     company['officialSites'] = [verified['url']]
+        if args.command in ('discover-backfill', 'discover-catalogue'):
+            from company_intelligence.site_inventory import import_inventory
+            import_inventory(root, companies, store, now)
         if args.command == 'discover-backfill' and not args.tickers:
             # Per-candidate attempt state is a checkpoint separate from SEC/master.
             eligible = []
@@ -168,7 +175,27 @@ def main(argv=None):
                         eligible.append(company)
                 elif (ir.get('retryAfter') or ir.get('nextVerify') or '') <= now:
                     eligible.append(company)
-            selected = sorted(eligible, key=lambda c: c['companyId'])[:args.limit]
+            # Existing logo/IR platform hints prioritize discovery, never authorize
+            # ingestion. Ownership still passes the same corporate validator.
+            def discovery_priority(c):
+                evidence = store.state('siteCandidates:' + c['companyId'], {}).get('candidates', [])
+                hinted = any(r.get('platformHint') for r in evidence)
+                ir_host = any(urlsplit(r.get('url', '')).hostname.split('.')[0] in ('ir', 'investor', 'investors') for r in evidence if urlsplit(r.get('url', '')).hostname)
+                return (not hinted, not ir_host, c['companyId'])
+            selected = sorted(eligible, key=discovery_priority)[:args.limit]
+            selected_ids = {c['companyId'] for c in selected}
+        inventory_results = None
+        if args.command == 'discover-backfill' and args.discovery_workers > 1:
+            from company_intelligence.discovery_batch import run as run_inventory, persist as persist_inventory
+            candidates = {c['companyId']: store.state('siteCandidates:' + c['companyId'], {}) for c in selected}
+            inventory_results = run_inventory(selected, candidates, http, now, args.request_budget, args.max_seconds, args.discovery_workers)
+            persist_inventory(inventory_results, store, companies, now)
+            deferred = any(r['status'] == 'DEFERRED' for r in inventory_results)
+            pipeline.run['discoveryFailures'] += sum(r['status'] in ('REJECTED','DEGRADED') for r in inventory_results)
+            http.requests = sum(r['requests'] for r in inventory_results)
+            for r in inventory_results:
+                for k, v in r['stats'].items(): http.stats[k] += v
+            selected = [companies[r['companyId']] for r in inventory_results]
             selected_ids = {c['companyId'] for c in selected}
         for source in store.sources():
             if source['type'] == 'GDELT':
@@ -193,7 +220,11 @@ def main(argv=None):
                 print(json.dumps({'status': 'DEGRADED', 'publicRequests': http.requests, 'reason': str(exc)[:250]}))
                 return 0  # Optional discovery cannot block known sources or SEC projection.
             for cid, evidence in result.items():
-                store.set_state('siteCandidates:' + cid, {**evidence, 'checkedAt': now})
+                prior_candidates = store.state('siteCandidates:' + cid, {}).get('candidates', [])
+                from company_intelligence.model import domain
+                merged = {domain(c['url']): c for c in prior_candidates + evidence['candidates']}
+                status = 'NO_CANDIDATE' if not merged else 'CANDIDATE' if len(merged) == 1 else 'AMBIGUOUS'
+                store.set_state('siteCandidates:' + cid, {'status': status, 'candidates': list(merged.values()), 'checkedAt': now})
             store.set_state('catalogueDiscovery', {'lastSuccess': now, 'checkedAt': now, 'issuersChecked': len(result), 'requests': http.requests})
             print(json.dumps({'issuersChecked': len(result), 'candidateIssuers': sum(bool(r['candidates']) for r in result.values()), 'publicRequests': http.requests}))
             return 0
@@ -215,7 +246,7 @@ def main(argv=None):
                 # Oldest work first; failed issuers respect the existing cooldown.
                 selected = [companies[cid] for cid in sorted(pending_stream, key=lambda cid: (pending_stream[cid]['filedAt'], cid)) if cid in companies and (store.state('sec:' + cid, {}).get('retryAfter') or '') <= now and pending_stream[cid].get('nextAttempt', '') <= now][:args.limit]
                 selected_ids = {c['companyId'] for c in selected}
-            if args.network:
+            if args.network and inventory_results is None:
                 pipeline.seed_sources(json.loads((config_dir / 'sources.json').read_text()))
                 try:
                     pipeline.ingest_due_sources(selected_ids, all_sources=not args.tickers and args.command in ('run', 'backfill', 'discover-backfill', 'sec-stream', 'poll'), force=args.force_sources)
@@ -256,7 +287,7 @@ def main(argv=None):
                         store.audit(now, cid, 'SEC_STREAM_INDEX_ACCESSION_NOT_IN_SUBMISSIONS', filingId=queued[cid]['latestAccession'])
                 if args.command == 'backfill' and not args.tickers and manifest_pending is None:
                     store.set_state('backfillCursor', max(company['companyId'], store.state('backfillCursor') or ''))
-            if args.network:
+            if args.network and inventory_results is None:
                 pipeline.seed_sources(json.loads((config_dir / 'sources.json').read_text()))
                 if args.discover_ir:
                     store.set_state('irPending', list(dict.fromkeys(store.state('irPending', []) + [c['companyId'] for c in selected if c['officialSites']])))
@@ -329,10 +360,19 @@ def main(argv=None):
                 # Reconcile estimates after first-party calendar changes without more SEC downloads.
                 for company in selected:
                     pipeline.refresh_estimates(company)
+        if inventory_results is not None:
+            # Only new/selected issuer sources may spend the remaining batch
+            # allowance; global polling stays in its four-hour lane.
+            try:
+                pipeline.ingest_due_sources(selected_ids, all_sources=False, include_global=False)
+            except BudgetExhausted:
+                deferred = True
+            for company in selected:
+                pipeline.refresh_estimates(company)
         store.prune(now)
         http.prune()
         exported = store.export(companies, output, now)
-        report = {'runtimeSeconds': round(time.monotonic() - started, 3), 'httpStats': http.stats, 'databaseBytes': (state_dir / 'state.sqlite').stat().st_size, 'schema': SCHEMA, 'generatedAt': now, 'status': 'DEFERRED' if deferred else 'DEGRADED' if any(pipeline.run[k] for k in ('sourceFailures', 'secFailures', 'discoveryFailures', 'documentFailures')) else 'PASS',
+        report = {'inventoryDiscovery': inventory_results, 'runtimeSeconds': round(time.monotonic() - started, 3), 'httpStats': http.stats, 'databaseBytes': (state_dir / 'state.sqlite').stat().st_size, 'schema': SCHEMA, 'generatedAt': now, 'status': 'DEFERRED' if deferred else 'DEGRADED' if any(pipeline.run[k] for k in ('sourceFailures', 'secFailures', 'discoveryFailures', 'documentFailures')) else 'PASS',
                   'selected': [{'companyId': c['companyId'], 'symbols': [l['symbol'] for l in c['listings']]} for c in selected],
                   'run': pipeline.run, 'publicRequests': http.requests, 'secRequests': getattr(getattr(pipeline, '_sec_client', None), 'stats', {}).get('requests', 0),
                   'quality': store.quality(now, companies), 'export': exported}

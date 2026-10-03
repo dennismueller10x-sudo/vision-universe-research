@@ -28,7 +28,7 @@ if [ ! -f "$state_root/latest-run.json" ]; then
 fi
 if [ "${PILOT_NETWORK:-false}" = true ]; then
   args=(poll --network --state "$state_root" --request-budget 100 --max-seconds 240)
-  if [ "${PILOT_LANE:-feeds}" = sec ] && [ $((10#$(date -u +%H) % 6)) -eq 0 ]; then
+  if [ "${PILOT_LANE:-feeds}" = sec ] && [ $((10#$(date -u +%H) % 4)) -eq 0 ]; then
     args=(sec-stream --network --sec-fetch --state "$state_root" --limit 50 --stream-days 3 --request-budget 100 --max-seconds 240)
   fi
   python3 scripts/company_intelligence/cli.py "${args[@]}"

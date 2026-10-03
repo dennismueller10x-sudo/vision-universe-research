@@ -53,6 +53,17 @@ def report(store, companies, now):
     countries = defaultdict(Counter)
     counts, platforms, exchanges, rows = Counter(), Counter(), defaultdict(Counter), []
     statuses = Counter(source_status(s, now) for s in sources)
+    platform_health = defaultdict(lambda: {'sources': 0, 'active': 0, 'blocked': 0, 'stale': 0, 'failures': 0, 'parserFailures': 0, 'issuerIds': set(), 'lastSuccess': None})
+    tiers = Counter()
+    for source in sources:
+        health = platform_health[source.get('provider', 'UNKNOWN')]
+        health['sources'] += 1
+        if source.get('companyId'): health['issuerIds'].add(source['companyId'])
+        status = source_status(source, now)
+        health['active'] += status == 'ACTIVE'; health['blocked'] += status == 'BLOCKED'; health['stale'] += status == 'STALE'
+        health['failures'] += bool(source.get('failureCount'))
+        health['parserFailures'] += any(code in (source.get('lastError') or '') for code in ('MALFORMED', 'INVALID_', 'SCHEMA'))
+        health['lastSuccess'] = max(health['lastSuccess'] or '', source.get('lastSuccess') or '') or None
     discovery_statuses = Counter()
     active_ids = {s['sourceId'] for s in sources if source_status(s, now) == 'ACTIVE'}
     for cid, c in sorted(companies.items()):
@@ -81,6 +92,11 @@ def report(store, companies, now):
             'recentMaterialSEC': any(e['eventType'] == 'MATERIAL_SEC_EVENT' and material_cutoff <= e.get('date', '') <= now[:10] for e in all_events[cid]),
             'calls': cid in calls,
             'webcasts': any(e.get('webcastUrl') or e.get('replayUrl') for e in all_events[cid]),
+            'webcastLinks': any(e.get('webcastUrl') for e in all_events[cid]),
+            'replayLinks': any(e.get('replayUrl') for e in all_events[cid]),
+            'callDates': any(e['eventType'] == 'EARNINGS_CALL' and e.get('date') for e in all_events[cid]),
+            'preparedRemarks': any(d.get('type') == 'PREPARED_REMARKS' for d in docs),
+            'shareholderLetters': any(d.get('type') == 'SHAREHOLDER_LETTER' for d in docs),
             'presentations': any(d.get('type') == 'PRESENTATION' for d in docs) or any(e.get('presentationUrl') for e in all_events[cid]),
             'transcriptLinks': any(d.get('type') == 'COMPANY_TRANSCRIPT' for d in docs) or any(e.get('transcriptUrl') for e in all_events[cid]),
             'consumerPayloadAvailable': bool(news_items[cid] or all_events[cid] or state.get('financials:' + cid, {}).get('state') == 'AVAILABLE'),
@@ -101,6 +117,20 @@ def report(store, companies, now):
         from .model import classify
         flags['recentMaterialNews'] = any(classify(i['headline'])['importance'] in ('HIGH', 'CRITICAL') for i in fresh_news)
         flags['anyMaterialIntelligence'] = bool(flags['financialSummaryCurrent'] or flags['recentMaterialNews'] or flags['confirmedUpcomingEarnings'] or flags['recentMaterialSEC'] or any(e['eventType'] in ('EARNINGS_PUBLISHED', 'PERIODIC_REPORT_PUBLISHED', 'OPERATING_RESULTS_PUBLISHED', 'PRESENTATION_PUBLISHED') and recent[:10] <= e.get('date', '') <= now[:10] for e in all_events[cid]))
+        flags['anyCallContentReference'] = bool(flags['transcriptLinks'] or flags['preparedRemarks'] or flags['shareholderLetters'] or flags['webcasts'])
+        calendar = flags['confirmedUpcomingEarnings'] or flags['estimatedUpcomingEarnings']
+        reference_cutoff = (datetime.fromisoformat(now.replace('Z', '+00:00')) - timedelta(days=365)).date().isoformat()
+        recent_call = any(e['eventType'] == 'EARNINGS_CALL' and reference_cutoff <= e.get('date', '') for e in all_events[cid])
+        recent_presentation = any(reference_cutoff <= e.get('date', '') and (e.get('presentationUrl') or any(d.get('type') == 'PRESENTATION' for d in e.get('sourceDocuments', []))) for e in all_events[cid]) or any(d.get('type') == 'PRESENTATION' and reference_cutoff <= (d.get('date') or '') <= now[:10] for cfg in configs for d in cfg.get('documents', []))
+        full = bool(flags['anyNews'] and flags['financialSummaryCurrent'] and flags['secIdentity'] and calendar and recent_call and recent_presentation)
+        strong = bool(flags['financialSummaryCurrent'] and flags['secIdentity'] and calendar)
+        basic = bool(flags['financialSummaryAvailable'] and flags['secIdentity'])
+        tier = 'A_FULL' if full else 'B_STRONG' if strong else 'C_BASIC' if basic else 'D_LIMITED'
+        tiers[tier] += 1
+        flags['fullIntelligenceTier'] = tier == 'A_FULL'
+        flags['strongIntelligenceTier'] = tier == 'B_STRONG'
+        flags['basicIntelligenceTier'] = tier == 'C_BASIC'
+        flags['limitedIntelligenceTier'] = tier == 'D_LIMITED'
         flags['noRecentMaterialIntelligence'] = not flags['anyMaterialIntelligence']
         flags['noNews'] = not flags['anyNews']
         flags['noConsumerPayload'] = not flags['consumerPayloadAvailable']
@@ -120,6 +150,9 @@ def report(store, companies, now):
     total = len(companies)
     return {'schema': 'vu-intelligence-coverage-1.0.0', 'generatedAt': now, 'totalCompanies': total,
             'counts': {k: {'companies': counts[k], 'percent': round(100 * counts[k] / total, 2)} for k in flags},
+            'coverageTiers': {k: {'companies': tiers[k], 'percent': round(100 * tiers[k] / total, 2)} for k in ('A_FULL', 'B_STRONG', 'C_BASIC', 'D_LIMITED')},
+            'tierDefinitions': {'A_FULL':'Current news + fresh financials + SEC identity + upcoming calendar + calls/presentation evidence within 365 days', 'B_STRONG':'Fresh financials + SEC identity + confirmed/estimated upcoming calendar', 'C_BASIC':'Financial summary + SEC identity', 'D_LIMITED':'Does not meet the preceding tiers'},
+            'platformHealth': {k: {**{f:v for f,v in h.items() if f != 'issuerIds'}, 'issuers': len(h['issuerIds']), 'healthySourcePercent': round(100 * h['active'] / h['sources'], 2)} for k,h in platform_health.items()},
             'sourceStatuses': dict(statuses), 'parserFailures': sum(any(code in (s.get('lastError') or '') for code in ('MALFORMED', 'INVALID_JSON', 'NOT_FEED', 'UNSAFE_OR_OVERSIZED_XML')) for s in sources), 'discoveryStatuses': dict(discovery_statuses), 'platformCompanies': dict(platforms),
             'byExchange': dict(exchanges), 'byMasterListingCountry': dict(countries), 'companies': rows,
             'freshnessWindowsDays': {'news': 180, 'materialSEC': 90, 'financials': 180},

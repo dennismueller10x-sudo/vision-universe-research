@@ -206,14 +206,19 @@ def issuer_earnings_announcement(headline, company):
     """An issuer-owned page can announce another entity's reporting date."""
     def legal_normalize(value):
         value = normalize(value)
-        for word, short in [('corporation', 'corp'), ('incorporated', 'inc'), ('limited', 'ltd')]:
+        for word, short in [('corporation', 'corp'), ('incorporated', 'inc'), ('limited', 'ltd'), ('company', 'co')]:
             value = re.sub(r'\b' + word + r'\b', short, value)
-        return value
+        return re.sub(r'^the\s+', '', value)
     title = legal_normalize(headline)
+    # Official platforms use '4th Quarter FY26' and '2026 Q2'. Normalize
+    # explicit period prefixes without removing a following issuer's name.
+    title = re.sub(r'\b(1st|2nd|3rd|4th)\s+quarter\b', lambda m: {'1st':'first','2nd':'second','3rd':'third','4th':'fourth'}[m[1]] + ' quarter', title)
+    title = re.sub(r'\bfy\s?(\d{2})\b', lambda m: 'fy20' + m[1], title)
+    title = re.sub(r'^(20\d{2})\s+(q[1-4])\b', lambda m: m[2] + ' ' + m[1], title)
     if re.search(r'\b(subsidiar(?:y|ies)|division|joint venture|partner|board meeting|board approval|to consider|to approve|to review)\b', title):
         return False
     lead = r'^(?:q[1-4]|[1-4]q(?:20\d{2}|\d{2})|first|second|third|fourth|quarterly|fiscal|annual|full year)(?:\s+(?:quarter|fiscal|year|fy|fy20\d{2}|20\d{2}|\d{2})){0,6}\s+'
-    titles = {title, re.sub(lead, '', title)}
+    titles = {title, re.sub(r'^the\s+', '', re.sub(lead, '', title))}
     aliases = {legal_normalize(n) for n in company['names']} | {legal_normalize(SUFFIX.sub('', n)) for n in company['names']}
     action = r'(?:reports?|announces?|releases?|will|to|sets?|schedules?|holds?|hosts?|confirms?|q[1-4]|first|second|third|fourth|quarterly|fiscal|annual|earnings|financial)\b'
     for candidate in titles:

@@ -72,9 +72,9 @@ class Pipeline:
             s.setdefault('active', True)
             self.store.source(s)
 
-    def ingest_due_sources(self, selected_ids, all_sources=False, force=False):
+    def ingest_due_sources(self, selected_ids, all_sources=False, force=False, include_global=True):
         from .cadence import due
-        near = {r[0] for r in self.store.db.execute("SELECT DISTINCT company FROM events WHERE kind IN ('EARNINGS_SCHEDULED','EARNINGS_CALL') AND date>=? AND date<=? AND json_extract(payload,'$.confirmationStatus')='CONFIRMED'", (self.now[:10], advance(self.now, 72)[:10]))}
+        near = {r[0] for r in self.store.db.execute("SELECT DISTINCT company FROM events WHERE kind IN ('EARNINGS_SCHEDULED','EARNINGS_CALL') AND date>=? AND date<=? AND json_extract(payload,'$.confirmationStatus')='CONFIRMED'", (self.now[:10], advance(self.now, 48)[:10]))}
         for source in self.store.sources():
             if not force and not due(source, self.now, source.get('companyId') in near):
                 continue
@@ -82,7 +82,7 @@ class Pipeline:
                 self.store.source({**source, 'active': False, 'disabledReason': 'ISSUER_NOT_IN_CURRENT_SUPPORTED_MASTER'})
                 self.store.audit(self.now, source['sourceId'], 'SOURCE_RETIRED_OUTSIDE_UNIVERSE', companyId=source['companyId'])
                 continue
-            if source['type'] != 'GDELT' and (all_sources or source.get('companyId') is None or source['companyId'] in selected_ids):
+            if source['type'] != 'GDELT' and (all_sources or (include_global and source.get('companyId') is None) or source.get('companyId') in selected_ids):
                 self.ingest_source(source)
 
     def ingest_source(self, source):
@@ -90,9 +90,9 @@ class Pipeline:
         self.ensure_aliases([source.get('companyId')])
         if source.get('verified') and source['type'] == 'IR_FEED':
             if is_material_feed(source['url']):
-                source = {**source, 'type': 'IR_MATERIALS', 'format': 'RSS_MATERIALS', 'intervalHours': 24}
+                source = {**source, 'type': 'IR_MATERIALS', 'format': 'RSS_MATERIALS', 'intervalHours': 12}
             elif is_event_feed(source['url']):
-                source = {**source, 'type': 'IR_EVENTS', 'format': 'RSS_EVENTS', 'intervalHours': 24}
+                source = {**source, 'type': 'IR_EVENTS', 'format': 'RSS_EVENTS', 'intervalHours': 12}
             self.store.source(source)
         sid = source['sourceId']
         signature = (sid, source['type'], source.get('format'))
@@ -121,6 +121,9 @@ class Pipeline:
                             if entry.get('eventUid'):
                                 value['eventId'] = stable_id(source['companyId'], source['sourceId'], entry['eventUid'])
                             events.append(value)
+                elif source.get('format') == 'Q4_EVENTS':
+                    from .q4_events import parse as parse_q4
+                    events = parse_q4(response['body'], source, self.now)
                 else:
                     events = parse_ics(response['body'], source, self.now) if response['body'].lstrip().startswith(b'BEGIN:VCALENDAR') else parse_jsonld(response['body'], source, self.now) + gcs_events(response['body'], source, self.now)
                 for e in events:
@@ -129,6 +132,7 @@ class Pipeline:
                         self.store.audit(self.now, sid, 'EVENT_REJECTED_WRONG_EARNINGS_ACTOR', headline=e['headline'], url=e.get('sourceUrl'))
                         continue
                     self.store.event(e, self.now)
+                    accepted += 1
                 entries = []
             else:
                 entries = parse_gdelt(response['body']) if source['type'] == 'GDELT' else news_index(response['body'], source, response['finalUrl']) if source.get('format') == 'JSONLD_NEWS' else parse_feed(response['body'], response['finalUrl'])
@@ -347,6 +351,8 @@ class Pipeline:
                         if result_id not in result_ids:
                             self.store.db.execute('DELETE FROM events WHERE id=? AND id NOT IN (SELECT target FROM event_alias)', (result_id,))
                 self.store.event(e, self.now)
+            from .reporting_calendar import fact_history
+            self.store.set_state('reportingHistory:' + cid, fact_history(consumer, cik, self.now))
             self.refresh_estimates(company)
             sec_state = {**self.store.state('sec:' + cid, {}), 'projectedAt': self.now, 'events': len(events),
                          'hasCanonical': bool(canonical), 'hasConsumer': bool(consumer)}
@@ -370,7 +376,14 @@ class Pipeline:
     def refresh_estimates(self, company):
         cid = company['companyId']
         all_events = [json.loads(r[0]) for r in self.store.db.execute('SELECT payload FROM events WHERE company=?', (cid,))]
-        estimates = estimate_calendar(company, all_events, self.now)
+        from .reporting_calendar import forecast
+        diagnostic = {}
+        estimates = forecast(company, all_events, self.store.state('reportingHistory:' + cid, []), self.now, diagnostic)
+        self.store.set_state('calendarModel:' + cid, {**diagnostic, 'checkedAt': self.now})
+        # Legacy seasonal observations without period ends remain useful; do not
+        # mix their windows with a stronger fiscal-end forecast.
+        if not estimates:
+            estimates = estimate_calendar(company, all_events, self.now)
         # Preserve estimate -> confirmation evidence before retiring an estimate.
         for prior in [e for e in all_events if e['eventType'] == 'EARNINGS_ESTIMATED']:
             confirmations = [e for e in all_events if e['eventType'] in ('EARNINGS_SCHEDULED', 'EARNINGS_CALL') and e.get('confirmationStatus') == 'CONFIRMED'
@@ -429,6 +442,6 @@ class Pipeline:
         names = sorted({c['names'][0] for c in companies if c['names']})[:10]
         query = '(' + ' OR '.join('"' + n.replace('"', '') + '"' for n in names) + ') sourcelang:english'
         url = 'https://api.gdeltproject.org/api/v2/doc/doc?' + urlencode({'query': query, 'mode': 'artlist', 'format': 'json', 'maxrecords': 250, 'timespan': timespan, 'sort': 'datedesc'})
-        source = {'sourceId': stable_id('gdelt', names), 'type': 'GDELT', 'url': url, 'verified': False, 'active': False, 'intervalHours': 24}
+        source = {'sourceId': stable_id('gdelt', names), 'type': 'GDELT', 'url': url, 'verified': False, 'active': False, 'intervalHours': 12}
         self.store.source(source)
         self.ingest_source(source)
