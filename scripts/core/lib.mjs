@@ -2,7 +2,7 @@
    data-quality). Lokal aus dem Repository oder per HTTP gegen die
    ausgelieferte Seite - dieselben Pfade, dieselbe Bewertung. */
 import { readFileSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
@@ -28,7 +28,8 @@ export function makeLoader({ root = REPO_ROOT, site = null } = {}) {
       if (!r.ok) throw new Error("HTTP " + r.status + " " + path);
       return r.json();
     }
-    const file = join(root, path.replace(/^\//, ""));
+    const file = resolve(root, path.replace(/^\//, ""));
+    if (!file.startsWith(resolve(root) + sep)) throw new Error("ausserhalb des Repositorys: " + path);
     if (!existsSync(file)) throw new Error("fehlt: " + path);
     return JSON.parse(readFileSync(file, "utf8"));
   };

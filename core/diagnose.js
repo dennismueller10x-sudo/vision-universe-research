@@ -113,7 +113,8 @@
     /* 5 Aktienseite */
     var s5 = step("payload", "Aktienseite (discover/data/stocks)");
     steps.push(s5);
-    var payload = await tryLoad(load, P.stockPage(universe, t));
+    var payload = /^[A-Z0-9][A-Z0-9.\-]{0,23}$/.test(t) && t.indexOf("..") < 0
+      ? await tryLoad(load, P.stockPage(universe, t)) : { ok: false, error: "INVALID_TICKER" };
     if (!payload.ok) {
       if (inIndex) fail(s5, "FAILED", "Index nennt die Seite, die Datei fehlt.", "Generierte Aktienseite fehlt", "payload");
       else fail(s5, "SKIPPED", "Keine Discover-Seite (nicht im Umfang).", null, null);

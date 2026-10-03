@@ -131,15 +131,18 @@
       });
     }
 
+    /* Ein Ticker wird nur dann Teil eines Dateinamens, wenn er keinen
+       Pfad bilden kann (kein "/", kein ".."). Red Team 03.10.2026. */
+    function pathSafe(t) { return /^[A-Z0-9][A-Z0-9.\-]{0,23}$/.test(t) && t.indexOf("..") < 0; }
     async function stockPage(ticker) {
       var id = ident(ticker);
-      if (!id) return { ok: false, error: "INVALID_TICKER" };
+      if (!id || !pathSafe(id.ticker)) return { ok: false, error: "INVALID_TICKER" };
       return tryLoad(PATHS.stockPage(universe, id.ticker));
     }
 
     async function getFundamentals(ticker) {
       var id = ident(ticker);
-      if (!id) return unavailable("INVALID_TICKER");
+      if (!id || !pathSafe(id.ticker)) return unavailable("INVALID_TICKER");
       var src = PATHS.stockPage(universe, id.ticker), pg = await stockPage(id.ticker);
       if (!pg.ok) return unavailable("NO_STOCK_PAGE", src);
       var f = pg.data.fundamentals, g = pg.data.geschaeftszahlen;

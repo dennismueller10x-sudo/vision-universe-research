@@ -91,3 +91,13 @@ test("Ein Ladefehler wird nicht gemerkt - der naechste Versuch laedt neu", async
   assert.equal((await flaky.getPriceSeries("ABC")).state, "UNAVAILABLE");
   assert.equal((await flaky.getPriceSeries("ABC")).state, "AVAILABLE");
 });
+
+test("Red Team · ein Ticker bildet keinen Pfad (kein Ausbruch aus dem Datenverzeichnis)", async () => {
+  const gesehen = [];
+  const spion = Client.create({ load: async (p) => { gesehen.push(p); throw new Error("x"); } });
+  for (const t of ["A/../../x", "A/B", "A..B"]) {
+    assert.equal((await spion.getFundamentals(t)).reason, "INVALID_TICKER", t);
+    assert.equal((await spion.stockPage(t)).ok, false, t);
+  }
+  assert.ok(gesehen.every((p) => !p.includes("..")), gesehen.join(","));
+});

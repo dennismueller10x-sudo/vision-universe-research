@@ -38,7 +38,11 @@
   "use strict";
 
   var VERSION = "core-identity-1.0.0";
-  var TICKER = /^[A-Z0-9][A-Z0-9.\-\/]{0,23}$/;
+  /* Erstes Zeichen alphanumerisch (kein "..", kein "/"-Anfang), danach auch
+     Trenner, die Anbieter verwenden ("BRK.B", "BRK-B", "BRK/B", "BFS_P_D",
+     "BRK B"). Ein ungewoehnlicher, aber harmloser Ticker darf keinen
+     Datenlauf abbrechen; er wird zur kanonischen ID normalisiert. */
+  var TICKER = /^[A-Z0-9][A-Z0-9.\-\/_ ]{0,23}$/;
 
   /** Ticker in Grossschrift, ohne Leerraum. Keine Umdeutung von Trennern:
    *  "BRK.B" bleibt "BRK.B" - der Anbieter fuehrt "BRK-B". */

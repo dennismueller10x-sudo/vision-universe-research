@@ -20,6 +20,9 @@ test("Regel · Bindestrich, Punkt und Schraegstrich ergeben dieselbe kanonische 
   assert.equal(Identity.matchKey("BRK.B"), "BRKB");
   assert.throws(() => Identity.securityIdForTicker(""), /INVALID_TICKER/);
   assert.throws(() => Identity.securityIdForTicker("../etc"), /INVALID_TICKER/);
+  assert.throws(() => Identity.securityIdForTicker("/abs"), /INVALID_TICKER/);
+  assert.equal(Identity.securityIdForTicker("BFS_P_D"), "ref_BFS_P_D");
+  assert.equal(Identity.securityIdForTicker("BRK B"), "ref_BRK_B");
 });
 
 test("Regel · byte-gleich zur Bildung des Company Master (legacySecurityId)", () => {
