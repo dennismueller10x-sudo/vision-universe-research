@@ -217,7 +217,7 @@ export function tradesFor(engine, seg, ctx, exec, sink = null, simOpts = {}) {
   const s = res.state.signal;
   if (s && s.entry && (s.remaining ?? 1) > 1e-9) {
     const last = d.length - 1;
-    const t = { date: d[last], lastClose: ctx.bars.close[last], distress: L.distressSignature(ctx.raw.close), kind: seg.delisted ? 'DELISTED' : 'OPEN_AT_END' };
+    const t = { date: d[last], lastClose: ctx.bars.close[last], distress: L.distressSignature(ctx.raw.close), kind: seg.delisted ? 'DELISTED' : 'OPEN_AT_END', delistClass: seg.delistClass || null };
     const tr = mk(s, t);
     tr.remainingAtTerminal = s.remaining ?? 1;
     if (!seg.delisted) tr.exits.push({ date: d[last], price: ctx.bars.close[last], fraction: s.remaining ?? 1, ruleId: 'OPEN_AT_END_MARK', basis: 'CLOSE' });
@@ -295,7 +295,7 @@ function rawFromStoreBars(bars) {
 
 // Laedt Listentabelle, Reihen (privater Eimer), Segmente (A2) und den
 // Point-in-Time-Querschnitt. Gemeinsam fuer analyze-methods und diagnose-methods.
-export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity = false, secPit = false } = {}) {
+export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity = false, secPit = false, delistPit = false } = {}) {
   const KEY = process.env.TIINGO_API_KEY || '';
   const zip = Buffer.from(await (await fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer());
   const rows = L.parseTickerCsv(L.unzipCsv(zip));
@@ -396,6 +396,16 @@ export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity 
     secCoverage = { segments: segs.length, withFund, delisted: segs.filter((s) => s.delisted).length, delistedWithFund: segs.filter((s) => s.delisted && s.fund).length };
     log(`SEC-Gewinnhistorie: ${withFund}/${segs.length} Segmente, delistet ${secCoverage.delistedWithFund}/${secCoverage.delisted}`);
   }
+  // Runde 13: Delisting-Klasse aus SEC-Einreichungen (Uebernahme/unbekannt) an delistete Segmente haengen.
+  let delistCoverage = null;
+  if (delistPit) {
+    budget.consumeClassB(1, 'GET sec delist');
+    const dbuf = await driver.get(mine.seriesPrefix + '_validation/sec-delist-r13.json.gz');
+    const dl = dbuf ? JSON.parse(zlib.gunzipSync(dbuf).toString('utf8')) : {};
+    delistCoverage = { delisted: 0, classified: 0, ACQUISITION: 0, UNKNOWN: 0 };
+    for (const seg of segs) { if (!seg.delisted) continue; delistCoverage.delisted++; const c = dl[seg.id.split('#')[0]]; if (c) { seg.delistClass = c.cls; seg.delistEvidence = c.evidence; delistCoverage.classified++; delistCoverage[c.cls]++; } }
+    log(`Delisting-Klassen: ${JSON.stringify(delistCoverage)}`);
+  }
   log(`Segmente ${segs.length}, Doppelhistorien ${dup.size}, Balken ausserhalb des Kalenders ${offCalendar}`);
 
   // 2. Querschnitt Point-in-Time (wie build.mjs crossSection, aber ueber das damalige Universum).
@@ -433,7 +443,7 @@ export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity 
   }
   for (const seg of segs) delete seg.vals;
 
-  return { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, spyAdj, bench, budget, mine, nonEquityExcluded, secCoverage };
+  return { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, spyAdj, spyRaw, bench, budget, mine, nonEquityExcluded, secCoverage, delistCoverage };
 }
 
 // Beispielspur R8: Kullamaegis eigene Beispiele gegen die Engine (TSLA-Breakout
