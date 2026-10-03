@@ -116,7 +116,9 @@ classificationConfidence, coverage, missingFields, canonicalizationMethod, manua
 `etf-taxonomy.js` (Name + Anbietergattung, jede Entscheidung mit Grundlage):
 - Produkttyp: ETF, ETN, ETC, ETP, CEF, MUTUAL_FUND, UNKNOWN
 - Strategie: LEVERAGED, INVERSE, LEVERAGED_INVERSE, SINGLE_STOCK, OPTION_INCOME, COVERED_CALL, BUFFER,
-  DEFINED_OUTCOME, CRYPTO, COMMODITY, THEMATIC, BOND, EQUITY, MULTI_ASSET, MONEY_MARKET, UNKNOWN
+  DEFINED_OUTCOME, CRYPTO, COMMODITY, THEMATIC, BOND, EQUITY, MULTI_ASSET, MONEY_MARKET, ALTERNATIVE, UNKNOWN
+- Einzelaktie: `long/short <TICKER>`, `Daily <TICKER> Bull/Bear` (auch Großbuchstaben-Namen mit Wortsperrliste),
+  `(<TICKER>)` bzw. `<TICKER> Option Income`; Markenzeichen `(R)`/`(TM)` und Krypto-Token sind keine Aktie
 - Vorsorge-Einordnung (**keine Anlageempfehlung**): STANDARD · KOMPLEX · SEHR_KOMPLEX · NICHT_EINORDENBAR
 - `COMMON_STOCK`-Fehlklassifikationen: ETF-Beleg auch aus dem Namen (ETF/ETN, iShares/ProShares/SPDR),
   REIT/BDC/Bank/geschlossene Fonds ausgeschlossen; manuelle Overrides in `overrides.json`.
@@ -132,6 +134,26 @@ Schichten:
 | REVIEW | Kollision, OTC/Pink, kein Name, keine Kurse, Kursanomalie, CEF/Mutual Fund, nicht einordenbar |
 
 Recycelte Ticker: Kurslücke > 120 Tage trennt Vorgänger ab; Anbieter-Startdatum ist nie Auflagedatum.
+
+Auslieferung: `etf-index.json` enthält nur PUBLIC_ANALYSIS + COMPLEX (≈ 475 KB gzip), `etf-index-extra.json`
+Archiv und Prüfschicht; der Browser lädt den Zusatzteil erst bei Bedarf (Schalter „inaktive“, Detail, Watchlist).
+
+### Gemessener Stand (Tiingo-Vollingest, Datenstand 02.10.2026)
+| Größe | Wert |
+|---|---|
+| Zeilen der Tiingo-Tickerliste / davon ETF | 108.934 / 9.777 |
+| aktive ETF-Ticker / erfolgreich abgefragt / ohne Kurse / gescheitert | 7.273 / 7.266 / 7 / 7 |
+| Listings / kanonische Fonds | 7.414 / 7.397 |
+| mit Kursreihe / ≥ 1 / 3 / 5 / 10 Jahre / Gesamtrendite | 7.405 / 5.188 / 3.522 / 2.758 / 1.620 / 7.010 |
+| PUBLIC_ANALYSIS / COMPLEX / REVIEW / ARCHIVE | 4.007 / 2.065 / 1.334 / 8 |
+| STANDARD / KOMPLEX / SEHR_KOMPLEX / NICHT_EINORDENBAR | 4.600 / 1.333 / 852 / 629 |
+| Hebel/Short · Einzelaktie erkannt | 773 · 434 |
+| Börsen (Top) | NYSE 2.761, BATS 1.583, NASDAQ 1.382, PINK 523, SHG 416, SHE 376 |
+| Währungen | USD 6.685, CNY 727, AUD 2 |
+| europäische Listings / ISIN | 0 / 0 (427 UCITS-Fonds nur als US-OTC-Zeile) |
+
+Workflow-Läufe: Canary 37143360935, Vollingest 37143602433 (Ingest 3 h 13 min, 0 × HTTP 429),
+Fortsetzung 37155917225; Rechtsquellen 37143678724.
 
 ## 5. Mathematik
 
@@ -178,8 +200,13 @@ liefern muss; Holdings über `etf-holdings-2.0.0`. Kein Anbieter wird hier empfo
 
 ## 9. Release, QA
 
+Gemessen (lokal, ungzippt ausgeliefert, Screener mit 6.072 Zeilen): Desktop Laden 0,8 s, erstes
+Rendern 43 ms, Suche 4 ms; Mobil (4 × CPU-Drossel) 1,5 s / 206 ms / 20 ms. Risiko-Plausibilität:
+SPY 10 J. 13,5 % p. a. Kurs / 15,3 % Gesamtrendite, Max. Rückgang −55,9 % (2007–2009, erholt 03/2013);
+QQQ −82,7 % (erholt 09/2016); EEM −63,5 % (erholt 01/2021).
+
 - `node --test "vorsorge/tests/*.test.mjs"`, `node scripts/vorsorge/assert-vorsorge-data.mjs`
 - Reproduzierbarkeit: zwei Builds, identische Hashes
-- Browser-QA (Playwright) über alle Routen bei 1440/1280/820/430/390 px, hell/dunkel
+- Browser-QA (Playwright) über alle Routen bei 1440/1280/820/768/430/390 px, hell/dunkel
 - Regression: Discover, Quant, SuperTrader, Screener, Worker, Release-Build, Datenhygiene
 - Modulgrenzen: keine Änderungen an `quant/`, `scripts/market/`, `providers/`, `api/`, `server/`, `worker/`
