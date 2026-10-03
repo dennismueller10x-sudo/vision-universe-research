@@ -240,3 +240,39 @@ body.hf{color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,'Seg
 .hf-stack a{text-decoration:none;display:inline-flex}
 .hf-hist .col:last-child .tip{right:0}.hf-hist .col:first-child .tip{left:0}
 .hf-section{scroll-margin-top:100px}
+
+/* --- Erweiterung: Veränderung je Position, Datenbank, Fondslisten --- */
+.hf-chg{display:inline-flex;align-items:center;gap:2px;font-size:10.5px;font-weight:750;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--muted)}
+.hf-chg.up{color:var(--up)} .hf-chg.down{color:var(--down)}
+.hf-chg.new{background:var(--accent-soft);color:var(--accent-text);padding:1px 6px;border-radius:99px}
+.hf-card-hold .row{grid-template-columns:22px minmax(0,1fr) auto auto;gap:8px}
+.hf-card-hold .row i{display:block}
+.hf-avatar.sm{width:34px;height:34px;font-size:11.5px;border-width:2px}
+.hf-star{color:#d6a200;font-size:12px}
+.hf-search-sm{min-height:42px;max-width:440px;margin:4px 0 6px;box-shadow:none}
+.hf-db td{vertical-align:middle}
+.hf-db .sec small{max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hf-pos-chips{display:flex;gap:6px;flex-wrap:wrap}
+.hf-pos-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 8px 3px 3px;border:1px solid var(--line-soft);border-radius:99px;background:var(--bg);font-size:11.5px;white-space:nowrap}
+.hf-pos-chip .hf-logo{width:18px;height:18px;border-radius:5px;font-size:7px}
+.hf-pos-chip small{color:var(--muted);font-variant-numeric:tabular-nums}
+.hf-li{grid-template-areas:"rk lg nm val" "dt dt dt dt"}
+.hf-li>.rk{grid-area:rk}.hf-li>.hf-logo{grid-area:lg}.hf-li>.nm{grid-area:nm}.hf-li>.val{grid-area:val}
+.hf-funds{grid-area:dt;margin:2px 0 0 64px}
+.hf-funds summary{min-height:28px;padding:4px 0;font-size:11.5px;font-weight:700;color:var(--muted);list-style:none;cursor:pointer}
+.hf-funds summary::-webkit-details-marker{display:none}
+.hf-funds summary:before{content:"▸ ";}
+.hf-funds[open] summary:before{content:"▾ ";}
+.hf-funds .hf-table-wrap{border-radius:12px}
+.hf-mini{min-width:0;font-size:12px}
+.hf-mini th{padding:8px 10px;font-size:9.5px}
+.hf-mini td{padding:7px 10px}
+.hf-fund{display:flex;align-items:center;gap:8px;text-decoration:none;min-width:0}
+.hf-fund span{display:flex;flex-direction:column;min-width:0}
+.hf-fund b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+.hf-fund small{font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+.hf-fund:hover b{text-decoration:underline}
+@media (max-width:640px){
+  .hf-funds{margin-left:0}
+  .hf-db th:nth-child(5),.hf-db td:nth-child(5),.hf-db th:nth-child(8),.hf-db td:nth-child(8){display:none}
+}
