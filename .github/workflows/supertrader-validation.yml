@@ -25,7 +25,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4]
+        options: [subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4, sources-r12]
         default: subset
   push:
     branches:
@@ -190,8 +190,8 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: node scripts/supertrader/validation/universe-audit.mjs --out "$RUNNER_TEMP/val"
       - name: Minervini-Quellen lesen (Runde 10, verschluesselt)
-        if: steps.mode.outputs.mode == 'sources-minervini'
-        run: node scripts/supertrader/validation/fetch-sources.mjs --out "$RUNNER_TEMP/val" --list scripts/supertrader/validation/sources-r10-minervini.json --name sources-r10-minervini
+        if: steps.mode.outputs.mode == 'sources-minervini' || steps.mode.outputs.mode == 'sources-r12'
+        run: node scripts/supertrader/validation/fetch-sources.mjs --out "$RUNNER_TEMP/val" --list scripts/supertrader/validation/${{ steps.mode.outputs.mode == 'sources-r12' && 'sources-r12-traderfox.json' || 'sources-r10-minervini.json' }} --name ${{ steps.mode.outputs.mode == 'sources-r12' && 'sources-r12-traderfox' || 'sources-r10-minervini' }}
       - name: Originalquellen lesen (verschluesselt)
         if: steps.mode.outputs.mode == 'sources'
         run: |
