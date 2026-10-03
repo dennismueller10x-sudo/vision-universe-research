@@ -2,6 +2,8 @@
 
 Canonical/public product data is materialized in review PR #353, stacked on accepted PR #349. Production membership remains **6,419** until reviewed merge/deployment. No production storage writes occurred.
 
+Current canonical-byte certification: [37100301897](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37100301897), source `cb9e4b2965e0e18d6242b20d68d85364b9042c87`. Manifest `a00c70f036760c6cfe852a881d50a5355377c52d8ef915d6fb3926afe46aa161`. Fresh encrypted publication/rollback artifact **11266490605**, derived proof artifact **11265779665**; 14-day retention. Both actual engines checked 117 titles × 1,432 checks with zero findings. Protected checks 21/21, browser 88/88, accessibility 76 with zero violations, all eight unchanged budgets and 148 release smoke checks pass. The read-only storage preflight passes and grants no write budget.
+
 Initial certified workflow (historical proof; superseded for later corrected bytes): [37036367074](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37036367074), source `029efa7cf8d30e98c72b540aef1f189e342465fe`. Exact publication manifest `3911665582ac1c44a60dd2d5636e8178612a7dffd7db9dd22d082f0baf447367`. Materialized review data: `663238b726a4a2e9264c97cba9e1ee82d7599bef`.
 
 | Scope | Result |
@@ -19,7 +21,7 @@ Initial certified workflow (historical proof; superseded for later corrected byt
 | New-title logos | 57 valid / 54 fallback / 2 suspect; suspect images use fallback |
 | DNA | 1,371 actual bars; IDs preserved; fresh listing/SEC/PIT verified; 5 available factors; Search/Chart/Watchlist/Discover/Screener/SuperTrader/Markets ready; valid canonical logo |
 | AMC / BIRD / AMWL | Historical false split checks corrected in #349; fresh action validation remains blocked; existing identities/capabilities/charts retained; SEC/PIT refreshed |
-| QA | 270 focused + 57 master tests; 21 protected checks; 1,432 checks each in Chromium and WebKit across 117 titles; 88 legacy browser checks; 76 accessibility checks; 148 smoke checks; zero findings |
+| QA | Native Quant/SEC/Discover CI and independent source review; 21 protected checks; 1,432 checks each in Chromium and WebKit across 117 titles; 88 legacy browser checks; 76 accessibility checks; 148 smoke checks; zero findings |
 
 ADRX and RZAI retain their independently verified SEC company identities even though no periodic PIT facts exist yet. ASBH has no verified SEC issuer mapping and keeps an explicit unavailable company ID. No financial coverage is fabricated to fill identity gaps.
 
@@ -33,7 +35,7 @@ All eight unchanged resource budgets passed. Screener uses approximately 22.59 M
 
 Factor DNA population rises from 6,308 to 6,402, preserving every prior record. Population-dependent normalization, peers and ranks change explicitly; full numerical comparisons are in `results/tiingo2_product_shadow_qa.json` and the independent logical-diff report. Existing factor-score maximum deltas: quality 1.55, growth 1.31, momentum 1.58, value 6.64, profitability 2.34, revisions 0, risk 4.87 points. BIDWR gains one evidenced financial component through newly materialized BID sharing the same SEC issuer; share-count-dependent valuation remains unavailable. Other unscoped market-factor inputs and historical-price bytes are protected.
 
-The verified transaction is committed only to the internal review branch. The encrypted publication package contains 113 private histories and rollback before-images. Before production deployment, merge ordering (#349 then #353), current baseline CAS, current history-store preflight/index CAS and additive-only storage writes must remain green. The encrypted artifact expires after 14 days and must be refreshed if stale. Canonical rollback retains additive histories for backtests. Vercel on subsequent source `1a68b21b2` is blocked by its external build rate limit; final-head status must be checked before merge. Final publication preparation requires a refreshed encrypted package for the later native projection/name/logo corrections and new exact-byte QA; the original artifact does not authorize those corrected bytes. No risky production publish was forced.
+The verified transaction is committed only to the internal review branch. The encrypted publication package contains 113 private histories and rollback before-images. Before production deployment, merge ordering (#349 then #353), current baseline CAS, current history-store preflight/index CAS and additive-only storage writes must remain green. The encrypted artifact expires after 14 days and must be refreshed if stale. Canonical rollback retains additive histories for backtests. Vercel on certified source `cb9e4b2` remains blocked by its external 24-hour build rate limit. The corrected canonical bytes now have the fresh encrypted package and exact-byte QA linked above; the initial artifact is historical proof. No risky production publish was forced.
 
 ## Exact proposed additions
 
@@ -62,7 +64,7 @@ The native SEC consumer index was omitted from the original projection allowlist
 
 Ten existing consumer issuers retain 17 invalid raw contexts in protected source bundles. Native PIT resolution, Quant inputs and the existing Discover reader withhold those contexts. Independent comparison found unchanged financial histories, stories and ranks; the native valuation reader exposed one intentional ASLE correction: an impossible future share count is replaced by valid FY2025 shares, correcting market cap, P/S and FCF yield. The scoped before/after change is documented separately. Per-context reasons and source hashes remain recorded in `qa/sec-legacy-context-audit.json`.
 
-Local full Python regression: 495/495; full Quant regression: 2,423/2,423; full Discover regression: 323/323. Independent final source/data review and exact-head CI/package QA remain mandatory before production preparation is finalized. The earlier certified package is superseded for corrected bytes.
+Local full Python regression: 495/495; full Quant regression: 2,423/2,423; full Discover regression: 323/323. Independent source/data review, native source CI and exact-byte package/browser QA are green. The separate FX register metadata correction is reproduced and independently checked; its follow-up commit is checked through the latest PR CI. The earlier initial package is superseded for corrected bytes.
 
 
 ## Final native factor source corrections
@@ -76,3 +78,7 @@ ASLE’s Discover valuation declares annual FY2025 shares; its Quant valuation u
 The final native replay uses the established Node 22 runtime. Ten Momentum/Risk score changes repair previously omitted hyphen shards using the current normalization population; Growth scores remain exact. A Node 24 intermediate tie difference was discarded before publication preparation.
 
 Discover-only pull requests retain the original strict module boundary. This reviewed cross-stack migration uses an exhaustive accepted-base contract for every changed path, before-image Git object and final SHA-256, bound to independent proof files. Unlisted source/projection changes, altered evidence, immutable historical snapshots, methodology, FX, unrelated providers and routing fail closed. Seven targeted isolation regression tests pass, including dangling symbolic links.
+
+The final metadata follow-up only regenerates the existing FX debt register: one unchanged source line moves from 607 to 617, plus the generation timestamp. Classifications, counts and complete referenced code lines remain identical. Its authenticated source-only exemption excludes it from canonical publication; unrelated FX data remains rejected. No FX engine, conversion rule or product payload changes.
+
+Native CI on the certified canonical source: Quant 2,427 passed / 3 skipped, SEC Python 494 passed / 1 skipped, Discover 319 passed / 4 skipped; zero failures in those suites. The regenerated register uses the latest PR CI; the counts above certify the canonical-data source commit. The four Value-Momentum rank-order changes stay within the same 150-member selection; all 6,402 strategy membership assignments and predicates remain unchanged.

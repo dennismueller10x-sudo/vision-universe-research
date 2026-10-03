@@ -7,12 +7,12 @@
     "freshDiscoveryTickers": 106557
   },
   "reviewPr": 353,
-  "verifiedWorkflowRun": 37036367074,
-  "verifiedSourceCommit": "029efa7cf8d30e98c72b540aef1f189e342465fe",
+  "verifiedWorkflowRun": 37100301897,
+  "verifiedSourceCommit": "cb9e4b2965e0e18d6242b20d68d85364b9042c87",
   "materializedReviewCommit": "663238b726a4a2e9264c97cba9e1ee82d7599bef",
-  "decision": "PRODUCTION_PREPARED_PENDING_FINAL_PACKAGE_QA_AND_CURRENT_STORAGE_PREFLIGHT",
+  "decision": "CANONICAL_PUBLICATION_PREPARED_REQUIRES_CURRENT_PRODUCTION_CAS_AND_EXTERNAL_PREVIEW",
   "productionPublishAllowed": false,
-  "manifestSha256": "3911665582ac1c44a60dd2d5636e8178612a7dffd7db9dd22d082f0baf447367",
+  "manifestSha256": "a00c70f036760c6cfe852a881d50a5355377c52d8ef915d6fb3926afe46aa161",
   "original102": {
     "canonical": 102,
     "quant": {
@@ -481,13 +481,13 @@
     "protectedChecks": 21,
     "protectedFindings": 0,
     "scopedBrowsers": {
-      "tiingo2_product_browser_chromium": {
+      "chromium": {
         "engine": "chromium",
         "titles": 117,
         "checks": 1432,
         "findings": 0
       },
-      "tiingo2_product_browser_webkit": {
+      "webkit": {
         "engine": "webkit",
         "titles": 117,
         "checks": 1432,
@@ -497,7 +497,7 @@
     "resourceBudgets": [
       {
         "view": "home",
-        "decodedBytes": 1794930,
+        "decodedBytes": 1795985,
         "requests": 22,
         "budget": {
           "decodedBytes": 1820000,
@@ -511,7 +511,7 @@
       },
       {
         "view": "screener",
-        "decodedBytes": 22589580,
+        "decodedBytes": 22590635,
         "requests": 29,
         "budget": {
           "decodedBytes": 30500000,
@@ -525,7 +525,7 @@
       },
       {
         "view": "screenerPro",
-        "decodedBytes": 22558124,
+        "decodedBytes": 22559149,
         "requests": 19,
         "budget": {
           "decodedBytes": 30500000,
@@ -539,7 +539,7 @@
       },
       {
         "view": "stock",
-        "decodedBytes": 5534270,
+        "decodedBytes": 5535377,
         "requests": 39,
         "budget": {
           "decodedBytes": 5700000,
@@ -553,7 +553,7 @@
       },
       {
         "view": "home",
-        "decodedBytes": 1794930,
+        "decodedBytes": 1795985,
         "requests": 22,
         "budget": {
           "decodedBytes": 1820000,
@@ -567,7 +567,7 @@
       },
       {
         "view": "screener",
-        "decodedBytes": 22589580,
+        "decodedBytes": 22590635,
         "requests": 29,
         "budget": {
           "decodedBytes": 30500000,
@@ -581,7 +581,7 @@
       },
       {
         "view": "screenerPro",
-        "decodedBytes": 22558124,
+        "decodedBytes": 22559149,
         "requests": 19,
         "budget": {
           "decodedBytes": 30500000,
@@ -595,7 +595,7 @@
       },
       {
         "view": "stock",
-        "decodedBytes": 5534270,
+        "decodedBytes": 5535377,
         "requests": 39,
         "budget": {
           "decodedBytes": 5700000,
@@ -610,7 +610,12 @@
     ],
     "quantCompositePublicationAllowed": false,
     "postMaterializationQuantTests": 2393,
-    "postMaterializationDiscoverTests": 322
+    "postMaterializationDiscoverTests": 322,
+    "legacyBrowserChecks": 88,
+    "accessibilityChecks": 76,
+    "releaseSmokeChecks": 148,
+    "refreshedExactByteQa": "PASS",
+    "originalFocusedTestsEvidence": "Historical initial workflow37036367074/source029efa7; current native source totals are recorded in currentSourceCi."
   },
   "factorPopulation": {
     "before": 6308,
@@ -637,14 +642,25 @@
     "retentionDays": 14,
     "historicalArtifactId": 11241273148,
     "historicalPackageSuperseded": true,
-    "refreshedPackageRequired": true
+    "refreshedPackageRequired": true,
+    "artifactId": 11266490605,
+    "derivedArtifactId": 11265779665,
+    "requiredGates": [
+      "CURRENT_PRODUCTION_BASELINE_CAS",
+      "CURRENT_STORAGE_PREFLIGHT",
+      "CURRENT_INDEX_CAS"
+    ],
+    "sourceCommit": "cb9e4b2965e0e18d6242b20d68d85364b9042c87",
+    "privateHistoriesUnchanged": 113,
+    "historyRebuilds": 0
   },
   "externalPreviewBlockers": [
     {
-      "sourceCommit": "1a68b21b2aba0ef41afb3d2f7925eb3130fc4ee1",
-      "system": "VERCEL",
-      "reason": "EXTERNAL_BUILD_RATE_LIMIT",
-      "status": "RECHECK_FINAL_HEAD"
+      "sourceCommit": "cb9e4b2965e0e18d6242b20d68d85364b9042c87",
+      "context": "Vercel",
+      "state": "failure",
+      "reason": "Deployment rate limited \u2014 retry in 24 hours.",
+      "productionRoutingChanged": false
     }
   ],
   "remainingConditionalBlockers": {
@@ -712,7 +728,7 @@
     "protectedFactorArtifactsRebuilt": 0,
     "pythonTests": 495,
     "quantTests": 2423,
-    "finalExactHeadQaPending": true,
+    "finalExactHeadQaPending": false,
     "discoverTests": 323
   },
   "nativeFactorFollowup": {
@@ -749,5 +765,64 @@
       "differingArtifacts": 0,
       "allowedMetadataTimestampOnly": true
     }
+  },
+  "historicalInitialCertification": {
+    "verifiedWorkflowRun": 37036367074,
+    "verifiedSourceCommit": "029efa7cf8d30e98c72b540aef1f189e342465fe",
+    "manifestSha256": "3911665582ac1c44a60dd2d5636e8178612a7dffd7db9dd22d082f0baf447367",
+    "productionPreparation": {
+      "basePrMergeOrder": [
+        349,
+        353
+      ],
+      "storage": "113 exact private histories and rollback before-images in authenticated encrypted artifact; additive-only writer requires current storage preflight/index CAS",
+      "retentionDays": 14,
+      "historicalArtifactId": 11241273148,
+      "historicalPackageSuperseded": true,
+      "refreshedPackageRequired": true
+    }
+  },
+  "currentSourceCi": {
+    "sourceCommit": "cb9e4b2965e0e18d6242b20d68d85364b9042c87",
+    "quant": {
+      "total": 2430,
+      "passed": 2427,
+      "skipped": 3,
+      "failed": 0
+    },
+    "secPython": {
+      "total": 495,
+      "passed": 494,
+      "skipped": 1,
+      "failed": 0
+    },
+    "discover": {
+      "total": 323,
+      "passed": 319,
+      "skipped": 4,
+      "failed": 0
+    },
+    "fxRegisterMetadataFollowup": "HISTORICAL_CB9_FAILURE_REPRODUCED_FIXED_AND_INDEPENDENTLY_VERIFIED_REQUIRE_LATEST_PR_HEAD_CI",
+    "protectedPagesDeploy": "SKIPPED"
+  },
+  "currentStorageReadOnly": {
+    "workflowRun": 37100301897,
+    "operation": "READ_ONLY",
+    "measured": true,
+    "executionAllowed": true,
+    "verdict": "ZERO_COST_GUARD_PASSED",
+    "writeBudgetGranted": false,
+    "productionWrites": 0
+  },
+  "idempotentReplay": {
+    "workflowRun": 37100301883,
+    "artifactId": 11266150543,
+    "state": "NO_CHANGES",
+    "referenceLayer": "REVIEW_SOURCE_CANONICAL",
+    "currentSourceMembers": 6532,
+    "productionMembers": 6419,
+    "canonicalMaterialized": 0,
+    "removed": 0,
+    "productionWrites": 0
   }
 }

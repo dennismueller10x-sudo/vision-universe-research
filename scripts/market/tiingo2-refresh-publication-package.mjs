@@ -10,6 +10,7 @@ import {createRequire} from 'node:module';
 import {attachCanonicalProjections,verifyStagedCanonicalPublication,isProductizationProjectionPath,CANONICAL_PUBLICATION_PATHS,PRODUCTIZATION_QA_SCHEMA,REQUIRED_PUBLICATION_QA} from './tiingo2-publication.mjs';
 import {validatePreparedHistoryPlan} from './tiingo2-finalize-preview.mjs';
 import {classifyMaterializedFactorRecord} from './tiingo2-factors.mjs';
+import {codeLines,HARDCODED_CURRENCY} from '../quality/currency-debt-patterns.mjs';
 const sha=b=>createHash('sha256').update(b).digest('hex'),read=p=>JSON.parse(readFileSync(p));
 const Company=createRequire(import.meta.url)('../../quant/engines/company-master.js');
 const FactorEvidence=createRequire(import.meta.url)('../../quant/engines/factor-evidence.js');
@@ -151,6 +152,30 @@ export function validateSourceOnlyHistoricalProvenance({baselineRoot,shadowRoot,
  return possible.map(path=>({path,sha256:fileSha(inside(shadowRoot,path)),category:'SOURCE_ONLY_HISTORICAL_PROVENANCE'}));
 }
 
+/** The native FX debt register records source locations, not market data.
+ * A reader guard can move a preserved debt line. Only its timestamp/line
+ * metadata may change; every complete referenced code line must remain
+ * identical and both locations must reproduce the native scanner result.
+ * This exemption applies to this register alone, never an FX projection. */
+export function validateSourceOnlyCurrencyDebtMetadata({baselineRoot,shadowRoot,changed}){
+ const path='quant/data/market/fx/currency-debt-register.json';if(!changed.includes(path))return [];
+ const beforeBytes=readFileSync(inside(baselineRoot,path)),afterBytes=readFileSync(inside(shadowRoot,path)),before=JSON.parse(beforeBytes),after=JSON.parse(afterBytes);
+ const timestamp=value=>typeof value==='string'&&Number.isFinite(Date.parse(value))&&new Date(Date.parse(value)).toISOString()===value;
+ if(before.schema!=='vu-currency-debt-register-1.0.0'||after.schema!==before.schema||!timestamp(before.generatedAtUtc)||!timestamp(after.generatedAtUtc)||after.generatedAtUtc<before.generatedAtUtc||!Array.isArray(before.entries)||!Array.isArray(after.entries))throw Error('REFRESH_CURRENCY_DEBT_METADATA_INVALID');
+ const functional=register=>{const {generatedAtUtc,entries,...rest}=register;return {...rest,entries:entries.map(({line,...entry})=>entry)};};
+ const content=functional(before);if(stable(content)!==stable(functional(after)))throw Error('REFRESH_CURRENCY_DEBT_FUNCTIONAL_CHANGE');
+ const sources=new Map(),movedReferences=[];
+ for(let i=0;i<before.entries.length;i++){
+  const old=before.entries[i],next=after.entries[i];
+  if(!Number.isSafeInteger(old.line)||old.line<1||!Number.isSafeInteger(next.line)||next.line<1)throw Error('REFRESH_CURRENCY_DEBT_SOURCE_REFERENCE_INVALID');
+  let source=sources.get(old.file);if(!source){const oldBytes=readFileSync(inside(baselineRoot,old.file)),bytes=readFileSync(inside(shadowRoot,old.file));source={file:old.file,beforeSha256:sha(oldBytes),sha256:sha(bytes),old:codeLines(oldBytes.toString('utf8')),next:codeLines(bytes.toString('utf8'))};sources.set(old.file,source);}
+  const a=source.old.find(r=>r.line===old.line),b=source.next.find(r=>r.line===next.line);
+  if(!a||!b||a.text!==b.text||a.text.slice(0,160)!==old.text||b.text.slice(0,160)!==next.text||HARDCODED_CURRENCY.find(r=>r.re.test(a.text))?.id!==old.rule||HARDCODED_CURRENCY.find(r=>r.re.test(b.text))?.id!==next.rule)throw Error('REFRESH_CURRENCY_DEBT_SOURCE_REFERENCE_INVALID');
+  if(old.line!==next.line)movedReferences.push({file:old.file,rule:old.rule,beforeLine:old.line,line:next.line});
+ }
+ return [{path,category:'SOURCE_ONLY_CURRENCY_DEBT_METADATA',beforeSha256:sha(beforeBytes),sha256:sha(afterBytes),functionalSha256:sha(stable(content)),entryCount:before.entries.length,movedReferences,sourceFiles:[...sources.values()].map(({file,beforeSha256,sha256})=>({file,beforeSha256,sha256}))}];
+}
+
 /** The caller must authenticate/decrypt with tiingo2-cache.open first and bind
  * the expected manifest/source commit to the trusted original Actions run. */
 export function validateOriginalPublicationPackage({originalPreparedRoot,expectedManifestSha256}){
@@ -186,7 +211,7 @@ export function prepareRefreshedPublicationPackage({root=process.cwd(),originalP
  for(const [path,expected]of Object.entries(original.manifest.baselineHashes))if(fileSha(inside(baselineRoot,path))!==expected)throw Error('ORIGINAL_SOURCE_BASELINE_HASH_MISMATCH:'+path);
  const paths=new Set(original.manifest.files.map(f=>f.path));
  const changed=git(root,['diff','--name-only','--no-renames',originalSourceCommit,expectedSourceCommit,'--',...dataPrefixes.map(p=>p.slice(0,-1))]).trim().split('\n').filter(Boolean);
- const sourceOnly=validateSourceOnlyHistoricalProvenance({baselineRoot,shadowRoot,changed}),sourceOnlyPaths=new Set(sourceOnly.map(r=>r.path));
+ const sourceOnly=validateSourceOnlyHistoricalProvenance({baselineRoot,shadowRoot,changed}),sourceOnlyCurrencyDebtMetadata=validateSourceOnlyCurrencyDebtMetadata({baselineRoot,shadowRoot,changed}),sourceOnlyPaths=new Set([...sourceOnly,...sourceOnlyCurrencyDebtMetadata].map(r=>r.path));
  for(const path of changed){if(sourceOnlyPaths.has(path))continue;if(!isProductizationProjectionPath(path)&&path!==CANONICAL_PUBLICATION_PATHS.raw)throw Error('REFRESH_UNSUPPORTED_PUBLIC_DIFF:'+path);paths.add(path);}
  const canonicalMigrations=validateNewCanonicalStorageMigrations({baselineRoot,shadowRoot,original}),canonicalOldPaths=new Set(canonicalMigrations.map(m=>m.oldPath));
  for(const migration of canonicalMigrations)paths.add(migration.path);
@@ -200,7 +225,7 @@ export function prepareRefreshedPublicationPackage({root=process.cwd(),originalP
  }
  const stage=join(workDir,'canonical-stage');mkdirSync(stage,{recursive:true,mode:0o700});
  const manifest=structuredClone(original.manifest);manifest.runId=runId;manifest.status='STAGED_ONLY';manifest.canonicalFilesWritten=false;manifest.files=manifest.files.filter(f=>!omitted.includes(f.path));
- manifest.publicationRefresh={schemaVersion:'tiingo2-publication-package-refresh-1',originalManifestSha256:expectedManifestSha256,originalHistoryPlanSha256:original.historySha256,originalSourceCommit,finalSourceCommit:sourceHead,omittedNewAssets:omitted.filter(p=>!canonicalOldPaths.has(p)),canonicalStorageMigrations:canonicalMigrations,sourceOnlyHistoricalProvenance:sourceOnly,providerCalls:0,historyRebuilds:0,productionWrites:0};
+ manifest.publicationRefresh={schemaVersion:'tiingo2-publication-package-refresh-1',originalManifestSha256:expectedManifestSha256,originalHistoryPlanSha256:original.historySha256,originalSourceCommit,finalSourceCommit:sourceHead,omittedNewAssets:omitted.filter(p=>!canonicalOldPaths.has(p)),canonicalStorageMigrations:canonicalMigrations,sourceOnlyHistoricalProvenance:sourceOnly,sourceOnlyCurrencyDebtMetadata,providerCalls:0,historyRebuilds:0,productionWrites:0};
  for(const f of manifest.files){put(inside(stage,f.stagedPath),readFileSync(inside(original.stage,f.stagedPath)));if(f.baselineSha256!==null)put(inside(stage,'rollback/'+f.path),readFileSync(inside(original.stage,'rollback/'+f.path)));}
  put(join(stage,'manifest.json'),encode(manifest));
  const raw=manifest.files.find(f=>f.path===CANONICAL_PUBLICATION_PATHS.raw);if(raw&&fileSha(inside(shadowRoot,raw.path))!==raw.stagedSha256)throw Error('REFRESH_RAW_MEMBERSHIP_CHANGED');

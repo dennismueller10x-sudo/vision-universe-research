@@ -1,13 +1,13 @@
 {
   "schemaVersion": "tiingo2-post-materialization-review-1.0.0",
-  "reviewedAt": "2026-10-03T05:31:27.085858+00:00",
+  "reviewedAt": "2026-10-03T05:59:35.795802+00:00",
   "baselineCommit": "bf3a0a96342b45b2229cf3b9f670ff5b177a0931",
   "originalDataCommit": "663238b726a4a2e9264c97cba9e1ee82d7599bef",
   "originalRunId": "37036367074",
   "originalTransactionReview": "docs/tiingo2-productization/qa/actual-data-logical-diff.json",
   "binding": {
-    "state": "REVIEWED_FINAL_WORKTREE_NOT_YET_COMMITTED",
-    "baselineCommit": "1a68b21b2aba0ef41afb3d2f7925eb3130fc4ee1",
+    "state": "REVIEWED_FINAL_METADATA_AND_DERIVED_QA_WORKTREE_NOT_YET_COMMITTED",
+    "baselineCommit": "cb9e4b2965e0e18d6242b20d68d85364b9042c87",
     "files": [
       {
         "path": ".github/workflows/discover-ci.yml",
@@ -35,7 +35,7 @@
       },
       {
         "path": "docs/tiingo2-productization/FINAL_REPORT.md",
-        "sha256": "fd845b7322317f20e6f2480788ca0d1bef24d4f06d986f9ff26ac937e22ac817"
+        "sha256": "a8cf1d07ca8dca1fe1832cfa9f88aee6eaca537256bd4a8bdb930ead29e79336"
       },
       {
         "path": "docs/tiingo2-productization/README.md",
@@ -51,7 +51,7 @@
       },
       {
         "path": "docs/tiingo2-productization/qa/discover-cross-stack-contract.json",
-        "sha256": "8de35f7271b91eb5d8712bb3cbe916adf5ca6feedf96c09e54fb47c716421787"
+        "sha256": "6583e617bb35baf13b0b115caf90f99eef030bc83f481e2f8d4679dbca5e109d"
       },
       {
         "path": "docs/tiingo2-productization/qa/discover-legacy-pit-impact.json",
@@ -60,6 +60,30 @@
       {
         "path": "docs/tiingo2-productization/qa/discover-native-reproducibility.json",
         "sha256": "1ddf5e2eb0c21467a5e6e98821f1289406cc32f425b177b4dd524c7699380fda"
+      },
+      {
+        "path": "docs/tiingo2-productization/qa/final/browser-products/tiingo2_product_browser_chromium.json",
+        "sha256": "38fb044402d3db0bffa2b19571fdbb42f0f17195925a01d67b01fb58c093d7e3"
+      },
+      {
+        "path": "docs/tiingo2-productization/qa/final/browser-products/tiingo2_product_browser_webkit.json",
+        "sha256": "3891bc759c3ad9f42c59f8b16508e82c0d7e59e984c2ac2193cffae49eda7c61"
+      },
+      {
+        "path": "docs/tiingo2-productization/qa/final/browser/accessibility.json",
+        "sha256": "ece1ff9363f05248f814b9dcc436de342f7f2d44906d37acf20cfb2a3c158688"
+      },
+      {
+        "path": "docs/tiingo2-productization/qa/final/browser/performance.json",
+        "sha256": "3743f8db7434d849df3aad52dbb22efff26fa6c4bf4d080452b831822354f3ca"
+      },
+      {
+        "path": "docs/tiingo2-productization/qa/final/browser/resource-budgets.json",
+        "sha256": "92e47bf72538bd705aa87983de6c421ed0bcbb0c86de4450186bc305887d297d"
+      },
+      {
+        "path": "docs/tiingo2-productization/qa/final/release-smoke.json",
+        "sha256": "d911e87e7b0744e496de913d241f7c6b0083919cc99fe1f158fe3c769e4cbc6e"
       },
       {
         "path": "docs/tiingo2-productization/qa/native-factor-chronology-replay.json",
@@ -82,8 +106,60 @@
         "sha256": "0c6919d6e8fff6323d32c5520c8f1d6a1fd04ffe82bf0650adcc860a192b361d"
       },
       {
+        "path": "docs/tiingo2-productization/results/release-smoke.json",
+        "sha256": "d911e87e7b0744e496de913d241f7c6b0083919cc99fe1f158fe3c769e4cbc6e"
+      },
+      {
+        "path": "docs/tiingo2-productization/results/tiingo2_accepted_materialization.json",
+        "sha256": "37aba5b8599cf8dfffdc0e894195fe0f913c254eb5122b43e2e05c872cdab268"
+      },
+      {
+        "path": "docs/tiingo2-productization/results/tiingo2_chart_status.json",
+        "sha256": "842302202e2feeb6e66d9be432352d6391af8b3b257cac434918f602eb33d84b"
+      },
+      {
+        "path": "docs/tiingo2-productization/results/tiingo2_current_read_only_storage_preflight.json",
+        "sha256": "6368780d5b0a5925a4aec3d0c002f68d5165033ee5e788e865de33422d789aaf"
+      },
+      {
+        "path": "docs/tiingo2-productization/results/tiingo2_final_consumer_universe.json",
+        "sha256": "681d79eaa62c5d9966a4ffb8cee3dbc656a941b8fe469a0055a04ff7bb05f901"
+      },
+      {
         "path": "docs/tiingo2-productization/results/tiingo2_final_report.json",
-        "sha256": "1df5be0070b2ec26df0f7b437943b2a8de76c2847ccb17cb2b17da5e7efa7ff5"
+        "sha256": "a2631916ec264b7589ebc94a912667d9c0d1b46bbf7140e0bf3c310038ff0793"
+      },
+      {
+        "path": "docs/tiingo2-productization/results/tiingo2_history_publication_plan.json",
+        "sha256": "2a546cb3d6f4659cd298b1950f387452824af5b683f61f1c22504e6cbb85c028"
+      },
+      {
+        "path": "docs/tiingo2-productization/results/tiingo2_product_readiness.json",
+        "sha256": "ba17651ece632dc940c0a17a9b58b0f7ad08e6036afce4597b762af810b19c36"
+      },
+      {
+        "path": "docs/tiingo2-productization/results/tiingo2_product_shadow_qa.json",
+        "sha256": "ebd52273602af681fc414a0bbd2b217eb240a95ce62ab7b06d618060805c9227"
+      },
+      {
+        "path": "docs/tiingo2-productization/results/tiingo2_productization_status.json",
+        "sha256": "c11876a96e9ac33f988fe9e7d2374704aa8c4f97b63deecd39a8a8f6e114deb0"
+      },
+      {
+        "path": "docs/tiingo2-productization/results/tiingo2_publication_diff.json",
+        "sha256": "5137161afa6faa1fd17078e3a5634520b05f27aa7705be88f46f59acd4f1ba78"
+      },
+      {
+        "path": "docs/tiingo2-productization/results/tiingo2_publication_package_refresh.json",
+        "sha256": "46f4a3dbb4569d02f6a12b49d92c691758bf46e64cf15f46f25a66a873d5e8da"
+      },
+      {
+        "path": "docs/tiingo2-productization/results/tiingo2_publication_qa.json",
+        "sha256": "a8b6dacea210409d953e235498388cb0314fa26fe7d32b16946e45c62445585b"
+      },
+      {
+        "path": "docs/tiingo2-productization/results/tiingo2_quant_readiness.json",
+        "sha256": "9f8b6b8886a7071bf34e47ce14dcd0abfef8ff371454f8fa45c4a1e008f597c5"
       },
       {
         "path": "providers/sec/adapter.js",
@@ -112,6 +188,10 @@
       {
         "path": "quant/data/fundamentals/quality.json",
         "sha256": "f1006e3865ec6056c2019290cde3c33cf136520e6304a48e56754fe903cbe803"
+      },
+      {
+        "path": "quant/data/market/fx/currency-debt-register.json",
+        "sha256": "2b6e4e2479896ccb15c7c11a5cc88bc529d39c48b80542734717966f355b04fc"
       },
       {
         "path": "quant/data/product/factor-evidence-history/index.json",
@@ -3511,7 +3591,7 @@
       },
       {
         "path": "quant/tests/tiingo2-refresh-publication-package.test.mjs",
-        "sha256": "8107c5758b3706100a93766cf6de4c7528414a716f15e241972905440efbffaa"
+        "sha256": "1e04740dd5ae782d2daf65dfa668430d998c71a8f21030b9fda8f12cbcc2ee3d"
       },
       {
         "path": "screener/data/universe-US_REAL.json",
@@ -3551,7 +3631,7 @@
       },
       {
         "path": "scripts/market/tiingo2-refresh-publication-package.mjs",
-        "sha256": "383e4370915cf7d36bca8031b5274436b194fba9d86f3951bfd04cd9ca991678"
+        "sha256": "1f953ed48005525ae212c4d64a0658492d82b117edf890f38824d395a7f0cc2d"
       },
       {
         "path": "scripts/market/tiingo2-run-productization.mjs",
@@ -3634,7 +3714,7 @@
         "sha256": "848fd2171f75ff514f19892e304b03019da81415c27b40874f5285b603b8b213"
       }
     ],
-    "filesDigestSha256": "ea3523dbe36c19bf9b86af7aa86dea76323ec3e82d9a1cc13dbfd3bbf67d6b24"
+    "filesDigestSha256": "f7c338b5ac9550d1f9db9379325a6d86d54e43883a29f457ceb1201bf4ad8385"
   },
   "checks": [
     {
@@ -3892,7 +3972,7 @@
   "publication": {
     "state": "BLOCKED_REQUIRES_REFRESHED_ENCRYPTED_PREPARED_TRANSACTION",
     "originalManifestSha256": "3911665582ac1c44a60dd2d5636e8178612a7dffd7db9dd22d082f0baf447367",
-    "reason": "Original391 package covers initial663 bytes. Final corrected native projections,reviewed current-factor normalization and additive peer taxonomy,98 lossless canonical gzip migrations,2 impossible-context repairs and94 additive consumer routes require refreshed exact-byte manifest, fresh dual-browser/release QA and current production baseline/storage/index CAS; no publication permission granted.",
+    "reason": "Fresh encrypted artifact 11266490605 and manifest a00c70f036760c6cfe852a881d50a5355377c52d8ef915d6fb3926afe46aa161 certify corrected canonical bytes at source cb9e4b2965e0e18d6242b20d68d85364b9042c87. The initial 391/663 proof is retained historically. The subsequent FX source-location metadata and derived-document follow-up changes no canonical publication surface and requires exact-head CI. Production remains withheld pending merge ordering (#349 then #353), current production baseline CAS, current storage preflight and index CAS. Read-only storage proof grants no write budget.",
     "productionDeploymentPerformed": false
   },
   "rawProviderValuesExported": false,
@@ -12289,7 +12369,7 @@
           "exactChangedPaths": 3833,
           "frozenIndependentProofs": 4,
           "negativeFixturesPassed": 7,
-          "contractSha256": "8de35f7271b91eb5d8712bb3cbe916adf5ca6feedf96c09e54fb47c716421787",
+          "contractSha256": "6583e617bb35baf13b0b115caf90f99eef030bc83f481e2f8d4679dbca5e109d",
           "ordinaryDiscoverZeroCrossStackGuardRetained": true
         }
       }
@@ -12321,8 +12401,145 @@
       "overlapsEarlierPackageAndIndexScope": true
     },
     "factorArtifactChronologyReview": "APPROVED_NATIVE_REPLAY_INDEPENDENTLY_VERIFIED_BELOW",
-    "actualFinalByteBrowserCi": "PENDING_FRESH_REFRESH_PACKAGE_RUN",
+    "actualFinalByteBrowserCi": "PASS_CERTIFIED_CANONICAL_SOURCE_CB9_METADATA_FOLLOWUP_CI_PENDING",
     "rawProviderPricesExported": false
   },
-  "finalSourceApproval": "SOURCE_AND_DATA_REVIEW_PASS_FRESH_EXACT_BYTE_PACKAGE_QA_PENDING"
+  "finalSourceApproval": "SOURCE_AND_DATA_REVIEW_PASS_CANONICAL_BYTES_CERTIFIED_AT_CB9_METADATA_FOLLOWUP_CI_PENDING",
+  "fxDebtMetadataFollowup": {
+    "baselineCommit": "cb9e4b2965e0e18d6242b20d68d85364b9042c87",
+    "conclusion": "PASS",
+    "checks": [
+      {
+        "name": "FX_REGISTER_ONLY_TIMESTAMP_AND_NATIVE_SOURCE_LINE_METADATA_CHANGED",
+        "passed": true,
+        "leaves": [
+          {
+            "path": "/entries/5/line",
+            "before": 607,
+            "after": 617
+          },
+          {
+            "path": "/generatedAtUtc",
+            "before": "2026-09-30T07:16:32.148Z",
+            "after": "2026-10-03T05:38:26.503Z"
+          }
+        ],
+        "nativeGeneratorReproductionExactExceptTimestamp": true
+      },
+      {
+        "name": "SOURCE_ONLY_REFRESH_EXCEPTION_AUTHENTICATED_AND_OUTSIDE_PUBLICATION_FILES",
+        "passed": true,
+        "actualOriginalSourceCommit": "029efa7cf8d30e98c72b540aef1f189e342465fe",
+        "existingEntries": 30,
+        "sourceFiles": 14,
+        "movedReferences": [
+          {
+            "file": "discover/engines/fundamentals.js",
+            "beforeLine": 607,
+            "line": 617
+          }
+        ],
+        "fullSourceAndNativeRuleIdentical": true,
+        "fxFunctionalChanges": 0,
+        "fxProjectionPathAdded": false,
+        "integrationRejectsUnrelatedFXDiff": true
+      },
+      {
+        "name": "CURRENT_NATIVE_PROJECTIONS_AND_REVIEWED_GUARDS_REMAIN_EXACT",
+        "passed": true,
+        "unexpectedChangedPaths": [],
+        "crossStackContractPaths": 3833,
+        "independentProofFiles": 4
+      }
+    ],
+    "tests": {
+      "packageRefresh": 16,
+      "discoverIsolation": 7,
+      "total": 23,
+      "failed": 0,
+      "negativeCoverage": [
+        "changedClassification",
+        "changedEntryCount",
+        "wrongCodeLocation",
+        "changedFullCodeBeyondStoredPrefix",
+        "unsafePath",
+        "sourceSymlink",
+        "unrelatedFXProjection"
+      ]
+    },
+    "previousBindingDigestSha256": "ea3523dbe36c19bf9b86af7aa86dea76323ec3e82d9a1cc13dbfd3bbf67d6b24",
+    "freshExactBytePackageAndBrowserQARemainRequired": false,
+    "productionPublishAllowed": false,
+    "canonicalCertificationCoveredBySourceCommit": "cb9e4b2965e0e18d6242b20d68d85364b9042c87",
+    "metadataFollowupExactHeadCiStillRequired": true
+  },
+  "certifiedCanonicalFollowup": {
+    "conclusion": "PASS",
+    "workflowRun": 37100301897,
+    "sourceCommit": "cb9e4b2965e0e18d6242b20d68d85364b9042c87",
+    "manifestSha256": "a00c70f036760c6cfe852a881d50a5355377c52d8ef915d6fb3926afe46aa161",
+    "encryptedPublicationArtifactId": 11266490605,
+    "derivedProofArtifactId": 11265779665,
+    "retentionDays": 14,
+    "scopeReadinessSha256": "ba17651ece632dc940c0a17a9b58b0f7ad08e6036afce4597b762af810b19c36",
+    "canonicalScope": 113,
+    "consumerBefore": 6419,
+    "consumerAfter": 6532,
+    "removals": 0,
+    "scopedTitles": 117,
+    "browserEngines": {
+      "chromium": {
+        "checks": 1432,
+        "findings": 0
+      },
+      "webkit": {
+        "checks": 1432,
+        "findings": 0
+      }
+    },
+    "protectedChecks": 21,
+    "legacyBrowserChecks": 88,
+    "accessibilityPages": 76,
+    "automatedAccessibilityViolations": 0,
+    "resourceBudgetsPassed": 8,
+    "releaseSmokeChecks": 148,
+    "canonicalFactorHashesRebound": 46,
+    "fundamentalsArtifactBindingsRebound": 196,
+    "acceptedQuant": {
+      "BLOCKED": 68,
+      "PARTIAL": 33,
+      "TECHNICAL_ONLY": 12
+    },
+    "fullQuantScoresPublished": 0,
+    "fourFrozenNativeProofsByteExact": true,
+    "readOnlyStorage": {
+      "operation": "READ_ONLY",
+      "measured": true,
+      "verdict": "ZERO_COST_GUARD_PASSED",
+      "writeBudgetGranted": false,
+      "productionWrites": 0
+    },
+    "sourceMetadataFollowup": {
+      "state": "FX_SOURCE_LOCATION_METADATA_ONLY_FOLLOWUP_UNCOMMITTED",
+      "canonicalPublishedBytesChanged": false,
+      "independentTestsPassed": 23,
+      "currentExactHeadCiRequired": true
+    },
+    "historicalInitialCertificationPreservedSeparately": true,
+    "productionPublishAllowed": false,
+    "remainingRequiredGates": [
+      "CURRENT_PRODUCTION_BASELINE_CAS",
+      "CURRENT_STORAGE_PREFLIGHT",
+      "CURRENT_INDEX_CAS"
+    ],
+    "previousBindingDigestSha256": "50e1675819d58ca9e51acc49d46b01a0891147d9c8b0854c973a9abec4f4cb71"
+  },
+  "certificateDocumentationLabelCorrection": {
+    "files": [
+      "docs/tiingo2-productization/FINAL_REPORT.md",
+      "docs/tiingo2-productization/results/tiingo2_final_report.json"
+    ],
+    "nativeDataOrSourceChanged": false,
+    "reason": "Historical cb9 certificate remains explicit; current production readiness requires current CAS and latest PR source CI."
+  }
 }
