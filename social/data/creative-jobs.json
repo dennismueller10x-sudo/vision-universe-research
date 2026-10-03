@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-02T21:00:45.821Z",
+  "generatedAt": "2026-10-03T06:15:37.596Z",
   "note": "Rekonstruiert aus den Kommentaren der Request-PRs und dem Invocation Ledger. Keine neue Work-Ausfuehrung. Jede Zeile nennt, woher sie stammt; was nicht geprueft wurde, steht als null und nicht als Schaetzung.",
   "jobs": [
     {
@@ -1146,9 +1146,9 @@
       "processingKey": "brief_6c4b03d96db69f6d:vu-post-20261002-fd3c1bcd00:cdb3dbe8f9edb821ba20a6116d9770bc9062a07c:1.0",
       "attempt": 1,
       "revision": null,
-      "state": "CREATIVE_JOB_DISPATCHED",
+      "state": "CREATIVE_JOB_SUPERSEDED",
       "createdAt": "2026-10-02T21:00:45.821Z",
-      "updatedAt": "2026-10-02T21:00:45.821Z",
+      "updatedAt": "2026-10-03T06:14:31.923Z",
       "prNumber": 364,
       "deliveryIds": [],
       "observedStarts": 0,
@@ -1162,6 +1162,38 @@
           "state": "CREATIVE_JOB_DISPATCHED",
           "at": "2026-10-02T21:00:45.821Z",
           "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_SUPERSEDED",
+          "at": "2026-10-03T06:14:31.923Z",
+          "note": "social/data/owner-job-storno.json — reconciled aus OWNER_STORNO_NIE_GESTARTET"
+        }
+      ]
+    },
+    {
+      "creativeJobId": "job_vu-post-20261003-a5cd1ac653:6811ceddd46772cbba3ca1a73360a382ee21d8bf:attempt1",
+      "contentId": "vu-post-20261003-a5cd1ac653",
+      "briefId": "brief_dd009a560e723394",
+      "briefBlobSha": "6811ceddd46772cbba3ca1a73360a382ee21d8bf",
+      "processingKey": "brief_dd009a560e723394:vu-post-20261003-a5cd1ac653:6811ceddd46772cbba3ca1a73360a382ee21d8bf:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_DISPATCHED",
+      "createdAt": "2026-10-03T06:15:37.596Z",
+      "updatedAt": "2026-10-03T06:15:37.596Z",
+      "prNumber": 375,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-10-03T06:15:37.596Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-10-03T06:15:37.596Z",
+          "note": "PR vom Orchestrator geoeffnet."
         }
       ]
     }
@@ -1173,5 +1205,5 @@
     "maxRevisionsPerContentId": 3,
     "diagnosticJobsInProduction": 0
   },
-  "reconciledAt": "2026-10-02T15:40:32.201Z"
+  "reconciledAt": "2026-10-03T06:14:31.923Z"
 }
