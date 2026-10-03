@@ -242,3 +242,17 @@ test('HS3-D1 end-to-end zaehlt 31 Versuche', async () => {
   assert.equal(r.stats.trialsCounted, 31);
   assert.ok(r.trials.C00.meanPositions <= 29.5);
 });
+
+test('HS3-D3: falsch skalierte Aktienzahl wird verworfen, echter Split nicht', () => {
+  const cal = calendarOf(800, '2018-01-01');
+  const idx = new Map(cal.map((d, i) => [d, i]));
+  const s = mkStock('PL', cal, 0);
+  s.split = cal.map((d, i) => (i === 600 ? 4 : 1));
+  const q = [100, 200, 300, 400, 500, 650];
+  s.fund = { shares: q.map((k, j) => [cal[k], j === 5 ? 1e9 : 1e6, cal[k + 5]]) };
+  const st = prepareStock(s, idx);
+  assert.ok(Number.isNaN(mcapAtT(st, 700, cal[700], undefined, { plausibility: true })), 'Ausreisser x1000 verworfen');
+  s.fund = { shares: q.map((k, j) => [cal[k], j === 5 ? 4e6 : 1e6, cal[k + 5]]) };
+  const st2 = prepareStock(s, idx);
+  assert.ok(Number.isFinite(mcapAtT(st2, 700, cal[700], undefined, { plausibility: true })), 'Split 4:1 ist plausibel');
+});

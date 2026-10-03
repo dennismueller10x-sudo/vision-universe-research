@@ -95,14 +95,21 @@ export function revgAt(fund, D, P = HS1) {
 
 // HS3: Marktkapitalisierung an Balken t (Datum D) aus der juengsten vor D eingereichten Aktienanzahl,
 // umgerechnet mit allen Splits nach deren Stichtag bis einschliesslich D.
-export function mcapAt(st, t, D, P = HS1) {
+export function mcapAt(st, t, D, P = HS1, opts = {}) {
   const rows = st.fund?.shares; if (!rows?.length) return NaN;
+  const splitMultTo = (end) => { let lo = 0, hi = st.n - 1, i = -1; while (lo <= hi) { const m = (lo + hi) >> 1; if (st.date[m] <= end) { i = m; lo = m + 1; } else hi = m - 1; } return Math.exp(st.pSplit[t + 1] - st.pSplit[i + 1]); };
   let best = null;
   for (const r of rows) if (r[2] < D && r[0] <= D && (!best || r[0] > best[0] || (r[0] === best[0] && r[2] < best[2]))) best = r;
   if (!best || dayDiff(best[0], D) > P.sharesMaxAgeDays) return NaN;
   let lo = 0, hi = st.n - 1, iEnd = -1;
   while (lo <= hi) { const m = (lo + hi) >> 1; if (st.date[m] <= best[0]) { iEnd = m; lo = m + 1; } else hi = m - 1; }
   const mult = Math.exp(st.pSplit[t + 1] - st.pSplit[iEnd + 1]);
+  if (opts.plausibility) {
+    // HS3-D3: Wert nur, wenn er split-bereinigt hoechstens Faktor 3 vom Median der eigenen, vor D eingereichten
+    // Meldungen der letzten 730 Tage abweicht (mind. 3 Meldungen; sonst ohne Pruefung).
+    const peers = rows.filter((r) => r[2] < D && dayDiff(r[0], D) <= 730).map((r) => r[1] * splitMultTo(r[0])).sort((a, b) => a - b);
+    if (peers.length >= 3) { const med = peers[Math.floor(peers.length / 2)], cur = best[1] * mult; if (cur > 3 * med || cur < med / 3) return NaN; }
+  }
   const v = st.rawClose[t] * best[1] * mult;
   return v > 0 && Number.isFinite(v) ? v : NaN;
 }
@@ -135,6 +142,7 @@ export function crossSection(stocks, k, D, P = HS1) {
     e.SUE = sueAt(st.fund, D, P);
     e.REVG = revgAt(st.fund, D, P);
     e.MCAP = mcapAt(st, t, D, P);
+    e.MCAP3 = mcapAt(st, t, D, P, { plausibility: true });
   }
   return elig;
 }
@@ -183,9 +191,10 @@ export function indexTiltWeights(elig, cfg, P = HS1) {
   if (cfg.sizeBy === 'MCAP') {
     // HS3: je CIK ein Listing (hoechster 63-Tage-Umsatz; elig ist danach sortiert), dann die 500 groessten.
     const seen = new Set(); const one = [];
-    let pool = elig.filter((e) => Number.isFinite(e.MCAP));
-    if (cfg.mcapRule === 'D2') pool = pool.filter((e) => (e.st.fund?.eps?.length || 0) > 0); // HS3-D2: nur 10-Q-Melder (US-Inlandsemittenten)
-    if (cfg.mcapRule === 'D1' || cfg.mcapRule === 'D2') {
+    const mc = cfg.mcapRule === 'D3' ? 'MCAP3' : 'MCAP';
+    let pool = elig.filter((e) => Number.isFinite(e[mc]));
+    if (cfg.mcapRule === 'D2' || cfg.mcapRule === 'D3') pool = pool.filter((e) => (e.st.fund?.eps?.length || 0) > 0); // HS3-D2: nur 10-Q-Melder (US-Inlandsemittenten)
+    if (cfg.mcapRule === 'D1' || cfg.mcapRule === 'D2' || cfg.mcapRule === 'D3') {
       // HS3-D1: keine ADR und keine IFRS-Emittenten (Aktienanzahl passt nicht zum Hinterlegungsschein, nicht im S&P 500);
       // Mehrgattungs-CIK mit Kursabstand > 2x zwischen ihren Listings an D wird ausgelassen (Stueckzahl nicht einer Gattung zuordenbar).
       pool = pool.filter((e) => e.st.cls !== 'ADR' && e.st.fund?.taxonomy !== 'ifrs-full');
@@ -194,8 +203,16 @@ export function indexTiltWeights(elig, cfg, P = HS1) {
       pool = pool.filter((e) => { const v = px.get(e.st.fund?.cik); return !v || v[1] <= 2 * v[0]; });
     }
     for (const e of pool) { const c = e.st.fund?.cik || e.st.id; if (seen.has(c)) continue; seen.add(c); one.push(e); }
-    uni = one.sort((a, b) => b.MCAP - a.MCAP || a.st.id.localeCompare(b.st.id)).slice(0, P.indexTop);
-    base = capWeights(new Map(uni.map((e) => [e.st.id, e.MCAP])), P.mcapCap);
+    uni = one.sort((a, b) => b[mc] - a[mc] || a.st.id.localeCompare(b.st.id)).slice(0, P.indexTop);
+    base = capWeights(new Map(uni.map((e) => [e.st.id, e[mc]])), P.mcapCap);
+    if (cfg.diagnose) {
+      // Diagnose: die 20 liquidesten Titel, die nicht im Universum sind, mit Grund.
+      const inU = new Set(uni.map((e) => e.st.id)), why = [];
+      for (const e of elig) { if (why.length >= 20) break; if (inU.has(e.st.id)) continue;
+        const r = !e.st.fund?.shares?.length ? 'NO_SHARES' : !Number.isFinite(e.MCAP) ? 'SHARES_STALE' : !Number.isFinite(e[mc]) ? 'IMPLAUSIBLE' : e.st.cls === 'ADR' || e.st.fund?.taxonomy === 'ifrs-full' ? 'ADR_IFRS' : !(e.st.fund?.eps?.length) ? 'NO_10Q' : 'MULTICLASS_OR_DUP_OR_RANK';
+        why.push([e.st.id.split(':')[2], r]); }
+      cfg.diagnose.push(why);
+    }
   } else {
     uni = elig.slice(0, P.indexTop).filter((e) => e.dvW > 0);
     base = capWeights(new Map(uni.map((e) => [e.st.id, e.dvW])), P.weightCap);
