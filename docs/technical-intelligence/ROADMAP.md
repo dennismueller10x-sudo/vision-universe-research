@@ -40,3 +40,11 @@
 3. **HOLDOUT-3 vorab registrieren** (neue Seeds, neues Korpus-Layout, möglichst extern erzeugt), dann das Gate erneut messen.
 4. **Produkt auf Engine 3.1 umstellen**, sobald der Neubau mit Replay eingeplant ist (Rechenzeit mehrere Stunden); bis dahin 2.2.
 5. **Erst nach bestandenem Gate:** Prognoseprüfung mit neuem Holdout und Vergleichsleiter A–E (Prereg §7).
+
+## Nach Mission III (Engine 3.2)
+
+1. **Blinde Expertenannotation durchführen** — Werkbank `quant/research/elliott-workbench/index.html?blind=1`, ≥ 2 Personen je Fall, Auswertung `scripts/technical/elliott-expert-agreement.mjs`. Ohne diesen Schritt bleibt offen, ob die Grenzen bei hohem Rauschen Methoden- oder Engine-Grenzen sind.
+2. **Kontextmodell statt Dominanz-Annahme** — Ursprungs-Signifikanz relativ zum Grad des Musters statt „markantester Pivot im Rückblick“ (C1-Taxonomie); nur mit neuem Holdout (HOLDOUT-4).
+3. **Abschluss vs. laufend** — die häufigste sichere Fehlentscheidung: drei Wellen eines laufenden Impulses als fertiges Zigzag (D2). Zusatzmerkmal für Anwendbarkeit; HOLDOUT-4.
+4. **Rauschgenerator mit Random-Walk-Anteil** (Generator-Audit M1) und ein Generator eines externen Autors.
+5. **Mehrere Zeitebenen** (Woche/Tag-Konsistenz 60 %): Tagesstruktur als Unterteilung der laufenden Wochenwelle prüfen.

@@ -56,3 +56,12 @@
 35. **Keine Expertenvalidierung.** Keine Annotationen durch Elliott-Praktiker. Praktiker-Referenzen sind ungeprüfte Suchzusammenfassungen (Seitenabruf blockiert). Die Werkbank für blinde Annotation ist vorbereitet, aber nicht genutzt.
 36. **Korpus vom selben Autor wie die Engine.** Layout B mildert die Generator-Kopplung, ersetzt aber keine unabhängigen Daten.
 37. **Produkt läuft weiter auf Engine 2.2.** Engine 3.1 ist per Methodik-Option verfügbar; das Pro-Panel kann ihre Felder bereits anzeigen.
+
+## Mission III (Engine 3.2, HOLDOUT-3)
+
+38. **Engine-Quality-Gate erneut nicht bestanden (HOLDOUT-3).** Gepoolt C1/C2/C3: Hauptzählung 42,9 % (≥ 45), Haupt+Alt 55,9 % (≥ 60), Grad 43,6 % (≥ 50), grober Gradfehler 32,5 % (≤ 25), hohes Rauschen 6,2 % (≥ 20), Woche/Tag-Richtung 60 % (≥ 70), laufende Muster mit HOCH immer falsch. Kein Prognose-Backtest.
+39. **Auf realitätsnahen Generatoren schwach.** Auf C1/C3 (Kontext ohne Elliott-Bezug, realistische Rauschcluster bzw. echte Renditen) erkennt 3.2 nur rund ein Drittel der sichtbaren Muster; auf dem unabhängigen C2 rund 57 %.
+40. **Echte Wochencharts ≈ hohes Rauschen.** Dort enthält sich die Engine fast immer (Anwendbarkeit HOCH in 0,5 % der Wochen im Holdout-Fenster). Laufende Zählungen erscheinen nur als „mögliche Welle“.
+41. **Beobachtbare Wahrheit selektiert.** Das Gate wertet nur Fälle, deren Muster im Kursbild regelkonform ist (69,5 % bei n/l/m, 27,7 % bei hohem Rauschen); strikte Werte liegen 10–15 Punkte niedriger und werden immer mitberichtet.
+42. **Generatoren vom selben Projekt.** C2 ist im Code unabhängig, im Entwurf an dieselbe Aufgabenbeschreibung gebunden; Rauschen mean-revertierend (Varianzverhältnis 0,1 statt 0,56 bei echten Aktien).
+43. **Keine Expertenvalidierung.** Blindmodus und Übereinstimmungsauswertung sind gebaut (`?blind=1`, `elliott-expert-agreement.mjs`), aber es liegen keine Annotationen vor (Status BLOCKED).

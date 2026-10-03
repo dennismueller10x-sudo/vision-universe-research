@@ -17,6 +17,9 @@
 | [PREREGISTRATION.md](PREREGISTRATION.md) | vorab registrierte Elliott-Hypothesen H1–H7, Entscheidungsregel, Amendment 1 |
 | [ELLIOTT_ENGINE_QUALITY_PREREG.md](ELLIOTT_ENGINE_QUALITY_PREREG.md) | vorab registriertes Engine-Quality-Gate (Korpus v2, Splits, Änderung 1) |
 | [ELLIOTT_ENGINE3_REPORT.md](ELLIOTT_ENGINE3_REPORT.md) | Engine 3.x: Architektur, HOLDOUT-1/2, Red-Team, Vorher/Nachher |
+| [ELLIOTT_HOLDOUT3_PREREG.md](ELLIOTT_HOLDOUT3_PREREG.md) | Mission III: HOLDOUT-3-Vorab-Registrierung (Generatoren C1/C2/C3, beobachtbare Wahrheit, Gates G1–G15, D2) |
+| [ELLIOTT_ENGINE32_REPORT.md](ELLIOTT_ENGINE32_REPORT.md) | Engine 3.2: Ursachen G5/hohes Rauschen, verworfene Wege, HOLDOUT-3, Migration, UI-Audit |
+| [reviews/](reviews/) | unabhängiges Red-Team 3.2 und Generator-Audit |
 | [ELLIOTT_VALIDATION_REPORT.md](ELLIOTT_VALIDATION_REPORT.md) | Bestätigungs-/Replikationsstudie, Referenzset, Audit-Stichprobe, Qualitätskalibrierung |
 | [TECHNICAL_EDGE_RESEARCH.md](TECHNICAL_EDGE_RESEARCH.md) | Ergebnis-Matrix aller Methoden, KEEP/DOWNWEIGHT/REMOVE, Produkttrennung |
 | [API_V3_MIGRATION.md](API_V3_MIGRATION.md) | v2 → v3: Overlays, Klarheit, Evidenzbadges, Replay |
@@ -26,3 +29,5 @@ Kurzfassung der Evidenz (Nachlauf mit Engine 2.2 und Elliott-Gewicht 0, siehe TE
 **Elliott (Mission II):** Die vorab registrierte Studie (1.784 Reihen, 69.791 Ereignisse, Walk-forward, Cluster-Bootstrap, Holm) bestätigt **keinen** Prognosebeitrag des Elliott-Labels (H1–H5, H7); bestätigt ist nur ein Timing-Effekt (H6), der ebenso ohne Elliott-Fortsetzungslabel auftritt. Count Quality steigt nicht mit dem späteren Ergebnis (HIGH − LOW +1,4 pp, n. s.). Entscheidung: **Elliott = Kontext**, Konfluenzgewicht 0; im Produkt als Strukturbeschreibung mit Regel-Audit, Quelle je Regel und Anwendbarkeit (inkl. „keine verlässliche Zählung").
 
 **Elliott Engine 3 (Quality Remediation):** Auf getrennten synthetischen Fällen (HOLDOUT-2) erkennt Engine 3.1 das Muster in 51,3 % der Fälle als Hauptzählung (2.2: 0,4 %), den Grad in 51,9 % (2.2: 0,4 %). Ausgegebene Zählungen verletzen keine harte Regel mehr, und falsche Sicherheit sinkt auf 15 % (2.2: 100 %). Das Gate ist **nicht** bestanden (grober Grad-Fehler 29 %, hohes Rauschen 10 %). Deshalb kein Prognose-Backtest; Status „Experimentelles Strukturmodell“, keine Expertenvalidierung. Siehe [ELLIOTT_ENGINE3_REPORT.md](ELLIOTT_ENGINE3_REPORT.md).
+
+**Mission III (Engine 3.2):** Produktion läuft auf Engine 3.2 (experimentelles Strukturmodell, Konfluenzgewicht 0). HOLDOUT-3 (realitätsnähere Generatoren, einmal ausgewertet): **nicht bestanden** — 0 Regelverstöße, falsche Sicherheit 14,9 %, Neuzuordnungen halb so häufig wie 2.2, aber Erkennung 42,9 % (≥ 45 %), grober Gradfehler 32,5 % (≤ 25 %), hohes Rauschen 6,2 %. Siehe [ELLIOTT_ENGINE32_REPORT.md](ELLIOTT_ENGINE32_REPORT.md).

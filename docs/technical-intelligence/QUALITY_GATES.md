@@ -21,3 +21,4 @@
 | G17 Audit-Stichprobe | 80 geschichtete Fälle mit Chart bis Erkennung, Regel-Audit, späterem Ergebnis | `quant/research/elliott-audit/` | ✅ (menschliche Bewertung offen) |
 | G18 Produkt v3 | Overlay-Vertrag, Strukturklarheit statt Konfidenz, Evidenzbadges, Wave Inspector, Zeitreise, Relabeling-Risiko | API_V3_MIGRATION.md, `ti-product.test.mjs`, Screenshots | ✅ |
 | G19 Elliott Engine Quality (Remediation) | vorab registriertes Gate G1–G11 auf getrennten Fällen, hohes Rauschen getrennt | ELLIOTT_ENGINE_QUALITY_PREREG.md, ELLIOTT_ENGINE3_REPORT.md, `ti-elliott-v3.test.mjs` | ❌ HOLDOUT-2: G1–G4, G6–G11 bestanden; G5 (29 %) und hohes Rauschen verfehlt → kein Prognose-Backtest |
+| G20 Elliott Engine Quality HOLDOUT-3 (Mission III) | vorab registriert (ELLIOTT_HOLDOUT3_PREREG.md), C1/C2/C3 + echte Charts | holdout3/holdout3-result-v32.json, ELLIOTT_ENGINE32_REPORT.md | ❌ G1, G6–G8, G10–G12, G14, G15 bestanden; G2–G5, G9, G13, D2 verfehlt → kein Prognose-Backtest |

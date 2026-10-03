@@ -1,7 +1,7 @@
 {
  "schemaVersion": "vu-technical-method-evidence-1.0.0",
  "purpose": "Evidenzstufe und Produktrolle je technischer Methode, abgeleitet aus den Holdout-Studien (Szenario-Evidenz, vorab registrierte Elliott-Validierung). Keine Zahl ist eine Wahrscheinlichkeit; Stufen werden nur aus Studienergebnissen abgeleitet, nie von Hand gesetzt.",
- "generatedAt": "2026-10-03T05:23:18.491Z",
+ "generatedAt": "2026-10-03T10:16:53.954Z",
  "definitions": {
   "VALIDATED": "vorab registrierte Hypothese auf unabhängiger Stichprobe bestätigt",
   "SUPPORTED": "Holdout-Richtung statistisch besser als 50 % und als „immer long“, aber nicht vorab registriert bestätigt; wirtschaftlich gering (vorzeichenbereinigte Rendite unter „immer long“)",
@@ -59,7 +59,7 @@
    "methodStatus": {
     "code": "EXPERIMENTAL_STRUCTURE_MODEL",
     "label": "Experimentelles Strukturmodell",
-    "note": "Methodentreue im Aufbau (Engine-Quality-Gate, ELLIOTT_ENGINE_QUALITY_PREREG.md); historischer Prognosevorteil nicht belegt."
+    "note": "Engine 3.2; Engine-Quality-Gate (HOLDOUT-3, ELLIOTT_HOLDOUT3_PREREG.md) nicht bestanden; historischer Prognosevorteil nicht belegt; Konfluenzgewicht 0."
    }
   },
   "FIBONACCI": {

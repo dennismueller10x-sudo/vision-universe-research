@@ -34,3 +34,10 @@ Alle v2-Felder je Titel bleiben: `outlook`, `regime`, `scenarios`, `confidence`,
 ## Verhaltensänderung
 
 Die Elliott-Hauptzählung nutzt **Persistenz** (Engine 2.2): Der Build rechnet die letzten 52 Bars sequenziell und übergibt den Zustand des Vortags. Ergebnis an t hängt damit nur von Bars ≤ t ab (kausal), ist aber nicht mehr identisch mit einem zustandslosen `TI.analyzeAt(P, t)`. Die Drift-Prüfung (`verify-technical-intelligence.mjs`) nutzt dieselbe Funktion `analyzeProduct()`.
+
+## Mission III — Versionsfelder und Elliott 3.2
+
+* Jeder Titel trägt `versions`: `{ api, analysis, resultSchema, elliott, ruleSet, elliottStatus: "EXPERIMENTAL_STRUCTURE_MODEL", dataAsOf }`.
+* `meta.json` trägt `elliott: { engine: "v3", status, confluenceWeight: 0, report }`.
+* Elliott-Ausgabe 3.2: `applicability.components` enthält zusätzlich `hierarchyConflict` und `proportion`; laufende Zählungen sind höchstens `LOW`; `clarityLevel` ist bei Grad-/Etikett-Mehrdeutigkeit `MODERATE`.
+* Abwärtskompatibel: keine Felder entfernt; Konsumenten, die `pro.elliott.engineVersion` lesen, sehen `elliott-3.2.0` statt `elliott-2.2.x`.
