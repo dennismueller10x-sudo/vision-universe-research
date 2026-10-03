@@ -1,54 +1,97 @@
 {
-  "schemaVersion": "vu-elliott-annotation-1.0.0",
-  "purpose": "Datenmodell fuer echte Expertenannotation von Elliott-Zaehlungen (Remediation §65–§67). Eine Annotation ist das Urteil EINER Person oder EINER veroeffentlichten Quelle zu EINEM Chart an EINEM Stichtag. Sie ist eine Praktiker-Referenz, keine objektive Wahrheit.",
+  "schemaVersion": "vu-elliott-annotation-2.0.0",
+  "supersedes": "vu-elliott-annotation-1.0.0",
+  "purpose": "Datenmodell fuer echte, blinde Expertenannotation von Elliott-Zaehlungen (Mission IV §6–§13, §63–§67, §76–§80). Eine Annotation ist das Urteil EINER Person zu EINEM Fall (Chart bis Stichtag). Sie ist eine Praktiker-Referenz, keine objektive Wahrheit. Solange keine echten Menschen annotiert haben, gilt: NOT EXPERT VALIDATED.",
+  "dataFiles": {
+    "cases-blind.json": "Vor Abgabe sichtbar: Fall-Code, Art, Zeitebene, Stichtag, Kurse bis Stichtag. Manifest mit SHA-256-Commitment von cases-sealed.json.",
+    "cases-sealed.json": "Nach Abgabe (je Fall) geladen: Symbol, Schichten, Engine-Ausgabe, Zaehlungs-Historie, 52-Wochen-Ergebnis, Praktiker-/Synthetik-Referenz, EXPERT_HOLDOUT-Kennzeichen."
+  },
   "sourceTypes": {
-    "SYNTHETIC": "Struktur bekannt, weil generiert (Korpus v2). Keine Annotation noetig.",
-    "MANUAL_VU_REVIEW": "Bewertung durch eine namentlich genannte Person bei Vision Universe. Nur so kennzeichnen, wenn ein Mensch bewertet hat.",
-    "EXTERNAL_PRACTITIONER": "Veroeffentlichte, datierte Zaehlung eines Elliott-Praktikers (Quelle mit URL und Datum).",
-    "AUTOMATED": "Von einer Engine oder einem Sprachmodell erzeugt — NIE als Expertenurteil zaehlen."
+    "MANUAL_VU_REVIEW": "Menschliche Fachperson (pseudonymer Code). Nur so kennzeichnen, wenn ein Mensch selbst gezaehlt hat.",
+    "EXTERNAL_PRACTITIONER": "Externe menschliche Fachperson, Annotation per Import (pseudonymer Code).",
+    "TEST": "Mechanischer Test der Werkbank. Wird NIE ausgewertet und soll nach dem Test geloescht werden.",
+    "AUTOMATED": "Von einer Engine oder einem Sprachmodell erzeugt — wird abgelehnt bzw. NIE als Expertenurteil gezaehlt. Kein Sprachmodell darf als Experte handeln."
   },
-  "fields": {
-    "annotationId": { "type": "string", "required": true },
-    "symbol": { "type": "string", "required": true },
-    "asOfDate": { "type": "date", "required": true, "note": "Stichtag; der Annotierende sieht nur Kurse bis zu diesem Tag (Blindrekonstruktion)" },
-    "timeframe": { "type": "enum", "values": ["1D", "1W", "1M"], "required": true },
-    "sourceType": { "type": "enum", "values": ["MANUAL_VU_REVIEW", "EXTERNAL_PRACTITIONER", "AUTOMATED"], "required": true },
-    "annotator": { "type": "string", "required": true, "note": "Name der Person bzw. Autor/Organisation der Quelle" },
-    "sourceUrl": { "type": "string|null", "note": "Pflicht bei EXTERNAL_PRACTITIONER" },
-    "publicationDate": { "type": "date|null" },
-    "primary": {
-      "type": "object", "required": true,
-      "fields": {
-        "pattern": { "type": "enum", "values": ["IMPULSE", "LEADING_DIAGONAL", "ENDING_DIAGONAL", "ZIGZAG", "FLAT", "TRIANGLE", "WXY", "DOUBLE_ZIGZAG", "TRIPLE_ZIGZAG", "COMBINATION", "UNCLEAR"] },
-        "degree": { "type": "enum", "values": ["Grand Supercycle", "Supercycle", "Cycle", "Primary", "Intermediate", "Minor", "Minute", "Minuette", "Subminuette", "relative"], "note": "Frost & Prechter, Kap. 1 (Wave Degree)" },
-        "currentWave": { "type": "string", "note": "z. B. \"(4) of 3\"" },
-        "status": { "type": "enum", "values": ["DEVELOPING", "COMPLETE", "POSSIBLE"] },
-        "pivots": { "type": "array", "items": { "date": "date", "price": "number", "label": "string" } },
-        "invalidation": { "type": "number|null" },
-        "targetZone": { "type": "[number, number]|null" },
-        "nextDirection": { "type": "enum", "values": ["UP", "DOWN", "SIDEWAYS", "UNKNOWN"] }
-      }
-    },
-    "alternatives": { "type": "array", "items": "wie primary" },
-    "engineVerdict": { "type": "enum", "values": ["AGREE", "AGREE_DEGREE_OFF_BY_ONE", "PARTLY", "DISAGREE", "ENGINE_SHOULD_ABSTAIN", "NOT_COUNTABLE"], "note": "Urteil ueber die Engine-Zaehlung am selben Stichtag" },
-    "mismatchCategory": { "type": "array", "values": ["DEGREE_TOO_LOW", "DEGREE_TOO_HIGH", "WRONG_PATTERN", "WRONG_WAVE_POSITION", "MISSED_TRUNCATION", "MISSED_FLAT", "MISSED_TRIANGLE", "TINY_SWING_COUNTED", "WEEKLY_CONTEXT_MISSING", "PROPORTION_IGNORED", "OTHER"] },
-    "validity": { "type": "enum", "values": ["VALID_COUNT", "AMBIGUOUS", "NO_RELIABLE_COUNT"] },
-    "comments": { "type": "string" },
-    "createdAt": { "type": "datetime", "required": true }
+  "enums": {
+    "pattern": ["IMPULSE", "LEADING_DIAGONAL", "ENDING_DIAGONAL", "ZIGZAG", "FLAT", "TRIANGLE", "WXY", "DOUBLE_ZIGZAG", "TRIPLE_ZIGZAG", "COMBINATION", "UNCLEAR"],
+    "patternFamily": { "MOTIVE": ["IMPULSE", "LEADING_DIAGONAL", "ENDING_DIAGONAL"], "CORRECTIVE": ["ZIGZAG", "FLAT", "TRIANGLE", "WXY", "DOUBLE_ZIGZAG", "TRIPLE_ZIGZAG", "COMBINATION"], "NONE": ["UNCLEAR"] },
+    "degree": ["Grand Supercycle", "Supercycle", "Cycle", "Primary", "Intermediate", "Minor", "Minute", "Minuette", "Subminuette"],
+    "degreeNote": "Ordinal nach Frost & Prechter (Kap. 1, Wave Degree); Index 0 = hoechster Grad. Grad des GEZAEHLTEN Musters (dessen Wellen tragen diesen Grad).",
+    "currentWave": ["1", "2", "3", "4", "5", "A", "B", "C", "D", "E", "W", "X", "Y", "X2", "Z", "COMPLETE"],
+    "status": ["DEVELOPING", "CONFIRMED", "POSSIBLE"],
+    "direction": ["UP", "DOWN", "SIDEWAYS"],
+    "directionNote": "Richtung der LAUFENDEN Welle (bei COMPLETE: Richtung der erwarteten Gegenbewegung).",
+    "applicability": ["HIGH", "MODERATE", "LOW"],
+    "raterSlot": ["A", "B", "C"]
   },
+  "count": {
+    "pattern": { "type": "enum:pattern", "required": true },
+    "degree": { "type": "enum:degree", "required": true },
+    "currentWave": { "type": "enum:currentWave", "required": true },
+    "status": { "type": "enum:status", "required": true },
+    "direction": { "type": "enum:direction", "required": true },
+    "pivots": { "type": "array", "items": { "date": "YYYY-MM-DD (≤ Stichtag)", "price": "number > 0", "label": "string (0,1,…,5 / A,B,C / W,X,Y …)" }, "note": "per Klick in den Chart oder als Text Datum:Preis:Label; …" },
+    "invalidation": { "type": "number|null", "note": "Kurs, jenseits dessen die Zaehlung ungueltig ist" },
+    "targetZone": { "type": "[number, number]|null", "note": "Zielzone der laufenden Welle [unten, oben]" }
+  },
+  "annotation": {
+    "schemaVersion": { "type": "const", "value": "vu-elliott-annotation-2.0.0", "required": true },
+    "annotationId": { "type": "string", "required": true, "note": "<caseId>|<annotatorCode> — stabil je Person und Fall" },
+    "version": { "type": "integer ≥ 1", "required": true, "note": "jede Speicherung erzeugt eine neue Version; alte Versionen bleiben erhalten (nie ueberschreiben)" },
+    "supersedes": { "type": "integer|null" },
+    "caseId": { "type": "string", "required": true },
+    "caseKind": { "type": "enum", "values": ["REFERENCE", "PRACTITIONER", "SYNTHETIC"] },
+    "timeframe": { "type": "enum", "values": ["1D", "1W"] },
+    "cutoff": { "type": "date", "required": true },
+    "annotatorCode": { "type": "string", "pattern": "^[A-Za-z0-9_-]{2,24}$", "required": true, "note": "PSEUDONYM (Privacy §80): keine Klarnamen, keine E-Mail-Adressen. Zuordnung Code→Person liegt ausserhalb dieses Systems." },
+    "raterSlot": { "type": "enum:raterSlot", "required": true, "note": "A/B(/C) fuer Doppel-/Dreifachannotation; Kappa A↔B nutzt diese Rollen" },
+    "sourceType": { "type": "enum", "values": ["MANUAL_VU_REVIEW", "EXTERNAL_PRACTITIONER", "TEST"], "required": true },
+    "blindMode": { "type": "boolean", "required": true },
+    "postReveal": { "type": "boolean", "required": true, "note": "true = Version nach Aufdeckung der Engine gespeichert (nicht mehr blind). Auswertung nutzt die letzte Version mit postReveal=false." },
+    "noReliableCount": { "type": "boolean", "required": true, "note": "true = keine verlaessliche Zaehlung moeglich (Enthaltung); primary darf dann leer sein" },
+    "primary": { "type": "count|null", "required": "wenn noReliableCount=false" },
+    "alternative": { "type": "count|null" },
+    "applicability": { "type": "enum:applicability", "required": true, "note": "Wie gut ist Elliott auf diesen Chart anwendbar?" },
+    "confidence": { "type": "integer 1–5", "required": true, "note": "eigene Sicherheit (1 = sehr unsicher, 5 = sehr sicher)" },
+    "comment": { "type": "string", "note": "keine personenbezogenen Daten" },
+    "openedAt": { "type": "datetime|null" },
+    "createdAt": { "type": "datetime", "required": true, "note": "erste Version" },
+    "savedAt": { "type": "datetime", "required": true, "note": "diese Version" },
+    "contentHash": { "type": "string", "note": "SHA-256 des fachlichen Inhalts (ohne Zeitstempel) — Dedupe/Konfliktpruefung beim Import" },
+    "blindManifestSha256": { "type": "string", "note": "Commitment der versiegelten Datei zum Zeitpunkt der Annotation" }
+  },
+  "auditLogEntry": {
+    "seq": "integer", "at": "datetime", "action": "SAVE | REVEAL | IMPORT | IMPORT_DUPLICATE | IMPORT_CONFLICT | IMPORT_REJECTED | CLEAR_TEST",
+    "annotationId": "string|null", "version": "integer|null", "caseId": "string|null", "annotatorCode": "string|null", "contentHash": "string|null", "note": "string|null", "origin": "local | import:<datei>"
+  },
+  "exportFormats": {
+    "json": "{ schemaVersion, exportedAt, blindManifestSha256, annotations: [alle Versionen], auditLog: [...] }",
+    "csv": "eine Zeile je Annotationsversion, verflachte Felder (primary_*, alternative_*); Audit-Log als zweite CSV-Datei"
+  },
+  "importRules": [
+    "Nur JSON mit schemaVersion vu-elliott-annotation-2.0.0 (Datei oder einzelne Annotationen).",
+    "Jede Annotation wird gegen dieses Schema validiert; ungueltige werden abgelehnt (IMPORT_REJECTED im Audit-Log).",
+    "Dedupe ueber annotationId + version: gleicher Inhalt → Duplikat (uebersprungen); anderer Inhalt → Konflikt (uebersprungen, IMPORT_CONFLICT).",
+    "sourceType AUTOMATED wird abgelehnt."
+  ],
   "agreementMetrics": {
-    "directionalStructureMatch": "gleiche laufende Richtung und gleiche Musterfamilie (Motiv/Korrektur)",
-    "waveStateMatch": "gleiche laufende Welle (Etikett) im selben Muster",
-    "degreeMatch": "gleicher relativer Grad",
-    "degreeWithinOne": "Grad hoechstens eine Stufe verschieden",
-    "primaryAlternativeOverlap": "Engine-Haupt- oder Alternativzaehlung trifft die Referenz-Hauptzaehlung",
-    "invalidationSimilarity": "|Engine − Referenz| / ATR",
-    "targetZoneOverlap": "Ueberlappung der Zielzonen (Anteil)",
-    "timingDifference": "Abstand der Wellenenden in Bars"
+    "pairs": "Engine↔A, Engine↔B, A↔B (Rollen ueber raterSlot); Fleiss' Kappa bei ≥3 Annotierenden je Fall",
+    "exactDegree": "gleicher F&P-Grad (Engine: heuristisch aus Wellendauer, gekennzeichnet)",
+    "degreeWithinOne": "Grad hoechstens eine ordinale Stufe verschieden",
+    "sameCurrentWave": "gleiches Etikett der laufenden Welle",
+    "samePatternFamily": "Motiv/Korrektur gleich",
+    "sameDirection": "gleiche Richtung der laufenden Welle",
+    "invalidationOverlap": "|a − b| ≤ max(3 % · |b|, 1 ATR-Aequivalent)",
+    "targetZoneOverlap": "Intervalle schneiden sich",
+    "primaryAlternativeOverlap": "Hauptzaehlung (Muster + laufende Welle) der einen Seite = Haupt- oder Alternativzaehlung der anderen",
+    "applicabilityAgreement": "gleiche Stufe; zusaetzlich linear gewichtetes Kappa",
+    "abstentionAgreement": "noReliableCount ↔ Engine enthaelt sich (Anwendbarkeit LOW)",
+    "kappa": "Cohen (2 Rater, nominal), Fleiss (≥3), linear gewichtet (ordinal: Grad, Anwendbarkeit). Nur bei ≥2 Ratern und ≥10 Einheiten, sonst null mit Grund."
   },
   "rules": [
-    "Keine Annotation ohne Person bzw. Quelle; AUTOMATED nie als Expertenurteil auswerten.",
-    "Widersprechen sich zwei Referenzen zum selben Stichtag: beide behalten, als REFERENCE_AMBIGUOUS markieren.",
-    "Die Engine wird mit Daten bis asOfDate gerechnet — nie mit dem spaeteren Chart."
+    "Keine erfundenen Annotationen. Kein Sprachmodell und keine Engine handelt als Experte.",
+    "Vor Abgabe sieht die annotierende Person nur Kurse bis zum Stichtag (kein Symbol, keine Engine, kein spaeterer Verlauf).",
+    "EXPERT_HOLDOUT-Faelle (in cases-sealed.json gekennzeichnet) nicht fuer die Engine-Entwicklung verwenden.",
+    "Widersprechen sich Annotierende: beide behalten; Uneinigkeit ist ein Ergebnis, kein Fehler."
   ]
 }

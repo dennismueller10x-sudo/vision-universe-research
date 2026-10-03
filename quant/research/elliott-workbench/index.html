@@ -8,137 +8,386 @@
 <style>
 :root{--bg:#0b0d10;--panel:#14171b;--line:rgba(255,255,255,.1);--text:#f4f5f1;--muted:#a6abb3;--dim:#7d828a;--lime:#c8f531;--blue:#8cc8ff;--red:#ff6b5e;--violet:#b3a6ff;--amber:#f2c14e}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header{padding:16px;border-bottom:1px solid var(--line)}h1{margin:0;font-size:20px}header p{margin:4px 0 0;color:var(--muted);max-width:980px;font-size:14px}
-main{display:grid;grid-template-columns:300px 1fr;min-height:calc(100vh - 80px)}
-nav{border-right:1px solid var(--line);overflow:auto;max-height:calc(100vh - 80px)}
+header{padding:14px 16px;border-bottom:1px solid var(--line)}h1{margin:0;font-size:20px}header p{margin:4px 0 0;color:var(--muted);max-width:1100px;font-size:14px}
+.banner{display:inline-block;margin-top:6px;padding:2px 10px;border-radius:99px;border:1px solid var(--amber);color:var(--amber);font-size:12px;font-weight:600;letter-spacing:.04em}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:end;padding:10px 16px;border-bottom:1px solid var(--line)}
+.toolbar label{margin:0 0 2px}.toolbar .fld{display:flex;flex-direction:column}
+.toolbar input[type=text]{width:150px}
+main{display:grid;grid-template-columns:290px 1fr;min-height:calc(100vh - 160px)}
+nav{border-right:1px solid var(--line);overflow:auto;max-height:calc(100vh - 150px)}
 nav .filters{display:flex;gap:6px;flex-wrap:wrap;padding:10px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg)}
-nav button.case{display:block;width:100%;text-align:left;padding:9px 12px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);font:inherit;cursor:pointer}
+nav button.case{display:block;width:100%;text-align:left;padding:8px 12px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);font:inherit;cursor:pointer}
 nav button.case[aria-current=true]{background:var(--panel);box-shadow:inset 3px 0 var(--lime)}
 nav small{display:block;color:var(--dim)}
-section{padding:14px;max-width:1150px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:12px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}
+section{padding:14px;max-width:1200px;min-width:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;min-width:0}
 .card h3{margin:0 0 8px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-dl{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:0}dt{color:var(--muted)}dd{margin:0}
-svg{width:100%;height:auto;background:#0f1215;border-radius:12px;border:1px solid var(--line)}
-.btn,.chip{min-height:36px;padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--text);font:inherit;cursor:pointer}
+.card h4{margin:10px 0 4px;font-size:13px;color:var(--muted)}
+dl{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:0}dt{color:var(--muted)}dd{margin:0;overflow-wrap:anywhere}
+svg.chart{width:100%;height:auto;background:#0f1215;border-radius:12px;border:1px solid var(--line);cursor:crosshair;touch-action:manipulation}
+.btn,.chip{min-height:34px;padding:5px 12px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--text);font:inherit;cursor:pointer}
+.btn.primary{border-color:var(--lime);color:var(--lime)}.btn:disabled{opacity:.45;cursor:not-allowed}
 .chip[aria-pressed=true]{border-color:var(--lime);color:var(--lime)}
 .tag{display:inline-block;padding:1px 8px;border-radius:99px;background:rgba(255,255,255,.08);font-size:12px;margin-right:6px}
-.note{color:var(--muted);font-size:13px}
+.tag.warn{background:rgba(242,193,78,.15);color:var(--amber)}
+.note{color:var(--muted);font-size:13px}.err{color:var(--red);font-size:13px}.ok{color:var(--lime);font-size:13px}
 label{display:block;margin:6px 0 2px;color:var(--muted);font-size:13px}
-select,input,textarea{width:100%;background:#0f1215;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px;font:inherit}
+select,input,textarea{width:100%;background:#0f1215;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px;font:inherit}
+input[type=checkbox],input[type=radio]{width:auto}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+fieldset{border:1px solid var(--line);border-radius:10px;margin:8px 0;padding:6px 10px 10px}legend{color:var(--muted);font-size:13px;padding:0 4px}
+fieldset.active{border-color:var(--blue)}
 ol{margin:4px 0;padding-left:18px}li{margin:2px 0}
-input[type=range]{padding:0}
-@media (max-width:760px){main{grid-template-columns:1fr}nav{max-height:240px;border-right:0;border-bottom:1px solid var(--line)}}
+.legend span{margin-right:12px;font-size:12px;color:var(--muted)}.sw{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:4px}
+@media (max-width:760px){main{grid-template-columns:1fr}nav{max-height:240px;border-right:0;border-bottom:1px solid var(--line)}.row3{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 <header>
-  <h1>Elliott-Werkbank (intern)</h1>
-  <p>Prüfen und annotieren: Kurs nur bis zum Stichtag, Engine 3.0 (lime) und Alternative (violett), Engine 2.2 (grau gestrichelt), Unterwellen als Punkte, Zählungs-Historie mit Wechselgrund. Praktiker-Referenzen sind ungeprüfte Zusammenfassungen; Annotationen bleiben in diesem Browser, bis sie exportiert werden. Nicht öffentlich verlinkt.</p>
+  <h1>Elliott-Werkbank · Blindannotation (intern)</h1>
+  <p>Zählen Sie jeden Fall selbst — Sie sehen nur Kurse bis zum Stichtag, ohne Symbol und ohne Engine. Erst nach Ihrer Abgabe lässt sich der versiegelte Teil (Engine-Zählung, späterer Verlauf, Historie, Referenz) für diesen Fall aufdecken. Annotationen bleiben in diesem Browser (versioniert, mit Audit-Log), bis sie exportiert werden. Bitte keine Klarnamen oder E-Mail-Adressen eingeben — nur einen pseudonymen Code.</p>
+  <span class="banner" id="status-banner">NOT EXPERT VALIDATED · noch keine echten Expertenannotationen ausgewertet</span>
 </header>
+<div class="toolbar" id="toolbar">
+  <div class="fld"><label for="t-code">Annotator-Code (pseudonym)</label><input type="text" id="t-code" autocomplete="off" spellcheck="false" placeholder="z. B. EXP-07"></div>
+  <div class="fld"><label for="t-slot">Rolle</label><select id="t-slot"><option>A</option><option>B</option><option>C</option></select></div>
+  <div class="fld"><label for="t-test"><input type="checkbox" id="t-test"> Testlauf (TEST · nie ausgewertet)</label></div>
+  <button class="btn" type="button" id="t-exp-json">Export JSON</button>
+  <button class="btn" type="button" id="t-exp-csv">Export CSV</button>
+  <button class="btn" type="button" id="t-exp-audit">Audit-Log CSV</button>
+  <label class="btn" for="t-imp" style="margin:0;display:inline-flex;align-items:center">Import JSON</label><input type="file" id="t-imp" accept="application/json,.json" multiple style="display:none">
+  <button class="btn" type="button" id="t-clear-test">TEST-Annotationen löschen</button>
+  <span class="note" id="t-msg" role="status"></span>
+</div>
 <main><nav id="nav" aria-label="Fälle"></nav><section id="detail" aria-live="polite"><p class="note">Lade …</p></section></main>
 <script>
 (function () {
   "use strict";
-  var D = null, cur = null, filter = "ALL", step = null, showTruth = false, KEY = "vu-elliott-annotations-v1";
-  function h(tag, attrs, kids) { var e = document.createElement(tag); Object.keys(attrs || {}).forEach(function (k) { if (k === "text") e.textContent = attrs[k]; else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), attrs[k]); else e.setAttribute(k, attrs[k]); }); (kids || []).forEach(function (c) { if (c) e.append(c); }); return e; }
-  function f(v) { return typeof v === "number" ? v.toLocaleString("de-DE", { maximumFractionDigits: 2 }) : v === null || v === undefined ? "–" : String(v); }
-  function load() { try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { return {}; } }
-  function save(a) { try { localStorage.setItem(KEY, JSON.stringify(a)); } catch (e) { /* privat */ } }
+  /* ── Blindprotokoll (Mission IV §6–§13) ───────────────────────────────────────────────────────────────────────────
+     Vor der Abgabe lädt diese Seite NUR cases-blind.json (Kurse bis Stichtag). cases-sealed.json (Engine, Ergebnis,
+     Historie, Symbol, Schichten) wird erst geladen, wenn die aktuelle Person für DIESEN Fall abgegeben hat und
+     "Aufdecken" wählt; die Datei wird gegen das SHA-256-Commitment im Manifest geprüft und nur der eine Fall behalten. */
+  var SCHEMA = "vu-elliott-annotation-2.0.0", KEY_A = "vu-elliott-annotations-v2", KEY_L = "vu-elliott-audit-v2", KEY_U = "vu-elliott-annotator-v2";
+  var PATTERNS = ["IMPULSE", "LEADING_DIAGONAL", "ENDING_DIAGONAL", "ZIGZAG", "FLAT", "TRIANGLE", "WXY", "DOUBLE_ZIGZAG", "TRIPLE_ZIGZAG", "COMBINATION", "UNCLEAR"];
+  var DEGREES = ["Grand Supercycle", "Supercycle", "Cycle", "Primary", "Intermediate", "Minor", "Minute", "Minuette", "Subminuette"];
+  var WAVES = ["1", "2", "3", "4", "5", "A", "B", "C", "D", "E", "W", "X", "Y", "X2", "Z", "COMPLETE"];
+  var STATUS = ["DEVELOPING", "CONFIRMED", "POSSIBLE"], DIRS = ["UP", "DOWN", "SIDEWAYS"], APPL = ["HIGH", "MODERATE", "LOW"];
+  var CODE_RE = /^[A-Za-z0-9_-]{2,24}$/;
+  var D = null, cur = null, filter = "ALL", active = "primary", logScale = false, opened = {}, sealedOne = {}, hoverTxt = null;
+
+  function h(tag, attrs, kids) { var e = document.createElement(tag); Object.keys(attrs || {}).forEach(function (k) { var v = attrs[k]; if (v === null || v === undefined || v === false) return; if (k === "text") e.textContent = v; else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), v); else e.setAttribute(k, v === true ? "" : v); }); (kids || []).forEach(function (c) { if (c) e.append(c); }); return e; }
+  function f(v) { return typeof v === "number" ? v.toLocaleString("de-DE", { maximumFractionDigits: 2 }) : v === null || v === undefined || v === "" ? "–" : String(v); }
+  function lsGet(k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+  function all() { return lsGet(KEY_A, []); }
+  function auditLog() { return lsGet(KEY_L, []); }
+  function audit(entry) { var L = auditLog(); entry.seq = L.length ? L[L.length - 1].seq + 1 : 1; entry.at = entry.at || new Date().toISOString(); entry.origin = entry.origin || "local"; L.push(entry); lsSet(KEY_L, L); }
+  function versionsOf(caseId, code) { return all().filter(function (a) { return a.caseId === caseId && a.annotatorCode === code; }).sort(function (a, b) { return a.version - b.version; }); }
+  function latestOf(caseId, code) { var v = versionsOf(caseId, code); return v.length ? v[v.length - 1] : null; }
+  function annotatorsDone(caseId) { var m = {}; all().forEach(function (a) { if (a.caseId === caseId) m[a.annotatorCode] = a.raterSlot + (a.sourceType === "TEST" ? "·TEST" : ""); }); return m; }
+  function me() { return lsGet(KEY_U, { code: "", slot: "A", test: false }); }
+  function revealed(caseId, code) { return !!(code && latestOf(caseId, code)) && auditLog().some(function (e) { return e.action === "REVEAL" && e.caseId === caseId && e.annotatorCode === code; }); }
+
+  /* ── Hash (SHA-256 via WebCrypto; Fallback FNV-1a nur bei fehlendem sicheren Kontext, gekennzeichnet) ── */
+  function hex(buf) { return Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, "0"); }).join(""); }
+  function sha256(text) {
+    if (window.crypto && crypto.subtle) return crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)).then(hex);
+    var x = 0x811c9dc5; for (var i = 0; i < text.length; i++) { x ^= text.charCodeAt(i); x = Math.imul(x, 0x01000193) >>> 0; } return Promise.resolve("fnv1a:" + x.toString(16));
+  }
+  function contentOf(a) { return JSON.stringify({ c: a.caseId, u: a.annotatorCode, r: a.raterSlot, s: a.sourceType, n: a.noReliableCount, p: a.primary, alt: a.alternative, ap: a.applicability, cf: a.confidence, cm: a.comment, pr: a.postReveal }); }
+
+  /* ── Validierung (identisch zu scripts/technical/elliott-expert-agreement.mjs) ── */
+  function validCount(c, cutoff, errs, who) {
+    if (!c || typeof c !== "object") { errs.push(who + ": fehlt"); return; }
+    if (PATTERNS.indexOf(c.pattern) < 0) errs.push(who + ": Muster fehlt/ungültig");
+    if (DEGREES.indexOf(c.degree) < 0) errs.push(who + ": Grad fehlt/ungültig");
+    if (WAVES.indexOf(c.currentWave) < 0) errs.push(who + ": laufende Welle fehlt/ungültig");
+    if (STATUS.indexOf(c.status) < 0) errs.push(who + ": Status fehlt/ungültig");
+    if (DIRS.indexOf(c.direction) < 0) errs.push(who + ": Richtung fehlt/ungültig");
+    if (!Array.isArray(c.pivots)) errs.push(who + ": Pivots müssen eine Liste sein");
+    else c.pivots.forEach(function (p, i) { if (!p || !/^\d{4}-\d{2}-\d{2}$/.test(p.date) || !(p.price > 0)) errs.push(who + ": Pivot " + (i + 1) + " ungültig"); else if (cutoff && p.date > cutoff) errs.push(who + ": Pivot " + p.date + " liegt nach dem Stichtag"); });
+    if (c.invalidation !== null && c.invalidation !== undefined && !(typeof c.invalidation === "number" && isFinite(c.invalidation))) errs.push(who + ": Invalidierung keine Zahl");
+    if (c.targetZone !== null && c.targetZone !== undefined && !(Array.isArray(c.targetZone) && c.targetZone.length === 2 && c.targetZone.every(function (x) { return typeof x === "number" && isFinite(x); }) && c.targetZone[0] <= c.targetZone[1])) errs.push(who + ": Zielzone [unten, oben] ungültig");
+  }
+  function validate(a) {
+    var e = [];
+    if (!a || a.schemaVersion !== SCHEMA) e.push("schemaVersion ≠ " + SCHEMA);
+    if (!a || typeof a !== "object") return e;
+    if (!CODE_RE.test(a.annotatorCode || "")) e.push("annotatorCode muss pseudonym sein (2–24 Zeichen A–Z, 0–9, _ -)");
+    if (a.annotationId !== a.caseId + "|" + a.annotatorCode) e.push("annotationId ≠ caseId|annotatorCode");
+    if (!(Number.isInteger(a.version) && a.version >= 1)) e.push("version ungültig");
+    if (["A", "B", "C"].indexOf(a.raterSlot) < 0) e.push("raterSlot ungültig");
+    if (["MANUAL_VU_REVIEW", "EXTERNAL_PRACTITIONER", "TEST"].indexOf(a.sourceType) < 0) e.push("sourceType ungültig (AUTOMATED wird nie angenommen)");
+    if (typeof a.blindMode !== "boolean" || typeof a.postReveal !== "boolean" || typeof a.noReliableCount !== "boolean") e.push("blindMode/postReveal/noReliableCount müssen boolesch sein");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(a.cutoff || "")) e.push("cutoff fehlt");
+    if (APPL.indexOf(a.applicability) < 0) e.push("Anwendbarkeit fehlt");
+    if (!(Number.isInteger(a.confidence) && a.confidence >= 1 && a.confidence <= 5)) e.push("Sicherheit 1–5 fehlt");
+    if (!a.noReliableCount) validCount(a.primary, a.cutoff, e, "Hauptzählung");
+    else if (a.primary) validCount(a.primary, a.cutoff, e, "Hauptzählung");
+    if (a.alternative) validCount(a.alternative, a.cutoff, e, "Alternative");
+    if (!a.createdAt || !a.savedAt) e.push("Zeitstempel fehlen");
+    if (D && a.caseId && !D.cases.some(function (c) { return c.id === a.caseId; })) e.push("unbekannter Fall " + a.caseId);
+    return e;
+  }
+
+  /* ── Chart (nur Kurse bis Stichtag; Engine erst nach Aufdeckung) ── */
   var NS = "http://www.w3.org/2000/svg";
   function s(tag, a) { var e = document.createElementNS(NS, tag); Object.keys(a || {}).forEach(function (k) { e.setAttribute(k, a[k]); }); return e; }
-  function chart(c) {
-    var d = c.chart.d, cl = c.chart.c, n = d.length, W = 960, H = 340, pl = 8, pr = 64, pt = 10, pb = 22;
-    var lo = Math.min.apply(null, cl), hi = Math.max.apply(null, cl), pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+  function chart(c, draft, sealed) {
+    var d = c.chart.d, cl = c.chart.c, n = d.length, W = 980, H = 360, pl = 8, pr = 66, pt = 12, pb = 24;
+    var lo = Math.min.apply(null, cl), hi = Math.max.apply(null, cl), pad = (hi - lo) * 0.08 || 1; lo = logScale ? lo / 1.08 : lo - pad; hi = logScale ? hi * 1.08 : hi + pad;
+    var T = function (v) { return logScale ? Math.log(Math.max(v, 1e-9)) : v; }, tl = T(lo), th = T(hi);
     var idx = {}; d.forEach(function (x, i) { idx[x] = i; });
-    var X = function (i) { return pl + (W - pl - pr) * (i + 0.5) / n; }, Y = function (v) { return pt + (hi - v) / (hi - lo) * (H - pt - pb); };
-    var g = s("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Kursverlauf bis zum Stichtag mit Zählungen" });
-    for (var k = 0; k <= 4; k++) { var v = lo + (hi - lo) * k / 4; g.append(s("line", { x1: pl, x2: W - pr, y1: Y(v), y2: Y(v), stroke: "rgba(255,255,255,.06)" })); var t = s("text", { x: W - pr + 6, y: Y(v) + 4, fill: "#7d828a", "font-size": 11 }); t.textContent = f(v); g.append(t); }
-    var p = ""; for (var i = 0; i < n; i++) p += (i ? "L" : "M") + X(i) + " " + Y(cl[i]); g.append(s("path", { d: p, fill: "none", stroke: "#f4f5f1", "stroke-width": 1.5 }));
-    function draw(cnt, color, dash, labels) {
-      if (!cnt) return;
-      var pts = []; cnt.waves.forEach(function (w, q) { if (q === 0 && idx[w.a] !== undefined) pts.push([idx[w.a], w.pa, ""]); if (idx[w.b] !== undefined) pts.push([idx[w.b], w.pb, w.l]); });
-      if (pts.length < 2) return;
-      g.append(s("path", { d: pts.map(function (q, j) { return (j ? "L" : "M") + X(q[0]) + " " + Y(q[1]); }).join(""), fill: "none", stroke: color, "stroke-width": 2, "stroke-dasharray": dash || "" }));
-      if (labels) pts.forEach(function (q) { if (!q[2]) return; var tt = s("text", { x: X(q[0]), y: Y(q[1]) - 7, fill: color, "font-size": 12, "text-anchor": "middle", "font-weight": 600 }); tt.textContent = q[2]; g.append(tt); });
-      if (labels) cnt.waves.forEach(function (w) { (w.sub && w.sub.w || []).forEach(function (x) { if (idx[x[0]] !== undefined) { g.append(s("circle", { cx: X(idx[x[0]]), cy: Y(x[1]), r: 2.6, fill: color, opacity: 0.7 })); } }); });
+    var X = function (i) { return pl + (W - pl - pr) * (i + 0.5) / n; }, Y = function (v) { return pt + (th - T(v)) / (th - tl) * (H - pt - pb); };
+    var g = s("svg", { viewBox: "0 0 " + W + " " + H, class: "chart", role: "img", "aria-label": "Schlusskurse bis zum Stichtag; Klick setzt einen Pivot" });
+    for (var k = 0; k <= 4; k++) { var v = logScale ? Math.exp(tl + (th - tl) * k / 4) : lo + (hi - lo) * k / 4; g.append(s("line", { x1: pl, x2: W - pr, y1: Y(v), y2: Y(v), stroke: "rgba(255,255,255,.06)" })); var t = s("text", { x: W - pr + 6, y: Y(v) + 4, fill: "#7d828a", "font-size": 11 }); t.textContent = f(v); g.append(t); }
+    var lastY = null; d.forEach(function (x, i) { var y = x.slice(0, 4); if (y !== lastY && i > 0) { g.append(s("line", { x1: X(i), x2: X(i), y1: pt, y2: H - pb, stroke: "rgba(255,255,255,.04)" })); var tt = s("text", { x: X(i) + 2, y: H - 8, fill: "#7d828a", "font-size": 10 }); tt.textContent = y; g.append(tt); } lastY = y; });
+    var p = ""; for (var i = 0; i < n; i++) p += (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(cl[i]).toFixed(1); g.append(s("path", { d: p, fill: "none", stroke: "#f4f5f1", "stroke-width": 1.3 }));
+    function hline(v, color, dash) { if (typeof v !== "number" || !isFinite(v) || v < lo || v > hi) return; g.append(s("line", { x1: pl, x2: W - pr, y1: Y(v), y2: Y(v), stroke: color, "stroke-dasharray": dash, "stroke-width": 1 })); }
+    function zone(z, color) { if (!z) return; var a = Math.max(lo, Math.min(hi, z[1])), b = Math.max(lo, Math.min(hi, z[0])); if (a === b) return; g.append(s("rect", { x: X(n - 1) - 30, width: 30 + pr - 4, y: Y(a), height: Math.max(1, Y(b) - Y(a)), fill: color, opacity: 0.18 })); }
+    function poly(pts, color, dash, w) {
+      var q = pts.filter(function (x) { return idx[x.date] !== undefined; }); if (!q.length) return;
+      if (q.length > 1) g.append(s("path", { d: q.map(function (x, j) { return (j ? "L" : "M") + X(idx[x.date]) + " " + Y(x.price); }).join(""), fill: "none", stroke: color, "stroke-width": w || 2, "stroke-dasharray": dash || "" }));
+      q.forEach(function (x) { g.append(s("circle", { cx: X(idx[x.date]), cy: Y(x.price), r: 3.5, fill: color })); if (x.label) { var tt = s("text", { x: X(idx[x.date]), y: Y(x.price) - 8, fill: color, "font-size": 12, "text-anchor": "middle", "font-weight": 600 }); tt.textContent = x.label; g.append(tt); } });
     }
-    if (!hidden(c)) {
-      if (c.v2.primary) draw(c.v2.primary, "#7d828a", "5 4", false);
-      if (c.v3.alternative) draw(c.v3.alternative, "#b3a6ff", "3 3", true);
-      if (c.v3.primary) draw(c.v3.primary, "#c8f531", "", true);
+    if (sealed && sealed.engine) {   // NUR nach Abgabe + Aufdeckung
+      var toPts = function (cn) { if (!cn) return []; var o = [{ date: cn.waves[0].a, price: cn.waves[0].pa, label: "" }]; cn.waves.forEach(function (w) { o.push({ date: w.b, price: w.pb, label: w.l }); }); return o; };
+      if (sealed.engine.v3.alternative) poly(toPts(sealed.engine.v3.alternative), "#7d828a", "3 3", 1.5);
+      if (sealed.engine.v3.primary) { poly(toPts(sealed.engine.v3.primary), "#c8f531", "", 1.8); hline(sealed.engine.v3.primary.inv, "#c8f531", "2 4"); zone(sealed.engine.v3.primary.targetZone, "#c8f531"); }
+      if (sealed.reference && sealed.reference.truth) poly(sealed.reference.truth.pivots.map(function (x) { return { date: x[0], price: x[1], label: "" }; }), "#f2c14e", "6 3", 2.5);
     }
-    if (showTruth && c.reference && c.reference.truth) { var tp = c.reference.truth.pivots.filter(function (q) { return idx[q[0]] !== undefined; }); if (tp.length > 1) g.append(s("path", { d: tp.map(function (q, j) { return (j ? "L" : "M") + X(idx[q[0]]) + " " + Y(q[1]); }).join(""), fill: "none", stroke: "#8cc8ff", "stroke-width": 3, opacity: 0.5 })); }
-    if (step !== null && c.history[step] && idx[c.history[step].d] !== undefined) { var sx = X(idx[c.history[step].d]); g.append(s("line", { x1: sx, x2: sx, y1: pt, y2: H - pb, stroke: "#f2c14e", "stroke-dasharray": "3 4" })); }
+    if (draft) {
+      if (draft.alternative) { poly(draft.alternative.pivots || [], "#b3a6ff", "5 4", 2); hline(draft.alternative.invalidation, "#b3a6ff", "6 4"); zone(draft.alternative.targetZone, "#b3a6ff"); }
+      if (draft.primary) { poly(draft.primary.pivots || [], "#8cc8ff", "", 2.2); hline(draft.primary.invalidation, "#ff6b5e", "6 4"); zone(draft.primary.targetZone, "#8cc8ff"); }
+    }
+    var cross = s("line", { x1: 0, x2: 0, y1: pt, y2: H - pb, stroke: "rgba(242,193,78,.5)", "stroke-dasharray": "2 3", visibility: "hidden" }); g.append(cross);
+    function at(ev) { var pnt = g.createSVGPoint(); pnt.x = ev.clientX; pnt.y = ev.clientY; var m = g.getScreenCTM(); if (!m) return null; var q = pnt.matrixTransform(m.inverse()); var i = Math.round((q.x - pl) / ((W - pl - pr) / n) - 0.5); return Math.max(0, Math.min(n - 1, i)); }
+    g.addEventListener("mousemove", function (ev) { var i = at(ev); if (i === null) return; cross.setAttribute("x1", X(i)); cross.setAttribute("x2", X(i)); cross.setAttribute("visibility", "visible"); if (hoverTxt) hoverTxt.textContent = d[i] + " · " + f(cl[i]); });
+    g.addEventListener("mouseleave", function () { cross.setAttribute("visibility", "hidden"); });
+    g.addEventListener("click", function (ev) { var i = at(ev); if (i !== null) addPivot(d[i], cl[i]); });
     return g;
   }
-  /* Blindmodus (Mission III §65–§66): ?blind=1 verbirgt Engine-Zaehlungen, Alternativen, Historie und Referenzen eines Falls, bis
-     die eigene Annotation gespeichert ist — sonst richtet sich das Urteil nach der Engine (Ankereffekt). */
-  var BLIND = /[?&]blind=1/.test(location.search);
-  function hidden(c) { return BLIND && !(load()[c.id] && load()[c.id].annotator); }
-  function kv(rows) { return h("dl", {}, [].concat.apply([], rows.map(function (r) { return [h("dt", { text: r[0] }), h("dd", { text: r[1] })]; }))); }
-  function countText(cn) { return cn ? cn.name + (cn.complete ? " · abgeschlossen" : " · Welle " + cn.wave) + (cn.inv ? " · ungültig jenseits " + f(cn.inv) : "") : "keine Zählung"; }
+
+  /* ── Formular ── */
+  function nextLabel(pattern, nPrev) {
+    var seq = /IMPULSE|DIAGONAL/.test(pattern || "") ? ["0", "1", "2", "3", "4", "5"] : pattern === "TRIANGLE" ? ["0", "A", "B", "C", "D", "E"] : /WXY|COMBINATION/.test(pattern || "") ? ["0", "W", "X", "Y", "X2", "Z"] : pattern === "DOUBLE_ZIGZAG" ? ["0", "W", "X", "Y"] : pattern === "TRIPLE_ZIGZAG" ? ["0", "W", "X", "Y", "X2", "Z"] : ["0", "A", "B", "C"];
+    return seq[nPrev] || String(nPrev);
+  }
+  function pivText(arr) { return (arr || []).map(function (p) { return p.date + ":" + p.price + (p.label ? ":" + p.label : ""); }).join("; "); }
+  function parsePivots(txt) { return String(txt || "").split(";").map(function (x) { return x.trim(); }).filter(Boolean).map(function (x) { var q = x.split(":"); return { date: (q[0] || "").trim(), price: Number(String(q[1] || "").replace(",", ".")), label: (q[2] || "").trim() }; }); }
+  function num(v) { v = String(v === undefined || v === null ? "" : v).trim().replace(",", "."); if (v === "") return null; var x = Number(v); return isFinite(x) ? x : NaN; }
+  function readCount(pre) {
+    var g = function (k) { var e = document.getElementById(pre + k); return e ? e.value : ""; };
+    var tl = num(g("tlo")), th = num(g("thi"));
+    return { pattern: g("pattern") || null, degree: g("degree") || null, currentWave: g("wave") || null, status: g("status") || null, direction: g("dir") || null,
+             pivots: parsePivots(g("piv")), invalidation: num(g("inv")), targetZone: tl === null && th === null ? null : [tl, th] };
+  }
+  function countEmpty(c) { return !c.pattern && !c.degree && !c.currentWave && !c.status && !c.direction && !c.pivots.length && c.invalidation === null && !c.targetZone; }
+  function readDraft() {
+    var alt = readCount("a-");
+    return { primary: readCount("p-"), alternative: countEmpty(alt) ? null : alt, noReliableCount: document.getElementById("f-nrc").checked,
+             applicability: document.getElementById("f-appl").value || null, confidence: document.getElementById("f-conf").value ? +document.getElementById("f-conf").value : null, comment: document.getElementById("f-comment").value || "" };
+  }
+  function addPivot(date, price) {
+    if (!document.getElementById("p-piv")) return;
+    var pre = active === "primary" ? "p-" : "a-", inp = document.getElementById(pre + "piv"), arr = parsePivots(inp.value);
+    if (arr.some(function (p) { return p.date === date; })) arr = arr.filter(function (p) { return p.date !== date; });   // erneuter Klick entfernt
+    else arr.push({ date: date, price: price, label: "" });
+    arr.sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    var pat = document.getElementById(pre + "pattern").value; arr.forEach(function (p, i) { p.label = nextLabel(pat, i); });
+    inp.value = pivText(arr); redrawChart();
+  }
+  function redrawChart() { var host = document.getElementById("chart-host"); if (!host || !cur) return; var dr = null; try { dr = readDraft(); } catch (e) { dr = null; } host.replaceChildren(chart(cur, dr, sealedOne[cur.id + "|" + me().code] || null)); }
+  function sel(id, opts, val, label) { var e = h("select", { id: id }); [""].concat(opts).forEach(function (o) { var op = h("option", { value: o, text: o === "" ? "—" : o }); if (val === o) op.selected = true; e.append(op); }); e.addEventListener("change", redrawChart); return [h("label", { for: id, text: label }), e]; }
+  function countFields(pre, c, title) {
+    c = c || {};
+    var fs = h("fieldset", { id: pre + "fs", class: (pre === "p-" ? active === "primary" : active === "alternative") ? "active" : "" }, [h("legend", { text: title })]);
+    var r1 = h("div", { class: "row2" }), r2 = h("div", { class: "row3" }), r3 = h("div", { class: "row3" });
+    var a = sel(pre + "pattern", PATTERNS, c.pattern, "Muster"), b = sel(pre + "degree", DEGREES, c.degree, "Grad (F&P)");
+    r1.append(h("div", {}, a), h("div", {}, b));
+    r2.append(h("div", {}, sel(pre + "wave", WAVES, c.currentWave, "Laufende Welle")), h("div", {}, sel(pre + "status", STATUS, c.status, "Status")), h("div", {}, sel(pre + "dir", DIRS, c.direction, "Richtung laufende Welle")));
+    var piv = h("input", { id: pre + "piv", type: "text", spellcheck: "false", placeholder: "JJJJ-MM-TT:Preis:Label; …" }); piv.value = pivText(c.pivots); piv.addEventListener("change", redrawChart);
+    var inv = h("input", { id: pre + "inv", inputmode: "decimal" }); inv.value = c.invalidation === null || c.invalidation === undefined ? "" : c.invalidation; inv.addEventListener("change", redrawChart);
+    var tlo = h("input", { id: pre + "tlo", inputmode: "decimal" }), thi = h("input", { id: pre + "thi", inputmode: "decimal" });
+    if (c.targetZone) { tlo.value = c.targetZone[0]; thi.value = c.targetZone[1]; } tlo.addEventListener("change", redrawChart); thi.addEventListener("change", redrawChart);
+    r3.append(h("div", {}, [h("label", { for: pre + "inv", text: "Invalidierung (Kurs)" }), inv]), h("div", {}, [h("label", { for: pre + "tlo", text: "Zielzone unten" }), tlo]), h("div", {}, [h("label", { for: pre + "thi", text: "Zielzone oben" }), thi]));
+    fs.append(r1, r2, h("label", { for: pre + "piv", text: "Pivots (Klick in den Chart oder Text; erneuter Klick entfernt)" }), piv, r3,
+      h("button", { class: "btn", type: "button", text: pre === "p-" ? "Chart-Klicks → Hauptzählung" : "Chart-Klicks → Alternative", onclick: function () { active = pre === "p-" ? "primary" : "alternative"; document.getElementById("p-fs").className = active === "primary" ? "active" : ""; document.getElementById("a-fs").className = active === "alternative" ? "active" : ""; } }));
+    return fs;
+  }
   function form(c) {
-    var A = load(), a = A[c.id] || {};
-    function sel(name, opts) { var e = h("select", { id: "f-" + name, name: name }); opts.forEach(function (o) { var op = h("option", { value: o, text: o }); if (a[name] === o) op.selected = true; e.append(op); }); return e; }
-    var fields = h("form", { onsubmit: function (ev) {
-      ev.preventDefault(); var fd = new FormData(ev.target), o = { annotationId: c.id + "|" + (fd.get("annotator") || "?"), symbol: c.symbol, asOfDate: c.date, timeframe: c.timeframe, sourceType: "MANUAL_VU_REVIEW", createdAt: new Date().toISOString() };
-      var was = hidden(c); fd.forEach(function (v, k) { o[k] = v; }); o.blind = BLIND; A[c.id] = Object.assign({}, A[c.id] || {}, o); save(A); msg.textContent = "Gespeichert (lokal). Export enthält alle Annotationen.";
-      if (was) detail(c);
-    } }, [
-      h("label", { for: "f-annotator", text: "Annotierende Person (Pflicht – kein Name, keine Annotation)" }), h("input", { id: "f-annotator", name: "annotator", required: "", value: a.annotator || "" }),
-      h("label", { for: "f-pattern", text: "Hauptmuster" }), sel("pattern", ["", "IMPULSE", "LEADING_DIAGONAL", "ENDING_DIAGONAL", "ZIGZAG", "FLAT", "TRIANGLE", "WXY", "DOUBLE_ZIGZAG", "TRIPLE_ZIGZAG", "COMBINATION", "UNCLEAR"]),
-      h("label", { for: "f-degree", text: "Grad" }), sel("degree", ["", "Supercycle", "Cycle", "Primary", "Intermediate", "Minor", "Minute", "Minuette", "relative"]),
-      h("label", { for: "f-currentWave", text: "Laufende Welle (z. B. (4) of 3)" }), h("input", { id: "f-currentWave", name: "currentWave", value: a.currentWave || "" }),
-      h("label", { for: "f-status", text: "Status" }), sel("status", ["", "DEVELOPING", "COMPLETE", "POSSIBLE"]),
-      h("label", { for: "f-pivots", text: "Wellenenden (Datum:Preis:Label; …), z. B. 2025-03-07:180.2:0; 2025-05-02:212:1" }), h("input", { id: "f-pivots", name: "pivots", value: a.pivots || "" }),
-      h("label", { for: "f-invalidation", text: "Ungültig bei (Preis)" }), h("input", { id: "f-invalidation", name: "invalidation", inputmode: "decimal", value: a.invalidation || "" }),
-      h("label", { for: "f-nextDirection", text: "Erwartete nächste Richtung" }), sel("nextDirection", ["", "UP", "DOWN", "SIDEWAYS", "UNKNOWN"]),
-      hidden(c) ? h("p", { class: "note", text: "Blindmodus: Das Urteil über die Engine folgt nach dem Speichern, wenn die Engine-Zählung sichtbar wird." }) : h("label", { for: "f-engineVerdict", text: "Urteil über Engine 3.x" }), hidden(c) ? null : sel("engineVerdict", ["", "AGREE", "AGREE_DEGREE_OFF_BY_ONE", "PARTLY", "DISAGREE", "ENGINE_SHOULD_ABSTAIN", "NOT_COUNTABLE"]),
-      hidden(c) ? null : h("label", { for: "f-mismatchCategory", text: "Abweichungsart" }), hidden(c) ? null : sel("mismatchCategory", ["", "DEGREE_TOO_LOW", "DEGREE_TOO_HIGH", "WRONG_PATTERN", "WRONG_WAVE_POSITION", "MISSED_TRUNCATION", "MISSED_FLAT", "MISSED_TRIANGLE", "TINY_SWING_COUNTED", "WEEKLY_CONTEXT_MISSING", "PROPORTION_IGNORED", "OTHER"]),
-      h("label", { for: "f-validity", text: "Zählbarkeit" }), sel("validity", ["", "VALID_COUNT", "AMBIGUOUS", "NO_RELIABLE_COUNT"]),
-      h("label", { for: "f-comments", text: "Kommentar" }), (function () { var t = h("textarea", { id: "f-comments", name: "comments", rows: "3" }); t.value = a.comments || ""; return t; })(),
-      h("div", { style: "display:flex;gap:8px;margin-top:8px;flex-wrap:wrap" }, [h("button", { class: "btn", type: "submit", text: "Annotation speichern" }), h("button", { class: "btn", type: "button", text: "Alle exportieren (JSON)", onclick: function () {
-        var blob = new Blob([JSON.stringify({ schemaVersion: "vu-elliott-annotation-1.0.0", exportedAt: new Date().toISOString(), annotations: Object.values(load()) }, null, 1)], { type: "application/json" });
-        var u = URL.createObjectURL(blob), l = h("a", { href: u, download: "elliott-annotations.json" }); document.body.append(l); l.click(); l.remove(); URL.revokeObjectURL(u); } })])
+    var u = me(), last = u.code ? latestOf(c.id, u.code) : null, msg = h("p", { class: "note", role: "status", id: "f-msg" });
+    var nrc = h("input", { type: "checkbox", id: "f-nrc" }); if (last && last.noReliableCount) nrc.checked = true;
+    var conf = h("select", { id: "f-conf" }); ["", "1", "2", "3", "4", "5"].forEach(function (o) { var op = h("option", { value: o, text: o === "" ? "—" : o + (o === "1" ? " (sehr unsicher)" : o === "5" ? " (sehr sicher)" : "") }); if (last && String(last.confidence) === o) op.selected = true; conf.append(op); });
+    var cm = h("textarea", { id: "f-comment", rows: "3", placeholder: "Begründung, Zweifel, Alternativen (keine personenbezogenen Daten)" }); cm.value = last ? last.comment || "" : "";
+    var isRev = revealed(c.id, u.code);
+    var save = h("button", { class: "btn primary", type: "submit", text: last ? "Neue Version speichern" : "Annotation abgeben" });
+    var fm = h("form", { id: "ann-form", novalidate: true, onsubmit: function (ev) { ev.preventDefault(); submit(c, msg); } }, [
+      countFields("p-", last && last.primary, "Hauptzählung"),
+      countFields("a-", last && last.alternative, "Alternative Zählung (optional)"),
+      h("div", { class: "row3" }, [h("div", {}, sel("f-appl", APPL, last && last.applicability, "Anwendbarkeit von Elliott hier")), h("div", {}, [h("label", { for: "f-conf", text: "Eigene Sicherheit (1–5)" }), conf]),
+        h("div", {}, [h("label", { for: "f-nrc" }, [nrc, document.createTextNode(" Keine verlässliche Zählung")])])]),
+      h("label", { for: "f-comment", text: "Kommentar" }), cm,
+      h("div", { style: "display:flex;gap:8px;margin-top:8px;flex-wrap:wrap" }, [save,
+        h("button", { class: "btn", type: "button", id: "btn-reveal", disabled: !last || isRev ? true : null, text: isRev ? "Aufgedeckt" : "Engine & Ergebnis aufdecken", onclick: function () { reveal(c, msg); } })]),
+      h("p", { class: "note", text: isRev ? "Aufgedeckt: weitere Versionen werden als postReveal (nicht mehr blind) markiert." : last ? "Abgegeben (v" + last.version + "). Vor dem Aufdecken können Sie blind weitere Versionen speichern." : "Erst nach der Abgabe kann der versiegelte Teil für diesen Fall aufgedeckt werden." })
     ]);
-    var msg = h("p", { class: "note", role: "status" });
-    return h("div", { class: "card" }, [h("h3", { text: "Annotation (Schema vu-elliott-annotation-1.0.0)" }), fields, msg]);
+    return h("div", { class: "card" }, [h("h3", { text: "Ihre Annotation · " + (u.code || "kein Code") + " · Rolle " + u.slot + (u.test ? " · TEST" : "") }), fm, msg]);
+  }
+  function submit(c, msg) {
+    var u = me();
+    if (!CODE_RE.test(u.code || "")) { msg.className = "err"; msg.textContent = "Bitte oben einen pseudonymen Annotator-Code eingeben (2–24 Zeichen A–Z, 0–9, _ -; keine Namen/E-Mails)."; return; }
+    var dr = readDraft(), prev = latestOf(c.id, u.code), now = new Date().toISOString();
+    if (dr.noReliableCount && countEmpty(dr.primary)) dr.primary = null;
+    var a = { schemaVersion: SCHEMA, annotationId: c.id + "|" + u.code, version: prev ? prev.version + 1 : 1, supersedes: prev ? prev.version : null,
+      caseId: c.id, caseKind: c.kind, timeframe: c.timeframe, cutoff: c.cutoff, annotatorCode: u.code, raterSlot: u.slot,
+      sourceType: u.test || /^TEST/i.test(u.code) ? "TEST" : "MANUAL_VU_REVIEW", blindMode: true, postReveal: revealed(c.id, u.code),
+      noReliableCount: dr.noReliableCount, primary: dr.primary, alternative: dr.alternative, applicability: dr.applicability, confidence: dr.confidence, comment: dr.comment,
+      openedAt: opened[c.id + "|" + u.code] || null, createdAt: prev ? prev.createdAt : now, savedAt: now, blindManifestSha256: D.manifest.sealedSha256 };
+    var errs = validate(a);
+    if (errs.length) { msg.className = "err"; msg.textContent = "Nicht gespeichert: " + errs.join(" · "); return; }
+    sha256(contentOf(a)).then(function (hsh) {
+      a.contentHash = hsh;
+      var A = all(); A.push(a); if (!lsSet(KEY_A, A)) { msg.className = "err"; msg.textContent = "Speichern im Browser nicht möglich (privater Modus?). Bitte sofort exportieren."; return; }
+      audit({ action: "SAVE", annotationId: a.annotationId, version: a.version, caseId: a.caseId, annotatorCode: a.annotatorCode, contentHash: hsh, note: a.postReveal ? "postReveal" : "blind" });
+      detail(c); nav(); var m = document.getElementById("f-msg"); if (m) { m.className = "ok"; m.textContent = "Gespeichert als Version " + a.version + " (lokal, Audit-Log ergänzt)."; }
+    });
+  }
+  function reveal(c, msg) {
+    var u = me(); if (!latestOf(c.id, u.code)) { msg.className = "err"; msg.textContent = "Erst abgeben, dann aufdecken."; return; }
+    msg.className = "note"; msg.textContent = "Lade versiegelte Datei und prüfe Commitment …";
+    fetch("cases-sealed.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); }).then(function (txt) {
+      return sha256(txt).then(function (hsh) {
+        var j = JSON.parse(txt), one = j.cases[c.id]; txt = null; j = null;   // nur DIESEN Fall behalten
+        if (!one) throw new Error("Fall nicht in versiegelter Datei");
+        one._commitment = { expected: D.manifest.sealedSha256, actual: hsh, ok: hsh === D.manifest.sealedSha256 };
+        sealedOne[c.id + "|" + u.code] = one;
+        audit({ action: "REVEAL", annotationId: c.id + "|" + u.code, version: latestOf(c.id, u.code).version, caseId: c.id, annotatorCode: u.code, contentHash: null, note: one._commitment.ok ? "commitment ok" : "COMMITMENT MISMATCH" });
+        detail(c);
+      });
+    }).catch(function (e) { msg.className = "err"; msg.textContent = "Aufdecken fehlgeschlagen: " + e.message; });
+  }
+  function kv(rows) { return h("dl", {}, [].concat.apply([], rows.map(function (r) { return [h("dt", { text: r[0] }), h("dd", { text: r[1] })]; }))); }
+  function countText(cn) { return cn ? cn.name + " · " + (cn.complete ? "abgeschlossen" : "Welle " + cn.wave) + " · " + f(cn.direction) + (cn.inv !== null ? " · ungültig jenseits " + f(cn.inv) : "") + (cn.targetZone ? " · Ziel " + f(cn.targetZone[0]) + "–" + f(cn.targetZone[1]) : "") + " · Grad≈" + f(cn.degreeHeuristic) : "keine Zählung"; }
+  function sealedPanel(c, sd) {
+    var e = sd.engine, o = sd.outcome52w, ref = sd.reference, kids = [h("h3", { text: "Versiegelter Teil (nach Abgabe)" })];
+    kids.push(h("p", { class: sd._commitment.ok ? "ok" : "err", text: sd._commitment.ok ? "SHA-256-Commitment geprüft ✓ (" + sd._commitment.actual.slice(0, 16) + "…)" : "Commitment stimmt NICHT: erwartet " + sd._commitment.expected.slice(0, 16) + "…, erhalten " + String(sd._commitment.actual).slice(0, 16) + "…" }));
+    if (sd.split === "EXPERT_HOLDOUT") kids.push(h("p", {}, [h("span", { class: "tag warn", text: "EXPERT_HOLDOUT – nicht für Entwicklung verwenden" })]));
+    kids.push(kv([["Symbol", sd.symbol], ["Split", sd.split], ["Schichten", Object.keys(sd.strata || {}).map(function (k) { var v = sd.strata[k]; return k + "=" + (Array.isArray(v) ? v.join("/") || "–" : v); }).join(" · ")]]));
+    if (e) {
+      kids.push(h("h4", { text: "Engine " + e.v3.engine + " (lime) · Alternative (grau)" }));
+      kids.push(kv([["Hauptzählung", countText(e.v3.primary)], ["Alternative", countText(e.v3.alternative)], ["Höherer Grad", e.v3.higher ? e.v3.higher.name + ", Welle " + e.v3.higher.current : "–"],
+        ["Anwendbarkeit", e.v3.applicability ? e.v3.applicability.level + (e.v3.applicability.abstain ? " (enthält sich)" : "") + " · " + (e.v3.applicability.reasons || []).join("; ") : "–"],
+        ["Mehrdeutigkeit", e.v3.ambiguity ? e.v3.ambiguity.kind + " – " + e.v3.ambiguity.note : "–"], ["Engine 2.2", countText(e.v2.primary)], ["Grad-Methode", e.v3.degreeMethod]]));
+      if (e.history && e.history.length) kids.push(h("h4", { text: "Zählungs-Historie (26 Schritte bis Stichtag)" }), h("ol", {}, e.history.filter(function (x) { return x.why; }).map(function (x) { return h("li", { text: x.d + ": " + (x.to || "–") + " — " + x.why }); })));
+    } else kids.push(h("p", { class: "err", text: "Engine-Ausgabe fehlt: " + (sd.engineError || "–") }));
+    if (o) kids.push(h("h4", { text: "Verlauf nach dem Stichtag" }), kv([["Wochen", f(o.weeksAvailable) + (o.end ? " (bis " + o.end + ")" : "")], ["Rendite", f(o.returnPct) + " %"], ["max. hoch / tief", f(o.maxUpPct) + " % / " + f(o.maxDownPct) + " %"],
+      ["Engine-Invalidierung", o.engineInvalidationBreached === undefined ? "–" : o.engineInvalidationBreached ? "verletzt am " + o.engineInvalidationBreachedAt : "nicht verletzt"], ["Engine-Ziel", o.engineTargetTouched === undefined ? "–" : o.engineTargetTouched ? "erreicht am " + o.engineTargetTouchedAt : "nicht erreicht"]]));
+    if (ref && ref.sourceType === "EXTERNAL_PRACTITIONER") kids.push(h("h4", { text: "Praktiker-Referenz (ungeprüft)" }), kv([["Quelle", (ref.organization || "") + (ref.author ? " · " + ref.author : "")], ["Aussage", ref.claim || "–"], ["Muster", ref.pattern || "–"], ["Erwartet", ref.next || "–"], ["Grenze / Ziel", f(ref.invalidation) + " / " + (ref.target ? [].concat(ref.target).map(f).join("–") : "–")]]),
+      ref.url ? h("p", {}, [h("a", { href: ref.url, rel: "noopener noreferrer", target: "_blank", style: "color:#8cc8ff", text: "Quelle öffnen" })]) : null);
+    if (ref && ref.sourceType === "SYNTHETIC") kids.push(h("h4", { text: "Synthetische Wahrheit (gelb gestrichelt)" }), kv([["Muster", ref.truth.pattern + " (" + ref.truth.expect.join("/") + ")"]]));
+    return h("div", { class: "card", id: "sealed-panel" }, kids);
   }
   function detail(c) {
-    cur = c; var sec = document.getElementById("detail"); sec.replaceChildren();
-    sec.append(h("h2", { text: c.symbol + " · Stichtag " + c.date + " · " + (c.timeframe === "1W" ? "Woche" : "Tag") }), h("p", {}, [h("span", { class: "tag", text: c.kind }), h("span", { class: "tag", text: "Engine " + c.v3.engine + " vs " + c.v2.engine })]));
-    var host = h("div"); host.append(chart(c)); sec.append(host);
-    if (c.history && c.history.length && !hidden(c)) {
-      var lab = h("p", { class: "note", role: "status" }), sl = h("input", { type: "range", min: "0", max: String(c.history.length - 1), value: String(c.history.length - 1), "aria-label": "Zeitreise der Zählung" });
-      var upd = function () { step = +sl.value; var x = c.history[step]; lab.textContent = x.d + ": " + (x.to || "keine Zählung") + (x.ab ? " (keine verlässliche Zählung)" : "") + (x.why ? " — " + x.why : ""); host.replaceChildren(chart(c)); };
-      sl.addEventListener("input", upd); sec.append(sl, lab); upd();
-    }
-    var ref = c.reference;
-    if (hidden(c)) { sec.append(h("div", { class: "grid" }, [h("div", { class: "card" }, [h("h3", { text: "Blindmodus" }), h("p", { class: "note", text: "Engine-Zählung, Alternativen, Historie und Referenzen sind verborgen, bis Ihre eigene Zählung gespeichert ist." })]), form(c)])); return; }
-    sec.append(h("div", { class: "grid" }, [
-      h("div", { class: "card" }, [h("h3", { text: "Engine 3.0" }), kv([["Hauptzählung", countText(c.v3.primary)], ["Alternative", countText(c.v3.alternative)], ["Höherer Grad", c.v3.higher ? c.v3.higher.name + ", Welle " + c.v3.higher.current : "–"],
-        ["Anwendbarkeit", c.v3.applicability ? c.v3.applicability.level + " (" + f(c.v3.applicability.score) + ")" : "–"], ["Mehrdeutigkeit", c.v3.ambiguity ? c.v3.ambiguity.kind + " – " + c.v3.ambiguity.note : "–"],
-        ["Verworfen", (c.v3.trace && c.v3.trace.rejectedTop || []).map(function (r) { return r.pattern + " (" + r.why + ")"; }).join(" · ") || "–"]])]),
-      h("div", { class: "card" }, [h("h3", { text: "Engine 2.2 · Referenz" }), kv([["Engine 2.2", countText(c.v2.primary)]].concat(ref && ref.sourceType === "EXTERNAL_PRACTITIONER" ? [["Quelle", (ref.organization || "") + (ref.author ? " · " + ref.author : "")], ["Aussage", ref.claim || "–"], ["Muster", ref.pattern || "–"], ["Erwartet", ref.next || "–"], ["Grenze / Ziel", f(ref.invalidation) + " / " + (ref.target ? ref.target.map(f).join("–") : "–")], ["Status", "ungeprüft (Suchzusammenfassung)" + (ref.conflictGroup ? " · widersprüchliche Referenzen: " + ref.conflictGroup : "")]] : ref && ref.sourceType === "SYNTHETIC" ? [["Wahrheit", showTruth ? ref.truth.pattern + " (" + ref.truth.expect.join("/") + ")" : "verborgen"]] : [["Referenz", "keine – bitte annotieren"]])),
-        ref && ref.url ? h("p", {}, [h("a", { href: ref.url, rel: "noopener noreferrer", target: "_blank", style: "color:#8cc8ff", text: "Quelle öffnen" })]) : null,
-        ref && ref.sourceType === "SYNTHETIC" ? h("button", { class: "btn", type: "button", text: showTruth ? "Wahrheit verbergen" : "Wahrheit zeigen", onclick: function () { showTruth = !showTruth; detail(c); } }) : null]),
-      h("div", { class: "card" }, [h("h3", { text: "Zählungs-Historie (26 Schritte)" }), h("ol", {}, c.history.filter(function (x) { return x.why; }).map(function (x) { return h("li", { text: x.d + ": " + (x.to || "–") + " — " + x.why }); }))]),
-      form(c)
-    ]));
+    cur = c; var u = me(), sec = document.getElementById("detail"); sec.replaceChildren();
+    if (u.code && !opened[c.id + "|" + u.code]) opened[c.id + "|" + u.code] = new Date().toISOString();
+    var done = annotatorsDone(c.id);
+    sec.append(h("h2", { text: c.id + " · Stichtag " + c.cutoff + " · " + (c.timeframe === "1W" ? "Wochenschlusskurse" : "Tagesschlusskurse") + " · " + c.bars + " Bars" }),
+      h("p", {}, [h("span", { class: "tag", text: c.kind }), h("span", { class: "tag", text: Object.keys(done).length + " Annotierende" + (Object.keys(done).length ? ": " + Object.keys(done).map(function (k) { return done[k]; }).join(", ") : "") })]));
+    hoverTxt = h("span", { class: "note" });
+    sec.append(h("div", { class: "legend" }, [h("span", {}, [h("i", { class: "sw", style: "background:#8cc8ff" }), document.createTextNode("Ihre Hauptzählung")]), h("span", {}, [h("i", { class: "sw", style: "background:#b3a6ff" }), document.createTextNode("Ihre Alternative")]), h("span", {}, [h("i", { class: "sw", style: "background:#ff6b5e" }), document.createTextNode("Ihre Invalidierung")]),
+      h("span", {}, [h("label", { for: "f-log", style: "display:inline;margin:0" }, [(function () { var cb = h("input", { type: "checkbox", id: "f-log" }); cb.checked = logScale; cb.addEventListener("change", function () { logScale = cb.checked; redrawChart(); }); return cb; })(), document.createTextNode(" Log-Skala")])]), hoverTxt]));
+    sec.append(h("div", { id: "chart-host" }));
+    var key = c.id + "|" + u.code, sd = sealedOne[key] || null;
+    if (sd && !revealed(c.id, u.code)) { delete sealedOne[key]; sd = null; }
+    sec.append(h("div", { class: "grid" }, [form(c), sd ? sealedPanel(c, sd) : h("div", { class: "card" }, [h("h3", { text: "Blindmodus" }), h("p", { class: "note", text: revealed(c.id, u.code) ? "Für diesen Fall bereits aufgedeckt — erneut laden mit „Aufdecken“ nach dem nächsten Speichern, oder Seite neu laden und den Fall öffnen." : "Sie sehen nur Kurse bis zum Stichtag. Symbol, Engine, Verlauf danach und Referenzen bleiben versiegelt, bis Sie abgegeben haben." }),
+      revealed(c.id, u.code) ? h("button", { class: "btn", type: "button", text: "Versiegelten Teil erneut laden", onclick: function () { reveal(c, document.getElementById("f-msg")); } }) : null])]));
+    redrawChart();
     document.querySelectorAll("nav button.case").forEach(function (b) { b.setAttribute("aria-current", b.dataset.id === c.id ? "true" : "false"); });
   }
   function nav() {
-    var n = document.getElementById("nav"); n.replaceChildren();
-    var kinds = ["ALL"].concat(Array.from(new Set(D.cases.map(function (c) { return c.kind; }))));
-    n.append(h("div", { class: "filters" }, kinds.map(function (k) { return h("button", { class: "chip", "aria-pressed": String(k === filter), text: k === "ALL" ? "Alle" : k, onclick: function () { filter = k; nav(); } }); })));
-    var A = load();
-    D.cases.filter(function (c) { return filter === "ALL" || c.kind === filter; }).forEach(function (c) {
-      n.append(h("button", { class: "case", "data-id": c.id, onclick: function () { step = null; showTruth = false; detail(c); } }, [h("span", { text: c.symbol + (A[c.id] ? " ✓" : "") }), h("small", { text: c.kind + " · " + c.date + (hidden(c) ? "" : " · " + (c.v3.primary ? c.v3.primary.name : "keine Zählung")) })]));
+    var n = document.getElementById("nav"), u = me(); n.replaceChildren();
+    var kinds = ["ALL"].concat(Array.from(new Set(D.cases.map(function (c) { return c.kind; })))).concat(["OFFEN"]);
+    n.append(h("div", { class: "filters" }, kinds.map(function (k) { return h("button", { class: "chip", type: "button", "aria-pressed": String(k === filter), text: k === "ALL" ? "Alle" : k === "OFFEN" ? "Offen (ich)" : k, onclick: function () { filter = k; nav(); } }); })));
+    var counts = {}; all().forEach(function (a) { (counts[a.caseId] = counts[a.caseId] || {})[a.annotatorCode] = a.raterSlot; });
+    D.cases.filter(function (c) { return filter === "ALL" || (filter === "OFFEN" ? !(counts[c.id] && counts[c.id][u.code]) : c.kind === filter); }).forEach(function (c) {
+      var m = counts[c.id] || {}, k = Object.keys(m).length, mine = !!(u.code && m[u.code]);
+      n.append(h("button", { class: "case", type: "button", "data-id": c.id, "aria-current": cur && cur.id === c.id ? "true" : "false", onclick: function () { active = "primary"; detail(c); } },
+        [h("span", { text: c.id + (mine ? " ✓" : "") }), h("small", { text: c.kind + " · " + c.timeframe + " · " + c.cutoff + " · " + k + " Annot." + (k ? " (" + Object.keys(m).map(function (x) { return m[x]; }).sort().join(",") + ")" : "") })]));
     });
   }
-  fetch("data.json").then(function (r) { return r.json(); }).then(function (d) { D = d; nav(); detail(D.cases[0]); }).catch(function () { document.getElementById("detail").textContent = "Daten nicht verfügbar (scripts/technical/elliott-workbench-data.mjs ausführen)."; });
+
+  /* ── Export / Import ── */
+  function download(name, text, type) { var blob = new Blob([text], { type: type }), url = URL.createObjectURL(blob), l = h("a", { href: url, download: name }); document.body.append(l); l.click(); l.remove(); setTimeout(function () { URL.revokeObjectURL(url); }, 1000); }
+  function stamp() { return new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19); }
+  function exportJson() { var A = all(); download("elliott-annotations-" + stamp() + ".json", JSON.stringify({ schemaVersion: SCHEMA, exportedAt: new Date().toISOString(), blindManifestSha256: D ? D.manifest.sealedSha256 : null, note: "Pseudonyme Annotator-Codes. TEST-Annotationen werden nie ausgewertet.", annotations: A, auditLog: auditLog() }, null, 1), "application/json"); return A.length; }
+  function csvCell(v) { v = v === null || v === undefined ? "" : typeof v === "object" ? JSON.stringify(v) : String(v); return /[",\n;]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  var CSV_COLS = ["annotationId", "version", "supersedes", "caseId", "caseKind", "timeframe", "cutoff", "annotatorCode", "raterSlot", "sourceType", "blindMode", "postReveal", "noReliableCount", "applicability", "confidence",
+    "primary_pattern", "primary_degree", "primary_currentWave", "primary_status", "primary_direction", "primary_pivots", "primary_invalidation", "primary_targetLow", "primary_targetHigh",
+    "alternative_pattern", "alternative_degree", "alternative_currentWave", "alternative_status", "alternative_direction", "alternative_pivots", "alternative_invalidation", "alternative_targetLow", "alternative_targetHigh",
+    "comment", "openedAt", "createdAt", "savedAt", "contentHash", "blindManifestSha256"];
+  function flat(a) { var o = Object.assign({}, a); ["primary", "alternative"].forEach(function (k) { var c = a[k] || {}; o[k + "_pattern"] = c.pattern; o[k + "_degree"] = c.degree; o[k + "_currentWave"] = c.currentWave; o[k + "_status"] = c.status; o[k + "_direction"] = c.direction; o[k + "_pivots"] = c.pivots ? pivText(c.pivots) : ""; o[k + "_invalidation"] = c.invalidation; o[k + "_targetLow"] = c.targetZone ? c.targetZone[0] : null; o[k + "_targetHigh"] = c.targetZone ? c.targetZone[1] : null; }); return o; }
+  function exportCsv() { var rows = [CSV_COLS.join(",")].concat(all().map(function (a) { var o = flat(a); return CSV_COLS.map(function (k) { return csvCell(o[k]); }).join(","); })); download("elliott-annotations-" + stamp() + ".csv", rows.join("\n") + "\n", "text/csv"); }
+  function exportAudit() { var cols = ["seq", "at", "action", "annotationId", "version", "caseId", "annotatorCode", "contentHash", "note", "origin"]; download("elliott-audit-" + stamp() + ".csv", [cols.join(",")].concat(auditLog().map(function (e) { return cols.map(function (k) { return csvCell(e[k]); }).join(","); })).join("\n") + "\n", "text/csv"); }
+  function importFiles(files) {
+    var msg = document.getElementById("t-msg"), tot = { ok: 0, dup: 0, conflict: 0, rejected: 0 };
+    return Array.from(files).reduce(function (pr, file) {
+      return pr.then(function () { return file.text(); }).then(function (txt) {
+        var j; try { j = JSON.parse(txt); } catch (e) { tot.rejected++; audit({ action: "IMPORT_REJECTED", note: file.name + ": kein JSON", origin: "import:" + file.name }); return; }
+        var list = Array.isArray(j) ? j : j && Array.isArray(j.annotations) ? j.annotations : j && j.schemaVersion === SCHEMA && j.annotationId ? [j] : null;
+        if (!list) { tot.rejected++; audit({ action: "IMPORT_REJECTED", note: file.name + ": keine Annotationen gefunden", origin: "import:" + file.name }); return; }
+        return list.reduce(function (p2, a) {
+          return p2.then(function () {
+            var errs = validate(a);
+            if (errs.length) { tot.rejected++; audit({ action: "IMPORT_REJECTED", annotationId: a && a.annotationId || null, version: a && a.version || null, caseId: a && a.caseId || null, annotatorCode: a && a.annotatorCode || null, note: errs.join(" · ").slice(0, 400), origin: "import:" + file.name }); return; }
+            return sha256(contentOf(a)).then(function (hsh) {
+              if (a.contentHash && a.contentHash !== hsh) { tot.rejected++; audit({ action: "IMPORT_REJECTED", annotationId: a.annotationId, version: a.version, caseId: a.caseId, annotatorCode: a.annotatorCode, contentHash: a.contentHash, note: "contentHash passt nicht zum Inhalt", origin: "import:" + file.name }); return; }
+              var A = all(), same = A.filter(function (x) { return x.annotationId === a.annotationId && x.version === a.version; })[0];
+              if (same) { var dup = (same.contentHash || "") === hsh; tot[dup ? "dup" : "conflict"]++; audit({ action: dup ? "IMPORT_DUPLICATE" : "IMPORT_CONFLICT", annotationId: a.annotationId, version: a.version, caseId: a.caseId, annotatorCode: a.annotatorCode, contentHash: hsh, note: dup ? "identisch, übersprungen" : "gleiche Version, anderer Inhalt — vorhandene behalten", origin: "import:" + file.name }); return; }
+              var rec = Object.assign({}, a, { contentHash: hsh, importedFrom: file.name, importedAt: new Date().toISOString() });
+              A.push(rec); lsSet(KEY_A, A); tot.ok++;
+              audit({ action: "IMPORT", annotationId: a.annotationId, version: a.version, caseId: a.caseId, annotatorCode: a.annotatorCode, contentHash: hsh, note: a.sourceType, origin: "import:" + file.name });
+            });
+          });
+        }, Promise.resolve()).then(function () {   // fremdes Audit-Log anhängen (als Import gekennzeichnet, ohne Duplikate)
+          if (!j || !Array.isArray(j.auditLog)) return;
+          var L = auditLog(), seen = new Set(L.map(function (e) { return [e.origin, e.at, e.action, e.annotationId, e.version].join("|"); }));
+          j.auditLog.forEach(function (e) { var o = "external:" + file.name + (e.origin ? "/" + e.origin : ""), k = [o, e.at, e.action, e.annotationId, e.version].join("|"); if (seen.has(k)) return; seen.add(k); L.push({ seq: (L.length ? L[L.length - 1].seq : 0) + 1, at: e.at, action: e.action, annotationId: e.annotationId || null, version: e.version || null, caseId: e.caseId || null, annotatorCode: e.annotatorCode || null, contentHash: e.contentHash || null, note: e.note || null, origin: o }); });
+          lsSet(KEY_L, L);
+        });
+      });
+    }, Promise.resolve()).then(function () { msg.textContent = "Import: " + tot.ok + " neu · " + tot.dup + " Duplikate · " + tot.conflict + " Konflikte · " + tot.rejected + " abgelehnt"; nav(); if (cur) detail(cur); return tot; });
+  }
+  function clearTest() {
+    var A = all(), keep = A.filter(function (a) { return a.sourceType !== "TEST"; }), gone = A.filter(function (a) { return a.sourceType === "TEST"; });
+    gone.forEach(function (a) { audit({ action: "CLEAR_TEST", annotationId: a.annotationId, version: a.version, caseId: a.caseId, annotatorCode: a.annotatorCode, contentHash: a.contentHash || null, note: "TEST-Annotation entfernt" }); });
+    lsSet(KEY_A, keep); Object.keys(sealedOne).forEach(function (k) { delete sealedOne[k]; });
+    document.getElementById("t-msg").textContent = gone.length + " TEST-Annotation(en) entfernt (Audit-Log bleibt erhalten)."; nav(); if (cur) detail(cur);
+  }
+  window.__elliottWorkbench = { importFiles: importFiles, exportJson: exportJson, clearTest: clearTest };   // für automatisierte Tests (keine versiegelten Daten)
+
+  function toolbar() {
+    var u = me(), code = document.getElementById("t-code"), slot = document.getElementById("t-slot"), test = document.getElementById("t-test");
+    code.value = u.code || ""; slot.value = u.slot || "A"; test.checked = !!u.test;
+    function upd() {
+      var v = code.value.trim(), m = document.getElementById("t-msg");
+      if (v && (!CODE_RE.test(v) || /@/.test(v))) { m.textContent = "Code: nur 2–24 Zeichen A–Z, 0–9, _ - (pseudonym, keine Namen/E-Mails)."; return; }
+      lsSet(KEY_U, { code: v, slot: slot.value, test: test.checked }); m.textContent = v ? "Aktiv: " + v + " · Rolle " + slot.value + (test.checked ? " · TEST" : "") : "";
+      Object.keys(sealedOne).forEach(function (k) { delete sealedOne[k]; }); nav(); if (cur) detail(cur);
+    }
+    code.addEventListener("change", upd); slot.addEventListener("change", upd); test.addEventListener("change", upd);
+    document.getElementById("t-exp-json").addEventListener("click", exportJson);
+    document.getElementById("t-exp-csv").addEventListener("click", exportCsv);
+    document.getElementById("t-exp-audit").addEventListener("click", exportAudit);
+    document.getElementById("t-imp").addEventListener("change", function (ev) { importFiles(ev.target.files).then(function () { ev.target.value = ""; }); });
+    document.getElementById("t-clear-test").addEventListener("click", clearTest);
+  }
+  toolbar();
+  fetch("cases-blind.json", { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (d) {
+    D = d; document.getElementById("status-banner").textContent = (d.status || "NOT EXPERT VALIDATED") + " · Commitment " + d.manifest.sealedSha256.slice(0, 12) + "…";
+    nav(); detail(D.cases[0]);
+  }).catch(function () { document.getElementById("detail").textContent = "Daten nicht verfügbar (node scripts/technical/elliott-workbench-data.mjs ausführen)."; });
 })();
 </script>
 <script src="/quant/ui/shell.js"></script>
