@@ -295,7 +295,7 @@ function rawFromStoreBars(bars) {
 
 // Laedt Listentabelle, Reihen (privater Eimer), Segmente (A2) und den
 // Point-in-Time-Querschnitt. Gemeinsam fuer analyze-methods und diagnose-methods.
-export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity = false, secPit = false } = {}) {
+export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity = false, secPit = false, secPitKey = '_validation/sec-pit-r11.json.gz', cross = true } = {}) {
   const KEY = process.env.TIINGO_API_KEY || '';
   const zip = Buffer.from(await (await fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer());
   const rows = L.parseTickerCsv(L.unzipCsv(zip));
@@ -389,7 +389,7 @@ export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity 
   let secCoverage = null;
   if (secPit) {
     budget.consumeClassB(1, 'GET sec pit');
-    const sbuf = await driver.get(mine.seriesPrefix + '_validation/sec-pit-r11.json.gz');
+    const sbuf = await driver.get(mine.seriesPrefix + secPitKey);
     const pit = sbuf ? JSON.parse(zlib.gunzipSync(sbuf).toString('utf8')) : {};
     let withFund = 0;
     for (const seg of segs) { const f = pit[seg.id.split('#')[0]]; if (f) { seg.fund = { eps: f.eps, rev: f.rev }; withFund++; } }
@@ -399,6 +399,8 @@ export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity 
   log(`Segmente ${segs.length}, Doppelhistorien ${dup.size}, Balken ausserhalb des Kalenders ${offCalendar}`);
 
   // 2. Querschnitt Point-in-Time (wie build.mjs crossSection, aber ueber das damalige Universum).
+  // Hausstrategie (cross: false) rechnet eigene Faktoren und braucht diesen Querschnitt nicht.
+  if (!cross) return { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, spyAdj, bench, budget, mine, nonEquityExcluded, secCoverage };
   const metric = {};
   for (const key of CROSS_KEYS) metric[key] = [];
   segs.forEach((seg, si) => {

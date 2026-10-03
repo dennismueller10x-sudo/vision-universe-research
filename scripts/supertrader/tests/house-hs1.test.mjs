@@ -1,0 +1,149 @@
+// VU Hausstrategie HS1: Engine, Look-ahead-Sperre, Abrechnung, Statistik.
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { prepareStock, crossSection, scoreSection, simulate, sueAt, revgAt, monthEnds, HS1 } from '../house/engine.mjs';
+import { deflatedSharpe, pboCscv, metrics, normInv, normCdf } from '../house/stats.mjs';
+import { truncateForDevelopment, DEV_END } from '../house/seal.mjs';
+import * as L from '../validation/lib.mjs';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
+
+function calendarOf(n, start = '2015-01-01') {
+  const out = []; const d = new Date(start + 'T00:00:00Z');
+  while (out.length < n) { const wd = d.getUTCDay(); if (wd !== 0 && wd !== 6) out.push(d.toISOString().slice(0, 10)); d.setUTCDate(d.getUTCDate() + 1); }
+  return out;
+}
+function mkStock(id, cal, drift, opts = {}) {
+  const from = opts.from || 0, to = opts.to ?? cal.length - 1;
+  const s = { id, survivor: !opts.delisted, delisted: !!opts.delisted, date: [], open: [], high: [], close: [], rawClose: [], rawVolume: [], divAdj: [], fund: opts.fund || null };
+  let p = opts.p0 || 50;
+  for (let k = from; k <= to; k++) {
+    const wig = Math.sin(k * 0.37 + id.length) * 0.004;
+    const o = p; p = p * (1 + drift + wig);
+    s.date.push(cal[k]); s.open.push(o); s.high.push(Math.max(o, p) * 1.002); s.close.push(p); s.rawClose.push(p); s.rawVolume.push(opts.vol || 1e6); s.divAdj.push(opts.div && k % 63 === 0 ? opts.div : 0);
+  }
+  return s;
+}
+function universe(cal, extra = []) {
+  const idx = new Map(cal.map((d, i) => [d, i]));
+  const raw = [];
+  for (let i = 0; i < 40; i++) raw.push(mkStock('S' + String(i).padStart(2, '0'), cal, (i - 20) * 0.00005, { vol: 1e6 + i * 1e4 }));
+  return [...raw, ...extra].map((s) => prepareStock(s, idx));
+}
+
+test('Look-ahead-Sperre: Aenderungen nach D veraendern Universum und Raenge an D nicht', () => {
+  const cal = calendarOf(700);
+  const base = universe(cal);
+  const k = 400, D = cal[k];
+  const a = scoreSection(crossSection(base, k, D), ['MOM', 'HIGH52', 'LVOL', 'MOMV']).map((x) => [x.id, x.score]);
+  // Vergiften: alle Balken nach k massiv veraendert
+  const idx = new Map(cal.map((d, i) => [d, i]));
+  const poisoned = universe(cal).map((st) => {
+    const s = { ...st, close: st.close.slice(), high: st.high.slice(), rawClose: st.rawClose.slice(), rawVolume: st.rawVolume.slice(), open: st.open.slice(), divAdj: st.divAdj.slice() };
+    for (let t = 0; t < s.date.length; t++) if (s.date[t] > D) { s.close[t] *= 9; s.high[t] *= 9; s.rawClose[t] *= 9; s.rawVolume[t] *= 50; }
+    return prepareStock(s, idx);
+  });
+  const b = scoreSection(crossSection(poisoned, k, D), ['MOM', 'HIGH52', 'LVOL', 'MOMV']).map((x) => [x.id, x.score]);
+  assert.deepEqual(b, a);
+});
+
+test('SUE/REVG: nur Einreichungen strikt vor D, alte Werte verfallen', () => {
+  const eps = [], rev = [];
+  const qs = ['2014-03-31', '2014-06-30', '2014-09-30', '2014-12-31', '2015-03-31', '2015-06-30', '2015-09-30', '2015-12-31', '2016-03-31', '2016-06-30'];
+  qs.forEach((e, i) => { eps.push([e, 1 + i * 0.1 + (i % 2) * 0.05, addD(e, 40), 0, null]); rev.push([e, 100 + i * 5, addD(e, 40), 0, null]); });
+  const fund = { eps, rev };
+  const filed = eps[9][2];
+  const before = sueAt(fund, filed), after = sueAt(fund, addD(filed, 1));
+  assert.notEqual(before, after, 'am Einreichungstag noch nicht sichtbar');
+  assert.ok(Number.isFinite(after));
+  assert.ok(Math.abs(revgAt(fund, addD(filed, 1)) - (145 / 125 - 1)) < 1e-12);
+  assert.ok(Number.isNaN(sueAt(fund, addD(filed, HS1.fundMaxAgeDays + 5))), 'veraltet');
+});
+function addD(d, n) { const t = new Date(d + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); }
+
+test('Simulation: Endwert = Barmittel + offene Positionen, Ausfuehrung zur Eroeffnung, Delisting S1/S2', () => {
+  const cal = calendarOf(800);
+  const idx = new Map(cal.map((d, i) => [d, i]));
+  // Starker Titel, der delistet wird und dabei kollabiert
+  const dl = mkStock('ZZDL', cal, 0.003, { to: 600, delisted: true, vol: 5e6 });
+  for (let t = dl.close.length - 70; t < dl.close.length; t++) { dl.close[t] *= 0.3; dl.rawClose[t] *= 0.3; dl.open[t] *= 0.3; dl.high[t] *= 0.3; }
+  const stocks = universe(cal, [dl]);
+  const startK = monthEnds(cal, 300, 799)[0], endK = 799;
+  const r1 = simulate(stocks, cal, { factors: ['MOM'], n: 5, scenario: 'S1_MINUS_30', startK, endK });
+  const last = r1.equity[r1.equity.length - 1];
+  assert.ok(Math.abs(last.equity - (r1.cashEnd + r1.openValueEnd)) < 1e-9);
+  assert.ok(r1.log.length > 10 && r1.meanPositions > 3);
+  const r0 = simulate(stocks, cal, { factors: ['MOM'], n: 5, scenario: 'S0_LAST_PRICE', startK, endK });
+  const r2 = simulate(stocks, cal, { factors: ['MOM'], n: 5, scenario: 'S2_DISTRESS_ZERO', startK, endK });
+  if (r1.terminalCount > 0) { assert.ok(r0.equity.at(-1).equity >= r1.equity.at(-1).equity); assert.ok(r1.equity.at(-1).equity >= r2.equity.at(-1).equity); }
+  // Kosten erhoehen -> Endwert sinkt
+  const rc = simulate(stocks, cal, { factors: ['MOM'], n: 5, scenario: 'S1_MINUS_30', startK, endK, slippageBps: 50, commissionBps: 10 });
+  assert.ok(rc.equity.at(-1).equity < r1.equity.at(-1).equity);
+});
+
+test('Simulation: Marktfilter halbiert Exposure, Puffer senkt Umschlag', () => {
+  const cal = calendarOf(800);
+  const stocks = universe(cal);
+  const startK = monthEnds(cal, 300, 799)[0];
+  const sma = new Float64Array(cal.length).fill(0.9);
+  const r = simulate(stocks, cal, { factors: ['MOM'], n: 10, regime: true, spySma: sma, startK, endK: 799 });
+  const mid = r.equity[200];
+  assert.ok(mid.exposure > 0.4 && mid.exposure < 0.6, `Exposure ${mid.exposure}`);
+  const rr = simulate(stocks, cal, { factors: ['MOM'], n: 10, random: 3, startK, endK: 799 });
+  assert.ok(rr.turnover > r.turnover);
+});
+
+test('Entwicklungssperre: Reihen und Fundamentaldaten nach 2021-12-31 werden entfernt', () => {
+  const seg = { id: 'X', raw: [{ date: '2021-12-30' }, { date: '2021-12-31' }, { date: '2022-01-03' }], fund: { eps: [['2021-09-30', 1, '2021-11-01'], ['2021-12-31', 1, '2022-02-01']], rev: [] }, delisted: false };
+  const out = truncateForDevelopment([seg]);
+  assert.equal(DEV_END, '2021-12-31');
+  assert.deepEqual(out[0].raw.map((b) => b.date), ['2021-12-30', '2021-12-31']);
+  assert.equal(out[0].fund.eps.length, 1);
+  assert.equal(out[0].delisted, false, 'Listing, das erst nach dem Stichtag endet, gilt im Entwicklungszeitraum nicht als delistet');
+});
+
+test('Statistik: Normalverteilung, DSR faellt mit der Zahl der Versuche, PBO in [0,1]', () => {
+  assert.ok(Math.abs(normCdf(normInv(0.975)) - 0.975) < 1e-6);
+  const rets = Array.from({ length: 120 }, (_, i) => 0.01 + 0.03 * Math.sin(i * 1.7));
+  const one = deflatedSharpe(rets, [0.3]);
+  const many = deflatedSharpe(rets, [0.3, 0.1, -0.2, 0.25, 0.05, 0.4, -0.1, 0.15, 0.2, 0.0, 0.35, 0.1]);
+  assert.ok(many.dsr < one.dsr);
+  const mtx = Array.from({ length: 72 }, (_, t) => Array.from({ length: 6 }, (_, j) => Math.sin(t * (j + 1) * 0.9) * 0.02));
+  const p = pboCscv(mtx, 8);
+  assert.equal(p.combinations, 70);
+  assert.ok(p.pbo >= 0 && p.pbo <= 1);
+  const cal = calendarOf(300);
+  const eq = cal.map((d, i) => ({ date: d, equity: 1.0005 ** i }));
+  const bench = new Map(cal.map((d, i) => [d, 1.0003 ** i]));
+  const m = metrics(eq, bench);
+  assert.ok(m.excessCagr > 0 && m.maxDrawdown === 0);
+});
+
+test('Praeregistrierung HS1: Versuchsliste, Kriterien und Holdout-Sperre vorhanden', () => {
+  const p = JSON.parse(fs.readFileSync(path.join(root, 'scripts/supertrader/house/PREREGISTRATION-HS1.json'), 'utf8'));
+  assert.equal(p.trials.length, 12);
+  assert.equal(new Set(p.trials.map((t) => t.id)).size, 12);
+  assert.equal(p.periods.development.to, DEV_END);
+  for (const h of ['H1', 'H2', 'H3', 'H4', 'H5']) assert.ok(p.criteria[h]);
+});
+
+test('Auswertung end-to-end auf kleinen Kunstreihen: Entwicklungsmodus sieht nichts nach 2021', async () => {
+  const { runAnalysis } = await import('../house/analyze.mjs');
+  const cal = []; const dd = new Date('2015-01-01T00:00:00Z');
+  while (dd.toISOString().slice(0, 10) <= '2026-09-30') { const wd = dd.getUTCDay(); if (wd && wd !== 6) cal.push(dd.toISOString().slice(0, 10)); dd.setUTCDate(dd.getUTCDate() + 1); }
+  const mkRaw = (i, to = cal.length - 1) => { let p = 20 + i; const out = []; for (let k = 0; k <= to; k++) { p *= 1 + (i - 15) * 0.00004 + Math.sin(k * 0.3 + i) * 0.006; out.push({ date: cal[k], open: p * 0.999, high: p * 1.01, low: p * 0.99, close: p, volume: 1e6 * (1 + i / 10), adjClose: p, dividend: k % 63 === 5 ? 0.05 : 0, splitFactor: 1 }); } return out; };
+  const segs = Array.from({ length: 30 }, (_, i) => ({ id: `tiingo:NYSE:T${i}:2000-01-01`, raw: mkRaw(i), survivor: true, delisted: false, fund: null }));
+  segs.push({ id: 'tiingo:NYSE:GONE:2000-01-01', raw: mkRaw(31, 1900), survivor: false, delisted: true, fund: null });
+  const spyRaw = mkRaw(16).map((b) => ({ ...b, close: b.close }));
+  const spyAdj = L.adjustSeries(spyRaw);
+  const r = runAnalysis({ segs, spyAdj, hash: 'x', nonEquityExcluded: 0, secCoverage: null }, { MODE: 'dev' });
+  assert.equal(r.period.to, '2021-12-31');
+  assert.equal(Object.keys(r.trials).length, 12);
+  assert.ok(r.selection.selected);
+  for (const t of Object.values(r.trials)) { assert.ok(t.reconcile < 1e-9); assert.ok(t.metrics.monthly.every((m) => m[0] <= '2021-12')); }
+  assert.equal(r.controls.RANDOM.length, 20);
+  assert.ok(r.stats.pbo.pbo !== null);
+});
