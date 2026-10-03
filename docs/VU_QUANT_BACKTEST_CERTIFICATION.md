@@ -142,3 +142,48 @@ Eine CIK wird keinem früheren Listing zugeordnet: die CIK-Karte gilt dem heutig
 
 - Setup-Backtest: Freigabe der Setup-Methodik (`backtestCertification`), sobald die Historien-Gates bestehen.
 - Setup-Einstiegsvariante, falls die Abweichung 1 Pp übersteigt.
+
+## Schuldverschreibungen sind keine Aktien (DEBT, 02.10.2026)
+
+**Fall PRHIZ.** Der Wertpapierstamm fuehrte PRHIZ als `EQUITY_COMMON`/`ELIGIBLE`, aber nur aus dem Restfall: Tiingo meldet `assetType=Stock`, und das Tickermuster ist unauffaellig. Die Namensschicht (`company-names.json`, Quelle `TIINGO_METADATA`, Stand 14.09.2026) nennt das Papier „Presurance Holdings Inc Sr Nt“. Die SEC fuehrt unter CIK 0001502292 die Symbole PRHI (Stammaktie, seit 2015) und PRHIZ. PRHIZ ist also ein Senior Note des Emittenten, kein Stammkapital.
+
+**Korrektur, provenance-basiert.**
+- `us-security-master` 1.3.0 fuehrt die Klasse `DEBT` (Policy `EXCLUDE`, nur ueber den Namen belegbar).
+- Die Namensregel erkennt Senior/Subordinated Notes, Debentures, „Notes due“, „Nts“ und Kupon-Notes.
+- `scripts/market/apply-name-layer-class.mjs --classes DEBT` wendet die Regel auf die bestehende Eignung an. Jede Aenderung steht mit Name und Namensquelle in `eligibility-reconciliation.json`.
+- Die Tickerform (Preferred, Warrant, Unit, Right) hat Vorrang vor dem Namen, wie beim vollen Eignungslauf.
+
+**Ergebnis.**
+- Die Regel stuft 22 Papiere um, darunter PRHIZ, TMUSI, TMUSL, TMUSZ, TRINI, TRINZ, SAX, SSSSL und MFICL.
+- Das Produktuniversum sinkt von 6.875 auf 6.853 Titel.
+- Die Papiere bleiben als Instrumente im Stamm und in der Suche. Sie fallen aus Screener, Strategie-Match, Bewertung, Faktoren und Discover heraus, weil diese aus dem Produktuniversum lesen.
+- Der Discover-Code ist unveraendert.
+
+**Gegenprobe.**
+- „Our Bond, Inc.“, „Sticky Notes Holdings Inc“ und „Columbia Core Bond ETF“ bleiben, was sie sind.
+- Derselbe Ticker mit dem Emittentennamen bleibt Stammaktie. Es gibt also keine Ticker-Heuristik.
+- Tests: `quant/tests/debt-instrument-classification.test.mjs`. Mit abgeschalteter Regel schlagen 3 von 6 fehl.
+
+## Gesamtrendite nach der Reparatur: gemessen, nicht behauptet (03.10.2026)
+
+Die Studie misst die Gesamtrendite an der **dauerhaften Historie** (R2), nicht an der Arbeitsablage.
+
+| Stand | bestaetigt | Dividendenluecke | Splitluecke | Anteil |
+|---|---|---|---|---|
+| main, 25.09. (vor der Reparatur) | 4.921 / 6.333 | 847 | 564 | 77,7 % |
+| Branch, 02.10. (nach Reparatur und Push) | 5.462 / 6.334 | 320 | 551 | 86,2 % |
+
+Die Mindestquote von 95 % ist nicht erreicht. Die Studie bleibt deshalb fail-closed auf `SPLIT_ADJUSTED_PRICE`, und die Basisrate laeuft auf derselben Basis.
+
+**Ursache des Rests (gefunden, behoben).**
+- Lauf 37052123489 brach in Gate A ab, also vor dem Zurueckholen der Arbeitsablage. Er sicherte trotzdem (`always()`) eine leere Ablage von 1 MB als juengsten Cache.
+- Der naechste Lauf baute darauf auf und lud nur das Standardfenster (941 Handelstage).
+- Die Reparatur pruefte nur dieses Fenster: 6.430 / 6.496 bestaetigt.
+- Der Push fuehrte die 941 Tage in die langen R2-Reihen ein. Der aeltere Teil behielt die alte Bereinigung.
+- Fix: gesichert wird nur noch nach erfolgreichem Zurueckholen (`steps.restore.outcome == 'success'`). Test EG-CACHE haelt das fest; mit entfernter Bedingung schlaegt er fehl.
+- Caches sind je Branch getrennt. Der main-Cache traegt die volle reparierte Ablage, und der naechste Lauf auf main schreibt sie vollstaendig nach R2.
+
+**Nicht reparierbar (Anbieterdaten).**
+- 337 der 551 Splitluecken lehnt schon der Abruf als `adjustmentContradicted` ab: Die bereinigte Spalte des Anbieters hat den Split nicht mitgemacht.
+- 66 Reihen behalten die Dividendenluecke auch nach vollem Neuabruf (`STILL_DIVIDEND_GAP`).
+- Beides bleibt `TOTAL_RETURN_REJECTED`, mit Grund. Es wird nicht geglaettet.

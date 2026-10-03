@@ -22,6 +22,7 @@ import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync, rmSync
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { resolveProductUniverse } from "../market/universe-source.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -305,6 +306,19 @@ function main() {
   const started = Date.now();
   const contract = readJSON(join(ROOT, "quant/methodology/quant-v2.json"));
   const priceFactors = readJSON(join(ROOT, "quant/data/market/factors/factors-FULL_UNIVERSE.json"));
+  /* DIE GRUNDGESAMTHEIT IST DAS PRODUKTUNIVERSUM, NICHT DIE FAKTORDATEI.
+   *
+   * Die Faktordatei baut der Marktdaten-Lauf; nach einem Universumswechsel
+   * (02.10.2026: 22 Schuldverschreibungen ausgeschlossen, DEBT) traegt sie
+   * bis zum naechsten Lauf noch Zeilen, die nicht mehr im Produkt stehen.
+   * Hier wuerden sie Faktorzeilen bekommen - und als Geschwister eines
+   * Emittenten dessen Stammaktie den Boersenwert nehmen (PRHI neben dem
+   * Senior Note PRHIZ). Gezaehlt wird deshalb nur, wer im kanonischen
+   * Produktuniversum steht; die Zahl der verworfenen Zeilen steht im Bericht. */
+  const imProdukt = new Set(resolveProductUniverse(ROOT).securities.map((s) => s.securityId));
+  const vorFilter = priceFactors.securities.length;
+  priceFactors.securities = priceFactors.securities.filter((s) => imProdukt.has(s.securityId));
+  const outsideProductUniverse = vorFilter - priceFactors.securities.length;
   const taxonomy = readJSON(join(ROOT, "quant/data/product/sic-peer-taxonomy-v1.json"));
 
   if (contract.methodologyVersion !== FactorEvidence.DERIVED_FROM) {
@@ -1063,8 +1077,9 @@ function main() {
       tickers: uebersprungen.map((e) => e.ticker).sort()
     },
     counts: {
-      productUniverse: priceFactors.coverage.requested,
+      productUniverse: imProdukt.size,
       priceFactorSecurities: priceFactors.securities.length,
+      priceFactorRowsOutsideProductUniverse: outsideProductUniverse,
       notAnEquityListing: uebersprungen.length,
       published: written,
       withFundamentals: records.filter((record) => record.fundamentals).length,

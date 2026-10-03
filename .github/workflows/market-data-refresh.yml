@@ -77,6 +77,7 @@ jobs:
       # die Tage seit dem ersten nach. Eigener Schluessel, damit der 7-GB-Stand
       # des Skalierungs-Workflows (volle Historie ab 1990) hier nicht landet.
       - name: Arbeitsablage aus dem letzten Lauf holen
+        id: restore
         uses: actions/cache/restore@v4
         with:
           path: .market-cache
@@ -351,8 +352,15 @@ jobs:
             echo "cache_mb=0" >> "$GITHUB_OUTPUT"
           fi
 
+      # Nur sichern, was zurueckgeholt wurde. Lauf 37052123489 (02.10.2026)
+      # brach in Gate A ab - VOR dem Zurueckholen - und sicherte trotzdem
+      # (always()) eine leere Arbeitsablage von 1 MB als juengsten Stand. Der
+      # naechste Lauf holte genau diese, lud nur das Standardfenster nach
+      # (941 Tage je Titel) und die Gesamtrendite-Reparatur pruefte nur dieses
+      # Fenster. Ein Cache-Treffer auf eine leere Ablage ist schlimmer als
+      # keiner: er sieht aus wie ein Bestand.
       - name: Arbeitsablage sichern (nur unterhalb der Ablagegrenze)
-        if: always() && steps.disk.outputs.cache_mb != '' && fromJSON(steps.disk.outputs.cache_mb) < 2500
+        if: always() && steps.restore.outcome == 'success' && steps.disk.outputs.cache_mb != '' && fromJSON(steps.disk.outputs.cache_mb) < 2500
         uses: actions/cache/save@v4
         with:
           path: .market-cache
