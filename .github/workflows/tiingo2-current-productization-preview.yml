@@ -1,0 +1,107 @@
+name: Tiingo 2.0 current-main productization preview
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tiingo2-current-productization-preview-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      SEC_USER_AGENT: VisionUniverseResearch info@visionuniverse.de
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Require a current-main descendant
+        run: |
+          git fetch origin main
+          git merge-base --is-ancestor origin/main HEAD
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install central logo asset dependency
+        run: |
+          npm install --no-save --package-lock=false sharp@0.34.4
+          npm install --prefix /tmp/tiingo2-qa playwright@1.58.2 axe-core@4.10.3 esbuild@0.25.10
+          /tmp/tiingo2-qa/node_modules/.bin/playwright install --with-deps chromium webkit
+      - name: Verify current-main Tiingo and productization contracts
+        run: node --test --test-reporter=dot quant/tests/tiingo2-*.test.mjs discover/tests/company-logos-scoped.test.mjs
+      - name: Restore encrypted main discovery cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .market-cache/tiingo2-cache.enc
+          key: tiingo2-encrypted-v1-main-productization-preview-${{ github.run_id }}
+          restore-keys: tiingo2-encrypted-v1-main-
+      - name: Open authenticated cache
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          test -s .market-cache/tiingo2-cache.enc
+          node scripts/market/tiingo2-cache.mjs open --work-dir .market-cache/tiingo2 --file .market-cache/tiingo2-cache.enc --context main
+          test -d .market-cache/tiingo2/evidence
+      - name: Reclassify from current source and cached listing evidence
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node scripts/market/tiingo2-refresh.mjs --run-id "current-productization-${GITHUB_RUN_ID}" --probe --max-symbols 0
+          node --input-type=module <<'NODE'
+          import {readFileSync} from 'node:fs';
+          const source='.market-cache/tiingo2/runs/current-productization-'+process.env.GITHUB_RUN_ID;
+          const summary=JSON.parse(readFileSync(source+'/tiingo2_final_universe_summary.json'));
+          if(summary.current.consumer<6397 || summary.protectedConsumer?.removals!==0 ||
+             summary.historicalExclusions?.count!==22 || summary.historicalExclusions?.readditions!==0 ||
+             summary.removed?.length || summary.publication?.state!=='BLOCKED')
+            throw Error('CURRENT_MAIN_STAGING_BASELINE_FAILED');
+          console.log(JSON.stringify({current:summary.current.consumer,accepted:summary.added.length,removals:0,historicallyExcluded:22}));
+          NODE
+      - name: Build canonical and product preview in private shadow
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          node --max-old-space-size=6144 scripts/market/tiingo2-run-productization.mjs \
+            --source-cache "$GITHUB_WORKSPACE/.market-cache/tiingo2" \
+            --source-run "$GITHUB_WORKSPACE/.market-cache/tiingo2/runs/current-productization-${GITHUB_RUN_ID}" \
+            --run-id "current-productization-${GITHUB_RUN_ID}" \
+            --out "$GITHUB_WORKSPACE/.verification/tiingo2-current-productization" \
+            --release-output "$RUNNER_TEMP/tiingo2-current-release"
+      - name: Protected tracked product bytes remain unchanged
+        if: always()
+        run: git diff --exit-code -- quant/data discover/data discover/logos screener/data supertrader/data
+      - name: Browser, mobile WebKit, accessibility and byte budgets
+        env:
+          NODE_PATH: /tmp/tiingo2-qa/node_modules
+          VU_QA_OUTPUT: ${{ github.workspace }}/.verification/tiingo2-current-productization/browser
+        run: |
+          /tmp/tiingo2-qa/node_modules/.bin/esbuild "$RUNNER_TEMP/tiingo2-current-release/quant/release-bundle.js" \
+            --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite \
+            --outfile="$RUNNER_TEMP/tiingo2-current-release/quant/release-bundle.js"
+          cd "$RUNNER_TEMP/tiingo2-current-release"
+          node "$GITHUB_WORKSPACE/scripts/vu2/browser-qa.mjs"
+          node "$GITHUB_WORKSPACE/scripts/vu2/production-smoke.mjs" "$RUNNER_TEMP/tiingo2-current-release" \
+            --report "$GITHUB_WORKSPACE/.verification/tiingo2-current-productization/release-smoke.json"
+      - name: Export derived status only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiingo2-current-productization-derived-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .verification/tiingo2-current-productization/*.json
+            .verification/tiingo2-current-productization/browser/*.json
+          if-no-files-found: warn
+          retention-days: 14

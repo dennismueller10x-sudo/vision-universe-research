@@ -5,3 +5,25 @@ test('empty first use never seeds or modifies legacy selection',()=>{const s=sto
 test('invalid selections and corrupt saved values are preserved rather than reset',()=>{for(const list of [['NVDA','NVDA'],['<script>'],['nvda'],Array(501).fill('NVDA'),null])assert.throws(()=>Watchlist.validate(list));const s=storage();s.setItem(Watchlist.key,'broken');assert.throws(()=>Watchlist.load(s));assert.equal(s.getItem(Watchlist.key),'broken');assert.throws(()=>Watchlist.save(s,['bad']));assert.equal(s.getItem(Watchlist.key),'broken');});
 test('every selected identity remains visible even when data is unavailable',()=>{const source={state:'AVAILABLE',stocks:[{ticker:'NVDA',state:'AVAILABLE',momentum6m:{value:0,unit:'percent'}}]};const data=Watchlist.build(['TSLA','NVDA'],source);assert.equal(data.partial,true);assert.equal(data.members[0].state,'UNAVAILABLE');assert.equal(data.members[1].momentum6m.value,0);assert.equal(Watchlist.build([],null).state,'EMPTY');assert.equal(Watchlist.build(['NVDA'],null).members.length,1);});
 test('capability evidence is attached per selected identity and never inferred from membership',()=>{const source={state:'AVAILABLE',stocks:[{ticker:'TSLA',state:'AVAILABLE'}]},capabilities={TSLA:{signals:{state:'AVAILABLE',events:[]},technical:{state:'AVAILABLE'},elliott:{state:'UNAVAILABLE',reason:'ELLIOTT_COUNT_NOT_VALIDATED'}}},coverage={selectable:6875,signalsCapable:5772,technicalCapable:5676,elliottCapable:5590};const data=Watchlist.build(['TSLA'],source,{capabilities,coverage});assert.equal(data.scope,'USER_SELECTION_WITHIN_CANONICAL_PRODUCT_UNIVERSE');assert.equal(data.members[0].intelligence.technical.state,'AVAILABLE');assert.equal(data.members[0].intelligence.elliott.state,'UNAVAILABLE');assert.equal(data.coverage.technicalCapable,5676);assert.equal(data.partial,false);});
+test('canonical selections persist both IDs across add, reload and remove without changing legacy storage',()=>{
+ const s=storage();s.setItem('vu.quant.watchlist.v1','protected-existing-user-selection');
+ const entry={ticker:'TEST',securityId:'vu_0123456789abcd',masterMemberId:'ref_TEST'};
+ Watchlist.saveCanonical(s,[entry]);
+ assert.deepEqual(Watchlist.load(s),['TEST']);
+ assert.deepEqual(Watchlist.loadCanonical(s),[entry]);
+ assert.deepEqual(Watchlist.removeCanonical(s,entry.securityId),[]);
+ assert.deepEqual(Watchlist.load(s),[]);
+ assert.deepEqual(Watchlist.loadCanonical(s),[]);
+ assert.equal(s.getItem('vu.quant.watchlist.v1'),'protected-existing-user-selection');
+ Watchlist.save(s,['NVDA']);
+ assert.deepEqual(Watchlist.loadCanonical(s),[]);
+ assert.deepEqual(Watchlist.load(s),['NVDA']);
+});
+test('canonical selection rejects ID collisions and malformed saved identity pairs',()=>{
+ const s=storage(),entry={ticker:'TEST',securityId:'vu_0123456789abcd',masterMemberId:'ref_TEST'};
+ assert.throws(()=>Watchlist.saveCanonical(s,[entry,{...entry,ticker:'OTHER'}]));
+ assert.equal(s.getItem(Watchlist.key),null);
+ s.setItem(Watchlist.key,JSON.stringify({version:'1.1.0',tickers:['OTHER'],identities:[entry]}));
+ assert.throws(()=>Watchlist.load(s));
+ assert.throws(()=>Watchlist.loadCanonical(s));
+});

@@ -58,7 +58,10 @@ export function evaluateConsumerPolicy(row, { baselineConsumer = false } = {}) {
   const explicit = row.consumerPolicy;
   let reasonCodes = [];
   let status = 'INCLUDED';
-  if (explicit?.included === false) {
+  if (row.historicallyExcluded === true) {
+    reasonCodes = ['HISTORICALLY_EXCLUDED', 'EXCLUDED_NON_EQUITY_DEBT'];
+    status = 'EXCLUDED';
+  } else if (explicit?.included === false) {
     reasonCodes = explicit.reasonCodes?.length ? explicit.reasonCodes : ['EXCLUDED_EXISTING_POLICY'];
     status = 'EXCLUDED';
   } else if (upper(row.product_eligibility ?? row.eligibility) === 'EXCLUDED') {
@@ -70,7 +73,7 @@ export function evaluateConsumerPolicy(row, { baselineConsumer = false } = {}) {
     const reason = { PREFERRED: 'PREFERRED', WARRANT: 'WARRANT', ETF: 'FUND', ETN: 'FUND', ETP: 'FUND', CEF: 'FUND', FUND: 'FUND', MUTUALFUND: 'FUND', UNIT: 'UNIT', RIGHT: 'RIGHT', INDEX: 'INDEX', TEST: 'TEST_SYMBOL' }[instrumentType] ?? 'NON_EQUITY';
     reasonCodes = [`EXCLUDED_${reason}`]; status = 'EXCLUDED';
   } else reasonCodes = [`INCLUDED_${instrumentType}`];
-  return { policyVersion: POLICY_VERSION, status, included: status === 'INCLUDED', instrumentType: instrumentType || 'UNKNOWN', reasonCodes: unique(reasonCodes), source: explicit ? 'EXPLICIT_EXISTING_POLICY' : 'CANONICAL_CONSUMER_INSTRUMENT_POLICY' };
+  return { policyVersion: POLICY_VERSION, status, included: status === 'INCLUDED', instrumentType: instrumentType || 'UNKNOWN', reasonCodes: unique(reasonCodes), source: row.historicallyExcluded === true ? 'PROTECTED_HISTORICAL_EXCLUSION' : explicit ? 'EXPLICIT_EXISTING_POLICY' : 'CANONICAL_CONSUMER_INSTRUMENT_POLICY' };
 }
 
 /** Only security-level evidence deduplicates. Issuer/company/name/CIK equality
@@ -130,7 +133,8 @@ export function classifyCandidate(row, options = {}) {
   const fundamentalReady = secMapped && sec.available === true && sec.pitValid === true;
   const priceReady = historyValid && latestValid && actionValid;
   const identityReady = identity.passed;
-  const membershipReady = active && policy.included && identityReady && priceReady;
+  const securityFormReviewRequired = row.securityFormReviewRequired === true;
+  const membershipReady = active && policy.included && identityReady && priceReady && !securityFormReviewRequired;
   // The canonical product projection needs five real daily points for a
   // chart. A shorter listing can still enter Search and Watchlists.
   const chartHistoryReady = Number.isSafeInteger(price.bars) && price.bars >= 5;
@@ -159,6 +163,7 @@ export function classifyCandidate(row, options = {}) {
     fullQuantScoreReady: false
   };
   const reasons = [...policy.reasonCodes, ...identity.reasonCodes];
+  if (securityFormReviewRequired) reasons.push('SECURITY_FORM_REVIEW_REQUIRED');
   if (inactive) reasons.push('EXCLUDED_INACTIVE');
   else if (!active) reasons.push('REVIEW_ACTIVE_STATUS');
   if (!historyValid) reasons.push(price.historyValid === false ? 'INVALID_PRICE_HISTORY' : 'MISSING_PRICE_HISTORY');

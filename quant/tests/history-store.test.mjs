@@ -463,6 +463,68 @@ test("HS43 der XML-Auszug liest Schluessel, Groesse und die Fortsetzung", () => 
   assert.equal(parseListXml("<ListBucketResult><IsTruncated>false</IsTruncated></ListBucketResult>").truncated, false);
 });
 
+test("HS44 bedingtes PUT bewahrt fremde Objekte und erkennt gleiche Inhalte", async () => {
+  const objects = new Map();
+  const calls = [];
+  const fetchImpl = async (url, options) => {
+    const key = new URL(url).pathname;
+    const prior = objects.get(key);
+    calls.push({ method: options.method, none: options.headers['if-none-match'], match: options.headers['if-match'] });
+    if (options.method === 'PUT') {
+      if (key.endsWith('/missing-bucket')) return new Response('NoSuchBucket', { status: 404 });
+      if (options.headers['if-none-match'] === '*' && prior) return new Response('', { status: 412 });
+      if (options.headers['if-match'] && (!prior || options.headers['if-match'] !== prior.etag)) return new Response('', { status: 412 });
+      const body = Buffer.from(options.body);
+      const etag = '"v' + (calls.filter((c) => c.method === 'PUT').length) + '"';
+      const metadata = Object.fromEntries(Object.entries(options.headers).filter(([name]) => name.startsWith('x-amz-meta-')));
+      objects.set(key, { body, etag, metadata });
+      return new Response('', { status: 200, headers: { etag } });
+    }
+    if (!prior) return new Response('', { status: 404 });
+    return new Response(options.method === 'HEAD' ? null : prior.body, { status: 200, headers: { etag: prior.etag, ...prior.metadata } });
+  };
+  const driver = createS3Driver({ endpoint: 'https://example.invalid', bucket: 'test', accessKeyId: 'test', secretAccessKey: 'test', maxRetries: 0, fetchImpl });
+  const initial = Buffer.from('original');
+  assert.equal((await driver.putIfAbsentOrSame('new', initial)).created, true);
+  assert.equal((await driver.putIfAbsentOrSame('new', initial)).unchanged, true);
+  await assert.rejects(driver.putIfAbsentOrSame('new', initial, { metadata: { owner: 'different' } }), /S3_ABSENT_ONLY_METADATA_CONFLICT/);
+  await assert.rejects(driver.putIfAbsentOrSame('new', Buffer.from('different')), /S3_ABSENT_ONLY_CONTENT_CONFLICT/);
+  assert.deepEqual((await driver.getWithETag('new')).buffer, initial);
+  const oldETag = (await driver.head('new')).etag;
+  assert.equal((await driver.putIfMatch('new', Buffer.from('updated'), oldETag)).bytes, 7);
+  await assert.rejects(driver.putIfMatch('new', Buffer.from('stale'), oldETag), /S3_INDEX_CAS_CONFLICT/);
+  assert.deepEqual((await driver.getWithETag('new')).buffer, Buffer.from('updated'));
+  // Each absent-or-same attempt first makes a conditional PUT. The three
+  // existing-object attempts receive 412, then verify metadata/content by GET.
+  assert.equal(calls.filter((c) => c.method === 'PUT' && c.none === '*').length, 4);
+  assert.equal(calls.filter((c) => c.method === 'PUT' && c.match).length, 2);
+  await assert.rejects(driver.putIfMatch('new', Buffer.from('bad'), '*'), /S3_INDEX_CAS_REQUIRES_QUOTED_ETAG/);
+  await assert.rejects(driver.putIfAbsentOrSame('missing-bucket', initial), /HTTP 404/);
+
+  const store = Store.createHistoryStore({ driver, provider: 'tiingo', market: 'US',
+    budget: Guard.createBudget({ classAOperations: 20, classBOperations: 20 }) });
+  const bars = synthBars(3);
+  assert.equal((await store.putSeries({ ticker: 'NEW', bars }, { absentOnly: true })).skipped, false);
+  assert.equal((await store.putSeries({ ticker: 'NEW', bars }, { absentOnly: true })).skipped, true);
+  await assert.rejects(store.putSeries({ ticker: 'NEW', bars: synthBars(4) }, { absentOnly: true }), /S3_ABSENT_ONLY_CONTENT_CONFLICT/);
+  const empty = await store.readIndexSnapshot();
+  assert.equal(empty.etag, null);
+  await store.writeIndex({ symbols: {} }, { expectedETag: empty.etag });
+  const indexed = await store.readIndexSnapshot();
+  assert.match(indexed.etag, /^"/);
+  await store.writeIndex({ symbols: { NEW: { barCount: 3 } } }, { expectedETag: indexed.etag });
+  await assert.rejects(store.writeIndex({ symbols: {} }, { expectedETag: indexed.etag }), /S3_INDEX_CAS_CONFLICT/);
+  assert.equal((await store.readIndex()).symbols.NEW.barCount, 3);
+  const month = Guard.monthKey();
+  const initialUsage = await store.readUsageSnapshot(month);
+  assert.equal(initialUsage.etag, null);
+  await store.writeUsage(initialUsage.usage, { expectedETag: null });
+  const usage = await store.readUsageSnapshot(month);
+  assert.match(usage.etag, /^"/);
+  await store.writeUsage(usage.usage, { expectedETag: usage.etag });
+  await assert.rejects(store.writeUsage(usage.usage, { expectedETag: usage.etag }), /S3_INDEX_CAS_CONFLICT/);
+});
+
 
 /* ================================================ NULLKOSTENSCHRANKE */
 
