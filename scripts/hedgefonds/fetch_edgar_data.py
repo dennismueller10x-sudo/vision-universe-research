@@ -80,7 +80,7 @@ MAX_RETRIES = 3
 BULK_VALUE_TOLERANCE = 0.15
 UNCHANGED_PCT = 0.5          # Stückzahländerung darunter gilt als unverändert
 UNIVERSE_PATH = DATA_DIR / "universe.json"
-CACHE_VERSION = 4            # erhöhen, wenn sich die Berechnung ändert -> alles neu laden
+CACHE_VERSION = 5            # erhöhen, wenn sich die Berechnung ändert -> alles neu laden
 # Weitere Hedgefonds ("zweite und dritte Reihe") aus dem Sammeldatensatz
 TIER2_MAX = 1000             # höchstens so viele zusätzliche Fonds
 TIER2_MIN_AUM = 200e6        # Mindestgröße des 13F-Portfolios
@@ -272,19 +272,38 @@ THOUSANDS_FILERS = set()  # CIKs, deren Positionen nachweislich in Tausend USD g
 
 
 def normalize_units(rows):
-    """Manche Filer melden <value> trotz neuer Spezifikation weiter in
-    Tausend USD (real beobachtet: Duquesne, Baupost mit "10 Mio. USD").
-    Erkennung über den impliziten Stückpreis: Der Median aus Wert/Stück der
-    Aktienpositionen liegt bei echten Portfolios weit über 1 USD; bei
-    Tausender-Meldungen darunter. Dann wird x1000 korrigiert."""
-    prices = sorted(h["valueUSD"] / h["shares"] for h in rows
-                    if h.get("shares") and not h.get("putCall") and h.get("shareType", "SH") in ("SH", "")
-                    and h["valueUSD"] > 0)
-    if len(prices) >= 3 and prices[len(prices) // 2] < 1.0:
+    """Korrigiert falsch skalierte <value>-Angaben einzelner Filer.
+
+    Erkennung über den impliziten Stückpreis (Wert / Stückzahl): Bei echten
+    Portfolios liegt der Median der Aktienpositionen zwischen etwa 1 und
+    einigen hundert USD.
+      Median < 1 USD     -> Werte in Tausend gemeldet, x1000
+                            (real beobachtet: Duquesne, Baupost)
+      Median > 2.000 USD -> Werte 1000-fach zu hoch gemeldet, /1000
+                            (real beobachtet: Banque Cantonale Vaudoise,
+                            Meteora mit SPAC-Aktien zu "10.000 USD")
+    Besteht ein Portfolio fast nur aus Anleihen (PRN, z.B. Wandelanleihen),
+    wird Wert / Nennwert geprüft: über 50 -> /1000."""
+    def med(xs):
+        xs = sorted(xs)
+        return xs[len(xs) // 2] if xs else None
+    sh = med(h["valueUSD"] / h["shares"] for h in rows
+             if h.get("shares") and not h.get("putCall") and h.get("shareType", "SH") in ("SH", "") and h["valueUSD"] > 0)
+    n_sh = sum(1 for h in rows if h.get("shares") and not h.get("putCall") and h.get("shareType", "SH") in ("SH", ""))
+    factor = 1
+    if n_sh >= 3 and sh is not None:
+        if sh < 1.0:
+            factor = 1000
+        elif sh > 2000:
+            factor = 0.001
+    else:
+        prn = med(h["valueUSD"] / h["shares"] for h in rows if h.get("shares") and h.get("shareType") == "PRN" and h["valueUSD"] > 0)
+        if prn is not None and prn > 50:
+            factor = 0.001
+    if factor != 1:
         for h in rows:
-            h["valueUSD"] *= 1000
-        return rows, 1000
-    return rows, 1
+            h["valueUSD"] *= factor
+    return rows, factor
 
 
 def filing_index(cik_int, accession):
@@ -304,9 +323,10 @@ def fetch_filing_holdings(cik_int, accession, names=None):
         holdings = parse_info_table_xml(xml_bytes)
         if holdings:
             holdings, factor = normalize_units(holdings)
-            if factor != 1:
+            if factor == 1000:
                 THOUSANDS_FILERS.add(str(cik_int))
-                print(f"  Werte in Tausend USD gemeldet ({accession}) – x{factor} korrigiert", file=sys.stderr)
+            if factor != 1:
+                print(f"  Werte falsch skaliert gemeldet ({accession}) – x{factor} korrigiert", file=sys.stderr)
             return holdings
     raise RuntimeError("Info-Table-XML konnte nicht geparst werden.")
 
@@ -916,6 +936,11 @@ def build_fund_record(meta, cik, sub, filings, history_quarters=HISTORY_QUARTERS
         record["prevTotalValueUSD"] = round(prev_total)
         record["prevPositionCount"] = len(prev_pos)
         record["aumChangePct"] = ((total - prev_total) / prev_total * 100) if prev_total else None
+        if prev_total and total and not (1 / 200 < total / prev_total < 200):
+            # unplausibler Sprung (Skalierungsfehler des Filers in einem Quartal)
+            print(f"  {meta['name']}: Sprung {prev_total:.0f} -> {total:.0f} unplausibel, keine Veränderung angezeigt",
+                  file=sys.stderr)
+            record["aumChangePct"] = None
         trades = compute_trades(cur_pos, prev_pos)
 
     # Verlauf: Deckblatt-Summen älterer Perioden (aktuelle/vorige berechnet)

@@ -86,6 +86,18 @@ class Units(unittest.TestCase):
         self.assertEqual(f, 1000)
         self.assertEqual(out[0]["valueUSD"], 150000)
 
+    def test_thousandfold_too_high_is_scaled_down(self):
+        rows = [{"valueUSD": v, "shares": sh, "putCall": "", "shareType": "SH"}
+                for v, sh in [(34781400000, 3390000), (31568503000, 2948729), (30502403000, 2816473)]]
+        out, f = m.normalize_units(rows)
+        self.assertEqual(f, 0.001)
+        self.assertAlmostEqual(out[0]["valueUSD"], 34781400)
+
+    def test_bond_portfolio_too_high(self):
+        rows = [{"valueUSD": 321607659000, "shares": 176537000, "putCall": "", "shareType": "PRN"},
+                {"valueUSD": 181304798000, "shares": 186000000, "putCall": "", "shareType": "PRN"}]
+        self.assertEqual(m.normalize_units(rows)[1], 0.001)
+
     def test_dollar_reporting_untouched(self):
         rows = [{"valueUSD": v, "shares": sh, "putCall": "", "shareType": "SH"}
                 for v, sh in [(150000, 1000), (90000, 2000), (4e6, 50000)]]
