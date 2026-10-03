@@ -122,6 +122,15 @@ class Amendments(unittest.TestCase):
 
 
 class Universe(unittest.TestCase):
+    def test_classification(self):
+        c = m.classify_bulk_fund
+        self.assertEqual(c("Alphabet Inc."), "Unternehmen")
+        self.assertEqual(c("Dodge & Cox"), "Vermögensverwaltung")
+        self.assertEqual(c("Walleye Trading LLC"), "Marktmacher / Trading")
+        self.assertEqual(c("Zurich Insurance Group Ltd/FI"), "Versicherung")
+        self.assertEqual(c("Viking Global Investors LP"), "Sonstige")
+        self.assertEqual(c("Adage Capital Partners GP, L.L.C."), "Sonstige")
+
     def test_pretty_name(self):
         self.assertEqual(m.pretty_name("MUSTER KAPITAL GMBH"), "Muster Kapital GmbH")
         self.assertEqual(m.pretty_name("VIKING GLOBAL INVESTORS LP"), "Viking Global Investors LP")

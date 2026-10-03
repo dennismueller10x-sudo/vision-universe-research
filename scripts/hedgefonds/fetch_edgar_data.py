@@ -69,8 +69,8 @@ DISCOVER_STOCKS = ROOT / "discover" / "data" / "stocks" / "US_REAL"
 DISCOVER_LOGOS = ROOT / "discover" / "logos" / "files"
 
 SCHEMA = "hedgefonds-2.0.0"
-DETAIL_HOLDINGS = 250        # Positionen je Fonds in der Detaildatei
-DETAIL_TRADES = 60           # je Trade-Art in der Detaildatei
+DETAIL_HOLDINGS = 150        # Positionen je Fonds in der Detaildatei
+DETAIL_TRADES = 40           # je Trade-Art in der Detaildatei
 INDEX_TOP = 10               # Top-Positionen je Fonds in der Übersicht
 HISTORY_QUARTERS = 8
 BULK_EXTRA = 40              # "Weitere Institutionen"
@@ -80,19 +80,20 @@ MAX_RETRIES = 3
 BULK_VALUE_TOLERANCE = 0.15
 UNCHANGED_PCT = 0.5          # Stückzahländerung darunter gilt als unverändert
 UNIVERSE_PATH = DATA_DIR / "universe.json"
-CACHE_VERSION = 3            # erhöhen, wenn sich die Berechnung ändert -> alles neu laden
+CACHE_VERSION = 4            # erhöhen, wenn sich die Berechnung ändert -> alles neu laden
 # Weitere Hedgefonds ("zweite und dritte Reihe") aus dem Sammeldatensatz
 TIER2_MAX = 1000             # höchstens so viele zusätzliche Fonds
 TIER2_MIN_AUM = 200e6        # Mindestgröße des 13F-Portfolios
 TIER2_MAX_ETF_SHARE = 0.35   # mehr ETF-Anteil = Vermögensberater, kein Hedgefonds
-TIER2_DETAIL_HOLDINGS = 100
-TIER2_DETAIL_TRADES = 30
+TIER2_DETAIL_HOLDINGS = 50
+TIER2_DETAIL_TRADES = 15
 TIER2_WORKERS = 6
 TIER2_TIME_BUDGET = 55 * 60  # Sekunden; danach nur noch Cache, Rest im nächsten Lauf
 DACH_MIN_AUM = 50e6
 DACH_COUNTRIES = {"2M": "DE", "C4": "AT", "V8": "CH"}  # EDGAR-Ländercodes
 SEC_MIN_INTERVAL = 0.115     # global ~8,7 Anfragen/s (SEC-Grenze: 10/s)
-AGG_FUNDS_LISTED = 25        # Fonds je Aktie in den Auswertungen
+AGG_FUNDS_LISTED = 15        # Fonds je Aktie in den Auswertungen
+TIER2_MAX_SIZE_POSITIONS = (80e9, 1000)  # größer UND breiter = Index-/Fondsgesellschaft
 # Stile, deren Portfolios aus tausenden, algorithmisch gehandelten Positionen
 # bestehen. Sie bleiben einzeln sichtbar, verzerren aber die übergreifenden
 # Auswertungen ("was kaufen die Star-Investoren"), daher dort ausgenommen.
@@ -725,8 +726,26 @@ BULK_CATEGORY_PATTERNS = [
         "ALLIANZ", "ALLIANCEBERNSTEIN", "PRUDENTIAL", "PRINCIPAL FINANCIAL",
         "NUVEEN", "JANUS HENDERSON", "NATIXIS", "MFS ", "PUTNAM INVESTMENT",
         "COLUMBIA MANAGEMENT", "VICTORY CAPITAL", "ARTISAN PARTNERS",
-        "LORD ABBETT", "EATON VANCE", "NORTHERN TRUST INVESTMENTS", "SSGA", "BLACKSTONE"]),
+        "LORD ABBETT", "EATON VANCE", "NORTHERN TRUST INVESTMENTS", "SSGA", "BLACKSTONE",
+        "DODGE & COX", "FIRST TRUST", "PRIMECAP", "JENNISON", "NEUBERGER", "SCHRODER", "FIL LTD", "RHUMBLINE",
+        "NORDEA", "CLEARBRIDGE", "VOYA", "TD ASSET", "RUSSELL INVESTMENTS", "SEI INVESTMENTS", "BAILLIE GIFFORD",
+        "ROBECO", "LOOMIS SAYLES", "ABERDEEN", "MIRAE", "1832 ASSET", "BOSTON PARTNERS", "FIRST EAGLE", "PARAMETRIC",
+        "MACKENZIE", "CIBC", "MANULIFE", "SUN LIFE", "FEDERATED HERMES", "HARTFORD", "THRIVENT", "LAZARD",
+        "AMERIPRISE", "COHEN & STEERS", "CALAMOS", "PGIM", "GUGGENHEIM", "UBS ASSET", "M&G", "KAYNE ANDERSON",
+        "WILLIAM BLAIR", "HARDING LOEVNER", "BROWN ADVISORY", "MFS INVESTMENT", "COLUMBIA THREADNEEDLE", "PIONEER",
+        "TIAA", "TEACHERS ADVISORS", "AMERICAN FUNDS", "DWS ", "AMUNDI", "AXA ", "CANDRIAM", "STATE FARM",
+        "LEGG MASON", "ALLSPRING", "BMO ", "RBC ", "SCOTIA", "DESJARDINS", "MACQUARIE", "DAIWA", "NIKKO", "SUMITOMO",
+        "ASSET MANAGEMENT ONE", "ORIX", "SAMSUNG", "KOREA INVESTMENT", "ETFS", "INDEX ", "EXCHANGE TRADED"]),
+    ("Staatsfonds & Pension", ["PENSION", "SOVEREIGN", "GOVERNMENT OF", "MONETARY AUTHORITY", "CENTRAL BANK",
+        "NATIONAL BANK", "CANADA PENSION", "ONTARIO TEACHERS", "CAISSE DE DEPOT", "BRITISH COLUMBIA INVESTMENT",
+        "ALBERTA INVESTMENT", "PUBLIC SECTOR PENSION", "NORGES BANK", "TEMASEK", "GIC PRIVATE", "KUWAIT", "ABU DHABI",
+        "QATAR", "SAUDI", "RETIREMENT SYSTEM", "TEACHERS", "EMPLOYEES"]),
+    ("Versicherung", ["INSURANCE", "ASSURANCE", "REINSURANCE", "VERSICHERUNG", "LIFE CO", "MUTUAL LIFE"]),
 ]
+
+CORPORATE_RE = re.compile(r"\b(INC|CORP|CORPORATION|PLC|SE|NV|N\.V\.)\.?(\s*/[A-Z]{2}/)?$")
+HF_WORD_RE = re.compile(r"CAPITAL|PARTNERS|MANAGEMENT|ADVISORS|ADVISERS|INVESTMENT|FUND|ASSET|HOLDINGS|GROUP|LP\b|L\.P\.")
+TRADING_RE = re.compile(r"\bTRADING\b|\bOPTIONS\b|MARKET MAKING|\bDERIVATIVES\b")
 
 
 def classify_bulk_fund(name):
@@ -735,6 +754,12 @@ def classify_bulk_fund(name):
         for p in patterns:
             if p in n:
                 return category
+    if TRADING_RE.search(n):
+        return "Marktmacher / Trading"
+    if "BANQUE" in n or "KANTONALBANK" in n or "CANTONALE" in n:
+        return "Bank & Broker"
+    if CORPORATE_RE.search(n.strip()) and not HF_WORD_RE.search(n):
+        return "Unternehmen"
     return "Sonstige"
 
 
@@ -1210,9 +1235,27 @@ def load_json(path, default):
         return default
 
 
+def compact(obj):
+    """Rundet Zahlen auf sinnvolle Genauigkeit und lässt doppelte Felder weg –
+    hält die rund 1200 Detaildateien klein."""
+    if isinstance(obj, float):
+        if obj != obj:  # NaN
+            return None
+        return round(obj) if abs(obj) >= 1000 else round(obj, 3)
+    if isinstance(obj, list):
+        return [compact(x) for x in obj]
+    if isinstance(obj, dict):
+        out = {k: compact(v) for k, v in obj.items()}
+        if out.get("cls") and out.get("cls") == out.get("issuer"):
+            del out["cls"]
+        return out
+    return obj
+
+
 def write_json_if_changed(path, obj, indent=None, ignore=("generatedAt",)):
     """Schreibt nur bei inhaltlicher Änderung (ohne Zeitstempel), damit der
     wöchentliche Lauf keine leeren Daten-Commits erzeugt."""
+    obj = compact(obj)
     old = load_json(path, None)
     strip = lambda o: {k: v for k, v in o.items() if k not in ignore} if isinstance(o, dict) else o  # noqa: E731
     if old is not None and strip(old) == strip(json.loads(json.dumps(obj))):
@@ -1335,6 +1378,9 @@ def select_universe(bulk, scale, exclude):
             continue
         if total < TIER2_MIN_AUM or classify_bulk_fund(name) != "Sonstige" or NON_HF_RE.search(name):
             continue
+        big_value, big_positions = TIER2_MAX_SIZE_POSITIONS
+        if total > big_value and len(f["holdings"]) > big_positions:
+            continue  # breit gestreute Großverwalter (Index-/Fondsgesellschaften)
         if etf_share(f["holdings"]) > TIER2_MAX_ETF_SHARE:
             continue
         hf.append(entry)
@@ -1389,8 +1435,9 @@ def fetch_universe_fund(entry, deadline):
         raise TimeoutError("Zeitbudget erschöpft")
     name = sub.get("name") or entry["name"]
     style = classify_bulk_fund(name)
-    meta = {"slug": slug, "name": pretty_name(name), "manager": None,
-            "style": "Hedgefonds" if style == "Sonstige" else style,
+    if style == "Sonstige":
+        style = "Vermögensverwaltung" if entry.get("region") else "Hedgefonds"
+    meta = {"slug": slug, "name": pretty_name(name), "manager": None, "style": style,
             "region": entry.get("region"), "city": pretty_name(entry.get("city") or "") or None}
     rec, pos, trades = build_fund_record(meta, cik, sub, filings, history_quarters=2, category="Hedgefonds")
     return {"rec": rec, "pos": pos, "trades": trades, "counts": None, "reused": False}

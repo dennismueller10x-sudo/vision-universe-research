@@ -311,7 +311,7 @@
 
   function renderHome() {
     var d = S.data, inv = investors(), agg = d.aggregates || {};
-    var total = inv.concat(S.universe).reduce(function (s, f) { return s + (f.totalValueUSD || 0); }, 0);
+    var total = dbAll().filter(isHF).reduce(function (s, f) { return s + (f.totalValueUSD || 0); }, 0);
     var dl = nextDeadline(), days = Math.ceil((dl - new Date()) / 864e5);
     var featured = FEATURED.map(function (s) { return S.bySlug[s]; }).filter(Boolean);
     var aggNames = (agg.funds || []).length;
@@ -321,14 +321,14 @@
       '<section class="hf-hero">' +
         '<div class="hf-eyebrow">13F-Meldungen der SEC · ' + esc(d.latestPeriodLabel || "") + "</div>" +
         "<h1>Was die besten Investoren gerade kaufen.</h1>" +
-        '<p class="lead">Die Portfolios von Bill Ackman, Warren Buffett, Michael Burry, Cathie Wood und ' + nf0.format(inv.length + S.universe.length - 4) +
+        '<p class="lead">Die Portfolios von Bill Ackman, Warren Buffett, Michael Burry, Cathie Wood und ' + nf0.format(hfCount() - 4) +
           " weiteren Hedgefonds – mit allen Käufen und Verkäufen des Quartals, direkt aus den Pflichtmeldungen an die US-Börsenaufsicht.</p>" +
-        '<div class="hf-actions"><a class="hf-pill primary" href="#datenbank">Alle ' + nf0.format(inv.length + S.universe.length) + ' Hedgefonds →</a>' +
+        '<div class="hf-actions"><a class="hf-pill primary" href="#datenbank">Alle ' + nf0.format(hfCount()) + ' Hedgefonds →</a>' +
           '<a class="hf-pill" href="#kaeufe">Größte Käufe</a><a class="hf-pill" href="#konsens">Meistgehaltene Aktien</a></div>' +
         '<label class="hf-search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>' +
           '<input id="hf-q" type="search" placeholder="Investor, Fonds oder Aktie suchen (z. B. Ackman, NVDA)" autocomplete="off" value="' + esc(S.q) + '" aria-label="Investor oder Aktie suchen"></label>' +
         '<div class="hf-stats">' +
-          '<div class="hf-stat"><small>Hedgefonds</small><b class="num">' + nf0.format(inv.length + S.universe.length) + "</b><span>davon " + inv.length + " Star-Investoren</span></div>" +
+          '<div class="hf-stat"><small>Hedgefonds</small><b class="num">' + nf0.format(hfCount()) + "</b><span>davon " + inv.length + " Star-Investoren</span></div>" +
           '<div class="hf-stat"><small>Gemeldetes Vermögen</small><b class="num">' + usd(total) + "</b><span>13F-pflichtige US-Positionen</span></div>" +
           '<div class="hf-stat"><small>Aktuelles Quartal</small><b>' + esc(d.latestPeriodLabel || "–") + "</b><span>Daten geprüft am " + dateDE(d.generatedAt) + "</span></div>" +
           '<div class="hf-stat"><small>Nächste Meldefrist</small><b class="num">' + dateDE(dl.toISOString()) + "</b><span>in " + days + " Tagen · für " + deadlineQuarter(dl) + "</span></div>" +
@@ -351,7 +351,7 @@
         '<div class="hf-two" id="hf-cons"></div></section>' +
 
       '<section class="hf-section" id="investoren"><div class="hf-head"><div><h2>Top-Investoren</h2><p id="hf-grid-count"></p></div>' +
-        '<a class="hf-more" href="#datenbank">Alle ' + nf0.format(inv.length + S.universe.length) + " Hedgefonds →</a></div>" +
+        '<a class="hf-more" href="#datenbank">Alle ' + nf0.format(hfCount()) + " Hedgefonds →</a></div>" +
         '<div class="hf-tools"><div class="hf-chips" id="hf-styles">' + renderStyleChips() + "</div>" +
         '<select class="hf-select" id="hf-sort" aria-label="Sortierung">' +
           [["value", "Größtes Portfolio"], ["change", "Stärkstes Wachstum"], ["concentration", "Am konzentriertesten"], ["filed", "Neueste Meldung"], ["name", "Name A–Z"]].map(function (o) {
@@ -388,11 +388,14 @@
 
   /* ------------------------------------------------- Hedgefonds-Datenbank */
   function dbAll() { return investors().concat(S.universe); }
+  function isHF(f) { return f.category === "Investoren" || f.style === "Hedgefonds"; }
+  function hfCount() { return dbAll().filter(isHF).length; }
   function dbFiltered() {
     var q = S.q.trim().toLowerCase();
     var list = dbAll().filter(function (f) {
+      if (S.dbFilter === "all" && !isHF(f)) return false;
       if (S.dbFilter === "star" && f.category !== "Investoren") return false;
-      if (S.dbFilter === "more" && f.category === "Investoren") return false;
+      if (S.dbFilter === "more" && (f.category === "Investoren" || f.style !== "Hedgefonds")) return false;
       if (S.dbFilter === "dach" && !f.region) return false;
       if (!q) return true;
       var hay = [f.name, f.manager, f.secName, f.style, f.city, regionLabel(f)].join(" ").toLowerCase();
@@ -412,14 +415,15 @@
     return list.sort(sorters[S.dbSort] || sorters.value);
   }
   function renderDatabaseShell() {
-    var all = dbAll(), star = investors().length, dach = all.filter(function (f) { return f.region; }).length;
+    var all = dbAll(), star = investors().length, dach = all.filter(function (f) { return f.region; }).length, hf = hfCount();
     var chip = function (k, label, n) {
       return '<button class="hf-chip" type="button" data-db="' + k + '" aria-pressed="' + (S.dbFilter === k) + '">' + label + '<span class="c">' + nf0.format(n) + "</span></button>";
     };
     return '<section class="hf-section" id="datenbank"><div class="hf-head"><div><h2>Hedgefonds-Datenbank</h2>' +
-      "<p>Alle " + nf0.format(all.length) + " erfassten Hedgefonds mit Fondsgröße (Wert des 13F-Portfolios), Veränderung zum Vorquartal und den größten Positionen inkl. Auf- oder Abbau.</p></div></div>" +
-      '<div class="hf-tools"><div class="hf-chips" id="hf-dbfilter">' + chip("all", "Alle", all.length) + chip("star", "Star-Investoren", star) +
-        chip("more", "Weitere Hedgefonds", all.length - star) + chip("dach", "Deutschland & DACH", dach) + "</div>" +
+      "<p>" + nf0.format(hf) + " Hedgefonds mit Fondsgröße (Wert des 13F-Portfolios), Veränderung zum Vorquartal und den größten Positionen inkl. Auf- oder Abbau. " +
+        "Unter „Deutschland &amp; DACH“ zusätzlich alle " + dach + " meldepflichtigen Investoren aus Deutschland, Österreich und der Schweiz (inkl. Banken und Vermögensverwalter).</p></div></div>" +
+      '<div class="hf-tools"><div class="hf-chips" id="hf-dbfilter">' + chip("all", "Alle Hedgefonds", hf) + chip("star", "Star-Investoren", star) +
+        chip("more", "Weitere Hedgefonds", hf - star) + chip("dach", "Deutschland & DACH", dach) + "</div>" +
       '<select class="hf-select" id="hf-dbsort" aria-label="Sortierung der Datenbank">' +
         [["value", "Größte Fonds"], ["change", "Stärkstes Wachstum"], ["drop", "Stärkster Rückgang"], ["buys", "Meiste Käufe"], ["filed", "Neueste Meldung"], ["name", "Name A–Z"]].map(function (o) {
           return '<option value="' + o[0] + '"' + (S.dbSort === o[0] ? " selected" : "") + ">" + o[1] + "</option>";
