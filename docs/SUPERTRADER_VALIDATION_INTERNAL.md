@@ -324,3 +324,45 @@ In allen 45 aufgelösten Splitfällen stimmte der umgerechnete Tagesbalken auf 1
 Die R9-Schranken (neutral -I, vorsichtig -IP) decken die nicht aufgelösten Kauftage **nicht vollständig** ab: Auf
 „klaren“ Tagen nehmen beide Schranken an, dass die Position hält; aufgelöste Fälle zeigen aber 28 % Gleichtags-Ausstiege
 auch dort. Deshalb läuft die vorab definierte äußerste Schranke r10b (3.1.0-IX: jeder nicht aufgelöste Kauftag endet zum Tagesbalken-Stop).
+
+### Fallprüfung großer Gewinner (PREREGISTRATION-R10-CASES.json) – Test unserer VU-Versionen
+- **Auswahl (vor jeder Analyse eingefroren):** SMCI + je Startjahr 2017–2025 der größte Anstieg (≥ 300 % in ≤ 252 Sitzungen,
+  investierbar am Start) unter weiter gelisteten und unter delisteten Titeln, verschiedene Branchen; je Gewinner ein
+  Fehlkandidat, der am selben Stichtag gleich stark aussah (≥ 85 % des 52-Wochen-Hochs, RS ≥ 90) und danach mindestens die
+  Hälfte verlor oder delistet wurde. Die Ranguebernächsten bilden eine versiegelte Prüfmenge.
+- **Läufe:** Diagnose 37095761820, Prüfmenge 37098889344, Vollportfolio r10c 37098890648, Minervini-Diagnose r10m 37099039970.
+- **Ursachen (19 Gewinner × 5 Methoden = 95 Fälle):** nie Kandidat 50, Kandidat ohne Einstieg 7, Einstieg ohne Platz im
+  Portfolio 24, zu früh verkauft (< 25 % des Anstiegs) 14, erfasst 0. Fehlkandidaten (95): nie Kandidat 66, Preis/Liquidität 3,
+  ohne Einstieg 10, ohne Platz 11, aufgenommen 5.
+- **Je Methode (Gewinner):** Momentum: 12 nie Kandidat (Momentum-Perzentil 98, Basisregel), 7 zu früh verkauft (Stop am
+  Tagestief, Teilverkauf nach Tagen). Weinstein: 19 nie Kandidat – 14 Gewinner waren schon in Stufe 2, die Engine sucht nur
+  Stufe-1-Basen (Fortsetzungskäufe fehlen). Darvas: 10 ohne Platz, 6 nie Kandidat, 3 zu früh (Stop 1 % unter Kauf).
+  Minervini: 11 nie Kandidat, 7 ohne Einstieg (Volumenregel, Bruch des Kontraktionstiefs), 1 ohne Platz. Turtle: 13 ohne
+  Platz (Kapital), 4 zu früh, 2 nie Kandidat.
+- **Unterscheidung:** Irgendeine Methode stieg in 17 von 19 Gewinnern ein, aber nur in 10 von 19 Fehlkandidaten – die
+  Kandidatensuche unterscheidet. Verloren gehen die Gewinner danach im Portfolio und beim Ausstieg.
+- **SMCI (Zeitlinie, intern):** ab Dezember 2022 RS über 90 und Gewinnwachstum je Aktie von 300–600 %. Darvas erkannte
+  die Ausbrüche mehrfach (Nov. 2022 bis Juli 2023); aufgenommen wurden zwei Einstiege, beide am selben Tag ausgestoppt;
+  der Einstieg vom 03.05.2023, der bis 23.06.2023 lief, bekam keinen Platz (Rang 7 von 18, alphabetisch). Turtle: 10 Einstiege,
+  einer aufgenommen (am Folgetag ausgestoppt), die übrigen ohne Kapital. Minervini: an 215 Tagen Trend-Template-Kandidat,
+  VCP-Regel ohne Treffer. Momentum: Basisregel nie erfüllt, erster Einstieg erst Juli 2024. Weinstein: nur Stufe 2, nie Kandidat.
+- **Gefundene Fehler und Korrekturen (PREREGISTRATION-R10-FIXES.json):** Nicht-Aktien im Universum (U1, Datenfehler),
+  Darvas-Kapazität (K1), alphabetische Platzvergabe (K3). K3 erfüllt die vorab festgelegte Regel an Prüfmenge und
+  Vollportfolio für Momentum, Weinstein, Minervini und Darvas 3.0.1, nicht für Darvas 3.0.0. Turtle bleibt alphabetisch.
+  Alle Urteile bleiben negativ; kein Vorteil belegt.
+
+### Minervini: tatsächlicher Prozess gegen unsere VU-Version 2.0.0
+- **Quellen:** Stockopedia-Interviews 2018, MarketWatch 2025, eigene Beiträge (Archiv), Audit-Seite 2021; Bücher nicht zugänglich.
+- **Auswahl:** Trend Template, RS gegen den Markt, „earnings, sales and margins – and the chart“; Code ohne Gewinnfilter.
+- **Exposition:** „progressive exposure“ (25–50 % Pilot, erhöhen bei Gewinnen); Code halbiert nur das Risiko nach Verlusten.
+- **Einstieg:** Ausbruch über den Pivot, auch „cheat“-Einstiege; Code: Schluss über Pivot mit ≥ 1,4× Volumen, Kauf zur nächsten Eröffnung.
+- **Stop/Verkauf:** Stop 8–10 % Obergrenze, Ø Verlust 4–5 %; verkauft in die Stärke, „trading around positions“; Code: Einstand ab 3R, 50-Tage-Linie.
+- **Wettbewerb 2021:** Long und Short, Hebel, über 550 Titel, tausende Ausführungen; unsere VU-Version: nur Long, ohne Hebel, ≤ 10 Positionen.
+- **Messung r10m (2016–2026, bereinigtes Universum):** Von 6,1 Mio. liquiden Aktientagen erfüllen 17 % das Trend Template;
+  davon erkennt die VCP-Regel an 9,6 % eine Basis, der Volumenrückgang lässt 21 % davon übrig; die Ausbruchsvolumen-Regel
+  verwirft 86 % der Einstiege (299 Trades in zehn Jahren, ohne die Regel 2 158). Ohne Volumenregel bleibt das Ergebnis
+  negativ (nicht robust); ohne RS-Filter, ohne Volumenrückgang oder mit 25 % statt 30 % über dem Tief ebenfalls negativ.
+- **Folgerung:** Unsere VU-Version handelt rund 30-mal im Jahr; Minervinis Ergebnis beruht auf Bausteinen, die sie nicht
+  enthält (Gewinnfilter, Verkauf in die Stärke, Exposition, Short/Hebel, diskretionäre Basisbeurteilung). Eine quellennähere
+  Version (Kauf am Pivot im Tagesverlauf, Gewinnfilter) braucht eine eigene Präregistrierung; Gewinnfilter derzeit nur für
+  heute gelistete Firmen möglich (Survivorship).
