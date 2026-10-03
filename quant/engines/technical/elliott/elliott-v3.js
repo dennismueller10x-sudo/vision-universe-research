@@ -50,7 +50,7 @@
   var DEFAULTS = {
     poolAtr: 1.0,                 // Monowellen-Schwelle in ATR
     windowYears: 6,               // Ursprung hoechstens so weit zurueck
-    maxNodes: 60000,              // Suchbudget je Analyse
+    maxNodes: 25000,              // Suchbudget je Analyse (Korpus DEVELOPMENT: 60 000 → 25 000 ohne Genauigkeitsverlust)
     maxScored: 500,               // vollstaendig bewertete Kandidaten (nach pfadbasierter Vorauswahl)
     similarity: 1 / 3,            // NEoWave Rule of Similarity
     subGrid: [0.04, 0.06, 0.09, 0.13, 0.19, 0.28, 0.4],
@@ -67,7 +67,7 @@
     clarity: { high: 0.1, moderate: 0.04 }, structural: { high: 0.68, moderate: 0.55 },
     noise: { abstainBelow: 1.3, full: 3.0 },
     /* Eichung Korpus DEVELOPMENT (scripts: elliott-corpus-eval, Bericht ELLIOTT_ENGINE3_REPORT.md): [1, countQuality, clarity/0,15, z/4, Strukturmehrdeutigkeit, laufend] */
-    applicability: { coef: [-4.139, 4.618, 4.662, 1.001, -0.658, -2.05], high: 0.5, moderate: 0.3 }
+    applicability: { coef: [-7.222, 7.725, 2.043, 0.835, 1, -1.953], high: 0.6, moderate: 0.35 }
   };
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -303,7 +303,11 @@
         if (truncated) return;
       }
     }
-    for (var a2 = 0; a2 < n && !truncated; a2++) {
+    /* Ursprungsreihenfolge: bedeutendste zuerst — reicht das Suchbudget nicht, fallen die unwahrscheinlichsten weg (nicht die juengsten). */
+    var anchorOrder = []; for (var a3 = 0; a3 < n; a3++) anchorOrder.push(a3);
+    anchorOrder.sort(function (x, y) { return leftSig[y] - leftSig[x] || x - y; });
+    for (var ai = 0; ai < anchorOrder.length && !truncated; ai++) {
+      var a2 = anchorOrder[ai];
       if (pts[a2].i < minAnchorIdx || pts[a2].dev) continue;
       /* Ursprung muss eine Bewegung abschliessen, die deutlich groesser als die Monowellen-Schwelle ist (Suchbudget). */
       if (cfg.anchorMinAtr && isNum(atrCol[pts[a2].i]) && leftSig[a2] < cfg.anchorMinAtr * atrCol[pts[a2].i]) continue;
@@ -573,7 +577,7 @@
   /**
    * Anwendbarkeit = Strukturklarheit der Zaehlung: Wie oft stimmte eine Hauptzaehlung mit diesen Merkmalen im synthetischen
    * Korpus (bekannte Struktur)? Logistische Eichung auf Korpus DEVELOPMENT (Ende + Mitte, alle Rauschstufen); Stufen ueber
-   * Praezisionsziele: HOCH ab 0,5 (abgeschlossene Muster: 87 % richtig im Entwicklungssplit), MITTEL ab 0,3, darunter
+   * Praezisionsziele: HOCH ab 0,6 (falsche Sicherheit 15 % im Entwicklungssplit), MITTEL ab 0,35, darunter
    * KEINE VERLAESSLICHE ZAEHLUNG. Keine Prognose ueber den Kurs — die Eichung misst Methodentreue, nicht Ergebnis.
    */
   function applicability3(q, clarity, snr, cfg, amb, complete) {

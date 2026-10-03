@@ -1,0 +1,21 @@
+{
+ "schemaVersion": "vu-elliott-freeze-1.0.0",
+ "frozenAt": "2026-10-03T06:38:00.763Z",
+ "engine": "elliott-3.0.0",
+ "ruleSet": "elliott-rules-3.0.0",
+ "parametersHash": "9a43273ad5a9629e",
+ "sha256": {
+  "quant/engines/technical/elliott/elliott-v3.js": "d042aeabed3f02e9af1a2e71414c1da4256de3fcf23ecf4ddfe531090a772341",
+  "quant/engines/technical/elliott/elliott-v2.js": "5fda575b4ad4612f0655f31638ca8c4263cfa49ea94c4085012e4293ebdbe562",
+  "quant/engines/technical/elliott/patterns.js": "07600426ec584cb335493f1670ea898de46ab4f2692ecd21d0392672db5be49b",
+  "quant/engines/technical/elliott/sources.js": "36fdf61c0f3ab91416a7ba4f565c34975351fe841a45541f9a0472170e22be6c",
+  "quant/engines/technical/ti/context.js": "aa7e490c5f3a05987cd5755173b8d5c6468b941883ccb721b6c5462edce7dbb0",
+  "quant/engines/technical/pivot-engine.js": "12ba836ed001a2f34739e95144c53f4d5c7ded0d03dd3db420547bfe9c69ed7b",
+  "quant/engines/technical/feature-store.js": "e43849f26973da14a69e7295a37b1bb9219b4adcf0ea4f9ed7bbbb72d5465114",
+  "quant/tests/elliott-corpus.mjs": "56830526dfca14e474caba0ff13d81261a08a3619c05a95dc2e97f51e0e1b4bd",
+  "scripts/technical/elliott-corpus-eval.mjs": "4592793e1d6762db2e08f29a6c0d144550286b1c28cb877de10eba5e9ea80b7c",
+  "scripts/technical/elliott-stability.mjs": "adc622f11680b3d035e50227536bd05a6d868a150965184dbc2698d36907dc94",
+  "scripts/technical/elliott-invariance.mjs": "688907414ee5987f9fedb3eb175793df8769afc274e30a31f89f09db398011a3"
+ },
+ "note": "Eingefroren vor dem einmaligen Oeffnen der HOLDOUT-Faelle (Korpus Seeds 20–29, Emittenten ew3-Split HOLDOUT). Validierungsvergleiche: (1) erster Lauf, G7 verfehlt (Anwendbarkeit auf altem Engine-Stand geeicht), G11 51 ms; (2) nach Neueichung auf DEVELOPMENT und Suchbudget/Reihenfolge: alle Korpus-Kriterien erfuellt."
+}
