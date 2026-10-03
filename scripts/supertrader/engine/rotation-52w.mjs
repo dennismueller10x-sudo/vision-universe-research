@@ -28,6 +28,7 @@ const SCEN = {
   S0_LAST_PRICE: (t, slip) => t.lastClose * (1 - slip),
   S1_MINUS_30: (t) => t.lastClose * 0.7,
   S2_DISTRESS_ZERO: (t) => (t.distress ? 0 : t.lastClose * 0.7),
+  S1C_CLASSIFIED: (t, slip) => (t.delistClass === 'ACQUISITION' ? t.lastClose * (1 - slip) : t.lastClose * 0.7),
 };
 
 function hash(seed, s) { let h = 2166136261 ^ seed; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }

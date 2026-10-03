@@ -15,6 +15,7 @@ import { applyR8 } from './registry-r8.mjs';
 import { applyR10 } from './registry-r10.mjs';
 import { applyR11 } from './registry-r11.mjs';
 import { buildR12, applyR12 } from './registry-r12.mjs';
+import { applyR13 } from './registry-r13.mjs';
 export const REGISTRY_VERSION = 'supertrader-registry-1.0.0';
 
 export const EVIDENCE = ['PRIMARY_EXPLICIT', 'PRIMARY_INFERRED', 'MULTI_SOURCE_CONFIRMED', 'SECONDARY_ONLY', 'DISPUTED', 'VU_FORMALIZATION', 'VU_EXTENSION', 'NOT_VERIFIABLE'];
@@ -674,6 +675,7 @@ applyR8({ momentum, weinstein, darvas, minervini, donchian, rule });
 applyR10({ momentum, weinstein, darvas, minervini, donchian, rule });
 applyR11({ momentum, rule });
 applyR12({ darvas, donchian, rule });
+applyR13({ weinstein, donchian, rule, strategies: [momentum, weinstein, darvas, minervini, donchian, trend52, canslim, piotroski, greenblatt, ...advancedList] });
 deriveProvenance();
 export const STRATEGIES = [momentum, weinstein, darvas, minervini, donchian, trend52, canslim, piotroski, greenblatt, ...advancedList];
 // Produktmodus: LIVE (Ein-/Ausstiege werden gerechnet), PARTIAL_CHECK (nur
