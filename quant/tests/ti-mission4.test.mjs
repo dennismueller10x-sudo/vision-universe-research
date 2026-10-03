@@ -74,3 +74,26 @@ test("M4-4 API carries consistent engine versions", () => {
   assert.ok(one.versions.ruleSet && one.versions.dataAsOf && one.versions.api);
   assert.equal(one.versions.elliottStatus, "EXPERIMENTAL_STRUCTURE_MODEL");
 });
+
+/* §92 Unmoegliche Kursniveaus: 328 von 5.292 Titeln (6 %) trugen Niveaus ≤ 0 oder > Faktor 10 vom Kurs (ACON: Kurs 2,44,
+   Ziel −2.695, Bestaetigung 949,73), weil der Measured Move linear in Kurspunkten nach einem Einbruch um 99,9 % rechnete. */
+test("M4-5 scenario levels are positive and plausible after a collapse", async () => {
+  const { analyzeProduct } = await import(join(ROOT, "scripts/technical/lib/ti-product.mjs"));
+  const check = (res, close, tag) => {
+    for (const s of res.scenarios || []) {
+      const lv = [];
+      if (s.entryZone) lv.push(s.entryZone.zoneLow, s.entryZone.zoneHigh);
+      if (s.invalidation) lv.push(s.invalidation.price);
+      if (s.confirmation) lv.push(s.confirmation.price);
+      (s.targets || []).forEach((z) => lv.push(z.zoneLow, z.zoneHigh));
+      for (const v of lv) { assert.ok(v > 0, tag + " " + s.kind + ": Niveau " + v + " ≤ 0"); assert.ok(v <= close * 12 && v >= close / 12, tag + " " + s.kind + ": Niveau " + v + " unplausibel bei Kurs " + close); }
+    }
+  };
+  /* synthetisch: 3.000 → 2 in 6 Jahren, dann seitwaerts mit Rauschen */
+  const pts = []; let d = Date.UTC(2015, 0, 2), v = 3000;
+  for (let i = 0; i < 520; i++) { v = i < 300 ? v * Math.exp(Math.log(2 / 3000) / 300 + 0.04 * Math.sin(i / 3)) : 2 * (1 + 0.15 * Math.sin(i / 5)); pts.push([new Date(d).toISOString().slice(0, 10), +v.toFixed(4)]); d += 7 * 86400000; }
+  const s = weeklySeriesFromPoints(pts, "COLLAPSE"), out = analyzeProduct(s, {});
+  check(out.res, s.close[s.length - 1], "synthetisch");
+  const f = join(ROOT, "quant/data/market/discover-series-long/ref_ACON.json");
+  if (existsSync(f)) { const s2 = weeklySeriesFromPoints(JSON.parse(readFileSync(f, "utf8")).points, "ACON"); check(analyzeProduct(s2, {}).res, s2.close[s2.length - 1], "ACON"); }
+});

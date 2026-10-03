@@ -45,6 +45,7 @@ const TI = require(join(ROOT, "quant/engines/technical/ti/engine.js"));
 const EV3 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js"));
 const Explain = require(join(ROOT, "quant/engines/technical/ti/explain.js"));
 const Alerts = require(join(ROOT, "quant/engines/technical/ti/alerts.js"));
+const Scenario = require(join(ROOT, "quant/engines/technical/ti/scenario.js"));
 
 const OUT = join(ROOT, "quant/data/technical-intelligence/v3");
 const Patterns = require(join(ROOT, "quant/engines/technical/elliott/patterns.js"));
@@ -285,7 +286,7 @@ async function main() {
   Object.keys(shards).forEach((k) => { shards[k] = Object.fromEntries(Object.keys(shards[k]).sort().map((t) => [t, shards[k][t]])); });
   // ---- Alerts gegen den vorherigen Index (Mission IV §51: nie aus Methoden-/Engine-Wechsel, nur bei neuen Marktdaten)
   const idxPath = join(OUT, "index.json.gz");
-  const methodologyKey = JSON.stringify({ bundle: TI.BUNDLE_VERSION, api: API_VERSION, methodology: PRODUCT_METHODOLOGY, elliott: EV3.ENGINE_VERSION, rules: Patterns.RULE_SET_VERSION });
+  const methodologyKey = JSON.stringify({ bundle: TI.BUNDLE_VERSION, api: API_VERSION, methodology: PRODUCT_METHODOLOGY, elliott: EV3.ENGINE_VERSION, rules: Patterns.RULE_SET_VERSION, scenario: Scenario.ENGINE_VERSION });
   let prevIdx = null;
   if (existsSync(idxPath)) { try { const j = JSON.parse(gunzipSync(readFileSync(idxPath)).toString()); prevIdx = { methodologyKey: j.methodologyKey || null, rows: j.rows }; } catch (e) { prevIdx = null; } }
   const run = Alerts.diffRun(prevIdx, { methodologyKey, rows });

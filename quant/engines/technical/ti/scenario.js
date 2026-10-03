@@ -36,7 +36,7 @@
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
   var Hash = isNode ? require("../../hash.js") : global.VUHash;
-  var ENGINE_VERSION = "ti-scenario-1.0.0";
+  var ENGINE_VERSION = "ti-scenario-1.1.0";   // 1.1.0 (Mission IV): Kursniveaus nur positiv und plausibel, Measured Move prozentual
 
   var DEFAULTS = {
     /* Prior aus Evidenzgraden (METHOD_RESEARCH.md). WYCKOFF = 0: keine Literatur-Evidenz (Grad D) UND in der
@@ -47,7 +47,8 @@
     zone: { minWidthAtr: 0.6, maxWidthAtr: 2.0, clusterTolAtr: 0.75 },
     entry: { maxDistanceAtr: 4.0, retracementBand: [0.382, 0.618] },
     invalidation: { minGapAtr: 0.3, maxRiskAtr: 4.5, bufferAtr: 0.25 },
-    targets: { minDistanceAtr: 1.5, separationAtr: 1.5 },
+    targets: { minDistanceAtr: 1.5, separationAtr: 1.5, maxFactor: 10 },
+    confirmation: { maxDistanceAtr: 8 },
     empirical: { minSample: 30 }
   };
 
@@ -162,6 +163,7 @@
       elliottUsed = true;
     }
     (x.levels.fib.clusters || []).forEach(function (fc) { ent.push({ price: fc.center, weight: 0.4 * fc.anchors, type: "FIB_CLUSTER", relation: "Fibonacci-Konfluenz aus " + fc.anchors + " Ankern" }); });
+    ent = ent.filter(function (e) { return isNum(e.price) && e.price > 0; });
     var near = ent.filter(function (e) { return d > 0 ? e.price <= close + 0.5 * atr && e.price >= close - cfg.entry.maxDistanceAtr * atr : e.price >= close - 0.5 * atr && e.price <= close + cfg.entry.maxDistanceAtr * atr; });
     var cl = cluster(near, atr, cfg.zone.clusterTolAtr).sort(function (a, b) { return b.weight - a.weight || Math.abs(a.center - close) - Math.abs(b.center - close); });
     var template, entry;
@@ -206,10 +208,14 @@
       });
     }
     (d > 0 ? x.levels.sr.resistances : x.levels.sr.supports).forEach(function (z) { tg.push({ price: z.center, weight: 0.5 + 0.25 * Math.min(4, z.strength), type: d > 0 ? "RESISTANCE" : "SUPPORT", relation: (d > 0 ? "Widerstandszone" : "Unterstützungszone") + " (" + z.touches + " Berührungen)" }); });
-    [1.0, 1.618].forEach(function (r) { tg.push({ price: entryEdgeNear + d * L * r, weight: r === 1 ? 0.8 : 0.6, type: "MEASURED_MOVE", relation: r + " × Länge des letzten Swings ab Einstiegszone" }); });
+    /* Measured Move prozentual (Mission IV): linear in Kurspunkten ergab nach starken Einbruechen negative Ziele
+       (ACON: Swing 2.700 → 2, Ziel −2.695). Gleiche prozentuale Bewegung bleibt immer positiv. */
+    if (A > 0 && B > 0) [1.0, 1.618].forEach(function (r) { tg.push({ price: entryEdgeNear * Math.pow(B / A, r), weight: r === 1 ? 0.8 : 0.6, type: "MEASURED_MOVE", relation: r + " × prozentuale Länge des letzten Swings ab Einstiegszone" }); });
     (x.levels.fib.levels || []).filter(function (f) { return f.kind === "EXTENSION" && (f.ratio === 1.272 || f.ratio === 1.618); }).forEach(function (f) { tg.push({ price: f.price, weight: 0.35, type: "FIB_EXTENSION", relation: "Fibonacci-Extension " + f.ratio }); });
     if (activePattern) tg.push({ price: (activePattern.target.zoneLow + activePattern.target.zoneHigh) / 2, weight: 0.7, type: "PATTERN_TARGET", relation: activePattern.name + ": Höhe der Formation" });
     var minT = entryEdgeNear + d * cfg.targets.minDistanceAtr * atr;
+    /* Nur positive Ziele innerhalb des Faktors maxFactor um den Kurs (sonst keine sinnvolle Szenario-Aussage). */
+    tg = tg.filter(function (c) { return isNum(c.price) && c.price > 0 && c.price <= close * cfg.targets.maxFactor && c.price >= close / cfg.targets.maxFactor; });
     var cands = cluster(tg.filter(function (c) { return d > 0 ? c.price >= minT : c.price <= minT; }), atr, cfg.zone.clusterTolAtr)
       .sort(function (a, b) { return d > 0 ? a.center - b.center : b.center - a.center; });
     var targets = [];
@@ -218,8 +224,14 @@
       if (c.weight < 0.6 && targets.length === 0 && cands.length > 1) return;   // T1 braucht Substanz
       var prev = targets[targets.length - 1];
       if (prev && Math.abs(c.center - prev.center) < cfg.targets.separationAtr * atr) return;
-      targets.push(toZone(c, atr, cfg, "Ziel " + (targets.length + 1)));
+      var z = toZone(c, atr, cfg, "Ziel " + (targets.length + 1));
+      /* Zielzonen duerfen sich nach dem Runden weder mit der Einstiegszone noch untereinander beruehren. */
+      var edge = prev ? (d > 0 ? prev.zoneHigh : prev.zoneLow) : entryEdgeNear;
+      if (z.zoneLow > 0 && (d > 0 ? z.zoneLow > edge : z.zoneHigh < edge)) targets.push(z);
     });
+    /* Volatilitaet groesser als das Kursniveau (z. B. nach einem Einbruch um 99 %): Zone oder Grenze laege bei ≤ 0.
+       Dann gibt es kein in Kursen ausdrueckbares Szenario – lieber keins als ein unmoegliches. */
+    if (!(entry.zoneLow > 0) || !(invalidation.price > 0)) return null;
     // ------------------------------------------------ Status
     var inEntry = close >= entry.zoneLow && close <= entry.zoneHigh;
     var beyondInv = d > 0 ? close < invalidation.price : close > invalidation.price;
@@ -228,6 +240,8 @@
     var confirmation = null;
     var sh = x.dow.shortTerm;
     if (sh && sh.lastHigh) confirmation = { price: d > 0 ? sh.lastHigh.price : sh.lastLow.price, rule: "Schluss " + (d > 0 ? "über dem letzten kurzfristigen Hoch" : "unter dem letzten kurzfristigen Tief") };
+    /* Ein uraltes Swing-Niveau weit weg vom Kurs (ACON: 949,73 bei Kurs 2,44) ist keine Bestaetigungsmarke. */
+    if (confirmation && !(confirmation.price > 0 && Math.abs(confirmation.price - close) <= cfg.confirmation.maxDistanceAtr * atr)) confirmation = null;
     var riskAtr = Math.abs((entry.zoneLow + entry.zoneHigh) / 2 - invalidation.price) / atr;
     var t1 = targets[0];
     var rr = t1 ? Math.abs(t1.center - (entry.zoneLow + entry.zoneHigh) / 2) / Math.max(1e-9, Math.abs((entry.zoneLow + entry.zoneHigh) / 2 - invalidation.price)) : null;
@@ -304,6 +318,7 @@
   function build(x, cfgIn) {
     var cfg = Object.assign({}, DEFAULTS, cfgIn || {});
     cfg.familyWeights = Object.assign({}, DEFAULTS.familyWeights, (cfgIn && cfgIn.familyWeights) || {});
+    ["zone", "entry", "invalidation", "targets", "confirmation"].forEach(function (k) { cfg[k] = Object.assign({}, DEFAULTS[k], (cfgIn && cfgIn[k]) || {}); });
     var conf = confluence(x, cfg);
     var structuralLevel = x.elliott && x.elliott.primary ? x.elliott.clarityLevel : "LOW";
     var scenarios = [];
