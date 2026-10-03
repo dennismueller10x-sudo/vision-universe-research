@@ -90,3 +90,41 @@ test("LC6 · der Marktdaten-Lauf kuerzt nach der Reparatur und vor allen Ableitu
   const sync = readFileSync(join(ROOT, "scripts/market/sync-history-store.mjs"), "utf8");
   assert.match(sync, /payload\.listingContinuity[\s\S]{0,400}currentListingSegment[\s\S]{0,400}putSeries/);
 });
+
+test("LC7 · der Bericht fuehrt jede je gekuerzte Reihe kumulativ - auch in Laeufen, die nichts mehr schneiden", async () => {
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { spawnSync } = await import("node:child_process");
+  const work = mkdtempSync(join(tmpdir(), "lc7-"));
+  try {
+    mkdirSync(join(work, "tiingo", "daily"), { recursive: true });
+    /* Bereits gekuerzt (Vermerk vom 03.10.), heute keine Luecke mehr. */
+    writeFileSync(join(work, "tiingo", "daily", "ref_AAPL.json"), JSON.stringify({ securityId: "ref_AAPL", bars: reihe("2026-05-05", 40, 25),
+      listingContinuity: { gapDays: 5601, droppedBars: 40, droppedTo: "2011-01-03", keptFrom: "2026-05-05", at: "2026-10-03T05:32:19.444Z", previous: null } }));
+    /* Neu zu kuerzen. */
+    writeFileSync(join(work, "tiingo", "daily", "ref_MSFT.json"), JSON.stringify({ securityId: "ref_MSFT", bars: [...reihe("2010-01-04", 10, 9), ...reihe("2026-01-05", 30, 400)] }));
+    const report = join(work, "report.json");
+    const r = spawnSync(process.execPath, [join(ROOT, "scripts/market/guard-listing-continuity.mjs"), "--work-dir", work, "--report", report], { encoding: "utf8" });
+    assert.equal(r.status, 0, r.stderr);
+    const out = JSON.parse(readFileSync(report, "utf8"));
+    assert.equal(out.seriesCut, 1);
+    const ids = out.productUniverse.rows.map((x) => x[0]).sort();
+    assert.deepEqual(ids, ["ref_AAPL", "ref_MSFT"], "eine frueher gekuerzte Reihe fehlt im Bericht");
+    const col = out.productUniverse.columns.indexOf("firstCutAt");
+    assert.equal(out.productUniverse.rows.find((x) => x[0] === "ref_AAPL")[col], "2026-10-03");
+  } finally { rmSync(work, { recursive: true, force: true }); }
+});
+
+test("LC8 · Paritaet veroeffentlichter Setup-Staende: nur belegt korrigierte Reihen und nur Staende vor dem Schnitt sind ausgenommen", async () => {
+  const { seriesRevisions, revisedSincePublication } = await import("../../scripts/quant/build-setup-backtest.mjs");
+  const rev = seriesRevisions({ generatedAt: "2026-10-03T05:32:19Z", productUniverse: { columns: ["securityId", "ticker", "gapDays", "droppedBars", "droppedTo", "keptFrom", "firstCutAt"],
+    rows: [["ref_FEXD", "FEXD", 528, 415, "2024-08-27", "2026-02-06", "2026-10-03"]] } });
+  assert.equal(revisedSincePublication(rev, "ref_FEXD", "2026-10-02"), true);
+  /* Gegenprobe: ein Stand NACH dem Schnitt und jeder andere Titel bleiben in der Paritaet. */
+  assert.equal(revisedSincePublication(rev, "ref_FEXD", "2026-10-05"), false);
+  assert.equal(revisedSincePublication(rev, "ref_AAPL", "2026-10-02"), false);
+  assert.equal(revisedSincePublication(seriesRevisions(null), "ref_FEXD", "2026-10-02"), false);
+  /* Alter Bericht ohne Spalte: Stichtag des Berichts. */
+  const alt = seriesRevisions({ generatedAt: "2026-10-03T05:32:19Z", productUniverse: { columns: ["securityId"], rows: [["ref_FEXD"]] } });
+  assert.equal(revisedSincePublication(alt, "ref_FEXD", "2026-10-03"), true);
+});
