@@ -14,6 +14,10 @@ on:
     paths: ['discover/**', 'scripts/discover/**', '.github/workflows/discover-ci.yml']
   workflow_dispatch:
 
+# Nur lesen: reine Pruef-Workflows brauchen kein Schreibrecht (Audit 03.10.2026).
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

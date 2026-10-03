@@ -55,9 +55,12 @@ jobs:
       - name: Freshness gegen die veroeffentlichte Seite
         id: live
         continue-on-error: true
+        env:
+          # Eingaben nur ueber env: - nie direkt in das Skript interpoliert (Script-Injection, Audit 03.10.2026).
+          IN_SITE: ${{ github.event_name == 'workflow_dispatch' && inputs.site || 'https://research.visionuniverse.de' }}
         run: |
           set -o pipefail
-          SITE='${{ github.event_name == 'workflow_dispatch' && inputs.site || 'https://research.visionuniverse.de' }}'
+          SITE="$IN_SITE"
           node scripts/market/check-freshness.mjs --strict --site="$SITE" | tee freshness-live.txt
 
       - name: Freshness des Repository-Stands (zur Einordnung)

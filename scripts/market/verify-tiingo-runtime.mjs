@@ -88,7 +88,7 @@ const registry = SymbolMapping.createRegistry([
     mic: "XNYS", currency: "USD", country: "US", confidence: "verified" },
   { securityId: "ref_AAPL", providerId: "tiingo", providerSymbol: "AAPL", ticker: "AAPL",
     mic: "XNAS", currency: "USD", country: "US", confidence: "verified" },
-  { securityId: "ref_BRKB", providerId: "tiingo", providerSymbol: "BRK-B", ticker: "BRK-B",
+  { securityId: "ref_BRK_B", providerId: "tiingo", providerSymbol: "BRK-B", ticker: "BRK-B",
     mic: "XNYS", currency: "USD", country: "US", confidence: "verified" }
 ]);
 
@@ -271,7 +271,7 @@ if (ko.available && ko.data.bars.length) {
 /* --------------------------------------- 5. Sonderzeichen im Ticker */
 
 console.log("  [5/6] Ticker mit Sonderzeichen (BRK-B) …");
-const brk = await provider.getDailyBars("ref_BRKB", { from: "2026-08-01" });
+const brk = await provider.getDailyBars("ref_BRK_B", { from: "2026-08-01" });
 record("symbolEncoding", brk.available ? "PASSED" : befund(brk), {
   symbol: "BRK-B", bars: brk.available ? brk.data.bars.length : 0,
   reason: brk.available ? null : brk.reason

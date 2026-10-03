@@ -24,7 +24,10 @@ permissions:
   contents: write
 
 concurrency:
-  group: index-membership
+  # Je Zweig eine Gruppe: Laeufe auf claude/** stehen nicht mehr in der
+  # Warteschlange von main (eine neue wartende Anfrage verdraengt die
+  # aeltere wartende - auch eine uebersprungene). Audit 03.10.2026.
+  group: index-membership-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -37,6 +40,9 @@ jobs:
       contains(github.event.head_commit.message, '[index-membership]')
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -66,7 +72,6 @@ jobs:
             echo "Keine Aenderung."
           else
             git commit -m "Index-Mitgliedschaft: $(node -e 'const i=require("./quant/data/market/index-membership/index.json");console.log(i.indexes.map(x=>x.indexId+" "+x.memberCount+" ("+x.asOf+")").join(", "))')"
-            git pull --rebase origin "${GITHUB_REF_NAME}"
             # Ein anderer Daten-Workflow kann zwischen Rebase und Push auf
             # main landen (03.10.2026: Supertrader-Signale, 25 s Abstand).
             # Dasselbe Werkzeug wie der Marktdaten-Lauf: neu aufsetzen und

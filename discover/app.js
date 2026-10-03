@@ -114,8 +114,8 @@
       capabilities:dir.capabilities(hits&&hits.entries&&hits.entries[0]),masterVersion:manifest&&manifest.version,asOf:manifest&&manifest.asOf},ctx);
     watchButton(root,symbol);
   }
-  async function route() {
-    if(!meta)return;
+  async function route(k) {
+    if(!meta)return;const y=k===1?scrollY:0;
     const id=++generation,active=()=>generation===id;
     if(homeDispose){homeDispose();homeDispose=null;}
     if(marketDispose){marketDispose();marketDispose=null;}
@@ -124,7 +124,7 @@
     document.body.classList.toggle('dx-feed-aktiv',parts[0]==='einzeln');
     document.body.classList.toggle('v2-feed-active',parts[0]==='einzeln');
     const root=shell();root.setAttribute('aria-busy','true');
-    document.title='Discover — Vision Universe®';global.scrollTo(0,0);
+    document.title='Discover — Vision Universe®';if(!y)global.scrollTo(0,0);
     try {
       await D.LiveHub.loadIndex().catch(()=>null);if(!active())return;
       if(parts[0]==='s'&&parts[2]){
@@ -259,7 +259,7 @@
       }
       if(active()){
         D.Cards.revealOnScroll(root);
-        if(parts[0]==='c'||parts[0]==='thema')global.requestAnimationFrame(()=>{if(active())global.scrollTo(0,0);});
+        if(y)scrollTo(0,y);else if(parts[0]==='c'||parts[0]==='thema')global.requestAnimationFrame(()=>{if(active())global.scrollTo(0,0);});
       }
     } catch(err) {
       if(active())message(root,'Gerade nicht erreichbar','Die Daten konnten nicht geladen werden. Bitte versuche es noch einmal.',true);
@@ -280,8 +280,8 @@
       document.querySelector('vu-navigation')?.renderSettings();
       setupSearch();global.addEventListener('hashchange',route);
       if('scrollRestoration' in history)history.scrollRestoration='manual';
-      document.addEventListener('vu-currency-change',route);
-      document.addEventListener('vu-fx-ready',route);
+      document.addEventListener('vu-currency-change',()=>route(1));
+      document.addEventListener('vu-fx-ready',()=>route(1));
       if(global.VUFx&&global.VUFx.Bootstrap){
         global.VUFx.Bootstrap.boot().catch(()=>{ /* ohne Kurse bleibt die Originalwaehrung */ });
       }
