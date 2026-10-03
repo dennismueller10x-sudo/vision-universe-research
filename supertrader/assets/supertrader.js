@@ -457,6 +457,9 @@
     else main.appendChild(sec('Warum heute keine Kandidaten?', [emptyBox('Pflichtdaten fehlen', (c && c.activationCondition) || 'Die Methode braucht Daten, die noch nicht vorliegen.'), c ? gapList(c) : null]));
 
     if (s.fidelity && s.fidelity.rules && s.fidelity.rules.length) main.appendChild(sec('Was stammt vom Trader, was von Vision Universe?', [fidelityList(s, D)], { kicker: 'Methodentreue je Regel' }));
+    if (s.processChain) { var PCL = { ORIGINAL: ['Original', 'good'], DOCUMENTED_VARIANT: ['dokumentierte Variante', 'info'], OPERATIONALIZATION: ['umgesetzt', 'info'], VU_EXTENSION: ['VU-Annahme', 'warn'], MISSING: ['fehlt', 'mute'] };
+      main.appendChild(sec('Vom Kandidaten bis zur Portfoliorendite', [h('ol', { class: 'st-chain' }, s.processChain.steps.map(function (x) { var c = PCL[x.cls] || [x.cls, 'mute']; return h('li', null, [h('div', { class: 'h' }, [h('strong', { text: x.step }), h('span', { class: 'st-tag', 'data-t': c[1], text: c[0] })]), h('p', { text: x.rule }), h('p', { class: 'st-hint', text: 'Quelle: ' + x.source })]); })),
+        s.processChain.finding ? h('p', { class: 'st-p', text: s.processChain.finding }) : null], { kicker: 'Prozesskette v' + s.processChain.version + ' · Regel, Quelle, Herkunft' })); }
     // Drei Aussagen im Detail
     if (c) main.appendChild(sec('Was ist belegt?', [assessments(s, c, D)], { kicker: 'Regel · Quellen · Daten · Evidenz' }));
     // Details
@@ -523,7 +526,7 @@
         h('div', { class: 'r2', text: 'Einstieg ' + dateShort(p.entryDate) + ' zu ' + num(p.entryPrice) + ' · Stop ' + num(p.stop) + ' · Risiko bis Stop ' + pct(p.riskToStopPct || 0, 2) + (p.version !== s.strategy_version ? ' · Regel v' + p.version : '') }),
       ])]);
     })));
-    if (mp.notTaken && mp.notTaken.length) kids.push(details('Nicht übernommen (' + mp.notTaken.length + ')', [h('p', { class: 'st-hint', text: 'Diese Modelleinstiege stehen im Protokoll, bekamen im Modellportfolio aber keinen Platz.' }), h('ul', { class: 'st-ul' }, mp.notTaken.slice(0, 60).map(function (x) { return h('li', { text: x.symbol + ' · ' + dateShort(x.entryDate) + ' · ' + ({ MAX_POSITIONS: 'alle Plätze belegt', NO_CASH: 'kein Kapital frei', NO_RISK: 'Stop nicht unter dem Einstieg' }[x.reason] || x.reason) }); }))]));
+    if (mp.notTaken && mp.notTaken.length) kids.push(details('Nicht übernommen (' + mp.notTaken.length + ')', [h('p', { class: 'st-hint', text: 'Diese Modelleinstiege stehen im Protokoll, bekamen im Modellportfolio aber keinen Platz.' }), h('ul', { class: 'st-ul' }, mp.notTaken.slice(0, 60).map(function (x) { return h('li', { text: x.symbol + ' · ' + dateShort(x.entryDate) + ' · ' + ({ MAX_POSITIONS: 'alle Plätze belegt', NO_CASH: 'kein Kapital frei', NO_RISK: 'Stop nicht unter dem Einstieg', MARKET_FILTER: 'Marktampel rot – keine neue Position' }[x.reason] || x.reason) }); }))]));
     if (mp.closed && mp.closed.length) kids.push(details('Abgeschlossen (' + mp.closed.length + ')', [h('ul', { class: 'st-ul' }, mp.closed.map(function (x) { return h('li', { text: x.symbol + ' · ' + dateShort(x.entryDate) + ' → ' + dateShort(x.exitDate) + ' · ' + ruleText(x.exitRuleId) + ' · ' + pct(x.returnPct, 1, true) }); }))]));
     kids.push(rules);
     kids.push(h('p', { class: 'st-hint', text: mp.publication || '' }));
@@ -611,7 +614,7 @@
     var p = (mp.positions || []).filter(function (x) { return x.signalId === s.id; })[0];
     if (p) return ['Positionsgröße', pct(p.weightPct, 1), 'Modellportfolio · Risiko ' + pct(p.initialRiskPct || 0, 2)];
     var n = (mp.notTaken || []).filter(function (x) { return x.signalId === s.id; })[0];
-    if (n) return ['Positionsgröße', 'kein Platz', 'Modellportfolio voll (' + (mp.config.maxPositions || 10) + ' Positionen)'];
+    if (n) return n.reason === 'MARKET_FILTER' ? ['Positionsgröße', 'nicht übernommen', 'Marktampel rot (SPY unter dem 200-Tage-Durchschnitt)'] : ['Positionsgröße', 'kein Platz', 'Modellportfolio voll (' + (mp.config.maxPositions || 10) + ' Positionen)'];
     return null;
   }
   function evidenceBanner(s, D) {

@@ -413,3 +413,10 @@ p { margin: 0; }
 .st-exlist li:first-child{border-top:0}
 .st-exlist .r{display:block;font-size:.75rem;color:var(--st-muted);margin-top:2px}
 .st-exlist p{margin:4px 0 0;font-size:.88rem;line-height:1.4}
+/* Runde 12: Prozesskette je Methode */
+.st-chain{margin:0;padding:0;list-style:none;display:grid;gap:8px;counter-reset:chain}
+.st-chain>li{counter-increment:chain;padding:10px 12px 10px 40px;border:1px solid var(--st-line-2);border-radius:12px;background:var(--st-surface);position:relative}
+.st-chain>li::before{content:counter(chain);position:absolute;left:12px;top:10px;width:20px;height:20px;border-radius:50%;background:var(--st-line-2);font-size:.75rem;display:grid;place-items:center}
+.st-chain>li .h{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.st-chain>li p{margin:4px 0 0;font-size:13.5px}
+.st-chain>li p.st-hint{margin-top:2px;font-size:12px}

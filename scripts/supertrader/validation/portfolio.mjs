@@ -166,3 +166,13 @@ export function maxDrawdown(curve, key = 'equity') {
   for (const p of curve) { peak = Math.max(peak, p[key]); mdd = Math.min(mdd, p[key] / peak - 1); }
   return mdd;
 }
+
+// Runde 12 (PORT-MARKET-200): SPY ueber GD 200 am Vortag je Handelstag (Marktampel).
+export function marketOkMap(spyAdj, days = 200) {
+  const out = new Map(); let sum = 0; const d = spyAdj.date, c = spyAdj.close;
+  for (let i = 0; i < d.length; i++) {
+    sum += c[i]; if (i >= days) sum -= c[i - days];
+    if (i + 1 < d.length) out.set(d[i + 1], i >= days - 1 ? c[i] > sum / days : null);
+  }
+  return out;
+}

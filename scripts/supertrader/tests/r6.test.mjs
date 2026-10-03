@@ -31,7 +31,8 @@ test('R6-1 Donchian v1.1.0: Prüfergebnis bleibt „In Prüfung“; seit Runde 8
   assert.ok(e.history.some((h) => h.version === '1.1.0' && h.level === 'IN_REVIEW'));
   // Runde 8: 2.0.0 laeuft live, offene Positionen aus 1.0.0/1.1.0 fuehrt die unveraenderte 1.1.0-Engine.
   const live = LIVE_ENGINES.find((x) => x.id === 'DONCHIAN_TURTLE');
-  assert.equal(live.version, '2.0.0');
+  // Runde 12: 2.0.1 = 2.0.0 mit Marktampel im Modellportfolio (Signale unveraendert, 2.0.0-Setups laufen weiter).
+  assert.equal(live.version, '2.0.1'); assert.ok(live.signalCompatible.includes('2.0.0'));
   assert.equal(live.legacy['1.1.0'], donchian); assert.equal(live.legacy['1.0.0'], donchian);
   assert.equal(donchian.version, '1.1.0');
   assert.deepEqual(donchian.manageCompatible, ['1.0.0', '1.1.0']);
@@ -69,7 +70,7 @@ test('R6-4 Ausgeliefertes registry.json enthält die Einstufung; Protokoll der F
   const ledger = read('ledger/DONCHIAN_TURTLE.json');
   assert.ok(ledger.open.some((s) => s.entry), 'laufende Modellpositionen im Protokoll');
   // Runde 8: 2.0.0 sucht neu; Positionen aus 1.x laufen nach ihrer Version weiter, wartende 1.x-Setups sind abgeloest.
-  for (const s of ledger.open) assert.ok(s.version === '2.0.0' || (s.entry && ['1.0.0', '1.1.0'].includes(s.version)), s.id);
+  for (const s of ledger.open) assert.ok(s.version === '2.0.0' || s.version === '2.0.1' || (s.entry && ['1.0.0', '1.1.0'].includes(s.version)), s.id);
   assert.ok(ledger.open.some((s) => s.entry && s.version === '1.1.0'), 'Altpositionen bleiben erhalten');
 });
 

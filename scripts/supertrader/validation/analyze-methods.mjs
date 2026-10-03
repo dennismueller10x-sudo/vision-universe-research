@@ -21,7 +21,7 @@ import zlib from 'node:zlib';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import * as L from './lib.mjs';
-import { runPortfolioTR, runPortfolioTR as runPortfolioTRBase, reconcile, cagrBetween, maxDrawdown } from './portfolio.mjs';
+import { runPortfolioTR, runPortfolioTR as runPortfolioTRBase, reconcile, cagrBetween, maxDrawdown, marketOkMap } from './portfolio.mjs';
 import { computeIndicators, isoWeekKey } from '../engine/indicators.mjs';
 import { simulate } from '../engine/simulator.mjs';
 import { runPortfolio, computeMetrics, PORTFOLIO_DEFAULTS } from '../engine/backtest.mjs';
@@ -137,15 +137,7 @@ export function enginesR12() {
   for (const e of live) out.push(e, { ...e, version: e.version + '-M', tradesOf: `${e.id}@${e.version}`, portfolio: { ...portfolioOf(e), marketFilter: true } });
   return out;
 }
-// SPY ueber GD 200 am Vortag je Handelstag (Marktampel).
-export function marketOkMap(spyAdj, days = 200) {
-  const out = new Map(); let sum = 0; const d = spyAdj.date, c = spyAdj.close;
-  for (let i = 0; i < d.length; i++) {
-    sum += c[i]; if (i >= days) sum -= c[i - days];
-    if (i + 1 < d.length) out.set(d[i + 1], i >= days - 1 ? c[i] > sum / days : null);
-  }
-  return out;
-}
+export { marketOkMap } from './portfolio.mjs';
 const ROLE_R11 = { 'MOMENTUM_BREAKOUT@3.1.0': 'REFERENCE_LIVE', 'WEINSTEIN_STAGE@3.0.0': 'REFERENCE_LIVE', 'DARVAS_BOX@3.0.1': 'REFERENCE_LIVE', 'MINERVINI_VCP@2.0.0': 'REFERENCE_LIVE', 'DONCHIAN_TURTLE@2.0.0': 'REFERENCE_LIVE',
   'MOMENTUM_BREAKOUT@3.2.0': 'R11_CORRECTION', 'WEINSTEIN_STAGE@4.0.0': 'R11_NEW_RULE', 'MINERVINI_VCP@3.0.0': 'R11_NEW_RULE', 'MINERVINI_VCP@3.0.0-NA': 'SENSITIVITY_MISSING_EPS', 'DONCHIAN_TURTLE@2.1.0': 'R11_NEW_RULE', 'DONCHIAN_TURTLE@2.1.0-CAP': 'SENSITIVITY_CAP_1_12' };
 const ROLE_R10C = (v) => (v.endsWith('-RS') ? 'R10_PRIORITY_RS' : v === '3.0.1' ? 'R10_DARVAS_CAPACITY' : 'R10_BASE_CLEAN_UNIVERSE');

@@ -37,6 +37,9 @@ import kkBreakout2 from './engine/strategies/kk-breakout-v2.mjs';
 import kkBreakout3 from './engine/strategies/kk-breakout-v3.mjs';
 import kkBreakout31 from './engine/strategies/kk-breakout-v31.mjs';
 import kkBreakout32 from './engine/strategies/kk-breakout-v32.mjs';
+import darvas302 from './engine/strategies/darvas-v302.mjs';
+import donchian201 from './engine/strategies/donchian-v201.mjs';
+import { marketOkMap } from './validation/portfolio.mjs';
 import donchian2 from './engine/strategies/donchian-v2.mjs';
 import darvas3 from './engine/strategies/darvas-v3.mjs';
 import darvas301 from './engine/strategies/darvas-v301.mjs';
@@ -47,6 +50,7 @@ import weinstein2 from './engine/strategies/weinstein-v2.mjs';
 import { fidelityFor, FIDELITY_VERSION, RULE_CLASS, SOURCE_ACCESS, PRODUCT_STATUS as FIDELITY_STATUS } from './fidelity.mjs';
 import { buildModelPortfolio, portfolioConfig, MODEL_PORTFOLIO_VERSION } from './model-portfolio.mjs';
 import { runTrend52Live, trend52View } from './trend52-live.mjs';
+import { PROCESS_CHAIN, STEPS as PROCESS_STEPS } from './process-chain.mjs';
 import * as canslim from './engine/partial/canslim.mjs';
 import * as piotroski from './engine/partial/piotroski.mjs';
 import { buildPilotArtifact } from './pilot/donchian-weekly.mjs';
@@ -64,7 +68,8 @@ let TREND52_SYMBOLS = [];
 // Vorversionen werden mit deren Engine weitergefuehrt (engine.legacy).
 // Runde 11: Momentum 3.2.0 (Fehlerkorrektur Einstand). Weinstein 4.0.0, Minervini 3.0.0 und Turtle 2.1.0
 // verfehlten die vorab festgelegten Uebernahmebedingungen und bleiben Forschung (PREREGISTRATION-R11).
-export const LIVE_ENGINES = [kkBreakout32, weinstein3, darvas301, minervini2, donchian2];
+// Runde 12: Marktampel (PORT-MARKET-200) fuer Darvas 3.0.2 und Turtle 2.0.1 (vorab festgelegt bestanden).
+export const LIVE_ENGINES = [kkBreakout32, weinstein3, darvas302, minervini2, donchian201];
 export const PREVIOUS_ENGINES = [kkBreakout, kkBreakout2, kkBreakout3, weinstein, weinstein2, darvas, darvas2, darvas3, minervini, donchian];
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
@@ -531,12 +536,15 @@ export function build() {
 
   // Laufendes Modellportfolio je Methode aus dem Live-Protokoll (alle Versionen).
   const portfolios = { schema: MODEL_PORTFOLIO_VERSION, asOf, strategies: {} };
+  // Runde 12: Marktampel (SPY ueber GD 200 am Vortag) fuer Methoden mit portfolio.marketFilter.
+  const spyAll = readJson(rel('quant/data/market/multi-asset/series/SPY.json')).points.filter(([d]) => String(d).slice(0, 10) <= asOf);
+  const MARKET_OK = marketOkMap({ date: spyAll.map(([d]) => String(d).slice(0, 10)), close: spyAll.map(([, v]) => v) });
   for (const engine of LIVE_ENGINES) {
     const L = ledgers[engine.id];
     const barsOf = (sym) => instruments.get(sym)?.bars || null;
     // Runde 10 (K3): relative Staerke am Vortag des Einstiegs fuer die Rangfolge gleichzeitiger Einstiege.
     const rsOf = (sym, date) => { const inst = instruments.get(sym); const t = inst?.indexOf.get(date); return t > 0 ? cross.get(sym)?.rs?.[t - 1] ?? null : null; };
-    portfolios.strategies[engine.id] = buildModelPortfolio({ engine, signals: [...L.open, ...L.closed], barsOf, calendar, asOf, rsOf });
+    portfolios.strategies[engine.id] = buildModelPortfolio({ engine, signals: [...L.open, ...L.closed], barsOf, marketOk: MARKET_OK, calendar, asOf, rsOf });
   }
   writeJson(path.join(DATA, 'portfolio.json'), portfolios);
   // Runde 12: VU Trendfolge 52W - Modelldepot mit monatlicher Umschichtung (eigenes Ledger, keine Rueckrechnung).
@@ -668,7 +676,7 @@ function buildRegistry(coverage, gbCoverage) {
     schema: 'supertrader-registry-1.0.0', registryVersion: REGISTRY_VERSION, dnaFields: DNA_FIELDS,
     lifecycle: { states: STATES, labels: STATE_LABELS, phases: PHASES, persistedFrom: 'SETUP', scannerOnly: ['DISCOVERED', 'WATCH'] },
     execution: describeExecution(), portfolioDefaults: PORTFOLIO_DEFAULTS,
-    strategies: STRATEGIES.map((s) => ({ ...s, engine: engineParams[s.strategy_id] || null, evidence: evidenceFor(s), fidelity: fidelityFor(s.strategy_id) })),
+    strategies: STRATEGIES.map((s) => ({ ...s, engine: engineParams[s.strategy_id] || null, evidence: evidenceFor(s), fidelity: fidelityFor(s.strategy_id), processChain: PROCESS_CHAIN[s.strategy_id] || null })),
     fidelityScale: { schema: FIDELITY_VERSION, ruleClass: RULE_CLASS, sourceAccess: SOURCE_ACCESS, status: FIDELITY_STATUS,
       accessNote: 'Runde 7: Fast alle Primärseiten (Trader-Websites, Bücher, Interviews) waren aus der Arbeitsumgebung nicht abrufbar. Belegt ist, was mehrere unabhängige Suchauszüge übereinstimmend wiedergeben; Wortlaute sind vor einem Zitat am Original zu prüfen.' },
     evidenceScale: { schema: EVIDENCE_VERSION, levels: EVIDENCE_LEVELS, source: SOURCE_QUALITY, data: DATA_QUALITY, noPromise: NO_PROMISE,

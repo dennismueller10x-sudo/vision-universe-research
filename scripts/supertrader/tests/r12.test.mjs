@@ -84,3 +84,17 @@ test('R12-T4 Ledger: stückweises Fortschreiben (Live) ergibt denselben Stand wi
   assert.equal(trades.length, full.trades.length);
   assert.ok(full.trades.length > 0);
 });
+
+test('R12-L Live: Marktampel nur für Darvas 3.0.2 und Turtle 2.0.1, Signale kompatibel, Modellportfolio meldet MARKET_FILTER', async () => {
+  const { LIVE_ENGINES } = await import('../build.mjs');
+  const v = Object.fromEntries(LIVE_ENGINES.map((e) => [e.id, e]));
+  assert.equal(v.DARVAS_BOX.version, '3.0.2'); assert.equal(v.DARVAS_BOX.portfolio.marketFilter, true); assert.ok(v.DARVAS_BOX.signalCompatible.includes('3.0.1'));
+  assert.equal(v.DONCHIAN_TURTLE.version, '2.0.1'); assert.equal(v.DONCHIAN_TURTLE.portfolio.marketFilter, true); assert.ok(v.DONCHIAN_TURTLE.signalCompatible.includes('2.0.0'));
+  for (const id of ['MOMENTUM_BREAKOUT', 'WEINSTEIN_STAGE', 'MINERVINI_VCP']) assert.ok(!v[id].portfolio?.marketFilter, id);
+  const { buildModelPortfolio } = await import('../model-portfolio.mjs');
+  const cal = ['2026-01-02', '2026-01-05', '2026-01-06'];
+  const sig = (sym, d) => ({ id: sym, symbol: sym, version: '3.0.2', state: 'ACTIVE', entry: { date: d, price: 10 }, initialStop: 9.9, stop: 9.9, exits: [] });
+  const barsOf = () => ({ date: cal, close: [10, 10, 10] });
+  const mp = buildModelPortfolio({ engine: v.DARVAS_BOX, signals: [sig('AAA', cal[1]), sig('BBB', cal[2])], barsOf, calendar: cal, asOf: cal[2], marketOk: new Map([[cal[1], true], [cal[2], false]]) });
+  assert.equal(mp.positions.length, 1); assert.equal(mp.notTaken[0].reason, 'MARKET_FILTER'); assert.equal(mp.config.marketFilter, true);
+});

@@ -93,3 +93,20 @@ export function buildR12({ f, NONE, NV, rule, DNA_FIELDS }) {
   }];
   return { trend };
 }
+
+// Marktampel (PORT-MARKET-200) fuer Darvas 3.0.2 und Turtle 2.0.1: vorab festgelegt im Vollportfolio bestanden.
+// Signale, Stops und Ausstiege unveraendert; nur das Modellportfolio nimmt bei roter Ampel keine neue Position auf.
+export const R12 = Object.freeze({ DARVAS_BOX: '3.0.2', DONCHIAN_TURTLE: '2.0.1' });
+export function applyR12({ darvas, donchian, rule }) {
+  const bump = (s, v, src, evidence, vu, note) => {
+    const prev = s.strategy_version;
+    s.previous_versions = [...(s.previous_versions || []), { version: prev, note: 'Signale, Stops und Ausstiege unverändert; neue Version ergänzt nur die Marktampel im Modellportfolio. Ergebnis der Vorversion bleibt gültig.' }];
+    for (const c of s.rule_cards || []) { c.plans_by_version = { ...(c.plans_by_version || {}), [prev]: { ...c.plan } }; c.rule_version = v; }
+    s.strategy_version = v;
+    for (const r of s.rules) r.strategy_version = v;
+    s.rules.push(rule(v, 'PORT-MARKET-200', note, 'spy(t-1) <= sma200(spy)(t-1) -> skip new model position (reason MARKET_FILTER)', { ma: 200 }, src, evidence, vu));
+    s.market_regime = { text: 'Marktampel im Modellportfolio: keine neue Position, wenn SPY am Vortag unter seinem 200-Tage-Durchschnitt schloss (seit Runde 12).', evidence, rules: ['PORT-MARKET-200'] };
+  };
+  bump(darvas, R12.DARVAS_BOX, ['SRC-TF-NEO-PP', 'SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true, 'Marktampel (Runde 12): Schließt SPY unter seinem 200-Tage-Durchschnitt, nimmt das Modellportfolio keine neue Position auf; Signale und offene Positionen laufen weiter. Darvas verließ den Markt in schwachen Phasen über seine Stops; die Ampel selbst stammt aus einer dokumentierten Drittvariante. Im Vollportfolio vorab festgelegt geprüft; ein Vorteil gegenüber dem Markt ist damit nicht belegt.');
+  bump(donchian, R12.DONCHIAN_TURTLE, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true, 'Marktampel (Runde 12): Schließt SPY unter seinem 200-Tage-Durchschnitt, nimmt das Modellportfolio keine neue Position auf; Signale und offene Positionen laufen weiter. Für die Turtles ist keine Marktregel belegt – VU-Annahme, im Vollportfolio vorab festgelegt geprüft; ein Vorteil gegenüber dem Markt ist damit nicht belegt.');
+}
