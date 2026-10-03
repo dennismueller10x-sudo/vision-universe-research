@@ -1108,6 +1108,28 @@ OPENFIGI_URL = "https://api.openfigi.com/v3/mapping"
 FIGI_MAX_REQUESTS = 400
 
 
+def cusip_valid(c):
+    """Prüfziffer nach CUSIP-Standard. Manche Filer melden Options- oder
+    interne Kennungen (z.B. 595112953), die OpenFIGI mit „Invalid idValue
+    format" ablehnt – die werden gar nicht erst abgefragt."""
+    if not c or len(c) != 9 or not c[8].isdigit():
+        return False
+    total = 0
+    for i, ch in enumerate(c[:8]):
+        if ch.isdigit():
+            v = int(ch)
+        elif ch.isalpha():
+            v = ord(ch.upper()) - 55
+        elif ch in "*@#":
+            v = {"*": 36, "@": 37, "#": 38}[ch]
+        else:
+            return False
+        if i % 2:
+            v *= 2
+        total += v // 10 + v % 10
+    return (10 - total % 10) % 10 == int(c[8])
+
+
 def figi_pick(data):
     eq = [x for x in data if x.get("marketSector") == "Equity"] or data
     us = [x for x in eq if x.get("exchCode") in ("US", "UN", "UW", "UQ", "UA", "UR", "UP")]
@@ -1124,6 +1146,10 @@ def update_cusip_map(cusips_by_priority):
     wird dann die Heimatbörse gefunden."""
     cmap = load_json(CUSIP_MAP_PATH, {})
     wanted = [c for c in dict.fromkeys(cusips_by_priority) if c and len(c) == 9]
+    for c in wanted:
+        if c not in cmap and not cusip_valid(c):
+            cmap[c] = {"ticker": None}  # ungültige Kennung, nie abfragen
+    wanted = [c for c in wanted if cusip_valid(c)]
     jobs = [(c, {"idType": "ID_CUSIP", "idValue": c, "exchCode": "US"}) for c in wanted if c not in cmap]
     for c in wanted:
         if c in cmap and cmap[c] is None:
@@ -1165,6 +1191,8 @@ def update_cusip_map(cusips_by_priority):
                 d = figi_pick(r["data"])
                 cmap[c] = {"ticker": (d.get("ticker") or "").replace("/", "-") or None, "name": d.get("name"),
                            "exch": d.get("exchCode")}
+            elif "error" in r and "idValue" in str(r["error"]):
+                cmap[c] = {"ticker": None}
             elif "warning" in r:
                 # erster Versuch (US) -> null, zweiter Versuch -> endgültig
                 cmap[c] = None if "exchCode" in job else {"ticker": None}

@@ -178,6 +178,14 @@ class Universe(unittest.TestCase):
         self.assertEqual(got, {"1": False, "2": True, "3": False})
 
 
+class Cusip(unittest.TestCase):
+    def test_check_digit(self):
+        for c in ("037833100", "594918104", "N07059210", "G1144AAA3", "02079K107"):
+            self.assertTrue(m.cusip_valid(c), c)
+        for c in ("595112953", "037833101", "03783310X", "12345"):
+            self.assertFalse(m.cusip_valid(c), c)
+
+
 class Meta(unittest.TestCase):
     def test_fund_meta_unique_and_complete(self):
         slugs = [f["slug"] for f in FUND_META]
