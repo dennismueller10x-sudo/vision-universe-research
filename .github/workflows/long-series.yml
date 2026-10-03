@@ -105,5 +105,9 @@ jobs:
             node scripts/discover/verify-discover-data.mjs
             git add -A discover/data
             if ! git diff --cached --quiet; then git commit --amend --no-edit; fi
-            git push origin HEAD:"${GITHUB_REF_NAME}"
+            # Ein anderer Daten-Workflow kann zwischen Rebase und Push auf
+            # main landen (03.10.2026: Supertrader-Signale, 25 s Abstand).
+            # Dasselbe Werkzeug wie der Marktdaten-Lauf: neu aufsetzen und
+            # mit Wartezeit erneut versuchen.
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
           fi
