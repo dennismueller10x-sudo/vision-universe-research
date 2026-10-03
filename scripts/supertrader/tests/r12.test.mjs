@@ -85,12 +85,13 @@ test('R12-T4 Ledger: stückweises Fortschreiben (Live) ergibt denselben Stand wi
   assert.ok(full.trades.length > 0);
 });
 
-test('R12-L Live: Marktampel nur für Darvas 3.0.2 und Turtle 2.0.1, Signale kompatibel, Modellportfolio meldet MARKET_FILTER', async () => {
+test('R12-L/R13 Live: Marktampel nur für Darvas 3.0.2 (Turtle 2.0.2 ohne Ampel), Signale kompatibel, Modellportfolio meldet MARKET_FILTER', async () => {
   const { LIVE_ENGINES } = await import('../build.mjs');
   const v = Object.fromEntries(LIVE_ENGINES.map((e) => [e.id, e]));
   assert.equal(v.DARVAS_BOX.version, '3.0.2'); assert.equal(v.DARVAS_BOX.portfolio.marketFilter, true); assert.ok(v.DARVAS_BOX.signalCompatible.includes('3.0.1'));
-  assert.equal(v.DONCHIAN_TURTLE.version, '2.0.1'); assert.equal(v.DONCHIAN_TURTLE.portfolio.marketFilter, true); assert.ok(v.DONCHIAN_TURTLE.signalCompatible.includes('2.0.0'));
-  for (const id of ['MOMENTUM_BREAKOUT', 'WEINSTEIN_STAGE', 'MINERVINI_VCP']) assert.ok(!v[id].portfolio?.marketFilter, id);
+  assert.equal(v.DONCHIAN_TURTLE.version, '2.0.2'); assert.ok(!v.DONCHIAN_TURTLE.portfolio.marketFilter); assert.ok(v.DONCHIAN_TURTLE.signalCompatible.includes('2.0.1'));
+  assert.equal(v.WEINSTEIN_STAGE.version, '4.0.0'); assert.ok(v.WEINSTEIN_STAGE.signalCompatible.includes('3.0.0'));
+  for (const id of ['MOMENTUM_BREAKOUT', 'WEINSTEIN_STAGE', 'MINERVINI_VCP', 'DONCHIAN_TURTLE']) assert.ok(!v[id].portfolio?.marketFilter, id);
   const { buildModelPortfolio } = await import('../model-portfolio.mjs');
   const cal = ['2026-01-02', '2026-01-05', '2026-01-06'];
   const sig = (sym, d) => ({ id: sym, symbol: sym, version: '3.0.2', state: 'ACTIVE', entry: { date: d, price: 10 }, initialStop: 9.9, stop: 9.9, exits: [] });
