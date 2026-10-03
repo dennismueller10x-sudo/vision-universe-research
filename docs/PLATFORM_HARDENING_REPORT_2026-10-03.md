@@ -122,6 +122,7 @@ ADRs:
 | M9 | Zwei Gesamtrendite-Definitionen | offen (ADR-002, Methodik-Version nötig) |
 | M10 | Universum seit 15.09. nicht neu gebaut: 53 delistete oder übernommene Titel ACTIVE, S&P-Neuzugänge fehlen (NRG, VLTO, SNDK, Q, BNY falsch) | offen; Eigentümer ist der Tiingo-2.0-Workstream: `tiingo2-universe-refresh.yml` läuft werktags (Discovery, Staging, nur lesend), die Publikation nach `eligibility.json` verlangt einen QA-Nachweis je Manifest (docs/tiingo2/README.md). Bewusst kein zweiter Erzeuger. |
 | M11 | Supertrader lädt 3,6 MB je Seite; Quant-Screener 18,8 MB | offen (FRONTEND.md) |
+| M12 | Diff-Gates von Discover und SEC im flachen Checkout wirkungslos (`git diff origin/main...HEAD` scheitert still) | behoben in #390 |
 
 ### Low
 | # | Bug | Status |
@@ -299,6 +300,7 @@ Kein Gate wurde abgeschwächt oder deaktiviert. Jede Korrektur hält die Gate-Re
 | `/status/` und Diagnose | nur lesend, DOM über `textContent`, Ticker vor jeder Pfadbildung geprüft (`pathSafe`) |
 | Zentrale `securityId` | byte-gleich zur bisherigen Regel für alle 25.071 geprüften IDs; einzige gewollte Änderung BRK-B |
 | Konflikte mit `main` | keine; zuletzt zusammengeführt am 03.10.2026 |
+| Gate-Wirksamkeit | Zwei Diff-Gates waren in flachen Checkouts wirkungslos (immer grün). #386 ist nur deshalb im Discover-Gate grün. Offengelegt, Fix in #390, Reihenfolge siehe unten. |
 
 ### Reihenfolge nach dem Merge
 
@@ -309,4 +311,5 @@ Kein Gate wurde abgeschwächt oder deaktiviert. Jede Korrektur hält die Gate-Re
 5. `node scripts/core/data-quality.mjs` lokal oder über `core-ci.yml` (`workflow_dispatch`) ausführen. Erwartet wird kein ERROR.
 6. `/status/` prüfen. Erwartet: Marktdaten OK. News und Security Master bleiben STALE bzw. DEGRADED, bis ihr Erzeuger läuft.
 7. #388 und #389 unabhängig davon mergen.
+8. **#390 erst nach #386 mergen.** #390 macht zwei Diff-Gates wieder wirksam (Discover „verändert keine bestehende Engine“, SEC „backtest engine untouched“). Sie waren im flachen Checkout still immer grün. #386 ist eine Querschnittsänderung über `discover/` und `quant/` und wäre mit #390 im Discover-Gate rot. Wird #390 zuerst gemergt, muss #386 aufgeteilt werden.
 
