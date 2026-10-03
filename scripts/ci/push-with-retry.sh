@@ -60,11 +60,24 @@ WARTE=3
 # Matrix und Projektion aus demselben Lauf stammen (Gate B prueft genau
 # das: "committed projection is reproducible from the existing capability
 # matrix"). Genannt sind die zwei Dateien, nicht das ganze Verzeichnis.
+#
+# FUENFTENS (Lauf 37083168221, 03.10.2026): der Universumslauf nach
+# Schluss hatte 6.876 Anfragen gestellt und 5.237 Tagesverlaeufe
+# geschrieben - und verwarf alles an einem Konflikt in
+# intraday/index.json. Den hatte kein zweiter Datenlauf erzeugt, sondern
+# ein Feature-PR (#366), der die erzeugte Datei mit nach main brachte. Das
+# Verzeichnis (und status/Ledger daneben) wird in JEDEM Lauf aus den
+# Sitzungsordnern neu gebaut; der eigene Stand ist richtig, und der
+# naechste Takt heilt jede Luecke. Die Sitzungsordner selbst (die
+# Kursverlaeufe) stehen weiterhin NICHT unter Erzeugerhoheit.
 ERZEUGT=(
   "quant/data/market/capabilities/"
   "quant/data/market/freshness/"
   "quant/data/product/capabilities-v1.json"
   "quant/data/product/capabilities-summary-v1.json"
+  "quant/data/market/intraday/index.json"
+  "quant/data/market/intraday/status.json"
+  "quant/data/market/intraday/pacemaker-ledger.json"
 )
 
 eigener_stand() {

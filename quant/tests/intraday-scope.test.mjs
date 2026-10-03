@@ -53,3 +53,35 @@ test("IC-5 · Gegenprobe: ein unversiegelter Umfang kippt NIE auf universe", () 
     assert.equal(w.scope, "discover", "Deckung " + deckung);
   }
 });
+
+/* Plattform-Audit 03.10.2026: das Discover-Siegel blieb dauerhaft offen. */
+test("Siegel · Bindestrich-Ticker wird unter seiner kanonischen ID gefunden", () => {
+  const S = require("../engines/realtime/intraday-scope.js");
+  const Identity = require("../../core/identity.js");
+  const dateien = { ref_AAPL: { regularComplete: true }, ref_MOG_A: { regularComplete: true } };
+  const r = S.discoverSiegel(["AAPL", "MOG-A"], Identity.securityIdForTicker,
+    (id) => dateien[id] || null, (id) => id in dateien);
+  assert.deepEqual([r.versiegelt, r.fertig, r.gesamt, r.nieGeliefert], [true, 2, 2, []]);
+  /* Gegenprobe mit der alten, rohen Bildung: MOG-A wird nicht gefunden. */
+  const roh = S.discoverSiegel(["AAPL", "MOG-A"], (t) => "ref_" + t,
+    (id) => dateien[id] || null, (id) => id in dateien);
+  assert.deepEqual(roh.nieGeliefert, ["MOG-A"]);
+});
+
+test("Siegel · Ein nie gelieferter Titel blockiert nicht, wird aber ausgewiesen", () => {
+  const S = require("../engines/realtime/intraday-scope.js");
+  const dateien = { ref_AAPL: { regularComplete: true } };
+  const r = S.discoverSiegel(["AAPL", "AKO-A"], (t) => "ref_" + t.replace(/[^A-Z0-9]/g, "_"),
+    (id) => dateien[id] || null, (id) => id in dateien);
+  assert.equal(r.versiegelt, true);
+  assert.deepEqual(r.nieGeliefert, ["AKO-A"]);
+});
+
+test("Siegel · Ein frueher gelieferter, heute fehlender Titel haelt das Siegel offen", () => {
+  const S = require("../engines/realtime/intraday-scope.js");
+  const heute = { ref_AAPL: { regularComplete: true } };
+  const r = S.discoverSiegel(["AAPL", "BH-A"], (t) => "ref_" + t.replace(/[^A-Z0-9]/g, "_"),
+    (id) => heute[id] || null, (id) => id === "ref_BH_A" || id in heute);
+  assert.equal(r.versiegelt, false);
+  assert.deepEqual([r.fertig, r.gesamt], [1, 2]);
+});

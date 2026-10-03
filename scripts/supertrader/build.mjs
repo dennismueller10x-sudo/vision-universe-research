@@ -20,6 +20,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
+import { createRequire } from 'node:module';
+// Eine Identitaetsregel (core/identity.js): BRK-A liegt als ref_BRK_A, nicht ref_BRK-A.
+const Identity = createRequire(import.meta.url)('../../core/identity.js');
 import { computeIndicators, percentileRanks, isoWeekKey, sma } from './engine/indicators.mjs';
 import { buildWeekly } from './engine/weekly.mjs';
 import { simulate, rescaleSignal } from './engine/simulator.mjs';
@@ -129,7 +132,7 @@ export function loadBars(universe) {
 }
 
 function loadWeeklyLong(sym) {
-  const p = rel('quant/data/market/discover-series-long', `ref_${sym}.json`);
+  const p = rel('quant/data/market/discover-series-long', `${Identity.securityIdForTicker(sym)}.json`);
   if (!exists(p)) return null;
   const j = readJson(p);
   return j.points || null;
@@ -181,7 +184,7 @@ function measureCoverage(instruments, weeklySpans) {
   const dailySpans = [...instruments.values()].map((i) => yearsBetween(i.bars.date[0], i.bars.date[i.bars.date.length - 1]));
   const sm = readJson(rel('quant/data/market/security-master/us-security-master.json'));
   const inactive = sm.rows.filter((r) => r.active_status === 'INACTIVE');
-  const delistedWithPrices = inactive.filter((r) => exists(rel('quant/data/market/discover-series-long', `ref_${r.ticker}.json`))).length;
+  const delistedWithPrices = inactive.filter((r) => exists(rel('quant/data/market/discover-series-long', `${Identity.securityIdForTicker(r.ticker)}.json`))).length;
   const pitGates = readJson(rel('quant/data/sec/pit_gates.json'));
   const histDir = rel('quant/data/market/index-membership/history/SP500');
   const membershipDates = exists(histDir) ? fs.readdirSync(histDir).filter((f) => /^\d{4}-\d{2}-\d{2}\.json$/.test(f)).length : 0;
@@ -703,7 +706,7 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
     const fund = fundOf(s.symbol);
     const inst = instruments.get(s.symbol);
     const si = sicInfo().get(s.symbol) || {};
-    const out = { ...s, plan: planOf(s), sicDivision: si.division || null, sicDivisionName: si.name || null, companyName: fund?.companyName || s.symbol, chart: inst ? { shard: inst.shard, weeklyPath: `/quant/data/market/discover-series-long/ref_${s.symbol}.json` } : null };
+    const out = { ...s, plan: planOf(s), sicDivision: si.division || null, sicDivisionName: si.name || null, companyName: fund?.companyName || s.symbol, chart: inst ? { shard: inst.shard, weeklyPath: `/quant/data/market/discover-series-long/${Identity.securityIdForTicker(s.symbol)}.json` } : null };
     if (s.strategyId === 'MINERVINI_VCP' && fund) out.fundamentalsDisplay = { revenueGrowthTTM: fund.revenueGrowthTTM, earningsAcceleration: fund.earningsAcceleration, asOf: fund.fundamentalsAsOf, filtered: false };
     return out;
   };
@@ -722,7 +725,7 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
     counts.REASSESSED_AFTER_RULE_CHANGE += open.filter(isReassessment).length;
     counts.NEW_SINCE_PREVIOUS_DATA += open.filter((x) => !isReassessment(x) && x.createdAt > (l.previousDataAsOf || '')).length;
     counts.DISCOVERED += scanner[id].discovered; counts.WATCH += scanner[id].watch;
-    const scan = scanner[id].top.map((x) => ({ ...x, sicDivision: sicInfo().get(x.symbol)?.division || null, sicDivisionName: sicInfo().get(x.symbol)?.name || null, companyName: fundOf(x.symbol)?.companyName || x.symbol, chart: instruments.get(x.symbol) ? { shard: instruments.get(x.symbol).shard, weeklyPath: `/quant/data/market/discover-series-long/ref_${x.symbol}.json` } : null }));
+    const scan = scanner[id].top.map((x) => ({ ...x, sicDivision: sicInfo().get(x.symbol)?.division || null, sicDivisionName: sicInfo().get(x.symbol)?.name || null, companyName: fundOf(x.symbol)?.companyName || x.symbol, chart: instruments.get(x.symbol) ? { shard: instruments.get(x.symbol).shard, weeklyPath: `/quant/data/market/discover-series-long/${Identity.securityIdForTicker(x.symbol)}.json` } : null }));
     const quality = qualitySummary(open);
     strategiesOut[id] = { quality: open.some((x) => x.quality) ? quality : null, liveSince: l.liveSince, lastProcessed: l.lastProcessed, variant: l.variant, version: l.version, open, closed, invalidated, invalidatedTotal: realInvalid.length, retired, retiredTotal: retiredList.length, reassessed: open.filter(isReassessment).length, ledgerPath: `/supertrader/data/ledger/${id}.json`, scanner: { discovered: scanner[id].discovered, watch: scanner[id].watch, top: scan, symbols: scanner[id].symbols } };
     for (const s of [...open, ...closed, ...invalidated]) (bySymbol[s.symbol] ||= []).push({ strategyId: id, id: s.id, state: s.state });

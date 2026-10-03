@@ -69,6 +69,7 @@ const TradingSession = require(join(engines, "realtime", "trading-session.js"));
 const Snapshot = require(join(engines, "realtime", "intraday-snapshot.js"));
 const Freshness = require(join(engines, "realtime", "freshness.js"));
 const IntradayScope = require(join(engines, "realtime", "intraday-scope.js"));
+const Identity = require(join(DEFAULT_ROOT, "core", "identity.js"));
 const Tiingo = require(join(root, "providers", "tiingo", "adapter.js"));
 
 const CALENDAR = JSON.parse(readFileSync(join(root, "quant", "config", "market-calendar.json"), "utf8"));
@@ -190,14 +191,13 @@ function sichereDatei(pfad) {
 }
 function discoverVersiegelt(date) {
   const dir = join(OUT_DIR, date);
-  if (!existsSync(dir)) return { versiegelt: false, fertig: 0, gesamt: 0 };
-  let fertig = 0, gesamt = 0;
-  for (const ticker of discoverTicker()) {
-    const s = sichereDatei(join(dir, "ref_" + ticker + ".json"));
-    gesamt++;
-    if (s && s.regularComplete) fertig++;
-  }
-  return { versiegelt: gesamt > 0 && fertig === gesamt, fertig, gesamt };
+  if (!existsSync(dir)) return { versiegelt: false, fertig: 0, gesamt: 0, nieGeliefert: [] };
+  /* Regel und Begruendung: quant/engines/realtime/intraday-scope.js
+     (discoverSiegel). Die ID kommt aus der einen Identitaetsregel. */
+  const ordner = readdirSync(OUT_DIR).filter((n) => /^\d{4}-\d{2}-\d{2}$/.test(n));
+  return IntradayScope.discoverSiegel(discoverTicker(), Identity.securityIdForTicker,
+    (id) => sichereDatei(join(dir, id + ".json")),
+    (id) => ordner.some((d) => existsSync(join(OUT_DIR, d, id + ".json"))));
 }
 if (SCOPE === "auto") {
   const siegel = lage.marketState === "OPEN" ? { versiegelt: true, fertig: 0, gesamt: 0 }

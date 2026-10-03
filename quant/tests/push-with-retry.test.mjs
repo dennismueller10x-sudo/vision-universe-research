@@ -157,3 +157,22 @@ test("PR5 · Zweiter Commit im Kursdaten-Konflikt: Abbruch, nichts halb Rebastes
     assert.equal(w.rebaseOffen, false, "der Rebase blieb offen");
   } finally { rmSync(w.root, { recursive: true, force: true }); }
 });
+
+test("PR6 · Konflikt im Intraday-Verzeichnis (von einem Feature-PR mitgebracht): eigener Stand, Push gelingt", () => {
+  /* Lauf 37083168221: 5.237 geschriebene Tagesverlaeufe wurden an genau
+     diesem Konflikt verworfen. */
+  const w = wettlauf("quant/data/market/intraday/index.json");
+  try {
+    assert.equal(w.r.status, 0, w.r.stdout + w.r.stderr);
+    assert.match(w.r.stdout, /Erzeugerhoheit aufgeloest \(eigener Stand\): quant\/data\/market\/intraday\/index\.json/);
+    assert.equal(w.lies("quant/data/market/intraday/index.json"), "refresh");
+  } finally { rmSync(w.root, { recursive: true, force: true }); }
+});
+
+test("PR7 · Ein Tagesverlauf im Sitzungsordner steht nie unter Erzeugerhoheit", () => {
+  const w = wettlauf("quant/data/market/intraday/2026-10-02/ref_AAPL.json");
+  try {
+    assert.equal(w.r.status, 1);
+    assert.equal(w.lies("quant/data/market/intraday/2026-10-02/ref_AAPL.json"), "intraday");
+  } finally { rmSync(w.root, { recursive: true, force: true }); }
+});
