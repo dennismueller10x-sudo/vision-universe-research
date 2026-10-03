@@ -55,14 +55,15 @@ function impulse(R, variant) {
   return [{ len: w1, bars: b[0], sub: "IMPULSE" }, { len: w2 * w1, bars: b[1], sub: w2sub }, { len: w3, bars: b[2], sub: "IMPULSE" }, { len: w4, bars: b[3], sub: w4sub }, { len: w5, bars: b[4], sub: "IMPULSE" }];
 }
 function diagonal(R, kind) {
-  /* kontrahierend: 1>3>5, 2>4, W2/W4 retracen 0,6–0,85; W4 ueberlappt W1 */
-  const w1 = 1, w2 = R.u(0.6, 0.85) * w1, w3 = R.u(0.7, 0.9) * w1, w4 = R.u(0.6, 0.85) * w3, w5 = R.u(0.6, 0.85) * w3;
-  const fix4 = Math.min(w4, w2 * 0.95), net3 = w1 - w2 + w3;
-  const w4o = Math.max(fix4, (net3 - w1) + 0.05 * w1);   // Ueberlappung: Ende W4 unter Ende W1
+  /* kontrahierend (EWP Kap. 1, Diagonal Triangles): W1 > W3 > W5, W2 > W4, W4 ueberlappt W1, W3 ueber W1-Ende hinaus
+     (harte Regel), W2/W4 retracen tief (typ. 0,66–0,81). Gezogen wird innerhalb dieser Grenzen. */
+  const w1 = 1, w2 = R.u(0.55, 0.78);
+  const w3 = R.u(Math.max(w2 + 0.1, 0.7), 0.95);
+  const w4lo = (w3 - w2) + 0.04, w4hi = Math.min(0.92 * w2, 0.88 * w3);
+  const w4 = w4lo < w4hi ? R.u(w4lo, w4hi) : (w4lo + w4hi) / 2;
+  const w5 = R.u(Math.min(w4 + 0.05, 0.9 * w3), 0.92 * w3);
   const sub = kind === "LEADING" ? ["IMPULSE", "ZIGZAG", "IMPULSE", "ZIGZAG", "IMPULSE"] : ["ZIGZAG", "ZIGZAG", "ZIGZAG", "ZIGZAG", "ZIGZAG"];
-  const L = [w1, w2, w3, Math.min(w4o, w2 * 0.97), w5];
-  if (L[4] >= L[2]) L[4] = L[2] * 0.8;
-  return L.map((len, k) => ({ len, bars: R.u(0.8, 1.3), sub: sub[k] }));
+  return [w1, w2, w3, w4, w5].map((len, k) => ({ len, bars: R.u(0.8, 1.3), sub: sub[k] }));
 }
 function zigzag(R) {
   const b = R.u(0.382, 0.8), c = R.u(0.75, 1.618);
@@ -221,10 +222,20 @@ export function corpusCase(cls, seed, noise, opts = {}) {
   closes[n - 1] = K[K.length - 1][1];
   const map = (pts) => pts.map(([x, y]) => { let best = 0, d = Infinity; K.forEach((k, j) => { const dd = Math.abs(k[0] - Math.round(x)) + Math.abs(k[1] - y) * 1e-6; if (dd < d) { d = dd; best = j; } }); return K[best][0]; });
   const topIdx = map(tgt.top), subIdx = map(tgt.sub);
+  /* Auswertung MITTEN im Muster (opts.cut === "mid"): Stand innerhalb einer laufenden Welle k+1 (k >= 2 abgeschlossene Wellen).
+     Wahrheit: die abgeschlossenen Wellenenden und die laufende Welle. */
+  let cutAt = n - 1, mid = null;
+  if (opts.cut === "mid" && shapeW.length >= 3) {
+    const k = 2 + Math.floor(R.next() * (shapeW.length - 2));          // 2 .. w-1 abgeschlossene Wellen
+    const a = topIdx[k], b = topIdx[k + 1];
+    cutAt = Math.min(n - 1, a + Math.max(2, Math.round(R.u(0.45, 0.85) * (b - a))));
+    mid = { completedWaves: k, currentWave: k + 1, pts: topIdx.slice(0, k + 1) };
+  }
   const dates = []; const t0 = Date.UTC(2001, 0, 5);
   for (let i = 0; i < n; i++) dates.push(new Date(t0 + i * 7 * 86400000).toISOString().slice(0, 10));
+  if (cutAt < n - 1) { closes.length = cutAt + 1; dates.length = cutAt + 1; }
   return {
-    id: cls + "|" + noise + "|" + seed, closes, dates,
+    id: cls + "|" + noise + "|" + seed + (mid ? "|mid" : ""), closes, dates, mid,
     truth: { cls, expect: C.expect, motive: C.motive, negativeOf: C.negativeOf || null, unsupported: !!C.unsupported, dir,
              topIdx, topPrice: tgt.top.map((p) => p[1]), subIdx, contextTopIdx: map(ctx.top), patternEnd: topIdx[topIdx.length - 1], legs: shapeW.length, sizePct: g }
   };

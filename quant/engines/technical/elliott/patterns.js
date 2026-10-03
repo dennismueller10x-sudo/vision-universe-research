@@ -478,7 +478,16 @@
     };
   }
 
-  var api = { RULE_SET_VERSION: RULE_SET_VERSION, PATTERNS: PATTERNS, TYPES: TYPES, evaluate: evaluate, invalidation: invalidation, projections: projections,
+  /** Nur Regeln (ohne Richtlinien) — fuer Suchverfahren, die sehr viele Teilmuster pruefen. */
+  function checkRules(type, legs) {
+    var Pt = PATTERNS[type];
+    if (!legs.length || legs.length > Pt.waves) return false;
+    var rules = Pt.rules(legs);
+    for (var k = 0; k < rules.length; k++) if (rules[k].passed === false) return false;
+    return true;
+  }
+
+  var api = { checkRules: checkRules, RULE_SET_VERSION: RULE_SET_VERSION, PATTERNS: PATTERNS, TYPES: TYPES, evaluate: evaluate, invalidation: invalidation, projections: projections,
               band: band, near: near, len: len, ratio: ratio, flatVariant: flatVariant, triangleShape: triangleShape };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ElliottPatterns = api; }

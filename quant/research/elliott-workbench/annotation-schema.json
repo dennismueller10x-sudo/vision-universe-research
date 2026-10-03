@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "vu-elliott-annotation-1.0.0",
+  "purpose": "Datenmodell fuer echte Expertenannotation von Elliott-Zaehlungen (Remediation §65–§67). Eine Annotation ist das Urteil EINER Person oder EINER veroeffentlichten Quelle zu EINEM Chart an EINEM Stichtag. Sie ist eine Praktiker-Referenz, keine objektive Wahrheit.",
+  "sourceTypes": {
+    "SYNTHETIC": "Struktur bekannt, weil generiert (Korpus v2). Keine Annotation noetig.",
+    "MANUAL_VU_REVIEW": "Bewertung durch eine namentlich genannte Person bei Vision Universe. Nur so kennzeichnen, wenn ein Mensch bewertet hat.",
+    "EXTERNAL_PRACTITIONER": "Veroeffentlichte, datierte Zaehlung eines Elliott-Praktikers (Quelle mit URL und Datum).",
+    "AUTOMATED": "Von einer Engine oder einem Sprachmodell erzeugt — NIE als Expertenurteil zaehlen."
+  },
+  "fields": {
+    "annotationId": { "type": "string", "required": true },
+    "symbol": { "type": "string", "required": true },
+    "asOfDate": { "type": "date", "required": true, "note": "Stichtag; der Annotierende sieht nur Kurse bis zu diesem Tag (Blindrekonstruktion)" },
+    "timeframe": { "type": "enum", "values": ["1D", "1W", "1M"], "required": true },
+    "sourceType": { "type": "enum", "values": ["MANUAL_VU_REVIEW", "EXTERNAL_PRACTITIONER", "AUTOMATED"], "required": true },
+    "annotator": { "type": "string", "required": true, "note": "Name der Person bzw. Autor/Organisation der Quelle" },
+    "sourceUrl": { "type": "string|null", "note": "Pflicht bei EXTERNAL_PRACTITIONER" },
+    "publicationDate": { "type": "date|null" },
+    "primary": {
+      "type": "object", "required": true,
+      "fields": {
+        "pattern": { "type": "enum", "values": ["IMPULSE", "LEADING_DIAGONAL", "ENDING_DIAGONAL", "ZIGZAG", "FLAT", "TRIANGLE", "WXY", "DOUBLE_ZIGZAG", "TRIPLE_ZIGZAG", "COMBINATION", "UNCLEAR"] },
+        "degree": { "type": "enum", "values": ["Grand Supercycle", "Supercycle", "Cycle", "Primary", "Intermediate", "Minor", "Minute", "Minuette", "Subminuette", "relative"], "note": "Frost & Prechter, Kap. 1 (Wave Degree)" },
+        "currentWave": { "type": "string", "note": "z. B. \"(4) of 3\"" },
+        "status": { "type": "enum", "values": ["DEVELOPING", "COMPLETE", "POSSIBLE"] },
+        "pivots": { "type": "array", "items": { "date": "date", "price": "number", "label": "string" } },
+        "invalidation": { "type": "number|null" },
+        "targetZone": { "type": "[number, number]|null" },
+        "nextDirection": { "type": "enum", "values": ["UP", "DOWN", "SIDEWAYS", "UNKNOWN"] }
+      }
+    },
+    "alternatives": { "type": "array", "items": "wie primary" },
+    "engineVerdict": { "type": "enum", "values": ["AGREE", "AGREE_DEGREE_OFF_BY_ONE", "PARTLY", "DISAGREE", "ENGINE_SHOULD_ABSTAIN", "NOT_COUNTABLE"], "note": "Urteil ueber die Engine-Zaehlung am selben Stichtag" },
+    "mismatchCategory": { "type": "array", "values": ["DEGREE_TOO_LOW", "DEGREE_TOO_HIGH", "WRONG_PATTERN", "WRONG_WAVE_POSITION", "MISSED_TRUNCATION", "MISSED_FLAT", "MISSED_TRIANGLE", "TINY_SWING_COUNTED", "WEEKLY_CONTEXT_MISSING", "PROPORTION_IGNORED", "OTHER"] },
+    "validity": { "type": "enum", "values": ["VALID_COUNT", "AMBIGUOUS", "NO_RELIABLE_COUNT"] },
+    "comments": { "type": "string" },
+    "createdAt": { "type": "datetime", "required": true }
+  },
+  "agreementMetrics": {
+    "directionalStructureMatch": "gleiche laufende Richtung und gleiche Musterfamilie (Motiv/Korrektur)",
+    "waveStateMatch": "gleiche laufende Welle (Etikett) im selben Muster",
+    "degreeMatch": "gleicher relativer Grad",
+    "degreeWithinOne": "Grad hoechstens eine Stufe verschieden",
+    "primaryAlternativeOverlap": "Engine-Haupt- oder Alternativzaehlung trifft die Referenz-Hauptzaehlung",
+    "invalidationSimilarity": "|Engine − Referenz| / ATR",
+    "targetZoneOverlap": "Ueberlappung der Zielzonen (Anteil)",
+    "timingDifference": "Abstand der Wellenenden in Bars"
+  },
+  "rules": [
+    "Keine Annotation ohne Person bzw. Quelle; AUTOMATED nie als Expertenurteil auswerten.",
+    "Widersprechen sich zwei Referenzen zum selben Stichtag: beide behalten, als REFERENCE_AMBIGUOUS markieren.",
+    "Die Engine wird mit Daten bis asOfDate gerechnet — nie mit dem spaeteren Chart."
+  ]
+}

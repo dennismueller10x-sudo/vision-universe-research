@@ -759,7 +759,9 @@
   }
 
   var api = { ENGINE_VERSION: ENGINE_VERSION, DEFAULTS: DEFAULTS, pivotView: pivotView, legsOf: legsOf, subdivide: subdivide, subdivisionFit: subdivisionFit,
-              parseHistory: parseHistory, nestedFit: nestedFit, ruleAudit: ruleAudit, priceSimilarity: priceSimilarity, countQuality: countQuality, applicability: applicability, signalToNoise: signalToNoise, detectionLatency: detectionLatency, trendDirection: trendDirection, chooseScales: chooseScales, analyzeElliottV2: analyzeElliottV2, PATTERN_NAMES_DE: PATTERN_NAMES_DE, notate: notate };
+              parseHistory: parseHistory, nestedFit: nestedFit, ruleAudit: ruleAudit, priceSimilarity: priceSimilarity, countQuality: countQuality, applicability: applicability, signalToNoise: signalToNoise, detectionLatency: detectionLatency, trendDirection: trendDirection, chooseScales: chooseScales, analyzeElliottV2: analyzeElliottV2, PATTERN_NAMES_DE: PATTERN_NAMES_DE, notate: notate,
+              /* fuer Engine 3.0 (gleiche Count-Objekte, gleiche Audit-/Qualitaets-Logik) */
+              buildCount: buildCount, materiallyDifferent: materiallyDifferent, candidateKey: candidateKey, buildCountId: buildCountId, historicalMap: historicalMap, analyzeScale: analyzeScale, candidateTree: candidateTree, labelWaves: labelWaves, currentRole: currentRole, waveDirection: waveDirection, impliedTrend: impliedTrend, makeLeg: makeLeg };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ElliottV2 = api; }
 })(typeof window !== "undefined" ? window : globalThis);
