@@ -12,7 +12,7 @@ const Premium = require("../../../api/premium.js");
 
 const NOW = Date.parse("2026-10-03T12:00:00Z");
 const USER = "11111111-1111-4111-8111-111111111111";
-const TOKEN = "user-access-token-0123456789";
+const TOKEN = "DUMMY-user-access-token-0123456789";
 const ENV = {
   VU_ACCOUNTS_ENABLED: "true", SUPABASE_URL: "https://db.example.supabase.co", SUPABASE_ANON_KEY: "anon", SUPABASE_SERVICE_ROLE_KEY: "service",
   REVENUECAT_WEBHOOK_AUTH: "Bearer hook-secret", REVENUECAT_API_KEY: "rc-key",
@@ -89,7 +89,7 @@ test("/api/me: ohne oder mit falschem Token 401", async () => {
   const backend = fakeBackend();
   const handler = Me.createHandler({ env: ENV, fetchImpl: backend.fetchImpl, now: () => NOW });
   let r = res(); await handler(req(), r); assert.equal(r.statusCode, 401);
-  r = res(); await handler(req({ headers: { authorization: "Bearer wrong-token-0123456789" } }), r); assert.equal(r.statusCode, 401);
+  r = res(); await handler(req({ headers: { authorization: "Bearer DUMMY-wrong-token-0123456789" } }), r); assert.equal(r.statusCode, 401);
 });
 
 test("/api/me: liefert Premium-Status, Herkunft der App erlaubt", async () => {

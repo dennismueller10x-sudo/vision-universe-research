@@ -35,7 +35,7 @@ jobs:
         env:
           VU_ACCOUNTS_ENABLED: 'true'
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           VU_REPORT_EMAIL_FROM: ${{ vars.VU_REPORT_EMAIL_FROM }}

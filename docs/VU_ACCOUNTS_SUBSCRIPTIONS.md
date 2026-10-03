@@ -129,8 +129,8 @@ Quellen, alle schon im Repository:
 
 ### 3. GitHub (Settings → Secrets and variables → Actions)
 
-- Variables: `VU_ACCOUNTS_ENABLED=true`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `VU_REPORT_EMAIL_FROM`
-- Secrets: `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`
+- Variables: `VU_ACCOUNTS_ENABLED=true`, `SUPABASE_URL`, `VU_REPORT_EMAIL_FROM`
+- Secrets: `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY` (die Secret-Prüfung `quant/tests/secrets.test.mjs` verlangt, dass jeder `*_KEY` aus `secrets.` kommt)
 
 ### 4. Web-Kontoseite einschalten
 
