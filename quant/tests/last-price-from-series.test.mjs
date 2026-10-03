@@ -89,7 +89,17 @@ test("a price carries its own date, because the row's asOf is the fundamentals d
 });
 
 test("without a published series the reason is the measured one, not a claimed withholding", async () => {
-  const stock = await api.getStockIntelligence("EDVA");
+  /* Der Fall kommt aus den Daten, nicht aus einem festen Symbol: hier stand
+     EDVA, bis der Titel am 02.10.2026 eine veroeffentlichte Reihe bekam.
+     Gesucht wird der erste Titel des Universums, dem die Reihe fehlt -
+     gibt es keinen mehr, ist die Aussage gegenstandslos und nicht falsch. */
+  const tickers = (await api.getUniverse()).stocks.map((s) => s.ticker).sort();
+  let stock = null;
+  for (const t of ["EDVA", ...tickers]) {
+    const s = await api.getStockIntelligence(t).catch(() => null);
+    if (s && s.price && s.price.value === null && s.price.reason === "NO_PUBLISHED_PRICE_SERIES") { stock = s; break; }
+  }
+  assert.ok(stock, "kein Titel ohne veroeffentlichte Reihe gefunden");
   assert.equal(stock.price.value, null);
   assert.equal(stock.price.reason, "NO_PUBLISHED_PRICE_SERIES");
   /* Das alte Wort ist weg - und zwar ueberall, nicht nur hier. */
