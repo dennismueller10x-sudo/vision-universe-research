@@ -1,0 +1,299 @@
+{
+ "schemaVersion": "vu-vorsorge-data-qa-1.0.0",
+ "asOf": "2026-10-02",
+ "scope": "REPOSITORY_DELIVERED_EXTRACT",
+ "tiingoEtfSymbols": {
+  "inRepository": 164,
+  "providerUniverseEtfRows": 9587,
+  "fullUniverseLoaded": false,
+  "workRows": 0
+ },
+ "canonicalETFs": 163,
+ "listings": 164,
+ "priceCoverage": {
+  "withAnyHistory": 158,
+  "withHistory3Y": 13,
+  "ratio": 0.9634146341463414
+ },
+ "metadataCoverage": {
+  "symbol": 1,
+  "name": 0.9634146341463414,
+  "exchange": 1,
+  "currency": 1,
+  "country": 1,
+  "assetClass": 0.8292682926829268,
+  "issuer": 0.8963414634146342,
+  "index": 0.06707317073170727,
+  "category": 1,
+  "region": 0.35365853658536583,
+  "sector": 0,
+  "theme": 0.28658536585365857,
+  "leverage": 1,
+  "inverse": 1,
+  "distributionPolicy": 0,
+  "replicationMethod": 0,
+  "ter": 0,
+  "fundSize": 0,
+  "inceptionDate": 0,
+  "holdingsCount": 0,
+  "benchmark": 0.06707317073170727,
+  "isin": 0,
+  "wkn": 0,
+  "tiingoAvailable": 1,
+  "priceHistoryAvailable": 1
+ },
+ "missingMetadata": {
+  "index": 153,
+  "region": 106,
+  "sector": 164,
+  "theme": 117,
+  "distributionPolicy": 164,
+  "replicationMethod": 164,
+  "ter": 164,
+  "fundSize": 164,
+  "inceptionDate": 164,
+  "holdingsCount": 164,
+  "benchmark": 153,
+  "isin": 164,
+  "wkn": 164,
+  "assetClass": 28,
+  "issuer": 17,
+  "name": 6
+ },
+ "noSourceFields": [
+  "distributionPolicy",
+  "replicationMethod",
+  "ter",
+  "fundSize",
+  "holdingsCount",
+  "isin",
+  "wkn",
+  "sector"
+ ],
+ "duplicates": {
+  "duplicateTickers": [
+   {
+    "symbol": "CHAI",
+    "listings": [
+     "CHAI@NASDAQ",
+     "CHAI@NYSE ARCA"
+    ]
+   }
+  ],
+  "multiListingFunds": [
+   {
+    "canonicalETFId": "vu-etf-123ccaf2",
+    "symbols": [
+     "CHAI",
+     "CHAI"
+    ]
+   }
+  ]
+ },
+ "conflicts": [
+  {
+   "symbol": "BNY",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Bank of New York Mellon"
+   ]
+  },
+  {
+   "symbol": "GHI",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Greystone Housing Impact"
+   ]
+  }
+ ],
+ "leveragedInverse": [
+  {
+   "symbol": "AMKL",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "APHU",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "ASTN",
+   "leverage": 2,
+   "inverse": true
+  },
+  {
+   "symbol": "CEGX",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "COIA",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "CRCA",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "ECHX",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "ETNG",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "KEEX",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "PLTA",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "POEL",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "PONX",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "QQDN",
+   "leverage": 2,
+   "inverse": true
+  },
+  {
+   "symbol": "QQUP",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "QQXL",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "SITX",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "SMU",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "SPCL",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "UCOP",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "UPAL",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "UPLT",
+   "leverage": 2,
+   "inverse": false
+  },
+  {
+   "symbol": "URSP",
+   "leverage": 2,
+   "inverse": false
+  }
+ ],
+ "complex": 68,
+ "currencies": {
+  "USD": 164
+ },
+ "exchanges": {
+  "NYSE": 68,
+  "NYSE ARCA": 12,
+  "NASDAQ": 30,
+  "BATS": 54
+ },
+ "assetClasses": {
+  "BOND": 33,
+  "UNKNOWN": 28,
+  "EQUITY": 82,
+  "CRYPTO": 14,
+  "REAL_ESTATE": 1,
+  "MONEY_MARKET": 3,
+  "COMMODITY": 3
+ },
+ "regions": {
+  "UNKNOWN": 106,
+  "EMERGING_MARKETS": 5,
+  "GLOBAL": 4,
+  "INTERNATIONAL": 5,
+  "USA": 38,
+  "EUROPE": 1,
+  "DEVELOPED_EX_US": 4,
+  "VIETNAM": 1
+ },
+ "issuers": {
+  "Columbia Threadneedle": 7,
+  "PGIM": 4,
+  "Pacer": 2,
+  "VictoryShares": 2,
+  "First Trust": 6,
+  "SoFi": 1,
+  "GraniteShares": 2,
+  "Defiance": 6,
+  "REX Shares (T-Rex)": 1,
+  "UNKNOWN": 17,
+  "American Century": 1,
+  "Baron": 4,
+  "Grayscale": 5,
+  "BlackRock (iShares)": 15,
+  "Bitwise": 2,
+  "MFS": 3,
+  "Corgi": 21,
+  "AllianceBernstein": 1,
+  "Tradr": 4,
+  "ProShares": 12,
+  "VegaShares": 1,
+  "Cohen & Steers": 4,
+  "Innovator": 4,
+  "State Street (SPDR)": 8,
+  "DoubleLine": 1,
+  "Leverage Shares": 2,
+  "Simplify": 3,
+  "Franklin Templeton": 1,
+  "Goldman Sachs": 1,
+  "VanEck": 1,
+  "J.P. Morgan": 4,
+  "Principal": 1,
+  "Alger": 1,
+  "KraneShares": 1,
+  "Nuveen": 3,
+  "Invesco": 2,
+  "Touchstone": 1,
+  "T. Rowe Price": 1,
+  "21Shares": 2,
+  "Vanguard": 5,
+  "Tema": 1
+ },
+ "statuses": {
+  "ACTIVE": 156,
+  "INACTIVE": 8
+ }
+}

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "vu-vorsorge-providers-1.0.0",
+  "asOf": null,
+  "status": "NO_VERIFIED_DATA",
+  "statusNote": "Für die geförderten Altersvorsorgedepots ab 2027 liegen noch keine verifizierten Produktkonditionen vor. Vision Universe zeigt Anbieterdaten erst, wenn sie aus einer belegbaren Quelle (Basisinformationsblatt, Preis-Leistungs-Verzeichnis, Produktinformationsblatt) mit Stand und Quelle erfasst sind.",
+  "fields": [
+    { "id": "provider", "label": "Anbieter" },
+    { "id": "product", "label": "Produkt" },
+    { "id": "custodyFee", "label": "Depotgebühr", "unit": "EUR/Jahr oder % p.a." },
+    { "id": "etfSelection", "label": "ETF-Auswahl", "unit": "Anzahl" },
+    { "id": "fundSelection", "label": "Fondsauswahl", "unit": "Anzahl" },
+    { "id": "stocksAllowed", "label": "Aktien möglich", "unit": "ja/nein" },
+    { "id": "savingsPlan", "label": "Sparrate", "unit": "ab EUR/Monat" },
+    { "id": "minimumAmount", "label": "Mindestbetrag", "unit": "EUR" },
+    { "id": "effectiveCosts", "label": "Effektivkosten", "unit": "% p.a. (laut Basisinformationsblatt)" },
+    { "id": "switchingCosts", "label": "Wechselkosten", "unit": "EUR" },
+    { "id": "payoutModel", "label": "Auszahlungsmodell" },
+    { "id": "service", "label": "Service" },
+    { "id": "digital", "label": "Digitalisierung" }
+  ],
+  "rowContract": "Jede Zeile braucht source (URL oder Dokument), asOf (Datum) und darf nur Felder enthalten, die in der Quelle stehen. Fehlende Felder bleiben null.",
+  "providers": []
+}

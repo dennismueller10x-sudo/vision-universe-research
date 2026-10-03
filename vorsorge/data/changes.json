@@ -1,0 +1,22 @@
+{
+ "version": "vorsorge-monitor-1.0.0",
+ "asOf": "2026-10-02",
+ "events": [],
+ "unmonitored": [
+  {
+   "type": "TER_CHANGE",
+   "label": "ETF-Kosten (TER) geändert",
+   "reason": "Keine Emittentenquelle für Kostenquoten angeschlossen."
+  },
+  {
+   "type": "FUND_MERGER",
+   "label": "ETF fusioniert",
+   "reason": "Fusionen melden Emittenten; Quelle nicht angeschlossen."
+  },
+  {
+   "type": "TRACKING_DIFFERENCE",
+   "label": "Tracking Difference verändert",
+   "reason": "Benötigt Indexstände und Gesamtrendite; nicht angeschlossen."
+  }
+ ]
+}

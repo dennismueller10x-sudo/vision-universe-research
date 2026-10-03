@@ -19,11 +19,11 @@ const normalized = JSON.parse(JSON.stringify(groups.map(([heading, entries]) => 
 // Discover shortcuts stay within Discover; the other groups link to platform products.
 test('the shared menu groups product routes and Discover destinations', () => {
   assert.deepEqual(normalized.map(([heading]) => heading),
-    ['Discover','Markets & Data','Analyse','Research','Learn','Tools & Personal']);
+    ['Discover','Markets & Data','Vorsorge','Analyse','Research','Learn','Tools & Personal']);
   const routes = normalized.flatMap(([, entries]) => entries.map(([, href]) => href));
   assert.equal(new Set(routes).size, routes.length);
   for (const route of ['/screener/','/quant/','/supertrader/','/dashboard/','/macro/','/etf/','/analysten/',
-    '/hedgefonds/','/news/','/morning/','/magazin/','/reports/xpeng/','/academy/','/guide/','/budget/']) {
+    '/hedgefonds/','/news/','/morning/','/magazin/','/reports/xpeng/','/academy/','/guide/','/budget/','/vorsorge/#/']) {
     assert.ok(routes.includes(route), `${route} fehlt`);
   }
   assert.deepEqual(normalized[0][1], [
@@ -31,7 +31,8 @@ test('the shared menu groups product routes and Discover destinations', () => {
     ['Entdecken','/discover/#/einzeln/US_REAL'],['Suchen','/discover/#/suche'],
     ['Märkte','/discover/#/maerkte'],['Watchlist','/discover/#/watchlist']
   ]);
-  assert.ok(routes.filter(route => route.includes('#/')).every(route => route.startsWith('/discover/#/')));
+  // Hash-Routen gehoeren zu ihrer eigenen Produkt-App (Discover, Vorsorge).
+  assert.ok(routes.filter(route => route.includes('#/')).every(route => route.startsWith('/discover/#/') || route.startsWith('/vorsorge/#/')));
 });
 
 test('Discover has separate worlds and strategies routes and five mobile destinations', () => {

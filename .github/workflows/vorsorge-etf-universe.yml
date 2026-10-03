@@ -1,0 +1,56 @@
+name: Vorsorge ETF-Universum (Tiingo, volle ETF-Liste)
+
+# Nimmt ALLE ETFs der Tiingo-Tickerliste auf (rund 9.600 Zeilen), holt
+# Stammdaten und Tageskerzen und baut daraus den Vorsorge-ETF-Stamm.
+# Nur manuell: der Lauf braucht mehrere Stunden Anbieterkontingent und
+# erweitert das oeffentliche Produktuniversum - das ist eine Owner-
+# Entscheidung, kein Zeitplan.
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Hoechstzahl ETFs in diesem Lauf (0 = alle)'
+        default: '0'
+      per_hour:
+        description: 'Anfragen je Stunde (Drossel)'
+        default: '4500'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vorsorge-etf-universe
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: ETF-Universum von Tiingo aufnehmen
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/vorsorge/ingest-tiingo-etfs.mjs --active-only --us-primary-only --limit "${{ github.event.inputs.limit }}" --per-hour "${{ github.event.inputs.per_hour }}"
+      - name: Vorsorge-Stamm bauen
+        run: node scripts/vorsorge/build-etf-data.mjs
+      - name: Tests und Hygiene
+        run: |
+          node --test "vorsorge/tests/*.test.mjs"
+          node scripts/market/assert-public-data-hygiene.mjs
+      - name: Kein Schluessel in den Daten
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if grep -rqF "$TIINGO_API_KEY" vorsorge/; then echo "Schluessel in den Daten gefunden"; exit 1; fi
+      - name: Veroeffentlichen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add vorsorge/data vorsorge/etf
+          git commit -m "Vorsorge: ETF-Universum aus der Tiingo-Tickerliste aktualisiert" || exit 0
+          bash scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

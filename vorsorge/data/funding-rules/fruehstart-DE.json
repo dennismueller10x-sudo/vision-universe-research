@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "vu-funding-rules-1.0.0",
+  "ruleId": "DE-FRUEHSTART",
+  "ruleVersion": "2027.0-angekuendigt",
+  "product": "Frühstart-Rente (staatlicher Beitrag für Kinder)",
+  "jurisdiction": "DE",
+  "validFrom": "2027-01-01",
+  "validUntil": null,
+  "legalStatus": "ANGEKUENDIGT",
+  "legalStatusNote": "Werte aus Sekundärquellen zur Reform. Ob und ab wann die Frühstart-Rente in dieser Form gilt, ist vor Produktivfreigabe gegen den Gesetzestext zu prüfen. Die Oberfläche zeigt die Werte deshalb als Annahme.",
+  "verification": { "status": "SECONDARY_SOURCES", "checkedAt": "2026-10-03", "primaryVerified": false },
+  "ruleSource": [
+    { "title": "Volksbank Stuttgart – Altersvorsorgedepot: Das plant der Gesetzgeber ab 2027", "url": "https://www.volksbank-stuttgart.de/privatkunden/vorsorge/ratgeber/altersvorsorgedepot.html", "kind": "SECONDARY_PRESS" },
+    { "title": "Raisin – Altersvorsorgedepot 2027", "url": "https://www.raisin.com/de-de/altersvorsorge/altersvorsorgedepot/", "kind": "SECONDARY_PRESS" }
+  ],
+  "childRules": {
+    "stateContributionMonthly": 10,
+    "fromAge": 6,
+    "untilAgeExclusive": 18,
+    "parentContributionAllowed": true
+  },
+  "maximumFunding": { "stateContributionPerYear": 120, "stateContributionTotal": 1440 }
+}

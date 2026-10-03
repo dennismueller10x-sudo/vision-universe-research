@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "vu-funding-rules-1.0.0",
+  "ruleId": "DE-ALTERSVORSORGEDEPOT",
+  "ruleVersion": "2027.1-bundestag-2026-03",
+  "product": "Gefördertes Altersvorsorgedepot (Reform der geförderten privaten Altersvorsorge)",
+  "jurisdiction": "DE",
+  "validFrom": "2027-01-01",
+  "validUntil": null,
+  "legalStatus": "BUNDESTAG_BESCHLUSS",
+  "legalStatusNote": "Bundestagsbeschluss (Textarchiv Bundestag, KW 13/2026). Die hinterlegten Werte folgen der beschlossenen Fassung, wie sie in mehreren übereinstimmenden Sekundärquellen wiedergegeben wird. Der Primärtext (Bundesgesetzblatt) war aus der Build-Umgebung nicht abrufbar; vor Produktivfreigabe gegen das BGBl. prüfen.",
+  "verification": {
+    "status": "SECONDARY_SOURCES_CONSISTENT",
+    "checkedAt": "2026-10-03",
+    "primaryVerified": false
+  },
+  "ruleSource": [
+    { "title": "Deutscher Bundestag – Bundestag beschließt das Altersvorsorgedepot", "url": "https://www.bundestag.de/dokumente/textarchiv/2026/kw13-de-altersvorsorge-1156798", "kind": "PRIMARY_PARLIAMENT", "fetched": false },
+    { "title": "BMF – Fragen und Antworten zur Reform der geförderten privaten Altersvorsorge", "url": "https://www.bundesfinanzministerium.de/Content/DE/FAQ/reform-der-privaten-altersvorsorge.html", "kind": "PRIMARY_MINISTRY", "fetched": false },
+    { "title": "BMF – Regierungsentwurf Altersvorsorgereformgesetz (Stand 15.12.2025)", "url": "https://www.bundesfinanzministerium.de/Content/DE/Gesetzestexte/Gesetze_Gesetzesvorhaben/Abteilungen/Abteilung_IV/21_Legislaturperiode/2025-12-01-Altersvorsorgereformgesetz/2-Regierungsentwurf.pdf", "kind": "DRAFT_SUPERSEDED", "fetched": false, "note": "Entwurf: 30 Cent je Euro bis 1.200 €, 20 Cent bis 1.800 €. Im parlamentarischen Verfahren geändert." },
+    { "title": "cash-online – Altersvorsorgedepot ab 2027: Staat erhöht Förderung auf 540 Euro", "url": "https://www.cash-online.de/a/altersvorsorgedepot-ab-2027-726968/", "kind": "SECONDARY_PRESS", "fetched": false }
+  ],
+  "contributionRules": {
+    "minimumAnnualOwnContribution": 120,
+    "maximumSubsidizedOwnContribution": 1800,
+    "eligibleAssets": "ETFs und Fonds ohne Garantiepflicht; keine Einzelaktien, keine Kryptowerte (laut Sekundärquellen)",
+    "note": "Unterhalb des Mindestbeitrags wird keine Zulage gezahlt."
+  },
+  "incomeRules": {
+    "basicAllowance": {
+      "label": "Grundzulage",
+      "tiers": [
+        { "from": 0, "to": 360, "rate": 0.50 },
+        { "from": 360, "to": 1800, "rate": 0.25 }
+      ],
+      "maximum": 540
+    },
+    "incomeDependent": false,
+    "note": "Die Grundzulage hängt am Eigenbeitrag, nicht am Einkommen."
+  },
+  "childRules": {
+    "label": "Kinderzulage",
+    "perChild": { "rate": 1.0, "maximum": 300, "requiresChildBenefit": true },
+    "assumption": "Modelliert als 1 € Zulage je 1 € Eigenbeitrag bis 300 € je Kind und Jahr. Sekundärquellen nennen \"bis zu 300 €\" bei Eigenbeitrag von mindestens 300 €; die genaue Staffel ist gegen den Gesetzestext zu prüfen."
+  },
+  "bonusRules": {
+    "careerStarter": { "label": "Berufseinsteigerbonus", "amount": 200, "oneTime": true, "maxAgeExclusive": 25 }
+  },
+  "maximumFunding": {
+    "basicAllowancePerYear": 540,
+    "childAllowancePerChildPerYear": 300,
+    "careerStarterOneTime": 200
+  },
+  "taxRules": {
+    "status": "NOT_MODELLED",
+    "note": "Sonderausgabenabzug und nachgelagerte Besteuerung der Auszahlung sind nicht modelliert. Keine Steuerberatung."
+  }
+}

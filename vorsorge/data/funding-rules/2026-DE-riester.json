@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "vu-funding-rules-1.0.0",
+  "ruleId": "DE-RIESTER",
+  "ruleVersion": "2026.1-estg",
+  "product": "Riester-Rente (Altersvorsorgevertrag nach § 10a / Abschnitt XI EStG)",
+  "jurisdiction": "DE",
+  "validFrom": "2018-01-01",
+  "validUntil": "2026-12-31",
+  "validUntilNote": "Für Neuabschlüsse bis zum Start der Reform. Bestandsverträge laufen weiter; Übergangsregeln der Reform sind nicht modelliert.",
+  "legalStatus": "GELTENDES_RECHT",
+  "verification": { "status": "STATUTE", "checkedAt": "2026-10-03", "primaryVerified": false },
+  "ruleSource": [
+    { "title": "§ 84 EStG Grundzulage", "url": "https://www.gesetze-im-internet.de/estg/__84.html", "kind": "STATUTE" },
+    { "title": "§ 85 EStG Kinderzulage", "url": "https://www.gesetze-im-internet.de/estg/__85.html", "kind": "STATUTE" },
+    { "title": "§ 86 EStG Mindesteigenbeitrag", "url": "https://www.gesetze-im-internet.de/estg/__86.html", "kind": "STATUTE" },
+    { "title": "§ 10a EStG Zusätzliche Altersvorsorge", "url": "https://www.gesetze-im-internet.de/estg/__10a.html", "kind": "STATUTE" }
+  ],
+  "contributionRules": {
+    "minimumOwnContributionRate": 0.04,
+    "minimumOwnContributionCap": 2100,
+    "baseContribution": 60,
+    "note": "Mindesteigenbeitrag = 4 % der beitragspflichtigen Einnahmen des Vorjahres, höchstens 2.100 €, abzüglich Zulagen, mindestens Sockelbetrag 60 €. Wird er unterschritten, werden die Zulagen anteilig gekürzt."
+  },
+  "incomeRules": {
+    "basicAllowance": { "label": "Grundzulage", "fixed": 175 },
+    "incomeDependent": true
+  },
+  "childRules": {
+    "label": "Kinderzulage",
+    "bornBefore2008": 185,
+    "bornFrom2008": 300
+  },
+  "bonusRules": {
+    "careerStarter": { "label": "Berufseinsteigerbonus", "amount": 200, "oneTime": true, "maxAgeExclusive": 25 }
+  },
+  "maximumFunding": { "basicAllowancePerYear": 175, "childAllowancePerChildPerYear": 300, "specialExpensesDeductionCap": 2100 },
+  "taxRules": {
+    "specialExpensesDeductionCap": 2100,
+    "note": "Günstigerprüfung: Steuervorteil aus Sonderausgabenabzug minus Zulagen, nur wenn größer null. Vereinfacht mit Grenzsteuersatz modelliert, keine Steuerberatung."
+  }
+}

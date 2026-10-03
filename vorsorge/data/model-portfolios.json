@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "vu-vorsorge-model-portfolios-1.0.0",
+  "note": "Modellportfolios sind Lehrbeispiele für die Analyse – keine Kauf- oder Anlageempfehlung. Gewichte sind frei änderbar. Die Bausteine sind US-Listings aus dem Tiingo-Universum (Marktabbild); für Privatanleger in der EU sind US-ETFs in der Regel nicht handelbar, weil ein Basisinformationsblatt fehlt. Gleichwertige UCITS-ETFs folgen mit europäischen Datenquellen.",
+  "portfolios": [
+    { "id": "one-etf", "label": "ONE ETF", "idea": "Ein einziger breiter Industrieländer-ETF. Maximal einfach.", "positions": [ { "symbol": "URTH", "weight": 1 } ] },
+    { "id": "global-core", "label": "GLOBAL CORE", "idea": "Industrieländer plus ein kleiner Schwellenländer-Anteil – grob die Gewichtung des Weltmarkts.", "positions": [ { "symbol": "URTH", "weight": 0.88 }, { "symbol": "EEM", "weight": 0.12 } ] },
+    { "id": "core-em", "label": "CORE + EM", "idea": "Bewusst mehr Schwellenländer als der Weltmarkt.", "positions": [ { "symbol": "URTH", "weight": 0.7 }, { "symbol": "EEM", "weight": 0.3 } ] },
+    { "id": "core-small", "label": "CORE + SMALL CAP", "idea": "Kern plus kleinere Unternehmen (hier: US-Nebenwerte).", "positions": [ { "symbol": "URTH", "weight": 0.8 }, { "symbol": "IWM", "weight": 0.2 } ] },
+    { "id": "core-bonds", "label": "CORE + BONDS", "idea": "Kern plus Staatsanleihen als ruhigerer Baustein.", "positions": [ { "symbol": "URTH", "weight": 0.7 }, { "symbol": "VTG", "weight": 0.3 } ] },
+    { "id": "quality-tilt", "label": "QUALITY TILT", "idea": "Kern plus eine Beimischung qualitätsstarker Nebenwerte.", "positions": [ { "symbol": "URTH", "weight": 0.8 }, { "symbol": "SQLT", "weight": 0.2 } ] },
+    { "id": "factor", "label": "FACTOR PORTFOLIO", "idea": "Kern plus Value, Qualität und Nebenwerte.", "positions": [ { "symbol": "URTH", "weight": 0.6 }, { "symbol": "VDV", "weight": 0.15 }, { "symbol": "SQLT", "weight": 0.15 }, { "symbol": "IWM", "weight": 0.1 } ] }
+  ]
+}
