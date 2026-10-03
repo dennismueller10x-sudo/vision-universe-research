@@ -60,7 +60,7 @@ export function importsOf(rel) {
 
 const has = (files, re) => files.filter((f) => re.test(f));
 /* Eine eigene Split-Bereinigung rechnet einen kumulativen Faktor aus
-   splitFactor (cumulative *= sf). Reine Plausibilitaetspruefungen auf
+   splitFactor (ein Produkt ueber alle Splits danach). Reine Pruefungen auf
    splitFactor zaehlen nicht. */
 const OWN_SPLIT = /(?:cumulative|factor|acc|kum\w*)\s*\*=\s*(?:sf|s|split\w*|[a-z]+\.splitFactor)\b/i;
 
