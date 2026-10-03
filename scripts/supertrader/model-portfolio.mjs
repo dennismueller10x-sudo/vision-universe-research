@@ -4,7 +4,7 @@
 // portfolio.mjs runPortfolioTR) auf das LIVE-Protokoll an: 100.000 USD
 // Startkapital ab dem ersten Modelleinstieg, Positionsgroesse aus Risiko je
 // Trade und Stopabstand, Hoechstgrenzen je Position und Anzahl, gleichzeitige
-// Einstiege alphabetisch, Gebuehren 1 bp je Seite. Was keinen Platz bekommt,
+// Einstiege nach relativer Staerke (ab R10; Turtle alphabetisch), Gebuehren 1 bp je Seite. Was keinen Platz bekommt,
 // wird als „nicht übernommen“ mit Grund gezeigt - nicht verschwiegen.
 //
 // Veroeffentlicht werden Zusammensetzung, Gewichte, Cash, Stops und die
@@ -14,20 +14,25 @@
 import { runPortfolioTR } from './validation/portfolio.mjs';
 import { PORTFOLIO_DEFAULTS } from './engine/backtest.mjs';
 
-export const MODEL_PORTFOLIO_VERSION = 'supertrader-model-portfolio-1.0.0';
+export const MODEL_PORTFOLIO_VERSION = 'supertrader-model-portfolio-1.1.0';
 const r4 = (v) => (Number.isFinite(v) ? Math.round(v * 1e4) / 1e4 : null);
 
+// Runde 10 (PREREGISTRATION-R10-FIXES K3): gleichzeitige Einstiege nach relativer Staerke am Vortag
+// (Quellen bevorzugen die staerksten Aktien), geprueft an Pruefmenge und Vollportfolio. Turtle: keine
+// Quelle fuer eine Rangfolge -> alphabetisch.
+export const RANK_RS = new Set(['MOMENTUM_BREAKOUT', 'WEINSTEIN_STAGE', 'DARVAS_BOX', 'MINERVINI_VCP']);
 export function portfolioConfig(engine) {
   const c = engine.portfolio ? { ...PORTFOLIO_DEFAULTS, ...engine.portfolio } : { ...PORTFOLIO_DEFAULTS, source: 'VU-Standard: keine belegte Positionsgrößenregel der Methode' };
+  if (!c.priority) c.priority = RANK_RS.has(engine.id) ? 'RS' : 'ALPHA';
   return c;
 }
 
 // signals: alle Ledger-Signale (open + closed) einer Methode; barsOf(symbol) -> {date[], close[]}.
-export function buildModelPortfolio({ engine, signals, barsOf, calendar, asOf }) {
+export function buildModelPortfolio({ engine, signals, barsOf, calendar, asOf, rsOf = null }) {
   const cfg = portfolioConfig(engine);
   const entered = signals.filter((s) => s.entry && s.entry.date && Number.isFinite(s.entry.price) && Number.isFinite(s.initialStop));
   const base = { schema: MODEL_PORTFOLIO_VERSION, strategyId: engine.id, currentVersion: engine.version, asOf,
-    config: { initialEquity: cfg.initialEquity, riskPerTrade: cfg.riskPerTrade, maxPositionPct: cfg.maxPositionPct, maxPositions: cfg.maxPositions, progressive: cfg.progressive || null, source: cfg.source || null, simultaneousEntries: 'alphabetisch nach Symbol', costs: '1 bp Gebühr je Seite; Einstiegspreise enthalten bereits 10 bp Slippage' },
+    config: { initialEquity: cfg.initialEquity, riskPerTrade: cfg.riskPerTrade, maxPositionPct: cfg.maxPositionPct, maxPositions: cfg.maxPositions, progressive: cfg.progressive || null, source: cfg.source || null, simultaneousEntries: cfg.priority === 'RS' ? 'nach relativer Stärke am Vortag (Gleichstand alphabetisch)' : 'alphabetisch nach Symbol (keine Rangregel in der Quelle)', priority: cfg.priority, costs: '1 bp Gebühr je Seite; Einstiegspreise enthalten bereits 10 bp Slippage' },
     publication: 'Zusammensetzung und Einzeltrades. Gesamtrendite und Kurve werden bis zur Klärung der Rechte an abgeleiteten Kennzahlen nicht veröffentlicht.' };
   if (!entered.length) return { ...base, startDate: null, cashPct: 1, investedPct: 0, positions: [], closed: [], notTaken: [], note: 'Noch kein Modelleinstieg dieser Methode im Live-Protokoll.' };
   const start = entered.map((s) => s.entry.date).sort()[0];
@@ -36,7 +41,7 @@ export function buildModelPortfolio({ engine, signals, barsOf, calendar, asOf })
     const b = barsOf(s.symbol);
     const marks = new Map();
     if (b) for (let i = 0; i < b.date.length; i++) if (b.date[i] >= s.entry.date && b.date[i] <= asOf) marks.set(b.date[i], b.close[i]);
-    return { id: s.id, listingId: s.symbol, entry: { date: s.entry.date, price: s.entry.price }, initialStop: s.initialStop,
+    return { id: s.id, listingId: s.symbol, rsAtEntry: rsOf ? rsOf(s.symbol, s.entry.date) : null, entry: { date: s.entry.date, price: s.entry.price }, initialStop: s.initialStop,
       exits: (s.exits || []).filter((x) => x.date <= asOf).map((x) => ({ date: x.date, price: x.price, fraction: x.fraction, ruleId: x.ruleId })), terminal: null, marks, divs: new Map(), sig: s };
   });
   const run = runPortfolioTR(trades, cal, cfg, { dividends: false, commissionBps: 1 });

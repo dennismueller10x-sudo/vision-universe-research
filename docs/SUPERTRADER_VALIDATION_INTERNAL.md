@@ -298,3 +298,29 @@ werden daneben berichtet.
   Die R8-Korrektur („2016–2020 über SPY“ beruhte auf der Tagesbalken-Annahme) gilt unverändert.
 - Darvas 3.0.0: beide Schranken weiter robust negativ; Ursachenregel weiter unerfüllt.
 - Ergebnisse vor A4 bleiben als `#r9b`, nach A4 als `#r9b-a4` in `evidence-internal.sealed.json`.
+
+## Runde 10 (03.10.2026): Mehrbörsen-Minuten, Splitfälle, Abdeckung der Ausschlüsse
+
+### Tiingo-Endpunkt /tiingo/equity/intraday (Beta) – PREREGISTRATION-R10-VENUES.json
+- Lauf 37093205098, Ergebnis `20261003T040901Z-venue-probe.sealed.json`; 258 Anfragen, nur bestehender Schlüssel.
+- **Zugang:** Status 200 mit Minutenbalken (AAPL 03.06.2024: 390 Balken). Historie ab 2017; 2010, 2016 und NVDA 11.11.2016 leer.
+- **Zeitraum/Zeitstempel:** UTC, 09:30–15:59 ET, keine Vor- und Nachbörse, Felder open/high/low/close, **kein Volumen**.
+- **Kurse:** In 66 von 67 Fällen mit Daten beider Quellen sind Eröffnung, Hoch und Tief **identisch mit den IEX-Minuten**.
+  Mit unserem Zugang liefert der Endpunkt also IEX-Werte ohne Volumen, keine konsolidierten Mehrbörsen-Minuten.
+- **Folge (D1–D3):** abrufbar (D1), aber nicht konsolidiert (D2 nicht erfüllt: alle 30 Identitätsabweichungen,
+  10 „IEX-Hoch unter Trigger“ und 12 „ohne Daten“ bleiben gleich). Kein Folgelauf; IEX bleibt die Minutenquelle.
+  Reihenfolge von Kauf und Stop stimmt in allen 24 von beiden Quellen aufgelösten Fällen überein.
+- **Splitbereinigung:** Beide Minutenquellen liefern Rohkurse (Tagesbalken roh passt, bereinigt nur über den Faktor).
+
+### Die fünf nicht aufgelösten Splitfälle (R9)
+Keiner scheiterte an der Splitumrechnung. Die Aussage „45 von 50 korrekt umgerechnet“ war ungenau:
+- ETP 19.10.2018 (Darvas): letzter Handelstag vor der Fusion in ET, Tagesbalken ohne Spanne (O=H=L=C) – keine Minuten. Datenmerkmal des Delistings.
+- DD 05.04.2019 (Turtle): keine IEX-Minuten unter dem alten Ticker nach der Fusion DowDuPont.
+- SLGN 02.06.2017, NSP 19.12.2017 (Darvas): IEX-Hoch 0,25 % bzw. 0,7 % unter dem Trigger (Hoch nicht an IEX gehandelt).
+- SEND 31.01.2019 (Darvas): Tief aus der Eröffnungsauktion (IEX 1,2 % höher), Identitätsprüfung greift.
+In allen 45 aufgelösten Splitfällen stimmte der umgerechnete Tagesbalken auf 1 % mit den Minuten überein (Identitätsprüfung).
+
+### Abdeckung der ausgeschlossenen Momentum-Fälle
+Die R9-Schranken (neutral -I, vorsichtig -IP) decken die nicht aufgelösten Kauftage **nicht vollständig** ab: Auf
+„klaren“ Tagen nehmen beide Schranken an, dass die Position hält; aufgelöste Fälle zeigen aber 28 % Gleichtags-Ausstiege
+auch dort. Deshalb läuft die vorab definierte äußerste Schranke r10b (3.1.0-IX: jeder nicht aufgelöste Kauftag endet zum Tagesbalken-Stop).

@@ -143,7 +143,13 @@ test('Plan je Signal: geplante Schwellen mit Datenstand; Einstieg nur als echte 
     assert.match(s.plan.trigger.dataAsOf, /^\d{4}-\d{2}-\d{2}$/);
     assert.ok(s.plan.nextAction.text && s.plan.nextAction.ruleId, s.id);
     if (['SETUP', 'ENTRY_READY', 'TRIGGERED'].includes(s.state)) assert.equal(s.plan.entry, null, `${s.id}: Einstieg vor Ausfuehrung`);
-    if (s.entry) { assert.equal(s.entry.priceBasis, 'NEXT_OPEN'); assert.ok(s.entry.date > s.confirmation.date, `${s.id}: Einstieg nach Bestaetigung`); }
+    // Schlusskurs-Methoden kaufen zur naechsten Eroeffnung nach der Bestaetigung; Kauf-Stop-Methoden
+    // (ab Runde 8) am Tag, an dem das Tageshoch den Trigger erreicht (Bestaetigung = Einstiegstag).
+    if (s.entry) {
+      assert.ok(['NEXT_OPEN', 'BUY_STOP'].includes(s.entry.priceBasis), `${s.id}: Preisbasis ${s.entry.priceBasis}`);
+      if (s.entry.priceBasis === 'NEXT_OPEN') assert.ok(s.entry.date > s.confirmation.date, `${s.id}: Einstieg nach Bestaetigung`);
+      else { assert.equal(s.entry.date, s.confirmation.date, `${s.id}: Kauf-Stop am Ausloesetag`); assert.ok(s.entry.evidence, `${s.id}: Belegart fehlt`); }
+    }
   }
 });
 

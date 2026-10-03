@@ -29,7 +29,7 @@ import { DEFAULT_EXECUTION } from '../engine/execution.mjs';
 import kk from '../engine/strategies/kk-breakout.mjs';
 import weinstein from '../engine/strategies/weinstein.mjs';
 import darvas from '../engine/strategies/darvas.mjs';
-import minervini from '../engine/strategies/minervini.mjs';
+import minervini, { trendTemplate as minTT } from '../engine/strategies/minervini.mjs';
 import { buildWeekly } from '../engine/weekly.mjs';
 import kk2 from '../engine/strategies/kk-breakout-v2.mjs';
 import weinstein2 from '../engine/strategies/weinstein-v2.mjs';
@@ -83,7 +83,38 @@ export function enginesR9B(oracle) {
     { ...darvas3, version: '3.0.0-I', simOpts: { intradayOracle: oracle } }, { ...darvas3, version: '3.0.0-IP', simOpts: { intradayOracle: oracle, ...P } }, darvas3,
   ];
 }
-const ROLE_R9B = { '3.1.0-I': 'R9B_RESOLVED_FALLBACK_NEUTRAL', '3.1.0-IP': 'R9B_RESOLVED_FALLBACK_PESSIMISTIC', '3.1.0': 'REFERENCE_R8C', '3.0.0-I': 'R9B_RESOLVED_FALLBACK_NEUTRAL', '3.0.0-IP': 'R9B_RESOLVED_FALLBACK_PESSIMISTIC', '3.0.0': 'REFERENCE_R8B' };
+// Runde 10 (PREREGISTRATION-R10-VENUES.json D4): aeusserste Schranke fuer nicht aufgeloeste
+// Momentum-Kauftage - jeder endet mit Ausstieg zum Tagesbalken-Stop. Neutral (-I) als Referenz.
+export const PREREG_R10B = 'supertrader-validation-prereg-r10-venues-1.0.0#D4';
+export function enginesR10B(oracle) {
+  return [{ ...kk31, version: '3.1.0-I', simOpts: { intradayOracle: oracle } }, { ...kk31, version: '3.1.0-IX', simOpts: { intradayOracle: oracle, sameDayPolicy: 'ALWAYS_UNRESOLVED' } }];
+}
+// Runde 10 (PREREGISTRATION-R10-FIXES): Vollportfolio der Live-Versionen mit bereinigtem Universum (U1),
+// Rang nach relativer Staerke (K3, nicht fuer Turtle) und Darvas-Kapazitaet 1/6 (K1). Varianten teilen die
+// Trades ihrer Basis (tradesOf) - nur die Portfoliologik unterscheidet sich.
+export const PREREG_R10C = 'supertrader-validation-prereg-r10-fixes-1.0.0';
+export function enginesR10C() {
+  const live = [kk31, weinstein3, darvas3, minervini2, don2];
+  const out = [];
+  for (const e of live) {
+    out.push(e);
+    if (e.id !== 'DONCHIAN_TURTLE') out.push({ ...e, version: e.version + '-RS', tradesOf: `${e.id}@${e.version}`, portfolio: { ...portfolioOf(e), priority: 'RS' } });
+    if (e.id === 'DARVAS_BOX') {
+      const k1 = { ...portfolioOf(e), maxPositionPct: 1 / 6 };
+      out.push({ ...e, version: '3.0.1', tradesOf: `${e.id}@${e.version}`, portfolio: k1 }, { ...e, version: '3.0.1-RS', tradesOf: `${e.id}@${e.version}`, portfolio: { ...k1, priority: 'RS' } });
+    }
+  }
+  return out;
+}
+// Runde 10: Minervini-Diagnose - Einfluss einzelner Bausteine auf Kandidaten und Trades
+// (Ablation, keine neue Version; PREREGISTRATION-R10-FIXES minerviniDiagnosis).
+export function enginesR10M() {
+  const P = minervini2.PARAMS;
+  const v = (suffix, params) => ({ ...minervini2, version: '2.0.0-' + suffix, PARAMS: Object.freeze({ ...P, ...params }) });
+  return [minervini2, v('NOVOL', { breakoutVolume: 0 }), v('NORS', { rsPercentile: 0 }), v('NODRY', { volumeDryUp: 99 }), v('LOW25', { lowDistance: 1.25 })];
+}
+const ROLE_R10C = (v) => (v.endsWith('-RS') ? 'R10_PRIORITY_RS' : v === '3.0.1' ? 'R10_DARVAS_CAPACITY' : 'R10_BASE_CLEAN_UNIVERSE');
+const ROLE_R9B = { '3.1.0-IX': 'R10B_UNRESOLVED_ALWAYS_EXIT',  '3.1.0-I': 'R9B_RESOLVED_FALLBACK_NEUTRAL', '3.1.0-IP': 'R9B_RESOLVED_FALLBACK_PESSIMISTIC', '3.1.0': 'REFERENCE_R8C', '3.0.0-I': 'R9B_RESOLVED_FALLBACK_NEUTRAL', '3.0.0-IP': 'R9B_RESOLVED_FALLBACK_PESSIMISTIC', '3.0.0': 'REFERENCE_R8B' };
 export const portfolioOf = (e) => (e.portfolio ? { ...PORTFOLIO_DEFAULTS, ...e.portfolio } : PORTFOLIO_DEFAULTS);
 const W = L.WINDOW;
 const EXEC2 = { ...DEFAULT_EXECUTION, slippageBps: 20, commissionBps: 2 };
@@ -150,6 +181,7 @@ export function tradesFor(engine, seg, ctx, exec, sink = null, simOpts = {}) {
       rawCloseAtConfirm: ci != null ? ctx.raw.close[s.confirmation?.basis === 'INTRADAY_BUY_STOP' ? ci - 1 : ci] : null, qualityFailed: s.quality?.failed || null,
       trigger: s.levels?.trigger ?? null, confirmClose: s.confirmation?.close ?? null, rawOpenEntry: s.entry.rawOpen ?? null, evidence: s.entry.evidence || null, sameDayOrder: s.entry.sameDayOrder || null,
       terminal, marks, divs, heldSessions: lastIdx - ei, survivor: seg.survivor,
+      rsAtEntry: seg.cross?.rs?.[ei - 1] ?? null, // Runde 10: Rang im Portfolio (Stand Vortag)
     };
   };
   if (sink) for (const s of res.finished) if (!s.entry) sink(s);
@@ -235,7 +267,7 @@ function rawFromStoreBars(bars) {
 
 // Laedt Listentabelle, Reihen (privater Eimer), Segmente (A2) und den
 // Point-in-Time-Querschnitt. Gemeinsam fuer analyze-methods und diagnose-methods.
-export async function loadPitData({ LIMIT = 0, log = () => {} } = {}) {
+export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity = false } = {}) {
   const KEY = process.env.TIINGO_API_KEY || '';
   const zip = Buffer.from(await (await fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer());
   const rows = L.parseTickerCsv(L.unzipCsv(zip));
@@ -275,16 +307,26 @@ export async function loadPitData({ LIMIT = 0, log = () => {} } = {}) {
   for (let i = 0; i < spyAdj.date.length; i++) bench.byWeek.set(isoWeekKey(spyAdj.date[i]), spyAdj.close[i]);
 
   const members = [];
+  let nonEquityExcluded = 0;
+  const companyRows = excludeNonEquity && fs.existsSync(path.join(root, 'quant/data/market/security-master/company-names.json')) ? JSON.parse(fs.readFileSync(path.join(root, 'quant/data/market/security-master/company-names.json'), 'utf8')).rows || [] : [];
+  const companyOf = new Map(companyRows.map((r) => [r.ticker, r]));
   for (const l of listings) {
-    if (l.source === 'STORE_ACTIVE') { if (L.INCLUDED_CLASSES.has(l.storeClass)) members.push({ l, from: 'STORE' }); continue; }
+    if (l.source === 'STORE_ACTIVE') {
+      if (!L.INCLUDED_CLASSES.has(l.storeClass)) continue;
+      const r = companyOf.get(l.ticker);
+      if (excludeNonEquity && L.nonStockProduct({ ticker: l.ticker, exchange: l.exchange, name: r?.companyName })) { nonEquityExcluded++; continue; }
+      members.push({ l, from: 'STORE' }); continue;
+    }
     const e = manifest[l.id];
     if (e && (e.status === 'OK' || e.status === 'PARTIAL')) {
       const inc = l.source === 'UNFETCHABLE_REUSED' ? e.included : L.classifyListing(Master, l, e.name, listedRoots).included;
+      // Runde 10 (PREREGISTRATION-R10-FIXES U1): Nicht-Aktien nach Name ausschliessen (ETN/ETF/Hebel, auch Plural).
+      if (inc && excludeNonEquity && L.nonStockProduct({ ticker: l.ticker, exchange: l.exchange, name: e.name })) { nonEquityExcluded++; continue; }
       if (inc) members.push({ l, from: 'R2' });
     }
   }
   const todo = LIMIT ? members.slice(0, LIMIT) : members;
-  log(`Universumsmitglieder ${members.length}, bearbeitet ${todo.length}`);
+  log(`Universumsmitglieder ${members.length}, bearbeitet ${todo.length}${excludeNonEquity ? `, Nicht-Aktien ausgeschlossen ${nonEquityExcluded}` : ''}`);
 
   // 1. Reihen laden, Doppelhistorien wie im Donchian-Lauf, Segmente (A2).
   const r2Raw = new Map(), lastKey = new Map();
@@ -352,7 +394,7 @@ export async function loadPitData({ LIMIT = 0, log = () => {} } = {}) {
   }
   for (const seg of segs) delete seg.vals;
 
-  return { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, spyAdj, bench, budget, mine };
+  return { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, spyAdj, bench, budget, mine, nonEquityExcluded };
 }
 
 // Beispielspur R8: Kullamaegis eigene Beispiele gegen die Engine (TSLA-Breakout
@@ -395,19 +437,19 @@ async function main() {
   const OUT_DIR = arg('--out', path.join(os.tmpdir(), 'supertrader-validation'));
   const LIMIT = Number(arg('--limit', '0'));
   const SET = arg('--set', 'methods');
-  const RUN = SET === 'r9b' ? [] : SET === 'r8c' ? ENGINES_R8C : SET === 'r8b' ? ENGINES_R8B : SET === 'r8' ? ENGINES_R8 : SET === 'r7' ? [...ENGINES_R7, ...REFERENCE_R7] : ENGINES;
-  const keyOf = (e) => (SET === 'r7' || SET.startsWith('r8') || SET === 'r9b' ? `${e.id}@${e.version}` : e.id);
+  const RUN = SET === 'r10m' ? enginesR10M() : SET === 'r10c' ? enginesR10C() : SET === 'r9b' || SET === 'r10b' ? [] : SET === 'r8c' ? ENGINES_R8C : SET === 'r8b' ? ENGINES_R8B : SET === 'r8' ? ENGINES_R8 : SET === 'r7' ? [...ENGINES_R7, ...REFERENCE_R7] : ENGINES;
+  const keyOf = (e) => (SET === 'r7' || SET.startsWith('r8') || SET === 'r9b' || SET === 'r10b' || SET === 'r10c' || SET === 'r10m' ? `${e.id}@${e.version}` : e.id);
   const examples = {};
   const t0 = Date.now();
   const log = (m) => console.log(`[validation-methods +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
-  const { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, bench, budget, mine } = await loadPitData({ LIMIT, log });
+  const { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, bench, budget, mine, nonEquityExcluded } = await loadPitData({ LIMIT, log, excludeNonEquity: SET === 'r10c' || SET === 'r10m' });
   let k = 0;
   // Runde 9: Minutenquelle aufbauen - Cache aus dem privaten Eimer, fehlende Einstiegstage
   // in Durchgaengen nachladen, bis keine neuen mehr entstehen (Pfadabhaengigkeit).
   let intradayStats = null;
-  if (SET === 'r9b') {
+  if (SET === 'r9b' || SET === 'r10b') {
     const { createS3DriverFromEnv } = await import(path.join(root, 'scripts/market/storage/s3-driver.mjs'));
     const driver = createS3DriverFromEnv(process.env);
     const cacheKey = mine.seriesPrefix + '_validation/intraday-r9.json.gz';
@@ -418,7 +460,7 @@ async function main() {
     const saveCache = async () => { if (LIMIT) return; budget.consumeClassA(1, 'PUT intraday cache'); await driver.put(cacheKey, zlib.gzipSync(Buffer.from(JSON.stringify(cache))), { contentType: 'application/gzip' }); };
     const startSize = Object.keys(cache).length;
     const { oracle, misses } = createOracle(cache);
-    RUN.splice(0, RUN.length, ...enginesR9B(oracle));
+    RUN.splice(0, RUN.length, ...(SET === 'r10b' ? enginesR10B(oracle) : enginesR9B(oracle)));
     const KEY = process.env.TIINGO_API_KEY || '';
     const passes = [];
     for (let pass = 0; pass < 6; pass++) {
@@ -437,19 +479,42 @@ async function main() {
   }
   // 3. Simulation je Methode.
   const R = Object.fromEntries(RUN.map((e) => [keyOf(e), { base: [], cost2: [], c3: [] }]));
+  const funnel = {};
   const pickC3 = new Set(segs.map((s) => s.id).sort((a, b) => L.sha256(a).localeCompare(L.sha256(b))).slice(0, 400));
   k = 0;
   for (const seg of segs) {
     const ctx = segCtx(seg, bench);
     if ((SET === 'r8' || SET === 'r8c') && /:(TSLA|NVDA):/.test(seg.id)) Object.assign(examples, exampleTrace(seg, ctx, SET === 'r8c' ? kk31 : kk3));
     for (const e of RUN) {
+      if (e.tradesOf) continue; // Runde 10: Portfoliovariante, Trades der Basis
       const base = tradesFor(e, seg, ctx, DEFAULT_EXECUTION);
       R[keyOf(e)].base.push(...base);
       R[keyOf(e)].cost2.push(...tradesFor(e, seg, ctx, EXEC2));
       if (pickC3.has(seg.id) && R[keyOf(e)].c3.length < 20) { const t = base.find((x) => !x.terminal); if (t) R[keyOf(e)].c3.push(verifyGeneric(t, ctx, e)); }
     }
+    // Runde 10 (r10m): Minervini-Trichter je Jahr - Liquiditaet, Trend Template je Regel, VCP, Volumen, Risiko.
+    if (SET === 'r10m') {
+      const g = rawGate(minervini2), P = { ...minervini2.PARAMS, minPrice: 0 }, d = ctx.bars.date;
+      for (let t = 252; t < d.length; t++) {
+        if (d[t] < W.from || d[t] > W.to) continue;
+        const y = d[t].slice(0, 4), f = (funnel[y] ||= { days: 0, liquid: 0, tt: 0, ttFail: {}, vcp: 0, dry: 0, riskOk: 0, setup: 0 });
+        f.days++;
+        if (!(ctx.raw.close[t] >= minervini2.PARAMS.minPrice) || !(ctx.ind.dollarVol20[t] >= minervini2.PARAMS.minDollarVolume)) continue;
+        f.liquid++;
+        const tt = minTT(ctx, t, P);
+        if (!tt.ok) { for (const [rk, ok] of Object.entries(tt.rules)) if (!ok) f.ttFail[rk] = (f.ttFail[rk] || 0) + 1; continue; }
+        f.tt++;
+        const r = g.scan(ctx, t, P, {});
+        if (!r) continue;
+        if (r.rules['MIN-VCP-01']) f.vcp++;
+        if (r.rules['MIN-VCP-02']) f.dry++;
+        if (r.rules['MIN-RISK-VU']) f.riskOk++;
+        if (r.stage === 'SETUP' || r.stage === 'ENTRY_READY') f.setup++;
+      }
+    }
     if (++k % 1000 === 0) log(`simuliert ${k}/${segs.length}`);
   }
+  for (const e of RUN) if (e.tradesOf) { R[keyOf(e)].base = R[e.tradesOf].base; R[keyOf(e)].cost2 = R[e.tradesOf].cost2; R[keyOf(e)].c3 = R[e.tradesOf].c3; }
   log('Simulation fertig: ' + RUN.map((e) => `${keyOf(e)} ${R[keyOf(e)].base.length}`).join(', '));
 
   // 4. Portfolio und Kennzahlen.
@@ -494,18 +559,18 @@ async function main() {
     const c5 = r0.taken.filter((p) => p.returnPct !== undefined).sort((a, b) => Math.abs(b.returnPct) - Math.abs(a.returnPct)).slice(0, 10).map((p) => ({ id: p.tr.id, returnPct: p.returnPct, entry: p.tr.entry, lastExit: p.tr.exits[p.tr.exits.length - 1] || null, terminal: p.tr.terminal ? { ...p.tr.terminal } : null, rawCloseAtConfirm: p.tr.rawCloseAtConfirm }));
     const at5 = all.filter((t) => !(t.rawCloseAtConfirm >= e.PARAMS.minPrice)).length;
     results[keyOf(e)] = {
-      variant: e.variant, version: e.version, params: e.PARAMS, portfolio: cfg, role: SET === 'r9b' ? ROLE_R9B[e.version] : SET === 'r8c' ? ROLE_R8C[keyOf(e)] : SET === 'r8b' ? ROLE_R8B[keyOf(e)] : SET === 'r8' ? ROLE_R8[keyOf(e)] : SET === 'r7' ? (ENGINES_R7.includes(e) ? 'R7_HYPOTHESIS' : 'REFERENCE_REPRODUCTION') : 'PREREGISTERED', engineTrades: all.length, portfolioTrades: runs.S0_LAST_PRICE.taken,
+      variant: e.variant, version: e.version, params: e.PARAMS, portfolio: cfg, role: SET === 'r10m' ? 'R10_MINERVINI_ABLATION' : SET === 'r10c' ? ROLE_R10C(e.version) : SET === 'r9b' || SET === 'r10b' ? ROLE_R9B[e.version] : SET === 'r8c' ? ROLE_R8C[keyOf(e)] : SET === 'r8b' ? ROLE_R8B[keyOf(e)] : SET === 'r8' ? ROLE_R8[keyOf(e)] : SET === 'r7' ? (ENGINES_R7.includes(e) ? 'R7_HYPOTHESIS' : 'REFERENCE_REPRODUCTION') : 'PREREGISTERED', engineTrades: all.length, portfolioTrades: runs.S0_LAST_PRICE.taken,
       runs, judgement: judge(runs), at5Violations: at5,
       controls: { C1max: Math.max(...['S0_LAST_PRICE', 'S1_MINUS_30', 'S2_DISTRESS_ZERO', 'COST2_S1', 'SURVIVORS_ONLY'].map((x) => runs[x].reconciliation.relDiff)), C2maxRelDiff: c2, C3m: R[keyOf(e)].c3, C5: c5 },
       diagnostics: { allTrades: diag(all), survivorTrades: diag(surv), delistedTrades: diag(all.filter((t) => !t.survivor)), takenS0: diag(r0.taken.map((p) => p.tr)), maxPositionsSkipped: r0.skipped.filter((x) => x.reason === 'MAX_POSITIONS').length },
     };
-    if (SET === 'r9b') { const ev = {}; for (const t of all) { const kk = `${t.evidence || 'NONE'}|${t.sameDayOrder || 'NONE'}`; ev[kk] = (ev[kk] || 0) + 1; } results[keyOf(e)].evidenceCounts = ev; }
-    if (SET === 'r7' || SET.startsWith('r8') || SET === 'r9b') {
+    if (SET === 'r9b' || SET === 'r10b') { const ev = {}; for (const t of all) { const kk = `${t.evidence || 'NONE'}|${t.sameDayOrder || 'NONE'}`; ev[kk] = (ev[kk] || 0) + 1; } results[keyOf(e)].evidenceCounts = ev; }
+    if (SET === 'r7' || SET.startsWith('r8') || SET === 'r9b' || SET === 'r10b' || SET === 'r10c' || SET === 'r10m') {
       const { signalQuality, exposureScenarios, theoreticalMaxExposure } = await import('./diagnose-methods.mjs');
       const spyIdx = new Map(spyTR.map((p, i) => [p.date, i]));
       results[keyOf(e)].signalQuality = signalQuality(all, spyIdx, spyTR);
       results[keyOf(e)].capital = { ...exposureScenarios(r0.equity, spyIdx, spyTR), ...theoreticalMaxExposure(all, cfg) };
-      if (SET.startsWith('r8') || SET === 'r9b') results[keyOf(e)].signalQualityBySubperiod = SPLIT_PERIODS.map(([a, b]) => ({ from: a, to: b, ...signalQuality(all.filter((t) => t.entry.date >= a && t.entry.date <= b), spyIdx, spyTR) }));
+      if (SET.startsWith('r8') || SET === 'r9b' || SET === 'r10b' || SET === 'r10c' || SET === 'r10m') results[keyOf(e)].signalQualityBySubperiod = SPLIT_PERIODS.map(([a, b]) => ({ from: a, to: b, ...signalQuality(all.filter((t) => t.entry.date >= a && t.entry.date <= b), spyIdx, spyTR) }));
     }
     R[keyOf(e)] = null;
     log(`${keyOf(e)}: Portfolio fertig`);
@@ -515,7 +580,7 @@ async function main() {
     const sp = budget.spent, u = await mine.readUsage();
     await mine.writeUsage(Guard.applyUsage(u, { classAOperations: sp.classA + 1, classBOperations: sp.classB, bytesDownloaded: sp.bytesDownloaded, run: { at: new Date().toISOString(), kind: 'VALIDATION_ANALYZE_METHODS', classB: sp.classB } }));
   }
-  const result = { schema: 'supertrader-validation-methods-result-1.0.0', set: SET, at: new Date().toISOString(), prereg: SET === 'r9b' ? PREREG_R9B : SET === 'r8c' ? PREREG_R8C : SET === 'r8b' ? PREREG_R8B : SET === 'r8' ? PREREG_R8 : SET === 'r7' ? PREREG_R7 : PREREG_METHODS, examples: SET === 'r8' || SET === 'r8c' ? examples : undefined, intraday: intradayStats, tableHash: hash, commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
+  const result = { schema: 'supertrader-validation-methods-result-1.0.0', set: SET, at: new Date().toISOString(), prereg: SET === 'r10c' || SET === 'r10m' ? PREREG_R10C : SET === 'r10b' ? PREREG_R10B : SET === 'r9b' ? PREREG_R9B : SET === 'r8c' ? PREREG_R8C : SET === 'r8b' ? PREREG_R8B : SET === 'r8' ? PREREG_R8 : SET === 'r7' ? PREREG_R7 : PREREG_METHODS, examples: SET === 'r8' || SET === 'r8c' ? examples : undefined, intraday: intradayStats, funnel: SET === 'r10m' ? funnel : undefined, nonEquityExcluded: SET === 'r10c' || SET === 'r10m' ? nonEquityExcluded : undefined, tableHash: hash, commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
     counts: { listings: listings.length, members: members.length, segments: segs.length, duplicates: dup.size, offCalendar }, execution: DEFAULT_EXECUTION, portfolio: cfg,
     spy: { cagr: cagrBetween(spyTR, W.from, W.to, 'value'), maxDrawdown: maxDrawdown(spyTR, 'value') }, results, budget: budget.spent };
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');

@@ -25,7 +25,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b]
+        options: [subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m]
         default: subset
   push:
     branches:
@@ -33,7 +33,11 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: supertrader-validation-${{ (contains(github.event.head_commit.message, '-smoke]')) && 'smoke' || 'main' }}
+  # Laeufe ohne Auftragsmarke (Pushes anderer Zweige, Job wird uebersprungen) bekommen eine eigene
+  # Gruppe: sonst verdraengen sie wartende Pruefauftraege (Runde 10, zweimal beobachtet).
+  # Manuell gestartete Laeufe (workflow_dispatch) laufen in eigener Gruppe: Pushes anderer Zweige
+  # mit aelterer Workflow-Fassung koennen sie sonst als wartende Laeufe verdraengen (Runde 10).
+  group: supertrader-validation-${{ (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && !contains(github.event.head_commit.message, '[supertrader-validation:'))) && github.run_id || ((contains(github.event.head_commit.message, '-smoke]')) && 'smoke' || 'main') }}
   cancel-in-progress: false
 jobs:
   run:
@@ -52,7 +56,7 @@ jobs:
           INPUT: ${{ inputs.mode }}
         run: |
           m="$INPUT"
-          case "$MSG" in *"[supertrader-validation:sources]"*) m=sources;; *"[supertrader-validation:r8b]"*) m=r8b;; *"[supertrader-validation:intraday-probe]"*) m=intraday-probe;; *"[supertrader-validation:intraday]"*) m=intraday;; *"[supertrader-validation:r9b]"*) m=r9b;; *"[supertrader-validation:intraday-smoke]"*) m=intraday-smoke;; *"[supertrader-validation:r8c]"*) m=r8c;; *"[supertrader-validation:r8-smoke]"*) m=r8-smoke;; *"[supertrader-validation:r8]"*) m=r8;; *"[supertrader-validation:r7-smoke]"*) m=r7-smoke;; *"[supertrader-validation:r7]"*) m=r7;; *"[supertrader-validation:diagnose-smoke]"*) m=diagnose-smoke;; *"[supertrader-validation:diagnose]"*) m=diagnose;; *"[supertrader-validation:methods-smoke]"*) m=methods-smoke;; *"[supertrader-validation:methods]"*) m=methods;; *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
+          case "$MSG" in *"[supertrader-validation:sources]"*) m=sources;; *"[supertrader-validation:venue-probe]"*) m=venue-probe;; *"[supertrader-validation:cases-smoke]"*) m=cases-smoke;; *"[supertrader-validation:cases]"*) m=cases;; *"[supertrader-validation:sources-minervini]"*) m=sources-minervini;; *"[supertrader-validation:r8b]"*) m=r8b;; *"[supertrader-validation:intraday-probe]"*) m=intraday-probe;; *"[supertrader-validation:intraday]"*) m=intraday;; *"[supertrader-validation:r9b]"*) m=r9b;; *"[supertrader-validation:r10b]"*) m=r10b;; *"[supertrader-validation:intraday-smoke]"*) m=intraday-smoke;; *"[supertrader-validation:r8c]"*) m=r8c;; *"[supertrader-validation:r8-smoke]"*) m=r8-smoke;; *"[supertrader-validation:r8]"*) m=r8;; *"[supertrader-validation:r7-smoke]"*) m=r7-smoke;; *"[supertrader-validation:r7]"*) m=r7;; *"[supertrader-validation:diagnose-smoke]"*) m=diagnose-smoke;; *"[supertrader-validation:diagnose]"*) m=diagnose;; *"[supertrader-validation:methods-smoke]"*) m=methods-smoke;; *"[supertrader-validation:methods]"*) m=methods;; *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
           echo "mode=${m:-subset}" >> "$GITHUB_OUTPUT"
       - name: Oeffentliche Anbieterangaben zu Abrufgrenzen (Beleg, best effort)
         if: steps.mode.outputs.mode == 'subset'
@@ -116,7 +120,7 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=14000
         run: node scripts/supertrader/validation/analyze-methods.mjs --set r7 --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r7-smoke' && '--limit 400' || '' }}
       - name: Runde-8 Momentum 3.0.0 und Gegenproben (verschluesselt)
-        if: steps.mode.outputs.mode == 'r8' || steps.mode.outputs.mode == 'r8-smoke' || steps.mode.outputs.mode == 'r8b' || steps.mode.outputs.mode == 'r8c' || steps.mode.outputs.mode == 'r9b'
+        if: steps.mode.outputs.mode == 'r8' || steps.mode.outputs.mode == 'r8-smoke' || steps.mode.outputs.mode == 'r8b' || steps.mode.outputs.mode == 'r8c' || steps.mode.outputs.mode == 'r9b' || steps.mode.outputs.mode == 'r10b' || steps.mode.outputs.mode == 'r10c' || steps.mode.outputs.mode == 'r10m'
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -125,7 +129,7 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=14000
-        run: node scripts/supertrader/validation/analyze-methods.mjs --set ${{ (steps.mode.outputs.mode == 'r8b' || steps.mode.outputs.mode == 'r8c' || steps.mode.outputs.mode == 'r9b') && steps.mode.outputs.mode || 'r8' }} --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r8-smoke' && '--limit 400' || '' }}
+        run: node scripts/supertrader/validation/analyze-methods.mjs --set ${{ (steps.mode.outputs.mode == 'r8b' || steps.mode.outputs.mode == 'r8c' || steps.mode.outputs.mode == 'r9b' || steps.mode.outputs.mode == 'r10b' || steps.mode.outputs.mode == 'r10c' || steps.mode.outputs.mode == 'r10m') && steps.mode.outputs.mode || 'r8' }} --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r8-smoke' && '--limit 400' || '' }}
       - name: Intraday-Zugangsprobe (verschluesselt)
         if: steps.mode.outputs.mode == 'intraday-probe'
         env:
@@ -142,6 +146,41 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=14000
         run: node scripts/supertrader/validation/intraday-study.mjs --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'intraday-smoke' && '--limit 400' || '' }}
+      - name: Mehrboersen-Minuten gegen IEX (Runde 10, begrenzt, verschluesselt)
+        if: steps.mode.outputs.mode == 'venue-probe'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+        run: node scripts/supertrader/validation/venue-probe.mjs --out "$RUNNER_TEMP/val"
+      - name: Fallpruefung Gewinner und Fehlkandidaten (Runde 10, verschluesselt)
+        if: steps.mode.outputs.mode == 'cases' || steps.mode.outputs.mode == 'cases-smoke' || steps.mode.outputs.mode == 'cases-holdout'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+        run: node scripts/supertrader/validation/case-study.mjs --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'cases-smoke' && '--limit 600' || '' }} ${{ steps.mode.outputs.mode == 'cases-holdout' && '--holdout' || '' }}
+      - name: Universumspruefung Nicht-Aktien (Runde 10, verschluesselt)
+        if: steps.mode.outputs.mode == 'universe-audit'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/supertrader/validation/universe-audit.mjs --out "$RUNNER_TEMP/val"
+      - name: Minervini-Quellen lesen (Runde 10, verschluesselt)
+        if: steps.mode.outputs.mode == 'sources-minervini'
+        run: node scripts/supertrader/validation/fetch-sources.mjs --out "$RUNNER_TEMP/val" --list scripts/supertrader/validation/sources-r10-minervini.json --name sources-r10-minervini
       - name: Originalquellen lesen (verschluesselt)
         if: steps.mode.outputs.mode == 'sources'
         run: |
