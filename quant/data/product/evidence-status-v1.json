@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-10-02T09:33:42.826Z",
+ "generatedAt": "2026-10-03T07:05:22.469Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -35,22 +35,22 @@
     "outOfSample": "nicht anwendbar - beschreibt, prüft keine Regel"
    },
    "coverage": {
-    "universe": 5882,
-    "covered": 5554,
-    "available": 5336,
+    "universe": 5751,
+    "covered": 5400,
+    "available": 4561,
     "sufficient": {
-     "m1": 2242,
-     "m3": 2155,
-     "m6": 2068,
-     "m12": 1967
+     "m1": 2150,
+     "m3": 2081,
+     "m6": 2008,
+     "m12": 1906
     },
     "broad": {
-     "m6": 627
+     "m6": 665
     },
     "reasons": {
-     "NOT_COVERED": 328,
-     "NO_PRICE_CONDITION_TODAY": 123,
-     "NO_COMPARABLE_CASE": 95
+     "NOT_COVERED": 351,
+     "NO_PRICE_CONDITION_TODAY": 778,
+     "NO_COMPARABLE_CASE": 61
     }
    }
   },
@@ -72,15 +72,16 @@
     "verdicts": {
      "INSUFFICIENT_SUPPORT": 9,
      "ROBUST": 69,
+     "PARAMETER_SENSITIVE": 1,
      "NOT_SIGNIFICANT": 6,
-     "IN_SAMPLE_ONLY": 30
+     "IN_SAMPLE_ONLY": 29
     }
    },
    "trust": {
-    "sample": 967194,
+    "sample": 954759,
     "period": [
      "1992-01-31",
-     "2026-09-25"
+     "2026-10-01"
     ],
     "costs": {
      "roundTripBps": 20,
@@ -129,7 +130,7 @@
      "id": "PIT_FUNDAMENTALS",
      "label": "Fundamentaldaten zeitpunktgenau",
      "required": "datierbar je Wert",
-     "measured": "5104 von 6875 Titeln",
+     "measured": "5097 von 6853 Titeln",
      "state": "PASS"
     },
     {
@@ -168,7 +169,7 @@
      "id": "PIT",
      "label": "Stände unverändert (contentHash)",
      "required": "bestanden",
-     "measured": "6 von 6 geprüft",
+     "measured": "7 von 7 geprüft",
      "state": "PASS"
     },
     {
@@ -182,14 +183,14 @@
      "id": "HISTORYDATES",
      "label": "veröffentlichte Stichtage",
      "required": "120",
-     "measured": "6",
+     "measured": "7",
      "state": "FAIL"
     },
     {
      "id": "HISTORYSPAN",
      "label": "Spanne der Historie",
      "required": "180 Tage",
-     "measured": "21 Tage",
+     "measured": "22 Tage",
      "state": "FAIL"
     },
     {
@@ -217,8 +218,8 @@
      "id": "RETURNBASIS",
      "label": "Gesamtrendite",
      "required": "bestanden",
-     "measured": "Gesamtrendite",
-     "state": "PASS"
+     "measured": "lokal Kursrendite; Pipeline rechnet mit Gesamtrendite",
+     "state": "FAIL"
     },
     {
      "id": "SURVIVORSHIP",
@@ -257,28 +258,30 @@
    "state": "PUBLISHED",
    "reason": null,
    "engine": "signal-backtest-2.0.0",
-   "returnType": "TOTAL_RETURN",
+   "returnType": "SPLIT_ADJUSTED_PRICE",
    "rules": [
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 93575,
-     "titles": 5452,
+     "n": 92156,
+     "titles": 5306,
      "displayAllowed": true,
      "failed": [
       "survivorship",
+      "returnBasis",
       "regimeDiversity"
      ]
     },
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 93958,
-     "titles": 5473,
+     "n": 92545,
+     "titles": 5332,
      "displayAllowed": true,
      "failed": [
       "oos",
       "survivorship",
+      "returnBasis",
       "regimeDiversity",
       "parameterStability"
      ]
@@ -286,24 +289,26 @@
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 90526,
-     "titles": 5408,
+     "n": 89218,
+     "titles": 5276,
      "displayAllowed": true,
      "failed": [
       "survivorship",
+      "returnBasis",
       "regimeDiversity"
      ]
     },
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 90630,
-     "titles": 5431,
+     "n": 89360,
+     "titles": 5300,
      "displayAllowed": true,
      "failed": [
       "oos",
       "walkForward",
       "survivorship",
+      "returnBasis",
       "regimeDiversity",
       "parameterStability"
      ]
@@ -311,13 +316,12 @@
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 59087,
-     "titles": 5197,
+     "n": 58251,
+     "titles": 5055,
      "displayAllowed": true,
      "failed": [
-      "oos",
-      "walkForward",
       "survivorship",
+      "returnBasis",
       "regimeDiversity"
      ]
     }
@@ -336,22 +340,22 @@
    "setupRules": 9
   },
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5882,
-   "covered": 5554,
-   "available": 5336,
+   "universe": 5751,
+   "covered": 5400,
+   "available": 4561,
    "sufficient": {
-    "m1": 2242,
-    "m3": 2155,
-    "m6": 2068,
-    "m12": 1967
+    "m1": 2150,
+    "m3": 2081,
+    "m6": 2008,
+    "m12": 1906
    },
    "broad": {
-    "m6": 627
+    "m6": 665
    },
    "reasons": {
-    "NOT_COVERED": 328,
-    "NO_PRICE_CONDITION_TODAY": 123,
-    "NO_COMPARABLE_CASE": 95
+    "NOT_COVERED": 351,
+    "NO_PRICE_CONDITION_TODAY": 778,
+    "NO_COMPARABLE_CASE": 61
    }
   }
  }

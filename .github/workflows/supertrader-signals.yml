@@ -34,7 +34,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Minutenquelle fuer Kauf-Stop-Tage (IEX, nur Zaehlwerte im Log, Datei ausserhalb des Repositorys)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          SUPERTRADER_INTRADAY_CACHE: ${{ runner.temp }}/supertrader-intraday.json
+        run: node scripts/supertrader/intraday-prefetch.mjs
       - name: Strategie-Lauf (deterministisch, append-only Signalprotokoll)
+        env:
+          SUPERTRADER_INTRADAY_CACHE: ${{ runner.temp }}/supertrader-intraday.json
         run: node scripts/supertrader/build.mjs
       - name: Integritaet vor dem Commit (Lifecycle, Gates, Historie)
         run: node --test "scripts/supertrader/tests/*.test.mjs"

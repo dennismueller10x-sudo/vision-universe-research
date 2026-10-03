@@ -37,6 +37,7 @@ import { loadPreviewConfig, resolveScope, expandPreviewConfig } from "./preview-
 
 const require = createRequire(import.meta.url);
 const HERE = dirname(fileURLToPath(import.meta.url));
+const SC = require(join(HERE, "..", "..", "quant", "engines", "survivorship-control.js"));
 const DEFAULT_ROOT = join(HERE, "..", "..");
 
 export const SERIES_DIR = join("quant", "data", "market", "discover-series");
@@ -71,7 +72,11 @@ export function splitAdjustedCloses(bars) {
 export function compactSeries(payload, security, permission, opts) {
   opts = opts || {};
   const maxPoints = opts.maxPoints || DEFAULT_POINTS;
-  const bars = (payload && payload.bars) || [];
+  /* Nur das juengste Listing (survivorship-control.js
+     currentListingSegment): nach mehr als einem Jahr ohne Kerze traegt das
+     Kuerzel eine andere Firma. Ohne diesen Schnitt zeigte DINE 2010 und
+     2026 in einem Chart (03.10.2026). */
+  const bars = SC.currentListingSegment((payload && payload.bars) || []).bars;
   const dated = splitAdjustedCloses(bars).filter((b) => isNum(b.close));
   if (dated.length < 30) return null;
   const fenster = dated.slice(-maxPoints);

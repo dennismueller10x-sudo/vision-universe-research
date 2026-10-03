@@ -118,10 +118,13 @@ async function main() {
      das ein Abbruch, keine Warnung - eine Kursrendite, die als
      Gesamtrendite auftritt, waere die gefaehrlichste Mischung. */
   const semantics = validation.ok ? MarketQuality.validateAdjustmentConsistency(validation.bars, { claimedStatus: "TOTAL_RETURN", dividendConvention: "TIINGO_REINVESTMENT_CLOSE" }) : null;
-  const refuted = semantics && (!semantics.ok || semantics.inferredStatus !== "TOTAL_RETURN" ||
-    semantics.findings.some((f) => f.code === "dividend_not_in_adjusted" || f.code === "split_not_adjusted"));
-  if (refuted) {
-    report({ ...base, state: "FAIL", reason: "TOTAL_RETURN_NOT_CONFIRMED", bars: bars.length, inferredStatus: semantics.inferredStatus,
+  /* Das Urteil faellt der gemeinsame Gesamtrendite-Vertrag (dieselbe
+     Funktion wie fuer jede Aktie, market-quality.js totalReturnVerdict). */
+  const verdict = validation.ok ? MarketQuality.totalReturnVerdict(validation.bars, { dividendConvention: "TIINGO_REINVESTMENT_CLOSE" }) : null;
+  /* Der Vergleichsmassstab schuettet aus: ohne Dividendenbeleg ist er keine
+     Gesamtrendite, auch wenn nichts widerlegt ist. */
+  if (verdict && ((!verdict.confirmed && verdict.reason !== "ADJUSTED_CLOSE_MISSING") || semantics.inferredStatus !== "TOTAL_RETURN")) {
+    report({ ...base, state: "FAIL", reason: "TOTAL_RETURN_NOT_CONFIRMED", contract: verdict.contract, verdictReason: verdict.reason, bars: bars.length, inferredStatus: semantics.inferredStatus,
       findings: semantics.findings.map((f) => f.code).filter((c, i, a) => a.indexOf(c) === i).slice(0, 8) });
     return;
   }

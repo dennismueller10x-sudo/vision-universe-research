@@ -243,10 +243,34 @@ function evidenzFuer(job, ergebnisse, ledger, nachfolger, register) {
       belege.push({ art: "UNGEMESSEN", quelle: messung.quelle, ungeeignet: true,
         detail: "Die Agent-Meldungen liessen sich nicht lesen: " + messung.grund +
           ". Ungeprueft ist kein Abbruch." });
+    } else if (!messung.letzte) {
+      /* -------------------------------------------------------------
+         DER OWNER-STORNO (PR #364)
+
+         Nur wenn GEMESSEN ist, dass der Agent zu diesem Schluessel nie
+         etwas gemeldet hat, und eine Owner-Entscheidung genau diesen
+         Schluessel nennt. Geurteilt wird in der Engine.
+         ------------------------------------------------------------- */
+      const storno = stornoFuer(job);
+      if (storno) {
+        belege.push({ art: "OWNER_STORNO_NIE_GESTARTET", quelle: STORNO_DATEI, storno,
+          detail: "Owner-Storno vom " + storno.decidedAt + "; keine Agent-Meldung zu " +
+            job.processingKey + " (" + messung.quelle + ")." });
+      }
     }
   }
 
   return belege;
+}
+
+/* Owner-Entscheidungen, einen nie gestarteten Auftrag zu stornieren. */
+const STORNO_DATEI = join(DATEN, "owner-job-storno.json");
+
+function stornoFuer(job) {
+  const d = lies(STORNO_DATEI, null);
+  const liste = (d && Array.isArray(d.entries)) ? d.entries : [];
+  return liste.find((e) => e && e.contentId === job.contentId &&
+    e.processingKey === job.processingKey) || null;
 }
 
 /** Die juengste Agent-Meldung zum processing_key dieses Jobs, gemessen am PR. */
@@ -344,7 +368,10 @@ for (const job of offene) {
       /* Die Messung reist mit. Die Engine verlangt sie ausdruecklich
          und schliesst ohne sie nicht. */
       keinPullRequest: erste.art === "DISPATCH_NIE_ERFOLGT" ? true : undefined,
-      agentStatus: erste.art === "AGENT_ABBRUCH_GEMELDET" ? (erste.status || undefined) : undefined });
+      agentStatus: erste.art === "AGENT_ABBRUCH_GEMELDET" ? (erste.status || undefined) : undefined,
+      ownerStorno: erste.art === "OWNER_STORNO_NIE_GESTARTET" ? erste.storno : undefined,
+      agentMeldungGemessen: erste.art === "OWNER_STORNO_NIE_GESTARTET" ? true : undefined,
+      agentMeldungVorhanden: erste.art === "OWNER_STORNO_NIE_GESTARTET" ? false : undefined });
 
   befunde.push({ creativeJobId: job.creativeJobId, contentId: job.contentId,
     vorher: r.from || job.state, nachher: r.geaendert ? r.to : job.state,

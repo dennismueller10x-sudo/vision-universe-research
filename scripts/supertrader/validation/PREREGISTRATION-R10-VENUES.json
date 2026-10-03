@@ -1,0 +1,540 @@
+{
+ "schema": "supertrader-validation-prereg-r10-venues-1.0.0",
+ "registeredAt": "2026-10-03",
+ "status": "Eingefroren vor dem ersten Abruf des Mehrbörsen-Endpunkts. Kein Ergebnis dieses Endpunkts war beim Festlegen bekannt.",
+ "question": "Liefert der Tiingo-Endpunkt /tiingo/equity/intraday/<ticker>/prices (laut Dokumentation Beta, 'where available') über den bestehenden Zugang historische Minuten aus mehreren Handelsplätzen, und ändern sie Reihenfolge von Kauf und Stop gegenüber IEX-Minuten und Tageskursen?",
+ "costRule": "Nur der bestehende Schlüssel; keine Bestellung, kein Upgrade. Erste Anfrage ist eine Zugangsprobe (AAPL 2024-06-03). Antwortet der Endpunkt nicht mit 200 und Balken, wird der Lauf nach den Tiefenproben beendet und nur der Status protokolliert. Höchstens 3 Anfragen je Fall (Mehrbörsen, IEX, Tageskurs) und 300 Anfragen insgesamt.",
+ "depthProbes": [
+  [
+   "AAPL",
+   "2010-06-01"
+  ],
+  [
+   "AAPL",
+   "2016-01-05"
+  ],
+  [
+   "AAPL",
+   "2017-06-01"
+  ],
+  [
+   "AAPL",
+   "2024-06-03"
+  ],
+  [
+   "AAPL",
+   "2026-09-30"
+  ],
+  [
+   "NVDA",
+   "2016-11-11"
+  ],
+  [
+   "TSLA",
+   "2020-06-01"
+  ]
+ ],
+ "selection": "Aus den 1 821 Fällen der R9-Studie (nach A4, Run 37051824868). Gruppen: P = die drei Berichtsfälle (CBAY, ZIM, ACIW) und TSLA 29.05.2020; S = alle 5 nicht aufgelösten Splitfälle; Momentum 3.1.0: M = 30 von 143 Identitätsabweichungen, H = 10 von 50 'IEX-Hoch unter Trigger', N = alle 12 ohne IEX-Daten, R = je 10 aufgelöste strittige und klare Fälle als Kontrolle. Reihenfolge innerhalb einer Gruppe: sha256('R10|engine|seg|date') aufsteigend.",
+ "comparisons": {
+  "C1_period": "Status, Zahl der Balken, erster/letzter Zeitstempel, Balken außerhalb 09:30-16:00 ET, je Quelle.",
+  "C2_timestamps": "Zeitzone/Format des Zeitstempels; Ausrichtung der Minuten (Mehrbörsen vs. IEX).",
+  "C3_prices": "Hoch/Tief/Eröffnung der Minuten gegen Rohtagesbalken (offizielle Eröffnung, Tageshoch/-tief) und gegen bereinigte Tageskurse; Volumensumme gegen Tagesvolumen (Anteil der erfassten Handelsplätze).",
+  "C4_splits": "Bei Splitfällen: Verhältnis Minutenkurs zu Roh- und zu bereinigtem Tageskurs.",
+  "C5_order": "resolve() (unveränderter Code nach A4) je Quelle: Status, Gap, Kaufminute, Stop, Gleichtags-Ausstieg. Übereinstimmung zwischen den Quellen, wo beide auflösen.",
+  "C6_bounds": "Für die M/H/N-Fälle, die der Mehrbörsen-Endpunkt auflöst: liegt der tatsächliche Gleichtags-Ausstieg zwischen den Schranken (neutral: Ausstieg nur wenn Schluss <= Stop; vorsichtig: Ausstieg wenn strittig)? Anteil außerhalb."
+ },
+ "decisionRules": {
+  "D1_access": "200 mit Minutenbalken für die Zugangsprobe = über den bestehenden Zugang abrufbar. 401/403/Fehlertext zu Berechtigung = nicht im Vertrag; dann Entscheidungsvorlage nur, wenn die Frage ohne diese Daten offen bliebe.",
+  "D2_consolidated": "Mehrbörsen gilt als konsolidiert, wenn bei >= 90 % der Kontrollfälle (R) Tageshoch und -tief auf 0,1 % mit dem Rohtagesbalken übereinstimmen und die offizielle Eröffnung enthalten ist.",
+  "D3_use": "Nur wenn D1 und D2 erfüllt sind und die Historie ab 2017 die Fallmenge abdeckt, wird ein Folgelauf mit Mehrbörsen-Minuten präregistriert. Sonst bleibt IEX die Quelle; Texte und Grenzen werden korrigiert.",
+  "D4_bounds": "Liegt in C6 ein Anteil > 0 außerhalb der Schranken, gelten die R9-Schranken für Momentum nicht als vollständige Abdeckung; das wird berichtet und das Urteil wird mit einer zusätzlichen, vorab definierten Schranke geprüft."
+ },
+ "cases": [
+  {
+   "group": "P_R9_PROBLEM",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:ZIM:2021-01-28",
+   "date": "2024-01-31"
+  },
+  {
+   "group": "P_R9_PROBLEM",
+   "engine": "DARVAS_BOX@3.0.0",
+   "seg": "tiingo:NASDAQ:ACIW:1995-02-27",
+   "date": "2024-02-15"
+  },
+  {
+   "group": "P_R9_PROBLEM",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:TSLA:2010-06-29",
+   "date": "2020-05-29"
+  },
+  {
+   "group": "P_R9_PROBLEM",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:CBAY:2014-02-03",
+   "date": "2024-01-19"
+  },
+  {
+   "group": "S_SPLIT_UNRESOLVED",
+   "engine": "DARVAS_BOX@3.0.0",
+   "seg": "tiingo:NYSE:SLGN:1997-02-14",
+   "date": "2017-06-02"
+  },
+  {
+   "group": "S_SPLIT_UNRESOLVED",
+   "engine": "DARVAS_BOX@3.0.0",
+   "seg": "tiingo:NYSE:ETP:2002-02-05",
+   "date": "2018-10-19"
+  },
+  {
+   "group": "S_SPLIT_UNRESOLVED",
+   "engine": "DARVAS_BOX@3.0.0",
+   "seg": "tiingo:NYSE:SEND:2017-11-15",
+   "date": "2019-01-31"
+  },
+  {
+   "group": "S_SPLIT_UNRESOLVED",
+   "engine": "DARVAS_BOX@3.0.0",
+   "seg": "tiingo:NYSE:NSP:1997-01-29",
+   "date": "2017-12-19"
+  },
+  {
+   "group": "S_SPLIT_UNRESOLVED",
+   "engine": "DONCHIAN_TURTLE@2.0.0",
+   "seg": "tiingo:NYSE:DD:1962-01-02",
+   "date": "2019-04-05"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:VNET:2011-04-21",
+   "date": "2018-11-15"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:MGI:2004-07-01",
+   "date": "2017-04-13"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:ASC:2013-08-01",
+   "date": "2022-09-13"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:PIRS:2015-04-13",
+   "date": "2021-09-24"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:RARX:2016-10-26",
+   "date": "2019-01-31"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:CDMO:2018-01-08",
+   "date": "2019-07-26"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:SPTN:2000-08-02",
+   "date": "2018-07-03"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:PRAA:2002-11-08",
+   "date": "2026-03-23"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:SGML:2018-11-05#2",
+   "date": "2022-09-12"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:UAN:2011-04-08",
+   "date": "2022-05-05"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:XOMA:1989-04-05",
+   "date": "2018-01-22"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:SGML:2018-11-05#2",
+   "date": "2022-10-04"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:ZGNX:2010-11-23",
+   "date": "2018-02-20"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:AVIR:2020-10-30",
+   "date": "2021-08-03"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:VCYT:2013-10-30",
+   "date": "2019-06-10"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:LOXO:2014-08-01",
+   "date": "2017-03-21"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:ZLAB:2017-09-20",
+   "date": "2019-02-28"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:EGAN:1999-09-23",
+   "date": "2018-06-27"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:EGAN:1999-09-23",
+   "date": "2019-03-04"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:KYMR:2020-08-21",
+   "date": "2026-07-20"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:AKBA:2014-03-20",
+   "date": "2019-12-16"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:LPG:2014-05-08",
+   "date": "2023-11-17"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:ESPR:2013-06-26",
+   "date": "2017-07-14"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:RARX:2016-10-26",
+   "date": "2019-07-22"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:PIRS:2015-04-13",
+   "date": "2024-08-15"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:SLN:2020-09-08",
+   "date": "2024-02-20"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:BFYT:2013-02-08",
+   "date": "2018-09-10"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:DYN:2020-09-17",
+   "date": "2024-05-15"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:URGN:2017-05-04",
+   "date": "2018-03-05"
+  },
+  {
+   "group": "M_IDENTITY_MISMATCH",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:HTT:2017-10-18",
+   "date": "2018-12-12"
+  },
+  {
+   "group": "H_IEX_HIGH_BELOW",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:PODD:2007-05-15",
+   "date": "2019-09-26"
+  },
+  {
+   "group": "H_IEX_HIGH_BELOW",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:SALE:2013-07-19",
+   "date": "2017-04-27"
+  },
+  {
+   "group": "H_IEX_HIGH_BELOW",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:SLNO:2014-11-13",
+   "date": "2024-02-22"
+  },
+  {
+   "group": "H_IEX_HIGH_BELOW",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:W:2014-10-02",
+   "date": "2018-10-01"
+  },
+  {
+   "group": "H_IEX_HIGH_BELOW",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:HARP:2019-02-08",
+   "date": "2024-01-30"
+  },
+  {
+   "group": "H_IEX_HIGH_BELOW",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:MACK:2012-03-29",
+   "date": "2022-12-02"
+  },
+  {
+   "group": "H_IEX_HIGH_BELOW",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:GEO:1994-07-28",
+   "date": "2025-04-21"
+  },
+  {
+   "group": "H_IEX_HIGH_BELOW",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:BNFT:2013-09-18",
+   "date": "2022-11-22"
+  },
+  {
+   "group": "H_IEX_HIGH_BELOW",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:TRTN:2005-10-12",
+   "date": "2017-04-04"
+  },
+  {
+   "group": "H_IEX_HIGH_BELOW",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:ALNY:2004-06-01",
+   "date": "2024-08-19"
+  },
+  {
+   "group": "N_NO_INTRADAY",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:PTNM:2025-05-30",
+   "date": "2025-10-17"
+  },
+  {
+   "group": "N_NO_INTRADAY",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:RICE:2014-01-24",
+   "date": "2017-07-19"
+  },
+  {
+   "group": "N_NO_INTRADAY",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:SE:2017-10-20",
+   "date": "2019-05-16"
+  },
+  {
+   "group": "N_NO_INTRADAY",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:SE:2017-10-20",
+   "date": "2019-03-21"
+  },
+  {
+   "group": "N_NO_INTRADAY",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:BITW:2020-10-15",
+   "date": "2024-03-26"
+  },
+  {
+   "group": "N_NO_INTRADAY",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:APHA:2015-03-18",
+   "date": "2017-12-20"
+  },
+  {
+   "group": "N_NO_INTRADAY",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:ASRT:2003-12-17",
+   "date": "2018-07-31"
+  },
+  {
+   "group": "N_NO_INTRADAY",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:CTST:2017-08-24",
+   "date": "2018-10-11"
+  },
+  {
+   "group": "N_NO_INTRADAY",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:EMPG:2025-07-02",
+   "date": "2025-10-16"
+  },
+  {
+   "group": "N_NO_INTRADAY",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:OGI:2014-08-27",
+   "date": "2018-10-08"
+  },
+  {
+   "group": "N_NO_INTRADAY",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:BHC:2001-01-02",
+   "date": "2017-07-17"
+  },
+  {
+   "group": "N_NO_INTRADAY",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:HEXO:2017-03-23",
+   "date": "2018-10-16"
+  },
+  {
+   "group": "R_CONTROL_AMBIGUOUS",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:XMTR:2021-06-30",
+   "date": "2022-10-06"
+  },
+  {
+   "group": "R_CONTROL_AMBIGUOUS",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:HMHC:2013-11-14",
+   "date": "2021-09-02"
+  },
+  {
+   "group": "R_CONTROL_AMBIGUOUS",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:REGI:2012-01-19",
+   "date": "2020-02-13"
+  },
+  {
+   "group": "R_CONTROL_AMBIGUOUS",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:VYGR:2015-11-11",
+   "date": "2022-04-07"
+  },
+  {
+   "group": "R_CONTROL_AMBIGUOUS",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:STRL:1995-08-18",
+   "date": "2023-09-01"
+  },
+  {
+   "group": "R_CONTROL_AMBIGUOUS",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:NVDA:1999-01-22",
+   "date": "2024-07-08"
+  },
+  {
+   "group": "R_CONTROL_AMBIGUOUS",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:OPLN:2009-12-11",
+   "date": "2022-03-22"
+  },
+  {
+   "group": "R_CONTROL_AMBIGUOUS",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:OLED:1996-04-12",
+   "date": "2017-03-16"
+  },
+  {
+   "group": "R_CONTROL_AMBIGUOUS",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:DDS:1989-06-30",
+   "date": "2021-10-14"
+  },
+  {
+   "group": "R_CONTROL_AMBIGUOUS",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:PRTS:2007-02-09",
+   "date": "2020-08-28"
+  },
+  {
+   "group": "R_CONTROL_CLEAR",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:ENVX:2021-01-05",
+   "date": "2024-05-22"
+  },
+  {
+   "group": "R_CONTROL_CLEAR",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:CMTL:1992-02-18",
+   "date": "2017-06-26"
+  },
+  {
+   "group": "R_CONTROL_CLEAR",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:GPRO:2014-06-26",
+   "date": "2021-04-09"
+  },
+  {
+   "group": "R_CONTROL_CLEAR",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:DVAX:2004-02-19",
+   "date": "2017-08-24"
+  },
+  {
+   "group": "R_CONTROL_CLEAR",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:VRTV:2014-07-01",
+   "date": "2021-10-05"
+  },
+  {
+   "group": "R_CONTROL_CLEAR",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:VIAV:2015-08-04",
+   "date": "2026-03-19"
+  },
+  {
+   "group": "R_CONTROL_CLEAR",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:BBCP:2017-08-21",
+   "date": "2026-06-29"
+  },
+  {
+   "group": "R_CONTROL_CLEAR",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NASDAQ:IMVT:2019-12-19",
+   "date": "2022-10-21"
+  },
+  {
+   "group": "R_CONTROL_CLEAR",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:VSXY:2021-07-21",
+   "date": "2023-11-14"
+  },
+  {
+   "group": "R_CONTROL_CLEAR",
+   "engine": "MOMENTUM_BREAKOUT@3.1.0",
+   "seg": "tiingo:NYSE:OLN:1987-12-30",
+   "date": "2021-04-15"
+  }
+ ]
+}

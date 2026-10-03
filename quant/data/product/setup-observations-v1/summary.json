@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-10-02T09:02:11.000Z",
- "asOf": "2026-10-01",
+ "generatedAt": "2026-10-03T06:53:42.000Z",
+ "asOf": "2026-10-02",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -323,25 +323,25 @@
    "predicateHash": null
   }
  ],
- "universe": 5882,
- "observed": 5882,
+ "universe": 5751,
+ "observed": 5751,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4508,
-  "WATCH": 813,
-  "SETUP_FORMING": 537,
-  "CONFIRMED": 24,
+  "NO_SETUP": 4411,
+  "WATCH": 740,
+  "SETUP_FORMING": 574,
+  "CONFIRMED": 26,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 537,
-  "setup.none.fallback": 4508,
-  "setup.watch.bullish-trend": 506,
-  "setup.watch.confirmed-structure-near-high": 307,
-  "setup.confirmed.structure-trend-volume": 24
+  "setup.forming.complete-setup-awaiting-trigger": 574,
+  "setup.none.fallback": 4411,
+  "setup.watch.bullish-trend": 457,
+  "setup.watch.confirmed-structure-near-high": 283,
+  "setup.confirmed.structure-trend-volume": 26
  },
  "pathTier": {
   "states": [
@@ -365,14 +365,15 @@
    "2026-09-25",
    "2026-09-28",
    "2026-09-30",
-   "2026-10-01"
+   "2026-10-01",
+   "2026-10-02"
   ],
   "minimumRequired": 2
  },
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5882
+   "instruments": 5751
   }
  },
  "shards": [
@@ -796,7 +797,6 @@
   "QL",
   "QM",
   "QN",
-  "QO",
   "QQ",
   "QR",
   "QS",
@@ -1013,5 +1013,16 @@
   "ZZ",
   "Z_"
  ],
- "observationDrift": null
+ "observationDrift": {
+  "asOf": "2026-10-02",
+  "publishedHash": "64c6ab9048696ebcf7fbfe1ac765f749",
+  "recomputedHash": "c081ea518dfb02b71cef97c4aacd5718",
+  "rowsPublished": 5876,
+  "rowsToday": 5751,
+  "rowsAdded": 0,
+  "rowsChanged": 138,
+  "addedOnly": false,
+  "columnsDiffer": false,
+  "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt - auch nicht durch eine, die nur Zeilen hinzufuegen wuerde."
+ }
 }

@@ -47,7 +47,7 @@ export function classifyStage(w, k, p = PARAMS) {
   return { stage: c > ma ? 2 : 4, slope, transitional: true };
 }
 
-function baseInfo(w, k, p) {
+export function baseInfo(w, k, p) {
   // Wochen in Folge (bis k) mit flacher MA und Kurs im Band um die MA.
   let len = 0;
   for (let j = k; j >= p.maWeeks + p.slopeWeeks; j--) {

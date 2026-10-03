@@ -34,6 +34,7 @@
    oder, beim 52-Wochen-Hoch, der veroeffentlichte Tageswert selbst.
    ========================================================================= */
 import { gzipSync, gunzipSync } from "node:zlib";
+import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -44,6 +45,9 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Radar = require(join(ROOT, "quant/engines/quant-radar.js"));
 const SetupEngine = require(join(ROOT, "quant/engines/setup-engine.js"));
 const HistoricalCases = require(join(ROOT, "quant/engines/historical-cases.js"));
+const SecurityMaster = require(join(ROOT, "quant/engines/us-security-master.js"));
+const Survivorship = require(join(ROOT, "quant/engines/survivorship-control.js"));
+const FactorEvidence = require(join(ROOT, "quant/engines/factor-evidence.js"));
 const VM = require(join(ROOT, "quant/app/view-model.js"));
 
 const P = (...p) => join(ROOT, ...p);
@@ -166,7 +170,20 @@ const notDefined = (reason) => ({ state: "NOT_DEFINED", reason });
 
 /* ---------------------------------------------------------------- Ereignisse */
 const events = [];
+/* METHODIKWECHSEL IST KEIN MARKTEREIGNIS (quant-radar.js compareSnapshots):
+   Ereignisse aus dem Vergleich zweier Staende werden erst gesammelt und nur
+   bei gleicher Methodik zu Ereignissen; sonst ein internes METHOD_REBASE. */
+const methodRebases = [];
+let stage = null;
+function methodGate(source, prev, cur, collect) {
+  stage = [];
+  try { collect(); } finally { const specs = stage; stage = null;
+    const r = Radar.compareSnapshots(source, prev, cur, specs);
+    if (r.rebase) methodRebases.push(r.rebase);
+    r.transitions.forEach(push); }
+}
 function push(e) {
+  if (stage) { stage.push(e); return; }
   const t = Radar.TYPE[e.eventType];
   const be = backtestEvidenceFor(e.eventType);
   const ev = Object.assign({ id: e.eventType.toLowerCase() + "_" + e.ticker + "_" + e.occurredAt + (e.key ? "_" + e.key : ""),
@@ -230,7 +247,13 @@ const strategy = gz(P("quant/data/product/strategy-index-v1.json.gz"));
 const profiles = json(P("quant/methodology/strategy-profiles-v1.json")).profiles || [];
 const profileLabel = Object.fromEntries(profiles.map((p) => [p.profileId, p.label]));
 const he = strategy.historicalEvidence || {};
-if (he.state === "AVAILABLE" && isDate(he.to)) {
+/* Die Zuordnung vergleicht zwei Faktor-Staende - ihre Methodik entscheidet. */
+const factorSnapshotAt = (version, date) => {
+  const f = P("quant/data/product/factor-evidence-history/" + version + "/" + date + ".json.gz");
+  if (!version || !isDate(date) || !existsSync(f)) return null;
+  const x = gz(f); return { asOf: x.asOf, method: x.method || null };
+};
+if (he.state === "AVAILABLE" && isDate(he.to)) methodGate("STRATEGY", factorSnapshotAt(he.methodologyVersion, he.from), factorSnapshotAt(he.methodologyVersion, he.to), () => {
   for (const tr of he.transitions || []) {
     for (const [list, type] of [[tr.entered || [], "STRATEGY_MATCH_NEW"], [tr.exited || [], "STRATEGY_MATCH_LOST"]]) {
       for (const t of list) {
@@ -244,7 +267,7 @@ if (he.state === "AVAILABLE" && isDate(he.to)) {
       }
     }
   }
-}
+});
 
 /* FACTOR: Stufenwechsel zwischen den letzten beiden Faktor-Staenden. */
 const FACTOR_HISTORY = P("quant/data/product/factor-evidence-history");
@@ -255,7 +278,7 @@ const fPrev = factorDates.length > 1 ? gz(join(FACTOR_HISTORY, factorVersion, fa
 const fIds = (fNow.fields || []).map((f) => f.split(".").pop());
 const factorCoverage = {};
 for (const [t, row] of Object.entries(fNow.rows || {})) factorCoverage[t] = row.filter((v) => typeof v === "number").length;
-if (fPrev) {
+if (fPrev) methodGate("FACTOR", fPrev, fNow, () => {
   for (const [t, row] of Object.entries(fNow.rows || {})) {
     const old = fPrev.rows[t];
     if (!old) continue;
@@ -277,7 +300,7 @@ if (fPrev) {
         nextCondition: null });
     });
   }
-}
+});
 
 /* MARKET: neues 52-Wochen-Hoch am Stichtag der Marktfaktoren. */
 const factorsFile = json(P("quant/data/market/factors/factors-FULL_UNIVERSE.json"));
@@ -307,15 +330,21 @@ for (const f of readdirSync(PATTERN_DIR).filter((f) => /^[A-Z0-9._-]{2}\.json\.g
   for (const [t, v] of Object.entries(shard.instruments || {})) patternHolds[t] = (v.holds || []).slice().sort();
 }
 const PATTERN_HISTORY = P("quant/data/product/radar-history/pattern-holds");
+const vocabularyHash = createHash("sha256").update(JSON.stringify(patternVocab || null)).digest("hex").slice(0, 16);
+/* Was einen Musterstand bestimmt: Vokabular, Gattungsregel, Listing-Regel
+   der Reihen und die Methodik der Faktorevidenz, auf der Muster aufsetzen. */
+const patternMethod = Radar.snapshotMethod({ vocabulary: vocabularyHash, securityMaster: SecurityMaster.VERSION,
+  listingRule: Survivorship.VERSION, factorMethod: fNow.method ? fNow.method.id : "UNVERSIONED" });
 if (isDate(patternAsOf)) {
   const file = join(PATTERN_HISTORY, patternAsOf + ".json.gz");
-  if (!existsSync(file)) writeGz(file, { schemaVersion: "pattern-holds-snapshot-1.0.0", asOf: patternAsOf, rows: patternHolds });
+  if (!existsSync(file)) writeGz(file, { schemaVersion: "pattern-holds-snapshot-1.1.0", asOf: patternAsOf, method: patternMethod, rows: patternHolds });
 }
 const patternDates = existsSync(PATTERN_HISTORY) ? readdirSync(PATTERN_HISTORY).filter((f) => /^\d{4}-\d{2}-\d{2}\.json\.gz$/.test(f)).map((f) => f.slice(0, 10)).sort() : [];
 let patternOpen = false;
 if (patternDates.length >= 2) {
   patternOpen = true;
   const a = gz(join(PATTERN_HISTORY, patternDates[patternDates.length - 2] + ".json.gz")), b = gz(join(PATTERN_HISTORY, patternDates[patternDates.length - 1] + ".json.gz"));
+  methodGate("PATTERN", a, b, () => {
   for (const [t, holds] of Object.entries(b.rows || {})) {
     const old = new Set((a.rows || {})[t] || []);
     if (!(a.rows || {})[t]) continue;
@@ -328,6 +357,7 @@ if (patternDates.length >= 2) {
       evidence: added.map((id) => ({ source: "pattern-match-v1", metricId: "holds", current: id, previousAsOf: a.asOf, asOf: b.asOf })),
       nextCondition: null });
   }
+  });
 }
 
 function replayFor(t) {
@@ -352,9 +382,13 @@ const replayAll = {};
 for (const t of Object.keys(lifecycle)) replayAll[t] = replayFor(t);
 const evidenceLevel = (r) => (!r ? "NONE" : r.state !== "AVAILABLE" ? "UNAVAILABLE" : r.sufficient ? r.evidence : "WITHHELD");
 const EVIDENCE_HISTORY = P("quant/data/product/radar-history/replay-evidence");
+/* Was eine Evidenzstufe bestimmt: Rueckblick-Engine, Vokabular, Gattungsregel
+   und die Listing-Regel der langen Reihen, auf denen der Rueckblick laeuft. */
+const evidenceMethod = Radar.snapshotMethod({ historicalCases: HistoricalCases.VERSION, vocabulary: vocabularyHash,
+  securityMaster: SecurityMaster.VERSION, listingRule: Survivorship.VERSION, horizon: "m6" });
 {
   const file = join(EVIDENCE_HISTORY, latest.date + ".json.gz");
-  if (!existsSync(file)) writeGz(file, { schemaVersion: "replay-evidence-snapshot-1.0.0", asOf: latest.date, horizon: "m6",
+  if (!existsSync(file)) writeGz(file, { schemaVersion: "replay-evidence-snapshot-1.1.0", asOf: latest.date, horizon: "m6", method: evidenceMethod,
     rows: Object.fromEntries(Object.entries(replayAll).map(([t, r]) => [t, [evidenceLevel(r), r && r.episodes ? r.episodes : 0]])) });
 }
 const evidenceDates = existsSync(EVIDENCE_HISTORY) ? readdirSync(EVIDENCE_HISTORY).filter((f) => /^\d{4}-\d{2}-\d{2}\.json\.gz$/.test(f)).map((f) => f.slice(0, 10)).sort() : [];
@@ -363,6 +397,7 @@ if (evidenceDates.length >= 2) {
   evidenceOpen = true;
   const a = gz(join(EVIDENCE_HISTORY, evidenceDates[evidenceDates.length - 2] + ".json.gz")), b = gz(join(EVIDENCE_HISTORY, evidenceDates[evidenceDates.length - 1] + ".json.gz"));
   const word = { BROAD: "breit", THIN: "dünn", WITHHELD: "zurückgehalten", UNAVAILABLE: "nicht verfügbar", NONE: "keine" };
+  methodGate("EVIDENCE", a, b, () => {
   for (const [t, row] of Object.entries(b.rows || {})) {
     const old = (a.rows || {})[t];
     if (!old || old[0] === row[0]) continue;
@@ -374,6 +409,7 @@ if (evidenceDates.length >= 2) {
       evidence: [{ source: "historical-cases", metricId: "replayEvidence.m6", previous: old[0], current: row[0], previousAsOf: a.asOf, asOf: b.asOf }],
       nextCondition: null });
   }
+  });
 }
 
 /* ------------------------------------------------------------ Ledger
@@ -513,6 +549,8 @@ const radar = {
     HISTORICAL_REPLAY_COVERAGE: { cards: cards.length, computed: replayComputed, sufficient: replaySufficient },
     WATCHLIST_TRACKABLE_TITLES: Object.keys(lifecycle).length,
     ALERT_READY_EVENTS: events.length - violations.length, ALERT_CONTRACT_VIOLATIONS: violations.length,
+    METHOD_REBASES: methodRebases.length,
+    TRANSITIONS_SUPPRESSED_BY_METHOD_CHANGE: methodRebases.reduce((n, r) => n + r.suppressedTransitions, 0),
     RADAR_EVENTS_WITH_BACKTEST: events.filter((e) => e.backtestEvidence.state === "AVAILABLE").length,
     EVENT_TYPES_WITH_BACKTEST: Radar.EVENT_TYPES.filter((t) => backtestEvidenceFor(t.id).state === "AVAILABLE").map((t) => t.id),
     EVENT_TYPES_BACKTEST_WITHHELD: Radar.EVENT_TYPES.filter((t) => backtestEvidenceFor(t.id).state !== "AVAILABLE").map((t) => ({ id: t.id, reason: backtestEvidenceFor(t.id).reason, trust: backtestEvidenceFor(t.id).trust })),
@@ -521,10 +559,14 @@ const radar = {
     EVENTS_WITH_BASE_RATE: events.filter((e) => e.baseRate).length,
     WATCHLIST_EVENTS_TRACKABLE: Object.keys(lifecycle).length
   },
+  /* Intern, nicht fuer Radar, Watchlist oder Alerts: Vergleiche, die eine
+     Methodikaenderung statt einer Aenderung der Aktie gemessen haetten. */
+  methodRebase: methodRebases,
   events, cards
 };
 if (violations.length) throw Error("ALERT_CONTRACT_VIOLATED: " + JSON.stringify(Radar.eventViolations(violations[0])) + " " + violations[0].id);
 writeGz(P("quant/data/product/radar-v1.json.gz"), radar);
+writeGz(P("quant/data/product/radar-home-v1.json.gz"), Radar.homeProjection(radar));
 
 writeGz(P("quant/data/product/setup-lifecycle-v1.json.gz"), {
   schemaVersion: "setup-lifecycle-1.0.0", engineVersion: Radar.VERSION, generatedAt: radar.generatedAt, asOf: latest.date,

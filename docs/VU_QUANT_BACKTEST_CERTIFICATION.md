@@ -85,22 +85,51 @@ Gemessen heute: 4 Stände über 18 Tage, 1.009 Wechsel und noch kein abgeschloss
 - **Engine:** `quant/engines/profile-backtest.js` liest Stände nur strikt vor dem Termin. Ohne frische Zugehörigkeit bricht sie ab (`MEMBERSHIP_STALE`) und greift nie auf das heutige Universum zurück.
 - **Belege:** Sabotage-Tests zeigen das. Ein Snapshot aus der Zukunft ändert nichts, ein veralteter Stand bricht den Lauf ab.
 
-## Überlebende
+## Überlebende (survivorship-control-1.0.0, 02.10.2026)
 
-| Kennzahl | Wert |
-|---|---|
-| SURVIVORSHIP_GATE | PASS |
-| SURVIVORSHIP_CONTROL | FAIL |
-| DELISTED_IDENTIFIED | 191 |
-| DELISTED_WITH_HISTORY | 0 |
-| DELISTED_BACKTEST_ELIGIBLE | 0 |
+Zwei Begriffe, zwei Zustände (`quant/engines/survivorship-control.js`):
 
-186 Kürzel inaktiver Titel haben eine Kursreihe, die weiterläuft. Das Kürzel wurde neu vergeben; die Reihe ist keine Historie des delisteten Titels. Vorwärts gesammelte Stände (Setup-Historie, Index-Zugehörigkeit) sind überlebensfrei, solange kein Fall weggelassen wird.
+| Begriff | Bedeutung | Stand |
+|---|---|---|
+| SURVIVORSHIP_GATE | Schutz: keine Auswertung ohne Kontrolle steht über „eingeschränkt“. Löst das Problem nicht (`solvesSurvivorship: false`). | PASS |
+| SURVIVORSHIP_CONTROL | Historische Nicht-Überlebende sind in einer Studie tatsächlich enthalten. | `PARTIAL`, sobald die Sensitivität delistete Titel enthält; sonst `NOT_AVAILABLE`. Nie PASS, solange die Hauptstudie nur heutige Titel enthält. |
+
+**Identität:** Eine Kursreihe gehört einem Listing nur, wenn ihr Zeitraum im Listing-Fenster liegt (Kennung `tiingo:BÖRSE:KÜRZEL:Start`). Es gibt keinen Join über das Kürzel. Die 191 inaktiven Stammaktien des Security Masters werden so klassifiziert (`quant/data/product/survivorship-control-v1.json`):
+
+| Klasse | Bedeutung | Anzahl |
+|---|---|---|
+| A | delistet, Historie bis zum Listing-Ende | 0 |
+| B | delistet, Historie unvollständig | 0 |
+| C | delistet, keine Historie | 1 |
+| D | Kürzel neu vergeben, die Reihe gehört dem späteren Listing | 183 |
+| E | Übernahme/Fusion belegt | 0 (lokal kein Beleg) |
+| F | Identität unsicher (Reihe läuft über das Listing-Ende hinaus, z. B. COHR) | 7 |
+
+Eine CIK wird keinem früheren Listing zugeordnet: die CIK-Karte gilt dem heutigen Emittenten eines Kürzels.
+
+**Delistete Titel ab 2015:** Der interne Delisting-Abruf (privater Speicher `tiingo-delisted`, Owner-Freigabe 01.10.2026 für interne Auswertung) liefert Kursreihen beendeter Listings ab 2015. `scripts/quant/build-survivorship-control.mjs` liest sein Manifest, klassifiziert jedes Listing (A–F), erkennt Kürzelwechsel (letzte Kerze = Kerze eines heutigen Titels → kein Delisting) und baut ein runner-privates Wochenbündel. Öffentlich erscheinen nur Zähler.
+
+**Ausgang eines Delistings:** lokal unbelegt (Insolvenz, Barabfindung, Aktientausch, Rückzug). Reicht ein Horizont über das Reihenende, wird der Fall **zensiert** und gezählt, nie pauschal mit 0 % oder −100 % gewertet. Die Variante „letzter Kurs“ ist eine ausgewiesene Annahme, kein Ergebnis.
+
+**Sensitivität (Signal-Studie, ab 2016):** dieselben Regeln, dieselbe Renditebasis, dieselbe Wochenachse in zwei Universen – `CURRENT_SURVIVORS_ONLY` und `HISTORICAL_ELIGIBLE_SUBSET` (jedes delistete Listing in den Wochen, in denen es gehandelt wurde). Die Base Rate wird je Variante über genau deren Universum gerechnet. Ausgewiesen werden Fälle, unabhängige Fälle, Anteil im Plus, Base Rate, Abstand, Median, Rückgang und Zensierungen. Die Hauptstudie bleibt unverändert, und aus der Sensitivität folgt keine Zertifizierung.
+
+**Grenzen:** Vor 2016 gibt es keine delisteten Reihen. Alt-Listings später neu vergebener Kürzel sind nicht abrufbar (Klasse D).
+
+## Gesamtrendite-Vertrag (total-return-contract-1.0.0)
+
+- **Regel:** Eine Reihe gilt nur dann als Gesamtrendite, wenn jede Ausschüttung und jeder Split in der bereinigten Spalte angekommen ist. Ein Ex-Tag ohne Faktorsprung, ein Faktorsprung außerhalb 0,6–1,4 × der gemeldeten Ausschüttung oder ein nicht bereinigter Split ist eine Ablehnung, keine Warnung.
+- **Ein Vertrag:** `quant/engines/market-quality.js totalReturnVerdict` – dieselbe Funktion für SPY (`refresh-benchmark-history.mjs`), Signal- und Setup-Studie (`scripts/quant/lib/daily-prices.mjs`) und die Reparatur.
+- **Ursache der Ablehnungen:** Der tägliche Anhang behält die adjustedClose-Skala des Abruftags; jede spätere Ausschüttung fehlt in der Spalte. `scripts/market/repair-total-return-history.mjs` holt für abgelehnte Reihen die ganze Historie in einer Anfrage (wie SPY), höchstens 1.500 je Lauf, jüngste Lücke zuerst. Übernommen wird **nur die Gesamtrendite-Spalte auf den gespeicherten Tagen** (Rohkurs, Volumen, Ausschüttung, Split und die Menge der Tage bleiben bitgleich), und nur, wenn die Reihe danach den Vertrag besteht und die Rohschlüsse übereinstimmen. Die erste Fassung ersetzte die ganze Reihe; im Marktlauf 37013170985 verschob das Faktor-Perzentile, und Discover lehnte eine Karte an der 90-%-Grenze ab (PRHIZ). Solche Reihen werden aus der dauerhaften Ablage zurückgeholt, bevor sie spaltenweise repariert werden.
+- **Kein Mischen:** Unter 95 % bestätigter Titel rechnet die Signal-Studie ganz in Kursrendite, die Setup-Studie ebenso. Darüber fallen abgelehnte Titel heraus und werden gezählt (`quant/data/product/total-return-quality-v1.json`).
+
+## Methodikwechsel bei gleichem Stichtag
+
+`scripts/quant/methodology-fingerprint.mjs` fasst Methodik, Evidenz-Engines, Benchmark-Vertrag und Gesamtrendite-Vertrag in einen Fingerabdruck. Die Idempotenz-Stufe der Materialisierung rechnet neu, sobald er vom zuletzt materialisierten (`quant/data/product/methodology-fingerprint-v1.json`) abweicht – ohne `force`. Festgeschrieben wird er erst nach einem vollständigen Lauf.
 
 ## Produkt
 
 - **Radar-Karten und Aktienseite:** Sie zeigen „Historisch beobachtet / getestet / zertifiziert“ mit Status. Jede Trefferquote steht zusammen mit Base Rate, Differenz, Intervall, Fällen, effektiver Fallzahl, Median und typischem Rückgang. Hält der Abstand im jüngsten Testzeitraum nicht (`edgeOutOfSample = false`), steht dort ausdrücklich „Im jüngsten Testzeitraum nicht robust genug bestätigt.“
-- **`#/backtest`:** Die Übersicht nennt offen „Zertifiziert: 0 von 6 Backtest-Arten“. Die Überlebenden-Kontrolle heißt dort „nicht vorhanden – delistete Titel fehlen in den Ergebnissen“; ein PASS erscheint nur für das Gate.
+- **`#/backtest`:** Die Übersicht nennt offen „Zertifiziert: 0 von 6 Backtest-Arten“. Gate und Kontrolle stehen dort getrennt. Die Kontrolle heißt „teilweise“ oder „nicht vorhanden“; ein PASS erscheint nur für das Gate. Jede Regel zeigt die acht Vertrauensbausteine einzeln (Gesamtrendite, Point-in-Time, kein Blick in die Zukunft, Überlebende, Test außerhalb des Lernzeitraums, Walk-Forward, Stichprobe, unabhängige Fälle), dazu die Hinweise „Historisch getestet“, „Evidenz eingeschränkt“ und „Überlebenden-Effekt nicht vollständig kontrolliert“ sowie den Vergleich mit und ohne delistete Titel.
 - **Alert-Vertrag 3.0.0:**
   - `effectiveAt`, `validUntil` (7 Tage), `baseRate` und `isNew`.
   - Das Ledger sorgt dafür, dass derselbe `dedupeKey` nur einmal alarmiert. Ein Eintrag merkt sich den Radar-Stichtag der ersten Erkennung; ein wiederholter Lauf zum selben Stichtag meldet seine Alerts weiter als neu (`Radar.markSeen`, Regressionstest mit Sabotage).
@@ -113,3 +142,88 @@ Gemessen heute: 4 Stände über 18 Tage, 1.009 Wechsel und noch kein abgeschloss
 
 - Setup-Backtest: Freigabe der Setup-Methodik (`backtestCertification`), sobald die Historien-Gates bestehen.
 - Setup-Einstiegsvariante, falls die Abweichung 1 Pp übersteigt.
+
+## Schuldverschreibungen sind keine Aktien (DEBT, 02.10.2026)
+
+**Fall PRHIZ.** Der Wertpapierstamm fuehrte PRHIZ als `EQUITY_COMMON`/`ELIGIBLE`, aber nur aus dem Restfall: Tiingo meldet `assetType=Stock`, und das Tickermuster ist unauffaellig. Die Namensschicht (`company-names.json`, Quelle `TIINGO_METADATA`, Stand 14.09.2026) nennt das Papier „Presurance Holdings Inc Sr Nt“. Die SEC fuehrt unter CIK 0001502292 die Symbole PRHI (Stammaktie, seit 2015) und PRHIZ. PRHIZ ist also ein Senior Note des Emittenten, kein Stammkapital.
+
+**Korrektur, provenance-basiert.**
+- `us-security-master` 1.3.0 fuehrt die Klasse `DEBT` (Policy `EXCLUDE`, nur ueber den Namen belegbar).
+- Die Namensregel erkennt Senior/Subordinated Notes, Debentures, „Notes due“, „Nts“ und Kupon-Notes.
+- `scripts/market/apply-name-layer-class.mjs --classes DEBT` wendet die Regel auf die bestehende Eignung an. Jede Aenderung steht mit Name und Namensquelle in `eligibility-reconciliation.json`.
+- Die Tickerform (Preferred, Warrant, Unit, Right) hat Vorrang vor dem Namen, wie beim vollen Eignungslauf.
+
+**Ergebnis.**
+- Die Regel stuft 22 Papiere um, darunter PRHIZ, TMUSI, TMUSL, TMUSZ, TRINI, TRINZ, SAX, SSSSL und MFICL.
+- Das Produktuniversum sinkt von 6.875 auf 6.853 Titel.
+- Die Papiere bleiben als Instrumente im Stamm und in der Suche. Sie fallen aus Screener, Strategie-Match, Bewertung, Faktoren und Discover heraus, weil diese aus dem Produktuniversum lesen.
+- Der Discover-Code ist unveraendert.
+
+**Gegenprobe.**
+- „Our Bond, Inc.“, „Sticky Notes Holdings Inc“ und „Columbia Core Bond ETF“ bleiben, was sie sind.
+- Derselbe Ticker mit dem Emittentennamen bleibt Stammaktie. Es gibt also keine Ticker-Heuristik.
+- Tests: `quant/tests/debt-instrument-classification.test.mjs`. Mit abgeschalteter Regel schlagen 3 von 6 fehl.
+
+## Gesamtrendite nach der Reparatur: gemessen, nicht behauptet (03.10.2026)
+
+Die Studie misst die Gesamtrendite an der **dauerhaften Historie** (R2), nicht an der Arbeitsablage.
+
+| Stand | bestaetigt | Dividendenluecke | Splitluecke | Anteil |
+|---|---|---|---|---|
+| main, 25.09. (vor der Reparatur) | 4.921 / 6.333 | 847 | 564 | 77,7 % |
+| Branch, 02.10. (nach Reparatur und Push) | 5.462 / 6.334 | 320 | 551 | 86,2 % |
+
+Die Mindestquote von 95 % ist nicht erreicht. Die Studie bleibt deshalb fail-closed auf `SPLIT_ADJUSTED_PRICE`, und die Basisrate laeuft auf derselben Basis.
+
+**Ursache des Rests (gefunden, behoben).**
+- Lauf 37052123489 brach in Gate A ab, also vor dem Zurueckholen der Arbeitsablage. Er sicherte trotzdem (`always()`) eine leere Ablage von 1 MB als juengsten Cache.
+- Der naechste Lauf baute darauf auf und lud nur das Standardfenster (941 Handelstage).
+- Die Reparatur pruefte nur dieses Fenster: 6.430 / 6.496 bestaetigt.
+- Der Push fuehrte die 941 Tage in die langen R2-Reihen ein. Der aeltere Teil behielt die alte Bereinigung.
+- Fix: gesichert wird nur noch nach erfolgreichem Zurueckholen (`steps.restore.outcome == 'success'`). Test EG-CACHE haelt das fest; mit entfernter Bedingung schlaegt er fehl.
+- Caches sind je Branch getrennt. Der main-Cache traegt die volle reparierte Ablage, und der naechste Lauf auf main schreibt sie vollstaendig nach R2.
+
+**Nicht reparierbar (Anbieterdaten).**
+- 337 der 551 Splitluecken lehnt schon der Abruf als `adjustmentContradicted` ab: Die bereinigte Spalte des Anbieters hat den Split nicht mitgemacht.
+- 66 Reihen behalten die Dividendenluecke auch nach vollem Neuabruf (`STILL_DIVIDEND_GAP`).
+- Beides bleibt `TOTAL_RETURN_REJECTED`, mit Grund. Es wird nicht geglaettet.
+
+## Listing-Kontinuitaet: ein Kuerzel ist keine Identitaet, auch in der Kursreihe nicht (03.10.2026)
+
+**Befund.**
+- Der erste vollstaendig veroeffentlichende Lauf auf main zeigte DINE mit Kerzen von 2010-05-11 bis 2011-01-03 (um 12) und ab 2026-05-05 (um 25). Dazwischen liegen 15 Jahre ohne eine Kerze, also zwei Firmen unter einem Kuerzel.
+- 127 kompakte und 251 lange Reihen hatten in ihrem Fenster eine Luecke von mehr als einem Jahr. Die meisten davon waren schon vorher veroeffentlicht.
+- Chart, 12-Monats-Rendite, 200-Tage-Schnitt und die Faehigkeit „Historie ≥ 250 Tage“ rechneten ueber diese Luecke hinweg.
+
+**Regel** (`survivorship-control.js` 1.1.0, `currentListingSegment`): Nach mehr als 365 Kalendertagen ohne Kerze beginnt ein neues Listing, und nur das juengste zaehlt. Kuerzere Luecken (Handelsaussetzungen) bleiben unberuehrt. Kein Ticker, kein Name: es entscheiden nur die Kerzen.
+
+**Angewendet**:
+- im Marktdaten-Lauf nach Abruf und Reparatur, vor allen Ableitungen (`scripts/market/guard-listing-continuity.mjs`, Bericht ohne Kurse in `quant/data/market/listing-continuity-v1.json`);
+- in beiden Reihen-Publishern;
+- beim Push: Gekuerzte Reihen werden zusammengefuehrt, dann geschnitten und anschliessend **ersetzt**, damit die alten Kerzen nicht aus der Ablage zurueckkommen.
+
+**Wirkung.**
+- 127 kompakte Reihen sind gekuerzt. Von den langen Reihen sind 207 gekuerzt; 44 fallen unter 30 Wochen und entfallen, wie es der Publisher bei zu kurzer Historie tut.
+- `historicalAvailable` sinkt von 5.660 auf 5.543: 117 Titel haben im aktuellen Listing keine 250 Handelstage.
+
+**Tests**: `quant/tests/listing-continuity.test.mjs`. Mit abgeschalteter Regel schlagen 3 von 6 fehl.
+
+## Methodikwechsel ist kein Marktereignis (quant-radar 1.3.0, 03.10.2026)
+
+**Befund.** Der Radar vom 02.10. meldete 571 „Evidenz veraendert“, 670 „neues Muster“, 117 Faktor- und 55 Strategie-Wechsel. Sie entstanden aus der DEBT-Umstufung und aus der neuen Grundgesamtheit der Faktorevidenz, nicht aus der Aktie.
+
+**Regel.**
+- Jeder verglichene Stand traegt seine Methodik (`snapshotMethod`). Das gilt fuer Faktor-Evidenz-Historie, Musterstand und Rueckblick-Evidenz.
+- Zur Methodik gehoeren Engine- und Methodikversionen, die Gattungsregel des Wertpapierstamms, die Listing-Regel der Reihen und die Grundgesamtheit der Perzentile.
+- Weichen zwei Staende ab, oder fehlt einem die Angabe (Gleichheit nicht belegt), entsteht **kein** Ereignis: kein Radar, keine Karte, keine Watchlist-Historie, kein Alert.
+- Stattdessen fuehrt der Radar ein internes `METHOD_REBASE` (`methodRebase`, `measures.METHOD_REBASES`) mit der Zahl der unterdrueckten Uebergaenge. Der juengere Stand ist die neue Vergleichsbasis.
+
+**Gemessen am Radar vom 02.10.**
+- 4 Rebases (EVIDENCE 571, PATTERN 670, FACTOR 117, STRATEGY 55): 1.413 unterdrueckte Uebergaenge.
+- Es bleiben 679 Ereignisse aus Markt und Setup: 52-Wochen-Hoch, Momentum, Trend, Setups.
+- Der Radar schrumpft von 211 auf 88 KB.
+
+**Gegenprobe und Tests.**
+- Bei gleicher Methodik werden Uebergaenge zu Ereignissen (MC1).
+- Ein unabhaengiger Nachrechner liest die Staende selbst (MC4).
+- Mit abgeschalteter Regel schlagen MC2 und MC4 fehl.

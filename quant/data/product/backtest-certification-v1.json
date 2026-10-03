@@ -1,7 +1,7 @@
 {
  "schemaVersion": "backtest-certification-1.0.0",
- "generatedAt": "2026-10-02T09:33:10.321Z",
- "asOf": "2026-10-02",
+ "generatedAt": "2026-10-03T07:05:00.154Z",
+ "asOf": "2026-10-03",
  "methodology": "backtest-certification-1.0.0",
  "kinds": [
   {
@@ -177,18 +177,18 @@
      "label": "Überlebende-Kontrolle",
      "category": "STRUCTURAL",
      "state": "FAIL",
-     "value": "nicht vorhanden",
+     "value": "teilweise (Sensitivität ab 2016, nicht in der Hauptstudie)",
      "required": null,
-     "reason": "TODAYS_UNIVERSE_ONLY"
+     "reason": "PARTIAL_SENSITIVITY_ONLY"
     },
     {
      "id": "returnBasis",
      "label": "Gesamtrendite",
      "category": "STRUCTURAL",
-     "state": "PASS",
-     "value": "Gesamtrendite",
+     "state": "FAIL",
+     "value": "Kursrendite (Pipeline rechnet mit Gesamtrendite)",
      "required": null,
-     "reason": null
+     "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
     },
     {
      "id": "ruleCertified",
@@ -209,13 +209,20 @@
    "minimumTrust": "USABLE",
    "status": "LIMITED",
    "readiness": "NOT_READY",
-   "reason": "TODAYS_UNIVERSE_ONLY",
+   "reason": "PARTIAL_SENSITIVITY_ONLY",
    "blockers": [
     {
      "id": "survivorship",
      "category": "STRUCTURAL",
-     "reason": "TODAYS_UNIVERSE_ONLY",
-     "value": "nicht vorhanden",
+     "reason": "PARTIAL_SENSITIVITY_ONLY",
+     "value": "teilweise (Sensitivität ab 2016, nicht in der Hauptstudie)",
+     "required": null
+    },
+    {
+     "id": "returnBasis",
+     "category": "STRUCTURAL",
+     "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
+     "value": "Kursrendite (Pipeline rechnet mit Gesamtrendite)",
      "required": null
     },
     {
@@ -253,7 +260,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "93575 Fälle mit 6-Monats-Ergebnis aus 5452 Titeln",
+       "value": "92156 Fälle mit 6-Monats-Ergebnis aus 5306 Titeln",
        "required": null,
        "reason": null
       },
@@ -280,18 +287,18 @@
        "label": "Überlebende-Kontrolle",
        "category": "STRUCTURAL",
        "state": "FAIL",
-       "value": "Nur heute gelistete Titel; 1 Reihen enden früher. Delistete Titel mit sauberer Identität und Historie: 0",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
        "required": null,
-       "reason": "TODAYS_UNIVERSE_ONLY"
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY"
       },
       {
        "id": "returnBasis",
        "label": "Gesamtrendite (inkl. Dividenden)",
        "category": "STRUCTURAL",
-       "state": "PASS",
-       "value": "Gesamtrendite (weekly-total-return-1.0.0)",
+       "state": "FAIL",
+       "value": "Kursrendite ohne Dividenden",
        "required": null,
-       "reason": null
+       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
       },
       {
        "id": "costs",
@@ -334,7 +341,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1836 Wochen, 141 Quartale, effektiv ≈ 20825 unabhängige Fälle",
+       "value": "1837 Wochen, 141 Quartale, effektiv ≈ 21490 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -352,7 +359,7 @@
        "label": "Vollständigkeit",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "0.996 der abgeschlossenen Fälle mit allen vier Zeiträumen",
+       "value": "0.998 der abgeschlossenen Fälle mit allen vier Zeiträumen",
        "required": null,
        "reason": null
       },
@@ -361,7 +368,7 @@
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "Δ -0.0125",
+       "value": "Δ -0.015",
        "required": null,
        "reason": null
       }
@@ -375,13 +382,20 @@
      "minimumTrust": "USABLE",
      "status": "LIMITED",
      "readiness": "NOT_READY",
-     "reason": "TODAYS_UNIVERSE_ONLY",
+     "reason": "MAIN_STUDY_SURVIVORS_ONLY",
      "blockers": [
       {
        "id": "survivorship",
        "category": "STRUCTURAL",
-       "reason": "TODAYS_UNIVERSE_ONLY",
-       "value": "Nur heute gelistete Titel; 1 Reihen enden früher. Delistete Titel mit sauberer Identität und Historie: 0",
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "required": null
+      },
+      {
+       "id": "returnBasis",
+       "category": "STRUCTURAL",
+       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
+       "value": "Kursrendite ohne Dividenden",
        "required": null
       },
       {
@@ -393,25 +407,25 @@
       }
      ],
      "sample": {
-      "n": 93575,
-      "titles": 5452
+      "n": 92156,
+      "titles": 5306
      },
      "independence": {
-      "uniqueTitles": 5452,
-      "uniquePeriods": 1836,
+      "uniqueTitles": 5306,
+      "uniquePeriods": 1837,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 20825,
-      "designEffect": 4.49
+      "effectiveN": 21490,
+      "designEffect": 4.29
      },
-     "returnType": "TOTAL_RETURN",
+     "returnType": "SPLIT_ADJUSTED_PRICE",
      "baseRate": {
-      "positiveShare": 0.5542,
-      "base": 0.5667,
-      "delta": -0.0125,
+      "positiveShare": 0.523,
+      "base": 0.538,
+      "delta": -0.015,
       "ci": [
-       -0.0188,
-       -0.0062
+       -0.0213,
+       -0.0088
       ]
      }
     },
@@ -441,7 +455,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "93958 Fälle mit 6-Monats-Ergebnis aus 5473 Titeln",
+       "value": "92545 Fälle mit 6-Monats-Ergebnis aus 5332 Titeln",
        "required": null,
        "reason": null
       },
@@ -468,18 +482,18 @@
        "label": "Überlebende-Kontrolle",
        "category": "STRUCTURAL",
        "state": "FAIL",
-       "value": "Nur heute gelistete Titel; 1 Reihen enden früher. Delistete Titel mit sauberer Identität und Historie: 0",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
        "required": null,
-       "reason": "TODAYS_UNIVERSE_ONLY"
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY"
       },
       {
        "id": "returnBasis",
        "label": "Gesamtrendite (inkl. Dividenden)",
        "category": "STRUCTURAL",
-       "state": "PASS",
-       "value": "Gesamtrendite (weekly-total-return-1.0.0)",
+       "state": "FAIL",
+       "value": "Kursrendite ohne Dividenden",
        "required": null,
-       "reason": null
+       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
       },
       {
        "id": "costs",
@@ -522,7 +536,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1837 Wochen, 141 Quartale, effektiv ≈ 24938 unabhängige Fälle",
+       "value": "1838 Wochen, 141 Quartale, effektiv ≈ 24306 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -540,7 +554,7 @@
        "label": "Vollständigkeit",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "0.997 der abgeschlossenen Fälle mit allen vier Zeiträumen",
+       "value": "0.998 der abgeschlossenen Fälle mit allen vier Zeiträumen",
        "required": null,
        "reason": null
       },
@@ -549,7 +563,7 @@
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
        "state": "FAIL",
-       "value": "Δ -0.0013",
+       "value": "Δ -0.0025",
        "required": null,
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
       }
@@ -563,13 +577,20 @@
      "minimumTrust": "USABLE",
      "status": "LIMITED",
      "readiness": "NOT_READY",
-     "reason": "TODAYS_UNIVERSE_ONLY",
+     "reason": "MAIN_STUDY_SURVIVORS_ONLY",
      "blockers": [
       {
        "id": "survivorship",
        "category": "STRUCTURAL",
-       "reason": "TODAYS_UNIVERSE_ONLY",
-       "value": "Nur heute gelistete Titel; 1 Reihen enden früher. Delistete Titel mit sauberer Identität und Historie: 0",
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "required": null
+      },
+      {
+       "id": "returnBasis",
+       "category": "STRUCTURAL",
+       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
+       "value": "Kursrendite ohne Dividenden",
        "required": null
       },
       {
@@ -597,30 +618,30 @@
        "id": "edgeOutOfSample",
        "category": "QUALITY",
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
-       "value": "Δ -0.0013",
+       "value": "Δ -0.0025",
        "required": null
       }
      ],
      "sample": {
-      "n": 93958,
-      "titles": 5473
+      "n": 92545,
+      "titles": 5332
      },
      "independence": {
-      "uniqueTitles": 5473,
-      "uniquePeriods": 1837,
+      "uniqueTitles": 5332,
+      "uniquePeriods": 1838,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 24938,
-      "designEffect": 3.77
+      "effectiveN": 24306,
+      "designEffect": 3.81
      },
-     "returnType": "TOTAL_RETURN",
+     "returnType": "SPLIT_ADJUSTED_PRICE",
      "baseRate": {
-      "positiveShare": 0.5671,
-      "base": 0.5684,
-      "delta": -0.0013,
+      "positiveShare": 0.5375,
+      "base": 0.54,
+      "delta": -0.0025,
       "ci": [
-       -0.0071,
-       0.0045
+       -0.0084,
+       0.0033
       ]
      }
     },
@@ -650,7 +671,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "90526 Fälle mit 6-Monats-Ergebnis aus 5408 Titeln",
+       "value": "89218 Fälle mit 6-Monats-Ergebnis aus 5276 Titeln",
        "required": null,
        "reason": null
       },
@@ -677,18 +698,18 @@
        "label": "Überlebende-Kontrolle",
        "category": "STRUCTURAL",
        "state": "FAIL",
-       "value": "Nur heute gelistete Titel; 1 Reihen enden früher. Delistete Titel mit sauberer Identität und Historie: 0",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
        "required": null,
-       "reason": "TODAYS_UNIVERSE_ONLY"
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY"
       },
       {
        "id": "returnBasis",
        "label": "Gesamtrendite (inkl. Dividenden)",
        "category": "STRUCTURAL",
-       "state": "PASS",
-       "value": "Gesamtrendite (weekly-total-return-1.0.0)",
+       "state": "FAIL",
+       "value": "Kursrendite ohne Dividenden",
        "required": null,
-       "reason": null
+       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
       },
       {
        "id": "costs",
@@ -731,7 +752,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1836 Wochen, 141 Quartale, effektiv ≈ 26926 unabhängige Fälle",
+       "value": "1837 Wochen, 141 Quartale, effektiv ≈ 26289 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -749,7 +770,7 @@
        "label": "Vollständigkeit",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "0.997 der abgeschlossenen Fälle mit allen vier Zeiträumen",
+       "value": "0.999 der abgeschlossenen Fälle mit allen vier Zeiträumen",
        "required": null,
        "reason": null
       },
@@ -757,10 +778,10 @@
        "id": "edgeOutOfSample",
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
-       "state": "FAIL",
-       "value": "Δ -0.0104",
+       "state": "PASS",
+       "value": "Δ -0.0131",
        "required": null,
-       "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
+       "reason": null
       }
      ],
      "trust": "LIMITED",
@@ -772,13 +793,20 @@
      "minimumTrust": "USABLE",
      "status": "LIMITED",
      "readiness": "NOT_READY",
-     "reason": "TODAYS_UNIVERSE_ONLY",
+     "reason": "MAIN_STUDY_SURVIVORS_ONLY",
      "blockers": [
       {
        "id": "survivorship",
        "category": "STRUCTURAL",
-       "reason": "TODAYS_UNIVERSE_ONLY",
-       "value": "Nur heute gelistete Titel; 1 Reihen enden früher. Delistete Titel mit sauberer Identität und Historie: 0",
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "required": null
+      },
+      {
+       "id": "returnBasis",
+       "category": "STRUCTURAL",
+       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
+       "value": "Kursrendite ohne Dividenden",
        "required": null
       },
       {
@@ -787,35 +815,28 @@
        "reason": "REGIME_HISTORY_NOT_CERTIFIED",
        "value": "Die Regime-Historie der Market-Regime-Engine ist nicht zertifiziert; keine eigene Ersatz-Einteilung",
        "required": null
-      },
-      {
-       "id": "edgeOutOfSample",
-       "category": "QUALITY",
-       "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
-       "value": "Δ -0.0104",
-       "required": null
       }
      ],
      "sample": {
-      "n": 90526,
-      "titles": 5408
+      "n": 89218,
+      "titles": 5276
      },
      "independence": {
-      "uniqueTitles": 5408,
-      "uniquePeriods": 1836,
+      "uniqueTitles": 5276,
+      "uniquePeriods": 1837,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 26926,
-      "designEffect": 3.36
+      "effectiveN": 26289,
+      "designEffect": 3.39
      },
-     "returnType": "TOTAL_RETURN",
+     "returnType": "SPLIT_ADJUSTED_PRICE",
      "baseRate": {
-      "positiveShare": 0.5579,
-      "base": 0.5683,
-      "delta": -0.0104,
+      "positiveShare": 0.5266,
+      "base": 0.5397,
+      "delta": -0.0131,
       "ci": [
-       -0.016,
-       -0.0049
+       -0.0187,
+       -0.0074
       ]
      }
     },
@@ -845,7 +866,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "90630 Fälle mit 6-Monats-Ergebnis aus 5431 Titeln",
+       "value": "89360 Fälle mit 6-Monats-Ergebnis aus 5300 Titeln",
        "required": null,
        "reason": null
       },
@@ -872,18 +893,18 @@
        "label": "Überlebende-Kontrolle",
        "category": "STRUCTURAL",
        "state": "FAIL",
-       "value": "Nur heute gelistete Titel; 1 Reihen enden früher. Delistete Titel mit sauberer Identität und Historie: 0",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
        "required": null,
-       "reason": "TODAYS_UNIVERSE_ONLY"
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY"
       },
       {
        "id": "returnBasis",
        "label": "Gesamtrendite (inkl. Dividenden)",
        "category": "STRUCTURAL",
-       "state": "PASS",
-       "value": "Gesamtrendite (weekly-total-return-1.0.0)",
+       "state": "FAIL",
+       "value": "Kursrendite ohne Dividenden",
        "required": null,
-       "reason": null
+       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
       },
       {
        "id": "costs",
@@ -926,7 +947,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1835 Wochen, 141 Quartale, effektiv ≈ 25546 unabhängige Fälle",
+       "value": "1836 Wochen, 141 Quartale, effektiv ≈ 27594 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -944,7 +965,7 @@
        "label": "Vollständigkeit",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "0.997 der abgeschlossenen Fälle mit allen vier Zeiträumen",
+       "value": "0.999 der abgeschlossenen Fälle mit allen vier Zeiträumen",
        "required": null,
        "reason": null
       },
@@ -953,7 +974,7 @@
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
        "state": "FAIL",
-       "value": "Δ 0.0001",
+       "value": "Δ -0.0014",
        "required": null,
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
       }
@@ -967,13 +988,20 @@
      "minimumTrust": "USABLE",
      "status": "LIMITED",
      "readiness": "NOT_READY",
-     "reason": "TODAYS_UNIVERSE_ONLY",
+     "reason": "MAIN_STUDY_SURVIVORS_ONLY",
      "blockers": [
       {
        "id": "survivorship",
        "category": "STRUCTURAL",
-       "reason": "TODAYS_UNIVERSE_ONLY",
-       "value": "Nur heute gelistete Titel; 1 Reihen enden früher. Delistete Titel mit sauberer Identität und Historie: 0",
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "required": null
+      },
+      {
+       "id": "returnBasis",
+       "category": "STRUCTURAL",
+       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
+       "value": "Kursrendite ohne Dividenden",
        "required": null
       },
       {
@@ -1008,30 +1036,30 @@
        "id": "edgeOutOfSample",
        "category": "QUALITY",
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
-       "value": "Δ 0.0001",
+       "value": "Δ -0.0014",
        "required": null
       }
      ],
      "sample": {
-      "n": 90630,
-      "titles": 5431
+      "n": 89360,
+      "titles": 5300
      },
      "independence": {
-      "uniqueTitles": 5431,
-      "uniquePeriods": 1835,
+      "uniqueTitles": 5300,
+      "uniquePeriods": 1836,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 25546,
-      "designEffect": 3.55
+      "effectiveN": 27594,
+      "designEffect": 3.24
      },
-     "returnType": "TOTAL_RETURN",
+     "returnType": "SPLIT_ADJUSTED_PRICE",
      "baseRate": {
-      "positiveShare": 0.5663,
-      "base": 0.5662,
-      "delta": 0.0001,
+      "positiveShare": 0.5366,
+      "base": 0.538,
+      "delta": -0.0014,
       "ci": [
-       -0.0056,
-       0.0058
+       -0.0068,
+       0.0041
       ]
      }
     },
@@ -1061,7 +1089,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "59087 Fälle mit 6-Monats-Ergebnis aus 5197 Titeln",
+       "value": "58251 Fälle mit 6-Monats-Ergebnis aus 5055 Titeln",
        "required": null,
        "reason": null
       },
@@ -1069,37 +1097,37 @@
        "id": "oos",
        "label": "Prüfung außerhalb des Lernzeitraums",
        "category": "QUALITY",
-       "state": "FAIL",
+       "state": "PASS",
        "value": null,
        "required": null,
-       "reason": "OOS_DIRECTION_NOT_CONFIRMED"
+       "reason": null
       },
       {
        "id": "walkForward",
        "label": "Walk-Forward",
        "category": "QUALITY",
-       "state": "FAIL",
-       "value": "1 von 4 Folds in derselben Richtung",
+       "state": "PASS",
+       "value": "3 von 4 Folds in derselben Richtung",
        "required": null,
-       "reason": "FOLDS_DISAGREE"
+       "reason": null
       },
       {
        "id": "survivorship",
        "label": "Überlebende-Kontrolle",
        "category": "STRUCTURAL",
        "state": "FAIL",
-       "value": "Nur heute gelistete Titel; 1 Reihen enden früher. Delistete Titel mit sauberer Identität und Historie: 0",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
        "required": null,
-       "reason": "TODAYS_UNIVERSE_ONLY"
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY"
       },
       {
        "id": "returnBasis",
        "label": "Gesamtrendite (inkl. Dividenden)",
        "category": "STRUCTURAL",
-       "state": "PASS",
-       "value": "Gesamtrendite (weekly-total-return-1.0.0)",
+       "state": "FAIL",
+       "value": "Kursrendite ohne Dividenden",
        "required": null,
-       "reason": null
+       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
       },
       {
        "id": "costs",
@@ -1142,7 +1170,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1834 Wochen, 141 Quartale, effektiv ≈ 10683 unabhängige Fälle",
+       "value": "1834 Wochen, 141 Quartale, effektiv ≈ 10437 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -1160,7 +1188,7 @@
        "label": "Vollständigkeit",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "0.996 der abgeschlossenen Fälle mit allen vier Zeiträumen",
+       "value": "0.999 der abgeschlossenen Fälle mit allen vier Zeiträumen",
        "required": null,
        "reason": null
       },
@@ -1169,7 +1197,7 @@
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
        "state": "FAIL",
-       "value": "Δ 0.0153",
+       "value": "Δ 0.0145",
        "required": null,
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
       }
@@ -1183,27 +1211,20 @@
      "minimumTrust": "USABLE",
      "status": "LIMITED",
      "readiness": "NOT_READY",
-     "reason": "TODAYS_UNIVERSE_ONLY",
+     "reason": "MAIN_STUDY_SURVIVORS_ONLY",
      "blockers": [
       {
        "id": "survivorship",
        "category": "STRUCTURAL",
-       "reason": "TODAYS_UNIVERSE_ONLY",
-       "value": "Nur heute gelistete Titel; 1 Reihen enden früher. Delistete Titel mit sauberer Identität und Historie: 0",
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
        "required": null
       },
       {
-       "id": "oos",
-       "category": "QUALITY",
-       "reason": "OOS_DIRECTION_NOT_CONFIRMED",
-       "value": null,
-       "required": null
-      },
-      {
-       "id": "walkForward",
-       "category": "QUALITY",
-       "reason": "FOLDS_DISAGREE",
-       "value": "1 von 4 Folds in derselben Richtung",
+       "id": "returnBasis",
+       "category": "STRUCTURAL",
+       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
+       "value": "Kursrendite ohne Dividenden",
        "required": null
       },
       {
@@ -1217,30 +1238,30 @@
        "id": "edgeOutOfSample",
        "category": "QUALITY",
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
-       "value": "Δ 0.0153",
+       "value": "Δ 0.0145",
        "required": null
       }
      ],
      "sample": {
-      "n": 59087,
-      "titles": 5197
+      "n": 58251,
+      "titles": 5055
      },
      "independence": {
-      "uniqueTitles": 5197,
+      "uniqueTitles": 5055,
       "uniquePeriods": 1834,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 10683,
-      "designEffect": 5.53
+      "effectiveN": 10437,
+      "designEffect": 5.58
      },
-     "returnType": "TOTAL_RETURN",
+     "returnType": "SPLIT_ADJUSTED_PRICE",
      "baseRate": {
-      "positiveShare": 0.582,
-      "base": 0.5667,
-      "delta": 0.0153,
+      "positiveShare": 0.5524,
+      "base": 0.5379,
+      "delta": 0.0145,
       "ci": [
-       0.0065,
-       0.0241
+       0.0055,
+       0.0235
       ]
      }
     }
@@ -1299,7 +1320,7 @@
      "label": "Stände unverändert (contentHash)",
      "category": "HARD",
      "state": "PASS",
-     "value": "6 von 6 geprüft",
+     "value": "7 von 7 geprüft",
      "required": null,
      "reason": null
     },
@@ -1317,7 +1338,7 @@
      "label": "veröffentlichte Stichtage",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": 6,
+     "value": 7,
      "required": 120,
      "reason": "SETUP_HISTORY_TOO_SHORT"
     },
@@ -1326,7 +1347,7 @@
      "label": "Spanne der Historie",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "21 Tage",
+     "value": "22 Tage",
      "required": "180 Tage",
      "reason": "SETUP_HISTORY_SPAN_TOO_SHORT"
     },
@@ -1361,10 +1382,10 @@
      "id": "returnBasis",
      "label": "Gesamtrendite",
      "category": "STRUCTURAL",
-     "state": "PASS",
-     "value": "Gesamtrendite",
+     "state": "FAIL",
+     "value": "lokal Kursrendite; Pipeline rechnet mit Gesamtrendite",
      "required": null,
-     "reason": null
+     "reason": "TOTAL_RETURN_NOT_IN_THIS_RUN"
     },
     {
      "id": "survivorship",
@@ -1410,14 +1431,14 @@
      "id": "historyDates",
      "category": "HISTORY",
      "reason": "SETUP_HISTORY_TOO_SHORT",
-     "value": 6,
+     "value": 7,
      "required": 120
     },
     {
      "id": "historySpan",
      "category": "HISTORY",
      "reason": "SETUP_HISTORY_SPAN_TOO_SHORT",
-     "value": "21 Tage",
+     "value": "22 Tage",
      "required": "180 Tage"
     },
     {
@@ -1442,6 +1463,13 @@
      "required": 20
     },
     {
+     "id": "returnBasis",
+     "category": "STRUCTURAL",
+     "reason": "TOTAL_RETURN_NOT_IN_THIS_RUN",
+     "value": "lokal Kursrendite; Pipeline rechnet mit Gesamtrendite",
+     "required": null
+    },
+    {
      "id": "entryVariant",
      "category": "QUALITY",
      "reason": "VARIANTS_NOT_MEASURABLE_YET",
@@ -1458,25 +1486,25 @@
    ],
    "eta": {
     "historyDates": {
-     "remaining": 114,
+     "remaining": 113,
      "date": "2027-03-10"
     },
     "firstCompletedM6": "2027-03-26"
    },
    "progress": {
-    "historyDates": 6,
-    "spanDays": 21,
+    "historyDates": 7,
+    "spanDays": 22,
     "transitions": {
-     "SETUP_CONFIRMED": 60,
-     "SETUP_NEW": 541,
-     "SETUP_WEAKENED": 859
+     "SETUP_CONFIRMED": 69,
+     "SETUP_NEW": 643,
+     "SETUP_WEAKENED": 929
     },
     "completedM6": 0,
-    "contractTradesCompleted": 147
+    "contractTradesCompleted": 191
    },
    "replay": {
     "role": "PIT-Nachweis der Engine (rekonstruiert, keine Ergebnisquelle)",
-    "parity": "617/617",
+    "parity": "992/992",
     "mismatches": 0
    }
   },
@@ -1517,7 +1545,7 @@
      "label": "Monate mit Faktor-Snapshots",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "2 (6 Stände seit 2026-09-23)",
+     "value": "2 (7 Stände seit 2026-09-23)",
      "required": 24,
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
@@ -1571,7 +1599,7 @@
      "id": "factorHistory",
      "category": "HISTORY",
      "reason": "FACTOR_HISTORY_TOO_SHORT",
-     "value": "2 (6 Stände seit 2026-09-23)",
+     "value": "2 (7 Stände seit 2026-09-23)",
      "required": 24
     }
    ],
@@ -1583,7 +1611,7 @@
      "latest": "2026-09-26",
      "maxGapDays": 11,
      "medianGapDays": 11,
-     "staleDays": 6
+     "staleDays": 7
     },
     "NDX": {
      "snapshots": 2,
@@ -1592,7 +1620,7 @@
      "latest": "2026-09-26",
      "maxGapDays": 11,
      "medianGapDays": 11,
-     "staleDays": 6
+     "staleDays": 7
     },
     "DJIA": {
      "snapshots": 2,
@@ -1601,15 +1629,15 @@
      "latest": "2026-09-26",
      "maxGapDays": 11,
      "medianGapDays": 11,
-     "staleDays": 6
+     "staleDays": 7
     }
    },
    "factor": {
     "version": "vu-factor-evidence-2.0.0",
-    "snapshots": 6,
+    "snapshots": 7,
     "months": 2,
     "earliest": "2026-09-23",
-    "latest": "2026-10-01",
+    "latest": "2026-10-02",
     "maxGapDays": 3,
     "medianGapDays": 1,
     "staleDays": 1
@@ -1621,7 +1649,7 @@
     },
     "factor": {
      "remaining": 22,
-     "date": "2028-07-31"
+     "date": "2028-08-01"
     }
    }
   },
@@ -1721,19 +1749,52 @@
    "eta": {
     "factor": {
      "remaining": 22,
-     "date": "2028-07-31"
+     "date": "2028-08-01"
     }
    }
   }
  ],
  "survivorship": {
+  "version": "survivorship-control-1.1.0",
   "gate": "PASS",
-  "control": "FAIL",
-  "DELISTED_IDENTIFIED": 191,
-  "DELISTED_WITH_HISTORY": 0,
-  "DELISTED_BACKTEST_ELIGIBLE": 0,
-  "tickerReuseAmbiguous": 187,
-  "plain": "Gate: keine Auswertung ohne Kontrolle steht über „eingeschränkt“, der Strategie-Backtest bleibt ohne historische Zugehörigkeit geschlossen. Kontrolle: im Repository gibt es keine Kursreihe eines delisteten Titels mit sauberer Identität - die Reihen inaktiver Kürzel laufen weiter, das Kürzel ist neu vergeben.",
+  "control": "PARTIAL",
+  "SURVIVORSHIP_GATE": {
+   "state": "PASS",
+   "meaning": "Schutz: keine Auswertung ohne Überlebenden-Kontrolle steht über „eingeschränkt“. Das Gate löst das Problem nicht.",
+   "solvesSurvivorship": false
+  },
+  "SURVIVORSHIP_CONTROL": {
+   "state": "PARTIAL",
+   "reasons": [
+    "DELISTED_ONLY_FROM_2016",
+    "REUSED_TICKER_LISTINGS_UNFETCHABLE",
+    "DELIST_OUTCOME_UNKNOWN",
+    "MAIN_STUDY_SURVIVORS_ONLY"
+   ],
+   "inMainStudy": false,
+   "meaning": "Kontrolle: historische Nicht-Überlebende sind in der Studie enthalten. Nur dann ist der Überlebenden-Effekt kontrolliert."
+  },
+  "DELISTED_IDENTIFIED": 3919,
+  "DELISTED_WITH_HISTORY": 3325,
+  "DELISTED_BACKTEST_ELIGIBLE": 3082,
+  "tickerReuseAmbiguous": 514,
+  "securityMasterClasses": {
+   "A": 0,
+   "B": 0,
+   "C": 1,
+   "D": 183,
+   "E": 0,
+   "F": 7
+  },
+  "delistedStoreClasses": {
+   "A": 3257,
+   "B": 68,
+   "C": 79,
+   "D": 178,
+   "E": 0,
+   "F": 146
+  },
+  "plain": "Gate: keine Auswertung ohne Kontrolle steht über „eingeschränkt“; das Gate löst den Überlebenden-Effekt nicht. Kontrolle: delistete Titel ab 2016 sind in einer Sensitivitätsrechnung enthalten, nicht in der Hauptstudie; vor 2016 fehlen sie, der Ausgang eines Delistings ist unbekannt.",
   "forwardCollected": "Vorwärts gesammelte Stände (Setup-Historie, Index-Zugehörigkeit) enthalten das Universum des jeweiligen Tages und sind damit überlebensfrei, solange kein Fall weggelassen wird."
  },
  "measures": {

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "tiingo2-foundation-premerge-qa-1",
+  "scope": "ISOLATED_FOUNDATION_PLUS_MAIN_WORKING_TREE",
+  "baselineCommit": "268d4c89750ac682a0acc2f6ddbb7b5143fb2959",
+  "runtime": "Node22.23.3",
+  "quant": {
+    "tests": 2280,
+    "passed": 2280,
+    "failed": 0,
+    "scope": "FINAL_FROZEN_SOURCE_AFTER_INDEPENDENT_DEBT_SUFFIX_FIX"
+  },
+  "SEC": {
+    "tests": 486,
+    "passed": 486,
+    "failed": 0
+  },
+  "SECExporter": {
+    "tests": 32,
+    "passed": 32,
+    "failed": 0
+  },
+  "Discover": {
+    "tests": 323,
+    "passed": 319,
+    "skipped": 4,
+    "failed": 0
+  },
+  "relayResourceBudgetAndStrategy": {
+    "tests": 47,
+    "passed": 47,
+    "failed": 0
+  },
+  "nativeCorporateActionTRBenchmarkSurvivorship": {
+    "tests": 60,
+    "passed": 60,
+    "failed": 0
+  },
+  "releaseBuild": "PASS",
+  "releaseSmoke": {
+    "checks": 148,
+    "failures": 0,
+    "certificateScope": "Uncommitted integration tree; not production certificate"
+  },
+  "browser": "INCOMPLETE_LOCAL_SESSION_REQUIRES_FINAL_HOSTED_QA",
+  "productionWrites": 0,
+  "fullProductizationRebasePerformed": false,
+  "publicationAllowed": false,
+  "independentReview": {
+    "state": "PASS",
+    "protectedFiles": 44226,
+    "byteDifferences": 0,
+    "focusedNodePassed": 55,
+    "canonicalMarketPythonPassed": 13,
+    "foundAndFixed": "EXPLICIT_DEBT_VS_PREFERRED_SUFFIX_PRIORITY"
+  }
+}

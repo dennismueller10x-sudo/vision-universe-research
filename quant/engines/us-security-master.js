@@ -51,18 +51,18 @@
     ? require("./instrument-classification.js")
     : global.VUInstrumentClassification;
 
-  /* VERSION is the backward-compatible artifact schema. Existing
-     protected 1.2.0 publications remain readable. Classification rules
-     carry separate provenance so staging builders can rejudge an old
-     cache without rewriting its schema or production membership. */
-  var VERSION = "us-security-master-1.2.0";
-  var CLASSIFICATION_RULE_VERSION = "us-security-master-rules-1.3.1";
+  /* Artifact schema follows the currently published main baseline.
+     Classification rules retain separate provenance; the combined rule
+     revision includes main's DEBT exclusions and the accepted Tiingo 2.0
+     classification safeguards. Old artifact files remain readable. */
+  var VERSION = "us-security-master-1.3.0";
+  var CLASSIFICATION_RULE_VERSION = "us-security-master-rules-1.3.2";
 
   /* Die Gattungen. Reihenfolge ist die Berichtsreihenfolge. */
   var CLASSES = [
     "EQUITY_COMMON", "ADR", "REIT", "SPAC", "PREFERRED", "TRUST",
     "ETF", "ETN", "ETP", "MUTUAL_FUND", "CEF", "INDEX",
-    "WARRANT", "UNIT", "RIGHT", "TEST_SECURITY", "OTHER", "UNKNOWN"
+    "WARRANT", "UNIT", "RIGHT", "DEBT", "TEST_SECURITY", "OTHER", "UNKNOWN"
   ];
 
   /* Die Politik aus der Aufgabenstellung, als Daten und nicht als
@@ -75,7 +75,7 @@
     SEPARATE: ["ADR", "REIT", "SPAC", "TRUST", "PREFERRED"],
     /* Keine Aktien. Bleiben im Stamm, zaehlen aber nirgends mit. */
     EXCLUDE: ["ETF", "ETN", "ETP", "MUTUAL_FUND", "CEF", "INDEX",
-              "WARRANT", "UNIT", "RIGHT", "TEST_SECURITY"]
+              "WARRANT", "UNIT", "RIGHT", "DEBT", "TEST_SECURITY"]
   };
 
   function policyBucket(cls) {
@@ -259,6 +259,16 @@
     { type: "ETN",         re: /\b(ETN|EXCHANGE[- ]TRADED NOTES?)\b/i },
     { type: "ETP",         re: /\b(ETP|EXCHANGE[- ]TRADED (PRODUCT|COMMODIT(Y|IES))S?)\b/i },
     { type: "CEF",         re: /\b(CLOSED[- ]END|CEF)\b/i },
+    /* Schuldverschreibungen ("Baby Bonds"), die der Anbieter als "Stock"
+       fuehrt (02.10.2026): "T-Mobile US Inc 5.500 Senior Notes due 2070",
+       "Presurance Holdings Inc Sr Nt", "Maiden Holdings ... 775 Nts 12012043".
+       Eine Forderung gegen den Emittenten, kein Anteil - Eigenkapital-
+       Kennzahlen gelten fuer sie nicht. Nur ausdrueckliche Formen: ein Rang
+       (Senior/Sr/Subordinated/Junior) vor Notes/Nt/Debentures/Bonds, "Notes
+       due", "Debentures", der Kupon vor "Notes" oder die Abkuerzung "Nts".
+       Absichtlich NICHT "Bond" allein: "Columbia Core Bond ETF" ist ein
+       Fonds (die ETF-Regel greift), "Our Bond, Inc." eine Firma. */
+    { type: "DEBT",        re: /\b(?:(?:SENIOR|SR|SUBORDINATED|SUB|JUNIOR|JR)\.?\s+(?:SECURED\s+|UNSECURED\s+)?(?:NOTES?|NTS?|DEBENTURES?|BONDS?)|NOTES?\s+DUE|DEBENTURES?|BABY\s+BONDS?|NTS|\d+(?:\.\d+)?\s?%?\s+(?:FIXED[- ]RATE\s+)?(?:SENIOR\s+|SUBORDINATED\s+)?NOTES?)\b/i },
     /* Die Form des Papiers vor der Art des Emittenten: "Centurion
        Acquisition Corp - Units" ist eine Unit (eines SPAC), "US Bancorp
        Depositary Shares ... Pfd" ein Vorzugspapier (kein ADR). */
@@ -288,7 +298,7 @@
      Stammaktie trennen lassen. Ihre Zahlen sind Untergrenzen, solange
      der Anbieter keinen Namen liefert - das steht als Feld im Befund und
      nicht nur in dieser Bemerkung. */
-  var NAME_ONLY_CLASSES = ["ADR", "REIT", "SPAC", "TRUST", "ETN", "ETP", "CEF"];
+  var NAME_ONLY_CLASSES = ["ADR", "REIT", "SPAC", "TRUST", "ETN", "ETP", "CEF", "DEBT"];
 
   /**
    * Klassifiziert eine Anbieterzeile in die feine Gattungsliste.
@@ -411,9 +421,14 @@
       /* Issuer metadata (a REIT, trust or depositary issuer) cannot
          change a separately evidenced preferred/warrant/unit/right into
          common equity or an ADR. The security form outranks its issuer. */
-      var securityForm = ["PREFERRED", "WARRANT", "UNIT", "RIGHT"].indexOf(cls) >= 0;
+      var securityForm = ["PREFERRED", "WARRANT", "UNIT", "RIGHT", "DEBT"].indexOf(cls) >= 0;
       var issuerClass = NAME_ONLY_CLASSES.indexOf(byName.type) >= 0;
-      if (securityForm && issuerClass && byName.type !== cls) {
+      if (byName.type === "DEBT" && cls !== "DEBT") {
+        // Notes/debentures name the security itself, not its issuer.
+        // Retain main's explicit debt evidence over a ticker-form guess.
+        reasons.push("Name weist das Papier als DEBT aus (Basisbefund war " + cls + ").");
+        cls = "DEBT"; confidence = "HIGH";
+      } else if (securityForm && issuerClass && byName.type !== cls) {
         reasons.push("Security form " + cls + " retained over issuer name classification " + byName.type + ".");
       } else if (byName.type !== cls && issuerClass) {
         reasons.push("Name weist das Papier als " + byName.type + " aus (Basisbefund war " + cls + ").");
@@ -427,7 +442,7 @@
       }
     }
 
-    if (byDescription && ["PREFERRED", "WARRANT", "UNIT", "RIGHT", "TEST_SECURITY", "INDEX", "ETF", "ETN"].indexOf(cls) < 0) {
+    if (byDescription && ["PREFERRED", "WARRANT", "UNIT", "RIGHT", "DEBT", "TEST_SECURITY", "INDEX", "ETF", "ETN"].indexOf(cls) < 0) {
       cls = "CEF"; confidence = "HIGH";
       flags.push("PROVIDER_DESCRIPTION_CLOSED_END_FUND");
       reasons.push("Provider security description explicitly identifies a closed-end investment-company wrapper.");

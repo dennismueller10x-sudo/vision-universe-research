@@ -36,6 +36,8 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
   for (const tr of trades) (byEntry.get(tr.entry.date) || byEntry.set(tr.entry.date, []).get(tr.entry.date)).push(tr);
   for (const list of byEntry.values()) {
     if (opts.seed) list.sort((a, b) => seededKey(opts.seed, a.listingId) - seededKey(opts.seed, b.listingId) || a.listingId.localeCompare(b.listingId));
+    // Runde 10 (PREREGISTRATION-R10-FIXES K3): Rang nach relativer Staerke am Vortag, Gleichstand alphabetisch.
+    else if ((opts.priority || cfg.priority) === 'RS') list.sort((a, b) => (Number.isFinite(b.rsAtEntry) ? b.rsAtEntry : -1) - (Number.isFinite(a.rsAtEntry) ? a.rsAtEntry : -1) || a.listingId.localeCompare(b.listingId));
     else list.sort((a, b) => a.listingId.localeCompare(b.listingId));
   }
   let cash = cfg.initialEquity;
@@ -43,6 +45,22 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
   const equity = [], taken = [], skipped = [];
   const book = { realized: 0, dividends: 0, commissions: 0, terminal: 0, terminalCount: 0 };
   let lastMark = new Map();
+  const finishedPnl = [];
+  // Runde 8 (cfg.turtleNotional, Turtle Rules Kap. 3 "Adjusting Trading Size"):
+  // Groessenbasis = notionelles Konto = Kapital zum Jahresbeginn; je 10 % Verlust
+  // (gegenueber dem jeweils verkleinerten Konto) -20 %, bis der Jahresstart wieder erreicht ist.
+  const tn = cfg.turtleNotional || null;
+  let tnYear = null, tnStart = cfg.initialEquity, tnCuts = 0;
+  const tnBase = (eqNow, date) => {
+    if (date.slice(0, 4) !== tnYear) { tnYear = date.slice(0, 4); tnStart = eqNow; tnCuts = 0; }
+    if (eqNow >= tnStart) tnCuts = 0;
+    for (;;) {
+      let lossTh = 0, acct = tnStart;
+      for (let j = 0; j <= tnCuts; j++) { lossTh += tn.stepLoss * acct; acct *= 1 - tn.cut; }
+      if (tnStart - eqNow >= lossTh - 1e-9) tnCuts++; else break;
+    }
+    return tnStart * Math.pow(1 - tn.cut, tnCuts);
+  };
   const markOf = (p, date) => { const v = p.tr.marks.get(date); if (Number.isFinite(v)) { p.last = v; return v; } return opts.engineCompat ? p.tr.entry.price : p.last; };
   const close = (p, q, price, date, kind) => {
     const gross = q * price, c = gross * comm;
@@ -72,14 +90,21 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
       const eq = cash + mv;
       const risk = tr.entry.price - tr.initialStop;
       if (open.length >= cfg.maxPositions || !(risk > 0)) { skipped.push({ id: tr.id, reason: open.length >= cfg.maxPositions ? 'MAX_POSITIONS' : 'NO_RISK' }); continue; }
-      let shares = (eq * cfg.riskPerTrade) / risk;
+      // Runde 7: schrittweise Exposition (cfg.progressive): nach netto negativen
+      // letzten n abgeschlossenen Trades gilt das verminderte Risiko.
+      let riskPct = cfg.riskPerTrade;
+      if (cfg.progressive && finishedPnl.length >= cfg.progressive.lookback) {
+        const lastN = finishedPnl.slice(-cfg.progressive.lookback).reduce((a, b) => a + b, 0);
+        if (lastN < 0) riskPct *= cfg.progressive.factor;
+      }
+      let shares = ((tn ? tnBase(equity.length ? equity[equity.length - 1].equity : cfg.initialEquity, date) : eq) * riskPct) / risk;
       const unit = tr.entry.price * (1 + comm);
       shares = Math.min(shares, (eq * cfg.maxPositionPct) / tr.entry.price, cash / unit);
       shares = Math.min(shares, Math.max(0, eq * cfg.maxExposure - (eq - cash)) / tr.entry.price);
       if (!(shares > 0)) { skipped.push({ id: tr.id, reason: 'NO_CASH' }); continue; }
       const gross = shares * tr.entry.price, c = gross * comm;
       cash -= gross + c; book.commissions += c;
-      const p = { tr, shares, entryShares: shares, cost: gross + c, proceeds: 0, dividends: 0, remainingFraction: 1, done: new Set(), entryDate: date, last: tr.entry.price, prevMark: null };
+      const p = { tr, shares, entryShares: shares, eqAtEntry: eq, cost: gross + c, proceeds: 0, dividends: 0, remainingFraction: 1, done: new Set(), entryDate: date, last: tr.entry.price, prevMark: null };
       open.push(p); taken.push(p);
       for (const x of tr.exits) if (x.date === date && !p.done.has(x)) {
         const q = p.shares * x.fraction / p.remainingFraction;
@@ -104,6 +129,7 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
   const openAtEnd = open.map((p) => ({ id: p.tr.id, value: p.shares * (p.last ?? p.tr.entry.price) }));
   function finish(p) {
     p.pnl = p.proceeds + p.dividends - p.cost;
+    finishedPnl.push(p.pnl);
     p.returnPct = p.pnl / p.cost;
     book.realized += p.proceeds - p.cost;
   }

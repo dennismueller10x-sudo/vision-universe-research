@@ -77,6 +77,7 @@ jobs:
       # die Tage seit dem ersten nach. Eigener Schluessel, damit der 7-GB-Stand
       # des Skalierungs-Workflows (volle Historie ab 1990) hier nicht landet.
       - name: Arbeitsablage aus dem letzten Lauf holen
+        id: restore
         uses: actions/cache/restore@v4
         with:
           path: .market-cache
@@ -115,6 +116,45 @@ jobs:
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: node scripts/market/refresh-benchmark-history.mjs --report "$RUNNER_TEMP/benchmark-refresh.json"
+
+      # Gesamtrendite-Vertrag fuer Aktien (Owner-Programm 02.10.2026): der
+      # taegliche Anhang behaelt die adjustedClose-Skala des Abruftags, also
+      # kommt jede spaetere Ausschuettung in der bereinigten Spalte nicht an.
+      # Dieselbe Pruefung wie fuer SPY (market-quality.js totalReturnVerdict)
+      # findet diese Reihen; fuer sie gibt es denselben vollen Abruf wie fuer
+      # SPY, juengste Luecke zuerst, hoechstens 1500 je Lauf (Commercial: 5.000/h). Uebernommen wird
+      # NUR die Gesamtrendite-Spalte auf den gespeicherten Tagen (Rohkurse,
+      # Volumen und Tagesmenge bleiben bitgleich), wenn die Reihe den Vertrag
+      # besteht und die Rohschluesse
+      # bestaetigt. Faellt etwas durch, bleibt die Reihe abgelehnt und rechnet
+      # in keinem Backtest als Gesamtrendite. Der Lauf wird davon nicht rot.
+      - name: Gesamtrendite-Reparatur (Aktien, voller Abruf nur bei Vertragsbruch)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          # Nur lesend: Rueckholung von Reihen, die die erste Fassung der
+          # Reparatur im Runner-Cache als Ganzes ersetzt hat.
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          node scripts/market/repair-total-return-history.mjs --max 1500 --report "$RUNNER_TEMP/total-return-repair.json"
+          node -e '
+            const r = require(process.env.RUNNER_TEMP + "/total-return-repair.json");
+            const l = ["### Gesamtrendite-Vertrag (Aktien)", "", "Zustand: " + r.state + (r.reason ? " (" + r.reason + ")" : ""),
+              "Vorher: " + JSON.stringify(r.before), "Nachher: " + JSON.stringify(r.after),
+              "Zurueckgeholt (erste Fassung): " + JSON.stringify(r.restoredFromDurable || {}), "Repariert: " + (r.repairedCount ?? 0) + " · fehlgeschlagen: " + (r.failedCount ?? 0) + " " + JSON.stringify(r.failReasons || {}) + " · offen: " + (r.remainingRepairable ?? r.repairable)];
+            require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY, l.join("\n") + "\n");
+          ' || true
+
+      # Ein Kuerzel ist keine Identitaet: der Anbieter fuehrt darunter die
+      # Kerzen jeder Firma, die es je trug (DINE 2010 und 2026 in einer
+      # Reihe). Nach Abruf und Reparatur, vor allen Ableitungen: jede Reihe
+      # auf ihr juengstes Listing kuerzen (Luecke > 365 Tage = neues
+      # Listing); der Push ersetzt so gekuerzte Reihen in der Ablage.
+      - name: Listing-Kontinuitaet (Kuerzel-Neuvergabe in der Reihe)
+        run: node scripts/market/guard-listing-continuity.mjs --public quant/data/market/listing-continuity-v1.json
 
       # Der Benchmark ist ein Einzelpunkt, an dem die relative Staerke des
       # GANZEN Universums haengt. Faellt er durch die Qualitaetspruefung,
@@ -320,8 +360,15 @@ jobs:
             echo "cache_mb=0" >> "$GITHUB_OUTPUT"
           fi
 
+      # Nur sichern, was zurueckgeholt wurde. Lauf 37052123489 (02.10.2026)
+      # brach in Gate A ab - VOR dem Zurueckholen - und sicherte trotzdem
+      # (always()) eine leere Arbeitsablage von 1 MB als juengsten Stand. Der
+      # naechste Lauf holte genau diese, lud nur das Standardfenster nach
+      # (941 Tage je Titel) und die Gesamtrendite-Reparatur pruefte nur dieses
+      # Fenster. Ein Cache-Treffer auf eine leere Ablage ist schlimmer als
+      # keiner: er sieht aus wie ein Bestand.
       - name: Arbeitsablage sichern (nur unterhalb der Ablagegrenze)
-        if: always() && steps.disk.outputs.cache_mb != '' && fromJSON(steps.disk.outputs.cache_mb) < 2500
+        if: always() && steps.restore.outcome == 'success' && steps.disk.outputs.cache_mb != '' && fromJSON(steps.disk.outputs.cache_mb) < 2500
         uses: actions/cache/save@v4
         with:
           path: .market-cache
@@ -348,6 +395,7 @@ jobs:
                       quant/data/market/discover-series \
                       quant/data/market/factors \
                       quant/data/market/tiingo-status.json \
+                      quant/data/market/listing-continuity-v1.json \
                       quant/data/technical \
                       quant/data/sec/quant-factor-inputs.json \
                       discover/data \

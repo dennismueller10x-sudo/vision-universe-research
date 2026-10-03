@@ -11,8 +11,8 @@ const row = (ticker, name, extra = {}) => ({ ticker, name, assetType: 'Stock', e
   currency: 'USD', startDate: '2020-01-02', endDate: '2026-10-01', ...extra });
 
 test('schema compatibility and new classification rule provenance remain independent', () => {
-  assert.equal(Master.VERSION, 'us-security-master-1.2.0');
-  assert.equal(Master.CLASSIFICATION_RULE_VERSION, 'us-security-master-rules-1.3.1');
+  assert.equal(Master.VERSION, 'us-security-master-1.3.0');
+  assert.equal(Master.CLASSIFICATION_RULE_VERSION, 'us-security-master-rules-1.3.2');
   const input = row('PFBC', 'Preferred Bank');
   assert.equal(Master.classifySecurity(input, opts).classificationRuleVersion, Master.CLASSIFICATION_RULE_VERSION);
   const master = Master.buildSecurityMaster({ providerRows: [input], baseline: [], today: opts.today });

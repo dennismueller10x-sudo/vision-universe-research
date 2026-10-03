@@ -208,3 +208,109 @@ test("alert ledger: a key alarms once, a re-run of the same radar date keeps it 
   const k2 = {}; broken(k2, ev()); const again = ev(); broken(k2, again);
   assert.notDeepEqual(again.map((e) => e.isNew), rerun.map((e) => e.isNew));
 });
+
+test("Startseite: die Radar-Projektion ist eine Teilmenge desselben Radars, beobachtete Titel kommen aus den Scherben", async () => {
+  /* Gemessen 03.10.2026: der ganze Radar (211 KB) hob die Startseite ueber
+     ihr Ressourcenbudget. Die Projektion darf nichts Eigenes rechnen. */
+  const home = gz("quant/data/product/radar-home-v1.json.gz");
+  assert.equal(home.schemaVersion, Radar.HOME_PROJECTION_SCHEMA);
+  assert.equal(home.asOf, radar.asOf);
+  assert.deepEqual(home.summary, radar.summary);
+  assert.deepEqual(home.sources, radar.sources);
+  assert.equal(home.cardCount, radar.cards.length);
+  assert.deepEqual(home.cards, radar.cards.slice(0, Radar.HOME_CARDS));
+  const ids = new Set(home.cards.flatMap((c) => c.events.map((e) => e.id)));
+  assert.deepEqual(home.events.map((e) => e.id).sort(), [...ids].sort(), "die Projektion traegt genau die Ereignisse ihrer Karten");
+  assert.deepEqual(Radar.homeProjection(radar), { ...home, generatedAt: radar.generatedAt });
+  const svc = await api.getQuantRadarHome();
+  assert.equal(svc.state, "AVAILABLE");
+  assert.ok(svc.cards.length >= 1 && svc.cards.length <= Radar.HOME_CARDS);
+  /* Beobachtete Titel: dieselben Karten wie im ganzen Radar. */
+  const watched = radar.cards.slice(10, 14).map((c) => c.ticker).concat(["ZZZZZZ"]);
+  const cards = await api.getRadarCards(watched);
+  assert.deepEqual(cards.map((c) => c.ticker).sort(), radar.cards.slice(10, 14).map((c) => c.ticker).sort());
+  for (const c of cards) assert.deepEqual(c, radar.cards.find((x) => x.ticker === c.ticker));
+  /* Die Startseite laedt den ganzen Radar nicht mehr. */
+  const pages = readFileSync(new URL("quant/app/pages.js", root), "utf8");
+  const start = pages.indexOf("async function home("), end = pages.indexOf("async function", start + 10);
+  assert.ok(start > 0 && !/getQuantRadar\(\)/.test(pages.slice(start, end)), "die Startseite liest wieder den ganzen Radar");
+});
+
+/* =========================================================================
+   METHODIKWECHSEL IST KEIN MARKTEREIGNIS (quant-radar-1.3.0, 03.10.2026)
+
+   Gemessen am 02.10.2026: 571 "Evidenz veraendert", 670 "neues Muster",
+   117 Faktor- und 55 Strategie-Wechsel entstanden aus der DEBT-Umstufung
+   und der neuen Grundgesamtheit der Faktorevidenz - nicht aus der Aktie.
+   ========================================================================= */
+test("MC1 · gleiche Methodik: Uebergaenge werden Ereignisse (Gegenprobe)", () => {
+  const m = Radar.snapshotMethod({ engine: "x-1.0.0", universe: "u1" });
+  const r = Radar.compareSnapshots("EVIDENCE", { asOf: "2026-10-01", method: m }, { asOf: "2026-10-02", method: Radar.snapshotMethod({ universe: "u1", engine: "x-1.0.0" }) }, [1, 2, 3]);
+  assert.deepEqual(r.transitions, [1, 2, 3]);
+  assert.equal(r.rebase, null);
+});
+
+test("MC2 · andere Methodik oder unbelegte Methodik: kein Ereignis, nur ein internes METHOD_REBASE", () => {
+  const a = Radar.snapshotMethod({ engine: "x-1.0.0", securityMaster: "us-security-master-1.2.0" });
+  const b = Radar.snapshotMethod({ engine: "x-1.0.0", securityMaster: "us-security-master-1.3.0" });
+  const r = Radar.compareSnapshots("EVIDENCE", { asOf: "2026-10-01", method: a }, { asOf: "2026-10-02", method: b }, [1, 2, 3]);
+  assert.deepEqual(r.transitions, []);
+  assert.equal(r.rebase.eventType, "METHOD_REBASE");
+  assert.equal(r.rebase.reason, "METHOD_CHANGED");
+  assert.deepEqual(r.rebase.changed, [{ component: "securityMaster", from: "us-security-master-1.2.0", to: "us-security-master-1.3.0" }]);
+  assert.equal(r.rebase.suppressedTransitions, 3);
+  assert.equal(r.rebase.userVisible, false); assert.equal(r.rebase.alerts, false); assert.equal(r.rebase.watchlist, false);
+  /* Fehlt die Angabe, ist Gleichheit nicht belegt. */
+  for (const [p, c, reason] of [[null, b, "PREVIOUS_SNAPSHOT_UNVERSIONED"], [a, null, "CURRENT_SNAPSHOT_UNVERSIONED"]]) {
+    const x = Radar.compareSnapshots("FACTOR", { asOf: "a", method: p }, { asOf: "b", method: c }, [1]);
+    assert.deepEqual(x.transitions, []); assert.equal(x.rebase.reason, reason);
+  }
+  /* METHOD_REBASE ist keine Ereignisart des Alert-Vertrags. */
+  assert.equal(Radar.TYPE.METHOD_REBASE, undefined);
+});
+
+test("MC3 · der veroeffentlichte Radar: ein Methodikwechsel erzeugt weder Radar-, Watchlist- noch Alert-Ereignisse", () => {
+  const rebases = radar.methodRebase || [];
+  assert.equal(radar.measures.METHOD_REBASES, rebases.length);
+  assert.equal(radar.measures.TRANSITIONS_SUPPRESSED_BY_METHOD_CHANGE, rebases.reduce((n, r) => n + r.suppressedTransitions, 0));
+  const typesOf = { EVIDENCE: ["EVIDENCE_CHANGED"], PATTERN: ["PATTERN_MATCH_NEW"], FACTOR: ["FACTOR_CHANGED", "RISK_RISING"], STRATEGY: ["STRATEGY_MATCH_NEW", "STRATEGY_MATCH_LOST"] };
+  const history = gz("quant/data/product/radar-history/events/" + radar.asOf + ".json.gz");
+  for (const r of rebases) {
+    assert.equal(r.userVisible, false);
+    const types = typesOf[r.source];
+    assert.ok(types, "unbekannte Quelle " + r.source);
+    const leak = radar.events.filter((e) => types.includes(e.eventType) && e.occurredAt === r.asOf && e.previousAsOf === r.previousAsOf);
+    assert.deepEqual(leak.map((e) => e.id), [], r.source + ": Ereignis trotz Methodikwechsel");
+    assert.equal(radar.cards.some((c) => c.events.some((e) => types.includes(e.eventType) && e.occurredAt === r.asOf)), false, r.source + " in einer Karte");
+    assert.equal(history.rows.some((row) => types.includes(row[1]) && row[3] === r.asOf), false, r.source + " in der Watchlist-Historie");
+  }
+  /* Nichts davon steht in den Ereignissen selbst. */
+  assert.equal(radar.events.some((e) => e.eventType === "METHOD_REBASE"), false);
+});
+
+test("MC4 · unabhaengig nachgerechnet: wo die Staende keine belegt gleiche Methodik tragen, steht ein REBASE und kein Ereignis", () => {
+  const latestTwo = (dir) => {
+    const dates = readdirSync(new URL(dir, root)).filter((f) => /^\d{4}-\d{2}-\d{2}\.json\.gz$/.test(f)).sort();
+    return dates.length >= 2 ? dates.slice(-2).map((f) => gz(dir + f)) : null;
+  };
+  const factorDir = "quant/data/product/factor-evidence-history/" + readdirSync(new URL("quant/data/product/factor-evidence-history/", root)).filter((d) => /^vu-factor-evidence-/.test(d)).sort().pop() + "/";
+  const cases = [["EVIDENCE", "quant/data/product/radar-history/replay-evidence/", ["EVIDENCE_CHANGED"]],
+    ["PATTERN", "quant/data/product/radar-history/pattern-holds/", ["PATTERN_MATCH_NEW"]],
+    ["FACTOR", factorDir, ["FACTOR_CHANGED", "RISK_RISING"]]];
+  let geprueft = 0;
+  for (const [source, dir, types] of cases) {
+    const pair = latestTwo(dir);
+    if (!pair) continue;
+    const [a, b] = pair;
+    const belegtGleich = !!(a.method && b.method && a.method.id && a.method.id === b.method.id);
+    const rebase = (radar.methodRebase || []).find((r) => r.source === source && r.asOf === b.asOf);
+    const events = radar.events.filter((e) => types.includes(e.eventType) && e.occurredAt === b.asOf);
+    if (belegtGleich) assert.equal(rebase, undefined, source + ": REBASE trotz gleicher Methodik");
+    else {
+      geprueft++;
+      assert.ok(rebase, source + ": Methodik nicht belegt gleich, aber kein REBASE");
+      assert.deepEqual(events.map((e) => e.id), [], source + ": Ereignisse trotz Methodikwechsel");
+    }
+  }
+  assert.ok(geprueft + cases.length > 0);
+});

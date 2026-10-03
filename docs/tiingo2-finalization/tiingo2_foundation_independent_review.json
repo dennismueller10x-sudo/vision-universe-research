@@ -1,0 +1,242 @@
+{
+  "schemaVersion": "tiingo2-foundation-independent-review-1",
+  "reviewedAt": "2026-10-03T08:48:48.586469+00:00",
+  "baselineCommit": "268d4c89750ac682a0acc2f6ddbb7b5143fb2959",
+  "reviewedState": "ACTUAL_ISOLATED_WORKTREE_NOT_YET_COMMITTED",
+  "worktreeHead": "1cf199eb54f13dcf96226c5c86c75431a9446c68",
+  "root": "/workspace/tiingo2-foundation-finalization",
+  "protectedBaseline": {
+    "baseline": "268d4c89750ac682a0acc2f6ddbb7b5143fb2959",
+    "protectedFiles": 44226,
+    "byRoot": {
+      ".github": 1,
+      "discover": 12137,
+      "quant": 32073,
+      "supertrader": 15
+    },
+    "byteFindings": [],
+    "untrackedProtectedFiles": [],
+    "prefixes": [
+      "quant/data",
+      "discover/data",
+      "discover/logos",
+      "supertrader/data",
+      "quant/config",
+      "discover/config",
+      "screener/config",
+      "quant/methodology",
+      ".github/workflows/pages-release.yml"
+    ],
+    "gitBlobInventorySha256": "420f6b773b51264b7cf34b4409933521c86f64ca2bded52c7b9986a6316f41d1",
+    "comparison": "Each actual file hashed as Git blob and compared to currentmain baseline tree blobOID; no relying solely on gitstatus",
+    "existingIdsUrlsMethodologyBudgetsAndArtworkUnchanged": true,
+    "postRegressionRerunActualByteCheck": "PASS_44226_ZERO_DIFFERENCES"
+  },
+  "tests": {
+    "focusedNode": {
+      "passed": 55,
+      "failed": 0,
+      "skipped": 0,
+      "log": "/tmp/tiingo2-foundation-independent-node-final.log",
+      "initial54PassingDidNotCoverNewlyFoundSuffixDebtCase": true
+    },
+    "canonicalMarketPython": {
+      "passed": 13,
+      "failed": 0,
+      "log": "/tmp/tiingo2-foundation-independent-canonical.log"
+    }
+  },
+  "sourceFiles": [
+    {
+      "path": ".github/workflows/tiingo2-universe-refresh.yml",
+      "sha256": "98dcf01e83ac3f70ea690ae4224454b57e04dc4b042532781f9bf2ccfcc7c567"
+    },
+    {
+      "path": "quant/engines/instrument-classification.js",
+      "sha256": "938f104d585019a89e6805fd4a2b62a2ba4391caffbb83054dce6d1480de4b6a"
+    },
+    {
+      "path": "quant/engines/market-quality.js",
+      "sha256": "90865f0c381b5ce889d69d1c77e9fa456d63f7641a6e234f1983ed4a3cdf2845"
+    },
+    {
+      "path": "quant/engines/us-security-master.js",
+      "sha256": "b136cf70c2da3559b75dd1b51f7f778d1bd814650709ca0f1229ec934a95073b"
+    },
+    {
+      "path": "quant/tests/company-name-coverage.test.mjs",
+      "sha256": "0e0d55ee7d7d8ad8a01b64a3afe2cda44d48d8852132f00791f65da15f2ea942"
+    },
+    {
+      "path": "quant/tests/tiingo2-cache.test.mjs",
+      "sha256": "9a1b165b4122bf625ad11550ca9894688dbe3a320bfb40f13f957c481d203a5e"
+    },
+    {
+      "path": "quant/tests/tiingo2-classifier.test.mjs",
+      "sha256": "9c1e872d6199070c84bb1646e14b9a29167e3cbc6406a507bf4d8c05d460d917"
+    },
+    {
+      "path": "quant/tests/tiingo2-corporate-actions.test.mjs",
+      "sha256": "8f4035ebae67ad5261739e86c667833cd96e5b87c3ccba01e0373b441e46d9af"
+    },
+    {
+      "path": "quant/tests/tiingo2-discovery.test.mjs",
+      "sha256": "284db200c26b968b2c633bbd7bd3fe9eee0c1d34f6678f84c77022a0006adffa"
+    },
+    {
+      "path": "quant/tests/tiingo2-evidence-export.test.mjs",
+      "sha256": "b069dc0400fb10c7f59923b9a5803ea7f509ff89467617df707efd2faa8b1067"
+    },
+    {
+      "path": "quant/tests/tiingo2-evidence-incremental.test.mjs",
+      "sha256": "62c69c9ac2376640159add6ccffd6f83ffb6cad001d25aed54b56607a1782b5b"
+    },
+    {
+      "path": "quant/tests/tiingo2-foundation-classifier-merge.test.mjs",
+      "sha256": "6b8ddaf01a343b8958f860524f39f3845847a899d6c1fb4dfa9232c38ea8ee7b"
+    },
+    {
+      "path": "quant/tests/tiingo2-foundation-integration.test.mjs",
+      "sha256": "a4a79754ece5c0e167ecf401f1e6cf5d408870edd43c27e2d8116b4788a9fa75"
+    },
+    {
+      "path": "quant/tests/tiingo2-identity.test.mjs",
+      "sha256": "11b3266298700fb92d9e6bc49447c00b87a5a476fa3ce463a348391cd089055b"
+    },
+    {
+      "path": "quant/tests/tiingo2-policy.test.mjs",
+      "sha256": "c7ce2af916a736db2a9d892ccd2a36f6460b147401618323492473eca9694732"
+    },
+    {
+      "path": "quant/tests/tiingo2-publication.test.mjs",
+      "sha256": "ff086c1a4d3705eea03decaec8f5664b61926f7ec2efe357bad5b30b8841e1c3"
+    },
+    {
+      "path": "quant/tests/tiingo2-refresh-identity.test.mjs",
+      "sha256": "179d4b21eda95190a632fa476a4a8fd9fb5bcf9055b9170c4d0b14793f01ad32"
+    },
+    {
+      "path": "quant/tests/tiingo2-refresh.test.mjs",
+      "sha256": "aac9a769434fb6c256f7cc5aec13511bde9256e4adb5709738f5f653cfc9e6dd"
+    },
+    {
+      "path": "scripts/market/build-us-eligibility.mjs",
+      "sha256": "7d0005315643f3be670c6e2dc17235ecc10b6585a9397ac844aa1f3f10e33d7b"
+    },
+    {
+      "path": "scripts/market/ingest-tiingo.mjs",
+      "sha256": "16cd46ae175f0275d05f870455953cb53dc158006ec992d4ee49b4524b6810e7"
+    },
+    {
+      "path": "scripts/market/refresh-benchmark-history.mjs",
+      "sha256": "d20a105fe74ca5e1dca0a5664024a08264e5aba9a406038948a2e7bba20eea2a"
+    },
+    {
+      "path": "scripts/market/repair-total-return-history.mjs",
+      "sha256": "967ad173d0b3692f831183487dc4ee7bb2d1b50ca8271bb3854d6328557a5cb9"
+    },
+    {
+      "path": "scripts/market/tiingo2-cache.mjs",
+      "sha256": "66d7cb16097177fd7a414de06d0a09702b1036daf8c01536db65ad7246679a39"
+    },
+    {
+      "path": "scripts/market/tiingo2-corporate-action-scan.mjs",
+      "sha256": "9f6762a297ec035822000555287d9945e16d9469bca5e2458dd5f70c0b15196a"
+    },
+    {
+      "path": "scripts/market/tiingo2-discovery.mjs",
+      "sha256": "c073e74c7ab49caf4ef749df203e95ee951c2315290ab3f5235e532bc8e6929b"
+    },
+    {
+      "path": "scripts/market/tiingo2-evidence.mjs",
+      "sha256": "f45aa4396d9cb2665c6bc3347ea53c091af635079c3e65bb4aa57c626331ccc5"
+    },
+    {
+      "path": "scripts/market/tiingo2-export.mjs",
+      "sha256": "4c162987fa701d40eed4860fac9df2278b830c32dce87ef9dd472187d0184ded"
+    },
+    {
+      "path": "scripts/market/tiingo2-identity.mjs",
+      "sha256": "0a00660b133e2a2670b373d83f36e074887c0ee63c1b8b596874d34150646cd9"
+    },
+    {
+      "path": "scripts/market/tiingo2-policy.mjs",
+      "sha256": "14536b4ff031cec48393081c5e67f9a835b1946327d082ddd2546b77964e28a5"
+    },
+    {
+      "path": "scripts/market/tiingo2-publication.mjs",
+      "sha256": "ed1e8ec4a3e7f4a5b9b3c2f63fe329a78b73b2d19a901cfbaf9e6b9f6f92bf64"
+    },
+    {
+      "path": "scripts/market/tiingo2-refresh.mjs",
+      "sha256": "618049bbdb48923649b9963337c279a17833f5c39479d529777215db78544db1"
+    },
+    {
+      "path": "scripts/market/verify-tiingo-commercial.mjs",
+      "sha256": "b1a8cbcde89925ebbcb7d6a2e82861ff00349d8a60d1c56bef14d917006d42fe"
+    },
+    {
+      "path": "scripts/quant/build-survivorship-control.mjs",
+      "sha256": "02519c0f23dee197162fb6a2818ff6f65b388ce062fa8f66a2c39924ce2f8860"
+    },
+    {
+      "path": "scripts/quant/lib/daily-prices.mjs",
+      "sha256": "00823fb6fcc44f42d5c93157b718bd5abd330da55f17752129eb3d9a82e886e8"
+    },
+    {
+      "path": "scripts/quant/tests/test_canonical_market.py",
+      "sha256": "b43d589896aadf0ab05fc98bb356ca85e9e3889a9314bfd50b635e5741bda0e7"
+    }
+  ],
+  "sourceFilesDigestSha256": "072eb41379014a156115ce1974d2dec7db9c1099e4881f1e575cd1f0e8cb676d",
+  "reviewFindings": [],
+  "conclusion": "PASS_FOUNDATION_SOURCE_INTEGRATION_ONLY",
+  "productionPublishAllowed": false,
+  "productionActionsPerformed": 0,
+  "remainingPublicationRequirement": "Fresh currentbaseline productization and exactbyte QA after foundation merge; oldsealedpackage baselineCAS fails currentmain.",
+  "resolvedFindings": [
+    {
+      "severity": "BLOCKING",
+      "code": "EXPLICIT_DEBT_OVERRIDDEN_BY_PREFERRED_SUFFIX",
+      "source": "quant/engines/us-security-master.js",
+      "input": {
+        "ticker": "ABCNP",
+        "name": "Example Corporation 6.00% Senior Notes Due 2030",
+        "assetType": "Stock",
+        "exchange": "NASDAQ",
+        "listedRoots": {
+          "ABCN": true
+        }
+      },
+      "observed": {
+        "instrumentType": "PREFERRED",
+        "policyBucket": "SEPARATE",
+        "classificationStatus": "CLASSIFIED"
+      },
+      "expected": {
+        "instrumentType": "DEBT",
+        "policyBucket": "EXCLUDE"
+      },
+      "ownerNotified": true,
+      "state": "FIXED_AND_INDEPENDENTLY_RETESTED",
+      "resolution": "Explicit DEBT security-form descriptor precedes issuer-class preservation and overrides NASDAQ preferred/derivative and dashed symbol-form guesses. OriginalABCNP probe nowDEBT/EXCLUDE/CLASSIFIED. All22 currentmain exclusions and accepted349 safeguards retained.",
+      "regressionCoverage": {
+        "NASDAQ": [
+          "P",
+          "O",
+          "N",
+          "M",
+          "W",
+          "R",
+          "U"
+        ],
+        "dashed": [
+          "ABCN-P-A",
+          "ABCN-WS",
+          "ABCN-RT",
+          "ABCN-U"
+        ]
+      }
+    }
+  ]
+}

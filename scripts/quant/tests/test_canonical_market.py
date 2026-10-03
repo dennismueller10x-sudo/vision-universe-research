@@ -31,24 +31,30 @@ KANON_UNIVERSUM = (ROOT / "quant" / "data" / "market" / "scale" /
 HERKUNFT = ROOT / "quant" / "data" / "market" / "history" / "CANONICAL_SOURCE.json"
 MARKTFAEHIGKEIT = ROOT / "quant" / "data" / "universe" / "market-capability.json"
 
-# Der abgenommene Stand. Diese Zahlen sind NICHT verhandelbar und
-# duerfen nicht durch eine lokale Ableitung ersetzt werden.
-#
-# Neu abgenommen am 15.09.2026 mit der Produkt-Datenhygiene des Eigentuemers
-# (docs/VU_DISCOVER_V3_NETFLIX_BUILD.md §1): 44 Testsymbole und die
-# belegten Nicht-Aktien (Warrants, Units, Rights) sind EXCLUDED, 123
-# Vorzuege mit NASDAQ-Suffix P/O/N/M sind SEPARATE_CLASS. Produkttitel
-# 7 004 -> 6 875; die Deckungen wurden mit denselben kanonischen
-# Artefakten (coverage-metrics.json, technical-coverage) ueber das neue
-# Produktuniversum neu gemessen (build-company-master + build-universe-
-# indexes, market-capability.json). Der vorherige Stand (7 004 / 6 997 /
-# 5 963) steht im Abnahmebericht.
-AKZEPTIERT = {
+# Die Quelle ist der unveraenderte, am 20.09.2026 gemessene Stand.
+# PR #366 hat am 03.10.2026 22 belegte Schuldverschreibungen aus der
+# Produktpolicy genommen. Das aendert die aktuelle Mitgliedschaft, aber
+# regeneriert keine historische R2-Messung. Beide Staende bleiben exakt
+# geprueft; der native Abgleich muss die unterschiedliche Grundgesamtheit
+# weiterhin als nicht abgestimmt melden.
+HISTORISCH_ABGENOMMEN = {
     "PRODUCT_TITLES": 6875,
     "R2_SERIES_AVAILABLE": 7802,
     "HISTORICAL_CHART_AVAILABLE": 6871,
     "TECHNICAL_HISTORY_ELIGIBLE": 5884,
 }
+AKTUELLER_POLICY_STAND = {
+    "PRODUCT_TITLES": 6853,
+    "HISTORICAL_CHART_AVAILABLE": 6849,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5876,
+}
+ENTFERNTE_DEBT_TITEL = {
+    "ADAMH", "BNH", "CICB", "CIMN", "CTGG", "CTHH", "DCOMG", "MFAN",
+    "MFICL", "MHNC", "PRHIZ", "RWTN", "SAX", "SRJN", "SSSSL", "TMUSI",
+    "TMUSL", "TMUSZ", "TPTS", "TRINI", "TRINZ", "UNMA",
+}
+CHART_AUSNAHMEN = {"GLMD", "BNRG", "BRTM", "JAB"}
+
 
 
 def lade(path):
@@ -77,13 +83,13 @@ class QuelleVorhandenTests(unittest.TestCase):
     def test_die_quelle_traegt_den_abgenommenen_stand(self):
         m = lade(METRIKEN)
         self.assertEqual(m["STORAGE_COVERAGE"]["stored"],
-                         AKZEPTIERT["R2_SERIES_AVAILABLE"])
+                         HISTORISCH_ABGENOMMEN["R2_SERIES_AVAILABLE"])
         self.assertEqual(m["CHART_AVAILABILITY"]["renderable"],
-                         AKZEPTIERT["HISTORICAL_CHART_AVAILABLE"])
+                         HISTORISCH_ABGENOMMEN["HISTORICAL_CHART_AVAILABLE"])
         self.assertEqual(m["TECHNICAL_HISTORY_ELIGIBILITY"]["eligible"],
-                         AKZEPTIERT["TECHNICAL_HISTORY_ELIGIBLE"])
+                         HISTORISCH_ABGENOMMEN["TECHNICAL_HISTORY_ELIGIBLE"])
         self.assertEqual(m["CHART_AVAILABILITY"]["denominator"],
-                         AKZEPTIERT["PRODUCT_TITLES"])
+                         HISTORISCH_ABGENOMMEN["PRODUCT_TITLES"])
 
 
 class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
@@ -110,6 +116,35 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
                          "Die Befundliste deckt nicht alle nicht-READY Titel ab - "
                          "dann waere die Umkehrung falsch und die Deckung zu hoch.")
 
+    def test_alle_vier_historischen_chart_ausnahmen_bleiben_im_aktuellen_universum(self):
+        self.assertEqual(set(lade(METRIKEN)["CHART_AVAILABILITY"]["notRenderableSymbols"]), CHART_AUSNAHMEN)
+        aktuell = {s["ticker"] for s in lade(KANON_UNIVERSUM)["securities"]}
+        self.assertTrue(CHART_AUSNAHMEN <= aktuell)
+        self.assertEqual({r["s"] for r in lade(MARKTFAEHIGKEIT)["members"] if not r["ph"]}, CHART_AUSNAHMEN)
+        self.assertEqual(len(aktuell) - len(CHART_AUSNAHMEN), AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
+
+    def test_der_aktuelle_nennerunterschied_ist_vollstaendig_durch_belegte_debt_erklaert(self):
+        entscheidungen = lade(ROOT / "quant/data/market/security-master/eligibility.json")["decisions"]
+        debt = {r["ticker"]: r for r in entscheidungen if r.get("instrument_type") == "DEBT"}
+        self.assertEqual(set(debt), ENTFERNTE_DEBT_TITEL)
+        self.assertEqual(len(debt), 22)
+        aktuell = {s["securityId"]: s["ticker"] for s in lade(KANON_UNIVERSUM)["securities"]}
+        for ticker, row in debt.items():
+            self.assertEqual(row["product_eligibility"], "EXCLUDED")
+            self.assertEqual(row["product_eligibility_reason"], "CONFIRMED_NON_EQUITY:DEBT")
+            self.assertEqual(row["securityId"], "ref_" + ticker)
+            self.assertNotIn(row["securityId"], aktuell)
+        self.assertEqual(aktuell, {r["securityId"]: r["ticker"] for r in entscheidungen
+                                   if r["product_eligibility"] != "EXCLUDED"})
+        self.assertEqual(len(aktuell) + len(debt), HISTORISCH_ABGENOMMEN["PRODUCT_TITLES"])
+        self.assertFalse(ENTFERNTE_DEBT_TITEL & CHART_AUSNAHMEN)
+        befund = lade(TECHNIK)["perSymbol"]
+        technisch_ready_entfernt = {ticker for ticker in debt
+                                   if befund.get(ticker, {}).get("technical", "TECHNICAL_READY") == "TECHNICAL_READY"}
+        self.assertEqual(len(technisch_ready_entfernt), 8)
+        self.assertEqual(HISTORISCH_ABGENOMMEN["TECHNICAL_HISTORY_ELIGIBLE"] - len(technisch_ready_entfernt),
+                         AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
+
     def test_der_bericht_erklaert_selbst_dass_er_nur_befunde_fuehrt(self):
         t = lade(TECHNIK)
         self.assertIn("alles ausser TECHNICAL_READY",
@@ -121,7 +156,7 @@ class IdentitaetsjoinTests(unittest.TestCase):
 
     def test_securityid_und_mastermemberid_sind_dieselbe_menge(self):
         kanon = {s["securityId"]: s["ticker"] for s in lade(KANON_UNIVERSUM)["securities"]}
-        self.assertEqual(len(kanon), AKZEPTIERT["PRODUCT_TITLES"])
+        self.assertEqual(len(kanon), AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
 
         base = ROOT / "quant" / "data" / "universe" / "instruments"
         if not base.exists():
@@ -155,18 +190,25 @@ class DieRechnungTrifftDenStandTests(unittest.TestCase):
 
     def test_kurshistorie_und_technik_reproduzieren_den_stand(self):
         t = self.mc["totals"]
-        self.assertEqual(t["MEMBERS"], AKZEPTIERT["PRODUCT_TITLES"])
-        self.assertEqual(t["WITH_PRICE_HISTORY"], AKZEPTIERT["HISTORICAL_CHART_AVAILABLE"])
-        self.assertEqual(t["TECHNICAL_READY"], AKZEPTIERT["TECHNICAL_HISTORY_ELIGIBLE"])
+        self.assertEqual(t["MEMBERS"], AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
+        self.assertEqual(t["WITH_PRICE_HISTORY"], AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
+        self.assertEqual(t["TECHNICAL_READY"], AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
 
-    def test_der_abgleich_meldet_sich_als_abgestimmt(self):
+    def test_der_abgleich_behaelt_den_erklaerten_historischen_nennerunterschied(self):
         path = ROOT / "quant" / "data" / "fundamentals" / "reconciliation.json"
         if not path.exists():
             self.skipTest("kein Abgleich - erst cli.py reconcile")
         a = lade(path)["overlap"]["acceptedMarketDataState"]
-        self.assertTrue(a["reconciled"], a.get("explanation"))
-        self.assertEqual(a["delta"]["HISTORICAL_CHART_AVAILABLE"], 0)
-        self.assertEqual(a["delta"]["TECHNICAL_HISTORY_ELIGIBLE"], 0)
+        self.assertFalse(a["reconciled"], "Die alte Messung darf nicht als aktuelle Neuabnahme erscheinen")
+        self.assertEqual(a["status"], "CANONICAL_PER_INSTRUMENT")
+        for key, value in HISTORISCH_ABGENOMMEN.items():
+            self.assertEqual(a["accepted"][key], value)
+        self.assertEqual(a["computed"], AKTUELLER_POLICY_STAND)
+        self.assertEqual(a["delta"], {
+            "HISTORICAL_CHART_AVAILABLE": -22,
+            "TECHNICAL_HISTORY_ELIGIBLE": -8,
+        })
+        self.assertIn("KEIN neuer Nenner ohne geklaerte Ursache", a["explanation"])
 
     def test_die_ablagedeckung_wird_nicht_in_die_schnittmengen_gerechnet(self):
         """7.802 zaehlt gegen den Wertpapierstamm, nicht gegen das Produktuniversum."""
@@ -176,7 +218,7 @@ class DieRechnungTrifftDenStandTests(unittest.TestCase):
         o = lade(path)["overlap"]
         for schluessel, wert in o.items():
             if isinstance(wert, int):
-                self.assertLessEqual(wert, AKZEPTIERT["PRODUCT_TITLES"],
+                self.assertLessEqual(wert, AKTUELLER_POLICY_STAND["PRODUCT_TITLES"],
                                      f"{schluessel} ist groesser als das Produktuniversum")
 
 

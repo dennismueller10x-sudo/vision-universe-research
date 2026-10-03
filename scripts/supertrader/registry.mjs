@@ -10,6 +10,9 @@
 // VU_EXTENSION, NOT_VERIFIABLE.
 
 import { buildR4 } from './registry-r4.mjs';
+import { applyR7 } from './registry-r7.mjs';
+import { applyR8 } from './registry-r8.mjs';
+import { applyR10 } from './registry-r10.mjs';
 export const REGISTRY_VERSION = 'supertrader-registry-1.0.0';
 
 export const EVIDENCE = ['PRIMARY_EXPLICIT', 'PRIMARY_INFERRED', 'MULTI_SOURCE_CONFIRMED', 'SECONDARY_ONLY', 'DISPUTED', 'VU_FORMALIZATION', 'VU_EXTENSION', 'NOT_VERIFIABLE'];
@@ -646,7 +649,9 @@ greenblatt.rule_cards = [{
   historical_validation: { status: 'NOT_VALIDATED', note: 'Kein Backtest hat die Datengates bestanden; keine Aussage über historische Wirksamkeit.' },
 }];
 
-// Herkunft je Sektion aus den Regeln ableiten.
+// Herkunft je Sektion aus den Regeln ableiten (nach allen Versionsrunden,
+// sonst zeigten geaenderte Sektionen die Herkunft der alten Regeln).
+function deriveProvenance() {
 for (const s of [momentum, weinstein, darvas, minervini, greenblatt, donchian, canslim, piotroski]) {
   const byId = new Map(s.rules.map((r) => [r.rule_id, r]));
   for (const card of s.rule_cards) {
@@ -659,7 +664,12 @@ for (const s of [momentum, weinstein, darvas, minervini, greenblatt, donchian, c
     card.source_basis.ruleCounts = { original: ids.filter((r) => !r.VU_formalization_flag).length, vu: ids.filter((r) => r.VU_formalization_flag).length };
   }
 }
+}
 
+applyR7({ momentum, weinstein, darvas, minervini, donchian, rule });
+applyR8({ momentum, weinstein, darvas, minervini, donchian, rule });
+applyR10({ momentum, weinstein, darvas, minervini, donchian, rule });
+deriveProvenance();
 export const STRATEGIES = [momentum, weinstein, darvas, minervini, donchian, canslim, piotroski, greenblatt, ...advancedList];
 // Produktmodus: LIVE (Ein-/Ausstiege werden gerechnet), PARTIAL_CHECK (nur
 // pruefbare Kriterien, keine Signale), DATA_PENDING (Regeln beschrieben, Daten

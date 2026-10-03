@@ -1,0 +1,730 @@
+[
+  {
+    "sourceId": "apple-newsroom-atom",
+    "companyId": "iss_cik_0000320193",
+    "type": "IR_FEED",
+    "url": "https://www.apple.com/newsroom/rss-feed.rss",
+    "allowedSites": [
+      "https://apple.com/"
+    ],
+    "verified": true,
+    "verificationEvidence": "Official Apple newsroom advertises this Atom feed",
+    "provider": "FIRST_PARTY",
+    "active": true,
+    "intervalHours": 6
+  },
+  {
+    "sourceId": "wallstreet-online-global",
+    "type": "RSS",
+    "url": "https://www.wallstreet-online.de/rss/nachrichten-alle.xml",
+    "verified": false,
+    "provider": "PUBLIC_RSS",
+    "active": true,
+    "intervalHours": 6,
+    "metadata": {
+      "reuse": "Existing dashboard source documents headline/excerpt/backlink permission; intelligence retains only headlines and links"
+    }
+  },
+  {
+    "sourceId": "globenewswire-united-states",
+    "type": "RSS",
+    "url": "https://www.globenewswire.com/RssFeed/country/United%20States/feedTitle/GlobeNewswire%20-%20United%20States",
+    "verified": false,
+    "provider": "GLOBENEWSWIRE_RSS",
+    "active": true,
+    "intervalHours": 1,
+    "metadata": {
+      "access": "Public RSS distribution; headlines/links only; robots checked. Stock category + contributor/master identity required.",
+      "coverage": "20-item rolling window; not complete market news or guaranteed outage backfill."
+    }
+  },
+  {
+    "sourceId": "globenewswire-earnings",
+    "type": "RSS",
+    "url": "https://www.globenewswire.com/RssFeed/subjectcode/06-Earnings%20Releases%20and%20Operating%20Results/feedTitle/GlobeNewswire%20-%20Earnings%20Releases%20and%20Operating%20Results",
+    "verified": false,
+    "provider": "GLOBENEWSWIRE_RSS",
+    "active": true,
+    "intervalHours": 1,
+    "metadata": {
+      "access": "Public RSS distribution; headlines/links only; robots checked. Stock category + contributor/master identity required.",
+      "coverage": "20-item rolling window; not complete market news or guaranteed outage backfill."
+    }
+  },
+  {
+    "sourceId": "globenewswire-legacy-topic-27",
+    "type": "RSS",
+    "url": "https://www.globenewswire.com/RssFeed/subjectcode/27-Company%20Announcement/feedTitle/GlobeNewswire%20-%20Company%20Announcements",
+    "provider": "GLOBENEWSWIRE_RSS",
+    "verified": false,
+    "active": true,
+    "intervalHours": 1,
+    "metadata": {
+      "access": "Public RSS, robots checked, headline/URL metadata only.",
+      "coverage": "Legacy subject filter semantics are not certified; classify actual titles, never trust the URL topic label. 20-item rolling window.",
+      "identity": "Master exchange+ticker and exact legal contributor; no title fallback on conflicts."
+    }
+  },
+  {
+    "sourceId": "globenewswire-legacy-topic-14",
+    "type": "RSS",
+    "url": "https://www.globenewswire.com/RssFeed/subjectcode/14-Mergers%20and%20Acquisitions/feedTitle/GlobeNewswire%20-%20Mergers%20and%20Acquisitions",
+    "provider": "GLOBENEWSWIRE_RSS",
+    "verified": false,
+    "active": true,
+    "intervalHours": 1,
+    "metadata": {
+      "access": "Public RSS, robots checked, headline/URL metadata only.",
+      "coverage": "Legacy subject filter semantics are not certified; classify actual titles, never trust the URL topic label. 20-item rolling window.",
+      "identity": "Master exchange+ticker and exact legal contributor; no title fallback on conflicts."
+    }
+  },
+  {
+    "sourceId": "066dc914951696cffbab339b",
+    "companyId": "iss_cik_0000019584",
+    "type": "IR_FEED",
+    "provider": "GCS",
+    "url": "https://www.chemed.com/rss/news-releases.xml",
+    "allowedSites": [
+      "https://www.chemed.com/",
+      "https://www.chemed.com/investor-relations/overview",
+      "https://www.chemed.com/rss/news-releases.xml"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.chemed.com/rss-feeds",
+      "officialSite": "https://www.chemed.com/",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "0f328552b4edeea805bbd280",
+    "companyId": "iss_cik_0000896878",
+    "type": "IR_FEED",
+    "provider": "STOCKPR",
+    "url": "https://investors.intuit.com/news-events/press-releases/rss",
+    "allowedSites": [
+      "https://www.intuit.com/",
+      "https://investors.intuit.com/news-events/ir-calendar/detail/20260917-intuits-annual-investor-day",
+      "https://investors.intuit.com/news-events/press-releases/rss"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.intuit.com/news-events/ir-calendar/detail/20260917-intuits-annual-investor-day",
+      "officialSite": "https://www.intuit.com/",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "439b52da72bfd59ff2709004",
+    "companyId": "iss_cik_0000033185",
+    "type": "IR_FEED",
+    "provider": "STOCKPR",
+    "url": "https://investor.equifax.com/news-events/press-releases/rss",
+    "allowedSites": [
+      "https://www.equifax.com/",
+      "https://investor.equifax.com/",
+      "https://investor.equifax.com/news-events/press-releases/rss"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investor.equifax.com/",
+      "officialSite": "https://www.equifax.com/",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "44fd3b25de35964cf7e9fea0",
+    "companyId": "iss_cik_0000027996",
+    "type": "IR_FEED",
+    "provider": "STOCKPR",
+    "url": "https://investors.deluxe.com/rss-news-feed",
+    "allowedSites": [
+      "https://www.deluxe.com/",
+      "https://investors.deluxe.com/overview/default.aspx",
+      "https://investors.deluxe.com/rss-news-feed"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.deluxe.com/overview/default.aspx",
+      "officialSite": "https://www.deluxe.com/",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "68f0f8c2bef125548244ba37",
+    "companyId": "iss_cik_0000050863",
+    "type": "IR_FEED",
+    "provider": "STOCKPR",
+    "url": "https://www.intc.com/news-events/press-releases/rss",
+    "allowedSites": [
+      "https://www.intel.com/content/www/us/en/homepage.html",
+      "https://www.intc.com/",
+      "https://www.intc.com/news-events/press-releases/rss"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.intc.com/",
+      "officialSite": "https://www.intel.com/content/www/us/en/homepage.html",
+      "validItems": 12
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "8000445a5bd75738cb961e6b",
+    "companyId": "iss_cik_0000014930",
+    "type": "IR_FEED",
+    "provider": "STOCKPR",
+    "url": "https://www.brunswick.com/investors/news-events/press-releases/rss",
+    "allowedSites": [
+      "https://www.brunswick.com/",
+      "https://www.brunswick.com/investors/overview",
+      "https://www.brunswick.com/investors/news-events/press-releases/rss"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.brunswick.com/investors/overview",
+      "officialSite": "https://www.brunswick.com/",
+      "validItems": 20
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "843b5303352a332ed9f74b33",
+    "companyId": "iss_cik_0001820953",
+    "type": "IR_FEED",
+    "provider": "GCS",
+    "url": "https://investors.affirm.com/rss/news-releases.xml",
+    "allowedSites": [
+      "https://investors.affirm.com/",
+      "https://investors.affirm.com/investor-resources/investor-faqs"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "852c9373b5d1337fc2d90f12",
+    "companyId": "iss_cik_0000021344",
+    "type": "IR_FEED",
+    "provider": "STOCKPR",
+    "url": "https://investors.coca-colacompany.com/news-events/press-releases/rss",
+    "allowedSites": [
+      "https://www.coca-colacompany.com/",
+      "https://investors.coca-colacompany.com/",
+      "https://investors.coca-colacompany.com/news-events/press-releases/rss"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.coca-colacompany.com/",
+      "officialSite": "https://www.coca-colacompany.com/",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "891373db858c8d01697b457f",
+    "companyId": "iss_cik_0000896878",
+    "type": "IR_FEED",
+    "provider": "STOCKPR",
+    "url": "https://investors.intuit.com/rss-news-feed",
+    "allowedSites": [
+      "https://www.intuit.com/",
+      "https://investors.intuit.com/news-events/ir-calendar/detail/20260917-intuits-annual-investor-day",
+      "https://investors.intuit.com/rss-news-feed"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.intuit.com/news-events/ir-calendar/detail/20260917-intuits-annual-investor-day",
+      "officialSite": "https://www.intuit.com/",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "a2d2c8c8d6383e3e49409c98",
+    "companyId": "iss_cik_0000012927",
+    "type": "IR_FEED",
+    "provider": "Q4",
+    "url": "https://investors.boeing.com/rss/pressrelease.aspx",
+    "allowedSites": [
+      "https://www.boeing.com/",
+      "http://investors.boeing.com/?_gl=1%2A1u3oa96%2A_ga%2AOTE0MjUyNzE5LjE3Mjg0MTk1NDI.%2A_ga_3N2PEGZ4HD%2AMTczMDE0MTA1MC4zNS4wLjE3MzAxNDEwNTkuMC4wLjA.",
+      "https://investors.boeing.com/rss/pressrelease.aspx"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.boeing.com/investors/investor-resources/default.aspx?section=alertsrss",
+      "officialSite": "https://www.boeing.com/",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "a8be70c1fe79ccd350a30775",
+    "companyId": "iss_cik_0000012659",
+    "type": "IR_FEED",
+    "provider": "GCS",
+    "url": "https://investors.hrblock.com/rss/news-releases.xml",
+    "allowedSites": [
+      "https://www.hrblock.com/",
+      "https://investors.hrblock.com/",
+      "https://investors.hrblock.com/rss/news-releases.xml"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.hrblock.com/contact-ir/rss-feeds",
+      "officialSite": "https://www.hrblock.com/",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "a901a5849c5934aecf6db141",
+    "companyId": "iss_cik_0000045919",
+    "type": "IR_FEED",
+    "provider": "WORDPRESS",
+    "url": "https://www.hartehanks.com/feed/",
+    "allowedSites": [
+      "https://www.hartehanks.com/",
+      "https://www.hartehanks.com/",
+      "https://www.hartehanks.com/feed/"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.hartehanks.com/",
+      "officialSite": "https://www.hartehanks.com/",
+      "validItems": 12
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "ab834fe87e1ded5bdc14157a",
+    "companyId": "iss_cik_0000010329",
+    "type": "IR_FEED",
+    "provider": "GCS",
+    "url": "https://investors.bassettfurniture.com/rss/news-releases.xml",
+    "allowedSites": [
+      "https://www.bassettfurniture.com/",
+      "https://investors.bassettfurniture.com/"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "ada99b3dd331a107223bfbab",
+    "companyId": "iss_cik_0001788882",
+    "type": "IR_FEED",
+    "provider": "GCS",
+    "url": "https://ir.joinroot.com/rss/news-releases.xml",
+    "allowedSites": [
+      "https://ir.joinroot.com/",
+      "https://ir.joinroot.com/news-releases/news-release-details/root-participate-upcoming-investor-conferences-0",
+      "https://ir.joinroot.com/rss/news-releases.xml"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.joinroot.com/ir-resources/rss-feeds",
+      "officialSite": "https://ir.joinroot.com/",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "b31f0906eb99f1c7457819bb",
+    "companyId": "iss_cik_0000027996",
+    "type": "IR_FEED",
+    "provider": "STOCKPR",
+    "url": "https://investors.deluxe.com/news-events/press-releases/rss",
+    "allowedSites": [
+      "https://www.deluxe.com/",
+      "https://investors.deluxe.com/overview/default.aspx",
+      "https://investors.deluxe.com/news-events/press-releases/rss"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.deluxe.com/overview/default.aspx",
+      "officialSite": "https://www.deluxe.com/",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "b73cb7ec4e39b81b3c8c70fc",
+    "companyId": "iss_cik_0000008858",
+    "type": "IR_FEED",
+    "provider": "GCS",
+    "url": "https://ir.avnet.com/rss/news-releases.xml",
+    "allowedSites": [
+      "https://www.avnet.com/americas/",
+      "https://ir.avnet.com/"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "bf4d0450bea523f842a8717f",
+    "companyId": "iss_cik_0001652044",
+    "type": "IR_FEED",
+    "provider": "Q4",
+    "url": "https://abc.xyz/rss/PressRelease.aspx?LanguageId=1",
+    "allowedSites": [
+      "https://abc.xyz/investor/",
+      "https://abc.xyz/investor/"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "c186f8163c3fd27a5ef64c3e",
+    "companyId": "iss_cik_0000319201",
+    "type": "IR_FEED",
+    "provider": "STOCKPR",
+    "url": "https://ir.kla.com/news-events/press-releases/rss",
+    "allowedSites": [
+      "https://www.kla.com/",
+      "https://ir.kla.com/",
+      "https://ir.kla.com/news-events/press-releases/rss"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.kla.com/",
+      "officialSite": "https://www.kla.com/",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "d657c5145fbab9f56f3dbcc9",
+    "companyId": "iss_cik_0000046195",
+    "type": "IR_FEED",
+    "provider": "GCS",
+    "url": "https://ir.boh.com/rss/news-releases.xml",
+    "allowedSites": [
+      "https://www.boh.com/",
+      "http://ir.boh.com/?ignore=true",
+      "https://ir.boh.com/rss/news-releases.xml"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.boh.com/rss-feeds",
+      "officialSite": "https://www.boh.com/",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "d85f974e8d49fa1790e29fe3",
+    "companyId": "iss_cik_0000056679",
+    "type": "IR_FEED",
+    "provider": "STOCKPR",
+    "url": "https://ir.kornferry.com/news-events/press-releases/rss",
+    "allowedSites": [
+      "https://www.kornferry.com/",
+      "https://ir.kornferry.com/",
+      "https://ir.kornferry.com/news-events/press-releases/rss"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.kornferry.com/",
+      "officialSite": "https://www.kornferry.com/",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "dacf9e2dbbb4006508dddd96",
+    "companyId": "iss_cik_0000004962",
+    "type": "IR_FEED",
+    "provider": "Q4",
+    "url": "https://ir.americanexpress.com/rss/PressRelease.aspx?LanguageId=1",
+    "allowedSites": [
+      "https://www.americanexpress.com/",
+      "https://ir.americanexpress.com/investor-relations/default.aspx?inav=en_us_footer_about_investor_relations"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "dc7877bb716d07198c51b10c",
+    "companyId": "iss_cik_0000006951",
+    "type": "IR_FEED",
+    "provider": "GCS",
+    "url": "https://ir.appliedmaterials.com/rss/news-releases.xml",
+    "allowedSites": [
+      "https://www.appliedmaterials.com/",
+      "https://ir.appliedmaterials.com/"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "eef9bae2085747d2e9f13270",
+    "companyId": "iss_cik_0000064803",
+    "type": "IR_FEED",
+    "provider": "Q4",
+    "url": "https://investors.cvshealth.com/rss/PressRelease.aspx?LanguageId=1",
+    "allowedSites": [
+      "https://www.cvshealth.com/",
+      "https://investors.cvshealth.com/overview/default.aspx"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "f132158236e17f31e71c1139",
+    "companyId": "iss_cik_0000707549",
+    "type": "IR_FEED",
+    "provider": "WEB_DRIVER",
+    "url": "https://investor.lamresearch.com/index.php?pagetemplate=rss&s=43",
+    "allowedSites": [
+      "https://www.lamresearch.com/",
+      "https://investor.lamresearch.com/contact-investor-relations",
+      "https://investor.lamresearch.com/index.php?pagetemplate=rss&s=43"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investor.lamresearch.com/index.php?rsspage=20&s=95",
+      "officialSite": "https://www.lamresearch.com/",
+      "validItems": 5
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "f274a40e9b96ff91eeec0b7c",
+    "companyId": "iss_cik_0000091142",
+    "type": "IR_FEED",
+    "provider": "GCS",
+    "url": "https://investor.aosmith.com/rss/news-releases.xml",
+    "allowedSites": [
+      "https://www.aosmith.com/",
+      "https://investor.aosmith.com/"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "f9bd9ccb732b617eeb3ea360",
+    "companyId": "iss_cik_0000014930",
+    "type": "IR_FEED",
+    "provider": "GENERIC",
+    "url": "https://www.brunswick.com/news/press-releases/rss",
+    "allowedSites": [
+      "https://www.brunswick.com/",
+      "https://www.brunswick.com/",
+      "https://www.brunswick.com/news/press-releases/rss"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.brunswick.com/",
+      "officialSite": "https://www.brunswick.com/",
+      "validItems": 20
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "f9d5ac6b5e9bb483e1c612df",
+    "companyId": "iss_cik_0000021344",
+    "type": "IR_FEED",
+    "provider": "STOCKPR",
+    "url": "https://investors.coca-colacompany.com/rss-news-feed",
+    "allowedSites": [
+      "https://www.coca-colacompany.com/",
+      "https://investors.coca-colacompany.com/",
+      "https://investors.coca-colacompany.com/rss-news-feed"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.coca-colacompany.com/",
+      "officialSite": "https://www.coca-colacompany.com/",
+      "validItems": 10
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  },
+  {
+    "sourceId": "fc9edc693e171eb45b80fa5a",
+    "companyId": "iss_cik_0000065984",
+    "type": "IR_FEED",
+    "provider": "WORDPRESS",
+    "url": "https://www.entergy.com/feed",
+    "allowedSites": [
+      "https://www.entergy.com/",
+      "https://www.entergy.com/",
+      "https://www.entergy.com/feed"
+    ],
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.entergy.com/",
+      "officialSite": "https://www.entergy.com/",
+      "validItems": 15
+    },
+    "intervalHours": 6,
+    "priority": 1,
+    "format": "RSS",
+    "active": true,
+    "bootstrapValidatedAt": "2026-10-02",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_FEED_INGESTION"
+  }
+]

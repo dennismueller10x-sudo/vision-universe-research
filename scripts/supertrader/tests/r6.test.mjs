@@ -21,15 +21,18 @@ test('R6-0 Alle intern geprüften Kursmethoden: öffentlich „In Prüfung“, D
   }
 });
 
-test('R6-1 Donchian v1.1.0: öffentlich „In Prüfung“, Darstellung Forschung; Engine läuft unverändert weiter', () => {
+test('R6-1 Donchian v1.1.0: Prüfergebnis bleibt „In Prüfung“; seit Runde 8 läuft 2.0.0, Positionen von 1.x nach 1.1.0', () => {
   const s = STRATEGIES.find((x) => x.strategy_id === 'DONCHIAN_TURTLE');
   const e = evidenceFor(s);
   assert.equal(e.level, 'IN_REVIEW');
   assert.equal(e.presentation, 'RESEARCH');
-  assert.equal(e.version, '1.1.0');
   assert.ok(isResearch(e));
-  // Laufende Modellpositionen werden nach der gueltigen Regelversion weiter gefuehrt.
-  assert.ok(LIVE_ENGINES.includes(donchian));
+  // Der Eintrag zu 1.1.0 bleibt im Protokoll stehen (alte Versionen werden nicht geloescht).
+  assert.ok(e.history.some((h) => h.version === '1.1.0' && h.level === 'IN_REVIEW'));
+  // Runde 8: 2.0.0 laeuft live, offene Positionen aus 1.0.0/1.1.0 fuehrt die unveraenderte 1.1.0-Engine.
+  const live = LIVE_ENGINES.find((x) => x.id === 'DONCHIAN_TURTLE');
+  assert.equal(live.version, '2.0.0');
+  assert.equal(live.legacy['1.1.0'], donchian); assert.equal(live.legacy['1.0.0'], donchian);
   assert.equal(donchian.version, '1.1.0');
   assert.deepEqual(donchian.manageCompatible, ['1.0.0', '1.1.0']);
 });
@@ -52,7 +55,8 @@ test('R6-3 Jede Strategie trägt Evidenz, Quellen- und Datenqualität getrennt; 
     if (s.mode === 'PARTIAL_CHECK') assert.equal(e.presentation, 'PARTIAL');
     if (s.mode === 'RESEARCH') assert.equal(e.presentation, 'NAME_ONLY');
   }
-  assert.equal(evidenceFor(STRATEGIES.find((x) => x.strategy_id === 'MINERVINI_VCP')).source.id, 'PARTLY_UNBACKED', 'Minervini-Ausstieg nicht als Original');
+  // Ab 2.0.0 ist der Ausstieg sekundaer belegt (Runde 7); nie als Originalregel.
+  assert.ok(['PARTLY_UNBACKED', 'SECONDARY_VU'].includes(evidenceFor(STRATEGIES.find((x) => x.strategy_id === 'MINERVINI_VCP')).source.id), 'Minervini-Ausstieg nicht als Original');
   assert.equal(evidenceFor(STRATEGIES.find((x) => x.strategy_id === 'CANSLIM')).data.id, 'PRICES_NO_PIT_FUNDAMENTALS');
 });
 
@@ -64,7 +68,9 @@ test('R6-4 Ausgeliefertes registry.json enthält die Einstufung; Protokoll der F
   assert.ok(reg.evidenceScale?.noPromise);
   const ledger = read('ledger/DONCHIAN_TURTLE.json');
   assert.ok(ledger.open.some((s) => s.entry), 'laufende Modellpositionen im Protokoll');
-  for (const s of ledger.open) assert.ok(['1.0.0', '1.1.0'].includes(s.version));
+  // Runde 8: 2.0.0 sucht neu; Positionen aus 1.x laufen nach ihrer Version weiter, wartende 1.x-Setups sind abgeloest.
+  for (const s of ledger.open) assert.ok(s.version === '2.0.0' || (s.entry && ['1.0.0', '1.1.0'].includes(s.version)), s.id);
+  assert.ok(ledger.open.some((s) => s.entry && s.version === '1.1.0'), 'Altpositionen bleiben erhalten');
 });
 
 test('R6-5 Interne Evidenz liegt nur verschlüsselt im Repository', () => {

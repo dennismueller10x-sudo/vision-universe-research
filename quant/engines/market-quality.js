@@ -564,13 +564,18 @@
          die Dividende nicht eingerechnet - die Spalte ist dann hoechstens
          splitbereinigt, egal wie sie heisst. */
       if (istDividendentag && isNum(prev.close) && prev.close > 0) {
+        // A simultaneous share action is independent of the cash return.
+        // Remove its share multiplier before the shared total-return contract
+        // compares the dividend evidence; a split alone cannot prove cash.
+        var shareMultiplier = istSplittag && cur.splitFactor > 0 ? cur.splitFactor : 1;
+        var dividendFactorChange = Math.abs(cur.factor / prev.factor / shareMultiplier - 1);
         var erwartet = dividendConvention === "TIINGO_REINVESTMENT_CLOSE"
-          ? cur.dividend / cur.close : cur.dividend / prev.close;
-        if (faktorAenderung > config.adjustmentRatioTolerance) {
+          ? cur.dividend / cur.close : cur.dividend / (prev.close / shareMultiplier);
+        if (dividendFactorChange > config.adjustmentRatioTolerance) {
           observed.dividendEvidence.push({
             date: cur.date, amount: cur.dividend,
             expectedFactorStep: round(erwartet, 6),
-            observedFactorStep: round(faktorAenderung, 6)
+            observedFactorStep: round(dividendFactorChange, 6)
           });
         } else if (erwartet > config.adjustmentRatioTolerance) {
           findings.push(finding("warning", "dividend_not_in_adjusted",
@@ -869,11 +874,79 @@
     return { results: results, summary: summary, reasons: reasons };
   }
 
+  /* ======================================================================
+     GESAMTRENDITE-VERTRAG   (Owner-Programm 02.10.2026, §10-§12)
+
+     EIN Urteil fuer jede Reihe, die als Gesamtrendite rechnen will - Aktie
+     wie Vergleichsmassstab. Es liest dieselbe Pruefung wie der taegliche
+     Abruf (validateAdjustmentConsistency) und macht aus ihren Warnungen
+     ein Nein: eine Ausschuettung, die in der bereinigten Spalte nicht
+     ankommt, ist fuer eine Gesamtrendite kein Schoenheitsfehler, sondern
+     eine Kursrendite unter falschem Namen.
+
+     Zusaetzlich zur Pruefung, OB bereinigt wurde, prueft der Vertrag, ob
+     der Schritt zur gemeldeten Ausschuettung passt - im selben Band wie
+     quant/engines/return-series.js verifyTotalReturn (0,6-1,4). Darueber
+     und darunter ist der Tag nicht erklaert.
+
+     Rueckgabe: {confirmed, state, reason, gaps, ...}
+       state  TOTAL_RETURN_CONFIRMED | TOTAL_RETURN_REJECTED
+       reason null | DIVIDEND_GAP | SPLIT_GAP | STALE | NO_BARS |
+              ADJUSTED_CLOSE_MISSING | CONTRADICTED
+     ====================================================================== */
+  var TR_CONTRACT_VERSION = "total-return-contract-1.0.0";
+  var TR_DIVIDEND_BAND = [0.60, 1.40];
+
+  function totalReturnVerdict(bars, options) {
+    options = options || {};
+    var rejected = function (reason, extra) {
+      return Object.assign({ contract: TR_CONTRACT_VERSION, confirmed: false,
+                             state: "TOTAL_RETURN_REJECTED", reason: reason }, extra || {});
+    };
+    if (!Array.isArray(bars) || !bars.length) return rejected("NO_BARS");
+    var missing = 0;
+    for (var i = 0; i < bars.length; i++) if (!(bars[i] && isNum(bars[i].adjustedClose) && bars[i].adjustedClose > 0)) missing++;
+    if (missing) return rejected("ADJUSTED_CLOSE_MISSING", { missingBars: missing });
+
+    var last = String(bars[bars.length - 1].date).slice(0, 10);
+    if (options.asOf && isNum(options.maxStaleDays)) {
+      var lag = Math.round((Date.parse(options.asOf) - Date.parse(last)) / 864e5);
+      if (lag > options.maxStaleDays) return rejected("STALE", { last: last, lagDays: lag });
+    }
+
+    var sem = validateAdjustmentConsistency(bars, { claimedStatus: "TOTAL_RETURN",
+      dividendConvention: options.dividendConvention || "PREVIOUS_CLOSE" });
+    var datesOf = function (code) {
+      return sem.findings.filter(function (f) { return f.code === code; })
+        .map(function (f) { return f.context && f.context.date ? f.context.date : null; });
+    };
+    var splitGaps = datesOf("split_not_adjusted");
+    var dividendGaps = datesOf("dividend_not_in_adjusted");
+    var offBand = sem.observed.dividendEvidence.filter(function (e) {
+      if (!(e.expectedFactorStep > 0)) return false;
+      var rel = e.observedFactorStep / e.expectedFactorStep;
+      return rel < TR_DIVIDEND_BAND[0] || rel > TR_DIVIDEND_BAND[1];
+    }).map(function (e) { return e.date; });
+    var base = { inferredStatus: sem.inferredStatus,
+                 dividendEvents: sem.observed.dividendEvents.length,
+                 splitEvents: sem.observed.splitEvents.length,
+                 dividendEvidence: sem.observed.dividendEvidence.length };
+    if (splitGaps.length) return rejected("SPLIT_GAP", Object.assign(base, { gaps: splitGaps.length, firstGap: splitGaps[0], lastGap: splitGaps[splitGaps.length - 1] }));
+    if (dividendGaps.length || offBand.length) {
+      var all = dividendGaps.concat(offBand).sort();
+      return rejected("DIVIDEND_GAP", Object.assign(base, { gaps: all.length, notAdjusted: dividendGaps.length, offBand: offBand.length, firstGap: all[0], lastGap: all[all.length - 1] }));
+    }
+    if (!sem.ok) return rejected("CONTRADICTED", base);
+    return Object.assign({ contract: TR_CONTRACT_VERSION, confirmed: true, state: "TOTAL_RETURN_CONFIRMED", reason: null }, base);
+  }
+
   var api = { DEFAULTS: DEFAULTS, ASSESS_DEFAULTS: ASSESS_DEFAULTS,
               validateBars: validateBars, validateBatch: validateBatch,
               looksLikeSplit: looksLikeSplit, adjustmentFactors: adjustmentFactors,
       validateAdjustmentConsistency: validateAdjustmentConsistency,
       classifyCorporateActions: classifyCorporateActions,
+              totalReturnVerdict: totalReturnVerdict, TR_CONTRACT_VERSION: TR_CONTRACT_VERSION,
+              TR_DIVIDEND_BAND: TR_DIVIDEND_BAND,
               weekdaysBetween: weekdaysBetween,
               assessSeries: assessSeries, assessBatch: assessBatch };
 

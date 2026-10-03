@@ -66,8 +66,12 @@ jobs:
             echo "Keine Aenderung."
           else
             git commit -m "Index-Mitgliedschaft: $(node -e 'const i=require("./quant/data/market/index-membership/index.json");console.log(i.indexes.map(x=>x.indexId+" "+x.memberCount+" ("+x.asOf+")").join(", "))')"
-            git pull --rebase
-            git push
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            # Ein anderer Daten-Workflow kann zwischen Rebase und Push auf
+            # main landen (03.10.2026: Supertrader-Signale, 25 s Abstand).
+            # Dasselbe Werkzeug wie der Marktdaten-Lauf: neu aufsetzen und
+            # mit Wartezeit erneut versuchen.
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
           fi
 
       - name: Zusammenfassung

@@ -165,13 +165,24 @@ async function webIcon(site, sharp, sym, companyName, iconOpts = {}) {
   return { reason: grund };
 }
 
-async function sparql(query) {
-  const res = await http("https://query.wikidata.org/sparql", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/sparql-results+json" },
-    body: "query=" + encodeURIComponent(query)
-  });
-  return (await res.json()).results.bindings;
+/* Wikidata bricht lange Abfragen bei Zeitueberschreitung mitten im Strom ab
+   und haengt die Fehlermeldung an (02.10.2026: "Bad control character in
+   string literal") - dann noch einmal, mit Pause. */
+async function sparql(query, versuche = 4) {
+  for (let v = 1; ; v++) {
+    try {
+      const res = await http("https://query.wikidata.org/sparql", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/sparql-results+json" },
+        body: "query=" + encodeURIComponent(query)
+      });
+      return JSON.parse(await res.text()).results.bindings;
+    } catch (e) {
+      if (v >= versuche) throw e;
+      console.log(`     Wikidata-Abfrage fehlgeschlagen (${String(e.message).slice(0, 80)}), Versuch ${v + 1} von ${versuche} …`);
+      await sleep(30000 * v);
+    }
+  }
 }
 
 async function imageinfo(titles) {
@@ -207,6 +218,13 @@ const gesperrtTitel = (t) => Boolean(t && (REJECTS.titles || {})[t]);
    erfahrungsgemaess weitere Fehlgriffe (Unterschriften, Stimmzettel). */
 const SEC_GESPERRT = new Set(Object.entries(REJECTS.urls || {})
   .filter(([url]) => /^https:\/\/www\.sec\.gov\//.test(url)).map(([, why]) => String(why).split(":")[0].trim()));
+/* Firmen, deren Website schon zweimal ein falsches Bild lieferte (fremde
+   Logos, Produktmarken, Baukasten-Icons): die Website ist dafuer keine
+   Quelle mehr - sonst kaeme nach jeder Sperre das naechste falsche Bild. */
+const WEB_GESPERRT = new Set(Object.entries(Object.entries(REJECTS.urls || {})
+  .filter(([url]) => !/^https:\/\/www\.sec\.gov\//.test(url))
+  .reduce((a, [, why]) => { const s = String(why).split(":")[0].trim(); a[s] = (a[s] || 0) + 1; return a; }, {}))
+  .filter(([, n]) => n >= 2).map(([s]) => s));
 const cikOf = new Map(names.rows.filter((r) => r.ticker).map((r) => [r.ticker, r.cik || null]));
 const universe = search.entries
   .filter((e) => safeSymbol(e.s) && !exclusions[e.s] && (!ONLY || ONLY.has(e.s)))
@@ -382,10 +400,36 @@ if (!args["no-web"] && !DRY) {
   let sharp = null;
   try { sharp = (await import("sharp")).default; } catch (e) { console.log("     sharp fehlt - Website-Icons entfallen."); }
   if (sharp) {
+    /* Von Hand gewaehlte Bildadressen (discover/config/logo-urls.json) fuer
+       Titel, bei denen keine Quelle automatisch etwas findet - gewaehlt aus
+       den Kandidaten (scripts/discover/logo-candidates.mjs). Sie gehen jeder
+       anderen Quelle vor und durchlaufen die Freigabe wie alle anderen. */
+    const gewaehlt = readJson(join(root, "discover", "config", "logo-urls.json"), { symbols: {} }).symbols || {};
+    const imUniv = new Set(universe.map((r) => r.symbol));
+    for (const [sym, url] of Object.entries(gewaehlt)) {
+      if (!imUniv.has(sym) || gesperrt(url) || !/^https:\/\//.test(url)) continue;
+      try {
+        const host = new URL(url).hostname;
+        const istSec = /(^|\.)sec\.gov$/.test(host);
+        const { buf } = istSec ? await secHolen(url, 3 * 1024 * 1024, process.env.SEC_USER_AGENT || WEB_USER_AGENT) : await holen(url, 3 * 1024 * 1024);
+        const res = await toPng(buf, sharp, { logo: true });
+        if (!res.png) { dbg(sym, "gewaehlt", url, res.reason); continue; }
+        const path = "files/" + sym + ".png";
+        for (const f of readdirSync(FILES)) if (f.startsWith(sym + ".") && f !== sym + ".png") rmSync(join(FILES, f));
+        writeFileSync(join(OUT, path), res.png);
+        files[sym] = path;
+        const basis = { path, wide: breitSchreiben(sym, res.wide), iconUrl: url, sha1: createHash("sha1").update(res.png).digest("hex"),
+                        via: "KURATIERT", licenseName: "Marke des Inhabers", fmt: FORMAT, ratio: Math.round((res.ratio || 1) * 100) / 100 };
+        credits[sym] = istSec ? { source: "SEC_FILING", page: url, form: "kuratiert", rule: "kuratiert", ...basis }
+                              : { source: "WEBSITE", page: "https://" + host + "/", host: host.replace(/^www\./, ""), ...basis };
+        reasons.delete(sym);
+        dbg(sym, "gewaehlt", url, "OK");
+      } catch (e) { dbg(sym, "gewaehlt", url, "Fehler", e.message); }
+    }
     console.log("4/5  Website-Icons fuer Titel ohne Commons-Logo oder mit breitem Schriftzug …");
     /* Ein breiter Schriftzug (NVIDIA 5:1) wird im Quadrat winzig. Hat die
        Website ein quadratisches Symbol, geht das vor. */
-    const breit = new Set(Object.entries(credits).filter(([, c]) => c.ratio && c.ratio > 2.2).map(([s]) => s));
+    const breit = new Set(Object.entries(credits).filter(([, c]) => c.ratio && c.ratio > 2.2 && c.via !== "KURATIERT").map(([s]) => s));
     const ohne = universe.filter((r) => !files[r.symbol] || breit.has(r.symbol)).slice(0, LIMIT);
     console.log(`     ${ohne.filter((r) => !files[r.symbol]).length} ohne Logo, ${breit.size} mit breitem Schriftzug`);
 
@@ -394,7 +438,14 @@ if (!args["no-web"] && !DRY) {
     collectItems(await sparql(SPARQL_SITE_BY_TICKER), siteItems);
     const siteMatches = matchUniverse(ohne, siteItems).matches;
     const siteOf = new Map();
+    /* Von Hand gepflegte Adressen gehen vor (discover/config/logo-sites.json). */
+    const kuratiert = readJson(join(root, "discover", "config", "logo-sites.json"), { symbols: {} }).symbols || {};
     for (const r of ohne) {
+      const site = kuratiert[r.symbol] && normalizeSite(kuratiert[r.symbol]);
+      if (site) siteOf.set(r.symbol, { ...site, via: "KURATIERT" });
+    }
+    for (const r of ohne) {
+      if (siteOf.has(r.symbol)) continue;
       const quelle = siteMatches.get(r.symbol) || matches.get(r.symbol);
       const site = quelle && (quelle.sites || []).map(normalizeSite).find(Boolean);
       if (site) siteOf.set(r.symbol, { ...site, via: "WIKIDATA_" + quelle.via });
@@ -436,6 +487,7 @@ if (!args["no-web"] && !DRY) {
       }
       console.log(`     SEC: ${JSON.stringify(stat)}`);
     } else console.log("     SEC_USER_AGENT fehlt - keine SEC-Adressen.");
+    for (const sym of WEB_GESPERRT) if (siteOf.has(sym) && siteOf.get(sym).via !== "KURATIERT") siteOf.delete(sym);
     console.log(`     ${siteOf.size} von ${ohne.length} Titeln mit offizieller Website`);
 
     const icons = new Map();
@@ -565,6 +617,22 @@ const breitePfade = new Set(Object.entries(credits).filter(([s, c]) => c.wide &&
 if (existsSync(join(FILES, "wide"))) for (const f of readdirSync(join(FILES, "wide"))) if (!breitePfade.has(f)) rmSync(join(FILES, "wide", f));
 for (const c of Object.values(credits)) if (!c.wide) delete c.wide;
 
+/* Freigabe: Ein Logo geht erst live, wenn genau dieses Bild (sha1) von Hand
+   gesichtet ist (discover/config/logo-reviewed.json). Neue Titel und
+   geaenderte Bilder warten - Datei und Nachweis bleiben, aber die
+   Oberflaeche (index.json) kennt sie noch nicht. So erscheint kein
+   ungesehenes Bild neben einer Aktie (Unterschriften, Partnerlogos, Fotos). */
+const FREIGABE = readJson(join(root, "discover", "config", "logo-reviewed.json"), { symbols: {} }).symbols || {};
+const wartend = [];
+for (const [sym, c] of Object.entries(credits)) {
+  if (files[sym] && FREIGABE[sym] !== c.sha1) {
+    c.pending = true; wartend.push(sym);
+    delete files[sym]; reasons.set(sym, "WARTET_AUF_SICHTPRUEFUNG");
+  } else delete c.pending;
+}
+if (wartend.length) console.log(`     Warten auf Sichtpruefung: ${wartend.length} (${wartend.slice(0, 40).join(", ")}${wartend.length > 40 ? " …" : ""})`);
+const live = Object.values(credits).filter((c) => !c.pending);
+
 /* Helle Logos auf transparentem Grund bekommen in der Oberflaeche eine dunkle Flaeche. */
 const dunkel = [];
 try {
@@ -609,7 +677,7 @@ if (webSites) writeFileSync(join(OUT, "sites.json"), JSON.stringify({
 }, null, 1) + "\n");
 writeFileSync(join(OUT, "missing.json"), JSON.stringify({
   generatedAt,
-  note: "Titel ohne Logo und der Grund. KEIN_WIKIDATA_LOGO: Wikidata kennt fuer die Firma kein Logo (oder die Firma nicht). NAME_ODER_CIK_WIDERSPRICHT / MEHRERE_ITEMS: Zuordnung unklar, deshalb bewusst ohne Logo. LIZENZ_NICHT_FREI / EINSCHRAENKUNG / URHEBER_FEHLT: kein Logo der Firma mit freier Lizenz. WEB_*: die Website brachte kein brauchbares Icon (keins, zu klein, generisch).",
+  note: "Titel ohne Logo und der Grund. KEIN_WIKIDATA_LOGO: Wikidata kennt fuer die Firma kein Logo (oder die Firma nicht). NAME_ODER_CIK_WIDERSPRICHT / MEHRERE_ITEMS: Zuordnung unklar, deshalb bewusst ohne Logo. LIZENZ_NICHT_FREI / EINSCHRAENKUNG / URHEBER_FEHLT: kein Logo der Firma mit freier Lizenz. WEB_*: die Website brachte kein brauchbares Icon (keins, zu klein, generisch). WARTET_AUF_SICHTPRUEFUNG: Logo gefunden, geht nach der Sichtpruefung live.",
   reasons: sortiert(Object.fromEntries([...reasons].filter(([sym]) => !files[sym])))
 }, null, 1) + "\n");
 writeFileSync(join(OUT, "summary.json"), JSON.stringify({
@@ -618,10 +686,11 @@ writeFileSync(join(OUT, "summary.json"), JSON.stringify({
   withLogo: Object.keys(files).length,
   pct: Math.round((Object.keys(files).length / Math.max(1, universe.length)) * 1000) / 10,
   downloaded: geladen + webNeu, unchanged: behalten + webBehalten,
-  bySource: Object.values(credits).reduce((a, c) => ((a[c.source] = (a[c.source] || 0) + 1), a), {}),
-  byVia: Object.values(credits).reduce((a, c) => ((a[c.via] = (a[c.via] || 0) + 1), a), {}),
+  pending: wartend.sort(),
+  bySource: live.reduce((a, c) => ((a[c.source] = (a[c.source] || 0) + 1), a), {}),
+  byVia: live.reduce((a, c) => ((a[c.via] = (a[c.via] || 0) + 1), a), {}),
   indexCoverage: indexAbdeckung,
-  byLicense: Object.values(credits).filter((c) => c.license).reduce((a, c) => ((a[c.license] = (a[c.license] || 0) + 1), a), {}),
+  byLicense: live.filter((c) => c.license).reduce((a, c) => ((a[c.license] = (a[c.license] || 0) + 1), a), {}),
   excluded: grundZaehler
 }, null, 1) + "\n");
 

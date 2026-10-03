@@ -141,3 +141,15 @@ test("EG6 · Gegenprobe: ein Code-Fehler ist vor dem Abruf rot -> keine Anfrage"
     } finally { rmSync(f2.dir, { recursive: true, force: true }); }
   } finally { rmSync(f.dir, { recursive: true, force: true }); }
 });
+
+test("EG-CACHE · die Arbeitsablage wird nur gesichert, wenn sie zurueckgeholt wurde (kein leerer Cache nach Gate A)", () => {
+  /* Gate A steht vor dem Zurueckholen. Bricht es ab, ist .market-cache leer
+     oder fehlt; ein always()-Sichern legte sie dann als juengsten Stand ab
+     (Lauf 37052123489, 1 MB), und der naechste Lauf baute darauf. */
+  const steps = workflow.split(/\n      - name: /);
+  const restore = steps.find((s) => s.startsWith("Arbeitsablage aus dem letzten Lauf holen"));
+  const save = steps.find((s) => s.startsWith("Arbeitsablage sichern"));
+  assert.ok(restore && /\n\s+id: restore\n/.test(restore), "Zurueckholen ohne id");
+  assert.ok(save && /steps\.restore\.outcome == 'success'/.test(save), "Sichern ohne Bedingung auf das Zurueckholen");
+  assert.ok(workflow.indexOf("Gate A") < workflow.indexOf("Arbeitsablage aus dem letzten Lauf holen"), "Reihenfolge geaendert - Test neu bewerten");
+});
