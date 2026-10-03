@@ -143,11 +143,19 @@ export function positionDailyReturns(positions, scenarioPx, comm = COMM, weightM
       if (tr.terminal?.kind === 'DELISTED' && tr.terminal.date === dt && shares > 1e-12) { end += shares * scenarioPx(tr.terminal) * (1 - comm); shares = 0; }
       end += shares * close;
       const b = day.get(dt) || day.set(dt, [0, 0, 0]).get(dt);
-      if (weightMode === 'EQUAL') { b[0]++; b[1] += end / start - 1; } else { b[0] += start; b[1] += end; }
+      if (weightMode === 'EQUAL') { b[0]++; b[1] += end / start - 1; } else { b[0] += start; b[1] += end; } // SHARES/DOLLARS: Summen
       prev = close;
     }
   }
+  if (weightMode === 'DOLLARS') return day;
   return new Map([...day].map(([dt, b]) => [dt, weightMode === 'EQUAL' ? b[1] / b[0] : b[1] / b[0] - 1]));
+}
+// Abstimmung: Tages-Dollarergebnis der Positionen gegen die Depotkurve; r_t = Delta E_t / eingesetztes Kapital_t (aus der Kurve).
+export function reconcileDeployed(equity, positions, scenarioPx) {
+  const day = positionDailyReturns(positions, scenarioPx, COMM, 'DOLLARS');
+  let pnl = 0; const fromCurve = new Map();
+  for (let i = 1; i < equity.length; i++) { const b = day.get(equity[i].date); const dE = equity[i].equity - equity[i - 1].equity; if (b && b[0] > 0) { pnl += b[1] - b[0]; fromCurve.set(equity[i].date, dE / b[0]); } }
+  return { positionsPnl: pnl, curvePnl: equity[equity.length - 1].equity - equity[0].equity, fromCurve };
 }
 export function compareDaily(ret, spyRet, n0 = 30) {
   const ri = [], rs = [];
@@ -331,6 +339,8 @@ async function main() {
     const B2 = investedReturns(base.equity, spyRet);
     const scenPx = (t) => (t.delistClass === 'ACQUISITION' ? t.lastClose * (1 - SLIP) : t.lastClose * 0.7);
     const B2exact = compareDaily(positionDailyReturns(base.taken, scenPx), spyRet);
+    const rec2 = reconcileDeployed(base.equity, base.taken, scenPx);
+    const B2curve = { ...compareDaily(rec2.fromCurve, spyRet), positionsPnl: rec2.positionsPnl, curvePnl: rec2.curvePnl };
     // B4: Signalportfolio ohne Kapazitaetsgrenze (alle Engine-Trades gleich gewichtet) mit Methodenausstieg bzw. 126 Sitzungen gehalten.
     const B4 = { methodExits: compareDaily(positionDailyReturns(r.base, scenPx, COMM, 'EQUAL'), spyRet), hold126: compareDaily(positionDailyReturns(r.holds[126], scenPx, COMM, 'EQUAL'), spyRet) };
     const B3 = { exposureMatchedSpy: exposureMatched(base.equity, spyRet), contributionPp: A.cagr - exposureMatched(base.equity, spyRet), s0ContributionPp: quickA(s0.equity, spyTR).cagr - exposureMatched(s0.equity, spyRet) };
@@ -391,7 +401,7 @@ async function main() {
       cfg: { riskPerTrade: cfg.riskPerTrade, maxPositionPct: cfg.maxPositionPct, maxPositions: cfg.maxPositions, priority: cfg.priority, marketFilter: !!cfg.marketFilter, progressive: cfg.progressive || null, turtleNotional: cfg.turtleNotional || null },
       engineTrades: r.base.length, taken: base.taken.length, skippedByReason: base.skipped.reduce((a, x) => ((a[x.reason] = (a[x.reason] || 0) + 1), a), {}),
       A: { ...A, s0: quickA(s0.equity, spyTR), cost2: quickA(cost2.equity, spyTR), subperiods: null },
-      B: { B1, B2_prereg: B2, B2_exact: B2exact, B3, B4 }, C: { C1_cashInSpy_noCost: C1hi, C1_cashInSpy_1bp: C1lo, C2_equalWeight: quickA(C2.equity, spyTR), C2_exposure: exposureStats(C2.equity).mean, C3_equalWeight_cashInSpy: C3, C4_unlimitedSlots: quickA(C4.equity, spyTR), C4_exposure: exposureStats(C4.equity).mean, C5_hold: C5, C6_noMarketFilter: C6, C7_rank: C7 },
+      B: { B1, B2_prereg: B2, B2_exact: B2exact, B2_curve: B2curve, B3, B4 }, C: { C1_cashInSpy_noCost: C1hi, C1_cashInSpy_1bp: C1lo, C2_equalWeight: quickA(C2.equity, spyTR), C2_exposure: exposureStats(C2.equity).mean, C3_equalWeight_cashInSpy: C3, C4_unlimitedSlots: quickA(C4.equity, spyTR), C4_exposure: exposureStats(C4.equity).mean, C5_hold: C5, C6_noMarketFilter: C6, C7_rank: C7 },
       exposure: { ...expo, weightAtEntry: summarize(weights), idle: attributeIdle(base, cfg) }, chain,
       signal: { n: recs.length, byHorizon: sig, distribution: dist, edgeByYear120vsUni: Object.fromEntries(Object.entries(edgeByYear).map(([y, b]) => [y, { n: b.n, mean: b.s / b.n }])) },
       exitAudit, portfolioConstruction: pc, failures, winnerCases, regimes: segmentReturns(base.equity), costs, tradability };
