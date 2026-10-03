@@ -29,8 +29,7 @@ const AUSNAHMEN = {
   "scripts/market/select-gate-universe.mjs": "regelgleich (/[^A-Z0-9]/gi) auf rohen Anbieterzeilen, darf nicht werfen",
   "scripts/market/tiingo2-refresh.mjs": "Workstream Tiingo 2.0, regelgleich",
   "scripts/universe/verify-company-master.mjs": "prueft, dass instrumentId KEINE Ticker-ID ist",
-  "scripts/supertrader/build.mjs": "Umstellung in PR #387 (Supertrader-Gate A verlangt eigenen PR)",
-  "scripts/discover/assert-source-state-coverage.mjs": "Umstellung in eigenem Discover-PR"
+  "scripts/supertrader/build.mjs": "Umstellung in PR #387 (Supertrader-Gate A verlangt eigenen PR)"
 };
 
 function produktcode() {
