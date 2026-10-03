@@ -116,7 +116,7 @@ async function main() {
   const OUT = arg('--out', path.join(os.tmpdir(), 'audit13')); const LIMIT = Number(arg('--limit', '0'));
   fs.mkdirSync(OUT, { recursive: true });
   const t0 = Date.now(); const log = (m) => console.log(`[audit13 +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
-  const { segs, calendar, spyTR, spyAdj, spyRaw, bench, nonEquityExcluded, delistCoverage } = await loadPitData({ LIMIT, log, excludeNonEquity: true, delistPit: true });
+  const { segs, calendar, spyTR, spyAdj, spyRaw, bench, nonEquityExcluded, delistCoverage, dataFingerprint } = await loadPitData({ LIMIT, log, excludeNonEquity: true, delistPit: true });
   // C2: SPY-Gesamtrendite eigene Rechnung vs. Tiingo-adjClose
   const sr = spyRaw.filter((b) => b.date >= W.from && b.date <= W.to);
   const yrs = (Date.parse(sr[sr.length - 1].date) - Date.parse(sr[0].date)) / (365.25 * 864e5);
@@ -191,7 +191,7 @@ async function main() {
       subperiods: SPLIT.map(([a, b]) => { const c = cagrBetween(eq, a, b), sv = cagrBetween(spyTR, a, b, 'value'); return c != null && sv != null ? c - sv : null; }) }; }
   log('Trendfolge 52W fertig');
   const result = { schema: 'supertrader-audit-r13-1.0.0', prereg: 'supertrader-validation-prereg-r13-audit-1.0.0', at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
-    universe: { segments: segs.length, nonEquityExcluded: Array.isArray(nonEquityExcluded) ? nonEquityExcluded.length : nonEquityExcluded, delistCoverage, tickerReuseOverlapping: reuse.length, tickerReuseExamples: reuse.slice(0, 30) },
+    dataFingerprint, universe: { segments: segs.length, nonEquityExcluded: Array.isArray(nonEquityExcluded) ? nonEquityExcluded.length : nonEquityExcluded, delistCoverage, tickerReuseOverlapping: reuse.length, tickerReuseExamples: reuse.slice(0, 30) },
     benchmark, results, trend52: t52 };
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
   fs.writeFileSync(path.join(OUT, `audit-r13${LIMIT ? '-smoke' : ''}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify(result))));

@@ -65,7 +65,7 @@ async function main() {
   const t0 = Date.now();
   const log = (m) => console.log(`[trend52 +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   const CLASSIFIED = argv.includes('--classified'); // Runde 13: S1C (SEC-Delisting-Klassen)
-  const { segs, spyTR, spyAdj, calendar, nonEquityExcluded } = await loadPitData({ LIMIT, log, excludeNonEquity: true, delistPit: CLASSIFIED });
+  const { segs, spyTR, spyAdj, calendar, nonEquityExcluded, dataFingerprint } = await loadPitData({ LIMIT, log, excludeNonEquity: true, delistPit: CLASSIFIED });
   const stocks = segs.map((seg) => {
     const a = L.adjustSeries(seg.raw); const n = a.date.length;
     return { id: seg.id, symbol: seg.id.split(':')[2] || seg.id, survivor: seg.survivor, delisted: seg.delisted,
@@ -104,7 +104,7 @@ async function main() {
     openAtEnd: r.openAtEnd.map((o) => ({ listingId: o.listingId, entryDate: o.entryDate, exits: o.exits.map((x) => ({ date: x.date, ruleId: x.ruleId })) })), skipped: r.skipped.filter((x) => x.decision).map((x) => [x.date, x.listingId, x.reason]),
     decisions: r.decisions.map((d) => ({ date: d.date, green: d.green, universe: d.universe, candidates: d.candidates, sells: d.sells, buys: d.buys, top: d.top.map((x) => [x.listingId, x.rank, x.score, x.perf]) })) });
   const result = { schema: 'supertrader-validation-trend52-1.0.0', prereg: 'supertrader-validation-prereg-r12-1.0.0', at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
-    params: PARAMS, universe: { stocks: stocks.length, delisted: stocks.filter((s) => s.delisted).length, nonEquityExcluded: Array.isArray(nonEquityExcluded) ? nonEquityExcluded.length : nonEquityExcluded },
+    params: PARAMS, dataFingerprint, universe: { stocks: stocks.length, delisted: stocks.filter((s) => s.delisted).length, nonEquityExcluded: Array.isArray(nonEquityExcluded) ? nonEquityExcluded.length : nonEquityExcluded },
     spy: { cagr: cagrBetween(spyTR, W.from, W.to, 'value'), maxDrawdown: maxDrawdown(spyTR, 'value') }, runs, seeds, judgement, judgementS1C, controls: ctl,
     raw: { PP_S1: slim(ppS1), BASE_S1: slim(base) }, ppS0Decisions: pp.decisions.length };
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');

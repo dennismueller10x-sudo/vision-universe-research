@@ -417,6 +417,10 @@ export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity 
   }
   log(`Segmente ${segs.length}, Doppelhistorien ${dup.size}, Balken ausserhalb des Kalenders ${offCalendar}`);
 
+  // Runde 13 (Audit): Datenfingerabdruck je Lauf - Kursreihen im privaten Eimer werden taeglich aktualisiert;
+  // gleiche Listentabelle heisst nicht gleiche Reihen. Abweichende Ergebnisse sind so als Datenaenderung erkennbar.
+  const dataFingerprint = { segments: segs.length, hash: L.sha256(segs.map((sg) => { const r = sg.raw, n = r.length; return `${sg.id}|${n}|${r[0]?.date}|${r[n - 1]?.date}|${r[n - 1]?.close}|${r.reduce((a, b) => a + (b.close || 0), 0).toFixed(4)}`; }).join('\n')) };
+  log(`Datenfingerabdruck ${dataFingerprint.hash.slice(0, 12)} (${segs.length} Segmente)`);
   // 2. Querschnitt Point-in-Time (wie build.mjs crossSection, aber ueber das damalige Universum).
   const metric = {};
   for (const key of CROSS_KEYS) metric[key] = [];
@@ -452,7 +456,7 @@ export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity 
   }
   for (const seg of segs) delete seg.vals;
 
-  return { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, spyAdj, spyRaw, bench, budget, mine, nonEquityExcluded, secCoverage, delistCoverage };
+  return { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, spyAdj, spyRaw, bench, budget, mine, nonEquityExcluded, secCoverage, delistCoverage, dataFingerprint };
 }
 
 // Beispielspur R8: Kullamaegis eigene Beispiele gegen die Engine (TSLA-Breakout
@@ -502,7 +506,7 @@ async function main() {
   const log = (m) => console.log(`[validation-methods +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
-  const { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, spyAdj, bench, budget, mine, nonEquityExcluded, secCoverage } = await loadPitData({ LIMIT, log, excludeNonEquity: SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12' || SET === 'r13b', secPit: SET === 'r11', delistPit: SET === 'r13b' });
+  const { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, spyAdj, bench, budget, mine, nonEquityExcluded, secCoverage, dataFingerprint } = await loadPitData({ LIMIT, log, excludeNonEquity: SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12' || SET === 'r13b', secPit: SET === 'r11', delistPit: SET === 'r13b' });
   let k = 0;
   // Runde 9: Minutenquelle aufbauen - Cache aus dem privaten Eimer, fehlende Einstiegstage
   // in Durchgaengen nachladen, bis keine neuen mehr entstehen (Pfadabhaengigkeit).
@@ -646,7 +650,7 @@ async function main() {
     const sp = budget.spent, u = await mine.readUsage();
     await mine.writeUsage(Guard.applyUsage(u, { classAOperations: sp.classA + 1, classBOperations: sp.classB, bytesDownloaded: sp.bytesDownloaded, run: { at: new Date().toISOString(), kind: 'VALIDATION_ANALYZE_METHODS', classB: sp.classB } }));
   }
-  const result = { schema: 'supertrader-validation-methods-result-1.0.0', set: SET, at: new Date().toISOString(), prereg: SET === 'r13b' ? PREREG_R13B : SET === 'r12' ? PREREG_R12 : SET === 'r11' ? PREREG_R11 : SET === 'r10c' || SET === 'r10m' ? PREREG_R10C : SET === 'r10b' ? PREREG_R10B : SET === 'r9b' ? PREREG_R9B : SET === 'r8c' ? PREREG_R8C : SET === 'r8b' ? PREREG_R8B : SET === 'r8' ? PREREG_R8 : SET === 'r7' ? PREREG_R7 : PREREG_METHODS, examples: SET === 'r8' || SET === 'r8c' ? examples : undefined, intraday: intradayStats, funnel: SET === 'r10m' ? funnel : undefined, nonEquityExcluded: SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12' ? nonEquityExcluded : undefined, secCoverage: SET === 'r11' ? secCoverage : undefined, tableHash: hash, commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
+  const result = { schema: 'supertrader-validation-methods-result-1.0.0', set: SET, at: new Date().toISOString(), prereg: SET === 'r13b' ? PREREG_R13B : SET === 'r12' ? PREREG_R12 : SET === 'r11' ? PREREG_R11 : SET === 'r10c' || SET === 'r10m' ? PREREG_R10C : SET === 'r10b' ? PREREG_R10B : SET === 'r9b' ? PREREG_R9B : SET === 'r8c' ? PREREG_R8C : SET === 'r8b' ? PREREG_R8B : SET === 'r8' ? PREREG_R8 : SET === 'r7' ? PREREG_R7 : PREREG_METHODS, examples: SET === 'r8' || SET === 'r8c' ? examples : undefined, intraday: intradayStats, funnel: SET === 'r10m' ? funnel : undefined, nonEquityExcluded: SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12' ? nonEquityExcluded : undefined, secCoverage: SET === 'r11' ? secCoverage : undefined, tableHash: hash, dataFingerprint, commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
     counts: { listings: listings.length, members: members.length, segments: segs.length, duplicates: dup.size, offCalendar }, execution: DEFAULT_EXECUTION, portfolio: cfg,
     spy: { cagr: cagrBetween(spyTR, W.from, W.to, 'value'), maxDrawdown: maxDrawdown(spyTR, 'value') }, results, budget: budget.spent };
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
