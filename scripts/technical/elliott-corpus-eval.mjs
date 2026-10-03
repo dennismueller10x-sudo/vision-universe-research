@@ -57,6 +57,20 @@ function judge(c, truth) {
   return { label: c.pattern + (c.complete ? "(C)" : "/" + c.currentWave.label), degree: nested ? "NESTED" : deg, hit: (deg === "EXACT" && truth.expect.includes(c.pattern) && c.complete) || !!nested,
            asNegTarget: !!truth.negativeOf && c.pattern === truth.negativeOf && deg === "EXACT" };
 }
+/** Unabhaengiger G8-Pruefer: harte Regeln gegen die Kursextreme INNERHALB jeder Welle (nicht nur an den Wellenenden). */
+export function intraViolations(c, closes) {
+  const v = [], W = c.waves, s = W[0].toPrice >= W[0].fromPrice ? 1 : -1, p0 = W[0].fromPrice, eps = 1e-4 * Math.abs(p0);   // Wellenpreise sind auf 4 Stellen gerundet
+  const back = (w) => { const up = w.toPrice >= w.fromPrice; let e = w.fromPrice; for (let i = w.fromIndex; i <= w.toIndex; i++) e = up ? Math.min(e, closes[i]) : Math.max(e, closes[i]); return e; };
+  const fwd = (w) => { const up = w.toPrice >= w.fromPrice; let e = w.toPrice; for (let i = w.fromIndex; i <= w.toIndex; i++) e = up ? Math.max(e, closes[i]) : Math.min(e, closes[i]); return e; };
+  if (["IMPULSE", "LEADING_DIAGONAL", "ENDING_DIAGONAL"].includes(c.pattern)) {
+    if (W[1] && s * fwd(W[1]) < s * p0 - eps) v.push("W2_BEYOND_W1_ORIGIN");
+    if (W[3] && c.pattern === "IMPULSE" && s * fwd(W[3]) < s * W[0].toPrice - eps) v.push("W4_OVERLAP_W1");
+    [0, 2, 4].forEach((k) => { if (W[k] && s * back(W[k]) < s * W[k].fromPrice - eps) v.push("MOTIVE_W" + (k + 1) + "_BELOW_START"); });
+  }
+  if (["ZIGZAG", "DOUBLE_ZIGZAG", "TRIPLE_ZIGZAG", "WXY"].includes(c.pattern) && W[1] && s * fwd(W[1]) < s * p0 - eps) v.push("B_OR_X_BEYOND_ORIGIN");
+  if (c.pattern === "IMPULSE" && W.length === 5 && W[4].status !== "DEVELOPING") { const L = W.map((w) => Math.abs(w.toPrice - w.fromPrice)); if (L[2] < Math.min(L[0], L[4])) v.push("W3_SHORTEST"); }
+  return v;
+}
 export function evaluateCase(cs, engineOpts) {
   const s = weeklySeriesFromPoints(cs.dates.map((d, i) => [d, cs.closes[i]]), "SYN");
   const P = Ctx.prepare(s);
@@ -67,7 +81,8 @@ export function evaluateCase(cs, engineOpts) {
   const cands = [r.primary, ...(r.alternatives || [])].filter(Boolean);
   const js = cands.map((c) => (cs.mid ? judgeMid(c, cs) : judge(c, cs.truth)));
   const k = js.findIndex((j) => j.hit);
-  return { id: cs.id, mid: !!cs.mid, structureOnly: js[0] && js[0].structure && !js[0].hit, cls: cs.truth.cls, scale: r.degrees.analysis, status: r.status, abstain: !!(r.applicability && r.applicability.abstain), applicability: r.applicability ? r.applicability.level : null,
+  const g8 = cands.reduce((a, c) => a + intraViolations(c, cs.closes).length, 0);
+  return { g8, id: cs.id, mid: !!cs.mid, structureOnly: js[0] && js[0].structure && !js[0].hit, cls: cs.truth.cls, scale: r.degrees.analysis, status: r.status, abstain: !!(r.applicability && r.applicability.abstain), applicability: r.applicability ? r.applicability.level : null,
            primary: js[0] || { label: "NONE", degree: "NONE" }, rank: k, falseAccept: js.some((j) => j.asNegTarget), quality: r.primary && r.primary.countQuality ? r.primary.countQuality.level : null,
            clarity: r.clarity, ms };
 }
@@ -88,9 +103,14 @@ export function gate(rowsAll) {
     G4_degreeExactOrNested: pct(nlm.filter((r) => r.primary.degree === "EXACT" || r.primary.degree === "NESTED").length, nlm.length),
     G5_grossDegreeError: pct(gross, nlm.length),
     G6_falseAccept: pct(neg.filter((r) => r.falseAccept).length, neg.length),
-    G7_falseCertainty: pct(high.filter((r) => r.rank !== 0).length, high.length), G7_nHigh: high.length
+    G7_falseCertainty: pct(high.filter((r) => r.rank !== 0).length, high.length), G7_nHigh: high.length,
+    G8_intraWaveViolations: rowsAll.reduce((a, r) => a + (r.g8 || 0), 0)
   };
-  const pass = { G1: g.G1_primary >= 45, G2: g.G2_primaryOrAlt >= 60, G3: g.G3_minClassPrimaryOrAlt && g.G3_minClassPrimaryOrAlt[1] >= 25, G4: g.G4_degreeExactOrNested >= 50, G5: g.G5_grossDegreeError <= 25, G6: g.G6_falseAccept <= 5, G7: g.G7_falseCertainty <= 25 };
+  const pass = { G1: g.G1_primary >= 45, G2: g.G2_primaryOrAlt >= 60, G3: g.G3_minClassPrimaryOrAlt && g.G3_minClassPrimaryOrAlt[1] >= 25, G4: g.G4_degreeExactOrNested >= 50, G5: g.G5_grossDegreeError <= 25, G6: g.G6_falseAccept <= 5, G7: g.G7_falseCertainty <= 25, G8: g.G8_intraWaveViolations === 0 };
+  const hi = end.filter((r) => sup(r) && r.id.split("|")[1] === "high"), hiHigh = hi.filter((r) => r.applicability === "HIGH");
+  g.high_G1_primary = pct(hi.filter((r) => r.rank === 0).length, hi.length); g.high_G7_falseCertainty = pct(hiHigh.filter((r) => r.rank !== 0).length, hiHigh.length); g.high_nHigh = hiHigh.length;
+  g.high_abstain = pct(hi.filter((r) => r.abstain).length, hi.length);
+  pass.high_G1 = g.high_G1_primary >= 20; pass.high_G7 = hiHigh.length === 0 || g.high_G7_falseCertainty <= 30;
   return { metrics: g, pass };
 }
 export function summarize(rowsAll) {
@@ -111,20 +131,20 @@ export function summarize(rowsAll) {
 }
 
 if (import.meta.url === "file://" + process.argv[1]) {
-  const split = arg("split", "DEVELOPMENT"), tag = arg("tag", "current"), engineOpts = JSON.parse(arg("engine", "{}"));
+  const split = arg("split", "DEVELOPMENT"), tag = arg("tag", "current"), engineOpts = JSON.parse(arg("engine", "{}")), layout = arg("layout", "A");
   const classes = arg("classes") ? arg("classes").split(",") : Object.keys(CLASSES);
   const noises = arg("noise") ? arg("noise").split(",") : NOISES;
   const rows = [];
   for (const cls of classes) for (const nz of noises) for (const seed of seedsOf(split)) {
-    rows.push(evaluateCase(corpusCase(cls, seed, nz), engineOpts));
-    if (!process.argv.includes("--end-only") && !CLASSES[cls].negativeOf) rows.push(evaluateCase(corpusCase(cls, seed, nz, { cut: "mid" }), engineOpts));
+    rows.push(evaluateCase(corpusCase(cls, seed, nz, { layout }), engineOpts));
+    if (!process.argv.includes("--end-only") && !CLASSES[cls].negativeOf) rows.push(evaluateCase(corpusCase(cls, seed, nz, { cut: "mid", layout }), engineOpts));
   }
   const sum = summarize(rows);
   const gt = gate(rows);
-  const out = { schemaVersion: "vu-elliott-corpus-eval-1.0.0", generatedAt: new Date().toISOString(), engine: USE_V3 ? EV3.ENGINE_VERSION : EV2.ENGINE_VERSION, engineOpts, split, tag, gate: gt, summary: sum, rows };
+  const out = { schemaVersion: "vu-elliott-corpus-eval-1.0.0", generatedAt: new Date().toISOString(), engine: USE_V3 ? EV3.ENGINE_VERSION : EV2.ENGINE_VERSION, engineOpts, split, layout, tag, gate: gt, summary: sum, rows };
   const dir = join(ROOT, "quant/data/technical-intelligence/elliott-validation/corpus");
   mkdirSync(dir, { recursive: true });
-  if (!process.argv.includes("--no-write")) writeFileSync(join(dir, "corpus-" + split.toLowerCase() + "-" + tag + ".json"), JSON.stringify(out));
+  if (!process.argv.includes("--no-write")) writeFileSync(join(dir, "corpus-" + split.toLowerCase() + (layout === "B" ? "-layoutB" : "") + "-" + tag + ".json"), JSON.stringify(out));
   const pct = (a, b) => (b ? (100 * a / b).toFixed(1) : "-") + "%";
   console.log(`  MID: n ${sum.mid.n} primary ${sum.mid.primary} (${pct(sum.mid.primary, sum.mid.n)}) p+a ${sum.mid.primaryOrAlt} structure-right-label-wrong ${sum.mid.structureOnly}`);
   console.log(`split ${split} tag ${tag}: positives ${sum.positives} primary ${sum.primary} (${pct(sum.primary, sum.positives)}) primary+alt ${sum.primaryOrAlt} (${pct(sum.primaryOrAlt, sum.positives)}) | degree ${JSON.stringify(sum.degree)} | negatives ${sum.negatives} falseAccept ${sum.falseAccepts} | abstain(pos) ${sum.abstainPositives} | ${sum.medianMs} ms`);

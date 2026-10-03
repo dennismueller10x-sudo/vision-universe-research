@@ -59,16 +59,16 @@
     orthodoxMax: 0.4,             // Ueberschiessen der Folgewelle (B eines expandierten Flats) relativ zu ihrer Laenge
     orthodoxShortMax: 0.7,        // Ende hinter dem Extrem (Dreieck-E, Running-Flat-C): Abstand zum Extrem relativ zur Ausdehnung
     anchorMinAtr: 4,              // Ursprung schliesst eine Bewegung >= 4 ATR ab (Suchbudget; Korpus DEVELOPMENT: keine Genauigkeitseinbusse, 34 → 23 ms)
-    /* Kalibriert auf Korpus DEVELOPMENT (Ende + Mitte, Rauschen none/low/medium; Koordinatensuche, Sensitivitaet ±50 % dokumentiert in
+    /* 3.1: kalibriert auf Korpus DEVELOPMENT, Layout A und B (Ende + Mitte; scripts/technical/elliott-calibration/calibrate-weights.mjs; Koordinatensuche, Sensitivitaet ±50 % dokumentiert in
        ELLIOTT_ENGINE3_REPORT.md). Keine VALIDATION- oder HOLDOUT-Faelle verwendet. */
-    weights: { guidelines: 0.03, subdivision: 0.2, separation: 0.06, anchor: 0.45, dominance: 0.45, similarity: 0, trendContext: 0, coverage: 0.3, prior: 0.06, higherDegree: 0.06, tail: 0.1, residual: 0.1 },
+    weights: { guidelines: 0.06, subdivision: 0.45, separation: 0.03, anchor: 0.45, dominance: 0.45, similarity: 0, trendContext: 0, coverage: 0.45, prior: 0.15, higherDegree: 0, tail: 0.2, residual: 0 },
     typePrior: { IMPULSE: 1, ZIGZAG: 1, FLAT: 0.85, TRIANGLE: 0.7, LEADING_DIAGONAL: 0.6, ENDING_DIAGONAL: 0.65, WXY: 0.65, DOUBLE_ZIGZAG: 0.7, TRIPLE_ZIGZAG: 0.5 },
     stickiness: 0.05, stickinessQuiet: 0.05, maxAlternatives: 2,   // Hysterese-Studie DEVELOPMENT: 0,05 = instabile Wechsel 0,66 %/Woche (V2 0,92 %), Erkennung −5 % ggü. 0,03; hoeher haelt an ueberholten Zaehlungen fest
     alternativeMinInvalidationGapAtr: 0.5,
     clarity: { high: 0.1, moderate: 0.04 }, structural: { high: 0.68, moderate: 0.55 },
     noise: { abstainBelow: 1.3, full: 3.0 },
     /* Eichung Korpus DEVELOPMENT (scripts: elliott-corpus-eval, Bericht ELLIOTT_ENGINE3_REPORT.md): [1, countQuality, clarity/0,15, z/4, Strukturmehrdeutigkeit, laufend] */
-    applicability: { coef: [-7.222, 7.725, 2.043, 0.835, 1, -1.953], high: 0.6, moderate: 0.35 }
+    applicability: { coef: [-7.44, 7.273, 1.597, 1.089, 0.865, -1.348], high: 0.6, moderate: 0.35, highMinZ: null }
   };
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -621,7 +621,7 @@
   /**
    * Anwendbarkeit = Strukturklarheit der Zaehlung: Wie oft stimmte eine Hauptzaehlung mit diesen Merkmalen im synthetischen
    * Korpus (bekannte Struktur)? Logistische Eichung auf Korpus DEVELOPMENT (Ende + Mitte, alle Rauschstufen); Stufen ueber
-   * Praezisionsziele: HOCH ab 0,6 (falsche Sicherheit 15 % im Entwicklungssplit), MITTEL ab 0,35, darunter
+   * Praezisionsziele: HOCH ab 0,6 (3.1: falsche Sicherheit 13 % im Entwicklungssplit, Layout A+B), MITTEL ab 0,35, darunter
    * KEINE VERLAESSLICHE ZAEHLUNG. Keine Prognose ueber den Kurs — die Eichung misst Methodentreue, nicht Ergebnis.
    */
   function applicability3(q, clarity, snr, cfg, amb, complete) {
@@ -630,6 +630,8 @@
     var eta = 0; for (var k = 0; k < x.length; k++) eta += x[k] * A.coef[k];
     var score = 1 / (1 + Math.exp(-eta));
     var level = score >= A.high ? "HIGH" : score >= A.moderate ? "MODERATE" : "LOW";
+    /* Wellen kaum groesser als ein Zufallspfad gleicher Dauer: hoechstens MITTEL (Korpus DEVELOPMENT, hohes Rauschen) */
+    if (level === "HIGH" && snr && isNum(A.highMinZ) && snr.ratio < A.highMinZ) level = "MODERATE";
     var reasons = [];
     if (amb && amb.kind === "STRUCTURE" && isNum(clarity) && clarity < 0.05) reasons.push("Mehrere Lesarten mit anderen Wellenenden liegen fast gleichauf");
     if (q && q.level === "LOW") reasons.push("Die beste Zählung erfüllt die Richtlinien nur schwach");
