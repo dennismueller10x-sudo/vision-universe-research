@@ -197,6 +197,11 @@ const NAME_FORM = [
   ['PREFERRED', /\b(PREFERRED|PFD|PREF\.)/i], ['WARRANT', /\bWARRANTS?\b/i],
   ['RIGHT', /\bRIGHTS?\b/i], ['UNIT', /\bUNITS?\b/i],
 ];
+// Runde 10: Namensmuster fuer Nicht-Aktien, auch im Plural ("ETNs", "ETFs") und mit Faktor
+// ("3X", "-2X"). Nur Diagnose/Universumspruefung; die Klassifikation oben bleibt unveraendert.
+export const NON_EQUITY_NAME = /(\bETNs?\b|\bETFs?\b|\bETPs?\b|\bEXCHANGE[- ]TRADED\b|\bINDEX[- ]LINKED\b|\bLEVERAGED\b|\bINVERSE\b|[-\s]\d+(\.\d+)?X\b|\bULTRA ?(PRO|SHORT)\b|\bDAILY TARGET\b)/i;
+export function nonEquityName(name) { return NON_EQUITY_NAME.test(String(name || '')); }
+
 export function classifyListing(Master, listing, name, listedRoots, today = '2026-10-01') {
   const r = Master.classifySecurity({ ticker: listing.ticker, exchange: listing.exchange, assetType: 'Stock', priceCurrency: 'USD', name: name || '', startDate: listing.startDate, endDate: listing.listEnd || '' }, { today, listedRoots });
   let cls = r.instrumentType, basis = 'classifySecurity';
