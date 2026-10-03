@@ -39,6 +39,8 @@ import kkBreakout31 from './engine/strategies/kk-breakout-v31.mjs';
 import kkBreakout32 from './engine/strategies/kk-breakout-v32.mjs';
 import darvas302 from './engine/strategies/darvas-v302.mjs';
 import donchian201 from './engine/strategies/donchian-v201.mjs';
+import donchian202 from './engine/strategies/donchian-v202.mjs';
+import weinstein4 from './engine/strategies/weinstein-v4.mjs';
 import { marketOkMap } from './validation/portfolio.mjs';
 import donchian2 from './engine/strategies/donchian-v2.mjs';
 import darvas3 from './engine/strategies/darvas-v3.mjs';
@@ -69,7 +71,9 @@ let TREND52_SYMBOLS = [];
 // Runde 11: Momentum 3.2.0 (Fehlerkorrektur Einstand). Weinstein 4.0.0, Minervini 3.0.0 und Turtle 2.1.0
 // verfehlten die vorab festgelegten Uebernahmebedingungen und bleiben Forschung (PREREGISTRATION-R11).
 // Runde 12: Marktampel (PORT-MARKET-200) fuer Darvas 3.0.2 und Turtle 2.0.1 (vorab festgelegt bestanden).
-export const LIVE_ENGINES = [kkBreakout32, weinstein3, darvas302, minervini2, donchian201];
+// Runde 13 (Audit, Entscheidungen mit S1C neu angewendet): Weinstein 4.0.0 (Fortsetzungskaeufe) live,
+// Turtle 2.0.2 ohne Marktampel (2.0.1 zurueckgenommen); Darvas 3.0.2 behaelt die Ampel.
+export const LIVE_ENGINES = [kkBreakout32, weinstein4, darvas302, minervini2, donchian202];
 export const PREVIOUS_ENGINES = [kkBreakout, kkBreakout2, kkBreakout3, weinstein, weinstein2, darvas, darvas2, darvas3, minervini, donchian];
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
