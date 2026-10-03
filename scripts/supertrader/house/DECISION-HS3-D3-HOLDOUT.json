@@ -1,0 +1,14 @@
+{
+  "schema": "supertrader-house-decision-1.0.0",
+  "id": "VU_HOUSE_HS3_D3",
+  "decidedAt": "2026-10-03",
+  "stage": "holdout",
+  "runs": { "dev": 37144385411, "holdout": 37146984920 },
+  "frozen": "FROZEN-HS3-D3.json",
+  "selected": "M03",
+  "criteria": { "G0": "PASS", "H1": "FAIL", "H2": "FAIL", "H3": "PASS", "H4": "FAIL", "H5": "PASS", "H6": "FAIL" },
+  "decision": "TESTED_NO_EDGE",
+  "finding": "Im Holdout 2022–2026 lag der gewählte Versuch praktisch gleichauf mit SPY (knapp darunter) und knapp unter der eigenen Kontrolle. Über 2016–2026 durchgehend ist die Abweichung zu SPY klein und statistisch nicht von null zu unterscheiden; die Deflated Sharpe Ratio bei 43 gezählten Versuchen ist weit unter 0,95.",
+  "holdoutStatus": "VERBRAUCHT. Der Zeitraum 2022–2026 ist für neue Hypothesen kein unberührter Test mehr; künftige Nachweise nur über einen eingefrorenen Vorwärtslauf.",
+  "liveModel": "Kein Modelldepot: Die vorab festgelegten Kriterien für einen Live-Start (CRITERIA_MET) sind nicht erfüllt."
+}

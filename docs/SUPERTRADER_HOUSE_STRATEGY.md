@@ -90,3 +90,15 @@ Logs zeigen nur Zählwerte.
 | dev HS1 (Run 37132733753) | Alle 12 gleichgewichteten Versuche unter SPY → TESTED_NO_EDGE, Holdout nicht geöffnet (DECISION-HS1.json). |
 | dev HS2 (Run 37134594360) | Überrendite stammt aus dem Größenersatz, nicht aus der Faktorneigung; PBO > 0,5 → TESTED_NO_EDGE, Holdout nicht geöffnet (DECISION-HS2.json). |
 | SEC r13 (Run 37136875082) | Aktienanzahl zum Einreichungsdatum für 7 242 von 9 533 Listings (dei 6 724, Durchschnittsaktien 518); Grundlage für HS3. |
+| HS3 dev (Run 37137161220), D1 (37139551895), D2 (37142173224) | Datenprüfung G0 jeweils verfehlt (ADR, Auslandsemittenten, falsch skalierte Aktienzahlen); Nachträge D1–D3 vor dem jeweils nächsten Lauf registriert. |
+| HS3-D3 dev (Run 37144385411) | G0 bestanden; M03 gewählt und eingefroren (FROZEN-HS3-D3.json). Vorsprung klein, statistisch nicht belastbar. |
+| **HS3-D3 Holdout (Run 37146984920)** | **TESTED_NO_EDGE**: im Holdout 2022–2026 praktisch gleichauf mit SPY. Holdout verbraucht. Kein Modelldepot (DECISION-HS3-D3-HOLDOUT.json). |
+
+## Ergebnis und Lehren (Stand 03.10.2026)
+
+- **Kein Versuch hat den S&P 500 belastbar geschlagen.** Das gilt für alle 43 gezählten Versuche, gleichgewichtet wie indexnah, auf echten Daten mit Delistings, nach Kosten.
+- **Gleichgewichtete Faktorportfolios** lagen 2016–2021 deutlich hinter SPY. Ursache ist die Gewichtung gegen einen kapitalgewichteten Index.
+- **Indexnahe Faktorneigung** bildet SPY sehr genau ab; der Faktorbeitrag liegt im Bereich von wenigen Zehntelprozent p. a. und ist von null nicht zu unterscheiden.
+- **Datenqualität entscheidet:** Ohne Point-in-Time-Marktkapitalisierung entstehen scheinbare Vorsprünge (HS2), die allein aus dem Größenersatz stammen. Die Datenprüfung G0 hat drei Datenfehler gefunden, bevor ein Ergebnis zählte.
+- **Offene Datenlücke:** Mehrgattungs-Emittenten ohne Aktienzahl in companyfacts (u. a. Alphabet, Berkshire, Visa, Mastercard).
+- **Weiterer Weg:** Neue Hypothesen nur mit eigener Präregistrierung und Nachweis über einen eingefrorenen Vorwärtslauf, da der Holdout verbraucht ist.
