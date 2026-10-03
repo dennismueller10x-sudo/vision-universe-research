@@ -286,3 +286,13 @@
 .qd .cb-controls{flex-wrap:wrap;row-gap:8px}
 @media (max-width:520px){.qd .cb-controls .cb-seg-btn{padding-left:12px;padding-right:12px}}
 .qd .qx-back,.qd .q-back{min-height:44px;min-width:44px;display:inline-flex;align-items:center}
+/* UI-Audit Mission III (Desktop 1280×900): Chart erschien erst unterhalb der ersten Bildschirmhoehe. Breite Bildschirme: Hero zweispaltig,
+   kleinere Ausblick-Zeile — Chart rueckt in den ersten Bildschirm. */
+@media (min-width:1024px){
+  .qd .cb-hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);column-gap:32px;align-items:end;padding-bottom:14px}
+  .qd .cb-hero > *{grid-column:1}
+  .qd .cb-hero > .cb-layers{grid-column:2;grid-row:1 / span 6;align-self:end;display:grid;grid-template-columns:1fr;gap:10px;margin:0}
+  .qd .cb-outlook{font-size:clamp(46px,5.4vw,72px)}
+  .qd .cb-eyebrow{margin-bottom:10px}
+  .qd .cb-hero .cb-lead{font-size:16px}
+}
