@@ -147,3 +147,35 @@ test('Auswertung end-to-end auf kleinen Kunstreihen: Entwicklungsmodus sieht nic
   assert.equal(r.controls.RANDOM.length, 20);
   assert.ok(r.stats.pbo.pbo !== null);
 });
+
+test('HS2: Gewichtsgrenze und Faktorneigung', async () => {
+  const { capWeights, indexTiltWeights } = await import('../house/engine.mjs');
+  const w = capWeights(new Map([['a', 50], ['b', 30], ['c', 10], ['d', 5], ['e', 5]]), 0.3);
+  const tot = [...w.values()].reduce((x, y) => x + y, 0);
+  assert.ok(Math.abs(tot - 1) < 1e-12);
+  assert.ok([...w.values()].every((v) => v <= 0.3 + 1e-12));
+  assert.ok(Math.abs(w.get('d') / w.get('e') - 1) < 1e-12);
+  const st = (id) => ({ id });
+  const elig = Array.from({ length: 40 }, (_, i) => ({ st: st('X' + i), dvW: 100 - i, MOM: i, SUE: NaN }));
+  const flat = indexTiltWeights(elig, { factors: [] });
+  const tilt = indexTiltWeights(elig, { factors: ['MOM'], tau: 0.5 });
+  const cut = indexTiltWeights(elig, { factors: ['MOM'], cut: true });
+  assert.ok(tilt.get('X39').w / flat.get('X39').w > 1.3, 'hoher Rang wird uebergewichtet');
+  assert.ok(tilt.get('X0').w / flat.get('X0').w < 0.7, 'niedriger Rang wird untergewichtet');
+  assert.ok(!cut.has('X0') && cut.has('X39'));
+  for (const m of [flat, tilt, cut]) assert.ok(Math.abs([...m.values()].reduce((a, x) => a + x.w, 0) - 1) < 1e-9);
+});
+
+test('HS2 end-to-end: indexnahe Versuche, Kontrollversuch E00 nicht waehlbar, DSR zaehlt 19 Versuche', async () => {
+  const { runAnalysis } = await import('../house/analyze.mjs');
+  const cal = []; const dd = new Date('2015-01-01T00:00:00Z');
+  while (dd.toISOString().slice(0, 10) <= '2026-09-30') { const wd = dd.getUTCDay(); if (wd && wd !== 6) cal.push(dd.toISOString().slice(0, 10)); dd.setUTCDate(dd.getUTCDate() + 1); }
+  const mkRaw = (i) => { let p = 20 + i; return cal.map((date, k) => { p *= 1 + (i - 15) * 0.00004 + Math.sin(k * 0.3 + i) * 0.006; return { date, open: p * 0.999, high: p * 1.01, low: p * 0.99, close: p, volume: 1e6 * (1 + i / 10), adjClose: p, dividend: 0, splitFactor: 1 }; }); };
+  const segs = Array.from({ length: 30 }, (_, i) => ({ id: `tiingo:NYSE:T${i}:2000-01-01`, raw: mkRaw(i), survivor: true, delisted: false, fund: null }));
+  const r = runAnalysis({ segs, spyAdj: L.adjustSeries(mkRaw(3)), hash: 'x', nonEquityExcluded: 0, secCoverage: null }, { MODE: 'dev', SET: 'hs2' });
+  assert.equal(r.set, 'hs2');
+  assert.deepEqual(Object.keys(r.trials), ['E00', 'E01', 'E02', 'E03', 'E04', 'E05', 'E06']);
+  assert.notEqual(r.selection.selected, 'E00');
+  assert.equal(r.stats.trialsCounted, 19);
+  for (const t of Object.values(r.trials)) assert.ok(t.reconcile < 1e-9);
+});

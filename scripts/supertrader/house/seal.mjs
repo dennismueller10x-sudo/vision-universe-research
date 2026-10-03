@@ -20,9 +20,9 @@ export function truncateForDevelopment(segs) {
 export function fileHash(p) { return crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex'); }
 
 // Holdout nur, wenn FROZEN-HS1.json die aktuellen Hashes von Praeregistrierung und Engine traegt.
-export function assertFrozen(dir) {
-  const frozenPath = path.join(dir, 'FROZEN-HS1.json');
-  if (!fs.existsSync(frozenPath)) throw new Error('Holdout gesperrt: FROZEN-HS1.json fehlt.');
+export function assertFrozen(dir, name = 'FROZEN-HS1.json') {
+  const frozenPath = path.join(dir, name);
+  if (!fs.existsSync(frozenPath)) throw new Error(`Holdout gesperrt: ${name} fehlt.`);
   const f = JSON.parse(fs.readFileSync(frozenPath, 'utf8'));
   for (const [file, want] of Object.entries(f.hashes || {})) {
     const got = fileHash(path.join(dir, file));

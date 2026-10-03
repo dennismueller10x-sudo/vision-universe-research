@@ -1,0 +1,15 @@
+{
+  "schema": "supertrader-house-decision-1.0.0",
+  "id": "VU_HOUSE_HS1",
+  "decidedAt": "2026-10-03",
+  "prereg": "PREREGISTRATION-HS1.json",
+  "runs": { "devSmoke": 37132495954, "dev": 37132733753 },
+  "publication": "Kennzahlen nur verschlüsselt (claude/vu-house-strategy-results). Öffentlich nur die Entscheidung.",
+  "technicalControls": "PASS (Abstimmung Endwert, Entwicklungssperre, SPY-Gesamtrendite plausibel)",
+  "selected": "T01",
+  "criteria": { "H3_development": "FAIL", "H1_H2_H4": "NOT_RUN", "H5_PBO": "PASS" },
+  "decision": "TESTED_NO_EDGE",
+  "holdout": "NICHT GEÖFFNET. Der gewählte Versuch verfehlt bereits H3 im Entwicklungszeitraum; ein Holdout-Lauf hätte den Zeitraum 2022–2026 verbraucht, ohne das Urteil ändern zu können. Der Holdout bleibt versiegelt für HS2.",
+  "finding": "Keiner der 12 gleichgewichteten Faktor-Versuche schlug SPY 2016–2021 nach Kosten. Auch das gleichgewichtete Gesamtuniversum lag dahinter; Zufallsauswahlen lagen im Median deutlich darunter. Ursache ist vor allem die Gleichgewichtung gegen einen kapitalgewichteten Index in einer Phase dominanter Großwerte, nicht ein einzelner Faktor.",
+  "consequence": "HS2 prüft vorab registriert einen indexnahen Ansatz (Gewichtung nach Größe mit Faktorneigung). Alle 12 HS1-Versuche zählen für die Deflated Sharpe Ratio von HS2 mit."
+}

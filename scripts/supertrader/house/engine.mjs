@@ -11,6 +11,8 @@ export const HS1 = Object.freeze({
   momFrom: 252, momSkip: 21, volShort: 126, volLong: 252, highWindow: 252,
   fundMaxAgeDays: 135, sueQuarters: 8, sueMin: 4,
   slippageBps: 10, commissionBps: 1, bufferMult: 2, resizeLow: 0.5, resizeHigh: 2, regimeExposure: 0.5, regimeSma: 200,
+  // HS2 (PREREGISTRATION-HS2.json)
+  indexTop: 500, dvWeightWindow: 252, weightCap: 0.06, bandRel: 0.25, bandAbs: 0.0005,
 });
 
 const DAY = 864e5;
@@ -98,7 +100,8 @@ export function crossSection(stocks, k, D, P = HS1) {
     if (!(st.rawClose[t] >= P.minRawPrice)) continue;
     const dv = (st.pDv[t + 1] - st.pDv[t + 1 - P.dvWindow]) / P.dvWindow;
     if (!(dv > 0)) continue;
-    cand.push({ st, t, dv });
+    const dvW = (st.pDv[t + 1] - st.pDv[t + 1 - P.dvWeightWindow]) / P.dvWeightWindow;
+    cand.push({ st, t, dv, dvW });
   }
   cand.sort((a, b) => b.dv - a.dv || a.st.id.localeCompare(b.st.id));
   const elig = cand.slice(0, P.topLiquid);
@@ -136,6 +139,45 @@ export function scoreSection(elig, factors) {
   const ranks = factors.map((f) => rankFactor(elig, f));
   return elig.map((e, i) => { let s = 0; for (const r of ranks) s += r[i]; return { id: e.st.id, st: e.st, t: e.t, score: s / factors.length }; })
     .filter((x) => Number.isFinite(x.score));
+}
+
+// Gewichte mit Obergrenze: Ueberschuss iterativ proportional auf die uebrigen verteilen.
+export function capWeights(raw, cap) {
+  const ids = [...raw.keys()];
+  let w = new Map(ids.map((id) => [id, raw.get(id)]));
+  const tot0 = ids.reduce((a, id) => a + w.get(id), 0);
+  if (!(tot0 > 0)) return new Map();
+  for (const id of ids) w.set(id, w.get(id) / tot0);
+  if (cap * ids.length < 1) return new Map(ids.map((id) => [id, 1 / ids.length]));
+  for (let it = 0; it < 100; it++) {
+    let excess = 0, freeSum = 0;
+    for (const id of ids) { const v = w.get(id); if (v > cap) { excess += v - cap; w.set(id, cap); } else if (v < cap) freeSum += v; }
+    if (excess <= 1e-15) break;
+    for (const id of ids) { const v = w.get(id); if (v < cap && freeSum > 0) w.set(id, v + excess * (v / freeSum)); }
+  }
+  return w;
+}
+
+// HS2: Zielgewichte im 500er-Universum (elig nach dv absteigend sortiert).
+export function indexTiltWeights(elig, cfg, P = HS1) {
+  const uni = elig.slice(0, P.indexTop).filter((e) => e.dvW > 0);
+  const base = capWeights(new Map(uni.map((e) => [e.st.id, e.dvW])), P.weightCap);
+  let raw;
+  if (!cfg.factors?.length) raw = base;
+  else {
+    const scored = scoreSection(uni, cfg.factors);
+    const s = new Map(scored.map((x) => [x.id, x.score]));
+    raw = new Map();
+    for (const e of uni) {
+      const sc = s.get(e.st.id); if (!Number.isFinite(sc)) continue;
+      const b = base.get(e.st.id) || 0;
+      if (cfg.cut) { if (sc >= 0.5) raw.set(e.st.id, b); }
+      else raw.set(e.st.id, b * Math.max(0, 1 + cfg.tau * (2 * sc - 1)));
+    }
+  }
+  const w = capWeights(raw, P.weightCap);
+  const byId = new Map(uni.map((e) => [e.st.id, e.st]));
+  return new Map([...w].filter(([, v]) => v > 0).map(([id, v]) => [id, { w: v, st: byId.get(id) }]));
 }
 
 // Deterministische Zufallszahl je (seed, id, D) fuer die Kontrolle RANDOM.
@@ -223,6 +265,21 @@ export function simulate(stocks, calendar, cfg, P = HS1) {
       if (cfg.ewUniverse) ranked = elig.map((e) => ({ id: e.st.id, st: e.st, score: 0 }));
       else if (cfg.random != null) ranked = elig.map((e) => ({ id: e.st.id, st: e.st, score: hashRand(cfg.random, e.st.id + D) })).sort((a, b) => b.score - a.score);
       else ranked = scoreSection(elig, cfg.factors).sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
+      if (cfg.weighting === 'INDEX_TILT') {
+        // HS2: Zielgewichte nach Groesse mit Faktorneigung; Handel nur ausserhalb des Bandes.
+        const tw = indexTiltWeights(elig, cfg, P);
+        const sells = new Map(), buys = [];
+        for (const [id, p] of pos) if (!tw.has(id)) sells.set(id, p.shares);
+        for (const [id, x] of tw) {
+          const p = pos.get(id), cur = p ? p.shares * p.last : 0, want = x.w * eq;
+          if (!p) { if (want > 0) buys.push({ st: x.st, value: want }); continue; }
+          if (Math.abs(cur - want) / eq <= Math.max(P.bandRel * x.w, P.bandAbs)) continue;
+          if (want > cur) buys.push({ st: p.st, value: want - cur }); else sells.set(id, (cur - want) / p.last);
+        }
+        pending = { sells, buys };
+        log.push({ date: D, eligible: elig.length, exposure: 1, holdings: [...tw.entries()].sort((a, b) => b[1].w - a[1].w).slice(0, 60).map(([id]) => id), sells: sells.size, buys: buys.length });
+        continue;
+      }
       const exposure = cfg.regime && cfg.spySma && cfg.spySma[k] < 1 ? P.regimeExposure : 1;
       const N = cfg.ewUniverse ? ranked.length : cfg.n;
       const rankOf = new Map(ranked.map((x, i) => [x.id, i + 1]));
