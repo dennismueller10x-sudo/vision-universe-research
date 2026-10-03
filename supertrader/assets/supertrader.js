@@ -1154,6 +1154,9 @@
   var BUILD = null;
   function build() { return BUILD || (BUILD = getJSON('build.json').catch(function () { return null; })); }
   function load(k) {
+    /* Regeltexte braucht nur die Strategie-Detailseite. */
+    if (k === 'registry') return build().then(function (b) { return page !== 'strategy' && b && b.slices && b.slices.registry
+      ? getJSON('registry-core.json').catch(function () { return getJSON(FILE.registry); }) : getJSON(FILE.registry); });
     if (k !== 'signals' || page === 'signals') return getJSON(FILE[k]);
     return build().then(function (b) {
       var sl = b && b.slices, part = null;
