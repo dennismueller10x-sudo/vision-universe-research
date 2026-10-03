@@ -35,13 +35,13 @@ def material_documents(events, cid):
     documents = {}
     for e in events:
         for doc in e.get('sourceDocuments', []) + [{'url': e.get(k), 'type': kind} for k, kind in
-                [('presentationUrl', 'PRESENTATION'), ('transcriptUrl', 'COMPANY_TRANSCRIPT'), ('quarterlyReportUrl', 'FINANCIAL_REPORT'), ('earningsReleaseUrl', 'EARNINGS_RELEASE')]]:
+                [('presentationUrl', 'PRESENTATION'), ('transcriptUrl', 'COMPANY_TRANSCRIPT'), ('quarterlyReportUrl', 'FINANCIAL_REPORT'), ('earningsReleaseUrl', 'EARNINGS_RELEASE'), ('webcastUrl', 'WEBCAST'), ('replayUrl', 'CALL_RECORDING')]]:
             url = doc.get('url')
             if not url:
                 continue
             key = (url, doc.get('type') or 'SOURCE_DOCUMENT')
             documents[key] = {**doc, 'type': key[1], 'documentId': stable_id(cid, *key), 'companyId': cid, 'eventId': e['eventId'],
-                              'reportingPeriod': e.get('reportingPeriod'), 'fiscalYear': e.get('fiscalYear'), 'fiscalQuarter': e.get('fiscalQuarter'), 'date': e.get('date')}
+                              'reportingPeriod': e.get('reportingPeriod'), 'fiscalYear': e.get('fiscalYear'), 'fiscalQuarter': e.get('fiscalQuarter'), 'date': e.get('date'), 'label': doc.get('label') or e.get('headline')}
     return list(documents.values())
 
 
@@ -341,9 +341,13 @@ class Store:
                             references[url] = {'documentId': stable_id(cid, url, 'fact-reference'), 'companyId': cid, 'type': 'SEC_FACT_FILING_REFERENCE',
                                                'url': url, 'filingId': fact['filingId'], 'filedAt': fact.get('filedAt'), 'date': None, 'eventId': None,
                                                'evidence': 'EXISTING_VALIDATED_CONSUMER_FACT_ACCESSION', 'label': 'Fact source filing; form and publication time unavailable'}
-        materials = list({(d['url'], d['type']): d for d in configuration_documents + material_documents(events, cid) + list(references.values())}.values())
+        event_documents = material_documents(events, cid)
+        # A large financial archive must not hide a recent conference webcast
+        # merely because its event has passed out of the upcoming section.
+        recordings = [d for d in event_documents if d['type'] in ('WEBCAST','CALL_RECORDING')]
+        materials = list({(d['url'], d['type']): d for d in recordings + configuration_documents + event_documents + list(references.values())}.values())
         return {'schema': SCHEMA, 'companyId': cid, 'listings': company['listings'], 'companyName': company['names'][0] if company['names'] else None,
-                'generatedAt': now, 'state': 'AVAILABLE' if items or events else 'NO_DATA',
+                'generatedAt': now, 'state': 'AVAILABLE' if items or events or materials or financials.get('state')=='AVAILABLE' else 'NO_DATA',
                 'news': [i for i in items if i['eventType'] == 'NEWS'],
                 'filings': [e for e in events if e['eventType'] == 'SEC_FILING'][:30],
                 'earnings': [e for e in events if e['eventType'] in ('EARNINGS_PUBLISHED', 'EARNINGS_CANDIDATE', 'PERIODIC_REPORT_PUBLISHED')][:12],
@@ -374,9 +378,9 @@ class Store:
         paths, tickers = {}, {}
         for cid, company in sorted(companies.items()):
             payload = self.company_payload(company, now)
-            if payload['state'] == 'NO_DATA' and payload['latestFinancials'].get('state') != 'AVAILABLE':
+            if payload['state'] == 'NO_DATA' and not payload['materials'] and payload['latestFinancials'].get('state') != 'AVAILABLE':
                 continue
-            if payload['latestFinancials'].get('state') == 'AVAILABLE':
+            if payload['materials'] or payload['latestFinancials'].get('state') == 'AVAILABLE':
                 payload['state'] = 'AVAILABLE'
             path = 'snapshots/' + generation + '/' + cid + '.json'
             # A noisy issuer cannot prevent publishing all other companies.

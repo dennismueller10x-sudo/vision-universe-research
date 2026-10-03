@@ -28,3 +28,8 @@ test('sharded ticker lookup loads only requested prefix and validates generation
   const stalePath = async path => ({ ok: true, json: async () => path.endsWith('index.json') ? { schema: SCHEMA, state: 'PREVIEW', generation, lookupShards: ['AA'] } : { schema: SCHEMA, generation, tickers: { AAPL: [{ companyId: cid, instrumentId: iid }] }, companies: { [cid]: 'snapshots/' + 'c'.repeat(24) + '/' + cid + '.json' } } });
   assert.equal((await load('AAPL', { ...options, fetch: stalePath })).reason, 'LOOKUP_GENERATION_MISMATCH');
 });
+
+test('an expired cached public snapshot fails closed rather than presenting old news as current', async()=>{
+ const result=await load('AAPL',{...options,now:'2026-10-10T00:00:00Z',fetch:fetcher()});
+ assert.equal(result.state,'UNAVAILABLE');assert.equal(result.reason,'SNAPSHOT_EXPIRED');
+});

@@ -13,8 +13,10 @@ def issuer_name(value):
 
 
 def resolve(item, source, index):
-    if source.get('provider') != 'GLOBENEWSWIRE_RSS' or domain(source.get('url', '')) != 'www.globenewswire.com' or '/RssFeed/' not in source.get('url', ''):
-        return None
+    rss=source.get('provider')=='GLOBENEWSWIRE_RSS' and domain(source.get('url',''))=='www.globenewswire.com' and '/RssFeed/' in source.get('url','')
+    from .distributor_archive import pinned_archive
+    archive=source.get('provider')=='GLOBENEWSWIRE_ARTICLE' and source.get('format')=='GNN_ARCHIVE' and pinned_archive(source.get('url',''))
+    if not rss and not archive:return None
     if domain(item.get('url', '')) != 'www.globenewswire.com':
         return []
     metadata = item.get('distributionMetadata') or {}
