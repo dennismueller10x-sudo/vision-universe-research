@@ -141,9 +141,10 @@ Das Betriebshandbuch mit konkreten Reparaturschritten steht in [docs/operations/
 
 | Suite | Befehl | Umfang (03.10.2026) |
 |---|---|---|
-| Core | `node --test "core/tests/*.test.mjs"` | 52 Tests: Identität, Health, Datenqualität, Diagnose, Contracts, Golden Paths |
-| Quant und Plattform | `node --test "quant/tests/*.test.mjs"` | ca. 2.300 Tests |
-| Discover, Supertrader, Screener, Social | `node --test "discover/tests/*.test.mjs" "scripts/supertrader/tests/*.test.mjs" "screener/tests/*.test.mjs" "social/tests/*.test.mjs"` | ca. 2.440 Tests |
+| Core | `node --test "core/tests/*.test.mjs"` | 53 Tests: Identität, Health, Datenqualität, Diagnose, Contracts, Golden Paths |
+| Quant und Plattform | `node --test "quant/tests/*.test.mjs"` | 2.315 Tests |
+| Discover, Supertrader, Screener | `node --test "discover/tests/*.test.mjs" "scripts/supertrader/tests/*.test.mjs" "screener/tests/*.test.mjs"` | 494 Tests |
+| Social | `node --test "social/tests/*.test.mjs" "workers/vision-universe-social/tests/*.test.mjs"` | 2.319 Tests |
 | SEC (Python) | `python3 -m unittest discover -s scripts/quant/tests -p 'test_*.py'` | 486 Tests |
 | Testisolation | `node scripts/quality/check-test-isolation.mjs` | Ändert ein Testlauf Produktionsdaten? |
 
