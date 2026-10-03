@@ -45,7 +45,7 @@
   var P = isNode ? require("./patterns.js") : global.VUTechnical.ElliottPatterns;
   var V2 = isNode ? require("./elliott-v2.js") : global.VUTechnical.ElliottV2;
 
-  var ENGINE_VERSION = "elliott-3.2.0";
+  var ENGINE_VERSION = "elliott-3.2.1";   // 3.2.1 = 3.2.0 + Datenlage-Fix fuer Tagesreihen (nach HOLDOUT-3; Wochenreihen identisch)
 
   var DEFAULTS = {
     poolAtr: 1.0,                 // Monowellen-Schwelle in ATR
@@ -678,7 +678,10 @@
   /** Datenlage im Analysefenster: Luecken in der Zeitachse, unbereinigte Splits (Kurs springt um ein Split-Verhaeltnis). */
   function dataQuality(series, from, to) {
     var ts = series.timestamps, c = series.close, d = [], gaps = 0, maxGap = 0, splits = [];
-    for (var i = from + 1; i <= to; i++) { var dt = (Date.parse(ts[i]) - Date.parse(ts[i - 1])) / 86400000; if (isNum(dt)) d.push(dt); }
+    /* 3.2.1: Abstand in BOERSENTAGEN (Wochenenden abgezogen) — sonst zaehlte bei Tagesdaten jedes Wochenende als Luecke und jede
+       Tagesreihe enthielt sich ("Luecken in der Kurshistorie"). Bei Wochendaten unveraendert (jede Woche enthaelt ein Wochenende). */
+    function bizDays(a, b) { var t0 = Date.parse(a), t1 = Date.parse(b); if (!isNum(t0) || !isNum(t1)) return NaN; var n = Math.round((t1 - t0) / 86400000), w = 0, d0 = new Date(t0).getUTCDay(); for (var q = 1; q <= n; q++) { var wd = (d0 + q) % 7; if (wd === 0 || wd === 6) w++; } return n - w; }
+    for (var i = from + 1; i <= to; i++) { var dt = bizDays(ts[i - 1], ts[i]); if (isNum(dt)) d.push(dt); }
     var med = d.length ? d.slice().sort(function (a, b) { return a - b; })[Math.floor(d.length / 2)] : null;
     if (isNum(med) && med > 0) d.forEach(function (x) { if (x > 2.5 * med) { gaps++; maxGap = Math.max(maxGap, Math.round(x / med) - 1); } });
     for (var j = from + 1; j <= to; j++) {

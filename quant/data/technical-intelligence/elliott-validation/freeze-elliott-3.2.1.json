@@ -1,0 +1,12 @@
+{
+ "schemaVersion": "vu-elliott-freeze-1.0.0",
+ "engineVersion": "elliott-3.2.1",
+ "basedOn": "elliott-3.2.0 (freeze-elliott-3.2.0.json, HOLDOUT-3)",
+ "change": "dataQuality: Abstaende in Boersentagen statt Kalendertagen (Tagesreihen enthielten sich wegen Wochenenden faelschlich mit \"Luecken in der Kurshistorie\").",
+ "afterHoldout": true,
+ "identityCheck": {
+  "cases": "VALIDATION C1, 3140 Zeilen",
+  "differencesVs320": 0
+ },
+ "note": "Kein Einfluss auf HOLDOUT-3 (nur Wochenreihen); Produktion nutzt 3.2.1."
+}
