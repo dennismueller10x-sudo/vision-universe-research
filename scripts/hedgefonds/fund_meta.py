@@ -16,6 +16,8 @@ Alles hier ist KEINE SEC-Angabe, sondern redaktionell gepflegt:
            Urheber und Lizenz. Ohne Treffer zeigt die Seite Initialen.
   style    Anlagestil (Filterchip im Frontend).
   note     optionaler Hinweis, der im Frontend beim Fonds steht.
+  photoSearch False = keine Commons-Suche nach dem Namen (zu häufiger
+           Name, Verwechslungsgefahr – z.B. „Jeff Smith“).
   optional True = nur aufnehmen, wenn bei der SEC eine 13F-Meldung
            existiert (z.B. deutsche Manager, deren Meldepflicht unklar
            ist). Fehlt sie, wird das nur protokolliert, nicht als Fehler.
@@ -110,7 +112,7 @@ FUND_META = [
      "name": "Trian Fund Management", "manager": "Nelson Peltz", "role": "Gründer & CEO",
      "wiki": "Nelson_Peltz", "style": "Aktivist",
      "bio": "Aktivist mit Fokus auf große Konsum- und Industriekonzerne."},
-    {"slug": "starboard", "cik": "0001517137", "match": "STARBOARD VALUE",
+    {"slug": "starboard", "photoSearch": False, "cik": "0001517137", "match": "STARBOARD VALUE",
      "name": "Starboard Value", "manager": "Jeff Smith", "role": "Gründer & CIO",
      "wiki": "Jeffrey_C._Smith", "style": "Aktivist",
      "bio": "Einer der aktivsten US-Aktivisten, oft mit Kampfabstimmungen."},
@@ -225,7 +227,7 @@ FUND_META = [
      "name": "AQR Capital Management", "manager": "Cliff Asness", "role": "Gründer & CIO",
      "wiki": "Cliff_Asness", "style": "Quant",
      "bio": "Faktor-Investing (Value, Momentum, Qualität) im großen Stil."},
-    {"slug": "man-group", "cik": "0001637460", "match": "MAN GROUP",
+    {"slug": "man-group", "photoSearch": False, "cik": "0001637460", "match": "MAN GROUP",
      "name": "Man Group", "manager": "Robyn Grew", "role": "CEO",
      "wiki": None, "style": "Quant",
      "bio": "Börsennotierter britischer Hedgefonds-Konzern (u. a. Man AHL)."},
@@ -260,10 +262,10 @@ FUND_META = [
     {"slug": "light-street", "cik": None, "match": "LIGHT STREET", "name": "Light Street Capital",
      "manager": "Glen Kacher", "role": "Gründer & CIO", "wiki": None, "style": "Wachstum",
      "bio": "Tiger-Cub-Schüler mit Tech-Fokus."},
-    {"slug": "egerton", "cik": None, "match": "EGERTON", "name": "Egerton Capital",
+    {"slug": "egerton", "photoSearch": False, "cik": None, "match": "EGERTON", "name": "Egerton Capital",
      "manager": "John Armitage", "role": "Gründer", "wiki": None, "style": "Long/Short",
      "bio": "Konzentrierter Qualitäts-Stock-Picker aus London."},
-    {"slug": "lansdowne", "cik": None, "match": "LANSDOWNE PARTNERS", "name": "Lansdowne Partners",
+    {"slug": "lansdowne", "photoSearch": False, "cik": None, "match": "LANSDOWNE PARTNERS", "name": "Lansdowne Partners",
      "manager": "Peter Davies", "role": "Senior Partner", "wiki": None, "style": "Long/Short",
      "bio": "Einer der traditionsreichsten Londoner Hedgefonds."},
     {"slug": "cantillon", "cik": None, "match": "CANTILLON", "name": "Cantillon Capital",
@@ -281,19 +283,19 @@ FUND_META = [
     {"slug": "giverny", "cik": None, "match": "GIVERNY CAPITAL", "name": "Giverny Capital",
      "manager": "François Rochon", "role": "Gründer", "wiki": None, "style": "Qualität",
      "bio": "Kanadischer Qualitätsinvestor."},
-    {"slug": "gardner-russo", "cik": None, "match": "GARDNER RUSSO", "name": "Gardner Russo & Quinn",
+    {"slug": "gardner-russo", "photoSearch": False, "cik": None, "match": "GARDNER RUSSO", "name": "Gardner Russo & Quinn",
      "manager": "Tom Russo", "role": "Partner", "wiki": None, "style": "Value",
      "bio": "Globale Markenkonzerne, sehr lange Haltedauern."},
-    {"slug": "ruane", "cik": None, "match": "RUANE", "name": "Ruane, Cunniff & Goldfarb",
+    {"slug": "ruane", "photoSearch": False, "cik": None, "match": "RUANE", "name": "Ruane, Cunniff & Goldfarb",
      "manager": "Sequoia Fund", "role": "Fondsgesellschaft", "wiki": None, "style": "Value",
      "bio": "Verwalter des legendären Sequoia Fund (Buffett-Empfehlung 1969)."},
     {"slug": "gamco", "cik": None, "match": "GAMCO INVESTORS", "name": "GAMCO Investors",
      "manager": "Mario Gabelli", "role": "Gründer & CEO", "wiki": "Mario_Gabelli", "style": "Value",
      "bio": "Private-Market-Value-Ansatz mit sehr breitem Portfolio."},
-    {"slug": "harris", "cik": None, "match": "HARRIS ASSOCIATES", "name": "Harris Associates (Oakmark)",
+    {"slug": "harris", "photoSearch": False, "cik": None, "match": "HARRIS ASSOCIATES", "name": "Harris Associates (Oakmark)",
      "manager": "Bill Nygren", "role": "CIO US-Aktien", "wiki": None, "style": "Value",
      "bio": "Verwalter der Oakmark-Fonds."},
-    {"slug": "davis", "cik": None, "match": "DAVIS SELECTED", "name": "Davis Selected Advisers",
+    {"slug": "davis", "photoSearch": False, "cik": None, "match": "DAVIS SELECTED", "name": "Davis Selected Advisers",
      "manager": "Chris Davis", "role": "Chairman", "wiki": None, "style": "Value",
      "bio": "Familiengeführter Value-Verwalter (Davis New York Venture)."},
     {"slug": "miller-value", "cik": None, "match": "MILLER VALUE", "name": "Miller Value Partners",
@@ -302,7 +304,7 @@ FUND_META = [
     {"slug": "yacktman", "cik": None, "match": "YACKTMAN", "name": "Yacktman Asset Management",
      "manager": "Stephen Yacktman", "role": "CIO", "wiki": None, "style": "Value",
      "bio": "Qualitäts-Value mit Fokus auf Konsumgüter."},
-    {"slug": "weitz", "cik": None, "match": "WEITZ", "name": "Weitz Investment Management",
+    {"slug": "weitz", "photoSearch": False, "cik": None, "match": "WEITZ", "name": "Weitz Investment Management",
      "manager": "Wally Weitz", "role": "Gründer", "wiki": None, "style": "Value",
      "bio": "Value-Investor aus Omaha."},
     {"slug": "jericho", "cik": None, "match": "JERICHO CAPITAL", "name": "Jericho Capital",
