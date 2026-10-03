@@ -23,7 +23,7 @@ const E = loadEngines();
 const load = makeLoader({ site: a.site || null });
 const now = a.now ? new Date(a.now) : new Date();
 const artifacts = await loadArtifacts(E.registry, load);
-const report = E.Health.evaluate(E.registry, artifacts, { now, calendar: E.calendar, tradingSession: E.TradingSession });
+const report = E.Health.evaluate(E.registry, artifacts, { now, calendar: E.calendar, tradingSession: E.TradingSession, target: a.site ? "site" : "repository" });
 report.target = a.site || "repository";
 
 if (a.json) console.log(JSON.stringify(report, null, 2));

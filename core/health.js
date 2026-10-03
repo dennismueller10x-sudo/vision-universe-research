@@ -11,6 +11,8 @@
      STALE     Rueckstand ueber der harten Schwelle
      FAILED    Artefakt fehlt oder ist nicht lesbar
      DISABLED  Domaene ist bewusst abgeschaltet
+     NOT_DELIVERED  gegen die Seite gemessen, Artefakt wird bewusst nicht
+               ausgeliefert (repositoryOnly)
      UNKNOWN   kein Zeitstempel - Frische nicht messbar
 
    Jede Zeile traegt: letzter Lauf, erwarteter und tatsaechlicher Stand,
@@ -35,7 +37,7 @@
   "use strict";
 
   var VERSION = "core-health-1.0.0";
-  var RANK = { OK: 0, DISABLED: 0, UNKNOWN: 1, DEGRADED: 2, STALE: 3, FAILED: 4 };
+  var RANK = { OK: 0, DISABLED: 0, NOT_DELIVERED: 0, UNKNOWN: 1, DEGRADED: 2, STALE: 3, FAILED: 4 };
   var HOUR = 3600000;
 
   /** Wert unter einem Punktpfad ("a.b.0.c"); null, wenn nicht vorhanden. */
@@ -104,6 +106,11 @@
       lastUpdate: null, asOf: null, expected: null, ageHours: null, lagSessions: null,
       records: null, expectedRecords: null, coverage: null, warnings: [], reason: null
     };
+    if (domain.repositoryOnly && ctx.target === "site") {
+      out.status = "NOT_DELIVERED"; out.reason = "REPOSITORY_ONLY";
+      out.warnings.push("Wird nicht ausgeliefert; nur gegen das Repository messbar.");
+      return out;
+    }
     if (!loaded || !loaded.ok) {
       out.status = "FAILED";
       out.reason = "ARTIFACT_UNREADABLE";
@@ -219,7 +226,8 @@
     if (opts.tradingSession && opts.calendar) {
       try { resolution = opts.tradingSession.resolve(now, { calendar: opts.calendar }); } catch (e) { resolution = null; }
     }
-    var ctx = { now: now, calendar: opts.calendar || null, tradingSession: opts.tradingSession || null, resolution: resolution };
+    var ctx = { now: now, calendar: opts.calendar || null, tradingSession: opts.tradingSession || null, resolution: resolution,
+                target: opts.target === "site" ? "site" : "repository" };
     var domains = (registry.domains || []).map(function (d) { return assessDomain(d, artifacts[d.artifact], ctx); });
     var overall = "OK";
     domains.forEach(function (d) {
@@ -256,7 +264,7 @@
       if (d.ageHours !== null && d.ageHours !== undefined) extra.push(d.ageHours + " h alt");
       if (d.records !== null && d.records !== undefined) extra.push(d.records + (d.expectedRecords ? "/" + d.expectedRecords : "") + " Datensaetze");
       lines.push(pad(d.label, 30) + pad(d.status, 10) + pad(stand, 18) + extra.join(" · "));
-      if (d.status !== "OK" && d.status !== "DISABLED") {
+      if (d.status !== "OK" && d.status !== "DISABLED" && d.status !== "NOT_DELIVERED") {
         if (d.reason) lines.push("    Grund: " + d.reason + (d.workflow ? " · Erzeuger: " + d.workflow : ""));
         d.warnings.forEach(function (w) { lines.push("    - " + w); });
       }

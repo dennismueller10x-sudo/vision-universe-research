@@ -63,6 +63,14 @@
     return t ? t.replace(/[^A-Z0-9]/g, "") : null;
   }
 
+  /** Scherbe des Company Master (quant/data/universe/instruments/<key>.json),
+   *  byte-gleich zu company-master.js#shardKey: "NVDA" -> "NV", "F" -> "F_". */
+  function shardKey(ticker) {
+    var t = normalizeTicker(ticker);
+    var s = t ? t.replace(/[^A-Z0-9]/g, "") : "";
+    return s ? (s + "_").slice(0, 2) : "_";
+  }
+
   function isSecurityId(id) { return typeof id === "string" && /^ref_[A-Z0-9_]{1,24}$/.test(id); }
   function isInstrumentId(id) { return typeof id === "string" && /^vu_[a-f0-9]{6,}$/.test(id); }
   function isIssuerId(id) { return typeof id === "string" && /^iss_cik_\d{10}$/.test(id); }
@@ -78,6 +86,7 @@
     normalizeTicker: normalizeTicker,
     securityIdForTicker: securityIdForTicker,
     matchKey: matchKey,
+    shardKey: shardKey,
     isSecurityId: isSecurityId,
     isInstrumentId: isInstrumentId,
     isIssuerId: isIssuerId,

@@ -140,3 +140,20 @@ test("Textbericht nennt Grund und Erzeuger jedes nicht gesunden Systems", () => 
   assert.match(txt, /STALE/);
   assert.match(txt, /update-news\.yml/);
 });
+
+test("Gegen die Seite: bewusst nicht ausgelieferte Artefakte sind NOT_DELIVERED, nicht FAILED", () => {
+  const d = dom({ repositoryOnly: true });
+  const site = Health.evaluate({ domains: [d] }, { "/x.json": { ok: false, error: "HTTP 404" } }, Object.assign(ctx(SAT), { target: "site" }));
+  assert.equal(site.domains[0].status, "NOT_DELIVERED");
+  assert.equal(site.overall, "OK");
+  const repo = Health.evaluate({ domains: [d] }, { "/x.json": { ok: false, error: "fehlt" } }, ctx(SAT));
+  assert.equal(repo.domains[0].status, "FAILED");
+});
+
+test("Register · repositoryOnly stimmt mit der Release-Regel ueberein", async () => {
+  const { permitted } = await import("../../scripts/vu2/build-release.mjs");
+  for (const d of registry.domains) {
+    const ausgeliefert = permitted(d.artifact.slice(1));
+    assert.equal(!!d.repositoryOnly, !ausgeliefert, d.id + ": repositoryOnly=" + !!d.repositoryOnly + ", ausgeliefert=" + ausgeliefert);
+  }
+});

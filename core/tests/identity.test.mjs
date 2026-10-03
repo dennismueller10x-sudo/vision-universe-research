@@ -27,7 +27,10 @@ test("Regel · byte-gleich zur Bildung des Company Master (legacySecurityId)", (
      Ticker des Produktuniversums. */
   const decisions = json("quant/data/market/security-master/eligibility.json").decisions;
   assert.ok(decisions.length > 5000);
-  for (const d of decisions) assert.equal(Identity.securityIdForTicker(d.ticker), Master.legacySecurityId(d.ticker), d.ticker);
+  for (const d of decisions) {
+    assert.equal(Identity.securityIdForTicker(d.ticker), Master.legacySecurityId(d.ticker), d.ticker);
+    assert.equal(Identity.shardKey(d.ticker), Master.shardKey(d.ticker), "Scherbe " + d.ticker);
+  }
 });
 
 test("Bestand · jede securityId in Konfiguration und Universen folgt der Regel", () => {

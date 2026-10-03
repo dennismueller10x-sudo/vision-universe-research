@@ -1,6 +1,7 @@
 {
   "schemaVersion": "core-domain-registry-1.0.0",
   "note": "Source-of-Truth-Register der Vision-Universe-Plattform. Je Datenart genau ein kanonisches Artefakt, sein Erzeuger, sein Zeitplan, sein Frischevertrag und seine Verbraucher. Gelesen von core/health.js (Systemzustand), core/diagnose.js (Selbstdiagnose), scripts/core/*.mjs und /status/. Pfade sind Auslieferungspfade (Repository-Wurzel = Website-Wurzel). Eine neue Datenart wird HIER eingetragen, bevor ein Produkt sie liest - siehe docs/architecture/ADR-002-market-data-source-of-truth.md.",
+  "repositoryOnly": "Artefakt wird bewusst nicht ausgeliefert (scripts/vu2/build-release.mjs#permitted: quant/data/sec, quant/data/fundamentals). Gegen die Seite gemessen heisst das NOT_DELIVERED, nicht FAILED.",
   "freshnessKinds": {
     "sessions": "Stand (asOf, ein Handelstag) gegen die letzte abgeschlossene US-Sitzung (quant/config/market-calendar.json). warnAfter/staleAfter in Handelstagen Rueckstand.",
     "hours": "Alter des Zeitstempels in Stunden. warnAfter/staleAfter in Stunden.",
@@ -115,6 +116,7 @@
       "group": "Fundamentals",
       "critical": true,
       "artifact": "/quant/data/fundamentals/manifest.json",
+      "repositoryOnly": true,
       "timestamp": ["generated_at_utc", "generatedAt"],
       "records": "totals.issuersWithFundamentals",
       "expectedRecords": "totals.productTitles",
@@ -132,6 +134,7 @@
       "group": "Fundamentals",
       "critical": false,
       "artifact": "/quant/data/sec/consumer_coverage.json",
+      "repositoryOnly": true,
       "timestamp": ["generated_at_utc"],
       "records": "latestFundamentals",
       "expectedRecords": "productUniverse",
