@@ -89,6 +89,11 @@ if (signals) {
     for (const v of Object.values(x)) if (v && typeof v === "object") walk(v, owner);
   };
   walk(signals, "supertrader");
+  /* Jede Karte verlinkt auf /supertrader/stock/<SYM>/ (supertrader.js#stockUrl). */
+  const syms = new Set(Object.keys(signals.bySymbol || {}));
+  const sammle = (x) => { if (Array.isArray(x)) x.forEach(sammle); else if (x && typeof x === "object") { if (typeof x.symbol === "string") syms.add(x.symbol); Object.values(x).forEach((v) => v && typeof v === "object" && sammle(v)); } };
+  sammle(signals.partialChecks);
+  for (const t of syms) refs.push({ owner: "supertrader-karte", path: "/supertrader/stock/" + t + "/index.html" });
 }
 for (const t of indexSymbols.slice(0)) {
   const pl = maybe("discover/data/stocks/US_REAL/" + t + ".json");

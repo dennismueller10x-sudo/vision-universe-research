@@ -573,7 +573,11 @@ export function build() {
   if (pilot) writeJson(path.join(DATA, 'pilot-backtest.json'), pilot);
   writeJson(path.join(DATA, 'replay.json'), replay);
   for (const [id, l] of Object.entries(ledgers)) writeJson(ledgerPath(id), l);
-  writeStockPages(signals, TREND52_SYMBOLS);
+  /* Jede Karte verlinkt auf /supertrader/stock/<SYM>/ (supertrader.js
+     stockUrl) - auch die Teilpruefungs-Karten, deren Titel nicht unter den
+     Kandidaten stehen. Ohne Seite war das ein 404 (DAR, ROKU, PECO, ...,
+     Plattform-Audit 03.10.2026). */
+  writeStockPages(signals, [...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)]);
   writeStrategyPages(registry);
   writeStaticPages();
   writeJson(path.join(DATA, 'build.json'), { buildVersion: BUILD_VERSION, registryVersion: REGISTRY_VERSION, asOf, inputsGeneratedAt: barsGeneratedAt });
@@ -919,6 +923,16 @@ function writeStrategyPages(registry) {
   for (const s of registry.strategies) {
     writeIfChanged(path.join(OUT, 'strategies', s.slug, 'index.html'), pageShell({ title: `${s.world_name} — Supertrader — Vision Universe®`, description: `${s.strategy_name}: Regeln, Evidenz, Signale und Backteststatus.`, page: 'strategy', depth: 3, attrs: ` data-strategy="${s.strategy_id}"` }));
   }
+}
+
+/** Alle Symbole, die irgendwo in einem Ausgabeobjekt als `symbol` stehen. */
+function symbolsIn(x, out = new Set()) {
+  if (Array.isArray(x)) for (const y of x) symbolsIn(y, out);
+  else if (x && typeof x === 'object') {
+    if (typeof x.symbol === 'string') out.add(x.symbol);
+    for (const v of Object.values(x)) if (v && typeof v === 'object') symbolsIn(v, out);
+  }
+  return out;
 }
 
 function writeStockPages(signals, extra = []) {
