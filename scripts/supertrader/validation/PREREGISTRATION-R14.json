@@ -1,0 +1,87 @@
+{
+  "schema": "supertrader-validation-prereg-r14-1.0.0",
+  "registeredAt": "2026-10-03",
+  "status": "Eingefroren vor jedem R14-Lauf und vor jedem Abruf der Holdout-Daten. R14 ist ein unabhängiger Red-Team-Audit: keine Live-Änderung, keine Versionsanhebung, keine Änderung an Ledgern oder Produktionsdaten. Code nur unter scripts/supertrader/validation/ (Forschungspfad) und in der Validierungs-Workflow-Datei.",
+  "knownBeforeRegistration": "Bekannt sind die R13-Ergebnisse auf 2016-01-04 bis 2026-09-30 (Portfolio-Überrendite, Cash-Zerlegung, Gegenproben G1/G2/G3, SMCI-Kette). Alle hier definierten Kennzahlen werden auf diesem Zeitraum erstmals berechnet, sind aber nicht unabhängig von R13-Wissen. Der Zeitraum 2008-01-02 bis 2015-12-31 wurde für keine Strategie je ausgewertet (Kursreihen beginnen im privaten Speicher 2015-01-01 als Vorlauf).",
+  "scope": {
+    "engines": ["MOMENTUM_BREAKOUT@3.2.0 (Rang RS)", "WEINSTEIN_STAGE@4.0.0 (Rang RS)", "DARVAS_BOX@3.0.2 (Rang RS, Marktampel)", "MINERVINI_VCP@2.0.0 (Rang RS)", "DONCHIAN_TURTLE@2.0.2 (alphabetisch)", "VU_TREND_52W@1.0.0 (PP, Clenow)"],
+    "note": "Exakt die Live-Konfiguration (scripts/supertrader/model-portfolio.mjs portfolioConfig).",
+    "costs": "10 bp Slippage + 1 bp Gebühr je Seite; COST2 20 + 2",
+    "delisting": "S1C_CLASSIFIED (Entscheidungsszenario seit R13); S0/S1 zum Vergleich",
+    "benchmark": "SPY-Gesamtrendite (Hauptbenchmark). Kontext, falls im privaten Speicher vorhanden: RSP, QQQ, IWM, IWV, IWF, IWO, MDY, IJR. Fehlende Reihen werden als fehlend berichtet, nicht ersetzt."
+  },
+  "periods": {
+    "DEV": { "from": "2016-01-04", "to": "2026-09-30", "warmupFrom": "2015-01-01", "status": "bekannt (R8–R13)" },
+    "HOLDOUT": { "from": "2008-01-02", "to": "2015-12-31", "warmupFrom": "2007-01-02", "status": "nicht abgerufen, nicht angesehen",
+      "data": "Abruf über den bestehenden Tiingo-Zugang (keine neuen Kosten) aller Stammaktien-Listings an NYSE/NASDAQ/AMEX, die im Zeitraum 2007-01-02 bis 2015-12-31 gelistet waren, in einen eigenen privaten Namensraum. Abruflog nur Zählwerte. SEC-Gewinnhistorie und Delisting-Klassen für diese Listings mit denselben Programmen (sec-pit.mjs).",
+      "openingRule": "Der Holdout wird genau einmal ausgewertet, nachdem (1) der Abruf abgeschlossen ist, (2) der DEV-Audit abgeschlossen ist und (3) eine Ergänzung dieser Präregistrierung (amendmentBeforeHoldout) mit allen zu prüfenden Varianten committet ist. Öffnungszeitpunkt, Commit und Datenfingerabdruck werden im Ergebnis vermerkt. Ein Teillauf mit --limit zur technischen Prüfung schreibt nur Zählwerte (keine Rendite).",
+      "limits": "Minervini: SEC-XBRL-Daten erst ab etwa 2009 (große) bzw. 2011 (kleine Emittenten) – fehlende Gewinndaten blockieren wie live; Abdeckung wird berichtet. 2015 diente im DEV als Indikator-Vorlauf (keine Trades, keine Kennzahlen)."
+    }
+  },
+  "levels": {
+    "A_REAL": "Reales Modellportfolio (Live-Konfiguration, S1C) gegen 100 % SPY-Gesamtrendite: CAGR, Überrendite, Drawdown. Bleibt Hauptaussage für den Anleger.",
+    "B_INVESTED": {
+      "B1_tradeMatched": "Je Engine-Trade: Gesamtrendite des Trades (Ausstiege, Dividenden, S1C) minus SPY-Gesamtrendite über exakt dieselbe Haltedauer (je Teilverkauf anteilig). Mittel, Median, Anteil > 0; Cluster nach Einstiegsmonat für den t-Wert.",
+      "B2_timeWeighted": "Tägliche Rendite des investierten Kapitals r_inv = R_Portfolio / Exposition_Vortag (Cash verzinst sich mit 0), nur an Tagen mit Exposition_Vortag ≥ 2 %. Annualisiert gegen SPY an denselben Tagen; zusätzlich CAPM-Regression r_inv − 0 = α + β·r_SPY (Tagesdaten, α annualisiert, Newey-West 5 Lags).",
+      "B3_portfolioContribution": "R13-Zerlegung (S0 − exponierungsgleiches SPY) wird beibehalten, aber ausdrücklich als Beitrag zur Gesamtrendite (Prozentpunkte des Gesamtdepots) und nicht als Rendite auf investiertem Kapital ausgewiesen."
+    },
+    "C_EXPOSURE_NORMALIZED": {
+      "rule": "Keine rückblickende Hebelung, keine nachträgliche Maximierung. Nur mechanisch vorab definierte, real umsetzbare Allokationen ohne Hebel (Exposition ≤ 100 %).",
+      "C1_cashInSpy": "Unverändertes Modellportfolio; nicht investiertes Kapital liegt in SPY (Gesamtrendite), Umschichtung täglich ohne Kosten (Obergrenze des Nutzens) und mit 1 bp je Umschichtung (Untergrenze).",
+      "C2_equalWeight": "Gleiche Einstiege, Gewicht je Position = 1/maxPositions der Methode statt Risiko/Stopabstand (G1 aus R13).",
+      "C3_equalWeightCashInSpy": "C2 + C1.",
+      "C4_unlimitedSlots": "Risiko-Positionsgröße wie live, ohne Positionszahl-Grenze (nur Bargeld begrenzt) – Wirkung der Platzgrenze.",
+      "C5_holdFixed": "Gleiche Einstiege, Ausstieg nach 63 / 126 / 252 Sitzungen zum Schluss ohne Stop (Exit-Wirkung, Größe wie live).",
+      "C6_noMarketFilter": "Nur Darvas: ohne Marktampel.",
+      "C7_rankAlternatives": "Reihenfolge gleichzeitiger Einstiege: RS (live), alphabetisch, umgekehrt alphabetisch, 20 Zufallsreihenfolgen – Prüfung von Reihenfolge-/Alphabet-Bias."
+    }
+  },
+  "exposure": {
+    "metrics": "Je Tag: Brutto-/Netto-Exposition (keine Leerverkäufe → gleich), Positionszahl. Mittel, Median, Verteilung (<25 %, 25–50, 50–75, 75–100, ≥ 95 % = voll investiert), mittlere/mediane Positionszahl, mittleres Gewicht je Position beim Einstieg.",
+    "attribution": "Ungenutztes Kapital je Tag (1 − Exposition) wird beschreibend zerlegt in: (a) Größenregel – Summe über offene Positionen von (Höchstgewicht − Gewicht beim Einstieg); (b) freie Plätze ohne Signal – (maxPositions − offene) × Höchstgewicht an Tagen ohne abgewiesenes Signal; (c) Marktampel – an Tagen mit abgewiesenem Signal wegen Marktampel; (d) Bargeld/Plätze voll – abgewiesene Signale wegen NO_CASH/MAX_POSITIONS. Übersteigt (a)+(b) das ungenutzte Kapital (Höchstgewicht × Plätze > 100 %), wird proportional skaliert und so ausgewiesen.",
+    "performanceChain": "Gesamtrückstand zu SPY = Cash-Abzug (A − C1-Obergrenze, negativ) + Größenwirkung (C2 − A) + Exit-Wirkung (C5_126 − A) + Kosten (COST2 − A) + Rest. Die Glieder sind Einzelgegenproben gegen dieselbe Basis und addieren sich nicht exakt; der Rest wird ausgewiesen."
+  },
+  "signalQuality": {
+    "population": "Alle Engine-Einstiege der Methode (unabhängig vom Portfolio), Einstiegskurs inklusive Slippage.",
+    "horizons": [5, 10, 20, 40, 60, 120, 252],
+    "returns": "Gesamtrendite der Aktie (Schluss + Dividenden) vom Einstiegskurs bis Schluss nach h Sitzungen; delistet vor h → S1C-Abschlusswert, danach 0 %.",
+    "benchmarks": ["SPY-Gesamtrendite gleicher Zeitraum", "Gleichgewichtetes liquides Universum (Rohkurs ≥ 5 USD, 20-Tage-Dollarumsatz ≥ 1 Mio. USD am Einstiegstag, damals gelistet) gleicher Zeitraum", "RS-Dezil-Kontrolle: Mittel der Universumsaktien im selben RS-Dezil am Einstiegstag (Momentum-Kontrolle)"],
+    "industry": "Keine Point-in-Time-Branchenzuordnung im Speicher → nicht berechnet, als Grenze berichtet.",
+    "stats": "Mittel, Median, Trefferquote (> 0, > SPY), Quantile 5/25/50/75/95, Anteil ≥ +25/+50/+100 % (Schluss nach h und Maximum innerhalb 252), Anteil ≤ −20/−50 %, MFE/MAE über 60 und 252 Sitzungen. t-Wert der mittleren Überrendite mit Monats-Clustern (Mittel je Einstiegsmonat).",
+    "edgeDefinition": "Signal-Edge gilt als vorhanden, wenn die mittlere 120-Sitzungen-Überrendite gegen das liquide Universum UND gegen die RS-Dezil-Kontrolle > 0 mit Cluster-t ≥ 2,0. Gegen SPY wird zusätzlich berichtet."
+  },
+  "exitAudit": {
+    "population": "Alle Engine-Trades.",
+    "metrics": "Rendite nach dem letzten Ausstieg (20/60/120/252 Sitzungen, ab Ausstiegskurs); Anteil der Trades, deren Aktie innerhalb von 252 Sitzungen nach Einstieg (Schlusskurs) ≥ +100/+50/+25 % über dem Einstieg stand, aber mit < +10 % Handelsrendite verkauft wurden – je Ausstiegsregel (ruleId). Erfassungsquote = Handelsrendite / MFE252. Mittel/Median Handelsrendite gegen Halten 63/126/252 gleicher Einstiege.",
+    "exitEdgeDefinition": "Exits zerstören Signalqualität, wenn die mittlere Handelsrendite unter der mittleren 126-Halte-Rendite derselben Einstiege liegt (gepaarte Differenz, Monats-Cluster-t ≤ −2,0)."
+  },
+  "missedWinners": {
+    "winners": "Vorab mechanisch: die 15 Aktien mit dem höchsten Schlusskurs-Anstieg innerhalb eines 252-Sitzungen-Fensters (Start mit 20-Tage-Dollarumsatz ≥ 5 Mio. USD und Rohkurs ≥ 5 USD), je Aktie nur das beste Fenster, plus SMCI (13.03.2023). Für jede Methode dieselbe Liste.",
+    "chain": "Je Methode und Gewinner: Engine-Einstiege im Fenster (Datum, Kurs), Portfolio aufgenommen oder Grund (MAX_POSITIONS, NO_CASH, MARKET_FILTER, NO_RISK), Ausstieg (Datum, Regel, Rendite) und erfasster Anteil der Bewegung; ohne Einstieg: häufigste Scan-Blocker-Regel laut Engine-Diagnose, wo vorhanden.",
+    "failures": "Je Methode die 10 aufgenommenen Trades mit dem größten Verlustbeitrag zum Depot (Euro-Verlust / Depotwert beim Einstieg): Einstieg, Stop, Gewicht, Ausstiegsregel, Rendite, Entwicklung danach."
+  },
+  "portfolioConstruction": "Tage mit mehr Signalen als freien Plätzen bzw. Bargeld; Rang der genommenen vs. abgewiesenen Signale; Handelsrendite genommener vs. abgewiesener Signale (gleiche Engine-Trades) je Abweisungsgrund; C7-Reihenfolgen.",
+  "regimes": {
+    "trend": "Bull: SPY > GD200 und GD200 steigend (20 Sitzungen); Bear: SPY < GD200 und GD200 fallend; sonst Seitwärts.",
+    "volatility": "20-Tage-Volatilität SPY über/unter Median des Zeitraums (beschreibend, Median über den Zeitraum).",
+    "rates": "Steigende/fallende Zinsen über IEF- oder TLT-126-Tage-Rendite, falls im Speicher; sonst nicht berechnet.",
+    "years": ["2016-2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026"],
+    "metric": "Annualisierte Rendite des Portfolios und des investierten Kapitals gegen SPY je Segment (Tage im Segment)."
+  },
+  "costs": "Umschlag (gehandeltes Volumen / mittleres Depot) pro Jahr, mittlere Haltedauer, Kostenquote je Trade, Stop-Lücken (Ausstieg unter Stopkurs: Anzahl, mittlere Abweichung), Dollarumsatz und Kursniveau beim Einstieg.",
+  "tradability": "Einstiege mit Rohkurs < 5 USD, Dollarumsatz < 1 Mio. USD, Splits/Reverse-Splits während der Haltedauer, Tagesbewegungen > ±50 % ohne Split während der Haltedauer (Datenfehlerverdacht).",
+  "fundamentalPit": "Minervini: je Einstieg das jüngste verwendete Einreichungsdatum ≤ Signaltag (Zähler für Verstöße, Soll 0); Anteil Einstiege mit fehlender EPS-Historie; Code-Prüfung, dass nur Werte mit filed ≤ Tag genutzt werden; Erstwert je Periode (spätere Korrekturen nicht rückwirkend).",
+  "holdoutHypotheses": {
+    "note": "Gelten je Methode, unverändert im Holdout. Varianten für den Holdout werden nur in amendmentBeforeHoldout ergänzt (vor Öffnung).",
+    "H1_signalEdge": "edgeDefinition (Signalqualität) erfüllt.",
+    "H2_selectionWhileInvested": "B2: annualisiertes α > 0 und Rendite investiertes Kapital > SPY an denselben Tagen.",
+    "H3_exitDestruction": "exitEdgeDefinition erfüllt (Exits zerstören).",
+    "H4_portfolio": "A_REAL S1C-Überrendite > 0 (Live-Konfiguration).",
+    "H5_normalized": "C3 (Gleichgewicht + Cash in SPY) > SPY."
+  },
+  "classification": {
+    "rules": "Kategorien laut Auftrag (A–G), datenbasiert: G nur wenn H4 in DEV und HOLDOUT erfüllt; B wenn H1 (oder H2) erfüllt und H4 nicht, und Größen-/Platz-/Cash-Glieder den Rückstand überwiegend erklären; C wenn H1 erfüllt und H3 erfüllt; D wenn die Quellenkette wesentliche Abweichungen in Größe/Ausstieg/Konzentration ausweist; E wenn zentrale Regeln laut Quellenkette diskretionär sind; F wenn Abdeckung oder Fallzahl (< 200 Engine-Trades) nicht reicht; A wenn H1, H2 und H4 verfehlt und keine wesentliche Abweichung vorliegt. Mehrfachzuordnung in Prioritätsreihenfolge (D/E vor B/C vor A).",
+    "noTuning": "Keine Schwelle, kein Parameter, keine Variante wird nach Ansicht der Ergebnisse geändert. Abweichungen vom Protokoll werden als solche berichtet."
+  },
+  "reproducibility": "Jede Kennzahl im Ergebnis mit Skript, Commit, Datenfingerabdruck, Zeitraum, Universum, Kosten und Szenario. Ergebnisse verschlüsselt (results-public-key.pem); öffentlich keine Kennzahlen aus Tiingo-Daten."
+}
