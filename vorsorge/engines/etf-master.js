@@ -356,6 +356,8 @@
       if ((e.name || "").toLowerCase().indexOf(q) !== -1) s += 20;
       if (e.consumerVisible) s += 10;
       if (e.complex) s -= 5;
+      if (e.layer === "ARCHIVE" || e.status === "INACTIVE") s -= 20;
+      if (e.layer === "PUBLIC_ANALYSIS") s += 5;
       if (e.priceHistoryAvailable) s += 5;
       scored.push({ e: e, s: s });
     });

@@ -37,6 +37,44 @@
       capabilities: ["isin", "ter", "fundSize", "holdings", "category", "trackingDifference", "distributionPolicy"] }
   };
 
+  /* Status je Datenfeld und Anbieter (intern, keine Marketingdarstellung). */
+  var STATUS_MATRIX = {
+    tiingo: { prices: "ACTIVE", totalReturn: "ACTIVE_WHERE_RECONSTRUCTED", metadata: "PARTIAL", holdings: "NOT_AVAILABLE", costs: "NOT_AVAILABLE", isin: "NOT_AVAILABLE", ucits: "NOT_AVAILABLE" },
+    european_exchange: { prices: "NOT_CONNECTED", metadata: "NOT_CONNECTED", isin: "NOT_CONNECTED" },
+    issuer_feeds: { holdings: "NOT_CONNECTED", costs: "NOT_CONNECTED", distribution: "NOT_CONNECTED", replication: "NOT_CONNECTED" }
+  };
+  /* Mapping-Vertrag fuer einen zweiten Anbieter: Quellfeld -> kanonisches Feld,
+     Typ und Pflicht. Ein Adapter liefert nur, was dieser Vertrag kennt. */
+  var MAPPING_CONTRACT = { version: "vu-etf-provider-mapping-1.0.0", identity: ["isin", "wkn", "providerSymbol", "exchangeMic", "currency"],
+    fields: {
+      isin: { type: "string", pattern: "^[A-Z]{2}[A-Z0-9]{9}[0-9]$", required: true },
+      wkn: { type: "string", pattern: "^[A-Z0-9]{6}$" }, ter: { type: "number", unit: "fraction p.a.", range: [0, 0.05] },
+      fundSize: { type: "number", unit: "currency" }, fundSizeCurrency: { type: "string" },
+      distributionPolicy: { type: "enum", values: ["DISTRIBUTING", "ACCUMULATING"] },
+      replicationMethod: { type: "enum", values: ["FULL_PHYSICAL", "SAMPLING", "SYNTHETIC_SWAP"] },
+      domicile: { type: "string" }, ucits: { type: "boolean" }, benchmark: { type: "string" },
+      inceptionDate: { type: "date" }, nav: { type: "number" }, navDate: { type: "date" },
+      trackingDifference: { type: "number", unit: "fraction p.a." }, holdings: { type: "contract", contract: "etf-holdings-2.0.0" }
+    },
+    rules: ["Kein Feld ohne Quelle und Stichtag.", "ISIN ist der Schluessel fuer FUND/SHARE CLASS; ohne ISIN kein Merge mit Tiingo-Listings.", "Konflikte zwischen Anbietern werden protokolliert, nicht still ueberschrieben."] };
+
+  /** Prueft einen Fremddatensatz gegen den Mapping-Vertrag. */
+  function validateMapped(fields) {
+    var errors = [];
+    Object.keys(fields || {}).forEach(function (k) {
+      var spec = MAPPING_CONTRACT.fields[k];
+      var v = fields[k];
+      if (!spec) { errors.push("UNKNOWN_FIELD_" + k); return; }
+      if (v === null || v === undefined) return;
+      if (spec.type === "number" && !(typeof v === "number" && isFinite(v))) errors.push("NOT_NUMBER_" + k);
+      if (spec.range && (v < spec.range[0] || v > spec.range[1])) errors.push("OUT_OF_RANGE_" + k);
+      if (spec.pattern && !(new RegExp(spec.pattern)).test(String(v))) errors.push("BAD_FORMAT_" + k);
+      if (spec.type === "enum" && spec.values.indexOf(v) < 0) errors.push("BAD_ENUM_" + k);
+    });
+    if (fields && !fields.isin && MAPPING_CONTRACT.fields.isin.required) errors.push("MISSING_isin");
+    return errors;
+  }
+
   function coverage(fields, wanted) {
     var list = wanted || Object.keys(fields || {});
     if (!list.length) return { ratio: 0, present: [], missing: [] };
@@ -140,7 +178,7 @@
     };
   }
 
-  var api = { VERSION: VERSION, PROVIDERS: PROVIDERS, record: record, coverage: coverage,
+  var api = { VERSION: VERSION, PROVIDERS: PROVIDERS, STATUS_MATRIX: STATUS_MATRIX, MAPPING_CONTRACT: MAPPING_CONTRACT, validateMapped: validateMapped, record: record, coverage: coverage,
     createTiingoAdapter: createTiingoAdapter, createDisconnectedAdapter: createDisconnectedAdapter,
     merge: merge, registry: registry };
   if (isNode) module.exports = api;

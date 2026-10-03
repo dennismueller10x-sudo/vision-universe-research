@@ -3,9 +3,11 @@
 
    Overlap-Engine, Portfolio-X-Ray und Szenario-Lab.
 
-   HOLDINGS-VERTRAG  (etf-holdings-1.0.0)
-     { canonicalETFId, symbol, asOf, source,
-       holdings: [ { id, name, weight (0..1), country?, sector?, isin?, ticker? } ] }
+   HOLDINGS-VERTRAG  (etf-holdings-2.0.0)
+     { fundId, shareClassId, symbol, asOf, source,
+       holdings: [ { holdingIdentifier, isin?, ticker?, name, weight (0..1),
+                     country?, sector?, currency?, assetType?, source? } ] }
+     Abwaertskompatibel: { id } wird als holdingIdentifier gelesen.
 
    Ohne Holdings-Datei rechnet die Engine KEINEN Overlap und keine
    Durchschau - sie meldet DATA_PENDING mit der Abdeckung. Nichts wird
@@ -22,7 +24,26 @@
   var VERSION = "vorsorge-xray-1.0.0";
   var A = isNode ? require("./etf-analytics.js") : (global.VUVorsorge && global.VUVorsorge.Analytics);
 
-  function holdingKey(h) { return h.isin || h.id || (h.ticker ? "T:" + h.ticker : "N:" + String(h.name || "").toLowerCase()); }
+  var HOLDINGS_CONTRACT = { version: "etf-holdings-2.0.0",
+    file: ["fundId", "shareClassId", "symbol", "asOf", "source", "holdings"],
+    holding: ["holdingIdentifier", "isin", "ticker", "name", "weight", "country", "sector", "currency", "assetType", "source"],
+    required: ["asOf", "source", "holdings"], holdingRequired: ["name", "weight"] };
+  function holdingKey(h) { return h.isin || h.holdingIdentifier || h.id || (h.ticker ? "T:" + h.ticker : "N:" + String(h.name || "").toLowerCase()); }
+  /** Prueft eine Holdings-Datei gegen den Vertrag. Liefert Fehlerliste (leer = gueltig). */
+  function validateHoldingsFile(f) {
+    var e = [];
+    if (!f || typeof f !== "object") return ["NO_FILE"];
+    HOLDINGS_CONTRACT.required.forEach(function (k) { if (!(k in f)) e.push("MISSING_" + k); });
+    if (!Array.isArray(f.holdings)) return e.concat("HOLDINGS_NOT_ARRAY");
+    var sum = 0;
+    f.holdings.forEach(function (h, i) {
+      if (!h || !h.name) e.push("HOLDING_" + i + "_NO_NAME");
+      if (!(Number.isFinite(h && h.weight) && h.weight >= 0 && h.weight <= 1)) e.push("HOLDING_" + i + "_BAD_WEIGHT");
+      else sum += h.weight;
+    });
+    if (sum > 1.02) e.push("WEIGHTS_EXCEED_100");
+    return e;
+  }
 
   function validHoldings(file) {
     return !!(file && Array.isArray(file.holdings) && file.holdings.length && file.holdings.every(function (h) { return h && Number.isFinite(h.weight) && h.weight >= 0; }));
@@ -44,7 +65,8 @@
       common.push({ key: holdingKey(h), name: h.name || o.name, weightA: h.weight, weightB: o.weight, overlap: m });
     });
     common.sort(function (x, y) { return y.overlap - x.overlap; });
-    return { status: "CALCULATED", value: weighted, commonCount: common.length,
+    var union = a.holdings.length + b.holdings.length - common.length;
+    return { status: "CALCULATED", value: weighted, weightedOverlap: weighted, simpleOverlap: union ? common.length / union : 0, commonCount: common.length,
       countA: a.holdings.length, countB: b.holdings.length, common: common, top: common.slice(0, 10),
       asOf: [a.asOf, b.asOf] };
   }
@@ -75,8 +97,9 @@
     function sorted(map) { return Object.keys(map).map(function (k) { return { key: k, weight: map[k] }; }).sort(function (a, b) { return b.weight - a.weight; }); }
     var list = Object.keys(companies).map(function (k) { return companies[k]; }).sort(function (a, b) { return b.weight - a.weight; });
     var multi = list.filter(function (c) { return c.via.length > 1; });
+    var duplicateExposure = multi.reduce(function (acc, c) { return acc + c.weight; }, 0);
     return {
-      status: covered < 0.999 ? "PARTIAL" : "CALCULATED", coverage: covered,
+      status: covered < 0.999 ? "PARTIAL" : "CALCULATED", coverage: covered, effectiveDuplicateExposure: duplicateExposure,
       companies: list.slice(0, 25), countries: sorted(countries), sectors: sorted(sectors),
       multiplyHeld: multi.slice(0, 10).map(function (c) {
         return { name: c.name, weight: c.weight, via: c.via, text: "Du besitzt " + c.name + " indirekt über " + c.via.length + " ETFs." };
@@ -123,13 +146,18 @@
     var base = opts.baseCurrency || "EUR";
     var fxExposure = currency.filter(function (c) { return c.key !== base && c.key !== "UNKNOWN"; }).reduce(function (a, c) { return a + c.weight; }, 0);
     var complex = pos.filter(function (p) { return (etfBySymbol[p.symbol] || {}).complex; }).map(function (p) { return p.symbol; });
+    var hold = opts.holdingsBySymbol || {};
+    var withHoldings = pos.filter(function (p) { return validHoldings(hold[p.symbol]); }).length;
+    var withPrices = pos.length - missingSeries.length;
+    var dataState = !pos.length ? "NO_DATA" : withHoldings === pos.length ? "FULL_DATA" : withHoldings > 0 ? "PARTIAL_DATA" : withPrices > 0 ? "PRICE_ONLY_DATA" : "NO_DATA";
     return {
       version: VERSION, positions: pos,
       assetClasses: group("assetClass"), regions: group("region", opts.regionLabels), currencies: currency,
       issuers: group("issuer"), themes: group("theme"),
       concentration: { hhi: hhi, effectiveNumber: hhi > 0 ? 1 / hhi : 0, largest: pos.slice().sort(function (a, b) { return b.weight - a.weight; })[0] || null },
       fxExposure: { baseCurrency: base, share: fxExposure, note: "Handelswährung des Listings. Die Währungen der Fondsinhalte sind ohne Holdings nicht bekannt." },
-      series: series, risk: risk, performance: perf, correlations: corr, missingSeries: missingSeries, complexPositions: complex
+      series: series, risk: risk, performance: perf, correlations: corr, missingSeries: missingSeries, complexPositions: complex,
+      dataState: dataState, coverage: { positions: pos.length, withPrices: withPrices, withHoldings: withHoldings }
     };
   }
 
@@ -173,7 +201,7 @@
       reason: unknown > 0 ? "Für " + Math.round(unknown * 100) + " % des Portfolios ist die Eigenschaft nicht belegt; dieser Teil bleibt unverändert gerechnet." : null };
   }
 
-  var api = { VERSION: VERSION, SCENARIOS: SCENARIOS, overlap: overlap, lookThrough: lookThrough,
+  var api = { VERSION: VERSION, HOLDINGS_CONTRACT: HOLDINGS_CONTRACT, validateHoldingsFile: validateHoldingsFile, SCENARIOS: SCENARIOS, overlap: overlap, lookThrough: lookThrough,
     portfolioXRay: portfolioXRay, applyScenario: applyScenario, normalizeWeights: normalizeWeights, validHoldings: validHoldings };
   if (isNode) module.exports = api;
   else { global.VUVorsorge = global.VUVorsorge || {}; global.VUVorsorge.XRay = api; }

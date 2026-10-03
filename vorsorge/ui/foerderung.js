@@ -169,22 +169,45 @@
 
   /* ================================================================= DATEN */
   VS.views.daten = function () {
-    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Datenquellen & Datenqualität</p><h1>Was wir wissen –<br>und was nicht.</h1><p class="vs-lead">Jede Zahl in Vorsorge hat eine Quelle. Was fehlt, steht hier – statt geschätzt zu werden.</p></section><section class="vs-section" id="vs-dq"><div class="vs-loading">…</div></section>');
-    Promise.all([VS.getJSON("/vorsorge/data/quality.json"), VS.master()]).then(function (res) {
-      var q = res[0], m = res[1], host = root.querySelector("#vs-dq");
-      function tbl(obj) { return Object.keys(obj).sort(function (a, b) { return obj[b] - obj[a]; }).map(function (k) { return '<div class="vs-row"><span>' + esc(k) + '</span><span class="num">' + obj[k] + '</span></div>'; }).join(""); }
-      host.innerHTML = '<div class="vs-grid g4">' +
-        '<div class="vs-card app"><p class="vs-label">ETF-Listings</p><p class="vs-kpi">' + q.listings + '</p><p class="vs-fine">' + q.canonicalETFs + ' kanonische Fonds</p></div>' +
-        '<div class="vs-card app"><p class="vs-label">Mit Kurshistorie</p><p class="vs-kpi">' + q.priceCoverage.withAnyHistory + '</p><p class="vs-fine">' + q.priceCoverage.withHistory3Y + ' mit ≥ 3 Jahren</p></div>' +
-        '<div class="vs-card app"><p class="vs-label">Tiingo-ETF-Zeilen gesamt</p><p class="vs-kpi">' + (q.tiingoEtfSymbols.providerUniverseEtfRows || "–").toLocaleString("de-DE") + '</p><p class="vs-fine">' + (q.tiingoEtfSymbols.fullUniverseLoaded ? "vollständig aufgenommen" : "Auszug aufgenommen – Vollausbau per CI-Lauf") + '</p></div>' +
-        '<div class="vs-card app"><p class="vs-label">Hebel / Short</p><p class="vs-kpi">' + q.leveragedInverse.length + '</p><p class="vs-fine">' + q.complex + ' komplexe Produkte gesamt</p></div></div>' +
+    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Datenquellen & Datenqualität</p><h1>Was wir wissen –<br>und was nicht.</h1><p class="vs-lead">Jede Zahl in Vision Universe Altersvorsorge hat eine Quelle. Was fehlt, steht hier – statt geschätzt zu werden.</p></section><section class="vs-section" id="vs-dq"><div class="vs-loading">…</div></section>');
+    Promise.all([VS.getJSON("/vorsorge/data/quality.json"), VS.master(), VS.getJSON("/vorsorge/data/ucits-coverage.json").catch(function () { return null; }), VS.getJSON("/vorsorge/data/data-gaps.json").catch(function () { return null; })]).then(function (res) {
+      var q = res[0], m = res[1], u = res[2], g = res[3], host = root.querySelector("#vs-dq");
+      var n = function (x) { return x === null || x === undefined ? "–" : Number(x).toLocaleString("de-DE"); };
+      function tbl(obj, limit) { return Object.keys(obj || {}).sort(function (a, b) { return obj[b] - obj[a]; }).slice(0, limit || 12).map(function (k) { return '<div class="vs-row"><span>' + esc(k) + '</span><span class="num">' + n(obj[k]) + '</span></div>'; }).join(""); }
+      var ing = q.ingest || {}, rep = ing.report || {}, cat = ing.catalog || {};
+      var L = q.layers || {}, P = q.priceCoverage || {};
+      var tile = function (label, val, sub) { return '<div class="vs-card app"><p class="vs-label">' + label + '</p><p class="vs-kpi">' + val + '</p><p class="vs-fine">' + sub + '</p></div>'; };
+      var STATUS = { ACTIVE: "aktiv", ACTIVE_WHERE_RECONSTRUCTED: "aktiv, wo rekonstruierbar", PARTIAL: "teilweise", NOT_AVAILABLE: "nicht verfügbar", NOT_CONNECTED: "nicht angebunden" };
+      var SM = V.Provider.STATUS_MATRIX;
+      host.innerHTML =
+        '<div class="vs-grid g4">' +
+        tile("Datenstand", F.date(q.asOf), "letzter Kurstag im Bestand") +
+        tile("Tiingo-Ingest", ing.status === "COMPLETE" ? "vollständig" : ing.status === "PARTIAL" ? "teilweise" : "nicht gelaufen", rep.activeTickers ? n(rep.processedOk) + " von " + n(rep.activeTickers) + " aktiven Tickern" : "nur Repository-Auszug") +
+        tile("Rohzeilen (ETF)", n(L.raw), cat.catalogRows ? "aus " + n(cat.catalogRows) + " Zeilen der Tiingo-Tickerliste" : "Tiingo-Tickerliste") +
+        tile("Public Analysis", n(L.publicAnalysis), "Standard-Bauart, aktiv, mit Kursen") + '</div>' +
+        '<div class="vs-grid g4" style="margin-top:14px">' +
+        tile("Listings", n(L.listings), n(L.canonical) + " kanonische Fonds") +
+        tile("Komplexe Produkte", n(L.complex), "Hebel, Short, Optionen, Krypto, Rohstoff, ETN") +
+        tile("Archiv (inaktiv)", n(L.archive), "nicht gelöscht, nur ausgeblendet") +
+        tile("In Prüfung", n(L.review), "Kollision, OTC, ohne Kurse/Name, unklar") + '</div>' +
         '<div class="vs-note" style="margin-top:14px">' + esc(m.scopeNote) + '</div>' +
-        '<div class="vs-grid g3" style="margin-top:14px"><div class="vs-card"><p class="vs-label">Metadaten-Abdeckung</p>' + Object.keys(q.metadataCoverage).map(function (k) { return '<div class="vs-row"><span>' + esc(k) + '</span><span class="num">' + F.pct(q.metadataCoverage[k], 0) + '</span></div>'; }).join("") + '</div>' +
-        '<div class="vs-card"><p class="vs-label">Börsen</p>' + tbl(q.exchanges) + '<p class="vs-label" style="margin-top:14px">Währungen</p>' + tbl(q.currencies) + '<p class="vs-label" style="margin-top:14px">Status</p>' + tbl(q.statuses) + '</div>' +
-        '<div class="vs-card"><p class="vs-label">Duplikate & Konflikte</p><div class="vs-row"><span>Gleicher Ticker an mehreren Börsen</span><span class="num">' + q.duplicates.duplicateTickers.length + '</span></div><div class="vs-row"><span>Fonds mit mehreren Listings</span><span class="num">' + q.duplicates.multiListingFunds.length + '</span></div>' +
-        q.conflicts.map(function (c) { return '<div class="vs-row"><span>' + esc(c.symbol) + ' – ' + esc((c.names || []).join(" / ")) + '</span><span class="vs-fine">' + esc(c.conflict) + '</span></div>'; }).join("") +
-        '<p class="vs-label" style="margin-top:14px">Felder ohne angeschlossene Quelle</p><p class="vs-fine">' + esc(q.noSourceFields.join(", ")) + '</p></div></div>' +
-        '<div class="vs-card soft" style="margin-top:14px"><p class="vs-label">Datenanbieter</p>' + V.Provider.registry([V.Provider.createTiingoAdapter({ rows: [] })]).status().map(function (p) { return '<div class="vs-row"><span>' + esc(p.label) + '</span><span class="vs-badge ' + (p.status === "CONNECTED" ? "ok" : "") + '">' + (p.status === "CONNECTED" ? "angeschlossen" : "vorbereitet") + '</span></div>'; }).join("") + '</div>';
-    });
+        '<div class="vs-grid g3" style="margin-top:14px">' +
+        '<div class="vs-card"><p class="vs-label">Kurshistorie</p>' + [["mit Kursreihe", P.withAnyHistory], ["≥ 1 Jahr", P.y1], ["≥ 3 Jahre", P.y3], ["≥ 5 Jahre", P.y5], ["≥ 10 Jahre", P.y10], ["mit Gesamtrendite (Ausschüttungen)", P.totalReturn]].map(function (x) { return '<div class="vs-row"><span>' + x[0] + '</span><span class="num">' + n(x[1]) + '</span></div>'; }).join("") +
+        '<p class="vs-fine" style="margin-top:8px">Abdeckung: ' + F.pct(P.ratio, 1) + ' aller Listings.</p></div>' +
+        '<div class="vs-card"><p class="vs-label">Produkttypen</p>' + tbl(q.productTypes) + '<p class="vs-label" style="margin-top:14px">Vorsorge-Einordnung</p>' + tbl(Object.fromEntries(Object.entries(q.retirementClasses || {}).map(function (kv) { return [VS.RETIRE[kv[0]] || kv[0], kv[1]]; }))) + '</div>' +
+        '<div class="vs-card"><p class="vs-label">Bauart (prägende Strategie)</p>' + tbl(Object.fromEntries(Object.entries(q.strategies || {}).map(function (kv) { return [VS.STRATEGY[kv[0]] || kv[0], kv[1]]; })), 16) + '</div></div>' +
+        '<div class="vs-grid g3" style="margin-top:14px">' +
+        '<div class="vs-card"><p class="vs-label">Börsen</p>' + tbl(q.exchanges) + '</div>' +
+        '<div class="vs-card"><p class="vs-label">Währungen</p>' + tbl(q.currencies) + '<p class="vs-label" style="margin-top:14px">Duplikate & Konflikte</p>' +
+        '<div class="vs-row"><span>Ticker an mehreren Börsen</span><span class="num">' + n(q.duplicates.duplicateTickers.length) + '</span></div><div class="vs-row"><span>Fonds mit mehreren Listings</span><span class="num">' + n(q.duplicates.multiListingFunds.length) + '</span></div>' +
+        '<div class="vs-row"><span>Identitätskonflikte</span><span class="num">' + n(q.conflicts.length) + '</span></div><div class="vs-row"><span>Recycelte Ticker (Verdacht)</span><span class="num">' + n((q.tickerReuseSuspected || []).length) + '</span></div>' +
+        '<div class="vs-row"><span>Auffällige Kursreihen</span><span class="num">' + n((q.priceAnomalies || []).length) + '</span></div><div class="vs-row"><span>Ohne Name / ohne Kurse</span><span class="num">' + n(q.missingName) + ' / ' + n(q.missingPrice) + '</span></div><div class="vs-row"><span>Klassifikation unbekannt</span><span class="num">' + n(q.unknownClassification) + '</span></div></div>' +
+        '<div class="vs-card"><p class="vs-label">UCITS (gemessen)</p>' + (u ? '<div class="vs-row"><span>ETF-Zeilen an europäischen Börsen (Tiingo-Liste)</span><span class="num">' + n(u.catalogEtfRowsOnEuropeanExchanges) + '</span></div><div class="vs-row"><span>Listings an europäischen Börsen</span><span class="num">' + n(u.listingsOnEuropeanExchanges) + '</span></div><div class="vs-row"><span>„UCITS“ im Namen</span><span class="num">' + n(u.listingsNamedUcits) + '</span></div><div class="vs-row"><span>Handel in EUR/GBP/CHF</span><span class="num">' + n(u.listingsInEurGbpChf) + '</span></div><div class="vs-row"><span>mit ISIN</span><span class="num">' + n(u.isinAvailable) + '</span></div><p class="vs-fine" style="margin-top:8px">' + esc(u.conclusion) + '</p>' : VS.pending("Kein UCITS-Bericht", "Noch nicht erzeugt.")) + '</div></div>' +
+        '<div class="vs-card" style="margin-top:14px"><p class="vs-label">Feldabdeckung und Bedarf an einer zweiten Quelle</p>' + (g ? '<div class="vs-table-wrap" style="margin-top:10px"><table class="vs-table" style="min-width:560px"><thead><tr><th>Feld</th><th>Tiingo</th><th>Abdeckung</th><th>Zweite Quelle nötig?</th></tr></thead><tbody>' +
+          g.fields.map(function (f) { return '<tr><td>' + esc(f.field) + '</td><td style="text-align:left;white-space:normal">' + esc(f.tiingo) + '</td><td class="num">' + (f.coverage === null ? "–" : F.pct(f.coverage, 0)) + '</td><td style="text-align:left;white-space:normal">' + esc(f.secondProviderNeeded) + '</td></tr>'; }).join("") + '</tbody></table></div>' : "") + '</div>' +
+        '<div class="vs-card soft" style="margin-top:14px"><p class="vs-label">Anbieter-Status (intern)</p>' + Object.keys(SM).map(function (prov) {
+          return '<div class="vs-row"><span><b>' + esc({ tiingo: "Tiingo", european_exchange: "Europäische Börsen", issuer_feeds: "Emittenten-Feeds" }[prov] || prov) + '</b></span><span style="text-align:right">' + Object.keys(SM[prov]).map(function (k) { return esc(k) + ": " + esc(STATUS[SM[prov][k]] || SM[prov][k]); }).join(" · ") + '</span></div>';
+        }).join("") + '</div>';
+    }).catch(function (e) { root.querySelector("#vs-dq").innerHTML = VS.pending("Datenbericht nicht erreichbar", String(e.message || e)); });
   };
 })(window);

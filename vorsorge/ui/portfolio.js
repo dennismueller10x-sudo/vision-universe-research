@@ -1,6 +1,6 @@
 /* =========================================================================
    VISION UNIVERSE® VORSORGE — ui/portfolio.js
-   Vorsorge-Portfolio: Modellportfolios (keine Empfehlung), eigene
+   Vorsorge-Portfolio: Strategiemodelle (Beispiel-Strukturen, keine Empfehlung), eigene
    Gewichtung, Portfolio-X-Ray, Overlap-Engine, Szenario-Lab.
    ========================================================================= */
 (function (global) {
@@ -13,14 +13,19 @@
       var s = r.query.add.toUpperCase();
       if (!VS.state.portfolio.some(function (p) { return p.symbol === s; })) { VS.state.portfolio.push({ symbol: s, weight: 0.1 }); VS.save(); }
     }
-    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Vorsorge-Portfolio</p><h1>Was steckt wirklich<br>in deinem Portfolio?</h1><p class="vs-lead">Wähle ein Modellportfolio oder baue dein eigenes. Wir zeigen Regionen, Risiko, Kursverlauf, Konzentration und Überschneidungen – keine Kaufempfehlung.</p>' +
+    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Vorsorge-Portfolio</p><h1>Was steckt wirklich<br>in deinem Portfolio?</h1><p class="vs-lead">Wähle ein Strategiemodell als Beispiel-Struktur oder baue dein eigenes. Wir zeigen Regionen, Risiko, Kursverlauf, Konzentration und Überschneidungen – keine Kaufempfehlung.</p>' +
       '<div class="vs-tabs"><a class="vs-pill' + (sub === "xray" ? " primary" : "") + '" href="#/portfolio">Portfolio-X-Ray</a><a class="vs-pill' + (sub === "szenarien" ? " primary" : "") + '" href="#/portfolio/szenarien">Szenario-Lab</a></div></section>' +
-      '<section class="vs-section"><div class="vs-section-head"><h2>Modellportfolios</h2><p class="vs-sub">Lehrbeispiele zum Ausprobieren</p></div><div class="vs-grid g4" id="vs-models"><div class="vs-loading">…</div></div></section>' +
+      '<section class="vs-section"><div class="vs-section-head"><h2>Strategiemodelle</h2><p class="vs-sub">Beispiel-Strukturen zum Verstehen – keine Empfehlung</p></div><div class="vs-grid g4" id="vs-models"><div class="vs-loading">…</div></div></section>' +
       '<section class="vs-section"><div class="vs-grid side"><div class="vs-card app" id="vs-editor"></div><div id="vs-pf-out"><div class="vs-loading">Berechne …</div></div></div></section>');
     Promise.all([VS.master(), VS.getJSON("/vorsorge/data/model-portfolios.json")]).then(function (res) {
       var m = res[0], models = res[1];
       root.querySelector("#vs-models").innerHTML = models.portfolios.map(function (p) {
-        return '<button class="vs-card link" style="text-align:left;cursor:pointer;border:1px solid var(--line-soft)" data-model="' + esc(p.id) + '"><p class="vs-label">' + esc(p.label) + '</p><p style="margin-top:6px;font-size:14px">' + esc(p.idea) + '</p><p class="vs-fine" style="margin-top:8px">' + p.positions.map(function (x) { return esc(x.symbol) + " " + F.pct(x.weight, 0); }).join(" · ") + '</p></button>';
+        var regions = {}; p.positions.forEach(function (x) { var e = m._bySymbol[x.symbol]; var k = e && e.region ? (VS.REGION[e.region] || e.region) : "nicht zugeordnet"; regions[k] = 1; });
+        var vols = p.positions.map(function (x) { var e = m._bySymbol[x.symbol]; return e && e.m ? e.m.vol : null; }).filter(function (v) { return v !== null; });
+        return '<button class="vs-card link" style="text-align:left;cursor:pointer;border:1px solid var(--line-soft)" data-model="' + esc(p.id) + '"><p class="vs-label">' + esc(p.label) + '</p><p style="margin-top:6px;font-size:14px">' + esc(p.idea) + '</p>' +
+          '<div class="vs-row" style="margin-top:8px"><span>Bausteine</span><span>' + p.positions.length + '</span></div><div class="vs-row"><span>Regionen</span><span style="text-align:right">' + esc(Object.keys(regions).join(", ")) + '</span></div>' +
+          '<div class="vs-row"><span>Schwankung der Bausteine</span><span>' + (vols.length ? F.pct(Math.min.apply(null, vols), 0) + "–" + F.pct(Math.max.apply(null, vols), 0) : "–") + '</span></div><div class="vs-row"><span>Kosten</span><span class="vs-fine">Quelle nicht angebunden</span></div>' +
+          '<p class="vs-fine" style="margin-top:8px">' + p.positions.map(function (x) { return esc(x.symbol) + " " + F.pct(x.weight, 0); }).join(" · ") + '</p></button>';
       }).join("") + '<p class="vs-fine" style="grid-column:1/-1">' + esc(models.note) + '</p>';
       root.querySelectorAll("[data-model]").forEach(function (b) {
         b.onclick = function () { var p = models.portfolios.filter(function (x) { return x.id === b.dataset.model; })[0]; VS.state.portfolio = p.positions.map(function (x) { return { symbol: x.symbol, weight: x.weight }; }); VS.save(); editor(); compute(); };
@@ -46,7 +51,7 @@
       }
       function compute() {
         var out = root.querySelector("#vs-pf-out");
-        if (!VS.state.portfolio.length) { out.innerHTML = VS.pending("Leeres Portfolio", "Wähle ein Modellportfolio oder füge ETFs hinzu."); return; }
+        if (!VS.state.portfolio.length) { out.innerHTML = VS.pending("Leeres Portfolio", "Wähle ein Strategiemodell oder füge ETFs hinzu."); return; }
         out.innerHTML = '<div class="vs-loading">Berechne …</div>';
         VS.seriesFor(VS.state.portfolio.map(function (p) { return p.symbol; })).then(function (s) {
           (sub === "szenarien" ? drawScenarios : drawXRay)(out, m, s);
@@ -57,14 +62,18 @@
   };
 
   function drawXRay(out, m, s) {
-    var x = X.portfolioXRay(VS.state.portfolio, m._bySymbol, s.series, { regionLabels: VS.REGION, baseCurrency: "EUR" });
-    VS.analytics.track("portfolio_xray", { positions: x.positions.length });
     var holdings = {}; Object.keys(s.details).forEach(function (k) { var h = s.details[k].holdings; if (X.validHoldings(h)) holdings[k] = h; });
+    var x = X.portfolioXRay(VS.state.portfolio, m._bySymbol, s.series, { regionLabels: VS.REGION, baseCurrency: "EUR", holdingsBySymbol: holdings });
+    VS.analytics.track("portfolio_xray", { positions: x.positions.length });
     var lt = X.lookThrough(x.positions, holdings);
     var pairs = [];
     for (var i = 0; i < x.positions.length; i++) for (var j = i + 1; j < x.positions.length; j++) pairs.push(X.overlap(holdings[x.positions[i].symbol], holdings[x.positions[j].symbol]));
     var hist = x.series.status === "CALCULATED" ? (Date.parse(x.series.to) - Date.parse(x.series.from)) / (365.25 * 864e5) : 0;
-    out.innerHTML =
+    var x2 = X.portfolioXRay(VS.state.portfolio, m._bySymbol, s.series, { holdingsBySymbol: holdings });
+    var STATE = { FULL_DATA: ["Vollständige Daten", "Kurse und Holdings für alle Positionen."], PARTIAL_DATA: ["Teilweise Daten", "Holdings nur für einen Teil der Positionen."],
+      PRICE_ONLY_DATA: ["Nur Kursdaten", "Berechnet aus Kursreihen und Stammdaten: Schwankung, Rückgang, Gleichlauf, Assetklassen, Regionen laut Fondsname, Handelswährung. Nicht berechenbar ohne Holdings: Länder- und Branchengewichte, Top-Unternehmen, Overlap."],
+      NO_DATA: ["Keine Daten", "Für die Positionen liegen keine Kurse vor."] }[x2.dataState];
+    out.innerHTML = '<div class="vs-note" style="margin-bottom:14px"><b>Datenstand: ' + esc(STATE[0]) + '</b> – ' + esc(STATE[1]) + ' (' + x2.coverage.withPrices + '/' + x2.coverage.positions + ' mit Kursen, ' + x2.coverage.withHoldings + '/' + x2.coverage.positions + ' mit Holdings)</div>' +
       (x.complexPositions.length ? '<div class="vs-warnbox" style="margin-bottom:14px">⚠ Komplexe Produkte im Portfolio: ' + esc(x.complexPositions.join(", ")) + '. Hebel-, Short-, Options- und Krypto-Produkte verhalten sich anders als breit gestreute ETFs.</div>' : "") +
       '<div class="vs-grid g3">' +
       '<div class="vs-card"><p class="vs-label">Schwankung</p><p class="vs-kpi">' + F.pct(x.risk && x.risk.volatility.value) + '</p><p class="vs-fine">p.a., Wochenwerte, gemeinsame Historie</p></div>' +
@@ -76,7 +85,7 @@
       '<div class="vs-grid g2" style="margin-top:14px">' +
       '<div class="vs-card"><p class="vs-label">Assetklassen</p><div style="margin-top:10px">' + VS.bars(x.assetClasses.map(function (a) { return { key: a.key, label: VS.ASSET[a.key] || a.key, weight: a.weight }; })) + '</div></div>' +
       '<div class="vs-card"><p class="vs-label">Regionen (laut Fondsname)</p><div style="margin-top:10px">' + VS.bars(x.regions) + '</div></div>' +
-      '<div class="vs-card"><p class="vs-label">Währungsrisiko</p><p class="vs-kpi small" style="margin-top:6px">' + F.pct(x.fxExposure.share, 0) + ' nicht in Euro</p><p class="vs-fine" style="margin-top:6px">' + esc(x.fxExposure.note) + '</p><div style="margin-top:10px">' + VS.bars(x.currencies) + '</div></div>' +
+      '<div class="vs-card"><p class="vs-label">Handelswährung</p><p class="vs-kpi small" style="margin-top:6px">' + F.pct(x.fxExposure.share, 0) + ' nicht in Euro gehandelt</p><p class="vs-fine" style="margin-top:6px">Gemessen ist nur die Handelswährung der Listings. Underlying-Währungsrisiko noch nicht verfügbar (dafür braucht es die Holdings).</p><div style="margin-top:10px">' + VS.bars(x.currencies) + '</div></div>' +
       '<div class="vs-card"><p class="vs-label">Konzentration</p><p class="vs-kpi small" style="margin-top:6px">' + x.concentration.effectiveNumber.toLocaleString("de-DE", { maximumFractionDigits: 1 }) + ' effektive ETFs</p><p class="vs-fine" style="margin-top:6px">Größte Position: ' + esc(x.concentration.largest ? x.concentration.largest.symbol + " " + F.pct(x.concentration.largest.weight, 0) : "–") + '. Auf Ebene der Unternehmen folgt die Konzentration mit Holdings-Daten.</p>' +
       '<p class="vs-label" style="margin-top:14px">Gleichlauf (Korrelation, Wochenrenditen)</p>' + (x.correlations.length ? x.correlations.map(function (c) { return '<div class="vs-row"><span>' + esc(c.a) + ' ↔ ' + esc(c.b) + '</span><span class="num">' + (c.value === null ? '<span class="vs-fine">zu wenig Überlappung</span>' : c.value.toLocaleString("de-DE", { maximumFractionDigits: 2 })) + '</span></div>'; }).join("") : '<p class="vs-fine">Ab zwei ETFs.</p>') + '</div></div>' +
       '<div class="vs-card" style="margin-top:14px"><p class="vs-label">Durchschau: Länder, Branchen, Top-Unternehmen, Overlap</p>' +
@@ -92,7 +101,7 @@
     var wealth = base.nominal;
     var results = X.SCENARIOS.map(function (s) { return { s: s, r: X.applyScenario(s, VS.state.portfolio, m._bySymbol) }; });
     var infl = global.VUVorsorge.Math.plan(Object.assign({}, VS.state.plan, { inflation: VS.state.plan.inflation + 0.01 }), [{ id: "basis", label: "Basis", annualReturn: VS.state.plan.returns.basis }]).scenarios[0];
-    out.innerHTML = '<div class="vs-card"><p class="vs-label">Szenario-Lab · Wirkung auf dein Portfolio</p><p class="vs-fine" style="margin-top:4px">Sofortiger Schock auf die heutigen Gewichte. Angewendet nur, wo die Eigenschaft belegt ist (Assetklasse, Region und Währung aus dem ETF-Stamm). Hebel/Short werden berücksichtigt.</p>' +
+    out.innerHTML = '<div class="vs-card"><p class="vs-label">Szenario-Lab · Modellrechnung</p><p class="vs-fine" style="margin-top:4px">Vereinfachtes Modell, keine Prognose: sofortiger Schock auf die heutigen Gewichte. Angewendet nur, wo die Eigenschaft belegt ist (Assetklasse, Region und Währung aus dem ETF-Stamm). Hebel/Short werden berücksichtigt.</p>' +
       '<div class="vs-table-wrap" style="margin-top:12px"><table class="vs-table" style="min-width:560px"><thead><tr><th>Szenario</th><th>Wirkung aufs Portfolio</th><th>Betroffener Anteil</th><th>Auf 10.000 €</th><th>Status</th></tr></thead><tbody>' +
       results.map(function (x) {
         var r = x.r;

@@ -343,15 +343,15 @@
       '<form class="vs-search" id="vs-cmp-form"><span aria-hidden="true">+</span><input id="vs-cmp-q" placeholder="ETF hinzufügen (Ticker oder Name)" autocomplete="off" aria-label="ETF hinzufügen"><button type="submit">Hinzufügen</button></form><div class="vs-suggest" id="vs-cmp-s"></div>' +
       '<div class="vs-tabs" id="vs-cmp-chips"></div></section><section class="vs-section" id="vs-cmp"><div class="vs-loading">…</div></section>');
     VS.master().then(function (m) {
-      syms = syms.filter(function (s) { return m._bySymbol[s]; });
+      syms = syms.map(function (s) { var e = m.find(s); return e ? e.slug : null; }).filter(Boolean);
       var chips = root.querySelector("#vs-cmp-chips");
       chips.innerHTML = syms.map(function (s) { return '<a class="vs-pill small primary" href="#/vergleich?s=' + encodeURIComponent(syms.filter(function (x) { return x !== s; }).join(",")) + '" aria-label="' + s + ' entfernen">' + esc(s) + ' ×</a>'; }).join("");
       var q = root.querySelector("#vs-cmp-q"), box = root.querySelector("#vs-cmp-s");
       q.addEventListener("input", function () {
-        var res = V.Master.search(m.etfs.filter(function (e) { return e.status !== "REVIEW"; }), q.value, 6);
-        box.innerHTML = res.length ? '<ul>' + res.map(function (e) { return '<li><a href="#/vergleich?s=' + encodeURIComponent(syms.concat(e.symbol).slice(-4).join(",")) + '"><span><b>' + esc(e.symbol) + '</b> · ' + esc(e.name) + '</span></a></li>'; }).join("") + '</ul>' : "";
+        var res = V.Master.search(m.etfs.filter(function (e) { return e.layer !== "REVIEW"; }), q.value, 6);
+        box.innerHTML = res.length ? '<ul>' + res.map(function (e) { return '<li><a href="#/vergleich?s=' + encodeURIComponent(syms.concat(e.slug).slice(-4).join(",")) + '"><span><b>' + esc(e.symbol) + '</b> · ' + esc(e.name) + '</span></a></li>'; }).join("") + '</ul>' : "";
       });
-      root.querySelector("#vs-cmp-form").addEventListener("submit", function (ev) { ev.preventDefault(); var hit = V.Master.search(m.etfs, q.value, 1)[0]; if (hit) VS.go("#/vergleich?s=" + encodeURIComponent(syms.concat(hit.symbol).slice(-4).join(","))); });
+      root.querySelector("#vs-cmp-form").addEventListener("submit", function (ev) { ev.preventDefault(); var hit = V.Master.search(m.etfs, q.value, 1)[0]; if (hit) VS.go("#/vergleich?s=" + encodeURIComponent(syms.concat(hit.slug).slice(-4).join(","))); });
       var host = root.querySelector("#vs-cmp");
       if (syms.length < 2) { host.innerHTML = VS.pending("Mindestens zwei ETFs", "Füge oben einen weiteren ETF hinzu."); return; }
       VS.analytics.track("etf_compare", { symbols: syms.join(",") });
@@ -362,7 +362,9 @@
   function drawCompare(host, ds, m) {
     function val(d, path) { try { return path.split(".").reduce(function (o, k) { return o === null || o === undefined ? null : o[k]; }, d); } catch (e) { return null; } }
     var rows = [
-      ["Kategorie", function (d) { return esc((m._bySymbol[d.symbol] || {}).category || "–"); }],
+      ["Kategorie", function (d) { return esc((m.find(d.slug) || {}).category || "–"); }],
+      ["Produkttyp · Bauart", function (d) { var e = m.find(d.slug) || {}; return esc((e.productType || "–") + " · " + (VS.STRATEGY[e.strategy] || "–")); }],
+      ["Vorsorge-Einordnung", function (d) { return esc(VS.RETIRE[d.retirementClass] || "–"); }],
       ["Index", function (d) { return esc(d.index || "–"); }], ["Anbieter", function (d) { return esc(d.issuer || "–"); }],
       ["Börse · Währung", function (d) { return esc((d.exchange || "–") + " · " + (d.currency || "–")); }],
       ["Region", function (d) { return esc(VS.REGION[d.region] || "–"); }],
@@ -376,7 +378,8 @@
       ["Ausschüttung", function () { return '<span class="vs-fine">Daten folgen</span>'; }], ["Replikation", function () { return '<span class="vs-fine">Daten folgen</span>'; }],
       ["Tracking Difference", function () { return '<span class="vs-fine">Daten folgen</span>'; }],
       ["Overlap / Top-Holdings / Branchen", function () { return '<span class="vs-fine">Daten folgen (Holdings)</span>'; }],
-      ["Komplex", function (d) { return d.complex ? '<span class="vs-badge complex">⚠ ja</span>' : "nein"; }]
+      ["Gesamtrendite 1J", function (d) { return d.metricsTotal ? F.spct(d.metricsTotal.windows["1Y"].value) : '<span class="vs-fine">nicht verfügbar</span>'; }],
+      ["Kurshistorie ab", function (d) { return F.date(d.priceHistoryFrom || (d.metrics && d.metrics.firstDate)); }]
     ];
     // Die groessten Unterschiede: normierte Spannweite je Kennzahl
     var diffs = [];
@@ -387,10 +390,10 @@
       var lo = vals[0], hi = vals[vals.length - 1];
       diffs.push({ score: (hi.v - lo.v) / scale, text: text(lo, hi) });
     }
-    spread("vol", "metrics.volatility.value", 0.05, function (lo, hi) { return hi.s + " schwankt deutlich stärker als " + lo.s + " (" + F.pct(hi.v) + " vs. " + F.pct(lo.v) + " p.a.)."; });
+    spread("vol", "metrics.volatility.value", 0.05, function (lo, hi) { return hi.s + ": höhere Schwankung (" + F.pct(hi.v) + " p.a.) · " + lo.s + ": geringere Schwankung (" + F.pct(lo.v) + " p.a.)."; });
     spread("mdd", "metrics.maxDrawdown.value", 0.1, function (lo, hi) { return "Größter Rückgang: " + lo.s + " " + F.pct(lo.v) + ", " + hi.s + " " + F.pct(hi.v) + " – beachte die unterschiedlich langen Historien."; });
-    spread("1y", "metrics.windows.1Y.value", 0.05, function (lo, hi) { return "Im letzten Jahr lag " + hi.s + " " + F.pct(hi.v - lo.v) + "-Punkte vor " + lo.s + "."; });
-    spread("hy", "metrics.historyYears", 3, function (lo, hi) { return hi.s + " hat " + F.years(hi.v) + " Kurshistorie, " + lo.s + " nur " + F.years(lo.v) + "."; });
+    spread("1y", "metrics.windows.1Y.value", 0.05, function (lo, hi) { return "Kursentwicklung der letzten 12 Monate: " + hi.s + " " + F.spct(hi.v) + ", " + lo.s + " " + F.spct(lo.v) + " (Vergangenheit, kein Qualitätsurteil)."; });
+    spread("hy", "metrics.historyYears", 3, function (lo, hi) { return hi.s + ": breitere Historie (" + F.years(hi.v) + ") · " + lo.s + ": " + F.years(lo.v) + " – Kennzahlen sind nur begrenzt vergleichbar."; });
     var regions = ds.map(function (d) { return d.region; }); if (regions.some(function (r) { return r !== regions[0]; })) diffs.push({ score: 2, text: "Unterschiedliche Regionen: " + ds.map(function (d) { return d.symbol + " " + (VS.REGION[d.region] || "unbekannt"); }).join(", ") + "." });
     if (ds.some(function (d) { return d.complex; }) && ds.some(function (d) { return !d.complex; })) diffs.push({ score: 3, text: "Mindestens ein komplexes Produkt im Vergleich: " + ds.filter(function (d) { return d.complex; }).map(function (d) { return d.symbol; }).join(", ") + "." });
     diffs.sort(function (a, b) { return b.score - a.score; });
@@ -414,13 +417,13 @@
   VS.views.watchlist = function () {
     var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Watchlist</p><h1>ETFs beobachten.</h1><p class="vs-lead">Performance, Status und Änderungen deiner beobachteten ETFs. Gespeichert nur in diesem Browser.</p></section><section class="vs-section" id="vs-wl"><div class="vs-loading">…</div></section>');
     Promise.all([VS.master(), VS.getJSON("/vorsorge/data/changes.json").catch(function () { return { events: [] }; })]).then(function (res) {
-      var m = res[0], ch = res[1], list = VS.state.watchlist.map(function (s) { return m._bySymbol[s]; }).filter(Boolean);
+      var m = res[0], ch = res[1], list = VS.state.watchlist.map(function (s) { return m.find(s); }).filter(Boolean), missing = VS.state.watchlist.filter(function (s) { return !m.find(s); });
       var host = root.querySelector("#vs-wl");
       if (!list.length) { host.innerHTML = '<div class="vs-card soft vs-empty">Noch keine ETFs beobachtet. Öffne einen ETF und tippe auf „♡ Beobachten“.<div class="vs-tabs" style="justify-content:center"><a class="vs-pill primary" href="#/etfs">ETFs entdecken</a></div></div>'; return; }
       host.innerHTML = '<div class="vs-table-wrap"><table class="vs-table"><thead><tr><th>ETF</th><th>Kurs</th><th>1 Tag</th><th>1J</th><th>Schwankung</th><th>Status</th><th>Kosten</th><th>Fondsgröße</th><th>Änderungen</th></tr></thead><tbody>' + list.map(function (e) {
         var evs = ch.events.filter(function (x) { return x.symbol === e.symbol; });
-        return '<tr><td><a href="#/etf/' + e.symbol + '">' + esc(e.symbol) + '</a><span class="t-name">' + esc(e.name) + '</span><span class="t-name">' + esc(e.index || e.category) + '</span></td><td class="num">' + F.price(e.m && e.m.price, e.currency) + '</td><td class="num ' + F.cls(e.m && e.m.d1) + '">' + F.spct(e.m && e.m.d1, 2) + '</td><td class="num ' + F.cls(e.m && e.m.p["1Y"]) + '">' + F.spct(e.m && e.m.p["1Y"]) + '</td><td class="num">' + F.pct(e.m && e.m.vol) + '</td><td>' + (e.status === "ACTIVE" ? "aktiv" : "nicht gehandelt") + '</td><td class="vs-fine">Daten folgen</td><td class="vs-fine">Daten folgen</td><td>' + (evs.length ? esc(evs[0].text) : "–") + '</td></tr>';
-      }).join("") + '</tbody></table></div>';
+        return '<tr><td><a href="' + VS.etfHref(e) + '">' + esc(e.symbol) + '</a><span class="t-name">' + esc(e.name) + '</span><span class="t-name">' + esc(e.index || e.category) + '</span></td><td class="num">' + F.price(e.m && e.m.price, e.currency) + '</td><td class="num ' + F.cls(e.m && e.m.d1) + '">' + F.spct(e.m && e.m.d1, 2) + '</td><td class="num ' + F.cls(e.m && e.m.p["1Y"]) + '">' + F.spct(e.m && e.m.p["1Y"]) + '</td><td class="num">' + F.pct(e.m && e.m.vol) + '</td><td>' + (e.status === "INACTIVE" ? '<span class="vs-badge bad">inaktiv</span>' : e.layer === "REVIEW" ? '<span class="vs-badge bad">in Prüfung</span>' : "aktiv") + '</td><td class="vs-fine">Quelle nicht angebunden</td><td class="vs-fine">Quelle nicht angebunden</td><td>' + (evs.length ? esc(evs[0].text) : "–") + '</td></tr>';
+      }).join("") + '</tbody></table></div>' + (missing.length ? '<p class="vs-fine" style="margin-top:10px">Nicht mehr im Verzeichnis: ' + esc(missing.join(", ")) + ' (Ticker entfernt oder umbenannt).</p>' : "");
     });
   };
 })(window);

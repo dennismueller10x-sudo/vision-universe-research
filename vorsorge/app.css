@@ -210,3 +210,9 @@ main.vs-main{padding-bottom:110px;min-height:70vh}
 .vs-field.vs-check input{width:auto}
 .vs-chips{display:flex;flex-wrap:wrap;gap:8px}
 .vs-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.vs-steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.vs-step{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:var(--panel);text-decoration:none;font-weight:700;font-size:13.5px;min-width:0}
+.vs-step b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--bg);display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+.vs-step:hover{background:var(--accent-soft)}
+@media(max-width:900px){.vs-steps{grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.vs-steps{grid-template-columns:1fr}}

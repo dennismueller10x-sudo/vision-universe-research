@@ -10,6 +10,16 @@
     var r = plan.returns || {};
     return [{ id: "konservativ", label: "Konservativ", annualReturn: r.konservativ }, { id: "basis", label: "Basis", annualReturn: r.basis }, { id: "optimistisch", label: "Optimistisch", annualReturn: r.optimistisch }];
   }
+  /** Kontext fuer Plan-Schnappschuesse: Datenstand, Regelversionen, Portfolio-Schwankung. */
+  VS.snapshotContext = function () {
+    return Promise.all([VS.master().catch(function () { return null; }), VS.rules().catch(function () { return []; }),
+      VS.seriesFor(VS.state.portfolio.map(function (p) { return p.symbol; })).catch(function () { return null; })]).then(function (r) {
+      var m = r[0], rules = r[1], s = r[2], vol = null;
+      if (m && s) { var x = V.XRay.portfolioXRay(VS.state.portfolio, m._bySymbol, s.series, {}); vol = x.risk ? x.risk.volatility.value : null; }
+      var rv = {}; (rules || []).forEach(function (x) { rv[x.ruleId] = x.ruleVersion; });
+      return { dataAsOf: m ? m.asOf : null, ruleVersions: rv, portfolioVol: vol };
+    });
+  };
   VS.currentPlan = function () { return M.plan(VS.state.plan, scenarios(VS.state.plan)); };
 
   /* ================================================================ HOME */
@@ -34,8 +44,8 @@
       if (!q) { box.innerHTML = ""; return; }
       var items = [];
       ROUTE_HINTS.forEach(function (h) { if (h[0].test(q)) items.push('<li><a href="' + h[1] + '"><span>' + esc(h[2]) + '</span><span class="vs-sub">Öffnen →</span></a></li>'); });
-      V.Master.search(master.etfs.filter(function (e) { return e.status !== "REVIEW"; }), q, 6).forEach(function (e) {
-        items.push('<li><a href="#/etf/' + encodeURIComponent(e.symbol) + '"><span><b>' + esc(e.symbol) + '</b> · ' + esc(e.name) + '</span><span class="vs-sub">' + esc(e.category) + '</span></a></li>');
+      V.Master.search(master.etfs.filter(function (e) { return e.layer !== "REVIEW"; }), q, 6).forEach(function (e) {
+        items.push('<li><a href="' + VS.etfHref(e) + '"><span><b>' + esc(e.symbol) + '</b> · ' + esc(e.name) + '</span><span class="vs-sub">' + esc(e.category) + '</span></a></li>');
       });
       if (!items.length) items.push('<li><a href="#/etfs?q=' + encodeURIComponent(q) + '"><span>Keine direkte Übereinstimmung – im ETF-Screener suchen</span><span>→</span></a></li>');
       box.innerHTML = '<ul role="listbox">' + items.slice(0, 9).join("") + '</ul>';
@@ -47,8 +57,8 @@
       ev.preventDefault();
       var q = input.value.trim(); if (!q) return;
       var hint = ROUTE_HINTS.filter(function (h) { return h[0].test(q); })[0];
-      var exact = master._bySymbol[q.toUpperCase()];
-      VS.go(exact ? "#/etf/" + exact.symbol : hint ? hint[1] : "#/etfs?q=" + encodeURIComponent(q));
+      var exact = master.find(q);
+      VS.go(exact ? VS.etfHref(exact) : hint ? hint[1] : "#/etfs?q=" + encodeURIComponent(q));
     });
     document.addEventListener("click", function (ev) { if (!box.contains(ev.target) && ev.target !== input) box.innerHTML = ""; });
   }
@@ -66,6 +76,8 @@
       '<div class="vs-suggest" id="vs-suggest"></div>' +
       '<nav class="vs-tabs" aria-label="Vorsorge-Bereiche"><a class="vs-pill primary" href="#/plan">Planen</a><a class="vs-pill" href="#/etfs">ETFs</a><a class="vs-pill" href="#/portfolio">Portfolio</a><a class="vs-pill" href="#/vergleichen">Vergleichen</a><a class="vs-pill" href="#/foerderung">Förderung</a><a class="vs-pill" href="#/wissen">Wissen</a></nav></section>' +
 
+      '<section class="vs-section" aria-label="So gehst du vor"><div class="vs-steps">' + [["#/plan", "Ziel definieren"], ["#/plan/luecke", "Vorsorgelücke verstehen"], ["#/plan", "Sparrate simulieren"], ["#/etfs", "ETF-Welt entdecken"], ["#/portfolio", "Portfolio analysieren"]].map(function (x, i) {
+        return '<a class="vs-step" href="' + x[0] + '"><b>' + (i + 1) + '</b><span>' + x[1] + '</span></a>'; }).join("") + '</div><p class="vs-fine" style="margin-top:8px">Nichts davon ist Pflicht. Jeder Schritt funktioniert für sich.</p></section>' +
       '<section class="vs-section"><div class="vs-grid g2">' +
       '<a class="vs-card app link" href="#/plan"><span class="vs-num-badge">1</span><p class="vs-label">Dein Plan</p>' +
       (VS.state.planDone ? '<p class="vs-light ' + track.state + '" style="margin-top:8px"><i></i>' + esc(track.label) + '</p>' +
@@ -87,18 +99,18 @@
       '<p class="vs-sub" style="margin-top:8px">So viel Unterschied machen 0,2 % statt 1,5 % laufende Kosten bei deinem Plan über ' + p.years + ' Jahre.</p></a>' +
       '</div></section>' +
 
-      '<section class="vs-section"><div class="vs-card app"><span class="vs-num-badge">6</span><div class="vs-section-head"><div><p class="vs-label">Zielerreichung</p><h2 style="margin-top:6px">Drei Szenarien statt einer Prognose</h2></div><a class="vs-pill lime" href="#/plan">Plan anpassen</a></div>' +
+      '<section class="vs-section"><div class="vs-card app"><span class="vs-num-badge">6</span><div class="vs-section-head"><div><p class="vs-label">Zielerreichung' + (VS.state.planDone ? "" : " · Beispielrechnung") + '</p><h2 style="margin-top:6px">Drei Szenarien statt einer Prognose</h2></div><a class="vs-pill lime" href="#/plan">Plan anpassen</a></div>' +
       '<div class="vs-scen">' + p.scenarios.map(function (s) {
         return '<div class="' + (s.id === "basis" ? "base" : "") + '"><p class="vs-label">' + esc(s.label) + ' · ' + F.pct(s.annualReturn, 0) + ' p.a.</p><p class="vs-kpi small">' + F.eurK(s.real) + '</p><p class="vs-fine">heutige Kaufkraft · Ziel ' + F.pct(s.goalAttainment, 0) + '</p></div>';
-      }).join("") + '</div><p class="vs-fine" style="margin-top:12px">Annahmen, keine Vorhersage. Renditen nach Kosten von ' + F.pct(p.input.cost, 2) + ' und Inflation von ' + F.pct(p.input.inflation, 1) + '.</p></div></section>'
+      }).join("") + '</div><p class="vs-fine" style="margin-top:12px">' + (VS.state.planDone ? "" : "Beispiel mit Standardannahmen – noch nicht deine Zahlen. ") + 'Annahmen, keine Vorhersage. Renditen nach Kosten von ' + F.pct(p.input.cost, 2) + ' und Inflation von ' + F.pct(p.input.inflation, 1) + '.</p></div></section>'
     );
     VS.master().then(function (m) {
       attachSearch(root, m);
       var world = root.querySelector("#vs-home-world");
       var core = ["URTH", "SPY", "EEM", "QQQ", "FEZ", "IWM"].map(function (s) { return m._bySymbol[s]; }).filter(Boolean);
-      world.innerHTML = '<span class="vs-num-badge">2</span><p class="vs-label">Deine ETF-Welt</p><p class="vs-kpi small" style="margin-top:6px">' + m.counts.consumerVisible + ' ETFs analysiert</p>' +
-        '<p class="vs-sub" style="margin:6px 0 10px">' + m.counts.withHistory3Y + ' mit mehr als 3 Jahren Kurshistorie · ' + m.counts.complex + ' als komplex markiert · Stand ' + F.date(m.asOf) + '</p>' +
-        core.map(function (e) { return '<div class="vs-row"><span><a href="#/etf/' + e.symbol + '"><b style="color:var(--ink)">' + esc(e.symbol) + '</b></a> ' + esc(e.category) + '</span><span class="num ' + F.cls(e.m && e.m.p["1Y"]) + '">1J ' + F.spct(e.m && e.m.p["1Y"]) + '</span></div>'; }).join("") +
+      world.innerHTML = '<span class="vs-num-badge">2</span><p class="vs-label">Deine ETF-Welt</p><p class="vs-kpi small" style="margin-top:6px">' + m.counts.publicAnalysis.toLocaleString("de-DE") + ' Standard-ETFs</p>' +
+        '<p class="vs-sub" style="margin:6px 0 10px">' + m.counts.listings.toLocaleString("de-DE") + ' Listings insgesamt · ' + m.counts.withHistory3Y.toLocaleString("de-DE") + ' mit ≥ 3 Jahren Kurshistorie · ' + m.counts.complex.toLocaleString("de-DE") + ' komplexe Produkte separat · Stand ' + F.date(m.asOf) + '</p>' +
+        core.map(function (e) { return '<div class="vs-row"><span><a href="' + VS.etfHref(e) + '"><b style="color:var(--ink)">' + esc(e.symbol) + '</b></a> ' + esc(e.category) + '</span><span class="num ' + F.cls(e.m && e.m.p["1Y"]) + '">1J ' + F.spct(e.m && e.m.p["1Y"]) + '</span></div>'; }).join("") +
         '<div class="vs-tabs"><a class="vs-pill small primary" href="#/etfs">Alle ETFs</a><a class="vs-pill small" href="#/watchlist">Watchlist (' + VS.state.watchlist.length + ')</a></div>';
     }).catch(function () { root.querySelector("#vs-home-world").innerHTML = VS.pending("ETF-Verzeichnis nicht erreichbar", "Die ETF-Daten konnten nicht geladen werden. Planer und Rechner funktionieren weiter."); });
     VS.getJSON("/vorsorge/data/changes.json").then(function (c) {
@@ -144,6 +156,7 @@
       ev.preventDefault(); read();
       var p = VS.currentPlan();
       VS.state.planDone = true; VS.state.snapshot = V.Monitor.snapshotPlan(p, VS.state.portfolio, new Date().toISOString().slice(0, 10)); VS.save();
+      VS.snapshotContext().then(function (ctx) { VS.state.snapshot = V.Monitor.snapshotPlan(p, VS.state.portfolio, VS.state.snapshot.at, ctx); VS.save(); });
       VS.analytics.track("planner_complete", { years: p.years });
       var b = form.querySelector("button[type=submit]"); b.textContent = "✓ Gespeichert – im Monitor sichtbar"; setTimeout(function () { b.textContent = "Plan speichern"; }, 2500);
     });
@@ -235,8 +248,8 @@
     var p = VS.currentPlan(), base = p.scenarios[1], snap = VS.state.snapshot;
     var track = V.Monitor.onTrack(VS.state.planDone ? base.goalAttainment : null);
     var levers = M.leverAnalysis(VS.state.plan, VS.state.plan.returns.basis);
-    var planDiff = snap ? V.Monitor.diffPlan(snap, V.Monitor.snapshotPlan(p, VS.state.portfolio)) : [];
-    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Vorsorge-Monitor</p><h1>Bin ich auf Kurs?</h1><p class="vs-lead">Dein Plan, dein Portfolio und das ETF-Verzeichnis – mit allem, was sich seit deinem letzten Stand verändert hat.</p></section>' +
+    var LBL = V.Monitor.CATEGORY_LABEL;
+    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Vorsorge-Monitor</p><h1>Bin ich auf Kurs?</h1><p class="vs-lead">Dein Plan, dein Portfolio und die Daten – mit allem, was sich seit deinem letzten gespeicherten Stand nachweislich verändert hat.</p></section>' +
       '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card app"><p class="vs-label">Status</p><p class="vs-light ' + track.state + '" style="margin-top:10px"><i></i>' + esc(track.label) + '</p>' +
       (VS.state.planDone ? '<div class="vs-progress"><i style="width:' + Math.min(100, base.goalAttainment * 100).toFixed(0) + '%"></i></div>' +
         '<div class="vs-row" style="margin-top:12px"><span>Zielerreichung (Basis)</span><span class="num">' + F.pct(base.goalAttainment, 0) + '</span></div>' +
@@ -244,30 +257,36 @@
         '<div class="vs-row"><span>Nötige Sparrate fürs Ziel</span><span class="num">' + F.eur(base.requiredMonthly) + ' / Monat</span></div>' +
         '<div class="vs-row"><span>Kostenannahme</span><span class="num">' + F.pct(p.input.cost, 2) + ' p.a.</span></div>' +
         '<div class="vs-row"><span>Plan gespeichert am</span><span class="num">' + F.date(snap && snap.at) + '</span></div>'
-        : '<p class="vs-sub" style="margin-top:10px">Speichere zuerst einen Plan im Vorsorgeplaner.</p><a class="vs-pill lime" style="margin-top:12px" href="#/plan">Zum Planer</a>') + '</div>' +
+        : '<p class="vs-sub" style="margin-top:10px">Noch kein Plan gespeichert. Ohne Plan zeigt der Monitor nur Daten- und Produktänderungen.</p><a class="vs-pill lime" style="margin-top:12px" href="#/plan">Zum Planer</a>') + '</div>' +
       '<div class="vs-card"><p class="vs-label">Welche Stellschraube wirkt am stärksten?</p><div style="margin-top:10px">' + levers.levers.map(function (l, i) {
         return '<div class="vs-row"><span>' + (i + 1) + '. ' + esc(l.label) + '</span><span class="num ' + F.cls(l.delta) + '">' + F.spct(l.delta, 0) + '-Pkt.</span></div>';
-      }).join("") + '</div><p class="vs-fine" style="margin-top:8px">Veränderung der Zielerreichung im Basisszenario.</p></div></div></section>' +
-      '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card"><p class="vs-label">Dein Plan – was hat sich verändert?</p><div style="margin-top:8px">' +
-      (planDiff.length ? planDiff.map(function (d) { return '<div class="vs-row"><span style="color:var(--ink)">' + esc(d.text) + '</span></div>'; }).join("") : '<p class="vs-sub">Keine Veränderung gegenüber dem gespeicherten Stand.</p>') + '</div></div>' +
+      }).join("") + '</div><p class="vs-fine" style="margin-top:8px">Veränderung der Zielerreichung im Basisszenario. Modellrechnung, keine Empfehlung.</p></div></div></section>' +
+      '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card" id="vs-mon-plan"><p class="vs-label">Was hat sich bei dir verändert?</p><div class="vs-loading">…</div></div>' +
       '<div class="vs-card" id="vs-mon-portfolio"><p class="vs-label">Portfolio · Risiko & Allokation</p><div class="vs-loading">…</div></div></div></section>' +
-      '<section class="vs-section"><div class="vs-card" id="vs-mon-changes"><p class="vs-label">ETF-Verzeichnis – was hat sich verändert?</p><div class="vs-loading">…</div></div></section>');
+      '<section class="vs-section"><div class="vs-card" id="vs-mon-changes"><p class="vs-label">Daten & Produkte – was hat sich verändert?</p><div class="vs-loading">…</div></div></section>');
+    function evRow(e) { return '<div class="vs-row"><span style="color:var(--ink)">' + esc(e.text) + '</span><span class="vs-badge">' + esc(LBL[e.category] || e.category) + '</span></div>'; }
+    VS.snapshotContext().then(function (ctx) {
+      var d = snap ? V.Monitor.diffPlan(snap, V.Monitor.snapshotPlan(p, VS.state.portfolio, null, ctx)) : [];
+      root.querySelector("#vs-mon-plan").innerHTML = '<p class="vs-label">Was hat sich bei dir verändert?</p><div style="margin-top:8px">' +
+        (snap ? (d.length ? d.map(evRow).join("") : '<p class="vs-sub">Keine Veränderung gegenüber deinem gespeicherten Stand.</p>') : '<p class="vs-sub">Speichere einen Plan, dann vergleicht der Monitor Plan, Portfolio, Regelversionen und Datenstand.</p>') + '</div>';
+    });
     VS.getJSON("/vorsorge/data/changes.json").then(function (c) {
-      root.querySelector("#vs-mon-changes").innerHTML = '<p class="vs-label">ETF-Verzeichnis – was hat sich verändert? · Stand ' + F.date(c.asOf) + '</p><div style="margin-top:8px">' +
-        (c.events.length ? c.events.slice(0, 20).map(function (e) { return '<div class="vs-row"><span style="color:var(--ink)">' + esc(e.text) + '</span><span class="vs-badge">' + esc(e.type) + '</span></div>'; }).join("") : '<p class="vs-sub">Keine Änderungen gegenüber dem vorherigen Datenstand.</p>') +
+      root.querySelector("#vs-mon-changes").innerHTML = '<p class="vs-label">Daten & Produkte – was hat sich verändert? · Stand ' + F.date(c.asOf) + '</p><div style="margin-top:8px">' +
+        (c.events.length ? c.events.slice(0, 25).map(evRow).join("") : '<p class="vs-sub">Keine Änderungen gegenüber dem vorherigen Datenstand.</p>') +
         '</div><h3 style="margin-top:16px">Noch nicht überwacht</h3><div style="margin-top:6px">' + c.unmonitored.map(function (u) { return '<div class="vs-row"><span>' + esc(u.label) + '</span><span class="vs-fine" style="text-align:right">' + esc(u.reason) + '</span></div>'; }).join("") +
-        '<div class="vs-row"><span>Regulatorische Änderung</span><span class="vs-fine" style="text-align:right">Nur über neue Versionen der Förderregeln (mit Quelle).</span></div></div>';
+        '<div class="vs-row"><span>Regulatorische Änderung</span><span class="vs-fine" style="text-align:right">Nur über neue Versionen der Förderregeln mit Quelle.</span></div></div>';
     }).catch(function () { root.querySelector("#vs-mon-changes").innerHTML = VS.pending("Änderungen nicht verfügbar", "Die Änderungsliste konnte nicht geladen werden."); });
     Promise.all([VS.master(), VS.seriesFor(VS.state.portfolio.map(function (x) { return x.symbol; }))]).then(function (res) {
       var m = res[0], x = V.XRay.portfolioXRay(VS.state.portfolio, m._bySymbol, res[1].series, { regionLabels: VS.REGION });
       root.querySelector("#vs-mon-portfolio").innerHTML = '<p class="vs-label">Portfolio · Risiko & Allokation</p>' +
         '<div class="vs-row" style="margin-top:8px"><span>Positionen</span><span>' + VS.state.portfolio.map(function (p) { return esc(p.symbol) + " " + F.pct(p.weight, 0); }).join(" · ") + '</span></div>' +
         '<div class="vs-row"><span>Schwankung (p.a.)</span><span class="num">' + F.pct(x.risk && x.risk.volatility.value) + '</span></div>' +
-        '<div class="vs-row"><span>Größter Rückgang</span><span class="num down">' + F.pct(x.risk && x.risk.maxDrawdown.value) + '</span></div>' +
+        '<div class="vs-row"><span>Größter historischer Rückgang</span><span class="num down">' + F.pct(x.risk && x.risk.maxDrawdown.value) + '</span></div>' +
         '<div class="vs-row"><span>Kursentwicklung 1 Jahr</span><span class="num ' + F.cls(x.performance && x.performance.windows["1Y"].value) + '">' + F.spct(x.performance && x.performance.windows["1Y"].value) + '</span></div>' +
-        '<div class="vs-row"><span>Fremdwährungsanteil (Handelswährung)</span><span class="num">' + F.pct(x.fxExposure.share, 0) + '</span></div>' +
+        '<div class="vs-row"><span>Nicht in Euro gehandelt</span><span class="num">' + F.pct(x.fxExposure.share, 0) + '</span></div>' +
         '<div style="margin-top:12px">' + VS.bars(x.assetClasses.map(function (a) { return { key: a.key, label: VS.ASSET[a.key] || a.key, weight: a.weight }; })) + '</div>' +
         '<a class="vs-pill small" style="margin-top:12px" href="#/portfolio">Portfolio-X-Ray öffnen</a>';
     }).catch(function () { root.querySelector("#vs-mon-portfolio").innerHTML = VS.pending("Portfolio nicht berechenbar", "ETF-Daten nicht erreichbar."); });
   };
+
 })(window);
