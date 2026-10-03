@@ -122,7 +122,10 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          allen FY-Dauern zerlegten das Jahr in Halbjahre, Q2 hiess Q1 und
 #          FY2025 trug den Juni-Wert. Gemessen im Bulk-Archiv: ~250 von 5 066
 #          Emittenten mit mindestens einem solchen Jahr.
-NORMALIZATION_LOGIC_VERSION = "1.10.0"
+# 1.11.0 — reject provider contexts filed before their own period end, and
+#          exclude those observations from cached factbooks before selecting
+#          revisions or deriving quarters. No dates or values are repaired.
+NORMALIZATION_LOGIC_VERSION = "1.11.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -153,7 +156,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "a708371225a27350f1ebc58e06cc358f6a8a550a8c44a6bcf1f90fd2d62d1c6a"
+    "54523d15e2bd49775aa05cc02a90d30041fd8bc99f31405054d249bfd709eda0"
 )
 
 

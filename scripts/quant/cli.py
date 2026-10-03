@@ -69,7 +69,7 @@ def _prune(directory, keep):
     """
     if not directory.is_dir():
         return
-    for path in sorted(directory.glob("*.json")):
+    for path in sorted(directory.glob("*.json")) + sorted(directory.glob("*.json.gz")):
         if path.name not in keep:
             path.unlink()
             try:
@@ -1247,12 +1247,14 @@ def cmd_canonical(args):
     nur_vorhandene = bool(getattr(args, "only_existing", False))
     for document in documents:
         ticker = _canonical_ticker(document, declared)
-        if nur_vorhandene and not (CANONICAL_DIR / f"{ticker}.json").exists():
+        if nur_vorhandene and not any((CANONICAL_DIR / f"{ticker}{extension}").exists()
+                                     for extension in (".json", ".json.gz")):
             continue
         bundle = build_company_bundle(document, registry, ticker,
                                       annual_years=args.annual_years,
                                       quarterly_years=args.quarterly_years)
-        path = _write(CANONICAL_DIR / f"{ticker}.json", bundle)
+        from quant.sec.artifacts import write_canonical_artifact
+        path = write_canonical_artifact(CANONICAL_DIR / f"{ticker}.json", bundle)
         written.add(path.name)
         index.append({
             "ticker": ticker,

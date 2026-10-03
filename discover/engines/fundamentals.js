@@ -110,6 +110,11 @@
 
   var COLUMNS_DEFAULT = ["fy", "fp", "end", "v", "filed", "accn", "derived"];
 
+  function validPeriodDate(value) {
+    return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+      isFinite(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
+  }
+
   function rows(bundle, kind, metric) {
     var block = bundle && bundle[kind];
     var list = block && block[metric];
@@ -120,7 +125,12 @@
       for (var i = 0; i < cols.length; i++) o[cols[i]] = r[i];
       o.metric = metric;
       return o;
-    }).filter(function (o) { return typeof o.v === "number" && isFinite(o.v); })
+    }).filter(function (o) {
+      // Ein Filing kann keine noch nicht beendete Berichtsperiode belegen.
+      // Auch historische Bundles durchlaufen diese Pruefung beim Lesen.
+      return typeof o.v === "number" && isFinite(o.v) &&
+        validPeriodDate(o.end) && validPeriodDate(o.filed) && o.end <= o.filed;
+    })
       .sort(function (a, b) { return a.fy - b.fy || String(a.end).localeCompare(String(b.end)); });
   }
 

@@ -7,7 +7,7 @@ import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {prepareProductizationShadow,reconcileShadowIssuerMappings,materializeExistingDnaEligibilityCorrection,initializeShadowGit,loadCandidatePriceInputs,assessProductizationReplay} from './tiingo2-productize.mjs';
 import {materializeFundamentals,runExistingProcess} from './tiingo2-fundamentals.mjs';
-import {materializeFactors} from './tiingo2-factors.mjs';
+import {materializeFactors,refreshMaterializedFactorReadiness} from './tiingo2-factors.mjs';
 import {materializeProductProjections} from './tiingo2-product-projections.mjs';
 import {materializeProductSurfaces} from './tiingo2-product-surfaces.mjs';
 import {materializeLogos} from './tiingo2-logos.mjs';
@@ -21,6 +21,7 @@ import {createRequire} from 'node:module';
 import {buildRelease,permitted} from '../vu2/build-release.mjs';
 import {restoreBenchmarkReference} from './tiingo2-benchmark-reference.mjs';
 import {prepareHistoryPublication} from './tiingo2-history-preparation.mjs';
+import {materializeNativeCoverage} from './tiingo2-native-coverage.mjs';
 const read=p=>JSON.parse(readFileSync(p,'utf8')),sha=b=>createHash('sha256').update(b).digest('hex');
 const Company=createRequire(import.meta.url)('../../quant/engines/company-master.js');
 const write=(p,d)=>{mkdirSync(dirname(p),{recursive:true});writeFileSync(p,JSON.stringify(d,null,2)+'\n');};
@@ -113,7 +114,7 @@ export function resolvePrivateReview({root,sourceCache,sourceRun,asOf,workDir}){
  return {sourceRun:derivedRun,additional,initialAcceptedCount,publicReport};
 }
 function walk(root,path){const dir=join(root,path);if(!existsSync(dir))return [];return readdirSync(dir).flatMap(name=>{const p=join(path,name);return lstatSync(join(root,p)).isDirectory()?walk(root,p):[p];});}
-export async function runProductization({root=process.cwd(),sourceCache=join(root,'.market-cache/tiingo2'),sourceRun,workDir=join(root,'.market-cache/tiingo2-productization'),asOf=new Date().toISOString().slice(0,10),runId='tiingo2-'+Date.now(),out=join(root,'.verification/tiingo2-productization'),releaseOutput,benchmarkPreflight,allowNetwork=true,onProgress=()=>{}}={}){
+export async function runProductization({root=process.cwd(),sourceCache=join(root,'.market-cache/tiingo2'),sourceRun,workDir=join(root,'.market-cache/tiingo2-productization'),asOf=new Date().toISOString().slice(0,10),runId='tiingo2-'+Date.now(),out=join(root,'.verification/tiingo2-productization'),releaseOutput,benchmarkPreflight,canonicalStorageBaselineRef=null,allowNetwork=true,onProgress=()=>{}}={}){
  root=resolve(root);sourceCache=resolve(sourceCache);workDir=resolve(workDir);out=resolve(out);
  if(!sourceRun){const runs=join(sourceCache,'runs');sourceRun=readdirSync(runs).filter(n=>existsSync(join(runs,n,'canonical/manifest.json'))).sort().map(n=>join(runs,n)).at(-1);}
  if(!sourceRun)throw Error('ACCEPTED_SOURCE_RUN_REQUIRED');
@@ -134,15 +135,16 @@ export async function runProductization({root=process.cwd(),sourceCache=join(roo
  const {shadowRoot,marketStoreDir}=prepared,tickers=prepared.tickers,scope=(prepared.priceSecurities||prepared.securities).map(r=>r.ticker);
  onProgress('Canonical company/security/listing and private histories materialized\n');
  if(benchmarkPreflight)try{onProgress(JSON.stringify(await restoreBenchmarkReference({marketStoreDir,preflightFile:benchmarkPreflight}))+'\n');}catch(error){onProgress('Benchmark reference unavailable: '+error.message+'\n');}
- const fundamentals=await materializeFundamentals({root:shadowRoot,tickers:scope,privateDir:join(workDir,'sec-private'),asOf,allowNetwork,onProgress});
+ const fundamentals=await materializeFundamentals({root:shadowRoot,tickers:scope,privateDir:join(workDir,'sec-private'),asOf,allowNetwork,canonicalStorageBaselineRef,onProgress});
  assertScopedSecIdentities({securities:prepared.securities,report:fundamentals});
  const issuerMappings=reconcileShadowIssuerMappings({shadowRoot,securities:prepared.securities,byTicker:fundamentals.byTicker});
  if(issuerMappings.rows.some(row=>row.state==='BLOCKED'))throw Error('NEW_SECURITY_CANONICAL_CIK_CONFLICT');
  const existingCorrection=materializeExistingDnaEligibilityCorrection({root,shadowRoot,sourceCache,candidates:prepared.priceCandidates,securities:prepared.priceSecurities,byTicker:fundamentals.byTicker,asOf,workDir});
  onProgress('Existing DNA canonical eligibility correction: '+existingCorrection.state+'\n');
  const projection=await materializeProductProjections({sourceRoot:root,shadowRoot,securities:prepared.priceSecurities||prepared.securities,pricePayloads:prepared.pricePayloads,asOf});
- const factors=await materializeFactors({root:shadowRoot,tickers:scope,marketStoreDir,privateDir:join(workDir,'factor-private'),asOf,onProgress});
- const surfaces=await materializeProductSurfaces({shadowRoot,marketStoreDir,tickers:scope,freshPriceTickers:[...prepared.pricePayloads.keys()],privateDir:join(workDir,'surface-private'),onProgress});
+ let factors=await materializeFactors({root:shadowRoot,tickers:scope,marketStoreDir,privateDir:join(workDir,'factor-private'),asOf,onProgress,deferCanonicalEvidence:true});
+ const surfaces=await materializeProductSurfaces({shadowRoot,marketStoreDir,tickers:scope,freshPriceTickers:[...prepared.pricePayloads.keys()],privateDir:join(workDir,'surface-private'),onProgress,rebuildCanonicalFactorEvidence:true});
+ factors=refreshMaterializedFactorReadiness({root:shadowRoot,report:factors});
  const logoReviews=join(root,'docs/tiingo2-productization/logo-asset-reviews.json');
  const logoCandidates=assembleLogoCandidates({prepared,projection,fundamentals});
  const logos=await materializeLogos({root,outputRoot:shadowRoot,tickers:scope,candidates:logoCandidates,seedRoot:root,assetReviews:existsSync(logoReviews)?read(logoReviews):{},noWikidata:true,secLogos:true,fetchAssets:allowNetwork,onProgress});
@@ -159,6 +161,8 @@ export async function runProductization({root=process.cwd(),sourceCache=join(roo
  }
  capability.totals={...capability.totals,FACTOR_READY:capability.members.filter(m=>m.fr).length,TECHNICAL_READY:capability.members.filter(m=>m.t==='TECHNICAL_READY').length};
  write(capabilityFile,capability);
+ const nativeCoverage=materializeNativeCoverage({shadowRoot});
+ onProgress('Native issuer coverage reaggregated: '+nativeCoverage.productTitles+' current product titles; no provider requests.\n');
  const projectionRows=projection.report.rows;
  const maps=[projection.report,factors,surfaces,logos,fundamentals].map(r=>byTicker(r.rows));
  const rows=(prepared.priceSecurities||prepared.securities).map(security=>{
@@ -177,7 +181,7 @@ export async function runProductization({root=process.cwd(),sourceCache=join(roo
  const changed=generated.filter(p=>isProductizationProjectionPath(p)&&(!existsSync(join(root,p))||sha(readFileSync(join(root,p)))!==sha(readFileSync(join(shadowRoot,p)))));
  const productizationReadiness=rows.filter(r=>tickers.includes(r.ticker)).map(row=>({ticker:row.ticker,securityId:row.securityId,instrumentId:row.instrumentId,products:Object.fromEntries([
   ['SEARCH',row.search?.ready,['quant/data/universe/search/sym/'+Company.shardKey(row.ticker)+'.json']],['CHARTS',row.chart?.ready,[row.chart?.dailyPath?.replace(/^\//,'')]],['WATCHLIST',row.watchlist?.ready,['quant/data/universe/instruments/'+Company.shardKey(row.ticker)+'.json']],
-  ['QUANT',row.quant.productQuantReady,[row.quant.canonicalEvidence?.artifactPath]],['DISCOVER',row.discover?.ready,[row.discover?.artifact]],['SCREENER',row.screener?.ready,['screener/data/universe-US_REAL.json']],['SUPERTRADER',row.supertrader?.ready,['quant/data/product/technical-signals-v1/'+Company.shardKey(row.ticker)+'.json.gz']],['SEC',row.fundamentals?.pitValid,[...(row.fundamentals?.artifacts?.map(a=>a.path)||[]), 'quant/data/sec/canonical_index.json']]
+  ['QUANT',row.quant.productQuantReady,[row.quant.canonicalEvidence?.artifactPath]],['DISCOVER',row.discover?.ready,[row.discover?.artifact]],['SCREENER',row.screener?.ready,['screener/data/universe-US_REAL.json']],['SUPERTRADER',row.supertrader?.ready,['quant/data/product/technical-signals-v1/'+Company.shardKey(row.ticker)+'.json.gz']],['SEC',row.fundamentals?.pitValid,[...(row.fundamentals?.artifacts?.map(a=>a.path)||[]), 'quant/data/sec/canonical_index.json', 'quant/data/sec/consumer/index.json']]
  ].map(([name,ready,paths])=>[name,{state:ready?'PASS':'UNAVAILABLE',coverage:name==='QUANT'?(row.quant.quantStatus==='QUANT_FULL'?'FULL':row.quant.quantStatus):undefined,reasonCodes:ready?[]:[({CHARTS:row.chart,SEC:row.fundamentals})[name]?.reasonCodes?.[0]||row[name.toLowerCase()]?.reasonCodes?.[0]||'CONDITIONAL_DATA_REQUIREMENTS_NOT_MET'],artifactPaths:ready?(paths||[]).filter(Boolean):[],...(name==='CHARTS'&&!ready&&row.chart?.eligibilityEvidence?{eligibilityEvidence:row.chart.eligibilityEvidence}:{})}]))}));
  const readinessArtifacts=productizationReadiness.flatMap(r=>Object.values(r.products).flatMap(p=>[...p.artifactPaths,...(p.eligibilityEvidence?.priceArtifactPath?[p.eligibilityEvidence.priceArtifactPath]:[])]));
  const publicationFiles=[...new Set([...changed,...readinessArtifacts])];
@@ -200,7 +204,7 @@ export async function runProductization({root=process.cwd(),sourceCache=join(roo
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const args=process.argv.slice(2),arg=n=>{const i=args.indexOf(n);return i<0?undefined:args[i+1];};
  try{
-  const result=await runProductization({sourceRun:arg('--source-run'),sourceCache:arg('--source-cache'),workDir:arg('--work-dir'),asOf:arg('--today'),runId:arg('--run-id'),out:arg('--out'),releaseOutput:arg('--release-output'),benchmarkPreflight:arg('--benchmark-preflight'),allowNetwork:!args.includes('--offline'),onProgress:s=>process.stdout.write(s)});
+  const result=await runProductization({sourceRun:arg('--source-run'),sourceCache:arg('--source-cache'),workDir:arg('--work-dir'),asOf:arg('--today'),runId:arg('--run-id'),out:arg('--out'),releaseOutput:arg('--release-output'),benchmarkPreflight:arg('--benchmark-preflight'),canonicalStorageBaselineRef:arg('--canonical-storage-baseline-ref'),allowNetwork:!args.includes('--offline'),onProgress:s=>process.stdout.write(s)});
   console.log(JSON.stringify({canonical:result.canonicalMaterialized,quant:result.quant,proposed:result.proposedConsumer,publication:result.publicationState}));
  }catch(error){write(join(arg('--out')||'.verification/tiingo2-productization','tiingo2_failure.json'),{status:'BLOCKED',reason:error.message,productionWrites:0});console.error(error.stack);process.exitCode=1;}
 }

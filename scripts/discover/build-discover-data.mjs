@@ -37,6 +37,7 @@ import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, readdirSync
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { gunzipSync } from "node:zlib";
 
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
@@ -1784,11 +1785,15 @@ function secFaktenIndex() {
   const dir = join(root, "quant", "data", "sec", "canonical");
   const map = new Map();
   if (!existsSync(dir)) return map;
+  const identities = new Set();
   for (const datei of readdirSync(dir)) {
-    if (!datei.endsWith(".json")) continue;
-    const ticker = datei.replace(/\.json$/, "");
+    if (!/\.json(?:\.gz)?$/.test(datei)) continue;
+    const ticker = datei.replace(/\.json(?:\.gz)?$/, "");
+    if (identities.has(ticker)) throw Error("DUPLICATE_CANONICAL_STORAGE_IDENTITY");
+    identities.add(ticker);
     try {
-      const payload = readJSON(join(dir, datei));
+      const bytes = readFileSync(join(dir, datei));
+      const payload = JSON.parse(datei.endsWith(".gz") ? gunzipSync(bytes) : bytes);
       if (Array.isArray(payload.facts) && payload.facts.length) map.set(ticker, payload.facts);
     } catch (err) { /* eine unlesbare Datei ist ein fehlender Titel, kein Abbruch */ }
   }

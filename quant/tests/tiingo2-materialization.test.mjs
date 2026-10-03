@@ -44,11 +44,12 @@ test('actual SEC bulk pipeline produces PIT consumer/canonical/derived artifacts
     const row = report.rows.find((row) => row.ticker === 'SCOP'); assert.equal(row.pitValid, true); assert.equal(row.fundamentalsStatus, 'FULL'); assert.equal(row.artifacts.length, 2);
     const bundle = JSON.parse(readFileSync(join(fixture.shadow, row.artifacts[0].path)));
     assert.equal(bundle.dataSource.isMock, false, 'existing producer provenance is preserved for fixture SEC inputs');
-    for (const series of Object.values(bundle.annual)) for (const point of series) assert.ok(point[4] <= '2024-09-30', 'facts after cutoff are invisible');
+    for (const series of Object.values(bundle.annual)) for (const point of series) assert.ok(point[2] <= point[4] && point[4] <= '2024-09-30', 'a metric is neither filed before its own end nor visible after cutoff');
     assert.ok(bundle.annual.free_cash_flow.length, 'existing derived engine must materialize actual cash-flow subtraction');
     assert.deepEqual(bundle.securityIds, ['ref_SCOP']);
     assert.deepEqual(report.scope, ['NOSEC', 'SCOP']);
-    const canonical = JSON.parse(readFileSync(join(fixture.shadow, row.artifacts[1].path))); assert.equal(canonical.security.securityId, 'sec_SCOP', 'existing SEC-specific identity contract is unchanged');
+    assert.equal(row.artifacts[1].storage,'GZIP');assert.equal(row.artifacts[1].roundtripVerified,true);assert.match(row.artifacts[1].decodedSha256,/^[a-f0-9]{64}$/);
+    const canonical = JSON.parse(gunzipSync(readFileSync(join(fixture.shadow, row.artifacts[1].path)))); assert.equal(canonical.security.securityId, 'sec_SCOP', 'existing SEC-specific identity contract is unchanged');
     assert.ok(canonical.facts.length);
     assert.equal(canonical.cik,undefined,'canonical SEC schema keeps issuer mapping in its separate canonical index');
     bundle.tickers.unshift('SCOP.B'); bundle.securityIds.unshift('ref_SCOP_B');
@@ -56,12 +57,16 @@ test('actual SEC bulk pipeline produces PIT consumer/canonical/derived artifacts
     const indexPath=join(fixture.shadow,'quant/data/sec/canonical_index.json'), index=JSON.parse(readFileSync(indexPath));
     const mapped=index.companies.find(row=>row.ticker==='SCOP');assert.equal(mapped.cik,row.cik);assert.equal(mapped.securityId,canonical.security.securityId);assert.equal('quant/data/sec/'+mapped.file,row.artifacts[1].path,'index binds the actual SEC-specific document identity and file to the confirmed issuer');
     const retained={ticker:'OTHER',securityId:'sec_OTHER',cik:'4100000099',file:'canonical/OTHER.json'};index.companies.push(retained);writeFileSync(indexPath,JSON.stringify(index));
+    const consumerIndexPath=join(fixture.shadow,'quant/data/sec/consumer/index.json'),consumerIndex=JSON.parse(readFileSync(consumerIndexPath));
+    consumerIndex.byTicker.SCOP.latestAnnualYear=2023;consumerIndex.byTicker.SCOP.latestQuarter={fy:2024,fp:'Q2'};
+    const protectedMapping=structuredClone(consumerIndex.byTicker.SCOP);writeFileSync(consumerIndexPath,JSON.stringify(consumerIndex));
     const second = await materializeFundamentals({ root: fixture.shadow, tickers: ['SCOP'], privateDir: fixture.privateDir, asOf: '2024-09-30', archive: fixture.archive, allowNetwork: false });
     assert.equal(second.network.requests, 0);
     assert.deepEqual(JSON.parse(readFileSync(join(fixture.shadow, row.artifacts[0].path))).annual, bundle.annual, 'resume preserves PIT financial values');
     assert.deepEqual(JSON.parse(readFileSync(join(fixture.shadow,row.artifacts[0].path))).securityIds,['ref_SCOP_B','ref_SCOP'],'requested share class does not erase existing same-issuer identity');
     assert.deepEqual(JSON.parse(readFileSync(indexPath)).companies.find(r=>r.ticker==='OTHER'),retained,'unrelated canonical index row stays identical');
     assert.equal(JSON.parse(readFileSync(indexPath)).companies.filter(r=>r.ticker==='SCOP').length,1,'resumed canonical publication is idempotent');
+    assert.deepEqual(JSON.parse(readFileSync(consumerIndexPath)).byTicker.SCOP,protectedMapping,'fresh issuer materialization preserves every valid baseline routing metadata field');
     assert.equal(second.canonicalProductionWrites, 0);
   } finally { rmSync(fixture.base, { recursive: true, force: true }); }
 });

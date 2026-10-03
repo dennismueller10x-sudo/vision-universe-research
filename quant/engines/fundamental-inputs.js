@@ -37,6 +37,9 @@
   var STALE_INSTANT_DAYS = 400;
 
   function finite(value) { return typeof value === "number" && Number.isFinite(value); }
+  function chronologyValid(end, filed) {
+    return typeof end === "string" && typeof filed === "string" && end <= filed;
+  }
 
   function annualSeries(doc, metric, cutoff) {
     var rows = doc && doc.annual && doc.annual[metric];
@@ -44,7 +47,7 @@
     return rows
       .filter(function (row) {
         return Array.isArray(row) && finite(row[COL.v]) &&
-          typeof row[COL.filed] === "string" && row[COL.filed] <= cutoff;
+          chronologyValid(row[COL.end], row[COL.filed]) && row[COL.filed] <= cutoff;
       })
       .map(function (row) { return { fy: row[COL.fy], end: row[COL.end], value: row[COL.v], filed: row[COL.filed] }; })
       .sort(function (a, b) { return a.end < b.end ? -1 : a.end > b.end ? 1 : 0; });
@@ -56,7 +59,7 @@
     return rows
       .filter(function (row) {
         return Array.isArray(row) && finite(row[COL.v]) &&
-          typeof row[COL.filed] === "string" && row[COL.filed] <= cutoff;
+          chronologyValid(row[COL.end], row[COL.filed]) && row[COL.filed] <= cutoff;
       })
       .map(function (row) { return { end: row[COL.end], value: row[COL.v], filed: row[COL.filed] }; })
       .sort(function (a, b) { return a.end < b.end ? -1 : a.end > b.end ? 1 : 0; });
@@ -69,11 +72,11 @@
     ["quarterly", "annual"].forEach(function (block) {
       var rows = doc && doc[block] && doc[block][metric];
       if (Array.isArray(rows)) rows.forEach(function (row) {
-        if (typeof row[COL.filed] === "string") dates.push(row[COL.filed]);
+        if (chronologyValid(row[COL.end], row[COL.filed])) dates.push(row[COL.filed]);
       });
     });
-    var direct = doc && doc.ttm && doc.ttm[metric] && doc.ttm[metric].filed;
-    if (typeof direct === "string") dates.push(direct);
+    var direct = doc && doc.ttm && doc.ttm[metric];
+    if (direct && chronologyValid(direct.end, direct.filed)) dates.push(direct.filed);
     return dates.length ? dates.slice().sort().pop() : null;
   }
 
@@ -86,7 +89,7 @@
         .filter(Boolean);
       filed = inputDates.length === entry.inputs.length ? inputDates.sort().pop() : null;
     }
-    if (!filed || filed > cutoff) return null;
+    if (!chronologyValid(entry.end, filed) || filed > cutoff) return null;
     return { value: entry.v, end: entry.end, filed: filed, derived: entry.derived === true };
   }
 
@@ -96,6 +99,29 @@
     var gap = (Date.parse(referenceEnd) - Date.parse(entry.end)) / 86400000;
     if (!Number.isFinite(gap)) return entry;
     return gap > STALE_INSTANT_DAYS ? null : entry;
+  }
+
+  function sharesValue(doc, cutoff, referenceEnd) {
+    var current = periodAligned(ttmValue(doc, "shares_outstanding", cutoff), referenceEnd);
+    if (current) return current;
+    var entry = doc && doc.ttm && doc.ttm.shares_outstanding;
+    // Only a cached provider context known to be impossible opens this path.
+    // Missing, valid-but-stale, or genuinely unpublished TTM evidence keeps
+    // its existing unavailable state. This mirrors the SEC instant resolver:
+    // latest measured balance-sheet date, then latest visible filing.
+    if (!entry || entry.kind !== "INSTANT" || typeof entry.end !== "string" ||
+        typeof entry.filed !== "string" || entry.end <= entry.filed) return null;
+    var rows = annualSeries(doc, "shares_outstanding", cutoff)
+      .concat(quarterSeries(doc, "shares_outstanding", cutoff))
+      .filter(function (row) { return row.value > 0; })
+      .sort(function (a, b) { return a.end < b.end ? -1 : a.end > b.end ? 1 :
+        a.filed < b.filed ? -1 : a.filed > b.filed ? 1 : 0; });
+    if (!rows.length) return null;
+    var latest = rows[rows.length - 1];
+    if (rows.some(function (row) { return row.end === latest.end && row.filed === latest.filed &&
+        row.value !== latest.value; })) return null;
+    return periodAligned({ value: latest.value, end: latest.end, filed: latest.filed,
+      derived: false }, referenceEnd);
   }
 
   /* A compound growth rate across a sign change has no meaning, so it is
@@ -433,7 +459,7 @@
       version: VERSION,
       raws: raws,
       change: change,
-      shares: periodAligned(ttmValue(doc, "shares_outstanding", cutoff), referenceEnd),
+      shares: sharesValue(doc, cutoff, referenceEnd),
       availableAt: filedDates.length ? filedDates.slice().sort().pop() : null,
       /* Ein Datum, nicht zwei. Fuer die 4.110 Titel mit Umsatz-TTM ist das
          gemessen derselbe Tag wie bisher; die 80 Dokumente, deren

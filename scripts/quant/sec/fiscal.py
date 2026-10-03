@@ -109,6 +109,10 @@ class FiscalCalendar:
 
     @classmethod
     def from_raw_facts(cls, cik, raw_facts, fiscal_year_end_hint=None):
+        # A bad future context must not become a fiscal-year anchor, including
+        # the annual-instant and registered-year-end fallback paths below.
+        raw_facts = [fact for fact in raw_facts if not (fact.filed and fact.end
+                     and str(fact.filed)[:10] < str(fact.end)[:10])]
         annual_ends = set()
         # accession -> {"ends": set, "fy": int} for 10-K/20-F filings only
         anchors_by_accession = defaultdict(lambda: {"ends": set(), "fy": None})

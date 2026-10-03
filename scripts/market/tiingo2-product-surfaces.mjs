@@ -46,7 +46,7 @@ export function mergeTechnicalProjection(baseline,increment,tickers){
  }
  return result;
 }
-export async function materializeProductSurfaces({shadowRoot,marketStoreDir,tickers,freshPriceTickers=[],privateDir,now=new Date().toISOString(),onProgress=()=>{}}){
+export async function materializeProductSurfaces({shadowRoot,marketStoreDir,tickers,freshPriceTickers=[],privateDir,now=new Date().toISOString(),onProgress=()=>{},rebuildCanonicalFactorEvidence=false}){
  shadowRoot=assertShadowRoot(shadowRoot);privateDir=resolve(privateDir);mkdirSync(privateDir,{recursive:true});
  const scope=[...new Set(tickers)].sort(),regime=join(shadowRoot,'quant/data/product/market-regime-v1.json'),regimeBefore=digest(regime);
  // The new listing has no prior technical bundle. SOURCE_MISSING is the
@@ -78,6 +78,10 @@ export async function materializeProductSurfaces({shadowRoot,marketStoreDir,tick
  const summary={...baselineSummary,generatedAt:now,rows:mergedRows,incremental:{scope,counts:incrementSummary.counts,source:incrementSummary.source,existingAvailablePreserved}};
  summary.counts={...baselineSummary.counts,productUniverse:Object.keys(summary.rows).length,technicalFullBundles:Object.values(summary.rows).filter(r=>r.technical==='AVAILABLE').length,signalsCapable:Object.values(summary.rows).filter(r=>r.signals==='AVAILABLE').length};
  writeFileSync(summaryPath,JSON.stringify(summary));
+ if(rebuildCanonicalFactorEvidence){
+  const factorEvidence=await runExistingProcess(process.execPath,[join(shadowRoot,'scripts/quant/build-factor-evidence.mjs')],{cwd:shadowRoot,onProgress});
+  if(factorEvidence.code!==0)throw Error('CANONICAL_FACTOR_EVIDENCE_BUILDER_FAILED:'+factorEvidence.output.slice(-1200));
+ }
  // Both builders reuse the full canonical shadow population, rather than
  // maintaining per-product ticker lists. Discover's destructive cleanup is
  // confined to its copied shadow output directory.

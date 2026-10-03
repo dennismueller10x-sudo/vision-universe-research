@@ -43,3 +43,10 @@ Use `tiingo2_final_consumer_universe.json` for the exact proposed addition list;
 ## Delivery budgets
 
 The release builder compacts existing market/universe JSON whitespace in the disposable release only. Every parsed field, missing/null value, identity and URL is retained. Source canonical data and production routing are unchanged. The existing Screener byte limit is not increased. Stock-section artwork is fetched when visible, preventing mobile offscreen overfetch while retaining the original image and unsupported-browser fallback.
+
+
+## Native producer order and replay
+
+The incremental orchestrator defers canonical FactorEvidence until the scoped technical projections are materialized. The existing native producer then runs once, followed by Discover, Screener and strategy projections; final readiness is reread from actual canonical shards. Both native SEC consumer routing and the SIC peer taxonomy sidecar are included in the publication transaction. Subsequent empty increments retain the early `NO_CHANGES` path.
+
+New canonical SEC histories use deterministic lossless gzip with native JSON/gzip index readers. Previously published JSON paths remain supported and preserved by default. Explicit original-baseline preservation is limited to the reviewed one-time migration. Final package refresh checks preserved observations, valid PIT, exact route/company/security bindings and actual current factor hashes; an old readiness label or QA report cannot authorize changed bytes.

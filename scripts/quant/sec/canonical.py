@@ -207,6 +207,11 @@ def facts_for_period(resolver, security, fiscal_year, fiscal_period, ingested_at
             period_end = _date(fact.period_end)
             if period_end is None:
                 continue
+            if not fact.provenance.filed or _date(fact.provenance.filed) < period_end \
+                    or instant < period_end:
+                LOGGER.warning("cik=%s %s %s: refusing filing before period end",
+                               factbook.cik, sec_metric, period_end)
+                continue
             cell = state.setdefault(period_end,
                                     {"revision": 0, "first": None, "previous": None})
             value = round(fact.value * scale, 6)

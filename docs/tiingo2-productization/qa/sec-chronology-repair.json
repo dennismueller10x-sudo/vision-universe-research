@@ -1,0 +1,151 @@
+{
+  "schemaVersion": "tiingo2-sec-chronology-repair-1",
+  "baselineRef": "029efa7cf8d30e98c72b540aef1f189e342465fe",
+  "producer": "scripts/quant/sec/canonical.py::build_company_bundle",
+  "normalizationVersion": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.11.0",
+    "formula": "1.2.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0"
+  },
+  "normalizationSourceDigest": "54523d15e2bd49775aa05cc02a90d30041fd8bc99f31405054d249bfd709eda0",
+  "sourceArchiveSha256": "60bbb028d244b5774dbee3d2566eed8f44836b9385d5887cb90dfeca6ff32603",
+  "rows": [
+    {
+      "ticker": "AMC",
+      "cik": "0001411579",
+      "originalPath": "quant/data/sec/canonical/AMC.json",
+      "originalSha256": "a318fe656d64a3f242681d8c4dd28b86c02e11552c2510a87eee24352e4cb5dd",
+      "originalDecodedSha256": "a318fe656d64a3f242681d8c4dd28b86c02e11552c2510a87eee24352e4cb5dd",
+      "proposedPath": "quant/data/sec/canonical/AMC.json.gz",
+      "proposedSha256": "3040986df342b0d88bc8c6f13e9d7117b9ecfa1b98d17166e1091c8ad21efadb",
+      "proposedDecodedSha256": "2164e76cc9ef147227f17572345a5ec8dd433cb8c6e8fa09023b7b26f899a5c4",
+      "sourceCompanyFactsSha256": "3ccd38ef15b87edeb17b1d38a59cdc9b17190898f8b6ad75d8e8e86027e0a255",
+      "oldFactCount": 835,
+      "newFactCount": 834,
+      "removedInvalidFacts": [
+        {
+          "availableAt": "2018-05-07",
+          "currency": "USD",
+          "dataSourceId": "ds_sec_edgar_v1",
+          "filedAt": "2018-05-07",
+          "fiscalPeriod": "Q2",
+          "fiscalYear": 2018,
+          "metricId": "revenue",
+          "periodEnd": "2018-06-30",
+          "reportedAt": "2018-05-07",
+          "securityId": "sec_AMC",
+          "sourceFilingId": "0001411579-18-000038",
+          "unit": "usd_m",
+          "value": 1383.6
+        }
+      ],
+      "addedSemanticFacts": [],
+      "allValidFactSemanticsPreserved": true,
+      "filingsUnchanged": true,
+      "allowedMetadataChanges": [
+        "generatedAtUtc",
+        "versions",
+        "ingestedAt",
+        "revisionId",
+        "restatementStatus",
+        "coverage"
+      ],
+      "consumerPath": "quant/data/sec/consumer/CIK0001411579.json",
+      "originalConsumerSha256": "dcdceee48a016ab29c9fd974785d0840049b73cbc7c5917bac9648ba8d430071",
+      "proposedConsumerSha256": "8d0c0d0ed0dd88d3bb09c8736fadb21e5e7bc0d638b256d1cf9c1da01c3a3958",
+      "consumerDelta": {
+        "annual": {
+          "removed": [],
+          "added": []
+        },
+        "quarterly": {
+          "removed": [],
+          "added": []
+        }
+      }
+    },
+    {
+      "ticker": "ONEN",
+      "cik": "0001846416",
+      "originalPath": "quant/data/sec/canonical/ONEN.json",
+      "originalSha256": "171eea7b2c5130cf649a966d027d6217bcd0ff5116b70daa58f2964d9db643e6",
+      "originalDecodedSha256": "171eea7b2c5130cf649a966d027d6217bcd0ff5116b70daa58f2964d9db643e6",
+      "proposedPath": "quant/data/sec/canonical/ONEN.json.gz",
+      "proposedSha256": "2ae97f3a73311c91baa9fc454466b3f973097a74d438a09a27b96382aa436343",
+      "proposedDecodedSha256": "362a88213ddc29772ceba436aca2c0f02b60e9c70a2ee70237e53ac3205f8cdc",
+      "sourceCompanyFactsSha256": "d325d73aca9cac03163c8a8e39427d8973ef485505af5d27692a40d04b76de7a",
+      "oldFactCount": 38,
+      "newFactCount": 37,
+      "removedInvalidFacts": [
+        {
+          "availableAt": "2026-05-13",
+          "currency": "USD",
+          "dataSourceId": "ds_sec_edgar_v1",
+          "filedAt": "2026-05-13",
+          "fiscalPeriod": "Q4",
+          "fiscalYear": 2026,
+          "metricId": "totalEquity",
+          "periodEnd": "2026-12-31",
+          "reportedAt": "2026-05-13",
+          "securityId": "sec_ONEN",
+          "sourceFilingId": "0001493152-26-022633",
+          "unit": "usd_m",
+          "value": -10.084981
+        }
+      ],
+      "addedSemanticFacts": [],
+      "allValidFactSemanticsPreserved": true,
+      "filingsUnchanged": true,
+      "allowedMetadataChanges": [
+        "generatedAtUtc",
+        "versions",
+        "ingestedAt",
+        "revisionId",
+        "restatementStatus",
+        "coverage"
+      ],
+      "consumerPath": "quant/data/sec/consumer/CIK0001846416.json",
+      "originalConsumerSha256": "1786517b455e0c8fcba207362da13b6a124a53db53ced2a73811760f2c592199",
+      "proposedConsumerSha256": "f59cd751fd661cea8d96bf853fd84fcf7ceefd206ee0484820e513ce3028d73e",
+      "consumerDelta": {
+        "annual": {
+          "removed": [
+            [
+              "stockholders_equity",
+              [
+                2026,
+                "FY",
+                "2026-12-31",
+                -10084981.0,
+                "2026-05-13",
+                "0001493152-26-022633",
+                0
+              ]
+            ],
+            [
+              "net_income",
+              [
+                2026,
+                "FY",
+                "2026-12-31",
+                575611.0,
+                "2026-05-13",
+                "0001493152-26-022633",
+                0
+              ]
+            ]
+          ],
+          "added": []
+        },
+        "quarterly": {
+          "removed": [],
+          "added": []
+        }
+      }
+    }
+  ],
+  "productionWrites": 0,
+  "protectedFactorArtifactsRebuilt": false
+}

@@ -407,17 +407,26 @@ test('columnar Screener membership and short IPO chart use actual listing-bound 
 }));
 
 test('canonical SEC bundles use their existing index for issuer binding without inventing a top-level CIK', () => {
- const attachSec = (context, change=()=>{}) => productizationFixture(context, input => {
+ const attachSec = (context, change=()=>{}, compressed=false) => productizationFixture(context, input => {
   const addition=input.staged.additions[0],file=input.staged.files.find(entry=>entry.path.startsWith(paths.instruments+'/'));
   const instruments=JSON.parse(readFileSync(join(dirname(input.staged.manifestPath),file.stagedPath)));
   const instrument=instruments.instruments.find(row=>row.symbol==='ZNEW');instrument.cik='0001234567';instrument.issuerId='iss_cik_0001234567';
-  const canonical={schema:'vu-canonical-v1',security:{securityId:'sec_ZNEW',ticker:'ZNEW'},dataSource:{isMock:false}},index={companies:[{ticker:'ZNEW',securityId:'sec_ZNEW',cik:'0001234567',file:'canonical/ZNEW.json'}]};
+  const canonical={schema:'vu-canonical-v1',security:{securityId:'sec_ZNEW',ticker:'ZNEW'},dataSource:{isMock:false},facts:[{periodEnd:'2026-06-30',filedAt:'2026-08-07',availableAt:'2026-08-07'}]},index={companies:[{ticker:'ZNEW',securityId:'sec_ZNEW',cik:'0001234567',file:'canonical/ZNEW.json'}]};
   change(canonical,index);
-  const canonicalPath='quant/data/sec/canonical/ZNEW.json',indexPath='quant/data/sec/canonical_index.json';
-  input.preparedFiles.push({path:file.path,bytes:Buffer.from(JSON.stringify(instruments))},{path:canonicalPath,bytes:Buffer.from(JSON.stringify(canonical))},{path:indexPath,bytes:Buffer.from(JSON.stringify(index))});
+  const canonicalPath='quant/data/sec/canonical/ZNEW.json'+(compressed?'.gz':''),indexPath='quant/data/sec/canonical_index.json';
+  if(compressed)index.companies[0].file='canonical/ZNEW.json.gz';
+  input.preparedFiles.push({path:file.path,bytes:Buffer.from(JSON.stringify(instruments))},{path:canonicalPath,bytes:compressed?gzipSync(JSON.stringify(canonical)):Buffer.from(JSON.stringify(canonical))},{path:indexPath,bytes:Buffer.from(JSON.stringify(index))});
   input.productizationReadiness[0].products.SEC={state:'PASS',artifactPaths:[canonicalPath,indexPath]};return input;
  });
  fixture(context=>{const {staged,qaProof}=attachSec(context);assert.equal(staged.productizationReadiness[0].products.SEC.state,'PASS');assert.equal(applyCanonicalPublication({root:context.root,staged,qaProof}).status,'APPLIED');});
+ fixture(context=>{const {staged,qaProof}=attachSec(context,()=>{},true);assert.equal(staged.productizationReadiness[0].products.SEC.state,'PASS');assert.equal(applyCanonicalPublication({root:context.root,staged,qaProof}).status,'APPLIED');});
+ for(const compressed of [false,true]) {
+  fixture(context=>assert.throws(()=>attachSec(context,d=>{d.facts=[];},compressed),/SEC_READINESS_PIT_CHRONOLOGY_INVALID/));
+  fixture(context=>assert.throws(()=>attachSec(context,d=>{d.facts=[{periodEnd:'2026-06-30',filedAt:'2026-05-07',availableAt:'2026-05-07'}];},compressed),/SEC_READINESS_PIT_CHRONOLOGY_INVALID/));
+  fixture(context=>assert.throws(()=>attachSec(context,d=>{d.facts=[{periodEnd:'2026-06-30',filedAt:'2026-08-07',availableAt:'2026-10-03'}];},compressed),/SEC_READINESS_PIT_CHRONOLOGY_INVALID/));
+  fixture(context=>{const {staged}=attachSec(context,d=>{d.facts=[{periodEnd:'2026-06-30',filedAt:'2026-08-07',availableAt:'2026-08-07'}];},compressed);assert.equal(staged.productizationReadiness[0].products.SEC.state,'PASS');});
+ }
+
  for(const change of [(d,i)=>{i.companies[0].cik='0007654321';},(d,i)=>{i.companies[0].securityId='sec_OTHER';},(d,i)=>{i.companies[0].file='canonical/OTHER.json';},(d,i)=>{i.companies.push(i.companies[0]);},d=>{d.security.securityId='sec_OTHER';},d=>{d.security.ticker='OTHER';},d=>{d.security.isMock=true;},d=>{d.schema='invented';},d=>{d.dataSource.isMock=true;}])fixture(context=>{assert.throws(()=>attachSec(context,change),/SEC_READINESS_ISSUER_MISMATCH/);});
 });
 
@@ -429,6 +438,11 @@ test('published factor history snapshots cannot be overwritten during product pr
 }));
 
 test('product projection paths admit existing public formats and reject private history, raw SEC, code and routing', () => {
+  assert.equal(isProductizationProjectionPath('quant/data/product/sic-peer-taxonomy-v1.json'),true);
+  for(const shard of ['C-','F-','T-'])assert.equal(isProductizationProjectionPath('quant/data/product/factor-evidence-v1/'+shard+'.json.gz'),true);
+  assert.equal(isProductizationProjectionPath('quant/data/sec/canonical/Q.json.gz'),true);
+  assert.equal(isProductizationProjectionPath('quant/data/sec/consumer/index.json'),true);
+  assert.equal(isProductizationProjectionPath('quant/data/fundamentals/history-coverage.json'),true);
   for (const path of ['quant/data/market/discover-series/ref_CART.json', 'quant/data/market/discover-series-long/ref_CART.json', 'screener/data/universe-US_REAL.json', 'quant/data/product/technical-signals-v1/signals-60.json.gz', 'quant/data/sec/consumer/CIK0001234567.json', 'quant/data/fundamentals/issuers/567.json', 'discover/data/stocks/US_REAL/CART.json', 'assets/logos/CART.svg', 'quant/data/market/capabilities/matrix.json', 'quant/data/market/capabilities/summary.json', 'quant/data/product/capabilities-v1.json', 'quant/data/product/capabilities-summary-v1.json', 'quant/data/product/strategy-index-v1.json.gz', 'quant/data/product/pattern-match-v1/CA.json.gz', 'quant/data/product/pattern-match-v1/C-.json.gz', 'quant/data/product/pattern-match-v1/summary.json']) assert.equal(isProductizationProjectionPath(path), true, path);
   for (const path of ['.market-cache/tiingo/daily/ref_CART.json', 'quant/data/market/daily/ref_CART.json', 'quant/data/sec/raw/CIK0001234567.json', 'scripts/market/tiingo2-publication.mjs', 'quant/config/feature-gates.json', 'quant/methodology/quant-v2.json', 'worker/src/routing.js', 'quant/data/technical/instruments/CART.json', 'assets/logos/../../worker.js', 'quant/data/market/capabilities/free-source-probe.json', 'quant/data/product/pattern-match-v1/raw-history.json', 'quant/data/product/strategy-index-v2.json.gz']) assert.equal(isProductizationProjectionPath(path), false, path);
 });

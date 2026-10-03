@@ -22,7 +22,7 @@ from .model import (
     NOT_YET_AVAILABLE, PERIOD_MISMATCH, missing,
 )
 from .registry import KIND_INSTANT
-from .restatements import POLICY_AS_OF_LATEST, Observation, to_instant
+from .restatements import POLICY_AS_OF_LATEST, Observation, FactTimeline, to_instant
 
 LOGGER = logging.getLogger("vu.sec.periods")
 
@@ -84,8 +84,19 @@ class PeriodResolver:
         return self._blocked.get(metric)
 
     def _raw(self, metric, fiscal_year, fiscal_period, as_of, policy, lag_days):
-        return self.factbook.resolve(metric, fiscal_year, fiscal_period,
-                                     as_of=as_of, policy=policy, lag_days=lag_days)
+        timeline = self.factbook.get(metric, fiscal_year, fiscal_period)
+        if timeline is None:
+            return None
+        # Cached factbooks created before the chronology guard may still hold
+        # a provider's invalid future context. Filter before selecting revisions
+        # or deriving quarters, so an invalid latest observation cannot hide a
+        # valid earlier one and ORIGINAL never mistakes it for the first report.
+        observations = [obs for obs in timeline.observations
+                        if not obs.period_end or (obs.filed and
+                            str(obs.filed)[:10] >= str(obs.period_end)[:10])]
+        safe = timeline if len(observations) == len(timeline.observations) else \
+            FactTimeline(metric, fiscal_year, fiscal_period, observations)
+        return safe.resolve(as_of=as_of, policy=policy, lag_days=lag_days)
 
     def _definition(self, metric):
         return self.registry.get(metric)

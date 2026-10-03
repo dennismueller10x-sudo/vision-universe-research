@@ -639,7 +639,14 @@
     "historicalPackageSuperseded": true,
     "refreshedPackageRequired": true
   },
-  "externalPreviewBlockers": [],
+  "externalPreviewBlockers": [
+    {
+      "sourceCommit": "1a68b21b2aba0ef41afb3d2f7925eb3130fc4ee1",
+      "system": "VERCEL",
+      "reason": "EXTERNAL_BUILD_RATE_LIMIT",
+      "status": "RECHECK_FINAL_HEAD"
+    }
+  ],
   "remainingConditionalBlockers": {
     "reviewCandidates": 128,
     "shortChartHistories": [
@@ -684,5 +691,63 @@
     "context": "Vercel",
     "state": "success",
     "previousRateLimitResolved": true
+  },
+  "nativeSecFollowup": {
+    "canonicalFactsWithheld": {
+      "AMC": 1,
+      "ONEN": 1
+    },
+    "validFactsPreserved": true,
+    "compressedNewCanonicalHistories": 98,
+    "protectedCanonicalJsonFiles": 5,
+    "secSourceKiB": 8095,
+    "secSourceBudgetKiB": 8192,
+    "addedConsumerRoutes": 94,
+    "protectedConsumerRoutes": 5378,
+    "companyFactsAvailable": 5540,
+    "providerRequestsForCoverage": 0,
+    "historyRebuildsForCoverage": 0,
+    "historicalInvalidContexts": 17,
+    "historicalInvalidIssuers": 10,
+    "protectedFactorArtifactsRebuilt": 0,
+    "pythonTests": 495,
+    "quantTests": 2423,
+    "finalExactHeadQaPending": true,
+    "discoverTests": 323
+  },
+  "nativeFactorFollowup": {
+    "source": "EXISTING_NATIVE_FACTOR_EVIDENCE",
+    "publicationOrdering": "TECHNICAL_THEN_FACTOR_EVIDENCE_THEN_PRODUCTS",
+    "cohortBefore": 6402,
+    "cohortAfter": 6402,
+    "peerRowsBefore": 5395,
+    "peerRowsAfter": 5489,
+    "peerRowsAdded": 94,
+    "peerRowsChanged": 0,
+    "rawCorrectedTitles": [
+      "AAL",
+      "ASLE",
+      "AXR",
+      "DNA",
+      "JCAP"
+    ],
+    "rawCorrectedComponents": 16,
+    "rawUnchangedTitles": 6397,
+    "factorScoresChanged": 294,
+    "factorScoreTitlesChanged": 290,
+    "componentRankMetadataTitlesChanged": 718,
+    "componentRankMetadataOnlyTitles": 714,
+    "immutableHistoryChanged": 0,
+    "fullCompositeAllowed": false,
+    "independentReview": "PASS",
+    "producerRuntime": "Node22.23.3",
+    "growthScoreChanges": 0,
+    "staleHyphenNormalizationScoresCorrected": 10,
+    "nativeDiscoverReproducibility": {
+      "runtime": "Node22.23.3",
+      "artifactsCompared": 6182,
+      "differingArtifacts": 0,
+      "allowedMetadataTimestampOnly": true
+    }
   }
 }

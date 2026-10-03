@@ -46,6 +46,7 @@
    ========================================================================= */
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
+import { gunzipSync } from "node:zlib";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
@@ -78,10 +79,12 @@ function monetaryUnitCurrencies(units) {
    Consumer-Vertrag nach CIK - die Bruecke sind die tickers im Datensatz. */
 function canonicalCurrency(tickers) {
   for (const ticker of tickers || []) {
-    const file = join(CANONICAL_DIR, `${ticker}.json`);
+    const plain = join(CANONICAL_DIR, `${ticker}.json`);
+    if (existsSync(plain) && existsSync(plain + '.gz')) throw Error('DUPLICATE_CANONICAL_STORAGE_IDENTITY');
+    const file = existsSync(plain) ? plain : plain + '.gz';
     if (!existsSync(file)) continue;
     let data;
-    try { data = JSON.parse(readFileSync(file, "utf8")); } catch { continue; }
+    try { const bytes=readFileSync(file); data = JSON.parse(file.endsWith('.gz') ? gunzipSync(bytes) : bytes); } catch { continue; }
     const seen = new Set();
     for (const fact of data.facts || []) {
       const unit = fact.unit || "";

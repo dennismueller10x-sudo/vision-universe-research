@@ -25,7 +25,7 @@ export function classifyMaterializedFactorRecord(record, { publicationAllowed = 
   return { quantStatus: publicationAllowed && factorDnaStatus === 'FULL' ? 'QUANT_FULL' : technicalOnly ? 'TECHNICAL_ONLY' : availableFactors.length ? 'PARTIAL' : 'BLOCKED', factorDnaStatus, availableFactors, fullQuantScoreReady: publicationAllowed && factorDnaStatus === 'FULL' };
 }
 
-export async function materializeFactors({ root, tickers, marketStoreDir, privateDir, asOf, onProgress = () => {}, rebuildTaxonomy = true }) {
+export async function materializeFactors({ root, tickers, marketStoreDir, privateDir, asOf, onProgress = () => {}, rebuildTaxonomy = true, deferCanonicalEvidence = false }) {
   root = assertShadowRoot(root); privateDir = resolve(privateDir); marketStoreDir = resolve(marketStoreDir ?? join(root, '.market-cache'));
   const scope = [...new Set(tickers.map((ticker) => String(ticker).toUpperCase()))].sort();
   if (!scope.length || scope.some((ticker) => !/^[A-Z0-9._-]+$/.test(ticker))) throw new Error('INVALID_FACTOR_SCOPE');
@@ -50,26 +50,49 @@ export async function materializeFactors({ root, tickers, marketStoreDir, privat
   broad.tiingo2Incremental = { asOf, requested: scope, updated: (scoped.securities ?? []).map((row) => row.ticker), source: 'EXISTING_MARKET_FACTOR_PRODUCER', canonicalIdsPreserved: true };
   write(factorsPath, broad);
   if (rebuildTaxonomy) await command('scripts/quant/build-sic-peer-taxonomy.mjs');
-  await command('scripts/quant/build-factor-evidence.mjs');
+  if (!deferCanonicalEvidence) await command('scripts/quant/build-factor-evidence.mjs');
   const contract = read(join(root, 'quant/methodology/quant-v2.json'));
   const refreshed = new Set((scoped.securities ?? []).map((row) => row.ticker));
-  const marketRows = new Map((scoped.securities ?? []).map((row) => [row.ticker, row]));
   const summary = read(join(factorDir, 'factors-TIINGO2_SCOPE-summary.json'));
   const result = { schemaVersion: 'tiingo2-factor-materialization-1.0.0', asOf, scope, source: 'EXISTING_CANONICAL_FACTOR_PRODUCERS', fullQuantScore: { allowed: contract.publication.allowed, reason: contract.publication.reason }, rows: [], counts: {}, producerSummary: summary.coverage ?? null, canonicalProductionWrites: 0 };
-  for (const ticker of scope) {
+  result.rows=scope.map(ticker=>({ticker,securityId:byTicker.get(ticker).securityId,refreshedPrice:refreshed.has(ticker),benchmark:scoped.benchmark}));
+  result.reportPath=join(privateDir,'factors-report.json');
+  return assessMaterializedFactorReadiness({root,report:result,deferred:deferCanonicalEvidence});
+}
+
+/** Re-read the actual canonical shards after their existing producer has
+ * consumed current technical quotes. No factor engine or price rebuild here. */
+export function refreshMaterializedFactorReadiness({root,report}){
+  root=assertShadowRoot(root);
+  return assessMaterializedFactorReadiness({root,report,deferred:false});
+}
+
+function assessMaterializedFactorReadiness({root,report,deferred}){
+  const contract=read(join(root,'quant/methodology/quant-v2.json'));
+  const byTicker=new Map(resolveProductUniverse(root).securities.map(row=>[row.ticker,row]));
+  const marketRows=new Map(read(join(root,'quant/data/market/factors/factors-FULL_UNIVERSE.json')).securities.map(row=>[row.securityId,row]));
+  const result={...report,rows:[],counts:{},fullQuantScore:{allowed:contract.publication.allowed,reason:contract.publication.reason}};
+  const reportPath=report.reportPath;delete result.reportPath;delete result.reportSha256;delete result.canonicalEvidenceDeferred;
+  if(deferred)result.canonicalEvidenceDeferred=true;
+  if(new Set(report.rows.map(row=>row.ticker)).size!==report.scope.length||report.rows.length!==report.scope.length)throw Error('INVALID_FACTOR_READINESS_SCOPE');
+  for(const prior of report.rows){
+    const ticker=prior.ticker,member=byTicker.get(ticker);
+    if(!report.scope.includes(ticker)||!member||member.securityId!==prior.securityId)throw Error('CANONICAL_FACTOR_REPORT_IDENTITY_CHANGED:'+ticker);
     const artifactPath = 'quant/data/product/factor-evidence-v1/' + Company.shardKey(ticker) + '.json.gz';
     let record = null, artifact = null, bytes = null;
-    if (existsSync(join(root, artifactPath))) {
+    if (!deferred && existsSync(join(root, artifactPath))) {
       bytes = readFileSync(join(root, artifactPath)); artifact = JSON.parse(gunzipSync(bytes));
       if (!Evidence.validShard(artifact, Company.shardKey(ticker))) throw new Error('INVALID_CANONICAL_FACTOR_EVIDENCE_SHARD');
       record = artifact.securities?.[ticker] ?? null;
     }
-    const market = marketRows.get(ticker);
-    const readiness = classifyMaterializedFactorRecord(record, { publicationAllowed: contract.publication.allowed === true, refreshedPrice: refreshed.has(ticker), expectedSecurityId: byTicker.get(ticker).securityId, expectedTicker: ticker, expectedAsOf: market?.asOf });
-    const proof = record && readiness.availableFactors.length ? { state: 'MATERIALIZED', verified: true, artifactPath, artifactSha256: sha(bytes), schemaVersion: artifact.schemaVersion, methodologyVersion: artifact.methodologyVersion, ticker, securityId: record.securityId, asOf: record.asOf } : { state: 'NOT_MATERIALIZED', verified: false, artifactSha256: null };
-    result.rows.push({ ticker, securityId: byTicker.get(ticker).securityId, ...readiness, refreshedPrice: refreshed.has(ticker), bars: record?.bars ?? market?.bars ?? null, canonicalEvidence: proof, factorStates: Object.fromEntries(Evidence.FACTOR_ORDER.map((id) => [id, record?.factors?.[id] ? { state: record.factors[id].state, reason: record.factors[id].reason ?? null, componentStates: (record.factors[id].components ?? []).map((component) => ({ id: component.id, state: component.state, reason: component.reason ?? null })) } : { state: 'UNAVAILABLE', reason: 'INPUT_NOT_MATERIALIZED' }])), marketFieldStatus: market?.fieldStatus ?? null, benchmark: scoped.benchmark, productQuantReady: proof.verified === true, fullQuantScoreState: contract.publication.allowed ? 'METHODOLOGY_ALLOWED' : 'BLOCKED_BY_EXISTING_METHODOLOGY' });
+    const market = marketRows.get(prior.securityId);
+    if(market&&market.ticker!==ticker)throw Error('CANONICAL_FACTOR_MARKET_IDENTITY_CHANGED:'+ticker);
+    const readiness = classifyMaterializedFactorRecord(record, { publicationAllowed: contract.publication.allowed === true, refreshedPrice: prior.refreshedPrice===true&&!!market, expectedSecurityId: member.securityId, expectedTicker: ticker, expectedAsOf: market?.asOf });
+    const proof = record && readiness.availableFactors.length ? { state: 'MATERIALIZED', verified: true, artifactPath, artifactSha256: sha(bytes), schemaVersion: artifact.schemaVersion, methodologyVersion: artifact.methodologyVersion, ticker, securityId: record.securityId, asOf: record.asOf } : { state: deferred?'DEFERRED':'NOT_MATERIALIZED', verified: false, artifactSha256: null };
+    const base={...prior};delete base.reason;
+    result.rows.push({ ...base, ...readiness, ...(deferred?{reason:'AWAITING_FRESH_TECHNICAL_PROJECTIONS'}:{}), bars: record?.bars ?? market?.bars ?? null, canonicalEvidence: proof, factorStates: Object.fromEntries(Evidence.FACTOR_ORDER.map((id) => [id, record?.factors?.[id] ? { state: record.factors[id].state, reason: record.factors[id].reason ?? null, componentStates: (record.factors[id].components ?? []).map((component) => ({ id: component.id, state: component.state, reason: component.reason ?? null })) } : { state: 'UNAVAILABLE', reason: 'INPUT_NOT_MATERIALIZED' }])), marketFieldStatus: market?.fieldStatus ?? null, productQuantReady: proof.verified === true, fullQuantScoreState: contract.publication.allowed ? 'METHODOLOGY_ALLOWED' : 'BLOCKED_BY_EXISTING_METHODOLOGY' });
   }
   for (const state of ['QUANT_FULL', 'TECHNICAL_ONLY', 'PARTIAL', 'BLOCKED']) result.counts[state] = result.rows.filter((row) => row.quantStatus === state).length;
-  const reportPath = join(privateDir, 'factors-report.json'); write(reportPath, result);
+  write(reportPath, result);
   result.reportPath = reportPath; result.reportSha256 = sha(readFileSync(reportPath)); return result;
 }

@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "tiingo2-asle-pit-valuation-correction-1",
+  "security": "ASLE",
+  "reason": "FILED_BEFORE_PERIOD_END",
+  "identity": {
+    "securityId": "ref_ASLE",
+    "instrumentId": "vu_e19172e8772d05",
+    "cik": "0001754170",
+    "discoverRoute": "#/s/US_REAL/ASLE"
+  },
+  "source": {
+    "path": "quant/data/sec/consumer/CIK0001754170.json",
+    "sha256": "075d7b32af193a1f85b41ed52644598ffa49e05b72fb937ea0ea8b8a64ad7d18",
+    "invalidContexts": [
+      {
+        "scope": "annual",
+        "metric": "shares_outstanding",
+        "row": [
+          2033,
+          "FY",
+          "2034-03-05",
+          52990947.0,
+          "2024-03-27",
+          "0001558370-24-004010",
+          0
+        ]
+      },
+      {
+        "scope": "quarterly",
+        "metric": "shares_outstanding",
+        "row": [
+          2033,
+          "Q4",
+          "2034-03-05",
+          52990947.0,
+          "2024-03-27",
+          "0001558370-24-004010",
+          0
+        ]
+      }
+    ],
+    "selectedValidAnnualSharesRows": [
+      [
+        2025,
+        "FY",
+        "2025-12-31",
+        47221513.0,
+        "2026-08-07",
+        "0001104659-26-092710",
+        0
+      ]
+    ]
+  },
+  "artifact": {
+    "path": "discover/data/stocks/US_REAL/ASLE.json",
+    "beforeSha256": "4122e051f3432b84e79618006585bf7fde67e17c120a87954c359736513c2625",
+    "afterSha256": "ab573f97f92c25c67665791bf2c09b6f0c36016bb452b69c364aaa7da6dca15f",
+    "nativeProducer": "scripts/discover/build-discover-data.mjs"
+  },
+  "exactFieldDiff": [
+    {
+      "field": "/fundamentals/valuation/fcfYield/value",
+      "before": -0.13323,
+      "after": -0.149508
+    },
+    {
+      "field": "/fundamentals/valuation/marketCap/shares",
+      "before": 52990947,
+      "after": 47221513
+    },
+    {
+      "field": "/fundamentals/valuation/marketCap/sharesEnd",
+      "before": "2034-03-05",
+      "after": "2025-12-31"
+    },
+    {
+      "field": "/fundamentals/valuation/marketCap/sharesFy",
+      "before": 2033,
+      "after": 2025
+    },
+    {
+      "field": "/fundamentals/valuation/marketCap/value",
+      "before": 264954735,
+      "after": 236107565
+    },
+    {
+      "field": "/fundamentals/valuation/ps/value",
+      "before": 0.872509,
+      "after": 0.777514
+    },
+    {
+      "field": "/metrics/f_fcfYield",
+      "before": -0.13323,
+      "after": -0.149508
+    },
+    {
+      "field": "/metrics/f_ps",
+      "before": 0.872509,
+      "after": 0.777514
+    }
+  ],
+  "protected": {
+    "otherDiscoverFiles": 6180,
+    "otherDiscoverFileHashManifestSha256": "aa28ac4949a99359949696a33ec4fda72b225ebf412be8bb115832696aa24f73",
+    "priceChart": {
+      "path": "quant/data/market/discover-series/ref_ASLE.json",
+      "sha256": "5de0e3086ceff19720638b96a902a0c5b0d3be9b3e06c5e20b10e6d029e10490"
+    },
+    "unchangedStockFields": [
+      "symbol",
+      "companyName",
+      "legalName",
+      "exchange",
+      "price",
+      "changePercent",
+      "priceSeries",
+      "scores",
+      "qualification",
+      "performancePath",
+      "indexMemberships"
+    ],
+    "scoresBeforeSha256": "f41512ef8863074da1093b32547b14384602090c2749da18a16d3a94a06dda0b",
+    "scoresAfterSha256": "f41512ef8863074da1093b32547b14384602090c2749da18a16d3a94a06dda0b",
+    "consumerBundleWritten": false,
+    "consumerIndexWritten": false,
+    "membershipChanges": 0,
+    "factorDnaWritten": false,
+    "allowedReproductionDifference": "discover/data/meta.json.generatedAt"
+  }
+}

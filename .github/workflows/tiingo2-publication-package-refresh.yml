@@ -58,6 +58,7 @@ jobs:
           node --input-type=module <<'NODE'
           import {readFileSync,writeFileSync,mkdirSync,readdirSync} from 'node:fs';
           import {join} from 'node:path';
+          import {rebindCurrentFundamentalsArtifacts,rebindCurrentQuantEvidenceArtifacts} from './scripts/market/tiingo2-refresh-publication-package.mjs';
           const load=p=>JSON.parse(readFileSync(p));
           const refreshed=load('.market-cache/publication-refresh/run-result.json');
           const seed='.verification/refresh-seed',out='.verification/tiingo2-publication-refresh';
@@ -81,18 +82,22 @@ jobs:
           writeFileSync(join(out,'tiingo2_history_publication_plan.json'),JSON.stringify(history,null,2)+'\n');
           const finalManifest=load(refreshed.stage),diff=load(join(out,'tiingo2_publication_diff.json'));
           diff.files=finalManifest.files;diff.manifestSha256=refreshed.manifestSha256;
+          diff.ADDED=rebindCurrentQuantEvidenceArtifacts({root:refreshed.shadowRoot,rows:rebindCurrentFundamentalsArtifacts({root:refreshed.shadowRoot,rows:diff.ADDED})});
           writeFileSync(join(out,'tiingo2_publication_diff.json'),JSON.stringify(diff,null,2)+'\n');
           const index=load(join(refreshed.shadowRoot,'discover/logos/index.json'));
           const dark=new Set(Array.isArray(index.dark)?index.dark:Object.keys(index.dark||{}).filter(k=>index.dark[k]));
-          for(const name of ['tiingo2_product_readiness.json','tiingo2_productization_status.json','tiingo2_accepted_materialization.json']){
+          for(const name of ['tiingo2_product_readiness.json','tiingo2_productization_status.json','tiingo2_accepted_materialization.json','tiingo2_logo_status.json','tiingo2_quant_readiness.json']){
             const report=load(join(out,name));
-            for(const row of report.rows||[])if(row.logo){
-              row.logo.darkBackground=dark.has(row.ticker);
-              if(row.logo.canonicalPath&&!index.files?.[row.ticker])throw Error('CURRENT_CANONICAL_LOGO_MAPPING_MISSING:'+row.ticker);
+            if(report.rows)report.rows=rebindCurrentQuantEvidenceArtifacts({root:refreshed.shadowRoot,rows:rebindCurrentFundamentalsArtifacts({root:refreshed.shadowRoot,rows:report.rows})});
+            for(const row of report.rows||[]){
+              const logo=row.logo||(row.status?.startsWith('LOGO_')?row:null);
+              if(!logo)continue;
+              logo.darkBackground=dark.has(row.ticker);
+              if(logo.canonicalPath&&!index.files?.[row.ticker])throw Error('CURRENT_CANONICAL_LOGO_MAPPING_MISSING:'+row.ticker);
             }
             writeFileSync(join(out,name),JSON.stringify(report,null,2)+'\n');
           }
-          const safeKeys=['schemaVersion','runId','state','sourceCommit','originalSourceCommit','originalManifestSha256','manifestSha256','files','additions','privateHistories','privateHistoriesRebuilt','omittedNewAssets','providerCalls','productionWrites','productionPublishAllowed','requiredGates'];
+          const safeKeys=['schemaVersion','runId','state','sourceCommit','originalSourceCommit','originalManifestSha256','manifestSha256','files','additions','privateHistories','privateHistoriesRebuilt','omittedNewAssets','canonicalStorageMigrations','providerCalls','productionWrites','productionPublishAllowed','requiredGates'];
           writeFileSync(join(out,'tiingo2_publication_package_refresh.json'),JSON.stringify(Object.fromEntries(safeKeys.map(k=>[k,refreshed[k]])),null,2)+'\n');
           NODE
       - name: Measure current history storage without granting a write budget

@@ -9,6 +9,7 @@ import { gunzipSync } from 'node:zlib';
 import { hostname } from 'node:os';
 import { classifyCandidate } from './tiingo2-policy.mjs';
 import { resolveName, summarizeCompanyNames, SUMMARY_FILE as NAME_SUMMARY_FILE } from './build-company-names.mjs';
+import {verifyConsumerBinding,CONSUMER_INDEX_PATH} from './tiingo2-consumer-index.mjs';
 const Company = createRequire(import.meta.url)('../../quant/engines/company-master.js');
 const FactorEvidence = createRequire(import.meta.url)('../../quant/engines/factor-evidence.js');
 export const REQUIRED_PUBLICATION_QA = ['IDENTITY', 'BASELINE', 'PROJECTIONS', 'SEARCH', 'CHARTS', 'WATCHLIST', 'QUANT', 'DISCOVER', 'SCREENER', 'SUPERTRADER', 'SEC', 'RELEASE', 'BROWSER'];
@@ -27,6 +28,7 @@ const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const jsonBytes = (data) => Buffer.from(JSON.stringify(data, null, 2) + '\n');
 const symbol = (row) => String(row.ticker ?? row.symbol ?? row.listing?.ticker ?? '').toUpperCase().trim();
 const currentHash = (file) => existsSync(file) ? sha(readFileSync(file)) : null;
+const validSecDate = value => /^\d{4}-\d{2}-\d{2}$/.test(value || '') && Number.isFinite(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
 function guardedPath(root, path) {
   if (typeof path !== 'string' || !path || path.includes('\\')) throw new Error('INVALID_PUBLICATION_PATH');
   const full = resolve(root, path), rel = relative(resolve(root), full);
@@ -59,15 +61,16 @@ export function isProductizationProjectionPath(path) {
     /^quant\/data\/market\/capabilities\/(?:matrix|summary)\.json$/,
     /^quant\/data\/product\/(?:capabilities|capabilities-summary)-v1\.json$/,
     /^quant\/data\/product\/strategy-index-v1\.json\.gz$/,
+    /^quant\/data\/product\/sic-peer-taxonomy-v1\.json$/,
     /^quant\/data\/product\/pattern-match-v1\/(?:[A-Z0-9_-]{2}\.json\.gz|summary\.json)$/,
-    /^quant\/data\/product\/(?:factor-evidence-v1|technical-signals-v1)\/(?:[A-Z0-9_]{2}|screening|signals-(?:5|20|60))\.json\.gz$/,
+    /^quant\/data\/product\/(?:factor-evidence-v1|technical-signals-v1)\/(?:[A-Z0-9_-]{2}|screening|signals-(?:5|20|60))\.json\.gz$/,
     /^quant\/data\/product\/(?:factor-evidence-v1|technical-signals-v1)\/(?:summary|index|manifest)\.json$/,
     /^quant\/data\/product\/factor-evidence-history\/(?:index\.json|vu-factor-evidence-\d+\.\d+\.\d+\/\d{4}-\d{2}-\d{2}\.json\.gz)$/,
-    /^quant\/data\/sec\/consumer\/CIK\d{10}\.json$/,
-    /^quant\/data\/sec\/canonical\/[A-Z0-9_.-]+\.json$/,
+    /^quant\/data\/sec\/consumer\/(?:CIK\d{10}|index)\.json$/,
+    /^quant\/data\/sec\/canonical\/[A-Z0-9_.-]+\.json(?:\.gz)?$/,
     /^quant\/data\/sec\/(?:canonical_index|consumer_coverage|quant-factor-inputs|pit_gates|sic-peer-taxonomy)\.json$/,
     /^quant\/data\/fundamentals\/issuers\/\d{3}\.json$/,
-    /^quant\/data\/fundamentals\/(?:manifest|coverage-report|canonical-index)\.json$/,
+    /^quant\/data\/fundamentals\/(?:manifest|coverage-report|history-coverage|overlap|quality|gaps|canonical-index)\.json$/,
     /^screener\/data\/universe-US_REAL\.json$/,
     /^discover\/data\/(?:home|featured|stock-index|search|feed|live-scope)\/(?:US_REAL|US_MODEL)(?:\.\d+)?\.json$/,
     /^discover\/data\/(?:rows|stocks|series)\/(?:US_REAL|US_MODEL)\/[A-Za-z0-9_.-]+\.json$/,
@@ -388,9 +391,9 @@ export function verifyExistingEligibilityCorrections({root,output,manifest}) {
       chart.points.some((r,i)=>!Array.isArray(r)||!/^\d{4}-\d{2}-\d{2}$/.test(r[0]||'')||!Number.isFinite(Date.parse(r[0]))||r[0]>proof.asOf||!Number.isFinite(r[1])||r[1]<=0||(i&&r[0]<=chart.points[i-1][0])))throw Error('EXISTING_ELIGIBILITY_FRESH_CHART_NOT_PROVED');
     const sec=parse('quant/data/sec/canonical_index.json').companies?.filter(r=>r.ticker==='DNA')||[],consumer=parse('quant/data/sec/consumer/CIK0001830214.json');
     const pitRows=['annual','quarterly'].flatMap(scope=>Object.values(consumer[scope]||{}).flat());
-    if(sec.length!==1||sec[0].cik!==e.cik||sec[0].securityId!=='sec_DNA'||sec[0].file!=='canonical/DNA.json'||
+    if(sec.length!==1||sec[0].cik!==e.cik||sec[0].securityId!=='sec_DNA'||!['canonical/DNA.json','canonical/DNA.json.gz'].includes(sec[0].file)||
       consumer.cik!==e.cik||consumer.dataSource?.isMock!==false||consumer.dataSource?.provider!=='sec_edgar'||!consumer.securityIds?.includes('ref_DNA')||!consumer.tickers?.includes('DNA')||!pitRows.length||
-      pitRows.some(r=>!Array.isArray(r)||!/^\d{4}-\d{2}-\d{2}$/.test(r[4]||'')||r[4]>proof.asOf||!r[5]))throw Error('EXISTING_ELIGIBILITY_SEC_PIT_NOT_PROVED');
+      pitRows.some(r=>!Array.isArray(r)||!/^\d{4}-\d{2}-\d{2}$/.test(r[2]||'')||!/^\d{4}-\d{2}-\d{2}$/.test(r[4]||'')||r[2]>r[4]||r[4]>proof.asOf||!r[5]))throw Error('EXISTING_ELIGIBILITY_SEC_PIT_NOT_PROVED');
     allowed.set(instrumentPath,new Map([[before.instrumentId,{before,after:expectedInstrument}]]));
     allowed.set(CANONICAL_PUBLICATION_PATHS.eligibility,new Map([['ref_DNA',{before:decision,after:expectedDecision}]]));
   }
@@ -441,8 +444,25 @@ function verifyScopedPublicProjections({ root, output, manifest }) {
     if (entry.baselineSha256 !== null && entry.stagedSha256 === entry.baselineSha256) continue;
     const chart = /^quant\/data\/market\/discover-series(?:-long)?\/(ref_[A-Z0-9_.-]+)\.json$/.exec(entry.path);
     const stock = /^discover\/data\/(?:stocks|series)\/(?:US_REAL|US_MODEL)\/([A-Z0-9_.-]+)\.json$/.exec(entry.path);
-    const canonicalSEC = /^quant\/data\/sec\/canonical\/([A-Z0-9_.-]+)\.json$/.exec(entry.path);
+    const canonicalSEC = /^quant\/data\/sec\/canonical\/([A-Z0-9_.-]+)\.json(?:\.gz)?$/.exec(entry.path);
     if ((chart && !ids.has(chart[1])) || (stock && !tickers.has(stock[1])) || (canonicalSEC && !tickers.has(canonicalSEC[1]))) throw Error('UNSCOPED_PUBLIC_PRODUCT_PROJECTION:' + entry.path);
+  }
+  const consumerIndexEntry=manifest.files.find(entry=>entry.path===CONSUMER_INDEX_PATH);
+  if(consumerIndexEntry&&consumerIndexEntry.stagedSha256!==consumerIndexEntry.baselineSha256){
+    const documentFor=path=>{const entry=manifest.files.find(row=>row.path===path),bytes=readFileSync(entry?guardedPath(output,entry.stagedPath):guardedPath(root,path));return JSON.parse(path.endsWith('.gz')?gunzipSync(bytes):bytes);};
+    const before=existsSync(guardedPath(root,CONSUMER_INDEX_PATH))?readDocument(root,CONSUMER_INDEX_PATH):{byTicker:{}},after=documentFor(CONSUMER_INDEX_PATH);
+    if(!after.byTicker||!before.byTicker)throw Error('INVALID_CONSUMER_INDEX');
+    for(const [ticker,row]of Object.entries(before.byTicker))if(JSON.stringify(row)!==JSON.stringify(after.byTicker[ticker]))throw Error('BASELINE_CONSUMER_INDEX_MAPPING_CHANGED:'+ticker);
+    const allowed=new Set(manifest.additions.map(symbol)),canonicalRows=documentFor('quant/data/sec/canonical_index.json').companies;
+    for(const [ticker,row]of Object.entries(after.byTicker))if(!Object.hasOwn(before.byTicker,ticker)){
+      if(!allowed.has(ticker))throw Error('UNSCOPED_CONSUMER_INDEX_MAPPING:'+ticker);
+      const canonical=canonicalRows.filter(row=>row.ticker===ticker),security=raw.securities.filter(row=>row.ticker===ticker);
+      const shard=documentFor('quant/data/universe/instruments/'+Company.shardKey(ticker)+'.json'),instruments=shard.instruments.filter(row=>row.symbol===ticker);
+      if(canonical.length!==1||security.length!==1||instruments.length!==1)throw Error('CONSUMER_INDEX_AMBIGUOUS_IDENTITY:'+ticker);
+      const expected=verifyConsumerBinding({ticker,security:security[0],instrument:instruments[0],canonical:canonical[0],document:documentFor('quant/data/sec/'+canonical[0].file),bundle:documentFor('quant/data/sec/consumer/CIK'+canonical[0].cik+'.json'),asOf:manifest.asOf});
+      if(JSON.stringify(row)!==JSON.stringify(expected))throw Error('CONSUMER_INDEX_MAPPING_SUMMARY_MISMATCH:'+ticker);
+    }
+    if(after.count!==new Set(Object.values(after.byTicker).map(row=>row.cik)).size)throw Error('CONSUMER_INDEX_COUNT_MISMATCH');
   }
 }
 
@@ -450,11 +470,11 @@ const PRODUCT_ARTIFACT_PATTERNS = {
   SEARCH: /^quant\/data\/universe\/search\/sym\/[A-Z0-9_-]+\.json$/,
   CHARTS: /^quant\/data\/market\/discover-series\/ref_[A-Z0-9_.-]+\.json$/,
   WATCHLIST: /^quant\/data\/universe\/instruments\/[A-Z0-9_-]+\.json$/,
-  QUANT: /^quant\/data\/product\/factor-evidence-v1\/[A-Z0-9_]{2}\.json\.gz$/,
+  QUANT: /^quant\/data\/product\/factor-evidence-v1\/[A-Z0-9_-]{2}\.json\.gz$/,
   DISCOVER: /^discover\/data\/stocks\/US_REAL\/[A-Z0-9_.-]+\.json$/,
   SCREENER: /^screener\/data\/universe-US_REAL\.json$/,
-  SUPERTRADER: /^quant\/data\/product\/technical-signals-v1\/[A-Z0-9_]{2}\.json\.gz$/,
-  SEC: /^quant\/data\/sec\/(?:consumer\/CIK\d{10}|canonical\/[A-Z0-9_.-]+|canonical_index)\.json$/
+  SUPERTRADER: /^quant\/data\/product\/technical-signals-v1\/[A-Z0-9_-]{2}\.json\.gz$/,
+  SEC: /^quant\/data\/sec\/(?:consumer\/CIK\d{10}\.json|canonical\/[A-Z0-9_.-]+\.json(?:\.gz)?|canonical_index\.json)$/
 };
 const hasIdentity = (document, row) => {
   if (!document || typeof document !== 'object') return false;
@@ -531,6 +551,7 @@ function verifyProductizationReadiness({ root, output, manifest, readiness }) {
         continue;
       }
       if (!artifactPaths.length || !artifactPaths.some((path) => PRODUCT_ARTIFACT_PATTERNS[product].test(path))) throw Error('AVAILABLE_PRODUCT_REQUIRES_ACTUAL_ARTIFACT:' + product);
+      if (product === 'SEC' && !artifactPaths.some(path => path === 'quant/data/sec/canonical/' + row.ticker + '.json' || path === 'quant/data/sec/canonical/' + row.ticker + '.json.gz')) throw Error('SEC_READINESS_FACTS_NOT_MATERIALIZED');
       const artifactHashes = {};
       for (const path of artifactPaths) {
         if (!projectionPath(path)) throw Error('UNSAFE_PRODUCT_READINESS_ARTIFACT');
@@ -572,9 +593,20 @@ function verifyProductizationReadiness({ root, output, manifest, readiness }) {
           if (path.startsWith('quant/data/sec/canonical/') || path === 'quant/data/sec/canonical_index.json') {
             const index = parse('quant/data/sec/canonical_index.json').document;
             const bindings = (index.companies || []).filter((entry) => entry.ticker === row.ticker);
-            if (bindings.length !== 1 || String(bindings[0].cik).padStart(10, '0') !== instrument.cik || bindings[0].file !== 'canonical/' + row.ticker + '.json' || bindings[0].securityId !== 'sec_' + row.ticker) throw Error('SEC_READINESS_ISSUER_MISMATCH');
-            if (path !== 'quant/data/sec/canonical_index.json' && (document.schema !== 'vu-canonical-v1' || document.security?.securityId !== bindings[0].securityId || document.security?.ticker !== row.ticker || document.security?.isMock === true)) throw Error('SEC_READINESS_ISSUER_MISMATCH');
-          } else if (String(document.cik).padStart(10, '0') !== instrument.cik) throw Error('SEC_READINESS_ISSUER_MISMATCH');
+            if (bindings.length !== 1 || String(bindings[0].cik).padStart(10, '0') !== instrument.cik || !['canonical/' + row.ticker + '.json', 'canonical/' + row.ticker + '.json.gz'].includes(bindings[0].file) || bindings[0].securityId !== 'sec_' + row.ticker) throw Error('SEC_READINESS_ISSUER_MISMATCH');
+            if (path !== 'quant/data/sec/canonical_index.json' && (path !== 'quant/data/sec/' + bindings[0].file || document.schema !== 'vu-canonical-v1' || document.security?.securityId !== bindings[0].securityId || document.security?.ticker !== row.ticker || document.security?.isMock === true)) throw Error('SEC_READINESS_ISSUER_MISMATCH');
+            if (path.startsWith('quant/data/sec/canonical/')) {
+              const facts = [...(document.facts || []), ...(document.industrySpecificMetrics?.facts || [])];
+              if (!facts.length || facts.some(f => !validSecDate(f.periodEnd) || !validSecDate(f.filedAt) || !validSecDate(f.availableAt) || f.periodEnd > f.filedAt || f.filedAt > f.availableAt || f.availableAt > manifest.asOf)) throw Error('SEC_READINESS_PIT_CHRONOLOGY_INVALID');
+            }
+          } else {
+            if (String(document.cik).padStart(10, '0') !== instrument.cik) throw Error('SEC_READINESS_ISSUER_MISMATCH');
+            const consumerIndex = parse('quant/data/sec/consumer/index.json').document;
+            const routing = consumerIndex.byTicker?.[row.ticker];
+            if (!routing || routing.cik !== instrument.cik || routing.file !== 'consumer/CIK' + instrument.cik + '.json' || path !== 'quant/data/sec/' + routing.file) throw Error('SEC_READINESS_CONSUMER_ROUTING_MISMATCH');
+            const observations = ['annual', 'quarterly'].flatMap(scope => Object.values(document[scope] || {}).flat());
+            if (observations.some(r => !Array.isArray(r) || !validSecDate(r[2]) || !validSecDate(r[4]) || r[2] > r[4] || r[4] > manifest.asOf || !r[5])) throw Error('SEC_READINESS_PIT_CHRONOLOGY_INVALID');
+          }
         } else if (!['SEARCH', 'WATCHLIST', 'CHARTS', 'QUANT', 'SUPERTRADER'].includes(product) && !hasIdentity(document, row)) throw Error('PRODUCT_READINESS_IDENTITY_MISSING:' + product);
       }
       row.products[product] = { state: 'PASS', reasonCodes, artifactPaths, artifactHashes, ...(product === 'QUANT' ? { coverage: proof.coverage || 'FULL' } : {}) };

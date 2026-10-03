@@ -38,6 +38,7 @@ ISSUE_UNKNOWN_CONCEPT = "UNKNOWN_CONCEPT"
 ISSUE_DUPLICATE_FACT = "DUPLICATE_FACT"
 ISSUE_CONCEPT_DISAGREEMENT = "CONCEPT_DISAGREEMENT"
 ISSUE_UNPLACEABLE_PERIOD = "UNPLACEABLE_PERIOD"
+ISSUE_FILED_BEFORE_PERIOD_END = "FILED_BEFORE_PERIOD_END"
 
 # Two concepts mapped to the same metric and period that differ by more than
 # this relative amount are reported; the higher-priority concept still wins.
@@ -119,6 +120,14 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
     stats = {"raw_facts": len(raw_facts), "mapped": 0, "unmapped": 0, "duplicates": 0}
 
     for fact in raw_facts:
+        # SEC companyfacts can itself contain erroneous future-dated contexts:
+        # AMC's May 2018 Q1 filing also labels its Q1 revenue as June Q2.
+        # Preserve the raw payload, record the defect, and never normalize it.
+        # Moving the filing date or the period end would invent PIT evidence.
+        if fact.filed and fact.end and str(fact.filed)[:10] < str(fact.end)[:10]:
+            issues.append(_issue(ISSUE_FILED_BEFORE_PERIOD_END, fact,
+                                 "filing date precedes the reported period end"))
+            continue
         matches = registry.metrics_for_concept(fact.taxonomy, fact.concept)
         if not matches:
             stats["unmapped"] += 1
