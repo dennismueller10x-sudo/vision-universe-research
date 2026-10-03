@@ -64,9 +64,29 @@
 
 Die Cluster-Intervalle sind beim TEST-Lift **3,1× breiter**, beim Gesamtwert 2,7×.
 
-### 4b. Neue Produktmessung (Engine 3.x laut PRODUCT_METHODOLOGY, Szenario {{SCEN}})
+### 4b. Neue Produktmessung (Engine 3.x laut PRODUCT_METHODOLOGY, Szenario `ti-scenario-1.1.0` / `elliott-3.2.2`)
 
-{{V3_TABLE}}
+Datei `quant/data/technical-intelligence/evidence/evidence-1W.json` (neu). „Alt" = bis 03.10.2026 veröffentlichter Bericht (Engine 2.x, Szenario 1.0, Normal-KI).
+
+| Größe | n alt | Lift alt | KI alt (Normal) | n neu | Lift neu | KI neu Normal (Vergleich) | **KI neu Cluster (Produktfeld)** | Schema | q (BH) |
+|---|---|---|---|---|---|---|---|---|---|
+| Gesamt | 110.631 | +0,12 | −0,21 … +0,44 | 109.389 | +0,22 | −0,11 … +0,55 | **−0,62 … +1,06** | TWO_WAY | – |
+| TRAIN | 44.062 | +1,22 | +0,70 … +1,74 | 43.535 | +1,29 | +0,77 … +1,81 | **+0,07 … +2,51** | TWO_WAY | 0,12 |
+| VALIDATION | 20.025 | −1,22 | −2,00 … −0,45 | 19.835 | −0,88 | −1,66 … −0,10 | **−2,63 … +0,87** | TWO_WAY | 0,49 |
+| **TEST (vorab registriert)** | 46.544 | −0,36 | −0,86 … +0,15 | 46.019 | −0,32 | −0,82 … +0,19 | **−1,73 … +1,09** | TWO_WAY | 0,66 |
+| CONTINUATION · bearish | 22.270 | +1,34 | +0,62 … +2,05 | 24.586 | +1,22 | +0,54 … +1,90 | **−1,29 … +3,73** | TWO_WAY | 0,96 |
+| CONTINUATION · bullish | 29.867 | −0,09 | −0,73 … +0,56 | 34.291 | +0,25 | −0,34 … +0,85 | **−1,99 … +2,50** | TWO_WAY | 0,96 |
+| PULLBACK · bearish | 20.467 | +0,01 | −0,72 … +0,74 | 17.740 | −0,07 | −0,85 … +0,72 | **−2,50 … +2,37** | TWO_WAY | 0,96 |
+| PULLBACK · bullish | 34.607 | −0,33 | −0,91 … +0,26 | 29.338 | −0,47 | −1,10 … +0,17 | **−2,45 … +1,80** | TIME | 0,96 |
+| BREAKOUT_RETEST · bullish | 2.235 | −1,23 | −3,58 … +1,12 | 2.254 | −0,41 | −2,76 … +1,93 | **−3,11 … +2,29** | TWO_WAY | 0,96 |
+| BREAKOUT_RETEST · bearish | 1.185 | −0,32 | −3,44 … +2,80 | 1.180 | +1,02 | −2,11 … +4,16 | **−2,70 … +4,74** | TWO_WAY | 0,96 |
+
+Trefferquote Zielzone 1 im TEST: 35,38 % (Wilson 34,95–35,82 → Cluster **33,31–37,45**), Baseline 35,70 %.
+TEST je Template (`byTemplateTest`, explorativ): alle sechs Cluster-KIs schließen 0 ein (z. B. CONTINUATION · bearish +1,41, Normal +0,41 … +2,41 → Cluster −2,90 … +5,71; PULLBACK · bullish −1,04, Normal −2,07 … −0,02 → Cluster −4,59 … +2,62), q = 0,91.
+
+**Elliott-Studie unter Engine 3.x:** Die 3.x-Engine führt kaum noch unvollständige Impulse in Welle 3 (IMPULSE_W3_AFTER_W2 n = 3, vorher 14.160; W5 n = 993, vorher 18.896) — Folge der Musterwahl in 3.x (u. a. WXY), keine Änderung dieser Studie. Die verbleibenden Setups liegen weiterhin **unter** dem Zufall: Flat C −4,2 Pp. (Cluster −5,5 … −2,8), Zigzag C −4,3 (−5,7 … −2,9), Impuls W5 −17,0 (−21,5 … −12,6); W3 hat zu wenige Cluster (KI `null`).
+
+**Tagesstudie (Golden 5, `evidence-1D-golden.json`):** TEST-Lift +2,47 Pp. (n = 162), Normal −6,30 … +11,24 → Cluster (nur Zeit-Schema; 5 Titel < 10 Cluster) **−6,41 … +11,63**; alt +1,62 (−7,05 … +10,28). Gesamt +0,15, Cluster −8,34 … +8,59.
 
 ## 5. Mehrfachtests und Kennzeichnung
 
@@ -84,19 +104,19 @@ Die Cluster-Intervalle sind beim TEST-Lift **3,1× breiter**, beim Gesamtwert 2,
 * **Setup-Zellen (Produkt):** 5 von 18 Zellen hatten ein KI ohne 0 — drei positiv (`1W|CONTINUATION|BEARISH|HIGH` +1,7, `…|MODERATE` +1,5, `1W|PULLBACK|BEARISH|HIGH` +1,7 Pp.), zwei negativ (`1W|PULLBACK|BEARISH|LOW` −2,6, `…|MODERATE` −1,5) — **keine** übersteht Cluster-KI und BH. Folge im Produkt (nach Neubau): Für die drei positiven Zellen vergibt `evidenceBadge()` nicht mehr „Experimentell"; da ihr Lift ≤ 2 Pp. ist und die KI-Untergrenze jetzt ≤ 0 liegt, greift in `overallConfidence()` die bestehende Regel `NO_HISTORICAL_EDGE` → Konfidenz LOW (statt bisher möglich HIGH). Die Regel selbst ist unverändert; geändert ist nur das gemessene Intervall.
 * **Marktregime, Volatilität, Elliott-Einstiegsform, Sektor:** von 11 früher „signifikanten" Zeilen bleiben nach BH je Tabelle 2 (Volatilität EXTREME +2,2 Pp., q = 0,013; Sektor H +2,2 Pp., q = 0,038) — beide explorativ, nicht vorab registriert.
 * **Jahre:** 13 von 34 Jahren bleiben nach BH von 0 verschieden — mit wechselndem Vorzeichen. Das ist Marktphasen-Heterogenität, kein stabiler Vorteil.
-* **Richtungs-Ablation (Holdout ab 2019):** Mit Wilson-KI lag TREND (51,97 %, KI 51,62–52,32) über „immer long" (KI bis 50,66) → `derive-method-evidence.mjs` vergab TREND/CONFLUENCE „SUPPORTED". Mit Cluster-KI: TREND 50,42–53,50, CONFLUENCE 50,15–53,36, „immer long" 45,88–54,68 — das Kriterium „KI-Untergrenze > Obergrenze von immer long" ist **nicht mehr erfüllt**. Nach dem nächsten Lauf von `derive-method-evidence.mjs` fallen TREND und CONFLUENCE auf NOT_ESTABLISHED. Nach BH (19 Regeln) ist keine Richtungsregel bei 5 % FDR von 50 % verschieden (kleinstes q = 0,054).
-* **Elliott-Studie:** alle vier Setups bleiben **negativ** gegen den Zufall (z. B. W3 nach W2 −11,6 Pp., KI −13,2 … −9,9) — die Aussage „Lehrbuch-Erwartung trifft nicht häufiger ein als Zufall" wird durch die Clusterung nicht schwächer.
+* **Richtungs-Ablation (Holdout ab 2019):** Mit Wilson-KI lag TREND (51,97 %, KI 51,62–52,32) über „immer long" (KI bis 50,66) → `derive-method-evidence.mjs` vergab TREND/CONFLUENCE „SUPPORTED". Mit Cluster-KI (Produktmessung 3.x): TREND 50,43–53,50, CONFLUENCE 50,25–53,43, „immer long" 45,89–54,68 — das Kriterium „KI-Untergrenze > Obergrenze von immer long" ist **nicht mehr erfüllt**. Nach dem nächsten Lauf von `derive-method-evidence.mjs` fallen TREND und CONFLUENCE auf NOT_ESTABLISHED. Nach BH (19 Regeln) ist keine Richtungsregel bei 5 % FDR von 50 % verschieden (kleinstes q = 0,054).
+* **Elliott-Studie:** alle vier Setups bleiben **negativ** gegen den Zufall (z. B. W3 nach W2 −11,6 Pp., KI −13,2 … −9,9; unter 3.x siehe 4b) — die Aussage „Lehrbuch-Erwartung trifft nicht häufiger ein als Zufall" wird durch die Clusterung nicht schwächer.
 * **Fibonacci:** 50 % zeigt eine kleine Häufung (Verhältnis 1,05, KI 1,02–1,08, q = 0,008), 38,2 %/78,6 % leicht darunter (q = 0,057). Explorativ; die Produktaussage „keine nennenswerte Häufung" bleibt sachlich richtig, sollte aber nicht „exakt 1" suggerieren.
 * **Gesamt/TEST:** unverändert „kein Vorteil belegt" — nur das Intervall ist ehrlicher.
 
-{{V3_BH}}
+**BH-Ergebnis der neuen Produktmessung (Woche, FDR 5 % je Tabelle):** In den Tabellen Zeitraum, Setup-Zellen (18), Template, Template im TEST, Konfidenz, Agreement, Marktregime, Elliott-Rolle/Klarheit/Einstiegsform, Alignment, bedingte Lifts (16) und Richtungs-Ablation (19) ist **keine** Zeile signifikant. Signifikant bleiben nur: Volatilität EXTREME (+2,2 Pp., q = 0,023), Sektor H (+2,3 Pp., q = 0,016), 13 von 34 Einzeljahren (beide Vorzeichen), alle Elliott-Setup-Zeilen (negativ: Lehrbuch-Erwartung seltener als Zufall) und Fibonacci 50 % (Verhältnis 1,05, q = 0,008). Alle sind explorativ. Setup-Zellen mit früher KI > 0 unter 3.x: `CONTINUATION|BEARISH|HIGH` (+1,6, Cluster −1,2 … +4,4), `CONTINUATION|BULLISH|MODERATE` (+1,6, −1,4 … +4,7), `PULLBACK|BEARISH|HIGH` (+1,7, −1,0 … +4,4) — keine hält.
 
 ## 6. Verbleibende Grenzen
 
 * **Survivorship (BLOCKED lokal):** Lokal nur heute gelistete Titel (`SURVIVORS_ONLY`). Der Eingang `--delisted` ist gebaut, aber das Bündel existiert nur im CI-Runner (R2, privat) und deckt Delistings erst ab 2015 ab; der Workflow `technical-intelligence-evidence.yml` ruft die Wochenstudie bisher nicht mit `--delisted` auf (Datei außerhalb dieses Auftrags). Delistete Reihen, die vor Ziel/Invalidation/Zeitablauf enden, fallen als OPEN/NO_DATA heraus (Zensierung).
 * **Heutige Indexzugehörigkeit / Sektor:** Sektor- und Universumszuordnung stammen aus der heutigen Taxonomie (Look-ahead in `bySector`; Universum = heute gelistete Titel).
 * **TEST-Zeitraum mehrfach angesehen:** ab 2019 jetzt zum **vierten** Mal gerechnet (Erstlauf, Messfehler-Korrektur, Elliott-Gewicht 0, dieser Messabgleich auf Engine 3.x mit Szenario 1.1.0). Er ist kein unberührter Holdout mehr; jede Aussage aus ihm ist bestenfalls „bestätigend unter Vorbehalt". Da keine Regel nach Ansicht dieses Laufs geändert wird, entsteht kein neues Tuning — aber auch keine neue Unabhängigkeit.
-* **Engine-Stand:** Die neue Messung nutzt Szenario {{SCEN}} (Mission IV, zeitgleich vom Koordinator geändert: Kursniveaus nur positiv/plausibel, Measured Move proportional). Abweichungen zwischen 4a und 4b mischen Engine- und Szenario-Änderung; 4a isoliert die reine Inferenzwirkung.
+* **Engine-Stand:** Die neue Messung nutzt Szenario `ti-scenario-1.1.0` / `elliott-3.2.2` (Mission IV, zeitgleich vom Koordinator geändert: Kursniveaus nur positiv/plausibel, Measured Move proportional). Abweichungen zwischen 4a und 4b mischen Engine- und Szenario-Änderung; 4a isoliert die reine Inferenzwirkung.
 * **Ohne Persistenz-Replay:** Das Produkt hält eine Elliott-Lesart über die Zeit (Hysterese); die Studie rechnet jeden Zeitpunkt zustandslos.
 * **Restabhängigkeit:** Benachbarte Quartale teilen Ergebnisfenster; der Zeit-Bootstrap mit 31 TEST-Quartalen bleibt eher zu optimistisch. Zeilen mit < 10 Clustern (z. B. einzelne Jahre im Zeit-Schema, Tagesstudie mit 5 Titeln im Titel-Schema) erhalten nur das verbleibende Schema oder `null`.
 * **Tagesstudie (Golden 5):** 5 Titel → Titel-Cluster unbrauchbar, nur Zeit-Cluster; Aussagen sind Illustration, keine Evidenz.
@@ -104,7 +124,15 @@ Die Cluster-Intervalle sind beim TEST-Lift **3,1× breiter**, beim Gesamtwert 2,
 
 ## 7. Laufzeiten
 
-{{RUNTIME}}
+| Lauf | Simulation | Bootstrap | Gesamt | Bemerkung |
+|---|---|---|---|---|
+| Woche, alt (Engine 2.x, 4 Worker statisch), Bericht 02.10. | – | – | 1.273 s | ohne Cluster-Bootstrap |
+| Woche, Engine 2.x, neue Inferenz (2 Worker, Maschine stark ausgelastet) | 1.383 s | 522 s | 1.915 s | Vergleichsrechnung 4a |
+| Teilmenge 60 Titel, Engine 2.x / 3.x (4 Worker statisch) | 13 s / 164 s | – | – | 3.x ≈ 12× teurer |
+| **Woche, Produktmessung (3.x, Szenario 1.1.0, 4 Worker dynamisch)** | **5.616 s (94 min)** | **510 s** | **6.130 s (102 min)** | Last durch parallele Sitzungen (Load 5–17) |
+| Tag, Golden 5 (3.x) | 65 s | 2 s | 67 s | |
+
+Hochrechnung aus der Teilmenge: ≈ 25.000 CPU-s → bei 4 freien Kernen ≈ 105 min; die dynamische Warteschlange und die Wiederverwendung des Elliott-Ergebnisses (−28 % CPU) bringen den Lauf auf ≈ 90–100 min. Weitere Beschleunigung nur mit mehr Kernen (CI: `--workers` entsprechend setzen).
 
 ## 8. Reproduktion
 
