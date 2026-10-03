@@ -77,24 +77,29 @@
       "maxRiskAtr": 4.5,
       "bufferAtr": 0.25,
       "basis": "Schlusskurs",
-      "maxShareOfClose": 0.5
+      "maxShareOfClose": 0.35
     },
     "targets": {
       "minDistanceAtr": 1.5,
       "separationAtr": 1.5,
       "max": 3,
       "maxFactor": 3,
-      "note": "Seit ti-scenario-1.2.0: Measured Move prozentual, Ziele und Zielzonen-Raender zwischen Kurs/3 und Kurs×3."
+      "note": "Seit ti-scenario-1.2.0: Measured Move prozentual, Ziele und Zielzonen-Raender zwischen Kurs/3 und Kurs×3.",
+      "maxDistanceAtr": 12
     },
     "confirmation": {
       "maxDistanceAtr": 8,
-      "note": "Bestaetigungsmarke nur, wenn hoechstens 8 ATR vom Kurs entfernt; sonst keine."
+      "note": "Bestaetigungsmarke nur, wenn hoechstens 8 ATR vom Kurs entfernt; sonst keine.",
+      "maxShareOfClose": 0.5
     },
-    "plausibility": "ti-scenario-1.2.0: Einstieg hoechstens 30 % und Risiko hoechstens 50 % vom Kurs; ATR fuer die Geometrie zwischen 0,5 % und 25 % des Kurses; liegen Einstiegszone oder Invalidation bei ≤ 0, kein Szenario; tote Reihe (≥ 4 gleiche Wochen- bzw. ≥ 10 gleiche Tagesschluesse) → kein Szenario; Elliott formt Szenarien nur bei Anwendbarkeit ≥ MITTEL.",
+    "plausibility": "ti-scenario-1.2.1: Einstieg hoechstens 30 % und Risiko hoechstens 35 % vom Kurs; Ziele zwischen Kurs/3 und Kurs×3 und hoechstens 12 ATR von der Einstiegszone; Bestaetigung hoechstens 8 ATR und 50 % vom Kurs; ATR fuer die Geometrie zwischen 1,5 % (Woche) bzw. 0,5 % (Tag) und 25 % des Kurses; liegen Einstiegszone oder Invalidation bei ≤ 0, kein Szenario; tote Reihe (≥ 4 gleiche Wochen- bzw. ≥ 10 gleiche Tagesschluesse) → kein Szenario; Elliott formt Szenarien nur bei Anwendbarkeit ≥ MITTEL.",
     "empiricalMinSample": 30,
     "overallConfidenceRule": "HIGH: Agreement HIGH und Struktur nicht LOW und (keine Empirie oder unterer KI-Rand des Uplifts > 0). LOW: Agreement LOW oder MIXED oder Empirie ohne Vorteil (Uplift <= 2 pp und unterer KI-Rand <= 0). Sonst MODERATE.",
     "atrMaxShareOfClose": 0.25,
-    "atrMinShareOfClose": 0.005,
+    "atrMinShareOfClose": {
+      "1W": 0.015,
+      "1D": 0.005
+    },
     "staleFlatBars": {
       "1W": 4,
       "1D": 10

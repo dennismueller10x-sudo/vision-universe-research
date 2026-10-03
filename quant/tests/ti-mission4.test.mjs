@@ -111,14 +111,14 @@ test("M4-6 no scenarios on dead series; abstained Elliott never shapes scenarios
   for (let i = 0; i < 480; i++) { if (i < 470) v *= 1 + 0.03 * Math.sin(i / 4) + 0.002; pts.push([new Date(d).toISOString().slice(0, 10), +v.toFixed(2)]); d += 7 * 86400000; }
   const dead = analyzeProduct(weeklySeriesFromPoints(pts, "DEAD"), {}).res;
   assert.equal(dead.scenarios.length, 0, "Szenario auf toter Reihe"); assert.equal(dead.confidence.overall, "LOW");
-  for (const t of ["ALPN", "VLCN", "AIXI", "ACON", "HCTI", "AAPL", "MSFT"]) {
+  for (const t of ["ALPN", "VLCN", "AIXI", "ACON", "HCTI", "TALK", "SLAB", "GRDX", "AAPL", "MSFT"]) {
     const f = join(ROOT, "quant/data/market/discover-series-long/ref_" + t + ".json"); if (!existsSync(f)) continue;
     const s = weeklySeriesFromPoints(JSON.parse(readFileSync(f, "utf8")).points, t), out = analyzeProduct(s, {}), r = out.res, close = s.close[s.length - 1];
     const E = r.methods && r.methods.elliott, abst = !E || !E.applicability || E.applicability.abstain;
     for (const sc of r.scenarios) {
       if (abst) { assert.ok(!sc.elliottShaped, t + ": enthaltene Zaehlung formt das Szenario"); assert.equal(sc.expectedStructure || null, null, t + ": Erwartete Struktur trotz Enthaltung"); }
       if (sc.entryZone && sc.kind !== "TAIL") { assert.ok(Math.abs(sc.entryZone.center - close) <= 0.35 * close, t + ": Einstieg " + sc.entryZone.center + " bei Kurs " + close); }
-      if (sc.rewardRiskT1 !== null && sc.rewardRiskT1 !== undefined) assert.ok(sc.rewardRiskT1 < 25, t + ": CRV " + sc.rewardRiskT1);
+      if (sc.rewardRiskT1 !== null && sc.rewardRiskT1 !== undefined) assert.ok(sc.rewardRiskT1 <= 12, t + ": CRV " + sc.rewardRiskT1);
     }
   }
 });

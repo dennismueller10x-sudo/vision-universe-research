@@ -36,7 +36,7 @@
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
   var Hash = isNode ? require("../../hash.js") : global.VUHash;
-  var ENGINE_VERSION = "ti-scenario-1.2.0";   // 1.1.0 (Mission IV): Kursniveaus nur positiv und plausibel, Measured Move prozentual; 1.1.1: ATR-Deckel 25 % des Kurses; 1.2.0 (Red-Team 2): keine Szenarien auf toten Reihen, Elliott formt nur bei Anwendbarkeit ≥ MITTEL, Abstandsgrenzen relativ zum Kurs
+  var ENGINE_VERSION = "ti-scenario-1.2.1";   // 1.1.0 (Mission IV): Kursniveaus nur positiv und plausibel, Measured Move prozentual; 1.1.1: ATR-Deckel 25 % des Kurses; 1.2.0 (Red-Team 2): keine Szenarien auf toten Reihen, Elliott formt nur bei Anwendbarkeit ≥ MITTEL, Abstandsgrenzen relativ zum Kurs; 1.2.1: ATR-Untergrenze je Zeitebene, Bestaetigung hoechstens 50 % vom Kurs
 
   var DEFAULTS = {
     /* Prior aus Evidenzgraden (METHOD_RESEARCH.md). WYCKOFF = 0: keine Literatur-Evidenz (Grad D) UND in der
@@ -46,14 +46,14 @@
     agreementLevels: { high: 0.5, moderate: 0.25 },
     zone: { minWidthAtr: 0.6, maxWidthAtr: 2.0, clusterTolAtr: 0.75 },
     entry: { maxDistanceAtr: 4.0, retracementBand: [0.382, 0.618], maxShareOfClose: 0.3 },
-    invalidation: { minGapAtr: 0.3, maxRiskAtr: 4.5, bufferAtr: 0.25, maxShareOfClose: 0.5 },
-    targets: { minDistanceAtr: 1.5, separationAtr: 1.5, maxFactor: 3 },
-    confirmation: { maxDistanceAtr: 8 },
+    invalidation: { minGapAtr: 0.3, maxRiskAtr: 4.5, bufferAtr: 0.25, maxShareOfClose: 0.35 },
+    targets: { minDistanceAtr: 1.5, separationAtr: 1.5, maxFactor: 3, maxDistanceAtr: 12 },
+    confirmation: { maxDistanceAtr: 8, maxShareOfClose: 0.5 },
     /* Nach einem Einbruch traegt die ATR noch die alten Kursniveaus (AIXI: Kurs 3,10, Einstiegszone 14,60–20,50). Fuer die
        Szenario-Geometrie hoechstens 25 % des Kurses je Bar. */
     atrMaxShareOfClose: 0.25,
     /* Untergrenze: auf fast flachen Reihen faellt die ATR gegen 0 und das Chance/Risiko-Verhaeltnis wird absurd (Red-Team 2 C1). */
-    atrMinShareOfClose: 0.005,
+    atrMinShareOfClose: { "1W": 0.015, "1D": 0.005 },   // Wochen-ATR unter 1,5 % des Kurses: praktisch nur gebundene Kurse (Uebernahmeangebot)
     /* Tote Reihe (uebernommen, delistet, ausgesetzt): so viele gleiche Schlusskurse am Ende → kein Szenario. */
     staleFlatBars: { "1W": 4, "1D": 10 },
     empirical: { minSample: 30 }
@@ -203,7 +203,7 @@
     var invalidation = valid[0] || null;
     var structural = valid.filter(function (c) { return c.basis !== "ZONE_EDGE"; })[0];
     if (structural && invalidation && invalidation.basis === "ZONE_EDGE" && Math.abs(structural.price - invalidation.price) <= 1.5 * atr) invalidation = structural;
-    if (!invalidation) invalidation = { price: entryEdgeFar - d * 1.5 * atr, basis: "VOLATILITY", rule: "1,5 ATR jenseits der Einstiegszone (keine strukturelle Grenze in Reichweite)" };
+    if (!invalidation) invalidation = { price: entryEdgeFar - d * Math.min(1.5 * atr, cfg.invalidation.maxShareOfClose * close), basis: "VOLATILITY", rule: "1,5 ATR jenseits der Einstiegszone (keine strukturelle Grenze in Reichweite)" };
     /* Invalidation nach aussen runden (weg von der Einstiegszone). */
     var ist = priceStep(invalidation.price);
     invalidation = { price: d > 0 ? down(invalidation.price, ist) : up(invalidation.price, ist), direction: d > 0 ? "below" : "above", basis: invalidation.basis, rule: invalidation.rule, ruleId: invalidation.ruleId || null, closeBasis: true };
@@ -223,7 +223,7 @@
     if (activePattern) tg.push({ price: (activePattern.target.zoneLow + activePattern.target.zoneHigh) / 2, weight: 0.7, type: "PATTERN_TARGET", relation: activePattern.name + ": Höhe der Formation" });
     var minT = entryEdgeNear + d * cfg.targets.minDistanceAtr * atr;
     /* Nur positive Ziele innerhalb des Faktors maxFactor um den Kurs (sonst keine sinnvolle Szenario-Aussage). */
-    tg = tg.filter(function (c) { return isNum(c.price) && c.price > 0 && c.price <= close * cfg.targets.maxFactor && c.price >= close / cfg.targets.maxFactor; });
+    tg = tg.filter(function (c) { return isNum(c.price) && c.price > 0 && c.price <= close * cfg.targets.maxFactor && c.price >= close / cfg.targets.maxFactor && Math.abs(c.price - entryEdgeNear) <= cfg.targets.maxDistanceAtr * atr; });
     var cands = cluster(tg.filter(function (c) { return d > 0 ? c.price >= minT : c.price <= minT; }), atr, cfg.zone.clusterTolAtr)
       .sort(function (a, b) { return d > 0 ? a.center - b.center : b.center - a.center; });
     var targets = [];
@@ -249,7 +249,7 @@
     var sh = x.dow.shortTerm;
     if (sh && sh.lastHigh) confirmation = { price: d > 0 ? sh.lastHigh.price : sh.lastLow.price, rule: "Schluss " + (d > 0 ? "über dem letzten kurzfristigen Hoch" : "unter dem letzten kurzfristigen Tief") };
     /* Ein uraltes Swing-Niveau weit weg vom Kurs (ACON: 949,73 bei Kurs 2,44) ist keine Bestaetigungsmarke. */
-    if (confirmation && !(confirmation.price > 0 && Math.abs(confirmation.price - close) <= cfg.confirmation.maxDistanceAtr * atr)) confirmation = null;
+    if (confirmation && !(confirmation.price > 0 && Math.abs(confirmation.price - close) <= cfg.confirmation.maxDistanceAtr * atr && Math.abs(confirmation.price - close) <= cfg.confirmation.maxShareOfClose * close)) confirmation = null;
     var riskAtr = Math.abs((entry.zoneLow + entry.zoneHigh) / 2 - invalidation.price) / atr;
     var t1 = targets[0];
     var rr = t1 ? Math.abs(t1.center - (entry.zoneLow + entry.zoneHigh) / 2) / Math.max(1e-9, Math.abs((entry.zoneLow + entry.zoneHigh) / 2 - invalidation.price)) : null;
@@ -329,7 +329,8 @@
     cfg.familyWeights = Object.assign({}, DEFAULTS.familyWeights, (cfgIn && cfgIn.familyWeights) || {});
     ["zone", "entry", "invalidation", "targets", "confirmation"].forEach(function (k) { cfg[k] = Object.assign({}, DEFAULTS[k], (cfgIn && cfgIn[k]) || {}); });
     if (x.ctx && isNum(x.ctx.atr) && isNum(x.ctx.close) && x.ctx.close > 0) {
-      var c0 = x.ctx.close, atr0 = Math.min(Math.max(x.ctx.atr, cfg.atrMinShareOfClose * c0), cfg.atrMaxShareOfClose * c0);
+      var tf0 = x.timeframe || (x.ctx.series && x.ctx.series.timeframe), minShare = typeof cfg.atrMinShareOfClose === "number" ? cfg.atrMinShareOfClose : (cfg.atrMinShareOfClose[tf0] || 0.005);
+      var c0 = x.ctx.close, atr0 = Math.min(Math.max(x.ctx.atr, minShare * c0), cfg.atrMaxShareOfClose * c0);
       var cl = x.ctx.series && x.ctx.series.close, flat = 0;
       var tEnd = isNum(x.ctx.t) ? x.ctx.t : (cl ? cl.length - 1 : -1);   // nur bis zum Analysebar (kausal, Test TI-C2)
       if (cl) for (var i = tEnd; i > 0 && cl[i] === cl[i - 1]; i--) flat++;
@@ -367,7 +368,7 @@
       var dd = p.direction === "BULLISH" ? 1 : -1, zs = dd > 0 ? x.levels.sr.supports : x.levels.sr.resistances;
       /* Die tiefere Zone muss vollstaendig JENSEITS der Invalidation liegen (sonst waere sie keine Tail-Lesart). */
       var inv = p.invalidation && isNum(p.invalidation.price) ? p.invalidation.price : null;
-      var deeper = inv === null ? null : zs.filter(function (z) { return dd > 0 ? z.zoneHigh < inv && z.zoneLow > inv - 4 * x.ctx.atr : z.zoneLow > inv && z.zoneHigh < inv + 4 * x.ctx.atr; })[0];
+      var cT = x.ctx.close, deeper = inv === null ? null : zs.filter(function (z) { return (dd > 0 ? z.zoneHigh < inv && z.zoneLow > inv - 4 * x.ctx.atr : z.zoneLow > inv && z.zoneHigh < inv + 4 * x.ctx.atr) && z.zoneLow >= cT / cfg.targets.maxFactor && z.zoneHigh <= cT * cfg.targets.maxFactor; })[0];
       if (deeper) scenarios.push({ kind: "TAIL", direction: p.direction, template: "DEEPER_CORRECTION", status: "WATCH", entryZone: toZone({ lo: deeper.zoneLow, hi: deeper.zoneHigh, center: deeper.center, weight: deeper.strength, sources: [{ type: dd > 0 ? "SUPPORT" : "RESISTANCE", relation: "nächste stärkere Zone jenseits der Invalidation" }] }, x.ctx.atr, cfg, "Tiefere Zone"),
                                    invalidation: null, targets: p.targets.slice(0, 1), note: "Bruch der Invalidation, aber Halt an der nächsten größeren Zone" });
       else if (p.targets.length >= 2) scenarios.push({ kind: "TAIL", direction: p.direction, template: "EXTENDED_MOVE", status: "WATCH", entryZone: null, invalidation: p.invalidation,
