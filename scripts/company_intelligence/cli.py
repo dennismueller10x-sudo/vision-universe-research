@@ -188,7 +188,9 @@ def main(argv=None):
         if args.command == 'discover-backfill' and args.discovery_workers > 1:
             from company_intelligence.discovery_batch import run as run_inventory, persist as persist_inventory
             candidates = {c['companyId']: store.state('siteCandidates:' + c['companyId'], {}) for c in selected}
-            inventory_results = run_inventory(selected, candidates, http, now, args.request_budget, args.max_seconds, args.discovery_workers)
+            pipeline.ensure_aliases(selected_ids)
+            discovery_companies = [{**c, 'names': pipeline.companies[c['companyId']]['names']} for c in selected]
+            inventory_results = run_inventory(discovery_companies, candidates, http, now, args.request_budget, args.max_seconds, args.discovery_workers)
             persist_inventory(inventory_results, store, companies, now)
             deferred = any(r['status'] == 'DEFERRED' for r in inventory_results)
             pipeline.run['discoveryFailures'] += sum(r['status'] in ('REJECTED','DEGRADED') for r in inventory_results)

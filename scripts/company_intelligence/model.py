@@ -9,7 +9,7 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 SCHEMA = 'vu-company-intelligence-1.0.0'
 AMBIGUOUS = set('apple meta unity toast root affirm block oracle target gap on all life square way car go sun march open shift match snap'.split())
 AMBIGUOUS_ALIASES = {'the gap', 'match group', 'life time', 'open door', 'on holding'}
-FINANCIAL = re.compile(r'\b(earnings|revenue|guidance|shares|stock|investors|quarter|dividend|buyback|acquisition|CEO|NYSE|NASDAQ|Aktie|Aktien|Umsatz|Gewinn|Dividende|Umsatzprognose|Quartalszahlen)\b', re.I)
+FINANCIAL = re.compile(r'\b(earnings|revenue|guidance|shares|stock|investors|quarter|dividend|buyback|acquisition|CEO|NYSE|NASDAQ|Aktie|Aktien|Umsatz|Gewinn|Dividende|Umsatzprognose|Quartalszahlen|Kursziel|Aktienkurs|Kaufempfehlung|Outperform|Underperform)\b|\bstuft\b.{0,100}\b(?:buy|hold|sell|neutral|kaufen|verkaufen|halten)\b', re.I)
 SUFFIX = re.compile(r'\b(incorporated|inc|corporation|corp|limited|ltd|plc|holdings)\b\.?', re.I)
 ACCESSION = re.compile(r'^\d{10}-\d{2}-\d{6}$')
 
