@@ -1,7 +1,7 @@
 {
   "schemaVersion": "tiingo2-foundation-premerge-qa-1",
   "scope": "ISOLATED_FOUNDATION_CURRENT_FOLLOWUP_HEAD",
-  "baselineCommit": "268d4c89750ac682a0acc2f6ddbb7b5143fb2959",
+  "baselineCommit": "41d1381c5bbe3725d817d0bb7878ab2ebbe1d710",
   "runtime": "Node22.23.3",
   "quant": {
     "tests": 2281,
@@ -125,5 +125,13 @@
     "reasonCode": "INSUFFICIENT_CHART_HISTORY",
     "targetedTestsPassed": 24,
     "latestCodeHostedQAPending": true
+  },
+  "currentMainIntegration": {
+    "newMainCommit": "41d1381c5bbe3725d817d0bb7878ab2ebbe1d710",
+    "mainChanges": 24,
+    "conflicts": 0,
+    "superTraderPathsChangedByFoundation": 0,
+    "protectedMetadataPathsChangedByFoundation": 10,
+    "fullHostedRerunPending": true
   }
 }
