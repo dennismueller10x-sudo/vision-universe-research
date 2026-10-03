@@ -168,7 +168,8 @@ const NOISE = { none: 0, low: 0.008, medium: 0.02, high: 0.04 };
  */
 export function corpusCase(cls, seed, noise, opts = {}) {
   const C = CLASSES[cls];
-  const R = rng("vu-elliott-corpus-v2|" + cls + "|" + seed + "|" + noise);
+  const LB = opts.layout === "B";
+  const R = rng("vu-elliott-corpus-v2|" + cls + "|" + seed + "|" + noise + (LB ? "|layoutB" : ""));
   const dir = R.next() < 0.5 ? 1 : -1;            // Richtung der ersten Welle des Zielmusters
   const P0 = 100;
   /* Groesse: Welle 1/A zwischen 12 % und 45 % des Kurses (log-gleichverteilt) → Muster auf scale-2..4 sichtbar */
@@ -187,7 +188,17 @@ export function corpusCase(cls, seed, noise, opts = {}) {
   const start = P0 + Math.max(0, -lowest + 0.35 * P0);
   /* Vorlauf (ruhiger Seitwaertsverlauf, 30 Wochen), dann Kontext, dann Ziel, dann Bestaetigung */
   const lead = 30;
-  const ctx = build(R, ctxWaves, lead, start, ctxDir, ctxLen, unitBars, 1);
+  let ctx = build(R, ctxWaves, lead, start, ctxDir, ctxLen, unitBars, 1);
+  if (LB) {
+    /* Layout B (Aenderung 1, HOLDOUT-2): Kontext ist ein Zufallspfad, kein Muster gleichen Grades. Er laeuft vom Start zum
+       Ursprung des Zielmusters (gleiche Nettobewegung wie der Musterkontext), Schritt fuer Schritt mit Zufallsabweichung. */
+    const cEndY = ctx.top[ctx.top.length - 1][1], m = Math.max(30, Math.round(R.u(40, 90)));
+    const sd = 0.035 * Math.abs(cEndY - start) / Math.sqrt(m) * 4 + 0.004 * start;
+    const pts = [[lead, start]]; let w = 0; const ws = [0];
+    for (let q = 1; q <= m; q++) { w += sd * R.gauss(); ws.push(w); }
+    for (let q = 1; q <= m; q++) pts.push([lead + q, start + (cEndY - start) * q / m + ws[q] - (q / m) * ws[m]]);
+    ctx = { top: [[lead, start], [lead + m, cEndY]], sub: [], all: pts };
+  }
   const cEnd = ctx.top[ctx.top.length - 1];
   const tgt = build(R, shapeW, cEnd[0], cEnd[1], dir, unitLen, unitBars, C.compact ? 1 : 1);
   const tEnd = tgt.top[tgt.top.length - 1], tPrev = tgt.top[tgt.top.length - 2];
@@ -203,8 +214,15 @@ export function corpusCase(cls, seed, noise, opts = {}) {
   } else confLen = R.u(0.5, 0.7) * net;
   confBars = Math.max(4, Math.round(R.u(0.35, 0.6) * tBars));
   const conf = [tEnd[0] + confBars, Math.max(1, tEnd[1] - lastDir * confLen)];
+  /* Layout B: die Bestaetigungsbewegung ist selbst unterteilt (Impuls nach einer Korrektur, Zigzag nach einem Motivmuster) */
+  let confPts = [conf];
+  if (LB) {
+    const cw = (!C.motive || C.negativeOf) ? impulse(R, "NORMAL") : zigzag(R), rel = walk(cw, 1), netRel = rel[rel.length - 1][1], spanRel = rel[rel.length - 1][0];
+    const b = build(R, cw, tEnd[0], tEnd[1], -lastDir, confLen / Math.abs(netRel), confBars / spanRel, 0);
+    confPts = b.all.slice(1).map(([x, y]) => [x, Math.max(1, y)]);
+  }
   /* Pivots auf ganze Wochen runden; streng monoton halten */
-  const knots = [[0, start * R.u(0.97, 1.03)], [lead, start]].concat(ctx.all.slice(1), tgt.all.slice(1), [conf]);
+  const knots = [[0, start * R.u(0.97, 1.03)], [lead, start]].concat(ctx.all.slice(1), tgt.all.slice(1), confPts);
   const xs = []; let lastX = -1;
   const K = knots.map(([x, y]) => { let xi = Math.round(x); if (xi <= lastX) xi = lastX + 1; lastX = xi; xs.push(xi); return [xi, y]; });
   const n = K[K.length - 1][0] + 1;
@@ -231,17 +249,19 @@ export function corpusCase(cls, seed, noise, opts = {}) {
     cutAt = Math.min(n - 1, a + Math.max(2, Math.round(R.u(0.45, 0.85) * (b - a))));
     mid = { completedWaves: k, currentWave: k + 1, pts: topIdx.slice(0, k + 1) };
   }
+  /* Layout B: Auswertung zu einem zufaelligen Zeitpunkt zwischen 40 % und 100 % der Bestaetigungsbewegung */
+  if (LB && !mid) { const te = topIdx[topIdx.length - 1]; cutAt = Math.min(n - 1, te + Math.max(2, Math.round(R.u(0.4, 1.0) * (n - 1 - te)))); }
   const dates = []; const t0 = Date.UTC(2001, 0, 5);
   for (let i = 0; i < n; i++) dates.push(new Date(t0 + i * 7 * 86400000).toISOString().slice(0, 10));
   if (cutAt < n - 1) { closes.length = cutAt + 1; dates.length = cutAt + 1; }
   return {
-    id: cls + "|" + noise + "|" + seed + (mid ? "|mid" : ""), closes, dates, mid,
+    id: cls + "|" + noise + "|" + seed + (mid ? "|mid" : "") + (LB ? "|B" : ""), closes, dates, mid, layout: LB ? "B" : "A",
     truth: { cls, expect: C.expect, motive: C.motive, negativeOf: C.negativeOf || null, unsupported: !!C.unsupported, dir,
              topIdx, topPrice: tgt.top.map((p) => p[1]), subIdx, contextTopIdx: map(ctx.top), patternEnd: topIdx[topIdx.length - 1], legs: shapeW.length, sizePct: g }
   };
 }
 
 /** Feste Splits (vorab registriert). */
-export const SPLITS = { DEVELOPMENT: [0, 9], VALIDATION: [10, 19], HOLDOUT: [20, 29] };
+export const SPLITS = { DEVELOPMENT: [0, 9], VALIDATION: [10, 19], HOLDOUT: [20, 29], HOLDOUT2: [40, 49] };   // HOLDOUT2: nur Layout B (Aenderung 1)
 export const NOISES = ["none", "low", "medium", "high"];
 export function seedsOf(split) { const [a, b] = SPLITS[split]; const out = []; for (let s = a; s <= b; s++) out.push(s); return out; }

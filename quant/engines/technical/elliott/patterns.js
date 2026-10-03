@@ -32,7 +32,7 @@
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
 
-  var RULE_SET_VERSION = "elliott-rules-3.0.0";   // 3.0.0: Dreifach-Zigzag (kompakt W-X-Y-X-Z)
+  var RULE_SET_VERSION = "elliott-rules-3.1.0";   // 3.0.0: Dreifach-Zigzag (kompakt W-X-Y-X-Z); 3.1.0: W/Y/Z als Zigzag (Red-Team M7)
   var TRIANGLE_BARRIER_TOL = 0.05;   // Barrier-Dreieck: D darf B um 5 % der A-Laenge ueberschreiten
   var EWP = "Frost & Prechter, Elliott Wave Principle (2005), ";
   var EWI = "Gorman & Kennedy (EWI), Visual Guide to Elliott Wave Trading (2013), ";
@@ -313,7 +313,7 @@
     [[0, "TZ_W_IS_THREE", "W"], [2, "TZ_Y_IS_THREE", "Y"], [4, "TZ_Z_IS_THREE", "Z"]].forEach(function (q) {
       var l = legs[q[0]]; if (!l) return;
       if (dev(l)) return;
-      R(out, q[1], "DEFINITION", !!(l.sub && l.sub.cls === "K"), q[2] + " unterteilt sich sichtbar in drei Wellen", EWP + "Kap. 1, Double and Triple Zigzags");
+      R(out, q[1], "DEFINITION", !!(l.sub && l.sub.cls === "K" && (l.sub.pattern === "ZIGZAG" || l.sub.pattern === "DOUBLE_ZIGZAG")), q[2] + " unterteilt sich sichtbar als Zigzag (nicht Flat oder Dreieck — sonst Triple Three)", EWP + "Kap. 1, Double and Triple Zigzags");
     });
     return out;
   }

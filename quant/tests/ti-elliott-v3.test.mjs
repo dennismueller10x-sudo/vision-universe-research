@@ -128,3 +128,42 @@ test("EV3-O1 · Ausgabevertrag wie V2 plus Grad-, Mehrdeutigkeits- und Begruendu
   assert.ok(r.trace && Array.isArray(r.trace.rejectedTop));
   assert.ok(r.primary.waves.some((w) => w.subdivision));
 });
+
+/* ---------------------------------------------------------------- 3.1: Red-Team H1 (Regressionsfaelle, dauerhaft) */
+function knotsSeries(K) {
+  const closes = []; for (let s = 0; s < K.length - 1; s++) { const [i0, v0] = K[s], [i1, v1] = K[s + 1]; for (let q = 0; q < i1 - i0; q++) closes.push(v0 + (v1 - v0) * q / (i1 - i0)); }
+  closes.push(K[K.length - 1][1]);
+  return { closes, dates: closes.map((_, i) => new Date(Date.UTC(2001, 0, 5) + i * 7 * 86400000).toISOString().slice(0, 10)) };
+}
+/** Unabhaengiger Pruefer (G8): harte Regeln gegen die Kursextreme INNERHALB jeder Welle. */
+function intraViolations(c, closes) {
+  const v = [], s = c.waves[0].toPrice >= c.waves[0].fromPrice ? 1 : -1, p0 = c.waves[0].fromPrice;
+  const back = (w) => { let e = w.toPrice; for (let i = w.fromIndex; i <= w.toIndex; i++) e = (w.toPrice >= w.fromPrice) ? Math.min(e, closes[i]) : Math.max(e, closes[i]); return e; };
+  const fwd = (w) => { let e = w.toPrice; for (let i = w.fromIndex; i <= w.toIndex; i++) e = (w.toPrice >= w.fromPrice) ? Math.max(e, closes[i]) : Math.min(e, closes[i]); return e; };
+  const W = c.waves;
+  if (["IMPULSE", "LEADING_DIAGONAL", "ENDING_DIAGONAL"].includes(c.pattern)) {
+    if (W[1] && s * back(W[1]) <= s * p0 && s * fwd(W[1]) !== undefined && s * Math.min(...[W[1]].map(back).map((x) => s * x)) <= s * p0) v.push("W2_BEYOND_ORIGIN");
+    if (W[3] && c.pattern === "IMPULSE" && s * back(W[3]) <= s * W[0].toPrice) v.push("W4_OVERLAP");
+  }
+  if (["ZIGZAG", "DOUBLE_ZIGZAG", "TRIPLE_ZIGZAG", "WXY"].includes(c.pattern) && W[1] && s * back(W[1]) <= s * p0) v.push("B_BEYOND_ORIGIN");
+  return v;
+}
+test("EV3-R2 · Red-Team H1: Welle 2 als Running Flat unter dem W1-Ursprung bzw. Dreieck-W4 im W1-Gebiet → kein Impuls", () => {
+  const variants = {
+    tri_w4_overlap: [[0, 140], [30, 140], [44, 120], [50, 128], [64, 100], [74, 112], [80, 105], [94, 135], [98, 109], [102, 128], [105, 116], [108, 125], [111, 119], [123, 145], [133, 128]],
+    runflat_w2_below_origin: [[0, 140], [30, 140], [44, 120], [50, 128], [64, 100], [74, 115], [78, 97], [83, 118], [87, 104], [101, 135], [107, 123], [119, 150], [129, 133]]
+  };
+  for (const [name, K] of Object.entries(variants)) {
+    const { closes, dates } = knotsSeries(K), r = run(closes, dates);
+    for (const c of [r.primary, ...(r.alternatives || [])].filter(Boolean)) assert.deepEqual(intraViolations(c, closes), [], name + " " + c.pattern);
+  }
+});
+test("EV3-R3 · G8 unabhaengig: keine ausgegebene Zaehlung verletzt eine harte Regel innerhalb einer Welle (Layout A und B, alle Rauschstufen)", () => {
+  let n = 0;
+  for (const cls of Object.keys(CLASSES)) for (const nz of ["none", "medium", "high"]) for (const layout of ["A", "B"]) {
+    const cs = corpusCase(cls, 7, nz, { layout });
+    const r = run(cs.closes, cs.dates);
+    for (const c of [r.primary, ...(r.alternatives || [])].filter(Boolean)) { n++; assert.deepEqual(intraViolations(c, cs.closes), [], cs.id + " " + c.pattern); }
+  }
+  assert.ok(n > 80);
+});

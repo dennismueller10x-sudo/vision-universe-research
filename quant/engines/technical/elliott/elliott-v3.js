@@ -45,7 +45,7 @@
   var P = isNode ? require("./patterns.js") : global.VUTechnical.ElliottPatterns;
   var V2 = isNode ? require("./elliott-v2.js") : global.VUTechnical.ElliottV2;
 
-  var ENGINE_VERSION = "elliott-3.0.0";
+  var ENGINE_VERSION = "elliott-3.1.0";
 
   var DEFAULTS = {
     poolAtr: 1.0,                 // Monowellen-Schwelle in ATR
@@ -63,7 +63,8 @@
        ELLIOTT_ENGINE3_REPORT.md). Keine VALIDATION- oder HOLDOUT-Faelle verwendet. */
     weights: { guidelines: 0.03, subdivision: 0.2, separation: 0.06, anchor: 0.45, dominance: 0.45, similarity: 0, trendContext: 0, coverage: 0.3, prior: 0.06, higherDegree: 0.06, tail: 0.1, residual: 0.1 },
     typePrior: { IMPULSE: 1, ZIGZAG: 1, FLAT: 0.85, TRIANGLE: 0.7, LEADING_DIAGONAL: 0.6, ENDING_DIAGONAL: 0.65, WXY: 0.65, DOUBLE_ZIGZAG: 0.7, TRIPLE_ZIGZAG: 0.5 },
-    stickiness: 0.05, stickinessQuiet: 0.05, maxAlternatives: 2,   // Hysterese-Studie DEVELOPMENT: 0,05 = instabile Wechsel 0,66 %/Woche (V2 0,92 %), Erkennung −5 % ggü. 0,03; hoeher haelt an ueberholten Zaehlungen fest alternativeMinInvalidationGapAtr: 0.5,
+    stickiness: 0.05, stickinessQuiet: 0.05, maxAlternatives: 2,   // Hysterese-Studie DEVELOPMENT: 0,05 = instabile Wechsel 0,66 %/Woche (V2 0,92 %), Erkennung −5 % ggü. 0,03; hoeher haelt an ueberholten Zaehlungen fest
+    alternativeMinInvalidationGapAtr: 0.5,
     clarity: { high: 0.1, moderate: 0.04 }, structural: { high: 0.68, moderate: 0.55 },
     noise: { abstainBelow: 1.3, full: 3.0 },
     /* Eichung Korpus DEVELOPMENT (scripts: elliott-corpus-eval, Bericht ELLIOTT_ENGINE3_REPORT.md): [1, countQuality, clarity/0,15, z/4, Strukturmehrdeutigkeit, laufend] */
@@ -263,6 +264,40 @@
       var a1 = Math.abs(l1.toPrice - l1.fromPrice), a2 = Math.abs(l2.toPrice - l2.fromPrice);
       return Math.min(a1, a2) >= cfg.similarity * Math.max(a1, a2) || Math.min(l1.duration, l2.duration) >= cfg.similarity * Math.max(l1.duration, l2.duration);
     }
+    /* 3.1 (Red-Team H1): harte Regeln und Definitionen auch gegen die Preisextreme INNERHALB jeder Welle pruefen — nicht nur an den
+       markierten Wellenenden. Sonst koennte ein orthodoxes Ende eine Verletzung (z. B. Welle 2 unter dem Ursprung von Welle 1)
+       verdecken. Grundlage: die Regeln beziehen sich auf den Kursverlauf der Welle (EWP Kap. 1). */
+    var extMemo = {};
+    function extremeAgainst(l) {
+      var key = l.fromIndex + "-" + l.toIndex;
+      if (extMemo[key] !== undefined) return extMemo[key];
+      var up = l.toPrice >= l.fromPrice, e = l.toPrice;
+      for (var i2 = l.fromIndex; i2 <= l.toIndex; i2++) e = up ? Math.max(e, close[i2]) : Math.min(e, close[i2]);
+      var lo = l.fromPrice;
+      for (var i3 = l.fromIndex; i3 <= l.toIndex; i3++) lo = up ? Math.min(lo, close[i3]) : Math.max(lo, close[i3]);
+      return (extMemo[key] = { ext: e, back: lo });   // ext = Extrem in Wellenrichtung, back = Extrem gegen die Wellenrichtung
+    }
+    function intraOk(type, legs) {
+      var s0 = legs[0].toPrice >= legs[0].fromPrice ? 1 : -1, p0 = legs[0].fromPrice, o = function (v) { return s0 * v; };
+      function wave(k) { return legs[k - 1]; }
+      if (type === "IMPULSE" || type.indexOf("DIAGONAL") >= 0) {
+        if (wave(2) && o(extremeAgainst(wave(2)).ext) <= o(p0)) return false;                                   // W2 nie hinter W1-Ursprung
+        if (wave(4) && type === "IMPULSE" && o(extremeAgainst(wave(4)).ext) <= o(wave(1).toPrice)) return false;  // W4 nie im Gebiet von W1
+        if (wave(4) && type !== "IMPULSE" && o(extremeAgainst(wave(4)).ext) <= o(wave(3).fromPrice)) return false; // Diagonale: W4 nicht hinter W3-Ursprung
+        for (var k2 = 1; k2 <= legs.length; k2 += 2) if (wave(k2) && o(extremeAgainst(wave(k2)).back) < o(wave(k2).fromPrice) - 1e-9) return false; // Motivwelle unterschreitet ihren Start nicht
+      } else if (type === "ZIGZAG" || type === "DOUBLE_ZIGZAG" || type === "TRIPLE_ZIGZAG" || type === "WXY") {
+        if (wave(2) && o(extremeAgainst(wave(2)).ext) <= o(p0)) return false;                                   // B bzw. X nie hinter dem Ursprung
+      } else if (type === "FLAT") {
+        if (wave(2) && Math.abs(extremeAgainst(wave(2)).ext - wave(1).toPrice) > 2.0 * Math.abs(wave(1).toPrice - p0)) return false; // VU-Grenze B <= 200 % von A
+      } else if (type === "TRIANGLE" && legs.length >= 3) {
+        var contracting = o(legs[2].toPrice) < o(legs[0].toPrice);
+        if (contracting) for (var k3 = 3; k3 <= legs.length; k3++) {
+          var w = wave(k3), ref = wave(k3 - 2).toPrice, dirW = (k3 % 2 === 1) ? s0 : -s0, tol = (k3 === 4 ? 0.05 : 0) * Math.abs(legs[0].toPrice - p0);
+          if (dirW * extremeAgainst(w).ext > dirW * ref + tol) return false;                                    // Dreieck: innerhalb der Begrenzung
+        }
+      }
+      return true;
+    }
     /* Wellen-Objekte je Kante einmal erzeugen (Suche erzeugt sonst je Knoten neue Listen → GC-Last). */
     var legMemo = {};
     function legAB(qa, qb, devLast, withSub) {
@@ -284,6 +319,7 @@
         if (k >= 2 && !cfg.noSimilarity && !lastP.dev && !similar(legs[k - 2], legs[k - 1])) return;
         if (k === 1 && !cfg.noAnchorPrune && leftSig[path[0]] < cfg.anchorMinRatio * Math.abs(legs[0].toPrice - legs[0].fromPrice)) return;
         if (!P.checkRules(type, legs)) return;
+        if (!intraOk(type, legs)) return;
         if (lastP.dev) found.push({ type: type, path: path.slice(), over: overs.slice(), complete: false });
         else if (untouched(lastP)) {
           if (k === w) found.push({ type: type, path: path.slice(), over: overs.slice(), complete: true });
@@ -296,7 +332,11 @@
       var nx = succ(path[k]);
       for (var q = 0; q < nx.length; q++) {
         /* Ende hinter dem Extrem nur, wenn sich die Welle als Running Flat, Dreieck oder trunkierter Impuls zerlegt */
-        if (nx[q].short > 0) { var cs = classifySegment(series, lastP.i, pts[nx[q].j].i, cfg, subMemo); if (!orthodoxShort(cs)) continue; }
+        if (nx[q].short > 0) {
+          /* 3.1 (Red-Team H1): ein Ende hinter dem Extrem nur an Korrekturpositionen (Unterteilung K) — Motivwellen enden am Extrem */
+          if (P.PATTERNS[type].subdivision[k] !== "K") continue;
+          var cs = classifySegment(series, lastP.i, pts[nx[q].j].i, cfg, subMemo); if (!orthodoxShort(cs)) continue;
+        }
         path.push(nx[q].j); overs.push(nx[q].over); legs.push(legAB(path[k], nx[q].j, false, ws));
         dfs(type, w, path, legs);
         path.pop(); overs.pop(); legs.pop();
@@ -385,7 +425,7 @@
       /* Diagonale nur mit sichtbarem Definitionsmerkmal (sonst Kopie der Impulslesart) */
       if (f.type.indexOf("DIAGONAL") >= 0 && !e.rules.some(function (r) { return r.ruleId === "DIAGONAL_W4_OVERLAPS_W1" && r.passed === true; })) return null;
       e = P.evaluate(f.type, legs);   // WXY braucht die Unterteilung
-      if (!e || !e.valid) return null;
+      if (!e || !e.valid || !intraOk(f.type, legs)) return null;
       /* orthodoxes Ende: die ueberschiessende Folgewelle muss ein Flat oder Dreieck sein */
       for (var ov = 0; ov < f.over.length; ov++) {
         if (f.over[ov] > 0) { var lg = legs[ov], sp = lg.sub && lg.sub.pattern; if (lg.status !== "DEVELOPING" && sp !== "FLAT" && sp !== "TRIANGLE") return null; lg.orthodoxOvershoot = f.over[ov]; }
@@ -565,9 +605,13 @@
   }
   function ambiguityKind(x, y) {
     if (!y) return { kind: "NONE", note: "keine materiell andere Lesart" };
-    var nested = (y.span[0] <= x.span[0] && y.span[1] >= x.span[1] && y.waves.some(function (w) { return w.fromIndex === x.span[0]; })) ||
-                 (x.span[0] <= y.span[0] && x.span[1] >= y.span[1] && x.waves.some(function (w) { return w.fromIndex === y.span[0]; }));
-    if (nested) return { kind: "DEGREE", note: "dieselbe Struktur auf einer anderen Ebene gezählt" };
+    /* 3.1 (Red-Team H4): DEGREE nur, wenn eine Lesart die andere als EINE Welle enthaelt (gleicher Start, gleiches Ende bzw.
+       beide laufend) UND beide dieselbe laufende Richtung implizieren — sonst ist es ein struktureller Widerspruch. */
+    function asWave(big, small) {
+      return big.span[0] <= small.span[0] && big.span[1] >= small.span[1] && big.waves.some(function (w) { return w.fromIndex === small.span[0] && (w.toIndex === small.span[1] || (w.status === "DEVELOPING" && !small.complete)); });
+    }
+    var curDir = function (c) { return c.complete ? -V2.waveDirection(c.sign, c.waves.length) : V2.waveDirection(c.sign, c.waves.length); };
+    if ((asWave(y, x) || asWave(x, y)) && curDir(x) === curDir(y)) return { kind: "DEGREE", note: "dieselbe Struktur auf einer anderen Ebene gezählt, gleiche laufende Richtung" };
     var same = x.waves.length === y.waves.length && x.waves.every(function (w, k) { return w.fromIndex === y.waves[k].fromIndex && w.toIndex === y.waves[k].toIndex; });
     if (same) return { kind: "LABEL", note: "gleiche Wellenenden, anderes Muster" };
     var nx = x.complete ? -V2.waveDirection(x.sign, x.waves.length) : V2.waveDirection(x.sign, x.waves.length);

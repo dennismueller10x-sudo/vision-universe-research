@@ -61,9 +61,9 @@
     Y_BEYOND_W_END: m("DEFINITION", "Doppel-/Dreifach-Zigzag: Y läuft über das Ende von W hinaus", "EWP", "Kap. 1, Double and Triple Zigzags (jeder Zigzag schreitet voran)", INVALIDATES + "; " + OPEN),
     X2_NOT_BEYOND_Y_ORIGIN: m("DEFINITION", "Dreifach-Zigzag: das zweite X retraced Y nicht vollständig", "EWP", "Kap. 1, Double and Triple Zigzags", INVALIDATES, "Operationalisierung analog zum ersten X."),
     Z_BEYOND_Y_END: m("DEFINITION", "Dreifach-Zigzag: Z läuft über das Ende von Y hinaus", "EWP", "Kap. 1, Double and Triple Zigzags", INVALIDATES + "; " + OPEN),
-    TZ_W_IS_THREE: m("DEFINITION", "Dreifach-Zigzag: W unterteilt sich in drei Wellen", "EWP", "Kap. 1, Double and Triple Zigzags", INVALIDATES),
-    TZ_Y_IS_THREE: m("DEFINITION", "Dreifach-Zigzag: Y unterteilt sich in drei Wellen", "EWP", "Kap. 1, Double and Triple Zigzags", INVALIDATES),
-    TZ_Z_IS_THREE: m("DEFINITION", "Dreifach-Zigzag: Z unterteilt sich in drei Wellen", "EWP", "Kap. 1, Double and Triple Zigzags", INVALIDATES)
+    TZ_W_IS_THREE: m("DEFINITION", "Dreifach-Zigzag: W unterteilt sich als Zigzag (drei Wellen 5-3-5)", "EWP", "Kap. 1, Double and Triple Zigzags", INVALIDATES),
+    TZ_Y_IS_THREE: m("DEFINITION", "Dreifach-Zigzag: Y unterteilt sich als Zigzag (drei Wellen 5-3-5)", "EWP", "Kap. 1, Double and Triple Zigzags", INVALIDATES),
+    TZ_Z_IS_THREE: m("DEFINITION", "Dreifach-Zigzag: Z unterteilt sich als Zigzag (drei Wellen 5-3-5)", "EWP", "Kap. 1, Double and Triple Zigzags", INVALIDATES)
   };
 
   /** Richtlinien (Schluessel = Guideline-Key ohne Praefix W_/Y_). Einfluss: Mittelwert aller Richtlinien → Richtlinienpassung. */
