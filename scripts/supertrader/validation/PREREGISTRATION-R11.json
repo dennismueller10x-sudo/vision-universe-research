@@ -1,0 +1,46 @@
+{
+  "schema": "supertrader-validation-prereg-r11-1.0.0",
+  "registeredAt": "2026-10-03",
+  "status": "Eingefroren vor jeder Implementierung und jedem Lauf der neuen Versionen. Grundlage sind die Befunde der Fallprüfung R10 (Diagnosemenge) und die Quellen; keine Schwelle wurde an Fällen ausprobiert.",
+  "naming": "Getestet werden unsere VU-Versionen der Methoden, nicht die Trader.",
+  "versions": {
+    "MOMENTUM_BREAKOUT@3.2.0": {
+      "kind": "Korrektur eines Implementierungsfehlers",
+      "source": "Kullamägi, „3 timeless setups“ (Volltext, R8): „You should sell 1/3 to 1/2 of the position after 3-5 days, and then move the stop to break even. The rest of the position should be trailed with the 10- or the 20-day moving average … wait for the first CLOSE below the 10-day.“",
+      "finding": "2.0.0–3.1.0 setzen nach drei Tagen den Stop auf den Einstiegskurs, auch wenn der Kurs darunter liegt. Ein Verkaufsstop über dem Markt ist sofort ausgeführt: der Rest wird am nächsten Morgen verkauft (Fallprüfung: STRP 2017, SMCI 2016 – Teilverkauf und Rest am selben Tag, beide unter Regel KK-BO-SCALE-01).",
+      "change": "KK-BO-BE-02: Der Stop wandert auf den Einstiegskurs, sobald ein Schlusskurs über dem Einstieg liegt (frühestens mit dem Teilverkauf); liegt der Kurs darunter, bleibt der bisherige Stop. Teilverkauf (1/3 nach 3 Tagen) und Trailing (erster Schluss unter der 10-Tage-Linie) unverändert."
+    },
+    "WEINSTEIN_STAGE@4.0.0": {
+      "kind": "Neue Regel (fehlender Baustein)",
+      "source": "stageanalysis.net, Breakout Quality Checklist (mit Buchzitaten, R8): Fortsetzungsausbruch einer Aktie in Stufe 2 – Kurs über steigender 30-Wochen-Linie, Kurs zu neuen Hochs, Konsolidierung über mehrere Monate oberhalb der steigenden Linie, Volumen ≥ 2× Vierwochenschnitt in der Ausbruchswoche, relative Stärke über null; Stop unter dem letzten bedeutenden Tief der Basis.",
+      "finding": "Fallprüfung R10: 14 von 19 Gewinnern waren schon in Stufe 2; 3.0.0 sucht nur Stufe-1-Basen.",
+      "change": "WEIN-CONT-01 zusätzlich zu Stufe-1-Ausbrüchen (3.0.0 unverändert): Zum Wochenschluss k gilt Stufe 2 (bestehende Einordnung). H = höchster Wochenschluss der letzten 52 Wochen, erreicht in Woche j0; seit j0 mindestens 8 Wochen ohne Schluss über H; jeder Wochenschluss seit j0 über der 30-Wochen-Linie der jeweiligen Woche; Tiefe (H − tiefster Schluss seit j0)/H ≤ 25 %; 10-Wochen-Linie heute über der vor vier Wochen. Trigger = höchstes Tageshoch seit j0 (Kauf-Stop im Tagesverlauf wie 3.0.0). Stop/Invalidierung = tiefster Wochenschluss seit j0 minus 2 %. Markt-, RS- und Volumenregel sowie Ausstieg wie 3.0.0."
+    },
+    "MINERVINI_VCP@3.0.0": {
+      "kind": "Neue Regel (fehlender Baustein)",
+      "source": "Minervini, Stockopedia-Interview 2018 (primär): „With growth stocks all you need to look at are earnings, sales and margins – and the chart.“ Sekundär (Buchzusammenfassungen): vierteljährliches EPS-Wachstum mindestens 20–25 %, Beschleunigung.",
+      "finding": "Fallprüfung R10: kein Gewinnfilter; SMCI wurde trotz EPS-Wachstum von 300–600 % nicht gekauft, gleichzeitig fehlten Fundamentaldaten für delistete Titel.",
+      "change": "MIN-EPS-01 am Bestätigungstag, nur mit Werten, deren erste Einreichung bei der SEC vor diesem Tag lag: (a) EPS (verwässert, sonst unverwässert) des zuletzt gemeldeten Quartals ≥ +25 % gegenüber dem Vorjahresquartal, Vorjahreswert > 0; (b) dieses Wachstum höher als das des vorherigen Quartals (Beschleunigung); (c) Umsatz des Quartals über dem Vorjahresquartal. Fehlen die Daten, gibt es keinen Einstieg (MIN-EPS-NA). Alle übrigen Regeln wie 2.0.0.",
+      "data": "SEC-XBRL (public domain): bestehende Factbooks (erste Einreichung) für gelistete Emittenten; für delistete Titel Zuordnung Ticker/Name -> CIK über SEC-Namensliste (cik-lookup-data) und EDGAR-Bulk companyfacts, nur erste Einreichung je Periode. Abdeckung wird je Jahr und getrennt für delistete Titel berichtet; Zuordnungsgüte an gelisteten Titeln mit bekannter CIK gemessen.",
+      "sensitivity": "3.0.0-NA: fehlende Daten blockieren nicht (nur Sensitivität, nicht live)."
+    },
+    "DONCHIAN_TURTLE@2.1.0": {
+      "kind": "Neue Regel (Quelle wörtlich)",
+      "source": "The Original Turtle Trading Rules, Kap. Tactics, „Buy Strength – Sell Weakness“: „If the signals came all at once, we always bought the strongest markets … Others would subtract the price 3 months ago from the current price and then divide by the current N … The strongest markets had the highest values.“ Und „Simultaneous Entry Signals: … take the trades as they came, until they reached the position limits.“",
+      "finding": "R10: Turtle vergab Kapital alphabetisch (66 664 Einstiege ohne Platz); keine Rangfolge umgesetzt.",
+      "change": "PORT-RANK-TURTLE: gleichzeitige Einstiege nach (Schluss − Schluss vor 63 Sitzungen) / N, Stand Vortag; Gleichstand alphabetisch. Signale, Größe und Ausstiege unverändert.",
+      "sensitivity": "2.1.0-CAP: zusätzlich Höchstgewicht 1/12 je Titel (zwölf Units passen ohne Hebel) – nur Sensitivität, nicht live."
+    },
+    "unchanged": "Darvas 3.0.1 und alle übrigen Regeln bleiben; frühere Versionen und Ergebnisse bleiben archiviert."
+  },
+  "evaluation": {
+    "E1_independent_cases": "Neue, bisher ungenutzte Fallmenge W4 nach der Auswahlregel aus PREREGISTRATION-R10-CASES (Rang 3 je Jahr und Klasse, Fehlkandidaten nach F1/F2). Auswahl und Kettenanalyse erst nach dem Einfrieren dieses Protokolls.",
+    "E2_full_portfolio": "Vollportfolio wie r10c (bereinigtes Universum, Szenarien S0, S1, S2, COST2, SURVIVORS, 20 Zufallsreihenfolgen) für die neuen Versionen und die aktuellen Live-Versionen als Referenz.",
+    "E3_diagnosis_recheck": "Die 19 Diagnosegewinner und 19 Fehlkandidaten aus R10 werden mit neuen und alten Versionen erneut verfolgt: Einstiege, Aufnahme, Haltedauer, erfasster Anteil, Verluste bei Fehlkandidaten. Nur Beschreibung – nicht Grundlage der Übernahme."
+  },
+  "decisionRules": {
+    "corrections": "Momentum 3.2.0 behebt einen nachgewiesenen Implementierungsfehler und wird übernommen, sofern Tests und Vollportfolio technisch bestehen; das Ergebnis wird berichtet, gleich in welche Richtung.",
+    "newRules": "Weinstein 4.0.0, Minervini 3.0.0 und Turtle 2.1.0 werden live übernommen, wenn (a) in W4 die Zahl aufgenommener Gewinner-Einstiege nicht sinkt und der Durchschnittsverlust aufgenommener Fehlkandidaten-Trades nicht um mehr als ein Drittel steigt und (b) im Vollportfolio die Überrendite im Szenario S1 nicht unter dem fünftschlechtesten der 20 Zufallsreihenfolgen der Referenzversion liegt. Sonst bleibt die Referenz live, die neue Version bleibt Forschung.",
+    "claims": "Ein Vorteil gegenüber dem Markt wird nur nach R1–R4 behauptet; öffentlich weiter „In Prüfung“ ohne Kennzahlen."
+  }
+}
