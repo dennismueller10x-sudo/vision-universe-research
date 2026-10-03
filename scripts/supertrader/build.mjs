@@ -38,6 +38,7 @@ import kkBreakout3 from './engine/strategies/kk-breakout-v3.mjs';
 import kkBreakout31 from './engine/strategies/kk-breakout-v31.mjs';
 import donchian2 from './engine/strategies/donchian-v2.mjs';
 import darvas3 from './engine/strategies/darvas-v3.mjs';
+import darvas301 from './engine/strategies/darvas-v301.mjs';
 import weinstein3 from './engine/strategies/weinstein-v3.mjs';
 import darvas2 from './engine/strategies/darvas-v2.mjs';
 import minervini2 from './engine/strategies/minervini-v2.mjs';
@@ -58,8 +59,8 @@ let CURRENT_REGIME = null;
 // Runde 7: Momentum, Weinstein, Darvas und Minervini laufen in Version 2.0.0
 // (vorab registriert, PREREGISTRATION-R7.json). Offene Positionen der
 // Vorversionen werden mit deren Engine weitergefuehrt (engine.legacy).
-export const LIVE_ENGINES = [kkBreakout31, weinstein3, darvas3, minervini2, donchian2];
-export const PREVIOUS_ENGINES = [kkBreakout, kkBreakout2, kkBreakout3, weinstein, weinstein2, darvas, darvas2, minervini, donchian];
+export const LIVE_ENGINES = [kkBreakout31, weinstein3, darvas301, minervini2, donchian2];
+export const PREVIOUS_ENGINES = [kkBreakout, kkBreakout2, kkBreakout3, weinstein, weinstein2, darvas, darvas2, darvas3, minervini, donchian];
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
 const ROOT = path.resolve(args.root || '.');
@@ -285,6 +286,9 @@ export function applyVersionPolicy(engine, open, lastProcessed, recordedAt) {
   for (const s of open) {
     const v = s.version || '1.0.0';
     if (v === engine.version) { kept.push(s); continue; }
+    // Runde 10: Eine Version mit unveraenderten Signalregeln (engine.signalCompatible, z. B. Darvas
+    // 3.0.1 = 3.0.0 mit anderem Modellportfolio) fuehrt wartende Setups unter ihrer Version weiter.
+    if ((engine.signalCompatible || []).includes(v)) { kept.push(s); continue; }
     if (PENDING.has(s.state) || s.state === 'TRIGGERED') {
       s.state = 'INVALIDATED';
       s.transitions.push({ state: 'INVALIDATED', date: lastProcessed, dataAsOf: lastProcessed, ruleId: 'LC-VERSION-RETIRED', ruleVersion: engine.version, recordedAt,
@@ -525,7 +529,9 @@ export function build() {
   for (const engine of LIVE_ENGINES) {
     const L = ledgers[engine.id];
     const barsOf = (sym) => instruments.get(sym)?.bars || null;
-    portfolios.strategies[engine.id] = buildModelPortfolio({ engine, signals: [...L.open, ...L.closed], barsOf, calendar, asOf });
+    // Runde 10 (K3): relative Staerke am Vortag des Einstiegs fuer die Rangfolge gleichzeitiger Einstiege.
+    const rsOf = (sym, date) => { const inst = instruments.get(sym); const t = inst?.indexOf.get(date); return t > 0 ? cross.get(sym)?.rs?.[t - 1] ?? null : null; };
+    portfolios.strategies[engine.id] = buildModelPortfolio({ engine, signals: [...L.open, ...L.closed], barsOf, calendar, asOf, rsOf });
   }
   writeJson(path.join(DATA, 'portfolio.json'), portfolios);
   writeJson(path.join(DATA, 'registry.json'), registry);
