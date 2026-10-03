@@ -165,9 +165,9 @@
       "cik": "0000920760",
       "name": "LENNAR CORP /NEW/",
       "sic": "1520",
-      "rawFacts": 18651,
-      "mappedFacts": 5275,
-      "unmappedFacts": 13248,
+      "rawFacts": 18911,
+      "mappedFacts": 5347,
+      "unmappedFacts": 13428,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -178,28 +178,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 69,
+      "quarterlyPeriods": 70,
       "firstPeriodEnd": "2008-11-30",
-      "lastPeriodEnd": "2026-05-31",
+      "lastPeriodEnd": "2026-08-31",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 46,
+          "quarterlyPeriods": 47,
           "firstAvailablePeriod": "2013-11-30",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 12.0
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2008-11-30",
           "lastAvailablePeriod": "2024-11-30",
           "historyYears": 16.0
         },
         "free_cash_flow": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 46,
+          "quarterlyPeriods": 47,
           "firstAvailablePeriod": "2013-11-30",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 12.0,
@@ -219,21 +219,21 @@
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-11-30",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 67,
+          "quarterlyPeriods": 68,
           "firstAvailablePeriod": "2008-11-30",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-11-30",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 17.0
@@ -247,14 +247,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2008-11-30",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-11-30",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 16.0
@@ -277,38 +277,39 @@
         }
       },
       "quality": {
-        "HIGH": 532,
+        "HIGH": 539,
         "MEDIUM": 48
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 580,
-        "resolvedValues": 580
+        "datableValues": 587,
+        "resolvedValues": 587
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 13760,
+        "total": 13953,
         "by_severity": {
-          "INFO": 13248,
-          "WARNING": 512
+          "INFO": 13428,
+          "WARNING": 525
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 451,
+          "CONCEPT_DISAGREEMENT": 462,
           "FISCAL_PERIOD_CONFLICT": 5,
-          "RESTATEMENT_CONFLICT": 44,
+          "RESTATEMENT_CONFLICT": 46,
           "UNIT_MISMATCH": 12,
-          "UNKNOWN_CONCEPT": 13248
+          "UNKNOWN_CONCEPT": 13428
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-046019",
-        "filing_date": "2026-06-29",
+        "accession": "0001628280-26-064557",
+        "filing_date": "2026-10-02",
         "form": "10-Q",
-        "periodic_filings": 129
+        "periodic_filings": 130,
+        "acceptance_datetime": "2026-10-03T00:32:40.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -317,7 +318,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "cf9c249705d57b0a6d2be7bc010d1d5e4d14c7be822a4c5afcc612d9e4ea70ec",
+      "sourceDigest": "39677a7ceecb5c80d04e5e05821d3001cd5ad05e7c93f8cd1a1ce8bbb506fd06",
       "issuerId": "iss_cik_0000920760"
     },
     {

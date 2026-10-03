@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated": true,
-  "generated_at_utc": "2026-10-02T12:36:50.411Z",
+  "generated_at_utc": "2026-10-03T11:47:33.416Z",
   "generator": "scripts/universe/build-sec-universe.mjs",
   "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
   "sources": {
@@ -27,7 +27,7 @@
     "candidates": 5469,
     "companies": 5470,
     "validationSet": 5,
-    "withDeliveredStockPage": 5047,
+    "withDeliveredStockPage": 5045,
     "excluded": {
       "noCik": 1204,
       "notUs": 0,
@@ -11240,20 +11240,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "CICB",
-      "name": "CION Investment Corp",
-      "cik": "0001534254",
-      "instrumentId": "vu_e0512565f895b9",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "CION"
-      ],
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "CIEN",
       "name": "Ciena Corp",
       "cik": "0000936395",
@@ -13636,20 +13622,6 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "CTGG",
-      "name": "Qwest Corp",
-      "cik": "0000068622",
-      "instrumentId": "vu_3ab29ad979ba65",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "CTHH"
-      ],
       "role": "deliveredStockPage"
     },
     {
@@ -16600,6 +16572,17 @@
       "cik": "0000031667",
       "instrumentId": "vu_94798d06ce49bf",
       "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "role": "deliveredStockPage"
+    },
+    {
+      "ticker": "EDVA",
+      "name": "Endovia Health Sciences, Inc.",
+      "cik": "0001553788",
+      "instrumentId": "vu_e9368dd0ac724a",
+      "exchange": "NYSE MKT",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
@@ -51369,17 +51352,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "TPTS",
-      "name": "Terra Property Trust, Inc.",
-      "cik": "0001674356",
-      "instrumentId": "vu_5ab623358bab47",
-      "exchange": "NYSE",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "TPVG",
       "name": "TriplePoint Venture Growth BDC Corp.",
       "cik": "0001580345",
@@ -58530,6 +58502,20 @@
       "role": "universe"
     },
     {
+      "ticker": "CICB",
+      "name": "CION Investment Corp",
+      "cik": "0001534254",
+      "instrumentId": "vu_e0512565f895b9",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "CION"
+      ],
+      "role": "universe"
+    },
+    {
       "ticker": "CIIT",
       "name": "Tianci International, Inc.",
       "cik": "0001557798",
@@ -58717,6 +58703,20 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "CTGG",
+      "name": "Qwest Corp",
+      "cik": "0000068622",
+      "instrumentId": "vu_3ab29ad979ba65",
+      "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "CTHH"
+      ],
       "role": "universe"
     },
     {
@@ -59054,17 +59054,6 @@
       "cik": "0002024876",
       "instrumentId": "vu_29d883729ba213",
       "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "role": "universe"
-    },
-    {
-      "ticker": "EDVA",
-      "name": "Endovia Health Sciences, Inc.",
-      "cik": "0001553788",
-      "instrumentId": "vu_e9368dd0ac724a",
-      "exchange": "NYSE MKT",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
@@ -61806,6 +61795,17 @@
       "cik": "0001355848",
       "instrumentId": "vu_cd0d9eca2de0b7",
       "exchange": "AMEX",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "TPTS",
+      "name": "Terra Property Trust, Inc.",
+      "cik": "0001674356",
+      "instrumentId": "vu_5ab623358bab47",
+      "exchange": "NYSE",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",

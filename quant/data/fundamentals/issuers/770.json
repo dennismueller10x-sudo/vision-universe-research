@@ -1414,9 +1414,9 @@
       "cik": "0002033770",
       "name": "CID Holdco, Inc.",
       "sic": "7373",
-      "rawFacts": 1126,
-      "mappedFacts": 373,
-      "unmappedFacts": 777,
+      "rawFacts": 1447,
+      "mappedFacts": 482,
+      "unmappedFacts": 987,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -1427,9 +1427,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 3,
-      "quarterlyPeriods": 10,
+      "quarterlyPeriods": 11,
       "firstPeriodEnd": "2023-12-31",
-      "lastPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 2.0,
       "metrics": {
         "capital_expenditures": {
@@ -1441,7 +1441,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -1468,42 +1468,42 @@
         },
         "net_income": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "operating_cash_flow": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 7,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "revenue": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "short_term_debt": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "stockholders_equity": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "total_assets": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -1526,34 +1526,36 @@
         }
       },
       "quality": {
-        "HIGH": 66
+        "HIGH": 73
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 66,
-        "resolvedValues": 66
+        "datableValues": 73,
+        "resolvedValues": 73
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 786,
+        "total": 1012,
         "by_severity": {
-          "INFO": 777,
-          "WARNING": 9
+          "INFO": 987,
+          "WARNING": 25
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 9,
-          "UNKNOWN_CONCEPT": 777
+          "CONCEPT_DISAGREEMENT": 12,
+          "RESTATEMENT_CONFLICT": 13,
+          "UNKNOWN_CONCEPT": 987
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-055091",
-        "filing_date": "2026-05-12",
-        "form": "10-Q",
-        "periodic_filings": 4
+        "accession": "0001213900-26-106414",
+        "filing_date": "2026-10-02",
+        "form": "10-Q/A",
+        "periodic_filings": 6,
+        "acceptance_datetime": "2026-10-03T00:30:14.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -1562,7 +1564,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "7ec1cecb4f5dd779b6f396c9fc1e780ffb2bb1e90228877c2a7920a5bdcc2bb4",
+      "sourceDigest": "0034a599f982ed9c08a3103ffe2e35ff8d243104d63a41e91295082128b60a49",
       "issuerId": "iss_cik_0002033770"
     }
   ]

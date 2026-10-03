@@ -479,9 +479,9 @@
       "cik": "0001543418",
       "name": "Trilogy Metals Inc.",
       "sic": "1040",
-      "rawFacts": 11129,
-      "mappedFacts": 3800,
-      "unmappedFacts": 7579,
+      "rawFacts": 11335,
+      "mappedFacts": 3878,
+      "unmappedFacts": 7713,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -491,9 +491,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 16,
-      "quarterlyPeriods": 60,
+      "quarterlyPeriods": 61,
       "firstPeriodEnd": "2010-11-30",
-      "lastPeriodEnd": "2026-05-31",
+      "lastPeriodEnd": "2026-08-31",
       "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
@@ -505,7 +505,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2018-11-30",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 7.0
@@ -532,14 +532,14 @@
         },
         "net_income": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-11-30",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 14.0
         },
         "operating_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-11-30",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 14.0
@@ -560,14 +560,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2010-11-30",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 55,
+          "quarterlyPeriods": 56,
           "firstAvailablePeriod": "2012-11-30",
           "lastAvailablePeriod": "2025-11-30",
           "historyYears": 13.0
@@ -590,39 +590,40 @@
         }
       },
       "quality": {
-        "HIGH": 369
+        "HIGH": 374
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 369,
-        "resolvedValues": 369
+        "datableValues": 374,
+        "resolvedValues": 374
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 7813,
+        "total": 7948,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 7579,
-          "WARNING": 233
+          "INFO": 7713,
+          "WARNING": 234
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 70,
+          "CONCEPT_DISAGREEMENT": 71,
           "FISCAL_PERIOD_CONFLICT": 8,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 32,
           "UNEXPECTED_DURATION": 123,
-          "UNKNOWN_CONCEPT": 7579
+          "UNKNOWN_CONCEPT": 7713
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-081550",
-        "filing_date": "2026-07-08",
+        "accession": "0001104659-26-113028",
+        "filing_date": "2026-10-02",
         "form": "10-Q",
-        "periodic_filings": 57
+        "periodic_filings": 58,
+        "acceptance_datetime": "2026-10-02T14:45:29.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -631,7 +632,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "d43c5f49574260509ee3516c987acab1c8b87f0dafd7fb9f8a64404c09f1fc24",
+      "sourceDigest": "98f5eb5e5d4b4992c0541e743a1e36e2acc00bdc01ac57072c077b6b90e95331",
       "issuerId": "iss_cik_0001543418"
     },
     {

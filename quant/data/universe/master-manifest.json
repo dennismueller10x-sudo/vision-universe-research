@@ -1,8 +1,8 @@
 {
   "version": "company-master-1.0.0",
   "masterId": "VU_COMPANY_MASTER",
-  "generatedAt": "2026-10-02T19:04:20.081Z",
-  "asOf": "2026-10-02",
+  "generatedAt": "2026-10-03T11:47:32.229Z",
+  "asOf": "2026-10-03",
   "provider": "tiingo",
   "source": {
     "kind": "COMMITTED_GATE_UNIVERSES",
@@ -2687,18 +2687,18 @@
     ]
   },
   "previousState": {
-    "from": "workingStore",
-    "instruments": 7810
+    "from": "publishedShards",
+    "instruments": 7809
   },
   "run": {
-    "source": "local",
-    "runId": null,
-    "commit": null,
-    "normalizeMs": 74,
-    "syncMs": 154,
+    "source": "github-actions",
+    "runId": "37120141184",
+    "commit": "f7dd730fdca2a40cab567a067218b4a9ed99f74c",
+    "normalizeMs": 114,
+    "syncMs": 135,
     "shardsWritten": 0,
     "shardsUnchanged": 646,
-    "publishedBytes": 10119048
+    "publishedBytes": 10119037
   },
   "identifiers": {
     "cikMap": {
@@ -2769,14 +2769,15 @@
       "inactive": 15,
       "noFirstTradeDate": 0,
       "symbolWithWhitespace": [],
-      "classificationDisagreement": 1325,
+      "classificationDisagreement": 1327,
       "classificationDisagreementByClass": {
         "EQUITY_COMMON->ETF": 133,
         "RIGHT->COMMON_STOCK": 129,
         "UNIT->COMMON_STOCK": 290,
         "WARRANT->COMMON_STOCK": 453,
+        "EQUITY_COMMON->ADR": 1,
         "TRUST->COMMON_STOCK": 115,
-        "PREFERRED->COMMON_STOCK": 124,
+        "PREFERRED->COMMON_STOCK": 125,
         "DEBT->COMMON_STOCK": 22,
         "WARRANT->ADR": 1,
         "ETN->COMMON_STOCK": 3,
