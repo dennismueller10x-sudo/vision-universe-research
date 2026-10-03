@@ -1048,6 +1048,10 @@ def commons_search(person):
     return out[:6]
 
 
+INVESTOR_CONTEXT_RE = re.compile(r"investor|hedge|fund|capital|asset management|portfolio|billionaire|financier|"
+                                 r"wall street|businessman|business executive|ceo|chief executive|investment", re.I)
+
+
 def photo_candidates(wiki, person=None):
     """Commons-Dateinamen in dieser Reihenfolge: Leitbild der englischen
     Wikipedia, Bild (P18) des Wikidata-Eintrags, Leitbild der deutschen
@@ -1098,13 +1102,21 @@ def photo_candidates(wiki, person=None):
     return list(dict.fromkeys(f.replace("_", " ") for f in files + search_hits))
 
 
-def fetch_manager_photo(slug, wiki, manifest, person=None):
+def fetch_manager_photo(slug, wiki, manifest, person=None, context_words=()):
     """Holt ein frei lizenziertes Commons-Porträt (mit Urheber und Lizenz).
-    Gibt Manifest-Eintrag oder None zurück."""
+    Gibt Manifest-Eintrag oder None zurück.
+
+    Treffer der reinen Namenssuche (nicht über Wikipedia/Wikidata
+    verknüpft) werden nur übernommen, wenn Beschreibung oder Kategorien
+    der Datei zum Investor passen (Fondsname oder Begriffe wie investor,
+    hedge fund) – sonst droht bei häufigen Namen das Foto einer anderen
+    Person."""
     key = wiki or ("search:" + (person or ""))
     cached = manifest.get(slug)
-    if cached and cached.get("wiki") in (wiki, key) and (PHOTO_DIR / cached["file"]).exists():
+    if cached and cached.get("wiki") in (wiki, key) and (PHOTO_DIR / cached["file"]).exists() \
+            and (not str(cached.get("wiki")).startswith("search:") or cached.get("verified")):
         return cached
+    linked = set(photo_candidates(wiki, None)) if wiki else set()
     for filename in photo_candidates(wiki, person):
         api = ("https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo"
                "&iiprop=url|extmetadata&iiurlwidth=480&titles=" + urllib.parse.quote("File:" + filename))
@@ -1115,6 +1127,11 @@ def fetch_manager_photo(slug, wiki, manifest, person=None):
         if not FREE_LICENSE.match(license_short):
             print(f"  Foto {filename}: Lizenz '{license_short}' nicht frei", file=sys.stderr)
             continue
+        if filename not in linked:
+            context = " ".join(strip_html(meta.get(k, {}).get("value", "")) for k in ("ImageDescription", "Categories", "ObjectName"))
+            if not (INVESTOR_CONTEXT_RE.search(context) or any(w.lower() in context.lower() for w in context_words if len(w) > 3)):
+                print(f"  Foto {filename}: Beschreibung passt nicht zu einem Investor – verworfen", file=sys.stderr)
+                continue
         thumb = info.get("thumburl") or info.get("url")
         if not thumb:
             continue
@@ -1123,7 +1140,7 @@ def fetch_manager_photo(slug, wiki, manifest, person=None):
         out_name = slug + ext
         (PHOTO_DIR / out_name).write_bytes(http_get(thumb))
         artist = strip_html(meta.get("Artist", {}).get("value", "")) or "unbekannt"
-        return {"wiki": key, "file": out_name, "license": license_short,
+        return {"wiki": key, "file": out_name, "license": license_short, "verified": True,
                 "licenseUrl": strip_html(meta.get("LicenseUrl", {}).get("value", "")) or None,
                 "artist": artist[:140], "sourceUrl": info.get("descriptionurl")}
     return None
@@ -1137,15 +1154,22 @@ def update_photos(funds_meta):
         if not wiki and not person:
             continue
         try:
-            entry = fetch_manager_photo(slug, wiki, manifest, person)
+            entry = fetch_manager_photo(slug, wiki, manifest, person,
+                                        context_words=re.findall(r"[A-Za-z]{4,}", meta.get("name", "")))
             if entry:
                 manifest[slug] = entry
+            elif slug in manifest and str(manifest[slug].get("wiki", "")).startswith("search:"):
+                del manifest[slug]  # früherer, ungeprüfter Suchtreffer
             else:
                 print(f"  kein freies Porträt für {meta.get('manager')} ({wiki})", file=sys.stderr)
         except Exception as exc:  # noqa: BLE001
             print(f"  Porträt {wiki} nicht ladbar: {exc}", file=sys.stderr)
         time.sleep(0.2)
     write_json_if_changed(PHOTO_MANIFEST_PATH, manifest, indent=1)
+    used = {e["file"] for e in manifest.values()}
+    for p in PHOTO_DIR.glob("*"):
+        if p.name not in used:
+            p.unlink()  # verworfene Fotos nicht weiter ausliefern
     return manifest
 
 
