@@ -27,14 +27,18 @@
    evidence-1D*.json (vom Backtest ti-evidence.mjs). Ohne Datei: keine
    empirischen Zahlen im Produkt (ehrlich "NO_HISTORY").
 
-   Aufruf: node scripts/technical/build-technical-intelligence.mjs [--work-dir DIR] [--limit N]
+   Aufruf: node scripts/technical/build-technical-intelligence.mjs [--work-dir DIR] [--limit N] [--workers N]
+   Mission III: Elliott Engine 3.x (PRODUCT_METHODOLOGY), parallel in Worker-Threads (Standard: CPU-Kerne − 0),
+   Versionsfelder je Titel (versions: analysis, elliott, ruleSet, dataAsOf).
    ========================================================================= */
 import { readdirSync, writeFileSync, mkdirSync, existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { gzipSync, gunzipSync } from "node:zlib";
 import { createRequire } from "node:module";
 import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload } from "./lib/ti-data.mjs";
-import { analyzeProduct, replaySnapshots, clarityOf, evidenceBadge, overlaysOf, elliottTransparency } from "./lib/ti-product.mjs";
+import { analyzeProduct, replaySnapshots, clarityOf, evidenceBadge, overlaysOf, elliottTransparency, PRODUCT_METHODOLOGY } from "./lib/ti-product.mjs";
+import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
+import { cpus } from "node:os";
 
 const require = createRequire(import.meta.url);
 const TI = require(join(ROOT, "quant/engines/technical/ti/engine.js"));
@@ -87,7 +91,10 @@ export function slim(res) {
       patterns: { patterns: m.patterns.patterns, source: m.patterns.source },
       wyckoff: { status: m.wyckoff.status, schematic: m.wyckoff.schematic, phase: m.wyckoff.phase, range: m.wyckoff.range, events: m.wyckoff.events, note: m.wyckoff.note, source: m.wyckoff.source }
     },
-    diagnostics: { engineVersions: res.diagnostics.engineVersions, isProbability: res.diagnostics.isProbability }
+    diagnostics: { engineVersions: res.diagnostics.engineVersions, isProbability: res.diagnostics.isProbability },
+    /* Mission III §37: Versionen eindeutig je Titel */
+    versions: { api: API_VERSION, analysis: TI.BUNDLE_VERSION, resultSchema: res.schemaVersion, elliott: E ? E.engineVersion : null, ruleSet: E ? E.ruleSetVersion : null,
+                elliottStatus: "EXPERIMENTAL_STRUCTURE_MODEL", dataAsOf: res.asOf }
   };
 }
 
@@ -213,40 +220,68 @@ function evidenceSummary() {
   return out;
 }
 
-async function main() {
-  const limit = +arg("limit", "0"), workDir = arg("work-dir", null);
+/** Ein Titel → Produktobjekt (in Worker-Threads parallel). */
+function workCtx(workDir) {
   const ev1W = evidenceTable(join(EVID, "evidence-1W.json"));
   const ev1D = evidenceTable(join(EVID, workDir ? "evidence-1D-universe.json" : "evidence-1D-golden.json")) || evidenceTable(join(EVID, "evidence-1D-golden.json"));
+  return { ev1W, ev1D, members: indexMembers(), dailyDir: workDir ? join(workDir, "tiingo", "daily") : join(ROOT, "quant/data/market/golden-preview/daily"), wdir: join(ROOT, "quant/data/market/discover-series-long") };
+}
+function runUnit(u, C) {
+  if (u.kind === "daily") {
+    const j = readJson(join(C.dailyDir, u.f)), series = dailySeriesFromPayload(j, j.ticker);
+    if (series.length < 300) return { skip: true };
+    const opts = { evidenceTable: C.ev1D, weeklyEvidenceTable: C.ev1W, calibration: C.ev1D && C.ev1D.calibration, symbol: j.ticker, methodology: PRODUCT_METHODOLOGY };
+    return { p: payload(series, analyzeProduct(series, opts), "$", opts), daily: true };
+  }
+  const j = readJson(join(C.wdir, u.f));
+  const series = weeklySeriesFromPoints(j.points || [], j.ticker);
+  if (series.length < 160) return { skip: true };
+  const opts = { evidenceTable: C.ev1W, calibration: C.ev1W && C.ev1W.calibration, symbol: j.ticker, methodology: PRODUCT_METHODOLOGY };
+  return { p: payload(series, analyzeProduct(series, opts), j.currency === "USD" || !j.currency ? "$" : j.currency, C.members[j.ticker] ? opts : null) };
+}
+if (!isMainThread && workerData && workerData.role === "ti-build") {
+  const C = workCtx(workerData.workDir);
+  for (const u of workerData.units) {
+    let msg;
+    try { msg = runUnit(u, C); } catch (e) { msg = { error: u.f + ": " + e.message }; }
+    parentPort.postMessage(Object.assign({ unit: u }, msg));
+  }
+  parentPort.postMessage({ done: true, rules: RULES });
+}
+
+async function main() {
+  const limit = +arg("limit", "0"), workDir = arg("work-dir", null), nWorkers = Math.max(1, +arg("workers", String(cpus().length)));
+  const C = workCtx(workDir), ev1W = C.ev1W, ev1D = C.ev1D;
   const shards = {}, rows = [], t0 = Date.now(), dailyDone = new Set();
-  const members = indexMembers();
+  const members = C.members;
   const add = (p) => { const k = shardKey(p.symbol); (shards[k] = shards[k] || {})[p.symbol] = p; const row = indexRow(p); row.indexes = members[p.symbol] || []; rows.push(row); };
-  // ---- Tagesanalyse
-  const dailyDir = workDir ? join(workDir, "tiingo", "daily") : join(ROOT, "quant/data/market/golden-preview/daily");
-  let dailyFiles = existsSync(dailyDir) ? readdirSync(dailyDir).filter((f) => f.endsWith(".json") && !f.startsWith("_")).sort() : [];
+  let dailyFiles = existsSync(C.dailyDir) ? readdirSync(C.dailyDir).filter((f) => f.endsWith(".json") && !f.startsWith("_")).sort() : [];
   if (limit) dailyFiles = dailyFiles.slice(0, limit);
-  for (const f of dailyFiles) {
-    try {
-      const j = readJson(join(dailyDir, f)), series = dailySeriesFromPayload(j, j.ticker);
-      if (series.length < 300) continue;
-      const opts = { evidenceTable: ev1D, weeklyEvidenceTable: ev1W, calibration: ev1D && ev1D.calibration, symbol: j.ticker };
-      add(payload(series, analyzeProduct(series, opts), "$", opts)); dailyDone.add(j.ticker);
-    } catch (e) { process.stderr.write("daily " + f + ": " + e.message + "\n"); }
-  }
-  // ---- Wochenanalyse fuer alle uebrigen Titel
-  const wdir = join(ROOT, "quant/data/market/discover-series-long");
-  let wfiles = readdirSync(wdir).filter((f) => f.startsWith("ref_") && f.endsWith(".json")).sort();
+  let wfiles = readdirSync(C.wdir).filter((f) => f.startsWith("ref_") && f.endsWith(".json")).sort();
   if (limit) wfiles = wfiles.slice(0, limit * 20);
-  let weekly = 0, skipped = 0;
-  for (const f of wfiles) {
-    try {
-      const j = readJson(join(wdir, f));
-      if (dailyDone.has(j.ticker)) continue;
-      const series = weeklySeriesFromPoints(j.points || [], j.ticker);
-      if (series.length < 160) { skipped++; continue; }
-      const opts = { evidenceTable: ev1W, calibration: ev1W && ev1W.calibration, symbol: j.ticker };
-      add(payload(series, analyzeProduct(series, opts), j.currency === "USD" || !j.currency ? "$" : j.currency, members[j.ticker] ? opts : null)); weekly++;
-    } catch (e) { skipped++; process.stderr.write("weekly " + f + ": " + e.message + "\n"); }
+  /* Tagesanalyse zuerst (bestimmt, welche Titel keine Wochenanalyse brauchen) */
+  const dailyTickers = new Set(dailyFiles.map((f) => { try { return readJson(join(C.dailyDir, f)).ticker; } catch (e) { return null; } }).filter(Boolean));
+  const units = dailyFiles.map((f) => ({ kind: "daily", f })).concat(wfiles.filter((f) => !dailyTickers.has(f.replace(/^ref_|\.json$/g, ""))).map((f) => ({ kind: "weekly", f })));
+  let weekly = 0, skipped = 0, done = 0;
+  const got = new Map();          // Tagesanalyse hat Vorrang vor Wochenanalyse desselben Titels
+  const handle = (m) => {
+    if (m.error) { skipped++; process.stderr.write(m.error + "\n"); return; }
+    if (m.skip) { skipped++; return; }
+    if (m.p) { const prevP = got.get(m.p.symbol); if (!prevP || (m.daily && !prevP.daily)) got.set(m.p.symbol, { p: m.p, daily: !!m.daily }); }
+    if (++done % 500 === 0) process.stderr.write("  " + done + "/" + units.length + " " + Math.round((Date.now() - t0) / 1000) + " s\n");
+  };
+  if (nWorkers === 1) { for (const u of units) { try { handle(runUnit(u, C)); } catch (e) { handle({ error: u.f + ": " + e.message }); } } }
+  else {
+    const parts = Array.from({ length: nWorkers }, () => []);
+    units.forEach((u, i) => parts[i % nWorkers].push(u));
+    await Promise.all(parts.map((part) => new Promise((resolve, reject) => {
+      const w = new Worker(new URL(import.meta.url), { workerData: { role: "ti-build", units: part, workDir } });
+      w.on("message", (m) => { if (m.done) { Object.assign(RULES, m.rules); resolve(); } else handle(m); });
+      w.on("error", reject); w.on("exit", (code) => { if (code !== 0) reject(new Error("worker exit " + code)); });
+    })));
   }
+  [...got.keys()].sort().forEach((t) => { const g = got.get(t); if (g.daily) dailyDone.add(t); else weekly++; add(g.p); });
+  Object.keys(shards).forEach((k) => { shards[k] = Object.fromEntries(Object.keys(shards[k]).sort().map((t) => [t, shards[k][t]])); });
   // ---- Alerts gegen den vorherigen Index
   let prev = {};
   const idxPath = join(OUT, "index.json.gz");
@@ -264,7 +299,7 @@ async function main() {
   writeFileSync(join(OUT, "alerts.json"), JSON.stringify({ schemaVersion: API_VERSION, generatedAt: new Date().toISOString(), previousIndex: Object.keys(prev).length > 0, events: alerts.slice(0, 2000) }, null, 1));
   const meta = {
     schemaVersion: API_VERSION, resultSchema: TI.SCHEMA_VERSION, bundle: TI.BUNDLE_VERSION, generatedAt: new Date().toISOString(),
-    methodology: "quant/methodology/technical-intelligence-v2.json",
+    methodology: "quant/methodology/technical-intelligence-v2.json", elliott: { engine: PRODUCT_METHODOLOGY.elliottEngine, status: "EXPERIMENTAL_STRUCTURE_MODEL", confluenceWeight: 0, report: "docs/technical-intelligence/ELLIOTT_ENGINE32_REPORT.md" },
     counts: { daily: dailyDone.size, weekly, skipped, shards: Object.keys(shards).length },
     sources: { daily: workDir ? "kanonische Tageshistorie (work-dir)" : "golden-preview (5 Titel)", weekly: "discover-series-long (Wochenschluss, ohne Volumen)" },
     evidence: { weekly: ev1W ? { file: ev1W.source, generatedAt: ev1W.generatedAt, calibrationPassed: ev1W.calibration.passed } : null, daily: ev1D ? { file: ev1D.source, generatedAt: ev1D.generatedAt, calibrationPassed: ev1D.calibration.passed } : null },
@@ -279,4 +314,4 @@ async function main() {
   console.log(JSON.stringify(meta.counts), meta.runtimeSec + " s", alerts.length + " Alerts");
 }
 
-if (process.argv[1] && process.argv[1].endsWith("build-technical-intelligence.mjs")) main().catch((e) => { console.error(e); process.exit(1); });
+if (isMainThread && process.argv[1] && process.argv[1].endsWith("build-technical-intelligence.mjs")) main().catch((e) => { console.error(e); process.exit(1); });

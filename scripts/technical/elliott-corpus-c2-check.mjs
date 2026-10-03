@@ -34,6 +34,7 @@ function originExtreme(closes, T, dir) {
   return true;
 }
 
+const originTally = {}, extremeTally = {};
 const fullByNoise = {}; // C_LATE series for stats
 const noiseOnly = { low: [], medium: [], high: [] };
 
@@ -83,7 +84,16 @@ for (const cls of CLASSES_C2) {
       const t = late.truth, T = t.topIdx, id = late.id;
       const whole = caseC2(cls, seed, noise, { full: true }).closes;
       ok(whole.length >= 180 && whole.length <= 320 && full.every((v, i) => v === whole[i]), id, "full series mismatch");
-      if (noise === "none" || noise === "low") ok(originExtreme(full, T, t.dir), id, "origin not extreme over first-wave span");
+      if (noise === "none") ok(originExtreme(full, T, t.dir), id, "origin not extreme over first-wave span");
+      else { originTally[noise] = originTally[noise] || [0, 0]; originTally[noise][0]++; if (originExtreme(full, T, t.dir)) originTally[noise][1]++; }
+      for (const st of ["C_EARLY", "C_LATE"]) {
+        const c = byStage[st].closes, cut = c.length - 1, s = -t.dir; // confirmation direction
+        let fresh = true;
+        for (let i = t.patternEnd; i < cut; i++) if (s * c[i] >= s * c[cut]) { fresh = false; break; }
+        const k = `${noise}|${st}`; extremeTally[k] = extremeTally[k] || [0, 0]; extremeTally[k][0]++; if (fresh) extremeTally[k][1]++;
+        const dcBars = t.confIdx[t.confIdx.length - 1] - t.patternEnd, f = (cut - t.patternEnd) / dcBars;
+        ok(cut - t.patternEnd >= 2 && (st === "C_EARLY" ? f >= 0.2 && f <= 0.55 : f >= 0.55 && f <= 1), byStage[st].id, `cut fraction ${f.toFixed(2)}`);
+      }
       if (noise === "none") {
         if (POS_IMPULSE.has(cls)) {
           const r = impulseRules(full, T, t.dir);
@@ -153,6 +163,9 @@ for (const noise of ["low", "medium", "high"]) {
   const s = stats(noiseOnly[noise]);
   console.log(`${noise.padEnd(7)} | std ${(s.sd * 100).toFixed(2)}% | exKurt ${s.k.toFixed(2)} | ac1(r) ${s.ac1.toFixed(3)} | ac1(|r|) ${s.acAbs.toFixed(3)} | P(|r|>3sd) ${(s.tail * 100).toFixed(2)}%`);
 }
+console.log("\nShare of C-stage cuts whose last bar is a fresh extreme of the confirmation:");
+for (const [k, [n, f]] of Object.entries(extremeTally)) console.log(`  ${k.padEnd(16)} ${(100 * f / n).toFixed(1)}%  (${f}/${n})`);
+for (const [k, [n, f]] of Object.entries(originTally)) console.log(`  origin extreme at ${k}: ${(100 * f / n).toFixed(1)}%`);
 console.log(`\n${checks} checks, ${failures.length ? failures.length + "+ failures" : "0 failures"}`);
 if (failures.length) { for (const f of failures) console.log("FAIL " + f); process.exit(1); }
 console.log("ALL C2 CHECKS PASSED");

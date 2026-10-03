@@ -9,7 +9,7 @@
      LOST/FOUND Wechsel zwischen „Zaehlung" und „keine Zaehlung"
    Emittenten-Splits (vorab registriert, ELLIOTT_ENGINE_QUALITY_PREREG.md §2): nur explorative Emittenten,
      fnv1a(issuerRoot + "|ew3") mod 10: DEVELOPMENT {0..3}, VALIDATION {4,5,6}, HOLDOUT {7,8,9}.
-   Aufruf: node scripts/technical/elliott-stability.mjs --split DEVELOPMENT --engine v3|v2 [--series 150] [--years 8] [--workers 4] */
+   Aufruf: node scripts/technical/elliott-stability.mjs --split DEVELOPMENT --engine v3|v2 [--series 150] [--years 8] [--workers 4] [--end YYYY-MM-DD: Reihe bis zu diesem Datum, HOLDOUT-3 nutzt ein neues Zeitfenster] */
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
 import { readdirSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
@@ -78,13 +78,13 @@ if (!isMainThread) {
   const { files, opt } = workerData;
   const out = [];
   for (const f of files) {
-    try { const j = readJson(f.path); const s = weeklySeriesFromPoints(j.points || [], j.ticker); const r = processSeries(s, opt); if (r) out.push(Object.assign({ symbol: f.symbol }, r)); }
+    try { const j = readJson(f.path); const s = weeklySeriesFromPoints((j.points || []).filter((p) => !opt.end || p[0] <= opt.end), j.ticker); const r = processSeries(s, opt); if (r) out.push(Object.assign({ symbol: f.symbol }, r)); }
     catch (e) { out.push({ symbol: f.symbol, error: e.message }); }
     parentPort.postMessage({ progress: 1 });
   }
   parentPort.postMessage({ done: out });
 } else if (import.meta.url === "file://" + process.argv[1]) {
-  const split = arg("split", "DEVELOPMENT"), engine = arg("engine", "v3"), engineOpts = JSON.parse(arg("opts", "{}")), tag = arg("tag", ""), nSeries = +arg("series", "150"), years = +arg("years", "8"), workers = +arg("workers", "4");
+  const split = arg("split", "DEVELOPMENT"), engine = arg("engine", "v3"), engineOpts = JSON.parse(arg("opts", "{}")), tag = arg("tag", ""), nSeries = +arg("series", "150"), years = +arg("years", "8"), workers = +arg("workers", "4"), end = arg("end", null);
   const dir = join(ROOT, "quant/data/market/discover-series-long");
   const master = readJson(join(ROOT, "quant/data/market/security-master/us-security-master.json"));
   const common = new Set(); master.rows.forEach((r) => { if (r.instrument_type === "EQUITY_COMMON") common.add(r.ticker); });
@@ -96,7 +96,7 @@ if (!isMainThread) {
   const chunks = Array.from({ length: Math.min(workers, files.length) }, () => []);
   files.forEach((f, i) => chunks[i % chunks.length].push(f));
   const res = (await Promise.all(chunks.map((c) => new Promise((resolve, reject) => {
-    const w = new Worker(fileURLToPath(import.meta.url), { workerData: { files: c, opt: { engine, years, engineOpts } } });
+    const w = new Worker(fileURLToPath(import.meta.url), { workerData: { files: c, opt: { engine, years, engineOpts, end } } });
     w.on("message", (m) => { if (m.progress && ++done % 25 === 0) process.stderr.write(`  ${done}/${files.length} (${Math.round((Date.now() - t0) / 1000)} s)\n`); if (m.done) resolve(m.done); });
     w.on("error", reject);
   })))).flat();
@@ -106,7 +106,7 @@ if (!isMainThread) {
   const merge = (key) => { const o = {}; ok.forEach((r) => Object.entries(r[key] || {}).forEach(([k, v]) => { o[k] = (o[k] || 0) + v; })); return o; };
   const life = {}; ok.forEach((r) => Object.entries(r.lifetimes).forEach(([k, v]) => { (life[k] = life[k] || []).push(...v); }));
   const med = (a) => { const b = a.slice().sort((x, y) => x - y); return b.length ? b[Math.floor(b.length / 2)] : null; };
-  const out = { schemaVersion: "vu-elliott-stability-1.0.0", generatedAt: new Date().toISOString(), split, engine, engineOpts, series: ok.length, errors: res.filter((r) => r.error).length, years, bars,
+  const out = { schemaVersion: "vu-elliott-stability-1.0.0", generatedAt: new Date().toISOString(), split, engine, engineOpts, end, series: ok.length, errors: res.filter((r) => r.error).length, years, bars,
     transitions: tot, perWeek: Object.fromEntries(Object.entries(tot).map(([k, v]) => [k, +(v / bars).toFixed(4)])),
     unstablePerWeek: +((tot.UNSTABLE || 0) / bars).toFixed(4), relabelPerWeek: +(((tot.UNSTABLE || 0) + (tot.JUSTIFIED || 0) + (tot.DEGREE || 0)) / bars).toFixed(4),
     ambiguity: merge("amb"), applicability: merge("appl"), status: merge("status"),

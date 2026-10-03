@@ -51,7 +51,7 @@
    * @param {object} o {
    *   chart: { timestamps, open?, high?, low?, close, closeOnly, timeframe },
    *   overlays?: Datenvertrag v3, scenarioKind?: "PRIMARY"|"ALTERNATIVE"|"TAIL", scenario?: (alt) Szenario-Objekt,
-   *   waves?: [{ label, display, time, price, status, key }], onWave?: fn(wave), uncertain?: bool,
+   *   waves?: [{ label, display, time, price, status, key }], waveTone?: "alt" (Alternative Lesart), onWave?: fn(wave), uncertain?: bool,
    *   cutoff?: ISO-Datum (Zeitreise: nur Bars bis hier), width, height, bars, mode: "line"|"candles", title, labels
    * }
    */
@@ -172,7 +172,7 @@
     /* ---------------------------------------------------------- Wellenmarken */
     if (o.waves && o.waves.length) {
       var idx = {}; ts.forEach(function (d0, k0) { idx[d0] = k0; });
-      var wg = svg("g", { class: "ti-waves" });
+      var wg = svg("g", { class: "ti-waves" + (o.waveTone === "alt" ? " is-alt" : "") });
       o.waves.forEach(function (w, wi) {
         var k1 = idx[w.time]; if (k1 === undefined || k1 > cut) return;
         var prev = wi > 0 ? o.waves[wi - 1].price : w.fromPrice;

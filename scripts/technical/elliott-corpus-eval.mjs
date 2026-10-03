@@ -23,7 +23,8 @@ export function caseC(layout, cls, seed, noise, stage) {
   const cs = layout === "C2" ? caseC2(cls, seed, noise, { stage }) : corpusCaseC(cls, seed, noise, { layout, stage });
   if (stage[0] === "P") {
     const T = cs.truth.topIdx, cut = cs.closes.length - 1; let k0 = 0;
-    for (let k = 1; k < T.length; k++) if (T[k] < cut - 1) k0 = k;
+    /* Welle k gilt erst als abgeschlossen, wenn die Folgewelle mindestens 2 Bars bzw. 25 % ihrer Dauer gelaufen ist (Generator-Audit M6) */
+    for (let k = 1; k < T.length - 1; k++) if (T[k] <= cut - Math.max(2, Math.round(0.25 * (T[k + 1] - T[k])))) k0 = k;
     cs.mid = k0 >= 2 && k0 + 1 <= T.length - 1 ? { completedWaves: k0, currentWave: k0 + 1, pts: T.slice(0, k0 + 1) } : null;
     if (!cs.mid) return null;                     // weniger als zwei abgeschlossene Wellen: nicht als laufendes Muster pruefbar
   } else cs.mid = null;
@@ -66,8 +67,10 @@ function judge(c, truth) {
   /* Verschachtelter Treffer: das Zielmuster ist eine abgeschlossene Welle der Zaehlung (Grad +1), deren Unterteilung die
      Engine als Zielmuster benennt — fachlich korrekt (die Engine zaehlt eine Ebene hoeher und nennt die Unterstruktur). */
   const T = truth.topIdx, tol = Math.max(2, Math.round(0.2 * median(T.slice(1).map((x, k) => x - T[k]))));
+  /* Red-Team 3.2 (LOW): verschachtelter Treffer verlangt auch die inneren Wellenenden der Unterteilung an den wahren Pivots */
+  const inner = (w) => !w.subdivision.waves || (w.subdivision.waves.length === T.length - 1 && w.subdivision.waves.every((x, k) => Math.abs(x.toIndex - T[k + 1]) <= tol));
   const nested = (c.waves || []).find((w) => w.status === "CONFIRMED" && Math.abs(w.fromIndex - T[0]) <= tol && Math.abs(w.toIndex - T[T.length - 1]) <= tol &&
-    w.subdivision && truth.expect.includes(w.subdivision.pattern === "COMBINATION" ? "WXY" : w.subdivision.pattern));
+    w.subdivision && truth.expect.includes(w.subdivision.pattern === "COMBINATION" ? "WXY" : w.subdivision.pattern) && inner(w));
   return { label: c.pattern + (c.complete ? "(C)" : "/" + c.currentWave.label), degree: nested ? "NESTED" : deg, hit: (deg === "EXACT" && truth.expect.includes(c.pattern) && c.complete) || !!nested,
            asNegTarget: !!truth.negativeOf && c.pattern === truth.negativeOf && deg === "EXACT" };
 }
@@ -82,6 +85,10 @@ export function intraViolations(c, closes) {
     [0, 2, 4].forEach((k) => { if (W[k] && s * back(W[k]) < s * W[k].fromPrice - eps) v.push("MOTIVE_W" + (k + 1) + "_BELOW_START"); });
   }
   if (["ZIGZAG", "DOUBLE_ZIGZAG", "TRIPLE_ZIGZAG", "WXY"].includes(c.pattern) && W[1] && s * fwd(W[1]) < s * p0 - eps) v.push("B_OR_X_BEYOND_ORIGIN");
+  /* Red-Team 3.2 H1: Motivwellen korrektiver Muster (Lehrbuch: Zigzag 5-3-5 → A, C; Flat 3-3-5 → C; Doppel-Zigzag a/c je Zigzag)
+     duerfen nicht hinter ihren eigenen Start laufen — auch laufende Wellen. */
+  const MOT = { ZIGZAG: [0, 2], FLAT: [2], DOUBLE_ZIGZAG: [0, 2, 4, 6] }[c.pattern] || [];
+  MOT.forEach((k) => { if (W[k] && s * back(W[k]) < s * W[k].fromPrice - eps) v.push("MOTIVE_" + c.pattern + "_W" + (k + 1) + "_BEYOND_START"); });
   if (c.pattern === "IMPULSE" && W.length === 5 && W[4].status !== "DEVELOPING") { const L = W.map((w) => Math.abs(w.toPrice - w.fromPrice)); if (L[2] < Math.min(L[0], L[4])) v.push("W3_SHORTEST"); }
   return v;
 }
@@ -90,7 +97,11 @@ export function intraViolations(c, closes) {
 export function observableTruth(cs) {
   if (cs.mid || !cs.truth.expect.length) return null;
   const idx = observedPivots(cs), c = cs.closes;
-  const waves = idx.slice(1).map((b, k) => ({ fromIndex: idx[k], toIndex: b, fromPrice: c[idx[k]], toPrice: c[b], duration: Math.max(1, b - idx[k]), status: "CONFIRMED" }));
+  /* Unterteilung sichtbar gemacht (WXY/Dreifach-Zigzag verlangen sie per Definition; ohne sie waeren diese Klassen nie gueltig —
+     Generator-Audit M5). Gleicher Skalenraum-Klassifikator wie in der Engine, nur auf den sichtbaren Kursen der Welle. */
+  const ser = { close: c, timestamps: cs.dates }, memo = {};
+  const waves = idx.slice(1).map((b, k) => ({ fromIndex: idx[k], toIndex: b, fromPrice: c[idx[k]], toPrice: c[b], duration: Math.max(1, b - idx[k]), status: "CONFIRMED",
+                                               sub: EV3.classifySegment(ser, idx[k], b, EV3.DEFAULTS, memo) }));
   const valid = cs.truth.expect.some((t) => PAT.PATTERNS[t] && PAT.checkRules(t, waves) && intraViolations({ pattern: t, waves }, c).length === 0);
   return { topIdx: idx, valid, shifted: idx.filter((x, k) => x !== cs.truth.topIdx[k]).length };
 }
@@ -108,7 +119,7 @@ export function evaluateCase(cs, engineOpts) {
   const jo = tObs ? cands.map((c) => judge(c, tObs)) : null;
   const obs = ot ? { valid: ot.valid, shifted: ot.shifted, rank: jo.findIndex((j) => j.hit), degree: jo[0] ? jo[0].degree : "NONE" } : null;
   const g8 = cands.reduce((a, c) => a + intraViolations(c, cs.closes).length, 0);
-  return { g8, obs, id: cs.id, mid: !!cs.mid, structureOnly: js[0] && js[0].structure && !js[0].hit, cls: cs.truth.cls, scale: r.degrees.analysis, status: r.status, abstain: !!(r.applicability && r.applicability.abstain), applicability: r.applicability ? r.applicability.level : null,
+  return { g8, obs, id: cs.id, mid: !!cs.mid, structureOnly: js[0] && js[0].structure && !js[0].hit, cls: cs.truth.cls, scale: r.degrees.analysis, status: r.status, abstain: !!(r.applicability && r.applicability.abstain), applicability: r.applicability ? r.applicability.level : null, applScore: r.applicability ? r.applicability.score : null,
            primary: js[0] || { label: "NONE", degree: "NONE" }, rank: k, falseAccept: js.some((j) => j.asNegTarget), quality: r.primary && r.primary.countQuality ? r.primary.countQuality.level : null,
            clarity: r.clarity, ms };
 }

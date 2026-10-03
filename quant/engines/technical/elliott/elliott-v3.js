@@ -71,13 +71,12 @@
     clarity: { high: 0.1, moderate: 0.04 }, structural: { high: 0.68, moderate: 0.55 },
     noise: { abstainBelow: 1.3, full: 3.0 },
     /* Eichung Korpus DEVELOPMENT (scripts: elliott-corpus-eval, Bericht ELLIOTT_ENGINE3_REPORT.md): [1, countQuality, clarity/0,15, z/4, Strukturmehrdeutigkeit, laufend] */
-    /* 3.2 (Mission III §19–§21): geeicht auf Korpus DEVELOPMENT, Layouts A, B, C1, C3 (je Layout gleich gewichtet), abgeschlossene und
-       laufende Stufen, alle Rauschstufen (scripts/technical/elliott-calibration/applicability32-*.mjs). Merkmale:
-       [1, Zaehlqualitaet, Klarheit (nur Strukturmehrdeutigkeit), z/4, Strukturmehrdeutigkeit, laufend, Hierarchie-Widerspruch,
-        Zeit-Preis-Proportion, laufend × Wellenanteil]. HOCH ab 0,75 (falsche Sicherheit im Entwicklungssplit gepoolt ≈ 20 %, Layout A/B
-       10–19 %), MITTEL ab 0,6 (A/B ≤ 26 %). Auf Layout C trennt KEIN Merkmal richtige von falschen Hauptzaehlungen (≥ 57 % falsch bei
-       jeder Schwelle) — dort enthaelt sich die Engine fast immer. */
-    applicability: { coef: [-10.748, 7.095, 1.402, 0.896, 0.911, -0.198, -0.776, 3.225, -1.06], high: 0.75, moderate: 0.6, highMinZ: null }
+    /* 3.2 (Mission III §19–§21, Red-Team 3.2 M2/H3): geeicht auf Korpus DEVELOPMENT, Layouts A, B, C1, C3 (je Layout gleich gewichtet),
+       nur abgeschlossene Muster, alle Rauschstufen (scripts/technical/elliott-calibration/applicability32-*.mjs). Merkmale:
+       [1, Zaehlqualitaet, Klarheit (nur Strukturmehrdeutigkeit), z/4, (Strukturmehrdeutigkeit: fest 0), laufend, Hierarchie-Widerspruch,
+        Zeit-Preis-Proportion, laufend × Wellenanteil]. HOCH ab 0,75 (falsch im Entwicklungssplit: A 16 %, B 21 %), MITTEL ab 0,55
+       (A 23 %, B 24 %, C1/C3 41–50 %). Laufende Zaehlungen hoechstens NIEDRIG (developingCap). */
+    applicability: { coef: [-9.665, 7.516, 0.852, 1.339, 0, -2.677, -0.801, 3.151, -2.667], high: 0.75, moderate: 0.55, highMinZ: null, developingCap: true }
   };
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -303,6 +302,10 @@
     function intraOk(type, legs) {
       var s0 = legs[0].toPrice >= legs[0].fromPrice ? 1 : -1, p0 = legs[0].fromPrice, o = function (v) { return s0 * v; };
       function wave(k) { return legs[k - 1]; }
+      /* 3.2 (Red-Team 3.2 H1): JEDE Welle mit Unterteilung "M" (Motivwelle: Impuls 1/3/5, Zigzag A/C, Flat C, Doppel-Zigzag a/c)
+         laeuft nie hinter ihren eigenen Start zurueck — auch nicht als laufende Welle. Vorher nur fuer Impulse/Diagonalen geprueft. */
+      var subM = P.PATTERNS[type].subdivision;
+      for (var km = 1; km <= legs.length; km++) if (subM[km - 1] === "M" && o(extremeAgainst(wave(km)).back) < o(wave(km).fromPrice) - 1e-9) return false;
       if (type === "IMPULSE" || type.indexOf("DIAGONAL") >= 0) {
         if (wave(2) && o(extremeAgainst(wave(2)).ext) <= o(p0)) return false;                                   // W2 nie hinter W1-Ursprung
         if (wave(4) && type === "IMPULSE" && o(extremeAgainst(wave(4)).ext) <= o(wave(1).toPrice)) return false;  // W4 nie im Gebiet von W1
@@ -451,7 +454,9 @@
       if (!e || !e.valid || !intraOk(f.type, legs)) return null;
       /* orthodoxes Ende: die ueberschiessende Folgewelle muss ein Flat oder Dreieck sein */
       for (var ov = 0; ov < f.over.length; ov++) {
-        if (f.over[ov] > 0) { var lg = legs[ov], sp = lg.sub && lg.sub.pattern; if (lg.status !== "DEVELOPING" && sp !== "FLAT" && sp !== "TRIANGLE") return null; lg.orthodoxOvershoot = f.over[ov]; }
+        /* 3.2 (Red-Team 3.2 H1): Ueberschiessen nur an Korrekturpositionen und nur mit SICHTBARER Flat-/Dreieck-Unterteilung —
+           eine laufende Welle kann das noch nicht zeigen, also kein Ueberschiessen fuer laufende Wellen. */
+        if (f.over[ov] > 0) { var lg = legs[ov], sp = lg.sub && lg.sub.pattern; if (lg.status === "DEVELOPING" || spec.subdivision[ov].indexOf("K") < 0 || (sp !== "FLAT" && sp !== "TRIANGLE")) return null; lg.orthodoxOvershoot = f.over[ov]; }
       }
       var conf = legs.filter(function (l) { return l.status !== "DEVELOPING"; });
       var subs = legs.map(function (l, k) { return l.status === "DEVELOPING" ? null : subFit(spec.subdivision[k], l.sub, cfg); }).filter(isNum);
@@ -627,7 +632,8 @@
     var appl = applicability3(primary.countQuality, alternatives.length && amb.kind === "STRUCTURE" ? clarity : null, snr, cfg, amb, primary.complete,
                               { hier: best0.components.hierarchy, prop: best0.components.proportion, waveFrac: wFrac });
     if (dq.blocking) { appl.level = "LOW"; appl.abstain = true; appl.reasons.unshift(dq.note); }
-    var clarityLevel = amb.kind !== "STRUCTURE" ? "HIGH" : clarity >= cfg.clarity.high ? "HIGH" : clarity >= cfg.clarity.moderate ? "MODERATE" : "LOW";
+    /* 3.2 (Red-Team 3.2 M3): Grad- oder Etikett-Mehrdeutigkeit ist nicht "klar" (solche Hauptzaehlungen stimmten im Korpus nur in 12–14 %) */
+    var clarityLevel = amb.kind === "NONE" ? "HIGH" : amb.kind !== "STRUCTURE" ? "MODERATE" : clarity >= cfg.clarity.high ? "HIGH" : clarity >= cfg.clarity.moderate ? "MODERATE" : "LOW";
     var status = primary.currentWave.wave === 1 && !primary.complete ? "EARLY" : clarityLevel === "LOW" ? "AMBIGUOUS" : "OK";
     var hd = best0.higher ? higherObj(best0.higher) : null;
     var nearest = nearestScale(best0, input.pivots);
@@ -717,6 +723,9 @@
     var eta = 0; for (var k = 0; k < x.length; k++) eta += x[k] * A.coef[k];
     var score = 1 / (1 + Math.exp(-eta));
     var level = score >= A.high ? "HIGH" : score >= A.moderate ? "MODERATE" : "LOW";
+    /* 3.2 (Red-Team 3.2 H3): laufende Zaehlungen hoechstens NIEDRIG — im Korpus (DEVELOPMENT und VALIDATION, alle Layouts) war keine
+       laufende Hauptzaehlung mit MITTEL/HOCH richtig. Sie werden als "moegliche Welle" gezeigt, nicht als verlaessliche Zaehlung. */
+    if (!complete && A.developingCap) level = "LOW";
     /* Wellen kaum groesser als ein Zufallspfad gleicher Dauer: hoechstens MITTEL (Korpus DEVELOPMENT, hohes Rauschen) */
     if (level === "HIGH" && snr && isNum(A.highMinZ) && snr.ratio < A.highMinZ) level = "MODERATE";
     var reasons = [];

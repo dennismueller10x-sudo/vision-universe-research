@@ -263,3 +263,22 @@
 .qd .cb-replay-flag{margin:0 4px 6px;padding:6px 12px;border-radius:99px;display:inline-block;font-size:12px;font-weight:800;background:rgba(179,166,255,.14);color:var(--cb-alt)}
 .qd .cb-chart-card.is-replay .cb-lead-m,.qd .cb-chart-card.is-replay .cb-unclear{display:none}
 .qd .cb-badge-validated{color:var(--cb-up);background:rgba(185,238,60,.12)} .qd .cb-badge-supported{color:var(--cb-target);background:rgba(140,200,255,.12)} .qd .cb-badge-not_established{color:var(--cb-mixed);background:rgba(242,193,78,.1)}
+
+/* ------------------------------------------------------------ Mission III: Elliott-Struktur, Szenario-Unterschied, Zeitreise-Marken */
+.qd .cb-ew-card{margin:0 0 18px;padding:16px 18px;border-radius:var(--q-radius-sm);background:var(--q-panel);border:1px solid var(--q-line)}
+.qd .cb-ew-card.is-abstain{border-color:rgba(242,193,78,.25)}
+.qd .cb-ew-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 6px}
+.qd .cb-ew-k{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--q-muted)}
+.qd .cb-ew-main{margin:2px 0 10px;font-size:clamp(20px,3.4vw,26px);font-weight:820;letter-spacing:-.015em}
+.qd .cb-ew-sub{margin:0 0 10px;font-size:14px;color:#d9dcd6}
+.qd .cb-ew-kv{margin:0 0 10px}
+.qd .cb-ew-switch{margin:4px 0 6px}
+.qd .cb-ew-alt{margin:0 0 8px;font-size:14px;color:var(--cb-alt)}
+.qd .ti-waves.is-alt .ti-wave-badge{stroke:var(--cb-alt)} .qd .ti-waves.is-alt .ti-wave-label{fill:var(--cb-alt)}
+.qd .cb-sc-diff{margin:-8px 2px 18px;font-size:14px;line-height:1.55;color:#cfd3cc}
+.qd .cb-scrub-wrap{position:relative}
+.qd .cb-scrub-ticks{position:absolute;left:8px;right:8px;top:-6px;height:6px;pointer-events:none}
+.qd .cb-tick{position:absolute;top:0;width:2px;height:6px;margin-left:-1px;border-radius:1px;background:var(--cb-alt)}
+.qd .cb-tick-flip{background:var(--cb-mixed)}
+.qd .cb-insp-kv{margin:0 0 12px}
+@media (max-width:520px){.qd .cb-ew-card{padding:14px}}

@@ -271,7 +271,7 @@ function tryPattern(cls, rng) {
       return { vals: [0, 1, 1 - rb, 1 - rb + kc], kinds: ["imp", rng.chance(0.6) ? "zz" : "flat", "imp"], lens: [1, rb, kc] };
     }
     case "FLAT_REGULAR": {
-      const rb = rng.uni(0.86, 0.98), cEnd = rng.uni(1.02, 1.1);
+      const rb = rng.uni(0.9, 1.05), cEnd = rng.uni(1.02, 1.1); // B retraces 90-105% of A
       return { vals: [0, 1, 1 - rb, cEnd], kinds: ["zz", "zz", "imp"], lens: [1, rb, cEnd - 1 + rb] };
     }
     case "FLAT_EXPANDED": {
@@ -474,9 +474,9 @@ function structOk(S, closes) {
   }
   switch (cls) {
     case "ZIGZAG": return y(T[2]) > y(T[0]) && y(T[3]) > y(T[1]);
-    case "FLAT_REGULAR": return y(T[2]) > y(T[0]) && L(2) > 0.8 * L(1) && y(T[3]) > y(T[1]);
-    case "FLAT_EXPANDED": return y(T[2]) < y(T[0]) && y(T[3]) > y(T[1]);
-    case "FLAT_RUNNING": return y(T[2]) < y(T[0]) && y(T[3]) < y(T[1]) && y(T[3]) > y(T[2]);
+    case "FLAT_REGULAR": return L(2) >= 0.89 * L(1) && L(2) <= 1.06 * L(1) && y(T[3]) > y(T[1]);
+    case "FLAT_EXPANDED": return L(2) > 1.06 * L(1) && y(T[3]) > y(T[1]);
+    case "FLAT_RUNNING": return L(2) > 1.06 * L(1) && y(T[3]) < y(T[1]) && y(T[3]) > y(T[2]);
     case "DOUBLE_ZIGZAG": case "WXY": return y(T[2]) > y(T[0]) && (cls === "WXY" || y(T[3]) > y(T[1]));
     case "TRIPLE_ZIGZAG": return y(T[2]) > y(T[0]) && y(T[3]) > y(T[1]) && y(T[4]) > y(T[2]) && y(T[5]) > y(T[3]);
     case "TRIANGLE_CONTRACTING": for (let w = 2; w <= 5; w++) if (!(L(w) < 0.98 * L(w - 1))) return false; return true;
@@ -515,8 +515,8 @@ function buildNoise(N, level, cls, seed, j, ouStart, ouEnd) {
   const gap = rng.sign() * rng.uni(2, 4) * sigma;
   let uPrev = 0, D = 0;
   for (let t = 1; t < N; t++) {
-    h = omega + alpha * e * e + beta * h;
-    e = Math.sqrt(h) * rng.studentT(nu) * ts;
+    h = Math.min(omega + alpha * e * e + beta * h, 9 * sigma * sigma); // cap variance blow-ups
+    e = Math.sqrt(h) * clamp(rng.studentT(nu) * ts, -7, 7); // cap single t draws at 7 sd
     if (rng.chance(0.012)) e += rng.sign() * rng.uni(3, 5.5) * Math.sqrt(h); // single-bar event shock
     const u = rho * uPrev + e;
     uPrev = u;
@@ -524,12 +524,6 @@ function buildNoise(N, level, cls, seed, j, ouStart, ouEnd) {
     else out[t] = out[t - 1] + u + (t === gapAt ? gap : 0);
   }
   return out;
-}
-
-function originOk(closes, S) {
-  const { dir, o, d1 } = S;
-  for (let i = Math.max(0, o - d1); i <= Math.min(closes.length - 1, o + d1); i++) if (i !== o && !(dir * closes[i] > dir * closes[o])) return false;
-  return true;
 }
 
 function isoDate(i) {
@@ -546,14 +540,9 @@ export function caseC2(cls, seed, noise, opts = {}) {
 
   const S = structureFor(cls, seed);
   const { N, x } = S;
-  let closesFull = null;
-  const tries = noise === "low" ? 80 : 1;
-  for (let j = 0; j < tries; j++) {
-    const nz = buildNoise(N, noise, cls, seed, j, S.moveStart, S.confEnd);
-    const c = Array.from(x, (v, i) => Math.exp(v + nz[i]));
-    closesFull = c;
-    if (noise !== "low" || originOk(c, S)) break;
-  }
+  // No noise retry: the origin is only guaranteed to be an extreme in the noise-free structure.
+  const nz = buildNoise(N, noise, cls, seed, 0, S.moveStart, S.confEnd);
+  const closesFull = Array.from(x, (v, i) => Math.exp(v + nz[i]));
 
   // stage cut (stage RNG is independent of noise and structure)
   const T = S.topIdx, o = S.o, pe = S.pe;
@@ -566,10 +555,11 @@ export function caseC2(cls, seed, noise, opts = {}) {
     completedWaves = T.slice(1).filter((t) => t <= cutAt).length;
     currentWave = completedWaves + 1;
   } else {
-    const q = stage === "C_EARLY" ? sr.uni(0.3, 0.5) : sr.uni(0.7, 1.0);
-    const x0 = x[pe], span = x[S.confEnd] - x0;
-    cutAt = S.confEnd;
-    if (q < 0.995) for (let t = pe + 1; t <= S.confEnd; t++) if ((x[t] - x0) / span >= q) { cutAt = t; break; }
+    // cut by TIME (uniform bar within the confirmation's duration), never snapped to an extreme
+    const dc = S.confEnd - pe;
+    const [lo, hi] = stage === "C_EARLY" ? [0.25, 0.5] : [0.6, 1.0];
+    const a = Math.max(2, Math.ceil(lo * dc)), b = Math.max(a, Math.floor(hi * dc));
+    cutAt = pe + sr.int(a, b);
     completedWaves = T.length - 1;
     currentWave = null;
   }

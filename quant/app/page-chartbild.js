@@ -167,7 +167,7 @@
       return [el("div", { class: "cb-table-wrap" }, [el("table", { class: "cb-table" }, [el("thead", {}, [el("tr", {}, [el("th", { text: "Verfahren" }), el("th", { text: "Richtung" }), el("th", { text: "Gewicht" })])]),
         el("tbody", {}, cf.families.map(function (f) { return el("tr", {}, [el("td", { text: (Ex && Ex.FAMILY[f.family]) || f.family }), el("td", { class: "num", text: (f.direction > 0 ? "+" : "") + f.direction.toFixed(2).replace(".", ",") }), el("td", { class: "num", text: f.weight.toFixed(2).replace(".", ",") })]); }))])]),
         el("p", { class: "cb-small", text: "Einigkeit (gewichtete Richtung): " + (cf.agreement > 0 ? "+" : "") + String(cf.agreement).replace(".", ",") + " · Abdeckung " + pct(cf.coverage) + ". Gewichte aus Evidenzgraden der Literatur; Wyckoff ohne Stimmgewicht." }),
-        el("p", { class: "cb-small cb-dim", text: "Alle Werte aus Daten bis " + X.dateDe(a.asOf) + "; nur bestätigte Swings; dieselbe Rechnung wie im Backtest. Methodik: quant/methodology/technical-intelligence-v2.json · Regelwerk elliott-rules-2.0.1." }),
+        el("p", { class: "cb-small cb-dim", text: "Alle Werte aus Daten bis " + X.dateDe(a.asOf) + "; nur bestätigte Swings; dieselbe Rechnung wie im Backtest. Methodik: quant/methodology/technical-intelligence-v2.json · Elliott " + ((a.versions && a.versions.elliott) || (a.pro.elliott && a.pro.elliott.engineVersion) || "–") + " · Regelwerk " + ((a.versions && a.versions.ruleSet) || (a.pro.elliott && a.pro.elliott.ruleSetVersion) || "–") + " · Datenstand " + X.dateDe((a.versions && a.versions.dataAsOf) || a.asOf) + "." }),
         el("p", {}, [X.link("Methodik und Quellen →", X.routes.method("chartbild"))])];
     }));
     return out;
@@ -220,6 +220,14 @@
     var ev = methodEv && methodEv.methods && methodEv.methods.ELLIOTT;
     sheet("Welle " + (wave.notation || wave.label), [
       el("p", { class: "cb-sheet-kicker", text: c.patternName + (wave.status === "DEVELOPING" ? " · läuft noch" : " · abgeschlossen") }),
+      el("dl", { class: "qx-kv cb-insp-kv" }, [].concat.apply([], [
+        ["Status", wave.status === "DEVELOPING" ? "läuft (entwickelnd) – Ende noch offen" : "abgeschlossen"],
+        retr !== null ? [/^[24BDX]/.test(waveKey(wave.label)) ? "Rücklauf" : "Länge ggü. Vorwelle", Math.round(retr * 100) + " %"] : null,
+        c.invalidation ? ["Ungültig, wenn", "Schluss " + (c.invalidation.direction === "below" ? "unter " : "über ") + fmt(c.invalidation.price)] : null,
+        ["Höherer Grad", E.higherDegree ? (E.higherDegree.patternName || E.higherDegree.pattern) + ", Welle " + E.higherDegree.current.notation : "nicht bestimmt"],
+        ["Alternativen", String((E.alternatives || []).length) + (E.ambiguity && E.ambiguity.kind === "STRUCTURE" ? " · mehrere gültige Lesarten" : "")],
+        ["Modell", "Experimentell · " + (E.engineVersion || "")]
+      ].filter(Boolean).map(function (r) { return [el("dt", { text: r[0] }), el("dd", { class: "num", text: r[1] })]; }))),
       el("h4", { text: "Was sie bedeutet" }), el("p", { text: WAVE_MEANING[waveKey(wave.label)] || "Teil der aktuellen Wellenstruktur." }),
       el("h4", { text: "Warum Vision Universe sie so sieht" }),
       el("ul", { class: "cb-list" }, [
@@ -326,19 +334,20 @@
     var chartHost = el("div", { class: "cb-chart", tabindex: "0", role: "region", "aria-label": "Chart mit Zonen und Szenario" });
     var range = a.timeframe === "1W" ? "3J" : "6M", mode = "line", wavesOn = view === "pro" || (!abstain && E && E.primary);
     var ranges = a.timeframe === "1W" ? [["1J", "1 J", 52], ["3J", "3 J", 156], ["5J", "5 J", 260]] : [["3M", "3 M", 63], ["6M", "6 M", 126], ["1J", "1 J", 252]];
-    var replayStep = null;
+    var replayStep = null, waveSet = "primary";
     function barsFor() { var r = ranges.filter(function (x) { return x[0] === range; })[0]; return r ? r[2] : 126; }
     function waveMarks() {
       if (replayStep) return replayStep.ew && !replayStep.ew.ab ? replayStep.ew.waves.map(function (w) { return { label: w[2], time: w[0], price: w[1], status: w[3] ? "DEVELOPING" : "CONFIRMED" }; }) : [];
       var ov = a.overlays && a.overlays.waves;
       if (!ov || !ov.primary.length || (!ov.consumerVisible && view !== "pro")) return [];
-      return ov.primary.map(function (w) { return { label: w.label, display: view === "pro" ? w.notation : w.label, time: w.time, price: w.price, fromPrice: w.fromPrice, status: w.status }; });
+      var list = waveSet === "alt" && ov.alternative && ov.alternative.length ? ov.alternative : ov.primary;
+      return list.map(function (w) { return { label: w.label, display: view === "pro" ? w.notation : w.label, time: w.time, price: w.price, fromPrice: w.fromPrice, status: w.status }; });
     }
     function draw() {
       var width = Math.max(300, Math.min(1100, chartHost.clientWidth || main.clientWidth - 24));
       chartHost.replaceChildren(Chart.render({ chart: a.chart, overlays: replayStep ? overlaysFromStep(replayStep) : a.overlays, scenarioKind: replayStep ? "PRIMARY" : kind, scenario: scenarioOf(kind),
         cutoff: replayStep ? replayStep.d : null, showPath: !replayStep, uncertain: replayStep ? replayStep.cl === "AMBIGUOUS" : uncertain,
-        waves: wavesOn ? waveMarks() : null, onWave: replayStep ? null : function (w) { waveInspector(a, w, rules, methodEv); },
+        waves: wavesOn ? waveMarks() : null, waveTone: !replayStep && waveSet === "alt" ? "alt" : null, onWave: replayStep || waveSet === "alt" ? null : function (w) { waveInspector(a, w, rules, methodEv); },
         width: width, height: width < 520 ? 360 : 430, bars: barsFor(), mode: mode, title: ticker + " · Chartbild · " + tfLabel, labels: true }));
       if (replayStep) chartHost.prepend(el("p", { class: "cb-replay-flag", role: "status", text: "Zeitreise · Stand " + X.dateDe(replayStep.d) + " · nur damals verfügbare Daten" }));
       chartCard.classList.toggle("is-replay", !!replayStep);
@@ -354,6 +363,9 @@
       abstain ? el("p", { class: "cb-unclear" }, [el("b", { text: "Keine verlässliche Elliott-Zählung. " }), el("span", { text: "Die aktuelle Kursstruktur lässt keine verlässliche Elliott-Zählung zu – Vision Universe zeigt hier bewusst keine Wellen." + (E.applicability.reasons && E.applicability.reasons.length ? " (" + E.applicability.reasons[0] + ")" : "") })]) : null,
       el("p", { class: "cb-small cb-dim", text: wavesOn && !abstain && E && E.primary ? "Tipp: Eine Wellenmarke antippen erklärt die Welle." : "" }),
       a.chart.closeOnly ? el("p", { class: "cb-small cb-dim", text: "Wochenschlusskurse ohne Volumen: Kerzen und Volumenbefunde sind für diesen Titel nicht verfügbar." }) : null]);
+
+    // ---------------------------------------------- Elliott-Struktur (Mission III §41–§47, §57, §98–§100)
+    var ewCard = elliottConsumerCard(a, abstain, function (set) { waveSet = set; wavesOn = true; draw(); });
 
     // ---------------------------------------------- Warum?
     var items = a.evidence.checklist.slice().sort(function (x, y) { var o = { SUPPORTS: 0, CONTRADICTS: 1, NEUTRAL: 2, UNAVAILABLE: 3 }; return o[x.status] - o[y.status] || FAMILY_ORDER.indexOf(x.family) - FAMILY_ORDER.indexOf(y.family); });
@@ -393,7 +405,8 @@
       };
       slider.addEventListener("input", upd);
       replay = X.section("Zeitreise", "Was hätte das Chartbild an einem früheren Tag gezeigt – nur mit den damals verfügbaren Daten.", [
-        el("div", { class: "cb-replay" }, [slider, el("div", { class: "cb-replay-ends" }, [el("span", { text: X.dateDe(steps[0].d) }), el("span", { text: "Heute" })]), rLabel]),
+        el("div", { class: "cb-replay" }, [el("div", { class: "cb-scrub-wrap" }, [replayTicks(steps), slider]), el("div", { class: "cb-replay-ends" }, [el("span", { text: X.dateDe(steps[0].d) }), el("span", { text: "Heute" })]), rLabel,
+          T && T.relabeling && T.relabeling.history && T.relabeling.history.length ? X.more("Zählungswechsel und Gründe (" + T.relabeling.history.length + ")", function () { return el("ol", { class: "cb-list cb-ew-history" }, T.relabeling.history.slice().reverse().map(function (h) { return el("li", {}, [el("b", { text: X.dateDe(h.d) + ": " }), el("span", { text: (h.to || "keine Zählung") + " — " + h.why })]); })); }) : null]),
         el("p", { class: "cb-small", text: "In den letzten " + steps.length + " " + (a.replay.unit === "Woche" ? "Wochen" : "Schritten") + " wechselte die Wellenlesart " + changes + "-mal." + (T && T.relabeling ? " Neuzuordnungs-Risiko: " + ({ LOW: "gering", MEDIUM: "mittel", HIGH: "hoch" }[T.relabeling.risk]) + "." : "") })
       ], null, null, "zeitreise");
       setTimeout(upd, 0);
@@ -427,10 +440,10 @@
     /* Reihenfolge je Layout-Variante (§63, Design-Review): a = minimal, b = Zonen zuerst, c = Szenario zuerst (gewählt). */
     /* Design-Review (UI_UX_SPEC §8): Variante „d" gewählt — Szenario-Tabs direkt über dem Chart, damit der Chart mit
        beschrifteten Zonen schon im ersten Bildschirm steht; Kacheln und Szenario-Satz darunter. a/b/c bleiben zum Vergleich. */
-    var tabsBlock = el("section", { class: "cb-scenario", "aria-label": "Szenario" }, [tabs]), textBlock = el("div", { class: "cb-sc-after" }, [scText]);
-    var order = { a: [hero, chartCard, levels, tabsBlock, textBlock], b: [hero, levels, chartCard, tabsBlock, textBlock], c: [hero, tabsBlock, textBlock, levels, chartCard], d: [hero, tabsBlock, chartCard, levels, textBlock] }[layout];
+    var tabsBlock = el("section", { class: "cb-scenario", "aria-label": "Szenario" }, [tabs]), textBlock = el("div", { class: "cb-sc-after" }, [scText, scenarioDifference(scenarioOf("PRIMARY"), scenarioOf("ALTERNATIVE"))]);
+    var order = { a: [hero, chartCard, levels, tabsBlock, textBlock, ewCard], b: [hero, levels, chartCard, tabsBlock, textBlock, ewCard], c: [hero, tabsBlock, textBlock, levels, chartCard, ewCard], d: [hero, tabsBlock, chartCard, levels, textBlock, ewCard] }[layout];
     host.append(el("div", { class: "cb-viewswitch" }, [viewSeg]));
-    order.forEach(function (n) { host.append(n); });
+    order.forEach(function (n) { if (n) host.append(n); });
     [why, evidence, replay, tfs].forEach(function (n) { if (n) host.append(n); });
     host.append(proOpen, proHost);
     host.append(el("footer", { class: "cb-foot" }, [el("p", { text: "Szenarien beschreiben Bedingungen – keine Vorhersage, keine Empfehlung, keine Order. Strukturklarheit beschreibt die Eindeutigkeit des Charts, nicht die Wahrscheinlichkeit eines Ergebnisses." }),
@@ -442,6 +455,61 @@
     chartHost.addEventListener("touchstart", function (e) { sx = e.touches[0].clientX; }, { passive: true });
     chartHost.addEventListener("touchend", function (e) { if (sx === null) return; var dx = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(dx) > 60 && kinds.length > 1) { var i = kinds.indexOf(kind); selectKind(kinds[(i + (dx < 0 ? 1 : -1) + kinds.length) % kinds.length]); } }, { passive: true });
     var rt; global.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { if (chartHost.isConnected) draw(); }, 150); });
+  }
+
+  /** Was die Szenarien unterscheidet (§46): Grenzen in einem Satz. */
+  function scenarioDifference(p, alt) {
+    if (!p || !alt) return null;
+    var parts = [];
+    if (p.invalidation) parts.push("Das Hauptszenario gilt, solange der Schlusskurs " + (p.invalidation.direction === "below" ? "über " : "unter ") + fmt(p.invalidation.price) + " bleibt.");
+    if (alt.trigger && isNum(alt.trigger.price)) parts.push("Die Alternative rückt in den Vordergrund " + (alt.direction === "BEARISH" ? "unter " : "über ") + fmt(alt.trigger.price) + ".");
+    else if (alt.invalidation) parts.push("Die Alternative wäre " + (alt.invalidation.direction === "below" ? "unter " : "über ") + fmt(alt.invalidation.price) + " widerlegt.");
+    return parts.length ? el("p", { class: "cb-sc-diff" }, [el("b", { text: "Was die Szenarien unterscheidet: " }), el("span", { text: parts.join(" ") })]) : null;
+  }
+  /** Markierungen auf der Zeitreise-Leiste: Wochen, in denen die Wellenlesart wechselte (§61). */
+  function replayTicks(steps) {
+    var box = el("div", { class: "cb-scrub-ticks", "aria-hidden": "true" });
+    for (var q = 1; q < steps.length; q++) {
+      var a0 = steps[q - 1].ew, b0 = steps[q].ew;
+      var kind = !a0 && !b0 ? null : !a0 || !b0 ? "flip" : a0.key !== b0.key ? "change" : null;
+      if (kind) box.append(el("span", { class: "cb-tick cb-tick-" + kind, style: "left:" + (100 * q / (steps.length - 1)).toFixed(2) + "%" }));
+    }
+    return box;
+  }
+  /** Elliott-Struktur fuer die Einfach-Ansicht: Hauptlesart = derzeit bevorzugt, nicht "richtig"; Grenze zuerst; Alternative
+      gleichwertig erreichbar; ohne verlaessliche Zaehlung die Marktstruktur statt einer leeren Stelle (§98–§100). */
+  function elliottConsumerCard(a, abstain, onSet) {
+    var E = a.pro.elliott, c = E && E.primary, P = a.pro;
+    var lvl = { HIGH: "hoch", MODERATE: "mittel", LOW: "niedrig" };
+    var head = el("div", { class: "cb-ew-head" }, [el("span", { class: "cb-ew-k", text: "Elliott-Struktur" }), el("span", { class: "cb-badge cb-badge-experimental", text: "Experimentelles Modell" })]);
+    if (!c || abstain) {
+      var t = P.trend, st = function (x) { return x && x.state === "UP" ? "steigend" : x && x.state === "DOWN" ? "fallend" : "ohne klare Richtung"; };
+      var sup = (P.supportResistance.supports || [])[0], res = (P.supportResistance.resistances || [])[0];
+      return el("section", { class: "cb-ew-card is-abstain", "aria-label": "Elliott-Struktur" }, [head,
+        el("p", { class: "cb-ew-main", text: "Keine verlässliche Zählung" }),
+        el("p", { class: "cb-ew-sub", text: "Die aktuelle Kursstruktur lässt keine verlässliche Elliott-Zählung zu. Stattdessen die Marktstruktur:" }),
+        el("dl", { class: "qx-kv cb-ew-kv" }, [].concat.apply([], [
+          ["Übergeordneter Trend", st(t && t.primary)], ["Mittelfristig", st(t && t.secondary)],
+          sup ? ["Nächste Unterstützung", zoneText(sup)] : null, res ? ["Nächster Widerstand", zoneText(res)] : null
+        ].filter(Boolean).map(function (r) { return [el("dt", { text: r[0] }), el("dd", { class: "num", text: r[1] })]; })))]);
+    }
+    var appl = E.applicability ? E.applicability.level : "LOW", alt = (E.alternatives || [])[0];
+    var possible = !c.complete && appl !== "HIGH";
+    var main = c.complete ? c.patternName + " abgeschlossen" : (possible ? "Mögliche " : "") + "Welle " + c.currentWave.label + " · " + c.patternName;
+    var amb = E.ambiguity ? { STRUCTURE: "Mehrere gültige Lesarten", DEGREE: "Dieselbe Struktur, auf anderer Ebene zählbar", LABEL: "Gleiche Wellen, anderes Muster möglich", NONE: "Keine materiell andere Lesart" }[E.ambiguity.kind] : null;
+    var inv = c.invalidation ? "Schlusskurs " + (c.invalidation.direction === "below" ? "unter " : "über ") + fmt(c.invalidation.price) : null;
+    var kids = [head, el("p", { class: "cb-ew-main", text: main }),
+      el("dl", { class: "qx-kv cb-ew-kv" }, [].concat.apply([], [
+        ["Modellstatus", "Experimentell"], ["Strukturklarheit", lvl[appl] || "–"], amb ? ["Lesarten", amb] : null,
+        inv ? ["Falsch, wenn", inv] : null
+      ].filter(Boolean).map(function (r) { return [el("dt", { text: r[0] }), el("dd", { class: "num", text: r[1] })]; })))];
+    if (alt) {
+      var altInv = alt.invalidation ? " – falsch bei Schluss " + (alt.invalidation.direction === "below" ? "unter " : "über ") + fmt(alt.invalidation.price) : "";
+      var altLine = el("p", { class: "cb-ew-alt", text: "Alternative: " + alt.patternName + (alt.complete ? " abgeschlossen" : ", Welle " + alt.currentWave.label) + altInv });
+      kids.push(el("div", { class: "cb-ew-switch" }, [segmented("Lesart im Chart", [["primary", "Hauptlesart"], ["alt", "Alternative"]], "primary", onSet)]), altLine);
+    }
+    kids.push(el("p", { class: "cb-small cb-dim", text: "Hauptlesart = derzeit bevorzugte Interpretation, nicht „die richtige Zählung“. Keine Wahrscheinlichkeit, kein Signal." }));
+    return el("section", { class: "cb-ew-card", "aria-label": "Elliott-Struktur" }, kids);
   }
 
   /** Elliott-Transparenz (§54/§123): Zaehlung, Grad, Status, Count Quality, Verzug, Regeln, Grad-Passung, Evidenz. */

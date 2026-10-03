@@ -15,10 +15,10 @@ const Canonical = require(join(ROOT, "quant/engines/technical/canonical-bars.js"
 const Ctx = require(join(ROOT, "quant/engines/technical/ti/context.js"));
 const EV3 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js"));
 function arg(n, d) { const i = process.argv.indexOf("--" + n); return i >= 0 ? process.argv[i + 1] : d; }
-const split = arg("split", "DEVELOPMENT"), N = +arg("n", "150");
+const split = arg("split", "DEVELOPMENT"), N = +arg("n", "150"), OFF = +arg("offset", "0");   // HOLDOUT-3: --offset 120 = Titel, die frueher nicht ausgewertet wurden
 const L = join(ROOT, "quant/data/market/discover-series-long"), D = join(ROOT, "quant/data/market/discover-series");
 const tickers = readdirSync(D).filter((f) => f.startsWith("ref_")).map((f) => f.replace(/^ref_|\.json$/g, "")).filter((t) => !/_/.test(t) && fnv1a(t.split(/[_.-]/)[0]) % 10 >= 3 && ew3Split(t) === split && existsSync(join(L, "ref_" + t + ".json")))
-  .sort((a, b) => fnv1a(a + "|mr") - fnv1a(b + "|mr")).slice(0, N);
+  .sort((a, b) => fnv1a(a + "|mr") - fnv1a(b + "|mr")).slice(OFF, OFF + N);
 const rows = [];
 for (const t of tickers) {
   const dj = readJson(join(D, "ref_" + t + ".json")), wj = readJson(join(L, "ref_" + t + ".json"));
@@ -44,5 +44,5 @@ const out = { schemaVersion: "vu-elliott-multires-1.0.0", generatedAt: new Date(
   whenBothApplicable: { n: both.length, direction: share((r) => r.direction, both), nested: share((r) => r.nested, both) },
   abstainWeekly: share((r) => r.wAbstain), abstainDaily: share((r) => r.dAbstain), rows };
 mkdirSync(join(ROOT, "quant/data/technical-intelligence/elliott-validation/multires"), { recursive: true });
-writeFileSync(join(ROOT, "quant/data/technical-intelligence/elliott-validation/multires", "multires-" + split.toLowerCase() + ".json"), JSON.stringify(out, null, 1));
+writeFileSync(join(ROOT, "quant/data/technical-intelligence/elliott-validation/multires", "multires-" + split.toLowerCase() + (arg("tag", "") ? "-" + arg("tag", "") : "") + ".json"), JSON.stringify(out, null, 1));
 console.log(JSON.stringify(Object.assign({}, out, { rows: undefined })));

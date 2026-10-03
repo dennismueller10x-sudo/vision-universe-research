@@ -9,9 +9,11 @@ import { tmpdir } from "node:os";
 const require = createRequire(import.meta.url);
 const S = require("../lib/validation-stats.cjs");
 const DIR = (process.env.VU_CALIB_DIR || tmpdir()) + "/";
-export const feat = (r) => [1, r.q, r.amb === "STRUCTURE" ? Math.min(1, Math.max(0, r.clarity || 0) / 0.15) : 1, Math.min(4, r.z || 0) / 4, r.amb === "STRUCTURE" ? 1 : 0, r.complete ? 0 : 1,
+/* Red-Team 3.2 M2: das Strukturmehrdeutigkeits-Merkmal (Index 4) ist fest 0 (sonst bewertete das Modell Lesarten MIT konkurrierender
+   Alternative hoeher als ohne); geeicht wird nur auf abgeschlossenen Mustern — laufende Zaehlungen sind ohnehin hoechstens NIEDRIG. */
+export const feat = (r) => [1, r.q, r.amb === "STRUCTURE" ? Math.min(1, Math.max(0, r.clarity || 0) / 0.15) : 1, Math.min(4, r.z || 0) / 4, 0, r.complete ? 0 : 1,
                             r.hier === undefined || r.hier === null ? 0 : 1 - r.hier, r.prop === undefined || r.prop === null ? 0.5 : r.prop, r.complete ? 0 : (r.waveFrac || 0)];
-function load(split, layouts) { const out = {}; for (const L of layouts) { const f = DIR + "appl32-" + split + "-" + L + ".json"; if (existsSync(f)) out[L] = JSON.parse(readFileSync(f)).filter((r) => r.q != null); } return out; }
+function load(split, layouts) { const out = {}; for (const L of layouts) { const f = DIR + "appl32-" + split + "-" + L + ".json"; if (existsSync(f)) out[L] = JSON.parse(readFileSync(f)).filter((r) => r.q != null && !r.mid); } return out; }
 if (import.meta.url === "file://" + process.argv[1]) {
   const by = load("DEVELOPMENT", ["A", "B", "C1", "C3"]);
   const nmin = Math.min(...Object.values(by).map((a) => a.length));

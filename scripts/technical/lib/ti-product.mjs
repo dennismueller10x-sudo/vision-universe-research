@@ -3,7 +3,7 @@
    Drift-Pruefung.
 
    1. ELLIOTT-REPLAY MIT PERSISTENZ
-      Die Elliott-Engine (2.2) haelt eine Lesart, bis eine andere um mehr als
+      Die Elliott-Engine (3.x, PRODUCT_METHODOLOGY) haelt eine Lesart, bis eine andere um mehr als
       die Hysterese besser ist. Dafuer braucht sie den Vortageszustand. Das
       Produkt rechnet deshalb die letzten WARMUP + STEPS Bars sequenziell
       (nur Elliott, billig) und uebergibt den Zustand von t−1 an die
@@ -32,6 +32,10 @@ function runElliott(series, prep, t, prev, meth) {
 }
 
 export const REPLAY_STEPS = 26, WARMUP = 26;
+/** Produktionsmethodik (Mission III §32–§34): Elliott Engine 3.x als EXPERIMENTELLES STRUKTURMODELL, Konfluenzgewicht 0.
+    Build und Drift-Pruefung nutzen dieselbe Vorgabe; ein Aufrufer kann sie ueber opts.methodology ersetzen. */
+export const PRODUCT_METHODOLOGY = Object.freeze({ elliottEngine: "v3" });
+export function withProductMethodology(opts) { return Object.assign({ methodology: PRODUCT_METHODOLOGY }, opts || {}); }
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 const r4 = (v) => (isNum(v) ? Math.round(v * 1e4) / 1e4 : v);
 
@@ -91,6 +95,7 @@ export function elliottReplay(series, P, steps = REPLAY_STEPS, warm = WARMUP, me
 
 /** Endanalyse mit Persistenz (identisch in Build und Drift-Pruefung). */
 export function analyzeProduct(series, opts) {
+  opts = withProductMethodology(opts);
   const P = TI.prepare(series);
   const rep = elliottReplay(series, P, REPLAY_STEPS, WARMUP, opts && opts.methodology);
   const t = series.length - 1;
@@ -100,6 +105,7 @@ export function analyzeProduct(series, opts) {
 
 /** Kompakte Replay-Schnappschuesse: was die Analyse an jedem der letzten Schritte gezeigt haette. */
 export function replaySnapshots(series, P, rep, opts, every) {
+  opts = withProductMethodology(opts);
   const n = series.length, out = [];
   for (let t = n - REPLAY_STEPS * every; t < n; t += every) {
     if (t < 1 || !(t in rep.states) && every === 1) continue;
