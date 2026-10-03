@@ -55,6 +55,7 @@ test("Öffentliche Schicht: aktiv, Name, Preise, eindeutig, Standard", () => {
   assert.equal(T.layerOf({ ...base, name: null }).layer, "REVIEW");
   assert.equal(T.layerOf({ ...base, productType: "CEF" }).layer, "REVIEW");
   assert.equal(T.layerOf({ ...base, retirementClass: "NICHT_EINORDENBAR" }).layer, "REVIEW");
+  assert.equal(T.layerOf({ ...base, otc: true }).layer, "REVIEW");
 });
 
 test("Preis-Anomalie wird erkannt", () => {

@@ -151,7 +151,7 @@ async function main() {
   const scrub = (s) => String(s).split(KEY).join("***");
   const WORK = join(root, ".market-cache/vorsorge");
   const OUT = join(root, "vorsorge/data");
-  mkdirSync(WORK, { recursive: true }); mkdirSync(join(OUT, "ingest"), { recursive: true }); mkdirSync(join(OUT, "series"), { recursive: true });
+  mkdirSync(join(WORK, "series"), { recursive: true }); mkdirSync(join(OUT, "ingest"), { recursive: true }); mkdirSync(join(OUT, "series"), { recursive: true });
   const t0 = Date.now();
   const deadline = t0 + MAX_MIN * 60000;
   const gap = Math.ceil(3600000 / Math.max(1, PER_HOUR));
@@ -222,7 +222,8 @@ async function main() {
     if (!px.ok) { cp.failed[sym] = { symbol: sym, endpoint: "prices", status: px.status, reason: px.error || "HTTP_" + px.status, retryable: retryable(px.status), attempts: px.attempts }; continue; }
     const sr = seriesRecord(sym, px.body, cp.meta[sym]);
     if (!sr.ok) { cp.processed[sym] = "NO_PRICES"; cp.failed[sym] = { symbol: sym, endpoint: "prices", status: 200, reason: sr.reason, retryable: false, attempts: px.attempts }; continue; }
-    writeFileSync(join(OUT, "series", sym + ".json"), JSON.stringify(sr.record));
+    // Erst in die (gecachte) Arbeitsablage, am Ende ins Repository - ein abgewiesener Push verliert nichts
+    writeFileSync(join(WORK, "series", sym + ".json"), JSON.stringify(sr.record));
     cp.meta[sym].series = { from: sr.record.priceHistoryFrom, asOf: sr.record.asOf, observations: sr.record.observations, totalReturn: sr.record.totalReturn.state,
       recycledTickerSuspected: sr.record.recycledTickerSuspected, dividendEvents: sr.record.dividendEvents };
     cp.processed[sym] = "OK"; delete cp.failed[sym]; cp.lastSymbol = sym; done++;
@@ -230,7 +231,9 @@ async function main() {
   }
   save();
 
-  // Ausgaben
+  // Ausgaben: alle bisher verarbeiteten Reihen (auch aus frueheren Laeufen) ins Repository
+  const { readdirSync, copyFileSync } = await import("node:fs");
+  for (const f of readdirSync(join(WORK, "series"))) if (cp.processed[f.replace(/\.json$/, "")] === "OK") copyFileSync(join(WORK, "series", f), join(OUT, "series", f));
   const rowsBySym = {};
   cat.rows.filter((r) => r.active).forEach((r) => { (rowsBySym[r.symbol] = rowsBySym[r.symbol] || []).push(r); });
   const universe = tickers.filter((s) => cp.processed[s] === "OK").map((s) => {

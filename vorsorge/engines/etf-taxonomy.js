@@ -178,6 +178,7 @@
     if (!e.name) reasons.push("kein Name");
     if (!e.priceHistoryAvailable) reasons.push("keine Kursreihe");
     if (e.priceAnomaly) reasons.push("Kursreihe auffällig: " + e.priceAnomaly);
+    if (e.otc) reasons.push("OTC-/Pink-Notiz: kein regulierter Primärhandel, Kurse oft lückenhaft");
     if (e.productType === "CEF" || e.productType === "MUTUAL_FUND") reasons.push("kein börsengehandelter Indexfonds (" + e.productType + ")");
     if (reasons.length) return { layer: "REVIEW", reasons: reasons };
     if (e.retirementClass === "NICHT_EINORDENBAR") return { layer: "REVIEW", reasons: ["nicht einordenbar"] };

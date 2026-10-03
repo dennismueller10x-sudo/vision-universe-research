@@ -246,7 +246,7 @@ export function build() {
       priceAnomaly: anomaly, tickerReuseSuspected: tickerReuse,
       priceHistoryFrom: rec ? rec.priceHistoryFrom : null, distributionPolicy: dist,
       distributionBasis: dist ? "Ausschüttungen in der Kursreihe beobachtet (" + rec.dividendEvents + " Ereignisse)" : null,
-      ucits
+      ucits, otc: /^(PINK|OTC|OTCGREY|OTCMKTS|OTCBB|OTCQB|OTCQX|OTCD|OTCCE|EXPM|NMFQS)$/.test(String(e.exchange || "").toUpperCase())
     });
     full.complex = full.retirementClass !== "STANDARD";
     const layer = Tax.layerOf(full);

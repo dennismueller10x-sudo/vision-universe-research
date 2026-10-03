@@ -79,7 +79,7 @@
   VS.ASSET = { EQUITY: "Aktien", BOND: "Anleihen", MONEY_MARKET: "Geldmarkt", COMMODITY: "Rohstoffe", CRYPTO: "Krypto", REAL_ESTATE: "Immobilien", MULTI_ASSET: "Mischfonds", UNKNOWN: "Nicht zugeordnet" };
   VS.STATUS_TEXT = {
     INSUFFICIENT_HISTORY: "Historie zu kurz", NO_HISTORY: "Keine Kursdaten", NEEDS_DAILY_DATA: "Nur mit Tagesdaten",
-    HOLDINGS_PENDING: "Noch nicht verfügbar (Holdings folgen)", TER_SOURCE_PENDING: "Noch nicht verfügbar (Kostenquelle folgt)",
+    HOLDINGS_PENDING: "Datenquelle noch nicht angebunden (Holdings)", TER_SOURCE_PENDING: "Datenquelle noch nicht angebunden (Kosten)",
     REGION_UNKNOWN: "Noch nicht verfügbar (Region unbekannt)", DATA_PENDING: "Daten folgen"
   };
 
@@ -91,13 +91,52 @@
     return VS.cache[url];
   }
   VS.getJSON = getJSON;
+  /** Indexzeile -> Objekt (gleiche Form fuer alle Bildschirme). */
+  function decodeRow(f, r) {
+    var o = {}; for (var i = 0; i < f.length; i++) o[f[i]] = r[i];
+    var e = { slug: o.slug, listingId: o.id, symbol: o.symbol, name: o.name, issuer: o.issuer, exchange: o.exchange, currency: o.currency,
+      productType: o.productType, assetClass: o.assetClass, region: o.region, index: o.index, theme: o.theme, category: o.category,
+      strategy: o.strategy, retirementClass: o.retirementClass, layer: o.layer, leverage: o.leverage || 1, inverse: !!o.inverse,
+      status: o.status, singleStockUnderlying: o.single, from: o.from, coverage: o.coverage, distributionPolicy: o.dist, ucits: o.ucits,
+      complex: o.retirementClass !== "STANDARD", consumerVisible: o.layer === "PUBLIC_ANALYSIS" || o.layer === "COMPLEX",
+      priceHistoryAvailable: o.hy !== null && o.hy !== undefined };
+    e.m = e.priceHistoryAvailable ? { price: o.price, priceDate: o.priceDate, d1: o.d1, hy: o.hy, vol: o.vol, mdd: o.mdd, trend: o.trend, rs: o.rs,
+      t1Y: o.t1Y, t5Y: o.t5Y, p: { "1W": o.p1W, "1M": o.p1M, "3M": o.p3M, "6M": o.p6M, "YTD": o.pYTD, "1Y": o.p1Y, "3Y": o.p3Y, "5Y": o.p5Y, "10Y": o.p10Y, "MAX": o.pMAX } } : null;
+    return e;
+  }
+  VS.decodeRow = decodeRow;
   VS.master = function () {
-    return getJSON("/vorsorge/data/etf-master.json").then(function (m) {
-      if (!m._bySymbol) { m._bySymbol = {}; m.etfs.forEach(function (e) { if (!m._bySymbol[e.symbol] || e.status === "ACTIVE") m._bySymbol[e.symbol] = e; }); }
+    return getJSON("/vorsorge/data/etf-index.json").then(function (m) {
+      if (!m._bySymbol) {
+        m.etfs = m.rows.map(function (r) { return decodeRow(m.fields, r); });
+        m._bySymbol = {}; m._bySlug = {};
+        var rank = { PUBLIC_ANALYSIS: 3, COMPLEX: 2, REVIEW: 1, ARCHIVE: 0 };
+        m.etfs.forEach(function (e) {
+          m._bySlug[e.slug] = e;
+          var cur = m._bySymbol[e.symbol];
+          if (!cur || rank[e.layer] > rank[cur.layer]) m._bySymbol[e.symbol] = e;
+        });
+        m.find = function (key) { key = String(key || "").toUpperCase(); return m._bySlug[key] || m._bySymbol[key] || null; };
+      }
       return m;
     });
   };
-  VS.etf = function (sym) { return getJSON("/vorsorge/data/etf/" + encodeURIComponent(sym) + ".json"); };
+  /** Detail + dekodierte Reihen. key = Slug oder Ticker. */
+  VS.etf = function (key) {
+    return VS.master().then(function (m) {
+      var e = m.find(key);
+      if (!e) throw new Error("NOT_IN_INDEX");
+      return getJSON("/vorsorge/data/etf/" + encodeURIComponent(e.slug) + ".json");
+    }).then(function (d) {
+      if (d.series !== undefined || !d.seriesPath) { d.series = d.series || null; return d; }
+      return getJSON(d.seriesPath).then(function (s) {
+        var C = V.Codec;
+        d.series = { daily: C.decode(s.price.daily), weekly: C.decode(s.price.weekly), basis: "PRICE_RETURN",
+          total: s.total ? { daily: C.decode(s.total.daily), weekly: C.decode(s.total.weekly) } : null, record: s };
+        return d;
+      }).catch(function () { d.series = null; d.seriesError = true; return d; });
+    });
+  };
   VS.rules = function () {
     return Promise.all(["2027-DE", "2026-DE-riester", "fruehstart-DE"].map(function (f) { return getJSON("/vorsorge/data/funding-rules/" + f + ".json"); }));
   };
@@ -118,14 +157,24 @@
     return '<p class="vs-disclaimer">' + VS.esc(DISCLAIMER) + ' Vision Universe ist kein Broker, kein Depotanbieter und kein Vermittler: Wir verwahren kein Kapital und eröffnen keine Depots. Die Umsetzung erfolgt bei einem Anbieter deiner Wahl. <a href="#/daten">Datenquellen & Datenqualität</a></p>';
   }
   VS.pending = function (title, text) { return '<div class="vs-pending" role="note"><strong>' + VS.esc(title) + '</strong>' + VS.esc(text) + '</div>'; };
+  VS.RETIRE = { STANDARD: "Standard", KOMPLEX: "Komplex", SEHR_KOMPLEX: "Sehr komplex", NICHT_EINORDENBAR: "Nicht einordenbar" };
+  VS.STRATEGY = { LEVERAGED: "Hebel", INVERSE: "Short", LEVERAGED_INVERSE: "Hebel + Short", SINGLE_STOCK: "Einzelaktie", OPTION_INCOME: "Optionsprämien",
+    COVERED_CALL: "Covered Call", BUFFER: "Puffer", DEFINED_OUTCOME: "Defined Outcome", CRYPTO: "Krypto", COMMODITY: "Rohstoff", THEMATIC: "Thema",
+    BOND: "Anleihen", EQUITY: "Aktien", MULTI_ASSET: "Mischfonds", MONEY_MARKET: "Geldmarkt / ultrakurz", UNKNOWN: "Unbekannt" };
   VS.badges = function (e) {
     var b = [];
-    if (e.complex) b.push('<span class="vs-badge complex" title="Hebel, Short, Optionsstrategie oder Krypto – nicht wie einen normalen langfristigen ETF behandeln.">⚠ Komplexes Produkt</span>');
+    var rc = e.retirementClass || (e.complex ? "KOMPLEX" : "STANDARD");
+    if (rc === "SEHR_KOMPLEX") b.push('<span class="vs-badge bad" title="Hebel, Short oder Einzelaktie – für langfristige Vorsorge nicht konstruiert.">⚠ Sehr komplex</span>');
+    else if (rc === "KOMPLEX") b.push('<span class="vs-badge complex" title="Optionen, Puffer, Krypto oder Rohstoff – Verhalten weicht von breit gestreuten ETFs ab.">⚠ Komplexes Produkt</span>');
+    else if (rc === "NICHT_EINORDENBAR") b.push('<span class="vs-badge">Nicht einordenbar</span>');
+    else b.push('<span class="vs-badge ok">Standard-Bauart</span>');
+    if (e.productType && e.productType !== "ETF") b.push('<span class="vs-badge">' + VS.esc(e.productType) + '</span>');
     if (e.leverage > 1) b.push('<span class="vs-badge complex">' + e.leverage + 'x Hebel</span>');
     if (e.inverse) b.push('<span class="vs-badge complex">Short</span>');
-    if (e.status === "INACTIVE") b.push('<span class="vs-badge bad">Nicht mehr gehandelt</span>');
-    if (e.status === "REVIEW") b.push('<span class="vs-badge bad">Identität in Prüfung</span>');
-    if (e.m && e.m.hy !== undefined && e.m.hy < 1) b.push('<span class="vs-badge">Historie &lt; 1 Jahr</span>');
+    if (e.singleStockUnderlying) b.push('<span class="vs-badge complex">Einzelaktie ' + VS.esc(e.singleStockUnderlying) + '</span>');
+    if (e.status === "INACTIVE") b.push('<span class="vs-badge bad">Inaktiv · nicht mehr gehandelt</span>');
+    if (e.layer === "REVIEW") b.push('<span class="vs-badge bad">In Prüfung</span>');
+    if (e.m && e.m.hy !== undefined && e.m.hy !== null && e.m.hy < 1) b.push('<span class="vs-badge">Historie &lt; 1 Jahr</span>');
     if (e.currency && e.currency !== "EUR") b.push('<span class="vs-badge">' + VS.esc(e.currency) + '</span>');
     return '<span class="vs-badges">' + b.join("") + '</span>';
   };
