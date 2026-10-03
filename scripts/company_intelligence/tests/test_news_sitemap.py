@@ -75,6 +75,15 @@ class RealEntityDefects(unittest.TestCase):
   self.assertEqual(r.resolve({'headline':'ConConAI Reaches 200 Wallets as $CON Utility Develops'},{'type':'RSS'}),[])
 
 class DomainOwnershipTests(unittest.TestCase):
+ def test_real_unrelated_corporate_identity_metadata(self):
+  from company_intelligence.discovery import validate_candidate
+  import html
+  fixture=json.loads((Path(__file__).parent/'fixtures/domain-ownership-metadata.json').read_text())
+  for case in fixture['cases']:
+   class HTTP:
+    def get(self,*args,**kwargs):return {'body':('<meta property="og:site_name" content="'+html.escape(case['corporateHeader'],quote=True)+'"><footer>'+html.escape(case['copyright'])+'</footer>').encode(),'finalUrl':case['url']}
+   c=company(case['names'][0]);c['names']=case['names']
+   self.assertEqual(validate_candidate(c,{'url':case['url'],'evidence':'OBSERVED_METADATA_FIXTURE'},HTTP(),NOW)['status'],'VALIDATED')
  def verify(self,name,title,body):
   from company_intelligence.discovery import validate_candidate
   class HTTP:
@@ -89,6 +98,18 @@ class DomainOwnershipTests(unittest.TestCase):
   self.assertEqual(self.verify('Helmerich & Payne Inc.','H&P Inc.','<main>'+('Drilling products '*100)+'</main><footer>© 2026 Helmerich &amp; Payne, Inc.</footer>')['status'],'VALIDATED')
  def test_corporation_and_corp_are_same_legal_suffix(self):
   self.assertEqual(self.verify('Matthews International Corp.','Matthews International Corporation','<footer>© 2026 Matthews International Corporation</footer>')['status'],'VALIDATED')
+ def test_exact_multiword_footer_can_omit_suffix_with_matching_header(self):
+  self.assertEqual(self.verify('Werner Enterprises Inc.','Werner Enterprises','<footer>© 2026 Werner Enterprises. All rights reserved.</footer>')['status'],'VALIDATED')
+  with self.assertRaises(SourceError):self.verify('Werner Enterprises Inc.','Werner Enterprises','<footer>© 2026 Werner Enterprises Travel Ltd.</footer>')
+  with self.assertRaises(SourceError):self.verify('Root Inc.','Root','<footer>© 2026 Root. All rights reserved.</footer>')
+ def test_missing_title_uses_metadata_without_inventing_identity(self):
+  from company_intelligence.discovery import validate_candidate
+  class HTTP:
+   def get(self,*args,**kwargs):return {'body':b'<meta property="og:site_name" content="BorgWarner"><footer>Copyright 2026 BorgWarner Inc.</footer>','finalUrl':'https://issuer.example/'}
+  self.assertEqual(validate_candidate(company('BorgWarner Inc.'),{'url':'https://issuer.example/','evidence':'CANDIDATE_ONLY'},HTTP(),NOW)['status'],'VALIDATED')
+ def test_generic_home_title_requires_corporate_metadata_and_exact_owner(self):
+  self.assertEqual(self.verify('BorgWarner Inc.','Home','<meta property="og:site_name" content="BorgWarner"><footer>© 2026 BorgWarner Inc.</footer>')['status'],'VALIDATED')
+  with self.assertRaises(SourceError):self.verify('Meta Platforms Inc.','Meta Platforms Inc.','<meta property="og:site_name" content="Meta Platforms"><p>Customer Meta Platforms Inc.</p><footer>© 2026 Other Research Ltd.</footer>')
 
 class PrefixEntityTests(unittest.TestCase):
  def test_provident_services_does_not_match_provident_holdings(self):

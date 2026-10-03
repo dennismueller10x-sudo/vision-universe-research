@@ -133,6 +133,18 @@ def provider_type(url, links):
 
 
 def discover_ir(company, official_site, http, now, max_pages=3):
+    """Retain independently verified endpoints when a bounded walk is interrupted."""
+    from .transport import BudgetExhausted
+    partial = {'sources': {}, 'configurations': []}
+    try:
+        return _discover_ir(company, official_site, http, now, max_pages, partial)
+    except BudgetExhausted as exc:
+        exc.discoverySources = list(partial['sources'].values())
+        exc.discoveryConfigurations = partial['configurations']
+        raise
+
+
+def _discover_ir(company, official_site, http, now, max_pages, partial):
     """Only walk links from a verified official root. No guessed domains or per-company scraper."""
     from .discovery import same_web_host
     homepage = http.get(official_site, ttl=86400)
@@ -149,7 +161,7 @@ def discover_ir(company, official_site, http, now, max_pages=3):
     ir_links = [l for l in links if ir_page(l)]
     pages = list(dict.fromkeys([homepage['finalUrl']] + [l['url'] for l in ir_links if l['url'] != homepage['finalUrl']]))[:max_pages]
     trusted_pages = set(pages)
-    sources, configs = {}, []
+    sources, configs = partial['sources'], partial['configurations']
     warnings = []
     def optional_page(url):
         try:
@@ -171,7 +183,7 @@ def discover_ir(company, official_site, http, now, max_pages=3):
         links = parse_links(response['body'], response['finalUrl'])
         from .platforms import fingerprint, endpoints
         provider = fingerprint(response['body'], provider_type(response['finalUrl'], links))
-        feed_links = [l for l in links if any(m in l['type'] for m in ('rss', 'atom', 'feed+json')) or re.search(r'rss(?:handler|\.aspx|/)|\b(rss|atom)\b|\.rss(?:\?|$)', l['url'] + ' ' + l['text'], re.I)]
+        feed_links = [l for l in links if not re.search(r'/comments/feed(?:/|$)|[?&]feed=comments',l['url'],re.I) and (any(m in l['type'] for m in ('rss', 'atom', 'feed+json')) or re.search(r'rss(?:handler|\.aspx|/)|\b(rss|atom)\b|\.rss(?:\?|$)', l['url'] + ' ' + l['text'], re.I))]
         extra = None
         # Follow one linked newsroom/event page if no structured feed is advertised.
         if not feed_links and len(trusted_pages) < max_pages + 1:
@@ -251,7 +263,9 @@ def discover_ir(company, official_site, http, now, max_pages=3):
                     for actual in advertised[:3]:
                         actual_response = http.get(actual['url'], ttl=86400)
                         actual_entries = parse_feed(actual_response['body'], actual_response['finalUrl'])
-                        valid_entries = [i for i in actual_entries if i.get('url') and i.get('headline') and (i.get('publishedAt') or i.get('updatedAt') or (re.search(r'events|financialevent', actual['url'], re.I) and re.search(r'\b20\d{2}\b', i['headline']))) and any(within_domain(i['url'], u) for u in [official_site, page, actual['url']])]
+                        from .news_quality import eligible,wordpress_feed
+                        wp=wordpress_feed(actual_response['body'])
+                        valid_entries = [i for i in actual_entries if eligible(i,company,wp) and i.get('url') and i.get('headline') and (i.get('publishedAt') or i.get('updatedAt') or (re.search(r'events|financialevent', actual['url'], re.I) and re.search(r'\b20\d{2}\b', i['headline']))) and any(within_domain(i['url'], u) for u in [official_site, page, actual['url']])]
                         if valid_entries:
                             sid = stable_id(company['companyId'], actual['url'])
                             is_events = is_event_feed(actual['url'])
@@ -265,7 +279,9 @@ def discover_ir(company, official_site, http, now, max_pages=3):
                 # Delegated provider feed may host article links itself, only when linked by validated IR.
                 allowed.append(link['url'])
                 is_events = is_event_feed(link['url'])
-                valid = [i for i in entries if i.get('url') and i.get('headline') and (i.get('publishedAt') or i.get('updatedAt') or (is_events and re.search(r'\b20\d{2}\b', i['headline']))) and any(within_domain(i['url'], u) for u in allowed)]
+                from .news_quality import eligible,wordpress_feed
+                wp=wordpress_feed(feed['body'])
+                valid = [i for i in entries if eligible(i,company,wp) and i.get('url') and i.get('headline') and (i.get('publishedAt') or i.get('updatedAt') or (is_events and re.search(r'\b20\d{2}\b', i['headline']))) and any(within_domain(i['url'], u) for u in allowed)]
                 if not valid:
                     continue
                 sid = stable_id(company['companyId'], link['url'])

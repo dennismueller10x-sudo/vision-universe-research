@@ -81,6 +81,15 @@ def validate_candidate(company, candidate, http, now):
     body = response['body'].decode('utf-8', 'replace')
     title = re.search(r'<title[^>]*>(.*?)</title>', body, re.I | re.S)
     header = normalize(title[1] if title else '')
+    from html.parser import HTMLParser
+    class CorporateHeader(HTMLParser):
+        values=[]
+        def handle_starttag(self,tag,attrs):
+            attrs=dict(attrs)
+            if tag=='meta' and (attrs.get('property') or attrs.get('name') or '').casefold() in ('og:site_name','og:title','application-name'):
+                self.values.append(clean(attrs.get('content'),200))
+    metadata=CorporateHeader();metadata.values=[];metadata.feed(body)
+    header=normalize(' '.join([header]+metadata.values))
     def legal_normalize(value):
         value = re.sub(r'/[A-Z]{2,3}/?$', '', str(value), flags=re.I)
         value = re.sub(r'[^\w]+', ' ', clean(value, 2 * 1024 * 1024).casefold()).strip()
@@ -100,9 +109,19 @@ def validate_candidate(company, candidate, http, now):
     # while the copyright footer discloses the precise parent/legal owner.
     # A customer mention in the page body is not this ownership evidence.
     copyright_text = re.sub(r'<[^>]*>', ' ', visible_body)
-    copyright_regions = [legal_normalize(m[0]) for m in re.finditer(r'(?:©|&copy;|copyright).{0,300}', copyright_text, re.I | re.S)]
+    copyright_raw = [clean(m[0],300) for m in re.finditer(r'(?:©|&copy;|copyright).{0,300}', copyright_text, re.I | re.S)]
+    copyright_regions = [legal_normalize(value) for value in copyright_raw]
     footer_owner = any(re.search(r'(?<!\w)' + re.escape(legal_normalize(n)) + r'(?!\w)', region)
                        for n in strong_names for region in copyright_regions if legal_normalize(n))
+    # Corporate footers commonly omit Inc./Corp. Require the complete multiword
+    # issuer name, a copyright ownership boundary, and corroborating header.
+    # A prefix of another legal owner or a generic single word is insufficient.
+    bases={normalize(SUFFIX.sub('',re.sub(r'/[A-Z]{2,3}/?$','',n,flags=re.I))) for n in strong_names}
+    suffixless_owner=any(len(base.split())>=2 and re.search(r'(?<!\w)'+re.escape(base)+r'(?!\w)',header)
+                        and any(re.search(r'(?<!\w)'+re.escape(base)+r'(?!\w)(?:\s+\d{4})?\s*(?:[.,;|]|all rights|$)',
+                                          re.sub(r'[-–—]+',' ',region.casefold())) for region in copyright_raw)
+                        for base in bases)
+    footer_owner=footer_owner or suffixless_owner
     stop = {'inc','corp','corporation','co','company','ltd','plc','holdings','group','global','national','first','bank','financial','resources','therapeutics','industries','technologies','international','trust','properties','healthcare'}
     brand_tokens = {w for n in company['names'] for w in normalize(n).split() if len(w) >= 4 and w not in stop}
     short_brand = any(re.search(r'(?<!\w)' + re.escape(w) + r'(?!\w)', header) for w in brand_tokens)
@@ -110,13 +129,15 @@ def validate_candidate(company, candidate, http, now):
     header_compact = re.sub(r'(?<!\w)([a-z])\s+([a-z])(?!\w)', r'\1\2', header)
     short_brand = short_brand or any(2 <= len(a) <= 4 and re.search(r'(?<!\w)' + re.escape(a) + r'(?!\w)', header_compact) for a in acronyms)
     copyright_has_legal_owner=any(re.search(r'\b(?:inc|corp|co|ltd|plc|ag|llc)\b',region) for region in copyright_regions)
-    specific_header=any(re.search(r'(?<!\w)'+re.escape(legal_normalize(n))+r'(?!\w)',legal_normalize(header)) for n in strong_names) or any(len(normalize(SUFFIX.sub('',n)).split())>=2 and re.search(r'(?<!\w)'+re.escape(normalize(SUFFIX.sub('',n)))+r'(?!\w)',header) for n in strong_names)
-    if copyright_has_legal_owner and not footer_owner and not specific_header:
+    if copyright_has_legal_owner and not footer_owner:
         raise SourceError('OFFICIAL_SITE_CANDIDATE_CONFLICTING_COPYRIGHT_OWNER')
-    method = 'CORPORATE_TITLE_AND_LEGAL_COMPANY_NAME' if legal and branded else 'EXACT_LEGAL_COPYRIGHT_OWNER_AND_CORPORATE_BRAND'
+    method = 'EXACT_MULTIWORD_COPYRIGHT_OWNER_AND_CORPORATE_HEADER' if suffixless_owner else 'CORPORATE_TITLE_AND_LEGAL_COMPANY_NAME' if legal and branded else 'EXACT_LEGAL_COPYRIGHT_OWNER_AND_CORPORATE_BRAND'
     if not (legal and branded) and not (footer_owner and short_brand):
         raise SourceError('OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED')
     return {'status': 'VALIDATED', 'url': response['finalUrl'], 'lastVerified': now, 'confidence': .95,
-            'evidence': [candidate['evidence'], method], 'title': clean(title[1], 150),
+            'verificationVersion': 'corporate-ownership-2',
+            'evidence': [candidate['evidence'], method], 'title': clean(title[1] if title else ' '.join(metadata.values), 150),
+            'ownershipEvidence': {'companyNames': strong_names, 'corporateHeader': header[:300],
+                                  'copyrightExcerpts': [v[:160] for v in copyright_raw if any(re.search(r'(?<!\w)'+re.escape(base)+r'(?!\w)',legal_normalize(v)) for base in bases)][:2]},
             'contentHash': hashlib.sha256(response['body']).hexdigest(), 'platformHint': fingerprint(response['body']),
             'irCandidates': list(dict.fromkeys(l['url'] for l in parse_links(response['body'],response['finalUrl']) if re.search(r'investor.relations|\binvestors?\b',l['text'],re.I) and not re.search(r'\.(?:pdf|zip|xml|js)(?:\?|$)',l['url'],re.I)))[:5]}

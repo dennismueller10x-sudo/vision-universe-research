@@ -164,7 +164,13 @@ class Pipeline:
                     entries = parse_news_sitemap(response['body'], response['finalUrl'])
                 else:
                     entries = parse_gdelt(response['body']) if source['type'] == 'GDELT' else news_index(response['body'], source, response['finalUrl']) if source.get('format') == 'JSONLD_NEWS' else parse_feed(response['body'], response['finalUrl'])
+            from .news_quality import wordpress_feed,eligible
+            wordpress=wordpress_feed(response['body']) if source['type']=='IR_FEED' else False
             for entry in entries:
+                if source['type']=='IR_FEED' and not eligible(entry,self.companies[source['companyId']],wordpress):
+                    rejected+=1
+                    self.store.audit(self.now,sid,'CMS_NON_ANNOUNCEMENT_REJECTED',headline=entry.get('headline'),url=entry.get('url'))
+                    continue
                 if entry.get('promotionalSolicitation'):
                     rejected += 1
                     self.run['promotionalRejected'] += 1

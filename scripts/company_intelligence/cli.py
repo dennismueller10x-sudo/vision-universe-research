@@ -55,7 +55,10 @@ def manifest_batch(document, companies, store, now, limit, tickers=None):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('command', choices=['run', 'backfill', 'export', 'quality', 'probe', 'coverage', 'discover-catalogue', 'discover-backfill', 'verify-domains', 'news-archive', 'materials-backfill', 'sec-stream', 'poll'])
+    p.add_argument('command', choices=['run', 'backfill', 'export', 'quality', 'probe', 'coverage', 'discover-catalogue', 'discover-backfill', 'verify-domains', 'sweep-inventory', 'news-archive', 'materials-backfill', 'sec-stream', 'poll'])
+    p.add_argument('--inventory-pass',help='Stable lower-case identifier for resumable candidate discovery')
+    p.add_argument('--inventory-lane',choices=['domains','ir'],default='domains')
+    p.add_argument('--discovery-admission-interval',type=float,default=2,help='Discovery-only spacing across independent hosts (.5..2 seconds); host cooldowns remain enforced')
     p.add_argument('--archive-month', help='Explicit YYYY-MM publisher-advertised archive; bounded weekly/backfill metadata lane')
     p.add_argument('--stream-days', type=int, default=3, help='Bounded completed EDGAR index days per material stream run (1..5)')
     p.add_argument('--stream-history-days', type=int, default=180, help='Initial submission import horizon for the incremental stream (30..366); retained history is preserved')
@@ -82,11 +85,19 @@ def main(argv=None):
     args = p.parse_args(argv)
     if not 1 <= args.limit <= 100 or not 1 <= args.request_budget <= 200 or not 30 <= args.max_seconds <= 1800:
         p.error('limit must be 1..100; request budget 1..200; max seconds 30..1800')
-    if not 1 <= args.discovery_workers <= 4 or (args.discovery_workers > 1 and args.command not in ('discover-backfill', 'verify-domains')):
+    if not 1 <= args.discovery_workers <= 4 or (args.discovery_workers > 1 and args.command not in ('discover-backfill', 'verify-domains','sweep-inventory')):
         p.error('discovery-workers must be 1..4 and requires discover-backfill')
     if args.all_offline and (args.network or args.tickers):
         p.error('--all-offline requires offline full-universe mode')
-    if args.command in ('discover-catalogue', 'verify-domains', 'news-archive', 'materials-backfill') and not args.network:
+    if not .5<=args.discovery_admission_interval<=2 or (args.discovery_admission_interval!=2 and args.command!='sweep-inventory'):
+        p.error('discovery admission override requires sweep-inventory and .5..2 seconds')
+    if args.command=='sweep-inventory':
+        if args.tickers or args.source_tickers or args.sec_fetch or args.updated_issuers or args.all_offline or args.gdelt or args.materials or args.force_sources:
+            p.error('sweep-inventory uses its frozen candidate inventory and discovery budget; separate SEC/poll commands are required')
+        from company_intelligence.inventory_sweep import prefix
+        try:prefix(args.inventory_pass,args.inventory_lane)
+        except ValueError:p.error('sweep-inventory requires a safe --inventory-pass identifier')
+    if args.command in ('discover-catalogue', 'verify-domains', 'sweep-inventory', 'news-archive', 'materials-backfill') and not args.network:
         p.error('discover-catalogue requires --network')
     if args.command == 'discover-backfill' and not (args.network and args.discover_sites and args.discover_ir):
         p.error('discover-backfill requires --network --discover-sites --discover-ir')
@@ -165,9 +176,29 @@ def main(argv=None):
                 verified = store.state('officialSite:' + company['companyId'], {})
                 if verified.get('status') == 'VALIDATED':
                     company['officialSites'] = [verified['url']]
-        if args.command in ('discover-backfill', 'discover-catalogue', 'verify-domains'):
+        if args.command in ('discover-backfill', 'discover-catalogue', 'verify-domains','sweep-inventory'):
             from company_intelligence.site_inventory import import_inventory
             import_inventory(root, companies, store, now)
+        if args.command=='sweep-inventory':
+            from company_intelligence.inventory_sweep import select as sweep_select,record,progress
+            from company_intelligence.discovery_batch import run as discover_batch,persist
+            selected,candidates=sweep_select(companies,store,now,args.inventory_pass,args.inventory_lane,args.limit)
+            pipeline.ensure_aliases([c['companyId'] for c in selected])
+            def checkpoint(result):
+                persist([result],store,companies,now)
+                record(result,store,now,args.inventory_pass,args.inventory_lane)
+            results=discover_batch(selected,candidates,http,now,args.request_budget,args.max_seconds,args.discovery_workers,
+                                   domain_only=args.inventory_lane=='domains',admission_interval=args.discovery_admission_interval,on_result=checkpoint)
+            http.requests=sum(r['requests'] for r in results)
+            for key in http.stats:http.stats[key]=sum(r['stats'].get(key,0) for r in results)
+            if args.inventory_lane=='ir':
+                try:pipeline.ingest_due_sources({c['companyId'] for c in selected},include_global=False)
+                except BudgetExhausted:deferred=True
+            http.prune()
+            print(json.dumps({'progress':progress(store,args.inventory_pass,args.inventory_lane),
+                              'requests':http.requests,'httpStats':http.stats,'run':pipeline.run,
+                              'deferred':deferred},sort_keys=True))
+            return 0
         if args.command=='news-archive':
             import re
             if not args.archive_month or not re.fullmatch(r'\d{4}-(?:0[1-9]|1[0-2])',args.archive_month) or not '2000-01'<=args.archive_month<=now[:7]:p.error('news-archive requires a valid non-future --archive-month YYYY-MM')
@@ -248,7 +279,9 @@ def main(argv=None):
                 store.source({**source, 'active': False})
         if args.command == 'coverage':
             from company_intelligence.coverage import report as coverage_report
+            from company_intelligence.inventory_sweep import funnel
             result = coverage_report(store, companies, now)
+            result['domainCandidateFunnel'] = funnel(store,result)
             atomic_json(state_dir / 'coverage.json', result)
             print(json.dumps({k: v for k, v in result.items() if k != 'companies'}, sort_keys=True))
             return 0

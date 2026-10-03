@@ -14,8 +14,9 @@ from .model import domain
 from .pipeline import advance
 
 
-def run(companies, candidates, http, now, request_budget, max_seconds, workers=4, domain_only=False):
+def run(companies, candidates, http, now, request_budget, max_seconds, workers=4, domain_only=False, admission_interval=2,on_result=None):
     if not 1<=workers<=4 or not 1<=request_budget<=200:raise ValueError('INVALID_DISCOVERY_BATCH_LIMITS')
+    if not .5<=admission_interval<=2:raise ValueError('INVALID_DISCOVERY_ADMISSION_INTERVAL')
     selected,hosts=[],set()
     # Reserve enough requests to reach IR/news/events, rather than spending one
     # request on hundreds of unusable half-discoveries.
@@ -33,11 +34,18 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
         def _wait(self,url):
             # Protect only request admission; slow HTTP responses do not block
             # independent hosts. Every client still enforces retries/deadline.
-            with gate:
-                host=domain(url);delay=max(2-(time.time()-last[0]),5-(time.time()-host_last.get(host,0)),0)
-                if time.time()+delay>=self.deadline:raise BudgetExhausted('NETWORK_TIME_BUDGET_EXHAUSTED')
-                if delay:time.sleep(delay)
-                super()._wait(url);last[0]=time.time();host_last[host]=last[0]
+            while True:
+                with gate:
+                    host=domain(url);stamp=time.time()
+                    delay=max(admission_interval-(stamp-last[0]),
+                              max(5,self.host_delay.get(host,0))-(stamp-host_last.get(host,0)),
+                              self.interval-(stamp-self.last_request),0)
+                    if stamp+delay>=self.deadline:raise BudgetExhausted('NETWORK_TIME_BUDGET_EXHAUSTED')
+                    if not delay:
+                        super()._wait(url);last[0]=time.time();host_last[host]=last[0]
+                        return
+                # A host cooldown must not monopolize admission for other hosts.
+                time.sleep(delay)
     def work(pair):
         c,candidate=pair;remaining=deadline-time.time()
         if remaining<=0:return {'companyId':c['companyId'],'domainOnly':domain_only,'status':'DEFERRED','reason':'DISCOVERY_DEADLINE','requests':0,'stats':{}}
@@ -48,7 +56,9 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
             if not c.get('officialSites'):result['site']=site
             sources,configs=([],[]) if domain_only else discover_ir(c,site['url'],client,now)
             result.update(status='VALIDATED',sources=sources,configurations=configs,domainOnly=domain_only)
-        except BudgetExhausted as e:result['reason']=str(e)
+        except BudgetExhausted as e:
+            result.update(reason=str(e),sources=getattr(e,'discoverySources',[]),
+                          configurations=getattr(e,'discoveryConfigurations',[]))
         except (SourceError,ValueError,TypeError,KeyError) as e:
             transient=any(code in str(e) for code in ('HTTP_429','HTTP_500','HTTP_502','HTTP_503','HTTP_504','NETWORK_UNAVAILABLE','NETWORK_TIMEOUT','DNS_UNAVAILABLE','ROBOTS_UNAVAILABLE'))
             result.update(status='DEGRADED' if c.get('officialSites') or result.get('site') else 'DEFERRED' if transient else 'REJECTED',reason=str(e)[:250])
@@ -58,7 +68,9 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
     results=[]
     with ThreadPoolExecutor(max_workers=workers) as pool:
         futures=[pool.submit(work,pair) for pair in selected]
-        for future in as_completed(futures):results.append(future.result())
+        for future in as_completed(futures):
+            result=future.result();results.append(result)
+            if on_result:on_result(result)
     assert sum(r['requests'] for r in results)<=request_budget
     return sorted(results,key=lambda r:r['companyId'])
 
@@ -71,6 +83,17 @@ def persist(results,store,companies,now):
             category='VERIFIED' if r['status']=='VALIDATED' else 'BLOCKED' if any(code in reason for code in ('403','ROBOTS_DISALLOWED')) else 'UNAVAILABLE' if any(code in reason for code in ('404','DNS','NETWORK_UNAVAILABLE')) else 'DEFERRED' if r['status']=='DEFERRED' else 'IDENTITY_NOT_CORROBORATED' if 'OWNER_NOT_VALIDATED' in reason else 'FAILED'
             store.set_state('domainValidation:'+cid,{'status':r['status'],'category':category,'reason':reason,'checkedAt':now,'nextAttempt':advance(now,24 if category in ('DEFERRED','UNAVAILABLE') else 7*24)})
         if r.get('site'):store.set_state('officialSite:'+cid,r['site']);companies[cid]['officialSites']=[r['site']['url']]
+        if not r.get('domainOnly') and r['status']=='DEFERRED':
+            for source in r.get('sources',[]):store.source(source)
+            prior=store.state('ir:'+cid,{})
+            configurations={cfg['irHomepage']:cfg for cfg in prior.get('configurations',[])}
+            for cfg in r.get('configurations',[]):
+                old=configurations.get(cfg['irHomepage'],{})
+                documents={d['url']:d for d in old.get('documents',[])+cfg.get('documents',[])}
+                configurations[cfg['irHomepage']]={**old,**cfg,'documents':list(documents.values())}
+            store.set_state('ir:'+cid,{**prior,'configurations':list(configurations.values()),
+                                      'partialDiscovery':True,'lastFailure':now,'reason':r.get('reason'),
+                                      'retryAfter':advance(now,24)})
         if r['status']=='VALIDATED' and not r.get('domainOnly'):
             for source in r['sources']:store.source(source)
             store.set_state('ir:'+cid,{'lastSuccess':now,'configurations':r['configurations'],'sources':len(r['sources']),'nextVerify':advance(now,7*24)})
