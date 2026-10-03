@@ -63,3 +63,24 @@ Berichtet ohne Schwelle: Rauschen high (Treffer, Enthaltung), Mehrdeutigkeitszer
 Erst nach bestandenem Gate: neue Vorab-Registrierung einer Prognoseprüfung mit neuem Holdout (TEST ab 2019 gilt als verbraucht), Vergleichsleiter A–E (Zufallszeitpunkt, Zufalls-Swing, strukturelle Kontrolle, technisches Basismodell, Basis + Elliott), Ergebnisgrößen über Zieltreffer hinaus (Richtung, MFE, MAE, bedingte Rendite, Drawdown, Zeit bis Ziel, Fehlschlag). Bis dahin trägt Elliott im Produkt den Status **„Experimentelles Strukturmodell"**.
 
 Wird das Gate verfehlt: keine Nachjustierung auf HOLDOUT. Der Bericht nennt das Ergebnis, die getesteten Lösungswege und die nachgewiesene Grenze (Remediation §3 B).
+
+## 8. Änderung 1 — nach HOLDOUT-1 und unabhängigem Red-Team-Review (vor jeder Arbeit an 3.1)
+
+Engine 3.0.0 wurde eingefroren (`freeze-elliott-3.0.0.json`) und auf HOLDOUT-1 (Korpus-Seeds 20–29, Emittenten-Split HOLDOUT) einmal geprüft; das Ergebnis wird unverändert berichtet. Ein unabhängiges Red-Team-Review fand unter anderem:
+
+* **H1** Harte Regeln wurden nur an Wellenenden geprüft. Über „orthodoxe kurze Enden" konnte das Preisextrem innerhalb einer Welle eine harte Regel verletzen (z. B. Welle 2 unter dem Ursprung von Welle 1). → G8 ist für 3.0.0 **nicht erfüllt**.
+* **H2** Generator und Engine teilen Annahmen (Kontextmuster endet am Ursprung, unstrukturierte Bestätigung, Auswertung am Bestätigungsextrem); ohne die darauf ansprechenden Gewichte bricht die Trefferquote ein.
+* **H3** Das Gate lässt das hohe Rauschen aus, das echten Wochencharts am nächsten kommt.
+* **H4** „Grad-Mehrdeutigkeit" war zu weit definiert (auch gegenläufige Alternativen) und erhöhte die Anwendbarkeit.
+* **L10** Parameter `alternativeMinInvalidationGapAtr` stand versehentlich in einem Kommentar.
+
+**Erlaubte Änderungen für Engine 3.1** (nur aus diesen Befunden, keine Gewichtssuche auf HOLDOUT-1):
+1. Harte Regeln und Definitionen zusätzlich gegen die Preisextreme innerhalb jeder Welle prüfen (W2-Ursprung, W4-Überlappung, B-/X-Ursprung, Dreiecksgrenzen); kurze Enden nur an Korrekturpositionen.
+2. DEGREE nur, wenn die Alternative die Hauptzählung als einzelne Welle enthält UND dieselbe laufende Richtung impliziert; sonst STRUCTURE.
+3. L10 beheben; Dreifach-Zigzag: W, Y, Z müssen sich als Zigzag (bzw. Doppel-Zigzag) unterteilen, nicht als beliebige Korrektur.
+4. Neueichung von Gewichten und Anwendbarkeit ausschließlich auf DEVELOPMENT (Layout A **und** Layout B, Seeds 0–9), weil 2. die Merkmale verschiebt.
+
+**Neuer, unabhängiger Prüfsatz HOLDOUT-2** (wird erst nach dem Einfrieren von 3.1 einmal ausgewertet):
+* **Korpus-Layout B**: Kontext ist ein Zufallspfad (kein Muster gleichen Grades); die Bestätigungsbewegung ist selbst unterteilt (3 oder 5 Unterwellen); Auswertung zu einem zufälligen Zeitpunkt zwischen 40 % und 100 % der Bestätigungsbewegung; Seeds **40–49**; alle vier Rauschstufen.
+* **Gate für HOLDOUT-2**: G1–G7 wie §5, berechnet auf none/low/medium **und zusätzlich getrennt auf high** (high: G1 ≥ 20 %, G7 ≤ 30 % — Erwartung: überwiegend Enthaltung); G8 durch einen unabhängigen Prüfer (Regeln gegen Preisextreme in jeder Welle, alle ausgegebenen Zählungen); G9–G11 wie §5 auf HOLDOUT-Emittenten.
+* Grenze der Unabhängigkeit: Layout B stammt vom selben Autor wie die Engine. Echte Expertenannotationen (Werkbank) bleiben der notwendige nächste Schritt.
