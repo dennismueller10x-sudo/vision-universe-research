@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "github_app_permission_unattended_write_check",
+  "test_fixture": true,
+  "brief_id": "vu-permcheck-brief-20260918",
+  "content_id": "vu-permcheck-20260918",
+  "brand": "Vision Universe",
+  "language": "de",
+  "channel": "technical-proof-only",
+  "format": "single-square-visual",
+  "topic": "Unbeaufsichtigter Schreibpfad: ein PR-Ereignis, ein Lauf, ein geschriebenes Bildasset",
+  "objective": "Pruefen, ob der Creative Agent unter der geaenderten GitHub-Berechtigung ohne jede weitere manuelle Bestaetigung Text und Bild erzeugt und beides auf den Request-Branch zurueckschreibt.",
+  "audience": "Interne Vision-Universe-Workflow-Prüfung",
+  "hook_strategy": {
+    "strategy_id": "curiosity-gap-system-proof-v2",
+    "hook_type": "curiosity_gap",
+    "instruction": "Formuliere neugierig machende Fragen zum automatischen Text-und-Bild-Roundtrip. Keine Marktbehauptung, keine Renditeaussage und keine alternative Hook-Strategie."
+  },
+  "visual_strategy": {
+    "strategy_id": "FUTURE_TECH",
+    "instruction": "Eine hochwertige, abstrakte Future-Tech-Szene visualisiert den kontrollierten Fluss von einem strukturierten Datenmodul über einen leuchtenden Creative-Core zu einem fertigen Bildasset.",
+    "creative_freedom": "Motivdetails, räumliche Komposition, Lichtführung und Materialität innerhalb FUTURE_TECH.",
+    "palette": [
+      "deep black",
+      "white",
+      "chrome",
+      "electric cyan",
+      "subtle violet"
+    ],
+    "style": "premium cinematic 3D technology visualization",
+    "composition": "square, centered transformation flow, generous negative space",
+    "restrictions": [
+      "Kein Text im Bild",
+      "Kein Logo",
+      "Keine Aktienkurse",
+      "Keine Renditezahlen",
+      "Keine Marktprognose",
+      "Kein Wasserzeichen"
+    ]
+  },
+  "asset_requirements": {
+    "count": 1,
+    "preferred_mime_type": "image/png",
+    "preferred_width": 1024,
+    "preferred_height": 1024,
+    "deterministic_path": "authoring/requests/vu-permcheck-20260918/assets/visual-01.png"
+  },
+  "authoring_requirements": {
+    "hook_variant_count": 3,
+    "stable_hook_variant_ids": true,
+    "hook_ids_bound_to_brief_blob_sha": true,
+    "visual_variant_ids_bound_to_brief_blob_sha": true,
+    "recommended_hook_allowed": true,
+    "canonical_selected_hook_allowed": false,
+    "evidence_refs_required": true,
+    "actual_image_asset_required": true,
+    "publishing_allowed": false
+  },
+  "constraints": [
+    "Ausschließlich nicht produktive Testfixture",
+    "Keine produktiven Marktbehauptungen",
+    "Keine Anlageberatung",
+    "Keine Publishing-Aktion",
+    "Kein selected_hook",
+    "Hook-Strategie ausschließlich aus diesem Brief übernehmen",
+    "Visual Strategy ausschließlich aus diesem Brief übernehmen",
+    "Keine Placeholder- oder programmatisch erzeugte Ersatzgrafik"
+  ],
+  "publishing_allowed": false
+}
