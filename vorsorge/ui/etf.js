@@ -395,7 +395,7 @@
     spread("vol", "metrics.volatility.value", 0.05, function (lo, hi) { return hi.s + ": höhere Schwankung (" + F.pct(hi.v) + " p.a.) · " + lo.s + ": geringere Schwankung (" + F.pct(lo.v) + " p.a.)."; });
     spread("mdd", "metrics.maxDrawdown.value", 0.1, function (lo, hi) { return "Größter Rückgang: " + lo.s + " " + F.pct(lo.v) + ", " + hi.s + " " + F.pct(hi.v) + " – beachte die unterschiedlich langen Historien."; });
     spread("1y", "metrics.windows.1Y.value", 0.05, function (lo, hi) { return "Kursentwicklung der letzten 12 Monate: " + hi.s + " " + F.spct(hi.v) + ", " + lo.s + " " + F.spct(lo.v) + " (Vergangenheit, kein Qualitätsurteil)."; });
-    spread("hy", "metrics.historyYears", 3, function (lo, hi) { return hi.s + ": breitere Historie (" + F.years(hi.v) + ") · " + lo.s + ": " + F.years(lo.v) + " – Kennzahlen sind nur begrenzt vergleichbar."; });
+    spread("hy", "metrics.historyYears", 3, function (lo, hi) { return hi.s + ": längere Historie (" + F.years(hi.v) + ") · " + lo.s + ": " + F.years(lo.v) + " – Kennzahlen sind nur begrenzt vergleichbar."; });
     var regions = ds.map(function (d) { return d.region; }); if (regions.some(function (r) { return r !== regions[0]; })) diffs.push({ score: 2, text: "Unterschiedliche Regionen: " + ds.map(function (d) { return d.symbol + " " + (VS.REGION[d.region] || "unbekannt"); }).join(", ") + "." });
     if (ds.some(function (d) { return d.complex; }) && ds.some(function (d) { return !d.complex; })) diffs.push({ score: 3, text: "Mindestens ein komplexes Produkt im Vergleich: " + ds.filter(function (d) { return d.complex; }).map(function (d) { return d.symbol; }).join(", ") + "." });
     diffs.sort(function (a, b) { return b.score - a.score; });
