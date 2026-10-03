@@ -173,12 +173,12 @@
 
   /** Belegt der Name ueberhaupt einen Fonds? (Schutz gegen Tickerkollisionen) */
   function nameIsFundLike(name) {
-    return /\b(etf|etn|funds?|trust|shares|portfolio|ishares|spdr|proshares|vanguard|invesco qqq)\b/i.test(name || "");
+    return /\b(etf|etfe|etn|funds?|trust|shares|portfolio|ishares|spdr|proshares|vanguard|invesco qqq|direxion|tradr|graniteshares|defiance|roundhill|t-rex|leverage shares|yieldmax)\b|etf_?e\b|exchange[- ]traded|daily target|\b\d(\.\d+)?x\b.*\bdaily\b|\bdaily\b.*\b\d(\.\d+)?x\b/i.test(name || "");
   }
   /** Namen, die trotz "Trust/Fund" kein ETF sind (REIT, geschlossene Fonds, BDC). */
   function nameIsNotEtf(name) {
-    return /realty trust|property trust|properties trust|mortgage trust|finance trust|royalty trust|hotel trust|lodging trust|homes trust|\binc\.?$|, inc|corp\b|corporation|lending fund|income fund, inc|opportunities fund$|\bbank\b|depositor/i.test(name || "")
-      && !/\betf\b/i.test(name || "");
+    return /realty trust|property trust|properties trust|mortgage trust|finance trust|royalty trust|hotel trust|lodging trust|homes trust|\binc\.?$|\bfund inc\b|, inc|corp\b|corporation|lending fund|income fund, inc|opportunities fund$|\bbank of\b|depositor|\bnotes? due\b|fixed rate senior notes|\bplc\b|\badr\b/i.test(name || "")
+      && !/\betf\b|etf_?e\b|exchange[- ]traded fund/i.test(name || "");
   }
 
   /**

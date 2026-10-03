@@ -30,7 +30,7 @@
   var VERSION = "etf-taxonomy-1.0.0";
 
   var RX = {
-    etn: /\betns?\b|exchange[- ]traded notes?|\bnotes?\s+due\b/i,
+    etn: /\betns?\b(?!\s+daily)|exchange[- ]traded notes?|\bnotes?\s+due\b/i,
     etc: /\betcs?\b|exchange[- ]traded commodit/i,
     cef: /closed[- ]end|\bcef\b|income fund,? inc|opportunities fund$|municipal (income )?fund,? inc/i,
     mutual: /\b(admiral|investor|institutional)\s+shares\b|\bclass\s+[a-z]\b(?!.*\betf\b)/i,
@@ -39,18 +39,19 @@
     ultrashort: /\bultra(pro)?short\b(?!\s+(income|bond|duration|term|municipal|government|treasury))/i,
     inverse: /\binverse\b|\bbear\b|-1x\b/i,
     short: /\bshort\b(?!\s*(duration|term|maturity|-term|\s+income))/i,
-    optionIncome: /option(s)?\s+income|premium income|yield\s?boost|income\s+strateg|weekly pay|\bincome\b.*\boption/i,
+    optionIncome: /option(s)?\s+income|premium income|yield\s?boost|yield premium|premium strategy|income boost|enhanced income|hybrid \d+ income|income\s+strateg|weekly pay|\bincome\b.*\boption/i,
     coveredCall: /covered call|buy[- ]?write/i,
-    buffer: /\bbuffer\b|\bfloor\b|dual directional|barrier|autocallable/i,
+    buffer: /swan sos|\bbuffer\b|\bfloor\b|dual directional|barrier|autocallable/i,
     definedOutcome: /defined outcome|structured (buffer|outcome)|\btarget (outcome|\d+)\b|\bseries\b.*\b(buffer|outcome)\b/i,
-    crypto: /bitcoin|ethereum|\bether\b|solana|\bxrp\b|dogecoin|crypto|chainlink|\bsui\b|zcash|litecoin|avalanche|cardano|polkadot|\bbtc\b|\beth\b/i,
+    crypto: /staking|hyperliquid|avalanche|\bavax\b|polygon|aptos|bitcoin|ethereum|\bether\b|solana|\bxrp\b|dogecoin|crypto|chainlink|\bsui\b|zcash|litecoin|avalanche|cardano|polkadot|\bbtc\b|\beth\b/i,
     commodity: /\bgold\b|silver|copper|palladium|platinum|commodit|\boil\b|crude|natural gas|\bwheat\b|\bcorn\b|soybean|agricultur|uranium/i,
     commodityEquity: /miners|mining|producers|royalt|equit|stocks?\b/i,
+    alternative: /weekly ?pay|tail risk|managed futures|\balternatives?\b|\bbox\b|\bspac\b|merger arbitrage|long\/short|long-short|market neutral|absolute return|\bvix\b|volatility futures|\bfutures\b|target drawdown|hedged? equity|inflation and deflation|risk parity|trend following|tactical/i,
     money: /money market|treasury securities money|cash management|t-bill|0-3 month|0-1 month|ultra[- ]?short (term )?(treasury|bond|income)/i,
-    bond: /\bbond\b|government securities|treasury|fixed income|\bmuni|municipal|credit|\bclo\b|\babs\b|mortgage|floating rate|inflation[- ]protected|\btips\b|ibonds|high yield|investment grade|securitized|ultrashort income|short duration|aggregate|corporate|preferred|loan/i,
-    multi: /allocation|multi[- ]asset|balanced|target (date|retirement) \d{4}|\b60\/40\b|risk parity/i,
+    bond: /\bbond\b|inflation[- ]linked|low duration|tax[- ]free|\bladder\b|government securities|treasury|fixed income|\bmuni|municipal|credit|\bclo\b|\babs\b|mortgage|floating rate|inflation[- ]protected|\btips\b|ibonds|high yield|investment grade|securitized|ultrashort income|short duration|aggregate|corporate|preferred|loan/i,
+    multi: /longevity income|target date|aggressive\b|conservative\b|moderate\b|allocation|multi[- ]asset|balanced|target (date|retirement) \d{4}|\b60\/40\b|risk parity/i,
     thematic: /\bai\b|artificial intelligence|robot|cyber|cloud|semiconductor|space|clean energy|solar|hydrogen|electrif|lithium|battery|genomic|biotech|fintech|blockchain|metaverse|gaming|esports|cannabis|defen[cs]e|war machine|infrastructure|innovation|disrupt|internet|ecommerce|coffee|energy drinks|billionaires|nyc based|uranium|water|pet care|travel|sports/i,
-    equity: /\bindex\b|industry|sector|machinery|chemical|medical|financials|software|semiconductor|consumer|utilities|materials|banks?\b|insurance|brokerage|livestock|rare metals|new energy|aerospace|military|pharma|biotech|technology|tech\b|dividend|low volatility|growth|value|emerging markets|international|global|world|health ?care|natural resources|durable|free cash flow|miners|mining|equit|stock|s&p|nasdaq|russell|dow jones|msci|ftse|stoxx|\bcap\b|growth|value|dividend|quality|small|mid ?cap|large|companies|leaders|momentum|low volatility|minimum volatility|factor|qqq/i
+    equity: /\b(500|1000|2000|3000|dow 30|equal weight|tiger|pacific|asia|asian|latin america|midstream|engineering|deletions|value line|momentum|quality|us|usa|u\.s\.|europe|european|japan|india|a50|a500|gem 50|gem composite|csi|rafi|beta|energy|financial|health|utilities|industrials|appliances|transformation|sustainab|esg|climate|women|ceo|customer|disrupt|video games|harvest|rare earth|metals|brand|internet|consumer|communication|semiconductors?|robotics|cyber|cloud|digital|quantum|nuclear|uranium|defense|aerospace|infrastructure|transportation|retail|homebuilders|biotechnology|pharmaceuticals|banks|insurance|regional)\b|\bindex\b|industry|sector|machinery|chemical|medical|financials|software|semiconductor|consumer|utilities|materials|banks?\b|insurance|brokerage|livestock|rare metals|new energy|aerospace|military|pharma|biotech|technology|tech\b|dividend|low volatility|growth|value|emerging markets|international|global|world|health ?care|natural resources|durable|free cash flow|miners|mining|equit|stock|s&p|nasdaq|russell|dow jones|msci|ftse|stoxx|\bcap\b|growth|value|dividend|quality|small|mid ?cap|large|companies|leaders|momentum|low volatility|minimum volatility|factor|qqq/i
   };
 
   function leverageOf(name) {
@@ -73,6 +74,9 @@
     var inverse = RX.inverse.test(name) || RX.ultrashort.test(name) || (lev > 1 && RX.short.test(name)) ||
       /\bshort\s+(s&p|qqq|dow|russell|msci|nasdaq|ftse|bitcoin|ether|real estate|financials|vix|midcap|smallcap|small ?cap)/i.test(name);
     var single = lev > 1 || inverse ? singleStock(name) : null;
+    if (!single) { var mp = name.match(/\(([A-Z]{1,5})\)/); if (mp && (RX.optionIncome.test(name) || RX.coveredCall.test(name))) single = mp[1]; }
+    if (!single) { var mo = name.match(/\b([A-Z]{2,5})\s+(?:option income|weekly ?pay|yield ?boost|covered call)/i) || name.match(/(?:yieldmax|roundhill|graniteshares yieldboost|direxion|kurv|rex)\s+([A-Z]{2,5})\b(?=.*(?:income|boost|yield|premium|weekly))/i);
+      if (mo && !/^(QQQ|SPY|SPX|NDX|DOW|TOP|ETF|US|USA|BTC|ETH|GOLD|BOND|SMALL|MID|LARGE|ALL|THE|TECH|AI)$/i.test(mo[1])) single = mo[1].toUpperCase(); }
     var strategies = [];
     var basis = name ? "NAME_PATTERN" : "NONE";
 
@@ -97,6 +101,7 @@
     if (RX.definedOutcome.test(name)) strategies.push("DEFINED_OUTCOME");
     if (RX.buffer.test(name)) strategies.push("BUFFER");
     if (RX.crypto.test(name)) strategies.push("CRYPTO");
+    if (RX.alternative.test(name)) strategies.push("ALTERNATIVE");
     var asset = null;
     if (RX.money.test(name)) asset = "MONEY_MARKET";
     else if (RX.crypto.test(name)) asset = "CRYPTO";
@@ -111,6 +116,8 @@
     else if (asset === "EQUITY" && !strategies.length) strategies.push("EQUITY");
     else if (asset === "MULTI_ASSET") strategies.push("MULTI_ASSET");
     else if (asset === "MONEY_MARKET") strategies.push("MONEY_MARKET");
+    if (asset === "EQUITY" && strategies.length === 1 && strategies[0] === "ALTERNATIVE") asset = "MULTI_ASSET";
+    if (!asset && strategies.indexOf("ALTERNATIVE") >= 0) asset = "MULTI_ASSET";
     if (!strategies.length) strategies.push("UNKNOWN");
 
     if (ov) {
@@ -158,6 +165,7 @@
     if (c.assetClass === "COMMODITY") reasons.push("Rohstoff-ETP");
     if (c.productType === "ETN") reasons.push("ETN (Emittentenrisiko)");
     if (c.productType === "CEF") reasons.push("Geschlossener Fonds");
+    if (s.indexOf("ALTERNATIVE") >= 0) reasons.push("Alternative Strategie (Futures, Optionen, Absicherung)");
     if (reasons.length) return { class: "KOMPLEX", reasons: reasons };
     if (c.productType === "UNKNOWN" || !c.assetClass) return { class: "NICHT_EINORDENBAR", reasons: [c.productType === "UNKNOWN" ? "Produkttyp unbekannt" : "Anlageklasse unbekannt"] };
     if (p && p.historyYears !== undefined && p.historyYears !== null && p.historyYears < 1 && s.indexOf("THEMATIC") >= 0) return { class: "KOMPLEX", reasons: ["Spezialthema mit Historie < 1 Jahr"] };

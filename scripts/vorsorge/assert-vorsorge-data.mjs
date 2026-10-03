@@ -28,7 +28,9 @@ const read = (p) => { try { return JSON.parse(readFileSync(p, "utf8")); } catch 
 const today = new Date().toISOString().slice(0, 10);
 
 const index = read(join(D, "etf-index.json"));
-const rows = index ? index.rows.map((r) => Object.fromEntries(index.fields.map((f, i) => [f, r[i]]))) : [];
+const extra = existsSync(join(D, "etf-index-extra.json")) ? read(join(D, "etf-index-extra.json")) : null;
+const rows = index ? index.rows.concat(extra ? extra.rows : []).map((r) => Object.fromEntries(index.fields.map((f, i) => [f, r[i]]))) : [];
+if (index && index.rows.some((r) => !["PUBLIC_ANALYSIS", "COMPLEX"].includes(r[index.fields.indexOf("layer")]))) errors.push("MAIN_INDEX_CONTAINS_ARCHIVE_OR_REVIEW");
 const slugs = new Set(), ids = new Set();
 for (const r of rows) {
   if (slugs.has(r.slug)) errors.push("DUPLICATE_SLUG " + r.slug); slugs.add(r.slug);

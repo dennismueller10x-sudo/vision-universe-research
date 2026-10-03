@@ -111,25 +111,33 @@
     return e;
   }
   VS.decodeRow = decodeRow;
-  VS.master = function () {
-    return getJSON("/vorsorge/data/etf-index.json").then(function (m) {
-      if (!m._bySymbol) {
-        m.etfs = m.rows.map(function (r) { return decodeRow(m.fields, r); });
-        m._bySymbol = {}; m._bySlug = {};
-        var rank = { PUBLIC_ANALYSIS: 3, COMPLEX: 2, REVIEW: 1, ARCHIVE: 0 };
-        m.etfs.forEach(function (e) {
-          m._bySlug[e.slug] = e;
-          var cur = m._bySymbol[e.symbol];
-          if (!cur || rank[e.layer] > rank[cur.layer]) m._bySymbol[e.symbol] = e;
-        });
-        m.find = function (key) { key = String(key || "").toUpperCase(); return m._bySlug[key] || m._bySymbol[key] || null; };
-      }
-      return m;
+  function indexObject(m, rows) {
+    m.etfs = rows.map(function (r) { return decodeRow(m.fields, r); });
+    m._bySymbol = {}; m._bySlug = {};
+    var rank = { PUBLIC_ANALYSIS: 3, COMPLEX: 2, REVIEW: 1, ARCHIVE: 0 };
+    m.etfs.forEach(function (e) {
+      m._bySlug[e.slug] = e;
+      var cur = m._bySymbol[e.symbol];
+      if (!cur || rank[e.layer] > rank[cur.layer]) m._bySymbol[e.symbol] = e;
     });
+    m.find = function (key) { key = String(key || "").toUpperCase(); return m._bySlug[key] || m._bySymbol[key] || null; };
+    return m;
+  }
+  /** Haupt-Index: Public Analysis + Komplex (schnell, fuer Screener und Suche). */
+  VS.master = function () {
+    return getJSON("/vorsorge/data/etf-index.json").then(function (m) { if (!m.etfs) indexObject(m, m.rows); return m; });
+  };
+  /** Vollstaendig: zusaetzlich Archiv und Pruefschicht - nur bei Bedarf geladen. */
+  VS.masterAll = function () {
+    if (VS._all) return VS._all;
+    VS._all = Promise.all([getJSON("/vorsorge/data/etf-index.json"), getJSON("/vorsorge/data/etf-index-extra.json").catch(function () { return { rows: [] }; })]).then(function (r) {
+      var m = Object.assign({}, r[0]); return indexObject(m, r[0].rows.concat(r[1].rows));
+    });
+    return VS._all;
   };
   /** Detail + dekodierte Reihen. key = Slug oder Ticker. */
   VS.etf = function (key) {
-    return VS.master().then(function (m) {
+    return VS.master().then(function (m) { return m.find(key) ? m : VS.masterAll(); }).then(function (m) {
       var e = m.find(key);
       if (!e) throw new Error("NOT_IN_INDEX");
       return getJSON("/vorsorge/data/etf/" + encodeURIComponent(e.slug) + ".json");
@@ -166,7 +174,7 @@
   VS.RETIRE = { STANDARD: "Standard", KOMPLEX: "Komplex", SEHR_KOMPLEX: "Sehr komplex", NICHT_EINORDENBAR: "Nicht einordenbar" };
   VS.STRATEGY = { LEVERAGED: "Hebel", INVERSE: "Short", LEVERAGED_INVERSE: "Hebel + Short", SINGLE_STOCK: "Einzelaktie", OPTION_INCOME: "Optionsprämien",
     COVERED_CALL: "Covered Call", BUFFER: "Puffer", DEFINED_OUTCOME: "Defined Outcome", CRYPTO: "Krypto", COMMODITY: "Rohstoff", THEMATIC: "Thema",
-    BOND: "Anleihen", EQUITY: "Aktien", MULTI_ASSET: "Mischfonds", MONEY_MARKET: "Geldmarkt / ultrakurz", UNKNOWN: "Unbekannt" };
+    BOND: "Anleihen", EQUITY: "Aktien", MULTI_ASSET: "Mischfonds", MONEY_MARKET: "Geldmarkt / ultrakurz", ALTERNATIVE: "Alternative Strategie", UNKNOWN: "Unbekannt" };
   VS.badges = function (e) {
     var b = [];
     var rc = e.retirementClass || (e.complex ? "KOMPLEX" : "STANDARD");

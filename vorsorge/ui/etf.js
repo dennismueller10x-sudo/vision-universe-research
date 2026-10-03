@@ -56,7 +56,7 @@
     var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">ETF Intelligence</p><h1>Die ETF-Welt.<br>Klar eingeordnet.</h1><p class="vs-lead">Alle ETFs, die unser Datenanbieter Tiingo führt und für die Kurse vorliegen – mit echter Historie, Schwankung, größtem Rückgang und Trend. Hebel-, Short-, Options- und Krypto-Produkte sind getrennt und markiert.</p>' +
       '<form id="vs-search-form" class="vs-search" role="search"><span aria-hidden="true">⌕</span><input id="vs-q" autocomplete="off" value="' + esc(st.q) + '" placeholder="Ticker, Name, Index, Thema, Region, Anbieter …" aria-label="ETFs durchsuchen"><button type="submit">Suchen</button></form><div class="vs-suggest" id="vs-suggest"></div></section>' +
       '<section class="vs-section" id="vs-rows"></section><section class="vs-section" id="vs-screener"><div class="vs-loading">ETF-Verzeichnis wird geladen …</div></section>');
-    VS.master().then(function (m) {
+    (q.inactive === "1" ? VS.masterAll() : VS.master()).then(function (m) {
       var t0 = (global.performance && performance.now()) || 0;
       var host = root.querySelector("#vs-screener");
       var all = m.etfs.filter(function (e) { return e.layer !== "REVIEW"; });
@@ -148,7 +148,9 @@
           (list.length === 0 ? '<div class="vs-empty">Kein ETF passt zu diesen Filtern.</div>' : "") +
           '<p class="vs-fine" style="margin-top:12px">Quality-, Value-, Growth- und Small-Cap-Exposure sowie Sektor- und Länderkonzentration folgen, sobald Holdings-Daten angeschlossen sind.</p>';
         host.querySelectorAll("select[data-k]").forEach(function (s) { s.addEventListener("change", function () { st[s.dataset.k] = s.value; st.limit = 50; draw(); }); });
-        host.querySelectorAll("input[data-k]").forEach(function (c) { c.addEventListener("change", function () { st[c.dataset.k] = c.checked; st.limit = 50; draw(); }); });
+        host.querySelectorAll("input[data-k]").forEach(function (c) { c.addEventListener("change", function () {
+          if (c.dataset.k === "inactive" && c.checked && !m.extraLoaded) { VS.masterAll().then(function (full) { all = full.etfs.filter(function (e) { return e.layer !== "REVIEW"; }); m.extraLoaded = true; st.inactive = true; draw(); }); return; }
+          st[c.dataset.k] = c.checked; st.limit = 50; draw(); }); });
         host.querySelectorAll("th[data-sort]").forEach(function (th) {
           function go() { var id = th.dataset.sort; if (st.sort === id) st.dir *= -1; else { st.sort = id; st.dir = id === "vol" || id === "name" ? 1 : -1; } draw(); }
           th.addEventListener("click", go); th.addEventListener("keydown", function (ev) { if (ev.key === "Enter") go(); });
@@ -209,7 +211,7 @@
     var sym = decodeURIComponent(r.args[0] || "").toUpperCase();
     var tab = r.query.tab || "uebersicht";
     var root = VS.render('<section class="vs-section"><div class="vs-loading">' + esc(sym) + ' wird geladen …</div></section>');
-    VS.master().then(function (m0) {
+    VS.master().then(function (m) { return m.find(sym) ? m : VS.masterAll(); }).then(function (m0) {
       if (!m0.find(sym)) throw new Error("NOT_IN_INDEX");
       return Promise.all([m0, VS.etf(sym)]);
     }).then(function (res) {
@@ -416,7 +418,7 @@
   /* ========================================================== WATCHLIST */
   VS.views.watchlist = function () {
     var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Watchlist</p><h1>ETFs beobachten.</h1><p class="vs-lead">Performance, Status und Änderungen deiner beobachteten ETFs. Gespeichert nur in diesem Browser.</p></section><section class="vs-section" id="vs-wl"><div class="vs-loading">…</div></section>');
-    Promise.all([VS.master(), VS.getJSON("/vorsorge/data/changes.json").catch(function () { return { events: [] }; })]).then(function (res) {
+    Promise.all([VS.masterAll(), VS.getJSON("/vorsorge/data/changes.json").catch(function () { return { events: [] }; })]).then(function (res) {
       var m = res[0], ch = res[1], list = VS.state.watchlist.map(function (s) { return m.find(s); }).filter(Boolean), missing = VS.state.watchlist.filter(function (s) { return !m.find(s); });
       var host = root.querySelector("#vs-wl");
       if (!list.length) { host.innerHTML = '<div class="vs-card soft vs-empty">Noch keine ETFs beobachtet. Öffne einen ETF und tippe auf „♡ Beobachten“.<div class="vs-tabs" style="justify-content:center"><a class="vs-pill primary" href="#/etfs">ETFs entdecken</a></div></div>'; return; }

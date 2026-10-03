@@ -200,6 +200,7 @@ export function build() {
   const { rows, ingest } = loadRows();
   const overrides = tryJson(join(OUT, "data/overrides.json"))?.overrides || {};
   const prevIndex = tryJson(join(OUT, "data/etf-index.json"));
+  const prevExtraRows = (tryJson(join(OUT, "data/etf-index-extra.json")) || {}).rows || null;
   const master = Master.buildMaster(rows, { overrides });
   mkdirSync(join(OUT, "data/series"), { recursive: true });
   const written = new Set();
@@ -319,7 +320,12 @@ export function build() {
       : "Repository-Auszug. Der volle Tiingo-Ingest läuft über .github/workflows/vorsorge-etf-universe.yml.",
     providerUniverseEtfRows: tryJson(join(OUT, "data/ingest/catalog-stats.json"))?.etfRows ?? tryJson(join(root, "quant/data/market/universe/summary.json"))?.totals?.byInstrumentType?.ETF ?? null,
     counts, fields: INDEX_FIELDS, rows: entries.map(row) };
-  writeFileSync(join(OUT, "data/etf-index.json"), JSON.stringify(index));
+  // Auslieferung in zwei Teilen: der Browser laedt zuerst nur Public + Komplex;
+  // Archiv und Pruefschicht kommen erst, wenn jemand sie braucht.
+  const isMain = (r) => r[INDEX_FIELDS.indexOf("layer")] === "PUBLIC_ANALYSIS" || r[INDEX_FIELDS.indexOf("layer")] === "COMPLEX";
+  const mainIndex = Object.assign({}, index, { part: "MAIN", rows: index.rows.filter(isMain), extraPath: "/vorsorge/data/etf-index-extra.json" });
+  writeFileSync(join(OUT, "data/etf-index.json"), JSON.stringify(mainIndex));
+  writeFileSync(join(OUT, "data/etf-index-extra.json"), JSON.stringify({ schemaVersion: index.schemaVersion, part: "EXTRA", asOf, fields: INDEX_FIELDS, rows: index.rows.filter((r) => !isMain(r)) }));
   if (existsSync(join(OUT, "data/etf-master.json"))) rmSync(join(OUT, "data/etf-master.json"));
 
   // ------------------------------------------------------------ Data-QA
@@ -382,7 +388,7 @@ export function build() {
   }, null, 1));
 
   // ------------------------------------------------------------ Änderungen
-  const prevRows = prevIndex && prevIndex.rows ? prevIndex.rows.map((r) => Object.fromEntries(prevIndex.fields.map((f, i) => [f, r[i]]))) : null;
+  const prevRows = prevIndex && prevIndex.rows ? prevIndex.rows.concat(prevExtraRows || []).map((r) => Object.fromEntries(prevIndex.fields.map((f, i) => [f, r[i]]))) : null;
   const nextRows = index.rows.map((r) => Object.fromEntries(INDEX_FIELDS.map((f, i) => [f, r[i]])));
   const toM = (list) => list && { etfs: list.map((r) => ({ listingId: r.id, symbol: r.symbol, name: r.name, status: r.status, index: r.index, vol: r.vol, hy: r.hy })) };
   const changes = Monitor.diffMasters(toM(prevRows), toM(nextRows), asOf);

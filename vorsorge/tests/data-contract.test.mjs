@@ -6,12 +6,14 @@ const Codec = createRequire(import.meta.url)("../engines/series-codec.js");
 const root = new URL("../", import.meta.url);
 const read = (p) => JSON.parse(readFileSync(new URL(p, root), "utf8"));
 const index = read("data/etf-index.json");
-const rows = index.rows.map((r) => Object.fromEntries(index.fields.map((f, i) => [f, r[i]])));
+const extra = read("data/etf-index-extra.json");
+const rows = index.rows.concat(extra.rows).map((r) => Object.fromEntries(index.fields.map((f, i) => [f, r[i]])));
 
 test("ETF-Index: Schema, Spalten, Schichten, keine erfundenen Kosten", () => {
   assert.equal(index.schemaVersion, "vu-vorsorge-etf-index-2.0.0");
   assert.ok(rows.length >= 100);
-  for (const r of index.rows) assert.equal(r.length, index.fields.length);
+  for (const r of index.rows.concat(extra.rows)) assert.equal(r.length, index.fields.length);
+  for (const r of index.rows) assert.ok(["PUBLIC_ANALYSIS", "COMPLEX"].includes(r[index.fields.indexOf("layer")]), "Haupt-Index nur Public + Komplex");
   for (const r of rows) {
     assert.ok(["PUBLIC_ANALYSIS", "COMPLEX", "ARCHIVE", "REVIEW"].includes(r.layer), r.symbol);
     assert.ok(["STANDARD", "KOMPLEX", "SEHR_KOMPLEX", "NICHT_EINORDENBAR"].includes(r.retirementClass), r.symbol);
