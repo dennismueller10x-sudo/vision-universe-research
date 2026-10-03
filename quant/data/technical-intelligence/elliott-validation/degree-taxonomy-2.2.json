@@ -1,0 +1,3868 @@
+{
+ "schemaVersion": "vu-elliott-degree-taxonomy-1.0.0",
+ "generatedAt": "2026-10-03T03:52:18.477Z",
+ "engine": "elliott-2.2.0",
+ "note": "Ereignisskala = feinste Skala, auf der das generische Ruecklauf-Ereignis erkannt wurde (Studienkonvention). Sie ist KEIN Grad-Goldstandard; die Taxonomie beschreibt, warum die Engine anders waehlt.",
+ "confusion": {
+  "scale-2→scale-1": 18,
+  "scale-2→scale-2": 36,
+  "scale-2→scale-4": 12,
+  "scale-2→scale-3": 13,
+  "scale-4→scale-4": 1
+ },
+ "classes": {
+  "UNCLASSIFIED": 8,
+  "COARSER_COUNT_FITS_BETTER": 22,
+  "FINER_COUNT_FITS_BETTER": 8,
+  "PERSISTENCE_HELD_OLD_DEGREE": 6,
+  "MULTIPLE_VALID_DEGREES": 6,
+  "COARSER_PREFERENCE_OR_SNR_WEIGHT": 3
+ },
+ "rows": [
+  {
+   "id": "A01",
+   "symbol": "AEG",
+   "date": "2000-10-06",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-1",
+   "delta": -1,
+   "switches52w": 3,
+   "considered": {
+    "scale-1": 0.6343,
+    "scale-2": 0.5799,
+    "scale-3": 0.5784
+   },
+   "per": {
+    "scale-1": {
+     "legs": 85,
+     "rank": 0.6343,
+     "pattern": "FLAT/C",
+     "snr": 3.101,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 39,
+     "rank": 0.6758,
+     "pattern": "ENDING_DIAGONAL/4",
+     "snr": 1.944,
+     "legBars": 7
+    },
+    "scale-3": {
+     "legs": 13,
+     "rank": 0.5704,
+     "pattern": "DOUBLE_ZIGZAG/Y·a",
+     "snr": 2.484,
+     "legBars": 18
+    },
+    "scale-4": {
+     "legs": 4,
+     "rank": null,
+     "pattern": "TOO_FEW_SWINGS",
+     "snr": 1.461,
+     "legBars": null
+    }
+   },
+   "classes": [
+    "UNCLASSIFIED"
+   ]
+  },
+  {
+   "id": "A02",
+   "symbol": "TPC",
+   "date": "1999-06-25",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 2,
+   "considered": {
+    "scale-2": 0.657,
+    "scale-1": 0.5917,
+    "scale-3": 0.5712,
+    "scale-4": 0.5487
+   },
+   "per": {
+    "scale-1": {
+     "legs": 103,
+     "rank": 0.5917,
+     "pattern": "TRIANGLE/C",
+     "snr": 3.345,
+     "legBars": 8
+    },
+    "scale-2": {
+     "legs": 53,
+     "rank": 0.627,
+     "pattern": "TRIANGLE/E",
+     "snr": 3.041,
+     "legBars": 9
+    },
+    "scale-3": {
+     "legs": 25,
+     "rank": 0.6756,
+     "pattern": "TRIANGLE/D",
+     "snr": 1.622,
+     "legBars": 16
+    },
+    "scale-4": {
+     "legs": 12,
+     "rank": 0.614,
+     "pattern": "FLAT(C)",
+     "snr": 1.568,
+     "legBars": 39
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A03",
+   "symbol": "GGAL",
+   "date": "2004-10-01",
+   "eventScale": "scale-2",
+   "chosen": "scale-4",
+   "freeChoice": "scale-4",
+   "delta": 2,
+   "switches52w": 6,
+   "considered": {
+    "scale-4": 0.7026,
+    "scale-1": 0.6123,
+    "scale-3": 0.6047,
+    "scale-2": 0.5866
+   },
+   "per": {
+    "scale-1": {
+     "legs": 45,
+     "rank": 0.6123,
+     "pattern": "ZIGZAG(C)",
+     "snr": 3.423,
+     "legBars": 7
+    },
+    "scale-2": {
+     "legs": 19,
+     "rank": 0.639,
+     "pattern": "FLAT/B",
+     "snr": 2.269,
+     "legBars": 14
+    },
+    "scale-3": {
+     "legs": 9,
+     "rank": 0.6211,
+     "pattern": "FLAT(C)",
+     "snr": 2.303,
+     "legBars": 10
+    },
+    "scale-4": {
+     "legs": 5,
+     "rank": 0.6971,
+     "pattern": "TRIANGLE/D",
+     "snr": 2.314,
+     "legBars": 48
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A04",
+   "symbol": "TGT",
+   "date": "2003-03-21",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 10,
+   "considered": {
+    "scale-2": 0.6824,
+    "scale-1": 0.6572,
+    "scale-3": 0.6407,
+    "scale-4": 0.588
+   },
+   "per": {
+    "scale-1": {
+     "legs": 143,
+     "rank": 0.6572,
+     "pattern": "FLAT/C",
+     "snr": 3.128,
+     "legBars": 2
+    },
+    "scale-2": {
+     "legs": 59,
+     "rank": 0.6524,
+     "pattern": "LEADING_DIAGONAL/4",
+     "snr": 3.106,
+     "legBars": 7
+    },
+    "scale-3": {
+     "legs": 29,
+     "rank": 0.619,
+     "pattern": "WXY/Y",
+     "snr": 2.65,
+     "legBars": 17
+    },
+    "scale-4": {
+     "legs": 12,
+     "rank": 0.6847,
+     "pattern": "DOUBLE_ZIGZAG(C)",
+     "snr": 1.454,
+     "legBars": 65
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A05",
+   "symbol": "TGT",
+   "date": "2000-03-17",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 6,
+   "considered": {
+    "scale-2": 0.7295,
+    "scale-4": 0.5893,
+    "scale-1": 0.5792,
+    "scale-3": 0.508
+   },
+   "per": {
+    "scale-1": {
+     "legs": 101,
+     "rank": 0.5792,
+     "pattern": "ZIGZAG(C)",
+     "snr": 3.539,
+     "legBars": 3
+    },
+    "scale-2": {
+     "legs": 45,
+     "rank": 0.705,
+     "pattern": "FLAT/B",
+     "snr": 2.956,
+     "legBars": 6
+    },
+    "scale-3": {
+     "legs": 22,
+     "rank": 0.5481,
+     "pattern": "FLAT(C)",
+     "snr": 1.964,
+     "legBars": 11
+    },
+    "scale-4": {
+     "legs": 8,
+     "rank": 0.6795,
+     "pattern": "IMPULSE(C)",
+     "snr": 1.497,
+     "legBars": 77
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A06",
+   "symbol": "BREW",
+   "date": "2004-07-09",
+   "eventScale": "scale-2",
+   "chosen": "scale-3",
+   "freeChoice": "scale-3",
+   "delta": 1,
+   "switches52w": 5,
+   "considered": {
+    "scale-3": 0.683,
+    "scale-1": 0.6115,
+    "scale-2": 0.5635,
+    "scale-4": 0.5083
+   },
+   "per": {
+    "scale-1": {
+     "legs": 113,
+     "rank": 0.6115,
+     "pattern": "TRIANGLE/E",
+     "snr": 3.264,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 51,
+     "rank": 0.6077,
+     "pattern": "TRIANGLE/E",
+     "snr": 2.308,
+     "legBars": 7
+    },
+    "scale-3": {
+     "legs": 22,
+     "rank": 0.6584,
+     "pattern": "ENDING_DIAGONAL/5",
+     "snr": 2.696,
+     "legBars": 19
+    },
+    "scale-4": {
+     "legs": 9,
+     "rank": 0.555,
+     "pattern": "WXY/Y",
+     "snr": 1.604,
+     "legBars": 31
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A07",
+   "symbol": "ARTNA",
+   "date": "2004-07-23",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-1",
+   "delta": -1,
+   "switches52w": 3,
+   "considered": {
+    "scale-1": 0.6668,
+    "scale-2": 0.6117,
+    "scale-3": 0.5739
+   },
+   "per": {
+    "scale-1": {
+     "legs": 80,
+     "rank": 0.7148,
+     "pattern": "IMPULSE/3",
+     "snr": 2.62,
+     "legBars": 9
+    },
+    "scale-2": {
+     "legs": 21,
+     "rank": 0.721,
+     "pattern": "LEADING_DIAGONAL(C)",
+     "snr": 1.906,
+     "legBars": 30
+    },
+    "scale-3": {
+     "legs": 9,
+     "rank": 0.6122,
+     "pattern": "IMPULSE/4",
+     "snr": 2.09,
+     "legBars": 52
+    },
+    "scale-4": {
+     "legs": 4,
+     "rank": null,
+     "pattern": "TOO_FEW_SWINGS",
+     "snr": 1.541,
+     "legBars": null
+    }
+   },
+   "classes": [
+    "UNCLASSIFIED"
+   ]
+  },
+  {
+   "id": "A08",
+   "symbol": "PPC",
+   "date": "1999-07-30",
+   "eventScale": "scale-2",
+   "chosen": "scale-4",
+   "freeChoice": "scale-4",
+   "delta": 2,
+   "switches52w": 4,
+   "considered": {
+    "scale-4": 0.6779,
+    "scale-2": 0.627,
+    "scale-1": 0.5136,
+    "scale-3": 0.4641
+   },
+   "per": {
+    "scale-1": {
+     "legs": 112,
+     "rank": 0.5136,
+     "pattern": "ZIGZAG(C)",
+     "snr": 4.61,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 70,
+     "rank": 0.6584,
+     "pattern": "FLAT/C",
+     "snr": 2.472,
+     "legBars": 9
+    },
+    "scale-3": {
+     "legs": 32,
+     "rank": 0.5614,
+     "pattern": "FLAT/C",
+     "snr": 1.412,
+     "legBars": 9
+    },
+    "scale-4": {
+     "legs": 18,
+     "rank": 0.7972,
+     "pattern": "ENDING_DIAGONAL/5",
+     "snr": 1.512,
+     "legBars": 24
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A09",
+   "symbol": "STAA",
+   "date": "1996-06-28",
+   "eventScale": "scale-2",
+   "chosen": "scale-3",
+   "freeChoice": "scale-3",
+   "delta": 1,
+   "switches52w": 1,
+   "considered": {
+    "scale-3": 0.6563,
+    "scale-1": 0.5422,
+    "scale-4": 0.5409,
+    "scale-2": 0.5314
+   },
+   "per": {
+    "scale-1": {
+     "legs": 50,
+     "rank": 0.5948,
+     "pattern": "TRIANGLE/E",
+     "snr": 2.499,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 30,
+     "rank": 0.6645,
+     "pattern": "IMPULSE/4",
+     "snr": 1.609,
+     "legBars": 6
+    },
+    "scale-3": {
+     "legs": 9,
+     "rank": 0.6964,
+     "pattern": "IMPULSE/3",
+     "snr": 2.186,
+     "legBars": 34
+    },
+    "scale-4": {
+     "legs": 7,
+     "rank": 0.6359,
+     "pattern": "IMPULSE/5",
+     "snr": 1.352,
+     "legBars": 29
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A10",
+   "symbol": "LZB",
+   "date": "1999-01-29",
+   "eventScale": "scale-2",
+   "chosen": "scale-4",
+   "freeChoice": "scale-4",
+   "delta": 2,
+   "switches52w": 1,
+   "considered": {
+    "scale-4": 0.705,
+    "scale-1": 0.6516,
+    "scale-3": 0.564,
+    "scale-2": 0.4638
+   },
+   "per": {
+    "scale-1": {
+     "legs": 91,
+     "rank": 0.6516,
+     "pattern": "IMPULSE/3",
+     "snr": 3.307,
+     "legBars": 2
+    },
+    "scale-2": {
+     "legs": 38,
+     "rank": 0.5156,
+     "pattern": "DOUBLE_ZIGZAG/X",
+     "snr": 2.101,
+     "legBars": 5
+    },
+    "scale-3": {
+     "legs": 21,
+     "rank": 0.6907,
+     "pattern": "IMPULSE(C)",
+     "snr": 1.468,
+     "legBars": 24
+    },
+    "scale-4": {
+     "legs": 5,
+     "rank": 0.7516,
+     "pattern": "ENDING_DIAGONAL/5",
+     "snr": 1.97,
+     "legBars": 82
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A11",
+   "symbol": "AES",
+   "date": "1998-07-17",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 3,
+   "considered": {
+    "scale-2": 0.6633,
+    "scale-3": 0.6369,
+    "scale-1": 0.5537
+   },
+   "per": {
+    "scale-1": {
+     "legs": 93,
+     "rank": 0.6953,
+     "pattern": "DOUBLE_ZIGZAG/Y·a",
+     "snr": 1.845,
+     "legBars": 2
+    },
+    "scale-2": {
+     "legs": 39,
+     "rank": 0.709,
+     "pattern": "IMPULSE(C)",
+     "snr": 2.394,
+     "legBars": 6
+    },
+    "scale-3": {
+     "legs": 11,
+     "rank": 0.6524,
+     "pattern": "IMPULSE/4",
+     "snr": 2.343,
+     "legBars": 16
+    },
+    "scale-4": {
+     "legs": 4,
+     "rank": null,
+     "pattern": "TOO_FEW_SWINGS",
+     "snr": 1.809,
+     "legBars": null
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A12",
+   "symbol": "SHOE",
+   "date": "1998-07-24",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-1",
+   "delta": -1,
+   "switches52w": 5,
+   "considered": {
+    "scale-1": 0.7184,
+    "scale-4": 0.6258,
+    "scale-2": 0.5788,
+    "scale-3": 0.4908
+   },
+   "per": {
+    "scale-1": {
+     "legs": 64,
+     "rank": 0.7184,
+     "pattern": "IMPULSE(C)",
+     "snr": 3.864,
+     "legBars": 3
+    },
+    "scale-2": {
+     "legs": 35,
+     "rank": 0.6333,
+     "pattern": "IMPULSE(C)",
+     "snr": 2.244,
+     "legBars": 5
+    },
+    "scale-3": {
+     "legs": 19,
+     "rank": 0.5745,
+     "pattern": "TRIANGLE/E",
+     "snr": 1.582,
+     "legBars": 9
+    },
+    "scale-4": {
+     "legs": 8,
+     "rank": 0.7207,
+     "pattern": "IMPULSE/3",
+     "snr": 1.547,
+     "legBars": 31
+    }
+   },
+   "classes": [
+    "FINER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A13",
+   "symbol": "MLR",
+   "date": "2003-06-27",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 4,
+   "considered": {
+    "scale-2": 0.6603,
+    "scale-1": 0.5793,
+    "scale-4": 0.5697,
+    "scale-3": 0.5434
+   },
+   "per": {
+    "scale-1": {
+     "legs": 92,
+     "rank": 0.5817,
+     "pattern": "TRIANGLE/E",
+     "snr": 2.976,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 49,
+     "rank": 0.687,
+     "pattern": "FLAT(C)",
+     "snr": 2.533,
+     "legBars": 8
+    },
+    "scale-3": {
+     "legs": 24,
+     "rank": 0.657,
+     "pattern": "ZIGZAG/C",
+     "snr": 1.502,
+     "legBars": 12
+    },
+    "scale-4": {
+     "legs": 10,
+     "rank": 0.6648,
+     "pattern": "TRIANGLE/E",
+     "snr": 1.423,
+     "legBars": 26
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A14",
+   "symbol": "AN",
+   "date": "1999-01-08",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 6,
+   "considered": {
+    "scale-2": 0.7135,
+    "scale-1": 0.6958,
+    "scale-4": 0.6757,
+    "scale-3": 0.6672
+   },
+   "per": {
+    "scale-1": {
+     "legs": 79,
+     "rank": 0.6958,
+     "pattern": "IMPULSE(C)",
+     "snr": 4.502,
+     "legBars": 7
+    },
+    "scale-2": {
+     "legs": 41,
+     "rank": 0.7877,
+     "pattern": "IMPULSE(C)",
+     "snr": 2.251,
+     "legBars": 7
+    },
+    "scale-3": {
+     "legs": 22,
+     "rank": 0.6721,
+     "pattern": "IMPULSE/5",
+     "snr": 2.453,
+     "legBars": 13
+    },
+    "scale-4": {
+     "legs": 8,
+     "rank": 0.7075,
+     "pattern": "TRIANGLE(C)",
+     "snr": 2.025,
+     "legBars": 22
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A15",
+   "symbol": "NVEC",
+   "date": "1999-09-10",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 7,
+   "considered": {
+    "scale-2": 0.6147,
+    "scale-3": 0.6049,
+    "scale-1": 0.5587
+   },
+   "per": {
+    "scale-1": {
+     "legs": 42,
+     "rank": 0.5587,
+     "pattern": "TRIANGLE/D",
+     "snr": 3.455,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 17,
+     "rank": 0.7332,
+     "pattern": "ZIGZAG(C)",
+     "snr": 1.853,
+     "legBars": 6
+    },
+    "scale-3": {
+     "legs": 11,
+     "rank": 0.6858,
+     "pattern": "ENDING_DIAGONAL/5",
+     "snr": 1.836,
+     "legBars": 15
+    },
+    "scale-4": {
+     "legs": 1,
+     "rank": null,
+     "pattern": "TOO_FEW_SWINGS",
+     "snr": null,
+     "legBars": null
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A16",
+   "symbol": "AZZ",
+   "date": "2007-09-28",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 1,
+   "considered": {
+    "scale-2": 0.7406,
+    "scale-1": 0.6356,
+    "scale-4": 0.6041,
+    "scale-3": 0.513
+   },
+   "per": {
+    "scale-1": {
+     "legs": 209,
+     "rank": 0.6356,
+     "pattern": "ZIGZAG(C)",
+     "snr": 5.15,
+     "legBars": 3
+    },
+    "scale-2": {
+     "legs": 111,
+     "rank": 0.7106,
+     "pattern": "FLAT/B",
+     "snr": 3.145,
+     "legBars": 5
+    },
+    "scale-3": {
+     "legs": 57,
+     "rank": 0.5508,
+     "pattern": "ZIGZAG/B",
+     "snr": 1.994,
+     "legBars": 5
+    },
+    "scale-4": {
+     "legs": 23,
+     "rank": 0.6598,
+     "pattern": "IMPULSE(C)",
+     "snr": 1.749,
+     "legBars": 40
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A17",
+   "symbol": "BFH",
+   "date": "2008-01-11",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 4,
+   "considered": {
+    "scale-2": 0.6736,
+    "scale-1": 0.6288,
+    "scale-4": 0.5791,
+    "scale-3": 0.5369
+   },
+   "per": {
+    "scale-1": {
+     "legs": 71,
+     "rank": 0.7047,
+     "pattern": "IMPULSE(C)",
+     "snr": 2.39,
+     "legBars": 6
+    },
+    "scale-2": {
+     "legs": 35,
+     "rank": 0.6485,
+     "pattern": "IMPULSE/4",
+     "snr": 2.957,
+     "legBars": 19
+    },
+    "scale-3": {
+     "legs": 17,
+     "rank": 0.5911,
+     "pattern": "DOUBLE_ZIGZAG/Y·b",
+     "snr": 1.906,
+     "legBars": 19
+    },
+    "scale-4": {
+     "legs": 6,
+     "rank": 0.6234,
+     "pattern": "DOUBLE_ZIGZAG/Y·c",
+     "snr": 1.78,
+     "legBars": 45
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A18",
+   "symbol": "LECO",
+   "date": "2010-05-07",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 5,
+   "considered": {
+    "scale-2": 0.8059,
+    "scale-3": 0.7416,
+    "scale-4": 0.6561,
+    "scale-1": 0.5108
+   },
+   "per": {
+    "scale-1": {
+     "legs": 150,
+     "rank": 0.6254,
+     "pattern": "IMPULSE/4",
+     "snr": 1.961,
+     "legBars": 3
+    },
+    "scale-2": {
+     "legs": 62,
+     "rank": 0.7994,
+     "pattern": "LEADING_DIAGONAL/4",
+     "snr": 2.834,
+     "legBars": 8
+    },
+    "scale-3": {
+     "legs": 35,
+     "rank": 0.8184,
+     "pattern": "IMPULSE/5",
+     "snr": 2.053,
+     "legBars": 12
+    },
+    "scale-4": {
+     "legs": 11,
+     "rank": 0.6275,
+     "pattern": "DOUBLE_ZIGZAG/Y·a",
+     "snr": 2.446,
+     "legBars": 74
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A19",
+   "symbol": "CRMT",
+   "date": "2010-06-11",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-1",
+   "delta": -1,
+   "switches52w": 6,
+   "considered": {
+    "scale-1": 0.6762,
+    "scale-4": 0.6501,
+    "scale-3": 0.636,
+    "scale-2": 0.588
+   },
+   "per": {
+    "scale-1": {
+     "legs": 182,
+     "rank": 0.6762,
+     "pattern": "DOUBLE_ZIGZAG/Y·a",
+     "snr": 3.357,
+     "legBars": 3
+    },
+    "scale-2": {
+     "legs": 100,
+     "rank": 0.7276,
+     "pattern": "DOUBLE_ZIGZAG/Y·a",
+     "snr": 1.678,
+     "legBars": 3
+    },
+    "scale-3": {
+     "legs": 54,
+     "rank": 0.7849,
+     "pattern": "IMPULSE(C)",
+     "snr": 1.493,
+     "legBars": 13
+    },
+    "scale-4": {
+     "legs": 22,
+     "rank": 0.7034,
+     "pattern": "FLAT(C)",
+     "snr": 1.846,
+     "legBars": 46
+    }
+   },
+   "classes": [
+    "UNCLASSIFIED"
+   ]
+  },
+  {
+   "id": "A20",
+   "symbol": "OSIS",
+   "date": "2005-01-21",
+   "eventScale": "scale-2",
+   "chosen": "scale-3",
+   "freeChoice": "scale-3",
+   "delta": 1,
+   "switches52w": 6,
+   "considered": {
+    "scale-3": 0.6808,
+    "scale-1": 0.6107,
+    "scale-2": 0.6045,
+    "scale-4": 0.5761
+   },
+   "per": {
+    "scale-1": {
+     "legs": 78,
+     "rank": 0.6107,
+     "pattern": "TRIANGLE/D",
+     "snr": 4.407,
+     "legBars": 6
+    },
+    "scale-2": {
+     "legs": 46,
+     "rank": 0.6225,
+     "pattern": "DOUBLE_ZIGZAG/Y·a",
+     "snr": 2.563,
+     "legBars": 8
+    },
+    "scale-3": {
+     "legs": 20,
+     "rank": 0.7122,
+     "pattern": "DOUBLE_ZIGZAG/Y·b",
+     "snr": 2.272,
+     "legBars": 13
+    },
+    "scale-4": {
+     "legs": 11,
+     "rank": 0.661,
+     "pattern": "FLAT/C",
+     "snr": 1.5,
+     "legBars": 25
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A21",
+   "symbol": "SJT",
+   "date": "2008-11-14",
+   "eventScale": "scale-2",
+   "chosen": "scale-3",
+   "freeChoice": "scale-3",
+   "delta": 1,
+   "switches52w": 1,
+   "considered": {
+    "scale-3": 0.7983,
+    "scale-4": 0.7464,
+    "scale-1": 0.7206,
+    "scale-2": 0.5481
+   },
+   "per": {
+    "scale-1": {
+     "legs": 186,
+     "rank": 0.7206,
+     "pattern": "IMPULSE/5",
+     "snr": 4.215,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 80,
+     "rank": 0.615,
+     "pattern": "IMPULSE/5",
+     "snr": 2.108,
+     "legBars": 4
+    },
+    "scale-3": {
+     "legs": 31,
+     "rank": 0.7558,
+     "pattern": "FLAT/C",
+     "snr": 2.868,
+     "legBars": 28
+    },
+    "scale-4": {
+     "legs": 10,
+     "rank": 0.6707,
+     "pattern": "TRIANGLE/D",
+     "snr": 2.879,
+     "legBars": 88
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A22",
+   "symbol": "FLXS",
+   "date": "2007-08-24",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-1",
+   "delta": -1,
+   "switches52w": 3,
+   "considered": {
+    "scale-1": 0.7336,
+    "scale-2": 0.6414,
+    "scale-4": 0.5507,
+    "scale-3": 0.4879
+   },
+   "per": {
+    "scale-1": {
+     "legs": 150,
+     "rank": 0.7336,
+     "pattern": "ZIGZAG(C)",
+     "snr": 3.135,
+     "legBars": 7
+    },
+    "scale-2": {
+     "legs": 64,
+     "rank": 0.6763,
+     "pattern": "FLAT/B",
+     "snr": 2.457,
+     "legBars": 12
+    },
+    "scale-3": {
+     "legs": 20,
+     "rank": 0.5481,
+     "pattern": "ZIGZAG/C",
+     "snr": 1.758,
+     "legBars": 58
+    },
+    "scale-4": {
+     "legs": 10,
+     "rank": 0.6259,
+     "pattern": "DOUBLE_ZIGZAG/X",
+     "snr": 1.504,
+     "legBars": 66
+    }
+   },
+   "classes": [
+    "FINER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A23",
+   "symbol": "LECO",
+   "date": "2008-07-11",
+   "eventScale": "scale-2",
+   "chosen": "scale-4",
+   "freeChoice": "scale-4",
+   "delta": 2,
+   "switches52w": 5,
+   "considered": {
+    "scale-4": 0.7093,
+    "scale-3": 0.6778,
+    "scale-1": 0.6608,
+    "scale-2": 0.5603
+   },
+   "per": {
+    "scale-1": {
+     "legs": 126,
+     "rank": 0.6608,
+     "pattern": "ZIGZAG(C)",
+     "snr": 4.124,
+     "legBars": 7
+    },
+    "scale-2": {
+     "legs": 50,
+     "rank": 0.5951,
+     "pattern": "FLAT/B",
+     "snr": 2.383,
+     "legBars": 13
+    },
+    "scale-3": {
+     "legs": 28,
+     "rank": 0.6765,
+     "pattern": "DOUBLE_ZIGZAG/Y·b",
+     "snr": 2.508,
+     "legBars": 28
+    },
+    "scale-4": {
+     "legs": 9,
+     "rank": 0.7544,
+     "pattern": "ZIGZAG/C",
+     "snr": 1.986,
+     "legBars": 92
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A24",
+   "symbol": "ROCK",
+   "date": "2008-07-11",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-1",
+   "delta": -1,
+   "switches52w": 2,
+   "considered": {
+    "scale-1": 0.6764,
+    "scale-3": 0.6357,
+    "scale-2": 0.5754,
+    "scale-4": 0.5298
+   },
+   "per": {
+    "scale-1": {
+     "legs": 205,
+     "rank": 0.6764,
+     "pattern": "IMPULSE(C)",
+     "snr": 3.696,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 95,
+     "rank": 0.6303,
+     "pattern": "FLAT(C)",
+     "snr": 2.236,
+     "legBars": 7
+    },
+    "scale-3": {
+     "legs": 47,
+     "rank": 0.707,
+     "pattern": "FLAT(C)",
+     "snr": 1.949,
+     "legBars": 7
+    },
+    "scale-4": {
+     "legs": 18,
+     "rank": 0.5978,
+     "pattern": "TRIANGLE/E",
+     "snr": 1.502,
+     "legBars": 54
+    }
+   },
+   "classes": [
+    "FINER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A25",
+   "symbol": "APOG",
+   "date": "2006-08-11",
+   "eventScale": "scale-2",
+   "chosen": "scale-4",
+   "freeChoice": "scale-2",
+   "delta": 2,
+   "switches52w": 7,
+   "considered": {
+    "scale-2": 0.6406,
+    "scale-4": 0.6194,
+    "scale-3": 0.6159,
+    "scale-1": 0.4784
+   },
+   "per": {
+    "scale-1": {
+     "legs": 196,
+     "rank": 0.6337,
+     "pattern": "FLAT(C)",
+     "snr": 1.611,
+     "legBars": 3
+    },
+    "scale-2": {
+     "legs": 94,
+     "rank": 0.77,
+     "pattern": "IMPULSE/3",
+     "snr": 1.827,
+     "legBars": 9
+    },
+    "scale-3": {
+     "legs": 49,
+     "rank": 0.6765,
+     "pattern": "DOUBLE_ZIGZAG(C)",
+     "snr": 1.99,
+     "legBars": 19
+    },
+    "scale-4": {
+     "legs": 19,
+     "rank": 0.6977,
+     "pattern": "DOUBLE_ZIGZAG(C)",
+     "snr": 1.633,
+     "legBars": 42
+    }
+   },
+   "classes": [
+    "PERSISTENCE_HELD_OLD_DEGREE",
+    "MULTIPLE_VALID_DEGREES",
+    "COARSER_PREFERENCE_OR_SNR_WEIGHT"
+   ]
+  },
+  {
+   "id": "A26",
+   "symbol": "NOV",
+   "date": "2006-06-02",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 4,
+   "considered": {
+    "scale-2": 0.6652,
+    "scale-1": 0.6022,
+    "scale-4": 0.5826,
+    "scale-3": 0.4791
+   },
+   "per": {
+    "scale-1": {
+     "legs": 122,
+     "rank": 0.6022,
+     "pattern": "IMPULSE/3",
+     "snr": 3.656,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 54,
+     "rank": 0.7006,
+     "pattern": "TRIANGLE(C)",
+     "snr": 2.471,
+     "legBars": 6
+    },
+    "scale-3": {
+     "legs": 30,
+     "rank": 0.5549,
+     "pattern": "DOUBLE_ZIGZAG/Y·a",
+     "snr": 1.612,
+     "legBars": 11
+    },
+    "scale-4": {
+     "legs": 13,
+     "rank": 0.6235,
+     "pattern": "IMPULSE/4",
+     "snr": 1.81,
+     "legBars": 47
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A27",
+   "symbol": "HURN",
+   "date": "2009-05-01",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 3,
+   "considered": {
+    "scale-2": 0.6471,
+    "scale-3": 0.601,
+    "scale-1": 0.5449
+   },
+   "per": {
+    "scale-1": {
+     "legs": 60,
+     "rank": 0.5449,
+     "pattern": "DOUBLE_ZIGZAG/Y·b",
+     "snr": 3.487,
+     "legBars": 6
+    },
+    "scale-2": {
+     "legs": 34,
+     "rank": 0.6171,
+     "pattern": "DOUBLE_ZIGZAG(C)",
+     "snr": 3.02,
+     "legBars": 10
+    },
+    "scale-3": {
+     "legs": 16,
+     "rank": 0.6981,
+     "pattern": "ENDING_DIAGONAL/4",
+     "snr": 1.726,
+     "legBars": 9
+    },
+    "scale-4": {
+     "legs": 3,
+     "rank": null,
+     "pattern": "TOO_FEW_SWINGS",
+     "snr": 1.468,
+     "legBars": null
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A28",
+   "symbol": "MRCY",
+   "date": "2008-08-08",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 7,
+   "considered": {
+    "scale-2": 0.6397,
+    "scale-1": 0.6161,
+    "scale-3": 0.5545,
+    "scale-4": 0.4899
+   },
+   "per": {
+    "scale-1": {
+     "legs": 118,
+     "rank": 0.6161,
+     "pattern": "TRIANGLE(C)",
+     "snr": 3.547,
+     "legBars": 7
+    },
+    "scale-2": {
+     "legs": 63,
+     "rank": 0.6097,
+     "pattern": "TRIANGLE(C)",
+     "snr": 3.072,
+     "legBars": 8
+    },
+    "scale-3": {
+     "legs": 34,
+     "rank": 0.5284,
+     "pattern": "DOUBLE_ZIGZAG/Y·b",
+     "snr": 2.636,
+     "legBars": 19
+    },
+    "scale-4": {
+     "legs": 18,
+     "rank": 0.5264,
+     "pattern": "DOUBLE_ZIGZAG(C)",
+     "snr": 1.638,
+     "legBars": 38
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A29",
+   "symbol": "MLR",
+   "date": "2009-10-23",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 3,
+   "considered": {
+    "scale-2": 0.7871,
+    "scale-1": 0.7244,
+    "scale-3": 0.6242,
+    "scale-4": 0.5982
+   },
+   "per": {
+    "scale-1": {
+     "legs": 168,
+     "rank": 0.7244,
+     "pattern": "IMPULSE(C)",
+     "snr": 3.21,
+     "legBars": 2
+    },
+    "scale-2": {
+     "legs": 89,
+     "rank": 0.758,
+     "pattern": "IMPULSE(C)",
+     "snr": 2.994,
+     "legBars": 10
+    },
+    "scale-3": {
+     "legs": 42,
+     "rank": 0.6194,
+     "pattern": "DOUBLE_ZIGZAG(C)",
+     "snr": 2.494,
+     "legBars": 18
+    },
+    "scale-4": {
+     "legs": 16,
+     "rank": 0.606,
+     "pattern": "FLAT/B",
+     "snr": 2.085,
+     "legBars": 57
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A30",
+   "symbol": "MGA",
+   "date": "2009-09-11",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 2,
+   "considered": {
+    "scale-2": 0.7781,
+    "scale-3": 0.6418,
+    "scale-1": 0.5579,
+    "scale-4": 0.4524
+   },
+   "per": {
+    "scale-1": {
+     "legs": 185,
+     "rank": 0.5579,
+     "pattern": "DOUBLE_ZIGZAG/X",
+     "snr": 4.166,
+     "legBars": 7
+    },
+    "scale-2": {
+     "legs": 89,
+     "rank": 0.7481,
+     "pattern": "ZIGZAG(C)",
+     "snr": 3.52,
+     "legBars": 7
+    },
+    "scale-3": {
+     "legs": 39,
+     "rank": 0.7364,
+     "pattern": "ZIGZAG/C",
+     "snr": 1.811,
+     "legBars": 34
+    },
+    "scale-4": {
+     "legs": 15,
+     "rank": 0.5085,
+     "pattern": "TRIANGLE/E",
+     "snr": 1.372,
+     "legBars": 71
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A31",
+   "symbol": "CX",
+   "date": "2011-07-15",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-1",
+   "delta": -1,
+   "switches52w": 5,
+   "considered": {
+    "scale-1": 0.5808,
+    "scale-2": 0.5654,
+    "scale-3": 0.5172,
+    "scale-4": 0.4896
+   },
+   "per": {
+    "scale-1": {
+     "legs": 131,
+     "rank": 0.6085,
+     "pattern": "DOUBLE_ZIGZAG/Y·a",
+     "snr": 2.741,
+     "legBars": 3
+    },
+    "scale-2": {
+     "legs": 61,
+     "rank": 0.5986,
+     "pattern": "IMPULSE/3",
+     "snr": 2.401,
+     "legBars": 5
+    },
+    "scale-3": {
+     "legs": 29,
+     "rank": 0.5705,
+     "pattern": "TRIANGLE/C",
+     "snr": 1.874,
+     "legBars": 20
+    },
+    "scale-4": {
+     "legs": 11,
+     "rank": 0.506,
+     "pattern": "ZIGZAG/B",
+     "snr": 1.808,
+     "legBars": 50
+    }
+   },
+   "classes": [
+    "MULTIPLE_VALID_DEGREES"
+   ]
+  },
+  {
+   "id": "A32",
+   "symbol": "RIO",
+   "date": "2012-08-10",
+   "eventScale": "scale-2",
+   "chosen": "scale-3",
+   "freeChoice": "scale-3",
+   "delta": 1,
+   "switches52w": 2,
+   "considered": {
+    "scale-3": 0.6974,
+    "scale-1": 0.6386,
+    "scale-2": 0.6284,
+    "scale-4": 0.5461
+   },
+   "per": {
+    "scale-1": {
+     "legs": 248,
+     "rank": 0.671,
+     "pattern": "ZIGZAG/C",
+     "snr": 2.726,
+     "legBars": 3
+    },
+    "scale-2": {
+     "legs": 101,
+     "rank": 0.7297,
+     "pattern": "FLAT/C",
+     "snr": 1.98,
+     "legBars": 12
+    },
+    "scale-3": {
+     "legs": 49,
+     "rank": 0.7158,
+     "pattern": "FLAT/C",
+     "snr": 2.38,
+     "legBars": 15
+    },
+    "scale-4": {
+     "legs": 26,
+     "rank": 0.616,
+     "pattern": "IMPULSE/3",
+     "snr": 1.529,
+     "legBars": 23
+    }
+   },
+   "classes": [
+    "COARSER_PREFERENCE_OR_SNR_WEIGHT"
+   ]
+  },
+  {
+   "id": "A33",
+   "symbol": "CRMT",
+   "date": "2013-01-04",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 4,
+   "considered": {
+    "scale-2": 0.6303,
+    "scale-3": 0.5959,
+    "scale-1": 0.5534,
+    "scale-4": 0.5248
+   },
+   "per": {
+    "scale-1": {
+     "legs": 211,
+     "rank": 0.5534,
+     "pattern": "FLAT(C)",
+     "snr": 5.187,
+     "legBars": 6
+    },
+    "scale-2": {
+     "legs": 113,
+     "rank": 0.6003,
+     "pattern": "FLAT/C",
+     "snr": 3.539,
+     "legBars": 9
+    },
+    "scale-3": {
+     "legs": 62,
+     "rank": 0.6725,
+     "pattern": "DOUBLE_ZIGZAG(C)",
+     "snr": 1.849,
+     "legBars": 16
+    },
+    "scale-4": {
+     "legs": 25,
+     "rank": 0.546,
+     "pattern": "FLAT/B",
+     "snr": 1.846,
+     "legBars": 33
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A34",
+   "symbol": "OPRX",
+   "date": "2014-07-18",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 6,
+   "considered": {
+    "scale-2": 0.6883,
+    "scale-1": 0.6679,
+    "scale-3": 0.6033,
+    "scale-4": 0.5485
+   },
+   "per": {
+    "scale-1": {
+     "legs": 91,
+     "rank": 0.7085,
+     "pattern": "DOUBLE_ZIGZAG/X",
+     "snr": 2.675,
+     "legBars": 3
+    },
+    "scale-2": {
+     "legs": 49,
+     "rank": 0.6941,
+     "pattern": "LEADING_DIAGONAL/4",
+     "snr": 2.707,
+     "legBars": 6
+    },
+    "scale-3": {
+     "legs": 22,
+     "rank": 0.6153,
+     "pattern": "FLAT/C",
+     "snr": 2.337,
+     "legBars": 19
+    },
+    "scale-4": {
+     "legs": 18,
+     "rank": 0.6073,
+     "pattern": "DOUBLE_ZIGZAG/Y·b",
+     "snr": 1.61,
+     "legBars": 21
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A35",
+   "symbol": "MVIS",
+   "date": "2016-01-29",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-1",
+   "delta": -1,
+   "switches52w": 7,
+   "considered": {
+    "scale-1": 0.6536,
+    "scale-4": 0.6393,
+    "scale-3": 0.6287,
+    "scale-2": 0.6151
+   },
+   "per": {
+    "scale-1": {
+     "legs": 221,
+     "rank": 0.6536,
+     "pattern": "TRIANGLE/C",
+     "snr": 3.737,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 124,
+     "rank": 0.6513,
+     "pattern": "DOUBLE_ZIGZAG/Y·b",
+     "snr": 2.424,
+     "legBars": 7
+    },
+    "scale-3": {
+     "legs": 64,
+     "rank": 0.6897,
+     "pattern": "DOUBLE_ZIGZAG/Y·a",
+     "snr": 2.005,
+     "legBars": 9
+    },
+    "scale-4": {
+     "legs": 30,
+     "rank": 0.6612,
+     "pattern": "ENDING_DIAGONAL/4",
+     "snr": 2.041,
+     "legBars": 25
+    }
+   },
+   "classes": [
+    "UNCLASSIFIED"
+   ]
+  },
+  {
+   "id": "A36",
+   "symbol": "EXPD",
+   "date": "2014-05-09",
+   "eventScale": "scale-2",
+   "chosen": "scale-4",
+   "freeChoice": "scale-4",
+   "delta": 2,
+   "switches52w": 2,
+   "considered": {
+    "scale-4": 0.746,
+    "scale-2": 0.6347,
+    "scale-1": 0.6045,
+    "scale-3": 0.5452
+   },
+   "per": {
+    "scale-1": {
+     "legs": 265,
+     "rank": 0.6045,
+     "pattern": "TRIANGLE/D",
+     "snr": 4.329,
+     "legBars": 8
+    },
+    "scale-2": {
+     "legs": 138,
+     "rank": 0.6612,
+     "pattern": "IMPULSE/3",
+     "snr": 2.515,
+     "legBars": 18
+    },
+    "scale-3": {
+     "legs": 54,
+     "rank": 0.655,
+     "pattern": "DOUBLE_ZIGZAG/Y·a",
+     "snr": 1.532,
+     "legBars": 35
+    },
+    "scale-4": {
+     "legs": 12,
+     "rank": 0.7613,
+     "pattern": "ENDING_DIAGONAL/4",
+     "snr": 2.217,
+     "legBars": 144
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A37",
+   "symbol": "TREX",
+   "date": "2016-01-29",
+   "eventScale": "scale-2",
+   "chosen": "scale-3",
+   "freeChoice": "scale-4",
+   "delta": 1,
+   "switches52w": 4,
+   "considered": {
+    "scale-4": 0.6375,
+    "scale-3": 0.6184,
+    "scale-2": 0.5901,
+    "scale-1": 0.5493
+   },
+   "per": {
+    "scale-1": {
+     "legs": 194,
+     "rank": 0.5541,
+     "pattern": "TRIANGLE/E",
+     "snr": 2.951,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 108,
+     "rank": 0.565,
+     "pattern": "TRIANGLE/E",
+     "snr": 2.952,
+     "legBars": 4
+    },
+    "scale-3": {
+     "legs": 63,
+     "rank": 0.676,
+     "pattern": "ZIGZAG/C",
+     "snr": 2.013,
+     "legBars": 14
+    },
+    "scale-4": {
+     "legs": 19,
+     "rank": 0.715,
+     "pattern": "DOUBLE_ZIGZAG/Y·b",
+     "snr": 1.673,
+     "legBars": 37
+    }
+   },
+   "classes": [
+    "PERSISTENCE_HELD_OLD_DEGREE",
+    "MULTIPLE_VALID_DEGREES",
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A38",
+   "symbol": "WYNN",
+   "date": "2013-03-01",
+   "eventScale": "scale-2",
+   "chosen": "scale-4",
+   "freeChoice": "scale-4",
+   "delta": 2,
+   "switches52w": 0,
+   "considered": {
+    "scale-4": 0.717,
+    "scale-2": 0.565,
+    "scale-1": 0.5491,
+    "scale-3": 0.547
+   },
+   "per": {
+    "scale-1": {
+     "legs": 118,
+     "rank": 0.5491,
+     "pattern": "DOUBLE_ZIGZAG/X",
+     "snr": 3.947,
+     "legBars": 8
+    },
+    "scale-2": {
+     "legs": 66,
+     "rank": 0.6088,
+     "pattern": "ENDING_DIAGONAL/4",
+     "snr": 2.313,
+     "legBars": 8
+    },
+    "scale-3": {
+     "legs": 30,
+     "rank": 0.5979,
+     "pattern": "ENDING_DIAGONAL(C)",
+     "snr": 1.95,
+     "legBars": 14
+    },
+    "scale-4": {
+     "legs": 5,
+     "rank": 0.627,
+     "pattern": "FLAT(C)",
+     "snr": 3.004,
+     "legBars": 101
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A39",
+   "symbol": "DSGR",
+   "date": "2011-11-11",
+   "eventScale": "scale-2",
+   "chosen": "scale-4",
+   "freeChoice": "scale-4",
+   "delta": 2,
+   "switches52w": 4,
+   "considered": {
+    "scale-4": 0.6349,
+    "scale-1": 0.6014,
+    "scale-2": 0.5675,
+    "scale-3": 0.5015
+   },
+   "per": {
+    "scale-1": {
+     "legs": 265,
+     "rank": 0.6014,
+     "pattern": "FLAT(C)",
+     "snr": 3.791,
+     "legBars": 2
+    },
+    "scale-2": {
+     "legs": 135,
+     "rank": 0.6677,
+     "pattern": "DOUBLE_ZIGZAG/Y·c",
+     "snr": 1.895,
+     "legBars": 6
+    },
+    "scale-3": {
+     "legs": 47,
+     "rank": 0.5786,
+     "pattern": "FLAT/C",
+     "snr": 1.657,
+     "legBars": 19
+    },
+    "scale-4": {
+     "legs": 19,
+     "rank": 0.6919,
+     "pattern": "DOUBLE_ZIGZAG/X",
+     "snr": 1.797,
+     "legBars": 31
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A40",
+   "symbol": "ACCS",
+   "date": "2015-07-24",
+   "eventScale": "scale-2",
+   "chosen": "scale-4",
+   "freeChoice": "scale-4",
+   "delta": 2,
+   "switches52w": 4,
+   "considered": {
+    "scale-4": 0.5362,
+    "scale-3": 0.5062,
+    "scale-1": 0.4798,
+    "scale-2": 0.4692
+   },
+   "per": {
+    "scale-1": {
+     "legs": 120,
+     "rank": 0.4798,
+     "pattern": "ZIGZAG/B",
+     "snr": 4.379,
+     "legBars": 6
+    },
+    "scale-2": {
+     "legs": 98,
+     "rank": 0.5001,
+     "pattern": "IMPULSE/3",
+     "snr": 2.31,
+     "legBars": 8
+    },
+    "scale-3": {
+     "legs": 38,
+     "rank": 0.5812,
+     "pattern": "FLAT(C)",
+     "snr": 1.685,
+     "legBars": 6
+    },
+    "scale-4": {
+     "legs": 16,
+     "rank": 0.6375,
+     "pattern": "FLAT(C)",
+     "snr": 0.564,
+     "legBars": 81
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A41",
+   "symbol": "AVD",
+   "date": "2016-05-06",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 7,
+   "considered": {
+    "scale-2": 0.6081,
+    "scale-3": 0.5948,
+    "scale-4": 0.5488,
+    "scale-1": 0.4465
+   },
+   "per": {
+    "scale-1": {
+     "legs": 318,
+     "rank": 0.5864,
+     "pattern": "TRIANGLE/D",
+     "snr": 1.648,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 185,
+     "rank": 0.6268,
+     "pattern": "TRIANGLE(C)",
+     "snr": 2.56,
+     "legBars": 8
+    },
+    "scale-3": {
+     "legs": 97,
+     "rank": 0.7093,
+     "pattern": "FLAT(C)",
+     "snr": 1.607,
+     "legBars": 13
+    },
+    "scale-4": {
+     "legs": 47,
+     "rank": 0.6555,
+     "pattern": "DOUBLE_ZIGZAG/Y·c",
+     "snr": 1.251,
+     "legBars": 42
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A42",
+   "symbol": "ALCO",
+   "date": "2012-01-20",
+   "eventScale": "scale-2",
+   "chosen": "scale-3",
+   "freeChoice": "scale-3",
+   "delta": 1,
+   "switches52w": 3,
+   "considered": {
+    "scale-3": 0.7356,
+    "scale-1": 0.552,
+    "scale-4": 0.534,
+    "scale-2": 0.5252
+   },
+   "per": {
+    "scale-1": {
+     "legs": 229,
+     "rank": 0.552,
+     "pattern": "FLAT/C",
+     "snr": 3.882,
+     "legBars": 5
+    },
+    "scale-2": {
+     "legs": 112,
+     "rank": 0.609,
+     "pattern": "FLAT/C",
+     "snr": 1.941,
+     "legBars": 5
+    },
+    "scale-3": {
+     "legs": 45,
+     "rank": 0.8734,
+     "pattern": "LEADING_DIAGONAL(C)",
+     "snr": 1.717,
+     "legBars": 20
+    },
+    "scale-4": {
+     "legs": 18,
+     "rank": 0.6343,
+     "pattern": "IMPULSE/5",
+     "snr": 1.197,
+     "legBars": 46
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A43",
+   "symbol": "LAZ",
+   "date": "2012-11-16",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 3,
+   "considered": {
+    "scale-2": 0.7904,
+    "scale-3": 0.6869,
+    "scale-1": 0.6561,
+    "scale-4": 0.5869
+   },
+   "per": {
+    "scale-1": {
+     "legs": 100,
+     "rank": 0.7897,
+     "pattern": "ZIGZAG/C",
+     "snr": 2.04,
+     "legBars": 2
+    },
+    "scale-2": {
+     "legs": 38,
+     "rank": 0.7604,
+     "pattern": "LEADING_DIAGONAL(C)",
+     "snr": 3.521,
+     "legBars": 10
+    },
+    "scale-3": {
+     "legs": 16,
+     "rank": 0.6521,
+     "pattern": "TRIANGLE/D",
+     "snr": 2.78,
+     "legBars": 21
+    },
+    "scale-4": {
+     "legs": 11,
+     "rank": 0.637,
+     "pattern": "ZIGZAG/C",
+     "snr": 1.755,
+     "legBars": 22
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A44",
+   "symbol": "RIGL",
+   "date": "2014-01-10",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 0,
+   "considered": {
+    "scale-2": 0.6571,
+    "scale-1": 0.5589,
+    "scale-3": 0.5413,
+    "scale-4": 0.5252
+   },
+   "per": {
+    "scale-1": {
+     "legs": 138,
+     "rank": 0.5662,
+     "pattern": "IMPULSE/2",
+     "snr": 2.927,
+     "legBars": 9
+    },
+    "scale-2": {
+     "legs": 78,
+     "rank": 0.6271,
+     "pattern": "IMPULSE(C)",
+     "snr": 4.498,
+     "legBars": 13
+    },
+    "scale-3": {
+     "legs": 40,
+     "rank": 0.544,
+     "pattern": "TRIANGLE/E",
+     "snr": 2.347,
+     "legBars": 22
+    },
+    "scale-4": {
+     "legs": 27,
+     "rank": 0.6159,
+     "pattern": "ZIGZAG(C)",
+     "snr": 1.338,
+     "legBars": 12
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A45",
+   "symbol": "OSIS",
+   "date": "2011-03-18",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 1,
+   "considered": {
+    "scale-2": 0.7195,
+    "scale-1": 0.6645,
+    "scale-4": 0.5386,
+    "scale-3": 0.4951
+   },
+   "per": {
+    "scale-1": {
+     "legs": 154,
+     "rank": 0.6781,
+     "pattern": "ENDING_DIAGONAL/4",
+     "snr": 2.886,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 80,
+     "rank": 0.8126,
+     "pattern": "IMPULSE(C)",
+     "snr": 2.141,
+     "legBars": 8
+    },
+    "scale-3": {
+     "legs": 41,
+     "rank": 0.59,
+     "pattern": "FLAT/C",
+     "snr": 1.512,
+     "legBars": 18
+    },
+    "scale-4": {
+     "legs": 17,
+     "rank": 0.6173,
+     "pattern": "TRIANGLE/D",
+     "snr": 1.451,
+     "legBars": 64
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A46",
+   "symbol": "PANL",
+   "date": "2020-09-11",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-1",
+   "delta": -1,
+   "switches52w": 3,
+   "considered": {
+    "scale-1": 0.6347,
+    "scale-4": 0.6247,
+    "scale-2": 0.5956,
+    "scale-3": 0.5638
+   },
+   "per": {
+    "scale-1": {
+     "legs": 77,
+     "rank": 0.6347,
+     "pattern": "DOUBLE_ZIGZAG/Y·b",
+     "snr": 3.902,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 38,
+     "rank": 0.6862,
+     "pattern": "DOUBLE_ZIGZAG/Y·b",
+     "snr": 2.003,
+     "legBars": 4
+    },
+    "scale-3": {
+     "legs": 19,
+     "rank": 0.6536,
+     "pattern": "TRIANGLE/C",
+     "snr": 1.702,
+     "legBars": 8
+    },
+    "scale-4": {
+     "legs": 9,
+     "rank": 0.703,
+     "pattern": "FLAT/C",
+     "snr": 1.643,
+     "legBars": 41
+    }
+   },
+   "classes": [
+    "UNCLASSIFIED"
+   ]
+  },
+  {
+   "id": "A47",
+   "symbol": "APO",
+   "date": "2018-10-12",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 5,
+   "considered": {
+    "scale-2": 0.6963,
+    "scale-3": 0.6561,
+    "scale-4": 0.5652,
+    "scale-1": 0.4805
+   },
+   "per": {
+    "scale-1": {
+     "legs": 74,
+     "rank": 0.586,
+     "pattern": "IMPULSE/3",
+     "snr": 1.979,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 34,
+     "rank": 0.7104,
+     "pattern": "FLAT/C",
+     "snr": 2.647,
+     "legBars": 12
+    },
+    "scale-3": {
+     "legs": 12,
+     "rank": 0.7461,
+     "pattern": "DOUBLE_ZIGZAG/Y·b",
+     "snr": 1.862,
+     "legBars": 24
+    },
+    "scale-4": {
+     "legs": 5,
+     "rank": 0.5888,
+     "pattern": "WXY/Y",
+     "snr": 1.907,
+     "legBars": 99
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A48",
+   "symbol": "EPSN",
+   "date": "2020-12-04",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 0,
+   "considered": {
+    "scale-2": 0.7047,
+    "scale-1": 0.5597,
+    "scale-3": 0.5539
+   },
+   "per": {
+    "scale-1": {
+     "legs": 60,
+     "rank": 0.6181,
+     "pattern": "DOUBLE_ZIGZAG/Y·c",
+     "snr": 2.464,
+     "legBars": 3
+    },
+    "scale-2": {
+     "legs": 24,
+     "rank": 0.6747,
+     "pattern": "DOUBLE_ZIGZAG/Y·b",
+     "snr": 3.051,
+     "legBars": 11
+    },
+    "scale-3": {
+     "legs": 10,
+     "rank": 0.6507,
+     "pattern": "FLAT/B",
+     "snr": 1.635,
+     "legBars": 37
+    },
+    "scale-4": {
+     "legs": 3,
+     "rank": null,
+     "pattern": "TOO_FEW_SWINGS",
+     "snr": 1.648,
+     "legBars": null
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A49",
+   "symbol": "CRI",
+   "date": "2018-05-25",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-1",
+   "delta": -1,
+   "switches52w": 3,
+   "considered": {
+    "scale-1": 0.7242,
+    "scale-3": 0.7083,
+    "scale-2": 0.5221,
+    "scale-4": 0.5022
+   },
+   "per": {
+    "scale-1": {
+     "legs": 152,
+     "rank": 0.7242,
+     "pattern": "IMPULSE/3",
+     "snr": 3.615,
+     "legBars": 11
+    },
+    "scale-2": {
+     "legs": 76,
+     "rank": 0.6231,
+     "pattern": "DOUBLE_ZIGZAG/Y·c",
+     "snr": 1.808,
+     "legBars": 10
+    },
+    "scale-3": {
+     "legs": 34,
+     "rank": 0.7441,
+     "pattern": "TRIANGLE/E",
+     "snr": 2.27,
+     "legBars": 30
+    },
+    "scale-4": {
+     "legs": 10,
+     "rank": 0.5888,
+     "pattern": "IMPULSE/5",
+     "snr": 1.3,
+     "legBars": 86
+    }
+   },
+   "classes": [
+    "FINER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A50",
+   "symbol": "GWRE",
+   "date": "2018-10-05",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 4,
+   "considered": {
+    "scale-2": 0.7819,
+    "scale-3": 0.6887,
+    "scale-1": 0.5534,
+    "scale-4": 0.5411
+   },
+   "per": {
+    "scale-1": {
+     "legs": 75,
+     "rank": 0.718,
+     "pattern": "IMPULSE(C)",
+     "snr": 1.701,
+     "legBars": 2
+    },
+    "scale-2": {
+     "legs": 29,
+     "rank": 0.7519,
+     "pattern": "IMPULSE/4",
+     "snr": 3.535,
+     "legBars": 11
+    },
+    "scale-3": {
+     "legs": 8,
+     "rank": 0.655,
+     "pattern": "IMPULSE/3",
+     "snr": 2.772,
+     "legBars": 45
+    },
+    "scale-4": {
+     "legs": 8,
+     "rank": 0.6132,
+     "pattern": "IMPULSE/3",
+     "snr": 1.503,
+     "legBars": 45
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A51",
+   "symbol": "TRGP",
+   "date": "2019-02-15",
+   "eventScale": "scale-2",
+   "chosen": "scale-4",
+   "freeChoice": "scale-4",
+   "delta": 2,
+   "switches52w": 1,
+   "considered": {
+    "scale-4": 0.7143,
+    "scale-3": 0.6684,
+    "scale-2": 0.655,
+    "scale-1": 0.5031
+   },
+   "per": {
+    "scale-1": {
+     "legs": 64,
+     "rank": 0.5957,
+     "pattern": "TRIANGLE/E",
+     "snr": 2.119,
+     "legBars": 9
+    },
+    "scale-2": {
+     "legs": 32,
+     "rank": 0.625,
+     "pattern": "TRIANGLE/E",
+     "snr": 3.1,
+     "legBars": 13
+    },
+    "scale-3": {
+     "legs": 14,
+     "rank": 0.6093,
+     "pattern": "TRIANGLE/E",
+     "snr": 2.991,
+     "legBars": 13
+    },
+    "scale-4": {
+     "legs": 5,
+     "rank": 0.6695,
+     "pattern": "TRIANGLE(C)",
+     "snr": 2.617,
+     "legBars": 82
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A52",
+   "symbol": "WKC",
+   "date": "2020-02-21",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-3",
+   "delta": -1,
+   "switches52w": 1,
+   "considered": {
+    "scale-3": 0.5765,
+    "scale-2": 0.5579,
+    "scale-1": 0.5565,
+    "scale-4": 0.5163
+   },
+   "per": {
+    "scale-1": {
+     "legs": 304,
+     "rank": 0.5565,
+     "pattern": "ZIGZAG(C)",
+     "snr": 3.644,
+     "legBars": 7
+    },
+    "scale-2": {
+     "legs": 152,
+     "rank": 0.5279,
+     "pattern": "FLAT/B",
+     "snr": 4.099,
+     "legBars": 19
+    },
+    "scale-3": {
+     "legs": 82,
+     "rank": 0.6034,
+     "pattern": "IMPULSE/4",
+     "snr": 2.184,
+     "legBars": 22
+    },
+    "scale-4": {
+     "legs": 39,
+     "rank": 0.609,
+     "pattern": "FLAT/C",
+     "snr": 1.236,
+     "legBars": 23
+    }
+   },
+   "classes": [
+    "PERSISTENCE_HELD_OLD_DEGREE",
+    "MULTIPLE_VALID_DEGREES"
+   ]
+  },
+  {
+   "id": "A53",
+   "symbol": "PED",
+   "date": "2019-10-04",
+   "eventScale": "scale-2",
+   "chosen": "scale-3",
+   "freeChoice": "scale-3",
+   "delta": 1,
+   "switches52w": 2,
+   "considered": {
+    "scale-3": 0.7743,
+    "scale-4": 0.6495,
+    "scale-1": 0.6335,
+    "scale-2": 0.4916
+   },
+   "per": {
+    "scale-1": {
+     "legs": 164,
+     "rank": 0.6335,
+     "pattern": "IMPULSE/5",
+     "snr": 5.299,
+     "legBars": 5
+    },
+    "scale-2": {
+     "legs": 91,
+     "rank": 0.5434,
+     "pattern": "TRIANGLE/D",
+     "snr": 2.146,
+     "legBars": 10
+    },
+    "scale-3": {
+     "legs": 44,
+     "rank": 0.7143,
+     "pattern": "DOUBLE_ZIGZAG/Y·c",
+     "snr": 3.147,
+     "legBars": 12
+    },
+    "scale-4": {
+     "legs": 23,
+     "rank": 0.6878,
+     "pattern": "ENDING_DIAGONAL/4",
+     "snr": 1.943,
+     "legBars": 20
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A54",
+   "symbol": "CP",
+   "date": "2021-07-09",
+   "eventScale": "scale-2",
+   "chosen": "scale-3",
+   "freeChoice": "scale-2",
+   "delta": 1,
+   "switches52w": 4,
+   "considered": {
+    "scale-2": 0.644,
+    "scale-3": 0.6277,
+    "scale-1": 0.5825,
+    "scale-4": 0.5375
+   },
+   "per": {
+    "scale-1": {
+     "legs": 284,
+     "rank": 0.6678,
+     "pattern": "ENDING_DIAGONAL/4",
+     "snr": 2.277,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 140,
+     "rank": 0.6629,
+     "pattern": "IMPULSE(C)",
+     "snr": 2.581,
+     "legBars": 12
+    },
+    "scale-3": {
+     "legs": 49,
+     "rank": 0.5751,
+     "pattern": "ENDING_DIAGONAL/5",
+     "snr": 2.927,
+     "legBars": 51
+    },
+    "scale-4": {
+     "legs": 23,
+     "rank": 0.5573,
+     "pattern": "DOUBLE_ZIGZAG/Y·a",
+     "snr": 1.883,
+     "legBars": 56
+    }
+   },
+   "classes": [
+    "PERSISTENCE_HELD_OLD_DEGREE",
+    "MULTIPLE_VALID_DEGREES",
+    "COARSER_PREFERENCE_OR_SNR_WEIGHT"
+   ]
+  },
+  {
+   "id": "A55",
+   "symbol": "SCYX",
+   "date": "2017-09-29",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-1",
+   "delta": -1,
+   "switches52w": 5,
+   "considered": {
+    "scale-1": 0.6363,
+    "scale-2": 0.6035,
+    "scale-3": 0.59
+   },
+   "per": {
+    "scale-1": {
+     "legs": 43,
+     "rank": 0.7526,
+     "pattern": "IMPULSE(C)",
+     "snr": 2.125,
+     "legBars": 5
+    },
+    "scale-2": {
+     "legs": 19,
+     "rank": 0.613,
+     "pattern": "IMPULSE/4",
+     "snr": 2.635,
+     "legBars": 11
+    },
+    "scale-3": {
+     "legs": 5,
+     "rank": 0.5719,
+     "pattern": "FLAT/C",
+     "snr": 2.585,
+     "legBars": 20
+    },
+    "scale-4": {
+     "legs": 4,
+     "rank": null,
+     "pattern": "TOO_FEW_SWINGS",
+     "snr": 1.508,
+     "legBars": null
+    }
+   },
+   "classes": [
+    "FINER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A56",
+   "symbol": "FTI",
+   "date": "2017-11-17",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-1",
+   "delta": -1,
+   "switches52w": 2,
+   "considered": {
+    "scale-1": 0.694,
+    "scale-2": 0.6711,
+    "scale-3": 0.571,
+    "scale-4": 0.5235
+   },
+   "per": {
+    "scale-1": {
+     "legs": 170,
+     "rank": 0.6986,
+     "pattern": "FLAT(C)",
+     "snr": 2.962,
+     "legBars": 3
+    },
+    "scale-2": {
+     "legs": 86,
+     "rank": 0.6411,
+     "pattern": "FLAT(C)",
+     "snr": 3.024,
+     "legBars": 3
+    },
+    "scale-3": {
+     "legs": 34,
+     "rank": 0.6766,
+     "pattern": "ZIGZAG(C)",
+     "snr": 1.613,
+     "legBars": 16
+    },
+    "scale-4": {
+     "legs": 18,
+     "rank": 0.606,
+     "pattern": "FLAT/B",
+     "snr": 1.387,
+     "legBars": 44
+    }
+   },
+   "classes": [
+    "MULTIPLE_VALID_DEGREES",
+    "FINER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A57",
+   "symbol": "PHG",
+   "date": "2017-04-28",
+   "eventScale": "scale-4",
+   "chosen": "scale-4",
+   "freeChoice": "scale-4",
+   "delta": 0,
+   "switches52w": 4,
+   "considered": {
+    "scale-4": 0.6177,
+    "scale-2": 0.5011,
+    "scale-1": 0.4576,
+    "scale-3": 0.4056
+   },
+   "per": {
+    "scale-1": {
+     "legs": 295,
+     "rank": 0.621,
+     "pattern": "ZIGZAG/C",
+     "snr": 1.509,
+     "legBars": 7
+    },
+    "scale-2": {
+     "legs": 131,
+     "rank": 0.6128,
+     "pattern": "IMPULSE/3",
+     "snr": 1.69,
+     "legBars": 21
+    },
+    "scale-3": {
+     "legs": 57,
+     "rank": 0.4906,
+     "pattern": "DOUBLE_ZIGZAG/X",
+     "snr": 1.326,
+     "legBars": 43
+    },
+    "scale-4": {
+     "legs": 21,
+     "rank": 0.6266,
+     "pattern": "DOUBLE_ZIGZAG/Y·b",
+     "snr": 2.106,
+     "legBars": 83
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A58",
+   "symbol": "ESRT",
+   "date": "2019-02-22",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 2,
+   "considered": {
+    "scale-2": 0.7687,
+    "scale-3": 0.5336,
+    "scale-1": 0.4006
+   },
+   "per": {
+    "scale-1": {
+     "legs": 28,
+     "rank": 0.4693,
+     "pattern": "IMPULSE/2",
+     "snr": 2.17,
+     "legBars": 6
+    },
+    "scale-2": {
+     "legs": 12,
+     "rank": 0.7387,
+     "pattern": "IMPULSE(C)",
+     "snr": 3.041,
+     "legBars": 24
+    },
+    "scale-3": {
+     "legs": 5,
+     "rank": 0.635,
+     "pattern": "TRIANGLE(C)",
+     "snr": 1.561,
+     "legBars": 30
+    },
+    "scale-4": {
+     "legs": 1,
+     "rank": null,
+     "pattern": "TOO_FEW_SWINGS",
+     "snr": null,
+     "legBars": null
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A59",
+   "symbol": "CBOE",
+   "date": "2021-02-05",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-1",
+   "delta": -1,
+   "switches52w": 2,
+   "considered": {
+    "scale-1": 0.6498,
+    "scale-3": 0.6132,
+    "scale-2": 0.5388
+   },
+   "per": {
+    "scale-1": {
+     "legs": 78,
+     "rank": 0.6498,
+     "pattern": "DOUBLE_ZIGZAG/X",
+     "snr": 3.185,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 40,
+     "rank": 0.6718,
+     "pattern": "DOUBLE_ZIGZAG/X",
+     "snr": 1.624,
+     "legBars": 4
+    },
+    "scale-3": {
+     "legs": 19,
+     "rank": 0.6625,
+     "pattern": "FLAT/C",
+     "snr": 2.064,
+     "legBars": 14
+    },
+    "scale-4": {
+     "legs": 4,
+     "rank": null,
+     "pattern": "TOO_FEW_SWINGS",
+     "snr": 1.752,
+     "legBars": null
+    }
+   },
+   "classes": [
+    "UNCLASSIFIED"
+   ]
+  },
+  {
+   "id": "A60",
+   "symbol": "JNJ",
+   "date": "2020-06-26",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 5,
+   "considered": {
+    "scale-2": 0.6735,
+    "scale-4": 0.6663,
+    "scale-3": 0.5869,
+    "scale-1": 0.4982
+   },
+   "per": {
+    "scale-1": {
+     "legs": 222,
+     "rank": 0.4982,
+     "pattern": "TRIANGLE/E",
+     "snr": 3.237,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 84,
+     "rank": 0.752,
+     "pattern": "FLAT(C)",
+     "snr": 2.182,
+     "legBars": 9
+    },
+    "scale-3": {
+     "legs": 34,
+     "rank": 0.728,
+     "pattern": "FLAT/C",
+     "snr": 1.435,
+     "legBars": 23
+    },
+    "scale-4": {
+     "legs": 8,
+     "rank": 0.7186,
+     "pattern": "DOUBLE_ZIGZAG/Y·a",
+     "snr": 1.877,
+     "legBars": 209
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A61",
+   "symbol": "HUM",
+   "date": "2024-08-09",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 4,
+   "considered": {
+    "scale-2": 0.6187,
+    "scale-3": 0.5596,
+    "scale-4": 0.5587,
+    "scale-1": 0.5343
+   },
+   "per": {
+    "scale-1": {
+     "legs": 376,
+     "rank": 0.608,
+     "pattern": "FLAT(C)",
+     "snr": 2.313,
+     "legBars": 5
+    },
+    "scale-2": {
+     "legs": 170,
+     "rank": 0.6092,
+     "pattern": "IMPULSE/5",
+     "snr": 2.809,
+     "legBars": 13
+    },
+    "scale-3": {
+     "legs": 75,
+     "rank": 0.6629,
+     "pattern": "IMPULSE/4",
+     "snr": 1.605,
+     "legBars": 23
+    },
+    "scale-4": {
+     "legs": 35,
+     "rank": 0.6695,
+     "pattern": "DOUBLE_ZIGZAG(C)",
+     "snr": 1.284,
+     "legBars": 47
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A62",
+   "symbol": "FWDI",
+   "date": "2025-04-11",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-1",
+   "delta": -1,
+   "switches52w": 7,
+   "considered": {
+    "scale-1": 0.7142,
+    "scale-2": 0.6826,
+    "scale-3": 0.5258,
+    "scale-4": 0.5213
+   },
+   "per": {
+    "scale-1": {
+     "legs": 381,
+     "rank": 0.7142,
+     "pattern": "FLAT/C",
+     "snr": 3.83,
+     "legBars": 3
+    },
+    "scale-2": {
+     "legs": 183,
+     "rank": 0.6823,
+     "pattern": "FLAT/C",
+     "snr": 2.753,
+     "legBars": 4
+    },
+    "scale-3": {
+     "legs": 84,
+     "rank": 0.5793,
+     "pattern": "FLAT/C",
+     "snr": 1.891,
+     "legBars": 8
+    },
+    "scale-4": {
+     "legs": 33,
+     "rank": 0.555,
+     "pattern": "IMPULSE/3",
+     "snr": 1.737,
+     "legBars": 71
+    }
+   },
+   "classes": [
+    "FINER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A63",
+   "symbol": "SBSW",
+   "date": "2023-07-28",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-3",
+   "delta": 0,
+   "switches52w": 3,
+   "considered": {
+    "scale-3": 0.6111,
+    "scale-4": 0.6032,
+    "scale-2": 0.5965,
+    "scale-1": 0.558
+   },
+   "per": {
+    "scale-1": {
+     "legs": 135,
+     "rank": 0.558,
+     "pattern": "IMPULSE/2",
+     "snr": 3.449,
+     "legBars": 6
+    },
+    "scale-2": {
+     "legs": 61,
+     "rank": 0.5665,
+     "pattern": "IMPULSE/4",
+     "snr": 4.096,
+     "legBars": 7
+    },
+    "scale-3": {
+     "legs": 34,
+     "rank": 0.5558,
+     "pattern": "WXY/Y",
+     "snr": 2.952,
+     "legBars": 23
+    },
+    "scale-4": {
+     "legs": 16,
+     "rank": 0.5579,
+     "pattern": "FLAT(C)",
+     "snr": 2.546,
+     "legBars": 20
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A64",
+   "symbol": "DAL",
+   "date": "2024-02-23",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 3,
+   "considered": {
+    "scale-2": 0.6911,
+    "scale-4": 0.6589,
+    "scale-1": 0.655,
+    "scale-3": 0.5552
+   },
+   "per": {
+    "scale-1": {
+     "legs": 191,
+     "rank": 0.655,
+     "pattern": "TRIANGLE/D",
+     "snr": 5.346,
+     "legBars": 8
+    },
+    "scale-2": {
+     "legs": 115,
+     "rank": 0.7015,
+     "pattern": "TRIANGLE/D",
+     "snr": 2.673,
+     "legBars": 8
+    },
+    "scale-3": {
+     "legs": 53,
+     "rank": 0.609,
+     "pattern": "DOUBLE_ZIGZAG/Y·a",
+     "snr": 1.94,
+     "legBars": 13
+    },
+    "scale-4": {
+     "legs": 16,
+     "rank": 0.7398,
+     "pattern": "TRIANGLE/E",
+     "snr": 1.692,
+     "legBars": 44
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A65",
+   "symbol": "UFCS",
+   "date": "2025-05-02",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-1",
+   "delta": -1,
+   "switches52w": 5,
+   "considered": {
+    "scale-1": 0.7232,
+    "scale-2": 0.6641,
+    "scale-3": 0.6161,
+    "scale-4": 0.6102
+   },
+   "per": {
+    "scale-1": {
+     "legs": 388,
+     "rank": 0.7232,
+     "pattern": "TRIANGLE/D",
+     "snr": 3.005,
+     "legBars": 5
+    },
+    "scale-2": {
+     "legs": 180,
+     "rank": 0.6977,
+     "pattern": "TRIANGLE/D",
+     "snr": 2.483,
+     "legBars": 5
+    },
+    "scale-3": {
+     "legs": 79,
+     "rank": 0.72,
+     "pattern": "IMPULSE/5",
+     "snr": 1.709,
+     "legBars": 16
+    },
+    "scale-4": {
+     "legs": 22,
+     "rank": 0.6166,
+     "pattern": "FLAT(C)",
+     "snr": 2.114,
+     "legBars": 43
+    }
+   },
+   "classes": [
+    "UNCLASSIFIED"
+   ]
+  },
+  {
+   "id": "A66",
+   "symbol": "XPO",
+   "date": "2022-12-30",
+   "eventScale": "scale-2",
+   "chosen": "scale-3",
+   "freeChoice": "scale-3",
+   "delta": 1,
+   "switches52w": 2,
+   "considered": {
+    "scale-3": 0.7574,
+    "scale-4": 0.6888,
+    "scale-2": 0.632,
+    "scale-1": 0.6266
+   },
+   "per": {
+    "scale-1": {
+     "legs": 225,
+     "rank": 0.6266,
+     "pattern": "IMPULSE/4",
+     "snr": 4.765,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 123,
+     "rank": 0.6266,
+     "pattern": "FLAT(C)",
+     "snr": 2.777,
+     "legBars": 7
+    },
+    "scale-3": {
+     "legs": 66,
+     "rank": 0.731,
+     "pattern": "IMPULSE(C)",
+     "snr": 2.74,
+     "legBars": 12
+    },
+    "scale-4": {
+     "legs": 26,
+     "rank": 0.6405,
+     "pattern": "ZIGZAG/C",
+     "snr": 2.63,
+     "legBars": 46
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A67",
+   "symbol": "ACU",
+   "date": "2023-03-17",
+   "eventScale": "scale-2",
+   "chosen": "scale-4",
+   "freeChoice": "scale-3",
+   "delta": 2,
+   "switches52w": 4,
+   "considered": {
+    "scale-3": 0.6638,
+    "scale-4": 0.6522,
+    "scale-2": 0.5318,
+    "scale-1": 0.4799
+   },
+   "per": {
+    "scale-1": {
+     "legs": 370,
+     "rank": 0.5587,
+     "pattern": "FLAT(C)",
+     "snr": 2.201,
+     "legBars": 3
+    },
+    "scale-2": {
+     "legs": 183,
+     "rank": 0.6162,
+     "pattern": "FLAT/C",
+     "snr": 1.947,
+     "legBars": 6
+    },
+    "scale-3": {
+     "legs": 62,
+     "rank": 0.6038,
+     "pattern": "DOUBLE_ZIGZAG/Y·a",
+     "snr": 3.506,
+     "legBars": 44
+    },
+    "scale-4": {
+     "legs": 25,
+     "rank": 0.701,
+     "pattern": "DOUBLE_ZIGZAG(C)",
+     "snr": 1.878,
+     "legBars": 75
+    }
+   },
+   "classes": [
+    "PERSISTENCE_HELD_OLD_DEGREE",
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A68",
+   "symbol": "MYO",
+   "date": "2025-02-28",
+   "eventScale": "scale-2",
+   "chosen": "scale-3",
+   "freeChoice": "scale-3",
+   "delta": 1,
+   "switches52w": 0,
+   "considered": {
+    "scale-3": 0.6866,
+    "scale-4": 0.6068,
+    "scale-1": 0.5333,
+    "scale-2": 0.4903
+   },
+   "per": {
+    "scale-1": {
+     "legs": 80,
+     "rank": 0.5333,
+     "pattern": "IMPULSE/2",
+     "snr": 3.701,
+     "legBars": 9
+    },
+    "scale-2": {
+     "legs": 40,
+     "rank": 0.5774,
+     "pattern": "IMPULSE/4",
+     "snr": 1.851,
+     "legBars": 7
+    },
+    "scale-3": {
+     "legs": 18,
+     "rank": 0.659,
+     "pattern": "IMPULSE/4",
+     "snr": 2.721,
+     "legBars": 13
+    },
+    "scale-4": {
+     "legs": 7,
+     "rank": 0.5728,
+     "pattern": "DOUBLE_ZIGZAG(C)",
+     "snr": 2.446,
+     "legBars": 50
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A69",
+   "symbol": "FTK",
+   "date": "2023-11-17",
+   "eventScale": "scale-2",
+   "chosen": "scale-3",
+   "freeChoice": "scale-3",
+   "delta": 1,
+   "switches52w": 4,
+   "considered": {
+    "scale-3": 0.7026,
+    "scale-4": 0.6693,
+    "scale-1": 0.6338,
+    "scale-2": 0.5512
+   },
+   "per": {
+    "scale-1": {
+     "legs": 203,
+     "rank": 0.6797,
+     "pattern": "IMPULSE/3",
+     "snr": 2.617,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 101,
+     "rank": 0.6587,
+     "pattern": "IMPULSE/3",
+     "snr": 1.817,
+     "legBars": 4
+    },
+    "scale-3": {
+     "legs": 45,
+     "rank": 0.8119,
+     "pattern": "IMPULSE/5",
+     "snr": 1.818,
+     "legBars": 17
+    },
+    "scale-4": {
+     "legs": 25,
+     "rank": 0.5793,
+     "pattern": "DOUBLE_ZIGZAG/Y·c",
+     "snr": 3.341,
+     "legBars": 39
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A70",
+   "symbol": "RMD",
+   "date": "2024-04-19",
+   "eventScale": "scale-2",
+   "chosen": "scale-4",
+   "freeChoice": "scale-1",
+   "delta": 2,
+   "switches52w": 4,
+   "considered": {
+    "scale-1": 0.6316,
+    "scale-4": 0.6293,
+    "scale-3": 0.5605,
+    "scale-2": 0.5269
+   },
+   "per": {
+    "scale-1": {
+     "legs": 295,
+     "rank": 0.6968,
+     "pattern": "DOUBLE_ZIGZAG/Y·b",
+     "snr": 2.47,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 153,
+     "rank": 0.6372,
+     "pattern": "TRIANGLE/D",
+     "snr": 1.753,
+     "legBars": 6
+    },
+    "scale-3": {
+     "legs": 66,
+     "rank": 0.6554,
+     "pattern": "LEADING_DIAGONAL/4",
+     "snr": 1.661,
+     "legBars": 27
+    },
+    "scale-4": {
+     "legs": 22,
+     "rank": 0.6548,
+     "pattern": "DOUBLE_ZIGZAG/Y·a",
+     "snr": 2.001,
+     "legBars": 89
+    }
+   },
+   "classes": [
+    "PERSISTENCE_HELD_OLD_DEGREE",
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A71",
+   "symbol": "LZB",
+   "date": "2022-08-26",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-1",
+   "delta": -1,
+   "switches52w": 2,
+   "considered": {
+    "scale-1": 0.616,
+    "scale-3": 0.5986,
+    "scale-2": 0.5469,
+    "scale-4": 0.5135
+   },
+   "per": {
+    "scale-1": {
+     "legs": 366,
+     "rank": 0.6452,
+     "pattern": "FLAT(C)",
+     "snr": 2.743,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 173,
+     "rank": 0.6474,
+     "pattern": "IMPULSE/5",
+     "snr": 1.858,
+     "legBars": 8
+    },
+    "scale-3": {
+     "legs": 86,
+     "rank": 0.6312,
+     "pattern": "ZIGZAG/C",
+     "snr": 2.169,
+     "legBars": 41
+    },
+    "scale-4": {
+     "legs": 34,
+     "rank": 0.605,
+     "pattern": "TRIANGLE(C)",
+     "snr": 1.185,
+     "legBars": 37
+    }
+   },
+   "classes": [
+    "UNCLASSIFIED"
+   ]
+  },
+  {
+   "id": "A72",
+   "symbol": "BFH",
+   "date": "2024-09-13",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 3,
+   "considered": {
+    "scale-2": 0.7984,
+    "scale-1": 0.7963,
+    "scale-4": 0.7453,
+    "scale-3": 0.7416
+   },
+   "per": {
+    "scale-1": {
+     "legs": 243,
+     "rank": 0.7963,
+     "pattern": "IMPULSE(C)",
+     "snr": 3.824,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 127,
+     "rank": 0.8514,
+     "pattern": "IMPULSE(C)",
+     "snr": 2.447,
+     "legBars": 6
+    },
+    "scale-3": {
+     "legs": 63,
+     "rank": 0.7616,
+     "pattern": "IMPULSE(C)",
+     "snr": 2.406,
+     "legBars": 14
+    },
+    "scale-4": {
+     "legs": 20,
+     "rank": 0.6775,
+     "pattern": "TRIANGLE(C)",
+     "snr": 2.814,
+     "legBars": 60
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A73",
+   "symbol": "RDN",
+   "date": "2023-03-17",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 1,
+   "considered": {
+    "scale-2": 0.6021,
+    "scale-4": 0.5922,
+    "scale-1": 0.5694,
+    "scale-3": 0.5581
+   },
+   "per": {
+    "scale-1": {
+     "legs": 307,
+     "rank": 0.5694,
+     "pattern": "FLAT(C)",
+     "snr": 4.882,
+     "legBars": 5
+    },
+    "scale-2": {
+     "legs": 147,
+     "rank": 0.6289,
+     "pattern": "FLAT(C)",
+     "snr": 2.489,
+     "legBars": 5
+    },
+    "scale-3": {
+     "legs": 72,
+     "rank": 0.6351,
+     "pattern": "FLAT/C",
+     "snr": 1.778,
+     "legBars": 11
+    },
+    "scale-4": {
+     "legs": 29,
+     "rank": 0.606,
+     "pattern": "FLAT/B",
+     "snr": 2.03,
+     "legBars": 70
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A74",
+   "symbol": "SSD",
+   "date": "2022-11-11",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 1,
+   "considered": {
+    "scale-2": 0.7578,
+    "scale-1": 0.6811,
+    "scale-3": 0.6258,
+    "scale-4": 0.6031
+   },
+   "per": {
+    "scale-1": {
+     "legs": 285,
+     "rank": 0.6811,
+     "pattern": "ENDING_DIAGONAL(C)",
+     "snr": 4.955,
+     "legBars": 6
+    },
+    "scale-2": {
+     "legs": 139,
+     "rank": 0.7324,
+     "pattern": "IMPULSE(C)",
+     "snr": 2.964,
+     "legBars": 8
+    },
+    "scale-3": {
+     "legs": 63,
+     "rank": 0.6131,
+     "pattern": "ZIGZAG(C)",
+     "snr": 2.563,
+     "legBars": 14
+    },
+    "scale-4": {
+     "legs": 26,
+     "rank": 0.6994,
+     "pattern": "DOUBLE_ZIGZAG/Y·b",
+     "snr": 1.491,
+     "legBars": 89
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A75",
+   "symbol": "BMTX",
+   "date": "2023-10-13",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 6,
+   "considered": {
+    "scale-2": 0.7928,
+    "scale-3": 0.7467,
+    "scale-1": 0.6023,
+    "scale-4": 0.5289
+   },
+   "per": {
+    "scale-1": {
+     "legs": 30,
+     "rank": 0.6213,
+     "pattern": "TRIANGLE/E",
+     "snr": 2.827,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 16,
+     "rank": 0.7628,
+     "pattern": "IMPULSE(C)",
+     "snr": 4.203,
+     "legBars": 9
+    },
+    "scale-3": {
+     "legs": 8,
+     "rank": 0.6867,
+     "pattern": "IMPULSE/2",
+     "snr": 3.472,
+     "legBars": 24
+    },
+    "scale-4": {
+     "legs": 7,
+     "rank": 0.6054,
+     "pattern": "DOUBLE_ZIGZAG/Y·c",
+     "snr": 1.442,
+     "legBars": 20
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A76",
+   "symbol": "COLD",
+   "date": "2022-11-04",
+   "eventScale": "scale-2",
+   "chosen": "scale-3",
+   "freeChoice": "scale-3",
+   "delta": 1,
+   "switches52w": 4,
+   "considered": {
+    "scale-3": 0.6031,
+    "scale-1": 0.5284,
+    "scale-2": 0.503
+   },
+   "per": {
+    "scale-1": {
+     "legs": 44,
+     "rank": 0.5284,
+     "pattern": "ZIGZAG(C)",
+     "snr": 3.664,
+     "legBars": 4
+    },
+    "scale-2": {
+     "legs": 24,
+     "rank": 0.5945,
+     "pattern": "TRIANGLE/E",
+     "snr": 1.842,
+     "legBars": 5
+    },
+    "scale-3": {
+     "legs": 10,
+     "rank": 0.724,
+     "pattern": "FLAT/C",
+     "snr": 1.584,
+     "legBars": 8
+    },
+    "scale-4": {
+     "legs": 1,
+     "rank": null,
+     "pattern": "TOO_FEW_SWINGS",
+     "snr": null,
+     "legBars": null
+    }
+   },
+   "classes": [
+    "COARSER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A77",
+   "symbol": "COLD",
+   "date": "2024-05-17",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 4,
+   "considered": {
+    "scale-2": 0.7227,
+    "scale-3": 0.5726,
+    "scale-1": 0.5557
+   },
+   "per": {
+    "scale-1": {
+     "legs": 56,
+     "rank": 0.5557,
+     "pattern": "TRIANGLE/E",
+     "snr": 3.296,
+     "legBars": 6
+    },
+    "scale-2": {
+     "legs": 30,
+     "rank": 0.6927,
+     "pattern": "ENDING_DIAGONAL/4",
+     "snr": 3.769,
+     "legBars": 9
+    },
+    "scale-3": {
+     "legs": 15,
+     "rank": 0.621,
+     "pattern": "ZIGZAG/C",
+     "snr": 2.01,
+     "legBars": 11
+    },
+    "scale-4": {
+     "legs": 3,
+     "rank": null,
+     "pattern": "TOO_FEW_SWINGS",
+     "snr": 1.966,
+     "legBars": null
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A78",
+   "symbol": "TNK",
+   "date": "2018-06-15",
+   "eventScale": "scale-2",
+   "chosen": "scale-1",
+   "freeChoice": "scale-1",
+   "delta": -1,
+   "switches52w": 5,
+   "considered": {
+    "scale-1": 0.7622,
+    "scale-2": 0.6908,
+    "scale-4": 0.6711,
+    "scale-3": 0.5548
+   },
+   "per": {
+    "scale-1": {
+     "legs": 130,
+     "rank": 0.8088,
+     "pattern": "ENDING_DIAGONAL/5",
+     "snr": 2.673,
+     "legBars": 3
+    },
+    "scale-2": {
+     "legs": 66,
+     "rank": 0.7676,
+     "pattern": "IMPULSE/3",
+     "snr": 2.212,
+     "legBars": 5
+    },
+    "scale-3": {
+     "legs": 30,
+     "rank": 0.636,
+     "pattern": "IMPULSE/5",
+     "snr": 1.742,
+     "legBars": 27
+    },
+    "scale-4": {
+     "legs": 12,
+     "rank": 0.6895,
+     "pattern": "ZIGZAG(C)",
+     "snr": 2.109,
+     "legBars": 51
+    }
+   },
+   "classes": [
+    "FINER_COUNT_FITS_BETTER"
+   ]
+  },
+  {
+   "id": "A79",
+   "symbol": "LND",
+   "date": "2023-08-18",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 0,
+   "considered": {
+    "scale-2": 0.8267,
+    "scale-3": 0.6506,
+    "scale-1": 0.639,
+    "scale-4": 0.5697
+   },
+   "per": {
+    "scale-1": {
+     "legs": 122,
+     "rank": 0.639,
+     "pattern": "ZIGZAG(C)",
+     "snr": 3.273,
+     "legBars": 3
+    },
+    "scale-2": {
+     "legs": 60,
+     "rank": 0.7967,
+     "pattern": "ENDING_DIAGONAL/5",
+     "snr": 3.534,
+     "legBars": 9
+    },
+    "scale-3": {
+     "legs": 32,
+     "rank": 0.6657,
+     "pattern": "TRIANGLE/C",
+     "snr": 2.36,
+     "legBars": 18
+    },
+    "scale-4": {
+     "legs": 17,
+     "rank": 0.6345,
+     "pattern": "DOUBLE_ZIGZAG/Y·b",
+     "snr": 1.619,
+     "legBars": 19
+    }
+   },
+   "classes": []
+  },
+  {
+   "id": "A80",
+   "symbol": "FORR",
+   "date": "2006-04-07",
+   "eventScale": "scale-2",
+   "chosen": "scale-2",
+   "freeChoice": "scale-2",
+   "delta": 0,
+   "switches52w": 4,
+   "considered": {
+    "scale-2": 0.6836,
+    "scale-1": 0.621,
+    "scale-3": 0.5639,
+    "scale-4": 0.5227
+   },
+   "per": {
+    "scale-1": {
+     "legs": 111,
+     "rank": 0.7427,
+     "pattern": "IMPULSE(C)",
+     "snr": 2.072,
+     "legBars": 3
+    },
+    "scale-2": {
+     "legs": 61,
+     "rank": 0.6536,
+     "pattern": "IMPULSE/4",
+     "snr": 3.094,
+     "legBars": 5
+    },
+    "scale-3": {
+     "legs": 32,
+     "rank": 0.6615,
+     "pattern": "IMPULSE/5",
+     "snr": 1.65,
+     "legBars": 14
+    },
+    "scale-4": {
+     "legs": 11,
+     "rank": 0.575,
+     "pattern": "DOUBLE_ZIGZAG/X",
+     "snr": 1.598,
+     "legBars": 74
+    }
+   },
+   "classes": []
+  }
+ ]
+}
