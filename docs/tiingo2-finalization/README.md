@@ -2,8 +2,8 @@
 
 ## Current publish-path assessment (2026-10-03)
 
-The current-main productization preview is read-only. Its final QA manifest and
-private history source remain on the preview runner; only derived JSON is
+The current-main productization preview is read-only. Its private intermediate
+history and projection sources remain on the preview runner; only derived JSON is
 exported. The existing HistoryStore sync writes the full universe, while the
 Tiingo 2.0 scoped history preflight has no writer. The canonical apply API has
 no production workflow caller. Pages deploys Git-tracked main without a Tiingo 2.0
@@ -11,6 +11,14 @@ index activation barrier. A merge could therefore expose a chart-ready title
 before its R2 index entry is active. Publication remains blocked; no production
 write was made by this assessment. The exact handoff, CAS and rollback
 requirements are in [tiingo2_current_publish_blocker.json](tiingo2_current_publish_blocker.json).
+
+The authenticated current-main preview on 2026-10-03 stopped at factor population QA
+before publication. Its derived, unpublished candidate and product counts are in
+[tiingo2_current_gate_status.json](tiingo2_current_gate_status.json). The current
+market-factor input omits 30 previously published factor identities after
+`unexplained_adjustment_step` checks, including 29 protected Consumer titles.
+This requires source-data and corporate-action reconciliation before a scoped
+factor release; existing Factor DNA was not overwritten.
 
 The historical observations below describe the earlier Foundation integration
 and must not be treated as a current production package.

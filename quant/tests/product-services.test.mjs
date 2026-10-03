@@ -20,7 +20,24 @@ const technicalSummary=JSON.parse(await readFile(new URL('quant/data/product/tec
 const signals20=JSON.parse(gunzipSync(await readFile(new URL('quant/data/product/technical-signals-v1/signals-20.json.gz',root))));
 const capability=JSON.parse(await readFile(new URL('quant/data/universe/market-capability.json',root),'utf8'));
 const quantV2Contract=JSON.parse(await readFile(new URL('quant/methodology/quant-v2.json',root),'utf8'));
-test('canonical product universe projects the full capability set; chart history is preserved',async()=>{const u=await api.getUniverse();assert.equal(u.stocks.length,capability.members.length);assert.ok(u.stocks.length>6000,'die Deckung des Produktuniversums ist eingebrochen');assert.ok(u.factorReady>=6401);assert.equal(u.scope,'CANONICAL_PRODUCT_UNIVERSE');const s=await api.getStockIntelligence('NVDA');assert.equal(s.state,'AVAILABLE');assert.equal(s.chart.state,'AVAILABLE');assert.ok(s.chart.bars.length>2500);assert.equal(s.price.value,nvda.fundamentals.price);assert.equal(s.momentum6m.value,nvda.fundamentals.momentum6m);});
+test('canonical product universe projects the full capability set; chart history is preserved',async()=>{const u=await materializedApi.getUniverse();assert.equal(u.stocks.length,capability.members.length);assert.ok(u.stocks.length>6000,'die Deckung des Produktuniversums ist eingebrochen');
+ const index=JSON.parse(gunzipSync(await readFile(new URL('quant/data/product/universe-list-v1.json.gz',root))));
+ const published=new Set(index.entries.filter(e=>Number.isFinite(e.b)&&!e.ne).map(e=>e.s));
+ const claims=u.stocks.filter(s=>s.factorState==='AVAILABLE');
+ assert.ok(claims.length>6000,'die publizierte Faktor-Deckung ist eingebrochen');
+ assert.equal(u.factorReady,claims.length);
+ for(const s of claims)assert.ok(published.has(s.ticker),s.ticker+' beansprucht unpublizierte Faktor-Evidenz');
+ assert.equal(u.scope,'CANONICAL_PRODUCT_UNIVERSE');const s=await api.getStockIntelligence('NVDA');assert.equal(s.state,'AVAILABLE');assert.equal(s.chart.state,'AVAILABLE');assert.ok(s.chart.bars.length>2500);assert.equal(s.price.value,nvda.fundamentals.price);assert.equal(s.momentum6m.value,nvda.fundamentals.momentum6m);});
+test('a new market-factor row cannot claim unpublished Factor Evidence',async()=>{
+ const guarded=Service.create({loadJSON:async p=>JSON.parse(await readFile(new URL(p.slice(1),root),'utf8')),
+  loadCompressedJSON:async p=>{const artifact=JSON.parse(gunzipSync(await readFile(new URL(p.slice(1),root))));
+   if(p.endsWith('/universe-list-v1.json.gz')){const aapl=artifact.entries.find(e=>e.s==='AAPL');delete aapl.b;}
+   return artifact;},displayPolicy:Policy,queryEngine:Query});
+ const stock=(await guarded.getUniverse()).stocks.find(s=>s.ticker==='AAPL');
+ assert.equal(stock.factorState,'UNAVAILABLE');assert.equal(stock.factorReason,'FACTOR_EVIDENCE_NOT_PUBLISHED');
+ assert.equal(stock.capabilities.factors,false);
+ const withoutIndex=await api.getUniverse();assert.equal(withoutIndex.factorReady,0,'missing publication index must fail closed');
+});
 test('canonical members outside the legacy panel remain addressable without raw fanout',async()=>{const s=await api.getStockIntelligence('TSLA');assert.equal(s.identityState,'AVAILABLE');assert.equal(s.state,'AVAILABLE');});
 test('consumer breadth follows capabilities across representative cohorts',async()=>{
  for(const [ticker,fundamentals] of [['TSLA',true],['AMD',true],['MU',true],['MET',true],['O',true],['ASML',true],['BAC',true],['PLAB',true],['CRWV',false]]){
