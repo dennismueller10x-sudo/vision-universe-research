@@ -397,6 +397,7 @@
       if (S.dbFilter === "star" && f.category !== "Investoren") return false;
       if (S.dbFilter === "more" && (f.category === "Investoren" || f.style !== "Hedgefonds")) return false;
       if (S.dbFilter === "dach" && !f.region) return false;
+      if (S.dbFilter === "am" && (isHF(f) || f.region)) return false;
       if (!q) return true;
       var hay = [f.name, f.manager, f.secName, f.style, f.city, regionLabel(f)].join(" ").toLowerCase();
       if (hay.indexOf(q) >= 0) return true;
@@ -421,9 +422,11 @@
     };
     return '<section class="hf-section" id="datenbank"><div class="hf-head"><div><h2>Hedgefonds-Datenbank</h2>' +
       "<p>" + nf0.format(hf) + " Hedgefonds mit Fondsgröße (Wert des 13F-Portfolios), Veränderung zum Vorquartal und den größten Positionen inkl. Auf- oder Abbau. " +
-        "Unter „Deutschland &amp; DACH“ zusätzlich alle " + dach + " meldepflichtigen Investoren aus Deutschland, Österreich und der Schweiz (inkl. Banken und Vermögensverwalter).</p></div></div>" +
+        "Unter „Deutschland &amp; DACH“ zusätzlich alle " + dach + " meldepflichtigen Investoren aus Deutschland, Österreich und der Schweiz, unter „Vermögensverwalter“ die größten Long-only-Fondshäuser. " +
+        "Ob ein Melder ein Hedgefonds ist, steht nicht in der 13F-Meldung; die Einordnung beruht auf Rechtsform, Optionspositionen und Namen.</p></div></div>" +
       '<div class="hf-tools"><div class="hf-chips" id="hf-dbfilter">' + chip("all", "Alle Hedgefonds", hf) + chip("star", "Star-Investoren", star) +
-        chip("more", "Weitere Hedgefonds", hf - star) + chip("dach", "Deutschland & DACH", dach) + "</div>" +
+        chip("more", "Weitere Hedgefonds", hf - star) + chip("dach", "Deutschland & DACH", dach) +
+        chip("am", "Vermögensverwalter", all.filter(function (f) { return !isHF(f) && !f.region; }).length) + "</div>" +
       '<select class="hf-select" id="hf-dbsort" aria-label="Sortierung der Datenbank">' +
         [["value", "Größte Fonds"], ["change", "Stärkstes Wachstum"], ["drop", "Stärkster Rückgang"], ["buys", "Meiste Käufe"], ["filed", "Neueste Meldung"], ["name", "Name A–Z"]].map(function (o) {
           return '<option value="' + o[0] + '"' + (S.dbSort === o[0] ? " selected" : "") + ">" + o[1] + "</option>";
