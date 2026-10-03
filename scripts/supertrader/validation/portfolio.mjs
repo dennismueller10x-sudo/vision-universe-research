@@ -90,6 +90,8 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
       void prevDate;
       const eq = cash + mv;
       const risk = tr.entry.price - tr.initialStop;
+      // Runde 12 (PORT-MARKET-200): keine neue Position, wenn die Marktampel am Vortag rot war.
+      if (cfg.marketFilter && opts.marketOk && opts.marketOk.get(date) === false) { skipped.push({ id: tr.id, reason: 'MARKET_FILTER' }); continue; }
       if (open.length >= cfg.maxPositions || !(risk > 0)) { skipped.push({ id: tr.id, reason: open.length >= cfg.maxPositions ? 'MAX_POSITIONS' : 'NO_RISK' }); continue; }
       // Runde 7: schrittweise Exposition (cfg.progressive): nach netto negativen
       // letzten n abgeschlossenen Trades gilt das verminderte Risiko.
