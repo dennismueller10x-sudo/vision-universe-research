@@ -1,0 +1,31 @@
+{
+  "schema": "supertrader-validation-prereg-r10-cases-1.0.0",
+  "registeredAt": "2026-10-03",
+  "status": "Eingefroren vor der Fallauswahl und vor jeder Kettenanalyse. Kein Fall und kein Ergebnis war beim Festlegen bekannt; SMCI ist vorgegeben.",
+  "question": "An welcher Stelle der Kette Quelle -> Daten -> Kandidat -> Einstieg -> Portfolio -> Ausstieg verfehlen die Supertrader-Methoden (Tests unserer VU-Versionen) außergewöhnliche US-Aktiengewinner, und wie verhalten sie sich bei ähnlich aussehenden Fehlkandidaten?",
+  "methods": "Die fünf Live-Versionen (build.mjs LIVE_ENGINES): MOMENTUM_BREAKOUT 3.1.0, WEINSTEIN_STAGE 3.0.0, DARVAS_BOX 3.0.0, MINERVINI_VCP 2.0.0, DONCHIAN_TURTLE 2.0.0. Code unverändert; Portfolio wie in der internen Prüfung (runPortfolioTR, Szenario S0, Methodenportfolio laut Engine).",
+  "data": "Point-in-Time-Universum des privaten Eimers (loadPitData: damals gelistete US-Aktien inkl. delisteter, Segmente nach Datenlücken). Fundamentaldaten: SEC-Factbooks (v1/sec/fundamentals) mit Einreichungsdatum; nur Werte mit available_from <= Stichtag.",
+  "lookAhead": "Spätere Renditen dienen ausschließlich der Fallauswahl. Jede Modellentscheidung wird mit dem unveränderten Engine-Code und den bis zum jeweiligen Tag bekannten Balken rekonstruiert.",
+  "selection": {
+    "S0_SMCI": "Super Micro Computer (Ticker SMCI) ist Pflichtfall. Episode nach derselben Regel wie W1, Startjahr frei (größter Anstieg der Reihe).",
+    "W1_episode": "Je Segment und Kalenderjahr (Startjahr 2017-2025): Start t0 = Sitzung mit dem größten Höchststand der folgenden 252 Sitzungen relativ zum Schluss t0 (bereinigte Schlusskurse). Gipfel t1 = Sitzung dieses Höchststands. Anstieg = Gipfel/Schluss(t0) - 1. Voraussetzung am Start: Rohschluss >= 5 USD und 20-Tage-Dollarumsatz >= 5 Mio. USD (investierbar; damit misst die Studie Preis-/Liquiditätsfilter nur nach t0). Mindestanstieg 300 %.",
+    "W2_pick": "Je Startjahr zwei Diagnosefälle: der größte Anstieg unter weiterhin gelisteten Segmenten und der größte unter delisteten Segmenten. Branche = SIC-Division (SEC, nur für gelistete Titel bekannt; unbekannt zählt als eigene Gruppe). Zwei Fälle eines Jahres nie aus derselben bekannten Division; dann gilt der nächste Rang. Kein Segment mehr als einmal.",
+    "W3_holdout": "Die jeweils nächstplatzierten Fälle derselben Klassen (Rang 2 nach derselben Regel) bilden die unabhängige Prüfmenge. Sie werden ausgewählt und versiegelt, aber erst analysiert, wenn eine neue Regel zu prüfen ist.",
+    "F1_lookalike_date": "Je Gewinner Stichtag L = erste Sitzung in [t0, t1] mit Rohschluss >= 5 USD, Schluss >= 85 % des 252-Tage-Hochs und RS-Perzentil (VU-Querschnitt) >= 90; sonst L = t0 + 21 Sitzungen.",
+    "F2_lookalike": "Fehlkandidat = anderes Segment, das an L dieselben drei Bedingungen erfüllt und danach scheiterte: Tiefstschluss der folgenden 252 Sitzungen <= 50 % des Schlusses an L, oder Delisting innerhalb von 252 Sitzungen mit letztem Schluss unter dem Schluss an L. Auswahl: gleiche SIC-Division, wenn vorhanden, sonst beliebig; davon das höchste RS-Perzentil an L; Gleichstand nach sha256(seg). Jeder Fehlkandidat nur einmal. Holdout-Gewinner erhalten ihre Fehlkandidaten nach derselben Regel."
+  },
+  "chain": {
+    "window": "Episode-Fenster [t0 - 63 Sitzungen, t1].",
+    "C0_source": "Regel-ID -> Eintrag der Methodentreue-Matrix (Deep Research/Quelle, Belegstufe, Klasse).",
+    "C1_data": "Segment vorhanden; Balkenlücken im Fenster; Rohpreis-/Liquiditätsgrenze der Methode (rawGate) je Tag; Fundamentaldaten vorhanden (SEC) und Gewinnwachstum zum Stichtag L.",
+    "C2_candidate": "Täglicher Scan (unveränderter Code): Stufe und nicht erfüllte Regeln; erstes Datum SETUP/ENTRY_READY; RS-Perzentil.",
+    "C3_entry": "Signale im Fenster mit Lebenslauf; Einstieg ja/nein; bei nein: Regel der Invalidierung.",
+    "C4_portfolio": "Aufnahme im Methodenportfolio (S0) oder Grund (MAX_POSITIONS, NO_CASH, Exposition); Position unter den gleichtägigen Einstiegen; offene Positionen zum Zeitpunkt.",
+    "C5_exit": "Gewicht beim Einstieg, Anfangsstop, Ausstiegsregel und -datum, Rendite je Trade; erfasster Anteil = Produkt (1 + Trade-Rendite) - 1 über aufgenommene Trades im Fenster, geteilt durch den Episode-Anstieg."
+  },
+  "causes": {
+    "rule": "Je Fall und Methode genau eine Hauptursache in dieser Reihenfolge: DATA_NOT_IN_UNIVERSE, DATA_GAP (Segment endet/fehlt im Fenster), PRICE_LIQUIDITY (rawGate verhindert jede Stufe), NOT_CANDIDATE (nie SETUP/ENTRY_READY; meistgenannte nicht erfüllte Regel wird mitgezählt), NO_ENTRY (Kandidat ohne Einstieg; Invalidierungsregel), NOT_IN_PORTFOLIO (Einstieg ohne Platz), EARLY_EXIT (aufgenommen, erfasster Anteil < 25 %), CAPTURED (>= 25 %). Nebenmerkmal SMALL_WEIGHT: Anfangsgewicht < 5 %.",
+    "losers": "Für Fehlkandidaten dieselbe Kette; gezählt wird zusätzlich, ob ein aufgenommener Trade mit Verlust endete und wie groß er war."
+  },
+  "changesAllowed": "Nachgewiesene Daten- oder Implementierungsfehler werden behoben (neue Version, alte bleibt). Eine fachlich begründete neue Regel wird nicht an den Diagnosefällen abgeleitet oder bewertet, sondern an der Prüfmenge W3 und im vollständigen Portfolio geprüft. Keine Renditeschwelle wird an Gewinnern kalibriert."
+}
