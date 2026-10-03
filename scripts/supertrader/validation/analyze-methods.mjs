@@ -138,6 +138,15 @@ export function enginesR12() {
   return out;
 }
 export { marketOkMap } from './portfolio.mjs';
+// Runde 13 (PREREGISTRATION-R13-AUDIT amendmentBeforeResults): R11/R12-Entscheidungen mit S1C erneut anwenden.
+export const PREREG_R13B = 'supertrader-validation-prereg-r13-audit-1.0.0#reapplication';
+export function enginesR13B() {
+  const rs = (e) => ({ ...e, portfolio: { ...portfolioOf(e), priority: 'RS' } });
+  const out = [rs(weinstein3), rs(weinstein4)];
+  for (const e of [rs(kk32), rs(weinstein3), darvas301, rs(minervini2), don2]) out.push({ ...e, version: e.version + '-M', tradesOf: `${e.id}@${e.version}`, portfolio: { ...portfolioOf(e), marketFilter: true } });
+  out.push(rs(kk32), darvas301, rs(minervini2), don2);
+  return out;
+}
 const ROLE_R11 = { 'MOMENTUM_BREAKOUT@3.1.0': 'REFERENCE_LIVE', 'WEINSTEIN_STAGE@3.0.0': 'REFERENCE_LIVE', 'DARVAS_BOX@3.0.1': 'REFERENCE_LIVE', 'MINERVINI_VCP@2.0.0': 'REFERENCE_LIVE', 'DONCHIAN_TURTLE@2.0.0': 'REFERENCE_LIVE',
   'MOMENTUM_BREAKOUT@3.2.0': 'R11_CORRECTION', 'WEINSTEIN_STAGE@4.0.0': 'R11_NEW_RULE', 'MINERVINI_VCP@3.0.0': 'R11_NEW_RULE', 'MINERVINI_VCP@3.0.0-NA': 'SENSITIVITY_MISSING_EPS', 'DONCHIAN_TURTLE@2.1.0': 'R11_NEW_RULE', 'DONCHIAN_TURTLE@2.1.0-CAP': 'SENSITIVITY_CAP_1_12' };
 const ROLE_R10C = (v) => (v.endsWith('-RS') ? 'R10_PRIORITY_RS' : v === '3.0.1' ? 'R10_DARVAS_CAPACITY' : 'R10_BASE_CLEAN_UNIVERSE');
@@ -486,14 +495,14 @@ async function main() {
   const OUT_DIR = arg('--out', path.join(os.tmpdir(), 'supertrader-validation'));
   const LIMIT = Number(arg('--limit', '0'));
   const SET = arg('--set', 'methods');
-  const RUN = SET === 'r12' ? enginesR12() : SET === 'r11' ? enginesR11() : SET === 'r10m' ? enginesR10M() : SET === 'r10c' ? enginesR10C() : SET === 'r9b' || SET === 'r10b' ? [] : SET === 'r8c' ? ENGINES_R8C : SET === 'r8b' ? ENGINES_R8B : SET === 'r8' ? ENGINES_R8 : SET === 'r7' ? [...ENGINES_R7, ...REFERENCE_R7] : ENGINES;
-  const keyOf = (e) => (SET === 'r7' || SET.startsWith('r8') || SET === 'r9b' || SET === 'r10b' || SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12' ? `${e.id}@${e.version}` : e.id);
+  const RUN = SET === 'r13b' ? enginesR13B() : SET === 'r12' ? enginesR12() : SET === 'r11' ? enginesR11() : SET === 'r10m' ? enginesR10M() : SET === 'r10c' ? enginesR10C() : SET === 'r9b' || SET === 'r10b' ? [] : SET === 'r8c' ? ENGINES_R8C : SET === 'r8b' ? ENGINES_R8B : SET === 'r8' ? ENGINES_R8 : SET === 'r7' ? [...ENGINES_R7, ...REFERENCE_R7] : ENGINES;
+  const keyOf = (e) => (SET === 'r7' || SET.startsWith('r8') || SET === 'r9b' || SET === 'r10b' || SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12' || SET === 'r13b' ? `${e.id}@${e.version}` : e.id);
   const examples = {};
   const t0 = Date.now();
   const log = (m) => console.log(`[validation-methods +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
-  const { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, spyAdj, bench, budget, mine, nonEquityExcluded, secCoverage } = await loadPitData({ LIMIT, log, excludeNonEquity: SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12', secPit: SET === 'r11' });
+  const { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, spyAdj, bench, budget, mine, nonEquityExcluded, secCoverage } = await loadPitData({ LIMIT, log, excludeNonEquity: SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12' || SET === 'r13b', secPit: SET === 'r11', delistPit: SET === 'r13b' });
   let k = 0;
   // Runde 9: Minutenquelle aufbauen - Cache aus dem privaten Eimer, fehlende Einstiegstage
   // in Durchgaengen nachladen, bis keine neuen mehr entstehen (Pfadabhaengigkeit).
@@ -591,6 +600,12 @@ async function main() {
     runs.SURVIVORS_ONLY = metricsOf(runPortfolioTR(surv, cal, cfg, { scenario: 'S0_LAST_PRICE' }), 'SURVIVORS_ONLY', cal);
     runs.SEEDS_S1 = [];
     for (let s = 1; s <= 20; s++) { const m = metricsOf(runPortfolioTR(all, cal, cfg, { scenario: 'S1_MINUS_30', seed: s }), 'SEED_' + s, cal); runs.SEEDS_S1.push({ seed: s, excessCagr: m.excessCagr, cagr: m.cagr, maxDrawdown: m.maxDrawdown, trades: m.trades }); }
+    if (SET === 'r13b') {
+      runs.S1C_CLASSIFIED = metricsOf(runPortfolioTR(all, cal, cfg, { scenario: 'S1C_CLASSIFIED' }), 'S1C_CLASSIFIED', cal);
+      runs.COST2_S1C = metricsOf(runPortfolioTR(all2, cal, cfg, { scenario: 'S1C_CLASSIFIED', slippageBps: 20, commissionBps: 2 }), 'COST2_S1C', cal);
+      runs.SEEDS_S1C = [];
+      for (let s = 1; s <= 20; s++) { const m = metricsOf(runPortfolioTR(all, cal, cfg, { scenario: 'S1C_CLASSIFIED', seed: s }), 'SEEDS1C_' + s, cal); runs.SEEDS_S1C.push({ seed: s, excessCagr: m.excessCagr }); }
+    }
     if (e.id === 'DARVAS_BOX') {
       const aOnly = all.filter((t) => Array.isArray(t.qualityFailed) && t.qualityFailed.filter((x) => x !== 'DAR-Q-REGIME').length === 0);
       runs.EXPLORATIVE_A_WITHOUT_REGIME_S1 = metricsOf(runPortfolioTR(aOnly, cal, cfg, { scenario: 'S1_MINUS_30' }), 'EXPLORATIVE_A_WITHOUT_REGIME_S1', cal);
@@ -610,13 +625,13 @@ async function main() {
     const c5 = r0.taken.filter((p) => p.returnPct !== undefined).sort((a, b) => Math.abs(b.returnPct) - Math.abs(a.returnPct)).slice(0, 10).map((p) => ({ id: p.tr.id, returnPct: p.returnPct, entry: p.tr.entry, lastExit: p.tr.exits[p.tr.exits.length - 1] || null, terminal: p.tr.terminal ? { ...p.tr.terminal } : null, rawCloseAtConfirm: p.tr.rawCloseAtConfirm }));
     const at5 = all.filter((t) => !(t.rawCloseAtConfirm >= e.PARAMS.minPrice)).length;
     results[keyOf(e)] = {
-      variant: e.variant, version: e.version, params: e.PARAMS, portfolio: cfg, role: SET === 'r12' ? (e.version.endsWith('-M') ? 'R12_MARKET_FILTER' : 'REFERENCE_LIVE') : SET === 'r11' ? ROLE_R11[keyOf(e)] : SET === 'r10m' ? 'R10_MINERVINI_ABLATION' : SET === 'r10c' ? ROLE_R10C(e.version) : SET === 'r9b' || SET === 'r10b' ? ROLE_R9B[e.version] : SET === 'r8c' ? ROLE_R8C[keyOf(e)] : SET === 'r8b' ? ROLE_R8B[keyOf(e)] : SET === 'r8' ? ROLE_R8[keyOf(e)] : SET === 'r7' ? (ENGINES_R7.includes(e) ? 'R7_HYPOTHESIS' : 'REFERENCE_REPRODUCTION') : 'PREREGISTERED', engineTrades: all.length, portfolioTrades: runs.S0_LAST_PRICE.taken,
+      variant: e.variant, version: e.version, params: e.PARAMS, portfolio: cfg, role: SET === 'r13b' ? 'R13B_REAPPLICATION' : SET === 'r12' ? (e.version.endsWith('-M') ? 'R12_MARKET_FILTER' : 'REFERENCE_LIVE') : SET === 'r11' ? ROLE_R11[keyOf(e)] : SET === 'r10m' ? 'R10_MINERVINI_ABLATION' : SET === 'r10c' ? ROLE_R10C(e.version) : SET === 'r9b' || SET === 'r10b' ? ROLE_R9B[e.version] : SET === 'r8c' ? ROLE_R8C[keyOf(e)] : SET === 'r8b' ? ROLE_R8B[keyOf(e)] : SET === 'r8' ? ROLE_R8[keyOf(e)] : SET === 'r7' ? (ENGINES_R7.includes(e) ? 'R7_HYPOTHESIS' : 'REFERENCE_REPRODUCTION') : 'PREREGISTERED', engineTrades: all.length, portfolioTrades: runs.S0_LAST_PRICE.taken,
       runs, judgement: judge(runs), at5Violations: at5,
       controls: { C1max: Math.max(...['S0_LAST_PRICE', 'S1_MINUS_30', 'S2_DISTRESS_ZERO', 'COST2_S1', 'SURVIVORS_ONLY'].map((x) => runs[x].reconciliation.relDiff)), C2maxRelDiff: c2, C3m: R[keyOf(e)].c3, C5: c5 },
       diagnostics: { allTrades: diag(all), survivorTrades: diag(surv), delistedTrades: diag(all.filter((t) => !t.survivor)), takenS0: diag(r0.taken.map((p) => p.tr)), maxPositionsSkipped: r0.skipped.filter((x) => x.reason === 'MAX_POSITIONS').length },
     };
     if (SET === 'r9b' || SET === 'r10b') { const ev = {}; for (const t of all) { const kk = `${t.evidence || 'NONE'}|${t.sameDayOrder || 'NONE'}`; ev[kk] = (ev[kk] || 0) + 1; } results[keyOf(e)].evidenceCounts = ev; }
-    if (SET === 'r7' || SET.startsWith('r8') || SET === 'r9b' || SET === 'r10b' || SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12') {
+    if (SET === 'r7' || SET.startsWith('r8') || SET === 'r9b' || SET === 'r10b' || SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12' || SET === 'r13b') {
       const { signalQuality, exposureScenarios, theoreticalMaxExposure } = await import('./diagnose-methods.mjs');
       const spyIdx = new Map(spyTR.map((p, i) => [p.date, i]));
       results[keyOf(e)].signalQuality = signalQuality(all, spyIdx, spyTR);
@@ -631,7 +646,7 @@ async function main() {
     const sp = budget.spent, u = await mine.readUsage();
     await mine.writeUsage(Guard.applyUsage(u, { classAOperations: sp.classA + 1, classBOperations: sp.classB, bytesDownloaded: sp.bytesDownloaded, run: { at: new Date().toISOString(), kind: 'VALIDATION_ANALYZE_METHODS', classB: sp.classB } }));
   }
-  const result = { schema: 'supertrader-validation-methods-result-1.0.0', set: SET, at: new Date().toISOString(), prereg: SET === 'r12' ? PREREG_R12 : SET === 'r11' ? PREREG_R11 : SET === 'r10c' || SET === 'r10m' ? PREREG_R10C : SET === 'r10b' ? PREREG_R10B : SET === 'r9b' ? PREREG_R9B : SET === 'r8c' ? PREREG_R8C : SET === 'r8b' ? PREREG_R8B : SET === 'r8' ? PREREG_R8 : SET === 'r7' ? PREREG_R7 : PREREG_METHODS, examples: SET === 'r8' || SET === 'r8c' ? examples : undefined, intraday: intradayStats, funnel: SET === 'r10m' ? funnel : undefined, nonEquityExcluded: SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12' ? nonEquityExcluded : undefined, secCoverage: SET === 'r11' ? secCoverage : undefined, tableHash: hash, commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
+  const result = { schema: 'supertrader-validation-methods-result-1.0.0', set: SET, at: new Date().toISOString(), prereg: SET === 'r13b' ? PREREG_R13B : SET === 'r12' ? PREREG_R12 : SET === 'r11' ? PREREG_R11 : SET === 'r10c' || SET === 'r10m' ? PREREG_R10C : SET === 'r10b' ? PREREG_R10B : SET === 'r9b' ? PREREG_R9B : SET === 'r8c' ? PREREG_R8C : SET === 'r8b' ? PREREG_R8B : SET === 'r8' ? PREREG_R8 : SET === 'r7' ? PREREG_R7 : PREREG_METHODS, examples: SET === 'r8' || SET === 'r8c' ? examples : undefined, intraday: intradayStats, funnel: SET === 'r10m' ? funnel : undefined, nonEquityExcluded: SET === 'r10c' || SET === 'r10m' || SET === 'r11' || SET === 'r12' ? nonEquityExcluded : undefined, secCoverage: SET === 'r11' ? secCoverage : undefined, tableHash: hash, commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
     counts: { listings: listings.length, members: members.length, segments: segs.length, duplicates: dup.size, offCalendar }, execution: DEFAULT_EXECUTION, portfolio: cfg,
     spy: { cagr: cagrBetween(spyTR, W.from, W.to, 'value'), maxDrawdown: maxDrawdown(spyTR, 'value') }, results, budget: budget.spent };
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
