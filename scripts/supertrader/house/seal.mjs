@@ -12,7 +12,7 @@ export function truncateForDevelopment(segs) {
   return segs.map((s) => {
     const origLast = s.raw.length ? s.raw[s.raw.length - 1].date : null;
     const raw = s.raw.filter((b) => b.date <= DEV_END);
-    const fund = s.fund ? { ...s.fund, eps: (s.fund.eps || []).filter((r) => r[2] <= DEV_END), rev: (s.fund.rev || []).filter((r) => r[2] <= DEV_END) } : s.fund;
+    const fund = s.fund ? { ...s.fund, eps: (s.fund.eps || []).filter((r) => r[2] <= DEV_END), rev: (s.fund.rev || []).filter((r) => r[2] <= DEV_END), ...(s.fund.shares ? { shares: s.fund.shares.filter((r) => r[2] <= DEV_END) } : {}) } : s.fund;
     return { ...s, raw, fund, delisted: !!s.delisted && origLast !== null && origLast <= DEV_END };
   }).filter((s) => s.raw.length > 0);
 }

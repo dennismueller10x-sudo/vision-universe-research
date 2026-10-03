@@ -9,7 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as L from '../validation/lib.mjs';
 import { loadPitData } from '../validation/analyze-methods.mjs';
-import { PIT_KEY_R12 } from '../validation/sec-pit.mjs';
+import { PIT_KEY_R12, PIT_KEY_R13 } from '../validation/sec-pit.mjs';
 import { prepareStock, crossSection, simulate, monthEnds, HS1 } from './engine.mjs';
 import { metrics, deflatedSharpe, pboCscv, moments } from './stats.mjs';
 import { truncateForDevelopment, DEV_END, assertFrozen, sealAll, fileHash } from './seal.mjs';
@@ -27,6 +27,9 @@ export const SETS = {
     selectable: (t) => t.turnover <= 3, pboIds: (ids) => ids, randomControls: true },
   hs2: { prereg: 'PREREGISTRATION-HS2.json', frozen: 'FROZEN-HS2.json', cfg: (t) => ({ weighting: 'INDEX_TILT', factors: t.factors, tau: t.tau || 0, cut: !!t.cut }),
     selectable: (t) => t.def.id !== 'E00' && t.turnover <= 1 && t.metrics.excessCagr > 0, pboIds: (ids) => ids.filter((id) => id !== 'E00'), priorSets: ['hs1'], control: 'E00' },
+  hs3: { prereg: 'PREREGISTRATION-HS3.json', frozen: 'FROZEN-HS3.json', secPitKey: 'r13', cfg: (t) => ({ weighting: 'INDEX_TILT', sizeBy: 'MCAP', factors: t.factors, tau: t.tau || 0, cut: !!t.cut }),
+    selectable: (t) => t.def.id !== 'C00' && t.turnover <= 1 && t.metrics.excessCagr > 0 && t.vsControl?.excessCagr > 0, pboIds: (ids) => ids.filter((id) => id !== 'C00'),
+    priorSets: ['hs1', 'hs2'], control: 'C00', relative: true, gateTE: 0.03 },
 };
 
 const slimMonthly = (m) => m.monthly.map((x) => [x.month, +x.r.toFixed(6), +x.b.toFixed(6)]);
@@ -37,7 +40,7 @@ async function main() {
   const arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
   const MODE = arg('--mode', 'dev');
   const SET = arg('--set', 'hs1');
-  if (!SETS[SET]) throw new Error('--set hs1|hs2');
+  if (!SETS[SET]) throw new Error('--set hs1|hs2|hs3');
   const OUT = arg('--out', path.join(os.tmpdir(), 'house'));
   const LIMIT = Number(arg('--limit', '0'));
   if (!['dev', 'holdout'].includes(MODE)) throw new Error('--mode dev|holdout');
@@ -46,7 +49,7 @@ async function main() {
   const t0 = Date.now();
   const log = (m) => console.log(`[house-${SET}-${MODE} +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
 
-  const d = await loadPitData({ LIMIT, log, excludeNonEquity: true, secPit: true, secPitKey: PIT_KEY_R12, cross: false });
+  const d = await loadPitData({ LIMIT, log, excludeNonEquity: true, secPit: true, secPitKey: SETS[SET].secPitKey === 'r13' ? PIT_KEY_R13 : PIT_KEY_R12, cross: false });
   const result = runAnalysis(d, { MODE, SET, LIMIT, frozen, log });
   const keys = { owner: path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), session: path.join(here, 'session-public-key.pem') };
   const files = sealAll(OUT, `house-${SET}-${MODE}${LIMIT ? '-smoke' : ''}`, result, keys);
@@ -82,7 +85,7 @@ export function runAnalysis(d, { MODE, SET = 'hs1', LIMIT = 0, frozen = null, lo
     const a = L.adjustSeries(raw);
     if (seg.fund) fundSegs++;
     stocks.push(prepareStock({ id: seg.id, survivor: seg.survivor, delisted: seg.delisted, date: a.date, open: a.open, high: a.high, close: a.close,
-      rawClose: a.rawClose, rawVolume: a.rawVolume, divAdj: a.divAdj, fund: seg.fund || null }, calIndex));
+      rawClose: a.rawClose, rawVolume: a.rawVolume, divAdj: a.divAdj, split: a.split, fund: seg.fund || null }, calIndex));
     seg.raw = null;
   }
   segs = null;
@@ -117,17 +120,30 @@ export function runAnalysis(d, { MODE, SET = 'hs1', LIMIT = 0, frozen = null, lo
   };
   const activeSr = (t) => { const mm = moments(t.metrics.monthly.map((m) => m[1] - m[2])); return mm.sdSample > 0 ? mm.mean / mm.sdSample : 0; };
   const trials = runTrials(P, S);
+  // HS3: Ueberrendite gegenueber der Kontrolle (monatlich) und Datenpruefung G0.
+  let gate = null;
+  if (S.relative) {
+    const cm = trials[S.control].metrics.monthly;
+    for (const t of Object.values(trials)) {
+      const a = t.metrics.monthly.map((m, i) => m[1] - (cm[i] ? cm[i][1] : 0)); const mm = moments(a);
+      const yrs = t.metrics.years, g = (x) => x.reduce((v, m) => v * (1 + m), 1);
+      t.vsControl = { excessCagr: g(t.metrics.monthly.map((m) => m[1])) ** (1 / yrs) - g(cm.map((m) => m[1])) ** (1 / yrs), infoRatio: mm.sdSample > 0 ? (mm.mean * 12) / (mm.sdSample * Math.sqrt(12)) : null };
+    }
+    gate = { G0: trials[S.control].metrics.trackingError <= S.gateTE, trackingError: trials[S.control].metrics.trackingError };
+  }
 
   // Auswahl (nur im Entwicklungsmodus massgeblich), Regel je Versuchsreihe vorab registriert.
-  const ok = Object.values(trials).filter(S.selectable);
-  const best = ok.sort((a, b) => (b.metrics.infoRatio ?? -Infinity) - (a.metrics.infoRatio ?? -Infinity))[0] || null;
+  const ok = gate && !gate.G0 ? [] : Object.values(trials).filter(S.selectable);
+  const irOf = (t) => (S.relative ? t.vsControl.infoRatio : t.metrics.infoRatio) ?? -Infinity;
+  const best = ok.sort((a, b) => irOf(b) - irOf(a))[0] || null;
   const selectedId = MODE === 'holdout' ? frozen.selectedTrial : best?.def.id || null;
   const sel = selectedId ? P.trials.find((t) => t.id === selectedId) : null;
 
   // Statistik: PBO ueber die Versuche dieser Reihe, DSR ueber ALLE je gerechneten Versuche (auch fruehere Reihen).
   const ids = S.pboIds(P.trials.map((t) => t.id));
   const months = trials[ids[0]].metrics.monthly.map((x) => x[0]);
-  const matrix = months.map((_, i) => ids.map((id) => { const m = trials[id].metrics.monthly[i]; return m ? m[1] - m[2] : 0; }));
+  const refAt = (i, m) => (S.relative ? (trials[S.control].metrics.monthly[i]?.[1] ?? 0) : m[2]);
+  const matrix = months.map((_, i) => ids.map((id) => { const m = trials[id].metrics.monthly[i]; return m ? m[1] - refAt(i, m) : 0; }));
   const srTrials = P.trials.map((t) => activeSr(trials[t.id]));
   for (const ps of S.priorSets || []) { const prior = runTrials(readJson(SETS[ps].prereg), SETS[ps]); for (const t of Object.values(prior)) srTrials.push(activeSr(t)); }
   const stats = { pbo: pboCscv(matrix, 8), trialsCounted: srTrials.length, dsrActive: sel ? deflatedSharpe(trials[selectedId].metrics.monthly.map((m) => m[1] - m[2]), srTrials) : null };
@@ -169,7 +185,7 @@ export function runAnalysis(d, { MODE, SET = 'hs1', LIMIT = 0, frozen = null, lo
     schema: 'supertrader-house-result-1.1.0', set: SET, mode: MODE, limit: LIMIT || null, at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null,
     hashes: { prereg: fileHash(path.join(here, S.prereg)), engine: fileHash(path.join(here, 'engine.mjs')), stats: fileHash(path.join(here, 'stats.mjs')), listingTable: d.hash },
     period: { from: calendar[startK], to: calendar[endK] }, universe: { stocks: stocks.length, delisted: stocks.filter((s) => s.delisted).length, survivors: SURV.list.length, withSec: fundSegs, nonEquityExcluded: d.nonEquityExcluded, secCoverage: d.secCoverage },
-    coverage, trials, selection: { rule: P.selection, selected: selectedId, candidates: ok.length }, stats, controls, holdout,
+    coverage, gate, trials, selection: { rule: P.selection, selected: selectedId, candidates: ok.length }, stats, controls, holdout,
   };
   return result;
 }

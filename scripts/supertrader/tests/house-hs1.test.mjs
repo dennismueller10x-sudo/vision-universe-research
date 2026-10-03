@@ -188,3 +188,33 @@ test('SEC r13: Aktienanzahl je Stichtag, Gattungen addiert, erste Einreichung', 
   assert.deepEqual(sharesSeries(cf), [['2020-04-20', 150, '2020-04-30', 'dei'], ['2020-07-20', 160, '2020-07-30', 'dei']]);
   assert.deepEqual(sharesSeries({ facts: {} }), []);
 });
+
+test('HS3: Marktkapitalisierung zum Stichtag mit Split-Umrechnung, nur vor D eingereicht', () => {
+  const cal = calendarOf(30, '2020-01-01');
+  const idx = new Map(cal.map((d, i) => [d, i]));
+  const s = mkStock('MC', cal, 0);
+  s.split = cal.map((d, i) => (i === 20 ? 2 : 1));
+  for (let i = 20; i < cal.length; i++) s.rawClose[i] = s.rawClose[i] / 2;
+  s.fund = { shares: [[cal[5], 1000, cal[8]], [cal[25], 99999, cal[29]]] };
+  const st = prepareStock(s, idx);
+  const t = 27, D = cal[t];
+  const mc = mcapAtT(st, t, D);
+  assert.ok(Math.abs(mc - st.rawClose[t] * 1000 * 2) < 1e-6, 'Split nach Stichtag verdoppelt die Stueckzahl');
+  assert.ok(Number.isNaN(mcapAtT(st, 7, cal[7])), 'vor der Einreichung unbekannt');
+});
+import { mcapAt as mcapAtT } from '../house/engine.mjs';
+
+test('HS3 end-to-end: Kontrolle C00, Datenpruefung G0, Auswahl relativ zur Kontrolle, 25 Versuche', async () => {
+  const { runAnalysis } = await import('../house/analyze.mjs');
+  const cal = []; const dd = new Date('2015-01-01T00:00:00Z');
+  while (dd.toISOString().slice(0, 10) <= '2026-09-30') { const wd = dd.getUTCDay(); if (wd && wd !== 6) cal.push(dd.toISOString().slice(0, 10)); dd.setUTCDate(dd.getUTCDate() + 1); }
+  const mkRaw = (i) => { let p = 20 + i; return cal.map((date, k) => { p *= 1 + (i - 15) * 0.00004 + Math.sin(k * 0.3 + i) * 0.006; return { date, open: p * 0.999, high: p * 1.01, low: p * 0.99, close: p, volume: 1e6 * (1 + i / 10), adjClose: p, dividend: 0, splitFactor: 1 }; }); };
+  const shares = (i) => cal.filter((d, k) => k % 63 === 0).map((d) => [d, 1e6 * (1 + i), d, 'dei']);
+  const segs = Array.from({ length: 30 }, (_, i) => ({ id: `tiingo:NYSE:T${i}:2000-01-01`, raw: mkRaw(i), survivor: true, delisted: false, fund: { eps: [], rev: [], shares: shares(i), cik: 'C' + (i === 29 ? 28 : i) } }));
+  const r = runAnalysis({ segs, spyAdj: L.adjustSeries(mkRaw(3)), hash: 'x', nonEquityExcluded: 0, secCoverage: null }, { MODE: 'dev', SET: 'hs3' });
+  assert.deepEqual(Object.keys(r.trials), ['C00', 'M01', 'M02', 'M03', 'M04', 'M05']);
+  assert.ok(r.gate && typeof r.gate.G0 === 'boolean');
+  assert.equal(r.stats.trialsCounted, 25);
+  assert.ok(r.trials.M01.vsControl);
+  assert.ok(r.trials.C00.meanPositions <= 29.5, 'doppelte CIK zaehlt einmal');
+});

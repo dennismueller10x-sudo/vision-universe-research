@@ -392,7 +392,7 @@ export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity 
     const sbuf = await driver.get(mine.seriesPrefix + secPitKey);
     const pit = sbuf ? JSON.parse(zlib.gunzipSync(sbuf).toString('utf8')) : {};
     let withFund = 0;
-    for (const seg of segs) { const f = pit[seg.id.split('#')[0]]; if (f) { seg.fund = { eps: f.eps, rev: f.rev }; withFund++; } }
+    for (const seg of segs) { const f = pit[seg.id.split('#')[0]]; if (f) { seg.fund = { eps: f.eps, rev: f.rev, ...(f.shares ? { shares: f.shares, cik: f.cik } : {}) }; withFund++; } }
     secCoverage = { segments: segs.length, withFund, delisted: segs.filter((s) => s.delisted).length, delistedWithFund: segs.filter((s) => s.delisted && s.fund).length };
     log(`SEC-Gewinnhistorie: ${withFund}/${segs.length} Segmente, delistet ${secCoverage.delistedWithFund}/${secCoverage.delisted}`);
   }

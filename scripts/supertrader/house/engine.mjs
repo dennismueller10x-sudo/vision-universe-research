@@ -13,6 +13,8 @@ export const HS1 = Object.freeze({
   slippageBps: 10, commissionBps: 1, bufferMult: 2, resizeLow: 0.5, resizeHigh: 2, regimeExposure: 0.5, regimeSma: 200,
   // HS2 (PREREGISTRATION-HS2.json)
   indexTop: 500, dvWeightWindow: 252, weightCap: 0.06, bandRel: 0.25, bandAbs: 0.0005,
+  // HS3 (PREREGISTRATION-HS3.json)
+  mcapCap: 0.10, sharesMaxAgeDays: 400,
 });
 
 const DAY = 864e5;
@@ -24,7 +26,7 @@ export function prepareStock(s, calIndex) {
   const dIdx = new Int32Array(n);
   for (let i = 0; i < n; i++) { const k = calIndex.get(s.date[i]); if (k === undefined) throw new Error(`Balken ausserhalb des Kalenders: ${s.id} ${s.date[i]}`); dIdx[i] = k; }
   const tri = new Float64Array(n), r = new Float64Array(n);
-  const pR = new Float64Array(n + 1), pR2 = new Float64Array(n + 1), pDv = new Float64Array(n + 1);
+  const pR = new Float64Array(n + 1), pR2 = new Float64Array(n + 1), pDv = new Float64Array(n + 1), pSplit = new Float64Array(n + 1);
   tri[0] = 1;
   for (let i = 0; i < n; i++) {
     if (i > 0) {
@@ -36,8 +38,10 @@ export function prepareStock(s, calIndex) {
     pR[i + 1] = pR[i] + r[i]; pR2[i + 1] = pR2[i] + r[i] * r[i];
     const dv = (s.rawClose[i] || 0) * (s.rawVolume[i] || 0);
     pDv[i + 1] = pDv[i] + (Number.isFinite(dv) ? dv : 0);
+    const sf = s.split ? s.split[i] : 1;
+    pSplit[i + 1] = pSplit[i] + (sf > 0 && Number.isFinite(sf) ? Math.log(sf) : 0);
   }
-  return { ...s, n, dIdx, tri, r, pR, pR2, pDv, firstK: dIdx[0], lastK: dIdx[n - 1] };
+  return { ...s, n, dIdx, tri, r, pR, pR2, pDv, pSplit, firstK: dIdx[0], lastK: dIdx[n - 1] };
 }
 
 // Letzter Balkenindex mit Kalenderindex <= k (binaere Suche), sonst -1.
@@ -89,6 +93,20 @@ export function revgAt(fund, D, P = HS1) {
   return y && y[1] > 0 ? cur[1] / y[1] - 1 : NaN;
 }
 
+// HS3: Marktkapitalisierung an Balken t (Datum D) aus der juengsten vor D eingereichten Aktienanzahl,
+// umgerechnet mit allen Splits nach deren Stichtag bis einschliesslich D.
+export function mcapAt(st, t, D, P = HS1) {
+  const rows = st.fund?.shares; if (!rows?.length) return NaN;
+  let best = null;
+  for (const r of rows) if (r[2] < D && r[0] <= D && (!best || r[0] > best[0] || (r[0] === best[0] && r[2] < best[2]))) best = r;
+  if (!best || dayDiff(best[0], D) > P.sharesMaxAgeDays) return NaN;
+  let lo = 0, hi = st.n - 1, iEnd = -1;
+  while (lo <= hi) { const m = (lo + hi) >> 1; if (st.date[m] <= best[0]) { iEnd = m; lo = m + 1; } else hi = m - 1; }
+  const mult = Math.exp(st.pSplit[t + 1] - st.pSplit[iEnd + 1]);
+  const v = st.rawClose[t] * best[1] * mult;
+  return v > 0 && Number.isFinite(v) ? v : NaN;
+}
+
 // Querschnitt an Kalendertag k (Datum D). Liefert zulaessige Titel mit Rohfaktoren.
 export function crossSection(stocks, k, D, P = HS1) {
   const cand = [];
@@ -116,6 +134,7 @@ export function crossSection(stocks, k, D, P = HS1) {
     e.HIGH52 = hi > 0 ? st.close[t] / hi : NaN;
     e.SUE = sueAt(st.fund, D, P);
     e.REVG = revgAt(st.fund, D, P);
+    e.MCAP = mcapAt(st, t, D, P);
   }
   return elig;
 }
@@ -160,8 +179,18 @@ export function capWeights(raw, cap) {
 
 // HS2: Zielgewichte im 500er-Universum (elig nach dv absteigend sortiert).
 export function indexTiltWeights(elig, cfg, P = HS1) {
-  const uni = elig.slice(0, P.indexTop).filter((e) => e.dvW > 0);
-  const base = capWeights(new Map(uni.map((e) => [e.st.id, e.dvW])), P.weightCap);
+  let uni, base;
+  if (cfg.sizeBy === 'MCAP') {
+    // HS3: je CIK ein Listing (hoechster 63-Tage-Umsatz; elig ist danach sortiert), dann die 500 groessten.
+    const seen = new Set(); const one = [];
+    for (const e of elig) { if (!Number.isFinite(e.MCAP)) continue; const c = e.st.fund?.cik || e.st.id; if (seen.has(c)) continue; seen.add(c); one.push(e); }
+    uni = one.sort((a, b) => b.MCAP - a.MCAP || a.st.id.localeCompare(b.st.id)).slice(0, P.indexTop);
+    base = capWeights(new Map(uni.map((e) => [e.st.id, e.MCAP])), P.mcapCap);
+  } else {
+    uni = elig.slice(0, P.indexTop).filter((e) => e.dvW > 0);
+    base = capWeights(new Map(uni.map((e) => [e.st.id, e.dvW])), P.weightCap);
+  }
+  const cap = cfg.sizeBy === 'MCAP' ? P.mcapCap : P.weightCap;
   let raw;
   if (!cfg.factors?.length) raw = base;
   else {
@@ -175,7 +204,7 @@ export function indexTiltWeights(elig, cfg, P = HS1) {
       else raw.set(e.st.id, b * Math.max(0, 1 + cfg.tau * (2 * sc - 1)));
     }
   }
-  const w = capWeights(raw, P.weightCap);
+  const w = capWeights(raw, cap);
   const byId = new Map(uni.map((e) => [e.st.id, e.st]));
   return new Map([...w].filter(([, v]) => v > 0).map(([id, v]) => [id, { w: v, st: byId.get(id) }]));
 }
