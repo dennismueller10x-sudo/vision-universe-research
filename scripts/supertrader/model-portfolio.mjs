@@ -28,11 +28,12 @@ export function portfolioConfig(engine) {
 }
 
 // signals: alle Ledger-Signale (open + closed) einer Methode; barsOf(symbol) -> {date[], close[]}.
-export function buildModelPortfolio({ engine, signals, barsOf, calendar, asOf, rsOf = null }) {
+// marketOk: Map(Datum -> SPY ueber GD 200 am Vortag) fuer Methoden mit Marktampel (Runde 12).
+export function buildModelPortfolio({ engine, signals, barsOf, calendar, asOf, rsOf = null, marketOk = null }) {
   const cfg = portfolioConfig(engine);
   const entered = signals.filter((s) => s.entry && s.entry.date && Number.isFinite(s.entry.price) && Number.isFinite(s.initialStop));
   const base = { schema: MODEL_PORTFOLIO_VERSION, strategyId: engine.id, currentVersion: engine.version, asOf,
-    config: { initialEquity: cfg.initialEquity, riskPerTrade: cfg.riskPerTrade, maxPositionPct: cfg.maxPositionPct, maxPositions: cfg.maxPositions, progressive: cfg.progressive || null, source: cfg.source || null, simultaneousEntries: cfg.priority === 'RS' ? 'nach relativer Stärke am Vortag (Gleichstand alphabetisch)' : 'alphabetisch nach Symbol (keine Rangregel in der Quelle)', priority: cfg.priority, costs: '1 bp Gebühr je Seite; Einstiegspreise enthalten bereits 10 bp Slippage' },
+    config: { initialEquity: cfg.initialEquity, riskPerTrade: cfg.riskPerTrade, maxPositionPct: cfg.maxPositionPct, maxPositions: cfg.maxPositions, progressive: cfg.progressive || null, source: cfg.source || null, simultaneousEntries: cfg.priority === 'RS' ? 'nach relativer Stärke am Vortag (Gleichstand alphabetisch)' : 'alphabetisch nach Symbol (keine Rangregel in der Quelle)', priority: cfg.priority, costs: '1 bp Gebühr je Seite; Einstiegspreise enthalten bereits 10 bp Slippage', marketFilter: !!cfg.marketFilter },
     publication: 'Zusammensetzung und Einzeltrades. Gesamtrendite und Kurve werden bis zur Klärung der Rechte an abgeleiteten Kennzahlen nicht veröffentlicht.' };
   if (!entered.length) return { ...base, startDate: null, cashPct: 1, investedPct: 0, positions: [], closed: [], notTaken: [], note: 'Noch kein Modelleinstieg dieser Methode im Live-Protokoll.' };
   const start = entered.map((s) => s.entry.date).sort()[0];
@@ -44,7 +45,7 @@ export function buildModelPortfolio({ engine, signals, barsOf, calendar, asOf, r
     return { id: s.id, listingId: s.symbol, rsAtEntry: rsOf ? rsOf(s.symbol, s.entry.date) : null, entry: { date: s.entry.date, price: s.entry.price }, initialStop: s.initialStop,
       exits: (s.exits || []).filter((x) => x.date <= asOf).map((x) => ({ date: x.date, price: x.price, fraction: x.fraction, ruleId: x.ruleId })), terminal: null, marks, divs: new Map(), sig: s };
   });
-  const run = runPortfolioTR(trades, cal, cfg, { dividends: false, commissionBps: 1 });
+  const run = runPortfolioTR(trades, cal, cfg, { dividends: false, commissionBps: 1, marketOk });
   const last = run.equity[run.equity.length - 1];
   const eq = last ? last.equity : cfg.initialEquity;
   const positions = run.taken.filter((p) => p.remainingFraction > 1e-9).map((p) => {

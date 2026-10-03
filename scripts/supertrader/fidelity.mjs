@@ -17,6 +17,7 @@ export const FIDELITY_VERSION = 'supertrader-fidelity-1.0.0';
 // Einordnung einer einzelnen Code-Regel.
 export const RULE_CLASS = Object.freeze({
   ORIGINAL: { label: 'Originalregel', plain: 'Steht so in einer Primärquelle des Traders.' },
+  DOCUMENTED_VARIANT: { label: 'Dokumentierte Variante', plain: 'Steht so in der öffentlichen Beschreibung einer Variante eines Dritten (z. B. TraderFox) – nicht beim Trader selbst.' },
   OPERATIONALIZATION: { label: 'Vertretbare Umsetzung', plain: 'Belegte Regel, für Tageskurse mechanisch übersetzt (z. B. Schlusskurs statt Kauforder im Tagesverlauf).' },
   VU_EXTENSION: { label: 'Vision-Universe-Erweiterung', plain: 'Eigene Ergänzung; nicht Teil der Originalmethode.' },
   UNBACKED: { label: 'Unbelegte Annahme', plain: 'Weder in Primär- noch in übereinstimmenden Sekundärquellen gefunden.' },
@@ -26,6 +27,7 @@ export const RULE_CLASS = Object.freeze({
 // Belegstufe der Quelle (was in Runde 7 tatsaechlich einsehbar war).
 export const SOURCE_ACCESS = Object.freeze({
   PRIMARY_FULL: 'Primärquelle im Volltext gelesen (Runde 8)',
+  VARIANT_FULL: 'Öffentliche Beschreibung der Drittvariante im Volltext gelesen (Runde 12)',
   SECONDARY_QUOTE: 'Wörtliches Zitat aus dem Original in einer Sekundärquelle',
   PRIMARY: 'Primärquelle eingesehen',
   PRIMARY_SNIPPET: 'Primärquelle, nur Auszug lesbar',
@@ -37,6 +39,7 @@ export const SOURCE_ACCESS = Object.freeze({
 // Produktstatus je Methode (was der Kunde als Erstes liest).
 export const PRODUCT_STATUS = Object.freeze({
   SOURCE_FAITHFUL: { label: 'Quellentreu nachgebildet', plain: 'Alle Kernregeln sind belegt und mechanisch abbildbar.' },
+  VU_METHOD: { label: 'Eigene VU-Methode', plain: 'Eigene Methode von Vision Universe aus dokumentierten Regeln Dritter und offengelegten VU-Annahmen. Weder Original eines Traders noch das System des Dritten.' },
   VU_VARIANT: { label: 'Vision-Universe-Variante', plain: 'Angelehnt an die Methode: belegte Kernideen, mechanisch umgesetzt, mit eigenen Annahmen und fehlenden Bausteinen. Nicht die Methode des Traders selbst.' },
   PARTIAL_CHECK: { label: 'Teilprüfung', plain: 'Nur einzelne Kriterien prüfbar; kein vollständiges Signal.' },
   RESEARCH: { label: 'Forschung', plain: 'Beschrieben, aber nicht als laufendes Modell umgesetzt.' },
@@ -45,6 +48,32 @@ export const PRODUCT_STATUS = Object.freeze({
 const r = (area, source, access, code, cls, note) => ({ area, source, access, code, cls, note: note || null });
 
 export const FIDELITY = Object.freeze({
+  VU_TREND_52W: {
+    status: 'VU_METHOD', mechanizable: 'YES',
+    mechanizableNote: 'Alle Regeln der öffentlich beschriebenen TraderFox-Variante sind mechanisch. Nicht öffentlich ist nur die Rangfolge „Trendstabilität“ – sie ist durch ein offengelegtes Trendmaß ersetzt.',
+    chain: [
+      { step: 'Vergleich', text: 'Runde 12: Öffentliche TraderFox-Beiträge zu „NEO-DARVAS“ (2018/2019) im Volltext gelesen. Wesentlicher Unterschied zu allen fünf VU-Methoden: kein enger Stop, Verkauf erst bei nachlassendem Trend (65 Tage ohne neues Hoch), zehn gleich große Plätze, monatliche Umschichtung, Marktampel.' },
+      { step: 'Code 1.0.0', text: 'Kauf- und Verkaufsregeln, Gewichte und Termine wie beschrieben; Universum (umsatzstärkste statt größte 1.800), SPY statt S&P 500 und Clenow-Trendmaß statt Trendstabilität als VU-Ersatz.' },
+      { step: 'Abgrenzung', text: 'Darvas selbst kaufte Ausbrüche aus Boxen mit Stop knapp unter der Kauforder (TIME 1959). Die 100-%-Regel seit Jahrestief schreibt TraderFox Darvas zu; in den von VU gelesenen Darvas-Quellen ist sie nicht belegt. Deshalb eigene Methode, nicht „Darvas“.' },
+      { step: 'Prüfung', text: 'Vorab festgelegt (PREREGISTRATION-R12): Vollportfolio 2016–2026 inklusive delisteter Titel, getrennte Teilzeiträume, Zufallsreihenfolgen, doppelte Kosten. TraderFox-Renditen sind nicht reproduziert.' },
+    ],
+    rules: [
+      r('Universum', 'größte 1.800 US-Unternehmen', 'VARIANT_FULL', '1.800 umsatzstärkste US-Aktien (63 Tage)', 'VU_EXTENSION', 'Keine historische Marktkapitalisierung verfügbar.'),
+      r('Auswahl', '≥ 100 % seit Jahrestief, neues Jahreshoch in 20 Handelstagen, ≥ 1 Mio. USD Tagesumsatz', 'VARIANT_FULL', 'identisch', 'DOCUMENTED_VARIANT'),
+      r('Kurslücke', 'Up-Gap ≥ 6 % in 20 Handelstagen', 'VARIANT_FULL', 'Eröffnung ≥ 6 % über Vortagesschluss', 'DOCUMENTED_VARIANT'),
+      r('Marktfilter', 'S&P 500 > GD 200; sonst alle Positionen auf höchstens 5 %', 'VARIANT_FULL', 'SPY statt S&P 500', 'DOCUMENTED_VARIANT', 'SPY als handelbarer Ersatz.'),
+      r('Rang', '„Trendstabilität“ (TraderFox-Indikator, nicht öffentlich)', 'VARIANT_FULL', 'Clenow-Trendmaß (Steigung × R², 90 Tage)', 'VU_EXTENSION', 'Offengelegter Ersatz; vorab festgelegt, nicht an Ergebnissen gewählt.'),
+      r('Positionsgröße', '10 % Zielgewicht bei Kauf, 10 Positionen', 'VARIANT_FULL', 'identisch', 'DOCUMENTED_VARIANT'),
+      r('Termine', 'monatliche Umschichtung', 'VARIANT_FULL', 'Entscheidung am letzten Handelstag, Ausführung zur Eröffnung am ersten Handelstag', 'OPERATIONALIZATION'),
+      r('Ausstieg', 'kein neues Hoch in 65 Handelstagen; < 100 % seit Jahrestief; Gewicht < 3 %', 'VARIANT_FULL', 'identisch, geprüft zum Monatsende', 'DOCUMENTED_VARIANT'),
+      r('Teilverkauf', 'Gewicht > 20 % → 15 %', 'VARIANT_FULL', 'identisch', 'DOCUMENTED_VARIANT'),
+      r('Stop', 'kein Stop genannt', 'VARIANT_FULL', 'kein Stop', 'DOCUMENTED_VARIANT'),
+    ],
+    missing: ['Pivotal-News-Points (Quartalszahlen deutlich über Konsens) – keine Analystenschätzungen verfügbar', 'Trendstabilität im Original'],
+    data: { historical: 'Tageskurse ab 2016 inklusive delisteter Titel', live: 'Tageskurse mit Eröffnung', gaps: 'keine historische Marktkapitalisierung, keine Konsensschätzungen' },
+    neededMaterial: [],
+    sourcesRead: ['TraderFox, 24.03.2018: NEO-DARVAS-SCREENING mit Marktampel', 'TraderFox, 21.04.2018: Regelbasiertes NEO-DARVAS-Musterdepot', 'TraderFox/aktien Magazin: exakte Regeln „NEO-DARVAS mit Pivotal-Points“'],
+  },
   MINERVINI_VCP: {
     status: 'VU_VARIANT', mechanizable: 'PARTLY',
     mechanizableNote: 'Trend Template ist mechanisch; ob eine Basis eine echte VCP ist, wo der Pivot liegt und wann in die Stärke verkauft wird, entscheidet Minervini nach Augenmaß.',

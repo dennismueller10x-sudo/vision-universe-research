@@ -60,6 +60,14 @@ async function main() {
   // Teilpruefung steht hinter vollstaendigen Modellen; sichtbar als eigener Tab.
   if (csSym) routes.push(['lens-partial', `/supertrader/stock/${csSym}/`, '.st-critlist, .st-chips.lens button']);
   routes.push(['lens-empty', '/supertrader/stock/?s=ZZZZ', '.st-emptybox']);
+  // Runde 12: Modelldepot VU Trendfolge 52W - Methode mit Marktampel/Rangliste, Einzelwert mit Status
+  const t52file = path.join(SITE, 'supertrader/data/trend52.json');
+  if (fs.existsSync(t52file)) {
+    const t52 = JSON.parse(fs.readFileSync(t52file, 'utf8'));
+    routes.push(['strategy-trend52-model', '/supertrader/strategies/vu-trendfolge-52w/', '.st-mphead']);
+    const sym = t52.portfolio.positions[0]?.symbol || t52.prepared.candidates[0]?.symbol;
+    if (sym) routes.push(['lens-trend52', `/supertrader/stock/${sym}/`, '.st-research']);
+  }
   if (fs.existsSync(path.join(SITE, 'supertrader/data/replay.json'))) routes.push(['replay', '/supertrader/beispiel/', '.st-demo-banner']);
   const watchSym = (signals.strategies.DONCHIAN_TURTLE?.open || []).find((x) => !x.entry)?.symbol;
   if (watchSym) routes.push(['lens-watch', `/supertrader/stock/${watchSym}/`, '.st-lensblock']);
@@ -109,7 +117,10 @@ async function main() {
       const page = await ctx.newPage();
       const errors = [];
       page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
-      page.on('console', (m) => { if (m.type() === 'error' && !/site-navigation|favicon|live\.visionuniverse/.test(m.text())) errors.push('console: ' + m.text()); });
+      // Fehlgeschlagene Antworten mit URL melden (Favicon ausgenommen); die URL-lose Konsolenmeldung
+      // „Failed to load resource“ ist damit doppelt und wird nicht zusaetzlich gezaehlt.
+      page.on('response', (r) => { if (r.status() >= 400 && !/favicon|site-navigation|live\.visionuniverse/.test(r.url())) errors.push(`http ${r.status()}: ${r.url()}`); });
+      page.on('console', (m) => { if (m.type() === 'error' && !/site-navigation|favicon|live\.visionuniverse|^Failed to load resource/.test(m.text())) errors.push('console: ' + m.text()); });
       page.on('requestfailed', (r) => { if (r.url().includes('/supertrader/')) errors.push('requestfailed: ' + r.url()); });
       const t0 = Date.now();
       await page.goto(base + url, { waitUntil: 'networkidle' });

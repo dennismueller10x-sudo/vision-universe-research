@@ -30,6 +30,8 @@ const Guard = require(path.join(root, 'quant/engines/zero-cost-guard.js'));
 const Master = require(path.join(root, 'quant/engines/us-security-master.js'));
 const UA = 'VisionUniverse-Research/1.0 (method fidelity review; info@visionuniverse.de)';
 export const PIT_KEY = '_validation/sec-pit-r11.json.gz';
+// Runde 12: erweiterte Fassung (IFRS, weitere EPS-/Umsatzkennzahlen, Ursachen fehlender Reihen); r11 bleibt unveraendert.
+export const PIT_KEY_R12 = '_validation/sec-pit-r12.json.gz';
 
 const SUFFIX = /\b(INC|INCORPORATED|CORP|CORPORATION|CO|COMPANY|LTD|LIMITED|LLC|L\.?L\.?C|PLC|LP|L\.?P|HOLDINGS?|GROUP|THE|SA|NV|AG|SE|N\.?V|S\.?A|CL(ASS)? [A-Z]|COMMON STOCK|ORDINARY SHARES|ADR|ADS|NEW|DEL|DE|NY|MD|NV|CAN)\b/g;
 export function normName(s) {
@@ -37,7 +39,12 @@ export function normName(s) {
 }
 
 const EPS_TAGS = ['EarningsPerShareDiluted', 'EarningsPerShareBasicAndDiluted', 'EarningsPerShareBasic'];
+// Runde 12: zusaetzliche Kennzahlen (nur wenn die obigen fehlen) und IFRS-Taxonomie (Auslandsemittenten).
+const EPS_TAGS_R12 = [...EPS_TAGS, 'IncomeLossFromContinuingOperationsPerDilutedShare', 'IncomeLossFromContinuingOperationsPerBasicShare'];
+const IFRS_EPS = ['DilutedEarningsLossPerShare', 'BasicEarningsLossPerShare', 'BasicAndDilutedEarningsLossPerShare'];
+const IFRS_REV = ['Revenue', 'RevenueFromContractsWithCustomers'];
 const REV_TAGS = ['Revenues', 'RevenueFromContractWithCustomerExcludingAssessedTax', 'RevenueFromContractWithCustomerIncludingAssessedTax', 'SalesRevenueNet', 'SalesRevenueGoodsNet', 'SalesRevenueServicesNet'];
+const REV_TAGS_R12 = [...REV_TAGS, 'RevenuesNetOfInterestExpense', 'InterestAndDividendIncomeOperating', 'RegulatedAndUnregulatedOperatingRevenue'];
 const days = (a, b) => (Date.parse(b) - Date.parse(a)) / 864e5;
 
 // Quartalsreihe [end, value, firstFiled, derived] aus companyfacts-Eintraegen einer Kennzahl.
@@ -69,6 +76,30 @@ export function extractFacts(cf) {
   const revMap = new Map();
   for (const t of REV_TAGS) { const u = g[t]?.units?.USD; if (!u) continue; for (const r of quarterly(u)) if (!revMap.has(r[0])) revMap.set(r[0], r); }
   return { name: cf?.entityName || null, epsTag: eps?.tag || null, eps: eps?.q || [], rev: [...revMap.values()].sort((a, b) => a[0].localeCompare(b[0])) };
+}
+
+
+// Runde 12: Extraktion mit erweiterten Kennzahlen, IFRS und Ursachenangabe, wenn keine Quartals-EPS vorliegen.
+export function extractFactsR12(cf) {
+  const g = cf?.facts?.['us-gaap'] || {}, ifrs = cf?.facts?.['ifrs-full'] || {};
+  const pick = (tax, tags, unitPred) => { for (const t of tags) { const u = tax[t]?.units; if (!u) continue; for (const [unit, arr] of Object.entries(u)) if (unitPred(unit)) { const q = quarterly(arr); if (q.length >= 4) return { tag: t, q, unit }; } } return null; };
+  const perShare = (u) => /\/shares$/i.test(u);
+  let eps = pick(g, EPS_TAGS_R12, perShare), tax = 'us-gaap';
+  if (!eps) { eps = pick(ifrs, IFRS_EPS, perShare); if (eps) tax = 'ifrs-full'; }
+  const revMap = new Map();
+  const revSrc = tax === 'ifrs-full' ? [[ifrs, IFRS_REV]] : [[g, REV_TAGS_R12]];
+  for (const [t0, tags] of revSrc) for (const t of tags) { const u = t0[t]?.units; if (!u) continue; for (const [unit, arr] of Object.entries(u)) { if (perShare(unit) || /shares/i.test(unit)) continue; for (const r of quarterly(arr)) if (!revMap.has(r[0])) revMap.set(r[0], r); } }
+  let cause = null;
+  if (!eps) {
+    const anyEps = [...EPS_TAGS_R12.map((t) => g[t]), ...IFRS_EPS.map((t) => ifrs[t])].filter(Boolean);
+    if (!anyEps.length) cause = Object.keys(ifrs).length && !Object.keys(g).length ? 'IFRS_NO_EPS' : 'NO_EPS_TAG';
+    else {
+      const all = anyEps.flatMap((x) => Object.values(x.units || {}).flat());
+      const q = all.filter((e) => e.start && e.end && (Date.parse(e.end) - Date.parse(e.start)) / 864e5 <= 100).length;
+      cause = q ? 'FEW_QUARTERS' : 'ANNUAL_ONLY';
+    }
+  }
+  return { name: cf?.entityName || null, taxonomy: eps ? tax : null, epsTag: eps?.tag || null, epsUnit: eps?.unit || null, eps: eps?.q || [], rev: [...revMap.values()].sort((a, b) => a[0].localeCompare(b[0])), cause };
 }
 
 async function download(url, file) {
@@ -133,10 +164,12 @@ async function main() {
   const facts = async (cik) => {
     if (cache.has(cik)) return cache.get(cik);
     let v = null;
-    try { const { stdout } = await pexec('unzip', ['-p', cfZip, `CIK${cik}.json`], { maxBuffer: 512 * 1024 * 1024, encoding: 'buffer' }); if (stdout.length) v = extractFacts(JSON.parse(stdout.toString('utf8'))); } catch { v = null; }
+    try { const { stdout } = await pexec('unzip', ['-p', cfZip, `CIK${cik}.json`], { maxBuffer: 512 * 1024 * 1024, encoding: 'buffer' }); if (stdout.length) v = extractFactsR12(JSON.parse(stdout.toString('utf8'))); } catch { v = null; }
     cache.set(cik, v); return v;
   };
   const overlaps = (f, l) => { const from = l.startDate, to = l.listEnd || '2026-12-31'; return !!f && [...f.eps, ...f.rev].some((r) => r[0] >= from && r[0] <= to); };
+  const causes = { active: {}, delisted: {} }, byStartYear = {};
+  const cause = (active, c, l) => { const b = causes[active ? 'active' : 'delisted']; b[c] = (b[c] || 0) + 1; const end = (l.listEnd || '2026').slice(0, 4); const y = byStartYear[end] ||= {}; y[c] = (y[c] || 0) + 1; };
 
   // 3. Zuordnung
   const out = {}, stats = { members: members.length, known: 0, nameMatched: 0, ambiguous: 0, noName: 0, noMatch: 0, noFacts: 0, withEps: { active: 0, delisted: 0 }, total: { active: 0, delisted: 0 }, accuracy: { tested: 0, correct: 0, wrong: 0, ambiguousOrNone: 0 } };
@@ -153,27 +186,29 @@ async function main() {
       if (ok.length === 1) { if (ok[0] === cik) stats.accuracy.correct++; else stats.accuracy.wrong++; } else stats.accuracy.ambiguousOrNone++;
     }
     if (!cik) {
-      if (!m.name) { stats.noName++; continue; }
+      if (!m.name) { stats.noName++; cause(active, 'NO_NAME', m.l); continue; }
       const cands = [...(byName.get(normName(m.name)) || [])];
-      if (!cands.length) { stats.noMatch++; continue; }
+      if (!cands.length) { stats.noMatch++; cause(active, 'NO_NAME_MATCH', m.l); continue; }
       const ok = []; for (const c of cands.slice(0, 6)) if (overlaps(await facts(c), m.l)) ok.push(c);
-      if (ok.length !== 1) { stats[ok.length ? 'ambiguous' : 'noFacts']++; continue; }
+      if (ok.length !== 1) { stats[ok.length ? 'ambiguous' : 'noFacts']++; cause(active, ok.length ? 'AMBIGUOUS_NAME' : 'NAME_MATCH_NO_DATA_IN_LISTING_WINDOW', m.l); continue; }
       cik = ok[0]; how = 'NAME_MATCH'; stats.nameMatched++;
     } else stats.known++;
     const f = await facts(cik);
-    if (!f || !f.eps.length) { stats.noFacts++; continue; }
-    out[m.l.id] = { cik, how, epsTag: f.epsTag, eps: f.eps, rev: f.rev };
+    if (!f) { stats.noFacts++; cause(active, 'CIK_NO_COMPANYFACTS', m.l); continue; }
+    if (!f.eps.length) { stats.noFacts++; cause(active, f.cause || 'NO_EPS', m.l); continue; }
+    if (!f.eps.some((r) => r[0] >= m.l.startDate && r[0] <= (m.l.listEnd || '2026-12-31'))) cause(active, 'EPS_OUTSIDE_LISTING_WINDOW', m.l); else cause(active, 'OK_' + (f.taxonomy || 'us-gaap'), m.l);
+    out[m.l.id] = { cik, how, epsTag: f.epsTag, taxonomy: f.taxonomy, eps: f.eps, rev: f.rev };
     stats.withEps[active ? 'active' : 'delisted']++;
     if (++k % 500 === 0) log(`zugeordnet ${k}`);
   }
   log(`mit EPS: gelistet ${stats.withEps.active}/${stats.total.active}, delistet ${stats.withEps.delisted}/${stats.total.delisted}; Namensabgleich-Pruefung ${stats.accuracy.correct}/${stats.accuracy.tested} richtig, ${stats.accuracy.wrong} falsch`);
   budget.consumeClassA(1, 'PUT sec pit');
-  await driver.put(mine.seriesPrefix + PIT_KEY, zlib.gzipSync(Buffer.from(JSON.stringify(out))), { contentType: 'application/gzip' });
+  await driver.put(mine.seriesPrefix + PIT_KEY_R12, zlib.gzipSync(Buffer.from(JSON.stringify(out))), { contentType: 'application/gzip' });
   log('Gewinnhistorie im privaten Eimer abgelegt');
   const byYear = {};
   for (const v of Object.values(out)) for (const r of v.eps) { const y = r[2].slice(0, 4); byYear[y] = (byYear[y] || 0) + 1; }
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
-  fs.writeFileSync(path.join(OUT, 'sec-pit.sealed.json'), L.encryptForOwner(pem, Buffer.from(JSON.stringify({ schema: 'supertrader-sec-pit-1.0.0', at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, stats, epsFilingsByYear: byYear }))));
+  fs.writeFileSync(path.join(OUT, 'sec-pit-r12.sealed.json'), L.encryptForOwner(pem, Buffer.from(JSON.stringify({ schema: 'supertrader-sec-pit-1.1.0', causes, byListEndYear: byStartYear, at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, stats, epsFilingsByYear: byYear }))));
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) main().catch((e) => { console.error(String(e?.stack || e)); process.exit(1); });
