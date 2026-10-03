@@ -43,11 +43,14 @@ MARKTFAEHIGKEIT = ROOT / "quant" / "data" / "universe" / "market-capability.json
 # Produktuniversum neu gemessen (build-company-master + build-universe-
 # indexes, market-capability.json). Der vorherige Stand (7 004 / 6 997 /
 # 5 963) steht im Abnahmebericht.
+# 03.10.2026: 22 Schuldverschreibungen (Klasse DEBT, PR #366) verliessen das
+# Produktuniversum; die kanonische Messung (market-capability.json totals)
+# steht seitdem bei 6.853 / 6.849 / 5.876.
 AKZEPTIERT = {
-    "PRODUCT_TITLES": 6875,
+    "PRODUCT_TITLES": 6853,
     "R2_SERIES_AVAILABLE": 7802,
-    "HISTORICAL_CHART_AVAILABLE": 6871,
-    "TECHNICAL_HISTORY_ELIGIBLE": 5884,
+    "HISTORICAL_CHART_AVAILABLE": 6849,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5876,
 }
 
 
