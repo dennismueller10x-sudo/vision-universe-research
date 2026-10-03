@@ -117,10 +117,10 @@ async function main() {
      ankommt, widerlegt die Gesamtrendite. Fuer den Vergleichsmassstab ist
      das ein Abbruch, keine Warnung - eine Kursrendite, die als
      Gesamtrendite auftritt, waere die gefaehrlichste Mischung. */
-  const semantics = validation.ok ? MarketQuality.validateAdjustmentConsistency(validation.bars, { claimedStatus: "TOTAL_RETURN" }) : null;
+  const semantics = validation.ok ? MarketQuality.validateAdjustmentConsistency(validation.bars, { claimedStatus: "TOTAL_RETURN", dividendConvention: "TIINGO_REINVESTMENT_CLOSE" }) : null;
   /* Das Urteil faellt der gemeinsame Gesamtrendite-Vertrag (dieselbe
      Funktion wie fuer jede Aktie, market-quality.js totalReturnVerdict). */
-  const verdict = validation.ok ? MarketQuality.totalReturnVerdict(validation.bars) : null;
+  const verdict = validation.ok ? MarketQuality.totalReturnVerdict(validation.bars, { dividendConvention: "TIINGO_REINVESTMENT_CLOSE" }) : null;
   /* Der Vergleichsmassstab schuettet aus: ohne Dividendenbeleg ist er keine
      Gesamtrendite, auch wenn nichts widerlegt ist. */
   if (verdict && ((!verdict.confirmed && verdict.reason !== "ADJUSTED_CLOSE_MISSING") || semantics.inferredStatus !== "TOTAL_RETURN")) {

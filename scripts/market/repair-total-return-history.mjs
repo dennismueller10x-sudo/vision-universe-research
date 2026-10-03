@@ -77,6 +77,9 @@ const today = new Date().toISOString().slice(0, 10);
 const RAW_TOLERANCE = 0.005;
 export const REPAIRABLE = ["DIVIDEND_GAP", "SPLIT_GAP", "CONTRADICTED"];
 export const REPAIR_MODE = "ADJUSTED_ONLY";
+// This repair reads only Tiingo stores and Tiingo provider responses. Keep
+// provider semantics explicit at every shared-contract boundary.
+const TIINGO_TOTAL_RETURN_OPTIONS = Object.freeze({ dividendConvention: "TIINGO_REINVESTMENT_CLOSE" });
 const ADJ_FIELDS = ["adjustedClose", "adjustedOpen", "adjustedHigh", "adjustedLow", "adjustedVolume"];
 
 /** Nur die Gesamtrendite-Spalte uebernehmen, nur fuer gespeicherte Tage.
@@ -183,7 +186,7 @@ async function main() {
     if (s.securityId === benchmarkId) continue;
     const stored = store.readBars(s.securityId, "working");
     if (!stored || !Array.isArray(stored.bars) || !stored.bars.length) continue;
-    verdicts.set(s.securityId, MarketQuality.totalReturnVerdict(stored.bars));
+    verdicts.set(s.securityId, MarketQuality.totalReturnVerdict(stored.bars, TIINGO_TOTAL_RETURN_OPTIONS));
   }
   const before = tally([...verdicts.values()]);
   const queue = [...verdicts.entries()].filter(([, v]) => !v.confirmed && REPAIRABLE.includes(v.reason))
@@ -219,14 +222,14 @@ async function main() {
     const validation = MarketQuality.validateBars(res.data.bars || [], { today, adjustmentStatus: res.data.adjustmentStatus });
     if (!validation.ok) { fail("QUALITY_CHECK_FAILED"); continue; }
     const fresh = validation.bars;
-    const verdict = MarketQuality.totalReturnVerdict(fresh);
+    const verdict = MarketQuality.totalReturnVerdict(fresh, TIINGO_TOTAL_RETURN_OPTIONS);
     if (!verdict.confirmed) { fail("STILL_" + verdict.reason); continue; }
     const stored = store.readBars(id, "working");
     const merged = adjustedOnly(stored.bars, fresh);
     if (!merged.ok) { fail(merged.reason); continue; }
-    if (!MarketQuality.totalReturnVerdict(merged.bars).confirmed) { fail("MERGED_NOT_CONFIRMED"); continue; }
+    if (!MarketQuality.totalReturnVerdict(merged.bars, TIINGO_TOTAL_RETURN_OPTIONS).confirmed) { fail("MERGED_NOT_CONFIRMED"); continue; }
     store.mergeBars(id, merged.bars, { totalReturnRepair: { mode: REPAIR_MODE, contract: MarketQuality.TR_CONTRACT_VERSION, at: new Date().toISOString(), previous: v.reason } });
-    const after = MarketQuality.totalReturnVerdict(store.readBars(id, "working").bars);
+    const after = MarketQuality.totalReturnVerdict(store.readBars(id, "working").bars, TIINGO_TOTAL_RETURN_OPTIONS);
     if (after.confirmed) { results.repaired.push([id, v.reason]); verdicts.set(id, after); }
     else { fail("MERGED_STILL_" + after.reason); verdicts.set(id, after); }
   }

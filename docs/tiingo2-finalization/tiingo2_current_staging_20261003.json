@@ -1,0 +1,339 @@
+{
+  "schemaVersion": "tiingo2-current-baseline-staging-1",
+  "productionCommit": "33e0938fadd4c035002631d537e363bb9017ffd4",
+  "productionConsumer": 6397,
+  "runId": "gh-37114183148-1",
+  "sourceCommit": "507fa883093367520557bd7f7fae42ff2bf86e3d",
+  "providerSourceTimestamp": "Sat, 03 Oct 2026 03:05:06 GMT",
+  "discoveryTimestamp": "2026-10-03T09:47:45.280Z",
+  "discoveryCounts": {
+    "records": 108934,
+    "tickerStrings": 106565,
+    "byAssetType": {
+      "Stock": 49277,
+      "ETF": 9777,
+      "Mutual Fund": 49880
+    },
+    "byListingStatus": {
+      "INACTIVE": 43112,
+      "ACTIVE": 65822
+    }
+  },
+  "candidateEvidenceBudget": 750,
+  "stagedCounts": {
+    "total": 631,
+    "AUTO_ACCEPT": 115,
+    "ACCEPT_AFTER_FIX": 3,
+    "MANUAL_REVIEW": 494,
+    "REJECT_WITH_REASON": 19,
+    "publicationReady": 118,
+    "quantCandidateEligible": 4,
+    "quantReady": 0
+  },
+  "stagedEvidence": {
+    "requests": 0,
+    "completed": 631,
+    "pending": 0,
+    "stopped": null
+  },
+  "proposedConsumerBeforeProductGates": 6501,
+  "candidateAdditions": [
+    "AAC",
+    "ACCL",
+    "ACCV",
+    "ADRX",
+    "AERO",
+    "AESP",
+    "AIBZ",
+    "AIRO",
+    "APAC",
+    "APC",
+    "APMC",
+    "ASBH",
+    "AXIN",
+    "AZUL",
+    "BACC",
+    "BID",
+    "BRKH",
+    "CAE",
+    "CAI",
+    "CAPN",
+    "CART",
+    "CBAT",
+    "CCAQ",
+    "CHA",
+    "CHWM",
+    "CLBK",
+    "CLMT",
+    "CNTB",
+    "CRAN",
+    "CRTO",
+    "CUB",
+    "DPC",
+    "EROC",
+    "ETRA",
+    "FIG",
+    "FIGR",
+    "FJDI",
+    "FLY",
+    "FOIL",
+    "GLXY",
+    "GOLD",
+    "GTES",
+    "HAWK",
+    "HLP",
+    "HOS",
+    "IGAC",
+    "IMSR",
+    "INR",
+    "ITG",
+    "JCAP",
+    "LFAC",
+    "LGCY",
+    "LIME",
+    "LION",
+    "LSBK",
+    "MBGL",
+    "MOB",
+    "MOBI",
+    "MRX",
+    "MTAK",
+    "NP",
+    "NVRI",
+    "NWCL",
+    "OCLT",
+    "OIG",
+    "ONEN",
+    "OSPR",
+    "OTAI",
+    "PAAC",
+    "PAL",
+    "PASW",
+    "PNAQ",
+    "PNFP",
+    "Q",
+    "RBKB",
+    "RNA",
+    "RNAQ",
+    "ROC",
+    "RZAI",
+    "SAIL",
+    "SEG",
+    "SHOT",
+    "SIMA",
+    "SIND",
+    "SKHY",
+    "SMA",
+    "SNDK",
+    "SOLS",
+    "STRZ",
+    "SZZL",
+    "TACO",
+    "TDTH",
+    "TLAC",
+    "TMTS",
+    "TTGT",
+    "TWLV",
+    "UROY",
+    "VIA",
+    "VII",
+    "VLTO",
+    "VYLR",
+    "WLTH",
+    "XIII",
+    "XPRO"
+  ],
+  "candidateAdditionCount": 104,
+  "candidateRemovals": [],
+  "prior113NoLongerSafe": [
+    {
+      "ticker": "BRBI",
+      "decision": "MANUAL_REVIEW",
+      "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
+        "FACTORS_NOT_READY",
+        "FUNDAMENTALS_NOT_READY",
+        "IDENTITY_UNRESOLVED",
+        "INCLUDED_EQUITY_COMMON"
+      ]
+    },
+    {
+      "ticker": "CATL",
+      "decision": "MANUAL_REVIEW",
+      "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
+        "FACTORS_NOT_READY",
+        "FUNDAMENTALS_NOT_READY",
+        "IDENTITY_UNRESOLVED",
+        "INCLUDED_SPAC"
+      ]
+    },
+    {
+      "ticker": "EMIS",
+      "decision": "MANUAL_REVIEW",
+      "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
+        "FACTORS_NOT_READY",
+        "FUNDAMENTALS_NOT_READY",
+        "IDENTITY_UNRESOLVED",
+        "INCLUDED_SPAC"
+      ]
+    },
+    {
+      "ticker": "FTW",
+      "decision": "MANUAL_REVIEW",
+      "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
+        "FACTORS_NOT_READY",
+        "FUNDAMENTALS_NOT_READY",
+        "IDENTITY_UNRESOLVED",
+        "INCLUDED_EQUITY_COMMON"
+      ]
+    },
+    {
+      "ticker": "GLAS",
+      "decision": "MANUAL_REVIEW",
+      "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
+        "FACTORS_NOT_READY",
+        "FUNDAMENTALS_NOT_READY",
+        "IDENTITY_UNRESOLVED",
+        "INCLUDED_EQUITY_COMMON",
+        "SEC_MAPPING_UNAVAILABLE"
+      ]
+    },
+    {
+      "ticker": "GORO",
+      "decision": "MANUAL_REVIEW",
+      "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
+        "FACTORS_NOT_READY",
+        "FUNDAMENTALS_NOT_READY",
+        "IDENTITY_UNRESOLVED",
+        "INCLUDED_EQUITY_COMMON",
+        "WRONG_EXCHANGE"
+      ]
+    },
+    {
+      "ticker": "HOST",
+      "decision": "MANUAL_REVIEW",
+      "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
+        "FACTORS_NOT_READY",
+        "FUNDAMENTALS_NOT_READY",
+        "IDENTITY_UNRESOLVED",
+        "INCLUDED_EQUITY_COMMON",
+        "SEC_MAPPING_UNAVAILABLE",
+        "WRONG_EXCHANGE"
+      ]
+    },
+    {
+      "ticker": "KTWO",
+      "decision": "MANUAL_REVIEW",
+      "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
+        "FACTORS_NOT_READY",
+        "FUNDAMENTALS_NOT_READY",
+        "IDENTITY_UNRESOLVED",
+        "INCLUDED_EQUITY_COMMON"
+      ]
+    },
+    {
+      "ticker": "NVA",
+      "decision": "MANUAL_REVIEW",
+      "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
+        "FACTORS_NOT_READY",
+        "FUNDAMENTALS_NOT_READY",
+        "IDENTITY_UNRESOLVED",
+        "INCLUDED_EQUITY_COMMON",
+        "WRONG_EXCHANGE"
+      ]
+    },
+    {
+      "ticker": "TRLV",
+      "decision": "MANUAL_REVIEW",
+      "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
+        "FACTORS_NOT_READY",
+        "FUNDAMENTALS_NOT_READY",
+        "IDENTITY_UNRESOLVED",
+        "INCLUDED_EQUITY_COMMON",
+        "SEC_MAPPING_UNAVAILABLE"
+      ]
+    },
+    {
+      "ticker": "WSTN",
+      "decision": "MANUAL_REVIEW",
+      "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
+        "FACTORS_NOT_READY",
+        "FUNDAMENTALS_NOT_READY",
+        "IDENTITY_UNRESOLVED",
+        "INCLUDED_SPAC"
+      ]
+    }
+  ],
+  "newlyStagedSincePriorSet": [
+    {
+      "ticker": "CHWM",
+      "decision": "AUTO_ACCEPT",
+      "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
+        "FACTORS_NOT_READY",
+        "FUNDAMENTALS_NOT_READY",
+        "INCLUDED_ADR"
+      ]
+    },
+    {
+      "ticker": "VYLR",
+      "decision": "AUTO_ACCEPT",
+      "reasonCodes": [
+        "CANONICAL_FACTOR_EVIDENCE_REQUIRED",
+        "FACTORS_NOT_READY",
+        "FUNDAMENTALS_NOT_READY",
+        "INCLUDED_EQUITY_COMMON",
+        "SEC_MAPPING_UNAVAILABLE"
+      ]
+    }
+  ],
+  "CHWM": {
+    "bars": 2,
+    "evidenceQuality": "FAIL",
+    "historyFindingCodes": [
+      "insufficient_history"
+    ],
+    "chartStatusOnSourceCommit": "OVERCLAIM_FIXED_IN_FOLLOWUP_POLICY",
+    "membershipCandidateReady": true,
+    "searchCandidateReady": true,
+    "watchlistCandidateReady": true,
+    "deliveredProductProof": false
+  },
+  "canonicalProjection": {
+    "manifestSha256": "e23565d4e98d53bda7cdd00517badd3e2f3c23082447adbae91bf2da5385c63d",
+    "additions": 104,
+    "files": 87,
+    "projectionStatus": "NOT_MATERIALIZED"
+  },
+  "publicationState": "BLOCKED",
+  "publicationBlockers": [
+    "PRODUCTION_BASELINE_6397_NOT_6419",
+    "OLD_PRODUCT_PACKAGE_CAS_MISMATCH",
+    "FRESH_104_TITLE_PRODUCT_MATERIALIZATION_MISSING",
+    "OFFICIAL_PRODUCTION_APPLY_PATH_MISSING",
+    "EXTERNAL_VERCEL_RATE_LIMIT"
+  ],
+  "quantReproducibilityReplay": {
+    "method": "Native build-factor-evidence on same committed baseline inputs with AA/PF master shards varied; generated factor outputs restored after comparison",
+    "beforeCohort": 6288,
+    "afterCohort": 6289,
+    "newCohortTicker": "PFBC",
+    "existingRowsWithChangedNormalizationOrPeerSize": 5977,
+    "existingRowsWithChangedScoreOrPercentile": 5875,
+    "maximumExistingScoreOrPercentileAbsolutePointChange": 0.02,
+    "factorArtifactPublication": false
+  },
+  "productionMutations": 0,
+  "repositoryMainCommit": "41d1381c5bbe3725d817d0bb7878ab2ebbe1d710",
+  "sourceCommitScope": "PRE_CHART_GATE_AND_PRE_MAIN_INTEGRATION;FINAL_RERUN_PENDING"
+}

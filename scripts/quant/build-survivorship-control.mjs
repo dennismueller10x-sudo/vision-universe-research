@@ -44,7 +44,15 @@ const arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[
 const WORK = arg("--work-dir");
 const BUNDLE_OUT = arg("--bundle-out");
 const OUT = process.env.VU_SURVIVORSHIP_OUT || join(ROOT, "quant/data/product/survivorship-control-v1.json");
-export const BUNDLE_VERSION = "delisted-weekly-bundle-1.0.0";
+// Weekly total-return eligibility now uses the provider's ex-close cash
+// convention. Invalidate only the derived bundle, never stored histories.
+export const BUNDLE_VERSION = "delisted-weekly-bundle-1.1.0";
+export function delistedBundleStamp(manifest) {
+  return { bundle: BUNDLE_VERSION, contract: MQ.TR_CONTRACT_VERSION, manifestUpdatedAt: manifest.updatedAt || null, tableHash: manifest.tableHash || null };
+}
+export function fromDelistedTiingoBars(ticker, bars, opts = {}) {
+  return fromBars({ ticker, provider: "tiingo", bars }, opts);
+}
 const json = (p) => JSON.parse(readFileSync(join(ROOT, p), "utf8"));
 const today = new Date().toISOString().slice(0, 10);
 const t0 = Date.now();
@@ -97,7 +105,7 @@ async function delistedInventory(survivorLastKeys) {
 
   /* Wochenbuendel: aus dem Cache, solange Manifest und Vertrag gleich sind. */
   const cacheKey = mine.seriesPrefix + "_validation/quant-weekly-bundle-v1.json.gz";
-  const stamp = { bundle: BUNDLE_VERSION, contract: MQ.TR_CONTRACT_VERSION, manifestUpdatedAt: manifest.updatedAt || null, tableHash: manifest.tableHash || null };
+  const stamp = delistedBundleStamp(manifest);
   let bundle = null;
   budget.consumeClassB(1, "GET bundle cache");
   const cbuf = await driver.get(cacheKey);
@@ -122,7 +130,7 @@ async function delistedInventory(survivorLastKeys) {
         if (seg.length < 30) return;
         const last = seg[seg.length - 1];
         const sa = splitAdjustedCloses(seg);
-        const d = fromBars({ ticker, bars: seg });
+        const d = fromDelistedTiingoBars(ticker, seg);
         const wk = new Map();
         sa.forEach((b, i) => { const key = weekKey(b.date); wk.set(key, [b.close, d.tr ? d.tr[i] : null]); });
         /* Lueckenlose Freitage ab der ersten Woche; Wochen ohne Handel null. */

@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "tiingo2-foundation-premerge-qa-1",
+  "scope": "ISOLATED_FOUNDATION_CURRENT_FOLLOWUP_HEAD",
+  "baselineCommit": "41d1381c5bbe3725d817d0bb7878ab2ebbe1d710",
+  "runtime": "Node22.23.3",
+  "quant": {
+    "tests": 2281,
+    "passed": 2281,
+    "failed": 0,
+    "scope": "FINAL_LOCAL_SOURCE_WITH_FIVE_BAR_CHART_CANDIDATE_GATE"
+  },
+  "SEC": {
+    "tests": 486,
+    "passed": 486,
+    "failed": 0
+  },
+  "SECExporter": {
+    "tests": 32,
+    "passed": 32,
+    "failed": 0
+  },
+  "Discover": {
+    "tests": 323,
+    "passed": 319,
+    "skipped": 4,
+    "failed": 0
+  },
+  "relayResourceBudgetAndStrategy": {
+    "tests": 47,
+    "passed": 47,
+    "failed": 0
+  },
+  "nativeCorporateActionTRBenchmarkSurvivorship": {
+    "tests": 60,
+    "passed": 60,
+    "failed": 0
+  },
+  "releaseBuild": "PASS",
+  "releaseSmoke": {
+    "checks": 148,
+    "failures": 0,
+    "certificateScope": "Uncommitted integration tree; not production certificate"
+  },
+  "browser": {
+    "namedJourneyChecks": 12,
+    "passed": 12,
+    "failed": 0,
+    "scope": "LOCAL_DELIVERED_RELEASE_RECHECK_AFTER_TYPED_AAAP_FIX",
+    "hostedQAPending": false,
+    "hostedRun": 37113682132,
+    "hostedStatus": "PASS_ON_PRIOR_507_CODE_SHA",
+    "resourceBudgetChecks": 8,
+    "screenerDecodedBytesDesktopAndMobile": 22216269
+  },
+  "productionWrites": 0,
+  "fullProductizationRebasePerformed": false,
+  "publicationAllowed": false,
+  "independentReview": {
+    "state": "PASS_CURRENT_CODE_AND_PROTECTED_METADATA_DIFF;NEW_STAGING_ARTIFACT_PENDING",
+    "protectedFiles": 44226,
+    "byteDifferences": 10,
+    "focusedNodePassed": 55,
+    "canonicalMarketPythonPassed": 13,
+    "foundAndFixed": [
+      "EXPLICIT_DEBT_VS_PREFERRED_SUFFIX_PRIORITY",
+      "AMERICAN_DEPOSITORY_ADR_SPELLING",
+      "AAAP_TYPED_NO_WEEKLY_SERIES_BROWSER_ASSERTION"
+    ],
+    "explainedProtectedPaths": [
+      "quant/data/universe/instruments/AA.json",
+      "quant/data/universe/instruments/PF.json",
+      "quant/data/universe/search/name/AS.json",
+      "quant/data/universe/search/name/BA.json",
+      "quant/data/universe/search/name/DE.json",
+      "quant/data/universe/search/name/IN.json",
+      "quant/data/universe/search/name/PH.json",
+      "quant/data/universe/search/name/PR.json",
+      "quant/data/universe/search/sym/AA.json",
+      "quant/data/universe/search/sym/PF.json"
+    ],
+    "previousSourceOnlyByteDifferences": 0,
+    "currentFocusedNodePassed": 32
+  },
+  "companyMaster": {
+    "offlineWorkflowRun": 37113757453,
+    "result": "PASS",
+    "publishedShardsReproduced": 646,
+    "changedMetadataSymbols": [
+      "AAPGV",
+      "PFBC"
+    ],
+    "canonicalIdentityChanges": 0,
+    "consumerMembershipChanges": 0
+  },
+  "factorPopulationReplay": {
+    "before": 6288,
+    "after": 6289,
+    "addedTicker": "PFBC",
+    "existingRowsWithChangedNormalization": 5977,
+    "maxExistingScorePointChange": 0.02,
+    "publishedFactorArtifactsChanged": false,
+    "existingRowsWithChangedScoreOrPercentile": 5875
+  },
+  "priorHeadHostedChecks": {
+    "remoteTreeCommit": "507fa883093367520557bd7f7fae42ff2bf86e3d",
+    "quantCI": 37113682163,
+    "SEC": 37113682101,
+    "FX": 37113682085,
+    "companyMaster": 37113757453,
+    "browserAndEightBudgets": 37113682132,
+    "release": 37113682105,
+    "discoverCI": 37113757388,
+    "discoverFrontend": 37113757597,
+    "screener": 37113757332,
+    "superTrader": 37113757474,
+    "results": "ALL_SUCCESS_ON_507_CODE_SHA",
+    "externalVercel": "DEPLOYMENT_RATE_LIMITED_RETRY_IN_24_HOURS"
+  },
+  "shortHistoryProductGate": {
+    "candidateTicker": "CHWM",
+    "actualProviderBars": 2,
+    "canonicalChartProjectionMinimumBars": 5,
+    "candidateSearchAndWatchlistStillAllowed": true,
+    "candidateChartNowBlocked": true,
+    "reasonCode": "INSUFFICIENT_CHART_HISTORY",
+    "targetedTestsPassed": 24,
+    "latestCodeHostedQAPending": true
+  },
+  "currentMainIntegration": {
+    "newMainCommit": "41d1381c5bbe3725d817d0bb7878ab2ebbe1d710",
+    "mainChanges": 24,
+    "conflicts": 0,
+    "superTraderPathsChangedByFoundation": 0,
+    "protectedMetadataPathsChangedByFoundation": 10,
+    "fullHostedRerunPending": true
+  }
+}

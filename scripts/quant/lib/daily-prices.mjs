@@ -33,16 +33,22 @@ export function fromBars(payload, opts = {}) {
   const w = Canonical.fromPriceBars(bars, actions, { instrumentId: payload.ticker, source: "tiingo", sourceRevision: payload.updatedAt, currency: payload.currency || "USD", exchange: payload.exchange || "US" });
   const SA = w.SPLIT_ADJUSTED, TR = w.TOTAL_RETURN || null;
   const legacyTotalReturn = !!TR && bars.length > 0 && bars.every((_, i) => TR.close[i] > 0);
-  const trVerdict = MarketQuality.totalReturnVerdict(bars, opts);
+  // Provider metadata selects Tiingo's ex-close reinvestment semantics.
+  // Explicit caller options win; unidentified/generic payloads retain the
+  // shared contract's prior-close default.
+  const provider = String(payload.provider || payload.provenance?.provider || payload.provenance?.source || "").toLowerCase();
+  const trOptions = provider === "tiingo" ? { dividendConvention: "TIINGO_REINVESTMENT_CLOSE", ...opts } : opts;
+  const trVerdict = MarketQuality.totalReturnVerdict(bars, trOptions);
   const totalReturn = legacyTotalReturn && trVerdict.confirmed;
   return { dates: bars.map((b) => b.date), close: Float64Array.from(SA.close), high: Float64Array.from(SA.high), tr: totalReturn ? Float64Array.from(TR.close) : null, totalReturn, legacyTotalReturn, trVerdict };
 }
 
-export function dailyOf(securityId, workDir, { allowPublicPriceOnly = false } = {}) {
+export function dailyOf(securityId, workDir, { allowPublicPriceOnly = false, ...opts } = {}) {
+  const tiingoOptions = { dividendConvention: "TIINGO_REINVESTMENT_CLOSE", ...opts };
   const priv = workDir ? join(workDir, "tiingo", "daily", securityId + ".json") : null;
-  if (priv && existsSync(priv)) return { source: "CANONICAL_HISTORY", ...fromBars(JSON.parse(readFileSync(priv, "utf8"))) };
+  if (priv && existsSync(priv)) return { source: "CANONICAL_HISTORY", ...fromBars(JSON.parse(readFileSync(priv, "utf8")), tiingoOptions) };
   const golden = join(ROOT, "quant/data/market/golden-preview/daily", securityId + ".json");
-  if (existsSync(golden)) return { source: "GOLDEN_PREVIEW", ...fromBars(JSON.parse(readFileSync(golden, "utf8"))) };
+  if (existsSync(golden)) return { source: "GOLDEN_PREVIEW", ...fromBars(JSON.parse(readFileSync(golden, "utf8")), tiingoOptions) };
   if (!allowPublicPriceOnly) return null;
   const pub = join(ROOT, "quant/data/market/discover-series", securityId + ".json");
   if (!existsSync(pub)) return null;

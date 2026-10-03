@@ -127,10 +127,10 @@ test("die Hülle entscheidet vor dem Inhalt - ein Vorzugs-ETF ist ein Fonds", ()
   /* Ein ADR nennt sich ADR. */
   const adr = klassifiziere("WuXi PharmaTech Cayman Inc. ADR");
   assert.equal(adr, "ADR");
-  /* Eine Hinterlegung ohne weitere Angabe bleibt eine Hinterlegung - besser
-     als Stammaktie. */
+  /* Bare depositary shares can represent domestic preferred stock
+     (WAFDP/MNSBP). Only affirmative American/receipt evidence proves ADR. */
   const blank = klassifiziere("Some Issuer Depositary Shares");
-  assert.equal(blank, "ADR");
+  assert.equal(blank, "UNKNOWN");
   /* Und die Hülle vor dem Inhalt. */
   const etf = klassifiziere("Cohen & Steers Short Duration Preferred AND Income Active ETF", "ETF");
   assert.equal(etf, "ETF", "ein Vorzugs-ETF als " + etf);
