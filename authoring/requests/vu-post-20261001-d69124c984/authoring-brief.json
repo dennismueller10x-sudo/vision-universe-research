@@ -1,0 +1,643 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "production_authoring_request",
+  "request_type": "FULL_CREATIVE",
+  "creative_format": "CAROUSEL",
+  "visual": {
+    "mode": "GENERATE_NEW_ASSET",
+    "regeneration_allowed": true
+  },
+  "test_fixture": false,
+  "brief_id": "brief_e4f40a2bcf6a6353",
+  "content_id": "vu-post-20261001-d69124c984",
+  "attempt": 1,
+  "supersedes_attempt": null,
+  "attempt_reason": null,
+  "created_at": "2026-10-01T13:54:03.976Z",
+  "trigger": "AUTO",
+  "brand": "Vision Universe",
+  "language": "de",
+  "channel": "instagram",
+  "format": "carousel",
+  "role": "Du bist Social Editor, Creative Director und Visual Designer von Vision Universe.",
+  "objective": "Recherchiere die aktuell relevantesten Boersen-, Aktien-, Unternehmens-, Makro-, Technologie- und Finanznachrichten und finde daraus selbststaendig die beste Story fuer einen Vision-Universe-Post. Das Recherchepaket unten ist Startmaterial: pruefe die Storys an der Originalquelle, suche ergaenzend selbst und nimm eine bessere Story, wenn du eine findest. Kannst du in diesem Lauf keine Webseiten oeffnen, arbeite ausschliesslich mit dem Paket (Originalartikel-Auszuege sind enthalten) und melde das ehrlich in research.web_access. Verstehe zuerst, was fuer Anleger daran wirklich interessant ist. Entwickle daraus eine starke deutsche Social Story. Erwaege mehrere unterschiedliche Hook-Richtungen und waehle die staerkste. Schreibe eine hochwertige deutsche Caption und bis zu 5 Hashtags. Plane ein zusammenhaengendes Carousel (Standard: 3 Slides) in der Designsprache der Referenzbilder. Erzeuge in diesem Auftrag das Cover (Slide 1) als vollendetes, finales 4:5-Creative und beschreibe Slide 2 und 3 so vollstaendig, dass sie ohne neue Redaktion umgesetzt werden koennen. Ziel: ein Vision-Universe-Post, den ein deutscher Anleger im Feed anhaelt und den der Owner freiwillig posten wuerde.",
+  "audience": "Deutschsprachige Anleger, die aktuelle Markt-, Unternehmens- und Technologieentwicklungen verfolgen",
+  "research": {
+    "mode": "WORK_WEB_RESEARCH",
+    "instruction": "Nicht die erste News nehmen. Pruefe mehrere aktuelle Storys und bewerte sie redaktionell: Aktualitaet, Anlegerrelevanz, Ueberraschung, Verstaendlichkeit, Neuigkeitswert, Diskussions-, Share- und Save-Potenzial, visuelles Potenzial, Staerke der Belege. Keine Story nehmen, nur weil sie leicht zu verarbeiten ist. Moegliche Felder (nicht abschliessend): Aktien, Unternehmen, Earnings, Maerkte, Makro, Zinsen, Inflation, Rohstoffe, KI, Halbleiter, Cloud, Rechenzentren, Cybersecurity, Robotik, Mobilitaet, Energie, Zukunftstechnologien, ETFs, aussergewoehnliche Unternehmensentwicklungen.",
+    "honesty": "Gib in `research.web_access` ehrlich an, ob du in diesem Lauf wirklich Webseiten geoeffnet hast, und je Quelle `opened_by_agent`. Keine Behauptung von Recherche, die nicht stattgefunden hat.",
+    "no_material_rule": null,
+    "do_not_repeat": "Die URLs in `package.already_covered_urls` wurden bereits behandelt - keine davon erneut als Hauptstory.",
+    "owner_topic": null,
+    "package": {
+      "generated_at": "2026-10-01T13:54:03.976Z",
+      "note": "Startmaterial, keine Vorauswahl. Die Reihenfolge sortiert nur nach Frische und Belegdichte - welche Story erzaehlt wird, entscheidet der Creative Agent.",
+      "feeds_checked": [
+        {
+          "source": "MarketWatch Top Stories",
+          "ok": true,
+          "items": 10
+        },
+        {
+          "source": "CNBC Top News",
+          "ok": true,
+          "items": 30
+        },
+        {
+          "source": "Yahoo Finance",
+          "ok": true,
+          "items": 49
+        },
+        {
+          "source": "Investing.com News",
+          "ok": true,
+          "items": 10
+        },
+        {
+          "source": "Seeking Alpha Market Currents",
+          "ok": true,
+          "items": 7
+        },
+        {
+          "source": "Nasdaq Markets",
+          "ok": false,
+          "items": 0
+        },
+        {
+          "source": "tagesschau Wirtschaft",
+          "ok": true,
+          "items": 26
+        },
+        {
+          "source": "Handelsblatt Finanzen",
+          "ok": true,
+          "items": 20
+        }
+      ],
+      "stories": [
+        {
+          "id": "s1",
+          "title": "Dow Jones, S&P 500, Nasdaq: Wall Street schließt uneinheitlich, trotz starker Tech-Werte",
+          "source": "Handelsblatt Finanzen",
+          "url": "https://www.handelsblatt.com/finanzen/maerkte/marktberichte/dow-jones-sp-500-nasdaq-wall-street-schliesst-uneinheitlich-trotz-starker-tech-werte/100258689.html",
+          "published_at": "2026-09-30T20:00:26.000Z",
+          "age_hours": 17.9,
+          "description": "Wichtige Konjunkturdaten verhelfen der US-Börse in Teilen zu einer Trendwende. Die Zinserwartungen bleiben dennoch konstant: Anleger rechnen mit einem weiteren Zinsschritt der Fed.",
+          "extracted_numbers": [
+            {
+              "value": "500",
+              "unit": null,
+              "sentence": "Dow Jones, S&P 500, Nasdaq: Wall Street schließt uneinheitlich, trotz starker Tech-Werte."
+            }
+          ],
+          "article_excerpt": "Düsseldorf. Nachdem die großen Indizes an den US-Börsen diese Woche bisher nur Verluste wegstecken mussten, reagierten sie am Mittwoch zumindest gemischt auf einen wichtigen Konjunkturindikator.\n\nDie Termindichte war am Mittwoch hoch: Das US-Handelsministerium veröffentlichte den Preisindex für die persönlichen Konsumausgaben PCE. Der Bericht über offene Stellen in der Privatwirtschaft im September wurde ebenso veröffentlicht.\n\nDazu äußern sich im Laufe der Restwoche sechs Fed-Redner. Am Freitag folgen die Arbeitsmarktzahlen der US-Regierung, die auch die Stellenentwicklung im Staatssektor umfassen.\n\nDer PCE verharrte im August bei 3,4 Prozent, auf dem gleichen Stand wie auch schon in den beiden Vormonaten. Analysten waren noch davon ausgegangen, dass der Index, der das bevorzugte Inflationsmaß der US-Notenbank Federal Reserve darstellt, steigen würde.\n\nDer PCE misst, wie viel private Haushalte in den USA tatsächlich für Waren und Dienstleistungen ausgeben – und wie sich diese Preise verändern. Anders als der Verbraucherpreisindex (CPI), der als offizielle US-Inflationsrate gilt, berücksichtigt der PCE auch Ausgaben, die nicht direkt von den Haushalten bezahlt werden, etwa Krankenversicherungsleistungen des Arbeitgebers.\n\nIntuitiv, schnell und immer aktuell - jetzt Handelsblatt App installieren.",
+          "article_meta_description": "Wichtige Konjunkturdaten verhelfen der US-Börse in Teilen zu einer Trendwende. Die Zinserwartungen bleiben dennoch konstant: Anleger rechnen mit einem weiteren Zinsschritt der Fed.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 1316,
+            "note": null
+          }
+        },
+        {
+          "id": "s2",
+          "title": "10-year Treasury yield hits highest level since 2002 as global bond rout gathers pace",
+          "source": "CNBC Top News",
+          "url": "https://www.cnbc.com/2026/10/01/us-treasury-bond-yield.html",
+          "published_at": "2026-10-01T10:22:44.000Z",
+          "age_hours": 3.5,
+          "description": "Treasury yields were higher on Thursday amid a global sell-off in government debt.",
+          "extracted_numbers": [
+            {
+              "value": "10",
+              "unit": null,
+              "sentence": "10-year Treasury yield hits highest level since 2002 as global bond rout gathers pace."
+            },
+            {
+              "value": "2002",
+              "unit": null,
+              "sentence": "10-year Treasury yield hits highest level since 2002 as global bond rout gathers pace."
+            }
+          ],
+          "article_excerpt": "U.S. Treasury yields hit their highest level in more than two decades on Thursday as a global bond sell-off deepened.\n\nThe 10-year Treasury yield breached a level last seen in April 2002, rising 4 basis points to 5.3338%, according to LSEG data. The figure is key to rates for mortgage borrowing, auto loans and credit card debt.\n\nThe yield on the 30-year Treasury bond jumped 3 basis points to 5.6702%, its highest level since July 2002. The 2-year yield was 2 basis points higher at 4.91%.\n\nYields and prices move inversely. One basis point equals 0.01%.\n\nGovernment borrowing costs rose around the world on Thursday, continuing a months-long trend as investors express concerns over a lack of political action to tackle fiscal deficits, while inflation remains sticky and interest rates rise.\n\nMajor economies face \"persistently large deficits and rising interest expenses — challenges long associated with debt-distressed emerging market sovereigns,\" the Institute of International Finance said last week .\n\nJapan's 10-year yield was last seen at 3.126%, the highest level in three decades. Japan's globally influential debt has come under pressure from a weaker yen and rate hikes by the Bank of Japan .\n\nThe yield on the German 10-year bund, the benchmark for the euro area, was up 4 basis points at 3.6179% — its highest since 2008. Elsewhere in Europe, the French 10-year popped 11 basis points to 4.9501%, Italy's 10-year was up 10 basis points to 4.7171%, while the U.K.'s 10-year yield was up 5 basis points to 5.483%.\n\nBonds are increasingly moving in lockstep with oil prices , which have been turbulent amid the U.S. and Israel's war with Iran obstructing crude exports from the Middle East. Crude oil prices were higher on Thursday , with international benchmark Brent Crude back above $100 a barrel.\n\n\"We could see [bond] buyers come in effectively to take advantage of those yields, which would have the effect of causing them to go down, but also one of the things that has kept the volatility in those yields in the long end of the curve has been what's going on with oil, what's going on with inflation,\" Nomi Prins, founder of Prinsights Global, told CNBC's \"Squawk Box Europe\" on Thursday.\n\nBut sovereign wealth funds and central banks, among the main long-term holders of Treasury debt, are unlikely to do this, Prins said.\n\n\"We could see movement ... in Treasury yields going down if oil prices go down significantly, if there's a resolution\" in the Middle East, Prins added.",
+          "article_meta_description": "Treasury yields were higher on Thursday amid a global sell-off in government debt.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 2499,
+            "note": null
+          }
+        },
+        {
+          "id": "s3",
+          "title": "Geldanlage: BIP-gewichtete ETFs versprechen mehr Streuung – bergen aber ein neues Risiko",
+          "source": "Handelsblatt Finanzen",
+          "url": "https://www.handelsblatt.com/finanzen/anlagestrategie/fonds-etf/geldanlage-neuer-etf-mit-bip-gewichtung-was-das-anlegern-bringt/100256780.html",
+          "published_at": "2026-10-01T09:15:00.000Z",
+          "age_hours": 4.7,
+          "description": "Ein Amundi-Fonds halbiert den US‑Anteil. Statt nach Marktkapitalisierung stellt das Produkt Aktienmärkte nach Wirtschaftskraft zusammen. Das schafft aber neue Probleme.",
+          "extracted_numbers": [],
+          "article_excerpt": "Frankfurt. Standard-Börsenfonds folgen meist einer simplen Regel: Je höher der Wert der frei gehandelten Aktien, desto größer der Anteil am Portfolio. Steigen etwa US-Titel stärker als jene aus dem Rest der Welt, wächst auch das US‑Gewicht. Beim Industrieländerindex MSCI World beträgt es aktuell mehr als 70 Prozent.\n\nDer französische Fondsriese Amundi bietet Anlegerinnen und Anlegern seit einigen Wochen eine Alternative: einen nach dem Bruttoinlandsprodukt (BIP) gewichteten Welt-ETF. Das mindert das Konzentrationsrisiko, vor allem am US‑Aktienmarkt. Experten sehen aber neue Probleme – und eine Alternative.\n\nIntuitiv, schnell und immer aktuell - jetzt Handelsblatt App installieren.",
+          "article_meta_description": "Statt nach Marktkapitalisierung stellt ein neuer Welt-ETF Aktienmärkte nach Wirtschaftskraft zusammen. Das halbiert den US-Anteil, schafft aber neue Probleme.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 689,
+            "note": null
+          }
+        },
+        {
+          "id": "s4",
+          "title": "Energieverbrauch: Anteil von Ökostrom steigt auf Rekordwert",
+          "source": "tagesschau Wirtschaft",
+          "url": "https://www.tagesschau.de/wirtschaft/energie/oekostrom-wind-sonne-wasserkraft-rekord-100.html",
+          "published_at": "2026-10-01T07:56:39.000Z",
+          "age_hours": 6,
+          "description": "In den ersten neun Monaten des Jahres betrug der Anteil von Ökostrom am gesamten Stromverbrauch fast 61 Prozent. Das ist so viel wie nie. Gleichzeitig stieg aber auch der Strombedarf.",
+          "extracted_numbers": [
+            {
+              "value": "61",
+              "unit": "Prozent",
+              "sentence": "In den ersten neun Monaten des Jahres betrug der Anteil von Ökostrom am gesamten Stromverbrauch fast 61 Prozent."
+            }
+          ],
+          "article_excerpt": "In den ersten neun Monaten des Jahres betrug der Anteil von Ökostrom am gesamten Stromverbrauch fast 61 Prozent. Das ist so viel wie nie. Gleichzeitig stieg aber auch der Strombedarf.\n\nErneuerbare Energien haben in Deutschland in den ersten drei Quartalen des Jahres einen Anteil von 60,7 Prozent des Stromverbrauchs gedeckt. Das geht aus Berechnungen des Zentrums für Sonnenenergie- und Wasserstoff-Forschung Baden-Württemberg (ZSW) und des Bundesverbands der Energie- und Wasserwirtschaft (BDEW) hervor.\n\nDazu zählen Windenergie, Sonnenenergie, Biomasse, Wasserkraft sowie der organische Anteil des Abfalls. Im Vergleich zum Vorjahreszeitraum gab es den Angaben zufolge ein Plus von vier Prozentpunkten.\n\nFast 60 Prozent des eingespeisten Stroms stammten aus erneuerbaren Quellen. mehr\n\nInsgesamt erzeugten Erneuerbare-Energien-Anlagen damit von Januar bis September 237,5 Milliarden Kilowattstunden Strom. Das sind 8,7 Prozent mehr als im Vorjahreszeitraum.\n\nDiese Entwicklung liegt den Angaben zufolge vor allem an deutlich höherer Stromerzeugung aus Windenergie an Land und auf See sowie aus Photovoltaik. Weil es wenig regnete, wurde dagegen weniger Strom aus Wasserkraft gewonnen. Auch die Erzeugung aus Biomasse ging leicht zurück.\n\nVom politischen Ziel, bis zum Jahr 2030 einen Anteil von 80 Prozent aus Erneuerbaren Energien zu erreichen, ist man damit allerdings noch ein Stück entfernt. Im ersten Halbjahr war Strom in Deutschland nach Angaben des Statistischen Bundesamts zu 59,1 Prozent aus Erneuerbaren Energien produziert worden - ebenfalls so viel wie noch nie zuvor.\n\nStartschuss für zwei Großrechenzentren: Die Schwarz-Gruppe baut in Lübbenau, die Telekom in München. mehr\n\nGleichzeitig stieg der Bruttostromverbrauch leicht. Die Wissenschaftler des ZSW erwarten wegen des Klimawandels auch künftig einen steigenden Strombedarf. Steigende Temperaturen dürften dafür sorgen, dass vermehrt Klimaanlagen genutzt würden. Dazu kommen laut Experten die vermehrte Anwendung von Künstlicher Intelligenz und Rechenzentrumsleistungen.\n\nDieses Thema im Programm: RBB24 Inforadio | Nachrichten | 08.09.2026 | 09:45 Uhr NDR 2 | Nachrichten | 01.10.2026 | 08:00 Uhr",
+          "article_meta_description": "In den ersten neun Monaten des Jahres betrug der Anteil von Ökostrom am gesamten Stromverbrauch fast 61 Prozent. Das ist so viel wie nie. Gleichzeitig stieg aber auch der Strombedarf.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 2170,
+            "note": null
+          }
+        },
+        {
+          "id": "s5",
+          "title": "My wife never went back to work after raising our kids. Do I have to share my retirement savings 50/50?",
+          "source": "MarketWatch Top Stories",
+          "url": "https://www.marketwatch.com/story/my-wife-never-went-back-to-work-after-raising-our-kids-do-i-have-to-share-my-retirement-savings-50-50-f0727f82?mod=mw_rss_topstories",
+          "published_at": "2026-10-01T13:15:00.000Z",
+          "age_hours": 0.7,
+          "description": "“For 14 years I have gotten up every morning and gone to work while she has been free to pursue whatever interested her.”",
+          "extracted_numbers": [
+            {
+              "value": "50",
+              "unit": null,
+              "sentence": "Do I have to share my retirement savings 50/50?"
+            },
+            {
+              "value": "14",
+              "unit": null,
+              "sentence": "“For 14 years I have gotten up every morning and gone to work while she has been free to pursue whatever interested her.”"
+            }
+          ],
+          "article_excerpt": null,
+          "article_meta_description": null,
+          "article_fetch": {
+            "ok": false,
+            "status": 401,
+            "excerpt_chars": 0,
+            "note": "Kein Artikeltext lesbar (Paywall, Bot-Sperre oder Skriptseite) - nur Titel/Teaser."
+          }
+        },
+        {
+          "id": "s6",
+          "title": "These bond strategies can help you get a safe 5% return on your cash",
+          "source": "MarketWatch Top Stories",
+          "url": "https://www.marketwatch.com/story/these-bond-strategies-can-help-you-get-a-safe-5-return-on-your-cash-5fa45ccd?mod=mw_rss_topstories",
+          "published_at": "2026-10-01T13:52:00.000Z",
+          "age_hours": 0,
+          "description": "With U.S. Treasury yields on the rise, financial planners say they’re seeing a growing interest in bonds, especially among investors looking to secure fixed income in retirement.",
+          "extracted_numbers": [
+            {
+              "value": "5",
+              "unit": "%",
+              "sentence": "These bond strategies can help you get a safe 5% return on your cash."
+            }
+          ],
+          "article_excerpt": null,
+          "article_meta_description": null,
+          "article_fetch": {
+            "ok": false,
+            "status": 401,
+            "excerpt_chars": 0,
+            "note": "Kein Artikeltext lesbar (Paywall, Bot-Sperre oder Skriptseite) - nur Titel/Teaser."
+          }
+        },
+        {
+          "id": "s7",
+          "title": "Anleihen: Kursverlust, massiver Renditeanstieg: US-Staatsbonds erleben ein fatales Quartal",
+          "source": "Handelsblatt Finanzen",
+          "url": "https://www.handelsblatt.com/finanzen/maerkte/anleihen/anleihen-us-staatsbonds-erleben-ein-fatales-quartal/100258428.html",
+          "published_at": "2026-10-01T08:39:32.000Z",
+          "age_hours": 5.2,
+          "description": "Die Kurse von US-Staatsanleihen fallen weiter, die Renditen legen zu. Die Rendite der zehnjährigen US-Anleihe stieg im dritten Quartal so stark wie zuletzt 1994. Was das für die Märkte bedeutet.",
+          "extracted_numbers": [
+            {
+              "value": "1994",
+              "unit": null,
+              "sentence": "Die Rendite der zehnjährigen US-Anleihe stieg im dritten Quartal so stark wie zuletzt 1994."
+            }
+          ],
+          "article_excerpt": "New York, Düsseldorf. Die Renditen am US-Anleihemarkt sind im dritten Quartal so stark gestiegen wie seit 30 Jahren nicht mehr. Das zeigen Daten des britischen Finanzdienstes LSEG.\n\nFür die marktbestimmende zehnjährige Staatsanleihe legte sie von Juli bis September um 0,87 Prozentpunkte zu – so stark wie zuletzt 1994. Allein im September zog die Rendite um mehr als 0,5 Prozentpunkte an. Am Donnerstag erreichte sie mit gut 5,3 Prozent den höchsten Stand seit 2002.\n\nDa sich Kurse und Renditen gegenläufig bewegen, geht der Renditeanstieg mit einem Kursverfall einher. Analyst Jim Reid von der Deutschen Bank erklärt mit Blick auf die September-Performance: „Für festverzinsliche Wertpapiere war es somit ein katastrophaler Monat.“\n\nDer Ausverkauf am Anleihemarkt beschränkt sich aber nicht auf die USA .\n\nIntuitiv, schnell und immer aktuell - jetzt Handelsblatt App installieren.",
+          "article_meta_description": "Die Kurse von US-Staatsanleihen fallen weiter, die Renditen legen zu. Die Rendite der zehnjährigen US-Anleihe stieg im dritten Quartal so stark wie zuletzt 1994. Was das für die Märkte bedeutet.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 882,
+            "note": null
+          }
+        },
+        {
+          "id": "s8",
+          "title": "Treasury launches student loan support center as new data show 9.3 million borrowers in default",
+          "source": "CNBC Top News",
+          "url": "https://www.cnbc.com/2026/09/30/student-loan-default-support-center.html",
+          "published_at": "2026-09-30T22:15:29.000Z",
+          "age_hours": 15.6,
+          "description": "The Trump administration announced on Wednesday that it was launching a \"Default Loans Support Center\" for student loan borrowers who've fallen behind.",
+          "extracted_numbers": [
+            {
+              "value": "9.3",
+              "unit": null,
+              "sentence": "Treasury launches student loan support center as new data show 9.3 million borrowers in default."
+            }
+          ],
+          "article_excerpt": "The Trump administration announced Wednesday that it is launching a \" Default Loans Support Center \" as more student loan borrowers fall behind on their payments.\n\nThe new online portal will provide defaulted borrowers with information and options to get current on their loans, according to a press release from the U.S. Department of the Treasury.\n\nThe administration announced in March that it will task the Treasury with collecting on defaulted student loans . President Donald Trump has promised to dismantle the Education Department and transfer its authority to other federal agencies and the states .\n\n\"Under President Trump, Treasury and the Department of Education are restoring fiscal responsibility to our nation's $1.7 trillion federal student loan portfolio,\" said Treasury Secretary Scott Bessent in a statement.\n\nAs of June 30, roughly 9.3 million federal student loan borrowers were in default, up from around 6.2 million at the same time in 2016, according to new Education Department data released earlier this month. That's a roughly 50% increase over the last decade.\n\nStudent loan defaults are surging due to the end of the Covid-era payment pause and the termination of the Biden administration's SAVE plan , which offered very low monthly bills to millions of borrowers. The unemployment rate among recent college graduates is also rising.\n\nThe Treasury Department has been involved in student loan collection efforts in the past. But the department itself found it collected at lower rates than private companies, according to an archived 2016 Treasury blog post viewable through the Internet Archive's Wayback Machine.\n\nBorrowers can be considered in default when they haven't made a scheduled payment in at least 270 days .",
+          "article_meta_description": "The Trump administration announced on Wednesday that it was launching a \"Default Loans Support Center\" for student loan borrowers who've fallen behind.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 1750,
+            "note": null
+          }
+        },
+        {
+          "id": "s9",
+          "title": "Preis für Deutschlandticket steigt im Januar auf 66,80 Euro",
+          "source": "tagesschau Wirtschaft",
+          "url": "https://www.tagesschau.de/wirtschaft/verbraucher/deutschlandticket-preis-110.html",
+          "published_at": "2026-09-30T14:06:15.000Z",
+          "age_hours": 23.8,
+          "description": "Das Deutschlandticket wird erneut teurer. Es kostet ab Januar 66,80 Euro und damit 3,80 Euro mehr als bisher. An der neuen Preissteigerung gab es vorab schon deutliche Kritik von Fahrgast- und Umweltverbänden.",
+          "extracted_numbers": [
+            {
+              "value": "66,80",
+              "unit": "Eur",
+              "sentence": "Preis für Deutschlandticket steigt im Januar auf 66,80 Euro."
+            },
+            {
+              "value": "3,80",
+              "unit": "Eur",
+              "sentence": "Es kostet ab Januar 66,80 Euro und damit 3,80 Euro mehr als bisher."
+            }
+          ],
+          "article_excerpt": "Das Deutschlandticket wird erneut teurer. Es kostet ab Januar 66,80 Euro und damit 3,80 Euro mehr als bisher. An der neuen Preissteigerung gab es vorab schon deutliche Kritik von Fahrgast- und Umweltverbänden.\n\nDas Deutschlandticket wird mit Beginn des kommenden Jahres teurer. Statt 63 Euro wie bisher kostet es vom 1. Januar 2027 an 66,80 Euro. Dies sei das Ergebnis der neuen Kostenberechnung, teilte die Verkehrsministerkonferenz der Länder mit.\n\nDas Jobticket, eine rabattierte Variante des Deutschlandtickets, kostet demnach künftig 63,46 Euro. Das Semesterticket steigt auf 40,08 Euro.\n\nIn dem Koordinierungsrat sitzen die Abteilungsleiter der Verkehrsministerien der Länder und des Bundes.\n\nBerechnet wurde der Preis erstmals anhand eines Kostenindexes, der unter anderem Personal-, Energie- und Betriebskosten berücksichtigt. Das für das Deutschlandticket gegründete Unternehmen D-Tix nahm die Berechnungen vor. Abschließend beriet darüber dann der \"Koordinierungsrat Deutschlandticket\", zu dem Bund, Länder, kommunale Spitzenverbände und Verkehrsbranche gehören.\n\nSchuld daran sind vor allem die massiv gestiegenen Energiepreise. mehr\n\nEs ist bereits das dritte Mal, dass das Ticket teurer wird. Ursprünglich hatte es 49 Euro pro Monat gekostet. 2025 war der Preis auf 58 Euro und in diesem Jahr auf 63 Euro gestiegen.\n\nAktuell nutzen etwa 14,5 Millionen Menschen das Deutschlandticket, mit dem der öffentliche Regional- und Nahverkehr bundesweit genutzt werden kann. Bund und Länder geben zur Finanzierung des Tickets je 1,5 Milliarden Euro pro Jahr dazu, um Verluste für Verkehrsbetriebe einzugrenzen.\n\nDer Städte- und Gemeindebund plädiert hingegen für eine vorübergehende Senkung der Mehrwertsteuer. mehr\n\nKritik am möglichen Preisaufschlag kam schon vorab vom Bund für Umwelt und Naturschutz Deutschland (BUND). Es sei nicht zu akzeptieren, dass die Bundesregierung 2,5 Milliarden Euro Steuergeld für einen weiteren \"Tankrabatt\" freimache, aber den Preis für das Deutschlandticket nicht wenigstens stabil halten könne. \"Die ständigen Diskussionen um das Ticket und seinen Preis sind ermüdend und erzeugen Unsicherheiten. Die Menschen brauchen langfristige Planbarkeit, um ihr Mobilitätsverhalten dauerhaft zu ändern\", mahnte Jens Hilgenberg, Leiter für Verkehrspolitik beim BUND.\n\nDer Ehrenvorsitzende des Fahrgastverbandes Pro Bahn, Detlef Neuß, betonte: \"Es reicht jetzt erst mal.\" Einen weiteren Preisanstieg nehme der Verband nur \"zähneknirschend\" hin. Auch Neuß verwies auf den \"Tankrabatt\", angesichts dessen es \"auch einen Rabatt für Nutzer des Deutschlandtickets\" geben sollte.\n\nAuch NRW-Verkehrsminister Oliver Krischer kritisierte die Preissteigerung. \"Die Bundesregierung hat im Koalitionsvertrag Preisstabilität für das Deutschlandticket versprochen\", sagte der Grünen-Politiker der Rheinischen Post . Dass nun ein automatisierter Mechanismus über den Preis bestimmt, sei schade. \"Je mehr Menschen es nutzen, desto stabiler kann der Preis langfristig bleiben und desto stärker wird das Angebot\", betonte Krischer.\n\nDieses Thema im Programm: NDR Info | Nachrichten | 30.09.2026 | 15:10 Uhr, Das Erste | tagesschau | 30.09.2026 | 20:00 Uhr",
+          "article_meta_description": "Das Deutschlandticket wird erneut teurer. Es kostet ab Januar 66,80 Euro und damit 3,80 Euro mehr als bisher. An der neuen Preissteigerung gab es vorab schon deutliche Kritik von Fahrgast- und Umweltverbänden.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 3164,
+            "note": null
+          }
+        },
+        {
+          "id": "s10",
+          "title": "Inside Wealth: Racehorse market breaks records riding high on tax breaks, stock market gains",
+          "source": "CNBC Top News",
+          "url": "https://www.cnbc.com/2026/10/01/racehorse-market-breaks-records-on-tax-breaks-stock-market-gains.html",
+          "published_at": "2026-10-01T13:45:26.000Z",
+          "age_hours": 0.1,
+          "description": "Keeneland's 2026 September Yearling Sale, the world's largest thoroughbred auction, grossed a record $536.7 million.",
+          "extracted_numbers": [
+            {
+              "value": "2026",
+              "unit": null,
+              "sentence": "Keeneland's 2026 September Yearling Sale, the world's largest thoroughbred auction, grossed a record $536.7 million."
+            },
+            {
+              "value": "536.7",
+              "unit": null,
+              "sentence": "Keeneland's 2026 September Yearling Sale, the world's largest thoroughbred auction, grossed a record $536.7 million."
+            }
+          ],
+          "article_excerpt": "The world's largest thoroughbred auction broke records this year despite concerns that the Gulf conflict would deter deep-pocketed racehorse buyers from the Middle East.\n\nThe Keeneland September Yearling Sale in Kentucky grossed $536.7 million this year, surpassing last year's record by about $5 million. At the two-week auction, which ended Sept. 26, 70 yearlings sold for at least $1 million, up from 56 last year, which broke a 19-year record. The average yearling price increased nearly 7% to $187,933.\n\nThe top lot, a dark bay colt with white socks, was bought for $3.7 million, by a group of investors including paper mogul Peter Brant. The colt was sired by champion stallion Into Mischief, who has produced three Kentucky Derby winners.\n\nHorse breeder and accountant Len Green said tax breaks from the \"one big beautiful bill\" was an important driver of the strong auction results in recent years. At last year's September Sale , which took place two months after OBBBA was signed into law, sales jumped 24% from the year prior.\n\n\"If you happen to be successful and you wanted to have something that gives you a tax deduction and gives you publicity, taking pictures and being in newspapers, et cetera, that kind of thing, the horse business is a pretty damn good investment to make,\" Green said.\n\nOBBBA permanently reinstated 100% bonus depreciation, a tax incentive that allows businesses to write off qualified business property. While bonus depreciation is more commonly associated with commercial real estate and private jets, businesses can write off 100% of a racehorse purchase in the first year of ownership. Racehorse owners can get more bang for their buck by writing off related assets like riding equipment and barns or forming an LLC, Green added.\n\nHe added that while the stock market and private-equity exits have created massive wealth, owning a sports team is still out of reach for many entrepreneurs. The racehorse industry has a much lower price of admission, he said.\n\nShannon Arvin, president and CEO of Keeneland, pointed to other factors, including higher purses in many racing jurisdictions.\n\nBuyers from the Middle East, including members of the ruling families of Dubai and Qatar, have become a prominent presence at the top-end of the thoroughbred market.\n\nBefore the auction, Arvin thought it was possible that the Gulf conflict would deter Middle East buyers. However, it did not appear to impact attendance, she said.\n\n\"We always kind of hold our breath until they get here,\" she said. \"But there wasn't anybody that we're aware of that didn't come because of the conflict.\"\n\nArvin said about a quarter of yearlings were purchased by international buyers, including from Qatar, Saudi Arabia, the United Arab Emirates, and Libya. Keeneland does not break out specific numbers by country.\n\nThe biggest buyer at the auction was a newly formed partnership of four racing partnerships and owners, spending $16.2 million on 20 horses combined. While partnerships have become more popular, they haven't reduced sales in the way that was once feared, Arvin said.\n\n\"What we've actually seen is that these partnerships, because people are joined up, they tend to spend more,\" she said. \"It lets them diversify their investment and have more opportunities for success. And what I found in talking to a lot of those buyers that decide to buy in partnership is that they love the camaraderie of buying with others, of buying with their friends.\"",
+          "article_meta_description": "Keeneland's 2026 September Yearling Sale, the world's largest thoroughbred auction, grossed a record $536.7 million.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 3473,
+            "note": null
+          }
+        }
+      ],
+      "already_covered_urls": [
+        "https://seekingalpha.com/news/4646208-us10y-tops-5_1-percent-marking-its-highest-level-since-2007?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+        "https://www.marketwatch.com/story/my-husband-and-i-are-in-our-50s-and-have-no-kids-we-have-2-million-do-we-need-a-will-62fb422f?mod=mw_rss_topstories",
+        "https://www.destatis.de/DE/Presse/Pressemitteilungen/2026/09/PD26_348_611.html",
+        "https://www.tagesschau.de/wirtschaft/inflation-september-energiepreise-100.html",
+        "https://www.reuters.com/business/german-inflation-accelerates-slightly-more-than-expected-september-2026-09-30/",
+        "https://www.marketwatch.com/story/from-6-eggs-to-50-000-cars-these-charts-show-how-inflation-has-defined-the-past-5-years-3c7b9ab9?mod=mw_rss_topstories",
+        "https://www.cnbc.com/2026/09/25/treasury-yield-buy-bonds.html"
+      ]
+    }
+  },
+  "social_learnings": {
+    "status": "AVAILABLE",
+    "items": [
+      {
+        "id": "format:VIDEO",
+        "n": 10,
+        "statement": "Reels/Videos (n=10 gemessene Posts): Median-Reichweite 25.5, Likes 5, Saves 0, Shares 0."
+      },
+      {
+        "id": "format:CAROUSEL_ALBUM",
+        "n": 12,
+        "statement": "Carousels (n=12 gemessene Posts): Median-Reichweite 9, Likes 4, Saves 0, Shares 0."
+      },
+      {
+        "id": "format:IMAGE",
+        "n": 3,
+        "statement": "Einzelbilder (n=3 gemessene Posts): Median-Reichweite 10, Likes 3, Saves 0, Shares 0."
+      },
+      {
+        "id": "saves-shares",
+        "n": 25,
+        "statement": "Ueber alle 25 gemessenen Posts zusammen: 0 Saves und 0 Shares - weniger als eine solche Interaktion pro Post; Inhalte, die man speichern oder weiterschicken will, sind bisher die groesste Luecke."
+      },
+      {
+        "id": "not-yet-measured",
+        "n": 0,
+        "statement": "Thema, Hook-Art und Carousel-Struktur der frueheren Posts sind noch nicht erfasst - dazu gibt es noch keine belastbaren Learnings."
+      }
+    ],
+    "note": "Feedback aus der Performance frueherer Vision-Universe-Posts, keine Vorgabe. Weiche ab, wenn die aktuelle Story eine bessere redaktionelle Loesung verlangt."
+  },
+  "editorial_process": [
+    "1. Story recherchieren und verstehen: Was ist tatsaechlich passiert? Was ist neu?",
+    "2. Relevanz bestimmen: Warum interessiert das einen Anleger? Was ist ueberraschend?",
+    "3. Social Angle entwickeln: Welche Konsequenz oder Spannung traegt den Post?",
+    "4. Mehrere Hook-Ideen intern erwaegen.",
+    "5. Die staerkste deutsche Hook auswaehlen.",
+    "6. Caption schreiben.",
+    "7. Carousel-Dramaturgie entwickeln.",
+    "8. Erst danach Bilder erzeugen."
+  ],
+  "hook_strategy": {
+    "strategy_id": "vu-carousel-editorial-v1",
+    "hook_type": "carousel_cover_hook_de",
+    "instruction": "Die Hook entsteht aus der Story, nicht mechanisch aus einer Zahl oder Headline. Erwaege intern mehrere wirklich unterschiedliche Richtungen (ueberraschende Erkenntnis, Konsequenz, starke Zahl, Widerspruch, historische Einordnung, Konflikt, belegte provokante Aussage, Frage, Vergleich) - nicht fuenf Varianten desselben Satzes - und waehle selbst die staerkste. Liefere GENAU EINE finale Hook: Deutsch, kurz, sofort verstaendlich, anlegerrelevant, social-first, mobile-first, faktisch korrekt. Die verworfenen Richtungen gehoeren in `hook_exploration`.",
+    "negative_fixtures": [
+      "BÖRSENGANG MIT EXISTENZWARNUNG",
+      "50.000 DOLLAR FÜR EIN AUTO?",
+      "493,78 USD SCHLUSSKURS – MSFT",
+      "420 VON 5954 GEPRÜFTEN TITELN",
+      "10-year U.S. Treasury yield tops ..."
+    ],
+    "negative_fixture_note": "Diese Hooks gelten ausdruecklich NICHT als gelungene Social Hooks: Headline-Verdichtung, isolierte Zahl, Systemsprache, englischer Quelltitel."
+  },
+  "editorial_gate": {
+    "rule": "Bevor du ein Bild erzeugst: waere Hook + Caption auch OHNE Bild bereits ein guter Vision-Universe-Post? Wenn nein, KEIN Bild erzeugen - Story, Angle, Hook und Caption zuerst verbessern. Ein schoenes Bild kaschiert keine schwache Redaktion.",
+    "required": [
+      "story_quality",
+      "hook_standalone_quality",
+      "caption_standalone_quality",
+      "fact_grounding"
+    ]
+  },
+  "caption_guidance": "Eine deutsche Caption fuer den ganzen Beitrag: verstaendlich, informativ, social-tauglich, kompakt, redaktionell hochwertig. Erklaert, was passiert ist, warum es interessant ist, welche belegten Fakten zaehlen und was das fuer Anleger bedeutet. Sie muss auch allein zum Cover funktionieren - keine Wisch-Aufforderung. Keine internen Scores, keine Quant-, Screener- oder Systemsprache, keine erfundenen Fakten, keine Anlageberatung vortaeuschen. Endet mit dem Hinweis, dass es keine Anlageberatung ist.",
+  "hashtag_guidance": "Bis zu 5 relevante Hashtags, dynamisch aus der Story, ohne #-Zeichen im Array. Keine Standardliste, keine internen Systembegriffe.",
+  "art_direction": {
+    "principle": "Kein starres Template. Nicht: jeder Vision-Universe-Post sieht gleich aus. Sondern: jeder Post sieht aus, als kaeme er von derselben hochwertigen Marke. Du entwickelst je Story eigene Layouts, Perspektiven, Bildideen und Kompositionen - auf der Qualitaetsstufe und in der Designsprache der Referenzbilder.",
+    "design_language": "PREMIUM FINANCE EDITORIAL x HIGH-END TECHNOLOGY x MODERN CAMPAIGN DESIGN",
+    "characteristics": [
+      "tiefschwarze bzw. sehr dunkle, hochwertige Grundflaeche",
+      "starke Kontraste",
+      "grosse, selbstbewusste Typografie",
+      "klare Informationshierarchie",
+      "wenige dominante Elemente, kontrollierter Negativraum",
+      "hochwertige Produkt-, Technologie- oder Finanzvisualisierung",
+      "Weiss als primaere Schriftfarbe",
+      "wenige gezielte Akzentfarben - bevorzugt Vision-Universe-Blau; Rot nur, wenn es inhaltlich traegt (z. B. Risiko)",
+      "hochwertige Licht- und Materialwirkung",
+      "klare mobile Lesbarkeit, keine visuelle Ueberladung"
+    ],
+    "not_wanted": [
+      "billige Flat-Vector-Grafiken",
+      "Comic-Poster",
+      "Canva-Look",
+      "klassische Infografik",
+      "Finfluencer-Thumbnail",
+      "ueberladene Collagen",
+      "zehn kleine Zahlen gleichzeitig",
+      "zahlreiche Pfeile, Kaesten und Icons",
+      "generische Stockbilder",
+      "zufaellige KI-Landschaften",
+      "surrealistische Metaphern nur um kreativ zu wirken",
+      "aufgerissene Buecher, Abgruende und aehnliche KI-Klischees, wenn die Story sie nicht traegt",
+      "generische Serverraeume fuer jedes KI-Thema",
+      "Text einfach auf ein beliebiges Bild gelegt"
+    ],
+    "one_idea_per_slide": "ONE SLIDE = ONE IDEA = ONE VISUAL HIERARCHY. Jede Slide hat genau eine dominante Aussage (etwa eine grosse Zahl oder ein kurzer Satz) - nicht sechs Zahlen, drei Headlines, vier Icons, Diagramm und Karte auf derselben Seite.",
+    "typography": "Typografie ist Gestaltungselement. Die Hook darf gross und selbstbewusst sein. Keine Bandwurmsaetze, keine winzige Textwueste, keine schlechte Worttrennung, keine Woerter ueber Bildkanten oder Falze zerlegt, keine drei konkurrierenden Headlines. Auf dem Smartphone muss innerhalb einer Sekunde klar sein: WAS IST DIE AUSSAGE?",
+    "brand_system": "Vision-Universe-Logo auf ALLEN Slides, bevorzugt oben links, innerhalb eines Carousels in identischer Position, Groesse und Sicherheitsabstand. Atlas NUR auf Slide 1 - als Host und Markenfigur hochwertig in die Komposition integriert, nicht wie ein Sticker auf ein fertiges Bild gesetzt.",
+    "carousel_coherence": "Die Slides duerfen unterschiedliche Layouts haben (z. B. Slide 1 Atlas + grosses Motiv + Hook, Slide 2 dominante Zahl + Produkt-/Technologievisual, Slide 3 Split Chance/Risiko) - erwuenscht. Gemeinsam teilen sie Logo-System, Typografie-Familie, Farbwelt, Material- und Lichtqualitaet, Designniveau und visuelle Sprache. Pruefe: lege ich die Slides nebeneinander, erkenne ich sofort EINEN Vision-Universe-Post?",
+    "story_decides_motif": "Die Referenzen definieren die Designsprache, nicht das Motiv. Das Motiv entsteht aus der Story (Halbleiter: Wafer, Lithografie, Chip-Strukturen; Rohstoffe: Material, industrielle Anwendung; Unternehmen: Produkt, Technologie, Infrastruktur, Geschaeftsmodell; Makro: hochwertige, nachvollziehbare finanzielle Visualisierung). Keine mechanische Zuordnung: erst die Story verstehen, dann das Visual Concept entwickeln.",
+    "creative_director": "Das ist ein Rahmen, keine Schablone. Du bleibst Creative Director und entscheidest Komposition, Bildidee, Perspektive, Motiv, Typografie-Hierarchie, den Einsatz von Zahlen und die Layouts von Slide 2 und 3 - innerhalb der Qualitaetswelt der Referenzen.",
+    "success": "Nicht: drei Bilder wurden technisch erzeugt. Sondern: das sieht aus wie ein professionelles Vision-Universe-Carousel, das der Owner freiwillig posten wuerde."
+  },
+  "style_references": {
+    "files": [
+      {
+        "path": "social/brand/style-references/vu-style-ref-01.png",
+        "sha256": "899023720e2ec0446e2cf401dee72ae8aa9c91ae36a94626efe08ce80e9b4890",
+        "width": 1122,
+        "height": 1402,
+        "shows": "Cover: Atlas als Host, dominante Hook, Motiv aus der Story"
+      },
+      {
+        "path": "social/brand/style-references/vu-style-ref-02.png",
+        "sha256": "71210b60cc575e9c8e53f45704c6bda7d08fd5d1060f2712a83b756d792653ad",
+        "width": 1122,
+        "height": 1402,
+        "shows": "Cover-Variante ohne Atlas: eine grosse Aussage ueber einem Story-Motiv"
+      },
+      {
+        "path": "social/brand/style-references/vu-style-ref-03.png",
+        "sha256": "500ffc334a1cfd5baf3fd5d60b59fa6eb49f7bf48d011dd113ecbe74fa1c7679",
+        "width": 1122,
+        "height": 1402,
+        "shows": "Key Insight: eine dominante Zahl, ruhiges Technologie-Motiv, knappe Einordnung"
+      },
+      {
+        "path": "social/brand/style-references/vu-style-ref-04.png",
+        "sha256": "b7b8235ce3b847ec005a1d74713b435c901a48036281f1c62fb79cb78bdc1d53",
+        "width": 1122,
+        "height": 1402,
+        "shows": "Einordnung: Chance/Risiko als Split-Layout, klare Leitfrage"
+      }
+    ],
+    "instruction": "Oeffne und betrachte diese Bilddateien selbst, BEVOR du gestaltest - sie liegen unveraendert im selben Checkout wie dieser Brief. Sie sind die visuelle Qualitaetsreferenz (Art Direction, Typografie, Hierarchie, Komposition, Markenwirkung, Informationsdichte, Atlas- und Logo-Integration). Nicht pixelgenau kopieren - diese Qualitaetswelt treffen.",
+    "not_facts": "Inhalte, Unternehmen, Aktien, Zahlen und Aussagen dieser Bilder sind KEINE Faktenquelle und KEIN Themenvorschlag. Die Story kommt ausschliesslich aus der Recherche.",
+    "check_required": "Gib in `style_references_check` je Referenzdatei { path, dominant_text } an: alle gut lesbaren Textzeilen des Bildes wortwoertlich (Headline und Zeilen darunter). Kannst du eine Datei nicht oeffnen, schreibe dominant_text: null - nichts erfinden.",
+    "delivered_in_checkout": true,
+    "delivery_measurement": "4 Referenzbilder liegen unveraendert im Checkout des Briefs."
+  },
+  "carousel": {
+    "slide_count": "Standard: 3 Slides. Einen vierten nur, wenn die Story ihn wirklich braucht - keine Fuellfolie.",
+    "plan_first": "Plane ZUERST das ganze Carousel als eine Geschichte (`carousel_plan`), dann erst das Bild. Die Slides sind eine Serie, keine unabhaengigen Einzelbilder.",
+    "slides": [
+      {
+        "slide_index": 1,
+        "role": "HOOK / COVER",
+        "task": "Scroll Stop.",
+        "contains": "staerkste deutsche Hook, starkes Hauptmotiv aus der Story, Vision-Universe-Logo, Atlas - moeglichst wenig weiterer Text."
+      },
+      {
+        "slide_index": 2,
+        "role": "KEY INSIGHT",
+        "task": "Die staerkste Information der Story vermitteln: dominante Zahl, Vergleich, ueberraschender Fakt, Entwicklung oder zentrale Erkenntnis.",
+        "contains": "Vision-Universe-Logo, KEIN Atlas."
+      },
+      {
+        "slide_index": 3,
+        "role": "EINORDNUNG",
+        "task": "Warum ist das fuer Anleger relevant? Chance/Risiko, Konsequenz, was jetzt wichtig wird, Vergleich, Ausblick oder die entscheidende Frage.",
+        "contains": "Vision-Universe-Logo, KEIN Atlas."
+      }
+    ],
+    "atlas_contract": "Atlas erscheint AUSSCHLIESSLICH auf Slide 1 - als Host und Markenfigur, natuerlich integriert, nicht aufgeklebt. Nutze die echte Datei brand_assets.atlas; keine neu erfundene Roboterfigur, Gesicht und Mimik wie im Referenzbild.",
+    "logo_contract": "Das echte Vision-Universe-Logo (brand_assets.logo) auf ALLEN Slides, bevorzugt oben links, in identischer Position, Groesse und Safe Area. Kein approximiertes Logo, kein neu generierter Schriftzug.",
+    "text_on_image": "Text im Bild ist Pflicht, vor allem die Hook auf Slide 1. Keine Worttrennung ueber Bildfalze, harte Kanten, Gesichter, Objekte oder Kompositionsbrueche (Negativbeispiel: BÖRSE|NGANG, EXISTENZ|WARNUNG ueber einen Buchfalz)."
+  },
+  "delivery": {
+    "mode": "COVER_FIRST",
+    "deliver_now": "Slide 1 (Cover) als EIN finales Bild. Slide 2 und 3 NICHT zeichnen - keine Mini-Slides auf einer Leinwand, kein Bogen.",
+    "plan_all": "carousel_plan beschreibt ALLE Slides vollstaendig (headline_de, key_content, visual_concept), damit sie spaeter ohne neue Redaktion entstehen koennen.",
+    "why": "Der aktive Work-Vertrag erlaubt ein Asset je Auftrag (PR #300); ein Mehr-Paneel-Bogen haelt die exakten Masse nicht (PR #303). Qualitaet vor Carousel-Mechanik: zuerst EIN perfektes Cover."
+  },
+  "visual_strategy": {
+    "strategy_id": "VU_EDITORIAL_PREMIUM",
+    "instruction": "Premium Finance Editorial x High-End Technology x Modern Campaign Design, in der Qualitaetswelt der Referenzbilder (style_references, art_direction). Eine dominante Aussage je Slide, Motiv aus der Story.",
+    "creative_freedom": "Komposition, Bildidee, Perspektive, Motiv, Typografie-Hierarchie und Layout entscheidest du aus der Story heraus.",
+    "restrictions": [
+      "Kein Template, keine pixelgenaue Kopie der Referenzen",
+      "Atlas nur auf Slide 1, Logo auf allen Slides an derselben Stelle",
+      "Keine Worttrennung ueber Kanten, Falze oder Motive",
+      "Keine erfundenen Zahlen im Bild",
+      "Nichts aus der Liste art_direction.not_wanted"
+    ]
+  },
+  "quality_references": {
+    "positive": [],
+    "positive_note": "Die Owner-Referenzbilder stehen unter style_references - sie sind der Massstab. Nicht kopieren, nicht als Template.",
+    "negative": [
+      {
+        "content_id": "vu-web-4e4d3aaef2a999a2-20260926",
+        "hook": "50.000 DOLLAR FÜR EIN AUTO?",
+        "why": [
+          "isolierte Zahl statt Story",
+          "generisches Auto auf Preisschild",
+          "billige Flat-/Vektor-Anmutung",
+          "Atlas wirkt aufgeklebt",
+          "Logo fast unsichtbar"
+        ]
+      },
+      {
+        "content_id": "vu-web-15e2974b16c8dc4c-20260929",
+        "hook": "BÖRSENGANG MIT EXISTENZWARNUNG",
+        "why": [
+          "Hook ist eine Verdichtung der englischen Headline, keine redaktionelle Aussage",
+          "Worttrennung ueber den Buchfalz (BÖRSE|NGANG, EXISTENZ|WARNUNG)",
+          "Risiko-Story -> Abgrund ist eine naheliegende, keine eigene Metapher"
+        ]
+      }
+    ]
+  },
+  "brand_assets": {
+    "logo": "assets/vision-universe-logo.png",
+    "atlas": "assets/atlas.png",
+    "instruction": "Beide Dateien liegen unveraendert im selben Checkout wie dieser Brief. Als echte Bildreferenz verwenden und nur skaliert, zugeschnitten oder neu positioniert einsetzen - keine Neuzeichnung, keine Farb- oder Stiltransformation. Atlas' Gesicht, Mimik und Proportionen exakt wie im Referenzbild; Pose und Blickwinkel sind frei."
+  },
+  "asset_requirements": {
+    "count": 1,
+    "preferred_mime_type": "image/png",
+    "preferred_width": 1080,
+    "preferred_height": 1350,
+    "deterministic_path": "authoring/requests/vu-post-20261001-d69124c984/assets/visual-01.png",
+    "format_note": "Hochformat 4:5 (Ziel 1080x1350). Das Bildwerkzeug liefert eigene Pixelmasse - waehle das Hochformat, skaliere oder beschneide nicht nachtraeglich, und halte Hook, Logo und Atlas mit Sicherheitsabstand vom Rand, damit ein 4:5-Ausschnitt nichts Wichtiges verliert. Melde die tatsaechlichen Masse ehrlich.",
+    "announced_fields_required": [
+      "slide_index",
+      "asset_path",
+      "mime_type",
+      "width",
+      "height",
+      "asset_byte_size",
+      "asset_sha256",
+      "brand_elements"
+    ],
+    "announcement_note": "asset_byte_size ist die Groesse der geschriebenen Datei in Bytes, asset_sha256 ihr SHA-256 ueber den gesamten Inhalt. Beides wird nach dem finalen Commit frisch zurueckgelesen und verglichen. brand_elements: { includes_logo, includes_atlas, includes_hook_text_de } als Booleans."
+  },
+  "authoring_requirements": {
+    "hook_variant_count": 1,
+    "internal_hook_exploration": true,
+    "stable_hook_variant_ids": true,
+    "hook_ids_bound_to_brief_blob_sha": true,
+    "visual_variant_ids_bound_to_brief_blob_sha": true,
+    "recommended_hook_allowed": true,
+    "canonical_selected_hook_allowed": false,
+    "actual_image_asset_required": true,
+    "brand_elements_announcement_required": true,
+    "sources_required": true,
+    "editorial_gate_required": true,
+    "style_references_check_required": true,
+    "publishing_allowed": false
+  },
+  "output_contract": {
+    "path": "authoring/requests/vu-post-20261001-d69124c984/authoring-result.json",
+    "fields": {
+      "schema_version": "1.0",
+      "brief_id": "wie in diesem Brief",
+      "content_id": "wie in diesem Brief",
+      "request_type": "FULL_CREATIVE",
+      "creative_format": "CAROUSEL",
+      "delivery_mode": "COVER_FIRST",
+      "research": "{ web_access: bool, mode_used, stories_considered: [{ title, url, decision, reason }] }",
+      "story": "{ title_de, what_happened, why_interesting }",
+      "sources": "[{ source, url, published_at, facts_used: [..], opened_by_agent: bool }] - mindestens eine",
+      "hook_exploration": "[{ direction, text, rejected_because }] - die intern verworfenen Richtungen",
+      "hook_variants": "[GENAU EINE: { hook_variant_id, hook_type: 'carousel_cover_hook_de', text, language: 'de', brief_revision, evidence_refs }]",
+      "recommended_hook": "{ recommended_hook_variant_id, recommendation_reason, is_canonical_selection: false }",
+      "caption": "deutsche Caption fuer den ganzen Beitrag",
+      "hashtags": "[bis zu 5 Strings ohne #]",
+      "carousel_plan": "[je Slide: { slide_index, role, headline_de, key_content, visual_concept, atlas: bool }] - alle Slides, auch die noch nicht gezeichneten",
+      "slide_count": "Zahl der geplanten Slides (Standard 3)",
+      "editorial_gate": "{ story_quality, hook_standalone_quality, caption_standalone_quality, fact_grounding } - je 'PASS'",
+      "visual_variants": "[GENAU EINE: { visual_variant_id, visual_strategy, slide_index: 1, slide_role: 'cover', brief_revision, asset_path, mime_type, width, height, asset_byte_size, asset_sha256, brand_elements }]",
+      "carousel_checks": "{ atlas_only_on_slide_1, logo_on_all_slides, logo_position_consistent } - je true (bei COVER_FIRST: so geplant)",
+      "style_references_check": "[je Referenzdatei: { path, dominant_text }]",
+      "processing": "{ status: 'completed', ... }",
+      "publishing_allowed": false
+    }
+  },
+  "constraints": [
+    "Keine erfundenen Zahlen, Fakten oder Quellen. Jede Zahl im Text stammt aus einer genannten Quelle.",
+    "Keine Fakten aus den Referenzbildern.",
+    "Keine Prognose, keine Kauf- oder Verkaufsempfehlung.",
+    "Alle sichtbaren Woerter Deutsch - Ausnahmen nur fuer Eigennamen, Ticker und Markennamen.",
+    "Kein `selected_hook` - nur `recommended_hook`.",
+    "Keine Placeholder- oder programmatisch erzeugte Ersatzgrafik.",
+    "Die Bilder sind FINALE Social Creatives, keine Rohbilder.",
+    "Keine Veroeffentlichung."
+  ],
+  "must_not_claim": [
+    {
+      "id": "forecast",
+      "text": "Keine Prognose ueber Kurse oder Geschaeftsentwicklung."
+    },
+    {
+      "id": "recommendation",
+      "text": "Keine Empfehlung, keine Handlungsaufforderung zum Kaufen oder Verkaufen."
+    }
+  ],
+  "publishing_allowed": false
+}
