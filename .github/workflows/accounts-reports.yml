@@ -1,0 +1,48 @@
+name: Watchlist-Berichte
+
+# Taeglich nach den Daten-Laeufen (Hedgefonds, Signale, News): Digests je Aktie
+# und Berichte je User schreiben, optional per E-Mail zustellen.
+# Inaktiv, bis die Repository-Variable VU_ACCOUNTS_ENABLED auf "true" steht
+# (Settings -> Secrets and variables -> Actions -> Variables).
+
+on:
+  schedule:
+    - cron: '43 7 * * *'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Stichtag YYYY-MM-DD (leer = heute, UTC)'
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: accounts-reports
+  cancel-in-progress: false
+
+jobs:
+  reports:
+    if: vars.VU_ACCOUNTS_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Digests und Berichte
+        env:
+          VU_ACCOUNTS_ENABLED: 'true'
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          VU_REPORT_EMAIL_FROM: ${{ vars.VU_REPORT_EMAIL_FROM }}
+          REPORT_DATE: ${{ inputs.date }}
+        run: |
+          if [ -n "${REPORT_DATE:-}" ]; then
+            node scripts/accounts/run-watchlist-reports.mjs --date="$REPORT_DATE"
+          else
+            node scripts/accounts/run-watchlist-reports.mjs
+          fi

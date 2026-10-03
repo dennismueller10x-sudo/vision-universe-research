@@ -1,0 +1,51 @@
+name: Accounts CI
+
+# Konten, Abo-Freischaltung (RevenueCat), Watchlist-Berichte und /konto/.
+# Laeuft ohne Zugangsdaten: Supabase und RevenueCat werden im Test nachgebaut,
+# das SQL-Schema gegen einen echten Postgres mit Supabase-Attrappe geprueft.
+
+on:
+  push:
+    branches: [main]
+    paths: ['api/me.js', 'api/premium.js', 'api/revenuecat-webhook.js', 'server/**', 'konto/**', 'supabase/**',
+            'scripts/accounts/**', '.github/workflows/accounts-ci.yml']
+  pull_request:
+    paths: ['api/me.js', 'api/premium.js', 'api/revenuecat-webhook.js', 'server/**', 'konto/**', 'supabase/**',
+            'scripts/accounts/**', '.github/workflows/accounts-ci.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Logik, Endpunkte, Konto-Client, Berichte
+        run: node --test scripts/accounts/tests/*.test.mjs
+      - name: Probelauf der Watchlist-Berichte auf den Repository-Daten
+        run: node scripts/accounts/run-watchlist-reports.mjs --dry-run
+      - name: SQL-Migration und Row-Level-Security
+        env:
+          PGHOST: localhost
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: |
+          set -euo pipefail
+          for f in scripts/accounts/tests/sql/supabase-stub.sql supabase/migrations/*.sql \
+                   supabase/migrations/*.sql scripts/accounts/tests/sql/rls-check.sql; do
+            psql -v ON_ERROR_STOP=1 -q -f "$f"
+          done

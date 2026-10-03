@@ -19,6 +19,18 @@
     "api/status.js": {
       "maxDuration": 10,
       "includeFiles": "{server/http.js}"
+    },
+    "api/me.js": {
+      "maxDuration": 10,
+      "includeFiles": "{server/http.js,server/accounts/*.js}"
+    },
+    "api/revenuecat-webhook.js": {
+      "maxDuration": 30,
+      "includeFiles": "{server/http.js,server/accounts/*.js}"
+    },
+    "api/premium.js": {
+      "maxDuration": 15,
+      "includeFiles": "{server/http.js,server/accounts/*.js,scripts/market/storage/s3-driver.mjs}"
     }
   },
   "headers": [
