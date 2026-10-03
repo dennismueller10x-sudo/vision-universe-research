@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-10-03T09:46:18.570Z",
+ "generatedAt": "2026-10-03T10:29:07.694Z",
  "returnContract": {
   "technicalSetupMomentum": "SPLIT_ADJUSTED_PRICE",
   "backtestPortfolioBenchmark": "TOTAL_RETURN",
@@ -15,8 +15,8 @@
    "to": "2026-10-02",
    "spanDays": 22,
    "replay": {
-    "titles": 150,
-    "observations": 122477,
+    "titles": 152,
+    "observations": 122970,
     "from": "1991-03-08"
    }
   },
@@ -94,7 +94,7 @@
    "label": "Muster-Beobachtungen",
    "studyFindings": 114,
    "robust": 69,
-   "matchSnapshots": 2
+   "matchSnapshots": 3
   },
   {
    "id": "technicalStates",
@@ -223,24 +223,24 @@
     {
      "id": "SETUP_CONFIRMED",
      "trust": "LIMITED",
-     "n": 812,
-     "titles": 111,
+     "n": 816,
+     "titles": 112,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "SETUP_NEW",
      "trust": "LIMITED",
-     "n": 7375,
-     "titles": 140,
+     "n": 7400,
+     "titles": 141,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "SETUP_WEAKENED",
      "trust": "LIMITED",
-     "n": 8147,
-     "titles": 141,
+     "n": 8176,
+     "titles": 142,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
     }
@@ -291,40 +291,40 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 88818,
-     "titles": 5139,
+     "n": 89039,
+     "titles": 5167,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 89174,
-     "titles": 5161,
+     "n": 89392,
+     "titles": 5191,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 86052,
-     "titles": 5110,
+     "n": 86267,
+     "titles": 5138,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 86241,
-     "titles": 5132,
+     "n": 86456,
+     "titles": 5162,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 56309,
-     "titles": 4893,
+     "n": 56433,
+     "titles": 4921,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     }
