@@ -1,6 +1,6 @@
 # ChatGPT Work – Output-Vertrag für Carousels
 
-Stand 30.09. · Owner-Direktive „OWNER CREATIVE DIRECTION“, §12
+Stand 03.10. · Owner-Entscheidung: drei Bilder in EINEM Auftrag (MULTI_ASSET)
 
 ## Die gemessene Grenze
 
@@ -77,3 +77,27 @@ Zwei Messungen, keine Behauptung:
     Im Checkout liegt kein Klartext, den Work stattdessen ablesen könnte.
   - Das Ergebnis steht am Kandidaten unter
     `presentation.styleReferences`.
+
+
+## Umgestellt am 03.10.: MULTI_ASSET
+
+`social/config/work-agent.json` steht auf `"delivery_mode": "MULTI_ASSET"`.
+
+Ab dem nächsten Auftrag verlangt der Brief drei finale 4:5-Bilder in einem Auftrag:
+- `assets/slide-01.png`: Hook
+- `assets/slide-02.png`: Key Insight mit Headline
+- `assets/slide-03.png`: Einordnung mit Headline
+
+Text im Bild ist auf jedem Slide Pflicht.
+
+### Der Satz für die ChatGPT-Work-Automation
+
+In den Anweisungen der Automation steht sinngemäß, dass ein `FULL_CREATIVE`-Auftrag genau ein Bild unter `assets/visual-01.png` schreibt. Diese Regel durch Folgendes ersetzen:
+
+> Bei `FULL_CREATIVE` gilt: Schreibe die Bilddateien genau unter den Pfaden, die der Brief vorgibt. Bei `asset_requirements.deterministic_path` (Einzahl) ist das ein Bild. Bei `asset_requirements.deterministic_paths` (Mehrzahl, `creative_format: CAROUSEL`) ist das ein Bild je Slide in der Reihenfolge des `carousel_plan`, Standard drei: `assets/slide-01.png`, `assets/slide-02.png`, `assets/slide-03.png`. Erzeuge die Bilder nacheinander im selben Auftrag. Melde jede Datei als eigene `visual_variants`-Eintragung mit `slide_index`, `asset_path`, `mime_type`, `width`, `height`, `asset_byte_size`, `asset_sha256` und `brand_elements`. Committe alle Bilder zusammen mit `authoring-result.json` in einem Commit.
+
+### Falls Work es trotzdem ablehnt
+
+Der Abgleich schließt den Auftrag automatisch (`AGENT_ABBRUCH_GEMELDET`), es bleibt nichts hängen.
+
+Zurück zum Cover-Weg: in `social/config/work-agent.json` `"delivery_mode": "COVER_FIRST"` setzen.

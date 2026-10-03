@@ -337,7 +337,19 @@
     "50.000 DOLLAR FÜR EIN AUTO?",
     "493,78 USD SCHLUSSKURS – MSFT",
     "420 VON 5954 GEPRÜFTEN TITELN",
-    "10-year U.S. Treasury yield tops ..."
+    "10-year U.S. Treasury yield tops ...",
+    /* Owner-Urteil 02.10.: brav, beschreibend, kein Scroll-Stopper. */
+    "RIVIAN SCHALTET EINEN GANG HÖHER.",
+    "REKORD GESCHAFFT. JETZT KOMMT DER SCHWERE TEIL."
+  ];
+
+  /* Owner-Urteil 02.10.: "genau in die Richtung muss es gehen". Beispiele
+     fuer die Tonlage - nicht zum Kopieren, und nur zulaessig, wenn die
+     Quelle die Zuspitzung traegt. */
+  var HOOK_TONLAGE = [
+    "RIVIAN SCHLÄGT DIE WALL STREET.",
+    "TOTGESAGT. JETZT REKORD.",
+    "DIE NÄCHSTEN 90 TAGE ENTSCHEIDEN ALLES."
   ];
 
   function carouselSlidePfad(contentId, index) {
@@ -548,7 +560,10 @@
           ? "Nicht die erste News nehmen. Pruefe mehrere aktuelle Storys und bewerte sie " +
             "redaktionell: Aktualitaet, Anlegerrelevanz, Ueberraschung, Verstaendlichkeit, " +
             "Neuigkeitswert, Diskussions-, Share- und Save-Potenzial, visuelles Potenzial, Staerke " +
-            "der Belege. Keine Story nehmen, nur weil sie leicht zu verarbeiten ist. Moegliche " +
+            "der Belege. Keine Story nehmen, nur weil sie leicht zu verarbeiten ist. " +
+            "Routinemeldungen, die jedes Quartal wiederkommen (Auslieferungszahlen, gewoehnliche " +
+            "Quartalszahlen, Kalendertermine), nur dann, wenn sie wirklich ueberraschen - sonst " +
+            "lieber die Story mit Konflikt, Wendepunkt oder echter Neuigkeit. Moegliche " +
             "Felder (nicht abschliessend): Aktien, Unternehmen, Earnings, Maerkte, Makro, Zinsen, " +
             "Inflation, Rohstoffe, KI, Halbleiter, Cloud, Rechenzentren, Cybersecurity, Robotik, " +
             "Mobilitaet, Energie, Zukunftstechnologien, ETFs, aussergewoehnliche " +
@@ -594,16 +609,33 @@
       hook_strategy: {
         strategy_id: "vu-carousel-editorial-v1",
         hook_type: CAROUSEL_HOOK_TYPE,
-        instruction: "Die Hook entsteht aus der Story, nicht mechanisch aus einer Zahl oder " +
-          "Headline. Erwaege intern mehrere wirklich unterschiedliche Richtungen (ueberraschende " +
-          "Erkenntnis, Konsequenz, starke Zahl, Widerspruch, historische Einordnung, Konflikt, " +
-          "belegte provokante Aussage, Frage, Vergleich) - nicht fuenf Varianten desselben " +
-          "Satzes - und waehle selbst die staerkste. Liefere GENAU EINE finale Hook: Deutsch, " +
-          "kurz, sofort verstaendlich, anlegerrelevant, social-first, mobile-first, faktisch " +
-          "korrekt. Die verworfenen Richtungen gehoeren in `hook_exploration`.",
+        instruction: "Die Hook ist ein SCROLL-STOPPER, keine Ueberschrift. Sie entsteht aus der " +
+          "Story, nicht mechanisch aus einer Zahl oder Headline. Erwaege intern mehrere wirklich " +
+          "unterschiedliche Richtungen und waehle die AGGRESSIVSTE, die die Quelle noch traegt. " +
+          "Liefere GENAU EINE finale Hook. Die verworfenen Richtungen gehoeren in " +
+          "`hook_exploration`.",
+        tone: [
+          "Konfrontation statt Beschreibung: Konflikt, Gewinner gegen Verlierer, Widerspruch zur " +
+            "Erwartung, Kampfansage, Schicksalsfrage oder eine harte Zahl als Schlag",
+          "3 bis 6 Woerter, Grossbuchstaben, gerne als direkte Ansage oder provokante Frage",
+          "ein Leser, der nur scrollt, muss nach einer Sekunde anhalten wollen",
+          "Deutsch, sofort verstaendlich, anlegerrelevant"
+        ],
+        forbidden: [
+          "Wortspiele und Redewendungen ohne Aussage (\"schaltet einen Gang hoeher\")",
+          "reine Beschreibung des Ereignisses (\"neuer Rekord\", \"Zahlen gemeldet\")",
+          "brave Einordnung (\"jetzt kommt der schwere Teil\")",
+          "Headline-Verdichtung, isolierte Zahl, Systemsprache, englischer Quelltitel"
+        ],
+        tone_examples: HOOK_TONLAGE,
+        tone_examples_note: "So klingt die richtige Tonlage (Rivian-Rekordquartal, 02.10.). " +
+          "Nicht kopieren - fuer jede Story neu, aus ihren eigenen Fakten.",
+        fact_limit: "Jede Zuspitzung muss belegt sein: 'schlaegt die Wall Street' nur mit " +
+          "genannter Erwartung, 'totgesagt' nur, wenn die Quelle das Umfeld so beschreibt. Keine " +
+          "erfundenen Behauptungen, keine Kurs- oder Renditeversprechen, keine Kaufaufforderung.",
         negative_fixtures: NEGATIVE_HOOKS,
         negative_fixture_note: "Diese Hooks gelten ausdruecklich NICHT als gelungene Social " +
-          "Hooks: Headline-Verdichtung, isolierte Zahl, Systemsprache, englischer Quelltitel."
+          "Hooks - zu brav, zu beschreibend oder Systemsprache."
       },
 
       editorial_gate: {
@@ -640,17 +672,25 @@
               "optional EINE kurze Supporting Line." },
           { slide_index: 2, role: "DETAIL / KEY INSIGHT", task: "Ein anderes hochwertiges Motiv " +
               "oder Detail derselben Storywelt mit EINER zentralen Erkenntnis oder Zahl.",
-            contains: "Logo exakt gleich positioniert, keine Informationsueberladung." },
+            contains: "PFLICHT: eine starke deutsche Headline im Bild (die zentrale Zahl oder " +
+              "Erkenntnis), optional EINE kurze Supporting Line. Logo exakt gleich positioniert, " +
+              "keine Informationsueberladung." },
           { slide_index: 3, role: "CONTEXT / INVESTOR RELEVANCE", task: "Eine dritte hochwertige " +
               "visuelle Perspektive mit kurzer Einordnung, Konsequenz oder Frage fuer Anleger.",
-            contains: "Logo exakt gleich positioniert." }
+            contains: "PFLICHT: eine starke deutsche Headline im Bild (Konsequenz, Einordnung oder " +
+              "die entscheidende Frage), optional EINE kurze Supporting Line. Logo exakt gleich " +
+              "positioniert." }
         ],
         atlas_contract: "KEIN Atlas auf keinem Slide. Kein Ersatzroboter, keine humanoide " +
           "Markenfigur.",
         logo_contract: "Das echte Vision-Universe-Logo (brand_assets.logo) auf ALLEN Slides, " +
           "fest OBEN LINKS, in identischer Position, Groesse und Safe Area. Kein " +
           "approximiertes Logo, kein neu generierter Schriftzug.",
-        text_on_image: "Text im Bild ist Pflicht, vor allem die Hook auf Slide 1. Keine " +
+        text_on_image: "Text im Bild ist auf JEDEM Slide Pflicht. Slide 1 traegt die Hook - " +
+          "der aggressivste Satz des Posts. Slide 2 und 3 tragen je eine starke deutsche " +
+          "Headline: klar, selbstbewusst, gut lesbar, aber weniger extrem als die Hook - sie " +
+          "fuehren die Geschichte weiter, statt sie zu wiederholen. Ein Slide ohne Text gibt es " +
+          "nicht. Keine " +
           "Worttrennung ueber Bildfalze, harte Kanten, Gesichter, Objekte oder Kompositionsbrueche " +
           "(Negativbeispiel: BÖRSE|NGANG, EXISTENZ|WARNUNG ueber einen Buchfalz)."
       },
@@ -668,8 +708,12 @@
         }
         : {
           mode: MULTI_ASSET,
-          deliver_now: "Jede Slide als eigenes finales Bild unter den Pfaden in " +
-            "asset_requirements.deterministic_paths."
+          deliver_now: "ALLE Slides in DIESEM einen Auftrag, jede als eigenes finales 4:5-Bild " +
+            "unter den Pfaden in asset_requirements.deterministic_paths (Standard: slide-01, " +
+            "slide-02, slide-03). Erzeuge die Bilder nacheinander und nimm Slide 1 als " +
+            "Stilanker fuer 2 und 3: gleiche Art Direction, Typografie, Farbgrading und " +
+            "Logo-Position. Keine Mini-Slides auf einer Leinwand, kein Bogen.",
+          why: "Owner-Entscheidung 03.10.: drei Bilder auf einmal - ein Auftrag, ein Carousel."
         },
 
       visual_strategy: {
@@ -736,8 +780,12 @@
             "slide_index", "asset_path", "mime_type", "width", "height",
             "asset_byte_size", "asset_sha256", "brand_elements"
           ],
+          format_note: "Jede Slide im Hochformat 4:5 (Ziel 1080x1350), alle Slides in denselben " +
+            "Pixelmassen. Nicht nachtraeglich skalieren oder beschneiden; Text und Logo mit " +
+            "Sicherheitsabstand vom Rand. Melde die tatsaechlichen Masse ehrlich.",
           announcement_note: "Je Slide eine Datei. brand_elements je Slide: { includes_logo, " +
-            "includes_atlas: false } - Slide 1 zusaetzlich includes_hook_text_de."
+            "includes_atlas: false, includes_text_de } - Slide 1 zusaetzlich " +
+            "includes_hook_text_de."
         },
 
       authoring_requirements: {
@@ -831,7 +879,7 @@
       befunde.push({ id: "slideCountMismatch", message: "slide_count=" + r.slide_count +
         ", geplant/geliefert " + n + " Slides." });
     }
-    if (l.modus === COVER_FIRST) {
+    if (l.modus === COVER_FIRST || Array.isArray(r.carousel_plan)) {
       var plan = (r.carousel_plan || []).slice()
         .sort(function (a, b) { return Number(a && a.slide_index) - Number(b && b.slide_index); });
       plan.forEach(function (p, i) {
@@ -857,6 +905,11 @@
 
       if (i === 0 && be.includes_hook_text_de !== true) {
         befunde.push({ id: "hookTextMissingOnCover", message: "Slide 1 meldet keine deutsche Hook im Bild." });
+      }
+      /* Owner 03.10.: auf Slide 2 und 3 muss ebenfalls Text stehen. */
+      if (i > 0 && be.includes_text_de !== true) {
+        befunde.push({ id: "slideTextMissing", message: "Slide " + (i + 1) +
+          " meldet keinen deutschen Text im Bild (brand_elements.includes_text_de)." });
       }
       if (be.includes_atlas !== false) {
         befunde.push({ id: "atlasPresent", message: "Slide " + (i + 1) +
@@ -1502,6 +1555,8 @@
     carouselLieferung: carouselLieferung,
     COVER_FIRST: COVER_FIRST,
     MULTI_ASSET: MULTI_ASSET,
+    NEGATIVE_HOOKS: NEGATIVE_HOOKS,
+    HOOK_TONLAGE: HOOK_TONLAGE,
     ART_DIRECTION: ART_DIRECTION,
     AI_CLICHE_GATE: AI_CLICHE_GATE,
     DESIGN_MODE: DESIGN_MODE,
