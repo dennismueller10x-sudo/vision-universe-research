@@ -37,6 +37,8 @@ const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Store = require(join(root, "quant", "engines", "history-store.js"));
 const Guard = require(join(root, "quant", "engines", "zero-cost-guard.js"));
+const Codec = require(join(root, "quant", "engines", "bar-codec.js"));
+const SC = require(join(root, "quant", "engines", "survivorship-control.js"));
 const SCALE = JSON.parse(readFileSync(join(root, "quant", "config", "tiingo-scale.json"), "utf8"));
 
 const argv = process.argv.slice(2);
@@ -283,6 +285,20 @@ async function main() {
       const stored = await store.getSeries(m.ticker);
       if (stored) assertSeries(m, stored);
       if (DRY_RUN) return { ok: true, ticker: m.ticker, bars: payload.bars.length, bytes: statSync(file).size };
+      /* Gekuerzt auf das juengste Listing (guard-listing-continuity.mjs):
+         Zusammenfuehren allein brachte die Kerzen der frueheren Firma unter
+         demselben Kuerzel zurueck. Deshalb hier: dauerhafte und Arbeitsreihe
+         zusammenfuehren, dann dieselbe Listing-Regel anwenden und die Reihe
+         ERSETZEN. Keine Kerze des aktuellen Listings geht verloren - auch
+         wenn die Arbeitsablage kuerzer ist als die dauerhafte. */
+      if (payload.listingContinuity) {
+        const merged = Codec.mergeBars(stored ? stored.bars : [], payload.bars).bars;
+        const seg = SC.currentListingSegment(merged);
+        const meta = await store.putSeries({ ticker: m.ticker, securityId: m.securityId, provider: PROVIDER,
+          adjustmentStatus: payload.adjustmentStatus || (stored && stored.adjustmentStatus) || null, bars: seg.bars },
+          { checkRemote: true });
+        return { ok: true, ticker: m.ticker, bars: meta.barCount, bytes: meta.bytes, meta, listingCut: !!seg.cut || null };
+      }
       /* appendSeries statt putSeries: ein zweiter Lauf soll eine
          vorhandene Reihe ergaenzen und nicht ersetzen. Liegt nichts da,
          ist das Ergebnis dasselbe wie ein put. */

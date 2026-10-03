@@ -65,7 +65,7 @@ function syncFixture(t) {
   const dir = mkdtempSync(join(tmpdir(), "vu-bm-sync-"));
   t.after(() => rmSync(dir, { recursive: true, force: true }));
   for (const f of ["scripts/market/sync-history-store.mjs", "scripts/market/benchmark-reference.mjs", "scripts/market/storage/fs-driver.mjs",
-    "quant/engines/history-store.js", "quant/engines/bar-codec.js", "quant/engines/zero-cost-guard.js", "quant/config/tiingo-scale.json"]) {
+    "quant/engines/history-store.js", "quant/engines/bar-codec.js", "quant/engines/zero-cost-guard.js", "quant/engines/survivorship-control.js", "quant/config/tiingo-scale.json"]) {
     mkdirSync(dirname(join(dir, f)), { recursive: true }); copyFileSync(join(ROOT, f), join(dir, f));
   }
   const write = (p, v) => { mkdirSync(dirname(join(dir, p)), { recursive: true }); writeFileSync(join(dir, p), JSON.stringify(v)); };
