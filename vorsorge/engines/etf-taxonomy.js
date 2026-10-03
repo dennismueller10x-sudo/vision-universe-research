@@ -73,10 +73,11 @@
     var lev = leverageOf(name);
     var inverse = RX.inverse.test(name) || RX.ultrashort.test(name) || (lev > 1 && RX.short.test(name)) ||
       /\bshort\s+(s&p|qqq|dow|russell|msci|nasdaq|ftse|bitcoin|ether|real estate|financials|vix|midcap|smallcap|small ?cap)/i.test(name);
-    var single = lev > 1 || inverse ? singleStock(name) : null;
-    if (!single) { var mp = name.match(/\(([A-Z]{1,5})\)/); if (mp && (RX.optionIncome.test(name) || RX.coveredCall.test(name))) single = mp[1]; }
+    var single = cleanUnderlying(lev > 1 || inverse ? singleStock(name) : null);
+    if (!single) { var mp = name.match(/\(([A-Z]{1,5})\)/); if (mp && (RX.optionIncome.test(name) || RX.coveredCall.test(name))) single = cleanUnderlying(mp[1]); }
     if (!single) { var mo = name.match(/\b([A-Z]{2,5})\s+(?:option income|weekly ?pay|yield ?boost|covered call)/i) || name.match(/(?:yieldmax|roundhill|graniteshares yieldboost|direxion|kurv|rex)\s+([A-Z]{2,5})\b(?=.*(?:income|boost|yield|premium|weekly))/i);
       if (mo && !/^(QQQ|SPY|SPX|NDX|DOW|TOP|ETF|US|USA|BTC|ETH|GOLD|BOND|SMALL|MID|LARGE|ALL|THE|TECH|AI)$/i.test(mo[1])) single = mo[1].toUpperCase(); }
+    single = cleanUnderlying(single);
     var strategies = [];
     var basis = name ? "NAME_PATTERN" : "NONE";
 
@@ -134,13 +135,32 @@
     return r;
   }
 
+  // Kandidat fuer "Einzelaktie" bereinigen: Markenzeichen (R)/(TM), Krypto-
+  // Token und gewoehnliche Woerter sind keine Aktie; ausgeschriebene Namen
+  // auf den Ticker abbilden, wo eindeutig.
+  var NOT_A_STOCK = /^(R|TM|SM|BULL|BEAR|REIT|SEVEN|FANG|KWEB|ETHER|BTC|ETH|SOL|XRP|SUI|HYPE|DOGE|ADA|LTC|AVAX|LINK|DOT|BNB|TRX)$/;
+  var NAME_TO_TICKER = { APPLE: "AAPL", TESLA: "TSLA", NVIDIA: "NVDA", AMAZON: "AMZN" };
+  function cleanUnderlying(t) {
+    if (!t) return null;
+    t = String(t).toUpperCase();
+    if (NAME_TO_TICKER[t]) return NAME_TO_TICKER[t];
+    return NOT_A_STOCK.test(t) ? null : t;
+  }
+
   function singleStock(name) {
     var m = name.match(/(?:long|short)\s+([A-Z]{2,5})\b(?:\s+(?:daily|etf|shares))?/) ||
       name.match(/(?:long|short)\s+([A-Za-z]{2,5})\s+(?:daily|etf)\b/i) ||
-      name.match(/\bultra(?:short)?\s+([A-Z]{2,5})\b/) || name.match(/autocallable\s+([A-Z]{2,5})\b/);
+      name.match(/\bultra(?:short)?\s+([A-Z]{2,5})\b/) || name.match(/autocallable\s+([A-Z]{2,5})\b/) ||
+      name.match(/\bDaily\s+([A-Z]{2,5})\s+(?:Bull|Bear)\b/);
+    // Tiingo liefert manche Namen komplett in Grossbuchstaben: dann nur das
+    // Muster "DAILY <X> BULL/BEAR" und nur, wenn X kein gewoehnliches Wort ist.
+    if (!m && name === name.toUpperCase()) {
+      var mu = name.match(/\bDAILY\s+([A-Z]{2,5})\s+(?:BULL|BEAR)\b/);
+      if (mu && !/^(JAPAN|INDIA|CHINA|KOREA|LATIN|CAP|TECH|BANK|BANKS|GAS|REAL|SMALL|MID|LARGE|EURO|AERO|MINER|HOME|CLOUD|SOLAR|FANG|BIO|PHARM|CYBER|RETL|MEXIC|CHIP|TREAS|BOND|GOLD|OIL)$/.test(mu[1])) m = mu;
+    }
     if (!m) return null;
     var t = m[1].toUpperCase();
-    if (/^(QQQ|SPY|DOW|TOP|SP|ETF|MSCI|USD|EUR|GOLD|OIL|BOND)$/.test(t)) return null;
+    if (/^(QQQ|SPY|DOW|TOP|SP|ETF|MSCI|USD|EUR|GOLD|OIL|BOND|FTSE|CSI|REIT|AAA|MLP|USA|BTC|ETH|NDX|SPX|AI)$/.test(t)) return null;
     return t;
   }
 
@@ -148,7 +168,7 @@
   var RETIREMENT_TEXT = {
     STANDARD: "Klassisches Produkt (Index, Anleihen, Geldmarkt). Das ist keine Empfehlung – nur die Einordnung der Bauart.",
     KOMPLEX: "Komplexe Bauart (Optionen, Puffer, Krypto, Rohstoff-ETP oder Spezialthema). Verhalten weicht von einem breit gestreuten ETF ab.",
-    SEHR_KOMPLEX: "Sehr komplex: Hebel, Short oder Einzelaktie mit täglichem Reset. Für langfristige Vorsorge nicht konstruiert.",
+    SEHR_KOMPLEX: "Hebel, Short oder Einzelaktie mit täglichem Reset. Für langfristige Vorsorge nicht konstruiert.",
     NICHT_EINORDENBAR: "Produkttyp oder Anlageklasse ist aus den verfügbaren Daten nicht sicher bestimmbar."
   };
 

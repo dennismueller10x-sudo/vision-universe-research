@@ -167,7 +167,7 @@
     ["Inflation & Kaufkraft", "Bei 2 % Inflation ist 1 € in 30 Jahren nur noch rund 55 Cent wert. Deshalb zeigen wir Endwerte auch in heutiger Kaufkraft."],
     ["Vorsorgelücke", "Die Differenz zwischen dem Einkommen, das du im Alter möchtest, und dem, was du aus Rente und anderen Quellen erwartest."],
     ["Overlap", "Wie stark sich zwei ETFs überschneiden. Wer MSCI World und S&P 500 kombiniert, besitzt viele US-Unternehmen doppelt."],
-    ["Hebel- und Short-ETFs", "Sie bilden die doppelte oder umgekehrte TAGESbewegung ab. Über längere Zeit weicht das Ergebnis stark ab – für die Vorsorge nicht gedacht."],
+    ["Hebel- und Short-ETFs", "Sie bilden die doppelte oder umgekehrte tägliche Bewegung ab. Über längere Zeit weicht das Ergebnis stark ab – für die Vorsorge nicht gedacht."],
     ["UCITS", "EU-Regelwerk für Fonds. Privatanleger in der EU kaufen in der Regel UCITS-ETFs; US-ETFs sind meist nicht handelbar, weil ein Basisinformationsblatt fehlt."],
     ["Altersvorsorgedepot", "Ein ab 2027 geplantes, staatlich gefördertes Depot für die private Altersvorsorge – ein Produkt von Banken und Brokern, das Vision Universe analysiert, nicht anbietet."]
   ];

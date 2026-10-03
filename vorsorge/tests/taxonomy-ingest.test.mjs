@@ -141,3 +141,27 @@ test("Fund -> Share Class -> Listing: ohne Anbieter kein Merge, Share-Class-ID",
   const o = M.buildMaster([row({ symbol: "BNY", name: "Bank of New York Mellon" })], { overrides: { "BNY@NYSE": { conflict: "TICKER_COLLISION_OPERATING_COMPANY", note: "x" } } });
   assert.equal(o.etfs[0].status, "REVIEW"); assert.equal(o.etfs[0].manualOverride, "x");
 });
+
+test("Einzelaktie in 'Daily <TICKER> Bull/Bear'-Namen erkannt, Indexkürzel nicht", () => {
+  const T = require("../engines/etf-taxonomy.js");
+  assert.equal(T.classify({ name: "Direxion Daily TSLA Bull 2X Shares" }).singleStockUnderlying, "TSLA");
+  assert.equal(T.classify({ name: "Direxion Daily FTSE China Bull 3X Shares" }).singleStockUnderlying, null);
+  assert.equal(T.classify({ name: "Direxion Daily REIT Bull 3X Shares" }).singleStockUnderlying, null);
+});
+
+test("Grossbuchstaben-Namen: Einzelaktie erkannt, Laenderwort nicht", () => {
+  assert.equal(T.classify({ name: "DIREXION DAILY TSLA BULL 2X SHARES" }).singleStockUnderlying, "TSLA");
+  assert.equal(T.classify({ name: "DIREXION DAILY JAPAN BULL 3X SHARES" }).singleStockUnderlying, null);
+});
+
+test("Markenzeichen und Krypto-Token sind keine Einzelaktie", () => {
+  assert.equal(T.classify({ name: "YieldMax(R) Option Income Strategy ETF" }).singleStockUnderlying, null);
+  assert.equal(T.classify({ name: "2x HYPE Daily Target ETF" }).singleStockUnderlying, null);
+  assert.equal(T.classify({ name: "T-Rex 2X Long Tesla Daily Target ETF" }).singleStockUnderlying, "TSLA");
+});
+
+test("YieldMax(R) <TICKER> Option Income: Einzelaktie trotz Markenzeichen", () => {
+  const c = T.classify({ name: "YIELDMAX(R) TSLA OPTION INCOME STRATEGY ETF" });
+  assert.equal(c.singleStockUnderlying, "TSLA");
+  assert.equal(c.retirement.class, "SEHR_KOMPLEX");
+});

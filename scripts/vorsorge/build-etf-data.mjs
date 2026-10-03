@@ -48,6 +48,8 @@ const log = (...a) => { if (!QUIET) console.log(...a); };
 const readJson = (p) => JSON.parse(readFileSync(p, "utf8"));
 const tryJson = (p) => { try { return readJson(p); } catch { return null; } };
 const r4 = (x) => (x === null || x === undefined || !Number.isFinite(x) ? null : Math.round(x * 10000) / 10000);
+// Verluste nahe -100 % nicht auf -1 runden: ein Totalverlust waere eine andere Aussage.
+const rLoss = (x) => (x === null || x === undefined || !Number.isFinite(x) ? null : x > -1 && x <= -0.9995 ? Math.round(x * 1e6) / 1e6 : r4(x));
 const EU_EXCHANGES = new Set(["XETRA", "XETR", "FRA", "FSX", "GER", "LSE", "LON", "XLON", "EURONEXT", "XPAR", "PAR", "XAMS", "AMS", "BRU", "MIL", "BIT", "SIX", "SWX", "XSWX", "MAD", "BME", "STO", "CPH", "HEL", "OSL", "VIE", "WSE", "ISE", "LIS", "EPA"]);
 
 /* ------------------------------------------------------------ Stammzeilen */
@@ -149,7 +151,7 @@ function metrics(daily, weekly, basis, benchmark) {
     historyYears: Math.round(historyYears * 100) / 100,
     volatility: { value: r4(risk.volatility.value), status: risk.volatility.status, basis: risk.volatility.basis || null },
     downsideDeviation: { value: r4(A.downsideDeviation(riskSeries).value) },
-    maxDrawdown: { value: r4(dd.value), peakDate: dd.peakDate || null, troughDate: dd.troughDate || null, recoveredDate: dd.recoveredDate || null,
+    maxDrawdown: { value: rLoss(dd.value), peakDate: dd.peakDate || null, troughDate: dd.troughDate || null, recoveredDate: dd.recoveredDate || null,
       recoveryDays: dd.recoveryDays ?? null, recoveryMonths: dd.recoveryMonths ?? null, durationDays: dd.durationDays ?? null, recovered: dd.recovered ?? null, status: dd.status },
     bestMonth: ex(riskMax.bestMonth), worstMonth: ex(riskMax.worstMonth), bestYear: ex(riskMax.bestYear), worstYear: ex(riskMax.worstYear),
     yearlyReturns: (riskMax.yearlyReturns || []).map((y) => ({ year: y.key, value: r4(y.value) })),

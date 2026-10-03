@@ -67,7 +67,7 @@
       return nf0.format(Math.round(v)) + " €";
     },
     price: function (v, cur) { return v === null || v === undefined ? "–" : nf2.format(v) + " " + (cur === "USD" ? "$" : cur || ""); },
-    pct: function (v, d) { if (v === null || v === undefined || !isFinite(v)) return "–"; var s = (v * 100).toLocaleString("de-DE", { minimumFractionDigits: d === undefined ? 1 : d, maximumFractionDigits: d === undefined ? 1 : d }); return s + " %"; },
+    pct: function (v, d) { if (v === null || v === undefined || !isFinite(v)) return "–"; if (Math.abs(v) >= 0.9995 && Math.abs(v) < 1) return (v < 0 ? "-" : "") + (Math.floor(Math.abs(v) * 10000) / 100).toLocaleString("de-DE", { minimumFractionDigits: 2 }) + " %"; var s = (v * 100).toLocaleString("de-DE", { minimumFractionDigits: d === undefined ? 1 : d, maximumFractionDigits: d === undefined ? 1 : d }); return s + " %"; },
     spct: function (v, d) { if (v === null || v === undefined || !isFinite(v)) return "–"; return (v > 0 ? "+" : v < 0 ? "−" : "") + VS.fmt.pct(Math.abs(v), d); },
     cls: function (v) { return v === null || v === undefined ? "" : v > 0 ? "up" : v < 0 ? "down" : ""; },
     date: function (d) { if (!d) return "–"; var p = String(d).split("-"); return p.length === 3 ? p[2] + "." + p[1] + "." + p[0] : d; },
