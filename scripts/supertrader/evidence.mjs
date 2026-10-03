@@ -71,7 +71,7 @@ export const EVIDENCE_LEDGER = Object.freeze({
     { date: '2026-10-02', version: '3.1.0', level: 'IN_REVIEW', presentation: 'RESEARCH', test: 'PREREGISTRATION-R8C.json',
       note: 'Version 3.1.0 entfernt zwei VU-Zusätze, an denen Kullamägis eigenes TSLA-Beispiel (Juni 2020) scheiterte: Der Kurs muss nur über einer der steigenden 10/20-Tage-Linien liegen, nach einem verlorenen Setup gibt es keine Sperre. Vor dem Lauf festgelegt; läuft live zur Vorwärtsbeobachtung. Das interne Prüfergebnis wird bis zur Klärung der Veröffentlichungsrechte nicht gezeigt.' },
     { date: '2026-10-02', version: '3.1.0', level: 'IN_REVIEW', presentation: 'RESEARCH', test: 'PREREGISTRATION-R9B-RESOLVED.json',
-      note: 'Interne Nachprüfung mit Minutenkursen (Runde 9): Ob am Kauftag das Tagestief vor oder nach dem Kauf lag, verändert das Ergebnis dieser Methode deutlich. Die frühere Auswertung auf Tagesbasis war zu günstig; die Ergebnisaussage ist entsprechend eingeschränkt. Öffentlich weiter ohne Kennzahlen.' }
+      note: 'Interne Nachprüfung mit Minutenkursen der Börse IEX (Runde 9; ein Handelsplatz, ohne Eröffnungsauktion): Ob am Kauftag das Tagestief vor oder nach dem Kauf lag, verändert das Ergebnis dieser Methode deutlich. Die frühere Auswertung auf Tagesbasis war zu günstig; die Ergebnisaussage ist entsprechend eingeschränkt. Öffentlich weiter ohne Kennzahlen.' }
   ],
   WEINSTEIN_STAGE: [{ date: '2026-09-28', version: '1.1.0', level: 'NOT_TESTED', presentation: 'CURRENT', note: 'Live ohne historischen Test.' },
     { date: '2026-10-02', version: '1.1.0', level: 'IN_REVIEW', presentation: 'RESEARCH', test: 'PREREGISTRATION-METHODS.json',
@@ -88,7 +88,7 @@ export const EVIDENCE_LEDGER = Object.freeze({
     { date: '2026-10-02', version: '3.0.0', level: 'IN_REVIEW', presentation: 'RESEARCH', test: 'PREREGISTRATION-R8B.json',
       note: 'Neue Regelversion aus der Volltext-Quellenprüfung (Runde 8): Kauf per Order am Ausbruchspunkt im Tagesverlauf, wie in der Originalquelle beschrieben. Vor jedem historischen Lauf festgelegt; läuft ab jetzt live zur Vorwärtsbeobachtung. Das interne Prüfergebnis wird bis zur Klärung der Veröffentlichungsrechte nicht gezeigt. Offene Modellpositionen der Vorversion werden nach deren Regeln zu Ende geführt.' },
     { date: '2026-10-02', version: '3.0.0', level: 'IN_REVIEW', presentation: 'RESEARCH', test: 'PREREGISTRATION-R9B-RESOLVED.json',
-      note: 'Interne Nachprüfung mit Minutenkursen (Runde 9): Die strittigen Kauftage sind jetzt überwiegend aufgelöst. Das Ergebnis bleibt in beiden Lesarten ohne Vorteil. Öffentlich weiter ohne Kennzahlen.' }
+      note: 'Interne Nachprüfung mit Minutenkursen der Börse IEX (Runde 9; ein Handelsplatz, ohne Eröffnungsauktion): Die strittigen Kauftage sind jetzt überwiegend aufgelöst. Das Ergebnis bleibt in beiden Lesarten ohne Vorteil. Öffentlich weiter ohne Kennzahlen.' }
   ],
   MINERVINI_VCP: [{ date: '2026-09-28', version: '1.1.0', level: 'NOT_TESTED', presentation: 'CURRENT', note: 'Live ohne historischen Test. Der Ausstieg (Schluss unter der 50-Tage-Linie) ist eine VU-Regel, keine belegte Minervini-Originalregel.' },
     { date: '2026-10-02', version: '1.1.0', level: 'IN_REVIEW', presentation: 'RESEARCH', test: 'PREREGISTRATION-METHODS.json',

@@ -40,3 +40,11 @@ test('R10-C4 explainNull nennt Preis- und Liquiditätsgrenzen', () => {
   const ctx = { raw: { close: [5] }, ind: { dollarVol20: [1e6], adr20: [0.02] }, bars: {}, cross: {} };
   assert.deepEqual(explainNull(e, ctx, 0), ['RAW_PRICE', 'LIQ_DOLLAR_VOLUME', 'DON-NOT-NEAR-CHANNEL']);
 });
+
+test('R10-V1 iPhone: Minutenbeleg nennt IEX als einzelnen Handelsplatz, kein „Minuten geprüft“ ohne Quelle', async () => {
+  const fs = await import('node:fs');
+  const js = fs.readFileSync(new URL('../../../supertrader/assets/supertrader.js', import.meta.url), 'utf8');
+  assert.ok(js.includes("' · IEX-Minuten geprüft'"));
+  assert.ok(!js.includes("' · Minuten geprüft'"));
+  assert.ok(js.includes('IEX ist ein einzelner Handelsplatz ohne Eröffnungsauktion'));
+});
