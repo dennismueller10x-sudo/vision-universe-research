@@ -17,6 +17,17 @@
 <!-- VISION UNIVERSE® Hedgefonds: 13F-Daten werden serverseitig von data.sec.gov
      geladen (scripts/hedgefonds/fetch_edgar_data.py) und hier nur gelesen. -->
 <script>var DATA_URL = "/hedgefonds/data/hedgefonds.json"; window.HF_DATA_URL = DATA_URL;</script>
+<!-- Beträge formatiert der zentrale Currency Core (nur Formatierung, keine
+     Umrechnung: 13F-Werte sind immer USD, §49). -->
+<script src="/quant/engines/fx/currency-registry.js"></script>
+<script src="/quant/engines/fx/money-format.js"></script>
+<script>window.HF_FORMAT_USD = function (n) {
+  var F = window.VUFx && VUFx.Format;
+  if (!F || typeof F.formatCompact !== "function") return null;
+  var a = Math.abs(n);
+  return a >= 1e3 ? F.formatCompact(n, "USD", { numberLocale: "de-DE", decimals: a >= 1e9 ? 1 : 0 })
+    : F.formatPrice(n, "USD", { numberLocale: "de-DE", decimals: 0 });
+};</script>
 <main class="hf-main hf-wrap" id="hf-root" tabindex="-1"></main>
 <button class="hf-theme" id="hf-theme" type="button" aria-label="Farbschema wechseln">☾ Dunkel</button>
 <script src="/hedgefonds/app.js"></script>

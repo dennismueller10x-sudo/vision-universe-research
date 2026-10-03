@@ -36,12 +36,16 @@
   var nf0 = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 });
   function usd(n) {
     if (n == null || isNaN(n)) return "–";
+    // Zentraler Formatter (quant/engines/fx/money-format.js), sonst eigener Rückfall
+    var central = window.HF_FORMAT_USD && window.HF_FORMAT_USD(n);
+    if (central) return central.replace(/^-/, "−");
     var a = Math.abs(n), s = n < 0 ? "−" : "";
-    if (a >= 1e12) return s + nf1.format(a / 1e12) + " Bio. $";
-    if (a >= 1e9) return s + nf1.format(a / 1e9) + " Mrd. $";
-    if (a >= 1e6) return s + nf0.format(a / 1e6) + " Mio. $";
-    if (a >= 1e3) return s + nf0.format(a / 1e3) + " Tsd. $";
-    return s + nf0.format(a) + " $";
+    // Rückfall ohne geladenen Currency Core: Zahl ohne Währungszeichen
+    if (a >= 1e12) return s + nf1.format(a / 1e12) + " Bio.";
+    if (a >= 1e9) return s + nf1.format(a / 1e9) + " Mrd.";
+    if (a >= 1e6) return s + nf0.format(a / 1e6) + " Mio.";
+    if (a >= 1e3) return s + nf0.format(a / 1e3) + " Tsd.";
+    return s + nf0.format(a);
   }
   function shares(n) {
     if (n == null) return "–";
