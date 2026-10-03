@@ -1136,7 +1136,9 @@ def update_cusip_map(cusips_by_priority):
     if key:
         headers["X-OPENFIGI-APIKEY"] = key
     requests_done = 0
-    print(f"OpenFIGI: {len(jobs)} Abfragen offen (Cache: {len(cmap)})", file=sys.stderr)
+    stats = Counter()
+    print(f"OpenFIGI: {len(jobs)} Abfragen offen (Cache: {len(cmap)}, "
+          f"{'mit' if key else 'ohne'} API-Schlüssel)", file=sys.stderr)
     for i in range(0, len(jobs), batch):
         if requests_done >= FIGI_MAX_REQUESTS:
             print("  Limit pro Lauf erreicht; Rest folgt beim nächsten Lauf.", file=sys.stderr)
@@ -1150,7 +1152,15 @@ def update_cusip_map(cusips_by_priority):
             time.sleep(10)
             requests_done += 1
             continue
+        if not isinstance(res, list):
+            print(f"  OpenFIGI: unerwartete Antwort {str(res)[:200]}", file=sys.stderr)
+            requests_done += 1
+            continue
         for (c, job), r in zip(chunk, res):
+            stats["treffer" if r.get("data") else "nicht gefunden" if "warning" in r else "fehler"] += 1
+            if "error" in r and not stats.get("_err"):
+                stats["_err"] = 1
+                print(f"  OpenFIGI-Fehler für {job}: {r['error']}", file=sys.stderr)
             if r.get("data"):
                 d = figi_pick(r["data"])
                 cmap[c] = {"ticker": (d.get("ticker") or "").replace("/", "-") or None, "name": d.get("name"),
@@ -1160,6 +1170,8 @@ def update_cusip_map(cusips_by_priority):
                 cmap[c] = None if "exchCode" in job else {"ticker": None}
         requests_done += 1
         time.sleep(pause)
+    stats.pop("_err", None)
+    print(f"  OpenFIGI-Ergebnis: {dict(stats)}", file=sys.stderr)
     write_json_if_changed(CUSIP_MAP_PATH, cmap, indent=0)
     return cmap
 
