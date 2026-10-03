@@ -29,6 +29,6 @@ test('explicit debt descriptor outranks confirmed NASDAQ preferred and derivativ
  }
 });
 test('classification cache rule provenance advances while current published main schema is preserved',()=>{
- assert.equal(Master.VERSION,'us-security-master-1.3.0');assert.equal(Master.CLASSIFICATION_RULE_VERSION,'us-security-master-rules-1.3.2');
+ assert.equal(Master.VERSION,'us-security-master-1.3.0');assert.equal(Master.CLASSIFICATION_RULE_VERSION,'us-security-master-rules-1.3.3');
  const c=classify({ticker:'PRHIZ',name:'Presurance Holdings Inc Sr Nt'});assert.equal(c.version,Master.VERSION);assert.equal(c.classificationRuleVersion,Master.CLASSIFICATION_RULE_VERSION);
 });

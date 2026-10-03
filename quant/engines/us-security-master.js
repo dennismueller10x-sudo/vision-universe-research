@@ -56,7 +56,7 @@
      revision includes main's DEBT exclusions and the accepted Tiingo 2.0
      classification safeguards. Old artifact files remain readable. */
   var VERSION = "us-security-master-1.3.0";
-  var CLASSIFICATION_RULE_VERSION = "us-security-master-rules-1.3.2";
+  var CLASSIFICATION_RULE_VERSION = "us-security-master-rules-1.3.3";
 
   /* Die Gattungen. Reihenfolge ist die Berichtsreihenfolge. */
   var CLASSES = [
@@ -276,7 +276,7 @@
     { type: "WARRANT",     re: /\bWARRANTS?\b/i },
     { type: "RIGHT",       re: /\bRIGHTS?\b/i },
     { type: "UNIT",        re: /\bUNITS?\b/i },
-    { type: "ADR",         re: /\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY RECEIPTS?)\b/i },
+    { type: "ADR",         re: /\b(ADR|ADS|AMERICAN DEPOSIT[AO]R(Y|IES)|DEPOSIT[AO]RY RECEIPTS?)\b/i },
     { type: "UNKNOWN",     re: /\bDEPOSIT[AO]RY SHARES?\b/i },
     { type: "REIT",        re: /\b(REIT|REAL ESTATE INVESTMENT TRUST)\b/i },
     { type: "SPAC",        re: /\b(SPAC|ACQUISITION CORP|ACQUISITION COMPANY|BLANK CHECK)\b/i },
@@ -344,7 +344,7 @@
     var byName = nameRule(name);
     var byDescription = Base.securityDescriptionRule(row.providerDescription || row.description, row.name);
     var bareDepositary = /\bDEPOSIT[AO]RY SHARES?\b/i.test(name) &&
-      !/\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY RECEIPTS?)\b/i.test(name);
+      !/\b(ADR|ADS|AMERICAN DEPOSIT[AO]R(Y|IES)|DEPOSIT[AO]RY RECEIPTS?)\b/i.test(name);
 
     /* 1. Grobklasse aus dem Basis-Klassierer uebernehmen. */
     var cls, confidence;

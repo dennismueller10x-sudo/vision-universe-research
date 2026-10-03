@@ -35,7 +35,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
 
-  var VERSION = "instrument-classification-1.1.1";
+  var VERSION = "instrument-classification-1.1.2";
 
   /* Die Klassen aus §7. OTHER ist die Sammelklasse fuer Gattungen, die
      erkannt, aber nicht einzeln gefuehrt werden (Units, Bezugsrechte);
@@ -176,7 +176,7 @@
     { type: "PREFERRED", re: /\b(PREFERRED(?!\s+BANK\b)|PFD|PREF\.)/i },
     /* A bare domestic depositary share is often a fractional preferred;
        only an affirmative American/receipt designation establishes ADR. */
-    { type: "ADR",       re: /\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY RECEIPTS?)\b/i },
+    { type: "ADR",       re: /\b(ADR|ADS|AMERICAN DEPOSIT[AO]R(Y|IES)|DEPOSIT[AO]RY RECEIPTS?)\b/i },
     { type: "WARRANT",   re: /\bWARRANTS?\b/i },
     { type: "FUND",      re: /\b(FUND|TRUST FUND|CLOSED[- ]END)\b/i },
     /* Bare depositary shares do not establish the underlying security. */

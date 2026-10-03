@@ -12,7 +12,7 @@ const row = (ticker, name, extra = {}) => ({ ticker, name, assetType: 'Stock', e
 
 test('schema compatibility and new classification rule provenance remain independent', () => {
   assert.equal(Master.VERSION, 'us-security-master-1.3.0');
-  assert.equal(Master.CLASSIFICATION_RULE_VERSION, 'us-security-master-rules-1.3.2');
+  assert.equal(Master.CLASSIFICATION_RULE_VERSION, 'us-security-master-rules-1.3.3');
   const input = row('PFBC', 'Preferred Bank');
   assert.equal(Master.classifySecurity(input, opts).classificationRuleVersion, Master.CLASSIFICATION_RULE_VERSION);
   const master = Master.buildSecurityMaster({ providerRows: [input], baseline: [], today: opts.today });
@@ -43,6 +43,9 @@ test('bare domestic depositary shares do not become American ADRs or override pr
   }
   const adr = Master.classifySecurity(row('SKHY', 'SK hynix Inc. - American Depositary Shares'), opts);
   assert.equal(adr.instrumentType, 'ADR');
+  const alternateSpelling = row('AAPGV', 'Ascentage Pharma Group International American Depository Shares');
+  assert.equal(Base.classify(alternateSpelling, opts).instrumentType, 'ADR');
+  assert.equal(Master.classifySecurity(alternateSpelling, opts).instrumentType, 'ADR');
   assert.equal(Base.classify(row('PREF', 'Foreign Issuer American Depositary Shares representing Preferred Stock'), opts).instrumentType, 'PREFERRED');
 });
 
