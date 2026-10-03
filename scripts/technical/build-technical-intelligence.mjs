@@ -42,6 +42,7 @@ import { cpus } from "node:os";
 
 const require = createRequire(import.meta.url);
 const TI = require(join(ROOT, "quant/engines/technical/ti/engine.js"));
+const EV3 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js"));
 const Explain = require(join(ROOT, "quant/engines/technical/ti/explain.js"));
 const Alerts = require(join(ROOT, "quant/engines/technical/ti/alerts.js"));
 
@@ -282,21 +283,20 @@ async function main() {
   }
   [...got.keys()].sort().forEach((t) => { const g = got.get(t); if (g.daily) dailyDone.add(t); else weekly++; add(g.p); });
   Object.keys(shards).forEach((k) => { shards[k] = Object.fromEntries(Object.keys(shards[k]).sort().map((t) => [t, shards[k][t]])); });
-  // ---- Alerts gegen den vorherigen Index
-  let prev = {};
+  // ---- Alerts gegen den vorherigen Index (Mission IV §51: nie aus Methoden-/Engine-Wechsel, nur bei neuen Marktdaten)
   const idxPath = join(OUT, "index.json.gz");
-  if (existsSync(idxPath)) { try { JSON.parse(gunzipSync(readFileSync(idxPath)).toString()).rows.forEach((x) => { prev[x.t] = x.alerts; }); } catch (e) { prev = {}; } }
-  const alerts = [];
-  /* Erster Lauf ohne vorherigen Index = Ausgangszustand, keine Ereignisse. */
-  const hasPrev = Object.keys(prev).length > 0;
-  if (hasPrev) rows.forEach((x) => Alerts.diff(prev[x.t] || null, x.alerts, { symbol: x.t, asOf: x.asOf }).forEach((a) => alerts.push(a)));
+  const methodologyKey = JSON.stringify({ bundle: TI.BUNDLE_VERSION, api: API_VERSION, methodology: PRODUCT_METHODOLOGY, elliott: EV3.ENGINE_VERSION, rules: Patterns.RULE_SET_VERSION });
+  let prevIdx = null;
+  if (existsSync(idxPath)) { try { const j = JSON.parse(gunzipSync(readFileSync(idxPath)).toString()); prevIdx = { methodologyKey: j.methodologyKey || null, rows: j.rows }; } catch (e) { prevIdx = null; } }
+  const run = Alerts.diffRun(prevIdx, { methodologyKey, rows });
+  const alerts = run.events, prev = prevIdx ? prevIdx.rows : [];
   // ---- schreiben
   mkdirSync(join(OUT, "shards"), { recursive: true });
   Object.entries(shards).forEach(([k, inst]) => gz(join(OUT, "shards", k + ".json.gz"), { schemaVersion: API_VERSION, shard: k, instruments: inst }));
-  gz(idxPath, { schemaVersion: API_VERSION, generatedAt: new Date().toISOString(), rows });
+  gz(idxPath, { schemaVersion: API_VERSION, generatedAt: new Date().toISOString(), methodologyKey, rows });
   writeFileSync(join(OUT, "rules-catalog.json"), JSON.stringify({ schemaVersion: API_VERSION, ruleSet: Patterns.RULE_SET_VERSION, rules: RULES }, null, 1));
   writeFileSync(join(OUT, "discover-rows.json"), JSON.stringify(discoverRows(rows), null, 1));
-  writeFileSync(join(OUT, "alerts.json"), JSON.stringify({ schemaVersion: API_VERSION, generatedAt: new Date().toISOString(), previousIndex: Object.keys(prev).length > 0, events: alerts.slice(0, 2000) }, null, 1));
+  writeFileSync(join(OUT, "alerts.json"), JSON.stringify({ schemaVersion: API_VERSION, generatedAt: new Date().toISOString(), previousIndex: prev.length > 0, suppressed: run.suppressed, skippedUnchanged: run.skippedUnchanged, events: alerts.slice(0, 2000) }, null, 1));
   const meta = {
     schemaVersion: API_VERSION, resultSchema: TI.SCHEMA_VERSION, bundle: TI.BUNDLE_VERSION, generatedAt: new Date().toISOString(),
     methodology: "quant/methodology/technical-intelligence-v2.json", elliott: { engine: PRODUCT_METHODOLOGY.elliottEngine, status: "EXPERIMENTAL_STRUCTURE_MODEL", confluenceWeight: 0, report: "docs/technical-intelligence/ELLIOTT_ENGINE32_REPORT.md" },

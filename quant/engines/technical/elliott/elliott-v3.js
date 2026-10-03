@@ -64,6 +64,7 @@
        ELLIOTT_ENGINE3_REPORT.md). Keine VALIDATION- oder HOLDOUT-Faelle verwendet. */
     weights: { guidelines: 0.06, subdivision: 0.45, separation: 0.03, anchor: 0.45, dominance: 0.45, similarity: 0, trendContext: 0, coverage: 0.45, prior: 0.15, higherDegree: 0, tail: 0.2, residual: 0, hierarchy: 0, proportion: 0 },
     hierMargin: 0.1, hierChild: 0.5,
+    wxyMargin: 0,                 // 3.3-Kandidat: Mindestvorsprung der Korrektur- vor der Motiv-Lesart fuer W und Y (0 = aus)
     subShrink: null,              // 3.2: { a, b, rMin } Zuverlaessigkeit der Unterteilung nach Unterwellen-Rauschabstand (null = aus)
     typePrior: { IMPULSE: 1, ZIGZAG: 1, FLAT: 0.85, TRIANGLE: 0.7, LEADING_DIAGONAL: 0.6, ENDING_DIAGONAL: 0.65, WXY: 0.65, DOUBLE_ZIGZAG: 0.7, TRIPLE_ZIGZAG: 0.5 },
     stickiness: 0.05, stickinessQuiet: 0.05, maxAlternatives: 2,   // Hysterese-Studie DEVELOPMENT: 0,05 = instabile Wechsel 0,66 %/Woche (V2 0,92 %), Erkennung −5 % ggü. 0,03; hoeher haelt an ueberholten Zaehlungen fest
@@ -452,6 +453,12 @@
       if (f.type.indexOf("DIAGONAL") >= 0 && !e.rules.some(function (r) { return r.ruleId === "DIAGONAL_W4_OVERLAPS_W1" && r.passed === true; })) return null;
       e = P.evaluate(f.type, legs);   // WXY braucht die Unterteilung
       if (!e || !e.valid || !intraOk(f.type, legs)) return null;
+      /* 3.3-Kandidat (Mission IV §26): W und Y einer Doppel-Korrektur muessen sich DEUTLICH korrektiv unterteilen — sonst ist W-X-Y
+         ein Auffangbecken fuer beliebige drei Schwuenge (Produktion: 1.877 WXY vs. 44 Impulse; Korpus: WXY 1.305-mal gewaehlt, 13 % richtig). */
+      if (cfg.wxyMargin && f.type === "WXY") {
+        var okW = function (l) { return l.status === "DEVELOPING" || (l.sub && l.sub.resolved && (l.sub.corrective - l.sub.motive) >= cfg.wxyMargin); };
+        if (!okW(legs[0]) || (legs[2] && !okW(legs[2]))) return null;
+      }
       /* orthodoxes Ende: die ueberschiessende Folgewelle muss ein Flat oder Dreieck sein */
       for (var ov = 0; ov < f.over.length; ov++) {
         /* 3.2 (Red-Team 3.2 H1): Ueberschiessen nur an Korrekturpositionen und nur mit SICHTBARER Flat-/Dreieck-Unterteilung —

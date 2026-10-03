@@ -282,7 +282,9 @@
         case "strategien": await ctx.loadNames(); await global.QXPages.strategies(main, ctx, r.id); break;
         case "aktien": await global.QXPages.stocks(main, ctx); break;
         case "aktie": await ctx.loadBacktestView(); dispose = await global.QXStock.render(main, r.ticker, ctx); break;
-        case "technik": await global.QXTools.technical(main, ctx, r.ticker, r.params.get("elliott") === "1"); break;
+        /* Mission IV §55: die V1-Technikseite ist abgeloest — die Route bleibt (Links, Lesezeichen), zeigt aber das Chartbild;
+           der alte Elliott-Link oeffnet die Profi-Ansicht. Keine zweite, widerspruechliche Szenario-Darstellung mehr. */
+        case "technik": { var tp = new URLSearchParams(r.params.toString()); if (tp.get("elliott") === "1") tp.set("ansicht", "profi"); await global.QXChartbild.chartbild(main, ctx, r.ticker, tp); break; }
         case "chartbild": await global.QXChartbild.chartbild(main, ctx, r.ticker, r.params); break;
         case "chartlagen": await global.QXChartbild.overview(main, ctx, r.params); break;
         case "zahlen": await global.QXTools.fundamentals(main, ctx, r.ticker, r.params); break;

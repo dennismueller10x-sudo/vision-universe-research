@@ -43,7 +43,29 @@
     return out;
   }
 
-  var api = { VERSION: VERSION, TYPES: TYPES, diff: diff };
+  /**
+   * Ein ganzer Lauf (Mission IV §51): Ereignisse nur, wenn sich die MARKTDATEN eines Titels bewegt haben — nie aus einer
+   * Methoden- oder Engine-Aenderung. Regeln:
+   *   1. kein voriger Index → Ausgangszustand, keine Ereignisse
+   *   2. anderer Methodenschluessel (Engine-/Regel-/Bundle-Versionen) → alle Ereignisse unterdrueckt ("METHODOLOGY_CHANGED")
+   *   3. je Titel: gleiches Datenstand-Datum wie zuvor → keine Ereignisse ("DATA_UNCHANGED")
+   * @param prev  { methodologyKey, rows: [{ t, asOf, alerts }] } | null
+   * @param next  { methodologyKey, rows: [{ t, asOf, alerts }] }
+   */
+  function diffRun(prev, next) {
+    if (!prev || !prev.rows || !prev.rows.length) return { events: [], suppressed: "BASELINE", skippedUnchanged: 0 };
+    if (prev.methodologyKey !== next.methodologyKey) return { events: [], suppressed: "METHODOLOGY_CHANGED", skippedUnchanged: 0, from: prev.methodologyKey || null, to: next.methodologyKey };
+    var byT = {}; prev.rows.forEach(function (r) { byT[r.t] = r; });
+    var events = [], skipped = 0;
+    next.rows.forEach(function (r) {
+      var p0 = byT[r.t];
+      if (p0 && p0.asOf && r.asOf && p0.asOf === r.asOf) { skipped++; return; }
+      diff(p0 ? p0.alerts : null, r.alerts, { symbol: r.t, asOf: r.asOf }).forEach(function (e) { events.push(e); });
+    });
+    return { events: events, suppressed: null, skippedUnchanged: skipped };
+  }
+
+  var api = { VERSION: VERSION, TYPES: TYPES, diff: diff, diffRun: diffRun };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.TIAlerts = api; }
 })(typeof window !== "undefined" ? window : globalThis);

@@ -330,7 +330,7 @@
         return X.stat(p[0], (p[1] && p[1].label) || "–");
       })),
       foot("Analyse bis " + X.dateDe(t.asOf) + ". " + (lag || "") + (t.elliott ? " Elliott-Szenarien sind Lesarten des Kursverlaufs, keine Wahrscheinlichkeiten." : "")),
-      t.fullWorkspace ? X.actions([X.btn("Technische Analyse & Elliott öffnen", X.routes.technical(ticker), "secondary")])
+      t.fullWorkspace ? X.actions([X.btn("Chartbild öffnen", X.routes.chartbild(ticker), "secondary")])
         : el("p", { class: "qx-small", text: (VM.technicalReasonText(t.unavailability) || "Eine vollständige technische Auswertung ist für diesen Titel noch nicht veröffentlicht.") })];
   }
 
@@ -429,7 +429,7 @@
       : "Einstieg, Stop-Loss und Ziele rechnet Quant nur für Titel mit vollständiger technischer Auswertung – für diesen Titel liegt sie nicht vor. " + (typeof invPrice === "number" ? "Die Invalidation stammt aus der Setup-Beobachtung." : "Quant setzt keine Ersatzwerte.") }));
     var links = [];
     if (st.state !== "UNAVAILABLE") links.push(X.link("Setup im Detail", "#setup"));
-    if (technical && technical.fullWorkspace) links.push(X.link("Technische Analyse öffnen", X.routes.technical(ticker)));
+    if (technical && technical.fullWorkspace) links.push(X.link("Chartbild öffnen", X.routes.chartbild(ticker)));
     if (links.length) kids.push(el("p", { class: "q-setup-links" }, links));
     host.replaceChildren(el("div", { class: "q-setup" }, kids));
   }
