@@ -633,7 +633,12 @@ test("R3 · Der Statusbericht behauptet nie mehr, als vorhanden ist", () => {
   assert.ok(DataMode.MODES.includes(status.dataMode), `unbekannter Modus ${status.dataMode}`);
   if (!status.configured) {
     assert.equal(status.dataMode, "mock", "ohne Zugang gibt es nur den Mock-Modus");
-    assert.ok(/Mock|mock/.test(status.notice), "der Hinweis muss den Mock-Modus benennen");
+    /* Der Hinweis wird auf /quant/markt/ angezeigt. Er benennt das Fehlen
+       der Daten - nicht mehr einen "Mock-Modus" des Quant-Kerns: das
+       synthetische Modelluniversum ist aus dem Produkt entfernt. */
+    assert.match(status.notice, /Keine .*Kursdaten/, "der Hinweis muss benennen, dass keine Kurse vorliegen");
+    assert.doesNotMatch(status.notice, /Mock-Modus|Modelluniversum|synthetisch/i);
+    assert.equal(status.publicDataState.mode, "UNAVAILABLE");
   }
   // Der Statusbericht ist eine ausgelieferte Datei — er darf keine Zugangsdaten tragen.
   const raw = JSON.stringify(status);

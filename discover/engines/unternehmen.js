@@ -15,8 +15,7 @@
    Bewertungskennzahlen - für 493 von ihnen nicht einmal den Kurs selbst.
    Was es gibt, sind SEC-Einreichungen für fünf Titel (die Golden Five);
    dort stehen Umsatz, Gewinn und Aktienzahl quartalsweise und
-   nachvollziehbar. Das Modelluniversum wiederum trägt einen vollständigen
-   synthetischen Kennzahlensatz.
+   nachvollziehbar.
 
    Daraus folgt die einzige Bauweise, die nicht lügt: Dieses Modul rechnet,
    was vorliegt, und sagt sonst, dass nichts vorliegt. Es gibt keinen
@@ -166,41 +165,6 @@
   }
 
   /**
-   * Dasselbe Bild aus dem Kennzahlensatz des Modelluniversums.
-   *
-   * Die Zeile in quant/data/securities.json traegt die Werte bereits
-   * gerechnet (quant/engines/factors.js). Hier wird nichts neu gerechnet -
-   * nur uebersetzt, damit Oberflaeche und Pruefung fuer beide Universen
-   * dieselbe Form sehen.
-   */
-  function ausModellzeile(zeile) {
-    if (!zeile) return leer(STATUS.SOURCE_MISSING, "Keine Modellzeile vorhanden.");
-    var pct = function (v) { return isNum(v) ? round(v / 100, 4) : null; };
-    return {
-      engineVersion: ENGINE_VERSION,
-      quelle: "VU_MODEL",
-      status: STATUS.CALCULATED,
-      zeitraum: { von: null, bis: zeile.asOf || null },
-      umsatzTTM: isNum(zeile.revenue) ? round(zeile.revenue, 2) : null,
-      gewinnTTM: isNum(zeile.netIncome) ? round(zeile.netIncome, 2) : null,
-      einheit: "usd_m",
-      umsatzWachstum: pct(zeile.revenueGrowth),
-      gewinnWachstum: pct(zeile.epsGrowth),
-      marge: pct(zeile.operatingMargin),
-      gewinnJeAktie: null,
-      /* Gewinnrendite und KGV sind Kehrwerte voneinander. */
-      kgv: isNum(zeile.earningsYield) && zeile.earningsYield > 0
-        ? round(100 / zeile.earningsYield, 2) : null,
-      kgvStatus: isNum(zeile.earningsYield) && zeile.earningsYield > 0
-        ? STATUS.CALCULATED : STATUS.SOURCE_MISSING,
-      dividendenRendite: pct(zeile.dividendYield),
-      dividendenRenditeStatus: isNum(zeile.dividendYield)
-        ? STATUS.CALCULATED : STATUS.SOURCE_MISSING,
-      message: null
-    };
-  }
-
-  /**
    * Dasselbe Bild aus dem kompakten Consumer-Bundle der SEC-Pipeline
    * (discover/engines/fundamentals.js, fromBundle). Zwoelfmonatswerte
    * kommen aus der TTM-Schicht des Bundles (vier juengste Standalone-
@@ -306,7 +270,7 @@
 
   var api = {
     ENGINE_VERSION: ENGINE_VERSION, STATUS: STATUS,
-    ausSecFakten: ausSecFakten, ausConsumerBundle: ausConsumerBundle, ausModellzeile: ausModellzeile, leer: leer,
+    ausSecFakten: ausSecFakten, ausConsumerBundle: ausConsumerBundle, leer: leer,
     zwoelfMonate: zwoelfMonate, wachstum: wachstum
   };
 

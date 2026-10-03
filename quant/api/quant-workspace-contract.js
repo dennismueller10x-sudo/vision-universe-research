@@ -22,7 +22,7 @@ function build(stock,source,versions){
    return {metricId,label:definition.uxMapping.label,unit:definition.unit,value,state:value===null?'SOURCE_MISSING':'AVAILABLE',reason:!allowed?'DISPLAY_NOT_PERMITTED':value===null?'SOURCE_MISSING':null,
     description:definition.uxMapping.explanation,owner:definition.owner,registryId:definition.metricId,definitionVersion:definition.version,catalog:'quant/engines/metric-registry.js',panelVersion:versions.buildScript,
     asOf:market?stock.asOf:stock.fundamentalsAsOf,availableAt:market?stock.asOf:stock.availableAt};
-  })})),methodologyHref:'/quant/data-inspector/',legacyHref:'/quant/stock/?ticker='+encodeURIComponent(stock.ticker)};
+  })})),methodologyHref:'/quant/data-inspector/',legacyHref:'/quant/#/aktie/'+encodeURIComponent(stock.ticker)};
 }
 const api={build};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUQuantWorkspaceContract=api;
 })(typeof window!=='undefined'?window:globalThis);

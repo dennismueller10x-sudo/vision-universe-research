@@ -222,12 +222,20 @@
   }
 
   /* ----------------------------------------------------------- Merkliste
-     Der Schluessel ist Quants eigener (vu.quant.watchlist.v1) - geteilt mit
-     den klassischen Quant-Seiten, nicht mit dem eigenstaendigen Screener. */
+     Der Schluessel ist Quants eigener (vu.quant.watchlist.v1) - nicht
+     geteilt mit dem eigenstaendigen Screener. */
   var WATCH_KEY = "vu.quant.watchlist.v1", RECENT_KEY = "vu.quant.recent.v1";
+  /* Die frueheren Mehrseiten-Quant-Seiten schrieben unter demselben
+     Merklisten-Schluessel ein Objekt ({ securityIds: ["sec_VU0001", ...] },
+     synthetisches Modelluniversum). Alles, was keine Liste ist, gilt als
+     leer und wird einmal als leere Liste ueberschrieben - sonst bliebe der
+     Altbestand liegen und jede Leseoperation stiesse erneut darauf. */
   function readList(key) {
-    try { var v = JSON.parse(global.localStorage.getItem(key) || "[]"); return Array.isArray(v) ? v.filter(function (x) { return typeof x === "string" && /^[A-Z0-9.-]{1,12}$/.test(x); }) : []; }
-    catch (e) { return []; }
+    var v;
+    try { v = JSON.parse(global.localStorage.getItem(key) || "[]"); }
+    catch (e) { v = null; }
+    if (!Array.isArray(v)) { writeList(key, []); return []; }
+    return v.filter(function (x) { return typeof x === "string" && /^[A-Z0-9.-]{1,12}$/.test(x); });
   }
   function writeList(key, list) { try { global.localStorage.setItem(key, JSON.stringify(list)); } catch (e) { /* privat oder voll */ } }
   var watch = {
