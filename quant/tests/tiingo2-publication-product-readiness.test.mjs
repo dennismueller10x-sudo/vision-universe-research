@@ -11,8 +11,10 @@ import { spawnSync } from 'node:child_process';
 import { resolveName, SUMMARY_FILE as NAME_SUMMARY_FILE } from '../../scripts/market/build-company-names.mjs';
 import { stageCanonicalPublication, attachCanonicalProjections, bindProtectedProductQA, applyCanonicalPublication, verifyCanonicalPublicationReceipt, rollbackCanonicalPublication, REQUIRED_PUBLICATION_QA, REQUIRED_PROTECTED_PRODUCT_CHECKS, CANONICAL_PUBLICATION_PATHS as paths, PRODUCTIZATION_QA_SCHEMA, REQUIRED_PRODUCTIZATION_QA, CONDITIONAL_PRODUCTIZATION_QA, isProductizationProjectionPath, verifyStagedCanonicalPublication } from '../../scripts/market/tiingo2-publication.mjs';
 import { budgets } from '../../scripts/vu2/resource-budget.mjs';
+import { verifyScopedHistoryIntent, assessScopedHistoryPreflight, probeScopedHistoryTargets } from '../../scripts/market/tiingo2-scoped-history-preflight.mjs';
 const Company = createRequire(import.meta.url)('../../quant/engines/company-master.js');
 const FactorEvidence = createRequire(import.meta.url)('../../quant/engines/factor-evidence.js');
+const Guard = createRequire(import.meta.url)('../../quant/engines/zero-cost-guard.js');
 const today = '2026-10-02';
 const factorShard = (record) => ({ schemaVersion: FactorEvidence.SHARD_SCHEMA, methodologyVersion: FactorEvidence.METHODOLOGY_VERSION, derivedFrom: FactorEvidence.DERIVED_FROM, shard: 'ZN', publication: { compositeAllowed: false, rankingAllowed: false }, publicationViolations: [], securities: { ZNEW: record } });
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
@@ -561,3 +563,84 @@ test('finalizer verification reads exact staged bytes and readiness without publ
   writeFileSync(join(context.output, chart.stagedPath), '{}');
   assert.throws(() => verifyStagedCanonicalPublication({ root: context.root, staged }), /STAGED_CONTENT_INTEGRITY_FAILED/);
 }));
+
+test('scoped HistoryStore preflight binds final protected QA manifest and source bytes without remote writes', () => fixture((context) => {
+  const sourceResponseSha256 = 'b'.repeat(64), bars = Array.from({ length: 30 }, (_, index) => ({
+    date: '2026-09-' + String(index + 1).padStart(2, '0'), securityId: 'ref_ZNEW', currency: 'USD',
+    open: 10, high: 10, low: 10, close: 10, volume: 100, adjustedClose: 10, splitFactor: 1, dividend: 0 }));
+  const { staged } = productizationFixture(context, input => {
+    const chart = JSON.parse(input.preparedFiles[0].bytes);
+    Object.assign(chart, { provider: 'tiingo', corporateActionStatus: 'PASS',
+      sourceResponseSha256, sourceBarCount: bars.length, to: bars.at(-1).date });
+    input.preparedFiles[0].bytes = Buffer.from(JSON.stringify(chart)); return input;
+  }), addition = staged.additions[0], sourceCommit = 'a'.repeat(40);
+  const planRoot = join(context.root, '.market-cache/prepared/tiingo2');
+  const path = 'private-histories/tiingo/daily/' + addition.securityId + '.json';
+  const source = Buffer.from(JSON.stringify({ ticker: addition.ticker, securityId: addition.securityId, provider: 'tiingo',
+    currency: 'USD', adjustmentStatus: 'adjusted', provenance: { sourceResponseSha256,
+      seriesSha256: sha(Buffer.from(JSON.stringify(bars))) }, bars }));
+  mkdirSync(dirname(join(planRoot, path)), { recursive: true }); writeFileSync(join(planRoot, path), source);
+  const plan = { schemaVersion: 'tiingo2-private-history-publication-intent-1.0.0', sourceCommit,
+    publicationManifestSha256: staged.manifestSha256, operation: 'APPEND_NEW_SECURITIES_ONLY',
+    owner: 'quant/engines/history-store.js', transport: 'AUTHENTICATED_ENCRYPTED_PACKAGE_ONLY',
+    writer: 'EXISTING_HISTORY_STORE_WITH_CURRENT_ZERO_COST_PREFLIGHT',
+    requiredGates: ['CURRENT_STORAGE_PREFLIGHT', 'PROVIDER_IDENTITY', 'CURRENT_INDEX_CAS',
+      'CORPORATE_ACTIONS', 'PUBLISHED_PRODUCT_MANIFEST_HASH'],
+    productionWrites: 0, protectedExistingSecuritiesUpdated: [], rows: [{ ticker: addition.ticker,
+      securityId: addition.securityId, path, sha256: sha(source), bars: bars.length, firstDate: bars[0].date,
+      latestDate: bars.at(-1).date, precondition: 'ABSENT_OR_EXACT_SAME_SOURCE_CONTENT', existingObjectOverwriteAllowed: false }] };
+  writeFileSync(join(planRoot, 'history-publication-plan.json'), JSON.stringify(plan));
+  const input = { root: context.root, staged, planRoot, sourceCommit };
+  const intent = verifyScopedHistoryIntent(input);
+  assert.equal(intent.rows.length, 1);
+  const usage = { ...Guard.emptyUsage(Guard.monthKey()), updatedAt: new Date().toISOString() };
+  const snapshot = { index: { symbols: {} }, etag: '"index"' }, measurement = { storageBytes: 1000, objectCount: 1 };
+  const targetObjects = [{ ticker: addition.ticker, key: 'v1/tiingo/daily/US/ZNEW.json.zst', present: false }];
+  const preflight = assessScopedHistoryPreflight({ intent, usage, indexSnapshot: snapshot, measurement,
+    usageETag: '"usage"', targetObjects });
+  assert.equal(preflight.status, 'PREFLIGHT_GREEN_READ_ONLY');
+  assert.equal(preflight.productionWrites, 0);
+  assert.equal(preflight.verdict.estimate.bytesDelta, source.length + 1048576);
+  assert.equal(assessScopedHistoryPreflight({ intent, usage,
+    indexSnapshot: { index: { symbols: { ZNEW: {} } }, etag: '"index"' }, measurement,
+    usageETag: '"usage"', targetObjects }).status, 'BLOCKED');
+  assert.equal(assessScopedHistoryPreflight({ intent, usage: Guard.emptyUsage(Guard.monthKey()),
+    indexSnapshot: snapshot, measurement, usageETag: null, targetObjects }).status, 'BLOCKED');
+  assert.throws(() => assessScopedHistoryPreflight({ intent, usage, indexSnapshot: snapshot,
+    measurement, usageETag: '"usage"' }), /TARGET_HEAD_INCOMPLETE/);
+  const orphan = assessScopedHistoryPreflight({ intent, usage, indexSnapshot: snapshot, measurement,
+    usageETag: '"usage"', targetObjects: [{ ...targetObjects[0], present: true }] });
+  assert.equal(orphan.status, 'BLOCKED'); assert.deepEqual(orphan.orphanObjects, ['ZNEW']);
+  assert.equal(assessScopedHistoryPreflight({ intent, usage, measurement, usageETag: '"usage"', targetObjects,
+    indexSnapshot: { index: { symbols: { KEEP: {} } }, etag: null } }).status, 'BLOCKED');
+  assert.throws(() => verifyScopedHistoryIntent({ ...input, sourceCommit: 'b'.repeat(40) }), /INTENT_NOT_BOUND/);
+  assert.throws(() => verifyScopedHistoryIntent({ ...input, planRoot: context.root }), /PRIVATE_ROOT_REQUIRED/);
+  const mismatched = JSON.parse(source); mismatched.provenance.sourceResponseSha256 = 'c'.repeat(64);
+  const mismatchedBytes = Buffer.from(JSON.stringify(mismatched)); plan.rows[0].sha256 = sha(mismatchedBytes);
+  writeFileSync(join(planRoot, path), mismatchedBytes);
+  writeFileSync(join(planRoot, 'history-publication-plan.json'), JSON.stringify(plan));
+  assert.throws(() => verifyScopedHistoryIntent(input), /CHART_SOURCE_MISMATCH/);
+  plan.rows[0].sha256 = sha(source); writeFileSync(join(planRoot, path), source);
+  writeFileSync(join(planRoot, 'history-publication-plan.json'), JSON.stringify(plan));
+  writeFileSync(join(planRoot, path), Buffer.from('changed'));
+  assert.throws(() => verifyScopedHistoryIntent(input), /SOURCE_HASH_MISMATCH/);
+  const placeholder = Buffer.from(JSON.stringify({ ticker: addition.ticker, securityId: addition.securityId,
+    provider: 'tiingo', bars: [{ date: '2026-10-01', securityId: addition.securityId },
+      { date: '2026-10-02', securityId: addition.securityId }] }));
+  plan.rows[0].sha256 = sha(placeholder); plan.rows[0].bars = 2;
+  plan.rows[0].firstDate = '2026-10-01'; plan.rows[0].latestDate = '2026-10-02';
+  writeFileSync(join(planRoot, path), placeholder);
+  writeFileSync(join(planRoot, 'history-publication-plan.json'), JSON.stringify(plan));
+  assert.throws(() => verifyScopedHistoryIntent(input), /PRICE_OR_ACTIONS_INVALID/);
+}));
+
+test('scoped R2 preflight probes intended keys even when stale index omits orphan objects', async () => {
+  const probes = [], reads = [];
+  const store = { seriesKey: ticker => 'v1/tiingo/daily/US/' + ticker + '.json.zst',
+    budget: { consumeClassB: () => reads.push('HEAD') },
+    driver: { head: async key => { probes.push(key); return key.includes('ORPHAN') ? { etag: '"orphan"' } : null; } } };
+  const objects = await probeScopedHistoryTargets(store, [{ ticker: 'FRESH' }, { ticker: 'ORPHAN' }]);
+  assert.deepEqual(probes, ['v1/tiingo/daily/US/FRESH.json.zst', 'v1/tiingo/daily/US/ORPHAN.json.zst']);
+  assert.deepEqual(objects.map(row => row.present), [false, true]);
+  assert.equal(reads.length, 2);
+});

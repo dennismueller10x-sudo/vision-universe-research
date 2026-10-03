@@ -9,6 +9,7 @@ import {writeUniverse} from '../screener/build-universe.mjs';
 import {REQUIRED_PROTECTED_PRODUCT_CHECKS} from './tiingo2-publication.mjs';
 import {DNA_CORRECTION_PATH,verifyExistingDnaEligibilityCorrection} from './tiingo2-productize.mjs';
 import {readDerivedFactorPopulationComparison} from './tiingo2-factor-population-qa.mjs';
+import {compareChangedExistingProductFiles} from './tiingo2-existing-product-semantics.mjs';
 
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
 const read=path=>{const bytes=readFileSync(path);return JSON.parse(path.endsWith('.gz')?gunzipSync(bytes):bytes);};
@@ -46,18 +47,28 @@ function historyFiles(root){
  }
  return files.sort();
 }
-function classifyChangedPath(path,verifiedDna){
+function classifyChangedPath(path,verifiedDna,semantic){
  if(verifiedDna&&(/(?:eligibility\.json|instruments\/DN\.json|tiingo2-existing-eligibility-corrections\.json)$/.test(path)))
   return ['VERIFIED_EXISTING_ELIGIBILITY_CORRECTION','The existing DNA listing correction is backed by fresh canonical identity and corporate action evidence.'];
+ if((/^discover\/data\/stocks\/US_REAL\//.test(path)||/^quant\/data\/product\/technical-signals-v1\//.test(path)||path==='screener/data/universe-US_REAL.json')&&
+    semantic?.status!=='PASS')
+  return ['UNVERIFIED_SEMANTIC_CHANGE','Existing product payload changed outside its proven population fields; publication remains blocked.'];
+ if(semantic&&/^quant\/data\/product\/technical-signals-v1\//.test(path))
+  return ['ADDITIVE_MEMBERSHIP_OR_INDEX','The technical bundle adds scoped listing rows; semantic comparison preserved every existing technical instrument and signal event.'];
+ if(semantic&&/^discover\/data\/stocks\/US_REAL\//.test(path)&&semantic.allowedSample.every(field=>field==='/updatedAt'))
+  return ['CANONICAL_METADATA_UPDATE','The rebuilt existing stock card changed only its generation timestamp; all price, fundamental, eligibility and signal fields are identical.'];
+ if(semantic&&path==='screener/data/universe-US_REAL.json'&&semantic.allowedCount===0)
+  return ['ADDITIVE_MEMBERSHIP_OR_INDEX','The Screener columnar artifact adds scoped listings; every existing row and column remains semantically identical.'];
  if(/(?:factors|factor-evidence|technical-signals|discover\/data\/(?:rank|stocks|themes|meta))/.test(path))
   return ['POPULATION_RANK_NORMALIZATION','The existing producer rebuilt this output for the enlarged canonical population; the factor population comparison and protected row checks record its impact.'];
  if(/(?:company-names|cik-map|sec\/consumer)/.test(path))
   return ['CANONICAL_METADATA_UPDATE','The canonical company metadata projection adds listing-bound issuer identities while retaining every protected existing row.'];
  return ['ADDITIVE_MEMBERSHIP_OR_INDEX','The canonical membership or product index gained scoped securities while the protected existing identity and policy checks retained the baseline.'];
 }
-export function explainChangedExistingFiles(stage,{verifiedDna=false}={}){
+export function explainChangedExistingFiles(stage,{verifiedDna=false,semantics=[]}={}){
+ const byPath=new Map(semantics.map(row=>[row.path,row]));
  return (stage.files??[]).filter(row=>row.projection&&row.baselineSha256!==null&&row.baselineSha256!==row.stagedSha256)
-  .map(row=>{const [reasonCode,explanation]=classifyChangedPath(row.path,verifiedDna);
+  .map(row=>{const [reasonCode,explanation]=classifyChangedPath(row.path,verifiedDna,byPath.get(row.path));
    return {path:row.path,beforeSha256:row.baselineSha256,afterSha256:row.stagedSha256,reasonCode,explanation};});
 }
 export async function runCurrentShadowQA({root,shadow,stage,workDir,out}){
@@ -129,17 +140,20 @@ export async function runCurrentShadowQA({root,shadow,stage,workDir,out}){
  }
  const baselineScreenRoot=join(workDir,'baseline-screener');
  await writeUniverse({root,out:baselineScreenRoot,log:()=>{}});
- const baselineScreen=new Set(read(join(baselineScreenRoot,'universe-US_REAL.json')).cols?.s??[]),
+ const baselineScreener=read(join(baselineScreenRoot,'universe-US_REAL.json')),
+  baselineScreen=new Set(baselineScreener.cols?.s??[]),
   shadowScreen=new Set(read(join(shadow,'screener/data/universe-US_REAL.json')).cols?.s??[]),lostScreen=[...baselineScreen].filter(ticker=>!shadowScreen.has(ticker));
  check('BASELINE_SCREENER_MEMBERSHIP',!lostScreen.length,{before:baselineScreen.size,after:shadowScreen.size,lost:lostScreen});
  const names=checks.map(row=>row.name);
  if(names.length!==REQUIRED_PROTECTED_PRODUCT_CHECKS.length||REQUIRED_PROTECTED_PRODUCT_CHECKS.some(name=>names.filter(item=>item===name).length!==1))
   throw Error('CURRENT_SHADOW_QA_CHECK_SET_INCOMPLETE');
  const derivedFactorChanges=readDerivedFactorPopulationComparison({root,shadow,scope:[...scope]});
- const changedExistingFiles=explainChangedExistingFiles(stage,{verifiedDna});
+ const semantic=compareChangedExistingProductFiles({root,shadow,stage,baselineScreener,verifiedDna});
+ findings.push(...semantic.findings);
+ const changedExistingFiles=explainChangedExistingFiles(stage,{verifiedDna,semantics:semantic.comparisons});
  const result={schemaVersion:'tiingo2-product-shadow-qa-1',runId:stage.runId,sourceCommit,
   sourceManifestSha256:stage.manifestSha256,sourceReadinessSha256:stage.productizationReadinessSha256,
-  scope:[...scope].sort(),checks,findings,changedExistingFiles,derivedFactorChanges,
+  scope:[...scope].sort(),checks,findings,changedExistingFiles,semanticDiff:semantic,derivedFactorChanges,
   populationChangeExplanation:'New listing membership recomputes derived ranks and Discover card ordering through the existing canonical producers; existing identities, values, policy, logos, histories and membership are checked independently.',
   productionWrites:0};
  mkdirSync(dirname(out),{recursive:true});writeFileSync(out,JSON.stringify(result,null,2)+'\n');

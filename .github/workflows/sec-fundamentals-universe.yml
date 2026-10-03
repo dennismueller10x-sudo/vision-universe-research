@@ -53,11 +53,16 @@ on:
       - 'quant/config/sec-universe.json'
       - 'scripts/universe/build-issuer-master.mjs'
       - 'scripts/universe/build-sec-universe.mjs'
+      - 'scripts/universe/check-sec-product-denominator.py'
+      - 'scripts/universe/tests/test_sec_product_denominator.py'
       - '.github/workflows/sec-fundamentals-universe.yml'
   pull_request:
     paths:
       - 'scripts/quant/sec/**'
       - 'quant/config/sec-metric-registry.json'
+      - 'scripts/universe/check-sec-product-denominator.py'
+      - 'scripts/universe/tests/test_sec_product_denominator.py'
+      - '.github/workflows/sec-fundamentals-universe.yml'
 
 permissions:
   contents: write
@@ -90,6 +95,9 @@ jobs:
 
       - name: SEC-Tests
         run: python3 scripts/quant/cli.py test
+
+      - name: Product-Nenner und historische Ausschluesse testen
+        run: python3 -m unittest discover -s scripts/universe/tests -p 'test_sec_product_denominator.py'
 
       - name: Emittentenstamm
         # Alle drei Suiten, nicht nur die eine. Lauf 34714903340 ist an
@@ -155,22 +163,10 @@ jobs:
 
       - name: Der Nenner ist das Produktuniversum
         # §19. Der bequemste Fehler waere, gegen den eigenen Bestand zu
-        # zaehlen - dann meldet die Pipeline immer volle Deckung.
-        run: |
-          python3 - <<'PY'
-          import json, sys
-          c = json.load(open("quant/data/fundamentals/coverage-report.json"))
-          titel = c["universe"]["PRODUCT_TITLES"]
-          verfuegbar = c["fundamentals"]["COMPANY_FACTS_AVAILABLE"]
-          if titel < 7000:
-              sys.exit(f"Produktuniversum nur {titel} Titel - der Master ist nicht synchron")
-          for name, row in c["metrics"].items():
-              if row["COUNT"] > titel:
-                  sys.exit(f"{name}: {row['COUNT']} von {titel} - mehr gedeckt als vorhanden")
-              if row["COUNT"] and row["PERCENT_OF_PRODUCT_UNIVERSE"] > 100:
-                  sys.exit(f"{name}: Prozentsatz ueber 100")
-          print(f"Nenner {titel}, davon {verfuegbar} mit Company Facts.")
-          PY
+        # zaehlen - dann meldet die Pipeline immer volle Deckung. Deshalb
+        # gegen alle kanonischen Master-Entscheidungen und die 22 bewusst
+        # ausgeschlossenen Debt-IDs pruefen, nicht gegen eine alte Zahl.
+        run: python3 scripts/universe/check-sec-product-denominator.py
 
       - name: Keine erfundene Coverage im Repository
         # §19 als Pruefung: eine Zahl, die keiner gemessen hat, darf nicht

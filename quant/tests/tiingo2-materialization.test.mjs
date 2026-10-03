@@ -169,6 +169,37 @@ cache.put(url,json.dumps(payload).encode())
   assert.equal(report.pipeline,null);
  }finally{rmSync(fixture.base,{recursive:true,force:true});}
 });
+test('one failed SEC issuer does not erase a later verified CIK and PIT bundle',async()=>{
+ const fixture=setup();
+ try{
+  const namesPath=join(fixture.shadow,'quant/data/market/security-master/company-names.json'),names=JSON.parse(readFileSync(namesPath));
+  names.rows.push({ticker:'GOOD',securityId:'ref_GOOD',cik:'4100000003'});writeFileSync(namesPath,JSON.stringify(names));
+  const seed=String.raw`
+import sys,json,zipfile
+from pathlib import Path
+sys.path.insert(0,sys.argv[1])
+from quant.tests.test_pipeline_and_store import make_company,StubSEC
+from quant.sec.http_client import DiskCache
+first,_=make_company(4100000001,'SCOP','SYNTHETIC SCOPE SOFTWARE','3674','1231')
+good,_=make_company(4100000003,'GOOD','SYNTHETIC GOOD SOFTWARE','3674','1231')
+stub=StubSEC([first,good]);cache=DiskCache(Path(sys.argv[2])/'http-cache',ttl_seconds=None)
+for url,payload in stub.responses.items():
+ if '/companyfacts/' not in url: cache.put(url,json.dumps(payload).encode())
+with zipfile.ZipFile(Path(sys.argv[2])/'companyfacts.zip','a',zipfile.ZIP_DEFLATED) as archive:
+ archive.writestr('CIK4100000003.json',json.dumps(good[-1].company_facts(good[2])))
+`;
+  const patched=spawnSync('python3',['-c',seed,join(root,'scripts'),fixture.privateDir],{encoding:'utf8'});assert.equal(patched.status,0,patched.stderr);
+  const badPath=join(fixture.shadow,'quant/data/sec/consumer/CIK4100000001.json');mkdirSync(dirname(badPath),{recursive:true});
+  writeFileSync(badPath,JSON.stringify({cik:'4100000099',tickers:['OTHER']}));
+  const report=await materializeFundamentals({root:fixture.shadow,tickers:['SCOP','GOOD'],privateDir:fixture.privateDir,
+   asOf:'2024-09-30',archive:fixture.archive,allowNetwork:false});
+  const bad=report.rows.find(row=>row.ticker==='SCOP'),good=report.rows.find(row=>row.ticker==='GOOD');
+  assert.equal(bad.reason,'SEC_IDENTITY_CIK_COLLISION');assert.equal(bad.errorCode,'CONSUMER_ISSUER_IDENTITY_COLLISION');
+  assert.equal(bad.pitValid,false);assert.deepEqual(bad.artifacts,[]);
+  assert.equal(good.fundamentalsStatus,'FULL');assert.equal(good.pitValid,true);assert.ok(good.artifacts.length);
+  assert.equal(report.byTicker.GOOD.cik,'4100000003');
+ }finally{rmSync(fixture.base,{recursive:true,force:true});}
+});
 test('actual materialized factor states expose technical-only/partial/blockage and never activate disabled full7F', () => {
   const record = (available) => ({ factors: Object.fromEntries(Evidence.FACTOR_ORDER.map((id) => [id, available.includes(id) ? { state: 'AVAILABLE', score: 50 } : { state: 'UNAVAILABLE', score: null, reason: id === 'revisions' ? 'BLOCKED_EXTERNAL' : 'INPUT_NOT_MATERIALIZED' }])) });
   assert.equal(classifyMaterializedFactorRecord(record(['momentum', 'risk'])).quantStatus, 'TECHNICAL_ONLY');

@@ -93,6 +93,7 @@ for entry in config['entries']:
 groups={}
 for entry in resolved: groups.setdefault(entry['cik'],[]).append(entry)
 archive_path=config.get('archive')
+writes_started=False
 try:
  if groups:
   if not archive_path:
@@ -106,36 +107,50 @@ try:
   canonical_index=json.loads(canonical_index_path.read_text()) if canonical_index_path.exists() else {'schema_version':1,'companies':[]}
   canonical_rows={row['ticker']:row for row in canonical_index.get('companies',[]) if row.get('ticker')}
   for cik,entries in groups.items():
-   document=store.read_company(cik)
-   if not document:
-    for entry in entries: report['rows'].append(failure(entry,'SEC_INGEST_FAILED',failures.get(cik,{}).get('error')))
+   # Validate one issuer fully before writing any of its public projections.
+   # One malformed filer must not turn every later CIK into SEC NONE.
+   try:
+    document=store.read_company(cik)
+    if not document:
+     for entry in entries: report['rows'].append(failure(entry,'SEC_INGEST_FAILED',failures.get(cik,{}).get('error')))
+     continue
+    payload=pipeline.raw_store.get_latest(cik,'companyfacts')
+    existing_path=root/'quant/data/sec/consumer'/('CIK'+cik+'.json')
+    previous=json.loads(existing_path.read_text()) if existing_path.exists() else {}
+    if previous and normalize_cik(previous.get('cik'))!=cik: raise RuntimeError('CONSUMER_ISSUER_IDENTITY_COLLISION')
+    tickers=list(dict.fromkeys(previous.get('tickers',[])+[e['ticker'] for e in entries]))
+    security_ids=list(dict.fromkeys(previous.get('securityIds',[])+[e['securityId'] for e in entries]))
+    bundle=build_consumer_bundle(cik,payload,registry,as_of=config['asOf'],tickers=tickers,security_ids=security_ids,name=document['profile']['name'],fiscal_year_end_hint=document['profile'].get('fiscal_year_end'),provider=provider) if payload else None
+    issuer_fundamentals=universe_coverage.issuer_fundamentals(document,registry)
+    if not bundle or not any(series for scope in ['annual','quarterly'] for series in bundle[scope].values()):
+     for entry in entries: report['rows'].append(failure(entry,'NO_PERIODIC_PIT_FACTS'))
+     continue
+    summary=summarize_bundle(bundle); core=['revenue','net_income','operating_cash_flow','total_assets','stockholders_equity']
+    present=set(bundle['coverage']['annualMetrics'])|set(bundle['coverage']['quarterlyMetrics'])|set(bundle['coverage']['ttmMetrics'])
+    status='FULL' if all(m in present for m in core) and summary['h3'] else 'PARTIAL'
+    pit=all(row[2] and row[4] and row[2]<=row[4]<=config['asOf'] and row[5] for scope in ['annual','quarterly'] for series in bundle[scope].values() for row in series)
+    if not pit: raise RuntimeError('CONSUMER_PIT_CHRONOLOGY_INVALID')
+    prepared=[]
+    for entry in entries:
+     canonical=build_company_bundle(document,registry,entry['ticker'])
+     if any(not f.get('filedAt') or f['filedAt']<f['periodEnd'] or f['availableAt']<f['periodEnd'] for f in canonical['facts']+((canonical.get('industrySpecificMetrics') or {}).get('facts') or [])): raise RuntimeError('CANONICAL_PIT_CHRONOLOGY_INVALID')
+     mapped=consumer_index.setdefault('byTicker',{}).get(entry['ticker'])
+     if mapped and (normalize_cik(mapped.get('cik'))!=cik or mapped.get('file')!='consumer/CIK'+cik+'.json'): raise RuntimeError('CONSUMER_INDEX_ISSUER_IDENTITY_COLLISION')
+     prepared.append((entry,canonical,mapped))
+   except Exception as exc:
+    code=str(exc) if str(exc) in ['CONSUMER_ISSUER_IDENTITY_COLLISION','CONSUMER_INDEX_ISSUER_IDENTITY_COLLISION','CONSUMER_PIT_CHRONOLOGY_INVALID','CANONICAL_PIT_CHRONOLOGY_INVALID'] else 'ISSUER_DATA_UNUSABLE'
+    reason='SEC_IDENTITY_CIK_COLLISION' if code in ['CONSUMER_ISSUER_IDENTITY_COLLISION','CONSUMER_INDEX_ISSUER_IDENTITY_COLLISION'] else 'SEC_ISSUER_MATERIALIZATION_FAILURE'
+    for entry in entries:
+     failed=failure(entry,reason);failed['errorCode']=code;failed['errorKind']=type(exc).__name__;report['rows'].append(failed)
+    print('SEC_ISSUER_SKIPPED '+','.join(entry['ticker'] for entry in entries)+' '+code,flush=True)
     continue
-   payload=pipeline.raw_store.get_latest(cik,'companyfacts')
-   existing_path=root/'quant/data/sec/consumer'/('CIK'+cik+'.json')
-   previous=json.loads(existing_path.read_text()) if existing_path.exists() else {}
-   if previous and normalize_cik(previous.get('cik'))!=cik: raise RuntimeError('CONSUMER_ISSUER_IDENTITY_COLLISION')
-   tickers=list(dict.fromkeys(previous.get('tickers',[])+[e['ticker'] for e in entries]))
-   security_ids=list(dict.fromkeys(previous.get('securityIds',[])+[e['securityId'] for e in entries]))
-   bundle=build_consumer_bundle(cik,payload,registry,as_of=config['asOf'],tickers=tickers,security_ids=security_ids,name=document['profile']['name'],fiscal_year_end_hint=document['profile'].get('fiscal_year_end'),provider=provider) if payload else None
-   issuers['iss_cik_'+cik]=universe_coverage.issuer_fundamentals(document,registry)
-   if not bundle or not any(series for scope in ['annual','quarterly'] for series in bundle[scope].values()):
-    for entry in entries: report['rows'].append(failure(entry,'NO_PERIODIC_PIT_FACTS'))
-    continue
-   summary=summarize_bundle(bundle); core=['revenue','net_income','operating_cash_flow','total_assets','stockholders_equity']
-   present=set(bundle['coverage']['annualMetrics'])|set(bundle['coverage']['quarterlyMetrics'])|set(bundle['coverage']['ttmMetrics'])
-   status='FULL' if all(m in present for m in core) and summary['h3'] else 'PARTIAL'
-   pit=all(row[2] and row[4] and row[2]<=row[4]<=config['asOf'] and row[5] for scope in ['annual','quarterly'] for series in bundle[scope].values() for row in series)
-   if not pit: raise RuntimeError('CONSUMER_PIT_CHRONOLOGY_INVALID')
+   issuers['iss_cik_'+cik]=issuer_fundamentals
+   writes_started=True
    consumer_artifact=write(root/'quant/data/sec/consumer'/('CIK'+cik+'.json'),bundle)
-   for entry in entries:
-    canonical=build_company_bundle(document,registry,entry['ticker'])
-    if any(not f.get('filedAt') or f['filedAt']<f['periodEnd'] or f['availableAt']<f['periodEnd'] for f in canonical['facts']+((canonical.get('industrySpecificMetrics') or {}).get('facts') or [])): raise RuntimeError('CANONICAL_PIT_CHRONOLOGY_INVALID')
+   for entry,canonical,mapped in prepared:
     artifact=write_canonical(root/'quant/data/sec/canonical'/(entry['ticker']+'.json'),canonical)
     canonical_rows[entry['ticker']]={'ticker':entry['ticker'],'securityId':canonical['security']['securityId'],'cik':cik,'name':canonical['security']['name'],'file':artifact['path'].removeprefix('quant/data/sec/'),**{key:canonical['coverage'][key] for key in ['factCount','metricIds','suppressedCells','annualYearsExamined','quarterlyYears']}}
-    mapped=consumer_index.setdefault('byTicker',{}).get(entry['ticker'])
-    if mapped:
-     if normalize_cik(mapped.get('cik'))!=cik or mapped.get('file')!='consumer/CIK'+cik+'.json': raise RuntimeError('CONSUMER_INDEX_ISSUER_IDENTITY_COLLISION')
-    else: consumer_index['byTicker'][entry['ticker']]={'cik':cik,'file':'consumer/CIK'+cik+'.json','annualYears':summary['annualYears'],'quarterly':summary['quarterly'],'ttm':summary['ttm'],'h3':summary['h3'],'h5':summary['h5'],'h10':summary['h10']}
+    if not mapped: consumer_index['byTicker'][entry['ticker']]={'cik':cik,'file':'consumer/CIK'+cik+'.json','annualYears':summary['annualYears'],'quarterly':summary['quarterly'],'ttm':summary['ttm'],'h3':summary['h3'],'h5':summary['h5'],'h10':summary['h10']}
     row={'ticker':entry['ticker'],'securityId':entry['securityId'],'cik':cik,'issuerId':'iss_cik_'+cik,'identityVerified':True,'identityReason':entry['identityReason'],'identityEvidence':entry['identityEvidence'],'sic':document['profile'].get('sic'),'fundamentalsStatus':status,'reason':None,'pitValid':bool(pit),'annualYears':summary['annualYears'],'quarterly':summary['quarterly'],'ttm':summary['ttm'],'metrics':summary['metrics'],'metricAvailability':{m:('AVAILABLE' if m in present else 'NOT_REPORTED') for m in core},'artifacts':[consumer_artifact,artifact]}
     report['rows'].append(row); report['byTicker'][entry['ticker']]=row
     print(entry['ticker']+': '+status+' '+str(summary['annualYears'])+' years',flush=True)
@@ -143,6 +158,7 @@ try:
   consumer_index.update({'asOf':config['asOf'],'count':len({r.get('cik') for r in consumer_index['byTicker'].values()})}); write(consumer_index_path,consumer_index)
   canonical_index['companies']=list(canonical_rows.values()); write(canonical_index_path,canonical_index)
 except Exception as exc:
+ if writes_started: report['fatal']='SEC_PARTIAL_WRITE_ABORTED'
  done={r['ticker'] for r in report['rows']}
  for entry in resolved:
   if entry['ticker'] not in done: report['rows'].append(failure(entry,'SEC_BULK_ACCESS_OR_MATERIALIZATION_FAILURE',str(exc)))
@@ -171,6 +187,7 @@ export async function materializeFundamentals({ root, tickers, privateDir, asOf,
   const processResult = await runExistingProcess('python3', ['-c', SEC_DRIVER, configFile], { cwd: root, onProgress });
   if (processResult.code !== 0 || !existsSync(resultFile)) throw new Error('SEC_EXISTING_PRODUCERS_FAILED:' + processResult.output.slice(-3000));
   const report = JSON.parse(readFileSync(resultFile));
+  if (report.fatal) throw new Error(report.fatal);
   report.reportPath = resultFile; report.reportSha256 = createHash('sha256').update(readFileSync(resultFile)).digest('hex');
   return report;
 }

@@ -102,6 +102,19 @@ jobs:
             --work-dir "$GITHUB_WORKSPACE/.market-cache/tiingo2-productization" \
             --out "$GITHUB_WORKSPACE/.verification/tiingo2-current-productization" \
             --browser-dir "$GITHUB_WORKSPACE/.verification/tiingo2-current-productization/browser"
+      - name: Read-only current storage, index and cost preflight
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          STAGED_DIR=$(node -p "require('node:path').dirname(JSON.parse(require('node:fs').readFileSync('.market-cache/tiingo2-productization/run-result.json')).stage)")
+          node scripts/market/tiingo2-scoped-history-preflight.mjs \
+            --staged "$STAGED_DIR" \
+            --plan-root "$GITHUB_WORKSPACE/.market-cache/prepared/tiingo2" \
+            --out "$GITHUB_WORKSPACE/.verification/tiingo2-current-productization/current_storage_preflight.json"
       - name: Export derived status only
         if: always()
         uses: actions/upload-artifact@v4

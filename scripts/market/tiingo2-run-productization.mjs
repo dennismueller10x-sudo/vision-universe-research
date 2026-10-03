@@ -146,7 +146,8 @@ export async function runProductization({root=process.cwd(),sourceCache=join(roo
  if(issuerMappings.rows.some(row=>row.state==='BLOCKED'))throw Error('NEW_SECURITY_CANONICAL_CIK_CONFLICT');
  let existingCorrection;
  try{existingCorrection=materializeExistingDnaEligibilityCorrection({root,shadowRoot,sourceCache,candidates:prepared.priceCandidates,securities:prepared.priceSecurities,byTicker:fundamentals.byTicker,asOf,workDir});}
- catch(error){if(error.diagnostic)write(join(out,'tiingo2_current_dna_gate.json'),error.diagnostic);throw error;}
+ catch(error){if(error.diagnostic){write(join(out,'tiingo2_current_dna_gate.json'),error.diagnostic);
+  onProgress('DNA current proof diagnostic: '+JSON.stringify(error.diagnostic)+'\n');}throw error;}
  onProgress('Existing DNA canonical eligibility correction: '+existingCorrection.state+'\n');
  const projection=await materializeProductProjections({sourceRoot:root,shadowRoot,securities:prepared.priceSecurities||prepared.securities,pricePayloads:prepared.pricePayloads,asOf});
  let factors=await materializeFactors({root:shadowRoot,tickers:scope,marketStoreDir,privateDir:join(workDir,'factor-private'),asOf,onProgress,deferCanonicalEvidence:true});

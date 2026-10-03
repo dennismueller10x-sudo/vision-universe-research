@@ -131,7 +131,8 @@ export function materializeExistingDnaEligibilityCorrection({root,shadowRoot,sou
    bars:input?.entry?.rows?.length??null,latestDate:input?.assessed?.price?.latestDate??null,
    historyValid:input?.assessed?.price?.historyValid??null,latestValid:input?.assessed?.price?.latestValid??null,
    corporateActionValid:input?.assessed?.price?.corporateActionValid??null},
-   sec:{status:sec?.fundamentalsStatus??'NONE',reason:sec?.reason??'SEC_ROW_MISSING',cikMatched:sec?.cik==='0001830214',
+   sec:{status:sec?.fundamentalsStatus??'NONE',reason:sec?.reason??'SEC_ROW_MISSING',errorCode:sec?.errorCode??null,
+    errorKind:sec?.errorKind??null,cikMatched:sec?.cik==='0001830214',
     identityVerified:sec?.identityVerified===true,pitValid:sec?.pitValid===true,providerVerified:sec?.identityEvidence?.provider==='sec_edgar',
     tickerMapMatched:sec?.identityEvidence?.tickerMapMatched===true,submissionsTickerMatched:sec?.identityEvidence?.submissionsTickerMatched===true,
     submissionsCikMatched:sec?.identityEvidence?.submissionsCikMatched===true},productionWrites:0};
