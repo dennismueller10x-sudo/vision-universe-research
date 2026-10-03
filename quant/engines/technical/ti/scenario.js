@@ -36,7 +36,7 @@
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
   var Hash = isNode ? require("../../hash.js") : global.VUHash;
-  var ENGINE_VERSION = "ti-scenario-1.1.0";   // 1.1.0 (Mission IV): Kursniveaus nur positiv und plausibel, Measured Move prozentual
+  var ENGINE_VERSION = "ti-scenario-1.1.1";   // 1.1.0 (Mission IV): Kursniveaus nur positiv und plausibel, Measured Move prozentual; 1.1.1: ATR-Deckel 25 % des Kurses
 
   var DEFAULTS = {
     /* Prior aus Evidenzgraden (METHOD_RESEARCH.md). WYCKOFF = 0: keine Literatur-Evidenz (Grad D) UND in der
@@ -49,6 +49,9 @@
     invalidation: { minGapAtr: 0.3, maxRiskAtr: 4.5, bufferAtr: 0.25 },
     targets: { minDistanceAtr: 1.5, separationAtr: 1.5, maxFactor: 10 },
     confirmation: { maxDistanceAtr: 8 },
+    /* Nach einem Einbruch traegt die ATR noch die alten Kursniveaus (AIXI: Kurs 3,10, Einstiegszone 14,60–20,50). Fuer die
+       Szenario-Geometrie hoechstens 25 % des Kurses je Bar. */
+    atrMaxShareOfClose: 0.25,
     empirical: { minSample: 30 }
   };
 
@@ -227,7 +230,7 @@
       var z = toZone(c, atr, cfg, "Ziel " + (targets.length + 1));
       /* Zielzonen duerfen sich nach dem Runden weder mit der Einstiegszone noch untereinander beruehren. */
       var edge = prev ? (d > 0 ? prev.zoneHigh : prev.zoneLow) : entryEdgeNear;
-      if (z.zoneLow > 0 && (d > 0 ? z.zoneLow > edge : z.zoneHigh < edge)) targets.push(z);
+      if (z.zoneLow > 0 && z.zoneLow >= close / cfg.targets.maxFactor && z.zoneHigh <= close * cfg.targets.maxFactor && (d > 0 ? z.zoneLow > edge : z.zoneHigh < edge)) targets.push(z);
     });
     /* Volatilitaet groesser als das Kursniveau (z. B. nach einem Einbruch um 99 %): Zone oder Grenze laege bei ≤ 0.
        Dann gibt es kein in Kursen ausdrueckbares Szenario – lieber keins als ein unmoegliches. */
@@ -319,6 +322,8 @@
     var cfg = Object.assign({}, DEFAULTS, cfgIn || {});
     cfg.familyWeights = Object.assign({}, DEFAULTS.familyWeights, (cfgIn && cfgIn.familyWeights) || {});
     ["zone", "entry", "invalidation", "targets", "confirmation"].forEach(function (k) { cfg[k] = Object.assign({}, DEFAULTS[k], (cfgIn && cfgIn[k]) || {}); });
+    if (x.ctx && isNum(x.ctx.atr) && isNum(x.ctx.close) && x.ctx.close > 0 && x.ctx.atr > cfg.atrMaxShareOfClose * x.ctx.close)
+      x = Object.assign({}, x, { ctx: Object.assign({}, x.ctx, { atr: cfg.atrMaxShareOfClose * x.ctx.close, atrCapped: true }) });
     var conf = confluence(x, cfg);
     var structuralLevel = x.elliott && x.elliott.primary ? x.elliott.clarityLevel : "LOW";
     var scenarios = [];

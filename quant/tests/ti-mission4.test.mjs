@@ -96,6 +96,9 @@ test("M4-5 scenario levels are positive and plausible after a collapse", async (
   for (let i = 0; i < 520; i++) { v = i < 300 ? v * Math.exp(Math.log(2 / 3000) / 300 + 0.04 * Math.sin(i / 3)) : 2 * (1 + 0.15 * Math.sin(i / 5)); pts.push([new Date(d).toISOString().slice(0, 10), +v.toFixed(4)]); d += 7 * 86400000; }
   const s = weeklySeriesFromPoints(pts, "COLLAPSE"), out = analyzeProduct(s, {});
   check(out.res, s.close[s.length - 1], "synthetisch");
-  const f = join(ROOT, "quant/data/market/discover-series-long/ref_ACON.json");
-  if (existsSync(f)) { const s2 = weeklySeriesFromPoints(JSON.parse(readFileSync(f, "utf8")).points, "ACON"); check(analyzeProduct(s2, {}).res, s2.close[s2.length - 1], "ACON"); }
+  /* echte Faelle: ACON (Ziel −2.695), AIXI (Einstiegszone 5× ueber dem Kurs wegen ATR aus Vor-Einbruch-Kursen), BYND, BRNX, ATOS */
+  for (const t of ["ACON", "AIXI", "BYND", "BRNX", "ATOS"]) {
+    const f = join(ROOT, "quant/data/market/discover-series-long/ref_" + t + ".json");
+    if (existsSync(f)) { const s2 = weeklySeriesFromPoints(JSON.parse(readFileSync(f, "utf8")).points, t); check(analyzeProduct(s2, {}).res, s2.close[s2.length - 1], t); }
+  }
 });

@@ -88,9 +88,10 @@
       "maxDistanceAtr": 8,
       "note": "Bestaetigungsmarke nur, wenn hoechstens 8 ATR vom Kurs entfernt; sonst keine."
     },
-    "plausibility": "Liegt Einstiegszone oder Invalidation bei ≤ 0 (Volatilitaet groesser als Kursniveau), wird fuer diese Richtung kein Szenario ausgegeben.",
+    "plausibility": "Liegt Einstiegszone oder Invalidation bei ≤ 0 (Volatilitaet groesser als Kursniveau), wird fuer diese Richtung kein Szenario ausgegeben. Seit ti-scenario-1.1.1: ATR fuer die Szenario-Geometrie hoechstens 25 % des Kurses (nach Einbruechen); Zielzonen-Raender innerhalb Kurs/10 … Kurs×10.",
     "empiricalMinSample": 30,
-    "overallConfidenceRule": "HIGH: Agreement HIGH und Struktur nicht LOW und (keine Empirie oder unterer KI-Rand des Uplifts > 0). LOW: Agreement LOW oder MIXED oder Empirie ohne Vorteil (Uplift <= 2 pp und unterer KI-Rand <= 0). Sonst MODERATE."
+    "overallConfidenceRule": "HIGH: Agreement HIGH und Struktur nicht LOW und (keine Empirie oder unterer KI-Rand des Uplifts > 0). LOW: Agreement LOW oder MIXED oder Empirie ohne Vorteil (Uplift <= 2 pp und unterer KI-Rand <= 0). Sonst MODERATE.",
+    "atrMaxShareOfClose": 0.25
   },
   "elliottV2": {
     "engine": {
