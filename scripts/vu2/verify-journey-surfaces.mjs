@@ -9,7 +9,7 @@
 
      NVDA   Bildunterschrift des Charts: splitbereinigt, nicht roh
      APGE   was das Setup beenden wuerde, ist da
-     AAAP   der Musternenner nennt, wovon er zaehlt
+     (aus dem Artefakt) der Musternenner nennt, wovon er zaehlt
      AACB   Setup-Bedingungen zaehlen messbare
      AAAC   ein belegter ETF: keine Unternehmensanalyse - eine Luecke mit
             Grund, kein Nichtpassen
@@ -51,13 +51,31 @@ await new Promise(r=>server.listen(0,"127.0.0.1",r));
 const origin="http://127.0.0.1:"+server.address().port;
 const browser=await chromium.launch({headless:true,args:["--no-sandbox"],executablePath:process.env.VU_CHROMIUM||undefined});
 let bad=0;
+/* DER MUSTERFALL KOMMT AUS DEM ARTEFAKT, NICHT AUS EINEM FESTEN KUERZEL.
+   Bis 03.10.2026 stand hier AAAP. Die Listing-Regel (#367) kuerzte seine
+   Reihe auf das juengste Listing; seitdem traegt AAAP kein Marktmuster mehr,
+   und der Satz, der geprueft werden soll, kann dort nicht stehen. Geprueft
+   wird deshalb der erste Titel (alphabetisch), der im ausgelieferten
+   pattern-match-v1 sowohl zutreffende als auch nicht messbare Muster hat -
+   genau der Fall, an dem der Nenner erklaeren muss, wovon er zaehlt. */
+const PATTERN_CASE=await (async()=>{
+ const { readdir } = await import("node:fs/promises"), { gunzipSync } = await import("node:zlib");
+ const dir=resolve(root,"quant/data/product/pattern-match-v1"), found=[];
+ for(const f of (await readdir(dir)).filter(x=>x.endsWith(".json.gz")).sort()){
+  const d=JSON.parse(gunzipSync(await readFile(resolve(dir,f))).toString("utf8"));
+  for(const [t,s] of Object.entries(d.instruments||{})) if((s.unmeasurable||[]).length&&(s.holds||[]).length&&s.hasFundamentals) found.push(t);
+ }
+ if(!found.length)throw Error("Kein Titel mit zutreffenden und nicht messbaren Mustern im Artefakt - der Fall laesst sich nicht pruefen.");
+ return found.sort()[0];
+})();
+console.log("Musterfall aus dem Artefakt:",PATTERN_CASE);
 /* [Titel, Abschnitt, erwarteter Satz (Text oder Ausdruck), vorher zu drueckender Zeitraum] */
 const checks=[
  /* Die Bildunterschrift gehoert zum Tagesschluss-Zeitraum; auf 1T steht
     dort die Quelle des Tagesverlaufs. Deshalb zuerst 1J. */
  ["NVDA","section.qc-chart .qc-note",/(^|[^t] )splitbereinigt/,"1J"],
  ["APGE","#setup",/Was würde das Setup ungültig machen\?/i],
- ["AAAP","#historie",/\d+ von \d+ Mustern|nicht prüfbar/],
+ [PATTERN_CASE,"#historie",/\d+ von \d+ Mustern|nicht prüfbar/],
  ["AACB","#setup","messbaren Bedingungen"],
  /* AAAC IST SEIT DER OWNER-ENTSCHEIDUNG 1 KEIN AKTIENFALL MEHR: Kurs und
     Kursverlauf bleiben, die Aktienanalyse entfaellt - mit Grund. */
