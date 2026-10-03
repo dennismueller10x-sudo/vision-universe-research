@@ -191,7 +191,8 @@
       if (!n.ok) return unavailable("SOURCE_MISSING", src);
       var t = o && o.ticker ? Identity.normalizeTicker(o.ticker) : null;
       var items = (n.data.items || []).filter(function (i) { return !t || i.symbol === t; });
-      return available(src, n.data.updated_at || null, { updatedAt: n.data.updated_at || null, maxAgeHours: n.data.freshness_hours || null, items: items });
+      return available(src, n.data.updated_at || null, { updatedAt: n.data.updated_at || null, maxAgeHours: n.data.freshness_hours || null,
+        sources: Array.isArray(n.data.sources) ? n.data.sources : [], items: items });
     }
 
     return { CONTRACT_VERSION: CONTRACT_VERSION, universeId: universe, getSecurity: getSecurity, getPriceSeries: getPriceSeries,
