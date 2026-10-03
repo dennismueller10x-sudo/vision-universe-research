@@ -3,7 +3,7 @@
  "methodologyVersion": "vu-factor-evidence-2.0.0",
  "derivedFrom": "quant-v2.2.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-10-03T10:12:07.000Z",
+ "generatedAt": "2026-10-03T11:05:41.000Z",
  "asOf": "2026-10-02",
  "publication": {
   "compositeAllowed": false,
@@ -728,9 +728,9 @@
   "recomputationDrift": {
    "asOf": "2026-10-02",
    "publishedHash": "388415da30ed1f1b",
-   "recomputedHash": "f98072070caa708f",
-   "rowsDiffering": 5575,
-   "rowsTotal": 6288,
+   "recomputedHash": "e96982522010cd31",
+   "rowsDiffering": 5577,
+   "rowsTotal": 6289,
    "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt."
   }
  },
@@ -772,13 +772,13 @@
  "notAnEquityListing": {
   "reason": "NOT_AN_EQUITY_LISTING",
   "decision": "Owner-Entscheidung 2026-09-28: ausdruecklicher ETF-/Gattungsname im veroeffentlichten Wertpapiernamen schlaegt das unspezifische assetType='Stock'.",
-  "count": 145,
+  "count": 144,
   "byType": {
    "ETF": 136,
-   "PREFERRED": 9
+   "PREFERRED": 8
   },
   "byBasis": {
-   "SECURITY_NAME": 145
+   "SECURITY_NAME": 144
   },
   "tickers": [
    "AAAC",
@@ -876,7 +876,6 @@
    "PBSC",
    "PCL",
    "PCS",
-   "PFBC",
    "PJUS",
    "POEL",
    "PONX",
@@ -932,8 +931,8 @@
   "productUniverse": 6853,
   "priceFactorSecurities": 6433,
   "priceFactorRowsOutsideProductUniverse": 0,
-  "notAnEquityListing": 145,
-  "published": 6288,
+  "notAnEquityListing": 144,
+  "published": 6289,
   "withFundamentals": 5015,
   "withMarketCap": 3763,
   "quotesFromPublishedSeries": 1051,
@@ -942,45 +941,45 @@
  "factorStates": {
   "quality": {
    "AVAILABLE": 3612,
-   "UNAVAILABLE": 2676,
+   "UNAVAILABLE": 2677,
    "NOT_APPLICABLE": 0
   },
   "growth": {
    "AVAILABLE": 3201,
-   "UNAVAILABLE": 3087,
+   "UNAVAILABLE": 3088,
    "NOT_APPLICABLE": 0
   },
   "momentum": {
-   "AVAILABLE": 5457,
+   "AVAILABLE": 5458,
    "UNAVAILABLE": 831,
    "NOT_APPLICABLE": 0
   },
   "value": {
    "AVAILABLE": 2521,
-   "UNAVAILABLE": 3767,
+   "UNAVAILABLE": 3768,
    "NOT_APPLICABLE": 0
   },
   "profitability": {
    "AVAILABLE": 1953,
-   "UNAVAILABLE": 4335,
+   "UNAVAILABLE": 4336,
    "NOT_APPLICABLE": 0
   },
   "revisions": {
    "AVAILABLE": 0,
-   "UNAVAILABLE": 6288,
+   "UNAVAILABLE": 6289,
    "NOT_APPLICABLE": 0
   },
   "risk": {
-   "AVAILABLE": 5457,
+   "AVAILABLE": 5458,
    "UNAVAILABLE": 831,
    "NOT_APPLICABLE": 0
   }
  },
  "reasonCounts": {
   "INSUFFICIENT_WEIGHTED_COVERAGE": 2019,
-  "BLOCKED_EXTERNAL": 6288,
+  "BLOCKED_EXTERNAL": 6289,
   "INSUFFICIENT_COMPONENTS": 4310,
-  "INPUT_NOT_MATERIALIZED": 8722,
+  "INPUT_NOT_MATERIALIZED": 8726,
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 451,
   "MANDATORY_COMPONENT_MISSING": 25
  },
@@ -995,12 +994,12 @@
   "growth:revenueGrowthTtmYoy": 3083,
   "growth:operatingMarginExpansion3y": 3126,
   "growth:revenueGrowthAcceleration": 3866,
-  "momentum:priceReturn12m1m": 5457,
-  "momentum:priceReturn6m": 5874,
-  "momentum:priceReturn3m": 6204,
-  "momentum:relativeStrength12m1m": 5457,
-  "momentum:distanceTo52wHigh": 5462,
-  "momentum:distanceToSma200": 5564,
+  "momentum:priceReturn12m1m": 5458,
+  "momentum:priceReturn6m": 5875,
+  "momentum:priceReturn3m": 6205,
+  "momentum:relativeStrength12m1m": 5458,
+  "momentum:distanceTo52wHigh": 5463,
+  "momentum:distanceToSma200": 5565,
   "value:fcfYield": 2008,
   "value:earningsYield": 2487,
   "value:bookToMarket": 3104,
@@ -1008,10 +1007,10 @@
   "profitability:operatingMarginTtm": 2350,
   "profitability:fcfMarginTtm": 2230,
   "profitability:roaTtm": 3027,
-  "risk:realizedVolatility252d": 5457,
-  "risk:downsideVolatility252d": 5465,
-  "risk:maxDrawdown252d": 5462,
-  "risk:beta252d": 5480,
+  "risk:realizedVolatility252d": 5458,
+  "risk:downsideVolatility252d": 5466,
+  "risk:maxDrawdown252d": 5463,
+  "risk:beta252d": 5481,
   "quality:netDebtToAssets": 467,
   "INDUSTRY:quality:equityToAssets": 899,
   "INDUSTRY:quality:roaStability5y": 855,
@@ -1038,7 +1037,7 @@
  "screening": {
   "schemaVersion": "factor-evidence-screening-1.0.0",
   "namespace": "quantV2.factorEvidence",
-  "rows": 6288,
+  "rows": 6289,
   "fields": [
    "quantV2.factorEvidence.quality",
    "quantV2.factorEvidence.growth",
@@ -1101,10 +1100,10 @@
  "gapCounts": {
   "NOT_AN_EQUITY_LISTING:ETF": 136,
   "IDENTITY_UNRESOLVED": 922,
-  "FUNDAMENTALS_DOCUMENT_MISSING": 351,
+  "FUNDAMENTALS_DOCUMENT_MISSING": 352,
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 451,
-  "NOT_AN_EQUITY_LISTING:PREFERRED": 9
+  "NOT_AN_EQUITY_LISTING:PREFERRED": 8
  },
- "runtimeMs": 17645,
- "contentHash": "3bfb49b0184d14b5"
+ "runtimeMs": 19971,
+ "contentHash": "bf2da17daf47f551"
 }
