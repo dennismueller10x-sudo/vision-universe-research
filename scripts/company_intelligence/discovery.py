@@ -128,16 +128,40 @@ def validate_candidate(company, candidate, http, now):
     acronyms = {''.join(w[0] for w in normalize(n).split() if w not in stop and len(w)>1) for n in company['names']}
     header_compact = re.sub(r'(?<!\w)([a-z])\s+([a-z])(?!\w)', r'\1\2', header)
     short_brand = short_brand or any(2 <= len(a) <= 4 and re.search(r'(?<!\w)' + re.escape(a) + r'(?!\w)', header_compact) for a in acronyms)
+    # Explicit structured legal ownership is commonly present only in JSON-LD,
+    # excluded from visible text above. A publisher/customer entity on another
+    # host, generic brand name or unrelated schema type is not ownership proof.
+    structured_owner = []
+    for match in re.finditer(r'<script\b[^>]*type=["\x27]application/ld\+json["\x27][^>]*>(.*?)</script>', body, re.I | re.S):
+        if len(match[1]) > 128 * 1024:continue
+        try:
+            document=json.loads(match[1])
+            nodes=document if isinstance(document,list) else document.get('@graph',[document]) if isinstance(document,dict) else []
+            if not isinstance(nodes,list):continue
+            for node in nodes[:100]:
+                if not isinstance(node,dict):continue
+                types=node.get('@type',[]);types=[types] if isinstance(types,str) else types
+                if not isinstance(types,list) or not any(isinstance(t,str) and t.casefold() in ('organization','corporation') for t in types):continue
+                name=node.get('legalName');url=canonical_url(node.get('url'))
+                if not isinstance(name,str) or len(name)>200 or not url or not same_web_host(url,response['finalUrl']):continue
+                if not any(legal_normalize(name)==legal_normalize(n) for n in strong_names):continue
+                identifiers=node.get('identifier',[]);identifiers=[identifiers] if isinstance(identifiers,dict) else identifiers
+                if isinstance(identifiers,list):
+                    ciks=[str(v.get('value','')).zfill(10) for v in identifiers if isinstance(v,dict) and str(v.get('propertyID','')).casefold() in ('cik','sec cik')]
+                    if ciks and any(cik!=company.get('cik') for cik in ciks):raise SourceError('OFFICIAL_SITE_CANDIDATE_STRUCTURED_CIK_CONFLICT')
+                structured_owner.append({'legalName':name,'url':url})
+        except (ValueError,TypeError,RecursionError):continue
     copyright_has_legal_owner=any(re.search(r'\b(?:inc|corp|co|ltd|plc|ag|llc)\b',region) for region in copyright_regions)
     if copyright_has_legal_owner and not footer_owner:
         raise SourceError('OFFICIAL_SITE_CANDIDATE_CONFLICTING_COPYRIGHT_OWNER')
-    method = 'EXACT_MULTIWORD_COPYRIGHT_OWNER_AND_CORPORATE_HEADER' if suffixless_owner else 'CORPORATE_TITLE_AND_LEGAL_COMPANY_NAME' if legal and branded else 'EXACT_LEGAL_COPYRIGHT_OWNER_AND_CORPORATE_BRAND'
-    if not (legal and branded) and not (footer_owner and short_brand):
+    method = 'EXACT_JSONLD_LEGAL_OWNER_HOST_AND_CORPORATE_HEADER' if structured_owner and short_brand else 'EXACT_MULTIWORD_COPYRIGHT_OWNER_AND_CORPORATE_HEADER' if suffixless_owner else 'CORPORATE_TITLE_AND_LEGAL_COMPANY_NAME' if legal and branded else 'EXACT_LEGAL_COPYRIGHT_OWNER_AND_CORPORATE_BRAND'
+    if not (legal and branded) and not (footer_owner and short_brand) and not (structured_owner and short_brand):
         raise SourceError('OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED')
     return {'status': 'VALIDATED', 'url': response['finalUrl'], 'lastVerified': now, 'confidence': .95,
-            'verificationVersion': 'corporate-ownership-2',
+            'verificationVersion': 'corporate-ownership-3',
             'evidence': [candidate['evidence'], method], 'title': clean(title[1] if title else ' '.join(metadata.values), 150),
             'ownershipEvidence': {'companyNames': strong_names, 'corporateHeader': header[:300],
-                                  'copyrightExcerpts': [v[:160] for v in copyright_raw if any(re.search(r'(?<!\w)'+re.escape(base)+r'(?!\w)',legal_normalize(v)) for base in bases)][:2]},
+                                  'copyrightExcerpts': [v[:160] for v in copyright_raw if any(re.search(r'(?<!\w)'+re.escape(base)+r'(?!\w)',legal_normalize(v)) for base in bases)][:2],
+                                  'structuredOrganizations':structured_owner[:2]},
             'contentHash': hashlib.sha256(response['body']).hexdigest(), 'platformHint': fingerprint(response['body']),
             'irCandidates': list(dict.fromkeys(l['url'] for l in parse_links(response['body'],response['finalUrl']) if re.search(r'investor.relations|\binvestors?\b',l['text'],re.I) and not re.search(r'\.(?:pdf|zip|xml|js)(?:\?|$)',l['url'],re.I)))[:5]}
