@@ -42,6 +42,8 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
     // Runde 10 (PREREGISTRATION-R10-FIXES K3): Rang nach relativer Staerke am Vortag, Gleichstand alphabetisch.
     else if ((opts.priority || cfg.priority) === 'SCORE') list.sort((a, b) => (Number.isFinite(b.rankScore) ? b.rankScore : -Infinity) - (Number.isFinite(a.rankScore) ? a.rankScore : -Infinity) || a.listingId.localeCompare(b.listingId));
     else if ((opts.priority || cfg.priority) === 'RS') list.sort((a, b) => (Number.isFinite(b.rsAtEntry) ? b.rsAtEntry : -1) - (Number.isFinite(a.rsAtEntry) ? a.rsAtEntry : -1) || a.listingId.localeCompare(b.listingId));
+    // Runde 14 (C7): umgekehrt alphabetisch als Gegenprobe auf Reihenfolge-/Alphabet-Bias.
+    else if ((opts.priority || cfg.priority) === 'RALPHA') list.sort((a, b) => b.listingId.localeCompare(a.listingId));
     else list.sort((a, b) => a.listingId.localeCompare(b.listingId));
   }
   let cash = cfg.initialEquity;
@@ -94,8 +96,8 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
       const eq = cash + mv;
       const risk = tr.entry.price - tr.initialStop;
       // Runde 12 (PORT-MARKET-200): keine neue Position, wenn die Marktampel am Vortag rot war.
-      if (cfg.marketFilter && opts.marketOk && opts.marketOk.get(date) === false) { skipped.push({ id: tr.id, reason: 'MARKET_FILTER' }); continue; }
-      if (open.length >= cfg.maxPositions || !(risk > 0)) { skipped.push({ id: tr.id, reason: open.length >= cfg.maxPositions ? 'MAX_POSITIONS' : 'NO_RISK' }); continue; }
+      if (cfg.marketFilter && opts.marketOk && opts.marketOk.get(date) === false) { skipped.push({ id: tr.id, reason: 'MARKET_FILTER', date }); continue; }
+      if (open.length >= cfg.maxPositions || !(risk > 0)) { skipped.push({ id: tr.id, reason: open.length >= cfg.maxPositions ? 'MAX_POSITIONS' : 'NO_RISK', date }); continue; }
       // Runde 7: schrittweise Exposition (cfg.progressive): nach netto negativen
       // letzten n abgeschlossenen Trades gilt das verminderte Risiko.
       let riskPct = cfg.riskPerTrade;
@@ -107,7 +109,7 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
       const unit = tr.entry.price * (1 + comm);
       shares = Math.min(shares, (eq * cfg.maxPositionPct) / tr.entry.price, cash / unit);
       shares = Math.min(shares, Math.max(0, eq * cfg.maxExposure - (eq - cash)) / tr.entry.price);
-      if (!(shares > 0)) { skipped.push({ id: tr.id, reason: 'NO_CASH' }); continue; }
+      if (!(shares > 0)) { skipped.push({ id: tr.id, reason: 'NO_CASH', date }); continue; }
       const gross = shares * tr.entry.price, c = gross * comm;
       cash -= gross + c; book.commissions += c;
       const p = { tr, shares, entryShares: shares, eqAtEntry: eq, cost: gross + c, proceeds: 0, dividends: 0, remainingFraction: 1, done: new Set(), entryDate: date, last: tr.entry.price, prevMark: null };
@@ -129,7 +131,7 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
     }
     const mv = open.reduce((a, p) => a + p.shares * (markOf(p, date) ?? p.tr.entry.price), 0);
     for (const p of open) p.prevMark = markOf(p, date);
-    equity.push({ date, equity: cash + mv, exposure: (cash + mv) > 0 ? mv / (cash + mv) : 0 });
+    equity.push({ date, equity: cash + mv, exposure: (cash + mv) > 0 ? mv / (cash + mv) : 0, n: open.length }); // n: Runde 14 (Positionszahl je Tag)
   }
   // Am Fensterende offene Positionen: Marktwert (OPEN_AT_END)
   const openAtEnd = open.map((p) => ({ id: p.tr.id, value: p.shares * (p.last ?? p.tr.entry.price) }));

@@ -141,7 +141,7 @@ async function main() {
   const { createS3DriverFromEnv } = await import(path.join(root, 'scripts/market/storage/s3-driver.mjs'));
   const driver = createS3DriverFromEnv(process.env);
   const budget = Guard.createBudget({ classAOperations: 8, classBOperations: 50 });
-  const mine = Store.createHistoryStore({ driver, provider: 'tiingo-delisted', market: 'US', budget });
+  const mine = Store.createHistoryStore({ driver, provider: L.SERIES_PROVIDER, market: 'US', budget }); // Runde 14: HOLDOUT eigener Namensraum
   budget.consumeClassB(1, 'GET manifest');
   const mbuf = await driver.get(mine.seriesPrefix + '_validation/manifest.json.gz');
   const manifest = mbuf ? JSON.parse(zlib.gunzipSync(mbuf).toString('utf8')).entries : {};
@@ -153,7 +153,8 @@ async function main() {
     const e = manifest[l.id];
     if (!(e && (e.status === 'OK' || e.status === 'PARTIAL'))) continue;
     const inc = l.source === 'UNFETCHABLE_REUSED' ? e.included : L.classifyListing(Master, l, e.name, listedRoots).included;
-    if (inc) members.push({ l, name: e.name || null, knownCik: null });
+    // Runde 14 (HOLDOUT): bekannte CIK nur fuer Listings, die heute noch dieselbe Notierung sind (sonst Kuerzel evtl. neu vergeben).
+    if (inc) members.push({ l, name: e.name || null, knownCik: L.WINDOW_NAME === 'HOLDOUT' && !l.listEnd ? companyOf.get(l.ticker)?.cik || null : null });
   }
   log(`Mitglieder ${members.length}, davon mit bekannter CIK ${members.filter((m) => m.knownCik).length}`);
 
@@ -185,7 +186,7 @@ async function main() {
   const out = {}, stats = { members: members.length, known: 0, nameMatched: 0, ambiguous: 0, noName: 0, noMatch: 0, noFacts: 0, withEps: { active: 0, delisted: 0 }, total: { active: 0, delisted: 0 }, accuracy: { tested: 0, correct: 0, wrong: 0, ambiguousOrNone: 0 } };
   let k = 0;
   for (const m of members) {
-    const active = m.l.source === 'STORE_ACTIVE';
+    const active = L.WINDOW_NAME === 'HOLDOUT' ? m.l.active : m.l.source === 'STORE_ACTIVE'; // HOLDOUT: ueber 2015 hinaus gelistet
     stats.total[active ? 'active' : 'delisted']++;
     let cik = m.knownCik ? String(m.knownCik).padStart(10, '0') : null, how = cik ? 'KNOWN' : null;
     // Zuordnungsguete: gelistete Titel mit bekannter CIK zusaetzlich ueber den Namen zuordnen.
@@ -248,7 +249,7 @@ async function main() {
   const byYear = {};
   for (const v of Object.values(out)) for (const r of v.eps) { const y = r[2].slice(0, 4); byYear[y] = (byYear[y] || 0) + 1; }
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
-  fs.writeFileSync(path.join(OUT, 'sec-pit-r12.sealed.json'), L.encryptForOwner(pem, Buffer.from(JSON.stringify({ schema: 'supertrader-sec-pit-1.2.0', delisting: dstats, delistSample: Object.entries(delist).filter(([, v]) => v.cls === 'ACQUISITION').slice(0, 40), causes, byListEndYear: byStartYear, at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, stats, epsFilingsByYear: byYear }))));
+  fs.writeFileSync(path.join(OUT, `sec-pit-r12${L.WINDOW_NAME === 'HOLDOUT' ? '-holdout' : ''}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify({ schema: 'supertrader-sec-pit-1.2.0', delisting: dstats, delistSample: Object.entries(delist).filter(([, v]) => v.cls === 'ACQUISITION').slice(0, 40), causes, byListEndYear: byStartYear, at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, stats, epsFilingsByYear: byYear }))));
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) main().catch((e) => { console.error(String(e?.stack || e)); process.exit(1); });
