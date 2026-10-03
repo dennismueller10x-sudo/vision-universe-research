@@ -71,6 +71,28 @@ export function evaluateCase(cs, engineOpts) {
            primary: js[0] || { label: "NONE", degree: "NONE" }, rank: k, falseAccept: js.some((j) => j.asNegTarget), quality: r.primary && r.primary.countQuality ? r.primary.countQuality.level : null,
            clarity: r.clarity, ms };
 }
+/** Gate-Kennzahlen laut ELLIOTT_ENGINE_QUALITY_PREREG.md §5 (Ende-Faelle; Rauschen none/low/medium, wo vorgesehen). */
+export function gate(rowsAll) {
+  const end = rowsAll.filter((r) => !r.mid), sup = (r) => !CLASSES[r.cls].negativeOf && !CLASSES[r.cls].unsupported;
+  const nlm = end.filter((r) => sup(r) && r.id.split("|")[1] !== "high");
+  const pct = (a, b) => (b ? +(100 * a / b).toFixed(1) : null);
+  const byCls = {}; nlm.forEach((r) => { const x = byCls[r.cls] = byCls[r.cls] || { n: 0, pa: 0 }; x.n++; if (r.rank >= 0) x.pa++; });
+  const minCls = Object.entries(byCls).map(([k, v]) => [k, pct(v.pa, v.n)]).sort((a, b) => a[1] - b[1]);
+  const neg = end.filter((r) => CLASSES[r.cls].negativeOf);
+  const high = end.filter((r) => sup(r) && r.applicability === "HIGH");
+  const gross = nlm.filter((r) => r.primary.degree === "OTHER" || r.primary.degree === "NONE").length;
+  const g = {
+    G1_primary: pct(nlm.filter((r) => r.rank === 0).length, nlm.length),
+    G2_primaryOrAlt: pct(nlm.filter((r) => r.rank >= 0).length, nlm.length),
+    G3_minClassPrimaryOrAlt: minCls[0] || null, G3_byClass: Object.fromEntries(minCls),
+    G4_degreeExactOrNested: pct(nlm.filter((r) => r.primary.degree === "EXACT" || r.primary.degree === "NESTED").length, nlm.length),
+    G5_grossDegreeError: pct(gross, nlm.length),
+    G6_falseAccept: pct(neg.filter((r) => r.falseAccept).length, neg.length),
+    G7_falseCertainty: pct(high.filter((r) => r.rank !== 0).length, high.length), G7_nHigh: high.length
+  };
+  const pass = { G1: g.G1_primary >= 45, G2: g.G2_primaryOrAlt >= 60, G3: g.G3_minClassPrimaryOrAlt && g.G3_minClassPrimaryOrAlt[1] >= 25, G4: g.G4_degreeExactOrNested >= 50, G5: g.G5_grossDegreeError <= 25, G6: g.G6_falseAccept <= 5, G7: g.G7_falseCertainty <= 25 };
+  return { metrics: g, pass };
+}
 export function summarize(rowsAll) {
   const rows = rowsAll.filter((r) => !r.mid), mids = rowsAll.filter((r) => r.mid);
   const by = (keyFn) => { const g = {}; rows.forEach((r) => { const k = keyFn(r); const x = g[k] = g[k] || { n: 0, primary: 0, primaryOrAlt: 0, abstain: 0, exactDegree: 0, falseAccept: 0 };
@@ -98,7 +120,8 @@ if (import.meta.url === "file://" + process.argv[1]) {
     if (!process.argv.includes("--end-only") && !CLASSES[cls].negativeOf) rows.push(evaluateCase(corpusCase(cls, seed, nz, { cut: "mid" }), engineOpts));
   }
   const sum = summarize(rows);
-  const out = { schemaVersion: "vu-elliott-corpus-eval-1.0.0", generatedAt: new Date().toISOString(), engine: USE_V3 ? EV3.ENGINE_VERSION : EV2.ENGINE_VERSION, engineOpts, split, tag, summary: sum, rows };
+  const gt = gate(rows);
+  const out = { schemaVersion: "vu-elliott-corpus-eval-1.0.0", generatedAt: new Date().toISOString(), engine: USE_V3 ? EV3.ENGINE_VERSION : EV2.ENGINE_VERSION, engineOpts, split, tag, gate: gt, summary: sum, rows };
   const dir = join(ROOT, "quant/data/technical-intelligence/elliott-validation/corpus");
   mkdirSync(dir, { recursive: true });
   if (!process.argv.includes("--no-write")) writeFileSync(join(dir, "corpus-" + split.toLowerCase() + "-" + tag + ".json"), JSON.stringify(out));
@@ -106,5 +129,6 @@ if (import.meta.url === "file://" + process.argv[1]) {
   console.log(`  MID: n ${sum.mid.n} primary ${sum.mid.primary} (${pct(sum.mid.primary, sum.mid.n)}) p+a ${sum.mid.primaryOrAlt} structure-right-label-wrong ${sum.mid.structureOnly}`);
   console.log(`split ${split} tag ${tag}: positives ${sum.positives} primary ${sum.primary} (${pct(sum.primary, sum.positives)}) primary+alt ${sum.primaryOrAlt} (${pct(sum.primaryOrAlt, sum.positives)}) | degree ${JSON.stringify(sum.degree)} | negatives ${sum.negatives} falseAccept ${sum.falseAccepts} | abstain(pos) ${sum.abstainPositives} | ${sum.medianMs} ms`);
   for (const [k, v] of Object.entries(sum.byClass)) console.log("  ", k.padEnd(22), "n", v.n, "prim", v.primary, "p+a", v.primaryOrAlt, "exactDeg", v.exactDegree, "abst", v.abstain, v.falseAccept ? "FA " + v.falseAccept : "");
+  console.log("  GATE", JSON.stringify(gt.metrics), JSON.stringify(gt.pass));
   console.log("  byNoise", JSON.stringify(Object.fromEntries(Object.entries(sum.byNoise).map(([k, v]) => [k, v.primary + "/" + v.n]))));
 }

@@ -44,7 +44,7 @@ function processSeries(series, opt) {
   let prev = null, prevState = null, life = 0, lifeQ = null, ms = 0, bars = 0;
   for (let t = from - 4; t < n; t++) {
     const t0 = Date.now();
-    const r = opt.engine === "v3" ? EV3.analyzeElliottV3({ series, features: P.features, pivots: P.pivots, asOfIndex: t, barsPerYear: 52, previous: prevState })
+    const r = opt.engine === "v3" ? EV3.analyzeElliottV3({ series, features: P.features, pivots: P.pivots, asOfIndex: t, barsPerYear: 52, previous: prevState, engine: opt.engineOpts || {} })
                                   : EV2.analyzeElliottV2({ series, features: P.features, pivots: P.pivots, asOfIndex: t, barsPerYear: 52, previous: prevState });
     ms += Date.now() - t0;
     const c = r.primary || null;
@@ -84,7 +84,7 @@ if (!isMainThread) {
   }
   parentPort.postMessage({ done: out });
 } else if (import.meta.url === "file://" + process.argv[1]) {
-  const split = arg("split", "DEVELOPMENT"), engine = arg("engine", "v3"), nSeries = +arg("series", "150"), years = +arg("years", "8"), workers = +arg("workers", "4");
+  const split = arg("split", "DEVELOPMENT"), engine = arg("engine", "v3"), engineOpts = JSON.parse(arg("opts", "{}")), tag = arg("tag", ""), nSeries = +arg("series", "150"), years = +arg("years", "8"), workers = +arg("workers", "4");
   const dir = join(ROOT, "quant/data/market/discover-series-long");
   const master = readJson(join(ROOT, "quant/data/market/security-master/us-security-master.json"));
   const common = new Set(); master.rows.forEach((r) => { if (r.instrument_type === "EQUITY_COMMON") common.add(r.ticker); });
@@ -96,7 +96,7 @@ if (!isMainThread) {
   const chunks = Array.from({ length: Math.min(workers, files.length) }, () => []);
   files.forEach((f, i) => chunks[i % chunks.length].push(f));
   const res = (await Promise.all(chunks.map((c) => new Promise((resolve, reject) => {
-    const w = new Worker(fileURLToPath(import.meta.url), { workerData: { files: c, opt: { engine, years } } });
+    const w = new Worker(fileURLToPath(import.meta.url), { workerData: { files: c, opt: { engine, years, engineOpts } } });
     w.on("message", (m) => { if (m.progress && ++done % 25 === 0) process.stderr.write(`  ${done}/${files.length} (${Math.round((Date.now() - t0) / 1000)} s)\n`); if (m.done) resolve(m.done); });
     w.on("error", reject);
   })))).flat();
@@ -106,13 +106,13 @@ if (!isMainThread) {
   const merge = (key) => { const o = {}; ok.forEach((r) => Object.entries(r[key] || {}).forEach(([k, v]) => { o[k] = (o[k] || 0) + v; })); return o; };
   const life = {}; ok.forEach((r) => Object.entries(r.lifetimes).forEach(([k, v]) => { (life[k] = life[k] || []).push(...v); }));
   const med = (a) => { const b = a.slice().sort((x, y) => x - y); return b.length ? b[Math.floor(b.length / 2)] : null; };
-  const out = { schemaVersion: "vu-elliott-stability-1.0.0", generatedAt: new Date().toISOString(), split, engine, series: ok.length, errors: res.filter((r) => r.error).length, years, bars,
+  const out = { schemaVersion: "vu-elliott-stability-1.0.0", generatedAt: new Date().toISOString(), split, engine, engineOpts, series: ok.length, errors: res.filter((r) => r.error).length, years, bars,
     transitions: tot, perWeek: Object.fromEntries(Object.entries(tot).map(([k, v]) => [k, +(v / bars).toFixed(4)])),
     unstablePerWeek: +((tot.UNSTABLE || 0) / bars).toFixed(4), relabelPerWeek: +(((tot.UNSTABLE || 0) + (tot.JUSTIFIED || 0) + (tot.DEGREE || 0)) / bars).toFixed(4),
     ambiguity: merge("amb"), applicability: merge("appl"), status: merge("status"),
     lifetimeMedianByQuality: Object.fromEntries(Object.entries(life).map(([k, v]) => [k, { n: v.length, median: med(v) }])),
     msPerBar: +(sum((r) => r.msPerBar) / Math.max(1, ok.length)).toFixed(2), runtimeSec: Math.round((Date.now() - t0) / 1000) };
   mkdirSync(join(ROOT, "quant/data/technical-intelligence/elliott-validation/stability"), { recursive: true });
-  writeFileSync(join(ROOT, "quant/data/technical-intelligence/elliott-validation/stability", `stability-${split.toLowerCase()}-${engine}.json`), JSON.stringify(out, null, 1));
+  writeFileSync(join(ROOT, "quant/data/technical-intelligence/elliott-validation/stability", `stability-${split.toLowerCase()}-${engine}${tag ? "-" + tag : ""}.json`), JSON.stringify(out, null, 1));
   console.log(JSON.stringify({ split, engine, series: out.series, bars, perWeek: out.perWeek, unstable: out.unstablePerWeek, relabel: out.relabelPerWeek, ambiguity: out.ambiguity, appl: out.applicability, ms: out.msPerBar }));
 }

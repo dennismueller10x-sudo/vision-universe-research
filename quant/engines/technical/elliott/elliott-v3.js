@@ -51,12 +51,14 @@
     poolAtr: 1.0,                 // Monowellen-Schwelle in ATR
     windowYears: 6,               // Ursprung hoechstens so weit zurueck
     maxNodes: 60000,              // Suchbudget je Analyse
+    maxScored: 500,               // vollstaendig bewertete Kandidaten (nach pfadbasierter Vorauswahl)
     similarity: 1 / 3,            // NEoWave Rule of Similarity
     subGrid: [0.04, 0.06, 0.09, 0.13, 0.19, 0.28, 0.4],
     unresolvedFit: 0.4,
     anchorMinRatio: 0.3,
     orthodoxMax: 0.4,             // Ueberschiessen der Folgewelle (B eines expandierten Flats) relativ zu ihrer Laenge
     orthodoxShortMax: 0.7,        // Ende hinter dem Extrem (Dreieck-E, Running-Flat-C): Abstand zum Extrem relativ zur Ausdehnung
+    anchorMinAtr: 4,              // Ursprung schliesst eine Bewegung >= 4 ATR ab (Suchbudget; Korpus DEVELOPMENT: keine Genauigkeitseinbusse, 34 → 23 ms)
     /* Kalibriert auf Korpus DEVELOPMENT (Ende + Mitte, Rauschen none/low/medium; Koordinatensuche, Sensitivitaet ±50 % dokumentiert in
        ELLIOTT_ENGINE3_REPORT.md). Keine VALIDATION- oder HOLDOUT-Faelle verwendet. */
     weights: { guidelines: 0.03, subdivision: 0.2, separation: 0.06, anchor: 0.45, dominance: 0.45, similarity: 0, trendContext: 0, coverage: 0.3, prior: 0.06, higherDegree: 0.06, tail: 0.1, residual: 0.1 },
@@ -303,6 +305,8 @@
     }
     for (var a2 = 0; a2 < n && !truncated; a2++) {
       if (pts[a2].i < minAnchorIdx || pts[a2].dev) continue;
+      /* Ursprung muss eine Bewegung abschliessen, die deutlich groesser als die Monowellen-Schwelle ist (Suchbudget). */
+      if (cfg.anchorMinAtr && isNum(atrCol[pts[a2].i]) && leftSig[a2] < cfg.anchorMinAtr * atrCol[pts[a2].i]) continue;
       P.TYPES.forEach(function (t) { if (!truncated) dfs(t, P.PATTERNS[t].waves, [a2], []); });
     }
 
@@ -334,7 +338,35 @@
       explain = why || "PATH_OK";
     }
     // ---------------------------------------------------------------- Bewertung
-    var cands = found.map(function (f) { var sc = score(f); if (!sc && input.debugTruth) f.dropped = true; else f.cand = sc; return sc; }).filter(Boolean);
+    /* Zweistufige Bewertung (Laufzeit): zuerst die pfadbasierten Merkmale (Ursprung, Dominanz, Vollstaendigkeit, Prior, Anschluss,
+       Restpfad) fuer alle Kandidaten, vollstaendig (mit Unterteilung) nur die besten cfg.maxScored. */
+    var domMemo = {};
+    function dominanceOf(q0, spanBars) {
+      var p0i = pts[q0].i, lb = p0i - 2 * spanBars, key = q0 + "|" + lb;
+      if (domMemo[key] !== undefined) return domMemo[key];
+      var mx = 0;
+      for (var z = q0; z >= 0 && pts[z].i >= lb; z--) if (!pts[z].dev) mx = Math.max(mx, leftSig[z]);
+      return (domMemo[key] = mx > 0 ? clamp(leftSig[q0] / mx, 0, 1) : 1);
+    }
+    function pathParts(f) {
+      var spec = P.PATTERNS[f.type], q0 = f.path[0], qa = f.path[1], ql = f.path[f.path.length - 1], qp = f.path[f.path.length - 2];
+      var w1 = Math.abs(close[pts[qa].i] - close[pts[q0].i]), anc = leftSig[q0] / Math.max(1e-9, w1);
+      var endI = pts[ql].i, lastLen = Math.abs(close[endI] - close[pts[qp].i]), tailMove = Math.abs(close[asOf] - close[endI]);
+      var tail = f.internal ? clamp(1 - tailMove / Math.max(1e-9, 0.5 * lastLen), 0, 1) : f.complete ? clamp(tailMove / Math.max(1e-9, 0.382 * lastLen), 0, 1) : 1;
+      var resid = 1;
+      if (!f.internal && endI < asOf) {
+        var dirT = close[asOf] >= close[endI] ? 1 : -1, ext = close[endI], cm = 0;
+        for (var t2 = endI + 1; t2 <= asOf; t2++) { if (dirT * (close[t2] - ext) > 0) ext = close[t2]; else cm = Math.max(cm, Math.abs(ext - close[t2])); }
+        resid = clamp(1 - cm / Math.max(1e-9, Math.max(tailMove, 0.382 * lastLen)), 0, 1);
+      }
+      var nl = f.path.length - 1;
+      return { anchor: P.band(anc, [0.9, 1e9], [cfg.anchorMinRatio, 1e9]), dominance: dominanceOf(q0, endI - pts[q0].i),
+               coverage: f.complete ? 1 : Math.min(1, 0.35 + 0.65 * (nl - 1) / Math.max(1, spec.waves - 1)),
+               prior: cfg.typePrior[f.type] === undefined ? 0.6 : cfg.typePrior[f.type], tail: tail, residual: resid };
+    }
+    found.forEach(function (f) { f.parts = pathParts(f); var r = 0; Object.keys(cfg.weights).forEach(function (k) { r += cfg.weights[k] * (k in f.parts ? f.parts[k] : 0.5); }); f.pre = r; });
+    found.sort(function (x, y) { return y.pre - x.pre; });
+    var cands = found.slice(0, cfg.maxScored).map(function (f) { var sc = score(f); if (!sc && input.debugTruth) f.dropped = true; else f.cand = sc; return sc; }).filter(Boolean);
     /* Diagnose (nur Forschung): Ist die wahre Lesart im Pool, gefunden, bewertet — und wo steht sie? */
     var truthDiag = null;
     if (input.debugTruth) {
@@ -366,40 +398,20 @@
       });
       var simN = 0, simOk = 0;
       for (var q = 1; q < legs.length; q++) { simN++; if (legs[q].status === "DEVELOPING" || (Math.min(Math.abs(legs[q].toPrice - legs[q].fromPrice), Math.abs(legs[q - 1].toPrice - legs[q - 1].fromPrice)) >= cfg.similarity * Math.max(Math.abs(legs[q].toPrice - legs[q].fromPrice), Math.abs(legs[q - 1].toPrice - legs[q - 1].fromPrice)))) simOk++; }
-      var w1 = Math.abs(legs[0].toPrice - legs[0].fromPrice), anc = leftSig[f.path[0]] / Math.max(1e-9, w1);
-      /* Dominanz des Ursprungs: beherrscht er den Zeitraum VOR dem Muster (doppelte Musterdauer)? Eine Zaehlung soll an
-         dem Wendepunkt beginnen, der die vorangehende Bewegung abschliesst — nicht an einem Zwischenpunkt. */
-      var spanBars = legs[legs.length - 1].toIndex - legs[0].fromIndex, p0i = legs[0].fromIndex, lb = p0i - 2 * spanBars, mx = 0;
-      for (var z = 0; z < n; z++) if (pts[z].i >= lb && pts[z].i <= p0i && !pts[z].dev) mx = Math.max(mx, leftSig[z]);
-      var dom = mx > 0 ? leftSig[f.path[0]] / mx : 1;
-      var dw = f.complete ? spec.waves : legs.length;
-      /* Anschluss an JETZT: wie gut passt die Bewegung nach dem letzten Wellenende zur Lesart? */
-      var lastL = legs[legs.length - 1], endI = lastL.toIndex, nowI = asOf, tailMove = Math.abs(close[nowI] - close[endI]), lastLen = Math.abs(lastL.toPrice - lastL.fromPrice);
-      var tail;
-      if (f.internal) tail = clamp(1 - tailMove / Math.max(1e-9, 0.5 * lastLen), 0, 1);
-      else if (f.complete) tail = clamp(tailMove / Math.max(1e-9, 0.382 * lastLen), 0, 1);
-      else tail = 1;
-      /* Restpfad: nach dem letzten Wellenende soll nur EINE laufende Welle stehen. Eine grosse Gegenbewegung darin ist
-         unerklaerte Struktur gleichen Grades (z. B. eine trunkierte Welle 5, die eine Zaehlung uebergeht). */
-      var resid = 1;
-      if (!f.internal && endI < nowI) {
-        var dirT = close[nowI] >= close[endI] ? 1 : -1, ext = close[endI], cm = 0;
-        for (var t2 = endI + 1; t2 <= nowI; t2++) { if (dirT * (close[t2] - ext) > 0) ext = close[t2]; else cm = Math.max(cm, Math.abs(ext - close[t2])); }
-        resid = clamp(1 - cm / Math.max(1e-9, Math.max(tailMove, 0.382 * lastLen)), 0, 1);
-      }
+      var dw = f.complete ? spec.waves : legs.length, pp = f.parts;
       var c = {
         guidelines: isNum(e.guidelineFit) ? e.guidelineFit : 0.5,
         subdivision: subs.length ? mean(subs) : cfg.unresolvedFit,
         separation: sep.length ? mean(sep) : 0.5,
-        anchor: P.band(anc, [0.9, 1e9], [cfg.anchorMinRatio, 1e9]),
-        dominance: clamp(dom, 0, 1),
+        anchor: pp.anchor,
+        dominance: pp.dominance,
         similarity: simN ? simOk / simN : 0.5,
         trendContext: ctx.trendDir === 0 ? 0.5 : (V2.impliedTrend(e) === ctx.trendDir ? 1 : 0.2),
-        coverage: f.complete ? 1 : Math.min(1, 0.35 + 0.65 * (legs.length - 1) / Math.max(1, spec.waves - 1)),
-        prior: cfg.typePrior[f.type] === undefined ? 0.6 : cfg.typePrior[f.type],
+        coverage: pp.coverage,
+        prior: pp.prior,
         higherDegree: 0.5,
-        tail: tail,
-        residual: resid
+        tail: pp.tail,
+        residual: pp.residual
       };
       e.waves = legs; e.complete = f.complete; e.internal = !!f.internal; e.developingWave = dw; e.startLeg = f.path[0];
       e.subdivisionFit = c.subdivision;
