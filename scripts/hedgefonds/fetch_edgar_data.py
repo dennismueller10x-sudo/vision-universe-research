@@ -80,6 +80,8 @@ MAX_RETRIES = 3
 BULK_VALUE_TOLERANCE = 0.15
 UNCHANGED_PCT = 0.5          # Stückzahländerung darunter gilt als unverändert
 UNIVERSE_PATH = DATA_DIR / "universe.json"
+STOCK_DIR = DATA_DIR / "stocks"
+STOCK_SHARDS = 32            # Aktienseiten: Halter je Aktie, auf 32 Dateien verteilt
 CACHE_VERSION = 6            # erhöhen, wenn sich die Berechnung ändert -> alles neu laden
 # Weitere Hedgefonds ("zweite und dritte Reihe") aus dem Sammeldatensatz
 TIER2_MAX = 1000             # höchstens so viele zusätzliche Hedgefonds
@@ -1015,11 +1017,53 @@ def commons_file_from_url(src):
     return urllib.parse.unquote(path.rsplit("/", 1)[1])
 
 
-def photo_candidates(wiki):
+def fold(s):
+    """Kleinschreibung ohne Akzente ("François" -> "francois")."""
+    import unicodedata
+    return "".join(c for c in unicodedata.normalize("NFKD", s or "") if not unicodedata.combining(c)).lower()
+
+
+def person_name(manager):
+    """'John Overdeck & David Siegel' -> 'John Overdeck', 'Jim Simons (†2024)' -> 'Jim Simons'."""
+    name = re.split(r"\s*&\s*|\s+und\s+", manager or "")[0]
+    return re.sub(r"\(.*?\)|†", "", name).strip()
+
+
+def commons_search(person):
+    """Sucht auf Wikimedia Commons nach Fotodateien, deren Name Vor- UND
+    Nachnamen enthält – findet freie Porträts, die in keinem Wikipedia-
+    Artikel eingebunden sind."""
+    parts = [fold(p) for p in re.findall(r"[^\W\d_]{3,}", person)]
+    if len(parts) < 2:
+        return []
+    q = urllib.parse.quote(f'"{person}"')
+    res = http_get_json("https://commons.wikimedia.org/w/api.php?action=query&list=search&srnamespace=6"
+                        f"&srlimit=20&format=json&srsearch={q}")
+    out = []
+    for r in res.get("query", {}).get("search", []):
+        title = r.get("title", "")
+        t = fold(title)
+        if re.search(r"\.(jpe?g|png)$", t) and all(p in t for p in parts) and not re.search(r"signatur|logo|grave|grab", t):
+            out.append(title.split(":", 1)[1])
+    return out[:6]
+
+
+def photo_candidates(wiki, person=None):
     """Commons-Dateinamen in dieser Reihenfolge: Leitbild der englischen
     Wikipedia, Bild (P18) des Wikidata-Eintrags, Leitbild der deutschen
-    Wikipedia. Lokale, nicht-freie Wikipedia-Dateien fallen heraus."""
+    Wikipedia, zuletzt eine Commons-Suche nach dem Namen. Lokale,
+    nicht-freie Wikipedia-Dateien fallen heraus."""
     files, qid = [], None
+    if person:
+        try:
+            search_hits = commons_search(person)
+        except Exception as exc:  # noqa: BLE001
+            print(f"  Commons-Suche {person}: {exc}", file=sys.stderr)
+            search_hits = []
+    else:
+        search_hits = []
+    if not wiki:
+        return search_hits
     try:
         summary = http_get_json(f"https://en.wikipedia.org/api/rest_v1/page/summary/{urllib.parse.quote(wiki)}")
         qid = summary.get("wikibase_item")
@@ -1051,16 +1095,17 @@ def photo_candidates(wiki):
                     files.append(f)
         except Exception as exc:  # noqa: BLE001
             print(f"  Wikidata {qid}: {exc}", file=sys.stderr)
-    return list(dict.fromkeys(f.replace("_", " ") for f in files))
+    return list(dict.fromkeys(f.replace("_", " ") for f in files + search_hits))
 
 
-def fetch_manager_photo(slug, wiki, manifest):
+def fetch_manager_photo(slug, wiki, manifest, person=None):
     """Holt ein frei lizenziertes Commons-Porträt (mit Urheber und Lizenz).
     Gibt Manifest-Eintrag oder None zurück."""
+    key = wiki or ("search:" + (person or ""))
     cached = manifest.get(slug)
-    if cached and cached.get("wiki") == wiki and (PHOTO_DIR / cached["file"]).exists():
+    if cached and cached.get("wiki") in (wiki, key) and (PHOTO_DIR / cached["file"]).exists():
         return cached
-    for filename in photo_candidates(wiki):
+    for filename in photo_candidates(wiki, person):
         api = ("https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo"
                "&iiprop=url|extmetadata&iiurlwidth=480&titles=" + urllib.parse.quote("File:" + filename))
         pages = http_get_json(api).get("query", {}).get("pages", {})
@@ -1078,7 +1123,7 @@ def fetch_manager_photo(slug, wiki, manifest):
         out_name = slug + ext
         (PHOTO_DIR / out_name).write_bytes(http_get(thumb))
         artist = strip_html(meta.get("Artist", {}).get("value", "")) or "unbekannt"
-        return {"wiki": wiki, "file": out_name, "license": license_short,
+        return {"wiki": key, "file": out_name, "license": license_short,
                 "licenseUrl": strip_html(meta.get("LicenseUrl", {}).get("value", "")) or None,
                 "artist": artist[:140], "sourceUrl": info.get("descriptionurl")}
     return None
@@ -1088,10 +1133,11 @@ def update_photos(funds_meta):
     manifest = load_json(PHOTO_MANIFEST_PATH, {})
     for meta in funds_meta:
         slug, wiki = meta["slug"], meta.get("wiki")
-        if not wiki:
+        person = person_name(meta.get("manager")) if meta.get("photoSearch", True) else None
+        if not wiki and not person:
             continue
         try:
-            entry = fetch_manager_photo(slug, wiki, manifest)
+            entry = fetch_manager_photo(slug, wiki, manifest, person)
             if entry:
                 manifest[slug] = entry
             else:
@@ -1554,6 +1600,57 @@ def fetch_universe(entries):
 
 
 # ------------------------------------------------------------------ main
+def stock_shard(cusip):
+    """Gleiche Formel wie im Frontend (app.js stockShard)."""
+    return sum(ord(ch) for ch in cusip) % STOCK_SHARDS
+
+
+def build_stock_index(entries, curated_slugs, cmap, stocks, logos):
+    """Umkehr-Index: welche Fonds halten welche Aktie mit welchem Anteil.
+
+    entries: [(record, positions, trades, limit)]. Gezählt werden die
+    Positionen, die auch in den Detaildateien stehen (Star-Investoren: die
+    größten 150, weitere Hedgefonds: die größten 50) – so stimmen
+    Aktienseite und Fondsseite überein. Nur Aktien, keine Optionen."""
+    by = {}
+    for rec, pos, trades, limit in entries:
+        total = rec["totalValueUSD"] or 1
+        for h in pos[:limit]:
+            if h.get("putCall") or not h.get("cusip"):
+                continue
+            a = by.setdefault(h["cusip"], {"cusip": h["cusip"], "issuer": h["issuer"], "holders": [], "sellers": []})
+            e = {"s": rec["slug"], "w": h["valueUSD"] / total * 100, "v": round(h["valueUSD"]), "sh": h.get("shares", 0)}
+            t = trades.get(position_key(h))
+            if t and t["status"] != "unchanged":
+                e["st"], e["d"] = t["status"], t.get("deltaPct")
+            a["holders"].append(e)
+        for t in trades.values():
+            if t["status"] == "sold" and not t.get("putCall") and t.get("cusip"):
+                a = by.setdefault(t["cusip"], {"cusip": t["cusip"], "issuer": t["issuer"], "holders": [], "sellers": []})
+                a["sellers"].append({"s": rec["slug"], "v": round(t.get("prevValueUSD") or 0), "sh": t.get("prevShares", 0)})
+    index, shards = [], [{} for _ in range(STOCK_SHARDS)]
+    for cusip, a in by.items():
+        enrich(a, cmap, stocks, logos)
+        a["holders"].sort(key=lambda e: -e["w"])
+        a["sellers"].sort(key=lambda e: -e["v"])
+        stars = sum(1 for e in a["holders"] if e["s"] in curated_slugs)
+        value = sum(e["v"] for e in a["holders"])
+        buyers = sum(1 for e in a["holders"] if e.get("st") in ("new", "added"))
+        reducers = sum(1 for e in a["holders"] if e.get("st") == "reduced") + len(a["sellers"])
+        a.update(fundCount=len(a["holders"]), starCount=stars, valueUSD=value, buyers=buyers, sellersCount=reducers)
+        shards[stock_shard(cusip)][cusip] = a
+        if a["holders"] and (a.get("ticker") or len(a["holders"]) >= 2):
+            index.append([cusip, a.get("ticker") or "", a.get("displayName") or a["issuer"], len(a["holders"]), stars,
+                          value, 1 if a.get("logo") else 0])
+    index.sort(key=lambda r: (-r[3], -r[5]))
+    STOCK_DIR.mkdir(parents=True, exist_ok=True)
+    for i, shard in enumerate(shards):
+        write_json_if_changed(STOCK_DIR / f"{i}.json", shard)
+    write_json_if_changed(STOCK_DIR / "index.json",
+                          {"fields": ["cusip", "ticker", "name", "fundCount", "starCount", "valueUSD", "logo"], "rows": index})
+    print(f"Aktien-Index: {len(index)} Aktien im Suchindex, {len(by)} insgesamt", file=sys.stderr)
+
+
 def enrich_detail(d, cmap, stocks, logos):
     for it in d.get("holdings", []):
         enrich(it, cmap, stocks, logos)
@@ -1764,6 +1861,12 @@ def main():
             universe_lite.append(old_universe[f["slug"]])
             written_slugs.add(f["slug"])
     universe_lite.sort(key=lambda f: -(f["totalValueUSD"] or 0))
+
+    # Aktienseiten: Umkehr-Index über Star-Investoren und weitere Fonds
+    curated_slugs = {r["slug"] for _, r, _, _ in curated}
+    build_stock_index([(r, p, t, DETAIL_HOLDINGS) for _, r, p, t in curated] +
+                      [(u["rec"], u["pos"], u["trades"], TIER2_DETAIL_HOLDINGS) for u in universe],
+                      curated_slugs, cmap, stocks, logos)
 
     # Detaildateien von Fonds, die nicht mehr geführt werden, entfernen.
     # Fehlgeschlagene kuratierte Fonds behalten ihre letzte Datei.
