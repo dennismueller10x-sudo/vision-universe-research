@@ -6,6 +6,7 @@ name: Supertrader Hausstrategie (HS1, intern)
 #   [house:dev]        Entwicklungszeitraum 2016-2021 (Daten nach 2021-12-31 vor jeder Rechnung entfernt)
 #   [house:holdout]    Holdout 2022-2026, nur mit FROZEN-HS1.json (Hash-Pruefung), genau einmal
 #   [house:hs2-dev-smoke] / [house:hs2-dev] / [house:hs2-holdout]  dasselbe fuer HS2 (PREREGISTRATION-HS2.json)
+#   [house:sec-pit-r13]  SEC-Werte zum Einreichungsdatum inkl. Aktienanzahl (privater Eimer, Zusammenfassung verschluesselt)
 # Rohreihen nur im privaten Eimer. Das Repository ist oeffentlich: Logs zeigen nur Zaehlwerte;
 # Ergebnisse verschluesselt (Eigentuemer- und Sitzungsschluessel) auf claude/vu-house-strategy-results.
 on:
@@ -13,7 +14,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [dev-smoke, dev, holdout, hs2-dev-smoke, hs2-dev, hs2-holdout]
+        options: [dev-smoke, dev, holdout, hs2-dev-smoke, hs2-dev, hs2-holdout, sec-pit-r13]
         default: dev-smoke
   push:
     branches:
@@ -40,7 +41,7 @@ jobs:
           INPUT: ${{ inputs.mode }}
         run: |
           m="$INPUT"
-          case "$MSG" in *"[house:hs2-dev-smoke]"*) m=hs2-dev-smoke;; *"[house:hs2-dev]"*) m=hs2-dev;; *"[house:hs2-holdout]"*) m=hs2-holdout;; *"[house:dev-smoke]"*) m=dev-smoke;; *"[house:dev]"*) m=dev;; *"[house:holdout]"*) m=holdout;; esac
+          case "$MSG" in *"[house:sec-pit-r13]"*) m=sec-pit-r13;; *"[house:hs2-dev-smoke]"*) m=hs2-dev-smoke;; *"[house:hs2-dev]"*) m=hs2-dev;; *"[house:hs2-holdout]"*) m=hs2-holdout;; *"[house:dev-smoke]"*) m=dev-smoke;; *"[house:dev]"*) m=dev;; *"[house:holdout]"*) m=holdout;; esac
           echo "mode=${m:-dev-smoke}" >> "$GITHUB_OUTPUT"
       - name: Tests der Hausstrategie
         run: node --test scripts/supertrader/tests/house-hs1.test.mjs
@@ -61,6 +62,7 @@ jobs:
             holdout) node scripts/supertrader/house/analyze.mjs --mode holdout --out "$RUNNER_TEMP/val" ;;
             hs2-dev-smoke) node scripts/supertrader/house/analyze.mjs --set hs2 --mode dev --limit 600 --out "$RUNNER_TEMP/val" ;;
             hs2-dev) node scripts/supertrader/house/analyze.mjs --set hs2 --mode dev --out "$RUNNER_TEMP/val" ;;
+            sec-pit-r13) node scripts/supertrader/validation/sec-pit.mjs --r13 --out "$RUNNER_TEMP/val" ;;
             hs2-holdout) node scripts/supertrader/house/analyze.mjs --set hs2 --mode holdout --out "$RUNNER_TEMP/val" ;;
           esac
       - name: Verschluesseltes Ergebnis ablegen

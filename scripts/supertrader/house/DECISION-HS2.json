@@ -1,0 +1,15 @@
+{
+  "schema": "supertrader-house-decision-1.0.0",
+  "id": "VU_HOUSE_HS2",
+  "decidedAt": "2026-10-03",
+  "prereg": "PREREGISTRATION-HS2.json",
+  "runs": { "dev": 37134594360 },
+  "publication": "Kennzahlen nur verschlüsselt. Öffentlich nur die Entscheidung.",
+  "technicalControls": "PASS (Abstimmung Endwert, Entwicklungssperre)",
+  "selected": "E03",
+  "criteria": { "H3_development": "PASS", "H5_PBO": "FAIL", "H1_H2_H4_H6": "NOT_RUN" },
+  "decision": "TESTED_NO_EDGE",
+  "holdout": "NICHT GEÖFFNET. H5 (PBO < 0,5) ist im Entwicklungszeitraum verfehlt; ein Holdout-Lauf könnte das Urteil nicht mehr ändern. Der Holdout 2022–2026 bleibt versiegelt.",
+  "finding": "Die Überrendite stammt fast vollständig aus der Kontrolle E00 (Gewichtung nach Handelsumsatz als Größenersatz), nicht aus der Faktorneigung. Der Ersatz übergewichtet stark gehandelte Titel und erzeugt große Jahresabweichungen gegen SPY in beide Richtungen. Die Deflated Sharpe Ratio mit 19 gezählten Versuchen ist weit von 0,95 entfernt.",
+  "consequence": "Datengrundlage zuerst: Point-in-Time-Marktkapitalisierung (SEC-Aktienzahl zum Einreichungsdatum × Rohschluss). Erst dann ist eine indexnahe Neigung sauber messbar (Kontrolle ≈ SPY). Neue Präregistrierung HS3 erst nach dieser Datenstufe."
+}

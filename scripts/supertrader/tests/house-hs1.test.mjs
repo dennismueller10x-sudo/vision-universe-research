@@ -179,3 +179,12 @@ test('HS2 end-to-end: indexnahe Versuche, Kontrollversuch E00 nicht waehlbar, DS
   assert.equal(r.stats.trialsCounted, 19);
   for (const t of Object.values(r.trials)) assert.ok(t.reconcile < 1e-9);
 });
+
+test('SEC r13: Aktienanzahl je Stichtag, Gattungen addiert, erste Einreichung', async () => {
+  const { sharesSeries } = await import('../validation/sec-pit.mjs');
+  const cf = { facts: { dei: { EntityCommonStockSharesOutstanding: { units: { shares: [
+    { end: '2020-04-20', val: 100, accn: 'a', filed: '2020-04-30' }, { end: '2020-04-20', val: 50, accn: 'a', filed: '2020-04-30' },
+    { end: '2020-07-20', val: 160, accn: 'b', filed: '2020-07-30' }, { end: '2020-07-20', val: 160, accn: 'c', filed: '2020-09-01' }] } } } } };
+  assert.deepEqual(sharesSeries(cf), [['2020-04-20', 150, '2020-04-30', 'dei'], ['2020-07-20', 160, '2020-07-30', 'dei']]);
+  assert.deepEqual(sharesSeries({ facts: {} }), []);
+});
