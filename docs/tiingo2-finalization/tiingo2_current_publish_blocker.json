@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "tiingo2-current-publish-blocker-1",
+  "observedAtUtc": "2026-10-03",
+  "assessment": "BLOCKED_FAIL_CLOSED",
+  "productionWritesPerformed": 0,
+  "scope": "Current-main Tiingo 2.0 canonical products and scoped private history publication",
+  "currentPaths": {
+    "preview": ".github/workflows/tiingo2-current-productization-preview.yml",
+    "canonicalApply": "scripts/market/tiingo2-publication.mjs:applyCanonicalPublication",
+    "scopedHistoryPreflight": "scripts/market/tiingo2-scoped-history-preflight.mjs",
+    "legacyHistoryWriter": ".github/workflows/history-store-sync.yml",
+    "pagesRelease": ".github/workflows/pages-release.yml"
+  },
+  "verifiedCapabilities": [
+    "The preview binds protected product QA to a private canonical manifest and produces a read-only scoped history preflight.",
+    "The local canonical apply checks manifest, protected exclusions, zero removals, product readiness, file CAS and rollback before-images.",
+    "HistoryStore supports absent-only same-content series writes and conditional index and usage writes.",
+    "Pages builds the release from checked-out Git files and checks the built source commit."
+  ],
+  "blockingGaps": [
+    {
+      "code": "NO_SEALED_PRIVATE_HANDOFF",
+      "evidence": "The preview uploads only .verification derived JSON. Its private projection blobs and history-source objects stay under .market-cache on a single runner. No authenticated encrypted cross-run handoff exists.",
+      "risk": "A later PR, merge or Pages run cannot reproduce or byte-verify the sealed product and history objects."
+    },
+    {
+      "code": "NO_SCOPED_HISTORY_APPLY_CALLER",
+      "evidence": "The Tiingo 2.0 scoped preflight is read-only. The existing history-store-sync workflow invokes the full-universe sync-history-store writer and does not consume the sealed history-publication-plan.json.",
+      "risk": "The full-universe writer cannot prove absent-only, exact-intent scoped writes or the intended index delta."
+    },
+    {
+      "code": "NO_CANONICAL_APPLY_RELEASE_HANDOFF",
+      "evidence": "applyCanonicalPublication has no non-test workflow caller. Its local receipt reports storageStatus and indexCASStatus as UNVERIFIED. Pages builds Git-tracked main, not the private staged checkout.",
+      "risk": "Local canonical APPLIED is not production publication, and a Git merge alone cannot certify R2 history or index activation."
+    },
+    {
+      "code": "NO_ORDERED_PAGES_INDEX_ACTIVATION",
+      "evidence": "Pages push/workflow_run delivery has no Tiingo 2.0 storage receipt gate. The index writer and Pages deploy run in separate lanes; no common atomic handoff or deployment barrier exists.",
+      "risk": "If Pages exposes new chart-capable securities before their R2 index is active, live charts can return 404; activating the index without an exact merge and rollback receipt leaves orphan membership after a failed release."
+    },
+    {
+      "code": "SOURCE_COMMIT_RESEAL_REQUIRED",
+      "evidence": "The private history plan binds sourceCommit to the preview checkout SHA and the scoped preflight CLI checks it against its own HEAD. Committing generated product files changes HEAD.",
+      "risk": "A preview plan cannot be replayed after a branch or main commit without a reviewed base-to-publication commit binding and fresh CAS checks."
+    },
+    {
+      "code": "CURRENT_GREEN_GATES_MISSING",
+      "evidence": "Current-main PR #404 preview run 37130754783 stopped at FACTOR_POPULATION_QA_BLOCKED. The current broad factor source marks 30 previously published Factor Evidence identities as FAIL/unexplained_adjustment_step, including 29 protected Consumer titles; rebuilding would remove their evidence and shift existing ranks. DNA R2 baseline identity/index proof also deferred. Quant CI has an independent stale EOD product-index failure and Vercel reports its external 24-hour build rate limit.",
+      "risk": "A publication workflow enabled now would bypass required quality and deployment gates."
+    }
+  ],
+  "requiredSafeHandoff": [
+    "Rebuild the exact candidate and product package from current main; bind the final protected QA, browser and factor-population reports to one immutable manifest hash and source commit.",
+    "Keep private history and projection source bytes in an authenticated encrypted handoff; expose no private data or credentials in Git, Pages or public Actions artifacts.",
+    "Use the market-data writer concurrency lane. Recheck live index and usage ETags, exact object absence or same-content, storage quota and operation budget immediately before each scoped absent-only write.",
+    "Write only immutable scoped history objects before PR merge. Do not activate the live index or usage membership in this pre-merge phase. Persist an exact object receipt and a rollback intent.",
+    "Commit only the byte-verified canonical public projections to a reviewable PR; rerun required CI and protected 6397/22/zero-removal, ID, product-budget and baseline CAS gates against the publication commit.",
+    "At the release boundary, recheck current main, exact product commit, live index and usage CAS, object receipts and rollback preconditions. Activate the scoped index in an ordered step that is complete before Pages exposes chart-ready entries, or keep Pages blocked until activation succeeds.",
+    "Verify the deployed Pages SHA and live R2 index/object receipt together. On failure, use the exact rollback receipt to restore canonical membership and projections without deleting retained additive history objects."
+  ],
+  "decision": "Do not add a mutating Tiingo 2.0 workflow or publish from the existing preview, full-universe history sync, or Pages workflow until these handoff and ordering invariants are implemented and tested."
+}

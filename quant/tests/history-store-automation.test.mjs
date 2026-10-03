@@ -111,3 +111,15 @@ test("der Hebel ohne Abruf ist dispatchbar und fragt keinen Anbieter", () => {
   assert.doesNotMatch(lever, /TIINGO/,
     "der Hebel soll die Ablage nachschreiben, nicht neu abrufen");
 });
+
+test("beide produktiven History-Writer teilen Index-CAS und eine serielle Workflow-Lane", () => {
+  const lever = workflow("history-store-sync.yml");
+  assert.match(refresh, /group:\s*market-data/);
+  assert.match(lever, /group:\s*market-data/);
+  for (const source of [refresh, lever]) assert.match(source, /cancel-in-progress:\s*false/);
+  const sync = readFileSync(join(root, "scripts/market/sync-history-store.mjs"), "utf8");
+  assert.match(sync, /readIndexSnapshot\(\)/);
+  assert.match(sync, /readUsageSnapshot\(month\)/);
+  assert.match(sync, /writeIndex\(\{ symbols: merged \},[\s\S]{0,120}expectedETag: idxSnapshot\.etag/);
+  assert.match(sync, /expectedETag: usageSnapshot\.etag/);
+});

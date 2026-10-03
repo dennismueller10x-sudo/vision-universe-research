@@ -29,20 +29,23 @@
    Ausfuehren: node scripts/universe/build-universe-indexes.mjs
    ========================================================================= */
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
-const root = join(here, "..", "..");
-const Master = require(join(root, "quant", "engines", "company-master.js"));
+const defaultRoot = join(here, "..", "..");
 
 const argv = process.argv.slice(2);
 function arg(name, fallback) {
   const i = argv.indexOf(name);
   return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : fallback;
 }
+
+// Isolated productization builds use the same engine against a shadow data root.
+const root = resolve(arg("--root", defaultRoot));
+const Master = require(join(defaultRoot, "quant", "engines", "company-master.js"));
 
 /* Ein absoluter Pfad bleibt absolut. join(root, "/tmp/x") ergibt
    "<root>/tmp/x" - die Datei landet dann im Repository statt dort, wo sie
@@ -272,6 +275,26 @@ function collectEvidence() {
     if (n) sources.push({ file: "quant/data/market/golden-preview/daily/", kind: "deliveredPriceHistory", symbols: n });
   }
 
+  // Compact canonical chart projections are real delivered history, independently
+  // of whether issuer fundamentals or Quant factors have been materialized.
+  const compactDir = join(root, "quant", "data", "market", "discover-series");
+  if (existsSync(compactDir)) {
+    let n = 0;
+    for (const f of readdirSync(compactDir).filter((f) => f.endsWith(".json") && f !== "index.json")) {
+      const payload = readJSON(join(compactDir, f));
+      if (payload.status !== "CALCULATED" || payload.priceSeriesType !== "SPLIT_ADJUSTED" ||
+          !Array.isArray(payload.points) || payload.points.length < (payload.historyCoverage === "SHORT_HISTORY" ? 5 : 30) ||
+          !payload.points.every((p) => Array.isArray(p) && typeof p[1] === "number" && Number.isFinite(p[1]) && p[1] > 0)) continue;
+      const e = get(String(payload.ticker).toUpperCase());
+      e.deliveredPriceHistoryBars = Math.max(e.deliveredPriceHistoryBars || 0, payload.points.length);
+      e.deliveredPriceSnapshot = true;
+      e.priceHistoryBars = Math.max(e.priceHistoryBars || 0, payload.sourceBarCount || payload.points.length);
+      e.priceHistoryVerified = true;
+      n++;
+    }
+    if (n) sources.push({ file: "quant/data/market/discover-series/", kind: "deliveredCanonicalChart", symbols: n });
+  }
+
   /* 3. Ausgelieferte Discover-Payloads: fuer diese Titel gibt es heute
         eine Aktienseite mit gerechneten Kennzahlen. */
   const stockDir = join(root, "discover", "data", "stocks", "US_REAL");
@@ -439,14 +462,23 @@ function main() {
   for (const inst of instruments) {
     const caps = capsByInstrument.get(inst.instrumentId);
     const flags = Master.CAPABILITIES.filter((c) => caps.levels[c] === "DELIVERED");
-    const entry = Master.searchEntry(inst, { capabilities: flags });
+    const aliases = [...new Set([...(inst.symbolAliases || []), ...(inst.companyNameAliases || []), ...(inst.nameAliases || [])])];
+    const entry = Master.searchEntry(inst, { capabilities: flags, aliases });
     entries++;
 
     const sk = Master.shardKey(inst.symbol);
     (symShards.get(sk) || symShards.set(sk, []).get(sk)).push(entry);
 
+    const seenSymbols = new Set([sk]);
+    for (const alias of inst.symbolAliases || []) {
+      const ak = Master.shardKey(alias);
+      if (seenSymbols.has(ak)) continue;
+      seenSymbols.add(ak);
+      (symShards.get(ak) || symShards.set(ak, []).get(ak)).push(entry);
+    }
+
     const seen = new Set();
-    for (const token of nameTokens(inst.companyName)) {
+    for (const token of nameTokens([inst.companyName, ...(inst.companyNameAliases || []), ...(inst.nameAliases || [])].filter(Boolean).join(" "))) {
       const nk = Master.shardKey(token);
       if (seen.has(nk)) continue;
       seen.add(nk);

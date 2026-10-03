@@ -43,6 +43,7 @@ import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { replayCommittedClassification, unchangedSnapshotShardBytes, verifiedExistingDnaSnapshot } from './company-master-snapshot-replay.mjs';
 
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
@@ -349,6 +350,7 @@ function loadCommittedGateUniverses() {
         name: s.company || s.name || null,
         active: typeof s.active === "boolean" ? s.active : undefined,
         securityId: s.securityId || null,
+        selection: s.selection || null,
         provider: s.provider || "tiingo"
       });
     }
@@ -524,12 +526,20 @@ function main() {
 
   /* Aufnehmen: alles, was die ingest-Regeln erlauben. */
   const ingest = CONFIG.ingest;
+  const previous = loadPreviousMaster();
+  const previousByListing = new Map();
+  for(const instrument of previous.instruments){
+    const key=instrument.symbol+'@'+String(instrument.exchange||'').toUpperCase();
+    previousByListing.set(key,previousByListing.has(key)?null:instrument);
+  }
+  const classificationReview=[];
+  const existingProofFile=join(root,'quant/data/universe/tiingo2-existing-eligibility-corrections.json'),existingProof=existsSync(existingProofFile)?readJSON(existingProofFile):null;
   const t0 = Date.now();
   const incoming = [];
   let droppedByIngest = 0;
   for (const row of source.rows) {
     const named = names.get(String(row.ticker || "").toUpperCase());
-    const inst = Master.toInstrument(
+    let inst = Master.toInstrument(
       Object.assign({}, row, { name: row.name || (named ? named.name : null) }),
       { today: TODAY, provider: row.provider || "tiingo" });
     if (named && inst.companyName) inst.companyNameStatus = "RESOLVED:" + named.source;
@@ -564,6 +574,11 @@ function main() {
       inst.screenerEligible = inst.screenerEligible && row.active !== false;
     }
 
+    const prior=previousByListing.get(inst.symbol+'@'+String(inst.exchange||'').toUpperCase());
+    const replay=replayCommittedClassification(prior,inst,{sourceKind:source.kind,sourceRow:{...row,existingEligibilityVerified:verifiedExistingDnaSnapshot(prior,decision,existingProof)}});
+    inst=replay.instrument;
+    if(replay.proposal)classificationReview.push(replay.proposal);
+
     if (ingest.securityTypes && ingest.securityTypes.indexOf(inst.securityType) === -1) {
       droppedByIngest++; continue;
     }
@@ -577,7 +592,6 @@ function main() {
   const normalizeMs = Date.now() - t0;
   console.log(`  Aufgenommen: ${incoming.length} (${droppedByIngest} durch ingest-Regeln aussen vor)`);
 
-  const previous = loadPreviousMaster();
   console.log(`  Bestand:  ${previous.instruments.length} Instrumente (${previous.from})`);
 
   const t1 = Date.now();
@@ -633,8 +647,8 @@ function main() {
        gelesen wird ohnehin mit einem Werkzeug. Die Berichte daneben
        (Manifest, Sync-Log, Qualitaet) bleiben eingerueckt - die liest
        jemand. */
-    const json = JSON.stringify(payload) + "\n";
     const before = existsSync(file) ? readFileSync(file, "utf8") : null;
+    const json = unchangedSnapshotShardBytes(before,payload,{sourceKind:source.kind}) ?? JSON.stringify(payload) + "\n";
     if (before !== json) { writeFileSync(file, json); written++; } else unchangedShards++;
     bytes += Buffer.byteLength(json);
     shardIndex.push({ shard: key, count: rows.length });
@@ -700,6 +714,7 @@ function main() {
     },
     quality: { blocking: quality.blocking, findings: quality.findings }
   };
+  manifest.classificationReview={count:classificationReview.length,rows:classificationReview};
   writeJSON(join(OUT_ROOT, "master-manifest.json"), manifest);
 
   writeJSON(join(OUT_ROOT, "sync-log.json"), {
