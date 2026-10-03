@@ -95,6 +95,13 @@ jobs:
           node "$GITHUB_WORKSPACE/scripts/vu2/browser-qa.mjs"
           node "$GITHUB_WORKSPACE/scripts/vu2/production-smoke.mjs" "$RUNNER_TEMP/tiingo2-current-release" \
             --report "$GITHUB_WORKSPACE/.verification/tiingo2-current-productization/release-smoke.json"
+      - name: Bind current-main protected QA and reseal private history intent
+        run: |
+          node scripts/market/tiingo2-finalize-preview.mjs \
+            --root "$GITHUB_WORKSPACE" \
+            --work-dir "$GITHUB_WORKSPACE/.market-cache/tiingo2-productization" \
+            --out "$GITHUB_WORKSPACE/.verification/tiingo2-current-productization" \
+            --browser-dir "$GITHUB_WORKSPACE/.verification/tiingo2-current-productization/browser"
       - name: Export derived status only
         if: always()
         uses: actions/upload-artifact@v4
