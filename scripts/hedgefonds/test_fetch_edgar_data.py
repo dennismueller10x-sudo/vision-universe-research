@@ -200,3 +200,35 @@ class Meta(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class WikidataPerson(unittest.TestCase):
+    def setUp(self):
+        self.orig = m.http_get_json
+
+    def tearDown(self):
+        m.http_get_json = self.orig
+
+    def fake(self, hits, p31="Q5"):
+        def get(url):
+            if "wbsearchentities" in url:
+                return {"search": hits}
+            qid = url.rsplit("/", 1)[1].split(".")[0]
+            return {"entities": {qid: {"claims": {"P31": [{"mainsnak": {"datavalue": {"value": {"id": p31}}}}]}}}}
+        m.http_get_json = get
+
+    def test_finance_person_found(self):
+        self.fake([{"id": "Q1", "label": "Jan Beckers", "description": "deutscher Unternehmer und Investor"}])
+        self.assertEqual(m.wikidata_person("Jan Beckers"), ("Q1", True))
+
+    def test_generic_business_needs_image_check(self):
+        self.fake([{"id": "Q4", "label": "Bert Flossbach", "description": "deutscher Unternehmer"}])
+        self.assertEqual(m.wikidata_person("Bert Flossbach"), ("Q4", False))
+
+    def test_other_profession_rejected(self):
+        self.fake([{"id": "Q2", "label": "Gavin Baker", "description": "American politician"}])
+        self.assertEqual(m.wikidata_person("Gavin Baker"), (None, False))
+
+    def test_non_human_rejected(self):
+        self.fake([{"id": "Q3", "label": "Jan Beckers", "description": "investor"}], p31="Q4830453")
+        self.assertEqual(m.wikidata_person("Jan Beckers"), (None, False))

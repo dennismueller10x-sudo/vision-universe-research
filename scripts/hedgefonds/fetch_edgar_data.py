@@ -1052,23 +1052,59 @@ INVESTOR_CONTEXT_RE = re.compile(r"investor|hedge|fund|capital|asset management|
                                  r"wall street|businessman|business executive|ceo|chief executive|investment", re.I)
 
 
+WIKIDATA_FINANCE_RE = re.compile(r"investor|hedge|fund|financier|portfolio manager|asset manager|money manager|"
+                                 r"vermögensverwalter|fondsmanager|bankier|banker|billionaire|milliardär", re.I)
+WIKIDATA_BUSINESS_RE = re.compile(r"unternehmer|businessman|businessperson|business executive|entrepreneur|"
+                                  r"economist|ökonom|manager", re.I)
+
+
+def wikidata_person(person):
+    """Sucht den Wikidata-Eintrag einer Person über den Namen (deutsch und
+    englisch) – deckt Manager ohne englischen Wikipedia-Artikel ab. Nur
+    Menschen (P31 = Q5), deren Beschreibung nach Wirtschaft klingt.
+    Gibt (QID, eindeutig) zurück; eindeutig ist ein Treffer nur mit
+    Finanzbegriff in der Beschreibung („Investor"), bei bloß „Unternehmer"
+    muss zusätzlich die Bildbeschreibung passen."""
+    parts = [fold(p) for p in re.findall(r"[^\W\d_]{2,}", person)]
+    if len(parts) < 2:
+        return None, False
+    for lang in ("en", "de"):
+        res = http_get_json("https://www.wikidata.org/w/api.php?action=wbsearchentities&type=item&limit=7&format=json"
+                            f"&language={lang}&uselang={lang}&search=" + urllib.parse.quote(person))
+        for hit in res.get("search", []):
+            label = fold(hit.get("label", ""))
+            desc = hit.get("description", "")
+            strong = bool(WIKIDATA_FINANCE_RE.search(desc))
+            if not all(p in label for p in parts) or not (strong or WIKIDATA_BUSINESS_RE.search(desc)):
+                continue
+            ent = http_get_json(f"https://www.wikidata.org/wiki/Special:EntityData/{hit['id']}.json")["entities"][hit["id"]]
+            p31 = [c.get("mainsnak", {}).get("datavalue", {}).get("value", {}).get("id") for c in ent.get("claims", {}).get("P31", [])]
+            if "Q5" in p31:
+                return hit["id"], strong
+    return None, False
+
+
 def photo_candidates(wiki, person=None):
+    """Verknüpfte Kandidaten zuerst, danach Treffer der Commons-Namenssuche."""
+    files, linked = linked_photo_candidates(wiki, person)
+    if person:
+        try:
+            files = files + commons_search(person)
+        except Exception as exc:  # noqa: BLE001
+            print(f"  Commons-Suche {person}: {exc}", file=sys.stderr)
+    return list(dict.fromkeys(files)), linked
+
+
+def linked_photo_candidates(wiki, person=None):
     """Commons-Dateinamen in dieser Reihenfolge: Leitbild der englischen
     Wikipedia, Bild (P18) des Wikidata-Eintrags, Leitbild der deutschen
     Wikipedia, zuletzt eine Commons-Suche nach dem Namen. Lokale,
-    nicht-freie Wikipedia-Dateien fallen heraus."""
-    files, qid = [], None
-    if person:
-        try:
-            search_hits = commons_search(person)
-        except Exception as exc:  # noqa: BLE001
-            print(f"  Commons-Suche {person}: {exc}", file=sys.stderr)
-            search_hits = []
-    else:
-        search_hits = []
-    if not wiki:
-        return search_hits
+    nicht-freie Wikipedia-Dateien fallen heraus. Gibt (Dateien, Menge der
+    über Wikipedia/Wikidata verknüpften Dateien) zurück."""
+    files, qid, trusted = [], None, True
     try:
+        if not wiki:
+            raise LookupError("kein Wikipedia-Artikel hinterlegt")
         summary = http_get_json(f"https://en.wikipedia.org/api/rest_v1/page/summary/{urllib.parse.quote(wiki)}")
         qid = summary.get("wikibase_item")
         f = commons_file_from_url((summary.get("originalimage") or summary.get("thumbnail") or {}).get("source", ""))
@@ -1084,6 +1120,13 @@ def photo_candidates(wiki, person=None):
                 files.append(f)
         except Exception:  # noqa: BLE001
             pass
+    if not qid and person:
+        try:
+            qid, trusted = wikidata_person(person)
+            if qid:
+                print(f"  Wikidata-Suche {person}: {qid}", file=sys.stderr)
+        except Exception as exc:  # noqa: BLE001
+            print(f"  Wikidata-Suche {person}: {exc}", file=sys.stderr)
     if qid:
         try:
             ent = http_get_json(f"https://www.wikidata.org/wiki/Special:EntityData/{qid}.json")["entities"][qid]
@@ -1099,7 +1142,8 @@ def photo_candidates(wiki, person=None):
                     files.append(f)
         except Exception as exc:  # noqa: BLE001
             print(f"  Wikidata {qid}: {exc}", file=sys.stderr)
-    return list(dict.fromkeys(f.replace("_", " ") for f in files + search_hits))
+    files = list(dict.fromkeys(f.replace("_", " ") for f in files))
+    return files, set(files) if trusted else set()
 
 
 def fetch_manager_photo(slug, wiki, manifest, person=None, context_words=()):
@@ -1116,8 +1160,8 @@ def fetch_manager_photo(slug, wiki, manifest, person=None, context_words=()):
     if cached and cached.get("wiki") in (wiki, key) and (PHOTO_DIR / cached["file"]).exists() \
             and (not str(cached.get("wiki")).startswith("search:") or cached.get("verified")):
         return cached
-    linked = set(photo_candidates(wiki, None)) if wiki else set()
-    for filename in photo_candidates(wiki, person):
+    candidates, linked = photo_candidates(wiki, person)
+    for filename in candidates:
         api = ("https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo"
                "&iiprop=url|extmetadata&iiurlwidth=480&titles=" + urllib.parse.quote("File:" + filename))
         pages = http_get_json(api).get("query", {}).get("pages", {})
