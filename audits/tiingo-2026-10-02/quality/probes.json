@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "tiingo-audit-probes-1.0.0",
+  "maxRequests": 8,
+  "probes": [
+    {
+      "id": "nvda-split-2021",
+      "path": "/tiingo/daily/NVDA/prices",
+      "params": {
+        "startDate": "2021-07-16",
+        "endDate": "2021-07-23",
+        "format": "json"
+      },
+      "purpose": "Known 4:1 split 2021-07-20; splitFactor geometry",
+      "group": "quality"
+    },
+    {
+      "id": "nvda-split-2024",
+      "path": "/tiingo/daily/NVDA/prices",
+      "params": {
+        "startDate": "2024-06-05",
+        "endDate": "2024-06-14",
+        "format": "json"
+      },
+      "purpose": "Known 10:1 split 2024-06-10; price and volume adjustment",
+      "group": "quality"
+    },
+    {
+      "id": "dna-reverse-split-2024",
+      "path": "/tiingo/daily/DNA/prices",
+      "params": {
+        "startDate": "2024-08-16",
+        "endDate": "2024-08-23",
+        "format": "json"
+      },
+      "purpose": "Known 1:40 reverse split 2024-08-20; test actual factor against gate false-positive",
+      "group": "quality"
+    },
+    {
+      "id": "msft-dividend-2024",
+      "path": "/tiingo/daily/MSFT/prices",
+      "params": {
+        "startDate": "2024-01-01",
+        "endDate": "2024-12-31",
+        "format": "json"
+      },
+      "purpose": "Multiple dividends; measure dividend-normalized adjustment error",
+      "group": "quality"
+    },
+    {
+      "id": "spy-dividend-2024",
+      "path": "/tiingo/daily/SPY/prices",
+      "params": {
+        "startDate": "2024-01-01",
+        "endDate": "2024-12-31",
+        "format": "json"
+      },
+      "purpose": "ETF distributions and adjusted OHLCV",
+      "group": "quality"
+    },
+    {
+      "id": "nvo-adr-history",
+      "path": "/tiingo/daily/NVO/prices",
+      "params": {
+        "startDate": "2023-01-01",
+        "endDate": "2024-12-31",
+        "format": "json"
+      },
+      "purpose": "ADR 2:1 split 2023-09-20 and foreign issuer cash dividends",
+      "group": "quality"
+    },
+    {
+      "id": "baba-adr-history",
+      "path": "/tiingo/daily/BABA/prices",
+      "params": {
+        "startDate": "2024-01-01",
+        "endDate": "2024-12-31",
+        "format": "json"
+      },
+      "purpose": "Chinese issuer US ADR dividend; geography is issuer domicile not market",
+      "group": "quality"
+    },
+    {
+      "id": "dna-history-depth",
+      "path": "/tiingo/daily/DNA/prices",
+      "params": {
+        "startDate": "2021-01-01",
+        "endDate": "2026-10-01",
+        "format": "json"
+      },
+      "purpose": "IPO, historical naming collision, reverse split, latest usable history",
+      "group": "quality"
+    }
+  ]
+}

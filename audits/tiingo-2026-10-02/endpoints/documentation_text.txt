@@ -1,0 +1,1952 @@
+You are not logged-in. Please login or make an account to see your token.
+ 1. General
+1.1 Overview
+ Tiingo's APIs are built to be performant, consistent, and also support extensive filters to speed up your development time.
+ Because of this, we hope you will take the time to read the documentation and learn about all of our features, but we also understand you may want to jump right in. So if you want to jump right in, click on any endpoint link, which are located on the sidebar to your left.
+ 1.1 General - Overview
+1.1.1 Introduction
+ The endpoints are broken up into two different types:
+REST Endpoints
+ which provide a RESTful interface to querying data, especially historical data for end-of-day data feeds.
+Websocket
+ which provide a websocket interface and are used to stream real-time data. If you are looking for access to a raw firehose of data, the websocket endpoint is how you get it.
+ To navigate and see how to query data using each of the above methods, use the sidebar on the left and choose an endpoint that interests you.
+ Additionally, there are a number of third-party packages that interface with our data and make it even easier to get up and running with our data. You can check them out here:
+ 1.1 General - Overview
+1.1.2 Authentication
+ In order to use the API, you must sign-up to create an account. All accounts are free and if you need higher usage limits, or you have a commercial use case, you can upgade to the Power and/or Commercial plan.
+ Once you create an account, your account with be assigned an authentication token. This token is used in place of your username & password throughout the API, so keep it safe like you would your password.
+ You can find your API token by clicking
+here
+, or to make it easy, your token will be shown below if you are logged in.
+Your API Token is:
+ To see how to use your token to make requests, you can use the code examples throughout the documentation, or check out the section on connecting:
+1.2.1 Connecting
+.
+ 1.1 General - Overview
+1.1.3 Usage Limits
+ To keep the API affordable to all, each account is given generous rate-limits. We limit based on:
+Hourly Requests - Reset every hour.
+Daily Requests - Reset every day at midnight EST.
+Monthly Bandwidth - Reset the first of every month at midnight EST.
+ We do not rate limit to minute or second, so you are free to make your requests as you desire.
+ The basic, power, and commercial power plans offer different levels of rate limits. To see what these rate limits are, visit the
+pricing page
+.
+ If you need custom limits set you can E-mail our
+sales team
+, who will give you a fair and reasonable price. Chances are, if you've been with us for some time and the request is reasonable, we will increase your limits at no charge. Do not hesitate to reach out, we are here for you.
+ 1.1 General - Overview
+1.1.4 Response Formats
+ For most of our REST endpoints, we allow you, the user, to choose which format the data data can be returned in. We support two different return formats:
+JSON
+ - The data is returned in the JSON data structure. This format allows the most flexibility as we can append meta data as well as debugging data. The downside to this data type is that it requires more bandwidth, which means it may be slower since more data has to be downloaded and parsed by the client side.
+CSV
+ - This is a "bare-bones" data return type that is often 4-5x faster than JSON. The data is returned in comma-separated-format, which is helpful when importing the data in spreadsheet programs like Excel.
+ To return data in a particular format, you may pass the
+format
+ parameter, which can take both "json" and "csv".
+ When browsing the documentation, you will see at the top of the page which return formats are supported.
+ 1.1 General - Overview
+1.1.5 Symbology
+ Tiingo's symbol format uses dashes ("-") instead of periods (".") to denote share classes. Our API covers both common share classes and preferred share classes. For example Berkshire class A shares would be "BRK-A" and Simon Property Group's Preferred J series shares would be "SPG-P-J".
+ More details can be found on the
+Symbology Appendix
+ page and a full list of tickers can be found in
+supported_tickers.zip
+, which is updated daily.
+ 1.1 General - Overview
+1.1.6 Permitted Use of Our Data
+ For Basic and Power accounts, data is for internal and personal use only. You may not redistribute the data in any form.
+ For Commercial accounts, data is licensed for internal commercial usage. You may not redistribute the data in any form.
+ If you would like to redistribute the data for commercial or personal use, for example: a presentation, a proposal, a website or app, or any other usage case, please E-mail
+sales@tiingo.com
+ and include the following:
+The use case for the data.
+A website link to your firm or academic affiliation.
+Whether your company is a start-up (less than 5 employees) or enterprise (5 or more employees).
+ All of our redistributable pricing is based on a flat rate, so it is predictable, simple, and easy. Additionally, redistributable licenses come with substantially higher usage limits to help you save storage costs and speed up loading of our data.
+ If you are a developer and are building software for your audience that requires users to submit their own Tiingo API token in order to use your software, and your software is not distributing our data, you do not need to contact us regarding licensing. Please read about our
+developer program
+ if you are interesting in building software that integrates into Tiingo.
+ Your API token is:
+Close
+Field Name
+JSON Field
+Data Type
+Description
+N/A
+Y
+N
+Response Format
+GET
+format
+string
+N
+Sets the response format of the returned data. Acceptable values are "csv" and "json". Defaults to JSON.
+Columns
+GET
+columns
+string[]
+N
+Allows you to specify which columns you would like returned from the output. Pass an array of strings of column names to get only this columns back.
+Field Name
+Parameter
+JSON Field
+Data Type
+Required
+Description
+Field Name
+Array Index
+Data Type
+Description
+Name & Project Page
+Description
+REST Endpoints
+# Meta Data
+https://api.tiingo.com/tiingo/daily/<ticker>
+
+# Latest Price
+https://api.tiingo.com/tiingo/daily/<ticker>/prices
+
+# Historical Prices
+https://api.tiingo.com/tiingo/daily/<ticker>/prices?startDate=2012-1-1&endDate=2016-1-1
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 2.1 REST - End-of-Day Prices
+2.1.1 Overview
+ Tiingo's End-of-Day prices use a proprietary error checking framework to help clean data feeds and also help catch missing corportate actions (splits, dividends, and exchange listing changes). Most US Equity prices are available at 5:30 PM EST, however exchanges may send corrections until 8 PM EST. As we obtain corrections, we update prices throughout the evening.
+ Mutual Fund NAVs are available after 12 AM EST. The fields "open", "high", "low", "close" will contain the NAV value for the given day.
+ Both raw prices and adjusted prices are available. The adjustment methodology follows the standard method set forth by "The Center for Research in Security Prices" (CRSP) in this document:
+CRSP Calculations
+. This methodology incorporates both split and dividend adjustments.
+ You can find out about the full product offering on the
+Product - End-of-Day
+ page.
+ 2.1 REST - End-of-Day Prices
+2.1.2 End-of-Day Endpoint
+To request price data for a stock, use the following REST endpoints.
+# Latest Price Information
+https://api.tiingo.com/tiingo/daily/<ticker>/prices
+
+# Historical Price Information
+https://api.tiingo.com/tiingo/daily/<ticker>/prices?startDate=2012-1-1&endDate=2016-1-1&format=csv&resampleFreq=monthly
+
+Response:
+ 2.1 REST - End-of-Day Prices
+2.1.3 Meta Endpoint
+ Our meta information comes from a variety of sources, but is used to help communicate details about an asset in our database to our users.
+For a daily list of Tiingo ticker symbols, including currently supported assets and reserved symbols for planned coverage expansion, please see the following file which is updated daily:
+supported_tickers.zip
+ The supported_tickers.zip file includes current coverage as well as symbol reservations that we have preserved as we expand our data and licensing access for end customers.
+To confirm whether a ticker is presently available through the EOD metadata endpoint, use the following REST endpoint. This endpoint reflects assets currently covered for immediate API access.
+# Meta Data
+https://api.tiingo.com/tiingo/daily/<ticker>
+
+Response:
+ 1. General
+1.2 Connecting
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 1.2 General - Connecting
+1.2.1 Connecting to the REST API
+ Using our REST API is super easy to do. Just use your favorite programming language's web request package and the data will be returned via JSON or CSV.
+ To use the REST API, you must let our server know you have an account. You can do this by passing your
+.
+ There are two (2) ways to pass your API token using the REST API.
+Pass the token directly within the request URL.
+Pass the token in your request headers.
+ 1. Pass the token directly within the request URL.
+ You can pass the token directly in the request URL by passing the
+token
+ parameter. For example you would query the https://api.tiingo.com/api/test/ endpoint with the token in URL by adding ?token=. Check out the copy & paste example below.
+Response:
+ 2. Pass the token in your request headers.
+ You can also pass the token in the request headers. Note you can do this by passing "Token " +
+ to the "Authorization" header. Check out the copy & paste examples below.
+Response:
+ 1.2 General - Connecting
+1.2.2 Connecting to the Websocket API
+ Websockets allow for two-way communication, allowing us to data to you as soon as it's available. If you want real-time data, this is the fastest way to get it.
+ This can seem complicated if it's your first experience with websockets, but don't worry - it's just as easy with a RESTful interface and even more efficient. Websockets are both faster and uses less data than RESTful requests.
+ The web socket API functions a bit differently as you "subscribe" and "unsubscribe" to data sources. From there, you will receive all updates as soon as they're received without having to make requests.
+ Additionally, when new data comes in there will be a "messageType" which can be
+"A" for new data
+"U" for updating existing data
+"D" for deleing existing data
+"I" for informational/meta data
+"E" for error messages
+"H" for Heartbeats (can be ignored for most cases)
+ This lets us pass on notices that data has updated or some data is no longer considered valid Each request made to the websocket server contains a JSON object that follows the format:
+Response:
+ Notice how we have to pass an authorization token just like a REST request. Also notice the HeartBeat message. This is sent every 30 seconds to keep the connection alive.
+ Once we get our first data request back on a successful connection, the "data" attribute will contain a
+subscriptionId
+. This will be used for managing the connection. For example with IEX data, if we want to add or remove tickers in our subscription, we can send updates using the
+subscriptionId
+.
+Response:
+ 5. Appendix
+5.3 Symbology
+ This guide is covers Tiingo's symbol format for querying different assets throughout the API.
+ 5.3 Appendix - Symbology
+5.3.1 Introduction
+ Tiingo follows a symbology format to help disambiguate share classes, preferreds, and other types of assets. This section will be expanded as we ready to expand our API into permatickers and delisted ticker support.
+ 5.3 Appendix - Symbology
+5.3.2 Equities
+ Right now the Tiingo API supports Equity, Mutual Fund, and ETF prices for US markets and Equity Prices for Chinese markets.
+ Since periods are often used in URLs to signify file extensions, we do not use periods in our symbol names given our REST APIs. Instead of periods ("."), we use hypens ("-"). This means "BRK.A" is "BRK-A" within Tiingo.
+ All tickers that have separate share classes follow the format:
+ For example Berkshire Hathaway Class A shares are "BRK-A".
+Similarly, for preferred shares, you may use the format:
+ For example Simon Property Group's Preferred J series shares would be "SPG-P-J".
+Mutual funds and Closed-End-Funds (CEFs) follow their typical format. Mutual Funds usually end with the letter "X" (e.g. "VFINX") and CEFs begin and end with the letter "X" (e.g. "XAIFX").
+ Tiingo supports delisted data for tickers that have not yet been recycled. You may see some delisted data that ends in a digit. These are typically tickers that are stored in our database, but we do not yet have price data. As Tiingo expands, we will expand the offering into even older delisted data.
+ 5.3 Appendix - Symbology
+5.3.3 CryptoCurrency & FX
+ Tiingo's methodology for CryptoCurrencies and FX currencies follow the same symbol method.
+ Because forward slashes ("/") are used to separate locations within URLs and directories, Tiingo does not use forward slashes within currency symbols to prevent URL amibiguity. Instead we remove the forward slashes. Therefore the format for currencies is:
+ For "EUR/USD" the base currency is "EUR" and the quote currency is "USD". This means the Tiingo symbol is "EURUSD".
+ For "BTC/ETH" the base currency is "BTC" and the quote currency is "ETH". This means the Tiingo symbol is "BTCETH".
+ For crypto DEX state prices, you will see the following format:
+ For example the state price for "mkreth" will be distributed as "tngospmkreth" (tngosp + mkreth) in our endpoints.
+ State prices are the implied current price of a pair based on the DEX pool composition at the given moment. An imperfect, but somewhat helpful analogy would be the "mid" price of a DEX pool.
+ For Crypto Synthetics, you will see the following format:
+ For example the crypto synthetic price for BTC-USD would be BTC/USD.
+ Synthetics are different than normal prices, and unless you are on the institutional plans, you will not see them on any public endpoints. They are Benchmark rates that take all eligible exchange crosspairs of the BASE_CURRENCY and then FX route all pairs into the QUOTE_CURRENCY and weight them. E.g. btcusdc, btcusd, btcusdt, ...btceur would all be converted into usd using intermediary fx pairs (with the exception of btcusd) and then weighted to produce a benchmark price. This way if the fx pair, or quote currency, change rapidly - the prices can update even before the base currency trades.
+ Synthetics are offered in three flavors, and all follow the above symbol format:
+VWAP Synthetics: VWAP Benchmark rates (CEX and DEX)
+Top-of-Book Synthetics: Top-of-Book Benchmark rates (CEX and Perp DEX)
+State Synthetics: State Benchmark rates (DEX and Perp DEX)
+ 1. General
+1.3 Changelog
+ Use this page to keep up with the latest additions and changes to the API.
+ 1.3 General - Changelog
+2026-09-08
+General
+We have updated our payment methods page as well as now accept new payment methods as well as a better Payment Methods UI.
+Internal improvements around API limits - improving overall API UX.
+FX Feeds WebSocket
+Increased FX rate update cadence to subsecond feeds.
+Fixed WebSocket documentation for Top-of-Book array shape.
+Equity Realtime REST
+ and
+Equity Realtime WebSocket
+Improved bar creation performance.
+Significantly improved P95 and P99 latency.
+BOATS Overnight Real-time REST
+ and
+BOATS Overnight Real-time WebSocket
+Significantly improved P95 and P99 latency.
+Crypto API & Benchmarks Data
+Added coverage of Robinhood Chain.
+Added further performance improvements.
+News API Data
+Launched new version of language identification models.
+ 1.3 General - Changelog
+2026-07-21
+BOATS Overnight Real-time REST
+ and
+BOATS Overnight Real-time WebSocket
+ - New Product (Beta)
+We've added a new BOATS Overnight Real-time API (currently in beta) that delivers venue-native Blue Ocean ATS (BOATS) equity market data during the overnight session (8:00 PM–3:59 AM ET).
+Includes Current Top-of-Book & Last Price REST endpoints and Historical Overnight Intraday Prices under
+/boats
+, plus a real-time WebSocket firehose at
+wss://api.tiingo.com/boats
+. See the
+REST documentation
+ and
+WebSocket documentation
+.
+Coverage spans 12,000+ quotable US equities with top-of-book quotes (bid/ask/mid), last trade price and size, and overnight intraday OHLC bars.
+Access requires the BOATS Real-time add-on entitlement (+$9/month on Power and Commercial plans; unavailable on Free tier). More on the
+BOATS product page
+.
+ 1.3 General - Changelog
+2026-07-07
+Equity Realtime REST
+ and
+Equity Realtime WebSocket
+ - New Product (Beta)
+We've added a new Equity Realtime API (currently in beta) that builds consolidated realtime equity snapshots from multiple Equity venues (exchanges, ATS, and OTC venues). Tiingo is the first company to make these exchange-compliant derived metrics available.
+Includes a Liquidity Spread Top-of-Book & Reference Price endpoint and a Historical Intraday Prices endpoint, both served under
+/tiingo/equity/intraday
+. Market hours run from 4am ET to 8pm ET with liquidity scored bid, ask, last sale, Tiingo reference price, and day-level OHLC fields.
+Historical intraday OHLCV bars support configurable minute and hourly resampling, optional after-hours data, and force-filled bars for charting workflows.
+Data is served via both
+REST endpoints
+ and
+WebSockets
+.
+EOD Composite Feeds
+Better tracking of expanded upcoming corporate actions, including a massive internal refactor of how we process these and also distribute upcoming values.
+Added two new cleansing checks - including a new type of check for more accurate error cleansing of subtle erroneous points.
+Crypto Synthetics - State Price
+Added new features to refine specific state price pool inclusion.
+Symbology
+Documented the symbology format for Crypto DEX State Prices, which use the
+tngosp
+ prefix followed by the base and quote currencies (e.g.
+tngospmkreth
+ for the mkreth state price).
+Documented the symbology format for Crypto Synthetics, which use a
+ convention (e.g.
+BTC/USD
+).
+Clarified the three Synthetic flavors: VWAP Synthetics (CEX and DEX), Top-of-Book Synthetics (CEX and Perp DEX), and State Synthetics (DEX and Perp DEX).
+ 1.3 General - Changelog
+2026-05-12
+General
+Huge data center migration, massive boost to infra as we accelerate. More to come.
+Smoother backend improvements on subscription management.
+API Token rotation now available via the
+Token Page
+.
+Dividend Corporate Actions
+ and
+EOD Composite Feeds
+Further large improvement in corp actions coverage across equities, ETFs, and mutual funds.
+IEX Feeds REST
+ Improved reference price formula to prevent occasional outliers - resulting in smoother reference prices.
+ Huge upgrade in IEX market performance.
+Crypto API & Benchmarks Data
+Improved resiliency of algorithmic calculations of Benchmarks.
+Improved responsiveness of RPC performance for faster DEX recovery in case of RPC recovery.
+Increased coverage of DEXes, now covering 160+ DEXes and CEXes.
+Crypto Benchmark Data
+Better FX Engine outlier detection.
+News API Data
+Added new sources.
+ 1.3 General - Changelog
+2026-03-20
+Dividend Corporate Actions
+ and
+EOD Composite Feeds
+Massive improvement in corp actions across equities, ETFs, and mutual funds. Now catch even more upcoming distributions with more detail.
+Fundamental Data
+Improved asReported=true functionality for Fundamentals Daily endpoints.
+Crypto API Data
+Further improved speed of recovery of blockchain outages and RPC failtures for swap tracking.
+Crypto Benchmark Data
+Better FX Engine outlier detection.
+News API Data
+Now cover 70+ million articles!
+Added new sources.
+ 1.3 General - Changelog
+2026-01-31
+Fundamental Data
+Documentation now added highlighting query support of permaTicker for /statements and /daily Fundamental Endpoints.
+Fixed edge case calculations in certain ADRs that report quarterly.
+FX Feeds REST
+ and
+FX Feeds WebSocket
+Added additional assets.
+Crypto API Data
+Improved recovery of blockchain outages and RPC failtures for swap tracking.
+ Better handling of exchange recovery when order book data is corrupted exchange-side.
+Crypto Benchmark Data
+Calibrated low-latency configurations for thinly-traded assets.
+ 1.3 General - Changelog
+2025-12-31
+General
+Automatically normalize symbols on websocket subscribes, so case sensitivity will no longer matter on remaining websocket connections.
+FX Feeds REST
+Better handling of date limits when querying FX data
+IEX Feeds REST
+ Improved logic of derived calculation, resulting in more relevant updates.
+Crypto API Data
+Massively added coverage of new CEXes, DEXes, and blockchains. The product page is now updated with a list of 140+ exchanges (CEXes and DEXes covered) with native blockchain/DEX support.
+ Better handling of exchange recovery when order book data is corrupted exchange-side.
+Crypto Benchmark Data
+Expansion of secondary symbols, allowing more exchange-specific benchmarks across a wider avenue of DEXes and CEXes.
+Improved Benchmark State Price algorithm for price stability.
+Created hybrid state and top-of-book algorithms for Perp DEXes.
+ 1.3 General - Changelog
+2025-06-30
+General
+Automatically normalize symbols on websocket subscribes, so case sensitivity will no longer matter on remaining websocket connections.
+IEX Feeds WebSocket
+Improved derived calculation methodology to result in faster updates in symbols that receive less updates.
+Crypto API Data
+Improved crypto exchange error mitigation (i.e. faster handling of when exchanges go down)
+Massively added coverage of new CEXes, DEXes, and blockchains.
+Crypto Benchmark Data
+Added exchange-specific benchmark rates.
+Added new kind of contract prices (tracking mint and redeems of stablecoins - specifically Ethena).
+Expanded Solana coverage of DEX states and program versions.
+ 1.3 General - Changelog
+2025-03-10
+Fundamental Data
+Added as-reported calculations to daily calculations.
+Crypto API Data
+Added coverage of new CEXes, DEXes, and blockchains.
+Crypto Benchmark Data
+Massively expanded DEX coverage universe including new chains. Contact sales@tiingo.com for more details.
+ 1.3 General - Changelog
+2025-01-10
+General
+Improvements in WebSocket performance.
+IEX Feeds REST
+Added changes to handle IEX market data policy changes coming on 2025-02-01.
+IEX Feeds WebSocket
+Added a new thresholdLevel of 6 to create derived data streams (tngoLast) as part of the changes to handle IEX market data policy changes coming on 2025-02-01.
+Dividend Corporate Actions
+ - Beta Product
+Improved coverage and detection of events.
+Split Corporate Actions
+ - Beta Product
+Improved coverage and detection of events.
+Crypto API Data
+Added coverage of new CEXes and DEXes.
+Minor bug fixes.
+Crypto Benchmark Data
+Added State Price endpoints to returning streaming prices for DEX-dominated state prices. Includes both EVM DEXes and Solana DEXes. This is a great "low-latency" DEX Product. Contact sales@tiingo.com for more details.
+Added feature to explore underlying sources creating Benchmark rates for Top-of-Book Benchmarks and State Price Benchmarks.
+ 1.3 General - Changelog
+2024-07-10
+General
+Improvements in WebSocket performance.
+Dividend Corporate Actions
+ - Beta Product
+Improved coverage and detection of events.
+Split Corporate Actions
+ - Beta Product
+Improved coverage and detection of events.
+News API Data
+Added new sources.
+Crypto API Data
+Improved error-checking of top of book data from exchanges that may send incorrect data.
+Added coverage of new CEXes and DEXes.
+Crypto Benchmark Data
+Added feature to explore underlying sources creating Benchmark rates.
+ 1.3 General - Changelog
+2024-03-28
+General
+General performance improvements across several REST endpoints.
+Improvements in WebSocket performance and simultaenous connections.
+Dividend Corporate Actions
+ - Beta Product
+Added ability to query data per ticker.
+Fixed timezone information on dates to allow dates to be accurate to the timezone of the event.
+Fixed several bugs.
+Split Corporate Actions
+ - Beta Product
+Added ability to query data per ticker.
+Fixed timezone information on dates to allow dates to be accurate to the timezone of the event.
+Fixed several bugs.
+News API Data
+Improved accuracy of tagging.
+Better processing of News websites that may have issues in their structure.
+Crypto API Data
+Improved resiliency of top of book data from exchanges that may send incorrect data.
+ 1.3 General - Changelog
+2024-01-04
+General
+Cleaned structure of several documentation and product pages.
+General performance improvements across several endpoints.
+Better handling of concurrent WebSocket connections for api tokens.
+Made page improvements on the Tiingo App.
+New Changelog process: Updates will be aggregated and reported at least quarterly.
+Dividend Corporate Actions
+ - Beta Product
+Made several data improvements to capture more distributions.
+Now captures announcements throughout the day.
+Added new date fields, e.g. recordDate, paymentDate, declarationDate, etc.
+Documentation clarifications added.
+Split Corporate Actions
+ - Beta Product
+Made several split data improvements to capture more splits.
+Now captures announcements throughout the day.
+Security Master Data - Enabled Commercial Clients
+Improved handling of various exchange actions for improved accuracy.
+EOD Composite Feeds
+Improved update performance.
+News API Data
+Expanded coverage and accuracy of tagging.
+Better & more efficient crawling of different types of news sources.
+Fund Fees
+Increased coverage to more Fund companies. Now supports over 41,000+ funds.
+Crypto API Data
+Added more crypto pairs that are being tracked.
+Expansion into new DEXes and CEXes.
+Expanded coverage of existing DEXes on Solana.
+Reintroduced Standard top-of-Book websocket with a subset of quality exchanges. This is a separate product than the Benchmark top-of-book websocket.
+Top-of-book Benchmark WebSocket now supports more quote currency conversion.
+Improved resiliency and handling of RPC load balancing and rotation for DEX aggregations.
+Tweaked general outlier detection algorithm.
+Fixed and improved outlier detection on Crypto Synthetic Benchmark WebSockets.
+Improved efficiency and speed of low latency top-of-book endpoints.
+ 1.3 General - Changelog
+2023-09-24
+General
+Changed the default tiingo.com to direct to our API pages. The old main Tiingo.com has been redirected to the Tiingo App (https://app.tiingo.com).
+Changed usage and pricing tiers for Power and Free customers.
+Product and Documentation pages have been refined.
+General performance improvements across several endpoints.
+Dividend Corporate Actions - New Product
+We've added a new
+Stock, ETF, and Mutual Fund Dividend API
+ that lets you capture more detailed distribution data, for both historical, current, and future distributions that are coming up.
+Split Corporate Actions - New Product
+We've added a new
+Stock, ETF, and Mutual Fund Split API
+ that lets you capture more detailed splits data, for both historical, current, and future splits that are coming up.
+Fundamental Data
+Refined calculation and edge cases for fundamental data metrics.
+Crypto Feeds
+Added significantly more crypto pairs that are being tracked.
+Expansion into new DEXes.
+Improved efficiency and speed of low latency top-of-book endpoints.
+ 1.3 General - Changelog
+2023-06-14
+General
+Product pages have been refined.
+General performance improvements across several endpoints.
+EOD Composite Feeds
+Improved Security Master data for customers who have access to the beta endpoint.
+Tiingo Fundamentals
+Fundamentals is now out of beta.
+Improved calculations for daily metrics.
+Tiingo Forex
+Forex is now out of beta.
+Crypto Feeds
+Added DEX tick storage - each event and event meta data is now available as a bulk download.
+Expansion into new DEXes.
+Added low latency top-of-book endpoints.
+ 1.3 General - Changelog
+2023-01-10
+General
+Happy New Year!
+New Power Plans with new pricing. Existing customers will be kept on their existing plans.
+General performance improvements across several endpoints.
+EOD Composite Feeds
+Improved Security Master data for customers who have access to the beta endpoint.
+Improved Mutual Fund NAV data.
+Tiingo News
+Expanded news coverage into more ASX equities.
+Added even more news sources.
+Improved tagging on existing news sources.
+Tiingo Fundamentals
+Fundamental Daily Incremental Bulk Download is now enabled. Reach out to support for more information.
+Crypto Feeds
+Expansion into new CEXes, DEXes, and Blockchains.
+Added new tickers as well as improving speeds to keep data updating even during high stress environments.
+ 1.3 General - Changelog
+2022-11-10
+General
+Major core engine improvements in IEX, Crypto, and FX data feeds to keep prices updating quickly even during high market volatility.
+Improvements in the WebSocket API..
+Added connectivity to a new futures exchange, TBA..
+We have migrated infrastructure to data centers closer to exchanges - including a preseence in the same data centers as many exchanges.
+New Logos! Check them out :)
+General performance improvements across several endpoints.
+IEX Feeds
+Significant performance improvements to keep the data fast and current for both REST and WebSocket APIs.
+Significant performance improvement in the WebSocket API in particular - especially during high market volatility periods.
+Tiingo News
+Added coverage for Australian equities. Reach out to
+sales@tiingo.com
+ for more information on how to get connected.
+Improved tagging speeds.
+Millions of articles added and continue to be added.
+Tiingo Fundamentals
+Data improvements for meta data fields.
+Faster ingestion of data for API consumption when new financial values are made available.
+Crypto Feeds
+Expansion into new CEXes, DEXes, and Blockchains.
+Added new tickers as well as improving speeds to keep data updating even during high stress environments.
+FX Feeds
+Engine improvements to keep data updating quickly even during high market volatility.s.
+ 1.3 General - Changelog
+2022-8-04
+General
+We have started the migration of infrastructure to data centers closer to exchanges - including a preseence in the same data centers as many exchanges.
+General performance improvements across several endpoints.
+Tiingo Fundamentals
+Significant performance improvements for REST queries.
+Crypto Feeds
+Improved outlier detection for Crypto Synthetics and Enterprise Clients who opt-in to data pruning.
+Tiingo has expanded into more DEXes and chains.
+Fund Fees
+Improved extraction methodology and error detection.
+ 1.3 General - Changelog
+2022-06-30
+General
+New Year - New look! Check our our new API page.
+General performance improvements across several endpoints.
+Corrected API Documentation in several locations
+Crypto Synthetics
+We have added new products/pairs to be tracked in Crypto Synthetics.
+Reach out to
+sales@tiingo.com
+ for more information.
+Crypto Feeds
+Tiingo has expanded into even more DEXes.
+IEX Feeds
+Added a new 1min bar OHLCV websocket option to the IEX Feed. Contact
+sales@tiingo.com
+ for more details.
+Added a 15ms delay to the IEX Feed as required by the IEX Exchange to avoid passing a $500/month license fee to our customers. We believe the IEX Exchange has created the most fair licensing for equity data to date. 15ms should make no practical impact to customers since network latency between our servers in NJ/NY and customers will most likely be > 15ms alone given geographical separation.
+ 1.3 General - Changelog
+2022-03-10
+General
+Added more types of bulk downloads for enterprise customers.
+Websocket feeds now allow additions to subscribed tickers within the same connection.
+Changed API usage tiers for new customers (old customers will remain at existing tiers).
+Crypto Synthetics - New Product
+We have launched a new CryptoCurrency benchmarking product: Crypto Synthetics.
+This product aggregates multiple cross pairs (e.g. ETH/AUD, ETH/USDC, ETH/BTC, etc.), converts them into a single quote pair (e.g. USD), VWAPs, and produces an aggregated synthetic feeds with microsecond latency - making it one of the fastest benchmarking products in existence.
+Reach out to
+sales@tiingo.com
+ for more information.
+Crypto Feeds
+Tiingo has expanded into even more blockchains and DEXes (Solana, Terraswap, Arbitrum, and more)
+Fund Fees
+Improved fund fee extraction method to backfill older data.
+FX Feeds
+We have sourced new FX data, resulting in much tighter spreads.
+News API
+News Database has now hit 40,000,000+ articles.
+IEX Feeds
+Significantly improved speed of IEX endpoints.
+ 1.3 General - Changelog
+2021-09-14
+Crypto Feeds
+Tiingo now supports 40+ Crypto exchanges.
+We've been expanding aggressively into Decentralized Exchanges (DEXes) - check them out in the
+Crypto API
+!
+Now support cross-chain currencies (AVAX, Polygon, BSC).
+Added various new Crypto Centralized Exchanges (CEXes).
+News API
+News Database has now hit 35,000,000+ articles.
+IEX Feeds
+IEX Historical data is now queryable by PermaTicker for clients who have PermaTickers enabled.
+2021-06-05
+General
+Increased queryable history for the intraday REST APIs (Crypto, FX, and IEX).
+Various bug and performance fixes.
+News API
+Improved crawling speed of our news crawler farm.
+FX Feeds
+Large scale improvements in the performance of the FX API.
+Mutual Fund and ETF Fee API
+Improved variability range of Fee parsing from Mutual Funds and ETFs, allowing for greater coverage.
+ 1.3 General - Changelog
+2021-03-26
+EOD Composite Feeds
+Added a sort request field for the End-of-Day Historical endpoint.
+Tiingo Fundamentals
+Added a sort request field for Fundamentals Statements and Daily endpoints.
+ 1.3 General - Changelog
+2021-03-23
+EOD Composite Feeds
+You can now query EOD price history by permaTicker for accounts that have permaTicker enabled.
+FX Feeds
+Improved frequency of FX price updates for the websocket and REST servers.
+Added back gold and silver to the Forex endpoints.
+FX was migrated to the same caching engine as Crypto and IEX for faster queries and performance.
+Crypto Feeds
+Added more crypto pairs for the feed as well as reworked infrastructure for more stable connections.
+Tiingo Fundamentals
+Fixed a calculation for certain tickers regarding market capitalization
+ 1.3 General - Changelog
+2021-02-23
+Tiingo Fundamentals
+Fixed a date boundary bug when requesting fundamental data where an extra day was added to the response than what was requested. Check out the fundamentals documentation here:
+Tiingo Fundamentals
+.
+ 1.3 General - Changelog
+2020-09-01
+EOD Composite Feeds
+Added an additional enterprise data source for EOD feeds for improved accuracy, coverage, and exchange listing changes.
+ 1.3 General - Changelog
+2020-05-18
+Tiingo Fundamentals
+Significantly expanded the number of meta fields, including Sector & Industry data, locations, company websites, and more. Check out the fundamentals documentation here:
+Tiingo Fundamentals
+.
+IEX Feeds
+Added the Volume field for the historical intraday IEX data Endpoint (2.6.3). To get volume data, "volume" must be passed to the "columns" parameter. Check out the IEX documentation here:
+IEX REST
+ to see an example.
+ 1.3 General - Changelog
+2020-04-05
+Tiingo Fundamentals
+The DOW 30 is now available as a sample/evaluation dataset. 3 Years of data are available for each company in the DOW 30. Check out the fundamentals documentation here:
+Tiingo Fundamentals
+.
+FX Feeds
+Improved stability for the real-time Forex data.
+ 1.3 General - Changelog
+2020-02-19
+New Product - Fundamentals
+We have added fundamentals to beta Visit the documentation here:
+Tiingo Fundamentals
+Crypto Feeds
+ A new intraday caching engine was deployed resulting in O(1) query times for historical intraday crypto data.
+IEX Feeds
+ A new intraday caching engine was deployed resulting in O(1) query times for historical intraday IEX data.
+ 1.3 General - Changelog
+2019-08-19
+New Product - Search
+We have added the ability to search for tickers in the Tiingo database. This is useful for building typeaheads. Visit the documentation here:
+Tiingo Search
+ 1.3 General - Changelog
+2019-07-28
+New Product - FX Feeds
+We have added institutional quality FX feeds into beta. Visit the documentation here:
+Forex Feeds
+IEX Feeds
+You can now query IEX data after hours data as well as the ability to force fill a timeseries (for cleaner charts) Check out the new historical data request parameters in the documentation here:
+IEX Endpoint
+.
+ 1.3 General - Changelog
+2019-05-09
+New Product - Company Descriptions
+We have added a new alternative data product that helps you parse through the delta of company descriptions and discover sentiment. Visit it here:
+Company Descriptions
+EOD Composite Feeds
+You can now query EOD data for crypto pairs using the
+EOD Endpoint
+.
+ 1.3 General - Changelog
+2019-02-11
+Updated API Site
+Does something feel different? We've updated our entire API documentation to make it easier to find relevant information for you.
+Documentation pages
+ have been made more complete, for example it now includes answers about our
+Developer Program
+ and our
+Symbology
+ format.
+Product pages have been expanded to include more data about what is covered in each offering.
+ 1.3 General - Changelog
+2018-08-26
+General
+We've added a status page to keep users informed of updates and maintenace. You can visit it here:
+https://status.tiingo.com
+Better error messages for when passing malformed dates to the endpoints
+Crypto Feeds
+We've added top-of-book quote updates to the websocket API. Check out our crypto API docs here:
+https://api.tiingo.com/docs/crypto/overview
+ 1.3 General - Changelog
+2018-03-24
+EOD Composite Feeds
+Improved FX conversion for ADRs that list their dividends in non-USD currencies.
+Faster update times for when exchanges send corrections.
+ 1.3 General - Changelog
+2017-12-27
+Crypto Feeds
+Check out our new crypto API available here:
+https://api.tiingo.com/docs/crypto/overview
+EOD Composite Feeds
+Faster loading and prioritization of asset prices.
+Expanded asset coverage.
+Now includes exchange corrections throughout the day.
+ 1.3 General - Changelog
+2017-09-19
+General
+Adding a Integrations/Plugins page that contains programming packages, software, and integrations that allow you to use Tiingo's data. Check it out here:
+Integrations
+.
+EOD Composite Feeds
+For international equities, the prices are reported in the country's currency rather than defaulting to USD.
+ 1.3 General - Changelog
+2017-07-25
+General
+Server caching improved for faster performance.
+EOD Composite Feeds
+This endpoint can now return values as CSVs or JSON formats. Append &format=csv to the query to get CSV data. More information available in the docs.
+This endpoint can now return values resampled to weekly, monthly, and annual values. Simply append resampleFreq= followed by daily, weekly, monthly, or annually to see the resampled values. E.g. &resampleFreq=monthly for monthly returns. More details available in the docs.
+If no end date is provided, a default endDate of today is used. This means you can provide a start date and all history up until now will be provided.
+IEX API
+You can now query multiple tickers by sending a list or a comma-separated list of tickers to the request URL. e.g. https://api.tiingo.com/iex/spy,googl.
+ 1.3 General - Changelog
+2017-07-14
+Auth token page
+You can now view your auth token at:
+https://api.tiingo.com/account/token
+.
+ 1.3 General - Changelog
+2017-07-5
+News API
+News API has now been opening up to Power users! You may query up to a month of historical data and get the full features for any current data as our feeds update! Check it out here:
+https://api.tiingo.com/docs/tiingo/news
+. We can now offer this data because of our decision to go freemium.
+Pricing Page
+You can now upgrade on the API page by visiting:
+https://api.tiingo.com/pricing
+.
+ 5. Appendix
+5.1 Developer Program
+ This guide is meant for software developers who would like to integrate their financial software to use Tiingo's API as a data source, where their software requires users to supply their own Tiingo API Token. This requires users to register for their own Tiingo account.
+ This is not meant for developers digesting Tiingo data and then redistributing Tiingo's data on their own platform/app/software. If you would like to redistribute Tiingo's data without requiring your users to make their own Tiingo account, you will have to get a redistribution license. Please contact
+sales@tiingo.com
+ to obtain a redistribution license.
+ 5.1 Appendix - Developer Program
+5.1.1 Introduction
+ We love when developers integrate Tiingo as a data source into their software or software library. You do not need permission if your use case qualifies for our developer program, but please let us know about your software/library by E-mailing us at
+developers@tiingo.com
+ so we can add it to
+our growing list
+. Additionally, we will add you to a developers mailing list so you may stay posted of the latest features and additions before it is open to the general public.
+ 5.1 Appendix - Developer Program
+5.1.2 Registration into the Developer Program
+ To register for the developer program please E-mail
+developers@tiingo.com
+ the following information:
+The name of your software and/or library.
+A link to your product's page or library page (github, bitbucket, and gitlab sites are perfectly fine).
+The description you would like us to use for your software on our
+integrations page
+.
+The best way to contact you (E-mail address, Phone, etc.). Only provide what you feel comfortable.
+Optional:
+ A logo, image, text, and/or any other trademark ("marks") that we may use for marketing purposes across social media and Tiingo pages. This is entirely optional, but if you do send us such marks, you grant Tiingo Inc. a worldwide perpetual license to use such marks for the purposes of educating and marketing your software's integration into Tiingo.
+ By E-mailing us the above information, you agree to the Tiingo
+Terms of Service
+,
+Privacy Policy
+, and Developer Rules as outlined in section 5.1.4 ("Developer Program Rules") below.
+ 5.1 Appendix - Developer Program
+5.1.3 Authorization Token
+ Each user must have their own API token. Once a user registers for Tiingo, guide them to this page to obtain their API Token:
+Account - API Token
+. You may then allow the user to paste their API token in your software and then use their API token to obtain Tiingo data.
+ We do not allow programmatic registration or logins due to security concerns so the API token is the only way to authenticate users.
+ 5.1 Appendix - Developer Program
+5.1.4 Developer Program Rules
+ Our users trust us to keep their data secure and private. In order to keep compliant with the developer program, we require that you follow the rules below:
+Tiingo is a privacy conscious company. You may not track, record, document, distribute, or sell user API analytic meta data. You may only track which endpoints your users are using
+ if and only if
+ it is for general support, software debugging, or general internal improvement purposes. Additionally you agree to only track this data
+ if and only if
+ you make such tracking clear & explicit, the consent for tracking is opt-in, and the user may opt out at any time.
+The only form of authentication allows is via the API Authorization Token. Do not wrap registration/login forms as this present security concerns for users. You agree to never ask users for their Tiingo login password.
+You accept and acknowledge Tiingo does not endorse your software, library, or software created by you or your organization. You acknowledge that Tiingo is not liable for any data misuse by you or your end users and will notify us if you believe any of your users are abusing our APIs. You and your end users are bound by the Tiingo
+Terms of Service
+ and
+Privacy Policy
+.
+Tiingo must be clearly attributed as the data source.
+If you violate the rules, we may either require you to remove the Tiingo integration or give you steps to fix the issue. Generally, we will work with you to help make your software compliant, unless the the error is malicious or not in good faith.
+ 5.1 Appendix - Developer Program
+5.1.5 Our Commitment to You
+ We will try our hardest to keep the following commitments to our developers.
+If we create a breaking change, we will work to ensure we support the current functionality for at least 1 year (end-of-life deprecation schedule).
+We will communicate changes to the API on the changelog as well as via E-mail if you register for the developer program (E-mail
+developers@tiingo.com
+ to register).
+We are here for your support and to help you integrate your software/library. Please reach out to us
+developers@tiingo.com
+ for priority support.
+We will work to keep your end user's information confidential and provide support to your users where we can.
+ 5. Appendix
+5.2 Integrations
+ The following are third-party programs, plugins, software, and libraries that integrate into Tiingo's data. This packages are not owned, managed by, or affiliated with/by Tiingo; however, these are tools made by the community that others have found helpful. Please use at your own risk.
+ If you would like your software package and/or library added to the list, check out our
+Developer Program
+.
+ 5.2 Appendix - Integrations
+5.2.1 Excel
+ 5.2 Appendix - Integrations
+5.2.2 Frameworks
+ 5.2 Appendix - Integrations
+5.2.3 Java
+ 5.2 Appendix - Integrations
+5.2.4 Matlab
+ 5.2 Appendix - Integrations
+5.2.4 Python
+ 5.2 Appendix - Integrations
+5.2.5 R
+ 5.2 Appendix - Integrations
+5.2.6 Software
+REST Endpoints
+# News Data Endpoint
+https://api.tiingo.com/tiingo/news
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 2.2 REST - News
+2.2.1 Overview
+ Tiingo's news feeds are some of the most comprehensive news feeds available. We not only incorporate financial news sites, but also financial blogs - including those of small-time reputable bloggers, and tag them using the latest algos our team has been developing for over a decade. We bring these powerful feeds to you.
+ On a typical day, Tiingo adds over 8,000-12,000 articles a day.
+ You can find out about the full product offering on the
+Product - News
+ page.
+ 2.2 REST - News
+2.2.2 News Endpoint
+To request news data, use the following REST endpoints.
+# For the latest news
+https://api.tiingo.com/tiingo/news
+
+# For the latest news for specific tickers
+https://api.tiingo.com/tiingo/news?tickers=aapl,googl
+
+# For the latest news picked up by our crawler, you can sort by crawlDate
+https://api.tiingo.com/tiingo/news?sortBy=crawlDate
+
+Response:
+ 2.2 REST - News
+2.2.3 Bulk Download
+ To download the entire database, use the following REST endpoints. An "incremental" batchType file is added every evening. At 12am EST a batch process runs saving down all news articles for the past 24 hours.
+ Note: Bulk Download can only be opened up to our institutional clients.
+To download the entire database, use the following REST endpoints.
+Response:
+REST Endpoints
+# Top-of-Book Data for specific tickers
+https://api.tiingo.com/tiingo/crypto/top?tickers=btcusd,fldcbtc
+
+# Real-time (Latest) Data for specific tickers
+https://api.tiingo.com/tiingo/crypto/prices?tickers=btcusd,fldcbtc
+
+# Historical Prices
+https://api.tiingo.com/tiingo/crypto/prices?tickers=btcusd,fldcbtc&startDate=2019-01-02&resampleFreq=5min
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 2.3 REST - Crypto
+2.3.1 Overview
+
+Tiingo connects to a variety of cryptocurrency exchanges to create a consolidated top-of-book feed.
+ The Benefits of Tiingo Crypto
+Over 8,000 tickers covered, with more added frequently.
+You can choose which exchanges to get data from, and Top-of-Book and aggregate OHLCV data are then compiled on-the-fly.
+Data includes Top-of-Book (Bid/Ask) and Last Sale (trade) Data.
+Data includes intraday OHLC bar historical data for all your needs.
+Tiingo compiles the data to give you updates when the bid/ask and last price change.
+Tiingo enriches the data, giving you more data for your convenience.
+Download the entire market in one API call.
+ You can find out about the full product offering on the
+Product - Crypto
+ page.
+ 2.3 REST - Crypto
+2.3.2 Real-time & Historical Prices Endpoint
+To download real-time and historical prices, use the following REST endpoints.
+# Intraday data for current day or last business day
+https://api.tiingo.com/tiingo/crypto/prices
+
+# Historical intraday data
+https://api.tiingo.com/tiingo/crypto/prices?tickers=<ticker>&startDate=2019-01-02&resampleFreq=5min
+
+ The Crypto Prices endpoint returns meta information about the crypto pair along with the price data related to that pair. This is different tham the other APIs and helps with crypto currency ambiguity.
+ Check out the table below to see the top-level fields returned from the prices crypto API.
+ To see what fields are returned in the "priceData" field, please see the table below.
+Response:
+ 2.3 REST - Crypto
+2.3.3 Meta Endpoint
+To request meta data for a cryptocurrency, use the following REST endpoints.
+# To request meta data for all tickers, use the following REST endpoint
+https://api.tiingo.com/tiingo/crypto
+
+# To request meta data for a specific tickers, use the following REST endpoint
+https://api.tiingo.com/tiingo/crypto?tickers=<ticker>
+
+Response:
+ 2.3 REST - Crypto
+2.3.4 Top-of-Book Endpoint
+To request top-of-book data, use the following REST endpoints.
+# Top-of-book data
+https://api.tiingo.com/tiingo/crypto/top?tickers=<ticker>
+
+ The Crypto Top-of-Book endpoint returns meta information about the crypto pair along with the top-of-book data related to that pair. This is different tham the other APIs and helps with crypto currency ambiguity.
+ Check out the table below to see the top-level fields returned from the top-of-book crypto API.
+Deprecation Warning:
+ After much consideration, we have made the decision to deprecate the top-of-book endpoint. This is the first endpoint we've fully deprecated in our firm's eight year history, and we do not make this decision lightly. Right now the crypto exchange feeds have been found unreliable to properly construct the best bid/ask in a way that's consistent. Some feeds remain inconsistent, timestamps are sometimes incorrectly stated, and other times it appears as if the messages may not be consistently ordered where the best bid/ask can be constructed. While this task can be done, we believe it must be done with a subset of specific exchanges and encourage clients who need full order-book construction to build this in-house with exchanges that are relevant to you.
+If you need last price, that is available on the /prices endpoint described in the above section.
+ Our philosophy is that no data is better than bad data, and we believe for now, the below task remains too onerous to be done with all 60+ exchanges we cover in a way that properly handles each exchange's potential quirks, let alone when the quirks are constantly changing. We believe Crypto exchanges will eventually converge to equity/futures level reliability, but right now the technology remains early. We will constantly be monitoring and deciding if we want to re-enable the top-of-book endpoint.
+ To see what fields are returned in the "topOfBookData" field, please see the table below.
+Response:
+REST Endpoints
+# To request top-of-book/last for all tickers, use the following REST endpoint
+https://api.tiingo.com/iex
+
+# To request top-of-book/last for specific tickers, use the following REST endpoint
+https://api.tiingo.com/iex/<ticker>
+
+# Historical Intraday Prices
+https://api.tiingo.com/iex/<ticker>/prices?startDate=2019-01-02&resampleFreq=5min
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 2.6 REST - IEX
+2.6.1 Overview
+ Our IEX Exchange API has two kinds of avenues for (1) Customers who are officially registered with the exchange and (2) Customers who want a simple, compliant solution, but do not want to formally register with the exchange.
+ 1. Tiingo has a cross-correct directly to the IEX Exchange that gives us access to raw binary price feeds we can share with you all. We receive IEX TOPS (top of book), which means we get the last sale data AND top bid and ask quotes.
+ 2. For customers that don't want to register with the exchange to receive full TOPS, you may use our derived reference price feed which provides a real-time reference price for the asset - giving you the benefit of a real-time feed without the added compliance or exchange fees required.
+
+Benefits of Tiingo + IEX
+14,000+ tickers IEX provides quotes and trade data on.
+Data includes Top-of-Book (Bid/Ask) and Last Sale (trade) Data.
+Data now includes intraday OHLC bar historical data for all your needs.
+Tiingo enriches the data, giving you more data for your convenience.
+Quotes updated to the latest nanosecond.
+Access to every field IEX gives us access to (including trade flags).
+Data is served via a REST API & Websocket API.
+As of February 1st, 2025
+ IEX Exchange has changed their market data policies. To receive the FULL TOPS Feed, you must now have a market data agreement signed with the IEX Exchange. Upon signing, you will then be able to receive the full TOPS feed in real-time.
+ For customers who do not want to sign a license agreement, you may use our derived data that calculates a reference price for each asset in real-time. While this is not a subsitute for the TOPS Feed, we do believe it will fulfill the needs of 95% of our customer base. There is no additional cost to the IEX Exchange if using our derived data.
+ You can find out about the full product offering on the
+Product - IEX
+ page.
+ 2.6 REST - IEX
+2.6.2 Current Top-of-Book & Last Price
+To request top-of-book and last price data for a stock, use the following REST endpoints.
+# To request top-of-book/last for all tickers, use the following REST endpoint
+https://api.tiingo.com/iex
+
+# To request top-of-book/last for specific tickers, use the following REST endpoint
+https://api.tiingo.com/iex/<ticker>
+
+ "IEX Entitlement Required" means the value will be null unless you are registered with the IEX Exchange and have a market data policy in place.
+Response:
+ 2.6 REST - IEX
+2.6.3 Historical Intraday Prices Endpoint
+To request historical intraday prices for a stock, use the following REST endpoint.
+# Historical Intraday Prices
+https://api.tiingo.com/iex/<ticker>/prices?startDate=2019-01-02&resampleFreq=5min
+
+Response:
+REST Endpoints
+Beta
+ The BOATS Overnight Real-time API Endpoints are currently in beta. For production use cases, we recommend the
+IEX endpoints
+ - which these endpoints expand upon.
+ Access requires the
+BOATS Real-time
+ entitlement — activate it on the
+Entitlements page
+.
+# To request top-of-book/last for all tickers, use the following REST endpoint
+https://api.tiingo.com/boats
+
+# To request top-of-book/last for specific tickers, use the following REST endpoint
+https://api.tiingo.com/boats/<ticker>
+
+# Historical Overnight Intraday Prices
+https://api.tiingo.com/boats/<ticker>/prices?startDate=2026-07-22&resampleFreq=5min
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 2.7 REST - BOATS Overnight Real-time
+2.7.1 Overview
+ Tiingo's BOATS Overnight Real-time API exposes Blue Ocean ATS (BOATS) equity market data over REST. BOATS is the dominant overnight US equity venue. With a Tiingo BOATS entitlement you get venue-native top-of-book and last-sale snapshots, plus overnight intraday OHLC history.
+ Benefits of Tiingo + BOATS
+12,000+ US equities quotable on Blue Ocean ATS (BOATS).
+Data includes Top-of-Book (Bid/Ask/Mid) and Last Sale (trade) data.
+Overnight intraday OHLC bar history for the BOATS session (8:00 PM–3:59 AM ET).
+Tiingo enriches the data with convenience fields such as mid and tngoLast.
+Quotes and trades updated in real time.
+Data is served via a REST API and a Websocket firehose API.
+ Access to the BOATS REST API requires the
+BOATS Real-time
+ entitlement on your API account. Without that entitlement, requests to
+https://api.tiingo.com/boats
+ are rejected.
+ Historical bars are limited to the overnight BOATS session (
+8:00 PM through 3:59 AM Eastern
+). The
+afterHours
+ request parameter is accepted for compatibility with other equity intraday endpoints, but it does not widen this overnight window.
+ For the full tick firehose (every validated quote and trade), see
+3.5 Websockets - BOATS Overnight Real-time
+.
+ You can find out about the full product offering on the
+Product - BOATS
+ page.
+ 2.7 REST - BOATS Overnight Real-time
+2.7.2 Current Top-of-Book & Last Price
+To request top-of-book and last price data for a stock, use the following REST endpoints.
+# To request top-of-book/last for all tickers, use the following REST endpoint
+https://api.tiingo.com/boats
+
+# To request top-of-book/last for specific tickers, use the following REST endpoint
+https://api.tiingo.com/boats/<ticker>
+
+ With a valid BOATS Real-time entitlement, snapshot responses include live bid/ask, last/lastSize, and volume. Derived LQ (liquidity-quote) fields from other Tiingo equity feeds are not returned on this endpoint.
+Response:
+ 2.7 REST - BOATS Overnight Real-time
+2.7.3 Historical Overnight Intraday Prices Endpoint
+ Historical bars cover the BOATS overnight session only (
+(8:00 PM–3:59 AM Eastern)
+. When
+startDate
+ and
+endDate
+ are omitted, Tiingo returns the latest overnight session window.
+To request historical overnight intraday prices for a stock, use the following REST endpoint.
+# Historical Overnight Intraday Prices
+https://api.tiingo.com/boats/<ticker>/prices?startDate=2026-07-22&resampleFreq=5min
+
+Response:
+REST Endpoints
+Beta
+ The Equity Realtime API Endpoints are currently in beta. For production use cases, we recommend the
+IEX endpoints
+ - which these endpoints expand upon.
+# To request reference price and liquidity metrics for all tickers, use the following REST endpoint
+https://api.tiingo.com/tiingo/equity/intraday
+
+# To request reference price and liquidity metrics for specific tickers, use the following REST endpoint
+https://api.tiingo.com/tiingo/equity/intraday/<ticker>
+
+# Historical Intraday Prices
+https://api.tiingo.com/tiingo/equity/intraday/<ticker>/prices?startDate=2019-01-02&resampleFreq=5min
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 2.5 REST - Equity Realtime
+2.5.1 Overview
+ This endpoint is an alternative to the IEX Endpoints and creates datasets from multiple Equity venues (exchanges, ATS, and OTC venues). Tiingo is the first company to make these exchange-compliant derived metrics and offer them for free.
+ This changes the game on exchange liquidity and the products we can offer to provide better reference pricing for risk and valuation metrics for your portfolio valuations, risk assessments, trading, and app/AI development.
+ The data is sourced from Tiingo's consolidated equity pipeline and exposed through
+/tiingo/equity/intraday
+. Historical bars use consolidated intraday data where available and preserve the familiar start date, end date, resampling, after-hours, and force-fill controls.
+ Benefits of Tiingo Equity Realtime
+Realtime consolidated equity snapshots for supported US equities and ETFs.
+Market hours from 4am ET to 8pm ET.
+Tiingo reference price, liquidity reference price, liquidity spread and bid/ask metrics, and day-level OHLC fields.
+Historical intraday OHLCV bars with configurable minute and hourly resampling.
+Optional after-hours data and force-filled bars for charting workflows.
+Data is served via REST endpoints and available via
+WebSockets
+ as well.
+ 2.5 REST - Equity Realtime
+2.5.2 Current Reference Price & Liquidity Snapshot
+To request reference price and liquidity metrics for a stock, use the following REST endpoints.
+# To request reference price and liquidity metrics for all tickers, use the following REST endpoint
+https://api.tiingo.com/tiingo/equity/intraday
+
+# To request reference price and liquidity metrics for specific tickers, use the following REST endpoint
+https://api.tiingo.com/tiingo/equity/intraday/<ticker>
+
+ Fields may be null when the underlying consolidated feed has not published that value.
+Response:
+ 2.5 REST - Equity Realtime
+2.5.3 Historical Intraday Prices Endpoint
+To request historical intraday prices for a stock, use the following REST endpoint.
+# Historical Intraday Prices
+https://api.tiingo.com/tiingo/equity/intraday/<ticker>/prices?startDate=2019-01-02&resampleFreq=5min
+
+Response:
+WebSocket Endpoints
+# Websocket Crypo API Top-of-Book & Last Trade Endpoint
+wss://api.tiingo.com/crypto
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 3.1 Websockets (Firehose) - Crypto
+3.1.1 Overview
+ Tiingo provides updates via websocket every time the Top-of-book (best bid/offer prices and sizes) change and when a trade is executed.
+ Exchanges often send out quotes for both trades and quote updates.
+Trades are when a security/stock was traded on an exchange and includes the price (lastPrice) and the volume done (lastSize).
+A quote update is when the bid/ask changes, but no trades were done. Tiingo sends a Quote update message via the Websocket if the Top-of-Book values change. In other words, if the best bid price, best bid size, best ask price, or best ask size change, then an update is sent.
+ With Tiingo Free, Power, Commercial, and Redistribution plans all come with access to the firehose. Please note the firehose exposes a very high amount of data, in some cases to the nanosecond resolution. Please build your systems cautiously and to scale, otherwise you may use our REST API which leverages Tiingo's infrastructure for this purpose.
+ You can find out about the full product offering on the
+Product - Crypto
+ page.
+ 3.1 Websockets (Firehose) - Crypto
+3.1.2 Top-of-Book & Last Trade
+ With Tiingo's Websocket/Firehose Crypto API, you can gain access to either just last trade data, or to both top-of-book and last trade updates. The top-of-book updates are offered at the per-exchange level, so you will see the top-of-book stream for a ticker offered on a specific exchange.
+ To control how much data you would like to receive, read about the "thresholdLevel" request parameter below. A higher "thresholdLevel" means you will get less updates, which could potentially be more relevant.
+For the Crypto Websocket API:
+A "thresholdLevel" of 2 means you will get Top-of-Book AND Last Trade updates.
+A "thresholdLevel" of 5 means you will get only Last Trade updates
+To request top-of-book and last trade data, use the following Websocket endpoint.
+# Websocket Top-of-Book & Last Trade Endpoint
+wss://api.tiingo.com/crypto
+
+ The Crypto websocket returns meta information about the websocket update message along with the raw data related to that update message.
+ Check out the table below to see the top-level fields returned from the Websocket crypto API.
+ To see what fields are returned in the "data" field, please see the table below.
+Trade Update Message
+Top-of-Book (Quote) Update Message
+ To subscribe to the Websocket API you must first open a connection then send the following request parameters. Check out the "Examples" tab to see copy & paste examples of how this works.
+ The following parameters are what can be passed in the "eventData" field.
+"eventData" Request Parameters
+Response:
+WebSocket Endpoints
+# Websocket IEX API Reference Price, Top-of-Book, & Last Trade Endpoint
+wss://api.tiingo.com/iex
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 3.4 Websockets (Firehose) - IEX
+3.4.1 Overview
+ Tiingo provides updates via websocket every time the Top-of-book (best bid/offer prices and sizes) change and when a trade is executed.
+ We obtain our data through raw binary feeds we receive via a physical connection to IEX in the NY5 data center. We then send the data straight from IEX to you after minor processing (even before we update our databases). This means we send you the IEX data as a JSON array within our JSON object.
+ To further minimize latency, we use bare metal machines for our cloud infrastructure which are located about 15 miles from the NY5 data center.
+Trades are when a security/stock was traded on an exchange and includes the price (lastPrice) and the volume done (lastSize).
+A quote update is when the bid/ask changes, but no trades were done. Tiingo sends a Quote update message via the Websocket if the Top-of-Book values change. In other words, if the best bid price, best bid size, best ask price, or best ask size change, then an update is sent.
+ With Tiingo Free, Power, Commercial, and Redistribution plans all come with access to the firehose. Please note the firehose exposes a very high amount of data, in some cases to the nanosecond resolution. Please build your systems cautiously and to scale, otherwise you may use our REST API which leverages Tiingo's infrastructure for this purpose.
+As of February 1st, 2025
+ IEX Exchange has changed their market data policies. To receive the FULL TOPS Feed, you must now have a market data agreement signed with the IEX Exchange. Upon signing, you will then be able to receive the full TOPS feed in real-time. If you want a thresholdLevel of 0 or 5 as described below, you will need this agreement.
+ For customers who do not want to sign a license agreement, you may use our derived data that calculates a reference price for each asset in real-time. While this is not a subsitute for the TOPS Feed, we do believe it will fulfill the needs of 95% of our customer base. There is no additional cost to the IEX Exchange if using our derived data. If you want this compliant-friendly reference price, you may use a thresholdLevel of 6 as described below.
+ You can find out about the full product offering on the
+Product - IEX
+ page.
+ 3.4 Websockets (Firehose) - IEX
+3.4.2 Reference Price (Derived Data Calculation)
+ If you do not want to formally paper an agreement with the exchange, you may use the Tiingo Reference price calculation. This calculation is not a full substitute for the TOPS feed, but should fulfill 95% of our customer use cases that require real-time price data. In fact, we even encourage customers who register with the exchange to still use this calculation as it will result in fuller charts and more frequent price updates.
+ If you do need the full IEX TOPS feed, please scroll below to section
+3.4.3
+For the Tiingo Reference Price Websocket API:
+A "thresholdLevel" of 6 means you updates price updates when a reference price change is detected.
+To request top-of-book and last trade data, use the following Websocket endpoint.
+# Websocket Top-of-Book & Last Trade Endpoint
+wss://api.tiingo.com/iex
+
+ The websocket returns meta information about the websocket update message along with the raw data related to that update message.
+ Check out the table below to see the top-level fields returned from the Tiingo Websocket IEX Reference Price API.
+ To see what fields are returned in the "data" field, please see the table below.
+Reference Price Update Messages
+ To subscribe to the Websocket API you must first open a connection then send the following request parameters. Check out the "Examples" tab to see copy & paste examples of how this works.
+ The following parameters are what can be passed in the "eventData" field.
+"eventData" Request Parameters
+Response:
+ The below example shows how you can subscribe to a few tickers and then update the subscription to add or remove new tickers to the list.
+ First you can create a subscription with the "tickers" parameter. If you pass "*" as a ticker, it will mean you will get data for ALL tickers.
+Response:
+ 3.4 Websockets (Firehose) - IEX
+3.4.3 Top-of-Book & Last Trade
+ With Tiingo's Websocket/Firehose IEX API, you can gain access to all data we receive via the cross connect, or to data our system determines is a major update.
+ To control how much data you would like to receive, read about the "thresholdLevel" request parameter below. A higher "thresholdLevel" means you will get less updates, which could potentially be more relevant.
+For the IEX Websocket API:
+A "thresholdLevel" of 0 means you will get ALL Top-of-Book AND Last Trade updates.
+A "thresholdLevel" of 5 means you will get all Last Trade updates and only Quote updates that are deemed major updates by our system.
+To request top-of-book and last trade data, use the following Websocket endpoint.
+# Websocket Top-of-Book & Last Trade Endpoint
+wss://api.tiingo.com/iex
+
+ The IEX websocket returns meta information about the websocket update message along with the raw data related to that update message.
+ Check out the table below to see the top-level fields returned from the Websocket IEX API.
+ To see what fields are returned in the "data" field, please see the table below.
+Trade & Top-of-Book (Quote) Update Messages
+ To subscribe to the Websocket API you must first open a connection then send the following request parameters. Check out the "Examples" tab to see copy & paste examples of how this works.
+ The following parameters are what can be passed in the "eventData" field.
+"eventData" Request Parameters
+Response:
+ The below example shows how you can subscribe to a few tickers and then update the subscription to add or remove new tickers to the list.
+ First you can create a subscription with the "tickers" parameter. If you pass "*" as a ticker, it will mean you will get data for ALL tickers.
+Response:
+ Use the
+subscriptionId
+ from the prior response to update the subscription. Specify the
+subscriptionId
+ in the
+eventData
+ parameter.
+ This command should be run as a second process. This means you can edit the first concurrent subscription without having to stop the flow of data packets.
+ The below example removes "spy" as one of the subscribed tickers. You will be returned a list of currently subscribed tickers, in the response, if the action is successful.
+Response:
+ The below examples add all tickers ("*") as one of the subscribed tickers. You will be returned a list of currently subscribed tickers, in the response, if the action is successful.
+Response:
+WebSocket Endpoints
+Beta
+ The BOATS Overnight Real-time Websocket Endpoints are currently in beta. For production use cases, we recommend the
+IEX websocket endpoints
+ - which these endpoints expand upon.
+ Access requires the
+BOATS Real-time
+ entitlement — activate it on the
+Entitlements page
+.
+# Websocket BOATS API Top-of-Book & Last Trade Endpoint
+wss://api.tiingo.com/boats
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 3.5 Websockets (Firehose) - BOATS
+3.5.1 Overview
+ Tiingo provides updates via websocket every time the Top-of-book (best bid/offer prices and sizes) change and when a trade is executed.
+ We obtain BOATS (Blue Ocean ATS) top-of-book and last-sale feeds, normalize them into Tiingo's realtime array format, and forward every validated update to entitled websocket clients with minimal processing. Updates are delivered as a JSON array inside our JSON object.
+ To further minimize latency, we use bare metal machines for our realtime infrastructure close to the market-data path.
+Trades are when a security/stock was traded on an exchange and includes the price (lastPrice), the volume done (lastSize), and the four raw MEMOIR sale-condition characters from BOATS (Sale Condition 1–4).
+A quote update is when the bid/ask changes, but no trades were done. Tiingo sends a Quote update message via the Websocket if the Top-of-Book values change. In other words, if the best bid price, best bid size, best ask price, or best ask size change, then an update is sent.
+ The BOATS firehose is an add-on entitlement (BOATS Real-time). Please note the firehose exposes a very high amount of data, in some cases to the nanosecond resolution. Please build your systems cautiously and to scale.
+ Access to the BOATS firehose requires the
+BOATS Real-time
+ entitlement on your API account. Without that entitlement, subscribe requests to
+wss://api.tiingo.com/boats
+ are rejected.
+ The public BOATS websocket currently exposes a single threshold level:
+thresholdLevel 3
+, which streams every validated venue-native quote and trade update Tiingo receives from BOATS (Blue Ocean ATS).
+ For REST snapshots and overnight OHLC history, see
+2.7 REST - BOATS Overnight Real-time
+. You can find out about the full product offering on the
+Product - BOATS
+ page.
+ 3.5 Websockets (Firehose) - BOATS
+3.5.2 Top-of-Book & Last Trade
+ With Tiingo's Websocket/Firehose BOATS API, you receive every validated top-of-book and last-trade update from the BOATS venue feed.
+ Use thresholdLevel
+3
+ (the only public BOATS channel today) to subscribe to the full venue firehose.
+For the BOATS Websocket API:
+A "thresholdLevel" of
+3
+ means you will get ALL venue-native Top-of-Book AND Last Trade updates from BOATS.
+To request top-of-book and last trade data, use the following Websocket endpoint.
+# Websocket Top-of-Book & Last Trade Endpoint
+wss://api.tiingo.com/boats
+
+ The BOATS websocket returns meta information about the websocket update message along with the raw data related to that update message.
+ Check out the table below to see the top-level fields returned from the Websocket BOATS API.
+ To see what fields are returned in the "data" field, please see the table below.
+Top-of-Book (Quote) Update Messages
+ Quote ("Q") updates return a compact 9-element
+data
+ array with the venue top-of-book only (bid/mid/ask). Halt, after-hours, and trade-slot placeholders from the older IEX-style layout are not included on this feed.
+Trade & Break Update Messages
+ Trade ("T") and Break ("B") updates return a compact 10-element
+data
+ array: last price/size plus the four raw MEMOIR Sale Condition characters at indexes 6–9 (so values like "H" vs "X" stay distinct).
+ To subscribe to the Websocket API you must first open a connection then send the following request parameters. Check out the "Examples" tab to see copy & paste examples of how this works.
+ The following parameters are what can be passed in the "eventData" field.
+"eventData" Request Parameters
+Response:
+ The below example shows how you can subscribe to a few tickers and then update the subscription to add or remove new tickers to the list.
+ First you can create a subscription with the "tickers" parameter. If you pass "*" as a ticker, it will mean you will get data for ALL tickers.
+Response:
+ Use the
+subscriptionId
+ from the prior response to update the subscription. Specify the
+subscriptionId
+ in the
+eventData
+ parameter.
+ This command should be run as a second process. This means you can edit the first concurrent subscription without having to stop the flow of data packets.
+ The below example removes "spy" as one of the subscribed tickers. You will be returned a list of currently subscribed tickers, in the response, if the action is successful.
+Response:
+ The below examples add all tickers ("*") as one of the subscribed tickers. You will be returned a list of currently subscribed tickers, in the response, if the action is successful.
+Response:
+WebSocket Endpoints
+Beta
+ The Equity Realtime Websocket Endpoints are currently in beta. For production use cases, we recommend the
+IEX websocket endpoints
+ - which these endpoints expand upon.
+# Websocket Consolidated Equity Reference Price & Liquidity Risk Metric Endpoint
+wss://api.tiingo.com/equity/intraday
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 3.3 Websockets (Firehose) - Equity Realtime
+3.3.1 Overview
+ Tiingo provides consolidated equity websocket updates from Tiingo's connections into multiple exchanges, ATS, and OTC venues. The feed combines multiple US equity market data sources into one stream and exposes two derived products: Reference Prices and Lquidity Bid/Ask metrics. These are accessible via two different
+thresholdLevel
+ subscriptions.
+thresholdLevel 6
+ publishes reference price updates when Tiingo detects a meaningful consolidated reference price change.
+thresholdLevel 4
+ publishes liquidity spread (bid/ask) updates, including
+lqSpread
+ and the related
+lq*
+ bid/ask fields (price and sizes).
+ The liquidity risk metric is a statistical estimate of an asset's expected bid/ask spread and liquidity at top-of-book. Tiingo gathers spread and liquidity observations from multiple venues - including exchanges, ATS, and OTC venues - and applies a proprietary methodology to produce an estimated liquidity spread and liquidity bid/ask profile for each security.
+ For REST snapshots and historical intraday bars, see the
+Equity Realtime REST documentation
+.
+ 3.3 Websockets (Firehose) - Equity Realtime
+3.3.2 Reference Price (thresholdLevel 6)
+ Use
+thresholdLevel
+ 6 to receive consolidated reference price updates. Each message contains a timestamp, ticker, and reference price. This reference price corresponds to
+tngoLast
+ in the REST API and is calculated from validated consolidated quote mids or trade prints. These values are used to create OHLC bars in the REST endpoints.
+A
+thresholdLevel
+ of
+6
+ means you receive reference price updates when Tiingo detects a meaningful consolidated reference price change.
+To request consolidated reference price data, use the following Websocket endpoint.
+# Websocket Consolidated Equity Reference Price Endpoint
+wss://api.tiingo.com/equity/intraday
+
+ The websocket returns meta information about the update message along with the compact reference price array.
+ To see what fields are returned in the
+data
+ field, please see the table below.
+Reference Price Update Messages
+ To subscribe to the Websocket API you must first open a connection then send the following request parameters. Check out the "Examples" tab to see copy & paste examples of how this works.
+ The following parameters are what can be passed in the
+eventData
+ field.
+"eventData" Request Parameters
+Response:
+ 3.3 Websockets (Firehose) - Equity Realtime
+3.3.3 Liquidity Risk Metric (thresholdLevel 4)
+ Use
+thresholdLevel
+ 4 to receive liquidity spread updates. Each message contains a timestamp, ticker, liquidity spread, liquidity bid size, liquidity bid price, reference price, liquidity ask price, and liquidity ask size.
+ The payload shape is
+[timestamp, ticker, lqSpread, lqBidSize, lqBidPrice, referencePrice, lqAskPrice, lqAskSize]
+.
+lqSpread
+ is a relative decimal (i.e. where 0.04 means 4%). The remaining liquidity fields correspond to the
+lq*
+ fields exposed on the consolidated equity REST endpoint, e.g. lqBidPrice and lqAskPrice. These are expanded upon below. These metrics are intended to be used as valuation and risk metrics to help value assets in real-time.
+A
+thresholdLevel
+ of
+4
+ means you receive liquidity risk metric updates when Tiingo republishes the statistical liquidity estimate for a security.
+To request liquidity risk metric data, use the following Websocket endpoint.
+# Websocket Consolidated Equity Liquidity Risk Metric Endpoint
+wss://api.tiingo.com/equity/intraday
+
+ The websocket returns meta information about the update message along with the compact liquidity risk metric array.
+ To see what fields are returned in the
+data
+ field, please see the table below.
+Liquidity Risk Metric Update Messages
+ To subscribe to the Websocket API you must first open a connection then send the following request parameters. Check out the "Examples" tab to see copy & paste examples of how this works.
+ The following parameters are what can be passed in the
+eventData
+ field.
+"eventData" Request Parameters
+Response:
+Forex API Documentation - Real-time & Historical
+REST Endpoints
+ The Forex API Endpoints are currently in beta.
+# To request top-of-book/last for specific base and quote pairs, use the following REST endpoint
+https://api.tiingo.com/tiingo/fx/<ticker>/top
+
+# Historical Intraday Prices for base and quote pairs
+https://api.tiingo.com/tiingo/fx/<ticker>/prices?startDate=2019-06-30&resampleFreq=5min
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 2.4 REST - Forex
+2.4.1 Overview of the Tiingo Forex API
+ Tiingo connects directly to tier-1 banks and FX dark pools to provide institutional-grade quality Forex quotes.
+ Benefits of the Tiingo Forex API
+140+ Forex Tickers Quoted
+Data includes Top-of-Book (Bid/Ask) data
+Data now includes intraday OHLC bar historical data for all your needs.
+Quotes updated to the latest microsecond.
+Data is served via a REST API & Websocket API.
+Market hours are from 8pm EST Sunday through 5pm EST Friday.
+For more details please visit the
+Forex API product page
+.
+ 2.4 REST - Forex
+2.4.2 Current Top-of-Book
+To request top-of-book and last price data for a forex pair, use the following REST endpoints.
+# To request top-of-book/last for mulitple base and quote pairs, use the following REST endpoint
+https://api.tiingo.com/tiingo/fx/top?tickers=<ticker>,<ticker>,...<ticker>
+
+# To request top-of-book/last for specific tickers, use the following REST endpoint
+https://api.tiingo.com/tiingo/fx/<ticker>/top
+
+Response:
+ 2.4 REST - Forex
+2.4.3 Intraday Prices Endpoint
+To request historical intraday prices for a forex pair, use the following REST endpoint.
+# Current OHLC for the day
+https://api.tiingo.com/tiingo/fx/<ticker>/prices?resampleFreq=1day
+
+# Historical Intraday Prices
+https://api.tiingo.com/tiingo/fx/<ticker>/prices?startDate=2019-06-30&resampleFreq=5min
+
+Response:
+WebSocket Endpoints
+# Websocket Forex API Top-of-Book Endpoint
+wss://api.tiingo.com/fx
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 3.2 Websockets (Firehose) - Forex
+3.2.1 Overview
+ Tiingo provides updates via websocket every time the Top-of-book (best bid/offer price) change.
+ We obtain our data through raw binary feeds we receive via feeds that cannot to tier-1 banks and FX dark pools. We then send the data straight to you after minor processing (even before we update our databases).
+ To further minimize latency, we use bare metal machines for our cloud infrastructure which are located about 15 miles from the NY5 data center.
+ With Tiingo Free, Power, Commercial, and Redistribution plans all come with access to the firehose. Please note the firehose exposes a very high amount of data, in some cases to the microsecond resolution. Please build your systems cautiously and to scale, otherwise you may use our REST API which leverages Tiingo's infrastructure for this purpose.
+ You can find out about the full product offering on the
+Product - Forex
+ page.
+ 3.2 Websockets (Firehose) - Forex
+3.2.2 Top-of-Book
+ With Tiingo's Websocket/Firehose Forex API, you can gain access to all data we receive via our feeds.
+ To control how much data you would like to receive, read about the "thresholdLevel" request parameter below. A higher "thresholdLevel" means you will get less updates, which could potentially be more relevant.
+For the Forex Websocket API:
+A "thresholdLevel" of 5 means you will get ALL Top-of-Book updates.
+To request top-of-book and last trade data, use the following Websocket endpoint.
+# Websocket Top-of-Book Endpoint
+wss://api.tiingo.com/fx
+
+ The Forex websocket returns meta information about the websocket update message along with the raw data related to that update message.
+ Check out the table below to see the top-level fields returned from the Websocket FX API.
+ To see what fields are returned in the "data" field, please see the table below.
+Top-of-Book (Quote) Update Messages
+ To subscribe to the Websocket API you must first open a connection then send the following request parameters. Check out the "Examples" tab to see copy & paste examples of how this works.
+ The following parameters are what can be passed in the "eventData" field.
+"eventData" Request Parameters
+Response:
+ The below example shows how you can subscribe to a few tickers and then update the subscription to add or remove new tickers to the list.
+ First you can create a subscription with the "tickers" parameter. If you pass "*" as a ticker, it will mean you will get data for ALL tickers.
+Response:
+ Use the
+subscriptionId
+ from the prior response to update the subscription. Specify the
+subscriptionId
+ in the
+eventData
+ parameter.
+ This command should be run as a second process. This means you can edit the first concurrent subscription without having to stop the flow of data packets.
+ The below example removes "audusd" as one of the subscribed tickers. You will be returned a list of currently subscribed tickers, in the response, if the action is successful.
+Response:
+ The below examples add all tickers ("*") as one of the subscribed tickers. You will be returned a list of currently subscribed tickers, in the response, if the action is successful.
+Response:
+REST Endpoints
+ Search Endpoint has just been launched and is in early beta. Responses objects are subject to change. We do not recommend building production code using this endpoint while in beta.
+# Search Endpoint
+https://api.tiingo.com/tiingo/utilities/search/<query>
+# or
+https://api.tiingo.com/tiingo/utilities/search?query=<query>
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 4.1 Utilities - Search
+4.1.1 Overview
+ Tiingo's search feature lets you find specific assets in our database by the ticker or the name of the asset. This endpoint lets you segment by active, delisted, tickers across asset classes. The endpoint first searches for ticker matches and then expands to matches in the name of the asset.
+ This endpoint is useful for looking up existing assets
+ 4.1 Utilities - Search
+4.1.2 Search Endpoint
+To request search query data, use the following REST endpoints.
+# Search Tiingo database for specific assets
+https://api.tiingo.com/tiingo/utilities/search/apple
+# or
+https://api.tiingo.com/tiingo/utilities/search?query=apple
+
+Response:
+Fundamental Data API Documentation
+REST Endpoints
+ Tiingo Fundamental Data API Endpoint is as an
+add-on subscription
+. The DOW 30 are available for free/evaluation. If you would like access to all tickers as an add-on subscription, please E-mail
+support@tiingo.com
+# To see the available fundamental metrics, use this endpoint
+https://api.tiingo.com/tiingo/fundamentals/definitions
+
+# To request historical statement data, use this endpoint (ticker for active symbols)
+https://api.tiingo.com/tiingo/fundamentals/<ticker>/statements
+
+# For delisted or recycled symbols, use Tiingo permaTicker (stable identifier)
+https://api.tiingo.com/tiingo/fundamentals/<permaTicker>/statements
+
+# To request historical daily fundamental data, use this endpoint (ticker for active symbols)
+https://api.tiingo.com/tiingo/fundamentals/<ticker>/daily
+
+# For delisted or recycled symbols, use Tiingo permaTicker (stable identifier)
+https://api.tiingo.com/tiingo/fundamentals/<permaTicker>/daily
+
+# To request fundamental meta data, use this endpoint
+https://api.tiingo.com/tiingo/fundamentals/meta
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 2.8 REST - Fundamentals
+2.8.1 Overview
+ Tiingo offers a fundamental data API via a third-party provider. Data goes back over 20 years and covers US Equities and ADRs. We have used this provider extensively over the years and found them to be reputable, reliable, and accurate.
+ Benefits of Tiingo Fundamental Data API
+5,500+ Equities Covered.
+Data includes Cash Flow, Income Statement, Balance Sheet, and Metric Data.
+Data is covered daily, quarterly, and for annual statements.
+Data is structured and normalized across a pre-define set of tickers for easy backtests and analysis.
+Data is served via a REST API API.
+Data is updated usually within 12-24 hours of being made available by the SEC.
+3 Years of the DOW 30 tickers are available for free/evaluation.
+ 2.8 REST - Fundamentals
+2.8.2 Definitions Data
+ This endpoint can be used to check which the various fields available in the fundamentals endpoint. As we add more indicators, the output of this endpoint will change to reflect the addition of indicators.
+To request fundamental definitions REST endpoints.
+# To see the available fundamental metrics, use this endpoint
+https://api.tiingo.com/tiingo/fundamentals/definitions
+
+Response:
+ 2.8 REST - Fundamentals
+2.8.3 Statement Data Endpoint
+ This endpoint returns data that is extracted from quarterly and annual statements.
+ For Tiingo statement data, use the endpoints below. Provide either a ticker (active symbols) or a Tiingo permaTicker (stable identifier for delisted/recycled symbols).
+ With this endpoint, the JSON (default) and CSV formats do share some differences in data strcture. The JSON data is nested, whereas the CSV format, by necessity, is a 2-D, flat structure. The data is the same, so choose a format that is simplest for you to digest.
+ Additionally, please ensure your code can handle new indicators as we will be continually updating these end points as we obtain new information and add new metrics.
+To request historical statement data for a stock, use the following REST endpoint.
+# To request historical statement data, use this endpoint (ticker for active symbols)
+https://api.tiingo.com/tiingo/fundamentals/<ticker>/statements
+
+# For delisted or recycled symbols, use Tiingo permaTicker (stable identifier)
+https://api.tiingo.com/tiingo/fundamentals/<permaTicker>/statements
+
+# To request historical statement data limited by date range, use this endpoint
+https://api.tiingo.com/tiingo/fundamentals/<ticker>/statements?startDate=2019-06-30
+
+ To see what format of the array of fields are returned in the "statementData" field, please see the table below.
+Statement Data Field
+Response:
+ 2.8 REST - Fundamentals
+2.8.4 Daily Data
+ While statement data covers quarterly and annual reporting, some metrics that rely on price update daily, for example Market Capitalization, P/E Ratios, P/B Ratios, etc. This endpoint covers daily metrics.
+ For Tiingo daily fundamentals, use the endpoints below. Provide either a ticker (active symbols) or a Tiingo permaTicker (stable identifier for delisted/recycled symbols).
+ This endpoint is different than others in that the different daily metrics are "columns". Please note that we will continue to add new daily metrics, so the fields will change throughout time. We recommend you
+do not
+ make parsing code that requires columns or fields to be in a particular order. If you do require this, please use the
+columns
+ request parameter to ensure constant output, even if we add columns. For example,
+columns=marketCap,peRatio
+ will always ensure only those two fields are returned in that exact order.
+To request daily metric data REST endpoints.
+# To request daily metric data, use this endpoint (ticker for active symbols)
+https://api.tiingo.com/tiingo/fundamentals/<ticker>/daily
+
+# For delisted or recycled symbols, use Tiingo permaTicker (stable identifier)
+https://api.tiingo.com/tiingo/fundamentals/<permaTicker>/daily
+Response:
+ 2.8 REST - Fundamentals
+2.8.5 Meta Data
+ This endpoint can be used to check which tickers have been updated with new fundamental data.
+ Like the endpoints above, as we add new meta data about companies and their fundamentals, this endpoint will change output. Please do not code with the assumption that column orders will always be maintained. If you must, please pass the
+columns
+ parameter to ensure the output maintains its column order. For example,
+columns=ticker,name
+ will always ensure those columns are returned in that exact order.
+To request meta data REST endpoints.
+# To request fundamental meta data, use this endpoint
+https://api.tiingo.com/tiingo/fundamentals/meta
+Response:
+ 2.8 REST - Fundamentals
+2.8.6 Additional Information & FAQ
+ We decided to partner with this data provider as over the years we have found their data process to be incredibly rigorous, their mission aligned with ours, and their support incredibly responsive. We hope the follow FAQ will be helpful to you, if you have any more questions please E-mail us at
+Support@tiingo.com
+Is the Statements data processed by hand or programmatically?
+Data collection goes through a mixture of machine curation and human oversight.
+What SEC filings are used for Fundamental Data?
+ Also sourcing includes the following docs: 10-12, S-11, S-4, 10SB and A-1 (Domestic), 20-F and 20FR (ADR), 40-F and 40FR (Canadian), F-1, F-10 and F-4 (ADR and Canadian), and limited 6-K (for ADR and Canadian). 8-K is being considered as well, and more others may be added in the future.
+Do you use XBRL?
+We have found XBRL unreliable and so do not rely on it. Human readable documents are a better measure of what companies intend to convey and so we focus on interpreting these.
+Is prior period data pulled from the latest report? Or is only the current period taken? As in 2018 annual info is from 2019 annual filings?
+Prior period data is pulled from the latest report for the Most-Recent (asReported=false) dimension, current period is taken only for As-Reported (asReported=true) dimension.
+What accuracy checks are performed?
+ Our big focus is on reconciling to the underlying human readable SEC document. In addition we deploy a variety of human and algorithmic checks.
+How quickly is data updated after a company reports earnings?
+ Less than 24 hours from the SEC form 10 filing.
+What currency is data returned in?
+ All values are returned in USD. If a company reports in a different currency, the values are converted to USD using a time-appropriate FX-rate before being served to you via the API. This is especially relevant to ADRs who often report in a different currency than USD.
+Mutual Fund and ETF Fee Data API Documentation
+REST Endpoints
+ This endpoint is for enterprise and institutional clients only. Please reach out to
+Sales@tiingo.com
+ for licensing and pricing.
+# To obtain top-level fund data, including description and share classes, use the following REST endpoint
+https://api.tiingo.com/tiingo/funds/<ticker>
+
+# To obtain detailed current and historical fee data, use the following REST endpoint
+https://api.tiingo.com/tiingo/funds/<ticker>/metrics
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 2.9 REST - Mutual Fund & ETF Fees
+2.9.1 Overview
+ Tiingo tracks and processes official Mutual Fund & ETF Fee data from over 36,000 Mutual Funds and ETFs. The data includes a detailed breakdown data of fees, even including custom fees (like check processing fee if withdrawing money via check).
+ Benefits of Mutual Fund & ETF Fee Data
+36,000+ Mutual Funds and ETFs covered.
+Data includes historical as well as current data.
+Fee data is detailed and broken down (e.g. management fee, 12b-1 fees, and more).
+Fee data is updated intraday as new data comes online from Fund Companies.
+Multiple share classes are mapped allowing you to easily compare fees across share classes.
+ 2.9 REST - Mutual Fund & ETF Fees
+2.9.2 Fund Overview
+To obtain top-level fund data, including description and share classes, use the following REST endpoint.
+# To obtain top-level fund data, including description and share classes, use the following REST endpoint
+https://api.tiingo.com/tiingo/funds/<ticker>
+
+ To see what fields are returned in the "otherShareClasses" field, please see the table below.
+Response:
+ 2.9 REST - Mutual Fund & ETF Fees
+2.9.3 Historical and Current Mutual Fund & ETF Fee Data
+To obtain detailed current and historical fee data, use the following REST endpoint.
+# To obtain detailed current and historical fee data, use the following REST endpoint
+https://api.tiingo.com/tiingo/funds/<ticker>/metrics
+
+ To see what fields are returned in the "customFees" field, please see the table below.
+Response:
+REST Endpoints
+# To request a list of contracts & meta data for all tickers, use the following REST endpoint
+https://api.tiingo.com/smallx/meta
+
+# To request top-of-book/last for all tickers, use the following REST endpoint
+https://api.tiingo.com/smallx/tops
+
+# To request top-of-book/last for specific tickers, use the following REST endpoint
+https://api.tiingo.com/smallx/<ticker>/tops
+
+# Historical Intraday Prices
+https://api.tiingo.com/smallx/<ticker>/prices?startDate=2022-08-02&resampleFreq=5min
+
+# Historical Official End-of-Day Prices
+https://api.tiingo.com/smallx/<ticker>/eod?startDate=2022-08-02
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 2.6 REST - Small Exchange
+2.6.1 Overview
+ Tiingo has a cross-correct directly to the Small Exchange Exchange that gives us access to raw binary price feeds we can share with you all.
+
+Benefits of Tiingo + Small Exchange
+For the first time, you now have Real-time 2Y, 10Y, and 30Y interest rate futures, Oil, US Dollar, equity index futures, and so much more.
+Small-Exchange has favorable retail products that are innovating both product scope as well as improving accessibility of retail to futures data.
+Small Exchange has a $0 (zero) USD license fee policy
+Data includes Top-of-Book (Bid/Ask) and Last Sale (trade) Data.
+Data includes intraday OHLC bar historical data for all your needs.
+Tiingo enriches the data, giving you more data for your convenience.
+Quotes updated to the latest nanosecond.
+Access to almost every field SmallX gives us access to.
+Data is served via a REST API & Websocket API.
+ You can find out about the full product offering on the
+Product - Small Exchange
+ page.
+ 2.6 REST - Small Exchange
+2.6.2 Meta Data
+ You can use this meta endpoint to keep updated with all of the available contracts from the Small Exchange, and use it to keep your database up to date as new contracts come in and old ones expire. This endpoint gives the master list of tickers, and associated meta data, that you can use to query data across our Small Exchange APIs.
+To request historical intraday prices for a stock, use the following REST endpoint.
+# Historical End-of-Day Prices
+https://api.tiingo.com/smallx/meta
+
+Response:
+ 2.6 REST - Small Exchange
+2.6.3 Current Top-of-Book & Last Price
+ The following endpoints curate the data as we receive it from the Small Exchange into a friendly-to-use format. The open, high, low, and last in these endpoints utilize a unique Tiingo algorithm that updates prices more frequently than last trade. The Open, High, Low, and Last prices are calculated by the "tngoLast" field which you can read more about in the table below.
+To request top-of-book and last price data for a stock, use the following REST endpoints.
+# To request top-of-book/last for all tickers, use the following REST endpoint
+https://api.tiingo.com/smallx/tops
+
+# To request top-of-book/last for specific tickers, use the following REST endpoint
+https://api.tiingo.com/smallx/<ticker>/tops
+or
+https://api.tiingo.com/smallx/tops?tickers=<ticker>
+
+Response:
+ 2.6 REST - Small Exchange
+2.6.4 Historical Intraday Prices Endpoint
+ The historical Open, High, Low, and Close prices are calculating using a Tiingo Algorithm that results in fuller charts. The values are calculated using the "tngoLast" field described in the table above. This means the charts look fuller, and update more frequently, even if no trades happened. In our opinion, this better reflects the prices of the underlying instruments, more than using trades alone.
+To request historical intraday prices for a stock, use the following REST endpoint.
+# Historical Intraday Prices
+https://api.tiingo.com/smallx/<ticker>/prices?startDate=2022-08-02&resampleFreq=5min
+
+Response:
+ 2.6 REST - Small Exchange
+2.6.5 Official End-of-Day Data
+ The historical Open, High, Low, Close, Settlement, Volume, and Open Interest prices are calculated by the Small Exchange and disseminated throughout the day. For OHLCV, these values use the trades done on the exchange. This endpoint includes Open Interest and Settlement Price, which are official values by the Small Exchange and not available in the intraday endpoint.
+To request historical intraday prices for a stock, use the following REST endpoint.
+# Historical End-of-Day Prices
+https://api.tiingo.com/smallx/<ticker>/eod?startDate=2022-08-02
+
+Response:
+REST Endpoints
+# To gather a list of all Yield Platforms Supported (e.g. AAVEV2, COMPOUND, etc.)
+https://api.tiingo.com/tiingo/crypto-yield/platforms
+
+# To request meta data for all yield pools, use the following REST endpoint
+https://api.tiingo.com/tiingo/crypto-yield/pools
+
+# Yield Pool Tick Metrics
+https://api.tiingo.com/tiingo/crypto-yield/ticks
+
+# Yield Pool Historical OHLC Metrics
+https://api.tiingo.com/tiingo/crypto-yield/<poolCode>/metrics
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 2.4 REST - CRYPTOCURRENCY YIELDcurrency Yield
+2.4.1 Overview
+
+Tiingo reads yield data directly on chain from various Cryptocurrency lending platforms such as AAVE, Compound, BenQi, Solend, and MakerDAO.
+ The Benefits of Tiingo Crypto Yield
+Pools and platforms easily queryable and yields and notional borrowed/supplied are aggregated in OHLCV and tick form.
+Complicated yield aggregations are all standardized into the Tiingo API for easy and accurate acquisition of data.
+Data is broken out into stable and variable yields if supported by the lending platforms.
+Notionals borrowed and supplied are provided.
+Data is updated constantly as changes are detect on blockchains.
+Multiple blockchains and networks are supported.
+Data can be downloaded in raw bulk form for enterprise customers..
+ To understand the relationship between Yield Lending Platforms and Yield Pools on the Tiingo API, think of the relationship of Exchanges and Cryptocurrencies.
+ Yield Platforms are similar to exchanges, and Yield Pools are similar to Cryptocurrencies in that they are mapped to specific Yield Platforms. E.g. "aavev2_usdc" Yield Pool is listed on the AAVE Yield Platform.
+
+ You can use the Yield Platform and Yield Pool meta endpoints to determine which pools belong on which platforms, then use the
+poolCode
+ to query specific lending information from each Yield Pool via the
+metrics
+ and
+ticks
+ endpoints.
+ 2.4 REST - CRYPTOCURRENCY YIELD
+2.4.2 Yield Platform Meta Data
+ This endpoint returns the various Platforms supported by Tiingo. The
+platformCode
+ acts as a unique identifier you can use to map Pools to.
+To see a list of supported lending Platforms, use the following REST endpoints.
+# To gather a list of all Yield Platforms Supported (e.g. AAVEV2, COMPOUND, etc.)
+https://api.tiingo.com/tiingo/crypto-yield/platforms
+
+Response:
+ 2.4 REST - CRYPTOCURRENCY YIELD
+2.4.3 Yield Pool Meta Data
+ Yield pools are pools that belong to a specific Platform. You can treat poolCode similarly as cryptocurrency tickers.
+ Pool codes will be unique identifiers that you can query tick and metric data from.
+To request meta data for a Yield Pools, use the following REST endpoints.
+# To request meta data for all yield pools, use the following REST endpoint
+https://api.tiingo.com/tiingo/crypto-yield/pools
+
+# To request meta data for a specific yield pools, use the following REST endpoint
+https://api.tiingo.com/tiingo/crypto-yield/pools?poolCodes=<poolCodes>
+
+# To request meta data for a specific yield platforms, use the following REST endpoint
+https://api.tiingo.com/tiingo/crypto-yield/pools?platformCodes=<platformCodes>
+
+Response:
+ 2.4 REST - CRYPTOCURRENCY YIELD
+2.4.4 Yield Pool Tick Metrics Endpoint
+ This endpoint allows you to query the latest metrics for the various yield pools in real-time as our processor reads changes from chain.
+ If you need historical values, please see the metrics ohlc endpoint below (Section 2.4.5).
+To request yield pool metrics, use the following REST endpoints.
+# Yield Pool Metric Ticks
+https://api.tiingo.com/tiingo/crypto-yield/ticks
+
+# Yield Pool Metric Ticks filtered by Pool Code
+https://api.tiingo.com/tiingo/crypto-yield/ticks?poolCodes=<poolCode>
+
+Response:
+ 2.4 REST - CRYPTOCURRENCY YIELD
+2.4.5 Yield Pool Historical (OHLC) Metrics Endpoint
+ This endpoint allows you to query metrics for the various yield pools, and resample the data into OHLC values. Data can be resampled to as low as 1 minute bars, and the latest bar will constantly update throughout the minute.
+ If you need ticks, please see the ticks endpoint below (Section 2.4.5).
+To request yield pool metrics, use the following REST endpoints.
+# Yield Pool Metrics
+https://api.tiingo.com/tiingo/crypto-yield/<poolCode>/metrics
+
+# Yield Pool Metrics reasmpled to 1 minute bars historically
+https://api.tiingo.com/tiingo/crypto-yield/<poolCode>/metrics?startDate=2022-09-04&endDate=2022-09-05&resampleFreq=1min
+
+Response:
+Stock, ETF, and Mutual Funds Dividend API Documentation
+REST Endpoints
+ The new Corporate Action endpoints, such as the distribution endpoints below, are currently available to Beta-enabled customers and enterprise customers as an early release product. If you would like access to the data below, please E-mail
+support@tiingo.com
+# Distribution data batch endpoint
+https://api.tiingo.com/tiingo/corporate-actions/distributions
+
+# Distribution data endpoint for specific ticker
+https://api.tiingo.com/tiingo/corporate-actions/<ticker>/distributions
+
+# Historical timeseries of distribution (dividend) yield
+https://api.tiingo.com/tiingo/corporate-actions/<ticker>/distribution-yield
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 2.10 REST - Stock, ETF, and Mutual Fund Dividends API
+2.10.1 Overview
+ The Tiingo API Dividends API endpoint help capture and relay both detailed dividend and distribution data, as well as historical metrics that relate to dividends, such as yield. As of August 28th, 2023, this endpoint remains newly exposed in beta and is included for all customers with the End-of-Day endpoint entitlement. This dividend distribution API endpoints fall under our new corporate action endpoints coming soon.
+ Diviends are available for current and future dates, and yield is available for tickers after their
+End-of-Day price data
+ have been processed.
+ You can find out about the full product offering on the
+Product - Stock, ETF, & Mutual Fund Dividend API
+ page.
+ 2.10 REST - Stock, ETF, and Mutual Fund Dividends API
+2.10.2 Batch Distribution Data
+ Use this endpoint to get past, present, and future dividends and distributions. This endpoint will return detailed dividend and distribution data for a given stock, ETF, or Mutual Fund. You will also notice a distribution frequency, this is the declared frequency of the distribution that you can use to customize your calculations to determine yield.
+To request distribution data for a stock, use the following REST endpoints.
+# Latest Distribution Data with an Ex-Date of the current day
+https://api.tiingo.com/tiingo/corporate-actions/distributions
+
+# Latest Distribution Data with an ex-date explicitly specified (future date or historical date)
+https://api.tiingo.com/tiingo/corporate-actions/distributions?exDate=2023-08-25
+
+
+
+Response:
+ 2.10 REST - Stock, ETF, and Mutual Fund Dividends API
+2.10.3 Ticker-specific Distribution Data
+ This endpoint is similar to the batch endpoint, but allows you to specify a specific ticker to limit the query and also provide historical distribution timeseries data for a ticker as well. Stocks, ETFs, and Mutual Funds are supported.
+To request distribution data for a stock, use the following REST endpoints.
+# Distribution data endpoint for specific ticker (Full history)
+https://api.tiingo.com/tiingo/corporate-actions/<ticker>/distributions
+
+# Distribution data for a ticker limited to a provided date range
+https://api.tiingo.com/tiingo/corporate-actions/<ticker>/distributions?startExDate=2023-01-01&endExDate=2024-01-01
+
+
+
+Response:
+ 2.10 REST - Stock, ETF, and Mutual Fund Dividends API
+2.10.4 Historical Yield Endpoint
+ Use this endpoint to obtain the current and historical information about yield data for the given Stock, ETF, or Mutual Fund. Please note that we will continue to add new daily metrics, so the fields will change throughout time. We recommend you
+do not
+ make parsing code that requires columns or fields to be in a particular order. If you do require this, please use the
+columns
+ request parameter to ensure constant output, even if we add columns. For example,
+columns=trailingDiv1Y
+ will always ensure only that single field is returned in that exact order.
+To request historical distribution yield data for a stock, use the following REST endpoint.
+# Distribution yield
+https://api.tiingo.com/tiingo/corporate-actions/<ticker>/distribution-yield
+
+Response:
+ 2.10 REST - Stock, ETF, and Mutual Fund Dividends API
+2.10.5 Additional Information & FAQ
+ This endpoint is used to communicate past, present, and future distribtion data.
+How often does this data update?
+Data is updated throughout 2-3 times a day as distribution announcements come in.
+Will more types of yield be added?
+ Yes, future expansions of various yield calculations will be included in future dates - including forward yield. You may also calculate this yourself using our distribution frequency endpoints.
+How come some dates are null?
+ We have different enterprise relationships with various provides who provide various data feeds. We then error check them using a proprietary framework to check for errors. If a date is null, it generally means this data is not available to us. Ex-date and distribution amounts will never be null however.
+Stock, ETF, and Mutual Funds Splits API Documentation
+REST Endpoints
+ The new Corporate Action endpoints, such as the splits endpoints below, are currently available to Beta-enabled customers and enterprise customers as an early release product. If you would like access to the data below, please E-mail
+support@tiingo.com
+# Split data batch endpoint
+https://api.tiingo.com/tiingo/corporate-actions/splits
+
+# Split data endpoint for specific ticker
+https://api.tiingo.com/tiingo/corporate-actions/<ticker>/splits
+
+ Just remember, you will need your token in order to connect. Keep it safe.
+.
+ 2.11 REST - Stock, ETF, and Mutual Fund Splits API
+2.11.1 Overview
+ The Tiingo API Splits API endpoint provides detailed split data, for both historical and future split data. This endpoint remains newly exposed in beta and is included for all customers with the End-of-Day endpoint entitlement.
+ Splits are available for current and future dates, and data is updated as new corporate communications get processed. The tickers covered are the same found via the
+End-of-Day price data
+ endpoints. This mean you can get past and future split data for stocks, ETFs, and mutual funds.
+ You can find out about the full product offering on the
+Product - Stock, ETF, & Mutual Fund Split API
+ page.
+ 2.11 REST - Stock, ETF, and Mutual Fund Split API
+2.11.2 Batch Split Data
+ Use this endpoint to get past, present, and future splits. This endpoint will return detailed split data for a given stock, ETF, or Mutual Fund. You will also notice split status - this can either be active ("a") or cancelled ("c").
+To request distribution data for a stock, use the following REST endpoints.
+# Latest Split Data with an Ex-Date of the current day
+https://api.tiingo.com/tiingo/corporate-actions/splits
+
+# Latest Split Data with an ex-date explicitly specified (future date or historical date)
+https://api.tiingo.com/tiingo/corporate-actions/splits?exDate=2023-08-25
+
+
+
+Response:
+ 2.11 REST - Stock, ETF, and Mutual Fund Split API
+2.11.3 Ticker-specific Split Data
+ This endpoint is similar to the batch endpoint, but allows you to specify a specific ticker to limit the query and also provide historical split timeseries data for a ticker as well. Stocks, ETFs, and Mutual Funds are supported.
+To request distribution data for a stock, use the following REST endpoints.
+# Latest Split Data with an Ex-Date of the current day
+https://api.tiingo.com/tiingo/corporate-actions/cvs/splits
+
+# Latest Split Data with an ex-date explicitly specified (future date or historical date)
+https://api.tiingo.com/tiingo/corporate-actions/cvs/splits?startExDate=2002-08-25
+
+Response:

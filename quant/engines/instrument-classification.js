@@ -173,7 +173,10 @@
     { type: "ADR",       re: /\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY RECEIPT)/i },
     /* Dann der Inhalt. Eine Hinterlegung auf Vorzugsaktien landet hier - und
        das ist richtig: sie ist ein Vorzugspapier, kein ADR. */
-    { type: "PREFERRED", re: /\b(PREFERRED|PFD|PREF\.)/i },
+    /* "Preferred Bank" benennt den Emittenten, nicht die Aktiengattung.
+       Ein weiteres "Preferred Shares" oder ein Tickersuffix belegt die
+       Gattung weiterhin (PFBC vs. Vorzug einer Preferred Bank). */
+    { type: "PREFERRED", re: /\b(PREFERRED(?!\s+BANK\b)|PFD|PREF\.)/i },
     { type: "WARRANT",   re: /\bWARRANTS?\b/i },
     { type: "FUND",      re: /\b(FUND|TRUST FUND|CLOSED[- ]END)\b/i },
     /* Eine Hinterlegung, deren Name weder ADR noch eine Gattung nennt, bleibt

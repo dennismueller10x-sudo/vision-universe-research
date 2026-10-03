@@ -1,0 +1,3102 @@
+{
+  "evidence_type": "PUBLIC_DOCUMENTATION_NOT_ACCOUNT_RESPONSE",
+  "tables": {
+    "metaTableResponseRows": [
+      {
+        "name": "Ticker",
+        "jsonFieldName": "ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Name",
+        "jsonFieldName": "name",
+        "jsonFieldType": "string",
+        "description": "Full-length name of the asset."
+      },
+      {
+        "name": "Exchange Code",
+        "jsonFieldName": "exchangeCode",
+        "jsonFieldType": "string",
+        "description": "An identifier that maps which Exchange this asset is listed on."
+      },
+      {
+        "name": "Description",
+        "jsonFieldName": "description",
+        "jsonFieldType": "string",
+        "description": "Long-form descripton of the asset."
+      },
+      {
+        "name": "Start Date",
+        "jsonFieldName": "startDate",
+        "jsonFieldType": "date",
+        "description": "The earliest date we have price data available for the asset. When null it means no price data available for the given asset."
+      },
+      {
+        "name": "End Date",
+        "jsonFieldName": "endDate",
+        "jsonFieldType": "date",
+        "description": "The latest date we have price data available for the asset. When null it means no price data available for the given asset."
+      }
+    ],
+    "metaTableRequestRows": [
+      {
+        "name": "Ticker",
+        "required": true,
+        "parameterType": "URL",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      }
+    ],
+    "eodTableResponseRows": [
+      {
+        "name": "Date",
+        "jsonFieldName": "date",
+        "jsonFieldType": "date",
+        "description": "The date this data pertains to."
+      },
+      {
+        "name": "Open",
+        "jsonFieldName": "open",
+        "jsonFieldType": "float",
+        "description": "The opening price for the asset on the given date."
+      },
+      {
+        "name": "High",
+        "jsonFieldName": "high",
+        "jsonFieldType": "float",
+        "description": "The high price for the asset on the given date."
+      },
+      {
+        "name": "Low",
+        "jsonFieldName": "low",
+        "jsonFieldType": "float",
+        "description": "The low price for the asset on the given date."
+      },
+      {
+        "name": "Close",
+        "jsonFieldName": "close",
+        "jsonFieldType": "float",
+        "description": "The closing price for the asset on the given date."
+      },
+      {
+        "name": "Volume",
+        "jsonFieldName": "volume",
+        "jsonFieldType": "int64",
+        "description": "The number of shares traded for the asset."
+      },
+      {
+        "name": "Adj Open",
+        "jsonFieldName": "adjOpen",
+        "jsonFieldType": "float",
+        "description": "The adjusted opening price for the asset on the given date."
+      },
+      {
+        "name": "Adj High",
+        "jsonFieldName": "adjHigh",
+        "jsonFieldType": "float",
+        "description": "The adjusted high price for the asset on the given date."
+      },
+      {
+        "name": "Adj. Low",
+        "jsonFieldName": "adjLow",
+        "jsonFieldType": "float",
+        "description": "The adjusted low price for the asset on the given date."
+      },
+      {
+        "name": "Adj. Close",
+        "jsonFieldName": "adjClose",
+        "jsonFieldType": "float",
+        "description": "The adjusted closing price for the asset on the given date."
+      },
+      {
+        "name": "Adj. Volume",
+        "jsonFieldName": "adjVolume",
+        "jsonFieldType": "int64",
+        "description": "The number of shares traded for the asset."
+      },
+      {
+        "name": "Dividend",
+        "jsonFieldName": "divCash",
+        "jsonFieldType": "float",
+        "description": "The dividend paid out on \"date\" (note that \"date\" will be the \"exDate\" for the dividend)."
+      },
+      {
+        "name": "Split",
+        "jsonFieldName": "splitFactor",
+        "jsonFieldType": "float",
+        "description": "The factor used to adjust prices when a company splits, reverse splits, or pays a distribution."
+      }
+    ],
+    "eodTableRequestRows": [
+      {
+        "name": "Ticker",
+        "required": true,
+        "parameterType": "URL",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Start Date",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "startDate",
+        "jsonFieldType": "date",
+        "description": "If startDate or endDate is not null, historical data will be queried. This filter limits             metrics to on or after the startDate (>=). Parameter must be in YYYY-MM-DD format."
+      },
+      {
+        "name": "End Date",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "endDate",
+        "jsonFieldType": "date",
+        "description": "If startDate or endDate is not null, historical data will be queried.             This filter limits metrics to on or before the endDate (<=). Parameter must be in YYYY-MM-DD format."
+      },
+      {
+        "name": "Resample Freq",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "resampleFreq",
+        "jsonFieldType": "string",
+        "description": "\n            Allows resampled values that allow you to choose the values returned as daily, weekly, monthly, or annually values.\n            Note: ONLY DAILY takes into account holidays. All others use standard business days\nAcceptable values:\n<ul>\n    <li><b>daily</b>: Values returned as daily periods, with a holiday calendar.</li>\n    <li><b>weekly</b>: Values returned as weekly data, with days ending on Friday.</li>\n    <li><b>monthly</b>: Values returned as monthly data, with days ending on the last standard business day (Mon-Fri) of each month.</li>\n    <li><b>annually</b>: Values returned as annual data, with days ending on the last standard business day (Mon-Fri) of each year.</li>\n</ul>\nNote, that if you choose a value in-between the resample period for weekly, monthly, and daily, the start date rolls\n back to consider the entire period. For example, if you choose to resample weekly, but your \"startDate\" parameter is\n set to Wednesday of that week, the startDate will be adjusted to Monday, so the entire week is captured. Another example\n is if you send a startDate mid-month, we roll back the startDate to the beginning of the month.\n<br><br>\nSimilarly, if you provide an endDate, and it's midway through the period, we roll-forward the date to capture the\n whole period. In the above example, if the end date is set to a wednesday with a weekly resample, the end date is\n rolled forward to the Friday of that week.\n            "
+      },
+      {
+        "name": "Sort",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "sort",
+        "jsonFieldType": "string",
+        "description": "This field allows you to specify the sort direct and which column to sort by. Prepend \"-\"             if you want descending order, otherwise it will be ascending. E.g. sort=date will sort by date in             ascending order. sort=-date will sort by date in descending order."
+      }
+    ],
+    "newsTableResponseRows": [
+      {
+        "name": "Article ID",
+        "jsonFieldName": "id",
+        "jsonFieldType": "int32",
+        "description": "Unique identifier specific to the news article."
+      },
+      {
+        "name": "Title",
+        "jsonFieldName": "title",
+        "jsonFieldType": "string",
+        "description": "Title of the news article."
+      },
+      {
+        "name": "URL",
+        "jsonFieldName": "url",
+        "jsonFieldType": "string",
+        "description": "URL of the news article."
+      },
+      {
+        "name": "Description",
+        "jsonFieldName": "description",
+        "jsonFieldType": "string",
+        "description": "Long-form descripton of the news story."
+      },
+      {
+        "name": "Published Date",
+        "jsonFieldName": "publishedDate",
+        "jsonFieldType": "datetime",
+        "description": "The datetime the news story was published in UTC. This is usually reported by the news source and not by Tiingo.                 If the news source does not declare a published date,                 Tiingo will use the time the news story was discovered by our crawler farm."
+      },
+      {
+        "name": "Crawl Date",
+        "jsonFieldName": "crawlDate",
+        "jsonFieldType": "datetime",
+        "description": "The datetime the news story was added to our database in UTC. This is always recorded by Tiingo and                 the news source has no input on this date. If you note a large gap between crawlDate and publishedDate,                 it means the news article was backfilled, which usually happens when we add a new data source or                 gain access to historical data archives."
+      },
+      {
+        "name": "News Source",
+        "jsonFieldName": "source",
+        "jsonFieldType": "string",
+        "description": "The domain the news source is from."
+      },
+      {
+        "name": "Tickers",
+        "jsonFieldName": "tickers",
+        "jsonFieldType": "string[]",
+        "description": "What tickers are mentioned in the news story using Tiingo's proprietary tagging algo."
+      },
+      {
+        "name": "Tags",
+        "jsonFieldName": "tags",
+        "jsonFieldType": "string[]",
+        "description": "Tags that are mapped and discovered by Tiingo using Tiingo's proprietary tagging algo."
+      }
+    ],
+    "newsTableRequestRows": [
+      {
+        "name": "Tickers",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "tickers",
+        "jsonFieldType": "string[]",
+        "description": "\nA comma-separated list of the tickers requested. When passing via GET parameter (not in URL), use a JSON array, otherwise use a comma-separated list.\n<br><br>\n<pre>\n#Use the below format if querying directly in the URL\nhttps://api.tiingo.com/tiingo/news?tickers=aapl,googl\n\n#Otherwise, if passing GET parameters via a request library, use a JSON array like this:\ntickers : ['aapl','googl']\n</pre>\n            "
+      },
+      {
+        "name": "Source (domains)",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "source",
+        "jsonFieldType": "string[]",
+        "description": "\nA comma-separated list of the tags requested. When passing via GET parameter (not in URL), use a JSON array, otherwise use a comma-separated list.\n<br><br>\n<pre>\n#Use the below format if querying directly in the URL\nhttps://api.tiingo.com/tiingo/news?source=bloomberg.com,reuters.com\n\n#Otherwise, if passing GET parameters via a request library, use a JSON array like this:\nsource : ['bloomberg.com','reuters.com']\n</pre>\n            "
+      },
+      {
+        "name": "Start Date",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "startDate",
+        "jsonFieldType": "date",
+        "description": "\nIf startDate or endDate is not null, historical data will be queried. This filter limits news stories to on or later than the publishedDate (>=). Parameter must be in YYYY-MM-DD format.\n            "
+      },
+      {
+        "name": "End Date",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "endDate",
+        "jsonFieldType": "date",
+        "description": "\nIf startDate or endDate is not null, historical data will be queried. This filter limits news stories to on or less than the publishedDate (<=). Parameter must be in YYYY-MM-DD format.\n            "
+      },
+      {
+        "name": "Limit",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "limit",
+        "jsonFieldType": "int32",
+        "description": "\nThe maximum number of news objects to return in the array. The default is 100 and the max is 1000. This is maxed to 1,000 as any more than that tends to lead to longer wait times. \nIf you would like this adjusted, please contact us at <a href=\"mailto:feeds@tiingo.com\">support@tiingo.com</a>.\n            "
+      },
+      {
+        "name": "Offset",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "offset",
+        "jsonFieldType": "int32",
+        "description": "\nThis is a \"pagination\" variable that is often used alongside limit. It returns an array with the results shifted by \"offset\". For example, when limit is 0 you may get the following: \n<br><br>\n<pre>\n0. News Story A\n1. News Story B\n2. News Story C\n3. News Story D\n</pre>\n<br><br>\nWhen offset is \"2\" you will receive:\n<br><br>\n<pre>\n0. News Story C\n1. News Story D\n2. News Story E\n3. News Story F\n</pre>\n<br><br>\nThis, when used alongside \"limit\" allows for pagination and more efficient queries.\n            "
+      },
+      {
+        "name": "Sort By",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "sortBy",
+        "jsonFieldType": "string",
+        "description": "\nThe field can take either \"publishedDate\" or \"crawlDate\". The date field specified will be used to sort the results in descending order. The results can either be sorted by when the news outlet reported the publish time (\"datePublished\") or when our feeds came across is (\"crawlDate\"). Defaults to \"publishedDate\" if no value provided\n            "
+      }
+    ],
+    "bulkDownloadTableResponseRows": [
+      {
+        "name": "File ID",
+        "jsonFieldName": "id",
+        "jsonFieldType": "int32",
+        "description": "Unique identifier specific to the bulk download file. Used to select which file to download."
+      },
+      {
+        "name": "URL",
+        "jsonFieldName": "url",
+        "jsonFieldType": "string",
+        "description": "A url you can use to directly download the batch file. <b>NOTE</b>: This url contains your Auth Token and is meant to be a \"copy/paste\" url for your convenience"
+      },
+      {
+        "name": "Filename",
+        "jsonFieldName": "filename",
+        "jsonFieldType": "string",
+        "description": "The filename of the batch file."
+      },
+      {
+        "name": "Batch Type",
+        "jsonFieldName": "batchType",
+        "jsonFieldType": "string",
+        "description": "Describes what kind of batch file this is. The value will either be: \"base\" or \"incremental\". base is an entire dump of the data and incremental is a partial dump of the data. This should be used in conjunction with the startDate and endDate parameters to identify the bounds of the data dump."
+      },
+      {
+        "name": "Start Date",
+        "jsonFieldName": "startDate",
+        "jsonFieldType": "date",
+        "description": "The start date that was used to select the News objects to generate the batch file. This is inclusive. publishedDate >= startDate."
+      },
+      {
+        "name": "End Date",
+        "jsonFieldName": "startDate",
+        "jsonFieldType": "date",
+        "description": "The end date that was used to select the News objects to generate the batch file. This is not inclusive. publishedDate < endDate."
+      },
+      {
+        "name": "Compressed file size",
+        "jsonFieldName": "fileSizeCompressed",
+        "jsonFieldType": "int64",
+        "description": "The size of the file in bytes compressed using gzip."
+      },
+      {
+        "name": "Uncompressed file size",
+        "jsonFieldName": "fileSizeUncompressed",
+        "jsonFieldType": "int64",
+        "description": "The size of the file in bytes uncompressed."
+      }
+    ],
+    "bulkDownloadTableRequestRows": [
+      {
+        "name": "File ID",
+        "required": true,
+        "parameterType": "URL",
+        "jsonFieldName": "id",
+        "jsonFieldType": "int32",
+        "description": "\nThe unique \"id\" that corresponds to the batch file you would like to download. If none is supplied, returns a list of the available batch files.\n            "
+      }
+    ],
+    "topOfBookTableResponseRows": [
+      {
+        "name": "Ticker",
+        "jsonFieldName": "ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Base Currency",
+        "jsonFieldName": "baseCurrency",
+        "jsonFieldType": "string",
+        "description": "The base pair of the cryptocurrency, e.g. \"btc\" for \"btcusd\"."
+      },
+      {
+        "name": "Quote Currency",
+        "jsonFieldName": "quoteCurrency",
+        "jsonFieldType": "string",
+        "description": "The quote pair of the cryptocurrency, e.g. \"usd\" for \"btcusd\"."
+      },
+      {
+        "name": "Top-of-Book Data",
+        "jsonFieldName": "topOfBookData",
+        "jsonFieldType": "object",
+        "description": "Stores the top-of-book data being returned. See the table below for the fields in this object."
+      },
+      {
+        "name": "Exchange Data",
+        "jsonFieldName": "exchangeData",
+        "jsonFieldType": "object",
+        "description": "The underlying data for each exchange. This will only be returned if the             <b>includeRawExchangeData</b> flag is set to \"true\"."
+      }
+    ],
+    "topOfBookDataTableResponseRows": [
+      {
+        "name": "Quote Timestamp",
+        "jsonFieldName": "quoteTimestamp",
+        "jsonFieldType": "datetime",
+        "description": "The timestamp the last time the quote (bid/ask) data was received from any crypto exchange."
+      },
+      {
+        "name": "Last Sale Timestamp",
+        "jsonFieldName": "lastSaleTimestamp",
+        "jsonFieldType": "datetime",
+        "description": "The timestamp the last time the trade (last/lastSize) data was received from any crypto exchange."
+      },
+      {
+        "name": "Last Price",
+        "jsonFieldName": "lastPrice",
+        "jsonFieldType": "float",
+        "description": "Last price is the last price that was executed on any crypto exchange."
+      },
+      {
+        "name": "Last Size",
+        "jsonFieldName": "lastSize",
+        "jsonFieldType": "float",
+        "description": "The amount of crypto volume done at the last price in the base currency."
+      },
+      {
+        "name": "Last Size Notional",
+        "jsonFieldName": "lastSizeNotional",
+        "jsonFieldType": "float",
+        "description": "The last size done for the asset on the specific date in the quote currency.\n        The notional of the volume traded.\n        <br><br>\n        In mathematical terms:\n        <br>\n<pre>\nlastSizeNotional = lastPrice * lastSize\n</pre>\n    "
+      },
+      {
+        "name": "Last Exchange",
+        "jsonFieldName": "lastExchange",
+        "jsonFieldType": "string",
+        "description": "The full name of the exchange the \"lastPrice\" and \"lastSize\" were executed on."
+      },
+      {
+        "name": "Bid Size",
+        "jsonFieldName": "bidSize",
+        "jsonFieldType": "float",
+        "description": "The amount of shares at the bid price."
+      },
+      {
+        "name": "Bid Price",
+        "jsonFieldName": "bidPrice",
+        "jsonFieldType": "float",
+        "description": "The current bid price."
+      },
+      {
+        "name": "Bid Exchange",
+        "jsonFieldName": "bidExchange",
+        "jsonFieldType": "string",
+        "description": "The full name of the exchange the \"bidPrice\" and \"bidSize\" are located on."
+      },
+      {
+        "name": "Ask Size",
+        "jsonFieldName": "askSize",
+        "jsonFieldType": "float",
+        "description": "The amount of shares at the ask price."
+      },
+      {
+        "name": "Ask Price",
+        "jsonFieldName": "askPrice",
+        "jsonFieldType": "float",
+        "description": "The current ask price."
+      },
+      {
+        "name": "Ask Exchange",
+        "jsonFieldName": "askExchange",
+        "jsonFieldType": "string",
+        "description": "The full name of the exchange the \"askPrice\" and \"askSize\" are located on."
+      }
+    ],
+    "topOfBookTableRequestRows": [
+      {
+        "name": "Tickers",
+        "required": true,
+        "parameterType": "URL",
+        "jsonFieldType": "string",
+        "description": "\n    The ticker(s) associated with the crypto pair(s). Can either be a single string or an array of strings (string[]).\n     Please note: no more than 100 tickers may be requested at this time.\n            "
+      },
+      {
+        "name": "Exchanges",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "exchanges",
+        "jsonFieldType": "string[]",
+        "description": "\nIf you would like to limit the query to a subset of exchanes, pass a comma-separated list of exchanged to select. E.g. \"POLONIEX, BINANCE\".\n            "
+      },
+      {
+        "name": "Include Exchange Data",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "includeRawExchangeData",
+        "jsonFieldType": "boolean",
+        "description": "If True, the endpoint will return all of the underlying exchange data used in the calculation.\n            If this is set to true, there will be a new field called exchangeData for each crypto.             This will contain the exchange-level OHLC for each asset.\n            "
+      }
+    ],
+    "pricesTableResponseRows": [
+      {
+        "name": "Ticker",
+        "jsonFieldName": "ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Base Currency",
+        "jsonFieldName": "baseCurrency",
+        "jsonFieldType": "string",
+        "description": "The base pair of the cryptocurrency, e.g. \"btc\" for \"btcusd\"."
+      },
+      {
+        "name": "Quote Currency",
+        "jsonFieldName": "quoteCurrency",
+        "jsonFieldType": "string",
+        "description": "The quote pair of the cryptocurrency, e.g. \"usd\" for \"btcusd\"."
+      },
+      {
+        "name": "Price Data",
+        "jsonFieldName": "priceData",
+        "jsonFieldType": "object",
+        "description": "Stores the top-of-book data being returned. See the table below for the fields in this object."
+      },
+      {
+        "name": "Exchange Data",
+        "jsonFieldName": "exchangeData",
+        "jsonFieldType": "object",
+        "description": "The underlying data for each exchange. This will only be returned if the             <b>includeRawExchangeData</b> flag is set to \"true\"."
+      }
+    ],
+    "pricesDataTableResponseRows": [
+      {
+        "name": "Date",
+        "jsonFieldName": "date",
+        "jsonFieldType": "datetime",
+        "description": "The datetime this data pertains to. It will be a timestamp dependent upon the resampleFreq             parameter. For example, if resampleFreq=5min, it will be in 5 min increments."
+      },
+      {
+        "name": "Open",
+        "jsonFieldName": "open",
+        "jsonFieldType": "float",
+        "description": "The opening price for the asset on the given date."
+      },
+      {
+        "name": "High",
+        "jsonFieldName": "high",
+        "jsonFieldType": "float",
+        "description": "The high price for the asset on the given date."
+      },
+      {
+        "name": "Low",
+        "jsonFieldName": "low",
+        "jsonFieldType": "float",
+        "description": "The low price for the asset on the given date."
+      },
+      {
+        "name": "Close",
+        "jsonFieldName": "close",
+        "jsonFieldType": "float",
+        "description": "The closing price for the asset on the given date."
+      },
+      {
+        "name": "Trade Done",
+        "jsonFieldName": "tradesDone",
+        "jsonFieldType": "int32",
+        "description": "The number of trades done on the given date."
+      },
+      {
+        "name": "Volume",
+        "jsonFieldName": "volume",
+        "jsonFieldType": "float",
+        "description": "The volume done for the asset on the specific date in the base currency."
+      },
+      {
+        "name": "Volume Notional",
+        "jsonFieldName": "volumeNotional",
+        "jsonFieldType": "float",
+        "description": "The last size done for the asset on the specific date in the quote currency.\n        The volume done for the asset on the specific date in the quote currency.\n        <br><br>\n        In mathematical terms:\n        <br>\n<pre>\nvolumeNotional = close * volume\n</pre>\n    "
+      }
+    ],
+    "pricesTableRequestRows": [
+      {
+        "name": "Tickers",
+        "required": true,
+        "parameterType": "URL",
+        "jsonFieldType": "string",
+        "description": "\n    The ticker(s) associated with the crypto pair(s). Can either be a single string or an array of strings (string[]).     Please note: no more than 100 tickers may be requested at this time.\n            "
+      },
+      {
+        "name": "Exchanges",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "exchanges",
+        "jsonFieldType": "string[]",
+        "description": "\nIf you would like to limit the query to a subset of exchanes, pass a comma-separated list of exchanged to select. E.g. \"POLONIEX, BINANCE\".\n            "
+      },
+      {
+        "name": "Start Date",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "startDate",
+        "jsonFieldType": "datetime",
+        "description": "If startDate or endDate is not null, historical data will be queried. This filter limits             metrics to on or later than the startDate (>=). Parameter must be in YYYY-MM-DD format."
+      },
+      {
+        "name": "End Date",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "endDate",
+        "jsonFieldType": "datetime",
+        "description": "f startDate or endDate is not null, historical data will be queried. This filter limits             metrics to on or less than the endDate (<=). Parameter must be in YYYY-MM-DD format."
+      },
+      {
+        "name": "Resample Freq",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "resampleFreq",
+        "jsonFieldType": "string",
+        "description": "\nThis allows you to set the frequency in which you want data resampled. For example \"1hour\" would return the data where OHLC is calculated on an hourly schedule. The minimum value is \"1min\". Units in minutes (min), hours (hour), and days (day) are accepted. Format is # + (min/hour/dau); e.g. \"15min\", \"4hour\" or \"1day\". If no value is provided, defaults to 5min.\n            "
+      }
+    ],
+    "metaTableResponseRows__occurrence_2": [
+      {
+        "name": "Ticker",
+        "jsonFieldName": "ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Base Currency",
+        "jsonFieldName": "baseCurrency",
+        "jsonFieldType": "string",
+        "description": "The base pair of the cryptocurrency, e.g. \"btc\" for \"btcusd\"."
+      },
+      {
+        "name": "Quote Currency",
+        "jsonFieldName": "quoteCurrency",
+        "jsonFieldType": "string",
+        "description": "The quote pair of the cryptocurrency, e.g. \"usd\" for \"btcusd\"."
+      },
+      {
+        "name": "Name",
+        "jsonFieldName": "name",
+        "jsonFieldType": "string",
+        "description": "Full-length name of the asset."
+      },
+      {
+        "name": "Description",
+        "jsonFieldName": "description",
+        "jsonFieldType": "string",
+        "description": "Long-form descripton of the asset."
+      }
+    ],
+    "metaTableRequestRows__occurrence_2": [
+      {
+        "name": "Tickers",
+        "required": false,
+        "parameterType": "URL",
+        "jsonFieldType": "string",
+        "description": "\n    The ticker(s) associated with the crypto pair(s). Can either be a single string or an array of strings (string[]).     Please note: no more than 100 tickers may be requested at this time.\n    <br><br>\n    If no ticker(s) are passed, returns data for all supported crypto pairs.\n            "
+      }
+    ],
+    "iexTopLastTableResponseRows": [
+      {
+        "name": "Ticker",
+        "jsonFieldName": "ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Timestamp",
+        "jsonFieldName": "timestamp",
+        "jsonFieldType": "datetime",
+        "description": "The timestamp the data was last refresh on."
+      },
+      {
+        "name": "Quote Timestamp",
+        "jsonFieldName": "quoteTimestamp",
+        "jsonFieldType": "datetime",
+        "description": "The timestamp the last time the quote (bid/ask) data was received from IEX. <i>IEX entitlement required</i>"
+      },
+      {
+        "name": "Last Sale Timestamp",
+        "jsonFieldName": "lastSaleTimestamp",
+        "jsonFieldType": "datetime",
+        "description": "The timestamp the last time the trade (last/lastSize) data was received from IEX. <i>IEX entitlement required</i>"
+      },
+      {
+        "name": "last",
+        "jsonFieldName": "last",
+        "jsonFieldType": "float",
+        "description": "Last is the last trade that was executed on IEX. <i>IEX entitlement required</i>"
+      },
+      {
+        "name": "Last Size",
+        "jsonFieldName": "lastSize",
+        "jsonFieldType": "int32",
+        "description": "The amount of shares traded (volume) at the last price on IEX.  <i>IEX entitlement required</i>"
+      },
+      {
+        "name": "Tiingo Last",
+        "jsonFieldName": "tngoLast",
+        "jsonFieldType": "float",
+        "description": "Tiingo Last is either the last price or mid price. The mid price is only used if our algo determines\n                 it is a good proxy for the last price. So if the spread is considered wide by our algo, we do not use it.\n                 Also, after the official exchange print comes in, this value changes to that value.\n                <b>This value is calculated by Tiingo and not provided by IEX</b>."
+      },
+      {
+        "name": "Previous Close",
+        "jsonFieldName": "prevClose",
+        "jsonFieldType": "float",
+        "description": "Previous day's closing price of the security.This can be from any of the exchanges, NYSE, NASDAQ, IEX, etc."
+      },
+      {
+        "name": "Open",
+        "jsonFieldName": "open",
+        "jsonFieldType": "float",
+        "description": "The opening price of the asset on the current day\n                 <b>This value is calculated by Tiingo and not provided by IEX.</b>"
+      },
+      {
+        "name": "High",
+        "jsonFieldName": "high",
+        "jsonFieldType": "float",
+        "description": "The high price of the asset on the current day\n                 <b>This value is calculated by Tiingo and not provided by IEX.</b>"
+      },
+      {
+        "name": "Low",
+        "jsonFieldName": "low",
+        "jsonFieldType": "float",
+        "description": "The low price of the asset on the current day\n                 <b>This value is calculated by Tiingo and not provided by IEX.</b>"
+      },
+      {
+        "name": "Mid",
+        "jsonFieldName": "mid",
+        "jsonFieldType": "float",
+        "description": "The mid price of the current timestamp when both \"bidPrice\" and \"askPrice\" are not-null.\nIn mathematical terms:\n        <br>\n<pre>\nmid = (bidPrice + askPrice)/2.0\n</pre>\n                 <b>This value is calculated by Tiingo and not provided by IEX.</b>"
+      },
+      {
+        "name": "Volume",
+        "jsonFieldName": "volume",
+        "jsonFieldType": "int64",
+        "description": "Volume will be IEX Volume throughout the day, but once the official closing price comes in, volume will             reflect the volume done on the entire day across all exchanges. This field is available for convenience."
+      },
+      {
+        "name": "Bid Size",
+        "jsonFieldName": "bidSize",
+        "jsonFieldType": "float",
+        "description": "The amount of shares at the bid price.  <i>IEX entitlement required</i>"
+      },
+      {
+        "name": "Bid Price",
+        "jsonFieldName": "bidPrice",
+        "jsonFieldType": "float",
+        "description": "The current bid price.  <i>IEX entitlement required</i>"
+      },
+      {
+        "name": "Ask Size",
+        "jsonFieldName": "askSize",
+        "jsonFieldType": "float",
+        "description": "The amount of shares at the ask price.  <i>IEX entitlement required</i>"
+      },
+      {
+        "name": "Ask Price",
+        "jsonFieldName": "askPrice",
+        "jsonFieldType": "float",
+        "description": "The current ask price.  <i>IEX entitlement required</i>"
+      }
+    ],
+    "iexTopLastTableRequestRows": [
+      {
+        "name": "Ticker",
+        "required": false,
+        "parameterType": "URL or GET",
+        "jsonFieldName": "tickers",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      }
+    ],
+    "iexHistoricalPricesTableResponseRows": [
+      {
+        "name": "Date",
+        "jsonFieldName": "date",
+        "jsonFieldType": "datetime",
+        "description": "The date this data pertains to."
+      },
+      {
+        "name": "Open",
+        "jsonFieldName": "open",
+        "jsonFieldType": "float",
+        "description": "The opening price for the asset on the given date."
+      },
+      {
+        "name": "High",
+        "jsonFieldName": "high",
+        "jsonFieldType": "float",
+        "description": "The high price for the asset on the given date."
+      },
+      {
+        "name": "Low",
+        "jsonFieldName": "low",
+        "jsonFieldType": "float",
+        "description": "The low price for the asset on the given date."
+      },
+      {
+        "name": "Close",
+        "jsonFieldName": "close",
+        "jsonFieldType": "float",
+        "description": "The closing price for the asset on the given date."
+      },
+      {
+        "name": "Volume",
+        "jsonFieldName": "volume",
+        "jsonFieldType": "int64",
+        "description": "The number of shares traded on IEX only. <b>This value will only be exposed if explicitly             passed to the \"columns\" request parameter.</b> E.g. ?columns=open,high,low,close,<b>volume</b>"
+      }
+    ],
+    "boatsTopLastTableResponseRows": [
+      {
+        "name": "Ticker",
+        "jsonFieldName": "ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Timestamp",
+        "jsonFieldName": "timestamp",
+        "jsonFieldType": "datetime",
+        "description": "The timestamp the data was last refreshed on."
+      },
+      {
+        "name": "Quote Timestamp",
+        "jsonFieldName": "quoteTimestamp",
+        "jsonFieldType": "datetime",
+        "description": "The timestamp of the last quote (bid/ask) update from BOATS."
+      },
+      {
+        "name": "Last Sale Timestamp",
+        "jsonFieldName": "lastSaleTimestamp",
+        "jsonFieldType": "datetime",
+        "description": "The timestamp of the last trade (last/lastSize) update from BOATS."
+      },
+      {
+        "name": "last",
+        "jsonFieldName": "last",
+        "jsonFieldType": "float",
+        "description": "Last is the last trade that was executed on BOATS."
+      },
+      {
+        "name": "Last Size",
+        "jsonFieldName": "lastSize",
+        "jsonFieldType": "int32",
+        "description": "The amount of shares traded (volume) at the last price on BOATS."
+      },
+      {
+        "name": "Tiingo Last",
+        "jsonFieldName": "tngoLast",
+        "jsonFieldType": "float",
+        "description": "Tiingo Last is either the last price or mid price. The mid price is only used if our algo determines\n                 it is a good proxy for the last price. So if the spread is considered wide by our algo, we do not use it.\n                 Also, after the official exchange print comes in, this value changes to that value.\n                <b>This value is calculated by Tiingo and not provided by BOATS</b>."
+      },
+      {
+        "name": "Previous Close",
+        "jsonFieldName": "prevClose",
+        "jsonFieldType": "float",
+        "description": "Previous day's closing price of the security. This can be from any of the exchanges, NYSE, NASDAQ, IEX, etc."
+      },
+      {
+        "name": "Open",
+        "jsonFieldName": "open",
+        "jsonFieldType": "float",
+        "description": "The opening price of the asset on the current day.\n                 <b>This value is calculated by Tiingo and not provided by BOATS.</b>"
+      },
+      {
+        "name": "High",
+        "jsonFieldName": "high",
+        "jsonFieldType": "float",
+        "description": "The high price of the asset on the current day.\n                 <b>This value is calculated by Tiingo and not provided by BOATS.</b>"
+      },
+      {
+        "name": "Low",
+        "jsonFieldName": "low",
+        "jsonFieldType": "float",
+        "description": "The low price of the asset on the current day.\n                 <b>This value is calculated by Tiingo and not provided by BOATS.</b>"
+      },
+      {
+        "name": "Mid",
+        "jsonFieldName": "mid",
+        "jsonFieldType": "float",
+        "description": "The mid price of the current timestamp when both \"bidPrice\" and \"askPrice\" are not-null.\nIn mathematical terms:\n        <br>\n<pre>\nmid = (bidPrice + askPrice)/2.0\n</pre>\n                 <b>This value is calculated by Tiingo and not provided by BOATS.</b>"
+      },
+      {
+        "name": "Volume",
+        "jsonFieldName": "volume",
+        "jsonFieldType": "int64",
+        "description": "Live BOATS session volume for the ticker. Volume is never delayed on the BOATS REST endpoint."
+      },
+      {
+        "name": "Bid Size",
+        "jsonFieldName": "bidSize",
+        "jsonFieldType": "float",
+        "description": "The amount of shares at the bid price on BOATS."
+      },
+      {
+        "name": "Bid Price",
+        "jsonFieldName": "bidPrice",
+        "jsonFieldType": "float",
+        "description": "The current bid price on BOATS."
+      },
+      {
+        "name": "Ask Size",
+        "jsonFieldName": "askSize",
+        "jsonFieldType": "float",
+        "description": "The amount of shares at the ask price on BOATS."
+      },
+      {
+        "name": "Ask Price",
+        "jsonFieldName": "askPrice",
+        "jsonFieldType": "float",
+        "description": "The current ask price on BOATS."
+      }
+    ],
+    "boatsTopLastTableRequestRows": [
+      {
+        "name": "Ticker",
+        "required": false,
+        "parameterType": "URL or GET",
+        "jsonFieldName": "tickers",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset. Pass a comma-separated list for multiple tickers (for example aapl,spy)."
+      }
+    ],
+    "boatsHistoricalPricesTableResponseRows": [
+      {
+        "name": "Date",
+        "jsonFieldName": "date",
+        "jsonFieldType": "datetime",
+        "description": "The date this data pertains to."
+      },
+      {
+        "name": "Open",
+        "jsonFieldName": "open",
+        "jsonFieldType": "float",
+        "description": "The opening price for the asset on the given date."
+      },
+      {
+        "name": "High",
+        "jsonFieldName": "high",
+        "jsonFieldType": "float",
+        "description": "The high price for the asset on the given date."
+      },
+      {
+        "name": "Low",
+        "jsonFieldName": "low",
+        "jsonFieldType": "float",
+        "description": "The low price for the asset on the given date."
+      },
+      {
+        "name": "Close",
+        "jsonFieldName": "close",
+        "jsonFieldType": "float",
+        "description": "The closing price for the asset on the given date."
+      },
+      {
+        "name": "Volume",
+        "jsonFieldName": "volume",
+        "jsonFieldType": "int64",
+        "description": "The number of shares traded on BOATS only. <b>This value will only be exposed if explicitly             passed to the \"columns\" request parameter.</b> E.g. ?columns=open,high,low,close,<b>volume</b>"
+      }
+    ],
+    "equityRealtimeTopLastTableResponseRows": [
+      {
+        "name": "Ticker",
+        "jsonFieldName": "ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Timestamp",
+        "jsonFieldName": "timestamp",
+        "jsonFieldType": "datetime",
+        "description": "The timestamp the data was last refresh on."
+      },
+      {
+        "name": "Tiingo Last",
+        "jsonFieldName": "tngoLast",
+        "jsonFieldType": "float",
+        "description": "Tiingo Last is either the last price or mid price. The mid price is only used if our algo determines\n                 it is a good proxy for the last price. So if the spread is considered wide by our algo, we do not use it.\n                 Also, after the official exchange print comes in, this value changes to that value.\n                <b>This value is calculated by Tiingo from the consolidated equity feed</b>."
+      },
+      {
+        "name": "Liquidity Reference Price",
+        "jsonFieldName": "lqRefPrice",
+        "jsonFieldType": "float",
+        "description": "The same as tngoLast - mirrored for convenience/consistency as it's better-named for its role in the lq spread metrics."
+      },
+      {
+        "name": "Previous Close",
+        "jsonFieldName": "prevClose",
+        "jsonFieldType": "float",
+        "description": "Previous day's closing price of the security. This can come from the supported consolidated equity market data sources."
+      },
+      {
+        "name": "Open",
+        "jsonFieldName": "open",
+        "jsonFieldType": "float",
+        "description": "The opening price of the asset on the current day\n                 <b>This value is calculated by Tiingo from the consolidated equity feed.</b>"
+      },
+      {
+        "name": "High",
+        "jsonFieldName": "high",
+        "jsonFieldType": "float",
+        "description": "The high price of the asset on the current day\n                 <b>This value is calculated by Tiingo from the consolidated equity feed.</b>"
+      },
+      {
+        "name": "Low",
+        "jsonFieldName": "low",
+        "jsonFieldType": "float",
+        "description": "The low price of the asset on the current day\n                 <b>This value is calculated by Tiingo from the consolidated equity feed.</b>"
+      },
+      {
+        "name": "Volume",
+        "jsonFieldName": "volume",
+        "jsonFieldType": "int64",
+        "description": "Volume will be consolidated intraday volume throughout the day. Once the official closing price comes in, volume may reflect the full official trading day. This field is available for convenience."
+      },
+      {
+        "name": "Liquidity Spread",
+        "jsonFieldName": "lqSpread",
+        "jsonFieldType": "float",
+        "description": "The relative lqBid/Ask spread component of the liquidity risk metric, expressed as a decimal (e.g. 0.04 means 4%). Corresponds to <b>lqSpread</b> in the thresholdLevel 4 websocket liquidity risk metric."
+      },
+      {
+        "name": "Liquidity Bid Price",
+        "jsonFieldName": "lqBidPrice",
+        "jsonFieldType": "float",
+        "description": "The bid price component of the liquidity risk metric. Corresponds to <b>lqBidPrice</b> in the thresholdLevel 4 websocket liquidity risk metric."
+      },
+      {
+        "name": "Liquidity Bid Size",
+        "jsonFieldName": "lqBidSize",
+        "jsonFieldType": "int64",
+        "description": "The bid size component of the liquidity risk metric in shares. Corresponds to <b>lqBidSize</b> in the thresholdLevel 4 websocket liquidity risk metric."
+      },
+      {
+        "name": "Liquidity Ask Price",
+        "jsonFieldName": "lqAskPrice",
+        "jsonFieldType": "float",
+        "description": "The ask price component of the liquidity risk metric. Corresponds to <b>lqAskPrice</b> in the thresholdLevel 4 websocket liquidity risk metric."
+      },
+      {
+        "name": "Liquidity Ask Size",
+        "jsonFieldName": "lqAskSize",
+        "jsonFieldType": "int64",
+        "description": "The ask size component of the liquidity risk metric in shares. Corresponds to <b>lqAskSize</b> in the thresholdLevel 4 websocket liquidity risk metric."
+      }
+    ],
+    "equityRealtimeTopLastTableRequestRows": [
+      {
+        "name": "Ticker",
+        "required": false,
+        "parameterType": "URL or GET",
+        "jsonFieldName": "tickers",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      }
+    ],
+    "equityRealtimeHistoricalPricesTableResponseRows": [
+      {
+        "name": "Date",
+        "jsonFieldName": "date",
+        "jsonFieldType": "datetime",
+        "description": "The date this data pertains to."
+      },
+      {
+        "name": "Open",
+        "jsonFieldName": "open",
+        "jsonFieldType": "float",
+        "description": "The opening price for the asset on the given date."
+      },
+      {
+        "name": "High",
+        "jsonFieldName": "high",
+        "jsonFieldType": "float",
+        "description": "The high price for the asset on the given date."
+      },
+      {
+        "name": "Low",
+        "jsonFieldName": "low",
+        "jsonFieldType": "float",
+        "description": "The low price for the asset on the given date."
+      },
+      {
+        "name": "Close",
+        "jsonFieldName": "close",
+        "jsonFieldType": "float",
+        "description": "The closing price for the asset on the given date."
+      },
+      {
+        "name": "Volume",
+        "jsonFieldName": "volume",
+        "jsonFieldType": "int64",
+        "description": "The consolidated number of shares traded for the interval. <b>This value will only be exposed if explicitly             passed to the \"columns\" request parameter.</b> E.g. ?columns=open,high,low,close,<b>volume</b>"
+      }
+    ],
+    "cryptoTopLastWebsocketTableResponseRows": [
+      {
+        "name": "Service code",
+        "jsonFieldName": "service",
+        "jsonFieldType": "string",
+        "description": "An identifier telling you this is crypto data. The value returned by this will always be \"crypto_data\"."
+      },
+      {
+        "name": "Message Type",
+        "jsonFieldName": "messageType",
+        "jsonFieldType": "char",
+        "description": "A value telling you what kind of data packet this is from our crypto feed.             Will always return \"A\" meaning new price quotes."
+      },
+      {
+        "name": "Crypto TOP/Price Data",
+        "jsonFieldName": "data",
+        "jsonFieldType": "array",
+        "description": "An array containing the crypto data. See the tables below to see the fields returned in the\n            array depending if the message is a \"Trade\" or \"TOP\" Update message."
+      }
+    ],
+    "cryptoLastWebsocketTableIndexRows": [
+      {
+        "name": "Update Message Type",
+        "jsonFieldType": "char",
+        "description": "Communicates what type of         price update this is. Will always be \"T\" for last trade message and \"Q\" for top-of-book update message."
+      },
+      {
+        "name": "Ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Date",
+        "jsonFieldType": "datetime",
+        "description": "A string representing the datetime         this trade quote came in."
+      },
+      {
+        "name": "Exchange",
+        "jsonFieldType": "string",
+        "description": "The exchange the trade was done one."
+      },
+      {
+        "name": "Last Size",
+        "jsonFieldType": "float",
+        "description": "The amount of crypto volume done at the last price in the base currency."
+      },
+      {
+        "name": "Last Price",
+        "jsonFieldType": "float",
+        "description": "The last price the last trade was executed at."
+      }
+    ],
+    "cryptoTopWebsocketTableIndexRows": [
+      {
+        "name": "Update Message Type",
+        "jsonFieldType": "char",
+        "description": "Communicates what type of         price update this is. Will always be \"T\" for last trade message and \"Q\" for top-of-book update message."
+      },
+      {
+        "name": "Ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Date",
+        "jsonFieldType": "datetime",
+        "description": "A string representing the datetime         this trade quote came in."
+      },
+      {
+        "name": "Exchange",
+        "jsonFieldType": "string",
+        "description": "The exchange the top-of-book update is for."
+      },
+      {
+        "name": "Bid Size",
+        "jsonFieldType": "float",
+        "description": "The amount of crypto at the bid price in the base currency."
+      },
+      {
+        "name": "Bid Price",
+        "jsonFieldType": "float",
+        "description": "The current highest bid price."
+      },
+      {
+        "name": "Mid Price",
+        "jsonFieldType": "float",
+        "description": "The mid price of the current timestamp when both \"bidPrice\" and \"askPrice\" are not-null.\nIn mathematical terms:\n        <br>\n<pre>\nmid = (bidPrice + askPrice)/2.0\n</pre>"
+      },
+      {
+        "name": "Ask Size",
+        "jsonFieldType": "float",
+        "description": "The amount of crypto at the ask price in the base currency."
+      },
+      {
+        "name": "Ask Price",
+        "jsonFieldType": "float",
+        "description": "The current lowest ask price."
+      }
+    ],
+    "iexTopLastWebsocketTableResponseRows": [
+      {
+        "name": "Service code",
+        "jsonFieldName": "service",
+        "jsonFieldType": "string",
+        "description": "\tAn identifier telling you this is IEX data. The value returned by this will always be \"iex\"."
+      },
+      {
+        "name": "Message Type",
+        "jsonFieldName": "messageType",
+        "jsonFieldType": "char",
+        "description": "A value telling you what kind of data packet this is from our IEX feed.             Will always return \"A\" meaning new price quotes."
+      },
+      {
+        "name": "IEX TOP/Price Data",
+        "jsonFieldName": "data",
+        "jsonFieldType": "array",
+        "description": "An array containing the IEX data. See the tables below to see the fields returned in the\n            array depending if the message is a \"Trade\" or \"TOP\" Update message."
+      }
+    ],
+    "iexReferenceWebsocketTableResponseRows": [
+      {
+        "name": "Service code",
+        "jsonFieldName": "service",
+        "jsonFieldType": "string",
+        "description": "\tAn identifier telling you this is IEX data. The value returned by this will always be \"iex\"."
+      },
+      {
+        "name": "Message Type",
+        "jsonFieldName": "messageType",
+        "jsonFieldType": "char",
+        "description": "A value telling you what kind of data packet this is from our IEX feed.             Will always return \"A\" meaning new price quotes."
+      },
+      {
+        "name": "Tiingo Reference Price Data",
+        "jsonFieldName": "data",
+        "jsonFieldType": "array",
+        "description": "An array containing the reference data. See the tables below to see the fields returned in the\n            array."
+      }
+    ],
+    "tiingoReferenceWebsocketTableIndexRows": [
+      {
+        "name": "Date",
+        "jsonFieldType": "datetime",
+        "description": "A string representing the datetime         this quote or trade came in. This is the timestamp reported by IEX in JSON ISO Format."
+      },
+      {
+        "name": "Ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Reference Price",
+        "jsonFieldType": "float",
+        "description": "The rerence price calculated using an internal algorithm to determine a fair reference price for the asset based on underlying quote and trade messages. This can be used as you would use <b>tngoLast</b> in the REST API."
+      }
+    ],
+    "iexTopLastWebsocketTableIndexRows": [
+      {
+        "name": "Update Message Type",
+        "jsonFieldType": "char",
+        "description": "Communicates what type of                 price update this is. Will always be \"T\" for last trade message, \"Q\" for top-of-book update message,                 and \"B\" for trade break messages."
+      },
+      {
+        "name": "Date",
+        "jsonFieldType": "datetime",
+        "description": "A string representing the datetime         this quote or trade came in. This is the timestamp reported by IEX in JSON ISO Format."
+      },
+      {
+        "name": "Nanoseconds",
+        "jsonFieldType": "int64",
+        "description": "An integer representing         the number of nanoseconds since POSIX (Epoch) time UTC."
+      },
+      {
+        "name": "Ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Bid Size",
+        "jsonFieldType": "int32",
+        "description": "The number shares at the bid price. <br> Only available for Quote updates, null otherwise."
+      },
+      {
+        "name": "Bid Price",
+        "jsonFieldType": "float",
+        "description": "The current highest bid price. <br> Only available for Quote updates, null otherwise."
+      },
+      {
+        "name": "Mid Price",
+        "jsonFieldType": "float",
+        "description": "The mid price of the current timestamp when both \"bidPrice\" and \"askPrice\" are not-null.\nIn mathematical terms:\n        <br>\n<pre>\nmid = (bidPrice + askPrice)/2.0\n</pre>\n<b>This value is calculated by Tiingo and not provided by IEX.</b>\n<br><br>\n Only available for Quote updates, null otherwise."
+      },
+      {
+        "name": "Ask Price",
+        "jsonFieldType": "float",
+        "description": "The current lowest ask price. <br> Only available for Quote updates, null otherwise."
+      },
+      {
+        "name": "Ask Size",
+        "jsonFieldType": "int32",
+        "description": "The number of shares at the ask price. <br> Only available for Quote updates, null otherwise."
+      },
+      {
+        "name": "Last Price",
+        "jsonFieldType": "float",
+        "description": "The last price the last trade was executed at. <br> Only available for Trade and Break updates, null otherwise."
+      },
+      {
+        "name": "Last Size",
+        "jsonFieldType": "int32",
+        "description": "The amount of shares (volume) traded at the last price. <br> Only available for Trade             and Break updates, null otherwise."
+      },
+      {
+        "name": "Halted",
+        "jsonFieldType": "int32",
+        "description": "1 if the security/asset is halted, 0 if it is not halted (this comes from IEX)."
+      },
+      {
+        "name": "After Hours",
+        "jsonFieldType": "int32",
+        "description": "1 if the data is after hours, 0 if the update was during market hours (this comes from IEX)."
+      },
+      {
+        "name": "Intermarket Sweep Order (ISO)",
+        "jsonFieldType": "int32",
+        "description": "1 if the order is an intermarket sweep order (ISO) sweeping order, 0 if its a non-ISO order                 (this comes from IEX)."
+      },
+      {
+        "name": "Oddlot",
+        "jsonFieldType": "int32",
+        "description": "\t1 if the trade is an odd lot, 0 if the trade is a round or mixed lot (this comes from IEX).            <br> Only available for Trade updates, null otherwise."
+      },
+      {
+        "name": "NMS Rule 611",
+        "jsonFieldType": "int32",
+        "description": "\t1 if the trade is not subject to NMS Rule 611 (trade through), 0 if the trade is subject             to Rule NMS 611 (this comes from IEX). <br> Only available for Trade updates, null otherwise."
+      }
+    ],
+    "boatsTopLastWebsocketTableResponseRows": [
+      {
+        "name": "Service code",
+        "jsonFieldName": "service",
+        "jsonFieldType": "string",
+        "description": "\tAn identifier telling you this is BOATS data. The value returned by this will always be \"boats\"."
+      },
+      {
+        "name": "Message Type",
+        "jsonFieldName": "messageType",
+        "jsonFieldType": "char",
+        "description": "A value telling you what kind of data packet this is from our BOATS feed.             Will always return \"A\" meaning new price quotes."
+      },
+      {
+        "name": "BOATS TOP/Price Data",
+        "jsonFieldName": "data",
+        "jsonFieldType": "array",
+        "description": "An array containing the BOATS data. Quote (\"Q\") and Trade (\"T\") / Break (\"B\") updates\n            use different compact layouts \u2014 see the tables below. This is a venue-native firehose shape,\n            not the longer IEX /equities array."
+      }
+    ],
+    "boatsReferenceWebsocketTableResponseRows": [
+      {
+        "name": "Service code",
+        "jsonFieldName": "service",
+        "jsonFieldType": "string",
+        "description": "\tAn identifier telling you this is BOATS data. The value returned by this will always be \"boats\"."
+      },
+      {
+        "name": "Message Type",
+        "jsonFieldName": "messageType",
+        "jsonFieldType": "char",
+        "description": "A value telling you what kind of data packet this is from our BOATS feed.             Will always return \"A\" meaning new price quotes."
+      },
+      {
+        "name": "Tiingo Reference Price Data",
+        "jsonFieldName": "data",
+        "jsonFieldType": "array",
+        "description": "An array containing the reference data. See the tables below to see the fields returned in the\n            array."
+      }
+    ],
+    "boatsCompactWebsocketTableIndexRows": [
+      {
+        "name": "Date",
+        "jsonFieldType": "datetime",
+        "description": "A string representing the datetime         this quote or trade came in. This is the timestamp reported by BOATS in JSON ISO Format."
+      },
+      {
+        "name": "Ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Reference Price",
+        "jsonFieldType": "float",
+        "description": "The rerence price calculated using an internal algorithm to determine a fair reference price for the asset based on underlying quote and trade messages. This can be used as you would use <b>tngoLast</b> in the REST API."
+      }
+    ],
+    "boatsQuoteWebsocketTableIndexRows": [
+      {
+        "name": "Update Message Type",
+        "jsonFieldType": "char",
+        "description": "Communicates what type of price update this is. Always \"Q\" for top-of-book quote updates."
+      },
+      {
+        "name": "Date",
+        "jsonFieldType": "datetime",
+        "description": "A string representing the datetime this quote came in. This is the timestamp reported by BOATS in JSON ISO Format."
+      },
+      {
+        "name": "Nanoseconds",
+        "jsonFieldType": "int64",
+        "description": "An integer representing the number of nanoseconds since POSIX (Epoch) time UTC."
+      },
+      {
+        "name": "Ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Bid Size",
+        "jsonFieldType": "int32",
+        "description": "The number of shares at the bid price."
+      },
+      {
+        "name": "Bid Price",
+        "jsonFieldType": "float",
+        "description": "The current highest bid price."
+      },
+      {
+        "name": "Mid Price",
+        "jsonFieldType": "float",
+        "description": "The mid price when both bidPrice and askPrice are positive.\nIn mathematical terms:\n        <br>\n<pre>\nmid = (bidPrice + askPrice)/2.0\n</pre>\n<b>This value is calculated by Tiingo and not provided by BOATS.</b>\n<br>\nNull when either side is missing or non-positive (for example a one-sided book)."
+      },
+      {
+        "name": "Ask Price",
+        "jsonFieldType": "float",
+        "description": "The current lowest ask price."
+      },
+      {
+        "name": "Ask Size",
+        "jsonFieldType": "int32",
+        "description": "The number of shares at the ask price."
+      }
+    ],
+    "boatsTradeWebsocketTableIndexRows": [
+      {
+        "name": "Update Message Type",
+        "jsonFieldType": "char",
+        "description": "Communicates what type of price update this is. \"T\" for last trade, \"B\" for trade break."
+      },
+      {
+        "name": "Date",
+        "jsonFieldType": "datetime",
+        "description": "A string representing the datetime this trade came in. This is the timestamp reported by BOATS in JSON ISO Format."
+      },
+      {
+        "name": "Nanoseconds",
+        "jsonFieldType": "int64",
+        "description": "An integer representing the number of nanoseconds since POSIX (Epoch) time UTC."
+      },
+      {
+        "name": "Ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Last Price",
+        "jsonFieldType": "float",
+        "description": "The price at which the last trade was executed."
+      },
+      {
+        "name": "Last Size",
+        "jsonFieldType": "int32",
+        "description": "The amount of shares (volume) traded at the last price."
+      },
+      {
+        "name": "Sale Condition 1",
+        "jsonFieldType": "char",
+        "description": "The first MEMOIR Last Sale sale-condition character from BOATS.\n            Whitespace-padded venue slots are returned as an empty string \"\". Commonly \"@\" for a regular sale."
+      },
+      {
+        "name": "Sale Condition 2",
+        "jsonFieldType": "char",
+        "description": "The second MEMOIR Last Sale sale-condition character from BOATS.\n            \"F\" indicates an Intermarket Sweep Order (ISO) / trade-through exemption. Unused positions are \"\"."
+      },
+      {
+        "name": "Sale Condition 3",
+        "jsonFieldType": "char",
+        "description": "The third MEMOIR Last Sale sale-condition character from BOATS.\n            \"T\" indicates a Form T / extended-hours trade. Unused positions are \"\"."
+      },
+      {
+        "name": "Sale Condition 4",
+        "jsonFieldType": "char",
+        "description": "The fourth MEMOIR Last Sale sale-condition character from BOATS.\n            Notable values include \"I\" (odd lot), \"H\" (price variation), and \"X\" (cross / periodic auction).\n            \"H\" and \"X\" are kept distinct so clients do not lose that MEMOIR distinction. Unused positions are \"\"."
+      }
+    ],
+    "consolidatedReferenceWebsocketTableResponseRows": [
+      {
+        "name": "Service code",
+        "jsonFieldName": "service",
+        "jsonFieldType": "string",
+        "description": "An identifier telling you this is consolidated equity data. The value returned by this will always be \"cons\"."
+      },
+      {
+        "name": "Message Type",
+        "jsonFieldName": "messageType",
+        "jsonFieldType": "char",
+        "description": "A value telling you what kind of data packet this is. Will always return \"A\" meaning new price quotes."
+      },
+      {
+        "name": "Consolidated Reference Price Data",
+        "jsonFieldName": "data",
+        "jsonFieldType": "array",
+        "description": "An array containing the consolidated reference price data. See the table below for the fields returned in the array."
+      }
+    ],
+    "consolidatedDerivedTopWebsocketTableResponseRows": [
+      {
+        "name": "Service code",
+        "jsonFieldName": "service",
+        "jsonFieldType": "string",
+        "description": "An identifier telling you this is consolidated equity data. The value returned by this will always be \"cons\"."
+      },
+      {
+        "name": "Message Type",
+        "jsonFieldName": "messageType",
+        "jsonFieldType": "char",
+        "description": "A value telling you what kind of data packet this is. Will always return \"A\" meaning a new liquidity risk metric update."
+      },
+      {
+        "name": "Consolidated Liquidity Risk Metric Data",
+        "jsonFieldName": "data",
+        "jsonFieldType": "array",
+        "description": "An array containing the statistical liquidity risk metric data. See the table below for the fields returned in the array."
+      }
+    ],
+    "consolidatedReferenceWebsocketTableIndexRows": [
+      {
+        "name": "Date",
+        "jsonFieldType": "datetime",
+        "description": "A string representing the datetime this reference price update was published, in JSON ISO format."
+      },
+      {
+        "name": "Ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Reference Price",
+        "jsonFieldType": "float",
+        "description": "Tiingo's consolidated reference price for the asset. This is calculated from validated consolidated quote mids or trade prints across enabled equity venues and corresponds to <b>tngoLast</b> in the REST API."
+      }
+    ],
+    "consolidatedDerivedTopWebsocketTableIndexRows": [
+      {
+        "name": "Date",
+        "jsonFieldType": "datetime",
+        "description": "A string representing the datetime this liquidity risk metric update was published, in JSON ISO format."
+      },
+      {
+        "name": "Ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Liquidity Spread",
+        "jsonFieldType": "float",
+        "description": "The relative spread width component of the liquidity risk metric, expressed as a decimal where 0.04 means 4%. Corresponds to <b>lqSpread</b> in the REST API."
+      },
+      {
+        "name": "Liquidity Bid Size",
+        "jsonFieldType": "int32",
+        "description": "The bid size component of the liquidity risk metric in shares. Corresponds to <b>lqBidSize</b> in the REST API."
+      },
+      {
+        "name": "Liquidity Bid Price",
+        "jsonFieldType": "float",
+        "description": "The bid price component of the liquidity risk metric. Corresponds to <b>lqBidPrice</b> in the REST API."
+      },
+      {
+        "name": "Reference Price",
+        "jsonFieldType": "float",
+        "description": "The reference price used as the center of the liquidity risk metric. This is normally the threshold-level 6 reference price (<b>tngoLast</b>) when available."
+      },
+      {
+        "name": "Liquidity Ask Price",
+        "jsonFieldType": "float",
+        "description": "The ask price component of the liquidity risk metric. Corresponds to <b>lqAskPrice</b> in the REST API."
+      },
+      {
+        "name": "Liquidity Ask Size",
+        "jsonFieldType": "int32",
+        "description": "The ask size component of the liquidity risk metric in shares. Corresponds to <b>lqAskSize</b> in the REST API."
+      }
+    ],
+    "iexTopLastTableResponseRows__occurrence_2": [
+      {
+        "name": "Ticker",
+        "jsonFieldName": "ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Timestamp",
+        "jsonFieldName": "quoteTimestamp",
+        "jsonFieldType": "datetime",
+        "description": "The timestamp the data was last refresh on."
+      },
+      {
+        "name": "Mid Price",
+        "jsonFieldName": "midPrice",
+        "jsonFieldType": "float",
+        "description": "The mid price of the current timestamp when both \"bidPrice\" and \"askPrice\" are not-null.\nIn mathematical terms:\n        <br>\n<pre>\nmidPrice = (bidPrice + askPrice)/2.0\n</pre>"
+      },
+      {
+        "name": "Bid Size",
+        "jsonFieldName": "bidSize",
+        "jsonFieldType": "float",
+        "description": "The amount of units at the bid price."
+      },
+      {
+        "name": "Bid Price",
+        "jsonFieldName": "bidPrice",
+        "jsonFieldType": "float",
+        "description": "The current bid price."
+      },
+      {
+        "name": "Ask Size",
+        "jsonFieldName": "askSize",
+        "jsonFieldType": "float",
+        "description": "The amount of units at the ask price."
+      },
+      {
+        "name": "Ask Price",
+        "jsonFieldName": "askPrice",
+        "jsonFieldType": "float",
+        "description": "The current ask price."
+      }
+    ],
+    "iexTopLastTableRequestRows__occurrence_2": [
+      {
+        "name": "Ticker",
+        "required": false,
+        "parameterType": "URL or GET",
+        "jsonFieldName": "tickers",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      }
+    ],
+    "iexHistoricalPricesTableResponseRows__occurrence_2": [
+      {
+        "name": "Date",
+        "jsonFieldName": "date",
+        "jsonFieldType": "datetime",
+        "description": "The date this data pertains to."
+      },
+      {
+        "name": "Ticker",
+        "jsonFieldName": "ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Open",
+        "jsonFieldName": "open",
+        "jsonFieldType": "float",
+        "description": "The opening price for the asset on the given date."
+      },
+      {
+        "name": "High",
+        "jsonFieldName": "high",
+        "jsonFieldType": "float",
+        "description": "The high price for the asset on the given date."
+      },
+      {
+        "name": "Low",
+        "jsonFieldName": "low",
+        "jsonFieldType": "float",
+        "description": "The low price for the asset on the given date."
+      },
+      {
+        "name": "Close",
+        "jsonFieldName": "close",
+        "jsonFieldType": "float",
+        "description": "The closing price for the asset on the given date."
+      }
+    ],
+    "iexTopLastWebsocketTableResponseRows__occurrence_2": [
+      {
+        "name": "Service code",
+        "jsonFieldName": "service",
+        "jsonFieldType": "string",
+        "description": "\tAn identifier telling you this is FX data. The value returned by this will always be \"fx\"."
+      },
+      {
+        "name": "Message Type",
+        "jsonFieldName": "messageType",
+        "jsonFieldType": "char",
+        "description": "A value telling you what kind of data packet this is from our FX feed.             Will always return \"A\" meaning new price quotes."
+      },
+      {
+        "name": "FX TOP/Price Data",
+        "jsonFieldName": "data",
+        "jsonFieldType": "array",
+        "description": "An array containing the FX data. See the tables below to see the fields returned in the\n            array depending if the message is a \"Trade\" or \"TOP\" Update message."
+      }
+    ],
+    "iexTopLastWebsocketTableIndexRows__occurrence_2": [
+      {
+        "name": "Update Message Type",
+        "jsonFieldType": "char",
+        "description": "Communicates what type of                 price update this is. Will always be \"Q\" for top-of-book update message."
+      },
+      {
+        "name": "Ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Date",
+        "jsonFieldType": "datetime",
+        "description": "A string representing the datetime         this quote or trade came in. This is reported in JSON ISO Format."
+      },
+      {
+        "name": "Bid Size",
+        "jsonFieldType": "float",
+        "description": "The number shares at the bid price."
+      },
+      {
+        "name": "Bid Price",
+        "jsonFieldType": "float",
+        "description": "The current highest bid price."
+      },
+      {
+        "name": "Mid Price",
+        "jsonFieldType": "float",
+        "description": "The mid price of the current timestamp when both \"bidPrice\" and \"askPrice\" are not-null.\nIn mathematical terms:\n        <br>\n<pre>\nmid = (bidPrice + askPrice)/2.0\n</pre>"
+      },
+      {
+        "name": "Ask Size",
+        "jsonFieldType": "float",
+        "description": "The number of units at the ask price."
+      },
+      {
+        "name": "Ask Price",
+        "jsonFieldType": "float",
+        "description": "The current lowest ask price."
+      }
+    ],
+    "searchTableResponseRows": [
+      {
+        "name": "Ticker",
+        "jsonFieldName": "ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker of the given asset."
+      },
+      {
+        "name": "Name",
+        "jsonFieldName": "name",
+        "jsonFieldType": "string",
+        "description": "The name of the asset."
+      },
+      {
+        "name": "Asset Type",
+        "jsonFieldName": "assetType",
+        "jsonFieldType": "string",
+        "description": "The asset type of the asset (Stock, ETF, & Mutual Fund)."
+      },
+      {
+        "name": "Is Active",
+        "jsonFieldName": "isActive",
+        "jsonFieldType": "boolean",
+        "description": "True if the ticker is still actively quoted, and false if the ticker is no longer actively quoted (delisted)."
+      },
+      {
+        "name": "Tiingo PermaTicker",
+        "jsonFieldName": "permaTicker",
+        "jsonFieldType": "string",
+        "description": "Placeholder for an upcoming change to the Tiingo API that allows querying by permaticker."
+      },
+      {
+        "name": "OpenFIGI Ticker",
+        "jsonFieldName": "openFIGI",
+        "jsonFieldType": "string",
+        "description": "Placeholder for an upcoming change to the Tiingo API that allows querying by the openFIGI ticker."
+      }
+    ],
+    "searchTableRequestRows": [
+      {
+        "name": "Search Query",
+        "required": true,
+        "parameterType": "GET",
+        "jsonFieldName": "query",
+        "jsonFieldType": "string",
+        "description": "The search query to use to look up assets."
+      },
+      {
+        "name": "Exact Ticker Match",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "exactTickerMatch",
+        "jsonFieldType": "boolean",
+        "description": "True to only include exact ticker matches based on the search query. \n            If set to true, no partial matches will be included and asset names will not be searched. "
+      },
+      {
+        "name": "Include Delisted",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "includeDelisted",
+        "jsonFieldType": "boolean",
+        "description": "True to include delisted tickers and false (default) to exclude delisted tickers."
+      },
+      {
+        "name": "Limit",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "limit",
+        "jsonFieldType": "int32",
+        "description": "The maximum number of assets to return. Defaults to 10 and can be set to a maximum of 100."
+      }
+    ],
+    "fundamentalDefinitionsResponseTableResponseRows": [
+      {
+        "name": "Data Code",
+        "jsonFieldName": "dataCode",
+        "jsonFieldType": "string",
+        "description": "An identifier representing the fundamentals field the value belongs to. For example, \"peRatio.\""
+      },
+      {
+        "name": "Name",
+        "jsonFieldName": "name",
+        "jsonFieldType": "string",
+        "description": "A human-friendly readable name of the field."
+      },
+      {
+        "name": "Description",
+        "jsonFieldName": "description",
+        "jsonFieldType": "string",
+        "description": "A description of the field."
+      },
+      {
+        "name": "Statement Type",
+        "jsonFieldName": "statementType",
+        "jsonFieldType": "string",
+        "description": "One of four values (\"balanceSheet\", \"incomeStatement\", \"cashFlow\", \"overview\"), representing             which statement this value belongs to. For example, \"netIncome\" would belong to \"incomeStatement\"."
+      },
+      {
+        "name": "Units",
+        "jsonFieldName": "units",
+        "jsonFieldType": "string",
+        "description": "The unit the field value is in. Value is either \"$\", \"%\" or blank. If blank, value may either             be an integer (like shares outstanding), or a ratio."
+      }
+    ],
+    "fundamentalMetaResponseTableResponseRows": [
+      {
+        "name": "Perma Ticker",
+        "jsonFieldName": "permaTicker",
+        "jsonFieldType": "string",
+        "description": "Permanent Tiingo Ticker mapping to the security. Can be used as a primary key."
+      },
+      {
+        "name": "Ticker",
+        "jsonFieldName": "ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Name",
+        "jsonFieldName": "name",
+        "jsonFieldType": "string",
+        "description": "Full-length name of the asset."
+      },
+      {
+        "name": "Is Active",
+        "jsonFieldName": "isActive",
+        "jsonFieldType": "boolean",
+        "description": "Boolean describing whether or not the ticker is still actively traded. If false, this ticker is delisted."
+      },
+      {
+        "name": "Is ADR",
+        "jsonFieldName": "isADR",
+        "jsonFieldType": "boolean",
+        "description": "Boolean describing whether or not the ticker is an ADR. Value is true if listed ticker is an ADR."
+      },
+      {
+        "name": "Sector",
+        "jsonFieldName": "sector",
+        "jsonFieldType": "string",
+        "description": "Sector information that is derived from sicSector."
+      },
+      {
+        "name": "Industry",
+        "jsonFieldName": "industry",
+        "jsonFieldType": "string",
+        "description": "Sector information that is derived from sicIndustry."
+      },
+      {
+        "name": "SIC Code",
+        "jsonFieldName": "sicCode",
+        "jsonFieldType": "int32",
+        "description": "SIC Code that represents company's business activities."
+      },
+      {
+        "name": "SIC Sector",
+        "jsonFieldName": "sicSector",
+        "jsonFieldType": "string",
+        "description": "Sector as determined by the SIC Code."
+      },
+      {
+        "name": "SIC Industry",
+        "jsonFieldName": "sicIndustry",
+        "jsonFieldType": "string",
+        "description": "Industry as determined by the SIC Code."
+      },
+      {
+        "name": "Reporting Currency",
+        "jsonFieldName": "reportingCurrency",
+        "jsonFieldType": "string",
+        "description": "The currency the company reports their SEC statement filings in."
+      },
+      {
+        "name": "Location",
+        "jsonFieldName": "location",
+        "jsonFieldType": "string",
+        "description": "Location/domicile of the company. States are included for U.S. companies, otherwise countries             for non-US companies."
+      },
+      {
+        "name": "Company Website",
+        "jsonFieldName": "companyWebsite",
+        "jsonFieldType": "string",
+        "description": "The website of the company when available."
+      },
+      {
+        "name": "SEC Filing Website",
+        "jsonFieldName": "secFilingWebsite",
+        "jsonFieldType": "string",
+        "description": "A URL to where you can find the company's SEC filings directly on the SEC website."
+      },
+      {
+        "name": "Statement Last Updated",
+        "jsonFieldName": "statementLastUpdated",
+        "jsonFieldType": "datetime",
+        "description": "The timestamp the statement data/endpoint was last updated for the ticker."
+      },
+      {
+        "name": "Daily Last Updated",
+        "jsonFieldName": "dailyLastUpdated",
+        "jsonFieldType": "datetime",
+        "description": "The timestamp the daily data/endpoint was last updated for the ticker."
+      }
+    ],
+    "fundamentalMetaTableRequestRows": [
+      {
+        "name": "Tickers",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "tickers",
+        "jsonFieldType": "string",
+        "description": "Specific tickers to return meta data for. If no string passed, will return meta data for all             available tickers. Can either be a single ticker, a comma-separated list of tickers,             or an array of strings (string[])."
+      }
+    ],
+    "fundamentalStatementTableResponseRows": [
+      {
+        "name": "Date",
+        "jsonFieldName": "date",
+        "jsonFieldType": "datetime",
+        "description": "The date the statement data was released to the public."
+      },
+      {
+        "name": "Quarter",
+        "jsonFieldName": "quarter",
+        "jsonFieldType": "int32",
+        "description": "An integer corresponding to the fiscal quarter reported. A value of \"0\" means this is an             Annual Report. A value of \"1\" through \"4\" corresponds to the respective fiscal quarter."
+      },
+      {
+        "name": "Year",
+        "jsonFieldName": "year",
+        "jsonFieldType": "int32",
+        "description": "An integer corresponding to the fiscal year reported."
+      },
+      {
+        "name": "Statement Data",
+        "jsonFieldName": "statementData",
+        "jsonFieldType": "object",
+        "description": "Statement data that is broken out by four different fields in a JSON object. \n            Each fields corresponds to a statement. The four fields are: \n            <ol>\n                <li><b>balanceSheet</b>:  Balance sheet data</li>\n                <li><b>incomeStatement</b>: Income Statement Data</li>\n                <li><b>cashFlow</b>: Cash flow statement data</li>\n                <li><b>overview</b>: Metrics and ratios that may be a combination of the fields from various statements</li>\n            </ol>\n            Each field will return an array of \"dataCode\" and \"value\" pairs that are described in the \"Statement Data Table\"\n            below."
+      }
+    ],
+    "fundamentalStatementDataTableResponseRows": [
+      {
+        "name": "Data Code",
+        "jsonFieldName": "dataCode",
+        "jsonFieldType": "string",
+        "description": "An identifier representing the fundamentals field the value belongs to. For example, \"peRatio.\""
+      },
+      {
+        "name": "Value",
+        "jsonFieldName": "value",
+        "jsonFieldType": "float",
+        "description": "The value of the field corresponding to the dataCode"
+      }
+    ],
+    "fundamentalDailyDataTableResponseRows": [
+      {
+        "name": "Date",
+        "jsonFieldName": "date",
+        "jsonFieldType": "datetime",
+        "description": "The date the daily data corresponds to."
+      },
+      {
+        "name": "Market Cap",
+        "jsonFieldName": "marketCap",
+        "jsonFieldType": "float",
+        "description": "The value of the field corresponding to the market capitalization."
+      },
+      {
+        "name": "Enterprise Value",
+        "jsonFieldName": "enterpriseVal",
+        "jsonFieldType": "float",
+        "description": "The value of the field corresponding to the enterprise value."
+      },
+      {
+        "name": "P/E Ratio",
+        "jsonFieldName": "peRatio",
+        "jsonFieldType": "float",
+        "description": "The value of the field corresponding to the price/earnings ratio."
+      },
+      {
+        "name": "P/B Ratio",
+        "jsonFieldName": "pbRatio",
+        "jsonFieldType": "float",
+        "description": "The value of the field corresponding to the price/book ratio."
+      },
+      {
+        "name": "Trailing PEG Ratio (1Y)",
+        "jsonFieldName": "trailingPEG1Y",
+        "jsonFieldType": "float",
+        "description": "The value of the field corresponding to the trailing 1 year PEG Ratio."
+      }
+    ],
+    "fundFeeTableResponseRows": [
+      {
+        "name": "Ticker",
+        "jsonFieldName": "ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the fund."
+      },
+      {
+        "name": "Name",
+        "jsonFieldName": "name",
+        "jsonFieldType": "string",
+        "description": "Full-length name of the fund."
+      },
+      {
+        "name": "Description",
+        "jsonFieldName": "description",
+        "jsonFieldType": "string",
+        "description": "Long-form descripton of the fund."
+      },
+      {
+        "name": "Share Class",
+        "jsonFieldName": "shareClass",
+        "jsonFieldType": "string",
+        "description": "Share class of the fund as described by the parent fund company."
+      },
+      {
+        "name": "Net Expense Ratio",
+        "jsonFieldName": "netExpense",
+        "jsonFieldType": "float",
+        "description": "The top-level net expense ratio for the fund."
+      },
+      {
+        "name": "Other Share Classes",
+        "jsonFieldName": "otherShareClasses",
+        "jsonFieldType": "object[]",
+        "description": "An array of objects representing related share classes of the given fund. See below for the object defintion table."
+      }
+    ],
+    "otherShareClassesTableResponseRows": [
+      {
+        "name": "Ticker",
+        "jsonFieldName": "ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the fund."
+      },
+      {
+        "name": "Name",
+        "jsonFieldName": "name",
+        "jsonFieldType": "string",
+        "description": "Full-length name of the fund."
+      },
+      {
+        "name": "Share Class",
+        "jsonFieldName": "shareClass",
+        "jsonFieldType": "string",
+        "description": "Share class of the fund as described by the parent fund company."
+      },
+      {
+        "name": "Net Expense Ratio",
+        "jsonFieldName": "netExpense",
+        "jsonFieldType": "float",
+        "description": "The top-level net expense ratio for the fund."
+      }
+    ],
+    "fundFeesLastTableRequestRows": [
+      {
+        "name": "Ticker",
+        "required": true,
+        "parameterType": "URL or GET",
+        "jsonFieldName": "tickers",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the fund."
+      }
+    ],
+    "fundFeesHistoricalPricesTableResponseRows": [
+      {
+        "name": "Prospectus Date",
+        "jsonFieldName": "prospectusDate",
+        "jsonFieldType": "date",
+        "description": "The prospectus date when the corresponding fund expense data was published."
+      },
+      {
+        "name": "Net Expense Ratio",
+        "jsonFieldName": "netExpense",
+        "jsonFieldType": "float",
+        "description": "Fund's net expense ratio, or the net expenses related to the fund."
+      },
+      {
+        "name": "Gross Expense Ratio",
+        "jsonFieldName": "grossExpense",
+        "jsonFieldType": "float",
+        "description": "Fund's gross expense ratio, or the expenses related to running the fund."
+      },
+      {
+        "name": "Management Fee",
+        "jsonFieldName": "managementFee",
+        "jsonFieldType": "float",
+        "description": "Fund's management fee, or the fees paid to the manager and/or advisors."
+      },
+      {
+        "name": "12b-1 Fee",
+        "jsonFieldName": "12b1",
+        "jsonFieldType": "float",
+        "description": "Fund's fee related to marketing expenses."
+      },
+      {
+        "name": "Non-12b-1 Fee",
+        "jsonFieldName": "non12b1",
+        "jsonFieldType": "float",
+        "description": "Fund's fee related to distribution and smilar non 12b-1 fees."
+      },
+      {
+        "name": "Other Fund Expenses",
+        "jsonFieldName": "otherExpenses",
+        "jsonFieldType": "float",
+        "description": "Fund's other expenses, or expenses related to legal, adminstrative, custodial, etc."
+      },
+      {
+        "name": "Acquired Fund Fees",
+        "jsonFieldName": "acquiredFundFees",
+        "jsonFieldType": "float",
+        "description": "Fund's acquired fund fees, or expenses related to underlying businesses or funds."
+      },
+      {
+        "name": "Fee Waiver",
+        "jsonFieldName": "feeWaiver",
+        "jsonFieldType": "float",
+        "description": "Fund's fee waiver, or discount on fees."
+      },
+      {
+        "name": "Exchange Fee (USD)",
+        "jsonFieldName": "exchangeFeeUSD",
+        "jsonFieldType": "float",
+        "description": "Fund's exchange fee if charged in USD, or expenses related to exchanging or transferring funds to another fund in the fund's family."
+      },
+      {
+        "name": "Exchange Fee (%)",
+        "jsonFieldName": "exchangeFeePercent",
+        "jsonFieldType": "float",
+        "description": "Fund's exchange fee if charged as a percentage, or expenses related to exchanging or transferring funds to another fund in the fund's family."
+      },
+      {
+        "name": "Front Load Fee",
+        "jsonFieldName": "frontLoad",
+        "jsonFieldType": "float",
+        "description": "Fund's front load fee, or the upfront fee charged when investing in the fund."
+      },
+      {
+        "name": "Back Load Fee",
+        "jsonFieldName": "backLoad",
+        "jsonFieldType": "float",
+        "description": "Fund's back load fee, or the back-end fee charged when redeeming from the fund."
+      },
+      {
+        "name": "Dividend Load Fee",
+        "jsonFieldName": "dividendLoad",
+        "jsonFieldType": "float",
+        "description": "Dividend load fee, or charges on reinvested dividends."
+      },
+      {
+        "name": "Shareholder Fee",
+        "jsonFieldName": "shareholderFee",
+        "jsonFieldType": "float",
+        "description": "Fund's shareholder fees, or the potential fees when buying/selling a fund."
+      },
+      {
+        "name": "Account Fee (USD)",
+        "jsonFieldName": "accountFeeUSD",
+        "jsonFieldType": "float",
+        "description": "Fund's account fees if charged in USD, or the fee required to maintain your account in USD."
+      },
+      {
+        "name": "Account Fee (%)",
+        "jsonFieldName": "accountFeePercent",
+        "jsonFieldType": "float",
+        "description": "Fund's account fees if charged as a percentage, or the fee required to maintain your account in percentage terms."
+      },
+      {
+        "name": "Redemption Fee (USD)",
+        "jsonFieldName": "redemptionFeeUSD",
+        "jsonFieldType": "float",
+        "description": "Fund's redemption fees if charged in USD, or the fee charged if funds are redeemed early (as defined by the fund company)."
+      },
+      {
+        "name": "Redemption Fee (%)",
+        "jsonFieldName": "redemptionFeePercent",
+        "jsonFieldType": "float",
+        "description": "Fund's redemption fees as a percentage, or the fee charged if funds are redeemed early (as defined by the fund company)."
+      },
+      {
+        "name": "Portfolio Turnover",
+        "jsonFieldName": "portfolioTurnover",
+        "jsonFieldType": "float",
+        "description": "Portfolio turnover."
+      },
+      {
+        "name": "Miscellaneous Fees",
+        "jsonFieldName": "miscFees",
+        "jsonFieldType": "float",
+        "description": "Fund's miscellaneous fees."
+      },
+      {
+        "name": "Custom Fees",
+        "jsonFieldName": "customFees",
+        "jsonFieldType": "object[]",
+        "description": "Fund's custom fees. For a full breakdown, see the table below."
+      }
+    ],
+    "customFeesTableResponseRows": [
+      {
+        "name": "Label",
+        "jsonFieldName": "label",
+        "jsonFieldType": "string",
+        "description": "Label related to the custom fee."
+      },
+      {
+        "name": "Value",
+        "jsonFieldName": "value",
+        "jsonFieldType": "float",
+        "description": "Value of the custom fee field."
+      },
+      {
+        "name": "Units",
+        "jsonFieldName": "units",
+        "jsonFieldType": "char",
+        "description": "\"$\" if the value is in dollars or \"%\" if the value is in percentage terms."
+      },
+      {
+        "name": "Parent Fee",
+        "jsonFieldName": "parentFee",
+        "jsonFieldType": "string",
+        "description": "The parent fee the custom fee's belongs under."
+      }
+    ],
+    "smallxMetaResponseTableResponseRows": [
+      {
+        "name": "Perma Ticker",
+        "jsonFieldName": "permaTicker",
+        "jsonFieldType": "string",
+        "description": "Permanent Tiingo Ticker mapping to the security. Can be used as a primary key."
+      },
+      {
+        "name": "Ticker",
+        "jsonFieldName": "ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Name",
+        "jsonFieldName": "name",
+        "jsonFieldType": "string",
+        "description": "Full-length name of the asset."
+      },
+      {
+        "name": "Base Ticker",
+        "jsonFieldName": "baseTicker",
+        "jsonFieldType": "string",
+        "description": "The base ticker for the given contract. This is the base tickers that the calendar and year identifier are appended to in order to create the Small Exchange ticker. E.g. \"SMO\""
+      },
+      {
+        "name": "Base Currency",
+        "jsonFieldName": "baseCurrency",
+        "jsonFieldType": "string",
+        "description": "The currency the contract is denominated in."
+      },
+      {
+        "name": "CFI Code",
+        "jsonFieldName": "cfiCode",
+        "jsonFieldType": "string",
+        "description": "The standardized CFI code for the given contract."
+      },
+      {
+        "name": "Fist Trading Date",
+        "jsonFieldName": "firstTradingDate",
+        "jsonFieldType": "date",
+        "description": "The first date the contract was able to be traded."
+      },
+      {
+        "name": "Last Trading Date",
+        "jsonFieldName": "lastTradingDate",
+        "jsonFieldType": "date",
+        "description": "The last date the contract is tradeable."
+      },
+      {
+        "name": "Expiration Date",
+        "jsonFieldName": "expirationDate",
+        "jsonFieldType": "date",
+        "description": "The date the contract expires."
+      },
+      {
+        "name": "Maturity Date",
+        "jsonFieldName": "maturityDate",
+        "jsonFieldType": "date",
+        "description": "The date the contract reaches maturity."
+      },
+      {
+        "name": "Tick Size",
+        "jsonFieldName": "tickSize",
+        "jsonFieldType": "float",
+        "description": "The smallest amount the contract can increment or decrement by."
+      },
+      {
+        "name": "Tick Multiplier",
+        "jsonFieldName": "tickMulitplier",
+        "jsonFieldType": "float",
+        "description": "The amount you need to multiple the contract price by to get the notional (in baseCurrency) of the value of the contract. E.g. a price of 35.0 with a baseCurrency of USD and multiplier of 100, means each contract is worth $3500.00 (35 * 100)."
+      }
+    ],
+    "smallXMetaTableRequestRows": [
+      {
+        "name": "Tickers",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "tickers",
+        "jsonFieldType": "string",
+        "description": "Specific tickers to return meta data for. If no string passed, will return meta data for all             available tickers. Can either be a single ticker, a comma-separated list of tickers,             or an array of strings (string[])."
+      }
+    ],
+    "smallXTopLastTableResponseRows": [
+      {
+        "name": "Ticker",
+        "jsonFieldName": "ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Timestamp",
+        "jsonFieldName": "timestamp",
+        "jsonFieldType": "datetime",
+        "description": "The timestamp the data was last refresh on."
+      },
+      {
+        "name": "Quote Timestamp",
+        "jsonFieldName": "quoteTimestamp",
+        "jsonFieldType": "datetime",
+        "description": "The timestamp the last time the quote (bid/ask) data was received from the Small Exchange."
+      },
+      {
+        "name": "Last Sale Timestamp",
+        "jsonFieldName": "lastSaleTimestamp",
+        "jsonFieldType": "datetime",
+        "description": "The timestamp the last time the trade (last/lastSize) data was received from Small Exchange."
+      },
+      {
+        "name": "last",
+        "jsonFieldName": "last",
+        "jsonFieldType": "float",
+        "description": "Last is the last trade that was executed on Small Exchange."
+      },
+      {
+        "name": "Last Size",
+        "jsonFieldName": "lastSize",
+        "jsonFieldType": "int32",
+        "description": "The amount of shares traded (volume) at the last price on Small Exchange."
+      },
+      {
+        "name": "Tiingo Last",
+        "jsonFieldName": "tngoLast",
+        "jsonFieldType": "float",
+        "description": "Tiingo Last is either the last price or mid price. The mid price is only used if our algo determines\n                 it is a good proxy for the last price. So if the spread is considered wide by our algo, we do not use it.\n                 Also, after the official exchange print comes in, this value changes to that value.\n                <b>This value is calculated by Tiingo and not provided by the Small Exchange</b>."
+      },
+      {
+        "name": "Previous Close",
+        "jsonFieldName": "prevClose",
+        "jsonFieldType": "float",
+        "description": "Previous day's closing price of the security."
+      },
+      {
+        "name": "Open",
+        "jsonFieldName": "open",
+        "jsonFieldType": "float",
+        "description": "The opening price of the asset on the current day as set by \"tngoLast\" in the docs.\n                 <b>This value is calculated by Tiingo and not provided by the Small Exchange.</b>"
+      },
+      {
+        "name": "High",
+        "jsonFieldName": "high",
+        "jsonFieldType": "float",
+        "description": "The high price of the asset on the current day as set by \"tngoLast\" in the docs.\n                 <b>This value is calculated by Tiingo and not provided by the Small Exchange.</b>"
+      },
+      {
+        "name": "Low",
+        "jsonFieldName": "low",
+        "jsonFieldType": "float",
+        "description": "The low price of the asset on the current day as set by \"tngoLast\" in the docs.\n                 <b>This value is calculated by Tiingo and not provided by the Small Exchange.</b>"
+      },
+      {
+        "name": "Low",
+        "jsonFieldName": "low",
+        "jsonFieldType": "float",
+        "description": "The close price of the asset on the current day as set by \"tngoLast\" in the docs.\n                 <b>This value is calculated by Tiingo and not provided by the Small Exchange.</b>"
+      },
+      {
+        "name": "Mid",
+        "jsonFieldName": "mid",
+        "jsonFieldType": "float",
+        "description": "The mid price of the current timestamp when both \"bidPrice\" and \"askPrice\" are not-null.\nIn mathematical terms:\n        <br>\n<pre>\nmid = (bidPrice + askPrice)/2.0\n</pre>\n                 <b>This value is calculated by Tiingo and not provided by the Small Exchange.</b>"
+      },
+      {
+        "name": "Volume",
+        "jsonFieldName": "volume",
+        "jsonFieldType": "int64",
+        "description": "Total volume traded on the Small Exchange for the given instrument."
+      },
+      {
+        "name": "Bid Size",
+        "jsonFieldName": "bidSize",
+        "jsonFieldType": "float",
+        "description": "The amount of shares at the bid price."
+      },
+      {
+        "name": "Bid Price",
+        "jsonFieldName": "bidPrice",
+        "jsonFieldType": "float",
+        "description": "The current bid price."
+      },
+      {
+        "name": "Ask Size",
+        "jsonFieldName": "askSize",
+        "jsonFieldType": "float",
+        "description": "The amount of shares at the ask price."
+      },
+      {
+        "name": "Ask Price",
+        "jsonFieldName": "askPrice",
+        "jsonFieldType": "float",
+        "description": "The current ask price."
+      },
+      {
+        "name": "Open interest",
+        "jsonFieldName": "openInterest",
+        "jsonFieldType": "int64",
+        "description": "The current Open Interest for the given instrument."
+      }
+    ],
+    "iexTopLastTableRequestRows__occurrence_3": [
+      {
+        "name": "Ticker",
+        "required": false,
+        "parameterType": "URL or GET",
+        "jsonFieldName": "tickers",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      }
+    ],
+    "iexHistoricalPricesTableResponseRows__occurrence_3": [
+      {
+        "name": "Date",
+        "jsonFieldName": "date",
+        "jsonFieldType": "datetime",
+        "description": "The date this data pertains to."
+      },
+      {
+        "name": "Open",
+        "jsonFieldName": "open",
+        "jsonFieldType": "float",
+        "description": "The opening price for the asset on the given date."
+      },
+      {
+        "name": "High",
+        "jsonFieldName": "high",
+        "jsonFieldType": "float",
+        "description": "The high price for the asset on the given date."
+      },
+      {
+        "name": "Low",
+        "jsonFieldName": "low",
+        "jsonFieldType": "float",
+        "description": "The low price for the asset on the given date."
+      },
+      {
+        "name": "Close",
+        "jsonFieldName": "close",
+        "jsonFieldType": "float",
+        "description": "The closing price for the asset on the given date."
+      },
+      {
+        "name": "Volume",
+        "jsonFieldName": "volume",
+        "jsonFieldType": "int64",
+        "description": "The number of shares traded on the Small Exchange."
+      }
+    ],
+    "smallXHistoricalEODPricesTableResponseRows": [
+      {
+        "name": "Date",
+        "jsonFieldName": "date",
+        "jsonFieldType": "datetime",
+        "description": "The date this data pertains to."
+      },
+      {
+        "name": "Open",
+        "jsonFieldName": "open",
+        "jsonFieldType": "float",
+        "description": "The opening price for the asset on the given date."
+      },
+      {
+        "name": "High",
+        "jsonFieldName": "high",
+        "jsonFieldType": "float",
+        "description": "The high price for the asset on the given date."
+      },
+      {
+        "name": "Low",
+        "jsonFieldName": "low",
+        "jsonFieldType": "float",
+        "description": "The low price for the asset on the given date."
+      },
+      {
+        "name": "Close",
+        "jsonFieldName": "close",
+        "jsonFieldType": "float",
+        "description": "The closing price for the asset on the given date."
+      },
+      {
+        "name": "Settlement Price",
+        "jsonFieldName": "settlementPrice",
+        "jsonFieldType": "float",
+        "description": "The settlement price of the contract as determined by the Small Exchange."
+      },
+      {
+        "name": "Volume",
+        "jsonFieldName": "volume",
+        "jsonFieldType": "int64",
+        "description": "The number of shares traded on the Small Exchange."
+      },
+      {
+        "name": "Open Interest",
+        "jsonFieldName": "openInterest",
+        "jsonFieldType": "int64",
+        "description": "The open interest of the contract."
+      }
+    ],
+    "yieldPlatformTableResponseRows": [
+      {
+        "name": "Name",
+        "jsonFieldName": "name",
+        "jsonFieldType": "string",
+        "description": "Formatted name of the Yield Platform."
+      },
+      {
+        "name": "Platform Code",
+        "jsonFieldName": "platformCode",
+        "jsonFieldType": "string",
+        "description": "A unique identifier for the Yield Platform that can be used throughout the API to map Yield Pools to the given Platform. Similar to <b>exchangeCode</b> in the equity endpoints."
+      },
+      {
+        "name": "Network",
+        "jsonFieldName": "network",
+        "jsonFieldType": "string",
+        "description": "The network this platform belongs to. E.g. ETH for mainnet, AVAX for Avalanche, SOL, for Solana.\"."
+      }
+    ],
+    "yieldPlatformTableRequestRows": [
+      {
+        "name": "Platform Codes",
+        "jsonFieldName": "platformCodes",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldType": "string",
+        "description": "\n    A list of platform codes to constrain the output to the given platforms. If passing it as a string in the URL, it can be a comma-separated list.\n            "
+      }
+    ],
+    "yieldMetricsTicksTableResponseRows": [
+      {
+        "name": "Date",
+        "jsonFieldName": "date",
+        "jsonFieldType": "datetime",
+        "description": "The datetime this data pertains to. It will be a timestamp dependent upon the resampleFreq             parameter. For example, if resampleFreq=5min, it will be in 5 min increments."
+      },
+      {
+        "name": "Pool Code",
+        "jsonFieldName": "poolCode",
+        "jsonFieldType": "string",
+        "description": "A unique identifier mapped to this pool that can be used to query metric and tick data throughout the API."
+      },
+      {
+        "name": "Variable Borrow Rate",
+        "jsonFieldName": "variableBorrowRate",
+        "jsonFieldType": "float",
+        "description": "The variable borrow rate (multiply by 100 for percentage)."
+      },
+      {
+        "name": "Stable Borrow Rate",
+        "jsonFieldName": "totalStableBorrowAmount",
+        "jsonFieldType": "float",
+        "description": "The stable borrow rate (multiply by 100 for percentage)."
+      },
+      {
+        "name": "Variable Borrow Amount",
+        "jsonFieldName": "totalVariableBorrowAmount",
+        "jsonFieldType": "float",
+        "description": "The amount borrowed subject to the variable borrow rate."
+      },
+      {
+        "name": "Total Borrow Amount",
+        "jsonFieldName": "totalBorrowAmount",
+        "jsonFieldType": "float",
+        "description": "The total amount borrowed  (total = stable amount + variable amount)"
+      },
+      {
+        "name": "Supply Rate",
+        "jsonFieldName": "supplyRate",
+        "jsonFieldType": "float",
+        "description": "The supply rate (multiply by 100 for percentage)."
+      },
+      {
+        "name": "Total Supply Amount",
+        "jsonFieldName": "totalSupplyAmount",
+        "jsonFieldType": "float",
+        "description": "The close total supply amount on the given date."
+      },
+      {
+        "name": "Available Liquidity Amount",
+        "jsonFieldName": "availableLiquidityAmount",
+        "jsonFieldType": "float",
+        "description": "The amount of liquidity available that can be borrowed."
+      }
+    ],
+    "yieldMetricsTableResponseRows": [
+      {
+        "name": "Date",
+        "jsonFieldName": "date",
+        "jsonFieldType": "datetime",
+        "description": "The datetime this data pertains to. It will be a timestamp dependent upon the resampleFreq             parameter. For example, if resampleFreq=5min, it will be in 5 min increments."
+      },
+      {
+        "name": "Open Variable Borrow Rate",
+        "jsonFieldName": "openVariableBorrowRate",
+        "jsonFieldType": "float",
+        "description": "The open variable borrow rate on the given date."
+      },
+      {
+        "name": "High Variable Borrow Rate",
+        "jsonFieldName": "highVariableBorrowRate",
+        "jsonFieldType": "float",
+        "description": "The high variable borrow rate on the given date."
+      },
+      {
+        "name": "Low Variable Borrow Rate",
+        "jsonFieldName": "lowVariableBorrowRate",
+        "jsonFieldType": "float",
+        "description": "The low variable borrow rate on the given date."
+      },
+      {
+        "name": "Close Variable Borrow Rate",
+        "jsonFieldName": "closeVariableBorrowRate",
+        "jsonFieldType": "float",
+        "description": "The close variable borrow rate on the given date."
+      },
+      {
+        "name": "Open Stable Borrow Rate",
+        "jsonFieldName": "openStableBorrowRate",
+        "jsonFieldType": "float",
+        "description": "The open stable borrow rate on the given date."
+      },
+      {
+        "name": "High Stable Borrow Rate",
+        "jsonFieldName": "highStableBorrowRate",
+        "jsonFieldType": "float",
+        "description": "The high stable borrow rate on the given date."
+      },
+      {
+        "name": "Low Stable Borrow Rate",
+        "jsonFieldName": "lowStableBorrowRate",
+        "jsonFieldType": "float",
+        "description": "The low stable borrow rate on the given date."
+      },
+      {
+        "name": "Close Stable Borrow Rate",
+        "jsonFieldName": "closeStableBorrowRate",
+        "jsonFieldType": "float",
+        "description": "The close stable borrow rate on the given date."
+      },
+      {
+        "name": "Open Variable Borrow Amount",
+        "jsonFieldName": "openTotalVariableBorrowAmount",
+        "jsonFieldType": "float",
+        "description": "The open variable borrow amount on the given date."
+      },
+      {
+        "name": "High Variable Borrow Amount",
+        "jsonFieldName": "highTotalVariableBorrowAmount",
+        "jsonFieldType": "float",
+        "description": "The high variable borrow amount on the given date."
+      },
+      {
+        "name": "Low Variable Borrow Amount",
+        "jsonFieldName": "lowTotalVariableBorrowAmount",
+        "jsonFieldType": "float",
+        "description": "The low variable borrow amount on the given date."
+      },
+      {
+        "name": "Close Variable Borrow Amount",
+        "jsonFieldName": "closeTotalVariableBorrowAmount",
+        "jsonFieldType": "float",
+        "description": "The close variable borrow amount on the given date."
+      },
+      {
+        "name": "Open Stable Borrow Amount",
+        "jsonFieldName": "openTotalStableBorrowAmount",
+        "jsonFieldType": "float",
+        "description": "The open supply rate on the given date."
+      },
+      {
+        "name": "High Stable Borrow Amount",
+        "jsonFieldName": "highTotalStableBorrowAmount",
+        "jsonFieldType": "float",
+        "description": "The high supply rate on the given date."
+      },
+      {
+        "name": "Low Stable Borrow Amount",
+        "jsonFieldName": "lowTotalStableBorrowAmount",
+        "jsonFieldType": "float",
+        "description": "The low supply rate on the given date."
+      },
+      {
+        "name": "Close Stable Borrow Amount",
+        "jsonFieldName": "closeTotalStableBorrowAmount",
+        "jsonFieldType": "float",
+        "description": "The close supply rate on the given date."
+      },
+      {
+        "name": "Open Total Borrow Amount",
+        "jsonFieldName": "openTotalBorrowAmount",
+        "jsonFieldType": "float",
+        "description": "The open total borrow amount on the given date (total = stable amount + variable amount)."
+      },
+      {
+        "name": "High Total Borrow Amount",
+        "jsonFieldName": "highTotalBorrowAmount",
+        "jsonFieldType": "float",
+        "description": "The high total borrow amount on the given date (total = stable amount + variable amount)."
+      },
+      {
+        "name": "Low Total Borrow Amount",
+        "jsonFieldName": "lowTotalBorrowAmount",
+        "jsonFieldType": "float",
+        "description": "The low total borrow amount on the given date (total = stable amount + variable amount)."
+      },
+      {
+        "name": "Close Total Borrow Amount",
+        "jsonFieldName": "closeTotalBorrowAmount",
+        "jsonFieldType": "float",
+        "description": "The close total borrow amount on the given date (total = stable amount + variable amount)."
+      },
+      {
+        "name": "Open Supply Rate",
+        "jsonFieldName": "openSupplyRate",
+        "jsonFieldType": "float",
+        "description": "The open supply rate on the given date."
+      },
+      {
+        "name": "High Supply Rate",
+        "jsonFieldName": "highSupplyRate",
+        "jsonFieldType": "float",
+        "description": "The high supply rate on the given date."
+      },
+      {
+        "name": "Low Supply Rate",
+        "jsonFieldName": "lowSupplyRate",
+        "jsonFieldType": "float",
+        "description": "The low supply rate on the given date."
+      },
+      {
+        "name": "Close Supply Rate",
+        "jsonFieldName": "closeSupplyRate",
+        "jsonFieldType": "float",
+        "description": "The close supply rate on the given date."
+      },
+      {
+        "name": "Open Total Supply Amount",
+        "jsonFieldName": "openTotalSupplyAmount",
+        "jsonFieldType": "float",
+        "description": "The open total supply amount on the given date."
+      },
+      {
+        "name": "High Total Supply Amount",
+        "jsonFieldName": "highTotalSupplyAmount",
+        "jsonFieldType": "float",
+        "description": "The high total supply amount on the given date."
+      },
+      {
+        "name": "Low Total Supply Amount",
+        "jsonFieldName": "lowTotalSupplyAmount",
+        "jsonFieldType": "float",
+        "description": "The low total supply amount on the given date."
+      },
+      {
+        "name": "Close Total Supply Amount",
+        "jsonFieldName": "closeTotalSupplyAmount",
+        "jsonFieldType": "float",
+        "description": "The close total supply amount on the given date."
+      },
+      {
+        "name": "Open Available Liquidity Amount",
+        "jsonFieldName": "openAvailableLiquidityAmount",
+        "jsonFieldType": "float",
+        "description": "The open total available liquidity amount on the given date (amount that can be borrowed)."
+      },
+      {
+        "name": "High Available Liquidity Amount",
+        "jsonFieldName": "highAvailableLiquidityAmount",
+        "jsonFieldType": "float",
+        "description": "The high total supply amount on the given date (amount that can be borrowed)."
+      },
+      {
+        "name": "Low Available Liquidity Amount",
+        "jsonFieldName": "lowAvailableLiquidityAmount",
+        "jsonFieldType": "float",
+        "description": "The low total supply amount on the given date (amount that can be borrowed)."
+      },
+      {
+        "name": "Close Available Liquidity Amount",
+        "jsonFieldName": "closeAvailableLiquidityAmount",
+        "jsonFieldType": "float",
+        "description": "The close total supply amount on the given date (amount that can be borrowed)."
+      },
+      {
+        "name": "Changes Detected",
+        "jsonFieldName": "changesDetected",
+        "jsonFieldType": "int32",
+        "description": "The number of changes detected for any of the above variables on blockchain during the resample window."
+      }
+    ],
+    "yieldMetricsTableRequestRows": [
+      {
+        "name": "Pool Code",
+        "required": true,
+        "parameterType": "URL",
+        "jsonFieldType": "string",
+        "description": "\n    The pool code associated with the yield pool. Must be a single pool code.\n            "
+      },
+      {
+        "name": "Start Date",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "startDate",
+        "jsonFieldType": "datetime",
+        "description": "If startDate or endDate is not null, historical data will be queried. This filter limits             metrics to on or later than the startDate (>=). Parameter must be in YYYY-MM-DD format."
+      },
+      {
+        "name": "End Date",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "endDate",
+        "jsonFieldType": "datetime",
+        "description": "f startDate or endDate is not null, historical data will be queried. This filter limits             metrics to on or less than the endDate (<=). Parameter must be in YYYY-MM-DD format."
+      },
+      {
+        "name": "Resample Freq",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "resampleFreq",
+        "jsonFieldType": "string",
+        "description": "\nThis allows you to set the frequency in which you want data resampled. For example \"1hour\" would return the data where OHLC is calculated on an hourly schedule. The minimum value is \"1min\". Units in minutes (min), hours (hour), and days (day) are accepted. Format is # + (min/hour/dau); e.g. \"15min\", \"4hour\" or \"1day\". If no value is provided, defaults to 5min.\n            "
+      }
+    ],
+    "yieldPoolTableRequestRows": [
+      {
+        "name": "Pool Codes",
+        "jsonFieldName": "poolCodes",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldType": "string",
+        "description": "\n    The pool code(s) associated with the Yield Pool. Can either be a single string or an array of strings (string[]).     <br><br>\n    If no pool code(s) are passed, returns data for all supported yield pools.\n            "
+      },
+      {
+        "name": "Platform Codes",
+        "jsonFieldName": "platformCodes",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldType": "string",
+        "description": "\n    The platform code(s) associated with the Yield Pools that you would like to constrain the output by. Can either be a single string or an array of strings (string[]).     <br><br>\n    If no platform code(s) are passed, returns data for all supported yield pools for all platforms.\n            "
+      }
+    ],
+    "metaTableResponseRows__occurrence_3": [
+      {
+        "name": "Date",
+        "jsonFieldName": "date",
+        "jsonFieldType": "datetime",
+        "description": "Date associated with the yield."
+      },
+      {
+        "name": "Trailing 1 Year Dividend",
+        "jsonFieldName": "trailingDiv1Y",
+        "jsonFieldType": "string",
+        "description": "The trailing distribution yield for the asset based on the previous 1 year of distributions."
+      }
+    ],
+    "metaTableRequestRows__occurrence_3": [
+      {
+        "name": "Ticker",
+        "required": true,
+        "parameterType": "URL",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset you would like yield data for."
+      }
+    ],
+    "eodTableResponseRows__occurrence_2": [
+      {
+        "name": "PermaTicker",
+        "jsonFieldName": "permaTicker",
+        "jsonFieldType": "string",
+        "description": "The Tiingo permaticker."
+      },
+      {
+        "name": "Ticker",
+        "jsonFieldName": "ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Ex-Date",
+        "jsonFieldName": "exDate",
+        "jsonFieldType": "datetime",
+        "description": "The ex-Date of the distribution. In the Tiingo EOD Endpoints, this is the date where \"divCash\" will be non-zero. This is also the date used for dividend price adjustments."
+      },
+      {
+        "name": "Payment Date",
+        "jsonFieldName": "paymentDate",
+        "jsonFieldType": "datetime",
+        "description": "The payment date of the distribution."
+      },
+      {
+        "name": "Record Date",
+        "jsonFieldName": "recordDate",
+        "jsonFieldType": "datetime",
+        "description": "The record date of the distribution."
+      },
+      {
+        "name": "Declaration Date",
+        "jsonFieldName": "declarationDate",
+        "jsonFieldType": "datetime",
+        "description": "The declaration date of the distribution."
+      },
+      {
+        "name": "Distribution",
+        "jsonFieldName": "distribution",
+        "jsonFieldType": "float",
+        "description": "The total distribution for the given date."
+      },
+      {
+        "name": "Distribution Frequency",
+        "jsonFieldName": "distributionFrequency",
+        "jsonFieldType": "string",
+        "description": "The frequency that's associated with this distribution. For example \"q\" means quarterly, meaning this is a declared quarterly distribution.\n          The full list of codes is available here:\n<ul>\n  <li><b>w</b>: Weekly</li>\n  <li><b>bm</b>: Bimonthly</li>\n  <li><b>m</b>: Monthly</li>\n  <li><b>tm</b>: Trimesterly</li>\n  <li><b>q</b>: Quarterly</li>\n  <li><b>sa</b>: Semiannually</li>\n  <li><b>a</b>: Annually</li>\n  <li><b>ir</b>: Irregular</li>\n  <li><b>f</b>: Final</li>\n  <li><b>u</b>: Unspecified</li>\n  <li><b>c</b>: Cancelled</li>\n          "
+      }
+    ],
+    "eodTableRequestRows__occurrence_2": [
+      {
+        "name": "Ex-Date",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "exDate",
+        "jsonFieldType": "date",
+        "description": "This filter limits           distributions that have an ex-date on the date passed. Parameter must be in YYYY-MM-DD format."
+      }
+    ],
+    "tickerDistributionTableRequestRows": [
+      {
+        "name": "Ticker",
+        "required": true,
+        "parameterType": "URL",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset you would like distribution data for."
+      },
+      {
+        "name": "Start Ex-Date",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "startExDate",
+        "jsonFieldType": "date",
+        "description": "This filter limits         distributions that have an ex-date >= on the date passed. Parameter must be in YYYY-MM-DD format."
+      },
+      {
+        "name": "End Ex-Date",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "endExDate",
+        "jsonFieldType": "date",
+        "description": "This filter limits         distributions that have an ex-date <= on the date passed. Parameter must be in YYYY-MM-DD format."
+      }
+    ],
+    "metaTableResponseRows__occurrence_4": [
+      {
+        "name": "Date",
+        "jsonFieldName": "date",
+        "jsonFieldType": "datetime",
+        "description": "Date associated with the yield."
+      },
+      {
+        "name": "Trailing 1 Year Dividend",
+        "jsonFieldName": "trailingDiv1Y",
+        "jsonFieldType": "string",
+        "description": "The trailing distribution yield for the asset based on the previous 1 year of distributions."
+      }
+    ],
+    "metaTableRequestRows__occurrence_4": [
+      {
+        "name": "Ticker",
+        "required": true,
+        "parameterType": "URL",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset you would like yield data for."
+      }
+    ],
+    "eodTableResponseRows__occurrence_3": [
+      {
+        "name": "PermaTicker",
+        "jsonFieldName": "permaTicker",
+        "jsonFieldType": "string",
+        "description": "The Tiingo permaticker."
+      },
+      {
+        "name": "Ticker",
+        "jsonFieldName": "ticker",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset."
+      },
+      {
+        "name": "Ex-Date",
+        "jsonFieldName": "exDate",
+        "jsonFieldType": "datetime",
+        "description": "The ex-Date of the split. In the Tiingo EOD Endpoints, this is the date where \"splitFactor\" will not be 1.0. This is also the date used for split adjustments."
+      },
+      {
+        "name": "Split From",
+        "jsonFieldName": "splitFrom",
+        "jsonFieldType": "float",
+        "description": "The prior split ratio."
+      },
+      {
+        "name": "Split To",
+        "jsonFieldName": "splitTo",
+        "jsonFieldType": "float",
+        "description": "The new split ratio, i.e. how many shares of \"splitTo\" are given for each share of \"splitFrom\"."
+      },
+      {
+        "name": "Split Factor",
+        "jsonFieldName": "splitFactor",
+        "jsonFieldType": "float",
+        "description": "The ratio of <b>splitTo</b> from <b>splitFrom</b>. In other words:\n          <pre>splitFactor = splitTo/splitFrom</pre> \n          This ratio is helpful in calculating split price adjustments."
+      },
+      {
+        "name": "Split Status",
+        "jsonFieldName": "splitStatus",
+        "jsonFieldType": "string",
+        "description": "A code representing the status of split\n<ul>\n  <li><b>a</b>: Active</li>\n  <li><b>c</b>: Cancelled</li>\n          "
+      }
+    ],
+    "eodTableRequestRows__occurrence_3": [
+      {
+        "name": "Ex-Date",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "exDate",
+        "jsonFieldType": "date",
+        "description": "This filter limits           distributions that have an ex-date on the date passed. Parameter must be in YYYY-MM-DD format."
+      }
+    ],
+    "tickerSplitTableRequestRows": [
+      {
+        "name": "Ticker",
+        "required": true,
+        "parameterType": "URL",
+        "jsonFieldType": "string",
+        "description": "Ticker related to the asset you would like distribution data for."
+      },
+      {
+        "name": "Start Ex-Date",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "startExDate",
+        "jsonFieldType": "date",
+        "description": "This filter limits         distributions that have an ex-date >= on the date passed. Parameter must be in YYYY-MM-DD format."
+      },
+      {
+        "name": "End Ex-Date",
+        "required": false,
+        "parameterType": "GET",
+        "jsonFieldName": "endExDate",
+        "jsonFieldType": "date",
+        "description": "This filter limits         distributions that have an ex-date <= on the date passed. Parameter must be in YYYY-MM-DD format."
+      }
+    ]
+  }
+}

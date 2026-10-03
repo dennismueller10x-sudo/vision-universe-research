@@ -1,0 +1,637 @@
+{
+  "schemaVersion": 1,
+  "requestedAt": "2026-10-02",
+  "requestCount": 61,
+  "auth": "existing Tiingo Authorization header only; never query token",
+  "probes": [
+    {
+      "id": "global-tsm-metadata",
+      "group": "global_select",
+      "company": "TSMC",
+      "symbol": "TSM",
+      "path": "/tiingo/daily/TSM",
+      "params": {},
+      "purpose": "Test current-account metadata for requested TSMC via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-tsm-history",
+      "group": "global_select",
+      "company": "TSMC",
+      "symbol": "TSM",
+      "path": "/tiingo/daily/TSM/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested TSMC via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-baba-metadata",
+      "group": "global_select",
+      "company": "Alibaba",
+      "symbol": "BABA",
+      "path": "/tiingo/daily/BABA",
+      "params": {},
+      "purpose": "Test current-account metadata for requested Alibaba via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-baba-history",
+      "group": "global_select",
+      "company": "Alibaba",
+      "symbol": "BABA",
+      "path": "/tiingo/daily/BABA/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested Alibaba via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-xpev-metadata",
+      "group": "global_select",
+      "company": "XPeng",
+      "symbol": "XPEV",
+      "path": "/tiingo/daily/XPEV",
+      "params": {},
+      "purpose": "Test current-account metadata for requested XPeng via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-xpev-history",
+      "group": "global_select",
+      "company": "XPeng",
+      "symbol": "XPEV",
+      "path": "/tiingo/daily/XPEV/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested XPeng via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-jd-metadata",
+      "group": "global_select",
+      "company": "JD.com",
+      "symbol": "JD",
+      "path": "/tiingo/daily/JD",
+      "params": {},
+      "purpose": "Test current-account metadata for requested JD.com via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-jd-history",
+      "group": "global_select",
+      "company": "JD.com",
+      "symbol": "JD",
+      "path": "/tiingo/daily/JD/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested JD.com via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-bidu-metadata",
+      "group": "global_select",
+      "company": "Baidu",
+      "symbol": "BIDU",
+      "path": "/tiingo/daily/BIDU",
+      "params": {},
+      "purpose": "Test current-account metadata for requested Baidu via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-bidu-history",
+      "group": "global_select",
+      "company": "Baidu",
+      "symbol": "BIDU",
+      "path": "/tiingo/daily/BIDU/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested Baidu via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-meli-metadata",
+      "group": "global_select",
+      "company": "MercadoLibre",
+      "symbol": "MELI",
+      "path": "/tiingo/daily/MELI",
+      "params": {},
+      "purpose": "Test current-account metadata for requested MercadoLibre via discovered US_ORDINARY_LISTING candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-meli-history",
+      "group": "global_select",
+      "company": "MercadoLibre",
+      "symbol": "MELI",
+      "path": "/tiingo/daily/MELI/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested MercadoLibre via discovered US_ORDINARY_LISTING candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-sony-metadata",
+      "group": "global_select",
+      "company": "Sony",
+      "symbol": "SONY",
+      "path": "/tiingo/daily/SONY",
+      "params": {},
+      "purpose": "Test current-account metadata for requested Sony via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-sony-history",
+      "group": "global_select",
+      "company": "Sony",
+      "symbol": "SONY",
+      "path": "/tiingo/daily/SONY/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested Sony via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-tm-metadata",
+      "group": "global_select",
+      "company": "Toyota",
+      "symbol": "TM",
+      "path": "/tiingo/daily/TM",
+      "params": {},
+      "purpose": "Test current-account metadata for requested Toyota via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-tm-history",
+      "group": "global_select",
+      "company": "Toyota",
+      "symbol": "TM",
+      "path": "/tiingo/daily/TM/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested Toyota via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-hmc-metadata",
+      "group": "global_select",
+      "company": "Honda",
+      "symbol": "HMC",
+      "path": "/tiingo/daily/HMC",
+      "params": {},
+      "purpose": "Test current-account metadata for requested Honda via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-hmc-history",
+      "group": "global_select",
+      "company": "Honda",
+      "symbol": "HMC",
+      "path": "/tiingo/daily/HMC/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested Honda via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-nio-metadata",
+      "group": "global_select",
+      "company": "NIO",
+      "symbol": "NIO",
+      "path": "/tiingo/daily/NIO",
+      "params": {},
+      "purpose": "Test current-account metadata for requested NIO via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-nio-history",
+      "group": "global_select",
+      "company": "NIO",
+      "symbol": "NIO",
+      "path": "/tiingo/daily/NIO/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested NIO via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-byddy-metadata",
+      "group": "global_select",
+      "company": "BYD",
+      "symbol": "BYDDY",
+      "path": "/tiingo/daily/BYDDY",
+      "params": {},
+      "purpose": "Test current-account metadata for requested BYD via discovered ADR_OTC candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-byddy-history",
+      "group": "global_select",
+      "company": "BYD",
+      "symbol": "BYDDY",
+      "path": "/tiingo/daily/BYDDY/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested BYD via discovered ADR_OTC candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-tcehy-metadata",
+      "group": "global_select",
+      "company": "Tencent",
+      "symbol": "TCEHY",
+      "path": "/tiingo/daily/TCEHY",
+      "params": {},
+      "purpose": "Test current-account metadata for requested Tencent via discovered ADR_OTC candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-tcehy-history",
+      "group": "global_select",
+      "company": "Tencent",
+      "symbol": "TCEHY",
+      "path": "/tiingo/daily/TCEHY/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested Tencent via discovered ADR_OTC candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-ssnlf-metadata",
+      "group": "global_select",
+      "company": "Samsung",
+      "symbol": "SSNLF",
+      "path": "/tiingo/daily/SSNLF",
+      "params": {},
+      "purpose": "Test current-account metadata for requested Samsung via discovered US_ORDINARY_OTC candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-ssnlf-history",
+      "group": "global_select",
+      "company": "Samsung",
+      "symbol": "SSNLF",
+      "path": "/tiingo/daily/SSNLF/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested Samsung via discovered US_ORDINARY_OTC candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-hxscl-metadata",
+      "group": "global_select",
+      "company": "SK Hynix",
+      "symbol": "HXSCL",
+      "path": "/tiingo/daily/HXSCL",
+      "params": {},
+      "purpose": "Test current-account metadata for requested SK Hynix via discovered UNKNOWN_US_OTC candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-hxscl-history",
+      "group": "global_select",
+      "company": "SK Hynix",
+      "symbol": "HXSCL",
+      "path": "/tiingo/daily/HXSCL/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested SK Hynix via discovered UNKNOWN_US_OTC candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-ntdoy-metadata",
+      "group": "global_select",
+      "company": "Nintendo",
+      "symbol": "NTDOY",
+      "path": "/tiingo/daily/NTDOY",
+      "params": {},
+      "purpose": "Test current-account metadata for requested Nintendo via discovered ADR_OTC candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-ntdoy-history",
+      "group": "global_select",
+      "company": "Nintendo",
+      "symbol": "NTDOY",
+      "path": "/tiingo/daily/NTDOY/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested Nintendo via discovered ADR_OTC candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-se-metadata",
+      "group": "global_select",
+      "company": "Sea Ltd",
+      "symbol": "SE",
+      "path": "/tiingo/daily/SE",
+      "params": {},
+      "purpose": "Test current-account metadata for requested Sea Ltd via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-se-history",
+      "group": "global_select",
+      "company": "Sea Ltd",
+      "symbol": "SE",
+      "path": "/tiingo/daily/SE/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested Sea Ltd via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-grab-metadata",
+      "group": "global_select",
+      "company": "Grab",
+      "symbol": "GRAB",
+      "path": "/tiingo/daily/GRAB",
+      "params": {},
+      "purpose": "Test current-account metadata for requested Grab via discovered US_ORDINARY_LISTING candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-grab-history",
+      "group": "global_select",
+      "company": "Grab",
+      "symbol": "GRAB",
+      "path": "/tiingo/daily/GRAB/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested Grab via discovered US_ORDINARY_LISTING candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-infy-metadata",
+      "group": "global_select",
+      "company": "Infosys",
+      "symbol": "INFY",
+      "path": "/tiingo/daily/INFY",
+      "params": {},
+      "purpose": "Test current-account metadata for requested Infosys via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "global-infy-history",
+      "group": "global_select",
+      "company": "Infosys",
+      "symbol": "INFY",
+      "path": "/tiingo/daily/INFY/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Current-account history: Test current-account latest for requested Infosys via discovered ADR candidate; verify returned issuer before classifying."
+    },
+    {
+      "id": "china-000001-metadata",
+      "group": "china_local",
+      "company": "Ping An Bank",
+      "symbol": "000001",
+      "path": "/tiingo/daily/000001",
+      "params": {},
+      "purpose": "Test dated ZIP-discovered SHE local candidate; measure fields, latest date, currency and adjustment availability."
+    },
+    {
+      "id": "china-000001-history",
+      "group": "china_local",
+      "company": "Ping An Bank",
+      "symbol": "000001",
+      "path": "/tiingo/daily/000001/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Test dated ZIP-discovered SHE local candidate; measure fields, latest date, currency and adjustment availability."
+    },
+    {
+      "id": "china-002594-metadata",
+      "group": "china_local",
+      "company": "BYD A",
+      "symbol": "002594",
+      "path": "/tiingo/daily/002594",
+      "params": {},
+      "purpose": "Test dated ZIP-discovered SHE local candidate; measure fields, latest date, currency and adjustment availability."
+    },
+    {
+      "id": "china-002594-history",
+      "group": "china_local",
+      "company": "BYD A",
+      "symbol": "002594",
+      "path": "/tiingo/daily/002594/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Test dated ZIP-discovered SHE local candidate; measure fields, latest date, currency and adjustment availability."
+    },
+    {
+      "id": "china-300750-metadata",
+      "group": "china_local",
+      "company": "CATL",
+      "symbol": "300750",
+      "path": "/tiingo/daily/300750",
+      "params": {},
+      "purpose": "Test dated ZIP-discovered SHE local candidate; measure fields, latest date, currency and adjustment availability."
+    },
+    {
+      "id": "china-300750-history",
+      "group": "china_local",
+      "company": "CATL",
+      "symbol": "300750",
+      "path": "/tiingo/daily/300750/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Test dated ZIP-discovered SHE local candidate; measure fields, latest date, currency and adjustment availability."
+    },
+    {
+      "id": "china-600519-metadata",
+      "group": "china_local",
+      "company": "Kweichow Moutai",
+      "symbol": "600519",
+      "path": "/tiingo/daily/600519",
+      "params": {},
+      "purpose": "Test dated ZIP-discovered SHG local candidate; measure fields, latest date, currency and adjustment availability."
+    },
+    {
+      "id": "china-600519-history",
+      "group": "china_local",
+      "company": "Kweichow Moutai",
+      "symbol": "600519",
+      "path": "/tiingo/daily/600519/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Test dated ZIP-discovered SHG local candidate; measure fields, latest date, currency and adjustment availability."
+    },
+    {
+      "id": "china-601318-metadata",
+      "group": "china_local",
+      "company": "Ping An Insurance A",
+      "symbol": "601318",
+      "path": "/tiingo/daily/601318",
+      "params": {},
+      "purpose": "Test dated ZIP-discovered SHG local candidate; measure fields, latest date, currency and adjustment availability."
+    },
+    {
+      "id": "china-601318-history",
+      "group": "china_local",
+      "company": "Ping An Insurance A",
+      "symbol": "601318",
+      "path": "/tiingo/daily/601318/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Test dated ZIP-discovered SHG local candidate; measure fields, latest date, currency and adjustment availability."
+    },
+    {
+      "id": "china-688981-metadata",
+      "group": "china_local",
+      "company": "SMIC A",
+      "symbol": "688981",
+      "path": "/tiingo/daily/688981",
+      "params": {},
+      "purpose": "Test dated ZIP-discovered SHG local candidate; measure fields, latest date, currency and adjustment availability."
+    },
+    {
+      "id": "china-688981-history",
+      "group": "china_local",
+      "company": "SMIC A",
+      "symbol": "688981",
+      "path": "/tiingo/daily/688981/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Test dated ZIP-discovered SHG local candidate; measure fields, latest date, currency and adjustment availability."
+    },
+    {
+      "id": "china-200011-metadata",
+      "group": "china_local",
+      "company": "Shenzhen Properties B",
+      "symbol": "200011",
+      "path": "/tiingo/daily/200011",
+      "params": {},
+      "purpose": "Test dated ZIP-discovered SHEB local candidate; measure fields, latest date, currency and adjustment availability."
+    },
+    {
+      "id": "china-200011-history",
+      "group": "china_local",
+      "company": "Shenzhen Properties B",
+      "symbol": "200011",
+      "path": "/tiingo/daily/200011/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Test dated ZIP-discovered SHEB local candidate; measure fields, latest date, currency and adjustment availability."
+    },
+    {
+      "id": "china-900901-metadata",
+      "group": "china_local",
+      "company": "INESA Electron B",
+      "symbol": "900901",
+      "path": "/tiingo/daily/900901",
+      "params": {},
+      "purpose": "Test dated ZIP-discovered SHGB local candidate; measure fields, latest date, currency and adjustment availability.",
+      "identityCorrection": "Original planned label Shanghai Yatong was incorrect; actual provider metadata identifies INESA Electron."
+    },
+    {
+      "id": "china-900901-history",
+      "group": "china_local",
+      "company": "INESA Electron B",
+      "symbol": "900901",
+      "path": "/tiingo/daily/900901/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Test dated ZIP-discovered SHGB local candidate; measure fields, latest date, currency and adjustment availability.",
+      "identityCorrection": "Original planned label Shanghai Yatong was incorrect; actual provider metadata identifies INESA Electron."
+    },
+    {
+      "id": "hongkong-0700-metadata",
+      "group": "hong_kong_local",
+      "company": "Tencent HK",
+      "symbol": "0700",
+      "path": "/tiingo/daily/0700",
+      "params": {},
+      "purpose": "No Hong Kong exchange in ZIP. Bounded numeric-code check complements discovery; negative proves only this exact syntax."
+    },
+    {
+      "id": "hongkong-9988-metadata",
+      "group": "hong_kong_local",
+      "company": "Alibaba HK",
+      "symbol": "9988",
+      "path": "/tiingo/daily/9988",
+      "params": {},
+      "purpose": "No Hong Kong exchange in ZIP. Bounded numeric-code check complements discovery; negative proves only this exact syntax."
+    },
+    {
+      "id": "hongkong-0700.hk-metadata",
+      "group": "hong_kong_local",
+      "symbol": "0700.HK",
+      "path": "/tiingo/daily/0700.HK",
+      "params": {},
+      "purpose": "Bounded standard exchange-suffixed Hong Kong symbol probe; absent in ZIP; failure covers only this syntax."
+    },
+    {
+      "id": "hongkong-9988.hk-metadata",
+      "group": "hong_kong_local",
+      "symbol": "9988.HK",
+      "path": "/tiingo/daily/9988.HK",
+      "params": {},
+      "purpose": "Bounded standard exchange-suffixed Hong Kong symbol probe; absent in ZIP; failure covers only this syntax."
+    },
+    {
+      "id": "global-hynix-search",
+      "group": "global_select",
+      "path": "/tiingo/utilities/search",
+      "params": {
+        "query": "SK Hynix"
+      },
+      "purpose": "Resolve HXSCL candidate issuer and discover alternate valid symbol without guessing aliases."
+    },
+    {
+      "id": "china-etf-510300-metadata",
+      "group": "china_etf",
+      "symbol": "510300",
+      "path": "/tiingo/daily/510300",
+      "params": {},
+      "purpose": "Audit mainland ETF data access and provider assetType discrepancy: Huatai-PineBridge CSI300 ETF; provider incorrectly labels Stock in ZIP"
+    },
+    {
+      "id": "china-etf-510300-history",
+      "group": "china_etf",
+      "symbol": "510300",
+      "path": "/tiingo/daily/510300/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Audit mainland ETF data access and provider assetType discrepancy: Huatai-PineBridge CSI300 ETF; provider incorrectly labels Stock in ZIP"
+    },
+    {
+      "id": "china-etf-510040-metadata",
+      "group": "china_etf",
+      "symbol": "510040",
+      "path": "/tiingo/daily/510040",
+      "params": {},
+      "purpose": "Audit mainland ETF data access and provider assetType discrepancy: Penghua SSE180 ETF; provider labels ETF in ZIP"
+    },
+    {
+      "id": "china-etf-510040-history",
+      "group": "china_etf",
+      "symbol": "510040",
+      "path": "/tiingo/daily/510040/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Audit mainland ETF data access and provider assetType discrepancy: Penghua SSE180 ETF; provider labels ETF in ZIP"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+# Full account payloads, observations and detailed analysis stay private.
+__pycache__/
+*.pyc
+PRIVATE_REPORT.md
+compressed_inputs.json
+protected_baseline.json
+protected_baseline.json.gz
+test_results.json
+tiingo_remaining_provider_gap.json
+**/*.json
+**/*.json.gz
+**/*.csv
+**/*.csv.gz
+**/*.html
+**/*.md
+test-logs/
+quality/targeted-tests.tap
+# Reviewed manifests, public source metadata and derived diagnostics.
+!/README.md
+!published/
+!published/**
+!*/probes*.json
+!runtime/**/probes.json
+!endpoints/public_sources.json
+!endpoints/documented_api_urls.json
+!endpoints/documented_field_schemas.json
+!global/listing-form-sources.json
+!global/issuer-listing-forms.json
+!global/depositary-listing-forms.json
+!global/byd-primary-document-provenance.json
+!global/byd-szse-announcements.json

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "auditDate": "2026-10-02",
+  "evidenceRequests": 507,
+  "rawEvidencePublication": false,
+  "confirmedIssuerHeuristic": [
+    {
+      "ticker": "PFBC",
+      "name": "Preferred Bank",
+      "reason": "Issuer phrase incorrectly matched preferred-security heuristic"
+    }
+  ],
+  "confirmedFalseSplitGateRejections": [
+    "DNA",
+    "AMC",
+    "BIRD",
+    "AMWL"
+  ],
+  "listingMetadataSelectionBug": "Reused ticker matched first historic listing rather than existing listing start date",
+  "listingPeriodMetadataCases": 114,
+  "replayedDecisionChanges": 113,
+  "identityReviewSymbols": [
+    "BNY",
+    "CHAI",
+    "DOO",
+    "CRTO",
+    "DEC",
+    "NRG",
+    "GOGL"
+  ],
+  "productionRematerialized": false
+}

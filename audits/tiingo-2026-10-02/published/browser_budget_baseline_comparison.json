@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "baselineCommit": "ef666ab3d9b7c9aea3d6fb6e0aafd4a6349aa20d",
+  "auditCheckCommit": "8d4aa9167ed436d6b087ef2c9544418b1ffa4a3e",
+  "githubBrowserRun": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36983478709",
+  "ciResult": "FAIL_EXISTING_RESOURCE_BUDGET",
+  "baselineReproductionResult": "SAME_RESOURCE_BUDGET_FAILURE",
+  "baselineResourceChecks": [
+    {
+      "view": "home",
+      "decodedBytes": 1785685,
+      "requests": 22,
+      "budget": {
+        "decodedBytes": 1820000,
+        "requests": 45,
+        "history": false
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/",
+      "width": 1440
+    },
+    {
+      "view": "screener",
+      "decodedBytes": 30535913,
+      "requests": 29,
+      "budget": {
+        "decodedBytes": 30500000,
+        "requests": 30,
+        "history": false
+      },
+      "pass": false,
+      "failures": [
+        "decodedBytes"
+      ],
+      "route": "#/screener",
+      "width": 1440
+    },
+    {
+      "view": "screenerPro",
+      "decodedBytes": 30504456,
+      "requests": 19,
+      "budget": {
+        "decodedBytes": 30500000,
+        "requests": 30,
+        "history": false
+      },
+      "pass": false,
+      "failures": [
+        "decodedBytes"
+      ],
+      "route": "#/screener/profi",
+      "width": 1440
+    },
+    {
+      "view": "stock",
+      "decodedBytes": 5529024,
+      "requests": 39,
+      "budget": {
+        "decodedBytes": 5700000,
+        "requests": 45,
+        "history": true
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/aktie/NVDA",
+      "width": 1440
+    },
+    {
+      "view": "home",
+      "decodedBytes": 1781846,
+      "requests": 19,
+      "budget": {
+        "decodedBytes": 1820000,
+        "requests": 45,
+        "history": false
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/",
+      "width": 390
+    },
+    {
+      "view": "screener",
+      "decodedBytes": 30530253,
+      "requests": 26,
+      "budget": {
+        "decodedBytes": 30500000,
+        "requests": 30,
+        "history": false
+      },
+      "pass": false,
+      "failures": [
+        "decodedBytes"
+      ],
+      "route": "#/screener",
+      "width": 390
+    },
+    {
+      "view": "screenerPro",
+      "decodedBytes": 30504456,
+      "requests": 19,
+      "budget": {
+        "decodedBytes": 30500000,
+        "requests": 30,
+        "history": false
+      },
+      "pass": false,
+      "failures": [
+        "decodedBytes"
+      ],
+      "route": "#/screener/profi",
+      "width": 390
+    },
+    {
+      "view": "stock",
+      "decodedBytes": 5529024,
+      "requests": 39,
+      "budget": {
+        "decodedBytes": 5700000,
+        "requests": 45,
+        "history": true
+      },
+      "pass": true,
+      "failures": [],
+      "route": "#/aktie/NVDA",
+      "width": 390
+    }
+  ],
+  "baselineFunctionalChecksPassed": 88,
+  "baselineAccessibilityPages": 76,
+  "baselineAccessibilityViolations": 0,
+  "currentCiFunctionalChecksPassed": 88,
+  "currentCiAccessibilityPages": 76,
+  "currentCiAccessibilityViolations": 0,
+  "auditBudgetGateWeakened": false,
+  "productionAppOrPayloadChanged": false,
+  "scope": "Separate browser resource gate; production smoke and release build pass. No Tiingo provider requests.",
+  "quantCi": "PASS",
+  "secFundamentalsCi": "PASS",
+  "currencyContractCi": "PASS",
+  "productionPagesPackageCi": "PASS",
+  "productionDeployment": "SKIPPED_PULL_REQUEST"
+}

@@ -1,0 +1,647 @@
+{
+  "schema_version": 1,
+  "probes": [
+    {
+      "id": "etf-spy-meta",
+      "path": "/tiingo/daily/SPY",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-spy-prices",
+      "path": "/tiingo/daily/SPY/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-qqq-meta",
+      "path": "/tiingo/daily/QQQ",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-qqq-prices",
+      "path": "/tiingo/daily/QQQ/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-voo-meta",
+      "path": "/tiingo/daily/VOO",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-voo-prices",
+      "path": "/tiingo/daily/VOO/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-vti-meta",
+      "path": "/tiingo/daily/VTI",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-vti-prices",
+      "path": "/tiingo/daily/VTI/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-iwm-meta",
+      "path": "/tiingo/daily/IWM",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-iwm-prices",
+      "path": "/tiingo/daily/IWM/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-dia-meta",
+      "path": "/tiingo/daily/DIA",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-dia-prices",
+      "path": "/tiingo/daily/DIA/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-schd-meta",
+      "path": "/tiingo/daily/SCHD",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-schd-prices",
+      "path": "/tiingo/daily/SCHD/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-tlt-meta",
+      "path": "/tiingo/daily/TLT",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-tlt-prices",
+      "path": "/tiingo/daily/TLT/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-hyg-meta",
+      "path": "/tiingo/daily/HYG",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-hyg-prices",
+      "path": "/tiingo/daily/HYG/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-lqd-meta",
+      "path": "/tiingo/daily/LQD",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-lqd-prices",
+      "path": "/tiingo/daily/LQD/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-gld-meta",
+      "path": "/tiingo/daily/GLD",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-gld-prices",
+      "path": "/tiingo/daily/GLD/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-slv-meta",
+      "path": "/tiingo/daily/SLV",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-slv-prices",
+      "path": "/tiingo/daily/SLV/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-arkk-meta",
+      "path": "/tiingo/daily/ARKK",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-arkk-prices",
+      "path": "/tiingo/daily/ARKK/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-xlf-meta",
+      "path": "/tiingo/daily/XLF",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-xlf-prices",
+      "path": "/tiingo/daily/XLF/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-xlk-meta",
+      "path": "/tiingo/daily/XLK",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-xlk-prices",
+      "path": "/tiingo/daily/XLK/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-xle-meta",
+      "path": "/tiingo/daily/XLE",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-xle-prices",
+      "path": "/tiingo/daily/XLE/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-smh-meta",
+      "path": "/tiingo/daily/SMH",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-smh-prices",
+      "path": "/tiingo/daily/SMH/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-soxx-meta",
+      "path": "/tiingo/daily/SOXX",
+      "params": {},
+      "purpose": "Verify provider metadata and ETF identity",
+      "group": "etf_us"
+    },
+    {
+      "id": "etf-soxx-prices",
+      "path": "/tiingo/daily/SOXX/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Verify latest raw and adjusted ETF OHLCV, cash dividends and split fields",
+      "group": "etf_us"
+    },
+    {
+      "id": "fund-spy-meta",
+      "path": "/tiingo/funds/SPY",
+      "params": {},
+      "purpose": "Verify documented fund fees endpoint available to current account, never infer holdings from fees",
+      "group": "fund_metadata"
+    },
+    {
+      "id": "fund-spy-fees",
+      "path": "/tiingo/funds/SPY/metrics",
+      "params": {},
+      "purpose": "Verify documented fund fees endpoint available to current account, never infer holdings from fees",
+      "group": "fund_metadata"
+    },
+    {
+      "id": "fund-qqq-meta",
+      "path": "/tiingo/funds/QQQ",
+      "params": {},
+      "purpose": "Verify documented fund fees endpoint available to current account, never infer holdings from fees",
+      "group": "fund_metadata"
+    },
+    {
+      "id": "fund-qqq-fees",
+      "path": "/tiingo/funds/QQQ/metrics",
+      "params": {},
+      "purpose": "Verify documented fund fees endpoint available to current account, never infer holdings from fees",
+      "group": "fund_metadata"
+    },
+    {
+      "id": "fund-voo-meta",
+      "path": "/tiingo/funds/VOO",
+      "params": {},
+      "purpose": "Verify documented fund fees endpoint available to current account, never infer holdings from fees",
+      "group": "fund_metadata"
+    },
+    {
+      "id": "fund-voo-fees",
+      "path": "/tiingo/funds/VOO/metrics",
+      "params": {},
+      "purpose": "Verify documented fund fees endpoint available to current account, never infer holdings from fees",
+      "group": "fund_metadata"
+    },
+    {
+      "id": "fund-vti-meta",
+      "path": "/tiingo/funds/VTI",
+      "params": {},
+      "purpose": "Verify documented fund fees endpoint available to current account, never infer holdings from fees",
+      "group": "fund_metadata"
+    },
+    {
+      "id": "fund-vti-fees",
+      "path": "/tiingo/funds/VTI/metrics",
+      "params": {},
+      "purpose": "Verify documented fund fees endpoint available to current account, never infer holdings from fees",
+      "group": "fund_metadata"
+    },
+    {
+      "id": "fund-vfinx-meta",
+      "path": "/tiingo/funds/VFINX",
+      "params": {},
+      "purpose": "Verify documented fund fees endpoint available to current account, never infer holdings from fees",
+      "group": "fund_metadata"
+    },
+    {
+      "id": "fund-vfinx-fees",
+      "path": "/tiingo/funds/VFINX/metrics",
+      "params": {},
+      "purpose": "Verify documented fund fees endpoint available to current account, never infer holdings from fees",
+      "group": "fund_metadata"
+    },
+    {
+      "id": "fund-vtsax-meta",
+      "path": "/tiingo/funds/VTSAX",
+      "params": {},
+      "purpose": "Verify documented fund fees endpoint available to current account, never infer holdings from fees",
+      "group": "fund_metadata"
+    },
+    {
+      "id": "fund-vtsax-fees",
+      "path": "/tiingo/funds/VTSAX/metrics",
+      "params": {},
+      "purpose": "Verify documented fund fees endpoint available to current account, never infer holdings from fees",
+      "group": "fund_metadata"
+    },
+    {
+      "id": "fund-fxaix-meta",
+      "path": "/tiingo/funds/FXAIX",
+      "params": {},
+      "purpose": "Verify documented fund fees endpoint available to current account, never infer holdings from fees",
+      "group": "fund_metadata"
+    },
+    {
+      "id": "fund-fxaix-fees",
+      "path": "/tiingo/funds/FXAIX/metrics",
+      "params": {},
+      "purpose": "Verify documented fund fees endpoint available to current account, never infer holdings from fees",
+      "group": "fund_metadata"
+    },
+    {
+      "id": "ucits-eunl-meta",
+      "path": "/tiingo/daily/EUNL",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-eunl-prices",
+      "path": "/tiingo/daily/EUNL/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-eunl-fund",
+      "path": "/tiingo/funds/EUNL",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-eunl-fees",
+      "path": "/tiingo/funds/EUNL/metrics",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-sxr8-meta",
+      "path": "/tiingo/daily/SXR8",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-sxr8-prices",
+      "path": "/tiingo/daily/SXR8/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-sxr8-fund",
+      "path": "/tiingo/funds/SXR8",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-sxr8-fees",
+      "path": "/tiingo/funds/SXR8/metrics",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-vwce-meta",
+      "path": "/tiingo/daily/VWCE",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-vwce-prices",
+      "path": "/tiingo/daily/VWCE/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-vwce-fund",
+      "path": "/tiingo/funds/VWCE",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-vwce-fees",
+      "path": "/tiingo/funds/VWCE/metrics",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-vwrl-meta",
+      "path": "/tiingo/daily/VWRL",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-vwrl-prices",
+      "path": "/tiingo/daily/VWRL/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-vwrl-fund",
+      "path": "/tiingo/funds/VWRL",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-vwrl-fees",
+      "path": "/tiingo/funds/VWRL/metrics",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-cspx-meta",
+      "path": "/tiingo/daily/CSPX",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-cspx-prices",
+      "path": "/tiingo/daily/CSPX/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-cspx-fund",
+      "path": "/tiingo/funds/CSPX",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-cspx-fees",
+      "path": "/tiingo/funds/CSPX/metrics",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-iwda-meta",
+      "path": "/tiingo/daily/IWDA",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-iwda-prices",
+      "path": "/tiingo/daily/IWDA/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-iwda-fund",
+      "path": "/tiingo/funds/IWDA",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-iwda-fees",
+      "path": "/tiingo/funds/IWDA/metrics",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-exs1-meta",
+      "path": "/tiingo/daily/EXS1",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-exs1-prices",
+      "path": "/tiingo/daily/EXS1/prices",
+      "params": {
+        "startDate": "2026-09-21",
+        "endDate": "2026-10-01"
+      },
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-exs1-fund",
+      "path": "/tiingo/funds/EXS1",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "ucits-exs1-fees",
+      "path": "/tiingo/funds/EXS1/metrics",
+      "params": {},
+      "purpose": "Probe canonical UCITS symbols absent from master; match returned security identity before claiming support",
+      "group": "ucits"
+    },
+    {
+      "id": "etf-spy-iex",
+      "path": "/iex/SPY",
+      "params": {},
+      "purpose": "Verify sample ETF IEX quote availability",
+      "group": "etf_live"
+    },
+    {
+      "id": "etf-qqq-iex",
+      "path": "/iex/QQQ",
+      "params": {},
+      "purpose": "Verify sample ETF IEX quote availability",
+      "group": "etf_live"
+    },
+    {
+      "id": "etf-voo-iex",
+      "path": "/iex/VOO",
+      "params": {},
+      "purpose": "Verify sample ETF IEX quote availability",
+      "group": "etf_live"
+    }
+  ]
+}
