@@ -40,6 +40,10 @@ on:
         default: ''
   schedule:
     - cron: '17 4 * * 1'
+    # Absicherung: workflow_run nach dem Marktdaten-Refresh loeste am
+    # 03.10.2026 nicht aus. Taeglich nach dem naechtlichen Refresh, vor der
+    # Sichtpruefung um 07:52 Uhr deutscher Zeit.
+    - cron: '47 3 * * 2-6'
   workflow_run:
     workflows:
       - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
