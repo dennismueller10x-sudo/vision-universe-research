@@ -32,3 +32,11 @@
 5. **Zeitpunkt-Wissen produktiv machen** — H6 bestätigt: früher Einstieg in der laufenden Gegenbewegung schlägt späte Bestätigung (unabhängig von Elliott). Im Produkt als Erklärung der Schlüsselzone, nicht als Signal.
 6. **Echte Referenzbeispiele** — dokumentierte historische Zählungen (Indizes) mit Rechteklärung; manuelle Prüfung der 80er-Audit-Stichprobe durch einen Elliott-Praktiker.
 7. **Survivorship** — Delisting-Bündel anbinden und Studie wiederholen.
+
+## Nach Elliott Engine 3 (Quality Remediation)
+
+1. **Blinde Expertenannotation** über die Werkbank (`quant/research/elliott-workbench/`), ≥ 2 Annotatoren je Fall, Übereinstimmung Engine ↔ Mensch und Mensch ↔ Mensch.
+2. **G5-Ursache** (Bestätigungsbewegung wird als Struktur gleichen Grades gelesen) auf DEVELOPMENT analysieren und beheben.
+3. **HOLDOUT-3 vorab registrieren** (neue Seeds, neues Korpus-Layout, möglichst extern erzeugt), dann das Gate erneut messen.
+4. **Produkt auf Engine 3.1 umstellen**, sobald der Neubau mit Replay eingeplant ist (Rechenzeit mehrere Stunden); bis dahin 2.2.
+5. **Erst nach bestandenem Gate:** Prognoseprüfung mit neuem Holdout und Vergleichsleiter A–E (Prereg §7).

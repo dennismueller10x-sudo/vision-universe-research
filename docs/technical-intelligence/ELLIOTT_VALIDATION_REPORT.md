@@ -171,7 +171,7 @@ H1 in allen Varianten ≈ 0 (ΔLogLoss ≤ 0,0003), H7 nie von null verschieden.
 
 * Survivorship: nur heute gelistete Titel; absolute Quoten überhöht (Vergleiche weniger betroffen).
 * Wochenschlusskurse ohne Hoch/Tief/Volumen; Volumen-Merkmale nicht prüfbar.
-* Grad-Problem nicht gelöst (§4); Flats und trunkierte Impulse werden schlecht erkannt.
+* Grad-Problem nicht gelöst (§4); Flats und trunkierte Impulse werden schlecht erkannt. → Nachtrag: in Engine 3.x weitgehend behoben (synthetisch, getrennte Fälle); Gate dennoch nicht bestanden, siehe ELLIOTT_ENGINE3_REPORT.md.
 * Der Titel-Holdout ist nicht völlig unberührt (gleiche Kursreihen in der früheren aggregierten Studie, andere Frage).
 * Fundstellen auf Kapitelebene; Volltext nicht geprüft (ELLIOTT_RULE_MATRIX.md).
 

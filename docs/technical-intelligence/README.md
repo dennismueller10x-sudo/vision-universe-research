@@ -15,6 +15,8 @@
 | [ELLIOTT_AUDIT.md](ELLIOTT_AUDIT.md) | forensisches Audit der Elliott-Engine (Fehlerklassen A–H, Regelkarte) |
 | [ELLIOTT_RULE_MATRIX.md](ELLIOTT_RULE_MATRIX.md) | quellengebundene Regelmatrix: Regel, Guideline, VU-Merkmal; Quelle, Klasse, Test (generiert) |
 | [PREREGISTRATION.md](PREREGISTRATION.md) | vorab registrierte Elliott-Hypothesen H1–H7, Entscheidungsregel, Amendment 1 |
+| [ELLIOTT_ENGINE_QUALITY_PREREG.md](ELLIOTT_ENGINE_QUALITY_PREREG.md) | vorab registriertes Engine-Quality-Gate (Korpus v2, Splits, Änderung 1) |
+| [ELLIOTT_ENGINE3_REPORT.md](ELLIOTT_ENGINE3_REPORT.md) | Engine 3.x: Architektur, HOLDOUT-1/2, Red-Team, Vorher/Nachher |
 | [ELLIOTT_VALIDATION_REPORT.md](ELLIOTT_VALIDATION_REPORT.md) | Bestätigungs-/Replikationsstudie, Referenzset, Audit-Stichprobe, Qualitätskalibrierung |
 | [TECHNICAL_EDGE_RESEARCH.md](TECHNICAL_EDGE_RESEARCH.md) | Ergebnis-Matrix aller Methoden, KEEP/DOWNWEIGHT/REMOVE, Produkttrennung |
 | [API_V3_MIGRATION.md](API_V3_MIGRATION.md) | v2 → v3: Overlays, Klarheit, Evidenzbadges, Replay |
@@ -22,3 +24,5 @@
 Kurzfassung der Evidenz (Nachlauf mit Engine 2.2 und Elliott-Gewicht 0, siehe TECHNICAL_EVIDENCE §0b): Hauptszenarien erreichen Zielzone 1 im Test (2019–2026, 46.544 Fälle) in **35,6 %** der Fälle gegenüber **35,9 %** bei zufälligem Timing mit gleicher Geometrie — **kein messbarer Vorteil**. Kalibrierung nicht bestanden → keine Wahrscheinlichkeiten. Fibonacci-Niveaus ohne Häufung. Elliott-Lesarten bringen in der vorab registrierten Prüfung keinen Prognosebeitrag, auch nicht die Konsistenz mit dem höheren Grad (H4). Das Chartbild ist Einordnung, kein Signalgeber.
 
 **Elliott (Mission II):** Die vorab registrierte Studie (1.784 Reihen, 69.791 Ereignisse, Walk-forward, Cluster-Bootstrap, Holm) bestätigt **keinen** Prognosebeitrag des Elliott-Labels (H1–H5, H7); bestätigt ist nur ein Timing-Effekt (H6), der ebenso ohne Elliott-Fortsetzungslabel auftritt. Count Quality steigt nicht mit dem späteren Ergebnis (HIGH − LOW +1,4 pp, n. s.). Entscheidung: **Elliott = Kontext**, Konfluenzgewicht 0; im Produkt als Strukturbeschreibung mit Regel-Audit, Quelle je Regel und Anwendbarkeit (inkl. „keine verlässliche Zählung").
+
+**Elliott Engine 3 (Quality Remediation):** Auf getrennten synthetischen Fällen (HOLDOUT-2) erkennt Engine 3.1 das Muster in 51,3 % der Fälle als Hauptzählung (2.2: 0,4 %), den Grad in 51,9 % (2.2: 0,4 %). Ausgegebene Zählungen verletzen keine harte Regel mehr, und falsche Sicherheit sinkt auf 15 % (2.2: 100 %). Das Gate ist **nicht** bestanden (grober Grad-Fehler 29 %, hohes Rauschen 10 %). Deshalb kein Prognose-Backtest; Status „Experimentelles Strukturmodell“, keine Expertenvalidierung. Siehe [ELLIOTT_ENGINE3_REPORT.md](ELLIOTT_ENGINE3_REPORT.md).
