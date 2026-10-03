@@ -96,9 +96,12 @@ function create(options){
   const [capabilities,productSummary]=await Promise.all([load('/quant/data/universe/market-capability.json'),load('/quant/data/product/capabilities-summary-v1.json').catch(()=>null)]);
   c.capabilities=capabilities;c.productSummary=productSummary;return c;
  }
+ /* Die Produktprojektion (Release-Build, factor-product-projection.js) traegt
+  * genau die Felder, die broadRow liest: 3,4 statt 19,2 MB. Ohne sie (lokal,
+  * alter Stand) gilt die volle Datei. */
  async function hydrateFullUniverseFactors(c){
   if(c.factorIndex)return c;
-  const factors=await load('/quant/data/market/factors/factors-FULL_UNIVERSE.json');
+  const factors=await load('/quant/data/market/factors/factors-FULL_UNIVERSE-product.json').catch(()=>load('/quant/data/market/factors/factors-FULL_UNIVERSE.json'));
    const factorIndex=Object.create(null);
    const list=Array.isArray(factors&&factors.securities)?factors.securities:Object.values((factors&&factors.securities)||{});
    list.forEach(f=>{if(f&&f.ticker)factorIndex[f.ticker]=f;if(f&&f.securityId)factorIndex[f.securityId]=f;});
@@ -995,7 +998,10 @@ function create(options){
   }catch{return unavailable('SOURCE_MISSING');}
  }
  async function getStockIntelligence(ticker){ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
-  try{const c=await hydrateCapabilities(await init()),canonical=await identity(ticker);if(!canonical)return unavailable('INVALID_IDENTITY');
+  /* Die Aktienseite laedt die Faktoren selbst. Vorher hatte sie sie nur, wenn
+     vorher eine Liste geladen war: Direktaufruf ohne Volatilitaet und Drawdown,
+     Stand der Marktkennzahlen veraltet (Audit 03.10.2026). */
+  try{const c=await hydrateFullUniverseFactors(await hydrateCapabilities(await init())),canonical=await identity(ticker);if(!canonical)return unavailable('INVALID_IDENTITY');
    const member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member)return identityOnlyStock(ticker);
    const panelCandidate=c.panel?.securities?.[ticker];if(panelCandidate&&panelCandidate.securityId!=='sec_'+ticker)return unavailable('INVALID_IDENTITY');
    let stock=await row(c,ticker)||broadRow(c,member);if(!stock)return identityOnlyStock(ticker);

@@ -6,7 +6,7 @@ import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {gzipSync} from 'node:zlib';
 import {createRequire} from 'node:module';
-const require=createRequire(import.meta.url),Master=require('../../quant/engines/company-master.js'),History=require('../../quant/api/fundamentals-contract.js');
+const require=createRequire(import.meta.url),Master=require('../../quant/engines/company-master.js'),History=require('../../quant/api/fundamentals-contract.js'),FactorProjection=require('../../quant/engines/factor-product-projection.js');
 export const SEC_BUDGET=8*1024*1024;
 const fields=(x,keys)=>Object.fromEntries(keys.filter(k=>Object.hasOwn(x||{},k)).map(k=>[k,x[k]]));
 export function projectInspector(source){
@@ -24,6 +24,7 @@ export function projectQuarterly(source){
  return {...fields(source,['generatedAtUtc','versions','dataSource','cik','asOf','policy','availability','columns']),schema:'vu-quant-quarterly-1.0.0',sourceSchema:source.schema,
   semantics:{quarterly:source.semantics?.quarterly},units:Object.fromEntries(Object.entries(source.units||{}).filter(([id])=>Object.hasOwn(quarterly,id))),quarterly,unavailableMetrics};
 }
+export const FACTOR_PROJECTION_BUDGET=4*1024*1024;
 export function permitted(path){
  if(path.split('/').some(p=>p.startsWith('.'))&&path!=='.nojekyll')return false;
  if(/^(scripts|docs|providers)\//.test(path)||/\/(tests|fixtures)\//.test(path)||/\.test\.(m?js|py)$/.test(path))return false;
@@ -40,6 +41,15 @@ export async function buildRelease({root,output}){
  for(const p of paths.filter(permitted)){const from=resolve(root,p);if(!(await lstat(from)).isFile())throw Error('NON_FILE_INPUT');await mkdir(dirname(resolve(output,p)),{recursive:true});await copyFile(from,resolve(output,p));}
  async function json(path,value){const bytes=Buffer.from(JSON.stringify(value));await mkdir(dirname(resolve(output,path)),{recursive:true});await writeFile(resolve(output,path),bytes);emitted.push({path,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});}
  const load=async p=>JSON.parse(await readFile(resolve(root,p),'utf8'));
+ /* Produktprojektion der Faktordatei (factor-product-projection.js): die
+    Quant-Ansichten laden 3,4 statt 19,2 MB. Die volle Datei bleibt daneben. */
+ /* Eigener Schreibweg mit eigenem Budget: das SEC-Auslieferungsbudget unten
+    gilt den SEC-Projektionen und bleibt unveraendert. */
+ if(paths.includes('quant/data/market/factors/factors-FULL_UNIVERSE.json')){
+  const bytes=Buffer.from(JSON.stringify(FactorProjection.project(await load('quant/data/market/factors/factors-FULL_UNIVERSE.json'))));
+  if(bytes.length>FACTOR_PROJECTION_BUDGET)throw Error('FACTOR_PROJECTION_BUDGET_EXCEEDED');
+  await writeFile(resolve(output,'quant/data/market/factors/factors-FULL_UNIVERSE-product.json'),bytes);
+ }
  const index=await load('quant/data/sec/inspector_index.json');
  await json('quant/data/sec/inspector_index.json',index);
  for(const name of ['quant-factor-inputs.json','coverage_matrix.json','pit_gates.json'])await json('quant/data/sec/'+name,await load('quant/data/sec/'+name));
