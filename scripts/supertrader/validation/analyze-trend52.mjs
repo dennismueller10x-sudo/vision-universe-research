@@ -64,12 +64,13 @@ async function main() {
   fs.mkdirSync(OUT, { recursive: true });
   const t0 = Date.now();
   const log = (m) => console.log(`[trend52 +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
-  const { segs, spyTR, spyAdj, calendar, nonEquityExcluded } = await loadPitData({ LIMIT, log, excludeNonEquity: true });
+  const CLASSIFIED = argv.includes('--classified'); // Runde 13: S1C (SEC-Delisting-Klassen)
+  const { segs, spyTR, spyAdj, calendar, nonEquityExcluded, dataFingerprint } = await loadPitData({ LIMIT, log, excludeNonEquity: true, delistPit: CLASSIFIED });
   const stocks = segs.map((seg) => {
     const a = L.adjustSeries(seg.raw); const n = a.date.length;
     return { id: seg.id, symbol: seg.id.split(':')[2] || seg.id, survivor: seg.survivor, delisted: seg.delisted,
       bars: { date: a.date, open: a.open, high: a.high, low: a.low, close: a.close, volume: a.volume }, divAdj: a.divAdj, rs: seg.cross?.rs || null,
-      terminal: seg.delisted ? { date: a.date[n - 1], lastClose: a.close[n - 1], distress: L.distressSignature(a.rawClose), kind: 'DELISTED' } : null };
+      terminal: seg.delisted ? { date: a.date[n - 1], lastClose: a.close[n - 1], distress: L.distressSignature(a.rawClose), kind: 'DELISTED', delistClass: seg.delistClass || null } : null };
   });
   for (const s of segs) { s.raw = null; }
   log(`Aktien ${stocks.length}, delistet ${stocks.filter((s) => s.delisted).length}`);
@@ -86,6 +87,15 @@ async function main() {
   const seeds = [];
   for (let s = 1; s <= 20; s++) { const r = simulateRotation(stocks, calendar, spy, { from: W.from, to: W.to, variant: 'PP', rank: 'RANDOM', seed: s, scenario: 'S1_MINUS_30' }); const m = metrics(r, spyTR); seeds.push({ seed: s, excessCagr: m.excessCagr, cagr: m.cagr, maxDrawdown: m.maxDrawdown }); }
   log('Zufallsreihenfolgen fertig');
+  let judgementS1C = null;
+  if (CLASSIFIED) {
+    go('PP_S1C', stocks, { variant: 'PP', rank: 'CLENOW', scenario: 'S1C_CLASSIFIED' });
+    go('PP_COST2_S1C', stocks, { variant: 'PP', rank: 'CLENOW', scenario: 'S1C_CLASSIFIED', slippageBps: 20, commissionBps: 2 });
+    go('BASE_S1C', stocks, { variant: 'BASE', rank: 'CLENOW', scenario: 'S1C_CLASSIFIED' });
+    const sc = []; for (let s = 1; s <= 20; s++) { const r = simulateRotation(stocks, calendar, spy, { from: W.from, to: W.to, variant: 'PP', rank: 'RANDOM', seed: s, scenario: 'S1C_CLASSIFIED' }); sc.push(metrics(r, spyTR).excessCagr); }
+    const q = runs.PP_S1C;
+    judgementS1C = { R1: q.excessCagr > 0, R2: q.subperiods.every((x) => x.excess > 0), R3: sc.filter((x) => x > 0).length >= 16, R4: runs.PP_COST2_S1C.excessCagr > 0, seedsPositive: sc.filter((x) => x > 0).length, seeds: sc };
+  }
   const s1 = runs.PP_S1;
   const judgement = { R1: s1.excessCagr > 0, R2: s1.subperiods.every((x) => x.excess > 0), R3: seeds.filter((x) => x.excessCagr > 0).length >= 16, R4: runs.PP_COST2_S1.excessCagr > 0, seedsPositive: seeds.filter((x) => x.excessCagr > 0).length };
   judgement.verdict = judgement.R1 && judgement.R2 && judgement.R3 && judgement.R4 ? 'CRITERIA_MET' : 'TESTED_NO_EDGE';
@@ -94,11 +104,11 @@ async function main() {
     openAtEnd: r.openAtEnd.map((o) => ({ listingId: o.listingId, entryDate: o.entryDate, exits: o.exits.map((x) => ({ date: x.date, ruleId: x.ruleId })) })), skipped: r.skipped.filter((x) => x.decision).map((x) => [x.date, x.listingId, x.reason]),
     decisions: r.decisions.map((d) => ({ date: d.date, green: d.green, universe: d.universe, candidates: d.candidates, sells: d.sells, buys: d.buys, top: d.top.map((x) => [x.listingId, x.rank, x.score, x.perf]) })) });
   const result = { schema: 'supertrader-validation-trend52-1.0.0', prereg: 'supertrader-validation-prereg-r12-1.0.0', at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
-    params: PARAMS, universe: { stocks: stocks.length, delisted: stocks.filter((s) => s.delisted).length, nonEquityExcluded: Array.isArray(nonEquityExcluded) ? nonEquityExcluded.length : nonEquityExcluded },
-    spy: { cagr: cagrBetween(spyTR, W.from, W.to, 'value'), maxDrawdown: maxDrawdown(spyTR, 'value') }, runs, seeds, judgement, controls: ctl,
+    params: PARAMS, dataFingerprint, universe: { stocks: stocks.length, delisted: stocks.filter((s) => s.delisted).length, nonEquityExcluded: Array.isArray(nonEquityExcluded) ? nonEquityExcluded.length : nonEquityExcluded },
+    spy: { cagr: cagrBetween(spyTR, W.from, W.to, 'value'), maxDrawdown: maxDrawdown(spyTR, 'value') }, runs, seeds, judgement, judgementS1C, controls: ctl,
     raw: { PP_S1: slim(ppS1), BASE_S1: slim(base) }, ppS0Decisions: pp.decisions.length };
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
-  fs.writeFileSync(path.join(OUT, `trend52${LIMIT ? '-smoke' : ''}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify(result))));
+  fs.writeFileSync(path.join(OUT, `trend52${CLASSIFIED ? '-s1c' : ''}${LIMIT ? '-smoke' : ''}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify(result))));
   log('Verschluesseltes Ergebnis geschrieben');
 }
 
