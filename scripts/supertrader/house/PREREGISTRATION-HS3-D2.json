@@ -1,0 +1,14 @@
+{
+  "schema": "supertrader-house-prereg-amendment-1.0.0",
+  "id": "VU_HOUSE_HS3_D2",
+  "amends": "PREREGISTRATION-HS3-D1.json",
+  "registeredAt": "2026-10-03",
+  "trigger": "Run 37139551895 (D1): G0 erneut verfehlt; die ADR/IFRS-Regel griff nicht, weil Auslandsemittenten mit Jahresberichten (20-F) keine Quartals-EPS und damit keine Taxonomie in der Datenstufe tragen.",
+  "change": [
+    "Zusätzlich zu D1: nur Emittenten mit mindestens einer Quartals-EPS-Reihe in sec-pit (10-Q-Melder) sind im 500er-Universum zugelassen (Ersatz für ‚US-Inlandsemittent‘, Voraussetzung des S&P 500)."
+  ],
+  "diagnostics": "Das Ergebnis enthält je Dezember die 25 größten Gewichte der Kontrolle C00 (nur verschlüsselt), damit G0 begründet werden kann.",
+  "unchanged": "Versuche, Auswahlregel, Gate G0, Kriterien, Holdout-Sperre.",
+  "knowledge": "Ergebnisse der M-Versuche aus HS3 und D1 waren sichtbar; die Versuche zählen erneut (insgesamt 37).",
+  "frozen": "FROZEN-HS3-D2.json für einen Holdout-Lauf."
+}

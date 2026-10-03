@@ -184,7 +184,8 @@ export function indexTiltWeights(elig, cfg, P = HS1) {
     // HS3: je CIK ein Listing (hoechster 63-Tage-Umsatz; elig ist danach sortiert), dann die 500 groessten.
     const seen = new Set(); const one = [];
     let pool = elig.filter((e) => Number.isFinite(e.MCAP));
-    if (cfg.mcapRule === 'D1') {
+    if (cfg.mcapRule === 'D2') pool = pool.filter((e) => (e.st.fund?.eps?.length || 0) > 0); // HS3-D2: nur 10-Q-Melder (US-Inlandsemittenten)
+    if (cfg.mcapRule === 'D1' || cfg.mcapRule === 'D2') {
       // HS3-D1: keine ADR und keine IFRS-Emittenten (Aktienanzahl passt nicht zum Hinterlegungsschein, nicht im S&P 500);
       // Mehrgattungs-CIK mit Kursabstand > 2x zwischen ihren Listings an D wird ausgelassen (Stueckzahl nicht einer Gattung zuordenbar).
       pool = pool.filter((e) => e.st.cls !== 'ADR' && e.st.fund?.taxonomy !== 'ifrs-full');
@@ -315,7 +316,8 @@ export function simulate(stocks, calendar, cfg, P = HS1) {
           if (want > cur) buys.push({ st: p.st, value: want - cur }); else sells.set(id, (cur - want) / p.last);
         }
         pending = { sells, buys };
-        log.push({ date: D, eligible: elig.length, exposure: 1, holdings: [...tw.entries()].sort((a, b) => b[1].w - a[1].w).slice(0, 60).map(([id]) => id), sells: sells.size, buys: buys.length });
+        const top = [...tw.entries()].sort((a, b) => b[1].w - a[1].w);
+        log.push({ date: D, eligible: elig.length, exposure: 1, universe: tw.size, holdings: top.slice(0, 60).map(([id]) => id), topWeights: top.slice(0, 25).map(([id, x]) => [id.split(':')[2], +x.w.toFixed(4)]), sells: sells.size, buys: buys.length });
         continue;
       }
       const exposure = cfg.regime && cfg.spySma && cfg.spySma[k] < 1 ? P.regimeExposure : 1;

@@ -225,6 +225,8 @@ test('HS3-D1: ADR, IFRS und Mehrgattung mit Kursabstand > 2x fallen aus dem Univ
   const elig = [mk('ADR1', 900, { cls: 'ADR' }), mk('IFRS1', 800, { tax: 'ifrs-full' }), mk('BRKA', 700, { cik: 'B', px: 400000 }), mk('BRKB', 600, { cik: 'B', px: 270 }), mk('GOOGL', 500, { cik: 'G', px: 100 }), mk('GOOG', 490, { cik: 'G', px: 101 }), mk('X', 100)];
   const w = indexTiltWeights(elig, { sizeBy: 'MCAP', mcapRule: 'D1', factors: [] });
   assert.deepEqual([...w.keys()].sort(), ['GOOGL', 'X']);
+  const w2 = indexTiltWeights(elig.map((e) => ({ ...e, st: { ...e.st, fund: { ...e.st.fund, eps: e.st.id === 'X' ? [] : [[1]] } } })), { sizeBy: 'MCAP', mcapRule: 'D2', factors: [] });
+  assert.deepEqual([...w2.keys()], ['GOOGL'], 'D2: ohne Quartals-EPS nicht zugelassen');
   const w0 = indexTiltWeights(elig, { sizeBy: 'MCAP', factors: [] });
   assert.ok(w0.has('ADR1') && w0.has('BRKA'), 'ohne D1 unveraendert (HS3 reproduzierbar)');
 });

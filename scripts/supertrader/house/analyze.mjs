@@ -34,6 +34,10 @@ export const SETS = {
   hs3d1: { prereg: 'PREREGISTRATION-HS3.json', frozen: 'FROZEN-HS3-D1.json', secPitKey: 'r13', cfg: (t) => ({ weighting: 'INDEX_TILT', sizeBy: 'MCAP', mcapRule: 'D1', factors: t.factors, tau: t.tau || 0, cut: !!t.cut }),
     selectable: (t) => t.def.id !== 'C00' && t.turnover <= 1 && t.metrics.excessCagr > 0 && t.vsControl?.excessCagr > 0, pboIds: (ids) => ids.filter((id) => id !== 'C00'),
     priorSets: ['hs1', 'hs2', 'hs3'], control: 'C00', relative: true, gateTE: 0.03 },
+  // HS3-D2 (PREREGISTRATION-HS3-D2.json): nur Emittenten mit Quartals-EPS; D1-Regeln bleiben.
+  hs3d2: { prereg: 'PREREGISTRATION-HS3.json', frozen: 'FROZEN-HS3-D2.json', secPitKey: 'r13', cfg: (t) => ({ weighting: 'INDEX_TILT', sizeBy: 'MCAP', mcapRule: 'D2', factors: t.factors, tau: t.tau || 0, cut: !!t.cut }),
+    selectable: (t) => t.def.id !== 'C00' && t.turnover <= 1 && t.metrics.excessCagr > 0 && t.vsControl?.excessCagr > 0, pboIds: (ids) => ids.filter((id) => id !== 'C00'),
+    priorSets: ['hs1', 'hs2', 'hs3', 'hs3d1'], control: 'C00', relative: true, gateTE: 0.03 },
 };
 
 const slimMonthly = (m) => m.monthly.map((x) => [x.month, +x.r.toFixed(6), +x.b.toFixed(6)]);
@@ -44,7 +48,7 @@ async function main() {
   const arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
   const MODE = arg('--mode', 'dev');
   const SET = arg('--set', 'hs1');
-  if (!SETS[SET]) throw new Error('--set hs1|hs2|hs3|hs3d1');
+  if (!SETS[SET]) throw new Error('--set hs1|hs2|hs3|hs3d1|hs3d2');
   const OUT = arg('--out', path.join(os.tmpdir(), 'house'));
   const LIMIT = Number(arg('--limit', '0'));
   if (!['dev', 'holdout'].includes(MODE)) throw new Error('--mode dev|holdout');
@@ -118,12 +122,14 @@ export function runAnalysis(d, { MODE, SET = 'hs1', LIMIT = 0, frozen = null, lo
       const r = run(set.cfg(t));
       out[t.id] = { def: t, metrics: summary(metrics(r.equity, bench)), turnover: r.turnover, costs: r.costs, meanPositions: r.meanPositions, terminalCount: r.terminalCount,
         reconcile: Math.abs(r.equity.at(-1).equity - (r.cashEnd + r.openValueEnd)), lastHoldings: r.log.at(-1)?.holdings.slice(0, 30).map((id) => id.split(':')[2]) || [] };
+      if (S.control && t.id === S.control && prereg === P) out[t.id].decisions = r.log.filter((x) => x.date.slice(5, 7) === '12' || x === r.log[0]).map((x) => ({ date: x.date, universe: x.universe, top: x.topWeights }));
       log(`${t.id} fertig`);
     }
     return out;
   };
   const activeSr = (t) => { const mm = moments(t.metrics.monthly.map((m) => m[1] - m[2])); return mm.sdSample > 0 ? mm.mean / mm.sdSample : 0; };
   const trials = runTrials(P, S);
+  const diag = {};
   // HS3: Ueberrendite gegenueber der Kontrolle (monatlich) und Datenpruefung G0.
   let gate = null;
   if (S.relative) {
