@@ -20,6 +20,10 @@ The productizer consumes the existing authenticated discovery cache and listing-
 
 Production deployment/merge and private history-store writes remain separate from this preview workflow. The prepared authenticated package contains full private history bytes and their additive-only intent, the canonical transaction, QA proof and rollback evidence. A storage publisher must perform its current zero-cost preflight and identity/index checks; it must not overwrite an existing history with different content. Canonical rollback retains additive historical data for backtests.
 
+## Final package refresh after review corrections
+
+`.github/workflows/tiingo2-publication-package-refresh.yml` validates the final committed review tree against the original authenticated publication transaction. It runs only as a same-repository PR check on the internal review branch and has no apply or deployment step. The existing staging APIs rebind corrected native names, capabilities, patterns, strategy and logo outputs; 113 private histories remain byte-exact. Original QA is discarded, and new protected, Chromium/WebKit, release, accessibility, smoke and unchanged budget proofs certify the final transaction before encryption. The original production baseline, history-store preflight and index CAS must still be current at actual publication. The normal weekday workflow retains its cheap `NO_CHANGES` path.
+
 ## Product-specific availability
 
 The existing full seven-factor Quant composite methodology has `publication.allowed:false`. Productization does not override it. Actual available Factor DNA evidence is published as partial or technical-only evidence; missing factors are typed unavailable and never zero-filled. A title can support Search/Chart/Watchlist while a technical strategy, Discover rule or full Quant score remains unavailable.

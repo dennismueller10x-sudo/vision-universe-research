@@ -169,11 +169,23 @@ export async function materializeLogos({ root = repositoryRoot, outputRoot, tick
           !Object.values(credits.credits).some(c => c.wide === previousWide)) rmSync(join(out, previousWide), { force: true });
       } else canonicalAssets.set(companyId, { path, credit, validation, dark: index.dark.includes(ticker) });
     } else {
+      const rejectedWidePaths = new Set([credit?.wide, index.wideFiles[ticker], 'files/wide/' + ticker + '.png'].filter(Boolean));
       delete index.files[ticker]; delete credits.credits[ticker]; delete index.wide?.[ticker]; delete index.wideFiles[ticker];
+      index.dark = (index.dark || []).filter(symbol => symbol !== ticker);
       const rejectedFile = path && resolve(out, path);
       if (rejectedFile && path.startsWith('files/') && rejectedFile.startsWith(out + '/') &&
         (!existsSync(rejectedFile) || physicalPath(rejectedFile).startsWith(physicalPath(out) + '/')) &&
         !Object.values(index.files).includes(path)) rmSync(rejectedFile, { force: true });
+      // Withhold all variants of this rejected issuer asset. A prior rejection
+      // may already have removed its credit; the scoped conventional wide path
+      // still needs cleanup on replay. Shared aliases remain referenced assets.
+      for (const widePath of rejectedWidePaths) {
+        const file = resolve(out, widePath);
+        if (widePath.startsWith('files/wide/') && file.startsWith(out + '/') &&
+          (!existsSync(file) || physicalPath(file).startsWith(physicalPath(out) + '/')) &&
+          !Object.values(credits.credits).some(c => c.wide === widePath) &&
+          !Object.values(index.wideFiles).includes(widePath) && !Object.values(index.files).includes(widePath)) rmSync(file, { force: true });
+      }
     }
     rows.push({ ticker, companyId, companyName: candidate.companyName, status, reason, fallbackAvailable: true,
       blocksSecurity: false, canonicalPath: status === 'LOGO_VALID' ? '/discover/logos/' + index.files[ticker] : null,

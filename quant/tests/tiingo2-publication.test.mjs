@@ -8,6 +8,7 @@ import { createRequire } from 'node:module';
 import { gzipSync } from 'node:zlib';
 import { hostname } from 'node:os';
 import { spawnSync } from 'node:child_process';
+import { resolveName, SUMMARY_FILE as NAME_SUMMARY_FILE } from '../../scripts/market/build-company-names.mjs';
 import { stageCanonicalPublication, attachCanonicalProjections, applyCanonicalPublication, rollbackCanonicalPublication, REQUIRED_PUBLICATION_QA, CANONICAL_PUBLICATION_PATHS as paths, PRODUCTIZATION_QA_SCHEMA, REQUIRED_PRODUCTIZATION_QA, CONDITIONAL_PRODUCTIZATION_QA, isProductizationProjectionPath, verifyStagedCanonicalPublication } from '../../scripts/market/tiingo2-publication.mjs';
 const Company = createRequire(import.meta.url)('../../quant/engines/company-master.js');
 const FactorEvidence = createRequire(import.meta.url)('../../quant/engines/factor-evidence.js');
@@ -73,6 +74,14 @@ test('stage concretely appends raw, policy, names and minted instruments without
   assert.equal(instrument.instrumentId, Company.mintInstrumentId({ ...candidate().listing, provider: 'tiingo' }, 0));
   assert.deepEqual(instrument.legacyIds, ['ref_ZNEW']); assert.equal(instrument.masterMemberId, 'ref_ZNEW');
   assert.equal(staged.additions[0].quantReady, false);
+  const namesFile = staged.files.find((f) => f.path === paths.names);
+  const named = JSON.parse(readFileSync(join(dirname(staged.manifestPath), namesFile.stagedPath))).rows.at(-1);
+  assert.equal(resolveName(named.ticker, named.candidates).companyName, named.companyName, 'native name resolution reproduces the staged provider name');
+  assert.equal(named.candidates.TIINGO_METADATA.providerSymbol, named.ticker);
+  assert.equal(named.candidates.TIINGO_METADATA.securityId, named.securityId);
+  assert.equal(named.candidates.TIINGO_METADATA.exchange, named.exchange);
+  assert.equal(named.candidates.TIINGO_METADATA.startDate, candidate().listing.startDate);
+  assert.equal(named.candidates.TIINGO_METADATA.asOf, today);
   assert.equal(stage().manifestSha256, staged.manifestSha256, 'identical stage resumes deterministically');
 }));
 test('new candidates must pass independent readiness and cannot reuse historical symbols or IDs', () => fixture(({ stage }) => {
@@ -81,6 +90,22 @@ test('new candidates must pass independent readiness and cannot reuse historical
   assert.throws(() => stage([candidate('KEEP')]), /EXISTING_OR_HISTORICAL_IDENTITY/);
   const reusedId = candidate(); reusedId.securityId = 'ref_KEEP';
   assert.throws(() => stage([reusedId]), /EXISTING_OR_HISTORICAL_IDENTITY/);
+}));
+test('incremental staging updates the existing native name summary against the exact new membership', () => fixture(({ root, stage, write, attach, proof }) => {
+  write(NAME_SUMMARY_FILE, { coverage: { productUniverse: 1 } });
+  const staged = stage(), summaryFile = staged.files.find((file) => file.path === NAME_SUMMARY_FILE);
+  const summary = JSON.parse(readFileSync(join(dirname(staged.manifestPath), summaryFile.stagedPath)));
+  const namesFile = staged.files.find((file) => file.path === paths.names), names = JSON.parse(readFileSync(join(dirname(staged.manifestPath), namesFile.stagedPath)));
+  assert.equal(summary.coverage.productUniverse, 2);
+  assert.equal(summary.coverage.withName, 2);
+  assert.deepEqual(summary.master, names.master);
+  assert.equal(summary.master.sha256, staged.files.find((file) => file.path === paths.eligibility).stagedSha256);
+  assert.equal(isProductizationProjectionPath(NAME_SUMMARY_FILE), true);
+  const projected = attach(staged);
+  applyCanonicalPublication({ root, staged: projected, qaProof: proof(projected) });
+  assert.deepEqual(JSON.parse(readFileSync(join(root, NAME_SUMMARY_FILE))), summary);
+  rollbackCanonicalPublication({ root, staged: projected });
+  assert.deepEqual(JSON.parse(readFileSync(join(root, NAME_SUMMARY_FILE))), { coverage: { productUniverse: 1 } });
 }));
 test('stage does not silently alter an existing staged manifest or files', () => fixture(({ stage, output }) => {
   const staged = stage();
@@ -404,8 +429,8 @@ test('published factor history snapshots cannot be overwritten during product pr
 }));
 
 test('product projection paths admit existing public formats and reject private history, raw SEC, code and routing', () => {
-  for (const path of ['quant/data/market/discover-series/ref_CART.json', 'quant/data/market/discover-series-long/ref_CART.json', 'screener/data/universe-US_REAL.json', 'quant/data/product/technical-signals-v1/signals-60.json.gz', 'quant/data/sec/consumer/CIK0001234567.json', 'quant/data/fundamentals/issuers/567.json', 'discover/data/stocks/US_REAL/CART.json', 'assets/logos/CART.svg']) assert.equal(isProductizationProjectionPath(path), true, path);
-  for (const path of ['.market-cache/tiingo/daily/ref_CART.json', 'quant/data/market/daily/ref_CART.json', 'quant/data/sec/raw/CIK0001234567.json', 'scripts/market/tiingo2-publication.mjs', 'quant/config/feature-gates.json', 'quant/methodology/quant-v2.json', 'worker/src/routing.js', 'quant/data/technical/instruments/CART.json', 'assets/logos/../../worker.js']) assert.equal(isProductizationProjectionPath(path), false, path);
+  for (const path of ['quant/data/market/discover-series/ref_CART.json', 'quant/data/market/discover-series-long/ref_CART.json', 'screener/data/universe-US_REAL.json', 'quant/data/product/technical-signals-v1/signals-60.json.gz', 'quant/data/sec/consumer/CIK0001234567.json', 'quant/data/fundamentals/issuers/567.json', 'discover/data/stocks/US_REAL/CART.json', 'assets/logos/CART.svg', 'quant/data/market/capabilities/matrix.json', 'quant/data/market/capabilities/summary.json', 'quant/data/product/capabilities-v1.json', 'quant/data/product/capabilities-summary-v1.json', 'quant/data/product/strategy-index-v1.json.gz', 'quant/data/product/pattern-match-v1/CA.json.gz', 'quant/data/product/pattern-match-v1/C-.json.gz', 'quant/data/product/pattern-match-v1/summary.json']) assert.equal(isProductizationProjectionPath(path), true, path);
+  for (const path of ['.market-cache/tiingo/daily/ref_CART.json', 'quant/data/market/daily/ref_CART.json', 'quant/data/sec/raw/CIK0001234567.json', 'scripts/market/tiingo2-publication.mjs', 'quant/config/feature-gates.json', 'quant/methodology/quant-v2.json', 'worker/src/routing.js', 'quant/data/technical/instruments/CART.json', 'assets/logos/../../worker.js', 'quant/data/market/capabilities/free-source-probe.json', 'quant/data/product/pattern-match-v1/raw-history.json', 'quant/data/product/strategy-index-v2.json.gz']) assert.equal(isProductizationProjectionPath(path), false, path);
 });
 
 test('attachment may reconcile new instrument SEC IDs but cannot rewrite baseline rows', () => fixture((context) => {

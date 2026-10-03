@@ -10,7 +10,7 @@
   "verifiedWorkflowRun": 37036367074,
   "verifiedSourceCommit": "029efa7cf8d30e98c72b540aef1f189e342465fe",
   "materializedReviewCommit": "663238b726a4a2e9264c97cba9e1ee82d7599bef",
-  "decision": "PRODUCTION_PREPARED_PENDING_EXTERNAL_PREVIEW_AND_CURRENT_STORAGE_PREFLIGHT",
+  "decision": "PRODUCTION_PREPARED_PENDING_FINAL_PACKAGE_QA_AND_CURRENT_STORAGE_PREFLIGHT",
   "productionPublishAllowed": false,
   "manifestSha256": "3911665582ac1c44a60dd2d5636e8178612a7dffd7db9dd22d082f0baf447367",
   "original102": {
@@ -608,7 +608,9 @@
         "width": 390
       }
     ],
-    "quantCompositePublicationAllowed": false
+    "quantCompositePublicationAllowed": false,
+    "postMaterializationQuantTests": 2393,
+    "postMaterializationDiscoverTests": 322
   },
   "factorPopulation": {
     "before": 6308,
@@ -632,17 +634,12 @@
       353
     ],
     "storage": "113 exact private histories and rollback before-images in authenticated encrypted artifact; additive-only writer requires current storage preflight/index CAS",
-    "artifactId": 11241273148,
-    "retentionDays": 14
+    "retentionDays": 14,
+    "historicalArtifactId": 11241273148,
+    "historicalPackageSuperseded": true,
+    "refreshedPackageRequired": true
   },
-  "externalPreviewBlockers": [
-    {
-      "context": "Vercel",
-      "state": "failure",
-      "reason": "Deployment rate limited \u2014 retry in 24 hours.",
-      "productionRoutingChanged": false
-    }
-  ],
+  "externalPreviewBlockers": [],
   "remainingConditionalBlockers": {
     "reviewCandidates": 128,
     "shortChartHistories": [
@@ -681,5 +678,11 @@
       "BRBI",
       "GORO"
     ]
+  },
+  "previewStatus": {
+    "sourceCommit": "bf3a0a96342b45b2229cf3b9f670ff5b177a0931",
+    "context": "Vercel",
+    "state": "success",
+    "previousRateLimitResolved": true
   }
 }

@@ -5,6 +5,7 @@ import {createRequire} from 'node:module';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
+import {resolveProductUniverse} from '../../scripts/market/universe-source.mjs';
 /* Frontend-Rebuild (quant/app): Prüfintention erhalten – der Suchtest lief
    gegen openSearch() aus vu2/experience.js, das geloescht ist. Die neue
    Oberflaeche hat zwei Suchen: den Suchdialog (quant/app/app.js, Taste "/",
@@ -17,7 +18,10 @@ const root=new URL('../../',import.meta.url);
 function api(mutate=()=>{},reads=[]){return Service.create({loadJSON:async p=>{reads.push(p);const d=JSON.parse(await readFile(new URL(p.slice(1),root),'utf8'));mutate(p,d);return d;},displayPolicy:Policy,queryEngine:Query});}
 test('canonical search resolves stable identities beyond the five-row panel without financial reads',async()=>{
  const reads=[],service=api(()=>{},reads),r=await service.searchInstruments('TSLA');assert.equal(r.state,'AVAILABLE');const hit=r.entries.find(e=>e.ticker==='TSLA');assert.match(hit.securityId,/^vu_/);assert.equal(hit.masterMemberId,'ref_TSLA');assert.ok(reads.every(p=>p.startsWith('/quant/data/universe/')));assert.ok(reads.length<15);
- const stock=await service.getStockIntelligence('TSLA');assert.equal(stock.securityId,hit.securityId);assert.equal(stock.identityState,'AVAILABLE');assert.equal(stock.state,'AVAILABLE');assert.equal((await service.getUniverse()).stocks.length,6875);
+ const stock=await service.getStockIntelligence('TSLA');assert.equal(stock.securityId,hit.securityId);assert.equal(stock.identityState,'AVAILABLE');assert.equal(stock.state,'AVAILABLE');
+ const universe=await service.getUniverse(),canonical=resolveProductUniverse(fileURLToPath(root));
+ assert.equal(universe.state,'AVAILABLE');assert.equal(universe.stocks.length,canonical.counts.productUniverse);
+ assert.deepEqual(universe.stocks.map(s=>s.masterMemberId).sort(),canonical.securities.map(s=>s.securityId).sort(),'every canonical member reaches the product universe exactly once');
 });
 test('missing issuer/CIK does not remove an eligible security from search or identity page',async()=>{
  const service=api((p,d)=>{if(p.includes('/instruments/'))for(const i of d.instruments){i.cik=null;i.issuerId=null;}}),r=await service.searchInstruments('TSLA');assert.ok(r.entries.some(e=>e.ticker==='TSLA'));const stock=await service.getStockIntelligence('TSLA');assert.equal(stock.identityState,'AVAILABLE');assert.equal(stock.issuerId,null);

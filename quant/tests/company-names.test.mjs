@@ -203,3 +203,28 @@ test("CN6 · Das ausgelieferte Artefakt: Produktuniversum, kein Ticker als Name,
   assert.equal(summary.coverage.productUniverse, ids.size);
   assert.equal(summary.spotCheck.length, CN.SPOT_CHECK.length);
 });
+
+test("CN7 · Fresh Tiingo names survive the native offline rebuild with their listing provenance", { skip: !vorhanden }, async () => {
+  const layer = readJSON(LAYER), fresh = layer.rows.filter((r) => r.candidates?.TIINGO_METADATA?.source === "TIINGO2_VERIFIED_INCREMENTAL_ADDITION");
+  assert.ok(fresh.length > 0, "current incremental names must retain native provider candidates");
+  const dir = mkdtempSync(join(tmpdir(), "vu-cn-incremental-"));
+  try {
+    for (const f of ["quant/data/market/security-master/eligibility.json", "quant/data/market/scale/universe-FULL_UNIVERSE.json", "scripts/market/universe-source.mjs", CN.OUT_FILE]) {
+      mkdirSync(join(dir, dirname(f)), { recursive: true }); cpSync(join(root, f), join(dir, f));
+    }
+    const rebuilt = await CN.buildCompanyNames({ root: dir, dryRun: true, now: () => new Date("2026-10-03T00:00:00Z"), provider: { getMetadata() { throw new Error("offline rebuild must never fetch"); } } });
+    assert.equal(rebuilt.out.stats.tiingo, null);
+    assert.equal(rebuilt.out.counts.productRows, layer.counts.productRows);
+    for (const prior of fresh) {
+      const row = rebuilt.out.rows.find((r) => r.securityId === prior.securityId), candidate = row.candidates.TIINGO_METADATA;
+      assert.equal(row.companyName, prior.companyName, prior.ticker);
+      assert.equal(row.nameAsOf, prior.nameAsOf, "observation date is preserved");
+      assert.equal(row.cik, prior.cik, "verified canonical SEC mapping survives the native name rebuild");
+      assert.equal(candidate.providerSymbol, row.providerSymbol);
+      assert.equal(candidate.securityId, row.securityId);
+      assert.equal(candidate.exchange, row.exchange);
+      assert.match(candidate.startDate, /^\d{4}-\d{2}-\d{2}$/);
+      assert.deepEqual(row.candidates, prior.candidates, "listing evidence survives resumption unchanged");
+    }
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

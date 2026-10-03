@@ -9,6 +9,7 @@ import { assessEvidence } from '../../scripts/market/tiingo2-evidence.mjs';
 import { assessProductizationReplay, loadCandidatePriceInputs, prepareProductizationShadow, reconcileShadowIssuerMappings } from '../../scripts/market/tiingo2-productize.mjs';
 import { productizationFixture as fixture } from './fixtures/tiingo2-productize-fixture.mjs';
 import { parseExchangeDirectory } from '../../scripts/market/tiingo2-refresh.mjs';
+import { resolveName } from '../../scripts/market/build-company-names.mjs';
 const source=join(dirname(fileURLToPath(import.meta.url)),'../..'),Company=createRequire(import.meta.url)('../../quant/engines/company-master.js');
 const digest=x=>createHash('sha256').update(x).digest('hex'),today='2026-10-02';
 function save(root,path,doc){const file=join(root,path);mkdirSync(dirname(file),{recursive:true});writeFileSync(file,JSON.stringify(doc));return file;}
@@ -96,6 +97,19 @@ test('SEC issuer mapping attaches only appended securities and refuses CIK reass
  const manifest=JSON.parse(readFileSync(join(result.shadowRoot,'quant/data/universe/master-manifest.json')));assert.equal(manifest.identifiers.withIssuerId,1);assert.equal(manifest.identifiers.distinctIssuers,1);assert.equal(manifest.identifiers.withCik,1);
  assert.deepEqual(JSON.parse(readFileSync(join(result.shadowRoot,'quant/data/universe/instruments/BA.json'))).instruments[0],before);
  assert.equal(reconcileShadowIssuerMappings({shadowRoot:result.shadowRoot,securities:result.securities,byTicker:{IPO:{cik:'0007654321'}}}).rows[0].reason,'CIK_CONFLICT');
+}));
+
+test('verified issuer mapping survives native name resumption without fundamentals or changing listing provenance',()=>fixture(options=>{
+ const result=prepareProductizationShadow({...options,today,runId:'issuer-no-fundamentals',expectedAdditions:1});
+ const namesPath=join(result.shadowRoot,'quant/data/market/security-master/company-names.json'),before=JSON.parse(readFileSync(namesPath)),prior=before.rows.find(row=>row.ticker==='IPO'),baseline=before.rows.find(row=>row.ticker==='BASE');
+ reconcileShadowIssuerMappings({shadowRoot:result.shadowRoot,securities:result.securities,byTicker:{IPO:{cik:'0001234567',identityVerified:true,fundamentalsStatus:'NONE'},BASE:{cik:'0000000001',identityVerified:true,fundamentalsStatus:'NONE'}}});
+ const after=JSON.parse(readFileSync(namesPath)),row=after.rows.find(row=>row.ticker==='IPO'),candidate=row.candidates.TIINGO_METADATA;
+ assert.equal(row.cik,'0001234567');assert.equal(resolveName(row.ticker,row.candidates).cik,row.cik,'existing resolver carries the verified issuer identity');
+ assert.equal(candidate.cikSource,'EXISTING_SEC_CANONICAL_PRODUCER');
+ const {cik,cikSource,...originalFields}=candidate,{cik:previousCik,cikSource:previousSource,...previousFields}=prior.candidates.TIINGO_METADATA;
+ assert.deepEqual(originalFields,previousFields,'name observation, run, symbol, venue, listing date and security identity are unchanged');
+ assert.deepEqual(after.rows.find(row=>row.ticker==='BASE'),baseline,'baseline name is untouched');
+ assert.equal(row.companyName,prior.companyName);assert.equal(row.nameAsOf,prior.nameAsOf);
 }));
 
 test('repeated accepted stage is a verified no-op preserving later unrelated consumer additions',()=>fixture(options=>{

@@ -162,8 +162,11 @@ export function assessProductizationReplay({root=process.cwd(),sourceRun,sourceC
   const expectedInstrumentId=inputs.existingStage?.additions.find(row=>symbol(row)===candidate.ticker)?.instrumentId||Company.mintInstrumentId({...candidate,provider:'tiingo'},0);
   const member=universe.securities.find(row=>row.securityId===candidate.securityId&&row.consumer);
   if(listing.securityId!==candidate.securityId||symbol(listing)!==candidate.ticker||String(listing.exchange).toUpperCase()!==candidate.exchange||listing.startDate!==candidate.startDate||listing.active!==true||rows.length!==1||rows[0].instrumentId!==expectedInstrumentId||rows[0].firstTradeDate!==candidate.startDate||rows[0].active!==true||!member)throw Error('CACHED_STAGE_CANONICAL_IDENTITY_CONFLICT:'+candidate.ticker);
-  const expectedType=candidate.instrument_type==='EQUITY_COMMON'?'COMMON_STOCK':candidate.instrument_type;
-  if(rows[0].securityType!==expectedType)throw Error('CACHED_STAGE_CANONICAL_CLASSIFICATION_CONFLICT:'+candidate.ticker);
+  // Policy securityClass and canonical securityType use different taxonomies:
+  // e.g. SPAC and REIT are classes of COMMON_STOCK. Reuse the canonical
+  // engine's mapping, while requiring the exact audited class on both layers.
+  const agreement=Company.applyEligibility({...rows[0]},{securityId:candidate.securityId,instrument_type:candidate.instrument_type,product_eligibility:rows[0].productEligibility});
+  if(rows[0].securityClass!==candidate.instrument_type||member.instrumentType!==candidate.instrument_type||agreement.classificationAgrees!==true)throw Error('CACHED_STAGE_CANONICAL_CLASSIFICATION_CONFLICT:'+candidate.ticker);
   present.push({ticker:candidate.ticker,securityId:candidate.securityId,instrumentId:rows[0].instrumentId,exchange:candidate.exchange,startDate:candidate.startDate});
  }
  const state=missing.length?(present.length?'BLOCKED_REQUIRES_FRESH_DIFF':'NEW_ADDITIONS'):'NO_CHANGES';
@@ -246,7 +249,16 @@ export function reconcileShadowIssuerMappings({shadowRoot,securities,byTicker}){
    Object.assign(scope.get(t),{cik:instrument.cik,issuerId:instrument.issuerId,companyId:instrument.issuerId});rows.push({ticker:t,state:'MAPPED',cik:instrument.cik,issuerId:instrument.issuerId});changed=true;
   }if(changed)write(path,doc);
  }
- const namesPath=join(shadowRoot,CANONICAL_PUBLICATION_PATHS.names),names=read(namesPath);for(const row of names.rows){const security=scope.get(row.ticker);if(security?.cik&&!row.cik)row.cik=security.cik;}write(namesPath,names);
+ const namesPath=join(shadowRoot,CANONICAL_PUBLICATION_PATHS.names),names=read(namesPath),mappedTickers=new Set(rows.filter(row=>row.state==='MAPPED').map(row=>row.ticker));
+ for(const row of names.rows){const security=scope.get(row.ticker);if(security?.cik&&!row.cik)row.cik=security.cik;
+  const candidate=row.candidates?.TIINGO_METADATA;
+  if(mappedTickers.has(row.ticker)&&security.securityId===row.securityId&&candidate?.source==='TIINGO2_VERIFIED_INCREMENTAL_ADDITION'&&candidate.securityId===row.securityId&&candidate.providerSymbol===row.ticker&&candidate.exchange===row.exchange&&candidate.startDate===security.firstTradeDate){
+   // Supplemental verified issuer identity must travel with the persisted
+   // name candidate. Keep the original observation/listing fields unchanged.
+   candidate.cik=security.cik;candidate.cikSource='EXISTING_SEC_CANONICAL_PRODUCER';
+  }
+ }
+ write(namesPath,names);
  const manifestPath=join(shadowRoot,'quant/data/universe/master-manifest.json');
  if(rows.some(row=>row.state==='MAPPED')&&existsSync(manifestPath)){const manifest=read(manifestPath),all=instruments(shadowRoot);manifest.identifiers={...manifest.identifiers,withIssuerId:all.filter(row=>row.issuerId).length,distinctIssuers:new Set(all.filter(row=>row.issuerId).map(row=>row.issuerId)).size,withCik:all.filter(row=>row.cik).length};write(manifestPath,manifest);}
  return {rows,securities};

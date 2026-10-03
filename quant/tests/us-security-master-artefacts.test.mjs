@@ -23,6 +23,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import {readSecurityMasterBaseline} from '../../scripts/market/us-security-master-baseline.mjs';
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -73,7 +74,7 @@ function baselineOf(recon) {
     /* Nennt der Abgleich eine Datei, die es nicht gibt, ist das ein
        Befund und kein Grund, auf eine andere auszuweichen. */
     assert.ok(existsSync(file), "Der Abgleich nennt " + named + ", die Datei fehlt.");
-    return JSON.parse(readFileSync(file, "utf8")).securities;
+    return readSecurityMasterBaseline(file,recon.nonDestructive.baselineSha256).document.securities;
   }
   const fallback = existsSync(PRE_EXPANSION)
     ? PRE_EXPANSION

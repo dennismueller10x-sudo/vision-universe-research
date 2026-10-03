@@ -1,7 +1,7 @@
 {
  "schemaVersion": "pattern-match-1.0.0",
- "generatedAt": "2026-10-02T09:07:54.000Z",
- "asOf": "2026-09-25",
+ "generatedAt": "2026-10-02T17:29:02.000Z",
+ "asOf": "2026-10-01",
  "horizon": "H24",
  "horizonMonths": 24,
  "winnerThreshold": "W100",
@@ -41,8 +41,8 @@
   }
  },
  "withheldNote": "Nur Muster mit dem Urteil ROBUST werden neben einem Titel gezeigt. Was zurueckgehalten wurde, steht hier gezaehlt statt zu verschwinden.",
- "instruments": 5591,
- "withoutFundamentals": 1502,
+ "instruments": 5599,
+ "withoutFundamentals": 1505,
  "shards": [
   "AA",
   "AB",
@@ -476,6 +476,7 @@
   "QU",
   "QV",
   "QX",
+  "Q_",
   "RA",
   "RB",
   "RC",
@@ -527,6 +528,7 @@
   "SW",
   "SX",
   "SY",
+  "SZ",
   "S_",
   "T-",
   "TA",
@@ -694,11 +696,11 @@
  "candidates": 30,
  "unavailableSchemaVersion": "pattern-unavailable-1.0.0",
  "unavailable": {
-  "total": 1284,
+  "total": 1389,
   "requiredWeeks": 104,
   "reasons": {
-   "INSUFFICIENT_WEEKLY_HISTORY": 740,
-   "NO_WEEKLY_SERIES": 542,
+   "INSUFFICIENT_WEEKLY_HISTORY": 786,
+   "NO_WEEKLY_SERIES": 601,
    "NO_MEASURABLE_FEATURES": 2
   },
   "note": "Je Titel im eigenen Shard nachlesbar. Die Luecke ist eine Datengrenze der Studie (104 Wochen vorregistriert) und kein Fehlschlag des Titels."

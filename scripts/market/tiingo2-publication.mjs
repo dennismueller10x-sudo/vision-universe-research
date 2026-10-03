@@ -8,6 +8,7 @@ import { createRequire } from 'node:module';
 import { gunzipSync } from 'node:zlib';
 import { hostname } from 'node:os';
 import { classifyCandidate } from './tiingo2-policy.mjs';
+import { resolveName, summarizeCompanyNames, SUMMARY_FILE as NAME_SUMMARY_FILE } from './build-company-names.mjs';
 const Company = createRequire(import.meta.url)('../../quant/engines/company-master.js');
 const FactorEvidence = createRequire(import.meta.url)('../../quant/engines/factor-evidence.js');
 export const REQUIRED_PUBLICATION_QA = ['IDENTITY', 'BASELINE', 'PROJECTIONS', 'SEARCH', 'CHARTS', 'WATCHLIST', 'QUANT', 'DISCOVER', 'SCREENER', 'SUPERTRADER', 'SEC', 'RELEASE', 'BROWSER'];
@@ -47,6 +48,7 @@ export function isProductizationProjectionPath(path) {
   if (typeof path !== 'string' || path.includes('..') || path.includes('\\')) return false;
   if (REQUIRED_CANONICAL_PROJECTIONS.includes(path)) return true;
   if (path === CANONICAL_PUBLICATION_PATHS.names) return true;
+  if (path === NAME_SUMMARY_FILE) return true;
   if (path === CANONICAL_PUBLICATION_PATHS.eligibility || path === EXISTING_ELIGIBILITY_CORRECTIONS_PATH) return true;
   return [
     /^quant\/data\/universe\/instruments\/[A-Z0-9_-]+\.json$/,
@@ -54,6 +56,10 @@ export function isProductizationProjectionPath(path) {
     /^quant\/data\/universe\/(cik-map|capability-summary|coverage-report|tiingo2-product-projections)\.json$/,
     /^quant\/data\/market\/discover-series(?:-long)?\/(?:ref_[A-Z0-9_.-]+|index)\.json$/,
     /^quant\/data\/market\/factors\/(?:factors|screener)-FULL_UNIVERSE(?:-summary)?\.json$/,
+    /^quant\/data\/market\/capabilities\/(?:matrix|summary)\.json$/,
+    /^quant\/data\/product\/(?:capabilities|capabilities-summary)-v1\.json$/,
+    /^quant\/data\/product\/strategy-index-v1\.json\.gz$/,
+    /^quant\/data\/product\/pattern-match-v1\/(?:[A-Z0-9_-]{2}\.json\.gz|summary\.json)$/,
     /^quant\/data\/product\/(?:factor-evidence-v1|technical-signals-v1)\/(?:[A-Z0-9_]{2}|screening|signals-(?:5|20|60))\.json\.gz$/,
     /^quant\/data\/product\/(?:factor-evidence-v1|technical-signals-v1)\/(?:summary|index|manifest)\.json$/,
     /^quant\/data\/product\/factor-evidence-history\/(?:index\.json|vu-factor-evidence-\d+\.\d+\.\d+\/\d{4}-\d{2}-\d{2}\.json\.gz)$/,
@@ -158,10 +164,15 @@ export function stageCanonicalPublication({ root, output, candidates, preview, b
     const cik = candidate.evidence?.sec?.cik ?? candidate.cik;
     if (/^\d{10}$/.test(String(cik ?? ''))) { instrument.cik = cik; instrument.cikSource = 'TIINGO2_VERIFIED_SEC_MAPPING'; instrument.issuerId = Company.issuerIdFromCik(cik); instrument.issuerIdSource = instrument.cikSource; }
     const name = candidate.companyName ?? listing.name ?? listing.companyName ?? null;
-    const resolvedName = typeof name === 'string' && name.trim() && name.trim().toUpperCase() !== t ? name : null;
+    // Persist the provider candidate, so the native name builder can resume
+    // without fetching again and reproduce its normal validity/priority rules.
+    const nameCandidates = { TIINGO_METADATA: { name, asOf: stageDate, providerSymbol: t, exchange: listing.exchange,
+      securityId: candidate.securityId, startDate: listing.startDate ?? null, cik: instrument.cik ?? null, cikSource: instrument.cikSource ?? null, identity: 'SECURITY_ID+TICKER+EXCHANGE+LISTING_START',
+      source: 'TIINGO2_VERIFIED_INCREMENTAL_ADDITION', runId } };
+    const nameResolution = resolveName(t, nameCandidates), resolvedName = nameResolution.companyName;
     raw.securities.push({ securityId: candidate.securityId, ticker: t, company: resolvedName, exchange: listing.exchange, country: instrument.country ?? 'US', currency: instrument.currency ?? null, assetType: listing.assetType ?? 'Stock', instrumentType: instrument.securityType, active: true, providerSymbol: t, provider: 'tiingo', sector: null, sectorStatus: 'SOURCE_MISSING', industry: null, industryStatus: 'SOURCE_MISSING', startDate: listing.startDate ?? null, selection: 'tiingo2:' + runId });
     eligibility.decisions.push(decision);
-    names.rows.push({ securityId: candidate.securityId, ticker: t, exchange: listing.exchange, providerSymbol: t, inProductUniverse: true, companyName: resolvedName, displayName: resolvedName, nameSource: resolvedName ? 'TIINGO_METADATA' : null, nameAsOf: stageDate, cik: instrument.cik, status: resolvedName ? 'RESOLVED' : 'UNRESOLVED', reason: resolvedName ? null : 'PROVIDER_HAS_NO_NAME', nameConflict: null, confirmedBy: null, candidates: {} });
+    names.rows.push({ securityId: candidate.securityId, ticker: t, exchange: listing.exchange, providerSymbol: t, inProductUniverse: true, companyName: resolvedName, displayName: nameResolution.displayName, nameSource: nameResolution.nameSource, nameAsOf: nameResolution.nameAsOf, cik: instrument.cik, status: resolvedName ? 'RESOLVED' : 'UNRESOLVED', reason: resolvedName ? null : 'PROVIDER_HAS_NO_NAME', nameConflict: nameResolution.nameConflict, confirmedBy: nameResolution.confirmedBy ?? null, candidates: nameCandidates });
     const shardPath = paths.instruments + '/' + Company.shardKey(t) + '.json';
     if (!shards.has(shardPath)) { capture(shardPath); shards.set(shardPath, { shard: Company.shardKey(t), engine: Company.VERSION, count: 0, instruments: [] }); }
     const shard = shards.get(shardPath); shard.instruments.push(instrument); shard.count = shard.instruments.length; changedShards.add(shardPath);
@@ -192,6 +203,11 @@ export function stageCanonicalPublication({ root, output, candidates, preview, b
     }
     names.master = { ...names.master, file: paths.eligibility, sha256: sha(jsonBytes(eligibility)), productUniverse: eligibility.counts.productUniverse };
     const prepared = new Map([[paths.raw, raw], [paths.eligibility, eligibility], [paths.names, names], ...[...changedShards].map((path) => [path, shards.get(path)])]);
+    if (existsSync(guardedPath(root, NAME_SUMMARY_FILE))) {
+      capture(NAME_SUMMARY_FILE);
+      prepared.set(NAME_SUMMARY_FILE, summarizeCompanyNames(names, { counts: eligibility.counts,
+        securities: eligibility.decisions.filter((row) => row.product_eligibility !== 'EXCLUDED').map((row) => ({ securityId: row.securityId, eligibility: row.product_eligibility })) }));
+    }
     for (const [path, doc] of prepared) {
       const field = path === paths.raw ? 'securities' : path === paths.eligibility ? 'decisions' : path === paths.names ? 'rows' : 'instruments';
       if (originals.has(path)) assertPrefix(originals.get(path), doc, field);

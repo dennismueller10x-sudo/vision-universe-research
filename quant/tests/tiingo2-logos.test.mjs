@@ -127,20 +127,49 @@ test('issuer brand review removes suspect asset and remains idempotent with cent
   const base = mkdtempSync(join(tmpdir(), 'logos-brand-seed-')), output = mkdtempSync(join(tmpdir(), 'logos-brand-shadow-'));
   mkdirSync(join(base, 'discover/logos/files'), { recursive: true });
   writeFileSync(join(base, 'discover/logos/files/AAA.png'), await sharp(fixture).png().toBuffer());
-  json(join(base, 'discover/logos/index.json'), { files: { AAA: 'files/AAA.png' }, wide: {}, dark: [] });
-  json(join(base, 'discover/logos/credits.json'), { credits: { AAA: { source: 'WEBSITE', path: 'files/AAA.png', host: 'previous-issuer.com' } } });
+  mkdirSync(join(base, 'discover/logos/files/wide'), { recursive: true });
+  const baselineWide = await sharp(fixture).png().toBuffer();
+  writeFileSync(join(base, 'discover/logos/files/wide/AAA.png'), baselineWide);
+  writeFileSync(join(base, 'discover/logos/files/wide/KEEP.png'), baselineWide);
+  json(join(base, 'discover/logos/index.json'), { files: { AAA: 'files/AAA.png', KEEP: 'files/KEEP.png' }, wide: { AAA: 3, KEEP: 3 }, wideFiles: { AAA: 'files/wide/AAA.png' }, dark: ['AAA'] });
+  json(join(base, 'discover/logos/credits.json'), { credits: { AAA: { source: 'WEBSITE', path: 'files/AAA.png', wide: 'files/wide/AAA.png', host: 'previous-issuer.com' }, KEEP: { path: 'files/KEEP.png', wide: 'files/wide/KEEP.png', ratio: 3 } } });
   const options = { outputRoot: output, seedRoot: base, candidates: [row('AAA')], fetchAssets: false,
     assetReviews: { AAA: { status: 'LOGO_SUSPECT', reason: 'CURRENT_ISSUER_BRAND_MISMATCH' } } };
   const first = await materializeLogos(options), again = await materializeLogos({ ...options, assetReviews: {} });
   assert.equal(first.rows[0].status, 'LOGO_SUSPECT'); assert.equal(again.rows[0].status, 'LOGO_SUSPECT');
   assert.equal(existsSync(join(output, 'discover/logos/files/AAA.png')), false);
-  assert.equal(JSON.parse(readFileSync(join(output, 'discover/logos/index.json'))).files.AAA, undefined);
+  assert.equal(existsSync(join(output, 'discover/logos/files/wide/AAA.png')), false);
+  assert.deepEqual(readFileSync(join(output, 'discover/logos/files/wide/KEEP.png')), baselineWide);
+  const index = JSON.parse(readFileSync(join(output, 'discover/logos/index.json')));
+  assert.equal(index.files.AAA, undefined); assert.equal(index.wide.AAA, undefined); assert.equal(index.wideFiles.AAA, undefined); assert.ok(!index.dark.includes('AAA'));
+  // Replay of an older producer's orphan must repair only this rejected title.
+  writeFileSync(join(output, 'discover/logos/files/wide/AAA.png'), baselineWide);
+  await materializeLogos({ ...options, assetReviews: {} });
+  assert.equal(existsSync(join(output, 'discover/logos/files/wide/AAA.png')), false);
+  assert.deepEqual(readFileSync(join(output, 'discover/logos/files/wide/KEEP.png')), baselineWide);
 });
 
 test('wrapper rejects production output and unsafe symbol before any builder call', async () => {
   const root = join(process.cwd(), 'discover/logos');
   await assert.rejects(materializeLogos({ outputRoot: process.cwd(), candidates: [row('AAA')] }), /PRODUCTION_LOGO_OUTPUT_FORBIDDEN/);
   await assert.rejects(materializeLogos({ outputRoot: tmpdir(), tickers: ['../evil'] }), /INVALID_LOGO_TARGETS/);
+});
+
+test('rejecting an issuer does not remove a wide asset still referenced by another canonical company', async () => {
+  const base = mkdtempSync(join(tmpdir(), 'logos-shared-wide-seed-')), output = mkdtempSync(join(tmpdir(), 'logos-shared-wide-shadow-'));
+  mkdirSync(join(base, 'discover/logos/files/wide'), { recursive: true });
+  const square = 'protected square', wide = 'protected shared wide';
+  writeFileSync(join(base, 'discover/logos/files/KEEP.png'), square);
+  writeFileSync(join(base, 'discover/logos/files/wide/AAA.png'), wide);
+  json(join(base, 'discover/logos/index.json'), { files: { AAA: 'files/KEEP.png', KEEP: 'files/KEEP.png' }, wide: { AAA: 3, KEEP: 3 }, wideFiles: { KEEP: 'files/wide/AAA.png' }, dark: [] });
+  json(join(base, 'discover/logos/credits.json'), { credits: { AAA: { path: 'files/KEEP.png', wide: 'files/wide/AAA.png' }, KEEP: { path: 'files/KEEP.png', wide: 'files/wide/AAA.png', ratio: 3 } } });
+  const report = await materializeLogos({ outputRoot: output, seedRoot: base, candidates: [row('AAA')], fetchAssets: false,
+    assetReviews: { AAA: { status: 'LOGO_SUSPECT', reason: 'CURRENT_ISSUER_BRAND_MISMATCH' } } });
+  assert.equal(report.rows[0].status, 'LOGO_SUSPECT');
+  assert.equal(readFileSync(join(output, 'discover/logos/files/KEEP.png'), 'utf8'), square);
+  assert.equal(readFileSync(join(output, 'discover/logos/files/wide/AAA.png'), 'utf8'), wide);
+  const index = JSON.parse(readFileSync(join(output, 'discover/logos/index.json')));
+  assert.equal(index.files.KEEP, 'files/KEEP.png'); assert.equal(index.wideFiles.KEEP, 'files/wide/AAA.png'); assert.equal(index.wide.KEEP, 3);
 });
 
 test('a shadow-directory symlink cannot bypass the production asset guard', async () => {

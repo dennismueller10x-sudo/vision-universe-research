@@ -16,6 +16,7 @@ import {parseExchangeDirectory,selectCurrentListings} from './tiingo2-refresh.mj
 import {classifyCandidate} from './tiingo2-policy.mjs';
 import {attachCanonicalProjections,isProductizationProjectionPath} from './tiingo2-publication.mjs';
 import {resolveProductUniverse} from './universe-source.mjs';
+import {summarizeCompanyNames,OUT_FILE as NAME_FILE,SUMMARY_FILE as NAME_SUMMARY_FILE} from './build-company-names.mjs';
 import {createRequire} from 'node:module';
 import {buildRelease,permitted} from '../vu2/build-release.mjs';
 import {restoreBenchmarkReference} from './tiingo2-benchmark-reference.mjs';
@@ -164,6 +165,9 @@ export async function runProductization({root=process.cwd(),sourceCache=join(roo
   const [p,f,s,l,sec]=maps.map(m=>m.get(security.ticker)||{});
   return {ticker:security.ticker,companyName:security.companyName,companyId:security.companyId||security.issuerId||null,securityId:security.securityId,instrumentId:security.instrumentId,exchange:security.exchange,currency:security.currency,canonicalStatus:'CANONICAL_READY',search:p.search,chart:p.chart,watchlist:p.watchlist,quant:f,discover:s.discover,screener:s.screener,supertrader:s.supertrader,markets:s.markets,logo:l,fundamentals:sec};
  });
+ // Eligibility/SEC corrections change name-layer provenance after staging.
+ // Use the existing native summary over the final canonical shadow.
+ write(join(shadowRoot,NAME_SUMMARY_FILE),summarizeCompanyNames(read(join(shadowRoot,NAME_FILE)),resolveProductUniverse(shadowRoot)));
  initializeShadowGit({root,shadowRoot,workDir});
  // Register only canonical/public generated paths for the existing release
  // packager. Private histories and raw SEC/cache files never enter Git.
