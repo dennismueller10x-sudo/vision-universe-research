@@ -51,7 +51,7 @@
 
 ## Elliott Engine 3 (Quality Remediation, siehe ELLIOTT_ENGINE3_REPORT.md)
 
-33. **Quality Gate nicht bestanden.** Engine 3.1 besteht auf HOLDOUT-2 G1–G4 und G6–G9, verfehlt aber G5 (grober Grad-Fehler 29 % statt ≤ 25 %) und das Gate für hohes Rauschen (Haupttreffer 10 % statt ≥ 20 %). Deshalb kein Prognose-Backtest; Status „Experimentelles Strukturmodell".
+33. **Quality Gate nicht bestanden.** Engine 3.1 besteht auf HOLDOUT-2 G1–G4 und G6–G11, verfehlt aber G5 (grober Grad-Fehler 29 % statt ≤ 25 %) und das Gate für hohes Rauschen (Haupttreffer 10 % statt ≥ 20 %). Deshalb kein Prognose-Backtest; Status „Experimentelles Strukturmodell".
 34. **Echte Wochencharts ≈ hohes Rauschen.** Auf den meisten echten Charts enthält sich Engine 3 (Anwendbarkeit HOCH nur in wenigen Prozent der Wochen). Das ist beabsichtigt, heißt aber: Meist gibt es keine verlässliche Zählung.
 35. **Keine Expertenvalidierung.** Keine Annotationen durch Elliott-Praktiker. Praktiker-Referenzen sind ungeprüfte Suchzusammenfassungen (Seitenabruf blockiert). Die Werkbank für blinde Annotation ist vorbereitet, aber nicht genutzt.
 36. **Korpus vom selben Autor wie die Engine.** Layout B mildert die Generator-Kopplung, ersetzt aber keine unabhängigen Daten.

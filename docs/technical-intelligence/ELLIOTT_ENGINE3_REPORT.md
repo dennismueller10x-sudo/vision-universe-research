@@ -97,7 +97,7 @@ Einmal ausgewertet; dieselben Fälle auch für das eingefrorene 3.0.0 (Git-Workt
 | G7 falsche Sicherheit | ≤ 25 % | **15,4 %** (n = 91) | 20,3 % | 100 % | ✅ |
 | G8 Regelverstöße (unabh. Prüfer) | 0 | **0** | 165 | 1 | ✅ |
 | G9 Invarianz ×2 / +100 | ≥ 98 % | 100 / 100 % | – | – | ✅ |
-| G10 instabile Neuzuordnungen | ≤ 2.2 | siehe §7 | 0,64 % | 1,00 % | §7 |
+| G10 instabile Neuzuordnungen (echte Charts) | ≤ 2.2 | **0,55 %** | 0,64 % | 1,00 % | ✅ |
 | G11 Laufzeit Median | ≤ 50 ms | 43,9 ms (p90 63) | – | – | ✅ |
 | hoch: G1 | ≥ 20 % | **10 %** | 5 % | 0 % | ❌ |
 | hoch: G7 | ≤ 30 % | 66,7 % (**n = 3**) | 66,7 % (n = 3) | 100 % (n = 65) | ❌ |
@@ -129,7 +129,7 @@ Auf echten Wochencharts (HOLDOUT-Emittenten) war die Statusmeldung `AMBIGUOUS` b
 * **STRUCTURE** (andere Struktur, andere Richtung oder Invalidierung): echte Mehrdeutigkeit, senkt die Anwendbarkeit.
 * **LABEL** (gleiche Pivots, anderer Name).
 
-Echte Charts mit 3.0.0 (H4 noch offen): DEGREE 8.423 Wochen, STRUCTURE 8.617 Wochen. Werte für 3.1 siehe §7. Der Ambiguity Gap (Scoreabstand Haupt/Alternative) geht als Klarheit in die Anwendbarkeit ein, und zwar nur bei STRUCTURE.
+Echte Charts, 17.040 Wochen: 3.0.0 (H4 noch offen) DEGREE 8.423, STRUCTURE 8.617. **3.1.0** (DEGREE eng definiert) DEGREE 1.152, LABEL 416, STRUCTURE 15.472. Das heißt: Mit der ehrlichen Definition ist die Struktur auf echten Wochencharts in rund 91 % der Wochen echt mehrdeutig. Die 46–47 % `AMBIGUOUS` von 2.2 haben die tatsächliche Mehrdeutigkeit also **unterschätzt**; 3.1 meldet 60,9 %. Der Missionspunkt „47 % mehrdeutig“ wurde damit nicht durch weniger Mehrdeutigkeit gelöst, sondern durch korrekte Zerlegung und Enthaltung (HOCH nur in 2,5 % der Wochen). Das passt zum Befund bei hohem Rauschen (§12.2). Der Ambiguity Gap (Scoreabstand Haupt/Alternative) geht als Klarheit in die Anwendbarkeit ein, und zwar nur bei STRUCTURE.
 
 **Enthaltung.** Auf echten Wochencharts (HOLDOUT-Emittenten) stuft 3.0.0 nur 4,6 % der Wochen als HOCH ein, 12,7 % als MITTEL und 82,7 % als NIEDRIG (Enthaltung). 2.2 stufte 63 % als HOCH ein, obwohl sie bei hohem Korpus-Rauschen fast nie richtig lag. Das ist die beabsichtigte Folge von H3: Echte Wochencharts haben ein Signal-Rausch-Verhältnis wie medium/high im Korpus. Die Produkt-Formulierung dafür lautet „Die aktuelle Kursstruktur lässt keine verlässliche Elliott-Zählung zu."
 
@@ -139,13 +139,15 @@ Neuzuordnungen je Woche auf echten Wochencharts, HOLDOUT-Emittenten, 17.040 Woch
 
 | | 2.2 | 3.0.0 | 3.1.0 |
 |---|---|---|---|
-| gleich | 84,7 % | 84,1 % | STAB31_SAME |
-| Fortschritt (Welle schreitet fort) | 3,9 % | 9,5 % | STAB31_PROGRESS |
-| berechtigt (vorige Lesart ungültig/abgeschlossen) | 6,1 % | 4,1 % | STAB31_JUSTIFIED |
-| Grad | 4,3 % | 1,7 % | STAB31_DEGREE |
-| **instabil** | **1,00 %** | **0,64 %** | **STAB31_UNSTABLE** |
-| Neuzuordnungen gesamt | 11,4 % | 6,4 % | STAB31_RELABEL |
-| Lebensdauer Median (HOCH) | 6 Wochen | 7 Wochen | STAB31_LIFE |
+| gleich | 84,7 % | 84,1 % | 91,4 % |
+| Fortschritt (Welle schreitet fort) | 3,9 % | 9,5 % | 3,5 % |
+| berechtigt (vorige Lesart ungültig/abgeschlossen) | 6,1 % | 4,1 % | 3,8 % |
+| Grad | 4,3 % | 1,7 % | 0,8 % |
+| **instabil** | **1,00 %** | **0,64 %** | **0,55 %** |
+| Neuzuordnungen gesamt | 11,4 % | 6,4 % | 5,1 % |
+| Lebensdauer Median (HOCH) | 6 Wochen | 7 Wochen | 4 Wochen¹ |
+
+¹ Bei 3.1 ist HOCH viel seltener (2,5 % der Wochen), die Stichprobe also eine andere. Die Ursache der kürzeren Lebensdauer wurde nicht getrennt untersucht. Instabile Wechsel und Neuzuordnungen insgesamt sinken dennoch.
 
 Hysterese: Stickiness 0,08 bzw. 0,15 hielt veraltete Zählungen fest. Die bestätigten Erkennungen fielen auf DEVELOPMENT von 308 auf 211 bzw. 76. Eine informationsabhängige Hysterese ergab 230 bestätigte und 1,05 % instabile. Gewählt wurde 0,05 (293 bestätigt, 0,66 % instabil vs. 2.2 0,92 %).
 
@@ -153,7 +155,7 @@ Latenz/Präzision (Korpus HOLDOUT-1, Stickiness 0,05): frühest mögliche entwic
 
 ## 8. Mehrere Zeitebenen
 
-Wochen- vs. Tagesanalyse derselben Emittenten (HOLDOUT, 90 Reihen, 3.0.0): Richtungsübereinstimmung 74 %, Tageszählung in der laufenden Wochenwelle enthalten 57 %. Enthaltung: Woche 83 %, Tag 100 %. Auf Tagesdaten erreicht die Engine bei echten Kursen nie HOCH oder MITTEL. Tageszählungen tragen deshalb keine eigene Aussage; das Produkt bleibt beim Wochenchart. Ein Universum-weiter Tageslauf ist erst nach Verbesserung bei hohem Rauschen sinnvoll.
+Wochen- vs. Tagesanalyse derselben Emittenten (HOLDOUT, 90 Reihen): Richtungsübereinstimmung 74 % (3.0.0 und 3.1.0). Tageszählung in der laufenden Wochenwelle enthalten: 57 % (3.0.0) bzw. 68 % (3.1.0). Enthaltung: Woche 83 % bzw. 84 %, Tag 100 %. Auf Tagesdaten erreicht die Engine bei echten Kursen nie HOCH oder MITTEL. Tageszählungen tragen deshalb keine eigene Aussage; das Produkt bleibt beim Wochenchart. Ein Universum-weiter Tageslauf ist erst nach Verbesserung bei hohem Rauschen sinnvoll.
 
 ## 9. Experten- und Praktiker-Abgleich (teilweise blockiert)
 
@@ -183,11 +185,11 @@ Synthetische Werte stammen aus **getrennten** Fällen. Gezählt sind abgeschloss
 | Regelverstöße in Ausgaben | – | > 0 (H1) | 1 | **0** |
 | Enthaltung (n/l/m) | 27,7 % | 33,1 % | 32,3 % | 54,6 % |
 | Enthaltung (hohes Rauschen) | 13,8 % | 85,6 % | 21,9 % | 83,8 % |
-| Echte Charts: mehrdeutige Wochen (Status) | 46,3 % | 45,9 % | | STAB31_AMB |
-| Echte Charts: davon echte Strukturmehrdeutigkeit | nicht zerlegt | 50,6 % der Wochen | | STAB31_STRUCT |
-| Echte Charts: Anwendbarkeit HOCH | 63,1 % | 4,6 % | | STAB31_HIGH |
-| Neuzuordnungen je Woche (gesamt / instabil) | 11,4 % / 1,00 % | 6,4 % / 0,64 % | | STAB31_RELABEL / STAB31_UNSTABLE |
-| Latenz Median (früh / bestätigt) | – | 3 / 4 Bars | | (wie 3.0.0, Hysterese unverändert) |
+| Echte Charts: mehrdeutige Wochen (Status) | 46,3 % | 45,9 % | | 60,9 % |
+| Echte Charts: davon echte Strukturmehrdeutigkeit | nicht zerlegt | 50,6 % der Wochen | | 90,8 % der Wochen |
+| Echte Charts: Anwendbarkeit HOCH | 63,1 % | 4,6 % | | 2,5 % |
+| Neuzuordnungen je Woche (gesamt / instabil) | 11,4 % / 1,00 % | 6,4 % / 0,64 % | | 5,1 % / 0,55 % |
+| Latenz Median (früh / bestätigt) | – | 3 / 4 Bars | | nicht neu gemessen (Hysterese unverändert) |
 | Laufzeit Median | ~1 ms | 41 ms | | 43,9 ms |
 
 Die Spalten zu 2.2 auf HOLDOUT-1 und HOLDOUT-2 zeigen, wie viel schwerer Layout B ist: 2.2 fällt dort fast auf null. Die Werte von 3.1 auf HOLDOUT-2 sind deshalb die vorsichtigere Schätzung.
