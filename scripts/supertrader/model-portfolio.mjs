@@ -4,7 +4,7 @@
 // portfolio.mjs runPortfolioTR) auf das LIVE-Protokoll an: 100.000 USD
 // Startkapital ab dem ersten Modelleinstieg, Positionsgroesse aus Risiko je
 // Trade und Stopabstand, Hoechstgrenzen je Position und Anzahl, gleichzeitige
-// Einstiege nach relativer Staerke (ab R10; Turtle alphabetisch), Gebuehren 1 bp je Seite. Was keinen Platz bekommt,
+// Einstiege nach relativer Staerke (ab R10; Turtle ab R11 nach Staerke/N), Gebuehren 1 bp je Seite. Was keinen Platz bekommt,
 // wird als „nicht übernommen“ mit Grund gezeigt - nicht verschwiegen.
 //
 // Veroeffentlicht werden Zusammensetzung, Gewichte, Cash, Stops und die
@@ -28,11 +28,12 @@ export function portfolioConfig(engine) {
 }
 
 // signals: alle Ledger-Signale (open + closed) einer Methode; barsOf(symbol) -> {date[], close[]}.
-export function buildModelPortfolio({ engine, signals, barsOf, calendar, asOf, rsOf = null }) {
+// scoreOf(symbol, entryDate) -> methodeneigener Rang (Runde 11, Turtle: Staerke/N am Vortag), nur bei priority SCORE.
+export function buildModelPortfolio({ engine, signals, barsOf, calendar, asOf, rsOf = null, scoreOf = null }) {
   const cfg = portfolioConfig(engine);
   const entered = signals.filter((s) => s.entry && s.entry.date && Number.isFinite(s.entry.price) && Number.isFinite(s.initialStop));
   const base = { schema: MODEL_PORTFOLIO_VERSION, strategyId: engine.id, currentVersion: engine.version, asOf,
-    config: { initialEquity: cfg.initialEquity, riskPerTrade: cfg.riskPerTrade, maxPositionPct: cfg.maxPositionPct, maxPositions: cfg.maxPositions, progressive: cfg.progressive || null, source: cfg.source || null, simultaneousEntries: cfg.priority === 'RS' ? 'nach relativer Stärke am Vortag (Gleichstand alphabetisch)' : 'alphabetisch nach Symbol (keine Rangregel in der Quelle)', priority: cfg.priority, costs: '1 bp Gebühr je Seite; Einstiegspreise enthalten bereits 10 bp Slippage' },
+    config: { initialEquity: cfg.initialEquity, riskPerTrade: cfg.riskPerTrade, maxPositionPct: cfg.maxPositionPct, maxPositions: cfg.maxPositions, progressive: cfg.progressive || null, source: cfg.source || null, simultaneousEntries: cfg.priority === 'RS' ? 'nach relativer Stärke am Vortag (Gleichstand alphabetisch)' : cfg.priority === 'SCORE' ? 'die stärksten zuerst: (Schluss − Schluss vor drei Monaten) / N am Vortag (Gleichstand alphabetisch)' : 'alphabetisch nach Symbol (keine Rangregel in der Quelle)', priority: cfg.priority, costs: '1 bp Gebühr je Seite; Einstiegspreise enthalten bereits 10 bp Slippage' },
     publication: 'Zusammensetzung und Einzeltrades. Gesamtrendite und Kurve werden bis zur Klärung der Rechte an abgeleiteten Kennzahlen nicht veröffentlicht.' };
   if (!entered.length) return { ...base, startDate: null, cashPct: 1, investedPct: 0, positions: [], closed: [], notTaken: [], note: 'Noch kein Modelleinstieg dieser Methode im Live-Protokoll.' };
   const start = entered.map((s) => s.entry.date).sort()[0];
@@ -41,7 +42,7 @@ export function buildModelPortfolio({ engine, signals, barsOf, calendar, asOf, r
     const b = barsOf(s.symbol);
     const marks = new Map();
     if (b) for (let i = 0; i < b.date.length; i++) if (b.date[i] >= s.entry.date && b.date[i] <= asOf) marks.set(b.date[i], b.close[i]);
-    return { id: s.id, listingId: s.symbol, rsAtEntry: rsOf ? rsOf(s.symbol, s.entry.date) : null, entry: { date: s.entry.date, price: s.entry.price }, initialStop: s.initialStop,
+    return { id: s.id, listingId: s.symbol, rsAtEntry: rsOf ? rsOf(s.symbol, s.entry.date) : null, rankScore: scoreOf ? scoreOf(s.symbol, s.entry.date) : null, entry: { date: s.entry.date, price: s.entry.price }, initialStop: s.initialStop,
       exits: (s.exits || []).filter((x) => x.date <= asOf).map((x) => ({ date: x.date, price: x.price, fraction: x.fraction, ruleId: x.ruleId })), terminal: null, marks, divs: new Map(), sig: s };
   });
   const run = runPortfolioTR(trades, cal, cfg, { dividends: false, commissionBps: 1 });
