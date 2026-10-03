@@ -1,0 +1,1690 @@
+{
+ "schemaVersion": "vu-elliott-practitioner-benchmark-1.0.0",
+ "generatedAt": "2026-10-03T05:00:27.259Z",
+ "engine": {
+  "v3": "elliott-3.0.0",
+  "v2": "elliott-2.2.0"
+ },
+ "status": "PRACTITIONER REFERENCE — unverified (search-summary based), not ground truth",
+ "referenceNote": "Practitioner reference set, NON-authoritative. Collected 2026-10-03. IMPORTANT ACCESS LIMITATION: in this environment WebFetch was blocked by the egress proxy for every source domain tried (elliottwave-forecast.com, elliottwave.com, fxstreet.com, fxempire.com, investing.com, cmtassociation.org, liquidityfinder.com, elliottwaveplus.com, wavetraders.com; web.archive.org also refused). All entries were therefore extracted from WebSearch result summaries of the specific article (one targeted title search per article), not from reading the full page; every entry is marked 'partly-explicit'. Wave labels and prices are recorded as the summaries attributed them to that page; some summaries contained degree-label inconsistencies (notably the XAUUSD 2025-10-01 entry), flagged in the claim text. Dates: taken from the FXStreet URL timestamp (YYYYMMDDhhmm), dated URL paths (fourdimensiontrading, pureelliottwave, elliottwavestockmarket, wavetraders), or X/Twitter post IDs (snowflake-decoded; used for 3 entries). EWF entries are futures/ETF-based (ES, NQ, YM, RTY, NKD, CL, QQQ, IWM) - price levels differ from cash indices. Authors: 'Alchemy Markets (series attribution)' = FXStreet 'DJI Elliott Wave forecast' series whose sibling titles appear on alchemymarkets.com, individual byline only verified for the 2026-02-25 piece. FXStreet pieces with author unknown left null. Dr. Arnout ter Schure pieces are mirrored on FXEmpire/Investing.com; the dated FXStreet mirror is used where available. PR001 (EWI) is a forecast dated 2024-05-31 known only via a retrospective EWI article of 2024-08-07 (selection bias: vendors publicize hits). Conflict groups: SPX-2025-12-mid, SPX-2026-06-early, SPX-2026-09, DJIA-2026-05, RUT-2026-Q3, BTC-2026-09-02. Note: EWF short-term counts change frequently, so same-vendor sequential updates are not conflicts. Tried and skipped: Frost & Prechter EWP (1978) Dow 2860 Cycle-V forecast and EWT May/Nov 1989 Nikkei calls (only year/month known, no exact date); Elliott Wave International pages (blocked + mostly retrospective); EWM Interactive weekly SPX/BTC posts (dated in URL but wave counts behind 'Pro Weekly' paywall); ElliottWaveTrader EEM 2024-05-11 (no explicit labels in accessible text); Mark Rivest EEM TradingView idea (2018, date unclear); Investing.com/FXEmpire ID-only URLs without a dated mirror (e.g. 'Primary-V ... higher targets', 'Gold Elliott Wave: Taking a Breather', 'Deep Dive into Bitcoin' (no labels)); Lara Iriarte Russell 2000 2020-07-24 (target figure looked inconsistent with index level); TradingLounge N225/RUT items whose date-to-content mapping was ambiguous; financialcontent 'MarketMinute' EWI piece (aggregator, likely auto-generated); CMT Association ChartAdvisor (blocked, undated in results). Coverage is thin for EEM (1 entry) and pre-2024 data; heavy concentration in 2025-2026 and on two sources (ElliottWave-Forecast and ter Schure). Recommended: re-verify each entry against the full page when network access allows before using as benchmark labels.",
+ "summary": {
+  "entries": 74,
+  "skipped": {
+   "INTRADAY_NOT_REPRODUCIBLE": 30
+  },
+  "usedForDirection": 39,
+  "direction": {
+   "v3CurrentWave": {
+    "n": 39,
+    "agree": 22,
+    "share": 0.564
+   },
+   "v3NextMove": {
+    "n": 39,
+    "agree": 26,
+    "share": 0.667
+   },
+   "v2CurrentWave": {
+    "n": 39,
+    "agree": 24,
+    "share": 0.615
+   },
+   "v2NextMove": {
+    "n": 39,
+    "agree": 14,
+    "share": 0.359
+   },
+   "baselineAlwaysUp": {
+    "n": 39,
+    "agree": 29,
+    "share": 0.744
+   },
+   "baselineTrend20": {
+    "n": 39,
+    "agree": 25,
+    "share": 0.641
+   }
+  },
+  "role": {
+   "v3": {
+    "n": 16,
+    "agree": 6,
+    "share": 0.375
+   },
+   "v2": {
+    "n": 23,
+    "agree": 18,
+    "share": 0.783
+   }
+  },
+  "v3Abstain": 35,
+  "v3Evaluated": 44,
+  "invalidationGapPct": {
+   "n": 6,
+   "median": 0.576,
+   "note": "nur Instrumente ohne Index/ETF-Skalenunterschied"
+  }
+ },
+ "rows": [
+  {
+   "id": "PR001",
+   "instrument": "SPX",
+   "date": "2024-05-31",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR002",
+   "instrument": "SPX",
+   "date": "2025-04-25",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "CORRECTIVE",
+   "v3": {
+    "pattern": "TRIANGLE",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "DOUBLE_ZIGZAG",
+    "wave": "complete",
+    "curDir": "DOWN",
+    "next": "DOWN",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "MODERATE"
+   },
+   "trend20": "DOWN",
+   "lastClose": 550.64,
+   "refInv": null
+  },
+  {
+   "id": "PR003",
+   "instrument": "SPX",
+   "date": "2025-05-09",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR004",
+   "instrument": "SPX",
+   "date": "2025-07-04",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR005",
+   "instrument": "SPX",
+   "date": "2025-11-25",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": null,
+   "v3": {
+    "pattern": "FLAT",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "3",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 356.56,
+    "applicability": "MODERATE"
+   },
+   "trend20": "DOWN",
+   "lastClose": 675.02,
+   "refInv": 6521
+  },
+  {
+   "id": "PR006",
+   "instrument": "SPX",
+   "date": "2025-11-28",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": null,
+   "v3": {
+    "pattern": "FLAT",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "3",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 356.56,
+    "applicability": "MODERATE"
+   },
+   "trend20": "UP",
+   "lastClose": 683.39,
+   "refInv": null
+  },
+  {
+   "id": "PR007",
+   "instrument": "SPX",
+   "date": "2025-12-14",
+   "timeframe": "daily",
+   "conflictGroup": "SPX-2025-12-mid",
+   "refDir": "SIDEWAYS",
+   "refRole": null,
+   "v3": {
+    "pattern": "FLAT",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "3",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 356.56,
+    "applicability": "MODERATE"
+   },
+   "trend20": "UP",
+   "lastClose": 681.76,
+   "refInv": null
+  },
+  {
+   "id": "PR008",
+   "instrument": "SPX",
+   "date": "2025-12-18",
+   "timeframe": "daily",
+   "conflictGroup": "SPX-2025-12-mid",
+   "refDir": "DOWN",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "FLAT",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "3",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 356.56,
+    "applicability": "MODERATE"
+   },
+   "trend20": "UP",
+   "lastClose": 676.47,
+   "refInv": null
+  },
+  {
+   "id": "PR009",
+   "instrument": "SPX",
+   "date": "2025-12-19",
+   "timeframe": "daily",
+   "conflictGroup": "SPX-2025-12-mid",
+   "refDir": "UP",
+   "refRole": null,
+   "v3": {
+    "pattern": "FLAT",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "3",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 356.56,
+    "applicability": "MODERATE"
+   },
+   "trend20": "UP",
+   "lastClose": 680.59,
+   "refInv": 6720
+  },
+  {
+   "id": "PR010",
+   "instrument": "SPX",
+   "date": "2026-02-03",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": null,
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR011",
+   "instrument": "SPX",
+   "date": "2026-04-01",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": null,
+   "v3": {
+    "pattern": "FLAT",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "3",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 356.56,
+    "applicability": "MODERATE"
+   },
+   "trend20": "DOWN",
+   "lastClose": 655.24,
+   "refInv": null
+  },
+  {
+   "id": "PR012",
+   "instrument": "SPX",
+   "date": "2026-04-17",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": null,
+   "v3": {
+    "pattern": "FLAT",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "3",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 496.48,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 710.14,
+   "refInv": null
+  },
+  {
+   "id": "PR013",
+   "instrument": "SPX",
+   "date": "2026-05-01",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "DOWN",
+   "refRole": "CORRECTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR014",
+   "instrument": "SPX",
+   "date": "2026-06-01",
+   "timeframe": "daily",
+   "conflictGroup": "SPX-2026-06-early",
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "TRIANGLE",
+    "wave": "D",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "CORRECTIVE",
+    "inv": 370.07,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "3",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 496.48,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 758.54,
+   "refInv": null
+  },
+  {
+   "id": "PR015",
+   "instrument": "SPX",
+   "date": "2026-06-03",
+   "timeframe": "daily",
+   "conflictGroup": "SPX-2026-06-early",
+   "refDir": "DOWN",
+   "refRole": null,
+   "v3": {
+    "pattern": "ZIGZAG",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "3",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 496.48,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 754.24,
+   "refInv": null
+  },
+  {
+   "id": "PR016",
+   "instrument": "SPX",
+   "date": "2026-06-05",
+   "timeframe": "intraday",
+   "conflictGroup": "SPX-2026-06-early",
+   "refDir": "UP",
+   "refRole": null,
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR017",
+   "instrument": "SPX",
+   "date": "2026-07-08",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "SIDEWAYS",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "ZIGZAG",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "3",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 496.48,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 745.4,
+   "refInv": null
+  },
+  {
+   "id": "PR018",
+   "instrument": "SPX",
+   "date": "2026-08-28",
+   "timeframe": "daily",
+   "conflictGroup": "SPX-2026-09",
+   "refDir": "DOWN",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "ZIGZAG",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "3",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 496.48,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 769.35,
+   "refInv": null
+  },
+  {
+   "id": "PR019",
+   "instrument": "SPX",
+   "date": "2026-09-08",
+   "timeframe": "intraday",
+   "conflictGroup": "SPX-2026-09",
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR020",
+   "instrument": "SPX",
+   "date": "2026-09-22",
+   "timeframe": "daily",
+   "conflictGroup": "SPX-2026-09",
+   "refDir": "UP",
+   "refRole": "CORRECTIVE",
+   "v3": {
+    "pattern": "IMPULSE",
+    "wave": "1",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "MOTIVE",
+    "inv": 362.57,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "3",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 496.48,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 773.38,
+   "refInv": null
+  },
+  {
+   "id": "PR021",
+   "instrument": "SPX",
+   "date": "2026-10-02",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "CORRECTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR022",
+   "instrument": "SPX",
+   "date": "2020-09-03",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "FLAT",
+    "wave": "C",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "MOTIVE",
+    "inv": 217.37,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "3",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 222.95,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 345.39,
+   "refInv": 2191.86
+  },
+  {
+   "id": "PR023",
+   "instrument": "SPX",
+   "date": "2025-02-22",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "DOWN",
+   "refRole": null,
+   "v3": {
+    "pattern": "TRIANGLE",
+    "wave": "E",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "CORRECTIVE",
+    "inv": 312.02,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "5",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 563.68,
+    "applicability": "MODERATE"
+   },
+   "trend20": "DOWN",
+   "lastClose": 599.94,
+   "refInv": null
+  },
+  {
+   "id": "PR024",
+   "instrument": "NDX",
+   "date": "2025-10-28",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": null,
+   "v3": {
+    "pattern": "ZIGZAG",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "DOUBLE_ZIGZAG",
+    "wave": "Y·a",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 416.06,
+    "applicability": "MODERATE"
+   },
+   "trend20": "UP",
+   "lastClose": 632.92,
+   "refInv": null
+  },
+  {
+   "id": "PR025",
+   "instrument": "NDX",
+   "date": "2025-11-19",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "unknown",
+   "refRole": null,
+   "v3": {
+    "pattern": "ZIGZAG",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "DOUBLE_ZIGZAG",
+    "wave": "Y·a",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 416.06,
+    "applicability": "MODERATE"
+   },
+   "trend20": "DOWN",
+   "lastClose": 599.87,
+   "refInv": null
+  },
+  {
+   "id": "PR026",
+   "instrument": "NDX",
+   "date": "2025-11-25",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "CORRECTIVE",
+   "v3": {
+    "pattern": "ZIGZAG",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "DOUBLE_ZIGZAG",
+    "wave": "Y·b",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "CORRECTIVE",
+    "inv": 416.06,
+    "applicability": "HIGH"
+   },
+   "trend20": "DOWN",
+   "lastClose": 608.89,
+   "refInv": null
+  },
+  {
+   "id": "PR027",
+   "instrument": "NDX",
+   "date": "2025-12-17",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": null,
+   "v3": {
+    "pattern": "ZIGZAG",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "DOUBLE_ZIGZAG",
+    "wave": "Y·a",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "MOTIVE",
+    "inv": 627.61,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 600.41,
+   "refInv": 23854
+  },
+  {
+   "id": "PR028",
+   "instrument": "NDX",
+   "date": "2026-05-13",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "DOWN",
+   "refRole": "CORRECTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR029",
+   "instrument": "NDX",
+   "date": "2026-07-21",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "DOWN",
+   "refRole": "CORRECTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR030",
+   "instrument": "DJIA",
+   "date": "2025-07-16",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": null,
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR031",
+   "instrument": "DJIA",
+   "date": "2025-11-12",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "TRIPLE_ZIGZAG",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "5",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 356.2,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 482.76,
+   "refInv": 45781
+  },
+  {
+   "id": "PR032",
+   "instrument": "DJIA",
+   "date": "2025-12-09",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "TRIPLE_ZIGZAG",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "5",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 356.2,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 476.42,
+   "refInv": 45728
+  },
+  {
+   "id": "PR033",
+   "instrument": "DJIA",
+   "date": "2026-02-25",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "DOWN",
+   "refRole": null,
+   "v3": {
+    "pattern": "TRIANGLE",
+    "wave": "B",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "CORRECTIVE",
+    "inv": 232.11,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "complete",
+    "curDir": "DOWN",
+    "next": "DOWN",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 494.82,
+   "refInv": null
+  },
+  {
+   "id": "PR034",
+   "instrument": "DJIA",
+   "date": "2026-03-24",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": null,
+   "v3": {
+    "pattern": "ZIGZAG",
+    "wave": "B",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "CORRECTIVE",
+    "inv": 186.13,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "complete",
+    "curDir": "DOWN",
+    "next": "DOWN",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "HIGH"
+   },
+   "trend20": "DOWN",
+   "lastClose": 461.17,
+   "refInv": 50499
+  },
+  {
+   "id": "PR035",
+   "instrument": "DJIA",
+   "date": "2026-05-05",
+   "timeframe": "daily",
+   "conflictGroup": "DJIA-2026-05",
+   "refDir": "DOWN",
+   "refRole": "CORRECTIVE",
+   "v3": {
+    "pattern": "WXY",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "3",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 376.48,
+    "applicability": "MODERATE"
+   },
+   "trend20": "UP",
+   "lastClose": 492.96,
+   "refInv": null
+  },
+  {
+   "id": "PR036",
+   "instrument": "DJIA",
+   "date": "2026-05-22",
+   "timeframe": "intraday",
+   "conflictGroup": "DJIA-2026-05",
+   "refDir": "UP",
+   "refRole": null,
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR037",
+   "instrument": "DJIA",
+   "date": "2026-07-10",
+   "timeframe": "weekly",
+   "conflictGroup": null,
+   "refDir": "unknown",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "WXY",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "HIGH"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "5",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 363.32,
+    "applicability": "MODERATE"
+   },
+   "trend20": "UP",
+   "lastClose": 525.78,
+   "refInv": null
+  },
+  {
+   "id": "PR038",
+   "instrument": "DJIA",
+   "date": "2026-10-02",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "DOWN",
+   "refRole": "CORRECTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR039",
+   "instrument": "DJIA",
+   "date": "2024-11-23",
+   "timeframe": "weekly",
+   "conflictGroup": null,
+   "refDir": "DOWN",
+   "refRole": null,
+   "v3": {
+    "pattern": "WXY",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "HIGH"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "5",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 354.48,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 443.16,
+   "refInv": null
+  },
+  {
+   "id": "PR040",
+   "instrument": "RUT",
+   "date": "2024-02-11",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "DOWN",
+   "refRole": null,
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR041",
+   "instrument": "RUT",
+   "date": "2025-10-08",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR042",
+   "instrument": "RUT",
+   "date": "2025-12-03",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "CORRECTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR043",
+   "instrument": "RUT",
+   "date": "2025-12-10",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "FLAT",
+    "wave": "C",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "MOTIVE",
+    "inv": 178.53,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "5",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 226.68,
+    "applicability": "MODERATE"
+   },
+   "trend20": "UP",
+   "lastClose": 254.81,
+   "refInv": null
+  },
+  {
+   "id": "PR044",
+   "instrument": "RUT",
+   "date": "2026-07-13",
+   "timeframe": "weekly",
+   "conflictGroup": "RUT-2026-Q3",
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "FLAT",
+    "wave": "C",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "MOTIVE",
+    "inv": 302.55,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "3",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 162.21,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 293.48,
+   "refInv": null
+  },
+  {
+   "id": "PR045",
+   "instrument": "RUT",
+   "date": "2026-08-12",
+   "timeframe": "intraday",
+   "conflictGroup": "RUT-2026-Q3",
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR046",
+   "instrument": "BTCUSD",
+   "date": "2021-06-02",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "DOWN",
+   "refRole": "CORRECTIVE",
+   "v3": {
+    "pattern": "TRIANGLE",
+    "wave": "D",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "CORRECTIVE",
+    "inv": 2421.22,
+    "applicability": "HIGH"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "complete",
+    "curDir": "DOWN",
+    "next": "DOWN",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "HIGH"
+   },
+   "trend20": "DOWN",
+   "lastClose": 37571.54193727457,
+   "refInv": null
+  },
+  {
+   "id": "PR047",
+   "instrument": "BTCUSD",
+   "date": "2021-08-05",
+   "timeframe": "weekly",
+   "conflictGroup": null,
+   "refDir": "SIDEWAYS",
+   "refRole": "CORRECTIVE",
+   "v3": {
+    "pattern": "TRIPLE_ZIGZAG",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "HIGH"
+   },
+   "v2": {
+    "pattern": "FLAT",
+    "wave": "B",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "CORRECTIVE",
+    "inv": 91332.1947,
+    "applicability": "HIGH"
+   },
+   "trend20": "DOWN",
+   "lastClose": 40871.15332931218,
+   "refInv": 13826.76
+  },
+  {
+   "id": "PR048",
+   "instrument": "BTCUSD",
+   "date": "2021-08-19",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "CORRECTIVE",
+   "v3": {
+    "pattern": "ZIGZAG",
+    "wave": "C",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "MOTIVE",
+    "inv": 19187.78,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "DOUBLE_ZIGZAG",
+    "wave": "Y·a",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 29793.2954,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 46762.51910332825,
+   "refInv": null
+  },
+  {
+   "id": "PR049",
+   "instrument": "BTCUSD",
+   "date": "2025-01-10",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "DOWN",
+   "refRole": null,
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR050",
+   "instrument": "BTCUSD",
+   "date": "2025-08-20",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "DOWN",
+   "refRole": "MOTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR051",
+   "instrument": "BTCUSD",
+   "date": "2025-09-25",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": null,
+   "v3": {
+    "pattern": "IMPULSE",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "HIGH"
+   },
+   "v2": {
+    "pattern": "TRIANGLE",
+    "wave": "C",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "CORRECTIVE",
+    "inv": 108269.1708,
+    "applicability": "MODERATE"
+   },
+   "trend20": "DOWN",
+   "lastClose": 109044.49076275282,
+   "refInv": null
+  },
+  {
+   "id": "PR052",
+   "instrument": "BTCUSD",
+   "date": "2026-07-01",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "CORRECTIVE",
+   "v3": {
+    "pattern": "IMPULSE",
+    "wave": "1",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 28669.9507,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "ZIGZAG",
+    "wave": "complete",
+    "curDir": "DOWN",
+    "next": "DOWN",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "HIGH"
+   },
+   "trend20": "DOWN",
+   "lastClose": 59968.64377025478,
+   "refInv": null
+  },
+  {
+   "id": "PR053",
+   "instrument": "BTCUSD",
+   "date": "2026-07-21",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "TRIANGLE",
+    "wave": "D",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "CORRECTIVE",
+    "inv": 23394.0061,
+    "applicability": "HIGH"
+   },
+   "v2": {
+    "pattern": "TRIANGLE",
+    "wave": "E",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "CORRECTIVE",
+    "inv": 58532.4127,
+    "applicability": "MODERATE"
+   },
+   "trend20": "UP",
+   "lastClose": 66521.77518614975,
+   "refInv": 62474
+  },
+  {
+   "id": "PR054",
+   "instrument": "BTCUSD",
+   "date": "2026-08-20",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "TRIPLE_ZIGZAG",
+    "wave": "Z",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "CORRECTIVE",
+    "inv": 22402.335,
+    "applicability": "HIGH"
+   },
+   "v2": {
+    "pattern": "FLAT",
+    "wave": "C",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 43413.6385,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 73010.88968396836,
+   "refInv": 62474
+  },
+  {
+   "id": "PR055",
+   "instrument": "BTCUSD",
+   "date": "2026-09-02",
+   "timeframe": "daily",
+   "conflictGroup": "BTC-2026-09-02",
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "TRIPLE_ZIGZAG",
+    "wave": "Z",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "CORRECTIVE",
+    "inv": 22402.335,
+    "applicability": "HIGH"
+   },
+   "v2": {
+    "pattern": "FLAT",
+    "wave": "C",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 43413.6385,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 77312.11961331074,
+   "refInv": 66919
+  },
+  {
+   "id": "PR056",
+   "instrument": "BTCUSD",
+   "date": "2026-09-02",
+   "timeframe": "intraday",
+   "conflictGroup": "BTC-2026-09-02",
+   "refDir": "DOWN",
+   "refRole": null,
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR057",
+   "instrument": "BTCUSD",
+   "date": "2026-09-18",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "WXY",
+    "wave": "Y",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "CORRECTIVE",
+    "inv": 24454.455,
+    "applicability": "HIGH"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "5",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 66521.7752,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 80875.07301720614,
+   "refInv": 76232
+  },
+  {
+   "id": "PR058",
+   "instrument": "WTI",
+   "date": "2025-04-29",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "DOWN",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "ZIGZAG",
+    "wave": "C",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "MOTIVE",
+    "inv": 66.24,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "ENDING_DIAGONAL",
+    "wave": "5",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "MOTIVE",
+    "inv": 87.69,
+    "applicability": "HIGH"
+   },
+   "trend20": "DOWN",
+   "lastClose": 61.84,
+   "refInv": null
+  },
+  {
+   "id": "PR059",
+   "instrument": "WTI",
+   "date": "2025-08-06",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "WXY",
+    "wave": "Y",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "CORRECTIVE",
+    "inv": 63.1,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "ENDING_DIAGONAL",
+    "wave": "5",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "MOTIVE",
+    "inv": 80.73,
+    "applicability": "HIGH"
+   },
+   "trend20": "DOWN",
+   "lastClose": 65.38,
+   "refInv": 64.03
+  },
+  {
+   "id": "PR060",
+   "instrument": "WTI",
+   "date": "2025-10-16",
+   "timeframe": "weekly",
+   "conflictGroup": null,
+   "refDir": "DOWN",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "FLAT",
+    "wave": "C",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "MOTIVE",
+    "inv": 133.19,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "3",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "MOTIVE",
+    "inv": 69.63,
+    "applicability": "HIGH"
+   },
+   "trend20": "DOWN",
+   "lastClose": 58.29,
+   "refInv": null
+  },
+  {
+   "id": "PR061",
+   "instrument": "WTI",
+   "date": "2026-06-12",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "DOWN",
+   "refRole": "MOTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR062",
+   "instrument": "WTI",
+   "date": "2026-07-22",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR063",
+   "instrument": "WTI",
+   "date": "2026-08-25",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": null,
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR064",
+   "instrument": "WTI",
+   "date": "2026-10-01",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "DOWN",
+   "refRole": "MOTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR065",
+   "instrument": "N225",
+   "date": "2025-04-29",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "v3": {
+    "pattern": "TRIANGLE",
+    "wave": "D",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "CORRECTIVE",
+    "inv": 16552.83,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "TRIANGLE",
+    "wave": "D",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "CORRECTIVE",
+    "inv": 30583.0955,
+    "applicability": "MODERATE"
+   },
+   "trend20": "UP",
+   "lastClose": 35839.99,
+   "refInv": 30726
+  },
+  {
+   "id": "PR066",
+   "instrument": "N225",
+   "date": "2025-09-19",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR067",
+   "instrument": "N225",
+   "date": "2026-05-14",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": null,
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR068",
+   "instrument": "N225",
+   "date": "2026-05-28",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR069",
+   "instrument": "XAUUSD",
+   "date": "2025-01-24",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR070",
+   "instrument": "XAUUSD",
+   "date": "2025-04-15",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": null,
+   "v3": {
+    "pattern": "WXY",
+    "wave": "Y",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "CORRECTIVE",
+    "inv": 1768.935,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "5",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 2052.03,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 3251.87,
+   "refInv": null
+  },
+  {
+   "id": "PR071",
+   "instrument": "XAUUSD",
+   "date": "2025-05-27",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": null,
+   "v3": {
+    "pattern": "TRIPLE_ZIGZAG",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "IMPULSE",
+    "wave": "5",
+    "curDir": "UP",
+    "next": "DOWN",
+    "role": "MOTIVE",
+    "inv": 2052.03,
+    "applicability": "HIGH"
+   },
+   "trend20": "UP",
+   "lastClose": 3309.5,
+   "refInv": null
+  },
+  {
+   "id": "PR072",
+   "instrument": "XAUUSD",
+   "date": "2025-10-01",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": "MOTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR073",
+   "instrument": "XAUUSD",
+   "date": "2026-07-24",
+   "timeframe": "intraday",
+   "conflictGroup": null,
+   "refDir": "DOWN",
+   "refRole": "MOTIVE",
+   "skipped": "INTRADAY_NOT_REPRODUCIBLE"
+  },
+  {
+   "id": "PR074",
+   "instrument": "EEM",
+   "date": "2025-02-18",
+   "timeframe": "daily",
+   "conflictGroup": null,
+   "refDir": "UP",
+   "refRole": null,
+   "v3": {
+    "pattern": "TRIANGLE",
+    "wave": "complete",
+    "curDir": "UP",
+    "next": "UP",
+    "role": "COMPLETE",
+    "inv": null,
+    "applicability": "LOW"
+   },
+   "v2": {
+    "pattern": "ENDING_DIAGONAL",
+    "wave": "4",
+    "curDir": "DOWN",
+    "next": "UP",
+    "role": "CORRECTIVE",
+    "inv": 36.53,
+    "applicability": "LOW"
+   },
+   "trend20": "UP",
+   "lastClose": 44.69,
+   "refInv": null
+  }
+ ]
+}

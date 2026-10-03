@@ -58,7 +58,12 @@
     WXY_W_IS_THREE: m("DEFINITION", "Kombination: W unterteilt sich in drei Wellen", "EWP", "Kap. 1, Combinations (Double Three)", INVALIDATES),
     WXY_Y_IS_THREE: m("DEFINITION", "Kombination: Y unterteilt sich in drei Wellen", "EWP", "Kap. 1, Combinations (Double Three)", INVALIDATES),
     X_NOT_BEYOND_W_ORIGIN: m("DEFINITION", "Kombination: X retraced nie mehr als 100 % von W", "EWP", "Kap. 1, Combinations / Double Zigzags", INVALIDATES, "Operationalisierung: über den W-Ursprung hinaus wäre die Korrektur beendet."),
-    Y_BEYOND_W_END: m("DEFINITION", "Doppel-Zigzag: Y läuft über das Ende von W hinaus", "EWP", "Kap. 1, Double Zigzags (zweiter Zigzag schreitet voran)", INVALIDATES + "; " + OPEN)
+    Y_BEYOND_W_END: m("DEFINITION", "Doppel-/Dreifach-Zigzag: Y läuft über das Ende von W hinaus", "EWP", "Kap. 1, Double and Triple Zigzags (jeder Zigzag schreitet voran)", INVALIDATES + "; " + OPEN),
+    X2_NOT_BEYOND_Y_ORIGIN: m("DEFINITION", "Dreifach-Zigzag: das zweite X retraced Y nicht vollständig", "EWP", "Kap. 1, Double and Triple Zigzags", INVALIDATES, "Operationalisierung analog zum ersten X."),
+    Z_BEYOND_Y_END: m("DEFINITION", "Dreifach-Zigzag: Z läuft über das Ende von Y hinaus", "EWP", "Kap. 1, Double and Triple Zigzags", INVALIDATES + "; " + OPEN),
+    TZ_W_IS_THREE: m("DEFINITION", "Dreifach-Zigzag: W unterteilt sich in drei Wellen", "EWP", "Kap. 1, Double and Triple Zigzags", INVALIDATES),
+    TZ_Y_IS_THREE: m("DEFINITION", "Dreifach-Zigzag: Y unterteilt sich in drei Wellen", "EWP", "Kap. 1, Double and Triple Zigzags", INVALIDATES),
+    TZ_Z_IS_THREE: m("DEFINITION", "Dreifach-Zigzag: Z unterteilt sich in drei Wellen", "EWP", "Kap. 1, Double and Triple Zigzags", INVALIDATES)
   };
 
   /** Richtlinien (Schluessel = Guideline-Key ohne Praefix W_/Y_). Einfluss: Mittelwert aller Richtlinien → Richtlinienpassung. */
@@ -84,7 +89,8 @@
     LEG_RATIOS: m("GUIDELINE", "Dreieck: Folgewellen ≈ 0,618 der Vorwelle", "EWP", "Kap. 4, Triangles", GL),
     EXPANDING_RARE: m("GUIDELINE", "Expandierende Dreiecke sind selten", "EWP", "Kap. 1, Triangles", GL),
     X_PROPORTION: m("GUIDELINE", "Verbindungswelle X typisch 38,2–78,6 %", "EWP", "Kap. 1, Combinations", GL),
-    Y_PROPORTION: m("GUIDELINE", "Y ≈ W (0,618–1,618)", "EWP", "Kap. 4, Ratio Analysis", GL)
+    Y_PROPORTION: m("GUIDELINE", "Y ≈ W (0,618–1,618)", "EWP", "Kap. 4, Ratio Analysis", GL),
+    Z_PROPORTION: m("GUIDELINE", "Z ≈ Y (0,618–1,618)", "EWP", "Kap. 4, Ratio Analysis", GL)
   };
 
   /** Bestandteile der Count Quality und weitere Audit-Dimensionen — mit Klasse und Begruendung der Gewichte. */

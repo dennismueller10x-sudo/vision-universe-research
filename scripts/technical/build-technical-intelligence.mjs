@@ -75,7 +75,9 @@ export function slim(res) {
     pro: {
       elliott: E && E.primary ? { status: E.status, degrees: E.degrees, structuralScore: E.structuralScore, structuralLevel: E.structuralLevel, clarity: E.clarity, clarityLevel: E.clarityLevel, applicability: E.applicability,
                                   primary: count(E.primary), alternatives: E.alternatives.map((a) => { const c = count(a); delete c.rules; delete c.guidelines; delete c.subdivision; if (c.ruleAudit) c.ruleAudit = { validity: c.ruleAudit.validity, hardRules: c.ruleAudit.hardRules, definitions: c.ruleAudit.definitions, guidelines: { matched: c.ruleAudit.guidelines.matched, total: c.ruleAudit.guidelines.total } }; c.zones = c.zones.slice(0, 3); return c; }), higherDegree: E.higherDegree && { pattern: E.higherDegree.pattern, patternName: E.higherDegree.patternName, current: E.higherDegree.current, waves: E.higherDegree.waves },
-                                  historicalMap: E.historicalMap && { coverage: E.historicalMap.coverage, unlabeledLegs: E.historicalMap.unlabeledLegs, patterns: E.historicalMap.patterns.slice(-6) }, ruleSetVersion: E.ruleSetVersion }
+                                  historicalMap: E.historicalMap && { coverage: E.historicalMap.coverage, unlabeledLegs: E.historicalMap.unlabeledLegs, patterns: E.historicalMap.patterns.slice(-6) }, ruleSetVersion: E.ruleSetVersion,
+                                  engineVersion: E.engineVersion, ambiguity: E.ambiguity || null, dataQuality: E.dataQuality ? { gaps: E.dataQuality.gaps, suspectedSplits: E.dataQuality.suspectedSplits.length, note: E.dataQuality.note } : null,
+                                  trace: E.trace ? { chosen: E.trace.chosen, rejectedTop: E.trace.rejectedTop, candidates: E.trace.candidates } : null }
                               : { status: E ? E.status : "UNAVAILABLE", reason: E ? E.reason : null, detail: E ? E.detail : null },
       trend: { phase: m.trend.phase, primary: m.trend.primary, secondary: m.trend.secondary, shortTerm: m.trend.shortTerm, stage: m.trend.stage, source: m.trend.source },
       momentum: m.momentum, volatility: m.volatility,

@@ -1,7 +1,7 @@
 {
  "schemaVersion": "vu-technical-method-evidence-1.0.0",
  "purpose": "Evidenzstufe und Produktrolle je technischer Methode, abgeleitet aus den Holdout-Studien (Szenario-Evidenz, vorab registrierte Elliott-Validierung). Keine Zahl ist eine Wahrscheinlichkeit; Stufen werden nur aus Studienergebnissen abgeleitet, nie von Hand gesetzt.",
- "generatedAt": "2026-10-02T21:35:07.583Z",
+ "generatedAt": "2026-10-03T05:23:18.491Z",
  "definitions": {
   "VALIDATED": "vorab registrierte Hypothese auf unabhängiger Stichprobe bestätigt",
   "SUPPORTED": "Holdout-Richtung statistisch besser als 50 % und als „immer long“, aber nicht vorab registriert bestätigt; wirtschaftlich gering (vorzeichenbereinigte Rendite unter „immer long“)",
@@ -54,8 +54,13 @@
    "label": "Kein Vorteil belegt",
    "role": "CONTEXT",
    "stat": "Vorab registrierter Test auf unabhängigen Titeln: H1 nicht bestätigt (Schätzer 0, 95 %-KI -0,0001 bis 0,0001); H2 nicht bestätigt (Schätzer +0,1 Pp., 95 %-KI −0,7 Pp. bis +1,0 Pp.); H3 nicht bestätigt (Schätzer −0,9 Pp., 95 %-KI −3,2 Pp. bis +1,3 Pp.); H4 nicht bestätigt (Schätzer +2,3 Pp., 95 %-KI −0,5 Pp. bis +5,4 Pp.); H5 nicht bestätigt (Schätzer −3,2 Pp., 95 %-KI −5,2 Pp. bis −0,9 Pp.)",
-   "consumer": "In der vorab festgelegten Prüfung auf unabhängigen Aktien brachte die Elliott-Zählung keinen Prognosevorteil gegenüber derselben Kursstruktur ohne Zählung. Sie dient hier als Sprache für Struktur und Szenarien.",
-   "pro": "Kontext, kein Prognosebeitrag (H1 nicht bestätigt (Schätzer 0, 95 %-KI -0,0001 bis 0,0001); H2 nicht bestätigt (Schätzer +0,1 Pp., 95 %-KI −0,7 Pp. bis +1,0 Pp.); H3 nicht bestätigt (Schätzer −0,9 Pp., 95 %-KI −3,2 Pp. bis +1,3 Pp.))"
+   "consumer": "Experimentelles Strukturmodell: Die Elliott-Zählung beschreibt die Wellenstruktur. In der vorab festgelegten Prüfung auf unabhängigen Aktien brachte sie keinen Prognosevorteil gegenüber derselben Kursstruktur ohne Zählung.",
+   "pro": "Kontext, kein Prognosebeitrag (H1 nicht bestätigt (Schätzer 0, 95 %-KI -0,0001 bis 0,0001); H2 nicht bestätigt (Schätzer +0,1 Pp., 95 %-KI −0,7 Pp. bis +1,0 Pp.); H3 nicht bestätigt (Schätzer −0,9 Pp., 95 %-KI −3,2 Pp. bis +1,3 Pp.))",
+   "methodStatus": {
+    "code": "EXPERIMENTAL_STRUCTURE_MODEL",
+    "label": "Experimentelles Strukturmodell",
+    "note": "Methodentreue im Aufbau (Engine-Quality-Gate, ELLIOTT_ENGINE_QUALITY_PREREG.md); historischer Prognosevorteil nicht belegt."
+   }
   },
   "FIBONACCI": {
    "level": "NOT_ESTABLISHED",

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elliott-Werkbank · Vision Universe</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+:root{--bg:#0b0d10;--panel:#14171b;--line:rgba(255,255,255,.1);--text:#f4f5f1;--muted:#a6abb3;--dim:#7d828a;--lime:#c8f531;--blue:#8cc8ff;--red:#ff6b5e;--violet:#b3a6ff;--amber:#f2c14e}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:16px;border-bottom:1px solid var(--line)}h1{margin:0;font-size:20px}header p{margin:4px 0 0;color:var(--muted);max-width:980px;font-size:14px}
+main{display:grid;grid-template-columns:300px 1fr;min-height:calc(100vh - 80px)}
+nav{border-right:1px solid var(--line);overflow:auto;max-height:calc(100vh - 80px)}
+nav .filters{display:flex;gap:6px;flex-wrap:wrap;padding:10px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg)}
+nav button.case{display:block;width:100%;text-align:left;padding:9px 12px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);font:inherit;cursor:pointer}
+nav button.case[aria-current=true]{background:var(--panel);box-shadow:inset 3px 0 var(--lime)}
+nav small{display:block;color:var(--dim)}
+section{padding:14px;max-width:1150px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}
+.card h3{margin:0 0 8px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+dl{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:0}dt{color:var(--muted)}dd{margin:0}
+svg{width:100%;height:auto;background:#0f1215;border-radius:12px;border:1px solid var(--line)}
+.btn,.chip{min-height:36px;padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--text);font:inherit;cursor:pointer}
+.chip[aria-pressed=true]{border-color:var(--lime);color:var(--lime)}
+.tag{display:inline-block;padding:1px 8px;border-radius:99px;background:rgba(255,255,255,.08);font-size:12px;margin-right:6px}
+.note{color:var(--muted);font-size:13px}
+label{display:block;margin:6px 0 2px;color:var(--muted);font-size:13px}
+select,input,textarea{width:100%;background:#0f1215;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px;font:inherit}
+ol{margin:4px 0;padding-left:18px}li{margin:2px 0}
+input[type=range]{padding:0}
+@media (max-width:760px){main{grid-template-columns:1fr}nav{max-height:240px;border-right:0;border-bottom:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Elliott-Werkbank (intern)</h1>
+  <p>Prüfen und annotieren: Kurs nur bis zum Stichtag, Engine 3.0 (lime) und Alternative (violett), Engine 2.2 (grau gestrichelt), Unterwellen als Punkte, Zählungs-Historie mit Wechselgrund. Praktiker-Referenzen sind ungeprüfte Zusammenfassungen; Annotationen bleiben in diesem Browser, bis sie exportiert werden. Nicht öffentlich verlinkt.</p>
+</header>
+<main><nav id="nav" aria-label="Fälle"></nav><section id="detail" aria-live="polite"><p class="note">Lade …</p></section></main>
+<script>
+(function () {
+  "use strict";
+  var D = null, cur = null, filter = "ALL", step = null, showTruth = false, KEY = "vu-elliott-annotations-v1";
+  function h(tag, attrs, kids) { var e = document.createElement(tag); Object.keys(attrs || {}).forEach(function (k) { if (k === "text") e.textContent = attrs[k]; else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), attrs[k]); else e.setAttribute(k, attrs[k]); }); (kids || []).forEach(function (c) { if (c) e.append(c); }); return e; }
+  function f(v) { return typeof v === "number" ? v.toLocaleString("de-DE", { maximumFractionDigits: 2 }) : v === null || v === undefined ? "–" : String(v); }
+  function load() { try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { return {}; } }
+  function save(a) { try { localStorage.setItem(KEY, JSON.stringify(a)); } catch (e) { /* privat */ } }
+  var NS = "http://www.w3.org/2000/svg";
+  function s(tag, a) { var e = document.createElementNS(NS, tag); Object.keys(a || {}).forEach(function (k) { e.setAttribute(k, a[k]); }); return e; }
+  function chart(c) {
+    var d = c.chart.d, cl = c.chart.c, n = d.length, W = 960, H = 340, pl = 8, pr = 64, pt = 10, pb = 22;
+    var lo = Math.min.apply(null, cl), hi = Math.max.apply(null, cl), pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+    var idx = {}; d.forEach(function (x, i) { idx[x] = i; });
+    var X = function (i) { return pl + (W - pl - pr) * (i + 0.5) / n; }, Y = function (v) { return pt + (hi - v) / (hi - lo) * (H - pt - pb); };
+    var g = s("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Kursverlauf bis zum Stichtag mit Zählungen" });
+    for (var k = 0; k <= 4; k++) { var v = lo + (hi - lo) * k / 4; g.append(s("line", { x1: pl, x2: W - pr, y1: Y(v), y2: Y(v), stroke: "rgba(255,255,255,.06)" })); var t = s("text", { x: W - pr + 6, y: Y(v) + 4, fill: "#7d828a", "font-size": 11 }); t.textContent = f(v); g.append(t); }
+    var p = ""; for (var i = 0; i < n; i++) p += (i ? "L" : "M") + X(i) + " " + Y(cl[i]); g.append(s("path", { d: p, fill: "none", stroke: "#f4f5f1", "stroke-width": 1.5 }));
+    function draw(cnt, color, dash, labels) {
+      if (!cnt) return;
+      var pts = []; cnt.waves.forEach(function (w, q) { if (q === 0 && idx[w.a] !== undefined) pts.push([idx[w.a], w.pa, ""]); if (idx[w.b] !== undefined) pts.push([idx[w.b], w.pb, w.l]); });
+      if (pts.length < 2) return;
+      g.append(s("path", { d: pts.map(function (q, j) { return (j ? "L" : "M") + X(q[0]) + " " + Y(q[1]); }).join(""), fill: "none", stroke: color, "stroke-width": 2, "stroke-dasharray": dash || "" }));
+      if (labels) pts.forEach(function (q) { if (!q[2]) return; var tt = s("text", { x: X(q[0]), y: Y(q[1]) - 7, fill: color, "font-size": 12, "text-anchor": "middle", "font-weight": 600 }); tt.textContent = q[2]; g.append(tt); });
+      if (labels) cnt.waves.forEach(function (w) { (w.sub && w.sub.w || []).forEach(function (x) { if (idx[x[0]] !== undefined) { g.append(s("circle", { cx: X(idx[x[0]]), cy: Y(x[1]), r: 2.6, fill: color, opacity: 0.7 })); } }); });
+    }
+    if (c.v2.primary) draw(c.v2.primary, "#7d828a", "5 4", false);
+    if (c.v3.alternative) draw(c.v3.alternative, "#b3a6ff", "3 3", true);
+    if (c.v3.primary) draw(c.v3.primary, "#c8f531", "", true);
+    if (showTruth && c.reference && c.reference.truth) { var tp = c.reference.truth.pivots.filter(function (q) { return idx[q[0]] !== undefined; }); if (tp.length > 1) g.append(s("path", { d: tp.map(function (q, j) { return (j ? "L" : "M") + X(idx[q[0]]) + " " + Y(q[1]); }).join(""), fill: "none", stroke: "#8cc8ff", "stroke-width": 3, opacity: 0.5 })); }
+    if (step !== null && c.history[step] && idx[c.history[step].d] !== undefined) { var sx = X(idx[c.history[step].d]); g.append(s("line", { x1: sx, x2: sx, y1: pt, y2: H - pb, stroke: "#f2c14e", "stroke-dasharray": "3 4" })); }
+    return g;
+  }
+  function kv(rows) { return h("dl", {}, [].concat.apply([], rows.map(function (r) { return [h("dt", { text: r[0] }), h("dd", { text: r[1] })]; }))); }
+  function countText(cn) { return cn ? cn.name + (cn.complete ? " · abgeschlossen" : " · Welle " + cn.wave) + (cn.inv ? " · ungültig jenseits " + f(cn.inv) : "") : "keine Zählung"; }
+  function form(c) {
+    var A = load(), a = A[c.id] || {};
+    function sel(name, opts) { var e = h("select", { id: "f-" + name, name: name }); opts.forEach(function (o) { var op = h("option", { value: o, text: o }); if (a[name] === o) op.selected = true; e.append(op); }); return e; }
+    var fields = h("form", { onsubmit: function (ev) {
+      ev.preventDefault(); var fd = new FormData(ev.target), o = { annotationId: c.id + "|" + (fd.get("annotator") || "?"), symbol: c.symbol, asOfDate: c.date, timeframe: c.timeframe, sourceType: "MANUAL_VU_REVIEW", createdAt: new Date().toISOString() };
+      fd.forEach(function (v, k) { o[k] = v; }); A[c.id] = o; save(A); msg.textContent = "Gespeichert (lokal). Export enthält alle Annotationen.";
+    } }, [
+      h("label", { for: "f-annotator", text: "Annotierende Person (Pflicht – kein Name, keine Annotation)" }), h("input", { id: "f-annotator", name: "annotator", required: "", value: a.annotator || "" }),
+      h("label", { for: "f-pattern", text: "Hauptmuster" }), sel("pattern", ["", "IMPULSE", "LEADING_DIAGONAL", "ENDING_DIAGONAL", "ZIGZAG", "FLAT", "TRIANGLE", "WXY", "DOUBLE_ZIGZAG", "TRIPLE_ZIGZAG", "COMBINATION", "UNCLEAR"]),
+      h("label", { for: "f-degree", text: "Grad" }), sel("degree", ["", "Supercycle", "Cycle", "Primary", "Intermediate", "Minor", "Minute", "Minuette", "relative"]),
+      h("label", { for: "f-currentWave", text: "Laufende Welle (z. B. (4) of 3)" }), h("input", { id: "f-currentWave", name: "currentWave", value: a.currentWave || "" }),
+      h("label", { for: "f-engineVerdict", text: "Urteil über Engine 3.0" }), sel("engineVerdict", ["", "AGREE", "AGREE_DEGREE_OFF_BY_ONE", "PARTLY", "DISAGREE", "ENGINE_SHOULD_ABSTAIN", "NOT_COUNTABLE"]),
+      h("label", { for: "f-mismatchCategory", text: "Abweichungsart" }), sel("mismatchCategory", ["", "DEGREE_TOO_LOW", "DEGREE_TOO_HIGH", "WRONG_PATTERN", "WRONG_WAVE_POSITION", "MISSED_TRUNCATION", "MISSED_FLAT", "MISSED_TRIANGLE", "TINY_SWING_COUNTED", "WEEKLY_CONTEXT_MISSING", "PROPORTION_IGNORED", "OTHER"]),
+      h("label", { for: "f-validity", text: "Zählbarkeit" }), sel("validity", ["", "VALID_COUNT", "AMBIGUOUS", "NO_RELIABLE_COUNT"]),
+      h("label", { for: "f-comments", text: "Kommentar" }), (function () { var t = h("textarea", { id: "f-comments", name: "comments", rows: "3" }); t.value = a.comments || ""; return t; })(),
+      h("div", { style: "display:flex;gap:8px;margin-top:8px;flex-wrap:wrap" }, [h("button", { class: "btn", type: "submit", text: "Annotation speichern" }), h("button", { class: "btn", type: "button", text: "Alle exportieren (JSON)", onclick: function () {
+        var blob = new Blob([JSON.stringify({ schemaVersion: "vu-elliott-annotation-1.0.0", exportedAt: new Date().toISOString(), annotations: Object.values(load()) }, null, 1)], { type: "application/json" });
+        var u = URL.createObjectURL(blob), l = h("a", { href: u, download: "elliott-annotations.json" }); document.body.append(l); l.click(); l.remove(); URL.revokeObjectURL(u); } })])
+    ]);
+    var msg = h("p", { class: "note", role: "status" });
+    return h("div", { class: "card" }, [h("h3", { text: "Annotation (Schema vu-elliott-annotation-1.0.0)" }), fields, msg]);
+  }
+  function detail(c) {
+    cur = c; var sec = document.getElementById("detail"); sec.replaceChildren();
+    sec.append(h("h2", { text: c.symbol + " · Stichtag " + c.date + " · " + (c.timeframe === "1W" ? "Woche" : "Tag") }), h("p", {}, [h("span", { class: "tag", text: c.kind }), h("span", { class: "tag", text: "Engine " + c.v3.engine + " vs " + c.v2.engine })]));
+    var host = h("div"); host.append(chart(c)); sec.append(host);
+    if (c.history && c.history.length) {
+      var lab = h("p", { class: "note", role: "status" }), sl = h("input", { type: "range", min: "0", max: String(c.history.length - 1), value: String(c.history.length - 1), "aria-label": "Zeitreise der Zählung" });
+      var upd = function () { step = +sl.value; var x = c.history[step]; lab.textContent = x.d + ": " + (x.to || "keine Zählung") + (x.ab ? " (keine verlässliche Zählung)" : "") + (x.why ? " — " + x.why : ""); host.replaceChildren(chart(c)); };
+      sl.addEventListener("input", upd); sec.append(sl, lab); upd();
+    }
+    var ref = c.reference;
+    sec.append(h("div", { class: "grid" }, [
+      h("div", { class: "card" }, [h("h3", { text: "Engine 3.0" }), kv([["Hauptzählung", countText(c.v3.primary)], ["Alternative", countText(c.v3.alternative)], ["Höherer Grad", c.v3.higher ? c.v3.higher.name + ", Welle " + c.v3.higher.current : "–"],
+        ["Anwendbarkeit", c.v3.applicability ? c.v3.applicability.level + " (" + f(c.v3.applicability.score) + ")" : "–"], ["Mehrdeutigkeit", c.v3.ambiguity ? c.v3.ambiguity.kind + " – " + c.v3.ambiguity.note : "–"],
+        ["Verworfen", (c.v3.trace && c.v3.trace.rejectedTop || []).map(function (r) { return r.pattern + " (" + r.why + ")"; }).join(" · ") || "–"]])]),
+      h("div", { class: "card" }, [h("h3", { text: "Engine 2.2 · Referenz" }), kv([["Engine 2.2", countText(c.v2.primary)]].concat(ref && ref.sourceType === "EXTERNAL_PRACTITIONER" ? [["Quelle", (ref.organization || "") + (ref.author ? " · " + ref.author : "")], ["Aussage", ref.claim || "–"], ["Muster", ref.pattern || "–"], ["Erwartet", ref.next || "–"], ["Grenze / Ziel", f(ref.invalidation) + " / " + (ref.target ? ref.target.map(f).join("–") : "–")], ["Status", "ungeprüft (Suchzusammenfassung)" + (ref.conflictGroup ? " · widersprüchliche Referenzen: " + ref.conflictGroup : "")]] : ref && ref.sourceType === "SYNTHETIC" ? [["Wahrheit", showTruth ? ref.truth.pattern + " (" + ref.truth.expect.join("/") + ")" : "verborgen"]] : [["Referenz", "keine – bitte annotieren"]])),
+        ref && ref.url ? h("p", {}, [h("a", { href: ref.url, rel: "noopener noreferrer", target: "_blank", style: "color:#8cc8ff", text: "Quelle öffnen" })]) : null,
+        ref && ref.sourceType === "SYNTHETIC" ? h("button", { class: "btn", type: "button", text: showTruth ? "Wahrheit verbergen" : "Wahrheit zeigen", onclick: function () { showTruth = !showTruth; detail(c); } }) : null]),
+      h("div", { class: "card" }, [h("h3", { text: "Zählungs-Historie (26 Schritte)" }), h("ol", {}, c.history.filter(function (x) { return x.why; }).map(function (x) { return h("li", { text: x.d + ": " + (x.to || "–") + " — " + x.why }); }))]),
+      form(c)
+    ]));
+    document.querySelectorAll("nav button.case").forEach(function (b) { b.setAttribute("aria-current", b.dataset.id === c.id ? "true" : "false"); });
+  }
+  function nav() {
+    var n = document.getElementById("nav"); n.replaceChildren();
+    var kinds = ["ALL"].concat(Array.from(new Set(D.cases.map(function (c) { return c.kind; }))));
+    n.append(h("div", { class: "filters" }, kinds.map(function (k) { return h("button", { class: "chip", "aria-pressed": String(k === filter), text: k === "ALL" ? "Alle" : k, onclick: function () { filter = k; nav(); } }); })));
+    var A = load();
+    D.cases.filter(function (c) { return filter === "ALL" || c.kind === filter; }).forEach(function (c) {
+      n.append(h("button", { class: "case", "data-id": c.id, onclick: function () { step = null; showTruth = false; detail(c); } }, [h("span", { text: c.symbol + (A[c.id] ? " ✓" : "") }), h("small", { text: c.kind + " · " + c.date + " · " + (c.v3.primary ? c.v3.primary.name : "keine Zählung") })]));
+    });
+  }
+  fetch("data.json").then(function (r) { return r.json(); }).then(function (d) { D = d; nav(); detail(D.cases[0]); }).catch(function () { document.getElementById("detail").textContent = "Daten nicht verfügbar (scripts/technical/elliott-workbench-data.mjs ausführen)."; });
+})();
+</script>
+<script src="/quant/ui/shell.js"></script>
+</body>
+</html>

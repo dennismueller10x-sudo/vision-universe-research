@@ -24,6 +24,12 @@ import { ROOT } from "./ti-data.mjs";
 const require = createRequire(import.meta.url);
 const TI = require(join(ROOT, "quant/engines/technical/ti/engine.js"));
 const EV2 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v2.js"));
+const EV3 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js"));
+/** Elliott-Engine laut Methodenvertrag (elliottEngine: "v2" | "v3"). */
+function runElliott(series, prep, t, prev, meth) {
+  const a = { series, features: prep.features, pivots: prep.pivots, asOfIndex: t, barsPerYear: prep.profile.barsPerYear, previous: prev };
+  return meth && meth.elliottEngine === "v3" ? EV3.analyzeElliottV3(Object.assign(a, { methodology: meth })) : EV2.analyzeElliottV2(Object.assign(a, { methodology: meth ? meth.elliottV2 || null : null }));
+}
 
 export const REPLAY_STEPS = 26, WARMUP = 26;
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
@@ -32,7 +38,21 @@ const r4 = (v) => (isNum(v) ? Math.round(v * 1e4) / 1e4 : v);
 function info(E, close) {
   const p = E && E.primary;
   if (!p) return null;
-  return { key: p.persistenceKey, scaleId: E.degrees.analysis, complete: p.complete, inv: p.invalidation ? p.invalidation.price : null, invDir: p.invalidation ? p.invalidation.direction : null };
+  return { key: p.persistenceKey, scaleId: E.degrees.analysis, complete: p.complete, inv: p.invalidation ? p.invalidation.price : null, invDir: p.invalidation ? p.invalidation.direction : null,
+           name: p.patternName, wave: p.complete ? "abgeschlossen" : p.currentWave.label, from: p.waves[0].fromIndex, span: [p.waves[0].fromIndex, p.waves[p.waves.length - 1].toIndex],
+           waveStarts: p.waves.map((w) => w.fromIndex), abstain: !!(E.applicability && E.applicability.abstain) };
+}
+/** Begruendung eines Wechsels (Zaehlungs-Historie, Profi-Ansicht): neue Kursinformation, Grad, Abschluss — oder instabil. */
+export function reasonOf(prev, cur, tr, close, prevClose, atr) {
+  if (tr === "SAME") return prev && cur && prev.wave !== cur.wave ? "Welle " + prev.wave + " → " + cur.wave + " (Fortschritt)" : null;
+  if (tr === "NONE") return null;
+  if (tr === "CHANGE") return cur ? "Zählung wieder möglich" : "keine verlässliche Zählung mehr";
+  if (prev.complete) return prev.name + " war abgeschlossen – neue Lesart beginnt";
+  if (isNum(prev.inv) && (prev.invDir === "below" ? close < prev.inv : close > prev.inv)) return "Schlusskurs jenseits der Grenze " + r4(prev.inv) + " – " + prev.name + " ungültig";
+  const nested = (a, b) => b.span[0] <= a.span[0] && b.span[1] >= a.span[1] && b.waveStarts.includes(a.span[0]);
+  if (nested(prev, cur) || nested(cur, prev)) return "gleiche Struktur, andere Ebene gezählt (" + prev.name + " ↔ " + cur.name + ")";
+  if (isNum(atr) && Math.abs(close - prevClose) >= atr) return "starke Wochenbewegung (≥ 1 ATR) – andere Lesart passt besser";
+  return "andere Lesart knapp besser – ohne Bruch der vorigen (instabil)";
 }
 /** Uebergang zweier aufeinanderfolgender Lesarten (gleich definiert wie in der Validierungsstudie). */
 export function transition(prev, cur, close) {
@@ -46,28 +66,33 @@ export function transition(prev, cur, close) {
  * Sequenzielles Elliott-Replay der letzten WARMUP+STEPS Bars mit Persistenz.
  * @returns { states: {t → previous-Zustand fuer Bar t}, relabels, transitions, lifetime }
  */
-export function elliottReplay(series, P, steps = REPLAY_STEPS, warm = WARMUP) {
+export function elliottReplay(series, P, steps = REPLAY_STEPS, warm = WARMUP, meth = null) {
   const n = series.length, prep = P.main, start = Math.max(1, n - steps - warm);
-  const states = {}, seq = [];
+  const states = {}, seq = [], history = [];
   let prevState = null, prevInfo = null;
   for (let t = start; t < n; t++) {
     states[t] = prevState;
-    const E = EV2.analyzeElliottV2({ series, features: prep.features, pivots: prep.pivots, asOfIndex: t, barsPerYear: prep.profile.barsPerYear, previous: prevState });
+    const E = runElliott(series, prep, t, prevState, meth);
     const cur = info(E, series.close[t]);
-    if (t >= n - steps) seq.push({ t, tr: transition(prevInfo, cur, series.close[t]) });
+    if (t >= n - steps) {
+      const tr = transition(prevInfo, cur, series.close[t]);
+      seq.push({ t, tr });
+      const why = reasonOf(prevInfo, cur, tr, series.close[t], series.close[t - 1], prep.features.columns.atr[t]);
+      if (why) history.push({ d: series.timestamps[t], from: prevInfo ? prevInfo.name + " · " + prevInfo.wave : null, to: cur ? cur.name + " · " + cur.wave : null, tr, why });
+    }
     prevInfo = cur;
     prevState = E.primary ? { key: E.primary.persistenceKey, scaleId: E.degrees.analysis } : null;
   }
   const relabels = seq.filter((x) => x.tr === "RELABEL").length;
   let lifetime = 0; for (let k = seq.length - 1; k >= 0 && seq[k].tr === "SAME"; k--) lifetime++;
-  return { states, relabels, resets: seq.filter((x) => x.tr === "RESET").length, steps: seq.length, lifetime,
+  return { states, history, relabels, resets: seq.filter((x) => x.tr === "RESET").length, steps: seq.length, lifetime,
            relabelingRisk: relabels === 0 ? "LOW" : relabels <= 2 ? "MEDIUM" : "HIGH" };
 }
 
 /** Endanalyse mit Persistenz (identisch in Build und Drift-Pruefung). */
 export function analyzeProduct(series, opts) {
   const P = TI.prepare(series);
-  const rep = elliottReplay(series, P);
+  const rep = elliottReplay(series, P, REPLAY_STEPS, WARMUP, opts && opts.methodology);
   const t = series.length - 1;
   const res = TI.analyzeAt(P, t, Object.assign({}, opts, { elliottPrevious: rep.states[t] || null }));
   return { P, res, replay: rep };
@@ -149,6 +174,6 @@ export function elliottTransparency(res, rep) {
     status: p.complete ? "COMPLETE" : "DEVELOPING", currentWave: p.currentWave, degree: E.degrees, countQuality: p.countQuality, applicability: E.applicability,
     detection: p.detection, ruleViolations: viol, openRules: open, guidelineFit: p.rankComponents ? p.rankComponents.guidelines : null,
     higherDegreeAgreement: p.rankComponents ? p.rankComponents.higherDegree : null, candidateTree: E.candidateTree,
-    relabeling: rep ? { risk: rep.relabelingRisk, relabelsLast26: rep.relabels, resetsLast26: rep.resets, stableFor: rep.lifetime } : null
+    relabeling: rep ? { risk: rep.relabelingRisk, relabelsLast26: rep.relabels, resetsLast26: rep.resets, stableFor: rep.lifetime, history: (rep.history || []).slice(-12) } : null
   };
 }

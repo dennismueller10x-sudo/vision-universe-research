@@ -204,7 +204,7 @@
     var patterns = [], pos = 0, expectMotive = null, unlabeled = 0, consumed = 0;
     while (pos + MAX_PATTERN_LEGS <= legs.length) {
       var options = [];
-      P.TYPES.forEach(function (t) {
+      (P.TYPES_V2 || P.TYPES).forEach(function (t) {
         var w = P.PATTERNS[t].waves;
         if (pos + w > legs.length) return;
         var e = scoreCandidate(t, legs.slice(pos, pos + w), ctx);
@@ -318,7 +318,7 @@
       out.push(e);
     }
     for (var s = minStart; s < n; s++) {
-      P.TYPES.forEach(function (t) {
+      (P.TYPES_V2 || P.TYPES).forEach(function (t) {
         var w = P.PATTERNS[t].waves, k = n - s;
         if (k >= 1 && k <= w) push(t, s, k, false);
         /* abgeschlossen am letzten bestaetigten Leg, das laufende Leg beginnt das Folgende */
@@ -376,7 +376,7 @@
 
   var PATTERN_NAMES_DE = {
     IMPULSE: "Impuls", LEADING_DIAGONAL: "Leading Diagonal", ENDING_DIAGONAL: "Ending Diagonal", ZIGZAG: "Zigzag", FLAT: "Flat",
-    TRIANGLE: "Dreieck", WXY: "Doppelte Korrektur (W-X-Y)", DOUBLE_ZIGZAG: "Doppel-Zigzag"
+    TRIANGLE: "Dreieck", WXY: "Doppelte Korrektur (W-X-Y)", DOUBLE_ZIGZAG: "Doppel-Zigzag", TRIPLE_ZIGZAG: "Dreifach-Zigzag"
   };
 
   /** Identitaet einer Lesart ueber die Zeit: Muster, Startpivot, Richtung (unabhaengig von der laufenden Welle). */

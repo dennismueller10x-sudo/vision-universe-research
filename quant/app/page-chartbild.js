@@ -351,7 +351,7 @@
     var chartCard = el("section", { class: "cb-chart-card", "aria-label": "Chart" }, [controls, chartHost,
       el("p", { class: "cb-legend" }, [el("span", { class: "cb-key cb-key-entry", text: "Schlüsselzone" }), el("span", { class: "cb-key cb-key-target", text: "Zielbereich" }), el("span", { class: "cb-key cb-key-invalid", text: "Ungültig (Schlusskurs)" }), el("span", { class: "cb-key cb-key-path", text: "Szenario-Korridor – keine Zeitangabe" })]),
       el("p", { class: "cb-lead cb-lead-m", text: a.explain.summary }),
-      abstain ? el("p", { class: "cb-unclear" }, [el("b", { text: "Wellenstruktur unklar. " }), el("span", { text: "Mehrere Lesarten sind möglich – Vision Universe zeigt hier bewusst keine Wellenzählung." + (E.applicability.reasons && E.applicability.reasons.length ? " (" + E.applicability.reasons[0] + ")" : "") })]) : null,
+      abstain ? el("p", { class: "cb-unclear" }, [el("b", { text: "Keine verlässliche Elliott-Zählung. " }), el("span", { text: "Die aktuelle Kursstruktur lässt keine verlässliche Elliott-Zählung zu – Vision Universe zeigt hier bewusst keine Wellen." + (E.applicability.reasons && E.applicability.reasons.length ? " (" + E.applicability.reasons[0] + ")" : "") })]) : null,
       el("p", { class: "cb-small cb-dim", text: wavesOn && !abstain && E && E.primary ? "Tipp: Eine Wellenmarke antippen erklärt die Welle." : "" }),
       a.chart.closeOnly ? el("p", { class: "cb-small cb-dim", text: "Wochenschlusskurse ohne Volumen: Kerzen und Volumenbefunde sind für diesen Titel nicht verfügbar." }) : null]);
 
@@ -386,7 +386,7 @@
       var upd = function () {
         var i = +slider.value, st = steps[i], prevSt = steps[i - 1];
         replayStep = i === steps.length - 1 ? null : st;
-        var lab = st.ew ? (st.ew.ab ? "Wellen unklar" : st.ew.p + ", Welle " + st.ew.w) : "keine Zählung";
+        var lab = st.ew ? (st.ew.ab ? "keine verlässliche Zählung" : st.ew.p + ", Welle " + st.ew.w) : "keine Zählung";
         var chg = prevSt && st.ew && prevSt.ew && st.ew.key !== prevSt.ew.key ? " · Lesart neu" : "";
         rLabel.textContent = (i === steps.length - 1 ? "Heute" : X.dateDe(st.d)) + ": " + ((Ex && Ex.OUTLOOK[st.o]) || st.o) + " · " + lab + chg;
         draw();
@@ -445,6 +445,7 @@
   }
 
   /** Elliott-Transparenz (§54/§123): Zaehlung, Grad, Status, Count Quality, Verzug, Regeln, Grad-Passung, Evidenz. */
+  var V2NAMES = { IMPULSE: "Impuls", LEADING_DIAGONAL: "Leading Diagonal", ENDING_DIAGONAL: "Ending Diagonal", ZIGZAG: "Zigzag", FLAT: "Flat", TRIANGLE: "Dreieck", WXY: "Doppelte Korrektur", DOUBLE_ZIGZAG: "Doppel-Zigzag", TRIPLE_ZIGZAG: "Dreifach-Zigzag" };
   function elliottPanel(a, methodEv) {
     var E = a.pro.elliott, T = a.pro.elliottTransparency;
     if (!E || !E.primary || !T) return null;
@@ -452,9 +453,11 @@
     var lvl = { HIGH: "hoch", MODERATE: "mittel", LOW: "niedrig", UNKNOWN: "–" };
     var d = T.detection, ev = methodEv && methodEv.methods && methodEv.methods.ELLIOTT;
     var rows = [
-      ["Hauptzählung", c.patternName + " · " + (c.complete ? "abgeschlossen" : "Welle " + c.currentWave.label + " von " + c.currentWave.of)],
+      ["Methodenstatus", "Experimentelles Strukturmodell · " + (E.engineVersion || "") + " · historischer Prognosevorteil nicht belegt"],
+      ["Hauptzählung", c.patternName + " · " + (c.complete ? "abgeschlossen" : (T.status === "DEVELOPING" && E.applicability && E.applicability.level !== "HIGH" ? "mögliche " : "") + "Welle " + c.currentWave.label + " von " + c.currentWave.of)],
       ["Alternative", alt ? alt.patternName + " · " + (alt.complete ? "abgeschlossen" : "Welle " + alt.currentWave.label) : "keine materiell andere"],
-      ["Grad (Skala)", T.degree.analysis + (T.degree.higher ? " · höherer Grad " + T.degree.higher : "")],
+      ["Grad", E.engineVersion && /^elliott-3/.test(E.engineVersion) ? "Hauptgrad" + (E.higherDegree ? " · höherer Grad: " + E.higherDegree.patternName + ", Welle " + E.higherDegree.current.notation : "") + " (Skalennähe " + T.degree.analysis + ")" : T.degree.analysis + (T.degree.higher ? " · höherer Grad " + T.degree.higher : "")],
+      ["Mehrdeutigkeit", E.ambiguity ? ({ NONE: "keine materiell andere Lesart", DEGREE: "nur Grad (dieselbe Struktur, andere Ebene)", LABEL: "nur Etikett (gleiche Wellenenden)", STRUCTURE: "strukturell (andere Wellenenden)" }[E.ambiguity.kind] || E.ambiguity.kind) : "–"],
       ["Status", T.status === "DEVELOPING" ? "entwickelnd (laufende Welle)" : "abgeschlossen"],
       ["Count Quality", c.countQuality ? lvl[c.countQuality.level] + " (" + String(c.countQuality.score).replace(".", ",") + ")" : "–"],
       ["Elliott anwendbar", E.applicability ? (E.applicability.abstain ? "keine verlässliche Zählung" : lvl[E.applicability.level]) + (E.applicability.reasons.length ? " · " + E.applicability.reasons.join("; ") : "") : "–"],
@@ -483,8 +486,17 @@
       return [el("ul", { class: "cb-list" }, RA.rules.map(function (x) { return li(x, x.passed === true ? "✓" : x.passed === false ? "✕" : "○"); }).concat(RA.guidelines.items.map(function (x) { return li(x, (x.matched ? "✓ " : "○ ") + String(x.value).replace(".", ",")); }))),
         el("p", { class: "cb-small cb-dim", text: "Fundstellen: " + (RA.verification || "") + ". Quellen: EWP = Frost & Prechter, Elliott Wave Principle; EWI = Gorman & Kennedy, Visual Guide; VU = Vision-Universe-Festlegung (keine Elliott-Regel)." })];
     }) : null;
+    var COMP = { subdivision: "Unterteilung", anchor: "Ursprung", dominance: "Dominanz des Ursprungs", coverage: "Vollständigkeit", tail: "Anschluss an heute", residual: "Restpfad", separation: "Grad-Trennung", guidelines: "Richtlinien", higherDegree: "höherer Grad", prior: "Musterhäufigkeit", similarity: "Ähnlichkeit" };
+    var why = E.trace ? X.more("Warum diese Zählung? (" + (E.trace.candidates || 0) + " regelkonforme Lesarten geprüft)", function () {
+      var ch = E.trace.chosen && E.trace.chosen.components ? Object.keys(E.trace.chosen.components).filter(function (k) { return COMP[k]; }).map(function (k) { return el("li", { text: COMP[k] + ": " + String(E.trace.chosen.components[k]).replace(".", ",") }); }) : [];
+      var rej = (E.trace.rejectedTop || []).map(function (r) { return el("li", { text: (V2NAMES[r.pattern] || r.pattern) + (r.complete ? " (abgeschlossen)" : "") + " ab " + X.dateDe(r.from) + " – " + r.why.replace(/\b(\w+)\b/g, function (m) { return COMP[m] || m; }) }); });
+      return [el("h4", { text: "Merkmale der gewählten Lesart (0–1)" }), el("ul", { class: "cb-list" }, ch), rej.length ? el("h4", { text: "Nächste verworfene Lesarten" }) : null, rej.length ? el("ul", { class: "cb-list" }, rej) : null];
+    }) : null;
+    var hist = T.relabeling && T.relabeling.history && T.relabeling.history.length ? X.more("Zählungs-Historie (" + T.relabeling.history.length + " Änderungen)", function () {
+      return [el("ol", { class: "cb-list cb-ew-history" }, T.relabeling.history.slice().reverse().map(function (h) { return el("li", {}, [el("b", { text: X.dateDe(h.d) + ": " }), el("span", { text: (h.to || "keine Zählung") + " — " + h.why })]); }))];
+    }) : null;
     var tree = (E.candidateTree || T.candidateTree || []).map(function (b) { return el("li", { text: ({ PRIMARY: "Hauptweg", EXTENSION: "Ausdehnung", ALTERNATIVE_1: "Alternative 1", ALTERNATIVE_2: "Alternative 2" }[b.branch] || b.branch) + ": " + b.text + (isNum(b.invalidation) ? " · ungültig bei " + fmt(b.invalidation) : "") }); });
-    return X.card([el("h3", { class: "qx-h3", text: "So wurde gerechnet – Elliott" }), dl, srcBox,
+    return X.card([el("h3", { class: "qx-h3" }, [el("span", { text: "So wurde gerechnet – Elliott " }), el("span", { class: "cb-badge cb-badge-experimental", text: "Experimentell" })]), dl, srcBox, why, hist,
       tree.length ? el("h4", { text: "Mögliche Entwicklungen aus dem aktuellen Stand" }) : null, tree.length ? el("ul", { class: "cb-list" }, tree) : null,
       el("p", { class: "cb-small cb-dim", text: "Count Quality beschreibt, wie sauber der Chart den Elliott-Regeln entspricht – keine Trefferwahrscheinlichkeit." })], "cb-ew-panel");
   }
@@ -606,7 +618,7 @@
     var ROLE = { CORE: "Kern", CONTEXT: "Kontext", EXPERIMENTAL: "experimentell", REMOVE: "entfernt" };
     return X.card([el("h3", { class: "qx-h3", text: "Was jede Methode leisten kann" }),
       el("div", { class: "cb-table-wrap" }, [el("table", { class: "cb-table" }, [el("thead", {}, [el("tr", {}, [el("th", { text: "Methode" }), el("th", { text: "Evidenz" }), el("th", { text: "Rolle" }), el("th", { text: "In Worten" })])]),
-        el("tbody", {}, Object.keys(mev.methods).map(function (k) { var m = mev.methods[k]; return el("tr", {}, [el("td", { text: NAME[k] || k }), el("td", {}, [el("span", { class: "cb-badge cb-badge-" + String(m.level).toLowerCase(), text: m.label })]), el("td", { text: ROLE[m.role] || m.role }), el("td", { text: m.consumer })]); }))])]),
+        el("tbody", {}, Object.keys(mev.methods).map(function (k) { var m = mev.methods[k]; return el("tr", {}, [el("td", { text: NAME[k] || k }), el("td", {}, [el("span", { class: "cb-badge cb-badge-" + String(m.level).toLowerCase(), text: m.label })]), el("td", { text: (ROLE[m.role] || m.role) + (m.methodStatus ? " · " + m.methodStatus.label : "") }), el("td", { text: m.consumer })]); }))])]),
       el("p", { class: "cb-small cb-dim", text: "Bestätigt = vorab registrierter Test auf unabhängigen Daten bestanden · Gestützt (schwach) = statistisch messbar, aber nicht vorab registriert bestätigt und wirtschaftlich gering · Kein Vorteil belegt = geprüft, ohne belastbaren Effekt · Beschreibend = ohne Prognoseanspruch." })]);
   }
 

@@ -115,7 +115,7 @@ export const CLASSES = {
   ENDING_DIAGONAL:      { shape: (R) => diagonal(R, "ENDING"), motive: true, expect: ["ENDING_DIAGONAL", "LEADING_DIAGONAL"] },
   ZIGZAG:               { shape: zigzag, motive: false, expect: ["ZIGZAG"] },
   DOUBLE_ZIGZAG:        { shape: doubleZigzag, motive: false, expect: ["DOUBLE_ZIGZAG", "WXY"], compact: true },
-  TRIPLE_ZIGZAG:        { shape: tripleZigzag, motive: false, expect: ["TRIPLE_ZIGZAG"], unsupported: true, compact: true },
+  TRIPLE_ZIGZAG:        { shape: tripleZigzag, motive: false, expect: ["TRIPLE_ZIGZAG"], compact: true },
   FLAT_REGULAR:         { shape: (R) => flat(R, "REGULAR"), motive: false, expect: ["FLAT"] },
   FLAT_EXPANDED:        { shape: (R) => flat(R, "EXPANDED"), motive: false, expect: ["FLAT"] },
   FLAT_RUNNING:         { shape: (R) => flat(R, "RUNNING"), motive: false, expect: ["FLAT"] },

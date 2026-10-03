@@ -32,7 +32,7 @@ const LABEL = { VALIDATED: "Bestätigt", SUPPORTED: "Gestützt (schwach)", NOT_E
 const out = { schemaVersion: "vu-technical-method-evidence-1.0.0", purpose: "Evidenzstufe und Produktrolle je technischer Methode, abgeleitet aus den Holdout-Studien (Szenario-Evidenz, vorab registrierte Elliott-Validierung). Keine Zahl ist eine Wahrscheinlichkeit; Stufen werden nur aus Studienergebnissen abgeleitet, nie von Hand gesetzt.", generatedAt: new Date().toISOString(), definitions: {
   VALIDATED: "vorab registrierte Hypothese auf unabhängiger Stichprobe bestätigt", SUPPORTED: "Holdout-Richtung statistisch besser als 50 % und als „immer long“, aber nicht vorab registriert bestätigt; wirtschaftlich gering (vorzeichenbereinigte Rendite unter „immer long“)",
   NOT_ESTABLISHED: "geprüft, kein belastbarer Effekt", DESCRIPTIVE_ONLY: "ohne Prognoseanspruch" }, methods: {} };
-function add(key, level, role, stat, consumer, pro) { out.methods[key] = { level, label: LABEL[level], role, stat, consumer, pro }; }
+function add(key, level, role, stat, consumer, pro) { out.methods[key] = { level, label: LABEL[level], role, stat, consumer, pro }; if (key === "ELLIOTT") out.methods[key].methodStatus = { code: "EXPERIMENTAL_STRUCTURE_MODEL", label: "Experimentelles Strukturmodell", note: "Methodentreue im Aufbau (Engine-Quality-Gate, ELLIOTT_ENGINE_QUALITY_PREREG.md); historischer Prognosevorteil nicht belegt." }; }
 
 const dTrend = direction("TREND"), dMom = direction("MOMENTUM"), dStr = direction("STRUCTURE"), dPat = direction("PATTERN"), dConf = direction("CONFLUENCE");
 add("TREND", dTrend.level, "CORE", dTrend.stat, "Trendrichtung ist die verlässlichste Beschreibung der Lage; einen wirtschaftlichen Vorteil belegt sie allein nicht.", dTrend.stat);
@@ -45,7 +45,7 @@ const h = (k) => (H[k] ? k + " " + (H[k].confirmed ? "bestätigt" : "nicht best�
 const elliottValidated = H.H1 && H.H1.confirmed && H.H2 && H.H2.confirmed;
 add("ELLIOTT", elliottValidated ? "VALIDATED" : "NOT_ESTABLISHED", elliottValidated ? "CORE" : "CONTEXT",
   "Vorab registrierter Test auf unabhängigen Titeln: " + ["H1", "H2", "H3", "H4", "H5"].map(h).join("; "),
-  "In der vorab festgelegten Prüfung auf unabhängigen Aktien brachte die Elliott-Zählung keinen Prognosevorteil gegenüber derselben Kursstruktur ohne Zählung. Sie dient hier als Sprache für Struktur und Szenarien.",
+  "Experimentelles Strukturmodell: Die Elliott-Zählung beschreibt die Wellenstruktur. In der vorab festgelegten Prüfung auf unabhängigen Aktien brachte sie keinen Prognosevorteil gegenüber derselben Kursstruktur ohne Zählung.",
   "Kontext, kein Prognosebeitrag (" + ["H1", "H2", "H3"].map(h).join("; ") + ")");
 add("FIBONACCI", H.H7 && H.H7.confirmed ? "SUPPORTED" : "NOT_ESTABLISHED", "CONTEXT", "Häufung an Fibonacci-Niveaus: keine (Verhältnis ≈ 1); " + h("H7"),
   "Wendepunkte häufen sich nicht an Fibonacci-Niveaus; Fibonacci zählt nur, wo mehrere Anker zusammenfallen.", h("H7"));

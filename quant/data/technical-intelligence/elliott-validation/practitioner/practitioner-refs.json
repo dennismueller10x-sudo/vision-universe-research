@@ -1,0 +1,2412 @@
+{
+ "generatedAt": "2026-10-03T04:46:03Z",
+ "note": "Practitioner reference set, NON-authoritative. Collected 2026-10-03. IMPORTANT ACCESS LIMITATION: in this environment WebFetch was blocked by the egress proxy for every source domain tried (elliottwave-forecast.com, elliottwave.com, fxstreet.com, fxempire.com, investing.com, cmtassociation.org, liquidityfinder.com, elliottwaveplus.com, wavetraders.com; web.archive.org also refused). All entries were therefore extracted from WebSearch result summaries of the specific article (one targeted title search per article), not from reading the full page; every entry is marked 'partly-explicit'. Wave labels and prices are recorded as the summaries attributed them to that page; some summaries contained degree-label inconsistencies (notably the XAUUSD 2025-10-01 entry), flagged in the claim text. Dates: taken from the FXStreet URL timestamp (YYYYMMDDhhmm), dated URL paths (fourdimensiontrading, pureelliottwave, elliottwavestockmarket, wavetraders), or X/Twitter post IDs (snowflake-decoded; used for 3 entries). EWF entries are futures/ETF-based (ES, NQ, YM, RTY, NKD, CL, QQQ, IWM) - price levels differ from cash indices. Authors: 'Alchemy Markets (series attribution)' = FXStreet 'DJI Elliott Wave forecast' series whose sibling titles appear on alchemymarkets.com, individual byline only verified for the 2026-02-25 piece. FXStreet pieces with author unknown left null. Dr. Arnout ter Schure pieces are mirrored on FXEmpire/Investing.com; the dated FXStreet mirror is used where available. PR001 (EWI) is a forecast dated 2024-05-31 known only via a retrospective EWI article of 2024-08-07 (selection bias: vendors publicize hits). Conflict groups: SPX-2025-12-mid, SPX-2026-06-early, SPX-2026-09, DJIA-2026-05, RUT-2026-Q3, BTC-2026-09-02. Note: EWF short-term counts change frequently, so same-vendor sequential updates are not conflicts. Tried and skipped: Frost & Prechter EWP (1978) Dow 2860 Cycle-V forecast and EWT May/Nov 1989 Nikkei calls (only year/month known, no exact date); Elliott Wave International pages (blocked + mostly retrospective); EWM Interactive weekly SPX/BTC posts (dated in URL but wave counts behind 'Pro Weekly' paywall); ElliottWaveTrader EEM 2024-05-11 (no explicit labels in accessible text); Mark Rivest EEM TradingView idea (2018, date unclear); Investing.com/FXEmpire ID-only URLs without a dated mirror (e.g. 'Primary-V ... higher targets', 'Gold Elliott Wave: Taking a Breather', 'Deep Dive into Bitcoin' (no labels)); Lara Iriarte Russell 2000 2020-07-24 (target figure looked inconsistent with index level); TradingLounge N225/RUT items whose date-to-content mapping was ambiguous; financialcontent 'MarketMinute' EWI piece (aggregator, likely auto-generated); CMT Association ChartAdvisor (blocked, undated in results). Coverage is thin for EEM (1 entry) and pre-2024 data; heavy concentration in 2025-2026 and on two sources (ElliottWave-Forecast and ter Schure). Recommended: re-verify each entry against the full page when network access allows before using as benchmark labels.",
+ "entries": [
+  {
+   "id": "PR001",
+   "instrument": "SPX",
+   "publicationDate": "2024-05-31",
+   "author": null,
+   "organization": "Elliott Wave International (Short Term Update)",
+   "url": "https://www.elliottwave.com/articles/see-our-sp-500-chart-and-forecast-from-before-the-big-decline/",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "waves 1-4 of a five-wave rally in place, wave 5 unfolding",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "Trend expected to turn down once wave 5 completes",
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [],
+   "quote": "May 31 STU: S&P tracing a clear five-wave rally, four waves done, wave 5 unfolding; turn expected after. Quoted retrospectively in Aug 7, 2024 article.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR002",
+   "instrument": "SPX",
+   "publicationDate": "2025-04-25",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/sp-500-spx-elliott-wave-forecasts-amid-tariff-uncertainties-202504251336",
+   "timeframe": "daily",
+   "degreeTerms": "(I)/(II)/(III) within ((III))",
+   "currentWaveClaim": "wave (II) may have ended at the April 2025 low; wave (III) expected above the February high",
+   "patternClaim": "impulse (wave (I) of ((III)) completed Feb 2025)",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "Second tariff-dependent scenario mentioned but not detailed",
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": null,
+     "price": null,
+     "label": "wave (I) of ((III)) high, Feb 2025"
+    },
+    {
+     "date": null,
+     "price": null,
+     "label": "wave (II) low, April 2025"
+    }
+   ],
+   "quote": "Wave (I) of ((III)) ended Feb 2025; wave (II) may have ended at April low, recovery toward wave (III) above February high.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR003",
+   "instrument": "SPX",
+   "publicationDate": "2025-05-09",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/elliott-wave-framework-highlights-sp-500-bullish-impulse-video-202505090319",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "wave 3 of the advance from the wave (II) low in progress",
+   "patternClaim": "nesting impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": 4823.5,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 4823.0,
+     "label": "wave (II) low"
+    },
+    {
+     "date": null,
+     "price": 5246.57,
+     "label": "wave 1"
+    },
+    {
+     "date": null,
+     "price": 4910.42,
+     "label": "wave 2"
+    },
+    {
+     "date": null,
+     "price": 6147.43,
+     "label": "wave (I) high, must be exceeded"
+    }
+   ],
+   "quote": "Wave (II) ended at 4823; wave 1 5246.57, wave 2 4910.42; wave 3 unfolding; dips supported while 4823.5 holds.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR004",
+   "instrument": "SPX",
+   "publicationDate": "2025-07-04",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/elliott-wave-outlook-sp-500-spx-nests-upward-in-strong-rally-video-202507040534",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "nesting higher in wave 3 of the rally from the April 7, 2025 low",
+   "patternClaim": "impulse (nest)",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2025-04-07",
+     "price": null,
+     "label": "cycle low"
+    },
+    {
+     "date": null,
+     "price": 5968.6,
+     "label": "wave 1"
+    },
+    {
+     "date": null,
+     "price": 5767.41,
+     "label": "wave 2"
+    }
+   ],
+   "quote": "From April 7 low wave 1 ended 5968.6, wave 2 5767.41; index nesting higher in wave 3; dips supported in 3/7/11 swings.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR005",
+   "instrument": "SPX",
+   "publicationDate": "2025-11-25",
+   "author": "Dr. Arnout ter Schure",
+   "organization": "Intelligent Investing LLC (via FXEmpire/FXStreet)",
+   "url": "https://www.fxstreet.com/news/sp500-elliott-wave-update-is-the-correction-over-202511252034",
+   "timeframe": "daily",
+   "degreeTerms": "green W-4 / W-5",
+   "currentWaveClaim": "green W-4 correction likely ended at 6521 (W-c); rally toward 7120 should be in progress",
+   "patternClaim": "abc correction (W-4)",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": 6521.0,
+   "targetZone": [
+    7120.0,
+    7120.0
+   ],
+   "keyPivots": [
+    {
+     "date": "2025-11-20",
+     "price": 6521.0,
+     "label": "end of W-c of green W-4"
+    },
+    {
+     "date": null,
+     "price": 6630.0,
+     "label": "warning level"
+    }
+   ],
+   "quote": "November correction likely ended at SPX 6521; rally to 7120 should be underway; warning below 6630, hold 6521.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR006",
+   "instrument": "SPX",
+   "publicationDate": "2025-11-28",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/sp-500-spx-elliott-wave-buying-the-dips-in-a-blue-box-202511281216",
+   "timeframe": "daily",
+   "degreeTerms": null,
+   "currentWaveClaim": "double three correction (W-X-Y red) into blue box buying zone, broader trend bullish",
+   "patternClaim": "double three (WXY)",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": [
+    6395.668,
+    6577.688
+   ],
+   "keyPivots": [],
+   "quote": "SPX forming a WXY double three; buyers expected in blue box 6577.69-6395.67 for at least a three-wave bounce, possibly new highs.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR007",
+   "instrument": "SPX",
+   "publicationDate": "2025-12-14",
+   "author": "Mark Rivest",
+   "organization": "FourDimensionTrading.com",
+   "url": "https://fourdimensiontrading.com/2025/12/14/sp-500-elliott-wave-forecast-december-2025/",
+   "timeframe": "daily",
+   "degreeTerms": null,
+   "currentWaveClaim": "contracting horizontal triangle possibly developing from the 10/29/25 peak",
+   "patternClaim": "contracting horizontal triangle",
+   "primaryDirectionNext": "SIDEWAYS",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2025-10-29",
+     "price": null,
+     "label": "triangle origin peak"
+    }
+   ],
+   "quote": "An Elliott wave contracting horizontal triangle could be developing from the SPX 10/29/25 peak.",
+   "confidence": "partly-explicit",
+   "conflictGroup": "SPX-2025-12-mid"
+  },
+  {
+   "id": "PR008",
+   "instrument": "SPX",
+   "publicationDate": "2025-12-18",
+   "author": "Mark Rivest",
+   "organization": "FourDimensionTrading.com",
+   "url": "https://fourdimensiontrading.com/2025/12/18/sp-500-elliott-wave-forecast-december-2025-part-two/",
+   "timeframe": "daily",
+   "degreeTerms": "Minute",
+   "currentWaveClaim": "Minute wave [c] of a presumed horizontal triangle may be incomplete",
+   "patternClaim": "horizontal triangle",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": [
+    6660.0,
+    6660.0
+   ],
+   "keyPivots": [],
+   "quote": "If Minute [c] of the presumed triangle is incomplete, SPX could reach about 6660 early in the week of 12/22/25.",
+   "confidence": "partly-explicit",
+   "conflictGroup": "SPX-2025-12-mid"
+  },
+  {
+   "id": "PR009",
+   "instrument": "SPX",
+   "publicationDate": "2025-12-19",
+   "author": "Dr. Arnout ter Schure",
+   "organization": "Intelligent Investing LLC (via FXEmpire/FXStreet)",
+   "url": "https://www.fxempire.com/forecasts/article/sp-500-update-elliott-wave-seasonality-and-cycles-indicate-more-upside-1568723",
+   "timeframe": "daily",
+   "degreeTerms": "gray W-i/W-ii/W-iii of larger 5th wave",
+   "currentWaveClaim": "6903 high was gray W-i of a larger 5th wave; W-ii at 6720; W-iii now underway",
+   "patternClaim": "impulse (5th wave subdividing)",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": 6720.0,
+   "targetZone": [
+    7120.0,
+    7760.0
+   ],
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 6903.0,
+     "label": "gray W-i"
+    },
+    {
+     "date": null,
+     "price": 6720.0,
+     "label": "gray W-ii"
+    }
+   ],
+   "quote": "View adjusted: 6903 only gray W-i, W-ii at 6720, W-iii underway; 7120-7760 possible by late April 2026 if 6720 holds.",
+   "confidence": "partly-explicit",
+   "conflictGroup": "SPX-2025-12-mid"
+  },
+  {
+   "id": "PR010",
+   "instrument": "SPX",
+   "publicationDate": "2026-02-03",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/sp-500-spx-approaches-completion-of-elliott-wave-diagonal-pattern-video-202602030832",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "wave ((v)) of a diagonal from the Nov 21, 2025 low in progress",
+   "patternClaim": "diagonal",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": 6788.87,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2025-11-21",
+     "price": null,
+     "label": "diagonal start"
+    },
+    {
+     "date": null,
+     "price": 6986.33,
+     "label": "wave ((i))"
+    },
+    {
+     "date": null,
+     "price": 6788.87,
+     "label": "wave ((ii))"
+    },
+    {
+     "date": null,
+     "price": 7002.28,
+     "label": "wave ((iii))"
+    },
+    {
+     "date": null,
+     "price": 6870.8,
+     "label": "wave ((iv))"
+    }
+   ],
+   "quote": "Diagonal from Nov 21 low: ((i)) 6986.33, ((ii)) 6788.87, ((iii)) 7002.28, ((iv)) 6870.8; now in ((v)); bullish above 6788.87.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR011",
+   "instrument": "SPX",
+   "publicationDate": "2026-04-01",
+   "author": "Dr. Arnout ter Schure",
+   "organization": "Intelligent Investing LLC (via FXEmpire/FXStreet)",
+   "url": "https://www.fxstreet.com/news/elliott-wave-analysis-sp500-at-an-inflection-point-202604011156",
+   "timeframe": "daily",
+   "degreeTerms": "red W-a",
+   "currentWaveClaim": "red Wave-a decline ended near 6316; rebound expected",
+   "patternClaim": "correction (a-b-c)",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": [
+    6800.0,
+    6800.0
+   ],
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 6316.0,
+     "label": "red W-a low"
+    }
+   ],
+   "quote": "Initial drop, red Wave-a, reached 6316; if low and breadth hold, renewed upside toward roughly 6800 expected.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR012",
+   "instrument": "SPX",
+   "publicationDate": "2026-04-17",
+   "author": "Dr. Arnout ter Schure",
+   "organization": "Intelligent Investing LLC (via FXEmpire/FXStreet)",
+   "url": "https://www.fxstreet.com/news/sp-500-extends-irregular-b-wave-rally-toward-key-7120-202604171720",
+   "timeframe": "daily",
+   "degreeTerms": "W-b",
+   "currentWaveClaim": "irregular B-wave rally of a flat 4th wave, extending toward 7120",
+   "patternClaim": "irregular (expanded) flat",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "Rally could alternatively be a 5th wave",
+   "invalidationLevel": null,
+   "targetZone": [
+    7120.0,
+    7120.0
+   ],
+   "keyPivots": [],
+   "quote": "Rally exceeded 6800-6900 like an irregular B-wave (alt: 5th wave); 7120 is 138.2% extension; watch reversal near April 18.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR013",
+   "instrument": "SPX",
+   "publicationDate": "2026-05-01",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://x.com/ElliottForecast/status/2050107948375106031",
+   "timeframe": "intraday",
+   "degreeTerms": "(2)/(3), 1/2, ((v))",
+   "currentWaveClaim": "wave ((v)) of 1 of (3) completing the impulse from the March 31, 2026 low; wave 2 pullback next",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": "Broader trend stays bullish while 6319.68 holds",
+   "invalidationLevel": 6319.68,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 6319.68,
+     "label": "wave (2) low"
+    },
+    {
+     "date": "2026-03-31",
+     "price": null,
+     "label": "start of wave 1 of (3)"
+    }
+   ],
+   "quote": "Impulsive rally from March 2026 low nearing end; wave ((v)) of 1 then wave 2 pullback; pivot 6319.68 (date from tweet).",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR014",
+   "instrument": "SPX",
+   "publicationDate": "2026-06-01",
+   "author": null,
+   "organization": "Wavetraders",
+   "url": "https://wavetraders.com/free-charts/sp-500-extends-bull-run-as-elliott-wave-targets-7700-june-1-2026/",
+   "timeframe": "daily",
+   "degreeTerms": "wave III",
+   "currentWaveClaim": "final wave 5 of the impulse from the March reversal, within larger wave III",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": [
+    7600.0,
+    7700.0
+   ],
+   "keyPivots": [],
+   "quote": "Move appears to be final wave 5 of an impulse; room toward 7600-7700 before a larger top forms.",
+   "confidence": "partly-explicit",
+   "conflictGroup": "SPX-2026-06-early"
+  },
+  {
+   "id": "PR015",
+   "instrument": "SPX",
+   "publicationDate": "2026-06-03",
+   "author": "Dr. Arnout ter Schure",
+   "organization": "Intelligent Investing LLC (via FXEmpire/FXStreet)",
+   "url": "https://www.fxstreet.com/analysis/sp-500-elliott-wave-count-warns-of-correction-as-breadth-divergence-deepens-202606031923",
+   "timeframe": "daily",
+   "degreeTerms": "gray W-iv/W-v",
+   "currentWaveClaim": "gray W-v likely completed near 7620; correction or multi-month decline may be underway",
+   "patternClaim": "impulse completed",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 7333.0,
+     "label": "gray W-iv"
+    },
+    {
+     "date": null,
+     "price": 7620.0,
+     "label": "gray W-v target/top area"
+    }
+   ],
+   "quote": "Final rally wave likely completed near target after gray W-iv at 7333; breadth divergence suggests correction or larger decline.",
+   "confidence": "partly-explicit",
+   "conflictGroup": "SPX-2026-06-early"
+  },
+  {
+   "id": "PR016",
+   "instrument": "SPX",
+   "publicationDate": "2026-06-05",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/elliott-wave-outlook-sp-500-extends-impulsive-advance-video-202606050334",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "wave ((iii)) of 3 of the impulse from the March 30, 2026 low in progress",
+   "patternClaim": "impulse (nest)",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "If 7336.33 fails, cycle from March 30 low ended and larger correction follows",
+   "invalidationLevel": 7336.33,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2026-03-30",
+     "price": null,
+     "label": "cycle low"
+    },
+    {
+     "date": null,
+     "price": 7147.78,
+     "label": "wave 1"
+    },
+    {
+     "date": null,
+     "price": 7046.55,
+     "label": "wave 2"
+    },
+    {
+     "date": null,
+     "price": 7517.12,
+     "label": "wave ((i)) of 3"
+    },
+    {
+     "date": "2026-05-19",
+     "price": 7336.33,
+     "label": "wave ((ii)) of 3"
+    }
+   ],
+   "quote": "From March 30 low: wave 1 7147.78, wave 2 7046.55, ((i)) 7517.12, ((ii)) 7336.33; now ((iii)); bullish above 7336.33.",
+   "confidence": "partly-explicit",
+   "conflictGroup": "SPX-2026-06-early"
+  },
+  {
+   "id": "PR017",
+   "instrument": "SPX",
+   "publicationDate": "2026-07-08",
+   "author": "Dr. Arnout ter Schure",
+   "organization": "Intelligent Investing LLC (via FXEmpire/FXStreet)",
+   "url": "https://www.fxstreet.com/news/sp-500-stalls-in-complex-4th-wave-as-traders-eye-critical-breakout-levels-202607081953",
+   "timeframe": "daily",
+   "degreeTerms": "4th wave",
+   "currentWaveClaim": "complex 4th-wave correction underway after June 15 peak",
+   "patternClaim": "complex correction (abc-abc-abc)",
+   "primaryDirectionNext": "SIDEWAYS",
+   "alternativeClaim": "Break above 7551 then 7721 targets ~7739; break below 7348 targets ~7140",
+   "invalidationLevel": null,
+   "targetZone": [
+    7090.0,
+    7190.0
+   ],
+   "keyPivots": [
+    {
+     "date": "2026-06-15",
+     "price": 7577.0,
+     "label": "peak"
+    },
+    {
+     "date": "2026-06-26",
+     "price": 7294.0,
+     "label": "low"
+    },
+    {
+     "date": "2026-07-06",
+     "price": 7551.0,
+     "label": "rally high"
+    },
+    {
+     "date": "2026-06-02",
+     "price": 7721.0,
+     "label": "all-time high"
+    }
+   ],
+   "quote": "A complex 4th wave is underway; above 7551 opens 7739, below 7348 implies ~7140 +/- 50 first.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR018",
+   "instrument": "SPX",
+   "publicationDate": "2026-08-28",
+   "author": "Dr. Arnout ter Schure",
+   "organization": "Intelligent Investing LLC (via FXEmpire/FXStreet)",
+   "url": "https://www.fxstreet.com/news/sp-500-faces-a-bearish-september-setup-as-seasonality-aligns-with-a-possible-five-wave-drop-toward-7-100-7-200-202608282006",
+   "timeframe": "daily",
+   "degreeTerms": "wave a / wave c",
+   "currentWaveClaim": "possible five-wave c-wave decline if 7638 breaks",
+   "patternClaim": "zigzag (c = 1.68 x a)",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": [
+    7121.85,
+    7190.0
+   ],
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 7638.0,
+     "label": "trigger level"
+    }
+   ],
+   "quote": "If 7638 breaks, a five-wave c-wave drop toward 7121-7190 becomes the highest-probability path; September seasonality bearish.",
+   "confidence": "partly-explicit",
+   "conflictGroup": "SPX-2026-09"
+  },
+  {
+   "id": "PR019",
+   "instrument": "SPX",
+   "publicationDate": "2026-09-08",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/elliott-wave-sp-500-spx-concluding-impulsive-advance-before-larger-correction-video-202609080458",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "wave (v) of the impulse from the June 9 low in progress; larger three-wave correction to follow",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "Must exceed 7816.7 to rule out a double correction",
+   "invalidationLevel": 7611.07,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2026-06-09",
+     "price": null,
+     "label": "cycle low"
+    },
+    {
+     "date": null,
+     "price": 7611.07,
+     "label": "wave (iv)"
+    },
+    {
+     "date": null,
+     "price": 7816.7,
+     "label": "prior peak"
+    }
+   ],
+   "quote": "Cycle from June 9 low near five waves; wave (iv) at 7611.07; wave (v) higher, then larger three-wave correction.",
+   "confidence": "partly-explicit",
+   "conflictGroup": "SPX-2026-09"
+  },
+  {
+   "id": "PR020",
+   "instrument": "SPX",
+   "publicationDate": "2026-09-22",
+   "author": null,
+   "organization": null,
+   "url": "https://www.fxstreet.com/news/sp-500-finds-support-at-key-zone-as-wave-5-could-follow-202609220935",
+   "timeframe": "daily",
+   "degreeTerms": null,
+   "currentWaveClaim": "higher-degree wave 4 correction (three waves down so far) of an ending diagonal; wave 5 may follow",
+   "patternClaim": "ending diagonal",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "Decline could still extend if correction is not complete",
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 7700.0,
+     "label": "resistance; break confirms wave 4 end"
+    }
+   ],
+   "quote": "Decline from highs corrective, three waves; likely wave 4; above ~7700 confirms final wave 5 of ending diagonal.",
+   "confidence": "partly-explicit",
+   "conflictGroup": "SPX-2026-09"
+  },
+  {
+   "id": "PR021",
+   "instrument": "SPX",
+   "publicationDate": "2026-10-02",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/spx-elliott-wave-mapping-the-path-ahead-202610021321",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "wave (ii) pullback completed at 7616.9 in equal-legs zone; next leg higher",
+   "patternClaim": "zigzag pullback",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": 7616.9,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 7616.9,
+     "label": "wave (ii) low"
+    }
+   ],
+   "quote": "SPX found buyers at Equal Legs zone 7362.45-7557.95 area; pullback (ii) completed at 7616.9; further upside while above.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR022",
+   "instrument": "SPX",
+   "publicationDate": "2020-09-03",
+   "author": "Lara Iriarte",
+   "organization": "Elliott Wave Stock Market / Pure Elliott Wave",
+   "url": "https://elliottwavestockmarket.com/2020/09/03/sp-500-elliott-wave-and-technical-analysis-charts-sep-03-2020/",
+   "timeframe": "daily",
+   "degreeTerms": "Primary",
+   "currentWaveClaim": "primary wave 1 may be incomplete; pullback expected over at the day's low",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "Alternate hourly counts had more classic TA support",
+   "invalidationLevel": 2191.86,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 3354.68,
+     "label": "hourly invalidation"
+    }
+   ],
+   "quote": "Primary wave 1 may be incomplete; primary 2 may not go below 2191.86; new low below 3354.68 invalidates main hourly count.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR023",
+   "instrument": "SPX",
+   "publicationDate": "2025-02-22",
+   "author": "Mark Rivest",
+   "organization": "FourDimensionTrading.com",
+   "url": "https://fourdimensiontrading.com/2025/02/22/short-term-sp-500-downside-target/",
+   "timeframe": "daily",
+   "degreeTerms": null,
+   "currentWaveClaim": "Ending Diagonal Triangle from 11/04/24 to 02/19/25 likely complete",
+   "patternClaim": "ending diagonal",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": [
+    5696.51,
+    5700.0
+   ],
+   "keyPivots": [
+    {
+     "date": "2024-11-04",
+     "price": 5696.51,
+     "label": "EDT origin"
+    },
+    {
+     "date": "2025-02-19",
+     "price": null,
+     "label": "EDT end / ATH"
+    },
+    {
+     "date": null,
+     "price": 6003.0,
+     "label": "breakdown trigger"
+    }
+   ],
+   "quote": "SPX may have formed an EDT 11/04/24-02/19/25; rapid retrace toward origin 5696.51 expected; break of 6003 opens 5700.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR024",
+   "instrument": "NDX",
+   "publicationDate": "2025-10-28",
+   "author": "Dr. Arnout ter Schure",
+   "organization": "Intelligent Investing LLC (via FXEmpire/FXStreet)",
+   "url": "https://www.fxstreet.com/analysis/nasdaq-100-elliott-wave-update-26700-here-we-come-202510281816",
+   "timeframe": "daily",
+   "degreeTerms": "green W-5",
+   "currentWaveClaim": "final fifth wave (green W-5) of the impulse from early April lows underway",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": [
+    26640.0,
+    26680.0
+   ],
+   "keyPivots": [],
+   "quote": "One last fifth wave from April lows targets about 26640-26680 (green W-5).",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR025",
+   "instrument": "NDX",
+   "publicationDate": "2025-11-19",
+   "author": "Dr. Arnout ter Schure",
+   "organization": "Intelligent Investing LLC (via FXEmpire/FXStreet)",
+   "url": "https://www.fxstreet.com/news/nasdaq-100-elliott-wave-update-just-a-correction-or-something-more-sinister-202511192020",
+   "timeframe": "daily",
+   "degreeTerms": "minor 4th / larger W-4",
+   "currentWaveClaim": "overlapping corrective decline from Oct 29 high: minor 4th before W-5 to ~26700, or larger W-4",
+   "patternClaim": "correction",
+   "primaryDirectionNext": "unknown",
+   "alternativeClaim": "Larger W-4 could reach 20485-22835",
+   "invalidationLevel": null,
+   "targetZone": [
+    26700.0,
+    26700.0
+   ],
+   "keyPivots": [
+    {
+     "date": "2025-10-29",
+     "price": 26182.0,
+     "label": "all-time high"
+    },
+    {
+     "date": "2025-11-07",
+     "price": 24652.0,
+     "label": "low broken"
+    }
+   ],
+   "quote": "Decline from Oct 29 ATH is corrective; either minor 4th then green W-5 near 26700, or larger W-4 toward 20485-22835.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR026",
+   "instrument": "NDX",
+   "publicationDate": "2025-11-25",
+   "author": null,
+   "organization": null,
+   "url": "https://www.fxstreet.com/news/nasdaq-elliott-wave-wave-4-support-202511250504",
+   "timeframe": "daily",
+   "degreeTerms": null,
+   "currentWaveClaim": "wave 4 of a 5-wave impulse from April 2025, correction from Oct 29",
+   "patternClaim": "zigzag-like wave 4 (wave 2 was zigzag)",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": [
+    25950.0,
+    27301.0
+   ],
+   "keyPivots": [
+    {
+     "date": "2025-10-29",
+     "price": null,
+     "label": "wave 3 top"
+    }
+   ],
+   "quote": "Correction from Oct 29 is wave 4; support 23854-22521; wave 5 could rally to 25950-27301, possibly 29635.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR027",
+   "instrument": "NDX",
+   "publicationDate": "2025-12-17",
+   "author": "Dr. Arnout ter Schure",
+   "organization": "Intelligent Investing LLC (via FXEmpire/FXStreet)",
+   "url": "https://www.fxstreet.com/news/nasdaq-100-elliott-wave-update-is-the-rally-to-26700-in-jeopardy-202512172236",
+   "timeframe": "daily",
+   "degreeTerms": "gray W-i of green 5th",
+   "currentWaveClaim": "25835 high was only gray W-i of a larger green 5th wave",
+   "patternClaim": "impulse (5th wave subdividing)",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": 23854.0,
+   "targetZone": [
+    28000.0,
+    28000.0
+   ],
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 25835.0,
+     "label": "gray W-i"
+    },
+    {
+     "date": "2025-11-21",
+     "price": 23854.0,
+     "label": "low that must hold"
+    }
+   ],
+   "quote": "View adjusted: 25835 high only gray W-i of larger 5th; above Nov 21 low 23854, 28000+ possible by April 18-28, 2026.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR028",
+   "instrument": "NDX",
+   "publicationDate": "2026-05-13",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/elliott-wave-analysis-nasdaq-futures-cycle-ending-correction-ahead-video-202605130209",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "wave ((v)) of 1 completing the impulse from March 31, 2026 low (NQ futures); wave 2 correction ahead",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": "Scope for one more push while above 27012.79",
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2026-03-31",
+     "price": null,
+     "label": "cycle low"
+    },
+    {
+     "date": null,
+     "price": 24348.25,
+     "label": "wave ((i))"
+    },
+    {
+     "date": null,
+     "price": 23666.0,
+     "label": "wave ((ii))"
+    },
+    {
+     "date": null,
+     "price": 27136.0,
+     "label": "wave ((iii))"
+    },
+    {
+     "date": null,
+     "price": 26681.75,
+     "label": "wave ((iv))"
+    }
+   ],
+   "quote": "NQ cycle from March 31 low nearly complete five waves; wave ((v)) unfolding; then wave 2 correction in 3 or 7 swings.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR029",
+   "instrument": "NDX",
+   "publicationDate": "2026-07-21",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/nasdaq-100-etf-qqq-elliott-wave-signals-double-correction-toward-684-video-202607210406",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "QQQ double three (w)-(x)-(y) correction from June 16 high, wave (y) down in progress",
+   "patternClaim": "double three",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": null,
+   "invalidationLevel": 737.72,
+   "targetZone": [
+    646.0,
+    684.0
+   ],
+   "keyPivots": [
+    {
+     "date": "2026-06-16",
+     "price": null,
+     "label": "correction start"
+    },
+    {
+     "date": null,
+     "price": 697.86,
+     "label": "wave (w)"
+    },
+    {
+     "date": null,
+     "price": 726.4,
+     "label": "wave (x)"
+    }
+   ],
+   "quote": "QQQ correcting as double three from June 16 high; (w) 697.86, (x) 726.40; target 646-684 while below 737.72.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR030",
+   "instrument": "DJIA",
+   "publicationDate": "2025-07-16",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/elliott-wave-sequence-supports-rally-in-dow-jones-futures-ym-f-from-extreme-area-video-202507161048",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "impulsive rally from the April 7, 2025 low (YM futures); pullbacks to extreme areas are buys",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2025-04-07",
+     "price": 36708.0,
+     "label": "cycle low (YM)"
+    },
+    {
+     "date": "2025-01-31",
+     "price": 45227.0,
+     "label": "prior high to break"
+    }
+   ],
+   "quote": "YM favors impulsive rally from April 7 low 36708; break above 45227 confirms; buy pullbacks against June 19 low.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR031",
+   "instrument": "DJIA",
+   "publicationDate": "2025-11-12",
+   "author": null,
+   "organization": "Alchemy Markets (series attribution)",
+   "url": "https://www.fxstreet.com/news/dji-elliott-wave-forecast-topping-the-wave-three-hill-202511120004",
+   "timeframe": "daily",
+   "degreeTerms": "((iii)) / (iv) / (v)",
+   "currentWaveClaim": "wave iii of (v) of ((iii)) from the April 21, 2025 low",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "Break below 45781 means ((iii)) topped; 5-10% decline in ((iv))",
+   "invalidationLevel": 45781.0,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2025-04-21",
+     "price": null,
+     "label": "start of wave ((iii))"
+    },
+    {
+     "date": "2025-10-16",
+     "price": 45781.0,
+     "label": "wave (iv) of ((iii))"
+    }
+   ],
+   "quote": "DJI near end of wave ((iii)); wave (iv) ended Oct 16 at 45781; wave (v) underway; new highs while 45781 holds.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR032",
+   "instrument": "DJIA",
+   "publicationDate": "2025-12-09",
+   "author": null,
+   "organization": null,
+   "url": "https://www.fxstreet.com/news/djia-elliott-wave-dow-delivers-the-wow-202512090320",
+   "timeframe": "daily",
+   "degreeTerms": "Primary 3, Intermediate (iv)/(v)",
+   "currentWaveClaim": "Intermediate wave (iv) contracting triangle of Primary wave 3 nearly complete",
+   "patternClaim": "contracting triangle",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": 45728.0,
+   "targetZone": [
+    49347.0,
+    51726.0
+   ],
+   "keyPivots": [],
+   "quote": "Dow in Primary 3, forming Intermediate (iv) triangle a-b-c-d-e; above 45728 favors thrust in wave (v) toward 49000-51000.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR033",
+   "instrument": "DJIA",
+   "publicationDate": "2026-02-25",
+   "author": "Zorrays Junaid",
+   "organization": "Alchemy Markets",
+   "url": "https://www.fxstreet.com/news/dji-elliott-wave-forecast-on-thin-ice-202602250415",
+   "timeframe": "daily",
+   "degreeTerms": null,
+   "currentWaveClaim": "top possibly in on Feb 11, 2026; new downtrend toward 45728 starting",
+   "patternClaim": "topping pattern",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": "Second count: one more new high to finish the pattern, then decline to 45728",
+   "invalidationLevel": null,
+   "targetZone": [
+    41396.0,
+    45728.0
+   ],
+   "keyPivots": [
+    {
+     "date": "2026-02-11",
+     "price": null,
+     "label": "possible top"
+    },
+    {
+     "date": null,
+     "price": 48731.0,
+     "label": "key level (week's low)"
+    }
+   ],
+   "quote": "Two counts: bearish decline to 45728 now, or a final new high first; break below 48731 opens 45728, possibly 41396.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR034",
+   "instrument": "DJIA",
+   "publicationDate": "2026-03-24",
+   "author": null,
+   "organization": "Alchemy Markets (series attribution)",
+   "url": "https://www.fxstreet.com/news/dji-elliott-wave-forecast-trying-to-recover-202603240716",
+   "timeframe": "daily",
+   "degreeTerms": "((iii))",
+   "currentWaveClaim": "first bearish wave from Feb 2026 high complete; partial recovery to a secondary high before wave ((iii)) down",
+   "patternClaim": "impulse down (wave 1 done)",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "Break below 45369 may bring another 10% decline to 42k",
+   "invalidationLevel": 50499.0,
+   "targetZone": [
+    47280.0,
+    48488.0
+   ],
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 50499.0,
+     "label": "start of bearish wave"
+    }
+   ],
+   "quote": "DJI may have finished first bearish leg; recovery to 47280-48488 for secondary high, then wave ((iii)) downtrend.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR035",
+   "instrument": "DJIA",
+   "publicationDate": "2026-05-05",
+   "author": null,
+   "organization": "Alchemy Markets (series attribution)",
+   "url": "https://www.fxstreet.com/news/dji-elliott-wave-forecast-rolling-over-202605052302",
+   "timeframe": "daily",
+   "degreeTerms": "(c) or (iii)",
+   "currentWaveClaim": "first bearish wave done; secondary high near gap then wave (c) or (iii) down",
+   "patternClaim": "correction or impulse down",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": [
+    47758.0,
+    48409.0
+   ],
+   "keyPivots": [
+    {
+     "date": "2026-05-01",
+     "price": 49988.0,
+     "label": "previous high not exceeded"
+    },
+    {
+     "date": null,
+     "price": 49441.0,
+     "label": "gap fill zone low"
+    }
+   ],
+   "quote": "DJI may fill gap 49441-49497 for a secondary high, then dig lower in wave (c) or (iii) toward 47758-48409.",
+   "confidence": "partly-explicit",
+   "conflictGroup": "DJIA-2026-05"
+  },
+  {
+   "id": "PR036",
+   "instrument": "DJIA",
+   "publicationDate": "2026-05-22",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/elliott-wave-view-dow-futures-ym-break-higher-following-march-2026-correction-202605220206",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "wave ((iii)) of 3 of the impulse from the March 30, 2026 low (YM futures)",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": 49146.0,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2026-03-30",
+     "price": null,
+     "label": "cycle low"
+    },
+    {
+     "date": null,
+     "price": 50043.0,
+     "label": "wave 1"
+    },
+    {
+     "date": null,
+     "price": 48608.0,
+     "label": "wave 2"
+    },
+    {
+     "date": null,
+     "price": 50292.0,
+     "label": "wave ((i))"
+    },
+    {
+     "date": null,
+     "price": 49146.0,
+     "label": "wave ((ii))"
+    }
+   ],
+   "quote": "YM rally from March 30 low is an impulse: wave 1 50043, wave 2 48608, ((i)) 50292, ((ii)) 49146; now ((iii)) of 3.",
+   "confidence": "partly-explicit",
+   "conflictGroup": "DJIA-2026-05"
+  },
+  {
+   "id": "PR037",
+   "instrument": "DJIA",
+   "publicationDate": "2026-07-10",
+   "author": "Henrik Zeberg",
+   "organization": "Modern Day Elliott Wave (Substack)",
+   "url": "https://x.com/HenrikZeberg/status/2075577635866898702",
+   "timeframe": "weekly",
+   "degreeTerms": null,
+   "currentWaveClaim": "wave 5 of (5) terminal advance running out of road",
+   "patternClaim": "impulse (terminal 5th)",
+   "primaryDirectionNext": "unknown",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [],
+   "quote": "Dow: Wave 5 of (5) is running out of road; the Dow's terminal advance and where it ends (tweet date from post ID).",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR038",
+   "instrument": "DJIA",
+   "publicationDate": "2026-10-02",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/elliott-wave-outlook-dow-futures-ym-bearish-sequence-targets-49570-video-202610020246",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "wave (y) of a double three correction from the Aug 5, 2026 high (YM futures)",
+   "patternClaim": "double three",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": [
+    47542.0,
+    49569.0
+   ],
+   "keyPivots": [
+    {
+     "date": "2026-08-05",
+     "price": null,
+     "label": "correction start"
+    },
+    {
+     "date": null,
+     "price": 51609.0,
+     "label": "wave (w)"
+    },
+    {
+     "date": null,
+     "price": 52840.0,
+     "label": "wave (x)"
+    }
+   ],
+   "quote": "YM double three from Aug 5 high: (w) 51609, (x) 52840; broke below (w), targeting 47542-49569.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR039",
+   "instrument": "DJIA",
+   "publicationDate": "2024-11-23",
+   "author": "Mark Rivest",
+   "organization": "FourDimensionTrading.com",
+   "url": "https://fourdimensiontrading.com/2024/11/23/dow-jones-industrial-average-long-term-elliott-wave-count-11-22-24/",
+   "timeframe": "weekly",
+   "degreeTerms": "Intermediate (5)",
+   "currentWaveClaim": "final part of an extended impulse from October 2022; Intermediate (5) itself extended",
+   "patternClaim": "extended impulse",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": null,
+     "price": null,
+     "label": "impulse origin (Oct 2022)"
+    }
+   ],
+   "quote": "DJI could soon complete an extended impulse begun October 2022; presumed Intermediate (5) extended; unconfirmed new high could be sell signal.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR040",
+   "instrument": "RUT",
+   "publicationDate": "2024-02-11",
+   "author": "Mark Rivest",
+   "organization": "FourDimensionTrading.com",
+   "url": "https://fourdimensiontrading.com/2024/02/11/russell-2000-detailed-elliott-wave-count/",
+   "timeframe": "intraday",
+   "degreeTerms": "Minute",
+   "currentWaveClaim": "after initial impulse down, inverse expanding flat with Minute b triangle complete; decline projected from 02/12/24",
+   "patternClaim": "leading diagonal (2021-22), inverse expanding flat",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": null,
+     "price": null,
+     "label": "all-time high (Nov 2021)"
+    }
+   ],
+   "quote": "RUT could be on the precipice of a severe decline; inverse expanding flat with Minute b triangle; decline projected from 02/12/24.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR041",
+   "instrument": "RUT",
+   "publicationDate": "2025-10-08",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/elliott-wave-analysis-russell-2000-futures-rty-advancing-in-wave-5-202510080505",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "wave (5) of the impulse from the May 23, 2025 low (RTY futures)",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2025-05-23",
+     "price": null,
+     "label": "cycle low"
+    },
+    {
+     "date": null,
+     "price": 2296.5,
+     "label": "wave (1)"
+    },
+    {
+     "date": null,
+     "price": 2146.8,
+     "label": "wave (2)"
+    },
+    {
+     "date": null,
+     "price": 2510.3,
+     "label": "wave (3)"
+    },
+    {
+     "date": null,
+     "price": 2412.15,
+     "label": "wave (4) zigzag low"
+    },
+    {
+     "date": null,
+     "price": 2518.5,
+     "label": "wave 3 of (5)"
+    }
+   ],
+   "quote": "RTY five-wave impulse from May 23 low: (1) 2296.5, (2) 2146.8, (3) 2510.3, (4) 2412.15; wave (5) advancing.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR042",
+   "instrument": "RUT",
+   "publicationDate": "2025-12-03",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/russell-2000-iwm-enters-correction-phase-following-impulsive-advance-video-202512030439",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "IWM: wave ((5)) of impulse from April 2025 low underway after wave ((4)) at 228.18; short-term wave (2) pullback",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": 228.18,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 228.18,
+     "label": "wave ((4)) low (IWM)"
+    },
+    {
+     "date": "2025-10-15",
+     "price": 252.77,
+     "label": "wave ((3)) peak (IWM)"
+    }
+   ],
+   "quote": "IWM cycle from April 2025 low is five-wave impulse; ((4)) ended 228.18; in ((5)), pullback in wave (2) before next leg.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR043",
+   "instrument": "RUT",
+   "publicationDate": "2025-12-10",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/russell-2000-etf-iwm-soars-11-from-blue-box-area-with-258-target-still-ahead-202512101355",
+   "timeframe": "daily",
+   "degreeTerms": null,
+   "currentWaveClaim": "IWM rallied from blue box after a completed 5-wave cycle and pullback; next leg toward 258-268",
+   "patternClaim": "impulse then equal-legs correction",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": [
+    258.0,
+    268.0
+   ],
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 219.62,
+     "label": "blue box low"
+    },
+    {
+     "date": null,
+     "price": 229.87,
+     "label": "blue box high"
+    }
+   ],
+   "quote": "After Nov 18 5-wave cycle, IWM pullback found buyers in blue box 229.87-219.62; rallied 11%; next 258-268.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR044",
+   "instrument": "RUT",
+   "publicationDate": "2026-07-13",
+   "author": "Henrik Zeberg",
+   "organization": "Modern Day Elliott Wave (Substack)",
+   "url": "https://x.com/HenrikZeberg/status/2076770802045698389",
+   "timeframe": "weekly",
+   "degreeTerms": "circled 5",
+   "currentWaveClaim": "wave 5 of circled 5 in progress, last leg of the advance from the 2020 low (RTY futures)",
+   "patternClaim": "impulse (terminal)",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": null,
+     "price": null,
+     "label": "2020 low (advance origin)"
+    }
+   ],
+   "quote": "RTY weekly: wave 5 of circled 5 in progress, the last leg of the advance from the 2020 low (tweet date from post ID).",
+   "confidence": "partly-explicit",
+   "conflictGroup": "RUT-2026-Q3"
+  },
+  {
+   "id": "PR045",
+   "instrument": "RUT",
+   "publicationDate": "2026-08-12",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/elliott-wave-view-russell-2000-impulse-set-to-extend-higher-video-202608120511",
+   "timeframe": "intraday",
+   "degreeTerms": "(1)",
+   "currentWaveClaim": "wave (v) of ((iii)) of the impulse from June 9, 2026 low; whole sequence to end wave (1) of a new cycle",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "After wave (1) completes, a larger corrective phase expected",
+   "invalidationLevel": 2903.26,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2026-06-09",
+     "price": null,
+     "label": "cycle low"
+    },
+    {
+     "date": null,
+     "price": 3068.4,
+     "label": "wave ((i))"
+    },
+    {
+     "date": null,
+     "price": 2903.26,
+     "label": "wave ((ii))"
+    }
+   ],
+   "quote": "RTY rally from June 9 low is five-wave impulse; ((i)) 3068.4, ((ii)) 2903.26; more highs to finish wave (1).",
+   "confidence": "partly-explicit",
+   "conflictGroup": "RUT-2026-Q3"
+  },
+  {
+   "id": "PR046",
+   "instrument": "BTCUSD",
+   "publicationDate": "2021-06-02",
+   "author": "Mark Rivest",
+   "organization": "FourDimensionTrading.com",
+   "url": "https://fourdimensiontrading.com/2021/06/02/bitcoin-horizontal-triangle/",
+   "timeframe": "daily",
+   "degreeTerms": "Minor",
+   "currentWaveClaim": "Minor wave 4 horizontal triangle after Minor wave 3 bottom on 05/19/21",
+   "patternClaim": "horizontal triangle",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2021-05-19",
+     "price": null,
+     "label": "Minor wave 3 bottom"
+    }
+   ],
+   "quote": "Alternate count forming: 05/19/21 bottom Minor 3; Minor 4 horizontal triangle; post-triangle thrust down toward .618 retrace of 2020-21 bull.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR047",
+   "instrument": "BTCUSD",
+   "publicationDate": "2021-08-05",
+   "author": "Lara Iriarte",
+   "organization": "Pure Elliott Wave",
+   "url": "https://pureelliottwave.com/2021/08/btcusd-elliott-wave-and-technical-analysis-charts-aug-05-2021/",
+   "timeframe": "weekly",
+   "degreeTerms": "Cycle III, Primary 4",
+   "currentWaveClaim": "primary wave 4 of cycle wave III underway, most likely a large triangle",
+   "patternClaim": "triangle",
+   "primaryDirectionNext": "SIDEWAYS",
+   "alternativeClaim": "Primary 4 could be any of 23+ corrective structures",
+   "invalidationLevel": 13826.76,
+   "targetZone": null,
+   "keyPivots": [],
+   "quote": "Within cycle III, primary 1-3 may be complete; primary 4 underway, likely triangle; may not go below 13826.76.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR048",
+   "instrument": "BTCUSD",
+   "publicationDate": "2021-08-19",
+   "author": "Lara Iriarte",
+   "organization": "Pure Elliott Wave",
+   "url": "https://pureelliottwave.com/2021/08/btcusd-elliott-wave-and-technical-analysis-charts-aug-19-2021/",
+   "timeframe": "daily",
+   "degreeTerms": "Cycle III, Primary 4",
+   "currentWaveClaim": "short-term upward movement within primary wave 4 triangle of cycle III",
+   "patternClaim": "triangle",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "Primary 5 breakout up expected after primary 4 completes",
+   "invalidationLevel": null,
+   "targetZone": [
+    57669.0,
+    57669.0
+   ],
+   "keyPivots": [],
+   "quote": "All three short-term counts expect more upside to about 57669, within larger primary 4 triangle consolidation.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR049",
+   "instrument": "BTCUSD",
+   "publicationDate": "2025-01-10",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/cryptocurrencies/news/bitcoin-elliott-wave-forecasting-the-decline-after-expanded-flat-pattern-202501101407",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "recovery against the 108364 high unfolding as irregular (expanded) flat; decline to follow",
+   "patternClaim": "expanded flat",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 108364.0,
+     "label": "cycle high"
+    }
+   ],
+   "quote": "Bitcoin correcting cycle from 108364 high; recovery unfolded as irregular flat, decline expected afterward.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR050",
+   "instrument": "BTCUSD",
+   "publicationDate": "2025-08-20",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/cryptocurrencies/news/bitcoin-elliott-wave-forecasting-the-path-202508201338",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "zigzag 5-3-5 pullback; final push down to complete five waves in the ((c)) leg",
+   "patternClaim": "zigzag",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": null,
+   "invalidationLevel": 111984.0,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 111984.0,
+     "label": "low referenced as count invalidation"
+    }
+   ],
+   "quote": "Five waves down from peak = first leg of 5-3-5 zigzag; short bounce then final push in ((c)); 111984 key low.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR051",
+   "instrument": "BTCUSD",
+   "publicationDate": "2025-09-25",
+   "author": "Dr. Arnout ter Schure",
+   "organization": "Intelligent Investing LLC (via FXEmpire/FXStreet)",
+   "url": "https://www.fxstreet.com/cryptocurrencies/news/elliott-wave-count-suggests-bitcoins-next-rally-is-around-the-corner-202509251616",
+   "timeframe": "daily",
+   "degreeTerms": "gray W-ii / W-iii; orange W-a,b,c",
+   "currentWaveClaim": "gray W-ii bottomed at 61.8% retracement as orange a-b-c expanded flat; gray W-iii next",
+   "patternClaim": "expanded flat (3-3-5)",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": [
+    159000.0,
+    161000.0
+   ],
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 107271.0,
+     "label": "gray W-ii low"
+    },
+    {
+     "date": null,
+     "price": 117981.0,
+     "label": "orange W-1 high (warning)"
+    },
+    {
+     "date": null,
+     "price": 123220.0,
+     "label": "gray W-i high (confirmation)"
+    }
+   ],
+   "quote": "Correction from July top an expanded flat; W-ii near 107271; above 123220 confirms W-iii toward 159-161K.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR052",
+   "instrument": "BTCUSD",
+   "publicationDate": "2026-07-01",
+   "author": "Dr. Arnout ter Schure",
+   "organization": "Intelligent Investing LLC (via FXEmpire/FXStreet)",
+   "url": "https://www.fxstreet.com/cryptocurrencies/news/bitcoin-nears-major-low-as-elliott-wave-count-and-momentum-divergences-point-to-reversal-potential-202607011923",
+   "timeframe": "daily",
+   "degreeTerms": "5th wave",
+   "currentWaveClaim": "five-wave decline from May 6 high nearing completion; 5th wave subdividing; major low forming",
+   "patternClaim": "impulse down (terminal 5th)",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2026-05-06",
+     "price": 82813.0,
+     "label": "high"
+    },
+    {
+     "date": null,
+     "price": 57739.0,
+     "label": "new low"
+    }
+   ],
+   "quote": "Decline counted as five waves with subdividing 5th; positive divergences; support 49200-58870; important low likely forming, unconfirmed.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR053",
+   "instrument": "BTCUSD",
+   "publicationDate": "2026-07-21",
+   "author": "Dr. Arnout ter Schure",
+   "organization": "Intelligent Investing LLC (via FXEmpire/FXStreet)",
+   "url": "https://www.fxstreet.com/cryptocurrencies/news/bitcoin-nears-critical-breakout-as-elliott-wave-count-signals-a-new-uptrend-202607211755",
+   "timeframe": "daily",
+   "degreeTerms": null,
+   "currentWaveClaim": "potential five-wave advance from the July 1 low",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": 62474.0,
+   "targetZone": [
+    164000.0,
+    337000.0
+   ],
+   "keyPivots": [
+    {
+     "date": "2026-07-01",
+     "price": null,
+     "label": "potential major low"
+    },
+    {
+     "date": null,
+     "price": 67256.0,
+     "label": "critical breakout level"
+    }
+   ],
+   "quote": "Tracking potential five waves up from July 1 low; 62474 key support; completion would target 164-337K in 2-3 years.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR054",
+   "instrument": "BTCUSD",
+   "publicationDate": "2026-08-20",
+   "author": "Dr. Arnout ter Schure",
+   "organization": "Intelligent Investing LLC (via FXEmpire/FXStreet)",
+   "url": "https://www.fxstreet.com/cryptocurrencies/news/bitcoin-holds-key-elliott-wave-support-as-bulls-target-77-000-before-possible-164-000-337-000-cycle-peak-202608201703",
+   "timeframe": "daily",
+   "degreeTerms": "3rd of a 3rd",
+   "currentWaveClaim": "3rd-of-a-3rd wave rally of five-wave advance from the July 1 low",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": 62474.0,
+   "targetZone": [
+    77000.0,
+    77000.0
+   ],
+   "keyPivots": [
+    {
+     "date": "2026-08-01",
+     "price": 62727.0,
+     "label": "lowest close"
+    },
+    {
+     "date": null,
+     "price": 65418.0,
+     "label": "warning level"
+    }
+   ],
+   "quote": "BTC held 62474; staging 3rd-of-3rd rally since Aug 1; five-wave advance could target about 77000 above 65418.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR055",
+   "instrument": "BTCUSD",
+   "publicationDate": "2026-09-02",
+   "author": "Dr. Arnout ter Schure",
+   "organization": "Intelligent Investing LLC (via FXEmpire/FXStreet)",
+   "url": "https://www.fxstreet.com/cryptocurrencies/news/bitcoin-elliott-wave-outlook-final-fifth-wave-rally-targets-90-000-202609022031",
+   "timeframe": "daily",
+   "degreeTerms": "gray i-v within green wave 1",
+   "currentWaveClaim": "final gray wave v of green wave 1 from the July 1 low",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": 66919.0,
+   "targetZone": [
+    85000.0,
+    95000.0
+   ],
+   "keyPivots": [
+    {
+     "date": "2026-08-28",
+     "price": 81330.0,
+     "label": "high"
+    },
+    {
+     "date": null,
+     "price": 72994.0,
+     "label": "warning level"
+    }
+   ],
+   "quote": "Tracking five gray waves within green wave 1; ideal completion near 90000 +/- 5000; below 72994 warns; invalidation 66919.",
+   "confidence": "partly-explicit",
+   "conflictGroup": "BTC-2026-09-02"
+  },
+  {
+   "id": "PR056",
+   "instrument": "BTCUSD",
+   "publicationDate": "2026-09-02",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/cryptocurrencies/news/bitcoin-elliott-wave-forecasting-the-short-term-path-202609021322",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "double three (w)-(x)-(y) pullback after wave ((iii)) of 3 from the Aug 1 low",
+   "patternClaim": "double three",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": "If 76463 holds and (x) breaks, wave ((v)) may have started toward 82662+",
+   "invalidationLevel": null,
+   "targetZone": [
+    72033.0,
+    74881.0
+   ],
+   "keyPivots": [
+    {
+     "date": "2026-08-01",
+     "price": null,
+     "label": "cycle low"
+    },
+    {
+     "date": null,
+     "price": 76463.0,
+     "label": "recent low"
+    }
+   ],
+   "quote": "Pullback a (w)-(x)-(y) double three, likely incomplete; another push toward 74881-72033 favored while (x) pivot holds.",
+   "confidence": "partly-explicit",
+   "conflictGroup": "BTC-2026-09-02"
+  },
+  {
+   "id": "PR057",
+   "instrument": "BTCUSD",
+   "publicationDate": "2026-09-18",
+   "author": "Dr. Arnout ter Schure",
+   "organization": "Intelligent Investing LLC (via FXEmpire/FXStreet)",
+   "url": "https://www.fxstreet.com/cryptocurrencies/news/bitcoin-price-forecast-bull-flag-breakout-targets-93k-as-fifth-wave-unfolds-202609181823",
+   "timeframe": "daily",
+   "degreeTerms": "fourth/fifth wave",
+   "currentWaveClaim": "smaller-degree fourth wave off the July 1 low complete; fifth wave advance underway",
+   "patternClaim": "impulse with bull flag",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "Break of 76232 raises odds advance is part of larger correction",
+   "invalidationLevel": 76232.0,
+   "targetZone": [
+    85200.0,
+    94500.0
+   ],
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 76248.0,
+     "label": "day's low"
+    }
+   ],
+   "quote": "Fourth wave off July 1 low likely done; fifth wave target 85200-94500; bull flag measured move ~93000.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR058",
+   "instrument": "WTI",
+   "publicationDate": "2025-04-29",
+   "author": null,
+   "organization": null,
+   "url": "https://www.fxstreet.com/analysis/crude-oil-plunges-on-weak-demand-outlook-wti-could-be-in-a-steep-wave-iii-decline-202504291017",
+   "timeframe": "daily",
+   "degreeTerms": "((ii))/((iii))/(iii)",
+   "currentWaveClaim": "wave (iii) of ((iii)) decline after wave ((ii)) top near 65.30",
+   "patternClaim": "impulse down",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 65.3,
+     "label": "wave ((ii)) top"
+    },
+    {
+     "date": null,
+     "price": 61.6,
+     "label": "approached in (iii) of ((iii))"
+    }
+   ],
+   "quote": "Wave ((ii)) likely completed near $65.30; sharp drop toward $61.60 could be wave (iii) of ((iii)).",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR059",
+   "instrument": "WTI",
+   "publicationDate": "2025-08-06",
+   "author": null,
+   "organization": null,
+   "url": "https://www.fxstreet.com/analysis/crude-oil-elliott-wave-sliding-into-support-202508060448",
+   "timeframe": "daily",
+   "degreeTerms": null,
+   "currentWaveClaim": "wave (c) of a suspected symmetrical triangle complete or nearly complete",
+   "patternClaim": "symmetrical triangle",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "Break below 64.03 opens 58.50",
+   "invalidationLevel": 64.03,
+   "targetZone": [
+    77.1,
+    77.1
+   ],
+   "keyPivots": [],
+   "quote": "Suspected triangle with wave (c) near complete; bounce above 64.03; after triangle, rally toward 77.10; below 64.03 opens 58.50.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR060",
+   "instrument": "WTI",
+   "publicationDate": "2025-10-16",
+   "author": null,
+   "organization": "Alchemy Markets",
+   "url": "https://www.fxstreet.com/analysis/crude-oil-maturing-elliott-wave-pattern-202510162257",
+   "timeframe": "weekly",
+   "degreeTerms": null,
+   "currentWaveClaim": "wave ((y)) of double zigzag wave 5 of an ending diagonal begun Sept 2023",
+   "patternClaim": "ending diagonal (falling wedge)",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": "Large bullish reversal expected after completion",
+   "invalidationLevel": null,
+   "targetZone": [
+    51.77,
+    57.38
+   ],
+   "keyPivots": [
+    {
+     "date": null,
+     "price": null,
+     "label": "diagonal start (Sept 2023)"
+    }
+   ],
+   "quote": "Two-year ending diagonal since Sept 2023; wave 5 a ((w))-((x))-((y)) double zigzag, now ((y)); targets 51.77-57.38.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR061",
+   "instrument": "WTI",
+   "publicationDate": "2026-06-12",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/analysis/elliott-wave-view-wti-crude-oil-cl-eyeing-lower-range-at-68-73-video-202606120518",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "wave 3 decline after wave 2 zigzag ended at 97.02",
+   "patternClaim": "zigzag (wave 2)",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": null,
+   "invalidationLevel": 97.02,
+   "targetZone": [
+    68.0,
+    73.0
+   ],
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 94.78,
+     "label": "wave ((a)) of 2"
+    },
+    {
+     "date": null,
+     "price": 90.12,
+     "label": "wave ((b)) of 2"
+    },
+    {
+     "date": null,
+     "price": 97.02,
+     "label": "wave ((c)) / wave 2 end"
+    },
+    {
+     "date": "2026-05-19",
+     "price": null,
+     "label": "sequence high"
+    }
+   ],
+   "quote": "Wave 2 zigzag ended 97.02; decline broke wave 1 low; targets $68-73 (100-123.6% extension from May 19 high).",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR062",
+   "instrument": "WTI",
+   "publicationDate": "2026-07-22",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/analysis/elliott-wave-analysis-wti-crude-oil-cl-five-swing-rally-from-july-low-favors-extension-202607220516",
+   "timeframe": "intraday",
+   "degreeTerms": "(A)",
+   "currentWaveClaim": "wave 5 of the impulse from July 2 low completing wave (A)",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "Extension expected within wave (C) or wave (3)",
+   "invalidationLevel": 67.05,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2026-07-02",
+     "price": 67.05,
+     "label": "cycle low"
+    },
+    {
+     "date": null,
+     "price": 76.08,
+     "label": "wave 1"
+    },
+    {
+     "date": null,
+     "price": 70.77,
+     "label": "wave 2"
+    },
+    {
+     "date": null,
+     "price": 85.39,
+     "label": "wave 3"
+    },
+    {
+     "date": null,
+     "price": 80.27,
+     "label": "wave 4"
+    }
+   ],
+   "quote": "From July 2 low: wave 1 76.08, 2 70.77, 3 85.39, 4 80.27, wave 5 unfolding to end wave (A); buy dips above 67.05.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR063",
+   "instrument": "WTI",
+   "publicationDate": "2026-08-25",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/analysis/elliott-wave-forecast-crude-oil-aims-higher-1006-in-sight-video-202608250330",
+   "timeframe": "intraday",
+   "degreeTerms": "(A)/(B)/(C)",
+   "currentWaveClaim": "wave ((v)) of (C) after (A) at 93.50 and (B) at 74.17",
+   "patternClaim": "zigzag (A)-(B)-(C)",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": 67.05,
+   "targetZone": [
+    100.6,
+    100.6
+   ],
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 93.5,
+     "label": "wave (A)"
+    },
+    {
+     "date": null,
+     "price": 74.17,
+     "label": "wave (B)"
+    },
+    {
+     "date": null,
+     "price": 84.61,
+     "label": "wave ((i)) of (C)"
+    },
+    {
+     "date": null,
+     "price": 80.09,
+     "label": "wave ((ii))"
+    },
+    {
+     "date": null,
+     "price": 89.0,
+     "label": "wave ((iii))"
+    },
+    {
+     "date": null,
+     "price": 84.36,
+     "label": "wave ((iv))"
+    }
+   ],
+   "quote": "Wave (A) 93.50, (B) 74.17; (C) impulsive: ((i)) 84.61, ((ii)) 80.09, ((iii)) 89, ((iv)) 84.36; target 100.6.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR064",
+   "instrument": "WTI",
+   "publicationDate": "2026-10-01",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/analysis/elliott-wave-view-light-crude-oil-incomplete-bearish-sequence-still-favors-further-downside-video-202610010230",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "wave 3 decline from the Sept 16, 2026 high after wave 2 at 96.78",
+   "patternClaim": "impulse down",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": null,
+   "invalidationLevel": 106.71,
+   "targetZone": [
+    67.0,
+    78.0
+   ],
+   "keyPivots": [
+    {
+     "date": "2026-09-16",
+     "price": null,
+     "label": "sequence high"
+    },
+    {
+     "date": null,
+     "price": 88.71,
+     "label": "wave 1 end"
+    },
+    {
+     "date": null,
+     "price": 96.78,
+     "label": "wave 2"
+    },
+    {
+     "date": null,
+     "price": 91.51,
+     "label": "wave ((i)) of 3"
+    },
+    {
+     "date": null,
+     "price": 96.54,
+     "label": "wave ((ii)) of 3"
+    }
+   ],
+   "quote": "Incomplete bearish sequence from Sept 16 high: wave 1 88.71, wave 2 96.78; target $67-78 while below 106.71.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR065",
+   "instrument": "N225",
+   "publicationDate": "2025-04-29",
+   "author": null,
+   "organization": "TradingLounge",
+   "url": "https://www.fxstreet.com/news/nikkei-225-index-elliott-wave-technical-analysis-video-202504290807",
+   "timeframe": "daily",
+   "degreeTerms": "navy blue wave 1 / gray wave 3",
+   "currentWaveClaim": "navy blue wave 1 of gray wave 3 underway after gray wave 2 completed",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": 30726.0,
+   "targetZone": null,
+   "keyPivots": [],
+   "quote": "Gray wave 2 appears complete; navy blue wave 1 of gray wave 3 underway; invalidation 30726.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR066",
+   "instrument": "N225",
+   "publicationDate": "2025-09-19",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/elliott-wave-update-nikkei-nkd-advances-in-fifth-wave-202509190520",
+   "timeframe": "intraday",
+   "degreeTerms": "((4))/((5))",
+   "currentWaveClaim": "wave 3 of ((5)) after wave ((4)) at 41708; wave ((iv)) pullback anticipated (NKD futures)",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2025-09-02",
+     "price": 41708.0,
+     "label": "wave ((4))"
+    },
+    {
+     "date": null,
+     "price": 44190.0,
+     "label": "wave 1 of ((5))"
+    },
+    {
+     "date": null,
+     "price": 43080.0,
+     "label": "wave 2"
+    },
+    {
+     "date": null,
+     "price": 45810.0,
+     "label": "wave ((iii)) of 3"
+    }
+   ],
+   "quote": "Wave ((4)) ended 41708 on Sept 2; ((5)) underway; wave 1 44190, wave 2 43080; wave 3 subdividing, ((iii)) 45810.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR067",
+   "instrument": "N225",
+   "publicationDate": "2026-05-14",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/elliott-wave-view-nikkei-futures-approaches-end-of-cycle-from-march-2026-low-video-202605140244",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "wave ((v)) to complete impulse from March 30, 2026 low after ((iv)) zigzag (NKD futures)",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "Larger-degree pullback expected after completion",
+   "invalidationLevel": 58651.0,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2026-03-30",
+     "price": null,
+     "label": "cycle low"
+    },
+    {
+     "date": null,
+     "price": 61000.0,
+     "label": "wave ((i))"
+    },
+    {
+     "date": null,
+     "price": 58651.0,
+     "label": "wave ((ii))"
+    },
+    {
+     "date": null,
+     "price": 63850.0,
+     "label": "wave ((iii))"
+    },
+    {
+     "date": null,
+     "price": 61805.0,
+     "label": "wave ((iv))"
+    }
+   ],
+   "quote": "NKD impulse from March 30 low: ((i)) 61000, ((ii)) 58651, ((iii)) 63850, ((iv)) 61805; ((v)) higher, then larger pullback.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR068",
+   "instrument": "N225",
+   "publicationDate": "2026-05-28",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/news/buyers-likely-to-support-nikkei-futures-nkd-pullback-eyeing-72-870-extension-202605281908",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "pullback after wave 1 and 2 of new bullish sequence from March 23, 2026 low; extension expected (NKD futures)",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": 59352.0,
+   "targetZone": [
+    72870.0,
+    72870.0
+   ],
+   "keyPivots": [
+    {
+     "date": "2026-03-23",
+     "price": null,
+     "label": "sequence low"
+    },
+    {
+     "date": null,
+     "price": 63880.0,
+     "label": "wave 1"
+    },
+    {
+     "date": null,
+     "price": 59352.0,
+     "label": "wave 2"
+    }
+   ],
+   "quote": "From March 23 low wave 1 63880, wave 2 59352; pullbacks supported in 3/7/11 swings; eyeing 72870 extension.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR069",
+   "instrument": "XAUUSD",
+   "publicationDate": "2025-01-24",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/analysis/elliott-wave-gold-forming-5-waves-from-the-26563-low-202501241650",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "wave (v) of ((i)) of a five-wave cycle from the 2656.3 low; ((ii)) pullback next",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "After completion, wave ((ii)) pullback to 50-61.8% retracement",
+   "invalidationLevel": 2735.8,
+   "targetZone": [
+    2769.99,
+    2804.4
+   ],
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 2656.3,
+     "label": "cycle low"
+    },
+    {
+     "date": null,
+     "price": 2735.8,
+     "label": "wave (iv) low"
+    }
+   ],
+   "quote": "Gold forming five waves from 2656.3; (iv) done above 2735.8; (v) in progress, (v)=(i) at 2804.4; then ((ii)) pullback.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR070",
+   "instrument": "XAUUSD",
+   "publicationDate": "2025-04-15",
+   "author": null,
+   "organization": null,
+   "url": "https://www.fxstreet.com/analysis/gold-eyes-wave-five-extension-elliott-wave-count-signals-bullish-continuation-202504151145",
+   "timeframe": "daily",
+   "degreeTerms": "Minor / Minute",
+   "currentWaveClaim": "wave five extension; conservative Minor-degree count vs aggressive larger Minute-degree advance",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "Aggressive count: move part of a larger Minute-degree advance",
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2025-04-11",
+     "price": 3245.28,
+     "label": "record high"
+    }
+   ],
+   "quote": "Two counts: conservative Minor wave structure, or aggressive bullish larger Minute degree advance; both imply continuation.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR071",
+   "instrument": "XAUUSD",
+   "publicationDate": "2025-05-27",
+   "author": null,
+   "organization": null,
+   "url": "https://www.fxstreet.com/analysis/two-scenarios-for-gold-elliott-wave-analysis-suggests-bullish-and-bearish-potentials-202505270952",
+   "timeframe": "daily",
+   "degreeTerms": null,
+   "currentWaveClaim": "WXY double zigzag correction complete at (Y); nested 1-2, 1-2 forming before a third wave",
+   "patternClaim": "double zigzag (WXY)",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": "Wave (Y) not finished; C-leg five waves down still developing",
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [],
+   "quote": "Primary: WXY complete, nested 1-2 1-2 precedes strong third wave. Alternative: (Y) still needs final C-leg down.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR072",
+   "instrument": "XAUUSD",
+   "publicationDate": "2025-10-01",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/analysis/gold-xau-usd-soars-to-all-time-highs-elliott-wave-outlook-and-next-target-video-202510010243",
+   "timeframe": "intraday",
+   "degreeTerms": null,
+   "currentWaveClaim": "five-wave impulse from the Sept 18, 2025 low continuing after a minor pullback (source summaries differ on degree labels)",
+   "patternClaim": "impulse",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": "2025-09-18",
+     "price": null,
+     "label": "cycle low"
+    },
+    {
+     "date": null,
+     "price": 3647.32,
+     "label": "wave (i)"
+    },
+    {
+     "date": null,
+     "price": 3791.08,
+     "label": "wave ((i)) end per one summary"
+    },
+    {
+     "date": null,
+     "price": 3871.73,
+     "label": "wave ((iii)) high"
+    },
+    {
+     "date": null,
+     "price": 3792.88,
+     "label": "wave ((iv)) low"
+    }
+   ],
+   "quote": "Cycle from Sept 18 low is a five-wave impulse; ((iii)) reached 3871.73, ((iv)) ended 3792.88; further upside.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR073",
+   "instrument": "XAUUSD",
+   "publicationDate": "2026-07-24",
+   "author": null,
+   "organization": "ElliottWave-Forecast.com",
+   "url": "https://www.fxstreet.com/analysis/elliott-wave-outlook-gold-xau-usd-rally-rejected-downside-potential-remains-video-202607240512",
+   "timeframe": "intraday",
+   "degreeTerms": "((B))/((C))",
+   "currentWaveClaim": "wave ((C)) decline in five waves after ((B)) top near 4204",
+   "patternClaim": "zigzag ((A))-((B))-((C))",
+   "primaryDirectionNext": "DOWN",
+   "alternativeClaim": null,
+   "invalidationLevel": 4204.6,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": null,
+     "price": 4204.0,
+     "label": "wave ((B)) top"
+    },
+    {
+     "date": null,
+     "price": 3983.2,
+     "label": "first sub-wave low of ((C))"
+    }
+   ],
+   "quote": "Rally to $4204 completed ((B)); ((C)) lower in five waves; rallies fail while below 4204.6.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  },
+  {
+   "id": "PR074",
+   "instrument": "EEM",
+   "publicationDate": "2025-02-18",
+   "author": null,
+   "organization": null,
+   "url": "https://www.fxstreet.com/analysis/emerging-markets-eem-are-breaking-higher-be-aware-of-lower-us-dollar-lower-202502181009",
+   "timeframe": "daily",
+   "degreeTerms": null,
+   "currentWaveClaim": "complex W-X-Y correction since October 2024 likely complete; breaking above channel resistance",
+   "patternClaim": "double three (W-X-Y)",
+   "primaryDirectionNext": "UP",
+   "alternativeClaim": null,
+   "invalidationLevel": null,
+   "targetZone": null,
+   "keyPivots": [
+    {
+     "date": null,
+     "price": null,
+     "label": "correction start (Oct 2024)"
+    }
+   ],
+   "quote": "EEM trended lower since Oct 2024 in complex W-X-Y correction; breaking above channel resistance signals returning bullish momentum.",
+   "confidence": "partly-explicit",
+   "conflictGroup": null
+  }
+ ]
+}

@@ -56,11 +56,16 @@
     unresolvedFit: 0.4,
     anchorMinRatio: 0.3,
     orthodoxMax: 0.4,             // Ueberschiessen der Folgewelle (B eines expandierten Flats) relativ zu ihrer Laenge
-    weights: { guidelines: 0.06, subdivision: 0.3, separation: 0, anchor: 0.45, dominance: 0.15, similarity: 0, trendContext: 0, coverage: 0.3, prior: 0.03, higherDegree: 0, tail: 0 },
-    typePrior: { IMPULSE: 1, ZIGZAG: 1, FLAT: 0.85, TRIANGLE: 0.7, LEADING_DIAGONAL: 0.6, ENDING_DIAGONAL: 0.65, WXY: 0.65, DOUBLE_ZIGZAG: 0.7 },
+    orthodoxShortMax: 0.7,        // Ende hinter dem Extrem (Dreieck-E, Running-Flat-C): Abstand zum Extrem relativ zur Ausdehnung
+    /* Kalibriert auf Korpus DEVELOPMENT (Ende + Mitte, Rauschen none/low/medium; Koordinatensuche, Sensitivitaet ±50 % dokumentiert in
+       ELLIOTT_ENGINE3_REPORT.md). Keine VALIDATION- oder HOLDOUT-Faelle verwendet. */
+    weights: { guidelines: 0.03, subdivision: 0.2, separation: 0.06, anchor: 0.45, dominance: 0.45, similarity: 0, trendContext: 0, coverage: 0.3, prior: 0.06, higherDegree: 0.06, tail: 0.1, residual: 0.1 },
+    typePrior: { IMPULSE: 1, ZIGZAG: 1, FLAT: 0.85, TRIANGLE: 0.7, LEADING_DIAGONAL: 0.6, ENDING_DIAGONAL: 0.65, WXY: 0.65, DOUBLE_ZIGZAG: 0.7, TRIPLE_ZIGZAG: 0.5 },
     stickiness: 0.03, maxAlternatives: 2, alternativeMinInvalidationGapAtr: 0.5,
     clarity: { high: 0.1, moderate: 0.04 }, structural: { high: 0.68, moderate: 0.55 },
-    noise: { abstainBelow: 1.3, full: 3.0 }
+    noise: { abstainBelow: 1.3, full: 3.0 },
+    /* Eichung Korpus DEVELOPMENT (scripts: elliott-corpus-eval, Bericht ELLIOTT_ENGINE3_REPORT.md): [1, countQuality, clarity/0,15, z/4, Strukturmehrdeutigkeit, laufend] */
+    applicability: { coef: [-4.139, 4.618, 4.662, 1.001, -0.658, -2.05], high: 0.5, moderate: 0.3 }
   };
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -126,7 +131,7 @@
     }
     return legs;
   }
-  var SUB_TYPES = { 3: ["ZIGZAG", "FLAT"], 5: ["IMPULSE", "LEADING_DIAGONAL", "ENDING_DIAGONAL", "TRIANGLE"], 7: ["DOUBLE_ZIGZAG"] };
+  var SUB_TYPES = { 3: ["ZIGZAG", "FLAT"], 5: ["IMPULSE", "LEADING_DIAGONAL", "ENDING_DIAGONAL", "TRIANGLE"], 7: ["DOUBLE_ZIGZAG"] };   // Unterebene ohne Unter-Unterteilung: WXY/Dreifach-Zigzag nicht pruefbar
   function classifySegment(series, a, b, cfg, memo) {
     var key = a + "-" + b;
     if (memo[key]) return memo[key];
@@ -216,7 +221,7 @@
     var succMemo = {};
     function succ(a) {
       if (succMemo[a]) return succMemo[a];
-      var pa = pts[a], out = [], run = close[pa.i], over = 0, post = null;
+      var pa = pts[a], out = [], run = close[pa.i], over = 0;
       for (var j = a + 1; j < n; j++) {
         var pj = pts[j];
         if (pj.s === pa.s) {
@@ -225,15 +230,17 @@
         }
         var better = pa.s < 0 ? close[pj.i] > run : close[pj.i] < run;
         if (better) {
-          run = close[pj.i]; post = null;
+          run = close[pj.i];
           var L = Math.abs(close[pj.i] - close[pa.i]);
           if (over <= cfg.orthodoxMax * L) out.push({ j: j, over: over, short: 0 });
         } else {
           /* ORTHODOXES ENDE VOR DEM EXTREM (Running Flat, Truncation, Dreieck): die Welle endet hinter ihrem Preisextrem.
              Kandidat ist nur ein Punkt, der seit dem Extrem selbst extremal ist (zweite Spitze), mit begrenztem Abstand. */
-          var L2 = Math.abs(close[pj.i] - close[pa.i]), shortBy = Math.abs(run - close[pj.i]);
-          var better2 = post === null || (pa.s < 0 ? close[pj.i] > post : close[pj.i] < post);
-          if (better2) { post = close[pj.i]; if (L2 > 0 && shortBy <= cfg.orthodoxMax * L2 && over <= cfg.orthodoxMax * L2) out.push({ j: j, over: over, short: shortBy }); }
+          /* Bezug ist die erreichte Ausdehnung der Welle (Start → Extrem), nicht ihr Netto: ein Dreieck als Welle 4 endet mit E
+             nahe seiner Mitte. Zugelassen nur mit passender Unterteilung (Pruefung in dfs). */
+          var L2 = Math.abs(close[pj.i] - close[pa.i]), ext2 = Math.abs(run - close[pa.i]), shortBy = Math.abs(run - close[pj.i]);
+          var towards = pa.s < 0 ? close[pj.i] > close[pa.i] : close[pj.i] < close[pa.i];
+          if (towards && L2 > 0 && shortBy <= cfg.orthodoxShortMax * ext2 && over <= cfg.orthodoxMax * ext2) out.push({ j: j, over: over, short: shortBy });
         }
       }
       succMemo[a] = out;
@@ -270,7 +277,7 @@
     }
     function dfs(type, w, path, legs) {
       if (nodes++ > cfg.maxNodes) { truncated = true; return; }
-      var k = path.length - 1, lastP = pts[path[k]], ws = type === "WXY";
+      var k = path.length - 1, lastP = pts[path[k]], ws = type === "WXY" || type === "TRIPLE_ZIGZAG";
       if (k >= 1) {
         if (k >= 2 && !cfg.noSimilarity && !lastP.dev && !similar(legs[k - 2], legs[k - 1])) return;
         if (k === 1 && !cfg.noAnchorPrune && leftSig[path[0]] < cfg.anchorMinRatio * Math.abs(legs[0].toPrice - legs[0].fromPrice)) return;
@@ -299,6 +306,33 @@
       P.TYPES.forEach(function (t) { if (!truncated) dfs(t, P.PATTERNS[t].waves, [a2], []); });
     }
 
+    /* Diagnose: warum wurde ein vorgegebener Pfad nicht gefunden? (nur Forschung) */
+    var explain = null;
+    if (input.debugTruth && input.debugTruth.explain) {
+      var T = input.debugTruth.pts, tol = input.debugTruth.tol, type0 = input.debugTruth.types[0];
+      var path = [], why = null;
+      for (var z = 0; z < T.length && !why; z++) {
+        var want = z === 0 ? null : -pts[path[z - 1]].s;
+        var bestQ = -1, bd = Infinity;
+        for (var q = 0; q < n; q++) { if (pts[q].dev) continue; if (want !== null && pts[q].s !== want) continue; if (z > 0 && q <= path[z - 1]) continue; var dd = Math.abs(pts[q].i - T[z]); if (dd < bd) { bd = dd; bestQ = q; } }
+        if (bestQ < 0 || bd > tol) { why = "NO_POOL_POINT_w" + z; break; }
+        if (z > 0) {
+          var sx = succ(path[z - 1]).filter(function (o) { return o.j === bestQ; })[0];
+          if (!sx) why = "NOT_SUCCESSOR_w" + z;
+          else if (sx.short > 0 && !orthodoxShort(classifySegment(series, pts[path[z - 1]].i, pts[bestQ].i, cfg, subMemo))) why = "SHORT_END_NOT_ORTHODOX_w" + z;
+        }
+        path.push(bestQ);
+        if (!why && z >= 1) {
+          var lg = path.slice(1).map(function (qq, k2) { return legAB(path[k2], qq, false, true); });
+          if (z === 1 && leftSig[path[0]] < cfg.anchorMinRatio * Math.abs(lg[0].toPrice - lg[0].fromPrice)) why = "ANCHOR_PRUNE";
+          else if (z >= 2 && !similar(lg[z - 2], lg[z - 1])) why = "SIMILARITY_PRUNE_w" + z;
+          else if (!P.checkRules(type0, lg)) why = "RULES:" + P.evaluate(type0, lg).violations.join("+");
+        }
+      }
+      if (!why && !untouched(pts[path[path.length - 1]])) why = "END_TOUCHED_LATER";
+      if (!why && pts[path[0]].i < minAnchorIdx) why = "ANCHOR_OUTSIDE_WINDOW";
+      explain = why || "PATH_OK";
+    }
     // ---------------------------------------------------------------- Bewertung
     var cands = found.map(function (f) { var sc = score(f); if (!sc && input.debugTruth) f.dropped = true; else f.cand = sc; return sc; }).filter(Boolean);
     /* Diagnose (nur Forschung): Ist die wahre Lesart im Pool, gefunden, bewertet — und wo steht sie? */
@@ -442,7 +476,7 @@
     zs.sort(function (x, y) { return x - y; });
     var zMed = zs.length ? zs[Math.floor(zs.length / 2)] : null;
     var snr = isNum(zMed) ? { ratio: round(zMed, 3), score: round(clamp((zMed - cfg.noise.abstainBelow) / (cfg.noise.full - cfg.noise.abstainBelow), 0, 1), 3) } : null;
-    var appl = applicability3(primary.countQuality, alternatives.length && amb.kind === "STRUCTURE" ? clarity : null, snr, cfg, amb);
+    var appl = applicability3(primary.countQuality, alternatives.length && amb.kind === "STRUCTURE" ? clarity : null, snr, cfg, amb, primary.complete);
     if (dq.blocking) { appl.level = "LOW"; appl.abstain = true; appl.reasons.unshift(dq.note); }
     var clarityLevel = amb.kind !== "STRUCTURE" ? "HIGH" : clarity >= cfg.clarity.high ? "HIGH" : clarity >= cfg.clarity.moderate ? "MODERATE" : "LOW";
     var status = primary.currentWave.wave === 1 && !primary.complete ? "EARLY" : clarityLevel === "LOW" ? "AMBIGUOUS" : "OK";
@@ -461,6 +495,7 @@
       applicability: appl, candidateTree: V2.candidateTree(primary, alternatives),
       historicalMap: hmap, atr: round(atr, 4), dataQuality: dq,
       trace: { poolPivots: n, candidates: cands.length, nodes: nodes, truncated: truncated, chosen: { rank: best0.rank, components: roundMap(best0.components) },
+               explain: explain,
                truth: truthDiag ? { poolDist: truthDiag.poolDist, found: truthDiag.foundInSearch, dropped: truthDiag.droppedInScore, rank: truthDiag.rank, comp: truthDiag.best ? roundMap(truthDiag.best.components) : null, score: truthDiag.best ? (truthDiag.best.rank || truthDiag.best.base) : null } : undefined,
                allCands: input.debugAll ? top.map(function (t) { return { type: t.type, complete: t.complete, pts: [t.waves[0].fromIndex].concat(t.waves.map(function (w) { return w.toIndex; })), c: t.components, subs: t.waves.map(function (w) { return { from: w.fromIndex, to: w.toIndex, st: w.status, p: w.sub ? w.sub.pattern : null }; }) }; }) : undefined,
                debugTop: input.debug ? top.slice(0, input.debug).map(function (t) { return { pattern: t.type, complete: t.complete, rank: t.rank, pts: [t.waves[0].fromIndex].concat(t.waves.map(function (w) { return w.toIndex; })), c: roundMap(t.components), subs: t.waves.map(function (w) { return w.sub ? w.sub.cls + w.sub.count + ':' + w.sub.motive + '/' + w.sub.corrective : '-'; }).join(' ') }; }) : undefined,
@@ -516,18 +551,27 @@
     var ny = y.complete ? -V2.waveDirection(y.sign, y.waves.length) : V2.waveDirection(y.sign, y.waves.length);
     return { kind: "STRUCTURE", note: nx === ny ? "andere Wellenenden, gleiche laufende Richtung" : "andere Wellenenden, andere laufende Richtung", sameDirection: nx === ny };
   }
-  function applicability3(q, clarity, snr, cfg, amb) {
-    var parts = { countQuality: q && isNum(q.score) ? q.score : null, clarity: isNum(clarity) ? clamp(clarity / 0.15, 0, 1) : null, signalToNoise: snr ? snr.score : null };
-    var v = Object.keys(parts).map(function (k) { return parts[k]; }).filter(isNum);
-    var score = v.length ? mean(v) : null;
-    var level = !isNum(score) ? "LOW" : score >= 0.62 ? "HIGH" : score >= 0.48 ? "MODERATE" : "LOW";
-    if (snr && snr.ratio < cfg.noise.abstainBelow) level = "LOW";
+  /**
+   * Anwendbarkeit = Strukturklarheit der Zaehlung: Wie oft stimmte eine Hauptzaehlung mit diesen Merkmalen im synthetischen
+   * Korpus (bekannte Struktur)? Logistische Eichung auf Korpus DEVELOPMENT (Ende + Mitte, alle Rauschstufen); Stufen ueber
+   * Praezisionsziele: HOCH ab 0,5 (abgeschlossene Muster: 87 % richtig im Entwicklungssplit), MITTEL ab 0,3, darunter
+   * KEINE VERLAESSLICHE ZAEHLUNG. Keine Prognose ueber den Kurs — die Eichung misst Methodentreue, nicht Ergebnis.
+   */
+  function applicability3(q, clarity, snr, cfg, amb, complete) {
+    var A = cfg.applicability;
+    var x = [1, q && isNum(q.score) ? q.score : 0.5, isNum(clarity) ? clamp(clarity / 0.15, 0, 1) : 1, snr ? Math.min(4, snr.ratio) / 4 : 0.3, amb && amb.kind === "STRUCTURE" ? 1 : 0, complete ? 0 : 1];
+    var eta = 0; for (var k = 0; k < x.length; k++) eta += x[k] * A.coef[k];
+    var score = 1 / (1 + Math.exp(-eta));
+    var level = score >= A.high ? "HIGH" : score >= A.moderate ? "MODERATE" : "LOW";
     var reasons = [];
-    if (isNum(parts.clarity) && parts.clarity < 0.34) reasons.push("Mehrere Lesarten mit anderen Wellenenden liegen fast gleichauf");
+    if (amb && amb.kind === "STRUCTURE" && isNum(clarity) && clarity < 0.05) reasons.push("Mehrere Lesarten mit anderen Wellenenden liegen fast gleichauf");
     if (q && q.level === "LOW") reasons.push("Die beste Zählung erfüllt die Richtlinien nur schwach");
-    if (snr && snr.ratio < cfg.noise.abstainBelow) reasons.push("Die Wellen sind kaum größer als ein Zufallspfad gleicher Dauer");
+    if (snr && snr.ratio < 1.3) reasons.push("Die Wellen sind kaum größer als ein Zufallspfad gleicher Dauer");
+    if (!complete) reasons.push("Das Muster läuft noch – laufende Zählungen sind seltener richtig als abgeschlossene");
     if (amb && amb.kind === "DEGREE") reasons.push("Alternative zählt dieselbe Struktur nur auf einer anderen Ebene (kein Widerspruch)");
-    return { score: isNum(score) ? round(score, 3) : null, level: level, abstain: level === "LOW", components: roundMap(parts), signalToNoise: snr ? snr.ratio : null, reasons: reasons };
+    return { score: round(score, 3), level: level, abstain: level === "LOW", basis: "synthetic-calibrated structural clarity",
+             components: { countQuality: x[1], clarity: round(x[2], 3), signalToNoise: snr ? snr.ratio : null, structureAmbiguity: x[4] === 1, developing: x[5] === 1 },
+             signalToNoise: snr ? snr.ratio : null, reasons: level === "HIGH" ? reasons.filter(function (r) { return /Ebene/.test(r); }) : reasons };
   }
   function nearestScale(e, pivots) {
     var ids = pivots && pivots.scaleIds ? pivots.scaleIds : ["scale-1"];

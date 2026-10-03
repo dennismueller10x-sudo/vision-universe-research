@@ -29,6 +29,7 @@
   var Wy = mod("./wyckoff.js", "TIWyckoff");
   var Sc = mod("./scenario.js", "TIScenario");
   var EV2 = isNode ? require("../elliott/elliott-v2.js") : global.VUTechnical.ElliottV2;
+  var EV3 = isNode ? require("../elliott/elliott-v3.js") : (global.VUTechnical && global.VUTechnical.ElliottV3) || null;
   var Timeframe = isNode ? require("../timeframe.js") : global.VUTechnical.Timeframe;
 
   var SCHEMA_VERSION = "vu-technical-analysis-2.0.0";
@@ -73,7 +74,10 @@
     var levels = { sr: Lv.supportResistance(ctx), fib: Lv.fibonacci(ctx) };
     var patterns = Pat.analyze(ctx, {});
     var wyckoff = Wy.analyze(ctx, {});
-    var elliott = EV2.analyzeElliottV2({ series: ctx.series, features: ctx.prep.features, pivots: ctx.prep.pivots, asOfIndex: ctx.t, methodology: meth.elliottV2 || null, barsPerYear: ctx.profile.barsPerYear, previous: elliottPrevious || null });
+    /* Engine-Wahl ueber den Methodenvertrag (elliottEngine: "v2" | "v3"); v3 nur, wenn geladen. */
+    var useV3 = meth.elliottEngine === "v3" && EV3;
+    var elliott = useV3 ? EV3.analyzeElliottV3({ series: ctx.series, features: ctx.prep.features, pivots: ctx.prep.pivots, asOfIndex: ctx.t, methodology: meth, barsPerYear: ctx.profile.barsPerYear, previous: elliottPrevious || null })
+                        : EV2.analyzeElliottV2({ series: ctx.series, features: ctx.prep.features, pivots: ctx.prep.pivots, asOfIndex: ctx.t, methodology: meth.elliottV2 || null, barsPerYear: ctx.profile.barsPerYear, previous: elliottPrevious || null });
     return { dow: dow, momentum: momentum, volatility: volatility, volume: volume, levels: levels, patterns: patterns, wyckoff: wyckoff, elliott: elliott };
   }
 
@@ -127,7 +131,7 @@
     if (ep && ep.primary) {
       /* Elliott = Kontext (vorab registrierte Entscheidung): beschreibt die Struktur, stimmt nicht ueber die Richtung ab. */
       items.push({ family: "ELLIOTT", status: "NEUTRAL", context: true,
-                   statement: ep.applicability && ep.applicability.abstain ? "Wellenstruktur unklar – keine verlässliche Zählung" : ep.primary.patternName + ", aktuell Welle " + ep.primary.currentWave.label + " (Strukturbeschreibung, kein Prognosebeitrag)" });
+                   statement: ep.applicability && ep.applicability.abstain ? "Die aktuelle Kursstruktur lässt keine verlässliche Elliott-Zählung zu" : ep.primary.patternName + ", aktuell Welle " + ep.primary.currentWave.label + " (Strukturbeschreibung, kein Prognosebeitrag)" });
     } else items.push({ family: "ELLIOTT", status: "UNAVAILABLE", statement: "Keine regelkonforme Wellenzählung" });
     return items;
   }

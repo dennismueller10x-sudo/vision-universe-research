@@ -32,7 +32,7 @@
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
 
-  var RULE_SET_VERSION = "elliott-rules-2.0.1";
+  var RULE_SET_VERSION = "elliott-rules-3.0.0";   // 3.0.0: Dreifach-Zigzag (kompakt W-X-Y-X-Z)
   var TRIANGLE_BARRIER_TOL = 0.05;   // Barrier-Dreieck: D darf B um 5 % der A-Laenge ueberschreiten
   var EWP = "Frost & Prechter, Elliott Wave Principle (2005), ";
   var EWI = "Gorman & Kennedy (EWI), Visual Guide to Elliott Wave Trading (2013), ";
@@ -300,6 +300,31 @@
     return g;
   }
 
+  /* Dreifach-Zigzag, kompakt (5 Legs W-X-Y-X-Z): drei Zigzags, verbunden durch zwei X; jeder Zigzag schreitet voran
+     (EWP Kap. 1, Double and Triple Zigzags). W, Y, Z muessen sich sichtbar als Dreier zeigen — sonst waere es ein Impuls
+     oder ein Dreieck (gleiche Wellenzahl). */
+  function tripleZigzagRules(legs) {
+    var c = Ctx(legs), out = [];
+    alternation(c, out);
+    notBeyondAgainst(c, out, "X_NOT_BEYOND_W_ORIGIN", 2, 0, "DEFINITION", "X retraced nie mehr als 100 % von W", EWP + "Kap. 1, Double and Triple Zigzags");
+    beyond(c, out, "Y_BEYOND_W_END", 3, 1, "DEFINITION", "Y läuft über das Ende von W hinaus", EWP + "Kap. 1, Double and Triple Zigzags");
+    notBeyondAgainst(c, out, "X2_NOT_BEYOND_Y_ORIGIN", 4, 2, "DEFINITION", "Das zweite X retraced Y nicht vollständig", EWP + "Kap. 1, Double and Triple Zigzags");
+    beyond(c, out, "Z_BEYOND_Y_END", 5, 3, "DEFINITION", "Z läuft über das Ende von Y hinaus", EWP + "Kap. 1, Double and Triple Zigzags");
+    [[0, "TZ_W_IS_THREE", "W"], [2, "TZ_Y_IS_THREE", "Y"], [4, "TZ_Z_IS_THREE", "Z"]].forEach(function (q) {
+      var l = legs[q[0]]; if (!l) return;
+      if (dev(l)) return;
+      R(out, q[1], "DEFINITION", !!(l.sub && l.sub.cls === "K"), q[2] + " unterteilt sich sichtbar in drei Wellen", EWP + "Kap. 1, Double and Triple Zigzags");
+    });
+    return out;
+  }
+  function tripleZigzagGuidelines(legs) {
+    var c = Ctx(legs), g = {};
+    if (c.n >= 2 && !dev(legs[1])) g.X_PROPORTION = band(c.L(2) / c.L(1), [0.382, 0.786], [0.2, 0.95]);
+    if (c.n >= 3 && !dev(legs[2])) g.Y_PROPORTION = band(c.L(3) / c.L(1), [0.618, 1.618], [0.382, 2.618]);
+    if (c.n >= 5 && !dev(legs[4])) g.Z_PROPORTION = band(c.L(5) / c.L(3), [0.618, 1.618], [0.382, 2.618]);
+    return g;
+  }
+
   // =====================================================================
   //  INVALIDATION & PROJEKTION
   // =====================================================================
@@ -348,6 +373,11 @@
         var dirSign = dw % 2 === 1 ? s : -s, ref = p[dw - 2] + (dw === 4 ? dirSign * TRIANGLE_BARRIER_TOL * c.L(1) : 0);
         out.hard = { price: ref, direction: dirSign > 0 ? "above" : "below", ruleId: "TRIANGLE_BOUNDARIES", statement: "Dreieck ungültig, wenn die laufende Welle das Extrem von zwei Wellen zuvor überschreitet" };
       }
+    } else if (type === "TRIPLE_ZIGZAG") {
+      if (dw === 2) out.hard = level(p[0], s, "X_NOT_BEYOND_W_ORIGIN", "X darf den Ursprung von W nicht erreichen");
+      if (dw === 3) { out.hard = level(p[0], s, "X_NOT_BEYOND_W_ORIGIN", "Ursprung von W"); out.revision = level(p[2], s, "Y_START", "Ende des ersten X"); }
+      if (dw === 4) out.hard = level(p[2], s, "X2_NOT_BEYOND_Y_ORIGIN", "das zweite X darf den Ursprung von Y nicht erreichen");
+      if (dw === 5) { out.hard = level(p[2], s, "X2_NOT_BEYOND_Y_ORIGIN", "Ursprung von Y"); out.revision = level(p[4], s, "Z_START", "Ende des zweiten X"); }
     } else if (type === "DOUBLE_ZIGZAG") {
       if (dw <= 3) return invalidation("ZIGZAG", legs.slice(0, 3), dw);
       if (dw === 4) out.hard = level(p[0], s, "X_NOT_BEYOND_W_ORIGIN", "X darf den Ursprung von W nicht erreichen");
@@ -405,15 +435,15 @@
       }
       if (cap !== null) out.push({ phase: "5", kind: "CAP", price: base + s * cap, ratio: 1, relation: "Welle 5 darf nicht länger als Welle 3 werden (W3 nie die kürzeste)", weight: 0 });
     }
-    if (type === "ZIGZAG" || type === "FLAT" || type === "WXY" || type === "DOUBLE_ZIGZAG") {
-      var A = type === "DOUBLE_ZIGZAG" ? null : L1;
+    if (type === "ZIGZAG" || type === "FLAT" || type === "WXY" || type === "DOUBLE_ZIGZAG" || type === "TRIPLE_ZIGZAG") {
+      var A = type === "DOUBLE_ZIGZAG" || type === "TRIPLE_ZIGZAG" ? null : L1;
       if (complete) {
         var span2 = Math.abs(p[p.length - 1] - p[0]);
         add("AFTER_CORRECTION", "TARGET", p[0], 1, "Ursprung der Korrektur (Trend setzt sich fort)", 1);
         add("AFTER_CORRECTION", "TARGET", p[p.length - 1] - s * span2 * 1.618, 1.618, "1,618 × Korrekturlänge vom Korrekturende", 0.6);
         return out;
       }
-      if (type === "DOUBLE_ZIGZAG") return out;
+      if (type === "DOUBLE_ZIGZAG" || type === "TRIPLE_ZIGZAG") return out;
       if (dw === 2) {
         if (type === "FLAT") [0.9, 1.0, 1.236].forEach(function (r, k) { add("B", "COMPLETION", p[1] - s * A * r, r, "B = " + r + " × A (Flat)", [0.7, 1, 0.7][k]); });
         else [0.5, 0.618, 0.786].forEach(function (r, k) { add("B", "COMPLETION", p[1] - s * A * r, r, "B = " + r + " × A", [0.8, 1, 0.6][k]); });
@@ -457,9 +487,13 @@
     WXY:              { type: "WXY", family: "CORRECTIVE", waves: 3, labels: ["W", "X", "Y"], subdivision: ["K", "K", "K"], rules: wxyRules, guidelines: wxyGuidelines,
                         positions: ["2", "4", "B"], source: EWP + "Kap. 1, Combinations (Double Three)" },
     DOUBLE_ZIGZAG:    { type: "DOUBLE_ZIGZAG", family: "CORRECTIVE", waves: 7, labels: ["A", "B", "C", "X", "A", "B", "C"], displayLabels: ["W·a", "W·b", "W·c", "X", "Y·a", "Y·b", "Y·c"], subdivision: ["M", "K", "M", "K", "M", "K", "M"], rules: doubleZigzagRules, guidelines: doubleZigzagGuidelines,
-                        positions: ["2", "4", "B"], source: EWP + "Kap. 1, Double Zigzags (Double Zigzag)" }
+                        positions: ["2", "4", "B"], source: EWP + "Kap. 1, Double Zigzags (Double Zigzag)" },
+    TRIPLE_ZIGZAG:    { type: "TRIPLE_ZIGZAG", family: "CORRECTIVE", waves: 5, labels: ["W", "X", "Y", "X", "Z"], displayLabels: ["W", "X", "Y", "X₂", "Z"], subdivision: ["K", "K", "K", "K", "K"], rules: tripleZigzagRules, guidelines: tripleZigzagGuidelines,
+                        positions: ["2", "4", "B"], source: EWP + "Kap. 1, Double and Triple Zigzags (Triple Zigzag)", since: "elliott-rules-3.0.0" }
   };
   var TYPES = Object.keys(PATTERNS);
+  /* Engine 2.x kennt nur die Muster bis Regelwerk 2.0.1 (Vorher/Nachher-Vergleiche bleiben reproduzierbar). */
+  var TYPES_V2 = TYPES.filter(function (t) { return !PATTERNS[t].since; });
 
   /** Bewertet ein (vollstaendiges oder partielles) Muster. */
   function evaluate(type, legs) {
@@ -487,7 +521,7 @@
     return true;
   }
 
-  var api = { checkRules: checkRules, RULE_SET_VERSION: RULE_SET_VERSION, PATTERNS: PATTERNS, TYPES: TYPES, evaluate: evaluate, invalidation: invalidation, projections: projections,
+  var api = { checkRules: checkRules, TYPES_V2: TYPES_V2, RULE_SET_VERSION: RULE_SET_VERSION, PATTERNS: PATTERNS, TYPES: TYPES, evaluate: evaluate, invalidation: invalidation, projections: projections,
               band: band, near: near, len: len, ratio: ratio, flatVariant: flatVariant, triangleShape: triangleShape };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ElliottPatterns = api; }
