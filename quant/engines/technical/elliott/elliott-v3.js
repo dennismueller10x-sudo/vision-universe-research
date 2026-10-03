@@ -63,7 +63,7 @@
        ELLIOTT_ENGINE3_REPORT.md). Keine VALIDATION- oder HOLDOUT-Faelle verwendet. */
     weights: { guidelines: 0.03, subdivision: 0.2, separation: 0.06, anchor: 0.45, dominance: 0.45, similarity: 0, trendContext: 0, coverage: 0.3, prior: 0.06, higherDegree: 0.06, tail: 0.1, residual: 0.1 },
     typePrior: { IMPULSE: 1, ZIGZAG: 1, FLAT: 0.85, TRIANGLE: 0.7, LEADING_DIAGONAL: 0.6, ENDING_DIAGONAL: 0.65, WXY: 0.65, DOUBLE_ZIGZAG: 0.7, TRIPLE_ZIGZAG: 0.5 },
-    stickiness: 0.03, stickinessQuiet: 0.15, maxAlternatives: 2, alternativeMinInvalidationGapAtr: 0.5,
+    stickiness: 0.05, stickinessQuiet: 0.05, maxAlternatives: 2,   // Hysterese-Studie DEVELOPMENT: 0,05 = instabile Wechsel 0,66 %/Woche (V2 0,92 %), Erkennung −5 % ggü. 0,03; hoeher haelt an ueberholten Zaehlungen fest alternativeMinInvalidationGapAtr: 0.5,
     clarity: { high: 0.1, moderate: 0.04 }, structural: { high: 0.68, moderate: 0.55 },
     noise: { abstainBelow: 1.3, full: 3.0 },
     /* Eichung Korpus DEVELOPMENT (scripts: elliott-corpus-eval, Bericht ELLIOTT_ENGINE3_REPORT.md): [1, countQuality, clarity/0,15, z/4, Strukturmehrdeutigkeit, laufend] */
