@@ -736,7 +736,7 @@ BULK_CATEGORY_PATTERNS = [
         "DEUTSCHE BANK", "CREDIT SUISSE", "HSBC", "BARCLAYS", "BANK OF NEW YORK MELLON",
         "BNY MELLON", "NORTHERN TRUST", "CHARLES SCHWAB", "TORONTO-DOMINION",
         "BANK OF MONTREAL", "SCOTIABANK", "NOMURA", "MIZUHO", "SUMITOMO MITSUI",
-        "MITSUBISHI UFJ", "SOCIETE GENERALE", "BNP PARIBAS", "STANDARD CHARTERED",
+        "MITSUBISHI UFJ", "SOCIETE GENERALE", "BNP PARIBAS", "CREDIT AGRICOLE", "SANTANDER", "BILBAO", "STANDARD CHARTERED",
         "RAYMOND JAMES", "STIFEL", "TRUIST", "U.S. BANCORP", "US BANCORP", "BANK"]),
     ("Marktmacher / Trading", ["SUSQUEHANNA", "JANE STREET", "CITADEL SECURITIES", "VIRTU FINANCIAL",
         "IMC CHICAGO", "IMC-CHICAGO", "OPTIVER", "DRW HOLDINGS", "FLOW TRADERS",
@@ -944,6 +944,7 @@ def build_fund_record(meta, cik, sub, filings, history_quarters=HISTORY_QUARTERS
             print(f"  {meta['name']}: Sprung {prev_total:.0f} -> {total:.0f} unplausibel, keine Veränderung angezeigt",
                   file=sys.stderr)
             record["aumChangePct"] = None
+            record["jump"] = True
         trades = compute_trades(cur_pos, prev_pos)
 
     # Verlauf: Deckblatt-Summen älterer Perioden (aktuelle/vorige berechnet)
@@ -1311,7 +1312,7 @@ def summarize(rec, pos, trades, photo, counts=None):
     total = rec["totalValueUSD"]
     s = {k: rec.get(k) for k in ("slug", "cik", "name", "secName", "manager", "role", "style", "bio", "note",
                                  "category", "source", "region", "city", "reportDate", "filedDate", "totalValueUSD",
-                                 "positionCount", "prevReportDate", "prevTotalValueUSD", "aumChangePct", "history")}
+                                 "positionCount", "prevReportDate", "prevTotalValueUSD", "aumChangePct", "jump", "history")}
     s["photo"] = photo
     s["top"] = top_with_change(pos, trades, total, INDEX_TOP)
     s["tradeCounts"] = counts if counts is not None else (own_counts if trades else None)
@@ -1325,7 +1326,7 @@ def summarize_lite(rec, pos, trades, counts=None):
     _, own_counts = trade_lists(trades, 1)
     s = {k: rec.get(k) for k in ("slug", "cik", "name", "manager", "style", "category", "region", "city",
                                  "reportDate", "filedDate", "totalValueUSD", "positionCount",
-                                 "prevTotalValueUSD", "aumChangePct", "stale")}
+                                 "prevTotalValueUSD", "aumChangePct", "stale", "jump")}
     s["top"] = top_with_change(pos, trades, rec["totalValueUSD"], 3)
     s["tradeCounts"] = counts if counts is not None else (own_counts if trades else None)
     return s
@@ -1368,7 +1369,9 @@ LONG_ONLY_NAMES = ["BRANDES", "WASATCH", "ROYCE", "WESTFIELD", "PROSHARE", "PACE
                    "RAFFERTY", "EMPOWERED FUNDS", "VIDENT", "NEOS INVESTMENT", "ALPS ADVISORS", "ROCKEFELLER",
                    "ENSIGN PEAK", "GQG", "GRANTHAM, MAYO", "SANDERS CAPITAL", "SANDS CAPITAL", "POLEN CAPITAL",
                    "CLEAR STREET", "MAREX", "PEAK6", "BROWN BROTHERS HARRIMAN", "BLAIR WILLIAM", "DAVENPORT",
-                   "ADVENT INTERNATIONAL", "INVESTOR AB", "PUBLIC INVESTMENT FUND", "MUBADALA"]
+                   "ADVENT INTERNATIONAL", "INVESTOR AB", "PUBLIC INVESTMENT FUND", "MUBADALA", "ASSENAGON",
+                   "POLAR CAPITAL", "HOTCHKIS", "FRED ALGER", "MENORA", "O'SHAUGHNESSY", "IEQ CAPITAL",
+                   "INDEPENDENT FRANCHISE", "VAUGHAN NELSON", "ARTEMIS INVESTMENT", "STEPSTONE", "SIXTH STREET"]
 _UPPER_WORDS = {"LP", "LLC", "LLP", "LTD", "AG", "SA", "SE", "NV", "PLC", "GMBH", "KG", "II", "III", "IV", "USA",
                 "US", "UK", "AB", "AS", "SAS", "LTDA", "KGAA", "CO.", "L.P.", "L.L.C.", "N.A."}
 
@@ -1444,7 +1447,7 @@ def reuse_detail(old):
     rec_keys = ("slug", "cik", "name", "secName", "manager", "role", "style", "bio", "note", "wiki", "category",
                 "source", "region", "city", "cacheVersion", "reportDate", "filedDate", "accession", "form",
                 "totalValueUSD", "positionCount", "optionCount", "prevReportDate", "prevTotalValueUSD",
-                "prevPositionCount", "aumChangePct", "history")
+                "prevPositionCount", "aumChangePct", "jump", "history")
     rec = {k: old.get(k) for k in rec_keys}
     pos = [{"issuer": h["issuer"], "cls": h.get("cls", ""), "cusip": h.get("cusip", ""), "putCall": h.get("putCall", ""),
             "shareType": "", "valueUSD": h["valueUSD"], "shares": h.get("shares", 0)} for h in old.get("holdings", [])]
@@ -1599,6 +1602,15 @@ def main():
     del bulk
 
     universe, universe_failed = fetch_universe(universe_entries) if universe_entries else ([], [])
+    # Einordnung bei jedem Lauf neu anwenden (auch für zwischengespeicherte
+    # Fonds), damit Änderungen an Filtern und Namenslisten sofort wirken.
+    entry_by_cik = {e["cik"]: e for e in universe_entries}
+    for u in universe:
+        e = entry_by_cik.get(u["rec"]["cik"], {})
+        style = classify_bulk_fund(u["rec"].get("secName") or u["rec"]["name"])
+        if style == "Sonstige":
+            style = "Hedgefonds" if e.get("hf") else "Vermögensverwaltung"
+        u["rec"]["style"] = style
 
     # 3) Porträts & Ticker ------------------------------------------------
     photos = update_photos([m for m, *_ in curated])
@@ -1637,6 +1649,9 @@ def main():
     min_period = previous_report_period(period) if period else None
     for r in records + [u["rec"] for u in universe]:
         r["stale"] = bool(period and r["reportDate"] < min_period)
+        cur, prev = r.get("totalValueUSD"), r.get("prevTotalValueUSD")
+        if cur and prev and not (1 / 200 < cur / prev < 200):
+            r["jump"], r["aumChangePct"] = True, None
 
     star_entries = [(r, p, t) for m, r, p, t in curated
                     if not r["stale"] and r["style"] not in AGG_EXCLUDED_STYLES
@@ -1690,6 +1705,8 @@ def main():
             old = load_json(path, None)
             if old:
                 old["stale"] = rec["stale"]
+                old["style"] = rec["style"]
+                old["jump"], old["aumChangePct"] = rec.get("jump"), rec.get("aumChangePct")
                 write_json_if_changed(path, enrich_detail(old, cmap, stocks, logos))
         else:
             d = detail(rec, u["pos"], u["trades"], None, TIER2_DETAIL_HOLDINGS, TIER2_DETAIL_TRADES)

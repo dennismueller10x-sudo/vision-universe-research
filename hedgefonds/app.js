@@ -452,7 +452,8 @@
       return '<tr data-slug="' + esc(f.slug) + '" tabindex="0"><td class="num">' + (i + 1) + '</td><td><div class="sec">' + avatar(f, "sm") +
         "<div><b>" + esc(f.manager || f.name) + (f.category === "Investoren" ? ' <span class="hf-star" title="Star-Investor">★</span>' : "") + "</b><small>" + esc(sub) + "</small></div></div></td>" +
         '<td class="r num"><b>' + usd(f.totalValueUSD) + "</b></td>" +
-        '<td class="r num ' + (f.aumChangePct >= 0 ? "pos" : "neg") + '">' + pct(f.aumChangePct, true) + "</td>" +
+        (f.jump ? '<td class="r"><span class="hf-badge warn" title="Fondsgröße hat sich mehr als verzweihundertfacht oder umgekehrt – bitte Meldung prüfen">Ungewöhnlicher Sprung</span></td>' :
+          '<td class="r num ' + (f.aumChangePct >= 0 ? "pos" : "neg") + '">' + pct(f.aumChangePct, true) + "</td>") +
         '<td class="r num">' + nf0.format(f.positionCount) + "</td><td><div class=\"hf-pos-chips\">" + top + "</div></td>" +
         '<td class="r num"><span class="pos">' + ((tc["new"] || 0) + (tc.added || 0)) + '</span> / <span class="neg">' + ((tc.sold || 0) + (tc.reduced || 0)) + "</span></td>" +
         '<td><span class="hf-badge' + (behind ? " warn" : "") + '">' + quarter(f.reportDate) + "</span></td></tr>";
@@ -656,6 +657,8 @@
           "<h1>" + esc(f.manager || f.name) + "</h1>" +
           '<p class="sub">' + esc(f.manager ? f.name : (String(d.secName).toLowerCase() === String(f.name).toLowerCase() ? "13F-Melder" : d.secName)) + (d.secName && f.manager ? ' · <span style="color:var(--muted)">SEC-Filer: ' + esc(d.secName) + "</span>" : "") + "</p>" +
           (f.bio ? '<p class="bio">' + esc(f.bio) + "</p>" : "") +
+          (d.jump ? '<p class="hf-note">Die gemeldete Fondsgröße hat sich gegenüber dem Vorquartal extrem verändert (' + usd(d.prevTotalValueUSD) + " → " + usd(d.totalValueUSD) +
+            "). Das kann eine Umstrukturierung oder ein Meldefehler des Fonds sein.</p>" : "") +
           (f.note ? '<p class="hf-note">' + esc(f.note) + "</p>" : f.reportDate < S.data.latestPeriod ? '<p class="hf-note">Für ' + esc(S.data.latestPeriodLabel) +
             " liegt von diesem Fonds bei der SEC noch keine 13F-Meldung vor. Gezeigt wird der Stand " + quarter(f.reportDate) + ".</p>" : "") +
           '<div class="tags"><a class="hf-pill dark" href="' + secLink(d) + '" target="_blank" rel="noopener">13F bei der SEC ↗</a></div>' +
