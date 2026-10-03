@@ -4,7 +4,7 @@ URLs/slugs select candidates only. News needs explicit publisher headline/date,
 and issuer ownership needs independent legal-author + exchange/ticker evidence.
 Article bodies exist transiently during parsing; no full-text storage/export.
 """
-import json,re
+import json,re,hashlib
 from html.parser import HTMLParser
 from xml.etree import ElementTree as ET
 from urllib.parse import urlsplit,unquote
@@ -63,8 +63,10 @@ def metadata(body,url):
     nodes=[n for n in nodes if isinstance(n,dict) and n.get('@type')=='NewsArticle']
     if len(nodes)!=1:raise SourceError('MISSING_UNIQUE_PUBLISHER_NEWS_METADATA')
     n=nodes[0];publisher=n.get('publisher') or {};author=n.get('author') or {}
-    stamp=parse_date(n.get('datePublished'));headline=clean(n.get('headline'),400);link=canonical_url(n.get('url') or n.get('@id'))
-    if not stamp or not headline or publisher.get('name')!='GlobeNewswire' or link!=canonical_url(url):raise SourceError('INVALID_PUBLISHER_NEWS_METADATA')
+    if not isinstance(publisher,dict) or not isinstance(author,dict):
+        raise SourceError('INVALID_PUBLISHER_NEWS_METADATA')
+    stamp=parse_date(n.get('datePublished'));headline=clean(n.get('headline'),400);canonical=canonical_url(n.get('url') or n.get('@id'))
+    if not stamp or not headline or publisher.get('name')!='GlobeNewswire' or not canonical or canonical!=canonical_url(url):raise SourceError('INVALID_PUBLISHER_NEWS_METADATA')
     contributor=clean(author.get('name'),200) if isinstance(author,dict) else ''
     # Exact publisher ticker meta is distinct from arbitrary article body references.
     stock=clean(p.meta.get('ticker'),100)
@@ -77,10 +79,10 @@ def metadata(body,url):
         link=public_link(l['url']);label=clean(l['label'],200)
         if not link or domain(link)=='www.globenewswire.com' and '/Tracker?' in link:continue
         if re.search(r'webcast|replay|presentation|slides|prepared remarks|shareholder letter|transcript',label,re.I):links.append({'url':link,'label':label})
-    return {'headline':headline,'publishedAt':stamp,'url':link,'publisher':'GlobeNewswire','evidenceText':'',
+    return {'headline':headline,'publishedAt':stamp,'url':canonical,'publisher':'GlobeNewswire','evidenceText':'',
             'distributionMetadata':{'contributor':contributor,'stocks':[x.strip() for x in stock.split(',') if x.strip()][:20]},'callEvidence':evidence,
             'materialLinks':links[:10],'authorSiteCandidate':canonical_url(author.get('url')) if isinstance(author,dict) else None,
-            'metadataEvidence':'PUBLISHER_NEWSARTICLE_EXPLICIT_HEADLINE_DATE_AUTHOR_AND_TICKER'}
+            'articleContentHash':hashlib.sha256(body).hexdigest(),'metadataEvidence':'PUBLISHER_NEWSARTICLE_EXPLICIT_HEADLINE_DATE_AUTHOR_AND_TICKER'}
 
 
 def collect(source,response,http,store,resolver,now):
@@ -89,7 +91,11 @@ def collect(source,response,http,store,resolver,now):
         if len(out)>=limit:break
         slug=unquote(urlsplit(url).path.rsplit('/',1)[-1]).removesuffix('.html').replace('-',' ')
         if re.search(r'law firm|law offices|lead plaintiff|secure counsel|lawsuit|class action|investor alert|shareholder alert|ROSEN|Bronstein|Kaplan Fox|Robbins LLP|Hagens Berman|Grabar Law',slug,re.I):continue
-        if not resolver.resolve({'headline':slug},{'type':'RSS'}):continue  # Discovery filter only.
+        # Slugs may omit legal suffixes and common brands. This loose filter
+        # only budgets document discovery; it never assigns company news.
+        normalized=' '+re.sub(r'[^\w]+',' ',slug.casefold()).strip()+' '
+        candidates={alias for token in normalized.split() for alias in resolver.by_token.get(token,set()) if len(alias)>=4}
+        if not any(' '+alias+' ' in normalized for alias in candidates):continue
         key='distributorArchive:'+url;prior=store.state(key,{})
         if prior.get('status')=='INGESTED' or prior.get('nextAttempt','')>now:continue
         if prior.get('status')=='PARSED' and prior.get('entry'):

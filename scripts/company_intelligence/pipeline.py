@@ -238,7 +238,13 @@ class Pipeline:
                         announcements = from_announcement(entry, announcer, self.now) if issuer_earnings_announcement(entry['headline'], self.companies[match['companyId']]) else []
                         if distributed_author and entry.get('callEvidence'):
                             call_entry={**entry,'headline':entry['distributionMetadata']['contributor']+' Earnings Conference Call','evidenceText':entry['callEvidence']}
-                            announcements += from_announcement(call_entry,announcer,self.now)
+                            from .sec_documents import release_period
+                            call_events=from_announcement(call_entry,announcer,self.now)
+                            call_period=release_period(entry['headline']) or {}
+                            for call in call_events:
+                                call.update(call_period)
+                                call['evidence']={'method':'EXPLICIT_ISSUER_AUTHORED_CALL_SCHEDULE','excerpt':entry['callEvidence'][:1200]}
+                            announcements += call_events
                         if distributed_author and entry.get('authorSiteCandidate'):
                             candidate=entry['authorSiteCandidate']
                             key='siteCandidates:'+match['companyId'];prior=self.store.state(key,{})
@@ -277,6 +283,7 @@ class Pipeline:
                     self.run['duplicate' if outcome == 'DUPLICATE' else 'new'] += 1
             if source.get('format')=='GNN_ARCHIVE':
                 for entry in entries:
+                    if not entry.get('url'):continue
                     key='distributorArchive:'+entry['url'];prior=self.store.state(key,{})
                     self.store.set_state(key,{k:v for k,v in {**prior,'status':'INGESTED'}.items() if k!='entry'})
             content_dates = [i.get('publishedAt') or i.get('updatedAt') for i in entries if (i.get('publishedAt') or i.get('updatedAt')) and (i.get('publishedAt') or i.get('updatedAt')) <= self.now]

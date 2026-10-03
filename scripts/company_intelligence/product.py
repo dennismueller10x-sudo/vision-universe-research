@@ -54,6 +54,21 @@ def project(payload):
             rows = [e for e in rows if (e.get('publishedAt') or e.get('observedAt') or '')[:10] >= news_cutoff]
         if key in ('materialEvents', 'timeline'):
             rows = [e for e in rows if (e.get('date') or e.get('publishedAt') or e.get('observedAt') or '')[:10] >= event_cutoff and e.get('eventType') not in ('SEC_FILING', 'EARNINGS_CANDIDATE', 'EARNINGS_ESTIMATED')]
+        if key == 'materials' and len(rows) > cap:
+            # A long report archive must not hide the latest available remarks,
+            # transcript or webcast. Preserve order and the same payload bound.
+            represented = {}
+            for position, row in enumerate(rows):
+                kind = row.get('type')
+                if kind in ('COMPANY_TRANSCRIPT', 'PREPARED_REMARKS', 'SHAREHOLDER_LETTER',
+                            'MANAGEMENT_COMMENTARY', 'CALL_RECORDING', 'WEBCAST', 'EARNINGS_WEBCAST', 'PRESENTATION'):
+                    represented.setdefault(kind, position)
+            protected = set(represented.values())
+            selected = set(range(cap))
+            for position in sorted(protected - selected):
+                selected.remove(max(selected - protected))
+                selected.add(position)
+            rows = [rows[position] for position in sorted(selected)]
         value[key] = deepcopy(rows[:cap])
     value['earningsBundles'] = bundles({**payload, 'earnings': value['earnings'], 'calls': value['calls']})
     bundled = {eid for b in value['earningsBundles'] for eid in b['eventIds'] + b['callIds']}

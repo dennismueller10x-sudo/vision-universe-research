@@ -19,6 +19,9 @@ class Archive(unittest.TestCase):
    with self.assertRaises(SourceError):archive_urls(b,u)
  def test_explicit_metadata_keeps_only_short_call_evidence(self):
   e=metadata(article(),URL);self.assertEqual(e['distributionMetadata']['contributor'],'Apple Inc.');self.assertEqual(e['publishedAt'],'2026-10-02T12:00:00Z');self.assertNotIn('copyrighted',json.dumps(e));self.assertEqual(e['materialLinks'],[]);self.assertIn('October 28',e['callEvidence'])
+ def test_footer_or_tracker_link_never_overwrites_article_canonical(self):
+  b=article().replace(b'</div>',b'<a href="https://www.globenewswire.com/Tracker?data=x">Webcast</a><a href="https://elsewhere.example/ir">Investor Relations</a></div>')
+  self.assertEqual(metadata(b,URL)['url'],URL)
  def test_related_story_cannot_become_call_evidence(self):
   b=article().replace(b'</div>',b'</div><p>Another issuer will host an earnings conference call on November 2, 2026 at 9:00 a.m. ET.</p>')
   self.assertNotIn('November',metadata(b,URL)['callEvidence']);self.assertIn('Eastern Time',metadata(b,URL)['callEvidence'])
@@ -26,6 +29,9 @@ class Archive(unittest.TestCase):
   self.assertEqual(metadata(article(ticker='Nasdaq:AAPL,HKSE:1234'),URL)['distributionMetadata']['stocks'],['Nasdaq:AAPL','HKSE:1234'])
  def test_naive_date_wrong_publisher_and_wrong_canonical_fail(self):
   for b in [article(date='2026-10-02'),article().replace(b'GlobeNewswire',b'Other'),article().replace(URL.encode(),b'https://evil.example/news')]:
+   with self.assertRaises(SourceError):metadata(b,URL)
+ def test_malformed_publisher_and_author_fail_as_isolated_source_errors(self):
+  for b in [article().replace(b'"publisher": {"name": "GlobeNewswire"}',b'"publisher": "GlobeNewswire"'),article().replace(b'"author": {"name": "Apple Inc.", "url": "https://apple.com/"}',b'"author": ["Apple Inc."]')]:
    with self.assertRaises(SourceError):metadata(b,URL)
  def test_contributor_stock_conflict_no_generic_fallback(self):
   c=company();s={'provider':'GLOBENEWSWIRE_ARTICLE','type':'RSS','format':'GNN_ARCHIVE','url':INDEX};r=Resolver({c['companyId']:c})
@@ -44,3 +50,17 @@ class Archive(unittest.TestCase):
    self.assertEqual(len(a),1);self.assertFalse((Path(tmp)/'body').exists());self.assertEqual(h.memo,{})
    self.assertEqual(collect(s,{'body':index(),'finalUrl':INDEX},h,st,r,NOW),a);self.assertEqual(h.calls,1)
    st.set_state('distributorArchive:'+URL,{'status':'INGESTED'});self.assertEqual(collect(s,{'body':index(),'finalUrl':INDEX},h,st,r,NOW),[]);st.close()
+ def test_call_retains_explicit_fiscal_period_and_actual_time_evidence(self):
+  from unittest.mock import patch
+  from company_intelligence.pipeline import Pipeline
+  entry=metadata(article(date='2026-09-30T12:00:00Z'),URL)
+  entry['headline']='Apple Inc. Announces Fourth Quarter Fiscal Year 2026 Earnings Conference Call'
+  class HTTP:
+   MAX_BYTES=2*1024*1024
+   def get(self,url,**kwargs):return {'body':index(),'finalUrl':url}
+  with tempfile.TemporaryDirectory() as tmp:
+   st=Store(Path(tmp)/'s.sqlite');c=company();p=Pipeline(Path(tmp),{c['companyId']:c},st,HTTP(),NOW)
+   source={'sourceId':'archive','provider':'GLOBENEWSWIRE_ARTICLE','type':'RSS','format':'GNN_ARCHIVE','url':INDEX}
+   with patch('company_intelligence.distributor_archive.collect',return_value=[entry]):p.ingest_source(source)
+   rows=[json.loads(r[0]) for r in st.db.execute("select payload from events where kind='EARNINGS_CALL'")]
+   self.assertEqual(len(rows),1);self.assertEqual(rows[0]['fiscalQuarter'],'Q4');self.assertEqual(rows[0]['fiscalYear'],2026);self.assertEqual(rows[0]['time'],'17:00');self.assertIn('5:00 p.m. Eastern Time',rows[0]['evidence']['excerpt']);st.close()

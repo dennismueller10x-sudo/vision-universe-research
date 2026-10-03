@@ -1,4 +1,4 @@
-import sys,tempfile,unittest
+import json,sys,tempfile,unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]))
 from company_intelligence.news_sitemap import parse,URL
@@ -95,3 +95,44 @@ class PrefixEntityTests(unittest.TestCase):
   from company_intelligence.model import Resolver
   a=company('Provident Financial Holdings Inc.','PROV','0000000001');b=company('Provident Financial Services Inc.','PFS','0000000002');r=Resolver({c['companyId']:c for c in [a,b]})
   self.assertEqual([m['companyId'] for m in r.resolve({'headline':'Provident Financial Services, Inc. Schedules Third Quarter Earnings Call'},{'type':'RSS'})],[b['companyId']])
+
+class TemporaryDomainFailure(unittest.TestCase):
+ def test_transient_503_is_deferred_not_false_identity_rejection(self):
+  from company_intelligence.transport import PublicHTTP
+  c=company();c['officialSites']=[]
+  with tempfile.TemporaryDirectory() as tmp:
+   with patch('company_intelligence.discovery_batch.validate_candidate',side_effect=SourceError('HTTP_503')):
+    rows=run([c],{c['companyId']:{'status':'CANDIDATE','candidates':[{'url':'https://apple.com/','evidence':'TEST'}]}},PublicHTTP(tmp),NOW,4,60,domain_only=True)
+   self.assertEqual(rows[0]['status'],'DEFERRED');st=Store(Path(tmp)/'s.sqlite');persist(rows,st,{c['companyId']:c},NOW)
+   self.assertEqual(st.state('officialSite:'+c['companyId'])['status'],'DEFERRED');self.assertIsNone(st.state('ir:'+c['companyId']));st.close()
+
+class DomainDisplayNameConflict(unittest.TestCase):
+ def test_display_alias_cannot_override_wrong_copyright_owner(self):
+  from company_intelligence.discovery import validate_candidate
+  class HTTP:
+   def get(self,*args,**kwargs):return {'body':b'<title>Meta Research</title><p>Our customer Meta Platforms Inc.</p><footer>Copyright 2026 Meta Research Ltd.</footer>','finalUrl':'https://issuer.example/'}
+  c=company('Meta Platforms Inc.');c['names']+=['Meta']
+  with self.assertRaises(SourceError):validate_candidate(c,{'url':'https://issuer.example/','evidence':'CANDIDATE_ONLY'},HTTP(),NOW)
+
+class WWWAliasOwnership(unittest.TestCase):
+ def test_only_conventional_www_alias_is_equivalent(self):
+  from company_intelligence.discovery import same_web_host
+  self.assertTrue(same_web_host('https://www.apple.com/','https://apple.com/'));self.assertFalse(same_web_host('https://ir.apple.com/','https://apple.com/'));self.assertFalse(same_web_host('https://apple.com.evil.example/','https://apple.com/'))
+ def test_www_redirect_still_requires_actual_legal_identity(self):
+  from company_intelligence.discovery import validate_candidate
+  class HTTP:
+   def get(self,*args,**kwargs):return {'body':b'<title>Apple</title><footer>Copyright 2026 Apple Inc.</footer>','finalUrl':'https://apple.com/'}
+  self.assertEqual(validate_candidate(company(),{'url':'https://www.apple.com/','evidence':'EXACT_CIK_CANDIDATE'},HTTP(),NOW)['url'],'https://apple.com/')
+
+class CorroboratedSitemapIssuer(unittest.TestCase):
+ def resolve(self,title,keyword='Root Inc.',stock='Nasdaq:ROOT'):
+  from company_intelligence.model import Resolver
+  c=company('Root Inc.','ROOT');r={'headline':title,'issuerKeywords':keyword,'distributionMetadata':{'stocks':[stock]}}
+  return Resolver({c['companyId']:c}).resolve(r,{'type':'RSS','provider':'GLOBENEWSWIRE_SITEMAP','url':URL})
+ def test_common_brand_requires_legal_keyword_listing_and_actual_actor(self):
+  self.assertTrue(self.resolve('Root announces third quarter earnings date'))
+  self.assertEqual(self.resolve('The root of international unity and a block of shares'),[])
+  self.assertEqual(self.resolve('Root announces third quarter earnings date',keyword='root cause'),[])
+  self.assertEqual(self.resolve('Root announces third quarter earnings date',stock='NYSE:ROOT'),[])
+ def test_metadata_is_entity_evidence_not_distributor_authority(self):
+  r=self.resolve('Root announces third quarter earnings date')[0];self.assertNotIn('EXACT_MASTER_CONTRIBUTOR',json.dumps(r))

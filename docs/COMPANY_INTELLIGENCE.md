@@ -1,4 +1,146 @@
-# Company Intelligence — coverage expansion and four-hour operations
+# Company Intelligence — news, calls and management-content coverage
+
+Validated **2026-10-03T11:26:28Z** on `feature/company-intelligence-rollout`, PR [#356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356). This report supersedes earlier coverage/cadence/readiness measurements below. Initial fetched local/remote HEAD was `a4cb77e3928caeb7203783a1444787357b0399b2`. The feature remains disabled/controlled, PR #356 remains unmerged, and no public schedule or broad deployment was activated.
+
+## Executive result and exact coverage
+
+Current-news issuers increased **117 → 374 (3.20×)**, calls **36 → 75**, company transcript links **18 → 39**, presentations **55 → 95**, verified domains **134 → 306**, and IR pages **87 → 155**. These are measured gains across multiple sparse pillars, with a reusable global news-index lane and issuer-hosted Q4 financial-results adapter. They do **not** reach 80–90% rich coverage: news remains 6.15%, calls 1.23%, and verified domains 5.03%. The practical zero-cost ceiling has not been established; thousands of candidates and deeper controlled metadata backfill remain available. No claim of universal news or transcript coverage is justified.
+
+The authoritative denominator is **6,078 issuer identities**, not ticker rows. Current news is accepted issuer-matched metadata within 180 days; calls/documents may be historical and undated archives remain explicitly undated. GOOG/GOOGL and BF-A/B share issuer identity. Financial freshness remains 180 days and recent material SEC events 90 days. Counts describe the full research ledger, **not already published production coverage**. The actual public review package is separately bounded to 30 issuers.
+
+| Area | Before | After | Absolute gain | Relative gain | Universe coverage |
+|---|---:|---:|---:|---:|---:|
+| News within 180 days | 117 | 374 | +257 | +219.66% | 6.15% |
+| Verified official domain | 134 | 306 | +172 | +128.36% | 5.03% |
+| Verified IR page | 87 | 155 | +68 | +78.16% | 2.55% |
+| Call identified | 36 | 75 | +39 | +108.33% | 1.23% |
+| Call dated | 36 | 71 | +35 | +97.22% | 1.17% |
+| Webcast link | 31 | 51 | +20 | +64.52% | 0.84% |
+| Explicit replay | 0 | 0 | +0 | — | 0.00% |
+| Presentation | 55 | 95 | +40 | +72.73% | 1.56% |
+| Company transcript | 18 | 39 | +21 | +116.67% | 0.64% |
+| Prepared remarks | 0 | 2 | +2 | new | 0.03% |
+| Shareholder letter | 3 | 5 | +2 | +66.67% | 0.08% |
+| Any management/call-content reference | 42 | 72 | +30 | +71.43% | 1.18% |
+| Active first-party news | 64 | 107 | +43 | +67.19% | 1.76% |
+| Active external news | 54 | 162 | +108 | +200.00% | 2.67% |
+| Material intelligence | 3,984 | 4,003 | +19 | +0.48% | 65.86% |
+| Consumer payload | 4,973 | 4,982 | +9 | +0.18% | 81.97% |
+| Financial summary | 4,869 | 4,869 | +0 | +0.00% | 80.11% |
+| Fresh financial summary | 3,721 | 3,721 | +0 | +0.00% | 61.22% |
+| SEC identity | 5,412 | 5,412 | +0 | +0.00% | 89.04% |
+| Recent material SEC event | 594 | 594 | +0 | +0.00% | 9.77% |
+| Estimated upcoming reporting window | 3,332 | 3,317 | -15 | -0.45% | 54.57% |
+| Confirmed upcoming earnings | 9 | 27 | +18 | +200.00% | 0.44% |
+| No consumer payload | 1,105 | 1,096 | -9 | -0.81% | 18.03% |
+
+News freshness after ingestion: **7 days 306 (5.03%), 30 days 337 (5.54%), 90 days 372 (6.12%), 180 days 374 (6.15%)**. The initial 117 count is the immutable baseline; reconstructed earlier bands from original records are not treated as an immutable point-in-time snapshot. First-party and external sets overlap and must not be summed. Registry coverage differs from accepted external stories: one global source serves many issuers. There are **4,283 domain candidates (70.47%)**, not verified domains. Prepared remarks, shareholder letters and webcast references are distinguished from transcripts; explicit replays, downloaded call recordings and standalone management-commentary documents remain **zero**.
+
+## News sources, distribution networks and official announcements
+
+The high-leverage new source is GlobeNewswire's publicly robots-advertised rolling **Google news sitemap**: one source poll reads up to 1,000 explicit headline/date/link entries. A final real request accepted **150 stories / 134 issuers**, rejected **158 promotional/law-solicitation entries**, left 692 unmatched, collapsed two duplicates, and recorded no source failure. The final real recovery used two HTTP requests, **717,486 bytes** and **11.11 seconds**. This is current metadata ingestion rather than per-ticker search. The parser pins the endpoint, rejects unsafe XML/entities and caps the payload. Existing GlobeNewswire topic/country RSS and Wallstreet-online remain complementary, with independent health and matching.
+
+An explicit monthly metadata-backfill lane reads publisher-advertised archive URL indexes, then bounded public NewsArticle metadata. September contains 11,968 URL candidates, **not 11,968 stories or covered issuers**. The final bounded September run made 103 requests, downloaded 8,645,198 bytes, attempted 100 entries, parsed 96, accepted 53 new items and three duplicates, and left 41 unmatched; four per-article fetch failures were isolated. October testing used 153 requests, 9,660,756 bytes and 763.98 seconds, yielding 120 stories / 112 issuers, seven calls and four scheduled earnings events. These separate probe populations overlap the final ledger and must not be added to aggregate coverage.
+
+Access review excludes prohibited paths and providers. GlobeNewswire's `/search`, `/api`, `/JsonData` and `/Tracker` paths are not used; tracker URLs are never decoded or followed. Only headline/date/link, issuer metadata and a bounded scheduling-evidence clause are retained. Downloaded HTML bodies are removed from body caches after metadata parsing; no full article is republished. Public robots-advertised metadata access is the basis for this lane, **not a blanket commercial full-text redistribution license**. PR Newswire and Business Wire terms require permission for commercial aggregation/storage; they were excluded despite accessible feeds. AccessNewswire, Newsfile and EQS restrictions likewise prevented adoption. GDELT remains unreliable with 503 responses and optional. Nasdaq finance RSS and Euronext pages did not yield a validated permitted issuer-wide contract; no new LSE/RNS or exchange feed is counted. This phase does not claim comprehensive international announcement coverage.
+
+## Official-domain verification, IR discovery and reusable families
+
+Existing company master/SEC identities remain authoritative. Read-only logo/website inventory and validated SEC legal aliases enrich candidates; no independent company master was introduced. Domain verification is a bounded weekly lane with at most four workers, per-host pacing, a total request/time budget and durable per-candidate retry checkpoints. Six hundred candidate attempts and 96 bounded IR walks produced the measured gains. Verification requires corporate title plus exact legal identity, or legal copyright ownership plus corroborating corporate brand; conflicting ownership fails. Only the same host's `www` alias is tolerated, not sibling/unrelated redirects. Temporary 429/5xx/network failures defer rather than become permanent identity rejections.
+
+An adversarial cached revalidation of 180 new domain results reaffirmed **135**, retracted **8** for insufficient evidence under the tightened rule, and could not replay **37** after bounded cache eviction. The latter retain their original content hash/evidence; this report does not claim fresh replay validation for them. The eight withdrawals do not establish that their real brands are unrelated; they establish that our stronger proof was insufficient. Domain candidates, blocked access and verified IR pages remain separate. IR discovery currently reports **17 blocked / 12 degraded** results; these are not dead sources counted as active coverage.
+
+| Observed IR family | Issuers with IR fingerprint | Registry issuers / sources | Capability and adapter status |
+|---|---:|---:|---|
+| Q4 | 46 | 41 / 120 | Generic news/events plus new issuer-hosted FinancialReport service; presentations, company transcripts, remarks, letters and webcast links |
+| GCS | 45 | 40 / 70 | Existing generic release RSS and structured event cards, public event/material links |
+| STOCKPR | 15 | 16 / 21 | Existing public issuer RSS/events and material navigation; registry/discovery populations differ |
+| WordPress | 12 | 12 / 15 | Explicit RSS/index navigation; five stale sources are visible |
+| Web Driver | 8 | 6 / 7 | Public provider feeds/events on validated issuer hosts |
+| Investis | 3 | 1 / 1 | Validated public source; no unsupported broad API claim |
+| Native/generic | 36 | 6 / 7 | Bounded structured/news/event navigation and first-party links |
+
+One embedded Business Wire fingerprint does not mean a Business Wire aggregation adapter exists. Family counts can overlap; they are not a census of all 6,078 issuers. The registry has **251 sources: 200 ACTIVE, 38 UNDATED_METADATA, five EMPTY, five STALE and three INACTIVE**. Q4's 38 undated report-metadata sources are available archives, not active dated news; the `healthySourcePercent` metric counts ACTIVE only. Platform/source failures and parser failures are reported separately rather than inflating coverage.
+
+## Calls, webcast links, presentations and management content
+
+The generic Q4 FinancialReport adapter is derived from advertised issuer widgets or previously validated issuer-hosted Q4 event endpoints. Twenty unrelated hosts were probed with **34 requests, 686,395 bytes, six HTTP 304s (17.65%), zero retries/errors and 183.61 seconds**. Explicit document category/title distinguishes presentation, company transcript, prepared remarks, shareholder letter, financial report and webcast. Vendor `ReportDate` is a fiscal grouping date: it never fabricates publication or call time. Only bounded current/prior/next-year grouping metadata is accepted; links do not create a call date or replay without evidence.
+
+Calls now cover **75 issuers**, **71 with dates**, while webcast links cover **51**. Four undated call references stay undated. Clorox fiscal-2026 prepared remarks and NVIDIA/Curtiss-Wright company transcript links demonstrate management content beyond third-party transcripts. Presentations cover 95 issuers, transcript links 39, prepared remarks two and shareholder letters five; the union of management/call-content references is **72**. Generic “Events & Presentations” navigation hubs were removed from document counts. “No presentation found” is not proof that an issuer does not publish presentations; that denominator is still unknown.
+
+Explicit announcement clauses retain their date/time/timezone evidence. Real examples include Haemonetics Q2 FY2027 on November 5 at 08:00 New York, Valmont Q3 on October 20 at 09:00 New York, Columbia Banking Q3 on October 22 at 17:00 New York and Richardson Q1 FY2027 on October 8 with unavailable time. “Fourth Quarter Fiscal Year 2026” is now preserved explicitly; no calendar quarter is substituted. Calendar confirmations supersede estimates through the existing audit path.
+
+No paid transcript provider, audio downloader or automatic transcription service was added. A public webcast URL does not prove download permission, duration, an open replay, or accessible captions. A future opt-in process should first validate access/permission and obtain explicit media metadata, then select important calls, queue bounded recordings/captions, retain source/evidence and process locally or under an separately approved cost budget. At an illustrative 20,000 annual one-hour calls and 64 kbps, recordings alone are approximately 0.58 TB/year; local ASR at 0.25–1× audio duration would require roughly 25,000–100,000 runner minutes/month. This is a planning scenario, not measured available recording volume. Prepared remarks, shareholder letters and presentations provide immediate zero-provider-cost alternatives.
+
+## Consumer experience, event bundles and quality audits
+
+The existing stock-page integration, exact-period earnings bundles and material SEC categories are preserved. A “Management & Ergebnisgespräche” section exposes available first-party remarks/transcripts/letters/webcasts with original links, honest fiscal grouping and unavailable-date labels. It excludes links already shown by earnings bundles, calls or upcoming events. It does not display empty administrative cards or invent content for sparse issuers.
+
+The public projection audit found and fixed two genuine defects: six recent investor webcast references disappeared after their events passed, and a long BorgWarner report archive hid its transcript beyond the 30-material bound. Investor webcast links now survive as documents without becoming earnings calls or replays. A bounded type-aware projection preserves the latest available management-content types while retaining the same 30-item cap and original ordering. Across **4,982 actual payloads**, raw and public projections retain **95 presentation, 39 transcript, two prepared-remarks, five shareholder-letter and 51 webcast issuers**, with zero lost issuer coverage for these types. This checks public data, not only database counts.
+
+Seeded random review covered CSL, RGLD, HTO/H2O America, PCYO, PRGS, CULP, COKE, HAE, SXT, MYE, KINS, CELU and GATX across small/large, healthcare, software, industrial, financial and unusual-fiscal issuers. HTO's Quadvest acquisition belongs to the renamed master issuer; PCYO's February period is preserved. CULP's March story is outside the 180-day window and not current news. COKE employee profiles remain LOW, not material corporate events. Actual call/time evidence and source ownership were inspected; URL presence is not a claim that every recording was played.
+
+Adversarial review fixed exchange mentions assigning Nasdaq news to NDAQ, Rogers Communications assigning ROG, National Healthcare Properties assigning NHC, Provident Services confusing Provident Holdings, and a crypto cashtag confusing a stock. GlobeNewswire legal-name keywords plus an explicit stock and issuer actor can corroborate Scienture SCNX; keywords alone do not confer authorship. ROOT, U, XYZ, TOST, TGT, AFRM, META, Apple, Oracle and GOOG/GOOGL remain in the ambiguity/share-class tests. Unavailable news stays unavailable rather than generic-word matches filling the feed. Conservative issuer-level deduplication retains provenance; the final ledger has 1,406 retained stories and 178 event aliases.
+
+## Calendar, earnings, material intelligence and tiers preserved
+
+Financial summaries remain **4,869**, fresh summaries **3,721**, SEC identities **5,412**, and recent material SEC issuers **594**. Existing evidence-aware guidance, metric-aware What Changed and material-event importance were not rebuilt. Material intelligence increased **3,984 → 4,003**, separately from broad news. Estimated upcoming windows changed **3,332 → 3,317** as new official confirmations superseded/retired estimates; confirmed events increased **9 → 27**. This is not a calendar-model regression.
+
+The historical backtest was rerun: **3,847 predictions / 1,094 issuers, 95.5% window hit rate, median 22-day window and four-day absolute error**. Non-calendar fiscal issuers achieved 96.44%; issuers with observed 20-F history 87.65%. These targets include 3,372 periodic reports, 431 XBRL filing proxies and only 44 verified release dates: this is a reporting-window backtest, not proof of point-in-time release-date accuracy for every company. The 4,102 sufficient-history population is preserved. Berlin date handling and confirmed/estimated labels remain regression-tested.
+
+Coverage tiers are **FULL 26 (0.43%), STRONG 3,273 (53.85%), BASIC 1,570 (25.83%), LIMITED 1,209 (19.89%)**. Existing STRONG means fresh financials + SEC identity + confirmed/estimated calendar; it does **not** imply news/calls/materials richness. FULL additionally requires current news and recent call/presentation evidence. Limited tier differs from the **1,096 issuers without a consumer payload**; a payload can exist while its evidence fails stronger tiers.
+
+## Repeated operation, fresh recovery and public delivery
+
+Three final normal-prune full-universe runs each processed 6,078 issuers in **45.84, 44.47, 46.14 seconds**, with zero network requests, new stories, duplicate additions or source failures. Item/event/source/alias identities and payload hashes were stable, with **141dd50638120e908f289b52** in all three exports. These are offline incremental/rebuild checks, not three scheduled live source cycles. An early direct verification helper omitted production pruning and re-imported archived filings; the actual CLI already prunes. That harness failure was investigated, corrected and the complete normal-prune sequence repeated without growth.
+
+A fresh local restore recovered exact logical hashes for hot/cold ledger, sources, aliases, checkpoints/audit and state, then exported the identical generation. The checkpoint is **63,540,542 compressed bytes / 620,571,639 expanded bytes**; packing took **20.46s**, restoration **2.47s**. This phase did **not** rerun authenticated R2 acceptance: credentials were unavailable locally; the foundation's existing authenticated fresh-runner acceptance remains unchanged. Local recovery does not substitute for a claim of new remote operation or a multi-day pilot.
+
+The actual release builder and existing public sanitizer generated a **30-issuer / 60-asset / 2,737,788-byte** review package, largest payload **181,144 bytes**. The browser exercised the existing stock surfaces at 390/430/768/1440 px: **82 checks passed (64 responsive, two disabled zero-fetch, 16 adversarial)**. Private ledger, coverage/source health and checkpoints are excluded; generation, path and unsafe-link failures remain fail-closed. This is local production-package validation, not a public rollout. Test-only Clorox routing does not alter the production pilot cohort. Publisher's existing **100-ticker / 250-asset** pilot bound remains intact.
+
+## Low-cost schedule, request/bandwidth and storage model
+
+No cron frequency was increased. Active news/global metadata follows **4h**, events **12–24h**, financial-material sources **12–24h**, discovery **weekly** and blocked sources **daily/weekly with cooldown**. Ten existing feeds retain a slower six-hour interval. Event-aware priority does not override source failure backoff. Newly preserved configurations total **242 active sources**, including 124 machine-discovered, successfully validated additions; 306 domain seeds retain ownership evidence, not hand-written issuer scrapers. Monthly archives are explicitly requested backfills, not four-hour polling.
+
+At configured source intervals, full-registry due polls are **919/day / 27,570/30-day month**, before SEC changed-issuer/index, robots refresh, retries and weekly discovery. A global sitemap costs about 180 normal polls/month, not 6,078 issuer searches. Combined instrumented domain/IR discovery cost 2,415 requests, 120,635,027 bytes, 332 retries and 94.75 minutes; 150 cache hits and 260 memo hits were recorded. This is controlled backfill expenditure, not a recurring four-hour run. Q4's six measured 304s save bytes; the overall discovery set recorded zero 304s. Interrupted early archive probes have incomplete accounting and are not hidden in an invented complete phase total.
+
+Actions planning at the prior authenticated pilot's measured 5.55 minutes/run is **999 minutes/month** for six runs/day, plus bounded manual/weekly discovery. It is not a measured new full-registry scheduled runtime. Disabled scheduling presently adds no automatic executions. Existing public-repository runner policies may cover ordinary Linux execution; account quotas and actual billing are not certified.
+
+For the actual 30-issuer public review size and current checkpoint, two public/private slots total **0.133 GB**. Conservative monthly rewrites are **12,060 Class A PUTs** and **23,220 Class B verification/restore GETs**, excluding user traffic. Hash skipping avoids writes to unchanged destination objects; generated timestamps can still change payload bytes, so zero writes are not promised. Cloudflare's reference R2 allowance is 10 GB/month, one million Class A and ten million Class B operations, shared with other account uses.
+
+The complete raw export is about **226.90 MB / 5,620 assets per generation**. Publishing it every four hours is **not enabled or allowed by current pilot bounds**. A conservative full rewrite would require **1,012,860 monthly Class A** operations, around the free-tier boundary, plus delivery traffic. Controlled cohort delivery remains comfortably smaller. Illustrative ledger growth at 100 accepted news + 1,000 events/day is approximately 43 MB/month, 514 MB/year and 2.57 GB/five years before indexes/compression. HTTP cache stays bounded, exports retain two slots, and cold history must partition before enforced checkpoint capacity as broad event traffic grows. Generated ledger/history/cache/export artifacts are not committed to Git.
+
+**Financial/news data-provider cost remains $0.** No new vendor, paid API, package or recurring transcript/transcription runtime was added. Expected incremental pilot storage/request charges fit reference free allowances if existing shared headroom remains; this is not an account bill or guarantee.
+
+## Failure engineering, security and validation
+
+Per-source/article failures isolate blocked sites, rate limits, malformed XML/JSON, wrong issuer metadata, changed provider markup and network outages. The real rolling source recovered after 503s; source health changed on an actual successful live fetch, not a fabricated replay. Archive checkpoints separate parsed metadata from completed ingestion so bounded interruption resumes safely. Early archive URL-variable shadowing and malformed publisher shapes were fixed; incorrect isolated probe records were discarded and only validated metadata reprocessed. Transient failures defer; restrictive ownership rules retract unsafe coverage. Bounded HTML/XML, entity rejection, URL/path constraints, private-address protections, redirect checks and rendering through safe text/links remain in place. Public output never includes private caches or rejected candidates.
+
+Final feature validation: **236 Python + 29 Node pass**, plus **82 browser cases** and the complete consumer-projection/recovery checks. Existing regressions: **2,569 Node pass / five existing skips, 484 SEC/Quant Python branch pass, 63 serving/Node pass, 32 VU2 Python pass**. Protected producer/deployment paths have an empty phase diff. No tests were weakened, unrelated Quant code altered or broad formatter run.
+
+Current main `268d4c89750ac682a0acc2f6ddbb7b5143fb2959` was independently checked in a fresh worktree: three existing Quant reconciliation assertions fail (`reconciliation=false`, price-history 6,849 versus 6,850, renderable 6,871 versus 6,850). The branch's 484-test suite passes. These main failures are recorded as pre-existing and do not make this isolated Company Intelligence code unmergeable. Test-generated provider-verification output was restored exactly.
+
+Important changed files are isolated source adapters (`news_sitemap.py`, `distributor_archive.py`, `q4_reports.py`, `distribution.py`), bounded CLI/discovery/ownership, consumer `store.py`/`product.py` projection, source/domain evidence configs, stock-section management-content UI, real metadata fixtures and this report. `management-coverage-validation.json` preserves aggregate counts/hashes and a bounded review sample; `management-content-metadata.json` pins three unrelated Q4 issuer responses without document bodies. No operational ledger or credential is published through these fixtures.
+
+## Limitations, next high-leverage work and readiness
+
+The sparse pillars remain far below the long-term goal, including non-US exchange announcements, verified domains, dated calls, replays and prepared remarks. Free/legal source rights and issuer-specific publication patterns limit some approaches, but these measurements **do not prove an absolute zero-cost coverage ceiling**. The demonstrated next large levers are resumable verification of remaining candidate domains, generic Q4/GCS event/result discovery across newly verified IR hosts, and bounded monthly metadata backfill. Permission-based additional distributor/exchange contracts are separate from technically accessible endpoints. This phase provides working scalable lanes and measured gains rather than disguising remaining coverage as solved.
+
+No immediate code-merge blocker remains behind the disabled gate. A controlled pilot is technically ready using existing isolated durable state and publisher gates, with observed live source recovery and local public-package validation. Broad rollout still requires reviewed enablement, repeated scheduled observation across real reporting/provider changes, actual delivery/rollback checks and a deliberately enlarged public publication budget. No multi-day acceptance, audio accessibility or universal company-news promise is claimed.
+
+NEWS-COVERAGE-BREAKTHROUGH: YES
+
+CALLS-MATERIALS-BREAKTHROUGH: YES
+
+CODE-MERGE-READY: YES
+
+PILOT-READY: YES
+
+BROAD-ROLLOUT-READY: NO
+
+---
+
+# Historical coverage and four-hour operations report
 
 Validated **2026-10-03** on `feature/company-intelligence-rollout`, PR [#356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356). This coverage-phase report supersedes the cadence, coverage and readiness numbers in the dated historical reports below. The public feature remains disabled. No merge, public activation, paid data provider or protected producer change occurred in this phase.
 

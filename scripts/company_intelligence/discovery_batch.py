@@ -40,7 +40,7 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
                 super()._wait(url);last[0]=time.time();host_last[host]=last[0]
     def work(pair):
         c,candidate=pair;remaining=deadline-time.time()
-        if remaining<=0:return {'companyId':c['companyId'],'status':'DEFERRED','reason':'DISCOVERY_DEADLINE','requests':0,'stats':{}}
+        if remaining<=0:return {'companyId':c['companyId'],'domainOnly':domain_only,'status':'DEFERRED','reason':'DISCOVERY_DEADLINE','requests':0,'stats':{}}
         client=BoundedHTTP(http.cache,budget=allowance,timeout=min(http.timeout,10),interval=2,max_seconds=min(remaining,60 if domain_only else 180))
         result={'companyId':c['companyId'],'status':'DEFERRED','domainOnly':domain_only}
         try:
@@ -49,7 +49,9 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
             sources,configs=([],[]) if domain_only else discover_ir(c,site['url'],client,now)
             result.update(status='VALIDATED',sources=sources,configurations=configs,domainOnly=domain_only)
         except BudgetExhausted as e:result['reason']=str(e)
-        except (SourceError,ValueError,TypeError,KeyError) as e:result.update(status='DEGRADED' if c.get('officialSites') or result.get('site') else 'REJECTED',reason=str(e)[:250])
+        except (SourceError,ValueError,TypeError,KeyError) as e:
+            transient=any(code in str(e) for code in ('HTTP_429','HTTP_500','HTTP_502','HTTP_503','HTTP_504','NETWORK_UNAVAILABLE','NETWORK_TIMEOUT','DNS_UNAVAILABLE','ROBOTS_UNAVAILABLE'))
+            result.update(status='DEGRADED' if c.get('officialSites') or result.get('site') else 'DEFERRED' if transient else 'REJECTED',reason=str(e)[:250])
         except Exception as e:result.update(status='DEGRADED',reason='UNEXPECTED_DISCOVERY_ERROR:'+type(e).__name__)
         finally:result.update(requests=client.requests,stats=client.stats)
         return result
@@ -72,6 +74,9 @@ def persist(results,store,companies,now):
         if r['status']=='VALIDATED' and not r.get('domainOnly'):
             for source in r['sources']:store.source(source)
             store.set_state('ir:'+cid,{'lastSuccess':now,'configurations':r['configurations'],'sources':len(r['sources']),'nextVerify':advance(now,7*24)})
+        elif r.get('domainOnly') and r['status']=='DEFERRED':
+            prior=store.state('officialSite:'+cid,{})
+            if prior.get('status')!='VALIDATED':store.set_state('officialSite:'+cid,{**prior,'status':'DEFERRED','lastFailure':now,'reason':r.get('reason'),'retryAfter':advance(now,24)})
         elif r['status']=='REJECTED':
             store.set_state('officialSite:'+cid,{'status':'REJECTED','lastChecked':now,'reason':r['reason'],'retryAfter':advance(now,7*24)})
         elif r['status']=='DEGRADED':

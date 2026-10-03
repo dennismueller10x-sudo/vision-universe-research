@@ -13,12 +13,16 @@ const cases=[];
 const route=(product,ticker,preview=true)=>product==='quant'?`/quant/${preview?'?company-intelligence=preview':''}#/aktie/${ticker}`:`/discover/${preview?'?company-intelligence=preview':''}#/s/US_REAL/${ticker}`;
 try{
  for(const product of ['quant','discover']){
-  for(const ticker of ['AAPL','NVDA','TSLA','MSFT','ROOT','GOOG','CHE'])for(const width of [390,430,768,1440]){
+  for(const ticker of ['AAPL','NVDA','TSLA','MSFT','ROOT','GOOG','CHE','CLX'])for(const width of [390,430,768,1440]){
    const page=await browser.newPage({viewport:{width,height:860}}), errors=[];page.on('pageerror',e=>errors.push(e.message));
+   // Exercise the real Clorox prepared-remarks archive without expanding the
+   // production pilot cohort. The isolated package includes this issuer.
+   if(ticker==='CLX')for(const path of ['**/company-intelligence/config/rollout.js*','**/quant/release-bundle.js*'])await page.route(path,async r=>{const response=await r.fetch();await r.fulfill({response,body:(await response.text()).replace('const cohort = [',"const cohort = ['CLX',")})});
    await page.goto(base+route(product,ticker));await page.waitForFunction(()=>document.querySelector('.ci-company-intelligence')?.textContent.includes('Letzte Quartalszahlen'));
    const chapter=page.locator('.ci-company-intelligence');
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.equal(await chapter.evaluate(e=>e.scrollWidth>e.clientWidth),false);assert.deepEqual(errors,[]);
-   if(width===390&&['NVDA','ROOT','CHE'].includes(ticker)){await chapter.screenshot({path:`${out}/${product}-${ticker}.png`});await writeFile(`${out}/${product}-${ticker}.txt`,await chapter.innerText())}
+   if(ticker==='CLX'){assert((await chapter.innerText()).includes('Vorbereitete Aussagen'));assert((await chapter.innerText()).includes('Veröffentlichungsdatum nicht angegeben.'))}
+   if(width===390&&['NVDA','ROOT','CHE','CLX'].includes(ticker)){await chapter.screenshot({path:`${out}/${product}-${ticker}.png`});await writeFile(`${out}/${product}-${ticker}.txt`,await chapter.innerText())}
    cases.push({product,ticker,width,status:'PASS'});await page.close();
   }
   const page=await browser.newPage(), requests=[];page.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))requests.push(r.url())});await page.goto(base+route(product,'AAPL',false));await page.waitForTimeout(1200);assert.equal(await page.locator('.ci-company-intelligence').count(),0);assert.deepEqual(requests,[]);cases.push({product,kind:'DISABLED_ZERO_REQUESTS',status:'PASS'});await page.close();
@@ -42,5 +46,5 @@ try{
    cases.push({product,kind:attack,status:'PASS'});await p.close();
   }
  }
- await writeFile(out+'/report.json',JSON.stringify({status:'PASS',cases},null,2));console.log(JSON.stringify({status:'PASS',cases:cases.length,responsiveCases:56,disabledCases:2,adversarialCases:16}));
+ await writeFile(out+'/report.json',JSON.stringify({status:'PASS',cases},null,2));console.log(JSON.stringify({status:'PASS',cases:cases.length,responsiveCases:64,disabledCases:2,adversarialCases:16}));
 }finally{await browser.close()}

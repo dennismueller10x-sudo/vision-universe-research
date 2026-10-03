@@ -59,6 +59,12 @@ def wikidata_sites(companies, http):
     return {cik: {'status': 'CANDIDATE' if len(sites) == 1 else 'AMBIGUOUS', 'candidates': list(sites.values())} for cik, sites in by_cik.items()}
 
 
+def same_web_host(url,other):
+    """Only the conventional www alias, never a sibling/delegated host."""
+    a,b=domain(url),domain(other)
+    return bool(a and b) and a.removeprefix('www.')==b.removeprefix('www.')
+
+
 def validate_candidate(company, candidate, http, now):
     """Wikidata is discovery evidence only: require corporate header and legal-name ownership."""
     from .model import normalize, clean, SUFFIX, within_domain
@@ -70,7 +76,7 @@ def validate_candidate(company, candidate, http, now):
     # to avoid repeated scheme redirects and re-fetching robots metadata.
     request_url = re.sub(r'^http:', 'https:', candidate['url'])
     response = http.get(request_url, ttl=86400)
-    if not within_domain(response['finalUrl'], candidate['url']):
+    if not within_domain(response['finalUrl'], candidate['url']) and not same_web_host(response['finalUrl'],candidate['url']):
         raise SourceError('OFFICIAL_SITE_CANDIDATE_REDIRECT')
     body = response['body'].decode('utf-8', 'replace')
     title = re.search(r'<title[^>]*>(.*?)</title>', body, re.I | re.S)
@@ -85,7 +91,10 @@ def validate_candidate(company, candidate, http, now):
     visible_body = re.sub(r'<(?:script|style)\b[^>]*>.*?</(?:script|style)>|<!--.*?-->', '', body, flags=re.I | re.S)
     visible = re.sub(r'[^\w]+', ' ', clean(visible_body, 2 * 1024 * 1024).casefold()).strip()
     visible = legal_normalize(visible)
-    legal = any(re.search(r'(?<!\w)' + re.escape(legal_normalize(n)) + r'(?!\w)', visible) for n in company['names'] if legal_normalize(n))
+    strong_names=[n for n in company['names'] if re.search(r'\b(?:inc\.?|incorporated|corp\.?|corporation|co\.?|company|ltd\.?|limited|plc|ag|s\.?a\.?)\b',n,re.I)]
+    if not strong_names:
+        strong_names=[n for n in company['names'] if len(normalize(n).split())>=2]
+    legal = any(re.search(r'(?<!\w)' + re.escape(legal_normalize(n)) + r'(?!\w)', visible) for n in strong_names if legal_normalize(n))
     branded = any(re.search(r'(?<!\w)' + re.escape(normalize(SUFFIX.sub('', n))) + r'(?!\w)', header) for n in company['names'] if normalize(SUFFIX.sub('', n)))
     # Many public-company titles use a short brand (Meta, H&P, Frost),
     # while the copyright footer discloses the precise parent/legal owner.
@@ -93,13 +102,17 @@ def validate_candidate(company, candidate, http, now):
     copyright_text = re.sub(r'<[^>]*>', ' ', visible_body)
     copyright_regions = [legal_normalize(m[0]) for m in re.finditer(r'(?:©|&copy;|copyright).{0,300}', copyright_text, re.I | re.S)]
     footer_owner = any(re.search(r'(?<!\w)' + re.escape(legal_normalize(n)) + r'(?!\w)', region)
-                       for n in company['names'] for region in copyright_regions if legal_normalize(n))
+                       for n in strong_names for region in copyright_regions if legal_normalize(n))
     stop = {'inc','corp','corporation','co','company','ltd','plc','holdings','group','global','national','first','bank','financial','resources','therapeutics','industries','technologies','international','trust','properties','healthcare'}
     brand_tokens = {w for n in company['names'] for w in normalize(n).split() if len(w) >= 4 and w not in stop}
     short_brand = any(re.search(r'(?<!\w)' + re.escape(w) + r'(?!\w)', header) for w in brand_tokens)
     acronyms = {''.join(w[0] for w in normalize(n).split() if w not in stop and len(w)>1) for n in company['names']}
     header_compact = re.sub(r'(?<!\w)([a-z])\s+([a-z])(?!\w)', r'\1\2', header)
     short_brand = short_brand or any(2 <= len(a) <= 4 and re.search(r'(?<!\w)' + re.escape(a) + r'(?!\w)', header_compact) for a in acronyms)
+    copyright_has_legal_owner=any(re.search(r'\b(?:inc|corp|co|ltd|plc|ag|llc)\b',region) for region in copyright_regions)
+    specific_header=any(re.search(r'(?<!\w)'+re.escape(legal_normalize(n))+r'(?!\w)',legal_normalize(header)) for n in strong_names) or any(len(normalize(SUFFIX.sub('',n)).split())>=2 and re.search(r'(?<!\w)'+re.escape(normalize(SUFFIX.sub('',n)))+r'(?!\w)',header) for n in strong_names)
+    if copyright_has_legal_owner and not footer_owner and not specific_header:
+        raise SourceError('OFFICIAL_SITE_CANDIDATE_CONFLICTING_COPYRIGHT_OWNER')
     method = 'CORPORATE_TITLE_AND_LEGAL_COMPANY_NAME' if legal and branded else 'EXACT_LEGAL_COPYRIGHT_OWNER_AND_CORPORATE_BRAND'
     if not (legal and branded) and not (footer_owner and short_brand):
         raise SourceError('OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED')

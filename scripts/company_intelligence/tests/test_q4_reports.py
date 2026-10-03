@@ -30,3 +30,34 @@ class Reports(unittest.TestCase):
   class HTTP:
    def get(self,*args,**kwargs):return {'body':body(),'finalUrl':'https://another.example/feed'}
   with self.assertRaises(SourceError):discover(b'<script src="/evergreen.q4Api.min.js"></script>','https://investors.example/',S,HTTP(),NOW)
+ def test_real_unrelated_issuers_keep_fiscal_labels_without_future_dates(self):
+  fixture=json.loads((Path(__file__).parent/'fixtures/management-content-metadata.json').read_text())
+  self.assertGreaterEqual(len(fixture['cases']),3)
+  for case in fixture['cases']:
+   rows=parse(json.dumps(case['response']).encode(),case['source'],NOW)
+   self.assertEqual(sorted({r['type'] for r in rows}),case['expectedTypes'])
+   for r in rows:
+    self.assertEqual(r['companyId'],case['source']['companyId']);self.assertIsNone(r['date']);self.assertEqual(r['publicationDateStatus'],'NOT_PROVIDED');self.assertEqual(r['fiscalYear'],2026)
+
+class ReportsConsumer(unittest.TestCase):
+ def test_past_investor_webcast_survives_large_archive_without_becoming_a_call(self):
+  import tempfile
+  from company_intelligence.store import Store
+  from test_engine import company
+  with tempfile.TemporaryDirectory() as tmp:
+   st=Store(Path(tmp)/'s.sqlite');c=company();cid=c['companyId']
+   st.set_state('ir:'+cid,{'configurations':[{'documents':[{'companyId':cid,'documentId':str(i),'type':'FINANCIAL_REPORT','url':'https://apple.com/report'+str(i),'date':None} for i in range(100)]}]})
+   st.event({'companyId':cid,'eventId':'conference','eventType':'IR_EVENT','date':'2026-09-09','headline':'Investor conference','webcastUrl':'https://public.webcast.example/conference'},NOW)
+   payload=st.company_payload(c,NOW);self.assertEqual(payload['calls'],[]);self.assertEqual(payload['events'],[]);self.assertEqual(len(payload['materials']),50)
+   self.assertEqual(payload['materials'][0]['type'],'WEBCAST');self.assertEqual(payload['materials'][0]['label'],'Investor conference');self.assertNotIn('CALL_RECORDING',{d['type'] for d in payload['materials']});st.close()
+ def test_materials_only_issuer_has_consistent_available_payload(self):
+  import tempfile
+  from company_intelligence.store import Store
+  from test_engine import company
+  with tempfile.TemporaryDirectory() as tmp:
+   st=Store(Path(tmp)/'s.sqlite');c=company();st.set_state('ir:'+c['companyId'],{'configurations':[{'companyId':c['companyId'],'pageRole':'IR','documents':[{'companyId':c['companyId'],'documentId':'d','type':'PREPARED_REMARKS','url':'https://apple.com/remarks','date':None}]}]})
+   payload=st.company_payload(c,NOW);self.assertEqual(payload['state'],'AVAILABLE');self.assertEqual(len(payload['materials']),1);self.assertEqual(payload['calls'],[]);st.close()
+ def test_derived_reports_source_requires_prior_q4_widget_ownership(self):
+  from company_intelligence.q4_reports import from_validated_events
+  s={**S,'format':'Q4_EVENTS','url':'https://investors.example/feed/Event.svc/GetEventList'}
+  self.assertEqual(from_validated_events(s,NOW)['format'],'Q4_REPORTS');self.assertIsNone(from_validated_events({**s,'verified':False},NOW));self.assertIsNone(from_validated_events({**s,'allowedSites':['https://other.example/']},NOW))

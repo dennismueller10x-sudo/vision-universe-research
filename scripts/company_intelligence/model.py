@@ -148,6 +148,9 @@ class Resolver:
 
     def resolve(self, item, source):
         """Query context alone never authorizes a match. Only verified first-party sources do."""
+        from .news_sitemap import resolve_metadata
+        corroborated=resolve_metadata(item,source,self.companies)
+        if corroborated is not None:return corroborated
         from .distribution import resolve as distribution_resolve
         distributed = distribution_resolve(item, source, self.distribution_index)
         if distributed is not None:

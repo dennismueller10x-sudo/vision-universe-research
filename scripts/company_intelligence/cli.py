@@ -196,7 +196,8 @@ def main(argv=None):
             eligible = sorted(eligible, key=lambda c: c['companyId'])[:args.limit]
             pipeline.ensure_aliases({c['companyId'] for c in eligible})
             from company_intelligence.discovery_batch import run as validate_domains, persist
-            results = validate_domains(eligible, {c['companyId']:store.state('siteCandidates:' + c['companyId'], {}) for c in eligible},
+            validation_companies=[{**c,'names':pipeline.companies[c['companyId']]['names']} for c in eligible]
+            results = validate_domains(validation_companies, {c['companyId']:store.state('siteCandidates:' + c['companyId'], {}) for c in eligible},
                                        http, now, args.request_budget, args.max_seconds, args.discovery_workers, domain_only=True)
             persist(results, store, companies, now)
             report = {'generatedAt': now, 'domainValidation': results, 'publicRequests': sum(r['requests'] for r in results),

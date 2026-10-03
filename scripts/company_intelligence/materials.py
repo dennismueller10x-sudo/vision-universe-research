@@ -24,6 +24,8 @@ def page_documents(company, links, page, now):
         # Explicit PDF/static-file attachments may be delegated to a CDN.
         if not within_domain(link['url'], page) and not re.search(r'\.pdf(?:\?|$)|/static-files/', link['url'], re.I):
             continue
+        if kind=='PRESENTATION' and not re.search(r'\.pdf(?:\?|$)|/static-files/',link['url'],re.I) and not re.search(r'20\d{2}|\bQ[1-4]\b|capital markets day|investor day',label+' '+link['url'],re.I):
+            continue
         from .q4_events import public_link
         if not public_link(link['url']):
             continue

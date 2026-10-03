@@ -55,7 +55,7 @@ def report(store, companies, now):
     countries = defaultdict(Counter)
     counts, platforms, exchanges, rows = Counter(), Counter(), defaultdict(Counter), []
     statuses = Counter(source_status(s, now) for s in sources)
-    platform_health = defaultdict(lambda: {'sources': 0, 'active': 0, 'blocked': 0, 'stale': 0, 'failures': 0, 'parserFailures': 0, 'issuerIds': set(), 'lastSuccess': None})
+    platform_health = defaultdict(lambda: {'sources': 0, 'active': 0, 'blocked': 0, 'stale': 0, 'failures': 0, 'parserFailures': 0, 'undatedMetadataAvailable':0, 'issuerIds': set(), 'lastSuccess': None})
     tiers = Counter()
     for source in sources:
         health = platform_health[source.get('provider', 'UNKNOWN')]
@@ -63,6 +63,7 @@ def report(store, companies, now):
         if source.get('companyId'): health['issuerIds'].add(source['companyId'])
         status = source_status(source, now)
         health['active'] += status == 'ACTIVE'; health['blocked'] += status == 'BLOCKED'; health['stale'] += status == 'STALE'
+        health['undatedMetadataAvailable'] += status=='UNDATED_METADATA'
         health['failures'] += bool(source.get('failureCount'))
         health['parserFailures'] += any(code in (source.get('lastError') or '') for code in ('MALFORMED', 'INVALID_', 'SCHEMA'))
         health['lastSuccess'] = max(health['lastSuccess'] or '', source.get('lastSuccess') or '') or None

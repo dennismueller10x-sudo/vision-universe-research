@@ -47,8 +47,8 @@ def release_period(text):
     # FY marker permits expansion; a bare two-digit year is ambiguous.
     text = re.sub(r'\bFY\s?(\d{2})\b', lambda m: 'FY 20' + m[1], text, flags=re.I)
     text = re.sub(r'\b(1st|2nd|3rd|4th)\s+quarter\b', lambda m: {'1st':'first','2nd':'second','3rd':'third','4th':'fourth'}[m[1].lower()] + ' quarter', text, flags=re.I)
-    after = re.search(r'\b(first|second|third|fourth|Q[1-4])\s+(?:fiscal\s+)?(?:quarter\s+)?(?:(?:of|fiscal|FY)\s*){0,2}(20\d{2})\b', text, re.I)
-    before = re.search(r'\b(?:fiscal\s+)?(20\d{2})\s+(first|second|third|fourth|Q[1-4])(?:\s+quarter)?\b', text, re.I)
+    after = re.search(r'\b(first|second|third|fourth|Q[1-4])\s+(?:fiscal\s+)?(?:quarter\s+)?(?:(?:of|fiscal(?:\s+year)?|FY)\s*){0,2}(20\d{2})\b', text, re.I)
+    before = re.search(r'\b(?:fiscal(?:\s+year)?\s+)?(20\d{2})\s+(first|second|third|fourth|Q[1-4])(?:\s+quarter)?\b', text, re.I)
     match = after or before
     if not match:
         return None

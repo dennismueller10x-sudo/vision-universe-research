@@ -134,8 +134,9 @@ def provider_type(url, links):
 
 def discover_ir(company, official_site, http, now, max_pages=3):
     """Only walk links from a verified official root. No guessed domains or per-company scraper."""
+    from .discovery import same_web_host
     homepage = http.get(official_site, ttl=86400)
-    if not within_domain(homepage['finalUrl'], official_site):
+    if not within_domain(homepage['finalUrl'], official_site) and not same_web_host(homepage['finalUrl'],official_site):
         raise SourceError('OFFICIAL_SITE_REDIRECT_REQUIRES_REVALIDATION')
     links = parse_links(homepage['body'], homepage['finalUrl'])
     from urllib.parse import urlsplit
@@ -164,8 +165,9 @@ def discover_ir(company, official_site, http, now, max_pages=3):
         if response is None:
             continue
         # A direct investor link from official site establishes a delegated IR host; unrelated redirects do not.
-        if domain(response['finalUrl']) != domain(page) and not within_domain(response['finalUrl'], official_site):
+        if domain(response['finalUrl']) != domain(page) and not within_domain(response['finalUrl'], official_site) and not same_web_host(response['finalUrl'],page):
             raise SourceError('IR_REDIRECT_REQUIRES_REVALIDATION')
+        trusted_pages.add(response['finalUrl'])
         links = parse_links(response['body'], response['finalUrl'])
         from .platforms import fingerprint, endpoints
         provider = fingerprint(response['body'], provider_type(response['finalUrl'], links))
@@ -176,13 +178,13 @@ def discover_ir(company, official_site, http, now, max_pages=3):
             candidate = next((l for l in links if re.search(r'press releases|news releases|events', l['text'], re.I) and not re.search(r'/static-files/|\.(?:pdf|zip|xml)(?:\?|$)', l['url'], re.I) and within_domain(l['url'], page)), None)
             if candidate:
                 extra = optional_page(candidate['url'])
-                if extra and domain(extra['finalUrl']) != domain(candidate['url']):
+                if extra and domain(extra['finalUrl']) != domain(candidate['url']) and not same_web_host(extra['finalUrl'],candidate['url']):
                     raise SourceError('IR_REDIRECT_REQUIRES_REVALIDATION')
-                trusted_pages.add(candidate['url'])
+                trusted_pages.add(extra['finalUrl'] if extra else candidate['url'])
                 more = parse_links(extra['body'], extra['finalUrl']) if extra else []
                 feed_links += [l for l in more if 'rss' in l['type'] or 'atom' in l['type'] or re.search(r'rss(?:handler|\.aspx|/)|\brss\b', l['url'] + ' ' + l['text'], re.I)]
         from .structured_sources import news_index, gcs_events
-        structured_source = {'companyId': company['companyId'], 'verified': True, 'allowedSites': [official_site, page], 'provider': provider, 'url': response['finalUrl']}
+        structured_source = {'companyId': company['companyId'], 'verified': True, 'allowedSites': [official_site,page,response['finalUrl']], 'provider': provider, 'url': response['finalUrl']}
         for news_page in [response] + ([extra] if extra else []):
             structured_source.update(url=news_page['finalUrl'], sourceId=stable_id(company['companyId'], news_page['finalUrl'], 'schema-news'))
             if news_index(news_page['body'], structured_source, news_page['finalUrl']):

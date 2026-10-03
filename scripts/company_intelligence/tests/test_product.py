@@ -95,6 +95,15 @@ class LazyAliasTests(unittest.TestCase):
 class ProductReviewRegressionTests(unittest.TestCase):
     payload = ProductTests.payload
     release = ProductTests.release
+    def test_long_report_archive_keeps_management_content_within_public_bound(self):
+        p=self.payload()
+        p['materials']=[{'type':'FINANCIAL_REPORT','url':f'https://ir.example.com/report/{i}'} for i in range(40)]
+        for kind in ('COMPANY_TRANSCRIPT','PREPARED_REMARKS','WEBCAST','PRESENTATION'):
+            p['materials'].append({'type':kind,'url':f'https://ir.example.com/{kind}'})
+        original=deepcopy(p);q=project(p)
+        self.assertEqual(len(q['materials']),30)
+        self.assertTrue({'COMPANY_TRANSCRIPT','PREPARED_REMARKS','WEBCAST','PRESENTATION'} <= {d['type'] for d in q['materials']})
+        self.assertEqual(p,original)
     def test_materials_merge_the_same_source_url_even_when_labels_differ(self):
         p=self.payload();p['earnings']=[self.release()];p['materials']=[{'companyId':p['companyId'],'eventId':'release','url':'https://www.sec.gov/report','type':'SEC_PRIMARY_DOCUMENT'},{'companyId':p['companyId'],'eventId':'release','url':'https://www.sec.gov/report','type':'FINANCIAL_REPORT'}]
         self.assertEqual(len(project(p)['earningsBundles'][0]['materials']),1)
