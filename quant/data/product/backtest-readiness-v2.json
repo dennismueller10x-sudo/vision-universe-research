@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-10-03T07:05:00.825Z",
+ "generatedAt": "2026-10-03T10:29:07.694Z",
  "returnContract": {
   "technicalSetupMomentum": "SPLIT_ADJUSTED_PRICE",
   "backtestPortfolioBenchmark": "TOTAL_RETURN",
@@ -15,8 +15,8 @@
    "to": "2026-10-02",
    "spanDays": 22,
    "replay": {
-    "titles": 155,
-    "observations": 126036,
+    "titles": 152,
+    "observations": 122970,
     "from": "1991-03-08"
    }
   },
@@ -94,7 +94,7 @@
    "label": "Muster-Beobachtungen",
    "studyFindings": 114,
    "robust": 69,
-   "matchSnapshots": 2
+   "matchSnapshots": 3
   },
   {
    "id": "technicalStates",
@@ -188,7 +188,7 @@
    "id": "B",
    "key": "SETUP_BACKTEST",
    "label": "Setup-Backtest",
-   "returnType": "SPLIT_ADJUSTED_PRICE",
+   "returnType": "TOTAL_RETURN",
    "gates": [
     {
      "id": "pit",
@@ -223,26 +223,26 @@
     {
      "id": "SETUP_CONFIRMED",
      "trust": "LIMITED",
-     "n": 832,
-     "titles": 115,
+     "n": 816,
+     "titles": 112,
      "displayAllowed": false,
-     "returnType": "SPLIT_ADJUSTED_PRICE"
+     "returnType": "TOTAL_RETURN"
     },
     {
      "id": "SETUP_NEW",
      "trust": "LIMITED",
-     "n": 7527,
-     "titles": 144,
+     "n": 7400,
+     "titles": 141,
      "displayAllowed": false,
-     "returnType": "SPLIT_ADJUSTED_PRICE"
+     "returnType": "TOTAL_RETURN"
     },
     {
      "id": "SETUP_WEAKENED",
      "trust": "LIMITED",
-     "n": 8317,
-     "titles": 145,
+     "n": 8176,
+     "titles": 142,
      "displayAllowed": false,
-     "returnType": "SPLIT_ADJUSTED_PRICE"
+     "returnType": "TOTAL_RETURN"
     }
    ],
    "decision": "WITHHELD",
@@ -256,7 +256,7 @@
    "id": "C",
    "key": "SIGNAL_BACKTEST",
    "label": "Signal-Backtest",
-   "returnType": "SPLIT_ADJUSTED_PRICE",
+   "returnType": "TOTAL_RETURN",
    "gates": [
     {
      "id": "pit",
@@ -291,42 +291,42 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 92156,
-     "titles": 5306,
+     "n": 89039,
+     "titles": 5167,
      "displayAllowed": true,
-     "returnType": "SPLIT_ADJUSTED_PRICE"
+     "returnType": "TOTAL_RETURN"
     },
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 92545,
-     "titles": 5332,
+     "n": 89392,
+     "titles": 5191,
      "displayAllowed": true,
-     "returnType": "SPLIT_ADJUSTED_PRICE"
+     "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 89218,
-     "titles": 5276,
+     "n": 86267,
+     "titles": 5138,
      "displayAllowed": true,
-     "returnType": "SPLIT_ADJUSTED_PRICE"
+     "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 89360,
-     "titles": 5300,
+     "n": 86456,
+     "titles": 5162,
      "displayAllowed": true,
-     "returnType": "SPLIT_ADJUSTED_PRICE"
+     "returnType": "TOTAL_RETURN"
     },
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 58251,
-     "titles": 5055,
+     "n": 56433,
+     "titles": 4921,
      "displayAllowed": true,
-     "returnType": "SPLIT_ADJUSTED_PRICE"
+     "returnType": "TOTAL_RETURN"
     }
    ],
    "decision": "PUBLISHED",

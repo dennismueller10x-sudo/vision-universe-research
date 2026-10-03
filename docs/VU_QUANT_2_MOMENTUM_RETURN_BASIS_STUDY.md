@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Stand der Messung | 2026-10-03T06:42:13.000Z |
+| Stand der Messung | 2026-10-03T09:58:44.000Z |
 | Bestand | `CANONICAL_HISTORY` |
 | Studienlogik | `1.0.0` · Reihen `vu-return-series-1.0.0` · Vergleich `vu-return-basis-comparison-1.0.0` |
 | Entscheidung | **PENDING_METHOD_DECISION** |
@@ -95,8 +95,8 @@ Diese Frage stand im Return-Semantics-Vertrag als `UNKNOWN_UNTIL_MEASURED`. Sie 
 | | |
 |---|---|
 | Artefakt | `quant/data/product/factor-evidence-v1` |
-| Einträge | 6.280 |
-| Preisbasis | `close` 6.280 |
+| Einträge | 6.288 |
+| Preisbasis | `close` 6.288 |
 | gemessene Quant-V2-Momentumbasis | **MIXED_OR_UNCONFIRMED** |
 
 **Befund: Methodiktext und Rechnung sagen nicht dasselbe.**
@@ -196,15 +196,15 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 |---|---:|---:|---:|---:|---:|
 | REITs | 200 | 5,09 % | -105 | 1,78 | 12,42 |
 | Utilities | 152 | 3,14 % | -1 | 0,01 | 4,99 |
-| (unclassified) | 1.102 | 0,72 % | 0 | 0,00 | 8,32 |
+| (unclassified) | 1.094 | 0,76 % | 0 | 0,00 | 8,32 |
 | Energy | 148 | 2,40 % | 1 | -0,01 | 6,13 |
-| Financials | 891 | 1,90 % | 4 | -0,07 | 5,69 |
+| Financials | 896 | 1,90 % | 4 | -0,06 | 5,69 |
 | Consumer Staples | 107 | 1,43 % | 10 | -0,17 | 3,85 |
 | Real Estate | 67 | 0,00 % | 13 | -0,22 | 9,56 |
 | Communication | 123 | 0,00 % | 14 | -0,24 | 5,58 |
-| Industrials | 422 | 0,23 % | 19 | -0,32 | 4,89 |
-| (other) | 458 | 0,00 % | 21 | -0,36 | 4,30 |
-| Health Care | 825 | 0,00 % | 24 | -0,41 | 4,02 |
+| Industrials | 423 | 0,22 % | 19 | -0,32 | 4,89 |
+| (other) | 459 | 0,00 % | 21 | -0,36 | 4,32 |
+| Health Care | 826 | 0,00 % | 24 | -0,40 | 4,02 |
 | Materials | 293 | 0,00 % | 24 | -0,41 | 4,13 |
 | Technology | 680 | 0,00 % | 25 | -0,43 | 3,92 |
 | Consumer Discretionary | 398 | 0,00 % | 26 | -0,44 | 4,68 |
@@ -215,14 +215,14 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 
 | Sektor | Titel | Δ Rendite (Median) | Δ Rang (Median) | Δ Perzentil (Median) | Δ Perzentil (P95) |
 |---|---:|---:|---:|---:|---:|
-| H · Finance, Insurance, And Real Estate | 1.158 | 2,50 % | 0 | 0,00 | 6,81 |
-| (unclassified) | 1.102 | 0,72 % | 0 | 0,00 | 8,32 |
+| H · Finance, Insurance, And Real Estate | 1.163 | 2,49 % | 0 | 0,00 | 6,80 |
+| (unclassified) | 1.094 | 0,76 % | 0 | 0,00 | 8,32 |
 | E · Transportation, Communications, Electric, Gas, And Sanitary Services | 393 | 2,09 % | 4 | -0,07 | 4,81 |
 | F · Wholesale Trade | 90 | 0,32 % | 19 | -0,32 | 4,11 |
 | B · Mining | 239 | 0,00 % | 20 | -0,34 | 5,03 |
-| D · Manufacturing | 1.773 | 0,00 % | 22 | -0,38 | 4,01 |
+| D · Manufacturing | 1.775 | 0,00 % | 22 | -0,38 | 4,02 |
 | A · Agriculture, Forestry, And Fishing | 18 | 0,00 % | 23 | -0,39 | 4,15 |
-| I · Services | 824 | 0,00 % | 25 | -0,43 | 4,54 |
+| I · Services | 825 | 0,00 % | 25 | -0,43 | 4,54 |
 | G · Retail Trade | 209 | 0,00 % | 26 | -0,44 | 4,42 |
 | C · Construction | 60 | 0,00 % | 41 | -0,69 | 4,98 |
 
@@ -237,9 +237,9 @@ Die Momentumnote wird auf beiden Basen aus denselben sechs Komponenten und dense
 | Grundlage | `EVIDENCE_AT_OR_BEFORE_CUTOFF` |
 | veröffentlichtes Evidence vom | 2026-10-02 (0 Tage nach dem Stichtag) |
 | ausgeschlossen, weil Fundamentaldaten erst nach dem Stichtag öffentlich | 0 |
-| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9458 |
-| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9571 |
-| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.404 / 5.866 / 5.866 |
+| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9457 |
+| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9567 |
+| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.412 / 5.866 / 5.866 |
 
 **Die Momentumnote selbst, Kurs gegen gesamt:** ρ 0,9924 · Median 58 Ränge · P95 413 · Maximum 3.339 · 622 Titel bewegen sich um mindestens 5 Perzentilpunkte, 120 um mindestens 10.
 

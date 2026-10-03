@@ -13,7 +13,11 @@
      methodology    Methodikdateien (quant/methodology/*.json)
      evidence       Engines und Builder der Backtest-/Evidenzartefakte
      benchmark      Vergleichsmassstab (tiingo-scale.json benchmark, Rolle)
-     returnQuality  Gesamtrendite-Vertrag und Lader
+     returnQuality  Gesamtrendite (canonical-total-return.js), alter Vertrag
+                    als Gegenprobe, Lader
+     contracts      die Vertragsversionen selbst: Gesamtrendite,
+                    Corporate Actions, Benchmark - eine neue Version aendert
+                    den Fingerabdruck auch ohne andere Dateiaenderung
    Je Gruppe ein SHA-256 ueber den Dateiinhalt, dazu ein Gesamtwert.
 
    Aufruf:
@@ -40,11 +44,17 @@ export const GROUPS = {
     "scripts/quant/build-backtest-certification.mjs", "scripts/quant/build-backtest-readiness.mjs", "scripts/quant/build-quant-radar.mjs",
     "scripts/quant/lib/weekly-total-return.mjs"
   ],
-  benchmark: () => ["scripts/market/benchmark-reference.mjs", "@benchmark"],
-  returnQuality: () => ["quant/engines/market-quality.js", "scripts/quant/lib/daily-prices.mjs"]
+  benchmark: () => ["scripts/market/benchmark-reference.mjs", "scripts/market/refresh-benchmark-history.mjs", "@benchmark"],
+  returnQuality: () => ["quant/engines/canonical-total-return.js", "quant/engines/market-quality.js", "scripts/quant/lib/daily-prices.mjs"],
+  contracts: () => ["@contracts"]
 };
 
 function contentOf(p) {
+  if (p === "@contracts") {
+    const src = readFileSync(join(ROOT, "quant/engines/canonical-total-return.js"), "utf8");
+    const v = (name) => (src.match(new RegExp("var " + name + ' = "([^"]+)"')) || [])[1] || "<missing>";
+    return JSON.stringify({ totalReturn: v("VERSION"), corporateActions: v("CORPORATE_ACTION_CONTRACT"), benchmark: v("BENCHMARK_CONTRACT") });
+  }
   if (p === "@benchmark") return JSON.stringify(JSON.parse(readFileSync(join(ROOT, "quant/config/tiingo-scale.json"), "utf8")).benchmark || null);
   const f = join(ROOT, p);
   return existsSync(f) ? readFileSync(f, "utf8").replace(/\r\n/g, "\n") : "<missing>";

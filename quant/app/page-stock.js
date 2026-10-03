@@ -41,6 +41,21 @@
     return key ? "/assets/discover-perspektiven/" + key + ".jpeg" : null;
   }
 
+  /* Die Stil-Grafik (bis 0,45 MB) haengt erst ein, wenn ihre Karte sichtbar
+     wird - wie die Logo-Zeile unten. loading="lazy" allein reichte nicht:
+     der Browser laedt bis weit unterhalb des Bildschirms vor, und ob das vor
+     oder nach dem ersten Bild geschah, war Zufall (Ressourcenbudget der
+     Aktienseite mal 5,50, mal 5,92 MB bei identischem Stand). */
+  function artOnSight(src) {
+    var img = el("img", { class: "v2-collection-image", alt: "", width: "1254", height: "1254", loading: "lazy", decoding: "async" });
+    if (!global.IntersectionObserver) { img.src = src; return img; }
+    var io = new global.IntersectionObserver(function (entries) {
+      if (entries.some(function (e) { return e.isIntersecting; })) { io.disconnect(); img.src = src; }
+    }, { rootMargin: "0px" });
+    io.observe(img);
+    return img;
+  }
+
   function foot(text) { return el("p", { class: "dx-kapitel-fuss", text: text }); }
 
   /* ------------------------------------------------ 01 Faktor-Karte
@@ -215,7 +230,7 @@
     var b = s.best, art = strategyArt(b.id);
     var kids = [el("p", { class: "dx-bewertung-satz qx-strategy-sentence" }, [el("b", { text: s.sentence })])];
     kids.push(el("a", { class: "v2-collection-link qx-strategy-link", href: X.routes.strategy(b.id) }, [
-      el("span", { class: "v2-collection-art" + (art ? " has-image" : ""), "aria-hidden": "true" }, [art ? el("img", { class: "v2-collection-image", src: art, alt: "", width: "1254", height: "1254", loading: "lazy", decoding: "async" }) : el("span", { class: "v2-collection-glyph", text: "↗" }),
+      el("span", { class: "v2-collection-art" + (art ? " has-image" : ""), "aria-hidden": "true" }, [art ? artOnSight(art) : el("span", { class: "v2-collection-glyph", text: "↗" }),
         el("span", { class: "v2-collection-art-label", text: b.label.split(" · ")[0] })]),
       el("span", { class: "v2-collection-copy" }, [el("strong", { text: b.label }), el("span", { text: b.countText + ". " + b.plain })]),
       el("span", { class: "v2-collection-arrow", text: "→" })]));

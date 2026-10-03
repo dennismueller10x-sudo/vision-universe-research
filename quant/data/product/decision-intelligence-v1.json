@@ -1,6 +1,6 @@
 {
  "schemaVersion": "decision-intelligence-1.0.0",
- "generatedAt": "2026-10-03T07:05:23.335Z",
+ "generatedAt": "2026-10-03T10:29:35.282Z",
  "asOf": "2026-10-02",
  "measures": {
   "RADAR_EVENTS_TOTAL": 674,
@@ -29,19 +29,19 @@
   "HISTORICAL_REPLAY_COVERAGE": {
    "universe": 5751,
    "covered": 5400,
-   "available": 4561,
+   "available": 4563,
    "sufficient": {
-    "m1": 2150,
-    "m3": 2081,
-    "m6": 2008,
-    "m12": 1906
+    "m1": 2155,
+    "m3": 2085,
+    "m6": 2015,
+    "m12": 1910
    },
    "broad": {
-    "m6": 665
+    "m6": 672
    },
    "reasons": {
     "NOT_COVERED": 351,
-    "NO_PRICE_CONDITION_TODAY": 778,
+    "NO_PRICE_CONDITION_TODAY": 776,
     "NO_COMPARABLE_CASE": 61
    }
   },
@@ -77,7 +77,7 @@
   {
    "question": "was historisch bei derselben Lage geschah",
    "pass": true,
-   "measured": "2008 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
+   "measured": "2015 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
   },
   {
    "question": "wie belastbar diese Evidenz ist",
@@ -295,11 +295,11 @@
     "direction": "NEUTRAL"
    },
    "replay": {
-    "episodes": 33,
+    "episodes": 38,
     "horizon": "m6",
     "evidence": "BROAD",
-    "positiveShare": 0.7878787878787878,
-    "medianReturn": 0.09653770000535133
+    "positiveShare": 0.7777777777777778,
+    "medianReturn": 0.08415097856053533
    },
    "factors": 4
   },
@@ -434,11 +434,11 @@
     "direction": "BULLISH"
    },
    "replay": {
-    "episodes": 38,
+    "episodes": 23,
     "horizon": "m6",
-    "evidence": "BROAD",
-    "positiveShare": 0.4864864864864865,
-    "medianReturn": -0.006908462867012188
+    "evidence": "THIN",
+    "positiveShare": 0.8421052631578947,
+    "medianReturn": 0.23755032845941937
    },
    "factors": 6
   },

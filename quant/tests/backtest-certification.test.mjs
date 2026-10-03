@@ -164,11 +164,11 @@ test("Signal-Studie: Base Rate derselben Woche und unabhaengige Faelle je Regel"
 
 test("Woechentliche Gesamtrendite: letzter Handelstag der Woche, Dividenden enthalten", async () => {
   const { weekKey, weeklyFromDaily } = await import("../../scripts/quant/lib/weekly-total-return.mjs");
-  const { fromBars } = await import("../../scripts/quant/lib/daily-prices.mjs");
+  const { fromBars, WORKING_STORE_IDENTITY } = await import("../../scripts/quant/lib/daily-prices.mjs");
   assert.equal(weekKey("2026-09-28"), "2026-10-02");
   assert.equal(weekKey("2026-10-02"), "2026-10-02");
-  const d = fromBars(json("quant/data/market/golden-preview/daily/ref_JPM.json"));
-  assert.ok(d.totalReturn);
+  const d = fromBars(json("quant/data/market/golden-preview/daily/ref_JPM.json"), { identity: WORKING_STORE_IDENTITY });
+  assert.ok(d.totalReturn, JSON.stringify(d.trVerdict));
   const keys = [...new Set(d.dates.map(weekKey))].sort(), idx = new Map(keys.map((k, i) => [k, i]));
   const tr = weeklyFromDaily(d.dates, d.tr, idx, keys.length), px = weeklyFromDaily(d.dates, d.close, idx, keys.length);
   const first = tr.findIndex((v) => v > 0), last = tr.length - 1;

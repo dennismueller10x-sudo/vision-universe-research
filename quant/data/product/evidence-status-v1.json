@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-10-03T07:05:22.469Z",
+ "generatedAt": "2026-10-03T10:29:34.304Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -37,19 +37,19 @@
    "coverage": {
     "universe": 5751,
     "covered": 5400,
-    "available": 4561,
+    "available": 4563,
     "sufficient": {
-     "m1": 2150,
-     "m3": 2081,
-     "m6": 2008,
-     "m12": 1906
+     "m1": 2155,
+     "m3": 2085,
+     "m6": 2015,
+     "m12": 1910
     },
     "broad": {
-     "m6": 665
+     "m6": 672
     },
     "reasons": {
      "NOT_COVERED": 351,
-     "NO_PRICE_CONDITION_TODAY": 778,
+     "NO_PRICE_CONDITION_TODAY": 776,
      "NO_COMPARABLE_CASE": 61
     }
    }
@@ -81,7 +81,7 @@
     "sample": 954759,
     "period": [
      "1992-01-31",
-     "2026-10-01"
+     "2026-10-02"
     ],
     "costs": {
      "roundTripBps": 20,
@@ -116,7 +116,7 @@
      "id": "SURVIVORSHIP",
      "label": "Dekotierte Titel mit Kurshistorie, Überlebenden-Kontrolle",
      "required": "Kontrolle aktiv",
-     "measured": "192 Titel mit Historie, Kontrolle nicht aktiv",
+     "measured": "185 Titel mit Historie, Kontrolle nicht aktiv",
      "state": "FAIL"
     },
     {
@@ -258,30 +258,28 @@
    "state": "PUBLISHED",
    "reason": null,
    "engine": "signal-backtest-2.0.0",
-   "returnType": "SPLIT_ADJUSTED_PRICE",
+   "returnType": "TOTAL_RETURN",
    "rules": [
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 92156,
-     "titles": 5306,
+     "n": 89039,
+     "titles": 5167,
      "displayAllowed": true,
      "failed": [
       "survivorship",
-      "returnBasis",
       "regimeDiversity"
      ]
     },
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 92545,
-     "titles": 5332,
+     "n": 89392,
+     "titles": 5191,
      "displayAllowed": true,
      "failed": [
       "oos",
       "survivorship",
-      "returnBasis",
       "regimeDiversity",
       "parameterStability"
      ]
@@ -289,26 +287,24 @@
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 89218,
-     "titles": 5276,
+     "n": 86267,
+     "titles": 5138,
      "displayAllowed": true,
      "failed": [
       "survivorship",
-      "returnBasis",
       "regimeDiversity"
      ]
     },
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 89360,
-     "titles": 5300,
+     "n": 86456,
+     "titles": 5162,
      "displayAllowed": true,
      "failed": [
       "oos",
       "walkForward",
       "survivorship",
-      "returnBasis",
       "regimeDiversity",
       "parameterStability"
      ]
@@ -316,12 +312,13 @@
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 58251,
-     "titles": 5055,
+     "n": 56433,
+     "titles": 4921,
      "displayAllowed": true,
      "failed": [
+      "oos",
+      "walkForward",
       "survivorship",
-      "returnBasis",
       "regimeDiversity"
      ]
     }
@@ -342,19 +339,19 @@
   "HISTORICAL_REPLAY_COVERAGE": {
    "universe": 5751,
    "covered": 5400,
-   "available": 4561,
+   "available": 4563,
    "sufficient": {
-    "m1": 2150,
-    "m3": 2081,
-    "m6": 2008,
-    "m12": 1906
+    "m1": 2155,
+    "m3": 2085,
+    "m6": 2015,
+    "m12": 1910
    },
    "broad": {
-    "m6": 665
+    "m6": 672
    },
    "reasons": {
     "NOT_COVERED": 351,
-    "NO_PRICE_CONDITION_TODAY": 778,
+    "NO_PRICE_CONDITION_TODAY": 776,
     "NO_COMPARABLE_CASE": 61
    }
   }
