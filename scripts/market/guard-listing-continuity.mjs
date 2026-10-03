@@ -72,16 +72,24 @@ function main() {
     out.seriesChecked++;
     if (product.has(id)) out.productUniverse.checked++;
     const next = guardPayload(payload, at);
-    if (!next) continue;
-    out.seriesCut++; out.barsDropped += next.listingContinuity.droppedBars;
-    if (product.has(id)) {
-      out.productUniverse.cut++;
-      const c = next.listingContinuity;
-      out.productUniverse.rows.push([id, product.get(id), c.gapDays, c.droppedBars, c.droppedTo, c.keptFrom]);
+    if (next) {
+      out.seriesCut++; out.barsDropped += next.listingContinuity.droppedBars;
+      if (product.has(id)) out.productUniverse.cut++;
+      if (!DRY) writeFileSync(join(dir, f), JSON.stringify(next));
     }
-    if (!DRY) writeFileSync(join(dir, f), JSON.stringify(next));
+    /* KUMULATIV: jede Reihe, die je gekuerzt wurde (Vermerk in der Reihe),
+       mit dem Tag des ersten Schnitts. Nachgelagerte Pruefungen (Paritaet
+       veroeffentlichter Staende) muessen wissen, dass die Reihe NACH einer
+       Veroeffentlichung korrigiert wurde - auch in spaeteren Laeufen, die
+       selbst nichts mehr schneiden. */
+    const mark = (next || payload).listingContinuity;
+    if (mark && product.has(id)) {
+      let first = mark; while (first.previous) first = first.previous;
+      out.productUniverse.rows.push([id, product.get(id), mark.gapDays, mark.droppedBars, mark.droppedTo, mark.keptFrom, String(first.at || at).slice(0, 10)]);
+    }
   }
-  out.productUniverse.columns = ["securityId", "ticker", "gapDays", "droppedBars", "droppedTo", "keptFrom"];
+  out.productUniverse.marked = out.productUniverse.rows.length;
+  out.productUniverse.columns = ["securityId", "ticker", "gapDays", "droppedBars", "droppedTo", "keptFrom", "firstCutAt"];
   out.state = DRY ? "DRY_RUN" : "DONE";
   finish(out, arg);
 }
@@ -90,7 +98,7 @@ function finish(out, arg) {
   const text = JSON.stringify(out, null, 1) + "\n";
   for (const p of [arg("--report"), arg("--public")]) if (p) { mkdirSync(dirname(p), { recursive: true }); writeFileSync(p, text); }
   console.log(`Listing-Kontinuitaet: ${out.seriesCut} von ${out.seriesChecked} Reihen gekuerzt (${out.barsDropped} Kerzen), ` +
-    `im Produktuniversum ${out.productUniverse.cut} von ${out.productUniverse.checked}`);
+    `im Produktuniversum ${out.productUniverse.cut} von ${out.productUniverse.checked}, vermerkt ${out.productUniverse.rows.length}`);
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) main();
