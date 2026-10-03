@@ -83,6 +83,8 @@
        Negativbeispiele - Headline-Verdichtung, isolierte Zahl, englischer
        Quelltitel. */
     /^b(ö|oe)rsengang mit existenzwarnung[.!]?$/i,
+    /^rivian schaltet einen gang h(ö|oe)her[.!]?$/i,
+    /^rekord geschafft\. jetzt kommt der schwere teil[.!]?$/i,
     /^50\.000 dollar f(ü|ue)r ein auto\??$/i,
     /^10-year u\.s\. treasury yield tops/i
   ];

@@ -48,7 +48,8 @@ function slide(i, extra) {
   return Object.assign({ visual_variant_id: "v" + i, visual_strategy: "CAROUSEL", slide_index: i,
     slide_role: i === 1 ? "cover" : "story", asset_path: "authoring/requests/x/assets/slide-0" + i + ".png",
     mime_type: "image/png", width: 1080, height: 1350, asset_byte_size: 10, asset_sha256: "a".repeat(64),
-    brand_elements: { includes_logo: true, includes_atlas: false, includes_hook_text_de: i === 1 } }, extra || {});
+    brand_elements: { includes_logo: true, includes_atlas: false, includes_hook_text_de: i === 1,
+      includes_text_de: true } }, extra || {});
 }
 
 /* Die Lieferform des aktiven Agentenvertrags: EIN Bild, das Cover,
@@ -480,4 +481,40 @@ test("WOP24 · Meldet der Agent den Abbruch, schliesst der Abgleich den Job - ei
   assert.equal(r.ok, true, r.message);
   assert.equal(r.to, "CREATIVE_JOB_FAILED");
   assert.equal(reg.all()[0].failureType, "AGENT_REPORTED_ASSET_CONTRACT_MISMATCH");
+});
+
+test("WOP25 · Owner 03.10.: aggressive Hook, Text auf jedem Slide, drei Bilder in EINEM Auftrag", () => {
+  const b = brief({ delivery: "MULTI_ASSET" });
+  const h = b.hook_strategy;
+  assert.match(h.instruction, /SCROLL-STOPPER/);
+  assert.match(h.instruction, /AGGRESSIVSTE/);
+  assert.ok(h.tone.some((t) => /3 bis 6 Woerter/.test(t)));
+  assert.deepEqual(h.tone_examples, ["RIVIAN SCHLÄGT DIE WALL STREET.", "TOTGESAGT. JETZT REKORD.",
+    "DIE NÄCHSTEN 90 TAGE ENTSCHEIDEN ALLES."]);
+  assert.match(h.fact_limit, /Jede Zuspitzung muss belegt sein/);
+  assert.ok(h.negative_fixtures.includes("RIVIAN SCHALTET EINEN GANG HÖHER."));
+  assert.ok(h.negative_fixtures.includes("REKORD GESCHAFFT. JETZT KOMMT DER SCHWERE TEIL."));
+  assert.equal(Gate.istNegativeHookFixture("RIVIAN SCHALTET EINEN GANG HÖHER."), true);
+  assert.equal(Gate.istNegativeHookFixture("TOTGESAGT. JETZT REKORD."), false);
+  assert.match(b.research.instruction, /Routinemeldungen/);
+
+  /* Text auf Slide 2 und 3 ist Pflicht - weniger extrem als die Hook. */
+  assert.match(b.carousel.text_on_image, /auf JEDEM Slide Pflicht/);
+  assert.match(b.carousel.text_on_image, /weniger extrem als die Hook/);
+  assert.match(b.carousel.slides[1].contains, /PFLICHT: eine starke deutsche Headline/);
+  assert.match(b.carousel.slides[2].contains, /PFLICHT: eine starke deutsche Headline/);
+
+  /* Drei Bilder in einem Auftrag. */
+  assert.equal(b.delivery.mode, "MULTI_ASSET");
+  assert.match(b.delivery.deliver_now, /ALLE Slides in DIESEM einen Auftrag/);
+  assert.match(b.asset_requirements.deterministic_paths[2], /slide-03\.png$/);
+  assert.match(b.asset_requirements.announcement_note, /includes_text_de/);
+  const cfg = JSON.parse(readFileSync(join(ROOT, "social/config/work-agent.json"), "utf8"));
+  assert.equal(cfg.delivery_mode, "MULTI_ASSET");
+
+  /* Ein Slide ohne Text faellt durch. */
+  const ohneText = ergebnis({ visual_variants: [slide(1), slide(2, { brand_elements: {
+    includes_logo: true, includes_atlas: false, includes_text_de: false } }), slide(3)] });
+  assert.ok(Work.verifyCarousel(ohneText).map((x) => x.id).includes("slideTextMissing"));
+  assert.deepEqual(Work.verifyCarousel(ergebnis({ visual_variants: [slide(1), slide(2), slide(3)] })), []);
 });
