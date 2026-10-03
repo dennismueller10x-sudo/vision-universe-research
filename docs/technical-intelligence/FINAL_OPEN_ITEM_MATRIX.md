@@ -9,16 +9,16 @@ Das System ist **nicht expert-validiert**. Die Elliott-Engine hat ihr vorab regi
 | Item | Ursprung | Status vorher | technisch lösbar? | externe Abhängigkeit? | Blocker | Aktion (Mission IV) | Ergebnis | finaler Status |
 |---|---|---|---|---|---|---|---|---|
 | Kein messbarer Vorteil der Szenarien | KL 1 | dokumentiert | – (Befund) | nein | – | nicht „wegtunen“ (kein Edge-Tuning) | bleibt Befund, Produkt sagt „Einordnung, kein Signal“ | REJECTED (kein Fix nötig; Befund) |
-| Cluster-Bootstrap für Lift-KIs | KL 6a, RM 3b | offen | ja | nein | – | Cluster-Bootstrap (Titel × Jahr) in ti-evidence | siehe STATISTICS_AUDIT.md | DONE* |
-| Überlappende Fenster / Mehrfachtests | KL 6, Mission IV | offen | ja | nein | – | BH/Holm für Segmenttabellen | siehe STATISTICS_AUDIT.md | DONE* |
+| Cluster-Bootstrap für Lift-KIs | KL 6a, RM 3b | offen | ja | nein | – | zweiseitiger Cluster-Bootstrap (Titel, Quartal, Cameron–Gelbach–Miller), B = 1000, breitestes Intervall | TEST-Lift −0,32 pp, KI −1,73 … +1,09 (vorher ±0,5); kein Setup und keine Methode mehr signifikant | DONE |
+| Überlappende Fenster / Mehrfachtests | KL 6, Mission IV | offen | ja | nein | – | jede Zeile als vorab registriert / beschreibend / explorativ markiert, BH-q-Werte je Tabelle und gepoolt | 9 von 11 früher signifikanten explorativen Zeilen entfallen | DONE |
 | Survivorship | KL 2, RM 2 | offen | Code ja | ja (Delisting-Bündel nur privat in CI) | Daten nur in R2/CI | Code-Pfad vorbereitet | Lauf nur in CI | PARTIAL → BLOCKED (Daten) |
 | Tagesstudie Universum | KL 4, RM 1 | offen | ja | ja (R2-Daten, Workflow nur auf Default-Branch auslösbar) | `technical-intelligence-evidence.yml` ist auf GitHub nicht registriert (404), solange der Branch nicht gemergt ist | – | Owner-Aktion: Merge oder manueller Start | BLOCKED |
 | TEST zweimal angesehen | KL 6b | dokumentiert | nein (Vergangenheit) | – | – | – | bleibt offengelegt | REJECTED (nicht rückgängig zu machen) |
-| Baseline über alle Zeiträume | KL 6c | offen | ja | nein | – | siehe STATISTICS_AUDIT.md | – | DONE* |
+| Baseline über alle Zeiträume | KL 6c | offen | ja | nein | – | siehe STATISTICS_AUDIT.md | – | siehe STATISTICS_AUDIT.md |
 | Elliott-Konditionierung | RM 3 | offen | ja | nein | – | Elliott hat Konfluenzgewicht 0; Prognosetest erst nach bestandenem Gate | – | REJECTED (Prognoseprüfung vor Gate verboten) |
 | Regime-Hypothese / H4 neuer Holdout | RM 3c, RM-II 4 | offen | ja | ja (Daten ab Freeze, Zeit) | Holdout-Zeitraum existiert noch nicht | – | – | BLOCKED (Zeit/Daten) |
 
-\* Ergebnis des Statistik-Tracks; Zahlen im STATISTICS_AUDIT.md.
+Details: STATISTICS_AUDIT.md. Der TEST-Zeitraum ist inzwischen viermal angesehen (offengelegt).
 
 ## B. Elliott-Engine
 
