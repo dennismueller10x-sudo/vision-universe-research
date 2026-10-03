@@ -226,7 +226,7 @@
         c.invalidation ? ["Ungültig, wenn", "Schluss " + (c.invalidation.direction === "below" ? "unter " : "über ") + fmt(c.invalidation.price)] : null,
         ["Höherer Grad", E.higherDegree ? (E.higherDegree.patternName || E.higherDegree.pattern) + ", Welle " + E.higherDegree.current.notation : "nicht bestimmt"],
         ["Alternativen", String((E.alternatives || []).length) + (E.ambiguity && E.ambiguity.kind === "STRUCTURE" ? " · mehrere gültige Lesarten" : "")],
-        ["Modell", "Experimentell · " + (E.engineVersion || "")]
+        ["Modell", "Experimentell" + (E.engineVersion ? " · " + E.engineVersion : "")]
       ].filter(Boolean).map(function (r) { return [el("dt", { text: r[0] }), el("dd", { class: "num", text: r[1] })]; }))),
       el("h4", { text: "Was sie bedeutet" }), el("p", { text: WAVE_MEANING[waveKey(wave.label)] || "Teil der aktuellen Wellenstruktur." }),
       el("h4", { text: "Warum Vision Universe sie so sieht" }),
@@ -237,8 +237,6 @@
       ]),
       hard.length ? el("h4", { text: "Wichtige Regeln" }) : null,
       hard.length ? el("ul", { class: "cb-list" }, hard.map(function (r) { var cat = (rules && rules[r.id]) || {}; return el("li", { text: (r.passed === true ? "✓ " : r.passed === false ? "✕ " : "○ ") + (cat.statement || r.id) }); })) : null,
-      retr !== null ? el("h4", { text: wave.status === "DEVELOPING" ? "Aktueller Stand" : "Größe" }) : null,
-      retr !== null ? el("p", { class: "num", text: (/^[24BDX]/.test(waveKey(wave.label)) ? "Rücklauf: " : "Länge im Vergleich zur Vorwelle: ") + Math.round(retr * 100) + " %" }) : null,
       el("h4", { text: "Historisches Verhalten" }),
       el("p", { text: ev ? ev.consumer : "Für Elliott-Zählungen ist in der VU-Prüfung kein Prognosevorteil belegt. Die Zählung beschreibt die Struktur." }),
       c.invalidation ? el("h4", { text: "Was sie ungültig macht" }) : null,
@@ -302,7 +300,7 @@
       if (!s) return "";
       var t = (Ex && Ex.TEMPLATE[s.template]) || s.template;
       var dir = s.direction === "BULLISH" ? "aufwärts" : s.direction === "BEARISH" ? "abwärts" : "seitwärts";
-      var cond = s.invalidation ? " Die Lesart gilt, solange kein Schlusskurs " + (s.invalidation.direction === "below" ? "unter " : "über ") + fmt(s.invalidation.price) + " liegt." : "";
+      var cond = s.invalidation && !(s.kind === "PRIMARY" && scenarioOf("ALTERNATIVE")) ? " Die Lesart gilt, solange kein Schlusskurs " + (s.invalidation.direction === "below" ? "unter " : "über ") + fmt(s.invalidation.price) + " liegt." : "";
       return KIND[s.kind] + " (" + dir + "): " + String(t).split(" —")[0] + "." + cond + (s.note ? " " + s.note + "." : "");
     }
     function selectKind(k) {

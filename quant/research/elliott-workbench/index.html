@@ -64,13 +64,19 @@ input[type=range]{padding:0}
       if (labels) pts.forEach(function (q) { if (!q[2]) return; var tt = s("text", { x: X(q[0]), y: Y(q[1]) - 7, fill: color, "font-size": 12, "text-anchor": "middle", "font-weight": 600 }); tt.textContent = q[2]; g.append(tt); });
       if (labels) cnt.waves.forEach(function (w) { (w.sub && w.sub.w || []).forEach(function (x) { if (idx[x[0]] !== undefined) { g.append(s("circle", { cx: X(idx[x[0]]), cy: Y(x[1]), r: 2.6, fill: color, opacity: 0.7 })); } }); });
     }
-    if (c.v2.primary) draw(c.v2.primary, "#7d828a", "5 4", false);
-    if (c.v3.alternative) draw(c.v3.alternative, "#b3a6ff", "3 3", true);
-    if (c.v3.primary) draw(c.v3.primary, "#c8f531", "", true);
+    if (!hidden(c)) {
+      if (c.v2.primary) draw(c.v2.primary, "#7d828a", "5 4", false);
+      if (c.v3.alternative) draw(c.v3.alternative, "#b3a6ff", "3 3", true);
+      if (c.v3.primary) draw(c.v3.primary, "#c8f531", "", true);
+    }
     if (showTruth && c.reference && c.reference.truth) { var tp = c.reference.truth.pivots.filter(function (q) { return idx[q[0]] !== undefined; }); if (tp.length > 1) g.append(s("path", { d: tp.map(function (q, j) { return (j ? "L" : "M") + X(idx[q[0]]) + " " + Y(q[1]); }).join(""), fill: "none", stroke: "#8cc8ff", "stroke-width": 3, opacity: 0.5 })); }
     if (step !== null && c.history[step] && idx[c.history[step].d] !== undefined) { var sx = X(idx[c.history[step].d]); g.append(s("line", { x1: sx, x2: sx, y1: pt, y2: H - pb, stroke: "#f2c14e", "stroke-dasharray": "3 4" })); }
     return g;
   }
+  /* Blindmodus (Mission III §65–§66): ?blind=1 verbirgt Engine-Zaehlungen, Alternativen, Historie und Referenzen eines Falls, bis
+     die eigene Annotation gespeichert ist — sonst richtet sich das Urteil nach der Engine (Ankereffekt). */
+  var BLIND = /[?&]blind=1/.test(location.search);
+  function hidden(c) { return BLIND && !(load()[c.id] && load()[c.id].annotator); }
   function kv(rows) { return h("dl", {}, [].concat.apply([], rows.map(function (r) { return [h("dt", { text: r[0] }), h("dd", { text: r[1] })]; }))); }
   function countText(cn) { return cn ? cn.name + (cn.complete ? " · abgeschlossen" : " · Welle " + cn.wave) + (cn.inv ? " · ungültig jenseits " + f(cn.inv) : "") : "keine Zählung"; }
   function form(c) {
@@ -78,14 +84,19 @@ input[type=range]{padding:0}
     function sel(name, opts) { var e = h("select", { id: "f-" + name, name: name }); opts.forEach(function (o) { var op = h("option", { value: o, text: o }); if (a[name] === o) op.selected = true; e.append(op); }); return e; }
     var fields = h("form", { onsubmit: function (ev) {
       ev.preventDefault(); var fd = new FormData(ev.target), o = { annotationId: c.id + "|" + (fd.get("annotator") || "?"), symbol: c.symbol, asOfDate: c.date, timeframe: c.timeframe, sourceType: "MANUAL_VU_REVIEW", createdAt: new Date().toISOString() };
-      fd.forEach(function (v, k) { o[k] = v; }); A[c.id] = o; save(A); msg.textContent = "Gespeichert (lokal). Export enthält alle Annotationen.";
+      var was = hidden(c); fd.forEach(function (v, k) { o[k] = v; }); o.blind = BLIND; A[c.id] = Object.assign({}, A[c.id] || {}, o); save(A); msg.textContent = "Gespeichert (lokal). Export enthält alle Annotationen.";
+      if (was) detail(c);
     } }, [
       h("label", { for: "f-annotator", text: "Annotierende Person (Pflicht – kein Name, keine Annotation)" }), h("input", { id: "f-annotator", name: "annotator", required: "", value: a.annotator || "" }),
       h("label", { for: "f-pattern", text: "Hauptmuster" }), sel("pattern", ["", "IMPULSE", "LEADING_DIAGONAL", "ENDING_DIAGONAL", "ZIGZAG", "FLAT", "TRIANGLE", "WXY", "DOUBLE_ZIGZAG", "TRIPLE_ZIGZAG", "COMBINATION", "UNCLEAR"]),
       h("label", { for: "f-degree", text: "Grad" }), sel("degree", ["", "Supercycle", "Cycle", "Primary", "Intermediate", "Minor", "Minute", "Minuette", "relative"]),
       h("label", { for: "f-currentWave", text: "Laufende Welle (z. B. (4) of 3)" }), h("input", { id: "f-currentWave", name: "currentWave", value: a.currentWave || "" }),
-      h("label", { for: "f-engineVerdict", text: "Urteil über Engine 3.0" }), sel("engineVerdict", ["", "AGREE", "AGREE_DEGREE_OFF_BY_ONE", "PARTLY", "DISAGREE", "ENGINE_SHOULD_ABSTAIN", "NOT_COUNTABLE"]),
-      h("label", { for: "f-mismatchCategory", text: "Abweichungsart" }), sel("mismatchCategory", ["", "DEGREE_TOO_LOW", "DEGREE_TOO_HIGH", "WRONG_PATTERN", "WRONG_WAVE_POSITION", "MISSED_TRUNCATION", "MISSED_FLAT", "MISSED_TRIANGLE", "TINY_SWING_COUNTED", "WEEKLY_CONTEXT_MISSING", "PROPORTION_IGNORED", "OTHER"]),
+      h("label", { for: "f-status", text: "Status" }), sel("status", ["", "DEVELOPING", "COMPLETE", "POSSIBLE"]),
+      h("label", { for: "f-pivots", text: "Wellenenden (Datum:Preis:Label; …), z. B. 2025-03-07:180.2:0; 2025-05-02:212:1" }), h("input", { id: "f-pivots", name: "pivots", value: a.pivots || "" }),
+      h("label", { for: "f-invalidation", text: "Ungültig bei (Preis)" }), h("input", { id: "f-invalidation", name: "invalidation", inputmode: "decimal", value: a.invalidation || "" }),
+      h("label", { for: "f-nextDirection", text: "Erwartete nächste Richtung" }), sel("nextDirection", ["", "UP", "DOWN", "SIDEWAYS", "UNKNOWN"]),
+      hidden(c) ? h("p", { class: "note", text: "Blindmodus: Das Urteil über die Engine folgt nach dem Speichern, wenn die Engine-Zählung sichtbar wird." }) : h("label", { for: "f-engineVerdict", text: "Urteil über Engine 3.x" }), hidden(c) ? null : sel("engineVerdict", ["", "AGREE", "AGREE_DEGREE_OFF_BY_ONE", "PARTLY", "DISAGREE", "ENGINE_SHOULD_ABSTAIN", "NOT_COUNTABLE"]),
+      hidden(c) ? null : h("label", { for: "f-mismatchCategory", text: "Abweichungsart" }), hidden(c) ? null : sel("mismatchCategory", ["", "DEGREE_TOO_LOW", "DEGREE_TOO_HIGH", "WRONG_PATTERN", "WRONG_WAVE_POSITION", "MISSED_TRUNCATION", "MISSED_FLAT", "MISSED_TRIANGLE", "TINY_SWING_COUNTED", "WEEKLY_CONTEXT_MISSING", "PROPORTION_IGNORED", "OTHER"]),
       h("label", { for: "f-validity", text: "Zählbarkeit" }), sel("validity", ["", "VALID_COUNT", "AMBIGUOUS", "NO_RELIABLE_COUNT"]),
       h("label", { for: "f-comments", text: "Kommentar" }), (function () { var t = h("textarea", { id: "f-comments", name: "comments", rows: "3" }); t.value = a.comments || ""; return t; })(),
       h("div", { style: "display:flex;gap:8px;margin-top:8px;flex-wrap:wrap" }, [h("button", { class: "btn", type: "submit", text: "Annotation speichern" }), h("button", { class: "btn", type: "button", text: "Alle exportieren (JSON)", onclick: function () {
@@ -99,12 +110,13 @@ input[type=range]{padding:0}
     cur = c; var sec = document.getElementById("detail"); sec.replaceChildren();
     sec.append(h("h2", { text: c.symbol + " · Stichtag " + c.date + " · " + (c.timeframe === "1W" ? "Woche" : "Tag") }), h("p", {}, [h("span", { class: "tag", text: c.kind }), h("span", { class: "tag", text: "Engine " + c.v3.engine + " vs " + c.v2.engine })]));
     var host = h("div"); host.append(chart(c)); sec.append(host);
-    if (c.history && c.history.length) {
+    if (c.history && c.history.length && !hidden(c)) {
       var lab = h("p", { class: "note", role: "status" }), sl = h("input", { type: "range", min: "0", max: String(c.history.length - 1), value: String(c.history.length - 1), "aria-label": "Zeitreise der Zählung" });
       var upd = function () { step = +sl.value; var x = c.history[step]; lab.textContent = x.d + ": " + (x.to || "keine Zählung") + (x.ab ? " (keine verlässliche Zählung)" : "") + (x.why ? " — " + x.why : ""); host.replaceChildren(chart(c)); };
       sl.addEventListener("input", upd); sec.append(sl, lab); upd();
     }
     var ref = c.reference;
+    if (hidden(c)) { sec.append(h("div", { class: "grid" }, [h("div", { class: "card" }, [h("h3", { text: "Blindmodus" }), h("p", { class: "note", text: "Engine-Zählung, Alternativen, Historie und Referenzen sind verborgen, bis Ihre eigene Zählung gespeichert ist." })]), form(c)])); return; }
     sec.append(h("div", { class: "grid" }, [
       h("div", { class: "card" }, [h("h3", { text: "Engine 3.0" }), kv([["Hauptzählung", countText(c.v3.primary)], ["Alternative", countText(c.v3.alternative)], ["Höherer Grad", c.v3.higher ? c.v3.higher.name + ", Welle " + c.v3.higher.current : "–"],
         ["Anwendbarkeit", c.v3.applicability ? c.v3.applicability.level + " (" + f(c.v3.applicability.score) + ")" : "–"], ["Mehrdeutigkeit", c.v3.ambiguity ? c.v3.ambiguity.kind + " – " + c.v3.ambiguity.note : "–"],
@@ -123,7 +135,7 @@ input[type=range]{padding:0}
     n.append(h("div", { class: "filters" }, kinds.map(function (k) { return h("button", { class: "chip", "aria-pressed": String(k === filter), text: k === "ALL" ? "Alle" : k, onclick: function () { filter = k; nav(); } }); })));
     var A = load();
     D.cases.filter(function (c) { return filter === "ALL" || c.kind === filter; }).forEach(function (c) {
-      n.append(h("button", { class: "case", "data-id": c.id, onclick: function () { step = null; showTruth = false; detail(c); } }, [h("span", { text: c.symbol + (A[c.id] ? " ✓" : "") }), h("small", { text: c.kind + " · " + c.date + " · " + (c.v3.primary ? c.v3.primary.name : "keine Zählung") })]));
+      n.append(h("button", { class: "case", "data-id": c.id, onclick: function () { step = null; showTruth = false; detail(c); } }, [h("span", { text: c.symbol + (A[c.id] ? " ✓" : "") }), h("small", { text: c.kind + " · " + c.date + (hidden(c) ? "" : " · " + (c.v3.primary ? c.v3.primary.name : "keine Zählung")) })]));
     });
   }
   fetch("data.json").then(function (r) { return r.json(); }).then(function (d) { D = d; nav(); detail(D.cases[0]); }).catch(function () { document.getElementById("detail").textContent = "Daten nicht verfügbar (scripts/technical/elliott-workbench-data.mjs ausführen)."; });

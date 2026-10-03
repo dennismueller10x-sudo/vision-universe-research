@@ -1,0 +1,1336 @@
+{
+ "schemaVersion": "vu-elliott-holdout3-1.0.0",
+ "generatedAt": "2026-10-03T10:12:52.894Z",
+ "tag": "v32",
+ "prereg": "docs/technical-intelligence/ELLIOTT_HOLDOUT3_PREREG.md",
+ "pooled": {
+  "metrics": {
+   "G1_hardRuleViolations": 0,
+   "G2_primary": 42.9,
+   "G3_primaryOrAlt": 55.9,
+   "G4_degreeExact": 43.6,
+   "G5_grossDegreeError": 32.5,
+   "G6_flats": {
+    "pa": 56.7,
+    "n": 876
+   },
+   "G7_truncation": {
+    "pa": 43.1,
+    "n": 248
+   },
+   "G8_triangles": {
+    "pa": 59.5,
+    "n": 504
+   },
+   "G9_highNoisePrimary": 6.2,
+   "G10_falseHigh": {
+    "high": 14.9,
+    "nHigh": 148,
+    "highOrModerate": 30.6,
+    "nHM": 882
+   },
+   "G11_unstableRelabels": {
+    "v3": 0.0043,
+    "v2": 0.0087
+   },
+   "G12_relabels": {
+    "v3": 0.0482,
+    "v2": 0.1023
+   },
+   "G13_multiResDirection": {
+    "agreement": 0.6,
+    "n": 85
+   },
+   "G14_abstention": {
+    "auc": 0.875,
+    "precisionHM": 69.4,
+    "nHM": 882,
+    "abstainShare": 88.5
+   },
+   "G15_falseAccept": 0.4,
+   "G15_allLayouts": 0.1,
+   "D1_developingPrimary": 12.7,
+   "D2_developingFalseHigh": {
+    "high": 100,
+    "nHigh": 24,
+    "highOrModerate": 100,
+    "nHM": 345
+   },
+   "observableValidShare": {
+    "nlm": 69.5,
+    "high": 27.7
+   },
+   "strictTruth": {
+    "G2": 29.6,
+    "G3": 38.2,
+    "G4": 30.4,
+    "G5": 38.1,
+    "G9": 1.6
+   },
+   "n": {
+    "completedPositive": 7680,
+    "nlm": 5760,
+    "nlmObservable": 4002,
+    "high": 1920,
+    "highObservable": 532,
+    "developing": 9788
+   }
+  },
+  "pass": {
+   "G1": true,
+   "G2": false,
+   "G3": false,
+   "G4": false,
+   "G5": false,
+   "G6": true,
+   "G7": true,
+   "G8": true,
+   "G9": false,
+   "G10": true,
+   "G11": true,
+   "G12": true,
+   "G13": false,
+   "G14": true,
+   "G15": true,
+   "D2": false
+  }
+ },
+ "perLayout": {
+  "C1": {
+   "metrics": {
+    "G1_hardRuleViolations": 0,
+    "G2_primary": 34.9,
+    "G3_primaryOrAlt": 47.1,
+    "G4_degreeExact": 35.8,
+    "G5_grossDegreeError": 39.5,
+    "G6_flats": {
+     "pa": 43.5,
+     "n": 294
+    },
+    "G7_truncation": {
+     "pa": 32.9,
+     "n": 82
+    },
+    "G8_triangles": {
+     "pa": 47.6,
+     "n": 164
+    },
+    "G9_highNoisePrimary": 4.7,
+    "G10_falseHigh": {
+     "high": 22.9,
+     "nHigh": 35,
+     "highOrModerate": 37,
+     "nHM": 246
+    },
+    "G11_unstableRelabels": null,
+    "G12_relabels": null,
+    "G13_multiResDirection": null,
+    "G14_abstention": {
+     "auc": 0.873,
+     "precisionHM": 63,
+     "nHM": 246,
+     "abstainShare": 90.4
+    },
+    "G15_falseAccept": null,
+    "G15_allLayouts": 0,
+    "D1_developingPrimary": 10.2,
+    "D2_developingFalseHigh": {
+     "high": 100,
+     "nHigh": 11,
+     "highOrModerate": 100,
+     "nHM": 142
+    },
+    "observableValidShare": {
+     "nlm": 65.1,
+     "high": 26.9
+    },
+    "strictTruth": {
+     "G2": 22.6,
+     "G3": 30.1,
+     "G4": 23.5,
+     "G5": 43.9,
+     "G9": 1.1
+    },
+    "n": {
+     "completedPositive": 2560,
+     "nlm": 1920,
+     "nlmObservable": 1250,
+     "high": 640,
+     "highObservable": 172,
+     "developing": 3268
+    }
+   },
+   "pass": {
+    "G1": true,
+    "G2": false,
+    "G3": false,
+    "G4": false,
+    "G5": false,
+    "G6": true,
+    "G7": true,
+    "G8": true,
+    "G9": false,
+    "G10": false,
+    "G11": null,
+    "G12": null,
+    "G13": null,
+    "G14": false,
+    "G15": true,
+    "D2": false
+   }
+  },
+  "C2": {
+   "metrics": {
+    "G1_hardRuleViolations": 0,
+    "G2_primary": 57.1,
+    "G3_primaryOrAlt": 70.7,
+    "G4_degreeExact": 57.6,
+    "G5_grossDegreeError": 21.6,
+    "G6_flats": {
+     "pa": 77.1,
+     "n": 306
+    },
+    "G7_truncation": {
+     "pa": 56.8,
+     "n": 88
+    },
+    "G8_triangles": {
+     "pa": 85.6,
+     "n": 174
+    },
+    "G9_highNoisePrimary": 10.2,
+    "G10_falseHigh": {
+     "high": 8.6,
+     "nHigh": 81,
+     "highOrModerate": 20.1,
+     "nHM": 384
+    },
+    "G11_unstableRelabels": null,
+    "G12_relabels": null,
+    "G13_multiResDirection": null,
+    "G14_abstention": {
+     "auc": 0.883,
+     "precisionHM": 79.9,
+     "nHM": 384,
+     "abstainShare": 85
+    },
+    "G15_falseAccept": 0.4,
+    "G15_allLayouts": 0.4,
+    "D1_developingPrimary": 17.5,
+    "D2_developingFalseHigh": {
+     "high": 100,
+     "nHigh": 8,
+     "highOrModerate": 100,
+     "nHM": 92
+    },
+    "observableValidShare": {
+     "nlm": 75.8,
+     "high": 30.6
+    },
+    "strictTruth": {
+     "G2": 43.1,
+     "G3": 53,
+     "G4": 43.8,
+     "G5": 27.4,
+     "G9": 2.8
+    },
+    "n": {
+     "completedPositive": 2560,
+     "nlm": 1920,
+     "nlmObservable": 1456,
+     "high": 640,
+     "highObservable": 196,
+     "developing": 3252
+    }
+   },
+   "pass": {
+    "G1": true,
+    "G2": true,
+    "G3": true,
+    "G4": true,
+    "G5": true,
+    "G6": true,
+    "G7": true,
+    "G8": true,
+    "G9": false,
+    "G10": true,
+    "G11": null,
+    "G12": null,
+    "G13": null,
+    "G14": true,
+    "G15": true,
+    "D2": false
+   }
+  },
+  "C3": {
+   "metrics": {
+    "G1_hardRuleViolations": 0,
+    "G2_primary": 34.6,
+    "G3_primaryOrAlt": 47.6,
+    "G4_degreeExact": 35.3,
+    "G5_grossDegreeError": 38.1,
+    "G6_flats": {
+     "pa": 48.2,
+     "n": 276
+    },
+    "G7_truncation": {
+     "pa": 38.5,
+     "n": 78
+    },
+    "G8_triangles": {
+     "pa": 44,
+     "n": 166
+    },
+    "G9_highNoisePrimary": 3,
+    "G10_falseHigh": {
+     "high": 21.9,
+     "nHigh": 32,
+     "highOrModerate": 40.5,
+     "nHM": 252
+    },
+    "G11_unstableRelabels": null,
+    "G12_relabels": null,
+    "G13_multiResDirection": null,
+    "G14_abstention": {
+     "auc": 0.857,
+     "precisionHM": 59.5,
+     "nHM": 252,
+     "abstainShare": 90.2
+    },
+    "G15_falseAccept": null,
+    "G15_allLayouts": 0,
+    "D1_developingPrimary": 10.3,
+    "D2_developingFalseHigh": {
+     "high": 100,
+     "nHigh": 5,
+     "highOrModerate": 100,
+     "nHM": 111
+    },
+    "observableValidShare": {
+     "nlm": 67.5,
+     "high": 25.6
+    },
+    "strictTruth": {
+     "G2": 23.1,
+     "G3": 31.5,
+     "G4": 24.1,
+     "G5": 43,
+     "G9": 0.8
+    },
+    "n": {
+     "completedPositive": 2560,
+     "nlm": 1920,
+     "nlmObservable": 1296,
+     "high": 640,
+     "highObservable": 164,
+     "developing": 3268
+    }
+   },
+   "pass": {
+    "G1": true,
+    "G2": false,
+    "G3": false,
+    "G4": false,
+    "G5": false,
+    "G6": true,
+    "G7": true,
+    "G8": true,
+    "G9": false,
+    "G10": false,
+    "G11": null,
+    "G12": null,
+    "G13": null,
+    "G14": false,
+    "G15": true,
+    "D2": false
+   }
+  }
+ },
+ "real": {
+  "v3": {
+   "unstable": 0.0043,
+   "relabel": 0.0482,
+   "series": 39,
+   "applicability": {
+    "HIGH": 56,
+    "MODERATE": 829,
+    "LOW": 10444
+   },
+   "ambiguity": {
+    "NONE": 0,
+    "DEGREE": 710,
+    "LABEL": 315,
+    "STRUCTURE": 10304,
+    "OTHER": 0
+   },
+   "status": {
+    "OK": 4019,
+    "AMBIGUOUS": 7310
+   }
+  },
+  "v2": {
+   "unstable": 0.0087,
+   "relabel": 0.1023,
+   "series": 39,
+   "applicability": {
+    "HIGH": 6450,
+    "MODERATE": 3322,
+    "LOW": 1557
+   }
+  },
+  "multires": {
+   "schemaVersion": "vu-elliott-multires-1.0.0",
+   "generatedAt": "2026-10-03T10:12:52.606Z",
+   "engine": "elliott-3.2.0",
+   "split": "HOLDOUT",
+   "series": 85,
+   "missing": 0,
+   "directionAgreement": 0.6,
+   "nestedDailyInWeeklyCurrentWave": 0.682,
+   "whenBothApplicable": {
+    "n": 0,
+    "direction": null,
+    "nested": null
+   },
+   "abstainWeekly": 0.941,
+   "abstainDaily": 1,
+   "rows": [
+    {
+     "t": "SIF",
+     "weekly": "WXY(C)",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "TROX",
+     "weekly": "WXY(C)",
+     "daily": "ZIGZAG/C",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "NEMD",
+     "weekly": "ZIGZAG/C",
+     "daily": "WXY(C)",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "UA",
+     "weekly": "TRIANGLE(C)",
+     "daily": "ZIGZAG/C",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "XPEL",
+     "weekly": "WXY(C)",
+     "daily": "FLAT(C)",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "KLXE",
+     "weekly": "WXY(C)",
+     "daily": "WXY/Y",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "FIVN",
+     "weekly": "TRIANGLE(C)",
+     "daily": "FLAT(C)",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "CLFD",
+     "weekly": "FLAT/C",
+     "daily": "ZIGZAG/C",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "VOYA",
+     "weekly": "TRIANGLE(C)",
+     "daily": "FLAT/C",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "MODV",
+     "weekly": "FLAT/C",
+     "daily": "FLAT/C",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "EGY",
+     "weekly": "FLAT(C)",
+     "daily": "FLAT(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "CBRL",
+     "weekly": "WXY(C)",
+     "daily": "WXY/Y",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "ULBI",
+     "weekly": "WXY(C)",
+     "daily": "WXY(C)",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "TECX",
+     "weekly": "ENDING_DIAGONAL(C)",
+     "daily": "FLAT/C",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "DCH",
+     "weekly": "WXY(C)",
+     "daily": "FLAT/C",
+     "direction": false,
+     "nested": true,
+     "wAbstain": false,
+     "dAbstain": true,
+     "wAppl": "MODERATE",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "CBSH",
+     "weekly": "ZIGZAG/C",
+     "daily": "FLAT/C",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "RDNW",
+     "weekly": "WXY/Y",
+     "daily": "ZIGZAG/C",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "PBI",
+     "weekly": "WXY(C)",
+     "daily": "WXY/Y",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "SDGR",
+     "weekly": "WXY(C)",
+     "daily": "ZIGZAG(C)",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "ITRG",
+     "weekly": "FLAT(C)",
+     "daily": "IMPULSE/5",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "SGC",
+     "weekly": "TRIANGLE(C)",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "FKWL",
+     "weekly": "ZIGZAG/C",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "UAL",
+     "weekly": "FLAT/C",
+     "daily": "TRIANGLE(C)",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "ETR",
+     "weekly": "TRIANGLE(C)",
+     "daily": "FLAT/C",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "CHSCP",
+     "weekly": "FLAT(C)",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "PBFS",
+     "weekly": "TRIANGLE(C)",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "TAOX",
+     "weekly": "WXY(C)",
+     "daily": "FLAT/C",
+     "direction": false,
+     "nested": true,
+     "wAbstain": false,
+     "dAbstain": true,
+     "wAppl": "HIGH",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "WGO",
+     "weekly": "WXY/Y",
+     "daily": "FLAT(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "XIFR",
+     "weekly": "WXY(C)",
+     "daily": "FLAT/C",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "SST",
+     "weekly": "WXY(C)",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "COLB",
+     "weekly": "TRIANGLE(C)",
+     "daily": "WXY/Y",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "XRX",
+     "weekly": "WXY(C)",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "RPD",
+     "weekly": "ZIGZAG/C",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "IMGN",
+     "weekly": "IMPULSE(C)",
+     "daily": "WXY/Y",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "MMYT",
+     "weekly": "ZIGZAG(C)",
+     "daily": "TRIANGLE/E",
+     "direction": false,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "WT",
+     "weekly": "FLAT(C)",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "BYD",
+     "weekly": "TRIANGLE/E",
+     "daily": "TRIANGLE/E",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "VOXR",
+     "weekly": "WXY(C)",
+     "daily": "FLAT/C",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "UTMD",
+     "weekly": "WXY/Y",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "ENPH",
+     "weekly": "WXY(C)",
+     "daily": "TRIANGLE/E",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "KTB",
+     "weekly": "TRIANGLE(C)",
+     "daily": "FLAT/C",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "FEIM",
+     "weekly": "TRIANGLE(C)",
+     "daily": "LEADING_DIAGONAL(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "RGCO",
+     "weekly": "WXY(C)",
+     "daily": "IMPULSE(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": false,
+     "dAbstain": true,
+     "wAppl": "MODERATE",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "FVCB",
+     "weekly": "TRIANGLE/E",
+     "daily": "WXY(C)",
+     "direction": false,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "BCIC",
+     "weekly": "TRIANGLE(C)",
+     "daily": "WXY/Y",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "STXS",
+     "weekly": "WXY(C)",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "MCD",
+     "weekly": "WXY/Y",
+     "daily": "FLAT(C)",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "RILYL",
+     "weekly": "WXY(C)",
+     "daily": "WXY(C)",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "GIGL",
+     "weekly": "TRIANGLE/E",
+     "daily": "ZIGZAG/C",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "AVNS",
+     "weekly": "WXY/Y",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "HUBB",
+     "weekly": "WXY(C)",
+     "daily": "FLAT/C",
+     "direction": true,
+     "nested": true,
+     "wAbstain": false,
+     "dAbstain": true,
+     "wAppl": "MODERATE",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "TRNS",
+     "weekly": "IMPULSE(C)",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "ADC",
+     "weekly": "FLAT/C",
+     "daily": "FLAT/C",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "ITRI",
+     "weekly": "FLAT(C)",
+     "daily": "TRIANGLE(C)",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "RJF",
+     "weekly": "WXY(C)",
+     "daily": "FLAT/C",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "KRNT",
+     "weekly": "TRIANGLE(C)",
+     "daily": "TRIANGLE(C)",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "CUBI",
+     "weekly": "FLAT/C",
+     "daily": "FLAT/C",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "ARL",
+     "weekly": "ENDING_DIAGONAL(C)",
+     "daily": "ZIGZAG/C",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "VIRT",
+     "weekly": "WXY(C)",
+     "daily": "FLAT(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "LFMD",
+     "weekly": "TRIANGLE(C)",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "LEG",
+     "weekly": "WXY(C)",
+     "daily": "WXY/Y",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "ABG",
+     "weekly": "ZIGZAG/C",
+     "daily": "FLAT/C",
+     "direction": false,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "SIM",
+     "weekly": "WXY(C)",
+     "daily": "ENDING_DIAGONAL/5",
+     "direction": false,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "PLUR",
+     "weekly": "FLAT(C)",
+     "daily": "TRIANGLE(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "MLSS",
+     "weekly": "WXY(C)",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": false,
+     "wAbstain": false,
+     "dAbstain": true,
+     "wAppl": "MODERATE",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "GPC",
+     "weekly": "WXY/Y",
+     "daily": "WXY/Y",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "EIX",
+     "weekly": "WXY/Y",
+     "daily": "FLAT/C",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "BX",
+     "weekly": "WXY(C)",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "ASTC",
+     "weekly": "TRIANGLE(C)",
+     "daily": "FLAT/C",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "ULH",
+     "weekly": "FLAT(C)",
+     "daily": "TRIANGLE(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "RMBI",
+     "weekly": "FLAT/C",
+     "daily": "WXY(C)",
+     "direction": false,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "EP",
+     "weekly": "WXY(C)",
+     "daily": "FLAT/C",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "SSII",
+     "weekly": "TRIANGLE(C)",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "CPAC",
+     "weekly": "ENDING_DIAGONAL/5",
+     "daily": "ZIGZAG(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "CSCO",
+     "weekly": "FLAT/C",
+     "daily": "LEADING_DIAGONAL(C)",
+     "direction": false,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "SLB",
+     "weekly": "ZIGZAG(C)",
+     "daily": "TRIANGLE/E",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "MRBK",
+     "weekly": "TRIANGLE(C)",
+     "daily": "WXY/Y",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "LUNG",
+     "weekly": "ZIGZAG/C",
+     "daily": "WXY/Y",
+     "direction": false,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "NTIP",
+     "weekly": "WXY(C)",
+     "daily": "FLAT/C",
+     "direction": false,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "LOVE",
+     "weekly": "WXY(C)",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "TXG",
+     "weekly": "FLAT/C",
+     "daily": "FLAT/C",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "FTHM",
+     "weekly": "FLAT(C)",
+     "daily": "TRIANGLE(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "TSN",
+     "weekly": "FLAT/C",
+     "daily": "ZIGZAG/C",
+     "direction": true,
+     "nested": false,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "KE",
+     "weekly": "TRIANGLE(C)",
+     "daily": "FLAT/C",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    },
+    {
+     "t": "PSHG",
+     "weekly": "ZIGZAG(C)",
+     "daily": "WXY(C)",
+     "direction": true,
+     "nested": true,
+     "wAbstain": true,
+     "dAbstain": true,
+     "wAppl": "LOW",
+     "dAppl": "LOW"
+    }
+   ]
+  }
+ }
+}
