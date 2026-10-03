@@ -647,7 +647,7 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | **User Label** | **Abstand zum 52-Wochen-Hoch** |
 | Erklärung für Einsteiger | Wie weit der Kurs unter seinem höchsten Stand der letzten zwölf Monate liegt. |
 | Professional Label | Technical Distance to 52W High |
-| Tooltip | Abstand zum höchsten Schlusskurs der letzten 52 Wochen, als Dezimalrendite des Snapshots. |
+| Tooltip | Abstand des Schlusskurses zum höchsten Tageskurs (Tageshoch) der letzten 252 Handelstage, als Dezimalrendite des Snapshots. |
 | Negativer Zustand | Der Abstand liegt außerhalb dieses Bereichs. |
 | Nicht verfügbar | Der Abstand ist hier nicht bestimmbar. |
 

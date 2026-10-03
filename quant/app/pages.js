@@ -463,7 +463,7 @@
         side: s.price && typeof s.price.value === "number" ? X.money(s.price.value) : null, sideNote: s.price && s.price.asOf ? X.dateDe(s.price.asOf) : null });
     });
     return { rows: rows, summary: rows.length.toLocaleString("de-DE") + " von " + measured.length.toLocaleString("de-DE") + " Aktien mit Kurshistorie stehen höchstens 3 % unter ihrem 52-Wochen-Hoch.",
-      method: "Abstand des letzten Schlusskurses zum höchsten Schlusskurs der letzten 52 Wochen, aus den veröffentlichten Tageskursen. Ein Jahreshoch beschreibt den bisherigen Verlauf – keine Prognose." };
+      method: "Abstand des letzten Schlusskurses zum höchsten Tageskurs (Tageshoch) der letzten 52 Wochen (252 Handelstage), aus den split-bereinigten Tageskursen. Ein Jahreshoch beschreibt den bisherigen Verlauf – keine Prognose." };
   }
 
   /* -------------------------------------------------------- Profi-Modus */
