@@ -36,6 +36,7 @@ import donchian from './engine/strategies/donchian.mjs';
 import kkBreakout2 from './engine/strategies/kk-breakout-v2.mjs';
 import kkBreakout3 from './engine/strategies/kk-breakout-v3.mjs';
 import kkBreakout31 from './engine/strategies/kk-breakout-v31.mjs';
+import kkBreakout32 from './engine/strategies/kk-breakout-v32.mjs';
 import donchian2 from './engine/strategies/donchian-v2.mjs';
 import darvas3 from './engine/strategies/darvas-v3.mjs';
 import darvas301 from './engine/strategies/darvas-v301.mjs';
@@ -59,7 +60,9 @@ let CURRENT_REGIME = null;
 // Runde 7: Momentum, Weinstein, Darvas und Minervini laufen in Version 2.0.0
 // (vorab registriert, PREREGISTRATION-R7.json). Offene Positionen der
 // Vorversionen werden mit deren Engine weitergefuehrt (engine.legacy).
-export const LIVE_ENGINES = [kkBreakout31, weinstein3, darvas301, minervini2, donchian2];
+// Runde 11: Momentum 3.2.0 (Fehlerkorrektur Einstand). Weinstein 4.0.0, Minervini 3.0.0 und Turtle 2.1.0
+// verfehlten die vorab festgelegten Uebernahmebedingungen und bleiben Forschung (PREREGISTRATION-R11).
+export const LIVE_ENGINES = [kkBreakout32, weinstein3, darvas301, minervini2, donchian2];
 export const PREVIOUS_ENGINES = [kkBreakout, kkBreakout2, kkBreakout3, weinstein, weinstein2, darvas, darvas2, darvas3, minervini, donchian];
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
@@ -380,9 +383,7 @@ export function build() {
   coverage.measuredAt = barsGeneratedAt;
   const gbCoverage = greenblattCoverage();
 
-  // Runde 11 (Minervini 3.0.0, MIN-EPS-01): Quartals-EPS und Umsatz aus SEC-XBRL; sichtbar erst nach der Einreichung.
-  const earnings = loadSecEarnings(new Set(instruments.keys()));
-  const ctxOf = (inst) => ({ symbol: inst.symbol, bars: inst.bars, ind: inst.ind, cross: cross.get(inst.symbol), weekly: inst.weekly, weekAt: inst.weekAt, regime: CURRENT_REGIME, fund: earnings.get(inst.symbol) || null });
+  const ctxOf = (inst) => ({ symbol: inst.symbol, bars: inst.bars, ind: inst.ind, cross: cross.get(inst.symbol), weekly: inst.weekly, weekAt: inst.weekAt, regime: CURRENT_REGIME });
 
   CURRENT_REGIME = readJson(rel('quant/data/product/market-regime-v1.json')).regime || null;
   /* --- Live-Lauf je Strategie --- */
@@ -533,8 +534,7 @@ export function build() {
     const barsOf = (sym) => instruments.get(sym)?.bars || null;
     // Runde 10 (K3): relative Staerke am Vortag des Einstiegs fuer die Rangfolge gleichzeitiger Einstiege.
     const rsOf = (sym, date) => { const inst = instruments.get(sym); const t = inst?.indexOf.get(date); return t > 0 ? cross.get(sym)?.rs?.[t - 1] ?? null : null; };
-    const scoreOf = engine.rankScore ? (sym, date) => { const inst = instruments.get(sym); const t = inst?.indexOf.get(date); return t > 0 ? engine.rankScore({ bars: inst.bars }, t) : null; } : null;
-    portfolios.strategies[engine.id] = buildModelPortfolio({ engine, signals: [...L.open, ...L.closed], barsOf, calendar, asOf, rsOf, scoreOf });
+    portfolios.strategies[engine.id] = buildModelPortfolio({ engine, signals: [...L.open, ...L.closed], barsOf, calendar, asOf, rsOf });
   }
   writeJson(path.join(DATA, 'portfolio.json'), portfolios);
   writeJson(path.join(DATA, 'registry.json'), registry);
@@ -568,22 +568,6 @@ function loadSecFundamentals(symbols) {
     if (!sym || out.has(sym)) continue;
     const annual = {}; for (const k of keepA) if (j.annual?.[k]) annual[k] = j.annual[k];
     out.set(sym, { cik: j.cik, name: j.name, annual, quarterly: { net_income: j.quarterly?.net_income || [] }, asOf: j.asOf });
-  }
-  return out;
-}
-
-// Quartalszeilen [fy, fp, end, v, filed, accn, derived] -> [end, v, filed, derived] (Format von engine/earnings.mjs).
-export function loadSecEarnings(symbols) {
-  const dir = rel('quant/data/sec/consumer');
-  const out = new Map();
-  if (!exists(dir)) return out;
-  const rows = (arr) => (arr || []).filter((r) => r && r[2] && Number.isFinite(r[3]) && r[4]).map((r) => [String(r[2]).slice(0, 10), r[3], String(r[4]).slice(0, 10), r[6] ? 1 : 0]);
-  for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.json')).sort()) {
-    const j = readJson(path.join(dir, f));
-    const sym = (j.tickers || []).find((t) => symbols.has(t));
-    if (!sym || out.has(sym)) continue;
-    const eps = rows(j.quarterly?.eps_diluted).length ? rows(j.quarterly?.eps_diluted) : rows(j.quarterly?.eps_basic);
-    if (eps.length) out.set(sym, { eps, rev: rows(j.quarterly?.revenue), source: 'SEC companyfacts (zuletzt berichtete Werte)' });
   }
   return out;
 }
