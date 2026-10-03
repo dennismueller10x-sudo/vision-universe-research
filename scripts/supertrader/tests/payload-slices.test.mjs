@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { signalsCore, signalsBySymbol, HISTORY_LISTS, registryCore, REGISTRY_DETAIL_FIELDS } from '../build.mjs';
+import { signalsCore, signalsBySymbol, HISTORY_LISTS, SLICES_VERSION, registryCore, REGISTRY_DETAIL_FIELDS } from '../build.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const signals = JSON.parse(readFileSync(join(ROOT, 'supertrader', 'data', 'signals.json'), 'utf8'));
@@ -77,5 +77,14 @@ test('registry-core: ohne Regeltexte der Detailseite, alles andere unveraendert'
 
 test('Seite: nur die Strategie-Detailseite laedt die volle Registry', () => {
   const src = readFileSync(join(ROOT, 'supertrader', 'assets', 'supertrader.js'), 'utf8');
-  assert.match(src, /k === 'registry' && page !== 'strategy'\) return getJSON\('registry-core\.json'\)\.catch\(function \(\) \{ return getJSON\(FILE\.registry\); \}\)/);
+  assert.match(src, /if \(k === 'registry'\) return build\(\)\.then\(function \(b\) \{ return page !== 'strategy' && b && b\.slices && b\.slices\.registry/);
 });
+test('Seite fragt nur Ausschnitte an, die build.json ausweist (keine vergeblichen 404)', () => {
+  const src = readFileSync(join(ROOT, 'supertrader', 'assets', 'supertrader.js'), 'utf8');
+  const build = readFileSync(join(ROOT, 'scripts', 'supertrader', 'build.mjs'), 'utf8');
+  assert.match(build, /slices: \{ version: SLICES_VERSION, registry: true, stock: Object\.keys\(slices\)\.sort\(\) \}/);
+  assert.match(src, /\(sl\.stock \|\| \[\]\)\.indexOf\(SYM\) >= 0 \? 'stock\/' \+ SYM \+ '\.json' : null/);
+  assert.match(src, /if \(!part\) return getJSON\(FILE\.signals\);/);
+});
+
+test('SLICES_VERSION ist gesetzt', () => { assert.match(SLICES_VERSION, /^signals-slices-\d+$/); });
