@@ -52,5 +52,24 @@
     return out;
   }
 
-  return { VERSION: VERSION, VALUE_KEYS: VALUE_KEYS, RETURN_KEYS: RETURN_KEYS, project: project };
+  /* Fuer die Aktienseite: dieselbe Projektion, aufgeteilt nach dem shardKey
+     des Company Masters. Eine Seite laedt dann einen Shard von wenigen KB
+     statt der ganzen Universumsdatei (Budget der Aktienseite 5,7 MB). */
+  function shards(projected, shardKey) {
+    var out = {};
+    (projected.securities || []).forEach(function (s) {
+      if (!s || !s.ticker) return;
+      var k = shardKey(s.ticker);
+      if (!out[k]) {
+        out[k] = {};
+        Object.keys(projected).forEach(function (h) { if (h !== "securities") out[k][h] = projected[h]; });
+        out[k].shard = k;
+        out[k].securities = [];
+      }
+      out[k].securities.push(s);
+    });
+    return out;
+  }
+
+  return { VERSION: VERSION, VALUE_KEYS: VALUE_KEYS, RETURN_KEYS: RETURN_KEYS, project: project, shards: shards };
 });

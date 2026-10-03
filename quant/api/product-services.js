@@ -99,6 +99,21 @@ function create(options){
  /* Die Produktprojektion (Release-Build, factor-product-projection.js) traegt
   * genau die Felder, die broadRow liest: 3,4 statt 19,2 MB. Ohne sie (lokal,
   * alter Stand) gilt die volle Datei. */
+ /* Die Aktienseite braucht eine Faktorzeile, nicht das Universum: ihr Shard
+  * (Release-Build, wenige KB). Ohne Shard - lokal, alter Stand - die
+  * Universumsdatei. Ist das Universum schon geladen, gilt es. Shard-Zeilen
+  * liegen im gemeinsamen Kontext (factorShardIndex), damit auch die
+  * Arbeitsbereiche der Seite sie sehen. */
+ async function factorsFor(c,ticker){
+  if(c.factorIndex)return c;
+  const shard=await load('/quant/data/market/factors/product-shards/'+Master.shardKey(ticker)+'.json').catch(()=>null);
+  if(!shard||!Array.isArray(shard.securities))return hydrateFullUniverseFactors(c);
+  const idx=c.factorShardIndex||(c.factorShardIndex=Object.create(null));
+  shard.securities.forEach(f=>{if(f&&f.ticker)idx[f.ticker]=f;if(f&&f.securityId)idx[f.securityId]=f;});
+  return c;
+ }
+ /* Eine Faktorzeile aus dem Universum oder aus einem geladenen Shard. */
+ function factorRowOf(c,...keys){for(const ix of [c.factorIndex,c.factorShardIndex])if(ix)for(const k of keys)if(k&&ix[k])return ix[k];return null;}
  async function hydrateFullUniverseFactors(c){
   if(c.factorIndex)return c;
   const factors=await load('/quant/data/market/factors/factors-FULL_UNIVERSE-product.json').catch(()=>load('/quant/data/market/factors/factors-FULL_UNIVERSE.json'));
@@ -156,7 +171,7 @@ function create(options){
    * wird deshalb nur noch, ob eine Zeile da ist; der Faktorindex deckt sich
    * gemessen genau mit den Zeilen in den Schichtdateien (6.296 zu 6.296, in
    * beide Richtungen 0 Abweichung). */
-  const f=c.factorIndex&&((c.factorIndex[member.m])||(c.factorIndex[member.s])),factorReady=!!f;
+  const f=factorRowOf(c,member.m,member.s),factorReady=!!f;
   const v=f&&f.values||{}, candidate=c.panel&&c.panel.securities&&c.panel.securities[member.s],today=new Date().toISOString().slice(0,10),legacy=candidate&&candidate.available&&candidate.provenance?.isMock===false&&validDate(candidate.marketData?.asOf)&&candidate.marketData.asOf<=today?candidate:null;
   const finite=x=>typeof x==='number'&&Number.isFinite(x);
   const derived=(value,unit)=>({value:finite(value)?value:null,unit,state:finite(value)?'AVAILABLE':'SOURCE_MISSING'});
@@ -1001,7 +1016,7 @@ function create(options){
   /* Die Aktienseite laedt die Faktoren selbst. Vorher hatte sie sie nur, wenn
      vorher eine Liste geladen war: Direktaufruf ohne Volatilitaet und Drawdown,
      Stand der Marktkennzahlen veraltet (Audit 03.10.2026). */
-  try{const c=await hydrateFullUniverseFactors(await hydrateCapabilities(await init())),canonical=await identity(ticker);if(!canonical)return unavailable('INVALID_IDENTITY');
+  try{const c=await factorsFor(await hydrateCapabilities(await init()),ticker),canonical=await identity(ticker);if(!canonical)return unavailable('INVALID_IDENTITY');
    const member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member)return identityOnlyStock(ticker);
    const panelCandidate=c.panel?.securities?.[ticker];if(panelCandidate&&panelCandidate.securityId!=='sec_'+ticker)return unavailable('INVALID_IDENTITY');
    let stock=await row(c,ticker)||broadRow(c,member);if(!stock)return identityOnlyStock(ticker);
@@ -1068,7 +1083,7 @@ function create(options){
      stock.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'NO_PUBLISHED_PRICE_SERIES'};
     }
    }
-   stock._factorValues=(c.factorIndex&&c.factorIndex[member.m]||{}).values||{};stock.quant=await getQuantWorkspace(ticker);stock.setupState=await setupFor(stock);stock.health=await marketHealth([stock]);
+   stock._factorValues=(factorRowOf(c,member.m)||{}).values||{};stock.quant=await getQuantWorkspace(ticker);stock.setupState=await setupFor(stock);stock.health=await marketHealth([stock]);
    /* Dasselbe Verzeichnis, das die Liste liest. Es traegt Name, letzten Kurs
       und die Zahl der Handelstage, auf denen der Faktorlauf gerechnet hat -
       die Aktienseite darf daran nicht weniger wissen als die Liste. */

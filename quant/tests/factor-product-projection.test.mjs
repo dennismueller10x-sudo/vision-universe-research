@@ -18,6 +18,8 @@ const Projection = require(join(ROOT, "quant/engines/factor-product-projection.j
 const FULL = "quant/data/market/factors/factors-FULL_UNIVERSE.json";
 const full = JSON.parse(readFileSync(join(ROOT, FULL), "utf8"));
 const projected = Projection.project(full);
+const Master = require(join(ROOT, "quant/engines/company-master.js"));
+const shards = Projection.shards(projected, Master.shardKey);
 
 function api(withProjection) {
   const loads = [];
@@ -25,6 +27,8 @@ function api(withProjection) {
     loadJSON: async (p) => {
       loads.push(p);
       if (p.endsWith("factors-FULL_UNIVERSE-product.json")) { if (!withProjection) throw new Error("404"); return projected; }
+      const m = p.match(/product-shards\/([A-Z0-9_]{1,2})\.json$/);
+      if (m) { if (!withProjection || !shards[m[1]]) throw new Error("404"); return shards[m[1]]; }
       return JSON.parse(readFileSync(join(ROOT, p), "utf8"));
     },
     loadCompressedJSON: async (p) => JSON.parse(gunzipSync(readFileSync(join(ROOT, p))).toString("utf8")),
@@ -34,6 +38,15 @@ function api(withProjection) {
   return s;
 }
 const ohneFieldStatus = (rows) => JSON.parse(JSON.stringify(rows, (k, v) => (k === "fieldStatus" ? undefined : v)));
+/* Zeitpunkte des Aufrufs, keine Datenstaende: health.asOf und die daraus
+   gebildete Setup-Beobachtung (observedAt, setupStateId, contentHash) -
+   zwei Direktaufrufe hintereinander unterscheiden sich schon darin. */
+const vergleichbar = (x) => {
+  const o = ohneFieldStatus(x);
+  if (o && o.health) delete o.health.asOf;
+  if (o && o.setupState) for (const k of ["observedAt", "setupStateId", "contentHash"]) delete o.setupState[k];
+  return o;
+};
 
 test("getUniverse: mit Projektion dieselben Zeilen wie mit der vollen Datei", async () => {
   const a = await api(false).getUniverse(), b = await api(true).getUniverse();
@@ -51,8 +64,22 @@ test("Projektion: nur die gelesenen Felder, deutlich kleiner", () => {
   assert.equal(projected.securities.length, full.securities.length);
 });
 
-test("Aktienseite laedt die Faktoren selbst (gleich bei Direktaufruf und ueber die Liste)", async () => {
-  const direkt = api(true);
-  await direkt.getStockIntelligence("CORT").catch(() => null);
-  assert.ok(direkt.loads.some((p) => p.endsWith("factors-FULL_UNIVERSE-product.json")), "Direktaufruf laedt die Faktoren");
+test("Aktienseite: Direktaufruf ueber den Shard == Aufruf nach der Liste, ohne die Universumsdatei", async () => {
+  for (const t of ["CORT", "AAPL", "BRK-B", "MOG-A"]) {
+    const direkt = api(true);
+    const a = await direkt.getStockIntelligence(t);
+    assert.ok(direkt.loads.some((p) => /product-shards\//.test(p)), t + ": Direktaufruf laedt seinen Shard");
+    assert.ok(!direkt.loads.some((p) => /factors-FULL_UNIVERSE(-product)?\.json$/.test(p)), t + ": keine Universumsdatei");
+    const ueberListe = api(true);
+    await ueberListe.getUniverse();
+    const b = await ueberListe.getStockIntelligence(t);
+    assert.deepEqual(vergleichbar(a), vergleichbar(b), t);
+  }
+});
+
+test("Shards: jede Zeile genau einmal, klein", () => {
+  const n = Object.values(shards).reduce((k, s) => k + s.securities.length, 0);
+  assert.equal(n, projected.securities.filter((s) => s.ticker).length);
+  const max = Math.max(...Object.values(shards).map((s) => Buffer.byteLength(JSON.stringify(s))));
+  assert.ok(max < 256 * 1024, "groesster Shard " + max);
 });

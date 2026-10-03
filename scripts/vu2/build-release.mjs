@@ -24,7 +24,7 @@ export function projectQuarterly(source){
  return {...fields(source,['generatedAtUtc','versions','dataSource','cik','asOf','policy','availability','columns']),schema:'vu-quant-quarterly-1.0.0',sourceSchema:source.schema,
   semantics:{quarterly:source.semantics?.quarterly},units:Object.fromEntries(Object.entries(source.units||{}).filter(([id])=>Object.hasOwn(quarterly,id))),quarterly,unavailableMetrics};
 }
-export const FACTOR_PROJECTION_BUDGET=4*1024*1024;
+export const FACTOR_PROJECTION_BUDGET=4*1024*1024,FACTOR_SHARD_BUDGET=256*1024;
 export function permitted(path){
  if(path.split('/').some(p=>p.startsWith('.'))&&path!=='.nojekyll')return false;
  if(/^(scripts|docs|providers)\//.test(path)||/\/(tests|fixtures)\//.test(path)||/\.test\.(m?js|py)$/.test(path))return false;
@@ -46,9 +46,17 @@ export async function buildRelease({root,output}){
  /* Eigener Schreibweg mit eigenem Budget: das SEC-Auslieferungsbudget unten
     gilt den SEC-Projektionen und bleibt unveraendert. */
  if(paths.includes('quant/data/market/factors/factors-FULL_UNIVERSE.json')){
-  const bytes=Buffer.from(JSON.stringify(FactorProjection.project(await load('quant/data/market/factors/factors-FULL_UNIVERSE.json'))));
+  const projected=FactorProjection.project(await load('quant/data/market/factors/factors-FULL_UNIVERSE.json'));
+  const bytes=Buffer.from(JSON.stringify(projected));
   if(bytes.length>FACTOR_PROJECTION_BUDGET)throw Error('FACTOR_PROJECTION_BUDGET_EXCEEDED');
   await writeFile(resolve(output,'quant/data/market/factors/factors-FULL_UNIVERSE-product.json'),bytes);
+  /* Je shardKey ein kleiner Ausschnitt fuer die Aktienseite. */
+  await mkdir(resolve(output,'quant/data/market/factors/product-shards'),{recursive:true});
+  for(const [key,part] of Object.entries(FactorProjection.shards(projected,Master.shardKey))){
+   if(!/^[A-Z0-9_]{1,2}$/.test(key))throw Error('FACTOR_SHARD_KEY_INVALID');
+   const b=Buffer.from(JSON.stringify(part));if(b.length>FACTOR_SHARD_BUDGET)throw Error('FACTOR_SHARD_BUDGET_EXCEEDED');
+   await writeFile(resolve(output,'quant/data/market/factors/product-shards/'+key+'.json'),b);
+  }
  }
  const index=await load('quant/data/sec/inspector_index.json');
  await json('quant/data/sec/inspector_index.json',index);
