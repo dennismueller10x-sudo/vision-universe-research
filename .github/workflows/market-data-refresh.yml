@@ -148,6 +148,14 @@ jobs:
             require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY, l.join("\n") + "\n");
           ' || true
 
+      # Ein Kuerzel ist keine Identitaet: der Anbieter fuehrt darunter die
+      # Kerzen jeder Firma, die es je trug (DINE 2010 und 2026 in einer
+      # Reihe). Nach Abruf und Reparatur, vor allen Ableitungen: jede Reihe
+      # auf ihr juengstes Listing kuerzen (Luecke > 365 Tage = neues
+      # Listing); der Push ersetzt so gekuerzte Reihen in der Ablage.
+      - name: Listing-Kontinuitaet (Kuerzel-Neuvergabe in der Reihe)
+        run: node scripts/market/guard-listing-continuity.mjs --public quant/data/market/listing-continuity-v1.json
+
       # Der Benchmark ist ein Einzelpunkt, an dem die relative Staerke des
       # GANZEN Universums haengt. Faellt er durch die Qualitaetspruefung,
       # altert seine Reihe, und seit dem Frische-Gate verlieren damit alle
@@ -387,6 +395,7 @@ jobs:
                       quant/data/market/discover-series \
                       quant/data/market/factors \
                       quant/data/market/tiingo-status.json \
+                      quant/data/market/listing-continuity-v1.json \
                       quant/data/technical \
                       quant/data/sec/quant-factor-inputs.json \
                       discover/data \

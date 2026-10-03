@@ -188,6 +188,26 @@ Die Mindestquote von 95 % ist nicht erreicht. Die Studie bleibt deshalb fail-clo
 - 66 Reihen behalten die Dividendenluecke auch nach vollem Neuabruf (`STILL_DIVIDEND_GAP`).
 - Beides bleibt `TOTAL_RETURN_REJECTED`, mit Grund. Es wird nicht geglaettet.
 
+## Listing-Kontinuitaet: ein Kuerzel ist keine Identitaet, auch in der Kursreihe nicht (03.10.2026)
+
+**Befund.**
+- Der erste vollstaendig veroeffentlichende Lauf auf main zeigte DINE mit Kerzen von 2010-05-11 bis 2011-01-03 (um 12) und ab 2026-05-05 (um 25). Dazwischen liegen 15 Jahre ohne eine Kerze, also zwei Firmen unter einem Kuerzel.
+- 127 kompakte und 251 lange Reihen hatten in ihrem Fenster eine Luecke von mehr als einem Jahr. Die meisten davon waren schon vorher veroeffentlicht.
+- Chart, 12-Monats-Rendite, 200-Tage-Schnitt und die Faehigkeit „Historie ≥ 250 Tage“ rechneten ueber diese Luecke hinweg.
+
+**Regel** (`survivorship-control.js` 1.1.0, `currentListingSegment`): Nach mehr als 365 Kalendertagen ohne Kerze beginnt ein neues Listing, und nur das juengste zaehlt. Kuerzere Luecken (Handelsaussetzungen) bleiben unberuehrt. Kein Ticker, kein Name: es entscheiden nur die Kerzen.
+
+**Angewendet**:
+- im Marktdaten-Lauf nach Abruf und Reparatur, vor allen Ableitungen (`scripts/market/guard-listing-continuity.mjs`, Bericht ohne Kurse in `quant/data/market/listing-continuity-v1.json`);
+- in beiden Reihen-Publishern;
+- beim Push: Gekuerzte Reihen werden zusammengefuehrt, dann geschnitten und anschliessend **ersetzt**, damit die alten Kerzen nicht aus der Ablage zurueckkommen.
+
+**Wirkung.**
+- 127 kompakte Reihen sind gekuerzt. Von den langen Reihen sind 207 gekuerzt; 44 fallen unter 30 Wochen und entfallen, wie es der Publisher bei zu kurzer Historie tut.
+- `historicalAvailable` sinkt von 5.660 auf 5.543: 117 Titel haben im aktuellen Listing keine 250 Handelstage.
+
+**Tests**: `quant/tests/listing-continuity.test.mjs`. Mit abgeschalteter Regel schlagen 3 von 6 fehl.
+
 ## Methodikwechsel ist kein Marktereignis (quant-radar 1.3.0, 03.10.2026)
 
 **Befund.** Der Radar vom 02.10. meldete 571 „Evidenz veraendert“, 670 „neues Muster“, 117 Faktor- und 55 Strategie-Wechsel. Sie entstanden aus der DEBT-Umstufung und aus der neuen Grundgesamtheit der Faktorevidenz, nicht aus der Aktie.
