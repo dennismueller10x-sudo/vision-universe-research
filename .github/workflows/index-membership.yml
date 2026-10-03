@@ -66,8 +66,8 @@ jobs:
             echo "Keine Aenderung."
           else
             git commit -m "Index-Mitgliedschaft: $(node -e 'const i=require("./quant/data/market/index-membership/index.json");console.log(i.indexes.map(x=>x.indexId+" "+x.memberCount+" ("+x.asOf+")").join(", "))')"
-            git pull --rebase
-            git push
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin HEAD:"${GITHUB_REF_NAME}"
           fi
 
       - name: Zusammenfassung
