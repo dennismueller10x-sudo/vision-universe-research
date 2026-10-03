@@ -52,6 +52,7 @@ Details: STATISTICS_AUDIT.md. Der TEST-Zeitraum ist inzwischen viermal angesehen
 | V1-Technikseite | KL 22, RM 8 | offen | ja | nein | – | Weiterleitung auf Chartbild; Route `technik` zeigt Chartbild | – | DONE |
 | Discover | RM 10 | V1-Elliott-Urteil sichtbar | ja | nein | – | abweichendes V1-Urteil entfernt, Link aufs Chartbild | – | DONE |
 | Screener-Felder | RM 11 | offen | ja | nein | – | Ausblick, Kursstruktur, Elliott-Strukturklarheit aus dem Index | – | DONE |
+| Altversionen (elliott-v1/v2, Technik-V1-Daten) | Mission IV §116 | parallel | teilweise | nein | – | sichtbare Altversionen abgelöst (V1-Seite, Discover-V1-Urteil, Methodikseite); `elliott-v2.js` bleibt als Hilfsbibliothek (23 Aufrufe aus elliott-v3: Notation, Rollen, Projektion), Technik-V1-Daten speisen weiter `product-services.js` und die Materialisierung | – | DONE (sichtbar) / REJECTED (Code-Löschung: noch benötigt) |
 | Methodikseite (veraltet elliott-v2) | Mission IV | offen | ja | nein | – | Verträge und erzeugte Seite nennen elliott-3.2.2, Gate FAIL, nicht expert-validiert | – | DONE |
 | Datenumfang (52 MB gz) | KL 19 | offen | ja | nein | – | gemessen: 37 % sind Elliott-Daten enthaltender Titel | Pro-Ansicht zeigt bewusst die Hypothese auch bei Enthaltung (Transparenz) | REJECTED (bewusst; Option dokumentiert) |
 | Professionelle Ansicht / szenario-first | Mission IV P0 | offen | ja | nein | – | Elliott-Übersichtskarte, Tabs, Methodenkarten, Szenario-Titel in Klartext | – | DONE |
