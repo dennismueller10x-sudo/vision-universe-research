@@ -408,4 +408,122 @@ function hypotheses(done, WF, ev, ids) {
   return H;
 }
 
-module.exports = { hypotheses, analyze, mean, median, quantile, clusterBoot, bothBoot, fitLogit, predict, designer, auc, walkForward, modelMetrics, stratified, benjaminiHochberg, rng };
+// ------------------------------------------------------------ Zweiweg-Cluster-Bootstrap (Evidenzstudie ti-evidence, 03.10.2026)
+/**
+ * Zeitblock eines ISO-Datums. "QUARTER" → "2019-Q1", "MONTH" → "2019-01", "YEAR" → "2019", "HALF" → "2019-H1".
+ */
+function timeBlockOf(date, unit) {
+  const d = String(date), y = d.slice(0, 4), m = +d.slice(5, 7) || 1;
+  if (unit === "MONTH") return d.slice(0, 7);
+  if (unit === "YEAR") return y;
+  if (unit === "HALF") return y + "-H" + (m <= 6 ? 1 : 2);
+  return y + "-Q" + (((m - 1) / 3 | 0) + 1);
+}
+/** Deterministischer 32-bit-Seed aus einem Text (FNV-1a). */
+function seedOf(text) { let h = 0x811c9dc5; const s = String(text); for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return h >>> 0; }
+function sdOf(a) { const m = mean(a); return a.length > 1 ? Math.sqrt(a.reduce((x, v) => x + (v - m) * (v - m), 0) / (a.length - 1)) : null; }
+
+/**
+ * Zweiweg-Cluster-Bootstrap fuer Statistiken aus additiven Summen.
+ * Vier Ziehungsschemata mit je B Ziehungen:
+ *   SYMBOL   Titel mit Zuruecklegen ziehen (Zeitbloecke fest)
+ *   TIME     Zeitbloecke mit Zuruecklegen ziehen (Titel fest) — faengt die
+ *            Querschnittsabhaengigkeit (gleiche Marktphase ueber alle Titel)
+ *   CELL     Zellen (Titel × Zeitblock) ziehen — nur Hilfsgroesse fuer TWO_WAY
+ *   PIGEONHOLE  Titel UND Zeitbloecke unabhaengig ziehen, Zelle mit dem Produkt
+ *            der Ziehungshaeufigkeiten gewichtet (Owen 2007; Menzel 2021).
+ *            Zaehlt den Zellen-Rauschanteil mehrfach → konservative Sensitivitaet.
+ * TWO_WAY (massgebliche Zweiweg-Schaetzung) nach Cameron, Gelbach & Miller (2011):
+ *   se² = se²_SYMBOL + se²_TIME − se²_CELL (bei negativem Ergebnis: max der
+ *   Einweg-Varianzen), Intervall est ± 1,96·se.
+ * Massgeblich ist je Statistik das BREITESTE der Intervalle SYMBOL, TIME, TWO_WAY.
+ * p-Wert (zweiseitig, H0: Statistik = 0 bzw. = nullValue) aus der Normal-
+ * naeherung mit der Standardabweichung des massgeblichen Schemas.
+ *
+ * @param rows    Ereignisse
+ * @param symFn   Ereignis → Titel-Schluessel
+ * @param timeFn  Ereignis → Zeitblock-Schluessel
+ * @param sumsFn  Ereignis → Array additiver Beitraege (gleiche Laenge) oder null
+ * @param stats   { name: (summenvektor) → Zahl|null }
+ * @param opts    { B = 1000, seed, nullValue: { name: Wert }, minClusters = 10 }
+ * Ein Schema zaehlt nur, wenn es mindestens minClusters Cluster ziehen kann (TWO_WAY: beide Dimensionen);
+ * ist keines gueltig, bleiben Intervall und p-Wert null (zu wenige unabhaengige Einheiten fuer eine Aussage).
+ */
+function twoWayBoot(rows, symFn, timeFn, sumsFn, stats, opts) {
+  opts = opts || {};
+  const B = opts.B || 1000, seed = opts.seed === undefined ? 7 : opts.seed, nullValue = opts.nullValue || {}, minCl = opts.minClusters === undefined ? 10 : opts.minClusters;
+  const symIx = new Map(), timeIx = new Map(), cellIx = new Map(), cellSym = [], cellTime = [], cellSums = [];
+  let dim = 0;
+  for (const r of rows) {
+    const v = sumsFn(r); if (!v) continue;
+    dim = v.length;
+    const sk = symFn(r), tk = timeFn(r);
+    let si = symIx.get(sk); if (si === undefined) { si = symIx.size; symIx.set(sk, si); }
+    let ti = timeIx.get(tk); if (ti === undefined) { ti = timeIx.size; timeIx.set(tk, ti); }
+    const ck = si * 1048576 + ti;
+    let ci = cellIx.get(ck);
+    if (ci === undefined) { ci = cellSym.length; cellIx.set(ck, ci); cellSym.push(si); cellTime.push(ti); cellSums.push(new Float64Array(v.length)); }
+    const g = cellSums[ci]; for (let i = 0; i < v.length; i++) g[i] += v[i];
+  }
+  const names = Object.keys(stats), out = {};
+  if (!dim) { names.forEach((k) => { out[k] = { est: null, lo: null, hi: null, se: null, p: null, by: null }; }); return { stats: out, symbols: 0, timeBlocks: 0, cells: 0, B }; }
+  const C = cellSym.length, S = symIx.size, T = timeIx.size;
+  const flat = new Float64Array(C * dim), cs = Int32Array.from(cellSym), ct = Int32Array.from(cellTime);
+  const tot = new Float64Array(dim);
+  for (let c = 0; c < C; c++) for (let i = 0; i < dim; i++) { flat[c * dim + i] = cellSums[c][i]; tot[i] += cellSums[c][i]; }
+  const est = {}; names.forEach((k) => { est[k] = stats[k](tot); });
+  const schemes = ["SYMBOL", "TIME", "CELL", "PIGEONHOLE"], reps = {};
+  const wc = new Float64Array(C);
+  schemes.forEach((sc, q) => {
+    const rand = rng((seed + 7919 * (q + 1)) >>> 0), ws = new Float64Array(S), wt = new Float64Array(T), acc = new Float64Array(dim);
+    const vals = {}; names.forEach((k) => { vals[k] = []; });
+    for (let b = 0; b < B; b++) {
+      acc.fill(0);
+      if (sc === "CELL") {
+        wc.fill(0); for (let j = 0; j < C; j++) wc[Math.floor(rand() * C)] += 1;
+        for (let c = 0; c < C; c++) { const w = wc[c]; if (w === 0) continue; const o = c * dim; for (let i = 0; i < dim; i++) acc[i] += w * flat[o + i]; }
+      } else {
+        if (sc === "TIME") ws.fill(1); else { ws.fill(0); for (let j = 0; j < S; j++) ws[Math.floor(rand() * S)] += 1; }
+        if (sc === "SYMBOL") wt.fill(1); else { wt.fill(0); for (let j = 0; j < T; j++) wt[Math.floor(rand() * T)] += 1; }
+        for (let c = 0; c < C; c++) {
+          const w = ws[cs[c]] * wt[ct[c]]; if (w === 0) continue;
+          const o = c * dim; for (let i = 0; i < dim; i++) acc[i] += w * flat[o + i];
+        }
+      }
+      names.forEach((k) => { const v = stats[k](acc); if (isNum(v)) vals[k].push(v); });
+    }
+    reps[sc] = vals;
+  });
+  names.forEach((k) => {
+    const per = {}, e = est[k];
+    schemes.forEach((sc) => { const v = reps[sc][k]; per[sc] = { lo: quantile(v, 0.025), hi: quantile(v, 0.975), se: sdOf(v), valid: v.length }; });
+    const sS = per.SYMBOL.se, sT = per.TIME.se, sC = per.CELL.se;
+    let seTw = null;
+    if (isNum(sS) && isNum(sT) && isNum(sC)) { const v = sS * sS + sT * sT - sC * sC; seTw = Math.sqrt(Math.max(v, sS * sS, sT * sT)); }
+    per.TWO_WAY = { lo: isNum(e) && isNum(seTw) ? e - 1.96 * seTw : null, hi: isNum(e) && isNum(seTw) ? e + 1.96 * seTw : null, se: seTw };
+    const usable = { SYMBOL: S >= minCl, TIME: T >= minCl, TWO_WAY: S >= minCl && T >= minCl };
+    let by = null;
+    ["SYMBOL", "TIME", "TWO_WAY"].forEach((sc) => { if (usable[sc] && isNum(per[sc].se) && per[sc].se > 1e-12 && isNum(per[sc].lo) && isNum(per[sc].hi) && (!by || per[sc].hi - per[sc].lo > per[by].hi - per[by].lo)) by = sc; });
+    const nv = isNum(nullValue[k]) ? nullValue[k] : 0, se = by ? per[by].se : null;
+    const p = isNum(e) && isNum(se) && se > 0 ? 2 * (1 - normCdf(Math.abs(e - nv) / se)) : null;
+    const pair = (x) => [r4(x.lo), r4(x.hi)];
+    out[k] = { est: r4(e), lo: by ? r4(per[by].lo) : null, hi: by ? r4(per[by].hi) : null, se: r4(se), p: isNum(p) ? Math.round(p * 1e6) / 1e6 : null, by, insufficientClusters: !by,
+               symbol: pair(per.SYMBOL), time: pair(per.TIME), twoWay: pair(per.TWO_WAY), iidCell: pair(per.CELL), pigeonhole: pair(per.PIGEONHOLE) };
+  });
+  return { stats: out, symbols: S, timeBlocks: T, cells: C, B };
+}
+
+/**
+ * Benjamini-Hochberg-adjustierte q-Werte (Step-up, monoton) fuer eine Liste von p-Werten.
+ * null-Eintraege bleiben null und zaehlen nicht zur Familie.
+ */
+function bhAdjust(ps) {
+  const idx = ps.map((p, i) => [p, i]).filter((x) => isNum(x[0])).sort((a, b) => a[0] - b[0]);
+  const m = idx.length, q = ps.map(() => null);
+  let run = 1;
+  for (let j = m - 1; j >= 0; j--) { run = Math.min(run, idx[j][0] * m / (j + 1)); q[idx[j][1]] = Math.round(Math.min(1, run) * 1e6) / 1e6; }
+  return q;
+}
+
+module.exports = { hypotheses, analyze, mean, median, quantile, clusterBoot, bothBoot, fitLogit, predict, designer, auc, walkForward, modelMetrics, stratified, benjaminiHochberg, rng,
+                   timeBlockOf, seedOf, twoWayBoot, bhAdjust };
