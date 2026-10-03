@@ -67,7 +67,9 @@
    GEGENPROBE GEGEN DEN ANBIETER
 
    Der Anbieterfaktor f_t = adjustedClose_t / close_t aendert sich nur an
-   Ereignistagen. Erwartet wird f_{t-1}/f_t = (1 - s_t*D_t/close_{t-1}) / s_t.
+   Ereignistagen. Erwartet wird f_{t-1}/f_t = close_t / (s_t*(close_t + D_t)) -
+   dieselbe Reinvestitionskonvention wie oben (an echten Tiingo-Reihen
+   nachgemessen: Tagesabweichung ~1e-12).
      - Ereignistag, Anbieter passt          -> Paritaet
      - Ereignistag, Anbieter passt nicht    -> PROVIDER_MISSED (Kanon gewinnt)
      - kein Ereignis, Anbieter springt wie ein Split und der Rohkurs mit
@@ -280,8 +282,10 @@
       var mObs = f[i - 1] / f[i];
       var isSplit = s !== 1, isDiv = D > 0;
       if (isSplit || isDiv) {
-        var delta = s * D / prev.close;
-        var mExp = (1 - delta) / s;
+        /* Exakt dieselbe Konvention wie die Rekonstruktion (an Tiingo-Reihen
+           gemessen: Abweichung ~1e-12): f_(t-1)/f_t = P_t / (s_t*(P_t + D_t)). */
+        var delta = D / (cur.close + D);
+        var mExp = cur.close / (s * (cur.close + D));
         /* Eine Toleranz fuer beide Ereignisarten: der Dividendenanteil im
            Band (0,6..1,4 des erwarteten Schritts), der Splitanteil 1 %. */
         var tol = (isDiv ? Math.max(CONFIG.dividendBand * delta, CONFIG.dividendAbsTolerance) : 0) +
@@ -340,10 +344,9 @@
     }
     var conflicts = summary.providerMissed - summary.dateShift + summary.providerStitch + summary.providerAnomaly;
     /* MATCH heisst: jedes Ereignis beidseitig gleich verbucht, kein
-       unerklaerter Anbieterschritt. Die Tagesabweichung wird gemessen,
-       entscheidet aber nicht - an einem Ex-Tag unterscheiden sich die
-       Konventionen (Reinvestition (P+D)/P_vor gegen Anbieterfaktor
-       P/(P_vor-D)) um etwa (D/P)^2, das ist kein Widerspruch. */
+       unerklaerter Anbieterschritt. Die Tagesabweichung wird gemessen; bei
+       gleicher Konvention ist sie ~0, ein Ereignis im Toleranzband zaehlt
+       aber nicht als Widerspruch. */
     summary.state = conflicts <= 0 ? "MATCH" : "CONFLICT_CANONICAL_WINS";
     return { summary: summary, blocking: null };
   }

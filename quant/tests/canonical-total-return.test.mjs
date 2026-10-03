@@ -27,12 +27,12 @@ function series(n, { moves = () => 0.001, events = {}, start = 100 } = {}) {
   }
   return bars;
 }
-/* Anbieterspalte nach Anbieterkonvention; skip: Ereignisse, die der Anbieter nicht kennt. */
+/* Anbieterspalte nach Anbieterkonvention (Tiingo: f_(t-1)/f_t = P_t/(s(P_t+D_t))); skip: Ereignisse, die der Anbieter nicht kennt. */
 function withProvider(bars, { skip = new Set(), extra = {} } = {}) {
   const n = bars.length, f = new Array(n); f[n - 1] = 1;
   for (let i = n - 1; i > 0; i--) {
     const b = bars[i], s = skip.has(i) ? 1 : b.splitFactor, D = skip.has(i) ? 0 : b.dividend;
-    let m = (1 - (s * D) / bars[i - 1].close) / s;
+    let m = b.close / (s * (b.close + D));
     if (extra[i]) m *= extra[i];
     f[i - 1] = f[i] * m;
   }
@@ -60,6 +60,7 @@ test("CTR2 normale Dividende: Ex-Tag reinvestiert, Kursrendite ohne Ausschuettun
   assert.ok(ret(r.tr, 100) > ret(r.priceReturnIndex, 100), "mit Ausschuettung hoeher");
   assert.equal(r.crossCheck.dividendParity, 1);
   assert.equal(r.crossCheck.state, "MATCH");
+  assert.ok(r.crossCheck.maxAbsDailyDiff < 1e-9, "gleiche Konvention wie der Anbieter: keine Abweichung");
 });
 
 test("CTR3 Sonderdividende: gezaehlt, gleich gerechnet", () => {
@@ -233,4 +234,21 @@ test("CTR17 Backtesting-Seite nennt die Renditebasis im Klartext, ohne interne C
   assert.match(src, /"Renditebasis: " \+ \(tr \? "Gesamtrendite mit Dividenden \(selbst berechnet\)" : "Nur Kursrendite, ohne Dividenden"\)/);
   assert.match(src, /main\.append\(returnBasisLine\(signal\)\)/);
   assert.doesNotMatch(src, /text: [^,]*"CANONICAL_TOTAL_RETURN"/, "der Code steht nie als Text auf der Seite");
+});
+
+test("CTR18 echte Tiingo-Reihen (Golden Preview): Rekonstruktion = Anbieter, jede Dividende und jeder Split paritaetisch", async () => {
+  const { readFileSync, readdirSync } = await import("node:fs");
+  const dir = new URL("../data/market/golden-preview/daily/", import.meta.url);
+  let div = 0, split = 0;
+  for (const f of readdirSync(dir)) {
+    const bars = JSON.parse(readFileSync(new URL(f, dir), "utf8")).bars;
+    const r = CTR.reconstruct(bars, OK);
+    assert.equal(r.state, "TOTAL_RETURN_RECONSTRUCTED", f);
+    assert.equal(r.crossCheck.state, "MATCH", f);
+    assert.ok(r.crossCheck.maxAbsDailyDiff < 1e-6 && r.crossCheck.maxLevelDiff < 1e-6, f);
+    assert.equal(r.crossCheck.dividendParity, r.crossCheck.dividendEvents, f);
+    assert.equal(r.crossCheck.splitParity, r.crossCheck.splitEvents, f);
+    div += r.crossCheck.dividendEvents; split += r.crossCheck.splitEvents;
+  }
+  assert.ok(div >= 200 && split >= 3, "die Probe traegt echte Ereignisse");
 });

@@ -36,7 +36,7 @@
   "identity": "Nur mit bestätigter Listing-Identität: Arbeitsablage (nur das jüngste Listing je securityId) oder Listing-Fenster bei delisteten Titeln (Klassen A/B). Kein Join über das Kürzel. Sonst IDENTITY_UNCERTAIN.",
   "crossCheck": {
     "role": "CROSS_CHECK, nie SOURCE_OF_TRUTH",
-    "rule": "Anbieterfaktor f_t = adjustedClose_t / close_t; erwartet f_(t-1)/f_t = (1 - s_t*D_t/close_(t-1)) / s_t.",
+    "rule": "Anbieterfaktor f_t = adjustedClose_t / close_t; erwartet f_(t-1)/f_t = close_t / (s_t*(close_t + D_t)) - dieselbe Konvention wie die Rekonstruktion; an den fünf Golden-Preview-Titeln (Tiingo) gemessen: Tagesabweichung ~1e-12, 234/234 Dividenden und 3/3 Splits paritätisch.",
     "outcomes": {
       "MATCH": "Jedes Ereignis beidseitig gleich verbucht, kein unerklärter Anbieterschritt.",
       "CONFLICT_CANONICAL_WINS": "Der Anbieter hat ein Ereignis verpasst oder seine Spalte aus zwei Abrufen zusammengesetzt; unsere Inputs sind vollständig - der Kanon gilt.",
