@@ -238,6 +238,12 @@ Quellenmatrix und Nutzungsbedingungen: `docs/ETF_PRIMARY_SOURCE_MATRIX.md`.
 | `[vorsorge-nport]` | `ingest-sec-nport.mjs` → `fetch-sec-sic.mjs` → `build-etf-intelligence.mjs` | SEC N-PORT (4 Quartale), SEC submissions (SIC) | `data/holdings/<SERIE>.json`, `data/holdings/index.json`, `data/sources/sec-sic.json`, `data/sources/nport-manifest.json` |
 | `[vorsorge-fundamentals]` | `ingest-sec-rr.mjs`, `ingest-esma-firds.mjs` | SEC Risk/Return (Prospekt-XBRL), ESMA FIRDS, GLEIF | `data/sources/sec-rr-costs.json`, `data/eu/etf-eu-index.json` |
 
+Beide Datenjobs bauen anschließend den ETF-Stamm (`build-etf-data.mjs`) neu und prüfen ihn mit
+`assert-vorsorge-data.mjs`. Sie schreiben dieselben abgeleiteten Dateien und werden deshalb
+nacheinander ausgelöst, nicht gleichzeitig. Neue Prüfregeln für Holdings greifen erst, wenn der
+N-PORT-Job die Holdings mit dem passenden Code neu erzeugt hat; deshalb läuft nach einer Änderung an
+den Holdings-Regeln zuerst `[vorsorge-nport]`.
+
 Vollständige Snapshots bleiben in der CI-Arbeitsablage (`.market-cache/vorsorge/nport`). Ins Git
 kommt je Fonds eine kompakte Datei: die 100 größten Positionen, Exposures und Konzentration aus allen
 Positionen, Historie je Quartal, Änderungen im Spaltenformat und eine Zeitleiste.
