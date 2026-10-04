@@ -58,3 +58,8 @@ test('the shared header remains themeable and offers light and dark contrast', (
   assert.match(light, /panelBg:\s*#101318|background:#101318/);
   assert.doesNotMatch(source, /Development Preview[^\n]*<[^>]*class="preview"/);
 });
+
+test('der fuenfte Direktlink (Vorsorge) weicht unter 900 px, damit der Menue-Button sichtbar bleibt', () => {
+  assert.match(source, /<a class="q-extra" href="\/vorsorge\/">Vorsorge<\/a>/);
+  assert.match(source, /@media\(max-width:900px\)\{\.quick a\.q-extra\{display:none\}\}/);
+});
