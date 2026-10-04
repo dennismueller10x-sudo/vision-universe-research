@@ -825,7 +825,7 @@ body.qd{--discover-dim:#9aa0a8}
 .qd .q-ev-trust-plain{font-size:13px;line-height:1.4;color:#2b3036}
 .qd .q-ev-checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
 .qd .q-ev-checks li{display:grid;grid-template-columns:18px 1fr;gap:2px 6px;font-size:12.5px;line-height:1.35;color:#2b3036}
-.qd .q-ev-checks li small{grid-column:2;font-size:10.5px;color:#80868f}
+.qd .q-ev-checks li small{grid-column:2;font-size:10.5px;color:var(--q-card-muted)}
 .qd .q-ev-checks .is-pass .q-ev-mark{color:#2f5200;font-weight:900}
 .qd .q-ev-checks .is-open .q-ev-mark{color:#a86b00;font-weight:900}
 .qd .q-ev-cert{display:flex;flex-direction:column;gap:6px;padding:10px 14px;border-radius:var(--q-radius-sm);border:1px dashed var(--q-line2)}
@@ -892,3 +892,24 @@ body.qd{--discover-dim:#9aa0a8}
 .qd .q-ev-observed .q-timeline li.is-off b{color:var(--q-card-muted)}
 .qd .q-ev-observed .q-timeline li::before{background:var(--q-card)}
 .qd .q-ev-observed .q-timeline::before{background:var(--q-card-line)}
+
+/* Produktpositionierung: Claim, vier Versprechen, Beleg (04.10.2026) */
+.qd .q-hero h1.q-claim{font-size:clamp(26px,4.6vw,44px);line-height:1.08;max-width:22ch}
+.qd .q-promises{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:8px;position:relative;z-index:1;max-width:760px}
+.qd .q-promises a{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid var(--q-line,rgba(255,255,255,.12));color:inherit;text-decoration:none;min-height:44px}
+.qd .q-promises a:hover,.qd .q-promises a:focus-visible{border-color:var(--q-lime,#c8f135)}
+.qd .q-promise-n{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--q-lime,#c8f135);color:#0b0c0e;font-weight:900;font-size:13px}
+.qd .q-promises strong{display:block;font-size:15px;line-height:1.25}
+.qd .q-promises small{display:block;font-size:13px;line-height:1.35;opacity:.82;margin-top:2px}
+@media (min-width:980px){.qd .q-promises{grid-template-columns:1fr 1fr}}
+.qd .q-proof{display:grid;gap:10px;max-width:640px}
+.qd .q-proof-claim{margin:0}
+.qd .q-intro-note{margin:10px 0 0;font-size:14px;line-height:1.45;opacity:.85;position:relative;z-index:1;max-width:62ch}
+.qd .q-intro-note a{color:var(--q-lime,#c8f135)}
+.qd .q-watch-value{margin:8px 0 0;padding-left:18px;font-size:14px;line-height:1.5}
+.qd .q-roles{display:grid;gap:10px}
+@media (min-width:900px){.qd .q-roles{grid-template-columns:repeat(3,1fr)}}
+.qd .q-role{border:1px solid var(--q-line,rgba(255,255,255,.12));border-radius:14px;padding:12px 14px}
+.qd .q-role h3{margin:0 0 4px;font-size:16px}
+.qd .q-role p{margin:0;font-size:14px;line-height:1.45}
+@media (max-width:599px){.qd .q-promises{grid-template-columns:1fr 1fr;gap:6px}.qd .q-promises a{grid-template-columns:22px 1fr;gap:6px;padding:8px 9px}.qd .q-promise-n{width:20px;height:20px;font-size:11px}.qd .q-promises strong{font-size:13px}.qd .q-promises small{display:none}}

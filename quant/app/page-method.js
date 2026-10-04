@@ -83,6 +83,12 @@
       el("h1", { class: "qx-h1", text: "Transparenz schafft Vertrauen." }),
       el("p", { class: "q-hero-lead v2-lead qx-lead", text: "Keine Blackbox. Jede Einschätzung hat einen Grund – und jeder Grund führt bis zu den Daten, aus denen er entsteht." })]),
       tabs(null));
+    /* Abgrenzung in drei Saetzen (Produktpositionierung 04.10.2026). */
+    main.append(X.section("Quant, Screener, Discover – was ist was?", null, [el("div", { class: "q-roles" }, [
+      ["Quant", "Beobachtet Zustände und Veränderungen nach festen Regeln und vergleicht sie mit dem, was früher im ganzen Markt geschah. Quant meldet sich – du musst nicht suchen.", X.routes.radar(), "Zum Radar"],
+      ["Quant Screener", "Findet Aktien, die deine Bedingungen heute erfüllen. Du gibst die Bedingung vor; eine Veränderung oder ein historischer Vergleich ist das nicht.", X.routes.screener(), "Zum Screener"],
+      ["Discover", "Entdecken: Themen, Unternehmen und Marktwelten. Keine Regeln, keine Backtests – dafür der Überblick.", "/discover/", "Zu Discover"]
+    ].map(function (r) { return el("div", { class: "q-role" }, [el("h3", { text: r[0] }), el("p", { text: r[1] }), el("p", {}, [X.link(r[3], r[2])])]); }))]));
     main.append(X.section("So arbeitet Quant", null, [el("div", { class: "q-rows v2-world-directory qx-method-grid" }, TOPICS.map(function (t) {
       return el("a", { class: "q-rowlink", href: X.routes.method(t.id) }, [el("span", { class: "q-icon", "aria-hidden": "true" }, [X.icon(TOPIC_ICON[t.id] || "doc")]),
         el("span", {}, [el("strong", { text: t.title }), el("small", { text: t.text })])]);
