@@ -10,6 +10,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { fingerprint, changedGroups, GROUPS, SCHEMA } from "../../scripts/quant/methodology-fingerprint.mjs";
+import { decide } from "../../scripts/quant/materialization-decision.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const wf = readFileSync(join(ROOT, ".github/workflows/product-intelligence-materialization.yml"), "utf8");
@@ -57,8 +58,14 @@ test("a new total-return, corporate-action or benchmark contract version changes
 test("the idempotency step recomputes on a methodology change without force, and records the fingerprint only after a full run", () => {
   const step = wf.slice(wf.indexOf("id: noetig"), wf.indexOf("Existing R2 credentials are available"));
   assert.match(step, /methodology-fingerprint\.mjs --compare/);
-  const iMethod = step.indexOf('elif [ -n "$METHOD" ]'), iSame = step.indexOf('elif [ -n "$STORE" ] && [ "$STORE" = "$PRODUCT" ]');
-  assert.ok(iMethod > 0 && iSame > iMethod, "der Methodikwechsel wird vor dem Stichtagsvergleich geprueft");
+  // Die Entscheidung lebt in scripts/quant/materialization-decision.mjs: der
+  // Schritt reicht den Methodikbefund weiter, und ein Methodikwechsel schlaegt
+  // den gleichen Stichtag (vorher als elif-Reihenfolge im Shell-Text geprueft).
+  assert.match(step, /materialization-decision\.mjs --store="\$STORE" --product="\$PRODUCT" \\\s*\n\s*--method="\$METHOD"/);
+  const same = { store: "2026-10-02", product: "2026-10-02" };
+  assert.equal(decide({ ...same }).noop, true, "gleicher Stichtag ohne Befund ist ein No-Op");
+  assert.deepEqual(decide({ ...same, method: "benchmark" }), { noop: false, reason: "METHODOLOGY_CHANGED" },
+    "der Methodikwechsel wird vor dem Stichtagsvergleich geprueft");
   const iWrite = wf.indexOf("methodology-fingerprint.mjs --write"), iCommit = wf.indexOf("Commit materialized Product Data");
   assert.ok(iWrite > wf.indexOf("Public data hygiene") && iWrite < iCommit, "festgeschrieben erst nach allen Schritten, vor dem Commit");
   assert.match(wf.slice(iCommit), /quant\/data\/product\/methodology-fingerprint-v1\.json/);
