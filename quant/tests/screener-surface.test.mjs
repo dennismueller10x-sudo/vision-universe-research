@@ -67,7 +67,7 @@ test("a V1 query returns rows that can fill the V1 columns", async () => {
   }
   assert.equal(mitKennzahl, result.stocks.length,
     "nur " + mitKennzahl + " von " + result.stocks.length + " Zeilen tragen die Sortierkennzahl");
-  assert.ok(mitKurs / result.stocks.length > 0.9,
+  assert.equal(mitKurs, result.stocks.length,
     "nur " + mitKurs + " von " + result.stocks.length + " Zeilen tragen einen Kurs");
   /* Und sortiert ist sortiert. */
   const werte = result.stocks.map((s) => s[feld.productKey].value);
