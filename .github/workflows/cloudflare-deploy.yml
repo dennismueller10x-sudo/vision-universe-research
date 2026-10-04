@@ -119,12 +119,12 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           set -e
-          npx --yes wrangler@4 deploy 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tee /tmp/deploy.txt
+          npx --yes wrangler@4.147.0 deploy 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tee /tmp/deploy.txt
           # Die veroeffentlichte Adresse steht in der Ausgabe. Sie ist
           # oeffentlich, sobald sie existiert - sie darf in den Bericht.
           URL=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' /tmp/deploy.txt | head -1)
           if [ -z "$URL" ]; then
-            SUB=$(npx --yes wrangler@4 subdomain get 2>/dev/null | grep -oE '[a-z0-9-]+\.workers\.dev' | head -1)
+            SUB=$(npx --yes wrangler@4.147.0 subdomain get 2>/dev/null | grep -oE '[a-z0-9-]+\.workers\.dev' | head -1)
             [ -n "$SUB" ] && URL="https://vu-live.$SUB"
           fi
           echo "Endpunkt: ${URL:-unbekannt}"
@@ -141,12 +141,12 @@ jobs:
           # Ueber stdin, nie als Argument: Argumente stehen in der
           # Prozessliste, stdin nicht. Und der Schluessel wird hier weder
           # ausgegeben noch in eine Datei geschrieben.
-          printf '%s' "$TIINGO_API_KEY" | npx --yes wrangler@4 secret put TIINGO_API_KEY 2>&1 \
+          printf '%s' "$TIINGO_API_KEY" | npx --yes wrangler@4.147.0 secret put TIINGO_API_KEY 2>&1 \
             | sed -E 's/[0-9a-f]{32}/<maskiert>/g'
           # Das Objekt liest das Secret beim naechsten Start. Ein Redeploy
           # ist nicht noetig - aber ein bereits laufendes Objekt haelt
           # seine alte Umgebung, deshalb wird es angestossen.
-          npx --yes wrangler@4 deploy 2>&1 | tail -5 | sed -E 's/[0-9a-f]{32}/<maskiert>/g'
+          npx --yes wrangler@4.147.0 deploy 2>&1 | tail -5 | sed -E 's/[0-9a-f]{32}/<maskiert>/g'
 
       # ---- Smoke-Test ---------------------------------------------------
       - name: Realtime Runtime smoke-testen
@@ -162,7 +162,7 @@ jobs:
           # Das Protokoll des Workers mitschneiden, waehrend der Test
           # laeuft. Eine Ausnahme im Durable Object ist von aussen nur
           # als abgerissener Socket zu sehen; hier steht sie im Klartext.
-          ( cd worker && npx --yes wrangler@4 tail vu-live --format json > /tmp/tail.json 2>/tmp/tail.err & echo $! > /tmp/tail.pid )
+          ( cd worker && npx --yes wrangler@4.147.0 tail vu-live --format json > /tmp/tail.json 2>/tmp/tail.err & echo $! > /tmp/tail.pid )
           sleep 8
           set +e
           node scripts/market/smoke-vu-live.mjs --url "$VU_LIVE_URL" --seconds 45
