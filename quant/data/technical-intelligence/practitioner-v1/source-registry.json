@@ -2,7 +2,7 @@
  "schemaVersion": "vu-practitioner-source-registry-1.0.0",
  "generatedAt": "2026-10-04",
  "status": "PRELIMINARY",
- "note": "Vorläufiges Quellenverzeichnis. Alle Angaben stammen aus Websuche-Metadaten (Titel, URL, Kurzfassung der Suchmaschine) und sind NICHT am Primärmaterial geprüft: Die Build-Umgebung kann YouTube, X, die Anbieter-Websites, Kolumnenportale und das Internet Archive nicht erreichen (Netzwerk-Policy, HTTP 403). Stufen A/B/C sind deshalb vorläufig; Felder 'UNVERIFIED' werden bei der ersten Sichtung des Primärmaterials gefüllt. Reichweite ist kein Kriterium.",
+ "note": "Vorläufiges Quellenverzeichnis. Alle Angaben stammen aus Websuche-Metadaten (Titel, URL, Kurzfassung der Suchmaschine) und sind NICHT am Primärmaterial geprüft: Die Build-Umgebung kann YouTube, X, die Anbieter-Websites, Kolumnenportale und das Internet Archive nicht erreichen (Netzwerk-Policy, HTTP 403). Stufen A/B/C sind deshalb vorläufig; Felder 'UNVERIFIED' werden bei der ersten Sichtung des Primärmaterials gefüllt. Reichweite ist kein Kriterium. Stichprobenrahmen je Quelle (samplingFrame) noch nicht gesetzt; quellenfamilie hkcm = hkcm + phantom-hkcm.",
  "tiers": {
   "A": "sehr gut dokumentierte Practitioner Reference",
   "B": "brauchbar",
@@ -52,7 +52,20 @@
    "benchmarkTier": "A (vorläufig)",
    "tierRationale": "Priorität laut Auftrag; konkrete Zielbereiche und Szenarien öffentlich; Prüfung am Primärmaterial ausstehend. Eigenwerbung mit Trefferquote → Publikationsverzerrung prüfen.",
    "language": "de",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": null,
+    "frameSize": null,
+    "stepK": null,
+    "startIndex": null,
+    "seed": 20261004,
+    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+   },
+   "sourceFamily": "hkcm"
   },
   {
    "sourceId": "phantom-hkcm",
@@ -88,7 +101,20 @@
    "benchmarkTier": "B (vorläufig)",
    "tierRationale": "HKCM-Umfeld (zählt zur 40-%-Grenze); Schwerpunkt Krypto, für Aktien-Benchmark nur ergänzend.",
    "language": "de",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": null,
+    "frameSize": null,
+    "stepK": null,
+    "startIndex": null,
+    "seed": 20261004,
+    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+   },
+   "sourceFamily": "hkcm"
   },
   {
    "sourceId": "ewi",
@@ -128,7 +154,20 @@
    "benchmarkTier": "B (vorläufig)",
    "tierRationale": "Klassische Schule (Frost & Prechter) — wichtig als Gegenpol; nur freie Inhalte zulässig.",
    "language": "en",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": null,
+    "frameSize": null,
+    "stepK": null,
+    "startIndex": null,
+    "seed": 20261004,
+    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+   },
+   "sourceFamily": "ewi"
   },
   {
    "sourceId": "ewf",
@@ -169,7 +208,20 @@
    "benchmarkTier": "B (vorläufig)",
    "tierRationale": "Viele öffentliche Aktien-/Index-Beiträge mit Zonen und Invalidation; Achtung: hoher Anteil retrospektiver Erfolgsbeiträge und Intraday-Zählungen.",
    "language": "en",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": null,
+    "frameSize": null,
+    "stepK": null,
+    "startIndex": null,
+    "seed": 20261004,
+    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+   },
+   "sourceFamily": "ewf"
   },
   {
    "sourceId": "more-crypto-online",
@@ -203,7 +255,20 @@
    "benchmarkTier": "C (vorläufig)",
    "tierRationale": "Krypto-Schwerpunkt; für den Aktien-Benchmark nur ergänzend.",
    "language": "en",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": null,
+    "frameSize": null,
+    "stepK": null,
+    "startIndex": null,
+    "seed": 20261004,
+    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+   },
+   "sourceFamily": "more-crypto-online"
   },
   {
    "sourceId": "ewt-gilburt",
@@ -240,7 +305,20 @@
    "benchmarkTier": "B (vorläufig)",
    "tierRationale": "Stichtag = Mitglieder-Erstveröffentlichung, nicht öffentliche Freigabe — muss je Artikel belegt sein, sonst konservativ öffentliches Datum.",
    "language": "en",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": null,
+    "frameSize": null,
+    "stepK": null,
+    "startIndex": null,
+    "seed": 20261004,
+    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+   },
+   "sourceFamily": "ewt-gilburt"
   },
   {
    "sourceId": "tiedje",
@@ -276,7 +354,20 @@
    "benchmarkTier": "B (vorläufig)",
    "tierRationale": "Deutschsprachig, unabhängig von HKCM; DAX-Future ohne VU-Reihe (UNMAPPED).",
    "language": "de",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": null,
+    "frameSize": null,
+    "stepK": null,
+    "startIndex": null,
+    "seed": 20261004,
+    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+   },
+   "sourceFamily": "tiedje"
   },
   {
    "sourceId": "stockstreet",
@@ -311,7 +402,20 @@
    "benchmarkTier": "B (vorläufig)",
    "tierRationale": "Deutschsprachige Indexanalysen mit Zielen; unabhängig von HKCM.",
    "language": "de",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": null,
+    "frameSize": null,
+    "stepK": null,
+    "startIndex": null,
+    "seed": 20261004,
+    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+   },
+   "sourceFamily": "stockstreet"
   },
   {
    "sourceId": "antczak",
@@ -345,7 +449,20 @@
    "benchmarkTier": "C (vorläufig)",
    "tierRationale": "Updates zu früheren Analysen vorhanden (Revisionen gut verfolgbar); DAX UNMAPPED.",
    "language": "de",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": null,
+    "frameSize": null,
+    "stepK": null,
+    "startIndex": null,
+    "seed": 20261004,
+    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+   },
+   "sourceFamily": "antczak"
   },
   {
    "sourceId": "tradingview-ideas",
@@ -377,7 +494,20 @@
    "benchmarkTier": "C (vorläufig)",
    "tierRationale": "Gute Zeitstempel-Disziplin, aber Autorenqualität sehr gemischt; nur Autoren mit Kontinuität einzeln aufnehmen.",
    "language": "en/de",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": null,
+    "frameSize": null,
+    "stepK": null,
+    "startIndex": null,
+    "seed": 20261004,
+    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+   },
+   "sourceFamily": "tradingview-ideas"
   },
   {
    "sourceId": "neowave",
@@ -411,7 +541,20 @@
    "benchmarkTier": "REJECT (vorläufig)",
    "tierRationale": "Kernanalysen hinter Bezahlschranke; andere Schule (nicht mit klassischer Zählung mischen).",
    "language": "en",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": null,
+    "frameSize": null,
+    "stepK": null,
+    "startIndex": null,
+    "seed": 20261004,
+    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+   },
+   "sourceFamily": "neowave"
   },
   {
    "sourceId": "search-aggregators",
@@ -441,7 +584,20 @@
    "benchmarkTier": "REJECT",
    "tierRationale": "Sekundärberichte über Analysen; Original bevorzugt (Quellkette).",
    "language": "en",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": null,
+    "frameSize": null,
+    "stepK": null,
+    "startIndex": null,
+    "seed": 20261004,
+    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+   },
+   "sourceFamily": "search-aggregators"
   }
  ]
 }
