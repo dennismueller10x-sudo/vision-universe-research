@@ -324,7 +324,7 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
       fundamentals: 'SEC EDGAR companyfacts (fundamentals-1.2.0)',
       classification: 'SEC SIC-Code (sic-peer-taxonomy-1.0.0) + ' + SIC_SECTOR_VERSION,
       factors: factorMeta ? factorMeta.methodologyVersion : null,
-      technicalIntelligence: ti.meta ? ti.meta.schemaVersion + ' (Wochenchart; Elliott experimentell, nicht in den Ausblick gewichtet)' : null
+      technicalIntelligence: ti.meta ? ti.meta.schemaVersion + ' (meist Wochenchart; Elliott experimentell, nicht in den Ausblick gewichtet)' : null
     },
     technicalIntelligence: ti.meta,
     factorPublication: factorMeta ? { ...factorMeta.publication, asOf: factorMeta.asOf } : { compositeAllowed: false, rankingAllowed: false, reason: 'SOURCE_MISSING' },

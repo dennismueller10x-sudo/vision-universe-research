@@ -23,7 +23,7 @@ const server = createServer(async (req, res) => {
   } catch (e) { res.writeHead(404).end(); }
 }).listen(PORT);
 const base = "http://127.0.0.1:" + PORT + "/quant/index.html";
-const WIDTHS = [[390, 844, "390"], [430, 932, "430"], [768, 1024, "768-tablet"], [1280, 900, "1280-desktop"]];
+const WIDTHS = [[390, 844, "390"], [430, 932, "430"], [768, 1024, "768-tablet"], [1280, 900, "1280-desktop"], [1440, 900, "1440-desktop"]];
 const SCREENS = [
   { id: "chartbild-simple", hash: "#/aktie/" + TICKER + "/chartbild", prep: async (p) => { await p.evaluate(() => localStorage.setItem("vu-ti-view-v1", "simple")); } },
   { id: "chartbild-alt-scenario", hash: "#/aktie/" + TICKER + "/chartbild", act: async (p) => { const b = p.locator(".cb-switch-btn").nth(1); if (await b.count()) await b.click(); } },
@@ -56,7 +56,9 @@ for (const [w, h, tag] of WIDTHS) for (const sc of SCREENS) {
     document.querySelectorAll("main *").forEach((n) => {
       const r = n.getBoundingClientRect(); if (!r.width) return;
       if (r.right > vw + 1 && getComputedStyle(n).position !== "fixed") { let p = n.parentElement, scroll = false; while (p) { const s = getComputedStyle(p); if (/(auto|scroll|hidden)/.test(s.overflowX)) { scroll = true; break; } p = p.parentElement; } if (!scroll && out.wideEls.length < 6) out.wideEls.push((n.className || n.tagName) + " " + Math.round(r.right)); }
-      if (n.children.length === 0 && !/(^|\\s)(cb-sr|sr-only|q-sr)(\\s|$)/.test(n.className || "") && n.scrollWidth > n.clientWidth + 2 && getComputedStyle(n).overflow === "hidden" && getComputedStyle(n).textOverflow !== "ellipsis" && out.clipped.length < 6) out.clipped.push((n.className || n.tagName) + ": " + n.textContent.slice(0, 30));
+      /* absichtlich nur fuer Screenreader (Klasse oder 1-px-Clip wie .qd .qc-chart>h2) zaehlt nicht als abgeschnitten */
+      const srOnly = (el) => { const cs = getComputedStyle(el); return (cs.position === "absolute" && el.offsetWidth <= 1 && el.offsetHeight <= 1) || /rect\(0/.test(cs.clip || ""); };
+      if (n.children.length === 0 && !/(^|\\s)(cb-sr|sr-only|q-sr)(\\s|$)/.test(n.className || "") && !srOnly(n) && n.scrollWidth > n.clientWidth + 2 && getComputedStyle(n).overflow === "hidden" && getComputedStyle(n).textOverflow !== "ellipsis" && out.clipped.length < 6) out.clipped.push((n.className || n.tagName) + ": " + n.textContent.slice(0, 30));
     });
     document.querySelectorAll("main button, main a, main [role=tab], main input").forEach((n) => { const r = n.getBoundingClientRect(); if (r.width && r.height && (r.height < 40 && r.width < 40) && out.smallTargets.length < 8) out.smallTargets.push((n.className || n.tagName) + " " + Math.round(r.width) + "x" + Math.round(r.height)); });
     const badges = [...document.querySelectorAll(".ti-wave-badge")].map((b) => b.getBoundingClientRect());
