@@ -130,7 +130,12 @@ export function drawFrame(frame) {
   const p0 = seedMod(FRAME_SEED + "|pilot|" + sourceId, m);
   const pilot = [];
   for (let j = 0; j < frame.pilotQuota && p0 + j * m < sample.length; j++) pilot.push(sample[p0 + j * m]);
-  return { rulesVersion: RULES_VERSION, frameSize: inWin.length, excludedCounts, eligibleCount: eligible.length, stepK: k, startIndex,
+  /* Pilot-Erweiterung (vorab festgelegt, 04.10.2026, bevor eines dieser Elemente gesichtet wurde): reicht der Pilot nicht fuer
+     20–30 Faelle, werden zusaetzlich die Mittelpunkte zwischen den Pilotpositionen gezogen: S[p0 + j·m + floor(m/2)],
+     j = 0 … pilotExtensionQuota−1. Der urspruengliche Pilot bleibt unveraendert. */
+  const ext = [], half = Math.floor(m / 2);
+  for (let j = 0; j < (frame.pilotExtensionQuota || 0) && p0 + j * m + half < sample.length; j++) if (half > 0) ext.push(sample[p0 + j * m + half]);
+  return { rulesVersion: RULES_VERSION, pilotExtension: ext.map((s) => [s.id, s.instrument]), frameSize: inWin.length, excludedCounts, eligibleCount: eligible.length, stepK: k, startIndex,
            sample: sample.map((s) => [s.id, s.instrument]), pilotStepM: m, pilotStartIndex: p0, pilot: pilot.map((s) => [s.id, s.instrument]) };
 }
 
@@ -143,7 +148,7 @@ function main(argv) {
     const p = join(FRAME_DIR, f), frame = JSON.parse(readFileSync(p, "utf8"));
     const d = drawFrame(frame);
     if (check) {
-      const keys = ["frameSize", "eligibleCount", "stepK", "startIndex", "sample", "pilot"];
+      const keys = ["frameSize", "eligibleCount", "stepK", "startIndex", "sample", "pilot", "pilotExtension"];
       const diff = keys.filter((k) => JSON.stringify(frame.draw && frame.draw[k]) !== JSON.stringify(d[k]));
       if (diff.length) { bad++; console.error(`${frame.sourceId}: gespeicherte Ziehung weicht ab (${diff.join(", ")})`); }
     }
