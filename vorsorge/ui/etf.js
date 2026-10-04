@@ -58,14 +58,16 @@
       maxcost: q.maxcost || "", minaum: q.minaum || "", minpos: "", maxt10: "", hasHoldings: q.holdings === "1", dom: q.dom || "",
       complex: q.complex === "1", inactive: false, sort: q.sort || "p1Y", dir: -1, limit: 50, row: q.row || "" };
     var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">ETF Intelligence</p><h1>Die ETF-Welt.<br>Klar eingeordnet.</h1><p class="vs-lead">Alle ETFs, die unser Datenanbieter Tiingo führt und für die Kurse vorliegen – mit echter Historie, Schwankung, größtem Rückgang und Trend. Hebel-, Short-, Options- und Krypto-Produkte sind getrennt und markiert.</p>' +
-      '<form id="vs-search-form" class="vs-search" role="search"><span aria-hidden="true">⌕</span><input id="vs-q" autocomplete="off" value="' + esc(st.q) + '" placeholder="Ticker, Name, Index, Thema, Region, Anbieter …" aria-label="ETFs durchsuchen"><button type="submit">Suchen</button></form><div class="vs-suggest" id="vs-suggest"></div></section>' +
+      '<form id="vs-search-form" class="vs-search" role="search"><span aria-hidden="true">⌕</span><input id="vs-q" autocomplete="off" value="' + esc(st.q) + '" placeholder="Ticker, ISIN, Name, Index, Thema, Anbieter …" aria-label="ETFs durchsuchen"><button type="submit">Suchen</button></form><div class="vs-suggest" id="vs-suggest"></div></section>' +
       '<section class="vs-section" id="vs-rows"></section><section class="vs-section" id="vs-screener"><div class="vs-loading">ETF-Verzeichnis wird geladen …</div></section>');
     (q.inactive === "1" ? VS.masterAll() : VS.master()).then(function (m) {
       var t0 = (global.performance && performance.now()) || 0;
       var host = root.querySelector("#vs-screener");
       var all = m.etfs.filter(function (e) { return e.layer !== "REVIEW"; });
       var input = root.querySelector("#vs-q"), timer = null;
-      root.querySelector("#vs-search-form").addEventListener("submit", function (ev) { ev.preventDefault(); st.q = input.value; st.limit = 50; draw(); VS.analytics.track("etf_search", { query: st.q.slice(0, 40) }); });
+      root.querySelector("#vs-search-form").addEventListener("submit", function (ev) { ev.preventDefault();
+        if (/^[A-Za-z]{2}[A-Za-z0-9]{9}\d$/.test(input.value.trim())) { VS.go("#/europa/" + input.value.trim().toUpperCase()); return; }
+        st.q = input.value; st.limit = 50; draw(); VS.analytics.track("etf_search", { query: st.q.slice(0, 40) }); });
       input.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(function () { st.q = input.value; st.limit = 50; draw(); }, 140); });
       var hasDist = all.some(function (e) { return e.distributionPolicy; });
       drawRows();

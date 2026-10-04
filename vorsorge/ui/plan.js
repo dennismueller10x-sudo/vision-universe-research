@@ -43,6 +43,7 @@
       var q = input.value.trim();
       if (!q) { box.innerHTML = ""; return; }
       var items = [];
+      if (/^[A-Za-z]{2}[A-Za-z0-9]{9}\d$/.test(q)) items.push('<li><a href="#/europa/' + esc(q.toUpperCase()) + '"><span>ISIN ' + esc(q.toUpperCase()) + ' im EU-Register öffnen</span><span class="vs-sub">Europa →</span></a></li>');
       ROUTE_HINTS.forEach(function (h) { if (h[0].test(q)) items.push('<li><a href="' + h[1] + '"><span>' + esc(h[2]) + '</span><span class="vs-sub">Öffnen →</span></a></li>'); });
       V.Master.search(master.etfs.filter(function (e) { return e.layer !== "REVIEW"; }), q, 6).forEach(function (e) {
         items.push('<li><a href="' + VS.etfHref(e) + '"><span><b>' + esc(e.symbol) + '</b> · ' + esc(e.name) + '</span><span class="vs-sub">' + esc(e.category) + '</span></a></li>');
