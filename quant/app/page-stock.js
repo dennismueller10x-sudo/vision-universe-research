@@ -515,9 +515,19 @@
     if (card && card.next && card.next.open && card.next.open.length) {
       out.push(el("p", { class: "q-now-line" }, [el("b", { text: "Nächster Schritt: " }), el("span", { text: "Für „" + lifecycleLabel(card.next.state) + "“ " + (card.next.open.length === 1 ? "fehlt noch eine von " : "fehlen noch " + card.next.open.length + " von ") + card.next.total + " Bedingungen." })]));
     }
+    /* Historisch: zuerst das marktweit GETESTETE Signal mit der Quote des
+       Markts daneben, dann die nur BEOBACHTETE Vergangenheit dieser Aktie -
+       getrennt beschriftet, nie eine nackte Trefferquote ohne Stufe. */
+    var E = global.QXEvidence;
+    var tested = card ? (card.events || []).filter(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; })[0] : null;
+    if (tested && E) {
+      var b = tested.backtest, tl = (Radar && Radar.TYPE[tested.eventType] || {}).label || tested.eventType;
+      out.push(el("p", { class: "q-now-line" }, [el("b", { text: "Historisch getestet („" + tl + "“, ganzer Markt): " }),
+        el("span", { text: E.share1(b.positiveShare) + " der Fälle lagen nach 6 Monaten höher – der Markt " + E.share1(b.basePositiveShare) + " (" + E.pp(b.deltaPositiveShare) + "). " + E.edgeSentence(b) })]));
+    }
     if (card && card.replay && card.replay.sufficient) {
       var rp = card.replay;
-      out.push(el("p", { class: "q-now-line" }, [el("b", { text: "Früher in derselben Kurslage: " }), el("span", { text: Math.round(rp.positiveShare * 100) + " % im Plus, Median " + VM.pct(rp.medianReturn, 1, true) + " nach 6 Monaten (" + rp.completed + " Fälle)." })]));
+      out.push(el("p", { class: "q-now-line" }, [el("b", { text: "Bei dieser Aktie beobachtet: " }), el("span", { text: "in derselben Kurslage früher " + Math.round(rp.positiveShare * 100) + " % im Plus, Median " + VM.pct(rp.medianReturn, 1, true) + " nach 6 Monaten (" + rp.completed + " Fälle, ohne Marktvergleich)." })]));
     }
     return out.length ? out : [el("p", { class: "qx-small", text: "Für diese Aktie liegt kein Radar-Stand vor." })];
   }

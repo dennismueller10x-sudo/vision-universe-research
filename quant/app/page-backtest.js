@@ -311,8 +311,8 @@
 
   async function render(main, ctx, ruleId) {
     main.append(el("header", { class: "q-hero q-hero--page" }, [X.globe(), el("p", { class: "q-kicker", text: "Backtesting" }),
-      el("h1", { class: "qx-h1", text: "Wähle eine Regel oder ein Setup" }),
-      el("p", { class: "q-hero-lead v2-lead", text: "Was geschah früher, nachdem dieselbe Regel galt – im Vergleich zur Base Rate derselben Wochen, mit Vertrauensstufe und klaren Grenzen. Keine Prognose, keine Empfehlung." })]));
+      el("h1", { class: "qx-h1", text: "Hatte ein Signal früher wirklich einen Vorteil?" }),
+      el("p", { class: "q-hero-lead v2-lead", text: "Für jede Regel: wie oft die Fälle nach 6 Monaten höher lagen – und wie oft der ganze Markt in denselben Wochen. Dazu, wie belastbar der Vergleich ist und was noch fehlt. Keine Prognose, keine Empfehlung." })]));
     var all = await Promise.all([ctx.api.getBacktest("signal"), ctx.api.getBacktest("certification"), ctx.api.getBacktest("outcomes")]);
     var signal = all[0], cert = all[1], outcomes = all[2].state === "AVAILABLE" ? all[2] : null;
     if (signal.state !== "AVAILABLE" || cert.state !== "AVAILABLE") { main.append(X.notice("Backtests derzeit nicht verfügbar", "Die Studien konnten nicht geladen werden.")); return; }
