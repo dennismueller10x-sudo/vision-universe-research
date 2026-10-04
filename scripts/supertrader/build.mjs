@@ -46,6 +46,8 @@ import kkBreakout31 from './engine/strategies/kk-breakout-v31.mjs';
 import kkBreakout32 from './engine/strategies/kk-breakout-v32.mjs';
 import darvas302 from './engine/strategies/darvas-v302.mjs';
 import donchian201 from './engine/strategies/donchian-v201.mjs';
+import donchian202 from './engine/strategies/donchian-v202.mjs';
+import weinstein4 from './engine/strategies/weinstein-v4.mjs';
 import { marketOkMap } from './validation/portfolio.mjs';
 import donchian2 from './engine/strategies/donchian-v2.mjs';
 import darvas3 from './engine/strategies/darvas-v3.mjs';
@@ -76,7 +78,9 @@ let TREND52_SYMBOLS = [];
 // Runde 11: Momentum 3.2.0 (Fehlerkorrektur Einstand). Weinstein 4.0.0, Minervini 3.0.0 und Turtle 2.1.0
 // verfehlten die vorab festgelegten Uebernahmebedingungen und bleiben Forschung (PREREGISTRATION-R11).
 // Runde 12: Marktampel (PORT-MARKET-200) fuer Darvas 3.0.2 und Turtle 2.0.1 (vorab festgelegt bestanden).
-export const LIVE_ENGINES = [kkBreakout32, weinstein3, darvas302, minervini2, donchian201];
+// Runde 13 (Audit, Entscheidungen mit S1C neu angewendet): Weinstein 4.0.0 (Fortsetzungskaeufe) live,
+// Turtle 2.0.2 ohne Marktampel (2.0.1 zurueckgenommen); Darvas 3.0.2 behaelt die Ampel.
+export const LIVE_ENGINES = [kkBreakout32, weinstein4, darvas302, minervini2, donchian202];
 export const PREVIOUS_ENGINES = [kkBreakout, kkBreakout2, kkBreakout3, weinstein, weinstein2, darvas, darvas2, darvas3, minervini, donchian];
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
@@ -571,6 +575,16 @@ export function build() {
   writeJson(path.join(DATA, 'sources.json'), sources);
   writeJson(path.join(DATA, 'market.json'), market);
   writeJson(path.join(DATA, 'coverage.json'), { schema: 'supertrader-coverage-1.0.0', asOf, coverage, greenblatt: gbCoverage, unavailableInstruments: unavailable, gateDefinitions: GATE_DEFS, minHistoryYears: MIN_HISTORY_YEARS });
+  /* Discover-Verfuegbarkeit explizit ausweisen (LOGI, 03.10.2026: Signal mit
+     offener Position, Discover-Seite durch das Faktor-Qualitaetsgate entfallen ->
+     toter Link). Signale und Positionen bleiben unveraendert; die Seite zeigt fuer
+     ausgewiesene Titel einen Hinweis statt des Links. */
+  /* Geprueft werden genau die Titel, fuer die unten eine Aktienseite
+     entsteht - auch die Teilpruefungs-Titel, deren Seite ebenfalls den
+     Discover-Link traegt. */
+  signals.discoverAvailability = discoverAvailability(
+    [...Object.keys(signals.bySymbol), ...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)],
+    readJson(rel('discover/data/stock-index/US_REAL.json')).symbols || []);
   writeJson(path.join(DATA, 'signals.json'), signals);
   if (pilot) backtests.pilot = { path: '/supertrader/data/pilot-backtest.json', status: pilot.status, id: pilot.spec.id };
   writeJson(path.join(DATA, 'backtests.json'), backtests);
@@ -937,6 +951,18 @@ export function symbolsIn(x, out = new Set()) {
     for (const v of Object.values(x)) if (v && typeof v === 'object') symbolsIn(v, out);
   }
   return out;
+}
+
+/** Welche Titel mit Supertrader-Seite haben (k)eine Discover-Aktienseite? */
+export function discoverAvailability(symbols, indexSymbols) {
+  const index = new Set(indexSymbols);
+  const checked = [...new Set(symbols)].sort();
+  return {
+    source: 'discover/data/stock-index/US_REAL.json',
+    checked: checked.length,
+    unavailable: checked.filter((s) => !index.has(s)),
+    note: 'Titel mit Supertrader-Seite ohne Discover-Aktienseite (z. B. vom Faktor-Qualitaetsgate gesperrt). Signale bleiben unveraendert; die Seite zeigt einen Hinweis statt des Links.'
+  };
 }
 
 function writeStockPages(signals, extra = []) {

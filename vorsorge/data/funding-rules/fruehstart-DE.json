@@ -1,0 +1,63 @@
+{
+ "schemaVersion": "vu-funding-rules-1.0.0",
+ "ruleId": "DE-FRUEHSTART",
+ "ruleVersion": "2027.1-bt-drs-21-7864",
+ "product": "Frühstart-Rente (staatlicher Beitrag für Kinder)",
+ "jurisdiction": "DE",
+ "validFrom": "2027-01-01",
+ "validUntil": null,
+ "legalStatus": "GESETZENTWURF",
+ "legalStatusNote": "Regierungsentwurf eines Gesetzes zur Einführung einer Frühstartrente (BT-Drucksache 21/7864), Kabinettsbeschluss 12.08.2026. Noch nicht verkündet – Werte können sich im parlamentarischen Verfahren ändern. Gefördert werden nach dem Entwurf nur Kinder ab dem Geburtsjahrgang 2020; ältere Kinder erhalten keine staatliche Einzahlung.",
+ "verification": {
+  "status": "PRIMARY_SOURCE_DRAFT",
+  "primaryVerified": false,
+  "verifiedAt": "2026-10-03",
+  "method": "Werte gegen die Bundestagsmeldung zum Gesetzentwurf geprüft. primaryVerified bleibt false, weil es noch kein verkündetes Gesetz gibt.",
+  "fields": {
+   "childRules.stateContributionMonthly": "„Die staatliche Förderung soll zehn Euro pro Monat und Kind betragen.“",
+   "childRules.fromAge/untilAgeExclusive": "„Kinder und Jugendliche von sechs bis 18 Jahren“",
+   "childRules.eligibleBirthYearFrom": "„zunächst mit dem Geburtsjahrgang der im Jahr 2026 sechs Jahre alten Kinder (Geburtsjahrgang 2020) … für ältere Kinder … ist eine staatliche Förderung nicht vorgesehen“",
+   "childRules.privateTopUpMaxPerYear": "„durch private Einzahlungen bis zu 6.840 Euro im Jahr weiter aufgestockt“",
+   "payoutRules.earliestAge": "„nicht vor Vollendung des 65. Lebensjahres“"
+  }
+ },
+ "ruleSource": [
+  {
+   "title": "Deutscher Bundestag, hib – Frühstartrente (BT-Drs. 21/7864)",
+   "url": "https://www.bundestag.de/presse/hib/kurzmeldungen-1211024",
+   "kind": "PRIMARY_PARLIAMENT_DRAFT",
+   "fetched": true
+  },
+  {
+   "title": "BMF-Pressemitteilung 12.08.2026 – Regierungsentwurf Frühstartrente",
+   "url": "https://www.bundesfinanzministerium.de/Content/DE/Pressemitteilungen/Finanzpolitik/2026/08/2026-08-12-regierungsentwurf-fruehstartrente.html",
+   "kind": "PRIMARY_MINISTRY",
+   "fetched": false,
+   "note": "Abruf durch Captcha blockiert"
+  }
+ ],
+ "childRules": {
+  "stateContributionMonthly": 10,
+  "fromAge": 6,
+  "untilAgeExclusive": 18,
+  "parentContributionAllowed": true,
+  "eligibleBirthYearFrom": 2020,
+  "privateTopUpMaxPerYear": 6840
+ },
+ "maximumFunding": {
+  "stateContributionPerYear": 120,
+  "stateContributionTotal": 1440
+ },
+ "country": "DE",
+ "status": "GESETZENTWURF",
+ "primarySource": {
+  "title": "Deutscher Bundestag, hib – Frühstartrente für Kinder soll schrittweise kommen (zu BT-Drs. 21/7864)",
+  "url": "https://www.bundestag.de/presse/hib/kurzmeldungen-1211024",
+  "sha256": "db7138a0f62e194a293983af32287da24df0a4ab6cb9284b2a9134cc4470ce56",
+  "localText": "sources/bundestag-hib-fruehstartrente.txt"
+ },
+ "payoutRules": {
+  "earliestAge": 65
+ },
+ "ruleHash": "fnv-0073b8d7910204bd"
+}
