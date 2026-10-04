@@ -6,9 +6,10 @@ name: Vorsorge ETF-Primaerquellen (Probe, SEC N-PORT, ESMA FIRDS)
 #   [vorsorge-etf-probe]   Nutzungsbedingungen der Emittenten + Form der offenen Quellen
 #   [vorsorge-nport]       SEC N-PORT (Quartals-Datasets, gemeinfrei): US-ETF-Holdings,
 #                          Fondsvermoegen, Historie
-#   [vorsorge-firds]       ESMA FIRDS (Wiederverwendung mit Quellenangabe): europaeische
-#                          Listings, ISIN, Handelsplatz, Waehrung, CFI
-# Ohne Marker laeuft nichts.
+#   [vorsorge-fundamentals] SEC Risk/Return (Kostenquoten) und ESMA FIRDS (Wiederverwendung
+#                          mit Quellenangabe): europaeische Listings, ISIN, Handelsplatz, CFI
+# Ohne Marker laeuft nichts. Der Push muss einen der unter paths genannten Pfade
+# beruehren. nport und fundamentals bauen beide den ETF-Stamm neu: nacheinander ausloesen.
 #
 # Emittenten-Datenendpunkte werden NICHT abgerufen (Bedingungen, siehe
 # docs/ETF_PRIMARY_SOURCE_MATRIX.md).
@@ -17,7 +18,7 @@ on:
   workflow_dispatch:
     inputs:
       job:
-        description: 'probe | nport | firds'
+        description: 'probe | nport | fundamentals'
         default: 'probe'
   push:
     branches:
