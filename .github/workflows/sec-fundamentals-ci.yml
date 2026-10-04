@@ -153,7 +153,10 @@ jobs:
                   raise AssertionError(message)
 
           Checker().feed(html)
-          assert "<vu-navigation></vu-navigation>" in html, "shared navigation missing"
+          # Attribute (theme, theme-switch, no-preview) sind erlaubt; geprueft
+          # wird, dass die gemeinsame Navigation als Element vorhanden ist.
+          import re
+          assert re.search(r"<vu-navigation(\s[^>]*)?></vu-navigation>", html), "shared navigation missing"
           # The inspector is a quant page and must use the quant shell, not a
           # second UI stack of its own.
           assert "/quant/ui/shell.js" in html, "shared quant shell missing"

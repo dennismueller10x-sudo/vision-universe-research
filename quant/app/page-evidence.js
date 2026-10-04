@@ -288,7 +288,8 @@
       return el("li", {}, [el("label", {}, [box, el("span", { text: c.label }), c.hint ? el("small", { text: c.hint }) : null])]);
     }));
     say();
-    return el("details", { class: "q-alerts" }, [el("summary", { text: "Benachrichtige mich, wenn …" }), list, status,
+    return el("details", { class: "q-alerts" }, [el("summary", { text: "Benachrichtige mich, wenn …" }),
+      el("p", { class: "q-alert-note", text: "Beobachtest du die Aktie (☆ oben), verfolgt Quant für dich Setup-Wechsel, neue historische Evidenz, Strategie-Wechsel, Risiken und neue Signale. Hier wählst du, was dir besonders wichtig ist." }), list, status,
       el("p", { class: "q-alert-note", text: "Benachrichtigungen werden noch nicht verschickt. Deine Auswahl bleibt auf diesem Gerät; Quant zeigt dir passende Ereignisse, sobald du die Seite öffnest." })]);
   }
 
@@ -384,7 +385,7 @@
 
   global.QXEvidence = { TRUST_WORD: TRUST_WORD, STATUS_WORD: STATUS_WORD, TIER_WORD: TIER_WORD, REASON: REASON, RULE_LABEL: RULE_LABEL,
     tierWord: tierWord, statusBadge: statusBadge, pp: pp, baseLine: baseLine, reasonText: reasonText, pct: pct, share: share, num: num, int: int,
-    trustPill: trustPill, returnWord: returnWord, evidenceBlock: evidenceBlock, trackingSection: trackingSection,
+    share1: share1, trustPill: trustPill, returnWord: returnWord, evidenceBlock: evidenceBlock, trackingSection: trackingSection,
     LANGUAGE_VERSION: LANGUAGE_VERSION, EDGE: EDGE, EDGE_THRESHOLDS_PP: EDGE_THRESHOLDS_PP, TRUST_PLAIN: TRUST_PLAIN, TRUST_SHORT: TRUST_SHORT, CHECK_WORDS: CHECK_WORDS,
     edgeOf: edgeOf, edgeSentence: edgeSentence, oosAnswer: oosAnswer, trustPlain: trustPlain, trustChecklist: trustChecklist,
     ALERT_CHOICES: ALERT_CHOICES, alertsFor: alertsFor, alertMatch: alertMatch, alertPanel: alertPanel, watchTimeline: watchTimeline, hasEdge: hasEdge,
