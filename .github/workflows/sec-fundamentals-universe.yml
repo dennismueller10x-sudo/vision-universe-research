@@ -177,8 +177,13 @@ jobs:
           c = json.load(open("quant/data/fundamentals/coverage-report.json"))
           titel = c["universe"]["PRODUCT_TITLES"]
           verfuegbar = c["fundamentals"]["COMPANY_FACTS_AVAILABLE"]
-          if titel < 7000:
-              sys.exit(f"Produktuniversum nur {titel} Titel - der Master ist nicht synchron")
+          # Exakt gegen die Eignungsschicht statt einer festen Untergrenze:
+          # "titel < 7000" stammte aus der Zeit vor der Produkt-Datenhygiene
+          # (14./15.09.2026, 7004 -> 6875) und #366 (-> 6853) und schlug seither
+          # bei jedem Lauf fehl (04.10.2026).
+          soll = json.load(open("quant/data/market/security-master/eligibility.json"))["counts"]["productUniverse"]
+          if titel != soll:
+              sys.exit(f"Produktuniversum {titel} Titel, Eignungsschicht {soll} - der Master ist nicht synchron")
           for name, row in c["metrics"].items():
               if row["COUNT"] > titel:
                   sys.exit(f"{name}: {row['COUNT']} von {titel} - mehr gedeckt als vorhanden")
