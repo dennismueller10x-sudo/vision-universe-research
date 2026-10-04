@@ -27,7 +27,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .market-cache
-          key: discover-market-cache-37096292852
+          key: discover-market-cache-37085599297
           fail-on-cache-miss: true
       - name: Keep old cache on this runner without changing its contents
         run: mv .market-cache "$RUNNER_TEMP/tiingo2-old-market-cache"
