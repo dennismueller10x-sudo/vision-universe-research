@@ -15,6 +15,8 @@ export const HS1 = Object.freeze({
   indexTop: 500, dvWeightWindow: 252, weightCap: 0.06, bandRel: 0.25, bandAbs: 0.0005,
   // HS3 (PREREGISTRATION-HS3.json)
   mcapCap: 0.10, sharesMaxAgeDays: 400,
+  // HS4 (PREREGISTRATION-HS4.json)
+  smaLong: 200, near52: 0.80, udvWindow: 50, accWindow: 63,
 });
 
 const DAY = 864e5;
@@ -26,7 +28,7 @@ export function prepareStock(s, calIndex) {
   const dIdx = new Int32Array(n);
   for (let i = 0; i < n; i++) { const k = calIndex.get(s.date[i]); if (k === undefined) throw new Error(`Balken ausserhalb des Kalenders: ${s.id} ${s.date[i]}`); dIdx[i] = k; }
   const tri = new Float64Array(n), r = new Float64Array(n);
-  const pR = new Float64Array(n + 1), pR2 = new Float64Array(n + 1), pDv = new Float64Array(n + 1), pSplit = new Float64Array(n + 1);
+  const pR = new Float64Array(n + 1), pR2 = new Float64Array(n + 1), pDv = new Float64Array(n + 1), pSplit = new Float64Array(n + 1), pC = new Float64Array(n + 1);
   tri[0] = 1;
   for (let i = 0; i < n; i++) {
     if (i > 0) {
@@ -40,8 +42,9 @@ export function prepareStock(s, calIndex) {
     pDv[i + 1] = pDv[i] + (Number.isFinite(dv) ? dv : 0);
     const sf = s.split ? s.split[i] : 1;
     pSplit[i + 1] = pSplit[i] + (sf > 0 && Number.isFinite(sf) ? Math.log(sf) : 0);
+    pC[i + 1] = pC[i] + (s.close[i] > 0 ? s.close[i] : 0);
   }
-  return { ...s, n, dIdx, tri, r, pR, pR2, pDv, pSplit, firstK: dIdx[0], lastK: dIdx[n - 1] };
+  return { ...s, n, dIdx, tri, r, pR, pR2, pDv, pSplit, pC, firstK: dIdx[0], lastK: dIdx[n - 1] };
 }
 
 // Letzter Balkenindex mit Kalenderindex <= k (binaere Suche), sonst -1.
@@ -114,6 +117,48 @@ export function mcapAt(st, t, D, P = HS1, opts = {}) {
   return v > 0 && Number.isFinite(v) ? v : NaN;
 }
 
+// HS4: Verhaeltnis des Dollar-Umsatzes an Plus- zu Minustagen (Tagesschluss gegen Vortag), letzte w Tage.
+export function upDownVolume(st, t, w) {
+  let up = 0, dn = 0;
+  for (let i = t - w + 1; i <= t; i++) {
+    if (i < 1) return NaN;
+    const dv = (st.rawClose[i] || 0) * (st.rawVolume[i] || 0);
+    if (st.close[i] > st.close[i - 1]) up += dv; else if (st.close[i] < st.close[i - 1]) dn += dv;
+  }
+  return dn > 0 ? up / dn : NaN;
+}
+// HS4: Akkumulation (Chaikin-Art): umsatzgewichtete Lage des Schlusses in der Tagesspanne, letzte w Tage, in [-1, 1].
+export function accumulation(st, t, w) {
+  if (!st.low) return NaN;
+  let num = 0, den = 0;
+  for (let i = t - w + 1; i <= t; i++) {
+    if (i < 0) return NaN;
+    const h = st.high[i], l = st.low[i], c = st.close[i], dv = (st.rawClose[i] || 0) * (st.rawVolume[i] || 0);
+    if (!(h > l) || !(dv > 0)) continue;
+    num += (((c - l) - (h - c)) / (h - l)) * dv; den += dv;
+  }
+  return den > 0 ? num / den : NaN;
+}
+
+// HS4: konzentriertes Depot. Universum wie HS3-D3 (500 groesste, US-Inland), Filter Trend und Naehe zum Hoch,
+// Rang aus den Faktoren der Variante, Top N mit Puffer 2N fuer gehaltene Titel; Gewichte gleich oder ~ Wurzel(Marktkap.).
+export function concentratedWeights(elig, cfg, held, P = HS1) {
+  const uniW = indexTiltWeights(elig, { sizeBy: 'MCAP', mcapRule: 'D3', factors: [] }, P);
+  const inUni = new Set(uniW.keys());
+  const pool = elig.filter((e) => inUni.has(e.st.id) && e.ABOVE200 && e.HIGH52 >= P.near52);
+  if (!pool.length) return new Map();
+  const ranked = (cfg.random != null ? pool.map((e) => ({ id: e.st.id, st: e.st, score: hashRand(cfg.random, e.st.id + e.t) })) : scoreSection(pool, cfg.factors))
+    .sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
+  const rankOf = new Map(ranked.map((x, i) => [x.id, i + 1]));
+  const keep = [...held].filter((id) => (rankOf.get(id) ?? Infinity) <= P.bufferMult * cfg.n).sort((a, b) => rankOf.get(a) - rankOf.get(b));
+  const target = keep.slice(0, cfg.n);
+  for (const x of ranked) { if (target.length >= cfg.n) break; if (!target.includes(x.id)) target.push(x.id); }
+  const byId = new Map(pool.map((e) => [e.st.id, e]));
+  const raw = new Map(target.map((id) => [id, cfg.sqrtCap ? Math.sqrt(byId.get(id).MCAP3) : 1]));
+  const w = capWeights(raw, cfg.sqrtCap ? 0.15 : 1);
+  return new Map([...w].map(([id, v]) => [id, { w: v, st: byId.get(id).st }]));
+}
+
 // Querschnitt an Kalendertag k (Datum D). Liefert zulaessige Titel mit Rohfaktoren.
 export function crossSection(stocks, k, D, P = HS1) {
   const cand = [];
@@ -143,6 +188,10 @@ export function crossSection(stocks, k, D, P = HS1) {
     e.REVG = revgAt(st.fund, D, P);
     e.MCAP = mcapAt(st, t, D, P);
     e.MCAP3 = mcapAt(st, t, D, P, { plausibility: true });
+    // HS4: Trend und Volumenprofil (nur Balken bis t).
+    e.ABOVE200 = st.close[t] > (st.pC[t + 1] - st.pC[t + 1 - P.smaLong]) / P.smaLong;
+    e.UDV = upDownVolume(st, t, P.udvWindow);
+    e.ACC = accumulation(st, t, P.accWindow);
   }
   return elig;
 }
@@ -321,9 +370,9 @@ export function simulate(stocks, calendar, cfg, P = HS1) {
       if (cfg.ewUniverse) ranked = elig.map((e) => ({ id: e.st.id, st: e.st, score: 0 }));
       else if (cfg.random != null) ranked = elig.map((e) => ({ id: e.st.id, st: e.st, score: hashRand(cfg.random, e.st.id + D) })).sort((a, b) => b.score - a.score);
       else ranked = scoreSection(elig, cfg.factors).sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
-      if (cfg.weighting === 'INDEX_TILT') {
+      if (cfg.weighting === 'INDEX_TILT' || cfg.concentrated) {
         // HS2: Zielgewichte nach Groesse mit Faktorneigung; Handel nur ausserhalb des Bandes.
-        const tw = indexTiltWeights(elig, cfg, P);
+        const tw = cfg.concentrated ? concentratedWeights(elig, cfg, new Set(pos.keys()), P) : indexTiltWeights(elig, cfg, P);
         const sells = new Map(), buys = [];
         for (const [id, p] of pos) if (!tw.has(id)) sells.set(id, p.shares);
         for (const [id, x] of tw) {

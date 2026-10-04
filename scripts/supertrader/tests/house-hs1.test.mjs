@@ -256,3 +256,32 @@ test('HS3-D3: falsch skalierte Aktienzahl wird verworfen, echter Split nicht', (
   const st2 = prepareStock(s, idx);
   assert.ok(Number.isFinite(mcapAtT(st2, 700, cal[700], undefined, { plausibility: true })), 'Split 4:1 ist plausibel');
 });
+
+test('HS4: Volumenprofil (Plus/Minus-Umsatz, Akkumulation) nur aus Balken bis t', async () => {
+  const { upDownVolume, accumulation } = await import('../house/engine.mjs');
+  const n = 80, st = { close: [], high: [], low: [], rawClose: [], rawVolume: [] };
+  for (let i = 0; i < n; i++) { const c = 10 + (i % 2 ? 1 : 0); st.close.push(c); st.rawClose.push(c); st.high.push(c + 0.5); st.low.push(c - 0.5); st.rawVolume.push(i % 2 ? 300 : 100); }
+  const u = upDownVolume(st, 70, 50);
+  assert.ok(u > 2.5 && u < 3.5, `UDV ${u}`);
+  const st2 = { ...st, close: st.close.map((c, i) => st.high[i]) };
+  assert.ok(Math.abs(accumulation(st2, 70, 63) - 1) < 1e-12, 'Schluss am Hoch = volle Akkumulation');
+  const poisoned = { ...st, rawVolume: st.rawVolume.map((v, i) => (i > 70 ? 1e9 : v)) };
+  assert.equal(upDownVolume(poisoned, 70, 50), u, 'Zukunft veraendert nichts');
+});
+
+test('HS4 full end-to-end: explorative Kriterien, Zufallsauswahl, V06 als Kontrolle', async () => {
+  const { runAnalysis } = await import('../house/analyze.mjs');
+  const cal = []; const dd = new Date('2015-01-01T00:00:00Z');
+  while (dd.toISOString().slice(0, 10) <= '2026-09-30') { const wd = dd.getUTCDay(); if (wd && wd !== 6) cal.push(dd.toISOString().slice(0, 10)); dd.setUTCDate(dd.getUTCDate() + 1); }
+  const mkRaw = (i) => { let p = 20 + i; return cal.map((date, k) => { p *= 1 + (i - 10) * 0.0001 + Math.sin(k * 0.3 + i) * 0.006; return { date, open: p * 0.999, high: p * 1.01, low: p * 0.99, close: p, volume: 1e6 * (1 + i / 10), adjClose: p, dividend: 0, splitFactor: 1 }; }); };
+  const shares = (i) => cal.filter((d, k) => k % 63 === 0).map((d) => [d, 1e6 * (1 + i), d, 'dei']);
+  const segs = Array.from({ length: 40 }, (_, i) => ({ id: `tiingo:NYSE:T${i}:2000-01-01`, raw: mkRaw(i), survivor: true, delisted: false, cls: 'EQUITY_COMMON', fund: { eps: [[cal[10], 1, cal[11]]], rev: [], shares: shares(i), cik: 'C' + i } }));
+  const r = runAnalysis({ segs, spyAdj: L.adjustSeries(mkRaw(3)), hash: 'x', nonEquityExcluded: 0, secCoverage: null }, { MODE: 'full', SET: 'hs4' });
+  assert.equal(r.period.to, '2026-09-30');
+  assert.deepEqual(Object.keys(r.trials), ['V01', 'V02', 'V03', 'V04', 'V05', 'V06']);
+  assert.notEqual(r.selection.selected, 'V06');
+  assert.equal(r.stats.trialsCounted, 49);
+  assert.ok(r.explorative && ['EXPLORATORY_PROMISING', 'EXPLORATORY_NO_EDGE'].includes(r.explorative.criteria.verdict));
+  assert.equal(r.controls.RANDOM_FILTERED.length, 20);
+  for (const t of Object.values(r.trials)) assert.ok(t.reconcile < 1e-9 && t.meanPositions <= 20.5);
+});

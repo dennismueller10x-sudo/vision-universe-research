@@ -42,6 +42,9 @@ export const SETS = {
   hs3d3: { prereg: 'PREREGISTRATION-HS3.json', frozen: 'FROZEN-HS3-D3.json', secPitKey: 'r13', cfg: (t) => ({ weighting: 'INDEX_TILT', sizeBy: 'MCAP', mcapRule: 'D3', factors: t.factors, tau: t.tau || 0, cut: !!t.cut }),
     selectable: (t) => t.def.id !== 'C00' && t.turnover <= 1 && t.metrics.excessCagr > 0 && t.vsControl?.excessCagr > 0, pboIds: (ids) => ids.filter((id) => id !== 'C00'),
     priorSets: ['hs1', 'hs2', 'hs3', 'hs3d1', 'hs3d2'], control: 'C00', relative: true, gateTE: 0.03 },
+  // HS4 (PREREGISTRATION-HS4.json): explorativ ueber den Gesamtzeitraum (Modus full).
+  hs4: { prereg: 'PREREGISTRATION-HS4.json', secPitKey: 'r13', cfg: (t) => ({ concentrated: true, factors: t.factors, n: t.n, sqrtCap: !!t.sqrtCap }),
+    selectable: (t) => t.def.id !== 'V06', pboIds: (ids) => ids.filter((id) => id !== 'V06'), priorSets: ['hs1', 'hs2', 'hs3', 'hs3d1', 'hs3d2', 'hs3d3'], halves: true, concRandom: true },
 };
 
 const slimMonthly = (m) => m.monthly.map((x) => [x.month, +x.r.toFixed(6), +x.b.toFixed(6)]);
@@ -52,10 +55,10 @@ async function main() {
   const arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
   const MODE = arg('--mode', 'dev');
   const SET = arg('--set', 'hs1');
-  if (!SETS[SET]) throw new Error('--set hs1|hs2|hs3|hs3d1|hs3d2|hs3d3');
+  if (!SETS[SET]) throw new Error('--set hs1|hs2|hs3|hs3d1|hs3d2|hs3d3|hs4');
   const OUT = arg('--out', path.join(os.tmpdir(), 'house'));
   const LIMIT = Number(arg('--limit', '0'));
-  if (!['dev', 'holdout'].includes(MODE)) throw new Error('--mode dev|holdout');
+  if (!['dev', 'holdout', 'full'].includes(MODE)) throw new Error('--mode dev|holdout|full');
   const frozen = MODE === 'holdout' ? assertFrozen(here, SETS[SET].frozen) : null;
   fs.mkdirSync(OUT, { recursive: true });
   const t0 = Date.now();
@@ -97,13 +100,13 @@ export function runAnalysis(d, { MODE, SET = 'hs1', LIMIT = 0, frozen = null, lo
     const a = L.adjustSeries(raw);
     if (seg.fund) fundSegs++;
     stocks.push(prepareStock({ id: seg.id, survivor: seg.survivor, delisted: seg.delisted, cls: seg.cls || null, date: a.date, open: a.open, high: a.high, close: a.close,
-      rawClose: a.rawClose, rawVolume: a.rawVolume, divAdj: a.divAdj, split: a.split, fund: seg.fund || null }, calIndex));
+      rawClose: a.rawClose, rawVolume: a.rawVolume, divAdj: a.divAdj, split: a.split, low: a.low, fund: seg.fund || null }, calIndex));
     seg.raw = null;
   }
   segs = null;
   log(`Aktien ${stocks.length}, delistet ${stocks.filter((s) => s.delisted).length}, mit SEC-Werten ${fundSegs}`);
 
-  const startDate = MODE === 'dev' ? DEV_FROM : PREREG.periods.holdout.from;
+  const startDate = MODE === 'holdout' ? PREREG.periods.holdout.from : DEV_FROM;
   const startK = calIndex.get(startDate), endK = calendar.length - 1;
   if (startK === undefined) throw new Error('Startdatum nicht im Kalender: ' + startDate);
   const fullStartK = calIndex.get(DEV_FROM);
@@ -180,6 +183,28 @@ export function runAnalysis(d, { MODE, SET = 'hs1', LIMIT = 0, frozen = null, lo
     for (let s = 1; s <= 20; s++) { const r = run({ random: s, n: 30 }); const m = metrics(r.equity, bench); random.push({ seed: s, cagr: m.cagr, excessCagr: m.excessCagr, infoRatio: m.infoRatio, maxDrawdown: m.maxDrawdown }); }
     controls.RANDOM = random;
   }
+  if (S.concRandom) {
+    const rnd = [];
+    for (let s = 1; s <= 20; s++) { const r = run({ concentrated: true, random: s, n: 20 }); const m = metrics(r.equity, bench); rnd.push({ seed: s, cagr: m.cagr, excessCagr: m.excessCagr, infoRatio: m.infoRatio }); }
+    controls.RANDOM_FILTERED = rnd;
+  }
+  let explorative = null;
+  if (S.halves && sel) {
+    const half = (t, from, to) => { const ms = trials[t].metrics.monthly.filter((m) => m[0] >= from && m[0] <= to); const g = (i) => ms.reduce((v, m) => v * (1 + m[i]), 1); const y = ms.length / 12; return { strat: g(1) ** (1 / y) - 1, spy: g(2) ** (1 / y) - 1, excess: g(1) ** (1 / y) - g(2) ** (1 / y) }; };
+    const H = (t) => ({ first: half(t, '2016-02', '2021-12'), second: half(t, '2022-01', '2026-09') });
+    const halvesAll = Object.fromEntries(Object.keys(trials).map((id) => [id, H(id)]));
+    const hs = halvesAll[selectedId], v6 = halvesAll.V06;
+    const rq = controls.RANDOM_FILTERED.map((x) => x.excessCagr).sort((a, b) => a - b);
+    const E = {
+      E1: hs.first.excess > 0 && hs.second.excess > 0,
+      E2: controls.COST2.excessCagr > 0,
+      E3: controls.S2.excessCagr > 0,
+      E4: hs.first.strat > v6.first.strat && hs.second.strat > v6.second.strat,
+      E5: trials[selectedId].metrics.excessCagr > rq[Math.floor(rq.length * 0.8)],
+    };
+    E.verdict = Object.values(E).every(Boolean) ? 'EXPLORATORY_PROMISING' : 'EXPLORATORY_NO_EDGE';
+    explorative = { halves: halvesAll, criteria: E, randomP80: rq[Math.floor(rq.length * 0.8)] };
+  }
   log('Kontrollen fertig');
 
   let holdout = null;
@@ -201,7 +226,7 @@ export function runAnalysis(d, { MODE, SET = 'hs1', LIMIT = 0, frozen = null, lo
     schema: 'supertrader-house-result-1.1.0', set: SET, mode: MODE, limit: LIMIT || null, at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null,
     hashes: { prereg: fileHash(path.join(here, S.prereg)), engine: fileHash(path.join(here, 'engine.mjs')), stats: fileHash(path.join(here, 'stats.mjs')), listingTable: d.hash },
     period: { from: calendar[startK], to: calendar[endK] }, universe: { stocks: stocks.length, delisted: stocks.filter((s) => s.delisted).length, survivors: SURV.list.length, withSec: fundSegs, nonEquityExcluded: d.nonEquityExcluded, secCoverage: d.secCoverage },
-    coverage, gate, trials, selection: { rule: P.selection, selected: selectedId, candidates: ok.length }, stats, controls, holdout,
+    coverage, gate, explorative, trials, selection: { rule: P.selection, selected: selectedId, candidates: ok.length }, stats, controls, holdout,
   };
   return result;
 }
