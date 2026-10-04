@@ -198,6 +198,22 @@ Holdings, Replikation, Domizil/UCITS-Status, NAV, Indexstände für Tracking Dif
 Der Mapping-Vertrag (`etf-provider.js → MAPPING_CONTRACT`) beschreibt, was ein zweiter Anbieter
 liefern muss; Holdings über `etf-holdings-2.0.0`. Kein Anbieter wird hier empfohlen.
 
+### Datenvolumen und Auslieferung (gemessen 04.10.2026)
+| Größe | Wert | Einordnung |
+|---|---|---|
+| Arbeitsbaum `vorsorge/` | 164 MB, 17.816 Dateien (Kursreihen 71 MB, Details 59 MB, SEO 3,6 MB) | |
+| Git, gepackt (alle PR-Objekte inkl. Zwischenstände) | +37 MB auf 3,11 GiB | +1,2 % Clone |
+| Pages-Artefakt (komprimiert) | ≈ +26 MB auf 486 MB (main) | +5 % |
+| Pages-Site (unkomprimiert) | +147 MB auf ≈ 1,08 GB (main) | main liegt bereits über der 1-GB-Richtgröße |
+| ein vollständiger Daten-Refresh (alle Reihen + Details) | ≈ +10 MB gepackt je Lauf | trotz Git-Deltas |
+
+Bewertung: Für den Merge vertretbar. Das Muster entspricht Discover/Quant (veröffentlichte Reihen im Repo),
+der Ingest läuft **nicht** zeitgesteuert (nur `workflow_dispatch` bzw. Marker auf `claude/**`), es gibt also
+kein laufendes Wachstum. Ein **täglicher** Refresh wäre dagegen nicht vertretbar (≈ 2,5 GB/Jahr).
+Refresh-Regel bis zur Umstellung: höchstens monatlich. Vor jedem häufigeren Takt die Reihen in
+unveränderliche Jahresblöcke + kleine Ende-Datei teilen (ein Refresh berührt dann nur die Ende-Dateien)
+oder die Reihen aus dem bestehenden R2-Speicher statt aus dem Repo ausliefern.
+
 ## 9. Release, QA
 
 Gemessen (lokal, ungzippt ausgeliefert, Screener mit 6.072 Zeilen): Desktop Laden 0,8 s, erstes
