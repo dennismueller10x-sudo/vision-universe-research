@@ -93,6 +93,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v4

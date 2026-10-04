@@ -19,7 +19,10 @@ permissions:
   contents: write
 
 concurrency:
-  group: market-data
+  # Je Zweig eine Gruppe: Laeufe auf claude/** stehen nicht mehr in der
+  # Warteschlange von main (eine neue wartende Anfrage verdraengt die
+  # aeltere wartende - auch eine uebersprungene). Audit 03.10.2026.
+  group: market-data-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -27,6 +30,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -111,4 +117,5 @@ jobs:
           # gruen, Commit gebaut, "cannot pull with rebase: You have unstaged
           # changes").
           git checkout -- .
-          scripts/ci/push-with-retry.sh "${{ github.ref_name }}"
+          # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

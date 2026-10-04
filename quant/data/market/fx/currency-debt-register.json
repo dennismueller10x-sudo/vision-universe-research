@@ -1,6 +1,6 @@
 {
   "schema": "vu-currency-debt-register-1.0.0",
-  "generatedAtUtc": "2026-10-03T15:58:45.605Z",
+  "generatedAtUtc": "2026-10-03T20:57:13.788Z",
   "note": "Erst klassifizieren, dann migrieren (O-6). Klasse A ist die einzige, die den Currency Contract konsumieren MUSS. B darf ihn nie konsumieren. E ist kein Schaden, sondern eine Aussage.",
   "classes": {
     "A": {
@@ -120,14 +120,14 @@
     },
     {
       "file": "discover/ui/cards.js",
-      "line": 108,
+      "line": 112,
       "rule": "trailingDollar",
       "class": "F",
       "label": "MIGRATED_FALLBACK",
       "action": "Bleibt. Die Datei konsumiert den zentralen Formatter; diese Zeile greift nur, wenn der Core nicht geladen ist.",
       "confidence": "HIGH",
       "declaredReason": null,
-      "text": "return v.toLocaleString(\"de-DE\", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + \" $\";"
+      "text": "return v.toLocaleString(\"de-DE\", { minimumFractionDigits: dec, maximumFractionDigits: dec }) + \" $\";"
     },
     {
       "file": "discover/ui/daten.js",

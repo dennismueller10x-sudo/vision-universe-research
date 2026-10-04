@@ -28,6 +28,8 @@
 import { readFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { join } from "node:path";
+import { createRequire } from "node:module";
+const Identity = createRequire(import.meta.url)("../../core/identity.js"); // eine Identitaetsregel
 
 export const PRODUCT_UNIVERSE = "PRODUCT_UNIVERSE";
 export const SECURITY_MASTER_FILE = "quant/data/market/security-master/eligibility.json";
@@ -90,7 +92,7 @@ function fromSecurityMaster(root, file) {
     if (klasse === "EXCLUDED") continue;
     counts.productUniverse++;
     securities.push({
-      securityId: e.securityId || "ref_" + e.ticker, ticker: String(e.ticker).toUpperCase(),
+      securityId: e.securityId || Identity.securityIdForTicker(e.ticker), ticker: String(e.ticker).toUpperCase(),
       providerSymbol: e.providerSymbol || String(e.ticker).toUpperCase(),
       exchange: e.exchange || null, mic: e.mic || null, eligibility: klasse,
       instrumentType: e.instrument_type || null, activeStatus: e.active_status || null,
@@ -132,7 +134,7 @@ function overlayCuratedSectors(root, securities) {
   const u = JSON.parse(readFileSync(file, "utf8"));
   const byId = new Map();
   for (const s of u.securities || []) {
-    if (s.sector && s.sectorStatus === "CURATED") byId.set(s.securityId || "ref_" + s.ticker, s);
+    if (s.sector && s.sectorStatus === "CURATED") byId.set(s.securityId || Identity.securityIdForTicker(s.ticker), s);
   }
   let n = 0;
   for (const s of securities) {
@@ -178,7 +180,7 @@ function fromScaleUniverse(root, file, name) {
   const roh = readFileSync(file);
   const u = JSON.parse(roh.toString("utf8"));
   const securities = (u.securities || []).map((s) => ({
-    securityId: s.securityId || "ref_" + s.ticker, ticker: String(s.ticker).toUpperCase(),
+    securityId: s.securityId || Identity.securityIdForTicker(s.ticker), ticker: String(s.ticker).toUpperCase(),
     providerSymbol: s.providerSymbol || String(s.ticker).toUpperCase(),
     exchange: s.exchange || null, mic: s.mic || null, eligibility: null,
     instrumentType: s.assetType || s.instrumentType || null

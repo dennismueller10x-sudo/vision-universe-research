@@ -18,6 +18,10 @@ on:
       - ".github/workflows/sec-fundamentals-ci.yml"
   workflow_dispatch:
 
+# Nur lesen: reine Pruef-Workflows brauchen kein Schreibrecht (Audit 03.10.2026).
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest

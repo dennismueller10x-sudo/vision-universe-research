@@ -39,9 +39,22 @@ on:
       # Neue Titel bekommen ihr Logo nach dem Marktdaten-Refresh; der
       # Logo-Lauf pusht mit dem GITHUB_TOKEN und loest sonst nichts aus.
       - "Firmenlogos (Wikimedia Commons und Firmen-Websites fuer Discover)"
-      # Hedgefonds-13F-Daten: woechentlich und taeglich um die Meldefristen,
-      # pusht ebenfalls mit dem GITHUB_TOKEN.
+      # Plattform-Audit 03.10.2026: diese Datenlaeufe pushen ebenfalls mit
+      # dem GITHUB_TOKEN und kamen bisher erst mit der naechsten Bruecke
+      # (Mo-Fr 13-21 UTC) auf die Seite - Samstagslaeufe (Supertrader-
+      # Signale, Index-Mitgliedschaft, lange Reihen) also erst am Montag.
+      - "Supertrader Signale"
+      - "SEC Fundamentals — Daily Incremental"
+      - "Index-Mitgliedschaft (S&P 500, NASDAQ-100, Dow Jones aus Fondsbestaenden)"
+      - "Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)"
+      - "Company Master — Universum, Suchindex, CIK"
+      - "Company-Namen (kanonische Namensschicht zum Company Master)"
+      - "Kanonische Deckungskennzahlen (R2-Index, Company Master, Abgleich)"
+      - "Quant 2.0 Product Intelligence Materialization"
+      - "Update VISION UNIVERSE news"
+      - "Update VISION UNIVERSE analyst ratings"
       - "Update Hedgefonds 13F data"
+      - "Build VISION UNIVERSE Morning"
     types: [completed]
     branches: [main]
 

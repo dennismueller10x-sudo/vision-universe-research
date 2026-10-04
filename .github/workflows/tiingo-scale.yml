@@ -112,6 +112,9 @@ jobs:
       contains(github.event.head_commit.message, '[tiingo-scale')
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -172,8 +175,8 @@ jobs:
             echo "Keine Aenderung am Faehigkeitsbericht."
           else
             git commit -m "Tiingo Commercial: Faehigkeitsnachweis aus Lauf ${{ github.run_id }}"
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
-            git push origin "HEAD:${GITHUB_REF_NAME}"
+            # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
           fi
 
       - name: Zusammenfassung
@@ -251,6 +254,9 @@ jobs:
       contains(github.event.head_commit.message, '[tiingo-realtime')
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -354,8 +360,8 @@ jobs:
             echo "Keine Aenderung am Stromnachweis."
           else
             git commit -m "Tiingo Commercial: Stromnachweis aus Lauf ${{ github.run_id }}"
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
-            git push origin "HEAD:${GITHUB_REF_NAME}"
+            # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
           fi
 
       - name: Zusammenfassung
@@ -472,6 +478,9 @@ jobs:
       )
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -724,8 +733,8 @@ jobs:
             echo "Keine Aenderung an den Berichten."
           else
             git commit -m "Tiingo Scale: Berichte aus Lauf ${{ github.run_id }} (${{ steps.gate.outputs.gate }})"
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
-            git push origin "HEAD:${GITHUB_REF_NAME}"
+            # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
           fi
 
       - name: Zusammenfassung
