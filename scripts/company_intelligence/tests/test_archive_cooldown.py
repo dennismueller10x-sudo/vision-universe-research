@@ -32,6 +32,7 @@ class ArchiveCooldownTests(unittest.TestCase):
    r=Path(tmp);self.seed(r,2,'2099-01-01T00:00:00Z')
    result,calls=self.run_archive(r,AssertionError('OUTBOUND_REQUEST_DURING_COOLDOWN'))
    self.assertEqual(calls,0);self.assertEqual(result['stopReason'],'SOURCE_COOLDOWN');self.assertEqual(result['checkpoint'],{'attempted':7,'parsed':5})
+   self.assertFalse(result['checkpointCurrentRun'])
    s=Store(r/'.company-intelligence/state.sqlite');v=json.loads(s.db.execute("select payload from sources where id='gnn-archive-2026-09'").fetchone()[0])
    self.assertEqual(v['failureCount'],2);self.assertEqual(s.state('distributorArchive:retained-release'),{'status':'INGESTED'});s.close()
 
@@ -40,6 +41,7 @@ class ArchiveCooldownTests(unittest.TestCase):
    r=Path(tmp);self.seed(r,1,'2020-01-01T00:00:00Z')
    result,calls=self.run_archive(r,SourceError('ROBOTS_UNAVAILABLE:HTTP_503'))
    self.assertEqual(calls,1);self.assertEqual(result['run']['sourceFailures'],1)
+   self.assertFalse(result['checkpointCurrentRun']);self.assertEqual(result['checkpoint'],{'attempted':7,'parsed':5})
    from company_intelligence.pipeline import advance
    s=Store(r/'.company-intelligence/state.sqlite');v=json.loads(s.db.execute("select payload from sources where id='gnn-archive-2026-09'").fetchone()[0]);self.assertEqual(v['failureCount'],2);self.assertEqual(v['nextCheck'],advance(NOW,4));self.assertEqual(s.state('distributorArchive:retained-release'),{'status':'INGESTED'});s.close()
 
@@ -57,3 +59,4 @@ class ArchiveCooldownTests(unittest.TestCase):
    response={'body':b'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>','finalUrl':'https://sitemaps.globenewswire.com/news/en/2026-09.xml'}
    result,calls=self.run_archive(r,lambda *args,**kw:response)
    self.assertEqual(calls,1);self.assertNotEqual(result.get('stopReason'),'SOURCE_COOLDOWN');self.assertEqual(result['run']['sourceFailures'],0)
+   self.assertTrue(result['checkpointCurrentRun']);self.assertEqual(result['checkpoint']['attempted'],0)

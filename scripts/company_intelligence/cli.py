@@ -244,10 +244,17 @@ def main(argv=None):
             if source.get('failureCount') and (source.get('nextCheck') or '')>now:
                 print(json.dumps({'run':pipeline.run,'requests':0,'httpStats':http.stats,
                                   'checkpoint':store.state('distributorArchiveRun:'+source['sourceId']),
+                                  'checkpointCurrentRun':False,
                                   'deferred':True,'stopReason':'SOURCE_COOLDOWN','retryAfter':source['nextCheck']},sort_keys=True))
                 return 0
+            prior_checkpoint=store.state('distributorArchiveRun:'+source['sourceId'])
             pipeline.ensure_aliases(companies.keys());pipeline.ingest_source(source)
-            print(json.dumps({'run':pipeline.run,'requests':http.requests,'httpStats':http.stats,'checkpoint':store.state('distributorArchiveRun:'+source['sourceId'])},sort_keys=True));return 0
+            checkpoint=store.state('distributorArchiveRun:'+source['sourceId'])
+            # Keep durable progress visible without reporting a preceding batch
+            # as this attempt after a publisher/robots failure.
+            current=bool(checkpoint and checkpoint!=prior_checkpoint and checkpoint.get('checkedAt')==now)
+            print(json.dumps({'run':pipeline.run,'requests':http.requests,'httpStats':http.stats,
+                              'checkpoint':checkpoint,'checkpointCurrentRun':current},sort_keys=True));return 0
         if args.command=='materials-backfill':
             from company_intelligence.materials import backfill
             print(json.dumps(backfill(pipeline,args.limit,selected_ids if args.tickers else None,companies),sort_keys=True));return 0

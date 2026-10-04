@@ -34,6 +34,24 @@ class HTTP:
 
 
 class MaterialHubTests(unittest.TestCase):
+ def test_compound_transcript_label_replaces_old_type_without_losing_other_materials(self):
+  from company_intelligence.model import stable_id
+  with tempfile.TemporaryDirectory() as tmp:
+   c=company();s=Store(Path(tmp)/'state.sqlite');src=from_validated_ir(c,config(),NOW)
+   url=HUB+'/qa.pdf';old={'documentId':stable_id(c['companyId'],url,'PRESENTATION'),
+                        'companyId':c['companyId'],'type':'PRESENTATION','url':url,
+                        'label':'HY26 Presentation and Q&A Transcript','sourceId':src['sourceId']}
+   annual={**old,'documentId':'annual','type':'FINANCIAL_REPORT','url':HUB+'/annual.pdf','label':'Annual Report'}
+   s.set_state('ir:'+c['companyId'],{'configurations':[{**config(),'materialsSourceId':src['sourceId'],'documents':[old,annual]}]})
+   h=HTTP({HUB:'<html><a href="'+url+'">HY26 Presentation and Q&amp;A Transcript</a><a href="remarks.pdf">Presentation Prepared Remarks</a></html>'})
+   p=Pipeline(tmp,{c['companyId']:c},s,h,NOW);p.ingest_source(src)
+   docs=s.state('ir:'+c['companyId'])['configurations'][0]['documents']
+   self.assertEqual([d['type'] for d in docs if d['url']==url],['COMPANY_TRANSCRIPT'])
+   self.assertIn(annual,docs);self.assertIn('PREPARED_REMARKS',{d['type'] for d in docs})
+   self.assertFalse(s.company_payload(c,NOW)['presentations'])
+   self.assertTrue(any(d['type']=='COMPANY_TRANSCRIPT' for d in s.company_payload(c,NOW)['materials']))
+   s.close()
+
  def test_only_advertised_html_hub_of_correct_verified_ir_is_eligible(self):
   c=company();cfg=config();self.assertEqual(from_validated_ir(c,cfg,NOW)['intervalHours'],24)
   bad=[{**cfg,'companyId':'other'},{**cfg,'pageRole':'CORPORATE'},{**cfg,'evidence':'guessed'},
