@@ -59,6 +59,15 @@ test('the shared header remains themeable and offers light and dark contrast', (
   assert.doesNotMatch(source, /Development Preview[^\n]*<[^>]*class="preview"/);
 });
 
+test('pages with dark styles get the theme switch between AI Atlas and the menu', () => {
+  assert.match(source, /theme-switch/);
+  assert.match(source, /<\/a>\$\{this\.hasAttribute\('theme-switch'\)\?'<button class="mode"[^`]*<button class="toggle"/);
+  assert.match(source, /const THEME_KEY = 'vu-discover-theme-v1'/);
+  for (const page of ['discover/index.html', 'screener/index.html', 'hedgefonds/index.html', 'ask/index.html']) {
+    assert.match(readFileSync(join(root, page), 'utf8'), /<vu-navigation[^>]*\btheme-switch\b/, `${page} ohne Schalter`);
+  }
+});
+
 test('der fuenfte Direktlink (Vorsorge) weicht unter 900 px, damit der Menue-Button sichtbar bleibt', () => {
   assert.match(source, /<a class="q-extra" href="\/vorsorge\/">Vorsorge<\/a>/);
   assert.match(source, /@media\(max-width:900px\)\{\.quick a\.q-extra\{display:none\}\}/);
