@@ -6,6 +6,38 @@ from test_engine import company,NOW
 
 
 class InventorySweepTests(unittest.TestCase):
+ def test_local_verified_and_discovered_outcomes_preserve_prior_attempt_accounting(self):
+  cid=self.a['companyId']
+  for lane in ('domains','ir'):
+   key='inventorySweep:accounting:'+lane+':'
+   self.s.set_state(key+'inventory',[cid])
+   self.s.set_state(key+cid,{'status':'DEFERRED','category':'TEMPORARILY_UNAVAILABLE','retryAfter':NOW,
+                           'networkRequests':7,'attempts':2,'stats':{'bytesDownloaded':123},'firstCheckedAt':'2026-01-01T00:00:00Z'})
+   self.s.set_state('officialSite:'+cid,{'status':'VALIDATED','url':'https://one.example/'})
+   if lane=='ir':self.s.set_state('ir:'+cid,{'lastSuccess':NOW})
+   self.assertEqual(select(self.cs,self.s,NOW,'accounting',lane)[0],[])
+   row=self.s.state(key+cid)
+   self.assertEqual((row['networkRequests'],row['attempts'],row['stats']['bytesDownloaded'],row['firstCheckedAt']),
+                    (7,2,123,'2026-01-01T00:00:00Z'))
+   self.assertEqual(progress(self.s,'accounting',lane)['retryPending'],0)
+   self.assertEqual(progress(self.s,'accounting',lane)['freshAttempts'],2)
+
+ def test_local_cooldown_retains_cost_and_new_ambiguity_cannot_keep_stale_retry_category(self):
+  cid=self.a['companyId'];key='inventorySweep:accounting:domains:'
+  self.s.set_state(key+'inventory',[cid]);prior={'status':'DEFERRED','category':'DEFERRED_BUDGET',
+              'retryAfter':NOW,'networkRequests':9,'attempts':1,'stats':{'bytesDownloaded':456}}
+  self.s.set_state(key+cid,prior)
+  self.s.set_state('officialSite:'+cid,{'status':'DEFERRED','reason':'DNS_UNAVAILABLE','retryAfter':'2026-12-01T00:00:00Z'})
+  self.assertEqual(select(self.cs,self.s,NOW,'accounting','domains')[0],[])
+  row=self.s.state(key+cid);self.assertEqual(row['status'],'COOLDOWN');self.assertEqual(row['networkRequests'],9)
+  self.assertEqual(row['stats'],prior['stats']);self.assertEqual(progress(self.s,'accounting','domains')['retryPending'],1)
+  self.s.set_state(key+cid,prior)
+  self.s.set_state('officialSite:'+cid,{'status':'REJECTED','reason':'OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED','ownershipVerifierVersion':'corporate-ownership-1'})
+  self.s.set_state('siteCandidates:'+cid,{'status':'CANDIDATE','candidates':[{'url':'https://one.example/'},{'url':'https://wrong.example/'}]})
+  self.assertEqual(select(self.cs,self.s,NOW,'accounting','domains')[0],[])
+  row=self.s.state(key+cid);self.assertEqual(row['status'],'AMBIGUOUS');self.assertEqual(row['networkRequests'],9)
+  self.assertEqual(progress(self.s,'accounting','domains')['retryPending'],0)
+
  def test_transport_equivalent_candidates_resume_same_frozen_pending_identity(self):
   cid=self.a['companyId'];original={'status':'CANDIDATE','candidates':[{'url':'http://one.example/','evidence':'PUBLISHER_AUTHOR'},{'url':'https://one.example/','evidence':'LOGO'}]}
   self.s.set_state('siteCandidates:'+cid,original)

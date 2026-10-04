@@ -1,49 +1,49 @@
 # Company Intelligence — candidate completion and recovery (in progress)
 
-Measured **2026-10-04T22:14:45Z**, branch `feature/company-intelligence-rollout`, PR [#356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356). **Do not merge.** Production gates remain off. This report follows the requested 32-section structure and will be refreshed as resumable discovery continues.
+Measured **2026-10-04T22:35:40Z**, branch `feature/company-intelligence-rollout`, PR [#356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356). **Do not merge.** Production gates remain off. This report follows the requested 32-section structure and will be refreshed as resumable discovery continues.
 
 ## 1. Executive result
 
-Verified domains increased **769 → 2088**. The **1319-new-domain cohort** now has **488 IR pages, 390 issuers with accepted news, 188 calls, 163 webcasts, 361 presentations and 227 issuers with management content**. These are actual stored/consumer-exported references and metadata, not just candidate processing. Inventory remains unfinished: 195 identities remain pending in the frozen main pass. Discovery continues after transient infrastructure cooldowns.
+Verified domains increased **769 → 2177**. The **1408-new-domain cohort** now has **488 IR pages, 421 issuers with accepted news, 189 calls, 163 webcasts, 361 presentations and 227 issuers with management content**. These are actual stored/consumer-exported references and metadata, not just candidate processing. The original frozen inventory is fully classified: 4248 / 4248, with 0 unchecked. Supplementary and due-time recovery queues remain separate. Downstream IR and source expansion continues.
 
 **Historical-state limitation:** the preceding expanded private research ledger was not uploaded to R2 and is absent from this fresh workspace. No authenticated R2 credential bindings are available. Its committed 769 domains/510 source descriptors survive. New ledger totals are reconstructed measurements; they must not be added to lost historical per-issuer sets. The historical 519-news/137-call/212-presentation totals cannot be reported as exact current unions. Original historical reports are retained below with their timestamps.
 
 | Component | Historical baseline | Current reconstructed ledger | Actual new-domain cohort | Current universe percentage |
 |---|---:|---:|---:|---:|
-| Verified domain | 769 | 2,088 | 1,319 | 34.35% |
+| Verified domain | 769 | 2,177 | 1,408 | 35.82% |
 | IR | 326 | 517 | 488 | 8.51% |
-| News 180d | 519 | 708 | 390 | 11.65% |
-| Call | 137 | 229 | 188 | 3.77% |
-| Dated call | 120 | 188 | 152 | 3.09% |
+| News 180d | 519 | 708 | 421 | 11.65% |
+| Call | 137 | 229 | 189 | 3.77% |
+| Dated call | 120 | 188 | 153 | 3.09% |
 | Webcast | 111 | 188 | 163 | 3.09% |
 | Presentation | 212 | 389 | 361 | 6.4% |
 | Transcript reference | 64 | 102 | 93 | 1.68% |
 | Any management content | 149 | 252 | 227 | 4.15% |
-| Confirmed upcoming earnings | 44 | 56 | 38 | 0.92% |
+| Confirmed upcoming earnings | 44 | 56 | 39 | 0.92% |
 
 ## 2. Candidate inventory — starting versus current
 
-Prior private ledger: 4,283 total / 2,358 classified / 1,925 unchecked. Reconstructed original frozen inventory: **4,248**, with 35 old identities unavailable from Git. Runtime metadata imports have produced **4322** candidate identities. The current exact runtime funnel is **4055 processed / 267 unchecked**. Configured seeds and durable ambiguity/cooldown outcomes count as classifications, not fresh network verification.
+Prior private ledger: 4,283 total / 2,358 classified / 1,925 unchecked. Reconstructed original frozen inventory: **4,248**, with 35 old identities unavailable from Git. Runtime metadata imports have produced **4322** candidate identities. The current exact runtime funnel is **4315 processed / 7 unchecked**. Configured seeds and durable ambiguity/cooldown outcomes count as classifications, not fresh network verification.
 
 | Durable current classification | Candidate identities |
 |---|---:|
 | AMBIGUOUS | 170 |
-| BLOCKED | 137 |
-| CONFLICTING_OWNER | 428 |
-| DEFERRED_BUDGET | 211 |
-| INSUFFICIENT_EVIDENCE | 650 |
+| BLOCKED | 145 |
+| CONFLICTING_OWNER | 472 |
+| DEFERRED_BUDGET | 224 |
+| INSUFFICIENT_EVIDENCE | 733 |
 | MISSING_PAGE | 20 |
-| NOT_CHECKED | 267 |
-| REDIRECTED | 51 |
-| TEMPORARILY_UNAVAILABLE | 275 |
+| NOT_CHECKED | 7 |
+| REDIRECTED | 55 |
+| TEMPORARILY_UNAVAILABLE | 294 |
 | UNRESOLVED | 26 |
-| VERIFIED_OFFICIAL | 2,087 |
+| VERIFIED_OFFICIAL | 2,176 |
 
 WRONG_COMPANY, DEAD, PARKED, SUBSIDIARY_ONLY and BRAND_ONLY are zero explicit classifications; missing pages/unproven ownership/DNS failures are not relabelled as those states. UNRESOLVED includes unchecked and unproven/unsafe/temporary candidates; use the full table rather than treating only the explicit UNRESOLVED category as the unresolved population. Second-pass unique verified recoveries: **66**; third-pass unique verified recoveries: **15**. Cohorts overlap historically; pass rows are not blindly summed into total candidates.
 
 ## 3. First pass
 
-Frozen main pass: **4053 / 4248 classified**, **2957 cumulative fresh attempts**, **195 pending**, **518 due-time retry records**. Completed candidates persist individually. A restart selects unattempted pending identities before due retries. Eight-worker domain batches now select up to 50 identities within the unchanged 200-request cap, interleaving eight-issuer IR/source ingestion every two domain batches. The driver checkpoints every ten batches and on circuit, no-due, stop-file or bounded-run completion.
+Frozen main pass: **4248 / 4248 classified**, **3141 cumulative fresh attempts**, **0 pending**, **527 due-time retry records**. Completed candidates persist individually. A restart selects unattempted pending identities before due retries. Eight-worker domain batches now select up to 50 identities within the unchanged 200-request cap, interleaving eight-issuer IR/source ingestion every two domain batches. The driver checkpoints every ten batches and on circuit, no-due, stop-file or bounded-run completion.
 
 ## 4. Second pass
 
@@ -51,10 +51,11 @@ Live prior insufficient-ownership and temporary-failure cohorts remain resumable
 
 | Pass | Frozen cohort | Classified | Pending | Validated outcomes | Requests |
 |---|---:|---:|---:|---:|---:|
-| complete | 4248 | 4053 | 195 | 1230 | 10275 |
+| complete | 4248 | 4248 | 0 | 1292 | 10977 |
 | second-network | 74 | 74 | 0 | 16 | 210 |
 | second-ownership-live | 235 | 235 | 0 | 46 | 1046 |
 | second-dns-live | 125 | 26 | 99 | 4 | 85 |
+| supplementary | 67 | 67 | 0 | 27 | 211 |
 | third-footer | 3 | 3 | 0 | 3 | 0 |
 | third-title-live | 2 | 2 | 0 | 2 | 6 |
 | third-q4-live | 7 | 7 | 0 | 1 | 25 |
@@ -74,20 +75,20 @@ Old ledger: approximately 578 insufficient ownership, 578 temporary failures, 89
 
 | Cause | Current identities |
 |---|---:|
-| INSUFFICIENT_EVIDENCE | 660 |
-| CONFLICTING_OWNER | 432 |
-| TEMPORARILY_UNAVAILABLE | 277 |
-| DEFERRED_BUDGET | 215 |
-| BLOCKED | 139 |
-| REDIRECTED | 53 |
+| INSUFFICIENT_EVIDENCE | 743 |
+| CONFLICTING_OWNER | 476 |
+| TEMPORARILY_UNAVAILABLE | 296 |
+| DEFERRED_BUDGET | 228 |
+| BLOCKED | 147 |
+| REDIRECTED | 57 |
 | UNRESOLVED | 27 |
 | MISSING_PAGE | 21 |
 
-Attack pending inventory first, then the largest recoverable ownership/temporary cluster. A durable 215-case request-budget cohort uses smaller candidate batches within the unchanged 200-request cap. The downstream census also found 629 live-verified roots without any IR state and 117 with only cached partial analysis. Frozen high-capability IR cohorts contain 60 Q4, 63 GCS, 18 STOCKPR, seven Investis and two Web Driver roots; these use existing adapters and preserve source due times. Corporate platform hints are scheduling priorities, not ownership/source proof. These cohort counts are checkpoints, not claimed completed coverage. Four matching infrastructure failures across unrelated hosts open a 15-minute circuit and checkpoint in-flight outcomes. Corporate-domain and IR/source discovery now persist separate circuit scopes with the same four-unrelated-host threshold and 15-minute cooldown. A closed healthy lane can continue while the other remains paused; a failure shared by both independently trips both bounded breakers. Legacy unscoped cooldowns still block both lanes until expiry, without resetting their due time. Production polling cadence is unchanged. Isolated origin failures and access denials never invalidate corporate ownership. Cached IR/parser/export/audit work continues during the circuit. Existing source families can be probed in bounded isolated batches; if the outage affects them too, those probes stop early.
+Attack pending inventory first, then the largest recoverable ownership/temporary cluster. A durable 215-case request-budget cohort uses smaller candidate batches within the unchanged 200-request cap. The downstream census also found 629 live-verified roots without any IR state and 117 with only cached partial analysis. Frozen high-capability IR cohorts contain 60 Q4, 63 GCS, 18 STOCKPR, seven Investis and two Web Driver roots; these use existing adapters and preserve source due times. Corporate platform hints are scheduling priorities, not ownership/source proof. Local reused-proof/cooldown/ambiguity outcomes now preserve prior first-check timestamps, attempts, request counts and byte statistics; stale retry categories are cleared when current proof or ambiguity supersedes them. The existing runner retains exact cumulative batch traffic even for preceding rows whose old counters were reset. Two meaningful domain/IR tests prove cost-history preservation, cooldown retention and removal of obsolete retry categories. These cohort counts are checkpoints, not claimed completed coverage. Four matching infrastructure failures across unrelated hosts open a 15-minute circuit and checkpoint in-flight outcomes. Corporate-domain and IR/source discovery now persist separate circuit scopes with the same four-unrelated-host threshold and 15-minute cooldown. A closed healthy lane can continue while the other remains paused; a failure shared by both independently trips both bounded breakers. Legacy unscoped cooldowns still block both lanes until expiry, without resetting their due time. Production polling cadence is unchanged. Isolated origin failures and access denials never invalidate corporate ownership. Cached IR/parser/export/audit work continues during the circuit. Existing source families can be probed in bounded isolated batches; if the outage affects them too, those probes stop early.
 
-## 7. Verified domains — 769 → 2088
+## 7. Verified domains — 769 → 2177
 
-Actual new verified cohort: 1319; committed audited seeds: 2088. Actual per-seed verifier versions, URLs, evidence hashes and timestamps are retained. Missing cached bodies retain original strong proof; a current cached rejection cannot be promoted. Exact-CIK non-mock SEC legal aliases enrich the existing resolver copy without changing Company Master.
+Actual new verified cohort: 1408; committed audited seeds: 2171. Actual per-seed verifier versions, URLs, evidence hashes and timestamps are retained. Missing cached bodies retain original strong proof; a current cached rejection cannot be promoted. Exact-CIK non-mock SEC legal aliases enrich the existing resolver copy without changing Company Master.
 
 ## 8. IR pages — historical 326; current reconstructed 517
 
@@ -132,7 +133,7 @@ The existing discovery circuit now recognizes typed EAI_AGAIN errors, including 
 
 ## 11. News — historical 519; current reconstructed 180-day coverage 708
 
-**390 new-domain issuers** have accepted recent metadata, from 360 news-source issuers. Total stored metadata items: **4268**, across 709 issuers including older retained metadata. First-party metadata: 3878 items / 393 issuers; external metadata: 416 items / 339 issuers (sets can overlap). Publisher/issuer identity precision remains unchanged; full article bodies are not retained. The initial local recovery checkpoint contains zero news items / zero news-covered identities; all 709 identities in this reconstructed ledger were added during this run. That checkpoint is separate from the unavailable historical 519-issuer set, whose union cannot be reconstructed.
+**421 new-domain issuers** have accepted recent metadata, from 360 news-source issuers. Total stored metadata items: **4268**, across 709 issuers including older retained metadata. First-party metadata: 3878 items / 393 issuers; external metadata: 416 items / 339 issuers (sets can overlap). Publisher/issuer identity precision remains unchanged; full article bodies are not retained. The initial local recovery checkpoint contains zero news items / zero news-covered identities; all 709 identities in this reconstructed ledger were added during this run. That checkpoint is separate from the unavailable historical 519-issuer set, whose union cannot be reconstructed.
 
 ## 12. News freshness
 
@@ -151,7 +152,7 @@ September publisher-advertised sitemap contains 11,968 release URLs. Resumed com
 
 ## 14. Calls — historical 137; current reconstructed 229
 
-New-domain cohort: **188 call-exists issuers / 152 dated-call issuers**. Structured event JSON-LD/iCalendar/Q4/GCS/feed metadata and issuer-authored release call schedules provide evidence. An announcement's results-release date cannot become a distinct conference-call date without explicit call evidence.
+New-domain cohort: **189 call-exists issuers / 153 dated-call issuers**. Structured event JSON-LD/iCalendar/Q4/GCS/feed metadata and issuer-authored release call schedules provide evidence. An announcement's results-release date cannot become a distinct conference-call date without explicit call evidence.
 
 ## 15. Webcasts — historical 111; current reconstructed 188
 
@@ -171,11 +172,11 @@ Current issuer counts: transcript 102; prepared remarks 18; shareholder letters 
 
 ## 19. Confirmed earnings — historical 44; current reconstructed 56
 
-New-domain confirmed-upcoming cohort: **38**. Existing model reconciled 19 stale estimates overlapping official confirmation; no forecast parameters changed. Current estimated upcoming windows: **3221**. Historical backtest remains 95.48% window coverage over 3,847 predictions; it is historical validated evidence, not rerun/invented performance.
+New-domain confirmed-upcoming cohort: **39**. Existing model reconciled 19 stale estimates overlapping official confirmation; no forecast parameters changed. Current estimated upcoming windows: **3221**. Historical backtest remains 95.48% window coverage over 3,847 predictions; it is historical validated evidence, not rerun/invented performance.
 
 ## 20. Downstream funnel
 
-**1319 new verified domains → 488 IR → 360 news-source issuers → 219 event-source issuers → 188 calls → 163 webcasts → 361 presentations → 227 management-content issuers.** These are overlapping component sets, not a claim that each sequential subset contains the next. 907 operational source descriptors belong to the new-domain cohort; actual accepted news coverage is measured separately from source count.
+**1408 new verified domains → 488 IR → 360 news-source issuers → 219 event-source issuers → 189 calls → 163 webcasts → 361 presentations → 227 management-content issuers.** These are overlapping component sets, not a claim that each sequential subset contains the next. 907 operational source descriptors belong to the new-domain cohort; actual accepted news coverage is measured separately from source count.
 
 ## 21. Coverage tiers and component percentages
 
@@ -199,7 +200,7 @@ Strong includes preserved financial/calendar/SEC identity evidence and must not 
 
 ## 22. Random quality audit
 
-Nineteen preserved seed waves added 144/59/93/77/48/20/79/76/127/104/2/58/43/76/50/7/105/134/17 issuer seeds with current cached revalidation or original strong hashed proof after cache pruning; zero promoted current-verifier rejections. The latest 17 roots all passed current cached revalidation with zero requests. Random actual enriched-stock audits inspected company/domain/IR/headline/date/call/material/source evidence. Three 12-issuer cohorts passed the existing local-storage → pilot API → browser-contract path; all returned actual useful content and all private-path probes were rejected. Later examples include POWI, UNM, ACCO, CBRE, RYN, WABC, AN, CPSH, TRST, UIS, KOPN and IBCP. The publisher-enriched cohort SAIA/DPRO/QCLS/KLRA/SGMT/VWAV/DYN/ARVN/PSIX/MLYS/VRCA/NEXR measured 25 assets / 150,595 bytes, maximum payload 18,038 bytes; retained contributor/exchange/ticker/date proof passed a separate 12-item random audit. Six navigation-only document instances across four issuers were retired with private audit evidence, and three self-linked IR dropdown configurations were corrected. An additional 12-stock materials audit (MDU/RTX/RJF/TTI/IHG/IDXX/BIIB/UNM/AVD/WRB/BF-A/CBSH) required a presentation in every consumer output and passed local storage/API/browser delivery: 25 assets / 568,814 bytes, maximum payload 64,553 bytes, with three private-path probes rejected. Twenty-two references passed issuer/source-provenance checks with no network requests. The corrected IHG transcript also passed local consumer delivery: three assets / 48,216 bytes, maximum payload 47,700 bytes, with three private-path probes rejected. A further random five-stock cohort from the latest promoted roots (BZAI/BLTE/EFXT/ZYME/MDCX) required actual acquired news/calls/non-filing materials and passed local storage/API/browser delivery with three private-path probes rejected. These five were the entire useful-content subset of the latest root wave at audit time; remaining new roots still require downstream IR discovery. The nine cached-presentation issuers ELBM/GRNT/RADX/CRML/HSHP/ARIS/GFR/CDLR/KLAR passed local consumer delivery with a presentation required for every stock: 19 assets / 80,253 bytes, maximum payload 13,303 bytes, with three private-path probes rejected. Their actual linked reference labels and filenames were reviewed; HSHP’s February-2022 company presentation remains explicitly undated metadata and is not represented as current. A further random 12-stock cohort (ACLS/ALGN/ARVN/CW/DNN/EPR/ESEA/MBWM/POWW/PTC/SA/WTFC) passed acquired-news/calls/non-filing-material consumer assertions: 25 assets / 373,528 bytes, maximum 65,387 bytes; all three private-path probes were rejected. Structured PTC and Mercantile call dates/times/timezones/webcast URLs were reviewed. Two exact untimed call groups remain duplicated in the retained event ledger, including EPR; no issuer-coverage count is inflated. This is a bounded remaining consumer display issue, not evidence of an extra call. Audits do not imply public deployment.
+Twenty preserved seed waves added 144/59/93/77/48/20/79/76/127/104/2/58/43/76/50/7/105/134/17/83 issuer seeds with current cached revalidation or original strong hashed proof after cache pruning; zero promoted current-verifier rejections. The latest audit covered 89 roots: 67 cached revalidations and 22 retained strong proofs after cache pruning, with zero requests. Eighty-three have existing current-master CIKs and were promoted; six validated master identities without CIK remain in operational state, without inventing or modifying identity mappings. Configured roots and actual operational domain coverage are distinguished. Random actual enriched-stock audits inspected company/domain/IR/headline/date/call/material/source evidence. Three 12-issuer cohorts passed the existing local-storage → pilot API → browser-contract path; all returned actual useful content and all private-path probes were rejected. Later examples include POWI, UNM, ACCO, CBRE, RYN, WABC, AN, CPSH, TRST, UIS, KOPN and IBCP. The publisher-enriched cohort SAIA/DPRO/QCLS/KLRA/SGMT/VWAV/DYN/ARVN/PSIX/MLYS/VRCA/NEXR measured 25 assets / 150,595 bytes, maximum payload 18,038 bytes; retained contributor/exchange/ticker/date proof passed a separate 12-item random audit. Six navigation-only document instances across four issuers were retired with private audit evidence, and three self-linked IR dropdown configurations were corrected. An additional 12-stock materials audit (MDU/RTX/RJF/TTI/IHG/IDXX/BIIB/UNM/AVD/WRB/BF-A/CBSH) required a presentation in every consumer output and passed local storage/API/browser delivery: 25 assets / 568,814 bytes, maximum payload 64,553 bytes, with three private-path probes rejected. Twenty-two references passed issuer/source-provenance checks with no network requests. The corrected IHG transcript also passed local consumer delivery: three assets / 48,216 bytes, maximum payload 47,700 bytes, with three private-path probes rejected. A further random five-stock cohort from the latest promoted roots (BZAI/BLTE/EFXT/ZYME/MDCX) required actual acquired news/calls/non-filing materials and passed local storage/API/browser delivery with three private-path probes rejected. These five were the entire useful-content subset of the latest root wave at audit time; remaining new roots still require downstream IR discovery. The nine cached-presentation issuers ELBM/GRNT/RADX/CRML/HSHP/ARIS/GFR/CDLR/KLAR passed local consumer delivery with a presentation required for every stock: 19 assets / 80,253 bytes, maximum payload 13,303 bytes, with three private-path probes rejected. Their actual linked reference labels and filenames were reviewed; HSHP’s February-2022 company presentation remains explicitly undated metadata and is not represented as current. A further random 12-stock cohort (ACLS/ALGN/ARVN/CW/DNN/EPR/ESEA/MBWM/POWW/PTC/SA/WTFC) passed acquired-news/calls/non-filing-material consumer assertions: 25 assets / 373,528 bytes, maximum 65,387 bytes; all three private-path probes were rejected. Structured PTC and Mercantile call dates/times/timezones/webcast URLs were reviewed. Two exact untimed call groups remain duplicated in the retained event ledger, including EPR; no issuer-coverage count is inflated. This is a bounded remaining consumer display issue, not evidence of an extra call. Audits do not imply public deployment.
 
 ## 23. False-positive audit
 
@@ -207,7 +208,7 @@ Explicit fixtures retain ROOT, UNITY, BLOCK/XYZ, TOAST, TARGET, AFFIRM, META, AP
 
 ## 24. Requests and bandwidth
 
-Main domain pass: **10275 cumulative requests**; second/third per-pass counts are above. Discovery admission/per-host robots pacing remains bounded; downloaded bytes are retained per batch/candidate. Completed September metadata batches and the publisher failure used **721 requests / 66051462 downloaded bytes**. Two successful known-family recovery batches accepted 290 stories in 62 requests / 2,822,276 bytes; the later shared-failure probe stopped after ten requests/zero bytes. These operational batch populations are separate and must not double-count stale last-batch reports. HTML and Q4 material batches used a separate 133 requests / 4,622,557 bytes; public SDK/API probes used three requests / 45,402 bytes. A subsequent Q4 outage batch stopped after 13 requests / zero bytes, with five isolated source failures and a four-host IR circuit; it added no coverage. Two later materials outage attempts each stopped after ten requests / zero bytes (four and five attempted descriptors), adding no coverage; their IR cooldowns are retained. The publisher robots outage used three requests / zero bytes and did not recount its preceding archive checkpoint. Discovery/backfill traffic is not recurring production traffic.
+Main completed-batch accounting: **11007 requests / 902887766 downloaded bytes**. Supplementary completed batches: **211 requests / 11596440 bytes**. Main per-candidate counters retain 10977 requests; preceding local-reuse rows lost some counters before the preservation fix, so completed-batch accounting is the traffic authority. No per-candidate values are invented to fill that historical gap. Second/third per-pass counts are above. Discovery admission/per-host robots pacing remains bounded; downloaded bytes are retained per batch/candidate. Completed September metadata batches and the publisher failure used **721 requests / 66051462 downloaded bytes**. Two successful known-family recovery batches accepted 290 stories in 62 requests / 2,822,276 bytes; the later shared-failure probe stopped after ten requests/zero bytes. These operational batch populations are separate and must not double-count stale last-batch reports. HTML and Q4 material batches used a separate 133 requests / 4,622,557 bytes; public SDK/API probes used three requests / 45,402 bytes. A subsequent Q4 outage batch stopped after 13 requests / zero bytes, with five isolated source failures and a four-host IR circuit; it added no coverage. Two later materials outage attempts each stopped after ten requests / zero bytes (four and five attempted descriptors), adding no coverage; their IR cooldowns are retained. The publisher robots outage used three requests / zero bytes and did not recount its preceding archive checkpoint. Discovery/backfill traffic is not recurring production traffic.
 
 ## 25. Actions cost model
 
@@ -215,9 +216,9 @@ Current 1452-source registry plans **4916 polls/day / 147480 per 30-day month**,
 
 ## 26. R2 cost model and recovery
 
-Sizing-only consumer projection: **4896 payloads / 5535 assets / 73313002 bytes**, maximum payload 148101 bytes. Conservative full-change monthly bounds: public PUT 997020; public verification GET 1993320; private PUT 540; private restore GET 900; two public/two private slots retain approximately 0.18914 GB. User delivery reads are excluded; unchanged-object hashes reduce actual writes, not all source requests.
+Sizing-only consumer projection: **4896 payloads / 5535 assets / 73313002 bytes**, maximum payload 148101 bytes. Conservative full-change monthly bounds: public PUT 997020; public verification GET 1993320; private PUT 540; private restore GET 900; two public/two private slots retain approximately 0.187737 GB. User delivery reads are excluded; unchanged-object hashes reduce actual writes, not all source requests.
 
-Latest local proof checkpoint: `2cf5a87c3645a568ef7becfd94b32d98de321a19785603a88c1c78c22a55e5a4`, 21256761 compressed bytes; exact six-table logical hash `f4abc0e48a14b3f3aae891f5e70a5291776456d837e6d3ced623e0ccea06383c`, immutable generation `d2c10020c4c751d30c7ecd77`. Fresh restore/reprojection passed. **Authenticated R2 acceptance is unavailable**: endpoint/bucket/access-key/secret credential bindings are absent. State remains in the existing ignored private ledger/checkpoints; databases/generated exports/secrets are not committed.
+Latest local proof checkpoint: `ffcaed4455603c2c02b6f36dc81990ce95113e34751a9c198effc5b13e029f91`, 20555276 compressed bytes; exact six-table logical hash `47768b92f171af5d9c8dc41471a9d990274e525440a7570c4725db06971ea147`, immutable generation `e78582a25d5ac57dd0f34dc9`. Fresh restore/reprojection passed. **Authenticated R2 acceptance is unavailable**: endpoint/bucket/access-key/secret credential bindings are absent. State remains in the existing ignored private ledger/checkpoints; databases/generated exports/secrets are not committed.
 
 ## 27. Estimated monthly operating cost
 
@@ -225,7 +226,7 @@ Data-provider cost: **$0** under the existing permitted metadata/free first-part
 
 ## 28. Tests
 
-Latest feature validation: **376 Python / 29 consumer-storage Node tests pass**, rerun after source promotion. The Q4 milestone `8fd0aea5e9a515a6083e657ab1c387f8d5f1452d` passed seven repository workflows but failed the Company Intelligence configuration test: three materials descriptors duplicated existing event routes. The three redundant bootstrap descriptors were removed, retaining event sources and stored material references; future promotion rejects a previously configured issuer/URL route. The full suite and targeted post-promotion configuration checks pass. All eight workflows on correction milestone `5e12deda3b1592b92edb5e64c6e00304cd9fb108` passed. This was a configuration regression, not a pre-existing main failure. Materials/Q4/retention tests cover public structured presentation contracts, credential/private link rejection, discarded bodies and grouping dates, child source health, rediscovery retention, and one-hub bounds despite existing annual reports, correct issuer/host proof, undated/CDN reference handling, prior-material preservation on empty responses, accumulated source health, pending-issuer resumption, CLI seed overrides and four-host circuit cooldown. New meaningful tests cover infrastructure circuit admission/resume, exact-CIK aliases, unsafe ownership/redirects, legal/title/footer evidence, partial discovery/cache restore, publisher cooldown accumulation, self-navigation rejection, composite release/call dates and source-only estimate reconciliation (including interrupted accepted batches). The shared circuit now also guards follow-up polling after successful IR discovery; a CLI-path test proves it checkpoints the new circuit and leaves unsent sources untouched. Isolated failures/access denials remain independent. All eight workflows on preceding milestone `0cbdf52d7929d65a75b65bc5c58c78eecdc15a83` passed. All eight workflows on coverage milestone `6a1d9b94eb5a04f388915e5c456f5ed637470e75` and ownership/coverage milestone `13fde9ba1ad7fd89dd7b588a10c7d0291035d5fa` passed. All eight workflows on the next coverage milestone `e905f8d0ecc8e38b1d800c6baf2d44716dd246ec` also passed. All eight workflows on coverage milestone `78a29806c5831381f8ebe533fa05c334f4d22912` and copyright-recovery milestone `b5da682b5d02f02b9a9878875522c8dfcfb1adcf` passed. On recovery milestone `51e37799656c7acce798616d1596507f34f7bf37`, seven workflows passed; Quant Production Pages was canceled before jobs were created, with no reported test failure. It uses a repository-wide pages-production concurrency group; cancellation is not misrepresented as passing. On HTML-materials milestone `0b34ec5fec8b07b63e82637741c00dece6e444df`, seven workflows passed and Quant Production Pages was canceled; no test failure was reported. The publisher archive CLI now marks whether its visible durable checkpoint belongs to the current attempt; cooldowns and pre-index robots failures retain prior progress without counting an old batch again. Full parser tests and publisher failure/cooldown/success assertions pass. All eight workflows on allowance milestone `533d355300c5911ec6684f23235ddd78ad4a9f93` passed. On checkpoint/type milestone `f893985d26c42c0703d21a39375657210c96597c`, seven workflows passed and Quant Production Pages was canceled with no reported test failure. All eight workflows on DNS-alias milestone `cee4bb335d724ae5a9a45e610a93843d66b41fa9` passed. A compound-label regression test also proves explicit transcript/remarks classifications outrank presentation wording, corrected URLs replace preceding types, and unrelated archived materials remain intact. Three preceding consumer audits and exact fresh checkpoint/reprojection passed. An additional strict 12-stock audit (TGB/WT/LCTX/CSV/GE/CPF/GS/MESO/ALLY/WRB/RTO/MOD) required acquired news, calls or non-filing company materials and passed: 25 assets / 337,892 bytes, maximum 101,422 bytes. A separate filing-only cohort passed delivery but is explicitly excluded from evidence of new intelligence. Seven workflows passed on coverage milestone `85619e54a1b921bb8fee4fd993f8dfc0b77971a4` and report-type milestone `61556f0d3159188186244e16e1e610b27a4f5abf`; Quant Production Pages was canceled without a reported test failure on both. Credential-dependent authenticated pilot/R2 acceptance remains unavailable, not represented as passing.
+Latest feature validation: **378 Python / 29 consumer-storage Node tests pass**, rerun after source promotion. The Q4 milestone `8fd0aea5e9a515a6083e657ab1c387f8d5f1452d` passed seven repository workflows but failed the Company Intelligence configuration test: three materials descriptors duplicated existing event routes. The three redundant bootstrap descriptors were removed, retaining event sources and stored material references; future promotion rejects a previously configured issuer/URL route. The full suite and targeted post-promotion configuration checks pass. All eight workflows on correction milestone `5e12deda3b1592b92edb5e64c6e00304cd9fb108` passed. This was a configuration regression, not a pre-existing main failure. Materials/Q4/retention tests cover public structured presentation contracts, credential/private link rejection, discarded bodies and grouping dates, child source health, rediscovery retention, and one-hub bounds despite existing annual reports, correct issuer/host proof, undated/CDN reference handling, prior-material preservation on empty responses, accumulated source health, pending-issuer resumption, CLI seed overrides and four-host circuit cooldown. New meaningful tests cover infrastructure circuit admission/resume, exact-CIK aliases, unsafe ownership/redirects, legal/title/footer evidence, partial discovery/cache restore, publisher cooldown accumulation, self-navigation rejection, composite release/call dates and source-only estimate reconciliation (including interrupted accepted batches). The shared circuit now also guards follow-up polling after successful IR discovery; a CLI-path test proves it checkpoints the new circuit and leaves unsent sources untouched. Isolated failures/access denials remain independent. All eight workflows on preceding milestone `0cbdf52d7929d65a75b65bc5c58c78eecdc15a83` passed. All eight workflows on coverage milestone `6a1d9b94eb5a04f388915e5c456f5ed637470e75` and ownership/coverage milestone `13fde9ba1ad7fd89dd7b588a10c7d0291035d5fa` passed. All eight workflows on the next coverage milestone `e905f8d0ecc8e38b1d800c6baf2d44716dd246ec` also passed. All eight workflows on coverage milestone `78a29806c5831381f8ebe533fa05c334f4d22912` and copyright-recovery milestone `b5da682b5d02f02b9a9878875522c8dfcfb1adcf` passed. On recovery milestone `51e37799656c7acce798616d1596507f34f7bf37`, seven workflows passed; Quant Production Pages was canceled before jobs were created, with no reported test failure. It uses a repository-wide pages-production concurrency group; cancellation is not misrepresented as passing. On HTML-materials milestone `0b34ec5fec8b07b63e82637741c00dece6e444df`, seven workflows passed and Quant Production Pages was canceled; no test failure was reported. The publisher archive CLI now marks whether its visible durable checkpoint belongs to the current attempt; cooldowns and pre-index robots failures retain prior progress without counting an old batch again. Full parser tests and publisher failure/cooldown/success assertions pass. All eight workflows on allowance milestone `533d355300c5911ec6684f23235ddd78ad4a9f93` passed. On checkpoint/type milestone `f893985d26c42c0703d21a39375657210c96597c`, seven workflows passed and Quant Production Pages was canceled with no reported test failure. All eight workflows on DNS-alias milestone `cee4bb335d724ae5a9a45e610a93843d66b41fa9` passed. A compound-label regression test also proves explicit transcript/remarks classifications outrank presentation wording, corrected URLs replace preceding types, and unrelated archived materials remain intact. Three preceding consumer audits and exact fresh checkpoint/reprojection passed. An additional strict 12-stock audit (TGB/WT/LCTX/CSV/GE/CPF/GS/MESO/ALLY/WRB/RTO/MOD) required acquired news, calls or non-filing company materials and passed: 25 assets / 337,892 bytes, maximum 101,422 bytes. A separate filing-only cohort passed delivery but is explicitly excluded from evidence of new intelligence. Seven workflows passed on coverage milestone `85619e54a1b921bb8fee4fd993f8dfc0b77971a4` and report-type milestone `61556f0d3159188186244e16e1e610b27a4f5abf`; Quant Production Pages was canceled without a reported test failure on both. All eight workflows passed on temporary-DNS milestone `8538f83e9b5e2f1aae0744775b35941a6564d9d6`. Credential-dependent authenticated pilot/R2 acceptance remains unavailable, not represented as passing.
 
 ## 29. Regressions / pre-existing main failures
 
@@ -233,7 +234,7 @@ Company Master, SEC, Quant, Discover, Supertrader, Screener, Markets, calendar e
 
 ## 30. Remaining unresolved candidates
 
-**195 frozen main-pass identities remain pending**, plus due recoverable cases in the exact funnel/pass tables. Missing preceding 35 inventory identities and unavailable private historical rows are explicit gaps. Temporary DNS/Envoy/proxy/site failures keep retry evidence and due times; unsafe parent/subsidiary/brand/conflicting-owner cases stay unproven rather than automatically resolved. No free-source ceiling is claimed prematurely.
+**0 frozen main-pass identities remain pending**, plus due recoverable cases in the exact funnel/pass tables. Missing preceding 35 inventory identities and unavailable private historical rows are explicit gaps. Temporary DNS/Envoy/proxy/site failures keep retry evidence and due times; unsafe parent/subsidiary/brand/conflicting-owner cases stay unproven rather than automatically resolved. No free-source ceiling is claimed prematurely.
 
 ## 31. True remaining high-leverage opportunities
 
@@ -243,7 +244,7 @@ Finish the unchecked frozen inventory; revisit due failures in the fully classif
 
 CANDIDATE-INVENTORY-SUBSTANTIALLY-COMPLETED: NO
 
-DOMAIN-COVERAGE-BREAKTHROUGH: YES (769 → 2088; downstream cohort measured)
+DOMAIN-COVERAGE-BREAKTHROUGH: YES (769 → 2177; downstream cohort measured)
 
 NEWS-COVERAGE-BREAKTHROUGH: NO (historical union unavailable; unchecked inventory remains)
 

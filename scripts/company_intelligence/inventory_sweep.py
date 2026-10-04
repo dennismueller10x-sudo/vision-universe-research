@@ -78,9 +78,16 @@ def select(companies, store, now, pass_id, lane, limit=50, allow_network=True):
             status='NO_VERIFIED_DOMAIN' if not official else 'ALREADY_DISCOVERED' if ir.get('lastSuccess') else None
             retry=ir.get('retryAfter','')
         if status or retry>now:
-            store.set_state(key+cid,{'status':status or 'COOLDOWN','checkedAt':now,
-                                    'reason':site.get('reason') if lane=='domains' else ir.get('reason'),
-                                    'retryAfter':retry or None,'networkRequests':0})
+            local_status = status or 'COOLDOWN'
+            reason = site.get('reason') if lane=='domains' else ir.get('reason')
+            category = ('VERIFIED_OFFICIAL' if status=='ALREADY_VERIFIED' else
+                        status if status in ('AMBIGUOUS','NO_VERIFIED_DOMAIN','ALREADY_DISCOVERED') else
+                        failure_category(local_status, reason or ''))
+            # Reused proof/cooldowns may change the current outcome, but must
+            # retain the attempts, traffic and first-check history already paid.
+            store.set_state(key+cid,{**(prior or {}),'status':local_status,'category':category,'checkedAt':now,
+                                    'reason':reason,'retryAfter':retry or None,
+                                    'networkRequests':(prior or {}).get('networkRequests',0)})
             continue
         if not allow_network:
             continue  # Unsent network work remains pending through a shared outage.
