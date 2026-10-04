@@ -56,6 +56,12 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
             try:
                 response = http.opener(request, **kwargs)
             except Exception as error:
+                # Envoy may return an HTTP 503 rather than a CONNECT exception.
+                # Read only a bounded error prefix; no article body is retained.
+                if getattr(error,'code',None)==503 and hasattr(error,'read'):
+                    try:
+                        error.proxy_failure_hint=b'upstream connect error or disconnect/reset before headers' in error.read(512)
+                    except OSError:pass
                 circuit.failure(request.full_url, error)
                 raise
             circuit.success()

@@ -191,6 +191,19 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
         links = parse_links(response['body'], response['finalUrl'])
         from .platforms import fingerprint, endpoints
         provider = fingerprint(response['body'], provider_type(response['finalUrl'], links))
+        # Local proof/documents survive a later provider or linked-page outage.
+        event_links = [l for l in links if re.search(r'events|calendar', l['text'], re.I) and not re.search(r'news[-_/]?releases|/static-files/|\.(?:pdf|zip)(?:\?|$)', l['url'], re.I) and within_domain(l['url'], page)]
+        from .materials import page_documents
+        configs.append({'companyId': company['companyId'], 'irHomepage': response['finalUrl'],
+                        'pageRole': 'IR' if page in {l['url'] for l in ir_links} or re.search(r'://(?:ir|investors?)\.|/investors?(?:/|$)|/investor-relations', response['finalUrl'], re.I) else 'CORPORATE',
+                        'documents': page_documents(company, links, response['finalUrl'], now),
+                        'pressReleaseUrl': next((l['url'] for l in links if re.search(r'press releases|news releases|newsroom', l['text'], re.I)), None),
+                        'eventsUrl': event_links[0]['url'] if event_links else None,
+                        'presentationsUrl': next((l['url'] for l in links if re.search(r'presentations|slides', l['text'], re.I)), None),
+                        'reportsUrl': next((l['url'] for l in links if re.search(r'annual reports|financial reports|shareholder letter', l['text'], re.I)), None),
+                        **endpoints(links, response['finalUrl']),
+                        'providerType': provider, 'lastVerified': now,
+                        'confidence': 1 if within_domain(page, official_site) else .95, 'evidence': 'LINK_FROM_VERIFIED_OFFICIAL_SITE'})
         feed_links = [l for l in links if not re.search(r'/comments/feed(?:/|$)|[?&]feed=comments',l['url'],re.I) and (any(m in l['type'] for m in ('rss', 'atom', 'feed+json')) or re.search(r'rss(?:handler|\.aspx|/)|\b(rss|atom)\b|\.rss(?:\?|$)', l['url'] + ' ' + l['text'], re.I))]
         extra = None
         # Follow one linked newsroom/event page if no structured feed is advertised.
@@ -242,17 +255,6 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
                 import sys
                 if isinstance(sys.exception(), BudgetExhausted):
                     raise
-        from .materials import page_documents
-        configs.append({'companyId': company['companyId'], 'irHomepage': response['finalUrl'],
-                        'pageRole': 'IR' if page in {l['url'] for l in ir_links} or re.search(r'://(?:ir|investors?)\.|/investors?(?:/|$)|/investor-relations', response['finalUrl'], re.I) else 'CORPORATE',
-                        'documents': page_documents(company, links, response['finalUrl'], now),
-                        'pressReleaseUrl': next((l['url'] for l in links if re.search(r'press releases|news releases|newsroom', l['text'], re.I)), None),
-                        'eventsUrl': event_links[0]['url'] if event_links else None,
-                        'presentationsUrl': next((l['url'] for l in links if re.search(r'presentations|slides', l['text'], re.I)), None),
-                        'reportsUrl': next((l['url'] for l in links if re.search(r'annual reports|financial reports|shareholder letter', l['text'], re.I)), None),
-                        **endpoints(links, response['finalUrl']),
-                        'providerType': provider, 'lastVerified': now,
-                        'confidence': 1 if within_domain(page, official_site) else .95, 'evidence': 'LINK_FROM_VERIFIED_OFFICIAL_SITE'})
         # One directly linked IR materials/results hub, not an unbounded crawl.
         if configs[-1]['pageRole'] == 'IR' and not configs[-1]['documents']:
             materials_page = next((l for l in links if within_domain(l['url'], page) and re.search(r'presentations|quarterly results|financial results|shareholder letters', l['text'], re.I) and not re.search(r'\.(?:pdf|zip)(?:\?|$)', l['url'], re.I)), None)

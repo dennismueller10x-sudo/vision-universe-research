@@ -60,7 +60,29 @@ class OwnershipRouteTests(unittest.TestCase):
 
  def test_customer_name_later_in_copyright_region_is_not_ownership(self):
   root='https://issuer.example/'
-  for text in ['Copyright 2026 Different Owner LLC. Customers include Root Inc.','Copyright 2026 Root Inc Services LLC. All rights reserved.']:
+  for text in ['Copyright 2026 Different Owner LLC. Customers include Root Inc.','Copyright 2026 Root Inc Services LLC. All rights reserved.','Copyright 2026 Root Inc Japan LLC. All rights reserved.']:
    http=HTTP({root:'<title>Root</title><footer>'+text+'</footer>'})
    with self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
     validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},http,NOW)
+
+ def test_transient_legal_page_failure_is_retryable_rather_than_an_identity_rejection(self):
+  root='https://issuer.example/'
+  http=HTTP({root:'<title>Root</title><a href="/about">About</a>',root+'about':SourceError('HTTP_503')})
+  with self.assertRaisesRegex(SourceError,'OWNERSHIP_EVIDENCE_TEMPORARY_FAILURE:HTTP_503') as caught:
+   validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},http,NOW)
+  self.assertEqual(caught.exception.ownershipEvidence['temporaryOwnershipRoutes'][0]['url'],root+'about')
+
+ def test_conflicting_linked_legal_owner_is_not_rescued_by_another_page(self):
+  root='https://issuer.example/'
+  http=HTTP({root:'<title>Root</title><a href="/about">About</a><a href="/legal">Legal</a>',root+'about':'<title>Root</title><footer>Copyright Different Owner LLC.</footer>'})
+  with self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
+   validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},http,NOW)
+  self.assertEqual(http.calls,[root,root+'about'])
+
+ def test_rights_reserved_before_exact_legal_owner_is_a_bounded_footer_template(self):
+  root='https://issuer.example/'
+  good=HTTP({root:'<title>Air T Inc.</title><footer>© 2026 All Rights Reserved - Air T, Inc.</footer>'})
+  self.assertEqual(validate_candidate(company('Air T Inc.','AIRT'),{'url':root,'evidence':'candidate'},good,NOW)['status'],'VALIDATED')
+  bad=HTTP({root:'<title>Root Inc.</title><footer>© 2026 All Rights Reserved - Other Owner LLC. Customers include Root Inc.</footer>'})
+  with self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
+   validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},bad,NOW)

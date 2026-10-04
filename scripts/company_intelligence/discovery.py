@@ -96,6 +96,7 @@ def validate_candidate(company, candidate, http, now, recover_redirects=False):
             else: continue
             routes[url] = min(priority, routes.get(url, priority))
         result = None
+        temporary_routes = []
         for url in sorted(routes, key=lambda url: (routes[url], url))[:2]:
             try:
                 legal_response = http.get(url, ttl=86400)
@@ -103,6 +104,7 @@ def validate_candidate(company, candidate, http, now, recover_redirects=False):
                     proof = _validate_response(company, target, legal_response, now)
                     header_source=legal_response['finalUrl']
                 except SourceError as route_error:
+                    if 'CONFLICTING_COPYRIGHT_OWNER' in str(route_error) or 'STRUCTURED_CIK_CONFLICT' in str(route_error):raise
                     if 'OWNER_NOT_VALIDATED' not in str(route_error): continue
                     proof = _validate_response(company, target, legal_response, now, header_body=response['body'])
                     header_source=response['finalUrl']
@@ -115,8 +117,15 @@ def validate_candidate(company, candidate, http, now, recover_redirects=False):
             except SourceError as route_error:
                 from .transport import BudgetExhausted
                 if isinstance(route_error, BudgetExhausted): raise
+                if 'CONFLICTING_COPYRIGHT_OWNER' in str(route_error) or 'STRUCTURED_CIK_CONFLICT' in str(route_error):raise
+                if any(code in str(route_error) for code in ('HTTP_429','HTTP_50','DNS_UNAVAILABLE','NETWORK_UNAVAILABLE','NETWORK_TIMEOUT','RATE_LIMIT')):
+                    temporary_routes.append({'url':url,'reason':str(route_error)[:150]})
                 continue
         if result is None:
+            if temporary_routes:
+                error=SourceError('OWNERSHIP_EVIDENCE_TEMPORARY_FAILURE:'+temporary_routes[0]['reason'])
+                error.ownershipEvidence={**getattr(original,'ownershipEvidence',{}),'temporaryOwnershipRoutes':temporary_routes}
+                raise error from original
             if redirected: raise SourceError('OFFICIAL_SITE_CANDIDATE_REDIRECT_OWNER_NOT_VALIDATED') from original
             raise original
     if redirected:
@@ -176,14 +185,24 @@ def _validate_response(company, candidate, response, now, header_body=None):
     # mentioned later in the footer is not the copyright owner.
     def owner_text(value):
         for _ in range(20):
-            stripped=re.sub(r'^\s*(?:copyright|©|&copy;|&nbsp;|\(c\)|\d{4}|\{\{year\}\}|[-–—|,:.])\s*','',value, count=1, flags=re.I)
+            stripped=re.sub(r'^\s*(?:copyright|©|&copy;|&nbsp;|\(c\)|all rights reserved\b|\d{4}|\{\{year\}\}|[-–—|,:.])\s*','',value, count=1, flags=re.I)
             if stripped==value:break
             value=stripped
         return value
     owner_raw=[owner_text(value) for value in copyright_raw]
     copyright_regions = [legal_normalize(value) for value in owner_raw]
-    footer_owner = any(re.match(re.escape(legal_normalize(n)) + r'(?!\w)(?!\s+(?:services|systems|llc|ltd|corp|inc|plc)\b)', region)
-                       for n in strong_names for region in copyright_regions if legal_normalize(n))
+    def exact_footer_owner(name, raw):
+        wanted=legal_normalize(name)
+        if not wanted:return False
+        words=list(re.finditer(r'\w+',raw))[:16]
+        for word in words:
+            if legal_normalize(raw[:word.end()])!=wanted:continue
+            tail=raw[word.end():]
+            normalized_tail=legal_normalize(tail)
+            if re.match(r'(?:services|systems|llc|ltd|corp|inc|plc)\b',normalized_tail):return False
+            return bool(re.match(r'\s*(?:[.,;|()]|all rights\b|privacy\b|terms\b|cookies\b|(?:19|20)\d{2}\b|©|&copy;|$)',tail,re.I))
+        return False
+    footer_owner = any(exact_footer_owner(name,raw) for name in strong_names for raw in owner_raw)
     # Corporate footers commonly omit Inc./Corp. Require the complete multiword
     # issuer name, a copyright ownership boundary, and corroborating header.
     # A prefix of another legal owner or a generic single word is insufficient.

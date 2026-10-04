@@ -10,6 +10,7 @@ def failure_signature(error):
     seen = set()
     while error is not None and id(error) not in seen:
         seen.add(id(error))
+        if getattr(error,'proxy_failure_hint',False):return 'SHARED_PROXY_FAILURE'
         messages.append(str(error).casefold())
         error = error.__cause__ or error.__context__
     text = ' '.join(messages)

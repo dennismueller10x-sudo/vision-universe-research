@@ -142,3 +142,28 @@ class BatchTests(unittest.TestCase):
   circuit.success()
   circuit.failure('https://two.example/',SourceError('HTTP_503'))
   self.assertFalse(circuit.snapshot()['open'])
+
+ def test_current_ir_documents_survive_an_unavailable_optional_newsroom(self):
+  from company_intelligence.feeds import discover_ir
+  c=company();c['officialSites']=['https://apple.com/investors']
+  class HTTP:
+   def get(self,url,**kwargs):
+    if url!=c['officialSites'][0]:raise BudgetExhausted('NETWORK_TIME_BUDGET_EXHAUSTED')
+    return {'body':b'<title>Apple Inc. Investors</title><a href="/deck.pdf">Q2 2026 Investor Presentation</a><a href="/news">Press Releases</a>','finalUrl':url}
+  with self.assertRaises(BudgetExhausted) as caught:discover_ir(c,c['officialSites'][0],HTTP(),NOW)
+  config=caught.exception.discoveryConfigurations[0]
+  self.assertEqual(config['pageRole'],'IR')
+  self.assertEqual(config['documents'][0]['type'],'PRESENTATION')
+  self.assertEqual(config['documents'][0]['url'],'https://apple.com/deck.pdf')
+  self.assertEqual(caught.exception.discoverySources,[])
+
+ def test_http_envoy_failure_has_explicit_proxy_signature(self):
+  import urllib.error,io
+  from company_intelligence.discovery_circuit import DiscoveryCircuit
+  circuit=DiscoveryCircuit(threshold=1);c=company();c['officialSites']=[]
+  candidates={c['companyId']:{'status':'CANDIDATE','candidates':[{'url':'https://apple.com/','evidence':'candidate'}]}}
+  def opener(request,**kwargs):raise urllib.error.HTTPError(request.full_url,503,'Unavailable',{'server':'envoy'},io.BytesIO(b'upstream connect error or disconnect/reset before headers. immediate connect error'))
+  with tempfile.TemporaryDirectory() as tmp:
+   rows=run([c],candidates,PublicHTTP(tmp,opener=opener,validator=lambda u:u),NOW,8,60,workers=1,domain_only=True,circuit=circuit)
+  self.assertEqual(circuit.snapshot()['signature'],'SHARED_PROXY_FAILURE')
+  self.assertIn('CIRCUIT_OPEN',rows[0]['reason'])
