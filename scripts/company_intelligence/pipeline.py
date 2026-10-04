@@ -99,6 +99,7 @@ class Pipeline:
         if signature in self._processed_sources:
             return
         self._processed_sources.add(signature)
+        calendar_issuers = set()
         try:
             accepted = 0
             rejected = 0
@@ -153,6 +154,8 @@ class Pipeline:
                         self.store.audit(self.now, sid, 'EVENT_REJECTED_WRONG_EARNINGS_ACTOR', headline=e['headline'], url=e.get('sourceUrl'))
                         continue
                     self.store.event(e, self.now)
+                    if e['eventType'] in ('EARNINGS_CALL', 'EARNINGS_SCHEDULED') and e.get('confirmationStatus') == 'CONFIRMED':
+                        calendar_issuers.add(e['companyId'])
                     accepted += 1
                 entries = []
             else:
@@ -264,6 +267,8 @@ class Pipeline:
                                 e.update(confidence=.99, confirmationEvidence='ISSUER_AUTHORED_DISTRIBUTOR_ANNOUNCEMENT', issuerMatchEvidence=match['evidence'])
                             self.store.event(e, self.now)
                             self.store.retire_composite_call(e, self.now)
+                            if e.get('confirmationStatus') == 'CONFIRMED':
+                                calendar_issuers.add(e['companyId'])
                         financial_proof = financial_release_evidence(entry['headline'], entry.get('evidenceText', ''))
                         if issuer_results_actor(entry['headline'], self.companies[match['companyId']]) and financial_proof and entry.get('publishedAt') and re.search(r'\b(reports?|announces?)\b.{0,80}(?:quarter|fiscal|financial|full.year).{0,35}results', entry['headline'], re.I) and not re.search(r'\b(will|to announce|to report|to be|date|scheduled|upcoming|forthcoming|expected|board meeting|board approval|to consider|to approve|to review)\b', entry['headline'], re.I) and not (re.search(r'\b(production|deliveries|operating results|operational results|phase[ -]?[123]|clinical|trial|study)\b', entry['headline'], re.I) and not re.search(r'financial results|earnings', entry['headline'], re.I)):
                             from .sec_documents import release_period
@@ -284,6 +289,7 @@ class Pipeline:
                             if reported:
                                 earnings['reportingPeriod'] = reported.get('periodEnd')
                             self.store.event(earnings, self.now)
+                            calendar_issuers.add(match['companyId'])
                         guidance = guidance_evidence(entry, announcer)
                         if guidance:
                             item['guidanceEvidence'] = guidance
@@ -315,6 +321,12 @@ class Pipeline:
             self.store.audit(self.now, sid, 'SOURCE_FAILURE', errorType=type(exc).__name__, reason=str(exc)[:250])
             self.run['sourceFailures'] += 1
             log('SOURCE_FAILURE', sourceId=sid, reason=str(exc)[:250])
+        finally:
+            # Source polling also runs without SEC/company refresh. Reconcile
+            # only issuers with accepted earnings evidence, including partial
+            # batches, using the existing estimator and retirement audit.
+            for cid in sorted(calendar_issuers):
+                self.refresh_estimates(self.companies[cid])
 
     def sec_client(self, sec_budget=60):
         from quant.sec.http_client import SECHttpClient, DiskCache, RateLimiter
