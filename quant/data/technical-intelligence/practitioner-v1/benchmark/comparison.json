@@ -1,12 +1,4205 @@
 {
  "schemaVersion": "vu-practitioner-benchmark-1.1.0",
- "generatedAt": "2026-10-04T04:38:43.855Z",
+ "generatedAt": "2026-10-04T20:58:09.744Z",
  "label": "PRACTITIONER REFERENCE, NOT OBJECTIVE GROUND TRUTH — INTERN, keine Produktaussage",
  "protocol": "docs/technical-intelligence/PRACTITIONER_PROTOCOL.md",
  "engine": {
   "expected": "elliott-3.2.2",
   "actual": "elliott-3.2.2"
  },
- "references": "practitioner-v1/references.jsonl",
- "status": "NO_REFERENCES"
+ "references": "PRACTITIONER_REFERENCE_V1.jsonl",
+ "frozen": {
+  "version": "PRACTITIONER_REFERENCE_V1",
+  "sha256": "7af25c9b5d61f0268f7049103076839e1dd43b3a2d9d24bc942290dd1133f489"
+ },
+ "status": "OK",
+ "scope": "DEVELOPMENT+VALIDATION",
+ "primaryView": "ORIGINAL_PUBLISHED",
+ "directionSemantics": "A1 = laufende Bewegung ab jetzt (Praktiker directionalBias vs. VU currentWave.direction); A2 = Bewegung nach der laufenden Welle (Praktiker primary.nextMoveAfterCurrent vs. VU nextMove); S = A1 + Rolle (+ Trend, wo ableitbar)",
+ "vuVsPractitioner": {
+  "all": {
+   "cases": 35,
+   "categories": {
+    "VU_ABSTAINED": 33,
+    "INSUFFICIENT_DATA": 2
+   },
+   "J": {
+    "vuAbstainShare": 1,
+    "applicability": {
+     "LOW": 33
+    }
+   },
+   "practitionerSidewaysNotComparable": 0,
+   "metrics": {
+    "A1": {
+     "includingAbstained": {
+      "n": 33,
+      "match": 21,
+      "rate": 0.6364,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 19; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 4,
+      "clustersInstrument": 19
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "A2": {
+     "includingAbstained": {
+      "n": 8,
+      "match": 4,
+      "rate": 0.5,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 3, Instrumente 5; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 3,
+      "clustersInstrument": 5
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "B": {
+     "includingAbstained": {
+      "n": 33,
+      "match": 8,
+      "rate": 0.2424,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 19; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 4,
+      "clustersInstrument": 19
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "C": {
+     "includingAbstained": {
+      "n": 31,
+      "match": 1,
+      "rate": 0.0323,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 19; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 4,
+      "clustersInstrument": 19
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "D": {
+     "includingAbstained": {
+      "n": 2,
+      "match": 1,
+      "rate": 0.5,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 1, Instrumente 2; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 1,
+      "clustersInstrument": 2
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "E": {
+     "includingAbstained": {
+      "n": 2,
+      "match": 1,
+      "rate": 0.5,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 1, Instrumente 2; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 1,
+      "clustersInstrument": 2
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "F": {
+     "includingAbstained": {
+      "n": 33,
+      "match": 0,
+      "rate": 0,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 19; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 4,
+      "clustersInstrument": 19
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "G": {
+     "includingAbstained": {
+      "n": 33,
+      "match": 1,
+      "rate": 0.0303,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 19; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 4,
+      "clustersInstrument": 19
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "K": {
+     "includingAbstained": {
+      "n": 31,
+      "match": 8,
+      "rate": 0.2581,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 19; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 4,
+      "clustersInstrument": 19
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "S": {
+     "includingAbstained": {
+      "n": 33,
+      "match": 16,
+      "rate": 0.4848,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 19; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 4,
+      "clustersInstrument": 19
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    }
+   },
+   "levels": {
+    "includingAbstained": {
+     "H": {
+      "n": 3,
+      "medianPct": 36.303,
+      "medianAtr": 9.966,
+      "sameSideShare": 0.667
+     },
+     "I": {
+      "n": 23,
+      "anyOverlap": {
+       "n": 23,
+       "match": 0,
+       "rate": 0,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 15; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 4,
+       "clustersInstrument": 15
+      },
+      "medianNearestCenterAtr": 10.984,
+      "medianNearestCenterPct": 27.144
+     }
+    },
+    "excludingAbstained": {
+     "H": {
+      "n": 0,
+      "medianPct": null,
+      "medianAtr": null,
+      "sameSideShare": null
+     },
+     "I": {
+      "n": 0,
+      "anyOverlap": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      },
+      "medianNearestCenterAtr": null,
+      "medianNearestCenterPct": null
+     }
+    }
+   },
+   "kappa": {
+    "currentMove": {
+     "n": 33,
+     "kappa": 0.2556,
+     "reason": null,
+     "categories": [
+      "DOWN",
+      "UP"
+     ],
+     "prevalence": {
+      "first": {
+       "DOWN": 16,
+       "UP": 17
+      },
+      "second": {
+       "DOWN": 4,
+       "UP": 29
+      }
+     },
+     "ci95": null,
+     "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 19; Minimum 5)",
+     "ciBy": null
+    },
+    "nextMoveAfterCurrent": {
+     "n": 8,
+     "kappa": null,
+     "reason": "INSUFFICIENT_PAIRS (< 20)",
+     "ci95": null,
+     "categories": [
+      "DOWN",
+      "UP"
+     ],
+     "prevalence": {
+      "first": {
+       "DOWN": 1,
+       "UP": 7
+      },
+      "second": {
+       "DOWN": 5,
+       "UP": 3
+      }
+     }
+    },
+    "family": {
+     "n": 33,
+     "kappa": 0,
+     "reason": null,
+     "categories": [
+      "CORRECTIVE",
+      "MOTIVE"
+     ],
+     "prevalence": {
+      "first": {
+       "CORRECTIVE": 8,
+       "MOTIVE": 25
+      },
+      "second": {
+       "CORRECTIVE": 33,
+       "MOTIVE": 0
+      }
+     },
+     "ci95": null,
+     "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 19; Minimum 5)",
+     "ciBy": null
+    }
+   },
+   "degreeNote": "D/E nur bei bekanntem Grad auf beiden Seiten; VU-Grad ist eine Naeherung aus der Wellendauer (approximate)."
+  },
+  "bySplit": {
+   "VALIDATION": {
+    "cases": 9,
+    "categories": {
+     "VU_ABSTAINED": 9
+    },
+    "J": {
+     "vuAbstainShare": 1,
+     "applicability": {
+      "LOW": 9
+     }
+    },
+    "practitionerSidewaysNotComparable": 0,
+    "metrics": {
+     "A1": {
+      "includingAbstained": {
+       "n": 9,
+       "match": 6,
+       "rate": 0.6667,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 3, Instrumente 9; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 3,
+       "clustersInstrument": 9
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "A2": {
+      "includingAbstained": {
+       "n": 3,
+       "match": 2,
+       "rate": 0.6667,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 1, Instrumente 3; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 1,
+       "clustersInstrument": 3
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "B": {
+      "includingAbstained": {
+       "n": 9,
+       "match": 4,
+       "rate": 0.4444,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 3, Instrumente 9; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 3,
+       "clustersInstrument": 9
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "C": {
+      "includingAbstained": {
+       "n": 9,
+       "match": 1,
+       "rate": 0.1111,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 3, Instrumente 9; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 3,
+       "clustersInstrument": 9
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "D": {
+      "includingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "E": {
+      "includingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "F": {
+      "includingAbstained": {
+       "n": 9,
+       "match": 0,
+       "rate": 0,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 3, Instrumente 9; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 3,
+       "clustersInstrument": 9
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "G": {
+      "includingAbstained": {
+       "n": 9,
+       "match": 0,
+       "rate": 0,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 3, Instrumente 9; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 3,
+       "clustersInstrument": 9
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "K": {
+      "includingAbstained": {
+       "n": 9,
+       "match": 3,
+       "rate": 0.3333,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 3, Instrumente 9; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 3,
+       "clustersInstrument": 9
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "S": {
+      "includingAbstained": {
+       "n": 9,
+       "match": 5,
+       "rate": 0.5556,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 3, Instrumente 9; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 3,
+       "clustersInstrument": 9
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     }
+    },
+    "levels": {
+     "includingAbstained": {
+      "H": {
+       "n": 3,
+       "medianPct": 36.303,
+       "medianAtr": 9.966,
+       "sameSideShare": 0.667
+      },
+      "I": {
+       "n": 5,
+       "anyOverlap": {
+        "n": 5,
+        "match": 0,
+        "rate": 0,
+        "ci95": null,
+        "ciReason": "INSUFFICIENT_CLUSTERS (Familien 3, Instrumente 5; Minimum 5)",
+        "ciBy": null,
+        "clustersSourceFamily": 3,
+        "clustersInstrument": 5
+       },
+       "medianNearestCenterAtr": 4.156,
+       "medianNearestCenterPct": 27.144
+      }
+     },
+     "excludingAbstained": {
+      "H": {
+       "n": 0,
+       "medianPct": null,
+       "medianAtr": null,
+       "sameSideShare": null
+      },
+      "I": {
+       "n": 0,
+       "anyOverlap": {
+        "n": 0,
+        "match": 0,
+        "rate": null,
+        "ci95": null,
+        "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+        "ciBy": null,
+        "clustersSourceFamily": 0,
+        "clustersInstrument": 0
+       },
+       "medianNearestCenterAtr": null,
+       "medianNearestCenterPct": null
+      }
+     }
+    },
+    "kappa": {
+     "currentMove": {
+      "n": 9,
+      "kappa": null,
+      "reason": "INSUFFICIENT_PAIRS (< 20)",
+      "ci95": null,
+      "categories": [
+       "DOWN",
+       "UP"
+      ],
+      "prevalence": {
+       "first": {
+        "DOWN": 5,
+        "UP": 4
+       },
+       "second": {
+        "DOWN": 2,
+        "UP": 7
+       }
+      }
+     },
+     "nextMoveAfterCurrent": {
+      "n": 3,
+      "kappa": null,
+      "reason": "INSUFFICIENT_PAIRS (< 20)",
+      "ci95": null,
+      "categories": [
+       "DOWN",
+       "UP"
+      ],
+      "prevalence": {
+       "first": {
+        "DOWN": 0,
+        "UP": 3
+       },
+       "second": {
+        "DOWN": 1,
+        "UP": 2
+       }
+      }
+     },
+     "family": {
+      "n": 9,
+      "kappa": null,
+      "reason": "INSUFFICIENT_PAIRS (< 20)",
+      "ci95": null,
+      "categories": [
+       "CORRECTIVE",
+       "MOTIVE"
+      ],
+      "prevalence": {
+       "first": {
+        "CORRECTIVE": 4,
+        "MOTIVE": 5
+       },
+       "second": {
+        "CORRECTIVE": 9,
+        "MOTIVE": 0
+       }
+      }
+     }
+    },
+    "degreeNote": "D/E nur bei bekanntem Grad auf beiden Seiten; VU-Grad ist eine Naeherung aus der Wellendauer (approximate)."
+   },
+   "DEVELOPMENT": {
+    "cases": 26,
+    "categories": {
+     "VU_ABSTAINED": 24,
+     "INSUFFICIENT_DATA": 2
+    },
+    "J": {
+     "vuAbstainShare": 1,
+     "applicability": {
+      "LOW": 24
+     }
+    },
+    "practitionerSidewaysNotComparable": 0,
+    "metrics": {
+     "A1": {
+      "includingAbstained": {
+       "n": 24,
+       "match": 15,
+       "rate": 0.625,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 13; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 4,
+       "clustersInstrument": 13
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "A2": {
+      "includingAbstained": {
+       "n": 5,
+       "match": 2,
+       "rate": 0.4,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 2, Instrumente 2; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 2,
+       "clustersInstrument": 2
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "B": {
+      "includingAbstained": {
+       "n": 24,
+       "match": 4,
+       "rate": 0.1667,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 13; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 4,
+       "clustersInstrument": 13
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "C": {
+      "includingAbstained": {
+       "n": 22,
+       "match": 0,
+       "rate": 0,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 13; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 4,
+       "clustersInstrument": 13
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "D": {
+      "includingAbstained": {
+       "n": 2,
+       "match": 1,
+       "rate": 0.5,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 1, Instrumente 2; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 1,
+       "clustersInstrument": 2
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "E": {
+      "includingAbstained": {
+       "n": 2,
+       "match": 1,
+       "rate": 0.5,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 1, Instrumente 2; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 1,
+       "clustersInstrument": 2
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "F": {
+      "includingAbstained": {
+       "n": 24,
+       "match": 0,
+       "rate": 0,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 13; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 4,
+       "clustersInstrument": 13
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "G": {
+      "includingAbstained": {
+       "n": 24,
+       "match": 1,
+       "rate": 0.0417,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 13; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 4,
+       "clustersInstrument": 13
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "K": {
+      "includingAbstained": {
+       "n": 22,
+       "match": 5,
+       "rate": 0.2273,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 13; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 4,
+       "clustersInstrument": 13
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     },
+     "S": {
+      "includingAbstained": {
+       "n": 24,
+       "match": 11,
+       "rate": 0.4583,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 13; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 4,
+       "clustersInstrument": 13
+      },
+      "excludingAbstained": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      }
+     }
+    },
+    "levels": {
+     "includingAbstained": {
+      "H": {
+       "n": 0,
+       "medianPct": null,
+       "medianAtr": null,
+       "sameSideShare": null
+      },
+      "I": {
+       "n": 18,
+       "anyOverlap": {
+        "n": 18,
+        "match": 0,
+        "rate": 0,
+        "ci95": null,
+        "ciReason": "INSUFFICIENT_CLUSTERS (Familien 3, Instrumente 12; Minimum 5)",
+        "ciBy": null,
+        "clustersSourceFamily": 3,
+        "clustersInstrument": 12
+       },
+       "medianNearestCenterAtr": 13.697,
+       "medianNearestCenterPct": 27.511
+      }
+     },
+     "excludingAbstained": {
+      "H": {
+       "n": 0,
+       "medianPct": null,
+       "medianAtr": null,
+       "sameSideShare": null
+      },
+      "I": {
+       "n": 0,
+       "anyOverlap": {
+        "n": 0,
+        "match": 0,
+        "rate": null,
+        "ci95": null,
+        "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+        "ciBy": null,
+        "clustersSourceFamily": 0,
+        "clustersInstrument": 0
+       },
+       "medianNearestCenterAtr": null,
+       "medianNearestCenterPct": null
+      }
+     }
+    },
+    "kappa": {
+     "currentMove": {
+      "n": 24,
+      "kappa": 0.194,
+      "reason": null,
+      "categories": [
+       "DOWN",
+       "UP"
+      ],
+      "prevalence": {
+       "first": {
+        "DOWN": 11,
+        "UP": 13
+       },
+       "second": {
+        "DOWN": 2,
+        "UP": 22
+       }
+      },
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 13; Minimum 5)",
+      "ciBy": null
+     },
+     "nextMoveAfterCurrent": {
+      "n": 5,
+      "kappa": null,
+      "reason": "INSUFFICIENT_PAIRS (< 20)",
+      "ci95": null,
+      "categories": [
+       "DOWN",
+       "UP"
+      ],
+      "prevalence": {
+       "first": {
+        "DOWN": 1,
+        "UP": 4
+       },
+       "second": {
+        "DOWN": 4,
+        "UP": 1
+       }
+      }
+     },
+     "family": {
+      "n": 24,
+      "kappa": 0,
+      "reason": null,
+      "categories": [
+       "CORRECTIVE",
+       "MOTIVE"
+      ],
+      "prevalence": {
+       "first": {
+        "CORRECTIVE": 4,
+        "MOTIVE": 20
+       },
+       "second": {
+        "CORRECTIVE": 24,
+        "MOTIVE": 0
+       }
+      },
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 13; Minimum 5)",
+      "ciBy": null
+     }
+    },
+    "degreeNote": "D/E nur bei bekanntem Grad auf beiden Seiten; VU-Grad ist eine Naeherung aus der Wellendauer (approximate)."
+   }
+  },
+  "latestView": {
+   "cases": 4,
+   "categories": {
+    "VU_ABSTAINED": 4
+   },
+   "J": {
+    "vuAbstainShare": 1,
+    "applicability": {
+     "LOW": 4
+    }
+   },
+   "practitionerSidewaysNotComparable": 1,
+   "metrics": {
+    "A1": {
+     "includingAbstained": {
+      "n": 3,
+      "match": 1,
+      "rate": 0.3333,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 2, Instrumente 2; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 2,
+      "clustersInstrument": 2
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "A2": {
+     "includingAbstained": {
+      "n": 2,
+      "match": 2,
+      "rate": 1,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 1, Instrumente 1; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 1,
+      "clustersInstrument": 1
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "B": {
+     "includingAbstained": {
+      "n": 4,
+      "match": 0,
+      "rate": 0,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 2, Instrumente 2; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 2,
+      "clustersInstrument": 2
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "C": {
+     "includingAbstained": {
+      "n": 3,
+      "match": 0,
+      "rate": 0,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 2, Instrumente 1; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 2,
+      "clustersInstrument": 1
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "D": {
+     "includingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "E": {
+     "includingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "F": {
+     "includingAbstained": {
+      "n": 4,
+      "match": 0,
+      "rate": 0,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 2, Instrumente 2; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 2,
+      "clustersInstrument": 2
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "G": {
+     "includingAbstained": {
+      "n": 4,
+      "match": 0,
+      "rate": 0,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 2, Instrumente 2; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 2,
+      "clustersInstrument": 2
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "K": {
+     "includingAbstained": {
+      "n": 3,
+      "match": 2,
+      "rate": 0.6667,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 2, Instrumente 2; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 2,
+      "clustersInstrument": 2
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    },
+    "S": {
+     "includingAbstained": {
+      "n": 3,
+      "match": 0,
+      "rate": 0,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 2, Instrumente 2; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 2,
+      "clustersInstrument": 2
+     },
+     "excludingAbstained": {
+      "n": 0,
+      "match": 0,
+      "rate": null,
+      "ci95": null,
+      "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+      "ciBy": null,
+      "clustersSourceFamily": 0,
+      "clustersInstrument": 0
+     }
+    }
+   },
+   "levels": {
+    "includingAbstained": {
+     "H": {
+      "n": 2,
+      "medianPct": 49.914,
+      "medianAtr": 28.19,
+      "sameSideShare": 0
+     },
+     "I": {
+      "n": 1,
+      "anyOverlap": {
+       "n": 1,
+       "match": 0,
+       "rate": 0,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 1, Instrumente 1; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 1,
+       "clustersInstrument": 1
+      },
+      "medianNearestCenterAtr": 0.618,
+      "medianNearestCenterPct": 1.07
+     }
+    },
+    "excludingAbstained": {
+     "H": {
+      "n": 0,
+      "medianPct": null,
+      "medianAtr": null,
+      "sameSideShare": null
+     },
+     "I": {
+      "n": 0,
+      "anyOverlap": {
+       "n": 0,
+       "match": 0,
+       "rate": null,
+       "ci95": null,
+       "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+       "ciBy": null,
+       "clustersSourceFamily": 0,
+       "clustersInstrument": 0
+      },
+      "medianNearestCenterAtr": null,
+      "medianNearestCenterPct": null
+     }
+    }
+   },
+   "kappa": {
+    "currentMove": {
+     "n": 3,
+     "kappa": null,
+     "reason": "INSUFFICIENT_PAIRS (< 20)",
+     "ci95": null,
+     "categories": [
+      "DOWN",
+      "UP"
+     ],
+     "prevalence": {
+      "first": {
+       "DOWN": 3,
+       "UP": 0
+      },
+      "second": {
+       "DOWN": 1,
+       "UP": 2
+      }
+     }
+    },
+    "nextMoveAfterCurrent": {
+     "n": 2,
+     "kappa": null,
+     "reason": "INSUFFICIENT_PAIRS (< 20)",
+     "ci95": null,
+     "categories": [
+      "DOWN",
+      "UP"
+     ],
+     "prevalence": {
+      "first": {
+       "DOWN": 1,
+       "UP": 1
+      },
+      "second": {
+       "DOWN": 1,
+       "UP": 1
+      }
+     }
+    },
+    "family": {
+     "n": 4,
+     "kappa": null,
+     "reason": "INSUFFICIENT_PAIRS (< 20)",
+     "ci95": null,
+     "categories": [
+      "CORRECTIVE",
+      "MOTIVE"
+     ],
+     "prevalence": {
+      "first": {
+       "CORRECTIVE": 0,
+       "MOTIVE": 4
+      },
+      "second": {
+       "CORRECTIVE": 4,
+       "MOTIVE": 0
+      }
+     }
+    }
+   },
+   "degreeNote": "D/E nur bei bekanntem Grad auf beiden Seiten; VU-Grad ist eine Naeherung aus der Wellendauer (approximate)."
+  }
+ },
+ "humanHuman": {
+  "pairingRule": "gleiche vuSymbol, gleicher Zeitrahmen, ≤ 5 Handelstage, verschiedene Quellenfamilie; je Referenz und Fremdfamilie die zeitlich naechste",
+  "pairs": 1,
+  "agreementDistribution": {
+   "AMBIGUITY": 1
+  },
+  "metrics": {
+   "A1": {
+    "n": 1,
+    "match": 0,
+    "rate": 0,
+    "ci95": null,
+    "ciReason": "INSUFFICIENT_CLUSTERS (Familien 1, Instrumente 1; Minimum 5)",
+    "ciBy": null,
+    "clustersSourceFamily": 1,
+    "clustersInstrument": 1
+   },
+   "A2": {
+    "n": 1,
+    "match": 0,
+    "rate": 0,
+    "ci95": null,
+    "ciReason": "INSUFFICIENT_CLUSTERS (Familien 1, Instrumente 1; Minimum 5)",
+    "ciBy": null,
+    "clustersSourceFamily": 1,
+    "clustersInstrument": 1
+   },
+   "B": {
+    "n": 1,
+    "match": 1,
+    "rate": 1,
+    "ci95": null,
+    "ciReason": "INSUFFICIENT_CLUSTERS (Familien 1, Instrumente 1; Minimum 5)",
+    "ciBy": null,
+    "clustersSourceFamily": 1,
+    "clustersInstrument": 1
+   },
+   "C": {
+    "n": 1,
+    "match": 1,
+    "rate": 1,
+    "ci95": null,
+    "ciReason": "INSUFFICIENT_CLUSTERS (Familien 1, Instrumente 1; Minimum 5)",
+    "ciBy": null,
+    "clustersSourceFamily": 1,
+    "clustersInstrument": 1
+   },
+   "D": {
+    "n": 0,
+    "match": 0,
+    "rate": null,
+    "ci95": null,
+    "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+    "ciBy": null,
+    "clustersSourceFamily": 0,
+    "clustersInstrument": 0
+   },
+   "E": {
+    "n": 0,
+    "match": 0,
+    "rate": null,
+    "ci95": null,
+    "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+    "ciBy": null,
+    "clustersSourceFamily": 0,
+    "clustersInstrument": 0
+   },
+   "F": {
+    "n": 1,
+    "match": 1,
+    "rate": 1,
+    "ci95": null,
+    "ciReason": "INSUFFICIENT_CLUSTERS (Familien 1, Instrumente 1; Minimum 5)",
+    "ciBy": null,
+    "clustersSourceFamily": 1,
+    "clustersInstrument": 1
+   },
+   "G": {
+    "n": 1,
+    "match": 1,
+    "rate": 1,
+    "ci95": null,
+    "ciReason": "INSUFFICIENT_CLUSTERS (Familien 1, Instrumente 1; Minimum 5)",
+    "ciBy": null,
+    "clustersSourceFamily": 1,
+    "clustersInstrument": 1
+   },
+   "K": {
+    "n": 1,
+    "match": 1,
+    "rate": 1,
+    "ci95": null,
+    "ciReason": "INSUFFICIENT_CLUSTERS (Familien 1, Instrumente 1; Minimum 5)",
+    "ciBy": null,
+    "clustersSourceFamily": 1,
+    "clustersInstrument": 1
+   },
+   "S": {
+    "n": 1,
+    "match": 0,
+    "rate": 0,
+    "ci95": null,
+    "ciReason": "INSUFFICIENT_CLUSTERS (Familien 1, Instrumente 1; Minimum 5)",
+    "ciBy": null,
+    "clustersSourceFamily": 1,
+    "clustersInstrument": 1
+   }
+  },
+  "levels": {
+   "H": {
+    "n": 0,
+    "medianPct": null,
+    "medianAtr": null,
+    "sameSideShare": null
+   },
+   "I": {
+    "n": 1,
+    "anyOverlap": {
+     "n": 1,
+     "match": 0,
+     "rate": 0,
+     "ci95": null,
+     "ciReason": "INSUFFICIENT_CLUSTERS (Familien 1, Instrumente 1; Minimum 5)",
+     "ciBy": null,
+     "clustersSourceFamily": 1,
+     "clustersInstrument": 1
+    },
+    "medianNearestCenterAtr": 26.345,
+    "medianNearestCenterPct": 19.645
+   }
+  },
+  "kappa": {
+   "currentMove": {
+    "n": 1,
+    "kappa": null,
+    "reason": "INSUFFICIENT_PAIRS (< 20)",
+    "ci95": null,
+    "categories": [
+     "DOWN",
+     "SIDEWAYS",
+     "UP"
+    ],
+    "prevalence": {
+     "first": {
+      "DOWN": 1,
+      "SIDEWAYS": 0,
+      "UP": 0
+     },
+     "second": {
+      "DOWN": 0,
+      "SIDEWAYS": 0,
+      "UP": 1
+     }
+    }
+   },
+   "nextMoveAfterCurrent": {
+    "n": 1,
+    "kappa": null,
+    "reason": "INSUFFICIENT_PAIRS (< 20)",
+    "ci95": null,
+    "categories": [
+     "DOWN",
+     "SIDEWAYS",
+     "UP"
+    ],
+    "prevalence": {
+     "first": {
+      "DOWN": 0,
+      "SIDEWAYS": 0,
+      "UP": 1
+     },
+     "second": {
+      "DOWN": 1,
+      "SIDEWAYS": 0,
+      "UP": 0
+     }
+    }
+   },
+   "family": {
+    "n": 1,
+    "kappa": null,
+    "reason": "INSUFFICIENT_PAIRS (< 20)",
+    "ci95": null,
+    "categories": [
+     "CORRECTIVE",
+     "MOTIVE"
+    ],
+    "prevalence": {
+     "first": {
+      "CORRECTIVE": 0,
+      "MOTIVE": 1
+     },
+     "second": {
+      "CORRECTIVE": 0,
+      "MOTIVE": 1
+     }
+    }
+   }
+  },
+  "note": "Keine Mehrheitsentscheidung als Wahrheit; gespeichert wird die Verteilung."
+ },
+ "dynamics": {
+  "practitionerRevisionRateBySource": {
+   "ewf": {
+    "cases": 18,
+    "revisedCases": 0,
+    "revisions": 0,
+    "rate": 0
+   },
+   "tv-cryptoknee": {
+    "cases": 7,
+    "revisedCases": 2,
+    "revisions": 2,
+    "rate": 0.286
+   },
+   "tv-thefifthwave": {
+    "cases": 5,
+    "revisedCases": 0,
+    "revisions": 0,
+    "rate": 0
+   },
+   "tv-yuchaosng": {
+    "cases": 5,
+    "revisedCases": 2,
+    "revisions": 6,
+    "rate": 0.4
+   }
+  },
+  "vuRelabel": {
+   "cases": 31,
+   "relabeledShare": 0.419,
+   "medianPer100Bars": 0
+  },
+  "detectionLatency": {
+   "cases": 35,
+   "found": 19,
+   "medianOffsetBars": -10,
+   "vuEarlierOrSame": 16,
+   "statusCounts": {
+    "NOT_IN_WINDOW": 12,
+    "FOUND": 19,
+    "NO_TRAJECTORY": 4
+   }
+  },
+  "note": "Revisionsrate (Praktiker, ganze Archivspanne) und VU-Neuzuordnungsrate (Replay-Fenster) haben verschiedene Horizonte – nur qualitativ vergleichen.",
+  "window": {
+   "before": 10,
+   "after": 10
+  }
+ },
+ "rows": [
+  {
+   "referenceId": "pr_ewf_20220816_zm",
+   "caseId": "ewf|ZM|2022-08-16|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "ZM",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "VALIDATION",
+   "confidence": "HIGH",
+   "year": "2022",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MISMATCH",
+    "A2": "MISMATCH",
+    "B": "MATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MISMATCH",
+    "role": "MISMATCH",
+    "impliedTrend": "MISMATCH",
+    "strict": false
+   },
+   "H": {
+    "result": "COMPUTED",
+    "absolute": 75.74,
+    "pct": 69.156,
+    "atr": 9.966,
+    "sameSide": true
+   },
+   "I": {
+    "result": "NOT_COMPARABLE"
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 35,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_ewf_20220828_unh",
+   "caseId": "ewf|UNH|2022-08-28|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "UNH",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2022",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MISMATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MATCH",
+    "K": "MISMATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MISMATCH",
+    "role": "MATCH",
+    "impliedTrend": "MATCH",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 38.204,
+    "nearestCenterAtr": 12.694
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 35,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_ewf_20221025_qqq",
+   "caseId": "ewf|QQQ|2022-10-25|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "QQQ",
+   "timeframe": "1D",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2022",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "OK",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MISMATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MISMATCH",
+    "role": "MATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 21.176,
+    "nearestCenterAtr": 14.699
+   },
+   "vuDegree": {
+    "rank": 0,
+    "medianWaveDays": 8,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_ewf_20230102_dis",
+   "caseId": "ewf|DIS|2023-01-02|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "DIS",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "VALIDATION",
+   "confidence": "MEDIUM",
+   "year": "2022",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "OK",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "MATCH",
+    "B": "MATCH",
+    "C": "MATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MATCH",
+    "S": "MATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MATCH",
+    "impliedTrend": "MATCH",
+    "strict": true
+   },
+   "H": {
+    "result": "COMPUTED",
+    "absolute": 31.54,
+    "pct": 36.303,
+    "atr": 7.81,
+    "sameSide": true
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 91.098,
+    "nearestCenterAtr": 19.598
+   },
+   "vuDegree": {
+    "rank": 2,
+    "medianWaveDays": 98,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_ewf_20230108_cat",
+   "caseId": "ewf|CAT|2023-01-08|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "CAT",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "HIGH",
+   "year": "2023",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MATCH",
+    "impliedTrend": "MATCH",
+    "strict": true
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 5.618,
+    "nearestCenterAtr": 1.729
+   },
+   "vuDegree": {
+    "rank": 2,
+    "medianWaveDays": 119,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_ewf_20230404_nvda",
+   "caseId": "ewf|NVDA|2023-04-04|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "NVDA",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2023",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MATCH",
+    "impliedTrend": "MATCH",
+    "strict": true
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "NOT_COMPARABLE"
+   },
+   "vuDegree": {
+    "rank": 2,
+    "medianWaveDays": 63,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_ewf_20230613_phm",
+   "caseId": "ewf|PHM|2023-06-13|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "PHM",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2023",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 56.047,
+    "nearestCenterAtr": 20.174
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 49,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_ewf_20230621_rcl",
+   "caseId": "ewf|RCL|2023-06-21|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "RCL",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "VALIDATION",
+   "confidence": "HIGH",
+   "year": "2023",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 15.792,
+    "nearestCenterAtr": 4.156
+   },
+   "vuDegree": {
+    "rank": 3,
+    "medianWaveDays": 287,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_ewf_20230725_fcx",
+   "caseId": "ewf|FCX|2023-07-25|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "FCX",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "VALIDATION",
+   "confidence": "HIGH",
+   "year": "2023",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MATCH",
+    "impliedTrend": "MATCH",
+    "strict": true
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "NOT_COMPARABLE"
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 42,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_ewf_20230815_nvda",
+   "caseId": "ewf|NVDA|2023-08-15|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "NVDA",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "VALIDATION",
+   "confidence": "MEDIUM",
+   "year": "2023",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 55.762,
+    "nearestCenterAtr": 10.984
+   },
+   "vuDegree": {
+    "rank": 2,
+    "medianWaveDays": 63,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_ewf_20230905_abnb",
+   "caseId": "ewf|ABNB|2023-09-05|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "ABNB",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "HIGH",
+   "year": "2023",
+   "replayStatus": "INSUFFICIENT_DATA",
+   "J": {
+    "vuStatus": "INSUFFICIENT_DATA",
+    "vuApplicability": null,
+    "vuAbstain": null,
+    "vuHasCount": false
+   },
+   "category": "INSUFFICIENT_DATA"
+  },
+  {
+   "referenceId": "pr_ewf_20230919_oln",
+   "caseId": "ewf|OLN|2023-09-19|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "OLN",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2023",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "OK",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MISMATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MISMATCH",
+    "role": "MATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 67.447,
+    "nearestCenterAtr": 17.252
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 49,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_ewf_20230923_mcd",
+   "caseId": "ewf|MCD|2023-09-23|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "MCD",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "VALIDATION",
+   "confidence": "MEDIUM",
+   "year": "2023",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "MATCH",
+    "B": "MATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MISMATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "COMPUTED",
+    "absolute": 80.73,
+    "pct": 29.656,
+    "atr": 20.784,
+    "sameSide": false
+   },
+   "I": {
+    "result": "NOT_COMPARABLE"
+   },
+   "vuDegree": {
+    "rank": 2,
+    "medianWaveDays": 70,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_ewf_20231205_coin",
+   "caseId": "ewf|COIN|2023-12-05|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "COIN",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2023",
+   "replayStatus": "INSUFFICIENT_DATA",
+   "J": {
+    "vuStatus": "INSUFFICIENT_DATA",
+    "vuApplicability": null,
+    "vuAbstain": null,
+    "vuHasCount": false
+   },
+   "category": "INSUFFICIENT_DATA"
+  },
+  {
+   "referenceId": "pr_ewf_20240220_lly",
+   "caseId": "ewf|LLY|2024-02-20|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "LLY",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "HIGH",
+   "year": "2024",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "OK",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "MATCH",
+    "E": "MATCH",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 87.151,
+    "nearestCenterAtr": 30.343
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 42,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": 1
+  },
+  {
+   "referenceId": "pr_ewf_20240812_axp",
+   "caseId": "ewf|AXP|2024-08-12|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "AXP",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2024",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "MISMATCH",
+    "E": "MISMATCH",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MATCH",
+    "impliedTrend": "MATCH",
+    "strict": true
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 43.304,
+    "nearestCenterAtr": 19.502
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 36,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": 3
+  },
+  {
+   "referenceId": "pr_ewf_20241003_mstr",
+   "caseId": "ewf|MSTR|2024-10-03|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "MSTR",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2024",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "OK",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 23.156,
+    "nearestCenterAtr": 2.491
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 49,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_ewf_20241008_nee",
+   "caseId": "ewf|NEE|2024-10-08|1",
+   "sourceId": "ewf",
+   "sourceFamily": "ewf",
+   "vuSymbol": "NEE",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "HIGH",
+   "year": "2024",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "OK",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MATCH",
+    "impliedTrend": "MATCH",
+    "strict": true
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 47.239,
+    "nearestCenterAtr": 18.04
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 49,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20220326_btcusd",
+   "caseId": "tv-cryptoknee|BTCUSD|2022-03-26|1",
+   "sourceId": "tv-cryptoknee",
+   "sourceFamily": "tv-cryptoknee",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2022",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "OK",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MISMATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 13.21,
+    "nearestCenterAtr": 7.312
+   },
+   "vuDegree": {
+    "rank": 0,
+    "medianWaveDays": 13,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20220904_btcusd",
+   "caseId": "tv-cryptoknee|BTCUSD|2022-09-04|1",
+   "sourceId": "tv-cryptoknee",
+   "sourceFamily": "tv-cryptoknee",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "VALIDATION",
+   "confidence": "MEDIUM",
+   "year": "2022",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MISMATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MISMATCH",
+    "role": "MISMATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 27.144,
+    "nearestCenterAtr": 3.225
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 56,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20221206_spy",
+   "caseId": "tv-cryptoknee|SPY|2022-12-06|1",
+   "sourceId": "tv-cryptoknee",
+   "sourceFamily": "tv-cryptoknee",
+   "vuSymbol": "SPY",
+   "timeframe": "1D",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2022",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MISMATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MISMATCH",
+    "role": "MATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 0.964,
+    "nearestCenterAtr": 1.09
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 23,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20221228_tsla",
+   "caseId": "tv-cryptoknee|TSLA|2022-12-28|1",
+   "sourceId": "tv-cryptoknee",
+   "sourceFamily": "tv-cryptoknee",
+   "vuSymbol": "TSLA",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2022",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "MATCH",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MATCH",
+    "S": "MATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 84.568,
+    "nearestCenterAtr": 5.682
+   },
+   "vuDegree": {
+    "rank": 2,
+    "medianWaveDays": 84,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20230118_btcusd",
+   "caseId": "tv-cryptoknee|BTCUSD|2023-01-18|1",
+   "sourceId": "tv-cryptoknee",
+   "sourceFamily": "tv-cryptoknee",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2023",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MISMATCH",
+    "A2": "MISMATCH",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MISMATCH",
+    "role": "MISMATCH",
+    "impliedTrend": "MISMATCH",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 10.66,
+    "nearestCenterAtr": 6.585
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 23,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20230916_btcusd",
+   "caseId": "tv-cryptoknee|BTCUSD|2023-09-16|1",
+   "sourceId": "tv-cryptoknee",
+   "sourceFamily": "tv-cryptoknee",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1W",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2023",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MISMATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MISMATCH",
+    "role": "MISMATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 31.865,
+    "nearestCenterAtr": 10.225
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 56,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20240428_btcusd",
+   "caseId": "tv-cryptoknee|BTCUSD|2024-04-28|1",
+   "sourceId": "tv-cryptoknee",
+   "sourceFamily": "tv-cryptoknee",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2024",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "NOT_COMPARABLE",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MISMATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 4.05,
+    "nearestCenterAtr": 2.185
+   },
+   "vuDegree": {
+    "rank": 2,
+    "medianWaveDays": 144,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20221203_spy",
+   "caseId": "tv-thefifthwave|SPY|2022-12-03|1",
+   "sourceId": "tv-thefifthwave",
+   "sourceFamily": "tv-thefifthwave",
+   "vuSymbol": "SPY",
+   "timeframe": "1D",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2022",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 15.75,
+    "nearestCenterAtr": 21.121
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 23,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20230129_btcusd",
+   "caseId": "tv-thefifthwave|BTCUSD|2023-01-29|1",
+   "sourceId": "tv-thefifthwave",
+   "sourceFamily": "tv-thefifthwave",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "PROXY_SAME_UNDERLYING",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2023",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "MISMATCH",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MISMATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 21.462,
+    "nearestCenterAtr": 16.577
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 23,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20230417_btcusd",
+   "caseId": "tv-thefifthwave|BTCUSD|2023-04-17|1",
+   "sourceId": "tv-thefifthwave",
+   "sourceFamily": "tv-thefifthwave",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "PROXY_SAME_UNDERLYING",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2023",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MISMATCH",
+    "A2": "MISMATCH",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MISMATCH",
+    "role": "MISMATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 57.523,
+    "nearestCenterAtr": 55.718
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 23,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20230710_btcusd",
+   "caseId": "tv-thefifthwave|BTCUSD|2023-07-10|1",
+   "sourceId": "tv-thefifthwave",
+   "sourceFamily": "tv-thefifthwave",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2023",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "MATCH",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MISMATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "NOT_COMPARABLE"
+   },
+   "vuDegree": {
+    "rank": 0,
+    "medianWaveDays": 13,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20240831_btcusd",
+   "caseId": "tv-thefifthwave|BTCUSD|2024-08-31|1",
+   "sourceId": "tv-thefifthwave",
+   "sourceFamily": "tv-thefifthwave",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "PROXY_SAME_UNDERLYING",
+   "split": "DEVELOPMENT",
+   "confidence": "HIGH",
+   "year": "2024",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "NOT_COMPARABLE"
+   },
+   "vuDegree": {
+    "rank": 0,
+    "medianWaveDays": 7,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240121_qqq",
+   "caseId": "tv-yuchaosng|QQQ|2024-01-21|1",
+   "sourceId": "tv-yuchaosng",
+   "sourceFamily": "tv-yuchaosng",
+   "vuSymbol": "QQQ",
+   "timeframe": "1D",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT",
+   "split": "VALIDATION",
+   "confidence": "HIGH",
+   "year": "2024",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MATCH",
+    "impliedTrend": "MATCH",
+    "strict": true
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 0.865,
+    "nearestCenterAtr": 1.143
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 36,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240322_btcusd",
+   "caseId": "tv-yuchaosng|BTCUSD|2024-03-22|1",
+   "sourceId": "tv-yuchaosng",
+   "sourceFamily": "tv-yuchaosng",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2024",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MISMATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "NOT_COMPARABLE",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "NOT_COMPARABLE",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MISMATCH",
+    "role": "MISMATCH",
+    "impliedTrend": "MATCH",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "NOT_COMPARABLE"
+   },
+   "vuDegree": {
+    "rank": 2,
+    "medianWaveDays": 144,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240720_spy",
+   "caseId": "tv-yuchaosng|SPY|2024-07-20|1",
+   "sourceId": "tv-yuchaosng",
+   "sourceFamily": "tv-yuchaosng",
+   "vuSymbol": "SPY",
+   "timeframe": "1D",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2024",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "NOT_COMPARABLE",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "NOT_COMPARABLE"
+   },
+   "vuDegree": {
+    "rank": 2,
+    "medianWaveDays": 116,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240828_iwm",
+   "caseId": "tv-yuchaosng|IWM|2024-08-28|1",
+   "sourceId": "tv-yuchaosng",
+   "sourceFamily": "tv-yuchaosng",
+   "vuSymbol": "IWM",
+   "timeframe": "1D",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "VALIDATION",
+   "confidence": "MEDIUM",
+   "year": "2024",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "OK",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MISMATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MISMATCH",
+    "role": "MATCH",
+    "impliedTrend": "MISMATCH",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "NOT_COMPARABLE"
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 21,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240929_btcusd",
+   "caseId": "tv-yuchaosng|BTCUSD|2024-09-29|1",
+   "sourceId": "tv-yuchaosng",
+   "sourceFamily": "tv-yuchaosng",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "viewKind": "ORIGINAL_PUBLISHED",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2024",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "OK",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MISMATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MISMATCH",
+    "role": "MATCH",
+    "impliedTrend": "MISMATCH",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "NOT_COMPARABLE"
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 20,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  }
+ ],
+ "latestRows": [
+  {
+   "referenceId": "pr_tv-cryptoknee_20230126_btcusd",
+   "caseId": "tv-cryptoknee|BTCUSD|2023-01-18|1",
+   "sourceId": "tv-cryptoknee",
+   "sourceFamily": "tv-cryptoknee",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "viewKind": "LATER_REVISION",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2023",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "NOT_COMPARABLE",
+    "A2": "MATCH",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MATCH",
+    "S": "NOT_COMPARABLE"
+   },
+   "notComparableReason": {
+    "A1": "SIDEWAYS_VU_HAS_NO_SIDEWAYS",
+    "S": "SIDEWAYS_VU_HAS_NO_SIDEWAYS"
+   },
+   "sDetail": {
+    "currentMove": "NOT_COMPARABLE",
+    "role": "MISMATCH",
+    "impliedTrend": "MATCH",
+    "strict": false
+   },
+   "H": {
+    "result": "COMPUTED",
+    "absolute": 17262.2727,
+    "pct": 74.862,
+    "atr": 34.422,
+    "sameSide": false
+   },
+   "I": {
+    "result": "NOT_COMPARABLE"
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 23,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20231014_btcusd",
+   "caseId": "tv-cryptoknee|BTCUSD|2023-09-16|1",
+   "sourceId": "tv-cryptoknee",
+   "sourceFamily": "tv-cryptoknee",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "viewKind": "LATER_REVISION",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2023",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "OK",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MATCH",
+    "A2": "MATCH",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MATCH",
+    "role": "MISMATCH",
+    "impliedTrend": "MISMATCH",
+    "strict": false
+   },
+   "H": {
+    "result": "COMPUTED",
+    "absolute": 6706.8213,
+    "pct": 24.966,
+    "atr": 21.958,
+    "sameSide": false
+   },
+   "I": {
+    "result": "NOT_COMPARABLE"
+   },
+   "vuDegree": {
+    "rank": 2,
+    "medianWaveDays": 150,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20241204_spy",
+   "caseId": "tv-yuchaosng|SPY|2024-07-20|1",
+   "sourceId": "tv-yuchaosng",
+   "sourceFamily": "tv-yuchaosng",
+   "vuSymbol": "SPY",
+   "timeframe": "1D",
+   "viewKind": "LATER_REVISION",
+   "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2024",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "AMBIGUOUS",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MISMATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "NOT_COMPARABLE",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "MISMATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MISMATCH",
+    "role": "MATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "NOT_COMPARABLE"
+   },
+   "vuDegree": {
+    "rank": 0,
+    "medianWaveDays": 11,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20241226_btcusd",
+   "caseId": "tv-yuchaosng|BTCUSD|2024-09-29|1",
+   "sourceId": "tv-yuchaosng",
+   "sourceFamily": "tv-yuchaosng",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "viewKind": "LATER_REVISION",
+   "mappingQuality": "EXACT",
+   "split": "DEVELOPMENT",
+   "confidence": "MEDIUM",
+   "year": "2024",
+   "replayStatus": "OK",
+   "J": {
+    "vuStatus": "OK",
+    "vuApplicability": "LOW",
+    "vuAbstain": true,
+    "vuHasCount": true
+   },
+   "category": "VU_ABSTAINED",
+   "metrics": {
+    "A1": "MISMATCH",
+    "A2": "NOT_COMPARABLE",
+    "B": "MISMATCH",
+    "C": "MISMATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MISMATCH",
+    "G": "MISMATCH",
+    "K": "NOT_COMPARABLE",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MISMATCH",
+    "role": "MATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 1.07,
+    "nearestCenterAtr": 0.618
+   },
+   "vuDegree": {
+    "rank": 1,
+    "medianWaveDays": 20,
+    "belowScale": false,
+    "approximate": true,
+    "basis": "mediane Dauer bestaetigter Wellen (Kalendertage) → Rang 0..5, Schwellen 14/60/180/730/3650 T"
+   },
+   "practitionerDegreeRank": null
+  }
+ ],
+ "humanPairs": [
+  {
+   "referenceIds": [
+    "pr_tv-cryptoknee_20221206_spy",
+    "pr_tv-thefifthwave_20221203_spy"
+   ],
+   "sources": [
+    "tv-cryptoknee",
+    "tv-thefifthwave"
+   ],
+   "sourceFamily": "tv-cryptoknee+tv-thefifthwave",
+   "vuSymbol": "SPY",
+   "timeframe": "1D",
+   "sessionsApart": 2,
+   "agreement": "AMBIGUITY",
+   "metrics": {
+    "A1": "MISMATCH",
+    "A2": "MISMATCH",
+    "B": "MATCH",
+    "C": "MATCH",
+    "D": "NOT_COMPARABLE",
+    "E": "NOT_COMPARABLE",
+    "F": "MATCH",
+    "G": "MATCH",
+    "K": "MATCH",
+    "S": "MISMATCH"
+   },
+   "notComparableReason": {},
+   "sDetail": {
+    "currentMove": "MISMATCH",
+    "role": "MATCH",
+    "impliedTrend": "NOT_COMPARABLE",
+    "strict": false
+   },
+   "H": {
+    "result": "NOT_COMPARABLE"
+   },
+   "I": {
+    "result": "COMPUTED",
+    "anyOverlap": false,
+    "shareOfFirstZonesHit": 0,
+    "shareOfSecondZonesHit": 0,
+    "nearestCenterPct": 19.645,
+    "nearestCenterAtr": 26.345
+   }
+  }
+ ],
+ "latency": [
+  {
+   "referenceId": "pr_ewf_20220816_zm",
+   "status": "NOT_IN_WINDOW",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_ewf_20220828_unh",
+   "status": "FOUND",
+   "offsetBars": 10,
+   "date": "2022-11-04",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_ewf_20221025_qqq",
+   "status": "NOT_IN_WINDOW",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_ewf_20230102_dis",
+   "status": "FOUND",
+   "offsetBars": -8,
+   "date": "2022-11-04",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_ewf_20230108_cat",
+   "status": "FOUND",
+   "offsetBars": -10,
+   "date": "2022-10-28",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_ewf_20230404_nvda",
+   "status": "FOUND",
+   "offsetBars": -10,
+   "date": "2023-01-20",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_ewf_20230613_phm",
+   "status": "FOUND",
+   "offsetBars": -10,
+   "date": "2023-03-31",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_ewf_20230621_rcl",
+   "status": "FOUND",
+   "offsetBars": -10,
+   "date": "2023-04-06",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_ewf_20230725_fcx",
+   "status": "FOUND",
+   "offsetBars": -7,
+   "date": "2023-06-02",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_ewf_20230815_nvda",
+   "status": "FOUND",
+   "offsetBars": -10,
+   "date": "2023-06-02",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_ewf_20230905_abnb",
+   "status": "NO_TRAJECTORY"
+  },
+  {
+   "referenceId": "pr_ewf_20230919_oln",
+   "status": "NOT_IN_WINDOW",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_ewf_20230923_mcd",
+   "status": "NOT_IN_WINDOW",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_ewf_20231205_coin",
+   "status": "NO_TRAJECTORY"
+  },
+  {
+   "referenceId": "pr_ewf_20240220_lly",
+   "status": "FOUND",
+   "offsetBars": -10,
+   "date": "2023-12-08",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_ewf_20240812_axp",
+   "status": "FOUND",
+   "offsetBars": -10,
+   "date": "2024-05-31",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_ewf_20241003_mstr",
+   "status": "FOUND",
+   "offsetBars": -10,
+   "date": "2024-07-19",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_ewf_20241008_nee",
+   "status": "FOUND",
+   "offsetBars": -10,
+   "date": "2024-07-26",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20220326_btcusd",
+   "status": "NOT_IN_WINDOW",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20220904_btcusd",
+   "status": "NO_TRAJECTORY"
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20221206_spy",
+   "status": "NOT_IN_WINDOW",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20221228_tsla",
+   "status": "FOUND",
+   "offsetBars": -10,
+   "date": "2022-10-14",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20230118_btcusd",
+   "status": "NOT_IN_WINDOW",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20230916_btcusd",
+   "status": "NO_TRAJECTORY"
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20240428_btcusd",
+   "status": "NOT_IN_WINDOW",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20221203_spy",
+   "status": "FOUND",
+   "offsetBars": -10,
+   "date": "2022-11-17",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20230129_btcusd",
+   "status": "NOT_IN_WINDOW",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20230417_btcusd",
+   "status": "FOUND",
+   "offsetBars": 5,
+   "date": "2023-04-21",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20230710_btcusd",
+   "status": "FOUND",
+   "offsetBars": -10,
+   "date": "2023-06-29",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20240831_btcusd",
+   "status": "FOUND",
+   "offsetBars": -10,
+   "date": "2024-08-20",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240121_qqq",
+   "status": "FOUND",
+   "offsetBars": -8,
+   "date": "2024-01-08",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240322_btcusd",
+   "status": "NOT_IN_WINDOW",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240720_spy",
+   "status": "FOUND",
+   "offsetBars": 9,
+   "date": "2024-08-01",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240828_iwm",
+   "status": "NOT_IN_WINDOW",
+   "window": [
+    -10,
+    10
+   ]
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240929_btcusd",
+   "status": "NOT_IN_WINDOW",
+   "window": [
+    -10,
+    10
+   ]
+  }
+ ]
 }

@@ -1,19 +1,103 @@
 {
  "schemaVersion": "vu-practitioner-benchmark-1.1.0",
- "generatedAt": "2026-10-04T04:38:43.855Z",
+ "generatedAt": "2026-10-04T20:58:09.744Z",
  "label": "PRACTITIONER REFERENCE, NOT OBJECTIVE GROUND TRUTH — INTERN, keine Produktaussage",
  "protocol": "docs/technical-intelligence/PRACTITIONER_PROTOCOL.md",
  "engine": {
   "expected": "elliott-3.2.2",
   "actual": "elliott-3.2.2"
  },
- "references": "practitioner-v1/references.jsonl",
- "status": "NO_REFERENCES",
+ "references": "PRACTITIONER_REFERENCE_V1.jsonl",
+ "frozen": {
+  "version": "PRACTITIONER_REFERENCE_V1",
+  "sha256": "7af25c9b5d61f0268f7049103076839e1dd43b3a2d9d24bc942290dd1133f489"
+ },
+ "status": "OK",
  "input": {
-  "rows": 0,
-  "byStatus": {},
-  "includedRows": 0,
+  "rows": 99,
+  "byStatus": {
+   "INCLUDED": 99
+  },
+  "includedRows": 99,
   "notIncluded": 0
  },
- "note": "Keine eingeschlossenen Praktiker-Referenzen – es werden keine Kennzahlen berechnet."
+ "cases": 78,
+ "versions": 99,
+ "duplicatesRemoved": [],
+ "mappingQuality": {
+  "EXACT": 84,
+  "PROXY_DIFFERENT_INSTRUMENT": 9,
+  "PROXY_SAME_UNDERLYING": 6
+ },
+ "unmappedCounted": 0,
+ "replayStatus": {
+  "OK": 41,
+  "INSUFFICIENT_DATA": 2
+ },
+ "plausibilityFailed": [],
+ "splits": {
+  "counts": {
+   "VALIDATION": 9,
+   "DEVELOPMENT": 26,
+   "HOLDOUT_TEMPORAL": 32,
+   "HOLDOUT_SOURCE": 11
+  },
+  "holdoutSource": "tiedje",
+  "provisional": false,
+  "quarantined": 0,
+  "sealed": {
+   "HOLDOUT_SOURCE": 11,
+   "HOLDOUT_TEMPORAL": 32
+  },
+  "evaluated": 35,
+  "note": "HOLDOUT_* und QUARANTINE werden nicht berechnet; Entsiegelung nur mit --unseal-holdout auf eingefrorenem Datensatz."
+ },
+ "internalHeadline": {
+  "note": "INTERN – nicht ins Produkt uebernehmen",
+  "S": {
+   "includingAbstained": {
+    "n": 33,
+    "match": 16,
+    "rate": 0.4848,
+    "ci95": null,
+    "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 19; Minimum 5)",
+    "ciBy": null,
+    "clustersSourceFamily": 4,
+    "clustersInstrument": 19
+   },
+   "excludingAbstained": {
+    "n": 0,
+    "match": 0,
+    "rate": null,
+    "ci95": null,
+    "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+    "ciBy": null,
+    "clustersSourceFamily": 0,
+    "clustersInstrument": 0
+   }
+  },
+  "A1": {
+   "includingAbstained": {
+    "n": 33,
+    "match": 21,
+    "rate": 0.6364,
+    "ci95": null,
+    "ciReason": "INSUFFICIENT_CLUSTERS (Familien 4, Instrumente 19; Minimum 5)",
+    "ciBy": null,
+    "clustersSourceFamily": 4,
+    "clustersInstrument": 19
+   },
+   "excludingAbstained": {
+    "n": 0,
+    "match": 0,
+    "rate": null,
+    "ci95": null,
+    "ciReason": "INSUFFICIENT_CLUSTERS (Familien 0, Instrumente 0; Minimum 5)",
+    "ciBy": null,
+    "clustersSourceFamily": 0,
+    "clustersInstrument": 0
+   }
+  },
+  "humanHumanPairs": 1
+ }
 }
