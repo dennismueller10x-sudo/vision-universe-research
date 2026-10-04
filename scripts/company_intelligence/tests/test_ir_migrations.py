@@ -6,6 +6,8 @@ from company_intelligence.feeds import discover_ir
 from company_intelligence.discovery_batch import run, persist
 from company_intelligence.transport import PublicHTTP, SourceError, BudgetExhausted
 from company_intelligence.store import Store
+from company_intelligence.cached_discovery import replay
+from company_intelligence.inventory_sweep import prefix
 from test_engine import company, NOW
 
 ROOT='https://apple.com/'
@@ -28,6 +30,16 @@ class HTTP:
 
 
 class IRMigrationTests(unittest.TestCase):
+    def test_cached_ir_conflict_cannot_replace_separately_verified_root_outcome(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            c=company();cid=c['companyId'];s=Store(Path(tmp)/'state.sqlite');prior={'status':'VALIDATED','url':ROOT,'contentHash':'original-proof'}
+            s.set_state('officialSite:'+cid,prior);s.set_state(prefix('cached-conflict','ir')+'inventory',[cid])
+            http=HTTP(owner='Other Research LLC');http.generation='test';http.requests=0;http.stats={}
+            result=replay(Path(tmp),s,{cid:c},'cached-conflict',lane='ir',http=http)
+            self.assertEqual(result['outcomes'],{'CACHED_REJECTED':1})
+            self.assertEqual(s.state('officialSite:'+cid),prior)
+            self.assertEqual(s.state('ir:'+cid)['configurations'][0]['documents'][0]['url'],ROOT+'prior.pdf');s.close()
+
     def test_independent_destination_owner_recovers_linked_ir_migration_without_refetch(self):
         http=HTTP();_,configs=discover_ir(company(),ROOT,http,NOW)
         ir=next(c for c in configs if c['irHomepage']==NEW)

@@ -50,6 +50,8 @@ def drive(root, state, pass_id, lane='domains', batches=100, limit=25,
     key = f'inventoryRunner:{pass_id}:{lane}'
     report = None
     for _ in range(batches):
+        if (state / 'stop-inventory').exists():
+            break
         command = [sys.executable, '-m', 'company_intelligence.cli', 'sweep-inventory',
                    '--root', str(Path(root).resolve()), '--state', str(state), '--network',
                    '--inventory-pass', pass_id, '--inventory-lane', lane,

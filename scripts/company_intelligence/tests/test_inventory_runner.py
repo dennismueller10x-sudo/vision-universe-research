@@ -61,3 +61,13 @@ class RunnerTests(unittest.TestCase):
     return SimpleNamespace(returncode=0,stdout=json.dumps({'requests':2,'stopReason':'BATCH_COMPLETED'}))
    with contextlib.redirect_stdout(io.StringIO()):drive(tmp,state,'stopped',batches=5,execute=execute)
    self.assertEqual(len(calls),1);self.assertTrue((state/'checkpoints/stopped-domains.tar.gz').is_file())
+
+ def test_stop_during_ir_interleave_does_not_start_another_domain_batch(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   state=Path(tmp)/'state';store=Store(state/'state.sqlite');store.close();lanes=[]
+   def execute(command,**kwargs):
+    lane=command[command.index('--inventory-lane')+1];lanes.append(lane)
+    if lane=='ir':(state/'stop-inventory').touch()
+    return SimpleNamespace(returncode=0,stdout=json.dumps({'requests':2,'stopReason':'BATCH_COMPLETED'}))
+   with contextlib.redirect_stdout(io.StringIO()):drive(tmp,state,'mixed-stop',batches=5,ir_every=1,execute=execute)
+   self.assertEqual(lanes,['domains','ir'])

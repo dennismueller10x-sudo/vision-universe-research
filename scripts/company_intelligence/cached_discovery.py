@@ -133,7 +133,7 @@ def replay(root, store, companies, pass_id, lane='domains', limit=100, max_secon
                 preserve_ir(store, cid, getattr(error, 'discoverySources', []), configs, now, False)
                 result.update(partialConfigurations=len(configs), documents=sum(len(c.get('documents', [])) for c in configs))
             # Retain live due times, while keeping newly demonstrated identity conflicts.
-            if result['category'] == 'CONFLICTING_OWNER':
+            if lane == 'domains' and result['category'] == 'CONFLICTING_OWNER':
                 store.set_state('officialSite:' + cid, {**site, 'status': 'REJECTED', 'reason': result['reason'], 'cachedRevalidatedAt': now})
         except (ValueError, KeyError, TypeError) as error:
             result.update(status='CACHED_PARSER_FAILURE', reason=type(error).__name__)
