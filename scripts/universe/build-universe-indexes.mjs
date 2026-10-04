@@ -113,14 +113,29 @@ function kanonischeMarktdeckung() {
      Canary-Satz. Die Canaries sind READY und duerfen nicht als Befund
      gelesen werden - sonst faellt AAPL aus dem technischen Universum. */
   const nichtTechnisch = new Map();
-  for (const [sym, row] of Object.entries(technik.perSymbol || {})) {
-    if (row.technical && row.technical !== "TECHNICAL_READY") {
-      nichtTechnisch.set(String(sym).toUpperCase(), row.technical);
+  /* Fuehrt die aktuelle R2-Messung ihre zu kurzen Titel namentlich, ist
+     SIE die Quelle: dieselbe Schwelle (300 Bars, run-technical-scale.mjs),
+     aber gemessen an den heute abgelegten Reihen. Der technische
+     Skalierungsbericht stammt vom 11.09.2026 und kennt die
+     Listing-Kuerzungen aus #367 nicht (Abgleich 04.10.2026). Er bleibt der
+     Rueckfall fuer eine Messung ohne Namensliste - und das Artefakt sagt,
+     welche Quelle gerechnet hat. */
+  const kurz = (metriken.TECHNICAL_HISTORY_ELIGIBILITY || {}).tooShortSymbols;
+  let technikQuelle;
+  if (Array.isArray(kurz)) {
+    for (const sym of kurz) nichtTechnisch.set(String(sym).toUpperCase(), "INSUFFICIENT_HISTORY");
+    technikQuelle = "quant/data/market/history/coverage-metrics.json#TECHNICAL_HISTORY_ELIGIBILITY.tooShortSymbols";
+  } else {
+    for (const [sym, row] of Object.entries(technik.perSymbol || {})) {
+      if (row.technical && row.technical !== "TECHNICAL_READY") {
+        nichtTechnisch.set(String(sym).toUpperCase(), row.technical);
+      }
     }
+    technikQuelle = "quant/data/technical/scale/technical-coverage-ELIGIBLE_US_EQUITY.json";
   }
 
   return {
-    nichtDarstellbar, nichtTechnisch,
+    nichtDarstellbar, nichtTechnisch, technikQuelle,
     runId: (technik.run || {}).runId || (metriken.generatedAt || "unbekannt"),
     metriken, technik
   };
@@ -584,6 +599,7 @@ function main() {
       runId: kanon.runId,
       files: ["quant/data/market/history/coverage-metrics.json",
               "quant/data/technical/scale/technical-coverage-ELIGIBLE_US_EQUITY.json"],
+      technicalSource: kanon.technikQuelle,
       provenance: "quant/data/market/history/CANONICAL_SOURCE.json",
       method: "Beide Berichte fuehren ihre Ausnahmen namentlich. Wer im Produktuniversum " +
               "steht und in keiner Ausnahmeliste, ist gedeckt - die Umkehrung einer " +
