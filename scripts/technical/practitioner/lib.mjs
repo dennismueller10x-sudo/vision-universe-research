@@ -2,7 +2,7 @@
 
    PRACTITIONER REFERENCE ≠ OBJECTIVE GROUND TRUTH. Dieses Modul
      • laedt Referenzen (JSONL, eine Zeile = eine Fassung eines Falls) und validiert sie gegen das Schema
-       practitioner-reference-1.0.0 (kleiner, handgeschriebener Validator, der die Schema-Datei SELBST interpretiert —
+       practitioner-reference-1.1.0 (kleiner, handgeschriebener Validator, der die Schema-Datei SELBST interpretiert —
        damit bleiben Validator und Schema konsistent) plus fachliche Pruefungen,
      • prueft Plausibilitaet (Niveaus ±60 % um den VU-Schluss am Stichtag, Label-Syntax, Zeitrahmen vs. Wellendauer),
      • bildet Instrumente auf VU-Reihen ab (instrument-map.json),
@@ -13,12 +13,12 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { computeAnalysisCutoff, parsePublication, timestampConsistency, isIsoDate, localDate, MARKETS } from "./cutoff.mjs";
+import { computeAnalysisCutoff, parsePublication, timestampConsistency, isIsoDate, localDate, MARKETS, SYMBOL_MARKET, sessionDaysBetween } from "./cutoff.mjs";
 
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 export const PV1 = join(ROOT, "quant/data/technical-intelligence/practitioner-v1");
 export const PATHS = Object.freeze({
-  schema: join(PV1, "schema/practitioner-reference-1.0.0.json"),
+  schema: join(PV1, "schema/practitioner-reference-1.1.0.json"),
   references: join(PV1, "references.jsonl"),
   instrumentMap: join(PV1, "instrument-map.json"),
   sourceRegistry: join(PV1, "source-registry.json"),
@@ -39,6 +39,14 @@ export function registryEntry(reg, id) {
   return Array.isArray(s) ? s.find((x) => x && x.sourceId === id) || null : s && s[id] ? s[id] : null;
 }
 export const registryHas = (reg, id) => !!registryEntry(reg, id);
+/** Quellenfamilie (Red-Team H7/M3): registry.sourceFamily, sonst organisation, sonst 'hkcm' fuer jede sourceId mit 'hkcm', sonst sourceId.
+    hkcm und phantom-hkcm sind EINE Familie – fuer Unabhaengigkeit (Mensch–Mensch), Cluster, Holdout-Quelle und Quellenzahl. */
+export function sourceFamily(sourceId, reg = null) {
+  const e = reg ? registryEntry(reg, sourceId) : null;
+  if (e && e.sourceFamily) return String(e.sourceFamily);
+  if (e && e.organisation && e.organisation !== "—") return "org:" + String(e.organisation).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  return /hkcm/i.test(String(sourceId)) ? "hkcm" : String(sourceId);
+}
 export function registryTier(reg, id) { const e = registryEntry(reg, id); const t = e && (e.benchmarkTier || e.tier); return t ? String(t).trim().split(/\s/)[0] : null; }
 
 // ------------------------------------------------------------------ JSONL
@@ -67,8 +75,17 @@ function resolveRef(root, ref) {
   if (!ref.startsWith("#/")) throw new Error("nur lokale $ref: " + ref);
   return ref.slice(2).split("/").reduce((o, k) => o[k], root);
 }
-export function validateSchema(value, schema = loadSchema(), root = schema, path = "$", errors = []) {
-  if (schema.$ref) return validateSchema(value, resolveRef(root, schema.$ref), root, path, errors);
+/* Strikter Modus (Standard, Red-Team M5): jedes Objekt mit `properties` ist geschlossen (auch verschachtelte, fuer die das Schema
+   additionalProperties nicht setzt) – erlaubt sind nur Schemafelder plus die dokumentierten Pipeline-Erweiterungen
+   (SCHEMA_EXTENSIONS). Strings ohne maxLength im Schema werden begrenzt: URLs 2048, sonst 400 Zeichen (keine Transkripte/Volltexte). */
+export const STRING_CAP = 400, URI_CAP = 2048;
+export const SCHEMA_EXTENSIONS = Object.freeze({
+  /* C1: Bewegung NACH Abschluss der laufenden Welle. directionalBias = laufende/naechste Bewegung ab jetzt (= laufende Welle).
+     Formal gehoert das Feld ins Schema (1.1); bis dahin nimmt der Validator es als einzige zulaessige Zusatzangabe in `primary` an. */
+  "$.primary": { nextMoveAfterCurrent: { enum: ["UP", "DOWN", "SIDEWAYS", "UNKNOWN"] } }
+});
+export function validateSchema(value, schema = loadSchema(), root = schema, path = "$", errors = [], strict = true) {
+  if (schema.$ref) return validateSchema(value, resolveRef(root, schema.$ref), root, path, errors, strict);
   if (value === undefined) return errors;
   if (schema.type) {
     const types = Array.isArray(schema.type) ? schema.type : [schema.type];
@@ -77,20 +94,24 @@ export function validateSchema(value, schema = loadSchema(), root = schema, path
   if (schema.enum && !schema.enum.includes(value)) errors.push({ path, error: `Wert ${JSON.stringify(value)} nicht in ${JSON.stringify(schema.enum)}` });
   if (typeOk("object", value)) {
     for (const k of schema.required || []) if (value[k] === undefined) errors.push({ path: path + "." + k, error: "Pflichtfeld fehlt" });
-    const props = schema.properties || {};
+    const props = schema.properties || {}, ext = (strict && SCHEMA_EXTENSIONS[path]) || {};
+    const closed = schema.additionalProperties === false || (strict && schema.properties);
     for (const [k, v] of Object.entries(value)) {
-      if (k.startsWith("__")) continue;   // interne Lade-Metadaten
-      if (props[k]) validateSchema(v, props[k], root, path + "." + k, errors);
-      else if (schema.additionalProperties === false) errors.push({ path: path + "." + k, error: "Feld im Schema nicht erlaubt" });
+      if (k.startsWith("__") && path === "$") continue;   // interne Lade-Metadaten
+      if (props[k]) validateSchema(v, props[k], root, path + "." + k, errors, strict);
+      else if (ext[k]) validateSchema(v, ext[k], root, path + "." + k, errors, strict);
+      else if (closed) errors.push({ path: path + "." + k, error: "Feld im Schema nicht erlaubt" });
     }
   }
   if (Array.isArray(value)) {
     if (Number.isInteger(schema.minItems) && value.length < schema.minItems) errors.push({ path, error: `mindestens ${schema.minItems} Eintraege` });
-    if (schema.items) value.forEach((v, i) => validateSchema(v, schema.items, root, `${path}[${i}]`, errors));
+    if (schema.items) value.forEach((v, i) => validateSchema(v, schema.items, root, `${path}[${i}]`, errors, strict));
+    else if (strict) value.forEach((v, i) => { if (typeof v === "string" && [...v].length > STRING_CAP) errors.push({ path: `${path}[${i}]`, error: `laenger als ${STRING_CAP} Zeichen` }); });
   }
   if (typeof value === "string") {
     if (schema.pattern && !new RegExp(schema.pattern).test(value)) errors.push({ path, error: `entspricht nicht ${schema.pattern}` });
-    if (Number.isInteger(schema.maxLength) && [...value].length > schema.maxLength) errors.push({ path, error: `laenger als ${schema.maxLength} Zeichen` });
+    const cap = Number.isInteger(schema.maxLength) ? schema.maxLength : strict ? (schema.format === "uri" ? URI_CAP : STRING_CAP) : null;
+    if (cap !== null && [...value].length > cap) errors.push({ path, error: `laenger als ${cap} Zeichen` });
     if (schema.format === "uri" && !isHttpUrl(value)) errors.push({ path, error: "keine gueltige http(s)-URL" });
   }
   if (typeof value === "number" && typeof schema.minimum === "number" && value < schema.minimum) errors.push({ path, error: `kleiner als ${schema.minimum}` });
@@ -106,7 +127,9 @@ export function isTestFixtureLike(r) {
 // ------------------------------------------------------------------ Wellenlabels
 const ROMAN = { i: 1, ii: 2, iii: 3, iv: 4, v: 5 };
 const DEGREE_WORDS = ["grand supercycle", "supercycle", "cycle", "primary", "intermediate", "minor", "minute", "minuette", "subminuette", "submicro", "micro"];
-export const DEGREE_RANK_BY_WORD = { minute: 0, minor: 1, intermediate: 2, primary: 3, cycle: 4, supercycle: 5 };
+/* Normalisierter Grad (README-Tabelle): −2 Subminuette, −1 Minuette, 0 Minute, 1 Minor, 2 Intermediate, 3 Primary, 4 Cycle, 5 Supercycle. */
+export const DEGREE_RANK_BY_WORD = { subminuette: -2, minuette: -1, minute: 0, minor: 1, intermediate: 2, primary: 3, cycle: 4, supercycle: 5 };
+export const DEGREE_RANK_MIN = -2, DEGREE_RANK_MAX = 5;
 const LABEL_CORE = /^(i{1,3}|iv|v|[1-5]|[a-e]|[wxyz]|x2)$/i;
 function bracketsBalanced(s) {
   const pairs = { "(": ")", "[": "]", "{": "}", "<": ">" }, st = [];
@@ -163,15 +186,15 @@ export function vuEffectiveRole(count, higher) {
 }
 
 // ------------------------------------------------------------------ Grad-Heuristik (NAEHERUNG)
-/* VU kennt keinen absoluten Elliott-Grad (nur relative Ebenen). Abbildung auf degreeRank 0..5 ueber die MEDIANE DAUER der
+/* VU kennt keinen absoluten Elliott-Grad (nur relative Ebenen). Abbildung auf degreeRank −1..5 ueber die MEDIANE DAUER der
    bestaetigten Wellen der Hauptzaehlung (Kalendertage), angelehnt an die ueblichen Groessenordnungen nach Frost & Prechter:
-     < 14 T  → 0 Minute (und feiner; 'BELOW_SCALE' markiert)   14–60 T → 1 Minor   60–180 T → 2 Intermediate
+     < 3 T → −1 Minuette   3–14 T → 0 Minute   14–60 T → 1 Minor   60–180 T → 2 Intermediate
      180–730 T → 3 Primary   730–3650 T → 4 Cycle   ≥ 3650 T → 5 Supercycle
-   Grade sind praktikerabhaengig (relative Begriffe); Kennzahl D ist deshalb nur grob, E (±1) die belastbarere. */
-export const DEGREE_THRESHOLDS_DAYS = [14, 60, 180, 730, 3650];
+   NAEHERUNG: Grade sind praktikerabhaengig; D/E nur, wenn beide Raenge bekannt sind, E (±1) ist die belastbarere Kennzahl. */
+export const DEGREE_THRESHOLDS_DAYS = [3, 14, 60, 180, 730, 3650];
 export function degreeRankFromDays(days) {
   if (!Number.isFinite(days) || days <= 0) return null;
-  let r = 0; for (const t of DEGREE_THRESHOLDS_DAYS) if (days >= t) r++;
+  let r = -1; for (const t of DEGREE_THRESHOLDS_DAYS) if (days >= t) r++;
   return r;
 }
 export const daysBetween = (a, b) => Math.round((Date.parse(b + "T00:00:00Z") - Date.parse(a + "T00:00:00Z")) / 86400000);
@@ -184,7 +207,7 @@ export function resolveInstrument(instr, map = loadInstrumentMap(), opts = {}) {
   for (const e of map.entries) {
     if (!e.instrumentTypes.includes(type)) continue;
     if (e.aliases.some((x) => normSym(x) === a)) {
-      return { mapId: e.id, vuSymbol: e.vuSymbol, seriesSource: e.seriesSource, market: e.market, mappingQuality: e.mappingQuality, levelScale: e.levelScale, note: e.note };
+      return { mapId: e.id, vuSymbol: e.vuSymbol, seriesSource: e.seriesSource, market: marketOfSymbol(e.vuSymbol, map) || e.market, mappingQuality: e.mappingQuality, levelScale: e.levelScale, note: e.note };
     }
   }
   const rule = map.usStockRule;
@@ -198,7 +221,13 @@ export function resolveInstrument(instr, map = loadInstrumentMap(), opts = {}) {
   }
   return { mapId: null, vuSymbol: null, seriesSource: null, market: guessMarket(type), mappingQuality: "UNMAPPED", levelScale: null, note: "keine VU-Reihe" };
 }
-function guessMarket(type) { return type === "CRYPTO_SPOT" ? "CRYPTO" : type === "FX" || type === "COMMODITY_SPOT" ? "US_COMMODITY" : "US_EQUITY"; }
+function guessMarket(type) { return type === "CRYPTO_SPOT" ? "CRYPTO" : type === "FX" || type === "COMMODITY_SPOT" ? "FX_METALS_UTC" : "US_EQUITY"; }
+/** Markt (Bar-Schlusszeit) einer VU-Reihe: instrument-map seriesMarkets, sonst SYMBOL_MARKET der Stichtagsregel. */
+export function marketOfSymbol(vuSymbol, map = loadInstrumentMap()) {
+  if (!vuSymbol) return null;
+  const e = map.seriesMarkets && map.seriesMarkets.symbols && map.seriesMarkets.symbols[vuSymbol];
+  return (e && e.market) || SYMBOL_MARKET[vuSymbol] || null;
+}
 /**
  * Wirksame Abbildung einer Referenz: Reihe/Markt aus der Karte; mappingQuality/levelScale aus der Referenz, falls dort
  * gesetzt (Mensch hat den Chart gesehen), sonst aus der Karte. EXACT → Skala 1. Proxy ohne Skala → Niveaus nicht vergleichbar.
@@ -259,7 +288,7 @@ export function validateReference(ref, opts = {}) {
     if (p.pattern && PATTERN_FAMILY[p.pattern] && p.family && p.family !== "UNKNOWN" && p.family !== PATTERN_FAMILY[p.pattern]) errors.push(`primary.family ${p.family} widerspricht Muster ${p.pattern}`);
     if (!labelSyntaxOk(p.currentWave)) errors.push(`primary.currentWave '${p.currentWave}' hat keine gueltige Label-Syntax`);
     if (p.degreeLabel && !labelSyntaxOk(p.degreeLabel) && !DEGREE_WORDS.some((w) => String(p.degreeLabel).toLowerCase().startsWith(w))) warnings.push(`primary.degreeLabel '${p.degreeLabel}' unuebliche Notation`);
-    if (p.degreeRank !== null && p.degreeRank !== undefined && (p.degreeRank < 0 || p.degreeRank > 5)) errors.push("primary.degreeRank ausserhalb 0..5");
+    if (p.degreeRank !== null && p.degreeRank !== undefined && (p.degreeRank < DEGREE_RANK_MIN || p.degreeRank > DEGREE_RANK_MAX)) errors.push(`primary.degreeRank ausserhalb ${DEGREE_RANK_MIN}..${DEGREE_RANK_MAX}`);
     const n = normalizeWaveLabel(p.currentWave);
     if (n && PATTERN_LABELS[p.pattern] && !PATTERN_LABELS[p.pattern].includes(n)) warnings.push(`Label '${p.currentWave}' passt nicht zu Muster ${p.pattern}`);
     const r = roleOfLabel(n, p.pattern);
@@ -406,32 +435,77 @@ export function detectDuplicates(refs, windowDays = 2) {
 function pubMs(r) { try { return parsePublication(r.publication).instantMs; } catch { return Infinity; } }
 function normUrl(u) { try { const x = new URL(u); x.hash = ""; return (x.hostname.replace(/^www\./, "") + x.pathname.replace(/\/$/, "") + x.search).toLowerCase(); } catch { return String(u); } }
 
-// ------------------------------------------------------------------ Aufteilung (§8)
-/** HKCM-Umfeld laut source-registry balanceRule: hkcm, phantom-hkcm (jede sourceId mit 'hkcm'). */
-export const isHkcmDefault = (sourceId) => /hkcm/i.test(String(sourceId));
+// ------------------------------------------------------------------ Aufteilung (§8, Red-Team H3)
+export const isHkcmDefault = (sourceId) => sourceFamily(sourceId) === "hkcm";
 export function hashUnit(s) { return parseInt(createHash("sha256").update(String(s)).digest("hex").slice(0, 8), 16) / 4294967296; }
+export const SPLIT_GUARD_SESSIONS = 20;
 /**
- * HOLDOUT_SOURCE = zweitgroesste Nicht-HKCM-Quelle (Faelle beim Freeze; Gleichstand nach sourceId); HOLDOUT_TEMPORAL = Original
- * ab 01.01.2025; Rest DEVELOPMENT/VALIDATION per SHA-256(caseId) 70/30. Alle Fassungen eines Falls teilen die Aufteilung.
+ * Aufteilung auf Ebene von Fallketten (Original + Revisionen; Revisionen und Cross-Posts erben die Aufteilung des Originals):
+ *   HOLDOUT_SOURCE   alle Faelle der zweitgroessten Nicht-HKCM-QUELLENFAMILIE (beim Freeze festgelegt; opts.holdoutSource
+ *                    uebernimmt den Wert aus dem Manifest statt neu zu rechnen)
+ *   HOLDOUT_TEMPORAL Original ab 01.01.2025 (uebrige Familien)
+ *   DEVELOPMENT/VALIDATION  70/30 per SHA-256 nicht je Fall, sondern je MARKTFENSTER-CLUSTER: Faelle desselben vuSymbol, deren
+ *                    Stichtage (aller Fassungen) <= 20 Handelstage auseinanderliegen, bilden eine Zusammenhangskomponente und
+ *                    landen gemeinsam in einem Split (der VU-Replay haengt nur an vuSymbol/Zeitrahmen/Stichtag).
+ *   QUARANTINE       DEV/VAL-Faelle, die mit einem Holdout-Fall vuSymbol und einen Stichtag innerhalb ±20 Handelstagen teilen –
+ *                    sonst saehe die Entwicklung denselben Kursausschnitt wie der Holdout. Werden in keinem Split ausgewertet.
  */
 export function assignSplits(refs, opts = {}) {
-  const isHkcm = opts.isHkcm || isHkcmDefault;
+  const fam = (id) => sourceFamily(id, opts.registry);
+  const isHkcm = opts.isHkcm || ((id) => fam(id) === "hkcm");
+  const map = opts.map || loadInstrumentMap(), guard = opts.guardSessions ?? SPLIT_GUARD_SESSIONS;
   const { chains } = revisionChains(refs);
-  const roots = [...chains.values()].map((c) => c[0]);
-  const perSource = {};
-  for (const r of roots) perSource[r.sourceId] = (perSource[r.sourceId] || 0) + 1;
-  const nonHkcm = Object.entries(perSource).filter(([s]) => !isHkcm(s)).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-  const holdoutSource = nonHkcm.length >= 2 ? nonHkcm[1][0] : null;
+  const units = [...chains.values()].map((c) => ({ root: c[0], caseId: c[0].caseId, family: fam(c[0].sourceId), sym: instrumentKey(c[0]),
+    market: marketOfSymbol(c[0].instrument && c[0].instrument.vuSymbol, map) || "US_EQUITY", cutoffs: c.map((v) => v.analysisCutoff).filter(isIsoDate).sort() }));
+  const perFamily = {};
+  for (const u of units) perFamily[u.family] = (perFamily[u.family] || 0) + 1;
+  const ranked = Object.entries(perFamily).filter(([f]) => !isHkcm(f) && f !== "hkcm").sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  const holdoutSource = opts.holdoutSource !== undefined ? opts.holdoutSource : ranked.length >= 2 ? ranked[1][0] : null;
+  const near = (u, v) => u.sym === v.sym && u.cutoffs.some((a) => v.cutoffs.some((b) => Math.abs(sessionDaysBetween(a, b, u.market)) <= guard));
   const byCase = {};
-  for (const r of roots) {
-    let sp;
-    if (r.sourceId === holdoutSource) sp = "HOLDOUT_SOURCE";
-    else if (publicationLocalDate(r) >= "2025-01-01") sp = "HOLDOUT_TEMPORAL";
-    else sp = hashUnit(r.caseId) < 0.7 ? "DEVELOPMENT" : "VALIDATION";
-    byCase[r.caseId] = sp;
+  const pending = [];
+  for (const u of units) {
+    if (holdoutSource && u.family === holdoutSource) byCase[u.caseId] = "HOLDOUT_SOURCE";
+    else if (publicationLocalDate(u.root) >= "2025-01-01") byCase[u.caseId] = "HOLDOUT_TEMPORAL";
+    else pending.push(u);
   }
-  const counts = {}; for (const s of Object.values(byCase)) counts[s] = (counts[s] || 0) + 1;
-  return { byCase, holdoutSource, holdoutNote: holdoutSource ? null : "weniger als zwei Nicht-HKCM-Quellen – kein HOLDOUT_SOURCE moeglich", perSource, counts };
+  // Zusammenhangskomponenten (Union-Find) ueber Marktfenster
+  const parent = pending.map((_, i) => i), find = (i) => (parent[i] === i ? i : (parent[i] = find(parent[i])));
+  for (let i = 0; i < pending.length; i++) for (let j = i + 1; j < pending.length; j++) if (near(pending[i], pending[j])) parent[find(i)] = find(j);
+  const compKey = {};
+  pending.forEach((u, i) => { const r = find(i); compKey[r] = compKey[r] && compKey[r] < u.caseId ? compKey[r] : u.caseId; });
+  pending.forEach((u, i) => { byCase[u.caseId] = hashUnit("cluster|" + compKey[find(i)]) < 0.7 ? "DEVELOPMENT" : "VALIDATION"; u.cluster = compKey[find(i)]; });
+  // Schutz: keine DEV/VAL-Faelle im Marktfenster eines Holdout-Falls
+  const holdouts = units.filter((u) => byCase[u.caseId].startsWith("HOLDOUT"));
+  const quarantine = [];
+  for (const u of pending) {
+    const hit = holdouts.find((h) => near(u, h));
+    if (hit) { quarantine.push({ caseId: u.caseId, was: byCase[u.caseId], collidesWith: hit.caseId, holdout: byCase[hit.caseId] }); byCase[u.caseId] = "QUARANTINE"; }
+  }
+  // Fassungen und Duplikate erben die Aufteilung ihres Originals
+  const byReference = {};
+  for (const c of chains.values()) for (const v of c) byReference[v.referenceId] = byCase[c[0].caseId];
+  for (const d of opts.duplicates || []) if (byReference[d.originalId]) byReference[d.duplicateId] = byReference[d.originalId];
+  const counts = {}; for (const x of Object.values(byCase)) counts[x] = (counts[x] || 0) + 1;
+  return { byCase, byReference, holdoutSource, holdoutFixed: opts.holdoutSource !== undefined,
+           holdoutNote: holdoutSource ? null : "weniger als zwei Nicht-HKCM-Quellenfamilien – kein HOLDOUT_SOURCE moeglich", perFamily, perSource: perFamily, counts, quarantine, guardSessions: guard };
+}
+/** Prueft die Schutzregel auf einer fertigen Aufteilung (fuer Tests/Manifest): Liste verletzender Paare. */
+export function splitGuardViolations(refs, byCase, opts = {}) {
+  const map = opts.map || loadInstrumentMap(), guard = opts.guardSessions ?? SPLIT_GUARD_SESSIONS, { chains } = revisionChains(refs);
+  const units = [...chains.values()].map((c) => ({ caseId: c[0].caseId, sym: instrumentKey(c[0]), market: marketOfSymbol(c[0].instrument && c[0].instrument.vuSymbol, map) || "US_EQUITY", cutoffs: c.map((v) => v.analysisCutoff) }));
+  const out = [];
+  for (const h of units.filter((u) => String(byCase[u.caseId]).startsWith("HOLDOUT")))
+    for (const d of units.filter((u) => byCase[u.caseId] === "DEVELOPMENT" || byCase[u.caseId] === "VALIDATION"))
+      if (h.sym === d.sym && h.cutoffs.some((a) => d.cutoffs.some((b) => Math.abs(sessionDaysBetween(a, b, h.market)) <= guard))) out.push([d.caseId, h.caseId]);
+  return out;
+}
+/** Doppelextraktion (§7): deterministische Auswahl von 25 % der Faelle mit Seed 20261004 (SHA-256(seed|caseId) aufsteigend). */
+export const SECOND_PASS_SEED = 20261004;
+export function selectSecondPass(caseIds, { seed = SECOND_PASS_SEED, share = 0.25 } = {}) {
+  const uniq = [...new Set(caseIds)].sort();
+  const n = Math.ceil(uniq.length * share);
+  return uniq.map((c) => [createHash("sha256").update(seed + "|" + c).digest("hex"), c]).sort((a, b) => (a[0] < b[0] ? -1 : 1)).slice(0, n).map((x) => x[1]).sort();
 }
 
 // ------------------------------------------------------------------ Freeze (§9)
@@ -458,9 +532,9 @@ export function freezeBlockers(r, opts = {}) {
   return out;
 }
 /** Qualitaetsgate §107 (nur Bericht; nicht erreicht → PILOT). */
-export function qualityGate(included, isHkcm = isHkcmDefault) {
+export function qualityGate(included, isHkcm = isHkcmDefault, registry = null) {
   const originals = included.filter((r) => r.viewKind !== "LATER_REVISION");
-  const n = originals.length, src = new Set(originals.map((r) => r.sourceId)), inst = new Set(originals.map(instrumentKey));
+  const n = originals.length, src = new Set(originals.map((r) => sourceFamily(r.sourceId, registry))), inst = new Set(originals.map(instrumentKey));
   const years = new Set(originals.map((r) => publicationLocalDate(r).slice(0, 4))), fam = new Set(originals.map((r) => r.primary && r.primary.family).filter((f) => f && f !== "UNKNOWN"));
   const high = n ? originals.filter((r) => r.extraction.confidence === "HIGH").length / n : 0, hk = n ? originals.filter((r) => isHkcm(r.sourceId)).length / n : 0;
   const checks = { sources: { value: src.size, min: 2, ok: src.size >= 2 }, cases: { value: n, min: 100, ok: n >= 100 }, highShare: { value: round(high, 3), min: 0.7, ok: high >= 0.7 },
@@ -491,7 +565,9 @@ export function freezeReferences(rows, opts = {}) {
   const d = detectDuplicates(included); for (const x of d.duplicates) reasons.push(`Duplikat ungeklaert: ${x.duplicateId} ≙ ${x.originalId} (${x.reason}) – als crossPosts eintragen`);
   if (reasons.length) throw new FreezeRefusedError(reasons);
   const splits = assignSplits(included, opts);
-  const lines = included.map((r) => Object.assign({}, r, { split: splits.byCase[r.caseId] || "UNASSIGNED" }))
+  /* Schema kennt QUARANTINE nicht → in der Zeile UNASSIGNED; massgeblich ist die Tabelle splits.byCase im Manifest. */
+  const lineSplit = (r) => { const x = splits.byCase[r.caseId]; return x && x !== "QUARANTINE" ? x : "UNASSIGNED"; };
+  const lines = included.map((r) => Object.assign({}, r, { split: lineSplit(r) }))
     .sort((a, b) => a.referenceId.localeCompare(b.referenceId)).map(canonicalJson);
   const content = lines.join("\n") + "\n", sha256 = createHash("sha256").update(content).digest("hex");
   const file = join(outDir, version + ".jsonl"), manFile = join(outDir, version + ".manifest.json");
@@ -499,9 +575,11 @@ export function freezeReferences(rows, opts = {}) {
     const prev = readJson(manFile);
     if (prev.sha256 !== sha256) throw new FreezeRefusedError([`${version} existiert bereits mit anderem Inhalt (${prev.sha256.slice(0, 12)}…) – Korrekturen nur als neue Version (V1.1 …)`]);
   }
-  const gate = qualityGate(included, opts.isHkcm);
-  const manifest = { version, schema: "practitioner-reference-1.0.0", file: version + ".jsonl", sha256, lines: lines.length,
-    cases: new Set(included.map((r) => r.caseId)).size, sources: splits.perSource, splits: splits.counts, holdoutSource: splits.holdoutSource, holdoutNote: splits.holdoutNote,
+  const gate = qualityGate(included, opts.isHkcm, opts.registry);
+  const manifest = { version, schema: "practitioner-reference-1.1.0", file: version + ".jsonl", sha256, lines: lines.length,
+    cases: new Set(included.map((r) => r.caseId)).size, sourceFamilies: splits.perFamily,
+    splits: { counts: splits.counts, byCase: splits.byCase, quarantine: splits.quarantine, guardSessions: splits.guardSessions },
+    holdoutSource: splits.holdoutSource, holdoutSourceKind: "SOURCE_FAMILY", holdoutNote: splits.holdoutNote,
     expectedEngine: opts.expectedEngine || "elliott-3.2.2", qualityGate: gate, label: gate.status === "FULL" ? "PRACTITIONER REFERENCE" : "PRACTITIONER REFERENCE — PILOT",
     createdAt: opts.now || new Date().toISOString(), note: "PRACTITIONER REFERENCE, NOT OBJECTIVE GROUND TRUTH" };
   mkdirSync(outDir, { recursive: true });

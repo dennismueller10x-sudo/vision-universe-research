@@ -12,12 +12,16 @@ import * as R from "../../scripts/technical/practitioner/replay.mjs";
 import * as K from "../../scripts/technical/practitioner/compare.mjs";
 import * as O from "../../scripts/technical/practitioner/outcome.mjs";
 import { runBenchmark } from "../../scripts/technical/practitioner/run-benchmark.mjs";
+import { runOutcome } from "../../scripts/technical/practitioner/run-outcome.mjs";
+import { createRequire } from "node:module";
+const Core = createRequire(import.meta.url)("../research/elliott-practitioners/reference-core.js");
 
 const tmp = () => mkdtempSync(join(tmpdir(), "vu-practitioner-"));
 const clone = (o) => JSON.parse(JSON.stringify(o));
 function deepMerge(a, b) { for (const [k, v] of Object.entries(b)) { if (v && typeof v === "object" && !Array.isArray(v) && a[k] && typeof a[k] === "object") deepMerge(a[k], v); else a[k] = v; } return a; }
 
-/** TEST_FIXTURE: S&P 500 Cash, Montag 17.10.2022 09:00 New York → Stichtag Freitag 14.10.2022. */
+/** TEST_FIXTURE: S&P 500 Cash, Montag 17.10.2022 09:00 New York → Stichtag Freitag 14.10.2022.
+    Szenario: neue Impulswelle (1) seit dem Tief 3491 laeuft aufwaerts (directionalBias UP = laufende Bewegung), danach (2) abwaerts. */
 function fx(over = {}) {
   const base = {
     referenceId: "pr_test_fixture_spx_a", caseId: "test-fixture-alpha|SPY|2022-10-17|1", version: 1, revisionOf: null, viewKind: "ORIGINAL_PUBLISHED",
@@ -25,8 +29,8 @@ function fx(over = {}) {
     publication: { timestamp: "2022-10-17T09:00:00-04:00", timestampPrecision: "MINUTE", timezone: "America/New_York", basis: "TEST", editedAfterPublication: "NO", editNote: null },
     instrument: { asShown: "S&P 500", instrumentType: "INDEX_CASH", priceAdjustment: "UNKNOWN", vuSymbol: "SPY", mappingQuality: "PROXY_DIFFERENT_INSTRUMENT", levelScale: 0.1 },
     timeframe: "1W", analysisCutoff: "2022-10-14", elliottSchool: "CLASSICAL",
-    primary: { pattern: "ZIGZAG", family: "CORRECTIVE", degreeLabel: "(C)", degreeRank: 2, currentWave: "(C)", currentWaveRole: "MOTIVE", state: "DEVELOPING", waveStartDate: "2022-08-16", waveStartPrice: 4305 },
-    alternatives: [{ pattern: "IMPULSE", currentWave: "3", directionalBias: "DOWN", trigger: null, note: null }],
+    primary: { pattern: "IMPULSE", family: "MOTIVE", degreeLabel: "(1)", degreeRank: 2, currentWave: "(1)", currentWaveRole: "MOTIVE", state: "DEVELOPING", waveStartDate: "2022-10-13", waveStartPrice: 3491, nextMoveAfterCurrent: "DOWN" },
+    alternatives: [{ pattern: "ZIGZAG", currentWave: "C", directionalBias: "DOWN", trigger: null, note: null }],
     directionalBias: "UP", structuralScenario: "TEST", keySupportZones: [], entryZones: [], targetZones: [{ low: 4100, high: 4200, label: "T1" }, { low: 4500, high: 4600, label: "T2" }],
     invalidation: { price: 3490, direction: "below", basis: "CLOSE" }, commentarySummary: "TEST FIXTURE – keine echte Analyse",
     extraction: { confidence: "HIGH", extractor: "test", method: "HUMAN_FROM_PRIMARY", secondPass: null, ambiguities: [] },
@@ -191,8 +195,9 @@ test("validation: Schema- und Fachfehler werden gemeldet", () => {
     [(r) => { r.sourceUrl = "https://www.youtube.com/watch?v=x"; }, /\.invalid-URL/],
     [(r) => { r.status = "INCLUDED"; }, /nur mit status TEST_FIXTURE/],
     [(r) => { r.primary.currentWave = "(iii]"; }, /Label-Syntax/],
-    [(r) => { r.primary.family = "MOTIVE"; }, /widerspricht Muster/],
-    [(r) => { r.primary.degreeRank = 7; }, /0\.\.5/],
+    [(r) => { r.primary.family = "CORRECTIVE"; }, /widerspricht Muster/],
+    [(r) => { r.primary.degreeRank = 7; }, /-2\.\.5/],
+    [(r) => { r.primary.degreeRank = -3; }, /-2\.\.5/],
     [(r) => { r.targetZones = [{ low: 5, high: 4 }]; }, /low > high/],
     [(r) => { r.instrument.vuSymbol = "QQQ"; }, /≠ Karte SPY/],
     [(r) => { r.status = "EXCLUDED"; r.sourceId = "real-x"; r.caseId = "real-x|SPY|2022-10-17|1"; r.sourceUrl = "https://example.org/a"; }, /exclusionReason/]
@@ -363,7 +368,10 @@ test("freeze: sortiert, SHA-256 stabil, Manifest, keine stille Neufassung", () =
   const r1 = L.freezeReferences([b, fx(), revision()], opt);
   const lines = readFileSync(r1.file, "utf8").trim().split("\n");
   assert.deepEqual(lines.map((l) => JSON.parse(l).referenceId), ["pr_test_fixture_spx_a", "pr_test_fixture_spx_a_v2", "pr_test_fixture_spx_b"]);
-  assert.ok(lines.every((l) => JSON.parse(l).split !== "UNASSIGNED"));
+  // beta = Holdout-Quelle; alpha (SPY, gleicher Stichtag) liegt in deren Marktfenster → QUARANTINE (Zeile: UNASSIGNED)
+  assert.equal(r1.manifest.splits.byCase["test-fixture-beta|SPY|2022-10-17|1"], "HOLDOUT_SOURCE");
+  assert.equal(r1.manifest.splits.byCase["test-fixture-alpha|SPY|2022-10-17|1"], "QUARANTINE");
+  assert.deepEqual(lines.map((l) => JSON.parse(l).split), ["UNASSIGNED", "UNASSIGNED", "HOLDOUT_SOURCE"]);
   assert.match(r1.manifest.sha256, /^[0-9a-f]{64}$/);
   assert.equal(r1.manifest.label, "PRACTITIONER REFERENCE — PILOT");
   assert.ok(r1.manifest.qualityGate.failed.includes("cases"));
@@ -379,13 +387,13 @@ test("freeze: sortiert, SHA-256 stabil, Manifest, keine stille Neufassung", () =
 const view = (o) => Object.assign({ pattern: null, family: null, label: null, completeLabel: null, inferredNext: null, role: null, state: null, direction: null, impliedTrend: null,
   degreeRank: null, invalidation: null, targets: [], alternatives: [], levelsComparable: true, abstain: false }, o);
 test("metrics: A–K und S auf handgemachten Sichten", () => {
-  const P = view({ pattern: "IMPULSE", family: "MOTIVE", label: "3", role: "MOTIVE", state: "DEVELOPING", direction: "UP", impliedTrend: "UP", degreeRank: 2,
+  const P = view({ actor: "PRACTITIONER", pattern: "IMPULSE", family: "MOTIVE", label: "3", role: "MOTIVE", state: "DEVELOPING", currentMove: "UP", nextMove: "DOWN", impliedTrend: "UP", degreeRank: 2,
     invalidation: { price: 95, direction: "below" }, targets: [{ low: 110, high: 120 }, { low: 130, high: 140 }], alternatives: [{ pattern: "ZIGZAG", label: "C", direction: "DOWN" }] });
-  const V = view({ pattern: "ZIGZAG", family: "CORRECTIVE", label: "C", role: "MOTIVE", state: "DEVELOPING", direction: "UP", impliedTrend: "DOWN", degreeRank: 1,
+  const V = view({ actor: "VU", pattern: "ZIGZAG", family: "CORRECTIVE", label: "C", role: "MOTIVE", state: "DEVELOPING", currentMove: "UP", nextMove: "UP", impliedTrend: "DOWN", degreeRank: 1,
     invalidation: { price: 90, direction: "below" }, targets: [{ low: 118, high: 125 }], alternatives: [] });
   const r = K.compareViews(P, V, { close: 100, atr: 2.5, absoluteComparable: true });
-  assert.deepEqual(r.metrics, { A: "MATCH", B: "MISMATCH", C: "MISMATCH", D: "MISMATCH", E: "MATCH", F: "MISMATCH", G: "MATCH", K: "MATCH", S: "MISMATCH" });
-  assert.deepEqual(r.sDetail, { nextMove: "MATCH", role: "MATCH", impliedTrend: "MISMATCH", strict: false });
+  assert.deepEqual(r.metrics, { A1: "MATCH", A2: "MISMATCH", B: "MISMATCH", C: "MISMATCH", D: "MISMATCH", E: "MATCH", F: "MISMATCH", G: "MATCH", K: "MATCH", S: "MISMATCH" });
+  assert.deepEqual(r.sDetail, { currentMove: "MATCH", role: "MATCH", impliedTrend: "MISMATCH", strict: false });
   assert.deepEqual(r.H, { result: "COMPUTED", absolute: 5, pct: 5, atr: 2, sameSide: true });
   assert.deepEqual(r.I, { result: "COMPUTED", anyOverlap: true, shareOfFirstZonesHit: 0.5, shareOfSecondZonesHit: 1, nearestCenterPct: 6.5, nearestCenterAtr: 2.6 });
   // Proxy: kein absoluter Abstand; Praktiker-Trend unbekannt → S nur aus Richtung + Rolle
@@ -393,21 +401,26 @@ test("metrics: A–K und S auf handgemachten Sichten", () => {
   assert.equal(r2.H.absolute, null);
   assert.equal(r2.metrics.S, "MATCH");
   // unbekannte Richtung → nicht vergleichbar
-  assert.equal(K.compareViews(Object.assign({}, P, { direction: null }), V, {}).metrics.S, "NOT_COMPARABLE");
+  assert.equal(K.compareViews(Object.assign({}, P, { currentMove: null }), V, {}).metrics.S, "NOT_COMPARABLE");
+  // Grad unbekannt auf einer Seite → D/E nicht vergleichbar
+  const r3 = K.compareViews(Object.assign({}, P, { degreeRank: null }), V, {});
+  assert.equal(r3.metrics.D, "NOT_COMPARABLE"); assert.equal(r3.metrics.E, "NOT_COMPARABLE");
   assert.equal(K.compareViews(P, V, {}).H.result, "NOT_COMPARABLE");
 });
 test("metrics: uebergeordnete Richtung des Praktikers nur aus Wellenstart (nicht aus dem Bias)", () => {
   const m = L.effectiveMapping(fx());
   // Zigzag-Welle (C) seit 430,5 (skaliert) bei Schluss 357,63 abwaerts → Korrektur gegen einen Aufwaertstrend
-  assert.equal(K.practitionerView(fx(), m, { close: 357.63 }).impliedTrend, "UP");
-  assert.equal(K.practitionerView(fx({ directionalBias: "DOWN" }), m, { close: 357.63 }).impliedTrend, "UP", "Bias aendert die Trendableitung nicht");
-  assert.equal(K.practitionerView(fx(), m, {}).impliedTrend, null, "ohne Schluss nicht ableitbar");
-  assert.equal(K.practitionerView(fx({ primary: { waveStartPrice: null } }), m, { close: 357.63 }).impliedTrend, null);
+  const zz = (o = {}) => fx(deepMerge({ primary: { pattern: "ZIGZAG", family: "CORRECTIVE", currentWave: "(C)", currentWaveRole: "MOTIVE", waveStartPrice: 4305 } }, o));
+  assert.equal(K.practitionerView(zz(), m, { close: 357.63 }).impliedTrend, "UP");
+  assert.equal(K.practitionerView(zz({ directionalBias: "UP" }), m, { close: 357.63 }).impliedTrend, "UP", "Bias aendert die Trendableitung nicht");
+  assert.equal(K.practitionerView(zz(), m, {}).impliedTrend, null, "ohne Schluss nicht ableitbar");
+  assert.equal(K.practitionerView(zz({ primary: { waveStartPrice: null } }), m, { close: 357.63 }).impliedTrend, null);
+  assert.equal(K.practitionerView(fx(), m, { close: 357.63 }).impliedTrend, "UP", "Impulswelle 1 seit 349,1 aufwaerts");
   const imp = fx({ primary: { pattern: "IMPULSE", family: "MOTIVE", currentWave: "4", currentWaveRole: "CORRECTIVE", waveStartPrice: 4000 } });
   assert.equal(K.practitionerView(imp, m, { close: 357.63 }).impliedTrend, "UP", "Welle 4 abwaerts in Aufwaertsimpuls");
 });
 test("metrics: laufende Welle bei abgeschlossenem VU-Muster (naechstes Label des hoeheren Grades)", () => {
-  const V = view({ pattern: "ZIGZAG", family: "CORRECTIVE", completeLabel: "C", inferredNext: "3", state: "CONFIRMED_COMPLETE", role: "MOTIVE", direction: "UP" });
+  const V = view({ actor: "VU", pattern: "ZIGZAG", family: "CORRECTIVE", completeLabel: "C", inferredNext: "3", state: "CONFIRMED_COMPLETE", role: "MOTIVE", currentMove: "UP" });
   assert.equal(K.compareViews(view({ label: "3" }), V).metrics.C, "MATCH");
   assert.equal(K.compareViews(view({ label: "5" }), V).metrics.C, "MISMATCH");
   assert.equal(K.compareViews(view({ completeLabel: "C", state: "CONFIRMED_COMPLETE" }), V).metrics.C, "MATCH");
@@ -417,32 +430,43 @@ test("metrics: laufende Welle bei abgeschlossenem VU-Muster (naechstes Label des
   assert.equal(K.compareViews(P, V).metrics.C, "MATCH");
 });
 test("metrics: Grad-Heuristik (Naeherung) und Cohens κ", () => {
-  assert.deepEqual([5, 14, 59, 60, 179, 180, 729, 730, 3649, 3650].map(L.degreeRankFromDays), [0, 1, 1, 2, 2, 3, 3, 4, 4, 5]);
+  assert.deepEqual([1, 2, 3, 5, 14, 59, 60, 179, 180, 729, 730, 3649, 3650].map(L.degreeRankFromDays), [-1, -1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5]);
   assert.equal(L.degreeRankFromDays(null), null);
   const pairs = [...Array(20).fill(["UP", "UP"]), ...Array(5).fill(["UP", "DOWN"]), ...Array(10).fill(["DOWN", "UP"]), ...Array(15).fill(["DOWN", "DOWN"])];
   assert.ok(Math.abs(K.cohenKappa(pairs) - 0.4) < 1e-12);
   assert.equal(K.cohenKappa([["UP", "UP"], ["DOWN", "DOWN"]]), 1);
 });
-test("metrics: Aggregat mit und ohne Enthaltung, Cluster-Bootstrap", () => {
-  const row = (i, cat, A, src, sym) => ({ referenceId: "r" + i, sourceId: src, vuSymbol: sym, category: cat, J: { vuAbstain: cat === "VU_ABSTAINED", vuApplicability: cat === "VU_ABSTAINED" ? "LOW" : "MODERATE" },
-    metrics: { A, B: "MATCH", C: "NOT_COMPARABLE", D: "NOT_COMPARABLE", E: "NOT_COMPARABLE", F: "NOT_COMPARABLE", G: "NOT_COMPARABLE", K: "MATCH", S: A }, H: { result: "NOT_COMPARABLE" }, I: { result: "NOT_COMPARABLE" },
-    _pDir: "UP", _vDir: A === "MATCH" ? "UP" : "DOWN", _pFam: "MOTIVE", _vFam: "MOTIVE" });
+function aggRow(i, cat, A, fam, sym) {
+  return { referenceId: "r" + i, sourceId: fam, sourceFamily: fam, vuSymbol: sym, category: cat, J: { vuAbstain: cat === "VU_ABSTAINED", vuApplicability: cat === "VU_ABSTAINED" ? "LOW" : "MODERATE" },
+    metrics: { A1: A, A2: "NOT_COMPARABLE", B: "MATCH", C: "NOT_COMPARABLE", D: "NOT_COMPARABLE", E: "NOT_COMPARABLE", F: "NOT_COMPARABLE", G: "NOT_COMPARABLE", K: "MATCH", S: A },
+    notComparableReason: {}, H: { result: "NOT_COMPARABLE" }, I: { result: "NOT_COMPARABLE" }, _a1: ["UP", A === "MATCH" ? "UP" : "DOWN"], _a2: [null, null], _fam: ["MOTIVE", "MOTIVE"] };
+}
+test("metrics: Aggregat mit und ohne Enthaltung; unter 5 Clustern kein CI, κ erst ab 20 Paaren (H7)", () => {
   const rows = [];
-  for (let i = 0; i < 12; i++) rows.push(row(i, i % 3 === 0 ? "VU_ABSTAINED" : "VU_APPLICABLE", i % 3 === 0 ? "MISMATCH" : i % 2 ? "MATCH" : "MISMATCH", "s" + (i % 3), ["SPY", "QQQ"][i % 2]));
+  for (let i = 0; i < 12; i++) rows.push(aggRow(i, i % 3 === 0 ? "VU_ABSTAINED" : "VU_APPLICABLE", i % 3 === 0 ? "MISMATCH" : i % 2 ? "MATCH" : "MISMATCH", "s" + (i % 3), ["SPY", "QQQ"][i % 2]));
   rows.push({ referenceId: "u", sourceId: "s0", vuSymbol: null, category: "UNMAPPED" });
   const a = K.aggregate(rows);
   assert.equal(a.cases, 13);
   assert.equal(a.categories.UNMAPPED, 1);
-  assert.equal(a.metrics.A.includingAbstained.n, 12);
-  assert.equal(a.metrics.A.excludingAbstained.n, 8);
-  assert.equal(a.metrics.A.excludingAbstained.match, 4);
-  assert.equal(a.metrics.A.includingAbstained.rate, 0.3333);
-  assert.equal(a.metrics.A.excludingAbstained.rate, 0.5);
-  assert.ok(a.metrics.A.includingAbstained.ci95[0] <= 0.3333 && a.metrics.A.includingAbstained.ci95[1] >= 0.3333);
+  const A1 = a.metrics.A1;
+  assert.equal(A1.includingAbstained.n, 12); assert.equal(A1.excludingAbstained.n, 8); assert.equal(A1.excludingAbstained.match, 4);
+  assert.equal(A1.includingAbstained.rate, 0.3333); assert.equal(A1.excludingAbstained.rate, 0.5);
+  assert.equal(A1.includingAbstained.ci95, null, "3 Familien / 2 Instrumente → kein CI");
+  assert.match(A1.includingAbstained.ciReason, /INSUFFICIENT_CLUSTERS/);
   assert.equal(a.metrics.C.includingAbstained.n, 0);
   assert.equal(a.J.vuAbstainShare, 0.333);
-  assert.equal(a.kappa.direction.n, 12);
+  assert.equal(a.kappa.currentMove.n, 12); assert.equal(a.kappa.currentMove.kappa, null); assert.match(a.kappa.currentMove.reason, /INSUFFICIENT_PAIRS/);
+  assert.deepEqual(a.kappa.currentMove.prevalence.first, { DOWN: 0, UP: 12 });
+  // genug Cluster und Paare → CI und κ
+  const big = [];
+  for (let i = 0; i < 40; i++) big.push(aggRow(i, "VU_APPLICABLE", i % 4 === 0 ? "MISMATCH" : "MATCH", "fam" + (i % 6), ["SPY", "QQQ", "DIA", "IWM", "EEM", "BTCUSD"][Math.floor(i / 7) % 6]));
+  for (const r of big) r._a1 = [i2dir(r), r.metrics.A1 === "MATCH" ? i2dir(r) : opp(i2dir(r))];
+  const b = K.aggregate(big);
+  assert.ok(Array.isArray(b.metrics.A1.includingAbstained.ci95));
+  assert.ok(b.metrics.A1.includingAbstained.ci95[0] <= 0.75 && b.metrics.A1.includingAbstained.ci95[1] >= 0.75);
+  assert.equal(typeof b.kappa.currentMove.kappa, "number");
 });
+const i2dir = (r) => (+r.referenceId.slice(1) % 3 === 0 ? "DOWN" : "UP"), opp = (d) => (d === "UP" ? "DOWN" : "UP");
 test("human–human: Paarungsregel (gleiches Instrument/Zeitrahmen, ≤ 5 Handelstage, andere Quelle, naechste)", () => {
   const mk = (id, src, ts, tf = "1W", sym = "S&P 500") => fx({ referenceId: id, sourceId: src, caseId: `${src}|SPY|x|1`, sourceUrl: `https://example.invalid/${id}`, timeframe: tf, instrument: { asShown: sym }, publication: { timestamp: ts } });
   const refs = [
@@ -506,7 +530,8 @@ test("NO_REFERENCES: ohne INCLUDED-Referenzen wird nichts erfunden", () => {
   const r = runBenchmark({ refsPath: refs, outDir: out, now: "2026-10-04T00:00:00Z" });
   assert.equal(r.summary.status, "NO_REFERENCES");
   assert.equal(r.summary.input.includedRows, 0);
-  for (const f of ["benchmark-summary.json", "replay-results.json", "comparison.json", "outcome.json"]) assert.equal(JSON.parse(readFileSync(join(out, f), "utf8")).status, "NO_REFERENCES");
+  for (const f of ["benchmark-summary.json", "replay-results.json", "comparison.json"]) assert.equal(JSON.parse(readFileSync(join(out, f), "utf8")).status, "NO_REFERENCES");
+  assert.ok(!existsSync(join(out, "outcome.json")), "Ergebnisstudie ist ein eigener Schritt (run-outcome.mjs)");
   assert.equal(r.summary.metrics, undefined);
   // nur TEST_FIXTURE und Kandidaten → ebenfalls NO_REFERENCES; Testzeilen tauchen in keiner Zaehlung auf
   writeFileSync(refs, [fx(), fx({ referenceId: "pr_cand", status: "CANDIDATE", sourceId: "hkcm", caseId: "hkcm|SPY|2022-10-17|1", sourceUrl: "https://example.org/c" })].map((x) => JSON.stringify(x)).join("\n"));
@@ -533,38 +558,266 @@ test("Datensatz: references.jsonl enthaelt keine Testdaten; Kartendatei vollstae
     else assert.equal(e.mappingQuality, "UNMAPPED");
   }
 });
-test("selbsttest: kompletter Lauf auf gekennzeichneten TEST_FIXTURE-Daten (nur ausserhalb practitioner-v1, als SELF_TEST markiert)", () => {
-  const dir = tmp(), refs = join(dir, "fixtures.jsonl"), out = join(dir, "bench");
-  const b = fx({ referenceId: "pr_test_fixture_spx_b", sourceId: "test-fixture-beta", caseId: "test-fixture-beta|SPY|2022-10-19|1", sourceUrl: "https://example.invalid/beta/1",
-    publication: { timestamp: "2022-10-19T18:00:00+02:00", timezone: "Europe/Berlin" }, analysisCutoff: "2022-10-18", directionalBias: "DOWN", primary: { currentWaveRole: "MOTIVE" } });
-  const cross = fx({ referenceId: "pr_test_fixture_spx_x", sourceType: "X", sourceUrl: "https://example.invalid/alpha/x" });
-  const dax = fx({ referenceId: "pr_test_fixture_dax", caseId: "test-fixture-alpha|UNMAPPED:DAX|2022-10-17|1", instrument: { asShown: "DAX", instrumentType: "INDEX_CASH", vuSymbol: null, mappingQuality: "UNMAPPED", levelScale: null },
-    sourceUrl: "https://example.invalid/alpha/dax", publication: { timestamp: "2022-10-17T09:00:00+02:00", timezone: "Europe/Berlin" }, analysisCutoff: "2022-10-14" });
-  const btc = fx({ referenceId: "pr_test_fixture_btc", sourceId: "test-fixture-beta", caseId: "test-fixture-beta|BTCUSD|2023-06-15|1", sourceUrl: "https://example.invalid/beta/btc", timeframe: "1D",
-    instrument: { asShown: "BTCUSD", instrumentType: "CRYPTO_SPOT", vuSymbol: "BTCUSD", mappingQuality: "EXACT", levelScale: null },
-    publication: { timestamp: "2023-06-15T10:00:00+02:00", timezone: "Europe/Berlin" }, analysisCutoff: "2023-06-14",
-    primary: { pattern: "IMPULSE", family: "MOTIVE", currentWave: "3", degreeRank: 1, waveStartDate: "2023-06-01", waveStartPrice: 27000 }, alternatives: [],
+
+// ================================================================== Red-Team-Regressionen (docs/technical-intelligence/reviews/PRACTITIONER_PIPELINE_REDTEAM.md)
+/** Kuenstlicher VU-Replay-Datensatz (nur VU-Felder) fuer Kennzahltests. */
+function fakeRec(primary, extra = {}) {
+  return Object.assign({ status: "OK", projection: { referenceId: "x", vuSymbol: "SPY", seriesSource: "multi-asset", market: "US_EQUITY", timeframe: "1W", analysisCutoff: "2022-10-14" },
+    lastBarDate: "2022-10-14", timeframeUsed: "1W", market: { closeAtCutoff: 357.63, atr14Close: 11 },
+    vu: { status: "OK", hasCount: true, applicability: { level: "LOW", abstain: true }, primary: Object.assign({ alternatives: [], targets: [], invalidation: null, degree: { rank: 2 } }, primary), alternatives: [], higherDegree: null } }, extra);
+}
+test("C1: gleiche Zaehlung → A1/A2/S MATCH (laufende Welle vs. VU currentWave.direction, danach vs. VU nextMove)", () => {
+  // README-Beispiel: Impuls, Welle (iii) laeuft aufwaerts; danach (iv) abwaerts. VU: identische Zaehlung, nextMove = DOWN.
+  const ref = fx({ timeframe: "1D", primary: { pattern: "IMPULSE", family: "MOTIVE", currentWave: "(iii)", currentWaveRole: "MOTIVE", nextMoveAfterCurrent: "DOWN", waveStartPrice: null } });
+  const rec = fakeRec({ pattern: "IMPULSE", family: "MOTIVE", direction: "UP", impliedTrend: "UP", complete: false, nextMove: "DOWN",
+                        currentWave: { label: "3", normLabel: "3", role: "MOTIVE", direction: "UP" } });
+  const row = K.compareCase(ref, L.effectiveMapping(ref), rec);
+  for (const k of ["A1", "A2", "B", "C", "F", "G", "K", "S"]) assert.equal(row.metrics[k], "MATCH", k);
+  // Gegenprobe: alte (falsche) Gleichsetzung directionalBias ≙ nextMove waere hier MISMATCH
+  assert.notEqual(ref.directionalBias, rec.vu.primary.nextMove);
+  // abgeschlossenes VU-Muster: nextMove ist die laufende Gegenbewegung → A2 nicht vergleichbar
+  const done = fakeRec({ pattern: "ZIGZAG", family: "CORRECTIVE", direction: "DOWN", impliedTrend: "UP", complete: true, nextMove: "UP", currentWave: { label: "nach C", normLabel: "C", role: "COMPLETE", direction: "UP" } });
+  const r2 = K.compareCase(ref, L.effectiveMapping(ref), done);
+  assert.equal(r2.metrics.A1, "MATCH"); assert.equal(r2.metrics.A2, "NOT_COMPARABLE");
+  // kein nextMoveAfterCurrent → A2 nicht vergleichbar, A1 unberuehrt
+  const r3 = K.compareCase(fx({ primary: { nextMoveAfterCurrent: undefined } }), L.effectiveMapping(fx()), rec);
+  assert.equal(r3.metrics.A2, "NOT_COMPARABLE"); assert.equal(r3.metrics.A1, "MATCH");
+});
+test("C1: SIDEWAYS gegen VU ist NOT_COMPARABLE (eigener Grund), zwischen Praktikern vergleichbar", () => {
+  const ref = fx({ directionalBias: "SIDEWAYS" }), m = L.effectiveMapping(ref);
+  const rec = fakeRec({ pattern: "IMPULSE", family: "MOTIVE", direction: "UP", impliedTrend: "UP", complete: false, nextMove: "DOWN", currentWave: { label: "1", normLabel: "1", role: "MOTIVE", direction: "UP" } });
+  const row = K.compareCase(ref, m, rec);
+  assert.equal(row.metrics.A1, "NOT_COMPARABLE"); assert.equal(row.metrics.S, "NOT_COMPARABLE");
+  assert.equal(row.notComparableReason.A1, "SIDEWAYS_VU_HAS_NO_SIDEWAYS");
+  assert.equal(K.aggregate([row]).practitionerSidewaysNotComparable, 1);
+  const P = K.practitionerView(ref, m);
+  assert.equal(K.compareViews(P, Object.assign({}, P)).metrics.A1, "MATCH");
+});
+test("C1: Ergebnisstudie nutzt die laufende Bewegung (VU currentWave.direction), nicht nextMove", () => {
+  const ref = fx(), m = L.effectiveMapping(ref);
+  const rec = fakeRec({ pattern: "IMPULSE", family: "MOTIVE", direction: "UP", impliedTrend: "UP", complete: false, nextMove: "DOWN", currentWave: { label: "1", normLabel: "1", role: "MOTIVE", direction: "UP" } });
+  const oc = O.outcomeForCase(ref, m, rec, [ref]);
+  assert.equal(oc.vu.direction, "UP"); assert.equal(oc.practitioner.direction, "UP");
+});
+test("C1: Trajektorie traegt die laufende Bewegung; Latenz vergleicht A1 + Rolle", () => {
+  const ref = fx(), m = L.effectiveMapping(ref);
+  const rec = fakeRec({}, { dynamics: { status: "OK", points: [
+    { date: "a", offsetBars: -1, currentMove: "DOWN", nextMove: "UP", role: "MOTIVE", impliedTrend: "UP" },
+    { date: "b", offsetBars: 0, currentMove: "UP", nextMove: "DOWN", role: "MOTIVE", impliedTrend: "UP" }] } });
+  assert.deepEqual(K.detectionLatency(ref, m, rec).offsetBars, 0);
+  const real = R.replayOne(R.replayProjection(ref, m), { dynamics: { before: 1, after: 0 } });
+  assert.ok(real.dynamics.points.every((p) => p.currentMove === "UP" || p.currentMove === "DOWN"));
+});
+
+test("H1: Bar-Schlusszeit je VU-Reihe (Metalle/Krypto 24:00 UTC, EIA 24:00 New York, N225 15:30 Tokio, US-ETFs 16:00)", () => {
+  // Gold-Beitrag 12.03.2024 18:30 EDT: Tiingo-Bar 12.03. schliesst erst 13.03. 00:00 UTC (20:00 EDT) → Stichtag 11.03.
+  const gold = { timestamp: "2024-03-12T18:30:00-04:00", timezone: "America/New_York", timestampPrecision: "MINUTE" };
+  assert.equal(C.computeAnalysisCutoff(gold, C.marketForSymbol("XAUUSD")).analysisCutoff, "2024-03-11");
+  assert.equal(C.computeAnalysisCutoff({ ...gold, timestamp: "2024-03-12T20:01:00-04:00" }, "FX_METALS_UTC").analysisCutoff, "2024-03-12");
+  assert.equal(C.computeAnalysisCutoff({ ...gold, timestamp: "2024-03-12T23:30:00-04:00" }, "US_ENERGY_EIA").analysisCutoff, "2024-03-11");
+  assert.equal(C.computeAnalysisCutoff({ ...gold, timestamp: "2024-03-13T00:30:00-04:00" }, "US_ENERGY_EIA").analysisCutoff, "2024-03-12");
+  assert.equal(C.computeAnalysisCutoff({ timestamp: "2024-03-12T15:20:00+09:00", timezone: "Asia/Tokyo", timestampPrecision: "MINUTE" }, "JP_EQUITY").analysisCutoff, "2024-03-11");
+  // Metalle: Montag 01:00 UTC → Sonntagsbar (geschlossen) ist der Stichtag; kein Samstag
+  assert.equal(C.computeAnalysisCutoff({ timestamp: "2024-03-11T01:00:00Z", timezone: "UTC", timestampPrecision: "MINUTE" }, "FX_METALS_UTC").analysisCutoff, "2024-03-10");
+  assert.equal(C.computeAnalysisCutoff({ timestamp: "2024-03-10T12:00:00Z", timezone: "UTC", timestampPrecision: "MINUTE" }, "FX_METALS_UTC").analysisCutoff, "2024-03-08");
+  // Abbildung und Kartendatei
+  const map = L.loadInstrumentMap();
+  for (const [sym, mk] of Object.entries(C.SYMBOL_MARKET)) assert.equal(map.seriesMarkets.symbols[sym].market, mk, sym);
+  const want = { "tiingo-equity": "US_EQUITY", "tiingo-crypto": "CRYPTO", "tiingo-fx-metals": "FX_METALS_UTC", eia: "US_ENERGY_EIA", "fred-index": "JP_EQUITY" };
+  for (const sym of Object.keys(C.SYMBOL_MARKET)) {
+    const src = JSON.parse(readFileSync(join(L.ROOT, "quant/data/market/multi-asset/series", sym + ".json"), "utf8")).source;
+    assert.equal(C.SYMBOL_MARKET[sym], want[src], `${sym} (${src})`);
+  }
+  for (const e of map.entries.filter((x) => x.vuSymbol)) assert.equal(e.market, C.SYMBOL_MARKET[e.vuSymbol], e.id);
+  assert.equal(L.resolveInstrument({ asShown: "GC1!", instrumentType: "FUTURE" }).market, "FX_METALS_UTC");
+  assert.equal(L.resolveInstrument({ asShown: "USOIL", instrumentType: "CFD" }).market, "US_ENERGY_EIA");
+  assert.equal(L.resolveInstrument({ asShown: "AAPL", instrumentType: "STOCK" }).market, "US_EQUITY");
+  // Wochenbars Metalle: Sonntagsbar gehoert zur Folgewoche (ersetzt nicht den Freitagsschluss)
+  assert.deepEqual(R.weeklyFromDaily([["2024-03-08", 1], ["2024-03-10", 2], ["2024-03-15", 3]], "FX_METALS_UTC"), [["2024-03-08", 1], ["2024-03-15", 3]]);
+  const p = Object.freeze({ referenceId: "x", vuSymbol: "XAUUSD", seriesSource: "multi-asset", market: "FX_METALS_UTC", timeframe: "1W", analysisCutoff: "2024-03-11" });
+  const { bars, limit } = R.barsUntil(p, p.analysisCutoff);
+  assert.equal(limit, "2024-03-08"); assert.ok(bars.every((b) => C.dow(b[0]) !== 0), "kein Sonntagsbar als Wochenschluss");
+});
+test("H2: Formular und Pipeline – eine Stichtagsregel (Wochenende, Karfreitag, 1W), Roundtrip Formular → Validierung", () => {
+  assert.equal(C.computeAnalysisCutoff, Core.CUTOFF.computeAnalysisCutoff, "cutoff.mjs re-exportiert die Seitenlogik");
+  const cases = [
+    ["2024-03-13T18:00:00+01:00", "Europe/Berlin", "MINUTE", "1W", "2024-03-12"],     // Red-Team-Repro: Seite gab 2024-03-08
+    ["2024-03-30T12:00:00+01:00", "Europe/Berlin", "MINUTE", "1D", "2024-03-29"],     // Karfreitag: Kalender kennt keinen Feiertag
+    ["2024-03-30T12:00:00+01:00", "Europe/Berlin", "MINUTE", "1W", "2024-03-29"],
+    ["2024-06-09T12:00:00+02:00", "Europe/Berlin", "DAY", "1D", "2024-06-07"],        // Sonntag
+    ["2024-06-08T10:00:00-04:00", "America/New_York", "HOUR", "1W", "2024-06-07"]     // Samstag, Woche
+  ];
+  const spyDates = R.defaultLoader("SPY", "multi-asset", "daily").map((x) => x[0]);
+  for (const [ts, tz, prec, tf, want] of cases) {
+    const page = Core.computeCutoff({ timestamp: ts, precision: prec, timezone: tz, market: "US_EQUITY", timeframe: tf, dates: spyDates });
+    const lib = C.computeAnalysisCutoff({ timestamp: ts, timezone: tz, timestampPrecision: prec }, "US_EQUITY").analysisCutoff;
+    assert.equal(page.date, want, ts + " " + tf); assert.equal(lib, want, ts + " " + tf);
+  }
+  // Einrasten (Karfreitag) und Woche nur im Replay
+  const gf = R.barsUntil(Object.freeze({ referenceId: "x", vuSymbol: "SPY", seriesSource: "multi-asset", market: "US_EQUITY", timeframe: "1D", analysisCutoff: "2024-03-29" }), "2024-03-29");
+  assert.equal(gf.bars[gf.bars.length - 1][0], "2024-03-28");
+  assert.equal(Core.computeCutoff({ timestamp: "2024-03-30T12:00:00+01:00", precision: "MINUTE", timezone: "Europe/Berlin", market: "US_EQUITY", timeframe: "1D", dates: spyDates }).lastVuBar, "2024-03-28");
+  // Roundtrip: Formular-Zeile (Seitenlogik) besteht die Stichtagspruefung der Pipeline, auch fuer Gold (H1) und 1W
+  for (const [asShown, type, sym, q, tf, local, tz] of [["S&P 500", "INDEX_CASH", "SPY", "PROXY_DIFFERENT_INSTRUMENT", "1W", "2024-03-13T18:00", "Europe/Berlin"],
+                                                        ["XAUUSD", "COMMODITY_SPOT", "XAUUSD", "EXACT", "1D", "2024-03-12T18:30", "America/New_York"]]) {
+    const st = { sourceId: "test-fixture-form", sourceType: "WEBSITE", sourceUrl: "https://example.invalid/form/" + sym, localDateTime: local, timezone: tz, precision: "MINUTE", timestampBasis: "TEST", edited: "NO",
+      asShown, instrumentType: type, priceAdjustment: "UNKNOWN", vuSymbol: sym, mappingQuality: q, levelScale: q === "EXACT" ? "" : "0,1", timeframe: tf, elliottSchool: "CLASSICAL",
+      pPattern: "IMPULSE", pFamily: "MOTIVE", pCurrentWave: "3", pRole: "MOTIVE", pState: "DEVELOPING", directionalBias: "UP", summary: "TEST FIXTURE", confidence: "HIGH", method: "HUMAN_FROM_PRIMARY",
+      extractor: "TEST-EXT1", evidence: [{ field: "primary", locator: "00:00", note: "TEST FIXTURE" }], status: "TEST_FIXTURE" };
+    st.timestamp = Core.localToIso(st.localDateTime, st.timezone);
+    st.analysisCutoff = Core.computeCutoff({ timestamp: st.timestamp, precision: st.precision, timezone: st.timezone, market: Core.guessMarket(type, sym, asShown), timeframe: tf }).date;
+    const rec = Core.buildRecord(st);
+    const errs = L.validateReference(rec).errors.filter((e) => /analysisCutoff|cutoff/i.test(e));
+    assert.deepEqual(errs, [], sym + ": " + JSON.stringify(errs));
+  }
+});
+
+/** Referenz-Minimalform fuer Split-Tests (nur Felder, die assignSplits liest). */
+const sref = (id, fam, sym, cutoff, pubDate = cutoff, extra = {}) => Object.assign({ referenceId: id, caseId: `${fam}|${sym}|${pubDate}|1`, sourceId: fam, version: 1, revisionOf: null, viewKind: "ORIGINAL_PUBLISHED",
+  instrument: { vuSymbol: sym }, analysisCutoff: cutoff, publication: { timestamp: `${pubDate}T22:00:00Z`, timezone: "UTC", timestampPrecision: "MINUTE" } }, extra);
+test("H3: Splits nach Marktfenster-Clustern, Erben von Revisionen/Duplikaten, QUARANTINE-Schutz", () => {
+  const refs = [
+    sref("pr_a1", "fa", "SPY", "2023-03-01"), sref("pr_a2", "fa", "SPY", "2023-03-03"),           // Nachbarn → gleicher Split
+    sref("pr_a3", "fa", "QQQ", "2023-05-02"), sref("pr_a4", "fa", "DIA", "2023-07-03"),
+    sref("pr_b1", "fb", "IWM", "2023-01-10"), sref("pr_b2", "fb", "IWM", "2023-06-01"), sref("pr_b3", "fb", "EEM", "2023-08-01"),
+    sref("pr_c1", "fc", "SPY", "2023-03-08"), sref("pr_c2", "fc", "XAUUSD", "2023-09-01"),       // fc = zweitgroesste Familie → HOLDOUT_SOURCE
+    sref("pr_d1", "fd", "QQQ", "2024-12-20"), sref("pr_e1", "fe", "QQQ", "2025-01-06", "2025-01-06"),  // DEV neben HOLDOUT_TEMPORAL
+    sref("pr_a1_v2", "fa", "SPY", "2025-02-03", "2025-02-03", { version: 2, revisionOf: "pr_a1", viewKind: "LATER_REVISION", caseId: "fa|SPY|2023-03-01|1" })
+  ];
+  const s = L.assignSplits(refs);
+  assert.equal(s.holdoutSource, "fb");
+  const by = s.byReference;
+  assert.ok(["HOLDOUT_SOURCE"].includes(by.pr_b1) && by.pr_b2 === "HOLDOUT_SOURCE");
+  assert.equal(by.pr_e1, "HOLDOUT_TEMPORAL");
+  assert.equal(by.pr_d1, "QUARANTINE", "DEV-Fall 20.12.2024 liegt im Fenster des Holdout-Falls 06.01.2025 (QQQ)");
+  assert.equal(by.pr_a1, by.pr_a2, "SPY-Nachbarn im selben Split");
+  assert.equal(by.pr_c1, by.pr_a1, "auch quellenuebergreifend: gleicher Marktausschnitt → gleicher Split");
+  assert.equal(by.pr_a1_v2, by.pr_a1, "Revision erbt die Aufteilung des Originals (auch wenn 2025 veroeffentlicht)");
+  assert.deepEqual(L.splitGuardViolations(refs, s.byCase), []);
+  assert.ok(s.quarantine.some((q) => q.caseId === "fd|QQQ|2024-12-20|1" && q.collidesWith === "fe|QQQ|2025-01-06|1"));
+  // Duplikat erbt
+  const d = L.assignSplits(refs, { duplicates: [{ originalId: "pr_a3", duplicateId: "pr_a3_x" }] });
+  assert.equal(d.byReference.pr_a3_x, d.byReference.pr_a3);
+  // vorgegebene Holdout-Quelle (aus dem Manifest) wird uebernommen, nicht neu gerechnet
+  assert.equal(L.assignSplits(refs, { holdoutSource: "fa" }).byReference.pr_a4, "HOLDOUT_SOURCE");
+  // Schutz greift auch fuer Revisionen: Revision 2025 (SPY 03.02.2025) neben einem Holdout-Temporal-Fall
+  const r2 = refs.concat([sref("pr_f1", "ff", "SPY", "2025-02-10", "2025-02-10")]);
+  const s2 = L.assignSplits(r2);
+  assert.equal(s2.byReference.pr_f1, "HOLDOUT_TEMPORAL");
+  assert.equal(s2.byReference.pr_a1, "QUARANTINE", "Kette mit Revision im Fenster eines Holdout-Falls → QUARANTINE");
+  assert.deepEqual(L.splitGuardViolations(r2, s2.byCase), []);
+});
+test("H7: hkcm und phantom-hkcm sind eine Quellenfamilie (Paarung, Cluster, Holdout)", () => {
+  const reg = L.loadSourceRegistry();
+  assert.equal(L.sourceFamily("phantom-hkcm", reg), L.sourceFamily("hkcm", reg));
+  assert.equal(L.sourceFamily("phantom-hkcm"), "hkcm");
+  assert.notEqual(L.sourceFamily("ewf", reg), L.sourceFamily("hkcm", reg));
+  const treg = { sources: [{ sourceId: "test-fixture-house-a", sourceFamily: "test-house" }, { sourceId: "test-fixture-house-b", sourceFamily: "test-house" }, { sourceId: "test-fixture-other", sourceFamily: "test-other" }] };
+  const mk = (id, src, ts) => fx({ referenceId: id, sourceId: src, caseId: `${src}|SPY|x|1`, sourceUrl: `https://example.invalid/${id}`, publication: { timestamp: ts } });
+  const refs = [mk("pr_h1", "test-fixture-house-a", "2022-10-17T09:00:00-04:00"), mk("pr_h2", "test-fixture-house-b", "2022-10-18T09:00:00-04:00"), mk("pr_o1", "test-fixture-other", "2022-10-19T09:00:00-04:00")];
+  const pairs = K.pairHumanHuman(refs, (r) => L.effectiveMapping(r), 5, (id) => L.sourceFamily(id, treg)).map((p) => [p.a.r.referenceId, p.b.r.referenceId].join("+"));
+  assert.ok(!pairs.includes("pr_h1+pr_h2"), "gleiches Haus ist keine unabhaengige Zweitmeinung");
+  assert.ok(pairs.includes("pr_h1+pr_o1") || pairs.includes("pr_h2+pr_o1"));
+  const row = K.compareCase(refs[1], L.effectiveMapping(refs[1]), { status: "UNMAPPED" }, { registry: treg });
+  assert.equal(row.sourceFamily, "test-house");
+});
+test("M5: unbekannte Felder auch verschachtelt abgelehnt, Zeichenlaengen begrenzt; nextMoveAfterCurrent ist die einzige Erweiterung", () => {
+  const bad = [
+    [(r) => { r.publication.transcript = "x".repeat(20000); }, /publication\.transcript: Feld im Schema nicht erlaubt/],
+    [(r) => { r.extraction.fullText = "y"; }, /extraction\.fullText/],
+    [(r) => { r.primary.notes = "z"; }, /primary\.notes/],
+    [(r) => { r.evidence[0].screenshot = "data:"; }, /evidence\[0\]\.screenshot/],
+    [(r) => { r.targetZones[0].comment = "q"; }, /targetZones\[0\]\.comment/],
+    [(r) => { r.structuralScenario = "s".repeat(401); }, /structuralScenario: laenger als 400/],
+    [(r) => { r.extraction.ambiguities = ["a".repeat(401)]; }, /ambiguities\[0\]: laenger als 400/],
+    [(r) => { r.alternatives[0].note = "n".repeat(20000); }, /alternatives\[0\]\.note: laenger/],
+    [(r) => { r.publication.editNote = "e".repeat(401); }, /editNote: laenger/],
+    [(r) => { r.primary.nextMoveAfterCurrent = "LATER"; }, /nextMoveAfterCurrent: Wert/]
+  ];
+  for (const [mut, re] of bad) { const r = fx(); mut(r); const errs = L.validateReference(r).errors; assert.ok(errs.some((e) => re.test(e)), `${re} → ${JSON.stringify(errs)}`); }
+  assert.deepEqual(L.validateReference(fx()).errors, [], "nextMoveAfterCurrent ist erlaubt");
+  assert.equal(L.validateSchema({ x: "y".repeat(500) }, { type: "object", properties: { x: { type: "string" } } }).length, 1);
+  assert.equal(L.validateSchema({ x: "y".repeat(500) }, { type: "object", properties: { x: { type: "string" } } }, undefined, "$", [], false).length, 0, "nicht-strikter Modus nur fuer Altdaten");
+});
+test("M6: deterministische Auswahl der Zweitextraktion (Seed 20261004, 25 %)", () => {
+  const ids = Array.from({ length: 41 }, (_, i) => `test-fixture-x|SPY|2023-01-${String((i % 28) + 1).padStart(2, "0")}|${i}`);
+  const a = L.selectSecondPass(ids), b = L.selectSecondPass(ids.slice().reverse().concat(ids.slice(0, 3)));
+  assert.equal(a.length, 11); assert.deepEqual(a, b, "unabhaengig von Reihenfolge und Wiederholungen");
+  assert.ok(a.every((x) => ids.includes(x)));
+  assert.notDeepEqual(L.selectSecondPass(ids, { seed: 1 }), a);
+  assert.equal(L.SECOND_PASS_SEED, 20261004);
+});
+
+/** Selbsttest-Datensatz: sichtbar (DEV/VAL), versiegelt (HOLDOUT_*), QUARANTINE, UNMAPPED, Cross-Post, Revision. */
+function selfTestRows() {
+  const at = (id, fam, over) => fx(deepMerge({ referenceId: id, sourceId: "test-fixture-" + fam, caseId: `test-fixture-${fam}|SPY|x|${id}`, sourceUrl: `https://example.invalid/${fam}/${id}` }, over));
+  const qqq = { instrument: { asShown: "QQQ", instrumentType: "ETF", vuSymbol: "QQQ", mappingQuality: "EXACT", levelScale: null }, timeframe: "1D", targetZones: [], invalidation: null, primary: { waveStartPrice: null } };
+  const a = at("pr_tf_a", "alpha", { caseId: "test-fixture-alpha|SPY|2022-10-17|1" });
+  const rev = deepMerge(revision(), { sourceId: "test-fixture-alpha", caseId: "test-fixture-alpha|SPY|2022-10-17|1", revisionOf: "pr_tf_a", referenceId: "pr_tf_a_v2" });
+  const cross = at("pr_tf_a_x", "alpha", { caseId: "test-fixture-alpha|SPY|2022-10-17|1", sourceType: "X" });
+  const g = at("pr_tf_g", "gamma", { publication: { timestamp: "2022-10-19T18:00:00+02:00", timezone: "Europe/Berlin" }, analysisCutoff: "2022-10-18", directionalBias: "DOWN" });
+  const dax = at("pr_tf_dax", "alpha", { caseId: "test-fixture-alpha|UNMAPPED:DAX|2022-10-17|1", instrument: { asShown: "DAX", instrumentType: "INDEX_CASH", vuSymbol: null, mappingQuality: "UNMAPPED", levelScale: null },
+    publication: { timestamp: "2022-10-17T09:00:00+02:00", timezone: "Europe/Berlin" } });
+  const btc = at("pr_tf_btc", "beta", { timeframe: "1D", instrument: { asShown: "BTCUSD", instrumentType: "CRYPTO_SPOT", vuSymbol: "BTCUSD", mappingQuality: "EXACT", levelScale: null },
+    publication: { timestamp: "2023-06-15T10:00:00+02:00", timezone: "Europe/Berlin" }, analysisCutoff: "2023-06-14", primary: { waveStartPrice: 25000 },
     targetZones: [{ low: 30000, high: 31000, label: "T1" }], invalidation: { price: 24000, direction: "below", basis: "CLOSE" } });
-  writeFileSync(refs, [fx(), revision(), b, cross, dax, btc].map((x) => JSON.stringify(x)).join("\n") + "\n");
-  assert.throws(() => runBenchmark({ refsPath: refs, outDir: join(L.PV1, "benchmark"), selfTestMode: true }), /selfTestMode/);
-  const r = runBenchmark({ refsPath: refs, outDir: out, selfTestMode: true, dynamicsBefore: 2, dynamicsAfter: 2 });
-  assert.equal(r.summary.status, "SELF_TEST");
-  assert.match(r.summary.label, /NOT A RESULT/);
-  assert.equal(r.summary.cases, 4);                          // a(+Revision), b, dax, btc; Cross-Post entfernt
-  assert.deepEqual(r.summary.duplicatesRemoved.map((d) => d.duplicateId), ["pr_test_fixture_spx_x"]);
-  assert.equal(r.summary.unmappedCounted, 1);
-  assert.equal(r.summary.replayStatus.UNMAPPED, 1);
-  const all = r.comparison.vuVsPractitioner.all;
-  assert.equal(all.cases, 4); assert.equal(all.categories.UNMAPPED, 1);
-  assert.ok(r.comparison.vuVsPractitioner.latestView && r.comparison.vuVsPractitioner.latestView.cases === 1);
+  const b2 = at("pr_tf_b2", "beta", deepMerge(clone(qqq), { publication: { timestamp: "2023-03-15T10:00:00-04:00" }, analysisCutoff: "2023-03-14" }));
+  const z = at("pr_tf_z", "zeta", deepMerge(clone(qqq), { publication: { timestamp: "2023-03-10T10:00:00-05:00" }, analysisCutoff: "2023-03-09" }));       // QUARANTINE (Fenster von b2)
+  const d = at("pr_tf_d", "delta", { publication: { timestamp: "2025-02-04T10:00:00-05:00" }, analysisCutoff: "2025-02-03", targetZones: [], invalidation: null, primary: { waveStartPrice: null } });  // HOLDOUT_TEMPORAL
+  return [a, rev, cross, g, dax, btc, b2, z, d];
+}
+test("H4 + M8: versiegelte Holdouts, Holdout-Quelle aus dem Manifest, Entsiegelung genau einmal, Ergebnisstudie nur nach Siegel", () => {
+  const dir = tmp(), src = join(dir, "fixtures.jsonl"), fz = join(dir, "freeze"), out = join(dir, "bench");
+  const rows = selfTestRows();
+  // Cross-Post vor dem Freeze aufloesen (Freeze verweigert ungeklaerte Duplikate)
+  assert.throws(() => L.freezeReferences(rows, { outDir: fz, version: "TEST_FREEZE", selfTestMode: true }), /Duplikat/);
+  const fr = L.freezeReferences(rows.filter((r) => r.referenceId !== "pr_tf_a_x"), { outDir: fz, version: "TEST_FREEZE", selfTestMode: true, now: "2026-10-04T00:00:00Z" });
+  const sp = fr.manifest.splits.byCase;
+  assert.equal(fr.manifest.holdoutSource, "test-fixture-beta");
+  assert.equal(sp["test-fixture-beta|SPY|x|pr_tf_btc"], "HOLDOUT_SOURCE");
+  assert.equal(sp["test-fixture-delta|SPY|x|pr_tf_d"], "HOLDOUT_TEMPORAL");
+  assert.equal(sp["test-fixture-zeta|SPY|x|pr_tf_z"], "QUARANTINE");
+  const lines = readFileSync(fr.file, "utf8").trim().split("\n").map((l) => JSON.parse(l));
+  assert.ok(lines.every((l) => l.split !== "QUARANTINE"), "Schema kennt QUARANTINE nicht → Zeile UNASSIGNED, Tabelle im Manifest");
+  // Ergebnisstudie vor dem Vergleich → verweigert
+  assert.throws(() => runOutcome({ refsPath: fr.file, benchDir: out, selfTestMode: true }), /versiegelter Vergleich fehlt/);
+  assert.throws(() => runOutcome({ refsPath: src, benchDir: out, selfTestMode: true }), /nicht eingefroren/);
+  // Vergleich: nur DEV/VAL sichtbar
+  const r = runBenchmark({ refsPath: fr.file, outDir: out, selfTestMode: true, dynamicsBefore: 1, dynamicsAfter: 1 });
+  assert.equal(r.summary.status, "SELF_TEST"); assert.match(r.summary.label, /NOT A RESULT/);
+  assert.equal(r.summary.splits.provisional, false); assert.equal(r.summary.splits.holdoutSource, "test-fixture-beta");
+  assert.deepEqual(r.summary.splits.sealed, { HOLDOUT_SOURCE: 2, HOLDOUT_TEMPORAL: 1 });
+  const txt = readFileSync(join(out, "comparison.json"), "utf8") + readFileSync(join(out, "replay-results.json"), "utf8") + readFileSync(join(out, "benchmark-summary.json"), "utf8");
+  for (const id of ["pr_tf_btc", "pr_tf_b2", "pr_tf_d", "pr_tf_z"]) assert.ok(!txt.includes(`"${id}"`), id + " darf versiegelt nicht erscheinen");
+  assert.ok(!Object.keys(r.comparison.vuVsPractitioner.bySplit).some((k) => k.startsWith("HOLDOUT") || k === "QUARANTINE"));
+  assert.equal(r.comparison.vuVsPractitioner.all.cases, 3);                     // a, g, dax
+  assert.equal(r.comparison.vuVsPractitioner.all.categories.UNMAPPED, 1);
+  assert.ok(r.comparison.vuVsPractitioner.latestView);
   assert.equal(r.comparison.humanHuman.pairs, 1);
-  assert.deepEqual(r.comparison.humanPairs[0].referenceIds, ["pr_test_fixture_spx_a", "pr_test_fixture_spx_b"]);
-  assert.equal(r.comparison.humanPairs[0].metrics.A, "MISMATCH");
-  assert.equal(r.comparison.dynamics.practitionerRevisionRateBySource["test-fixture-alpha"].revisedCases, 1);
+  assert.equal(r.comparison.humanPairs[0].metrics.A1, "MISMATCH");
   assert.ok(r.comparison.rows.every((x) => !Object.keys(x).some((k) => k.startsWith("_"))));
-  assert.equal(r.outcome.status, "SELF_TEST");
-  assert.ok(r.outcome.rows.filter((x) => x.status === "OK").length === 3);
   const repl = JSON.parse(readFileSync(join(out, "replay-results.json"), "utf8"));
   for (const x of repl.results) assert.deepEqual(Object.keys(x.projection).sort(), [...R.PROJECTION_KEYS].sort());
-  assert.ok(!JSON.stringify(repl).includes("directionalBias"));
+  // Ergebnisstudie: nur nach Siegel, nur fuer sichtbare Faelle; Manipulation wird erkannt
+  const oc = runOutcome({ refsPath: fr.file, benchDir: out, selfTestMode: true });
+  assert.equal(oc.status, "SELF_TEST"); assert.equal(oc.freeze.sha256, fr.manifest.sha256);
+  assert.deepEqual(oc.rows.map((x) => x.referenceId).sort(), ["pr_tf_a", "pr_tf_dax", "pr_tf_g"]);
+  assert.equal(oc.rows.filter((x) => x.status === "OK").length, 2);
+  writeFileSync(join(out, "comparison.json"), readFileSync(join(out, "comparison.json"), "utf8").replace('"OK"', '"0K"'));
+  assert.throws(() => runOutcome({ refsPath: fr.file, benchDir: out, selfTestMode: true }), /nach der Versiegelung veraendert/);
+  // Siegel eines anderen Freezes
+  const out2 = join(dir, "bench2"), fz2 = join(dir, "freeze2");
+  const fr2 = L.freezeReferences(rows.filter((x) => !["pr_tf_a_x", "pr_tf_g"].includes(x.referenceId)), { outDir: fz2, version: "TEST_FREEZE", selfTestMode: true });
+  runBenchmark({ refsPath: fr2.file, outDir: out2, selfTestMode: true, dynamicsBefore: 0, dynamicsAfter: 0 });
+  assert.throws(() => runOutcome({ refsPath: fr.file, benchDir: out2, selfTestMode: true }), /anderen Freeze/);
+  // Entsiegelung: nur mit Manifest, genau einmal je Holdout und Freeze
+  assert.throws(() => runBenchmark({ refsPath: src, outDir: join(dir, "b3"), selfTestMode: true, unsealHoldout: "HOLDOUT_SOURCE" }), /eingefrorenen Datensatz/);
+  assert.throws(() => runBenchmark({ refsPath: fr.file, outDir: out, selfTestMode: true, unsealHoldout: "DEVELOPMENT" }), /erwartet/);
+  const u = runBenchmark({ refsPath: fr.file, outDir: out, selfTestMode: true, unsealHoldout: "HOLDOUT_SOURCE", dynamicsBefore: 0, dynamicsAfter: 0 });
+  assert.equal(u.unsealed, "HOLDOUT_SOURCE"); assert.ok(existsSync(u.file));
+  assert.deepEqual(u.comparison.rows.map((x) => x.referenceId).sort(), ["pr_tf_b2", "pr_tf_btc"]);
+  assert.match(readFileSync(join(out, "unseal-log.jsonl"), "utf8"), new RegExp(fr.manifest.sha256));
+  assert.throws(() => runBenchmark({ refsPath: fr.file, outDir: out, selfTestMode: true, unsealHoldout: "HOLDOUT_SOURCE" }), /genau einmal/);
+  // Selbsttest-Modus nie in practitioner-v1
+  assert.throws(() => runBenchmark({ refsPath: fr.file, outDir: join(L.PV1, "benchmark"), selfTestMode: true }), /selfTestMode/);
 });

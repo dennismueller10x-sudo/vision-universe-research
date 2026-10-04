@@ -24,7 +24,7 @@ Stand: 04.10.2026. **Status: NICHT DURCHGEFÜHRT — keine Practitioner-Referenz
 
 ## Bereitschaft der Messung
 
-Alles außer den Daten ist gebaut und getestet. Vor der ersten Extraktion wurde ein unabhängiges Red-Team durchgeführt ([reviews/PRACTITIONER_PIPELINE_REDTEAM.md](reviews/PRACTITIONER_PIPELINE_REDTEAM.md)). Dessen kritischer Befund wird behoben (Stand dieses Commits: in Arbeit): Die Richtung des Praktikers („ab jetzt“) wurde mit der VU-Richtung *nach* der laufenden Welle verglichen. Ebenso die schweren Befunde: Stichtag Gold/Silber, Formular vs. Pipeline, Leck zwischen Aufteilungen, unversiegelte Holdouts, fehlender Stichprobenrahmen, Ergebniswissen der Extrahierenden, Mindestgrößen. Die Protokollseite ist im Nachtrag 1 festgehalten; die Code-Korrekturen folgen. Beides liegt zeitlich vor jedem Fall.
+Alles außer den Daten ist gebaut und getestet. Vor der ersten Extraktion wurde ein unabhängiges Red-Team durchgeführt ([reviews/PRACTITIONER_PIPELINE_REDTEAM.md](reviews/PRACTITIONER_PIPELINE_REDTEAM.md)). Dessen kritischer Befund wurde behoben: Die Richtung des Praktikers („ab jetzt“) wurde mit der VU-Richtung *nach* der laufenden Welle verglichen. Ebenso die schweren Befunde: Stichtag Gold/Silber, Formular vs. Pipeline, Leck zwischen Aufteilungen, unversiegelte Holdouts, fehlender Stichprobenrahmen, Ergebniswissen der Extrahierenden, Mindestgrößen. Protokoll-Nachtrag 1, Schema 1.1.0 (A2-Feld, QUARANTINE, Grad −2…5) und Code-Korrekturen mit je einem Regressionstest (Practitioner-Tests 54, Abnahmetests 22: 76/76 bestanden) — alles zeitlich vor jedem Fall. Mittlere Befunde ebenfalls behoben: keine unbekannten Felder/Volltexte, deterministische Auswahl der Zweitextraktion, Ergebnisschicht nur nach versiegeltem Vergleich.
 
 ## Ergebnisstudie
 

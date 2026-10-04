@@ -61,10 +61,11 @@ export function defaultLoader(vuSymbol, seriesSource, grain) {
   cache.set(k, pts);
   return pts;
 }
-/** Wochenschluesse aus Tagesschluessen: letzter Tag je Mo–So-Woche (Datum = letzter Handelstag der Woche). */
-export function weeklyFromDaily(points) {
+/** Wochenschluesse aus Tagesschluessen: letzter Tag je Mo–So-Woche (Datum = letzter Handelstag der Woche). Bei Maerkten mit
+    sundayOpensWeek (Tiingo-Metalle) gehoert der Sonntagsbar zur FOLGEwoche – sonst ersetzte er nachtraeglich den Freitagsschluss. */
+export function weeklyFromDaily(points, market = null) {
   const m = new Map();
-  for (const p of points) m.set(weekKey(p[0]), p);
+  for (const p of points) m.set(weekKey(p[0], market), p);
   return [...m.values()];
 }
 /**
@@ -79,7 +80,7 @@ export function barsUntil(p, until, loader = defaultLoader) {
   if (tf === "1W" && p.seriesSource === "us-stock") bars = (loader(p.vuSymbol, p.seriesSource, "weekly") || []).filter((x) => x[0] <= limit);
   else {
     const d = (loader(p.vuSymbol, p.seriesSource, "daily") || []).filter((x) => x[0] <= limit);
-    bars = tf === "1W" ? weeklyFromDaily(d) : d;
+    bars = tf === "1W" ? weeklyFromDaily(d, p.market) : d;
   }
   return { tf, bars, limit };
 }
@@ -182,7 +183,7 @@ function trajectory(p, tf, loader, { before = 0, after = 0 }, cutoffBarDate) {
     const c = r.primary, v = summarizeVu(r), sc = v.primary;
     prev = c ? { key: c.persistenceKey, pivots: c.persistencePivots } : null;
     pts.push({ date: full[i][0], offsetBars: i - ci, key: c ? c.persistenceKey : null, pattern: sc ? sc.pattern : null, family: sc ? sc.family : null, complete: sc ? sc.complete : null,
-               nextMove: sc ? sc.nextMove : null, role: sc ? vuEffectiveRole(sc, v.higherDegree) : null, impliedTrend: sc ? sc.impliedTrend : null, abstain: v.applicability.abstain });
+               currentMove: sc ? sc.currentWave.direction : null, nextMove: sc ? sc.nextMove : null, role: sc ? vuEffectiveRole(sc, v.higherDegree) : null, impliedTrend: sc ? sc.impliedTrend : null, abstain: v.applicability.abstain });
   }
   return { status: "OK", usesPostCutoffData: pts.some((x) => x.offsetBars > 0), before, after, points: pts };
 }

@@ -5,35 +5,713 @@
   "multi-asset": "quant/data/market/multi-asset/series/<SYM>.json (Tagesschluesse; Woche aus Tagen aggregiert)",
   "us-stock": "Tag: quant/data/market/discover-series/ref_<T>.json (nur ~1 Jahr); Woche: quant/data/market/discover-series-long/ref_<T>.json (seit ~1990), beide SPLIT_ADJUSTED (Tiingo), nicht dividendenbereinigt"
  },
+ "seriesMarkets": {
+  "note": "Markt (Bar-Schlusszeit) je VU-Reihe, aus Quelle/Metadaten der Reihe; spaetestmoeglicher Schluss (konservativ). Muss SYMBOL_MARKET in reference-core.js entsprechen (Test).",
+  "symbols": {
+   "SPY": {
+    "market": "US_EQUITY",
+    "source": "tiingo-equity",
+    "closeBasis": "Tagesschluss 16:00 America/New_York"
+   },
+   "QQQ": {
+    "market": "US_EQUITY",
+    "source": "tiingo-equity",
+    "closeBasis": "Tagesschluss 16:00 America/New_York"
+   },
+   "DIA": {
+    "market": "US_EQUITY",
+    "source": "tiingo-equity",
+    "closeBasis": "Tagesschluss 16:00 America/New_York"
+   },
+   "IWM": {
+    "market": "US_EQUITY",
+    "source": "tiingo-equity",
+    "closeBasis": "Tagesschluss 16:00 America/New_York"
+   },
+   "EEM": {
+    "market": "US_EQUITY",
+    "source": "tiingo-equity",
+    "closeBasis": "Tagesschluss 16:00 America/New_York"
+   },
+   "FEZ": {
+    "market": "US_EQUITY",
+    "source": "tiingo-equity",
+    "closeBasis": "Tagesschluss 16:00 America/New_York"
+   },
+   "URTH": {
+    "market": "US_EQUITY",
+    "source": "tiingo-equity",
+    "closeBasis": "Tagesschluss 16:00 America/New_York"
+   },
+   "BTCUSD": {
+    "market": "CRYPTO",
+    "source": "tiingo-crypto",
+    "closeBasis": "Bar = UTC-Kalendertag, Schluss 24:00 UTC (alle Tage)"
+   },
+   "ETHUSD": {
+    "market": "CRYPTO",
+    "source": "tiingo-crypto",
+    "closeBasis": "Bar = UTC-Kalendertag, Schluss 24:00 UTC (alle Tage)"
+   },
+   "SOLUSD": {
+    "market": "CRYPTO",
+    "source": "tiingo-crypto",
+    "closeBasis": "Bar = UTC-Kalendertag, Schluss 24:00 UTC (alle Tage)"
+   },
+   "XRPUSD": {
+    "market": "CRYPTO",
+    "source": "tiingo-crypto",
+    "closeBasis": "Bar = UTC-Kalendertag, Schluss 24:00 UTC (alle Tage)"
+   },
+   "XAUUSD": {
+    "market": "FX_METALS_UTC",
+    "source": "tiingo-fx-metals",
+    "closeBasis": "Bar = UTC-Kalendertag (Stempel 00:00Z, scripts/quality/audit-fx-provider-seam.mjs), Schluss 24:00 UTC, So–Fr; Sonntagsbar gehoert zur Folgewoche"
+   },
+   "XAGUSD": {
+    "market": "FX_METALS_UTC",
+    "source": "tiingo-fx-metals",
+    "closeBasis": "Bar = UTC-Kalendertag (Stempel 00:00Z, scripts/quality/audit-fx-provider-seam.mjs), Schluss 24:00 UTC, So–Fr; Sonntagsbar gehoert zur Folgewoche"
+   },
+   "XPTUSD": {
+    "market": "FX_METALS_UTC",
+    "source": "tiingo-fx-metals",
+    "closeBasis": "Bar = UTC-Kalendertag (Stempel 00:00Z, scripts/quality/audit-fx-provider-seam.mjs), Schluss 24:00 UTC, So–Fr; Sonntagsbar gehoert zur Folgewoche"
+   },
+   "XPDUSD": {
+    "market": "FX_METALS_UTC",
+    "source": "tiingo-fx-metals",
+    "closeBasis": "Bar = UTC-Kalendertag (Stempel 00:00Z, scripts/quality/audit-fx-provider-seam.mjs), Schluss 24:00 UTC, So–Fr; Sonntagsbar gehoert zur Folgewoche"
+   },
+   "WTI": {
+    "market": "US_ENERGY_EIA",
+    "source": "eia",
+    "closeBasis": "EIA-Spot (Bewertung ~14:30 New York, Veroeffentlichung spaeter) – konservativ Tagesende 24:00 America/New_York"
+   },
+   "BRENT": {
+    "market": "US_ENERGY_EIA",
+    "source": "eia",
+    "closeBasis": "EIA-Spot (Bewertung ~14:30 New York, Veroeffentlichung spaeter) – konservativ Tagesende 24:00 America/New_York"
+   },
+   "NATGAS": {
+    "market": "US_ENERGY_EIA",
+    "source": "eia",
+    "closeBasis": "EIA-Spot (Bewertung ~14:30 New York, Veroeffentlichung spaeter) – konservativ Tagesende 24:00 America/New_York"
+   },
+   "N225": {
+    "market": "JP_EQUITY",
+    "source": "fred-index",
+    "closeBasis": "FRED NIKKEI225, TSE-Schluss 15:00 (bis 11/2024) bzw. 15:30 – konservativ 15:30 Asia/Tokyo"
+   }
+  },
+  "usStocks": "US_EQUITY"
+ },
  "entries": [
-  { "id": "spx-cash", "aliases": ["SPX", "S&P 500", "S&P500", "SP500", "GSPC", "^GSPC", "S&P 500 INDEX", "S&P 500 CASH"], "instrumentTypes": ["INDEX_CASH", "UNKNOWN"], "vuSymbol": "SPY", "seriesSource": "multi-asset", "market": "US_EQUITY", "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT", "levelScale": 0.1, "note": "SPY ≈ SPX/10 (Kursreihe ohne Dividenden; Abweichung driftet)" },
-  { "id": "spx-future", "aliases": ["ES", "ES1!", "ES1", "ESM", "ESU", "ESZ", "ESH", "S&P 500 FUTURE", "E-MINI S&P"], "instrumentTypes": ["FUTURE", "UNKNOWN"], "vuSymbol": "SPY", "seriesSource": "multi-asset", "market": "US_EQUITY", "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT", "levelScale": 0.1, "note": "Future mit Basis/Rollsprung; SPY ≈ ES/10" },
-  { "id": "spx-cfd", "aliases": ["US500", "SPX500", "US 500", "SPX500USD", "USA500"], "instrumentTypes": ["CFD", "UNKNOWN"], "vuSymbol": "SPY", "seriesSource": "multi-asset", "market": "US_EQUITY", "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT", "levelScale": 0.1, "note": "CFD auf S&P 500" },
-  { "id": "spy", "aliases": ["SPY"], "instrumentTypes": ["ETF", "UNKNOWN"], "vuSymbol": "SPY", "seriesSource": "multi-asset", "market": "US_EQUITY", "mappingQuality": "EXACT", "levelScale": null, "note": null },
-  { "id": "ndx", "aliases": ["NDX", "NASDAQ 100", "NASDAQ100", "NASDAQ-100", "NAS100", "US100", "USTEC", "NQ", "NQ1!", "NQ1", "NASDAQ 100 CASH", "NASDAQ 100 FUTURE"], "instrumentTypes": ["INDEX_CASH", "FUTURE", "CFD", "UNKNOWN"], "vuSymbol": "QQQ", "seriesSource": "multi-asset", "market": "US_EQUITY", "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT", "levelScale": 0.0244, "note": "QQQ ≈ NDX/41 (Naeherung, driftet); bevorzugt levelScale aus Chart-Schluss setzen" },
-  { "id": "qqq", "aliases": ["QQQ"], "instrumentTypes": ["ETF", "UNKNOWN"], "vuSymbol": "QQQ", "seriesSource": "multi-asset", "market": "US_EQUITY", "mappingQuality": "EXACT", "levelScale": null, "note": null },
-  { "id": "dji", "aliases": ["DJI", "DJIA", "DOW", "DOW JONES", "DOW JONES INDUSTRIAL AVERAGE", "US30", "YM", "YM1!", "WALL STREET"], "instrumentTypes": ["INDEX_CASH", "FUTURE", "CFD", "UNKNOWN"], "vuSymbol": "DIA", "seriesSource": "multi-asset", "market": "US_EQUITY", "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT", "levelScale": 0.01, "note": "DIA ≈ DJI/100" },
-  { "id": "dia", "aliases": ["DIA"], "instrumentTypes": ["ETF", "UNKNOWN"], "vuSymbol": "DIA", "seriesSource": "multi-asset", "market": "US_EQUITY", "mappingQuality": "EXACT", "levelScale": null, "note": null },
-  { "id": "rut", "aliases": ["RUT", "RUSSELL 2000", "RUSSELL2000", "R2K", "RTY", "RTY1!", "US2000"], "instrumentTypes": ["INDEX_CASH", "FUTURE", "CFD", "UNKNOWN"], "vuSymbol": "IWM", "seriesSource": "multi-asset", "market": "US_EQUITY", "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT", "levelScale": 0.0985, "note": "IWM ≈ RUT/10,15 (Naeherung)" },
-  { "id": "iwm", "aliases": ["IWM"], "instrumentTypes": ["ETF", "UNKNOWN"], "vuSymbol": "IWM", "seriesSource": "multi-asset", "market": "US_EQUITY", "mappingQuality": "EXACT", "levelScale": null, "note": null },
-  { "id": "eem", "aliases": ["EEM"], "instrumentTypes": ["ETF", "UNKNOWN"], "vuSymbol": "EEM", "seriesSource": "multi-asset", "market": "US_EQUITY", "mappingQuality": "EXACT", "levelScale": null, "note": null },
-  { "id": "eurostoxx", "aliases": ["SX5E", "EURO STOXX 50", "EUROSTOXX 50", "EUROSTOXX50", "ESTX50", "EU50", "STOXX50E", "FESX"], "instrumentTypes": ["INDEX_CASH", "FUTURE", "CFD", "UNKNOWN"], "vuSymbol": "FEZ", "seriesSource": "multi-asset", "market": "US_EQUITY", "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT", "levelScale": null, "note": "FEZ notiert in USD (EUR/USD-Effekt) – Niveaus nicht vergleichbar, nur Richtung/Struktur" },
-  { "id": "msci-world", "aliases": ["MSCI WORLD", "URTH"], "instrumentTypes": ["INDEX_CASH", "ETF", "UNKNOWN"], "vuSymbol": "URTH", "seriesSource": "multi-asset", "market": "US_EQUITY", "mappingQuality": "PROXY_SAME_UNDERLYING", "levelScale": null, "note": "Index vs. ETF; Niveaus nur fuer asShown=URTH vergleichbar" },
-  { "id": "nikkei", "aliases": ["N225", "NIKKEI", "NIKKEI 225", "NI225", "JP225", "JPN225"], "instrumentTypes": ["INDEX_CASH", "UNKNOWN"], "vuSymbol": "N225", "seriesSource": "multi-asset", "market": "JP_EQUITY", "mappingQuality": "EXACT", "levelScale": null, "note": "FRED-Indexstand" },
-  { "id": "nikkei-cfd", "aliases": ["N225", "NIKKEI", "NIKKEI 225", "JP225", "JPN225", "NKD", "NK225"], "instrumentTypes": ["FUTURE", "CFD"], "vuSymbol": "N225", "seriesSource": "multi-asset", "market": "JP_EQUITY", "mappingQuality": "PROXY_SAME_UNDERLYING", "levelScale": 1, "note": "Future/CFD auf Nikkei (Basis)" },
-  { "id": "btc", "aliases": ["BTCUSD", "BTC/USD", "BTC", "BITCOIN", "XBTUSD", "BTC-USD"], "instrumentTypes": ["CRYPTO_SPOT", "UNKNOWN"], "vuSymbol": "BTCUSD", "seriesSource": "multi-asset", "market": "CRYPTO", "mappingQuality": "EXACT", "levelScale": null, "note": "Boersenuebergreifende Tageskurse; einzelne Boersen weichen leicht ab" },
-  { "id": "btc-usdt", "aliases": ["BTCUSDT", "BTC/USDT"], "instrumentTypes": ["CRYPTO_SPOT", "UNKNOWN"], "vuSymbol": "BTCUSD", "seriesSource": "multi-asset", "market": "CRYPTO", "mappingQuality": "PROXY_SAME_UNDERLYING", "levelScale": 1, "note": "USDT ≈ USD" },
-  { "id": "btc-future", "aliases": ["BTC1!", "BTCUSD PERP", "BTCUSDT.P", "CME BTC"], "instrumentTypes": ["FUTURE", "CFD"], "vuSymbol": "BTCUSD", "seriesSource": "multi-asset", "market": "CRYPTO", "mappingQuality": "PROXY_SAME_UNDERLYING", "levelScale": 1, "note": "Future/Perp (Basis)" },
-  { "id": "eth", "aliases": ["ETHUSD", "ETH/USD", "ETH", "ETHEREUM", "ETHUSDT", "ETH-USD"], "instrumentTypes": ["CRYPTO_SPOT", "UNKNOWN"], "vuSymbol": "ETHUSD", "seriesSource": "multi-asset", "market": "CRYPTO", "mappingQuality": "EXACT", "levelScale": null, "note": null },
-  { "id": "sol", "aliases": ["SOLUSD", "SOL/USD", "SOL", "SOLANA", "SOLUSDT"], "instrumentTypes": ["CRYPTO_SPOT", "UNKNOWN"], "vuSymbol": "SOLUSD", "seriesSource": "multi-asset", "market": "CRYPTO", "mappingQuality": "EXACT", "levelScale": null, "note": null },
-  { "id": "xrp", "aliases": ["XRPUSD", "XRP/USD", "XRP", "XRPUSDT"], "instrumentTypes": ["CRYPTO_SPOT", "UNKNOWN"], "vuSymbol": "XRPUSD", "seriesSource": "multi-asset", "market": "CRYPTO", "mappingQuality": "EXACT", "levelScale": null, "note": null },
-  { "id": "gold-spot", "aliases": ["XAUUSD", "XAU/USD", "GOLD", "GOLD SPOT", "XAU"], "instrumentTypes": ["COMMODITY_SPOT", "FX", "CFD", "UNKNOWN"], "vuSymbol": "XAUUSD", "seriesSource": "multi-asset", "market": "US_COMMODITY", "mappingQuality": "EXACT", "levelScale": null, "note": "Reihe beginnt 2021-10" },
-  { "id": "gold-future", "aliases": ["GC", "GC1!", "GOLD FUTURE", "COMEX GOLD"], "instrumentTypes": ["FUTURE", "UNKNOWN"], "vuSymbol": "XAUUSD", "seriesSource": "multi-asset", "market": "US_COMMODITY", "mappingQuality": "PROXY_SAME_UNDERLYING", "levelScale": 1, "note": "Future-Basis gegen Spot (typisch < 1 %)" },
-  { "id": "silver", "aliases": ["XAGUSD", "XAG/USD", "SILVER", "SILBER", "SI", "SI1!"], "instrumentTypes": ["COMMODITY_SPOT", "FUTURE", "FX", "CFD", "UNKNOWN"], "vuSymbol": "XAGUSD", "seriesSource": "multi-asset", "market": "US_COMMODITY", "mappingQuality": "PROXY_SAME_UNDERLYING", "levelScale": 1, "note": "Spot/Future-Basis" },
-  { "id": "wti", "aliases": ["WTI", "CL", "CL1!", "USOIL", "WTI CRUDE", "CRUDE OIL", "OEL WTI", "ÖL WTI"], "instrumentTypes": ["COMMODITY_SPOT", "FUTURE", "CFD", "UNKNOWN"], "vuSymbol": "WTI", "seriesSource": "multi-asset", "market": "US_COMMODITY", "mappingQuality": "PROXY_SAME_UNDERLYING", "levelScale": 1, "note": "EIA-Spot vs. Front-Month-Future (Rollsprung, Contango)" },
-  { "id": "brent", "aliases": ["BRENT", "UKOIL", "BRN", "BRN1!", "BRENT CRUDE", "OEL BRENT", "ÖL BRENT"], "instrumentTypes": ["COMMODITY_SPOT", "FUTURE", "CFD", "UNKNOWN"], "vuSymbol": "BRENT", "seriesSource": "multi-asset", "market": "US_COMMODITY", "mappingQuality": "PROXY_SAME_UNDERLYING", "levelScale": 1, "note": "EIA-Spot vs. Future" },
-  { "id": "natgas", "aliases": ["NATGAS", "NG", "NG1!", "NATURAL GAS", "ERDGAS"], "instrumentTypes": ["COMMODITY_SPOT", "FUTURE", "CFD", "UNKNOWN"], "vuSymbol": "NATGAS", "seriesSource": "multi-asset", "market": "US_COMMODITY", "mappingQuality": "PROXY_SAME_UNDERLYING", "levelScale": 1, "note": "Henry-Hub-Spot vs. Future (starke Basis moeglich)" },
-  { "id": "dax", "aliases": ["DAX", "DAX40", "DAX 40", "GER40", "GER 40", "DE40", "DE 40", "FDAX", "FDAX1!", "GDAXI", "^GDAXI", "GER30", "DAX PERFORMANCE"], "instrumentTypes": ["INDEX_CASH", "FUTURE", "CFD", "UNKNOWN"], "vuSymbol": null, "seriesSource": null, "market": "XETRA", "mappingQuality": "UNMAPPED", "levelScale": null, "note": "Keine DAX-Reihe in VU – Kandidat, gezaehlt, nicht gerechnet" }
+  {
+   "id": "spx-cash",
+   "aliases": [
+    "SPX",
+    "S&P 500",
+    "S&P500",
+    "SP500",
+    "GSPC",
+    "^GSPC",
+    "S&P 500 INDEX",
+    "S&P 500 CASH"
+   ],
+   "instrumentTypes": [
+    "INDEX_CASH",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "SPY",
+   "seriesSource": "multi-asset",
+   "market": "US_EQUITY",
+   "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT",
+   "levelScale": 0.1,
+   "note": "SPY ≈ SPX/10 (Kursreihe ohne Dividenden; Abweichung driftet)"
+  },
+  {
+   "id": "spx-future",
+   "aliases": [
+    "ES",
+    "ES1!",
+    "ES1",
+    "ESM",
+    "ESU",
+    "ESZ",
+    "ESH",
+    "S&P 500 FUTURE",
+    "E-MINI S&P"
+   ],
+   "instrumentTypes": [
+    "FUTURE",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "SPY",
+   "seriesSource": "multi-asset",
+   "market": "US_EQUITY",
+   "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT",
+   "levelScale": 0.1,
+   "note": "Future mit Basis/Rollsprung; SPY ≈ ES/10"
+  },
+  {
+   "id": "spx-cfd",
+   "aliases": [
+    "US500",
+    "SPX500",
+    "US 500",
+    "SPX500USD",
+    "USA500"
+   ],
+   "instrumentTypes": [
+    "CFD",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "SPY",
+   "seriesSource": "multi-asset",
+   "market": "US_EQUITY",
+   "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT",
+   "levelScale": 0.1,
+   "note": "CFD auf S&P 500"
+  },
+  {
+   "id": "spy",
+   "aliases": [
+    "SPY"
+   ],
+   "instrumentTypes": [
+    "ETF",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "SPY",
+   "seriesSource": "multi-asset",
+   "market": "US_EQUITY",
+   "mappingQuality": "EXACT",
+   "levelScale": null,
+   "note": null
+  },
+  {
+   "id": "ndx",
+   "aliases": [
+    "NDX",
+    "NASDAQ 100",
+    "NASDAQ100",
+    "NASDAQ-100",
+    "NAS100",
+    "US100",
+    "USTEC",
+    "NQ",
+    "NQ1!",
+    "NQ1",
+    "NASDAQ 100 CASH",
+    "NASDAQ 100 FUTURE"
+   ],
+   "instrumentTypes": [
+    "INDEX_CASH",
+    "FUTURE",
+    "CFD",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "QQQ",
+   "seriesSource": "multi-asset",
+   "market": "US_EQUITY",
+   "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT",
+   "levelScale": 0.0244,
+   "note": "QQQ ≈ NDX/41 (Naeherung, driftet); bevorzugt levelScale aus Chart-Schluss setzen"
+  },
+  {
+   "id": "qqq",
+   "aliases": [
+    "QQQ"
+   ],
+   "instrumentTypes": [
+    "ETF",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "QQQ",
+   "seriesSource": "multi-asset",
+   "market": "US_EQUITY",
+   "mappingQuality": "EXACT",
+   "levelScale": null,
+   "note": null
+  },
+  {
+   "id": "dji",
+   "aliases": [
+    "DJI",
+    "DJIA",
+    "DOW",
+    "DOW JONES",
+    "DOW JONES INDUSTRIAL AVERAGE",
+    "US30",
+    "YM",
+    "YM1!",
+    "WALL STREET"
+   ],
+   "instrumentTypes": [
+    "INDEX_CASH",
+    "FUTURE",
+    "CFD",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "DIA",
+   "seriesSource": "multi-asset",
+   "market": "US_EQUITY",
+   "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT",
+   "levelScale": 0.01,
+   "note": "DIA ≈ DJI/100"
+  },
+  {
+   "id": "dia",
+   "aliases": [
+    "DIA"
+   ],
+   "instrumentTypes": [
+    "ETF",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "DIA",
+   "seriesSource": "multi-asset",
+   "market": "US_EQUITY",
+   "mappingQuality": "EXACT",
+   "levelScale": null,
+   "note": null
+  },
+  {
+   "id": "rut",
+   "aliases": [
+    "RUT",
+    "RUSSELL 2000",
+    "RUSSELL2000",
+    "R2K",
+    "RTY",
+    "RTY1!",
+    "US2000"
+   ],
+   "instrumentTypes": [
+    "INDEX_CASH",
+    "FUTURE",
+    "CFD",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "IWM",
+   "seriesSource": "multi-asset",
+   "market": "US_EQUITY",
+   "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT",
+   "levelScale": 0.0985,
+   "note": "IWM ≈ RUT/10,15 (Naeherung)"
+  },
+  {
+   "id": "iwm",
+   "aliases": [
+    "IWM"
+   ],
+   "instrumentTypes": [
+    "ETF",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "IWM",
+   "seriesSource": "multi-asset",
+   "market": "US_EQUITY",
+   "mappingQuality": "EXACT",
+   "levelScale": null,
+   "note": null
+  },
+  {
+   "id": "eem",
+   "aliases": [
+    "EEM"
+   ],
+   "instrumentTypes": [
+    "ETF",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "EEM",
+   "seriesSource": "multi-asset",
+   "market": "US_EQUITY",
+   "mappingQuality": "EXACT",
+   "levelScale": null,
+   "note": null
+  },
+  {
+   "id": "eurostoxx",
+   "aliases": [
+    "SX5E",
+    "EURO STOXX 50",
+    "EUROSTOXX 50",
+    "EUROSTOXX50",
+    "ESTX50",
+    "EU50",
+    "STOXX50E",
+    "FESX"
+   ],
+   "instrumentTypes": [
+    "INDEX_CASH",
+    "FUTURE",
+    "CFD",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "FEZ",
+   "seriesSource": "multi-asset",
+   "market": "US_EQUITY",
+   "mappingQuality": "PROXY_DIFFERENT_INSTRUMENT",
+   "levelScale": null,
+   "note": "FEZ notiert in USD (EUR/USD-Effekt) – Niveaus nicht vergleichbar, nur Richtung/Struktur"
+  },
+  {
+   "id": "msci-world",
+   "aliases": [
+    "MSCI WORLD",
+    "URTH"
+   ],
+   "instrumentTypes": [
+    "INDEX_CASH",
+    "ETF",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "URTH",
+   "seriesSource": "multi-asset",
+   "market": "US_EQUITY",
+   "mappingQuality": "PROXY_SAME_UNDERLYING",
+   "levelScale": null,
+   "note": "Index vs. ETF; Niveaus nur fuer asShown=URTH vergleichbar"
+  },
+  {
+   "id": "nikkei",
+   "aliases": [
+    "N225",
+    "NIKKEI",
+    "NIKKEI 225",
+    "NI225",
+    "JP225",
+    "JPN225"
+   ],
+   "instrumentTypes": [
+    "INDEX_CASH",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "N225",
+   "seriesSource": "multi-asset",
+   "market": "JP_EQUITY",
+   "mappingQuality": "EXACT",
+   "levelScale": null,
+   "note": "FRED-Indexstand"
+  },
+  {
+   "id": "nikkei-cfd",
+   "aliases": [
+    "N225",
+    "NIKKEI",
+    "NIKKEI 225",
+    "JP225",
+    "JPN225",
+    "NKD",
+    "NK225"
+   ],
+   "instrumentTypes": [
+    "FUTURE",
+    "CFD"
+   ],
+   "vuSymbol": "N225",
+   "seriesSource": "multi-asset",
+   "market": "JP_EQUITY",
+   "mappingQuality": "PROXY_SAME_UNDERLYING",
+   "levelScale": 1,
+   "note": "Future/CFD auf Nikkei (Basis)"
+  },
+  {
+   "id": "btc",
+   "aliases": [
+    "BTCUSD",
+    "BTC/USD",
+    "BTC",
+    "BITCOIN",
+    "XBTUSD",
+    "BTC-USD"
+   ],
+   "instrumentTypes": [
+    "CRYPTO_SPOT",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "BTCUSD",
+   "seriesSource": "multi-asset",
+   "market": "CRYPTO",
+   "mappingQuality": "EXACT",
+   "levelScale": null,
+   "note": "Boersenuebergreifende Tageskurse; einzelne Boersen weichen leicht ab"
+  },
+  {
+   "id": "btc-usdt",
+   "aliases": [
+    "BTCUSDT",
+    "BTC/USDT"
+   ],
+   "instrumentTypes": [
+    "CRYPTO_SPOT",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "BTCUSD",
+   "seriesSource": "multi-asset",
+   "market": "CRYPTO",
+   "mappingQuality": "PROXY_SAME_UNDERLYING",
+   "levelScale": 1,
+   "note": "USDT ≈ USD"
+  },
+  {
+   "id": "btc-future",
+   "aliases": [
+    "BTC1!",
+    "BTCUSD PERP",
+    "BTCUSDT.P",
+    "CME BTC"
+   ],
+   "instrumentTypes": [
+    "FUTURE",
+    "CFD"
+   ],
+   "vuSymbol": "BTCUSD",
+   "seriesSource": "multi-asset",
+   "market": "CRYPTO",
+   "mappingQuality": "PROXY_SAME_UNDERLYING",
+   "levelScale": 1,
+   "note": "Future/Perp (Basis)"
+  },
+  {
+   "id": "eth",
+   "aliases": [
+    "ETHUSD",
+    "ETH/USD",
+    "ETH",
+    "ETHEREUM",
+    "ETHUSDT",
+    "ETH-USD"
+   ],
+   "instrumentTypes": [
+    "CRYPTO_SPOT",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "ETHUSD",
+   "seriesSource": "multi-asset",
+   "market": "CRYPTO",
+   "mappingQuality": "EXACT",
+   "levelScale": null,
+   "note": null
+  },
+  {
+   "id": "sol",
+   "aliases": [
+    "SOLUSD",
+    "SOL/USD",
+    "SOL",
+    "SOLANA",
+    "SOLUSDT"
+   ],
+   "instrumentTypes": [
+    "CRYPTO_SPOT",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "SOLUSD",
+   "seriesSource": "multi-asset",
+   "market": "CRYPTO",
+   "mappingQuality": "EXACT",
+   "levelScale": null,
+   "note": null
+  },
+  {
+   "id": "xrp",
+   "aliases": [
+    "XRPUSD",
+    "XRP/USD",
+    "XRP",
+    "XRPUSDT"
+   ],
+   "instrumentTypes": [
+    "CRYPTO_SPOT",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "XRPUSD",
+   "seriesSource": "multi-asset",
+   "market": "CRYPTO",
+   "mappingQuality": "EXACT",
+   "levelScale": null,
+   "note": null
+  },
+  {
+   "id": "gold-spot",
+   "aliases": [
+    "XAUUSD",
+    "XAU/USD",
+    "GOLD",
+    "GOLD SPOT",
+    "XAU"
+   ],
+   "instrumentTypes": [
+    "COMMODITY_SPOT",
+    "FX",
+    "CFD",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "XAUUSD",
+   "seriesSource": "multi-asset",
+   "market": "FX_METALS_UTC",
+   "mappingQuality": "EXACT",
+   "levelScale": null,
+   "note": "Reihe beginnt 2021-10"
+  },
+  {
+   "id": "gold-future",
+   "aliases": [
+    "GC",
+    "GC1!",
+    "GOLD FUTURE",
+    "COMEX GOLD"
+   ],
+   "instrumentTypes": [
+    "FUTURE",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "XAUUSD",
+   "seriesSource": "multi-asset",
+   "market": "FX_METALS_UTC",
+   "mappingQuality": "PROXY_SAME_UNDERLYING",
+   "levelScale": 1,
+   "note": "Future-Basis gegen Spot (typisch < 1 %)"
+  },
+  {
+   "id": "silver",
+   "aliases": [
+    "XAGUSD",
+    "XAG/USD",
+    "SILVER",
+    "SILBER",
+    "SI",
+    "SI1!"
+   ],
+   "instrumentTypes": [
+    "COMMODITY_SPOT",
+    "FUTURE",
+    "FX",
+    "CFD",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "XAGUSD",
+   "seriesSource": "multi-asset",
+   "market": "FX_METALS_UTC",
+   "mappingQuality": "PROXY_SAME_UNDERLYING",
+   "levelScale": 1,
+   "note": "Spot/Future-Basis"
+  },
+  {
+   "id": "wti",
+   "aliases": [
+    "WTI",
+    "CL",
+    "CL1!",
+    "USOIL",
+    "WTI CRUDE",
+    "CRUDE OIL",
+    "OEL WTI",
+    "ÖL WTI"
+   ],
+   "instrumentTypes": [
+    "COMMODITY_SPOT",
+    "FUTURE",
+    "CFD",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "WTI",
+   "seriesSource": "multi-asset",
+   "market": "US_ENERGY_EIA",
+   "mappingQuality": "PROXY_SAME_UNDERLYING",
+   "levelScale": 1,
+   "note": "EIA-Spot vs. Front-Month-Future (Rollsprung, Contango)"
+  },
+  {
+   "id": "brent",
+   "aliases": [
+    "BRENT",
+    "UKOIL",
+    "BRN",
+    "BRN1!",
+    "BRENT CRUDE",
+    "OEL BRENT",
+    "ÖL BRENT"
+   ],
+   "instrumentTypes": [
+    "COMMODITY_SPOT",
+    "FUTURE",
+    "CFD",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "BRENT",
+   "seriesSource": "multi-asset",
+   "market": "US_ENERGY_EIA",
+   "mappingQuality": "PROXY_SAME_UNDERLYING",
+   "levelScale": 1,
+   "note": "EIA-Spot vs. Future"
+  },
+  {
+   "id": "natgas",
+   "aliases": [
+    "NATGAS",
+    "NG",
+    "NG1!",
+    "NATURAL GAS",
+    "ERDGAS"
+   ],
+   "instrumentTypes": [
+    "COMMODITY_SPOT",
+    "FUTURE",
+    "CFD",
+    "UNKNOWN"
+   ],
+   "vuSymbol": "NATGAS",
+   "seriesSource": "multi-asset",
+   "market": "US_ENERGY_EIA",
+   "mappingQuality": "PROXY_SAME_UNDERLYING",
+   "levelScale": 1,
+   "note": "Henry-Hub-Spot vs. Future (starke Basis moeglich)"
+  },
+  {
+   "id": "dax",
+   "aliases": [
+    "DAX",
+    "DAX40",
+    "DAX 40",
+    "GER40",
+    "GER 40",
+    "DE40",
+    "DE 40",
+    "FDAX",
+    "FDAX1!",
+    "GDAXI",
+    "^GDAXI",
+    "GER30",
+    "DAX PERFORMANCE"
+   ],
+   "instrumentTypes": [
+    "INDEX_CASH",
+    "FUTURE",
+    "CFD",
+    "UNKNOWN"
+   ],
+   "vuSymbol": null,
+   "seriesSource": null,
+   "market": "XETRA",
+   "mappingQuality": "UNMAPPED",
+   "levelScale": null,
+   "note": "Keine DAX-Reihe in VU – Kandidat, gezaehlt, nicht gerechnet"
+  }
  ],
- "usStockRule": { "instrumentTypes": ["STOCK"], "seriesSource": "us-stock", "market": "US_EQUITY", "mappingQuality": "EXACT", "levelScale": null, "requires": "quant/data/market/discover-series-long/ref_<TICKER>.json", "priceAdjustmentNote": "VU-Reihen sind SPLIT_ADJUSTED. Praktiker-Chart UNADJUSTED mit spaeterem Split → levelScale (kumulierter Splitfaktor) in der Referenz setzen, sonst schlaegt die ±60-%-Plausibilitaet fehl; TOTAL_RETURN → PROXY_SAME_UNDERLYING." }
+ "usStockRule": {
+  "instrumentTypes": [
+   "STOCK"
+  ],
+  "seriesSource": "us-stock",
+  "market": "US_EQUITY",
+  "mappingQuality": "EXACT",
+  "levelScale": null,
+  "requires": "quant/data/market/discover-series-long/ref_<TICKER>.json",
+  "priceAdjustmentNote": "VU-Reihen sind SPLIT_ADJUSTED. Praktiker-Chart UNADJUSTED mit spaeterem Split → levelScale (kumulierter Splitfaktor) in der Referenz setzen, sonst schlaegt die ±60-%-Plausibilitaet fehl; TOTAL_RETURN → PROXY_SAME_UNDERLYING."
+ }
 }

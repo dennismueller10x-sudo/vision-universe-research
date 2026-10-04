@@ -3,7 +3,7 @@
    Geprüft wird:
      1. Skripte der Seite sind syntaktisch gültig (node --check bzw. new Function für Inline-Skripte),
      2. Pflicht-Kennzeichnungen (noindex, INTERN, „keine objektive Wahrheit“) und Blindmodus als Standard,
-     3. die Formularlogik erzeugt JSONL-Zeilen, die die Pflichtfelder des Schemas practitioner-reference-1.0.0 erfüllen,
+     3. die Formularlogik erzeugt JSONL-Zeilen, die die Pflichtfelder des Schemas practitioner-reference-1.1.0 erfüllen,
         Warnungen für LOW / LLM_DRAFT_UNREVIEWED, Stichtag nie nach der Veröffentlichung, Duplikaterkennung, Diff,
      4. (falls Playwright vorhanden) im echten Browser: leerer Zustand, Erfassen → Export, Blindmodus mit Sperre,
         blinde Zweitextraktion mit Feld-Diff. Ohne Playwright wird dieser Teil übersprungen. */
@@ -19,7 +19,7 @@ import http from "node:http";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const DIR = join(ROOT, "quant/research/elliott-practitioners");
 const HTML = readFileSync(join(DIR, "index.html"), "utf8");
-const SCHEMA = JSON.parse(readFileSync(join(ROOT, "quant/data/technical-intelligence/practitioner-v1/schema/practitioner-reference-1.0.0.json"), "utf8"));
+const SCHEMA = JSON.parse(readFileSync(join(ROOT, "quant/data/technical-intelligence/practitioner-v1/schema/practitioner-reference-1.1.0.json"), "utf8"));
 const require = createRequire(import.meta.url);
 const Core = require(join(DIR, "reference-core.js"));
 
@@ -124,12 +124,13 @@ test("Stichtag: letzter Schluss strikt vor der Veröffentlichung; deckungsgleich
     const c = Core.computeCutoff({ timestamp: ts, precision: prec, timezone: tz, market, timeframe: tf });
     assert.ok(c.date && c.date <= ts.slice(0, 10), ts + " " + prec + " " + market + " → " + c.date);
     if (prec === "DAY") assert.ok(c.date < ts.slice(0, 10));
-    const mk = Core.MARKETS[market], close = mk.closeH === 24 ? Date.parse(Core.addDays(c.dailyDate, 1) + "T00:00:00Z") : Core.zonedToUtc(c.dailyDate, mk.closeH, mk.closeM, mk.tz);
+    const close = Core.CUTOFF.closeInstant(c.dailyDate, market);
     assert.ok(close < Date.parse(ts), "Schluss des Stichtags liegt vor der Veröffentlichung: " + ts + " " + market);
     if (ref) {
+      /* Red-Team H2: Seite speichert immer den TAGES-Stichtag (auch 1W), identisch zu cutoff.mjs; Woche/Einrasten nur im Replay. */
       const r = ref.computeAnalysisCutoff({ timestamp: ts, timestampPrecision: prec, timezone: tz }, market);
-      const want = tf === "1W" ? ref.lastCompleteWeekEnd(r.analysisCutoff, market) : r.analysisCutoff;
-      assert.equal(c.date, want, "wie cutoff.mjs: " + ts + " " + prec + " " + market + " " + tf); n++;
+      assert.equal(c.date, r.analysisCutoff, "wie cutoff.mjs: " + ts + " " + prec + " " + market + " " + tf); n++;
+      if (tf === "1W") assert.equal(c.weeklyBarEnd, ref.lastCompleteWeekEnd(r.analysisCutoff, market));
     }
   }
   if (ref) assert.ok(n > 1000);

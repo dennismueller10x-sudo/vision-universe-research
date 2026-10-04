@@ -1,6 +1,8 @@
 /* Practitioner Reference Benchmark — Ergebnisstudie (Protokoll §11), GETRENNT von der Methodenaehnlichkeit.
 
-   Nur dieses Modul liest Kurse NACH dem Stichtag. compare.mjs importiert es nicht; die Ausgabe ist eine eigene Datei.
+   Nur dieses Modul liest Kurse NACH dem Stichtag. compare.mjs importiert es nicht; aufgerufen wird es nur von run-outcome.mjs,
+   und zwar erst nach versiegeltem Vergleich (comparison.seal.json zum selben Freeze-Hash).
+   Szenariorichtung = erwartete Bewegung AB JETZT: Praktiker directionalBias, VU currentWave.direction (Red-Team C1).
    Konventionen wie die TI-Methodik: Schlusskursbasis; Invalidation und Ziel auf demselben Bar → Invalidation zuerst;
    Luecken werden nicht interpoliert (es zaehlt der naechste vorhandene Bar). Keine Rankings, keine Trefferquoten je Quelle.
      T1/T2 = naechste bzw. zweitnaechste Zielzone in Szenariorichtung jenseits des Einstiegsschlusses (Zone, in der der
@@ -78,7 +80,8 @@ export function outcomeForCase(ref, mapping, rec, chain, opts = {}) {
   const laterRevs = (chain || []).filter((r) => r.referenceId !== ref.referenceId && pubOf(r) > pubOf(ref));
   pr.revisionBeforeOutcome = firstDate ? laterRevs.some((r) => r.analysisCutoff < firstDate) : null;
   const c = rec.vu && rec.vu.primary;
-  const vu = c ? evaluateOutcome({ direction: c.nextMove, entryClose: rec.market.closeAtCutoff, bars, invalidation: c.invalidation, targets: c.targets }) : { firstEvent: "VU_NO_COUNT" };
+  /* C1: erwartete naechste Bewegung = laufende Bewegung (VU currentWave.direction; Praktiker directionalBias), nicht nextMove. */
+  const vu = c ? evaluateOutcome({ direction: c.currentWave.direction, entryClose: rec.market.closeAtCutoff, bars, invalidation: c.invalidation, targets: c.targets }) : { firstEvent: "VU_NO_COUNT" };
   if (c) vu.abstain = rec.vu.applicability.abstain;
   return { referenceId: ref.referenceId, caseId: ref.caseId, timeframe: tf, horizonBars: horizon, barsAvailable: bars.length, status: "OK", practitioner: pr, vu };
 }

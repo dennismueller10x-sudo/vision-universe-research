@@ -9,7 +9,7 @@
      2. „VU-Analyse sperren“ → Audit-Eintrag LOCK_VU (SHA-256 der VU-Zusammenfassung)
      3. erst dann: Praktiker-Referenz (strukturiert), Abweichungen
      4. optional: späterer Verlauf (verborgen, Umschalter)
-   Erfassung: Formular nach Schema practitioner-reference-1.0.0, Export als JSONL
+   Erfassung: Formular nach Schema practitioner-reference-1.1.0, Export als JSONL
    (eine Zeile je Referenz), Import mit Duplikaterkennung, blinde Zweitextraktion
    mit Feld-Diff. Alles bleibt in diesem Browser (localStorage) bis zum Export.
    ========================================================================= */
@@ -359,7 +359,7 @@
         ["Instrument", i.asShown + " · " + i.instrumentType + " · " + (i.priceAdjustment || "–") + " → " + (i.vuSymbol || "UNMAPPED") + " (" + i.mappingQuality + (typeof i.levelScale === "number" ? ", ×" + i.levelScale : "") + ")"],
         ["Zeitrahmen / Schule", rec.timeframe + " · " + rec.elliottSchool], ["Primär", p ? [p.pattern, p.family, p.degreeLabel, p.degreeRank !== null && p.degreeRank !== undefined ? "Rang " + p.degreeRank : null, p.currentWave ? "Welle " + p.currentWave : null, p.currentWaveRole, p.state].filter(Boolean).join(" · ") : "keine Primärzählung"],
         p && (p.waveStartDate || p.waveStartPrice) ? ["Wellenstart", f(p.waveStartDate) + " @ " + f(p.waveStartPrice)] : null,
-        ["Richtung (nächste Bewegung)", rec.directionalBias], ["Strukturelles Szenario", rec.structuralScenario],
+        ["Richtung ab jetzt (A1)", rec.directionalBias], ["Bewegung nach laufender Welle (A2)", (rec.primary && rec.primary.nextMoveAfterCurrent) || "–"], ["Strukturelles Szenario", rec.structuralScenario],
         ["Invalidation", rec.invalidation ? f(rec.invalidation.price) + " " + (rec.invalidation.direction || "") + " · " + (rec.invalidation.basis || "") : "–"],
         ["Unterstützung", zonesText(rec.keySupportZones)], ["Einstieg", zonesText(rec.entryZones)], ["Ziele", zonesText(rec.targetZones)],
         ["Alternativen", (rec.alternatives || []).map(function (a) { return [a.pattern, a.currentWave, a.directionalBias, a.trigger !== null && a.trigger !== undefined ? "Trigger " + f(a.trigger) : null, a.note].filter(Boolean).join(" · "); }).join(" | ")],
@@ -387,8 +387,11 @@
     } else card.append(h("p", { class: "note", text: "Kein Benchmark-Ergebnis für diesen Fall (benchmark/comparison.json fehlt oder enthält ihn nicht — nur Fälle mit Status INCLUDED werden gerechnet)." }));
     if (vu && !cmp) {
       var rows = [], sc = levelScale(rec), p = rec.primary || {};
-      var vuNext = vu.nextMove, prDir = rec.directionalBias;
-      rows.push(["A Richtung", prDir, vuNext, prDir === "UNKNOWN" || !vuNext ? "n/a" : prDir === vuNext ? "gleich" : "abweichend"]);
+      /* A1: Bewegung ab jetzt (laufende Welle) vs. VU-Richtung der laufenden Welle; A2: Bewegung nach der laufenden Welle vs. VU nextMove
+         (Red-Team C1: nicht vermischen). Seitwärts hat VU nicht → n/a. */
+      var cmpDir = function (a, b) { return !a || a === "UNKNOWN" || !b ? "n/a" : a === "SIDEWAYS" ? "nicht vergleichbar (VU kennt kein seitwärts)" : a === b ? "gleich" : "abweichend"; };
+      rows.push(["A1 Richtung ab jetzt", rec.directionalBias, vu.curDir || "–", cmpDir(rec.directionalBias, vu.curDir)]);
+      rows.push(["A2 Bewegung nach laufender Welle", p.nextMoveAfterCurrent || "–", vu.nextMove || "–", vu.role === "COMPLETE" ? "n/a" : cmpDir(p.nextMoveAfterCurrent, vu.nextMove)]);
       rows.push(["B Familie", p.family || "–", vu.family || "–", !p.family || p.family === "UNKNOWN" || !vu.family ? "n/a" : p.family === vu.family ? "gleich" : "abweichend"]);
       rows.push(["C Rolle laufende Welle", p.currentWaveRole || "–", vu.role || "–", !p.currentWaveRole || p.currentWaveRole === "UNKNOWN" || !vu.role || vu.role === "COMPLETE" ? "n/a" : p.currentWaveRole === vu.role ? "gleich" : "abweichend"]);
       var pi = rec.invalidation && sc !== null ? rec.invalidation.price * sc : null, vi = vu.invalidation ? vu.invalidation.price : null;
@@ -482,10 +485,10 @@
       h("div", { class: "row2" }, [field(pre, "elliottSchool", "Elliott-Schule", { type: "select", options: opt(E.elliottSchool), required: true }, st.elliottSchool), field(pre, "noPrimary", "keine Primärzählung angegeben (primary = null)", { type: "checkbox" }, st.noPrimary)]),
       h("div", { class: "row3", id: pre + "primary-fields" }, [field(pre, "pPattern", "Muster", { type: "select", options: opt(E.pattern) }, st.pPattern), field(pre, "pFamily", "Familie", { type: "select", options: opt(E.family) }, st.pFamily), field(pre, "pDegreeLabel", "Gradlabel wie gezeigt", { ph: "(iii), [C], Primary 4" }, st.pDegreeLabel),
         field(pre, "pDegreeRank", "degreeRank (normalisiert)", { type: "select", options: C.DEGREE_RANKS.map(function (d) { return { v: String(d.v), l: d.label }; }) }, st.pDegreeRank), field(pre, "pCurrentWave", "laufende Welle", { ph: "3, C, iv" }, st.pCurrentWave), field(pre, "pRole", "Rolle laufende Welle", { type: "select", options: opt(E.role) }, st.pRole),
-        field(pre, "pState", "Zustand", { type: "select", options: opt(E.state) }, st.pState), field(pre, "pWaveStartDate", "Wellenstart Datum", { type: "date" }, st.pWaveStartDate), field(pre, "pWaveStartPrice", "Wellenstart Kurs", { num: true }, st.pWaveStartPrice)])]);
+        field(pre, "pState", "Zustand", { type: "select", options: opt(E.state) }, st.pState), field(pre, "pNextAfter", "Bewegung nach der laufenden Welle (A2)", { type: "select", options: opt(E.bias) }, st.pNextAfter), field(pre, "pWaveStartDate", "Wellenstart Datum", { type: "date" }, st.pWaveStartDate), field(pre, "pWaveStartPrice", "Wellenstart Kurs", { num: true }, st.pWaveStartPrice)])]);
     var alts = repeatable(pre, "alternatives", "Alternativen", [{ k: "pattern", l: "Muster", type: "select", options: opt(E.pattern) }, { k: "currentWave", l: "laufende Welle" }, { k: "directionalBias", l: "Richtung", type: "select", options: opt(E.bias) }, { k: "trigger", l: "Trigger (Kurs)", num: true }, { k: "note", l: "Notiz" }], "+ Alternative", st.alternatives);
     var scen = h("fieldset", {}, [h("legend", { text: "Szenario & Invalidation" }),
-      h("div", { class: "row2" }, [field(pre, "directionalBias", "Richtung (nächste erwartete Bewegung)", { type: "select", options: opt(E.bias), required: true }, st.directionalBias), field(pre, "structuralScenario", "Strukturelles Szenario (eigene Kurzform)", { ph: "übergeordnet aufwärts; Korrektur läuft; Fortsetzung oberhalb X" }, st.structuralScenario)]),
+      h("div", { class: "row2" }, [field(pre, "directionalBias", "Richtung ab jetzt (A1, meist die laufende Welle)", { type: "select", options: opt(E.bias), required: true }, st.directionalBias), field(pre, "structuralScenario", "Strukturelles Szenario (eigene Kurzform)", { ph: "übergeordnet aufwärts; Korrektur läuft; Fortsetzung oberhalb X" }, st.structuralScenario)]),
       h("div", { class: "row3" }, [field(pre, "invPrice", "Invalidation (Kurs, Praktiker-Skala)", { num: true }, st.invPrice), field(pre, "invDirection", "Richtung", { type: "select", options: opt(E.invDirection) }, st.invDirection), field(pre, "invBasis", "Basis", { type: "select", options: opt(E.invBasis) }, st.invBasis)])]);
     var zs = [repeatable(pre, "supportZones", "Unterstützungszonen (keySupportZones)", ZONE_COLS, "+ Unterstützung", st.supportZones), repeatable(pre, "entryZones", "Einstiegszonen (entryZones)", ZONE_COLS, "+ Einstieg", st.entryZones), repeatable(pre, "targetZones", "Zielzonen (targetZones)", ZONE_COLS, "+ Ziel", st.targetZones)];
     var sum = h("fieldset", {}, [h("legend", { text: "Eigene Kurzfassung" }), h("p", { class: "reminder", text: "Keine Zitate/Transkripte — nur eigene Worte, höchstens 400 Zeichen. Keine fremden Screenshots." }),
@@ -504,7 +507,7 @@
       h("button", { class: "btn", type: "button", id: pre + "copy", text: "JSONL-Zeile kopieren", onclick: function () { var r = api.record(); copyText(C.toJsonlLine(r)); audit({ action: "COPY_LINE", referenceId: r.referenceId, caseId: r.caseId }); } }),
       h("button", { class: "btn", type: "button", id: pre + "dl", text: "JSONL-Zeile herunterladen", onclick: function () { var v = api.check(); if (!v.ok) { setMsg("Nicht exportiert: Fehler beheben.", "err"); return; } download(v.record.referenceId + ".jsonl", C.toJsonl([v.record]), "application/x-ndjson"); audit({ action: "EXPORT_LINE", referenceId: v.record.referenceId, caseId: v.record.caseId }); } }),
       second ? null : h("button", { class: "btn", type: "button", id: pre + "reset", text: "Formular leeren", onclick: function () { renderCapture({}); } })]);
-    form.append(src, pub, ins, ell, alts, scen, h("div", {}, zs), sum, ev, ext, h("h4", { text: "Prüfung (Schema practitioner-reference-1.0.0 + Protokoll)" }), checks, h("h4", { text: "JSONL-Zeile (für references.jsonl)" }), preview, actions);
+    form.append(src, pub, ins, ell, alts, scen, h("div", {}, zs), sum, ev, ext, h("h4", { text: "Prüfung (Schema practitioner-reference-1.1.0 + Protokoll)" }), checks, h("h4", { text: "JSONL-Zeile (für references.jsonl)" }), preview, actions);
     var lastSym = null, series = null, cutClose = null;
     function g(k) { var e = $(pre + k); if (!e) return undefined; return e.type === "checkbox" ? e.checked : e.value; }
     function state() {
@@ -514,7 +517,7 @@
         localDateTime: g("localDateTime"), timezone: g("timezone"), precision: g("precision"), timestampBasis: g("timestampBasis"), edited: g("edited"), editNote: g("editNote"),
         asShown: g("asShown"), instrumentType: g("instrumentType"), priceAdjustment: g("priceAdjustment"), vuSymbol: (g("vuSymbol") || "").trim().toUpperCase(), mappingQuality: g("mappingQuality"), levelScale: g("levelScale"),
         timeframe: g("timeframe"), analysisCutoff: g("analysisCutoff"), windowStart: g("windowStart"), windowEnd: g("windowEnd"), elliottSchool: g("elliottSchool"), noPrimary: g("noPrimary"),
-        pPattern: g("pPattern"), pFamily: g("pFamily"), pDegreeLabel: g("pDegreeLabel"), pDegreeRank: g("pDegreeRank"), pCurrentWave: g("pCurrentWave"), pRole: g("pRole"), pState: g("pState"), pWaveStartDate: g("pWaveStartDate"), pWaveStartPrice: g("pWaveStartPrice"),
+        pPattern: g("pPattern"), pFamily: g("pFamily"), pDegreeLabel: g("pDegreeLabel"), pDegreeRank: g("pDegreeRank"), pCurrentWave: g("pCurrentWave"), pRole: g("pRole"), pState: g("pState"), pNextAfter: g("pNextAfter"), pWaveStartDate: g("pWaveStartDate"), pWaveStartPrice: g("pWaveStartPrice"),
         alternatives: $(pre + "alternatives")._read(), directionalBias: g("directionalBias"), structuralScenario: g("structuralScenario"),
         supportZones: $(pre + "supportZones")._read(), entryZones: $(pre + "entryZones")._read(), targetZones: $(pre + "targetZones")._read(),
         invPrice: g("invPrice"), invDirection: g("invDirection"), invBasis: g("invBasis"), summary: g("summary"), evidence: $(pre + "evidence")._read(),
@@ -750,7 +753,7 @@
   toolbar();
   document.body.setAttribute("data-blind", "on");
   Promise.all([
-    fetchJson(PV1 + "schema/practitioner-reference-1.0.0.json").then(function (j) { S.schema = j; }).catch(function () { S.schema = null; }),
+    fetchJson(PV1 + "schema/practitioner-reference-1.1.0.json").then(function (j) { S.schema = j; }).catch(function () { S.schema = null; }),
     fetchJson(PV1 + "source-registry.json").then(function (j) { S.registry = normRegistry(j); S.registryStatus = S.registry.length + " Quellen"; }).catch(function () { S.registryStatus = "noch nicht vorhanden"; }),
     fetchText(PV1 + "references.jsonl").then(function (t) { var p = C.parseJsonl(t); S.repoRefs = p.records.map(function (x) { return x.record; }).filter(function (r) { return r.referenceId && r.caseId; }); S.repoStatus = S.repoRefs.length + " Zeile(n)" + (p.errors.length ? ", " + p.errors.length + " unlesbar" : ""); }).catch(function () { S.repoStatus = "noch nicht vorhanden"; }),
     loadBench().catch(function () {}),

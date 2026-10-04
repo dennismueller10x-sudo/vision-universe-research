@@ -3,7 +3,7 @@
 
    Reine Logik ohne DOM für die interne Praktiker-Referenzseite
    (docs/technical-intelligence/PRACTITIONER_PROTOCOL.md, Schema
-   practitioner-reference-1.0.0). Läuft im Browser (global VUPractitionerCore)
+   practitioner-reference-1.1.0). Läuft im Browser (global VUPractitionerCore)
    und in Node (module.exports) — dadurch testbar.
 
    PRACTITIONER REFERENCE — keine objektive Wahrheit. Diese Datei erzeugt nur
@@ -24,7 +24,7 @@
 (function (global) {
   "use strict";
 
-  var SCHEMA_ID = "vu-practitioner-reference-1.0.0";
+  var SCHEMA_ID = "vu-practitioner-reference-1.1.0";
   var ENUMS = {
     sourceType: ["YOUTUBE", "X", "BLOG", "WEBSITE", "NEWSLETTER_PUBLIC", "PODCAST", "OTHER"],
     viewKind: ["ORIGINAL_PUBLISHED", "LATER_REVISION"],
@@ -52,13 +52,29 @@
     { v: 0, label: "0 · Minute" }, { v: 1, label: "1 · Minor" }, { v: 2, label: "2 · Intermediate" },
     { v: 3, label: "3 · Primary" }, { v: 4, label: "4 · Cycle" }, { v: 5, label: "5 · Supercycle" }
   ];
-  /* Handelsschluss je Markt (§5) — identisch zu MARKETS in scripts/technical/practitioner/cutoff.mjs. */
+  /* Handelsschluss je Markt (§5). EINZIGE Quelle der Stichtagsregel: scripts/technical/practitioner/cutoff.mjs re-exportiert
+     genau diese Funktionen (CUTOFF unten), Seite und Pipeline rechnen also identisch.
+     Schlusszeit = spaetestmoeglicher Schluss des VU-Tagesbars (konservativ), festgelegt je Reihenquelle, nicht je Anlageklasse:
+       tiingo-equity (US-Aktien/ETFs inkl. FEZ, EEM, URTH)  16:00 America/New_York
+       tiingo-crypto                                        Bar = UTC-Kalendertag → 24:00 UTC, alle Tage
+       tiingo-fx-metals (XAU/XAG/XPT/XPD)                   Bar = UTC-Kalendertag (Stempel 00:00Z) → 24:00 UTC, So–Fr
+       eia (WTI/BRENT/NATGAS Spot)                          konservativ Tagesende 24:00 America/New_York
+       fred-index (N225)                                    15:30 Asia/Tokyo (TSE-Schluss seit 11/2024; davor 15:00 → konservativ)
+       Xetra (keine VU-Reihe)                               17:30 Europe/Berlin */
   var MARKETS = {
-    US_EQUITY: { label: "US-Aktien · 16:00 America/New_York", tz: "America/New_York", closeH: 16, closeM: 0, sessionDays: [1, 2, 3, 4, 5], weekFinalDow: 5 },
+    US_EQUITY: { label: "US-Aktien/ETFs (tiingo-equity) · 16:00 America/New_York", tz: "America/New_York", closeH: 16, closeM: 0, sessionDays: [1, 2, 3, 4, 5], weekFinalDow: 5 },
     XETRA: { label: "Xetra · 17:30 Europe/Berlin", tz: "Europe/Berlin", closeH: 17, closeM: 30, sessionDays: [1, 2, 3, 4, 5], weekFinalDow: 5 },
-    CRYPTO: { label: "Krypto · Tagesende 00:00 UTC", tz: "UTC", closeH: 24, closeM: 0, sessionDays: [0, 1, 2, 3, 4, 5, 6], weekFinalDow: 0 },
-    US_COMMODITY: { label: "FX/Metalle/Energie · 17:00 America/New_York", tz: "America/New_York", closeH: 17, closeM: 0, sessionDays: [1, 2, 3, 4, 5], weekFinalDow: 5 },
-    JP_EQUITY: { label: "Tokio · 15:30 Asia/Tokyo", tz: "Asia/Tokyo", closeH: 15, closeM: 30, sessionDays: [1, 2, 3, 4, 5], weekFinalDow: 5 }
+    CRYPTO: { label: "Krypto (tiingo-crypto) · UTC-Kalendertag, Schluss 24:00 UTC", tz: "UTC", closeH: 24, closeM: 0, sessionDays: [0, 1, 2, 3, 4, 5, 6], weekFinalDow: 0 },
+    FX_METALS_UTC: { label: "Edelmetalle (tiingo-fx-metals) · UTC-Kalendertag, Schluss 24:00 UTC, So–Fr", tz: "UTC", closeH: 24, closeM: 0, sessionDays: [0, 1, 2, 3, 4, 5], weekFinalDow: 5, sundayOpensWeek: true },
+    US_ENERGY_EIA: { label: "EIA-Spot Öl/Gas · konservativ 24:00 America/New_York", tz: "America/New_York", closeH: 24, closeM: 0, sessionDays: [1, 2, 3, 4, 5], weekFinalDow: 5 },
+    JP_EQUITY: { label: "Tokio (fred-index N225) · konservativ 15:30 Asia/Tokyo", tz: "Asia/Tokyo", closeH: 15, closeM: 30, sessionDays: [1, 2, 3, 4, 5], weekFinalDow: 5 }
+  };
+  /* Markt je VU-Reihe (muss mit instrument-map.json seriesMarkets übereinstimmen; Test prüft das). Einzelaktien (us-stock) → US_EQUITY. */
+  var SYMBOL_MARKET = {
+    SPY: "US_EQUITY", QQQ: "US_EQUITY", DIA: "US_EQUITY", IWM: "US_EQUITY", EEM: "US_EQUITY", FEZ: "US_EQUITY", URTH: "US_EQUITY",
+    BTCUSD: "CRYPTO", ETHUSD: "CRYPTO", SOLUSD: "CRYPTO", XRPUSD: "CRYPTO",
+    XAUUSD: "FX_METALS_UTC", XAGUSD: "FX_METALS_UTC", XPTUSD: "FX_METALS_UTC", XPDUSD: "FX_METALS_UTC",
+    WTI: "US_ENERGY_EIA", BRENT: "US_ENERGY_EIA", NATGAS: "US_ENERGY_EIA", N225: "JP_EQUITY"
   };
   var PROPERTY_ORDER = ["referenceId", "caseId", "version", "revisionOf", "viewKind", "sourceId", "sourceType", "sourceUrl", "crossPosts", "publication", "instrument", "timeframe", "analysisCutoff", "analysisWindow",
     "elliottSchool", "primary", "alternatives", "directionalBias", "structuralScenario", "keySupportZones", "entryZones", "targetZones", "invalidation", "commentarySummary", "extraction", "evidence", "referenceQuality", "status", "exclusionReason", "split"];
@@ -115,14 +131,15 @@
     return errs;
   }
 
-  // ------------------------------------------------------------------ Zeit / Stichtag (§5)
+  // ------------------------------------------------------------------ Zeit / Stichtag (§5) — kanonische Regel
   var FMT = {};
   function partsIn(ms, tz) {
-    var f = FMT[tz] || (FMT[tz] = new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" }));
-    var o = {}; f.formatToParts(new Date(ms)).forEach(function (p) { o[p.type] = p.value; });
-    return { date: o.year + "-" + o.month + "-" + o.day, minutes: (+o.hour % 24) * 60 + +o.minute, y: +o.year, m: +o.month, d: +o.day, h: +o.hour % 24, mi: +o.minute, s: +o.second };
+    var f = FMT[tz] || (FMT[tz] = new Intl.DateTimeFormat("en-US", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" }));
+    var o = {}; f.formatToParts(new Date(ms)).forEach(function (p) { if (p.type !== "literal") o[p.type] = p.value; });
+    var y = +o.year, m = +o.month, d = +o.day, h = +o.hour % 24, mi = +o.minute, se = +o.second;
+    return { date: o.year + "-" + o.month + "-" + o.day, minutes: h * 60 + mi, y: y, m: m, d: d, h: h, mi: mi, s: se, year: y, month: m, day: d, hour: h, minute: mi, second: se };
   }
-  function validTz(tz) { try { new Intl.DateTimeFormat("en", { timeZone: tz }); return !!tz; } catch (e) { return false; } }
+  function validTz(tz) { if (typeof tz !== "string" || !tz) return false; try { new Intl.DateTimeFormat("en", { timeZone: tz }); return true; } catch (e) { return false; } }
   function offsetMinutes(ms, tz) { var p = partsIn(ms, tz); return Math.round((Date.UTC(p.y, p.m - 1, p.d, p.h, p.mi, p.s) - Math.floor(ms / 1000) * 1000) / 60000); }
   function fmtOffset(min) { var s = min < 0 ? "-" : "+", a = Math.abs(min); return s + String(Math.floor(a / 60)).padStart(2, "0") + ":" + String(a % 60).padStart(2, "0"); }
   /* "2024-03-12T18:00" (Ortszeit in tz) → "2024-03-12T18:00:00+01:00" */
@@ -134,47 +151,99 @@
   }
   function addDays(date, n) { var t = new Date(date + "T00:00:00Z"); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); }
   function weekday(date) { return new Date(date + "T00:00:00Z").getUTCDay(); }
+  function isIsoDate(s) { return typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(Date.parse(s + "T00:00:00Z")) && new Date(s + "T00:00:00Z").toISOString().slice(0, 10) === s; }
+  function marketSpec(key) { var mk = MARKETS[key]; if (!mk) throw new Error("unbekannter Markt " + key); return mk; }
+  function marketForSymbol(vuSymbol) { var s = trim(vuSymbol).toUpperCase(); return SYMBOL_MARKET[s] || null; }
+  /* Markt für die Seite: zuerst die VU-Reihe (SYMBOL_MARKET), sonst Heuristik aus Typ/Bezeichnung. */
   function guessMarket(instrumentType, vuSymbol, asShown) {
+    var bySym = marketForSymbol(vuSymbol); if (bySym) return bySym;
     var s = (trim(vuSymbol) + " " + trim(asShown)).toUpperCase();
     if (instrumentType === "CRYPTO_SPOT" || /BTC|ETH|SOL|XRP|CRYPTO/.test(s)) return "CRYPTO";
-    if (instrumentType === "FX" || instrumentType === "COMMODITY_SPOT" || /EURUSD|USDJPY|GBPUSD|XAU|XAG|GOLD|WTI|BRENT|NATGAS/.test(s)) return "US_COMMODITY";
-    if (/DAX|XETRA|GDAXI|MDAX|TECDAX/.test(s)) return "XETRA";
-    if (/N225|NIKKEI/.test(s)) return "JP_EQUITY";
+    if (/XAU|XAG|XPT|XPD|GOLD|SILVER|SILBER/.test(s)) return "FX_METALS_UTC";
+    if (/WTI|BRENT|NATGAS|OIL|CRUDE|ÖL|GAS/.test(s)) return "US_ENERGY_EIA";
+    if (/DAX|XETRA|GDAXI|MDAX|TECDAX|GER40|DE40/.test(s)) return "XETRA";
+    if (/N225|NIKKEI|JP225/.test(s)) return "JP_EQUITY";
     return "US_EQUITY";
   }
   function zonedToUtc(date, hh, mm, tz) {
     var y = +date.slice(0, 4), mo = +date.slice(5, 7), d = +date.slice(8, 10), guess = Date.UTC(y, mo - 1, d, hh, mm);
     var t = guess - offsetMinutes(guess, tz) * 60000; return guess - offsetMinutes(t, tz) * 60000;
   }
-  function closeInstant(date, mk) { return mk.closeH === 24 ? Date.parse(addDays(date, 1) + "T00:00:00Z") : zonedToUtc(date, mk.closeH, mk.closeM, mk.tz); }
-  /* Spiegel von computeAnalysisCutoff/lastCompleteWeekEnd (scripts/technical/practitioner/cutoff.mjs): letzter Schluss STRIKT vor dem
-     frühestmöglichen Veröffentlichungszeitpunkt (DAY → 00:00 Ortszeit der Quelle, HOUR → Stundenbeginn). `dates` (optional) =
-     Handelstage der VU-Reihe zum Einrasten (Feiertage). Maßgeblich bleibt cutoff.mjs. */
-  function computeCutoff(o) {
-    var ts = trim(o.timestamp), prec = o.precision, key = MARKETS[o.market] ? o.market : "US_EQUITY", mk = MARKETS[key], tf = o.timeframe, dates = o.dates || null;
-    var m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/.exec(ts);
-    if (!m) return { date: null, rule: "Zeitstempel fehlt oder ohne Zeitzonen-Offset" };
-    var ms = Date.parse(ts); if (!isFinite(ms)) return { date: null, rule: "Zeitstempel ungültig" };
-    var eff;
-    if (prec === "DAY") { if (!validTz(o.timezone)) return { date: null, rule: "Genauigkeit DAY braucht eine gültige Zeitzone" }; eff = Math.min(ms, zonedToUtc(ts.slice(0, 10), 0, 0, o.timezone)); }
-    else if (prec === "HOUR") eff = ms - (+m[5]) * 60000 - (+(m[6] || 0)) * 1000;
-    else if (prec === "MINUTE") eff = ms - (+(m[6] || 0)) * 1000;
-    else return { date: null, rule: "Genauigkeit fehlt" };
-    var d = addDays(partsIn(eff, mk.tz).date, 1), daily = null;
-    for (var k = 0; k < 20; k++, d = addDays(d, -1)) { if (mk.sessionDays.indexOf(weekday(d)) < 0) continue; if (closeInstant(d, mk) < eff) { daily = d; break; } }
-    if (!daily) return { date: null, rule: "kein Stichtag gefunden" };
-    var rule = prec + ": letzter Schluss strikt vor " + new Date(eff).toISOString().slice(0, 16) + "Z (" + mk.label + ")";
-    var out = daily;
-    if (tf === "1W" || tf === "1M") {
-      var monday = addDays(daily, -((weekday(daily) + 6) % 7)), fin = addDays(monday, (mk.weekFinalDow + 6) % 7);
-      out = daily >= fin ? fin : addDays(fin, -7);
-      rule += " · Wochenbar nur abgeschlossene Wochen" + (tf === "1M" ? " · 1M wird auf Wochenbasis rekonstruiert" : "");
-    }
-    if (dates && dates.length) { var snapped = snap(out, dates); if (!snapped) return { date: null, rule: rule + " · keine VU-Daten bis " + out }; if (snapped !== out) rule += " · eingerastet auf letzten VU-Handelstag " + snapped; out = snapped; }
-    else rule += " · ohne VU-Reihe (Feiertage unberücksichtigt)";
-    return { date: out, dailyDate: daily, rule: rule };
+  /* Schlusszeitpunkt (UTC ms) des Tagesbars `date`; closeH 24 = Ende des lokalen Kalendertags. */
+  function closeInstant(date, key) {
+    var mk = typeof key === "string" ? marketSpec(key) : key;
+    return mk.closeH === 24 ? zonedToUtc(addDays(date, 1), 0, 0, mk.tz) : zonedToUtc(date, mk.closeH, mk.closeM, mk.tz);
   }
-  function snap(cand, dates) { var best = null; for (var i = 0; i < dates.length; i++) { if (dates[i] <= cand) best = dates[i]; else break; } return best; }
+  function isSessionDay(date, key) { return marketSpec(key).sessionDays.indexOf(weekday(date)) >= 0; }
+  var TS_RE = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/;
+  /* Publikation → Zeitpunkt laut Stempel und frühestmöglicher Zeitpunkt (DAY → 00:00 in publication.timezone, HOUR → Stundenbeginn,
+     MINUTE → Sekunden verworfen). Wirft bei fehlendem Offset, unbekannter Zone oder Genauigkeit. */
+  function parsePublication(pub) {
+    if (!pub || typeof pub !== "object") throw new Error("publication fehlt");
+    var m = TS_RE.exec(String(pub.timestamp || ""));
+    if (!m) throw new Error("publication.timestamp ist kein ISO-8601 mit Offset: " + pub.timestamp);
+    if (!validTz(pub.timezone)) throw new Error("publication.timezone ist keine IANA-Zone: " + pub.timezone);
+    var ms = Date.parse(pub.timestamp); if (!isFinite(ms)) throw new Error("publication.timestamp nicht lesbar: " + pub.timestamp);
+    var prec = pub.timestampPrecision, datePart = m[1] + "-" + m[2] + "-" + m[3], earliest;
+    if (prec === "DAY") earliest = Math.min(ms, zonedToUtc(datePart, 0, 0, pub.timezone));
+    else if (prec === "HOUR") earliest = ms - (+m[5]) * 60000 - (+(m[6] || 0)) * 1000;
+    else if (prec === "MINUTE") earliest = ms - (+(m[6] || 0)) * 1000;
+    else throw new Error("publication.timestampPrecision unbekannt: " + prec);
+    var off = m[7] === "Z" ? 0 : (m[7][0] === "-" ? -1 : 1) * (+m[7].slice(1, 3) * 60 + +m[7].slice(4, 6));
+    return { instantMs: ms, earliestMs: earliest, statedOffsetMinutes: off, zoneOffsetMinutes: offsetMinutes(ms, pub.timezone), datePart: datePart, precision: prec };
+  }
+  function timestampConsistency(pub) {
+    var p = parsePublication(pub);
+    return p.statedOffsetMinutes === p.zoneOffsetMinutes ? null : "Offset " + p.statedOffsetMinutes + " min im Zeitstempel passt nicht zu " + pub.timezone + " (" + p.zoneOffsetMinutes + " min zu diesem Zeitpunkt)";
+  }
+  /* analysisCutoff = letzter TAGESbar, dessen Schluss strikt vor dem frühestmöglichen Veröffentlichungszeitpunkt lag. Gespeichert wird
+     IMMER dieser Tages-Stichtag (auch bei 1W/1M); Wochenabschluss und Einrasten auf vorhandene Bars macht ausschließlich replay.mjs. */
+  function computeAnalysisCutoff(publication, key) {
+    var mk = marketSpec(key), p = parsePublication(publication), eff = p.earliestMs;
+    var d = addDays(partsIn(eff, mk.tz).date, 1);
+    for (var k = 0; k < 20; k++, d = addDays(d, -1)) {
+      if (!isSessionDay(d, key)) continue;
+      var ci = closeInstant(d, key);
+      if (ci < eff) return { analysisCutoff: d, closeInstantUtc: new Date(ci).toISOString(), effectivePublicationUtc: new Date(eff).toISOString(), market: key,
+                             rule: p.precision + ": letzter Schluss strikt vor " + new Date(eff).toISOString() + " (" + mk.label + ")" };
+    }
+    throw new Error("kein Stichtag gefunden");
+  }
+  /* Ende (letzte Sitzung) der letzten zum Stichtag abgeschlossenen Woche (Mo–So-Woche; bei sundayOpensWeek gehört der Sonntag zur Folgewoche). */
+  function lastCompleteWeekEnd(cutoffDate, key) {
+    var mk = marketSpec(key), monday = addDays(cutoffDate, -((weekday(cutoffDate) + 6) % 7)), fin = addDays(monday, (mk.weekFinalDow + 6) % 7);
+    return cutoffDate >= fin ? fin : addDays(fin, -7);
+  }
+  /* Wochenschlüssel (Montag); bei sundayOpensWeek zählt ein Sonntagsbar zur folgenden Woche. */
+  function weekKey(date, key) {
+    var mk = key ? marketSpec(key) : null, d = mk && mk.sundayOpensWeek && weekday(date) === 0 ? addDays(date, 1) : date;
+    return addDays(d, -((weekday(d) + 6) % 7));
+  }
+  function snapToBars(sortedDates, date) {
+    var lo = 0, hi = sortedDates.length - 1, ans = -1;
+    while (lo <= hi) { var mid = (lo + hi) >> 1; if (sortedDates[mid] <= date) { ans = mid; lo = mid + 1; } else hi = mid - 1; }
+    return ans < 0 ? null : { index: ans, date: sortedDates[ans] };
+  }
+  function sessionDaysBetween(a, b, key) {
+    if (a === b) return 0;
+    var sgn = a < b ? 1 : -1, x = a < b ? a : b, y = a < b ? b : a, n = 0;
+    for (var d = addDays(x, 1); d <= y; d = addDays(d, 1)) if (isSessionDay(d, key)) n++;
+    return sgn * n;
+  }
+  /* Formular: speichert NUR den Tages-Stichtag (identisch zur Pipeline). Wochenende und Einrasten werden nur als Hinweis gezeigt. */
+  function computeCutoff(o) {
+    var key = MARKETS[o.market] ? o.market : "US_EQUITY", c;
+    try { c = computeAnalysisCutoff({ timestamp: trim(o.timestamp), timestampPrecision: o.precision, timezone: o.timezone }, key); }
+    catch (e) { return { date: null, rule: e.message }; }
+    var rule = c.rule, info = {};
+    if (o.timeframe === "1W" || o.timeframe === "1M") { info.weeklyBarEnd = lastCompleteWeekEnd(c.analysisCutoff, key); rule += " · Hinweis: Replay nutzt Wochen bis " + info.weeklyBarEnd + (o.timeframe === "1M" ? " (1M auf Wochenbasis)" : ""); }
+    if (o.dates && o.dates.length) { var sn = snapToBars(o.dates, info.weeklyBarEnd || c.analysisCutoff); info.lastVuBar = sn ? sn.date : null; rule += sn ? " · letzter VU-Bar " + sn.date : " · keine VU-Daten bis zum Stichtag"; }
+    return { date: c.analysisCutoff, dailyDate: c.analysisCutoff, weeklyBarEnd: info.weeklyBarEnd || null, lastVuBar: info.lastVuBar || null, rule: rule };
+  }
+  var CUTOFF = { MARKETS: MARKETS, SYMBOL_MARKET: SYMBOL_MARKET, marketForSymbol: marketForSymbol, parsePublication: parsePublication, timestampConsistency: timestampConsistency,
+    computeAnalysisCutoff: computeAnalysisCutoff, lastCompleteWeekEnd: lastCompleteWeekEnd, weekKey: weekKey, snapToBars: snapToBars, sessionDaysBetween: sessionDaysBetween,
+    closeInstant: closeInstant, isSessionDay: isSessionDay, zonedToUtc: zonedToUtc, zonedParts: partsIn, tzOffsetMinutes: offsetMinutes, localDate: function (ms, tz) { return partsIn(ms, tz).date; },
+    addDays: addDays, dow: weekday, isIsoDate: isIsoDate, isValidTimeZone: validTz };
 
   // ------------------------------------------------------------------ Reihen
   /* Tagesreihe → Wochenreihe (letzter Handelstag je Woche, Wochenende Freitag; wie scripts/technical/elliott-practitioner-benchmark.mjs). */
@@ -225,7 +294,7 @@
     r.primary = s.noPrimary ? null : {
       pattern: s.pPattern || "UNKNOWN", family: s.pFamily || "UNKNOWN", degreeLabel: strOrNull(s.pDegreeLabel),
       degreeRank: trim(s.pDegreeRank) === "" ? null : parseInt(s.pDegreeRank, 10), currentWave: strOrNull(s.pCurrentWave),
-      currentWaveRole: s.pRole || "UNKNOWN", state: s.pState || "UNKNOWN", waveStartDate: strOrNull(s.pWaveStartDate), waveStartPrice: numOrNull(s.pWaveStartPrice)
+      currentWaveRole: s.pRole || "UNKNOWN", state: s.pState || "UNKNOWN", nextMoveAfterCurrent: s.pNextAfter || "UNKNOWN", waveStartDate: strOrNull(s.pWaveStartDate), waveStartPrice: numOrNull(s.pWaveStartPrice)
     };
     r.alternatives = (s.alternatives || []).map(function (a) { return { pattern: trim(a.pattern) || "UNKNOWN", currentWave: strOrNull(a.currentWave), directionalBias: a.directionalBias || "UNKNOWN", trigger: numOrNull(a.trigger), note: strOrNull(a.note) }; })
       .filter(function (a) { return a.pattern !== "UNKNOWN" || a.currentWave || a.trigger !== null || a.note || a.directionalBias !== "UNKNOWN"; });
@@ -260,7 +329,7 @@
       asShown: i.asShown, instrumentType: i.instrumentType, priceAdjustment: i.priceAdjustment, vuSymbol: i.vuSymbol || "", mappingQuality: i.mappingQuality, levelScale: i.levelScale === null || i.levelScale === undefined ? "" : String(i.levelScale),
       timeframe: r.timeframe, analysisCutoff: r.analysisCutoff, windowStart: r.analysisWindow ? r.analysisWindow.start : "", windowEnd: r.analysisWindow ? r.analysisWindow.end : "", elliottSchool: r.elliottSchool,
       noPrimary: r.primary === null, pPattern: p.pattern || "", pFamily: p.family || "", pDegreeLabel: p.degreeLabel || "", pDegreeRank: p.degreeRank === null || p.degreeRank === undefined ? "" : String(p.degreeRank),
-      pCurrentWave: p.currentWave || "", pRole: p.currentWaveRole || "", pState: p.state || "", pWaveStartDate: p.waveStartDate || "", pWaveStartPrice: p.waveStartPrice === null || p.waveStartPrice === undefined ? "" : String(p.waveStartPrice),
+      pCurrentWave: p.currentWave || "", pRole: p.currentWaveRole || "", pState: p.state || "", pNextAfter: p.nextMoveAfterCurrent || "", pWaveStartDate: p.waveStartDate || "", pWaveStartPrice: p.waveStartPrice === null || p.waveStartPrice === undefined ? "" : String(p.waveStartPrice),
       alternatives: (r.alternatives || []).map(function (a) { return { pattern: a.pattern || "", currentWave: a.currentWave || "", directionalBias: a.directionalBias || "", trigger: a.trigger === null || a.trigger === undefined ? "" : String(a.trigger), note: a.note || "" }; }),
       directionalBias: r.directionalBias, structuralScenario: r.structuralScenario || "", supportZones: z(r.keySupportZones), entryZones: z(r.entryZones), targetZones: z(r.targetZones),
       invPrice: inv.price === undefined || inv.price === null ? "" : String(inv.price), invDirection: inv.direction || "", invBasis: inv.basis || "",
@@ -371,7 +440,7 @@
 
   // ------------------------------------------------------------------ Diff (Doppelextraktion)
   var DIFF_FIELDS = ["sourceType", "publication.timestamp", "publication.timestampPrecision", "instrument.asShown", "instrument.instrumentType", "instrument.priceAdjustment", "instrument.vuSymbol", "instrument.mappingQuality", "instrument.levelScale",
-    "timeframe", "analysisCutoff", "elliottSchool", "primary.pattern", "primary.family", "primary.degreeLabel", "primary.degreeRank", "primary.currentWave", "primary.currentWaveRole", "primary.state", "primary.waveStartDate", "primary.waveStartPrice",
+    "timeframe", "analysisCutoff", "elliottSchool", "primary.pattern", "primary.family", "primary.degreeLabel", "primary.degreeRank", "primary.currentWave", "primary.currentWaveRole", "primary.state", "primary.nextMoveAfterCurrent", "primary.waveStartDate", "primary.waveStartPrice",
     "alternatives", "directionalBias", "structuralScenario", "keySupportZones", "entryZones", "targetZones", "invalidation.price", "invalidation.direction", "invalidation.basis", "extraction.confidence"];
   var FREE_TEXT = { structuralScenario: true };
   function normLabel(v) { return trim(v).toLowerCase().replace(/[()\[\]{}\s]/g, ""); }
@@ -403,7 +472,7 @@
   var api = {
     SCHEMA_ID: SCHEMA_ID, ENUMS: ENUMS, DEGREE_RANKS: DEGREE_RANKS, MARKETS: MARKETS, PROPERTY_ORDER: PROPERTY_ORDER, EVIDENCE_FIELDS: EVIDENCE_FIELDS, DIFF_FIELDS: DIFF_FIELDS, FAMILY_OF: FAMILY_OF, SECOND_PASS_SUFFIX: SECOND_PASS_SUFFIX,
     validateSchema: validateSchema, domainChecks: domainChecks, validateRecord: validateRecord,
-    localToIso: localToIso, validTz: validTz, computeCutoff: computeCutoff, zonedToUtc: zonedToUtc, guessMarket: guessMarket, addDays: addDays, toWeekly: toWeekly,
+    localToIso: localToIso, validTz: validTz, computeCutoff: computeCutoff, zonedToUtc: zonedToUtc, guessMarket: guessMarket, addDays: addDays, toWeekly: toWeekly, CUTOFF: CUTOFF, SYMBOL_MARKET: SYMBOL_MARKET,
     makeCaseId: makeCaseId, makeReferenceId: makeReferenceId, isSecondPass: isSecondPass, firstPassIdOf: firstPassIdOf,
     buildRecord: buildRecord, recordToState: recordToState, toJsonlLine: toJsonlLine, toJsonl: toJsonl, parseJsonl: parseJsonl, classifyImport: classifyImport,
     diffRecords: diffRecords, canonical: canonical, fnv1a: fnv1a, numOrNull: numOrNull

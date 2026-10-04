@@ -5,28 +5,35 @@
    Dieses Modul liest KEINE Kurse nach dem Stichtag und importiert outcome.mjs nicht (Trennung Methode/Ergebnis).
 
    Kennzahlen je Fall (MATCH / MISMATCH / NOT_COMPARABLE):
-     A Richtung (directionalBias vs. VU nextMove)       B Musterfamilie (MOTIVE/CORRECTIVE)
+     A1 laufende Bewegung ab jetzt: Praktiker directionalBias (= laufende Welle) vs. VU currentWave.direction
+     A2 Bewegung NACH der laufenden Welle: Praktiker primary.nextMoveAfterCurrent vs. VU nextMove (nur laufende VU-Zaehlung;
+        bei abgeschlossenem VU-Muster ist nextMove = laufende Gegenbewegung → nicht vergleichbar)
+        (Red-Team C1: frueher wurde directionalBias mit nextMove verglichen – das misst bei laufenden Wellen das Gegenteil.)
+        VU kennt kein SIDEWAYS: Praktiker SIDEWAYS gegen VU → NOT_COMPARABLE (Grund SIDEWAYS), nie MISMATCH.
+     B Musterfamilie (MOTIVE/CORRECTIVE)
      C laufende Welle (normalisiertes Label; VU-Muster abgeschlossen → letztes Label oder naechstes Label des hoeheren Grades)
      D Grad exakt / E Grad ±1 (VU-Grad = NAEHERUNG aus Wellendauer, siehe lib.degreeRankFromDays)
      F Primaerzaehlung gleich (Muster + laufende Welle)  G Primaer- oder Alternativzaehlung gleich (beliebiges Paar)
      H Invalidation: Abstand absolut (nur EXACT), in % des VU-Schlusses und ATR-normiert; gleiche Seite
      I Zielzonen: Ueberlappung (ja/nein, Anteil getroffener Zonen je Seite), Abstand naechster Zentren in % und ATR
      J Anwendbarkeit/Enthaltung (VU-Stufe, abstain)     K laufend vs. bestaetigt
-     S strukturelle Szenario-Uebereinstimmung: naechste Bewegung (A) UND Rolle der laufenden Bewegung UND – wo beim
+     S strukturelle Szenario-Uebereinstimmung: laufende Bewegung (A1) UND Rolle der laufenden Bewegung UND – wo beim
        Praktiker ableitbar – uebergeordnete Richtung.
    Enthaltung ist eine eigene Kategorie: Raten werden mit und ohne enthaltene Faelle berichtet.
-   Konfidenzintervalle: Cluster-Bootstrap nach Quelle UND nach Instrument (scripts/technical/lib/validation-stats.cjs);
-   massgeblich ist das breitere Intervall. Cohens κ fuer Richtung und Familie (ebenfalls Cluster-Bootstrap).
+   Konfidenzintervalle: Cluster-Bootstrap nach QUELLENFAMILIE und nach Instrument (scripts/technical/lib/validation-stats.cjs);
+   massgeblich ist das breitere Intervall; unter 5 Clustern in einer der beiden Strukturen kein CI (null, INSUFFICIENT_CLUSTERS).
+   Cohens κ fuer A1, A2 und Familie erst ab 20 Paaren (sonst null, INSUFFICIENT_PAIRS), mit Praevalenz.
    Mensch–Mensch-Paare: gleiche vuSymbol, gleicher Zeitrahmen, Veroeffentlichung innerhalb von 5 Handelstagen, verschiedene
-   sourceId; je Referenz und fremder Quelle nur die zeitlich naechste Referenz (keine Ueberzaehlung vielposter Quellen). */
+   QUELLENFAMILIE (hkcm und phantom-hkcm sind eine Familie); je Referenz und fremder Familie nur die zeitlich naechste Referenz. */
 import { createRequire } from "node:module";
 import { join } from "node:path";
-import { ROOT, PATTERN_FAMILY, normalizeWaveLabel, roleOfLabel, vuEffectiveRole, round, publicationLocalDate, chainViews } from "./lib.mjs";
+import { ROOT, PATTERN_FAMILY, normalizeWaveLabel, roleOfLabel, vuEffectiveRole, round, publicationLocalDate, chainViews, sourceFamily } from "./lib.mjs";
 import { sessionDaysBetween, parsePublication } from "./cutoff.mjs";
 const require = createRequire(import.meta.url);
 const VS = require(join(ROOT, "scripts/technical/lib/validation-stats.cjs"));
 
-export const METRICS_BINARY = ["A", "B", "C", "D", "E", "F", "G", "K", "S"];
+export const METRICS_BINARY = ["A1", "A2", "B", "C", "D", "E", "F", "G", "K", "S"];
+export const MIN_CLUSTERS = 5, MIN_KAPPA_PAIRS = 20;
 const M = "MATCH", X = "MISMATCH", NC = "NOT_COMPARABLE";
 const known = (v) => v !== null && v !== undefined && v !== "UNKNOWN";
 const eq = (a, b) => (known(a) && known(b) ? (a === b ? M : X) : NC);
@@ -42,7 +49,9 @@ export function practitionerView(ref, mapping, ctx = {}) {
   const roleFromLabel = roleOfLabel(label, pattern);
   const role = known(p.currentWaveRole) ? p.currentWaveRole : known(roleFromLabel) ? roleFromLabel : null;
   const state = known(p.state) ? p.state : null;
-  const direction = known(ref.directionalBias) ? ref.directionalBias : null;
+  /* C1: directionalBias = laufende/naechste Bewegung AB JETZT (= laufende Welle); primary.nextMoveAfterCurrent = danach. */
+  const currentMove = known(ref.directionalBias) ? ref.directionalBias : null;
+  const nextMove = known(p.nextMoveAfterCurrent) ? p.nextMoveAfterCurrent : null;
   const scale = mapping && mapping.levelsComparable ? mapping.levelScale : null;
   const sc = (v) => (Number.isFinite(v) && Number.isFinite(scale) ? v * scale : null);
   /* Uebergeordnete Richtung nur, wo eindeutig ableitbar: Richtung der laufenden Welle aus waveStartPrice (skaliert) gegen den
@@ -57,10 +66,10 @@ export function practitionerView(ref, mapping, ctx = {}) {
   }
   return {
     actor: "PRACTITIONER", pattern, family, label, completeLabel: state === "CONFIRMED_COMPLETE" ? label : null, inferredNext: null,
-    role, state, direction, impliedTrend, degreeRank: Number.isInteger(p.degreeRank) ? p.degreeRank : null,
+    role, state, currentMove, nextMove, impliedTrend, degreeRank: Number.isInteger(p.degreeRank) ? p.degreeRank : null,
     invalidation: ref.invalidation && sc(ref.invalidation.price) !== null ? { price: sc(ref.invalidation.price), direction: ref.invalidation.direction || null } : null,
     targets: Number.isFinite(scale) ? (ref.targetZones || []).map((z) => ({ low: sc(Math.min(z.low, z.high)), high: sc(Math.max(z.low, z.high)) })) : [],
-    alternatives: (ref.alternatives || []).map((a) => ({ pattern: known(a.pattern) ? a.pattern : null, label: normalizeWaveLabel(a.currentWave), direction: known(a.directionalBias) ? a.directionalBias : null })),
+    alternatives: (ref.alternatives || []).map((a) => ({ pattern: known(a.pattern) ? a.pattern : null, label: normalizeWaveLabel(a.currentWave), currentMove: known(a.directionalBias) ? a.directionalBias : null })),
     levelsComparable: Number.isFinite(scale), abstain: false
   };
 }
@@ -72,10 +81,10 @@ export function vuView(rec) {
   return {
     actor: "VU", pattern: c.pattern, family: c.family, label: c.complete ? null : c.currentWave.normLabel, completeLabel: c.complete ? c.currentWave.normLabel : null,
     inferredNext: c.complete && h ? h.nextLabel : null, role: vuEffectiveRole(c, h), roleInferred: c.complete, state: c.complete ? "CONFIRMED_COMPLETE" : "DEVELOPING",
-    direction: c.nextMove || null, impliedTrend: c.impliedTrend || null, degreeRank: c.degree ? c.degree.rank : null,
+    currentMove: c.currentWave.direction || null, nextMove: c.complete ? null : c.nextMove || null, impliedTrend: c.impliedTrend || null, degreeRank: c.degree ? c.degree.rank : null,
     invalidation: c.invalidation ? { price: c.invalidation.price, direction: c.invalidation.direction } : null,
     targets: (c.targets || []).map((z) => ({ low: Math.min(z.low, z.high), high: Math.max(z.low, z.high) })),
-    alternatives: (v.alternatives || []).map((a) => ({ pattern: a.pattern, label: a.complete ? null : a.currentWave.normLabel, completeLabel: a.complete ? a.currentWave.normLabel : null, direction: a.nextMove })),
+    alternatives: (v.alternatives || []).map((a) => ({ pattern: a.pattern, label: a.complete ? null : a.currentWave.normLabel, completeLabel: a.complete ? a.currentWave.normLabel : null, currentMove: a.currentWave.direction })),
     levelsComparable: true, abstain: !!v.applicability.abstain, applicability: v.applicability.level, status: v.status
   };
 }
@@ -102,8 +111,14 @@ const center = (z) => (z.low + z.high) / 2;
  * Alle Kennzahlen zwischen zwei Sichten. ctx: {close, atr, absoluteComparable}. Niveaus beider Sichten in VU-Einheiten.
  */
 export function compareViews(a, b, ctx = {}) {
-  const m = {};
-  m.A = eq(a.direction, b.direction);
+  const m = {}, why = {};
+  /* Richtung: VU kennt kein SIDEWAYS → gegen VU nicht vergleichbar (eigener Grund), zwischen Praktikern normal vergleichbar. */
+  const dir = (x, y, k) => {
+    if ((x === "SIDEWAYS" && b.actor === "VU") || (y === "SIDEWAYS" && a.actor === "VU")) { why[k] = "SIDEWAYS_VU_HAS_NO_SIDEWAYS"; return NC; }
+    return eq(x, y);
+  };
+  m.A1 = dir(a.currentMove, b.currentMove, "A1");
+  m.A2 = dir(a.nextMove, b.nextMove, "A2");
   m.B = eq(a.family, b.family);
   m.C = waveMatch(a, b);
   m.D = Number.isInteger(a.degreeRank) && Number.isInteger(b.degreeRank) ? (a.degreeRank === b.degreeRank ? M : X) : NC;
@@ -114,8 +129,9 @@ export function compareViews(a, b, ctx = {}) {
   m.G = gRes.includes(M) ? M : gRes.includes(X) ? X : NC;
   m.K = eq(a.state, b.state);
   const role = eq(a.role, b.role), trend = known(a.impliedTrend) && known(b.impliedTrend) ? eq(a.impliedTrend, b.impliedTrend) : NC;
-  m.S = m.A === NC || role === NC ? NC : m.A === M && role === M && trend !== X ? M : X;
-  const sDetail = { nextMove: m.A, role, impliedTrend: trend, strict: m.A === M && role === M && trend === M };
+  m.S = m.A1 === NC || role === NC ? NC : m.A1 === M && role === M && trend !== X ? M : X;
+  if (m.A1 === NC && why.A1) why.S = why.A1;
+  const sDetail = { currentMove: m.A1, role, impliedTrend: trend, strict: m.A1 === M && role === M && trend === M };
   // H Invalidation
   let H = { result: NC };
   if (a.invalidation && b.invalidation && a.levelsComparable && b.levelsComparable && Number.isFinite(ctx.close)) {
@@ -131,12 +147,12 @@ export function compareViews(a, b, ctx = {}) {
     I = { result: "COMPUTED", anyOverlap: hitA > 0, shareOfFirstZonesHit: round(hitA / a.targets.length, 3), shareOfSecondZonesHit: round(hitB / b.targets.length, 3),
           nearestCenterPct: round(best / ctx.close * 100, 3), nearestCenterAtr: Number.isFinite(ctx.atr) && ctx.atr > 0 ? round(best / ctx.atr, 3) : null };
   }
-  return { metrics: m, sDetail, H, I };
+  return { metrics: m, notComparableReason: why, sDetail, H, I };
 }
 
 /** VU vs. Praktiker fuer einen Fall. rec = Replay-Datensatz derselben Referenz. */
 export function compareCase(ref, mapping, rec, extra = {}) {
-  const row = { referenceId: ref.referenceId, caseId: ref.caseId, sourceId: ref.sourceId, vuSymbol: mapping.vuSymbol, timeframe: ref.timeframe, viewKind: ref.viewKind || "ORIGINAL_PUBLISHED",
+  const row = { referenceId: ref.referenceId, caseId: ref.caseId, sourceId: ref.sourceId, sourceFamily: sourceFamily(ref.sourceId, extra.registry), vuSymbol: mapping.vuSymbol, timeframe: ref.timeframe, viewKind: ref.viewKind || "ORIGINAL_PUBLISHED",
                 mappingQuality: mapping.mappingQuality, split: extra.split || ref.split || "UNASSIGNED", confidence: ref.extraction && ref.extraction.confidence, year: String(ref.analysisCutoff).slice(0, 4) };
   const v = rec && rec.status === "OK" ? vuView(rec) : null;
   row.replayStatus = rec ? rec.status : "MISSING";
@@ -145,21 +161,28 @@ export function compareCase(ref, mapping, rec, extra = {}) {
   row.category = v.abstain ? "VU_ABSTAINED" : "VU_APPLICABLE";
   const P = practitionerView(ref, mapping, { close: rec.market.closeAtCutoff });
   const r = compareViews(P, v, { close: rec.market.closeAtCutoff, atr: rec.market.atr14Close, absoluteComparable: mapping.mappingQuality === "EXACT" });
-  Object.assign(row, r, { vuDegree: rec.vu.primary.degree, practitionerDegreeRank: P.degreeRank });
+  Object.assign(row, r, { vuDegree: rec.vu.primary.degree, practitionerDegreeRank: P.degreeRank,
+    _a1: [P.currentMove, v.currentMove], _a2: [P.nextMove, v.nextMove], _fam: [P.family, v.family] });
   return row;
 }
 
 // ------------------------------------------------------------------ Statistik
-function wideCi(a, b) { if (a.lo === null || b.lo === null) return a.lo === null ? b : a; return (a.hi - a.lo) >= (b.hi - b.lo) ? a : b; }
+const clusterOf = (r) => r.sourceFamily || r.sourceId;
+/** Cluster-CI nur, wenn BEIDE Cluster-Strukturen (Quellenfamilie, Instrument) mindestens MIN_CLUSTERS Cluster haben. */
+function ciFrom(bySource, byInstrument) {
+  const enough = bySource.clusters >= MIN_CLUSTERS && byInstrument.clusters >= MIN_CLUSTERS;
+  if (!enough) return { ci95: null, ciReason: `INSUFFICIENT_CLUSTERS (Familien ${bySource.clusters}, Instrumente ${byInstrument.clusters}; Minimum ${MIN_CLUSTERS})`, ciBy: null };
+  const w = (bySource.hi - bySource.lo) >= (byInstrument.hi - byInstrument.lo) ? bySource : byInstrument;
+  return { ci95: [w.lo, w.hi], ciReason: null, ciBy: w === bySource ? "SOURCE_FAMILY" : "INSTRUMENT" };
+}
 function bootRate(rows, valueFn, seed) {
   const v = rows.filter((r) => valueFn(r) === M || valueFn(r) === X);
   const sums = (r) => [valueFn(r) === M ? 1 : 0, 1], stat = (s) => (s[1] ? s[0] / s[1] : null);
-  const bySource = VS.clusterBoot(v, (r) => r.sourceId, sums, stat, 1000, seed), byInstrument = VS.clusterBoot(v, (r) => r.vuSymbol, sums, stat, 1000, seed + 1);
-  const w = wideCi(bySource, byInstrument);
-  return { n: v.length, match: v.filter((r) => valueFn(r) === M).length, rate: bySource.est, ci95: [w.lo, w.hi], ciBy: w === bySource ? "SOURCE" : "INSTRUMENT",
-           ciSource: [bySource.lo, bySource.hi], ciInstrument: [byInstrument.lo, byInstrument.hi], clustersSource: bySource.clusters, clustersInstrument: byInstrument.clusters };
+  const bySource = VS.clusterBoot(v, clusterOf, sums, stat, 1000, seed), byInstrument = VS.clusterBoot(v, (r) => r.vuSymbol, sums, stat, 1000, seed + 1);
+  return Object.assign({ n: v.length, match: v.filter((r) => valueFn(r) === M).length, rate: bySource.est }, ciFrom(bySource, byInstrument),
+    { clustersSourceFamily: bySource.clusters, clustersInstrument: byInstrument.clusters });
 }
-/** Cohens κ aus Paaren [a, b] (Kategorien ohne Unbekannt). */
+/** Cohens κ aus Paaren [a, b] (Kategorien ohne Unbekannt); ohne Mindestzahl (Rechenkern). */
 export function cohenKappa(pairs, cats) {
   cats = cats || [...new Set(pairs.flat())].sort();
   const k = cats.length, n = pairs.length;
@@ -176,12 +199,14 @@ function kappaFromMatrix(flat, k) {
   po /= n; let pe = 0; for (let i = 0; i < k; i++) pe += (ra[i] / n) * (rb[i] / n);
   return pe >= 1 ? (po === 1 ? 1 : null) : (po - pe) / (1 - pe);
 }
-function bootKappa(rows, getA, getB, cats, seed) {
-  const v = rows.filter((r) => cats.includes(getA(r)) && cats.includes(getB(r))), k = cats.length;
-  const sums = (r) => { const a = new Array(k * k).fill(0); a[cats.indexOf(getA(r)) * k + cats.indexOf(getB(r))] = 1; return a; }, stat = (s) => kappaFromMatrix(Array.from(s), k);
-  if (!v.length) return { n: 0, kappa: null, ci95: [null, null] };
-  const bs = VS.clusterBoot(v, (r) => r.sourceId, sums, stat, 1000, seed), bi = VS.clusterBoot(v, (r) => r.vuSymbol, sums, stat, 1000, seed + 1), w = wideCi(bs, bi);
-  return { n: v.length, kappa: bs.est, ci95: [w.lo, w.hi], ciBy: w === bs ? "SOURCE" : "INSTRUMENT", categories: cats };
+/** κ mit Mindestzahl MIN_KAPPA_PAIRS, Praevalenz (Randverteilungen) und Cluster-CI (gleiche Mindestclusterregel). */
+export function kappaReport(rows, pairFn, cats, seed) {
+  const v = rows.map((r) => ({ r, p: pairFn(r) })).filter((x) => x.p && cats.includes(x.p[0]) && cats.includes(x.p[1])), k = cats.length;
+  const prevalence = { first: Object.fromEntries(cats.map((c) => [c, v.filter((x) => x.p[0] === c).length])), second: Object.fromEntries(cats.map((c) => [c, v.filter((x) => x.p[1] === c).length])) };
+  if (v.length < MIN_KAPPA_PAIRS) return { n: v.length, kappa: null, reason: `INSUFFICIENT_PAIRS (< ${MIN_KAPPA_PAIRS})`, ci95: null, categories: cats, prevalence };
+  const sums = (x) => { const a = new Array(k * k).fill(0); a[cats.indexOf(x.p[0]) * k + cats.indexOf(x.p[1])] = 1; return a; }, stat = (s) => kappaFromMatrix(Array.from(s), k);
+  const bs = VS.clusterBoot(v, (x) => clusterOf(x.r), sums, stat, 1000, seed), bi = VS.clusterBoot(v, (x) => x.r.vuSymbol, sums, stat, 1000, seed + 1);
+  return Object.assign({ n: v.length, kappa: bs.est, reason: null, categories: cats, prevalence }, ciFrom(bs, bi));
 }
 const median = (a) => { a = a.filter(Number.isFinite).sort((x, y) => x - y); return a.length ? a[Math.floor((a.length - 1) / 2)] + (a.length % 2 ? 0 : (a[a.length / 2] - a[a.length / 2 - 1]) / 2) : null; };
 function levelSummary(rows) {
@@ -189,19 +214,22 @@ function levelSummary(rows) {
   return { H: { n: H.length, medianPct: round(median(H.map((r) => r.H.pct)), 3), medianAtr: round(median(H.map((r) => r.H.atr)), 3), sameSideShare: H.length ? round(H.filter((r) => r.H.sameSide).length / H.length, 3) : null },
            I: { n: I.length, anyOverlap: bootRate(I, (r) => (r.I.anyOverlap ? M : X), 101), medianNearestCenterAtr: round(median(I.map((r) => r.I.nearestCenterAtr)), 3), medianNearestCenterPct: round(median(I.map((r) => r.I.nearestCenterPct)), 3) } };
 }
+const DIRS = ["DOWN", "UP"];
 /** Aggregat ueber Fallzeilen (VU vs. Praktiker): je Kennzahl mit und ohne enthaltene Faelle. */
 export function aggregate(rows) {
   const withCount = rows.filter((r) => r.metrics), nonAbst = withCount.filter((r) => r.category === "VU_APPLICABLE");
   const cat = {}; for (const r of rows) cat[r.category] = (cat[r.category] || 0) + 1;
   const metrics = {};
   METRICS_BINARY.forEach((k, i) => { metrics[k] = { includingAbstained: bootRate(withCount, (r) => r.metrics[k], 200 + i * 3), excludingAbstained: bootRate(nonAbst, (r) => r.metrics[k], 300 + i * 3) }; });
+  const sideways = withCount.filter((r) => r.notComparableReason && r.notComparableReason.A1 === "SIDEWAYS_VU_HAS_NO_SIDEWAYS").length;
   return {
     cases: rows.length, categories: cat,
     J: { vuAbstainShare: withCount.length ? round(withCount.filter((r) => r.J.vuAbstain).length / withCount.length, 3) : null, applicability: countBy(withCount, (r) => r.J.vuApplicability) },
+    practitionerSidewaysNotComparable: sideways,
     metrics,
     levels: { includingAbstained: levelSummary(withCount), excludingAbstained: levelSummary(nonAbst) },
-    kappa: { direction: bootKappa(withCount, (r) => r._pDir, (r) => r._vDir, ["DOWN", "SIDEWAYS", "UP"], 401), family: bootKappa(withCount, (r) => r._pFam, (r) => r._vFam, ["CORRECTIVE", "MOTIVE"], 403) },
-    degreeNote: "D/E: VU-Grad ist eine Naeherung aus der Wellendauer (approximate)."
+    kappa: { currentMove: kappaReport(withCount, (r) => r._a1, DIRS, 401), nextMoveAfterCurrent: kappaReport(withCount, (r) => r._a2, DIRS, 405), family: kappaReport(withCount, (r) => r._fam, ["CORRECTIVE", "MOTIVE"], 403) },
+    degreeNote: "D/E nur bei bekanntem Grad auf beiden Seiten; VU-Grad ist eine Naeherung aus der Wellendauer (approximate)."
   };
 }
 const countBy = (a, f) => a.reduce((o, x) => { const k = String(f(x)); o[k] = (o[k] || 0) + 1; return o; }, {});
@@ -209,19 +237,19 @@ const countBy = (a, f) => a.reduce((o, x) => { const k = String(f(x)); o[k] = (o
 // ------------------------------------------------------------------ Mensch–Mensch
 /**
  * Paare: gleiche vuSymbol, gleicher Zeitrahmen, |Handelstage| <= 5 zwischen den Veroeffentlichungsdaten (Markt des Instruments),
- * verschiedene sourceId. Je Referenz und fremder Quelle nur die zeitlich naechste (Gleichstand: kleinere referenceId).
+ * verschiedene QUELLENFAMILIE. Je Referenz und fremder Familie nur die zeitlich naechste (Gleichstand: kleinere referenceId).
  */
-export function pairHumanHuman(refs, mappingOf, maxSessions = 5) {
-  const items = refs.filter((r) => mappingOf(r).vuSymbol).map((r) => ({ r, d: publicationLocalDate(r), t: parsePublication(r.publication).instantMs, m: mappingOf(r) }));
+export function pairHumanHuman(refs, mappingOf, maxSessions = 5, familyOf = (id) => sourceFamily(id)) {
+  const items = refs.filter((r) => mappingOf(r).vuSymbol).map((r) => ({ r, d: publicationLocalDate(r), t: parsePublication(r.publication).instantMs, m: mappingOf(r), f: familyOf(r.sourceId) }));
   const pairs = new Map();
   for (const a of items) {
     const best = new Map();
     for (const b of items) {
-      if (a === b || a.r.sourceId === b.r.sourceId || a.m.vuSymbol !== b.m.vuSymbol || a.r.timeframe !== b.r.timeframe) continue;
+      if (a === b || a.f === b.f || a.m.vuSymbol !== b.m.vuSymbol || a.r.timeframe !== b.r.timeframe) continue;
       const s = Math.abs(sessionDaysBetween(a.d, b.d, a.m.market));
       if (s > maxSessions) continue;
-      const cur = best.get(b.r.sourceId), dt = Math.abs(a.t - b.t);
-      if (!cur || dt < cur.dt || (dt === cur.dt && b.r.referenceId < cur.b.r.referenceId)) best.set(b.r.sourceId, { b, dt, s });
+      const cur = best.get(b.f), dt = Math.abs(a.t - b.t);
+      if (!cur || dt < cur.dt || (dt === cur.dt && b.r.referenceId < cur.b.r.referenceId)) best.set(b.f, { b, dt, s });
     }
     for (const { b, s } of best.values()) {
       const [x, y] = a.r.referenceId < b.r.referenceId ? [a, b] : [b, a];
@@ -237,14 +265,16 @@ export function compareHumanPair(pair, replayOf) {
   const ctx = rec && rec.status === "OK" ? { close: rec.market.closeAtCutoff, atr: rec.market.atr14Close, absoluteComparable: a.m.mappingQuality === "EXACT" && b.m.mappingQuality === "EXACT" } : {};
   const A = practitionerView(a.r, a.m, ctx), B = practitionerView(b.r, b.m, ctx);
   const r = compareViews(A, B, ctx);
-  const agreement = r.metrics.A === NC ? "NOT_COMPARABLE" : r.metrics.A === M && r.metrics.S === M ? "HIGH_PRACTITIONER_AGREEMENT" : "AMBIGUITY";
-  return { referenceIds: [a.r.referenceId, b.r.referenceId], sources: [a.r.sourceId, b.r.sourceId], sourceId: [a.r.sourceId, b.r.sourceId].sort().join("+"), vuSymbol: a.m.vuSymbol,
-           timeframe: a.r.timeframe, sessionsApart: pair.sessionsApart, agreement, _pDir: A.direction, _vDir: B.direction, _pFam: A.family, _vFam: B.family, ...r };
+  const agreement = r.metrics.A1 === NC ? "NOT_COMPARABLE" : r.metrics.A1 === M && r.metrics.S === M ? "HIGH_PRACTITIONER_AGREEMENT" : "AMBIGUITY";
+  const fams = [a.f, b.f].sort();
+  return { referenceIds: [a.r.referenceId, b.r.referenceId], sources: [a.r.sourceId, b.r.sourceId], sourceFamily: fams.join("+"), vuSymbol: a.m.vuSymbol,
+           timeframe: a.r.timeframe, sessionsApart: pair.sessionsApart, agreement, _a1: [A.currentMove, B.currentMove], _a2: [A.nextMove, B.nextMove], _fam: [A.family, B.family], ...r };
 }
 export function aggregateHuman(rows) {
   const metrics = {}; METRICS_BINARY.forEach((k, i) => { metrics[k] = bootRate(rows, (r) => r.metrics[k], 500 + i * 3); });
+  const D3 = ["DOWN", "SIDEWAYS", "UP"];
   return { pairs: rows.length, agreementDistribution: countBy(rows, (r) => r.agreement), metrics, levels: levelSummary(rows),
-           kappa: { direction: bootKappa(rows, (r) => r._pDir, (r) => r._vDir, ["DOWN", "SIDEWAYS", "UP"], 601), family: bootKappa(rows, (r) => r._pFam, (r) => r._vFam, ["CORRECTIVE", "MOTIVE"], 603) },
+           kappa: { currentMove: kappaReport(rows, (r) => r._a1, D3, 601), nextMoveAfterCurrent: kappaReport(rows, (r) => r._a2, D3, 605), family: kappaReport(rows, (r) => r._fam, ["CORRECTIVE", "MOTIVE"], 603) },
            note: "Keine Mehrheitsentscheidung als Wahrheit; gespeichert wird die Verteilung." };
 }
 
@@ -266,13 +296,13 @@ export function vuRelabel(rec) {
   let changes = 0; for (let i = 1; i < pts.length; i++) if (pts[i].key !== pts[i - 1].key) changes++;
   return { bars: pts.length - 1, changes, relabeled: changes > 0, per100Bars: round(changes / (pts.length - 1) * 100, 2) };
 }
-/** Erkennungslatenz: erster Stichtag im Fenster, an dem VU dasselbe strukturelle Szenario (S) zeigt; Bars relativ zum Stichtag. */
+/** Erkennungslatenz: erster Stichtag im Fenster, an dem VU dasselbe strukturelle Szenario (S: laufende Bewegung + Rolle) zeigt. */
 export function detectionLatency(ref, mapping, rec) {
   const pts = rec && rec.dynamics && rec.dynamics.status === "OK" ? rec.dynamics.points : null;
   if (!pts || !pts.length) return { status: "NO_TRAJECTORY" };
   const P = practitionerView(ref, mapping, { close: rec.market && rec.market.closeAtCutoff });
-  if (!known(P.direction) || !known(P.role)) return { status: "NOT_COMPARABLE" };
-  const hit = pts.find((p) => p.nextMove === P.direction && p.role === P.role && (!known(P.impliedTrend) || p.impliedTrend === P.impliedTrend));
+  if (!(P.currentMove === "UP" || P.currentMove === "DOWN") || !known(P.role)) return { status: "NOT_COMPARABLE" };
+  const hit = pts.find((p) => p.currentMove === P.currentMove && p.role === P.role && (!known(P.impliedTrend) || p.impliedTrend === P.impliedTrend));
   return hit ? { status: "FOUND", offsetBars: hit.offsetBars, date: hit.date, window: [pts[0].offsetBars, pts[pts.length - 1].offsetBars] }
              : { status: "NOT_IN_WINDOW", window: [pts[0].offsetBars, pts[pts.length - 1].offsetBars] };
 }
@@ -284,9 +314,4 @@ export function dynamicsSummary(chains, latencyRows, relabelRows) {
            note: "Revisionsrate (Praktiker, ganze Archivspanne) und VU-Neuzuordnungsrate (Replay-Fenster) haben verschiedene Horizonte – nur qualitativ vergleichen." };
 }
 export { chainViews };
-/** Fuer κ: Kategorien der Zeile ablegen (intern, mit '_' beginnend). */
-export function attachKappaFields(row, ref, mapping, rec) {
-  const P = practitionerView(ref, mapping), V = rec && rec.status === "OK" ? vuView(rec) : null;
-  return Object.assign(row, { _pDir: P.direction, _vDir: V ? V.direction : null, _pFam: P.family, _vFam: V ? V.family : null });
-}
 export const stripPrivate = (row) => Object.fromEntries(Object.entries(row).filter(([k]) => !k.startsWith("_")));
