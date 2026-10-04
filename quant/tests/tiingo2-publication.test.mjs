@@ -8,7 +8,7 @@ import { createRequire } from 'node:module';
 import { gzipSync } from 'node:zlib';
 import { hostname } from 'node:os';
 import { spawnSync } from 'node:child_process';
-import { stageCanonicalPublication, attachCanonicalProjections, applyCanonicalPublication, rollbackCanonicalPublication, REQUIRED_PUBLICATION_QA, CANONICAL_PUBLICATION_PATHS as paths } from '../../scripts/market/tiingo2-publication.mjs';
+import { stageCanonicalPublication, attachCanonicalProjections, applyCanonicalPublication, rollbackCanonicalPublication, isProductizationProjectionPath, REQUIRED_PUBLICATION_QA, CANONICAL_PUBLICATION_PATHS as paths } from '../../scripts/market/tiingo2-publication.mjs';
 const Company = createRequire(import.meta.url)('../../quant/engines/company-master.js');
 const today = '2026-10-02';
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
@@ -17,13 +17,13 @@ function candidate(ticker = 'ZNEW') {
     listing: { ticker, name: 'New Software Corporation', assetType: 'Stock', exchange: 'NASDAQ', currency: 'USD', startDate: '2026-09-01', endDate: '2026-10-01' },
     evidence: { identity: { resolved: true }, price: { historyValid: true, latestValid: true, latestDate: '2026-10-01', corporateActionValid: true } } };
 }
-function fixture(fn) {
+function fixture(fn, { historicalDebt = false } = {}) {
   const root = mkdtempSync(join(tmpdir(), 'vu-tiingo2-publication-'));
   const output = join(root, '.market-cache/stage');
   const write = (path, doc) => { mkdirSync(dirname(join(root, path)), { recursive: true }); writeFileSync(join(root, path), JSON.stringify(doc, null, 1) + '\n'); };
   const keep = { ticker: 'KEEP', securityId: 'ref_KEEP', exchange: 'NASDAQ', active: true, assetType: 'Stock', name: 'Existing Software Inc' };
   write(paths.raw, { actualSize: 1, securities: [keep], byExchange: { NASDAQ: 1 }, bySector: { UNKNOWN: 1 } });
-  write(paths.eligibility, { version: 'us-security-master-1.2.0', counts: { universeMembers: 1, ELIGIBLE: 1, SEPARATE_CLASS: 0, EXCLUDED: 0, REVIEW: 0, productUniverse: 1 }, decisions: [{ ...keep, product_eligibility: 'ELIGIBLE', instrument_type: 'EQUITY_COMMON' }], nonDestructive: {} });
+  write(paths.eligibility, { version: 'us-security-master-1.2.0', counts: { universeMembers: 1, ELIGIBLE: historicalDebt ? 0 : 1, SEPARATE_CLASS: 0, EXCLUDED: historicalDebt ? 1 : 0, REVIEW: 0, productUniverse: historicalDebt ? 0 : 1 }, decisions: [{ ...keep, product_eligibility: historicalDebt ? 'EXCLUDED' : 'ELIGIBLE', instrument_type: historicalDebt ? 'DEBT' : 'EQUITY_COMMON', product_eligibility_reason: historicalDebt ? 'CONFIRMED_NON_EQUITY:DEBT' : null }], nonDestructive: {} });
   write(paths.names, { version: 'company-names-1.0.0', master: {}, counts: {}, rows: [{ ...keep, inProductUniverse: true, companyName: keep.name, status: 'RESOLVED', nameSource: 'TIINGO_METADATA' }] });
   const instrument = Company.toInstrument(keep, { today }); instrument.instrumentId = Company.mintInstrumentId(keep, 0);
   const shardPath = paths.instruments + '/' + Company.shardKey('KEEP') + '.json';
@@ -68,6 +68,11 @@ test('stage concretely appends raw, policy, names and minted instruments without
   const instrument = JSON.parse(readFileSync(join(dirname(staged.manifestPath), instrumentFile.stagedPath))).instruments.at(-1);
   assert.equal(instrument.instrumentId, Company.mintInstrumentId({ ...candidate().listing, provider: 'tiingo' }, 0));
   assert.deepEqual(instrument.legacyIds, ['ref_ZNEW']); assert.equal(instrument.masterMemberId, 'ref_ZNEW');
+  const namesFile = staged.files.find((f) => f.path === paths.names);
+  const addedName = JSON.parse(readFileSync(join(dirname(staged.manifestPath), namesFile.stagedPath))).rows.at(-1);
+  assert.equal(addedName.candidates.TIINGO_METADATA.securityId, 'ref_ZNEW');
+  assert.equal(addedName.candidates.TIINGO_METADATA.startDate, '2026-09-01');
+  assert.equal(addedName.nameSource, 'TIINGO_METADATA');
   assert.equal(staged.additions[0].quantReady, false);
   assert.equal(stage().manifestSha256, staged.manifestSha256, 'identical stage resumes deterministically');
 }));
@@ -77,6 +82,45 @@ test('new candidates must pass independent readiness and cannot reuse historical
   assert.throws(() => stage([candidate('KEEP')]), /EXISTING_OR_HISTORICAL_IDENTITY/);
   const reusedId = candidate(); reusedId.securityId = 'ref_KEEP';
   assert.throws(() => stage([reusedId]), /EXISTING_OR_HISTORICAL_IDENTITY/);
+}));
+test('historically excluded debt remains excluded in stage and cannot be re-added', () => fixture(({ stage, output }) => {
+  assert.throws(() => stage([candidate('KEEP')]), /HISTORICAL_EXCLUSION_REINTRODUCED/);
+  const staged = stage([candidate('ZNEW')]);
+  assert.deepEqual(staged.protectedHistoricalExclusions, [{ ticker: 'KEEP', securityId: 'ref_KEEP', historicallyExcluded: true }]);
+  const file = staged.files.find((row) => row.path === paths.eligibility);
+  const after = JSON.parse(readFileSync(join(output, file.stagedPath)));
+  assert.equal(after.decisions[0].product_eligibility, 'EXCLUDED');
+  assert.equal(after.decisions[0].instrument_type, 'DEBT');
+  assert.deepEqual(staged.removals, []);
+}, { historicalDebt: true }));
+test('product attachment cannot reclassify a protected historical debt exclusion', () => fixture(({ root, output, stage, attach }) => {
+  const staged = attach(stage());
+  const entry = staged.files.find((row) => row.path === paths.eligibility);
+  const document = JSON.parse(readFileSync(join(output, entry.stagedPath)));
+  document.decisions[0].product_eligibility = 'ELIGIBLE';
+  assert.throws(() => attachCanonicalProjections({ root, staged, preparedFiles: [
+    { path: paths.eligibility, bytes: Buffer.from(JSON.stringify(document)) }
+  ] }), /HISTORICAL_EXCLUSION_REINTRODUCED/);
+}, { historicalDebt: true }));
+test('product attachments use a strict allowlist and still require core projections', () => fixture(({ root, stage }) => {
+  assert.equal(isProductizationProjectionPath('screener/data/universe-US_REAL.json'), true);
+  assert.equal(isProductizationProjectionPath('discover/logos/files/ABC.svg'), true);
+  for (const path of ['quant/data/market/tiingo/private.json', 'quant/config/policy.json', '../outside.json', 'assets/logos/../../secret']) {
+    assert.equal(isProductizationProjectionPath(path), false, path);
+  }
+  assert.throws(() => attachCanonicalProjections({ root, staged: stage(), preparedFiles: [
+    { path: 'screener/data/universe-US_REAL.json', bytes: Buffer.from('{}') }
+  ] }), /CANONICAL_PROJECTION_MISSING/);
+}));
+test('incremental names stage includes the native coverage summary when it exists', () => fixture(({ stage, output, write }) => {
+  const path = 'quant/data/market/security-master/company-names-summary.json';
+  write(path, { version: 'baseline' });
+  const staged = stage();
+  const summary = staged.files.find((row) => row.path === path);
+  assert.ok(summary);
+  const doc = JSON.parse(readFileSync(join(output, summary.stagedPath)));
+  assert.equal(doc.coverage.productUniverse, 2);
+  assert.equal(doc.coverage.withName, 2);
 }));
 test('stage does not silently alter an existing staged manifest or files', () => fixture(({ stage, output }) => {
   const staged = stage();

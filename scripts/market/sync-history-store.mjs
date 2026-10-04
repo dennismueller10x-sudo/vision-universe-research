@@ -275,7 +275,8 @@ async function main() {
     // Revalidate persisted accounting before any series mutation, even when
     // an earlier preflight was valid. Corruption must not be discovered late.
     const month = Guard.monthKey();
-    const usage = await store.readUsage(month);
+    const usageSnapshot = await store.readUsageSnapshot(month);
+    const usage = usageSnapshot.usage;
     const results = await pool(members, CONCURRENCY, async (m) => {
       const file = cacheFile(m.securityId);
       if (!existsSync(file)) return { skipped: true, ticker: m.ticker };
@@ -332,13 +333,15 @@ async function main() {
       }
     }
     if (!DRY_RUN) {
-      const idx = await store.readIndex();
+      const idxSnapshot = await store.readIndexSnapshot();
+      const idx = idxSnapshot.index;
       const merged = Object.assign({}, idx.symbols || {}, symbols);
 
       /* Der Index wird nur geschrieben, wenn sich etwas geaendert hat.
          Ein Lauf ohne Aenderung soll KEINEN Schreibvorgang kosten. */
       if (Object.keys(symbols).length) {
-        const written = await store.writeIndex({ symbols: merged });
+        const written = await store.writeIndex({ symbols: merged },
+          store.driver.kind === "s3" ? { expectedETag: idxSnapshot.etag } : undefined);
         console.log(`  Index:     ${written.symbols} Titel, ${written.bytes} Byte`);
       } else {
         console.log("  Index:     unveraendert, nicht geschrieben");
@@ -360,7 +363,7 @@ async function main() {
         run: { at: new Date().toISOString(), operation: OPERATION,
                classA: spent.classA, classB: spent.classB,
                runId: process.env.GITHUB_RUN_ID || null }
-      }));
+      }), store.driver.kind === "s3" ? { expectedETag: usageSnapshot.etag } : undefined);
       console.log(`  Nutzung:   Monat ${month} fortgeschrieben`);
     }
   }

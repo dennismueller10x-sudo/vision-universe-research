@@ -116,6 +116,32 @@ function createHistoryStore(options) {
     const enc = Codec.encode(series, { codec });
     const key = seriesKey(series.ticker);
 
+    if (po.absentOnly) {
+      if (typeof driver.putIfAbsentOrSame !== "function") throw new Error("HISTORY_ABSENT_ONLY_DRIVER_UNAVAILABLE");
+      const sameContent = {
+        ticker: series.ticker, key,
+        first: enc.meta.first, last: enc.meta.last, barCount: enc.meta.barCount,
+        bytes: enc.meta.storedBytes, bytesPerBar: enc.meta.bytesPerBar,
+        sha256: enc.meta.sha256, codec
+      };
+      if (dryRun) return { ...sameContent, dryRun: true, updatedAt: null };
+      // Reserve a possible conflict GET too. Conservative accounting keeps
+      // the existing zero-cost ceiling valid even if another writer wins.
+      meter.consumeClassA(1, "conditional PUT " + key);
+      meter.consumeClassB(1, "possible conflict GET " + key);
+      meter.noteUpload(enc.buffer.length);
+      const result = await driver.putIfAbsentOrSame(key, enc.buffer, {
+        contentType: "application/json",
+        metadata: { ticker: String(series.ticker), bars: String(enc.meta.barCount),
+          first: enc.meta.first || "", last: enc.meta.last || "",
+          format: enc.meta.format, sha256: enc.meta.sha256 }
+      });
+      if (result.unchanged) meter.noteSkippedWrite();
+      return { ...sameContent, skipped: !!result.unchanged,
+        reason: result.unchanged ? "EXISTING_SAME_CONTENT" : undefined,
+        updatedAt: result.unchanged ? null : new Date().toISOString() };
+    }
+
     if (po.skipIfUnchanged !== false) {
       let storedSha = po.knownSha256 || null;
       if (!storedSha && po.checkRemote !== false) {
@@ -223,20 +249,25 @@ function createHistoryStore(options) {
      Ein Objekt, das sagt, was da ist. Ohne ihn braeuchte ein
      fortgesetzter Lauf 7.800 HEAD-Anfragen, um zu wissen, wo er steht.
      Mit ihm ist es eine. */
-  async function readIndex() {
+  async function readIndexSnapshot() {
     meter.consumeClassB(1, "GET " + indexKey);
-    const buf = await driver.get(indexKey);
+    const snapshot = typeof driver.getWithETag === "function"
+      ? await driver.getWithETag(indexKey)
+      : { buffer: await driver.get(indexKey), etag: null };
+    const buf = snapshot?.buffer;
     if (!buf) {
-      return { version: VERSION, layout: prefix, provider, market,
-               generatedAt: null, symbols: {} };
+      return { index: { version: VERSION, layout: prefix, provider, market,
+                        generatedAt: null, symbols: {} }, etag: null };
     }
     const raw = Codec.CODECS.includes(codec)
       ? require("node:zlib")[codec === "gzip" ? "gunzipSync" : "zstdDecompressSync"](buf)
       : buf;
-    return JSON.parse(raw.toString("utf8"));
+    return { index: JSON.parse(raw.toString("utf8")), etag: snapshot.etag };
   }
 
-  async function writeIndex(index) {
+  async function readIndex() { return (await readIndexSnapshot()).index; }
+
+  async function writeIndex(index, writeOpts) {
     const payload = Object.assign({}, index, {
       version: VERSION, layout: prefix, provider, market,
       generatedAt: new Date().toISOString(),
@@ -249,8 +280,20 @@ function createHistoryStore(options) {
     if (dryRun) return { key: indexKey, bytes: buf.length, symbols: payload.symbolCount, dryRun: true };
     meter.consumeClassA(1, "PUT " + indexKey);
     meter.noteUpload(buf.length);
-    await driver.put(indexKey, buf, { contentType: "application/json" });
-    return { key: indexKey, bytes: buf.length, symbols: payload.symbolCount };
+    let written;
+    if (writeOpts && Object.hasOwn(writeOpts, "expectedETag")) {
+      if (writeOpts.expectedETag === null) {
+        if (typeof driver.putIfAbsentOrSame !== "function") throw new Error("HISTORY_INDEX_CAS_DRIVER_UNAVAILABLE");
+        meter.consumeClassB(1, "possible index conflict GET " + indexKey);
+        written = await driver.putIfAbsentOrSame(indexKey, buf, { contentType: "application/json" });
+      } else {
+        if (typeof driver.putIfMatch !== "function") throw new Error("HISTORY_INDEX_CAS_DRIVER_UNAVAILABLE");
+        written = await driver.putIfMatch(indexKey, buf, writeOpts.expectedETag, { contentType: "application/json" });
+      }
+    } else {
+      written = await driver.put(indexKey, buf, { contentType: "application/json" });
+    }
+    return { key: indexKey, bytes: buf.length, symbols: payload.symbolCount, etag: written.etag ?? null };
   }
 
   /**
@@ -379,29 +422,47 @@ function createHistoryStore(options) {
     return state;
   }
 
-  async function readUsage(month) {
+  async function readUsageSnapshot(month) {
     const m = month || Guard.monthKey();
     const key = usageKeyFor(m);
     meter.consumeClassB(1, "GET usage " + m);
-    const buf = await driver.get(key);
+    const snapshot = typeof driver.getWithETag === "function"
+      ? await driver.getWithETag(key)
+      : { buffer: await driver.get(key), etag: null };
+    const buf = snapshot?.buffer;
     // Absence retains the existing new-month behavior. A present but corrupt
     // object is different: never convert an unknown consumed budget to zero.
-    if (!buf) return Guard.emptyUsage(m);
+    if (!buf) return { usage: Guard.emptyUsage(m), etag: null };
     let parsed;
     try { parsed = JSON.parse(buf.toString("utf8")); }
     catch { invalidUsage(); }
-    return validateUsage(parsed, m);
+    return { usage: validateUsage(parsed, m), etag: snapshot.etag };
   }
 
-  async function writeUsage(state) {
+  async function readUsage(month) { return (await readUsageSnapshot(month)).usage; }
+
+  async function writeUsage(state, writeOpts) {
     const payload = Object.assign({}, state, { updatedAt: new Date().toISOString() });
     usageKeyFor(payload.month);
     validateUsage(payload, payload.month);
     const buf = Buffer.from(JSON.stringify(payload, null, 2));
     if (dryRun) return { key: usageKeyFor(payload.month), bytes: buf.length, dryRun: true };
     meter.consumeClassA(1, "PUT usage " + payload.month);
-    await driver.put(usageKeyFor(payload.month), buf, { contentType: "application/json" });
-    return { key: usageKeyFor(payload.month), bytes: buf.length };
+    const key = usageKeyFor(payload.month);
+    let written;
+    if (writeOpts && Object.hasOwn(writeOpts, "expectedETag")) {
+      if (writeOpts.expectedETag === null) {
+        if (typeof driver.putIfAbsentOrSame !== "function") throw new Error("HISTORY_USAGE_CAS_DRIVER_UNAVAILABLE");
+        meter.consumeClassB(1, "possible usage conflict GET " + key);
+        written = await driver.putIfAbsentOrSame(key, buf, { contentType: "application/json" });
+      } else {
+        if (typeof driver.putIfMatch !== "function") throw new Error("HISTORY_USAGE_CAS_DRIVER_UNAVAILABLE");
+        written = await driver.putIfMatch(key, buf, writeOpts.expectedETag, { contentType: "application/json" });
+      }
+    } else {
+      written = await driver.put(key, buf, { contentType: "application/json" });
+    }
+    return { key, bytes: buf.length, etag: written.etag ?? null };
   }
 
   /** Belegter Speicher und Objektzahl aus dem Speicher selbst. */
@@ -418,8 +479,8 @@ function createHistoryStore(options) {
     VERSION, codec, provider, market, dryRun,
     seriesPrefix, indexKey, usageKey, seriesKey, keyForTicker, tickerFromKey,
     putSeries, getSeries, appendSeries,
-    readIndex, writeIndex, rebuildIndexFromStorage, planBackfill,
-    readUsage, writeUsage, measureStorage,
+    readIndex, readIndexSnapshot, writeIndex, rebuildIndexFromStorage, planBackfill,
+    readUsage, readUsageSnapshot, writeUsage, measureStorage,
     budget: meter,
     driver
   };

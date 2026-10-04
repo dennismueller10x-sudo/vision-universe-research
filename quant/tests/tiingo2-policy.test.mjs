@@ -31,20 +31,22 @@ test('staging requires every price/identity/action gate; SEC existence never fab
   const unresolved = ready(); delete unresolved.evidence.identity.resolved;
   assert.equal(classifyCandidate(unresolved, { today }).publicationReady, false);
 });
-test('short IPO history keeps membership and Search without claiming a chart', () => {
-  const row = ready('CHWM');
-  row.evidence.price.bars = 2;
-  row.evidence.price.quality = 'FAIL';
-  const short = classifyCandidate(row, { today });
-  assert.equal(short.publicationReady, true);
-  assert.equal(short.productReadiness.search, true);
-  assert.equal(short.productReadiness.watchlist, true);
-  assert.equal(short.productReadiness.chart, false);
-  assert.ok(short.reasonCodes.includes('INSUFFICIENT_CHART_HISTORY'));
-  row.evidence.price.bars = 5;
-  const sufficient = classifyCandidate(row, { today });
-  assert.equal(sufficient.productReadiness.chart, true);
-  assert.ok(!sufficient.reasonCodes.includes('INSUFFICIENT_CHART_HISTORY'));
+test('fewer than 30 actual sessions keep Search and Watchlist without chart readiness', () => {
+ const row = ready('CHWM');
+ row.evidence.price.quality = 'FAIL';
+ for(const bars of [2,5,21,29]){
+  row.evidence.price.bars=bars;
+  const short=classifyCandidate(row,{today});
+  assert.equal(short.publicationReady,true);
+  assert.equal(short.productReadiness.search,true);
+  assert.equal(short.productReadiness.watchlist,true);
+  assert.equal(short.productReadiness.chart,false);
+  assert.ok(short.reasonCodes.includes('CHART_BLOCKED_SHORT_HISTORY'));
+ }
+ row.evidence.price.bars = 30;
+ const sufficient = classifyCandidate(row, { today });
+ assert.equal(sufficient.productReadiness.chart, true);
+ assert.ok(!sufficient.reasonCodes.includes('CHART_BLOCKED_SHORT_HISTORY'));
 });
 test('HOS 21 bars and DNA private arithmetic cannot certify Quant or Factor DNA delivery', () => {
   const bars = Array.from({ length: 21 }, (_, i) => ({ date: new Date(Date.UTC(2026, 8, i + 2)).toISOString().slice(0, 10), open: 10 + i, high: 11 + i, low: 9 + i, close: 10 + i, volume: 1000, adjustedOpen: 10 + i, adjustedHigh: 11 + i, adjustedLow: 9 + i, adjustedClose: 10 + i, adjustedVolume: 1000, splitFactor: 1, dividend: 0 }));

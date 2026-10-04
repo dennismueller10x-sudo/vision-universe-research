@@ -30,7 +30,7 @@ async function fixture({officialName,providerName,secName,providerTicker='IPO'},
   const fromZip=put('input.zip',zip('ticker,exchange,assetType,priceCurrency,startDate,endDate\nIPO,NASDAQ,Stock,USD,'+start+','+today+'\n'),false);
   const key=createHash('sha256').update(JSON.stringify({ticker,today,start,rule:EVIDENCE_RULE})).digest('hex');
   put('.market-cache/tiingo2/evidence/'+key+'.json',{key,summary:{metadata:{ticker:providerTicker,name:providerName,exchange:'NASDAQ',startDate:start},price:{historyValid:true,latestValid:true,latestDate:today,corporateActionValid:true},marketFactors:{materialized:false,basisValid:true}}});
-  const result=await runRefresh({root,workDir,runId:'identity-integration',today,fromZip,offline:true,probe:true,fetchImpl:()=>{throw Error('Unexpected network request');}});
+  const result=await runRefresh({root,workDir,runId:'identity-integration',today,fromZip,offline:true,probe:true,historicalExclusions:new Map(),fetchImpl:()=>{throw Error('Unexpected network request');}});
   await check(result);
  }finally{rmSync(root,{recursive:true,force:true});}
 }

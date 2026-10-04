@@ -926,7 +926,18 @@ function create(options){
  async function getUniverse(){try{const c=await hydrateFullUniverseFactors(await hydrateCapabilities(await init()));
   const members=Array.isArray(c.capabilities&&c.capabilities.members)?c.capabilities.members:[];
   const index=await universeIndex();
-  const stocks=members.map(m=>{const s=broadRow(c,m);if(s&&!permission(c,s.ticker,'raw').allowed)s.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'};return s&&ohneErfundenenNamen(mitVerzeichnis(s,index.byTicker[s.ticker]));}).filter(Boolean);
+  const stocks=members.map(m=>{const s=broadRow(c,m);if(!s)return null;
+   if(!permission(c,s.ticker,'raw').allowed)s.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'};
+   const entry=index.byTicker[s.ticker];mitVerzeichnis(s,entry);
+   /* The market-factor feed can arrive before Factor Evidence is published.
+    * The universe-list marker is built from the published evidence shards;
+    * a market row alone must never advertise an available stock assessment. */
+   if(s.factorState==='AVAILABLE'&&!Number.isFinite(entry?.b)){
+    s.factorState='UNAVAILABLE';s.factorReason='FACTOR_EVIDENCE_NOT_PUBLISHED';
+    s.capabilities={...s.capabilities,factors:false};
+   }
+   return ohneErfundenenNamen(s);
+  }).filter(Boolean);
   return {state:stocks.length?'AVAILABLE':'UNAVAILABLE',stocks,scope:'CANONICAL_PRODUCT_UNIVERSE',
    universeSize:stocks.length,factorReady:stocks.filter(s=>s.factorState==='AVAILABLE').length,
    productCapabilityState:c.productSummary?.schemaVersion==='1.0.0'?'AVAILABLE':'UNAVAILABLE',

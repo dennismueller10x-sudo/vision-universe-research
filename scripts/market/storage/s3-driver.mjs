@@ -213,7 +213,7 @@ export function createS3Driver(cfg) {
     }
   }
 
-  async function request(method, key, { body, query, extraHeaders } = {}) {
+  async function request(method, key, { body, query, extraHeaders, allowPreconditionFailure = false } = {}) {
     assertZeroCostSafe(method, query, extraHeaders, key);
     const path = "/" + uriEncode(bucket, false) + (key ? "/" + uriEncode(key, false) : "");
     const payload = body || Buffer.alloc(0);
@@ -241,7 +241,8 @@ export function createS3Driver(cfg) {
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         const res = await fetchImpl(target, { method, headers, body: body || undefined });
-        if (res.status === 404) return { status: 404, buffer: null, headers: res.headers };
+        if (res.status === 404 && (method === "GET" || method === "HEAD")) return { status: 404, buffer: null, headers: res.headers };
+        if (allowPreconditionFailure && res.status === 412) return { status: 412, buffer: null, headers: res.headers };
         if (res.status >= 500 || res.status === 429) {
           lastErr = new Error(`${method} ${key || "(bucket)"}: HTTP ${res.status}`);
         } else if (!res.ok) {
@@ -272,16 +273,54 @@ export function createS3Driver(cfg) {
     return out;
   }
 
+  function putHeaders(opts) {
+    const extra = metaHeaders(opts && opts.metadata);
+    if (opts && opts.contentType) extra["content-type"] = opts.contentType;
+    return extra;
+  }
+
+  function assertETag(etag) {
+    if (typeof etag !== "string" || !/^"[^"\r\n]+"$/.test(etag)) {
+      throw new Error("S3_INDEX_CAS_REQUIRES_QUOTED_ETAG");
+    }
+  }
+
   return {
     kind: "s3",
     endpoint: url.origin,
     bucket,
 
     async put(key, buffer, opts) {
-      const extra = metaHeaders(opts && opts.metadata);
-      if (opts && opts.contentType) extra["content-type"] = opts.contentType;
+      const extra = putHeaders(opts);
       await request("PUT", key, { body: buffer, extraHeaders: extra });
       return { key, bytes: buffer.length };
+    },
+
+    // The conditional write is the protection: a preceding HEAD alone is
+    // not safe against another publisher creating the same key meanwhile.
+    async putIfAbsentOrSame(key, buffer, opts) {
+      const extra = { ...putHeaders(opts), "if-none-match": "*" };
+      const result = await request("PUT", key, { body: buffer, extraHeaders: extra, allowPreconditionFailure: true });
+      if (result.status !== 412) return { key, bytes: buffer.length, created: true };
+      const existing = await request("GET", key);
+      if (existing.status === 404 || !existing.buffer.equals(buffer)) throw new Error("S3_ABSENT_ONLY_CONTENT_CONFLICT:" + key);
+      for (const [name, value] of Object.entries(metaHeaders(opts && opts.metadata))) {
+        if (existing.headers.get(name) !== value) throw new Error("S3_ABSENT_ONLY_METADATA_CONFLICT:" + key);
+      }
+      return { key, bytes: buffer.length, created: false, unchanged: true };
+    },
+
+    async putIfMatch(key, buffer, etag, opts) {
+      assertETag(etag);
+      const extra = { ...putHeaders(opts), "if-match": etag };
+      const result = await request("PUT", key, { body: buffer, extraHeaders: extra, allowPreconditionFailure: true });
+      if (result.status === 412) throw new Error("S3_INDEX_CAS_CONFLICT:" + key);
+      return { key, bytes: buffer.length, etag: result.headers.get("etag") };
+    },
+
+    async getWithETag(key) {
+      const res = await request("GET", key);
+      return res.status === 404 ? null : { buffer: res.buffer, etag: res.headers.get("etag") };
     },
 
     async get(key) {
@@ -298,6 +337,7 @@ export function createS3Driver(cfg) {
       }
       return {
         key,
+        etag: res.headers.get("etag"),
         size: Number(res.headers.get("content-length") || 0),
         lastModified: res.headers.get("last-modified"),
         metadata
