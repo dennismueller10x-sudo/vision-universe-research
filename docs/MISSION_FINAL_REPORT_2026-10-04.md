@@ -67,6 +67,8 @@ Unerklärte Abweichungen brechen den Lauf künftig **vor** dem Commit ab. Damit 
 | #387 + #418 | #387 schreibt Aktienseiten auch für Teilprüfungs-Titel, mit Discover-Link. #418 prüfte nur Signale und Trend52. Dort hätte ein toter Link entstehen können. | Die Verfügbarkeit prüft genau die Seitenliste. Ein Test sichert die Gleichheit beider Listen. |
 | #397 + #418 | Die Aktienseite liest seit #397 nur `stock/<SYM>.json`. Ohne das Feld hätte LOGI wieder einen toten Link gezeigt. | Der Ausschnitt trägt die Verfügbarkeit seines Symbols. Test mit Gegenprobe. |
 | #406 + #424 | Konflikt in `discover/index.html` (neuer Theme-Schalter) | Schalter aus `main` plus Scroll-Skript. Discover-Tests 324/324. |
+| #394 + #417 | Der Identitäts-Wächter (#394) fand `"ref_" + symbol` in der neuen Vorsorge-Säule (`scripts/vorsorge/build-etf-data.mjs`). | Begründete Ausnahme: `core/identity.js` liegt erst mit #386 auf `main`, für reine Buchstaben-Ticker ist das Ergebnis identisch. Der Wächter meldet sie, sobald sie veraltet ist. Umstellung nach #386. |
+| #395 (CI) | `push-with-retry`-Test scheiterte beim Aufräumen (`ENOTEMPTY`, abgekoppeltes `git gc --auto`). | In #386: keine automatische Git-Wartung in Testrepos, Aufräumen mit Wiederholung. Testlogik unverändert. |
 
 ---
 
@@ -140,6 +142,7 @@ Geschlossen: **#427** (überholt durch #425).
 | News ohne Zeitplan (Stand 21.09.) | Low | Owner, Seite weist Veraltung aus |
 | Cache ohne Content-Hash | Low | Build-Umbau, P3 |
 | `core/client.js` noch nicht in Discover-Detail | Low | nach #401 als reines Refactoring |
+| Vorsorge bildet `ref_`-Pfade selbst | Low | nach #386 auf `securityIdForTicker` umstellen (Ausnahme im Wächter) |
 
 ---
 
@@ -154,7 +157,7 @@ Geschlossen: **#427** (überholt durch #425).
 | Baseline ohne Erklärung übernommen? | Nein. Bilanz je Titel, Abbruch vor dem Commit bei Unerklärtem. |
 | Fachliche Modelle verändert? | Nein. Quant-, Supertrader-, Ranking- und Technical-Logik sind unverändert. Supertrader: nur Links und Ausweis. |
 | Daten von Hand erzeugt? | Nein. Alle Daten stammen von den offiziellen Buildern (`coverage-metrics.yml`, Materialisierung, `supertrader-signals.yml`). |
-| Wechselwirkungen beim Synchronisieren | Zwei echte gefunden und behoben (Abschnitt 4) |
+| Wechselwirkungen beim Synchronisieren | Vier echte gefunden und behoben (Abschnitt 4), dazu eine Testinstabilität mit Ursache statt Neustart |
 | Secrets | Keine ausgegeben. Diagnose-Workflows lesen R2 nur über `env`. |
 | Merges ohne Freigabe | Keine. Gemergt nur #405, #418 und #419 mit Owner-Freigabe. |
 
