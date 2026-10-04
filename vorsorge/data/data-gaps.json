@@ -3,94 +3,156 @@
  "asOf": "2026-10-02",
  "fields": [
   {
-   "field": "Price History",
+   "field": "US-Kurse",
+   "primarySource": "Tiingo EOD",
    "tiingo": "Tiingo EOD",
    "coverage": 0.9988,
-   "secondProviderNeeded": "nein (US); ja für europäische Listings"
-  },
-  {
-   "field": "Total Return",
-   "tiingo": "Tiingo divCash + kanonische Rekonstruktion",
-   "coverage": 0.9455,
+   "gap": "nein",
    "secondProviderNeeded": "nein"
   },
   {
-   "field": "Realtime",
-   "tiingo": "Tiingo IEX (nur US, in Vorsorge nicht genutzt)",
-   "coverage": null,
-   "secondProviderNeeded": "für Vorsorge nicht nötig"
+   "field": "Gesamtrendite",
+   "primarySource": "Tiingo divCash + kanonische Rekonstruktion",
+   "tiingo": "Tiingo divCash + kanonische Rekonstruktion",
+   "coverage": 0.9455,
+   "gap": "nein",
+   "secondProviderNeeded": "nein"
   },
   {
-   "field": "ISIN",
-   "tiingo": "nicht geliefert",
+   "field": "UCITS-/EU-Kurse",
+   "primarySource": "keine",
+   "tiingo": "keine",
    "coverage": 0,
+   "gap": "ja – europäischer Kursanbieter",
+   "secondProviderNeeded": "ja – europäischer Kursanbieter"
+  },
+  {
+   "field": "US-Holdings",
+   "primarySource": "SEC N-PORT (quartalsweise)",
+   "tiingo": "SEC N-PORT (quartalsweise)",
+   "coverage": 0.6308,
+   "gap": "aktuelle Tagesbestände nur über lizenzierte Emittentendaten",
+   "secondProviderNeeded": "aktuelle Tagesbestände nur über lizenzierte Emittentendaten"
+  },
+  {
+   "field": "UCITS-Holdings",
+   "primarySource": "keine",
+   "tiingo": "keine",
+   "coverage": 0,
+   "gap": "ja – Lizenz eines Emittenten/Datenanbieters",
+   "secondProviderNeeded": "ja – Lizenz eines Emittenten/Datenanbieters"
+  },
+  {
+   "field": "Kostenquote (US)",
+   "primarySource": "SEC Prospektdaten (Risk/Return)",
+   "tiingo": "SEC Prospektdaten (Risk/Return)",
+   "coverage": 0.6584,
+   "gap": "TER/laufende Kosten für UCITS: EMT/Emittent (Lizenz)",
+   "secondProviderNeeded": "TER/laufende Kosten für UCITS: EMT/Emittent (Lizenz)"
+  },
+  {
+   "field": "Fondsvermögen (US)",
+   "primarySource": "SEC N-PORT (Fondsebene)",
+   "tiingo": "SEC N-PORT (Fondsebene)",
+   "coverage": 0.6308,
+   "gap": "Anteilklassen-Ebene: Emittent",
+   "secondProviderNeeded": "Anteilklassen-Ebene: Emittent"
+  },
+  {
+   "field": "ISIN (EU)",
+   "primarySource": "ESMA FIRDS",
+   "tiingo": "ESMA FIRDS",
+   "coverage": 1,
+   "gap": "nein",
+   "secondProviderNeeded": "nein"
+  },
+  {
+   "field": "ISIN (US-Listings)",
+   "primarySource": "keine",
+   "tiingo": "keine",
+   "coverage": 0,
+   "gap": "ja",
    "secondProviderNeeded": "ja"
   },
   {
    "field": "WKN",
-   "tiingo": "nicht geliefert",
+   "primarySource": "keine (offizielle Quelle ohne geprüfte Lizenz)",
+   "tiingo": "keine (offizielle Quelle ohne geprüfte Lizenz)",
    "coverage": 0,
+   "gap": "ja",
    "secondProviderNeeded": "ja"
   },
   {
-   "field": "TER",
-   "tiingo": "nicht geliefert",
-   "coverage": 0,
-   "secondProviderNeeded": "ja"
+   "field": "Domizil",
+   "primarySource": "SEC (US) · GLEIF (EU)",
+   "tiingo": "SEC (US) · GLEIF (EU)",
+   "coverage": 0.6308,
+   "gap": "nein",
+   "secondProviderNeeded": "nein"
   },
   {
-   "field": "AUM / Fondsvolumen",
-   "tiingo": "nicht geliefert",
-   "coverage": 0,
-   "secondProviderNeeded": "ja"
+   "field": "UCITS-Status",
+   "primarySource": "SEC (US = kein UCITS) · EU nur Hinweis aus amtlichem Namen",
+   "tiingo": "SEC (US = kein UCITS) · EU nur Hinweis aus amtlichem Namen",
+   "coverage": 0.6308,
+   "gap": "verbindlich nur Emittent/KID",
+   "secondProviderNeeded": "verbindlich nur Emittent/KID"
   },
   {
-   "field": "Holdings",
-   "tiingo": "nicht geliefert",
-   "coverage": 0,
-   "secondProviderNeeded": "ja"
-  },
-  {
-   "field": "Index",
-   "tiingo": "aus Name/Beschreibung abgeleitet",
-   "coverage": 0.147,
-   "secondProviderNeeded": "ja (verbindlich)"
-  },
-  {
-   "field": "Distribution",
-   "tiingo": "aus beobachteten Ausschüttungen (nur positiv belegbar)",
+   "field": "Ertragsverwendung",
+   "primarySource": "Ausschüttungen beobachtet (US) · CFI (EU)",
+   "tiingo": "Ausschüttungen beobachtet (US) · CFI (EU)",
    "coverage": 0.6462,
-   "secondProviderNeeded": "ja (thesaurierend nicht belegbar)"
+   "gap": "thesaurierend (US) nicht belegbar",
+   "secondProviderNeeded": "thesaurierend (US) nicht belegbar"
   },
   {
-   "field": "Replication",
-   "tiingo": "nicht geliefert",
+   "field": "Replikation",
+   "primarySource": "keine",
+   "tiingo": "keine",
    "coverage": 0,
+   "gap": "ja",
+   "secondProviderNeeded": "ja"
+  },
+  {
+   "field": "Index (verbindlich)",
+   "primarySource": "aus Namen abgeleitet",
+   "tiingo": "aus Namen abgeleitet",
+   "coverage": 0.147,
+   "gap": "ja",
    "secondProviderNeeded": "ja"
   },
   {
    "field": "Tracking Difference",
+   "primarySource": "nicht berechenbar ohne Indexstände",
    "tiingo": "nicht berechenbar ohne Indexstände",
    "coverage": 0,
+   "gap": "ja",
    "secondProviderNeeded": "ja"
-  },
-  {
-   "field": "UCITS",
-   "tiingo": "nicht geliefert",
-   "coverage": 0.0576,
-   "secondProviderNeeded": "ja"
-  },
-  {
-   "field": "Exchange",
-   "tiingo": "Tiingo-Tickerliste",
-   "coverage": 1,
-   "secondProviderNeeded": "nein"
   },
   {
    "field": "NAV",
-   "tiingo": "nicht geliefert",
+   "primarySource": "keine",
+   "tiingo": "keine",
    "coverage": 0,
+   "gap": "ja",
    "secondProviderNeeded": "ja"
+  },
+  {
+   "field": "Börse (US)",
+   "primarySource": "Tiingo-Tickerliste",
+   "tiingo": "Tiingo-Tickerliste",
+   "coverage": 1,
+   "gap": "nein",
+   "secondProviderNeeded": "nein"
+  },
+  {
+   "field": "Börsen (EU)",
+   "primarySource": "ESMA FIRDS",
+   "tiingo": "ESMA FIRDS",
+   "coverage": 1,
+   "gap": "nein",
+   "secondProviderNeeded": "nein"
   }
  ]
 }
