@@ -20,8 +20,8 @@ def failure_category(status, reason=''):
     if status == 'VALIDATED':return 'VERIFIED_OFFICIAL'
     if 'CIRCUIT_OPEN' in reason:return 'TEMPORARILY_UNAVAILABLE'
     if 'CONFLICTING_COPYRIGHT_OWNER' in reason:return 'CONFLICTING_OWNER'
-    if 'OWNER_NOT_VALIDATED' in reason:return 'INSUFFICIENT_EVIDENCE'
     if 'REDIRECT' in reason:return 'REDIRECTED'
+    if 'OWNER_NOT_VALIDATED' in reason:return 'INSUFFICIENT_EVIDENCE'
     if any(s in reason for s in ('ROBOTS_DISALLOWED','HTTP_403','HTTP_401','CRAWL_DELAY')):return 'BLOCKED'
     if 'HTTP_410' in reason:return 'DEAD'
     if 'HTTP_404' in reason:return 'MISSING_PAGE'
@@ -79,6 +79,7 @@ def record(result,store,now,pass_id,lane):
     store.set_state(key+cid,{'attempts':prior.get('attempts',0)+int(result.get('requests',0)>0),
                             'firstCheckedAt':prior.get('firstCheckedAt',now),
                             'retryAfter':lane_state.get('retryAfter') or now,
+                            'stats':{key:prior.get('stats',{}).get(key,0)+value for key,value in result.get('stats',{}).items()},
                             'status':result['status'],'category':failure_category(result['status'],result.get('reason','')),
                             'reason':result.get('reason'),'checkedAt':now,'networkRequests':prior.get('networkRequests',0)+result.get('requests',0)})
 

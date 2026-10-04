@@ -8,14 +8,14 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
 from .transport import PublicHTTP, BudgetExhausted, SourceError
-from .discovery import validate_candidate
+from .discovery import validate_discovery_candidate as validate_candidate
 from .feeds import discover_ir
 from .model import domain
 from .pipeline import advance
 
 
 def run(companies, candidates, http, now, request_budget, max_seconds, workers=4, domain_only=False, admission_interval=2,on_result=None,circuit=None):
-    if not 1<=workers<=4 or not 1<=request_budget<=200:raise ValueError('INVALID_DISCOVERY_BATCH_LIMITS')
+    if not 1<=workers<=8 or not 1<=request_budget<=200:raise ValueError('INVALID_DISCOVERY_BATCH_LIMITS')
     if not .5<=admission_interval<=2:raise ValueError('INVALID_DISCOVERY_ADMISSION_INTERVAL')
     from .discovery_circuit import DiscoveryCircuit
     circuit = circuit or DiscoveryCircuit()
@@ -123,5 +123,5 @@ def persist(results,store,companies,now):
             store.set_state('officialSite:'+cid,{'status':'REJECTED','lastChecked':now,'reason':r['reason'],'retryAfter':advance(now,7*24)})
         elif r['status']=='DEGRADED':
             store.set_state('ir:'+cid,{**store.state('ir:'+cid,{}),'lastFailure':now,'reason':r['reason'],'retryAfter':advance(now,.25 if 'CIRCUIT_OPEN' in reason else 24)})
-        store.set_state('inventoryDiscovery:'+cid,{'status':r['status'],'checkedAt':now,'requests':r['requests'],'reason':r.get('reason')})
+        store.set_state('inventoryDiscovery:'+cid,{'status':r['status'],'checkedAt':now,'requests':r['requests'],'stats':r.get('stats',{}),'reason':r.get('reason')})
         if r['status']!='VALIDATED':store.audit(now,cid,'INVENTORY_DISCOVERY_'+r['status'],reason=r.get('reason'),requests=r['requests'])

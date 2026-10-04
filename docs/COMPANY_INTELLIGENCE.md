@@ -17,6 +17,8 @@ PYTHONPATH=scripts python -m company_intelligence.inventory_runner \
 
 The reconstructed logo-plus-current-Wikidata inventory has 4,248 candidates. The preceding ledger's 35 additional candidate identities cannot be recovered from Git alone. They remain an explicit historical-state gap, not silently completed candidates. The previously committed 769 verified domains and all source configurations are retained.
 
+Ownership version `corporate-ownership-4` adds at most two advertised same-first-party investor/about/privacy/legal routes. Root and legal-response hashes, legal-source URL and the actual corporate-header source are retained separately. A different root copyright owner/CIK fails before fallback. Exact compound brands and corporate acronyms remain conditional on exact legal copyright ownership. Copyright matching now starts at the owner after the marker/year; a customer mentioned later in the footer and an extended different legal entity fail closed. Discovery can independently verify a redirect destination only with the retained transport redirect chain and the complete owner verifier; the normal verifier still rejects foreign redirects by default. Defaults remain four workers; an explicit discovery-only opt-in allows eight under the same global/per-host spacing and total request cap. Per-candidate HTTP accounting is retained in durable sweep checkpoints, including retries and downloaded bytes. The 281-test feature suite and the subsequent 32 targeted route/recovery tests pass.
+
 The continuation is unfinished; the historical report below remains evidence from its own ledger rather than a claim of current restored operational state. PR #356 remains unmerged and gated.
 
 ---

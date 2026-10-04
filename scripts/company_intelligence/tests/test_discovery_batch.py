@@ -76,7 +76,7 @@ class BatchTests(unittest.TestCase):
    a=company();b=company('Other','OTHR','0000000002');h=PublicHTTP(tmp)
    with patch('company_intelligence.discovery_batch.discover_ir',return_value=([],[])):
     self.assertEqual(len(run([a,b],{},h,NOW,24,60)),1)
-   with self.assertRaises(ValueError):run([],{},h,NOW,24,60,5)
+   with self.assertRaises(ValueError):run([],{},h,NOW,24,60,9)
 
  def test_feed_failure_cannot_revoke_an_existing_validated_domain(self):
   with tempfile.TemporaryDirectory() as tmp:

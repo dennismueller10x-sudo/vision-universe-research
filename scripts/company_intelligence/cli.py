@@ -78,15 +78,15 @@ def main(argv=None):
     p.add_argument('--sec-document-issuers', type=int, default=2, help='Maximum issuers receiving optional document inspection in a run (0..10)')
     p.add_argument('--sec-fetch', action='store_true', help='Refresh selected issuer submissions through existing SEC client')
     p.add_argument('--discover-ir', action='store_true')
-    p.add_argument('--discovery-workers', type=int, default=1, help='Inventory backfill only: 1..4 independent hosts under one total request budget')
+    p.add_argument('--discovery-workers', type=int, default=1, help='Inventory backfill only: 1..8 independent hosts under one total request budget')
     p.add_argument('--materials', action='store_true', help='Inspect one official call/event material page per selected issuer')
     p.add_argument('--discover-sites', action='store_true', help='Exact CIK Wikidata candidates, automatically used only if unique')
     p.add_argument('--gdelt', action='store_true', help='Optional, unreliable discovery metadata')
     args = p.parse_args(argv)
     if not 1 <= args.limit <= 100 or not 1 <= args.request_budget <= 200 or not 30 <= args.max_seconds <= 1800:
         p.error('limit must be 1..100; request budget 1..200; max seconds 30..1800')
-    if not 1 <= args.discovery_workers <= 4 or (args.discovery_workers > 1 and args.command not in ('discover-backfill', 'verify-domains','sweep-inventory')):
-        p.error('discovery-workers must be 1..4 and requires discover-backfill')
+    if not 1 <= args.discovery_workers <= 8 or (args.discovery_workers > 1 and args.command not in ('discover-backfill', 'verify-domains','sweep-inventory')):
+        p.error('discovery-workers must be 1..8 and requires discover-backfill')
     if args.all_offline and (args.network or args.tickers):
         p.error('--all-offline requires offline full-universe mode')
     if not .5<=args.discovery_admission_interval<=2 or (args.discovery_admission_interval!=2 and args.command!='sweep-inventory'):

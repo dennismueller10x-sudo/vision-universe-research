@@ -65,21 +65,83 @@ def same_web_host(url,other):
     return bool(a and b) and a.removeprefix('www.')==b.removeprefix('www.')
 
 
-def validate_candidate(company, candidate, http, now):
+def validate_candidate(company, candidate, http, now, recover_redirects=False):
+    """Gather bounded first-party proof; redirects must independently prove the owner."""
+    import re
+    from .model import within_domain
+    from .feeds import parse_links
+    request_url = re.sub(r'^http:', 'https:', candidate['url'])
+    response = http.get(request_url, ttl=86400)
+    redirected = not within_domain(response['finalUrl'], candidate['url']) and not same_web_host(response['finalUrl'], candidate['url'])
+    if redirected and (not recover_redirects or not response.get('redirects')):
+        raise SourceError('OFFICIAL_SITE_CANDIDATE_REDIRECT')
+    target = {**candidate, 'url': response['finalUrl']} if redirected else candidate
+    try:
+        result = _validate_response(company, target, response, now)
+    except SourceError as original:
+        # An explicit different legal owner/CIK is never rescued by another page.
+        if 'OWNER_NOT_VALIDATED' not in str(original):
+            raise
+        links = parse_links(response['body'], response['finalUrl'])
+        routes = {}
+        for link in links:
+            url = link['url']
+            label = link['text'].casefold()
+            if (not (within_domain(url, response['finalUrl']) or same_web_host(url, response['finalUrl']))
+                    or url == response['finalUrl'] or re.search(r'\.(?:pdf|zip|xml|js)(?:\?|$)', url, re.I)):
+                continue
+            if re.search(r'\binvestors?\b|investor relations', label): priority = 0
+            elif re.search(r'\babout(?: us| the company)?\b', label): priority = 1
+            elif re.search(r'\bprivacy(?: policy| notice)?\b|\blegal\b', label): priority = 2
+            else: continue
+            routes[url] = min(priority, routes.get(url, priority))
+        result = None
+        for url in sorted(routes, key=lambda url: (routes[url], url))[:2]:
+            try:
+                legal_response = http.get(url, ttl=86400)
+                try:
+                    proof = _validate_response(company, target, legal_response, now)
+                    header_source=legal_response['finalUrl']
+                except SourceError as route_error:
+                    if 'OWNER_NOT_VALIDATED' not in str(route_error): continue
+                    proof = _validate_response(company, target, legal_response, now, header_body=response['body'])
+                    header_source=response['finalUrl']
+                proof['ownershipEvidence'].update(legalSourceUrl=legal_response['finalUrl'], legalContentHash=proof['contentHash'],
+                                                 corporateHeaderUrl=header_source)
+                proof.update(url=response['finalUrl'], contentHash=response['sha256'] if response.get('sha256') else __import__('hashlib').sha256(response['body']).hexdigest())
+                proof['evidence'].append('FIRST_PARTY_LINKED_OWNERSHIP_ROUTE')
+                result = proof
+                break
+            except SourceError as route_error:
+                from .transport import BudgetExhausted
+                if isinstance(route_error, BudgetExhausted): raise
+                continue
+        if result is None:
+            if redirected: raise SourceError('OFFICIAL_SITE_CANDIDATE_REDIRECT_OWNER_NOT_VALIDATED') from original
+            raise original
+    if redirected:
+        result['redirectEvidence'] = {'fromUrl': candidate['url'], 'redirects': response.get('redirects', []),
+                                      'finalUrl': response['finalUrl'], 'method': 'INDEPENDENT_DESTINATION_LEGAL_OWNER_VERIFICATION'}
+        result['evidence'].append('INDEPENDENTLY_VERIFIED_REDIRECT_DESTINATION')
+    return result
+
+
+def validate_discovery_candidate(company, candidate, http, now):
+    return validate_candidate(company, candidate, http, now, recover_redirects=True)
+
+
+def _validate_response(company, candidate, response, now, header_body=None):
     """Wikidata is discovery evidence only: require corporate header and legal-name ownership."""
     from .model import normalize, clean, SUFFIX, within_domain
     import hashlib
     from .feeds import parse_links
     from .platforms import fingerprint
     import re
-    # Old repository candidates often use HTTP. Prefer the same host over TLS
-    # to avoid repeated scheme redirects and re-fetching robots metadata.
-    request_url = re.sub(r'^http:', 'https:', candidate['url'])
-    response = http.get(request_url, ttl=86400)
     if not within_domain(response['finalUrl'], candidate['url']) and not same_web_host(response['finalUrl'],candidate['url']):
         raise SourceError('OFFICIAL_SITE_CANDIDATE_REDIRECT')
     body = response['body'].decode('utf-8', 'replace')
-    title = re.search(r'<title[^>]*>(.*?)</title>', body, re.I | re.S)
+    header_body = header_body.decode('utf-8','replace') if header_body is not None else body
+    title = re.search(r'<title[^>]*>(.*?)</title>', header_body, re.I | re.S)
     header = normalize(title[1] if title else '')
     from html.parser import HTMLParser
     class CorporateHeader(HTMLParser):
@@ -88,7 +150,7 @@ def validate_candidate(company, candidate, http, now):
             attrs=dict(attrs)
             if tag=='meta' and (attrs.get('property') or attrs.get('name') or '').casefold() in ('og:site_name','og:title','application-name'):
                 self.values.append(clean(attrs.get('content'),200))
-    metadata=CorporateHeader();metadata.values=[];metadata.feed(body)
+    metadata=CorporateHeader();metadata.values=[];metadata.feed(header_body)
     header=normalize(' '.join([header]+metadata.values))
     def legal_normalize(value):
         value = re.sub(r'/[A-Z]{2,3}/?$', '', str(value), flags=re.I)
@@ -110,16 +172,25 @@ def validate_candidate(company, candidate, http, now):
     # A customer mention in the page body is not this ownership evidence.
     copyright_text = re.sub(r'<[^>]*>', ' ', visible_body)
     copyright_raw = [clean(m[0],300) for m in re.finditer(r'(?:©|&copy;|copyright).{0,300}', copyright_text, re.I | re.S)]
-    copyright_regions = [legal_normalize(value) for value in copyright_raw]
-    footer_owner = any(re.search(r'(?<!\w)' + re.escape(legal_normalize(n)) + r'(?!\w)', region)
+    # Ownership begins immediately after the copyright marker/year. A partner
+    # mentioned later in the footer is not the copyright owner.
+    def owner_text(value):
+        for _ in range(20):
+            stripped=re.sub(r'^\s*(?:copyright|©|&copy;|&nbsp;|\(c\)|\d{4}|\{\{year\}\}|[-–—|,:.])\s*','',value, count=1, flags=re.I)
+            if stripped==value:break
+            value=stripped
+        return value
+    owner_raw=[owner_text(value) for value in copyright_raw]
+    copyright_regions = [legal_normalize(value) for value in owner_raw]
+    footer_owner = any(re.match(re.escape(legal_normalize(n)) + r'(?!\w)(?!\s+(?:services|systems|llc|ltd|corp|inc|plc)\b)', region)
                        for n in strong_names for region in copyright_regions if legal_normalize(n))
     # Corporate footers commonly omit Inc./Corp. Require the complete multiword
     # issuer name, a copyright ownership boundary, and corroborating header.
     # A prefix of another legal owner or a generic single word is insufficient.
     bases={normalize(SUFFIX.sub('',re.sub(r'/[A-Z]{2,3}/?$','',n,flags=re.I))) for n in strong_names}
     suffixless_owner=any(len(base.split())>=2 and re.search(r'(?<!\w)'+re.escape(base)+r'(?!\w)',header)
-                        and any(re.search(r'(?<!\w)'+re.escape(base)+r'(?!\w)(?:\s+\d{4})?\s*(?:[.,;|]|all rights|$)',
-                                          re.sub(r'[-–—]+',' ',region.casefold())) for region in copyright_raw)
+                        and any(re.match(re.escape(base)+r'(?!\w)(?:\s+\d{4})?\s*(?:[.,;|]|all rights|$)',
+                                          re.sub(r'[-–—]+',' ',region.casefold())) for region in owner_raw)
                         for base in bases)
     footer_owner=footer_owner or suffixless_owner
     stop = {'inc','corp','corporation','co','company','ltd','plc','holdings','group','global','national','first','bank','financial','resources','therapeutics','industries','technologies','international','trust','properties','healthcare'}
@@ -127,7 +198,17 @@ def validate_candidate(company, candidate, http, now):
     short_brand = any(re.search(r'(?<!\w)' + re.escape(w) + r'(?!\w)', header) for w in brand_tokens)
     acronyms = {''.join(w[0] for w in normalize(n).split() if w not in stop and len(w)>1) for n in company['names']}
     header_compact = re.sub(r'(?<!\w)([a-z])\s+([a-z])(?!\w)', r'\1\2', header)
+    legal_suffixes={'inc','corp','corporation','co','company','ltd','limited','plc','ag','sa'}
+    acronyms |= {''.join(w[0] for w in normalize(n).split() if w not in legal_suffixes) for n in strong_names}
     short_brand = short_brand or any(2 <= len(a) <= 4 and re.search(r'(?<!\w)' + re.escape(a) + r'(?!\w)', header_compact) for a in acronyms)
+    # Exact legal footer still required: recognize compound brands such as
+    # Bio-Rad and JPMorganChase without admitting generic one-word guesses.
+    for base in bases:
+        words=base.split()
+        if len(words)>=2 and all(len(w)>=3 and w not in stop for w in words[:2]):
+            brand=' '.join(words[:2])
+            compact=''.join(words)
+            short_brand = short_brand or bool(re.search(r'(?<!\w)'+re.escape(brand)+r'(?!\w)',header)) or bool(re.search(r'(?<!\w)'+re.escape(compact)+r'(?!\w)',header)) or bool(re.search(r'(?<!\w)'+re.escape(''.join(words[:2]))+r'(?!\w)',header))
     # Explicit structured legal ownership is commonly present only in JSON-LD,
     # excluded from visible text above. A publisher/customer entity on another
     # host, generic brand name or unrelated schema type is not ownership proof.
@@ -158,7 +239,7 @@ def validate_candidate(company, candidate, http, now):
     if not (legal and branded) and not (footer_owner and short_brand) and not (structured_owner and short_brand):
         raise SourceError('OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED')
     return {'status': 'VALIDATED', 'url': response['finalUrl'], 'lastVerified': now, 'confidence': .95,
-            'verificationVersion': 'corporate-ownership-3',
+            'verificationVersion': 'corporate-ownership-4',
             'evidence': [candidate['evidence'], method], 'title': clean(title[1] if title else ' '.join(metadata.values), 150),
             'ownershipEvidence': {'companyNames': strong_names, 'corporateHeader': header[:300],
                                   'copyrightExcerpts': [v[:160] for v in copyright_raw if any(re.search(r'(?<!\w)'+re.escape(base)+r'(?!\w)',legal_normalize(v)) for base in bases)][:2],
