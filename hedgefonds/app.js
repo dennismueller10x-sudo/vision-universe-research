@@ -15,7 +15,6 @@
 
   var DATA_URL = window.HF_DATA_URL || "/hedgefonds/data/hedgefonds.json";
   var BASE = "/hedgefonds/data/";
-  var THEME_KEY = "vu-discover-theme-v1";
   var SERIES = ["--s1", "--s2", "--s3", "--s4", "--s5", "--s6", "--s7", "--s8"];
   var STOCK_SHARDS = 32;
   var FEATURED = ["pershing-square", "berkshire", "scion", "ark", "situational-awareness", "appaloosa", "duquesne",
@@ -126,7 +125,8 @@
     return prettyIssuer(item.displayName || item.name || item.issuer)
       .replace(/\s*-\s*(Cl|Class|Sp|Spon|Reg|Ord)\b.*$/i, "").replace(/\s*-\s*[A-Z]$/, "")
       .replace(/\bTechn$/, "Technologies").replace(/\bHldgs?\b/g, "Holdings").replace(/\bIntl\b/g, "International")
-      .replace(/\bGrp\b/g, "Group").replace(/\bSvcs\b/g, "Services").trim();
+      .replace(/\bGrp\b/g, "Group").replace(/\bSvcs\b/g, "Services")
+      .replace(/^Ss (?=Spdr)/i, "").replace(/-Us$/, "").trim();
   }
   // Von SEC/FIGI abgeschnittene Namen, die sich nicht regelbasiert reparieren lassen
   var NAME_FIX = { SPCX: "SpaceX", GOOGL: "Alphabet (A)", GOOG: "Alphabet (C)", "BRK/B": "Berkshire Hathaway", META: "Meta Platforms" };
@@ -396,15 +396,6 @@
     }).join("");
     document.body.appendChild(nav);
     nav.querySelector(".hf-dock-search").addEventListener("click", openSearch);
-    var theme = document.createElement("button");
-    theme.type = "button";
-    theme.className = "hf-theme";
-    theme.id = "hf-theme";
-    theme.setAttribute("aria-label", "Farbschema wechseln");
-    document.body.appendChild(theme);
-    theme.addEventListener("click", function () {
-      setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
-    });
   }
   function setDock(key) {
     [].forEach.call(document.querySelectorAll(".hf-dock-item"), function (a) {
@@ -447,19 +438,13 @@
     document.body.classList.remove("hf-noscroll");
   }
 
-  /* ------------------------------------------------------------- Theme */
-  function setTheme(t) {
-    document.documentElement.setAttribute("data-theme", t);
-    document.documentElement.setAttribute("data-theme-mode", t);
-    var nav = document.querySelector("vu-navigation");
-    if (nav) nav.setAttribute("theme", t);
-    var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", t === "dark" ? "#0b0d10" : "#ffffff");
-    try { if (t === "dark") localStorage.setItem(THEME_KEY, "dark"); else localStorage.removeItem(THEME_KEY); } catch (e) {}
-    var b = document.getElementById("hf-theme");
-    if (b) b.innerHTML = icon(t === "dark" ? "sun" : "moon");
+  /* ------------------------------------------------------------- Theme
+     Der Schalter sitzt plattformweit in der Navigation (site-navigation.js).
+     Hier wird nur das Kuchendiagramm neu gezeichnet, dessen Farben aus den
+     CSS-Tokens gelesen werden. */
+  document.addEventListener("vu-theme-change", function () {
     if (/^#\/fonds\//.test(location.hash) && S.data) route();
-  }
+  });
 
   /* ----------------------------------------------------- Bausteine */
   function card(f, featured) {
@@ -1067,7 +1052,6 @@
 
   buildDock();
   buildOverlay();
-  setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light");
   root.innerHTML = '<div class="hf-skeleton" style="margin-top:24px;height:420px"></div>';
   load().then(route).catch(function (err) {
     root.innerHTML = '<p class="hf-empty">Die 13F-Daten konnten nicht geladen werden (' + esc(err.message) + ").</p>";
