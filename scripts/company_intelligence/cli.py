@@ -184,7 +184,12 @@ def main(argv=None):
             from company_intelligence.discovery_circuit import DiscoveryCircuit
             from company_intelligence.pipeline import advance
             from company_intelligence.discovery_batch import run as discover_batch,persist
-            prior_circuit=store.state('discoveryCircuit',{})
+            # Corporate-domain and IR/source requests have distinct routes.
+            # Each lane keeps the same bounded failure threshold and cooldown;
+            # an unavailable IR family must not erase a healthy domain lane.
+            # Honor legacy unscoped cooldowns until they expire during migration.
+            circuit_key='discoveryCircuit:'+args.inventory_lane
+            prior_circuit=store.state(circuit_key,store.state('discoveryCircuit',{}))
             if prior_circuit.get('open') and prior_circuit.get('retryAfter','')>now:
                 # Finish deterministic local classifications while preserving
                 # pending network work and the original circuit due time.
@@ -195,9 +200,9 @@ def main(argv=None):
                 return 0
             circuit=DiscoveryCircuit()
             def save_circuit():
-                value={**circuit.snapshot(),'checkedAt':now}
+                value={**circuit.snapshot(),'checkedAt':now,'scope':args.inventory_lane}
                 if value['open']:value['retryAfter']=advance(now,.25)
-                store.set_state('discoveryCircuit',value)
+                store.set_state(circuit_key,value)
                 return value
             selected,candidates=sweep_select(companies,store,now,args.inventory_pass,args.inventory_lane,args.limit)
             pipeline.ensure_aliases([c['companyId'] for c in selected])

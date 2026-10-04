@@ -46,7 +46,7 @@ class PollCircuitTests(unittest.TestCase):
             self.assertTrue(result['deferred'])
             self.assertTrue(result['circuit']['open'])
             store = Store(state / 'state.sqlite')
-            saved = store.state('discoveryCircuit')
+            saved = store.state('discoveryCircuit:ir')
             self.assertTrue(saved['open'])
             self.assertGreater(saved['retryAfter'], saved['checkedAt'])
             self.assertEqual(store.state('officialSite:' + cid)['status'], 'VALIDATED')
@@ -115,3 +115,67 @@ class PollCircuitTests(unittest.TestCase):
             http.opener(urllib.request.Request('https://healthy.example/feed'))
         circuit.failure('https://later.example', SourceError('HTTP_503'))
         self.assertFalse(circuit.snapshot()['open'])
+
+    def test_ir_outage_keeps_its_cooldown_while_domain_lane_verifies(self):
+        import contextlib
+        from company_intelligence.cli import main
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); state = root / 'state'
+            config = root / 'company-intelligence/config'; config.mkdir(parents=True)
+            (config / 'official-sites.json').write_text('{}')
+            issuer = company(); issuer['officialSites'] = []; cid = issuer['companyId']
+            store = Store(state / 'state.sqlite')
+            ir_failure = {'open': True, 'signature': 'SHARED_PROXY_FAILURE',
+                          'retryAfter': '2099-01-01T00:00:00Z', 'affectedHosts': ['ir.example']}
+            store.set_state('discoveryCircuit:ir', ir_failure)
+            store.set_state('siteCandidates:' + cid, {'status': 'CANDIDATE',
+                'candidates': [{'url': 'https://apple.com/', 'evidence': 'EXACT_CIK'}]})
+            store.close(); verified = []
+            def verify(owner, candidate, http, now):
+                verified.append(owner['companyId'])
+                return {'status': 'VALIDATED', 'url': candidate['url'], 'lastVerified': now}
+            def invoke(lane):
+                output = io.StringIO()
+                with patch('company_intelligence.cli.load_universe', return_value={cid: issuer}), \
+                     patch('company_intelligence.site_inventory.import_inventory'), \
+                     patch('company_intelligence.discovery_batch.validate_candidate', side_effect=verify), \
+                     contextlib.redirect_stdout(output):
+                    main(['sweep-inventory', '--root', str(root), '--state', str(state),
+                          '--network', '--inventory-pass', 'isolated', '--inventory-lane', lane])
+                return json.loads(output.getvalue())
+            self.assertEqual(invoke('ir')['stopReason'], 'CIRCUIT_COOLDOWN')
+            self.assertEqual(verified, [])
+            self.assertEqual(invoke('domains')['stopReason'], 'BATCH_COMPLETED')
+            self.assertEqual(verified, [cid])
+            store = Store(state / 'state.sqlite')
+            self.assertEqual(store.state('discoveryCircuit:ir'), ir_failure)
+            self.assertFalse(store.state('discoveryCircuit:domains')['open'])
+            self.assertEqual(store.state('officialSite:' + cid)['status'], 'VALIDATED')
+            store.close()
+
+    def test_unscoped_legacy_outage_blocks_both_lanes_without_resetting_due_time(self):
+        import contextlib
+        from company_intelligence.cli import main
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); state = root / 'state'
+            config = root / 'company-intelligence/config'; config.mkdir(parents=True)
+            (config / 'official-sites.json').write_text('{}')
+            issuer = company(); cid = issuer['companyId']; store = Store(state / 'state.sqlite')
+            legacy = {'open': True, 'signature': 'SHARED_PROXY_FAILURE', 'retryAfter': '2099-01-01T00:00:00Z'}
+            store.set_state('discoveryCircuit', legacy); store.close()
+            for lane in ('domains', 'ir'):
+                output = io.StringIO()
+                with patch('company_intelligence.cli.load_universe', return_value={cid: issuer}), \
+                     patch('company_intelligence.site_inventory.import_inventory'), \
+                     patch('company_intelligence.discovery_batch.run', side_effect=AssertionError('COOLDOWN_BYPASSED')), \
+                     contextlib.redirect_stdout(output):
+                    main(['sweep-inventory', '--root', str(root), '--state', str(state),
+                          '--network', '--inventory-pass', 'legacy', '--inventory-lane', lane])
+                result = json.loads(output.getvalue())
+                self.assertEqual(result['stopReason'], 'CIRCUIT_COOLDOWN')
+                self.assertEqual(result['requests'], 0)
+                self.assertEqual(result['circuit']['retryAfter'], legacy['retryAfter'])
+            store = Store(state / 'state.sqlite')
+            self.assertEqual(store.state('discoveryCircuit'), legacy)
+            self.assertIsNone(store.state('discoveryCircuit:domains'))
+            self.assertIsNone(store.state('discoveryCircuit:ir')); store.close()
