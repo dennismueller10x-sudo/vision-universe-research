@@ -66,7 +66,7 @@ function topList(list, n) { return list.slice(0, n).map((x) => ({ key: x.key, we
 if (existsSync(OUT)) for (const f of readdirSync(OUT)) if (f.endsWith(".json")) rmSync(join(OUT, f));
 mkdirSync(OUT, { recursive: true });
 const index = { schemaVersion: "vu-vorsorge-holdings-index-1.0.0", version: VERSION, source: "SEC_NPORT", sourceType: "REGULATORY",
-  license: manifest.license, quarters: manifest.quarters.map((q) => q.quarter), fields: ["series", "asOf", "positions", "top10", "netAssets", "usShare", "changes", "high", "mapped"], bySymbol: {}, feed: [] };
+  license: manifest.license, quarters: manifest.quarters.map((q) => q.quarter), fields: ["series", "asOf", "positions", "top10", "netAssets", "usShare", "changes", "high", "mapped", "effectiveNumber"], bySymbol: {}, feed: [] };
 const stats = { series: 0, snapshots: 0, events: 0, eventsByType: {}, mappedShare: [], qualityErrors: 0, qualityWarnings: 0, rows: 0 };
 
 for (const meta of manifest.series) {
@@ -120,7 +120,7 @@ for (const meta of manifest.series) {
   const us = (ex.countries.find((c) => c.key === "US") || {}).weight || 0;
   const evs = lastDiff ? lastDiff.events : [];
   for (const c of meta.classes) {
-    index.bySymbol[c.symbol] = [meta.seriesId, cur.asOf, conc.positions, conc.top10, cur.totalNetAssets, r6(us), evs.filter((e) => e.importance !== "LOW").length, evs.filter((e) => e.importance === "HIGH").length, map.mappedShareOfEquity];
+    index.bySymbol[c.symbol] = [meta.seriesId, cur.asOf, conc.positions, conc.top10, cur.totalNetAssets, r6(us), evs.filter((e) => e.importance !== "LOW").length, evs.filter((e) => e.importance === "HIGH").length, map.mappedShareOfEquity, conc.effectiveNumber];
   }
   C.relevant(evs, 2).filter((e) => e.importance === "HIGH").forEach((e) => index.feed.push({ symbol: meta.classes[0].symbol, series: meta.seriesId, asOf: e.asOf, type: e.eventType, text: e.explanation, aum: cur.totalNetAssets }));
 }

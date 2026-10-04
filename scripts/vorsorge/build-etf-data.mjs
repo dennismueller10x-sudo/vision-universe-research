@@ -36,6 +36,7 @@ const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Master = require(join(root, "vorsorge/engines/etf-master.js"));
 const Tax = require(join(root, "vorsorge/engines/etf-taxonomy.js"));
+const FUND = require(join(root, "vorsorge/engines/etf-fundamentals.js"));
 const A = require(join(root, "vorsorge/engines/etf-analytics.js"));
 const Codec = require(join(root, "vorsorge/engines/series-codec.js"));
 const Monitor = require(join(root, "vorsorge/engines/monitor.js"));
@@ -195,11 +196,51 @@ function seoPage(e) {
 /* ------------------------------------------------------------- Index-Spalten */
 export const INDEX_FIELDS = ["slug", "id", "symbol", "name", "issuer", "exchange", "currency", "productType", "assetClass", "region", "index", "theme", "category",
   "strategy", "retirementClass", "layer", "leverage", "inverse", "status", "single", "hy", "from", "price", "priceDate", "d1",
-  "p1W", "p1M", "p3M", "p6M", "pYTD", "p1Y", "p3Y", "p5Y", "p10Y", "pMAX", "t1Y", "t5Y", "vol", "mdd", "trend", "rs", "coverage", "dist", "ucits"];
+  "p1W", "p1M", "p3M", "p6M", "pYTD", "p1Y", "p3Y", "p5Y", "p10Y", "pMAX", "t1Y", "t5Y", "vol", "mdd", "trend", "rs", "coverage", "dist", "ucits",
+  "ter", "aum", "hp", "t10", "hAsOf", "hch", "us", "hs", "dom"];
+
+/* --------------------------------------------- Primaerquellen (SEC) */
+const NOT_IN_NPORT = "Für diesen Fonds liegt keine N-PORT-Meldung vor (z. B. Unit Investment Trust wie SPY/QQQ/DIA, Rohstoff-Trust oder Nicht-US-Fonds). Holdings eines Emittenten dürfen ohne Lizenz nicht automatisiert übernommen werden.";
+function secSources(e, hIdx, rr) {
+  const otc = /^(PINK|OTC|OTCGREY|OTCMKTS|OTCBB|OTCQB|OTCQX|OTCD|OTCCE|EXPM)$/.test(String(e.exchange || "").toUpperCase());
+  const h = !otc && hIdx && hIdx.bySymbol[e.symbol] || null;
+  const c = !otc && rr && rr.bySymbol && rr.bySymbol[e.symbol] || null;
+  const srcs = [];
+  srcs.push({ fields: {
+    name: FUND.field(e.name, { source: "TIINGO", sourceType: "MARKET_DATA_PROVIDER", confidence: "MEDIUM" }),
+    ticker: FUND.field(e.symbol, { source: "TIINGO", sourceType: "MARKET_DATA_PROVIDER", confidence: "HIGH" }),
+    exchange: FUND.field(e.exchange, { source: "TIINGO", sourceType: "MARKET_DATA_PROVIDER", confidence: "HIGH" }),
+    listingCurrency: FUND.field(e.currency, { source: "TIINGO", sourceType: "MARKET_DATA_PROVIDER", confidence: "HIGH" }),
+    issuer: FUND.field(FUND.normalizeIssuer(e.name) || e.issuer || null, { source: "VU_NAME_RULES", sourceType: "HEURISTIC", confidence: "MEDIUM" })
+  } });
+  if (h) {
+    const [series, asOf, positions, , netAssets] = h;
+    const ctx = { source: "SEC_NPORT", sourceType: "REGULATORY", sourceUrl: "https://www.sec.gov/data-research/sec-markets-data/form-n-port-data-sets", asOf, confidence: "HIGH" };
+    srcs.push({ fields: {
+      aum: FUND.field(netAssets, ctx), aumCurrency: FUND.field("USD", ctx), aumLevel: FUND.field("FUND", ctx), numberOfHoldings: FUND.field(positions, ctx),
+      domicile: FUND.field("US", Object.assign({}, ctx, { originalField: "N-PORT filer (US-registrierte Investmentgesellschaft)" })),
+      ucits: FUND.field(false, Object.assign({}, ctx, { originalField: "US Investment Company Act 1940 - kein UCITS" })),
+      legalStructure: FUND.field("US_INVESTMENT_COMPANY_ACT_1940", ctx), fundStatus: FUND.field("ACTIVE", ctx)
+    } });
+  }
+  if (c) {
+    const cx = (f) => ({ source: "SEC_RR", sourceType: "REGULATORY", sourceUrl: "https://www.sec.gov/data-research/sec-markets-data/mutual-fund-prospectus-riskreturn-summary-data-sets", asOf: f.filed, confidence: "HIGH", originalField: "Prospekt-Gebührentabelle (XBRL)" });
+    srcs.push({ fields: {
+      expenseRatio: c.expenseRatio ? FUND.field(c.expenseRatio.value, cx(c.expenseRatio)) : null,
+      netExpenseRatio: c.netExpenseRatio ? FUND.field(c.netExpenseRatio.value, cx(c.netExpenseRatio)) : null,
+      managementFee: c.managementFee ? FUND.field(c.managementFee.value, cx(c.managementFee)) : null
+    } });
+  }
+  const merged = FUND.merge(srcs, { fundId: h ? "sec:" + h[0] : e.canonicalETFId || null, shareClassId: e.shareClassId || null, listingId: e.listingId || null }).record;
+  const er = c && (c.netExpenseRatio || c.expenseRatio);
+  return { h, c, merged, costValue: er ? er.value : null, costBasis: c ? (c.netExpenseRatio ? "NET_EXPENSE_RATIO" : "EXPENSE_RATIO") : null };
+}
 
 /* ------------------------------------------------------------------ Lauf */
 export function build() {
   const { rows, ingest } = loadRows();
+  const hIdx = tryJson(join(OUT, "data/holdings/index.json"));
+  const rr = tryJson(join(OUT, "data/sources/sec-rr-costs.json"));
   const overrides = tryJson(join(OUT, "data/overrides.json"))?.overrides || {};
   const prevIndex = tryJson(join(OUT, "data/etf-index.json"));
   const prevExtraRows = (tryJson(join(OUT, "data/etf-index-extra.json")) || {}).rows || null;
@@ -275,13 +316,20 @@ export function build() {
       coverage: q.coverage, missingFields: q.missingFields, canonicalizationMethod: e.canonicalizationMethod,
       canonicalizationConfidence: e.canonicalizationConfidence, manualOverride: e.manualOverride || null
     };
-    const dna = Master.dna(full, priceM ? { volatility: priceM.volatility.value, maxDrawdown: priceM.maxDrawdown.value, momentum12m: priceM.windows["1Y"].value, historyYears: priceM.historyYears } : {});
+    const sec = secSources(full, hIdx, rr);
+    full.fundamentals = sec.merged;
+    full.secSeries = sec.h ? sec.h[0] : null;
+    const dna = Master.dna(full, priceM ? { volatility: priceM.volatility.value, maxDrawdown: priceM.maxDrawdown.value, momentum12m: priceM.windows["1Y"].value, historyYears: priceM.historyYears } : {},
+      { cost: sec.costValue, effectiveNumber: sec.h && Number.isFinite(sec.h[9]) ? sec.h[9] : null, top10: sec.h ? sec.h[3] : null });
     dna.dataQuality = { value: Math.round(q.coverage * 100), status: "CALCULATED", label: "Datenqualität (Feldabdeckung)" };
     writeFileSync(join(detailDir, full.slug + ".json"), JSON.stringify({
       schemaVersion: "vu-vorsorge-etf-2.0.0", ...full, quality: q, provenance, dna, metrics: priceM, metricsTotal: totalM,
       totalReturn: rec ? rec.totalReturn : { state: "NO_SERIES" }, seriesPath: s ? "/vorsorge/data/series/" + e.symbol + ".json" : null,
-      holdings: { status: "SOURCE_NOT_CONNECTED", reason: "Holdings liefert Tiingo nicht. Vertrag: etf-holdings-2.0.0." },
-      costs: { status: "SOURCE_NOT_CONNECTED", ter: null }
+      holdings: sec.h ? { status: "AVAILABLE", source: "SEC_NPORT", sourceType: "REGULATORY", series: sec.h[0], path: "/vorsorge/data/holdings/" + sec.h[0] + ".json", asOf: sec.h[1], positions: sec.h[2], top10: sec.h[3] }
+        : { status: full.otc ? "NOT_APPLICABLE" : "NOT_IN_NPORT", reason: full.otc ? "US-Freiverkehrszeile eines ausländischen Fonds." : NOT_IN_NPORT },
+      costs: sec.c ? { status: "AVAILABLE", basis: sec.costBasis, value: sec.costValue, expenseRatio: full.fundamentals.expenseRatio, netExpenseRatio: full.fundamentals.netExpenseRatio, managementFee: full.fundamentals.managementFee,
+        note: "Laufende Kostenquote laut Prospekt-Gebührentabelle. Handels-, Depot- und Transaktionskosten sind nicht enthalten." }
+        : { status: "SOURCE_NOT_CONNECTED", value: null, note: "Keine Kostenquote aus einer Primär- oder Regulierungsquelle verfügbar." }
     }));
     entries.push({ full, priceM, totalM });
   }
@@ -301,7 +349,11 @@ export function build() {
       p("1W"), p("1M"), p("3M"), p("6M"), p("YTD"), p("1Y"), p("3Y"), p("5Y"), p("10Y"), p("MAX"),
       t ? t.windows["1Y"].value : null, t ? (t.windows["5Y"].annualized ?? null) : null,
       m ? m.volatility.value : null, m ? m.maxDrawdown.value : null, m ? m.trend.value : null, m ? m.relativeStrengthVsSPY.value : null,
-      Master.dataQuality(e).coverage, e.distributionPolicy, e.ucits];
+      Master.dataQuality(e).coverage, e.distributionPolicy, e.ucits,
+      FUND.valueOf(e.fundamentals && (e.fundamentals.netExpenseRatio || e.fundamentals.expenseRatio)), FUND.valueOf(e.fundamentals && e.fundamentals.aum),
+      hIdx && hIdx.bySymbol[e.symbol] && e.secSeries ? hIdx.bySymbol[e.symbol][2] : null, hIdx && e.secSeries ? hIdx.bySymbol[e.symbol][3] : null,
+      hIdx && e.secSeries ? hIdx.bySymbol[e.symbol][1] : null, hIdx && e.secSeries ? hIdx.bySymbol[e.symbol][6] : null,
+      hIdx && e.secSeries ? hIdx.bySymbol[e.symbol][5] : null, e.secSeries || null, FUND.valueOf(e.fundamentals && e.fundamentals.domicile)];
   };
   const layerCount = (l) => entries.filter((x) => x.full.layer === l).length;
   const all = entries.map((x) => x.full);
