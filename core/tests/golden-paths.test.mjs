@@ -1,5 +1,6 @@
 /* Core · Golden Paths ueber den echten Repository-Stand.
 
+   Stock:       Security -> Kurs -> Chart -> Fundamentals -> Quant -> News
    Discover:    Universum -> Ranking (Startseite) -> Karte -> Aktienseite -> Chart
    Supertrader: Kursreihe -> Strategie -> Signal -> Ausgabe -> Chartpfad
    Alle Produkte muessen dieselbe Identitaet und denselben Kurs zeigen. */
@@ -80,4 +81,55 @@ test("Supertrader · Signal-Stand liegt nicht vor dem Kursstand der Plattform zu
   assert.ok(st <= eod, "Supertrader vor den Kursen?");
   const d = (a, b) => (Date.parse(b) - Date.parse(a)) / 86400000;
   assert.ok(d(st, eod) <= 4, "Supertrader " + st + " vs Kurse " + eod);
+});
+
+/* Stock-Pfad (Mega-Mission §20) fuer jeden Titel der Discover-Startseite:
+   jede Stufe liefert ueber den Core-Vertrag, mit derselben Identitaet und
+   demselben Kurs. "Nicht verfuegbar" ist nur mit strukturellem Grund
+   zulaessig (kein CIK = keine SEC-Fundamentals), nie als stilles Loch. */
+test("Stock · Security -> Kurs -> Chart -> Fundamentals -> Quant fuer jeden Startseitentitel", async () => {
+  const home = json("discover/data/home/US_REAL.json");
+  const titel = [...new Set((home.surfaces || []).flatMap((s) => (s.cards || []).map((k) => k.symbol)))];
+  assert.ok(titel.length >= 5, "Startseite ohne Titel");
+  const fehler = [];
+  for (const t of titel) {
+    const sec = await c.getSecurity(t);
+    if (sec.state !== "AVAILABLE") { fehler.push(t + ": Security " + sec.reason); continue; }
+    if (sec.data.ambiguous) fehler.push(t + ": Identitaet mehrdeutig");
+    const px = await c.getLatestPrice(t), reihe = await c.getPriceSeries(t);
+    if (px.state !== "AVAILABLE" || reihe.state !== "AVAILABLE") { fehler.push(t + ": Kurs/Reihe " + (px.reason || reihe.reason)); continue; }
+    if (px.data.securityId !== sec.data.securityId) fehler.push(t + ": Kurs gehoert zu " + px.data.securityId);
+    const p = reihe.data.points, letzter = p[p.length - 1];
+    if (p.length < 20) fehler.push(t + ": Chart mit " + p.length + " Punkten");
+    if (p.some((x, i) => i && x[0] <= p[i - 1][0])) fehler.push(t + ": Chartpunkte nicht aufsteigend");
+    // Was die Aktienseite als Kurs zeigt, muss das Chartende sein (nicht
+    // Reihe gegen sich selbst: getLatestPrice liest dieselbe Reihe).
+    const seite = await c.stockPage(t);
+    if (!seite.ok) fehler.push(t + ": Aktienseite fehlt");
+    else if (seite.data.price.value !== letzter[1]) fehler.push(t + ": Seite " + seite.data.price.value + " / Chartende " + letzter[1]);
+    const fu = await c.getFundamentals(t);
+    if (fu.state !== "AVAILABLE" && fu.reason !== "NO_CIK") fehler.push(t + ": Fundamentals " + fu.reason);
+    const q = await c.getQuantData(t);
+    if (q.state !== "AVAILABLE") fehler.push(t + ": Quant " + q.reason);
+    else if (!q.data.identityConsistent) fehler.push(t + ": Quant-Zeile gehoert zu " + q.data.securityId);
+  }
+  assert.deepEqual(fehler, []);
+});
+
+/* News: Frische ist eine Owner-Entscheidung (kein Zeitplan). Der Pfad
+   verlangt daher nicht "frisch", sondern dass Veraltung erkennbar ist und
+   die Seite sie sagt - und dass jede Meldung zu einer Security fuehrt. */
+test("Stock · News: Stand erkennbar, Veraltung angezeigt, jede Meldung zu einer Security", async () => {
+  const n = await c.getNews();
+  assert.equal(n.state, "AVAILABLE", "News-Quelle fehlt");
+  assert.ok(Number.isFinite(Date.parse(n.data.updatedAt)), "News ohne Aktualisierungszeit");
+  assert.ok(n.data.maxAgeHours > 0, "News ohne zulaessiges Alter");
+  const seite = readFileSync(join(ROOT, "news", "news.js"), "utf8");
+  assert.match(seite, /news-stale/, "News-Seite zeigt Veraltung nicht an");
+  const offen = [];
+  for (const sym of new Set(n.data.items.map((i) => i.symbol).filter(Boolean))) {
+    const s = await c.getSecurity(sym);
+    if (s.state !== "AVAILABLE") offen.push(sym + ": " + s.reason);
+  }
+  assert.deepEqual(offen, []);
 });
