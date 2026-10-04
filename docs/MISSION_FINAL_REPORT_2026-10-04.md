@@ -69,6 +69,8 @@ Unerklärte Abweichungen brechen den Lauf künftig **vor** dem Commit ab. Damit 
 | #406 + #424 | Konflikt in `discover/index.html` (neuer Theme-Schalter) | Schalter aus `main` plus Scroll-Skript. Discover-Tests 324/324. |
 | #394 + #417 | Der Identitäts-Wächter (#394) fand `"ref_" + symbol` in der neuen Vorsorge-Säule (`scripts/vorsorge/build-etf-data.mjs`). | Begründete Ausnahme: `core/identity.js` liegt erst mit #386 auf `main`, für reine Buchstaben-Ticker ist das Ergebnis identisch. Der Wächter meldet sie, sobald sie veraltet ist. Umstellung nach #386. |
 | #395 (CI) | `push-with-retry`-Test scheiterte beim Aufräumen (`ENOTEMPTY`, abgekoppeltes `git gc --auto`). | In #386: keine automatische Git-Wartung in Testrepos, Aufräumen mit Wiederholung. Testlogik unverändert. |
+| #428 (CI) | `sec-fundamentals-universe.yml` verlangte `PRODUCT_TITLES >= 7000`, eine Schwelle aus der Zeit vor der Datenhygiene. Seit 6853 Titeln scheiterte sie bei jedem Lauf, auch auf `main`. | Ersetzt durch exakte Gleichheit mit dem Produktuniversum der Eignungsschicht, also strenger als vorher (#428). |
+| #421 (CI) | Social-Test AD25 suchte die Deploy-Bestätigung im alten Inline-Ausdruck, den #421 auf `env` umgestellt hat. | Der Test prüft die env-Form gleich streng (Variable aus `inputs.confirm_deploy` und Vergleich mit DEPLOY), mit Gegenprobe. Social 1959/1959. |
 
 ---
 
