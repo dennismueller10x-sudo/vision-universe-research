@@ -1,10 +1,19 @@
 import json,sys,tempfile,unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]))
-from company_intelligence.site_inventory import inventory,import_inventory
+from company_intelligence.site_inventory import inventory,import_inventory,candidate_routes
 from company_intelligence.store import Store
 from test_engine import company,NOW
 class InventoryTests(unittest.TestCase):
+ def test_duplicate_http_https_routes_do_not_change_original_provenance(self):
+  value={'candidates':[{'url':'http://www.carriageservices.com/','evidence':'PUBLISHER_AUTHOR'}, {'url':'https://www.carriageservices.com/','evidence':'SEC_LOGO'}]}
+  result=candidate_routes(value)
+  self.assertEqual(len(result),1);self.assertEqual(result[0]['url'],'https://www.carriageservices.com/')
+  self.assertEqual(value['candidates'][0]['url'],'http://www.carriageservices.com/')
+  self.assertEqual(len(value['candidates']),2)
+ def test_different_host_path_or_query_remains_separate(self):
+  for other in ['https://other.example/','https://www.carriageservices.com/other','https://www.carriageservices.com/?tenant=other','https://carriageservices.com/']:
+   self.assertEqual(len(candidate_routes({'candidates':[{'url':'https://www.carriageservices.com/'},{'url':other}]})),2)
  def fixture(self,tmp,rows,credits=None):
   root=Path(tmp);p=root/'discover/logos';p.mkdir(parents=True);(p/'sites.json').write_text(json.dumps({'generatedAt':NOW,'sites':rows}));(p/'credits.json').write_text(json.dumps({'credits':credits or {}}));return root
  def test_existing_output_is_candidate_not_verified_and_import_is_incremental(self):

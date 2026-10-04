@@ -7,6 +7,17 @@ from company_intelligence.transport import PublicHTTP,SourceError,BudgetExhauste
 from company_intelligence.store import Store
 from test_engine import company,NOW
 class BatchTests(unittest.TestCase):
+ def test_transport_duplicate_route_reaches_owner_verifier_without_silent_skip(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   c=company();c['officialSites']=[];cid=c['companyId']
+   candidates={cid:{'status':'CANDIDATE','candidates':[{'url':'http://apple.com/','evidence':'LOGO'},{'url':'https://apple.com/','evidence':'PUBLISHER'}]}}
+   seen=[]
+   def verify(owner,candidate,http,now):
+    seen.append(candidate['url']);raise SourceError('OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED')
+   with patch('company_intelligence.discovery_batch.validate_candidate',side_effect=verify):
+    result=run([c],candidates,PublicHTTP(tmp),NOW,8,60,domain_only=True,on_result=lambda r:seen.append(r['status']))
+   self.assertEqual(seen,['https://apple.com/','REJECTED']);self.assertEqual(len(result),1)
+   self.assertNotIn('site',result[0]);self.assertEqual(len(candidates[cid]['candidates']),2)
  def test_host_cooldown_does_not_block_an_independent_host(self):
   import threading
   ready=threading.Event();order=[]

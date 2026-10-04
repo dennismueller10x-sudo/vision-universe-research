@@ -12,6 +12,7 @@ from .discovery import validate_discovery_candidate as validate_candidate
 from .feeds import discover_ir
 from .model import domain
 from .pipeline import advance
+from .site_inventory import candidate_routes
 
 
 def run(companies, candidates, http, now, request_budget, max_seconds, workers=4, domain_only=False, admission_interval=2,on_result=None,circuit=None):
@@ -24,6 +25,7 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
     # request on hundreds of unusable half-discoveries.
     for c in companies:
         evidence = {'status':'CANDIDATE','candidates':[{'url':c['officialSites'][0],'evidence':'EXISTING_VALIDATED_SITE'}]} if c.get('officialSites') else candidates.get(c['companyId'],{})
+        evidence = {**evidence,'candidates':candidate_routes(evidence)}
         if evidence.get('status')!='CANDIDATE' or len(evidence.get('candidates',[]))!=1:continue
         host=domain(evidence['candidates'][0]['url'])
         if host in hosts:continue

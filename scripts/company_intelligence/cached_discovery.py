@@ -17,6 +17,7 @@ from .inventory_sweep import prefix, failure_category
 from .discovery import validate_discovery_candidate
 from .feeds import discover_ir
 from .store import Store, export_revision
+from .site_inventory import candidate_routes
 
 
 class CachedHTTP(PublicHTTP):
@@ -100,6 +101,7 @@ def replay(root, store, companies, pass_id, lane='domains', limit=100, max_secon
         try:
             if lane == 'domains':
                 evidence = store.state('siteCandidates:' + cid, {})
+                evidence = {**evidence,'candidates':candidate_routes(evidence)}
                 if evidence.get('status') != 'CANDIDATE' or len(evidence.get('candidates', [])) != 1:
                     result['status'] = 'AMBIGUOUS'
                 else:

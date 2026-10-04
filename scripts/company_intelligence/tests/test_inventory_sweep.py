@@ -6,6 +6,22 @@ from test_engine import company,NOW
 
 
 class InventorySweepTests(unittest.TestCase):
+ def test_transport_equivalent_candidates_resume_same_frozen_pending_identity(self):
+  cid=self.a['companyId'];original={'status':'CANDIDATE','candidates':[{'url':'http://one.example/','evidence':'PUBLISHER_AUTHOR'},{'url':'https://one.example/','evidence':'LOGO'}]}
+  self.s.set_state('siteCandidates:'+cid,original)
+  self.s.set_state('inventorySweep:duplicates:domains:inventory',[cid])
+  chosen,candidates=select(self.cs,self.s,NOW,'duplicates','domains')
+  self.assertEqual([c['companyId'] for c in chosen],[cid]);self.assertEqual(len(candidates[cid]['candidates']),1)
+  self.assertEqual(self.s.state('siteCandidates:'+cid),original)
+  self.assertEqual(progress(self.s,'duplicates','domains')['pending'],1)
+  record({'companyId':cid,'status':'VALIDATED','requests':2},self.s,NOW,'duplicates','domains')
+  self.assertEqual(progress(self.s,'duplicates','domains')['pending'],0)
+ def test_inconsistent_same_host_routes_receive_durable_ambiguity_without_network(self):
+  cid=self.a['companyId'];self.s.set_state('siteCandidates:'+cid,{'status':'CANDIDATE','candidates':[{'url':'https://one.example/company-a'},{'url':'https://one.example/company-b'}]})
+  self.s.set_state('inventorySweep:routes:domains:inventory',[cid])
+  self.assertEqual(select(self.cs,self.s,NOW,'routes','domains')[0],[])
+  row=self.s.state('inventorySweep:routes:domains:'+cid);self.assertEqual(row['status'],'AMBIGUOUS');self.assertEqual(row['networkRequests'],0)
+  value=self.s.state('siteCandidates:'+cid);self.assertEqual(value['status'],'AMBIGUOUS');self.assertEqual(len(value['candidates']),2)
  def setUp(self):
   self.tmp=tempfile.TemporaryDirectory();self.s=Store(Path(self.tmp.name)/'state.sqlite')
   self.a=company('One Corp','ONE','0000000001');self.b=company('Two Corp','TWO','0000000002')

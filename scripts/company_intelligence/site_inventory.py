@@ -18,6 +18,21 @@ ALLOWED_VIA = {'WIKIDATA_CIK','WIKIDATA_NAME','WIKIDATA_TICKER','SEC_STAMMDATEN'
 EXCLUDED = re.compile(r'(^|\.)(sec\.gov|wikidata\.org|wikipedia\.org|facebook\.com|linkedin\.com|youtube\.com|x\.com|google\.com|yahoo\.com|bloomberg\.com|reuters\.com)$')
 
 
+def candidate_routes(value):
+    """Collapse only routes the verifier already treats as identical.
+
+    Original candidate/provenance rows stay in the ledger. Different hosts,
+    paths and non-tracking queries remain distinct ownership candidates.
+    """
+    routes = {}
+    for index, candidate in enumerate(value.get('candidates', [])):
+        url = canonical_url(candidate.get('url'))
+        normalized = re.sub(r'^http:', 'https:', url) if url else None
+        routes.setdefault(normalized or ('INVALID', index),
+                          {**candidate, 'url': normalized} if normalized else candidate)
+    return list(routes.values())
+
+
 def inventory(root, companies):
     root=Path(root)
     path=root/'discover/logos/sites.json'

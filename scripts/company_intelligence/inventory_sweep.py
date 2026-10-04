@@ -8,6 +8,7 @@ import json
 import re
 from collections import Counter
 from .model import domain
+from .site_inventory import candidate_routes
 
 
 def prefix(pass_id, lane):
@@ -34,7 +35,8 @@ def failure_category(status, reason=''):
 def select(companies, store, now, pass_id, lane, limit=50, allow_network=True):
     key=prefix(pass_id,lane)
     if not 1<=limit<=100:raise ValueError('INVALID_INVENTORY_LIMIT')
-    candidates={cid:store.state('siteCandidates:'+cid,{}) for cid in companies}
+    candidates={cid:{**value,'candidates':candidate_routes(value)}
+                for cid in companies for value in [store.state('siteCandidates:'+cid,{})]}
     snapshot=store.state(key+'inventory')
     if snapshot is None:
         snapshot=sorted(cid for cid,value in candidates.items() if value.get('candidates'))
@@ -54,7 +56,11 @@ def select(companies, store, now, pass_id, lane, limit=50, allow_network=True):
         due_after=(prior or {}).get('retryAfter') or (site if lane=='domains' else store.state('ir:'+cid,{})).get('retryAfter') or '9999'
         if prior and not (retryable and due_after<=now) and not (lane=='ir' and prior.get('status')=='NO_VERIFIED_DOMAIN' and official):continue
         if lane=='domains':
-            status='ALREADY_VERIFIED' if official else 'AMBIGUOUS' if value.get('status')!='CANDIDATE' else None
+            if not official and value.get('status')=='CANDIDATE' and len(value.get('candidates',[]))!=1:
+                original=store.state('siteCandidates:'+cid,{})
+                store.set_state('siteCandidates:'+cid,{**original,'status':'AMBIGUOUS',
+                    'reason':'MULTIPLE_NON_EQUIVALENT_WEBSITE_CANDIDATES','checkedAt':now})
+            status='ALREADY_VERIFIED' if official else 'AMBIGUOUS' if value.get('status')!='CANDIDATE' or len(value.get('candidates',[]))!=1 else None
             retry=site.get('retryAfter','')
         else:
             ir=store.state('ir:'+cid,{})
