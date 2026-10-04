@@ -84,4 +84,16 @@ Ziel 1/2 erreicht, Invalidation zuerst, MFE/MAE, Zeit bis Ziel/Invalidation, Rev
 
 ## 12. Nachträge
 
-* *(leer)*
+### Nachtrag 1 — 04.10.2026, nach Pipeline-Red-Team (vor jeder Extraktion, keine Daten vorhanden)
+
+Grundlage: `reviews/PRACTITIONER_PIPELINE_REDTEAM.md`. Es existiert noch kein einziger Fall; die Änderungen sind daher keine nachträgliche Anpassung an Ergebnisse.
+
+1. **Richtung (C1):** Zwei getrennte Größen statt einer. *A1* = Richtung der laufenden Welle („nächste Bewegung ab jetzt“), *A2* = Bewegung nach Abschluss der laufenden Welle. VU: A1 = Richtung der laufenden Welle, A2 = `nextMove`. Strukturelles Szenario S nutzt A1 und Rolle. Praktiker „seitwärts“ ist NOT_COMPARABLE, nicht „abweichend“.
+2. **Stichprobenrahmen (H5):** Je Quelle werden vor der ersten Extraktion im Quellenverzeichnis festgehalten: Zeitfenster, Archivliste als Rahmen (chronologisch vollständige Liste aller Beiträge im Fenster, aus der Plattform-Übersicht, nicht aus der Websuche), Schrittweite k und Startindex (aus Seed 20261004). Die Discovery-Queue dient nur dem Auffinden von Quellen, **nie** als Stichprobe. Beiträge mit Erfolgs-/Rückblickstitel werden im Rahmen gezählt und als ausgeschlossen dokumentiert, nicht still übersprungen.
+3. **Extraktion ohne Ergebniswissen (H6):** Extrahierende arbeiten mit der Kursansicht bis zum Stichtag (Vergleichsseite, Blindmodus) und notieren vor der Extraktion, ob ihnen der spätere Verlauf des Instruments bekannt ist (`ambiguities`: „Ergebnis bekannt“). Primär = die vom Praktiker ausdrücklich als bevorzugt/Hauptszenario bezeichnete Zählung; ohne ausdrückliche Bezeichnung die zuerst und ausführlichste gezeigte; nicht entscheidbar → `UNKNOWN`. Für bearbeitete Beiträge gilt nur ein belegter Originalzustand (Archiv-Snapshot oder Plattform-Versionsverlauf); sonst `editedAfterPublication: UNKNOWN` und Sicherheit höchstens MEDIUM.
+4. **Aufteilung (H3):** Zusätzlich zu Quelle und Zeit wird nach Instrument-Zeit-Clustern getrennt: Kein Holdout-Fall darf mit einem Entwicklungsfall dasselbe VU-Instrument und einen Stichtag innerhalb ±20 Handelstagen teilen (sonst wandert der Entwicklungsfall in QUARANTINE). Revisionen und Cross-Posts erben die Aufteilung ihres Originals.
+5. **Versiegelte Holdouts (H4):** Holdout-Kennzahlen werden nur mit ausdrücklicher Entsiegelung berechnet; die Holdout-Quelle wird im Freeze-Manifest festgeschrieben.
+6. **Mindestgrößen (H7):** Konfidenzintervalle erst ab 5 Clustern, κ erst ab 20 Paaren; HKCM und Phantom by HKCM gelten als **eine** Quellenfamilie (nicht unabhängig) für Mensch–Mensch-Vergleich, Cluster und die 40-%-Grenze.
+7. **Zeitstempel (MEDIUM):** Veröffentlichungen mit Genauigkeit DAY werden in der Zeitzone der Quelle interpretiert, nicht der des Lesers. Bei verzögerter öffentlicher Freigabe (z. B. ElliottWaveTrader, 72 h) gilt der belegte Zeitpunkt der Erstveröffentlichung; ist er nicht belegt, wird der Fall ausgeschlossen (sonst sähe VU mehr Daten als der Praktiker hatte).
+8. **Vorbelastung:** Die Engine wurde in Mission II gegen 31 ElliottWave-Forecast-Fundstellen aus Suchzusammenfassungen geprüft (Datensatz später geleert). Fälle dieser Quelle aus demselben Zeitraum werden markiert und separat berichtet.
+9. **Ergebnis getrennt:** Die Ergebnisstudie läuft als eigener Schritt erst nach versiegeltem Methodenvergleich desselben Freeze-Hashes.
