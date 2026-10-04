@@ -256,6 +256,27 @@
     return out;
   }
 
+
+  /* ------------------------------------------- SIC -> Wirtschaftszweig */
+  /** Naeherung SEC-SIC -> elf Sektoren (Bezeichnung "Wirtschaftszweig (SEC-SIC)", nicht GICS). */
+  var SECTORS_DE = { TECH: "Technologie", HEALTH: "Gesundheit", FIN: "Finanzen", RE: "Immobilien", ENERGY: "Energie", MAT: "Grundstoffe",
+    IND: "Industrie", DISC: "Zyklischer Konsum", STAPLES: "Basiskonsum", COMM: "Kommunikation", UTIL: "Versorger" };
+  function sicSector(sic) {
+    var s = Number(sic);
+    if (!Number.isFinite(s) || s <= 0) return null;
+    var R = [[100, 999, "STAPLES"], [1000, 1099, "MAT"], [1200, 1399, "ENERGY"], [1400, 1499, "MAT"], [1500, 1799, "IND"], [2000, 2199, "STAPLES"],
+      [2200, 2399, "DISC"], [2400, 2499, "MAT"], [2500, 2599, "DISC"], [2600, 2699, "MAT"], [2700, 2799, "COMM"], [2800, 2829, "MAT"], [2830, 2836, "HEALTH"],
+      [2840, 2844, "STAPLES"], [2845, 2899, "MAT"], [2900, 2999, "ENERGY"], [3000, 3099, "MAT"], [3100, 3199, "DISC"], [3200, 3399, "MAT"], [3400, 3499, "IND"],
+      [3500, 3569, "IND"], [3570, 3579, "TECH"], [3580, 3629, "IND"], [3630, 3639, "DISC"], [3640, 3659, "IND"], [3660, 3679, "TECH"], [3680, 3699, "IND"],
+      [3710, 3716, "DISC"], [3750, 3751, "DISC"], [3700, 3799, "IND"], [3800, 3839, "TECH"], [3840, 3859, "HEALTH"], [3860, 3899, "TECH"], [3900, 3999, "DISC"],
+      [4000, 4799, "IND"], [4800, 4899, "COMM"], [4950, 4959, "IND"], [4900, 4999, "UTIL"], [5122, 5122, "HEALTH"], [5140, 5149, "STAPLES"], [5171, 5172, "ENERGY"],
+      [5000, 5199, "IND"], [5331, 5331, "STAPLES"], [5400, 5499, "STAPLES"], [5912, 5912, "STAPLES"], [5200, 5999, "DISC"], [6500, 6553, "RE"], [6798, 6798, "RE"],
+      [6000, 6999, "FIN"], [7000, 7299, "DISC"], [7310, 7319, "COMM"], [7370, 7379, "TECH"], [7380, 7389, "IND"], [7500, 7599, "DISC"], [7800, 7899, "COMM"],
+      [7900, 7999, "DISC"], [8000, 8099, "HEALTH"], [8731, 8731, "HEALTH"], [8100, 8999, "IND"]];
+    for (var i = 0; i < R.length; i++) if (s >= R[i][0] && s <= R[i][1]) return R[i][2];
+    return null;
+  }
+
   /* ------------------------------------------------------- Kurztext */
   var COUNTRY_DE = { US: "USA", JP: "Japan", GB: "Großbritannien", DE: "Deutschland", FR: "Frankreich", CH: "Schweiz", CA: "Kanada", CN: "China",
     TW: "Taiwan", IN: "Indien", KR: "Südkorea", NL: "Niederlande", AU: "Australien", SE: "Schweden", DK: "Dänemark", IT: "Italien", ES: "Spanien",
@@ -278,7 +299,7 @@
   var api = { SCHEMA: SCHEMA, ETF_HOLDINGS_SCHEMA_VERSION: SCHEMA, ASSET_TYPES: ASSET_TYPES, ROW_FIELDS: ROW_FIELDS, DERIVATIVES: DERIVATIVES,
     parseNumber: parseNumber, inferWeightUnit: inferWeightUnit, normalizeAssetType: normalizeAssetType, holdingKey: holdingKey, fnv: fnv,
     snapshot: snapshot, qualityGates: qualityGates, concentration: concentration, exposures: exposures, mapToCompanies: mapToCompanies,
-    factorExposure: factorExposure, summary: summary, COUNTRY_DE: COUNTRY_DE };
+    factorExposure: factorExposure, summary: summary, COUNTRY_DE: COUNTRY_DE, sicSector: sicSector, SECTORS_DE: SECTORS_DE };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else { global.VUVorsorge = global.VUVorsorge || {}; global.VUVorsorge.Holdings = api; }
 })(typeof window !== "undefined" ? window : globalThis);

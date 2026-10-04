@@ -122,14 +122,23 @@
         ev.push(mk(ctx, "HOLDING_REMOVED", k, a.name || a.ticker || k, r(a.weight), null, imp, (a.name || k) + " ist nicht mehr im ETF (zuvor " + pc(a.weight) + ")."));
       }
     });
+    var top10Moved = {};
     [10, 20].forEach(function (n) {
       Object.keys(rankB).forEach(function (k) {
-        if (rankB[k] <= n && !(rankA[k] <= n)) ev.push(mk(ctx, "ENTERED_TOP_" + n, k, (B[k] || {}).name || k, rankA[k] || null, rankB[k], n === 10 ? "HIGH" : "MEDIUM",
-          ((B[k] || {}).name || k) + " ist neu unter den " + (n === 10 ? "zehn" : "zwanzig") + " größten Positionen (Rang " + rankB[k] + ")."));
+        if (!(rankB[k] <= n && !(rankA[k] <= n))) return;
+        if (n === 20 && top10Moved[k]) return;
+        if (n === 10) top10Moved[k] = 1;
+        var w = (B[k] || {}).weight || 0, nm = (B[k] || {}).name || k;
+        ev.push(mk(ctx, "ENTERED_TOP_" + n, k, nm, rankA[k] || null, rankB[k], n === 10 && w >= 0.01 ? "HIGH" : n === 10 || w >= 0.01 ? "MEDIUM" : "LOW",
+          nm + " ist neu unter den " + (n === 10 ? "zehn" : "zwanzig") + " größten Positionen (Rang " + rankB[k] + ")."));
       });
       Object.keys(rankA).forEach(function (k) {
-        if (rankA[k] <= n && !(rankB[k] <= n)) ev.push(mk(ctx, "LEFT_TOP_" + n, k, (A[k] || {}).name || k, rankA[k], rankB[k] || null, n === 10 ? "HIGH" : "MEDIUM",
-          ((A[k] || {}).name || k) + " ist aus den " + (n === 10 ? "zehn" : "zwanzig") + " größten Positionen gefallen."));
+        if (!(rankA[k] <= n && !(rankB[k] <= n))) return;
+        if (n === 20 && top10Moved[k]) return;
+        if (n === 10) top10Moved[k] = 1;
+        var w = (A[k] || {}).weight || 0, nm = (A[k] || {}).name || k;
+        ev.push(mk(ctx, "LEFT_TOP_" + n, k, nm, rankA[k], rankB[k] || null, n === 10 && w >= 0.01 ? "HIGH" : n === 10 || w >= 0.01 ? "MEDIUM" : "LOW",
+          nm + " ist aus den " + (n === 10 ? "zehn" : "zwanzig") + " größten Positionen gefallen."));
       });
     });
     [["sector", "SECTOR_WEIGHT_CHANGED"], ["country", "COUNTRY_WEIGHT_CHANGED"]].forEach(function (g) {
@@ -224,17 +233,16 @@
   }
   /** Ein Satz aus echten Ereignissen. */
   function changeSentence(events) {
-    var parts = [];
-    var inc = (events || []).filter(function (e) { return e.eventType === "WEIGHT_INCREASED"; })[0];
-    var dec = (events || []).filter(function (e) { return e.eventType === "WEIGHT_DECREASED"; })[0];
-    var out = (events || []).filter(function (e) { return e.eventType === "LEFT_TOP_10"; })[0];
-    var inn = (events || []).filter(function (e) { return e.eventType === "ENTERED_TOP_10"; })[0];
-    if (inc) parts.push(inc.entityName + " ist um " + (Math.round(inc.absoluteChange * 1000) / 10).toLocaleString("de-DE") + " Prozentpunkte gestiegen");
-    if (dec && !inc) parts.push(dec.entityName + " ist um " + (Math.round(-dec.absoluteChange * 1000) / 10).toLocaleString("de-DE") + " Prozentpunkte gesunken");
+    var ev = events || [], parts = [];
+    function first(t) { return ev.filter(function (e) { return e.eventType === t && e.importance !== "LOW"; })[0] || null; }
+    function ppTxt(x) { return (Math.round(Math.abs(x) * 1000) / 10).toLocaleString("de-DE") + " Prozentpunkte"; }
+    var inc = first("WEIGHT_INCREASED"), dec = first("WEIGHT_DECREASED"), out = first("LEFT_TOP_10"), inn = first("ENTERED_TOP_10");
+    if (inc) parts.push(inc.entityName + " um " + ppTxt(inc.absoluteChange) + " gestiegen");
+    if (dec) parts.push(dec.entityName + " um " + ppTxt(dec.absoluteChange) + " gesunken");
     if (out) parts.push(out.entityName + " aus den zehn größten Positionen gefallen");
     if (inn) parts.push(inn.entityName + " neu unter den zehn größten Positionen");
     if (!parts.length) return null;
-    return "Seit dem letzten Holdings-Update " + (parts.length === 1 ? "ist " + parts[0] : "ist " + parts.slice(0, -1).join(", ") + " und " + parts[parts.length - 1].replace(/^(.*?) (aus|neu)/, "$1 ist $2")) + ".";
+    return "Seit dem letzten Holdings-Update: " + parts.join("; ") + ".";
   }
 
   var api = { VERSION: VERSION, ETF_CHANGE_EVENT_VERSION: VERSION, IMPORTANCE: IMPORTANCE, DEFAULTS: DEFAULTS, eventId: eventId, comparable: comparable,

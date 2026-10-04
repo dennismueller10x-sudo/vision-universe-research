@@ -58,3 +58,46 @@ jobs:
           git add vorsorge/data/sources/etf-source-probe.json
           git commit -q -m "Vorsorge: ETF-Quellen geprueft (Lauf ${{ github.run_id }})" || { echo "Keine Aenderung."; exit 0; }
           bash scripts/ci/push-with-retry.sh "${{ github.ref_name }}"
+
+  nport:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    concurrency:
+      group: vorsorge-etf-nport-${{ github.ref_name }}
+      cancel-in-progress: false
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'nport') ||
+      contains(github.event.head_commit.message, '[vorsorge-nport]')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: SEC N-PORT (vier Quartale) aufnehmen
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: node scripts/vorsorge/ingest-sec-nport.mjs --max-quarters 4
+      - name: SEC SIC-Codes (Wirtschaftszweig der Emittenten)
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
+        run: node scripts/vorsorge/fetch-sec-sic.mjs
+      - name: Holdings, Exposures, Change Events verdichten
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: |
+          node scripts/vorsorge/build-etf-intelligence.mjs
+          node -e 'const m=require("./.market-cache/vorsorge/nport/nport-manifest.json"); delete m.series; require("fs").writeFileSync("vorsorge/data/sources/nport-manifest.json", JSON.stringify(m,null,1)+"\n")'
+      - name: Tests und Hygiene
+        run: |
+          node --test "vorsorge/tests/*.test.mjs"
+          node scripts/market/assert-public-data-hygiene.mjs
+      - name: Veroeffentlichen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add vorsorge/data/holdings vorsorge/data/sources/sec-sic.json vorsorge/data/sources/nport-manifest.json
+          git commit -q -m "Vorsorge: US-ETF-Holdings aus SEC N-PORT (Lauf ${{ github.run_id }})" || { echo "Keine Aenderung."; exit 0; }
+          bash scripts/ci/push-with-retry.sh "${{ github.ref_name }}"
