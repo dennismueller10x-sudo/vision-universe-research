@@ -3,7 +3,7 @@
 
    Reine Logik ohne DOM für die interne Praktiker-Referenzseite
    (docs/technical-intelligence/PRACTITIONER_PROTOCOL.md, Schema
-   practitioner-reference-1.1.0). Läuft im Browser (global VUPractitionerCore)
+   practitioner-reference-1.2.0). Läuft im Browser (global VUPractitionerCore)
    und in Node (module.exports) — dadurch testbar.
 
    PRACTITIONER REFERENCE — keine objektive Wahrheit. Diese Datei erzeugt nur
@@ -24,7 +24,7 @@
 (function (global) {
   "use strict";
 
-  var SCHEMA_ID = "vu-practitioner-reference-1.1.0";
+  var SCHEMA_ID = "vu-practitioner-reference-1.2.0";
   var ENUMS = {
     sourceType: ["YOUTUBE", "X", "BLOG", "WEBSITE", "NEWSLETTER_PUBLIC", "PODCAST", "OTHER"],
     viewKind: ["ORIGINAL_PUBLISHED", "LATER_REVISION"],
@@ -43,7 +43,7 @@
     invDirection: ["below", "above"],
     invBasis: ["CLOSE", "INTRADAY", "UNKNOWN"],
     confidence: ["HIGH", "MEDIUM", "LOW"],
-    method: ["HUMAN_FROM_PRIMARY", "LLM_DRAFT_HUMAN_REVIEWED", "LLM_DRAFT_UNREVIEWED"],
+    method: ["HUMAN_FROM_PRIMARY", "LLM_DRAFT_HUMAN_REVIEWED", "LLM_DUAL_INDEPENDENT_PRIMARY", "LLM_DRAFT_UNREVIEWED"],
     referenceQuality: ["A", "B", "C"],
     status: ["CANDIDATE", "INCLUDED", "EXCLUDED", "TEST_FIXTURE"],
     split: ["DEVELOPMENT", "VALIDATION", "HOLDOUT_TEMPORAL", "HOLDOUT_SOURCE", "UNASSIGNED"]

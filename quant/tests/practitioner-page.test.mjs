@@ -3,7 +3,7 @@
    Geprüft wird:
      1. Skripte der Seite sind syntaktisch gültig (node --check bzw. new Function für Inline-Skripte),
      2. Pflicht-Kennzeichnungen (noindex, INTERN, „keine objektive Wahrheit“) und Blindmodus als Standard,
-     3. die Formularlogik erzeugt JSONL-Zeilen, die die Pflichtfelder des Schemas practitioner-reference-1.1.0 erfüllen,
+     3. die Formularlogik erzeugt JSONL-Zeilen, die die Pflichtfelder des Schemas practitioner-reference-1.2.0 erfüllen,
         Warnungen für LOW / LLM_DRAFT_UNREVIEWED, Stichtag nie nach der Veröffentlichung, Duplikaterkennung, Diff,
      4. (falls Playwright vorhanden) im echten Browser: leerer Zustand, Erfassen → Export, Blindmodus mit Sperre,
         blinde Zweitextraktion mit Feld-Diff. Ohne Playwright wird dieser Teil übersprungen. */
@@ -19,7 +19,7 @@ import http from "node:http";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const DIR = join(ROOT, "quant/research/elliott-practitioners");
 const HTML = readFileSync(join(DIR, "index.html"), "utf8");
-const SCHEMA = JSON.parse(readFileSync(join(ROOT, "quant/data/technical-intelligence/practitioner-v1/schema/practitioner-reference-1.1.0.json"), "utf8"));
+const SCHEMA = JSON.parse(readFileSync(join(ROOT, "quant/data/technical-intelligence/practitioner-v1/schema/practitioner-reference-1.2.0.json"), "utf8"));
 const require = createRequire(import.meta.url);
 const Core = require(join(DIR, "reference-core.js"));
 

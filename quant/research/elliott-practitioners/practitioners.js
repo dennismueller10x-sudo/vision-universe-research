@@ -9,7 +9,7 @@
      2. „VU-Analyse sperren“ → Audit-Eintrag LOCK_VU (SHA-256 der VU-Zusammenfassung)
      3. erst dann: Praktiker-Referenz (strukturiert), Abweichungen
      4. optional: späterer Verlauf (verborgen, Umschalter)
-   Erfassung: Formular nach Schema practitioner-reference-1.1.0, Export als JSONL
+   Erfassung: Formular nach Schema practitioner-reference-1.2.0, Export als JSONL
    (eine Zeile je Referenz), Import mit Duplikaterkennung, blinde Zweitextraktion
    mit Feld-Diff. Alles bleibt in diesem Browser (localStorage) bis zum Export.
    ========================================================================= */
@@ -507,7 +507,7 @@
       h("button", { class: "btn", type: "button", id: pre + "copy", text: "JSONL-Zeile kopieren", onclick: function () { var r = api.record(); copyText(C.toJsonlLine(r)); audit({ action: "COPY_LINE", referenceId: r.referenceId, caseId: r.caseId }); } }),
       h("button", { class: "btn", type: "button", id: pre + "dl", text: "JSONL-Zeile herunterladen", onclick: function () { var v = api.check(); if (!v.ok) { setMsg("Nicht exportiert: Fehler beheben.", "err"); return; } download(v.record.referenceId + ".jsonl", C.toJsonl([v.record]), "application/x-ndjson"); audit({ action: "EXPORT_LINE", referenceId: v.record.referenceId, caseId: v.record.caseId }); } }),
       second ? null : h("button", { class: "btn", type: "button", id: pre + "reset", text: "Formular leeren", onclick: function () { renderCapture({}); } })]);
-    form.append(src, pub, ins, ell, alts, scen, h("div", {}, zs), sum, ev, ext, h("h4", { text: "Prüfung (Schema practitioner-reference-1.1.0 + Protokoll)" }), checks, h("h4", { text: "JSONL-Zeile (für references.jsonl)" }), preview, actions);
+    form.append(src, pub, ins, ell, alts, scen, h("div", {}, zs), sum, ev, ext, h("h4", { text: "Prüfung (Schema practitioner-reference-1.2.0 + Protokoll)" }), checks, h("h4", { text: "JSONL-Zeile (für references.jsonl)" }), preview, actions);
     var lastSym = null, series = null, cutClose = null;
     function g(k) { var e = $(pre + k); if (!e) return undefined; return e.type === "checkbox" ? e.checked : e.value; }
     function state() {
@@ -753,7 +753,7 @@
   toolbar();
   document.body.setAttribute("data-blind", "on");
   Promise.all([
-    fetchJson(PV1 + "schema/practitioner-reference-1.1.0.json").then(function (j) { S.schema = j; }).catch(function () { S.schema = null; }),
+    fetchJson(PV1 + "schema/practitioner-reference-1.2.0.json").then(function (j) { S.schema = j; }).catch(function () { S.schema = null; }),
     fetchJson(PV1 + "source-registry.json").then(function (j) { S.registry = normRegistry(j); S.registryStatus = S.registry.length + " Quellen"; }).catch(function () { S.registryStatus = "noch nicht vorhanden"; }),
     fetchText(PV1 + "references.jsonl").then(function (t) { var p = C.parseJsonl(t); S.repoRefs = p.records.map(function (x) { return x.record; }).filter(function (r) { return r.referenceId && r.caseId; }); S.repoStatus = S.repoRefs.length + " Zeile(n)" + (p.errors.length ? ", " + p.errors.length + " unlesbar" : ""); }).catch(function () { S.repoStatus = "noch nicht vorhanden"; }),
     loadBench().catch(function () {}),

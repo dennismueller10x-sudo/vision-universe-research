@@ -2,7 +2,7 @@
 
    PRACTITIONER REFERENCE ≠ OBJECTIVE GROUND TRUTH. Dieses Modul
      • laedt Referenzen (JSONL, eine Zeile = eine Fassung eines Falls) und validiert sie gegen das Schema
-       practitioner-reference-1.1.0 (kleiner, handgeschriebener Validator, der die Schema-Datei SELBST interpretiert —
+       practitioner-reference-1.2.0 (kleiner, handgeschriebener Validator, der die Schema-Datei SELBST interpretiert —
        damit bleiben Validator und Schema konsistent) plus fachliche Pruefungen,
      • prueft Plausibilitaet (Niveaus ±60 % um den VU-Schluss am Stichtag, Label-Syntax, Zeitrahmen vs. Wellendauer),
      • bildet Instrumente auf VU-Reihen ab (instrument-map.json),
@@ -18,7 +18,7 @@ import { computeAnalysisCutoff, parsePublication, timestampConsistency, isIsoDat
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 export const PV1 = join(ROOT, "quant/data/technical-intelligence/practitioner-v1");
 export const PATHS = Object.freeze({
-  schema: join(PV1, "schema/practitioner-reference-1.1.0.json"),
+  schema: join(PV1, "schema/practitioner-reference-1.2.0.json"),
   references: join(PV1, "references.jsonl"),
   instrumentMap: join(PV1, "instrument-map.json"),
   sourceRegistry: join(PV1, "source-registry.json"),
@@ -525,6 +525,13 @@ export function freezeBlockers(r, opts = {}) {
   const ex = r.extraction || {};
   if (ex.confidence === "LOW") out.push(`${id}: Extraktionssicherheit LOW`);
   if (ex.method === "LLM_DRAFT_UNREVIEWED") out.push(`${id}: LLM_DRAFT_UNREVIEWED zaehlt nie`);
+  /* Protokoll-Nachtrag 2: zwei unabhaengige Durchgaenge aus der Primaerquelle mit dokumentierter Kernfeld-Uebereinstimmung */
+  if (ex.method === "LLM_DUAL_INDEPENDENT_PRIMARY") {
+    const ps = ex.passes || {};
+    if (!ps.a || !ps.b || ps.a === ps.b) out.push(`${id}: LLM_DUAL_INDEPENDENT_PRIMARY ohne zwei verschiedene Durchgaenge (passes.a/b)`);
+    if (!ps.coreFieldAgreement || typeof ps.coreFieldAgreement !== "object") out.push(`${id}: LLM_DUAL_INDEPENDENT_PRIMARY ohne coreFieldAgreement`);
+    else if (ex.confidence === "HIGH" && Object.values(ps.coreFieldAgreement).some((v) => v !== true && v !== "NOT_STATED")) out.push(`${id}: HIGH trotz abweichender Kernfelder zwischen Durchgang A und B`);
+  }
   if (!Array.isArray(r.evidence) || !r.evidence.length || r.evidence.some((e) => !e || !e.note)) out.push(`${id}: Fundstellen-Nachweis (evidence) fehlt`);
   const v = validateReference(r, opts);
   for (const e of v.errors) out.push(`${id}: ${e}`);
@@ -576,7 +583,7 @@ export function freezeReferences(rows, opts = {}) {
     if (prev.sha256 !== sha256) throw new FreezeRefusedError([`${version} existiert bereits mit anderem Inhalt (${prev.sha256.slice(0, 12)}…) – Korrekturen nur als neue Version (V1.1 …)`]);
   }
   const gate = qualityGate(included, opts.isHkcm, opts.registry);
-  const manifest = { version, schema: "practitioner-reference-1.1.0", file: version + ".jsonl", sha256, lines: lines.length,
+  const manifest = { version, schema: "practitioner-reference-1.2.0", file: version + ".jsonl", sha256, lines: lines.length,
     cases: new Set(included.map((r) => r.caseId)).size, sourceFamilies: splits.perFamily,
     splits: { counts: splits.counts, byCase: splits.byCase, quarantine: splits.quarantine, guardSessions: splits.guardSessions },
     holdoutSource: splits.holdoutSource, holdoutSourceKind: "SOURCE_FAMILY", holdoutNote: splits.holdoutNote,

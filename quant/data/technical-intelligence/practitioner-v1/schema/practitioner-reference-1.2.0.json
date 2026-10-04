@@ -1,0 +1,554 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "vu-practitioner-reference-1.2.0",
+ "title": "PractitionerReference (PRACTITIONER REFERENCE, NOT OBJECTIVE GROUND TRUTH)",
+ "description": "Eine datierte, oeffentlich dokumentierte Elliott-Analyse eines Praktikers, strukturiert extrahiert. Keine fremden Screenshots, Transkripte oder Volltexte; nur Fundstelle, Zeitstempel und eigene Kurzfassung. Eine Zeile = eine Fassung (version) eines Falls; Revisionen sind eigene Zeilen mit revisionOf. 1.1.0 (Mission V, Nachtrag 1, vor jedem Fall): primary.nextMoveAfterCurrent (A2), split QUARANTINE, degreeRank −2..5. 1.2.0 (Nachtrag 2): extraction.method LLM_DUAL_INDEPENDENT_PRIMARY, extraction.passes.",
+ "type": "object",
+ "required": [
+  "referenceId",
+  "caseId",
+  "version",
+  "sourceId",
+  "sourceType",
+  "sourceUrl",
+  "publication",
+  "instrument",
+  "timeframe",
+  "analysisCutoff",
+  "elliottSchool",
+  "directionalBias",
+  "extraction",
+  "evidence",
+  "status"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "referenceId": {
+   "type": "string",
+   "pattern": "^pr_[a-z0-9_-]+$",
+   "description": "eindeutig je Fassung"
+  },
+  "caseId": {
+   "type": "string",
+   "description": "Fallidentitaet: sourceId|instrument.vuSymbol|publication-Datum|scenarioVersion; Cross-Posts derselben Analyse teilen die caseId"
+  },
+  "version": {
+   "type": "integer",
+   "minimum": 1
+  },
+  "revisionOf": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "description": "referenceId der Vorfassung desselben Praktikers zum selben Markt (spaetere Revision), sonst null"
+  },
+  "viewKind": {
+   "enum": [
+    "ORIGINAL_PUBLISHED",
+    "LATER_REVISION"
+   ]
+  },
+  "sourceId": {
+   "type": "string",
+   "description": "Schluessel in source-registry.json"
+  },
+  "sourceType": {
+   "enum": [
+    "YOUTUBE",
+    "X",
+    "BLOG",
+    "WEBSITE",
+    "NEWSLETTER_PUBLIC",
+    "PODCAST",
+    "OTHER"
+   ]
+  },
+  "sourceUrl": {
+   "type": "string",
+   "format": "uri"
+  },
+  "crossPosts": {
+   "type": "array",
+   "items": {
+    "type": "string",
+    "format": "uri"
+   },
+   "description": "weitere Fundstellen derselben Analyse (zaehlen nicht als unabhaengige Faelle); Original bevorzugt"
+  },
+  "publication": {
+   "type": "object",
+   "required": [
+    "timestamp",
+    "timestampPrecision",
+    "timezone",
+    "basis"
+   ],
+   "properties": {
+    "timestamp": {
+     "type": "string",
+     "description": "ISO-8601 mit Offset, z. B. 2024-03-12T18:00:00+01:00; bei Datum ohne Uhrzeit 00:00 lokaler Zeit"
+    },
+    "timestampPrecision": {
+     "enum": [
+      "MINUTE",
+      "HOUR",
+      "DAY"
+     ]
+    },
+    "timezone": {
+     "type": "string",
+     "description": "IANA, z. B. Europe/Berlin"
+    },
+    "basis": {
+     "type": "string",
+     "description": "woher der Zeitstempel stammt (Plattform-Metadaten, Artikelkopf, …)"
+    },
+    "editedAfterPublication": {
+     "enum": [
+      "NO",
+      "YES",
+      "UNKNOWN"
+     ]
+    },
+    "editNote": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   }
+  },
+  "instrument": {
+   "type": "object",
+   "required": [
+    "asShown",
+    "instrumentType",
+    "vuSymbol",
+    "mappingQuality"
+   ],
+   "properties": {
+    "asShown": {
+     "type": "string",
+     "description": "Bezeichnung im Chart/Text, z. B. 'NASDAQ 100 Cash', 'NQ1!', 'QQQ'"
+    },
+    "instrumentType": {
+     "enum": [
+      "STOCK",
+      "ETF",
+      "INDEX_CASH",
+      "FUTURE",
+      "CFD",
+      "CRYPTO_SPOT",
+      "FX",
+      "COMMODITY_SPOT",
+      "UNKNOWN"
+     ]
+    },
+    "priceAdjustment": {
+     "enum": [
+      "SPLIT_ADJUSTED",
+      "UNADJUSTED",
+      "TOTAL_RETURN",
+      "UNKNOWN"
+     ]
+    },
+    "vuSymbol": {
+     "type": [
+      "string",
+      "null"
+     ],
+     "description": "VU-Reihe fuer die Rekonstruktion; null = nicht abbildbar"
+    },
+    "mappingQuality": {
+     "enum": [
+      "EXACT",
+      "PROXY_SAME_UNDERLYING",
+      "PROXY_DIFFERENT_INSTRUMENT",
+      "UNMAPPED"
+     ],
+     "description": "z. B. NDX-Cash → QQQ = PROXY_DIFFERENT_INSTRUMENT: Niveaus nur ATR-/prozentual vergleichbar"
+    },
+    "levelScale": {
+     "type": [
+      "number",
+      "null"
+     ],
+     "description": "Faktor Praktiker-Niveau → VU-Reihe (z. B. SPX→SPY ≈ 0,1), nur fuer Proxys, sonst null"
+    }
+   }
+  },
+  "timeframe": {
+   "enum": [
+    "1D",
+    "1W",
+    "1M",
+    "INTRADAY",
+    "MIXED",
+    "UNKNOWN"
+   ]
+  },
+  "analysisCutoff": {
+   "type": "string",
+   "description": "letzter vollstaendig bekannter Bar (YYYY-MM-DD) zum Veroeffentlichungszeitpunkt; berechnet, nie spaeter als publication"
+  },
+  "analysisWindow": {
+   "type": [
+    "object",
+    "null"
+   ],
+   "description": "bei Videos: Start/Ende der Elliott-Passage",
+   "properties": {
+    "start": {
+     "type": "string"
+    },
+    "end": {
+     "type": "string"
+    }
+   }
+  },
+  "elliottSchool": {
+   "enum": [
+    "CLASSICAL",
+    "PRACTITIONER_SPECIFIC",
+    "NEOWAVE",
+    "UNKNOWN_MIXED"
+   ]
+  },
+  "primary": {
+   "type": [
+    "object",
+    "null"
+   ],
+   "properties": {
+    "pattern": {
+     "enum": [
+      "IMPULSE",
+      "LEADING_DIAGONAL",
+      "ENDING_DIAGONAL",
+      "ZIGZAG",
+      "FLAT",
+      "TRIANGLE",
+      "WXY",
+      "DOUBLE_ZIGZAG",
+      "TRIPLE_ZIGZAG",
+      "COMBINATION",
+      "UNKNOWN"
+     ]
+    },
+    "family": {
+     "enum": [
+      "MOTIVE",
+      "CORRECTIVE",
+      "UNKNOWN"
+     ]
+    },
+    "degreeLabel": {
+     "type": [
+      "string",
+      "null"
+     ],
+     "description": "wie gezeigt, z. B. '(iii)', '[C]', 'Primary 4'"
+    },
+    "degreeRank": {
+     "type": [
+      "integer",
+      "null"
+     ],
+     "minimum": -2,
+     "maximum": 5,
+     "description": "normalisiert: −2 Subminuette, −1 Minuette, 0 Minute, 1 Minor, 2 Intermediate, 3 Primary, 4 Cycle, 5 Supercycle; null = unbekannt"
+    },
+    "currentWave": {
+     "type": [
+      "string",
+      "null"
+     ],
+     "description": "laufende Welle, z. B. '3', 'C', 'iv'"
+    },
+    "currentWaveRole": {
+     "enum": [
+      "MOTIVE",
+      "CORRECTIVE",
+      "UNKNOWN"
+     ]
+    },
+    "state": {
+     "enum": [
+      "DEVELOPING",
+      "CONFIRMED_COMPLETE",
+      "UNKNOWN"
+     ]
+    },
+    "waveStartDate": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "waveStartPrice": {
+     "type": [
+      "number",
+      "null"
+     ]
+    },
+    "nextMoveAfterCurrent": {
+     "enum": [
+      "UP",
+      "DOWN",
+      "SIDEWAYS",
+      "UNKNOWN"
+     ],
+     "description": "Bewegung NACH Abschluss der laufenden Welle (Kennzahl A2); directionalBias = Bewegung ab jetzt (A1)"
+    }
+   }
+  },
+  "alternatives": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "pattern": {
+      "type": "string"
+     },
+     "currentWave": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "directionalBias": {
+      "enum": [
+       "UP",
+       "DOWN",
+       "SIDEWAYS",
+       "UNKNOWN"
+      ]
+     },
+     "trigger": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "note": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    }
+   }
+  },
+  "directionalBias": {
+   "enum": [
+    "UP",
+    "DOWN",
+    "SIDEWAYS",
+    "UNKNOWN"
+   ],
+   "description": "naechste erwartete Bewegung AB JETZT (meist die laufende Welle; Kennzahl A1)"
+  },
+  "structuralScenario": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "description": "eigene Kurzform, z. B. 'uebergeordnet aufwaerts; Korrektur laeuft; Fortsetzung oberhalb X'"
+  },
+  "keySupportZones": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/zone"
+   }
+  },
+  "entryZones": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/zone"
+   }
+  },
+  "targetZones": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/zone"
+   }
+  },
+  "invalidation": {
+   "type": [
+    "object",
+    "null"
+   ],
+   "properties": {
+    "price": {
+     "type": "number"
+    },
+    "direction": {
+     "enum": [
+      "below",
+      "above"
+     ]
+    },
+    "basis": {
+     "enum": [
+      "CLOSE",
+      "INTRADAY",
+      "UNKNOWN"
+     ]
+    }
+   }
+  },
+  "commentarySummary": {
+   "type": "string",
+   "maxLength": 400,
+   "description": "eigene Kurzfassung, kein Zitat"
+  },
+  "extraction": {
+   "type": "object",
+   "required": [
+    "confidence",
+    "extractor",
+    "method"
+   ],
+   "properties": {
+    "confidence": {
+     "enum": [
+      "HIGH",
+      "MEDIUM",
+      "LOW"
+     ]
+    },
+    "extractor": {
+     "type": "string",
+     "description": "pseudonyme ID des Extrahierenden (Mensch oder 'llm-draft')"
+    },
+    "method": {
+     "enum": [
+      "HUMAN_FROM_PRIMARY",
+      "LLM_DRAFT_HUMAN_REVIEWED",
+      "LLM_DRAFT_UNREVIEWED",
+      "LLM_DUAL_INDEPENDENT_PRIMARY"
+     ]
+    },
+    "secondPass": {
+     "type": [
+      "string",
+      "null"
+     ],
+     "description": "referenceId der unabhaengigen Zweitextraktion"
+    },
+    "ambiguities": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "passes": {
+     "type": [
+      "object",
+      "null"
+     ],
+     "description": "bei LLM_DUAL_INDEPENDENT_PRIMARY: Kennungen der Durchgänge und Übereinstimmung der Kernfelder",
+     "properties": {
+      "a": {
+       "type": "string"
+      },
+      "b": {
+       "type": "string"
+      },
+      "adjudication": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "coreFieldAgreement": {
+       "type": "object"
+      }
+     }
+    }
+   }
+  },
+  "evidence": {
+   "type": "array",
+   "minItems": 1,
+   "items": {
+    "type": "object",
+    "required": [
+     "field",
+     "note"
+    ],
+    "properties": {
+     "field": {
+      "type": "string"
+     },
+     "locator": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "Videozeit mm:ss, Absatz, Bildnummer"
+     },
+     "note": {
+      "type": "string",
+      "maxLength": 200
+     }
+    }
+   }
+  },
+  "referenceQuality": {
+   "enum": [
+    "A",
+    "B",
+    "C"
+   ]
+  },
+  "status": {
+   "enum": [
+    "CANDIDATE",
+    "INCLUDED",
+    "EXCLUDED",
+    "TEST_FIXTURE"
+   ]
+  },
+  "exclusionReason": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "split": {
+   "enum": [
+    "DEVELOPMENT",
+    "VALIDATION",
+    "HOLDOUT_TEMPORAL",
+    "HOLDOUT_SOURCE",
+    "UNASSIGNED",
+    "QUARANTINE"
+   ]
+  }
+ },
+ "$defs": {
+  "zone": {
+   "type": "object",
+   "required": [
+    "low",
+    "high"
+   ],
+   "properties": {
+    "low": {
+     "type": "number"
+    },
+    "high": {
+     "type": "number"
+    },
+    "label": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   }
+  }
+ }
+}

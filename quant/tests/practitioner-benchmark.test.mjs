@@ -821,3 +821,15 @@ test("H4 + M8: versiegelte Holdouts, Holdout-Quelle aus dem Manifest, Entsiegelu
   // Selbsttest-Modus nie in practitioner-v1
   assert.throws(() => runBenchmark({ refsPath: fr.file, outDir: join(L.PV1, "benchmark"), selfTestMode: true }), /selfTestMode/);
 });
+
+/* Protokoll-Nachtrag 2: LLM_DUAL_INDEPENDENT_PRIMARY nur mit zwei verschiedenen Durchgaengen und dokumentierter Kernfeld-Uebereinstimmung */
+test("Nachtrag 2: LLM_DUAL_INDEPENDENT_PRIMARY freeze guards", () => {
+  const base = { referenceId: "pr_x_spy_20240312_abcdef_v1", status: "INCLUDED", evidence: [{ field: "primary", note: "Labels sichtbar" }] };
+  const mk = (extraction) => Object.assign({}, base, { extraction });
+  const has = (r, re) => L.freezeBlockers(r).some((m) => re.test(m));
+  assert.ok(has(mk({ confidence: "HIGH", extractor: "llm-a", method: "LLM_DUAL_INDEPENDENT_PRIMARY" }), /zwei verschiedene Durchgaenge/));
+  assert.ok(has(mk({ confidence: "HIGH", extractor: "llm-a", method: "LLM_DUAL_INDEPENDENT_PRIMARY", passes: { a: "p1", b: "p1", coreFieldAgreement: {} } }), /zwei verschiedene/));
+  assert.ok(has(mk({ confidence: "HIGH", extractor: "llm-a", method: "LLM_DUAL_INDEPENDENT_PRIMARY", passes: { a: "p1", b: "p2", coreFieldAgreement: { family: true, currentWave: false } } }), /HIGH trotz abweichender/));
+  assert.ok(!has(mk({ confidence: "MEDIUM", extractor: "llm-a", method: "LLM_DUAL_INDEPENDENT_PRIMARY", passes: { a: "p1", b: "p2", coreFieldAgreement: { family: true, currentWave: false } } }), /Durchgaenge|abweichender|coreField/));
+  assert.ok(L.loadSchema().properties.extraction.properties.method.enum.includes("LLM_DUAL_INDEPENDENT_PRIMARY"));
+});
