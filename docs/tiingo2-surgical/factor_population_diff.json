@@ -1489,5 +1489,27 @@
     }
   ],
   "factorRankDriftMax": 1459,
-  "factorRankDriftOver102": 4019
+  "factorRankDriftOver102": 4019,
+  "inputAttribution": {
+    "oldMarketFactorRows": 6433,
+    "currentMarketFactorRows": 6745,
+    "marketFactorRowsAdded": 342,
+    "addedOldSkipReasons": {
+      "SOURCE_MISSING": 341,
+      "STALE_LAST_BAR": 1
+    },
+    "marketFactorRowsRemoved": 30,
+    "commonMarketFactorRows": 6403,
+    "commonMarketFactorRowsChangedAnyField": 74,
+    "commonMarketFactorValuesChanged": 1,
+    "changedMarketFactorValuesTicker": [
+      "ONMD"
+    ],
+    "fundamentalsArtifactsChanged": false,
+    "factorMethodologyChanged": false,
+    "factorMaterializerCodeChanged": false,
+    "oldPeerTaxonomyRows": 5379,
+    "currentPeerTaxonomyRows": 5675,
+    "reason": "341 source-missing histories and one stale history became factor inputs in an independent main refresh; the peer population expanded and normalized existing component scores. PR #404 did not add these rows."
+  }
 }

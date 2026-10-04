@@ -39,8 +39,15 @@ quality problem is resolved. The run deliberately remains blocked.
 Current-main Factor Evidence has already lost those 30 in separate
 materializations (`388d9ca55`, `6d8028e55`). The gate prevents another silent
 loss; it does not undo that earlier publication. Rank drift is measured in
-`factor_population_diff.json`, and is too large to approve PR #404 from the old
-population comparison.
+`factor_population_diff.json`. The later market-factor input added 342 rows
+that were previously skipped (341 missing histories, one stale last bar),
+independently of PR #404. The SIC peer taxonomy grew from 5,379 to 5,675
+rows. Among 6,403 common market-factor identities, only ONMD changed numeric
+market-factor values; SEC Consumer artifacts, factor methodology, and the
+materializer code were unchanged. Thus broad historical component-score drift
+comes chiefly from peer-population normalization, not 102 staged candidates.
+The old 6,289-row comparison is stale for evaluating #404; a new current-main
+comparison is needed once the 30 protected removals are resolved.
 
 ## V1 Screener
 
