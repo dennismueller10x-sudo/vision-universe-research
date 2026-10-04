@@ -112,16 +112,19 @@ for (const meta of manifest.series) {
   const map = (() => { let eq = 0, mw = 0; cur.holdings.forEach((h) => { if (h.assetType === "EQUITY" && h.weight > 0) { eq += h.weight; if (h.vuTicker) mw += h.weight; } }); return { equityWeight: r6(eq), mappedWeight: r6(mw), mappedShareOfEquity: eq ? r6(mw / eq) : null }; })();
   const secW = cur.holdings.reduce((a, h) => a + (h.sector && h.weight > 0 ? h.weight : 0), 0);
   const listed = cur.holdings.filter((h) => h.weight !== null);
+  const totalW = listed.reduce((a, h) => a + h.weight, 0);
+  // Hebel-/Derivatefonds: Gewichte in % des Nettovermoegens koennen ueber 100 % liegen (Sicherheiten, Swap-Nominale).
+  const derivativeHeavy = ex.derivativeGrossWeight > 0.05 || listed.some((h) => h.weight > 1 || h.weight < -0.05) || totalW > 1.3 || totalW < 0.7;
   const file = {
     schemaVersion: "vu-vorsorge-holdings-file-1.0.0", version: VERSION, seriesId: meta.seriesId, seriesName: meta.seriesName, registrant: meta.registrant, registrantCik: meta.cik, seriesLei: meta.lei,
     listings: meta.classes.map((c) => ({ symbol: c.symbol, classId: c.classId, slug: c.slug })),
     source: "SEC_NPORT", sourceType: "REGULATORY", sourceLabel: "SEC Form N-PORT (öffentlicher Teil)", sourceUrl: cur.sourceUrl, accession: cur.accession,
     asOf: cur.asOf, publishedAt: cur.publishedAt, weightBasis: "Anteil am Nettofondsvermögen (NET_ASSETS)", netAssets: cur.totalNetAssets, netAssetsCurrency: "USD", netAssetsLevel: "FUND",
     holdingsCount: cur.holdingsCount, positions: conc.positions, totalWeight: r6(listed.reduce((a, h) => a + h.weight, 0)),
-    concentration: conc,
+    concentration: conc, derivativeHeavy,
     exposures: { countries: topList(ex.countries, 25), sectors: ex.sectors.map((x) => ({ key: x.key, weight: x.weight })), sectorBasis: "SEC_SIC", sectorCoverage: r6(secW),
       assetTypes: ex.assetTypes, currencies: topList(ex.currencies, 15), cashWeight: ex.cashWeight, derivativeCount: ex.derivativeCount, derivativeGrossWeight: ex.derivativeGrossWeight },
-    mapping: map, summary: H.summary(cur, ex, conc),
+    mapping: map, summary: derivativeHeavy ? "Fonds mit Derivaten bzw. Hebel: " + conc.positions.toLocaleString("de-DE") + " Positionen; Gewichte beziehen sich auf das Nettofondsvermögen und können zusammen deutlich von 100 % abweichen." : H.summary(cur, ex, conc),
     rowFields: ROW, holdings: listed.slice(0, TOP).map(compactRow), holdingsShown: Math.min(TOP, listed.length), shownWeight: r6(listed.slice(0, TOP).reduce((a, h) => a + h.weight, 0)),
     history, changes: lastDiff ? { from: lastDiff.from, to: lastDiff.to, status: lastDiff.status, eventVersion: C.VERSION, eventFields: EVENT_FIELDS,
       events: lastDiff.events.slice(0, 50).map(compactEvent), eventCount: lastDiff.events.length, summary: lastDiff.summary,

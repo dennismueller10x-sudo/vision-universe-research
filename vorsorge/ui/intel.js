@@ -46,7 +46,8 @@
   };
   /** Holdings-Datei im Format der X-Ray-Engine (Overlap, Look-through). */
   VS.xrayFile = function (f) {
-    if (!f) return null;
+    // Hebel-/Derivatefonds (Gewichte in % des Nettovermoegens, Summe weit ueber/unter 100 %) nicht durchschauen.
+    if (!f || f.derivativeHeavy) return null;
     return { asOf: f.asOf, source: f.source, coverage: f.shownWeight, holdings: f.rows.filter(function (r) { return r.weight > 0 && r.assetType !== "CASH"; }).map(function (r) {
       // Identitaet: CUSIP (in N-PORT durchgaengig gemeldet) vor ISIN (nur teilweise), sonst Ticker.
       return { name: r.name, ticker: r.ticker, isin: r.cusip ? null : r.isin, holdingIdentifier: r.cusip ? "CUSIP:" + r.cusip : r.ticker ? "T:" + r.ticker : null, weight: r.weight, country: r.country, sector: r.sector, vuTicker: r.vuTicker };
@@ -130,7 +131,8 @@
       if (!f) { el.innerHTML = '<section class="vs-section">' + VS.pending("Bestandsdatei nicht erreichbar", "") + '</section>'; return; }
       var c = f.concentration, x = f.exposures, mp = f.mapping || {};
       var eq = (x.assetTypes.filter(function (a) { return a.key === "EQUITY"; })[0] || {}).weight || 0;
-      el.innerHTML = '<section class="vs-section"><div class="vs-card app"><p class="vs-label">Auf einen Blick</p><p style="margin-top:8px;font-size:17px;color:var(--app-ink)">' + esc(f.summary || "") + '</p></div></section>' +
+      el.innerHTML = '<section class="vs-section"><div class="vs-card app"><p class="vs-label">Auf einen Blick</p><p style="margin-top:8px;font-size:17px;color:var(--app-ink)">' + esc(f.summary || "") + '</p></div>' +
+        (f.derivativeHeavy ? '<div class="vs-warnbox" style="margin-top:12px">⚠ Dieser Fonds arbeitet mit Derivaten (z. B. Swaps, Futures, Optionen) oder Sicherheiten. Die Meldung nennt Werte in Prozent des Nettofondsvermögens – einzelne Positionen können über 100 % liegen, die Summe weicht ab. Konzentrationskennzahlen sind hier nicht wie bei einem klassischen Index-ETF zu lesen.</div>' : "") + '</section>' +
         '<section class="vs-section"><div class="vs-grid g4">' +
         [["Größte Position", wpct(c.top1)], ["Top 5", wpct(c.top5)], ["Top 10", wpct(c.top10)], ["Top 20", wpct(c.top20)]].map(function (k) { return '<div class="vs-card"><p class="vs-label">' + k[0] + '</p><p class="vs-kpi small">' + k[1] + '</p></div>'; }).join("") +
         '</div><p class="vs-fine" style="margin-top:8px">Effektive Anzahl Positionen (Kehrwert des Herfindahl-Index): ' + (c.effectiveNumber !== null ? c.effectiveNumber.toLocaleString("de-DE") : "–") + ' bei ' + c.positions.toLocaleString("de-DE") + ' Positionen – je näher beide Zahlen beieinander liegen, desto gleichmäßiger ist das Gewicht verteilt.</p></section>' +
