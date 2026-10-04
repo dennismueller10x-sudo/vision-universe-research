@@ -27,8 +27,9 @@ const UA = process.env.SEC_USER_AGENT || "VisionUniverseResearch info@visionuniv
 mkdirSync(WORK, { recursive: true });
 const cikMap = JSON.parse(readFileSync(join(root, "quant/data/universe/cik-map.json"), "utf8"));
 const byCik = new Map();
-for (const [t, v] of Object.entries(cikMap)) if (v && typeof v === "object" && v.cik && /^\d{10}$/.test(v.cik)) { const l = byCik.get(v.cik) || []; l.push(t); byCik.set(v.cik, l); }
+for (const [t, v] of Object.entries(cikMap.byTicker || cikMap)) if (v && typeof v === "object" && v.cik && /^\d{10}$/.test(v.cik)) { const l = byCik.get(v.cik) || []; l.push(t); byCik.set(v.cik, l); }
 console.log("Emittenten:", byCik.size);
+if (!byCik.size) { console.error("cik-map.json ohne verwertbare Eintraege"); process.exit(1); }
 const zip = join(WORK, "submissions.zip");
 if (!existsSync(zip)) {
   const res = await fetch("https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip", { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(1800000) });
@@ -52,3 +53,4 @@ mkdirSync(join(root, "vorsorge/data/sources"), { recursive: true });
 writeFileSync(join(root, "vorsorge/data/sources/sec-sic.json"), JSON.stringify({ schemaVersion: "vu-sec-sic-1.0.0", source: "SEC EDGAR submissions (bulk), public domain", generatedAt: new Date().toISOString(), count: n, map: sorted }));
 rmSync(out, { recursive: true, force: true });
 console.log("SIC fuer", n, "Ticker");
+if (n < 1000) { console.error("Zu wenige SIC-Zuordnungen (" + n + ") - Abbruch statt leerer Ausgabe."); process.exit(1); }

@@ -70,11 +70,13 @@ for (const l of links) {
   if (!subF || !numF) throw new Error("Unerwarteter Aufbau " + l + ": " + mem.join(", "));
   const filed = new Map();
   const s = await stream(zip, subF, (r) => filed.set(r.adsh, r.filed || r.accepted || null));
-  let hits = 0, colsOk = null;
+  let hits = 0, colsOk = null, tagRows = 0; const samples = [];
   const n = await stream(zip, numF, (r, head) => {
     if (colsOk === null) { colsOk = ["adsh", "tag", "value"].every((k) => head.includes(k)) && (head.includes("class") || head.includes("dimh") || head.includes("segments")); report.headers.num = head; report.headers.sub = s.head; }
     const field = TAGS[r.tag]; if (!field) return;
-    const cls = r.class || (String(r.segments || "").match(/C\d{9}/) || [])[0] || null;
+    tagRows++;
+    const cls = r.class || (String(r.otherdims || r.segments || "").match(/C\d{9}/) || [])[0] || null;
+    if (samples.length < 4) samples.push({ tag: r.tag, series: r.series, class: r.class, otherdims: r.otherdims, value: r.value, measure: r.measure });
     if (!cls || !classToSymbol.has(cls)) return;
     const v = Number(r.value); if (!Number.isFinite(v) || v < 0 || v >= 0.1) return;
     const f = filed.get(r.adsh) || ""; const k = cls + "|" + field; const cur = best.get(k);
@@ -82,7 +84,7 @@ for (const l of links) {
     hits++;
   });
   if (!colsOk) throw new Error("num.tsv ohne erwartete Spalten (adsh, tag, value, class): " + JSON.stringify(report.headers.num));
-  report.datasets.push({ file: l, submissions: s.n, numRows: n.n, hits });
+  report.datasets.push({ file: l, submissions: s.n, numRows: n.n, tagRows, hits, samples });
   console.log(" ", l.split("/").pop(), s.n, "Einreichungen,", n.n, "Werte,", hits, "Treffer");
   rmSync(zip, { force: true });
 }
@@ -98,3 +100,4 @@ report.bySymbol = Object.fromEntries(Object.keys(bySymbol).sort().map((k) => [k,
 mkdirSync(join(root, "vorsorge/data/sources"), { recursive: true });
 writeFileSync(join(root, "vorsorge/data/sources/sec-rr-costs.json"), JSON.stringify(report));
 console.log("Kostenquoten fuer", report.count, "Ticker");
+for (const d of report.datasets) console.log(" ", d.file.split("/").pop(), "Tag-Zeilen", d.tagRows, "Treffer", d.hits, JSON.stringify(d.samples).slice(0, 400));
