@@ -113,7 +113,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     console.log(`\n== ${t} (${doc.first} .. ${doc.last}, ${doc.barCount} Bars)`);
     console.log(`Befunde: ${verdict.findings.filter((f) => f.severity === "error").map((f) => f.code + "@" + (f.details && f.details.date || "")).join(", ") || "keine Fehler"}`);
     console.log(`Gemeldete Dividenden: ${divs.map((d) => d.date + " " + d.dividend).join(" | ") || "keine"}`);
-    for (const s of steps.filter((x) => !x.explained)) {
+    for (const s of steps.filter((x) => !x.explained).slice(-3)) {
       const cl = classifyStep(s, bars);
       console.log(`EINORDNUNG ${cl.kind}${cl.matchedDividend ? " (passt zu Dividende " + cl.matchedDividend.amount + " am " + cl.matchedDividend.date + ")" : ""}; Dividendenpaare an Folgetagen: ${cl.consecutiveDividendPairs.map((p) => p.join("/")).join(", ") || "keine"}`);
       console.log(`UNERKLAERT ${s.prevDate} -> ${s.date}: close ${s.close.join(" -> ")}, adj ${s.adjustedClose.join(" -> ")}, Faktor ${s.factor.join(" -> ")}, Sprung ${s.stepPct} %, entspraeche Dividende ${s.impliedDividendAtExClose} (${s.impliedYieldPct} %)`);
@@ -123,7 +123,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const kinds = {};
   for (const [t, v] of Object.entries(report.tickers)) for (const s of v.unexplainedSteps || []) (kinds[s.classification.kind] = kinds[s.classification.kind] || []).push(t + "@" + s.date);
   report.summary = Object.fromEntries(Object.entries(kinds).map(([k, v]) => [k, { count: v.length, steps: v }]));
-  console.log("\nZUSAMMENFASSUNG " + JSON.stringify(report.summary));
+  console.log("\nJE TITEL (Titel | Reihe | gemeldete Dividenden | unerklaerte Spruenge | Einordnung | erster..letzter | Median-Sprung %)");
+  for (const [t, v] of Object.entries(report.tickers)) {
+    const u = v.unexplainedSteps || [];
+    const k = {}; u.forEach((s) => { k[s.classification.kind] = (k[s.classification.kind] || 0) + 1; });
+    const y = u.map((s) => s.stepPct).sort((a, b) => a - b);
+    console.log(`TITEL ${t} | ${v.first || "-"}..${v.last || "-"} | ${(v.dividendsReported || []).length} | ${u.length} | ${JSON.stringify(k)} | ${u[0] ? u[0].date : "-"}..${u.length ? u[u.length - 1].date : "-"} | ${y.length ? y[Math.floor(y.length / 2)] : "-"}`);
+  }
+  console.log("\nZUSAMMENFASSUNG " + JSON.stringify(Object.fromEntries(Object.entries(report.summary).map(([k, v]) => [k, v.count]))));
   const out = arg("--out");
   if (out) writeFileSync(out, JSON.stringify(report, null, 2));
 }
