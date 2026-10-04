@@ -102,3 +102,4 @@ Logs zeigen nur Zählwerte.
 - **Datenqualität entscheidet:** Ohne Point-in-Time-Marktkapitalisierung entstehen scheinbare Vorsprünge (HS2), die allein aus dem Größenersatz stammen. Die Datenprüfung G0 hat drei Datenfehler gefunden, bevor ein Ergebnis zählte.
 - **Offene Datenlücke:** Mehrgattungs-Emittenten ohne Aktienzahl in companyfacts (u. a. Alphabet, Berkshire, Visa, Mastercard).
 - **Weiterer Weg:** Neue Hypothesen nur mit eigener Präregistrierung und Nachweis über einen eingefrorenen Vorwärtslauf, da der Holdout verbraucht ist.
+| HS4 explorativ (Run 37182469897) | Volumenprofil verbessert die Auswahl gegenüber gleicher Regel ohne Volumen; gewählter Versuch über den Gesamtzeitraum vor SPY, aber nur dank 2024–2026 → EXPLORATORY_NO_EDGE (DECISION-HS4.json). |
