@@ -18,6 +18,9 @@ export const SCENARIOS = Object.freeze({
   S0_LAST_PRICE: (t, slip) => t.lastClose * (1 - slip),
   S1_MINUS_30: (t) => t.lastClose * 0.7,
   S2_DISTRESS_ZERO: (t) => (t.distress ? 0 : t.lastClose * 0.7),
+  // Runde 13 (PREREGISTRATION-R13-AUDIT D): Uebernahmen laut SEC-Einreichungen zum letzten Kurs.
+  S1C_CLASSIFIED: (t, slip) => (t.delistClass === 'ACQUISITION' ? t.lastClose * (1 - slip) : t.lastClose * 0.7),
+  S2C_CLASSIFIED: (t, slip) => (t.delistClass === 'ACQUISITION' ? t.lastClose * (1 - slip) : t.distress ? 0 : t.lastClose * 0.7),
 });
 
 function seededKey(seed, s) {
