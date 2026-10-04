@@ -113,13 +113,23 @@
         core.map(function (e) { return '<div class="vs-row"><span><a href="' + VS.etfHref(e) + '"><b style="color:var(--ink)">' + esc(e.symbol) + '</b></a> ' + esc(e.category) + '</span><span class="num ' + F.cls(e.m && e.m.p["1Y"]) + '">1J ' + F.spct(e.m && e.m.p["1Y"]) + '</span></div>'; }).join("") +
         '<div class="vs-tabs"><a class="vs-pill small primary" href="#/etfs">Alle ETFs</a><a class="vs-pill small" href="#/watchlist">Watchlist (' + VS.state.watchlist.length + ')</a></div>';
     }).catch(function () { root.querySelector("#vs-home-world").innerHTML = VS.pending("ETF-Verzeichnis nicht erreichbar", "Die ETF-Daten konnten nicht geladen werden. Planer und Rechner funktionieren weiter."); });
-    VS.getJSON("/vorsorge/data/changes.json").then(function (c) {
+    Promise.all([VS.getJSON("/vorsorge/data/changes.json").catch(function () { return { events: [] }; }), VS.getJSON("/vorsorge/data/holdings/index.json").catch(function () { return null; }), VS.master().catch(function () { return null; })]).then(function (res) {
+      var c = res[0], hi = res[1], m = res[2];
       var plan = VS.state.snapshot ? V.Monitor.diffPlan(VS.state.snapshot, V.Monitor.snapshotPlan(p, VS.state.portfolio)) : [];
-      var ev = plan.map(function (x) { return x.text; }).concat(c.events.slice(0, 4).map(function (x) { return x.text; }));
-      root.querySelector("#vs-home-changes").innerHTML = '<span class="vs-num-badge">3</span><p class="vs-label">Was hat sich verändert?</p>' +
-        (ev.length ? ev.slice(0, 5).map(function (t) { return '<div class="vs-row"><span style="color:var(--ink)">' + esc(t) + '</span></div>'; }).join("")
-          : '<p class="vs-sub" style="margin-top:8px">Seit dem letzten Datenstand (' + F.date(c.asOf) + ') keine Änderungen im ETF-Verzeichnis.</p>') +
-        '<a class="vs-pill small" style="margin-top:10px" href="#/monitor">Zum Monitor</a>';
+      var mine = {}; VS.state.watchlist.concat(VS.state.portfolio.map(function (x) { return x.symbol; })).forEach(function (s) { var e = m && m.find(s); if (e) mine[e.symbol] = e; });
+      var mineList = Object.keys(mine).map(function (k) { return mine[k]; });
+      var changed = mineList.filter(function (e) { return e.holdingsChanges > 0; });
+      var feed = hi ? hi.feed : [];
+      var feedMine = feed.filter(function (f) { return mine[f.symbol]; });
+      var lines = plan.map(function (x) { return esc(x.text); });
+      if (mineList.length) lines.push(changed.length ? '<b>' + changed.length + ' deiner ' + mineList.length + ' ETFs</b> mit relevanten Bestandsänderungen: ' + changed.slice(0, 4).map(function (e) { return '<a href="' + VS.etfHref(e) + '?tab=aenderungen">' + esc(e.symbol) + '</a>'; }).join(", ") : "Keine relevanten Bestandsänderungen bei deinen " + mineList.length + " ETFs.");
+      (feedMine.length ? feedMine : feed).slice(0, mineList.length ? 2 : 3).forEach(function (f) { lines.push('<a href="#/etf/' + encodeURIComponent(f.symbol) + '?tab=aenderungen"><b>' + esc(f.symbol) + '</b></a> ' + esc(f.text)); });
+      c.events.slice(0, 2).forEach(function (x) { lines.push(esc(x.text)); });
+      root.querySelector("#vs-home-changes").innerHTML = '<span class="vs-num-badge">3</span><p class="vs-label">Was hat sich in deiner ETF-Welt geändert?</p>' +
+        (lines.length ? lines.slice(0, 6).map(function (t) { return '<div class="vs-row"><span style="color:var(--ink)">' + t + '</span></div>'; }).join("")
+          : '<p class="vs-sub" style="margin-top:8px">Keine Änderungen seit dem letzten Datenstand.</p>') +
+        '<p class="vs-fine" style="margin-top:6px">Bestände: SEC N-PORT, Stand ' + (hi ? esc(hi.quarters.join(", ")) : "–") + ' · Kurse: Tiingo ' + F.date(c.asOf) + '</p>' +
+        '<a class="vs-pill small" style="margin-top:10px" href="#/watchlist">Watchlist</a> <a class="vs-pill small" style="margin-top:10px" href="#/monitor">Monitor</a>';
     }).catch(function () { root.querySelector("#vs-home-changes").innerHTML = VS.pending("Änderungen nicht verfügbar", "Die Änderungsliste konnte nicht geladen werden."); });
   };
 

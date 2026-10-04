@@ -177,6 +177,28 @@
   };
 
   /* ================================================================= DATEN */
+
+  function intelBlock(it, n) {
+    if (!it) return "";
+    var c = it.coverage, h = it.holdings || {}, eu = it.europe;
+    var tiles = [["Kostenquote (Prospekt)", c.costs], ["Fondsvermögen", c.aum], ["Holdings (Bestände)", c.holdings], ["Domizil", c.domicile], ["UCITS-Status", c.ucitsStatus], ["ISIN (US)", c.isin]];
+    var ST = { HEALTHY: ["ok", "aktiv"], DEGRADED: ["complex", "eingeschränkt"], FAILED: ["bad", "Fehler"], NOT_CONFIGURED: ["", "nicht eingerichtet"], NOT_PERMITTED: ["bad", "nicht erlaubt"] };
+    return '<div class="vs-card" style="margin-top:14px"><p class="vs-label">ETF-Fundamentals & Holdings · öffentliches Universum (' + n(it.publicUniverse) + ' ETFs)</p><div class="vs-grid g3" style="margin-top:10px">' +
+      tiles.map(function (t) { return '<div class="vs-card soft"><p class="vs-label">' + esc(t[0]) + '</p><p class="vs-kpi small">' + F.pct(t[1].ratio, 0) + '</p><p class="vs-fine">' + n(t[1].count) + ' ETFs</p></div>'; }).join("") + '</div>' +
+      '<div class="vs-row" style="margin-top:10px"><span>Holdings-Snapshots (SEC N-PORT, ' + esc((it.holdingsQuarters || []).join(", ")) + ')</span><span class="num">' + n(h.snapshots) + '</span></div>' +
+      '<div class="vs-row"><span>Fondsserien mit Beständen · aktuelle Positionszeilen</span><span class="num">' + n(h.series) + ' · ' + n(h.currentHoldingRows) + '</span></div>' +
+      '<div class="vs-row"><span>Erkannte Bestandsänderungen (alle Quartalspaare)</span><span class="num">' + n(h.events) + '</span></div>' +
+      '<div class="vs-row"><span>Aktiengewicht dem VU-Aktienstamm zugeordnet (Median)</span><span class="num">' + F.pct(h.medianMappedShareOfEquity, 0) + '</span></div>' +
+      '<div class="vs-row"><span>Qualitätsbefunde (Fehler · Hinweise)</span><span class="num">' + n(h.qualityErrors) + ' · ' + n(h.qualityWarnings) + '</span></div></div>' +
+      (eu ? '<div class="vs-card" style="margin-top:14px"><p class="vs-label">Europa · ESMA FIRDS + GLEIF (Stand ' + F.date(eu.asOf) + ')</p>' +
+        '<div class="vs-row"><span>ETF-Anteilklassen mit ISIN</span><span class="num">' + n(eu.shareClasses) + '</span></div><div class="vs-row"><span>davon „UCITS“ im amtlichen Namen</span><span class="num">' + n(eu.ucitsInName) + '</span></div>' +
+        '<div class="vs-row"><span>an deutschen Börsen gelistet</span><span class="num">' + n(eu.listedInGermany) + '</span></div><div class="vs-row"><span>Listings (Anteilklasse × Handelsplatz)</span><span class="num">' + n(eu.venues) + '</span></div>' +
+        '<div class="vs-row"><span>mit Kursfeed · WKN · TER · Holdings</span><span class="num">0 · 0 · 0 · 0</span></div><a class="vs-pill small" style="margin-top:8px" href="#/europa">Europäische ETFs ansehen</a></div>' : "") +
+      '<div class="vs-card soft" style="margin-top:14px"><p class="vs-label">Quellen-Status</p><div class="vs-table-wrap"><table class="vs-table" style="min-width:560px"><thead><tr><th>Quelle</th><th>Art</th><th>Status</th><th>Stand</th><th>Einträge</th><th>Felder</th></tr></thead><tbody>' +
+      it.providers.map(function (p) { var st = ST[p.status] || ["", p.status]; return '<tr><td>' + esc(p.id) + '</td><td>' + esc({ PRIMARY_ISSUER: "Emittent", REGULATORY: "Regulierung", MARKET_DATA_PROVIDER: "Kursanbieter" }[p.type] || p.type) + '</td><td><span class="vs-badge ' + st[0] + '">' + esc(st[1]) + '</span></td><td>' + F.date(p.lastSuccessfulFetch) + '</td><td class="num">' + n(p.items) + '</td><td style="text-align:left;white-space:normal" class="vs-fine">' + esc(p.fields) + '</td></tr>'; }).join("") +
+      '</tbody></table></div><p class="vs-fine" style="margin-top:8px">Emittenten: Nutzungsbedingungen von ' + n(it.termsChecked) + ' Seiten geprüft – persönliche, nicht-kommerzielle Nutzung bzw. keine Weitergabe ohne Zustimmung. Ohne Lizenz werden keine Emittentendaten automatisiert übernommen.</p></div>';
+  }
+
   VS.views.daten = function () {
     var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Datenquellen & Datenqualität</p><h1>Was wir wissen –<br>und was nicht.</h1><p class="vs-lead">Jede Zahl in Vision Universe Altersvorsorge hat eine Quelle. Was fehlt, steht hier – statt geschätzt zu werden.</p></section><section class="vs-section" id="vs-dq"><div class="vs-loading">…</div></section>');
     Promise.all([VS.getJSON("/vorsorge/data/quality.json"), VS.master(), VS.getJSON("/vorsorge/data/ucits-coverage.json").catch(function () { return null; }), VS.getJSON("/vorsorge/data/data-gaps.json").catch(function () { return null; })]).then(function (res) {
@@ -212,11 +234,9 @@
         '<div class="vs-row"><span>Identitätskonflikte</span><span class="num">' + n(q.conflicts.length) + '</span></div><div class="vs-row"><span>Recycelte Ticker (Verdacht)</span><span class="num">' + n((q.tickerReuseSuspected || []).length) + '</span></div>' +
         '<div class="vs-row"><span>Auffällige Kursreihen</span><span class="num">' + n((q.priceAnomalies || []).length) + '</span></div><div class="vs-row"><span>Ohne Name / ohne Kurse</span><span class="num">' + n(q.missingName) + ' / ' + n(q.missingPrice) + '</span></div><div class="vs-row"><span>Klassifikation unbekannt</span><span class="num">' + n(q.unknownClassification) + '</span></div></div>' +
         '<div class="vs-card"><p class="vs-label">UCITS (gemessen)</p>' + (u ? '<div class="vs-row"><span>ETF-Zeilen an europäischen Börsen (Tiingo-Liste)</span><span class="num">' + n(u.catalogEtfRowsOnEuropeanExchanges) + '</span></div><div class="vs-row"><span>Listings an europäischen Börsen</span><span class="num">' + n(u.listingsOnEuropeanExchanges) + '</span></div><div class="vs-row"><span>„UCITS“ im Namen (nur US-Freiverkehr)</span><span class="num">' + n(u.listingsNamedUcits) + '</span></div><div class="vs-row"><span>Handel in EUR/GBP/CHF</span><span class="num">' + n(u.listingsInEurGbpChf) + '</span></div><div class="vs-row"><span>mit ISIN</span><span class="num">' + n(u.isinAvailable) + '</span></div><p class="vs-fine" style="margin-top:8px">' + esc(u.conclusion) + '</p>' : VS.pending("Kein UCITS-Bericht", "Noch nicht erzeugt.")) + '</div></div>' +
-        '<div class="vs-card" style="margin-top:14px"><p class="vs-label">Feldabdeckung und Bedarf an einer zweiten Quelle</p>' + (g ? '<div class="vs-table-wrap" style="margin-top:10px"><table class="vs-table" style="min-width:560px"><thead><tr><th>Feld</th><th>Tiingo</th><th>Abdeckung</th><th>Zweite Quelle nötig?</th></tr></thead><tbody>' +
-          g.fields.map(function (f) { return '<tr><td>' + esc(f.field) + '</td><td style="text-align:left;white-space:normal">' + esc(f.tiingo) + '</td><td class="num">' + (f.coverage === null ? "–" : F.pct(f.coverage, 0)) + '</td><td style="text-align:left;white-space:normal">' + esc(f.secondProviderNeeded) + '</td></tr>'; }).join("") + '</tbody></table></div>' : "") + '</div>' +
-        '<div class="vs-card soft" style="margin-top:14px"><p class="vs-label">Anbieter-Status (intern)</p>' + Object.keys(SM).map(function (prov) {
-          return '<div class="vs-row"><span><b>' + esc({ tiingo: "Tiingo", european_exchange: "Europäische Börsen", issuer_feeds: "Emittenten-Feeds" }[prov] || prov) + '</b></span><span style="text-align:right">' + Object.keys(SM[prov]).map(function (k) { return esc(k) + ": " + esc(STATUS[SM[prov][k]] || SM[prov][k]); }).join(" · ") + '</span></div>';
-        }).join("") + '</div>';
+        intelBlock(q.intelligence, n) +
+        '<div class="vs-card" style="margin-top:14px"><p class="vs-label">Quellenstrategie je Feld</p>' + (g ? '<div class="vs-table-wrap" style="margin-top:10px"><table class="vs-table" style="min-width:640px"><thead><tr><th>Feld</th><th>Primärquelle</th><th>Abdeckung</th><th>Lücke / Bedarf</th></tr></thead><tbody>' +
+          g.fields.map(function (f) { return '<tr><td>' + esc(f.field) + '</td><td style="text-align:left;white-space:normal">' + esc(f.primarySource || f.tiingo) + '</td><td class="num">' + (f.coverage === null ? "–" : F.pct(f.coverage, 0)) + '</td><td style="text-align:left;white-space:normal">' + esc(f.gap || f.secondProviderNeeded) + '</td></tr>'; }).join("") + '</tbody></table></div><p class="vs-fine" style="margin-top:8px">Abdeckung bezogen auf das öffentliche Universum (Standard + Komplex) bzw. das EU-Register.</p>' : "") + '</div>';
     }).catch(function (e) { root.querySelector("#vs-dq").innerHTML = VS.pending("Datenbericht nicht erreichbar", String(e.message || e)); });
   };
 })(window);

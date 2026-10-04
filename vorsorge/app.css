@@ -216,3 +216,14 @@ main.vs-main{padding-bottom:110px;min-height:70vh}
 .vs-step:hover{background:var(--accent-soft)}
 @media(max-width:900px){.vs-steps{grid-template-columns:1fr 1fr}}
 @media(max-width:420px){.vs-steps{grid-template-columns:1fr}}
+
+/* ETF Intelligence: Kurzkopf */
+.vs-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.vs-quick>div{background:var(--panel);border-radius:14px;padding:12px 14px;min-width:0}
+.vs-quick span{display:block;font-size:12px;color:var(--muted);font-weight:650}
+.vs-quick b{display:block;margin-top:4px;font-size:15px;overflow-wrap:anywhere}
+.vs-quick b .vs-fine{font-weight:500}
+@media (max-width:760px){.vs-quick{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.vs-own{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.vs-own>div{background:var(--panel);border-radius:14px;padding:12px 14px}
+.vs-own b{display:block;font-size:16px}

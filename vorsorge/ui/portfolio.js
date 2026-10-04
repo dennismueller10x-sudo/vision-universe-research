@@ -54,7 +54,12 @@
         if (!VS.state.portfolio.length) { out.innerHTML = VS.pending("Leeres Portfolio", "Wähle ein Strategiemodell oder füge ETFs hinzu."); return; }
         out.innerHTML = '<div class="vs-loading">Berechne …</div>';
         VS.seriesFor(VS.state.portfolio.map(function (p) { return p.symbol; })).then(function (s) {
-          (sub === "szenarien" ? drawScenarios : drawXRay)(out, m, s);
+          if (sub === "szenarien") return drawScenarios(out, m, s);
+          var syms = Object.keys(s.details);
+          return Promise.all(syms.map(function (k) { var d = s.details[k]; return d.holdings && d.holdings.status === "AVAILABLE" ? VS.holdings(d.holdings.series) : Promise.resolve(null); })).then(function (files) {
+            s.holdingFiles = {}; syms.forEach(function (k, i) { if (files[i]) s.holdingFiles[k] = files[i]; });
+            drawXRay(out, m, s);
+          });
         });
       }
       editor(); compute();
@@ -62,7 +67,7 @@
   };
 
   function drawXRay(out, m, s) {
-    var holdings = {}; Object.keys(s.details).forEach(function (k) { var h = s.details[k].holdings; if (X.validHoldings(h)) holdings[k] = h; });
+    var holdings = {}; Object.keys(s.holdingFiles || {}).forEach(function (k) { var h = VS.xrayFile(s.holdingFiles[k]); if (X.validHoldings(h)) holdings[k] = h; });
     var x = X.portfolioXRay(VS.state.portfolio, m._bySymbol, s.series, { regionLabels: VS.REGION, baseCurrency: "EUR", holdingsBySymbol: holdings });
     VS.analytics.track("portfolio_xray", { positions: x.positions.length });
     var lt = X.lookThrough(x.positions, holdings);
@@ -88,12 +93,40 @@
       '<div class="vs-card"><p class="vs-label">Handelswährung</p><p class="vs-kpi small" style="margin-top:6px">' + F.pct(x.fxExposure.share, 0) + ' nicht in Euro gehandelt</p><p class="vs-fine" style="margin-top:6px">Gemessen ist nur die Handelswährung der Listings. Underlying-Währungsrisiko noch nicht verfügbar (dafür braucht es die Holdings).</p><div style="margin-top:10px">' + VS.bars(x.currencies) + '</div></div>' +
       '<div class="vs-card"><p class="vs-label">Konzentration</p><p class="vs-kpi small" style="margin-top:6px">' + x.concentration.effectiveNumber.toLocaleString("de-DE", { maximumFractionDigits: 1 }) + ' effektive ETFs</p><p class="vs-fine" style="margin-top:6px">Größte Position: ' + esc(x.concentration.largest ? x.concentration.largest.symbol + " " + F.pct(x.concentration.largest.weight, 0) : "–") + '. Auf Ebene der Unternehmen folgt die Konzentration mit Holdings-Daten.</p>' +
       '<p class="vs-label" style="margin-top:14px">Gleichlauf (Korrelation, Wochenrenditen)</p>' + (x.correlations.length ? x.correlations.map(function (c) { return '<div class="vs-row"><span>' + esc(c.a) + ' ↔ ' + esc(c.b) + '</span><span class="num">' + (c.value === null ? '<span class="vs-fine">zu wenig Überlappung</span>' : c.value.toLocaleString("de-DE", { maximumFractionDigits: 2 })) + '</span></div>'; }).join("") : '<p class="vs-fine">Ab zwei ETFs.</p>') + '</div></div>' +
-      '<div class="vs-card" style="margin-top:14px"><p class="vs-label">Durchschau: Länder, Branchen, Top-Unternehmen, Overlap</p>' +
-      (lt.status === "CALCULATED" || lt.status === "PARTIAL" ? '<div style="margin-top:10px">' + lt.multiplyHeld.map(function (h) { return '<div class="vs-row"><span>' + esc(h.text) + '</span><span class="num">' + F.pct(h.weight, 2) + '</span></div>'; }).join("") + '</div>'
-        : '<div class="vs-grid g2" style="margin-top:10px">' + VS.pending("Effektive Länder- und Branchengewichtung · Daten folgen", "Dafür braucht es die Holdings jedes ETFs. Die Engine ist fertig (z. B. „Du besitzt NVIDIA indirekt über drei ETFs.“) und startet, sobald Emittenten-Holdings angeschlossen sind.") +
-          VS.pending("ETF-Overlap · Daten folgen", pairs.length ? pairs.length + " ETF-Paare vorbereitet. Gewichteter Overlap und gemeinsame Holdings erscheinen mit den Holdings-Daten – wir simulieren keine Überschneidungen." : "Ab zwei ETFs.") + '</div>') + '</div>';
+      '<div id="vs-lt"></div>';
+    drawLookThrough(out.querySelector("#vs-lt"), x, lt, holdings, s);
     if (x.series.status === "CALCULATED") VS.lineChart(out.querySelector("#vs-pf-chart"), [{ label: "Portfolio", points: x.series.points, area: true }], { label: "Portfolio-Verlauf", fmtY: function (v) { return v.toFixed(0); } });
     else out.querySelector("#vs-pf-chart").innerHTML = VS.pending("Kein gemeinsamer Verlauf", "Die Kursreihen der Positionen überschneiden sich nicht ausreichend.");
+  }
+
+
+  /* ---------------------------------------------- Look-through 2.0 */
+  function drawLookThrough(el, x, lt, holdings, s) {
+    var pos = x.positions, total = pos.reduce(function (a, p) { return a + p.weight; }, 0) || 1;
+    // gewichtete laufende Produktkosten
+    var costW = 0, cost = 0;
+    pos.forEach(function (p) { var d = s.details[p.symbol]; var c = d && d.costs && d.costs.status === "AVAILABLE" ? d.costs.value : null; if (c !== null) { costW += p.weight / total; cost += p.weight / total * c; } });
+    var costCard = '<div class="vs-card"><p class="vs-label">Laufende Produktkosten der Struktur</p>' + (costW > 0 ? '<p class="vs-kpi small" style="margin-top:6px">' + VS.costPct(cost / costW) + ' p.a.</p><p class="vs-fine">gewichtet über ' + F.pct(costW, 0) + ' des Portfolios mit Kostenquote laut Prospekt (SEC). Depot-, Handels- und Steuerkosten sind nicht enthalten.</p>'
+      : VS.pending("Keine Kostenquoten", "Für die Positionen liegt keine Kostenquote aus einer Primär- oder Regulierungsquelle vor.")) + '</div>';
+    if (!(lt.status === "CALCULATED" || lt.status === "PARTIAL")) {
+      el.innerHTML = '<div class="vs-grid g2" style="margin-top:14px">' + costCard + VS.pending("Durchschau nicht möglich", "Für keine Position liegen Bestandsdaten vor (z. B. Unit Investment Trusts wie SPY oder Nicht-US-Fonds). Wir schätzen keine Inhalte.") + '</div>';
+      return;
+    }
+    var shown = Object.keys(holdings).map(function (k) { return k + " " + F.pct((s.holdingFiles[k] || {}).shownWeight, 0); }).join(", ");
+    var eqTop25 = lt.companies.slice(0, 25).reduce(function (a, c) { return a + c.weight; }, 0);
+    var sentence = "Du hältst " + pos.length + " ETF" + (pos.length > 1 ? "s" : "") + ". " + F.pct(eqTop25 / Math.max(lt.coverage, 1e-9), 0) + " des durchschauten Vermögens entfallen effektiv auf die 25 größten Unternehmen.";
+    var pairs = [];
+    for (var i = 0; i < pos.length; i++) for (var j = i + 1; j < pos.length; j++) { var a = holdings[pos[i].symbol], b = holdings[pos[j].symbol]; if (a && b) pairs.push({ a: pos[i].symbol, b: pos[j].symbol, o: X.overlap(a, b) }); }
+    el.innerHTML = '<div class="vs-card app" style="margin-top:14px"><p class="vs-label">Was du wirklich besitzt</p><p style="margin-top:8px;color:var(--app-ink);font-size:17px">' + esc(sentence) + '</p>' +
+      (lt.effectiveDuplicateExposure > 0 ? '<p class="vs-fine" style="margin-top:4px;color:var(--app-muted)">' + F.pct(lt.effectiveDuplicateExposure, 1) + ' deines Portfolios stecken in Unternehmen, die du über mehrere ETFs hältst.</p>' : "") + '</div>' +
+      '<div class="vs-own" style="margin-top:12px">' + lt.companies.slice(0, 12).map(function (c) {
+        return '<div><b>' + esc(c.name) + '</b><span class="num" style="font-size:20px;font-weight:800">' + F.pct(c.weight, 2) + '</span><span class="vs-fine"> effektiv</span><br>' + (c.via.length > 1 ? '<span class="vs-badge">über ' + c.via.length + ' ETFs</span> ' : "") + '<span class="vs-fine">' + esc(c.via.join(", ")) + '</span></div>';
+      }).join("") + '</div>' +
+      '<div class="vs-grid g2" style="margin-top:14px"><div class="vs-card"><p class="vs-label">Länder (effektiv)</p>' + VS.bars(lt.countries.slice(0, 10).map(function (c) { return { key: c.key, label: VS.countryName(c.key), weight: c.weight }; })) + '</div>' +
+      '<div class="vs-card"><p class="vs-label">Wirtschaftszweige (effektiv, SEC-SIC)</p>' + (lt.sectors.length ? VS.bars(lt.sectors.slice(0, 11).map(function (c) { return { key: c.key, label: VS.sectorName(c.key), weight: c.weight }; })) : '<p class="vs-fine">Keine Zuordnung.</p>') + '</div>' +
+      costCard +
+      '<div class="vs-card"><p class="vs-label">Überschneidung der ETFs</p>' + (pairs.length ? pairs.map(function (p) { return '<div class="vs-row"><span>' + esc(p.a + " ↔ " + p.b) + '<span class="t-name">' + p.o.commonCount + ' gemeinsame Positionen</span></span><span class="num">' + F.pct(p.o.weightedOverlap) + '</span></div>'; }).join("") : '<p class="vs-fine">Ab zwei ETFs mit Bestandsdaten.</p>') + '</div></div>' +
+      '<p class="vs-fine" style="margin-top:10px">Durchschau über ' + F.pct(lt.coverage, 0) + ' des Portfolios (Positionen mit Bestandsdaten, SEC N-PORT). Je ETF die bis zu 100 größten Positionen (Anteil am ETF: ' + esc(shown) + '); Werte beziehen sich auf das Gesamtportfolio. Stichtage der Bestände können sich unterscheiden.</p>';
   }
 
   function drawScenarios(out, m) {
