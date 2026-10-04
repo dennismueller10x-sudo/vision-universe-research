@@ -34,6 +34,13 @@ class HTTP:
 
 
 class MaterialHubTests(unittest.TestCase):
+ def test_generic_presentation_label_cannot_turn_report_filename_into_slides(self):
+  c=company();src=from_validated_ir(c,config(),NOW)
+  body=b'<a href="Himalaya-Shipping-Annual-Report-2021.pdf">Download presentation: Annual Report</a><a href="Consolidated-financial-statements-Q4-2021.pdf">Download presentation: financial statements</a><a href="H1-2026-Investor-Presentation.pdf">Interim Financial Report - Investor Presentation</a><a href="Financial-Statements-and-Presentation.pdf">Investor Presentation</a>'
+  docs=parse_hub(body,src,c,HUB,NOW)
+  self.assertEqual([d['type'] for d in docs],['FINANCIAL_REPORT','FINANCIAL_REPORT','PRESENTATION','PRESENTATION'])
+  self.assertTrue(all(d['date'] is None and d['companyId']==c['companyId'] for d in docs))
+
  def test_compound_transcript_label_replaces_old_type_without_losing_other_materials(self):
   from company_intelligence.model import stable_id
   with tempfile.TemporaryDirectory() as tmp:
