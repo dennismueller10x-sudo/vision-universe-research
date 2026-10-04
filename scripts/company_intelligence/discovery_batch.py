@@ -79,7 +79,8 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
         except (SourceError,ValueError,TypeError,KeyError) as e:
             circuit.failure(candidate['url'], e)
             transient=any(code in str(e) for code in ('HTTP_429','HTTP_500','HTTP_502','HTTP_503','HTTP_504','NETWORK_UNAVAILABLE','NETWORK_TIMEOUT','DNS_UNAVAILABLE','ROBOTS_UNAVAILABLE'))
-            result.update(status='DEGRADED' if c.get('officialSites') or result.get('site') else 'DEFERRED' if transient else 'REJECTED',reason=str(e)[:250],failureEvidence=getattr(e,'ownershipEvidence',{}))
+            result.update(status='DEGRADED' if c.get('officialSites') or result.get('site') else 'DEFERRED' if transient else 'REJECTED',reason=str(e)[:250],failureEvidence=getattr(e,'ownershipEvidence',{}),
+                          sources=getattr(e,'discoverySources',[]),configurations=getattr(e,'discoveryConfigurations',[]))
         except Exception as e:result.update(status='DEGRADED',reason='UNEXPECTED_DISCOVERY_ERROR:'+type(e).__name__)
         finally:
             with gate:
@@ -113,7 +114,7 @@ def persist(results,store,companies,now):
             category='VERIFIED' if r['status']=='VALIDATED' else 'BLOCKED' if any(code in reason for code in ('403','ROBOTS_DISALLOWED')) else 'UNAVAILABLE' if any(code in reason for code in ('404','DNS','NETWORK_UNAVAILABLE')) else 'DEFERRED' if r['status']=='DEFERRED' else 'IDENTITY_NOT_CORROBORATED' if 'OWNER_NOT_VALIDATED' in reason else 'FAILED'
             store.set_state('domainValidation:'+cid,{'status':r['status'],'category':category,'reason':reason,'checkedAt':now,'nextAttempt':advance(now,24 if category in ('DEFERRED','UNAVAILABLE') else 7*24)})
         if r.get('site'):store.set_state('officialSite:'+cid,r['site']);companies[cid]['officialSites']=[r['site']['url']]
-        if not r.get('domainOnly') and r['status']=='DEFERRED':
+        if not r.get('domainOnly') and r['status'] in ('DEFERRED','DEGRADED'):
             for source in r.get('sources',[]):store.source(source)
             prior=store.state('ir:'+cid,{})
             configurations={cfg['irHomepage']:cfg for cfg in prior.get('configurations',[])}

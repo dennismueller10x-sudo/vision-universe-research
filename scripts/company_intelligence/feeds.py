@@ -138,7 +138,7 @@ def discover_ir(company, official_site, http, now, max_pages=3):
     partial = {'sources': {}, 'configurations': []}
     try:
         return _discover_ir(company, official_site, http, now, max_pages, partial)
-    except BudgetExhausted as exc:
+    except SourceError as exc:
         exc.discoverySources = list(partial['sources'].values())
         exc.discoveryConfigurations = partial['configurations']
         raise
@@ -147,6 +147,7 @@ def discover_ir(company, official_site, http, now, max_pages=3):
 def _discover_ir(company, official_site, http, now, max_pages, partial):
     """Only walk links from a verified official root. No guessed domains or per-company scraper."""
     from .discovery import same_web_host
+    from .transport import BudgetExhausted
     homepage = http.get(official_site, ttl=86400)
     if not within_domain(homepage['finalUrl'], official_site) and not same_web_host(homepage['finalUrl'],official_site):
         raise SourceError('OFFICIAL_SITE_REDIRECT_REQUIRES_REVALIDATION')
@@ -171,6 +172,19 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
     trusted_pages = set(pages)
     sources, configs = partial['sources'], partial['configurations']
     warnings = []
+    def redirected_ir_proof(page, response):
+        # A linked old IR host may migrate to another domain. Require the
+        # transport's retained chain and independent destination ownership.
+        # Reuse the fetched response; legal routes remain separately bounded.
+        from .discovery import validate_discovery_candidate
+        if not response.get('redirects'):
+            raise SourceError('IR_REDIRECT_MISSING_TRANSPORT_CHAIN')
+        class RetainedResponse:
+            def get(self, url, **kwargs):
+                if canonical_url(url) == canonical_url(re.sub(r'^http:', 'https:', page)):
+                    return response
+                return http.get(url, **kwargs)
+        return validate_discovery_candidate(company, {'url': page, 'evidence': 'LINK_FROM_VERIFIED_OFFICIAL_SITE'}, RetainedResponse(), now)
     def optional_page(url):
         try:
             return http.get(url, ttl=86400)
@@ -185,8 +199,11 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
         if response is None:
             continue
         # A direct investor link from official site establishes a delegated IR host; unrelated redirects do not.
+        redirect_proof = None
         if domain(response['finalUrl']) != domain(page) and not within_domain(response['finalUrl'], official_site) and not same_web_host(response['finalUrl'],page):
-            raise SourceError('IR_REDIRECT_REQUIRES_REVALIDATION')
+            try:redirect_proof = redirected_ir_proof(page, response)
+            except BudgetExhausted:raise
+            except SourceError as error:raise SourceError('IR_REDIRECT_REQUIRES_REVALIDATION:'+str(error)) from error
         trusted_pages.add(response['finalUrl'])
         links = parse_links(response['body'], response['finalUrl'])
         from .platforms import fingerprint, endpoints
@@ -204,6 +221,9 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
                         **endpoints(links, response['finalUrl']),
                         'providerType': provider, 'lastVerified': now,
                         'confidence': 1 if within_domain(page, official_site) else .95, 'evidence': 'LINK_FROM_VERIFIED_OFFICIAL_SITE'})
+        if redirect_proof:
+            configs[-1]['redirectEvidence'] = redirect_proof.get('redirectEvidence') or {'fromUrl':page,'finalUrl':response['finalUrl'], 'redirects':response['redirects'], 'method':'INDEPENDENT_DESTINATION_LEGAL_OWNER_VERIFICATION'}
+            configs[-1]['ownershipEvidence'] = redirect_proof['ownershipEvidence']
         feed_links = [l for l in links if not re.search(r'/comments/feed(?:/|$)|[?&]feed=comments',l['url'],re.I) and (any(m in l['type'] for m in ('rss', 'atom', 'feed+json')) or re.search(r'rss(?:handler|\.aspx|/)|\b(rss|atom)\b|\.rss(?:\?|$)', l['url'] + ' ' + l['text'], re.I))]
         extra = None
         # Follow one linked newsroom/event page if no structured feed is advertised.
@@ -212,7 +232,9 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
             if candidate:
                 extra = optional_page(candidate['url'])
                 if extra and domain(extra['finalUrl']) != domain(candidate['url']) and not same_web_host(extra['finalUrl'],candidate['url']):
-                    raise SourceError('IR_REDIRECT_REQUIRES_REVALIDATION')
+                    try:redirected_ir_proof(candidate['url'], extra)
+                    except BudgetExhausted:raise
+                    except SourceError as error:raise SourceError('IR_REDIRECT_REQUIRES_REVALIDATION:'+str(error)) from error
                 trusted_pages.add(extra['finalUrl'] if extra else candidate['url'])
                 more = parse_links(extra['body'], extra['finalUrl']) if extra else []
                 feed_links += [l for l in more if 'rss' in l['type'] or 'atom' in l['type'] or re.search(r'rss(?:handler|\.aspx|/)|\brss\b', l['url'] + ' ' + l['text'], re.I)]
