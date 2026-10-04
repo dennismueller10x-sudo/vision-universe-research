@@ -31,3 +31,10 @@ Kurzfassung der Evidenz (Nachlauf mit Engine 2.2 und Elliott-Gewicht 0, siehe TE
 **Elliott Engine 3 (Quality Remediation):** Auf getrennten synthetischen Fällen (HOLDOUT-2) erkennt Engine 3.1 das Muster in 51,3 % der Fälle als Hauptzählung (2.2: 0,4 %), den Grad in 51,9 % (2.2: 0,4 %). Ausgegebene Zählungen verletzen keine harte Regel mehr, und falsche Sicherheit sinkt auf 15 % (2.2: 100 %). Das Gate ist **nicht** bestanden (grober Grad-Fehler 29 %, hohes Rauschen 10 %). Deshalb kein Prognose-Backtest; Status „Experimentelles Strukturmodell“, keine Expertenvalidierung. Siehe [ELLIOTT_ENGINE3_REPORT.md](ELLIOTT_ENGINE3_REPORT.md).
 
 **Mission III (Engine 3.2):** Produktion läuft auf Engine 3.2 (experimentelles Strukturmodell, Konfluenzgewicht 0). HOLDOUT-3 (realitätsnähere Generatoren, einmal ausgewertet): **nicht bestanden** — 0 Regelverstöße, falsche Sicherheit 14,9 %, Neuzuordnungen halb so häufig wie 2.2, aber Erkennung 42,9 % (≥ 45 %), grober Gradfehler 32,5 % (≤ 25 %), hohes Rauschen 6,2 %. Siehe [ELLIOTT_ENGINE32_REPORT.md](ELLIOTT_ENGINE32_REPORT.md).
+
+## Mission IV (Abschluss)
+
+* [MISSION4_FINAL_REPORT.md](MISSION4_FINAL_REPORT.md) — Abschlussbericht, Statustabelle, Selbstkritik
+* [FINAL_OPEN_ITEM_MATRIX.md](FINAL_OPEN_ITEM_MATRIX.md) — alle offenen Punkte Mission I–IV
+* [STATISTICS_AUDIT.md](STATISTICS_AUDIT.md) — Cluster-Bootstrap, Mehrfachtests, zeitraumgleiche Baseline
+* Reviews: [Code-Review](reviews/MISSION4_CODE_REVIEW.md), [Red-Team 2](reviews/MISSION4_REDTEAM_2.md), [Generator-Audit 2](reviews/ELLIOTT_GENERATOR_AUDIT_2.md), [Sprachaudit](reviews/REGULATORY_LANGUAGE_AUDIT.md)
