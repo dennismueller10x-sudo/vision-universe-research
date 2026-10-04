@@ -263,6 +263,7 @@ class Pipeline:
                             if distributed_author:
                                 e.update(confidence=.99, confirmationEvidence='ISSUER_AUTHORED_DISTRIBUTOR_ANNOUNCEMENT', issuerMatchEvidence=match['evidence'])
                             self.store.event(e, self.now)
+                            self.store.retire_composite_call(e, self.now)
                         financial_proof = financial_release_evidence(entry['headline'], entry.get('evidenceText', ''))
                         if issuer_results_actor(entry['headline'], self.companies[match['companyId']]) and financial_proof and entry.get('publishedAt') and re.search(r'\b(reports?|announces?)\b.{0,80}(?:quarter|fiscal|financial|full.year).{0,35}results', entry['headline'], re.I) and not re.search(r'\b(will|to announce|to report|to be|date|scheduled|upcoming|forthcoming|expected|board meeting|board approval|to consider|to approve|to review)\b', entry['headline'], re.I) and not (re.search(r'\b(production|deliveries|operating results|operational results|phase[ -]?[123]|clinical|trial|study)\b', entry['headline'], re.I) and not re.search(r'financial results|earnings', entry['headline'], re.I)):
                             from .sec_documents import release_period

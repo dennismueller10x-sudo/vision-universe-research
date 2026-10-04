@@ -88,16 +88,27 @@ def from_announcement(item, source, now):
             return []
         start = dt.astimezone(timezone.utc).isoformat().replace('+00:00', 'Z')
     name = item['headline']
-    if not structured and re.search(r'[,;]\s*related\s+(?:conference|earnings)\s+call', name, re.I):
+    composite_release = False
+    legacy_call_mismatch = False
+    composite_call = r'(?:[,;]\s*related\s+|\band\s+)(?:conference|earnings)\s+call'
+    if not structured and re.search(composite_call, name, re.I):
         # Composite headlines can name a call whose date lacks a year. Keep only
         # the release clause supported by the one explicit full date in the body.
-        release_clause = re.split(r'[,;]\s*related\s+(?:conference|earnings)\s+call', name, flags=re.I)[0]
-        release_date = any(f'{match[3]}-{MONTHS[match[1].lower()]:02d}-{int(match[2]):02d}' == day and re.search(r'will\s+(?:release|report|announce)\s+(?:financial\s+results|earnings)(?:(?!\b(?:call|webcast)\b).){0,240}$', text[max(0, match.start() - 300):match.start()], re.I) for match in dates)
+        release_clause = re.split(composite_call, name, flags=re.I)[0]
+        release_date = any(f'{match[3]}-{MONTHS[match[1].lower()]:02d}-{int(match[2]):02d}' == day and re.search(r'will\s+(?:release|report|announce)\s+(?:its?\s+)?(?:financial\s+results|earnings)(?:(?!\b(?:call|webcast)\b).){0,240}$', text[max(0, match.start() - 300):match.start()], re.I) for match in dates)
         if release_date:
             name = release_clause
+            composite_release = True
+            call_clause = re.split(composite_call, item['headline'], flags=re.I, maxsplit=1)[1]
+            short_dates = list(re.finditer(r'\b('+'|'.join(MONTHS)+r')\s+(\d{1,2})(?:st|nd|rd|th)?\b',call_clause,re.I))
+            if len(short_dates)==1:
+                mention=short_dates[0]
+                legacy_call_mismatch=f'{MONTHS[mention[1].lower()]:02d}-{int(mention[2]):02d}' != day[5:]
     result = event(source, name, item['url'], day, now, start=start,
                    evidence={'method': 'EXPLICIT_OFFICIAL_ANNOUNCEMENT', 'excerpt': text[:300]}, clock=clock, zone=zone)
     if result:
+        if composite_release:
+            result['evidence'].update(method='EXPLICIT_FIRST_PARTY_RELEASE_CLAUSE_IN_COMPOSITE_HEADLINE',originalHeadline=clean(item['headline']),retireLegacyCallOnReleaseDate=legacy_call_mismatch)
         for material in item.get('materialLinks', []):
             label, url = material['label'], canonical_url(material['url'])
             if not url:

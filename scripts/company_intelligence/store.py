@@ -256,6 +256,35 @@ class Store:
             self.db.execute('INSERT OR REPLACE INTO events VALUES(?,?,?,?,?)',
                             (event['eventId'], event['companyId'], event['eventType'], event.get('date') or event.get('publishedAt'), encoded))
 
+    def retire_composite_call(self, replacement, now):
+        """Retire only a proven release-date/call-date mix-up on the same source."""
+        proof = replacement.get('evidence') or {}
+        if (replacement.get('eventType') != 'EARNINGS_SCHEDULED' or
+                proof.get('method') != 'EXPLICIT_FIRST_PARTY_RELEASE_CLAUSE_IN_COMPOSITE_HEADLINE' or
+                proof.get('retireLegacyCallOnReleaseDate') is not True or not replacement.get('sourceId') or not proof.get('originalHeadline')):
+            return 0
+        target = self.db.execute('SELECT payload FROM events WHERE id=?', (replacement['eventId'],)).fetchone()
+        if not target or json.loads(target[0]).get('eventType') != 'EARNINGS_SCHEDULED':
+            return 0  # Commit the verified replacement before retiring any prior row.
+        old_rows = self.db.execute("SELECT id,payload FROM events WHERE company=? AND kind='EARNINGS_CALL' AND date=? AND json_extract(payload,'$.sourceId')=? AND json_extract(payload,'$.sourceUrl')=?",
+                                   (replacement['companyId'], replacement['date'], replacement['sourceId'], replacement['sourceUrl'])).fetchall()
+        retired = 0
+        with self.db:
+            for row in old_rows:
+                old = json.loads(row['payload'])
+                if (old.get('headline') != proof['originalHeadline'] or
+                        (old.get('evidence') or {}).get('method') != 'EXPLICIT_OFFICIAL_ANNOUNCEMENT'):
+                    continue
+                audit = {'code':'COMPOSITE_CALL_RECLASSIFIED_AS_RELEASE','previousEvent':old,
+                         'replacementEventId':replacement['eventId'],'reason':'The explicit full date proves the release; the headline names a different call day.'}
+                self.db.execute('INSERT OR REPLACE INTO audit VALUES(?,?,?,?)',
+                                (stable_id(now,replacement['sourceId'],audit),now,replacement['sourceId'],dumps(audit)))
+                self.db.execute('UPDATE event_alias SET target=? WHERE target=?',(replacement['eventId'],row['id']))
+                self.db.execute('INSERT OR REPLACE INTO event_alias VALUES(?,?)',(row['id'],replacement['eventId']))
+                self.db.execute('DELETE FROM events WHERE id=?',(row['id'],))
+                retired += 1
+        return retired
+
     def prune(self, now):
         cutoff = (datetime.fromisoformat(now.replace('Z', '+00:00')) - timedelta(days=365)).isoformat().replace('+00:00', 'Z')
         audit_cutoff = (datetime.fromisoformat(now.replace('Z', '+00:00')) - timedelta(days=30)).isoformat().replace('+00:00', 'Z')
