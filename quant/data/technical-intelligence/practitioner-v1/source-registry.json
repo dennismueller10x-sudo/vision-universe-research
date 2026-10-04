@@ -2,7 +2,7 @@
  "schemaVersion": "vu-practitioner-source-registry-1.0.0",
  "generatedAt": "2026-10-04",
  "status": "PRELIMINARY",
- "note": "Vorläufiges Quellenverzeichnis. Alle Angaben stammen aus Websuche-Metadaten (Titel, URL, Kurzfassung der Suchmaschine) und sind NICHT am Primärmaterial geprüft: Die Build-Umgebung kann YouTube, X, die Anbieter-Websites, Kolumnenportale und das Internet Archive nicht erreichen (Netzwerk-Policy, HTTP 403). Stufen A/B/C sind deshalb vorläufig; Felder 'UNVERIFIED' werden bei der ersten Sichtung des Primärmaterials gefüllt. Reichweite ist kein Kriterium. Stichprobenrahmen je Quelle (samplingFrame) noch nicht gesetzt; quellenfamilie hkcm = hkcm + phantom-hkcm.",
+ "note": "Vorläufiges Quellenverzeichnis. Alle Angaben stammen aus Websuche-Metadaten (Titel, URL, Kurzfassung der Suchmaschine) und sind NICHT am Primärmaterial geprüft: Die Build-Umgebung kann YouTube, X, die Anbieter-Websites, Kolumnenportale und das Internet Archive nicht erreichen (Netzwerk-Policy, HTTP 403). Stufen A/B/C sind deshalb vorläufig; Felder 'UNVERIFIED' werden bei der ersten Sichtung des Primärmaterials gefüllt. Reichweite ist kein Kriterium. Stichprobenrahmen je Quelle (samplingFrame) noch nicht gesetzt; quellenfamilie hkcm = hkcm + phantom-hkcm. | 2026-10-04: Zugangspruefung aus einer Umgebung mit Internetzugang (Feld accessFromBuildEnvironment); Stichprobenrahmen fuer ewf, tiedje, ewt-gilburt gesetzt (frames/<sourceId>.json) vor jeder Extraktion; YouTube-Rahmen (hkcm, phantom-hkcm, more-crypto-online) folgen in eigenem Commit.",
  "tiers": {
   "A": "sehr gut dokumentierte Practitioner Reference",
   "B": "brauchbar",
@@ -52,7 +52,7 @@
    "benchmarkTier": "A (vorläufig)",
    "tierRationale": "Priorität laut Auftrag; konkrete Zielbereiche und Szenarien öffentlich; Prüfung am Primärmaterial ausstehend. Eigenwerbung mit Trefferquote → Publikationsverzerrung prüfen.",
    "language": "de",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-04 (Umgebung mit Internetzugang): YouTube-Kanalliste (@hkcm/videos) erreichbar (HTTP 200, 1.856 Videos). Einzelvideo-/Metadatenabruf zeitweise durch YouTube-Bot-Pruefung gesperrt (302 → google.com/sorry bzw. 'Sign in to confirm you're not a bot'); NICHT umgangen (keine Cookies/Logins), nur spaeter gedrosselt erneut versucht. hkcm.de: 200, aber leere JS-Seite (Analysen nur fuer Mitglieder). aktiencheck.de-Kolumne (200): nur Verweise auf YouTube-Videos (2023), Cross-Posts ohne eigenen Inhalt. trading-treff.de-Autorenarchiv (200): letzter Beitrag 30.06.2021 → 0 Beitraege im Fenster. X: 200 (JS-Huelle), Zeitleisten nur mit Login → nicht genutzt.",
    "samplingFrame": {
     "window": [
      "2022-01-01",
@@ -101,7 +101,7 @@
    "benchmarkTier": "B (vorläufig)",
    "tierRationale": "HKCM-Umfeld (zählt zur 40-%-Grenze); Schwerpunkt Krypto, für Aktien-Benchmark nur ergänzend.",
    "language": "de",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-04 (Umgebung mit Internetzugang): YouTube-Kanalliste (@phantombyhkcm/videos) erreichbar (659 Videos, aeltestes ca. 10/2023). Einzelvideo-Abruf zeitweise durch Bot-Pruefung gesperrt; nicht umgangen. X-Zeitleiste nur mit Login → nicht genutzt.",
    "samplingFrame": {
     "window": [
      "2022-01-01",
@@ -154,7 +154,7 @@
    "benchmarkTier": "B (vorläufig)",
    "tierRationale": "Klassische Schule (Frost & Prechter) — wichtig als Gegenpol; nur freie Inhalte zulässig.",
    "language": "en",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-04 (Umgebung mit Internetzugang): elliottwave.com: HTTP 403 → nicht erreichbar, nicht umgangen.",
    "samplingFrame": {
     "window": [
      "2022-01-01",
@@ -208,18 +208,34 @@
    "benchmarkTier": "B (vorläufig)",
    "tierRationale": "Viele öffentliche Aktien-/Index-Beiträge mit Zonen und Invalidation; Achtung: hoher Anteil retrospektiver Erfolgsbeiträge und Intraday-Zählungen.",
    "language": "en",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-04 (Umgebung mit Internetzugang): Erreichbar (HTTP 200). Oeffentliche WordPress-REST-API liefert das vollstaendige datierte Beitragsarchiv (date_gmt, Kategorien).",
    "samplingFrame": {
     "window": [
      "2022-01-01",
      "2026-06-30"
     ],
-    "frameSource": null,
-    "frameSize": null,
-    "stepK": null,
-    "startIndex": null,
+    "frameSource": "WordPress-REST-API der Website (oeffentlich): GET https://elliottwave-forecast.com/wp-json/wp/v2/posts?after=2022-01-01T00:00:00&before=2026-07-01T00:00:00&orderby=date&order=asc (alle Beitraege, alle Kategorien; Datum = date_gmt) + /wp/v2/categories",
+    "frameFile": "frames/ewf.json",
+    "retrievedAt": "2026-10-04",
+    "frameSize": 3275,
+    "instrumentFilter": "TITLE",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {
+     "EXCLUDED_NO_TARGET_INSTRUMENT": 1190,
+     "EXCLUDED_RETROSPECTIVE": 509,
+     "EXCLUDED_NON_ANALYSIS": 28
+    },
+    "eligibleCount": 1548,
+    "sampleTarget": 60,
+    "stepK": 25,
+    "startIndex": 19,
+    "sampleSize": 62,
+    "pilotQuota": 7,
+    "pilotStepM": 8,
+    "pilotStartIndex": 2,
     "seed": 20261004,
-    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+    "procedure": "scripts/technical/practitioner/sampling-frame.mjs: Fenster → Titel-/Kategorieregeln (ergebnisblind, vorab) → E chronologisch; k=floor(|E|/sampleTarget); startIndex=SHA-256(\"20261004|\"+sourceId) mod k (erste 8 Hex); S=E[start+j·k]; Pilot: m=floor(|S|/pilotQuota), p0=SHA-256(\"20261004|pilot|\"+sourceId) mod m, Pilot=S[p0+j·m]",
+    "status": "SET 2026-10-04 vor jeder Extraktion dieser Quelle"
    },
    "sourceFamily": "ewf"
   },
@@ -255,7 +271,7 @@
    "benchmarkTier": "C (vorläufig)",
    "tierRationale": "Krypto-Schwerpunkt; für den Aktien-Benchmark nur ergänzend.",
    "language": "en",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-04 (Umgebung mit Internetzugang): YouTube-Kanalliste erreichbar (22.797 Videos); Einzelvideo-Abruf zeitweise durch Bot-Pruefung gesperrt; nicht umgangen.",
    "samplingFrame": {
     "window": [
      "2022-01-01",
@@ -305,18 +321,33 @@
    "benchmarkTier": "B (vorläufig)",
    "tierRationale": "Stichtag = Mitglieder-Erstveröffentlichung, nicht öffentliche Freigabe — muss je Artikel belegt sein, sonst konservativ öffentliches Datum.",
    "language": "en",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-04 (Umgebung mit Internetzugang): Erreichbar (HTTP 200). Autorenseite ohne Archiv/Paginierung; oeffentliche News-Sitemaps 2018–2026 mit publication_date; Artikelseiten oeffentlich nach 72-h-Freigabe, JSON-LD datePublished = Erstveroeffentlichung.",
    "samplingFrame": {
     "window": [
      "2022-01-01",
      "2026-06-30"
     ],
-    "frameSource": null,
-    "frameSize": null,
-    "stepK": null,
-    "startIndex": null,
+    "frameSource": "Oeffentliche News-Sitemaps https://www.elliottwavetrader.net/images/charts/sitemaps/elliottwavetrader-sitemap-news-2022..2026.xml (alle oeffentlichen Artikel aller Analysten, publication_date mit Offset), gefiltert auf author.name \"Avi Gilburt\" aus dem JSON-LD-Kopf der Artikelseite",
+    "frameFile": "frames/ewt-gilburt.json",
+    "retrievedAt": "2026-10-04",
+    "frameSize": 60,
+    "instrumentFilter": "AT_DRAW",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {
+     "EXCLUDED_NON_ANALYSIS": 18,
+     "EXCLUDED_RETROSPECTIVE": 1
+    },
+    "eligibleCount": 41,
+    "sampleTarget": 15,
+    "stepK": 2,
+    "startIndex": 1,
+    "sampleSize": 20,
+    "pilotQuota": 4,
+    "pilotStepM": 5,
+    "pilotStartIndex": 2,
     "seed": 20261004,
-    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+    "procedure": "scripts/technical/practitioner/sampling-frame.mjs: Fenster → Titel-/Kategorieregeln (ergebnisblind, vorab) → E chronologisch; k=floor(|E|/sampleTarget); startIndex=SHA-256(\"20261004|\"+sourceId) mod k (erste 8 Hex); S=E[start+j·k]; Pilot: m=floor(|S|/pilotQuota), p0=SHA-256(\"20261004|pilot|\"+sourceId) mod m, Pilot=S[p0+j·m]",
+    "status": "SET 2026-10-04 vor jeder Extraktion dieser Quelle"
    },
    "sourceFamily": "ewt-gilburt"
   },
@@ -354,18 +385,35 @@
    "benchmarkTier": "B (vorläufig)",
    "tierRationale": "Deutschsprachig, unabhängig von HKCM; DAX-Future ohne VU-Reihe (UNMAPPED).",
    "language": "de",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-04 (Umgebung mit Internetzugang): Erreichbar (HTTP 200). Themenseite Elliott-Wellen (400 Seiten, 3.999 Artikel, davon 3.927 André Tiedje); Artikelseiten mit isAccessibleForFree und datePublished (Sekunde, Offset).",
    "samplingFrame": {
     "window": [
      "2022-01-01",
      "2026-06-30"
     ],
-    "frameSource": null,
-    "frameSize": null,
-    "stepK": null,
-    "startIndex": null,
+    "frameSource": "Themenseite stock3.com/themen/elliott-wellen-23?page=1..400 (Plattform-Uebersicht, alle Artikel des Themas), gefiltert auf Autor \"André Tiedje\" (Autorenangabe der Artikelkarte); Datum = Kartendatum (Tag)",
+    "frameFile": "frames/tiedje.json",
+    "retrievedAt": "2026-10-04",
+    "frameSize": 2000,
+    "instrumentFilter": "TITLE",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {
+     "EXCLUDED_SYSTEM_SIGNALS": 1841,
+     "EXCLUDED_NO_TARGET_INSTRUMENT": 42,
+     "EXCLUDED_NON_ANALYSIS": 17,
+     "EXCLUDED_RETROSPECTIVE": 5
+    },
+    "eligibleCount": 95,
+    "sampleTarget": 40,
+    "stepK": 2,
+    "startIndex": 0,
+    "sampleSize": 48,
+    "pilotQuota": 5,
+    "pilotStepM": 9,
+    "pilotStartIndex": 2,
     "seed": 20261004,
-    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+    "procedure": "scripts/technical/practitioner/sampling-frame.mjs: Fenster → Titel-/Kategorieregeln (ergebnisblind, vorab) → E chronologisch; k=floor(|E|/sampleTarget); startIndex=SHA-256(\"20261004|\"+sourceId) mod k (erste 8 Hex); S=E[start+j·k]; Pilot: m=floor(|S|/pilotQuota), p0=SHA-256(\"20261004|pilot|\"+sourceId) mod m, Pilot=S[p0+j·m]",
+    "status": "SET 2026-10-04 vor jeder Extraktion dieser Quelle"
    },
    "sourceFamily": "tiedje"
   },
@@ -402,7 +450,7 @@
    "benchmarkTier": "B (vorläufig)",
    "tierRationale": "Deutschsprachige Indexanalysen mit Zielen; unabhängig von HKCM.",
    "language": "de",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-04 (Umgebung mit Internetzugang): de.investing.com: HTTP 403 → nicht erreichbar, nicht umgangen.",
    "samplingFrame": {
     "window": [
      "2022-01-01",
@@ -449,7 +497,7 @@
    "benchmarkTier": "C (vorläufig)",
    "tierRationale": "Updates zu früheren Analysen vorhanden (Revisionen gut verfolgbar); DAX UNMAPPED.",
    "language": "de",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-04 (Umgebung mit Internetzugang): de.investing.com: HTTP 403 → nicht erreichbar, nicht umgangen.",
    "samplingFrame": {
     "window": [
      "2022-01-01",
@@ -494,7 +542,7 @@
    "benchmarkTier": "C (vorläufig)",
    "tierRationale": "Gute Zeitstempel-Disziplin, aber Autorenqualität sehr gemischt; nur Autoren mit Kontinuität einzeln aufnehmen.",
    "language": "en/de",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-04 (Umgebung mit Internetzugang): tradingview.com/ideas/elliottwaves/: HTTP 200. Im Pilot nicht genutzt (nur einzelne Autoren mit Kontinuitaet; Auswahl offen).",
    "samplingFrame": {
     "window": [
      "2022-01-01",
@@ -541,7 +589,7 @@
    "benchmarkTier": "REJECT (vorläufig)",
    "tierRationale": "Kernanalysen hinter Bezahlschranke; andere Schule (nicht mit klassischer Zählung mischen).",
    "language": "en",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-04 (Umgebung mit Internetzugang): nicht geprueft (REJECT, Bezahlschranke).",
    "samplingFrame": {
     "window": [
      "2022-01-01",
@@ -584,7 +632,7 @@
    "benchmarkTier": "REJECT",
    "tierRationale": "Sekundärberichte über Analysen; Original bevorzugt (Quellkette).",
    "language": "en",
-   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-04 (Umgebung mit Internetzugang): nicht genutzt (REJECT).",
    "samplingFrame": {
     "window": [
      "2022-01-01",
