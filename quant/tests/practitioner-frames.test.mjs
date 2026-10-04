@@ -12,7 +12,7 @@ test("jede Rahmendatei: gespeicherte Ziehung = neu berechnete Ziehung", () => {
   assert.ok(frames.length >= 1);
   for (const f of frames) {
     const d = drawFrame(f);
-    for (const k of ["frameSize", "eligibleCount", "stepK", "startIndex", "sample", "pilot", "pilotExtension"]) assert.deepEqual(f.draw[k], d[k], `${f.sourceId}.${k}`);
+    for (const k of ["frameSize", "eligibleCount", "stepK", "startIndex", "sample", "pilot", "pilotExtension", "phase2"]) assert.deepEqual(f.draw[k], d[k], `${f.sourceId}.${k}`);
     assert.equal(d.startIndex, seedMod("20261004|" + f.sourceId, d.stepK));
   }
 });

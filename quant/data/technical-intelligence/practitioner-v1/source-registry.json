@@ -2,7 +2,7 @@
  "schemaVersion": "vu-practitioner-source-registry-1.0.0",
  "generatedAt": "2026-10-04",
  "status": "PRELIMINARY",
- "note": "Vorläufiges Quellenverzeichnis. Alle Angaben stammen aus Websuche-Metadaten (Titel, URL, Kurzfassung der Suchmaschine) und sind NICHT am Primärmaterial geprüft: Die Build-Umgebung kann YouTube, X, die Anbieter-Websites, Kolumnenportale und das Internet Archive nicht erreichen (Netzwerk-Policy, HTTP 403). Stufen A/B/C sind deshalb vorläufig; Felder 'UNVERIFIED' werden bei der ersten Sichtung des Primärmaterials gefüllt. Reichweite ist kein Kriterium. Stichprobenrahmen je Quelle (samplingFrame) noch nicht gesetzt; quellenfamilie hkcm = hkcm + phantom-hkcm. | 2026-10-04: Zugangspruefung aus einer Umgebung mit Internetzugang (Feld accessFromBuildEnvironment); Stichprobenrahmen fuer ewf, tiedje, ewt-gilburt gesetzt (frames/<sourceId>.json) vor jeder Extraktion; YouTube-Rahmen (hkcm, phantom-hkcm, more-crypto-online) folgen in eigenem Commit. | 2026-10-04 (spaeter): VORLAEUFIGE YouTube-Rahmen fuer hkcm und phantom-hkcm (ungefaehre Daten aus relativen Plattformangaben; exakte Grenzen wegen Bot-Pruefung offen; Extraktion BLOCKED bis Zugang). more-crypto-online: kein Rahmen (Kanalliste nur mit uebersetzten Titeln abgerufen, 22.797 Videos; Datumsliste abgebrochen).",
+ "note": "Vorläufiges Quellenverzeichnis. Alle Angaben stammen aus Websuche-Metadaten (Titel, URL, Kurzfassung der Suchmaschine) und sind NICHT am Primärmaterial geprüft: Die Build-Umgebung kann YouTube, X, die Anbieter-Websites, Kolumnenportale und das Internet Archive nicht erreichen (Netzwerk-Policy, HTTP 403). Stufen A/B/C sind deshalb vorläufig; Felder 'UNVERIFIED' werden bei der ersten Sichtung des Primärmaterials gefüllt. Reichweite ist kein Kriterium. Stichprobenrahmen je Quelle (samplingFrame) noch nicht gesetzt; quellenfamilie hkcm = hkcm + phantom-hkcm. | 2026-10-04: Zugangspruefung aus einer Umgebung mit Internetzugang (Feld accessFromBuildEnvironment); Stichprobenrahmen fuer ewf, tiedje, ewt-gilburt gesetzt (frames/<sourceId>.json) vor jeder Extraktion; YouTube-Rahmen (hkcm, phantom-hkcm, more-crypto-online) folgen in eigenem Commit. | 2026-10-04 (spaeter): VORLAEUFIGE YouTube-Rahmen fuer hkcm und phantom-hkcm (ungefaehre Daten aus relativen Plattformangaben; exakte Grenzen wegen Bot-Pruefung offen; Extraktion BLOCKED bis Zugang). more-crypto-online: kein Rahmen (Kanalliste nur mit uebersetzten Titeln abgerufen, 22.797 Videos; Datumsliste abgebrochen). | 2026-10-04 Phase 2 (Nachtrag 5): EWF eingeschraenkt (Stock Market ohne Chart Of The Day, k=4), Tiedje vollstaendig, TradingView-Autoren tv-cryptoknee, tv-thefifthwave, tv-yuchaosng (Regel 5 d), Reihenfolge phase2-order.json.",
  "tiers": {
   "A": "sehr gut dokumentierte Practitioner Reference",
   "B": "brauchbar",
@@ -79,7 +79,7 @@
     "pilotStartIndex": 2,
     "seed": 20261004,
     "procedure": "scripts/technical/practitioner/sampling-frame.mjs: Fenster → Titel-/Kategorieregeln (ergebnisblind, vorab) → E chronologisch; k=floor(|E|/sampleTarget); startIndex=SHA-256(\"20261004|\"+sourceId) mod k (erste 8 Hex); S=E[start+j·k]; Pilot: m=floor(|S|/pilotQuota), p0=SHA-256(\"20261004|pilot|\"+sourceId) mod m, Pilot=S[p0+j·m]",
-    "status": "PROVISIONAL 2026-10-04 — ungefaehre Daten; exakte Fenstergrenzen vor der ersten Extraktion nachziehen (ohne Inhaltskenntnis) und neu committen; Extraktion BLOCKED (YouTube-Bot-Pruefung)",
+    "status": "SET 2026-10-04 vor jeder Extraktion dieser Quelle",
     "windowNote": "VORLAEUFIG: Einzeldaten nur ungefaehr (bei \"vor 4 Jahren\" Fehler bis ±6 Monate). Fenster = Videos mit ungefaehrem Datum 2022-01-01..2026-06-30 in Plattform-Reihenfolge. Exakte Grenzen (Upload-Datum der Randvideos) konnten nicht bestimmt werden: YouTube-Einzelabrufe durch Bot-Pruefung gesperrt (nicht umgangen). Vor der ersten Extraktion dieser Quelle werden die Grenzen mit exakten Daten nachgezogen und der Rahmen neu committet – ohne Kenntnis von Inhalten; bis dahin keine Extraktion (Status BLOCKED)."
    },
    "sourceFamily": "hkcm"
@@ -145,7 +145,7 @@
     "pilotStartIndex": 3,
     "seed": 20261004,
     "procedure": "scripts/technical/practitioner/sampling-frame.mjs: Fenster → Titel-/Kategorieregeln (ergebnisblind, vorab) → E chronologisch; k=floor(|E|/sampleTarget); startIndex=SHA-256(\"20261004|\"+sourceId) mod k (erste 8 Hex); S=E[start+j·k]; Pilot: m=floor(|S|/pilotQuota), p0=SHA-256(\"20261004|pilot|\"+sourceId) mod m, Pilot=S[p0+j·m]",
-    "status": "PROVISIONAL 2026-10-04 — ungefaehre Daten; exakte Fenstergrenzen vor der ersten Extraktion nachziehen (ohne Inhaltskenntnis) und neu committen; Extraktion BLOCKED (YouTube-Bot-Pruefung)",
+    "status": "SET 2026-10-04 vor jeder Extraktion dieser Quelle",
     "windowNote": "VORLAEUFIG: Einzeldaten nur ungefaehr (bei \"vor 4 Jahren\" Fehler bis ±6 Monate). Fenster = Videos mit ungefaehrem Datum 2022-01-01..2026-06-30 in Plattform-Reihenfolge. Exakte Grenzen (Upload-Datum der Randvideos) konnten nicht bestimmt werden: YouTube-Einzelabrufe durch Bot-Pruefung gesperrt (nicht umgangen). Vor der ersten Extraktion dieser Quelle werden die Grenzen mit exakten Daten nachgezogen und der Rahmen neu committet – ohne Kenntnis von Inhalten; bis dahin keine Extraktion (Status BLOCKED)."
    },
    "sourceFamily": "hkcm"
@@ -680,6 +680,189 @@
     "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
    },
    "sourceFamily": "search-aggregators"
+  },
+  {
+   "sourceId": "tv-cryptoknee",
+   "name": "TradingView-Autor CryptoKnee",
+   "organisation": "—",
+   "elliottSchool": "UNKNOWN_MIXED",
+   "priorityGroup": "C",
+   "platforms": [
+    "WEBSITE"
+   ],
+   "urls": [
+    "https://www.tradingview.com/u/CryptoKnee/"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "laut Metadaten: US-Aktien/Indizes/BTC"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W",
+    "1M",
+    "INTRADAY"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Ideen-Zeitstempel (created_at, Sekunde, UTC) aus Plattform-API; Ideen nachtraeglich nur per Update-Anhang ergaenzbar (updated_at)",
+   "historicalContentAccessible": "oeffentlich (API /api/v1/ideas/?by=)",
+   "laterEditingPossible": "Updates als Anhang; Ursprungs-Idee bleibt",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "C (vorläufig)",
+   "tierRationale": "Auswahl nach vorab festgelegter Regel (Nachtrag 5 d), nicht nach Reichweite oder Erfolg.",
+   "language": "en",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-04: tradingview.com 200, oeffentliche Ideen-API ohne Login",
+   "sourceFamily": "tv-cryptoknee",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": "TradingView oeffentliche Ideen-Liste /api/v1/ideas/?by=CryptoKnee (Metadaten), Nachtrag 5 d",
+    "frameFile": "frames/tv-cryptoknee.json",
+    "retrievedAt": "2026-10-04",
+    "frameSize": 59,
+    "instrumentFilter": "AT_DRAW",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {},
+    "eligibleCount": 59,
+    "sampleTarget": 59,
+    "stepK": 1,
+    "startIndex": 0,
+    "sampleSize": 59,
+    "pilotQuota": 0,
+    "pilotStepM": 59,
+    "pilotStartIndex": 33,
+    "seed": 20261004,
+    "procedure": "scripts/technical/practitioner/sampling-frame.mjs: Fenster → Titel-/Kategorieregeln (ergebnisblind, vorab) → E chronologisch; k=floor(|E|/sampleTarget); startIndex=SHA-256(\"20261004|\"+sourceId) mod k (erste 8 Hex); S=E[start+j·k]; Pilot: m=floor(|S|/pilotQuota), p0=SHA-256(\"20261004|pilot|\"+sourceId) mod m, Pilot=S[p0+j·m]",
+    "status": "SET 2026-10-04 vor jeder Extraktion dieser Quelle"
+   }
+  },
+  {
+   "sourceId": "tv-thefifthwave",
+   "name": "TradingView-Autor Thefifthwave",
+   "organisation": "—",
+   "elliottSchool": "UNKNOWN_MIXED",
+   "priorityGroup": "C",
+   "platforms": [
+    "WEBSITE"
+   ],
+   "urls": [
+    "https://www.tradingview.com/u/Thefifthwave/"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "laut Metadaten: US-Aktien/Indizes/BTC"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W",
+    "1M",
+    "INTRADAY"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Ideen-Zeitstempel (created_at, Sekunde, UTC) aus Plattform-API; Ideen nachtraeglich nur per Update-Anhang ergaenzbar (updated_at)",
+   "historicalContentAccessible": "oeffentlich (API /api/v1/ideas/?by=)",
+   "laterEditingPossible": "Updates als Anhang; Ursprungs-Idee bleibt",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "C (vorläufig)",
+   "tierRationale": "Auswahl nach vorab festgelegter Regel (Nachtrag 5 d), nicht nach Reichweite oder Erfolg.",
+   "language": "en",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-04: tradingview.com 200, oeffentliche Ideen-API ohne Login",
+   "sourceFamily": "tv-thefifthwave",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": "TradingView oeffentliche Ideen-Liste /api/v1/ideas/?by=Thefifthwave (Metadaten), Nachtrag 5 d",
+    "frameFile": "frames/tv-thefifthwave.json",
+    "retrievedAt": "2026-10-04",
+    "frameSize": 59,
+    "instrumentFilter": "AT_DRAW",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {},
+    "eligibleCount": 59,
+    "sampleTarget": 59,
+    "stepK": 1,
+    "startIndex": 0,
+    "sampleSize": 59,
+    "pilotQuota": 0,
+    "pilotStepM": 59,
+    "pilotStartIndex": 32,
+    "seed": 20261004,
+    "procedure": "scripts/technical/practitioner/sampling-frame.mjs: Fenster → Titel-/Kategorieregeln (ergebnisblind, vorab) → E chronologisch; k=floor(|E|/sampleTarget); startIndex=SHA-256(\"20261004|\"+sourceId) mod k (erste 8 Hex); S=E[start+j·k]; Pilot: m=floor(|S|/pilotQuota), p0=SHA-256(\"20261004|pilot|\"+sourceId) mod m, Pilot=S[p0+j·m]",
+    "status": "SET 2026-10-04 vor jeder Extraktion dieser Quelle"
+   }
+  },
+  {
+   "sourceId": "tv-yuchaosng",
+   "name": "TradingView-Autor yuchaosng",
+   "organisation": "—",
+   "elliottSchool": "UNKNOWN_MIXED",
+   "priorityGroup": "C",
+   "platforms": [
+    "WEBSITE"
+   ],
+   "urls": [
+    "https://www.tradingview.com/u/yuchaosng/"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "laut Metadaten: US-Aktien/Indizes/BTC"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W",
+    "1M",
+    "INTRADAY"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Ideen-Zeitstempel (created_at, Sekunde, UTC) aus Plattform-API; Ideen nachtraeglich nur per Update-Anhang ergaenzbar (updated_at)",
+   "historicalContentAccessible": "oeffentlich (API /api/v1/ideas/?by=)",
+   "laterEditingPossible": "Updates als Anhang; Ursprungs-Idee bleibt",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "C (vorläufig)",
+   "tierRationale": "Auswahl nach vorab festgelegter Regel (Nachtrag 5 d), nicht nach Reichweite oder Erfolg.",
+   "language": "en",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-04: tradingview.com 200, oeffentliche Ideen-API ohne Login",
+   "sourceFamily": "tv-yuchaosng",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": "TradingView oeffentliche Ideen-Liste /api/v1/ideas/?by=yuchaosng (Metadaten), Nachtrag 5 d",
+    "frameFile": "frames/tv-yuchaosng.json",
+    "retrievedAt": "2026-10-04",
+    "frameSize": 176,
+    "instrumentFilter": "AT_DRAW",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {
+     "EXCLUDED_RETROSPECTIVE": 1,
+     "EXCLUDED_NON_ANALYSIS": 1
+    },
+    "eligibleCount": 174,
+    "sampleTarget": 176,
+    "stepK": 1,
+    "startIndex": 0,
+    "sampleSize": 174,
+    "pilotQuota": 0,
+    "pilotStepM": 174,
+    "pilotStartIndex": 80,
+    "seed": 20261004,
+    "procedure": "scripts/technical/practitioner/sampling-frame.mjs: Fenster → Titel-/Kategorieregeln (ergebnisblind, vorab) → E chronologisch; k=floor(|E|/sampleTarget); startIndex=SHA-256(\"20261004|\"+sourceId) mod k (erste 8 Hex); S=E[start+j·k]; Pilot: m=floor(|S|/pilotQuota), p0=SHA-256(\"20261004|pilot|\"+sourceId) mod m, Pilot=S[p0+j·m]",
+    "status": "SET 2026-10-04 vor jeder Extraktion dieser Quelle"
+   }
   }
  ]
 }

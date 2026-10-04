@@ -135,7 +135,19 @@ export function drawFrame(frame) {
      j = 0 … pilotExtensionQuota−1. Der urspruengliche Pilot bleibt unveraendert. */
   const ext = [], half = Math.floor(m / 2);
   for (let j = 0; j < (frame.pilotExtensionQuota || 0) && p0 + j * m + half < sample.length; j++) if (half > 0) ext.push(sample[p0 + j * m + half]);
-  return { rulesVersion: RULES_VERSION, pilotExtension: ext.map((s) => [s.id, s.instrument]), frameSize: inWin.length, excludedCounts, eligibleCount: eligible.length, stepK: k, startIndex,
+  /* Phase 2 (Nachtrag 5): Filter ueber Metadaten-Tags (item[3]: EWF-Kategorien bzw. TradingView-Zeitrahmen), bereits gezogene
+     Pilot-Elemente ausgenommen, eigene Schrittweite und eigener Start (SHA-256(seedKey) mod k); stepK "AUTO20" = max(1, floor(n/20)). */
+  let phase2 = null;
+  if (frame.phase2) {
+    const p2 = frame.phase2, drawn = new Set([...pilot, ...ext].map((x) => x.id));
+    const tags = (id) => (frame.items.find((it) => it[0] === id) || [])[3] || [];
+    const pool = eligible.filter((e) => !drawn.has(e.id) && (!p2.includeTags || p2.includeTags.some((t) => tags(e.id).includes(t))) && !(p2.excludeTags || []).some((t) => tags(e.id).includes(t)));
+    const k2 = p2.stepK === "AUTO20" ? Math.max(1, Math.floor(pool.length / 20)) : p2.stepK;
+    const st = seedMod(p2.seedKey, k2), list = [];
+    for (let i = st; i < pool.length; i += k2) list.push(pool[i]);
+    phase2 = { poolSize: pool.length, stepK: k2, startIndex: st, items: list.map((x) => [x.id, x.instrument]) };
+  }
+  return { rulesVersion: RULES_VERSION, phase2, pilotExtension: ext.map((s) => [s.id, s.instrument]), frameSize: inWin.length, excludedCounts, eligibleCount: eligible.length, stepK: k, startIndex,
            sample: sample.map((s) => [s.id, s.instrument]), pilotStepM: m, pilotStartIndex: p0, pilot: pilot.map((s) => [s.id, s.instrument]) };
 }
 
@@ -148,12 +160,23 @@ function main(argv) {
     const p = join(FRAME_DIR, f), frame = JSON.parse(readFileSync(p, "utf8"));
     const d = drawFrame(frame);
     if (check) {
-      const keys = ["frameSize", "eligibleCount", "stepK", "startIndex", "sample", "pilot", "pilotExtension"];
+      const keys = ["frameSize", "eligibleCount", "stepK", "startIndex", "sample", "pilot", "pilotExtension", "phase2"];
       const diff = keys.filter((k) => JSON.stringify(frame.draw && frame.draw[k]) !== JSON.stringify(d[k]));
       if (diff.length) { bad++; console.error(`${frame.sourceId}: gespeicherte Ziehung weicht ab (${diff.join(", ")})`); }
     }
     if (write) { frame.draw = d; writeFileSync(p, JSON.stringify(frame).replace(/\],\[/g, "],\n[") + "\n"); }
     console.log(`${frame.sourceId}: Rahmen ${d.frameSize}, ausgeschlossen ${JSON.stringify(d.excludedCounts)}, E=${d.eligibleCount}, k=${d.stepK}, start=${d.startIndex}, Stichprobe ${d.sample.length}, Pilot ${d.pilot.length} (m=${d.pilotStepM}, p0=${d.pilotStartIndex})`);
+  }
+  /* Nachtrag 5 f: feste, quellenuebergreifende Bearbeitungsreihenfolge der Phase-2-Elemente (SHA-256("20261004|order|"+sourceId+"|"+id)). */
+  if (write && !ids.length) {
+    const all = [];
+    for (const f of readdirSync(FRAME_DIR).filter((x) => x.endsWith(".json"))) {
+      const fr = JSON.parse(readFileSync(join(FRAME_DIR, f), "utf8"));
+      for (const [id, ins] of (fr.draw && fr.draw.phase2 && fr.draw.phase2.items) || []) all.push({ sourceId: fr.sourceId, id, instrument: ins, h: createHash("sha256").update(`${FRAME_SEED}|order|${fr.sourceId}|${id}`).digest("hex") });
+    }
+    all.sort((a, b) => (a.h < b.h ? -1 : 1));
+    writeFileSync(join(PV1, "phase2-order.json"), JSON.stringify({ rule: "Nachtrag 5 f", count: all.length, order: all.map((x) => [x.sourceId, x.id, x.instrument]) }).replace(/\],\[/g, "],\n[") + "\n");
+    console.log("phase2-order.json:", all.length);
   }
   if (bad) process.exit(1);
 }
