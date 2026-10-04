@@ -568,6 +568,13 @@ export function build() {
   writeJson(path.join(DATA, 'sources.json'), sources);
   writeJson(path.join(DATA, 'market.json'), market);
   writeJson(path.join(DATA, 'coverage.json'), { schema: 'supertrader-coverage-1.0.0', asOf, coverage, greenblatt: gbCoverage, unavailableInstruments: unavailable, gateDefinitions: GATE_DEFS, minHistoryYears: MIN_HISTORY_YEARS });
+  /* Discover-Verfuegbarkeit explizit ausweisen (LOGI, 03.10.2026: Signal mit
+     offener Position, Discover-Seite durch das Faktor-Qualitaetsgate entfallen ->
+     toter Link). Signale und Positionen bleiben unveraendert; die Seite zeigt fuer
+     ausgewiesene Titel einen Hinweis statt des Links. */
+  signals.discoverAvailability = discoverAvailability(
+    [...Object.keys(signals.bySymbol), ...TREND52_SYMBOLS],
+    readJson(rel('discover/data/stock-index/US_REAL.json')).symbols || []);
   writeJson(path.join(DATA, 'signals.json'), signals);
   if (pilot) backtests.pilot = { path: '/supertrader/data/pilot-backtest.json', status: pilot.status, id: pilot.spec.id };
   writeJson(path.join(DATA, 'backtests.json'), backtests);
@@ -920,6 +927,18 @@ function writeStrategyPages(registry) {
   for (const s of registry.strategies) {
     writeIfChanged(path.join(OUT, 'strategies', s.slug, 'index.html'), pageShell({ title: `${s.world_name} — Supertrader — Vision Universe®`, description: `${s.strategy_name}: Regeln, Evidenz, Signale und Backteststatus.`, page: 'strategy', depth: 3, attrs: ` data-strategy="${s.strategy_id}"` }));
   }
+}
+
+/** Welche Titel mit Supertrader-Seite haben (k)eine Discover-Aktienseite? */
+export function discoverAvailability(symbols, indexSymbols) {
+  const index = new Set(indexSymbols);
+  const checked = [...new Set(symbols)].sort();
+  return {
+    source: 'discover/data/stock-index/US_REAL.json',
+    checked: checked.length,
+    unavailable: checked.filter((s) => !index.has(s)),
+    note: 'Titel mit Supertrader-Seite ohne Discover-Aktienseite (z. B. vom Faktor-Qualitaetsgate gesperrt). Signale bleiben unveraendert; die Seite zeigt einen Hinweis statt des Links.'
+  };
 }
 
 function writeStockPages(signals, extra = []) {

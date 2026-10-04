@@ -48,11 +48,27 @@ test("Supertrader · jedes Signal gehoert zu einem Titel mit Discover-Seite und 
   const index = new Set(json("discover/data/stock-index/US_REAL.json").symbols);
   const symbole = Object.keys(sig.bySymbol || {});
   assert.ok(symbole.length > 50);
+  /* Drei Faelle (Owner-Regel 04.10.2026, LOGI):
+     - Signal + Discover-Seite                                  -> PASS
+     - Signal + im Build ausgewiesen (discoverAvailability)     -> PASS mit bewusstem Fallback
+       (die Seite zeigt dann einen Hinweis statt des Links)
+     - Signal ohne Seite und ohne Ausweis (toter Link)          -> FAIL */
+  const ausgewiesen = new Set((sig.discoverAvailability && sig.discoverAvailability.unavailable) || []);
   const fehler = [];
   for (const t of symbole) {
-    if (!index.has(t)) { fehler.push(t + ": nicht im Discover-Universum"); continue; }
+    if (!index.has(t)) {
+      if (!ausgewiesen.has(t)) fehler.push(t + ": nicht im Discover-Universum und nicht als discoverAvailability.unavailable ausgewiesen (toter Link)");
+      continue;
+    }
+    if (ausgewiesen.has(t)) { fehler.push(t + ": als nicht verfuegbar ausgewiesen, hat aber eine Discover-Seite (veralteter Ausweis)"); continue; }
     const px = await c.getLatestPrice(t);
     if (px.state !== "AVAILABLE") fehler.push(t + ": keine kanonische Tagesreihe");
+  }
+  if (ausgewiesen.size) {
+    // Ein Ausweis ohne Behandlung auf der Seite waere wieder ein toter Link.
+    const seite = readFileSync(new URL("../../supertrader/assets/supertrader.js", import.meta.url), "utf8");
+    if (!/function discoverLink\(sym, sig, label\)/.test(seite) || !/data-discover': 'unavailable'/.test(seite))
+      fehler.push("discoverAvailability ausgewiesen, aber supertrader.js zeigt keinen Hinweis statt des Links");
   }
   assert.deepEqual(fehler, []);
   assert.equal(sig.asOf, json("supertrader/data/build.json").asOf);
