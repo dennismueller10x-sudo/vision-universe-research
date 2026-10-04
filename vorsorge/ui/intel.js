@@ -35,6 +35,11 @@
     cache[series] = VS.getJSON("/vorsorge/data/holdings/" + encodeURIComponent(series) + ".json").then(function (f) {
       var F_ = f.rowFields;
       f.rows = f.holdings.map(function (r) { var o = {}; F_.forEach(function (k, i) { o[k] = r[i]; }); return o; });
+      // Ereignisse/Zeitleiste: Spaltenformat -> Change Event 1.0 (Meta-Felder aus der Datei)
+      var ch = f.changes || {};
+      if (ch.eventFields) ch.events = (ch.events || []).map(function (r) { var e = { fundId: "sec:" + f.seriesId, fromSnapshot: ch.from, toSnapshot: ch.to, asOf: ch.to, source: f.source, version: ch.eventVersion };
+        ch.eventFields.forEach(function (k, i) { e[k] = r[i]; }); e.eventId = V.Changes.eventId(e.fundId, ch.from, ch.to, e.eventType, e.entityId); return e; });
+      if (f.timelineFields) f.timeline = (f.timeline || []).map(function (r) { var o = {}; f.timelineFields.forEach(function (k, i) { o[k] = r[i]; }); return o; });
       return f;
     }).catch(function () { delete cache[series]; return null; });
     return cache[series];

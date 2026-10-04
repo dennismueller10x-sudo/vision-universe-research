@@ -247,8 +247,10 @@ test("SEC-N-PORT-Pipeline: Quartale -> Snapshots -> Holdings-Datei mit Exposures
   assert.equal(f.source, "SEC_NPORT"); assert.equal(f.asOf, "2026-06-30"); assert.equal(f.publishedAt, "2026-08-27");
   assert.equal(f.netAssets, 1200000000); assert.equal(f.netAssetsLevel, "FUND");
   assert.equal(f.history.length, 2);
-  assert.ok(f.changes.events.some((e) => e.eventType === "HOLDING_ADDED" && e.entityName === "Epsilon SA"));
-  assert.ok(f.changes.events.some((e) => e.eventType === "HOLDING_REMOVED" && e.entityName === "Delta AG"));
+  const ev = f.changes.events.map((r) => Object.fromEntries(f.changes.eventFields.map((k, i) => [k, r[i]])));
+  assert.ok(ev.some((e) => e.eventType === "HOLDING_ADDED" && e.entityName === "Epsilon SA"));
+  assert.ok(ev.some((e) => e.eventType === "HOLDING_REMOVED" && e.entityName === "Delta AG"));
+  assert.equal(f.changes.eventVersion, "1.0.0");
   assert.ok(Math.abs(f.exposures.countries.find((c) => c.key === "US").weight - 0.934) < 1e-9);
   const idx = JSON.parse(readFileSync(join(out, "index.json"), "utf8"));
   assert.equal(idx.bySymbol.IVV[0], "S000004310"); assert.ok(!idx.bySymbol.NOTINDEX);

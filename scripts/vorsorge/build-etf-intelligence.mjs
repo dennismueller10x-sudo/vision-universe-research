@@ -68,6 +68,10 @@ function localize(e) {
   if (e.eventType === "COUNTRY_WEIGHT_CHANGED") e.explanation = e.explanation.replace(/^[A-Z]{2}:/, countryDe(e.entityName) + ":");
   return e;
 }
+/* Auslieferungsformat der Ereignisse: Spalten statt Objekte. Die Meta-Felder (fundId, Snapshots,
+   Quelle, Stand) stehen einmal je Datei; eventId wird im Browser deterministisch gleich gebildet. */
+const EVENT_FIELDS = ["eventType", "entityId", "entityName", "oldValue", "newValue", "absoluteChange", "importance", "explanation"];
+const compactEvent = (e) => EVENT_FIELDS.map((k) => (typeof e[k] === "number" ? Math.round(e[k] * 1e6) / 1e6 : e[k] === undefined ? null : e[k]));
 const ROW = ["ticker", "name", "weight", "country", "sector", "assetType", "isin", "cusip", "vuTicker"];
 function topList(list, n) { return list.slice(0, n).map((x) => ({ key: x.key, weight: x.weight })); }
 
@@ -119,9 +123,10 @@ for (const meta of manifest.series) {
       assetTypes: ex.assetTypes, currencies: topList(ex.currencies, 15), cashWeight: ex.cashWeight, derivativeCount: ex.derivativeCount, derivativeGrossWeight: ex.derivativeGrossWeight },
     mapping: map, summary: H.summary(cur, ex, conc),
     rowFields: ROW, holdings: listed.slice(0, TOP).map(compactRow), holdingsShown: Math.min(TOP, listed.length), shownWeight: r6(listed.slice(0, TOP).reduce((a, h) => a + h.weight, 0)),
-    history, changes: lastDiff ? { from: lastDiff.from, to: lastDiff.to, status: lastDiff.status, events: lastDiff.events.slice(0, 60), eventCount: lastDiff.events.length, summary: lastDiff.summary,
+    history, changes: lastDiff ? { from: lastDiff.from, to: lastDiff.to, status: lastDiff.status, eventVersion: C.VERSION, eventFields: EVENT_FIELDS,
+      events: lastDiff.events.slice(0, 50).map(compactEvent), eventCount: lastDiff.events.length, summary: lastDiff.summary,
       sentence: C.changeSentence(lastDiff.events) } : { status: "BASELINE", events: [], eventCount: 0 },
-    timeline: timeline.sort((a, b) => (a.asOf < b.asOf ? 1 : -1)).slice(0, 24)
+    timeline: timeline.sort((a, b) => (a.asOf < b.asOf ? 1 : -1)).slice(0, 15).map((t) => [t.asOf, t.type, t.importance, t.text]), timelineFields: ["asOf", "type", "importance", "text"]
   };
   writeFileSync(join(OUT, meta.seriesId + ".json"), JSON.stringify(file));
   stats.series++; stats.snapshots += uniq.length; stats.rows += cur.holdingsCount;
