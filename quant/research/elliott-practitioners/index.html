@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Praktiker-Referenzen · Elliott · INTERN · Vision Universe</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="practitioners.css">
+</head>
+<body data-blind-default="on">
+<a class="skip" href="#main">Zum Inhalt springen</a>
+<header>
+  <h1>Elliott · Praktiker-Referenzen — Vergleich &amp; Erfassung (INTERN)</h1>
+  <div class="banners">
+    <span class="banner" id="label-reference">PRACTITIONER REFERENCE — keine objektive Wahrheit</span>
+    <span class="banner internal" id="label-internal">INTERN – nicht für Kunden</span>
+    <span class="banner neutral">Keine Trefferquoten, keine Rankings von Praktikern oder Anbietern</span>
+  </div>
+  <p>Interne Methodenforschung nach <code>docs/technical-intelligence/PRACTITIONER_PROTOCOL.md</code>: Wie ähnlich strukturiert Vision Universe (Engine <code>elliott-3.2.2</code>) einen historischen Chart wie ein erfahrener Praktiker zum selben Zeitpunkt? Eine Praktiker-Zählung ist eine Referenz, kein Beleg für richtig oder falsch. Keine fremden Screenshots, Transkripte, Zitate, Logos oder Gestaltungen — nur strukturierte Angaben und eigene Kurzfassungen. Bitte nur pseudonyme Codes eingeben, keine Namen oder E-Mail-Adressen.</p>
+  <p class="note" id="data-status" role="status">Lade Schema, Quellenverzeichnis, Referenzen und Benchmark …</p>
+</header>
+<div class="toolbar" id="toolbar">
+  <div class="fld"><label for="t-code">Prüfer-/Extraktor-Code (pseudonym)</label><input type="text" id="t-code" autocomplete="off" spellcheck="false" placeholder="z. B. EXT-07"></div>
+  <label class="inline" for="t-blind"><input type="checkbox" id="t-blind" checked> Blindmodus (Praktiker-Panel erst nach Sperre der VU-Analyse)</label>
+  <button class="btn" type="button" id="t-exp-jsonl">Export JSONL (lokal)</button>
+  <label class="btn" for="t-imp" style="margin:0;display:inline-flex;align-items:center">Import JSONL</label><input type="file" id="t-imp" accept=".jsonl,.json,.txt,application/x-ndjson,application/json,text/plain" class="hidden">
+  <label class="btn" for="t-bench" style="margin:0;display:inline-flex;align-items:center">Benchmark-JSON laden</label><input type="file" id="t-bench" accept=".json,application/json" multiple class="hidden">
+  <button class="btn" type="button" id="t-exp-audit">Audit-Log CSV</button>
+  <span class="note" id="t-msg" role="status" aria-live="polite"></span>
+</div>
+<div role="tablist" aria-label="Bereiche" id="tabs">
+  <button role="tab" type="button" id="tab-compare" aria-controls="panel-compare" aria-selected="true">Vergleich</button>
+  <button role="tab" type="button" id="tab-capture" aria-controls="panel-capture" aria-selected="false" tabindex="-1">Referenz erfassen</button>
+  <button role="tab" type="button" id="tab-second" aria-controls="panel-second" aria-selected="false" tabindex="-1">Zweitextraktion (blind)</button>
+  <button role="tab" type="button" id="tab-data" aria-controls="panel-data" aria-selected="false" tabindex="-1">Daten &amp; Audit-Log</button>
+</div>
+<main id="main">
+  <section role="tabpanel" id="panel-compare" aria-labelledby="tab-compare">
+    <div class="layout">
+      <nav class="cases" id="case-nav" aria-label="Fälle"></nav>
+      <div id="detail" aria-live="polite">
+        <div class="card empty" id="empty-state">
+          <h3>Noch keine Praktiker-Referenzen</h3>
+          <p>Es ist noch kein Fall erfasst. Referenzen werden ausschließlich manuell über <strong>„Referenz erfassen“</strong> eingetragen: Diese Umgebung kann YouTube-, X- oder Blog-Quellen nicht abrufen, und die Seite erfindet oder ergänzt keine Fälle. Exportierte JSONL-Zeilen werden an <code>quant/data/technical-intelligence/practitioner-v1/references.jsonl</code> angehängt.</p>
+        </div>
+        <!-- Blindmodus ist Standard: das Praktiker-Panel wird erst nach „VU-Analyse sperren“ gefüllt und sichtbar. -->
+        <div class="card pr hidden" id="pr-panel" data-blind="locked" hidden></div>
+      </div>
+    </div>
+  </section>
+  <section role="tabpanel" id="panel-capture" aria-labelledby="tab-capture" hidden></section>
+  <section role="tabpanel" id="panel-second" aria-labelledby="tab-second" hidden></section>
+  <section role="tabpanel" id="panel-data" aria-labelledby="tab-data" hidden></section>
+</main>
+<script src="reference-core.js"></script>
+<script src="practitioners.js"></script>
+</body>
+</html>
