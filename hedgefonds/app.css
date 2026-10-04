@@ -36,7 +36,7 @@ html[data-theme=dark]{
 html,body{background:var(--bg)}
 body.hf{color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;padding-top:88px;overflow-x:hidden;line-height:1.45}
 body.hf-noscroll{overflow:hidden}
-.hf a{color:inherit}
+:where(.hf) a{color:inherit}
 .hf button{font-family:inherit;color:inherit}
 .hf .num{font-variant-numeric:tabular-nums}
 .hf-skip{position:fixed;left:20px;top:-100px;z-index:3000;background:var(--ink);color:var(--bg);padding:14px;border-radius:10px}
@@ -167,16 +167,22 @@ a.hf-kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
 
 /* Entdecken-Kacheln (wie Discover-Welten) */
 .hf-doors{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-.hf-door{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;gap:8px;min-height:190px;padding:20px;border-radius:24px;color:#fff;text-decoration:none;background:linear-gradient(145deg,#22143f 0%,#5023a8 58%,#7439e2 100%);box-shadow:0 18px 50px rgba(40,18,96,.14);transition:transform .22s ease,box-shadow .22s ease}
-.hf-door:before{content:"";position:absolute;z-index:-1;width:220px;height:220px;right:-80px;bottom:-100px;border:1px solid rgba(255,255,255,.18);border-radius:50%;box-shadow:0 0 0 35px rgba(255,255,255,.03),0 0 0 70px rgba(255,255,255,.02)}
-.hf-door[data-tone="1"]{background:linear-gradient(145deg,#043746 0%,#006b82 58%,#00a2bb 100%)}
-.hf-door[data-tone="2"]{background:linear-gradient(145deg,#052f2a 0%,#075e4e 60%,#078c70 100%)}
-.hf-door[data-tone="3"]{background:linear-gradient(145deg,#111214 0%,#272a2f 67%,#41454d 100%)}
-.hf-door:hover{transform:translateY(-4px);box-shadow:0 24px 60px rgba(0,0,0,.18)}
-.hf-door b{font-size:19px;letter-spacing:-.02em;margin-top:auto}
-.hf-door span{font-size:13px;color:rgba(255,255,255,.85)}
-.hf-door em{font-style:normal;display:flex;align-items:center;justify-content:space-between;padding-top:12px;margin-top:6px;border-top:1px solid rgba(255,255,255,.2);font-size:12.5px;font-weight:750}
-.hf-door em .hf-i{width:16px;height:16px}
+/* Helle, leicht getönte Karten – dieselbe Farbfamilie wie die Icon-Kacheln */
+.hf .hf-door{--dt:#7c4dff;--dg:var(--t-violet);position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;gap:6px;min-height:200px;padding:20px;border-radius:24px;color:var(--ink);text-decoration:none;
+  background:radial-gradient(260px 200px at 100% 0%,color-mix(in srgb,var(--dt) 16%,transparent),transparent 70%),linear-gradient(180deg,color-mix(in srgb,var(--dt) 4%,var(--card)),color-mix(in srgb,var(--dt) 9%,var(--card)));
+  border:1px solid color-mix(in srgb,var(--dt) 22%,var(--line));box-shadow:var(--shadow);transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.hf .hf-door[data-tone="1"]{--dt:#2f7cf0;--dg:var(--t-blue)}
+.hf .hf-door[data-tone="2"]{--dt:#14a86a;--dg:var(--t-green)}
+.hf .hf-door[data-tone="3"]{--dt:#f29a0c;--dg:var(--t-amber)}
+.hf .hf-door:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:color-mix(in srgb,var(--dt) 45%,var(--line))}
+.hf-door .hf-tile-ico{background:var(--dg);width:48px;height:48px;border-radius:15px;margin-bottom:auto}
+.hf-door .hf-tile-ico .hf-i{width:24px;height:24px}
+.hf-door b{font-size:19px;letter-spacing:-.02em;margin-top:18px}
+.hf-door span:not(.hf-tile-ico){font-size:13px;color:var(--muted)}
+.hf-door em{font-style:normal;display:flex;align-items:center;justify-content:space-between;padding-top:12px;margin-top:8px;border-top:1px solid color-mix(in srgb,var(--dt) 20%,var(--line-soft));font-size:12.5px;font-weight:750;color:color-mix(in srgb,var(--dt) 75%,var(--ink))}
+html[data-theme=dark] .hf-door em{color:color-mix(in srgb,var(--dt) 70%,#fff)}
+.hf-door em .hf-i{width:16px;height:16px;transition:transform .2s ease}
+.hf-door:hover em .hf-i{transform:translateX(3px)}
 
 /* --------------------------------------------------------- Manager-Karten */
 .hf-track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:4px 2px 14px;overscroll-behavior-x:contain}
@@ -408,7 +414,7 @@ a.hf-kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
   .hf-kpi b{font-size:18px}
   .hf-phead{flex-direction:column;gap:12px;padding:20px;border-radius:22px;margin-top:12px}
   .hf-doors{grid-template-columns:1fr}
-  .hf-door{min-height:150px}
+  .hf .hf-door{min-height:0}
   .hf-tools{flex-direction:column;align-items:stretch}
   .hf-search-sm{max-width:none}
   .hf-head{align-items:flex-start}

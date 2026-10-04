@@ -560,7 +560,7 @@
 
   /* ---------------------------------------------------------------- Start */
   function door(href, ico, title, text, tone) {
-    return '<a class="hf-door" data-tone="' + tone + '" href="' + href + '">' + icon(ico, "big") + "<b>" + title + "</b><span>" + text + "</span><em>Öffnen " + icon("arrow") + "</em></a>";
+    return '<a class="hf-door" data-tone="' + tone + '" href="' + href + '">' + '<span class="hf-tile-ico">' + icon(ico) + "</span><b>" + title + "</b><span>" + text + "</span><em>Öffnen " + icon("arrow") + "</em></a>";
   }
   function renderHome() {
     var d = S.data, inv = investors(), agg = d.aggregates || {}, all = d.aggregatesAll || agg;
@@ -613,7 +613,7 @@
         '<a class="hf-more" href="#/aktien">Alle Aktien ' + icon("arrow") + '</a></div><div class="hf-two" id="hf-cons"></div></section>' +
 
       '<section class="hf-section"><div class="hf-head"><div><h2>Entdecken</h2></div></div><div class="hf-doors">' +
-        door("#/investoren", "users", "Star-Investoren", inv.length + " bekannte Manager mit Foto, Portfolio und Trades", 0) +
+        door("#/investoren", "users", "Star-Investoren", inv.length + " bekannte Manager mit Portfolio und Trades", 0) +
         door("#/datenbank", "table", "Hedgefonds-Datenbank", nf0.format(n) + " Fonds filtern, sortieren, vergleichen", 1) +
         door("#/aktien", "chart", "Aktien", "Wer hält welche Aktie – und wie viel davon?", 2) +
         door("#/datenbank?f=dach", "globe", "Deutschland &amp; DACH", (d.dachCount || 0) + " Melder aus Deutschland, Österreich, Schweiz", 3) +
@@ -886,7 +886,7 @@
     var segs = top.map(function (h, i) {
       return { item: h, label: issuerName(h), value: h.valueUSD, color: cssVar(SERIES[i]), put: h.putCall, href: h.putCall ? null : stockHref(h) };
     });
-    if (rest / total > 0.0005) segs.push({ label: "Sonstige", sub: nf0.format(Math.max(0, d.positionCount - top.length)) + " weitere Positionen", value: rest, color: cssVar("--s-other") });
+    if (rest / total > 0.0005) segs.push({ label: "Sonstige", sub: nf0.format(Math.max(0, d.positionCount + (d.optionCount || 0) - top.length)) + " weitere Positionen", value: rest, color: cssVar("--s-other") });
     var R = 80, C = 2 * Math.PI * R, gap = segs.length > 1 ? 2.2 : 0, off = 0;
     var circles = segs.map(function (s, i) {
       var len = s.value / total * C, dash = Math.max(0.6, len - gap);
@@ -963,7 +963,7 @@
           '</small></div></div></td><td class="r"><span class="hf-wbar"><i style="width:' + Math.min(100, h.weightPct / (hs[0].weightPct || 1) * 100).toFixed(1) +
           '%"></i></span><b class="num">' + pct(h.weightPct) + '</b></td><td class="r num c-v">' + usd(h.valueUSD) + '</td><td class="r num c-sh">' + shares(h.shares) + "</td><td class=\"r\">" + (h.status ? chg(h) || '<span class="hf-chg">Unverändert</span>' : "–") + "</td></tr>";
       }).join("") + "</tbody></table></div>" +
-      (d.holdingsTruncated ? '<p class="hf-foot-note">Gezeigt werden die ' + hs.length + " größten von " + nf0.format(d.positionCount) + " Positionen.</p>" : "");
+      (d.holdingsTruncated ? '<p class="hf-foot-note">Gezeigt werden die ' + hs.length + " größten von " + nf0.format(d.positionCount + (d.optionCount || 0)) + " Positionen" + (d.optionCount ? " (inkl. Optionen)" : "") + ".</p>" : "");
   }
   function tradesTable(list, sells, total) {
     if (!list.length) return '<p class="hf-empty">Keine ' + (sells ? "Verkäufe" : "Käufe") + " in diesem Quartal.</p>";
@@ -1014,17 +1014,20 @@
         '<div class="hf-dstats">' +
           stat("brief", "blue", "Fondsgröße (13F)", usd(d.totalValueUSD), "US-Portfolio " + quarter(d.reportDate)) +
           stat(aumChg >= 0 ? "up" : "down", aumChg >= 0 ? "green" : "rose", "ggü. Vorquartal", '<span class="' + (aumChg >= 0 ? "pos" : "neg") + '">' + pct(aumChg, true) + "</span>", d.prevTotalValueUSD ? "vorher " + usd(d.prevTotalValueUSD) : "kein Vorquartal") +
-          stat("layers", "violet", "Positionen", nf0.format(d.positionCount), (d.prevPositionCount != null ? "vorher " + nf0.format(d.prevPositionCount) : "") + (d.optionCount ? " · " + d.optionCount + " Optionen" : "")) +
+          stat("layers", "violet", "Positionen", nf0.format(d.positionCount), d.optionCount ? "Wertpapiere, dazu " + nf0.format(d.optionCount) + " Optionen" :
+            (d.prevPositionCount != null ? "vorher " + nf0.format(d.prevPositionCount) : "")) +
           stat("calendar", "amber", "Gemeldet am", dateDE(d.filedDate), esc(d.form || "13F-HR") + " · Stichtag " + dateDE(d.reportDate)) +
         "</div>" +
         '<div class="hf-dgrid">' + dn.html + history(d) + "</div>" +
         '<div class="hf-tabs" role="tablist">' +
           '<button class="hf-tab" role="tab" data-tab="holdings">Positionen<span class="c">' + nf0.format(d.positionCount) + "</span></button>" +
-          '<button class="hf-tab" role="tab" data-tab="buys">Käufe<span class="c">' + nBuys + "</span></button>" +
-          '<button class="hf-tab" role="tab" data-tab="sells">Verkäufe<span class="c">' + nSells + "</span></button></div>" +
+          '<button class="hf-tab" role="tab" data-tab="buys">Käufe<span class="c">' + nf0.format(nBuys) + "</span></button>" +
+          '<button class="hf-tab" role="tab" data-tab="sells">Verkäufe<span class="c">' + nf0.format(nSells) + "</span></button></div>" +
         '<div id="hf-tabbody"></div>' +
-        (d.tradeCounts ? '<p class="hf-foot-note">' + (tc["new"] || 0) + " neue Positionen, " + (tc.added || 0) + " aufgestockt, " + (tc.reduced || 0) + " reduziert, " + (tc.sold || 0) +
-          " komplett verkauft (Vergleich " + quarter(d.prevReportDate) + " → " + quarter(d.reportDate) + ").</p>" : "") +
+        (d.tradeCounts ? '<p class="hf-foot-note">Käufe = ' + nf0.format(tc["new"] || 0) + " neue Positionen + " + nf0.format(tc.added || 0) + " aufgestockt · Verkäufe = " +
+          nf0.format(tc.reduced || 0) + " reduziert + " + nf0.format(tc.sold || 0) + " komplett verkauft (nicht mehr im Depot, daher nicht unter Positionen) · Vergleich " +
+          quarter(d.prevReportDate) + " → " + quarter(d.reportDate) + "." +
+          (d.optionCount ? " Optionen (Calls/Puts) sind in Positionen, Käufen und Verkäufen nicht mitgezählt; sie stehen mit dem Wert des Basiswerts in der Liste." : "") + "</p>" : "") +
         footer() + "</div>";
       bindDonut(d, dn.segs);
       bindHistory();
