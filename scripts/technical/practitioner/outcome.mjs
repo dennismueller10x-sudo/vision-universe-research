@@ -11,7 +11,7 @@
      MFE/MAE in % vom Einstiegsschluss in Szenariorichtung, bis zur Invalidation bzw. zum Horizontende.
      revisionBeforeOutcome: eine spaetere Fassung desselben Falls wurde vor dem ersten Ereignis (bzw. Horizontende) veroeffentlicht. */
 import { round } from "./lib.mjs";
-import { barsUntil, defaultLoader } from "./replay.mjs";
+import { barsUntil, defaultLoader, FAR_FUTURE } from "./replay.mjs";
 import { parsePublication } from "./cutoff.mjs";
 
 export const DEFAULT_HORIZON = Object.freeze({ "1D": 252, "1W": 52 });
@@ -58,7 +58,7 @@ export function evaluateOutcome(o) {
 
 /** Bars strikt nach dem Stichtag-Bar (gleicher Zeitrahmen wie die Wiedergabe), begrenzt auf den Horizont. */
 export function barsAfter(rec, horizon, loader = defaultLoader) {
-  const all = barsUntil(rec.projection, "9999-12-31", loader).bars;
+  const all = barsUntil(rec.projection, FAR_FUTURE, loader).bars;
   return all.filter((b) => b[0] > rec.lastBarDate).slice(0, horizon);
 }
 
@@ -70,6 +70,8 @@ export function outcomeForCase(ref, mapping, rec, chain, opts = {}) {
   if (!rec || rec.status !== "OK") return { referenceId: ref.referenceId, status: rec ? rec.status : "MISSING" };
   const tf = rec.timeframeUsed, horizon = (opts.horizon && opts.horizon[tf]) || DEFAULT_HORIZON[tf];
   const bars = barsAfter(rec, horizon, opts.loader);
+  /* Nachtrag 6 c: ohne Folgebar nichts auszuwerten (frueher als OK/NONE gezaehlt) */
+  if (!bars.length) return { referenceId: ref.referenceId, caseId: ref.caseId, timeframe: tf, horizonBars: horizon, barsAvailable: 0, status: "NO_FORWARD_DATA" };
   const scale = mapping.levelsComparable ? mapping.levelScale : null, sc = (v) => (Number.isFinite(v) && Number.isFinite(scale) ? v * scale : null);
   const pr = evaluateOutcome({ direction: ref.directionalBias, entryClose: rec.market.closeAtCutoff, bars,
     invalidation: ref.invalidation && sc(ref.invalidation.price) !== null ? { price: sc(ref.invalidation.price), direction: ref.invalidation.direction } : null,

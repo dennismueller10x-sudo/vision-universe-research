@@ -78,13 +78,17 @@ export function vuView(rec) {
   const v = rec && rec.vu, c = v && v.primary;
   if (!c) return null;
   const h = v.higherDegree;
+  /* Nachtrag 6 a: Praktiker-Muster/-Familie = Struktur, die die laufende Welle enthaelt (Nachtrag 3). Ist das VU-Hauptmuster
+     abgeschlossen, ist die laufende Bewegung schon die naechste Welle → enthaltende Struktur des hoeheren Grades, sonst nicht
+     vergleichbar (frueher: Familie des abgeschlossenen Musters). */
+  const containing = c.complete ? (h && h.pattern ? h.pattern : null) : c.pattern;
   return {
-    actor: "VU", pattern: c.pattern, family: c.family, label: c.complete ? null : c.currentWave.normLabel, completeLabel: c.complete ? c.currentWave.normLabel : null,
+    actor: "VU", pattern: containing, family: c.complete ? (containing ? PATTERN_FAMILY[containing] || null : null) : c.family, ownPattern: c.pattern, label: c.complete ? null : c.currentWave.normLabel, completeLabel: c.complete ? c.currentWave.normLabel : null,
     inferredNext: c.complete && h ? h.nextLabel : null, role: vuEffectiveRole(c, h), roleInferred: c.complete, state: c.complete ? "CONFIRMED_COMPLETE" : "DEVELOPING",
     currentMove: c.currentWave.direction || null, nextMove: c.complete ? null : c.nextMove || null, impliedTrend: c.impliedTrend || null, degreeRank: c.degree ? c.degree.rank : null,
     invalidation: c.invalidation ? { price: c.invalidation.price, direction: c.invalidation.direction } : null,
     targets: (c.targets || []).map((z) => ({ low: Math.min(z.low, z.high), high: Math.max(z.low, z.high) })),
-    alternatives: (v.alternatives || []).map((a) => ({ pattern: a.pattern, label: a.complete ? null : a.currentWave.normLabel, completeLabel: a.complete ? a.currentWave.normLabel : null, currentMove: a.currentWave.direction })),
+    alternatives: (v.alternatives || []).map((a) => ({ pattern: a.complete ? null : a.pattern, label: a.complete ? null : a.currentWave.normLabel, completeLabel: a.complete ? a.currentWave.normLabel : null, currentMove: a.currentWave.direction })),
     levelsComparable: true, abstain: !!v.applicability.abstain, applicability: v.applicability.level, status: v.status
   };
 }
@@ -120,6 +124,8 @@ export function compareViews(a, b, ctx = {}) {
   m.A1 = dir(a.currentMove, b.currentMove, "A1");
   m.A2 = dir(a.nextMove, b.nextMove, "A2");
   m.B = eq(a.family, b.family);
+  const vuSide = a.actor === "VU" ? a : b.actor === "VU" ? b : null;
+  const completeNoContainer = vuSide && vuSide.state === "CONFIRMED_COMPLETE" && !known(vuSide.pattern);
   m.C = waveMatch(a, b);
   m.D = Number.isInteger(a.degreeRank) && Number.isInteger(b.degreeRank) ? (a.degreeRank === b.degreeRank ? M : X) : NC;
   m.E = Number.isInteger(a.degreeRank) && Number.isInteger(b.degreeRank) ? (Math.abs(a.degreeRank - b.degreeRank) <= 1 ? M : X) : NC;
@@ -127,6 +133,7 @@ export function compareViews(a, b, ctx = {}) {
   const ca = [a, ...a.alternatives], cb = [b, ...b.alternatives];
   const gRes = ca.flatMap((x) => cb.map((y) => countMatch(Object.assign({ alternatives: [] }, x), Object.assign({ alternatives: [] }, y))));
   m.G = gRes.includes(M) ? M : gRes.includes(X) ? X : NC;
+  if (completeNoContainer) for (const k of ["B", "F"]) if (m[k] === NC) why[k] = "VU_PATTERN_COMPLETE_NO_CONTAINING_STRUCTURE";
   m.K = eq(a.state, b.state);
   const role = eq(a.role, b.role), trend = known(a.impliedTrend) && known(b.impliedTrend) ? eq(a.impliedTrend, b.impliedTrend) : NC;
   m.S = m.A1 === NC || role === NC ? NC : m.A1 === M && role === M && trend !== X ? M : X;
@@ -161,7 +168,8 @@ export function compareCase(ref, mapping, rec, extra = {}) {
   row.category = v.abstain ? "VU_ABSTAINED" : "VU_APPLICABLE";
   const P = practitionerView(ref, mapping, { close: rec.market.closeAtCutoff });
   const r = compareViews(P, v, { close: rec.market.closeAtCutoff, atr: rec.market.atr14Close, absoluteComparable: mapping.mappingQuality === "EXACT" });
-  Object.assign(row, r, { vuDegree: rec.vu.primary.degree, practitionerDegreeRank: P.degreeRank,
+  Object.assign(row, r, { vuDegree: rec.vu.primary.degree, practitionerDegreeRank: P.degreeRank, vuPatternComplete: !!rec.vu.primary.complete,
+    vuOwnPattern: v.ownPattern, vuContainingPattern: v.pattern, sRoleSource: v.roleInferred ? "INFERRED" : "ENGINE",
     _a1: [P.currentMove, v.currentMove], _a2: [P.nextMove, v.nextMove], _fam: [P.family, v.family] });
   return row;
 }
@@ -310,7 +318,10 @@ export function dynamicsSummary(chains, latencyRows, relabelRows) {
   const lat = latencyRows.filter((x) => x.status === "FOUND").map((x) => x.offsetBars), rel = relabelRows.filter(Boolean);
   return { practitionerRevisionRateBySource: revisionRateBySource(chains),
            vuRelabel: { cases: rel.length, relabeledShare: rel.length ? round(rel.filter((x) => x.relabeled).length / rel.length, 3) : null, medianPer100Bars: round(median(rel.map((x) => x.per100Bars)), 2) },
-           detectionLatency: { cases: latencyRows.length, found: lat.length, medianOffsetBars: median(lat), vuEarlierOrSame: lat.filter((x) => x <= 0).length, statusCounts: countBy(latencyRows, (x) => x.status) },
+           detectionLatency: { cases: latencyRows.length, found: lat.length, medianOffsetBars: median(lat), vuEarlierOrSame: lat.filter((x) => x <= 0).length,
+             /* Nachtrag 6 d: erster Treffer am linken Fensterrand = "schon zu Fensterbeginn so gelesen" (zensiert), keine Latenz */
+             leftCensored: latencyRows.filter((x) => x.status === "FOUND" && x.window && x.offsetBars === x.window[0]).length,
+             note: "Median nur zusammen mit leftCensored lesen", statusCounts: countBy(latencyRows, (x) => x.status) },
            note: "Revisionsrate (Praktiker, ganze Archivspanne) und VU-Neuzuordnungsrate (Replay-Fenster) haben verschiedene Horizonte – nur qualitativ vergleichen." };
 }
 export { chainViews };

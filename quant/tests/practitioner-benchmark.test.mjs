@@ -841,3 +841,41 @@ test("Nachtrag 4: Wochen-/Monatszaehlung mit Invalidation am Welle-II-Tief ist p
   assert.ok(L.plausibilityChecks(Object.assign({}, base, { timeframe: "1D" }), { closeAtCutoff: 246.89, levelScale: 1 }).errors.length >= 1);
   assert.ok(L.plausibilityChecks(base, { closeAtCutoff: 246.89, levelScale: 0.001 }).errors.some((e) => /Faktor 100/.test(e)));
 });
+
+// ================================================================== Nachtrag 6 (Red-Team §122)
+test("Nachtrag 6 a: abgeschlossenes VU-Muster → B/F gegen die enthaltende Struktur, sonst NOT_COMPARABLE", () => {
+  const rec = (higherDegree) => ({ status: "OK", vu: { status: "OK", applicability: { abstain: true, level: "LOW" }, alternatives: [{ pattern: "TRIANGLE", complete: true, currentWave: { normLabel: "E", direction: "DOWN" } }], higherDegree,
+    primary: { pattern: "WXY", family: "CORRECTIVE", complete: true, currentWave: { normLabel: "Y", direction: "UP", role: "CORRECTIVE" }, nextMove: null, impliedTrend: null, degree: { rank: 1 }, invalidation: null, targets: [] } } });
+  const noHd = K.vuView(rec(null));
+  assert.equal(noHd.ownPattern, "WXY");
+  assert.equal(noHd.pattern, null);
+  assert.equal(noHd.family, null);
+  assert.equal(noHd.alternatives[0].pattern, null);
+  const P = view({ actor: "PRACTITIONER", pattern: "IMPULSE", family: "MOTIVE", label: "3", role: "MOTIVE", state: "DEVELOPING", currentMove: "UP" });
+  const r = K.compareViews(P, noHd, { close: 100 });
+  assert.equal(r.metrics.B, "NOT_COMPARABLE");
+  assert.equal(r.metrics.F, "NOT_COMPARABLE");
+  assert.equal(r.notComparableReason.B, "VU_PATTERN_COMPLETE_NO_CONTAINING_STRUCTURE");
+  const withHd = K.vuView(rec({ pattern: "IMPULSE", currentLabel: "2", nextLabel: "3", role: "CORRECTIVE", direction: "DOWN" }));
+  assert.equal(withHd.pattern, "IMPULSE");
+  assert.equal(withHd.family, "MOTIVE");
+  const r2 = K.compareViews(P, withHd, { close: 100 });
+  assert.equal(r2.metrics.B, "MATCH");
+  assert.equal(r2.metrics.F, "MATCH");   // IMPULSE, laufende Welle 3 = naechstes Label des hoeheren Grades
+  // laufendes VU-Muster: unveraendert die eigene Familie
+  const run = K.vuView({ status: "OK", vu: Object.assign(rec(null).vu, { primary: Object.assign(rec(null).vu.primary, { complete: false }) }) });
+  assert.equal(run.family, "CORRECTIVE");
+  assert.equal(run.pattern, "WXY");
+});
+test("Nachtrag 6 c/d: kein Folgebar → NO_FORWARD_DATA; Latenz zaehlt linkszensierte Treffer", () => {
+  const ref = fx();
+  const out = O.outcomeForCase(ref, L.effectiveMapping(ref), { status: "OK", timeframeUsed: "1D", lastBarDate: "2099-12-30", projection: R.replayProjection(ref, L.effectiveMapping(ref)), market: { closeAtCutoff: 100 }, vu: null }, [ref]);
+  assert.equal(out.status, "NO_FORWARD_DATA");
+  assert.equal(O.aggregateOutcomes([out]).cases, 0);
+  assert.equal(R.FAR_FUTURE, "2099-12-31");
+  assert.notEqual(C.lastCompleteWeekEnd(R.FAR_FUTURE, "CRYPTO").length, 0);
+  assert.match(C.lastCompleteWeekEnd(R.FAR_FUTURE, "CRYPTO"), /^\d{4}-\d{2}-\d{2}$/);
+  const s = K.dynamicsSummary(new Map(), [{ status: "FOUND", offsetBars: -10, window: [-10, 10] }, { status: "FOUND", offsetBars: 3, window: [-10, 10] }, { status: "NOT_IN_WINDOW" }], []);
+  assert.equal(s.detectionLatency.leftCensored, 1);
+  assert.equal(s.detectionLatency.found, 2);
+});

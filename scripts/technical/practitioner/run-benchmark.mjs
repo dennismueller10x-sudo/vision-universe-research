@@ -119,7 +119,9 @@ export function runBenchmark(o = {}) {
     const comparison = Object.assign({}, head, {
       status: selfTest ? "SELF_TEST" : "OK", scope: tag, primaryView: "ORIGINAL_PUBLISHED",
       directionSemantics: "A1 = laufende Bewegung ab jetzt (Praktiker directionalBias vs. VU currentWave.direction); A2 = Bewegung nach der laufenden Welle (Praktiker primary.nextMoveAfterCurrent vs. VU nextMove); S = A1 + Rolle (+ Trend, wo ableitbar)",
-      vuVsPractitioner: { all: aggregate(origRows), bySplit, latestView: latestRows.length ? aggregate(latestRows) : null },
+      vuVsPractitioner: { all: aggregate(origRows), bySplit, latestView: latestRows.length ? aggregate(latestRows) : null,
+        /* Nachtrag 6 b: S getrennt nach Herkunft der VU-Rolle (Engine bei laufendem Muster / vom Vergleich abgeleitet bei abgeschlossenem) */
+        sByRoleSource: Object.fromEntries(["ENGINE", "INFERRED"].map((k) => { const x = origRows.filter((r) => r.sRoleSource === k); return [k, x.length ? aggregate(x).metrics.S : null]; })) },
       humanHuman: Object.assign({ pairingRule: "gleiche vuSymbol, gleicher Zeitrahmen, ≤ 5 Handelstage, verschiedene Quellenfamilie; je Referenz und Fremdfamilie die zeitlich naechste" }, aggregateHuman(hhRows)),
       dynamics: Object.assign(dynamicsSummary(revisionChains(vs.flatMap((v) => v.chain)).chains, latency, relabel), { window: dyn }),
       rows: origRows.map(stripPrivate), latestRows: latestRows.map(stripPrivate), humanPairs: hhRows.map(stripPrivate), latency

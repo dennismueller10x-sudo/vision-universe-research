@@ -24,6 +24,8 @@ const EV3 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js"))
 const PAT = require(join(ROOT, "quant/engines/technical/elliott/patterns.js"));
 
 export const EXPECTED_ENGINE_VERSION = "elliott-3.2.2";
+/* Nachtrag 6 c: "alle Folgedaten" – gueltiges Datum (9999-12-31 ergab bei Wochen/Krypto ein ungueltiges Wochenende → 0 Bars). */
+export const FAR_FUTURE = "2099-12-31";
 export const ENGINE_VERSION = EV3.ENGINE_VERSION;
 export const PROJECTION_KEYS = Object.freeze(["referenceId", "vuSymbol", "seriesSource", "market", "timeframe", "analysisCutoff"]);
 export const MIN_BARS = Object.freeze({ "1D": 200, "1W": 150 });
@@ -171,7 +173,7 @@ export function replayOne(projection, opts = {}) {
 }
 /** Trajektorie der Lesart an Bars [cutoff−before … cutoff+after]; jeder Lauf kausal bis zu seinem Datum, Persistenz verkettet. */
 function trajectory(p, tf, loader, { before = 0, after = 0 }, cutoffBarDate) {
-  const all = barsUntil(p, "9999-12-31", loader);
+  const all = barsUntil(p, FAR_FUTURE, loader);
   let full = all.bars;
   if (tf === "1W" && full.length) { const lw = lastCompleteWeekEnd(full[full.length - 1][0], p.market); full = full.filter((x) => x[0] <= lw); }
   const ci = full.findIndex((x) => x[0] === cutoffBarDate);
