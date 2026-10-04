@@ -1,0 +1,1393 @@
+{
+ "schemaVersion": "vu-practitioner-outcome-1.0.0",
+ "generatedAt": "2026-10-04T21:10:11.033Z",
+ "label": "PRACTITIONER REFERENCE, NOT OBJECTIVE GROUND TRUTH — INTERN",
+ "status": "OK",
+ "freeze": {
+  "version": "PRACTITIONER_REFERENCE_V1",
+  "sha256": "7af25c9b5d61f0268f7049103076839e1dd43b3a2d9d24bc942290dd1133f489"
+ },
+ "comparisonSha256": "ede60cac3fcb7227cc536d29f9f698171667be8d754de88ca86bb592ffb96346",
+ "scope": "DEVELOPMENT+VALIDATION",
+ "directionSemantics": "erwartete Bewegung ab jetzt: Praktiker directionalBias, VU currentWave.direction",
+ "aggregate": {
+  "cases": 33,
+  "statusCounts": {
+   "OK": 33,
+   "INSUFFICIENT_DATA": 2
+  },
+  "practitioner": {
+   "firstEvent": {
+    "NONE": 12,
+    "T1": 13,
+    "NO_LEVELS": 6,
+    "INVALIDATION": 2
+   },
+   "medianMfePct": 18.619,
+   "medianMaePct": -14.938,
+   "revisionBeforeOutcome": 3
+  },
+  "vu": {
+   "firstEvent": {
+    "INVALIDATION": 4,
+    "NO_LEVELS": 9,
+    "NONE": 7,
+    "T1": 13
+   },
+   "medianMfePct": 33.539,
+   "medianMaePct": -10.4
+  },
+  "note": "Gepoolt, ohne Rangfolge einzelner Quellen. Pflichtgrenzen: Publikations-, Loesch-, Auswahlverzerrung; unvollstaendige Archive; abweichende Kursquellen (Proxy); keine Intraday-Reihenfolge (Schlusskurs)."
+ },
+ "rows": [
+  {
+   "referenceId": "pr_ewf_20220816_zm",
+   "caseId": "ewf|ZM|2022-08-16|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "DOWN",
+    "entryClose": 109.52,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 43.91,
+    "maePct": 0,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 109.52,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": {
+     "date": "2022-08-26",
+     "bars": 2
+    },
+    "firstEvent": "INVALIDATION",
+    "mfePct": 0,
+    "maePct": -25.667,
+    "targetsUsable": 3,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_ewf_20220828_unh",
+   "caseId": "ewf|UNH|2022-08-28|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "DOWN",
+    "entryClose": 529.25,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 13.37,
+    "maePct": -4.155,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 529.25,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NO_LEVELS",
+    "mfePct": 4.155,
+    "maePct": -13.37,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_ewf_20221025_qqq",
+   "caseId": "ewf|QQQ|2022-10-25|1",
+   "timeframe": "1D",
+   "horizonBars": 252,
+   "barsAvailable": 252,
+   "status": "OK",
+   "practitioner": {
+    "direction": "DOWN",
+    "entryClose": 278.45,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 6.59,
+    "maePct": -38.531,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 278.45,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NO_LEVELS",
+    "mfePct": 38.531,
+    "maePct": -6.59,
+    "targetsUsable": 0,
+    "alreadyInZone": 1,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_ewf_20230102_dis",
+   "caseId": "ewf|DIS|2023-01-02|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "DOWN",
+    "entryClose": 86.88,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 8.69,
+    "maePct": -27.429,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "DOWN",
+    "entryClose": 86.88,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 8.69,
+    "maePct": -27.429,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_ewf_20230108_cat",
+   "caseId": "ewf|CAT|2023-01-08|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "UP",
+    "entryClose": 248.86,
+    "horizonBars": 52,
+    "t1": {
+     "date": "2023-01-13",
+     "bars": 1
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 18.81,
+    "maePct": -15.949,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 248.86,
+    "horizonBars": 52,
+    "t1": {
+     "date": "2023-12-29",
+     "bars": 51
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 18.81,
+    "maePct": -15.949,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_ewf_20230404_nvda",
+   "caseId": "ewf|NVDA|2023-04-04|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "UP",
+    "entryClose": 27.78,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 239.417,
+    "maePct": -3.672,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 27.78,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NO_LEVELS",
+    "mfePct": 239.417,
+    "maePct": -3.672,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_ewf_20230613_phm",
+   "caseId": "ewf|PHM|2023-06-13|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "UP",
+    "entryClose": 71.99,
+    "horizonBars": 52,
+    "t1": {
+     "date": "2023-07-14",
+     "bars": 5
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 67.551,
+    "maePct": -3.25,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 71.99,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NO_LEVELS",
+    "mfePct": 67.551,
+    "maePct": -3.25,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_ewf_20230621_rcl",
+   "caseId": "ewf|RCL|2023-06-21|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "UP",
+    "entryClose": 95.3,
+    "horizonBars": 52,
+    "t1": {
+     "date": "2023-12-08",
+     "bars": 25
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 62.193,
+    "maePct": -16.013,
+    "targetsUsable": 2,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 95.3,
+    "horizonBars": 52,
+    "t1": {
+     "date": "2024-03-22",
+     "bars": 40
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 62.193,
+    "maePct": -16.013,
+    "targetsUsable": 2,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_ewf_20230725_fcx",
+   "caseId": "ewf|FCX|2023-07-25|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "UP",
+    "entryClose": 40.61,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 33.539,
+    "maePct": -17.089,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 40.61,
+    "horizonBars": 52,
+    "t1": {
+     "date": "2024-05-10",
+     "bars": 42
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 33.539,
+    "maePct": -17.089,
+    "targetsUsable": 2,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_ewf_20230815_nvda",
+   "caseId": "ewf|NVDA|2023-08-15|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "UP",
+    "entryClose": 40.86,
+    "horizonBars": 52,
+    "t1": {
+     "date": "2023-08-18",
+     "bars": 1
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 222.761,
+    "maePct": -0.881,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 40.86,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NO_LEVELS",
+    "mfePct": 222.761,
+    "maePct": -0.881,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_ewf_20230905_abnb",
+   "status": "INSUFFICIENT_DATA"
+  },
+  {
+   "referenceId": "pr_ewf_20230919_oln",
+   "caseId": "ewf|OLN|2023-09-19|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "DOWN",
+    "entryClose": 49.95,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 18.619,
+    "maePct": -17.718,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 49.95,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 17.718,
+    "maePct": -18.619,
+    "targetsUsable": 2,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_ewf_20230923_mcd",
+   "caseId": "ewf|MCD|2023-09-23|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "DOWN",
+    "entryClose": 272.22,
+    "horizonBars": 52,
+    "t1": {
+     "date": "2023-10-06",
+     "bars": 2
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 8.816,
+    "maePct": -10.4,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "DOWN",
+    "entryClose": 272.22,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": {
+     "date": "2024-01-19",
+     "bars": 17
+    },
+    "firstEvent": "INVALIDATION",
+    "mfePct": 8.816,
+    "maePct": -10.4,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_ewf_20231205_coin",
+   "status": "INSUFFICIENT_DATA"
+  },
+  {
+   "referenceId": "pr_ewf_20240220_lly",
+   "caseId": "ewf|LLY|2024-02-20|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "UP",
+    "entryClose": 782.06,
+    "horizonBars": 52,
+    "t1": {
+     "date": "2024-06-14",
+     "bars": 17
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 22.755,
+    "maePct": -7.204,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 782.06,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NO_LEVELS",
+    "mfePct": 22.755,
+    "maePct": -7.204,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_ewf_20240812_axp",
+   "caseId": "ewf|AXP|2024-08-12|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "UP",
+    "entryClose": 237.85,
+    "horizonBars": 52,
+    "t1": {
+     "date": "2024-09-20",
+     "bars": 6
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 37.957,
+    "maePct": -1.753,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 237.85,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NO_LEVELS",
+    "mfePct": 37.957,
+    "maePct": -1.753,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_ewf_20241003_mstr",
+   "caseId": "ewf|MSTR|2024-10-03|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "UP",
+    "entryClose": 176.22,
+    "horizonBars": 52,
+    "t1": {
+     "date": "2024-11-08",
+     "bars": 6
+    },
+    "t2": {
+     "date": "2024-11-15",
+     "bars": 7
+    },
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 146.612,
+    "maePct": 0,
+    "targetsUsable": 2,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 176.22,
+    "horizonBars": 52,
+    "t1": {
+     "date": "2024-10-11",
+     "bars": 2
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 146.612,
+    "maePct": 0,
+    "targetsUsable": 1,
+    "alreadyInZone": 1,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_ewf_20241008_nee",
+   "caseId": "ewf|NEE|2024-10-08|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "UP",
+    "entryClose": 83.85,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 0.632,
+    "maePct": -21.515,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 83.85,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NO_LEVELS",
+    "mfePct": 0.632,
+    "maePct": -21.515,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20220326_btcusd",
+   "caseId": "tv-cryptoknee|BTCUSD|2022-03-26|1",
+   "timeframe": "1D",
+   "horizonBars": 252,
+   "barsAvailable": 252,
+   "status": "OK",
+   "practitioner": {
+    "direction": "UP",
+    "entryClose": 44319.270304865175,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 7.038,
+    "maePct": -64.441,
+    "targetsUsable": 2,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 44319.270304865175,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 7.038,
+    "maePct": -64.441,
+    "targetsUsable": 2,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20220904_btcusd",
+   "caseId": "tv-cryptoknee|BTCUSD|2022-09-04|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "DOWN",
+    "entryClose": 19553.972592557257,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 16.853,
+    "maePct": -56.583,
+    "targetsUsable": 3,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 19553.972592557257,
+    "horizonBars": 52,
+    "t1": {
+     "date": "2023-04-16",
+     "bars": 33
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 56.583,
+    "maePct": -16.853,
+    "targetsUsable": 1,
+    "alreadyInZone": 1,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20221206_spy",
+   "caseId": "tv-cryptoknee|SPY|2022-12-06|1",
+   "timeframe": "1D",
+   "horizonBars": 252,
+   "barsAvailable": 252,
+   "status": "OK",
+   "practitioner": {
+    "direction": "DOWN",
+    "entryClose": 393.83,
+    "horizonBars": 252,
+    "t1": {
+     "date": "2022-12-16",
+     "bars": 8
+    },
+    "t2": null,
+    "invalidation": {
+     "date": "2023-01-26",
+     "bars": 34
+    },
+    "firstEvent": "T1",
+    "mfePct": 4.36,
+    "maePct": -2.773,
+    "targetsUsable": 2,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 393.83,
+    "horizonBars": 252,
+    "t1": {
+     "date": "2022-12-12",
+     "bars": 4
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 16.573,
+    "maePct": -4.36,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20221228_tsla",
+   "caseId": "tv-cryptoknee|TSLA|2022-12-28|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "DOWN",
+    "entryClose": 123.15,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 8.193,
+    "maePct": -128.486,
+    "targetsUsable": 2,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "DOWN",
+    "entryClose": 123.15,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 8.193,
+    "maePct": -128.486,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20230118_btcusd",
+   "caseId": "tv-cryptoknee|BTCUSD|2023-01-18|1",
+   "timeframe": "1D",
+   "horizonBars": 252,
+   "barsAvailable": 252,
+   "status": "OK",
+   "practitioner": {
+    "direction": "DOWN",
+    "entryClose": 21125.71672034329,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NO_LEVELS",
+    "mfePct": 4.301,
+    "maePct": -48.99,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": true
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 21125.71672034329,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 48.99,
+    "maePct": -4.301,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20230916_btcusd",
+   "caseId": "tv-cryptoknee|BTCUSD|2023-09-16|1",
+   "timeframe": "1W",
+   "horizonBars": 52,
+   "barsAvailable": 52,
+   "status": "OK",
+   "practitioner": {
+    "direction": "DOWN",
+    "entryClose": 25834.113613444573,
+    "horizonBars": 52,
+    "t1": null,
+    "t2": null,
+    "invalidation": {
+     "date": "2023-10-29",
+     "bars": 7
+    },
+    "firstEvent": "INVALIDATION",
+    "mfePct": 0,
+    "maePct": -33.69,
+    "targetsUsable": 2,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": true
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 25834.113613444573,
+    "horizonBars": 52,
+    "t1": {
+     "date": "2023-10-22",
+     "bars": 6
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 176.027,
+    "maePct": 0,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20240428_btcusd",
+   "caseId": "tv-cryptoknee|BTCUSD|2024-04-28|1",
+   "timeframe": "1D",
+   "horizonBars": 252,
+   "barsAvailable": 252,
+   "status": "OK",
+   "practitioner": {
+    "direction": "UP",
+    "entryClose": 63445.08062123922,
+    "horizonBars": 252,
+    "t1": {
+     "date": "2024-11-10",
+     "bars": 197
+    },
+    "t2": {
+     "date": "2024-11-19",
+     "bars": 206
+    },
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 67.284,
+    "maePct": -14.938,
+    "targetsUsable": 2,
+    "alreadyInZone": 1,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 63445.08062123922,
+    "horizonBars": 252,
+    "t1": {
+     "date": "2024-11-10",
+     "bars": 197
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 67.284,
+    "maePct": -14.938,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20221203_spy",
+   "caseId": "tv-thefifthwave|SPY|2022-12-03|1",
+   "timeframe": "1D",
+   "horizonBars": 252,
+   "barsAvailable": 252,
+   "status": "OK",
+   "practitioner": {
+    "direction": "UP",
+    "entryClose": 406.91,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 12.826,
+    "maePct": -7.434,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 406.91,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NO_LEVELS",
+    "mfePct": 12.826,
+    "maePct": -7.434,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20230129_btcusd",
+   "caseId": "tv-thefifthwave|BTCUSD|2023-01-29|1",
+   "timeframe": "1D",
+   "horizonBars": 252,
+   "barsAvailable": 252,
+   "status": "OK",
+   "practitioner": {
+    "direction": "UP",
+    "entryClose": 23027.414556817035,
+    "horizonBars": 252,
+    "t1": {
+     "date": "2023-02-20",
+     "bars": 23
+    },
+    "t2": {
+     "date": "2023-03-17",
+     "bars": 48
+    },
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 36.686,
+    "maePct": -12.205,
+    "targetsUsable": 3,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 23027.414556817035,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 36.686,
+    "maePct": -12.205,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20230417_btcusd",
+   "caseId": "tv-thefifthwave|BTCUSD|2023-04-17|1",
+   "timeframe": "1D",
+   "horizonBars": 252,
+   "barsAvailable": 252,
+   "status": "OK",
+   "practitioner": {
+    "direction": "DOWN",
+    "entryClose": 30328.18603582223,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NO_LEVELS",
+    "mfePct": 17.154,
+    "maePct": -45.707,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 30328.18603582223,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NONE",
+    "mfePct": 45.707,
+    "maePct": -17.154,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20230710_btcusd",
+   "caseId": "tv-thefifthwave|BTCUSD|2023-07-10|1",
+   "timeframe": "1D",
+   "horizonBars": 252,
+   "barsAvailable": 252,
+   "status": "OK",
+   "practitioner": {
+    "direction": "UP",
+    "entryClose": 30171.83127784513,
+    "horizonBars": 252,
+    "t1": {
+     "date": "2023-12-02",
+     "bars": 146
+    },
+    "t2": {
+     "date": "2023-12-03",
+     "bars": 147
+    },
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 142.334,
+    "maePct": -16.626,
+    "targetsUsable": 3,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 30171.83127784513,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": {
+     "date": "2023-07-18",
+     "bars": 9
+    },
+    "firstEvent": "INVALIDATION",
+    "mfePct": 4.32,
+    "maePct": -1.019,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20240831_btcusd",
+   "caseId": "tv-thefifthwave|BTCUSD|2024-08-31|1",
+   "timeframe": "1D",
+   "horizonBars": 252,
+   "barsAvailable": 252,
+   "status": "OK",
+   "practitioner": {
+    "direction": "UP",
+    "entryClose": 59137.3627518862,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NO_LEVELS",
+    "mfePct": 79.512,
+    "maePct": -8.742,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 59137.3627518862,
+    "horizonBars": 252,
+    "t1": {
+     "date": "2024-10-29",
+     "bars": 60
+    },
+    "t2": {
+     "date": "2024-11-11",
+     "bars": 73
+    },
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 79.512,
+    "maePct": -8.742,
+    "targetsUsable": 2,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240121_qqq",
+   "caseId": "tv-yuchaosng|QQQ|2024-01-21|1",
+   "timeframe": "1D",
+   "horizonBars": 252,
+   "barsAvailable": 252,
+   "status": "OK",
+   "practitioner": {
+    "direction": "UP",
+    "entryClose": 421.18,
+    "horizonBars": 252,
+    "t1": {
+     "date": "2024-02-22",
+     "bars": 23
+    },
+    "t2": {
+     "date": "2024-05-20",
+     "bars": 84
+    },
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 27.777,
+    "maePct": -1.55,
+    "targetsUsable": 2,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 421.18,
+    "horizonBars": 252,
+    "t1": {
+     "date": "2024-05-15",
+     "bars": 81
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 27.777,
+    "maePct": -1.55,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240322_btcusd",
+   "caseId": "tv-yuchaosng|BTCUSD|2024-03-22|1",
+   "timeframe": "1D",
+   "horizonBars": 252,
+   "barsAvailable": 252,
+   "status": "OK",
+   "practitioner": {
+    "direction": "DOWN",
+    "entryClose": 65497.307031036704,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NO_LEVELS",
+    "mfePct": 17.604,
+    "maePct": -51.155,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 65497.307031036704,
+    "horizonBars": 252,
+    "t1": {
+     "date": "2024-11-10",
+     "bars": 234
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 51.155,
+    "maePct": -17.604,
+    "targetsUsable": 1,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240720_spy",
+   "caseId": "tv-yuchaosng|SPY|2024-07-20|1",
+   "timeframe": "1D",
+   "horizonBars": 252,
+   "barsAvailable": 252,
+   "status": "OK",
+   "practitioner": {
+    "direction": "DOWN",
+    "entryClose": 548.99,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NO_LEVELS",
+    "mfePct": 9.565,
+    "maePct": -15.523,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": true
+   },
+   "vu": {
+    "direction": "DOWN",
+    "entryClose": 548.99,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": {
+     "date": "2024-09-19",
+     "bars": 43
+    },
+    "firstEvent": "INVALIDATION",
+    "mfePct": 5.758,
+    "maePct": -4.006,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240828_iwm",
+   "caseId": "tv-yuchaosng|IWM|2024-08-28|1",
+   "timeframe": "1D",
+   "horizonBars": 252,
+   "barsAvailable": 252,
+   "status": "OK",
+   "practitioner": {
+    "direction": "DOWN",
+    "entryClose": 218.74,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "NO_LEVELS",
+    "mfePct": 20.079,
+    "maePct": -10.816,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 218.74,
+    "horizonBars": 252,
+    "t1": {
+     "date": "2024-11-11",
+     "bars": 53
+    },
+    "t2": null,
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 10.816,
+    "maePct": -20.079,
+    "targetsUsable": 2,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240929_btcusd",
+   "caseId": "tv-yuchaosng|BTCUSD|2024-09-29|1",
+   "timeframe": "1D",
+   "horizonBars": 252,
+   "barsAvailable": 252,
+   "status": "OK",
+   "practitioner": {
+    "direction": "DOWN",
+    "entryClose": 65867.50326226499,
+    "horizonBars": 252,
+    "t1": null,
+    "t2": null,
+    "invalidation": {
+     "date": "2024-10-15",
+     "bars": 17
+    },
+    "firstEvent": "INVALIDATION",
+    "mfePct": 8.48,
+    "maePct": -1.812,
+    "targetsUsable": 0,
+    "alreadyInZone": 0,
+    "levelsComparable": true,
+    "revisionBeforeOutcome": false
+   },
+   "vu": {
+    "direction": "UP",
+    "entryClose": 65867.50326226499,
+    "horizonBars": 252,
+    "t1": {
+     "date": "2024-11-06",
+     "bars": 39
+    },
+    "t2": {
+     "date": "2024-11-11",
+     "bars": 44
+    },
+    "invalidation": null,
+    "firstEvent": "T1",
+    "mfePct": 69.612,
+    "maePct": -8.48,
+    "targetsUsable": 2,
+    "alreadyInZone": 0,
+    "abstain": true
+   }
+  }
+ ]
+}
