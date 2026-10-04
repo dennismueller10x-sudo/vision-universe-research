@@ -101,3 +101,38 @@ jobs:
           git add vorsorge/data/holdings vorsorge/data/sources/sec-sic.json vorsorge/data/sources/nport-manifest.json
           git commit -q -m "Vorsorge: US-ETF-Holdings aus SEC N-PORT (Lauf ${{ github.run_id }})" || { echo "Keine Aenderung."; exit 0; }
           bash scripts/ci/push-with-retry.sh "${{ github.ref_name }}"
+
+  fundamentals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    concurrency:
+      group: vorsorge-etf-fundamentals-${{ github.ref_name }}
+      cancel-in-progress: false
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'fundamentals') ||
+      contains(github.event.head_commit.message, '[vorsorge-fundamentals]')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: SEC Risk/Return (Kostenquoten aus Prospekten)
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: node scripts/vorsorge/ingest-sec-rr.mjs --max-quarters 6
+      - name: ESMA FIRDS + GLEIF (europaeische ETF-Anteilklassen und Listings)
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: node scripts/vorsorge/ingest-esma-firds.mjs
+      - name: Hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+      - name: Veroeffentlichen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add vorsorge/data/sources/sec-rr-costs.json vorsorge/data/eu
+          git commit -q -m "Vorsorge: Kostenquoten (SEC RR) und europaeische ETF-Listings (ESMA FIRDS, GLEIF) (Lauf ${{ github.run_id }})" || { echo "Keine Aenderung."; exit 0; }
+          bash scripts/ci/push-with-retry.sh "${{ github.ref_name }}"
