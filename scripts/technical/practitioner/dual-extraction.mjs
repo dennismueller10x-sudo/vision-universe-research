@@ -33,6 +33,10 @@ export function coreValue(pass, field, map = loadInstrumentMap()) {
 export function sameCore(field, a, b) {
   if (a === null && b === null) return "NOT_STATED";
   if (a === null || b === null) return false;
+  if (field === "instrument" && a.startsWith("NAME:") && b.startsWith("NAME:")) {
+    const A = a.slice(5).split("|"), B = b.slice(5).split("|");
+    return A.every((w) => B.includes(w)) || B.every((w) => A.includes(w));
+  }
   if (field === "invalidation") return a.direction === b.direction && Math.abs(a.price - b.price) <= 0.01 * Math.max(Math.abs(a.price), Math.abs(b.price));
   return a === b;
 }
@@ -74,5 +78,7 @@ export function instrumentKeyOf(instr, map = loadInstrumentMap()) {
     const r = resolveInstrument({ asShown: c, instrumentType: t, priceAdjustment: i.priceAdjustment }, map);
     if (r.mapId) return { key: r.vuSymbol ? "VU:" + r.vuSymbol : "MAP:" + r.mapId, token: c, resolved: r, instrumentType: t };
   }
-  return { key: "NAME:" + normSym(s), token: s, resolved: null, instrumentType: i.instrumentType || "UNKNOWN" };
+  /* ohne Abbildung: Wortmenge ohne Zeitrahmen-/Boersenkennungen; zwei Namen gelten als gleich, wenn eine Wortmenge die andere enthaelt */
+  const set = [...new Set(words.map(normSym).filter((w) => w && !CAND_STOP.has(w)))].sort();
+  return { key: "NAME:" + set.join("|"), token: s, resolved: null, instrumentType: i.instrumentType || "UNKNOWN" };
 }
