@@ -125,7 +125,7 @@
   function ruleBody(r, study, kind) {
     var out = [], h = r.horizons, m6 = h.m6, unitDays = kind === "setup";
     var hz = ["m1", "m3", "m6", "m12"];
-    if (kind === "signal") out.push(X.section("Vertrauen auf einen Blick", null, [evidenceFlags(r, study), trustComponents(r)]));
+    if (kind === "signal") out.push(X.section("Auf einen Blick", "Wie oft lag das Signal nach 6 Monaten höher – und wie oft der Markt in denselben Wochen.", [evidenceFlags(r, study), global.QXEvidence.signalEvidence(ruleEvidence(r)), global.QXEvidence.certifiedLine(null)]));
     out.push(X.section("Regel", null, [el("p", { class: "dx-bewertung-lesart", text: r.plain }),
       el("dl", { class: "qx-kv" }, [].concat.apply([], [
         ["Version", (r.version ? r.id + " " + r.version : r.id) + " · " + (study.engineVersion || "")],
@@ -189,7 +189,7 @@
         bars(years.map(function (y) { return { label: y.year.slice(2), value: y.medianExcess }; }), { label: "Median-Abstand zum Markt je Jahr", fmt: function (v) { return pct(v, 0, true); }, signed: true })]));
     }
 
-    out.push(X.section("Vertrauen", null, [el("p", {}, [trustPill(r.trust)]),
+    out.push(X.section("Vertrauen im Detail", "Alle Prüfungen der Vertrauensregel mit Messwert – für alle, die es genau wissen wollen.", [el("p", {}, [trustPill(r.trust)]), trustComponents(r),
       el("ul", { class: "q-checks" }, study.trustChecks.map(function (c) {
         var k = r.checks[c.id] || {};
         return el("li", { class: k.state === "PASS" ? "is-pass" : "is-fail" }, [el("span", { text: (k.state === "PASS" ? "✓ " : "✗ ") + c.label }),
@@ -263,6 +263,52 @@
       el("span", { text: " " + (study.returnTypeNote || "") + detail })]);
   }
 
+  /* Studienregel -> dieselbe Evidenzform wie auf Radar und Aktienseite. */
+  function ruleEvidence(r) {
+    var m = r.horizons && r.horizons.m6, br = (m && m.baseRate) || {};
+    if (!m) return null;
+    var checks = r.checks || {};
+    return { state: "AVAILABLE", positiveShare: m.positiveShare, basePositiveShare: br.matchedPositiveShare, deltaPositiveShare: br.deltaPositiveShare, deltaCi: br.ci,
+      n: m.n, effectiveN: r.independence ? r.independence.effectiveN : null, typicalDrawdown: m.maxDrawdown ? m.maxDrawdown.median : null, median: m.median,
+      returnType: r.returnType, trust: r.trust, edgeOutOfSample: r.edgeOutOfSample,
+      openChecks: Object.keys(checks).filter(function (k) { return checks[k] && checks[k].state !== "PASS"; }), checkedIds: Object.keys(checks) };
+  }
+  function lowerFirst(t) { return t ? t.charAt(0).toLowerCase() + t.slice(1) : t; }
+  /* Was allen getesteten Regeln zur Zertifizierung fehlt - aus den offenen Pruefungen. */
+  function missingForCertification(signal, cert) {
+    var E = global.QXEvidence, common = null;
+    signal.rules.forEach(function (r) {
+      var open = Object.keys(r.checks || {}).filter(function (k) { return r.checks[k] && r.checks[k].state !== "PASS"; });
+      common = common === null ? open : common.filter(function (k) { return open.indexOf(k) >= 0; });
+    });
+    var words = (common || []).map(function (id) { var w = E.CHECK_WORDS.filter(function (c) { return c[0] === id; })[0]; return w ? w[2] : null; }).filter(Boolean);
+    return words.length ? " Allen getesteten Signalen fehlt noch: " + words.join(" ") : "";
+  }
+  /* WAS IST HIER BEREITS BELASTBAR? Drei Gruppen aus dem Zertifizierungsstand. */
+  function trustOverview(signal, cert) {
+    var E = global.QXEvidence;
+    var by = function (tier) { return cert.kinds.filter(function (k) { return k.tier === tier && k.status !== "CERTIFIED"; }); };
+    var certified = cert.kinds.filter(function (k) { return k.status === "CERTIFIED"; });
+    var obs = by("OBSERVED"), tested = by("TESTED");
+    var group = function (cls, title, plain, items) {
+      return el("div", { class: "q-belast-col " + cls }, [el("span", { class: "q-ev-tier " + cls, text: title }), el("p", { class: "q-belast-plain", text: plain }), el("ul", {}, items)]);
+    };
+    var signalItems = signal.rules.map(function (r) {
+      var b = ruleEvidence(r);
+      return el("li", {}, [el("a", { href: X.routes.backtest(r.id), text: RULE_LABEL[r.id] || r.id }), el("span", { text: ": " + (b ? E.pp(b.deltaPositiveShare) + " gegenüber dem Markt – " + lowerFirst(E.edgeOf(b).label) : "–") })]);
+    });
+    return el("section", { class: "q-belast", "aria-label": "Was ist hier bereits belastbar?" }, [
+      el("h2", { class: "qx-h2", text: "Was ist hier bereits belastbar?" }),
+      el("div", { class: "q-belast-grid" }, [
+        group("tier-observed", "Historisch beobachtet", "Beschreibt, was früher geschah – ohne eine Regel zu prüfen und ohne Vergleich mit dem Markt.",
+          obs.map(function (k) { return el("li", { text: k.label + ": verfügbar" }); })),
+        group("tier-tested", "Historisch getestet", "Feste Regeln, marktweit ausgewertet und mit dem Markt derselben Wochen verglichen. Evidenz vorhanden, aber noch nicht vollständig belastbar.",
+          signalItems.concat(tested.filter(function (k) { return k.id !== "SIGNAL_BACKTEST"; }).map(function (k) { return el("li", { text: k.label + ": " + (STATUS_WORD[k.status] || k.status) }); }))),
+        group("tier-certified" + (certified.length ? "" : " is-off"), "Zertifiziert", certified.length ? "Alle methodischen Prüfungen bestanden." : "Noch keine Backtest-Art ist zertifiziert. Das ist der ehrliche Stand, kein Fehler." + missingForCertification(signal, cert),
+          certified.map(function (k) { return el("li", { text: k.label }); }))
+      ])]);
+  }
+
   async function render(main, ctx, ruleId) {
     main.append(el("header", { class: "q-hero q-hero--page" }, [X.globe(), el("p", { class: "q-kicker", text: "Backtesting" }),
       el("h1", { class: "qx-h1", text: "Wähle eine Regel oder ein Setup" }),
@@ -276,12 +322,13 @@
     var picks = [];
     signal.rules.forEach(function (r) { var rc = ruleCert(r.id);
       picks.push(el("a", { class: "q-bt-pick" + (r.display.allowed ? " is-on" : " is-off"), href: X.routes.backtest(r.id) }, [el("small", { text: "Radar-Signal · marktweit" }), el("b", { text: RULE_LABEL[r.id] || r.id }),
-        el("span", { text: r.horizons.m6.baseRate ? pp(r.horizons.m6.baseRate.deltaPositiveShare) + " vs. Base Rate · " + (STATUS_WORD[rc ? rc.status : "LIMITED"]) : STATUS_WORD.LIMITED })])); });
+        el("span", { text: r.horizons.m6.baseRate ? pp(r.horizons.m6.baseRate.deltaPositiveShare) + " gegenüber dem Markt · " + global.QXEvidence.edgeOf(ruleEvidence(r)).label : STATUS_WORD.LIMITED })])); });
     ["SETUP_CONFIRMED", "SETUP_NEW"].forEach(function (id) {
       picks.push(el("a", { class: "q-bt-pick is-off", href: X.routes.backtest(id) }, [el("small", { text: "Setup-Wechsel · veröffentlicht" }), el("b", { text: RULE_LABEL[id] }), el("span", { text: STATUS_WORD[setupCert.status] })]));
     });
     ["STRATEGY_BACKTEST", "FACTOR_RANKING_BACKTEST"].forEach(function (id) { var k = kindOf(id);
       picks.push(el("div", { class: "q-bt-pick is-off" }, [el("small", { text: id === "STRATEGY_BACKTEST" ? "Anlagestil" : "Faktor-Ranking" }), el("b", { text: k.label }), el("span", { text: STATUS_WORD[k.status] })])); });
+    main.append(trustOverview(signal, cert));
     main.append(el("nav", { class: "q-bt-picks", "aria-label": "Regel oder Setup wählen" }, picks));
     main.append(returnBasisLine(signal));
 
