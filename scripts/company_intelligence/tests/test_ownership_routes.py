@@ -200,7 +200,7 @@ class CopyrightFormattingTests(unittest.TestCase):
   self.assertEqual(result['evidence'][-1],'EXACT_MULTIWORD_COPYRIGHT_OWNER_AND_CORPORATE_HEADER')
 
  def test_suffixless_prefix_never_accepts_extended_owner(self):
-  for owner in ('Park Hotels & Resorts Japan LLC','Park Hotels & Resorts 2026 Travel Ltd','Park Hotels & Resorts 2026 International Operating Technology Japan LLC','Park Hotels & Resorts Services Inc.'):
+  for owner in ('Park Hotels & Resorts Japan LLC','Park Hotels & Resorts 2026 Travel Ltd','Park Hotels & Resorts 2026 International Operating Technology Japan LLC','Park Hotels & Resorts Services Inc.','Park Hotels & Resorts Terms Conditions LLC','Park Hotels & Resorts Privacy Ltd'):
    with self.subTest(owner=owner),self.assertRaises(SourceError):
     self.verify('Park Hotels & Resorts Inc.','<footer>© 2026 '+owner+'. All rights reserved.</footer>','Park Hotels & Resorts')
   with self.assertRaises(SourceError):self.verify('Root Inc.','<footer>© 2026 Root. All rights reserved.</footer>','Root')

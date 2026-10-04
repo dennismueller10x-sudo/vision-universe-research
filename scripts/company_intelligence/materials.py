@@ -5,6 +5,16 @@ from .model import within_domain, canonical_url
 from .transport import SourceError
 
 
+def retain_source_configurations(store, company_id, configurations):
+    """IR navigation rediscovery must not erase separately polled materials."""
+    current={cfg.get('materialsSourceId') for cfg in configurations if cfg.get('materialsSourceId')}
+    active={src['sourceId'] for src in store.sources() if src.get('companyId')==company_id and
+            src.get('verified') and src.get('type')=='IR_MATERIALS'}
+    retained=[cfg for cfg in store.state('ir:'+company_id,{}).get('configurations',[])
+              if cfg.get('companyId')==company_id and cfg.get('materialsSourceId') in active-current]
+    return list(configurations)+retained
+
+
 def from_validated_ir(company, config, now):
     """Reuse an advertised HTML hub under an already verified IR host."""
     from .model import stable_id
@@ -39,6 +49,7 @@ def backfill(pipeline, limit, scope=None, companies=None):
     """Resume missing materials through existing source health and IR proof."""
     import json
     from .q4_reports import from_validated_events
+    from .q4_presentations import from_validated_events as presentations_from_events
     from .discovery_circuit import DiscoveryCircuit,guarded_poll
     from .pipeline import advance,utcnow
     from .transport import BudgetExhausted
@@ -55,8 +66,9 @@ def backfill(pipeline, limit, scope=None, companies=None):
     for source in prior.values():
         if source.get('companyId') not in companies or not source.get('active',True):continue
         if scope is not None and source.get('companyId') not in scope:continue
-        derived=from_validated_events(source,now)
-        if derived:candidates[derived['sourceId']]=derived
+        for adapter in (from_validated_events,presentations_from_events):
+            derived=adapter(source,now)
+            if derived:candidates[derived['sourceId']]=derived
     for cid,company in sorted(companies.items()):
         if scope is not None and cid not in scope:continue
         if not company.get('officialSites') or store.company_payload(company,now)['presentations']:continue

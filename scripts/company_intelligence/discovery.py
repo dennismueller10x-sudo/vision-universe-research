@@ -268,7 +268,7 @@ def _validate_response(company, candidate, response, now, header_body=None):
             # standard rights/navigation text is not an owner extension.
             extension = re.split(r'[;|()©]', tail, maxsplit=1)[0]
             extension = legal_normalize(extension)
-            if (not re.match(r'(?:all rights|privacy|terms|cookies)\b', extension) and
+            if ((suffixless or not re.match(r'(?:all rights|privacy|terms|cookies)\b', extension)) and
                     re.match(r'(?:\w+\s+){0,4}(?:llc|ltd|corp|inc|plc)\b', extension)):
                 return False
             return bool(re.match(r'\s*(?:[.,;|()–—-]|all rights\b|privacy\b|terms\b|cookies\b|(?:19|20)\d{2}\b|©|&copy;|$)',tail,re.I))

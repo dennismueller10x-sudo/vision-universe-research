@@ -130,7 +130,9 @@ def persist(results,store,companies,now):
                                       'retryAfter':advance(now,.25 if 'CIRCUIT_OPEN' in reason else 24)})
         if r['status']=='VALIDATED' and not r.get('domainOnly'):
             for source in r['sources']:store.source(source)
-            store.set_state('ir:'+cid,{'lastSuccess':now,'configurations':r['configurations'],'sources':len(r['sources']),'nextVerify':advance(now,7*24)})
+            from .materials import retain_source_configurations
+            configurations=retain_source_configurations(store,cid,r['configurations'])
+            store.set_state('ir:'+cid,{'lastSuccess':now,'configurations':configurations,'sources':len(r['sources']),'nextVerify':advance(now,7*24)})
         elif r.get('domainOnly') and r['status']=='DEFERRED':
             prior=store.state('officialSite:'+cid,{})
             if prior.get('status')!='VALIDATED':store.set_state('officialSite:'+cid,{**prior,'status':'DEFERRED','lastFailure':now,'reason':r.get('reason'),'retryAfter':advance(now,7*24 if category=='BLOCKED' else .25 if 'CIRCUIT_OPEN' in reason else 1)})

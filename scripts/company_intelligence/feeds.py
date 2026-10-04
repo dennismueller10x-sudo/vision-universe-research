@@ -252,9 +252,10 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
         if provider == 'Q4':
             from .q4_events import discover as discover_q4
             from .q4_reports import discover as discover_q4_reports
+            from .q4_presentations import discover as discover_q4_presentations
             # Each endpoint fails independently; an event schema change cannot
             # suppress otherwise healthy financial-document discovery.
-            for adapter in (discover_q4,discover_q4_reports):
+            for adapter in (discover_q4,discover_q4_reports,discover_q4_presentations):
                 try:
                     q4_source=adapter(response['body'],response['finalUrl'],{**structured_source,'provider':provider},http,now)
                     if q4_source:sources[q4_source['sourceId']]=q4_source
@@ -295,6 +296,14 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
                     hub_documents=page_documents(company, material_links, materials_response['finalUrl'], now)
                     configs[-1]['documents'].extend(hub_documents)
                     configs[-1]['materialsPage'] = materials_response['finalUrl']
+                    if provider=='Q4':
+                        from .q4_presentations import discover as discover_q4_presentations
+                        try:
+                            q4_source=discover_q4_presentations(materials_response['body'],materials_response['finalUrl'],{**structured_source,'provider':'Q4'},http,now)
+                            if q4_source:sources[q4_source['sourceId']]=q4_source
+                        except (SourceError,ValueError) as error:
+                            if isinstance(error,BudgetExhausted):raise
+                            warnings.append({'url':materials_response['finalUrl'],'reason':str(error)[:200],'provider':'Q4'})
                     if any(d['type']!='FINANCIAL_REPORT' for d in hub_documents):
                         from .materials import from_validated_ir
                         material_source=from_validated_ir({**company,'officialSites':[official_site]},configs[-1],now)

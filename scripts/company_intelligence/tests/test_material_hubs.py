@@ -113,3 +113,24 @@ class MaterialHubTests(unittest.TestCase):
    self.assertTrue(r['circuit']['open']);self.assertEqual(h.requests,4);self.assertEqual(len(s.sources()),4)
    before=s.state('discoveryCircuit:ir');h=HTTP();r=backfill(Pipeline(tmp,companies,s,h,NOW),6)
    self.assertEqual(r['stopReason'],'CIRCUIT_COOLDOWN');self.assertEqual(h.requests,0);self.assertEqual(s.state('discoveryCircuit:ir'),before);s.close()
+
+ def test_successful_ir_rediscovery_keeps_active_source_materials_in_both_paths(self):
+  from unittest.mock import patch
+  from company_intelligence.discovery_batch import persist
+  for mode in ('pipeline','batch'):
+   with self.subTest(mode=mode),tempfile.TemporaryDirectory() as tmp:
+    c=company();cid=c['companyId'];s=Store(Path(tmp)/'state.sqlite');src=from_validated_ir(c,config(),NOW);s.source(src)
+    preserved={**config(),'materialsSourceId':src['sourceId'],'documents':[{'documentId':'proof','companyId':cid,'type':'PRESENTATION','url':PAGE+'deck.pdf','date':None,'label':'Investor Presentation'}]}
+    s.set_state('ir:'+cid,{'configurations':[preserved]});new={**config(),'documents':[]}
+    if mode=='pipeline':
+     with patch('company_intelligence.pipeline.discover_ir',return_value=([],[new])):Pipeline(tmp,{cid:c},s,HTTP(),NOW).discover_company(c,c['officialSites'][0])
+    else:persist([{'companyId':cid,'status':'VALIDATED','sources':[],'configurations':[new],'requests':1,'stats':{}}],s,{cid:c},NOW)
+    self.assertEqual(len(s.company_payload(c,NOW)['presentations']),1);self.assertEqual(s.state('ir:'+cid)['lastSuccess'],NOW);s.close()
+
+ def test_source_retention_does_not_restore_disabled_wrong_company_or_replaced_configs(self):
+  from company_intelligence.materials import retain_source_configurations
+  with tempfile.TemporaryDirectory() as tmp:
+   c=company();cid=c['companyId'];s=Store(Path(tmp)/'state.sqlite');src=from_validated_ir(c,config(),NOW);old={**config(),'materialsSourceId':src['sourceId'],'documents':[{'old':'proof'}]};s.source(src);s.set_state('ir:'+cid,{'configurations':[old]})
+   new={**old,'documents':[{'new':'proof'}]};self.assertEqual(retain_source_configurations(s,cid,[new]),[new])
+   s.source({**src,'active':False});self.assertEqual(retain_source_configurations(s,cid,[]),[])
+   s.source({**src,'active':True,'companyId':'wrong'});self.assertEqual(retain_source_configurations(s,cid,[]),[]);s.close()

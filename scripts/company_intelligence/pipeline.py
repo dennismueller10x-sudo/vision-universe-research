@@ -120,10 +120,14 @@ class Pipeline:
             if source.get('verified') and source['type'] != 'SEC':
                 if not any(within_domain(response['finalUrl'], site) for site in source.get('allowedSites', [])):
                     raise SourceError('SOURCE_REDIRECT_REQUIRES_REVALIDATION')
-            if source.get('format') == 'HTML_MATERIALS':
-                from .materials import parse_hub
+            if source.get('format') in ('HTML_MATERIALS','Q4_PRESENTATIONS'):
                 cid=source['companyId'];ir=self.store.state('ir:'+cid,{})
-                documents=parse_hub(response['body'],source,self.companies[cid],response['finalUrl'],self.now)
+                if source['format']=='HTML_MATERIALS':
+                    from .materials import parse_hub
+                    documents=parse_hub(response['body'],source,self.companies[cid],response['finalUrl'],self.now)
+                else:
+                    from .q4_presentations import parse as parse_presentations
+                    documents=parse_presentations(response['body'],source,self.now)
                 previous=[d for cfg in ir.get('configurations',[]) if cfg.get('materialsSourceId')==sid for d in cfg.get('documents',[])]
                 current_ids={d['documentId'] for d in documents}
                 documents=(documents+[d for d in previous if d['documentId'] not in current_ids])[:100]
@@ -131,7 +135,7 @@ class Pipeline:
                 configs.append({'companyId':cid,'irHomepage':source['metadata']['originatingIRHomepage'],'pageRole':'IR',
                                 'providerType':source.get('provider','GENERIC'),'documents':documents,'materialsSourceId':sid,
                                 'materialsPage':response['finalUrl'],'lastVerified':self.now,'confidence':.95,
-                                'evidence':'VALIDATED_ISSUER_ADVERTISED_MATERIALS_HUB'})
+                                'evidence':'VALIDATED_ISSUER_Q4_PRESENTATION_INDEX' if source['format']=='Q4_PRESENTATIONS' else 'VALIDATED_ISSUER_ADVERTISED_MATERIALS_HUB'})
                 self.store.set_state('ir:'+cid,{**ir,'configurations':configs})
                 self.store.source({**source,'lastChecked':self.now,'lastSuccess':self.now,'failureCount':0,'lastError':None,
                                    'lastItemCount':len(documents),'contentDateStatus':'PUBLICATION_DATE_NOT_PROVIDED',
@@ -523,6 +527,8 @@ class Pipeline:
             sources, configurations = discover_ir(company, official_site, self.http, self.now)
             for source in sources:
                 self.store.source(source)
+            from .materials import retain_source_configurations
+            configurations=retain_source_configurations(self.store,cid,configurations)
             warnings = [warning for config in configurations for warning in config.get('discoveryWarnings', [])]
             if warnings:
                 self.run['discoveryFailures'] += 1
