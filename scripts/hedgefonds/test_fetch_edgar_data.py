@@ -232,3 +232,25 @@ class WikidataPerson(unittest.TestCase):
     def test_non_human_rejected(self):
         self.fake([{"id": "Q3", "label": "Jan Beckers", "description": "investor"}], p31="Q4830453")
         self.assertEqual(m.wikidata_person("Jan Beckers"), (None, False))
+
+
+class Counts(unittest.TestCase):
+    def rows(self, n, start=0, pc=""):
+        return [{"issuer": f"X{i}", "cusip": f"C{i:08d}", "putCall": pc, "valueUSD": 1.0, "shares": 1.0}
+                for i in range(start, start + n)]
+
+    def test_options_not_counted_as_securities(self):
+        pos = self.rows(5) + self.rows(3, pc="CALL")
+        self.assertEqual(m.security_count(pos), 5)
+
+    def test_option_trades_excluded_from_counts(self):
+        cur, prev = self.rows(4) + self.rows(2, pc="PUT"), self.rows(2)
+        _, counts = m.trade_lists(m.compute_trades(cur, prev), 10)
+        self.assertEqual(counts["new"], 2)
+
+    def test_resubmitted_portfolio_detected(self):
+        self.assertTrue(m.is_full_resubmission(self.rows(30), self.rows(30)))
+
+    def test_real_new_holdings_amendment_is_merged(self):
+        self.assertFalse(m.is_full_resubmission(self.rows(30), self.rows(25, start=30)))
+        self.assertFalse(m.is_full_resubmission(self.rows(300), self.rows(30)))
