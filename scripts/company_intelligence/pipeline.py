@@ -307,7 +307,9 @@ class Pipeline:
             raise
         except Exception as exc:
             failure = source.get('failureCount', 0) + 1
-            delay = 7 * 24 if any(code in str(exc) for code in ('403', '404', 'ROBOTS')) else min(72, 2 ** min(failure, 6))
+            # Failure to retrieve robots (DNS/proxy/503) is temporary. Only an
+            # actual access denial/disallowance receives the slow blocked retry.
+            delay = 7 * 24 if any(code in str(exc) for code in ('403', '404', 'ROBOTS_DISALLOWED')) else min(72, 2 ** min(failure, 6))
             source.update(lastFailure=self.now, lastChecked=self.now, failureCount=failure, lastError=(type(exc).__name__ + ':' + str(exc))[:250], nextCheck=advance(self.now, delay))
             self.store.source(source)
             self.store.audit(self.now, sid, 'SOURCE_FAILURE', errorType=type(exc).__name__, reason=str(exc)[:250])

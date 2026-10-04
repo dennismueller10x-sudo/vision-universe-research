@@ -225,6 +225,15 @@ def main(argv=None):
                     'type':'RSS','format':'GNN_ARCHIVE','provider':'GLOBENEWSWIRE_ARTICLE','verified':False,'active':False,'intervalHours':168,'batchSize':args.limit,
                     'metadata':{'access':'Publisher robots-advertised public archive/NewsArticle metadata; headline/date/link and bounded scheduling evidence only. Full article body cache deleted.',
                                 'mode':'EXPLICIT_RESUMABLE_BACKFILL_NOT_FOUR_HOUR_POLL'}}
+            # Explicit backfill may continue a healthy archive before its normal
+            # weekly interval. Publisher failures still retain their due time
+            # and cumulative failure count across fresh CLI invocations.
+            source=store.source(source)
+            if source.get('failureCount') and (source.get('nextCheck') or '')>now:
+                print(json.dumps({'run':pipeline.run,'requests':0,'httpStats':http.stats,
+                                  'checkpoint':store.state('distributorArchiveRun:'+source['sourceId']),
+                                  'deferred':True,'stopReason':'SOURCE_COOLDOWN','retryAfter':source['nextCheck']},sort_keys=True))
+                return 0
             pipeline.ensure_aliases(companies.keys());pipeline.ingest_source(source)
             print(json.dumps({'run':pipeline.run,'requests':http.requests,'httpStats':http.stats,'checkpoint':store.state('distributorArchiveRun:'+source['sourceId'])},sort_keys=True));return 0
         if args.command=='materials-backfill':
