@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
     inputs:
       tickers:
-        description: 'Titel, mit Komma getrennt (z. B. LOGI,AAPL)'
-        required: true
+        description: 'Titel, mit Komma getrennt (z. B. LOGI,AAPL); leer = alle vom Faktorlauf gesperrten'
+        required: false
   push:
     branches: [claude/diag-adjustment-steps]
     paths: ['scripts/diagnose/**', '.github/workflows/diagnose-adjustment-steps.yml']
@@ -34,12 +34,14 @@ jobs:
           node-version: '22'
       - name: Ablage lesen und Stufen erklaeren
         env:
-          IN_TICKERS: ${{ inputs.tickers || 'LOGI,AAPL,MSFT' }}
+          IN_TICKERS: ${{ inputs.tickers }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
-        run: node scripts/diagnose/adjustment-steps.mjs --tickers "$IN_TICKERS" --out "$RUNNER_TEMP/adjustment-steps.json"
+        run: |
+          if [ -n "$IN_TICKERS" ]; then sel=(--tickers "$IN_TICKERS"); else sel=(--blocked); fi
+          node scripts/diagnose/adjustment-steps.mjs "${sel[@]}" --out "$RUNNER_TEMP/adjustment-steps.json"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

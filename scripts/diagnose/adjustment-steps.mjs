@@ -26,9 +26,17 @@ const MQ = require(join(root, "quant", "engines", "market-quality.js"));
 
 const argv = process.argv.slice(2);
 const arg = (n, d = null) => { const i = argv.indexOf(n); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
-const TICKERS = String(arg("--tickers", "")).split(",").map((s) => s.trim().toUpperCase()).filter(Boolean);
-if (!TICKERS.length || TICKERS.some((t) => !/^[A-Z0-9.\-]{1,12}$/.test(t))) { console.error("--tickers A,B,C"); process.exit(2); }
+import { readFileSync } from "node:fs";
+/* --blocked: alle Titel, die der letzte Faktorlauf mit unexplained_adjustment_step gesperrt hat. */
+function blockedTickers() {
+  const acc = new Set();
+  const walk = (o) => { if (Array.isArray(o)) o.forEach(walk); else if (o && typeof o === "object") {
+    if (o.message === "unexplained_adjustment_step" && o.ticker) acc.add(o.ticker); Object.values(o).forEach(walk); } };
+  walk(JSON.parse(readFileSync(join(root, "quant", "data", "market", "factors", "factors-FULL_UNIVERSE-summary.json"), "utf8")));
+  return [...acc].sort();
+}
 
+let TICKERS = [];
 const r = (v, d = 6) => (typeof v === "number" && isFinite(v) ? Math.round(v * 10 ** d) / 10 ** d : null);
 
 /** Reine Auswertung einer Reihe: jeder Faktorsprung mit Einordnung. */
@@ -58,6 +66,20 @@ export function explainSteps(bars, { tolerance = 0.002, context = 3 } = {}) {
   return steps;
 }
 
+/** Einordnung eines unerklaerten Sprungs gegen die gemeldeten Dividenden. */
+export function classifyStep(step, bars, { window = 3, tolerance = 0.15 } = {}) {
+  const i = bars.findIndex((b) => b.date === step.date);
+  const near = bars.slice(Math.max(0, i - window), i + window + 1).filter((b) => b.dividend > 0 && b.date !== step.date);
+  const match = near.find((b) => Math.abs(b.dividend / step.impliedDividendAtExClose - 1) <= tolerance);
+  // Wiederkehrendes Muster: in frueheren Jahren zwei Dividenden an benachbarten Handelstagen.
+  const divIdx = bars.map((b, k) => (b.dividend > 0 ? k : -1)).filter((k) => k >= 0);
+  const pairs = [];
+  for (let k = 1; k < divIdx.length; k++) if (divIdx[k] - divIdx[k - 1] === 1) pairs.push([bars[divIdx[k - 1]].date, bars[divIdx[k]].date]);
+  if (match) return { kind: pairs.length ? "DUPLICATED_DIVIDEND_ADJUSTMENT" : "DIVIDEND_ADJUSTMENT_WITHOUT_DIVCASH",
+    matchedDividend: { date: match.date, amount: match.dividend }, consecutiveDividendPairs: pairs };
+  return { kind: "UNEXPLAINED", consecutiveDividendPairs: pairs };
+}
+
 async function makeStore() {
   const budget = Guard.createBudget({ classAOperations: 0, classBOperations: TICKERS.length });
   const local = arg("--local-root");
@@ -70,6 +92,9 @@ async function makeStore() {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  TICKERS = (argv.includes("--blocked") ? blockedTickers() : String(arg("--tickers", "")).split(","))
+    .map((s) => s.trim().toUpperCase()).filter(Boolean);
+  if (!TICKERS.length || TICKERS.some((t) => !/^[A-Z0-9.\-]{1,12}$/.test(t))) { console.error("--tickers A,B,C"); process.exit(2); }
   const store = await makeStore();
   const report = { generatedAt: new Date().toISOString(), tickers: {} };
   for (const t of TICKERS) {
@@ -82,16 +107,23 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     report.tickers[t] = {
       state: "READ", first: doc.first, last: doc.last, barCount: doc.barCount, adjustmentStatus: doc.adjustmentStatus,
       findings: verdict.findings, dividendsReported: divs, splitsReported: bars.filter((b) => b.splitFactor && b.splitFactor !== 1).map((b) => ({ date: b.date, splitFactor: b.splitFactor })),
-      unexplainedSteps: steps.filter((s) => !s.explained), explainedSteps: steps.filter((s) => s.explained).length
+      unexplainedSteps: steps.filter((s) => !s.explained).map((s) => ({ ...s, classification: classifyStep(s, bars) })),
+      explainedSteps: steps.filter((s) => s.explained).length
     };
     console.log(`\n== ${t} (${doc.first} .. ${doc.last}, ${doc.barCount} Bars)`);
     console.log(`Befunde: ${verdict.findings.filter((f) => f.severity === "error").map((f) => f.code + "@" + (f.details && f.details.date || "")).join(", ") || "keine Fehler"}`);
     console.log(`Gemeldete Dividenden: ${divs.map((d) => d.date + " " + d.dividend).join(" | ") || "keine"}`);
     for (const s of steps.filter((x) => !x.explained)) {
+      const cl = classifyStep(s, bars);
+      console.log(`EINORDNUNG ${cl.kind}${cl.matchedDividend ? " (passt zu Dividende " + cl.matchedDividend.amount + " am " + cl.matchedDividend.date + ")" : ""}; Dividendenpaare an Folgetagen: ${cl.consecutiveDividendPairs.map((p) => p.join("/")).join(", ") || "keine"}`);
       console.log(`UNERKLAERT ${s.prevDate} -> ${s.date}: close ${s.close.join(" -> ")}, adj ${s.adjustedClose.join(" -> ")}, Faktor ${s.factor.join(" -> ")}, Sprung ${s.stepPct} %, entspraeche Dividende ${s.impliedDividendAtExClose} (${s.impliedYieldPct} %)`);
       for (const b of s.context) console.log(`   ${b.date}  close=${b.close}  adj=${b.adjustedClose}  div=${b.dividend}  split=${b.splitFactor}`);
     }
   }
+  const kinds = {};
+  for (const [t, v] of Object.entries(report.tickers)) for (const s of v.unexplainedSteps || []) (kinds[s.classification.kind] = kinds[s.classification.kind] || []).push(t + "@" + s.date);
+  report.summary = Object.fromEntries(Object.entries(kinds).map(([k, v]) => [k, { count: v.length, steps: v }]));
+  console.log("\nZUSAMMENFASSUNG " + JSON.stringify(report.summary));
   const out = arg("--out");
   if (out) writeFileSync(out, JSON.stringify(report, null, 2));
 }
