@@ -4,7 +4,7 @@ from urllib.parse import urlencode, urlsplit
 from .model import canonical_url, domain
 from .transport import SourceError
 
-OWNERSHIP_VERSION = 'corporate-ownership-9'
+OWNERSHIP_VERSION = 'corporate-ownership-10'
 
 
 def wikidata_catalogue(companies, http):
@@ -243,13 +243,13 @@ def _validate_response(company, candidate, response, now, header_body=None):
     # mentioned later in the footer is not the copyright owner.
     def owner_text(value):
         for _ in range(20):
-            stripped=re.sub(r'^\s*(?:copyright|©|&copy;|&nbsp;|\(c\)|all rights reserved\b|\d{4}|\{\{year\}\}|[-–—|,:.])\s*','',value, count=1, flags=re.I)
+            stripped=re.sub(r'^\s*(?:copyright|©|&copy;|&nbsp;|\(c\)|all rights reserved\b(?:\s+by\b)?|\d{4}|\{\{year\}\}|[-–—|,:.])\s*','',value, count=1, flags=re.I)
             if stripped==value:break
             value=stripped
         return value
     owner_raw=[owner_text(value) for value in copyright_raw]
     copyright_regions = [legal_normalize(value) for value in owner_raw]
-    def exact_footer_owner(name, raw):
+    def exact_footer_owner(name, raw, suffixless=False):
         wanted=legal_normalize(name)
         if not wanted:return False
         words=list(re.finditer(r'\w+',raw))[:16]
@@ -257,6 +257,11 @@ def _validate_response(company, candidate, response, now, header_body=None):
             if legal_normalize(raw[:word.end()])!=wanted:continue
             tail=raw[word.end():]
             normalized_tail=legal_normalize(tail)
+            # A year alone is insufficient to delimit a suffixless owner when
+            # arbitrary words follow it. Keep the previous strict boundary.
+            if suffixless and re.match(r'\s*(?:19|20)\d{2}\b',tail):
+                if not re.match(r'\s*(?:19|20)\d{2}\s*(?:[.,;|()]|all rights\b|privacy\b|terms\b|cookies\b|$)',tail,re.I):
+                    return False
             if re.match(r'(?:services|systems|llc|ltd|corp|inc|plc)\b',normalized_tail):return False
             # A period in Inc./Corp. does not end an extended legal owner
             # such as "Root Inc. Japan LLC". Stop only at hard separators;
@@ -273,9 +278,11 @@ def _validate_response(company, candidate, response, now, header_body=None):
     # issuer name, a copyright ownership boundary, and corroborating header.
     # A prefix of another legal owner or a generic single word is insufficient.
     bases={normalize(SUFFIX.sub('',re.sub(r'[/\\][A-Z]{2,3}[/\\]?$','',n,flags=re.I))) for n in strong_names}
+    # Use the same complete-owner boundary/extension checks for suffixless
+    # multiword names. Raw punctuation (&, apostrophes) must not defeat the
+    # exact legal normalization already used for suffixed copyright owners.
     suffixless_owner=any(len(base.split())>=2 and re.search(r'(?<!\w)'+re.escape(base)+r'(?!\w)',header)
-                        and any(re.match(re.escape(base)+r'(?!\w)(?:\s+\d{4})?\s*(?:[.,;|]|all rights|$)',
-                                          re.sub(r'[-–—]+',' ',region.casefold())) for region in owner_raw)
+                        and any(exact_footer_owner(base,raw,suffixless=True) for raw in owner_raw)
                         for base in bases)
     footer_owner=footer_owner or suffixless_owner
     stop = {'inc','corp','corporation','co','company','ltd','plc','holdings','group','global','national','first','bank','financial','resources','therapeutics','industries','technologies','international','trust','properties','healthcare'}

@@ -147,7 +147,7 @@ class InventorySweepTests(unittest.TestCase):
  def test_evidence_upgrade_keeps_current_unknown_transport_blocked_and_conflict_cooldowns(self):
   from company_intelligence.discovery import OWNERSHIP_VERSION
   cid=self.a['companyId'];future='2099-01-01T00:00:00Z'
-  cases=[('REJECTED','OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED',OWNERSHIP_VERSION),('REJECTED','OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED',None),('REJECTED','OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED','corporate-ownership-10'),('REJECTED','OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED','unknown'),('DEFERRED','ROBOTS_UNAVAILABLE:HTTP_503','corporate-ownership-8'),('DEFERRED','ROBOTS_DISALLOWED','corporate-ownership-8'),('REJECTED','OFFICIAL_SITE_CANDIDATE_CONFLICTING_COPYRIGHT_OWNER','corporate-ownership-8')]
+  cases=[('REJECTED','OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED',OWNERSHIP_VERSION),('REJECTED','OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED',None),('REJECTED','OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED','corporate-ownership-'+str(int(OWNERSHIP_VERSION.rsplit('-',1)[1])+1)),('REJECTED','OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED','unknown'),('DEFERRED','ROBOTS_UNAVAILABLE:HTTP_503','corporate-ownership-8'),('DEFERRED','ROBOTS_DISALLOWED','corporate-ownership-8'),('REJECTED','OFFICIAL_SITE_CANDIDATE_CONFLICTING_COPYRIGHT_OWNER','corporate-ownership-8')]
   for i,(status,reason,version) in enumerate(cases):
    pid='protected'+str(i);key='inventorySweep:'+pid+':domains:';self.s.set_state(key+'inventory',[cid]);site={'status':status,'reason':reason,'retryAfter':future,'ownershipVerifierVersion':version};self.s.set_state('officialSite:'+cid,site)
    self.assertEqual(select(self.cs,self.s,NOW,pid,'domains')[0],[])

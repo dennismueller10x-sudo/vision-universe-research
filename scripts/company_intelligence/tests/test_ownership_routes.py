@@ -1,5 +1,5 @@
 import unittest
-from company_intelligence.discovery import validate_candidate, validate_discovery_candidate
+from company_intelligence.discovery import validate_candidate, validate_discovery_candidate, OWNERSHIP_VERSION
 from company_intelligence.transport import SourceError, BudgetExhausted
 from test_engine import company, NOW
 
@@ -134,7 +134,7 @@ class OwnershipRouteTests(unittest.TestCase):
   good=HTTP({root:'<title>Root</title><a href="https://ir.issuer.example/">Investors</a>',ir:'<title>Root Investor Relations</title><footer>Copyright 2026 Root Inc. All rights reserved.</footer>'})
   result=validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},good,NOW)
   self.assertEqual(result['url'],root);self.assertEqual(result['ownershipEvidence']['legalSourceUrl'],ir)
-  self.assertEqual(result['verificationVersion'],'corporate-ownership-9')
+  self.assertEqual(result['verificationVersion'],OWNERSHIP_VERSION)
   bad=HTTP({root:'<title>Root</title><a href="https://ir.issuer.example/">Investors</a>',ir:'<title>Root Investor Relations</title><footer>Copyright Different Owner LLC.</footer>'})
   with self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
    validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},bad,NOW)
@@ -187,3 +187,27 @@ class OwnershipRouteTests(unittest.TestCase):
    h=HTTP({root:f'<title>{title}</title><p>Coffee Holding Co Inc is a customer.</p>'})
    with self.assertRaisesRegex(SourceError,'OWNER_NOT_VALIDATED'):
     validate_candidate(company('Coffee Holding Co Inc','ISSUER'),{'url':root,'evidence':'candidate'},h,NOW)
+
+
+class CopyrightFormattingTests(unittest.TestCase):
+ def verify(self,name,body,title=None):
+  url='https://issuer.example/'
+  return validate_candidate(company(name),{'url':url,'evidence':'candidate'},HTTP({url:'<title>'+(title or name)+'</title>'+body}),NOW)
+
+ def test_complete_multiword_punctuation_owner_with_navigation_boundary(self):
+  result=self.verify('Park Hotels & Resorts Inc.','<footer>© 2026 PARK HOTELS &amp; RESORTS <a href="/terms">Terms &amp; Conditions</a> | Delivered by Investis Digital Company</footer>','Park Hotels & Resorts')
+  self.assertEqual(result['status'],'VALIDATED')
+  self.assertEqual(result['evidence'][-1],'EXACT_MULTIWORD_COPYRIGHT_OWNER_AND_CORPORATE_HEADER')
+
+ def test_suffixless_prefix_never_accepts_extended_owner(self):
+  for owner in ('Park Hotels & Resorts Japan LLC','Park Hotels & Resorts 2026 Travel Ltd','Park Hotels & Resorts 2026 International Operating Technology Japan LLC','Park Hotels & Resorts Services Inc.'):
+   with self.subTest(owner=owner),self.assertRaises(SourceError):
+    self.verify('Park Hotels & Resorts Inc.','<footer>© 2026 '+owner+'. All rights reserved.</footer>','Park Hotels & Resorts')
+  with self.assertRaises(SourceError):self.verify('Root Inc.','<footer>© 2026 Root. All rights reserved.</footer>','Root')
+
+ def test_rights_reserved_by_exact_legal_entity(self):
+  result=self.verify('PAVmed Inc.','<footer>© Copyright 2026. All Rights Reserved by PAVmed Inc. AD-0174 Rev B</footer>','PAVmed')
+  self.assertEqual(result['status'],'VALIDATED')
+  for owner in ('Other Owner LLC','PAVmed Inc. Japan LLC','PAVmed Inc. Services LLC'):
+   with self.subTest(owner=owner),self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
+    self.verify('PAVmed Inc.','<footer>© Copyright 2026. All Rights Reserved by '+owner+'. Customers include PAVmed Inc.</footer>','PAVmed Inc.')
