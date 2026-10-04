@@ -8,7 +8,8 @@ Verbindlich ist das vorab registrierte Protokoll `docs/technical-intelligence/PR
 | Datei | Zweck |
 |---|---|
 | `schema/practitioner-reference-1.0.0.json` | Schema einer Referenzzeile (nicht ändern; Änderungen nur als neue Schema-Version) |
-| `references.jsonl` | **Erfassungsdatei.** Eine Zeile = eine Fassung eines Falls (JSON-Objekt). Derzeit leer. |
+| `references.jsonl` | **Erfassungsdatei.** Eine Zeile = eine Fassung eines Falls (JSON-Objekt). Seit 04.10.2026 Pilot (27 Zeilen, 5 INCLUDED; `docs/technical-intelligence/PRACTITIONER_PILOT_LOG.md`). |
+| `frames/<sourceId>.json` | Stichprobenrahmen je Quelle (vollständige Plattformliste im Fenster, Ziehung; `scripts/technical/practitioner/sampling-frame.mjs`) |
 | `instrument-map.json` | Abbildung Praktiker-Instrument → VU-Reihe (Abbildungsgüte, `levelScale`) |
 | `source-registry.json` | Quellenverzeichnis; jede `sourceId` muss hier stehen |
 | `freeze/` | eingefrorene Datensätze (`PRACTITIONER_REFERENCE_V1.jsonl` + Manifest mit SHA-256), entsteht erst beim Freeze |
@@ -97,7 +98,8 @@ Verbindlich ist das vorab registrierte Protokoll `docs/technical-intelligence/PR
 * Unklares heißt `UNKNOWN` / `null` – nichts ergänzen. Widerspruch Text ↔ Chart → `extraction.ambiguities`.
 * `commentarySummary` ≤ 400 Zeichen, **eigene** Kurzfassung, kein Zitat. Keine Screenshots, Transkripte oder Volltexte.
 * `evidence`: mindestens ein Eintrag mit Fundstelle (`locator`: Videozeit `mm:ss`, Absatz, Bildnummer) und kurzer Notiz (≤ 200 Zeichen).
-* `extraction.method`: `HUMAN_FROM_PRIMARY` oder `LLM_DRAFT_HUMAN_REVIEWED`. **`LLM_DRAFT_UNREVIEWED` zählt nie.**
+* `extraction.method`: `HUMAN_FROM_PRIMARY`, `LLM_DRAFT_HUMAN_REVIEWED` oder `LLM_DUAL_INDEPENDENT_PRIMARY` (Nachtrag 2: zwei unabhängige Durchgänge + `extraction.passes`, Vergleich `scripts/technical/practitioner/dual-extraction.mjs`). **`LLM_DRAFT_UNREVIEWED` zählt nie.**
+* `primary.pattern`/`family` = Muster, in dem die laufende Welle ein Label ist (Nachtrag 3); Plausibilitätsband je Zeitrahmen (Nachtrag 4).
   `confidence: "LOW"` → nur `CANDIDATE`, nie `INCLUDED`.
 * `status`: `CANDIDATE` (erfasst, nicht geprüft) → `INCLUDED` (geprüft, zählt) oder `EXCLUDED` (mit `exclusionReason`).
   `TEST_FIXTURE` ist ausschließlich für automatische Tests (`sourceId: "test-fixture-*"`, URL `https://example.invalid/…`)

@@ -67,7 +67,9 @@ export function instrumentKeyOf(instr, map = loadInstrumentMap()) {
   const s = String(i.asShown);
   const words = s.split(/[^A-Za-z0-9&!.$]+/).map((w) => w.replace(/^\$/, "").replace(/[.,-]+$/, "")).filter(Boolean);
   const cands = [s, ...[...s.matchAll(/\(([^)]+)\)/g)].map((m) => m[1].trim()), ...words, ...words.slice(1).map((w, k) => words[k] + " " + w)];
-  const types = [...new Set([i.instrumentType || "UNKNOWN", "UNKNOWN"])];
+  /* Aktien/ETFs nur mit eigenem Typ aufloesen ("VanEck Junior Gold Miners ETF" ist kein Gold-Spot) */
+  const own = i.instrumentType || "UNKNOWN";
+  const types = own === "STOCK" || own === "ETF" ? [own] : [...new Set([own, "UNKNOWN"])];
   for (const c of cands.filter((x) => !CAND_STOP.has(String(x).trim().toUpperCase()))) for (const t of types) {
     const r = resolveInstrument({ asShown: c, instrumentType: t, priceAdjustment: i.priceAdjustment }, map);
     if (r.mapId) return { key: r.vuSymbol ? "VU:" + r.vuSymbol : "MAP:" + r.mapId, token: c, resolved: r, instrumentType: t };

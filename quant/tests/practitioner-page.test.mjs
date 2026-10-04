@@ -185,6 +185,8 @@ test("Browser: leerer Zustand, Erfassen → Export, Blindmodus mit Sperre, Zweit
   try {
     for (const vp of [{ width: 390, height: 844 }, { width: 1280, height: 900 }]) {
       const ctx = await browser.newContext({ viewport: vp });
+      /* Leerzustand unabhaengig vom Datenstand der Repo-Datei pruefen (seit dem Pilot enthaelt references.jsonl echte Zeilen) */
+      await ctx.route("**/references.jsonl", (r) => r.fulfill({ status: 200, contentType: "text/plain", body: "" }));
       const page = await ctx.newPage();
       page.on("pageerror", (e) => errors.push(String(e)));
       await page.goto(base);
@@ -200,6 +202,8 @@ test("Browser: leerer Zustand, Erfassen → Export, Blindmodus mit Sperre, Zweit
     }
 
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    /* Leerzustand unabhaengig vom Datenstand der Repo-Datei pruefen (seit dem Pilot enthaelt references.jsonl echte Zeilen) */
+    await ctx.route("**/references.jsonl", (r) => r.fulfill({ status: 200, contentType: "text/plain", body: "" }));
     const page = await ctx.newPage();
     page.on("pageerror", (e) => errors.push(String(e)));
     page.on("dialog", (d) => d.accept());
