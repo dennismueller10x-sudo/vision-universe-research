@@ -624,6 +624,8 @@
           positivePct: h.sufficient && isNum(h.positiveShare) ? Math.round(h.positiveShare * 100) + " %" : null,
           mean: h.sufficient && isNum(h.meanReturn) ? pct(h.meanReturn, 1, true) : null,
           worstDrawdown: h.sufficient && isNum(h.worstDrawdown) ? pct(h.worstDrawdown, 1) : null,
+          drawdownRaw: h.sufficient && isNum(h.medianDrawdown) ? h.medianDrawdown : null,
+          worstDrawdownRaw: h.sufficient && isNum(h.worstDrawdown) ? h.worstDrawdown : null,
           chanceRisk: h.sufficient && isNum(h.chanceRisk) ? h.chanceRisk : null,
           quartiles: h.sufficient && Array.isArray(h.quartiles) ? h.quartiles : null,
           distribution: h.sufficient && Array.isArray(h.distribution) ? h.distribution : null,

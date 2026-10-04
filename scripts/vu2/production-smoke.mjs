@@ -131,7 +131,25 @@ const ABSAGE={'/quant/#/aktie/ZZZZZ':'Aktie nicht gefunden','/quant/#/gibtsnicht
 const DATENREICH=['NVDA','AAPL','MSFT','JPM','O','T','SO','GOOG','GOOGL'];
 const DATENARM=['ACAA','EDVA','ABTC','AAAC'];
 const BRANCHENVORLAGE=['JPM','O','WSBCO','ABCB'];
-const ZURUECKHALTUNG=['JPM','GOOG','GOOGL'];
+/* ZURUECKHALTUNG AUS DEN DATEN (04.10.2026).
+   Ob ein Boersenwert zurueckgehalten wird, entscheidet die Materialisierung
+   (marketCapReason SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING) - nicht diese
+   Liste. JPM war zurueckgehalten, weil AMJB (eine Schuldverschreibung von
+   JPMorgan) denselben Emittenten trug; seit Schuldverschreibungen keine
+   Aktienzeilen mehr sind (#366), ist JPMs Anteilsbestand zuordenbar. Gefragt
+   wird deshalb das veroeffentlichte Artefakt. GOOG und GOOGL sind zwei
+   Aktiengattungen eines Emittenten: dort MUSS zurueckgehalten werden - faellt
+   das weg, ist das ein Fehler, keine Datenlage. */
+const ZURUECKHALTUNG_PFLICHT=['GOOG','GOOGL'];
+const ZURUECKHALTUNG_KANDIDATEN=['JPM','GOOG','GOOGL'];
+const ZURUECKHALTUNG=[];let vorabFehler=0;
+for(const t of ZURUECKHALTUNG_KANDIDATEN){
+ let grund=null;
+ try{const {gunzipSync}=await import('node:zlib');const shard=JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/factor-evidence-v1/'+(t+'_').slice(0,2)+'.json.gz'))));grund=shard.securities?.[t]?.marketCapReason||null;}catch(e){grund='LESEFEHLER '+e.message;}
+ if(grund==='SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING')ZURUECKHALTUNG.push(t);
+ else if(ZURUECKHALTUNG_PFLICHT.includes(t)){console.log('FAIL Zurueckhaltung '+t+': Daten halten den Boersenwert nicht mehr zurueck ('+grund+')');vorabFehler++;}
+ else console.log('     Zurueckhaltung '+t+': laut Daten nicht zurueckgehalten ('+grund+')');
+}
 const NICHT_STAMMAKTIE=['AHT-P-D','ALL-P-B','ABR-P-D','AAAC'];
 const SECTION={home:'Home',screener:'Quant Screener',strategien:'Strategien',aktien:'Aktien',aktie:'Aktien',technik:'Aktien',zahlen:'Aktien',vergleich:'Aktien',methodik:'Methodik'};
 
@@ -594,4 +612,4 @@ if(REPORT&&!ONLY){
  console.log('Bericht: '+REPORT);
 }
 console.log(failures?'PRODUCTION SMOKE FAILURES '+failures:'PRODUCTION SMOKE CLEAN');
-process.exit(failures?1:0);
+process.exit(failures||vorabFehler?1:0);
