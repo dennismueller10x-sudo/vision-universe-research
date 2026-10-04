@@ -104,5 +104,11 @@ jobs:
           if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
           Z=$(node -e 'const m=require("./quant/data/market/history/coverage-metrics.json"); console.log("Charts "+m.CHART_AVAILABILITY.renderable+"/"+m.CHART_AVAILABILITY.denominator+", Technik "+m.TECHNICAL_HISTORY_ELIGIBILITY.eligible)')
           git commit -m "Deckungskennzahlen gegen das Produktuniversum neu gerechnet: $Z (Lauf ${{ github.run_id }})"
-          git pull --rebase origin "${{ github.ref_name }}"
-          git push origin HEAD:"${{ github.ref_name }}"
+          # Die Regressionssuite veraendert nebenbei committete Dateien
+          # ausserhalb der Kennzahlpfade (z. B. total-return-verification.json).
+          # Geschoben wird nur, was oben committet wurde; der Rest wird
+          # verworfen, sonst bricht das Rebase ab (Lauf 37181495758: alles
+          # gruen, Commit gebaut, "cannot pull with rebase: You have unstaged
+          # changes").
+          git checkout -- .
+          scripts/ci/push-with-retry.sh "${{ github.ref_name }}"

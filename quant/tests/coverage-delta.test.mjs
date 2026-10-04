@@ -71,3 +71,12 @@ test("der Workflow erklaert die Abweichung, bevor er committet", () => {
   assert.ok(erklaeren < wf.indexOf("name: Commit und Push"));
   assert.doesNotMatch(wf.slice(erklaeren, erklaeren + 200), /--report-only/, "die Erklaerung darf den Lauf nicht nur protokollieren");
 });
+
+test("der Commit-Schritt verwirft Testnebenwirkungen vor dem Rebase und schiebt mit Wiederholung", () => {
+  const wf = readFileSync(new URL("../../.github/workflows/coverage-metrics.yml", import.meta.url), "utf8");
+  const schritt = wf.slice(wf.indexOf("name: Commit und Push"));
+  const commit = schritt.indexOf("git commit"), verwerfen = schritt.indexOf("git checkout -- ."),
+        schieben = schritt.indexOf("scripts/ci/push-with-retry.sh");
+  assert.ok(commit > 0 && verwerfen > commit && schieben > verwerfen, "Reihenfolge: commit -> verwerfen -> push-with-retry");
+  assert.doesNotMatch(schritt, /git pull --rebase/, "kein nacktes Rebase mehr (Lauf 37181495758)");
+});
