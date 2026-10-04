@@ -97,6 +97,13 @@ function loadMaster() {
    Gibt null zurueck, wenn die Quelle fehlt - dann faellt der Aufrufer
    auf die alten Gate-Belege zurueck UND sagt das im Artefakt. Stillzu-
    schweigen, dass eine andere Quelle gerechnet hat, waere der Fehler. */
+function herkunftRunId() {
+  const datei = join(root, "quant", "data", "market", "history", "CANONICAL_SOURCE.json");
+  if (!existsSync(datei)) return null;
+  const r = readJSON(datei).regenerated;
+  return r && r.runId ? String(r.runId) : null;
+}
+
 function kanonischeMarktdeckung() {
   const metrikDatei = join(root, "quant", "data", "market", "history", "coverage-metrics.json");
   const technikDatei = join(root, "quant", "data", "technical", "scale",
@@ -136,7 +143,13 @@ function kanonischeMarktdeckung() {
 
   return {
     nichtDarstellbar, nichtTechnisch, technikQuelle,
-    runId: (technik.run || {}).runId || (metriken.generatedAt || "unbekannt"),
+    /* Der Lauf, der die Zahlen tatsaechlich gerechnet hat: bei der
+       R2-Namensliste die Neurechnung (CANONICAL_SOURCE.regenerated), sonst
+       der Skalierungslauf. Vorher stand hier immer der Skalierungslauf -
+       auch wenn er gar nicht mehr rechnete (Abgleich 04.10.2026). */
+    runId: Array.isArray(kurz)
+      ? (herkunftRunId() || metriken.generatedAt || "unbekannt")
+      : ((technik.run || {}).runId || (metriken.generatedAt || "unbekannt")),
     metriken, technik
   };
 }

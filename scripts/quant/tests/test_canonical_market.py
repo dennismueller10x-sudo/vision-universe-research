@@ -234,6 +234,9 @@ class DieRechnungTrifftDenStandTests(unittest.TestCase):
     def test_die_technische_deckung_kommt_aus_der_aktuellen_messung(self):
         """Der Skalierungsbericht vom 11.09. kennt die Listing-Kuerzungen
         aus #367 nicht; er ist nur noch Rueckfall (Abgleich 04.10.2026)."""
+        herkunft = lade(HERKUNFT).get("regenerated") or {}
+        self.assertEqual(self.mc["source"]["runId"], herkunft.get("runId"),
+                         "Der Abgleich nennt einen anderen Lauf als den, der gerechnet hat")
         self.assertEqual(self.mc["source"]["technicalSource"],
                          "quant/data/market/history/coverage-metrics.json"
                          "#TECHNICAL_HISTORY_ELIGIBILITY.tooShortSymbols")
