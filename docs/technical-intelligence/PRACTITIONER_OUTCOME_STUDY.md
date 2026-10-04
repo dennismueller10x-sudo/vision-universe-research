@@ -4,10 +4,11 @@ Stand: 04.10.2026. **Status: PILOT, deskriptiv.** Keine Prognoseevidenz, keine R
 
 > **PRACTITIONER REFERENCE, NOT OBJECTIVE GROUND TRUTH.**
 >
-> Diese Studie beantwortet eine **andere** Frage als der Methodenvergleich: Was geschah nach Veröffentlichung tatsächlich am Markt? Sie lief erst, nachdem der Vergleich versiegelt war:
-> * `comparison.seal.json` mit Commit `4faaa3acd`;
-> * gleicher Freeze-Hash `7af25c9b…f489`;
-> * unverändertes `comparison.json`.
+> Diese Studie fragt etwas **anderes** als der Methodenvergleich: Was geschah nach Veröffentlichung tatsächlich am Markt?
+>
+> Sie lief erst nach der Versiegelung des Vergleichs, mit gleichem Freeze-Hash `7af25c9b…f489` und unverändertem `comparison.json`:
+> * nach Protokoll-Nachtrag 6 neu: Seal `61b930627`, Studie `8d4393be7`;
+> * die erste Fassung liegt unter `benchmark/archive-v1.0/`.
 >
 > Die Holdouts bleiben versiegelt.
 
@@ -15,30 +16,33 @@ Ausgabe: `quant/data/technical-intelligence/practitioner-v1/benchmark/outcome.js
 
 ## 1. Aufbau
 
-* **Fälle:** DEVELOPMENT + VALIDATION, 33 auswertbar.
-* **Horizont:** 252 Handelstage bei 1D-Fällen (15), 52 Wochen bei 1W-Fällen (18).
+* **Fälle:** DEVELOPMENT + VALIDATION, 33 auswertbar. Alle haben vollständige Folgedaten (52 Wochen bzw. 252 Handelstage).
 * **Kurse:** Schlusskurse der VU-Reihe ab dem Stichtag. Es gibt keine Intraday-Reihenfolge; bei Proxy-Reihen gilt der Abbildungsmaßstab.
 * **Praktikerseite:** Richtung, Ziel T1/T2 und Invalidation wie extrahiert.
 * **VU-Seite:** die **latente** Zählung von elliott-3.2.2. VU hat sich in allen 33 Fällen enthalten und dem Nutzer nichts gezeigt.
+
+**Korrektur nach Nachtrag 6.** Im ersten Lauf hatten 2 BTC-Fälle wegen eines Datumsfehlers 0 Folgebars, wurden aber als „kein Ereignis“ gezählt. Jetzt werden sie mit 52 Folgewochen ausgewertet. Fälle ohne Folgebar würden als `NO_FORWARD_DATA` ausgeschlossen; in diesem Lauf kommt das nicht vor.
 
 ## 2. Ergebnisse (gepoolt)
 
 | | Praktiker | VU (latent, nicht ausgegeben) |
 |---|---:|---:|
 | Richtung | UP 17 · DOWN 16 | UP 29 · DOWN 4 |
-| Erstes Ereignis: Ziel T1 erreicht | 13 | 11 |
-| Erstes Ereignis: Invalidation | 1 | 4 |
-| Kein Ereignis im Horizont | 13 | 9 |
+| Erstes Ereignis: Ziel T1 erreicht | 13 | 13 |
+| Erstes Ereignis: Invalidation | 2 | 4 |
+| Kein Ereignis im Horizont | 12 | 7 |
 | Ohne verwertbare Niveaus | 6 | 9 |
-| Median MFE (günstigste Bewegung) | +18,6 % | +22,8 % |
-| Median MAE (ungünstigste Bewegung) | −10,8 % | −8,7 % |
-| MFE größer als \|MAE\| | 21 / 33 | 22 / 33 |
-| Praktiker revidierte vor dem Ergebnis | 2 | – |
+| Median MFE (günstigste Bewegung) | +18,6 % | +33,5 % |
+| Median MAE (ungünstigste Bewegung) | −14,9 % | −10,4 % |
+| MFE größer als \|MAE\| | 21 / 33 | 24 / 33 |
+| Praktiker revidierte vor dem Ergebnis | 3 | – |
+
+Mediane bei gerader Fallzahl sind der untere Median (`outcome.mjs`). Bei n = 33 spielt das keine Rolle.
 
 ## 3. Einordnung
 
-* **Unterschiede innerhalb der Stichprobe nicht unterscheidbar.** Die Unterschiede liegen im Bereich weniger Fälle. Es gibt keine Konfidenzintervalle, weil weniger als 5 Quellenfamilien-Cluster vorliegen.
-* **Marktphase.** Die VU-Werte spiegeln vor allem die UP-Lastigkeit der latenten Zählung in einer überwiegend steigenden Marktphase. Sie zeigen keine Prognosefähigkeit.
+* **Unterschiede innerhalb der Stichprobe nicht unterscheidbar.** Es gibt keine Konfidenzintervalle (weniger als 5 Quellenfamilien-Cluster).
+* **Kein Prognosebeleg.** VUs höhere Werte spiegeln vor allem die UP-Lastigkeit der latenten Zählung (29 von 33) in einer überwiegend steigenden Marktphase. Eine Regel „immer UP“ käme zu ähnlichen Zahlen. Das ist kein Hinweis auf Prognosefähigkeit.
 * **Grenzen der Praktikerzahlen:**
   * Publikationsverzerrung: selbst gewählte öffentliche Beiträge.
   * Löschverzerrung: gelöschte Inhalte fehlen.

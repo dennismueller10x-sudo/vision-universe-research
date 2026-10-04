@@ -43,7 +43,7 @@ Die Mission wurde zwischen zwei Sitzungen aufgeteilt:
 | Quellenfamilie | ElliottWave-Forecast 45 (57,7 %) · André Tiedje 11 · TradingView cryptoknee 8 · yuchaosng 7 · thefifthwave 7 · **HKCM 0** |
 | Zeitrahmen | 1W 47 · 1D 23 · 1M 8 |
 | Jahr (Veröffentlichung) | 2022 14 · 2023 20 · 2024 12 · 2025 20 · 2026 12 |
-| Instrumente | 44 (Aktie 52, Krypto 17 — davon BTC 20 Fassungen —, ETF 3, CFD 2, Kassaindex 2, Future 1, Rohstoff 1) |
+| Instrumente | 44 (Aktie 52, Krypto 17 — alle BTC; BTC insgesamt 26 Zeilen (17 Originale + 9 Revisionen) —, ETF 3, CFD 2, Kassaindex 2, Future 1, Rohstoff 1) |
 | Musterfamilie | MOTIVE 62 · CORRECTIVE 15 · UNKNOWN 1 |
 | Extraktionssicherheit | HIGH 23 (29,5 %) · MEDIUM 55 |
 | Abbildungsgüte (Zeilen) | EXACT 84 · PROXY_SAME_UNDERLYING 6 · PROXY_DIFFERENT_INSTRUMENT 9 |
@@ -95,8 +95,15 @@ Die laufende Welle ist das unsicherste Feld. Bei 8 INCLUDED-Fällen wichen zwei 
 5. **Datenlücke.** VU-Tagesreihen für US-Einzelaktien beginnen am 05.09.2025. Ältere 1D-Aktienfälle blieben CANDIDATE (59), dadurch sind Wochencharts überrepräsentiert.
 6. **Extraktion ohne Menschen.** Gemessen ist nur die Reproduzierbarkeit zwischen zwei LLM-Durchgängen, nicht die Richtigkeit gegenüber dem Autor.
 7. **Revisionen** wurden nur unter gezogenen Elementen erkannt, es gab keine gezielte Nachextraktion (offen gelegte Abweichung, Skalierungsprotokoll).
-8. **BTC-Häufung.** 20 von 99 Zeilen betreffen BTC. Es gibt keine Obergrenze je Instrument im Protokoll.
+8. **BTC-Häufung.** 26 von 99 Zeilen (17 der 78 Fälle) betreffen BTC. Es gibt keine Obergrenze je Instrument im Protokoll.
 
 ## 7. Nutzung
 
 Der Vergleich (`run-benchmark.mjs --refs freeze/PRACTITIONER_REFERENCE_V1.jsonl`) rechnet nur DEVELOPMENT und VALIDATION. **Beide Holdouts bleiben versiegelt.** Sie sind für die Prüfung einer künftigen Engine 3.3 reserviert. Ergebnisse: [ELLIOTT_PRACTITIONER_BENCHMARK.md](ELLIOTT_PRACTITIONER_BENCHMARK.md), [PRACTITIONER_OUTCOME_STUDY.md](PRACTITIONER_OUTCOME_STUDY.md).
+
+## 8. Nachtrag nach dem finalen Red-Team
+
+* Der Datensatz selbst ist unverändert.
+* Protokoll-Nachtrag 6 korrigiert Auswertungsfehler: Kennzahl B/F/G bei abgeschlossenen VU-Mustern, Ergebnisschicht ohne Folgedaten, zensierte Latenz.
+* Der erste Lauf liegt unverändert unter `benchmark/archive-v1.0/`.
+* Die Holdouts sind weiterhin versiegelt.
