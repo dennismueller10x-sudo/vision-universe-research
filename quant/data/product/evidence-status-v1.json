@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-10-03T11:38:46.078Z",
+ "generatedAt": "2026-10-04T05:42:19.374Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -35,7 +35,7 @@
     "outOfSample": "nicht anwendbar - beschreibt, prüft keine Regel"
    },
    "coverage": {
-    "universe": 5751,
+    "universe": 5746,
     "covered": 5400,
     "available": 4563,
     "sufficient": {
@@ -48,7 +48,7 @@
      "m6": 672
     },
     "reasons": {
-     "NOT_COVERED": 351,
+     "NOT_COVERED": 346,
      "NO_PRICE_CONDITION_TODAY": 776,
      "NO_COMPARABLE_CASE": 61
     }
@@ -109,7 +109,7 @@
      "id": "HISTORICAL_UNIVERSE",
      "label": "Historische Index-Zugehörigkeit (Point-in-Time)",
      "required": "mindestens 24 Stichtage",
-     "measured": "2 Stichtage",
+     "measured": "3 Stichtage",
      "state": "FAIL"
     },
     {
@@ -130,7 +130,7 @@
      "id": "PIT_FUNDAMENTALS",
      "label": "Fundamentaldaten zeitpunktgenau",
      "required": "datierbar je Wert",
-     "measured": "5097 von 6853 Titeln",
+     "measured": "5098 von 6853 Titeln",
      "state": "PASS"
     },
     {
@@ -263,7 +263,7 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 89039,
+     "n": 89028,
      "titles": 5167,
      "displayAllowed": true,
      "failed": [
@@ -274,7 +274,7 @@
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 89392,
+     "n": 89383,
      "titles": 5191,
      "displayAllowed": true,
      "failed": [
@@ -287,8 +287,8 @@
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 86267,
-     "titles": 5138,
+     "n": 86260,
+     "titles": 5137,
      "displayAllowed": true,
      "failed": [
       "survivorship",
@@ -298,8 +298,8 @@
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 86456,
-     "titles": 5162,
+     "n": 86446,
+     "titles": 5161,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -312,8 +312,8 @@
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 56433,
-     "titles": 4921,
+     "n": 56425,
+     "titles": 4920,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -337,7 +337,7 @@
    "setupRules": 9
   },
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5751,
+   "universe": 5746,
    "covered": 5400,
    "available": 4563,
    "sufficient": {
@@ -350,7 +350,7 @@
     "m6": 672
    },
    "reasons": {
-    "NOT_COVERED": 351,
+    "NOT_COVERED": 346,
     "NO_PRICE_CONDITION_TODAY": 776,
     "NO_COMPARABLE_CASE": 61
    }
