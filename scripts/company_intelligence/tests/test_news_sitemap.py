@@ -81,6 +81,20 @@ class ManagementMaterialsTests(unittest.TestCase):
   _,configs=discover_ir(company(),root,HTTP(),NOW)
   self.assertEqual(configs[0]['pageRole'],'IR')
 
+ def test_investor_subscription_forms_do_not_replace_ir_hub(self):
+  from company_intelligence.feeds import discover_ir
+  root='https://apple.com/';hub=root+'investors/overview';alert=root+'resources/investor-email-alerts/default.aspx'
+  class HTTP:
+   def __init__(self):self.calls=[]
+   def get(self,url,**kw):
+    self.calls.append(url)
+    return {'body':b'<a href="/resources/investor-email-alerts/default.aspx">Investor email alerts</a><a href="/investors/overview">Investor Overview</a>' if url==root else b'<title>Investor Relations</title>','finalUrl':url}
+  h=HTTP();_,configs=discover_ir(company(),root,h,NOW)
+  self.assertEqual([c['irHomepage'] for c in configs if c['pageRole']=='IR'],[hub])
+  self.assertNotIn(alert,h.calls)
+  _,configs=discover_ir(company(),alert,HTTP(),NOW)
+  self.assertEqual(configs[0]['pageRole'],'CORPORATE')
+
  def test_html_first_party_management_content_supported(self):
   links=[{'url':'https://apple.com/remarks','text':'Prepared remarks'},{'url':'https://apple.com/letter','text':'Shareholder letter'},{'url':'https://apple.com/commentary','text':'Management commentary'},{'url':'https://apple.com/replay','text':'Earnings call replay'}]
   docs=page_documents(company(),links,'https://apple.com/investors',NOW)

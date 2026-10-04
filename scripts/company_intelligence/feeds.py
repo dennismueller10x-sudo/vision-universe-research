@@ -153,7 +153,12 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
         raise SourceError('OFFICIAL_SITE_REDIRECT_REQUIRES_REVALIDATION')
     links = parse_links(homepage['body'], homepage['finalUrl'])
     from urllib.parse import urlsplit
+    def investor_subscription_page(url):
+        # Alert/RSS signup forms are support pages, not an IR entry point.
+        return bool(re.search(r'email[-_]?alerts?|rss[-_]?feeds?', urlsplit(url).path, re.I))
     def ir_page(link):
+        if investor_subscription_page(link['url']):
+            return False
         # Dropdown/fragment navigation is not a separate IR destination. The
         # fetched homepage still receives its own role from its actual URL.
         if link['url'] == canonical_url(homepage['finalUrl']):
@@ -217,7 +222,7 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
         event_links = [l for l in links if re.search(r'events|calendar', l['text'], re.I) and not re.search(r'news[-_/]?releases|/static-files/|\.(?:pdf|zip)(?:\?|$)', l['url'], re.I) and within_domain(l['url'], page)]
         from .materials import page_documents
         configs.append({'companyId': company['companyId'], 'irHomepage': response['finalUrl'],
-                        'pageRole': 'IR' if page in {l['url'] for l in ir_links} or re.search(r'://(?:ir|investors?)\.|/investors?(?:/|$)|/investor-relations', response['finalUrl'], re.I) else 'CORPORATE',
+                        'pageRole': 'IR' if not investor_subscription_page(response['finalUrl']) and (page in {l['url'] for l in ir_links} or re.search(r'://(?:ir|investors?)\.|/investors?(?:/|$)|/investor-relations', response['finalUrl'], re.I)) else 'CORPORATE',
                         'documents': page_documents(company, links, response['finalUrl'], now),
                         'pressReleaseUrl': next((l['url'] for l in links if re.search(r'press releases|news releases|newsroom', l['text'], re.I)), None),
                         'eventsUrl': event_links[0]['url'] if event_links else None,
