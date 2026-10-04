@@ -29,7 +29,8 @@ const AUSNAHMEN = {
   "scripts/market/select-gate-universe.mjs": "regelgleich (/[^A-Z0-9]/gi) auf rohen Anbieterzeilen, darf nicht werfen",
   "scripts/market/tiingo2-refresh.mjs": "Workstream Tiingo 2.0, regelgleich",
   "scripts/universe/verify-company-master.mjs": "prueft, dass instrumentId KEINE Ticker-ID ist",
-  "scripts/supertrader/build.mjs": "Umstellung in PR #387 (Supertrader-Gate A verlangt eigenen PR)"
+  "scripts/supertrader/build.mjs": "Umstellung in PR #387 (Supertrader-Gate A verlangt eigenen PR)",
+  "scripts/vorsorge/build-etf-data.mjs": "Workstream Vorsorge (#417, 04.10.2026): Dateipfad der Discover-Reihe; core/identity.js liegt erst mit #386 auf main - danach securityIdForTicker"
 };
 
 function produktcode() {
