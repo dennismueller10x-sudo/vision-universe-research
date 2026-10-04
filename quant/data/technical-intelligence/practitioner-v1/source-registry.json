@@ -2,7 +2,7 @@
  "schemaVersion": "vu-practitioner-source-registry-1.0.0",
  "generatedAt": "2026-10-04",
  "status": "PRELIMINARY",
- "note": "Vorläufiges Quellenverzeichnis. Alle Angaben stammen aus Websuche-Metadaten (Titel, URL, Kurzfassung der Suchmaschine) und sind NICHT am Primärmaterial geprüft: Die Build-Umgebung kann YouTube, X, die Anbieter-Websites, Kolumnenportale und das Internet Archive nicht erreichen (Netzwerk-Policy, HTTP 403). Stufen A/B/C sind deshalb vorläufig; Felder 'UNVERIFIED' werden bei der ersten Sichtung des Primärmaterials gefüllt. Reichweite ist kein Kriterium. Stichprobenrahmen je Quelle (samplingFrame) noch nicht gesetzt; quellenfamilie hkcm = hkcm + phantom-hkcm. | 2026-10-04: Zugangspruefung aus einer Umgebung mit Internetzugang (Feld accessFromBuildEnvironment); Stichprobenrahmen fuer ewf, tiedje, ewt-gilburt gesetzt (frames/<sourceId>.json) vor jeder Extraktion; YouTube-Rahmen (hkcm, phantom-hkcm, more-crypto-online) folgen in eigenem Commit.",
+ "note": "Vorläufiges Quellenverzeichnis. Alle Angaben stammen aus Websuche-Metadaten (Titel, URL, Kurzfassung der Suchmaschine) und sind NICHT am Primärmaterial geprüft: Die Build-Umgebung kann YouTube, X, die Anbieter-Websites, Kolumnenportale und das Internet Archive nicht erreichen (Netzwerk-Policy, HTTP 403). Stufen A/B/C sind deshalb vorläufig; Felder 'UNVERIFIED' werden bei der ersten Sichtung des Primärmaterials gefüllt. Reichweite ist kein Kriterium. Stichprobenrahmen je Quelle (samplingFrame) noch nicht gesetzt; quellenfamilie hkcm = hkcm + phantom-hkcm. | 2026-10-04: Zugangspruefung aus einer Umgebung mit Internetzugang (Feld accessFromBuildEnvironment); Stichprobenrahmen fuer ewf, tiedje, ewt-gilburt gesetzt (frames/<sourceId>.json) vor jeder Extraktion; YouTube-Rahmen (hkcm, phantom-hkcm, more-crypto-online) folgen in eigenem Commit. | 2026-10-04 (spaeter): VORLAEUFIGE YouTube-Rahmen fuer hkcm und phantom-hkcm (ungefaehre Daten aus relativen Plattformangaben; exakte Grenzen wegen Bot-Pruefung offen; Extraktion BLOCKED bis Zugang). more-crypto-online: kein Rahmen (Kanalliste nur mit uebersetzten Titeln abgerufen, 22.797 Videos; Datumsliste abgebrochen).",
  "tiers": {
   "A": "sehr gut dokumentierte Practitioner Reference",
   "B": "brauchbar",
@@ -58,12 +58,29 @@
      "2022-01-01",
      "2026-06-30"
     ],
-    "frameSource": null,
-    "frameSize": null,
-    "stepK": null,
-    "startIndex": null,
+    "frameSource": "YouTube-Kanalliste https://www.youtube.com/@hkcm/videos (Plattform-Reihenfolge = Upload-Reihenfolge), abgerufen mit yt-dlp --flat-playlist; Titel deutsch (lang=de), Datum = ungefaehres Datum aus der relativen Plattformangabe (\"vor N Monaten/Jahren\", yt-dlp youtubetab:approximate_date)",
+    "frameFile": "frames/hkcm.json",
+    "retrievedAt": "2026-10-04",
+    "frameSize": 1398,
+    "instrumentFilter": "TITLE",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {
+     "EXCLUDED_NO_TARGET_INSTRUMENT": 819,
+     "EXCLUDED_NON_ANALYSIS": 90,
+     "EXCLUDED_RETROSPECTIVE": 8
+    },
+    "eligibleCount": 481,
+    "sampleTarget": 70,
+    "stepK": 6,
+    "startIndex": 2,
+    "sampleSize": 80,
+    "pilotQuota": 7,
+    "pilotStepM": 11,
+    "pilotStartIndex": 2,
     "seed": 20261004,
-    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+    "procedure": "scripts/technical/practitioner/sampling-frame.mjs: Fenster → Titel-/Kategorieregeln (ergebnisblind, vorab) → E chronologisch; k=floor(|E|/sampleTarget); startIndex=SHA-256(\"20261004|\"+sourceId) mod k (erste 8 Hex); S=E[start+j·k]; Pilot: m=floor(|S|/pilotQuota), p0=SHA-256(\"20261004|pilot|\"+sourceId) mod m, Pilot=S[p0+j·m]",
+    "status": "PROVISIONAL 2026-10-04 — ungefaehre Daten; exakte Fenstergrenzen vor der ersten Extraktion nachziehen (ohne Inhaltskenntnis) und neu committen; Extraktion BLOCKED (YouTube-Bot-Pruefung)",
+    "windowNote": "VORLAEUFIG: Einzeldaten nur ungefaehr (bei \"vor 4 Jahren\" Fehler bis ±6 Monate). Fenster = Videos mit ungefaehrem Datum 2022-01-01..2026-06-30 in Plattform-Reihenfolge. Exakte Grenzen (Upload-Datum der Randvideos) konnten nicht bestimmt werden: YouTube-Einzelabrufe durch Bot-Pruefung gesperrt (nicht umgangen). Vor der ersten Extraktion dieser Quelle werden die Grenzen mit exakten Daten nachgezogen und der Rahmen neu committet – ohne Kenntnis von Inhalten; bis dahin keine Extraktion (Status BLOCKED)."
    },
    "sourceFamily": "hkcm"
   },
@@ -107,12 +124,29 @@
      "2022-01-01",
      "2026-06-30"
     ],
-    "frameSource": null,
-    "frameSize": null,
-    "stepK": null,
-    "startIndex": null,
+    "frameSource": "YouTube-Kanalliste https://www.youtube.com/@phantombyhkcm/videos (Plattform-Reihenfolge = Upload-Reihenfolge), abgerufen mit yt-dlp --flat-playlist; Titel deutsch (lang=de), Datum = ungefaehres Datum aus der relativen Plattformangabe (\"vor N Monaten/Jahren\", yt-dlp youtubetab:approximate_date)",
+    "frameFile": "frames/phantom-hkcm.json",
+    "retrievedAt": "2026-10-04",
+    "frameSize": 590,
+    "instrumentFilter": "TITLE",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {
+     "EXCLUDED_NO_TARGET_INSTRUMENT": 499,
+     "EXCLUDED_NON_ANALYSIS": 7,
+     "EXCLUDED_RETROSPECTIVE": 1
+    },
+    "eligibleCount": 83,
+    "sampleTarget": 10,
+    "stepK": 8,
+    "startIndex": 7,
+    "sampleSize": 10,
+    "pilotQuota": 2,
+    "pilotStepM": 5,
+    "pilotStartIndex": 3,
     "seed": 20261004,
-    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+    "procedure": "scripts/technical/practitioner/sampling-frame.mjs: Fenster → Titel-/Kategorieregeln (ergebnisblind, vorab) → E chronologisch; k=floor(|E|/sampleTarget); startIndex=SHA-256(\"20261004|\"+sourceId) mod k (erste 8 Hex); S=E[start+j·k]; Pilot: m=floor(|S|/pilotQuota), p0=SHA-256(\"20261004|pilot|\"+sourceId) mod m, Pilot=S[p0+j·m]",
+    "status": "PROVISIONAL 2026-10-04 — ungefaehre Daten; exakte Fenstergrenzen vor der ersten Extraktion nachziehen (ohne Inhaltskenntnis) und neu committen; Extraktion BLOCKED (YouTube-Bot-Pruefung)",
+    "windowNote": "VORLAEUFIG: Einzeldaten nur ungefaehr (bei \"vor 4 Jahren\" Fehler bis ±6 Monate). Fenster = Videos mit ungefaehrem Datum 2022-01-01..2026-06-30 in Plattform-Reihenfolge. Exakte Grenzen (Upload-Datum der Randvideos) konnten nicht bestimmt werden: YouTube-Einzelabrufe durch Bot-Pruefung gesperrt (nicht umgangen). Vor der ersten Extraktion dieser Quelle werden die Grenzen mit exakten Daten nachgezogen und der Rahmen neu committet – ohne Kenntnis von Inhalten; bis dahin keine Extraktion (Status BLOCKED)."
    },
    "sourceFamily": "hkcm"
   },
@@ -282,7 +316,7 @@
     "stepK": null,
     "startIndex": null,
     "seed": 20261004,
-    "status": "NOT_SET — wird bei erster Sichtung des Plattform-Archivs festgelegt und vor der ersten Extraktion committet (Protokoll-Nachtrag 1, Punkt 2)"
+    "status": "NOT_SET — Kanalliste (22.797 Videos) abrufbar, Datumsliste wegen YouTube-Sperre nicht abgeschlossen; Extraktion BLOCKED"
    },
    "sourceFamily": "more-crypto-online"
   },
