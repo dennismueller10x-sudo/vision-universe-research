@@ -86,3 +86,35 @@ class OwnershipRouteTests(unittest.TestCase):
   bad=HTTP({root:'<title>Root Inc.</title><footer>© 2026 All Rights Reserved - Other Owner LLC. Customers include Root Inc.</footer>'})
   with self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
    validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},bad,NOW)
+
+ def test_advertised_ir_sibling_under_www_corporate_base_retains_exact_owner_requirement(self):
+  root='https://www.issuer.example/';ir='https://ir.issuer.example/'
+  good=HTTP({root:'<title>Root</title><a href="https://ir.issuer.example/">Investors</a>',ir:'<title>Root Investor Relations</title><footer>Copyright 2026 Root Inc. All rights reserved.</footer>'})
+  result=validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},good,NOW)
+  self.assertEqual(result['url'],root);self.assertEqual(result['ownershipEvidence']['legalSourceUrl'],ir)
+  self.assertEqual(result['verificationVersion'],'corporate-ownership-5')
+  bad=HTTP({root:'<title>Root</title><a href="https://ir.issuer.example/">Investors</a>',ir:'<title>Root Investor Relations</title><footer>Copyright Different Owner LLC.</footer>'})
+  with self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
+   validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},bad,NOW)
+
+ def test_hosting_tenants_other_prefixes_and_foreign_ir_redirects_never_broaden_ownership_scope(self):
+  from company_intelligence.discovery import linked_corporate_host
+  for root,other in [('https://www.issuer.q4ir.example/','https://ir.other-issuer.q4ir.example/'),('https://tenant.issuer.example/','https://ir.issuer.example/'),('https://www.co.uk/','https://unrelated.co.uk/')]:
+   self.assertFalse(linked_corporate_host(other,root))
+  root='https://www.issuer.example/';ir='https://ir.issuer.example/'
+  class RedirectHTTP(HTTP):
+   def get(self,url,**kwargs):
+    r=super().get(url,**kwargs)
+    if url==ir:r['finalUrl']='https://other.example/'
+    return r
+  http=RedirectHTTP({root:'<title>Root</title><a href="https://ir.issuer.example/">Investors</a>',ir:'<title>Root Investor Relations</title><footer>Copyright 2026 Root Inc. All rights reserved.</footer>'})
+  with self.assertRaisesRegex(SourceError,'OWNER_NOT_VALIDATED'):
+   validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},http,NOW)
+
+ def test_a_generic_or_subsidiary_root_header_cannot_inherit_ownership_from_www_ir_sibling(self):
+  root='https://www.issuer.example/';ir='https://ir.issuer.example/'
+  for header in ('Home','Different Subsidiary Brand'):
+   http=HTTP({root:f'<title>{header}</title><a href="https://ir.issuer.example/">Investors</a>',ir:'<title>Root Investor Relations</title><footer>Copyright 2026 Root Inc. All rights reserved.</footer>'})
+   with self.assertRaisesRegex(SourceError,'OWNER_NOT_VALIDATED'):
+    validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},http,NOW)
+   self.assertEqual(http.calls,[root])

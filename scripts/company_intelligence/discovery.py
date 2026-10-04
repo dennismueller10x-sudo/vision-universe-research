@@ -4,6 +4,8 @@ from urllib.parse import urlencode, urlsplit
 from .model import canonical_url, domain
 from .transport import SourceError
 
+OWNERSHIP_VERSION = 'corporate-ownership-5'
+
 
 def wikidata_catalogue(companies, http):
     """One bounded CC0 catalogue request; intersect exact CIKs with the master.
@@ -65,6 +67,22 @@ def same_web_host(url,other):
     return bool(a and b) and a.removeprefix('www.')==b.removeprefix('www.')
 
 
+def linked_corporate_host(url, root):
+    """Scope advertised ownership routes under a corporate www alias only.
+
+    Conventional IR siblings of www.issuer.com are allowed only when advertised.
+    Other prefixes and hosting tenants stay intact; general ingestion trust stays
+    unchanged. The caller also requires a corroborating corporate root header.
+    """
+    from .model import within_domain
+    host=domain(root)
+    base=host.removeprefix('www.')
+    if base in ('co.uk','com.au','co.jp','com.br','com.cn'):
+        return same_web_host(url,root)
+    return (within_domain(url,root) or same_web_host(url,root) or
+            host.startswith('www.') and domain(url) in {prefix+'.'+base for prefix in ('ir','investor','investors','investing')})
+
+
 def validate_candidate(company, candidate, http, now, recover_redirects=False):
     """Gather bounded first-party proof; redirects must independently prove the owner."""
     import re
@@ -87,8 +105,11 @@ def validate_candidate(company, candidate, http, now, recover_redirects=False):
         for link in links:
             url = link['url']
             label = link['text'].casefold()
-            if (not (within_domain(url, response['finalUrl']) or same_web_host(url, response['finalUrl']))
+            if (not linked_corporate_host(url, response['finalUrl'])
                     or url == response['finalUrl'] or re.search(r'\.(?:pdf|zip|xml|js)(?:\?|$)', url, re.I)):
+                continue
+            sibling = not (within_domain(url, response['finalUrl']) or same_web_host(url, response['finalUrl']))
+            if sibling and not (getattr(original,'ownershipEvidence',{}).get('headerBranded') or getattr(original,'ownershipEvidence',{}).get('shortBrand')):
                 continue
             if re.search(r'\binvestors?\b|investor relations', label): priority = 0
             elif re.search(r'\babout(?: us| the company)?\b', label): priority = 1
@@ -100,13 +121,16 @@ def validate_candidate(company, candidate, http, now, recover_redirects=False):
         for url in sorted(routes, key=lambda url: (routes[url], url))[:2]:
             try:
                 legal_response = http.get(url, ttl=86400)
+                if not linked_corporate_host(legal_response['finalUrl'], response['finalUrl']):
+                    continue
+                legal_target={**target,'url':legal_response['finalUrl']}
                 try:
-                    proof = _validate_response(company, target, legal_response, now)
+                    proof = _validate_response(company, legal_target, legal_response, now)
                     header_source=legal_response['finalUrl']
                 except SourceError as route_error:
                     if 'CONFLICTING_COPYRIGHT_OWNER' in str(route_error) or 'STRUCTURED_CIK_CONFLICT' in str(route_error):raise
                     if 'OWNER_NOT_VALIDATED' not in str(route_error): continue
-                    proof = _validate_response(company, target, legal_response, now, header_body=response['body'])
+                    proof = _validate_response(company, legal_target, legal_response, now, header_body=response['body'])
                     header_source=response['finalUrl']
                 proof['ownershipEvidence'].update(legalSourceUrl=legal_response['finalUrl'], legalContentHash=proof['contentHash'],
                                                  corporateHeaderUrl=header_source)
@@ -264,7 +288,7 @@ def _validate_response(company, candidate, response, now, header_body=None):
                                  'structuredOwnerMatched':bool(structured_owner)}
         raise error
     return {'status': 'VALIDATED', 'url': response['finalUrl'], 'lastVerified': now, 'confidence': .95,
-            'verificationVersion': 'corporate-ownership-4',
+            'verificationVersion': OWNERSHIP_VERSION,
             'evidence': [candidate['evidence'], method], 'title': clean(title[1] if title else ' '.join(metadata.values), 150),
             'ownershipEvidence': {'companyNames': strong_names, 'corporateHeader': header[:300],
                                   'copyrightExcerpts': [v[:160] for v in copyright_raw if any(re.search(r'(?<!\w)'+re.escape(base)+r'(?!\w)',legal_normalize(v)) for base in bases)][:2],

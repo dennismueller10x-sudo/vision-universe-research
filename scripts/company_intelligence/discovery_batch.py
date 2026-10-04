@@ -107,6 +107,7 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
 
 
 def persist(results,store,companies,now):
+    from .discovery import OWNERSHIP_VERSION
     for r in results:
         cid=r['companyId'];reason=r.get('reason') or ''
         if r.get('domainOnly'):
@@ -132,7 +133,7 @@ def persist(results,store,companies,now):
             prior=store.state('officialSite:'+cid,{})
             if prior.get('status')!='VALIDATED':store.set_state('officialSite:'+cid,{**prior,'status':'DEFERRED','lastFailure':now,'reason':r.get('reason'),'retryAfter':advance(now,7*24 if category=='BLOCKED' else .25 if 'CIRCUIT_OPEN' in reason else 1)})
         elif r['status']=='REJECTED':
-            store.set_state('officialSite:'+cid,{'status':'REJECTED','lastChecked':now,'reason':r['reason'],'ownershipEvidence':r.get('failureEvidence',{}),'retryAfter':advance(now,7*24)})
+            store.set_state('officialSite:'+cid,{'status':'REJECTED','lastChecked':now,'reason':r['reason'],'ownershipEvidence':r.get('failureEvidence',{}),'ownershipVerifierVersion':OWNERSHIP_VERSION,'retryAfter':advance(now,7*24)})
         elif r['status']=='DEGRADED':
             store.set_state('ir:'+cid,{**store.state('ir:'+cid,{}),'lastFailure':now,'reason':r['reason'],'retryAfter':advance(now,.25 if 'CIRCUIT_OPEN' in reason else 24)})
         store.set_state('inventoryDiscovery:'+cid,{'status':r['status'],'checkedAt':now,'requests':r['requests'],'stats':r.get('stats',{}),'reason':r.get('reason')})
