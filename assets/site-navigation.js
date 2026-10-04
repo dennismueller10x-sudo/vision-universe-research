@@ -49,6 +49,38 @@
     }
   };
 
+  /* Farbschema plattformweit: dieselbe Wahl (localStorage, Schluessel von
+     Discover) gilt auf jeder Seite. Seiten mit Hell- und Dunkel-Styles
+     tragen das Attribut theme-switch an <vu-navigation>; nur dort zeigt
+     der Kopf den Schalter. Gibt es die Discover-Engine (VUDiscover.theme),
+     schaltet sie; sonst setzt der Kopf <html data-theme> selbst und meldet
+     den Wechsel mit dem Ereignis vu-theme-change. */
+  const THEME_KEY = 'vu-discover-theme-v1';
+  const BAR = {light: '#ffffff', dark: '#08080a'};
+  const currentTheme = () => document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  const applyTheme = (mode, persist) => {
+    const engine = window.VUDiscover && window.VUDiscover.theme;
+    if (engine && persist) { engine.set(mode); return; }  // Discover/Screener melden den Wechsel selbst
+    if (persist) { try { localStorage.setItem(THEME_KEY, mode); } catch (_) { /* nur fuer diese Sitzung */ } }
+    const html = document.documentElement;
+    html.setAttribute('data-theme', mode);
+    html.setAttribute('data-theme-mode', mode);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', BAR[mode]);
+    document.querySelectorAll('vu-navigation').forEach(n => n.setAttribute('theme', mode));
+    document.dispatchEvent(new Event('vu-theme-change'));
+  };
+  if (typeof window !== 'undefined') {
+    window.VUTheme = {key: THEME_KEY, mode: currentTheme, set: m => applyTheme(m === 'dark' ? 'dark' : 'light', true),
+      toggle: () => applyTheme(currentTheme() === 'dark' ? 'light' : 'dark', true)};
+    // Wahl aus einem anderen Tab uebernehmen
+    window.addEventListener('storage', e => {
+      if (e.key !== THEME_KEY || !document.querySelector('vu-navigation[theme-switch]')) return;
+      const mode = e.newValue === 'dark' ? 'dark' : 'light';
+      if (mode !== currentTheme()) applyTheme(mode, false);
+    });
+  }
+
   /* Die Farbwerte des Kopfes als Funktion des Schemas: so kann Discover
      das Attribut theme spaeter umschalten (Hell/Dunkel/System, V4.1), und
      der Kopf zieht mit, ohne neu aufgebaut zu werden. */
@@ -66,6 +98,9 @@
         .quick+.atlas{margin-left:4px}.atlas:hover{text-decoration:none;transform:translateY(-1px);box-shadow:0 0 0 1px ${t.atlasRing},0 10px 28px ${t.atlasGlow}}
         .atlas-icon{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#e9ff7a,#c8f531 55%,#9fc41c);box-shadow:0 0 14px #c8f53199}
         .atlas-icon svg{width:19px;height:19px;fill:#101318}.atlas-small{opacity:.7}
+        .mode{flex-shrink:0;width:42px;height:42px;display:grid;place-items:center;border-radius:50%;border:1px solid ${t.divider};background:transparent;color:${t.ink};padding:0;transition:transform .15s,background-color .15s}
+        .mode:hover{transform:translateY(-1px);background:${t.border}}.mode svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+        .mode .sun{display:none}:host([theme="dark"]) .mode .sun{display:block}:host([theme="dark"]) .mode .moon{display:none}
         .atlas[aria-current=page]{box-shadow:0 0 0 2px #c8f531,0 6px 22px ${t.atlasGlow}}
         .backdrop{position:fixed;inset:88px 0 0;background:#0009;visibility:hidden;opacity:0;transition:opacity .2s}
         .panel{position:fixed;right:0;top:88px;bottom:0;width:min(420px,100vw);padding:24px 28px calc(34px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;background:${t.panelBg};color:#f5f6f2;border-left:1px solid ${t.panelBorder};box-shadow:-20px 20px 70px #0004;visibility:hidden;transform:translateX(100%);transition:transform .2s,visibility .2s}
@@ -77,10 +112,11 @@
         .icon{width:34px;height:34px;flex:none;display:grid;place-items:center;color:#f5f6f2}.icon svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}.links a[aria-current=page] .icon{color:#101318}.settings{margin-top:24px;padding-top:20px;border-top:1px solid #ffffff30}.setting{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:14px 0;font-size:12px}
         .choices{display:flex;border:1px solid #ffffff38;border-radius:10px;padding:3px;gap:2px}.choices button,.choices a{display:block;border:0;border-radius:7px;background:transparent;color:#f5f6f2;padding:7px 9px;min-width:40px;font-size:11px;text-align:center;text-decoration:none}.choices [aria-pressed=true]{background:#f5f6f2;color:#101318}
         .panel a:focus-visible,.panel button:focus-visible{outline-color:#c8f531}
-        @media(max-width:1120px){.section{display:none}}@media(max-width:900px){.quick a.q-extra{display:none}}
-        @media(max-width:760px){.shell{width:calc(100% - 32px)}.row{height:70px;gap:10px;min-width:0}.brand{min-width:0}.brand img{width:min(188px,52vw);max-width:100%}.section{display:none}.quick{display:none}.quick+.atlas,.atlas{margin-left:auto;height:44px}.toggle{margin-left:auto;white-space:nowrap;padding:10px 12px;min-height:44px}.backdrop{inset:70px 0 0}.panel{top:70px;width:min(400px,100vw);padding:22px 24px calc(36px + env(safe-area-inset-bottom))}.links{grid-template-columns:1fr}.links a{min-height:44px;font-size:14px}.groups{gap:25px}}
-        @media(max-width:480px){.row{gap:8px}.brand img{width:min(140px,36vw)}.atlas{gap:7px;padding-right:12px;font-size:12px}}
-        @media(max-width:340px){.atlas-ask{display:none}.toggle{padding:10px 9px}}
+        @media(max-width:1240px){.section{display:none}}@media(max-width:900px){.quick a.q-extra{display:none}}
+        @media(max-width:1024px){.quick{display:none}.quick+.atlas,.atlas{margin-left:auto}}
+        @media(max-width:760px){.shell{width:calc(100% - 32px)}.row{height:70px;gap:10px;min-width:0}.brand{min-width:0}.brand img{width:min(188px,52vw);max-width:100%}.section{display:none}.quick{display:none}.quick+.atlas,.atlas{margin-left:auto;height:44px}.mode{width:44px;height:44px}.toggle{margin-left:auto;white-space:nowrap;padding:10px 12px;min-height:44px}.backdrop{inset:70px 0 0}.panel{top:70px;width:min(400px,100vw);padding:22px 24px calc(36px + env(safe-area-inset-bottom))}.links{grid-template-columns:1fr}.links a{min-height:44px;font-size:14px}.groups{gap:25px}}
+        @media(max-width:480px){.row{gap:6px}.mode{width:40px;height:40px}.brand img{width:min(140px,32vw)}:host([theme-switch]) .menu-label{display:none}:host([theme-switch]) .toggle{width:44px;padding:0;display:grid;place-items:center;font-size:17px}.atlas{gap:7px;padding-right:12px;font-size:12px}}
+        @media(max-width:340px){.atlas-ask{display:none}.mode{width:36px;height:36px}.toggle{padding:10px 9px}}
         @media(max-width:360px){.shell{width:calc(100% - 24px)}.brand img{width:min(120px,35vw)}.panel{padding-inline:20px}}
         :host([theme="dark"]) header img{filter:invert(1) brightness(1.08)}
         @media(prefers-reduced-motion:reduce){.backdrop,.panel{transition:none}}
@@ -107,7 +143,7 @@
          sie sind - sie stehen in Daten, nicht auf dem Bildschirm. */
       const root = this.attachShadow({mode: 'open'});
       const inDiscover = location.pathname.startsWith('/discover/');
-      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo.png" alt="Vision Universe"></a><span class="section">${inDiscover?'Discover':'Entdecken. Verstehen. Investieren.'}</span><nav class="quick" aria-label="Direktzugriff"><a href="/dashboard/">Dashboard</a><a href="/screener/">Screener</a><a href="/news/">News</a><a href="/quant/">Quant</a><a class="q-extra" href="/vorsorge/">Vorsorge</a></nav><a class="atlas" href="/ask/" aria-label="AI Atlas – KI-Suche"><span class="atlas-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/><path class="atlas-small" d="M18.6 14.6c.2 1.6.9 2.5 2.6 2.8-1.7.3-2.4 1.2-2.6 2.8-.2-1.6-.9-2.5-2.6-2.8 1.7-.3 2.4-1.2 2.6-2.8z"/></svg></span><span class="atlas-label"><span class="atlas-ask">AI </span>Atlas</span></a><button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰ Menü</button></div></div></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><div class="panel-head"><a href="/"><img src="/assets/vision-universe-logo.png" alt="Vision Universe"></a><button class="close" type="button" aria-label="Menü schließen">×</button></div><div class="groups"></div><div class="settings"><h2>Einstellungen</h2><div class="setting"><span>Währung</span><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div><div class="setting"><span>Darstellung</span><div class="choices appearance" role="group" aria-label="Darstellung"></div></div></div></nav>`;
+      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo.png" alt="Vision Universe"></a><span class="section">${inDiscover?'Discover':'Entdecken. Verstehen. Investieren.'}</span><nav class="quick" aria-label="Direktzugriff"><a href="/dashboard/">Dashboard</a><a href="/screener/">Screener</a><a href="/news/">News</a><a href="/quant/">Quant</a><a class="q-extra" href="/vorsorge/">Vorsorge</a></nav><a class="atlas" href="/ask/" aria-label="AI Atlas – KI-Suche"><span class="atlas-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/><path class="atlas-small" d="M18.6 14.6c.2 1.6.9 2.5 2.6 2.8-1.7.3-2.4 1.2-2.6 2.8-.2-1.6-.9-2.5-2.6-2.8 1.7-.3 2.4-1.2 2.6-2.8z"/></svg></span><span class="atlas-label"><span class="atlas-ask">AI </span>Atlas</span></a>${this.hasAttribute('theme-switch')?'<button class="mode" type="button" aria-label="Farbschema wechseln"><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>':''}<button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰<span class="menu-label"> Menü</span></button></div></div></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><div class="panel-head"><a href="/"><img src="/assets/vision-universe-logo.png" alt="Vision Universe"></a><button class="close" type="button" aria-label="Menü schließen">×</button></div><div class="groups"></div><div class="settings"><h2>Einstellungen</h2><div class="setting"><span>Währung</span><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div><div class="setting"><span>Darstellung</span><div class="choices appearance" role="group" aria-label="Darstellung"></div></div></div></nav>`;
       const host=root.querySelector('.groups');
       groups.forEach(([heading,entries])=>{
         const section=document.createElement('section');section.className='group';
@@ -137,6 +173,11 @@
       };
       if(location.pathname.startsWith('/ask/'))root.querySelector('.atlas').setAttribute('aria-current','page');
       root.querySelectorAll('.quick a').forEach(a=>{if(location.pathname.startsWith(a.getAttribute('href')))a.setAttribute('aria-current','page');});
+      const modeButton=root.querySelector('.mode');
+      const syncMode=()=>{if(!modeButton)return;const dark=currentTheme()==='dark';modeButton.setAttribute('aria-pressed',String(dark));modeButton.setAttribute('aria-label',dark?'Helles Farbschema':'Dunkles Farbschema');modeButton.title=dark?'Hell':'Dunkel';};
+      if(modeButton){modeButton.onclick=()=>{window.VUTheme.toggle();syncMode();};syncMode();
+        if(this.getAttribute('theme')!==currentTheme())this.setAttribute('theme',currentTheme());}
+      document.addEventListener('vu-theme-change',syncMode);
       const panel=root.querySelector('.panel'),button=root.querySelector('.toggle');panel.inert=true;
       const close=()=>{this.removeAttribute('open');panel.inert=true;panel.setAttribute('aria-hidden','true');button.setAttribute('aria-expanded','false');button.setAttribute('aria-label','Menü öffnen');};
       button.onclick=()=>{if(this.hasAttribute('open')){close();return;}syncActive();this.setAttribute('open','');panel.inert=false;panel.removeAttribute('aria-hidden');button.setAttribute('aria-expanded','true');button.setAttribute('aria-label','Menü schließen');root.querySelector('.close').focus();};
@@ -166,7 +207,7 @@
         const b=document.createElement('button');b.type='button';b.textContent=code;b.setAttribute('aria-pressed',String(preference.get()===code));
         b.onclick=async()=>{if(preference.get()===code)return;b.disabled=true;try{if(code!=='EUR'&&window.VUFx.Bootstrap)await window.VUFx.Bootstrap.ensureCurrency(code);layer.setDisplayCurrency(code);}catch(_){b.disabled=false;}this.renderSettings();};currency.append(b);
       }
-      const theme=window.VUDiscover&&window.VUDiscover.theme;
+      const theme=(window.VUDiscover&&window.VUDiscover.theme)||(this.hasAttribute('theme-switch')?window.VUTheme:null);
       for(const [mode,label] of [['light','Hell'],['dark','Dunkel']]){
         if(!theme){const a=document.createElement('a');a.href='/discover/#/settings';a.textContent=label;appearance.append(a);continue;}
         const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-pressed',String(theme.mode()===mode));b.onclick=()=>{theme.set(mode);this.renderSettings();};appearance.append(b);
