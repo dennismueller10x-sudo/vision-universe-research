@@ -154,6 +154,10 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
     links = parse_links(homepage['body'], homepage['finalUrl'])
     from urllib.parse import urlsplit
     def ir_page(link):
+        # Dropdown/fragment navigation is not a separate IR destination. The
+        # fetched homepage still receives its own role from its actual URL.
+        if link['url'] == canonical_url(homepage['finalUrl']):
+            return False
         parts = urlsplit(link['url'])
         if re.search(r'/static-files/|\.(?:ico|png|jpg|jpeg|svg|webp|css|js|json|pdf|xml|zip|woff2?)(?:$)', parts.path, re.I):
             return False

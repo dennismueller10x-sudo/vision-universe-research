@@ -18,6 +18,14 @@ class InventorySweepTests(unittest.TestCase):
   self.assertEqual(len(chosen),1);record({'companyId':chosen[0]['companyId'],'status':'REJECTED','reason':'OWNER_NOT_VALIDATED','requests':2},self.s,NOW,'first','domains')
   remaining,_=select(self.cs,self.s,NOW,'first','domains');self.assertEqual(len(remaining),1);self.assertNotEqual(remaining[0]['companyId'],chosen[0]['companyId'])
   self.assertEqual(progress(self.s,'first','domains')['pending'],1)
+ def test_offline_classification_reuses_proof_but_never_completes_unsent_network_work(self):
+  self.s.set_state('officialSite:'+self.b['companyId'],{'status':'VALIDATED','url':'https://two.example/'})
+  chosen,_=select(self.cs,self.s,NOW,'outage','domains',limit=1,allow_network=False)
+  self.assertEqual(chosen,[])
+  self.assertIsNone(self.s.state('inventorySweep:outage:domains:'+self.a['companyId']))
+  self.assertEqual(progress(self.s,'outage','domains')['statuses'],{'ALREADY_VERIFIED':1})
+  chosen,_=select(self.cs,self.s,NOW,'outage','domains',limit=1)
+  self.assertEqual([c['companyId'] for c in chosen],[self.a['companyId']])
  def test_resume_and_new_pass_preserve_access_cooldown(self):
   self.s.set_state('officialSite:'+self.a['companyId'],{'status':'REJECTED','reason':'ROBOTS_DISALLOWED','retryAfter':'2026-12-01T00:00:00Z'})
   chosen,_=select(self.cs,self.s,NOW,'second','domains');self.assertEqual([c['companyId'] for c in chosen],[self.b['companyId']])

@@ -186,6 +186,9 @@ def main(argv=None):
             from company_intelligence.discovery_batch import run as discover_batch,persist
             prior_circuit=store.state('discoveryCircuit',{})
             if prior_circuit.get('open') and prior_circuit.get('retryAfter','')>now:
+                # Finish deterministic local classifications while preserving
+                # pending network work and the original circuit due time.
+                sweep_select(companies,store,now,args.inventory_pass,args.inventory_lane,args.limit,allow_network=False)
                 print(json.dumps({'progress':progress(store,args.inventory_pass,args.inventory_lane),
                                   'requests':0,'httpStats':http.stats,'circuit':prior_circuit,
                                   'deferred':True,'stopReason':'CIRCUIT_COOLDOWN'},sort_keys=True))

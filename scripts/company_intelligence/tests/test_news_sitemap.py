@@ -60,6 +60,27 @@ class ManagementMaterialsTests(unittest.TestCase):
   self.assertEqual([c['irHomepage'] for c in configs if c['pageRole']=='IR'],[ir])
   self.assertFalse(any('/stories/' in u for u in h.calls))
 
+ def test_investor_dropdown_does_not_count_corporate_root_as_ir(self):
+  from company_intelligence.feeds import discover_ir
+  root='https://apple.com/';ir=root+'investor-relations/investors-lobby'
+  class HTTP:
+   def __init__(self):self.calls=[]
+   def get(self,url,**kw):
+    self.calls.append(url)
+    return {'body':b'<a href="#">Investor Relations</a><a href="/investor-relations/investors-lobby">Investors Lobby</a>' if url==root else b'<title>Investor Relations</title>','finalUrl':url}
+  h=HTTP();_,configs=discover_ir(company(),root,h,NOW)
+  self.assertEqual(next(c['pageRole'] for c in configs if c['irHomepage']==root),'CORPORATE')
+  self.assertEqual([c['irHomepage'] for c in configs if c['pageRole']=='IR'],[ir])
+  self.assertEqual(h.calls.count(root),1)
+
+ def test_dedicated_ir_root_keeps_role_despite_self_navigation(self):
+  from company_intelligence.feeds import discover_ir
+  root='https://investors.apple.com/'
+  class HTTP:
+   def get(self,url,**kw):return {'body':b'<a href="#">Investors</a>','finalUrl':url}
+  _,configs=discover_ir(company(),root,HTTP(),NOW)
+  self.assertEqual(configs[0]['pageRole'],'IR')
+
  def test_html_first_party_management_content_supported(self):
   links=[{'url':'https://apple.com/remarks','text':'Prepared remarks'},{'url':'https://apple.com/letter','text':'Shareholder letter'},{'url':'https://apple.com/commentary','text':'Management commentary'},{'url':'https://apple.com/replay','text':'Earnings call replay'}]
   docs=page_documents(company(),links,'https://apple.com/investors',NOW)

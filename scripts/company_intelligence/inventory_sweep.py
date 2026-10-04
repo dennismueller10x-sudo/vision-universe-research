@@ -31,7 +31,7 @@ def failure_category(status, reason=''):
     return 'UNRESOLVED'
 
 
-def select(companies, store, now, pass_id, lane, limit=50):
+def select(companies, store, now, pass_id, lane, limit=50, allow_network=True):
     key=prefix(pass_id,lane)
     if not 1<=limit<=100:raise ValueError('INVALID_INVENTORY_LIMIT')
     candidates={cid:store.state('siteCandidates:'+cid,{}) for cid in companies}
@@ -65,6 +65,8 @@ def select(companies, store, now, pass_id, lane, limit=50):
                                     'reason':site.get('reason') if lane=='domains' else ir.get('reason'),
                                     'retryAfter':retry or None,'networkRequests':0})
             continue
+        if not allow_network:
+            continue  # Unsent network work remains pending through a shared outage.
         url=(c.get('officialSites') or [site.get('url')])[0] if lane=='ir' else value['candidates'][0]['url']
         host=domain(url)
         if host in hosts:continue  # Pending identity stays pending, never silently completed.
