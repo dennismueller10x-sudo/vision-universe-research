@@ -62,6 +62,30 @@ export function revisedSincePublication(revisions, securityId, asOf) {
   return !!(cutAt && asOf <= cutAt);
 }
 
+/* FORTGESCHRIEBENE STAENDE SIND KEINE BEOBACHTUNG (04.10.2026).
+   Haelt die Technik-Materialisierung den Schnappschuss eines Titels fest
+   (z. B. Datenqualitaet "large_move" um einen Split), schreibt die
+   Setup-Historie dessen alten Stand unter jedem neuen Stichtag fort. Ein
+   solcher Stand beschreibt den Schnappschuss-Tag, nicht den Stichtag - die
+   Nachrechnung des Stichtags kann ihn nicht treffen, und das ist kein
+   PIT-Verstoss. Belegt ist das, wenn der Stichtag NACH dem Datum des
+   aktuellen Schnappschusses liegt (Schnappschuss-Daten laufen nur vorwaerts).
+   Einmal erkannt, bleibt ein Stand ausgenommen (Liste im Artefakt), auch
+   wenn der Titel spaeter wieder frisch ist. Gezaehlt, nie still. */
+/* snapshotAsOf: Ticker -> Datum des aktuellen Schnappschusses. Liegt der
+   Stichtag danach, war die Eingabe an diesem Stichtag hoechstens so alt wie
+   dieser Schnappschuss - also aelter als der Stichtag. */
+export function carriedForwardKeys(snapshotAsOf, previous) {
+  const keys = new Set(Array.isArray(previous) ? previous.map(([t, d]) => t + "|" + d) : []);
+  return { keys, isCarried(ticker, asOf) {
+    const k = ticker + "|" + asOf;
+    if (keys.has(k)) return true;
+    const snap = snapshotAsOf.get(ticker);
+    if (snap && asOf > snap) { keys.add(k); return true; }
+    return false;
+  }, list() { return [...keys].map((k) => k.split("|")).sort((a, b) => a[0].localeCompare(b[0]) || a[1].localeCompare(b[1])); } };
+}
+
 export function transitionType(a, b) {
   if (!(a in UP) || !(b in UP) || a === b) return null;
   if (b === "CONFIRMED") return "SETUP_CONFIRMED";
@@ -118,17 +142,25 @@ function main() {
   const regimeAt = (d) => { const i = spyIdx.get(d); if (i === undefined || i < 126) return null; const r = spyPts[i][1] / spyPts[i - 126][1] - 1; return r > 0.05 ? "UP" : r < -0.05 ? "DOWN" : "SIDEWAYS"; };
 
   /* Paritaet: dieselben Stichtage wie die veroeffentlichte Setup-Historie. */
-  let parityChecked = 0, parityMismatch = 0, parityRevised = 0;
+  let parityChecked = 0, parityMismatch = 0, parityRevised = 0, parityCarried = 0;
+  const SNAP = join(ROOT, "quant/data/product/setup-observations-v1"), snapshotAsOf = new Map();
+  if (existsSync(SNAP)) for (const f of readdirSync(SNAP).filter((x) => /^[A-Z0-9._-]{2}\.json\.gz$/.test(x))) {
+    for (const [t, v] of Object.entries(JSON.parse(gunzipSync(readFileSync(join(SNAP, f))).toString("utf8")).instruments || {})) if (v && v.asOf) snapshotAsOf.set(t, v.asOf);
+  }
+  const prevArtifact = existsSync(OUT) ? JSON.parse(readFileSync(OUT, "utf8")) : null;
+
   const parityRows = [];
   const LC = join(ROOT, "quant/data/market/listing-continuity-v1.json");
   const revisions = seriesRevisions(existsSync(LC) ? JSON.parse(readFileSync(LC, "utf8")) : null);
-  if (existsSync(HIST)) for (const f of readdirSync(HIST).filter((x) => x.endsWith(".json.gz"))) {
-    const h = JSON.parse(gunzipSync(readFileSync(join(HIST, f))).toString("utf8"));
+  const published = existsSync(HIST) ? readdirSync(HIST).filter((x) => x.endsWith(".json.gz")).sort().map((f) => JSON.parse(gunzipSync(readFileSync(join(HIST, f))).toString("utf8"))) : [];
+  const carried = carriedForwardKeys(snapshotAsOf, prevArtifact && prevArtifact.parity && prevArtifact.parity.carriedForward);
+  for (const h of published) {
     for (const r of replays) {
       /* Nachrechnung genau dieses Stichtags, Marken in der Skala des Stichtags. */
       const pub = h.rows[r.ticker], mine = (r.parity || []).find((x) => x[0] === h.asOf);
       if (!pub || !mine) continue;
       if (revisedSincePublication(revisions, r.securityId, h.asOf)) { parityRevised++; continue; }
+      if (carried.isCarried(r.ticker, h.asOf)) { parityCarried++; continue; }
       const same = pub[0] === mine[1] && pub[1] === mine[4] && pub[2] === mine[5];
       parityChecked++; if (!same) parityMismatch++;
       parityRows.push({ ticker: r.ticker, asOf: h.asOf, published: pub, replay: [mine[1], mine[4], mine[5]], same });
@@ -249,7 +281,7 @@ function main() {
     const completeness = closed ? complete / closed : 0;
     const checks = {
       pit: pitViolations === 0 && parityChecked > 0 && parityMismatch === 0
-        ? { state: "PASS", value: "Jeder Stichtag nur mit Daten bis zum Stichtag; " + parityChecked + " von " + parityChecked + " veröffentlichten Setup-Ständen exakt nachgerechnet" }
+        ? { state: "PASS", value: "Jeder Stichtag nur mit Daten bis zum Stichtag; " + parityChecked + " von " + parityChecked + " veröffentlichten Setup-Ständen exakt nachgerechnet" + (parityRevised || parityCarried ? " (ausgenommen: " + [parityRevised ? parityRevised + " nach Korrektur der Reihe" : null, parityCarried ? parityCarried + " fortgeschriebene Stände eines festgehaltenen Schnappschusses" : null].filter(Boolean).join(", ") + ")" : "") }
         : { state: "FAIL", reason: parityChecked === 0 ? "PARITY_NOT_MEASURED" : "PIT_OR_PARITY_MISMATCH", value: { pitViolations, parityChecked, parityMismatch } },
       lookahead: lookahead === 0 ? { state: "PASS", value: "Einstieg zum Schluss des Folgetags" } : { state: "FAIL", reason: "ENTRY_NOT_AFTER_SIGNAL", value: lookahead },
       sample: { state: SB.sampleLevel(sample.n, sample.titles) === "NOT_READY" ? "FAIL" : "PASS", reason: SB.sampleLevel(sample.n, sample.titles) === "NOT_READY" ? "TOO_FEW_TITLES_OR_CASES" : null,
@@ -301,7 +333,7 @@ function main() {
       setupEngine: replays[0]?.engine || null },
     returnType: allTR ? "TOTAL_RETURN" : SB.RETURN_TYPE, semantics: SB.SEMANTICS.setup, frictions: SB.FRICTIONS, horizons: DAY_HORIZONS, maxHoldDays: MAX_HOLD,
     parity: { checked: parityChecked, mismatches: parityMismatch, rows: parityRows,
-      excludedSeriesRevised: parityRevised, revisionSource: revisions.at ? "listing-continuity-v1.json " + revisions.at : null },
+      excludedSeriesRevised: parityRevised, excludedCarriedForward: parityCarried, carriedForward: carried.list(), revisionSource: revisions.at ? "listing-continuity-v1.json " + revisions.at : null },
     pitViolations, trustRule: SB.TRUST_RULE, trustChecks: SB.TRUST_CHECKS,
     certification, certificationSource: "quant/methodology/setup-state-v1.json requirements.backtestCertification",
     certificationPlain: "Die Setup-Methodik gibt Ausgangszahlen erst nach ihrer Zertifizierung frei. Die Zertifizierung ist eine Owner-Entscheidung auf Grundlage dieser Messung.",
@@ -313,7 +345,7 @@ function main() {
   if (errors.length) { console.error(errors); process.exit(1); }
   writeFileSync(OUT, JSON.stringify(out) + "\n");
   for (const s of studies) console.log(s.id.padEnd(16), "occ", s.occurrences, "titles", s.titles, "m6", s.horizons.m6.n, s.horizons.m6.positiveShare, s.horizons.m6.median, "trade", s.contractTrade.n ?? "-", "rev", s.reversalNextObservation, "trust", s.trust, s.trustReasons.map((x) => x.id).join(","));
-  console.log("parity", parityChecked, "mismatch", parityMismatch, "excludedSeriesRevised", parityRevised, "pitViolations", pitViolations);
+  console.log("parity", parityChecked, "mismatch", parityMismatch, "excludedSeriesRevised", parityRevised, "excludedCarriedForward", parityCarried, "pitViolations", pitViolations);
   for (const x of parityRows.filter((x) => !x.same)) console.log("  mismatch", x.ticker, x.asOf, JSON.stringify(x.published), JSON.stringify(x.replay));
 }
 

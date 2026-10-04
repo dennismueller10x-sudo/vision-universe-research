@@ -156,3 +156,23 @@ test("Replay-Dateien enthalten keine Kursreihe (Rohkurse bleiben runner-privat)"
     assert.deepEqual(r.columns, ["date", "setupState", "invalidationPrice", "exitPrice"]);
   }
 });
+
+test("Paritaet: fortgeschriebene Staende eines festgehaltenen Schnappschusses sind ausgenommen, gezaehlt und bleiben es", async () => {
+  /* Gemessen 04.10.2026: sechs Titel (AMC, CHPT, EJH, LGHL, VEEE, VIVO) mit
+     Datenqualitaet "large_move" behielten ihren Technik-Schnappschuss vom
+     10.09.; die Setup-Historie schrieb ihn unter jedem neuen Stichtag fort,
+     die Nachrechnung des Stichtags traf ihn nicht (33 "Abweichungen"). */
+  const { carriedForwardKeys } = await import("../../scripts/quant/build-setup-backtest.mjs");
+  const c = carriedForwardKeys(new Map([["AMC", "2026-09-10"], ["AAPL", "2026-10-02"]]), [["CHPT", "2026-09-24"]]);
+  assert.equal(c.isCarried("AMC", "2026-09-10"), false, "der Schnappschuss-Tag selbst wird nachgerechnet");
+  assert.equal(c.isCarried("AMC", "2026-09-24"), true);
+  assert.equal(c.isCarried("AAPL", "2026-10-02"), false, "ein frischer Titel wird nachgerechnet");
+  assert.equal(c.isCarried("AAPL", "2026-09-24"), false);
+  assert.equal(c.isCarried("CHPT", "2026-09-24"), true, "einmal erkannt bleibt ausgenommen, auch wenn der Titel wieder frisch ist");
+  assert.equal(c.isCarried("CHPT", "2026-09-25"), false, "nur die belegten Stichtage");
+  assert.equal(c.isCarried("NEU", "2026-09-24"), false, "ohne Schnappschuss kein Ausnahmegrund");
+  assert.deepEqual(c.list(), [["AMC", "2026-09-24"], ["CHPT", "2026-09-24"]]);
+  const src = readFileSync(new URL("scripts/quant/build-setup-backtest.mjs", root), "utf8");
+  assert.match(src, /excludedCarriedForward: parityCarried, carriedForward: carried\.list\(\)/, "die Ausnahme steht im Artefakt");
+  assert.match(src, /fortgeschriebene Stände eines festgehaltenen Schnappschusses/, "und im Text der PIT-Pruefung");
+});
