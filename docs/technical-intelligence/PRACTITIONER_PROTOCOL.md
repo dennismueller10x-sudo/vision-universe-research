@@ -122,3 +122,12 @@ Grundlage: `reviews/PRACTITIONER_PIPELINE_REDTEAM.md`. Es existiert noch kein ei
 4. **Instrument-Kernfeld:** verglichen über die Alias-Auflösung der `instrument-map.json` (`scripts/technical/practitioner/dual-extraction.mjs`, `instrumentKeyOf`), nicht über den Rohtext („$DAX-XET“ = „DAX Index“).
 5. **Ausschluss:** Setzen A und B unabhängig einen Ausschlussgrund (Rückblick, kein Strukturinhalt) → `EXCLUDED` mit diesem Grund; nur einer → Schiedsdurchgang.
 6. **Eingebettete Videos in Artikeln:** Ist ein eingebettetes YouTube-Video wegen Bot-Prüfung nicht abrufbar, wird aus Text und Charts extrahiert und das in `ambiguities` vermerkt; die Fundstellen beziehen sich dann nur auf Text/Bilder.
+
+### Nachtrag 4 — 04.10.2026, im Pilot (vor Festlegung des Status der betroffenen Zeilen; kein VU-Vergleich gesehen)
+
+**Anlass (echte Lücke):** Die Plausibilitätsprüfung §7 („jedes Niveau im Kursbereich des Stichtags ±60 %“) soll Skalierungs- und Abbildungsfehler finden. Im Pilot verwirft sie systematisch **richtig extrahierte** Niveaus von Wochen-/Monatszählungen: Invalidierungen am Tief einer übergeordneten Welle II (Gartner 1M: 4,87 bei Kurs ≈ 247; Robinhood 1W: 6,81 bei ≈ 118; Palantir 1D: 22,04 bei ≈ 132) und Wellenstarts an weit entfernten Hochs (Bitcoin 1W: Welle I bei 68 979 bei ≈ 30 300). Diese Fälle würden allein wegen ihres Zeitrahmens aus dem Benchmark fallen (Auswahlverzerrung gegen große Grade).
+
+1. **Zonen und Trigger** (`targetZones`, `entryZones`, `keySupportZones`, `alternatives[].trigger`): 1D (und kürzer) wie bisher ±60 % um den VU-Schluss am Stichtag (nach Skalierung); 1W/1M −90 % … +400 %.
+2. **Ankerpunkte** (`invalidation.price`, `primary.waveStartPrice`): liegen an vergangenen Wendepunkten und dürfen weiter entfernt sein — zulässig innerhalb Faktor 10 (1D) bzw. Faktor 100 (1W/1M) um den VU-Schluss.
+3. Grobe Skalierungsfehler (z. B. SPX-Niveaus ohne Faktor 0,1 auf SPY) bleiben über die Zonen erkennbar; Fälle ohne Zonen mit nur einem Ankerpunkt sind schwächer geprüft (berichtet).
+4. Umsetzung: `lib.mjs` `plausibilityChecks`, Test in `quant/tests/practitioner-benchmark.test.mjs`.

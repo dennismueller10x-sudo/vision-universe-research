@@ -318,9 +318,16 @@ export function plausibilityChecks(ref, { closeAtCutoff, levelScale }) {
   (ref.alternatives || []).forEach((a, i) => push(`alternatives[${i}].trigger`, a.trigger));
   if (ref.primary) push("primary.waveStartPrice", ref.primary.waveStartPrice);
   if (Number.isFinite(levelScale) && Number.isFinite(closeAtCutoff) && closeAtCutoff > 0) {
+    /* Nachtrag 4: Zonen/Trigger je Zeitrahmen (1D ±60 %, 1W/1M −90 %…+400 %); Invalidation und Wellenstart liegen an
+       vergangenen Wendepunkten (z. B. Welle-II-Tief) und duerfen weiter entfernt sein: Faktor 10 (1D) bzw. 100 (1W/1M). */
+    const long = ref.timeframe === "1W" || ref.timeframe === "1M";
+    const anchor = (n) => n === "invalidation.price" || n === "primary.waveStartPrice";
     for (const [name, v] of lv) {
-      const rel = v * levelScale / closeAtCutoff - 1;
-      if (Math.abs(rel) > 0.6) errors.push(`${name}=${v} (skaliert ${round(v * levelScale, 4)}) liegt ${round(rel * 100, 1)} % vom VU-Schluss ${closeAtCutoff} am Stichtag (> ±60 %)`);
+      const x = v * levelScale / closeAtCutoff, rel = x - 1;
+      if (anchor(name)) {
+        const f = long ? 100 : 10;
+        if (!(x > 0) || x > f || x < 1 / f) errors.push(`${name}=${v} (skaliert ${round(v * levelScale, 4)}) liegt ${round(rel * 100, 1)} % vom VU-Schluss ${closeAtCutoff} am Stichtag (> Faktor ${f}, Nachtrag 4)`);
+      } else if (long ? (rel < -0.9 || rel > 4) : Math.abs(rel) > 0.6) errors.push(`${name}=${v} (skaliert ${round(v * levelScale, 4)}) liegt ${round(rel * 100, 1)} % vom VU-Schluss ${closeAtCutoff} am Stichtag (> ${long ? "−90 %/+400 %" : "±60 %"})`);
     }
   } else if (lv.length) warnings.push("Niveaus nicht pruefbar (Proxy ohne levelScale oder kein Schluss)");
   const p = ref.primary;

@@ -321,7 +321,8 @@ test("plausibility: Niveaus ±60 % um den VU-Schluss, nach Skalierung", () => {
   const r = fx();
   assert.deepEqual(L.plausibilityChecks(r, { closeAtCutoff: 357.63, levelScale: 0.1 }).errors, []);
   const unscaled = L.plausibilityChecks(r, { closeAtCutoff: 357.63, levelScale: 1 });
-  assert.ok(unscaled.errors.length >= 3 && unscaled.errors.every((e) => /> ±60 %/.test(e)));
+  // Nachtrag 4: Band je Zeitrahmen (Fixture 1W: Zonen −90 %/+400 %); unskalierte SPX-Ziele (×11) fallen weiterhin durch
+  assert.ok(unscaled.errors.length >= 3 && unscaled.errors.every((e) => /> (±60 %|−90 %\/\+400 %|Faktor \d+)/.test(e)));
   assert.ok(L.plausibilityChecks(r, { closeAtCutoff: 357.63, levelScale: null }).warnings.some((w) => /nicht pruefbar/.test(w)));
   const tf = L.plausibilityChecks(fx({ timeframe: "1W", primary: { waveStartDate: "2022-10-10" } }), { closeAtCutoff: 357.63, levelScale: 0.1 });
   assert.ok(tf.warnings.some((w) => /Wochenchart/.test(w)));
@@ -832,4 +833,11 @@ test("Nachtrag 2: LLM_DUAL_INDEPENDENT_PRIMARY freeze guards", () => {
   assert.ok(has(mk({ confidence: "HIGH", extractor: "llm-a", method: "LLM_DUAL_INDEPENDENT_PRIMARY", passes: { a: "p1", b: "p2", coreFieldAgreement: { family: true, currentWave: false } } }), /HIGH trotz abweichender/));
   assert.ok(!has(mk({ confidence: "MEDIUM", extractor: "llm-a", method: "LLM_DUAL_INDEPENDENT_PRIMARY", passes: { a: "p1", b: "p2", coreFieldAgreement: { family: true, currentWave: false } } }), /Durchgaenge|abweichender|coreField/));
   assert.ok(L.loadSchema().properties.extraction.properties.method.enum.includes("LLM_DUAL_INDEPENDENT_PRIMARY"));
+});
+
+test("Nachtrag 4: Wochen-/Monatszaehlung mit Invalidation am Welle-II-Tief ist plausibel, Skalenfehler nicht", () => {
+  const base = { timeframe: "1M", invalidation: { price: 4.87, direction: "below", basis: "UNKNOWN" }, targetZones: [], keySupportZones: [{ low: 93.96, high: 189.12 }], entryZones: [], alternatives: [], primary: null };
+  assert.deepEqual(L.plausibilityChecks(base, { closeAtCutoff: 246.89, levelScale: 1 }).errors, []);
+  assert.ok(L.plausibilityChecks(Object.assign({}, base, { timeframe: "1D" }), { closeAtCutoff: 246.89, levelScale: 1 }).errors.length >= 1);
+  assert.ok(L.plausibilityChecks(base, { closeAtCutoff: 246.89, levelScale: 0.001 }).errors.some((e) => /Faktor 100/.test(e)));
 });

@@ -59,6 +59,8 @@ export function confidenceFor({ agreementAB, finalKnown, evidenced = true, editF
  * Woerter, Wortpaare; je Kandidat erst mit dem angegebenen Typ, dann mit UNKNOWN. Erster Treffer gewinnt. Kein Treffer →
  * normalisierter Name. Liefert {key, token, resolved}.
  */
+/* Keine Instrument-Kandidaten: Zeitrahmen-/Chartkennungen und Boersennamen ("NVDA (W)" ist nicht Ticker W). */
+const CAND_STOP = new Set(["W", "D", "M", "H", "1D", "1W", "1M", "4H", "1H", "60", "240", "120", "45", "DYNAMIC", "NYSE", "NASDAQ", "NASDAQGS", "AMEX", "XETRA", "NAS", "INC", "CORP", "ETF", "INDEX", "F"]);
 export function instrumentKeyOf(instr, map = loadInstrumentMap()) {
   const i = instr || {};
   if (isUnknown(i.asShown)) return null;
@@ -66,7 +68,7 @@ export function instrumentKeyOf(instr, map = loadInstrumentMap()) {
   const words = s.split(/[^A-Za-z0-9&!.$]+/).map((w) => w.replace(/^\$/, "").replace(/[.,-]+$/, "")).filter(Boolean);
   const cands = [s, ...[...s.matchAll(/\(([^)]+)\)/g)].map((m) => m[1].trim()), ...words, ...words.slice(1).map((w, k) => words[k] + " " + w)];
   const types = [...new Set([i.instrumentType || "UNKNOWN", "UNKNOWN"])];
-  for (const c of cands) for (const t of types) {
+  for (const c of cands.filter((x) => !CAND_STOP.has(String(x).trim().toUpperCase()))) for (const t of types) {
     const r = resolveInstrument({ asShown: c, instrumentType: t, priceAdjustment: i.priceAdjustment }, map);
     if (r.mapId) return { key: r.vuSymbol ? "VU:" + r.vuSymbol : "MAP:" + r.mapId, token: c, resolved: r, instrumentType: t };
   }
