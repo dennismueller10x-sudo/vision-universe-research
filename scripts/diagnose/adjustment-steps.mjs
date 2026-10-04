@@ -1,0 +1,97 @@
+/* Diagnose: warum sperrt die Qualitaetspruefung eine Reihe mit
+   unexplained_adjustment_step? (quant/engines/market-quality.js)
+
+   Liest die Tagesreihen der genannten Titel NUR LESEND aus der dauerhaften
+   Ablage (R2, wie sync-history-store --pull) oder aus einem lokalen
+   Verzeichnis, rechnet die Pruefung mit derselben Engine nach und legt
+   jeden Faktorsprung offen: Datum, Rohkurs, bereinigter Kurs, Faktor
+   (adjClose/close) vorher/nachher, Sprungverhaeltnis, gemeldeter Split und
+   Dividende - und welche Dividende den Sprung erklaeren wuerde.
+
+   Keine Sonderregel fuer einzelne Titel, keine Schreibvorgaenge.
+
+   Aufruf:
+     node scripts/diagnose/adjustment-steps.mjs --tickers LOGI,AAPL [--local-root DIR] [--out FILE]
+*/
+import { writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const Store = require(join(root, "quant", "engines", "history-store.js"));
+const Guard = require(join(root, "quant", "engines", "zero-cost-guard.js"));
+const MQ = require(join(root, "quant", "engines", "market-quality.js"));
+
+const argv = process.argv.slice(2);
+const arg = (n, d = null) => { const i = argv.indexOf(n); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
+const TICKERS = String(arg("--tickers", "")).split(",").map((s) => s.trim().toUpperCase()).filter(Boolean);
+if (!TICKERS.length || TICKERS.some((t) => !/^[A-Z0-9.\-]{1,12}$/.test(t))) { console.error("--tickers A,B,C"); process.exit(2); }
+
+const r = (v, d = 6) => (typeof v === "number" && isFinite(v) ? Math.round(v * 10 ** d) / 10 ** d : null);
+
+/** Reine Auswertung einer Reihe: jeder Faktorsprung mit Einordnung. */
+export function explainSteps(bars, { tolerance = 0.002, context = 3 } = {}) {
+  const steps = [];
+  for (let i = 1; i < bars.length; i++) {
+    const p = bars[i - 1], c = bars[i];
+    if (!(p.close > 0 && p.adjustedClose > 0 && c.close > 0 && c.adjustedClose > 0)) continue;
+    const fp = p.adjustedClose / p.close, fc = c.adjustedClose / c.close, step = fc / fp;
+    if (Math.abs(step - 1) <= tolerance) continue;
+    const split = typeof c.splitFactor === "number" && Math.abs(c.splitFactor - 1) > 1e-9 ? c.splitFactor : null;
+    const div = typeof c.dividend === "number" && c.dividend > 0 ? c.dividend : null;
+    // Tiingo-Konvention: step = splitFactor * (1 + div/close_ex). Welche Dividende erklaerte den Sprung?
+    const impliedDividend = (step / (split || 1) - 1) * c.close;
+    steps.push({
+      date: c.date, prevDate: p.date,
+      close: [p.close, c.close], adjustedClose: [p.adjustedClose, c.adjustedClose],
+      factor: [r(fp, 8), r(fc, 8)], step: r(step, 8), stepPct: r((step - 1) * 100, 4),
+      reportedSplit: split, reportedDividend: div,
+      impliedDividendAtExClose: r(impliedDividend, 4),
+      impliedYieldPct: r((impliedDividend / c.close) * 100, 4),
+      explained: !!(split || div),
+      context: bars.slice(Math.max(0, i - context), Math.min(bars.length, i + context + 1))
+        .map((b) => ({ date: b.date, close: b.close, adjustedClose: b.adjustedClose, dividend: b.dividend ?? null, splitFactor: b.splitFactor ?? null }))
+    });
+  }
+  return steps;
+}
+
+async function makeStore() {
+  const budget = Guard.createBudget({ classAOperations: 0, classBOperations: TICKERS.length });
+  const local = arg("--local-root");
+  if (local) {
+    const { createFsDriver } = await import(join(root, "scripts", "market", "storage", "fs-driver.mjs"));
+    return Store.createHistoryStore({ driver: createFsDriver(local), provider: "tiingo", market: "US", budget });
+  }
+  const { createS3DriverFromEnv } = await import(join(root, "scripts", "market", "storage", "s3-driver.mjs"));
+  return Store.createHistoryStore({ driver: createS3DriverFromEnv(), provider: "tiingo", market: "US", budget });
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const store = await makeStore();
+  const report = { generatedAt: new Date().toISOString(), tickers: {} };
+  for (const t of TICKERS) {
+    const doc = await store.getSeries(t);
+    if (!doc) { report.tickers[t] = { state: "NOT_IN_STORE" }; console.log(`${t}: nicht in der Ablage`); continue; }
+    const bars = doc.bars;
+    const verdict = MQ.validateAdjustmentConsistency(bars, { claimedStatus: doc.adjustmentStatus, dividendConvention: "TIINGO_REINVESTMENT_CLOSE" });
+    const steps = explainSteps(bars);
+    const divs = bars.filter((b) => b.dividend > 0).map((b) => ({ date: b.date, dividend: b.dividend, close: b.close }));
+    report.tickers[t] = {
+      state: "READ", first: doc.first, last: doc.last, barCount: doc.barCount, adjustmentStatus: doc.adjustmentStatus,
+      findings: verdict.findings, dividendsReported: divs, splitsReported: bars.filter((b) => b.splitFactor && b.splitFactor !== 1).map((b) => ({ date: b.date, splitFactor: b.splitFactor })),
+      unexplainedSteps: steps.filter((s) => !s.explained), explainedSteps: steps.filter((s) => s.explained).length
+    };
+    console.log(`\n== ${t} (${doc.first} .. ${doc.last}, ${doc.barCount} Bars)`);
+    console.log(`Befunde: ${verdict.findings.filter((f) => f.severity === "error").map((f) => f.code + "@" + (f.details && f.details.date || "")).join(", ") || "keine Fehler"}`);
+    console.log(`Gemeldete Dividenden: ${divs.map((d) => d.date + " " + d.dividend).join(" | ") || "keine"}`);
+    for (const s of steps.filter((x) => !x.explained)) {
+      console.log(`UNERKLAERT ${s.prevDate} -> ${s.date}: close ${s.close.join(" -> ")}, adj ${s.adjustedClose.join(" -> ")}, Faktor ${s.factor.join(" -> ")}, Sprung ${s.stepPct} %, entspraeche Dividende ${s.impliedDividendAtExClose} (${s.impliedYieldPct} %)`);
+      for (const b of s.context) console.log(`   ${b.date}  close=${b.close}  adj=${b.adjustedClose}  div=${b.dividend}  split=${b.splitFactor}`);
+    }
+  }
+  const out = arg("--out");
+  if (out) writeFileSync(out, JSON.stringify(report, null, 2));
+}
