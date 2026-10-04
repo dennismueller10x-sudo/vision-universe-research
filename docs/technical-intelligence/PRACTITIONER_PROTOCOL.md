@@ -144,3 +144,40 @@ e) **Balance:** HKCM-Grenze derzeit gegenstandslos (0). Keine Familie > 60 % der
 f) **Stopp-Regel (vorab):** Alle neu gezogenen Elemente erhalten eine feste Bearbeitungsreihenfolge = aufsteigend SHA-256("20261004|order|"+sourceId+"|"+id) (quellenübergreifend gemischt, damit ein vorzeitiger Stopp eine Zufallsauswahl der Ziehung hinterlässt). Bearbeitet wird in dieser Reihenfolge, jedes Element vollständig (keine Auslassung); Stopp, sobald **100 INCLUDED** (einschließlich der 5 aus dem Pilot) erreicht sind oder das Rechenbudget (≈ 450 USD für Phase 2) erreicht ist. Nicht mehr bearbeitete Elemente werden als `NOT_PROCESSED` im Rahmen/Protokoll gezählt.
 g) **Revisionen:** Für jede INCLUDED-Fassung wird die erste spätere Analyse desselben Autors zum selben Instrument innerhalb von 56 Tagen (aus den Rahmen-Metadaten: gleiches Titel-Instrument/Ticker bzw. gleiches Symbol) als `LATER_REVISION` (`revisionOf`, gleiche `caseId`) doppelt extrahiert; sie zählt nicht zur Fallzahl und hat kein Stichprobengewicht.
 h) Extraktion unverändert nach Nachträgen 2–4; kein Freeze, kein Vergleichslauf, keine VU-Ausgaben oder späteren Kurse — den Freeze und den blinden Benchmark führt der Auftraggeber aus.
+
+### Nachtrag 6 — 04.10.2026, nach dem ersten Vergleichslauf auf DEVELOPMENT/VALIDATION, vor jeder Entsiegelung
+
+**Offenlegung:** Dieser Nachtrag ist **nachträglich**. Der Vergleich auf DEVELOPMENT + VALIDATION (35 Fälle, Commit `4faaa3acd`) lief bereits und war ausgewertet. Die Holdouts (HOLDOUT_TEMPORAL 32, HOLDOUT_SOURCE `tiedje` 11) sind weiterhin versiegelt. Für sie gilt dieser Nachtrag als vorab festgelegt. Freeze, Daten und Aufteilung bleiben unverändert (SHA-256 `7af25c9b…f489`). Der ursprüngliche Lauf wird unter `benchmark/archive-v1.0/` aufbewahrt und im Bericht mit beiden Definitionen genannt.
+
+**Anlass (echte Fehler, gefunden im finalen Red-Team §122):**
+
+1. **Kennzahl B/F/G bei abgeschlossenem VU-Muster.** Nachtrag 3 legt fest: Die Praktiker-Familie bzw. das Praktiker-Muster ist die Struktur, *deren Teilwelle die laufende Welle ist*. Ist VUs Hauptmuster abgeschlossen (`complete`), so ist die laufende Bewegung bereits die nächste Welle. `compare.mjs` verglich trotzdem die Familie bzw. das Muster des **abgeschlossenen** VU-Musters. Damit wurden ungleiche Dinge verglichen: die abgeschlossene Vorstruktur gegen die laufende Struktur. In 24 von 33 Fällen war das VU-Muster abgeschlossen.
+2. **Ergebnisschicht ohne Folgedaten.** `barsAfter` rief `barsUntil(…, "9999-12-31")` auf. Für Wochenreihen liefert `lastCompleteWeekEnd` dafür ein ungültiges Datum. Die Folge: 0 Bars, die trotzdem als `status: OK` mit `firstEvent: NONE` gezählt wurden. Derselbe Aufruf steckt in der Trajektorie für die Erkennungslatenz.
+3. **Erkennungslatenz zensiert.** Gemeldet wird der erste Treffer im Fenster [−10, +10]. Treffer am linken Rand (−10) bedeuten nur „schon zu Fensterbeginn so gelesen“. Der Median ist deshalb keine Latenz.
+
+**Festlegung:**
+
+a) **B, F und G bei abgeschlossenem VU-Hauptmuster.**
+* Liefert VU einen höheren Grad, der das Hauptmuster als Welle enthält (`higherDegree.pattern`), so werden Familie und Muster dieser enthaltenden Struktur verglichen. C bleibt unverändert (Label über `inferredNext`).
+* Ohne höheren Grad gilt NOT_COMPARABLE (Grund `VU_PATTERN_COMPLETE_NO_CONTAINING_STRUCTURE`).
+* Für laufende VU-Muster bleibt alles unverändert. Gleiches gilt für Alternativen in G.
+
+b) **S getrennt berichten.** S wird zusätzlich danach aufgeteilt, ob die VU-Rolle aus der Engine stammt (laufendes Muster) oder vom Vergleich abgeleitet ist (`roleInferred`, abgeschlossenes Muster).
+
+c) **Ergebnisschicht.**
+* Folgedaten werden bis zum letzten vorhandenen Bar der Reihe geladen.
+* Ein Fall ohne Folgebar erhält `status: NO_FORWARD_DATA` und zählt nicht als ausgewertet.
+* Die Trajektorie der Latenz wird ebenso korrigiert.
+
+d) **Latenz.**
+* Zusätzlich werden die Treffer am linken Fensterrand gezählt (`leftCensored`).
+* Der Bericht nennt den Median nur zusammen mit dieser Zahl.
+
+e) **Berichtsregeln.**
+* Familien-κ mit konstantem Bewerter wird als „nicht definiert“ berichtet.
+* Revisionsangaben heißen „Anteil revidierter Fälle“.
+* A1 wird nur gegen Basisregeln eingeordnet, ohne Aussage „über der Basis“, solange es kein Konfidenzintervall bzw. keinen gepaarten Test gibt.
+
+f) **Weitere Regeln.**
+* Die Ergebnisstudie läuft danach erneut, ebenfalls erst nach der neuen Versiegelung.
+* Holdouts werden durch diesen Nachtrag **nicht** entsiegelt.
