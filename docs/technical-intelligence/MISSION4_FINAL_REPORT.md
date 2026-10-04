@@ -94,7 +94,7 @@ Produktbau 4 Worker ≈ 75 min für 5.292 Titel; Wochen-Evidenz ≈ 100 min (Eng
 
 ## 19 Tests
 
-`node --test quant/tests/*.test.mjs`: **2.209 bestanden, 0 fehlgeschlagen**; Screener, Discover, VU-Ask-Worker, Ask: **379 bestanden, 0 fehlgeschlagen, 5 übersprungen** (Datenabhängigkeit). Neue Regressionstests: M4-1 Wochenend-Lücken, M4-2 Migrations-/Neutitel-Alerts, M4-3 WXY auf Lehrbuchstrukturen, M4-4 API-Versionen, M4-5 Kollaps-Niveaus (ACON, AIXI, BYND, BRNX, ATOS), M4-6 tote Reihen, Elliott-Formung, Einstiegs- und CRV-Grenzen (ALPN, VLCN, TALK, SLAB, GRDX …); Screener-Veraltung; Werkbank-Selbsttest 23/23, Playwright 22/22. Kausalitätstest (vergiftete Zukunft) fing während der Arbeit einen eigenen Look-ahead-Fehler
+Reproduzierbarkeit: `verify-technical-intelligence.mjs --every 50` — 106 Stichprobentitel aus den veröffentlichten Daten stimmen mit einer Neuberechnung überein (Drift 0). `node --test quant/tests/*.test.mjs`: **2.209 bestanden, 0 fehlgeschlagen**; Screener, Discover, VU-Ask-Worker, Ask: **379 bestanden, 0 fehlgeschlagen, 5 übersprungen** (Datenabhängigkeit). Neue Regressionstests: M4-1 Wochenend-Lücken, M4-2 Migrations-/Neutitel-Alerts, M4-3 WXY auf Lehrbuchstrukturen, M4-4 API-Versionen, M4-5 Kollaps-Niveaus (ACON, AIXI, BYND, BRNX, ATOS), M4-6 tote Reihen, Elliott-Formung, Einstiegs- und CRV-Grenzen (ALPN, VLCN, TALK, SLAB, GRDX …); Screener-Veraltung; Werkbank-Selbsttest 23/23, Playwright 22/22. Kausalitätstest (vergiftete Zukunft) fing während der Arbeit einen eigenen Look-ahead-Fehler
 
 ## 20 Red Team
 
