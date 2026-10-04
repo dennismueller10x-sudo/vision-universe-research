@@ -198,6 +198,8 @@ def main(argv=None):
                 return value
             selected,candidates=sweep_select(companies,store,now,args.inventory_pass,args.inventory_lane,args.limit)
             pipeline.ensure_aliases([c['companyId'] for c in selected])
+            # Exact-CIK SEC legal aliases enrich verification without replacing master names.
+            selected=[{**c,'names':pipeline.companies[c['companyId']]['names']} for c in selected]
             def checkpoint(result):
                 persist([result],store,companies,now)
                 record(result,store,now,args.inventory_pass,args.inventory_lane)

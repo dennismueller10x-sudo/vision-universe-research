@@ -6,6 +6,17 @@ Discovery now stops submitting candidates after matching infrastructure errors a
 
 Reuse the same inventory pass ID. Expired temporary-failure and cooldown entries are eligible again; attempt/request counts are cumulative and successful retries retain the first-attempt timestamp. Permanent ownership/access classifications are not automatically relaxed. In-flight sources preserve independently validated partial evidence. Initial validation: 271 feature Python tests and 29 feature Node tests pass, including shared-failure admission, transport proxy causes, isolated origins/access denials and due-time resume.
 
+The bounded driver records every completed batch and ranks failure categories/reasons in `inventoryRunner:<pass>:<lane>` in the same private ledger. It snapshots the existing checkpoint format every ten batches and on a circuit/no-due/outer-limit stop. A failed child never overwrites candidate state; a restarted driver uses the same frozen inventory. Targeted interruption/restore tests pass. Unattempted candidates precede due retries, preventing retry storms from starving the unchecked pool. The verifier now receives the existing resolver's exact-CIK, non-mock SEC legal aliases; master names remain unchanged and wrong-CIK aliases are excluded.
+
+```bash
+PYTHONPATH=scripts python -m company_intelligence.inventory_runner \
+  --root . --state .company-intelligence --network \
+  --inventory-pass inventory-20261004-complete --inventory-lane domains \
+  --max-batches 200 --limit 25 --request-budget 200 --max-seconds 480
+```
+
+The reconstructed logo-plus-current-Wikidata inventory has 4,248 candidates. The preceding ledger's 35 additional candidate identities cannot be recovered from Git alone. They remain an explicit historical-state gap, not silently completed candidates. The previously committed 769 verified domains and all source configurations are retained.
+
 The continuation is unfinished; the historical report below remains evidence from its own ledger rather than a claim of current restored operational state. PR #356 remains unmerged and gated.
 
 ---

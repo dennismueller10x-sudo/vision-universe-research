@@ -40,11 +40,13 @@ def select(companies, store, now, pass_id, lane, limit=50):
         snapshot=sorted(cid for cid,value in candidates.items() if value.get('candidates'))
         store.set_state(key+'inventory',snapshot)
     selected=[];hosts=set()
-    for cid in snapshot:
+    prior_outcomes={cid:store.state(key+cid) for cid in snapshot}
+    # Finish unattempted identities before consuming due retry capacity.
+    for cid in sorted(snapshot,key=lambda cid:(bool(prior_outcomes[cid]),cid)):
         if cid not in companies:continue
         c=companies[cid];value=candidates[cid];site=store.state('officialSite:'+cid,{})
         official=bool(c.get('officialSites')) or site.get('status')=='VALIDATED'
-        prior=store.state(key+cid)
+        prior=prior_outcomes[cid]
         retryable = prior and (prior.get('status')=='COOLDOWN' or prior.get('category') in ('TEMPORARILY_UNAVAILABLE','DEFERRED_BUDGET'))
         due_after=(prior or {}).get('retryAfter') or (site if lane=='domains' else store.state('ir:'+cid,{})).get('retryAfter') or '9999'
         if prior and not (retryable and due_after<=now) and not (lane=='ir' and prior.get('status')=='NO_VERIFIED_DOMAIN' and official):continue

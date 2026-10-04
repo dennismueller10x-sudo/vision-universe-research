@@ -71,13 +71,37 @@ class InventorySweepTests(unittest.TestCase):
   chosen,_=select(self.cs,self.s,NOW,'recover','domains')
   self.assertNotIn(cid,[c['companyId'] for c in chosen])
   chosen,_=select(self.cs,self.s,'2026-12-02T00:00:00Z','recover','domains')
+  # A never-attempted issuer on the same host precedes this due retry.
+  self.assertEqual(chosen[0]['companyId'],self.b['companyId'])
+  record({'companyId':self.b['companyId'],'status':'REJECTED','reason':'OWNER_NOT_VALIDATED','requests':0},self.s,NOW,'recover','domains')
+  chosen,_=select(self.cs,self.s,'2026-12-02T00:00:00Z','recover','domains')
   self.assertEqual(chosen[0]['companyId'],cid)
   record({'companyId':cid,'status':'DEFERRED','reason':'SHARED_INFRASTRUCTURE_CIRCUIT_OPEN:SHARED_PROXY_FAILURE','requests':1},self.s,NOW,'recover','domains')
   self.assertEqual(progress(self.s,'recover','domains')['freshAttempts'],1)
-  self.assertEqual(select(self.cs,self.s,NOW,'recover','domains')[0],[self.b])
+  self.assertEqual(select(self.cs,self.s,NOW,'recover','domains')[0],[])
   chosen,_=select(self.cs,self.s,'2026-12-02T00:00:00Z','recover','domains')
   self.assertEqual(chosen[0]['companyId'],cid)
   record({'companyId':cid,'status':'VALIDATED','requests':2},self.s,'2026-12-02T00:00:00Z','recover','domains')
   row=self.s.state('inventorySweep:recover:domains:'+cid)
   self.assertEqual(row['attempts'],2);self.assertEqual(row['networkRequests'],3)
   self.assertEqual(row['category'],'VERIFIED_OFFICIAL')
+
+ def test_cli_passes_only_exact_cik_sec_legal_aliases_to_domain_verifier(self):
+  import contextlib,io,json
+  from unittest.mock import patch
+  from company_intelligence.cli import main
+  root=Path(self.tmp.name)/'root';config=root/'company-intelligence/config';config.mkdir(parents=True)
+  (config/'official-sites.json').write_text('{}')
+  consumer=root/'quant/data/sec/consumer';consumer.mkdir(parents=True)
+  (consumer/(self.a['cik']+'.json')).write_text('{}')
+  (consumer/('CIK'+self.a['cik']+'.json')).write_text(json.dumps({'cik':self.a['cik'],'name':'One Legal Holdings Corporation','dataSource':{'provider':'sec_edgar','isMock':False}}))
+  (consumer/('CIK'+self.b['cik']+'.json')).write_text(json.dumps({'cik':self.a['cik'],'name':'Wrong Owner Corporation','dataSource':{'provider':'sec_edgar','isMock':False}}))
+  def import_candidates(root,companies,store,now):
+   for c in companies.values():store.set_state('siteCandidates:'+c['companyId'],{'status':'CANDIDATE','candidates':[{'url':'https://'+c['listings'][0]['symbol'].lower()+'.example/'}]})
+  def batch(selected,*args,**kwargs):
+   self.assertIn('One Legal Holdings Corporation',selected[0]['names'])
+   self.assertNotIn('Wrong Owner Corporation',selected[1]['names'])
+   self.assertEqual(self.a['names'],['One Corp'])
+   return []
+  with patch('company_intelligence.cli.load_universe',return_value=self.cs),patch('company_intelligence.site_inventory.import_inventory',side_effect=import_candidates),patch('company_intelligence.discovery_batch.run',side_effect=batch),contextlib.redirect_stdout(io.StringIO()):
+   self.assertEqual(main(['sweep-inventory','--root',str(root),'--state',str(root/'.company-intelligence'),'--network','--inventory-pass','aliases']),0)
