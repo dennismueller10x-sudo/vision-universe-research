@@ -62,6 +62,38 @@ export function revisedSincePublication(revisions, securityId, asOf) {
   return !!(cutAt && asOf <= cutAt);
 }
 
+/* WIEDERHOLTE ALT-BEOBACHTUNG IST KEIN PIT-VERSTOSS - ABER SICHTBAR (04.10.2026).
+   Bis 04.10.2026 hat build-setup-observations jedes Technical-Bundle unter dem
+   juengsten Stichtag veroeffentlicht, auch wenn das Bundle selbst aelter war.
+   Sechs Titel (AMC, CHPT, EJH, LGHL, VEEE, VIVO) stehen seit dem 2026-09-10
+   mit identischer Zeile in jeder Beobachtung; nachdem ihre Reihen wieder
+   fortgeschrieben wurden, rechnet die Wiederholung an diesen Stichtagen
+   andere Werte - 33 Abweichungen. Das ist Veraltung, kein Blick in die
+   Zukunft. Als solche gilt eine Abweichung NUR, wenn
+     1. die veroeffentlichte Zeile seit einem frueheren Stichtag E unveraendert ist und
+     2. die Wiederholung an genau diesem E exakt uebereinstimmt.
+   Sie wird gezaehlt und ausgewiesen (parity.staleRepeats), nicht verschwiegen.
+   Jede andere Abweichung bleibt ein PIT-Fehler. Neue Beobachtungen nehmen
+   veraltete Bundles nicht mehr auf (build-setup-observations, staleBundles). */
+export function classifyStaleRepeats(parityRows, publishedByTicker) {
+  const key = (t, d) => t + "|" + d;
+  const byKey = new Map(parityRows.map((x) => [key(x.ticker, x.asOf), x]));
+  const same = (a, b) => !!a && !!b && a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
+  let stale = 0;
+  for (const x of parityRows) {
+    if (x.same) continue;
+    const hist = (publishedByTicker.get(x.ticker) || []).filter((h) => h.asOf <= x.asOf).sort((a, b) => (a.asOf < b.asOf ? -1 : 1));
+    let i = hist.length - 1;
+    if (i < 0 || hist[i].asOf !== x.asOf) continue;
+    while (i > 0 && same(hist[i - 1].row, x.published)) i--;
+    const origin = hist[i];
+    if (!origin || origin.asOf === x.asOf) continue;
+    const proof = byKey.get(key(x.ticker, origin.asOf));
+    if (proof && proof.same) { x.staleRepeatOf = origin.asOf; stale++; }
+  }
+  return stale;
+}
+
 export function transitionType(a, b) {
   if (!(a in UP) || !(b in UP) || a === b) return null;
   if (b === "CONFIRMED") return "SETUP_CONFIRMED";
@@ -122,8 +154,10 @@ function main() {
   const parityRows = [];
   const LC = join(ROOT, "quant/data/market/listing-continuity-v1.json");
   const revisions = seriesRevisions(existsSync(LC) ? JSON.parse(readFileSync(LC, "utf8")) : null);
+  const publishedByTicker = new Map();
   if (existsSync(HIST)) for (const f of readdirSync(HIST).filter((x) => x.endsWith(".json.gz"))) {
     const h = JSON.parse(gunzipSync(readFileSync(join(HIST, f))).toString("utf8"));
+    for (const [t, row] of Object.entries(h.rows || {})) (publishedByTicker.get(t) || publishedByTicker.set(t, []).get(t)).push({ asOf: h.asOf, row });
     for (const r of replays) {
       /* Nachrechnung genau dieses Stichtags, Marken in der Skala des Stichtags. */
       const pub = h.rows[r.ticker], mine = (r.parity || []).find((x) => x[0] === h.asOf);
@@ -134,6 +168,8 @@ function main() {
       parityRows.push({ ticker: r.ticker, asOf: h.asOf, published: pub, replay: [mine[1], mine[4], mine[5]], same });
     }
   }
+  const parityStaleRepeats = classifyStaleRepeats(parityRows, publishedByTicker);
+  parityMismatch -= parityStaleRepeats;
   const pitViolations = replays.reduce((s, r) => s + r.pitViolations, 0);
   /* Gesamtrendite-Vertrag: Replays ohne bestaetigte Gesamtrendite fallen
      heraus (gezaehlt), solange >= 95 % bestaetigt sind - dann rechnet die
@@ -301,6 +337,8 @@ function main() {
       setupEngine: replays[0]?.engine || null },
     returnType: allTR ? "TOTAL_RETURN" : SB.RETURN_TYPE, semantics: SB.SEMANTICS.setup, frictions: SB.FRICTIONS, horizons: DAY_HORIZONS, maxHoldDays: MAX_HOLD,
     parity: { checked: parityChecked, mismatches: parityMismatch, rows: parityRows,
+      staleRepeats: parityStaleRepeats,
+      staleRepeatRule: "Veroeffentlichte Zeile seit Stichtag E unveraendert und an E exakt nachgerechnet: wiederholte Alt-Beobachtung (Veraltung), kein PIT-Verstoss; seit 04.10.2026 nimmt die Beobachtung veraltete Bundles nicht mehr auf.",
       excludedSeriesRevised: parityRevised, revisionSource: revisions.at ? "listing-continuity-v1.json " + revisions.at : null },
     pitViolations, trustRule: SB.TRUST_RULE, trustChecks: SB.TRUST_CHECKS,
     certification, certificationSource: "quant/methodology/setup-state-v1.json requirements.backtestCertification",
@@ -313,8 +351,8 @@ function main() {
   if (errors.length) { console.error(errors); process.exit(1); }
   writeFileSync(OUT, JSON.stringify(out) + "\n");
   for (const s of studies) console.log(s.id.padEnd(16), "occ", s.occurrences, "titles", s.titles, "m6", s.horizons.m6.n, s.horizons.m6.positiveShare, s.horizons.m6.median, "trade", s.contractTrade.n ?? "-", "rev", s.reversalNextObservation, "trust", s.trust, s.trustReasons.map((x) => x.id).join(","));
-  console.log("parity", parityChecked, "mismatch", parityMismatch, "excludedSeriesRevised", parityRevised, "pitViolations", pitViolations);
-  for (const x of parityRows.filter((x) => !x.same)) console.log("  mismatch", x.ticker, x.asOf, JSON.stringify(x.published), JSON.stringify(x.replay));
+  console.log("parity", parityChecked, "mismatch", parityMismatch, "staleRepeats", parityStaleRepeats, "excludedSeriesRevised", parityRevised, "pitViolations", pitViolations);
+  for (const x of parityRows.filter((x) => !x.same)) console.log(x.staleRepeatOf ? "  staleRepeat" : "  mismatch", x.ticker, x.asOf, x.staleRepeatOf ? "(seit " + x.staleRepeatOf + ")" : "", JSON.stringify(x.published), JSON.stringify(x.replay));
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) main();
