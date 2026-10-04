@@ -19,12 +19,16 @@
       '<section class="vs-section"><div class="vs-grid side"><div class="vs-card app" id="vs-editor"></div><div id="vs-pf-out"><div class="vs-loading">Berechne …</div></div></div></section>');
     Promise.all([VS.master(), VS.getJSON("/vorsorge/data/model-portfolios.json")]).then(function (res) {
       var m = res[0], models = res[1];
+      function modelCost(p) {
+        var w = 0, c = 0; p.positions.forEach(function (x) { var e = m._bySymbol[x.symbol]; if (e && e.cost !== null) { w += x.weight; c += x.weight * e.cost; } });
+        return w >= 0.999 ? VS.costPct(c) : w > 0 ? VS.costPct(c / w) + ' <span class="vs-fine">(für ' + F.pct(w, 0) + ')</span>' : '<span class="vs-fine">Quelle fehlt</span>';
+      }
       root.querySelector("#vs-models").innerHTML = models.portfolios.map(function (p) {
         var regions = {}; p.positions.forEach(function (x) { var e = m._bySymbol[x.symbol]; var k = e && e.region ? (VS.REGION[e.region] || e.region) : "nicht zugeordnet"; regions[k] = 1; });
         var vols = p.positions.map(function (x) { var e = m._bySymbol[x.symbol]; return e && e.m ? e.m.vol : null; }).filter(function (v) { return v !== null; });
         return '<button class="vs-card link" style="text-align:left;cursor:pointer;border:1px solid var(--line-soft)" data-model="' + esc(p.id) + '"><p class="vs-label">' + esc(p.label) + '</p><p style="margin-top:6px;font-size:14px">' + esc(p.idea) + '</p>' +
           '<div class="vs-row" style="margin-top:8px"><span>Bausteine</span><span>' + p.positions.length + '</span></div><div class="vs-row"><span>Regionen</span><span style="text-align:right">' + esc(Object.keys(regions).join(", ")) + '</span></div>' +
-          '<div class="vs-row"><span>Schwankung der Bausteine</span><span>' + (vols.length ? F.pct(Math.min.apply(null, vols), 0) + "–" + F.pct(Math.max.apply(null, vols), 0) : "–") + '</span></div><div class="vs-row"><span>Kosten</span><span class="vs-fine">Quelle nicht angebunden</span></div>' +
+          '<div class="vs-row"><span>Schwankung der Bausteine</span><span>' + (vols.length ? F.pct(Math.min.apply(null, vols), 0) + "–" + F.pct(Math.max.apply(null, vols), 0) : "–") + '</span></div><div class="vs-row"><span>Laufende Kosten (gewichtet)</span><span>' + modelCost(p) + '</span></div>' +
           '<p class="vs-fine" style="margin-top:8px">' + p.positions.map(function (x) { return esc(x.symbol) + " " + F.pct(x.weight, 0); }).join(" · ") + '</p></button>';
       }).join("") + '<p class="vs-fine" style="grid-column:1/-1">' + esc(models.note) + '</p>';
       root.querySelectorAll("[data-model]").forEach(function (b) {
@@ -112,6 +116,14 @@
       el.innerHTML = '<div class="vs-grid g2" style="margin-top:14px">' + costCard + VS.pending("Durchschau nicht möglich", "Für keine Position liegen Bestandsdaten vor (z. B. Unit Investment Trusts wie SPY oder Nicht-US-Fonds). Wir schätzen keine Inhalte.") + '</div>';
       return;
     }
+    // Länder/Wirtschaftszweige exakt: je ETF aus ALLEN Positionen (Datei-Exposures) × ETF-Gewicht
+    function effective(field) {
+      var m = {}, cov = 0;
+      pos.forEach(function (p) { var f = s.holdingFiles[p.symbol]; if (!f) return; var w = p.weight / total; cov += w;
+        (f.exposures[field] || []).forEach(function (x) { if (x.key === "CASH") return; m[x.key] = (m[x.key] || 0) + w * x.weight; }); });
+      return Object.keys(m).map(function (k) { return { key: k, weight: m[k] }; }).sort(function (a, b) { return b.weight - a.weight; });
+    }
+    var effCountries = effective("countries"), effSectors = effective("sectors");
     var shown = Object.keys(holdings).map(function (k) { return k + " " + F.pct((s.holdingFiles[k] || {}).shownWeight, 0); }).join(", ");
     var eqTop25 = lt.companies.slice(0, 25).reduce(function (a, c) { return a + c.weight; }, 0);
     var sentence = "Du hältst " + pos.length + " ETF" + (pos.length > 1 ? "s" : "") + ". " + F.pct(eqTop25 / Math.max(lt.coverage, 1e-9), 0) + " des durchschauten Vermögens entfallen effektiv auf die 25 größten Unternehmen.";
@@ -122,11 +134,11 @@
       '<div class="vs-own" style="margin-top:12px">' + lt.companies.slice(0, 12).map(function (c) {
         return '<div><b>' + esc(c.name) + '</b><span class="num" style="font-size:20px;font-weight:800">' + F.pct(c.weight, 2) + '</span><span class="vs-fine"> effektiv</span><br>' + (c.via.length > 1 ? '<span class="vs-badge">über ' + c.via.length + ' ETFs</span> ' : "") + '<span class="vs-fine">' + esc(c.via.join(", ")) + '</span></div>';
       }).join("") + '</div>' +
-      '<div class="vs-grid g2" style="margin-top:14px"><div class="vs-card"><p class="vs-label">Länder (effektiv)</p>' + VS.bars(lt.countries.slice(0, 10).map(function (c) { return { key: c.key, label: VS.countryName(c.key), weight: c.weight }; })) + '</div>' +
-      '<div class="vs-card"><p class="vs-label">Wirtschaftszweige (effektiv, SEC-SIC)</p>' + (lt.sectors.length ? VS.bars(lt.sectors.slice(0, 11).map(function (c) { return { key: c.key, label: VS.sectorName(c.key), weight: c.weight }; })) : '<p class="vs-fine">Keine Zuordnung.</p>') + '</div>' +
+      '<div class="vs-grid g2" style="margin-top:14px"><div class="vs-card"><p class="vs-label">Länder (effektiv)</p>' + VS.bars(effCountries.slice(0, 10).map(function (c) { return { key: c.key, label: VS.countryName(c.key), weight: c.weight }; })) + '</div>' +
+      '<div class="vs-card"><p class="vs-label">Wirtschaftszweige (effektiv, SEC-SIC)</p>' + (effSectors.length ? VS.bars(effSectors.slice(0, 11).map(function (c) { return { key: c.key, label: VS.sectorName(c.key), weight: c.weight }; })) : '<p class="vs-fine">Keine Zuordnung.</p>') + '</div>' +
       costCard +
-      '<div class="vs-card"><p class="vs-label">Überschneidung der ETFs</p>' + (pairs.length ? pairs.map(function (p) { return '<div class="vs-row"><span>' + esc(p.a + " ↔ " + p.b) + '<span class="t-name">' + p.o.commonCount + ' gemeinsame Positionen</span></span><span class="num">' + F.pct(p.o.weightedOverlap) + '</span></div>'; }).join("") : '<p class="vs-fine">Ab zwei ETFs mit Bestandsdaten.</p>') + '</div></div>' +
-      '<p class="vs-fine" style="margin-top:10px">Durchschau über ' + F.pct(lt.coverage, 0) + ' des Portfolios (Positionen mit Bestandsdaten, SEC N-PORT). Je ETF die bis zu 100 größten Positionen (Anteil am ETF: ' + esc(shown) + '); Werte beziehen sich auf das Gesamtportfolio. Stichtage der Bestände können sich unterscheiden.</p>';
+      '<div class="vs-card"><p class="vs-label">Überschneidung der ETFs</p>' + (pairs.length ? pairs.map(function (p) { return '<div class="vs-row"><span>' + esc(p.a + " ↔ " + p.b) + ' <span class="vs-fine">· ' + p.o.commonCount + ' gemeinsame Positionen</span></span><span class="num">' + F.pct(p.o.weightedOverlap) + '</span></div>'; }).join("") : '<p class="vs-fine">Ab zwei ETFs mit Bestandsdaten.</p>') + '</div></div>' +
+      '<p class="vs-fine" style="margin-top:10px">Durchschau über ' + F.pct(lt.coverage, 0) + ' des Portfolios (Positionen mit Bestandsdaten, SEC N-PORT). Je ETF die bis zu 100 größten Positionen (Anteil am ETF: ' + esc(shown) + '); Top-Unternehmen und Überschneidung beruhen auf diesen Positionen; Länder und Wirtschaftszweige auf allen Positionen jedes ETFs. Werte beziehen sich auf das Gesamtportfolio. Stichtage der Bestände können sich unterscheiden.</p>';
   }
 
   function drawScenarios(out, m) {

@@ -60,6 +60,14 @@ function enrich(h) {
 /* ------------------------------------------------------- Ausgabe */
 const r6 = (x) => (x === null || x === undefined || !Number.isFinite(x) ? null : Math.round(x * 1e6) / 1e6);
 function compactRow(h) { return [h.holdingTicker || null, h.holdingName || null, r6(h.weight), h.country || null, h.sector || null, h.assetType, h.holdingIsin || null, h.holdingCusip || null, h.vuTicker || null]; }
+const DN = (() => { try { return new Intl.DisplayNames(["de"], { type: "region" }); } catch { return null; } })();
+const countryDe = (k) => { try { return (DN && /^[A-Z]{2}$/.test(k) && DN.of(k)) || k; } catch { return k; } };
+/** Erklaerungstexte mit deutschen Bezeichnungen fuer Sektor- und Laenderereignisse. */
+function localize(e) {
+  if (e.eventType === "SECTOR_WEIGHT_CHANGED") e.explanation = e.explanation.replace(/^[A-Z_]+:/, (H.SECTORS_DE[e.entityName] || e.entityName) + ":");
+  if (e.eventType === "COUNTRY_WEIGHT_CHANGED") e.explanation = e.explanation.replace(/^[A-Z]{2}:/, countryDe(e.entityName) + ":");
+  return e;
+}
 const ROW = ["ticker", "name", "weight", "country", "sector", "assetType", "isin", "cusip", "vuTicker"];
 function topList(list, n) { return list.slice(0, n).map((x) => ({ key: x.key, weight: x.weight })); }
 
@@ -87,6 +95,7 @@ for (const meta of manifest.series) {
     history.push({ asOf: s.asOf, publishedAt: s.publishedAt, netAssets: s.totalNetAssets, positions: conc.positions, top10: conc.top10, contentHash: s.contentHash, quality: q.errors.length ? "ERROR" : q.warnings.length ? "WARN" : "OK", issues: q.errors.concat(q.warnings).slice(0, 6) });
     if (prev && !q.errors.length) {
       const d = C.diffHoldings(prev, s, { detectedAt: s.publishedAt });
+      d.events.forEach(localize);
       lastDiff = { from: prev.asOf, to: s.asOf, status: d.status, events: d.events, summary: d.summary };
       d.events.forEach((e) => { stats.eventsByType[e.eventType] = (stats.eventsByType[e.eventType] || 0) + 1; });
       stats.events += d.events.length;
