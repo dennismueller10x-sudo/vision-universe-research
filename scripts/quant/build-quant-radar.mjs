@@ -111,7 +111,11 @@ function nextStep(t) {
   if (!s || !s.row) return null;
   const cascade = SetupEngine.explainCascade(mapping, s.row, { close: s.close, previous: s.previous });
   const own = cascade.find((r) => s.observation && r.ruleId === s.observation.r) || null;
-  const higher = cascade.filter((r) => r.tier === "POINT_IN_TIME" && !r.unanswerable && (!own || r.order < own.order) && r.matched !== true && (r.open || []).length > 0)
+  /* Naechste Bedingung heisst naechste STUFE: eine andere Regel derselben
+     Stufe (z. B. eine zweite Beobachten-Regel) ist kein Schritt nach vorn. */
+  const curRank = Radar.MATURITY[(lifecycle[t] || [])[0]] ?? (own ? Radar.MATURITY[own.state] ?? 0 : 0);
+  const higher = cascade.filter((r) => r.tier === "POINT_IN_TIME" && !r.unanswerable && (!own || r.order < own.order) && r.matched !== true && (r.open || []).length > 0
+      && (Radar.MATURITY[r.state] ?? -1) > curRank)
     .sort((a, b) => a.open.length - b.open.length || b.order - a.order)[0];
   if (!higher) return null;
   const open = higher.conditions.filter((c) => c.met === false).map((c) => ({ field: c.field, demand: c.demand, value: c.value }));
@@ -154,6 +158,10 @@ function backtestEvidenceFor(type) {
       medianExcess: c.medianExcess, trust: rule.trust, sentence: rule.display.sentence, caveats: rule.display.caveats,
       basePositiveShare: c.basePositiveShare, deltaPositiveShare: c.deltaPositiveShare, deltaCi: c.deltaCi, effectiveN: c.effectiveN,
       edgeOutOfSample: !!rule.edgeOutOfSample,
+      /* Welche Vertrauensbausteine offen sind - fuer die Checkliste in
+         Alltagssprache (quant/methodology/evidence-language-v1.json). */
+      openChecks: Object.entries(rule.checks || {}).filter(([, v]) => v && v.state !== "PASS").map(([k]) => k).sort(),
+      checkedIds: Object.keys(rule.checks || {}).sort(),
       certification: (() => { const k = certKind("SIGNAL_BACKTEST"), r = k && (k.rules || []).find((x) => x.id === rule.id); return r ? { status: r.status, tier: k.tier, readiness: r.readiness } : null; })() };
   }
   return (backtestCache[type] = out);
@@ -446,7 +454,8 @@ const byTicker = {};
 for (const e of events) (byTicker[e.ticker] = byTicker[e.ticker] || []).push(e);
 const compactBacktest = (be) => (be.state === "AVAILABLE"
   ? { state: "AVAILABLE", n: be.n, positiveShare: be.positiveShare, median: be.median, typicalDrawdown: be.typicalDrawdown, chanceRisk: be.chanceRisk, medianExcess: be.medianExcess, trust: be.trust, returnType: be.returnType, horizon: be.horizon,
-      basePositiveShare: be.basePositiveShare, deltaPositiveShare: be.deltaPositiveShare, deltaCi: be.deltaCi, effectiveN: be.effectiveN, edgeOutOfSample: be.edgeOutOfSample === true, certification: be.certification || null }
+      basePositiveShare: be.basePositiveShare, deltaPositiveShare: be.deltaPositiveShare, deltaCi: be.deltaCi, effectiveN: be.effectiveN, edgeOutOfSample: be.edgeOutOfSample === true,
+      occurrences: be.occurrences, openChecks: be.openChecks || [], checkedIds: be.checkedIds || [], certification: be.certification || null }
   : { state: "WITHHELD", reason: be.reason, trust: be.trust, certification: be.certification || null, progress: be.progress || null });
 
 let cards = Object.keys(byTicker).map((t) => {
@@ -532,7 +541,13 @@ const radar = {
   priorityRule: Radar.PRIORITY_RULE,
   summary: {
     newSetups: byType.SETUP_NEW, confirmedSetups: byType.SETUP_CONFIRMED, weakenedSetups: byType.SETUP_WEAKENED,
-    improvingTickers: tickersUp.size, riskRisingTickers: tickersRisk.size, newStrategyMatches: byType.STRATEGY_MATCH_NEW, newHighs: byType.NEW_52W_HIGH
+    improvingTickers: tickersUp.size, riskRisingTickers: tickersRisk.size, newStrategyMatches: byType.STRATEGY_MATCH_NEW, newHighs: byType.NEW_52W_HIGH,
+    /* evidence-language-1.0.0: messbarer Vorteil heisst 95-%-Band der
+       Differenz zur Base Rate ganz ueber 0 (schwaecher: ganz unter 0). */
+    edgeTickers: new Set(events.filter((e) => e.backtestEvidence && e.backtestEvidence.state === "AVAILABLE" && Array.isArray(e.backtestEvidence.deltaCi) && e.backtestEvidence.deltaCi[0] > 0).map((e) => e.ticker)).size,
+    weakerEdgeTickers: new Set(events.filter((e) => e.backtestEvidence && e.backtestEvidence.state === "AVAILABLE" && Array.isArray(e.backtestEvidence.deltaCi) && e.backtestEvidence.deltaCi[1] < 0).map((e) => e.ticker)).size,
+    testedSignalTickers: new Set(events.filter((e) => e.backtestEvidence && e.backtestEvidence.state === "AVAILABLE").map((e) => e.ticker)).size,
+    edgeLanguage: "evidence-language-1.0.0"
   },
   caveats: {
     /* Gemessen im Aktivierungs-Gate der Setup-Engine: welcher Anteil der
