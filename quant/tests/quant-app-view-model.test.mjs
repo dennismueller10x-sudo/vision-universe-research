@@ -111,8 +111,12 @@ test("VM6 · Strategy Match: 'passt' nur, wenn nichts verletzt oder offen ist", 
     const { vm } = await stockVM(t);
     const s = vm.strategy;
     if (s.state !== "AVAILABLE") continue;
-    if (s.best.notMet.length || s.best.open.length) assert.match(s.sentence, /^Am ehesten passt/, t);
-    else assert.match(s.sentence, /^Passt aktuell zu/, t);
+    /* Drei Faelle: alles erfuellt -> "passt"; gute Uebereinstimmung mit
+       Offenem -> "am ehesten"; darunter -> "zu keinem Stil passt gut". */
+    if (!s.best.notMet.length && !s.best.open.length) assert.match(s.sentence, /^Passt aktuell zu/, t);
+    else if (s.good) assert.match(s.sentence, /^Am ehesten passt/, t);
+    else assert.match(s.sentence, /^Zu keinem Anlagestil passt dieser Titel derzeit gut\. Am nächsten kommt /, t);
+    assert.ok(!/^Passt aktuell/.test(s.sentence) || (!s.best.notMet.length && !s.best.open.length), t + ": 'passt' trotz verletzter oder offener Bedingung");
     for (const c of [...s.best.met, ...s.best.notMet, ...s.best.open]) assert.doesNotMatch(c.label, /Quant V2/, "interner Namensraum im Label");
   }
 });
