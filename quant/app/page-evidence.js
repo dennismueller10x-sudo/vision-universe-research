@@ -102,6 +102,219 @@
     SETUP_CONFIRMED: "Setup bestätigt", SETUP_NEW: "Setup entsteht", SETUP_WEAKENED: "Setup schwächt sich ab"
   };
 
+  /* ===================================================================
+     EVIDENZ IN ALLTAGSSPRACHE (evidence-language-1.0.0,
+     quant/methodology/evidence-language-v1.json)
+
+     Keine neue Kennzahl: nur Worte fuer gemessene Zahlen. Eine Quote steht
+     nie allein - immer mit Base Rate, Differenz, Vertrauen und dem, was
+     Quant nicht weiss.
+     =================================================================== */
+  var LANGUAGE_VERSION = "evidence-language-1.0.0";
+  var EDGE_THRESHOLDS_PP = { moderate: 2, clear: 5 };
+  var EDGE = {
+    WEAKER: { label: "Historisch schwächer als der Markt", tone: "down" },
+    NONE: { label: "Kein messbarer Vorteil", tone: "flat" },
+    SMALL: { label: "Kleiner historischer Vorteil", tone: "up" },
+    MODERATE: { label: "Moderater historischer Vorteil", tone: "up" },
+    CLEAR: { label: "Deutlicher historischer Vorteil", tone: "up" },
+    UNKNOWN: { label: "Kein Vergleich mit dem Markt möglich", tone: "flat" }
+  };
+  var TRUST_PLAIN = {
+    LIMITED: "Evidenz vorhanden, aber noch nicht vollständig belastbar.",
+    NOT_READY: "Noch nicht genug Evidenz für eine Aussage.",
+    USABLE: "Evidenz belastbar, aber nicht zertifiziert.",
+    ROBUST: "Evidenz robust, aber nicht zertifiziert."
+  };
+  var TRUST_SHORT = { LIMITED: "eingeschränkt", NOT_READY: "nicht bereit", USABLE: "belastbar", ROBUST: "robust" };
+  /* Reihenfolge der Checkliste: was gilt, dann was fehlt. [id, erfuellt, offen, Fachbegriff] */
+  var CHECK_WORDS = [
+    ["returnBasis", "Dividenden sind berücksichtigt (Gesamtrendite).", "Dividenden sind nicht berücksichtigt.", "Gesamtrendite"],
+    ["lookahead", "Kein Blick in die Zukunft: gekauft wird erst nach dem Signal.", "Ein Blick in die Zukunft ist nicht ausgeschlossen.", "Look-Ahead"],
+    ["pit", "Nur Daten, die damals bekannt waren.", "Zeitpunktgenauigkeit nicht belegt.", "Point-in-Time"],
+    ["benchmark", "Vergleich mit dem Markt in denselben Wochen.", "Kein Vergleich mit dem Markt.", "Base Rate"],
+    ["independence", "Mehrfach auftretende Signale wurden zusammengefasst.", "Die Fälle ballen sich in wenigen Zeiträumen.", "Unabhängigkeit"],
+    ["sample", "Genug Fälle aus genug Aktien.", "Zu wenige Fälle.", "Stichprobe"],
+    ["costs", "Handelskosten sind abgezogen.", "Handelskosten sind nicht abgezogen.", "Kosten"],
+    ["survivorship", "Frühere verschwundene Unternehmen sind enthalten.", "Frühere verschwundene Unternehmen sind noch nicht vollständig enthalten.", "Survivorship"],
+    ["oos", "Die Richtung hielt auch in neueren Daten.", "Die Richtung hat sich in neueren Daten nicht bestätigt.", "Out-of-Sample"],
+    ["walkForward", "Über die Zeit durchgehend in derselben Richtung.", "Über die Zeit nicht durchgehend in derselben Richtung.", "Walk-Forward"],
+    ["parameterStability", "Leicht andere Einstellungen zeigen dasselbe Bild.", "Bei leicht anderen Einstellungen zeigt sich ein anderes Bild.", "Parameterstabilität"],
+    ["regimeDiversity", "In verschiedenen Marktphasen geprüft.", "Marktphasen sind noch nicht zertifiziert.", "Marktphasen"],
+    ["completeness", "Die Fälle sind vollständig ausgewertet.", "Zu viele Fälle ohne vollständiges Ergebnis.", "Vollständigkeit"]
+  ];
+
+  /* Die vier Pruefungen, die ein Anleger zuerst sehen soll; weitere bestandene klappen auf. */
+  var KEY_PASS = { returnBasis: true, lookahead: true, independence: true, benchmark: true };
+  /* Edge aus Differenz und 95-%-Band - erst das Band, dann die Groesse. */
+  function edgeOf(b) {
+    if (!b || typeof b.deltaPositiveShare !== "number" || !Array.isArray(b.deltaCi)) return { id: "UNKNOWN", label: EDGE.UNKNOWN.label, tone: "flat", oos: null };
+    var lo = b.deltaCi[0], hi = b.deltaCi[1], d = b.deltaPositiveShare * 100, id;
+    if (hi < 0) id = "WEAKER";
+    else if (lo <= 0) id = "NONE";
+    else id = d >= EDGE_THRESHOLDS_PP.clear ? "CLEAR" : d >= EDGE_THRESHOLDS_PP.moderate ? "MODERATE" : "SMALL";
+    var oos = typeof b.edgeOutOfSample === "boolean" ? b.edgeOutOfSample : null;
+    return { id: id, label: EDGE[id].label, tone: EDGE[id].tone, oos: oos };
+  }
+  /* Ein Satz: Edge-Sprache plus der Vorbehalt aus neueren Daten. */
+  function edgeSentence(b) {
+    var e = edgeOf(b);
+    if (e.id === "UNKNOWN") return e.label + ".";
+    var tail = e.id === "NONE" ? "" : e.oos === false ? " – der Unterschied ist in neueren Daten nicht eindeutig" : e.oos === true ? " – auch in neueren Daten deutlich" : "";
+    return e.label + tail + ".";
+  }
+  function oosAnswer(b) {
+    if (!b || typeof b.edgeOutOfSample !== "boolean") return null;
+    return b.edgeOutOfSample ? "Ja" : "Nein";
+  }
+  function trustPlain(trust) { return TRUST_PLAIN[trust] || TRUST_PLAIN.NOT_READY; }
+  /* Vertrauen als Checkliste: erfuellt (✓) und offen (⚠), Fachbegriff klein. */
+  function trustChecklist(b, opts) {
+    opts = opts || {};
+    var open = {}, known = {};
+    (b.openChecks || []).forEach(function (k) { open[k] = true; });
+    (b.checkedIds || []).forEach(function (k) { known[k] = true; });
+    var has = Object.keys(known).length > 0;
+    var rows = CHECK_WORDS.filter(function (c) { return has ? known[c[0]] : false; });
+    var pass = rows.filter(function (c) { return !open[c[0]]; }), fail = rows.filter(function (c) { return open[c[0]]; });
+    var li = function (c, ok) {
+      return el("li", { class: ok ? "is-pass" : "is-open" }, [el("span", { class: "q-ev-mark", "aria-hidden": "true", text: ok ? "✓" : "⚠" }),
+        el("span", { text: ok ? c[1] : c[2] }), opts.terms === false ? null : el("small", { text: c[3] })]);
+    };
+    return el("div", { class: "q-ev-trust" }, [
+      el("p", { class: "q-ev-trust-head" }, [el("b", { text: opts.title || "Wie belastbar ist das?" }), el("span", { class: "q-ev-trust-word trust-" + String(b.trust || "NOT_READY").toLowerCase(), text: TRUST_SHORT[b.trust] || "nicht bereit" })]),
+      el("p", { class: "q-ev-trust-plain", text: trustPlain(b.trust) }),
+      has ? el("ul", { class: "q-ev-checks", "aria-label": "Vertrauen nach Prüfungen" }, pass.filter(function (c) { return KEY_PASS[c[0]]; }).map(function (c) { return li(c, true); })
+        .concat(fail.map(function (c) { return li(c, false); }))) : null,
+      has && pass.some(function (c) { return !KEY_PASS[c[0]]; }) ? el("details", { class: "q-ev-more" }, [
+        el("summary", { text: pass.filter(function (c) { return !KEY_PASS[c[0]]; }).length + " weitere Prüfungen bestanden" }),
+        el("ul", { class: "q-ev-checks" }, pass.filter(function (c) { return !KEY_PASS[c[0]]; }).map(function (c) { return li(c, true); }))]) : null
+    ]);
+  }
+  /* Rückgang: Bedeutung zuerst, Zahl danach. */
+  function drawdownSentence(typical, worst) {
+    if (typeof typical !== "number") return null;
+    var t = Math.abs(Math.round(typical * 100));
+    var s = "Zwischenzeitlich fielen vergleichbare Fälle typischerweise um etwa " + t + " %.";
+    if (typeof worst === "number") s += " Der stärkste Rückgang lag bei " + Math.abs(Math.round(worst * 100)) + " %.";
+    return s;
+  }
+  function sampleSentence(n, effectiveN, scope) {
+    if (typeof n !== "number") return null;
+    return int(n) + " Fälle " + (scope || "aus dem ganzen Markt") + (typeof effectiveN === "number" ? ", davon etwa " + int(effectiveN) + " unabhängig." : ".");
+  }
+  var SAMPLE_WHY = "Mehrere Signale können in derselben Marktphase auftreten. Deshalb zählen wir zusätzlich unabhängige Fälle.";
+  function bar(label, value, cls) {
+    return el("div", { class: "q-ev-bar " + (cls || "") }, [el("span", { class: "q-ev-bar-label", text: label }),
+      el("span", { class: "q-ev-bar-track", "aria-hidden": "true" }, [el("i", { style: "width:" + Math.max(0, Math.min(100, (value || 0) * 100)).toFixed(1) + "%" })]),
+      el("b", { class: "num", text: share1(value) })]);
+  }
+  /* Signal gegen Markt: grosse Quote, zwei Balken, Differenz, Edge-Satz.
+     opts.compact: Radar-Karte (ohne Checkliste, ohne Details). */
+  function signalEvidence(b, opts) {
+    opts = opts || {};
+    if (!b || b.state !== "AVAILABLE") return null;
+    var e = edgeOf(b), horizon = "nach 6 Monaten";
+    var kids = [
+      el("p", { class: "q-ev-head" }, [el("span", { class: "q-ev-tier tier-tested", text: "Historisch getestet" }), opts.label ? el("b", { text: opts.label }) : null]),
+      el("p", { class: "q-ev-big" }, [el("b", { class: "num", text: share1(b.positiveShare) }), el("span", { text: " der Fälle lagen " + horizon + " höher" })]),
+      el("div", { class: "q-ev-compare", role: "img", "aria-label": "Signal " + share1(b.positiveShare) + ", Markt " + share1(b.basePositiveShare) + ", Unterschied " + pp(b.deltaPositiveShare) }, [
+        bar("Signal", b.positiveShare, "is-signal"), bar("Markt", b.basePositiveShare, "is-base")]),
+      el("p", { class: "q-ev-edge tone-" + e.tone }, [el("b", { class: "num", text: pp(b.deltaPositiveShare) }), el("span", { text: edgeSentence(b) })])
+    ];
+    if (opts.compact) {
+      kids.push(el("p", { class: "q-ev-mini" }, [el("span", { text: "Evidenz " + (TRUST_SHORT[b.trust] || "nicht bereit") }), el("span", { text: int(b.n) + " Fälle · ≈ " + int(b.effectiveN) + " unabhängig" })]));
+      return el("div", { class: "q-evx is-compact" }, kids);
+    }
+    var oa = oosAnswer(b);
+    kids.push(el("dl", { class: "q-ev-facts" }, [
+      el("dt", { text: "Ist der Unterschied zum Markt auch in neueren Daten deutlich?" }), el("dd", { class: oa === "Ja" ? "is-yes" : "is-no", text: oa || "nicht gemessen" }),
+      el("dt", { text: "Wie viele Fälle?" }), el("dd", { text: sampleSentence(b.n, b.effectiveN) || "–" }),
+      el("dt", { text: "Wie groß war das Risiko?" }), el("dd", { text: drawdownSentence(b.typicalDrawdown) || "nicht gemessen" }),
+      el("dt", { text: "Typisches Ergebnis" }), el("dd", { text: "Median " + pct(b.median, 1, true) + " " + horizon + (b.returnType === "TOTAL_RETURN" ? ", mit Dividenden" : ", ohne Dividenden") })
+    ]));
+    kids.push(el("p", { class: "q-ev-why", text: SAMPLE_WHY }));
+    kids.push(trustChecklist(b));
+    return el("div", { class: "q-evx" }, kids);
+  }
+  /* Zertifiziert: nur mit Status CERTIFIED - sonst ein ruhiger Satz. */
+  function certifiedLine(cert, opts) {
+    var ok = cert && cert.status === "CERTIFIED", subject = (opts && opts.subject) || "dieses Signal";
+    return el("div", { class: "q-ev-cert" + (ok ? " is-on" : "") }, [el("span", { class: "q-ev-tier tier-certified" + (ok ? "" : " is-off"), text: "Zertifiziert" }),
+      el("p", { text: ok ? "Alle methodischen Prüfungen sind bestanden." : "Für " + subject + " liegt noch kein vollständig zertifizierter Backtest vor. Das ist der normale Stand – nicht ein fehlendes Ergebnis." })]);
+  }
+
+  /* ===================================================================
+     BENACHRICHTIGEN (vorbereitet, Alert-Vertrag quant-alert-event-3.0.0)
+     Die Auswahl bleibt auf diesem Geraet; versendet wird noch nichts
+     (delivery NOT_CONFIGURED). Passende Ereignisse werden markiert.
+     =================================================================== */
+  var ALERT_KEY = "vu.quant.alerts.v1";
+  var ALERT_CHOICES = [
+    { id: "SETUP_CONFIRMED", label: "Setup bestätigt" },
+    /* Der Pfadzustand "ungueltig" ist im Radar noch geschlossen; gemeldet
+       wird bis dahin, wenn ein Setup nicht mehr erfuellt ist. */
+    { id: "SETUP_INVALIDATED", label: "Setup ungültig oder nicht mehr erfüllt", types: ["SETUP_INVALIDATED", "SETUP_WEAKENED"] },
+    { id: "RISK_RISING", label: "Risiko steigt" },
+    { id: "EDGE", label: "Neuer historischer Vorteil", hint: "ein getestetes Signal, das historisch messbar über dem Markt lag" },
+    { id: "STRATEGY_MATCH_NEW", label: "Neu in einer Strategie" },
+    { id: "NEW_52W_HIGH", label: "Neues 52-Wochen-Hoch" }
+  ];
+  function readAlerts() { try { var v = JSON.parse(global.localStorage.getItem(ALERT_KEY) || "{}"); return v && typeof v === "object" ? v : {}; } catch (e) { return {}; } }
+  function writeAlerts(v) { try { global.localStorage.setItem(ALERT_KEY, JSON.stringify(v)); } catch (e) { /* privater Modus: Auswahl gilt nur fuer diese Sitzung */ } }
+  function alertsFor(ticker) { var a = readAlerts()[ticker]; return Array.isArray(a) ? a : []; }
+  function hasEdge(e) { var b = e && e.backtest; return !!(b && b.state === "AVAILABLE" && Array.isArray(b.deltaCi) && b.deltaCi[0] > 0); }
+  /* Welche der gewaehlten Ausloeser trifft dieses Ereignis? */
+  function alertMatch(ticker, e) {
+    var on = alertsFor(ticker);
+    if (!on.length || !e) return null;
+    var c = ALERT_CHOICES.filter(function (x) { return on.indexOf(x.id) >= 0 && (x.types || [x.id]).indexOf(e.eventType) >= 0; })[0];
+    if (c) return c.label;
+    if (on.indexOf("EDGE") >= 0 && hasEdge(e)) return "Neuer historischer Vorteil";
+    return null;
+  }
+  function alertPanel(ticker) {
+    var chosen = alertsFor(ticker), status = el("p", { class: "q-alert-status", "aria-live": "polite" });
+    function say() { var n = alertsFor(ticker).length; status.textContent = n ? n + " Auslöser gewählt. Quant markiert passende Ereignisse im Radar und in deiner Beobachtungsliste." : "Kein Auslöser gewählt."; }
+    var list = el("ul", { class: "q-alert-list" }, ALERT_CHOICES.map(function (c) {
+      var box = el("input", { type: "checkbox", value: c.id });
+      box.checked = chosen.indexOf(c.id) >= 0;
+      box.addEventListener("change", function () {
+        var all = readAlerts(), cur = Array.isArray(all[ticker]) ? all[ticker] : [];
+        cur = box.checked ? cur.concat([c.id]).filter(function (x, i, a) { return a.indexOf(x) === i; }) : cur.filter(function (x) { return x !== c.id; });
+        if (cur.length) all[ticker] = cur; else delete all[ticker];
+        writeAlerts(all); say();
+      });
+      return el("li", {}, [el("label", {}, [box, el("span", { text: c.label }), c.hint ? el("small", { text: c.hint }) : null])]);
+    }));
+    say();
+    return el("details", { class: "q-alerts" }, [el("summary", { text: "Benachrichtige mich, wenn …" }), list, status,
+      el("p", { class: "q-alert-note", text: "Benachrichtigungen werden noch nicht verschickt. Deine Auswahl bleibt auf diesem Gerät; Quant zeigt dir passende Ereignisse, sobald du die Seite öffnest." })]);
+  }
+
+  /* ===================================================================
+     BEOBACHTET: EVIDENZ-VERLAUF JE AKTIE (kein Portfolio)
+     =================================================================== */
+  function watchTimeline(ticker, name, tr, href) {
+    var R = global.VUQuantRadar, T = R ? R.TYPE : {};
+    var label = function (id) { var l = R ? R.LIFECYCLE.filter(function (x) { return x.id === id; })[0] : null; return l ? l.label : id; };
+    var rows = [];
+    if (tr && tr.state === "AVAILABLE") {
+      rows.push(["Jetzt", label(tr.current) + (tr.enteredAt ? " (seit " + X.dateDe(tr.enteredAt) + ")" : "")]);
+      if (tr.previous) rows.push(["Davor", label(tr.previous)]);
+      var edgeEv = (tr.events || []).filter(hasEdge)[0] || (tr.events || []).filter(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; })[0];
+      if (edgeEv) rows.push(["Historisch getestet", ((T[edgeEv.eventType] || {}).label || edgeEv.eventType) + ": " + pp(edgeEv.backtest.deltaPositiveShare) + " gegenüber dem Markt – " + edgeSentence(edgeEv.backtest)]);
+      (tr.history || []).slice(0, 4).forEach(function (h) {
+        var m = alertMatch(ticker, { eventType: h[0] });
+        rows.push([X.dateDe(h[2]), ((T[h[0]] || {}).label || h[0]) + (m ? " · passt zu deiner Benachrichtigung" : "")]);
+      });
+      if (tr.nextCondition) rows.push(["Als Nächstes", "für „" + tr.nextCondition.label + "“ fehlen " + tr.nextCondition.open + " von " + tr.nextCondition.total + " Bedingungen"]);
+    }
+    return el("a", { class: "q-watch-tl", href: href }, [el("p", { class: "q-watch-tl-head" }, [el("b", { text: name || ticker }), el("small", { text: ticker })]),
+      rows.length ? el("dl", {}, [].concat.apply([], rows.map(function (r) { return [el("dt", { text: r[0] }), el("dd", { text: r[1] })]; })))
+        : el("p", { class: "qx-small", text: tr && tr.reason === "NOT_IN_SETUP_UNIVERSE" ? "Der Radar verfolgt diese Aktie nicht (nicht im Setup-Universum)." : "Noch kein Verlauf veröffentlicht." })]);
+  }
+
   /* ------------------------------------------------- Radar-Karte: Evidenz */
   function evidenceBlock(events, opts) {
     opts = opts || {};
@@ -141,17 +354,20 @@
       ["Auslöser", tr.trigger || "–"],
       ["Ungültig unter", typeof tr.invalidation === "number" ? num(tr.invalidation) + " $" : "–"],
       ["Nächste Bedingung", tr.nextCondition ? "für „" + tr.nextCondition.label + "“ fehlen " + tr.nextCondition.open + " von " + tr.nextCondition.total : "–"],
-      ["Rückblick (dieselbe Aktie)", { BROAD: "breit", THIN: "dünn", WITHHELD: "zurückgehalten", UNAVAILABLE: "nicht verfügbar", NONE: "keine Vergleichsfälle" }[tr.evidenceState] + (tr.episodes ? " · " + tr.episodes + (tr.episodes === 1 ? " Fall" : " Fälle") : "")],
-      ["Setup-Backtest", tr.backtest ? (tr.backtest.state === "AVAILABLE" ? TRUST_WORD[tr.backtest.trust] : (tr.backtest.certification ? STATUS_WORD[tr.backtest.certification.status] + " – " : "noch nicht freigegeben – ") + reasonText(tr.backtest.reason)) : "kein Setup"]
+      ["Beobachtet (diese Aktie)", { BROAD: "breit", THIN: "dünn", WITHHELD: "zurückgehalten", UNAVAILABLE: "nicht verfügbar", NONE: "keine Vergleichsfälle" }[tr.evidenceState] + (tr.episodes ? " · " + tr.episodes + (tr.episodes === 1 ? " Fall" : " Fälle") : "")],
+      ["Setup-Backtest", tr.backtest ? (tr.backtest.state === "AVAILABLE" ? TRUST_SHORT[tr.backtest.trust] : "noch keine Zahlen – " + reasonText(tr.backtest.reason)) : "kein Setup"]
     ];
     var kids = [el("dl", { class: "qx-kv q-track" }, [].concat.apply([], rows.map(function (r) { return [el("dt", { text: r[0] }), el("dd", { text: r[1] })]; })))];
     if (tr.events && tr.events.length) {
       var T = R ? R.TYPE : {};
       kids.push(el("ul", { class: "q-track-events" }, tr.events.map(function (e) {
         var t = T[e.eventType] || {};
+        var hit = alertMatch(tr.ticker, e);
         return el("li", { class: "tone-" + (e.direction || t.tone || "info") }, [el("b", { text: (t.label || e.eventType) + " · " + X.dateDe(e.occurredAt) }), el("span", { text: e.explanation }),
-          e.backtest ? el("small", { text: e.backtest.state === "AVAILABLE" ? "Historisch getestet: " + (baseLine(e.backtest) || share(e.backtest.positiveShare) + " im Plus nach 6 M.") + " · Evidenz " + TRUST_WORD[e.backtest.trust] + (oosHint(e.backtest) ? " · " + oosHint(e.backtest) : "")
-            : "Historischer Backtest noch nicht freigegeben: " + reasonText(e.backtest.reason) }) : null]);
+          hit ? el("small", { class: "q-alert-hit", text: "Passt zu deiner Benachrichtigung: " + hit }) : null,
+          e.backtest ? el("small", { text: e.backtest.state === "AVAILABLE"
+            ? "Historisch getestet: " + share1(e.backtest.positiveShare) + " der Fälle höher nach 6 Monaten, Markt " + share1(e.backtest.basePositiveShare) + " (" + pp(e.backtest.deltaPositiveShare) + "). " + edgeSentence(e.backtest) + " Evidenz " + (TRUST_SHORT[e.backtest.trust] || "nicht bereit") + " – Details unter „Was geschah früher“."
+            : "Historisch getestet: noch keine Zahlen. " + reasonText(e.backtest.reason) }) : null]);
       })));
     } else kids.push(el("p", { class: "qx-small", text: "Zum letzten Stand kein neues Ereignis bei dieser Aktie." }));
     if (tr.history && tr.history.length) {
@@ -168,5 +384,9 @@
 
   global.QXEvidence = { TRUST_WORD: TRUST_WORD, STATUS_WORD: STATUS_WORD, TIER_WORD: TIER_WORD, REASON: REASON, RULE_LABEL: RULE_LABEL,
     tierWord: tierWord, statusBadge: statusBadge, pp: pp, baseLine: baseLine, reasonText: reasonText, pct: pct, share: share, num: num, int: int,
-    trustPill: trustPill, returnWord: returnWord, evidenceBlock: evidenceBlock, trackingSection: trackingSection };
+    trustPill: trustPill, returnWord: returnWord, evidenceBlock: evidenceBlock, trackingSection: trackingSection,
+    LANGUAGE_VERSION: LANGUAGE_VERSION, EDGE: EDGE, EDGE_THRESHOLDS_PP: EDGE_THRESHOLDS_PP, TRUST_PLAIN: TRUST_PLAIN, TRUST_SHORT: TRUST_SHORT, CHECK_WORDS: CHECK_WORDS,
+    edgeOf: edgeOf, edgeSentence: edgeSentence, oosAnswer: oosAnswer, trustPlain: trustPlain, trustChecklist: trustChecklist,
+    ALERT_CHOICES: ALERT_CHOICES, alertsFor: alertsFor, alertMatch: alertMatch, alertPanel: alertPanel, watchTimeline: watchTimeline, hasEdge: hasEdge,
+    drawdownSentence: drawdownSentence, sampleSentence: sampleSentence, SAMPLE_WHY: SAMPLE_WHY, signalEvidence: signalEvidence, certifiedLine: certifiedLine };
 })(typeof window !== "undefined" ? window : globalThis);
