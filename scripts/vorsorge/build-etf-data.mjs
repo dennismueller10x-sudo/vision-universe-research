@@ -1,0 +1,418 @@
+/* =========================================================================
+   VISION UNIVERSE VORSORGE — build-etf-data.mjs   (vorsorge-build-2.0.0)
+
+   Deterministischer Daten-Build der Produktsaeule Vorsorge. Liest NUR
+   committete Dateien - keine Arbeitsablage, keine Uhr - und ergibt bei
+   gleichem Input byte-identische Ausgaben.
+
+   QUELLEN
+     vorsorge/data/ingest/universe.json + vorsorge/data/series/*.json
+         voller Tiingo-ETF-Ingest (scripts/vorsorge/ingest-tiingo-etfs.mjs)
+     quant/data/universe/instruments/*.json, .../us-security-master.json,
+     quant/data/market/multi-asset/*, discover-series(-long)
+         bisheriger Repository-Auszug (164 Listings)
+     vorsorge/data/overrides.json   manuelle Festlegungen mit Begruendung
+
+   AUSGABE
+     vorsorge/data/etf-index.json       spaltenfoermiger Index (Screener, Suche)
+     vorsorge/data/etf/<slug>.json      Detail: Taxonomie, Metriken (Kurs- und
+                                        Gesamtrendite getrennt), DNA, Provenienz
+     vorsorge/data/series/<SYM>.json    Reihen aus Repository-Quellen (origin
+                                        repository-sources); Ingest-Reihen bleiben
+     vorsorge/data/quality.json         Data-QA
+     vorsorge/data/ucits-coverage.json  UCITS-Abdeckung (gemessen)
+     vorsorge/data/data-gaps.json       Feldabdeckung je Quelle
+     vorsorge/data/changes.json         Ereignisse gegenueber dem letzten Stand
+     vorsorge/etf/<slug>/index.html     oeffentliche Seiten (nur Public Analysis
+                                        Universe mit >= 1 Jahr Historie)
+     vorsorge/sitemap.xml
+   ========================================================================= */
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const Master = require(join(root, "vorsorge/engines/etf-master.js"));
+const Tax = require(join(root, "vorsorge/engines/etf-taxonomy.js"));
+const A = require(join(root, "vorsorge/engines/etf-analytics.js"));
+const Codec = require(join(root, "vorsorge/engines/series-codec.js"));
+const Monitor = require(join(root, "vorsorge/engines/monitor.js"));
+
+export const VERSION = "vorsorge-build-2.0.0";
+const argv = process.argv.slice(2);
+const OUT = argv.includes("--out") ? argv[argv.indexOf("--out") + 1] : join(root, "vorsorge");
+const QUIET = argv.includes("--quiet");
+const log = (...a) => { if (!QUIET) console.log(...a); };
+const readJson = (p) => JSON.parse(readFileSync(p, "utf8"));
+const tryJson = (p) => { try { return readJson(p); } catch { return null; } };
+const r4 = (x) => (x === null || x === undefined || !Number.isFinite(x) ? null : Math.round(x * 10000) / 10000);
+// Verluste nahe -100 % nicht auf -1 runden: ein Totalverlust waere eine andere Aussage.
+const rLoss = (x) => (x === null || x === undefined || !Number.isFinite(x) ? null : x > -1 && x <= -0.9995 ? Math.round(x * 1e6) / 1e6 : r4(x));
+const EU_EXCHANGES = new Set(["XETRA", "XETR", "FRA", "FSX", "GER", "LSE", "LON", "XLON", "EURONEXT", "XPAR", "PAR", "XAMS", "AMS", "BRU", "MIL", "BIT", "SIX", "SWX", "XSWX", "MAD", "BME", "STO", "CPH", "HEL", "OSL", "VIE", "WSE", "ISE", "LIS", "EPA"]);
+
+/* ------------------------------------------------------------ Stammzeilen */
+function loadRows() {
+  const rows = [];
+  const ingest = tryJson(join(OUT, "data/ingest/universe.json"));
+  const ingestBySym = {};
+  for (const r of ingest?.rows || []) ingestBySym[r.symbol] = r;
+  // Ticker-Identitaet: der Tiingo-Tagesendpunkt ist tickergebunden. Liegt ein
+  // Ticker im Ingest vor, gilt dessen Boerse auch fuer die Repository-Zeilen.
+  const ex = (sym, exch) => (ingestBySym[sym] && ingestBySym[sym].exchange) || exch;
+  const dir = join(root, "quant/data/universe/instruments");
+  for (const f of readdirSync(dir).filter((f) => f.endsWith(".json")).sort()) {
+    for (const it of readJson(join(dir, f)).instruments || []) {
+      rows.push({ symbol: it.symbol, name: it.companyName, exchange: ex(it.symbol, it.exchange), currency: it.currency, country: it.country,
+        securityType: it.securityType, firstTradeDate: it.firstTradeDate, lastTradeDate: it.lastTradeDate || it.delistedAt || null,
+        active: it.active, source: "tiingo:company-master" });
+    }
+  }
+  const sm = tryJson(join(root, "quant/data/market/security-master/us-security-master.json"));
+  for (const r of sm?.rows || []) {
+    if (r.instrument_type !== "ETF" && r.asset_type !== "ETF") continue;
+    rows.push({ symbol: r.ticker, name: r.security_name || null, exchange: ex(r.ticker, r.exchange), currency: r.currency, country: r.country,
+      securityType: "ETF", firstTradeDate: r.start_date, lastTradeDate: r.active_status === "INACTIVE" ? r.end_date : null,
+      active: r.active_status !== "INACTIVE", source: "tiingo:supported-tickers" });
+  }
+  const ma = tryJson(join(root, "quant/data/market/multi-asset/instruments.json"));
+  for (const i of ma?.instruments || []) {
+    if (i.assetClass !== "ETF") continue;
+    rows.push({ symbol: i.symbol, name: i.name, exchange: ex(i.symbol, i.exchangeOrVenue), currency: i.currency, country: i.country,
+      securityType: "ETF", active: i.status === "ACTIVE", trackedIndex: i.tracker?.tracksIndexName || null,
+      assetClassHint: "EQUITY", source: "tiingo:multi-asset" });
+  }
+  for (const r of ingest?.rows || []) {
+    rows.push({ symbol: r.symbol, name: r.name, description: r.description, exchange: r.exchange, currency: r.currency,
+      country: null, securityType: "ETF", firstTradeDate: r.providerStartDate, lastTradeDate: null, active: true, source: "tiingo:etf-ingest" });
+  }
+  return { rows, ingest, ingestBySym };
+}
+
+/* ----------------------------------------------------------------- Reihen */
+function repoSeries(symbol) {
+  const ma = tryJson(join(root, "quant/data/market/multi-asset/series", symbol + ".json"));
+  if (ma?.points?.length && ma.assetClass === "ETF") return { daily: A.clean(ma.points), weekly: A.toWeekly(ma.points), sources: ["tiingo:multi-asset"] };
+  const d = tryJson(join(root, "quant/data/market/discover-series", "ref_" + symbol + ".json"));
+  const w = tryJson(join(root, "quant/data/market/discover-series-long", "ref_" + symbol + ".json"));
+  const daily = A.clean(d?.points || []), longWeekly = A.clean(w?.points || []);
+  if (!daily.length && !longWeekly.length) return null;
+  return { daily, weekly: A.splice(longWeekly, A.toWeekly(daily)).points, sources: [d && "tiingo:discover-series", w && "tiingo:discover-series-long"].filter(Boolean) };
+}
+
+/** Liefert die Reihe eines Symbols und schreibt Repository-Reihen ins Serienverzeichnis. */
+function seriesFor(symbol, written) {
+  const path = join(OUT, "data/series", symbol + ".json");
+  const existing = tryJson(path);
+  if (existing && existing.origin === "tiingo:etf-ingest") {
+    return { record: existing, price: { daily: Codec.decode(existing.price.daily), weekly: Codec.decode(existing.price.weekly) },
+      total: existing.total ? { daily: Codec.decode(existing.total.daily), weekly: Codec.decode(existing.total.weekly) } : null, sources: ["tiingo:etf-ingest"] };
+  }
+  const s = repoSeries(symbol);
+  if (!s) return null;
+  const record = { schemaVersion: "vu-vorsorge-series-1.0.0", symbol, origin: "repository-sources", sources: s.sources,
+    priceHistoryFrom: (s.weekly[0] || s.daily[0] || [null])[0], asOf: (s.daily[s.daily.length - 1] || s.weekly[s.weekly.length - 1] || [null])[0],
+    observations: s.daily.length, recycledTickerSuspected: false, dividendEvents: null,
+    totalReturn: { state: "TOTAL_RETURN_UNAVAILABLE", reason: "SOURCE_HAS_NO_DIVIDENDS" },
+    price: { basis: "PRICE_RETURN", type: "SPLIT_ADJUSTED", daily: Codec.encode(s.daily.slice(-260)), weekly: Codec.encode(s.weekly) }, total: null };
+  writeFileSync(path, JSON.stringify(record));
+  written.add(symbol + ".json");
+  return { record, price: { daily: s.daily, weekly: s.weekly }, total: null, sources: s.sources };
+}
+
+/* -------------------------------------------------------------- Metriken */
+function metrics(daily, weekly, basis, benchmark) {
+  daily = A.clean(daily); weekly = A.clean(weekly);
+  const full = A.splice(weekly, daily).points;
+  if (full.length < 2) return null;
+  const perfDaily = A.performance(daily, { basis });
+  const perfFull = A.performance(full, { basis });
+  const windows = {};
+  for (const id of A.WINDOWS) {
+    const src = ["1D", "1W", "1M", "3M", "6M", "YTD"].includes(id) && daily.length > 2 ? perfDaily : perfFull;
+    const w = src.windows[id];
+    windows[id] = { value: r4(w.value), annualized: r4(w.annualized), status: w.status, from: w.from || null };
+  }
+  const riskSeries = weekly.length >= 104 ? weekly.slice(-260) : (daily.length >= 60 ? daily : weekly);
+  const risk = A.risk(riskSeries);
+  const riskMax = A.risk(full, { asOf: full[full.length - 1][0] });
+  const trend = A.trend(daily.length >= 200 ? daily : weekly);
+  const firstDate = full[0][0], lastDate = full[full.length - 1][0];
+  const historyYears = (Date.parse(lastDate) - Date.parse(firstDate)) / (365.25 * 864e5);
+  const rs = benchmark ? A.relativeStrength(full, benchmark, 12) : { value: null, status: "NO_BENCHMARK" };
+  const roll1 = A.rolling(weekly.length > 60 ? weekly : full, 1), roll3 = A.rolling(weekly.length > 160 ? weekly : full, 3);
+  const dd = riskMax.maxDrawdown;
+  const ex = (x) => ({ value: r4(x.value), period: x.period || null, status: x.status });
+  const last = daily.length ? daily[daily.length - 1] : weekly[weekly.length - 1];
+  return {
+    basis, basisLabel: basis === "TOTAL_RETURN" ? "Gesamtrendite (Ausschüttungen reinvestiert)" : "Kursentwicklung (ohne Ausschüttungen)",
+    asOf: lastDate, price: last[1], priceDate: last[0], change1D: windows["1D"].value, windows, firstDate,
+    historyYears: Math.round(historyYears * 100) / 100,
+    volatility: { value: r4(risk.volatility.value), status: risk.volatility.status, basis: risk.volatility.basis || null },
+    downsideDeviation: { value: r4(A.downsideDeviation(riskSeries).value) },
+    maxDrawdown: { value: rLoss(dd.value), peakDate: dd.peakDate || null, troughDate: dd.troughDate || null, recoveredDate: dd.recoveredDate || null,
+      recoveryDays: dd.recoveryDays ?? null, recoveryMonths: dd.recoveryMonths ?? null, durationDays: dd.durationDays ?? null, recovered: dd.recovered ?? null, status: dd.status },
+    bestMonth: ex(riskMax.bestMonth), worstMonth: ex(riskMax.worstMonth), bestYear: ex(riskMax.bestYear), worstYear: ex(riskMax.worstYear),
+    yearlyReturns: (riskMax.yearlyReturns || []).map((y) => ({ year: y.key, value: r4(y.value) })),
+    rolling1Y: roll1.status === "CALCULATED" ? { worst: r4(roll1.worst), median: r4(roll1.median), best: r4(roll1.best), positiveShare: r4(roll1.positiveShare), count: roll1.count } : { status: roll1.status },
+    rolling3Y: roll3.status === "CALCULATED" ? { worst: r4(roll3.worst), median: r4(roll3.median), best: r4(roll3.best), positiveShare: r4(roll3.positiveShare), count: roll3.count, annualized: true } : { status: roll3.status },
+    trend: { status: trend.status, value: r4(trend.value), above: trend.above ?? null, window: trend.window || null },
+    relativeStrengthVsSPY: { value: r4(rs.value), status: rs.status },
+    observations: { daily: daily.length, weekly: weekly.length }
+  };
+}
+
+/* ------------------------------------------------------------------- SEO */
+function esc(s) { return String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function seoPage(e) {
+  const title = `${e.name} (${e.symbol}) – ETF-Analyse | Vision Universe Altersvorsorge`;
+  const desc = `${e.name} (${e.symbol}, ${e.exchange || "Börse unbekannt"}, ${e.currency || ""}): historische Kursentwicklung, Schwankung, größter Rückgang und Einordnung. Keine Anlageberatung.`;
+  return `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>${esc(title)}</title>
+<meta name="description" content="${esc(desc)}">
+<link rel="canonical" href="https://research.visionuniverse.de/vorsorge/etf/${esc(e.slug)}/">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<script>location.replace("/vorsorge/#/etf/${encodeURIComponent(e.slug)}");</script>
+</head>
+<body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<main style="max-width:720px;margin:40px auto;padding:0 20px;font-family:Inter,-apple-system,sans-serif">
+<h1>${esc(e.name)} (${esc(e.symbol)})</h1>
+<p>${esc(e.category)} · ${esc(e.exchange)} · ${esc(e.currency)}</p>
+<p><a href="/vorsorge/#/etf/${esc(e.slug)}">ETF-Analyse in Vision Universe Altersvorsorge öffnen</a></p>
+<p><small>Die dargestellten Informationen dienen der Analyse und Information und stellen keine individuelle Anlage-, Steuer- oder Rechtsberatung dar.</small></p>
+</main>
+</body>
+</html>
+`;
+}
+
+/* ------------------------------------------------------------- Index-Spalten */
+export const INDEX_FIELDS = ["slug", "id", "symbol", "name", "issuer", "exchange", "currency", "productType", "assetClass", "region", "index", "theme", "category",
+  "strategy", "retirementClass", "layer", "leverage", "inverse", "status", "single", "hy", "from", "price", "priceDate", "d1",
+  "p1W", "p1M", "p3M", "p6M", "pYTD", "p1Y", "p3Y", "p5Y", "p10Y", "pMAX", "t1Y", "t5Y", "vol", "mdd", "trend", "rs", "coverage", "dist", "ucits"];
+
+/* ------------------------------------------------------------------ Lauf */
+export function build() {
+  const { rows, ingest } = loadRows();
+  const overrides = tryJson(join(OUT, "data/overrides.json"))?.overrides || {};
+  const prevIndex = tryJson(join(OUT, "data/etf-index.json"));
+  const prevExtraRows = (tryJson(join(OUT, "data/etf-index-extra.json")) || {}).rows || null;
+  const master = Master.buildMaster(rows, { overrides });
+  mkdirSync(join(OUT, "data/series"), { recursive: true });
+  const written = new Set();
+  const spy = seriesFor("SPY", written);
+  const benchmark = spy ? A.splice(spy.price.weekly, spy.price.daily).points : null;
+
+  // Slugs: Ticker, solange eindeutig unter nicht-archivierten Listings
+  const live = {};
+  master.etfs.forEach((e) => { if (e.status !== "INACTIVE") live[e.symbol] = (live[e.symbol] || 0) + 1; });
+  const total = {};
+  master.etfs.forEach((e) => { total[e.symbol] = (total[e.symbol] || 0) + 1; });
+  // Ticker allein, wenn er eindeutig ist - oder das einzige aktive Listing eines mehrfach gefuehrten Tickers
+  const slugOf = (e) => (total[e.symbol] === 1 || (e.status !== "INACTIVE" && live[e.symbol] === 1) ? e.symbol : e.symbol + "-" + String(e.exchange || "X").replace(/[^A-Z0-9]+/gi, ""));
+
+  const detailDir = join(OUT, "data/etf");
+  if (existsSync(detailDir)) rmSync(detailDir, { recursive: true });
+  mkdirSync(detailDir, { recursive: true });
+
+  let latest = "";
+  const entries = [];
+  for (const e of master.etfs) {
+    const s = e.status === "INACTIVE" && !existsSync(join(OUT, "data/series", e.symbol + ".json")) ? null : seriesFor(e.symbol, written);
+    const priceM = s ? metrics(s.price.daily, s.price.weekly, "PRICE_RETURN", e.symbol === "SPY" ? null : benchmark) : null;
+    const totalM = s && s.total ? metrics(s.total.daily, s.total.weekly, "TOTAL_RETURN", null) : null;
+    e.priceHistoryAvailable = !!priceM;
+    if (priceM && priceM.asOf > latest) latest = priceM.asOf;
+    const tax = Tax.classify({ name: e.name, securityType: "ETF", assetClassHint: e.assetClass, historyYears: priceM ? priceM.historyYears : null, override: (overrides[e.symbol + "@" + e.exchange] || {}).taxonomy });
+    // Assetklasse: Taxonomie (breiter) mit Rueckfall auf den Master
+    const assetClass = tax.assetClass || e.assetClass;
+    const anomaly = s ? Tax.priceAnomaly(A.clean(s.price.weekly)) : null;
+    const rec = s ? s.record : null;
+    // Nur Ingest-Reihen beginnen beim ersten Kurs des Anbieters; Repository-Reihen sind gekuerzt
+    const tickerReuse = !!(rec && rec.origin === "tiingo:etf-ingest" && (rec.recycledTickerSuspected || (e.providerStartDate && rec.priceHistoryFrom && Date.parse(rec.priceHistoryFrom) - Date.parse(e.providerStartDate) > 400 * 864e5)));
+    const twoYearsAgo = priceM ? new Date(Date.parse(priceM.asOf) - 730 * 864e5).toISOString().slice(0, 10) : null;
+    const dist = rec && rec.dividendEvents !== null && rec.dividendEvents !== undefined && rec.dividendEvents > 0 ? "DISTRIBUTING_OBSERVED" : null;
+    const ucits = /\bucits\b/i.test(e.name || "") ? "NAME" : null;
+    const exch = String(e.exchange || "").toUpperCase();
+    const countryFromExchange = /^(SHE|SHG|SHEB|SHGB)$/.test(exch) ? "CN" : /^(NYSE|NYSE ARCA|NASDAQ|BATS|AMEX|NYSE MKT|PINK|OTC.*|EXPM|NMFQS)$/.test(exch) ? "US" : null;
+    if (!e.country && countryFromExchange) e.country = countryFromExchange;
+    if (!e.region && countryFromExchange === "CN") { e.region = "CHINA"; e.derivation = Object.assign({}, e.derivation, { region: "EXCHANGE_COUNTRY" }); }
+    const full = Object.assign({}, e, {
+      assetClass, productType: tax.productType, productTypeBasis: tax.productTypeBasis, productTypeConfidence: tax.productTypeConfidence,
+      strategies: tax.strategies, primaryStrategy: tax.primaryStrategy,
+      leverage: Math.max(e.leverage || 1, tax.leverage), inverse: e.inverse || tax.inverse,
+      singleStockUnderlying: e.singleStockUnderlying || tax.singleStockUnderlying,
+      retirementClass: tax.retirement.class, retirementReasons: tax.retirement.reasons,
+      conflict: e.status === "REVIEW" ? (master.conflicts.find((c) => c.symbol === e.symbol) || {}).conflict || "REVIEW" : null,
+      priceAnomaly: anomaly, tickerReuseSuspected: tickerReuse,
+      priceHistoryFrom: rec ? rec.priceHistoryFrom : null, distributionPolicy: dist,
+      distributionBasis: dist ? "Ausschüttungen in der Kursreihe beobachtet (" + rec.dividendEvents + " Ereignisse)" : null,
+      ucits, otc: /^(PINK|OTC|OTCGREY|OTCMKTS|OTCBB|OTCQB|OTCQX|OTCD|OTCCE|EXPM|NMFQS)$/.test(String(e.exchange || "").toUpperCase())
+    });
+    // Einordnung aus den ZUSAMMENGEFUEHRTEN Werten (Master + Taxonomie), nie aus nur einer Quelle
+    const ret = Tax.retirementClass({ productType: full.productType, assetClass: full.assetClass, strategies: full.strategies,
+      leverage: full.leverage, inverse: full.inverse, singleStockUnderlying: full.singleStockUnderlying }, { historyYears: priceM ? priceM.historyYears : null });
+    full.retirementClass = ret.class; full.retirementReasons = ret.reasons;
+    if ((full.leverage > 1 || full.inverse) && !/LEVERAGED|INVERSE/.test(full.primaryStrategy)) {
+      full.strategies = [full.leverage > 1 && full.inverse ? "LEVERAGED_INVERSE" : full.leverage > 1 ? "LEVERAGED" : "INVERSE"].concat(full.strategies.filter((x) => x !== "EQUITY" && x !== "UNKNOWN"));
+      full.primaryStrategy = full.strategies[0];
+    }
+    full.complex = full.retirementClass !== "STANDARD";
+    const layer = Tax.layerOf(full);
+    full.layer = layer.layer; full.layerReasons = layer.reasons;
+    full.consumerVisible = full.layer === "PUBLIC_ANALYSIS" || full.layer === "COMPLEX";
+    full.slug = slugOf(e);
+    const q = Master.dataQuality(full);
+    const provenance = {
+      source: "tiingo", sourceId: e.listingId, sources: e.sources, retrievedAt: (ingest && ingest.asOf) || null, asOf: priceM ? priceM.asOf : null,
+      classificationMethod: tax.basis + " (" + Tax.VERSION + ")", classificationConfidence: tax.productTypeConfidence,
+      coverage: q.coverage, missingFields: q.missingFields, canonicalizationMethod: e.canonicalizationMethod,
+      canonicalizationConfidence: e.canonicalizationConfidence, manualOverride: e.manualOverride || null
+    };
+    const dna = Master.dna(full, priceM ? { volatility: priceM.volatility.value, maxDrawdown: priceM.maxDrawdown.value, momentum12m: priceM.windows["1Y"].value, historyYears: priceM.historyYears } : {});
+    dna.dataQuality = { value: Math.round(q.coverage * 100), status: "CALCULATED", label: "Datenqualität (Feldabdeckung)" };
+    writeFileSync(join(detailDir, full.slug + ".json"), JSON.stringify({
+      schemaVersion: "vu-vorsorge-etf-2.0.0", ...full, quality: q, provenance, dna, metrics: priceM, metricsTotal: totalM,
+      totalReturn: rec ? rec.totalReturn : { state: "NO_SERIES" }, seriesPath: s ? "/vorsorge/data/series/" + e.symbol + ".json" : null,
+      holdings: { status: "SOURCE_NOT_CONNECTED", reason: "Holdings liefert Tiingo nicht. Vertrag: etf-holdings-2.0.0." },
+      costs: { status: "SOURCE_NOT_CONNECTED", ter: null }
+    }));
+    entries.push({ full, priceM, totalM });
+  }
+
+  // Serien aus Repository-Quellen, die nicht mehr gebraucht werden, entfernen
+  for (const f of readdirSync(join(OUT, "data/series"))) {
+    const rec = tryJson(join(OUT, "data/series", f));
+    if (rec && rec.origin === "repository-sources" && !written.has(f)) rmSync(join(OUT, "data/series", f));
+  }
+
+  const asOf = latest || null;
+  const row = ({ full: e, priceM: m, totalM: t }) => {
+    const p = (k) => (m ? (m.windows[k].annualized ?? m.windows[k].value) : null);
+    return [e.slug, e.listingId, e.symbol, e.name, e.issuer, e.exchange, e.currency, e.productType, e.assetClass, e.region, e.index, e.theme, e.category,
+      e.primaryStrategy, e.retirementClass, e.layer, e.leverage, e.inverse ? 1 : 0, e.status, e.singleStockUnderlying, m ? m.historyYears : null, e.priceHistoryFrom || (m ? m.firstDate : null),
+      m ? m.price : null, m ? m.priceDate : null, m ? m.change1D : null,
+      p("1W"), p("1M"), p("3M"), p("6M"), p("YTD"), p("1Y"), p("3Y"), p("5Y"), p("10Y"), p("MAX"),
+      t ? t.windows["1Y"].value : null, t ? (t.windows["5Y"].annualized ?? null) : null,
+      m ? m.volatility.value : null, m ? m.maxDrawdown.value : null, m ? m.trend.value : null, m ? m.relativeStrengthVsSPY.value : null,
+      Master.dataQuality(e).coverage, e.distributionPolicy, e.ucits];
+  };
+  const layerCount = (l) => entries.filter((x) => x.full.layer === l).length;
+  const all = entries.map((x) => x.full);
+  const tally = (list, f) => list.reduce((a, e) => { const k = Array.isArray(e[f]) ? e[f][0] : e[f]; const kk = k ?? "UNKNOWN"; a[kk] = (a[kk] || 0) + 1; return a; }, {});
+  const hist = (y) => entries.filter((x) => x.priceM && x.priceM.historyYears >= y).length;
+  const counts = {
+    rowsRead: rows.length, listings: all.length, canonicalFunds: master.counts.funds,
+    shareClasses: new Set(all.map((e) => e.shareClassId)).size, uniqueTickers: new Set(all.map((e) => e.symbol)).size,
+    publicAnalysis: layerCount("PUBLIC_ANALYSIS"), complex: layerCount("COMPLEX"), archive: layerCount("ARCHIVE"), review: layerCount("REVIEW"),
+    consumerVisible: all.filter((e) => e.consumerVisible).length,
+    withPriceHistory: hist(0), withHistory1Y: hist(1), withHistory3Y: hist(3), withHistory5Y: hist(5), withHistory10Y: hist(10),
+    withTotalReturn: entries.filter((x) => x.totalM).length,
+    leveragedOrInverse: all.filter((e) => e.leverage > 1 || e.inverse).length, inactive: all.filter((e) => e.status === "INACTIVE").length
+  };
+  const index = { schemaVersion: "vu-vorsorge-etf-index-2.0.0", build: VERSION, taxonomy: Tax.VERSION, analytics: A.VERSION, generatedAt: asOf, asOf, provider: "tiingo",
+    scope: ingest ? "TIINGO_ETF_INGEST" : "REPOSITORY_DELIVERED_EXTRACT",
+    scopeNote: ingest ? "Aktive ETF-Ticker der Tiingo-Tickerliste mit Stammdaten und Kursreihen (Ingest " + (ingest.ingest || "") + ") plus bisheriger Repository-Auszug."
+      : "Repository-Auszug. Der volle Tiingo-Ingest läuft über .github/workflows/vorsorge-etf-universe.yml.",
+    providerUniverseEtfRows: tryJson(join(OUT, "data/ingest/catalog-stats.json"))?.etfRows ?? tryJson(join(root, "quant/data/market/universe/summary.json"))?.totals?.byInstrumentType?.ETF ?? null,
+    counts, fields: INDEX_FIELDS, rows: entries.map(row) };
+  // Auslieferung in zwei Teilen: der Browser laedt zuerst nur Public + Komplex;
+  // Archiv und Pruefschicht kommen erst, wenn jemand sie braucht.
+  const isMain = (r) => r[INDEX_FIELDS.indexOf("layer")] === "PUBLIC_ANALYSIS" || r[INDEX_FIELDS.indexOf("layer")] === "COMPLEX";
+  const mainIndex = Object.assign({}, index, { part: "MAIN", rows: index.rows.filter(isMain), extraPath: "/vorsorge/data/etf-index-extra.json" });
+  writeFileSync(join(OUT, "data/etf-index.json"), JSON.stringify(mainIndex));
+  writeFileSync(join(OUT, "data/etf-index-extra.json"), JSON.stringify({ schemaVersion: index.schemaVersion, part: "EXTRA", asOf, fields: INDEX_FIELDS, rows: index.rows.filter((r) => !isMain(r)) }));
+  if (existsSync(join(OUT, "data/etf-master.json"))) rmSync(join(OUT, "data/etf-master.json"));
+
+  // ------------------------------------------------------------ Data-QA
+  const missing = {};
+  for (const e of all) for (const f of Master.dataQuality(e).missingFields) missing[f] = (missing[f] || 0) + 1;
+  const cat = tryJson(join(OUT, "data/ingest/catalog-stats.json"));
+  const rep = tryJson(join(OUT, "data/ingest/ingest-report.json"));
+  const failedRep = tryJson(join(OUT, "data/ingest/failed-etf-ingest.json"));
+  const quality = {
+    schemaVersion: "vu-vorsorge-data-qa-2.0.0", asOf, scope: index.scope,
+    ingest: { status: rep ? (rep.complete ? "COMPLETE" : "PARTIAL") : "NOT_RUN", report: rep, catalog: cat, failedCount: failedRep ? failedRep.count : null },
+    layers: { raw: cat ? cat.etfRows : null, canonical: counts.canonicalFunds, listings: counts.listings, publicAnalysis: counts.publicAnalysis, complex: counts.complex, archive: counts.archive, review: counts.review },
+    counts,
+    priceCoverage: { withAnyHistory: counts.withPriceHistory, ratio: all.length ? counts.withPriceHistory / all.length : 0, y1: counts.withHistory1Y, y3: counts.withHistory3Y, y5: counts.withHistory5Y, y10: counts.withHistory10Y, totalReturn: counts.withTotalReturn },
+    metadataCoverage: Object.fromEntries(Master.FIELDS.map((f) => [f, Math.round((1 - (missing[f] || 0) / Math.max(1, all.length)) * 1000) / 1000])),
+    missingMetadata: missing, missingName: all.filter((e) => !e.name).length, missingPrice: all.filter((e) => !e.priceHistoryAvailable).length,
+    noSourceFields: Master.NO_SOURCE_FIELDS,
+    duplicates: { duplicateTickers: master.duplicateTickers, multiListingFunds: master.multiListingFunds },
+    conflicts: master.conflicts, tickerReuseSuspected: all.filter((e) => e.tickerReuseSuspected).map((e) => e.symbol),
+    priceAnomalies: all.filter((e) => e.priceAnomaly).map((e) => ({ symbol: e.symbol, anomaly: e.priceAnomaly })),
+    productTypes: tally(all, "productType"), strategies: tally(all, "primaryStrategy"), retirementClasses: tally(all, "retirementClass"),
+    leveragedInverse: all.filter((e) => e.leverage > 1 || e.inverse).length,
+    singleStock: all.filter((e) => e.singleStockUnderlying).length,
+    currencies: tally(all, "currency"), exchanges: tally(all, "exchange"), countries: tally(all, "country"), assetClasses: tally(all, "assetClass"),
+    regions: tally(all, "region"), issuers: tally(all, "issuer"), statuses: tally(all, "status"), unknownClassification: all.filter((e) => e.productType === "UNKNOWN" || !e.assetClass).length
+  };
+  writeFileSync(join(OUT, "data/quality.json"), JSON.stringify(quality, null, 1));
+
+  // ---------------------------------------------------------------- UCITS
+  const euEx = all.filter((e) => EU_EXCHANGES.has(String(e.exchange || "").toUpperCase()));
+  const catEu = cat ? Object.entries(cat.byExchange || {}).filter(([k]) => EU_EXCHANGES.has(k)).reduce((a, [, v]) => a + v, 0) : null;
+  writeFileSync(join(OUT, "data/ucits-coverage.json"), JSON.stringify({
+    schemaVersion: "vu-vorsorge-ucits-coverage-1.0.0", asOf, measuredOn: index.scope,
+    catalogEtfRowsOnEuropeanExchanges: catEu, catalogExchanges: cat ? cat.byExchange : null,
+    listingsOnEuropeanExchanges: euEx.length, listingsNamedUcits: all.filter((e) => e.ucits).length,
+    listingsInEurGbpChf: all.filter((e) => ["EUR", "GBP", "CHF"].includes(e.currency)).length,
+    isinAvailable: all.filter((e) => e.isin).length,
+    examples: all.filter((e) => e.ucits || EU_EXCHANGES.has(String(e.exchange || "").toUpperCase())).slice(0, 20).map((e) => ({ symbol: e.symbol, name: e.name, exchange: e.exchange, currency: e.currency })),
+    conclusion: (euEx.length + all.filter((e) => e.ucits).length) === 0
+      ? "Im gemessenen Tiingo-Bestand ist kein UCITS-Listing (europäische Börse, UCITS im Namen oder EUR/GBP/CHF-Handelswährung) enthalten. Für deutsche Privatanleger relevante UCITS-ETFs brauchen eine zweite Datenquelle."
+      : euEx.length === 0
+        ? `${all.filter((e) => e.ucits).length} UCITS-Fonds erscheinen nur als US-Freiverkehrszeile (OTC, z. B. PINK, in USD) – nicht als europäisches Börsenlisting, ohne ISIN. Die für deutsche Privatanleger handelbaren Listings (Xetra, LSE, Euronext …) fehlen; dafür braucht es eine zweite Datenquelle.`
+        : "Einzelne europäische Listings vorhanden; ISIN fehlt. Abdeckung für deutsche Privatanleger unzureichend.",
+    ucitsByExchange: all.filter((e) => e.ucits).reduce((a, e) => { a[e.exchange] = (a[e.exchange] || 0) + 1; return a; }, {})
+  }, null, 1));
+
+  // ------------------------------------------------------- Datenlücken-Matrix
+  const cov = (f) => quality.metadataCoverage[f];
+  writeFileSync(join(OUT, "data/data-gaps.json"), JSON.stringify({
+    schemaVersion: "vu-vorsorge-data-gaps-1.0.0", asOf,
+    fields: [
+      ["Price History", "Tiingo EOD", r4(quality.priceCoverage.ratio), "nein (US); ja für europäische Listings"],
+      ["Total Return", "Tiingo divCash + kanonische Rekonstruktion", r4(counts.withTotalReturn / Math.max(1, all.length)), "nein"],
+      ["Realtime", "Tiingo IEX (nur US, in Vorsorge nicht genutzt)", null, "für Vorsorge nicht nötig"],
+      ["ISIN", "nicht geliefert", cov("isin"), "ja"], ["WKN", "nicht geliefert", cov("wkn"), "ja"],
+      ["TER", "nicht geliefert", cov("ter"), "ja"], ["AUM / Fondsvolumen", "nicht geliefert", cov("fundSize"), "ja"],
+      ["Holdings", "nicht geliefert", 0, "ja"], ["Index", "aus Name/Beschreibung abgeleitet", cov("index"), "ja (verbindlich)"],
+      ["Distribution", "aus beobachteten Ausschüttungen (nur positiv belegbar)", r4(all.filter((e) => e.distributionPolicy).length / Math.max(1, all.length)), "ja (thesaurierend nicht belegbar)"],
+      ["Replication", "nicht geliefert", cov("replicationMethod"), "ja"], ["Tracking Difference", "nicht berechenbar ohne Indexstände", 0, "ja"],
+      ["UCITS", "nicht geliefert", r4(all.filter((e) => e.ucits).length / Math.max(1, all.length)), "ja"],
+      ["Exchange", "Tiingo-Tickerliste", cov("exchange"), "nein"], ["NAV", "nicht geliefert", 0, "ja"]
+    ].map(([field, tiingo, coverage, secondProvider]) => ({ field, tiingo, coverage, secondProviderNeeded: secondProvider }))
+  }, null, 1));
+
+  // ------------------------------------------------------------ Änderungen
+  const prevRows = prevIndex && prevIndex.rows ? prevIndex.rows.concat(prevExtraRows || []).map((r) => Object.fromEntries(prevIndex.fields.map((f, i) => [f, r[i]]))) : null;
+  const nextRows = index.rows.map((r) => Object.fromEntries(INDEX_FIELDS.map((f, i) => [f, r[i]])));
+  const toM = (list) => list && { etfs: list.map((r) => ({ listingId: r.id, symbol: r.symbol, name: r.name, status: r.status, index: r.index, vol: r.vol, hy: r.hy })) };
+  const changes = Monitor.diffMasters(toM(prevRows), toM(nextRows), asOf);
+  const prevChanges = tryJson(join(OUT, "data/changes.json"));
+  if (!changes.events.length && prevChanges && prevChanges.events) changes.events = prevChanges.events;
+  writeFileSync(join(OUT, "data/changes.json"), JSON.stringify(changes, null, 1));
+
+  // ------------------------------------------------------------ SEO
+  const seoDir = join(OUT, "etf");
+  if (existsSync(seoDir)) rmSync(seoDir, { recursive: true });
+  const seo = all.filter((e) => e.layer === "PUBLIC_ANALYSIS" && /^[A-Z0-9.-]+$/.test(e.slug) && entries.find((x) => x.full === e).priceM?.historyYears >= 1);
+  for (const e of seo) { mkdirSync(join(seoDir, e.slug), { recursive: true }); writeFileSync(join(seoDir, e.slug, "index.html"), seoPage(e)); }
+  writeFileSync(join(OUT, "sitemap.xml"), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+    ['<url><loc>https://research.visionuniverse.de/vorsorge/</loc></url>'].concat(seo.map((e) => `<url><loc>https://research.visionuniverse.de/vorsorge/etf/${esc(e.slug)}/</loc>${asOf ? `<lastmod>${asOf}</lastmod>` : ""}</url>`)).join("\n") + "\n</urlset>\n");
+  return { counts, asOf, scope: index.scope, seoPages: seo.length };
+}
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  const t = Date.now();
+  const res = build();
+  log(JSON.stringify({ ...res, buildMs: Date.now() - t }, null, 2));
+}

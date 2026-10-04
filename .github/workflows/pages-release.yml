@@ -39,6 +39,9 @@ on:
       # Neue Titel bekommen ihr Logo nach dem Marktdaten-Refresh; der
       # Logo-Lauf pusht mit dem GITHUB_TOKEN und loest sonst nichts aus.
       - "Firmenlogos (Wikimedia Commons und Firmen-Websites fuer Discover)"
+      # Hedgefonds-13F-Daten: woechentlich und taeglich um die Meldefristen,
+      # pusht ebenfalls mit dem GITHUB_TOKEN.
+      - "Update Hedgefonds 13F data"
     types: [completed]
     branches: [main]
 
