@@ -66,8 +66,12 @@
     if (inv !== null && c.setup && c.setup.state !== "NO_SETUP") rows.push(["Ungültig unter", usd(inv)]);
     if (tr && tr.targets && tr.targets[0]) rows.push(["Zielzone 1", zoneText(tr.targets[0])]);
     var ev = c.replay && c.replay.sufficient
-      ? Math.round(c.replay.positiveShare * 100) + " % im Plus · Median " + VM.pct(c.replay.medianReturn, 1, true) + " nach 6 M. (" + c.replay.completed + " Fälle)"
-      : c.replay && c.replay.state === "AVAILABLE" ? "Zu wenige Vergleichsfälle (" + c.replay.episodes + ")" : null;
+      ? Math.round(c.replay.positiveShare * 100) + " % der " + c.replay.completed + " ähnlichen Fälle lagen nach 6 Monaten höher (Median " + VM.pct(c.replay.medianReturn, 1, true) + ")"
+      : c.replay && c.replay.state === "AVAILABLE" ? "zu wenige ähnliche Fälle (" + c.replay.episodes + ")" : null;
+    var E = global.QXEvidence;
+    var tested = c.events.filter(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; })[0];
+    var testedNode = tested && E ? E.signalEvidence(tested.backtest, { compact: true, label: "„" + ((T[tested.eventType] || {}).label || tested.eventType) + "“ marktweit" }) : null;
+    var withheld = !tested ? c.events.filter(function (e) { return e.backtest && e.backtest.state !== "AVAILABLE"; })[0] : null;
     return el("a", { class: "q-radar-card tone-" + (first.direction || t0.tone || "info"), href: X.routes.stock(c.ticker), dataset: { symbol: c.ticker } }, [
       el("div", { class: "q-rc-head" }, [X.logo(c.ticker, nameOf(ctx, c.ticker), "md", { initialOnly: !opts.logo }),
         el("span", { class: "q-rc-id" }, [el("b", { text: nameOf(ctx, c.ticker) }), el("small", { text: c.ticker + (c.setup && c.setup.state !== "NO_SETUP" ? " · " + lifecycleLabel(c.setup.state) + " seit " + X.dateDe(c.setup.since) : "") })])]),
@@ -79,8 +83,11 @@
       rows.length ? el("dl", { class: "q-rc-levels" }, [].concat.apply([], rows.map(function (r) { return [el("dt", { text: r[0] }), el("dd", { class: "num", text: r[1] })]; }))) : null,
       tr && tr.trigger ? el("p", { class: "q-rc-next" }, [el("b", { text: "Bestätigt wenn: " }), el("span", { text: tr.trigger })])
         : c.next && c.next.open && c.next.open.length ? el("p", { class: "q-rc-next" }, [el("b", { text: "Nächster Schritt: " }), el("span", { text: "für „" + lifecycleLabel(c.next.state) + "“ fehlen " + c.next.open.length + " von " + c.next.total + " Bedingungen" })]) : null,
-      ev ? el("p", { class: "q-rc-evidence" }, [el("b", { text: "Früher bei dieser Aktie: " }), el("span", { text: ev })]) : null,
-      global.QXEvidence ? global.QXEvidence.evidenceBlock(c.events, { compact: !!opts.compact }) : null,
+      ev ? el("p", { class: "q-rc-evidence" }, [el("span", { class: "q-ev-tier tier-observed", text: "Beobachtet" }), el("span", { text: " Bei dieser Aktie: " + ev + "." })]) : null,
+      testedNode,
+      withheld && E ? el("p", { class: "q-rc-withheld" }, [el("span", { class: "q-ev-tier tier-tested is-off", text: "Getestet" }), el("span", { text: " " + E.reasonText(withheld.backtest.reason) })]) : null,
+      (function () { var hit = E && E.alertMatch ? c.events.map(function (e) { return E.alertMatch(c.ticker, e); }).filter(Boolean)[0] : null;
+        return hit ? el("p", { class: "q-alert-hit", text: "Passt zu deiner Benachrichtigung: " + hit }) : null; })(),
       el("small", { class: "q-rc-date", text: "Stand " + X.dateDe(first.occurredAt) })
     ]);
   }
@@ -91,7 +98,10 @@
       X.stat("Aktien verbessern sich", sm.improvingTickers.toLocaleString("de-DE"), "mindestens ein positives Ereignis"),
       X.stat("Risiko steigt", String(sm.riskRisingTickers), "Risiko-Faktor fällt eine Stufe"),
       X.stat("Neues 52-Wochen-Hoch", String(sm.newHighs), "Stand " + X.dateDe(radar.sources.market.asOf)),
-      X.stat("Neu in einer Strategie", String(sm.newStrategyMatches), "Stand " + X.dateDe(radar.sources.strategy.to))];
+      X.stat("Neu in einer Strategie", String(sm.newStrategyMatches), "Stand " + X.dateDe(radar.sources.strategy.to))]
+      .concat(typeof sm.edgeTickers === "number" ? [
+        X.stat("Mit messbarem historischen Vorteil", sm.edgeTickers.toLocaleString("de-DE"), "Signal lag historisch über dem Markt – meist nur leicht"),
+        X.stat("Historisch schwächer als der Markt", sm.weakerEdgeTickers.toLocaleString("de-DE"), "Signal lag historisch unter dem Markt")] : []);
   }
   var RADAR_FILTERS = [
     { id: "alle", label: "Alle", types: null },
@@ -101,9 +111,24 @@
     { id: "hoch", label: "52-Wochen-Hoch", types: ["NEW_52W_HIGH"] },
     { id: "faktoren", label: "Faktoren & Risiko", types: ["FACTOR_CHANGED", "RISK_RISING"] },
     { id: "evidenz", label: "Evidenz verändert", types: ["EVIDENCE_CHANGED"] },
-    { id: "historisch", label: "Mit historischer Evidenz", evidence: true },
+    { id: "historisch", label: "Historisch getestet", evidence: true },
+    /* evidence-language-1.0.0: 95-%-Band der Differenz zur Base Rate ganz ueber 0. */
+    { id: "vorteil", label: "Mit messbarem Vorteil", edge: true },
     { id: "beobachtet", label: "Beobachtet", watched: true }
   ];
+  /* Warum der historische Vorteil nicht sortiert - aus der aktuellen Evidenz, nicht fest geschrieben. */
+  function edgeSortNote(r) {
+    var E = global.QXEvidence, best = null;
+    Object.keys(r.backtestEvidence || {}).forEach(function (k) {
+      var b = r.backtestEvidence[k];
+      if (b && b.state === "AVAILABLE" && Array.isArray(b.deltaCi) && b.deltaCi[0] > 0 && (!best || b.deltaPositiveShare > best.b.deltaPositiveShare)) best = { id: k, b: b };
+    });
+    var base = "Ein historischer Vorteil gegenüber dem Markt sortiert eine Karte bewusst nicht nach oben";
+    if (!best) return base + ": Zum aktuellen Stand hat kein getestetes Signal einen messbaren Vorteil.";
+    var label = (RadarC && RadarC.TYPE[best.id] || {}).label || best.id;
+    return base + ": Der größte messbare Vorteil („" + label + "“) beträgt " + (E ? E.pp(best.b.deltaPositiveShare) : "") +
+      (best.b.edgeOutOfSample ? "." : " und hat sich in neueren Daten nicht bestätigt.") + " Wer nur solche Fälle sehen will, nutzt den Filter „Mit messbarem Vorteil“.";
+  }
   async function radar(main, ctx, params) {
     main.append(el("header", { class: "q-hero q-hero--page" }, [X.globe(), el("p", { class: "q-kicker", text: "Quant Radar" }),
       el("h1", { class: "qx-h1", text: "Was ist heute neu?" }),
@@ -124,6 +149,7 @@
       var cards = r.cards.filter(function (c) {
         if ((f.watched || onlyWatched) && watched.indexOf(c.ticker) < 0) return false;
         if (f.evidence) return c.events.some(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; });
+        if (f.edge) return c.events.some(function (e) { return e.backtest && e.backtest.state === "AVAILABLE" && Array.isArray(e.backtest.deltaCi) && e.backtest.deltaCi[0] > 0; });
         return !f.types || c.events.some(function (e) { return f.types.indexOf(e.eventType) >= 0; });
       }).map(function (c) {
         if (!f.types) return c;
@@ -145,6 +171,7 @@
     main.append(X.section("Wie der Radar sortiert", null, [
       el("ol", { class: "q-rule" }, r.priorityRule.keys.map(function (k) { return el("li", { text: k.plain }); })),
       el("p", { class: "qx-small", text: "Regel " + r.priorityRule.version + ": Die Karten werden nach diesen Schlüsseln der Reihe nach geordnet – der erste Unterschied entscheidet. Es entsteht keine Gesamtnote." }),
+      el("p", { class: "qx-small", text: edgeSortNote(r) }),
       rev ? el("p", { class: "qx-small", text: "Wichtig: Setup-Wechsel sind unruhig. Gemessen kehren sich " + Math.round(rev.share * 100) + " % der Wechsel beim nächsten Stand wieder um (" + rev.reversals + " von " + rev.candidates + "). Ein neues Setup ist ein Anlass zum Hinsehen, kein Beleg." }) : null,
       el("p", { class: "qx-small", text: "Quellen: Setup " + X.dateDe(r.sources.setup.from) + " → " + X.dateDe(r.sources.setup.to) + " · Signale " + X.dateDe(r.sources.signals.asOf) + " · Strategien " + X.dateDe(r.sources.strategy.from) + " → " + X.dateDe(r.sources.strategy.to) + " · Faktoren " + X.dateDe(r.sources.factors.from) + " → " + X.dateDe(r.sources.factors.to) + " · 52-Wochen-Hoch " + X.dateDe(r.sources.market.asOf) + "." }),
       el("ul", { class: "q-trust" }, r.eventTypes.filter(function (t) { return t.state === "CLOSED"; }).map(function (t) {
@@ -674,6 +701,18 @@
     var recent = X.recent.list(), watched = X.watch.list();
     if (watched.length) main.append(X.world("Beobachtet", watched.length + (watched.length === 1 ? " Aktie" : " Aktien") + " beobachtest du. Quant zeigt im Radar, wenn sich bei ihnen etwas ändert.", [X.rail(watched.slice(0, 24).map(function (t) { return X.poster({ ticker: t, name: nameOf(ctx, t), story: "Beobachtet" }); }), "Gemerkt"),
       watched.length > 1 ? X.actions([X.btn("Beobachtete vergleichen", X.routes.compare(watched.slice(0, 4)), "secondary")]) : null]));
+    /* Evidenz-Verlauf je beobachteter Aktie: was jetzt gilt, was davor galt,
+       was historisch getestet ist, was als Naechstes fehlt. Kein Portfolio. */
+    if (watched.length && ctx.api.getSignalTracking) {
+      var tlHost = el("div", { class: "q-watch-tls", "aria-live": "polite" }, [X.loading()]);
+      main.append(X.world("Verlauf deiner beobachteten Aktien", "Was sich bei ihnen zuletzt geändert hat – mit Datum. Keine Empfehlung und kein Depot.", [tlHost]));
+      Promise.all([ctx.loadBacktestView().catch(function () { return null; })].concat(watched.slice(0, 12).map(function (t) { return ctx.api.getSignalTracking(t).catch(function () { return null; }); }))).then(function (all) {
+        var trs = all.slice(1);
+        if (!tlHost.isConnected) return;
+        if (!global.QXEvidence) { tlHost.replaceChildren(el("p", { class: "qx-small", text: "Der Verlauf konnte nicht geladen werden." })); return; }
+        tlHost.replaceChildren.apply(tlHost, watched.slice(0, 12).map(function (t, i) { return global.QXEvidence.watchTimeline(t, nameOf(ctx, t), trs[i], X.routes.stock(t)); }));
+      });
+    }
     main.append(X.world("Zuletzt analysiert", recent.length ? null : "Aktien, die du analysierst oder beobachtest, erscheinen hier. Tippe auf einer Aktienseite auf „Beobachten“.",
       recent.length ? [X.rail(recent.slice(0, 12).map(function (t) { return X.poster({ ticker: t, name: nameOf(ctx, t), story: "Zuletzt analysiert" }); }), "Zuletzt analysiert")] : []));
     var interesting = el("div", {}, [X.loading()]);
