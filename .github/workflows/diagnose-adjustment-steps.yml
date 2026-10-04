@@ -12,9 +12,6 @@ on:
       tickers:
         description: 'Titel, mit Komma getrennt (z. B. LOGI,AAPL); leer = alle vom Faktorlauf gesperrten'
         required: false
-  push:
-    branches: [claude/diag-adjustment-steps]
-    paths: ['scripts/diagnose/**', '.github/workflows/diagnose-adjustment-steps.yml']
 
 permissions:
   contents: read

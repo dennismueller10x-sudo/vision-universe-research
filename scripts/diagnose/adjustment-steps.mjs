@@ -69,8 +69,13 @@ export function explainSteps(bars, { tolerance = 0.002, context = 3 } = {}) {
 /** Einordnung eines unerklaerten Sprungs gegen die gemeldeten Dividenden. */
 export function classifyStep(step, bars, { window = 3, tolerance = 0.15 } = {}) {
   const i = bars.findIndex((b) => b.date === step.date);
-  const near = bars.slice(Math.max(0, i - window), i + window + 1).filter((b) => b.dividend > 0 && b.date !== step.date);
-  const match = near.find((b) => Math.abs(b.dividend / step.impliedDividendAtExClose - 1) <= tolerance);
+  // Naechstgelegene passende Dividende (nicht die erste im Fenster).
+  const near = [];
+  for (let k = Math.max(0, i - window); k <= Math.min(bars.length - 1, i + window); k++)
+    if (k !== i && bars[k].dividend > 0) near.push({ b: bars[k], d: Math.abs(k - i) });
+  near.sort((a, b) => a.d - b.d);
+  const hit = near.find((x) => Math.abs(x.b.dividend / step.impliedDividendAtExClose - 1) <= tolerance);
+  const match = hit ? hit.b : null;
   // Wiederkehrendes Muster: in frueheren Jahren zwei Dividenden an benachbarten Handelstagen.
   const divIdx = bars.map((b, k) => (b.dividend > 0 ? k : -1)).filter((k) => k >= 0);
   const pairs = [];
