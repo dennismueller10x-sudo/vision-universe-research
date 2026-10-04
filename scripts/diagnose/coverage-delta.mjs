@@ -167,8 +167,10 @@ async function main() {
   for (const [name, rows] of [["TECHNIK", res.technical], ["CHART", res.chart]]) {
     for (const r of rows) {
       const c = cut.get(r.ticker);
+      const d = series.get(r.ticker);
       const extra = r.cls === "LISTING_CUT" && c ? ` gekuerzt ab ${c[5]} (-${c[3]} Bars)` :
-        (r.cls === "AGED_PAST_THRESHOLD" || r.cls === "NEW_BARS_SINCE_REFERENCE") ? ` Bars am Bezug ${barsBefore(r.ticker, name === "TECHNIK" ? techBaseDate : chartBaseDate)}, heute ${(series.get(r.ticker) || []).length}` : "";
+        series.has(r.ticker) ? (d ? ` Bars am Bezug ${barsBefore(r.ticker, name === "TECHNIK" ? techBaseDate : chartBaseDate)}, ` +
+          `heute ${d.length}, Reihe ${d[0] || "-"} .. ${d[d.length - 1] || "-"}` : " Reihe in der Ablage nicht lesbar") : "";
       console.log(`  ${name.padEnd(7)} ${r.ticker.padEnd(8)} ${r.before.padEnd(5)} -> ${r.now.padEnd(5)} ${r.cls}${extra}`);
     }
   }
