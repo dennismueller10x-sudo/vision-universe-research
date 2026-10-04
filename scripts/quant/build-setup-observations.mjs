@@ -102,6 +102,11 @@ function snapshotHash(snapshot) {
  * Steht als eigene Funktion da, damit die Messung pruefbar ist, ohne die
  * ganze Materialisierung laufen zu lassen.
  */
+/** Wurde dieses Bundle am Stichtag beobachtet (und nicht nur fortgeschrieben)? */
+export function observedAtCutoff(entry, cutoff) {
+  return !!entry && !!cutoff && entry.dataCutoff === cutoff;
+}
+
 export function extensionVerdict(existing, snapshot) {
   const gleich = (a, b) => Array.isArray(a) && Array.isArray(b) &&
     a.length === b.length && a.every((value, i) => value === b[i]);
@@ -189,6 +194,7 @@ function main() {
   const rules = {};
   let unavailable = 0;
   const historyRows = {};
+  const staleBundles = [];
   /* The other half of the same question. A per-title observation says where
      one title stands; these two collect what is needed to say which titles
      stand there, and to prove that answer is the cascade's own. */
@@ -214,7 +220,11 @@ function main() {
     if (recorded && recorded !== "UNAVAILABLE") {
       counts[recorded] = (counts[recorded] || 0) + 1;
       rules[observation.matchedRule.ruleId] = (rules[observation.matchedRule.ruleId] || 0) + 1;
-      historyRows[entry.ticker] = [recorded, entry.levels.invalidationPrice, entry.levels.exitPrice];
+      /* Ins unveraenderliche Protokoll zum Stichtag nur, was an diesem Stichtag
+         beobachtet wurde (04.10.2026: sechs Bundles vom 2026-09-10 standen drei
+         Wochen lang als Beobachtung jedes neuen Stichtags in der Historie). */
+      if (observedAtCutoff(entry, cutoff)) historyRows[entry.ticker] = [recorded, entry.levels.invalidationPrice, entry.levels.exitPrice];
+      else staleBundles.push({ ticker: entry.ticker, dataCutoff: entry.dataCutoff });
       assignments.push({
         ticker: entry.ticker,
         ruleId: observation.matchedRule.ruleId,
@@ -415,6 +425,11 @@ function main() {
   }
 
   summary.observationDrift = observationDrift;
+  summary.staleBundles = { count: staleBundles.length, cutoff,
+    rule: "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
+    byDataCutoff: staleBundles.reduce((m, b) => ((m[b.dataCutoff || "UNKNOWN"] = (m[b.dataCutoff || "UNKNOWN"] || 0) + 1), m), {}),
+    sample: staleBundles.slice(0, 50) };
+  if (staleBundles.length) process.stdout.write("  Veraltete Bundles nicht in die Beobachtung " + cutoff + " aufgenommen: " + staleBundles.length + "\n");
   writeFileSync(join(OUT_DIR, "summary.json"), JSON.stringify(summary, null, 1) + "\n");
 
   const dates = readdirSync(historyDir).filter((file) => file.endsWith(".json.gz")).map((file) => file.replace(/\.json\.gz$/, "")).sort();
