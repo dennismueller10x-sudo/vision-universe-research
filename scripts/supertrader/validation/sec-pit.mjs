@@ -32,6 +32,15 @@ const UA = 'VisionUniverse-Research/1.0 (method fidelity review; info@visionuniv
 export const PIT_KEY = '_validation/sec-pit-r11.json.gz';
 // Runde 12: erweiterte Fassung (IFRS, weitere EPS-/Umsatzkennzahlen, Ursachen fehlender Reihen); r11 bleibt unveraendert.
 export const PIT_KEY_R12 = '_validation/sec-pit-r12.json.gz';
+// Runde 13: Delisting-Klassifikation aus SEC-Einreichungen (PREREGISTRATION-R13-AUDIT D).
+export const DELIST_KEY = '_validation/sec-delist-r13.json.gz';
+export const MERGER_FORMS = new Set(['DEFM14A', 'PREM14A', 'DEFM14C', 'PREM14C', 'SC TO-T', 'SC TO-T/A', 'SC 14D9', 'SC 14D9/A', 'SC 13E3', 'SC 13E3/A', 'SC13E3', '425']);
+export function classifyDelisting(filings, listEnd) {
+  const end = Date.parse(listEnd), lo = end - 450 * 864e5, hi = end + 60 * 864e5;
+  const hits = [];
+  for (let i = 0; i < (filings.form || []).length; i++) { const f = filings.form[i], d = Date.parse(filings.filingDate[i]); if (d >= lo && d <= hi && MERGER_FORMS.has(f)) hits.push([f, filings.filingDate[i]]); }
+  return hits.length ? { cls: 'ACQUISITION', evidence: hits.slice(0, 6) } : { cls: 'UNKNOWN', evidence: [] };
+}
 
 const SUFFIX = /\b(INC|INCORPORATED|CORP|CORPORATION|CO|COMPANY|LTD|LIMITED|LLC|L\.?L\.?C|PLC|LP|L\.?P|HOLDINGS?|GROUP|THE|SA|NV|AG|SE|N\.?V|S\.?A|CL(ASS)? [A-Z]|COMMON STOCK|ORDINARY SHARES|ADR|ADS|NEW|DEL|DE|NY|MD|NV|CAN)\b/g;
 export function normName(s) {
@@ -131,7 +140,7 @@ async function main() {
   const listedRoots = Master.collectListedRoots(rows);
   const { createS3DriverFromEnv } = await import(path.join(root, 'scripts/market/storage/s3-driver.mjs'));
   const driver = createS3DriverFromEnv(process.env);
-  const budget = Guard.createBudget({ classAOperations: 5, classBOperations: 50 });
+  const budget = Guard.createBudget({ classAOperations: 8, classBOperations: 50 });
   const mine = Store.createHistoryStore({ driver, provider: 'tiingo-delisted', market: 'US', budget });
   budget.consumeClassB(1, 'GET manifest');
   const mbuf = await driver.get(mine.seriesPrefix + '_validation/manifest.json.gz');
@@ -172,6 +181,7 @@ async function main() {
   const cause = (active, c, l) => { const b = causes[active ? 'active' : 'delisted']; b[c] = (b[c] || 0) + 1; const end = (l.listEnd || '2026').slice(0, 4); const y = byStartYear[end] ||= {}; y[c] = (y[c] || 0) + 1; };
 
   // 3. Zuordnung
+  const cikAll = {};
   const out = {}, stats = { members: members.length, known: 0, nameMatched: 0, ambiguous: 0, noName: 0, noMatch: 0, noFacts: 0, withEps: { active: 0, delisted: 0 }, total: { active: 0, delisted: 0 }, accuracy: { tested: 0, correct: 0, wrong: 0, ambiguousOrNone: 0 } };
   let k = 0;
   for (const m of members) {
@@ -193,6 +203,7 @@ async function main() {
       if (ok.length !== 1) { stats[ok.length ? 'ambiguous' : 'noFacts']++; cause(active, ok.length ? 'AMBIGUOUS_NAME' : 'NAME_MATCH_NO_DATA_IN_LISTING_WINDOW', m.l); continue; }
       cik = ok[0]; how = 'NAME_MATCH'; stats.nameMatched++;
     } else stats.known++;
+    cikAll[m.l.id] = { cik, active, listEnd: m.l.listEnd || null };
     const f = await facts(cik);
     if (!f) { stats.noFacts++; cause(active, 'CIK_NO_COMPANYFACTS', m.l); continue; }
     if (!f.eps.length) { stats.noFacts++; cause(active, f.cause || 'NO_EPS', m.l); continue; }
@@ -202,13 +213,42 @@ async function main() {
     if (++k % 500 === 0) log(`zugeordnet ${k}`);
   }
   log(`mit EPS: gelistet ${stats.withEps.active}/${stats.total.active}, delistet ${stats.withEps.delisted}/${stats.total.delisted}; Namensabgleich-Pruefung ${stats.accuracy.correct}/${stats.accuracy.tested} richtig, ${stats.accuracy.wrong} falsch`);
+  // Runde 13: Delisting-Klassifikation (Uebernahme vs. unbekannt) fuer delistete Notierungen mit CIK.
+  const delist = {}, dstats = { delistedWithCik: 0, fetched: 0, failed: 0, ACQUISITION: 0, UNKNOWN: 0 };
+  const subCache = new Map();
+  const todo = Object.entries(cikAll).filter(([, v]) => !v.active && v.listEnd);
+  dstats.delistedWithCik = todo.length;
+  for (const [id, v] of todo) {
+    let fl = subCache.get(v.cik);
+    if (fl === undefined) {
+      fl = null;
+      try {
+        const r = await fetch(`https://data.sec.gov/submissions/CIK${v.cik}.json`, { headers: { 'User-Agent': UA } });
+        if (r.ok) { const j = await r.json(); fl = { form: [...(j.filings?.recent?.form || [])], filingDate: [...(j.filings?.recent?.filingDate || [])] };
+          // aeltere Seiten nur, wenn die juengste Seite nicht bis zum Delisting zurueckreicht
+          const oldest = fl.filingDate[fl.filingDate.length - 1];
+          if (oldest && oldest > v.listEnd) for (const f of (j.filings?.files || [])) { const r2 = await fetch(`https://data.sec.gov/submissions/${f.name}`, { headers: { 'User-Agent': UA } }); if (r2.ok) { const j2 = await r2.json(); fl.form.push(...(j2.form || [])); fl.filingDate.push(...(j2.filingDate || [])); } await new Promise((res) => setTimeout(res, 120)); }
+          dstats.fetched++; } else dstats.failed++;
+      } catch { dstats.failed++; }
+      subCache.set(v.cik, fl);
+      await new Promise((res) => setTimeout(res, 120));
+    }
+    if (!fl) continue;
+    const c = classifyDelisting(fl, v.listEnd);
+    delist[id] = { cik: v.cik, listEnd: v.listEnd, cls: c.cls, evidence: c.evidence };
+    dstats[c.cls]++;
+    if ((dstats.ACQUISITION + dstats.UNKNOWN) % 500 === 0) log(`Delisting klassifiziert ${dstats.ACQUISITION + dstats.UNKNOWN}`);
+  }
+  log(`Delistings: mit CIK ${dstats.delistedWithCik}, Uebernahme ${dstats.ACQUISITION}, unbekannt ${dstats.UNKNOWN}, Abruf fehlgeschlagen ${dstats.failed}`);
+  budget.consumeClassA(1, 'PUT sec delist');
+  await driver.put(mine.seriesPrefix + DELIST_KEY, zlib.gzipSync(Buffer.from(JSON.stringify(delist))), { contentType: 'application/gzip' });
   budget.consumeClassA(1, 'PUT sec pit');
   await driver.put(mine.seriesPrefix + PIT_KEY_R12, zlib.gzipSync(Buffer.from(JSON.stringify(out))), { contentType: 'application/gzip' });
   log('Gewinnhistorie im privaten Eimer abgelegt');
   const byYear = {};
   for (const v of Object.values(out)) for (const r of v.eps) { const y = r[2].slice(0, 4); byYear[y] = (byYear[y] || 0) + 1; }
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
-  fs.writeFileSync(path.join(OUT, 'sec-pit-r12.sealed.json'), L.encryptForOwner(pem, Buffer.from(JSON.stringify({ schema: 'supertrader-sec-pit-1.1.0', causes, byListEndYear: byStartYear, at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, stats, epsFilingsByYear: byYear }))));
+  fs.writeFileSync(path.join(OUT, 'sec-pit-r12.sealed.json'), L.encryptForOwner(pem, Buffer.from(JSON.stringify({ schema: 'supertrader-sec-pit-1.2.0', delisting: dstats, delistSample: Object.entries(delist).filter(([, v]) => v.cls === 'ACQUISITION').slice(0, 40), causes, byListEndYear: byStartYear, at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, stats, epsFilingsByYear: byYear }))));
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) main().catch((e) => { console.error(String(e?.stack || e)); process.exit(1); });

@@ -1,0 +1,96 @@
+{
+ "schemaVersion": "vu-vorsorge-data-gaps-1.0.0",
+ "asOf": "2026-10-02",
+ "fields": [
+  {
+   "field": "Price History",
+   "tiingo": "Tiingo EOD",
+   "coverage": 0.9988,
+   "secondProviderNeeded": "nein (US); ja für europäische Listings"
+  },
+  {
+   "field": "Total Return",
+   "tiingo": "Tiingo divCash + kanonische Rekonstruktion",
+   "coverage": 0.9455,
+   "secondProviderNeeded": "nein"
+  },
+  {
+   "field": "Realtime",
+   "tiingo": "Tiingo IEX (nur US, in Vorsorge nicht genutzt)",
+   "coverage": null,
+   "secondProviderNeeded": "für Vorsorge nicht nötig"
+  },
+  {
+   "field": "ISIN",
+   "tiingo": "nicht geliefert",
+   "coverage": 0,
+   "secondProviderNeeded": "ja"
+  },
+  {
+   "field": "WKN",
+   "tiingo": "nicht geliefert",
+   "coverage": 0,
+   "secondProviderNeeded": "ja"
+  },
+  {
+   "field": "TER",
+   "tiingo": "nicht geliefert",
+   "coverage": 0,
+   "secondProviderNeeded": "ja"
+  },
+  {
+   "field": "AUM / Fondsvolumen",
+   "tiingo": "nicht geliefert",
+   "coverage": 0,
+   "secondProviderNeeded": "ja"
+  },
+  {
+   "field": "Holdings",
+   "tiingo": "nicht geliefert",
+   "coverage": 0,
+   "secondProviderNeeded": "ja"
+  },
+  {
+   "field": "Index",
+   "tiingo": "aus Name/Beschreibung abgeleitet",
+   "coverage": 0.147,
+   "secondProviderNeeded": "ja (verbindlich)"
+  },
+  {
+   "field": "Distribution",
+   "tiingo": "aus beobachteten Ausschüttungen (nur positiv belegbar)",
+   "coverage": 0.6462,
+   "secondProviderNeeded": "ja (thesaurierend nicht belegbar)"
+  },
+  {
+   "field": "Replication",
+   "tiingo": "nicht geliefert",
+   "coverage": 0,
+   "secondProviderNeeded": "ja"
+  },
+  {
+   "field": "Tracking Difference",
+   "tiingo": "nicht berechenbar ohne Indexstände",
+   "coverage": 0,
+   "secondProviderNeeded": "ja"
+  },
+  {
+   "field": "UCITS",
+   "tiingo": "nicht geliefert",
+   "coverage": 0.0576,
+   "secondProviderNeeded": "ja"
+  },
+  {
+   "field": "Exchange",
+   "tiingo": "Tiingo-Tickerliste",
+   "coverage": 1,
+   "secondProviderNeeded": "nein"
+  },
+  {
+   "field": "NAV",
+   "tiingo": "nicht geliefert",
+   "coverage": 0,
+   "secondProviderNeeded": "ja"
+  }
+ ]
+}
