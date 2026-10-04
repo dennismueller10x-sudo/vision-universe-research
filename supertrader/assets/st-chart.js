@@ -4,11 +4,29 @@
    Lademechanismus (fetch + DecompressionStream). Es werden keine Kursdaten
    kopiert oder neu berechnet — nur Strategie-Overlays gezeichnet.
    Eine Preisachse, separates Volumen-Pane, Crosshair-Tooltip, abschaltbare
-   Overlays mit Legende. */
+   Overlays mit Legende. Farben kommen aus CSS-Variablen (supertrader.css) und
+   werden bei jedem Zeichnen gelesen; beim Wechsel des Farbschemas
+   (Ereignis vu-theme-change der Navigation) zeichnen alle Charts neu. */
 (function (global) {
   'use strict';
   var NS = 'http://www.w3.org/2000/svg';
   var cache = {};
+  var live = [];
+
+  // Farbwert aufloesen: 'var(--name)' oder 'var(--name, fallback)' wird zum
+  // aktuell berechneten Wert der Variable, alles andere bleibt unveraendert.
+  function col(c, scope) {
+    var m = typeof c === 'string' && /^var\(\s*(--[\w-]+)\s*(?:,\s*([^)]*))?\)$/.exec(c.trim());
+    if (!m) return c;
+    var v = getComputedStyle(scope || document.documentElement).getPropertyValue(m[1]).trim();
+    return v || (m[2] ? col(m[2].trim(), scope) : '');
+  }
+
+  // Farbschema gewechselt: alle noch eingehaengten Charts neu zeichnen.
+  document.addEventListener('vu-theme-change', function () {
+    live = live.filter(function (c) { return c.host.isConnected; });
+    live.forEach(function (c) { c.draw(); });
+  });
 
   function loadGz(path) {
     if (cache[path]) return cache[path];
@@ -92,8 +110,8 @@
     }
     (cfg.overlays || []).forEach(function (o) { addToggle(o.id, o.label, o.color); });
     (cfg.levels || []).forEach(function (o) { addToggle(o.id, o.label, o.color); });
-    if (cfg.boxes && cfg.boxes.length) addToggle('__boxes', cfg.boxes[0].label || 'Box', cfg.boxes[0].color || '#ff7a1a');
-    if (cfg.markers && cfg.markers.length) addToggle('__markers', 'Bestätigung · Modell-Ein-/Ausstiege', '#ffffff');
+    if (cfg.boxes && cfg.boxes.length) addToggle('__boxes', cfg.boxes[0].label || 'Box', cfg.boxes[0].color || 'var(--chart-box-darvas)');
+    if (cfg.markers && cfg.markers.length) addToggle('__markers', 'Bestätigung · Modell-Ein-/Ausstiege', 'var(--chart-marker-legend)');
     host.appendChild(tools);
 
     var wrap = document.createElement('div');
@@ -112,6 +130,14 @@
     function draw() {
       if (svg) svg.remove();
       var W = Math.max(300, wrap.clientWidth || 600);
+      // Palette des aktuellen Farbschemas
+      var C = {
+        grid: col('var(--chart-grid)', host), axis: col('var(--chart-axis)', host), vol: col('var(--chart-vol)', host),
+        price: col('var(--chart-price)', host), cross: col('var(--chart-cross)', host), hollow: col('var(--candle-hollow)', host),
+        up: col('var(--candle-up)', host), down: col('var(--candle-down)', host), trigger: col('var(--chart-trigger)', host),
+        entry: col('var(--chart-entry)', host), exit: col('var(--chart-exit)', host), ring: col('var(--chart-marker-ring)', host),
+        tagInk: col('var(--chart-tag-ink)', host), box: col('var(--chart-box-darvas)', host)
+      };
       var narrow = W < 560;
       var H = narrow ? 300 : 380;
       var volH = cfg.showVolume && bars.volume ? (narrow ? 50 : 64) : 0;
@@ -136,20 +162,20 @@
       var g = el('g', {}, svg);
       for (var t = 0; t <= 4; t++) {
         var v = lo + (hi - lo) * t / 4, yy = y(v);
-        el('line', { x1: padL, x2: W - padR, y1: yy, y2: yy, stroke: 'rgba(255,255,255,.06)' }, g);
-        var tx = el('text', { x: W - padR + 6, y: yy + 4, fill: '#8a8fa0', 'font-size': 11 }, g); tx.textContent = fmt(v);
+        el('line', { x1: padL, x2: W - padR, y1: yy, y2: yy, stroke: C.grid }, g);
+        var tx = el('text', { x: W - padR + 6, y: yy + 4, fill: C.axis, 'font-size': 11 }, g); tx.textContent = fmt(v);
       }
       // Datumsachse
       var step = Math.max(1, Math.round((n - from) / (narrow ? 4 : 7)));
       for (var d = from; d < n; d += step) {
-        var dt = el('text', { x: x(d), y: H - 6, fill: '#8a8fa0', 'font-size': 10.5, 'text-anchor': 'middle' }, g);
+        var dt = el('text', { x: x(d), y: H - 6, fill: C.axis, 'font-size': 10.5, 'text-anchor': 'middle' }, g);
         var p = bars.date[d].split('-'); dt.textContent = p[2] + '.' + p[1] + (cfg.mode === 'line' ? '.' + p[0].slice(2) : '');
       }
       // Boxen
       if (state.on.__boxes) (cfg.boxes || []).forEach(function (b) {
         var i0 = idx[b.from] !== undefined ? Math.max(idx[b.from], from) : from, i1 = b.to && idx[b.to] !== undefined ? idx[b.to] : n - 1;
         if (i1 < from) return;
-        el('rect', { x: x(i0) - cw / 2, y: y(b.top), width: Math.max(2, (i1 - i0 + 1) * cw), height: Math.max(1, y(b.bottom) - y(b.top)), fill: b.color || '#ff7a1a', 'fill-opacity': 0.12, stroke: b.color || '#ff7a1a', 'stroke-opacity': 0.7, 'stroke-width': 1.5, rx: 4 }, svg);
+        el('rect', { x: x(i0) - cw / 2, y: y(b.top), width: Math.max(2, (i1 - i0 + 1) * cw), height: Math.max(1, y(b.bottom) - y(b.top)), fill: col(b.color, host) || C.box, 'fill-opacity': 0.12, stroke: col(b.color, host) || C.box, 'stroke-opacity': 0.7, 'stroke-width': 1.5, rx: 4 }, svg);
       });
       // Volumen
       if (volH) {
@@ -157,20 +183,20 @@
         var vy0 = H - padB;
         for (var q2 = from; q2 < n; q2++) {
           var vh = vmax ? bars.volume[q2] / vmax * volH : 0;
-          el('rect', { x: x(q2) - Math.max(1, cw * 0.35), y: vy0 - vh, width: Math.max(1, cw * 0.7), height: Math.max(0, vh), fill: 'rgba(185,189,202,.28)' }, svg);
+          el('rect', { x: x(q2) - Math.max(1, cw * 0.35), y: vy0 - vh, width: Math.max(1, cw * 0.7), height: Math.max(0, vh), fill: C.vol }, svg);
         }
       }
       // Kurs
       if (cfg.mode === 'line') {
         var dpath = '';
         for (var a = from; a < n; a++) if (isFinite(bars.close[a])) dpath += (dpath ? 'L' : 'M') + x(a).toFixed(1) + ' ' + y(bars.close[a]).toFixed(1);
-        el('path', { d: dpath, fill: 'none', stroke: '#e5e7eb', 'stroke-width': 2, 'stroke-linejoin': 'round' }, svg);
+        el('path', { d: dpath, fill: 'none', stroke: C.price, 'stroke-width': 2, 'stroke-linejoin': 'round' }, svg);
       } else {
         var bw = Math.max(1, Math.min(9, cw * 0.62));
         for (var c = from; c < n; c++) {
-          var o = bars.open[c], cl = bars.close[c], up = cl >= o, col = up ? 'var(--candle-up)' : 'var(--candle-down)';
-          el('line', { x1: x(c), x2: x(c), y1: y(bars.high[c]), y2: y(bars.low[c]), stroke: col, 'stroke-width': 1 }, svg);
-          el('rect', { x: x(c) - bw / 2, y: y(Math.max(o, cl)), width: bw, height: Math.max(1, Math.abs(y(o) - y(cl))), fill: up ? 'var(--st-bg-2)' : col, stroke: col, 'stroke-width': 1 }, svg);
+          var o = bars.open[c], cl = bars.close[c], up = cl >= o, cc = up ? C.up : C.down;
+          el('line', { x1: x(c), x2: x(c), y1: y(bars.high[c]), y2: y(bars.low[c]), stroke: cc, 'stroke-width': 1 }, svg);
+          el('rect', { x: x(c) - bw / 2, y: y(Math.max(o, cl)), width: bw, height: Math.max(1, Math.abs(y(o) - y(cl))), fill: up ? C.hollow : cc, stroke: cc, 'stroke-width': 1 }, svg);
         }
       }
       // Overlays (Linien)
@@ -178,7 +204,7 @@
         if (!state.on[O.id]) return;
         var dd = '';
         for (var m = from; m < n; m++) { var vv = O.values[m]; if (isFinite(vv) && vv !== null) dd += (dd ? 'L' : 'M') + x(m).toFixed(1) + ' ' + y(vv).toFixed(1); else if (dd && dd.slice(-1) !== 'M') dd += ''; }
-        if (dd) el('path', { d: dd, fill: 'none', stroke: O.color, 'stroke-width': 2, 'stroke-linejoin': 'round', opacity: 0.95 }, svg);
+        if (dd) el('path', { d: dd, fill: 'none', stroke: col(O.color, host), 'stroke-width': 2, 'stroke-linejoin': 'round', opacity: 0.95 }, svg);
       });
       // Levels: Linie an der echten Hoehe, Preisschild bei Kollision verschoben
       // (Abstand >= 20 px), damit nahe Schwellen (z. B. Trigger und Stop) lesbar bleiben.
@@ -186,27 +212,27 @@
       (cfg.levels || []).forEach(function (L) {
         if (!state.on[L.id] || !isFinite(L.value)) return;
         var ly = y(L.value);
-        el('line', { x1: padL, x2: W - padR, y1: ly, y2: ly, stroke: L.color, 'stroke-width': 1.5, 'stroke-dasharray': L.dash || '6 4' }, svg);
+        el('line', { x1: padL, x2: W - padR, y1: ly, y2: ly, stroke: col(L.color, host), 'stroke-width': 1.5, 'stroke-dasharray': L.dash || '6 4' }, svg);
         tags.push({ L: L, y: ly });
       });
       tags.sort(function (a, b) { return a.y - b.y; });
       for (var ti = 1; ti < tags.length; ti++) if (tags[ti].y - tags[ti - 1].y < 20) tags[ti].y = tags[ti - 1].y + 20;
       tags.forEach(function (T) {
         var tagW = padR - 4;
-        el('rect', { x: W - padR + 2, y: T.y - 9, width: tagW, height: 18, rx: 5, fill: T.L.color }, svg);
-        var tt = el('text', { x: W - padR + 2 + tagW / 2, y: T.y + 4, fill: '#000', 'font-size': 10.5, 'font-weight': 700, 'text-anchor': 'middle' }, svg);
+        el('rect', { x: W - padR + 2, y: T.y - 9, width: tagW, height: 18, rx: 5, fill: col(T.L.color, host) }, svg);
+        var tt = el('text', { x: W - padR + 2 + tagW / 2, y: T.y + 4, fill: C.tagInk, 'font-size': 10.5, 'font-weight': 700, 'text-anchor': 'middle' }, svg);
         tt.textContent = fmt(T.L.value);
       });
       // Marker
       if (state.on.__markers) (cfg.markers || []).forEach(function (M) {
         var mi = idx[M.date]; if (mi === undefined || mi < from) return;
         var my = y(M.price), mx = x(mi), entry = M.kind === 'entry';
-        if (M.kind === 'confirm') { el('circle', { cx: mx, cy: my, r: 5, fill: 'none', stroke: '#fde047', 'stroke-width': 2 }, svg); return; }
+        if (M.kind === 'confirm') { el('circle', { cx: mx, cy: my, r: 5, fill: 'none', stroke: C.trigger, 'stroke-width': 2 }, svg); return; }
         var path = entry ? 'M' + mx + ' ' + (my + 3) + 'l-6 10h12z' : 'M' + mx + ' ' + (my - 3) + 'l-6 -10h12z';
-        el('path', { d: path, fill: entry ? '#4ade80' : (M.kind === 'partial' ? '#fde047' : '#f472b6'), stroke: '#07080c', 'stroke-width': 2 }, svg);
+        el('path', { d: path, fill: entry ? C.entry : (M.kind === 'partial' ? C.trigger : C.exit), stroke: C.ring, 'stroke-width': 2 }, svg);
       });
       // Crosshair
-      var cross = el('line', { y1: padT, y2: H - padB, stroke: 'rgba(255,255,255,.35)', 'stroke-width': 1, visibility: 'hidden' }, svg);
+      var cross = el('line', { y1: padT, y2: H - padB, stroke: C.cross, 'stroke-width': 1, visibility: 'hidden' }, svg);
       var hit = el('rect', { x: padL, y: padT, width: W - padL - padR, height: H - padT - padB, fill: 'transparent' }, svg);
       function move(ev) {
         var r = svg.getBoundingClientRect();
@@ -233,8 +259,10 @@
     draw();
     var rt; var ro = typeof ResizeObserver === 'function' ? new ResizeObserver(function () { clearTimeout(rt); rt = setTimeout(draw, 80); }) : null;
     if (ro) ro.observe(wrap);
+    live = live.filter(function (c) { return c.host !== host; });
+    live.push({ host: host, draw: draw });
     return { redraw: draw };
   }
 
-  global.STChart = { loadBars: loadBars, loadWeekly: loadWeekly, render: render, sma: sma, fmt: fmt, fmtDate: fmtDate };
+  global.STChart = { loadBars: loadBars, loadWeekly: loadWeekly, render: render, color: col, sma: sma, fmt: fmt, fmtDate: fmtDate };
 })(window);
