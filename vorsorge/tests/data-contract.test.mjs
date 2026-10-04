@@ -29,7 +29,14 @@ test("Detaildateien: Provenienz, Taxonomie, keine TER/ISIN ohne Quelle, Holdings
     const d = read("data/etf/" + r.slug + ".json");
     assert.equal(d.symbol, r.symbol);
     assert.equal(d.ter, null); assert.equal(d.isin, null);
-    assert.equal(d.holdings.status, "SOURCE_NOT_CONNECTED");
+    assert.ok(["AVAILABLE", "NOT_IN_NPORT", "NOT_APPLICABLE"].includes(d.holdings.status), r.symbol + " " + d.holdings.status);
+    if (d.holdings.status === "AVAILABLE") {
+      assert.equal(d.holdings.source, "SEC_NPORT", r.symbol);
+      assert.ok(existsSync(new URL("." + d.holdings.path.replace("/vorsorge", ""), root)), d.holdings.path);
+    } else assert.ok(d.holdings.reason, r.symbol);
+    assert.ok(["AVAILABLE", "SOURCE_NOT_CONNECTED"].includes(d.costs.status), r.symbol);
+    if (d.costs.status === "AVAILABLE") assert.ok(d.costs.basis && (d.costs.value === null || (d.costs.value >= 0 && d.costs.value < 0.1)), r.symbol);
+    else assert.equal(d.costs.value, null, r.symbol);
     for (const k of ["source", "sourceId", "asOf", "classificationMethod", "classificationConfidence", "coverage", "missingFields", "canonicalizationMethod"]) assert.ok(k in d.provenance, k);
     if (d.metrics) assert.ok(d.metrics.basis === "PRICE_RETURN");
     if (d.metricsTotal) assert.equal(d.metricsTotal.basis, "TOTAL_RETURN");
@@ -54,7 +61,8 @@ test("Data-QA, UCITS-Report und Lückenmatrix sind vollständig", () => {
   const u = read("data/ucits-coverage.json");
   assert.ok(typeof u.listingsOnEuropeanExchanges === "number" && typeof u.isinAvailable === "number");
   const g = read("data/data-gaps.json");
-  for (const f of ["Price History", "ISIN", "TER", "Holdings", "UCITS", "Tracking Difference"]) assert.ok(g.fields.some((x) => x.field === f), f);
+  for (const f of ["US-Kurse", "ISIN (EU)", "WKN", "Kostenquote (US)", "US-Holdings", "UCITS-Holdings", "UCITS-Status", "Tracking Difference"]) assert.ok(g.fields.some((x) => x.field === f), f);
+  for (const x of g.fields) assert.ok(x.primarySource && "coverage" in x && x.gap, x.field);
 });
 
 test("SEO-Seiten nur für das Public Analysis Universe, mit Disclaimer und Sitemap", () => {

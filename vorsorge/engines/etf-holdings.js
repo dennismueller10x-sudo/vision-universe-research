@@ -159,7 +159,7 @@
       if (h.weight === null) { nullW++; return; }
       if (h.weight < 0) { neg++; if (!DERIVATIVES[h.assetType] && h.assetType !== "CASH" && !/short/i.test(h.payoff || "")) negNonDeriv++; }
       if (h.weight > 1) over++;
-      if (h.weight > 3) overHard++;
+      if (h.weight > 3 && !DERIVATIVES[h.assetType]) overHard++;   // Optionsbeine (Nominalwert) duerfen weit darueber liegen
       sum += h.weight;
       if (!h.holdingName) noName++;
       if (!h.holdingIsin && !h.holdingCusip && !h.holdingSedol && !h.holdingTicker && h.assetType !== "CASH") noId++;

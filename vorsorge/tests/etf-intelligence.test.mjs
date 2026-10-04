@@ -78,6 +78,9 @@ test("Qualitäts-Gates: Duplikate, negative Gewichte, >100 %, Summe, Zukunft, Ei
   assert.ok(H.qualityGates(over, null, { today: "2026-10-04" }).warnings.some((e) => /WEIGHT_ABOVE_100/.test(e)), "Dachfonds mit 102 % ist ein Hinweis, kein Fehler");
   const absurd = H.snapshot({ fundId: "F", asOf: "2026-09-30", source: "T", weightUnit: "fraction" }, [row("A", 3.5)]);
   assert.ok(H.qualityGates(absurd, null, { today: "2026-10-04" }).errors.some((e) => /WEIGHT_ABOVE_300/.test(e)));
+  // Gegenläufige FLEX-Optionsbeine (Nominalwert) eines Floor-ETFs: real, kein Fehler
+  const floor = H.snapshot({ fundId: "F", asOf: "2026-09-30", source: "T", weightUnit: "fraction" }, [row("Bitcoin-ETF", 0.98), row("S&P 500 Mini Call", 12.9, { assetType: "OPTION" }), row("S&P 500 Mini Put", -11.8, { assetType: "OPTION" })]);
+  assert.ok(!H.qualityGates(floor, null, { today: "2026-10-04" }).errors.some((e) => /WEIGHT_ABOVE_300/.test(e)));
   const low = H.snapshot({ fundId: "F", asOf: "2026-09-30", source: "T", weightUnit: "percent" }, [row("A", 10)]);
   assert.ok(H.qualityGates(low, null, { today: "2026-10-04" }).errors.some((e) => /IMPLAUSIBLE_TOTAL/.test(e)));
   const fut = H.snapshot({ fundId: "F", asOf: "2027-01-01", source: "T", weightUnit: "percent" }, [row("A", 100)]);

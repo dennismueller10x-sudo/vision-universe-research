@@ -66,10 +66,18 @@ if (existsSync(join(hDir, "index.json"))) {
       if (f.seriesName === "Test Series" || /TEST TRUST/.test(f.registrant || "")) errors.push("FIXTURE_DATA_PUBLISHED " + sid);
       if (!f.asOf || f.asOf > today) errors.push("HOLDINGS_BAD_AS_OF " + sid);
       if (f.source !== "SEC_NPORT" || f.sourceType !== "REGULATORY") errors.push("HOLDINGS_UNKNOWN_SOURCE " + sid);
-      const wi = f.rowFields.indexOf("weight");
+      const wi = f.rowFields.indexOf("weight"), ti = f.rowFields.indexOf("assetType");
       // Hebel-/Derivatefonds melden Gewichte in % des Nettovermoegens auch ueber 100 % (Sicherheiten, Swaps): nur dort zulaessig.
+      // Gegenlaeufige Optionsbeine (z. B. FLEX-Optionen mit Floor) werden mit Nominalwert gemeldet und koennen dort
+      // einzeln weit ueber 1000 % liegen; fuer Derivate in Derivatefonds gilt daher nur: endlicher Wert.
+      const DERIV = new Set(["FUTURE", "OPTION", "SWAP", "FORWARD", "DERIVATIVE"]);
       const lim = f.derivativeHeavy ? 10 : 1;
-      for (const r of f.holdings) if (r[wi] !== null && (r[wi] > lim || r[wi] < -lim)) { errors.push("HOLDINGS_WEIGHT_OUT_OF_RANGE " + sid); break; }
+      for (const r of f.holdings) {
+        const w = r[wi]; if (w === null) continue;
+        if (!Number.isFinite(w)) { errors.push("HOLDINGS_WEIGHT_NOT_FINITE " + sid); break; }
+        if (f.derivativeHeavy && DERIV.has(r[ti])) continue;
+        if (w > lim || w < -lim) { errors.push("HOLDINGS_WEIGHT_OUT_OF_RANGE " + sid); break; }
+      }
       if (!f.derivativeHeavy && f.concentration && f.concentration.top10 !== null && (f.concentration.top10 < 0 || f.concentration.top10 > 1.5)) errors.push("HOLDINGS_TOP10_IMPLAUSIBLE " + sid);
     }
   }
