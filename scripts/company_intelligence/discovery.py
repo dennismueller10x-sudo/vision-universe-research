@@ -167,7 +167,24 @@ def validate_candidate(company, candidate, http, now, recover_redirects=False):
 
 
 def validate_discovery_candidate(company, candidate, http, now):
-    return validate_candidate(company, candidate, http, now, recover_redirects=True)
+    try:
+        return validate_candidate(company, candidate, http, now, recover_redirects=True)
+    except SourceError as original:
+        # A missing DNS record for one conventional host spelling does not
+        # establish that the company site is dead. Never use this route to
+        # work around robots/access denials or shared proxy failures.
+        if str(original) not in ('DNS_UNAVAILABLE','ROBOTS_UNAVAILABLE:DNS_UNAVAILABLE'):
+            raise
+        parts=urlsplit(candidate['url']);host=parts.hostname or ''
+        if '.' not in host or ':' in host or host.replace('.','').isdigit():raise
+        alternate=host[4:] if host.startswith('www.') else 'www.'+host
+        netloc=alternate+(':'+str(parts.port) if parts.port else '')
+        route=parts._replace(scheme='https',netloc=netloc).geturl()
+        verified=validate_candidate(company,{**candidate,'url':route},http,now,recover_redirects=True)
+        verified['ownershipEvidence']['transportRecovery']={'originalCandidateURL':candidate['url'],
+            'alternateURL':route,'primaryFailure':str(original),'scope':'CONVENTIONAL_WWW_HOST_ALIAS'}
+        verified['evidence'].append('INDEPENDENTLY_VERIFIED_WWW_ALIAS_AFTER_DNS_FAILURE')
+        return verified
 
 
 def _validate_response(company, candidate, response, now, header_body=None):

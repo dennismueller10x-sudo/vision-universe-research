@@ -14,6 +14,41 @@ class HTTP:
 
 
 class OwnershipRouteTests(unittest.TestCase):
+ def test_dns_failure_can_recover_conventional_www_route_with_full_owner_proof(self):
+  c=company('Acme Industries Inc.','ACME');body='<title>Acme Industries Inc.</title><footer>© 2026 Acme Industries Inc. All rights reserved.</footer>'
+  for root,alternate,reason in [('https://acme.example/','https://www.acme.example/','DNS_UNAVAILABLE'),
+                                ('https://www.acme.example/','https://acme.example/','ROBOTS_UNAVAILABLE:DNS_UNAVAILABLE')]:
+   with self.subTest(root=root):
+    h=HTTP({root:SourceError(reason),alternate:body});v=validate_discovery_candidate(c,{'url':root,'evidence':'candidate'},h,NOW)
+    self.assertEqual(v['url'],alternate);self.assertEqual(h.calls,[root,alternate])
+    self.assertEqual(v['ownershipEvidence']['transportRecovery']['primaryFailure'],reason)
+    self.assertIn('CORPORATE_TITLE_AND_LEGAL_COMPANY_NAME',v['evidence'])
+
+ def test_dns_alias_never_accepts_different_company_or_brand_only_evidence(self):
+  root='https://acme.example/';alternate='https://www.acme.example/'
+  for body in ('<title>Acme Industries Inc.</title><footer>© Different Owner LLC.</footer>',
+               '<title>Acme</title><p>Acme Industries Inc. is our customer.</p>'):
+   with self.subTest(body=body):
+    h=HTTP({root:SourceError('DNS_UNAVAILABLE'),alternate:body})
+    with self.assertRaises(SourceError):validate_discovery_candidate(company('Acme Industries Inc.','ACME'),{'url':root},h,NOW)
+
+ def test_access_and_proxy_failures_never_trigger_www_alias_probe(self):
+  root='https://acme.example/'
+  for reason in ('HTTP_403','ROBOTS_DISALLOWED','ROBOTS_UNAVAILABLE:HTTP_403','HTTP_503',
+                 'ROBOTS_UNAVAILABLE:HTTP_503','Envoy proxy error HTTP_503',
+                 'OWNERSHIP_EVIDENCE_TEMPORARY_FAILURE:DNS_UNAVAILABLE'):
+   with self.subTest(reason=reason):
+    h=HTTP({root:SourceError(reason)})
+    with self.assertRaisesRegex(SourceError,reason):validate_discovery_candidate(company(),{'url':root},h,NOW)
+    self.assertEqual(h.calls,[root])
+
+ def test_dns_alias_attempt_is_bounded_and_preserves_budget_deferral(self):
+  root='https://acme.example/';alternate='https://www.acme.example/'
+  for failure in (SourceError('DNS_UNAVAILABLE'),BudgetExhausted('NETWORK_BUDGET_EXHAUSTED')):
+   h=HTTP({root:SourceError('DNS_UNAVAILABLE'),alternate:failure})
+   with self.assertRaises(type(failure)):validate_discovery_candidate(company(),{'url':root},h,NOW)
+   self.assertEqual(h.calls,[root,alternate])
+
  def credit(self,host='www.q4inc.com',path='/Powered-by-Q4/'):
   return f'<a href="https://{host}{path}"><span>Powered By Q4 Inc.</span><span> 5.189.1.6</span><span> (opens in new window)</span></a>'
 
