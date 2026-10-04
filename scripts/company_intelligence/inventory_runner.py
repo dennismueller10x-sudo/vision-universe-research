@@ -21,6 +21,7 @@ def failure_clusters(store, lane):
     state_prefix = 'officialSite:' if lane == 'domains' else 'ir:'
     counts = Counter()
     reasons = Counter()
+    evidence_gaps = Counter()
     for row in store.db.execute('SELECT payload FROM state WHERE key LIKE ?', (state_prefix + '%',)):
         value = json.loads(row[0])
         if value.get('status') == 'VALIDATED' or lane == 'ir' and value.get('lastSuccess'):
@@ -28,13 +29,21 @@ def failure_clusters(store, lane):
         reason = value.get('reason') or ''
         counts[failure_category(value.get('status'), reason)] += 1
         reasons[reason or 'UNKNOWN'] += 1
-    return {'categories': dict(counts.most_common()), 'reasons': dict(reasons.most_common(20))}
+        if 'OWNER_NOT_VALIDATED' in reason:
+            evidence=value.get('ownershipEvidence',{})
+            if evidence:
+                for flag in ('legalNameVisible','headerBranded','shortBrand','footerOwnerMatched','structuredOwnerMatched'):
+                    if not evidence.get(flag):evidence_gaps[flag]+=1
+            else:evidence_gaps['NO_RETAINED_OWNERSHIP_DETAILS']+=1
+    return {'categories': dict(counts.most_common()), 'reasons': dict(reasons.most_common(20)), 'ownershipEvidenceGaps':dict(evidence_gaps.most_common())}
 
 
 def drive(root, state, pass_id, lane='domains', batches=100, limit=25,
           request_budget=200, max_seconds=480, workers=4, admission_interval=.5,
-          execute=subprocess.run):
+          execute=subprocess.run, ir_every=0):
     prefix(pass_id, lane)
+    if not 0 <= ir_every <= 100 or (ir_every and lane != 'domains'):
+        raise ValueError('INVALID_IR_INTERLEAVE')
     if not 1 <= batches <= 500:
         raise ValueError('INVALID_INVENTORY_BATCH_COUNT')
     state = Path(state).resolve()
@@ -66,8 +75,12 @@ def drive(root, state, pass_id, lane='domains', batches=100, limit=25,
         print(json.dumps(accounting, sort_keys=True), flush=True)
         if accounting['completedBatches'] % 10 == 0 or report.get('stopReason') != 'BATCH_COMPLETED':
             pack(state, state / 'checkpoints' / (pass_id + '-' + lane + '.tar.gz'))
-        if report.get('stopReason') != 'BATCH_COMPLETED':
+        if report.get('stopReason') != 'BATCH_COMPLETED' or (state/'stop-inventory').exists():
             break
+        if ir_every and accounting['completedBatches'] % ir_every == 0:
+            drive(root,state,pass_id,lane='ir',batches=1,limit=8,
+                  request_budget=request_budget,max_seconds=max_seconds,workers=workers,
+                  admission_interval=admission_interval,execute=execute)
     # Persist an idle-writer recovery snapshot even when the outer limit fires.
     if report is not None:
         pack(state, state / 'checkpoints' / (pass_id + '-' + lane + '.tar.gz'))
@@ -86,13 +99,14 @@ def main(argv=None):
     parser.add_argument('--max-seconds', type=int, default=480)
     parser.add_argument('--discovery-workers', type=int, default=4)
     parser.add_argument('--discovery-admission-interval', type=float, default=.5)
+    parser.add_argument('--ir-batch-every',type=int,default=0,help='After this many domain batches, discover and ingest one bounded new-domain IR batch (0 disables)')
     parser.add_argument('--network', action='store_true')
     args = parser.parse_args(argv)
     if not args.network:
         parser.error('inventory-runner requires explicit --network')
     drive(args.root, args.state or args.root / '.company-intelligence', args.inventory_pass,
           args.inventory_lane, args.max_batches, args.limit, args.request_budget,
-          args.max_seconds, args.discovery_workers, args.discovery_admission_interval)
+          args.max_seconds, args.discovery_workers, args.discovery_admission_interval,ir_every=args.ir_batch_every)
 
 
 if __name__ == '__main__':

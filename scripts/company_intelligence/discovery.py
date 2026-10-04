@@ -237,7 +237,13 @@ def _validate_response(company, candidate, response, now, header_body=None):
         raise SourceError('OFFICIAL_SITE_CANDIDATE_CONFLICTING_COPYRIGHT_OWNER')
     method = 'EXACT_JSONLD_LEGAL_OWNER_HOST_AND_CORPORATE_HEADER' if structured_owner and short_brand else 'EXACT_MULTIWORD_COPYRIGHT_OWNER_AND_CORPORATE_HEADER' if suffixless_owner else 'CORPORATE_TITLE_AND_LEGAL_COMPANY_NAME' if legal and branded else 'EXACT_LEGAL_COPYRIGHT_OWNER_AND_CORPORATE_BRAND'
     if not (legal and branded) and not (footer_owner and short_brand) and not (structured_owner and short_brand):
-        raise SourceError('OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED')
+        error=SourceError('OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED')
+        error.ownershipEvidence={'sourceUrl':response['finalUrl'],'contentHash':hashlib.sha256(response['body']).hexdigest(),
+                                 'corporateHeader':header[:300],'legalNameVisible':legal,'headerBranded':branded,
+                                 'shortBrand':short_brand,'footerOwnerMatched':footer_owner,
+                                 'copyrightExcerpts':[v[:160] for v in copyright_raw[:3]],
+                                 'structuredOwnerMatched':bool(structured_owner)}
+        raise error
     return {'status': 'VALIDATED', 'url': response['finalUrl'], 'lastVerified': now, 'confidence': .95,
             'verificationVersion': 'corporate-ownership-4',
             'evidence': [candidate['evidence'], method], 'title': clean(title[1] if title else ' '.join(metadata.values), 150),

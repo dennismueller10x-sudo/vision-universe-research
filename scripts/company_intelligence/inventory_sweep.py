@@ -42,7 +42,10 @@ def select(companies, store, now, pass_id, lane, limit=50):
     selected=[];hosts=set()
     prior_outcomes={cid:store.state(key+cid) for cid in snapshot}
     # Finish unattempted identities before consuming due retry capacity.
-    for cid in sorted(snapshot,key=lambda cid:(bool(prior_outcomes[cid]),cid)):
+    def order(cid):
+        newly_verified=lane=='ir' and store.state('officialSite:'+cid,{}).get('status')=='VALIDATED'
+        return (lane=='ir' and not newly_verified,bool(prior_outcomes[cid]),cid)
+    for cid in sorted(snapshot,key=order):
         if cid not in companies:continue
         c=companies[cid];value=candidates[cid];site=store.state('officialSite:'+cid,{})
         official=bool(c.get('officialSites')) or site.get('status')=='VALIDATED'

@@ -73,9 +73,12 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
         except (SourceError,ValueError,TypeError,KeyError) as e:
             circuit.failure(candidate['url'], e)
             transient=any(code in str(e) for code in ('HTTP_429','HTTP_500','HTTP_502','HTTP_503','HTTP_504','NETWORK_UNAVAILABLE','NETWORK_TIMEOUT','DNS_UNAVAILABLE','ROBOTS_UNAVAILABLE'))
-            result.update(status='DEGRADED' if c.get('officialSites') or result.get('site') else 'DEFERRED' if transient else 'REJECTED',reason=str(e)[:250])
+            result.update(status='DEGRADED' if c.get('officialSites') or result.get('site') else 'DEFERRED' if transient else 'REJECTED',reason=str(e)[:250],failureEvidence=getattr(e,'ownershipEvidence',{}))
         except Exception as e:result.update(status='DEGRADED',reason='UNEXPECTED_DISCOVERY_ERROR:'+type(e).__name__)
-        finally:result.update(requests=client.requests,stats=client.stats)
+        finally:
+            with gate:
+                for host,delay in client.host_delay.items():http.host_delay[host]=max(http.host_delay.get(host,0),delay)
+            result.update(requests=client.requests,stats=client.stats)
         return result
     results=[]
     with ThreadPoolExecutor(max_workers=workers) as pool:
@@ -90,6 +93,8 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
                 for _ in completed:
                     pair=next(pending,None)
                     if pair is not None:futures.add(pool.submit(work,pair))
+    http.last_request=last[0]
+    http.host_last.update(host_last)
     assert sum(r['requests'] for r in results)<=request_budget
     return sorted(results,key=lambda r:r['companyId'])
 
@@ -120,7 +125,7 @@ def persist(results,store,companies,now):
             prior=store.state('officialSite:'+cid,{})
             if prior.get('status')!='VALIDATED':store.set_state('officialSite:'+cid,{**prior,'status':'DEFERRED','lastFailure':now,'reason':r.get('reason'),'retryAfter':advance(now,7*24 if category=='BLOCKED' else .25 if 'CIRCUIT_OPEN' in reason else 1)})
         elif r['status']=='REJECTED':
-            store.set_state('officialSite:'+cid,{'status':'REJECTED','lastChecked':now,'reason':r['reason'],'retryAfter':advance(now,7*24)})
+            store.set_state('officialSite:'+cid,{'status':'REJECTED','lastChecked':now,'reason':r['reason'],'ownershipEvidence':r.get('failureEvidence',{}),'retryAfter':advance(now,7*24)})
         elif r['status']=='DEGRADED':
             store.set_state('ir:'+cid,{**store.state('ir:'+cid,{}),'lastFailure':now,'reason':r['reason'],'retryAfter':advance(now,.25 if 'CIRCUIT_OPEN' in reason else 24)})
         store.set_state('inventoryDiscovery:'+cid,{'status':r['status'],'checkedAt':now,'requests':r['requests'],'stats':r.get('stats',{}),'reason':r.get('reason')})

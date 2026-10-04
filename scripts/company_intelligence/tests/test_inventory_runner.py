@@ -42,3 +42,22 @@ class RunnerTests(unittest.TestCase):
     return SimpleNamespace(returncode=0,stdout=json.dumps({'requests':0,'stopReason':'CIRCUIT_COOLDOWN'}))
    with contextlib.redirect_stdout(io.StringIO()):drive(tmp,state,'blocked',batches=5,execute=execute)
    self.assertEqual(len(calls),1)
+
+ def test_ir_is_ingested_between_domain_batches_without_restarting_domain_pass(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   state=Path(tmp)/'state';store=Store(state/'state.sqlite');store.close();lanes=[]
+   def execute(command,**kwargs):
+    lanes.append(command[command.index('--inventory-lane')+1])
+    return SimpleNamespace(returncode=0,stdout=json.dumps({'requests':2,'stopReason':'BATCH_COMPLETED'}))
+   with contextlib.redirect_stdout(io.StringIO()):drive(tmp,state,'mixed',batches=2,ir_every=1,execute=execute)
+   self.assertEqual(lanes,['domains','ir','domains','ir'])
+   store=Store(state/'state.sqlite');self.assertEqual(store.state('inventoryRunner:mixed:domains')['requests'],4);self.assertEqual(store.state('inventoryRunner:mixed:ir')['requests'],4);store.close()
+
+ def test_operator_stop_waits_for_current_checkpoint_then_avoids_next_batch(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   state=Path(tmp)/'state';store=Store(state/'state.sqlite');store.close();calls=[]
+   def execute(command,**kwargs):
+    calls.append(command);(state/'stop-inventory').touch()
+    return SimpleNamespace(returncode=0,stdout=json.dumps({'requests':2,'stopReason':'BATCH_COMPLETED'}))
+   with contextlib.redirect_stdout(io.StringIO()):drive(tmp,state,'stopped',batches=5,execute=execute)
+   self.assertEqual(len(calls),1);self.assertTrue((state/'checkpoints/stopped-domains.tar.gz').is_file())
