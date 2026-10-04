@@ -99,3 +99,46 @@ class BatchTests(unittest.TestCase):
     ingest.reset_mock();p.ingest_due_sources({c['companyId']})
     self.assertEqual({x.args[0]['sourceId'] for x in ingest.call_args_list},{'owned','global'})
    s.close()
+
+ def test_shared_failure_stops_submission_and_keeps_unattempted_candidates_pending(self):
+  from company_intelligence.discovery_circuit import DiscoveryCircuit
+  circuit=DiscoveryCircuit(threshold=3)
+  cs=[company(f'Company {i} Inc.',f'T{i}',str(i+1).zfill(10)) for i in range(8)]
+  for c in cs:c['officialSites']=[]
+  candidates={c['companyId']:{'status':'CANDIDATE','candidates':[{'url':f'https://issuer{i}.example/'}]} for i,c in enumerate(cs)}
+  def unavailable(c,candidate,http,now):
+   http.requests+=1
+   raise SourceError('ROBOTS_UNAVAILABLE:HTTP_503')
+  with tempfile.TemporaryDirectory() as tmp,patch('company_intelligence.discovery_batch.validate_candidate',unavailable):
+   rows=run(cs,candidates,PublicHTTP(tmp),NOW,32,60,workers=1,domain_only=True,circuit=circuit)
+  self.assertEqual(len(rows),3)
+  self.assertTrue(circuit.snapshot()['open'])
+  self.assertEqual(len(circuit.snapshot()['affectedHosts']),3)
+  self.assertTrue(all(r['status']=='DEFERRED' for r in rows))
+
+ def test_proxy_cause_opens_guard_before_transport_exhausts_all_retries(self):
+  import urllib.error
+  from company_intelligence.discovery_circuit import DiscoveryCircuit
+  circuit=DiscoveryCircuit(threshold=1)
+  c=company();c['officialSites']=[]
+  candidates={c['companyId']:{'status':'CANDIDATE','candidates':[{'url':'https://apple.com/','evidence':'candidate'}]}}
+  calls=[]
+  def opener(request,**kwargs):
+   calls.append(request.full_url)
+   raise urllib.error.URLError('Tunnel connection failed: 503 Service Unavailable')
+  with tempfile.TemporaryDirectory() as tmp:
+   http=PublicHTTP(tmp,opener=opener,validator=lambda url:url)
+   rows=run([c],candidates,http,NOW,8,60,workers=1,domain_only=True,circuit=circuit)
+  self.assertEqual(len(calls),1)
+  self.assertIn('CIRCUIT_OPEN',rows[0]['reason'])
+  self.assertEqual(circuit.snapshot()['signature'],'SHARED_PROXY_FAILURE')
+
+ def test_repeated_single_host_failure_and_denial_do_not_open_shared_guard(self):
+  from company_intelligence.discovery_circuit import DiscoveryCircuit
+  circuit=DiscoveryCircuit(threshold=3)
+  for _ in range(10):circuit.failure('https://one.example/path',SourceError('HTTP_503'))
+  for i in range(10):circuit.failure(f'https://blocked{i}.example/',SourceError('HTTP_403'))
+  self.assertFalse(circuit.snapshot()['open'])
+  circuit.success()
+  circuit.failure('https://two.example/',SourceError('HTTP_503'))
+  self.assertFalse(circuit.snapshot()['open'])

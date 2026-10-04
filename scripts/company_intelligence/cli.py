@@ -181,23 +181,40 @@ def main(argv=None):
             import_inventory(root, companies, store, now)
         if args.command=='sweep-inventory':
             from company_intelligence.inventory_sweep import select as sweep_select,record,progress
+            from company_intelligence.discovery_circuit import DiscoveryCircuit
+            from company_intelligence.pipeline import advance
             from company_intelligence.discovery_batch import run as discover_batch,persist
+            prior_circuit=store.state('discoveryCircuit',{})
+            if prior_circuit.get('open') and prior_circuit.get('retryAfter','')>now:
+                print(json.dumps({'progress':progress(store,args.inventory_pass,args.inventory_lane),
+                                  'requests':0,'httpStats':http.stats,'circuit':prior_circuit,
+                                  'deferred':True,'stopReason':'CIRCUIT_COOLDOWN'},sort_keys=True))
+                return 0
+            circuit=DiscoveryCircuit()
+            def save_circuit():
+                value={**circuit.snapshot(),'checkedAt':now}
+                if value['open']:value['retryAfter']=advance(now,.25)
+                store.set_state('discoveryCircuit',value)
+                return value
             selected,candidates=sweep_select(companies,store,now,args.inventory_pass,args.inventory_lane,args.limit)
             pipeline.ensure_aliases([c['companyId'] for c in selected])
             def checkpoint(result):
                 persist([result],store,companies,now)
                 record(result,store,now,args.inventory_pass,args.inventory_lane)
+                save_circuit()
             results=discover_batch(selected,candidates,http,now,args.request_budget,args.max_seconds,args.discovery_workers,
-                                   domain_only=args.inventory_lane=='domains',admission_interval=args.discovery_admission_interval,on_result=checkpoint)
+                                   domain_only=args.inventory_lane=='domains',admission_interval=args.discovery_admission_interval,on_result=checkpoint,circuit=circuit)
             http.requests=sum(r['requests'] for r in results)
             for key in http.stats:http.stats[key]=sum(r['stats'].get(key,0) for r in results)
-            if args.inventory_lane=='ir':
+            circuit_state=save_circuit()
+            if args.inventory_lane=='ir' and not circuit_state['open']:
                 try:pipeline.ingest_due_sources({c['companyId'] for c in selected},include_global=False)
                 except BudgetExhausted:deferred=True
             http.prune()
             print(json.dumps({'progress':progress(store,args.inventory_pass,args.inventory_lane),
                               'requests':http.requests,'httpStats':http.stats,'run':pipeline.run,
-                              'deferred':deferred},sort_keys=True))
+                              'deferred':deferred or circuit_state['open'],'circuit':circuit_state,
+                              'stopReason':'CIRCUIT_OPEN' if circuit_state['open'] else 'BATCH_COMPLETED' if results else 'NO_DUE_CANDIDATES'},sort_keys=True))
             return 0
         if args.command=='news-archive':
             import re

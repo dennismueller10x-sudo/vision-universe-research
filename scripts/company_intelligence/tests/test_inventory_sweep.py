@@ -64,3 +64,20 @@ class InventorySweepTests(unittest.TestCase):
    with self.assertRaises(SystemExit),redirect_stderr(io.StringIO()):
     main(['sweep-inventory','--inventory-pass','cohort','--network','--state',str(state)]+extra)
    self.assertFalse(state.exists())
+
+ def test_due_cooldown_and_transient_retry_resume_same_frozen_pass(self):
+  cid=self.a['companyId']
+  self.s.set_state('officialSite:'+cid,{'status':'DEFERRED','reason':'ROBOTS_UNAVAILABLE:HTTP_503','retryAfter':'2026-12-01T00:00:00Z'})
+  chosen,_=select(self.cs,self.s,NOW,'recover','domains')
+  self.assertNotIn(cid,[c['companyId'] for c in chosen])
+  chosen,_=select(self.cs,self.s,'2026-12-02T00:00:00Z','recover','domains')
+  self.assertEqual(chosen[0]['companyId'],cid)
+  record({'companyId':cid,'status':'DEFERRED','reason':'SHARED_INFRASTRUCTURE_CIRCUIT_OPEN:SHARED_PROXY_FAILURE','requests':1},self.s,NOW,'recover','domains')
+  self.assertEqual(progress(self.s,'recover','domains')['freshAttempts'],1)
+  self.assertEqual(select(self.cs,self.s,NOW,'recover','domains')[0],[self.b])
+  chosen,_=select(self.cs,self.s,'2026-12-02T00:00:00Z','recover','domains')
+  self.assertEqual(chosen[0]['companyId'],cid)
+  record({'companyId':cid,'status':'VALIDATED','requests':2},self.s,'2026-12-02T00:00:00Z','recover','domains')
+  row=self.s.state('inventorySweep:recover:domains:'+cid)
+  self.assertEqual(row['attempts'],2);self.assertEqual(row['networkRequests'],3)
+  self.assertEqual(row['category'],'VERIFIED_OFFICIAL')

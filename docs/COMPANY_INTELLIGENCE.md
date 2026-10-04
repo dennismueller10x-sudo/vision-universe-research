@@ -1,3 +1,15 @@
+## Resumable inventory recovery — 2026-10-04 (in progress)
+
+This continuation starts from remote PR #356 HEAD `aa616395257cae56b787c4223170cc00dd7b4c73`. The fresh execution workspace does not contain the preceding private research ledger. That ledger was not uploaded to R2 in the preceding run; no R2 credential bindings are available here. Committed verified domains and source configurations are preserved. Operational state is reconstructed and its measurements are reported separately from the preceding ledger; old per-candidate outcomes or historical rows are not fabricated.
+
+Discovery now stops submitting candidates after matching infrastructure errors across four independent hosts, checkpoints completed attempts, and leaves unsubmitted candidates pending. Explicit proxy/tunnel failures are distinguished from suspected shared origin 502/503/504 failures. Repeated errors on one host and access denials never open the shared guard. The private `discoveryCircuit` checkpoint holds a 15-minute due time; the next invocation respects it. These changes apply to discovery, not the established four-hour news or slower event/material cadence.
+
+Reuse the same inventory pass ID. Expired temporary-failure and cooldown entries are eligible again; attempt/request counts are cumulative and successful retries retain the first-attempt timestamp. Permanent ownership/access classifications are not automatically relaxed. In-flight sources preserve independently validated partial evidence. Initial validation: 271 feature Python tests and 29 feature Node tests pass, including shared-failure admission, transport proxy causes, isolated origins/access denials and due-time resume.
+
+The continuation is unfinished; the historical report below remains evidence from its own ledger rather than a claim of current restored operational state. PR #356 remains unmerged and gated.
+
+---
+
 # Company Intelligence — domain verification and deep coverage passes
 
 Validated **2026-10-03T15:21:32Z** on `feature/company-intelligence-rollout`, PR [#356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356). Initial local/remote HEAD: `17cd31b504d0d3365143ffb5f540e1477519860f`. This report supersedes the measurements below. PR remains unmerged and feature-gated; no public schedule or broad rollout was activated.

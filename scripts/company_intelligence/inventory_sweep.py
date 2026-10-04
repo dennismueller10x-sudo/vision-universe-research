@@ -18,6 +18,7 @@ def prefix(pass_id, lane):
 
 def failure_category(status, reason=''):
     if status == 'VALIDATED':return 'VERIFIED_OFFICIAL'
+    if 'CIRCUIT_OPEN' in reason:return 'TEMPORARILY_UNAVAILABLE'
     if 'CONFLICTING_COPYRIGHT_OWNER' in reason:return 'CONFLICTING_OWNER'
     if 'OWNER_NOT_VALIDATED' in reason:return 'INSUFFICIENT_EVIDENCE'
     if 'REDIRECT' in reason:return 'REDIRECTED'
@@ -44,7 +45,9 @@ def select(companies, store, now, pass_id, lane, limit=50):
         c=companies[cid];value=candidates[cid];site=store.state('officialSite:'+cid,{})
         official=bool(c.get('officialSites')) or site.get('status')=='VALIDATED'
         prior=store.state(key+cid)
-        if prior and not (lane=='ir' and prior.get('status')=='NO_VERIFIED_DOMAIN' and official):continue
+        retryable = prior and (prior.get('status')=='COOLDOWN' or prior.get('category') in ('TEMPORARILY_UNAVAILABLE','DEFERRED_BUDGET'))
+        due_after=(prior or {}).get('retryAfter') or (site if lane=='domains' else store.state('ir:'+cid,{})).get('retryAfter') or '9999'
+        if prior and not (retryable and due_after<=now) and not (lane=='ir' and prior.get('status')=='NO_VERIFIED_DOMAIN' and official):continue
         if lane=='domains':
             status='ALREADY_VERIFIED' if official else 'AMBIGUOUS' if value.get('status')!='CANDIDATE' else None
             retry=site.get('retryAfter','')
@@ -69,15 +72,22 @@ def record(result,store,now,pass_id,lane):
     key=prefix(pass_id,lane)
     cid=result['companyId']
     if cid not in store.state(key+'inventory',[]):raise ValueError('ISSUER_OUTSIDE_INVENTORY_PASS')
-    store.set_state(key+cid,{'status':result['status'],'category':failure_category(result['status'],result.get('reason','')),
-                            'reason':result.get('reason'),'checkedAt':now,'networkRequests':result.get('requests',0)})
+    prior=store.state(key+cid,{})
+    lane_state=store.state(('officialSite:' if lane=='domains' else 'ir:')+cid,{})
+    store.set_state(key+cid,{'attempts':prior.get('attempts',0)+int(result.get('requests',0)>0),
+                            'firstCheckedAt':prior.get('firstCheckedAt',now),
+                            'retryAfter':lane_state.get('retryAfter') or now,
+                            'status':result['status'],'category':failure_category(result['status'],result.get('reason','')),
+                            'reason':result.get('reason'),'checkedAt':now,'networkRequests':prior.get('networkRequests',0)+result.get('requests',0)})
 
 
 def progress(store,pass_id,lane):
     key=prefix(pass_id,lane);inventory=store.state(key+'inventory',[])
     outcomes=[store.state(key+cid) for cid in inventory];counts=Counter(v['status'] for v in outcomes if v)
     return {'passId':pass_id,'lane':lane,'candidateIssuers':len(inventory),'classified':sum(counts.values()),
-            'pending':sum(v is None for v in outcomes),'statuses':dict(counts),
+            'pending':sum(v is None for v in outcomes),
+            'retryPending':sum(bool(v) and (v.get('status')=='COOLDOWN' or v.get('category') in ('TEMPORARILY_UNAVAILABLE','DEFERRED_BUDGET')) for v in outcomes),
+            'freshAttempts':sum(v.get('attempts',0) for v in outcomes if v),'statuses':dict(counts),
             'networkRequests':sum(v.get('networkRequests',0) for v in outcomes if v),
             'interpretation':'Reused/cooldown/ambiguous classifications are not fresh network verifications.'}
 
