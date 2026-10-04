@@ -63,7 +63,9 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
     for (;;) {
       let lossTh = 0, acct = tnStart;
       for (let j = 0; j <= tnCuts; j++) { lossTh += tn.stepLoss * acct; acct *= 1 - tn.cut; }
-      if (tnStart - eqNow >= lossTh - 1e-9) tnCuts++; else break;
+      // Runde 14: Die Schwellen summieren sich zu stepLoss/cut (50 %) des Jahresstarts; bei groesserem Verlust
+      // endete die Schleife nie (Holdout 2008). Nach 60 Kuerzungen ist das notionelle Konto praktisch null (0,8^60).
+      if (tnStart - eqNow >= lossTh - 1e-9 && tnCuts < 60) tnCuts++; else break;
     }
     return tnStart * Math.pow(1 - tn.cut, tnCuts);
   };

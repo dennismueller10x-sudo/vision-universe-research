@@ -142,5 +142,16 @@
       "date": "2026-10-03",
       "status": "Vor jedem Holdout-Ergebnis (Abruf läuft noch). Nur O8 ergänzt, nachdem die DEV-Werte von C1 bekannt waren – O8 ist daher eine aus DEV abgeleitete Beobachtung."
     }
-  }
+  },
+  "holdoutOpeningLog": [
+    {
+      "run": 37175450393,
+      "startedAt": "2026-10-04T03:55:17Z",
+      "commit": "eb2236fd6d4",
+      "outcome": "abgebrochen nach >4 h ohne Ergebnis: Endlosschleife im Turtle-Notionalkonto (Verlust > 50 % im Kalenderjahr), kein Ergebnis geschrieben oder angesehen"
+    },
+    {
+      "fix": "portfolio.mjs: Kürzungszahl auf 60 begrenzt (Absturzkorrektur; identisches Ergebnis für jede Eingabe, die vorher endete). Test R14-T1."
+    }
+  ]
 }

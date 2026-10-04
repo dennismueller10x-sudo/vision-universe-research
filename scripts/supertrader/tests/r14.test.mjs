@@ -64,3 +64,12 @@ test('R14-B2x Positionsgenaue Tagesrendite: Einstiegstag zählt ab Einstiegskurs
   assert.deepEqual([...r2.keys()], ['d1', 'd2', 'd3']);
   assert.ok(Math.abs(r2.get('d1') - 0.1) < 1e-12 && Math.abs(r2.get('d2') - 0.5 / 11) < 1e-12 && Math.abs(r2.get('d3') - 1 / 11) < 1e-12);
 });
+
+test('R14-T1 Turtle-Notionalkonto: Verlust > 50 % im Kalenderjahr hängt nicht mehr (Endlosschleife, Holdout 2008)', () => {
+  const cal = ['2008-01-02', '2008-01-03', '2008-01-04'];
+  const tr = { id: 'A', listingId: 'A', entry: { date: cal[0], price: 10 }, initialStop: 9, exits: [{ date: cal[2], price: 2, fraction: 1, ruleId: 'X' }], terminal: null, marks: new Map([[cal[0], 10], [cal[1], 2], [cal[2], 2]]), divs: new Map() };
+  const tr2 = { ...tr, id: 'B', listingId: 'B', entry: { date: cal[2], price: 5 }, initialStop: 4, exits: [], marks: new Map([[cal[2], 5]]) };
+  const run = runPortfolioTR([tr, tr2], cal, { initialEquity: 100000, riskPerTrade: 1, maxPositionPct: 1, maxPositions: 12, maxExposure: 1, turtleNotional: { stepLoss: 0.1, cut: 0.2 } }, {});
+  assert.equal(run.equity.length, 3);
+  const b = run.taken.find((p) => p.tr.id === 'B'); assert.ok(!b || b.entryShares * 5 < 1); // notionelles Konto ~0 → praktisch keine neue Position
+});
