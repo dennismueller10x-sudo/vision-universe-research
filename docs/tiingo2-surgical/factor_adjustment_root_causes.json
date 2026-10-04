@@ -1,0 +1,3900 @@
+{
+  "schemaVersion": "tiingo2-factor-adjustment-root-causes-1",
+  "sourceFactorInputOld": "88f23553fbf8799a9bbdc4a820f5b51a686ac015",
+  "sourceFactorInputNew": "cf23c427665e15c7479998450ef6c7fccc3c217e",
+  "sourceMarketCaches": {
+    "old": "discover-market-cache-37085599297",
+    "current": "discover-market-cache-37125382185"
+  },
+  "affected": 30,
+  "allSourceHistoriesIdentical": true,
+  "providerRestatements": 0,
+  "pipelineDetectionRegressions": 0,
+  "validatorMethodologyTightened": 30,
+  "explainedByIndependentCorporateActionEvidence": 0,
+  "unresolved": 30,
+  "rows": [
+    {
+      "ticker": "ADTN",
+      "company": "ADTRAN Holdings, Inc.",
+      "companyId": "iss_cik_0000926282",
+      "securityId": "ref_ADTN",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": 45.73,
+        "growth": 60.32,
+        "momentum": 20.11,
+        "value": 62.13,
+        "profitability": 53,
+        "revisions": null,
+        "risk": 29.94
+      },
+      "publishedRanks": {
+        "quality": {
+          "rank": 2407,
+          "population": 3612,
+          "percentile": 66.64
+        },
+        "growth": {
+          "rank": 1011,
+          "population": 3201,
+          "percentile": 31.58
+        },
+        "momentum": {
+          "rank": 4745,
+          "population": 5458,
+          "percentile": 86.94
+        },
+        "value": {
+          "rank": 812,
+          "population": 2521,
+          "percentile": 32.21
+        },
+        "profitability": {
+          "rank": 951,
+          "population": 1953,
+          "percentile": 48.69
+        },
+        "revisions": null,
+        "risk": {
+          "rank": 4167,
+          "population": 5458,
+          "percentile": 76.35
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2023-08-16",
+      "anomalyDates": [
+        "2023-08-16"
+      ],
+      "anomalyCount": 1,
+      "largestStepPct": -1.09356015,
+      "largestStepDate": "2023-08-16",
+      "firstEvent": {
+        "date": "2023-08-16",
+        "factorStep": 0.9890644,
+        "factorStepPct": -1.09356015,
+        "rawCloseMovePct": -0.49200492,
+        "adjustedCloseMovePct": -1.5801847,
+        "eventWindow": [
+          {
+            "date": "2023-08-15",
+            "open": 8,
+            "high": 8.19,
+            "low": 7.94,
+            "close": 8.13,
+            "volume": 673815,
+            "adjustedOpen": 8,
+            "adjustedHigh": 8.19,
+            "adjustedLow": 7.94,
+            "adjustedClose": 8.13,
+            "adjustedVolume": 673815,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-08-16",
+            "open": 8.1,
+            "high": 8.2,
+            "low": 7.905,
+            "close": 8.09,
+            "volume": 760720,
+            "adjustedOpen": 8.0114216282,
+            "adjustedHigh": 8.110328068,
+            "adjustedLow": 7.8185540705,
+            "adjustedClose": 8.0015309842,
+            "adjustedVolume": 760720,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-08-17",
+            "open": 8.1,
+            "high": 8.3,
+            "low": 8.07,
+            "close": 8.16,
+            "volume": 755664,
+            "adjustedOpen": 8.0114216282,
+            "adjustedHigh": 8.2092345079,
+            "adjustedLow": 7.9817496962,
+            "adjustedClose": 8.0707654921,
+            "adjustedVolume": 755664,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "eb5c4fe82de3490cb0edbdb1a2bff9ccf5875a3f321daa3ae2135b59dfb52832",
+      "adjustedHash": "4d69a5f178631bf5e168ddfb28f0e65e9c1e1f3e6df3ac015bd45e36a9df0e00",
+      "actionsHash": "9aa6c2c05dd7e3bce0ec01b9d6119aaef2e841d2c4a325fb5f8d60b05dbbdfbd",
+      "providerActionCounts": {
+        "VALID_SHARE_ACTION": 3,
+        "MISSING_PROVIDER_ACTION": 1
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_7f205f3483fe8a",
+      "listingId": null
+    },
+    {
+      "ticker": "AIZN",
+      "company": "Assurant, Inc.",
+      "companyId": "iss_cik_0001267238",
+      "securityId": "ref_AIZN",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": 66.36,
+        "growth": 71.2,
+        "momentum": 31.39,
+        "value": null,
+        "profitability": 70.24,
+        "revisions": null,
+        "risk": 75.65
+      },
+      "publishedRanks": {
+        "quality": {
+          "rank": 456,
+          "population": 3612,
+          "percentile": 12.62
+        },
+        "growth": {
+          "rank": 502,
+          "population": 3201,
+          "percentile": 15.68
+        },
+        "momentum": {
+          "rank": 4187,
+          "population": 5458,
+          "percentile": 76.71
+        },
+        "value": null,
+        "profitability": {
+          "rank": 440,
+          "population": 1953,
+          "percentile": 22.53
+        },
+        "revisions": null,
+        "risk": {
+          "rank": 1356,
+          "population": 5458,
+          "percentile": 24.84
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2021-03-31",
+      "anomalyDates": [
+        "2021-03-31",
+        "2021-06-30",
+        "2021-09-30",
+        "2021-12-30",
+        "2022-03-31",
+        "2022-06-30",
+        "2022-09-29",
+        "2022-12-29",
+        "2023-03-30",
+        "2023-06-29",
+        "2023-09-28",
+        "2023-12-28",
+        "2024-03-28",
+        "2024-07-01",
+        "2024-10-01",
+        "2024-12-31",
+        "2025-04-01",
+        "2025-07-01",
+        "2025-10-01",
+        "2025-12-31",
+        "2026-04-01",
+        "2026-07-01"
+      ],
+      "anomalyCount": 22,
+      "largestStepPct": 2.06956325,
+      "largestStepDate": "2021-03-31",
+      "firstEvent": {
+        "date": "2021-03-31",
+        "factorStep": 1.02069563,
+        "factorStepPct": 2.06956325,
+        "rawCloseMovePct": 0.07782101,
+        "adjustedCloseMovePct": 2.14899481,
+        "eventWindow": [
+          {
+            "date": "2021-03-30",
+            "open": 25.72,
+            "high": 25.78,
+            "low": 25.68,
+            "close": 25.7,
+            "volume": 72808,
+            "adjustedOpen": 17.8865118133,
+            "adjustedHigh": 17.9282377351,
+            "adjustedLow": 17.8586945321,
+            "adjustedClose": 17.8726031727,
+            "adjustedVolume": 72808,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2021-03-31",
+            "open": 25.32,
+            "high": 25.73,
+            "low": 25.24,
+            "close": 25.72,
+            "volume": 68130,
+            "adjustedOpen": 17.9727547135,
+            "adjustedHigh": 18.2637827322,
+            "adjustedLow": 17.9159687587,
+            "adjustedClose": 18.2566844878,
+            "adjustedVolume": 68130,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2021-04-01",
+            "open": 25.7,
+            "high": 26.06,
+            "low": 25.54,
+            "close": 25.77,
+            "volume": 344269,
+            "adjustedOpen": 18.2424879991,
+            "adjustedHigh": 18.498024796,
+            "adjustedLow": 18.1289160894,
+            "adjustedClose": 18.2921757096,
+            "adjustedVolume": 344269,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "41240386cea0d8606fa9ccf63c6dc59131ab9c51e6b17fa9b1ef68f22b6a3b29",
+      "adjustedHash": "7f1ad18490c78cc7e77e33b4012110ee8b268aa35afeb3090df1ee3632452777",
+      "actionsHash": "e5352cf1b3f1a7aa01b86c996d384cbd95de2aa574d3c98ba5ccbfe6d39b05ef",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 22,
+        "VALID_SHARE_ACTION": 1
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_f792d89a886580",
+      "listingId": null
+    },
+    {
+      "ticker": "AMJB",
+      "company": "Jpmorgan Chase & Co",
+      "companyId": "iss_cik_0000019617",
+      "securityId": "ref_AMJB",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": 54.62,
+        "growth": 74.27,
+        "momentum": 62.37,
+        "value": null,
+        "profitability": 81,
+        "revisions": null,
+        "risk": 84.53
+      },
+      "publishedRanks": {
+        "quality": {
+          "rank": 1519,
+          "population": 3612,
+          "percentile": 42.05
+        },
+        "growth": {
+          "rank": 372,
+          "population": 3201,
+          "percentile": 11.62
+        },
+        "momentum": {
+          "rank": 1780,
+          "population": 5458,
+          "percentile": 32.61
+        },
+        "value": null,
+        "profitability": {
+          "rank": 202,
+          "population": 1953,
+          "percentile": 10.34
+        },
+        "revisions": null,
+        "risk": {
+          "rank": 741,
+          "population": 5458,
+          "percentile": 13.58
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2024-02-28",
+      "anomalyDates": [
+        "2024-02-28",
+        "2024-05-29",
+        "2024-08-28",
+        "2024-11-29",
+        "2025-03-03",
+        "2025-05-29",
+        "2025-08-28",
+        "2025-12-01",
+        "2026-03-02"
+      ],
+      "anomalyCount": 9,
+      "largestStepPct": 1.65269679,
+      "largestStepDate": "2024-05-29",
+      "firstEvent": {
+        "date": "2024-02-28",
+        "factorStep": 1.01561323,
+        "factorStepPct": 1.56132264,
+        "rawCloseMovePct": -2.47933289,
+        "adjustedCloseMovePct": -0.95672064,
+        "eventWindow": [
+          {
+            "date": "2024-02-27",
+            "open": 27.7615,
+            "high": 27.7615,
+            "low": 27.7615,
+            "close": 27.7615,
+            "volume": 6,
+            "adjustedOpen": 24.1651272838,
+            "adjustedHigh": 24.1651272838,
+            "adjustedLow": 24.1651272838,
+            "adjustedClose": 24.1651272838,
+            "adjustedVolume": 6,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2024-02-28",
+            "open": 27.19,
+            "high": 27.19,
+            "low": 27.0732,
+            "close": 27.0732,
+            "volume": 267,
+            "adjustedOpen": 24.0371910119,
+            "adjustedHigh": 24.0371910119,
+            "adjustedLow": 23.9339345238,
+            "adjustedClose": 23.9339345238,
+            "adjustedVolume": 267,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2024-02-29",
+            "open": 27.23,
+            "high": 27.23,
+            "low": 27.175,
+            "close": 27.218,
+            "volume": 595,
+            "adjustedOpen": 24.0725528228,
+            "adjustedHigh": 24.0725528228,
+            "adjustedLow": 24.0239303327,
+            "adjustedClose": 24.0619442795,
+            "adjustedVolume": 595,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "9a4112f12551cfc5af5453f2c10548bae0235cb06a160475a525ca8d57f6542c",
+      "adjustedHash": "29ee93527d9dba1e31c0fc77254428a05be3e8cc41265f2de9c6b6d58667c897",
+      "actionsHash": "1e9cd612da414579d393934279dee84292403a733720c8e3587ae736ca70694c",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 9
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_69a61aa211f0ce",
+      "listingId": null
+    },
+    {
+      "ticker": "AOMN",
+      "company": "Angel Oak Mortgage REIT, Inc.",
+      "companyId": "iss_cik_0001766478",
+      "securityId": "ref_AOMN",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": null,
+        "growth": null,
+        "momentum": 67.85,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": 96.3
+      },
+      "publishedRanks": {
+        "quality": null,
+        "growth": null,
+        "momentum": {
+          "rank": 1396,
+          "population": 5458,
+          "percentile": 25.58
+        },
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": {
+          "rank": 93,
+          "population": 5458,
+          "percentile": 1.7
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2024-10-15",
+      "anomalyDates": [
+        "2024-10-15",
+        "2025-01-15",
+        "2025-04-15",
+        "2025-07-15",
+        "2025-10-15",
+        "2026-01-15",
+        "2026-07-15"
+      ],
+      "anomalyCount": 7,
+      "largestStepPct": 2.45879917,
+      "largestStepDate": "2025-04-15",
+      "firstEvent": {
+        "date": "2024-10-15",
+        "factorStep": 1.02456684,
+        "factorStepPct": 2.45668365,
+        "rawCloseMovePct": -2.22307397,
+        "adjustedCloseMovePct": 0.17899578,
+        "eventWindow": [
+          {
+            "date": "2024-10-14",
+            "open": 25.96,
+            "high": 26.09,
+            "low": 25.96,
+            "close": 26.09,
+            "volume": 9379,
+            "adjustedOpen": 21.9892730219,
+            "adjustedHigh": 22.0993887959,
+            "adjustedLow": 21.9892730219,
+            "adjustedClose": 22.0993887959,
+            "adjustedVolume": 9379,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2024-10-15",
+            "open": 25.61,
+            "high": 25.67,
+            "low": 25.4,
+            "close": 25.51,
+            "volume": 16290,
+            "adjustedOpen": 22.2257311318,
+            "adjustedHigh": 22.2778023488,
+            "adjustedLow": 22.0434818722,
+            "adjustedClose": 22.1389457701,
+            "adjustedVolume": 16290,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2024-10-16",
+            "open": 25.54,
+            "high": 25.54,
+            "low": 25.43,
+            "close": 25.5,
+            "volume": 6356,
+            "adjustedOpen": 22.1649813786,
+            "adjustedHigh": 22.1649813786,
+            "adjustedLow": 22.0695174807,
+            "adjustedClose": 22.1302672339,
+            "adjustedVolume": 6356,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "6625bd6fa6b151d2a6e266e7074217e85d02e66bd61c186c83cabbb9c5b85fc4",
+      "adjustedHash": "ca311e7b152fd0f1db86926a116e3e92ec0ddb45170423aab965e796b4dff53d",
+      "actionsHash": "31338e52af69672cd9e7f95591c03bed9c7ff1312bfe017879370ba22f6b0eac",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 7
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_5df9076358c2e5",
+      "listingId": null
+    },
+    {
+      "ticker": "APD",
+      "company": "Air Products and Chemicals",
+      "companyId": "iss_cik_0000002969",
+      "securityId": "ref_APD",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": 56.23,
+        "growth": 35.31,
+        "momentum": 57.24,
+        "value": 43.71,
+        "profitability": null,
+        "revisions": null,
+        "risk": 90.85
+      },
+      "publishedRanks": {
+        "quality": {
+          "rank": 1352,
+          "population": 3612,
+          "percentile": 37.43
+        },
+        "growth": {
+          "rank": 2440,
+          "population": 3201,
+          "percentile": 76.23
+        },
+        "momentum": {
+          "rank": 2210,
+          "population": 5458,
+          "percentile": 40.49
+        },
+        "value": {
+          "rank": 1629,
+          "population": 2521,
+          "percentile": 64.62
+        },
+        "profitability": null,
+        "revisions": null,
+        "risk": {
+          "rank": 331,
+          "population": 5458,
+          "percentile": 6.06
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2016-10-03",
+      "anomalyDates": [
+        "2016-10-03"
+      ],
+      "anomalyCount": 1,
+      "largestStepPct": 9.36899765,
+      "largestStepDate": "2016-10-03",
+      "firstEvent": {
+        "date": "2016-10-03",
+        "factorStep": 1.09368998,
+        "factorStepPct": 9.36899765,
+        "rawCloseMovePct": -6.49860317,
+        "adjustedCloseMovePct": 2.26154051,
+        "eventWindow": [
+          {
+            "date": "2016-09-30",
+            "open": 151.36,
+            "high": 151.87,
+            "low": 149.89,
+            "close": 150.34,
+            "volume": 2042207,
+            "adjustedOpen": 107.7132318373,
+            "adjustedHigh": 108.0761662205,
+            "adjustedLow": 106.6671268506,
+            "adjustedClose": 106.987363071,
+            "adjustedVolume": 2233541,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2016-10-03",
+            "open": 139.84,
+            "high": 141.02,
+            "low": 138.85,
+            "close": 140.57,
+            "volume": 3017896,
+            "adjustedOpen": 108.8387599023,
+            "adjustedHigh": 109.7571647699,
+            "adjustedLow": 108.0682337846,
+            "adjustedClose": 109.4069256255,
+            "adjustedVolume": 3017896,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2016-10-04",
+            "open": 140.68,
+            "high": 141.07,
+            "low": 136.99,
+            "close": 137.32,
+            "volume": 2203234,
+            "adjustedOpen": 109.4925396386,
+            "adjustedHigh": 109.7960802304,
+            "adjustedLow": 106.6205786543,
+            "adjustedClose": 106.8774206935,
+            "adjustedVolume": 2203234,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "16318ea940cc4e72b4bbed8121871b51bb2b0b9a71479e13c8cba18507c57b32",
+      "adjustedHash": "dbf1f8f256793dfe060db7eedcaa8ad0b076ade7f51fa301d73acd3ed3e27b7e",
+      "actionsHash": "c08889d7d7ac27c9959346b1a5bf62b1af5a057cbc8f8d0b54a95a720d9b9f81",
+      "providerActionCounts": {
+        "VALID_SHARE_ACTION": 147,
+        "VALID_SPLIT": 2,
+        "MISSING_PROVIDER_ACTION": 1
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_379152615958e3",
+      "listingId": null
+    },
+    {
+      "ticker": "BEPH",
+      "company": "Brookfield Renewable Partners L.P.",
+      "companyId": "iss_cik_0001533232",
+      "securityId": "ref_BEPH",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": null,
+        "growth": null,
+        "momentum": 61.63,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": 79.91
+      },
+      "publishedRanks": {
+        "quality": null,
+        "growth": null,
+        "momentum": {
+          "rank": 1824,
+          "population": 5458,
+          "percentile": 33.42
+        },
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": {
+          "rank": 1055,
+          "population": 5458,
+          "percentile": 19.33
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2023-01-12",
+      "anomalyDates": [
+        "2023-01-12",
+        "2023-04-13",
+        "2023-07-13",
+        "2023-10-12",
+        "2024-01-11",
+        "2024-04-12",
+        "2024-07-15",
+        "2024-10-15",
+        "2025-01-15",
+        "2025-04-15",
+        "2025-07-15",
+        "2025-10-15",
+        "2026-01-15",
+        "2026-04-15"
+      ],
+      "anomalyCount": 14,
+      "largestStepPct": 2.06723891,
+      "largestStepDate": "2023-10-12",
+      "firstEvent": {
+        "date": "2023-01-12",
+        "factorStep": 1.01831828,
+        "factorStepPct": 1.83182826,
+        "rawCloseMovePct": -0.12658228,
+        "adjustedCloseMovePct": 1.70292722,
+        "eventWindow": [
+          {
+            "date": "2023-01-11",
+            "open": 15.75,
+            "high": 15.8,
+            "low": 15.7,
+            "close": 15.8,
+            "volume": 23347,
+            "adjustedOpen": 12.1626269488,
+            "adjustedHigh": 12.2012384629,
+            "adjustedLow": 12.1240154346,
+            "adjustedClose": 12.2012384629,
+            "adjustedVolume": 23347,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-01-12",
+            "open": 15.57,
+            "high": 15.81,
+            "low": 15.4,
+            "close": 15.78,
+            "volume": 19971,
+            "adjustedOpen": 12.2438776681,
+            "adjustedHigh": 12.4326079597,
+            "adjustedLow": 12.1101937115,
+            "adjustedClose": 12.4090166733,
+            "adjustedVolume": 19971,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-01-13",
+            "open": 15.76,
+            "high": 16.14,
+            "low": 15.5989,
+            "close": 16.06,
+            "volume": 31236,
+            "adjustedOpen": 12.393289149,
+            "adjustedHigh": 12.6921121107,
+            "adjustedLow": 12.2666039407,
+            "adjustedClose": 12.6292020135,
+            "adjustedVolume": 31236,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "b28e68f71955ee24b03bf4cc861a144ad479b3e86e6304549331d0a3bcfa5ef4",
+      "adjustedHash": "67162d5b1daa916beec61c6643bcd0590402ce898a8f27199731b3939a89c9e5",
+      "actionsHash": "fc2f39737d6ed5685dc613c61952d9b44a4b959dfba25123db0fb0d8c4a89669",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 14
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_399427498884b1",
+      "listingId": null
+    },
+    {
+      "ticker": "BEPI",
+      "company": "Brookfield Renewable Partners L.P.",
+      "companyId": "iss_cik_0001533232",
+      "securityId": "ref_BEPI",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": null,
+        "growth": null,
+        "momentum": 64.68,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": 80.62
+      },
+      "publishedRanks": {
+        "quality": null,
+        "growth": null,
+        "momentum": {
+          "rank": 1634,
+          "population": 5458,
+          "percentile": 29.94
+        },
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": {
+          "rank": 1019,
+          "population": 5458,
+          "percentile": 18.67
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2023-01-12",
+      "anomalyDates": [
+        "2023-01-12",
+        "2023-04-13",
+        "2023-07-13",
+        "2023-10-12",
+        "2024-01-11",
+        "2024-04-12",
+        "2024-07-15",
+        "2024-10-15",
+        "2025-01-15",
+        "2025-04-15",
+        "2025-07-15",
+        "2025-10-15",
+        "2026-01-15",
+        "2026-04-15"
+      ],
+      "anomalyCount": 14,
+      "largestStepPct": 2.11511789,
+      "largestStepDate": "2023-10-12",
+      "firstEvent": {
+        "date": "2023-01-12",
+        "factorStep": 1.01827759,
+        "factorStepPct": 1.82775945,
+        "rawCloseMovePct": -1.53573538,
+        "adjustedCloseMovePct": 0.26395452,
+        "eventWindow": [
+          {
+            "date": "2023-01-11",
+            "open": 16.89,
+            "high": 16.93,
+            "low": 16.65,
+            "close": 16.93,
+            "volume": 35127,
+            "adjustedOpen": 13.0233095681,
+            "adjustedHigh": 13.0541522195,
+            "adjustedLow": 12.8382536595,
+            "adjustedClose": 13.0541522195,
+            "adjustedVolume": 35127,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-01-12",
+            "open": 16.7,
+            "high": 16.7,
+            "low": 16.495,
+            "close": 16.67,
+            "volume": 7680,
+            "adjustedOpen": 13.1121640299,
+            "adjustedHigh": 13.1121640299,
+            "adjustedLow": 12.9512063277,
+            "adjustedClose": 13.0886092442,
+            "adjustedVolume": 7680,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-01-13",
+            "open": 16.64,
+            "high": 17.0001,
+            "low": 16.64,
+            "close": 16.92,
+            "volume": 9771,
+            "adjustedOpen": 13.0650544585,
+            "adjustedHigh": 13.3477904026,
+            "adjustedLow": 13.0650544585,
+            "adjustedClose": 13.2848991249,
+            "adjustedVolume": 9771,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "ce2df3d938fcc14b798d78a79358a0cd4ac3e410c1b7118704c8ef0d9a8db224",
+      "adjustedHash": "294458bf302ab2c63b7a96987a25c08e361f1699183d54d337a3df322a647224",
+      "actionsHash": "fc2f39737d6ed5685dc613c61952d9b44a4b959dfba25123db0fb0d8c4a89669",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 14
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_a5d2c4e2f562b2",
+      "listingId": null
+    },
+    {
+      "ticker": "BEPJ",
+      "company": "Brookfield Renewable Partners L.P.",
+      "companyId": "iss_cik_0001533232",
+      "securityId": "ref_BEPJ",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": null,
+        "growth": null,
+        "momentum": 48.48,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": 79
+      },
+      "publishedRanks": {
+        "quality": null,
+        "growth": null,
+        "momentum": {
+          "rank": 2914,
+          "population": 5458,
+          "percentile": 53.39
+        },
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": {
+          "rank": 1114,
+          "population": 5458,
+          "percentile": 20.41
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2024-04-12",
+      "anomalyDates": [
+        "2024-04-12",
+        "2024-07-15",
+        "2024-10-15",
+        "2025-01-15",
+        "2025-04-15",
+        "2025-07-15",
+        "2025-10-15",
+        "2026-01-15",
+        "2026-04-15"
+      ],
+      "anomalyCount": 9,
+      "largestStepPct": 2.10157699,
+      "largestStepDate": "2025-04-15",
+      "firstEvent": {
+        "date": "2024-04-12",
+        "factorStep": 1.007001,
+        "factorStepPct": 0.70010044,
+        "rawCloseMovePct": 0.11933174,
+        "adjustedCloseMovePct": 0.82026762,
+        "eventWindow": [
+          {
+            "date": "2024-04-11",
+            "open": 25,
+            "high": 25.25,
+            "low": 24.99,
+            "close": 25.14,
+            "volume": 62792,
+            "adjustedOpen": 21.4366699129,
+            "adjustedHigh": 21.651036612,
+            "adjustedLow": 21.4280952449,
+            "adjustedClose": 21.5567152644,
+            "adjustedVolume": 62792,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2024-04-12",
+            "open": 24.99,
+            "high": 25.17,
+            "low": 24.99,
+            "close": 25.17,
+            "volume": 43886,
+            "adjustedOpen": 21.5781134333,
+            "adjustedHigh": 21.7335380199,
+            "adjustedLow": 21.5781134333,
+            "adjustedClose": 21.7335380199,
+            "adjustedVolume": 43886,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2024-04-15",
+            "open": 25.125,
+            "high": 25.17,
+            "low": 24.87,
+            "close": 24.98,
+            "volume": 125089,
+            "adjustedOpen": 21.6946818733,
+            "adjustedHigh": 21.7335380199,
+            "adjustedLow": 21.4744970423,
+            "adjustedClose": 21.5694787341,
+            "adjustedVolume": 125089,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "ca717d93b6db72a01ab95448256531087636a9d30d01abd18ad6e94089a895d6",
+      "adjustedHash": "959174987dae0e07f652eb5e51725ad09018033ffee757cb4933c15d5c849c3f",
+      "actionsHash": "e4af09282dca36bc7c94346eb11258a1f2780086cef5fff5c27c0a78119ba8d5",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 9
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_0eb9ba4b5ee778",
+      "listingId": null
+    },
+    {
+      "ticker": "BRN",
+      "company": "Barnwell Industries",
+      "companyId": "iss_cik_0000010048",
+      "securityId": "ref_BRN",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": null,
+        "growth": null,
+        "momentum": 26.56,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": 38.51
+      },
+      "publishedRanks": {
+        "quality": null,
+        "growth": null,
+        "momentum": {
+          "rank": 4451,
+          "population": 5458,
+          "percentile": 81.55
+        },
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": {
+          "rank": 3711,
+          "population": 5458,
+          "percentile": 67.99
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2023-08-21",
+      "anomalyDates": [
+        "2023-08-21"
+      ],
+      "anomalyCount": 1,
+      "largestStepPct": -0.60606061,
+      "largestStepDate": "2023-08-21",
+      "firstEvent": {
+        "date": "2023-08-21",
+        "factorStep": 0.99393939,
+        "factorStepPct": -0.60606061,
+        "rawCloseMovePct": -1.87407407,
+        "adjustedCloseMovePct": -2.46877666,
+        "eventWindow": [
+          {
+            "date": "2023-08-18",
+            "open": 2.72,
+            "high": 2.7296,
+            "low": 2.68,
+            "close": 2.7,
+            "volume": 3043,
+            "adjustedOpen": 2.72,
+            "adjustedHigh": 2.7296,
+            "adjustedLow": 2.68,
+            "adjustedClose": 2.7,
+            "adjustedVolume": 3043,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-08-21",
+            "open": 2.61,
+            "high": 2.7899,
+            "low": 2.5801,
+            "close": 2.6494,
+            "volume": 23472,
+            "adjustedOpen": 2.5941818182,
+            "adjustedHigh": 2.7729915152,
+            "adjustedLow": 2.5644630303,
+            "adjustedClose": 2.6333430303,
+            "adjustedVolume": 23472,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-08-22",
+            "open": 2.6107,
+            "high": 2.7286,
+            "low": 2.6107,
+            "close": 2.69,
+            "volume": 15517,
+            "adjustedOpen": 2.5948775758,
+            "adjustedHigh": 2.7120630303,
+            "adjustedLow": 2.5948775758,
+            "adjustedClose": 2.6736969697,
+            "adjustedVolume": 15517,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "7d8d4fd061cec751c98ebc4f823b184f5bf6cae410733cd8244873cf2008714e",
+      "adjustedHash": "37ba7ce616433108eac78a92e2f93c8dbbce7db31a1659d426a775f60550a362",
+      "actionsHash": "6b0c0eded20331eb5a954b8f241f026a620649f74df8b9d6ce044aefee59a3a0",
+      "providerActionCounts": {
+        "VALID_SHARE_ACTION": 3,
+        "MISSING_PROVIDER_ACTION": 1
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_348dac6a253b58",
+      "listingId": null
+    },
+    {
+      "ticker": "CIMP",
+      "company": "Chimera Investment Corp",
+      "companyId": "iss_cik_0001409493",
+      "securityId": "ref_CIMP",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": 47.74,
+        "growth": null,
+        "momentum": 61.36,
+        "value": null,
+        "profitability": 28.36,
+        "revisions": null,
+        "risk": 92.78
+      },
+      "publishedRanks": {
+        "quality": {
+          "rank": 2230,
+          "population": 3612,
+          "percentile": 61.74
+        },
+        "growth": null,
+        "momentum": {
+          "rank": 1843,
+          "population": 5458,
+          "percentile": 33.77
+        },
+        "value": null,
+        "profitability": {
+          "rank": 1633,
+          "population": 1953,
+          "percentile": 83.61
+        },
+        "revisions": null,
+        "risk": {
+          "rank": 248,
+          "population": 5458,
+          "percentile": 4.54
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2025-10-31",
+      "anomalyDates": [
+        "2025-10-31",
+        "2026-05-01",
+        "2026-07-31"
+      ],
+      "anomalyCount": 3,
+      "largestStepPct": 2.21348763,
+      "largestStepDate": "2026-05-01",
+      "firstEvent": {
+        "date": "2025-10-31",
+        "factorStep": 1.01464478,
+        "factorStepPct": 1.46447845,
+        "rawCloseMovePct": -1.07569721,
+        "adjustedCloseMovePct": 0.37302789,
+        "eventWindow": [
+          {
+            "date": "2025-10-30",
+            "open": 25.07,
+            "high": 25.13,
+            "low": 25.07,
+            "close": 25.1,
+            "volume": 20019,
+            "adjustedOpen": 23.6514379161,
+            "adjustedHigh": 23.7080428732,
+            "adjustedLow": 23.6514379161,
+            "adjustedClose": 23.6797403947,
+            "adjustedVolume": 20019,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2025-10-31",
+            "open": 24.88,
+            "high": 24.98,
+            "low": 24.83,
+            "close": 24.83,
+            "volume": 45291,
+            "adjustedOpen": 23.815934034,
+            "adjustedHigh": 23.9116572415,
+            "adjustedLow": 23.7680724302,
+            "adjustedClose": 23.7680724302,
+            "adjustedVolume": 45291,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2025-11-03",
+            "open": 24.93,
+            "high": 25.07,
+            "low": 24.9,
+            "close": 25,
+            "volume": 20342,
+            "adjustedOpen": 23.8637956378,
+            "adjustedHigh": 23.9978081283,
+            "adjustedLow": 23.8350786755,
+            "adjustedClose": 23.930801883,
+            "adjustedVolume": 20342,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "6e70fc3e49f10cfadac6c3014004ca8cb9156652b19a78bd5d7993d2efa16588",
+      "adjustedHash": "960753caf00cf8c9819a48f1bf8a5b6c81b7cdbf6a2abc62829b1478e3efb94b",
+      "actionsHash": "f458082efe3341172cb8bee433ddcbfef4d8e77fbc2632237f078db9e9c08bf3",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 3
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_a4290b95891ff5",
+      "listingId": null
+    },
+    {
+      "ticker": "EASY",
+      "company": "Easylink Services",
+      "companyId": null,
+      "securityId": "ref_EASY",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": null,
+        "growth": null,
+        "momentum": 55.82,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": 91.65
+      },
+      "publishedRanks": {
+        "quality": null,
+        "growth": null,
+        "momentum": {
+          "rank": 2321,
+          "population": 5458,
+          "percentile": 42.52
+        },
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": {
+          "rank": 295,
+          "population": 5458,
+          "percentile": 5.4
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2026-03-31",
+      "anomalyDates": [
+        "2026-03-31",
+        "2026-04-15",
+        "2026-04-30",
+        "2026-05-29",
+        "2026-06-15",
+        "2026-06-30",
+        "2026-07-15",
+        "2026-07-31",
+        "2026-08-31",
+        "2026-09-15"
+      ],
+      "anomalyCount": 10,
+      "largestStepPct": 1.18443122,
+      "largestStepDate": "2026-05-29",
+      "firstEvent": {
+        "date": "2026-03-31",
+        "factorStep": 1.01165966,
+        "factorStepPct": 1.16596583,
+        "rawCloseMovePct": 1.00022413,
+        "adjustedCloseMovePct": 2.17785223,
+        "eventWindow": [
+          {
+            "date": "2026-03-30",
+            "open": 26.42,
+            "high": 26.42,
+            "low": 26.3,
+            "close": 26.3241,
+            "volume": 8099,
+            "adjustedOpen": 23.4818219777,
+            "adjustedHigh": 23.4818219777,
+            "adjustedLow": 23.3751672223,
+            "adjustedClose": 23.3965870524,
+            "adjustedVolume": 8099,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2026-03-31",
+            "open": 26.57,
+            "high": 26.595,
+            "low": 26.4,
+            "close": 26.5874,
+            "volume": 21057,
+            "adjustedOpen": 23.8904848908,
+            "adjustedHigh": 23.9129637061,
+            "adjustedLow": 23.7376289468,
+            "adjustedClose": 23.9061301462,
+            "adjustedVolume": 21057,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2026-04-01",
+            "open": 26.6,
+            "high": 26.69,
+            "low": 26.55,
+            "close": 26.6439,
+            "volume": 4635,
+            "adjustedOpen": 23.9174594692,
+            "adjustedHigh": 23.9983832042,
+            "adjustedLow": 23.8725018386,
+            "adjustedClose": 23.9569322688,
+            "adjustedVolume": 4635,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "77ef1f27ec5e0ff6f8ed5eb7e887db26093f7dfa6ee5e9abcf28aa139375f9be",
+      "adjustedHash": "792ed161dcaec8436d6afdde621d9f7aa032b08d38921b7247611b33bfdc74d2",
+      "actionsHash": "0b6a1de3e42320fcfd24159b43227527d2dc761b61c630223f92f57a17ffdfcc",
+      "providerActionCounts": {
+        "VALID_SHARE_ACTION": 11,
+        "MISSING_PROVIDER_ACTION": 10
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_453f18b1d2e88c",
+      "listingId": null
+    },
+    {
+      "ticker": "ESOA",
+      "company": "Energy Services of America CORP",
+      "companyId": "iss_cik_0001357971",
+      "securityId": "ref_ESOA",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": null,
+        "growth": 56.55,
+        "momentum": 49.86,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": 42.49
+      },
+      "publishedRanks": {
+        "quality": null,
+        "growth": {
+          "rank": 1196,
+          "population": 3201,
+          "percentile": 37.36
+        },
+        "momentum": {
+          "rank": 2809,
+          "population": 5458,
+          "percentile": 51.47
+        },
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": {
+          "rank": 3465,
+          "population": 5458,
+          "percentile": 63.48
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2016-06-14",
+      "anomalyDates": [
+        "2016-06-14"
+      ],
+      "anomalyCount": 1,
+      "largestStepPct": 3.33333333,
+      "largestStepDate": "2016-06-14",
+      "firstEvent": {
+        "date": "2016-06-14",
+        "factorStep": 1.03333333,
+        "factorStepPct": 3.33333333,
+        "rawCloseMovePct": 0,
+        "adjustedCloseMovePct": 3.33333333,
+        "eventWindow": [
+          {
+            "date": "2016-06-10",
+            "open": 1.55,
+            "high": 1.57,
+            "low": 1.55,
+            "close": 1.55,
+            "volume": 3262,
+            "adjustedOpen": 1.2980626886,
+            "adjustedHigh": 1.3148118846,
+            "adjustedLow": 1.2980626886,
+            "adjustedClose": 1.2980626886,
+            "adjustedVolume": 3262,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2016-06-14",
+            "open": 1.55,
+            "high": 1.55,
+            "low": 1.55,
+            "close": 1.55,
+            "volume": 1625,
+            "adjustedOpen": 1.3413314449,
+            "adjustedHigh": 1.3413314449,
+            "adjustedLow": 1.3413314449,
+            "adjustedClose": 1.3413314449,
+            "adjustedVolume": 1625,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2016-06-15",
+            "open": 1.55,
+            "high": 1.55,
+            "low": 1.5,
+            "close": 1.5,
+            "volume": 19974,
+            "adjustedOpen": 1.3413314449,
+            "adjustedHigh": 1.3413314449,
+            "adjustedLow": 1.2980626886,
+            "adjustedClose": 1.2980626886,
+            "adjustedVolume": 19974,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "17a7f28cfa528027130296653ab421c738b4f283d92278eb15646bc95e35e7df",
+      "adjustedHash": "3ed05a734a857659ea532f61fd23f16efa770731d45a9e9155ee07d4d61fc058",
+      "actionsHash": "36ea939ab81d370a9b47b5695f68c6fbfa3166b3adc1603e4279cf9b0a4d5554",
+      "providerActionCounts": {
+        "SUSPICIOUS_PRICE_BREAK": 13,
+        "MISSING_PROVIDER_ACTION": 1,
+        "VALID_SHARE_ACTION": 12
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_e1bdcdfbb6af93",
+      "listingId": null
+    },
+    {
+      "ticker": "FGSN",
+      "company": "F&G Annuities & Life, Inc.",
+      "companyId": "iss_cik_0001934850",
+      "securityId": "ref_FGSN",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": 37.82,
+        "growth": 61.14,
+        "momentum": 35.21,
+        "value": null,
+        "profitability": 38.84,
+        "revisions": null,
+        "risk": 67.37
+      },
+      "publishedRanks": {
+        "quality": {
+          "rank": 2948,
+          "population": 3612,
+          "percentile": 81.62
+        },
+        "growth": {
+          "rank": 964,
+          "population": 3201,
+          "percentile": 30.12
+        },
+        "momentum": {
+          "rank": 3947,
+          "population": 5458,
+          "percentile": 72.32
+        },
+        "value": null,
+        "profitability": {
+          "rank": 1377,
+          "population": 1953,
+          "percentile": 70.51
+        },
+        "revisions": null,
+        "risk": {
+          "rank": 1903,
+          "population": 5458,
+          "percentile": 34.87
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2025-04-01",
+      "anomalyDates": [
+        "2025-04-01",
+        "2025-07-01",
+        "2025-10-01",
+        "2025-12-31",
+        "2026-04-01",
+        "2026-07-01"
+      ],
+      "anomalyCount": 6,
+      "largestStepPct": 2.24078624,
+      "largestStepDate": "2026-04-01",
+      "firstEvent": {
+        "date": "2025-04-01",
+        "factorStep": 1.01916929,
+        "factorStepPct": 1.91692926,
+        "rawCloseMovePct": -1.65723525,
+        "adjustedCloseMovePct": 0.22792599,
+        "eventWindow": [
+          {
+            "date": "2025-03-31",
+            "open": 24.6,
+            "high": 24.75,
+            "low": 24.46,
+            "close": 24.74,
+            "volume": 94004,
+            "adjustedOpen": 21.2970895337,
+            "adjustedHigh": 21.4269498357,
+            "adjustedLow": 21.1758865851,
+            "adjustedClose": 21.4182924822,
+            "adjustedVolume": 94004,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2025-04-01",
+            "open": 24.32,
+            "high": 24.35,
+            "low": 24.1819,
+            "close": 24.33,
+            "volume": 9823,
+            "adjustedOpen": 21.4582870287,
+            "adjustedHigh": 21.4847569551,
+            "adjustedLow": 21.336437134,
+            "adjustedClose": 21.4671103375,
+            "adjustedVolume": 9823,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2025-04-02",
+            "open": 24.36,
+            "high": 24.37,
+            "low": 24.2616,
+            "close": 24.29,
+            "volume": 7890,
+            "adjustedOpen": 21.4935802639,
+            "adjustedHigh": 21.5024035727,
+            "adjustedLow": 21.4067589052,
+            "adjustedClose": 21.4318171022,
+            "adjustedVolume": 7890,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "cad7c53f718a3e668b233a842070b1276819e16729c920a45d58b64d285bbdb1",
+      "adjustedHash": "052ed7cb42cc0f6c236101b2929e19a81fc9469966354cb9e499e865c6788d1c",
+      "actionsHash": "5fd0041c44ba6ba7b8aba9e77f5eca9202b3e1e935e1fe74f5c517126ef97af0",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 6,
+        "VALID_SHARE_ACTION": 1
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_b87e8ffe1a1714",
+      "listingId": null
+    },
+    {
+      "ticker": "FSOL",
+      "company": "Fidelity Solana Fund",
+      "companyId": "iss_cik_0002063380",
+      "securityId": "ref_FSOL",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": null,
+        "growth": null,
+        "momentum": null,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": null
+      },
+      "publishedRanks": {
+        "quality": null,
+        "growth": null,
+        "momentum": null,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": null
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2026-06-23",
+      "anomalyDates": [
+        "2026-06-23"
+      ],
+      "anomalyCount": 1,
+      "largestStepPct": 0.43935644,
+      "largestStepDate": "2026-06-23",
+      "firstEvent": {
+        "date": "2026-06-23",
+        "factorStep": 1.00439356,
+        "factorStepPct": 0.43935644,
+        "rawCloseMovePct": -5.82750583,
+        "adjustedCloseMovePct": -5.41375291,
+        "eventWindow": [
+          {
+            "date": "2026-06-22",
+            "open": 8.76,
+            "high": 8.84,
+            "low": 8.54,
+            "close": 8.58,
+            "volume": 198478,
+            "adjustedOpen": 8.6333999148,
+            "adjustedHigh": 8.7122437496,
+            "adjustedLow": 8.416579369,
+            "adjustedClose": 8.4560012864,
+            "adjustedVolume": 198478,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2026-06-23",
+            "open": 8.07,
+            "high": 8.16,
+            "low": 8.035,
+            "close": 8.08,
+            "volume": 246631,
+            "adjustedOpen": 7.9883154903,
+            "adjustedHigh": 8.0774045107,
+            "adjustedLow": 7.9536697602,
+            "adjustedClose": 7.9982142704,
+            "adjustedVolume": 246631,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2026-06-24",
+            "open": 8.09,
+            "high": 8.155,
+            "low": 7.59,
+            "close": 7.77,
+            "volume": 309208,
+            "adjustedOpen": 8.0081130504,
+            "adjustedHigh": 8.0724551207,
+            "adjustedLow": 7.5131740485,
+            "adjustedClose": 7.6913520892,
+            "adjustedVolume": 309208,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "41ac1e1d2faa7972ae6fbb3b6bf2d422f9a96e143e4f92102e4d586c0f596c04",
+      "adjustedHash": "72e5c75a80362afecbeb1ad343ed4f789dd625437831f510e1ed7ea8576e3498",
+      "actionsHash": "f2da6f7af9496e230ccbe1f18fe2db6af904d1e5c0afe70e3ce9dc0f7d86506b",
+      "providerActionCounts": {
+        "VALID_SHARE_ACTION": 3,
+        "MISSING_PROVIDER_ACTION": 1
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_b8600d40f456b9",
+      "listingId": null
+    },
+    {
+      "ticker": "GJO",
+      "company": "Strats Sm Trust For Wal-Mart Stores, Inc. Securities, Series 2005-4",
+      "companyId": "iss_cik_0001340909",
+      "securityId": "ref_GJO",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": null,
+        "growth": null,
+        "momentum": 45.69,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": 91.13
+      },
+      "publishedRanks": {
+        "quality": null,
+        "growth": null,
+        "momentum": {
+          "rank": 3137,
+          "population": 5458,
+          "percentile": 57.48
+        },
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": {
+          "rank": 314,
+          "population": 5458,
+          "percentile": 5.75
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2023-03-13",
+      "anomalyDates": [
+        "2023-03-13",
+        "2023-04-13",
+        "2023-06-13",
+        "2023-07-13",
+        "2023-09-13",
+        "2023-10-12",
+        "2023-11-13",
+        "2023-12-13",
+        "2024-01-11",
+        "2024-02-13",
+        "2024-03-13",
+        "2024-04-11",
+        "2024-05-13",
+        "2024-06-14",
+        "2024-07-12",
+        "2024-08-14",
+        "2024-09-13",
+        "2024-10-11",
+        "2024-11-14",
+        "2024-12-13",
+        "2025-01-14",
+        "2025-02-14",
+        "2025-03-14",
+        "2025-04-14",
+        "2025-05-14",
+        "2025-06-13",
+        "2025-07-14",
+        "2025-08-14",
+        "2025-09-12",
+        "2025-10-14",
+        "2025-11-14",
+        "2025-12-12",
+        "2026-01-14",
+        "2026-02-13",
+        "2026-03-13",
+        "2026-05-14",
+        "2026-06-12",
+        "2026-07-14"
+      ],
+      "anomalyCount": 38,
+      "largestStepPct": 0.52328838,
+      "largestStepDate": "2023-12-13",
+      "firstEvent": {
+        "date": "2023-03-13",
+        "factorStep": 1.00460621,
+        "factorStepPct": 0.46062102,
+        "rawCloseMovePct": -0.10271159,
+        "adjustedCloseMovePct": 0.35743632,
+        "eventWindow": [
+          {
+            "date": "2023-03-10",
+            "open": 24.34,
+            "high": 24.34,
+            "low": 24.34,
+            "close": 24.34,
+            "volume": 0,
+            "adjustedOpen": 20.5163749373,
+            "adjustedHigh": 20.5163749373,
+            "adjustedLow": 20.5163749373,
+            "adjustedClose": 20.5163749373,
+            "adjustedVolume": 0,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-03-13",
+            "open": 24.34,
+            "high": 24.34,
+            "low": 24.02,
+            "close": 24.315,
+            "volume": 2332,
+            "adjustedOpen": 20.6108776719,
+            "adjustedHigh": 20.6108776719,
+            "adjustedLow": 20.3399047527,
+            "adjustedClose": 20.5897079126,
+            "adjustedVolume": 2332,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-03-14",
+            "open": 24.34,
+            "high": 24.34,
+            "low": 24.15,
+            "close": 24.15,
+            "volume": 956,
+            "adjustedOpen": 20.6108776719,
+            "adjustedHigh": 20.6108776719,
+            "adjustedLow": 20.4499875011,
+            "adjustedClose": 20.4499875011,
+            "adjustedVolume": 956,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "b334aba0eb543650dd9763a0e60aad2cc398023d7ec2c8e2d73b183fea6559cb",
+      "adjustedHash": "47b23d7f6049397833a5690d0be30693a7684ca2a4197fb40c1b05a312abdc7d",
+      "actionsHash": "7cb2888f6a59ede3f4e294b359a7c3a6ec6c3f0d4138cc1726f613467bc2968b",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 38
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_24a0c46c3c3733",
+      "listingId": null
+    },
+    {
+      "ticker": "GJT",
+      "company": "STRATS(SM) Trust for Allstate Corp Securities, Series 2006-3",
+      "companyId": "iss_cik_0001357660",
+      "securityId": "ref_GJT",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": null,
+        "growth": null,
+        "momentum": 50.42,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": 92.68
+      },
+      "publishedRanks": {
+        "quality": null,
+        "growth": null,
+        "momentum": {
+          "rank": 2769,
+          "population": 5458,
+          "percentile": 50.73
+        },
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": {
+          "rank": 251,
+          "population": 5458,
+          "percentile": 4.6
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2007-08-03",
+      "anomalyDates": [
+        "2007-08-03",
+        "2007-08-28",
+        "2007-09-25",
+        "2007-10-03",
+        "2007-11-02",
+        "2007-11-27",
+        "2007-12-04",
+        "2007-12-26",
+        "2008-01-03",
+        "2008-01-28",
+        "2008-02-04",
+        "2008-02-26",
+        "2008-03-04",
+        "2008-03-26",
+        "2008-04-02",
+        "2008-05-02",
+        "2008-05-27",
+        "2008-06-04",
+        "2008-06-25",
+        "2008-07-09",
+        "2008-07-28",
+        "2008-07-29",
+        "2008-08-26",
+        "2008-08-27",
+        "2008-09-26",
+        "2008-10-28",
+        "2008-10-29",
+        "2008-11-25",
+        "2008-12-29",
+        "2009-01-28",
+        "2009-02-24",
+        "2009-02-25",
+        "2009-03-27",
+        "2009-04-27",
+        "2009-05-26",
+        "2009-07-28",
+        "2009-08-26",
+        "2009-10-27",
+        "2009-12-28",
+        "2010-04-27",
+        "2010-09-27",
+        "2010-10-26",
+        "2010-12-28",
+        "2011-01-26",
+        "2011-02-23",
+        "2011-03-28",
+        "2011-04-26",
+        "2011-06-13",
+        "2011-06-29",
+        "2011-12-27",
+        "2011-12-29",
+        "2012-06-29",
+        "2012-07-18",
+        "2013-01-30",
+        "2013-05-01",
+        "2013-08-07",
+        "2013-10-02",
+        "2017-08-29",
+        "2017-11-29",
+        "2017-12-28",
+        "2018-01-30",
+        "2018-02-27",
+        "2018-04-27",
+        "2018-06-28",
+        "2018-07-30",
+        "2018-08-30",
+        "2018-09-27",
+        "2018-10-30",
+        "2018-11-29",
+        "2019-01-30",
+        "2019-02-27",
+        "2019-03-28",
+        "2019-04-29",
+        "2019-05-30",
+        "2019-06-27",
+        "2019-07-26",
+        "2019-08-29",
+        "2019-10-30",
+        "2019-11-27",
+        "2019-12-30",
+        "2020-01-30",
+        "2020-02-27",
+        "2022-08-30",
+        "2022-09-29",
+        "2022-10-28",
+        "2022-11-29",
+        "2023-01-30",
+        "2023-02-27",
+        "2023-03-30",
+        "2023-04-27",
+        "2023-05-30",
+        "2023-06-29",
+        "2023-07-28",
+        "2023-08-30",
+        "2023-09-28",
+        "2023-10-30",
+        "2023-11-29",
+        "2023-12-28",
+        "2024-01-30",
+        "2024-02-28",
+        "2024-03-27",
+        "2024-04-29",
+        "2024-05-31",
+        "2024-06-28",
+        "2024-07-31",
+        "2024-08-30",
+        "2024-09-30",
+        "2024-10-31",
+        "2024-11-29",
+        "2024-12-31",
+        "2025-01-31",
+        "2025-02-28",
+        "2025-03-31",
+        "2025-04-30",
+        "2025-05-30",
+        "2025-06-30",
+        "2025-07-31",
+        "2025-08-29",
+        "2025-09-30",
+        "2025-10-31",
+        "2025-11-28",
+        "2025-12-31",
+        "2026-01-30",
+        "2026-02-27",
+        "2026-03-31",
+        "2026-04-30",
+        "2026-05-29",
+        "2026-06-30",
+        "2026-07-31",
+        "2026-09-01"
+      ],
+      "anomalyCount": 130,
+      "largestStepPct": 1.90476191,
+      "largestStepDate": "2008-10-28",
+      "firstEvent": {
+        "date": "2007-08-03",
+        "factorStep": 1.0053099,
+        "factorStepPct": 0.53099002,
+        "rawCloseMovePct": 0,
+        "adjustedCloseMovePct": 0.53099002,
+        "eventWindow": [
+          {
+            "date": "2007-08-02",
+            "open": 22.05,
+            "high": 22.05,
+            "low": 22.05,
+            "close": 22.05,
+            "volume": 5000,
+            "adjustedOpen": 9.1427656842,
+            "adjustedHigh": 9.1427656842,
+            "adjustedLow": 9.1427656842,
+            "adjustedClose": 9.1427656842,
+            "adjustedVolume": 5000,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2007-08-03",
+            "open": 22.05,
+            "high": 22.05,
+            "low": 22.05,
+            "close": 22.05,
+            "volume": 0,
+            "adjustedOpen": 9.1913128577,
+            "adjustedHigh": 9.1913128577,
+            "adjustedLow": 9.1913128577,
+            "adjustedClose": 9.1913128577,
+            "adjustedVolume": 0,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2007-08-06",
+            "open": 22.09,
+            "high": 22.09,
+            "low": 21.89,
+            "close": 22,
+            "volume": 4200,
+            "adjustedOpen": 9.2079864412,
+            "adjustedHigh": 9.2079864412,
+            "adjustedLow": 9.1246185241,
+            "adjustedClose": 9.1704708785,
+            "adjustedVolume": 4200,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "d9dafdd2ff4f0607853055e2c67f4fb9db6f0d7c7fa71d4128b7725934874821",
+      "adjustedHash": "796b059af91a3723678a283986af20ceab681066782df6c6d2f2cf8377e5e2bc",
+      "actionsHash": "0578b34ec9113966f127c0b7c7d82f00c4a37cbcb39961cf9a96d497c3e0d704",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 130,
+        "VALID_SHARE_ACTION": 1
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_ac4c1da1601ac0",
+      "listingId": null
+    },
+    {
+      "ticker": "HCXY",
+      "company": "Hercules Capital, Inc.",
+      "companyId": "iss_cik_0001280784",
+      "securityId": "ref_HCXY",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": 28.49,
+        "growth": null,
+        "momentum": 54.82,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": 94.58
+      },
+      "publishedRanks": {
+        "quality": {
+          "rank": 3333,
+          "population": 3612,
+          "percentile": 92.28
+        },
+        "growth": null,
+        "momentum": {
+          "rank": 2423,
+          "population": 5458,
+          "percentile": 44.39
+        },
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": {
+          "rank": 170,
+          "population": 5458,
+          "percentile": 3.11
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2023-01-12",
+      "anomalyDates": [
+        "2023-01-12",
+        "2023-04-13",
+        "2023-07-13",
+        "2023-10-12",
+        "2024-01-11",
+        "2024-04-12",
+        "2024-07-15",
+        "2024-10-15",
+        "2025-01-15",
+        "2025-04-15",
+        "2025-07-15",
+        "2025-10-15",
+        "2026-01-15",
+        "2026-04-15",
+        "2026-07-15"
+      ],
+      "anomalyCount": 15,
+      "largestStepPct": 1.67811159,
+      "largestStepDate": "2023-10-12",
+      "firstEvent": {
+        "date": "2023-01-12",
+        "factorStep": 1.01579751,
+        "factorStepPct": 1.57975088,
+        "rawCloseMovePct": -1.56449045,
+        "adjustedCloseMovePct": -0.00945462,
+        "eventWindow": [
+          {
+            "date": "2023-01-11",
+            "open": 25.05,
+            "high": 25.14,
+            "low": 25,
+            "close": 25.12,
+            "volume": 8633,
+            "adjustedOpen": 19.8034451437,
+            "adjustedHigh": 19.874595246,
+            "adjustedLow": 19.7639173091,
+            "adjustedClose": 19.8587841122,
+            "adjustedVolume": 8633,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-01-12",
+            "open": 25.0799,
+            "high": 25.0799,
+            "low": 24.45,
+            "close": 24.727,
+            "volume": 2923,
+            "adjustedOpen": 20.1403013036,
+            "adjustedHigh": 20.1403013036,
+            "adjustedLow": 19.6344629314,
+            "adjustedClose": 19.8569065401,
+            "adjustedVolume": 2923,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-01-13",
+            "open": 24.8,
+            "high": 25.35,
+            "low": 24.58,
+            "close": 25.35,
+            "volume": 3137,
+            "adjustedOpen": 19.9155288629,
+            "adjustedHigh": 20.3572038982,
+            "adjustedLow": 19.7388588488,
+            "adjustedClose": 20.3572038982,
+            "adjustedVolume": 3137,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "58b62e03f240365407f32aa9c356c308697367695cd44675a4e071dd4c2397b8",
+      "adjustedHash": "7c665bd41d73426b1e547c684177481b9f4a0df6b609a2fca98da5be488d017a",
+      "actionsHash": "9ca79b238486d5e9b6c2800c7f4a7c4f5c20da45eb1e63508ac2b0fc843e0121",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 15
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_006d558e5b025e",
+      "listingId": null
+    },
+    {
+      "ticker": "KTN",
+      "company": "Structured Products Corp Cred Enhance Corts Tr For Aon Cap A",
+      "companyId": "iss_cik_0001283337",
+      "securityId": "ref_KTN",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": null,
+        "growth": null,
+        "momentum": 46.38,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": 90.7
+      },
+      "publishedRanks": {
+        "quality": null,
+        "growth": null,
+        "momentum": {
+          "rank": 3084,
+          "population": 5458,
+          "percentile": 56.5
+        },
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": {
+          "rank": 345,
+          "population": 5458,
+          "percentile": 6.32
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2023-06-29",
+      "anomalyDates": [
+        "2023-06-29",
+        "2023-12-28",
+        "2024-06-28",
+        "2024-12-31",
+        "2025-06-30",
+        "2025-12-31"
+      ],
+      "anomalyCount": 6,
+      "largestStepPct": 4.04281818,
+      "largestStepDate": "2025-12-31",
+      "firstEvent": {
+        "date": "2023-06-29",
+        "factorStep": 1.03788696,
+        "factorStepPct": 3.78869597,
+        "rawCloseMovePct": -2.97491039,
+        "adjustedCloseMovePct": 0.70107527,
+        "eventWindow": [
+          {
+            "date": "2023-06-28",
+            "open": 27.3,
+            "high": 28.0449,
+            "low": 27.3,
+            "close": 27.9,
+            "volume": 7370,
+            "adjustedOpen": 21.7135050749,
+            "adjustedHigh": 22.3059735706,
+            "adjustedLow": 21.7135050749,
+            "adjustedClose": 22.1907249667,
+            "adjustedVolume": 7370,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-06-29",
+            "open": 27,
+            "high": 27.25,
+            "low": 26.6,
+            "close": 27.07,
+            "volume": 7175,
+            "adjustedOpen": 22.2885136161,
+            "adjustedHigh": 22.4948887422,
+            "adjustedLow": 21.9583134144,
+            "adjustedClose": 22.3462986514,
+            "adjustedVolume": 7175,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-06-30",
+            "open": 27.15,
+            "high": 27.18,
+            "low": 26.49,
+            "close": 27.01,
+            "volume": 2858,
+            "adjustedOpen": 22.4123386917,
+            "adjustedHigh": 22.4371037069,
+            "adjustedLow": 21.8675083589,
+            "adjustedClose": 22.2967686211,
+            "adjustedVolume": 2858,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "af52d27268844553757b77994ada11c0317e53841e203a3f19b0cf738894ad6b",
+      "adjustedHash": "a4ef71ea294eb325b182089d7d3267a779dd3c24bdccf19b7ec61c6445fd6d9a",
+      "actionsHash": "bda662bef3b6f968b4f17fa7cdb4944490e96bbfbdeeee92942d1b1c0c9924f8",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 6
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_2ae6aa55ffd75d",
+      "listingId": null
+    },
+    {
+      "ticker": "LOGI",
+      "company": "Logitech International S.a.",
+      "companyId": "iss_cik_0001032975",
+      "securityId": "ref_LOGI",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": 74.56,
+        "growth": 60.06,
+        "momentum": 54.66,
+        "value": 70.26,
+        "profitability": 87.84,
+        "revisions": null,
+        "risk": 64.96
+      },
+      "publishedRanks": {
+        "quality": {
+          "rank": 87,
+          "population": 3612,
+          "percentile": 2.41
+        },
+        "growth": {
+          "rank": 1019,
+          "population": 3201,
+          "percentile": 31.83
+        },
+        "momentum": {
+          "rank": 2440,
+          "population": 5458,
+          "percentile": 44.71
+        },
+        "value": {
+          "rank": 473,
+          "population": 2521,
+          "percentile": 18.76
+        },
+        "profitability": {
+          "rank": 92,
+          "population": 1953,
+          "percentile": 4.71
+        },
+        "revisions": null,
+        "risk": {
+          "rank": 2060,
+          "population": 5458,
+          "percentile": 37.74
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2026-09-21",
+      "anomalyDates": [
+        "2026-09-21"
+      ],
+      "anomalyCount": 1,
+      "largestStepPct": 1.57343988,
+      "largestStepDate": "2026-09-21",
+      "firstEvent": {
+        "date": "2026-09-21",
+        "factorStep": 1.0157344,
+        "factorStepPct": 1.57343988,
+        "rawCloseMovePct": 3.87351779,
+        "adjustedCloseMovePct": 5.50790514,
+        "eventWindow": [
+          {
+            "date": "2026-09-18",
+            "open": 104.35,
+            "high": 104.48,
+            "low": 100.75,
+            "close": 101.2,
+            "volume": 773018,
+            "adjustedOpen": 101.1491570752,
+            "adjustedHigh": 101.2751694415,
+            "adjustedLow": 97.6595838556,
+            "adjustedClose": 98.095780508,
+            "adjustedVolume": 791996,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2026-09-21",
+            "open": 104.45,
+            "high": 105.18,
+            "low": 102.59,
+            "close": 105.12,
+            "volume": 877607,
+            "adjustedOpen": 102.8391360146,
+            "adjustedHigh": 103.5578777024,
+            "adjustedLow": 101.0078215772,
+            "adjustedClose": 103.4988030431,
+            "adjustedVolume": 903003,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2026-09-22",
+            "open": 105.685,
+            "high": 106.24,
+            "low": 104.06,
+            "close": 105.82,
+            "volume": 748151,
+            "adjustedOpen": 105.685,
+            "adjustedHigh": 106.24,
+            "adjustedLow": 104.06,
+            "adjustedClose": 105.82,
+            "adjustedVolume": 748151,
+            "splitFactor": 1,
+            "dividend": 1.657556
+          }
+        ]
+      },
+      "rawHash": "d333c0f8c3d7fd026039b5861c6c671c991b00108e102fc7160192a8378f7376",
+      "adjustedHash": "78021ec86e8af6252ae34a32f63329b89698e8ba85b7aff582d5361aa294d8d7",
+      "actionsHash": "3404f0b562971d6c25db99bdeefa097fd2bb6c725fa73d2a50a083d47a42af48",
+      "providerActionCounts": {
+        "VALID_SPLIT": 3,
+        "VALID_SHARE_ACTION": 16,
+        "MISSING_PROVIDER_ACTION": 1
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_c5c051e69edffa",
+      "listingId": null
+    },
+    {
+      "ticker": "MFAO",
+      "company": "Mfa Financial, Inc.",
+      "companyId": "iss_cik_0001055160",
+      "securityId": "ref_MFAO",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": 47.32,
+        "growth": null,
+        "momentum": 58.1,
+        "value": null,
+        "profitability": 47.1,
+        "revisions": null,
+        "risk": 93.36
+      },
+      "publishedRanks": {
+        "quality": {
+          "rank": 2269,
+          "population": 3612,
+          "percentile": 62.82
+        },
+        "growth": null,
+        "momentum": {
+          "rank": 2098,
+          "population": 5458,
+          "percentile": 38.44
+        },
+        "value": null,
+        "profitability": {
+          "rank": 1137,
+          "population": 1953,
+          "percentile": 58.22
+        },
+        "revisions": null,
+        "risk": {
+          "rank": 220,
+          "population": 5458,
+          "percentile": 4.03
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2024-08-01",
+      "anomalyDates": [
+        "2024-08-01",
+        "2024-11-01",
+        "2025-01-31",
+        "2025-05-01",
+        "2025-08-01",
+        "2025-10-31",
+        "2026-01-30",
+        "2026-05-01",
+        "2026-07-31"
+      ],
+      "anomalyCount": 9,
+      "largestStepPct": 2.94646424,
+      "largestStepDate": "2024-08-01",
+      "firstEvent": {
+        "date": "2024-08-01",
+        "factorStep": 1.02946464,
+        "factorStepPct": 2.94646424,
+        "rawCloseMovePct": -2.37909516,
+        "adjustedCloseMovePct": 0.49726989,
+        "eventWindow": [
+          {
+            "date": "2024-07-31",
+            "open": 25.62,
+            "high": 25.68,
+            "low": 25.58,
+            "close": 25.64,
+            "volume": 24476,
+            "adjustedOpen": 20.8406430676,
+            "adjustedHigh": 20.8894501942,
+            "adjustedLow": 20.8081049832,
+            "adjustedClose": 20.8569121098,
+            "adjustedVolume": 24476,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2024-08-01",
+            "open": 25.09,
+            "high": 25.09,
+            "low": 25.01,
+            "close": 25.03,
+            "volume": 36460,
+            "adjustedOpen": 21.010872465,
+            "adjustedHigh": 21.010872465,
+            "adjustedLow": 20.9438788501,
+            "adjustedClose": 20.9606272539,
+            "adjustedVolume": 36460,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2024-08-02",
+            "open": 25,
+            "high": 25.06,
+            "low": 24.98,
+            "close": 25,
+            "volume": 31363,
+            "adjustedOpen": 20.9355046483,
+            "adjustedHigh": 20.9857498594,
+            "adjustedLow": 20.9187562446,
+            "adjustedClose": 20.9355046483,
+            "adjustedVolume": 31363,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "6c5382d9fff129a48e01ec7f9da12170d39f492f554760d16af12ee86ef25687",
+      "adjustedHash": "36e6a1130e2ec207eae2d8d956c9ca640b2f2aaf042fe354c4a467a1f960bf00",
+      "actionsHash": "2bba13d3b1fd37da1b546dc495f574d7ee817de068f82e8939c3bc181eb9c200",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 9
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_f967c6efc32c98",
+      "listingId": null
+    },
+    {
+      "ticker": "NRUC",
+      "company": "National Rural Utilities Cooperative Finance Corp /Dc/",
+      "companyId": "iss_cik_0000070502",
+      "securityId": "ref_NRUC",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": 37.37,
+        "growth": null,
+        "momentum": 28.16,
+        "value": null,
+        "profitability": 33.94,
+        "revisions": null,
+        "risk": 79.78
+      },
+      "publishedRanks": {
+        "quality": {
+          "rank": 2976,
+          "population": 3612,
+          "percentile": 82.39
+        },
+        "growth": null,
+        "momentum": {
+          "rank": 4369,
+          "population": 5458,
+          "percentile": 80.05
+        },
+        "value": null,
+        "profitability": {
+          "rank": 1518,
+          "population": 1953,
+          "percentile": 77.73
+        },
+        "revisions": null,
+        "risk": {
+          "rank": 1063,
+          "population": 5458,
+          "percentile": 19.48
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2023-01-31",
+      "anomalyDates": [
+        "2023-01-31",
+        "2023-04-28",
+        "2023-07-31",
+        "2023-10-31",
+        "2024-01-31",
+        "2024-04-30",
+        "2024-08-01",
+        "2024-11-01",
+        "2025-01-31",
+        "2025-05-01",
+        "2025-08-01",
+        "2025-10-31",
+        "2026-01-30",
+        "2026-05-01"
+      ],
+      "anomalyCount": 14,
+      "largestStepPct": 1.52212389,
+      "largestStepDate": "2023-10-31",
+      "firstEvent": {
+        "date": "2023-01-31",
+        "factorStep": 1.01431544,
+        "factorStepPct": 1.4315439,
+        "rawCloseMovePct": -0.62034739,
+        "adjustedCloseMovePct": 0.80231596,
+        "eventWindow": [
+          {
+            "date": "2023-01-30",
+            "open": 24.13,
+            "high": 24.22,
+            "low": 24.13,
+            "close": 24.18,
+            "volume": 43111,
+            "adjustedOpen": 19.7753214948,
+            "adjustedHigh": 19.8490794283,
+            "adjustedLow": 19.7753214948,
+            "adjustedClose": 19.8162981245,
+            "adjustedVolume": 43111,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-01-31",
+            "open": 24.05,
+            "high": 24.09,
+            "low": 23.81,
+            "close": 24.03,
+            "volume": 66317,
+            "adjustedOpen": 19.991912739,
+            "adjustedHigh": 20.0251633215,
+            "adjustedLow": 19.7924092439,
+            "adjustedClose": 19.9752874478,
+            "adjustedVolume": 66317,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-02-01",
+            "open": 24.03,
+            "high": 24.1,
+            "low": 23.83,
+            "close": 24.05,
+            "volume": 24599,
+            "adjustedOpen": 19.9752874478,
+            "adjustedHigh": 20.0334759672,
+            "adjustedLow": 19.8090345352,
+            "adjustedClose": 19.991912739,
+            "adjustedVolume": 24599,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "7d469600a6ed124bfc33d46efeafb66ca8cc3e87146996313594979f308e1dc8",
+      "adjustedHash": "c84d10a0d278949225c4d89ca122e1542b7293c7d852a02e581a650bb34aa60d",
+      "actionsHash": "14a85a4d876578f5ef4bb9805d759a23d4968339c24224def342673fb17d2f99",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 14
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_975fbd38ba96fb",
+      "listingId": null
+    },
+    {
+      "ticker": "PMTV",
+      "company": "PennyMac Mortgage Investment Trust",
+      "companyId": "iss_cik_0001464423",
+      "securityId": "ref_PMTV",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": 31.89,
+        "growth": null,
+        "momentum": 56.61,
+        "value": null,
+        "profitability": 27.09,
+        "revisions": null,
+        "risk": 95.86
+      },
+      "publishedRanks": {
+        "quality": {
+          "rank": 3244,
+          "population": 3612,
+          "percentile": 89.81
+        },
+        "growth": null,
+        "momentum": {
+          "rank": 2255,
+          "population": 5458,
+          "percentile": 41.32
+        },
+        "value": null,
+        "profitability": {
+          "rank": 1656,
+          "population": 1953,
+          "percentile": 84.79
+        },
+        "revisions": null,
+        "risk": {
+          "rank": 108,
+          "population": 5458,
+          "percentile": 1.98
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2025-10-31",
+      "anomalyDates": [
+        "2025-10-31",
+        "2026-01-30",
+        "2026-05-01",
+        "2026-07-31"
+      ],
+      "anomalyCount": 4,
+      "largestStepPct": 2.24192906,
+      "largestStepDate": "2026-07-31",
+      "firstEvent": {
+        "date": "2025-10-31",
+        "factorStep": 1.0222332,
+        "factorStepPct": 2.22332016,
+        "rawCloseMovePct": -1.65667685,
+        "adjustedCloseMovePct": 0.52981008,
+        "eventWindow": [
+          {
+            "date": "2025-10-30",
+            "open": 25.7499,
+            "high": 25.7499,
+            "low": 25.7,
+            "close": 25.7262,
+            "volume": 4550,
+            "adjustedOpen": 23.5747915366,
+            "adjustedHigh": 23.5747915366,
+            "adjustedLow": 23.5291066175,
+            "adjustedClose": 23.5530934888,
+            "adjustedVolume": 4550,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2025-10-31",
+            "open": 25.26,
+            "high": 25.3,
+            "low": 25.21,
+            "close": 25.3,
+            "volume": 19521,
+            "adjustedOpen": 23.6404447679,
+            "adjustedHigh": 23.6778801516,
+            "adjustedLow": 23.5936505384,
+            "adjustedClose": 23.6778801516,
+            "adjustedVolume": 19521,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2025-11-03",
+            "open": 25.4,
+            "high": 25.52,
+            "low": 25.3115,
+            "close": 25.4,
+            "volume": 37733,
+            "adjustedOpen": 23.7714686107,
+            "adjustedHigh": 23.8837747616,
+            "adjustedLow": 23.6886428244,
+            "adjustedClose": 23.7714686107,
+            "adjustedVolume": 37733,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "ea666ce6dc9b92c61b90fb915661e52edd30d944f88a06d1027c9bddafc78d20",
+      "adjustedHash": "0325646473c9a2c768f61e5cb98be168ebe0dc7137b0dba7ce25485a7bda07c5",
+      "actionsHash": "d96d1fffd6cd89a2e6d9616665a0ba06722ff61a93b177f400c46ed8824520f5",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 4
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_070f1111351b09",
+      "listingId": null
+    },
+    {
+      "ticker": "RILYN",
+      "company": "BRC Group Holdings, Inc.",
+      "companyId": "iss_cik_0001464790",
+      "securityId": "ref_RILYN",
+      "consumer": false,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": 22.67,
+        "growth": 31.02,
+        "momentum": 74.17,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": 88.32
+      },
+      "publishedRanks": {
+        "quality": {
+          "rank": 3490,
+          "population": 3612,
+          "percentile": 96.62
+        },
+        "growth": {
+          "rank": 2652,
+          "population": 3201,
+          "percentile": 82.85
+        },
+        "momentum": {
+          "rank": 960,
+          "population": 5458,
+          "percentile": 17.59
+        },
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": {
+          "rank": 475,
+          "population": 5458,
+          "percentile": 8.7
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2019-10-11",
+      "anomalyDates": [
+        "2019-10-11",
+        "2020-01-14",
+        "2020-04-14",
+        "2020-07-14",
+        "2020-10-14",
+        "2021-01-14",
+        "2021-04-14",
+        "2021-07-14",
+        "2021-10-14",
+        "2022-01-13",
+        "2022-04-13",
+        "2022-07-14",
+        "2022-10-13",
+        "2023-01-12",
+        "2023-04-13",
+        "2023-07-13",
+        "2023-10-12",
+        "2024-01-11",
+        "2024-04-12",
+        "2024-07-15",
+        "2024-10-15",
+        "2025-01-15",
+        "2025-04-15",
+        "2025-07-15",
+        "2025-10-15",
+        "2026-01-15",
+        "2026-04-15",
+        "2026-07-15"
+      ],
+      "anomalyCount": 28,
+      "largestStepPct": 3.84706439,
+      "largestStepDate": "2025-04-15",
+      "firstEvent": {
+        "date": "2019-10-11",
+        "factorStep": 1.00680343,
+        "factorStepPct": 0.68034269,
+        "rawCloseMovePct": -0.22952117,
+        "adjustedCloseMovePct": 0.44925999,
+        "eventWindow": [
+          {
+            "date": "2019-10-10",
+            "open": 25.36,
+            "high": 25.365,
+            "low": 25.23,
+            "close": 25.27,
+            "volume": 17170,
+            "adjustedOpen": 14.5026116148,
+            "adjustedHigh": 14.5054709626,
+            "adjustedLow": 14.4282685742,
+            "adjustedClose": 14.451143356,
+            "adjustedVolume": 17170,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2019-10-11",
+            "open": 25.1,
+            "high": 25.22,
+            "low": 25.1,
+            "close": 25.212,
+            "volume": 12311,
+            "adjustedOpen": 14.4515814173,
+            "adjustedHigh": 14.5206726432,
+            "adjustedLow": 14.4515814173,
+            "adjustedClose": 14.5160665615,
+            "adjustedVolume": 12311,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2019-10-14",
+            "open": 25.19,
+            "high": 25.22,
+            "low": 25.16,
+            "close": 25.205,
+            "volume": 18177,
+            "adjustedOpen": 14.5033998367,
+            "adjustedHigh": 14.5206726432,
+            "adjustedLow": 14.4861270302,
+            "adjustedClose": 14.5120362399,
+            "adjustedVolume": 18177,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "79ae52fba23f4d6bd188a241de8a608ebe1281a13f206a6370657c0a64e442b6",
+      "adjustedHash": "95f409ac5f0bbd56a34492be3510d7fa0bbce6fba74a7241fc1710782aed635c",
+      "actionsHash": "531d8f6d0f049f040b70e849fc4836171d764fb755a9160c1261e958eb50319f",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 28,
+        "SUSPICIOUS_PRICE_BREAK": 3,
+        "VALID_SHARE_ACTION": 1
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_2b43c1970707db",
+      "listingId": null
+    },
+    {
+      "ticker": "SAZ",
+      "company": "Saratoga Investment Corp.",
+      "companyId": "iss_cik_0001377936",
+      "securityId": "ref_SAZ",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": null,
+        "growth": null,
+        "momentum": 54.55,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": 95.25
+      },
+      "publishedRanks": {
+        "quality": null,
+        "growth": null,
+        "momentum": {
+          "rank": 2453,
+          "population": 5458,
+          "percentile": 44.94
+        },
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": {
+          "rank": 141,
+          "population": 5458,
+          "percentile": 2.58
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2023-05-12",
+      "anomalyDates": [
+        "2023-05-12",
+        "2023-08-14",
+        "2023-11-14",
+        "2024-02-14",
+        "2024-05-14",
+        "2024-08-15",
+        "2024-11-15",
+        "2025-02-14",
+        "2025-05-15",
+        "2025-08-15",
+        "2025-11-14",
+        "2026-02-13",
+        "2026-05-15"
+      ],
+      "anomalyCount": 13,
+      "largestStepPct": 2.12982639,
+      "largestStepDate": "2023-11-14",
+      "firstEvent": {
+        "date": "2023-05-12",
+        "factorStep": 1.01112897,
+        "factorStepPct": 1.11289675,
+        "rawCloseMovePct": -0.40016006,
+        "adjustedCloseMovePct": 0.70828331,
+        "eventWindow": [
+          {
+            "date": "2023-05-11",
+            "open": 25.02,
+            "high": 25.02,
+            "low": 24.94,
+            "close": 24.99,
+            "volume": 4349,
+            "adjustedOpen": 19.2603765876,
+            "adjustedHigh": 19.2603765876,
+            "adjustedLow": 19.1987926497,
+            "adjustedClose": 19.2372826109,
+            "adjustedVolume": 4349,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-05-12",
+            "open": 24.78,
+            "high": 24.97,
+            "low": 24.78,
+            "close": 24.89,
+            "volume": 6668,
+            "adjustedOpen": 19.2879167812,
+            "adjustedHigh": 19.4358063772,
+            "adjustedLow": 19.2879167812,
+            "adjustedClose": 19.3735370736,
+            "adjustedVolume": 6668,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-05-15",
+            "open": 24.99,
+            "high": 25,
+            "low": 24.875,
+            "close": 24.94,
+            "volume": 2872,
+            "adjustedOpen": 19.4513737031,
+            "adjustedHigh": 19.459157366,
+            "adjustedLow": 19.3618615792,
+            "adjustedClose": 19.4124553883,
+            "adjustedVolume": 2872,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "a4e90b3c0cd739016fac30166a934ee252bb60552e58d136f691d24cb743c72f",
+      "adjustedHash": "c4e1b4dee2f7c520db8827ae03af4b2aa58c2bb4393e745e8b31479af4fbd98b",
+      "actionsHash": "2b11db810a0a302bdbefa0be31308bf500c124f13c03690ac381fc1c99d053c3",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 13
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_835aa0c44c1f91",
+      "listingId": null
+    },
+    {
+      "ticker": "SFB",
+      "company": "Stifel Financial Corp",
+      "companyId": "iss_cik_0000720672",
+      "securityId": "ref_SFB",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": 68.96,
+        "growth": 44.06,
+        "momentum": 43.22,
+        "value": null,
+        "profitability": 55.91,
+        "revisions": null,
+        "risk": 95.18
+      },
+      "publishedRanks": {
+        "quality": {
+          "rank": 301,
+          "population": 3612,
+          "percentile": 8.33
+        },
+        "growth": {
+          "rank": 1929,
+          "population": 3201,
+          "percentile": 60.26
+        },
+        "momentum": {
+          "rank": 3335,
+          "population": 5458,
+          "percentile": 61.1
+        },
+        "value": null,
+        "profitability": {
+          "rank": 866,
+          "population": 1953,
+          "percentile": 44.34
+        },
+        "revisions": null,
+        "risk": {
+          "rank": 144,
+          "population": 5458,
+          "percentile": 2.64
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2017-12-28",
+      "anomalyDates": [
+        "2017-12-28",
+        "2018-03-28",
+        "2019-12-30",
+        "2020-03-31",
+        "2020-06-30",
+        "2020-09-30",
+        "2020-12-30",
+        "2021-03-31",
+        "2021-09-30",
+        "2021-12-30",
+        "2022-03-31",
+        "2022-06-30",
+        "2022-09-29",
+        "2022-12-29",
+        "2023-12-28",
+        "2024-03-28",
+        "2024-07-01",
+        "2024-10-01",
+        "2024-12-31",
+        "2025-04-01",
+        "2025-07-01",
+        "2025-10-01",
+        "2025-12-31",
+        "2026-04-01",
+        "2026-07-01"
+      ],
+      "anomalyCount": 25,
+      "largestStepPct": 1.67525773,
+      "largestStepDate": "2026-04-01",
+      "firstEvent": {
+        "date": "2017-12-28",
+        "factorStep": 1.01465336,
+        "factorStepPct": 1.46533637,
+        "rawCloseMovePct": -1.19094879,
+        "adjustedCloseMovePct": 0.25693617,
+        "eventWindow": [
+          {
+            "date": "2017-12-27",
+            "open": 25.19,
+            "high": 25.21,
+            "low": 25.15,
+            "close": 25.19,
+            "volume": 44000,
+            "adjustedOpen": 17.3778107648,
+            "adjustedHigh": 17.3916081533,
+            "adjustedLow": 17.3502159879,
+            "adjustedClose": 17.3778107648,
+            "adjustedVolume": 44000,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2017-12-28",
+            "open": 24.96,
+            "high": 24.9889,
+            "low": 24.85,
+            "close": 24.89,
+            "volume": 50467,
+            "adjustedOpen": 17.4714591299,
+            "adjustedHigh": 17.4916885036,
+            "adjustedLow": 17.3944615135,
+            "adjustedClose": 17.4224606467,
+            "adjustedVolume": 50467,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2017-12-29",
+            "open": 24.92,
+            "high": 24.93,
+            "low": 24.8405,
+            "close": 24.93,
+            "volume": 46033,
+            "adjustedOpen": 17.4434599967,
+            "adjustedHigh": 17.45045978,
+            "adjustedLow": 17.3878117194,
+            "adjustedClose": 17.45045978,
+            "adjustedVolume": 46033,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "1a072e589408aad08cd5ee329b2b5262a965a7a107bc6e3c54339cd5efe2751c",
+      "adjustedHash": "62b4d7d47da4a82b712a04ed336bc587d07a9e2cfdef8d23ee075b1177f6c180",
+      "actionsHash": "e647ef3023548d6115f6365f8e56afabaaf8c25619544911d0c1d60a2fd5f124",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 25,
+        "VALID_SHARE_ACTION": 1
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_d64841af6b1e91",
+      "listingId": null
+    },
+    {
+      "ticker": "TCPA",
+      "company": "Transcanada Pipelines Ltd",
+      "companyId": "iss_cik_0000099070",
+      "securityId": "ref_TCPA",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": null,
+        "growth": null,
+        "momentum": null,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": null
+      },
+      "publishedRanks": {
+        "quality": null,
+        "growth": null,
+        "momentum": null,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": null
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2026-07-17",
+      "anomalyDates": [
+        "2026-07-17"
+      ],
+      "anomalyCount": 1,
+      "largestStepPct": 1.67280514,
+      "largestStepDate": "2026-07-17",
+      "firstEvent": {
+        "date": "2026-07-17",
+        "factorStep": 1.01672805,
+        "factorStepPct": 1.67280514,
+        "rawCloseMovePct": -1.51834669,
+        "adjustedCloseMovePct": 0.12905947,
+        "eventWindow": [
+          {
+            "date": "2026-07-16",
+            "open": 23.84,
+            "high": 23.84,
+            "low": 23.55,
+            "close": 23.71,
+            "volume": 9115,
+            "adjustedOpen": 23.4477645889,
+            "adjustedHigh": 23.4477645889,
+            "adjustedLow": 23.1625359089,
+            "adjustedClose": 23.3199034565,
+            "adjustedVolume": 9115,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2026-07-17",
+            "open": 23.21,
+            "high": 23.42,
+            "low": 23.19,
+            "close": 23.35,
+            "volume": 11995,
+            "adjustedOpen": 23.21,
+            "adjustedHigh": 23.42,
+            "adjustedLow": 23.19,
+            "adjustedClose": 23.35,
+            "adjustedVolume": 11995,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2026-07-20",
+            "open": 23.26,
+            "high": 23.46,
+            "low": 23.04,
+            "close": 23.04,
+            "volume": 35313,
+            "adjustedOpen": 23.26,
+            "adjustedHigh": 23.46,
+            "adjustedLow": 23.04,
+            "adjustedClose": 23.04,
+            "adjustedVolume": 35313,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "7491416f8e5de8d8162f84f95aa949c76fab3ae1ed294deefd334675fa34572f",
+      "adjustedHash": "fa73354865f1ced4c7fdda4ed6a39787a78eb7dfb30008d690c7bf8b1a3d6403",
+      "actionsHash": "336a7b4112248d7c6eb789d3ea05a4e0719d7d261d9009ef599e8f200ccc345d",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 1
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_cfe1c49af62f92",
+      "listingId": null
+    },
+    {
+      "ticker": "THRM",
+      "company": "Gentherm Inc",
+      "companyId": "iss_cik_0000903129",
+      "securityId": "ref_THRM",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": 53.09,
+        "growth": 57.46,
+        "momentum": 65.85,
+        "value": 48.84,
+        "profitability": 43.57,
+        "revisions": null,
+        "risk": 54.86
+      },
+      "publishedRanks": {
+        "quality": {
+          "rank": 1706,
+          "population": 3612,
+          "percentile": 47.23
+        },
+        "growth": {
+          "rank": 1147,
+          "population": 3201,
+          "percentile": 35.83
+        },
+        "momentum": {
+          "rank": 1546,
+          "population": 5458,
+          "percentile": 28.33
+        },
+        "value": {
+          "rank": 1384,
+          "population": 2521,
+          "percentile": 54.9
+        },
+        "profitability": {
+          "rank": 1238,
+          "population": 1953,
+          "percentile": 63.39
+        },
+        "revisions": null,
+        "risk": {
+          "rank": 2705,
+          "population": 5458,
+          "percentile": 49.56
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "1995-01-20",
+      "anomalyDates": [
+        "1995-01-20"
+      ],
+      "anomalyCount": 1,
+      "largestStepPct": -97.5,
+      "largestStepDate": "1995-01-20",
+      "firstEvent": {
+        "date": "1995-01-20",
+        "factorStep": 0.025,
+        "factorStepPct": -97.5,
+        "rawCloseMovePct": 0,
+        "adjustedCloseMovePct": -97.5,
+        "eventWindow": [
+          {
+            "date": "1995-01-19",
+            "open": 13,
+            "high": 13,
+            "low": 12.5,
+            "close": 12.5,
+            "volume": 16500,
+            "adjustedOpen": 2600,
+            "adjustedHigh": 2600,
+            "adjustedLow": 2500,
+            "adjustedClose": 2500,
+            "adjustedVolume": 82,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "1995-01-20",
+            "open": 12.75,
+            "high": 13,
+            "low": 12.5,
+            "close": 12.5,
+            "volume": 31500,
+            "adjustedOpen": 63.75,
+            "adjustedHigh": 65,
+            "adjustedLow": 62.5,
+            "adjustedClose": 62.5,
+            "adjustedVolume": 6300,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "1995-01-23",
+            "open": 12.5,
+            "high": 13,
+            "low": 12.25,
+            "close": 12.63,
+            "volume": 14000,
+            "adjustedOpen": 62.5,
+            "adjustedHigh": 65,
+            "adjustedLow": 61.25,
+            "adjustedClose": 63.15,
+            "adjustedVolume": 2800,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "e166d9396529742eb06c72e8c0f3293cbb24e83c326d413fd94d9ac7aa077ca5",
+      "adjustedHash": "a9dac9769d52a56d9fad9963c9f22a742a73b63ae7e45da6a01ff68abd200f35",
+      "actionsHash": "c53667c9695cbfc06de8e184759711894aa49a02365e13e926ab26fc5ecd7863",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 1,
+        "SUSPICIOUS_PRICE_BREAK": 18,
+        "VALID_REVERSE_SPLIT": 1,
+        "BAD_SERIES": 2
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_1a75edc60b733a",
+      "listingId": null
+    },
+    {
+      "ticker": "TTE",
+      "company": "TotalEnergies SE",
+      "companyId": "iss_cik_0000879764",
+      "securityId": "ref_TTE",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": null,
+        "growth": null,
+        "momentum": 65.07,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": 83.82
+      },
+      "publishedRanks": {
+        "quality": null,
+        "growth": null,
+        "momentum": {
+          "rank": 1602,
+          "population": 5458,
+          "percentile": 29.35
+        },
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": {
+          "rank": 792,
+          "population": 5458,
+          "percentile": 14.51
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2008-05-30",
+      "anomalyDates": [
+        "2008-05-30"
+      ],
+      "anomalyCount": 1,
+      "largestStepPct": 1.40327869,
+      "largestStepDate": "2008-05-30",
+      "firstEvent": {
+        "date": "2008-05-30",
+        "factorStep": 1.01403279,
+        "factorStepPct": 1.40327869,
+        "rawCloseMovePct": 5.86060606,
+        "adjustedCloseMovePct": 7.34612539,
+        "eventWindow": [
+          {
+            "date": "2008-05-08",
+            "open": 82.5,
+            "high": 82.5,
+            "low": 82.5,
+            "close": 82.5,
+            "volume": 285,
+            "adjustedOpen": 11.8584235656,
+            "adjustedHigh": 11.8584235656,
+            "adjustedLow": 11.8584235656,
+            "adjustedClose": 11.8584235656,
+            "adjustedVolume": 285,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2008-05-30",
+            "open": 87.335,
+            "high": 87.335,
+            "low": 87.335,
+            "close": 87.335,
+            "volume": 50000,
+            "adjustedOpen": 12.7295582295,
+            "adjustedHigh": 12.7295582295,
+            "adjustedLow": 12.7295582295,
+            "adjustedClose": 12.7295582295,
+            "adjustedVolume": 50000,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2008-06-05",
+            "open": 84.25,
+            "high": 84.25,
+            "low": 84.25,
+            "close": 84.25,
+            "volume": 500,
+            "adjustedOpen": 12.2799024541,
+            "adjustedHigh": 12.2799024541,
+            "adjustedLow": 12.2799024541,
+            "adjustedClose": 12.2799024541,
+            "adjustedVolume": 500,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "3268bf60f7769db31250d3d956de6324e366fec6392ded103e99149a64262b61",
+      "adjustedHash": "b7b71c0c551ab7e9a8064b397812c496baa67a3e8c4b38d821564d04898069a9",
+      "actionsHash": "f2624add30f4dc0e1d6164329463d5ba05814654178b377472ed5aab8cd49029",
+      "providerActionCounts": {
+        "VALID_SHARE_ACTION": 118,
+        "MISSING_PROVIDER_ACTION": 1,
+        "SUSPICIOUS_PRICE_BREAK": 3
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_e4d1bf61d709eb",
+      "listingId": null
+    },
+    {
+      "ticker": "TVE",
+      "company": "Tennessee Valley Authority",
+      "companyId": "iss_cik_0001376986",
+      "securityId": "ref_TVE",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": 43.34,
+        "growth": null,
+        "momentum": 62.63,
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": 93.34
+      },
+      "publishedRanks": {
+        "quality": {
+          "rank": 2614,
+          "population": 3612,
+          "percentile": 72.37
+        },
+        "growth": null,
+        "momentum": {
+          "rank": 1756,
+          "population": 5458,
+          "percentile": 32.17
+        },
+        "value": null,
+        "profitability": null,
+        "revisions": null,
+        "risk": {
+          "rank": 222,
+          "population": 5458,
+          "percentile": 4.07
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2023-01-30",
+      "anomalyDates": [
+        "2023-01-30",
+        "2023-04-27",
+        "2023-07-28",
+        "2023-10-30",
+        "2024-01-30",
+        "2024-04-29",
+        "2024-07-31",
+        "2024-10-31",
+        "2025-01-31",
+        "2025-04-30",
+        "2025-07-31",
+        "2025-10-31",
+        "2026-01-30",
+        "2026-04-30",
+        "2026-07-31"
+      ],
+      "anomalyCount": 15,
+      "largestStepPct": 0.65764482,
+      "largestStepDate": "2023-10-30",
+      "firstEvent": {
+        "date": "2023-01-30",
+        "factorStep": 1.00633288,
+        "factorStepPct": 0.63328761,
+        "rawCloseMovePct": -0.8612874,
+        "adjustedCloseMovePct": -0.23345422,
+        "eventWindow": [
+          {
+            "date": "2023-01-27",
+            "open": 22.2,
+            "high": 22.31,
+            "low": 21.97,
+            "close": 22.06,
+            "volume": 7536,
+            "adjustedOpen": 20.2514222765,
+            "adjustedHigh": 20.3517671616,
+            "adjustedLow": 20.0416102439,
+            "adjustedClose": 20.1237106045,
+            "adjustedVolume": 7536,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-01-30",
+            "open": 21.79,
+            "high": 21.98,
+            "low": 21.7101,
+            "close": 21.87,
+            "volume": 6794,
+            "adjustedOpen": 20.0032906941,
+            "adjustedHigh": 20.1777113106,
+            "adjustedLow": 19.9299422349,
+            "adjustedClose": 20.0767309537,
+            "adjustedVolume": 6794,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2023-01-31",
+            "open": 21.98,
+            "high": 21.98,
+            "low": 21.58,
+            "close": 21.62,
+            "volume": 57397,
+            "adjustedOpen": 20.1777113106,
+            "adjustedHigh": 20.1777113106,
+            "adjustedLow": 19.8105100128,
+            "adjustedClose": 19.8472301426,
+            "adjustedVolume": 57397,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "259201b3ed6ff4f70c7f3fe07f2a2ded2270cf9322672396158a7fa98935ec7b",
+      "adjustedHash": "d8a5ef77d18558de710b98b5ff7840529187d20e54c96c2192e89aa87201a76a",
+      "actionsHash": "9ca79b238486d5e9b6c2800c7f4a7c4f5c20da45eb1e63508ac2b0fc843e0121",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 15
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_f8777c9bd2a028",
+      "listingId": null
+    },
+    {
+      "ticker": "TWOD",
+      "company": "Two Harbors Investment Corp.",
+      "companyId": "iss_cik_0001465740",
+      "securityId": "ref_TWOD",
+      "consumer": true,
+      "wasPublished": true,
+      "publishedAsOf": "2026-10-02",
+      "publishedScores": {
+        "quality": 24.96,
+        "growth": null,
+        "momentum": 67.55,
+        "value": 30.77,
+        "profitability": 14.23,
+        "revisions": null,
+        "risk": 93.17
+      },
+      "publishedRanks": {
+        "quality": {
+          "rank": 3438,
+          "population": 3612,
+          "percentile": 95.18
+        },
+        "growth": null,
+        "momentum": {
+          "rank": 1420,
+          "population": 5458,
+          "percentile": 26.02
+        },
+        "value": {
+          "rank": 2134,
+          "population": 2521,
+          "percentile": 84.65
+        },
+        "profitability": {
+          "rank": 1832,
+          "population": 1953,
+          "percentile": 93.8
+        },
+        "revisions": null,
+        "risk": {
+          "rank": 230,
+          "population": 5458,
+          "percentile": 4.21
+        }
+      },
+      "compositePublished": false,
+      "currentFactorStatus": "WITHHELD_INPUT_FAIL",
+      "classification": "J_TRUE_UNEXPLAINED_DATA_DEFECT",
+      "technicalCause": "NEW_STRICT_CORPORATE_ACTION_VALIDATOR_AFTER_PREVIOUS_FACTOR_PUBLICATION",
+      "sourceDataRestatement": false,
+      "oldAndCurrentMarketCacheIdentical": true,
+      "firstAnomalyDate": "2025-08-01",
+      "anomalyDates": [
+        "2025-08-01",
+        "2025-10-31",
+        "2026-01-30",
+        "2026-05-01",
+        "2026-07-31"
+      ],
+      "anomalyCount": 5,
+      "largestStepPct": 2.34258897,
+      "largestStepDate": "2025-08-01",
+      "firstEvent": {
+        "date": "2025-08-01",
+        "factorStep": 1.02342589,
+        "factorStepPct": 2.34258897,
+        "rawCloseMovePct": -1.72943889,
+        "adjustedCloseMovePct": 0.57263643,
+        "eventWindow": [
+          {
+            "date": "2025-07-31",
+            "open": 25.94,
+            "high": 26.09,
+            "low": 25.94,
+            "close": 26.02,
+            "volume": 5756,
+            "adjustedOpen": 23.1396637309,
+            "adjustedHigh": 23.2734705759,
+            "adjustedLow": 23.1396637309,
+            "adjustedClose": 23.2110273816,
+            "adjustedVolume": 5756,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2025-08-01",
+            "open": 25.49,
+            "high": 25.67,
+            "low": 25.39,
+            "close": 25.57,
+            "volume": 14610,
+            "adjustedOpen": 23.2709067733,
+            "adjustedHigh": 23.4352364406,
+            "adjustedLow": 23.1796125137,
+            "adjustedClose": 23.343942181,
+            "adjustedVolume": 14610,
+            "splitFactor": 1,
+            "dividend": 0
+          },
+          {
+            "date": "2025-08-04",
+            "open": 25.7,
+            "high": 25.7,
+            "low": 25.48,
+            "close": 25.5,
+            "volume": 22377,
+            "adjustedOpen": 23.4626247184,
+            "adjustedHigh": 23.4626247184,
+            "adjustedLow": 23.2617773473,
+            "adjustedClose": 23.2800361992,
+            "adjustedVolume": 22377,
+            "splitFactor": 1,
+            "dividend": 0
+          }
+        ]
+      },
+      "rawHash": "09bc96e19bb78a82838f2d54d6d7e2f4152baa6906d259b4aabae4abc8dca7df",
+      "adjustedHash": "d4051e9327b5047da15408007fc071a59153934f5bb81295202f5ea6022df09d",
+      "actionsHash": "9e09d7e2568df354ea6459743cdfbf736adf530976a826b7da36237655078932",
+      "providerActionCounts": {
+        "MISSING_PROVIDER_ACTION": 5
+      },
+      "reason": "Adjusted/raw factor step has no matching split or dividend in Tiingo action columns. Older validator permitted it; current validator rejects. Independent action evidence is required before re-publishing or approving removal.",
+      "instrumentId": "vu_60728fa6d35955",
+      "listingId": null
+    }
+  ]
+}
