@@ -276,6 +276,7 @@
       }).join("") + '</div><p class="vs-fine" style="margin-top:8px">Veränderung der Zielerreichung im Basisszenario. Modellrechnung, keine Empfehlung.</p></div></div></section>' +
       '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card" id="vs-mon-plan"><p class="vs-label">Was hat sich bei dir verändert?</p><div class="vs-loading">…</div></div>' +
       '<div class="vs-card" id="vs-mon-portfolio"><p class="vs-label">Portfolio · Risiko & Allokation</p><div class="vs-loading">…</div></div></div></section>' +
+      '<section class="vs-section"><div class="vs-card" id="vs-mon-holdings"><p class="vs-label">Bestandsänderungen deiner ETFs</p><div class="vs-loading">…</div></div></section>' +
       '<section class="vs-section"><div class="vs-card" id="vs-mon-changes"><p class="vs-label">Daten & Produkte – was hat sich verändert?</p><div class="vs-loading">…</div></div></section>');
     function evRow(e) { return '<div class="vs-row"><span style="color:var(--ink)">' + esc(e.text) + '</span><span class="vs-badge">' + esc(LBL[e.category] || e.category) + '</span></div>'; }
     VS.snapshotContext().then(function (ctx) {
@@ -289,6 +290,18 @@
         '</div><h3 style="margin-top:16px">Noch nicht überwacht</h3><div style="margin-top:6px">' + c.unmonitored.map(function (u) { return '<div class="vs-row"><span>' + esc(u.label) + '</span><span class="vs-fine" style="text-align:right">' + esc(u.reason) + '</span></div>'; }).join("") +
         '<div class="vs-row"><span>Regulatorische Änderung</span><span class="vs-fine" style="text-align:right">Nur über neue Versionen der Förderregeln mit Quelle.</span></div></div>';
     }).catch(function () { root.querySelector("#vs-mon-changes").innerHTML = VS.pending("Änderungen nicht verfügbar", "Die Änderungsliste konnte nicht geladen werden."); });
+    Promise.all([VS.master(), VS.getJSON("/vorsorge/data/holdings/index.json").catch(function () { return null; })]).then(function (res) {
+      var m = res[0], hi = res[1], seen = {}, mine = [];
+      VS.state.watchlist.concat(VS.state.portfolio.map(function (x) { return x.symbol; })).forEach(function (s) { var e = m.find(s); if (e && !seen[e.symbol]) { seen[e.symbol] = 1; mine.push(e); } });
+      var feed = hi ? hi.feed : [];
+      var head = '<p class="vs-label">Bestandsänderungen deiner ETFs' + (hi ? ' · Quartale ' + esc(hi.quarters.join(", ")) : "") + '</p><div style="margin-top:8px">';
+      var body = mine.length ? mine.map(function (e) {
+        var st = e.holdingsAsOf ? (e.holdingsChanges > 0 ? e.holdingsChanges + " relevante Änderung" + (e.holdingsChanges === 1 ? "" : "en") : "keine relevante Änderung") : "keine Bestandsdaten (nicht in SEC N-PORT)";
+        return '<div class="vs-row"><span><a href="' + VS.etfHref(e) + (e.holdingsAsOf ? "?tab=aenderungen" : "") + '"><b style="color:var(--ink)">' + esc(e.symbol) + '</b></a> ' + esc(e.name || "") + '</span><span class="vs-fine" style="text-align:right">' + esc(st) + (e.holdingsAsOf ? " · Stand " + F.date(e.holdingsAsOf) : "") + '</span></div>';
+      }).join("") : '<p class="vs-sub">Noch keine ETFs in Watchlist oder Portfolio. Auffällige Änderungen im gesamten Bestand:</p>' +
+        feed.slice(0, 6).map(function (f) { return '<div class="vs-row"><span><a href="#/etf/' + encodeURIComponent(f.symbol) + '?tab=aenderungen"><b>' + esc(f.symbol) + '</b></a> ' + esc(f.text) + '</span></div>'; }).join("");
+      root.querySelector("#vs-mon-holdings").innerHTML = head + body + '</div><p class="vs-fine" style="margin-top:8px">Quelle: SEC N-PORT (Quartalsberichte US-registrierter Fonds). Änderungen unter 0,25 Prozentpunkten zählen als Rauschen. Europäische ETFs: Bestände noch nicht angebunden.</p>';
+    }).catch(function () { root.querySelector("#vs-mon-holdings").innerHTML = VS.pending("Bestandsänderungen nicht verfügbar", "Die Holdings-Übersicht konnte nicht geladen werden."); });
     Promise.all([VS.master(), VS.seriesFor(VS.state.portfolio.map(function (x) { return x.symbol; }))]).then(function (res) {
       var m = res[0], x = V.XRay.portfolioXRay(VS.state.portfolio, m._bySymbol, res[1].series, { regionLabels: VS.REGION });
       root.querySelector("#vs-mon-portfolio").innerHTML = '<p class="vs-label">Portfolio · Risiko & Allokation</p>' +
