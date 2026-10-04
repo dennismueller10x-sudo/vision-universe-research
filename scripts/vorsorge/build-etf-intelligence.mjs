@@ -84,7 +84,7 @@ for (const meta of manifest.series) {
     const q = H.qualityGates(s, prev, { today: s.publishedAt || s.asOf });
     stats.qualityErrors += q.errors.length; stats.qualityWarnings += q.warnings.length;
     const conc = H.concentration(s);
-    history.push({ asOf: s.asOf, publishedAt: s.publishedAt, netAssets: s.totalNetAssets, positions: conc.positions, top10: conc.top10, contentHash: s.contentHash, quality: q.errors.length ? "ERROR" : q.warnings.length ? "WARN" : "OK" });
+    history.push({ asOf: s.asOf, publishedAt: s.publishedAt, netAssets: s.totalNetAssets, positions: conc.positions, top10: conc.top10, contentHash: s.contentHash, quality: q.errors.length ? "ERROR" : q.warnings.length ? "WARN" : "OK", issues: q.errors.concat(q.warnings).slice(0, 6) });
     if (prev && !q.errors.length) {
       const d = C.diffHoldings(prev, s, { detectedAt: s.publishedAt });
       lastDiff = { from: prev.asOf, to: s.asOf, status: d.status, events: d.events, summary: d.summary };

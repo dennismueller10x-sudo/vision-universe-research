@@ -237,7 +237,7 @@
   function changeSentence(events) {
     var ev = events || [], parts = [];
     function first(t) { return ev.filter(function (e) { return e.eventType === t && e.importance !== "LOW"; })[0] || null; }
-    function ppTxt(x) { return (Math.round(Math.abs(x) * 1000) / 10).toLocaleString("de-DE") + " Prozentpunkte"; }
+    function ppTxt(x) { return (Math.round(Math.abs(x) * 1000) / 10).toLocaleString("de-DE", { minimumFractionDigits: 1 }) + " Prozentpunkte"; }
     var inc = first("WEIGHT_INCREASED"), dec = first("WEIGHT_DECREASED"), out = first("LEFT_TOP_10"), inn = first("ENTERED_TOP_10");
     if (inc) parts.push(inc.entityName + " um " + ppTxt(inc.absoluteChange) + " gestiegen");
     if (dec) parts.push(dec.entityName + " um " + ppTxt(dec.absoluteChange) + " gesunken");

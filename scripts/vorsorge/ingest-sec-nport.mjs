@@ -192,7 +192,10 @@ for (const q of quarterList()) {
     if (!acc.has(r.ACCESSION_NUMBER)) return;
     const rate = H.parseNumber(r.EXCHANGE_RATE), val = H.parseNumber(r.CURRENCY_VALUE);
     const usd = val === null ? null : r.CURRENCY_CODE === "USD" || !rate ? val : val / rate;
-    const row = { sourceRowId: r.HOLDING_ID, holdingName: [r.ISSUER_NAME, r.ISSUER_TITLE && r.ISSUER_TITLE !== r.ISSUER_NAME ? r.ISSUER_TITLE : null].filter(Boolean).join(" – ") || null,
+    const nm = String(r.ISSUER_NAME || "").trim(), ti = String(r.ISSUER_TITLE || "").trim();
+    const simple = (x) => x.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const addTitle = ti && r.ASSET_CAT !== "EC" && r.ASSET_CAT !== "EP" && !simple(nm).includes(simple(ti)) && !simple(ti).includes(simple(nm));
+    const row = { sourceRowId: r.HOLDING_ID, holdingName: (addTitle ? nm + " – " + ti : nm || ti) || null,
       issuerName: r.ISSUER_NAME, holdingCusip: F.cleanId("cusip", r.ISSUER_CUSIP), weight: r.PERCENTAGE, assetType: r.ASSET_CAT || r.OTHER_ASSET, derivativeType: r.DERIVATIVE_CAT,
       marketValue: usd, marketValueCurrency: "USD", shares: r.UNIT === "NS" ? r.BALANCE : null, principal: r.UNIT === "PA" ? r.BALANCE : null, currency: r.CURRENCY_CODE,
       country: r.INVESTMENT_COUNTRY, issuerType: r.ISSUER_TYPE, payoff: r.PAYOFF_PROFILE, issuerLei: r.ISSUER_LEI };
@@ -205,6 +208,15 @@ for (const q of quarterList()) {
     const isin = F.cleanId("isin", r.IDENTIFIER_ISIN); if (isin && !row.holdingIsin) row.holdingIsin = isin;
     const t = r.IDENTIFIER_TICKER && String(r.IDENTIFIER_TICKER).trim().toUpperCase();
     if (t && t !== "N/A" && /^[A-Z0-9.\-/ ]{1,12}$/.test(t) && !row.holdingTicker) row.holdingTicker = t.replace(/\s+(US|UN|UW|UQ|UA|UP)$/, "");
+  });
+  // 5b. Anleihen: Kupon und Faelligkeit (unterscheidet gleichnamige Emissionen)
+  const debtF = m("DEBT_SECURITY");
+  if (debtF) await streamTsv(zipPath, debtF, (r) => {
+    const row = holdingAcc.get(r.HOLDING_ID); if (!row) return;
+    const mat = F.isoDate(r.MATURITY_DATE), cpn = H.parseNumber(r.ANNUALIZED_RATE);
+    if (mat) row.maturityDate = mat;
+    if (cpn !== null) row.coupon = cpn;
+    if (mat || cpn !== null) row.holdingName = (row.holdingName || "") + " " + [cpn !== null ? (Math.round(cpn * 1000) / 1000).toLocaleString("de-DE") + " %" : null, mat ? mat.slice(0, 4) : null].filter(Boolean).join(" ");
   });
   // 6. Snapshots schreiben
   let written = 0;
