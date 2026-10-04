@@ -26,6 +26,7 @@ import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { decide } from "../../scripts/quant/materialization-decision.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -202,7 +203,11 @@ test("die Materialisierung ist aufrufbar und idempotent", () => {
   assert.match(yml, /workflow_dispatch:\s*\n\s+inputs:\s*\n(?:\s+#.*\n)*\s+force:\s*\n/, "kein manuelles Erzwingen nach einem Methodik-Wechsel");
   assert.match(yml, /github\.event_name == 'workflow_dispatch' && inputs\.force == true/,
     "force muss an den manuellen Start gebunden sein, sonst ist die Kette nicht mehr idempotent");
-  assert.match(yml, /noop=true/,
+  // Der No-Op entsteht in scripts/quant/materialization-decision.mjs und
+  // landet ueber $GITHUB_OUTPUT im Schritt - nicht nur als Wort im Kommentar.
+  assert.match(yml, /materialization-decision\.mjs[^\n]*\\\s*\n[^\n]*>> "\$GITHUB_OUTPUT"/,
+    "die No-Op-Entscheidung erreicht den Schritt nicht");
+  assert.deepEqual(decide({ store: "2026-10-02", product: "2026-10-02" }), { noop: true, reason: "UP_TO_DATE" },
     "es gibt keinen sauberen No-Op - ein Wiederholungslauf kostet dann eine Stunde umsonst");
   /* Die schweren Schritte muessen wirklich an der Bedingung haengen. */
   const bedingt = (yml.match(/if: steps\.noetig\.outputs\.noop != 'true'/g) || []).length;
