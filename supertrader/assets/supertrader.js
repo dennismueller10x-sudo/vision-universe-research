@@ -218,6 +218,15 @@
     return h('section', { class: 'st-sec', id: opts.id || null }, [h('div', { class: 'st-sec-h' }, [h('div', null, [opts.kicker ? h('div', { class: 'st-kick', text: opts.kicker }) : null, h('h2', { text: title })]), opts.more || null])].concat(kids));
   }
   function more(href, text) { return h('a', { class: 'st-more', href: href }, [text, icon(IC.arrow)]); }
+  /* Link zur Discover-Aktienseite nur, wenn der Build sie nicht als fehlend
+     ausweist (signals.discoverAvailability). Sonst ein Hinweis statt eines toten
+     Links - das Signal selbst bleibt sichtbar. */
+  var DISCOVER_UNAVAILABLE_TEXT = 'Aktienansicht vorübergehend nicht verfügbar – Daten werden geprüft.';
+  function discoverLink(sym, sig, label) {
+    var av = sig && sig.discoverAvailability;
+    if (av && (av.unavailable || []).indexOf(sym) >= 0) return h('p', { class: 'st-hint', 'data-discover': 'unavailable', text: DISCOVER_UNAVAILABLE_TEXT });
+    return h('p', null, [h('a', { class: 'st-more', href: '/discover/#/s/US_REAL/' + encodeURIComponent(sym) }, [label, icon(IC.arrow)])]);
+  }
   function emptyBox(title, text) { return h('div', { class: 'st-emptybox' }, [h('strong', { text: title }), h('p', { text: text })]); }
   function details(summary, kids, open) { var d = h('details', { class: 'st-det' }, [h('summary', { text: summary })].concat(kids)); if (open) d.open = true; return d; }
   function disclaimer(sig) {
@@ -457,6 +466,8 @@
     else main.appendChild(sec('Warum heute keine Kandidaten?', [emptyBox('Pflichtdaten fehlen', (c && c.activationCondition) || 'Die Methode braucht Daten, die noch nicht vorliegen.'), c ? gapList(c) : null]));
 
     if (s.fidelity && s.fidelity.rules && s.fidelity.rules.length) main.appendChild(sec('Was stammt vom Trader, was von Vision Universe?', [fidelityList(s, D)], { kicker: 'Methodentreue je Regel' }));
+    if (s.research_versions && s.research_versions.length) main.appendChild(sec('Geprüft, aber nicht live', [h('ul', { class: 'st-ul' }, s.research_versions.map(function (x) { return h('li', { text: 'Version ' + x.version + ' (Runde ' + x.round + ', ' + (x.status === 'WITHDRAWN' ? 'zurückgenommen' : 'Forschung') + '): ' + x.note }); })),
+      h('p', { class: 'st-hint', text: 'Live läuft Version ' + s.strategy_version + '. Offene Setups und Positionen älterer Versionen laufen unter ihrer ursprünglichen Regelversion weiter.' })], { kicker: 'Versionslinie' }));
     if (s.processChain) { var PCL = { ORIGINAL: ['Original', 'good'], DOCUMENTED_VARIANT: ['dokumentierte Variante', 'info'], OPERATIONALIZATION: ['umgesetzt', 'info'], VU_EXTENSION: ['VU-Annahme', 'warn'], MISSING: ['fehlt', 'mute'] };
       main.appendChild(sec('Vom Kandidaten bis zur Portfoliorendite', [h('ol', { class: 'st-chain' }, s.processChain.steps.map(function (x) { var c = PCL[x.cls] || [x.cls, 'mute']; return h('li', null, [h('div', { class: 'h' }, [h('strong', { text: x.step }), h('span', { class: 'st-tag', 'data-t': c[1], text: c[0] })]), h('p', { text: x.rule }), h('p', { class: 'st-hint', text: 'Quelle: ' + x.source })]); })),
         s.processChain.finding ? h('p', { class: 'st-p', text: s.processChain.finding }) : null], { kicker: 'Prozesskette v' + s.processChain.version + ' · Regel, Quelle, Herkunft' })); }
@@ -831,7 +842,7 @@
     if (t52 && t52s) main.appendChild(h('a', { class: 'st-research', href: stratUrl(t52s), style: worldVars(t52s) }, [h('div', { class: 'r1' }, [h('strong', { text: t52s.world_name }), h('span', { class: 'st-tag', 'data-t': t52[1], text: t52[0] })]), h('p', { text: t52[2] })]));
     if (!sym || (!entries.length && !history.length && !t52)) {
       main.appendChild(emptyBox('Kein Supertrader-Modell erkennt ' + (sym || 'diesen Titel'), 'Heute sieht keine Methode ein Setup, einen Kandidaten oder einen Teiltreffer.'));
-      main.appendChild(h('p', null, [h('a', { class: 'st-more', href: '/discover/#/s/US_REAL/' + encodeURIComponent(sym) }, ['In Discovery öffnen', icon(IC.arrow)])]));
+      main.appendChild(discoverLink(sym, sig, 'In Discovery öffnen'));
       main.appendChild(disclaimer(sig)); return;
     }
     liveQuote(sym, D.market);
@@ -855,7 +866,7 @@
     if (entries.length) { main.appendChild(tabs); main.appendChild(panel); main.appendChild(chartHost); show(entries[0]); }
     var hist = history.concat(entries.filter(function (e) { return e.kind === 'sig' && e.s.transitions; }));
     if (hist.length) main.appendChild(sec('Protokoll für ' + sym, [timeline(hist, S)], { kicker: 'Jeder Zustandswechsel mit Regel und Kurs' }));
-    main.appendChild(h('p', null, [h('a', { class: 'st-more', href: '/discover/#/s/US_REAL/' + encodeURIComponent(sym) }, ['Vollständige Aktienansicht in Discovery', icon(IC.arrow)])]));
+    main.appendChild(discoverLink(sym, sig, 'Vollständige Aktienansicht in Discovery'));
     main.appendChild(disclaimer(sig));
   }
   function lensBlock(s, strat, D) {
