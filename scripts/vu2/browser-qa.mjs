@@ -443,8 +443,8 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
   await page.unroute(serviceRoute);
   await page.getByRole('button',{name:'Erneut versuchen',exact:true}).click();
   await bereit(page,'home');
-  /* Konzept-Design: die Startseite fragt "Was möchtest du heute analysieren?". */
-  await page.locator('#qx-main h1').filter({hasText:'Was möchtest du heute analysieren'}).waitFor();
+  /* Produktpositionierung: die Startseite traegt den Claim. */
+  await page.locator('#qx-main h1').filter({hasText:'Quant zeigt dir jeden Tag'}).waitFor();
   checks.push({view:'render-failure-recovery',width,pass:true});
  });
 
