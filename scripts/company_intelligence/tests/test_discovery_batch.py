@@ -7,6 +7,51 @@ from company_intelligence.transport import PublicHTTP,SourceError,BudgetExhauste
 from company_intelligence.store import Store
 from test_engine import company,NOW
 class BatchTests(unittest.TestCase):
+ def budget_fixture(self,count):
+  cs=[company(f'Issuer {i} Inc.',f'T{i}',str(i+1).zfill(10)) for i in range(count)]
+  for c in cs:c['officialSites']=[]
+  candidates={c['companyId']:{'status':'CANDIDATE','candidates':[{'url':f'https://issuer{i}.example/'}]} for i,c in enumerate(cs)}
+  return cs,candidates
+
+ @staticmethod
+ def counted_admission(http,url):
+  # Exercise the shared gate without real HTTP or transport pacing delays.
+  if http.requests>=http.budget:raise BudgetExhausted('NETWORK_BUDGET_EXHAUSTED')
+  http.requests+=1
+
+ def test_domain_borrows_unused_allowance_for_bounded_ownership_routes(self):
+  cs,candidates=self.budget_fixture(3)
+  def validate(c,candidate,http,now):
+   self.assertEqual(http.budget,8)
+   for i in range(6 if c is cs[0] else 1):http._wait(f'https://route-{c["companyId"]}-{i}.example/')
+   return {'status':'VALIDATED','url':candidate['url']}
+  with tempfile.TemporaryDirectory() as tmp,patch('company_intelligence.transport.PublicHTTP._wait',self.counted_admission),patch('company_intelligence.discovery_batch.validate_candidate',validate):
+   rows=run(cs,candidates,PublicHTTP(tmp),NOW,12,60,workers=1,domain_only=True,admission_interval=.5)
+  self.assertEqual([r['status'] for r in rows],['VALIDATED']*3)
+  self.assertEqual(sum(r['requests'] for r in rows),8)
+
+ def test_concurrent_borrowing_cannot_exceed_total_request_allowance(self):
+  cs,candidates=self.budget_fixture(3)
+  def validate(c,candidate,http,now):
+   for i in range(6):http._wait(f'https://route-{c["companyId"]}-{i}.example/')
+   return {'status':'VALIDATED','url':candidate['url']}
+  with tempfile.TemporaryDirectory() as tmp,patch('company_intelligence.transport.PublicHTTP._wait',self.counted_admission),patch('company_intelligence.discovery_batch.validate_candidate',validate):
+   rows=run(cs,candidates,PublicHTTP(tmp),NOW,12,60,workers=3,domain_only=True,admission_interval=.5)
+  self.assertEqual(sum(r['requests'] for r in rows),12)
+  self.assertTrue(any(r['status']=='DEFERRED' and r['reason']=='NETWORK_BUDGET_EXHAUSTED' for r in rows))
+
+ def test_exhausted_shared_allowance_leaves_unsent_candidates_pending(self):
+  cs,candidates=self.budget_fixture(4);seen=[]
+  def validate(c,candidate,http,now):
+   seen.append(c['companyId'])
+   for i in range(8):http._wait(f'https://route-{c["companyId"]}-{i}.example/')
+   return {'status':'VALIDATED','url':candidate['url']}
+  with tempfile.TemporaryDirectory() as tmp,patch('company_intelligence.transport.PublicHTTP._wait',self.counted_admission),patch('company_intelligence.discovery_batch.validate_candidate',validate):
+   rows=run(cs,candidates,PublicHTTP(tmp),NOW,16,60,workers=1,domain_only=True,admission_interval=.5)
+  self.assertEqual(seen,[c['companyId'] for c in cs[:2]])
+  self.assertEqual(len(rows),2);self.assertEqual(sum(r['requests'] for r in rows),16)
+  self.assertTrue(all(r['status']=='VALIDATED' for r in rows))
+
  def test_transport_duplicate_route_reaches_owner_verifier_without_silent_skip(self):
   with tempfile.TemporaryDirectory() as tmp:
    c=company();c['officialSites']=[];cid=c['companyId']

@@ -1,8 +1,9 @@
 """Bounded inventory backfill; worker HTTP is isolated, SQLite writes are serial.
 
-The global request allowance is divided before submitting work. Independent
-hosts overlap network latency, but a shared request gate retains existing rate
-spacing. Budgets/deadlines defer work rather than reject a healthy candidate.
+Independent hosts overlap network latency, but a shared request gate retains
+the total allowance and existing rate spacing. Domain candidates may borrow
+unused allowance while retaining an individual ceiling. Budgets/deadlines
+defer work rather than reject a healthy candidate.
 """
 import threading
 import time
@@ -33,7 +34,7 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
         if len(selected)>=max(1,request_budget//(4 if domain_only else 12)):break
     if not selected:return []
     allowance=request_budget//len(selected);deadline=time.time()+max_seconds
-    gate=threading.Lock();last=[0];host_last={}
+    gate=threading.Lock();last=[0];host_last={};remaining_requests=[request_budget]
     class BoundedHTTP(PublicHTTP):
         def _wait(self,url):
             # Protect only request admission; slow HTTP responses do not block
@@ -41,13 +42,15 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
             while True:
                 circuit.check()
                 with gate:
+                    if remaining_requests[0]<=0:raise BudgetExhausted('NETWORK_BUDGET_EXHAUSTED')
                     host=domain(url);stamp=time.time()
                     delay=max(admission_interval-(stamp-last[0]),
                               max(5,self.host_delay.get(host,0))-(stamp-host_last.get(host,0)),
                               self.interval-(stamp-self.last_request),0)
                     if stamp+delay>=self.deadline:raise BudgetExhausted('NETWORK_TIME_BUDGET_EXHAUSTED')
                     if not delay:
-                        super()._wait(url);last[0]=time.time();host_last[host]=last[0]
+                        super()._wait(url);remaining_requests[0]-=1
+                        last[0]=time.time();host_last[host]=last[0]
                         return
                 # A host cooldown must not monopolize admission for other hosts.
                 time.sleep(delay)
@@ -68,7 +71,8 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
                 raise
             circuit.success()
             return response
-        client=BoundedHTTP(http.cache,budget=allowance,timeout=min(http.timeout,10),interval=2,max_seconds=min(remaining,60 if domain_only else 180),opener=observed_open,validator=http.validator)
+        candidate_budget=min(request_budget,max(allowance,8)) if domain_only else allowance
+        client=BoundedHTTP(http.cache,budget=candidate_budget,timeout=min(http.timeout,10),interval=2,max_seconds=min(remaining,60 if domain_only else 180),opener=observed_open,validator=http.validator)
         result={'companyId':c['companyId'],'status':'DEFERRED','domainOnly':domain_only}
         try:
             site = {'status':'VALIDATED','url':c['officialSites'][0]} if c.get('officialSites') else validate_candidate(c,candidate,client,now)
@@ -98,7 +102,8 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
             for future in completed:
                 result=future.result();results.append(result)
                 if on_result:on_result(result)
-            if not circuit.snapshot()['open']:
+            with gate:budget_available=remaining_requests[0]>0
+            if not circuit.snapshot()['open'] and budget_available:
                 for _ in completed:
                     pair=next(pending,None)
                     if pair is not None:futures.add(pool.submit(work,pair))
