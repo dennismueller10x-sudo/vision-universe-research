@@ -14,6 +14,35 @@ class HTTP:
 
 
 class OwnershipRouteTests(unittest.TestCase):
+ def credit(self,host='www.q4inc.com',path='/Powered-by-Q4/'):
+  return f'<a href="https://{host}{path}"><span>Powered By Q4 Inc.</span><span> 5.189.1.6</span><span> (opens in new window)</span></a>'
+
+ def test_exact_q4_credit_does_not_extend_independently_proven_copyright_owner(self):
+  url='https://issuer.example/';c=company('Integer Holdings Corporation','ITGR')
+  http=HTTP({url:'<title>Integer | Your Innovative Partner</title><footer>© Integer Holdings Corporation '+self.credit()+'</footer>'})
+  result=validate_candidate(c,{'url':url,'evidence':'candidate'},http,NOW)
+  self.assertEqual(result['status'],'VALIDATED')
+  self.assertEqual(result['ownershipEvidence']['excludedProviderCredits'][0]['url'],'https://www.q4inc.com/Powered-by-Q4/')
+
+ def test_linked_credit_copyright_is_not_the_issuer_owner(self):
+  url='https://issuer.example/';c=company('Baxter International Inc.','BAX')
+  body='<title>Baxter International Inc.</title><p>Baxter International Inc.</p><footer>© Baxter. All rights reserved. '+self.credit().replace('<span>Powered','<span>© Powered')+'</footer>'
+  self.assertEqual(validate_candidate(c,{'url':url,'evidence':'candidate'},HTTP({url:body}),NOW)['status'],'VALIDATED')
+
+ def test_provider_credit_never_rescues_a_different_or_extended_legal_owner(self):
+  url='https://issuer.example/'
+  for owner in ('Different Owner LLC.','Root Inc. Services LLC.','Root Inc. Japan LLC.'):
+   http=HTTP({url:'<title>Root</title><footer>© '+owner+' '+self.credit()+'</footer>'})
+   with self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
+    validate_candidate(company('Root Inc.','ROOT'),{'url':url,'evidence':'candidate'},http,NOW)
+
+ def test_unlinked_or_untrusted_credit_text_is_not_removed(self):
+  url='https://issuer.example/'
+  for credit in ('Powered By Q4 Inc.',self.credit('q4inc.com.evil.example'),self.credit(path='/unrelated/')):
+   http=HTTP({url:'<title>Integer</title><footer>© Integer Holdings Corporation '+credit+'</footer>'})
+   with self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
+    validate_candidate(company('Integer Holdings Corporation','ITGR'),{'url':url,'evidence':'candidate'},http,NOW)
+
  def test_linked_same_host_legal_footer_corroborates_root_brand_with_provenance(self):
   root='https://www.cheniere.com/';legal=root+'about'
   http=HTTP({root:'<title>Cheniere</title><a href="/about">About Us</a>',legal:'<title>About Us</title><footer>Copyright 2026 Cheniere Energy, Inc. All rights reserved.</footer>'})
@@ -92,7 +121,7 @@ class OwnershipRouteTests(unittest.TestCase):
   good=HTTP({root:'<title>Root</title><a href="https://ir.issuer.example/">Investors</a>',ir:'<title>Root Investor Relations</title><footer>Copyright 2026 Root Inc. All rights reserved.</footer>'})
   result=validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},good,NOW)
   self.assertEqual(result['url'],root);self.assertEqual(result['ownershipEvidence']['legalSourceUrl'],ir)
-  self.assertEqual(result['verificationVersion'],'corporate-ownership-7')
+  self.assertEqual(result['verificationVersion'],'corporate-ownership-8')
   bad=HTTP({root:'<title>Root</title><a href="https://ir.issuer.example/">Investors</a>',ir:'<title>Root Investor Relations</title><footer>Copyright Different Owner LLC.</footer>'})
   with self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
    validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},bad,NOW)

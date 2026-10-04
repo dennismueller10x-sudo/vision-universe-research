@@ -4,7 +4,7 @@ from urllib.parse import urlencode, urlsplit
 from .model import canonical_url, domain
 from .transport import SourceError
 
-OWNERSHIP_VERSION = 'corporate-ownership-7'
+OWNERSHIP_VERSION = 'corporate-ownership-8'
 
 
 def wikidata_catalogue(companies, http):
@@ -210,8 +210,26 @@ def _validate_response(company, candidate, response, now, header_body=None):
     # A customer mention in the page body is not this ownership evidence.
     # Preserve a boundary before explicitly labelled footer navigation. Merely
     # finding "Contact Us" in flattened prose must not truncate a legal owner.
+    provider_credits = []
+    def separate_provider_credit(match):
+        node = match[0]
+        if len(node) > 2048 or 'powered' not in node.casefold(): return node
+        links = parse_links(node.encode(), response['finalUrl'])
+        if len(links) != 1: return node
+        link = links[0]
+        from urllib.parse import urlsplit
+        parts = urlsplit(link['url'])
+        if (parts.hostname not in ('q4inc.com', 'www.q4inc.com') or
+                parts.path.casefold().rstrip('/') != '/powered-by-q4' or
+                not re.fullmatch(r'(?:©\s*)?Powered By Q4 Inc\.?(?:\s+\d+(?:\.\d+){1,5})?(?:\s+\(opens in new window\))?', link['text'], re.I)):
+            return node
+        provider_credits.append({'url': link['url'], 'label': link['text']})
+        return ' | '
+    # An exact linked vendor credit is separate from the copyright owner.
+    # Unlinked prose, unrelated hosts and different legal-owner prefixes stay.
+    footer_body = re.sub(r'<a\b[^>]*>.*?</a\s*>', separate_provider_credit, visible_body, flags=re.I | re.S)
     footer_body = re.sub(r'<a\b[^>]*>\s*(?:contact us|privacy(?: policy)?|terms(?: of use)?)\s*</a\s*>',
-                         ' | ', visible_body, flags=re.I)
+                         ' | ', footer_body, flags=re.I)
     copyright_text = re.sub(r'<[^>]*>', ' ', footer_body)
     copyright_raw = [clean(m[0],300) for m in re.finditer(r'(?:©|&copy;|copyright).{0,300}', copyright_text, re.I | re.S)]
     # Ownership begins immediately after the copyright marker/year. A partner
@@ -233,6 +251,14 @@ def _validate_response(company, candidate, response, now, header_body=None):
             tail=raw[word.end():]
             normalized_tail=legal_normalize(tail)
             if re.match(r'(?:services|systems|llc|ltd|corp|inc|plc)\b',normalized_tail):return False
+            # A period in Inc./Corp. does not end an extended legal owner
+            # such as "Root Inc. Japan LLC". Stop only at hard separators;
+            # standard rights/navigation text is not an owner extension.
+            extension = re.split(r'[;|()©]', tail, maxsplit=1)[0]
+            extension = legal_normalize(extension)
+            if (not re.match(r'(?:all rights|privacy|terms|cookies)\b', extension) and
+                    re.match(r'(?:\w+\s+){0,4}(?:llc|ltd|corp|inc|plc)\b', extension)):
+                return False
             return bool(re.match(r'\s*(?:[.,;|()–—-]|all rights\b|privacy\b|terms\b|cookies\b|(?:19|20)\d{2}\b|©|&copy;|$)',tail,re.I))
         return False
     footer_owner = any(exact_footer_owner(name,raw) for name in strong_names for raw in owner_raw)
@@ -307,6 +333,6 @@ def _validate_response(company, candidate, response, now, header_body=None):
             'evidence': [candidate['evidence'], method], 'title': clean(title[1] if title else ' '.join(metadata.values), 150),
             'ownershipEvidence': {'companyNames': strong_names, 'corporateHeader': header[:300],
                                   'copyrightExcerpts': [v[:160] for v in copyright_raw if any(re.search(r'(?<!\w)'+re.escape(base)+r'(?!\w)',legal_normalize(v)) for base in bases)][:2],
-                                  'structuredOrganizations':structured_owner[:2]},
+                                  'structuredOrganizations':structured_owner[:2], 'excludedProviderCredits':provider_credits[:2]},
             'contentHash': hashlib.sha256(response['body']).hexdigest(), 'platformHint': fingerprint(response['body']),
             'irCandidates': list(dict.fromkeys(l['url'] for l in parse_links(response['body'],response['finalUrl']) if re.search(r'investor.relations|\binvestors?\b',l['text'],re.I) and not re.search(r'\.(?:pdf|zip|xml|js)(?:\?|$)',l['url'],re.I)))[:5]}
