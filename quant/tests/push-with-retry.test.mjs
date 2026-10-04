@@ -23,8 +23,15 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 
 const SCRIPT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "scripts", "ci", "push-with-retry.sh");
+/* Keine automatische Wartung in den Testrepos: ein abgekoppeltes
+   `git gc --auto` nach Fetch/Rebase schrieb noch in .git/objects, waehrend
+   der Test aufraeumte (CI 04.10.2026, #395: ENOTEMPTY in rmSync, PR2). */
 const ENV = Object.assign({}, process.env, { GIT_AUTHOR_NAME: "t", GIT_AUTHOR_EMAIL: "t@t", GIT_COMMITTER_NAME: "t",
-                                             GIT_COMMITTER_EMAIL: "t@t", GIT_CONFIG_GLOBAL: "/dev/null", GIT_CONFIG_NOSYSTEM: "1" });
+                                             GIT_COMMITTER_EMAIL: "t@t", GIT_CONFIG_GLOBAL: "/dev/null", GIT_CONFIG_NOSYSTEM: "1",
+                                             GIT_CONFIG_COUNT: "3", GIT_CONFIG_KEY_0: "gc.auto", GIT_CONFIG_VALUE_0: "0",
+                                             GIT_CONFIG_KEY_1: "maintenance.auto", GIT_CONFIG_VALUE_1: "false",
+                                             GIT_CONFIG_KEY_2: "gc.autoDetach", GIT_CONFIG_VALUE_2: "false" });
+const aufraeumen = (dir) => rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 const git = (cwd, ...args) => {
   const r = spawnSync("git", args, { cwd, env: ENV, encoding: "utf8" });
   if (r.status !== 0) throw new Error("git " + args.join(" ") + ": " + r.stderr);
@@ -67,7 +74,7 @@ test("PR1 · Matrix und Produkt-Projektion im Konflikt: eigener Stand, Push geli
     assert.match(w.r.stdout, /Erzeugerhoheit aufgeloest \(eigener Stand\): quant\/data\/product\/capabilities-v1\.json/);
     assert.equal(w.head, "refresh");
     for (const f of [MATRIX, PROJ, PROJ_SUM]) assert.equal(w.lies(f), "refresh", f);
-  } finally { rmSync(w.root, { recursive: true, force: true }); }
+  } finally { aufraeumen(w.root); }
 });
 
 test("PR2 · Gegenprobe: ein Konflikt in Kursdaten bricht ab, nichts wird geschoben", () => {
@@ -77,7 +84,7 @@ test("PR2 · Gegenprobe: ein Konflikt in Kursdaten bricht ab, nichts wird gescho
     assert.match(w.r.stderr, /Konflikt ausserhalb erzeugter Artefakte: quant\/data\/market\/discover-series\/ref_AAPL\.json/);
     assert.equal(w.head, "intraday");
     assert.equal(w.lies(REIHE), "intraday");
-  } finally { rmSync(w.root, { recursive: true, force: true }); }
+  } finally { aufraeumen(w.root); }
 });
 
 test("PR3 · Jeder Pfad, den der Refresh UND ein Intraday-/Takt-Lauf committen, steht unter Erzeugerhoheit", () => {
@@ -143,7 +150,7 @@ test("PR4 · Zwei eigene Commits, beide in Erzeugerhoheit: beide landen, kein of
     assert.equal(w.lies(MATRIX), "takt-1");
     assert.equal(w.lies(PROJ), "takt-2");
     assert.equal(w.rebaseOffen, false);
-  } finally { rmSync(w.root, { recursive: true, force: true }); }
+  } finally { aufraeumen(w.root); }
 });
 
 test("PR5 · Zweiter Commit im Kursdaten-Konflikt: Abbruch, nichts halb Rebastes wird geschoben", () => {
@@ -155,7 +162,7 @@ test("PR5 · Zweiter Commit im Kursdaten-Konflikt: Abbruch, nichts halb Rebastes
     assert.equal(w.lies(REIHE), "andere");
     assert.equal(w.lies(MATRIX), "andere");
     assert.equal(w.rebaseOffen, false, "der Rebase blieb offen");
-  } finally { rmSync(w.root, { recursive: true, force: true }); }
+  } finally { aufraeumen(w.root); }
 });
 
 test("PR6 · Konflikt im Intraday-Verzeichnis (von einem Feature-PR mitgebracht): eigener Stand, Push gelingt", () => {
@@ -166,7 +173,7 @@ test("PR6 · Konflikt im Intraday-Verzeichnis (von einem Feature-PR mitgebracht)
     assert.equal(w.r.status, 0, w.r.stdout + w.r.stderr);
     assert.match(w.r.stdout, /Erzeugerhoheit aufgeloest \(eigener Stand\): quant\/data\/market\/intraday\/index\.json/);
     assert.equal(w.lies("quant/data/market/intraday/index.json"), "refresh");
-  } finally { rmSync(w.root, { recursive: true, force: true }); }
+  } finally { aufraeumen(w.root); }
 });
 
 test("PR7 · Ein Tagesverlauf im Sitzungsordner steht nie unter Erzeugerhoheit", () => {
@@ -174,5 +181,5 @@ test("PR7 · Ein Tagesverlauf im Sitzungsordner steht nie unter Erzeugerhoheit",
   try {
     assert.equal(w.r.status, 1);
     assert.equal(w.lies("quant/data/market/intraday/2026-10-02/ref_AAPL.json"), "intraday");
-  } finally { rmSync(w.root, { recursive: true, force: true }); }
+  } finally { aufraeumen(w.root); }
 });
