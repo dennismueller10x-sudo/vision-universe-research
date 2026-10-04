@@ -4,10 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
+<meta name="theme-color" content="#08080a">
+<!-- Farbschema vor dem ersten Bild: dieselbe gemerkte Wahl wie die Plattform-Navigation, Quant startet dunkel -->
+<script>(function(){var w="dark";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <title>Methodik im Detail · Vision Universe®</title>
 <style>
- :root{color-scheme:dark light;--bg:#0b0f14;--fg:#e8eef5;--muted:#9fb0c3;--line:#1e2a36;--card:#101720}
- @media (prefers-color-scheme:light){:root{--bg:#f7f9fc;--fg:#121a24;--muted:#53667a;--line:#dce4ee;--card:#fff}}
+ /* Hell und Dunkel folgen dem Schalter der Plattform-Navigation
+    (html[data-theme]), nicht der Systemeinstellung - sonst zeigte die
+    Seite ein anderes Schema als der Rest von Quant. Grundeinstellung: dunkel. */
+ :root,html[data-theme=dark]{color-scheme:dark;--bg:#050607;--fg:#f4f5f1;--muted:#a6abb3;--line:#252a31;--card:#121519;--accent:#c8f531}
+ html[data-theme=light]{color-scheme:light;--bg:#f5f6f2;--fg:#101216;--muted:#4a5058;--line:#dfe2da;--card:#fff;--accent:#4a6a00}
  *{box-sizing:border-box}
  body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
  main{max-width:920px;margin:0 auto;padding:32px 16px 72px}
@@ -19,6 +25,7 @@
  .contract p{margin:0 0 8px}
  .meta{color:var(--muted);font-size:.9rem}
  a{color:inherit}
+ .contract a{color:var(--accent)}
  .back{display:inline-block;margin-top:28px;padding:10px 16px;border:1px solid var(--line);border-radius:10px;text-decoration:none}
  @media (max-width:640px){main{padding:24px 16px 56px}h1{font-size:1.55rem}}
 </style>
@@ -34,7 +41,7 @@
      Navigation mal hat und mal nicht. Deshalb steht sie jetzt hier. -->
 <link rel="stylesheet" href="/assets/site-navigation.css">
 </head>
-<body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<body><vu-navigation theme="dark" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"dark");</script><script src="/assets/site-navigation.js"></script>
 <!-- §94: Jede Seite unter /quant/ bindet die gemeinsame Shell ein. Sie
      rendert das Banner, das synthetische Daten als solche kennzeichnet.
      Diese Seite zeigt keine Kurse - aber die Regel ist zu Recht

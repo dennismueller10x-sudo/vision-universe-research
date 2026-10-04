@@ -76,7 +76,11 @@ export async function buildRelease({root,output}){
  async function bundlePage(page,bundlePath){
   const html=await readFile(resolve(root,page),'utf8');
   const tags=[...html.matchAll(/<script src="([^"]+)"><\/script>/g)];
-  if(!tags.length||tags.length!==(html.match(/<script\b/g)||[]).length)throw Error('UNSUPPORTED_SCRIPT_TAG');
+  // Attributlose Inline-Skripte (Farbschema vor dem ersten Zeichnen setzen,
+  // Navigation synchronisieren) bleiben an ihrer Stelle; gebuendelt werden
+  // nur die externen klassischen Skripte. Alles andere bleibt unzulaessig.
+  const inline=(html.match(/<script>(?:(?!<\/script>)[\s\S])*<\/script>/g)||[]).length;
+  if(!tags.length||tags.length+inline!==(html.match(/<script\b/g)||[]).length)throw Error('UNSUPPORTED_SCRIPT_TAG');
   const dir=page.slice(0,page.lastIndexOf('/')+1),chunks=[];
   for(const tag of tags){const p=tag[1].startsWith('/')?tag[1].slice(1):dir+tag[1];
    if(!paths.includes(p)||!permitted(p))throw Error('INVALID_BUNDLE_INPUT');
