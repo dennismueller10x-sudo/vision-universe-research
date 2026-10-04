@@ -92,7 +92,7 @@ class OwnershipRouteTests(unittest.TestCase):
   good=HTTP({root:'<title>Root</title><a href="https://ir.issuer.example/">Investors</a>',ir:'<title>Root Investor Relations</title><footer>Copyright 2026 Root Inc. All rights reserved.</footer>'})
   result=validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},good,NOW)
   self.assertEqual(result['url'],root);self.assertEqual(result['ownershipEvidence']['legalSourceUrl'],ir)
-  self.assertEqual(result['verificationVersion'],'corporate-ownership-5')
+  self.assertEqual(result['verificationVersion'],'corporate-ownership-6')
   bad=HTTP({root:'<title>Root</title><a href="https://ir.issuer.example/">Investors</a>',ir:'<title>Root Investor Relations</title><footer>Copyright Different Owner LLC.</footer>'})
   with self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
    validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},bad,NOW)
@@ -118,3 +118,20 @@ class OwnershipRouteTests(unittest.TestCase):
    with self.assertRaisesRegex(SourceError,'OWNER_NOT_VALIDATED'):
     validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},http,NOW)
    self.assertEqual(http.calls,[root])
+
+ def test_sec_jurisdiction_annotation_and_exact_footer_punctuation(self):
+  root='https://issuer.example/'
+  for name,footer in [('Rush Enterprises Inc \\tx\\','Rush Enterprises, Inc. Privacy Policy'),('Outdoor Holding Co','Outdoor Holding Company - All rights reserved Powered By Q4 Inc.')]:
+   http=HTTP({root:f'<title>{name}</title><footer>© 2026 {footer}</footer>'})
+   proof=validate_candidate(company(name,'ISSUER'),{'url':root,'evidence':'candidate'},http,NOW)
+   self.assertEqual(proof['status'],'VALIDATED');self.assertTrue(proof['ownershipEvidence']['copyrightExcerpts'])
+
+ def test_precise_owner_before_labelled_navigation_anchor_keeps_a_structural_boundary(self):
+  root='https://issuer.example/'
+  http=HTTP({root:'<title>Diodes Incorporated</title><footer>©2026 Diodes Incorporated <a href="/contact">Contact Us</a></footer>'})
+  self.assertEqual(validate_candidate(company('Diodes Incorporated','DIOD'),{'url':root,'evidence':'candidate'},http,NOW)['status'],'VALIDATED')
+  for footer in ['Root Inc Contact Us LLC', 'Root Inc <a href="/owner">Japan LLC</a>', 'Other Owner LLC <a href="/contact">Contact Us</a> Customers include Root Inc.']:
+   bad=HTTP({root:'<title>Root</title><footer>©2026 '+footer+'</footer>'})
+   with self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER') as caught:
+    validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},bad,NOW)
+   self.assertTrue(caught.exception.ownershipEvidence['copyrightExcerpts'])

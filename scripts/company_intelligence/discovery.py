@@ -4,7 +4,7 @@ from urllib.parse import urlencode, urlsplit
 from .model import canonical_url, domain
 from .transport import SourceError
 
-OWNERSHIP_VERSION = 'corporate-ownership-5'
+OWNERSHIP_VERSION = 'corporate-ownership-6'
 
 
 def wikidata_catalogue(companies, http):
@@ -186,7 +186,7 @@ def _validate_response(company, candidate, response, now, header_body=None):
     metadata=CorporateHeader();metadata.values=[];metadata.feed(header_body)
     header=normalize(' '.join([header]+metadata.values))
     def legal_normalize(value):
-        value = re.sub(r'/[A-Z]{2,3}/?$', '', str(value), flags=re.I)
+        value = re.sub(r'[/\\][A-Z]{2,3}[/\\]?$', '', str(value), flags=re.I)
         value = re.sub(r'[^\w]+', ' ', clean(value, 2 * 1024 * 1024).casefold()).strip()
         value = re.sub(r'\b(?:[a-z]\s+){1,3}[a-z]\b', lambda m: m[0].replace(' ', ''), value)
         for long, short in [('corporation','corp'),('incorporated','inc'),('limited','ltd'),('company','co')]:
@@ -203,7 +203,11 @@ def _validate_response(company, candidate, response, now, header_body=None):
     # Many public-company titles use a short brand (Meta, H&P, Frost),
     # while the copyright footer discloses the precise parent/legal owner.
     # A customer mention in the page body is not this ownership evidence.
-    copyright_text = re.sub(r'<[^>]*>', ' ', visible_body)
+    # Preserve a boundary before explicitly labelled footer navigation. Merely
+    # finding "Contact Us" in flattened prose must not truncate a legal owner.
+    footer_body = re.sub(r'<a\b[^>]*>\s*(?:contact us|privacy(?: policy)?|terms(?: of use)?)\s*</a\s*>',
+                         ' | ', visible_body, flags=re.I)
+    copyright_text = re.sub(r'<[^>]*>', ' ', footer_body)
     copyright_raw = [clean(m[0],300) for m in re.finditer(r'(?:©|&copy;|copyright).{0,300}', copyright_text, re.I | re.S)]
     # Ownership begins immediately after the copyright marker/year. A partner
     # mentioned later in the footer is not the copyright owner.
@@ -224,13 +228,13 @@ def _validate_response(company, candidate, response, now, header_body=None):
             tail=raw[word.end():]
             normalized_tail=legal_normalize(tail)
             if re.match(r'(?:services|systems|llc|ltd|corp|inc|plc)\b',normalized_tail):return False
-            return bool(re.match(r'\s*(?:[.,;|()]|all rights\b|privacy\b|terms\b|cookies\b|(?:19|20)\d{2}\b|©|&copy;|$)',tail,re.I))
+            return bool(re.match(r'\s*(?:[.,;|()–—-]|all rights\b|privacy\b|terms\b|cookies\b|(?:19|20)\d{2}\b|©|&copy;|$)',tail,re.I))
         return False
     footer_owner = any(exact_footer_owner(name,raw) for name in strong_names for raw in owner_raw)
     # Corporate footers commonly omit Inc./Corp. Require the complete multiword
     # issuer name, a copyright ownership boundary, and corroborating header.
     # A prefix of another legal owner or a generic single word is insufficient.
-    bases={normalize(SUFFIX.sub('',re.sub(r'/[A-Z]{2,3}/?$','',n,flags=re.I))) for n in strong_names}
+    bases={normalize(SUFFIX.sub('',re.sub(r'[/\\][A-Z]{2,3}[/\\]?$','',n,flags=re.I))) for n in strong_names}
     suffixless_owner=any(len(base.split())>=2 and re.search(r'(?<!\w)'+re.escape(base)+r'(?!\w)',header)
                         and any(re.match(re.escape(base)+r'(?!\w)(?:\s+\d{4})?\s*(?:[.,;|]|all rights|$)',
                                           re.sub(r'[-–—]+',' ',region.casefold())) for region in owner_raw)
@@ -277,7 +281,13 @@ def _validate_response(company, candidate, response, now, header_body=None):
         except (ValueError,TypeError,RecursionError):continue
     copyright_has_legal_owner=any(re.search(r'\b(?:inc|corp|co|ltd|plc|ag|llc)\b',region) for region in copyright_regions)
     if copyright_has_legal_owner and not footer_owner:
-        raise SourceError('OFFICIAL_SITE_CANDIDATE_CONFLICTING_COPYRIGHT_OWNER')
+        error=SourceError('OFFICIAL_SITE_CANDIDATE_CONFLICTING_COPYRIGHT_OWNER')
+        error.ownershipEvidence={'sourceUrl':response['finalUrl'],'contentHash':hashlib.sha256(response['body']).hexdigest(),
+                                 'corporateHeader':header[:300],'legalNameVisible':legal,'headerBranded':branded,
+                                 'shortBrand':short_brand,'footerOwnerMatched':footer_owner,
+                                 'copyrightExcerpts':[v[:160] for v in copyright_raw[:3]],
+                                 'structuredOwnerMatched':bool(structured_owner)}
+        raise error
     method = 'EXACT_JSONLD_LEGAL_OWNER_HOST_AND_CORPORATE_HEADER' if structured_owner and short_brand else 'EXACT_MULTIWORD_COPYRIGHT_OWNER_AND_CORPORATE_HEADER' if suffixless_owner else 'CORPORATE_TITLE_AND_LEGAL_COMPANY_NAME' if legal and branded else 'EXACT_LEGAL_COPYRIGHT_OWNER_AND_CORPORATE_BRAND'
     if not (legal and branded) and not (footer_owner and short_brand) and not (structured_owner and short_brand):
         error=SourceError('OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED')
