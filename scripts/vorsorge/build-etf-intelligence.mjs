@@ -79,6 +79,7 @@ if (existsSync(OUT)) for (const f of readdirSync(OUT)) if (f.endsWith(".json")) 
 mkdirSync(OUT, { recursive: true });
 const index = { schemaVersion: "vu-vorsorge-holdings-index-1.0.0", version: VERSION, source: "SEC_NPORT", sourceType: "REGULATORY",
   license: manifest.license, quarters: manifest.quarters.map((q) => q.quarter), fields: ["series", "asOf", "positions", "top10", "netAssets", "usShare", "changes", "high", "mapped", "effectiveNumber"], bySymbol: {}, feed: [] };
+const simBase = [], pendingFiles = new Map();
 const stats = { series: 0, snapshots: 0, events: 0, eventsByType: {}, mappedShare: [], qualityErrors: 0, qualityWarnings: 0, rows: 0 };
 
 for (const meta of manifest.series) {
@@ -89,7 +90,7 @@ for (const meta of manifest.series) {
   // Gleicher Inhalt an neuem Datum ist kein neuer Stand (Idempotenz).
   const uniq = []; for (const s of snaps) { if (uniq.length && uniq[uniq.length - 1].contentHash === s.contentHash) continue; uniq.push(s); }
   const history = [], timeline = [];
-  let prev = null, lastDiff = null;
+  let prev = null, lastDiff = null, rejected = null;
   for (const s of uniq) {
     s.fundId = "sec:" + meta.seriesId;
     s.holdings.forEach(enrich);
@@ -106,7 +107,10 @@ for (const meta of manifest.series) {
       C.relevant(d.events, 3).forEach((e) => timeline.push({ asOf: e.asOf, type: e.eventType, importance: e.importance, text: e.explanation }));
     }
     if (!q.errors.length) prev = s;
+    else rejected = { asOf: s.asOf, publishedAt: s.publishedAt, reasons: q.errors.slice(0, 4) };
   }
+  // Ein neuerer, aber abgelehnter Bericht wird benannt statt still uebergangen.
+  const rejectedNewer = rejected && prev && rejected.asOf > prev.asOf ? rejected : null;
   const cur = prev || uniq[uniq.length - 1];
   const conc = H.concentration(cur), ex = H.exposures(cur);
   const map = (() => { let eq = 0, mw = 0; cur.holdings.forEach((h) => { if (h.assetType === "EQUITY" && h.weight > 0) { eq += h.weight; if (h.vuTicker) mw += h.weight; } }); return { equityWeight: r6(eq), mappedWeight: r6(mw), mappedShareOfEquity: eq ? r6(mw / eq) : null }; })();
@@ -121,7 +125,7 @@ for (const meta of manifest.series) {
     source: "SEC_NPORT", sourceType: "REGULATORY", sourceLabel: "SEC Form N-PORT (öffentlicher Teil)", sourceUrl: cur.sourceUrl, accession: cur.accession,
     asOf: cur.asOf, publishedAt: cur.publishedAt, weightBasis: "Anteil am Nettofondsvermögen (NET_ASSETS)", netAssets: cur.totalNetAssets, netAssetsCurrency: "USD", netAssetsLevel: "FUND",
     holdingsCount: cur.holdingsCount, positions: conc.positions, totalWeight: r6(listed.reduce((a, h) => a + h.weight, 0)),
-    concentration: conc, derivativeHeavy,
+    concentration: conc, derivativeHeavy, rejectedNewer,
     exposures: { countries: topList(ex.countries, 25), sectors: ex.sectors.map((x) => ({ key: x.key, weight: x.weight })), sectorBasis: "SEC_SIC", sectorCoverage: r6(secW),
       assetTypes: ex.assetTypes, currencies: topList(ex.currencies, 15), cashWeight: ex.cashWeight, derivativeCount: ex.derivativeCount, derivativeGrossWeight: ex.derivativeGrossWeight },
     mapping: map, summary: derivativeHeavy ? "Fonds mit Derivaten bzw. Hebel: " + conc.positions.toLocaleString("de-DE") + " Positionen; Gewichte beziehen sich auf das Nettofondsvermögen und können zusammen deutlich von 100 % abweichen." : H.summary(cur, ex, conc),
@@ -131,7 +135,9 @@ for (const meta of manifest.series) {
       sentence: C.changeSentence(lastDiff.events) } : { status: "BASELINE", events: [], eventCount: 0 },
     timeline: timeline.sort((a, b) => (a.asOf < b.asOf ? 1 : -1)).slice(0, 15).map((t) => [t.asOf, t.type, t.importance, t.text]), timelineFields: ["asOf", "type", "importance", "text"]
   };
-  writeFileSync(join(OUT, meta.seriesId + ".json"), JSON.stringify(file));
+  if (!derivativeHeavy) simBase.push({ id: meta.seriesId, symbol: meta.classes[0].symbol, name: meta.seriesName, aum: cur.totalNetAssets,
+    rows: listed.filter((h) => h.weight > 0 && h.assetType !== "CASH").slice(0, TOP).map((h) => [h.holdingCusip ? "C:" + h.holdingCusip : h.holdingIsin ? "I:" + h.holdingIsin : "T:" + (h.holdingTicker || h.holdingName), h.weight]) });
+  pendingFiles.set(meta.seriesId, file);
   stats.series++; stats.snapshots += uniq.length; stats.rows += cur.holdingsCount;
   if (map.mappedShareOfEquity !== null) stats.mappedShare.push(map.mappedShareOfEquity);
   const us = (ex.countries.find((c) => c.key === "US") || {}).weight || 0;
@@ -141,6 +147,26 @@ for (const meta of manifest.series) {
   }
   C.relevant(evs, 2).filter((e) => e.importance === "HIGH").forEach((e) => index.feed.push({ symbol: meta.classes[0].symbol, series: meta.seriesId, asOf: e.asOf, type: e.eventType, text: e.explanation, aum: cur.totalNetAssets }));
 }
+/* ------------------------------------------- Aehnliche Produkte (Bestandsueberschneidung) */
+const byKey = new Map();
+simBase.forEach((f, i) => f.rows.slice(0, 10).forEach(([k]) => { let l = byKey.get(k); if (!l) byKey.set(k, (l = [])); l.push(i); }));
+const maps = simBase.map((f) => new Map(f.rows));
+simBase.forEach((f, i) => {
+  const cand = new Map();
+  f.rows.slice(0, 10).forEach(([k]) => (byKey.get(k) || []).forEach((j) => { if (j !== i) cand.set(j, (cand.get(j) || 0) + 1); }));
+  const res = [];
+  for (const [j, shared] of cand) {
+    if (shared < 3) continue;
+    let o = 0; const mj = maps[j];
+    for (const [k, w] of f.rows) { const w2 = mj.get(k); if (w2) o += Math.min(w, w2); }
+    if (o >= 0.3) res.push({ series: simBase[j].id, symbol: simBase[j].symbol, name: simBase[j].name, overlap: r6(o) });
+  }
+  res.sort((a, b) => b.overlap - a.overlap || (a.series < b.series ? -1 : 1));
+  const file = pendingFiles.get(f.id);
+  if (file) file.similar = res.slice(0, 6);
+});
+for (const [id, file] of pendingFiles) writeFileSync(join(OUT, id + ".json"), JSON.stringify(file));
+
 index.feed.sort((a, b) => (b.aum || 0) - (a.aum || 0) || (a.symbol < b.symbol ? -1 : 1));
 index.feed = index.feed.slice(0, 120);
 const ms = stats.mappedShare.slice().sort((a, b) => a - b);

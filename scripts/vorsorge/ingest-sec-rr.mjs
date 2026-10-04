@@ -60,7 +60,7 @@ const links = [...new Set(page.match(/\/files\/dera\/data\/mutual-fund-prospectu
 console.log("RR-Datasets:", links.join(", "));
 const best = new Map();   // classId|field -> { value, filed, adsh, ddate }
 const report = { schemaVersion: "vu-sec-rr-costs-1.0.0", source: "SEC DERA Mutual Fund Prospectus Risk/Return Summary Data Sets", license: "U.S. government work, public domain",
-  generatedAt: new Date().toISOString(), datasets: [], headers: {} };
+  datasets: [], headers: {} };
 for (const l of links) {
   const zip = join(WORK, l.split("/").pop());
   if (!existsSync(zip)) await pipeline(Readable.fromWeb((await get("https://www.sec.gov" + l)).body), createWriteStream(zip));
@@ -79,8 +79,12 @@ for (const l of links) {
     if (samples.length < 4) samples.push({ tag: r.tag, series: r.series, class: r.class, otherdims: r.otherdims, value: r.value, measure: r.measure });
     if (!cls || !classToSymbol.has(cls)) return;
     const v = Number(r.value); if (!Number.isFinite(v) || v < 0 || v >= 0.1) return;
-    const f = filed.get(r.adsh) || ""; const k = cls + "|" + field; const cur = best.get(k);
-    if (!cur || f > cur.filed || (f === cur.filed && String(r.ddate || "") > String(cur.ddate || ""))) { best.set(k, { value: v, filed: f, adsh: r.adsh, ddate: r.ddate || null }); }
+    // Alle Werte einer Klasse muessen aus DERSELBEN Einreichung stammen (sonst Netto aus altem, Brutto aus neuem Prospekt).
+    const f = filed.get(r.adsh) || "";
+    let byFiling = best.get(cls); if (!byFiling) best.set(cls, (byFiling = new Map()));
+    const key = f + "|" + r.adsh; let rec = byFiling.get(key); if (!rec) byFiling.set(key, (rec = { filed: f, adsh: r.adsh, fields: {} }));
+    const cur = rec.fields[field];
+    if (!cur || String(r.ddate || "") > String(cur.ddate || "")) rec.fields[field] = { value: v, ddate: r.ddate || null };
     hits++;
   });
   if (!colsOk) throw new Error("num.tsv ohne erwartete Spalten (adsh, tag, value, class): " + JSON.stringify(report.headers.num));
@@ -89,11 +93,15 @@ for (const l of links) {
   rmSync(zip, { force: true });
 }
 const bySymbol = {};
-for (const [k, v] of best) {
-  const [cls, field] = k.split("|"); const sym = classToSymbol.get(cls);
-  const o = bySymbol[sym] || (bySymbol[sym] = { classId: cls });
-  const filed = v.filed && /^\d{8}$/.test(v.filed) ? v.filed.slice(0, 4) + "-" + v.filed.slice(4, 6) + "-" + v.filed.slice(6, 8) : v.filed || null;
-  o[field] = { value: Math.round(v.value * 1e7) / 1e7, filed, accession: v.adsh };
+for (const [cls, byFiling] of best) {
+  const latest = [...byFiling.values()].sort((a, b) => (a.filed < b.filed ? 1 : a.filed > b.filed ? -1 : a.adsh < b.adsh ? 1 : -1))[0];
+  if (!latest) continue;
+  const sym = classToSymbol.get(cls);
+  const filed = latest.filed && /^\d{8}$/.test(latest.filed) ? latest.filed.slice(0, 4) + "-" + latest.filed.slice(4, 6) + "-" + latest.filed.slice(6, 8) : latest.filed || null;
+  const o = bySymbol[sym] = { classId: cls, filed, accession: latest.adsh };
+  for (const [field, v] of Object.entries(latest.fields)) o[field] = { value: Math.round(v.value * 1e7) / 1e7, filed, accession: latest.adsh };
+  // Netto ueber Brutto waere widerspruechlich -> Nettowert verwerfen
+  if (o.netExpenseRatio && o.expenseRatio && o.netExpenseRatio.value > o.expenseRatio.value + 1e-9) { delete o.netExpenseRatio; o.note = "NET_ABOVE_GROSS_DROPPED"; }
 }
 report.count = Object.keys(bySymbol).length;
 report.bySymbol = Object.fromEntries(Object.keys(bySymbol).sort().map((k) => [k, bySymbol[k]]));

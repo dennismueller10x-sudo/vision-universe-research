@@ -143,7 +143,7 @@ for (const row of mf.data) {
 }
 console.log(`  company_tickers_mf: ${mf.data.length} Zeilen, ${seriesInfo.size} Serien mit Vorsorge-Ticker`);
 
-const manifest = { schemaVersion: "vu-nport-manifest-1.0.0", version: VERSION, generatedAt: new Date().toISOString(), source: "SEC Form N-PORT Data Sets (DERA)",
+const manifest = { schemaVersion: "vu-nport-manifest-1.0.0", version: VERSION, source: "SEC Form N-PORT Data Sets (DERA)",
   license: "U.S. government work, public domain; sec.gov: may be copied or further distributed without the SEC's permission",
   universeUsListings: universe.length, seriesMatched: seriesInfo.size, quarters: [], snapshots: 0, failures: [] };
 const seriesMeta = {};
@@ -190,14 +190,14 @@ for (const q of quarterList()) {
   let hRows = 0;
   await streamTsv(zipPath, m("FUND_REPORTED_HOLDING"), (r) => {
     if (!acc.has(r.ACCESSION_NUMBER)) return;
-    const rate = H.parseNumber(r.EXCHANGE_RATE), val = H.parseNumber(r.CURRENCY_VALUE);
-    const usd = val === null ? null : r.CURRENCY_CODE === "USD" || !rate ? val : val / rate;
+    // Wert wie gemeldet (keine eigene Umrechnung); wird nicht fuer Gewichte verwendet.
+    const val = H.parseNumber(r.CURRENCY_VALUE);
     const nm = String(r.ISSUER_NAME || "").trim(), ti = String(r.ISSUER_TITLE || "").trim();
     const simple = (x) => x.toLowerCase().replace(/[^a-z0-9]/g, "");
     const addTitle = ti && r.ASSET_CAT !== "EC" && r.ASSET_CAT !== "EP" && !simple(nm).includes(simple(ti)) && !simple(ti).includes(simple(nm));
     const row = { sourceRowId: r.HOLDING_ID, holdingName: (addTitle ? nm + " – " + ti : nm || ti) || null,
       issuerName: r.ISSUER_NAME, holdingCusip: F.cleanId("cusip", r.ISSUER_CUSIP), weight: r.PERCENTAGE, assetType: r.ASSET_CAT || r.OTHER_ASSET, derivativeType: r.DERIVATIVE_CAT,
-      marketValue: usd, marketValueCurrency: "USD", shares: r.UNIT === "NS" ? r.BALANCE : null, principal: r.UNIT === "PA" ? r.BALANCE : null, currency: r.CURRENCY_CODE,
+      marketValue: val, marketValueCurrency: null, shares: r.UNIT === "NS" ? r.BALANCE : null, principal: r.UNIT === "PA" ? r.BALANCE : null, currency: r.CURRENCY_CODE,
       country: r.INVESTMENT_COUNTRY, issuerType: r.ISSUER_TYPE, payoff: r.PAYOFF_PROFILE, issuerLei: r.ISSUER_LEI };
     let list = rowsByAcc.get(r.ACCESSION_NUMBER); if (!list) rowsByAcc.set(r.ACCESSION_NUMBER, (list = []));
     list.push(row); holdingAcc.set(r.HOLDING_ID, row); hRows++;
@@ -230,18 +230,25 @@ for (const q of quarterList()) {
     snap.accession = a; snap.seriesId = k.seriesId; snap.seriesName = k.seriesName; snap.registrant = reg.name || null; snap.registrantCik = reg.cik || null;
     snap.subType = k.subType; snap.quarterDataset = q;
     const dir = join(WORK, "snapshots", k.seriesId); mkdirSync(dir, { recursive: true });
-    writeFileSync(join(dir, k.reportDate + ".json"), JSON.stringify(snap));
+    // Quartale werden neueste zuerst gelesen: eine spaeter eingereichte Korrektur (anderes Dataset) darf
+    // nicht vom aelteren Original ueberschrieben werden.
+    const target = join(dir, k.reportDate + ".json");
+    if (existsSync(target)) {
+      let have = null; try { have = JSON.parse(readFileSync(target, "utf8")); } catch { have = null; }
+      if (have && have.quarterDataset !== q && (have.publishedAt || "") >= (k.filingDate || "")) { manifest.amendmentsKept = (manifest.amendmentsKept || 0) + 1; continue; }
+    }
+    writeFileSync(target, JSON.stringify(snap));
     seriesMeta[k.seriesId] = Object.assign(seriesMeta[k.seriesId] || {}, { seriesId: k.seriesId, seriesName: k.seriesName, registrant: reg.name || null, cik: reg.cik || seriesInfo.get(k.seriesId).cik, lei: k.seriesLei || null, classes: seriesInfo.get(k.seriesId).classes });
     written++;
   }
-  manifest.quarters.push({ quarter: q, submissions: subs.size, matchedFilings: keep.size, chosenFilings: acc.size, holdingRows: hRows, snapshotsWritten: written, seconds: Math.round((Date.now() - tq) / 1000) });
+  manifest.quarters.push({ quarter: q, submissions: subs.size, matchedFilings: keep.size, chosenFilings: acc.size, holdingRows: hRows, snapshotsWritten: written });
   manifest.snapshots += written;
   console.log(`  ${q}: ${subs.size} Meldungen, ${keep.size} passend, ${acc.size} gewaehlt, ${hRows} Holdings-Zeilen, ${written} Snapshots (${Math.round((Date.now() - tq) / 1000)} s)`);
   if (!KEEP_ZIPS) rmSync(zipPath, { force: true });
   done++;
 }
 manifest.series = Object.values(seriesMeta).sort((a, b) => (a.seriesId < b.seriesId ? -1 : 1));
-manifest.seconds = Math.round((Date.now() - t0) / 1000);
+console.log("Laufzeit", Math.round((Date.now() - t0) / 1000), "s");
 writeFileSync(join(WORK, "nport-manifest.json"), JSON.stringify(manifest, null, 1));
-console.log(`Fertig: ${manifest.snapshots} Snapshots aus ${manifest.quarters.length} Quartalen, ${manifest.series.length} Serien, ${manifest.seconds} s`);
+console.log(`Fertig: ${manifest.snapshots} Snapshots aus ${manifest.quarters.length} Quartalen, ${manifest.series.length} Serien`);
 if (!manifest.quarters.length) process.exit(1);

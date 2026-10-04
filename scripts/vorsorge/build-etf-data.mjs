@@ -202,7 +202,8 @@ export const INDEX_FIELDS = ["slug", "id", "symbol", "name", "issuer", "exchange
 /* --------------------------------------------- Primaerquellen (SEC) */
 const NOT_IN_NPORT = "Für diesen Fonds liegt keine N-PORT-Meldung vor (z. B. Unit Investment Trust wie SPY/QQQ/DIA, Rohstoff-Trust oder Nicht-US-Fonds). Holdings eines Emittenten dürfen ohne Lizenz nicht automatisiert übernommen werden.";
 function secSources(e, hIdx, rr) {
-  const otc = /^(PINK|OTC|OTCGREY|OTCMKTS|OTCBB|OTCQB|OTCQX|OTCD|OTCCE|EXPM)$/.test(String(e.exchange || "").toUpperCase());
+  // Nur US-Boersenlistings erben SEC-Daten (gleicher Ticker an einer anderen Boerse waere ein anderes Wertpapier).
+  const otc = !/^(NYSE|NASDAQ|BATS|ARCA|NYSE ARCA|AMEX|NYSE MKT)$/.test(String(e.exchange || "").toUpperCase());
   const h = !otc && hIdx && hIdx.bySymbol[e.symbol] || null;
   const c = !otc && rr && rr.bySymbol && rr.bySymbol[e.symbol] || null;
   const srcs = [];
@@ -218,9 +219,10 @@ function secSources(e, hIdx, rr) {
     const ctx = { source: "SEC_NPORT", sourceType: "REGULATORY", sourceUrl: "https://www.sec.gov/data-research/sec-markets-data/form-n-port-data-sets", asOf, confidence: "HIGH" };
     srcs.push({ fields: {
       aum: FUND.field(netAssets, ctx), aumCurrency: FUND.field("USD", ctx), aumLevel: FUND.field("FUND", ctx), numberOfHoldings: FUND.field(positions, ctx),
-      domicile: FUND.field("US", Object.assign({}, ctx, { originalField: "N-PORT filer (US-registrierte Investmentgesellschaft)" })),
-      ucits: FUND.field(false, Object.assign({}, ctx, { originalField: "US Investment Company Act 1940 - kein UCITS" })),
-      legalStructure: FUND.field("US_INVESTMENT_COMPANY_ACT_1940", ctx), fundStatus: FUND.field("ACTIVE", ctx)
+      // Abgeleitet aus der Tatsache, dass der Fonds N-PORT meldet (US-registrierte Investmentgesellschaft) - nicht direkt gemeldet.
+      domicile: FUND.field("US", Object.assign({}, ctx, { sourceType: "DERIVED", confidence: "MEDIUM", originalField: "abgeleitet: N-PORT-Melder (US-registrierte Investmentgesellschaft)" })),
+      ucits: FUND.field(false, Object.assign({}, ctx, { sourceType: "DERIVED", confidence: "MEDIUM", originalField: "abgeleitet: US Investment Company Act 1940 - kein UCITS" })),
+      legalStructure: FUND.field("US_INVESTMENT_COMPANY_ACT_1940", Object.assign({}, ctx, { sourceType: "DERIVED", confidence: "MEDIUM" }))
     } });
   }
   if (c) {

@@ -50,7 +50,7 @@ for (const f of readdirSync(out)) {
 }
 const sorted = Object.fromEntries(Object.keys(result).sort().map((k) => [k, result[k]]));
 mkdirSync(join(root, "vorsorge/data/sources"), { recursive: true });
-writeFileSync(join(root, "vorsorge/data/sources/sec-sic.json"), JSON.stringify({ schemaVersion: "vu-sec-sic-1.0.0", source: "SEC EDGAR submissions (bulk), public domain", generatedAt: new Date().toISOString(), count: n, map: sorted }));
+writeFileSync(join(root, "vorsorge/data/sources/sec-sic.json"), JSON.stringify({ schemaVersion: "vu-sec-sic-1.0.0", source: "SEC EDGAR submissions (bulk), public domain", count: n, map: sorted }));
 rmSync(out, { recursive: true, force: true });
 console.log("SIC fuer", n, "Ticker");
 if (n < 1000) { console.error("Zu wenige SIC-Zuordnungen (" + n + ") - Abbruch statt leerer Ausgabe."); process.exit(1); }

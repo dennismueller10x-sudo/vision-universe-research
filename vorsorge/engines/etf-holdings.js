@@ -30,7 +30,7 @@
   var DERIVATIVES = { FUTURE: 1, OPTION: 1, SWAP: 1, FORWARD: 1, DERIVATIVE: 1 };
   var ROW_FIELDS = ["holdingId", "holdingIsin", "holdingCusip", "holdingSedol", "holdingTicker", "holdingExchange", "holdingName", "assetType",
     "weight", "marketValue", "marketValueCurrency", "shares", "country", "sector", "industry", "currency", "maturityDate", "coupon",
-    "derivativeType", "underlying", "sourceRowId", "confidence"];
+    "derivativeType", "underlying", "payoff", "sourceRowId", "confidence"];
 
   /* ---------------------------------------------------------- Zahlen */
   function parseNumber(raw) {
@@ -152,20 +152,23 @@
     if (s.asOf && s.asOf > today) errors.push("FUTURE_AS_OF");
     if (s.issues.indexOf("WEIGHT_UNIT_UNKNOWN") >= 0) errors.push("WEIGHT_UNIT_UNKNOWN");
     if (!s.holdings.length) errors.push("NO_HOLDINGS");
-    var seen = {}, dup = 0, neg = 0, negNonDeriv = 0, over = 0, noName = 0, noId = 0, sum = 0, nullW = 0;
+    var seen = {}, dup = 0, neg = 0, negNonDeriv = 0, over = 0, overHard = 0, noName = 0, noId = 0, sum = 0, nullW = 0;
     s.holdings.forEach(function (h) {
       if (seen[h.holdingId] && !DERIVATIVES[h.assetType] && h.assetType !== "CASH") dup++;
       seen[h.holdingId] = 1;
       if (h.weight === null) { nullW++; return; }
-      if (h.weight < 0) { neg++; if (!DERIVATIVES[h.assetType] && h.assetType !== "CASH") negNonDeriv++; }
+      if (h.weight < 0) { neg++; if (!DERIVATIVES[h.assetType] && h.assetType !== "CASH" && !/short/i.test(h.payoff || "")) negNonDeriv++; }
       if (h.weight > 1) over++;
+      if (h.weight > 3) overHard++;
       sum += h.weight;
       if (!h.holdingName) noName++;
       if (!h.holdingIsin && !h.holdingCusip && !h.holdingSedol && !h.holdingTicker && h.assetType !== "CASH") noId++;
     });
     if (dup) warnings.push("DUPLICATE_ROWS " + dup);
     if (negNonDeriv) warnings.push("NEGATIVE_WEIGHTS_NON_DERIVATIVE " + negNonDeriv);
-    if (over) errors.push("WEIGHT_ABOVE_100 " + over);
+    // > 100 % kommt bei Dachfonds (ein ETF als einzige Position), Covered-Call- und Hebelfonds real vor (Anteil am Nettovermoegen).
+    if (overHard) errors.push("WEIGHT_ABOVE_300 " + overHard);
+    else if (over) warnings.push("WEIGHT_ABOVE_100 " + over);
     if (noName) warnings.push("MISSING_NAMES " + noName);
     if (noId > s.holdings.length * 0.5) warnings.push("MISSING_IDENTIFIERS " + noId);
     if (nullW > s.holdings.length * 0.2) errors.push("MISSING_WEIGHTS " + nullW);
@@ -290,8 +293,9 @@
     var bd = (ex.assetTypes.filter(function (a) { return a.key === "BOND"; })[0] || {}).weight || 0;
     var kind = eq >= 0.8 ? "Aktien-ETF" : bd >= 0.8 ? "Anleihen-ETF" : "ETF";
     parts.push((conc.positions >= 500 ? "Breit gestreuter " : "") + kind + " mit " + conc.positions.toLocaleString("de-DE") + " Positionen.");
-    var c = ex.countries.filter(function (x) { return x.key !== "UNASSIGNED" && x.key !== "CASH"; })[0];
-    if (c && c.weight >= 0.3) parts.push("Rund " + pct(c.weight) + " " + (COUNTRY_DE[c.key] || c.key) + ".");
+    var cl = ex.countries.filter(function (x) { return x.key !== "CASH" && x.weight > 0; }), tot = cl.reduce(function (a, x) { return a + x.weight; }, 0);
+    var c = cl.filter(function (x) { return x.key !== "UNASSIGNED"; })[0];
+    if (c && tot > 0 && c.weight / tot >= 0.3) parts.push("Rund " + pct(Math.min(1, c.weight / tot)) + " der Positionen entfallen auf " + (COUNTRY_DE[c.key] || c.key) + ".");
     if (conc.positions >= 10 && conc.top10 !== null) parts.push("Die zehn größten Positionen machen " + pct(conc.top10) + " des Gewichts aus.");
     return parts.join(" ");
   }

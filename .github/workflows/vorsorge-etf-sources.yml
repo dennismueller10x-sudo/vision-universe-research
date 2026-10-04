@@ -90,15 +90,18 @@ jobs:
         run: |
           node scripts/vorsorge/build-etf-intelligence.mjs
           node -e 'const m=require("./.market-cache/vorsorge/nport/nport-manifest.json"); delete m.series; require("fs").writeFileSync("vorsorge/data/sources/nport-manifest.json", JSON.stringify(m,null,1)+"\n")'
+      - name: ETF-Stamm mit den neuen Daten neu bauen
+        run: node scripts/vorsorge/build-etf-data.mjs --quiet
       - name: Tests und Hygiene
         run: |
           node --test "vorsorge/tests/*.test.mjs"
+          node scripts/vorsorge/assert-vorsorge-data.mjs
           node scripts/market/assert-public-data-hygiene.mjs
       - name: Veroeffentlichen
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add vorsorge/data/holdings vorsorge/data/sources/sec-sic.json vorsorge/data/sources/nport-manifest.json
+          git add vorsorge/data vorsorge/etf vorsorge/sitemap.xml
           git commit -q -m "Vorsorge: US-ETF-Holdings aus SEC N-PORT (Lauf ${{ github.run_id }})" || { echo "Keine Aenderung."; exit 0; }
           bash scripts/ci/push-with-retry.sh "${{ github.ref_name }}"
 
@@ -127,12 +130,15 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=6144
         run: node scripts/vorsorge/ingest-esma-firds.mjs
-      - name: Hygiene
-        run: node scripts/market/assert-public-data-hygiene.mjs
+      - name: ETF-Stamm mit den neuen Daten neu bauen, Gates, Hygiene
+        run: |
+          node scripts/vorsorge/build-etf-data.mjs --quiet
+          node scripts/vorsorge/assert-vorsorge-data.mjs
+          node scripts/market/assert-public-data-hygiene.mjs
       - name: Veroeffentlichen
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add vorsorge/data/sources/sec-rr-costs.json vorsorge/data/eu
+          git add vorsorge/data vorsorge/etf vorsorge/sitemap.xml
           git commit -q -m "Vorsorge: Kostenquoten (SEC RR) und europaeische ETF-Listings (ESMA FIRDS, GLEIF) (Lauf ${{ github.run_id }})" || { echo "Keine Aenderung."; exit 0; }
           bash scripts/ci/push-with-retry.sh "${{ github.ref_name }}"

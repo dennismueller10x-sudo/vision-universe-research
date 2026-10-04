@@ -74,8 +74,10 @@ test("Qualitäts-Gates: Duplikate, negative Gewichte, >100 %, Summe, Zukunft, Ei
   const dup = H.snapshot({ fundId: "F", asOf: "2026-09-30", source: "T", weightUnit: "percent" }, [row("A", 50, { holdingTicker: "A" }), row("A", 49, { holdingTicker: "A" }), row("B", -1, { holdingTicker: "B" })]);
   const q = H.qualityGates(dup, null, { today: "2026-10-04" });
   assert.ok(q.warnings.some((w) => /DUPLICATE_ROWS/.test(w))); assert.ok(q.warnings.some((w) => /NEGATIVE_WEIGHTS_NON_DERIVATIVE/.test(w)));
-  const over = H.snapshot({ fundId: "F", asOf: "2026-09-30", source: "T", weightUnit: "fraction" }, [row("A", 1.5)]);
-  assert.ok(H.qualityGates(over, null, { today: "2026-10-04" }).errors.some((e) => /WEIGHT_ABOVE_100/.test(e)));
+  const over = H.snapshot({ fundId: "F", asOf: "2026-09-30", source: "T", weightUnit: "fraction" }, [row("ETF-Dachfonds-Position", 1.02)]);
+  assert.ok(H.qualityGates(over, null, { today: "2026-10-04" }).warnings.some((e) => /WEIGHT_ABOVE_100/.test(e)), "Dachfonds mit 102 % ist ein Hinweis, kein Fehler");
+  const absurd = H.snapshot({ fundId: "F", asOf: "2026-09-30", source: "T", weightUnit: "fraction" }, [row("A", 3.5)]);
+  assert.ok(H.qualityGates(absurd, null, { today: "2026-10-04" }).errors.some((e) => /WEIGHT_ABOVE_300/.test(e)));
   const low = H.snapshot({ fundId: "F", asOf: "2026-09-30", source: "T", weightUnit: "percent" }, [row("A", 10)]);
   assert.ok(H.qualityGates(low, null, { today: "2026-10-04" }).errors.some((e) => /IMPLAUSIBLE_TOTAL/.test(e)));
   const fut = H.snapshot({ fundId: "F", asOf: "2027-01-01", source: "T", weightUnit: "percent" }, [row("A", 100)]);
@@ -164,6 +166,18 @@ test("Sektor- und Länderverschiebung", () => {
   const d = C.diffHoldings(a, snap("2026-06-30", rows));
   assert.ok(d.events.some((e) => e.eventType === "COUNTRY_WEIGHT_CHANGED" && e.entityName === "JP" && e.importance === "HIGH"));
   assert.ok(d.events.some((e) => e.eventType === "SECTOR_WEIGHT_CHANGED" && e.entityName === "TECH"));
+});
+test("Kennungswechsel zwischen Quartalen (ISIN -> nur Ticker) erzeugt kein Hinzufügen/Entfernen", () => {
+  const a = snap("2026-03-31", base());
+  const rows = base().map((r) => r.holdingName === "Apple" ? Object.assign({}, r, { holdingIsin: null, holdingCusip: "037833100" }) : r);
+  const d = C.diffHoldings(a, snap("2026-06-30", rows));
+  assert.ok(!d.events.some((e) => /HOLDING_(ADDED|REMOVED)/.test(e.eventType)), JSON.stringify(d.events.map((e) => e.eventType + ":" + e.entityName)));
+});
+test("Gewichtsänderung bei unveränderter Stückzahl = Kursbewegung, eine Stufe niedriger", () => {
+  const withShares = (w) => base().map((r) => Object.assign({}, r, { shares: 1000 }, r.holdingName === "NVIDIA" ? { weight: w } : {}));
+  const a = snap("2026-03-31", withShares(6.8)), b = snap("2026-06-30", withShares(8.0).map((r) => r.holdingName === "Rest" ? Object.assign({}, r, { weight: 63.8 }) : r));
+  const e = C.diffHoldings(a, b).events.find((x) => x.entityName === "NVIDIA");
+  assert.equal(e.driver, "PRICE"); assert.equal(e.importance, "MEDIUM"); assert.match(e.explanation, /Kursbewegung/);
 });
 test("Tickerwechsel / Split mit gleicher ISIN ist keine Änderung; andere Quelle nicht vergleichbar", () => {
   const a = snap("2026-03-31", base());

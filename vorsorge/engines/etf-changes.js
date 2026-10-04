@@ -79,7 +79,41 @@
     var m = {}; longs(s).forEach(function (h) { if (h.assetType === "CASH" && key === "country") return; var k = h[key] || "UNASSIGNED"; m[k] = (m[k] || 0) + h.weight; });
     return m;
   }
-  function byId(s) { var m = {}; s.holdings.forEach(function (h) { if (DERIV[h.assetType]) return; if (m[h.holdingId]) m[h.holdingId].weight += h.weight || 0; else m[h.holdingId] = { holdingId: h.holdingId, name: h.holdingName, ticker: h.holdingTicker, weight: h.weight || 0, assetType: h.assetType }; }); return m; }
+  function normName(n) { return String(n || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim(); }
+  /** Alle Kennungen einer Position (N-PORT meldet ISIN/Ticker nicht in jedem Quartal). */
+  function aliases(h) {
+    var a = [];
+    if (h.holdingIsin) a.push("ISIN:" + h.holdingIsin);
+    if (h.holdingCusip) a.push("CUSIP:" + h.holdingCusip);
+    if (h.holdingIsin && /^(US|CA)/.test(h.holdingIsin)) a.push("CUSIP:" + h.holdingIsin.slice(2, 11));
+    if (h.holdingSedol) a.push("SEDOL:" + h.holdingSedol);
+    if (h.holdingTicker) a.push("TICKER:" + h.holdingTicker + "@" + (h.holdingExchange || ""));
+    if (h.assetType === "EQUITY" || h.assetType === "FUND" || h.assetType === "ETF") a.push("NAME:" + normName(h.holdingName));
+    return a;
+  }
+  function byId(s, remap) {
+    var m = {};
+    s.holdings.forEach(function (h) {
+      if (DERIV[h.assetType]) return;
+      var id = remap && remap(h) || h.holdingId;
+      if (m[id]) { m[id].weight += h.weight || 0; if (Number.isFinite(h.shares)) m[id].shares = (m[id].shares || 0) + h.shares; }
+      else m[id] = { holdingId: id, name: h.holdingName, ticker: h.holdingTicker, weight: h.weight || 0, assetType: h.assetType, shares: Number.isFinite(h.shares) ? h.shares : null };
+    });
+    return m;
+  }
+  /** Ordnet Positionen aus T1 der Kennung aus T0 zu, wenn sie eine gemeinsame Kennung tragen (Namen nur, wenn eindeutig). */
+  function aliasRemap(prev) {
+    var idx = {}, nameCount = {};
+    prev.holdings.forEach(function (h) { var n = "NAME:" + normName(h.holdingName); nameCount[n] = (nameCount[n] || 0) + 1; });
+    prev.holdings.forEach(function (h) { if (DERIV[h.assetType]) return; aliases(h).forEach(function (a) { if (/^NAME:/.test(a) && nameCount[a] > 1) return; if (!(a in idx)) idx[a] = h.holdingId; }); });
+    var prevIds = {}; prev.holdings.forEach(function (h) { prevIds[h.holdingId] = 1; });
+    return function (h) {
+      if (prevIds[h.holdingId]) return h.holdingId;
+      var al = aliases(h);
+      for (var i = 0; i < al.length; i++) if (idx[al[i]]) return idx[al[i]];
+      return h.holdingId;
+    };
+  }
 
   /**
    * Holdings-Vergleich. prev = null -> BASELINE (keine Ereignisse).
@@ -93,7 +127,7 @@
     if (prev.contentHash === next.contentHash) return { status: "UNCHANGED", events: [], summary: emptySummary() };
     var ctx = { fundId: next.fundId || next.symbol, shareClassId: next.shareClassId, from: prev.asOf, to: next.asOf,
       fromSnapshot: prev.snapshotId, toSnapshot: next.snapshotId, source: next.source, detectedAt: cfg.detectedAt || null };
-    var A = byId(prev), B = byId(next), ev = [];
+    var A = byId(prev), B = byId(next, aliasRemap(prev)), ev = [];
     var small = longs(next).length <= cfg.smallFundPositions;
     var rankA = rankMap(prev), rankB = rankMap(next);
     Object.keys(B).forEach(function (k) {
@@ -110,8 +144,11 @@
       var d = b.weight - a.weight;
       if (Math.abs(d) >= cfg.weightNoisePP) {
         var wi = weightImportance(d, cfg);
-        if (wi) ev.push(mk(ctx, d > 0 ? "WEIGHT_INCREASED" : "WEIGHT_DECREASED", k, label, r(a.weight), r(b.weight), wi,
-          label + ": " + pc(a.weight) + " → " + pc(b.weight) + " (" + pp(d) + ")."));
+        // Stueckzahl unveraendert -> Gewichtsaenderung kommt aus der Kursbewegung, nicht aus Umschichtung.
+        var priceOnly = Number.isFinite(a.shares) && Number.isFinite(b.shares) && a.shares > 0 && Math.abs(b.shares - a.shares) / a.shares < 0.01;
+        if (wi && priceOnly) wi = wi === "HIGH" ? "MEDIUM" : "LOW";
+        if (wi) { var e1 = mk(ctx, d > 0 ? "WEIGHT_INCREASED" : "WEIGHT_DECREASED", k, label, r(a.weight), r(b.weight), wi,
+          label + ": " + pc(a.weight) + " → " + pc(b.weight) + " (" + pp(d) + ")" + (priceOnly ? ", Stückzahl unverändert – Kursbewegung." : ".")); e1.driver = priceOnly ? "PRICE" : Number.isFinite(a.shares) && Number.isFinite(b.shares) ? "SHARES" : null; ev.push(e1); }
       }
     });
     Object.keys(A).forEach(function (k) {
@@ -166,7 +203,8 @@
 
   var IMP_RANK = { CRITICAL: 4, HIGH: 3, MEDIUM: 2, LOW: 1 };
   function order(a, b) {
-    return (IMP_RANK[b.importance] - IMP_RANK[a.importance]) || (Math.abs(b.absoluteChange || b.newValue || 0) - Math.abs(a.absoluteChange || a.newValue || 0)) ||
+    function mag(e) { return /_TOP_/.test(e.eventType) ? 0.0075 : Math.abs(e.absoluteChange !== null && e.absoluteChange !== undefined ? e.absoluteChange : e.newValue || e.oldValue || 0); }
+    return (IMP_RANK[b.importance] - IMP_RANK[a.importance]) || (mag(b) - mag(a)) ||
       (a.eventId < b.eventId ? -1 : 1);
   }
   function emptySummary() { return { largestIncrease: null, largestDecrease: null, newHoldings: 0, removedHoldings: 0, top10Entries: [], top10Exits: [], sectorShift: null, countryShift: null, holdingsCountDelta: 0 }; }

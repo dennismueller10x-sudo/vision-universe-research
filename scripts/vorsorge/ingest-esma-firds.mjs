@@ -57,7 +57,8 @@ const files = cFiles.filter((d) => d.file_name.slice(9, 17) === latest).sort((a,
 console.log("FIRDS Vollversion", latest, files.map((f) => f.file_name).join(", "));
 
 /* ------------------------------------------------ XML streamend lesen */
-const tag = (s, t) => { const m = s.match(new RegExp("<(?:\\w+:)?" + t + ">([^<]*)</(?:\\w+:)?" + t + ">")); return m ? m[1].trim() : null; };
+const ent = (x) => x.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)));
+const tag = (s, t) => { const m = s.match(new RegExp("<(?:\\w+:)?" + t + ">([^<]*)</(?:\\w+:)?" + t + ">")); return m ? ent(m[1].trim()) : null; };
 const byIsin = new Map();
 let records = 0;
 function onRecord(x) {
@@ -111,7 +112,7 @@ for (let i = 0; i < leis.length; i += 100) {
   const r = await get("https://api.gleif.org/api/v1/lei-records?filter%5Blei%5D=" + batch.join(",") + "&page%5Bsize%5D=100", 60000);
   if (r && r.ok) {
     const j = await r.json();
-    for (const d of j.data || []) { const en = d.attributes.entity; gleif.set(d.id, { name: en.legalName && en.legalName.name, jurisdiction: en.jurisdiction || null, category: en.category || null, country: en.legalAddress && en.legalAddress.country, status: en.status }); }
+    for (const d of j.data || []) { const en = d.attributes.entity; gleif.set(d.id, { name: en.legalName && en.legalName.name, jurisdiction: en.jurisdiction ? String(en.jurisdiction).slice(0, 2) : null, jurisdictionFull: en.jurisdiction || null, category: en.category || null, country: en.legalAddress && en.legalAddress.country, status: en.status }); }
   }
   await sleep(1100);
 }

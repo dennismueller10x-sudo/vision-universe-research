@@ -32,7 +32,7 @@
     { id: "rs", label: "Rel. Stärke vs. SPY", get: function (e) { return e.m && e.m.rs; }, pct: true },
     { id: "hy", label: "Historie", get: function (e) { return e.m && e.m.hy; }, years: true },
     { id: "cost", label: "Kostenquote", get: function (e) { return e.cost; }, cost: true },
-    { id: "aum", label: "Fondsvermögen", get: function (e) { return e.aum; }, money: true },
+    { id: "aum", label: "Fondsvermögen (Fonds)", get: function (e) { return e.aum; }, money: true },
     { id: "t10", label: "Top-10-Anteil", get: function (e) { return e.top10; }, pct: true, neutral: true }
   ];
   VS.etfHref = function (e) { return "#/etf/" + encodeURIComponent(e.slug || e.symbol); };
@@ -373,7 +373,7 @@
       ["Größter Rückgang", function (d) { return F.pct(val(d, "metrics.maxDrawdown.value")); }, "metrics.maxDrawdown.value"],
       ["Historie", function (d) { return F.years(val(d, "metrics.historyYears")); }],
       ["Kostenquote (Prospekt)", function (d) { return d.costs && d.costs.status === "AVAILABLE" ? VS.costPct(d.costs.value) : '<span class="vs-fine">Quelle fehlt</span>'; }, "costs.value"],
-      ["Fondsvermögen", function (d) { var a = d.fundamentals && d.fundamentals.aum; return a ? VS.money(a.value, "USD") + ' <span class="vs-fine">' + F.date(a.asOf) + '</span>' : '<span class="vs-fine">Quelle fehlt</span>'; }],
+      ["Fondsvermögen (alle Anteilklassen)", function (d) { var a = d.fundamentals && d.fundamentals.aum; return a ? VS.money(a.value, "USD") + ' <span class="vs-fine">' + F.date(a.asOf) + '</span>' : '<span class="vs-fine">Quelle fehlt</span>'; }],
       ["Positionen", function (d) { return d.holdings && d.holdings.positions ? d.holdings.positions.toLocaleString("de-DE") : '<span class="vs-fine">keine Holdings</span>'; }],
       ["Top-10-Anteil", function (d) { return d.holdings && d.holdings.top10 !== undefined && d.holdings.top10 !== null ? F.pct(d.holdings.top10) : '<span class="vs-fine">–</span>'; }, "holdings.top10"],
       ["Domizil · UCITS", function (d) { var f = d.fundamentals || {}; return f.domicile ? esc(f.domicile.value) + " · " + (f.ucits && f.ucits.value === false ? "kein UCITS" : "–") : '<span class="vs-fine">unbekannt</span>'; }],
@@ -440,7 +440,7 @@
       var changed = list.filter(function (e) { return e.holdingsChanges > 0; });
       host.innerHTML = '<div class="vs-card app"><p class="vs-label">Seit dem letzten Holdings-Update</p><p style="margin-top:6px;color:var(--app-ink);font-size:17px">' +
         (changed.length ? changed.length + " von " + list.length + " beobachteten ETFs mit relevanten Änderungen im Bestand." : "Keine relevanten Bestandsänderungen bei deinen beobachteten ETFs.") + '</p><p class="vs-fine" style="color:var(--app-muted)">Quelle: SEC N-PORT (quartalsweise, rund 60 Tage verzögert). Für Fonds ohne N-PORT-Meldung gibt es keine Bestandsänderungen.</p></div>' +
-        '<div class="vs-table-wrap" style="margin-top:14px"><table class="vs-table"><thead><tr><th>ETF</th><th>Kurs</th><th>1 Tag</th><th>1J</th><th>Schwankung</th><th>Status</th><th>Kostenquote</th><th>Fondsvermögen</th><th>Bestand</th></tr></thead><tbody>' + list.map(function (e) {
+        '<div class="vs-table-wrap" style="margin-top:14px"><table class="vs-table"><thead><tr><th>ETF</th><th>Kurs</th><th>1 Tag</th><th>1J</th><th>Schwankung</th><th>Status</th><th>Kostenquote</th><th>Fondsvermögen (Fonds)</th><th>Bestand</th></tr></thead><tbody>' + list.map(function (e) {
         var evs = ch.events.filter(function (x) { return x.symbol === e.symbol; });
         var hc = e.holdingsAsOf ? (e.holdingsChanges > 0 ? '<a href="' + VS.etfHref(e) + '?tab=aenderungen">' + e.holdingsChanges + ' relevante Änderung' + (e.holdingsChanges === 1 ? "" : "en") + '</a>' : '<span class="vs-fine">keine relevanten Änderungen</span>') + '<span class="t-name">Stand ' + F.date(e.holdingsAsOf) + '</span>' : '<span class="vs-fine">keine Bestandsdaten</span>';
         return '<tr><td><a href="' + VS.etfHref(e) + '">' + esc(e.symbol) + '</a><span class="t-name">' + esc(e.name) + '</span><span class="t-name">' + esc(e.index || e.category) + '</span></td><td class="num">' + F.price(e.m && e.m.price, e.currency) + '</td><td class="num ' + F.cls(e.m && e.m.d1) + '">' + F.spct(e.m && e.m.d1, 2) + '</td><td class="num ' + F.cls(e.m && e.m.p["1Y"]) + '">' + F.spct(e.m && e.m.p["1Y"]) + '</td><td class="num">' + F.pct(e.m && e.m.vol) + '</td><td>' + (e.status === "INACTIVE" ? '<span class="vs-badge bad">inaktiv</span>' : e.layer === "REVIEW" ? '<span class="vs-badge bad">in Prüfung</span>' : "aktiv") + (evs.length ? '<span class="t-name">' + esc(evs[0].text) + '</span>' : "") + '</td>' +
