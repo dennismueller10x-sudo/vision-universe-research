@@ -41,7 +41,11 @@ class CachedDiscoveryTests(unittest.TestCase):
             self.assertEqual(first['outcomes'],{'CACHE_ONLY_PENDING_NETWORK':1})
             self.assertEqual(second['processedThisBatch'],0)
             self.assertEqual(s.state('officialSite:'+cid),prior)
-            self.assertEqual(first['networkRequests'],0);s.close()
+            self.assertEqual(first['networkRequests'],0)
+            with patch('company_intelligence.cached_discovery.export_revision',return_value=b'new-verifier'):
+                updated=replay(Path(tmp),s,{cid:c},'second')
+            self.assertEqual(updated['processedThisBatch'],1)
+            self.assertEqual(s.state('officialSite:'+cid),prior);s.close()
 
     def test_cached_ir_documents_survive_optional_missing_pages_and_keep_live_health(self):
         with tempfile.TemporaryDirectory() as tmp:

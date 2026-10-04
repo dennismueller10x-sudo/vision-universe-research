@@ -64,3 +64,27 @@ class Archive(unittest.TestCase):
    with patch('company_intelligence.distributor_archive.collect',return_value=[entry]):p.ingest_source(source)
    rows=[json.loads(r[0]) for r in st.db.execute("select payload from events where kind='EARNINGS_CALL'")]
    self.assertEqual(len(rows),1);self.assertEqual(rows[0]['fiscalQuarter'],'Q4');self.assertEqual(rows[0]['fiscalYear'],2026);self.assertEqual(rows[0]['time'],'17:00');self.assertIn('5:00 p.m. Eastern Time',rows[0]['evidence']['excerpt']);st.close()
+
+ def test_transient_publisher_errors_pause_and_resume_without_week_long_identity_loss(self):
+  urls=[URL.replace('/1/0/','/'+str(i)+'/0/') for i in range(1,5)]
+  response={'body':('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+u+'</loc></url>' for u in urls)+'</urlset>').encode(),'finalUrl':INDEX}
+  class HTTP:
+   def __init__(self,tmp):self.tmp=Path(tmp);self.memo={};self.calls=[];self.recovered=False
+   def _paths(self,url):return self.tmp/'body',self.tmp/'meta'
+   def get(self,url,**kw):
+    self.calls.append(url)
+    for path in self._paths(url):path.write_bytes(b'disposable full article')
+    if not self.recovered:raise SourceError('HTTP_503')
+    return {'body':article().replace(URL.encode(),url.encode()),'finalUrl':url}
+  with tempfile.TemporaryDirectory() as tmp:
+   st=Store(Path(tmp)/'s.sqlite');h=HTTP(tmp);c=company();resolver=Resolver({c['companyId']:c});source={'sourceId':'archive','url':INDEX}
+   self.assertEqual(collect(source,response,h,st,resolver,NOW),[])
+   self.assertEqual(len(h.calls),3)
+   self.assertEqual(st.state('distributorArchiveRun:archive')['stopReason'],'PUBLISHER_TEMPORARY_FAILURE_PAUSE')
+   for url in h.calls:
+    checkpoint=st.state('distributorArchive:'+url)
+    self.assertEqual(checkpoint['status'],'TEMPORARY_FAILURE');self.assertEqual(checkpoint['nextAttempt'],'2026-10-01T19:00:00Z')
+   self.assertIsNone(st.state('distributorArchive:'+urls[0]))
+   self.assertFalse((Path(tmp)/'body').exists());h.recovered=True
+   self.assertEqual(len(collect(source,response,h,st,resolver,'2026-10-01T20:00:00Z')),4)
+   self.assertFalse((Path(tmp)/'body').exists());st.close()

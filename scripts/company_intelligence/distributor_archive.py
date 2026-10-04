@@ -86,7 +86,7 @@ def metadata(body,url):
 
 
 def collect(source,response,http,store,resolver,now):
-    urls=archive_urls(response['body'],response['finalUrl']);out=[];attempted=0;limit=min(300,max(1,int(source.get('batchSize',100))))
+    urls=archive_urls(response['body'],response['finalUrl']);out=[];attempted=0;temporary=0;consecutive_temporary=0;stop='BATCH_COMPLETED';limit=min(300,max(1,int(source.get('batchSize',100))))
     for url in sorted(urls,reverse=True):
         if len(out)>=limit:break
         slug=unquote(urlsplit(url).path.rsplit('/',1)[-1]).removesuffix('.html').replace('-',' ')
@@ -108,16 +108,23 @@ def collect(source,response,http,store,resolver,now):
             r=http.get(url,ttl=86400)
             if canonical_url(r['finalUrl'])!=canonical_url(url):raise SourceError('DISTRIBUTOR_ARTICLE_REDIRECT_REQUIRES_REVALIDATION')
             entry=metadata(r['body'],url);out.append(entry)
+            consecutive_temporary=0
             store.set_state(key,{'status':'PARSED','checkedAt':now,'publishedAt':entry['publishedAt'],'sourceId':source['sourceId'],'entry':entry})
-        except BudgetExhausted:break
+        except BudgetExhausted:
+            stop='BUDGET_DEFERRED';break
         except (SourceError,ValueError,TypeError) as exc:
-            store.set_state(key,{'status':'DEGRADED','checkedAt':now,'nextAttempt':advance(now,168),'reason':str(exc)[:160]})
+            transient=any(code in str(exc) for code in ('HTTP_429','HTTP_50','DNS_UNAVAILABLE','NETWORK_UNAVAILABLE','NETWORK_TIMEOUT','RATE_LIMIT'))
+            consecutive_temporary=consecutive_temporary+1 if transient else 0
+            temporary+=int(transient)
+            store.set_state(key,{'status':'TEMPORARY_FAILURE' if transient else 'DEGRADED','checkedAt':now,'nextAttempt':advance(now,1 if transient else 168),'reason':str(exc)[:160]})
             store.audit(now,source['sourceId'],'DISTRIBUTOR_METADATA_FAILURE',url=url,reason=str(exc)[:160])
+            if consecutive_temporary>=3:
+                stop='PUBLISHER_TEMPORARY_FAILURE_PAUSE';break
         finally:
             # PublicHTTP persists cache by default. Article bodies are deliberately
             # removed after metadata extraction, including HTTP memo copies.
             for path in http._paths(canonical_url(url)):
                 path.unlink(missing_ok=True)
             http.memo.pop(canonical_url(url),None)
-    store.set_state('distributorArchiveRun:'+source['sourceId'],{'checkedAt':now,'indexedURLs':len(urls),'attempted':attempted,'parsed':len(out)})
+    store.set_state('distributorArchiveRun:'+source['sourceId'],{'checkedAt':now,'indexedURLs':len(urls),'attempted':attempted,'parsed':len(out),'temporaryFailures':temporary,'stopReason':stop})
     return out

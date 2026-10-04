@@ -16,7 +16,7 @@ from .pipeline import Pipeline, utcnow
 from .inventory_sweep import prefix, failure_category
 from .discovery import validate_discovery_candidate
 from .feeds import discover_ir
-from .store import Store
+from .store import Store, export_revision
 
 
 class CachedHTTP(PublicHTTP):
@@ -37,7 +37,9 @@ class CachedHTTP(PublicHTTP):
                 self.responses.setdefault(meta.get('finalUrl', meta['url']), response)
             except (ValueError, KeyError, OSError):
                 continue
-        self.generation = hashlib.sha256(json.dumps(sorted((url, r['sha256']) for url, r in self.responses.items())).encode()).hexdigest()
+        digest = hashlib.sha256(export_revision())
+        digest.update(json.dumps(sorted((url, r['sha256']) for url, r in self.responses.items())).encode())
+        self.generation = digest.hexdigest()
 
     def get(self, url, **kwargs):
         url = canonical_url(url)
