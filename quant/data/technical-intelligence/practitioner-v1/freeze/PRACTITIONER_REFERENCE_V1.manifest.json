@@ -1,0 +1,156 @@
+{
+ "version": "PRACTITIONER_REFERENCE_V1",
+ "schema": "practitioner-reference-1.2.0",
+ "file": "PRACTITIONER_REFERENCE_V1.jsonl",
+ "sha256": "7af25c9b5d61f0268f7049103076839e1dd43b3a2d9d24bc942290dd1133f489",
+ "lines": 99,
+ "cases": 78,
+ "sourceFamilies": {
+  "ewf": 45,
+  "tiedje": 11,
+  "tv-yuchaosng": 7,
+  "tv-thefifthwave": 7,
+  "tv-cryptoknee": 8
+ },
+ "splits": {
+  "counts": {
+   "HOLDOUT_TEMPORAL": 32,
+   "HOLDOUT_SOURCE": 11,
+   "DEVELOPMENT": 26,
+   "VALIDATION": 9
+  },
+  "byCase": {
+   "ewf|IT|2025-09-16|1": "HOLDOUT_TEMPORAL",
+   "ewf|HOOD|2025-12-28|1": "HOLDOUT_TEMPORAL",
+   "tiedje|BTCUSD|2022-05-20|1": "HOLDOUT_SOURCE",
+   "tiedje|NVDA|2023-05-27|1": "HOLDOUT_SOURCE",
+   "ewf|TSM|2025-11-03|1": "HOLDOUT_TEMPORAL",
+   "ewf|MCD|2025-12-08|1": "HOLDOUT_TEMPORAL",
+   "ewf|GPN|2025-06-10|1": "HOLDOUT_TEMPORAL",
+   "ewf|QS|2025-03-04|1": "HOLDOUT_TEMPORAL",
+   "tiedje|XAUUSD|2022-09-09|1": "HOLDOUT_SOURCE",
+   "tv-yuchaosng|BTCUSD|2025-11-08|1": "HOLDOUT_TEMPORAL",
+   "ewf|QQQ|2025-02-25|1": "HOLDOUT_TEMPORAL",
+   "ewf|V|2026-05-18|1": "HOLDOUT_TEMPORAL",
+   "ewf|HOOD|2025-09-15|1": "HOLDOUT_TEMPORAL",
+   "ewf|HOOD|2025-06-02|1": "HOLDOUT_TEMPORAL",
+   "ewf|NU|2025-03-04|1": "HOLDOUT_TEMPORAL",
+   "tiedje|PLTR|2023-05-19|1": "HOLDOUT_SOURCE",
+   "ewf|COST|2025-01-30|1": "HOLDOUT_TEMPORAL",
+   "tv-yuchaosng|QQQ|2026-02-14|1": "HOLDOUT_TEMPORAL",
+   "tiedje|AMD|2022-07-01|1": "HOLDOUT_SOURCE",
+   "ewf|MSTR|2025-06-30|1": "HOLDOUT_TEMPORAL",
+   "tiedje|BTCUSD|2022-01-07|1": "HOLDOUT_SOURCE",
+   "tiedje|PLTR|2023-11-03|1": "HOLDOUT_SOURCE",
+   "tv-thefifthwave|BTCUSD|2026-05-28|1": "HOLDOUT_TEMPORAL",
+   "tiedje|BTCUSD|2022-04-22|1": "HOLDOUT_SOURCE",
+   "ewf|AMD|2026-05-12|1": "HOLDOUT_TEMPORAL",
+   "tv-cryptoknee|MSFT|2026-05-14|1": "HOLDOUT_TEMPORAL",
+   "ewf|F|2026-03-16|1": "HOLDOUT_TEMPORAL",
+   "tv-thefifthwave|BTCUSD|2025-10-21|1": "HOLDOUT_TEMPORAL",
+   "ewf|JNJ|2026-04-21|1": "HOLDOUT_TEMPORAL",
+   "tiedje|NKE|2024-09-20|1": "HOLDOUT_SOURCE",
+   "ewf|ASML|2026-01-20|1": "HOLDOUT_TEMPORAL",
+   "ewf|RBLX|2025-08-21|1": "HOLDOUT_TEMPORAL",
+   "ewf|HSY|2025-10-06|1": "HOLDOUT_TEMPORAL",
+   "ewf|COST|2026-05-19|1": "HOLDOUT_TEMPORAL",
+   "ewf|DXCM|2025-11-18|1": "HOLDOUT_TEMPORAL",
+   "ewf|HOOD|2026-03-30|1": "HOLDOUT_TEMPORAL",
+   "tiedje|GOOGL|2023-08-11|1": "HOLDOUT_SOURCE",
+   "ewf|RGLD|2025-04-24|1": "HOLDOUT_TEMPORAL",
+   "ewf|RCL|2025-04-30|1": "HOLDOUT_TEMPORAL",
+   "ewf|HL|2026-01-07|1": "HOLDOUT_TEMPORAL",
+   "ewf|KO|2026-02-19|1": "HOLDOUT_TEMPORAL",
+   "tiedje|AMD|2022-04-29|1": "HOLDOUT_SOURCE",
+   "ewf|NEE|2025-01-14|1": "HOLDOUT_TEMPORAL",
+   "ewf|AXP|2024-08-12|1": "DEVELOPMENT",
+   "tv-yuchaosng|BTCUSD|2024-09-29|1": "DEVELOPMENT",
+   "ewf|OLN|2023-09-19|1": "DEVELOPMENT",
+   "tv-yuchaosng|SPY|2024-07-20|1": "DEVELOPMENT",
+   "ewf|MCD|2023-09-23|1": "VALIDATION",
+   "tv-thefifthwave|SPY|2022-12-03|1": "DEVELOPMENT",
+   "tv-thefifthwave|BTCUSD|2023-07-10|1": "DEVELOPMENT",
+   "ewf|ABNB|2023-09-05|1": "DEVELOPMENT",
+   "ewf|UNH|2022-08-28|1": "DEVELOPMENT",
+   "tv-yuchaosng|IWM|2024-08-28|1": "VALIDATION",
+   "tv-thefifthwave|BTCUSD|2024-08-31|1": "DEVELOPMENT",
+   "ewf|PHM|2023-06-13|1": "DEVELOPMENT",
+   "ewf|NVDA|2023-04-04|1": "DEVELOPMENT",
+   "tv-cryptoknee|BTCUSD|2023-09-16|1": "DEVELOPMENT",
+   "ewf|FCX|2023-07-25|1": "VALIDATION",
+   "tv-cryptoknee|TSLA|2022-12-28|1": "DEVELOPMENT",
+   "tv-yuchaosng|QQQ|2024-01-21|1": "VALIDATION",
+   "ewf|QQQ|2022-10-25|1": "DEVELOPMENT",
+   "tv-cryptoknee|BTCUSD|2024-04-28|1": "DEVELOPMENT",
+   "ewf|MSTR|2024-10-03|1": "DEVELOPMENT",
+   "tv-cryptoknee|BTCUSD|2023-01-18|1": "DEVELOPMENT",
+   "ewf|ZM|2022-08-16|1": "VALIDATION",
+   "tv-thefifthwave|BTCUSD|2023-04-17|1": "DEVELOPMENT",
+   "tv-cryptoknee|BTCUSD|2022-03-26|1": "DEVELOPMENT",
+   "ewf|LLY|2024-02-20|1": "DEVELOPMENT",
+   "tv-yuchaosng|BTCUSD|2024-03-22|1": "DEVELOPMENT",
+   "ewf|DIS|2023-01-02|1": "VALIDATION",
+   "tv-thefifthwave|BTCUSD|2023-01-29|1": "DEVELOPMENT",
+   "ewf|NVDA|2023-08-15|1": "VALIDATION",
+   "ewf|COIN|2023-12-05|1": "DEVELOPMENT",
+   "ewf|CAT|2023-01-08|1": "DEVELOPMENT",
+   "ewf|RCL|2023-06-21|1": "VALIDATION",
+   "ewf|NEE|2024-10-08|1": "DEVELOPMENT",
+   "tv-cryptoknee|BTCUSD|2022-09-04|1": "VALIDATION",
+   "tv-cryptoknee|SPY|2022-12-06|1": "DEVELOPMENT"
+  },
+  "quarantine": [],
+  "guardSessions": 20
+ },
+ "holdoutSource": "tiedje",
+ "holdoutSourceKind": "SOURCE_FAMILY",
+ "holdoutNote": null,
+ "expectedEngine": "elliott-3.2.2",
+ "qualityGate": {
+  "status": "PILOT",
+  "checks": {
+   "sources": {
+    "value": 5,
+    "min": 2,
+    "ok": true
+   },
+   "cases": {
+    "value": 78,
+    "min": 100,
+    "ok": false
+   },
+   "highShare": {
+    "value": 0.295,
+    "min": 0.7,
+    "ok": false
+   },
+   "instruments": {
+    "value": 44,
+    "min": 2,
+    "ok": true
+   },
+   "years": {
+    "value": 5,
+    "min": 2,
+    "ok": true
+   },
+   "patternFamilies": {
+    "value": 2,
+    "min": 2,
+    "ok": true
+   },
+   "hkcmShare": {
+    "value": 0,
+    "max": 0.4,
+    "ok": true
+   }
+  },
+  "failed": [
+   "cases",
+   "highShare"
+  ]
+ },
+ "label": "PRACTITIONER REFERENCE — PILOT",
+ "createdAt": "2026-10-04T20:57:49.794Z",
+ "note": "PRACTITIONER REFERENCE, NOT OBJECTIVE GROUND TRUTH"
+}
