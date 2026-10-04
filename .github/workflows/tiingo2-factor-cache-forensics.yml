@@ -1,0 +1,54 @@
+name: Tiingo 2.0 factor cache forensics (read only)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/tiingo2-factor-cache-forensics.yml
+      - scripts/market/inspect-adjustment-caches.mjs
+      - docs/tiingo2-surgical/factor_affected30.json
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore old immutable default-branch market cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .market-cache
+          key: discover-market-cache-37096292852
+          fail-on-cache-miss: true
+      - name: Keep old cache on this runner without changing its contents
+        run: mv .market-cache "$RUNNER_TEMP/tiingo2-old-market-cache"
+      - name: Restore new immutable default-branch market cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .market-cache
+          key: discover-market-cache-37125382185
+          fail-on-cache-miss: true
+      - name: Compare only the 30 affected histories and action windows
+        run: |
+          node scripts/market/inspect-adjustment-caches.mjs \
+            --old-cache "$RUNNER_TEMP/tiingo2-old-market-cache" \
+            --new-cache .market-cache \
+            --affected docs/tiingo2-surgical/factor_affected30.json \
+            --out "$RUNNER_TEMP/tiingo2-factor-cache-comparison.json"
+      - name: Upload derived forensic evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiingo2-factor-cache-forensics-${{ github.run_id }}
+          path: ${{ runner.temp }}/tiingo2-factor-cache-comparison.json
+          if-no-files-found: warn
+          retention-days: 14
