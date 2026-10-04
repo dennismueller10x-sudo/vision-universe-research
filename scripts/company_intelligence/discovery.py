@@ -4,7 +4,7 @@ from urllib.parse import urlencode, urlsplit
 from .model import canonical_url, domain
 from .transport import SourceError
 
-OWNERSHIP_VERSION = 'corporate-ownership-8'
+OWNERSHIP_VERSION = 'corporate-ownership-9'
 
 
 def wikidata_catalogue(companies, http):
@@ -111,14 +111,21 @@ def validate_candidate(company, candidate, http, now, recover_redirects=False):
             sibling = not (within_domain(url, response['finalUrl']) or same_web_host(url, response['finalUrl']))
             if sibling and not (getattr(original,'ownershipEvidence',{}).get('headerBranded') or getattr(original,'ownershipEvidence',{}).get('shortBrand')):
                 continue
-            if re.search(r'\binvestors?\b|investor relations', label): priority = 0
-            elif re.search(r'\babout(?: us| the company)?\b', label): priority = 1
-            elif re.search(r'\bprivacy(?: policy| notice)?\b|\blegal\b', label): priority = 2
+            if re.search(r'\bprivacy(?: policy| notice)?\b|\blegal\b', label): priority = 0
+            elif re.search(r'\binvestors?\b|investor relations', label): priority = 1
+            elif re.search(r'\babout(?: us| the company)?\b', label): priority = 2
             else: continue
             routes[url] = min(priority, routes.get(url, priority))
         result = None
         temporary_routes = []
-        for url in sorted(routes, key=lambda url: (routes[url], url))[:2]:
+        ordered = sorted(routes, key=lambda url: (routes[url], url))
+        # Spend the same two-page allowance on different evidence families
+        # before consuming two navigation variants of one family. Legal pages
+        # often name the issuer precisely where corporate/IR branding does not.
+        first_per_family = list(dict.fromkeys(next(url for url in ordered if routes[url] == family)
+                                             for family in sorted(set(routes.values()))))
+        selected_routes = (first_per_family + [url for url in ordered if url not in first_per_family])[:2]
+        for url in selected_routes:
             try:
                 legal_response = http.get(url, ttl=86400)
                 if not linked_corporate_host(legal_response['finalUrl'], response['finalUrl']):

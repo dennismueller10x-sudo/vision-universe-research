@@ -103,10 +103,23 @@ class OwnershipRouteTests(unittest.TestCase):
 
  def test_conflicting_linked_legal_owner_is_not_rescued_by_another_page(self):
   root='https://issuer.example/'
-  http=HTTP({root:'<title>Root</title><a href="/about">About</a><a href="/legal">Legal</a>',root+'about':'<title>Root</title><footer>Copyright Different Owner LLC.</footer>'})
+  http=HTTP({root:'<title>Root</title><a href="/about">About</a><a href="/legal">Legal</a>',root+'legal':'<title>Root</title><footer>Copyright Different Owner LLC.</footer>'})
   with self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
    validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},http,NOW)
-  self.assertEqual(http.calls,[root,root+'about'])
+  self.assertEqual(http.calls,[root,root+'legal'])
+
+ def test_advertised_legal_proof_is_not_crowded_out_by_about_and_ir_routes(self):
+  root='https://issuer.example/';privacy=root+'privacy'
+  http=HTTP({root:'<title>Root</title><a href="/investors">Investors</a><a href="/about">About</a><a href="/privacy">Privacy Policy</a>',privacy:'<title>Privacy Policy</title><footer>Copyright 2026 Root Inc. All rights reserved.</footer>'})
+  result=validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},http,NOW)
+  self.assertEqual(http.calls,[root,privacy]);self.assertEqual(result['url'],root)
+  self.assertEqual(result['ownershipEvidence']['legalSourceUrl'],privacy)
+
+ def test_two_page_allowance_diversifies_legal_and_ir_proof_before_duplicate_routes(self):
+  root='https://issuer.example/';privacy=root+'privacy-a';ir=root+'investors'
+  http=HTTP({root:'<title>Root</title><a href="/privacy-a">Privacy Policy</a><a href="/privacy-b">Privacy Notice</a><a href="/investors">Investors</a><a href="/investors/events">Investor Events</a><a href="/about">About</a>',privacy:'<title>Privacy</title><p>Data practices.</p>',ir:'<title>Root Investor Relations</title><footer>Copyright 2026 Root Inc. All rights reserved.</footer>'})
+  result=validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},http,NOW)
+  self.assertEqual(http.calls,[root,privacy,ir]);self.assertEqual(result['ownershipEvidence']['legalSourceUrl'],ir)
 
  def test_rights_reserved_before_exact_legal_owner_is_a_bounded_footer_template(self):
   root='https://issuer.example/'
@@ -121,7 +134,7 @@ class OwnershipRouteTests(unittest.TestCase):
   good=HTTP({root:'<title>Root</title><a href="https://ir.issuer.example/">Investors</a>',ir:'<title>Root Investor Relations</title><footer>Copyright 2026 Root Inc. All rights reserved.</footer>'})
   result=validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},good,NOW)
   self.assertEqual(result['url'],root);self.assertEqual(result['ownershipEvidence']['legalSourceUrl'],ir)
-  self.assertEqual(result['verificationVersion'],'corporate-ownership-8')
+  self.assertEqual(result['verificationVersion'],'corporate-ownership-9')
   bad=HTTP({root:'<title>Root</title><a href="https://ir.issuer.example/">Investors</a>',ir:'<title>Root Investor Relations</title><footer>Copyright Different Owner LLC.</footer>'})
   with self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
    validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},bad,NOW)

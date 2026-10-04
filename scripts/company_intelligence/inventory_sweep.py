@@ -9,6 +9,10 @@ import re
 from collections import Counter
 from .model import domain
 from .site_inventory import candidate_routes
+from .discovery import OWNERSHIP_VERSION
+
+PRIOR_OWNERSHIP_VERSIONS = tuple('corporate-ownership-' + str(version)
+                               for version in range(1, int(OWNERSHIP_VERSION.rsplit('-', 1)[1])))
 
 
 def prefix(pass_id, lane):
@@ -52,16 +56,23 @@ def select(companies, store, now, pass_id, lane, limit=50, allow_network=True):
         c=companies[cid];value=candidates[cid];site=store.state('officialSite:'+cid,{})
         official=bool(c.get('officialSites')) or site.get('status')=='VALIDATED'
         prior=prior_outcomes[cid]
+        evidence_upgrade=(lane=='domains' and site.get('status')=='REJECTED' and
+                          site.get('reason') in ('OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED',
+                                                'OFFICIAL_SITE_CANDIDATE_REDIRECT_OWNER_NOT_VALIDATED') and
+                          site.get('ownershipVerifierVersion') in PRIOR_OWNERSHIP_VERSIONS)
         retryable = prior and (prior.get('status')=='COOLDOWN' or prior.get('category') in ('TEMPORARILY_UNAVAILABLE','DEFERRED_BUDGET'))
         due_after=(prior or {}).get('retryAfter') or (site if lane=='domains' else store.state('ir:'+cid,{})).get('retryAfter') or '9999'
-        if prior and not (retryable and due_after<=now) and not (lane=='ir' and prior.get('status')=='NO_VERIFIED_DOMAIN' and official):continue
+        if prior and not evidence_upgrade and not (retryable and due_after<=now) and not (lane=='ir' and prior.get('status')=='NO_VERIFIED_DOMAIN' and official):continue
         if lane=='domains':
             if not official and value.get('status')=='CANDIDATE' and len(value.get('candidates',[]))!=1:
                 original=store.state('siteCandidates:'+cid,{})
                 store.set_state('siteCandidates:'+cid,{**original,'status':'AMBIGUOUS',
                     'reason':'MULTIPLE_NON_EQUIVALENT_WEBSITE_CANDIDATES','checkedAt':now})
             status='ALREADY_VERIFIED' if official else 'AMBIGUOUS' if value.get('status')!='CANDIDATE' or len(value.get('candidates',[]))!=1 else None
-            retry=site.get('retryAfter','')
+            # A changed evidence collector may revisit an old ownership-only
+            # rejection once. Transport/access/conflict cooldowns remain intact;
+            # persistence records this version even when ownership still fails.
+            retry='' if evidence_upgrade else site.get('retryAfter','')
         else:
             ir=store.state('ir:'+cid,{})
             status='NO_VERIFIED_DOMAIN' if not official else 'ALREADY_DISCOVERED' if ir.get('lastSuccess') else None
