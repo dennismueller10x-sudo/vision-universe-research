@@ -242,6 +242,9 @@
       el("div", { class: "dx-waage-spalte dx-waage-spalte--contra qx-pc-col tone-bad" }, [el("h3", { text: "Nicht erfüllt" }), conditions(b.notMet, "Keine Bedingung verletzt.")])
     ]));
     if (b.risk) kids.push(el("p", { class: "qx-small", text: "Typisches Risiko dieses Stils: " + b.risk }));
+    /* Anlagestil heisst "welche Art von Investment passt" - nicht "getestete Strategie". */
+    kids.push(el("p", { class: "q-setup-evidence" }, [el("span", { class: "q-ev-tier tier-tested is-off", text: "Historische Strategieperformance" }),
+      el("span", { text: " " + (s.fits ? "Der Anlagestil passt aktuell. " : "") + "Wie sich dieser Stil historisch entwickelt hat, ist noch nicht getestet und nicht zertifiziert – dafür fehlen die historische Index-Zugehörigkeit und eine längere Faktorhistorie." })]));
     kids.push(X.more("Weitere Anlagestile im Vergleich", function () {
       return [el("div", { class: "qx-list" }, s.others.map(function (o) {
         return el("a", { class: "qx-row", href: X.routes.strategy(o.id) }, [
@@ -259,79 +262,109 @@
     return p(d.from) + " bis " + p(d.to) + " %";
   }
   /* ------------------------------------------------ 05 Rueckblick */
-  function replaySection(vm, conditionWords, evidence) {
-    var r = vm.replay, kids = [];
-    r.levels.forEach(function (lv) {
-      var c = [el("h3", { class: "qx-sub", text: lv.title })];
-      if (lv.id === "SAME_STOCK") {
-        if (lv.conditions && lv.conditions.length) c.push(el("p", { class: "qx-small", text: "Heutige Lage: " + lv.conditions.map(function (id) { return conditionWords[id] || id.replace(/-/g, " "); }).join(" · ") + "." }));
-        c.push(el("p", { class: "dx-bewertung-lesart", text: lv.text }));
-        if (lv.state === "AVAILABLE") {
-          /* Die Karte "Historisch getestet": vier Zahlen zu einem Zeitfenster
-             (6 Monate, sonst das laengste mit genug Faellen), darunter der
-             Zeitstrahl ueber alle Fenster und die Verteilung der Ausgaenge. */
-          var main = (lv.horizons || []).filter(function (h) { return h.id === "m6" && h.sufficient; })[0] ||
-            (lv.horizons || []).filter(function (h) { return h.sufficient; }).slice(-1)[0] || null;
-          if (main) {
-            c.push(el("div", { class: "q-evidence", role: "group", "aria-label": "Historisch getestet – " + main.label }, [
-              el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: String(lv.episodes) }), el("span", { text: "ähnliche Fälle" }), el("small", { text: main.completed + " davon nach " + main.label + " abgeschlossen" })]),
-              el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: main.positivePct || "–" }), el("span", { text: "im Plus" }), el("small", { text: "nach " + main.label })]),
-              el("div", { class: "q-ev-tile" }, [el("b", { class: "num " + (main.medianRaw > 0 ? "up" : main.medianRaw < 0 ? "down" : ""), text: main.median || "–" }), el("span", { text: "Median" }), el("small", { text: "nach " + main.label + (main.mean ? " · Mittel " + main.mean : "") })]),
-              el("div", { class: "q-ev-tile" }, [el("b", { class: "num down", text: main.drawdown || "–" }), el("span", { text: "typischer Rückgang" }), el("small", { text: main.worstDrawdown ? "größter: " + main.worstDrawdown : "im Zeitfenster" })]),
-              el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: main.chanceRisk !== null ? main.chanceRisk.toLocaleString("de-DE", { maximumFractionDigits: 2 }) : "–" }), el("span", { text: "Chance / Risiko" }), el("small", { text: "Median größter Anstieg ÷ Median größter Rückgang" })])
-            ]));
-          }
-          c.push(el("ol", { class: "q-timeline", "aria-label": "Ausgang nach Zeitfenster" }, [el("li", { class: "is-now" }, [el("b", { text: "Heute" }), el("small", { text: "Ausgangslage" })])].concat((lv.horizons || []).map(function (h) {
-            return el("li", { class: h.sufficient ? (h.medianRaw > 0 ? "up" : h.medianRaw < 0 ? "down" : "") : "is-off" }, [el("b", { class: "num", text: h.sufficient ? h.median : "–" }),
-              el("small", { text: h.label + (h.sufficient ? " · " + h.positivePct + " im Plus" + (h.drawdown ? " · typ. Rückgang " + h.drawdown : "") : " · zu wenige Fälle") })]);
-          }))));
-          var dist = main && main.distribution;
-          if (dist) {
-            var most = Math.max.apply(null, dist.map(function (d) { return d.count; })) || 1;
-            c.push(el("div", { class: "q-dist", role: "img", "aria-label": "Verteilung der Ausgänge nach " + main.label + ": " + dist.map(function (d) { return bucketLabel(d) + " " + d.count; }).join(", ") }, dist.map(function (d) {
-              return el("div", { class: "q-dist-bar " + (d.to !== null && d.to <= 0 ? "down" : "up") }, [el("i", { style: "--h:" + Math.round(d.count / most * 100) + "%" }), el("b", { class: "num", text: String(d.count) }), el("small", { text: bucketLabel(d) })]);
-            })), el("p", { class: "qx-small", text: "Verteilung der " + main.completed + " abgeschlossenen Fälle nach " + main.label + " (Kursveränderung)." }));
-          }
-          c.push(el("ul", { class: "q-trust" }, [
-            el("li", { text: "Evidenz: " + (main && main.evidence === "BROAD" ? "breit (ab 30 Fällen)" : main ? "dünn (10–29 Fälle)" : "zurückgehalten") }),
-            el("li", { text: "Zeitraum: " + (lv.from ? String(lv.from).slice(0, 4) : "–") + "–" + (lv.to ? String(lv.to).slice(0, 4) : "–") }),
-            el("li", { text: "Nur Kursbedingungen, Wochenraster" }), el("li", { text: "Ohne Ausschüttungen und Kosten" }),
-            el("li", { text: "Fenster überlappen – Fälle nicht unabhängig" }), el("li", { text: "Keine Out-of-Sample-Prüfung (beschreibt, prüft keine Regel)" })]));
-        }
-        var lastCase = (lv.horizons || []).map(function (h) { return h.lastCase; }).filter(Boolean).sort().pop();
-        if (lv.state === "AVAILABLE" && lastCase) c.push(el("p", { class: "qx-small", text: "Letzter abgeschlossener Vergleichsfall: " + X.dateDe(lastCase) + ". Gezeigt werden immer alle Fälle zusammen, nie ein einzelner herausgegriffener." }));
-        if (lv.limits && lv.limits.length) c.push(X.more("Grenzen dieses Vergleichs", function () { return el("ul", { class: "qx-small" }, lv.limits.map(function (l) { return el("li", { text: l }); })); }));
-      } else if (lv.state === "AVAILABLE") {
-        c.push(el("p", { class: "dx-bewertung-lesart", text: lv.text }));
-        var up = lv.upside, down = lv.downside;
-        var widest = Math.max(up ? up.conditional || 0 : 0, up ? up.base || 0 : 0, down ? down.conditional || 0 : 0, down ? down.base || 0 : 0, 0.0001);
-        /* Eine Zeile wie Discovers Bewertungsvergleich (dx-bewertung-zeile):
-           die eigene Lage dunkel, der Markt daneben. */
-        function bar(label, value, base, tone) {
-          return el("div", { class: "dx-bewertung-zeile" + (base !== null ? " dx-bewertung-zeile--eigen" : "") + " tone-" + tone }, [el("span", { class: "dx-bewertung-name", text: label }),
-            el("span", { class: "dx-bewertung-balken", "aria-hidden": "true" }, [el("i", { style: "width:" + Math.max(2, (value || 0) / widest * 100).toFixed(1) + "%" })]),
-            el("b", { class: "num", text: VM.pct(value, 1) })]);
-        }
-        if (up && down) {
-          c.push(el("div", { class: "qx-bars2 dx-bewertung-bild", role: "img", "aria-label": up.sentence + " " + down.sentence }, [
-            bar("Starker Gewinn", up.conditional, up.base, "good"), bar("… im Markt", up.base, null, "unknown"),
-            bar("Deutlicher Verlust", down.conditional, down.base, "bad"), bar("… im Markt", down.base, null, "unknown")]));
-          c.push(el("p", { class: "dx-bewertung-erklaerung", text: up.sentence + " " + down.sentence + " Zeitraum: " + lv.horizonMonths + " Monate." }));
-        }
-        c.push(el("p", { class: "qx-small", text: [lv.sample, lv.robust, lv.coverageText].filter(Boolean).join(" ") }));
-      } else c.push(el("p", { class: "qx-muted", text: lv.text }));
-      kids.push(el("div", { class: "qx-replay-level", dataset: { level: lv.id } }, c));
-    });
-    /* Backtests: Strategie- und Setup-Backtest sind gemessen geschlossen.
-       Statt "kommt spaeter" steht da, welche Bedingung fehlt - mit Zahl. */
+  /* ------------------------------------------------ Was geschah frueher?
+     Drei Evidenzstufen, sichtbar getrennt (evidence-language-1.0.0):
+       A Historisch beobachtet - diese Aktie in aehnlicher Lage (Replay)
+       B Historisch getestet   - marktweit getestetes Signal, mit Base Rate
+       C Zertifiziert          - nur mit Status CERTIFIED
+     Jede Quote mit Bedeutungssatz; Rueckgang zuerst als Satz. */
+  function replaySection(vm, conditionWords, evidence, signalHost) {
+    var r = vm.replay, E = global.QXEvidence, kids = [];
+    var nach = function (label) { return "nach " + String(label || "").replace(/Monate$/, "Monaten"); };
+    var same = r.levels.filter(function (lv) { return lv.id === "SAME_STOCK"; })[0];
+    var wide = r.levels.filter(function (lv) { return lv.id === "MARKET_WIDE"; })[0];
+
+    /* A */
+    var a = [el("p", { class: "q-ev-level-title", text: "A · Diese Aktie selbst" })];
+    if (same && same.state === "AVAILABLE") {
+      var main = (same.horizons || []).filter(function (h) { return h.id === "m6" && h.sufficient; })[0] ||
+        (same.horizons || []).filter(function (h) { return h.sufficient; }).slice(-1)[0] || null;
+      var box = [el("p", { class: "q-ev-head" }, [el("span", { class: "q-ev-tier tier-observed", text: "Historisch beobachtet" }), el("b", { text: same.episodes + " ähnliche Situationen seit " + String(same.from).slice(0, 4) })])];
+      if (same.conditions && same.conditions.length) box.push(el("p", { class: "q-ev-note", text: "Ähnlich heißt: " + same.conditions.map(function (id) { return conditionWords[id] || id.replace(/-/g, " "); }).join(" · ") + "." }));
+      if (main) {
+        box.push(el("p", { class: "q-ev-big" }, [el("b", { class: "num", text: main.positivePct || "–" }), el("span", { text: " der Fälle lagen " + nach(main.label) + " höher" })]));
+        box.push(el("div", { class: "q-ev-stats" }, [
+          el("div", { class: "q-ev-stat" }, [el("b", { class: "num " + (main.medianRaw > 0 ? "up" : main.medianRaw < 0 ? "down" : ""), text: main.median || "–" }), el("span", { text: "typisches Ergebnis (Median) " + nach(main.label) })]),
+          el("div", { class: "q-ev-stat" }, [el("b", { class: "num down", text: main.drawdown || "–" }), el("span", { text: "typischer Rückgang zwischendurch" })]),
+          el("div", { class: "q-ev-stat" }, [el("b", { class: "num", text: String(main.completed) }), el("span", { text: "abgeschlossene Fälle" })])]));
+        var dd = E ? E.drawdownSentence(main.drawdownRaw, main.worstDrawdownRaw) : null;
+        if (dd) box.push(el("p", { class: "q-ev-note", text: dd }));
+      } else box.push(el("p", { text: same.text }));
+      box.push(el("p", { class: "q-ev-note", text: "Beobachtet, nicht getestet: Das beschreibt nur die Vergangenheit dieser Aktie. Es gibt keine Vergleichsrate mit dem Markt, die Fälle überlappen sich zeitlich, und Dividenden sind nicht enthalten." }));
+      box.push(X.more("Alle Zeitfenster und die Verteilung", function () { return sameStockDetails(same, main); }));
+      a.push(el("div", { class: "q-ev-observed" }, box));
+    } else a.push(el("p", { class: "qx-muted", text: same ? same.text : "Für diese Aktie liegt kein Rückblick vor." }));
+
+    /* B */
+    var bHost = signalHost || el("div", {});
+    var b = [el("p", { class: "q-ev-level-title", text: "B · Marktweit getestetes Signal" }), bHost];
+    if (wide && wide.state === "AVAILABLE") b.push(X.more("Ähnliche Lagen im ganzen Markt (Musterforschung)", function () { return marketWideDetails(wide); }));
+    else if (wide && !(same && same.text === wide.text)) b.push.apply(b, marketWideDetails(wide));
+
+    /* C */
+    var c = [el("p", { class: "q-ev-level-title", text: "C · Zertifizierter Backtest" }), E ? E.certifiedLine(null) : null];
     var closed = evidence && evidence.state === "AVAILABLE" ? evidence.kinds.filter(function (k) { return k.state === "WITHHELD"; }) : [];
-    if (closed.length) kids.push(el("div", { class: "qx-replay-level q-backtest-status", dataset: { level: "BACKTEST" } }, [el("h3", { class: "qx-sub", text: "Backtests – noch keine Zahlen" })].concat(closed.map(function (k) {
-      return el("div", { class: "q-gate" }, [el("b", { text: k.label + ": " + k.question }),
-        el("ul", {}, k.checks.filter(function (ch) { return ch.state === "FAIL"; }).map(function (ch) { return el("li", {}, [el("span", { text: ch.label + " – " }), el("small", { text: "nötig: " + ch.required + " · heute: " + ch.measured })]); }))]);
-    })).concat([el("p", { class: "qx-small", text: "Solange eine dieser Bedingungen fehlt, veröffentlicht Quant für diese Arten keine Trefferquote und keine Rendite – eine Zahl ohne diese Grundlage sähe belastbarer aus, als sie ist." })])));
-    kids.push(foot(r.isNot + " Die Fälle überlappen sich zeitlich und sind nicht unabhängig; Dividenden sind nicht enthalten."));
-    kids.push(el("p", { class: "dx-kapitel-fuss dx-kapitel-fuss--link" }, [X.link("Wie Historical Replay rechnet", X.routes.method("historie")), el("span", { text: " · " }), X.link("Regeln und Setups im Backtesting", X.routes.backtest())]));
+    if (closed.length) c.push(el("ul", { class: "q-ev-closed" }, closed.map(function (k) { return el("li", { text: closedKindSentence(k) }); })));
+
+    kids.push(el("div", { class: "q-ev-levels" }, [el("div", {}, a), el("div", {}, b), el("div", { class: "is-wide" }, c)]));
+    kids.push(foot(r.isNot));
+    kids.push(el("p", { class: "dx-kapitel-fuss dx-kapitel-fuss--link" }, [X.link("Wie der Rückblick rechnet", X.routes.method("historie")), el("span", { text: " · " }), X.link("Alle getesteten Signale", X.routes.backtest())]));
     return [el("div", { class: "qx-replay" }, kids)];
+  }
+  /* Ein geschlossener Backtest in einem Satz statt einer Fachliste. */
+  function closedKindSentence(k) {
+    var fail = (k.checks || []).filter(function (ch) { return ch.state === "FAIL"; });
+    var first = fail[0];
+    return k.label + ": noch keine Zahlen." + (first ? " Es fehlt unter anderem: " + first.label + " (nötig " + first.required + ", heute " + first.measured + ")." : "") +
+      (fail.length > 1 ? " Dazu " + (fail.length - 1) + " weitere Bedingung" + (fail.length > 2 ? "en" : "") + "." : "");
+  }
+  function sameStockDetails(lv, main) {
+    var out = [el("ol", { class: "q-timeline", "aria-label": "Ausgang nach Zeitfenster" }, [el("li", { class: "is-now" }, [el("b", { text: "Heute" }), el("small", { text: "Ausgangslage" })])].concat((lv.horizons || []).map(function (h) {
+      return el("li", { class: h.sufficient ? (h.medianRaw > 0 ? "up" : h.medianRaw < 0 ? "down" : "") : "is-off" }, [el("b", { class: "num", text: h.sufficient ? h.median : "–" }),
+        el("small", { text: h.label + (h.sufficient ? " · " + h.positivePct + " höher · typ. Rückgang " + (h.drawdown || "–") : " · zu wenige Fälle") })]);
+    })))];
+    var dist = main && main.distribution;
+    if (dist) {
+      var most = Math.max.apply(null, dist.map(function (d) { return d.count; })) || 1;
+      out.push(el("div", { class: "q-dist", role: "img", "aria-label": "Verteilung der Ausgänge nach " + main.label + ": " + dist.map(function (d) { return bucketLabel(d) + " " + d.count; }).join(", ") }, dist.map(function (d) {
+        return el("div", { class: "q-dist-bar " + (d.to !== null && d.to <= 0 ? "down" : "up") }, [el("i", { style: "--h:" + Math.round(d.count / most * 100) + "%" }), el("b", { class: "num", text: String(d.count) }), el("small", { text: bucketLabel(d) })]);
+      })), el("p", { class: "qx-small", text: "Verteilung der " + main.completed + " abgeschlossenen Fälle nach " + main.label + " (Kursveränderung)." }));
+    }
+    if (main && main.chanceRisk !== null && main.chanceRisk !== undefined) out.push(el("p", { class: "qx-small", text: "Typischer größter Anstieg geteilt durch typischen größten Rückgang: " + main.chanceRisk.toLocaleString("de-DE", { maximumFractionDigits: 1 }) + " (über 1 heißt: der typische Anstieg war größer als der typische Rückgang)." }));
+    var lastCase = (lv.horizons || []).map(function (h) { return h.lastCase; }).filter(Boolean).sort().pop();
+    out.push(el("p", { class: "qx-small", text: "Zeitraum " + String(lv.from).slice(0, 4) + "–" + String(lv.to).slice(0, 4) + ", nur Kursbedingungen im Wochenraster." + (lastCase ? " Letzter abgeschlossener Fall: " + X.dateDe(lastCase) + "." : "") + " Gezeigt werden immer alle Fälle zusammen, nie ein einzelner herausgegriffener." }));
+    if (lv.limits && lv.limits.length) out.push(el("ul", { class: "qx-small" }, lv.limits.map(function (l) { return el("li", { text: l }); })));
+    return out;
+  }
+  function marketWideDetails(lv) {
+    var c = [];
+    /* Kein Treffer ist eine Aussage, kein leerer Kasten. */
+    if (lv.state !== "AVAILABLE") { c.push(el("p", { class: "qx-muted", text: lv.text })); return c; }
+    c.push(el("p", { class: "dx-bewertung-lesart", text: lv.text }));
+    var up = lv.upside, down = lv.downside;
+    var widest = Math.max(up ? up.conditional || 0 : 0, up ? up.base || 0 : 0, down ? down.conditional || 0 : 0, down ? down.base || 0 : 0, 0.0001);
+    function bar(label, value, base, tone) {
+      return el("div", { class: "dx-bewertung-zeile" + (base !== null ? " dx-bewertung-zeile--eigen" : "") + " tone-" + tone }, [el("span", { class: "dx-bewertung-name", text: label }),
+        el("span", { class: "dx-bewertung-balken", "aria-hidden": "true" }, [el("i", { style: "width:" + Math.max(2, (value || 0) / widest * 100).toFixed(1) + "%" })]),
+        el("b", { class: "num", text: VM.pct(value, 1) })]);
+    }
+    if (up && down) {
+      c.push(el("div", { class: "qx-bars2 dx-bewertung-bild", role: "img", "aria-label": up.sentence + " " + down.sentence }, [
+        bar("Starker Gewinn", up.conditional, up.base, "good"), bar("… im Markt", up.base, null, "unknown"),
+        bar("Deutlicher Verlust", down.conditional, down.base, "bad"), bar("… im Markt", down.base, null, "unknown")]));
+      c.push(el("p", { class: "dx-bewertung-erklaerung", text: up.sentence + " " + down.sentence + " Zeitraum: " + lv.horizonMonths + " Monate." }));
+    }
+    c.push(el("p", { class: "qx-small", text: [lv.sample, lv.robust, lv.coverageText, "Historisch beobachtet: eine Häufigkeitsauswertung, kein Test einer Handelsregel."].filter(Boolean).join(" ") }));
+    return c;
+  }
+  /* B: die marktweit getesteten Signale, die bei dieser Aktie gerade ausloesen. */
+  function signalEvidenceFor(card) {
+    var E = global.QXEvidence, T = global.VUQuantRadar ? global.VUQuantRadar.TYPE : {};
+    var evs = ((card && card.events) || []).filter(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; }).slice(0, 2);
+    if (!evs.length) return [el("p", { class: "qx-muted", text: "Zurzeit löst bei dieser Aktie kein marktweit getestetes Signal aus. Welche Signale getestet sind und wie sie abschnitten, steht im Backtesting." })];
+    return evs.map(function (e) {
+      return E.signalEvidence(e.backtest, { label: "„" + ((T[e.eventType] || {}).label || e.eventType) + "“ am " + X.dateDe(e.occurredAt) });
+    });
   }
 
   /* ------------------------------------------------ 06 Kursstruktur */
@@ -619,7 +652,7 @@
        die Hauptgeschichte - sie stehen weiter unten, vollstaendig. */
     var hasFactors = vm.factorState === "AVAILABLE";
     var o = vm.overall;
-    var TABS = [["einordnung-kurz", "Jetzt"], ["setup", "Setup"], ["historie", "Backtesting"], ["einordnung", hasFactors && o.rated > 0 ? "Faktoren" : null], ["news", "News"]]
+    var TABS = [["einordnung-kurz", "Jetzt"], ["setup", "Setup"], ["historie", "Evidenz"], ["einordnung", hasFactors && o.rated > 0 ? "Faktoren" : null], ["news", "News"]]
       .filter(function (t) { return t[1]; });
     var tabs = el("nav", { class: "q-tabs qx-toc", "aria-label": "Abschnitte der Analyse" }, TABS.map(function (t, i) {
       return el("a", { href: "#" + t[0], "aria-current": i === 0 ? "true" : "false", dataset: { target: t[0] }, text: t[1] });
@@ -645,7 +678,8 @@
     layout.append(verdictCard(vm, factors && factors.reason, "Quant bildet keine Ersatzwerte. Was vorhanden ist, steht weiter unten; was fehlt, steht unter „Daten und Grenzen“.", nowHost));
     bodyHost.append(layout);
     var lifecycleBox = el("div", { class: "q-lifecycle-host" });
-    Promise.all([api.getRadarCard ? api.getRadarCard(ticker).catch(function () { return null; }) : null,
+    var cardPromise = api.getRadarCard ? api.getRadarCard(ticker).catch(function () { return null; }) : Promise.resolve(null);
+    Promise.all([cardPromise,
       api.getSetupLifecycle ? api.getSetupLifecycle(ticker).catch(function () { return null; }) : null]).then(function (rl) {
       if (!nowHost.isConnected) return;
       nowHost.replaceChildren.apply(nowHost, nowContent(ticker, rl[0], rl[1]));
@@ -660,18 +694,39 @@
     if (technical && technical.state === "AVAILABLE" && technical.fullWorkspace && api.getTechnicalWorkspace) {
       api.getTechnicalWorkspace(ticker).then(function (ws) { if (setupCard.isConnected) renderSetupCard(setupCard, vm, ws, technical, ticker, lifecycleBox); }).catch(function () { return null; });
     }
+    var evidenceP = api.getEvidenceStatus ? api.getEvidenceStatus().catch(function () { return null; }) : Promise.resolve(null);
+    /* Setup und Evidenz direkt verbunden - aber nie mit Signal-Backtests vermischt. */
+    var setupEvidence = el("p", { class: "q-setup-evidence" });
+    evidenceP.then(function (ev) {
+      var k = ev && ev.state === "AVAILABLE" ? ev.kinds.filter(function (x) { return x.id === "SETUP_BACKTEST" || /Setup/.test(x.label || ""); })[0] : null;
+      if (!setupEvidence.isConnected || vm.setup.state === "UNAVAILABLE") return;
+      setupEvidence.replaceChildren(el("span", { class: "q-ev-tier tier-tested is-off", text: "Historische Evidenz zu Setups" }),
+        el("span", { text: k && k.state !== "WITHHELD" ? " Setup-Ergebnisse siehe Backtesting." : " Zu wenige echte Setup-Fälle für eine Aussage. " + (k ? closedKindSentence(k) : "") + " Setup-Ergebnisse werden nicht mit den marktweiten Signal-Backtests vermischt." }));
+    });
     bodyHost.append(X.section("Wie weit ist die Aktie im Setup?", "Wo ein Einstieg im Szenario ansetzt, was ihn bestätigt und wo es ungültig wird – keine Empfehlung.",
-      [setupCard].concat(vm.setup.state !== "UNAVAILABLE" ? [X.more("Die Setup-Stufen im Detail", function () { return setupSection(vm); })] : []), null, "01 / Setup & Trigger", "setup"));
+      [setupCard, setupEvidence].concat(vm.setup.state !== "UNAVAILABLE" ? [X.more("Die Setup-Stufen im Detail", function () { return setupSection(vm); })] : []), null, "01 / Setup & Trigger", "setup"));
 
-    /* 4: Historisch getestet - Rueckblick, Marktmuster, Stand der Backtests. */
-    var evidence = await (api.getEvidenceStatus ? api.getEvidenceStatus().catch(function () { return null; }) : null);
-    bodyHost.append(X.section("Was geschah früher in ähnlichen Situationen?", "Bei dieser Aktie in derselben Kurslage – und im gesamten Markt in ähnlichen Lagen. Keine Prognose.", replaySection(vm, words, evidence), { href: X.routes.method("historie"), label: "Wie das gerechnet wird" }, "02 / Historisch getestet", "historie"));
+    /* 4: Was geschah frueher? Beobachtet (diese Aktie), getestet
+       (marktweites Signal mit Base Rate), zertifiziert. */
+    var evidence = await evidenceP;
+    var signalHost = el("div", { class: "q-ev-signal-host", "aria-live": "polite" }, [el("p", { class: "qx-small", text: "Getestete Signale werden geladen …" })]);
+    bodyHost.append(X.section("Was geschah früher in ähnlichen Situationen?", "Getrennt nach dem, was bei dieser Aktie beobachtet wurde, und dem, was marktweit getestet ist. Keine Prognose.", replaySection(vm, words, evidence, signalHost), { href: X.routes.method("historie"), label: "Wie das gerechnet wird" }, "02 / Historische Evidenz", "historie"));
+    cardPromise.then(function (rc) {
+      if (!signalHost.isConnected) return;
+      var card = rc && rc.state === "AVAILABLE" ? rc.card : null;
+      signalHost.replaceChildren.apply(signalHost, signalEvidenceFor(card));
+      /* Ohne ausloesendes Signal spricht die Zertifizierungszeile von der Aktie, nicht von "diesem Signal". */
+      var tested = ((card && card.events) || []).some(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; });
+      var certHost = signalHost.closest ? signalHost.closest(".qx-replay") : null, certLine = certHost ? certHost.querySelector(".q-ev-cert") : null;
+      if (!tested && certLine && global.QXEvidence) certLine.replaceWith(global.QXEvidence.certifiedLine(null, { subject: "diese Aktie" }));
+    });
 
     /* 4b: Radar-Status - die Verfolgung dieser Aktie: Zustand jetzt und
        davor, seit wann, Ausloeser, Invalidierung, naechste Bedingung,
        Evidenzstand und der historische Beleg je Ereignis. */
     var trackHost = el("div", { class: "q-track-host", "aria-live": "polite" }, [el("p", { class: "qx-small", text: "Radar-Status wird geladen …" })]);
-    bodyHost.append(X.section("Radar-Status", "Was Quant für diese Aktie verfolgt – mit Datum und historischem Beleg. Keine Empfehlung.", [trackHost],
+    var alertHost = global.QXEvidence && global.QXEvidence.alertPanel ? global.QXEvidence.alertPanel(ticker) : null;
+    bodyHost.append(X.section("Radar-Status", "Was Quant für diese Aktie verfolgt – mit Datum und historischem Beleg. Keine Empfehlung.", [trackHost, alertHost].filter(Boolean),
       { href: X.routes.backtest(), label: "Backtesting" }, "03 / Radar-Status", "radar-status"));
     (api.getSignalTracking ? api.getSignalTracking(ticker).catch(function () { return null; }) : Promise.resolve(null)).then(function (tr) {
       if (!trackHost.isConnected) return;
