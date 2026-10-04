@@ -22710,5 +22710,714 @@
     "companyId": "iss_cik_0001262976",
     "bootstrapValidatedAt": "2026-10-04",
     "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://www.epam.com/",
+      "https://www.epam.com/investors",
+      "https://investors.epam.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0001352010",
+    "sourceId": "090ad751f1984316ed131c1c",
+    "provider": "Q4",
+    "url": "https://investors.epam.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "intervalHours": 12,
+    "type": "IR_EVENTS",
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:33:01Z",
+    "format": "Q4_EVENTS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://www.bridgewaterbankmn.com/",
+      "http://investors.bridgewaterbankmn.com/",
+      "https://investors.bridgewaterbankmn.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0001341317",
+    "sourceId": "0abc731c8c2fb4921371c73e",
+    "provider": "Q4",
+    "url": "https://investors.bridgewaterbankmn.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "intervalHours": 12,
+    "type": "IR_EVENTS",
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:29:24Z",
+    "format": "Q4_EVENTS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://www.pavmed.com/",
+      "https://ir.pavmed.com/",
+      "https://ir.pavmed.com/press-releases?pagetemplate=rss"
+    ],
+    "companyId": "iss_cik_0001624326",
+    "sourceId": "10822f63606437386d1e038e",
+    "provider": "WEB_DRIVER",
+    "priority": 1,
+    "url": "https://ir.pavmed.com/press-releases?pagetemplate=rss",
+    "intervalHours": 4,
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.pavmed.com/",
+      "officialSite": "https://www.pavmed.com/",
+      "validItems": 5
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:23:38Z",
+    "format": "RSS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://www.mesoblast.com/",
+      "http://investorsmedia.mesoblast.com/shareholder-services/investor-faqs",
+      "http://investorsmedia.mesoblast.com/rss/events.xml"
+    ],
+    "companyId": "iss_cik_0001345099",
+    "sourceId": "14276a538e70ecfd4f307413",
+    "provider": "GCS",
+    "priority": 1,
+    "url": "http://investorsmedia.mesoblast.com/rss/events.xml",
+    "intervalHours": 12,
+    "type": "IR_EVENTS",
+    "verificationEvidence": {
+      "linkedFrom": "http://investorsmedia.mesoblast.com/rss-feeds",
+      "officialSite": "https://www.mesoblast.com/",
+      "validItems": 10
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:33:01Z",
+    "format": "RSS_EVENTS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "allowedSites": [
+      "https://gpreinc.com/",
+      "https://gpreinc.com/investors-media/",
+      "https://investor.gpreinc.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0001309402",
+    "sourceId": "144322a14a76aca0109d3adc",
+    "provider": "Q4",
+    "url": "https://investor.gpreinc.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "intervalHours": 24,
+    "type": "IR_MATERIALS",
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:25:54Z",
+    "format": "Q4_REPORTS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://www.wheatonpm.com/overview/default.aspx",
+      "https://www.wheatonpm.com/investor-centre/events-and-presentations/default.aspx",
+      "https://www.wheatonpm.com/investor-centre/events-and-presentations/default.aspx"
+    ],
+    "companyId": "iss_cik_0001323404",
+    "sourceId": "173746bf3dbdfbc4d02e3bc7",
+    "provider": "Q4",
+    "url": "https://www.wheatonpm.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "intervalHours": 12,
+    "type": "IR_EVENTS",
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:25:54Z",
+    "format": "Q4_EVENTS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://www.mesoblast.com/",
+      "http://investorsmedia.mesoblast.com/shareholder-services/investor-faqs",
+      "http://investorsmedia.mesoblast.com/rss/news-releases.xml"
+    ],
+    "companyId": "iss_cik_0001345099",
+    "sourceId": "1abd2a997ab52af70ac0de52",
+    "provider": "GCS",
+    "priority": 1,
+    "url": "http://investorsmedia.mesoblast.com/rss/news-releases.xml",
+    "intervalHours": 6,
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "linkedFrom": "http://investorsmedia.mesoblast.com/rss-feeds",
+      "officialSite": "https://www.mesoblast.com/",
+      "validItems": 10
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:33:01Z",
+    "format": "RSS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://www.aldeyra.com/",
+      "https://ir.aldeyra.com/"
+    ],
+    "companyId": "iss_cik_0001341235",
+    "sourceId": "1bb9671b59c2d114267c5efe",
+    "provider": "GCS",
+    "priority": 1,
+    "url": "https://ir.aldeyra.com/rss/news-releases.xml",
+    "intervalHours": 4,
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:29:24Z",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://www.cfindustries.com/",
+      "https://cfindustries.q4ir.com/corporate-profile/default.aspx",
+      "https://ir.cfindustries.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0001324404",
+    "sourceId": "3c878adba7773453d59c6896",
+    "provider": "Q4",
+    "url": "https://ir.cfindustries.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "intervalHours": 12,
+    "type": "IR_EVENTS",
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:25:54Z",
+    "format": "Q4_EVENTS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://celsiusholdingsinc.com/",
+      "https://ir.celsiusholdingsinc.com/",
+      "https://ir.celsiusholdingsinc.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0001341766",
+    "sourceId": "3e953b5acd2cc0c32811d75f",
+    "provider": "Q4",
+    "url": "https://ir.celsiusholdingsinc.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "intervalHours": 12,
+    "type": "IR_EVENTS",
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:29:24Z",
+    "format": "Q4_EVENTS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://clearchanneloutdoor.com/",
+      "https://investor.clearchannel.com/resources/investor-faq/default.aspx",
+      "https://investor.clearchannel.com/news/rss"
+    ],
+    "companyId": "iss_cik_0001334978",
+    "sourceId": "3ef5c7271979016c9cae8e23",
+    "provider": "STOCKPR",
+    "priority": 1,
+    "url": "https://investor.clearchannel.com/news/rss",
+    "intervalHours": 6,
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "linkedFrom": "https://investor.clearchannel.com/resources/rss-feeds",
+      "officialSite": "https://clearchanneloutdoor.com/",
+      "validItems": 10
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:25:54Z",
+    "format": "RSS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://gpreinc.com/",
+      "https://investor.gpreinc.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0001309402",
+    "sourceId": "4e0e3ae503a816d20f5720d0",
+    "provider": "Q4",
+    "priority": 1,
+    "url": "https://investor.gpreinc.com/rss/PressRelease.aspx?LanguageId=1",
+    "intervalHours": 4,
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:25:54Z",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "allowedSites": [
+      "https://www.bridgewaterbankmn.com/",
+      "http://investors.bridgewaterbankmn.com/",
+      "https://investors.bridgewaterbankmn.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0001341317",
+    "sourceId": "52d9268e4c034acfbfe3d21e",
+    "provider": "Q4",
+    "url": "https://investors.bridgewaterbankmn.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "intervalHours": 24,
+    "type": "IR_MATERIALS",
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:29:24Z",
+    "format": "Q4_REPORTS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "allowedSites": [
+      "https://www.wheatonpm.com/overview/default.aspx",
+      "https://www.wheatonpm.com/investor-centre/events-and-presentations/default.aspx",
+      "https://www.wheatonpm.com/investor-centre/events-and-presentations/default.aspx"
+    ],
+    "companyId": "iss_cik_0001323404",
+    "sourceId": "544a2dcdb3feb118a5e5fdf9",
+    "provider": "Q4",
+    "url": "https://www.wheatonpm.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "intervalHours": 24,
+    "type": "IR_MATERIALS",
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:25:54Z",
+    "format": "Q4_REPORTS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://www.gladstoneinvestment.com/",
+      "https://www.gladstoneinvestment.com/",
+      "https://www.gladstoneinvestment.com/newsroom/press-releases/rss"
+    ],
+    "companyId": "iss_cik_0001321741",
+    "sourceId": "62676778d4d534007cb3eb33",
+    "provider": "GENERIC",
+    "priority": 1,
+    "url": "https://www.gladstoneinvestment.com/newsroom/press-releases/rss",
+    "intervalHours": 4,
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "linkedFrom": "https://www.gladstoneinvestment.com/",
+      "officialSite": "https://www.gladstoneinvestment.com/",
+      "validItems": 10
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:25:54Z",
+    "format": "RSS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://www.bridgewaterbankmn.com/",
+      "https://investors.bridgewaterbankmn.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0001341317",
+    "sourceId": "62bd8f98b85b18fa7c88e0a2",
+    "provider": "Q4",
+    "priority": 1,
+    "url": "https://investors.bridgewaterbankmn.com/rss/PressRelease.aspx?LanguageId=1",
+    "intervalHours": 4,
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:29:24Z",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://sandridgeenergy.com/",
+      "http://investors.sandridgeenergy.com/investor-relations/overview/default.aspx",
+      "https://investors.sandridgeenergy.com/Investor-Relations/press-releases/default.aspx"
+    ],
+    "companyId": "iss_cik_0001349436",
+    "sourceId": "63253e08c78db51a3a895444",
+    "provider": "Q4",
+    "url": "https://investors.sandridgeenergy.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "intervalHours": 12,
+    "type": "IR_EVENTS",
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:33:01Z",
+    "format": "Q4_EVENTS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://www.gladstoneinvestment.com/",
+      "https://www.gladstoneinvestment.com/investors/news-events",
+      "https://www.gladstoneinvestment.com/investors/news-events/press-releases/rss"
+    ],
+    "companyId": "iss_cik_0001321741",
+    "sourceId": "6a67c7498595988cecba801c",
+    "provider": "STOCKPR",
+    "priority": 1,
+    "url": "https://www.gladstoneinvestment.com/investors/news-events/press-releases/rss",
+    "intervalHours": 4,
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "linkedFrom": "https://www.gladstoneinvestment.com/investors/news-events",
+      "officialSite": "https://www.gladstoneinvestment.com/",
+      "validItems": 10
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:25:54Z",
+    "format": "RSS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://freightcaramerica.com/",
+      "https://investors.freightcaramerica.com/corporate-profile/default.aspx"
+    ],
+    "companyId": "iss_cik_0001320854",
+    "sourceId": "6c863112fd22693f6de8d867",
+    "provider": "Q4",
+    "priority": 1,
+    "url": "https://investors.freightcaramerica.com/rss/PressRelease.aspx?LanguageId=1",
+    "intervalHours": 4,
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:25:54Z",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://www.mesoblast.com/",
+      "https://investorsmedia.mesoblast.com/shareholder-services/investor-faqs",
+      "https://investorsmedia.mesoblast.com/rss/news-releases.xml"
+    ],
+    "companyId": "iss_cik_0001345099",
+    "sourceId": "6d87c55a16e6d0a18a4b343c",
+    "provider": "GCS",
+    "priority": 1,
+    "url": "https://investorsmedia.mesoblast.com/rss/news-releases.xml",
+    "intervalHours": 6,
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "linkedFrom": "https://investorsmedia.mesoblast.com/rss-feeds",
+      "officialSite": "https://www.mesoblast.com/",
+      "validItems": 10
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:33:01Z",
+    "format": "RSS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://www.mesoblast.com/",
+      "https://investorsmedia.mesoblast.com/shareholder-services/investor-faqs",
+      "https://investorsmedia.mesoblast.com/rss/events.xml"
+    ],
+    "companyId": "iss_cik_0001345099",
+    "sourceId": "9272ec9c04acfcf0fee594f6",
+    "provider": "GCS",
+    "priority": 1,
+    "url": "https://investorsmedia.mesoblast.com/rss/events.xml",
+    "intervalHours": 12,
+    "type": "IR_EVENTS",
+    "verificationEvidence": {
+      "linkedFrom": "https://investorsmedia.mesoblast.com/rss-feeds",
+      "officialSite": "https://www.mesoblast.com/",
+      "validItems": 10
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:33:01Z",
+    "format": "RSS_EVENTS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "allowedSites": [
+      "https://www.cfindustries.com/",
+      "https://cfindustries.q4ir.com/corporate-profile/default.aspx",
+      "https://ir.cfindustries.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0001324404",
+    "sourceId": "a38ee1fcdcf17df540ee02e2",
+    "provider": "Q4",
+    "url": "https://ir.cfindustries.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "intervalHours": 24,
+    "type": "IR_MATERIALS",
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:25:54Z",
+    "format": "Q4_REPORTS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://www.wheatonpm.com/overview/default.aspx",
+      "https://www.wheatonpm.com/investor-centre/events-and-presentations/default.aspx"
+    ],
+    "companyId": "iss_cik_0001323404",
+    "sourceId": "ac20ae24d4b33c46e6d4f429",
+    "provider": "Q4",
+    "priority": 1,
+    "url": "https://www.wheatonpm.com/rss/PressRelease.aspx?LanguageId=1",
+    "intervalHours": 4,
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:25:54Z",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://celsiusholdingsinc.com/",
+      "https://ir.celsiusholdingsinc.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0001341766",
+    "sourceId": "b6e5944c9f4606fdf9e4faeb",
+    "provider": "Q4",
+    "priority": 1,
+    "url": "https://ir.celsiusholdingsinc.com/rss/PressRelease.aspx?LanguageId=1",
+    "intervalHours": 4,
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:29:24Z",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "allowedSites": [
+      "https://celsiusholdingsinc.com/",
+      "https://ir.celsiusholdingsinc.com/",
+      "https://ir.celsiusholdingsinc.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0001341766",
+    "sourceId": "d686004be3ee372f15558472",
+    "provider": "Q4",
+    "url": "https://ir.celsiusholdingsinc.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "intervalHours": 24,
+    "type": "IR_MATERIALS",
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:29:24Z",
+    "format": "Q4_REPORTS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://www.epam.com/",
+      "https://investors.epam.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0001352010",
+    "sourceId": "db1610ce869d500a4c17b9f7",
+    "provider": "Q4",
+    "priority": 1,
+    "url": "https://investors.epam.com/rss/PressRelease.aspx?LanguageId=1",
+    "intervalHours": 4,
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:33:01Z",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://sandridgeenergy.com/",
+      "http://investors.sandridgeenergy.com/investor-relations/overview/default.aspx",
+      "https://investors.sandridgeenergy.com/rss/pressrelease.aspx"
+    ],
+    "companyId": "iss_cik_0001349436",
+    "sourceId": "dd4f7ec8a4e4b0d1c6584d09",
+    "provider": "Q4",
+    "priority": 1,
+    "url": "https://investors.sandridgeenergy.com/rss/pressrelease.aspx",
+    "intervalHours": 6,
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.sandridgeenergy.com/Investor-Relations/RSS-Feeds/default.aspx",
+      "officialSite": "https://sandridgeenergy.com/",
+      "validItems": 10
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:33:01Z",
+    "format": "RSS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://femasys.com/",
+      "https://ir.femasys.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0001339005",
+    "sourceId": "decb94fea091a82c43b016e1",
+    "provider": "Q4",
+    "priority": 1,
+    "url": "https://ir.femasys.com/rss/PressRelease.aspx?LanguageId=1",
+    "intervalHours": 4,
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:29:24Z",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://gpreinc.com/",
+      "https://gpreinc.com/investors-media/",
+      "https://investor.gpreinc.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0001309402",
+    "sourceId": "e1de7114b02015122a57e0dc",
+    "provider": "Q4",
+    "url": "https://investor.gpreinc.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "intervalHours": 12,
+    "type": "IR_EVENTS",
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:25:54Z",
+    "format": "Q4_EVENTS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://www.cfindustries.com/",
+      "https://ir.cfindustries.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0001324404",
+    "sourceId": "e2cbb27a49f6e9f2633054cd",
+    "provider": "Q4",
+    "priority": 1,
+    "url": "https://ir.cfindustries.com/rss/PressRelease.aspx?LanguageId=1",
+    "intervalHours": 4,
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:25:54Z",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://freightcaramerica.com/",
+      "https://investors.freightcaramerica.com/corporate-profile/default.aspx",
+      "https://investors.freightcaramerica.com/corporate-profile/default.aspx"
+    ],
+    "companyId": "iss_cik_0001320854",
+    "sourceId": "e946b6140a2c36ab8babe9a3",
+    "provider": "Q4",
+    "url": "https://investors.freightcaramerica.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "intervalHours": 12,
+    "type": "IR_EVENTS",
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:25:54Z",
+    "format": "Q4_EVENTS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "allowedSites": [
+      "https://www.epam.com/",
+      "https://www.epam.com/investors",
+      "https://investors.epam.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0001352010",
+    "sourceId": "ffc3727896541d9987f318c4",
+    "provider": "Q4",
+    "url": "https://investors.epam.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "intervalHours": 24,
+    "type": "IR_MATERIALS",
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "verified": true,
+    "active": true,
+    "lastVerified": "2026-10-04T17:33:01Z",
+    "format": "Q4_REPORTS",
+    "bootstrapValidatedAt": "2026-10-04",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
   }
 ]

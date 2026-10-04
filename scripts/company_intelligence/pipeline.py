@@ -120,6 +120,23 @@ class Pipeline:
             if source.get('verified') and source['type'] != 'SEC':
                 if not any(within_domain(response['finalUrl'], site) for site in source.get('allowedSites', [])):
                     raise SourceError('SOURCE_REDIRECT_REQUIRES_REVALIDATION')
+            if source.get('format') == 'HTML_MATERIALS':
+                from .materials import parse_hub
+                cid=source['companyId'];ir=self.store.state('ir:'+cid,{})
+                documents=parse_hub(response['body'],source,self.companies[cid],response['finalUrl'],self.now)
+                previous=[d for cfg in ir.get('configurations',[]) if cfg.get('materialsSourceId')==sid for d in cfg.get('documents',[])]
+                current_ids={d['documentId'] for d in documents}
+                documents=(documents+[d for d in previous if d['documentId'] not in current_ids])[:100]
+                configs=[cfg for cfg in ir.get('configurations',[]) if cfg.get('materialsSourceId')!=sid]
+                configs.append({'companyId':cid,'irHomepage':source['metadata']['originatingIRHomepage'],'pageRole':'IR',
+                                'providerType':source.get('provider','GENERIC'),'documents':documents,'materialsSourceId':sid,
+                                'materialsPage':response['finalUrl'],'lastVerified':self.now,'confidence':.95,
+                                'evidence':'VALIDATED_ISSUER_ADVERTISED_MATERIALS_HUB'})
+                self.store.set_state('ir:'+cid,{**ir,'configurations':configs})
+                self.store.source({**source,'lastChecked':self.now,'lastSuccess':self.now,'failureCount':0,'lastError':None,
+                                   'lastItemCount':len(documents),'contentDateStatus':'PUBLICATION_DATE_NOT_PROVIDED',
+                                   'nextCheck':advance(self.now,source.get('intervalHours',24))})
+                return
             if source.get('format') == 'Q4_REPORTS':
                 from .q4_reports import parse as parse_reports
                 documents = parse_reports(response['body'], source, self.now)

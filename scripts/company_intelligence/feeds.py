@@ -282,15 +282,23 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
                 import sys
                 if isinstance(sys.exception(), BudgetExhausted):
                     raise
-        # One directly linked IR materials/results hub, not an unbounded crawl.
-        if configs[-1]['pageRole'] == 'IR' and not configs[-1]['documents']:
-            materials_page = next((l for l in links if within_domain(l['url'], page) and re.search(r'presentations|quarterly results|financial results|shareholder letters', l['text'], re.I) and not re.search(r'\.(?:pdf|zip)(?:\?|$)', l['url'], re.I)), None)
+        # One advertised hub can fill a missing material component even when
+        # the IR homepage already contains unrelated annual-report links.
+        if configs[-1]['pageRole'] == 'IR' and not any(d['type']=='PRESENTATION' for d in configs[-1]['documents']):
+            material_hubs = [l for l in links if within_domain(l['url'], page) and re.search(r'presentations|quarterly results|financial results|shareholder letters|transcripts|prepared remarks', l['text'], re.I) and not re.search(r'\.(?:pdf|zip)(?:\?|$)', l['url'], re.I) and l['url'] != response['finalUrl']]
+            material_hubs.sort(key=lambda l: (not bool(re.search(r'presentations|slides',l['text'],re.I)),l['url']))
+            materials_page = next(iter(material_hubs), None)
             if materials_page and materials_page['url'] != response['finalUrl']:
                 materials_response = optional_page(materials_page['url'])
                 if materials_response and within_domain(materials_response['finalUrl'], page):
                     material_links = parse_links(materials_response['body'], materials_response['finalUrl'])
-                    configs[-1]['documents'].extend(page_documents(company, material_links, materials_response['finalUrl'], now))
+                    hub_documents=page_documents(company, material_links, materials_response['finalUrl'], now)
+                    configs[-1]['documents'].extend(hub_documents)
                     configs[-1]['materialsPage'] = materials_response['finalUrl']
+                    if any(d['type']!='FINANCIAL_REPORT' for d in hub_documents):
+                        from .materials import from_validated_ir
+                        material_source=from_validated_ir({**company,'officialSites':[official_site]},configs[-1],now)
+                        if material_source:sources[material_source['sourceId']]=material_source
         for link in feed_links[:3]:
             try:
                 feed = http.get(link['url'], ttl=86400)

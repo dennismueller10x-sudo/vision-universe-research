@@ -5,6 +5,96 @@ from .model import within_domain, canonical_url
 from .transport import SourceError
 
 
+def from_validated_ir(company, config, now):
+    """Reuse an advertised HTML hub under an already verified IR host."""
+    from .model import stable_id
+    page=canonical_url(config.get('irHomepage'))
+    url=canonical_url(config.get('materialsPage') or config.get('presentationsUrl'))
+    if (not company.get('officialSites') or config.get('companyId')!=company['companyId'] or
+            config.get('pageRole')!='IR' or config.get('evidence')!='LINK_FROM_VERIFIED_OFFICIAL_SITE' or
+            not page or not url or url==page or not within_domain(url,page) or
+            re.search(r'/static-files/|\.(?:pdf|zip)(?:\?|$)',url,re.I)):
+        return None
+    return {'sourceId':stable_id(company['companyId'],url,'html-materials'),'companyId':company['companyId'],
+            'url':url,'type':'IR_MATERIALS','format':'HTML_MATERIALS','provider':config.get('providerType','GENERIC'),
+            'verified':True,'active':True,'intervalHours':24,'allowedSites':[company['officialSites'][0],page,url],
+            'metadata':{'originatingIRHomepage':page},'lastVerified':now,
+            'verificationEvidence':{'method':'ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE','linkedFrom':page}}
+
+
+def parse_hub(body, source, company, final_url, now):
+    if (not source.get('verified') or source.get('format')!='HTML_MATERIALS' or
+            source.get('companyId')!=company['companyId'] or
+            not any(within_domain(final_url,u) for u in source.get('allowedSites',[]))):
+        raise SourceError('HTML_MATERIALS_REQUIRES_VERIFIED_ISSUER_HOST')
+    if len(body)>2*1024*1024 or not body.lstrip().startswith(b'<'):
+        raise SourceError('HTML_MATERIALS_INVALID_OR_OVERSIZED_HTML')
+    documents=page_documents(company,parse_links(body,final_url),final_url,now)
+    if not any(d['type']!='FINANCIAL_REPORT' for d in documents):
+        raise SourceError('HTML_MATERIALS_NO_COMPANY_MATERIAL_LINKS')
+    return [{**d,'sourceId':source['sourceId'],'publicationDateStatus':'NOT_PROVIDED'} for d in documents]
+
+
+def backfill(pipeline, limit, scope=None, companies=None):
+    """Resume missing materials through existing source health and IR proof."""
+    import json
+    from .q4_reports import from_validated_events
+    from .discovery_circuit import DiscoveryCircuit,guarded_poll
+    from .pipeline import advance,utcnow
+    from .transport import BudgetExhausted
+    if not 1<=limit<=100:raise ValueError('INVALID_MATERIALS_BACKFILL_LIMIT')
+    store,http,now=pipeline.store,pipeline.http,pipeline.now
+    companies=companies if companies is not None else pipeline.companies
+    circuit_key='discoveryCircuit:ir'
+    prior_circuit=store.state(circuit_key,store.state('discoveryCircuit',{}))
+    if prior_circuit.get('open') and prior_circuit.get('retryAfter','')>now:
+        return {'derivedSources':0,'requests':0,'httpStats':http.stats,'run':pipeline.run,
+                'deferred':True,'stopReason':'CIRCUIT_COOLDOWN','circuit':prior_circuit}
+    prior={s['sourceId']:s for (raw,) in store.db.execute('SELECT payload FROM sources') for s in [json.loads(raw)]}
+    candidates={}
+    for source in prior.values():
+        if source.get('companyId') not in companies or not source.get('active',True):continue
+        if scope is not None and source.get('companyId') not in scope:continue
+        derived=from_validated_events(source,now)
+        if derived:candidates[derived['sourceId']]=derived
+    for cid,company in sorted(companies.items()):
+        if scope is not None and cid not in scope:continue
+        if not company.get('officialSites') or store.company_payload(company,now)['presentations']:continue
+        for config in store.state('ir:'+cid,{}).get('configurations',[]):
+            derived=from_validated_ir(company,config,now)
+            if derived:candidates[derived['sourceId']]=derived
+    eligible=[]
+    for sid,candidate in sorted(candidates.items(),key=lambda item:(item[0] in prior,item[1]['companyId'],item[0])):
+        previous=prior.get(sid)
+        if previous and (not previous.get('active',True) or previous.get('lastSuccess') or (previous.get('nextCheck') or '')>now):continue
+        # A derived descriptor must never reset a prior failure count/due time.
+        eligible.append(previous or candidate)
+    circuit=DiscoveryCircuit();attempted=[];recovered=[];deferred=False
+    def save_circuit():
+        checked=utcnow();value={**circuit.snapshot(),'checkedAt':checked,'scope':'ir'}
+        if value['open']:value['retryAfter']=advance(checked,.25)
+        store.set_state(circuit_key,value)
+        return value
+    try:
+        with guarded_poll(http,circuit):
+            for source in eligible[:limit]:
+                circuit.check()
+                cid=source['companyId'];before=bool(store.company_payload(companies[cid],now)['presentations'])
+                store.source(source);attempted.append(source['sourceId'])
+                try:pipeline.ingest_source(source)
+                finally:save_circuit()
+                if not before and store.company_payload(companies[cid],now)['presentations']:recovered.append(cid)
+    except BudgetExhausted:
+        deferred=True
+    finally:
+        circuit_state=save_circuit()
+    result={'derivedSources':len(attempted),'eligibleSources':len(eligible),'sourceIds':attempted,
+            'recoveredPresentationIssuers':sorted(set(recovered)),'run':pipeline.run,'requests':http.requests,
+            'httpStats':http.stats,'deferred':deferred,'circuit':circuit_state}
+    store.set_state('materialsBackfill:lastBatch',result)
+    return result
+
+
 def page_documents(company, links, page, now):
     """Documents explicitly linked by a validated corporate/IR page, including CDN delegations."""
     from .model import stable_id

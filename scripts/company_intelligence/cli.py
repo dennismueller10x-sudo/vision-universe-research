@@ -249,14 +249,8 @@ def main(argv=None):
             pipeline.ensure_aliases(companies.keys());pipeline.ingest_source(source)
             print(json.dumps({'run':pipeline.run,'requests':http.requests,'httpStats':http.stats,'checkpoint':store.state('distributorArchiveRun:'+source['sourceId'])},sort_keys=True));return 0
         if args.command=='materials-backfill':
-            from company_intelligence.q4_reports import from_validated_events
-            derived=[candidate for source in store.sources() if (not args.tickers or source.get('companyId') in selected_ids)
-                     and (candidate:=from_validated_events(source,now)) and not any(s['sourceId']==candidate['sourceId'] and s.get('lastSuccess') for s in store.sources())][:args.limit]
-            for source in derived:
-                store.source(source)
-                try:pipeline.ingest_source(source)
-                except BudgetExhausted:break
-            print(json.dumps({'derivedSources':len(derived),'run':pipeline.run,'requests':http.requests,'httpStats':http.stats},sort_keys=True));return 0
+            from company_intelligence.materials import backfill
+            print(json.dumps(backfill(pipeline,args.limit,selected_ids if args.tickers else None,companies),sort_keys=True));return 0
         if args.command == 'verify-domains':
             # Weekly candidate validation is separate from expensive IR discovery
             # and from four-hour feed ingestion. No financial/export rebuild.
