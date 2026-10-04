@@ -13,6 +13,8 @@
      Technik (>= 300 Bars)
        DEBT_EXCLUDED          Titel ist als Schuldverschreibung aus dem
                               Produkt genommen (eligibility.json)
+       POLICY_EXCLUDED        anders begruendet ausgeschlossen (Grund im
+                              Wertpapierstamm, product_eligibility_reason)
        LISTING_CUT            Reihe wurde auf das juengste Listing
                               gekuerzt (listing-continuity-v1.json, #367)
        AGED_PAST_THRESHOLD    junge Reihe: am Bezugstag < 300 Bars, heute
@@ -59,7 +61,8 @@ const tageZwischen = (a, b) => (Date.parse(b) - Date.parse(a)) / 86400000;
 export function classify(input) {
   const out = { technical: [], chart: [] };
   const why = (t, kind, wasShort, nowShort, baseDate, min) => {
-    if (!input.productNow.has(t)) return input.debt.has(t) ? "DEBT_EXCLUDED" : "UNEXPLAINED";
+    if (!input.productNow.has(t)) return input.debt.has(t) ? "DEBT_EXCLUDED"
+      : (input.excludedReason && input.excludedReason.get(t)) ? "POLICY_EXCLUDED" : "UNEXPLAINED";
     if (!input.productBefore.has(t)) return "NEW_PRODUCT_MEMBER";
     if (!wasShort && nowShort) return input.cut.has(t) ? "LISTING_CUT" : "UNEXPLAINED";
     if (wasShort && !nowShort) {
@@ -102,6 +105,38 @@ export function balance(rows, beforeOk, nowOk) {
   return { before: beforeOk, net, expected: beforeOk + net, now: nowOk, closes: beforeOk + net === nowOk };
 }
 
+/* Der Bezugsstand.
+   NAMED: die committete Messung fuehrt ihre Ausnahmen namentlich (ab der
+     Neuabnahme 04.10.2026). Dann ist SIE der Bezug - mit dem
+     Produktuniversum aus der eligibility.json desselben Commits. Passt deren
+     Groesse nicht zum Nenner der Messung, ist der Bezug nicht bestimmbar.
+   LEGACY_0920: erster Uebergang. Die Messung vom 20.09. fuehrt die
+     technischen Ausnahmen nicht namentlich; Bezug ist der technische
+     Skalierungsbericht, und das Produktuniversum von damals ist das heutige
+     plus die seither als DEBT herausgenommenen Titel (#366). */
+const ausgeschlossen = (e) => new Map(e.decisions.filter((d) => d.product_eligibility === "EXCLUDED" && d.product_eligibility_reason)
+  .map((d) => [d.ticker.toUpperCase(), d.product_eligibility_reason]));
+export function bezug({ before, eligNow, eligHead, scale }) {
+  const product = (e) => new Set(e.decisions.filter((d) => d.product_eligibility !== "EXCLUDED").map((d) => d.ticker.toUpperCase()));
+  const productNow = product(eligNow);
+  const debt = new Set(eligNow.decisions.filter((d) => d.instrument_type === "DEBT" && d.product_eligibility === "EXCLUDED").map((d) => d.ticker.toUpperCase()));
+  const T = before.TECHNICAL_HISTORY_ELIGIBILITY || {};
+  if (Array.isArray(T.tooShortSymbols)) {
+    if (!eligHead) throw new Error("eligibility.json des Bezugs-Commits nicht lesbar");
+    const productBefore = product(eligHead);
+    if (productBefore.size !== before.CHART_AVAILABILITY.denominator)
+      throw new Error(`Produktuniversum des Bezugs (${productBefore.size}) passt nicht zum Nenner der Messung (${before.CHART_AVAILABILITY.denominator})`);
+    return { mode: "NAMED", productNow, productBefore, debt, excludedReason: ausgeschlossen(eligNow),
+      techShortBefore: new Set(T.tooShortSymbols.map((x) => x.toUpperCase())), techBaseDate: before.today, techBeforeOk: T.eligible };
+  }
+  const productBefore = new Set([...productNow, ...debt]);
+  const techShortBefore = new Set(Object.entries(scale.perSymbol || {})
+    .filter(([, r]) => r.technical && r.technical !== "TECHNICAL_READY").map(([t]) => t.toUpperCase()));
+  return { mode: "LEGACY_0920", productNow, productBefore, debt, excludedReason: ausgeschlossen(eligNow), techShortBefore,
+    techBaseDate: String(scale.generatedAt).slice(0, 10),
+    techBeforeOk: [...productBefore].filter((t) => !techShortBefore.has(t)).length };
+}
+
 async function main() {
   const argv = process.argv.slice(2);
   const arg = (n, d = null) => { const i = argv.indexOf(n); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
@@ -118,17 +153,15 @@ async function main() {
   catch { console.error("Bezugsstand (git HEAD) nicht lesbar."); process.exit(2); }
 
   const elig = read("quant/data/market/security-master/eligibility.json");
-  const productNow = new Set(elig.decisions.filter((d) => d.product_eligibility !== "EXCLUDED").map((d) => d.ticker.toUpperCase()));
-  const debt = new Set(elig.decisions.filter((d) => d.instrument_type === "DEBT" && d.product_eligibility === "EXCLUDED").map((d) => d.ticker.toUpperCase()));
-  /* Das Produktuniversum des Bezugs = heute + was seither als DEBT
-     herausgenommen wurde. Mehr Wechsel gab es nicht; tauchen andere auf,
-     zeigen sie sich als UNEXPLAINED bzw. NEW_PRODUCT_MEMBER. */
-  const productBefore = new Set([...productNow, ...debt]);
-
+  let eligHead = null;
+  try { eligHead = JSON.parse(execFileSync("git", ["show", "HEAD:quant/data/market/security-master/eligibility.json"], { cwd: root, maxBuffer: 1 << 27 }).toString()); }
+  catch { eligHead = null; }
   const tech = read("quant/data/technical/scale/technical-coverage-ELIGIBLE_US_EQUITY.json");
-  const techShortBefore = new Set(Object.entries(tech.perSymbol || {})
-    .filter(([, r]) => r.technical && r.technical !== "TECHNICAL_READY").map(([t]) => t.toUpperCase()));
-  const techBaseDate = String(tech.generatedAt).slice(0, 10);
+  let b;
+  try { b = bezug({ before, eligNow: elig, eligHead, scale: tech }); }
+  catch (e) { console.error("Bezug nicht bestimmbar: " + e.message); process.exit(1); }
+  const { productNow, productBefore, debt, excludedReason, techShortBefore, techBaseDate } = b;
+  console.log(`  Bezug: ${b.mode}`);
 
   const lc = read("quant/data/market/listing-continuity-v1.json");
   const cut = new Map((lc.productUniverse && lc.productUniverse.rows || []).map((r) => [String(r[1]).toUpperCase(), r]));
@@ -141,7 +174,7 @@ async function main() {
   /* Erst ohne Speicher klassifizieren, um die Titel zu finden, die eine
      Zaehlung aus der Reihe brauchen - nur fuer die wird gelesen. */
   const needs = new Set();
-  classify({ productNow, productBefore, debt, cut, techShortNow, techShortBefore, techBaseDate,
+  classify({ productNow, productBefore, debt, excludedReason, cut, techShortNow, techShortBefore, techBaseDate,
     chartShortNow, chartShortBefore, chartBaseDate, barsBefore: (t) => { needs.add(t); return null; } });
 
   const series = new Map();
@@ -164,11 +197,11 @@ async function main() {
   const listingStart = (t) => startByTicker.get(t) || null;
   const seriesFirst = (t) => { const d = series.get(t); return d && d.length ? d[0] : null; };
 
-  const res = classify({ productNow, productBefore, debt, cut, techShortNow, techShortBefore, techBaseDate,
+  const res = classify({ productNow, productBefore, debt, excludedReason, cut, techShortNow, techShortBefore, techBaseDate,
     chartShortNow, chartShortBefore, chartBaseDate, barsBefore, listingStart, seriesFirst });
 
   const count = (rows) => rows.reduce((a, r) => ((a[r.cls] = (a[r.cls] || 0) + 1), a), {});
-  const techBeforeOk = [...productBefore].filter((t) => !techShortBefore.has(t)).length;
+  const techBeforeOk = b.techBeforeOk;
   const chartBeforeOk = before.CHART_AVAILABILITY.renderable;
   const tb = balance(res.technical, techBeforeOk, T.eligible);
   const cb = balance(res.chart, chartBeforeOk, now.CHART_AVAILABILITY.renderable);

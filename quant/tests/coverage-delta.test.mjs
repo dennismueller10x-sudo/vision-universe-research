@@ -4,7 +4,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { classify, balance } from "../../scripts/diagnose/coverage-delta.mjs";
+import { classify, balance, bezug } from "../../scripts/diagnose/coverage-delta.mjs";
 
 const basis = (o) => Object.assign({
   productNow: new Set(["A", "B", "C", "D", "E"]),
@@ -79,4 +79,38 @@ test("der Commit-Schritt verwirft Testnebenwirkungen vor dem Rebase und schiebt 
         schieben = schritt.indexOf("scripts/ci/push-with-retry.sh");
   assert.ok(commit > 0 && verwerfen > commit && schieben > verwerfen, "Reihenfolge: commit -> verwerfen -> push-with-retry");
   assert.doesNotMatch(schritt, /git pull --rebase/, "kein nacktes Rebase mehr (Lauf 37181495758)");
+});
+
+const E = (rows) => ({ decisions: rows.map(([ticker, ex, type, reason]) => ({ ticker, product_eligibility: ex ? "EXCLUDED" : "ELIGIBLE", instrument_type: type || "EQUITY_COMMON", product_eligibility_reason: reason || null })) });
+
+test("Bezug NAMED: die committete Messung mit Namenslisten ist der Bezug (Lauf 37182732949)", () => {
+  const before = { today: "2026-10-04", CHART_AVAILABILITY: { denominator: 2, renderable: 2, notRenderableSymbols: [] },
+    TECHNICAL_HISTORY_ELIGIBILITY: { eligible: 1, tooShortSymbols: ["B"] } };
+  const jetzt = E([["A"], ["B"], ["X", true, "DEBT", "CONFIRMED_NON_EQUITY:DEBT"]]);
+  const b = bezug({ before, eligNow: jetzt, eligHead: jetzt, scale: { perSymbol: {} } });
+  assert.equal(b.mode, "NAMED");
+  assert.deepEqual([...b.productBefore].sort(), ["A", "B"], "schon ausgeschlossene DEBT nicht noch einmal abziehen");
+  assert.equal(b.techBeforeOk, 1);
+  // unveraenderter Stand: keine Zeile, Bilanz geht auf
+  const r = classify({ ...b, cut: new Map(), techShortNow: new Set(["B"]), chartShortNow: new Set(), chartShortBefore: new Set(),
+    chartBaseDate: "2026-10-04", barsBefore: () => null });
+  assert.deepEqual(r, { technical: [], chart: [] });
+  assert.equal(balance(r.chart, 2, 2).closes, true);
+  // Gegenprobe: Universum des Bezugs passt nicht zum Nenner
+  assert.throws(() => bezug({ before: { ...before, CHART_AVAILABILITY: { denominator: 3 } }, eligNow: jetzt, eligHead: jetzt, scale: {} }), /passt nicht/);
+});
+
+test("Bezug LEGACY_0920: erster Uebergang ohne Namensliste nimmt Skalierungsbericht + DEBT", () => {
+  const before = { today: "2026-09-20", CHART_AVAILABILITY: { denominator: 3 }, TECHNICAL_HISTORY_ELIGIBILITY: { eligible: 2 } };
+  const b = bezug({ before, eligNow: E([["A"], ["B"], ["X", true, "DEBT", "CONFIRMED_NON_EQUITY:DEBT"]]), eligHead: null,
+    scale: { generatedAt: "2026-09-11T00:00:00Z", perSymbol: { B: { technical: "INSUFFICIENT_HISTORY" } } } });
+  assert.equal(b.mode, "LEGACY_0920");
+  assert.deepEqual([...b.productBefore].sort(), ["A", "B", "X"]);
+  assert.equal(b.techBeforeOk, 2);
+});
+
+test("begruendet ausgeschlossen ist erklaert, unbegruendet nicht", () => {
+  const r = (reason) => classify(basis({ debt: new Set(), excludedReason: new Map(reason ? [["X", reason]] : []) }));
+  assert.equal(r("CONFIRMED_NON_EQUITY:WARRANT").technical.find((x) => x.ticker === "X").cls, "POLICY_EXCLUDED");
+  assert.equal(r(null).technical.find((x) => x.ticker === "X").cls, "UNEXPLAINED");
 });
