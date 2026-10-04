@@ -282,7 +282,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    /* Setup & Trigger in Alltagssprache; Backtests mit gemessenem Grund. */
    const setupText=await page.locator('#setup').innerText();
    for(const w of ['Interessant ab','Ungültig unter'])if(!setupText.includes(w))befund(view,width,'Setup-Karte ohne "'+w+'"');
-   if(!/Backtests – noch keine Zahlen/.test(await page.locator('#historie').innerText()))befund(view,width,'Backtest-Stand fehlt im Rueckblick');
+   /* Evidence Experience: Stufe C nennt den Zertifizierungsstand und je geschlossener Art den gemessenen Grund. */
+   {const hist=await page.locator('#historie').innerText();
+    if(!/C · Zertifizierter Backtest/i.test(hist)||!/kein vollständig zertifizierter Backtest vor/.test(hist)||!/noch keine Zahlen\. Es fehlt unter anderem: .+\(nötig .+, heute .+\)/.test(hist))befund(view,width,'Backtest-Stand fehlt im Rueckblick');}
    /* Bedeutung ist zu, bis jemand fragt - und oeffnet dann bis zu den Rohdaten. */
    const first=page.locator('details.qx-factor').first();
    if(await first.evaluate(d=>d.open))befund(view,width,'factor evidence not progressively disclosed');
