@@ -4,7 +4,7 @@ from urllib.parse import urlencode, urlsplit
 from .model import canonical_url, domain
 from .transport import SourceError
 
-OWNERSHIP_VERSION = 'corporate-ownership-6'
+OWNERSHIP_VERSION = 'corporate-ownership-7'
 
 
 def wikidata_catalogue(companies, http):
@@ -199,7 +199,12 @@ def _validate_response(company, candidate, response, now, header_body=None):
     if not strong_names:
         strong_names=[n for n in company['names'] if len(normalize(n).split())>=2]
     legal = any(re.search(r'(?<!\w)' + re.escape(legal_normalize(n)) + r'(?!\w)', visible) for n in strong_names if legal_normalize(n))
-    branded = any(re.search(r'(?<!\w)' + re.escape(normalize(SUFFIX.sub('', n))) + r'(?!\w)', header) for n in company['names'] if normalize(SUFFIX.sub('', n)))
+    # A complete legal title uses the same Co./Company normalization as body
+    # proof. Match entire title/meta segments, never prefixes of another owner.
+    title_segments={legal_normalize(part) for value in ([title[1]] if title else [])+metadata.values
+                    for part in re.split(r'\s*[|]\s*|\s+[-–—]\s+',clean(value,300))}
+    legal_title=any(legal_normalize(name) in title_segments for name in strong_names)
+    branded = legal_title or any(re.search(r'(?<!\w)' + re.escape(normalize(SUFFIX.sub('', n))) + r'(?!\w)', header) for n in company['names'] if normalize(SUFFIX.sub('', n)))
     # Many public-company titles use a short brand (Meta, H&P, Frost),
     # while the copyright footer discloses the precise parent/legal owner.
     # A customer mention in the page body is not this ownership evidence.

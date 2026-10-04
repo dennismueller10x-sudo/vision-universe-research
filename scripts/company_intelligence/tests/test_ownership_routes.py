@@ -92,7 +92,7 @@ class OwnershipRouteTests(unittest.TestCase):
   good=HTTP({root:'<title>Root</title><a href="https://ir.issuer.example/">Investors</a>',ir:'<title>Root Investor Relations</title><footer>Copyright 2026 Root Inc. All rights reserved.</footer>'})
   result=validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},good,NOW)
   self.assertEqual(result['url'],root);self.assertEqual(result['ownershipEvidence']['legalSourceUrl'],ir)
-  self.assertEqual(result['verificationVersion'],'corporate-ownership-6')
+  self.assertEqual(result['verificationVersion'],'corporate-ownership-7')
   bad=HTTP({root:'<title>Root</title><a href="https://ir.issuer.example/">Investors</a>',ir:'<title>Root Investor Relations</title><footer>Copyright Different Owner LLC.</footer>'})
   with self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
    validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},bad,NOW)
@@ -135,3 +135,13 @@ class OwnershipRouteTests(unittest.TestCase):
    with self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER') as caught:
     validate_candidate(company('Root Inc.','ROOT'),{'url':root,'evidence':'candidate'},bad,NOW)
    self.assertTrue(caught.exception.ownershipEvidence['copyrightExcerpts'])
+
+ def test_complete_legal_title_normalizes_company_and_co_without_owner_prefix_matching(self):
+  root='https://issuer.example/'
+  for name,title in [('Coffee Holding Co Inc','Coffee Holding Company Inc | Committed to Coffee'),('Harmony Gold Mining Co Ltd','Home | Harmony Gold Mining Company Limited')]:
+   h=HTTP({root:f'<title>{title}</title><p>{name}</p>'})
+   self.assertEqual(validate_candidate(company(name,'ISSUER'),{'url':root,'evidence':'candidate'},h,NOW)['status'],'VALIDATED')
+  for title in ['Coffee Holding Company Inc Services LLC','Coffee Holding Company Ireland Limited']:
+   h=HTTP({root:f'<title>{title}</title><p>Coffee Holding Co Inc is a customer.</p>'})
+   with self.assertRaisesRegex(SourceError,'OWNER_NOT_VALIDATED'):
+    validate_candidate(company('Coffee Holding Co Inc','ISSUER'),{'url':root,'evidence':'candidate'},h,NOW)
