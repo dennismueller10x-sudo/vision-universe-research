@@ -158,6 +158,8 @@
     var cashB = next.holdings.filter(function (h) { return h.assetType === "CASH"; }).reduce(function (s, h) { return s + (h.weight || 0); }, 0);
     if (Math.abs(cashB - cashA) >= cfg.cashShiftPP) ev.push(mk(ctx, "CASH_CHANGED", "cash", "Liquidität", r(cashA), r(cashB), Math.abs(cashB - cashA) >= 0.02 ? "MEDIUM" : "LOW",
       "Liquidität: " + pc(cashA) + " → " + pc(cashB) + "."));
+    // Rangereignisse tragen Raenge (alt/neu), keine Gewichtsdifferenz.
+    ev.forEach(function (e) { if (/_TOP_/.test(e.eventType)) { e.absoluteChange = null; e.relativeChange = null; } });
     ev.sort(order);
     return { status: "CHANGED", events: ev, summary: summarize(ev) };
   }
