@@ -1,4 +1,5 @@
 """Discovery-only shared-failure guard; no change to production polling cadence."""
+import socket
 import threading
 from contextlib import contextmanager
 from urllib.parse import urlsplit
@@ -9,14 +10,19 @@ def failure_signature(error):
     """Keep proxy failures separate from ordinary origin failures/access denials."""
     messages = []
     seen = set()
+    temporary_dns = False
     while error is not None and id(error) not in seen:
         seen.add(id(error))
         if getattr(error,'proxy_failure_hint',False):return 'SHARED_PROXY_FAILURE'
+        temporary_dns |= isinstance(error, socket.gaierror) and error.errno == socket.EAI_AGAIN
         messages.append(str(error).casefold())
-        error = error.__cause__ or error.__context__
+        reason = getattr(error, 'reason', None)
+        error = error.__cause__ or error.__context__ or (reason if isinstance(reason, BaseException) else None)
     text = ' '.join(messages)
     if any(token in text for token in ('tunnel connection failed', 'proxy error', 'proxyerror', 'envoy')):
         return 'SHARED_PROXY_FAILURE'
+    if temporary_dns:
+        return 'SUSPECTED_SHARED_TEMPORARY_DNS'
     if any(token in text for token in ('http_503', 'http error 503', 'http_502', 'http error 502', 'http_504', 'http error 504')):
         return 'UNRELATED_UPSTREAM_5XX'
     return None
@@ -63,6 +69,7 @@ class DiscoveryCircuit:
 def guarded_poll(http, circuit):
     """Carry a discovery circuit through its serial follow-up source polling."""
     opener, admission = http.opener, http._wait
+    getter = getattr(http, 'get', None)
 
     def wait(url):
         circuit.check()
@@ -82,8 +89,20 @@ def guarded_poll(http, circuit):
         circuit.success()
         return response
 
+    def get(url, **kwargs):
+        try:
+            return getter(url, **kwargs)
+        except Exception as error:
+            # URL/DNS validation may fail before the opener is reached.
+            circuit.failure(url, error)
+            raise
+
     http.opener, http._wait = observed, wait
+    if getter is not None:
+        http.get = get
     try:
         yield
     finally:
         http.opener, http._wait = opener, admission
+        if getter is not None:
+            http.get = getter
