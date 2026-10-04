@@ -1,5 +1,6 @@
 """Discovery-only shared-failure guard; no change to production polling cadence."""
 import threading
+from contextlib import contextmanager
 from urllib.parse import urlsplit
 from .transport import BudgetExhausted
 
@@ -56,3 +57,33 @@ class DiscoveryCircuit:
                     'affectedHosts': sorted(self.hosts.get(self.signature, set())),
                     'threshold': self.threshold,
                     'interpretation': 'Repeated errors across independent hosts indicate a shared failure; generic origin 5xx remains suspected infrastructure, not proof of invalid companies.'}
+
+
+@contextmanager
+def guarded_poll(http, circuit):
+    """Carry a discovery circuit through its serial follow-up source polling."""
+    opener, admission = http.opener, http._wait
+
+    def wait(url):
+        circuit.check()
+        admission(url)
+
+    def observed(request, **kwargs):
+        try:
+            response = opener(request, **kwargs)
+        except Exception as error:
+            if getattr(error, 'code', None) == 503 and hasattr(error, 'read'):
+                try:
+                    error.proxy_failure_hint = b'upstream connect error or disconnect/reset before headers' in error.read(512)
+                except OSError:
+                    pass
+            circuit.failure(request.full_url, error)
+            raise
+        circuit.success()
+        return response
+
+    http.opener, http._wait = observed, wait
+    try:
+        yield
+    finally:
+        http.opener, http._wait = opener, admission

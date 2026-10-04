@@ -213,8 +213,12 @@ def main(argv=None):
             for key in http.stats:http.stats[key]=sum(r['stats'].get(key,0) for r in results)
             circuit_state=save_circuit()
             if args.inventory_lane=='ir' and not circuit_state['open']:
-                try:pipeline.ingest_due_sources({c['companyId'] for c in selected},include_global=False)
+                from .discovery_circuit import guarded_poll
+                try:
+                    with guarded_poll(http,circuit):
+                        pipeline.ingest_due_sources({c['companyId'] for c in selected},include_global=False)
                 except BudgetExhausted:deferred=True
+                circuit_state=save_circuit()
             http.prune()
             print(json.dumps({'progress':progress(store,args.inventory_pass,args.inventory_lane),
                               'requests':http.requests,'httpStats':http.stats,'run':pipeline.run,
