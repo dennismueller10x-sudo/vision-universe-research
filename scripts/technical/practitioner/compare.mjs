@@ -33,8 +33,8 @@ const eq = (a, b) => (known(a) && known(b) ? (a === b ? M : X) : NC);
 const opp = (d) => (d === "UP" ? "DOWN" : d === "DOWN" ? "UP" : null);
 
 // ------------------------------------------------------------------ Sichten (gleiche Form fuer Praktiker und VU)
-/** Praktiker-Sicht; Niveaus in VU-Einheiten (levelScale), nur wenn vergleichbar. */
-export function practitionerView(ref, mapping) {
+/** Praktiker-Sicht; Niveaus in VU-Einheiten (levelScale), nur wenn vergleichbar. ctx.close = VU-Schluss am Stichtag. */
+export function practitionerView(ref, mapping, ctx = {}) {
   const p = ref.primary || {};
   const pattern = known(p.pattern) ? p.pattern : null;
   const family = known(p.family) ? p.family : pattern ? PATTERN_FAMILY[pattern] || null : null;
@@ -43,12 +43,18 @@ export function practitionerView(ref, mapping) {
   const role = known(p.currentWaveRole) ? p.currentWaveRole : known(roleFromLabel) ? roleFromLabel : null;
   const state = known(p.state) ? p.state : null;
   const direction = known(ref.directionalBias) ? ref.directionalBias : null;
-  /* uebergeordnete Richtung nur, wo eindeutig: laufende Motivwelle eines Motivmusters laeuft MIT dem Trend; laufende A/C-Welle
-     eines Korrekturmusters GEGEN den Trend; sonst unbekannt. */
-  let impliedTrend = null;
-  if (state !== "CONFIRMED_COMPLETE" && role === "MOTIVE" && (direction === "UP" || direction === "DOWN")) impliedTrend = family === "MOTIVE" ? direction : family === "CORRECTIVE" ? opp(direction) : null;
   const scale = mapping && mapping.levelsComparable ? mapping.levelScale : null;
   const sc = (v) => (Number.isFinite(v) && Number.isFinite(scale) ? v * scale : null);
+  /* Uebergeordnete Richtung nur, wo eindeutig ableitbar: Richtung der laufenden Welle aus waveStartPrice (skaliert) gegen den
+     VU-Schluss am Stichtag – NICHT aus directionalBias (der kann das Ende der Welle vorwegnehmen). Motivmuster: Motivwelle laeuft
+     mit dem Trend, Welle 2/4 dagegen; Korrekturmuster: A/C gegen den uebergeordneten Trend, B mit ihm; sonst unbekannt. */
+  let impliedTrend = null;
+  const ws = sc(p.waveStartPrice);
+  if (state !== "CONFIRMED_COMPLETE" && ws !== null && Number.isFinite(ctx.close) && ctx.close !== ws && role) {
+    const cur = ctx.close > ws ? "UP" : "DOWN";
+    if (family === "MOTIVE") impliedTrend = role === "MOTIVE" ? cur : opp(cur);
+    else if (family === "CORRECTIVE" && ["ZIGZAG", "FLAT", "DOUBLE_ZIGZAG"].includes(pattern)) impliedTrend = role === "MOTIVE" || label === "A" ? opp(cur) : label === "B" ? cur : null;
+  }
   return {
     actor: "PRACTITIONER", pattern, family, label, completeLabel: state === "CONFIRMED_COMPLETE" ? label : null, inferredNext: null,
     role, state, direction, impliedTrend, degreeRank: Number.isInteger(p.degreeRank) ? p.degreeRank : null,
@@ -137,7 +143,7 @@ export function compareCase(ref, mapping, rec, extra = {}) {
   row.J = { vuStatus: rec && rec.vu ? rec.vu.status : rec ? rec.status : null, vuApplicability: v ? v.applicability : null, vuAbstain: v ? v.abstain : null, vuHasCount: !!v };
   if (!v) { row.category = rec && rec.status === "OK" ? "VU_NO_COUNT" : row.replayStatus; return row; }
   row.category = v.abstain ? "VU_ABSTAINED" : "VU_APPLICABLE";
-  const P = practitionerView(ref, mapping);
+  const P = practitionerView(ref, mapping, { close: rec.market.closeAtCutoff });
   const r = compareViews(P, v, { close: rec.market.closeAtCutoff, atr: rec.market.atr14Close, absoluteComparable: mapping.mappingQuality === "EXACT" });
   Object.assign(row, r, { vuDegree: rec.vu.primary.degree, practitionerDegreeRank: P.degreeRank });
   return row;
@@ -228,8 +234,8 @@ export function pairHumanHuman(refs, mappingOf, maxSessions = 5) {
 /** Kennzahlen zwischen zwei Praktikern. Niveaus beide in VU-Einheiten; Schluss/ATR aus der VU-Wiedergabe der frueheren Referenz. */
 export function compareHumanPair(pair, replayOf) {
   const { a, b } = pair, first = a.t <= b.t ? a : b, rec = replayOf(first.r.referenceId);
-  const A = practitionerView(a.r, a.m), B = practitionerView(b.r, b.m);
   const ctx = rec && rec.status === "OK" ? { close: rec.market.closeAtCutoff, atr: rec.market.atr14Close, absoluteComparable: a.m.mappingQuality === "EXACT" && b.m.mappingQuality === "EXACT" } : {};
+  const A = practitionerView(a.r, a.m, ctx), B = practitionerView(b.r, b.m, ctx);
   const r = compareViews(A, B, ctx);
   const agreement = r.metrics.A === NC ? "NOT_COMPARABLE" : r.metrics.A === M && r.metrics.S === M ? "HIGH_PRACTITIONER_AGREEMENT" : "AMBIGUITY";
   return { referenceIds: [a.r.referenceId, b.r.referenceId], sources: [a.r.sourceId, b.r.sourceId], sourceId: [a.r.sourceId, b.r.sourceId].sort().join("+"), vuSymbol: a.m.vuSymbol,
@@ -264,7 +270,7 @@ export function vuRelabel(rec) {
 export function detectionLatency(ref, mapping, rec) {
   const pts = rec && rec.dynamics && rec.dynamics.status === "OK" ? rec.dynamics.points : null;
   if (!pts || !pts.length) return { status: "NO_TRAJECTORY" };
-  const P = practitionerView(ref, mapping);
+  const P = practitionerView(ref, mapping, { close: rec.market && rec.market.closeAtCutoff });
   if (!known(P.direction) || !known(P.role)) return { status: "NOT_COMPARABLE" };
   const hit = pts.find((p) => p.nextMove === P.direction && p.role === P.role && (!known(P.impliedTrend) || p.impliedTrend === P.impliedTrend));
   return hit ? { status: "FOUND", offsetBars: hit.offsetBars, date: hit.date, window: [pts[0].offsetBars, pts[pts.length - 1].offsetBars] }

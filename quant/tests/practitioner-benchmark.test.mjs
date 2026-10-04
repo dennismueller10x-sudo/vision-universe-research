@@ -396,6 +396,16 @@ test("metrics: A–K und S auf handgemachten Sichten", () => {
   assert.equal(K.compareViews(Object.assign({}, P, { direction: null }), V, {}).metrics.S, "NOT_COMPARABLE");
   assert.equal(K.compareViews(P, V, {}).H.result, "NOT_COMPARABLE");
 });
+test("metrics: uebergeordnete Richtung des Praktikers nur aus Wellenstart (nicht aus dem Bias)", () => {
+  const m = L.effectiveMapping(fx());
+  // Zigzag-Welle (C) seit 430,5 (skaliert) bei Schluss 357,63 abwaerts → Korrektur gegen einen Aufwaertstrend
+  assert.equal(K.practitionerView(fx(), m, { close: 357.63 }).impliedTrend, "UP");
+  assert.equal(K.practitionerView(fx({ directionalBias: "DOWN" }), m, { close: 357.63 }).impliedTrend, "UP", "Bias aendert die Trendableitung nicht");
+  assert.equal(K.practitionerView(fx(), m, {}).impliedTrend, null, "ohne Schluss nicht ableitbar");
+  assert.equal(K.practitionerView(fx({ primary: { waveStartPrice: null } }), m, { close: 357.63 }).impliedTrend, null);
+  const imp = fx({ primary: { pattern: "IMPULSE", family: "MOTIVE", currentWave: "4", currentWaveRole: "CORRECTIVE", waveStartPrice: 4000 } });
+  assert.equal(K.practitionerView(imp, m, { close: 357.63 }).impliedTrend, "UP", "Welle 4 abwaerts in Aufwaertsimpuls");
+});
 test("metrics: laufende Welle bei abgeschlossenem VU-Muster (naechstes Label des hoeheren Grades)", () => {
   const V = view({ pattern: "ZIGZAG", family: "CORRECTIVE", completeLabel: "C", inferredNext: "3", state: "CONFIRMED_COMPLETE", role: "MOTIVE", direction: "UP" });
   assert.equal(K.compareViews(view({ label: "3" }), V).metrics.C, "MATCH");

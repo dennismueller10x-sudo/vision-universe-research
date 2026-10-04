@@ -462,7 +462,7 @@
       h("div", { class: "row2" }, [
         field(pre, "sourceSel", "Quelle (source-registry.json)", { type: "select", options: regOpts, required: true, help: S.registry.length ? null : "Quellenverzeichnis noch nicht vorhanden — Quelle frei eintragen." }, srcInReg ? st.sourceId : st.sourceId ? "__other" : ""),
         field(pre, "sourceOther", "sourceId (frei, falls nicht im Verzeichnis)", { ph: "z. B. hkcm-youtube" }, srcInReg ? "" : st.sourceId)]),
-      h("div", { class: "row2" }, [field(pre, "sourceType", "Quellentyp", { type: "select", options: opt(E.sourceType), required: true }, st.sourceType), field(pre, "sourceUrl", "URL der Originalfundstelle", { type: "url", required: true, ph: "https://…" }, st.sourceUrl)]),
+      h("div", { class: "row2" }, [field(pre, "sourceType", "Quellentyp", { type: "select", options: opt(E.sourceType), required: true }, st.sourceType), field(pre, "sourceUrl", "URL der Originalfundstelle", { type: "url", required: true, ph: "Adresse der Originalfundstelle" }, st.sourceUrl)]),
       field(pre, "crossPosts", "Cross-Posts derselben Analyse (je Zeile eine URL; kein eigener Fall)", { type: "textarea", rows: 2 }, st.crossPosts),
       second ? null : h("div", { class: "row3" }, [field(pre, "version", "Fassung (version)", { type: "number", required: true }, st.version || 1), field(pre, "viewKind", "Art", { type: "select", options: opt(E.viewKind) }, st.viewKind || "ORIGINAL_PUBLISHED"), field(pre, "revisionOf", "revisionOf (referenceId der Vorfassung)", {}, st.revisionOf)]),
       second ? null : field(pre, "caseIdOverride", "caseId (leer = automatisch; Cross-Posts teilen die caseId)", { ph: "sourceId|VU-Symbol|Datum|s1" }, st.caseIdOverride || "")]);

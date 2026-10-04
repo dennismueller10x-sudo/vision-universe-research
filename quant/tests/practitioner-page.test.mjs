@@ -59,7 +59,7 @@ test("Skripte der Seite sind syntaktisch gültig", () => {
   assert.ok(srcs.includes("reference-core.js") && srcs.includes("practitioners.js"), "Seite lädt Kern und App");
   for (const s of srcs) {
     assert.ok(!/^(https?:)?\/\//.test(s), "keine externen Skripte: " + s);
-    const file = join(DIR, s);
+    const file = s.startsWith("/") ? join(ROOT, s) : join(DIR, s);   // /quant/ui/shell.js: gemeinsame Shell (Abnahmetest §94)
     assert.ok(existsSync(file), "Skript vorhanden: " + s);
     const r = spawnSync(process.execPath, ["--check", file], { encoding: "utf8" });
     assert.equal(r.status, 0, s + ": " + r.stderr);
