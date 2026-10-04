@@ -226,3 +226,48 @@ QQQ −82,7 % (erholt 09/2016); EEM −63,5 % (erholt 01/2021).
 - Browser-QA (Playwright) über alle Routen bei 1440/1280/820/768/430/390 px, hell/dunkel
 - Regression: Discover, Quant, SuperTrader, Screener, Worker, Release-Build, Datenhygiene
 - Modulgrenzen: keine Änderungen an `quant/`, `scripts/market/`, `providers/`, `api/`, `server/`, `worker/`
+
+## 10. ETF Intelligence: Fundamentals, Holdings, Change Intelligence
+
+Quellenmatrix und Nutzungsbedingungen: `docs/ETF_PRIMARY_SOURCE_MATRIX.md`.
+
+### Datenwege (alle in GitHub Actions, `vorsorge-etf-sources.yml`)
+| Marker | Skript | Quelle | Ausgabe (Git) |
+|---|---|---|---|
+| `[vorsorge-etf-probe]` | `probe-etf-sources.mjs` | Nutzungsbedingungen, robots.txt, Form offener Quellen | `data/sources/etf-source-probe.json` |
+| `[vorsorge-nport]` | `ingest-sec-nport.mjs` → `fetch-sec-sic.mjs` → `build-etf-intelligence.mjs` | SEC N-PORT (4 Quartale), SEC submissions (SIC) | `data/holdings/<SERIE>.json`, `data/holdings/index.json`, `data/sources/sec-sic.json`, `data/sources/nport-manifest.json` |
+| `[vorsorge-fundamentals]` | `ingest-sec-rr.mjs`, `ingest-esma-firds.mjs` | SEC Risk/Return (Prospekt-XBRL), ESMA FIRDS, GLEIF | `data/sources/sec-rr-costs.json`, `data/eu/etf-eu-index.json` |
+
+Vollständige Snapshots bleiben in der CI-Arbeitsablage (`.market-cache/vorsorge/nport`). Ins Git
+kommt je Fonds eine kompakte Datei: die 100 größten Positionen, Exposures und Konzentration aus allen
+Positionen, Historie je Quartal, Änderungen im Spaltenformat und eine Zeitleiste.
+
+### Verträge
+- `etf-fundamentals.js`: ETF_FUNDAMENTALS_SCHEMA_VERSION 2.0.0 mit Herkunft je Feld (`value, source, sourceType,
+  sourceUrl, asOf, retrievedAt, confidence, originalField`). Kosten sind Dezimalbrüche. TER, Ongoing Charges, Expense Ratio
+  und Management Fee sind getrennte Felder. Beim Zusammenführen gewinnt die höhere Quellenart, Widersprüche werden
+  gespeichert (`AS_OF_DIFFERS` | `VALUE_CONFLICT`).
+- `etf-holdings.js`: ETF_HOLDINGS_SCHEMA_VERSION 2.0.0. Gewichte sind Dezimalbrüche; die Einheit gilt je Datei und
+  wird nie je Zeile geraten. Anlagearten: EQUITY … UNKNOWN (inkl. N-PORT-Codes). Die Identität einer Position läuft über
+  ISIN, dann CUSIP, dann SEDOL, dann Ticker+Börse. Der Snapshot-Hash umfasst nur Positionen und Gewichte.
+- `etf-changes.js`: ETF_CHANGE_EVENT_VERSION 1.0.0. Der erste Snapshot ist die Baseline. Gleicher Inhalt erzeugt
+  keine Ereignisse. Verglichen wird nur innerhalb desselben Fonds und derselben Quelle mit späterem Stichtag.
+  Rauschen < 0,10 PP wird ignoriert. Die IDs sind deterministisch.
+
+### Fachliche Regeln
+- **Stichtag** = Berichtsdatum des Bestands (REPORT_DATE), nicht das Einreichungsdatum. Das Einreichungsdatum steht
+  als `publishedAt` daneben.
+- **Fondsvermögen (N-PORT NET_ASSETS)** gilt auf Fondsebene, also für alle Anteilklassen einer Serie (z. B.
+  Vanguard-ETF-Klasse und Investmentfonds-Klassen). Ausgewiesen als `aumLevel = FUND`.
+- **UCITS**: Ein N-PORT-Melder ist eine US-Investmentgesellschaft und deshalb **kein UCITS** (Quelle SEC, Konfidenz
+  HIGH). Für EU-Anteilklassen gibt es nur den Hinweis „UCITS im amtlichen Namen“. Das ist kein Beleg.
+- **Hebel-/Derivatefonds** (`derivativeHeavy`): N-PORT meldet in % des Nettovermögens, einzelne Positionen liegen
+  über 100 %. Diese Fonds werden gekennzeichnet und bei Durchschau und Overlap nicht berücksichtigt.
+- **Wirtschaftszweig** über den SEC-SIC-Code des Emittenten, als Näherung auf elf Sektoren abgebildet und als
+  „SEC-SIC“ beschriftet, nicht als GICS.
+- **Kosten**: die Expense Ratio laut Gebührentabelle im Prospekt (US). Sie ist nicht identisch mit TER oder den
+  laufenden Kosten im europäischen Basisinformationsblatt.
+
+### Nicht verfügbar (benannt, nicht geschätzt)
+Tagesaktuelle Bestände, Holdings und Kosten europäischer UCITS-ETFs, WKN, Replikation, NAV, Tracking Difference
+und Kurse europäischer Listings. Die Gründe stehen in der Quellenmatrix.

@@ -110,7 +110,7 @@
     // gewichtete laufende Produktkosten
     var costW = 0, cost = 0;
     pos.forEach(function (p) { var d = s.details[p.symbol]; var c = d && d.costs && d.costs.status === "AVAILABLE" ? d.costs.value : null; if (c !== null) { costW += p.weight / total; cost += p.weight / total * c; } });
-    var costCard = '<div class="vs-card"><p class="vs-label">Laufende Produktkosten der Struktur</p>' + (costW > 0 ? '<p class="vs-kpi small" style="margin-top:6px">' + VS.costPct(cost / costW) + ' p.a.</p><p class="vs-fine">gewichtet über ' + F.pct(costW, 0) + ' des Portfolios mit Kostenquote laut Prospekt (SEC). Depot-, Handels- und Steuerkosten sind nicht enthalten.</p>'
+    var costCard = '<div class="vs-card"><p class="vs-label">Laufende Produktkosten der Struktur</p>' + (costW > 0 ? '<p class="vs-kpi small" style="margin-top:6px">' + VS.costPct(cost / costW) + ' p.a.</p><p class="vs-fine">gewichtet über ' + F.pct(costW, 0) + ' des Portfolios mit Kostenquote laut Prospekt (SEC). Depot-, Handels- und Steuerkosten sind nicht enthalten.</p><a class="vs-pill small" href="#/kosten?ter=' + (cost / costW * 100).toFixed(3) + '">Über die Laufzeit rechnen</a>'
       : VS.pending("Keine Kostenquoten", "Für die Positionen liegt keine Kostenquote aus einer Primär- oder Regulierungsquelle vor.")) + '</div>';
     if (!(lt.status === "CALCULATED" || lt.status === "PARTIAL")) {
       el.innerHTML = '<div class="vs-grid g2" style="margin-top:14px">' + costCard + VS.pending("Durchschau nicht möglich", "Für keine Position liegen Bestandsdaten vor (z. B. Unit Investment Trusts wie SPY oder Nicht-US-Fonds). Wir schätzen keine Inhalte.") + '</div>';

@@ -223,13 +223,15 @@
   }
 
   /* ============================================================== KOSTEN */
-  VS.views.kosten = function () {
+  VS.views.kosten = function (r) {
     var pl = VS.state.plan;
+    // Kostenquote aus ETF-Detail oder Portfolio uebernehmen (?ter=0.07 in Prozent) - nur laufende Produktkosten.
+    var terQ = r && r.query && r.query.ter && isFinite(Number(r.query.ter)) ? Number(r.query.ter) : null;
     var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Kostenanalyse</p><h1>Was kosten mich Gebühren wirklich?</h1><p class="vs-lead">Ein Prozentpunkt klingt nach wenig. Über Jahrzehnte frisst er durch den Zinseszins einen großen Teil des Vermögens.</p></section>' +
       '<section class="vs-section"><div class="vs-grid side"><form class="vs-card app" id="vs-fee-form"><p class="vs-label">Annahmen</p><div class="vs-form" style="margin-top:12px">' +
       VS.field("start", "Startkapital", pl.start, { min: 0, unit: "€" }) + VS.field("monthly", "Sparrate", pl.monthly, { min: 0, unit: "€ / Monat" }) +
       VS.field("years", "Laufzeit", Math.max(1, pl.targetAge - pl.age), { min: 1, max: 70, unit: "Jahre" }) + VS.field("ret", "Rendite vor Kosten", (pl.returns.basis * 100).toFixed(1), { step: 0.5, unit: "% p.a." }) +
-      VS.field("ca", "Kosten A", "0.20", { step: 0.05, min: 0, unit: "% p.a. (z. B. ETF)" }) + VS.field("cb", "Kosten B", "1.50", { step: 0.05, min: 0, unit: "% p.a. (z. B. aktiver Fonds, Versicherung)" }) +
+      VS.field("ca", terQ !== null ? "Kosten A (übernommen)" : "Kosten A", terQ !== null ? terQ.toFixed(2) : "0.20", { step: 0.01, min: 0, unit: terQ !== null ? "% p.a. laufende Produktkosten (Prospekt)" : "% p.a. (z. B. ETF)" }) + VS.field("cb", "Kosten B", "1.50", { step: 0.05, min: 0, unit: "% p.a. (z. B. aktiver Fonds, Versicherung)" }) +
       '</div></form><div id="vs-fee-out"></div></div></section>');
     var form = root.querySelector("#vs-fee-form"), sent = false;
     function draw() {
