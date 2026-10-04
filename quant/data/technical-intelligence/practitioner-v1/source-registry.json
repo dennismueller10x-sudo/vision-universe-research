@@ -1,0 +1,447 @@
+{
+ "schemaVersion": "vu-practitioner-source-registry-1.0.0",
+ "generatedAt": "2026-10-04",
+ "status": "PRELIMINARY",
+ "note": "Vorläufiges Quellenverzeichnis. Alle Angaben stammen aus Websuche-Metadaten (Titel, URL, Kurzfassung der Suchmaschine) und sind NICHT am Primärmaterial geprüft: Die Build-Umgebung kann YouTube, X, die Anbieter-Websites, Kolumnenportale und das Internet Archive nicht erreichen (Netzwerk-Policy, HTTP 403). Stufen A/B/C sind deshalb vorläufig; Felder 'UNVERIFIED' werden bei der ersten Sichtung des Primärmaterials gefüllt. Reichweite ist kein Kriterium.",
+ "tiers": {
+  "A": "sehr gut dokumentierte Practitioner Reference",
+  "B": "brauchbar",
+  "C": "nur ergänzend",
+  "REJECT": "nicht benchmarkfähig"
+ },
+ "balanceRule": "HKCM-Umfeld (hkcm, phantom-hkcm) höchstens 40 % der eingeschlossenen Fälle",
+ "sources": [
+  {
+   "sourceId": "hkcm",
+   "name": "HKCM / Philip Hopf, Philip Klinkmüller",
+   "organisation": "Hopf-Klinkmüller Capital Management",
+   "elliottSchool": "PRACTITIONER_SPECIFIC (Elliott + Fibonacci + Zyklen)",
+   "priorityGroup": "A",
+   "platforms": [
+    "YOUTUBE",
+    "X",
+    "WEBSITE",
+    "COLUMN"
+   ],
+   "urls": [
+    "https://www.youtube.com/@hkcm",
+    "https://www.aktiencheck.de/kolumnen/Philip_Hopf-852",
+    "https://trading-treff.de/author/philiphopf"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "DAX",
+    "S&P 500",
+    "Nasdaq 100",
+    "Einzelaktien",
+    "Krypto",
+    "Rohstoffe"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W"
+   ],
+   "showsConcreteCounts": "JA (Suchmetadaten)",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "JA (Suchmetadaten: Zielbereiche, Trendwendezonen)",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "YouTube/Kolumnen: Datum ja, Uhrzeit nur über Plattform-Metadaten",
+   "historicalContentAccessible": "teilweise (YouTube-Archiv, Kolumnenarchiv)",
+   "laterEditingPossible": "YouTube-Titel/Beschreibung editierbar; Video-Inhalt nicht",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "A (vorläufig)",
+   "tierRationale": "Priorität laut Auftrag; konkrete Zielbereiche und Szenarien öffentlich; Prüfung am Primärmaterial ausstehend. Eigenwerbung mit Trefferquote → Publikationsverzerrung prüfen.",
+   "language": "de",
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+  },
+  {
+   "sourceId": "phantom-hkcm",
+   "name": "Phantom by HKCM",
+   "organisation": "HKCM",
+   "elliottSchool": "PRACTITIONER_SPECIFIC",
+   "priorityGroup": "A",
+   "platforms": [
+    "YOUTUBE",
+    "X"
+   ],
+   "urls": [
+    "https://www.youtube.com/@phantombyhkcm",
+    "https://x.com/Phantom_by_HKCM"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "Krypto",
+    "Technologieaktien"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "YouTube-Metadaten",
+   "historicalContentAccessible": "YouTube-Archiv",
+   "laterEditingPossible": "wie oben",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "B (vorläufig)",
+   "tierRationale": "HKCM-Umfeld (zählt zur 40-%-Grenze); Schwerpunkt Krypto, für Aktien-Benchmark nur ergänzend.",
+   "language": "de",
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+  },
+  {
+   "sourceId": "ewi",
+   "name": "Elliott Wave International (Prechter u. a.)",
+   "organisation": "Elliott Wave International",
+   "elliottSchool": "CLASSICAL",
+   "priorityGroup": "B",
+   "platforms": [
+    "WEBSITE",
+    "YOUTUBE"
+   ],
+   "urls": [
+    "https://www.elliottwave.com/articles/",
+    "https://www.youtube.com/channel/UC4H-JhWsulgYjgziL5md1gw"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "S&P 500",
+    "Dow",
+    "Anleihen",
+    "Gold",
+    "Krypto"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W",
+    "1M"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Artikel datiert",
+   "historicalContentAccessible": "freie Artikel ja; Kernpublikationen (Theorist, Financial Forecast) kostenpflichtig → ausgeschlossen",
+   "laterEditingPossible": "Artikel editierbar",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "B (vorläufig)",
+   "tierRationale": "Klassische Schule (Frost & Prechter) — wichtig als Gegenpol; nur freie Inhalte zulässig.",
+   "language": "en",
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+  },
+  {
+   "sourceId": "ewf",
+   "name": "ElliottWave-Forecast",
+   "organisation": "ElliottWave-Forecast.com",
+   "elliottSchool": "PRACTITIONER_SPECIFIC (Sequenzen 3-7-11 Swings, ‚Blue Box‘)",
+   "priorityGroup": "B",
+   "platforms": [
+    "WEBSITE",
+    "BLOG",
+    "YOUTUBE"
+   ],
+   "urls": [
+    "https://elliottwave-forecast.com/news/",
+    "https://elliottwave-forecast.com/stock-market/"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "S&P 500",
+    "Nasdaq",
+    "Einzelaktien",
+    "ETFs",
+    "FX",
+    "Rohstoffe"
+   ],
+   "typicalTimeframes": [
+    "INTRADAY",
+    "1D"
+   ],
+   "showsConcreteCounts": "JA (Suchmetadaten)",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "JA (Blue-Box-Zonen)",
+   "namesInvalidations": "JA (Suchmetadaten: Invalidation je Szenario)",
+   "publicationTimeUnambiguous": "Blog datiert",
+   "historicalContentAccessible": "öffentliches Blogarchiv",
+   "laterEditingPossible": "Blogbeiträge editierbar; viele Nachbetrachtungen („as expected“) → Ausschlussregel",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "B (vorläufig)",
+   "tierRationale": "Viele öffentliche Aktien-/Index-Beiträge mit Zonen und Invalidation; Achtung: hoher Anteil retrospektiver Erfolgsbeiträge und Intraday-Zählungen.",
+   "language": "en",
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+  },
+  {
+   "sourceId": "more-crypto-online",
+   "name": "More Crypto Online",
+   "organisation": "More Crypto Online",
+   "elliottSchool": "CLASSICAL (eigene Angabe: Elliott + Fibonacci)",
+   "priorityGroup": "B",
+   "platforms": [
+    "YOUTUBE"
+   ],
+   "urls": [
+    "https://www.youtube.com/@morecryptoonline"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "Krypto",
+    "Krypto-Aktien"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "INTRADAY"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "YouTube-Metadaten",
+   "historicalContentAccessible": "YouTube-Archiv",
+   "laterEditingPossible": "wie YouTube",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "C (vorläufig)",
+   "tierRationale": "Krypto-Schwerpunkt; für den Aktien-Benchmark nur ergänzend.",
+   "language": "en",
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+  },
+  {
+   "sourceId": "ewt-gilburt",
+   "name": "ElliottWaveTrader / Avi Gilburt",
+   "organisation": "ElliottWaveTrader.net",
+   "elliottSchool": "PRACTITIONER_SPECIFIC (Fibonacci-Pinball)",
+   "priorityGroup": "B",
+   "platforms": [
+    "WEBSITE",
+    "COLUMN"
+   ],
+   "urls": [
+    "https://www.elliottwavetrader.net/news/Avi-Gilburt",
+    "https://www.financialsense.com/contributors/avi-gilburt"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "S&P 500",
+    "Gold",
+    "Einzelaktien"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Artikel datiert; öffentlich erst 72 h nach Mitgliederveröffentlichung (Suchmetadaten)",
+   "historicalContentAccessible": "öffentliche Artikel",
+   "laterEditingPossible": "editierbar",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "B (vorläufig)",
+   "tierRationale": "Stichtag = Mitglieder-Erstveröffentlichung, nicht öffentliche Freigabe — muss je Artikel belegt sein, sonst konservativ öffentliches Datum.",
+   "language": "en",
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+  },
+  {
+   "sourceId": "tiedje",
+   "name": "André Tiedje (GodmodeTrader / stock3)",
+   "organisation": "stock3 AG",
+   "elliottSchool": "CLASSICAL (eigene Ausprägung)",
+   "priorityGroup": "B",
+   "platforms": [
+    "WEBSITE",
+    "COLUMN"
+   ],
+   "urls": [
+    "https://stock3.com/themen/elliott-wellen-23"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "DAX-Future",
+    "Bitcoin",
+    "Indizes"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "INTRADAY"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Artikel datiert",
+   "historicalContentAccessible": "öffentliche Artikel teilweise; Premium ausgeschlossen",
+   "laterEditingPossible": "Titel wie „Volltreffer“ = Rückblicke → Ausschlussregel",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "B (vorläufig)",
+   "tierRationale": "Deutschsprachig, unabhängig von HKCM; DAX-Future ohne VU-Reihe (UNMAPPED).",
+   "language": "de",
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+  },
+  {
+   "sourceId": "stockstreet",
+   "name": "Sven Weisenhaus (Stockstreet) auf investing.com/finanzmarktwelt",
+   "organisation": "Stockstreet GmbH",
+   "elliottSchool": "CLASSICAL",
+   "priorityGroup": "B",
+   "platforms": [
+    "COLUMN"
+   ],
+   "urls": [
+    "https://de.investing.com/analysis/ein-langfristiges-elliottwellenszenario-fur-den-nasdaq-100-200486720"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "Nasdaq 100",
+    "S&P 500",
+    "DAX"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "JA (Suchmetadaten: Ziel ≈ 16.250)",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Artikel datiert",
+   "historicalContentAccessible": "Kolumnenarchiv",
+   "laterEditingPossible": "editierbar",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "B (vorläufig)",
+   "tierRationale": "Deutschsprachige Indexanalysen mit Zielen; unabhängig von HKCM.",
+   "language": "de",
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+  },
+  {
+   "sourceId": "antczak",
+   "name": "Thomas Antczak auf investing.com",
+   "organisation": "—",
+   "elliottSchool": "UNKNOWN_MIXED",
+   "priorityGroup": "C",
+   "platforms": [
+    "COLUMN"
+   ],
+   "urls": [
+    "https://de.investing.com/analysis/elliott-wellen-analyse-dax-index-1832024-200489486"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "DAX",
+    "Einzelaktien"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "JA (Suchmetadaten: Zielbereiche, Zeitziele)",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Datum im Titel",
+   "historicalContentAccessible": "Kolumnenarchiv",
+   "laterEditingPossible": "editierbar",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "C (vorläufig)",
+   "tierRationale": "Updates zu früheren Analysen vorhanden (Revisionen gut verfolgbar); DAX UNMAPPED.",
+   "language": "de",
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+  },
+  {
+   "sourceId": "tradingview-ideas",
+   "name": "TradingView Ideas (diverse Autoren)",
+   "organisation": "TradingView",
+   "elliottSchool": "UNKNOWN_MIXED",
+   "priorityGroup": "C",
+   "platforms": [
+    "WEBSITE"
+   ],
+   "urls": [
+    "https://www.tradingview.com/ideas/elliottwaves/"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "alle"
+   ],
+   "typicalTimeframes": [
+    "alle"
+   ],
+   "showsConcreteCounts": "JA (Chart je Idee)",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Zeitstempel je Idee (Plattform); Ideen nachträglich nicht editierbar, Updates separat (zu prüfen)",
+   "historicalContentAccessible": "öffentlich",
+   "laterEditingPossible": "UNVERIFIED",
+   "documentationQuality": "heterogen",
+   "benchmarkTier": "C (vorläufig)",
+   "tierRationale": "Gute Zeitstempel-Disziplin, aber Autorenqualität sehr gemischt; nur Autoren mit Kontinuität einzeln aufnehmen.",
+   "language": "en/de",
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+  },
+  {
+   "sourceId": "neowave",
+   "name": "NEoWave / Glenn Neely",
+   "organisation": "NEoWave Inc.",
+   "elliottSchool": "NEOWAVE",
+   "priorityGroup": "B",
+   "platforms": [
+    "WEBSITE"
+   ],
+   "urls": [
+    "https://www.neowave.com"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "S&P 500",
+    "Gold"
+   ],
+   "typicalTimeframes": [
+    "1W",
+    "1M"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "UNVERIFIED",
+   "historicalContentAccessible": "überwiegend kostenpflichtig → ausgeschlossen",
+   "laterEditingPossible": "UNVERIFIED",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "REJECT (vorläufig)",
+   "tierRationale": "Kernanalysen hinter Bezahlschranke; andere Schule (nicht mit klassischer Zählung mischen).",
+   "language": "en",
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+  },
+  {
+   "sourceId": "search-aggregators",
+   "name": "Aggregatoren/Nachrichten über Analysten (z. B. Krypto-Newsseiten)",
+   "organisation": "—",
+   "elliottSchool": "UNKNOWN_MIXED",
+   "priorityGroup": "C",
+   "platforms": [
+    "WEBSITE"
+   ],
+   "urls": [],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "Krypto"
+   ],
+   "typicalTimeframes": [
+    "1D"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "sekundär",
+   "historicalContentAccessible": "—",
+   "laterEditingPossible": "—",
+   "documentationQuality": "niedrig",
+   "benchmarkTier": "REJECT",
+   "tierRationale": "Sekundärberichte über Analysen; Original bevorzugt (Quellkette).",
+   "language": "en",
+   "accessFromBuildEnvironment": "BLOCKED (Netzwerk-Policy der Umgebung, HTTP 403; nicht umgangen)"
+  }
+ ]
+}
