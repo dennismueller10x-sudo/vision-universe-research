@@ -1,0 +1,88 @@
+{
+ "schemaVersion": "vu-funding-rules-1.0.0",
+ "ruleId": "DE-RIESTER",
+ "ruleVersion": "2026.2-estg-bestand",
+ "product": "Riester-Rente (Altersvorsorgevertrag nach § 10a / Abschnitt XI EStG)",
+ "jurisdiction": "DE",
+ "validFrom": "2018-01-01",
+ "validUntil": null,
+ "validUntilNote": "Für Verträge, die bis 31.12.2026 abgeschlossen wurden (Bestandsverträge), gelten §§ 10a, 79, 82, 84, 85 Abs. 1, 86, 89, 91 EStG in der bis 31.12.2026 geltenden Fassung bis zum Beginn der Auszahlungsphase weiter (§ 52 Abs. 50a EStG, BGBl. 2026 I Nr. 156). Ein unwiderruflicher Wechsel ins neue Recht ist möglich; ein neuer zertifizierter Vertrag nach dem 31.12.2026 bringt alle Verträge ins neue Recht.",
+ "legalStatus": "GELTENDES_RECHT",
+ "verification": {
+  "status": "TRANSITION_PRIMARY_VERIFIED",
+  "primaryVerified": false,
+  "verifiedAt": "2026-10-03",
+  "method": "Übergangsregel (§ 52 Abs. 50a) und Sockelbetrag 60 € (wird im neuen Recht durch 120 € ersetzt) im BGBl.-Text geprüft. Die alten Beträge (175 €, 185 €/300 €, 4 %, 2.100 €) stehen in der Altfassung der §§ 84–86, 10a EStG; deren Volltext war aus CI nicht abrufbar (gesetze-im-internet.de), daher primaryVerified = false.",
+  "fields": {
+   "transitionRules": "§ 52 Abs. 50a EStG i. d. F. Art. 1 Nr. 3 BGBl. 2026 I Nr. 156",
+   "contributionRules.baseContribution": "Art. 1 Nr. 2 c: „die Angabe „60 Euro“ durch die Angabe „120 Euro“ ersetzt“ (Altfassung 60 €)"
+  }
+ },
+ "ruleSource": [
+  {
+   "title": "§ 84 EStG Grundzulage",
+   "url": "https://www.gesetze-im-internet.de/estg/__84.html",
+   "kind": "STATUTE"
+  },
+  {
+   "title": "§ 85 EStG Kinderzulage",
+   "url": "https://www.gesetze-im-internet.de/estg/__85.html",
+   "kind": "STATUTE"
+  },
+  {
+   "title": "§ 86 EStG Mindesteigenbeitrag",
+   "url": "https://www.gesetze-im-internet.de/estg/__86.html",
+   "kind": "STATUTE"
+  },
+  {
+   "title": "§ 10a EStG Zusätzliche Altersvorsorge",
+   "url": "https://www.gesetze-im-internet.de/estg/__10a.html",
+   "kind": "STATUTE"
+  }
+ ],
+ "contributionRules": {
+  "minimumOwnContributionRate": 0.04,
+  "minimumOwnContributionCap": 2100,
+  "baseContribution": 60,
+  "note": "Mindesteigenbeitrag = 4 % der beitragspflichtigen Einnahmen des Vorjahres, höchstens 2.100 €, abzüglich Zulagen, mindestens Sockelbetrag 60 €. Wird er unterschritten, werden die Zulagen anteilig gekürzt."
+ },
+ "incomeRules": {
+  "basicAllowance": {
+   "label": "Grundzulage",
+   "fixed": 175
+  },
+  "incomeDependent": true
+ },
+ "childRules": {
+  "label": "Kinderzulage",
+  "bornBefore2008": 185,
+  "bornFrom2008": 300
+ },
+ "bonusRules": {
+  "careerStarter": {
+   "label": "Berufseinsteigerbonus",
+   "amount": 200,
+   "oneTime": true,
+   "maxAgeExclusive": 25
+  }
+ },
+ "maximumFunding": {
+  "basicAllowancePerYear": 175,
+  "childAllowancePerChildPerYear": 300,
+  "specialExpensesDeductionCap": 2100
+ },
+ "taxRules": {
+  "specialExpensesDeductionCap": 2100,
+  "note": "Günstigerprüfung: Steuervorteil aus Sonderausgabenabzug minus Zulagen, nur wenn größer null. Vereinfacht mit Grenzsteuersatz modelliert, keine Steuerberatung."
+ },
+ "country": "DE",
+ "status": "BESTANDSVERTRAEGE",
+ "newContractsUntil": "2026-12-31",
+ "transitionRules": {
+  "existingKeepOldLaw": true,
+  "irrevocableSwitchPossible": true,
+  "newContractSwitchesAll": true,
+  "source": "§ 52 Abs. 50a EStG"
+ },
+ "ruleHash": "fnv-ad75c9a61851ef44"
+}
