@@ -212,8 +212,11 @@ export function resolveInstrument(instr, map = loadInstrumentMap(), opts = {}) {
   }
   const rule = map.usStockRule;
   if (rule && rule.instrumentTypes.includes(type) && /^[A-Z][A-Z0-9.-]{0,9}$/.test(String(instr.asShown || "").trim().toUpperCase())) {
-    const t = String(instr.asShown).trim().toUpperCase();
-    const exists = opts.stockExists ? opts.stockExists(t) : existsSync(join(ROOT, "quant/data/market/discover-series-long", "ref_" + t + ".json"));
+    /* Aktienklassen: VU fuehrt "BRK.B" ohne Trennzeichen (ref_BRKB) */
+    const has = (x) => (opts.stockExists ? opts.stockExists(x) : existsSync(join(ROOT, "quant/data/market/discover-series-long", "ref_" + x + ".json")));
+    const raw = String(instr.asShown).trim().toUpperCase(), bare = raw.replace(/[.\-\/]/g, "");
+    const t = has(raw) || bare === raw || !has(bare) ? raw : bare;
+    const exists = has(t);
     if (exists) {
       const q = instr.priceAdjustment === "TOTAL_RETURN" ? "PROXY_SAME_UNDERLYING" : "EXACT";
       return { mapId: "us-stock", vuSymbol: t, seriesSource: rule.seriesSource, market: rule.market, mappingQuality: q, levelScale: null, note: rule.priceAdjustmentNote };
