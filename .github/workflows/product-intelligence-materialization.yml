@@ -123,18 +123,12 @@ jobs:
           # gerechnet - ohne force (scripts/quant/methodology-fingerprint.mjs).
           METHOD=$(node scripts/quant/methodology-fingerprint.mjs --compare | sed 's/^changed=//')
           echo "Methodik geaendert: ${METHOD:-nein}"
-          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.force == true }}" = "true" ]; then
-            echo "noop=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Manuell erzwungen (force) - Stichtag $STORE wird neu materialisiert."
-          elif [ -n "$METHOD" ]; then
-            echo "noop=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Methodikwechsel ($METHOD) - Stichtag $STORE wird neu materialisiert."
-          elif [ -n "$STORE" ] && [ "$STORE" = "$PRODUCT" ]; then
-            echo "noop=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::Produktstand entspricht der Ablage ($STORE) - nichts zu materialisieren."
-          else
-            echo "noop=false" >> "$GITHUB_OUTPUT"
-          fi
+          # Entscheidung in scripts/quant/materialization-decision.mjs (getestet):
+          # force > Methodikwechsel > Faktorzeilen neuer als Faktor-Evidenz
+          # (Same-Day-Refresh) > Stichtag Ablage = Produkt -> No-Op.
+          node scripts/quant/materialization-decision.mjs --store="$STORE" --product="$PRODUCT" \
+            --method="$METHOD" --force="${{ github.event_name == 'workflow_dispatch' && inputs.force == true }}" >> "$GITHUB_OUTPUT"
+          grep -E '^(noop|reason)=' "$GITHUB_OUTPUT" | tail -2
 
       - name: Existing R2 credentials are available
         if: steps.noetig.outputs.noop != 'true'
