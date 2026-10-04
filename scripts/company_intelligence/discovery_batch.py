@@ -123,6 +123,9 @@ def persist(results,store,companies,now):
             store.set_state('domainValidation:'+cid,{'status':r['status'],'category':category,'reason':reason,'checkedAt':now,'nextAttempt':advance(now,24 if category in ('DEFERRED','UNAVAILABLE') else 7*24)})
         if r.get('site'):store.set_state('officialSite:'+cid,r['site']);companies[cid]['officialSites']=[r['site']['url']]
         if not r.get('domainOnly') and r['status'] in ('DEFERRED','DEGRADED'):
+            local_capacity = r['status']=='DEFERRED' and reason in (
+                'NETWORK_BUDGET_EXHAUSTED','NETWORK_TIME_BUDGET_EXHAUSTED','DISCOVERY_DEADLINE')
+            retry_hours = .25 if 'CIRCUIT_OPEN' in reason else 1 if local_capacity else 24
             for source in r.get('sources',[]):store.source(source)
             prior=store.state('ir:'+cid,{})
             configurations={cfg['irHomepage']:cfg for cfg in prior.get('configurations',[])}
@@ -132,7 +135,7 @@ def persist(results,store,companies,now):
                 configurations[cfg['irHomepage']]={**old,**cfg,'documents':list(documents.values())}
             store.set_state('ir:'+cid,{**prior,'configurations':list(configurations.values()),
                                       'partialDiscovery':True,'lastFailure':now,'reason':r.get('reason'),
-                                      'retryAfter':advance(now,.25 if 'CIRCUIT_OPEN' in reason else 24)})
+                                      'retryAfter':advance(now,retry_hours)})
         if r['status']=='VALIDATED' and not r.get('domainOnly'):
             for source in r['sources']:store.source(source)
             from .materials import retain_source_configurations

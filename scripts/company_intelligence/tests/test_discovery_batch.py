@@ -116,6 +116,23 @@ class BatchTests(unittest.TestCase):
    self.assertTrue(ir['partialDiscovery']);self.assertNotIn('lastSuccess',ir)
    self.assertEqual(ir['configurations'][0]['documents'][0]['url'],'https://apple.com/prior.pdf')
    s.close()
+ def test_ir_capacity_retry_does_not_change_source_or_transport_backoff(self):
+  from company_intelligence.pipeline import advance
+  with tempfile.TemporaryDirectory() as tmp:
+   c=company();s=Store(Path(tmp)/'state.sqlite');cid=c['companyId']
+   source={'sourceId':'already-polled','companyId':cid,'type':'RSS','url':'https://apple.com/rss','active':True,'nextCheck':advance(NOW,48),'failureCount':3}
+   s.source(source)
+   prior={'lastSuccess':NOW,'configurations':[{'irHomepage':'https://apple.com/investors','documents':[{'url':'https://apple.com/deck.pdf','type':'PRESENTATION'}]}]}
+   for status,reason,hours in [('DEFERRED','NETWORK_BUDGET_EXHAUSTED',1),('DEFERRED','NETWORK_TIME_BUDGET_EXHAUSTED',1),('DEFERRED','DISCOVERY_DEADLINE',1),('DEGRADED','HTTP_503',24),('DEFERRED','DNS_UNAVAILABLE',24),('DEFERRED','SHARED_INFRASTRUCTURE_CIRCUIT_OPEN:SHARED_PROXY_FAILURE',.25)]:
+    s.set_state('ir:'+cid,prior)
+    persist([{'companyId':cid,'status':status,'reason':reason,'requests':0,'stats':{}}],s,{cid:c},NOW)
+    ir=s.state('ir:'+cid)
+    self.assertEqual(ir['retryAfter'],advance(NOW,hours),(status,reason))
+    self.assertEqual(ir['lastSuccess'],NOW);self.assertEqual(ir['configurations'],prior['configurations'])
+    retained=s.sources()[0]
+    self.assertEqual(retained['nextCheck'],source['nextCheck']);self.assertEqual(retained['failureCount'],3)
+   s.close()
+
  def test_serial_callback_persists_before_batch_return(self):
   import threading
   with tempfile.TemporaryDirectory() as tmp:
