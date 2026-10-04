@@ -1,55 +1,102 @@
 # PRACTITIONER_REFERENCE_V1 — Datensatzbericht
 
-Stand: 04.10.2026. **Status: NICHT EINGEFROREN — 0 Fälle.** Dieser Bericht dokumentiert Methodik, Werkzeuge und den Grund, warum noch kein Fall extrahiert wurde. Er wird beim Freeze durch den echten Datensatzbericht ersetzt (§108).
+Stand: 04.10.2026. **Status: EINGEFROREN — Kennzeichnung „PRACTITIONER REFERENCE — PILOT“** (Qualitätsgate §107 verfehlt, siehe §4).
 
-> Eine Praktiker-Zählung ist **PRACTITIONER REFERENCE**, keine **OBJECTIVE GROUND TRUTH**.
+> Eine Praktiker-Zählung ist **PRACTITIONER REFERENCE, NOT OBJECTIVE GROUND TRUTH**.
+> Extraktion: **LLM-dual aus Primärquelle, nicht menschlich geprüft** (Protokoll-Nachtrag 2). Der vorgesehene menschliche Audit (≥ 20 %) ist **BLOCKED**.
 
-## 1. Warum es noch keine Fälle gibt
+## 1. Freeze
 
-Die Build-Umgebung dieser Mission kann keine einzige Primärquelle abrufen. Die Netzwerk-Policy der Umgebung lehnt die Verbindungen ab (HTTP 403 am Egress-Proxy), auch über das Abrufwerkzeug:
-
-| Ziel | Ergebnis |
+| Feld | Wert |
 |---|---|
-| youtube.com (HKCM, Phantom by HKCM, More Crypto Online, EWI-Kanal) | blockiert |
-| x.com, nitter.net | blockiert |
-| hkcm.de, aktiencheck.de, trading-treff.de (Kolumnen Philip Hopf) | blockiert |
-| elliottwave.com, elliottwave-forecast.com, elliottwavetrader.net, neowave.com | blockiert |
-| stock3.com, de.investing.com, finanzmarktwelt.de, onvista.de, fxstreet.com, tradingview.com | blockiert |
-| web.archive.org / archive.org (Originalzustände, Zeitstempel) | blockiert |
+| Datei | `quant/data/technical-intelligence/practitioner-v1/freeze/PRACTITIONER_REFERENCE_V1.jsonl` |
+| Manifest | `…/freeze/PRACTITIONER_REFERENCE_V1.manifest.json` |
+| SHA-256 | `7af25c9b5d61f0268f7049103076839e1dd43b3a2d9d24bc942290dd1133f489` |
+| Schema | `practitioner-reference-1.2.0` |
+| Zeilen / Fälle | 99 Zeilen = 78 Originalfälle + 21 spätere Fassungen (Revisionsketten) |
+| Freeze-Commit | `8985c6a06`, **vor** jedem VU-Vergleich |
+| Holdout-Quellenfamilie (im Manifest festgeschrieben) | `tiedje` (zweitgrößte Nicht-HKCM-Familie) |
+| Aufteilung (Fälle) | DEVELOPMENT 26 · VALIDATION 9 · HOLDOUT_TEMPORAL 32 · HOLDOUT_SOURCE 11 · QUARANTINE 0 |
 
-Verfügbar ist nur eine Websuche, die Titel, Adresse und eine **maschinell erzeugte Kurzfassung** liefert. Diese Kurzfassungen sind keine Primärquelle: kein Chart, keine sichtbaren Wellenlabels, Zeitpunkt meist nur aus dem Titel, Zahlen paraphrasiert und nicht prüfbar. Nach Protokoll §7 (nur HUMAN_FROM_PRIMARY oder LLM_DRAFT_HUMAN_REVIEWED, keine Halluzination, auditierbare Fundstelle) ergeben sie höchstens Sicherheit LOW — **nicht benchmarkfähig**. Dieselbe Entscheidung wurde bereits in Mission II getroffen: Der damalige Satz aus Suchzusammenfassungen wurde geleert.
+Korrekturen nach dem Freeze nur als neue Version (V1.1 …) mit Änderungsliste.
 
-Es wurden **keine** Zugangsbeschränkungen umgangen (§106) und **keine** Fälle erfunden (§105).
+## 2. Entstehung
 
-## 2. Was fertig ist
-
-| Baustein | Ort |
+| Schritt | Beleg |
 |---|---|
-| Vorab registriertes Protokoll inkl. Nachtrag 1 (nach Red-Team, vor Daten) | `PRACTITIONER_PROTOCOL.md` |
-| Schema `practitioner-reference-1.0.0` | `quant/data/technical-intelligence/practitioner-v1/schema/` |
-| Quellenverzeichnis (12 Quellen, Qualitätsmatrix, vorläufige Stufen, Quellenfamilien, Stichprobenrahmen-Felder) | `practitioner-v1/source-registry.json` |
-| Discovery-Queue (14 Fundstellen, nur Metadaten; keine Stichprobe) | `practitioner-v1/discovery-queue.json` |
-| Instrumentabbildung (Cash-Index/ETF/Future/CFD, Proxy-Skalen, UNMAPPED z. B. DAX) | `practitioner-v1/instrument-map.json` |
-| Werkzeuge: Validierung, Stichtag (Zeitzonen/Sommerzeit/Börsenschluss), Duplikate/Cross-Posts, Revisionsketten, Aufteilung, Freeze mit SHA-256, blinder Replay mit Leckschutz, Kennzahlen A–K/S, Mensch–Mensch, Ergebnisschicht getrennt | `scripts/technical/practitioner/` |
-| Interne Vergleichs- und Erfassungsseite (Blindmodus, Formular, blinde Zweitextraktion mit Feldvergleich, Audit-Log) | `quant/research/elliott-practitioners/` |
-| Tests (Zeitstempel, Stichtag nie nach Veröffentlichung, Datenleck, Duplikate, Reposts, Revisionen, Instrumentabbildung, Freeze-Sperren) | `quant/tests/practitioner-*.test.mjs` |
+| Protokoll, Schema, Werkzeuge, Red-Team, Nachtrag 1 — vor jedem Fall | `PRACTITIONER_PROTOCOL.md`, `reviews/PRACTITIONER_PIPELINE_REDTEAM.md` |
+| Nachtrag 2 (LLM-Doppelextraktion) — vor jeder Zeile | Protokoll |
+| Pilot: 27 Elemente, 5 INCLUDED; Nachträge 3–4 vor Verwendung der betroffenen Daten | `PRACTITIONER_PILOT_LOG.md` |
+| Nachtrag 5 (Rahmen EWF/Tiedje/TradingView, Stopp-Regel) **vor** der Ziehung (3bd4f414e → b9f3a4f1f) | Protokoll |
+| Phase 2: 323 gezogen, 307 bearbeitet, 16 NOT_PROCESSED; Stopp am Budget (≈ 415 USD) | `PRACTITIONER_SCALING_LOG.md` |
 
-## 3. Freeze-Qualitätsgate (§107)
+Die Ziehung war systematisch und vorab festgelegt (Schrittweite, Start aus SHA-256, quellenübergreifende Reihenfolge aus SHA-256). Es wurde **nicht** nach Erfolg ausgewählt. Die Extrahierenden sahen keine späteren Kurse und keine VU-Ausgaben.
 
-| Kriterium | Stand |
+Die Mission wurde zwischen zwei Sitzungen aufgeteilt:
+* Erfassung in einer eigenen Sitzung mit Netzzugang.
+* Freeze, Vergleich und Ergebnisstudie in der koordinierenden Sitzung.
+
+## 3. Zusammensetzung (78 Originalfälle)
+
+| Merkmal | Verteilung |
 |---|---|
-| ≥ 2 (besser 3) unabhängige Quellen | 0 |
-| ≥ 100 nutzbare Fälle | 0 |
-| ≥ 70 % HIGH | – |
-| mehrere Instrumente, Jahre, Musterklassen | – |
-| dokumentierte Ein-/Ausschlusskriterien | erfüllt (Protokoll) |
+| Quellenfamilie | ElliottWave-Forecast 45 (57,7 %) · André Tiedje 11 · TradingView cryptoknee 8 · yuchaosng 7 · thefifthwave 7 · **HKCM 0** |
+| Zeitrahmen | 1W 47 · 1D 23 · 1M 8 |
+| Jahr (Veröffentlichung) | 2022 14 · 2023 20 · 2024 12 · 2025 20 · 2026 12 |
+| Instrumente | 44 (Aktie 52, Krypto 17 — davon BTC 20 Fassungen —, ETF 3, CFD 2, Kassaindex 2, Future 1, Rohstoff 1) |
+| Musterfamilie | MOTIVE 62 · CORRECTIVE 15 · UNKNOWN 1 |
+| Extraktionssicherheit | HIGH 23 (29,5 %) · MEDIUM 55 |
+| Abbildungsgüte (Zeilen) | EXACT 84 · PROXY_SAME_UNDERLYING 6 · PROXY_DIFFERENT_INSTRUMENT 9 |
 
-**Gate nicht erreicht.** Kein Freeze.
+**A↔B-Übereinstimmung der unabhängigen Durchgänge** (Phase 2, n = 290):
 
-## 4. Bekannte Verzerrungen, die der künftige Datensatz haben wird
+| Feld | Übereinstimmung |
+|---|---:|
+| Familie | 92,7 % |
+| laufende Welle | 75,6 % |
+| Richtung | 94,6 % |
+| Invalidation | 92,4 % |
+| Zeitrahmen | 96,4 % |
+| Instrument | 99,0 % |
 
-Publikationsverzerrung (Gewinner werden hervorgehoben; HKCM wirbt öffentlich mit einer Trefferquote), Löschverzerrung (gelöschte Inhalte unsichtbar), Bearbeitungen (Titel/Beschreibungen editierbar), Quellen-Schwerpunkte (HKCM/Phantom stark Krypto, EWF stark Intraday, Tiedje DAX-Future), Instrumentlücken (DAX ohne VU-Reihe; Einzelaktien täglich nur ein Jahr lokal), Extraktionssubjektivität (wird über Doppelextraktion gemessen).
+Die laufende Welle ist das unsicherste Feld. Bei 8 INCLUDED-Fällen wichen zwei oder mehr Kernfelder ab. Alle 8 wurden im dritten Durchgang C geschlichtet und tragen deshalb höchstens MEDIUM.
 
-## 5. Nächster Schritt
+## 4. Freeze-Qualitätsgate (§107)
 
-Extraktion durch Menschen mit Zugang zu den Quellen über `quant/research/elliott-practitioners/` (Formular → JSONL → `references.jsonl`), oder Freigabe der Domains in der Netzwerkeinstellung dieser Umgebung. Danach: Stichprobenrahmen je Quelle festlegen und committen, Pilot 20–30 Fälle, Doppelextraktion 25 %, Freeze, blinder Benchmark.
+| Kriterium | Ziel | Wert | erfüllt |
+|---|---|---:|---|
+| unabhängige Quellenfamilien | ≥ 2 (besser 3) | 5 | ja |
+| nutzbare Fälle | ≥ 100 | 78 | **nein** |
+| HIGH-Anteil | ≥ 70 % | 29,5 % | **nein** |
+| Instrumente / Jahre / Musterfamilien | ≥ 2 | 44 / 5 / 2 | ja |
+| HKCM-Anteil | ≤ 40 % | 0 % | ja |
+
+**Gate verfehlt → nach §9 „ehrlich berichten, Benchmark nur als Pilot kennzeichnen“.**
+
+## 5. Ausschlüsse (Phase 2, 307 bearbeitete Elemente)
+
+| Grund | Anzahl |
+|---|---:|
+| EXCLUDED: Zeitrahmen MIXED | 49 |
+| EXCLUDED: Zeitrahmen INTRADAY | 34 |
+| EXCLUDED: keine Prognose (Rückblick, Werbung, Lehrbeispiel) | 25 |
+| EXCLUDED: Quelle unerreichbar (YouTube-Bot-Prüfung; nicht umgangen) | 14 |
+| EXCLUDED: Zeitrahmen unbekannt | 2 |
+| CANDIDATE: VU-Tagesreihe deckt den Stichtag nicht ab (US-Aktien 1D vor 05.09.2025) | 59 |
+| CANDIDATE: Plausibilitätsband (Nachtrag 4) | 25 |
+| CANDIDATE: sonstige | 5 |
+
+## 6. Bekannte Verzerrungen und Grenzen
+
+1. **Keine HKCM-Abdeckung.** YouTube blockiert den Abruf per Bot-Prüfung, hkcm.de ist nur für Mitglieder, das trading-treff-Archiv endet 2021. Entscheidung des Auftraggebers: ohne HKCM weiter. Jede Aussage über HKCM bleibt unbelegt.
+2. **Quellenschwerpunkt.** ElliottWave-Forecast stellt 57,7 % der Fälle, knapp unter der 60-%-Grenze. Viele davon sind Impulsfortsetzungen bzw. „blue box“-Käufe, daher die MOTIVE-Schieflage.
+3. **Publikationsverzerrung.** Die Beiträge sind öffentlich und von den Autoren selbst ausgewählt. Gelöschte Inhalte sind unsichtbar, Erfolgsrückblicke wurden ausgeschlossen.
+4. **Zeitrahmen-Selektion.** Intraday- und gemischte Zählungen sind ausgeschlossen (83 Elemente). Der Datensatz zeigt nur die Teilmenge der Praktiker-Arbeit, die sich auf VU-Tages- und Wochenreihen abbilden lässt.
+5. **Datenlücke.** VU-Tagesreihen für US-Einzelaktien beginnen am 05.09.2025. Ältere 1D-Aktienfälle blieben CANDIDATE (59), dadurch sind Wochencharts überrepräsentiert.
+6. **Extraktion ohne Menschen.** Gemessen ist nur die Reproduzierbarkeit zwischen zwei LLM-Durchgängen, nicht die Richtigkeit gegenüber dem Autor.
+7. **Revisionen** wurden nur unter gezogenen Elementen erkannt, es gab keine gezielte Nachextraktion (offen gelegte Abweichung, Skalierungsprotokoll).
+8. **BTC-Häufung.** 20 von 99 Zeilen betreffen BTC. Es gibt keine Obergrenze je Instrument im Protokoll.
+
+## 7. Nutzung
+
+Der Vergleich (`run-benchmark.mjs --refs freeze/PRACTITIONER_REFERENCE_V1.jsonl`) rechnet nur DEVELOPMENT und VALIDATION. **Beide Holdouts bleiben versiegelt.** Sie sind für die Prüfung einer künftigen Engine 3.3 reserviert. Ergebnisse: [ELLIOTT_PRACTITIONER_BENCHMARK.md](ELLIOTT_PRACTITIONER_BENCHMARK.md), [PRACTITIONER_OUTCOME_STUDY.md](PRACTITIONER_OUTCOME_STUDY.md).
