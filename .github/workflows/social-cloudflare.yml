@@ -166,17 +166,20 @@ jobs:
         # sichtbar, sie hat einen Autor und ein Datum, und sie laesst sich
         # durch Loeschen zurueckziehen. Das ist mehr Nachweis als ein
         # Auswahlfeld, nicht weniger.
+        env:
+          IN_ACTION: ${{ inputs.action }}
+          IN_CONFIRM_DEPLOY: ${{ inputs.confirm_deploy }}
         run: |
           request_file="workers/vision-universe-social/DEPLOY_REQUEST"
           deploy=false
           verify=false
           reason=""
 
-          if [ -n "${{ inputs.action }}" ]; then
+          if [ -n "$IN_ACTION" ]; then
             # Dispatch: die Eingabe entscheidet.
-            case "${{ inputs.action }}" in
+            case "$IN_ACTION" in
               deploy)
-                if [ "${{ inputs.confirm_deploy }}" != "DEPLOY" ]; then
+                if [ "$IN_CONFIRM_DEPLOY" != "DEPLOY" ]; then
                   echo "::error::Fuer action=deploy muss confirm_deploy auf DEPLOY stehen."
                   exit 1
                 fi

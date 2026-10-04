@@ -21,6 +21,9 @@ on:
             '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

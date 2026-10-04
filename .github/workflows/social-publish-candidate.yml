@@ -157,25 +157,31 @@ jobs:
       # --------------------------------------------------------- ABLEHNEN
       - name: Ablehnen
         if: inputs.aktion == 'ablehnen'
+        env:
+          IN_CANDIDATEID: ${{ inputs.candidateId }}
+          IN_GRUND: ${{ inputs.grund }}
         run: |
           set -e
-          if [ -z "${{ inputs.candidateId }}" ]; then
+          if [ -z "$IN_CANDIDATEID" ]; then
             echo "::error::Ohne candidateId gibt es nichts abzulehnen."
             exit 1
           fi
-          if [ -z "${{ inputs.grund }}" ]; then
+          # candidateId wird Teil eines Dateipfads (social/data/publish-candidates/<id>.json):
+          # nur Buchstaben, Ziffern, Punkt, Unterstrich, Bindestrich - kein "..".
+          case "$IN_CANDIDATEID" in *[!A-Za-z0-9._-]*|*..*) echo "::error::Ungueltige candidateId."; exit 1;; esac
+          if [ -z "$IN_GRUND" ]; then
             echo "::error::Eine Ablehnung ohne Grund ist als Rueckmeldung wertlos — und der Grund ist ihr einziger Ertrag."
             exit 1
           fi
 
           node scripts/social/decide-candidate.mjs \
-            --candidate "${{ inputs.candidateId }}" \
-            --reject --reason "${{ inputs.grund }}" --by owner
+            --candidate "$IN_CANDIDATEID" \
+            --reject --reason "$IN_GRUND" --by owner
 
           git config user.name "vision-universe-bot"
           git config user.email "info@visionuniverse.de"
           git add social/data
-          git diff --cached --quiet || git commit -m "Kandidat abgelehnt: ${{ inputs.candidateId }}
+          git diff --cached --quiet || git commit -m "Kandidat abgelehnt: ${IN_CANDIDATEID}
 
           Rueckmeldung zur AUSWAHL, nicht zur WIRKUNG. Dieser Beitrag wurde
           nie veroeffentlicht und hat deshalb keine Leistung.
@@ -186,25 +192,33 @@ jobs:
       # -------------------------------------------------------- FREIGEBEN
       - name: Bestaetigung pruefen
         if: inputs.aktion == 'freigeben'
+        env:
+          IN_BESTAETIGUNG: ${{ inputs.bestaetigung }}
+          IN_CANDIDATEID: ${{ inputs.candidateId }}
         run: |
-          if [ "${{ inputs.bestaetigung }}" != "FREIGEBEN" ]; then
+          if [ "$IN_BESTAETIGUNG" != "FREIGEBEN" ]; then
             echo "::error::Dieser Lauf veroeffentlicht einen ECHTEN Beitrag. Er laeuft nur, wenn im Feld exakt FREIGEBEN steht."
             exit 1
           fi
-          if [ -z "${{ inputs.candidateId }}" ]; then
+          if [ -z "$IN_CANDIDATEID" ]; then
             echo "::error::Ohne candidateId gibt es nichts freizugeben."
             exit 1
           fi
+          # candidateId wird Teil eines Dateipfads (social/data/publish-candidates/<id>.json):
+          # nur Buchstaben, Ziffern, Punkt, Unterstrich, Bindestrich - kein "..".
+          case "$IN_CANDIDATEID" in *[!A-Za-z0-9._-]*|*..*) echo "::error::Ungueltige candidateId."; exit 1;; esac
 
       - name: Ist das Bild oeffentlich erreichbar?
         if: inputs.aktion == 'freigeben'
+        env:
+          IN_CANDIDATEID: ${{ inputs.candidateId }}
         run: |
           set -e
           url=$(node -e '
             const fs=require("fs");
             const k=JSON.parse(fs.readFileSync("social/data/publish-candidates/"+process.argv[1]+".json","utf8"));
             process.stdout.write(k.content.imageUrl);
-          ' "${{ inputs.candidateId }}")
+          ' "$IN_CANDIDATEID")
           echo "Bild: $url"
 
           # Ohne erreichbares Bild lehnt Meta den Container ab — und das
@@ -224,14 +238,17 @@ jobs:
 
       - name: Freigabe eintragen
         if: inputs.aktion == 'freigeben'
+        env:
+          IN_CANDIDATEID: ${{ inputs.candidateId }}
         run: |
           set -e
           node scripts/social/decide-candidate.mjs \
-            --candidate "${{ inputs.candidateId }}" --approve --by owner
+            --candidate "$IN_CANDIDATEID" --approve --by owner
 
       - name: Veroeffentlichen
         if: inputs.aktion == 'freigeben'
         env:
+          IN_CANDIDATEID: ${{ inputs.candidateId }}
           KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
         run: |
           set -e
@@ -240,7 +257,7 @@ jobs:
             exit 1
           fi
 
-          req="social/data/publish-candidates/${{ inputs.candidateId }}.request.json"
+          req="social/data/publish-candidates/${IN_CANDIDATEID}.request.json"
           body=$(node -e '
             const fs=require("fs");
             process.stdout.write(JSON.stringify(JSON.parse(fs.readFileSync(process.argv[1],"utf8")).body));
@@ -270,16 +287,18 @@ jobs:
 
       - name: Medien-ID in die Herkunftskette
         if: inputs.aktion == 'freigeben'
+        env:
+          IN_CANDIDATEID: ${{ inputs.candidateId }}
         run: |
           set -e
           node scripts/social/record-publication.mjs \
-            --candidate "${{ inputs.candidateId }}" \
+            --candidate "$IN_CANDIDATEID" \
             --response tmp/publish.json --data social/data --write
 
           git config user.name "vision-universe-bot"
           git config user.email "info@visionuniverse.de"
           git add social/data
-          git diff --cached --quiet || git commit -m "Veroeffentlicht: ${{ inputs.candidateId }}
+          git diff --cached --quiet || git commit -m "Veroeffentlicht: ${IN_CANDIDATEID}
 
           Freigegeben vom Owner, gesendet ueber den idempotenten Publishing-Pfad.
           Die Herkunftskette traegt jetzt die Medien-ID.
