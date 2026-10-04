@@ -1,7 +1,7 @@
 """Bounded link discovery on official event pages, never article body ingestion."""
 import re
 from .feeds import parse_links
-from .model import within_domain
+from .model import within_domain, canonical_url
 from .transport import SourceError
 
 
@@ -12,6 +12,8 @@ def page_documents(company, links, page, now):
     from urllib.parse import unquote
     out, seen = [], set()
     for link in links:
+        if link.get('href','').strip().startswith('#') or canonical_url(link['url']) == canonical_url(page):
+            continue  # In-page navigation is not an independently accessible material.
         if link['url'] in seen:
             continue
         label = link['text']
@@ -47,6 +49,8 @@ def discover_links(event, source, http):
     out = dict(event)
     evidence = []
     for link in parse_links(response['body'], response['finalUrl']):
+        if link.get('href','').strip().startswith('#') or link['url'] == canonical_url(response['finalUrl']):
+            continue
         label = link['text']
         kind = 'webcastUrl' if re.search(r'webcast|listen|watch webcast', label, re.I) else 'presentationUrl' if re.search(r'presentation|slides', label, re.I) else 'transcriptUrl' if re.search(r'transcript', label, re.I) else None
         if kind and not out.get(kind) and (kind != 'transcriptUrl' or any(within_domain(link['url'], site) for site in source.get('allowedSites', []))):

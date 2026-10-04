@@ -157,7 +157,8 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
         parts = urlsplit(link['url'])
         if re.search(r'/static-files/|\.(?:ico|png|jpg|jpeg|svg|webp|css|js|json|pdf|xml|zip|woff2?)(?:$)', parts.path, re.I):
             return False
-        return bool(re.search(r'investor|investor.relations', link['text'] + ' ' + parts.path, re.I) or
+        return bool(re.fullmatch(r'(?:for |our )?investors?(?: relations| overview| information| center| resources)?', link['text'].strip(), re.I) or
+                    re.search(r'/(?:investor[-_]?relations|investors?)(?:[/._-]|$)', parts.path, re.I) or
                     (parts.path in ('', '/') and re.match(r'(?:ir|investors?)\.', parts.hostname or '', re.I)))
     def ir_rank(link):
         # Navigation order often puts investor FAQs/governance before the hub.

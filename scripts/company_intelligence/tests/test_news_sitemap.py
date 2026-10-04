@@ -36,6 +36,30 @@ class SitemapTests(unittest.TestCase):
    c=company(name,ticker);self.assertEqual(Resolver({c['companyId']:c}).resolve(r,{'type':'RSS','provider':'GLOBENEWSWIRE_SITEMAP','url':URL}),[])
 
 class ManagementMaterialsTests(unittest.TestCase):
+ def test_in_page_buttons_do_not_create_presentation_or_webcast_evidence(self):
+  from company_intelligence.feeds import parse_links
+  from company_intelligence.materials import discover_links
+  page='https://apple.com/investors'
+  html=b'<a href="#slides">Q2 Earnings Presentation (PDF)</a><a href="/investors">Q2 Earnings Presentation</a><a href="/q2.pdf">Q2 Earnings Presentation</a>'
+  docs=page_documents(company(),parse_links(html,page),page,NOW)
+  self.assertEqual([d['url'] for d in docs],['https://apple.com/q2.pdf'])
+  class HTTP:
+   def get(self,*a,**kw):return {'body':b'<a href="#webcast">Watch Webcast</a>','finalUrl':page}
+  event={'sourceUrl':page,'eventType':'EARNINGS_CALL'}
+  self.assertNotIn('webcastUrl',discover_links(event,{'verified':True,'allowedSites':['https://apple.com/']},HTTP()))
+
+ def test_retail_investor_article_does_not_become_an_ir_entry(self):
+  from company_intelligence.feeds import discover_ir
+  root='https://apple.com/';ir=root+'about/investor/'
+  class HTTP:
+   def __init__(self):self.calls=[]
+   def get(self,url,**kw):
+    self.calls.append(url)
+    return {'body':b'<a href="/about/investor/">Investors</a><a href="/stories/invest/how-to-start-investing">The New Investor\'s Guide to Investing</a>' if url==root else b'<title>Investor Relations</title>','finalUrl':url}
+  h=HTTP();sources,configs=discover_ir(company(),root,h,NOW)
+  self.assertEqual([c['irHomepage'] for c in configs if c['pageRole']=='IR'],[ir])
+  self.assertFalse(any('/stories/' in u for u in h.calls))
+
  def test_html_first_party_management_content_supported(self):
   links=[{'url':'https://apple.com/remarks','text':'Prepared remarks'},{'url':'https://apple.com/letter','text':'Shareholder letter'},{'url':'https://apple.com/commentary','text':'Management commentary'},{'url':'https://apple.com/replay','text':'Earnings call replay'}]
   docs=page_documents(company(),links,'https://apple.com/investors',NOW)
