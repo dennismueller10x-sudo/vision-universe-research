@@ -605,6 +605,7 @@ function main() {
               "steht und in keiner Ausnahmeliste, ist gedeckt - die Umkehrung einer " +
               "vollstaendigen Aufzaehlung, keine Schaetzung.",
       accepted: {
+        PRODUCT_TITLES: (kanon.metriken.CHART_AVAILABILITY || {}).denominator,
         R2_SERIES_AVAILABLE: (kanon.metriken.STORAGE_COVERAGE || {}).stored,
         HISTORICAL_CHART_AVAILABLE: (kanon.metriken.CHART_AVAILABILITY || {}).renderable,
         TECHNICAL_HISTORY_ELIGIBLE:

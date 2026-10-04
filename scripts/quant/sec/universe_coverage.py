@@ -682,10 +682,10 @@ def reports_from_records(root, per_issuer, registry=None, universe=None):
             "status": "NOT_CONNECTED",
             "canonicalOwner": "R2-Workstream (quant/data/market/history)",
             "accepted": {
-                "PRODUCT_TITLES": 6875,
+                "PRODUCT_TITLES": 6853,
                 "R2_SERIES_AVAILABLE": 7802,
-                "HISTORICAL_CHART_AVAILABLE": 6871,
-                "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.94,
+                "HISTORICAL_CHART_AVAILABLE": 6850,
+                "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.96,
             },
             "note": "Uebernommene Kennzahlen des abgenommenen R2-Stands. Dieser "
                     "Workstream liest sie NICHT ein und rechnet nicht mit ihnen - "

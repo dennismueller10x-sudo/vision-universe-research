@@ -31,29 +31,46 @@ KANON_UNIVERSUM = (ROOT / "quant" / "data" / "market" / "scale" /
 HERKUNFT = ROOT / "quant" / "data" / "market" / "history" / "CANONICAL_SOURCE.json"
 MARKTFAEHIGKEIT = ROOT / "quant" / "data" / "universe" / "market-capability.json"
 
-# Die Quelle ist der unveraenderte, am 20.09.2026 gemessene Stand.
-# PR #366 hat am 03.10.2026 22 belegte Schuldverschreibungen aus der
-# Produktpolicy genommen. Das aendert die aktuelle Mitgliedschaft, aber
-# regeneriert keine historische R2-Messung. Beide Staende bleiben exakt
-# geprueft; der native Abgleich muss die unterschiedliche Grundgesamtheit
-# weiterhin als nicht abgestimmt melden.
+# Der am 20.09.2026 gemessene Stand - historischer Bezug. PR #366 hat am
+# 03.10.2026 22 belegte Schuldverschreibungen aus der Produktpolicy
+# genommen; die Herleitung dagegen bleibt unten exakt geprueft.
 HISTORISCH_ABGENOMMEN = {
     "PRODUCT_TITLES": 6875,
     "R2_SERIES_AVAILABLE": 7802,
     "HISTORICAL_CHART_AVAILABLE": 6871,
     "TECHNICAL_HISTORY_ELIGIBLE": 5884,
 }
-AKTUELLER_POLICY_STAND = {
+# Stand 20.09.2026 nach Abzug der 22 DEBT-Titel (nur Mitgliedschaft, keine
+# neue Messung): 6875-22 / 6871-22 / 5884-8.
+STAND_0920_OHNE_DEBT = {
     "PRODUCT_TITLES": 6853,
     "HISTORICAL_CHART_AVAILABLE": 6849,
     "TECHNICAL_HISTORY_ELIGIBLE": 5876,
+}
+# Neuabnahme 04.10.2026 (coverage-metrics.yml gegen das aktuelle
+# Produktuniversum). Jede Abweichung zum 20.09. ist je Titel erklaert
+# (scripts/diagnose/coverage-delta.mjs, laeuft vor jedem Commit):
+#   Charts  6871 -22 DEBT +1 BRTM (neues Listing vom 10.09., nachgeladen) = 6850
+#   Technik 5884  -8 DEBT -139 Listing-Kuerzung (#367) +43 junge Reihen   = 5780
+ABGENOMMEN = {
+    "PRODUCT_TITLES": 6853,
+    "R2_SERIES_AVAILABLE": 7802,
+    "HISTORICAL_CHART_AVAILABLE": 6850,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5780,
+}
+AKTUELLER_POLICY_STAND = {
+    "PRODUCT_TITLES": 6853,
+    "HISTORICAL_CHART_AVAILABLE": 6850,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5780,
 }
 ENTFERNTE_DEBT_TITEL = {
     "ADAMH", "BNH", "CICB", "CIMN", "CTGG", "CTHH", "DCOMG", "MFAN",
     "MFICL", "MHNC", "PRHIZ", "RWTN", "SAX", "SRJN", "SSSSL", "TMUSI",
     "TMUSL", "TMUSZ", "TPTS", "TRINI", "TRINZ", "UNMA",
 }
-CHART_AUSNAHMEN = {"GLMD", "BNRG", "BRTM", "JAB"}
+CHART_AUSNAHMEN = {"GLMD", "BNRG", "JAB"}
+# BRTM stand am 20.09. hier (Listing 10.09., < 2 Bars abgelegt); heute 17 Bars.
+CHART_AUSNAHMEN_0920 = CHART_AUSNAHMEN | {"BRTM"}
 
 
 
@@ -83,13 +100,16 @@ class QuelleVorhandenTests(unittest.TestCase):
     def test_die_quelle_traegt_den_abgenommenen_stand(self):
         m = lade(METRIKEN)
         self.assertEqual(m["STORAGE_COVERAGE"]["stored"],
-                         HISTORISCH_ABGENOMMEN["R2_SERIES_AVAILABLE"])
+                         ABGENOMMEN["R2_SERIES_AVAILABLE"])
         self.assertEqual(m["CHART_AVAILABILITY"]["renderable"],
-                         HISTORISCH_ABGENOMMEN["HISTORICAL_CHART_AVAILABLE"])
+                         ABGENOMMEN["HISTORICAL_CHART_AVAILABLE"])
         self.assertEqual(m["TECHNICAL_HISTORY_ELIGIBILITY"]["eligible"],
-                         HISTORISCH_ABGENOMMEN["TECHNICAL_HISTORY_ELIGIBLE"])
+                         ABGENOMMEN["TECHNICAL_HISTORY_ELIGIBLE"])
         self.assertEqual(m["CHART_AVAILABILITY"]["denominator"],
-                         HISTORISCH_ABGENOMMEN["PRODUCT_TITLES"])
+                         ABGENOMMEN["PRODUCT_TITLES"])
+        # Die technischen Ausnahmen stehen vollstaendig und namentlich da.
+        t = m["TECHNICAL_HISTORY_ELIGIBILITY"]
+        self.assertEqual(len(t["tooShortSymbols"]), t["tooShort"])
 
 
 class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
@@ -116,7 +136,7 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
                          "Die Befundliste deckt nicht alle nicht-READY Titel ab - "
                          "dann waere die Umkehrung falsch und die Deckung zu hoch.")
 
-    def test_alle_vier_historischen_chart_ausnahmen_bleiben_im_aktuellen_universum(self):
+    def test_die_chart_ausnahmen_bleiben_im_aktuellen_universum(self):
         self.assertEqual(set(lade(METRIKEN)["CHART_AVAILABILITY"]["notRenderableSymbols"]), CHART_AUSNAHMEN)
         aktuell = {s["ticker"] for s in lade(KANON_UNIVERSUM)["securities"]}
         self.assertTrue(CHART_AUSNAHMEN <= aktuell)
@@ -137,13 +157,15 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
         self.assertEqual(aktuell, {r["securityId"]: r["ticker"] for r in entscheidungen
                                    if r["product_eligibility"] != "EXCLUDED"})
         self.assertEqual(len(aktuell) + len(debt), HISTORISCH_ABGENOMMEN["PRODUCT_TITLES"])
-        self.assertFalse(ENTFERNTE_DEBT_TITEL & CHART_AUSNAHMEN)
+        self.assertFalse(ENTFERNTE_DEBT_TITEL & CHART_AUSNAHMEN_0920)
         befund = lade(TECHNIK)["perSymbol"]
         technisch_ready_entfernt = {ticker for ticker in debt
                                    if befund.get(ticker, {}).get("technical", "TECHNICAL_READY") == "TECHNICAL_READY"}
         self.assertEqual(len(technisch_ready_entfernt), 8)
         self.assertEqual(HISTORISCH_ABGENOMMEN["TECHNICAL_HISTORY_ELIGIBLE"] - len(technisch_ready_entfernt),
-                         AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
+                         STAND_0920_OHNE_DEBT["TECHNICAL_HISTORY_ELIGIBLE"])
+        self.assertEqual(HISTORISCH_ABGENOMMEN["HISTORICAL_CHART_AVAILABLE"] - len(debt),
+                         STAND_0920_OHNE_DEBT["HISTORICAL_CHART_AVAILABLE"])
 
     def test_der_bericht_erklaert_selbst_dass_er_nur_befunde_fuehrt(self):
         t = lade(TECHNIK)
@@ -194,21 +216,27 @@ class DieRechnungTrifftDenStandTests(unittest.TestCase):
         self.assertEqual(t["WITH_PRICE_HISTORY"], AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
         self.assertEqual(t["TECHNICAL_READY"], AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
 
-    def test_der_abgleich_behaelt_den_erklaerten_historischen_nennerunterschied(self):
+    def test_der_abgleich_trifft_den_neu_abgenommenen_stand(self):
         path = ROOT / "quant" / "data" / "fundamentals" / "reconciliation.json"
         if not path.exists():
             self.skipTest("kein Abgleich - erst cli.py reconcile")
         a = lade(path)["overlap"]["acceptedMarketDataState"]
-        self.assertFalse(a["reconciled"], "Die alte Messung darf nicht als aktuelle Neuabnahme erscheinen")
+        self.assertTrue(a["reconciled"], a.get("explanation"))
         self.assertEqual(a["status"], "CANONICAL_PER_INSTRUMENT")
-        for key, value in HISTORISCH_ABGENOMMEN.items():
+        for key, value in ABGENOMMEN.items():
             self.assertEqual(a["accepted"][key], value)
         self.assertEqual(a["computed"], AKTUELLER_POLICY_STAND)
         self.assertEqual(a["delta"], {
-            "HISTORICAL_CHART_AVAILABLE": -22,
-            "TECHNICAL_HISTORY_ELIGIBLE": -8,
+            "HISTORICAL_CHART_AVAILABLE": 0,
+            "TECHNICAL_HISTORY_ELIGIBLE": 0,
         })
-        self.assertIn("KEIN neuer Nenner ohne geklaerte Ursache", a["explanation"])
+
+    def test_die_technische_deckung_kommt_aus_der_aktuellen_messung(self):
+        """Der Skalierungsbericht vom 11.09. kennt die Listing-Kuerzungen
+        aus #367 nicht; er ist nur noch Rueckfall (Abgleich 04.10.2026)."""
+        self.assertEqual(self.mc["source"]["technicalSource"],
+                         "quant/data/market/history/coverage-metrics.json"
+                         "#TECHNICAL_HISTORY_ELIGIBILITY.tooShortSymbols")
 
     def test_die_ablagedeckung_wird_nicht_in_die_schnittmengen_gerechnet(self):
         """7.802 zaehlt gegen den Wertpapierstamm, nicht gegen das Produktuniversum."""

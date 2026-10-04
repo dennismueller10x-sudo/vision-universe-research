@@ -21,6 +21,10 @@
        UNEXPLAINED            alles andere -> Exit 1
      Chart (>= 2 Bars)
        NEW_BARS_SINCE_REFERENCE  am Bezugstag < 2 Bars, heute >= 2
+       NEW_LISTING_BACKFILLED    junges Listing (Beginn laut Wertpapierstamm
+                              <= 30 Tage vor dem Bezug, Reihe beginnt genau
+                              dort): die Messung am Bezugstag sah < 2 Bars,
+                              die fruehen Kerzen wurden danach nachgeladen
        LISTING_CUT / DEBT_EXCLUDED / UNEXPLAINED wie oben
 
    Bezug Technik: der technische Skalierungsbericht (perSymbol fuehrt
@@ -48,7 +52,10 @@ export const TECH_MIN = 300, CHART_MIN = 2;
    input: { productNow:Set, productBefore:Set, debt:Set, cut:Map(t->row),
             techShortNow:Set, techShortBefore:Set, techBaseDate,
             chartShortNow:Set, chartShortBefore:Set, chartBaseDate,
-            barsBefore:(t,date)=>number|null }   (Bars mit Datum < date) */
+            barsBefore:(t,date)=>number|null,    (Bars mit Datum < date)
+            listingStart:(t)=>string|null, seriesFirst:(t)=>string|null } */
+export const BACKFILL_WINDOW_DAYS = 30;
+const tageZwischen = (a, b) => (Date.parse(b) - Date.parse(a)) / 86400000;
 export function classify(input) {
   const out = { technical: [], chart: [] };
   const why = (t, kind, wasShort, nowShort, baseDate, min) => {
@@ -59,6 +66,10 @@ export function classify(input) {
       const b = input.barsBefore(t, baseDate);
       if (b === null || b === undefined) return "UNEXPLAINED";
       if (b < min) return kind === "technical" ? "AGED_PAST_THRESHOLD" : "NEW_BARS_SINCE_REFERENCE";
+      const start = input.listingStart ? input.listingStart(t) : null;
+      const first = input.seriesFirst ? input.seriesFirst(t) : null;
+      if (kind === "chart" && start && first === start && tageZwischen(start, baseDate) >= 0 &&
+          tageZwischen(start, baseDate) <= BACKFILL_WINDOW_DAYS) return "NEW_LISTING_BACKFILLED";
       return "UNEXPLAINED";
     }
     return null;
@@ -149,9 +160,12 @@ async function main() {
     }
   }
   const barsBefore = (t, date) => { const d = series.get(t); return d ? d.filter((x) => x < date).length : null; };
+  const startByTicker = new Map(elig.decisions.map((d) => [d.ticker.toUpperCase(), d.start_date || null]));
+  const listingStart = (t) => startByTicker.get(t) || null;
+  const seriesFirst = (t) => { const d = series.get(t); return d && d.length ? d[0] : null; };
 
   const res = classify({ productNow, productBefore, debt, cut, techShortNow, techShortBefore, techBaseDate,
-    chartShortNow, chartShortBefore, chartBaseDate, barsBefore });
+    chartShortNow, chartShortBefore, chartBaseDate, barsBefore, listingStart, seriesFirst });
 
   const count = (rows) => rows.reduce((a, r) => ((a[r.cls] = (a[r.cls] || 0) + 1), a), {});
   const techBeforeOk = [...productBefore].filter((t) => !techShortBefore.has(t)).length;

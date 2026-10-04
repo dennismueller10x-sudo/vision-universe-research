@@ -44,6 +44,19 @@ test("Gegenprobe: ein Titel faellt ohne DEBT-Entscheid aus dem Produkt -> UNEXPL
   assert.equal(r.technical.find((x) => x.ticker === "X").cls, "UNEXPLAINED");
 });
 
+test("neues Listing, nach dem Bezug nachgeladen (BRTM 04.10.2026): erklaert, eng begrenzt", () => {
+  const brtm = basis({
+    chartShortBefore: new Set(["E"]), barsBefore: (t) => ({ C: 290, E: 7 })[t] ?? null,
+    listingStart: (t) => (t === "E" ? "2026-09-10" : null), seriesFirst: (t) => (t === "E" ? "2026-09-10" : null)
+  });
+  assert.equal(classify(brtm).chart.find((x) => x.ticker === "E").cls, "NEW_LISTING_BACKFILLED");
+  // Gegenproben: altes Listing, Reihe beginnt nicht am Listingtag, Listing erst nach dem Bezug
+  for (const [start, first] of [["2026-07-01", "2026-07-01"], ["2026-09-10", "2026-09-12"], ["2026-09-25", "2026-09-25"]]) {
+    const r = classify(Object.assign({}, brtm, { listingStart: () => start, seriesFirst: () => first }));
+    assert.equal(r.chart.find((x) => x.ticker === "E").cls, "UNEXPLAINED", start + " / " + first);
+  }
+});
+
 test("Bilanz: Bezug - Abgaenge + Zugaenge = gemessen", () => {
   const r = classify(basis());
   // Bezug Technik READY: A, B, E, X = 4. Jetzt READY: A, C, E = 3.
