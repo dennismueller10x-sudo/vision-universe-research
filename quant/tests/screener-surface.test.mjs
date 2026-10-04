@@ -74,6 +74,24 @@ test("a V1 query returns rows that can fill the V1 columns", async () => {
   for (let i = 1; i < werte.length; i += 1) assert.ok(werte[i] <= werte[i - 1], "die Reihenfolge stimmt nicht");
 });
 
+test("V1 price index uses the already published chart close for the five formerly stale rows", () => {
+  const index = JSON.parse(gunzipSync(readFileSync(join(ROOT,
+    "quant/data/product/universe-list-v1.json.gz"))));
+  const entries = new Map(index.entries.map((entry) => [entry.s, entry]));
+  for (const ticker of ["BURU", "NCPL", "SDEV", "BGDE", "ASST"]) {
+    const entry = entries.get(ticker);
+    assert.ok(entry, ticker + ": missing V1 index entry");
+    const chart = JSON.parse(readFileSync(join(ROOT,
+      "quant/data/market/discover-series/ref_" + ticker + ".json"), "utf8"));
+    const point = require(join(ROOT, "quant/engines/published-close.js"))
+      .lastPoint(chart, index.generatedAt.slice(0, 10));
+    assert.ok(point, ticker + ": no contract-valid published chart point");
+    assert.equal(entry.c, point.close, ticker + ": price drift from canonical chart");
+    assert.equal(entry.d, point.date, ticker + ": date drift from canonical chart");
+    assert.equal(entry.u, point.currency, ticker + ": currency drift from canonical chart");
+  }
+});
+
 test("a V2 query returns rows that can fill the V2 columns", async () => {
   const v2 = Screener.methodologies.find((m) => m.id !== "legacy");
   const feld = v2.fields.filter((f) => f.type === "number")[0];

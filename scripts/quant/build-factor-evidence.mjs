@@ -34,6 +34,7 @@ const Catalog = require(join(ROOT, "quant/engines/catalog.js"));
 const Radar = require(join(ROOT, "quant/engines/quant-radar.js"));
 const SecurityMaster = require(join(ROOT, "quant/engines/us-security-master.js"));
 const Survivorship = require(join(ROOT, "quant/engines/survivorship-control.js"));
+const PopulationTransition = require(join(ROOT, "quant/engines/factor-population-transition.js"));
 /* Wer zur Grundgesamtheit der Perzentile gehoert (seit 02.10.2026: das
    kanonische Produktuniversum, nicht die Faktordatei). Teil der Methodik
    jedes Stands - aendert sich die Regel, ist ein Rangwechsel keine
@@ -903,7 +904,39 @@ function main() {
     out.get(shard)[record.ticker] = published;
   });
 
-  /* 5. Write. */
+  /* 5. A newly failed market row must not silently delete published factor
+     evidence. Evaluate the transition before touching any existing shard. */
+  const previousScreeningPath = join(OUT_DIR, "screening.json.gz");
+  {
+    const previous = existsSync(previousScreeningPath)
+      ? JSON.parse(gunzipSync(readFileSync(previousScreeningPath))) : { rows: {} };
+    if (!previous.rows || typeof previous.rows !== "object") {
+      throw new Error("INVALID_PREVIOUS_FACTOR_SCREENING");
+    }
+    const nextRows = Object.fromEntries([...out.values()].flatMap((securities) =>
+      Object.keys(securities).map((ticker) => [ticker, true])));
+    const decisionAt = process.argv.indexOf("--reviewed-factor-removals");
+    const decisionPath = decisionAt >= 0 ? process.argv[decisionAt + 1] : null;
+    if (decisionAt >= 0 && (!decisionPath || decisionPath.startsWith("--"))) {
+      throw new Error("FACTOR_REMOVAL_DECISIONS_PATH_MISSING");
+    }
+    const decisions = decisionPath ? readJSON(decisionPath).decisions : [];
+    /* The October 3 materialization had already dropped 30 formerly
+       published identities before this gate existed. Keep that measured
+       historical baseline in scope until every removal has explicit review. */
+    const protectedBaseline = readJSON(join(ROOT,
+      "quant/config/factor-population-protection.json"));
+    if (protectedBaseline.schemaVersion !== "factor-population-protection-1") {
+      throw new Error("INVALID_FACTOR_POPULATION_PROTECTION");
+    }
+    const transition = PopulationTransition.validateTransition(previous.rows, nextRows,
+      decisions, protectedBaseline.tickers);
+    if (!transition.safe) {
+      throw new Error("UNREVIEWED_FACTOR_REMOVALS:" + transition.unexpected.join(","));
+    }
+  }
+
+  /* 6. Write. */
   if (existsSync(OUT_DIR)) rmSync(OUT_DIR, { recursive: true });
   mkdirSync(OUT_DIR, { recursive: true });
 
