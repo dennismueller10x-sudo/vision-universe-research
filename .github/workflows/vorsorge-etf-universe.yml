@@ -1,0 +1,137 @@
+name: Vorsorge ETF-Universum (Tiingo, volle ETF-Liste)
+
+# Nimmt ALLE aktiven ETF-Ticker der Tiingo-Tickerliste auf: Stammdaten und
+# Tageskerzen, Kursrendite und (wo rekonstruierbar) Gesamtrendite. Baut
+# daraus den Vorsorge-ETF-Stamm und committet ihn auf den laufenden Branch.
+#
+# AUSLOESUNG
+#   workflow_dispatch          (sobald der Workflow auf main liegt)
+#   Push auf claude/** mit Marker in der Commit-Nachricht:
+#     [vorsorge-ingest-canary]  40 Ticker - Pipeline-Nachweis
+#     [vorsorge-ingest]         alle aktiven Ticker (fortsetzbar)
+#   Ohne Marker laeuft nichts: ein Push kostet kein Anbieterkontingent.
+#
+# FORTSETZBAR
+#   Die Arbeitsablage .market-cache/vorsorge (Checkpoint, Rohzeilen) wird
+#   mit actions/cache gesichert - auch bei Abbruch. Der naechste Lauf
+#   setzt beim letzten verarbeiteten Ticker fort.
+#
+# KONTINGENT
+#   Zwei Anfragen je aktivem Ticker, Drossel 4.500/h (belegte Untergrenze
+#   des Kontingents: 5.000/h ohne Ablehnung, verify-request-limits.mjs).
+#   429 und 5xx mit exponentiellem Backoff; zwoelf 429 in Folge beenden
+#   den Lauf sauber (QUOTA) - der naechste Lauf setzt fort.
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Hoechstzahl neu abgefragter Ticker (0 = alle)'
+        default: '0'
+      per_hour:
+        description: 'Anfragen je Stunde (Drossel)'
+        default: '4500'
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'scripts/vorsorge/**'
+      - 'vorsorge/engines/**'
+      - '.github/workflows/vorsorge-etf-universe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    # Nebenlaeufigkeit am Job: Pushes ohne Marker werden uebersprungen, statt
+    # als wartende Laeufe einen laufenden Ingest zu blockieren.
+    concurrency:
+      group: vorsorge-etf-universe-${{ github.ref_name }}
+      cancel-in-progress: false
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[vorsorge-ingest')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist ein Zugang hinterlegt?
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -z "$TIINGO_API_KEY" ]; then echo "Kein TIINGO_API_KEY hinterlegt."; exit 1; fi
+          echo "Zugang vorhanden."
+
+      - name: Laufparameter
+        id: params
+        env:
+          MSG: ${{ github.event.head_commit.message }}
+        run: |
+          limit="${{ github.event.inputs.limit }}"; per_hour="${{ github.event.inputs.per_hour }}"
+          if printf '%s' "$MSG" | grep -q '\[vorsorge-ingest-canary\]'; then limit=40; fi
+          echo "limit=${limit:-0}" >> "$GITHUB_OUTPUT"
+          echo "per_hour=${per_hour:-4500}" >> "$GITHUB_OUTPUT"
+          echo "Limit ${limit:-0}, Drossel ${per_hour:-4500}/h"
+
+      - name: Arbeitsablage wiederherstellen (Checkpoint)
+        uses: actions/cache/restore@v4
+        with:
+          path: .market-cache/vorsorge
+          key: vorsorge-ingest-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            vorsorge-ingest-${{ github.ref_name }}-
+            vorsorge-ingest-
+
+      - name: ETF-Universum von Tiingo aufnehmen
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/vorsorge/ingest-tiingo-etfs.mjs --limit "${{ steps.params.outputs.limit }}" --per-hour "${{ steps.params.outputs.per_hour }}" --max-minutes 290
+
+      - name: Arbeitsablage sichern (auch bei Abbruch)
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .market-cache/vorsorge
+          key: vorsorge-ingest-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Rohzeilen und Berichte als Artefakt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vorsorge-etf-ingest-${{ github.run_id }}
+          path: |
+            .market-cache/vorsorge/raw-etf-rows.json
+            vorsorge/data/ingest/
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Vorsorge-Stamm bauen
+        run: node scripts/vorsorge/build-etf-data.mjs
+
+      - name: Tests, Qualitaets-Gates, Hygiene
+        run: |
+          node --test "vorsorge/tests/*.test.mjs"
+          node scripts/vorsorge/assert-vorsorge-data.mjs
+          node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Kein Schluessel in Daten oder Berichten
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if grep -rqF -- "$TIINGO_API_KEY" vorsorge/ .market-cache/vorsorge/ 2>/dev/null; then echo "Schluessel in den Daten gefunden"; exit 1; fi
+          echo "Kein Schluessel gefunden."
+
+      - name: Veroeffentlichen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add vorsorge/data vorsorge/etf vorsorge/sitemap.xml 2>/dev/null || git add vorsorge/data vorsorge/etf
+          git commit -q -m "Vorsorge: ETF-Universum aus Tiingo aufgenommen (Lauf ${{ github.run_id }})" || { echo "Keine Aenderung."; exit 0; }
+          bash scripts/ci/push-with-retry.sh "${{ github.ref_name }}"
