@@ -82,7 +82,7 @@ UNCHANGED_PCT = 0.5          # Stückzahländerung darunter gilt als unveränder
 UNIVERSE_PATH = DATA_DIR / "universe.json"
 STOCK_DIR = DATA_DIR / "stocks"
 STOCK_SHARDS = 32            # Aktienseiten: Halter je Aktie, auf 32 Dateien verteilt
-CACHE_VERSION = 6            # erhöhen, wenn sich die Berechnung ändert -> alles neu laden
+CACHE_VERSION = 7            # erhöhen, wenn sich die Berechnung ändert -> alles neu laden
 # Weitere Hedgefonds ("zweite und dritte Reihe") aus dem Sammeldatensatz
 TIER2_MAX = 1000             # höchstens so viele zusätzliche Hedgefonds
 TIER2_OTHER_MAX = 150        # dazu die größten Long-only-Vermögensverwalter (eigene Kategorie)
@@ -374,6 +374,12 @@ def fetch_period_positions(cik_int, filings_13f, period):
             continue
         if rows is None or is_restatement(f, cover):
             rows = new_rows
+        elif is_full_resubmission(rows, new_rows):
+            # als Ergänzung gekennzeichnet, enthält aber das ganze Portfolio
+            # noch einmal – zusammengeführt wäre jede Position doppelt
+            print(f"  {f['accession']}: Ergänzung wiederholt das Portfolio ({len(new_rows)} Zeilen) – ersetzt statt addiert",
+                  file=sys.stderr)
+            rows = new_rows
         else:
             rows = rows + new_rows
             print(f"  {f['accession']}: Ergänzung ({(cover or {}).get('amendmentType') or 'NEW HOLDINGS'}) "
@@ -382,6 +388,23 @@ def fetch_period_positions(cik_int, filings_13f, period):
     if rows is None:
         raise RuntimeError(f"Keine Positionen für {period}")
     return aggregate_positions(rows), used
+
+
+def is_full_resubmission(rows, new_rows):
+    """True, wenn eine „NEW HOLDINGS"-Ergänzung überwiegend Positionen
+    enthält, die schon gemeldet sind (Filer kennzeichnen Neueinreichungen
+    nicht immer als RESTATEMENT)."""
+    if not rows or not new_rows:
+        return False
+    old_keys = {position_key(h) for h in rows}
+    new_keys = {position_key(h) for h in new_rows}
+    shared = len(new_keys & old_keys)
+    return len(new_keys) >= 20 and shared / len(new_keys) > 0.5 and shared / len(old_keys) > 0.8
+
+
+def security_count(pos):
+    """Anzahl der Wertpapierpositionen ohne Optionen (Calls/Puts zählen extra)."""
+    return sum(1 for h in pos if not h.get("putCall"))
 
 
 def fetch_period_total(cik_int, filings_13f, period):
@@ -477,6 +500,8 @@ def compute_trades(current, previous):
 def trade_lists(trades, limit):
     by = {"new": [], "added": [], "reduced": [], "sold": []}
     for t in trades.values():
+        if t.get("putCall"):
+            continue  # Optionen: Nominalwert des Basiswerts, kein Kauf/Verkauf der Aktie
         if t["status"] in by:
             by[t["status"]].append(t)
     for k in by:
@@ -928,7 +953,7 @@ def build_fund_record(meta, cik, sub, filings, history_quarters=HISTORY_QUARTERS
         "city": meta.get("city"), "cacheVersion": CACHE_VERSION,
         "reportDate": current["reportDate"], "filedDate": current["filedDate"],
         "accession": current["accession"], "form": current["form"],
-        "totalValueUSD": round(total), "positionCount": len(cur_pos),
+        "totalValueUSD": round(total), "positionCount": security_count(cur_pos),
         "optionCount": sum(1 for h in cur_pos if h["putCall"]),
         "prevReportDate": prev["reportDate"] if prev else None,
         "prevTotalValueUSD": None, "prevPositionCount": None, "aumChangePct": None,
@@ -939,7 +964,7 @@ def build_fund_record(meta, cik, sub, filings, history_quarters=HISTORY_QUARTERS
         prev_pos, _ = fetch_period_positions(cik_int, filings_13f, prev["reportDate"])
         prev_total = sum(h["valueUSD"] for h in prev_pos)
         record["prevTotalValueUSD"] = round(prev_total)
-        record["prevPositionCount"] = len(prev_pos)
+        record["prevPositionCount"] = security_count(prev_pos)
         record["aumChangePct"] = ((total - prev_total) / prev_total * 100) if prev_total else None
         if prev_total and total and not (1 / 200 < total / prev_total < 200):
             # unplausibler Sprung (Skalierungsfehler des Filers in einem Quartal)
@@ -950,7 +975,7 @@ def build_fund_record(meta, cik, sub, filings, history_quarters=HISTORY_QUARTERS
         trades = compute_trades(cur_pos, prev_pos)
 
     # Verlauf: Deckblatt-Summen älterer Perioden (aktuelle/vorige berechnet)
-    history = [{"period": current["reportDate"], "valueUSD": round(total), "positions": len(cur_pos)}]
+    history = [{"period": current["reportDate"], "valueUSD": round(total), "positions": record["positionCount"]}]
     if prev:
         history.append({"period": prev["reportDate"], "valueUSD": record["prevTotalValueUSD"],
                         "positions": record["prevPositionCount"]})
@@ -982,20 +1007,20 @@ def build_bulk_record(cik, f, scale, prev_fund):
         "manager": None, "role": None, "style": category, "bio": None, "note": None, "wiki": None,
         "category": "Institutionen", "source": "bulk",
         "reportDate": f["reportDate"], "filedDate": f["filingDate"], "accession": f["accession"], "form": "13F-HR",
-        "totalValueUSD": round(total), "positionCount": len(pos),
+        "totalValueUSD": round(total), "positionCount": security_count(pos),
         "optionCount": sum(1 for h in pos if h["putCall"]),
         "prevReportDate": None, "prevTotalValueUSD": None, "prevPositionCount": None, "aumChangePct": None,
-        "history": [{"period": f["reportDate"], "valueUSD": round(total), "positions": len(pos)}],
+        "history": [{"period": f["reportDate"], "valueUSD": round(total), "positions": security_count(pos)}],
     }
     trades = {}
     if prev_fund:
         prev_pos = aggregate_positions([{**h, "valueUSD": h["valueUSD"] * scale} for h in prev_fund["holdings"]])
         prev_total = sum(h["valueUSD"] for h in prev_pos)
         record.update(prevReportDate=prev_fund["reportDate"], prevTotalValueUSD=round(prev_total),
-                      prevPositionCount=len(prev_pos),
+                      prevPositionCount=security_count(prev_pos),
                       aumChangePct=((total - prev_total) / prev_total * 100) if prev_total else None)
         record["history"].insert(0, {"period": prev_fund["reportDate"], "valueUSD": round(prev_total),
-                                     "positions": len(prev_pos)})
+                                     "positions": security_count(prev_pos)})
         trades = compute_trades(pos, prev_pos)
     return record, pos, trades
 
