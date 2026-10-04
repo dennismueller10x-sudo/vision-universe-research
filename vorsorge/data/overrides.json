@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "vu-vorsorge-overrides-1.0.0",
+  "note": "Manuelle Festlegungen mit Begründung. Jede Zeile überschreibt eine heuristische Entscheidung und ist im Datensatz als manualOverride sichtbar.",
+  "overrides": {
+    "BNY@NYSE": { "conflict": "TICKER_COLLISION_OPERATING_COMPANY", "note": "Tickerliste führt BNY als ETF; der Name gehört der Bank of New York Mellon (operatives Unternehmen)." },
+    "GHI@NYSE": { "conflict": "NOT_AN_ETF", "note": "Greystone Housing Impact ist eine Investmentgesellschaft (LP), kein ETF." }
+  }
+}
