@@ -214,7 +214,12 @@ function create(options){
   stock.availableAt=latest.annual?.revenue?.filed||stock.availableAt||stock.asOf;
   return stock;
  }
- async function consumerFor(ticker){try{return await load('/discover/data/stocks/US_REAL/'+ticker+'.json');}catch{return null;}}
+ /* Nur Titel aus dem Discover-Index anfragen (Mission IV: kein 404 in der Konsole fuer Titel ausserhalb von Discover, z. B. HCTI). */
+ let consumerSet=null;
+ async function consumerFor(ticker){if(!consumerSet){try{const s=await load('/discover/data/stock-index/US_REAL.json');consumerSet=new Set(s.symbols||[]);}catch{consumerSet=null;}}
+  if(consumerSet&&!consumerSet.has(ticker))return null;try{return await load('/discover/data/stocks/US_REAL/'+ticker+'.json');}catch{return null;}}
+ let dailySeriesSet=null;
+ async function hasDailySeries(ticker){if(!dailySeriesSet){try{const s=await load('/quant/data/market/discover-series/index.json');dailySeriesSet=new Set(s.tickers||[]);}catch{dailySeriesSet=new Set();}}return dailySeriesSet.size===0||dailySeriesSet.has(ticker);}
  function broadQuantWorkspace(stock){
   const finite=v=>typeof v==='number'&&Number.isFinite(v), metric=(id,label,value,unit,reason,asOf)=>({metricId:id,label,unit:unit||'pct',value:finite(value)?value:null,state:finite(value)?'AVAILABLE':'SOURCE_MISSING',reason:reason||(!finite(value)?'SOURCE_MISSING':null),description:'Bestehende veröffentlichte Evidenz; kein aktivierter Quant-V2-Score.',owner:'quant/engines/factors.js',registryId:'factor.'+id,definitionVersion:'1.0.0',catalog:'quant/engines/metric-registry.js',panelVersion:'quant-evidence-1.0.0',asOf:asOf||stock.asOf,availableAt:asOf||stock.asOf});
   const v=stock._factorValues||{};
@@ -717,6 +722,7 @@ function create(options){
   * den Stand der Geschaeftszahlen (AMD 2026-09-08, ASML null). */
  async function publishedPriceAsOf(securityId){
   if(!/^[A-Za-z0-9_-]+$/.test(String(securityId||'')))return null;
+  if(!(await hasDailySeries(String(securityId).replace(/^ref_/,''))))return null;
   try{const series=await load('/quant/data/market/discover-series/'+securityId+'.json');
    return series&&series.status==='CALCULATED'&&validDate(series.asOf)?series.asOf:null;}catch{return null;}
  }
@@ -1184,6 +1190,7 @@ function create(options){
    if(!/^[A-Za-z0-9_-]+$/.test(instrument.masterMemberId))return unavailable('INVALID_IDENTITY');
    const long=selection.range==='MAX'||selection.grain==='weekly';
    const path='/quant/data/market/discover-series'+(long?'-long':'')+'/'+instrument.masterMemberId+'.json';
+   if(!long&&!(await hasDailySeries(ticker)))return unavailable('SOURCE_MISSING');
    const source=await load(path),today=new Date().toISOString().slice(0,10);
    if(source.schemaVersion!==(long?'discover-series-long-1.0.0':'discover-series-1.1.0')||source.securityId!==instrument.masterMemberId||source.ticker!==ticker||source.dataMode!=='real'||source.source!=='tiingo'||source.provider!=='tiingo'||source.status!=='CALCULATED'||source.priceSeriesType!=='SPLIT_ADJUSTED'||source.grain!==(long?'weekly':'daily')||!source.publishBasis||!validDate(source.asOf)||source.asOf>today||!source.currency||!Array.isArray(source.points))return unavailable('INVALID_HISTORY_CONTRACT');
    let previous='';

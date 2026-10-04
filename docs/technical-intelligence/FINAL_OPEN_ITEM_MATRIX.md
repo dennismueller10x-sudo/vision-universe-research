@@ -14,7 +14,7 @@ Das System ist **nicht expert-validiert**. Die Elliott-Engine hat ihr vorab regi
 | Survivorship | KL 2, RM 2 | offen | Code ja | ja (Delisting-Bündel nur privat in CI) | Daten nur in R2/CI | Code-Pfad vorbereitet | Lauf nur in CI | PARTIAL → BLOCKED (Daten) |
 | Tagesstudie Universum | KL 4, RM 1 | offen | ja | Owner-Aktion (Merge/Start) und R2-Daten nur in CI | `technical-intelligence-evidence.yml` ist auf GitHub nicht registriert (404), solange der Branch nicht gemergt ist | – | Owner-Aktion: Merge oder manueller Start | BLOCKED |
 | TEST zweimal angesehen | KL 6b | dokumentiert | nein (Vergangenheit) | – | – | – | bleibt offengelegt | REJECTED (nicht rückgängig zu machen) |
-| Baseline über alle Zeiträume | KL 6c | offen | ja | nein | – | siehe STATISTICS_AUDIT.md | – | siehe STATISTICS_AUDIT.md |
+| Baseline über alle Zeiträume | KL 6c | offen | ja | nein | – | zeitraumgleiche Baseline (±104 Wochen) als berichtete Sensitivität; registrierte Baseline unverändert | TEST −2,73 pp (KI −4,31 … −1,14): Szenarien schlechter als Zufall derselben Phase | DONE (Sensitivität) |
 | Elliott-Konditionierung | RM 3 | offen | ja | nein | – | Elliott hat Konfluenzgewicht 0; Prognosetest erst nach bestandenem Gate | – | REJECTED (Prognoseprüfung vor Gate verboten) |
 | Regime-Hypothese / H4 neuer Holdout | RM 3c, RM-II 4 | offen | ja | ja (Daten ab Freeze, Zeit) | Holdout-Zeitraum existiert noch nicht | – | – | BLOCKED (Zeit/Daten) |
 
@@ -73,4 +73,4 @@ Details: STATISTICS_AUDIT.md. Der TEST-Zeitraum ist inzwischen viermal angesehen
 
 ## Offene interne Punkte
 
-Keine, sofern Red-Team 2 und Code-Review keine neuen BLOCKER finden (Ergebnis siehe Abschlussbericht).
+Keine. Code-Review (1 BLOCKER, 5 MINOR) und Red-Team 2 (1 CRITICAL, 3 HIGH, 5 MEDIUM, 4 LOW) sind behoben oder offengelegt; siehe MISSION4_FINAL_REPORT.md.

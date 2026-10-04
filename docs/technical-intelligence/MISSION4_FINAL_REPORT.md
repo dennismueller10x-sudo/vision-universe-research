@@ -1,6 +1,6 @@
 # Mission IV — Abschlussbericht (Finalization, Expert Validation, Engine 3.3, Product Completion)
 
-Stand: 03./04.10.2026. Branch `claude/vision-universe-technical-intelligence-cxarnz` (kein Merge, kein PR). Alle Zahlen stammen aus Dateien im Repository; Pfade sind angegeben.
+Stand: 04.10.2026. Branch `claude/vision-universe-technical-intelligence-cxarnz` (kein Merge, kein PR). Alle Zahlen stammen aus Dateien im Repository; Pfade sind angegeben.
 
 > **Grundsatz (§115):** Vision Universe behauptet nicht, Elliott automatisiert zu haben. Die Elliott-Schicht ist ein **experimentelles Strukturmodell**, hat ihr vorab registriertes Qualitäts-Gate **nicht bestanden** und ist **nicht expert-validiert**. Die technischen Szenarien haben **keinen belegten Prognosevorteil**.
 
@@ -58,7 +58,7 @@ Code-Pfad `--delisted` in `ti-evidence.mjs` vorhanden; das Delisting-Bündel lie
 
 ## 10 Bootstrap / Statistics
 
-[STATISTICS_AUDIT.md](STATISTICS_AUDIT.md): zweiseitiger Cluster-Bootstrap (Titel, Kalenderquartal, Cameron–Gelbach–Miller), B = 1.000, breitestes Intervall maßgeblich; jede Zeile als vorab registriert / beschreibend / explorativ markiert, BH-q-Werte. Ergebnis (Woche, ti-scenario-1.2.1): ⟨WOCHE⟩. Keine Methode gilt mehr als „gestützt“; TIMING_EARLY „bestätigt“ stammt aus Mission II mit Engine 2.2 und ist für 3.x nicht neu gemessen. **Neue Sensitivität (nicht vorab registriert):** Zufallseinstiege nur im Zeitraum ±2 Jahre um das Signal: ⟨PERIODE⟩. Der TEST-Zeitraum ist inzwischen mehrfach angesehen (offengelegt).
+[STATISTICS_AUDIT.md](STATISTICS_AUDIT.md): zweiseitiger Cluster-Bootstrap (Titel, Kalenderquartal, Cameron–Gelbach–Miller), B = 1.000, breitestes Intervall maßgeblich; jede Zeile als vorab registriert / beschreibend / explorativ markiert, BH-q-Werte. Ergebnis (Woche, ti-scenario-1.2.1): Gesamt n = 110.120 gefüllte Signale, Trefferquote Zielzone 1 35,6 % gegen Baseline 35,4 %, Lift +0,19 pp (Cluster-KI −0,65 … +1,03); TEST (vorab registriert) n = 46.509, Lift −0,36 pp (Cluster-KI −1,81 … +1,09; zuvor Normal-KI ±0,5) — **kein Vorteil**. Keine Methode gilt mehr als „gestützt“; TIMING_EARLY „bestätigt“ stammt aus Mission II mit Engine 2.2 und ist für 3.x nicht neu gemessen. **Neue Sensitivität (nicht vorab registriert):** Zufallseinstiege nur im Zeitraum ±2 Jahre um das Signal: TEST −2,73 pp (KI −4,31 … −1,14), TRAIN −2,16 pp, VALIDATION −2,09 pp, gesamt −2,39 pp (KI −3,26 … −1,51) — gegen Zufallseinstiege aus derselben Marktphase schneiden die Szenarien **signifikant schlechter** ab. Interpretation offen (Regime-Konditionierung der Baseline vs. echter Nachteil); nicht vorab registriert, daher kein Urteil, aber ein klarer Warnhinweis gegen jede Vorteilsbehauptung. Der TEST-Zeitraum ist inzwischen mehrfach angesehen (offengelegt).
 
 ## 11 Alerts
 
@@ -70,7 +70,7 @@ Werkzeug `getChartbildLage` (`ti/ai-tools.js`): strukturierte Werte aus dem Inde
 
 ## 13 API / Data
 
-API `vu-ti-api-3.0.0`; jede Zeile mit Engine-, Regel-, Daten- und API-Version; `dataQuality.stalePriceBars` und Index-Feld `stale` für tote Reihen. Umfang ≈ 52 MB gz (Pro-Ansicht zeigt die Elliott-Hypothese bewusst auch bei Enthaltung). Produktdaten neu gebaut: ⟨BUILD⟩.
+API `vu-ti-api-3.0.0`; jede Zeile mit Engine-, Regel-, Daten- und API-Version; `dataQuality.stalePriceBars` und Index-Feld `stale` für tote Reihen. Umfang ≈ 52 MB gz (Pro-Ansicht zeigt die Elliott-Hypothese bewusst auch bei Enthaltung). Produktdaten neu gebaut: 5.292 Titel (5.287 Woche, 5 Tag), 623 Shards, ≈ 53 MB; 0 Titel mit unplausiblen Niveaus (vorher 328), 247 tote Reihen ohne Szenario, 568 Titel ohne Einstiegszone; Elliott-Anwendbarkeit HOCH 4, MITTEL 46, NIEDRIG 5.242 (99,1 % Enthaltung); Ausblick abwärts 2.276, aufwärts 2.183, gemischt 491, seitwärts 342; Alerts `METHODOLOGY_CHANGED`, 0 Ereignisse.
 
 ## 14 Discover / Screener
 
@@ -82,7 +82,7 @@ Pro-Ansicht: Elliott-Übersichtskarte (bevorzugte Lesart oder „Keine verlässl
 
 ## 16 Mobile
 
-⟨SCREENSHOTS⟩
+Bildschirm-Audit mit echtem Browser und echten Daten, Breiten 390, 430, 768, 1280, 1440 (`scripts/technical/chartbild-ui-audit.mjs`), sechs Lagen: AAPL (aufwärts, Elliott enthalten), ABT (abwärts), ADM (gemischt), HCTI (Elliott HOCH), ACHL (tote Reihe → Hinweis statt Chartbild), ABBV (früherer 404). Je 45 Ansichten: **0** horizontale Überläufe, 0 abgeschnittene Texte, 0 Tippflächen < 40 px, 0 überlappende Wellenmarken; Konsolenfehler nur anfangs bei HCTI (optionale Discover-Daten → behoben, jetzt 0); Ladezeit ≤ 1,2 s. Repräsentative Bilder (390/768/1440, einfach/Pro) in `docs/technical-intelligence/ui-audit/m4/<Titel>/`; die übrigen Bilder wurden aus Platzgründen nicht eingecheckt (Prüfergebnisse in `ui-audit.json`). Keine Nutzerstudie
 
 ## 17 Bug Fixes
 
@@ -94,7 +94,7 @@ Produktbau 4 Worker ≈ 75 min für 5.292 Titel; Wochen-Evidenz ≈ 100 min (Eng
 
 ## 19 Tests
 
-⟨TESTS⟩
+`node --test quant/tests/*.test.mjs`: **2.209 bestanden, 0 fehlgeschlagen**; Screener, Discover, VU-Ask-Worker, Ask: **379 bestanden, 0 fehlgeschlagen, 5 übersprungen** (Datenabhängigkeit). Neue Regressionstests: M4-1 Wochenend-Lücken, M4-2 Migrations-/Neutitel-Alerts, M4-3 WXY auf Lehrbuchstrukturen, M4-4 API-Versionen, M4-5 Kollaps-Niveaus (ACON, AIXI, BYND, BRNX, ATOS), M4-6 tote Reihen, Elliott-Formung, Einstiegs- und CRV-Grenzen (ALPN, VLCN, TALK, SLAB, GRDX …); Screener-Veraltung; Werkbank-Selbsttest 23/23, Playwright 22/22. Kausalitätstest (vergiftete Zukunft) fing während der Arbeit einen eigenen Look-ahead-Fehler
 
 ## 20 Red Team
 
@@ -129,7 +129,7 @@ Alle Commits auf `claude/vision-universe-technical-intelligence-cxarnz` gepusht;
 | Forecast Evidence | **NOT ESTABLISHED** (kein Vorteil; zeitraumgleiche Baseline negativ) |
 | Product Migration | **DONE** (elliott-3.2.2, ti-scenario-1.2.1, neu gebaut) |
 | Professional UI | **DONE** |
-| Mobile UI | ⟨MOBILE⟩ |
+| Mobile UI | **DONE** (Audit 390/430/768 ohne Befund; keine Nutzerstudie) |
 | Daily | **BLOCKED** (R2/CI, Owner-Merge) |
 | Intraday | **BLOCKED** (keine Historie) |
 | Survivorship | **BLOCKED** (Daten nur in CI) |
@@ -149,5 +149,5 @@ Alle Commits auf `claude/vision-universe-technical-intelligence-cxarnz` gepusht;
 8. **Methodische Schwäche:** Der einzige Gütemaßstab der Engine ist ein selbst gebauter Generator, der mit der Engine gekoppelt ist; laufende Muster werden nicht erkannt.
 9. **Externe Abhängigkeit:** echte, unabhängige Expertenannotationen.
 10. **Externer Quant:** (a) zeitraumgleiche Baseline negativ — Szenarien schlechter als Zufall im selben Regime; (b) TEST mehrfach angesehen, Survivorship ungelöst; (c) Schwellen der Plausibilitätsgrenzen (Faktor 3, 12 ATR, 35 %) sind gesetzt, nicht geschätzt.
-11. **Elliott-Praktiker:** (a) Grad und Kontext werden aus Pivots statt aus dem Gesamtbild abgeleitet; (b) laufende Impulse werden als fertige Korrekturen gelesen; (c) Enthaltung in 99 % der Fälle — „das Werkzeug zählt praktisch nie“.
+11. **Elliott-Praktiker:** (a) Grad und Kontext werden aus Pivots statt aus dem Gesamtbild abgeleitet (Beispiel HCTI: „Neuzuordnung bei 69.322“ bei Kurs 0,74 — formal korrekt aus split-bereinigter Historie, praktisch bedeutungslos); (b) laufende Impulse werden als fertige Korrekturen gelesen; (c) Enthaltung in 99 % der Fälle — „das Werkzeug zählt praktisch nie“.
 12. **Consumer:** (a) meist „keine verlässliche Zählung“ — wofür dann Elliott? (b) Szenarien mit Einstieg und Ziel, aber der Hinweis „kein Vorteil belegt“ — verwirrend; (c) zu viele Fachbegriffe in der Pro-Ansicht.

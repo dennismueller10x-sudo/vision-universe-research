@@ -142,3 +142,17 @@ node scripts/technical/ti-evidence.mjs --mode daily --workers 4                 
 node scripts/technical/ti-evidence.mjs --mode weekly --from-records /tmp/w.rec.gz --time-block MONTH --out /tmp/sens   # Sensitivität
 node scripts/technical/ti-evidence.mjs --mode weekly --delisted "$RUNNER_TEMP/delisted-weekly.json"   # nur im CI-Runner
 ```
+
+
+## Nachtrag Mission IV (Endstand, ti-scenario-1.2.1, elliott-3.2.2)
+
+Wochenstudie neu gerechnet nach den Szenario-Korrekturen (Plausibilitätsgrenzen, tote Reihen, Elliott formt nur bei Anwendbarkeit ≥ MITTEL):
+
+| Zeitraum | n | Lift gegen vorab registrierte Baseline (Cluster-KI) | Sensitivität: Baseline aus ±104 Wochen um das Signal (Cluster-KI) |
+|---|---|---|---|
+| TEST (vorab registriert) | 46.509 | −0,36 pp (−1,81 … +1,09) | −2,73 pp (−4,31 … −1,14) |
+| TRAIN | 43.844 | +1,36 pp (+0,10 … +2,61) | −2,16 pp (−3,40 … −0,92) |
+| VALIDATION | 19.767 | −1,11 pp (−2,66 … +0,43) | −2,09 pp (−3,82 … −0,36) |
+| gesamt | 110.120 | +0,19 pp (−0,65 … +1,03) | −2,39 pp (−3,26 … −1,51) |
+
+Die zeitraumgleiche Baseline (KL 6c) ist **nicht vorab registriert** und wird nur berichtet (eigener Zufallsstrom, die registrierte Baseline bleibt bitgleich). Sie zeigt: Zufallseinstiege gleicher Geometrie aus derselben Marktphase erreichen Zielzone 1 öfter (37,7 % im TEST) als die Szenarien (34,95 %). Mögliche Erklärungen: Die Szenarien entstehen bevorzugt in Phasen, in denen die nahe Zukunft ungünstiger ist (Konditionierung), oder die Szenario-Geometrie ist schlechter als zufällig. Beides spricht gegen jede Vorteilsbehauptung.

@@ -72,7 +72,8 @@
 45. **Laufende Muster werden kaum erkannt.** Auf VALIDATION sind laufende Hauptzählungen zu 8,7 % richtig; 48,6 % werden als abgeschlossen gelesen (meist als WXY). Der Anwendbarkeitswert ist auf laufenden Stufen invers (AUC 0,33). Engine 3.2.2 senkt deshalb abgeschlossene WXY auf NIEDRIG; verbleibende sichere Aussagen auf laufenden Mustern: 45 (alle falsch) statt 182.
 46. **Korpus taugt nicht als Qualitäts-Gate** (Generator-Audit 2): Generator und Engine teilen Annahmen (Unterteilung, Ursprungsextreme), Rauschen ist mean-revertierend (Varianzverhältnis 0,07–0,12 statt 0,61–0,80 echt), die beobachtbare Wahrheit nutzt den Unterteilungsklassifikator der Engine und schließt fast nur Fehlschläge aus. Er bleibt Regressions- und Plausibilitätsprüfung.
 47. **Woche/Tag-Konsistenz real schwach.** Hierarchiegerechte Kennzahl 52–59 % gegenüber Zufallsbasis ≈ 49 %; kein Titel ist auf beiden Zeitebenen gleichzeitig anwendbar.
-48. **Unmögliche Kursniveaus bis Mission IV.** Rund 6 % der Titel trugen Ziele ≤ 0 oder Niveaus > Faktor 10 vom Kurs; behoben in ti-scenario-1.1.0 (Produktneubau nötig, siehe Bericht).
+48. **Unmögliche Kursniveaus bis Mission IV.** Rund 6 % der Titel trugen Ziele ≤ 0 oder Niveaus > Faktor 10 vom Kurs, tote/gebundene Reihen absurde CRV; behoben in ti-scenario-1.2.1 und neu gebaut (0 Titel mit unplausiblen Niveaus). Die Grenzen (Faktor 3, 12 ATR, 30/35 % vom Kurs, ATR 1,5–25 %) sind gesetzt, nicht geschätzt. Auf Kursen unter 1 USD rundet die Preisstufe grob.
+52. **Szenarien schlechter als Zufall derselben Phase** (Sensitivität, nicht vorab registriert): TEST −2,73 pp gegenüber zeitraumgleicher Baseline.
 49. **Alerts nur in der App.** Push/E-Mail fehlen (keine Zustell-Infrastruktur).
 50. **VU Ask:** Das Sprachmodell sieht die Chartbild-Werte nicht; die Werte stammen deterministisch aus dem Index im Browser.
 51. **Regulatorik:** Begriffe „Einstiegszone“, „Ziel“ und personalisierte Watchlist-Ereignisse — LEGAL REVIEW REQUIRED.
