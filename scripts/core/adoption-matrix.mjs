@@ -51,6 +51,9 @@ export function scriptsOf(htmlRel) {
 export function importsOf(rel) {
   const src = read(rel), base = dirname(rel), out = new Set();
   for (const m of src.matchAll(/(?:from\s+|import\(|require\()\s*["'`]([^"'`]+)["'`]/g)) if (m[1].startsWith(".")) out.add(join(base, m[1]));
+  /* createRequire(import.meta.url)("../x.js") - so laedt Supertrader die
+     gemeinsame Engine; vorher uebersehen (Matrix zeigte "eigen"). */
+  for (const m of src.matchAll(/createRequire\([^)]*\)\(\s*["'`]([^"'`]+)["'`]/g)) if (m[1].startsWith(".")) out.add(join(base, m[1]));
   for (const m of src.matchAll(/join\((?:root|ROOT|HERE|DEFAULT_ROOT|here)[^)]*?((?:"[^"]+"\s*,\s*)*"[^"]+\.(?:js|mjs)")\s*\)/g)) {
     const parts = [...m[1].matchAll(/"([^"]+)"/g)].map((x) => x[1]).filter((x) => x !== "..");
     out.add(parts.join("/"));
@@ -59,6 +62,11 @@ export function importsOf(rel) {
 }
 
 const has = (files, re) => files.filter((f) => re.test(f));
+
+/** Quelltext ohne Block- und Zeilenkommentare (grob, reicht fuer die Muster hier). */
+export function ohneKommentare(src) {
+  return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'`\\])\/\/[^\n]*/g, "$1");
+}
 /* Eine eigene Split-Bereinigung rechnet einen kumulativen Faktor aus
    splitFactor (ein Produkt ueber alle Splits danach). Reine Pruefungen auf
    splitFactor zaehlen nicht. */
@@ -71,7 +79,10 @@ export function measure(name, def) {
   /* Produkteigene Dateien: alles, was nicht unter quant/engines, core oder
      den geteilten Assets liegt. Nur dort zaehlt eine Ableitung als "eigene". */
   const own = [...runtime.filter((f) => !/^(quant\/engines|core|assets)\//.test(f)), ...build];
-  const ownText = own.map((f) => [f, read(f)]);
+  /* Ohne Kommentare: ein Kommentar, der einen behobenen Fehler beschreibt
+     (etwa die fruehere rohe ID-Bildung im Supertrader-Build), ist keine
+     Ableitung. */
+  const ownText = own.map((f) => [f, ohneKommentare(read(f))]);
   const grepOwn = (re) => ownText.filter(([, t]) => re.test(t)).map(([f]) => f);
   const all = [...runtime, ...buildMods];
   const paths = new Set();

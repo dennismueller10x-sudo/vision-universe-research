@@ -1,6 +1,6 @@
 # Core-Adoption: Welche Produkte laufen wirklich auf dem Core?
 
-**Stand:** 03.10.2026, gemessen mit `node scripts/core/adoption-matrix.mjs` (`--json` liefert die Belege je Zelle).
+**Stand:** 05.10.2026 (main nach der Merge-Kette), gemessen mit `node scripts/core/adoption-matrix.mjs` (`--json` liefert die Belege je Zelle).
 Die Matrix entsteht aus dem Code und wird nicht eingeschätzt. Gelesen werden:
 - die Skripte, die jede Produktseite tatsächlich lädt (`<script src>`),
 - die Erzeuger-Skripte des Produkts mit ihren Importen.
@@ -18,14 +18,14 @@ Die Matrix entsteht aus dem Code und wird nicht eingeschätzt. Gelesen werden:
 
 | Bereich | Security Identity | Prices | Fundamentals | Corporate Actions | Health/DQ | Core Client |
 |---|---|---|---|---|---|---|
-| Discover | 🟢 gemeinsam | 🟡 gemischt | 🟢 gemeinsam | 🔴 eigen | 🟢 gemeinsam | – |
+| Discover | 🟢 gemeinsam | 🟢 gemeinsam | 🟢 gemeinsam | 🟢 gemeinsam | 🟢 gemeinsam | – |
 | Quant | ✅ Core | 🟢 gemeinsam | 🟢 gemeinsam | 🟢 gemeinsam | 🟢 gemeinsam | – |
 | Markets | – | – | – | – | – | – |
 | Screener | ✅ Core | ⚪ indirekt | ⚪ indirekt | – | – | – |
-| Supertrader | 🔴 eigen | ⚪ indirekt | ⚪ indirekt | – | – | – |
+| Supertrader | 🟢 gemeinsam | ⚪ indirekt | ⚪ indirekt | – | – | – |
 | Technical | ✅ Core | – | – | – | – | – |
-| News | – | – | – | – | 🔴 eigen | – |
-| Company Pages | – | 🟡 gemischt | 🟢 gemeinsam | 🔴 eigen | – | – |
+| News | ✅ Core | – | – | – | 🔴 eigen | ✅ Core |
+| Company Pages | – | 🟢 gemeinsam | 🟢 gemeinsam | 🟢 gemeinsam | – | – |
 | Status | ✅ Core | – | – | – | ✅ Core | ✅ Core |
 
 Eigene Split-Bereinigungen im Repository (Ziel: nur quant/engines/return-series.js):
@@ -33,8 +33,6 @@ Eigene Split-Bereinigungen im Repository (Ziel: nur quant/engines/return-series.
   quant/engines/mock-generator.js
   quant/engines/return-series.js
   quant/engines/technical/canonical-bars.js
-  scripts/discover/build-discover-data.mjs
-  scripts/market/publish-discover-series.mjs
   scripts/market/study-momentum-return-basis.mjs
   scripts/supertrader/validation/lib.mjs
 
@@ -42,24 +40,23 @@ Eigene Split-Bereinigungen im Repository (Ziel: nur quant/engines/return-series.
 
 | Produkt | Befund |
 |---|---|
-| **Discover** | Identität über `company-master.js` (dieselbe Regel wie der Core, per Test über alle 5.982 Titel festgehalten). Kurse über `published-close.js`. Die Split-Bereinigung ist noch eine eigene Schleife; die Umstellung auf `return-series.js#splitFactors` liegt in **#388** (bitgleich, 0 geänderte Datendateien). |
-| **Quant** | Identität über `core/identity.js`, seit diesem PR auch im Signal-Vertrag. Vorher bekamen 25 Share-Class-Titel (BRK-A, BF-B, MOG-A …) eine falsche `securityId`. Kurse und Splits über `return-series.js`, Frische über `freshness.js`/`source-state.js`. |
-| **Markets** | liest nur Marktpuls- und Multi-Asset-Artefakte. Die Tagesänderung der Movers ist eine eigene Definition (IEX statt EOD, ADR-002, offen). |
-| **Screener** | Identität über `core/identity.js` (seit diesem PR). Kurse und Fundamentals aus den Discover-Seiten und `quant-factor-inputs.json`, also indirekt. |
-| **Supertrader** | eigene ID-Bildung im Erzeuger `scripts/supertrader/build.mjs`. Die Umstellung liegt in **#387** (Supertrader-Gate A verlangt einen eigenen PR). |
-| **Technical** | Identität über `core/identity.js` (seit diesem PR). Die OHLC-Split-Bereinigung liegt in einer eigenen Engine (`quant/engines/technical/canonical-bars.js`), siehe unten. |
-| **News** | rechnet das Datenalter selbst (`news/news.js`). Kandidat für `core/client.js#getNews` und `core/health.js`. |
-| **Company Pages** | Discover-Detail und Quant-Aktienseite. Sie hängen am Discover-Build (siehe Discover). |
+| **Discover** | Identität über `company-master.js` (dieselbe Regel wie der Core, per Test über alle Titel festgehalten). Kurse über `published-close.js`. Split-Bereinigung über `return-series.js#splitFactors` – im Builder (#388) und im Publisher (#437), bitgleich zur früheren Schleife. |
+| **Quant** | Identität über `core/identity.js`, auch im Signal-Vertrag (#394). Kurse und Splits über `return-series.js`, Frische über `freshness.js`/`source-state.js`. |
+| **Markets** | liest nur Marktpuls- und Multi-Asset-Artefakte. Movers und Steigend/Fallend kommen seit #400 aus der EOD-Tagesreihe (ADR-002); der Benchmark über `core/identity.js`. Die Matrix sieht nur die Seite, nicht den Erzeuger. |
+| **Screener** | Identität über `core/identity.js`. Kurse und Fundamentals indirekt aus den Discover-Seiten und `quant-factor-inputs.json`. |
+| **Supertrader** | Identität über `company-master.js#legacySecurityId` (#387), gleich zu `core/identity.js`. Bis 05.10. stand hier „eigen“ – ein Messfehler: das Werkzeug übersah `createRequire(...)("…")` und zählte einen Kommentar zum behobenen Fehler mit. |
+| **Technical** | Identität über `core/identity.js`. Die OHLC-Split-Bereinigung bleibt in `canonical-bars.js`; ihre Gleichheit mit der Core-Definition ist festgeschrieben (#410). |
+| **News** | liest über `core/client.js#getNews` (#396). Das Datenalter rechnet die Seite noch selbst (Health/DQ „eigen“) – nächster Schritt: `core/health.js`. |
+| **Company Pages** | Discover-Detail und Quant-Aktienseite, am Discover-Build. Vortag aus der Tagesreihe (#401, #402). |
 | **Status** | vollständig auf dem Core. |
 
 ## Parallelwelten, die noch bestehen
 
-| Thema | Wo | Weg |
+| Thema | Wo | Begründung / Weg |
 |---|---|---|
-| Split-Bereinigung | Liste unter der Matrix (8 Stellen; Ziel: nur `return-series.js`) | Discover: #388. Technical `canonical-bars.js`: OHLC und Volumen, eigener Vorher/Nachher-Nachweis. Supertrader-Validierung: semantisch identisch, versiegelte Forschung, bleibt. `mock-generator.js` und der Tiingo-Adapter erzeugen bzw. normalisieren Rohdaten und sind keine Produktableitung. |
-| `core/client.js` | nur `/status/` | Kandidaten in dieser Reihenfolge: News (`getNews`), Discover-Detail (`getLatestPrice`), Screener (`getPriceSeries`) |
-| 52-Wochen-Hoch | 4 Definitionen | eigener PR mit Methodik-Version |
-| Tagesänderung Markets | IEX statt EOD | eigener PR (ADR-002) |
+| Split-Bereinigung | 6 Stellen (Liste unter der Matrix; vorher 8) | `return-series.js` ist die Definition. `canonical-bars.js`: OHLC und Volumen, Gleichheit festgeschrieben (#410). Supertrader-Validierung: versiegelte Forschung (Gate A), bleibt. `mock-generator.js` und der Tiingo-Adapter erzeugen bzw. normalisieren Rohdaten. `study-momentum-return-basis.mjs` ist eine Studie. |
+| `core/client.js` | Status, News, Golden Paths | Discover-Detail (`getLatestPrice`) als reines Refactoring nach #401; Screener (`getPriceSeries`) |
+| Datenalter in News | `news/news.js` | auf `core/health.js` umstellen |
 | Gesamtrendite | `investorReturn` und `canonical-total-return.js` | Methodik-Version |
 
 ## Wächter
@@ -68,5 +65,5 @@ Eigene Split-Bereinigungen im Repository (Ziel: nur quant/engines/return-series.
   - Kein Produkt- oder Erzeugercode bildet eine `securityId` selbst.
   - Jede Ausnahme steht mit Grund in der Liste, und eine veraltete Ausnahme lässt den Test ebenfalls scheitern.
 - `core/tests/adoption-matrix.test.mjs`:
-  - Hält den erreichten Stand fest (Status, Quant, Screener und Technical auf der Core-Identität).
-  - Lässt keine neue Split-Bereinigung zu.
+  - Hält den erreichten Stand fest (Status, Quant, Screener und Technical auf der Core-Identität, Supertrader auf der gemeinsamen Engine, News über `core/client.js`).
+  - Lässt keine neue Split-Bereinigung zu, und die Liste der bekannten schrumpft nur: ein Eintrag, der nicht mehr zutrifft, lässt den Test scheitern.

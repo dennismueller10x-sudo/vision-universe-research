@@ -3,7 +3,7 @@
    Core-Identitaet abfaellt, faellt hier auf. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { matrix, splitImplementations, scriptsOf } from "../../scripts/core/adoption-matrix.mjs";
+import { matrix, splitImplementations, scriptsOf, ohneKommentare } from "../../scripts/core/adoption-matrix.mjs";
 
 const rows = Object.fromEntries(matrix().map((r) => [r.product, r]));
 
@@ -21,12 +21,26 @@ test("News liest ueber den Core-Vertrag", () => {
   assert.equal(rows.News.coreClient.state, "CORE");
 });
 
-test("Kein Produkt bekommt eine neue eigene Split-Bereinigung", () => {
+test("Kein Produkt bekommt eine neue eigene Split-Bereinigung - und die Liste schrumpft nur", () => {
+  /* Discover-Builder und -Publisher nutzen seit #388/#437 return-series.js;
+     sie stehen nicht mehr in der Liste. Ein Eintrag, der nicht mehr
+     zutrifft, laesst den Test scheitern (wie im Identitaets-Waechter). */
   const bekannt = new Set(["providers/tiingo/adapter.js", "quant/engines/mock-generator.js", "quant/engines/return-series.js",
-    "quant/engines/technical/canonical-bars.js", "scripts/discover/build-discover-data.mjs", "scripts/market/publish-discover-series.mjs",
-    "scripts/market/study-momentum-return-basis.mjs", "scripts/supertrader/validation/lib.mjs"]);
-  const neu = splitImplementations().filter((f) => !bekannt.has(f));
+    "quant/engines/technical/canonical-bars.js", "scripts/market/study-momentum-return-basis.mjs", "scripts/supertrader/validation/lib.mjs"]);
+  const gefunden = splitImplementations();
+  const neu = gefunden.filter((f) => !bekannt.has(f));
   assert.deepEqual(neu, [], "neue Split-Bereinigung: quant/engines/return-series.js#splitFactors verwenden");
+  const veraltet = [...bekannt].filter((f) => !gefunden.includes(f));
+  assert.deepEqual(veraltet, [], "Eintrag nicht mehr noetig - aus der Liste entfernen");
+});
+
+test("Supertrader bildet die ID ueber die gemeinsame Engine (company-master.js)", () => {
+  assert.equal(rows.Supertrader.identity.state, "SHARED");
+});
+
+test("Messung: createRequire-Importe zaehlen, Kommentare nicht", () => {
+  assert.equal(ohneKommentare("// Vorher `ref_${s}`\nconst a = 1; /* ref_ + x */"), "\nconst a = 1; ");
+  assert.equal(ohneKommentare('const u = "https://x.y/z";'), 'const u = "https://x.y/z";');
 });
 
 test("Skriptliste einer Seite folgt der Ladereihenfolge", () => {
