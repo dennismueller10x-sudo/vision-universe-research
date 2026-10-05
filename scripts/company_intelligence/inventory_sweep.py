@@ -47,10 +47,13 @@ def select(companies, store, now, pass_id, lane, limit=50, allow_network=True):
         store.set_state(key+'inventory',snapshot)
     selected=[];hosts=set()
     prior_outcomes={cid:store.state(key+cid) for cid in snapshot}
-    # Finish unattempted identities before consuming due retry capacity.
+    # Finish unattempted identities, then the oldest due attempts. An early
+    # permanently failing host must not monopolize every resumed retry batch.
     def order(cid):
         newly_verified=lane=='ir' and store.state('officialSite:'+cid,{}).get('status')=='VALIDATED'
-        return (lane=='ir' and not newly_verified,bool(prior_outcomes[cid]),cid)
+        prior=prior_outcomes[cid] or {}
+        retry_age=prior.get('lastAttemptAt') or prior.get('checkedAt') or ''
+        return (lane=='ir' and not newly_verified,bool(prior_outcomes[cid]),retry_age,cid)
     for cid in sorted(snapshot,key=order):
         if cid not in companies:continue
         c=companies[cid];value=candidates[cid];site=store.state('officialSite:'+cid,{})
@@ -107,6 +110,9 @@ def record(result,store,now,pass_id,lane):
     lane_state=store.state(('officialSite:' if lane=='domains' else 'ir:')+cid,{})
     store.set_state(key+cid,{'attempts':prior.get('attempts',0)+int(result.get('requests',0)>0),
                             'firstCheckedAt':prior.get('firstCheckedAt',now),
+                            # DNS/preflight attempts may precede an HTTP opener; local
+                            # cooldown/ambiguity reuse never changes this timestamp.
+                            'lastAttemptAt':now,
                             'retryAfter':lane_state.get('retryAfter') or now,
                             'stats':{key:prior.get('stats',{}).get(key,0)+value for key,value in result.get('stats',{}).items()},
                             'status':result['status'],'category':failure_category(result['status'],result.get('reason','')),
