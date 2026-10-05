@@ -36,6 +36,7 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const Identity = require(join(root, "core", "identity.js"));
 const engines = join(root, "quant", "engines");
 
 const SymbolMapping = require(join(engines, "symbol-mapping.js"));
@@ -183,7 +184,7 @@ if (GATE === "FULL_UNIVERSE" && !ALLOW_FULL_BACKFILL) {
 const allSymbols = securities.map((s) => ({ securityId: s.securityId, ticker: s.ticker,
                                             exchange: s.exchange, mic: null }));
 const canarySymbols = SCALE.canary.symbols.map((t) => ({
-  securityId: "ref_" + t, ticker: t, exchange: null, mic: null
+  securityId: Identity.securityIdForTicker(t), ticker: t, exchange: null, mic: null
 }));
 
 /* Die Benchmark. Sie steht NICHT im Gate-Universum, weil sie ein ETF ist

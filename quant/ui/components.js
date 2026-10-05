@@ -62,7 +62,7 @@
     if (dna.status === "incomplete") {
       items.push(el("div", { class: "q-metric", style: "grid-column:1/-1;background:var(--yellow-bg)" }, [
         el("span", { text: "Warum kein vollstaendiger Score?" }),
-        el("em", { text: (dna.incompleteReasons || []).join(" ") , style: "font-size:12.5px;color:#6e5a18;margin-top:5px" })
+        el("em", { text: (dna.incompleteReasons || []).join(" ") , style: "font-size:12.5px;color:var(--yellow-ink);margin-top:5px" })
       ]));
     }
     return el("div", { class: "q-metrics" }, items);
