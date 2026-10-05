@@ -15,6 +15,8 @@
 import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+const Identity = createRequire(import.meta.url)("../../core/identity.js"); // eine Identitaetsregel
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -56,7 +58,7 @@ export const QUELLEN_NAMENSRAUM = [
 /** Die Kursreihe eines Instruments samt Herkunft, oder null. */
 export function kursreihe(symbol, root) {
   if (!symbol) return null;
-  const pfad = join(root || ROOT, SERIEN_ORDNER, "ref_" + symbol + ".json");
+  const pfad = join(root || ROOT, SERIEN_ORDNER, Identity.securityIdForTicker(symbol) + ".json");
   if (!existsSync(pfad)) return null;
   try {
     const daten = JSON.parse(readFileSync(pfad, "utf8"));
