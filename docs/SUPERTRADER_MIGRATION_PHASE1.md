@@ -176,7 +176,15 @@ Texte zwischen Methodenseite, Regelkarte, Prozesskette und Portfolioblock wurden
 
 ## 9. CI, Release, Produktions-Smoke
 
-Wird nach dem Merge ergänzt (Abschlussnachweis).
+| Schritt | Ergebnis |
+|---|---|
+| Tests lokal | 223/223 grün (203 bestehende, 20 neue Phase-1-Tests). Freeze-Hash der Live-Parameter identisch mit `main` vor Phase 1. |
+| PR #449 (CI auf dem Merge-Stand) | `core`, `gates` (inkl. Gate A, Tests, Build, Browser-QA 390/1280 px), `test`, `contract`, `marker` grün. Der Commit-Status „Vercel“ blieb rot wegen des dokumentierten Deployment-Kontingents (kein Codefehler; gleiche Meldung wie bei #446). |
+| Merge | #449 gemergt (6ec433c). Keine Strategie-, Ledger- oder Versionsänderung. |
+| Release | Der Erzeuger (`Supertrader Signale`, manuell ausgelöst) hat `registry.json` mit dem neuen Code neu gebaut und auf `main` committet (Registry-Version `supertrader-migration-phase1-1.0.0`, Produktklassen je Strategie vorhanden); danach lief die Pages-Auslieferung erfolgreich. Der Lauf aktualisierte außerdem das Signalprotokoll wie jeder Tageslauf (append-only, Integritätstests im Lauf grün): Die Darvas-Vorqualität offener, noch nicht eingestiegener Setups änderte sich durch die Kursdaten, nicht durch Phase 1. |
+| Produktions-Smoke | `Supertrader Production Smoke` nach der Auslieferung: Routen, Artefakte, Frische und Browser-QA auf der ausgelieferten Seite grün (Lauf vom 05.10.2026, 12:09 UTC). |
+
+Offen bleibt nur, was ausdrücklich nicht Teil von Phase 1 ist (Abschnitt 10).
 
 ## 10. Nicht Teil von Phase 1 (Stopp)
 
