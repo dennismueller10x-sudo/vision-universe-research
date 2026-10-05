@@ -30,7 +30,6 @@ const AUSNAHMEN = {
   "scripts/market/tiingo2-refresh.mjs": "Workstream Tiingo 2.0, regelgleich",
   "scripts/universe/verify-company-master.mjs": "prueft, dass instrumentId KEINE Ticker-ID ist",
   "scripts/supertrader/build.mjs": "Umstellung in PR #387 (Supertrader-Gate A verlangt eigenen PR)",
-  "scripts/discover/assert-source-state-coverage.mjs": "Umstellung in eigenem Discover-PR",
   "scripts/vorsorge/build-etf-data.mjs": "Workstream Vorsorge (#417, 04.10.2026): Dateipfad der Discover-Reihe; core/identity.js liegt erst mit #386 auf main - danach securityIdForTicker"
 };
 
