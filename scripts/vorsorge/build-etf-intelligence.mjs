@@ -70,7 +70,7 @@ function localize(e) {
 }
 /* Auslieferungsformat der Ereignisse: Spalten statt Objekte. Die Meta-Felder (fundId, Snapshots,
    Quelle, Stand) stehen einmal je Datei; eventId wird im Browser deterministisch gleich gebildet. */
-const EVENT_FIELDS = ["eventType", "entityId", "entityName", "oldValue", "newValue", "absoluteChange", "importance", "explanation"];
+const EVENT_FIELDS = ["eventType", "entityId", "entityName", "oldValue", "newValue", "absoluteChange", "importance", "explanation", "driver"];
 const compactEvent = (e) => EVENT_FIELDS.map((k) => (typeof e[k] === "number" ? Math.round(e[k] * 1e6) / 1e6 : e[k] === undefined ? null : e[k]));
 const ROW = ["ticker", "name", "weight", "country", "sector", "assetType", "isin", "cusip", "vuTicker"];
 function topList(list, n) { return list.slice(0, n).map((x) => ({ key: x.key, weight: x.weight })); }

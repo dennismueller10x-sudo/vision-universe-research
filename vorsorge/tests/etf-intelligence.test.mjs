@@ -176,6 +176,15 @@ test("Kennungswechsel zwischen Quartalen (ISIN -> nur Ticker) erzeugt kein Hinzu
   const d = C.diffHoldings(a, snap("2026-06-30", rows));
   assert.ok(!d.events.some((e) => /HOLDING_(ADDED|REMOVED)/.test(e.eventType)), JSON.stringify(d.events.map((e) => e.eventType + ":" + e.entityName)));
 });
+test("ISIN-Wechsel einer Aktie bei doppeltem Namen im Vorquartal: kein Zu-/Abgang, kein Top-10-Wechsel", () => {
+  const roche = (isin) => base().map((r) => r.holdingName === "Rest" ? Object.assign({}, r, { weight: 61.8 }) : r)
+    .concat([row("Roche Holding AG", 3.0, { holdingIsin: isin, sector: "HEALTH", country: "CH" }), row("Roche Holding AG", 0.2, { holdingIsin: "CH0012032113", sector: "HEALTH", country: "CH" })]);
+  const d = C.diffHoldings(snap("2026-03-31", roche("CH0012032048")), snap("2026-06-30", roche("CH1499059983")));
+  assert.ok(!d.events.some((e) => /Roche/.test(e.entityName)), JSON.stringify(d.events.map((e) => e.eventType + ":" + e.entityName)));
+  // Zwei verschiedene neue Aktien gleichen Namens bleiben echte Zu-/Abgänge
+  const two = roche("CH1499059983").concat([row("Roche Holding AG", 0.5, { holdingIsin: "CH9999999990", sector: "HEALTH", country: "CH" })]).map((r) => r.holdingName === "Rest" ? Object.assign({}, r, { weight: 61.3 }) : r);
+  assert.ok(C.diffHoldings(snap("2026-03-31", roche("CH0012032048")), snap("2026-06-30", two)).events.some((e) => e.eventType === "HOLDING_ADDED"));
+});
 test("Gewichtsänderung bei unveränderter Stückzahl = Kursbewegung, eine Stufe niedriger", () => {
   const withShares = (w) => base().map((r) => Object.assign({}, r, { shares: 1000 }, r.holdingName === "NVIDIA" ? { weight: w } : {}));
   const a = snap("2026-03-31", withShares(6.8)), b = snap("2026-06-30", withShares(8.0).map((r) => r.holdingName === "Rest" ? Object.assign({}, r, { weight: 63.8 }) : r));

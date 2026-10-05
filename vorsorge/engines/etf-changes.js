@@ -71,8 +71,8 @@
   }
 
   function longs(s) { return s.holdings.filter(function (h) { return h.weight !== null && h.weight > 0 && !DERIV[h.assetType]; }); }
-  function rankMap(s) {
-    var m = {}; longs(s).filter(function (h) { return h.assetType !== "CASH"; }).forEach(function (h, i) { if (!(h.holdingId in m)) m[h.holdingId] = i + 1; });
+  function rankMap(s, remap) {
+    var m = {}; longs(s).filter(function (h) { return h.assetType !== "CASH"; }).forEach(function (h, i) { var id = remap ? remap(h) : h.holdingId; if (!(id in m)) m[id] = i + 1; });
     return m;
   }
   function groupWeights(s, key) {
@@ -116,6 +116,20 @@
   }
 
   /**
+   * Zweiter Abgleich: verschwundene und neue Aktien/Fonds mit gleichem Namen (je Seite genau einmal)
+   * sind dieselbe Position mit neuer Kennung (z. B. ISIN-Wechsel nach Kapitalmassnahme), kein Zu-/Abgang.
+   */
+  var NAME_PAIR = { EQUITY: 1, FUND: 1, ETF: 1 };
+  function pairByName(A, next, remap0) {
+    var B = byId(next, remap0), gone = {}, fresh = {}, extra = {};
+    function count(map, k, v) { var n = normName(v.name); if (!n || !NAME_PAIR[v.assetType]) return; (map[n] = map[n] || []).push(k); }
+    Object.keys(A).forEach(function (k) { if (!B[k]) count(gone, k, A[k]); });
+    Object.keys(B).forEach(function (k) { if (!A[k]) count(fresh, k, B[k]); });
+    Object.keys(fresh).forEach(function (n) { if (fresh[n].length === 1 && gone[n] && gone[n].length === 1) extra[fresh[n][0]] = gone[n][0]; });
+    return function (h) { var k = remap0(h); return extra[k] || k; };
+  }
+
+  /**
    * Holdings-Vergleich. prev = null -> BASELINE (keine Ereignisse).
    * Liefert { status, events, summary }.
    */
@@ -127,9 +141,10 @@
     if (prev.contentHash === next.contentHash) return { status: "UNCHANGED", events: [], summary: emptySummary() };
     var ctx = { fundId: next.fundId || next.symbol, shareClassId: next.shareClassId, from: prev.asOf, to: next.asOf,
       fromSnapshot: prev.snapshotId, toSnapshot: next.snapshotId, source: next.source, detectedAt: cfg.detectedAt || null };
-    var A = byId(prev), B = byId(next, aliasRemap(prev)), ev = [];
+    var remap = pairByName(byId(prev), next, aliasRemap(prev));
+    var A = byId(prev), B = byId(next, remap), ev = [];
     var small = longs(next).length <= cfg.smallFundPositions;
-    var rankA = rankMap(prev), rankB = rankMap(next);
+    var rankA = rankMap(prev), rankB = rankMap(next, remap);
     Object.keys(B).forEach(function (k) {
       var b = B[k], a = A[k];
       if (b.assetType === "CASH") return;
