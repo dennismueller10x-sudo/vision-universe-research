@@ -108,6 +108,29 @@ class ProfileTests(unittest.TestCase):
         company = {**COMPANY, 'names': ['Example']}
         self.assertEqual(extract(company, short, source, NOW)['state'], 'UNAVAILABLE')
 
+    def test_country_abbreviation_boundary_and_neutral_business_facts(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>Our business strategy is to become the indispensable healthcare provider. We are the leading provider of behavioral healthcare services in the U.S. Management believes we can expand rapidly.</p>'
+        result = extract(COMPANY, body, source, NOW)
+        self.assertEqual(result['description'], 'Example Holdings Inc. is a provider of behavioral healthcare services in the U.S.')
+        self.assertNotIn('strategy', result['description'])
+        insurance = b'<h2>ITEM 1 | Business</h2><p>Example Holdings Inc. is a leading global insurance organization.</p>'
+        self.assertIn('global insurance organization', extract(COMPANY, insurance, source, NOW)['description'])
+        steel = b'<h2>Item 1. Business</h2><p>We manufacture and market prestressed concrete strand and welded wire reinforcement for construction applications.</p>'
+        self.assertIn('manufactures and markets prestressed concrete', extract(COMPANY, steel, source, NOW)['description'])
+        segments = b'<h2>Item 1. Business</h2><p>We are organized into three business segments for management reporting purposes: Consumer Banking, Commercial Banking, and Treasury and Other.</p><p>Our primary focus is the United States personal auto insurance market.</p>'
+        result = extract(COMPANY, segments, source, NOW)
+        self.assertIn('Consumer Banking', result['description'])
+        self.assertIn('personal auto insurance', result['description'])
+
+    def test_named_issuer_and_subsidiaries_plural_predicate_is_scoped(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>Example Holdings Inc. and its subsidiaries ("Example", "we") develop technologies that we monetize through programmable logic semiconductor products and licenses.</p>'
+        result = extract(COMPANY, body, source, NOW)
+        self.assertEqual(result['description'], 'Example Holdings Inc. develops technologies that it monetizes through programmable logic semiconductor products and licenses.')
+        wrong = body.replace(b'Example Holdings Inc. and its subsidiaries', b'Example Holdings Inc. Japan LLC and its subsidiaries')
+        self.assertEqual(extract(COMPANY, wrong, source, NOW)['state'], 'UNAVAILABLE')
+
     def test_foreign_private_issuer_20f_business_overview_is_identity_scoped(self):
         data = submissions(); data['filings']['recent']['form'] = ['20-F']
         source = annual_filing(COMPANY, data, NOW)

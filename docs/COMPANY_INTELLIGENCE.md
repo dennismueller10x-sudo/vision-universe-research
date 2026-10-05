@@ -80,6 +80,11 @@ Prepared catalogue: **2,977 profiles / 6,078 supported issuers (48.98%)**, all s
 
 Concurrent remote discovery milestone `d30133ae5dc03d7b50ac816ba3c57b9f7a4b39fb` is incorporated without recreating its checkpoint: 1,539 recent-news issuers, 462 calls, 400 webcasts, 892 presentations, 507 management-content issuers and 89 confirmed upcoming earnings. Original frozen tail remains fully classified. Continued bounded SEC initial extraction remains pending; the 80–90% profile target is not reached. Validation: **498 integrated Python tests and 39 feature Node tests passed**. A profile-only full-universe export/consumer projection validated all 2,977 available profiles; the 15-stock browser cohort contains 31 prepared assets / 40,374 bytes. This isolated audit is not a replacement for the absent discovery ledger.
 
+
+### Consumer-description quality milestone — 2026-10-05T11:11 UTC
+
+**3,177 prepared profiles (52.27% of 6,078)**. A 403-issuer targeted cached review upgraded 285 descriptions and withheld three more weak descriptions with **zero HTTP requests**. Actual source-driven fixes now handle country abbreviations at sentence boundaries, pipe-separated SEC Business headings, explicitly stated banking segments, concrete/wire products and exact-issuer consolidated plural predicates. Corporate strategy, employee-channel prose and promotional interface/culture statements are excluded. Source verification dates remain unchanged on cached normalization. Root now explicitly states its personal auto-insurance market; Bank of Hawaii states Consumer Banking, Commercial Banking and Treasury segments; Lattice identifies programmable-logic semiconductor products and licenses. No customer or segment facts were invented. **500 integrated Python tests pass; 39 feature Node tests pass.**
+
 <!-- PROFILE-CONTINUATION-MILESTONE-END -->
 
 # Company Intelligence — candidate completion and recovery (in progress)

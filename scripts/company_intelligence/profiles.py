@@ -14,14 +14,14 @@ from .transport import SourceError, BudgetExhausted
 from .q4_events import public_link
 
 VERSION = 'company-profile-1.0.0'
-PARSER_VERSION = 'company-profile-parser-1.0.11'
+PARSER_VERSION = 'company-profile-parser-1.0.13'
 WEB_DAYS = 90
 SEC_STALE_DAYS = 550
 MAX_DOCUMENT = 64 * 1024 * 1024
 ACTIVITY = re.compile(r'\b(?:designs?|develops?|manufactures?|markets?|sells?|provides?|operates?|offers?|distributes?|produces?|supplies?|commercializes?|researches?|licenses?|delivers?|builds?|serves?|specializes?|engages?|focuses?)\b', re.I)
-BUSINESS = re.compile(r'\b(?:software|platforms?|products?|services?|solutions?|bank|banking|insurance|insurer|manufacturer|provider|supplier|developer|retailer|retail|holding company|biotechnology|biopharmaceutical|pharmaceutical|semiconductors?|computing|infrastructure|power management|energy|mining|real estate|transportation|technology|equipment|devices?|vehicles?|EVs?|NEVs?|food|beverages?|materials|merchandise|airline|utilities|utility|producers?|drilling|agribusiness|land management|telecommunications|communications|logistics|restaurants?|medical|furnishings|clothing|chemicals|oil|gas|gold|silver|copper|steel|REIT|education|training|publishing|media|entertainment|gaming|hospitality|hotels?|travel|apparel|textiles|fabrics|construction|engineering|aerospace|defen[sc]e|financial|investments?|asset management|mortgages?|lending|loans|blank check company|acquisition company|furniture|personal care|cosmetics|candles|packaging|paper|forestry|wood|lumber|timber|electricity|renewable|water|waste|shipping|freight|oilfield|distribution|healthcare|payroll)\b', re.I)
+BUSINESS = re.compile(r'\b(?:software|platforms?|products?|services?|solutions?|bank|banking|insurance|insurer|manufacturer|provider|supplier|developer|retailer|retail|holding company|biotechnology|biopharmaceutical|pharmaceutical|semiconductors?|computing|infrastructure|power management|energy|mining|real estate|transportation|technology|equipment|devices?|vehicles?|EVs?|NEVs?|food|beverages?|materials|merchandise|airline|utilities|utility|producers?|drilling|agribusiness|land management|telecommunications|communications|logistics|restaurants?|medical|furnishings|clothing|chemicals|oil|gas|gold|silver|copper|steel|REIT|education|training|publishing|media|entertainment|gaming|hospitality|hotels?|travel|apparel|textiles|fabrics|construction|engineering|aerospace|defen[sc]e|financial|investments?|asset management|mortgages?|lending|loans|blank check company|acquisition company|furniture|personal care|cosmetics|candles|packaging|paper|forestry|wood|lumber|timber|electricity|renewable|water|waste|shipping|freight|oilfield|distribution|healthcare|payroll|concrete|wire)\b', re.I)
 EXCLUDED = re.compile(r'\b(?:headcount|forward.looking|may|might|could|will|expects?|intends?|plans?|believes?|aims?|aspires?|best|revolutionary|unrivaled|unparalleled|world.class|award.winning|visionary|transforming the future|market leader)\b', re.I)
-PROMOTION = re.compile(r'\b(?:(?:world[’\']?s? |global |industry |market )?(?:leading|largest|premier|top.ranked)|innovative|cutting.edge|state.of.the.art|intelligent|novel|differentiated|fashionable|comprehensive|most advanced|effectively)\s*,?\s*', re.I)
+PROMOTION = re.compile(r'\b(?:(?:world[’\']?s? |nation[’\']s |global |industry |market )?(?:leading|largest|premier|top.ranked)|innovative|cutting.edge|state.of.the.art|intelligent|novel|differentiated|fashionable|comprehensive|most advanced|effectively)\s*,?\s*', re.I)
 
 
 def later(now, days):
@@ -116,7 +116,7 @@ def annual_filing(company, submissions, now):
 
 
 def business_blocks(doc, form):
-    patterns = [r'^(?:part\s+i\s*)?item\s*1[. :–-]*business\b', r'^items?\s*1\.?\s*(?:and|&)\s*2[. :–-]*business(?: and properties)?\b'] if form == '10-K' else [r'^item\s*4[. :–-]*information on the company\b', r'^(?:[bB][. :–-]*)?business overview\b']
+    patterns = [r'^(?:part\s+i\s*)?item\s*1[.| :–-]*business\b', r'^items?\s*1\.?\s*(?:and|&)\s*2[.| :–-]*business(?: and properties)?\b'] if form == '10-K' else [r'^item\s*4[.| :–-]*information on the company\b', r'^(?:[bB][. :–-]*)?business overview\b']
     starts = [i for i, text in enumerate(doc.blocks) if any(re.search(p, text, re.I) for p in patterns)]
     for i in range(len(doc.blocks) - 1):
         if re.fullmatch(r'item\s*1[. :–-]*', doc.blocks[i], re.I) and re.fullmatch(r'business[. :–-]*', doc.blocks[i + 1], re.I) and form == '10-K':
@@ -137,6 +137,9 @@ def business_blocks(doc, form):
 
 
 def sentences(text):
+    # A country abbreviation can also end a sentence. Explicit new
+    # issuer/management voice is a safe boundary; 'U.S. Department' is not.
+    text = re.sub(r'\bU\.([SK])\.\s+(?=(?:We|Our|Management|The [Cc]ompany)\b)', lambda m: 'U\u2024' + m[1] + '. ', text)
     # Protect legal suffixes and country abbreviations from sentence splitting.
     text = re.sub(r'\b(?:Inc|Corp|Ltd|Co|U\.S|U\.K|B\.V|S\.A|e\.g|i\.e)\.', lambda m: m[0].replace('.', '\u2024'), text)
     return [s.replace('\u2024', '.') for s in re.split(r'(?<=[.!?])\s+(?=[A-Z“\"])', text)]
@@ -157,6 +160,7 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True):
         segment = re.match(r'^Through our ([^,.!?]{1,100} segment), we (.+)', text, re.I)
         if segment:
             text = 'We ' + segment[2].rstrip('.') + ' through our ' + segment[1] + '.'
+        text = re.sub(r'^We are organized into ((?:two|three|four|five|six|\d+) business segments)(?: for management reporting purposes)?: (.+)', r'We operate through \1: \2', text, flags=re.I)
         text = re.sub(r'^We report our business in ((?:two|three|four|five|six|\d+) segments: .+)', r'We operate through \1', text, flags=re.I)
     text = re.sub(r'\bindustry-leading\s+', '', text, flags=re.I)
     if not 40 <= len(text) <= 1000 or not re.search(r'[.!?]$', text) or EXCLUDED.search(text):
@@ -164,7 +168,7 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True):
     if re.search(r'\b(?:employee count|number of employees|(?:[\d,.]+|hundreds?|thousands?|million|one|two|three|four|five|six|seven|eight|nine|ten)(?:\s+(?:full.time|part.time))?\s+employees?)\b', text, re.I):
         return None
     text = re.sub(r'(\bcompany\b)\s+(?:committed|dedicated|founded|reshaping)\b.*', r'\1.', text, flags=re.I)
-    if re.search(r'revolutioniz|reshaping|tremendous|competitive|purpose.driven|company culture|long.term happiness|most recognized|preeminent|synergistic|secular growth|compelling demographics|benefiting|strengthening|momentum|market leaders|utmost urgency|scalable|scalability|seasonal fluctuations|must.not.fail|inspires? confidence|off.mall|best.in.class|differentiating value|low.cost,? high.quality|\b(?:are|is) (?:also expanding|focused|committed)\b', text, re.I):
+    if re.search(r'revolutioniz|reshaping|tremendous|competitive|business strategy|to become|indispensable|consideration and drive|sales representatives who are its employees|exceptional customer support|elegant user interface|intuitive|powerful enough|designed to make its members|purpose.driven|company culture|long.term happiness|most recognized|preeminent|synergistic|secular growth|compelling demographics|benefiting|strengthening|momentum|market leaders|utmost urgency|scalable|scalability|seasonal fluctuations|must.not.fail|inspires? confidence|off.mall|best.in.class|differentiating value|low.cost,? high.quality|\b(?:are|is) (?:also expanding|focused|committed)\b', text, re.I):
         return None
     name = display_name(company['names'][0])
     names = []
@@ -181,7 +185,7 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True):
                 subject += '.'
             break
     first_person = sec and allow_first_person and bool(re.match(r'^(?:we|the company|the corporation|the registrant)\s', text, re.I))
-    possessive = sec and allow_first_person and re.match(r'^our\s+(?:principal |main |core )?(?:products|product (?:portfolio|offering|line)s?|brands?|merchandise|platforms?|services|business|software platforms|technology stack|(?:comprehensive )?set of software|(?:auto )?insurance products?|field programmable gate array)\b', text, re.I)
+    possessive = sec and allow_first_person and re.match(r'^our\s+(?:principal |main |core )?(?:primary focus|products|product (?:portfolio|offering|line)s?|brands?|merchandise|platforms?|services|business|software platforms|technology stack|(?:comprehensive )?set of software|(?:auto )?insurance products?|field programmable gate array)\b', text, re.I)
     if possessive:
         text = re.sub(r'^our\b', lambda m: name + "'s", text, flags=re.I)
         subject = name + "'s"
@@ -248,6 +252,11 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True):
         tail = re.sub(r'^\s*,\s*a\s+(?:\w+\s+){0,4}(?:corporation|company)\s*,?', '', tail, flags=re.I)
     else:
         tail = re.sub(r'^\s*\([^)]{0,120}\)\s*', ' ', tail)
+    if sec and allow_first_person and subject and not first_person and re.match(r'^\s*(?:design|develop|manufacture|market|sell|provide|operate|offer|produce|distribute)\b', tail, re.I):
+        # An exact legal issuer with consolidated subsidiaries takes a plural
+        # predicate in filings; use the same tested issuer-voice conjugation.
+        tail = re.sub(r'\bwe monetize\b', 'it monetizes', tail, flags=re.I)
+        return issuer_sentence('We ' + tail.strip(' ,'), company, sec=True, allow_first_person=True)
     if not possessive and not re.match(r'^\s*,?\s*(?:(?:is|are|has)\b|(?:designs|develops|manufactures|markets|sells|provides|operates|offers|produces|distributes|supplies|commercializes|researches|licenses|delivers|builds|makes|engineers|serves|specializes|engages|focuses)\b)', tail, re.I):
         return None
     if sec and not possessive and subject != name:
@@ -259,6 +268,7 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True):
     # business role; this is a grammatical normalization, not a new fact.
     roles = {'companies': 'company', 'providers': 'provider', 'suppliers': 'supplier', 'manufacturers': 'manufacturer', 'producers': 'producer', 'retailers': 'retailer', 'operators': 'operator', 'distributors': 'distributor'}
     predicate = text[len(subject):]
+    predicate = re.sub(r'^ is the leading ([a-z -]{0,60})(provider|supplier|manufacturer|producer|retailer|operator|distributor)\b', r' is a \1\2', predicate, flags=re.I)
     predicate = re.sub(r'^ is one of (?:the )?(?:(?:world\'s|global|industry) )?(?:leading|largest) ([a-z -]{0,60})(' + '|'.join(roles) + r')\b', lambda m: ' is a ' + m[1] + roles[m[2].lower()], predicate, flags=re.I)
     predicate = re.sub(r'^ is the (?:first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|\d+(?:st|nd|rd|th)) largest ([a-z -]{0,60})(company|provider|supplier|manufacturer|producer|retailer|operator|distributor|bank)\b', r' is a \1\2', predicate, flags=re.I)
     text = subject + predicate
@@ -268,6 +278,7 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True):
     text = re.sub(r'\b(broad|extensive|diverse|full|complete) and (portfolio|range|set|suite|solutions|services|products)\b', r'\1 \2', text, flags=re.I)
     text = subject + re.sub(r'\b(?:disruptive|technology-forward|essential|premium)\s+', '', text[len(subject):], flags=re.I)
     text = re.sub(r'\s+in a \$[\d,.]+\s+(?:billion|million) Total Addressable Market.*', '.', text, flags=re.I)
+    text = re.sub(r'\s+with a commitment to\b.*', '.', text, flags=re.I)
     text = re.sub(r'\s+using a powerful combination of science and engineering[.!]?$', '.', text, flags=re.I)
     text = re.sub(r'\b(?:an?|the) innovator,\s*', 'a ', text, flags=re.I)
     text = re.sub(r'\ban (power|software|technology)\b', r'a \1', text, flags=re.I)
@@ -277,7 +288,7 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True):
     # or unsupported positioning clause. Do not manufacture an industry type.
     text = re.sub(r'(\b(?:company|provider|supplier|manufacturer|bank|retailer|platform)\b)\s+(?:committed|dedicated|founded)\b.*', r'\1.', text, flags=re.I)
     predicate = text[len(subject):].strip()
-    nominal = re.match(r'^(?:is|are)\s+(?:now\s+)?(?:an?\s+|the\s+)(?:[\w,-]+\s+){0,12}(?:company|provider|supplier|manufacturer|marketer|developer|bank|insurer|retailer|holding company|platform|producer|operator|distributor|airline|REIT|real estate investment trust|limited partnership)\b', predicate, re.I)
+    nominal = re.match(r'^(?:is|are)\s+(?:now\s+)?(?:an?\s+|the\s+)(?:[\w,-]+\s+){0,12}(?:company|organization|provider|supplier|manufacturer|marketer|developer|bank|insurer|retailer|holding company|platform|producer|operator|distributor|airline|REIT|real estate investment trust|limited partnership)\b', predicate, re.I)
     active = re.match(r'^(?:designs|develops|manufactures|markets|sells|provides|operates|offers|produces|distributes|supplies|commercializes|researches|licenses|delivers|builds|makes|engineers|serves|specializes|engages|focuses)\b|^has (?:built|developed|manufactured)\b', predicate, re.I)
     if re.match(r'^builds (?:upon|on|within)\b', predicate, re.I):
         active = None
@@ -291,7 +302,7 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True):
     text = re.sub(r'\bempowers\b', 'helps', text, flags=re.I)
     if re.search(r'\b(?:we|our|us)\b', text, re.I):
         return None
-    if re.search(r'\b(?:no single product contributed|individual part numbers|direct sales force|field sales employees|focuses its investments|products are sold|sells (?:product|the majority of its products) (?:primarily|through))\b', text, re.I):
+    if re.search(r'\b(?:this software|these products|provides them|no single product contributed|individual part numbers|direct sales force|field sales employees|focuses its investments|products are sold|sells (?:product|the majority of its products) (?:primarily|through))\b', text, re.I):
         return None
     return clean(text, 1000) if len(text) <= 700 else None
 
