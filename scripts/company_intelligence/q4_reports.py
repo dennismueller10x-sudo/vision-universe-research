@@ -36,6 +36,9 @@ def parse(body,source,now):
             label=clean(doc.get('DocumentTitle'),200);category=doc.get('DocumentCategory');url=public_link(doc.get('DocumentPath'))
             if not url or not label:continue
             kind='COMPANY_TRANSCRIPT' if re.search('transcript',label,re.I) else 'PREPARED_REMARKS' if re.search(r'prepared (?:management )?remarks|earnings script',label,re.I) else 'SHAREHOLDER_LETTER' if re.search('shareholder letter|letter to shareholders',label,re.I) else 'MANAGEMENT_COMMENTARY' if re.search('management commentary|ceo letter',label,re.I) else 'CALL_RECORDING' if re.search('webcast replay|call replay|call recording',label,re.I) else 'EARNINGS_WEBCAST' if quarter and (category=='webcast' or re.search('webcast',label,re.I)) else 'WEBCAST' if category=='webcast' or re.search('webcast',label,re.I) else 'PRESENTATION' if category=='presentation' or re.search('presentation|slides',label,re.I) else 'EARNINGS_RELEASE' if category=='news' or re.search('press release|earnings release',label,re.I) else 'FINANCIAL_REPORT' if category in ('tenq','tenk','annual','supplemental-fin') or re.search('10-[KQ]|annual report|financial statement',label,re.I) else None
+            if kind=='PRESENTATION':
+                from .q4_presentations import document_kind
+                kind=document_kind(label,url)
             if not kind:continue
             # Company transcripts/remarks are issuer-provided, not a paid
             # external provider linked by the site's marketing widget.

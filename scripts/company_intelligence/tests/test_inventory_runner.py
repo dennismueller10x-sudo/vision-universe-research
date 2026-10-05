@@ -11,6 +11,23 @@ from company_intelligence.checkpoint import restore
 
 
 class RunnerTests(unittest.TestCase):
+ def test_same_pass_ir_inherits_domain_cohort_but_preserves_an_existing_ir_checkpoint(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   state=Path(tmp)/'state';store=Store(state/'state.sqlite')
+   store.set_state('inventorySweep:scoped:domains:inventory',['recovered','pending'])
+   store.set_state('siteCandidates:unrelated',{'status':'CANDIDATE'})
+   store.close();seen=[]
+   def execute(command,**kwargs):
+    store=Store(state/'state.sqlite');seen.append(store.state('inventorySweep:scoped:ir:inventory'));store.close()
+    return SimpleNamespace(returncode=0,stdout=json.dumps({'requests':0,'stopReason':'NO_DUE_CANDIDATES'}))
+   with contextlib.redirect_stdout(io.StringIO()):drive(tmp,state,'scoped',lane='ir',execute=execute)
+   self.assertEqual(seen,[['recovered','pending']])
+   store=Store(state/'state.sqlite');store.set_state('inventorySweep:scoped:ir:inventory',['previously-frozen']);store.close()
+   with contextlib.redirect_stdout(io.StringIO()):drive(tmp,state,'scoped',lane='ir',execute=execute)
+   self.assertEqual(seen[-1],['previously-frozen'])
+   restore(state/'checkpoints/scoped-ir.tar.gz',Path(tmp)/'restored')
+   store=Store(Path(tmp)/'restored/state.sqlite');self.assertEqual(store.state('inventorySweep:scoped:ir:inventory'),['previously-frozen']);store.close()
+
  def test_interrupt_preserves_candidate_and_resumed_batch_accounting(self):
   with tempfile.TemporaryDirectory() as tmp:
    state=Path(tmp)/'state';store=Store(state/'state.sqlite')

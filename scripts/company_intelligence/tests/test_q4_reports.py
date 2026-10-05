@@ -8,6 +8,26 @@ S={'companyId':'issuer','sourceId':'q4','url':endpoint('https://investors.exampl
 def body(docs=None):
  return json.dumps({'GetFinancialReportListResult':[{'ReportYear':2026,'ReportTitle':'2026','ReportSubType':'Third Quarter','ReportDate':'12/31/2026','Documents':docs or [{'DocumentTitle':'Prepared Management Remarks','DocumentPath':'https://s21.q4cdn.com/a.pdf','DocumentCategory':'supplemental-fin'},{'DocumentTitle':'Earnings Webcast','DocumentPath':'https://public.webcast.example/event','DocumentCategory':'webcast'},{'DocumentTitle':'Earnings Presentation','DocumentPath':'https://s21.q4cdn.com/deck.pdf','DocumentCategory':'presentation'}]}]}).encode()
 class Reports(unittest.TestCase):
+ def test_financial_supplements_in_vendor_presentation_category_remain_reports(self):
+  docs=[{'DocumentTitle':label,'DocumentPath':url,'DocumentCategory':'presentation'} for label,url in [
+   ('Supplemental Information','https://s21.q4cdn.com/2026-Supplemental-Data.pdf'),
+   ('Financial Supplement','https://s21.q4cdn.com/financial-supplement.pdf'),
+   ('Earnings Supplemental Slides','https://s21.q4cdn.com/earnings-presentation.pdf'),
+   ('Second Quarter 2026 Presentation','https://s21.q4cdn.com/Q2-2026-Supplementals.pdf'),
+   ('Prepared Management Remarks','https://s21.q4cdn.com/remarks.pdf'),
+   ('Supplemental Information','https://s21.q4cdn.com/Investor-Presentation.pdf'),
+   ('Supplemental Information','https://s21.q4cdn.com/Earnings-Release-Supplemental-Slides.pdf'),
+   ('Supplemental Information','https://s21.q4cdn.com/Q2-Earnings-Release.pdf')]]
+  rows=parse(body(docs),S,NOW)
+  self.assertEqual([r['type'] for r in rows],['FINANCIAL_REPORT','FINANCIAL_REPORT','PRESENTATION','PRESENTATION','PREPARED_REMARKS','PRESENTATION','PRESENTATION','EARNINGS_RELEASE'])
+  self.assertTrue(all(r['fiscalQuarter']=='Q3' and r['date'] is None for r in rows))
+  from company_intelligence.q4_presentations import correct_documents
+  old=[{**r,'type':'PRESENTATION'} for r in rows[:2]]
+  fixed=correct_documents(old)
+  self.assertEqual([r['type'] for r in fixed],['FINANCIAL_REPORT','FINANCIAL_REPORT'])
+  self.assertEqual([r['url'] for r in fixed],[r['url'] for r in old])
+  self.assertEqual([r['discoveredAt'] for r in fixed],[r['discoveredAt'] for r in old])
+
  def test_explicit_period_and_links_without_invented_dates(self):
   rows=parse(body(),S,NOW);self.assertEqual({r['type'] for r in rows},{'PREPARED_REMARKS','EARNINGS_WEBCAST','PRESENTATION'})
   for r in rows:self.assertIsNone(r['date']);self.assertEqual(r['publicationDateStatus'],'NOT_PROVIDED');self.assertEqual(r['fiscalQuarter'],'Q3');self.assertEqual(r['sourceGroupingDate'],'12/31/2026')

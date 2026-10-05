@@ -52,6 +52,17 @@ def drive(root, state, pass_id, lane='domains', batches=100, limit=25,
     for _ in range(batches):
         if (state / 'stop-inventory').exists():
             break
+        if lane == 'ir':
+            store = Store(state / 'state.sqlite')
+            try:
+                ir_inventory = prefix(pass_id, 'ir') + 'inventory'
+                domains = store.state(prefix(pass_id, 'domains') + 'inventory')
+                if store.state(ir_inventory) is None and domains is not None:
+                    # A same-pass downstream invocation inherits its frozen
+                    # domain cohort, rather than silently selecting all issuers.
+                    store.set_state(ir_inventory, domains)
+            finally:
+                store.close()
         command = [sys.executable, '-m', 'company_intelligence.cli', 'sweep-inventory',
                    '--root', str(Path(root).resolve()), '--state', str(state), '--network',
                    '--inventory-pass', pass_id, '--inventory-lane', lane,

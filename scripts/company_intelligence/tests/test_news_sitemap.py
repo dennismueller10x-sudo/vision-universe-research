@@ -36,6 +36,28 @@ class SitemapTests(unittest.TestCase):
    c=company(name,ticker);self.assertEqual(Resolver({c['companyId']:c}).resolve(r,{'type':'RSS','provider':'GLOBENEWSWIRE_SITEMAP','url':URL}),[])
 
 class ManagementMaterialsTests(unittest.TestCase):
+ def test_exact_news_navigation_can_reach_the_verified_corporate_backlink_from_ir(self):
+  from company_intelligence.feeds import discover_ir,news_navigation
+  root='https://apple.com/';ir='https://investors.apple.com/';news=root+'news/';feed=root+'company-news.xml';external='https://evil.example/news/'
+  class HTTP:
+   def __init__(self):self.calls=[]
+   def get(self,url,**kw):
+    self.calls.append(url)
+    if url==root:body=b'<a href="https://investors.apple.com/">Investor Relations</a>'
+    elif url==ir:body=b'<a href="https://evil.example/news/">Company News</a><a href="https://apple.com/news/">News</a><a href="/product-news">Latest news from the industry</a>'
+    elif url==news:body=b'<a type="application/rss+xml" href="/company-news.xml">RSS</a>'
+    elif url==feed:body=b'<rss><channel><item><title>Apple Inc. reports quarterly results</title><link>https://apple.com/news/results</link><pubDate>Fri, 02 Oct 2026 12:00:00 GMT</pubDate></item></channel></rss>'
+    else:raise SourceError('HTTP_404')
+    return {'body':body,'finalUrl':url,'contentType':'application/rss+xml' if url==feed else 'text/html'}
+  h=HTTP();sources,configs=discover_ir(company(),root,h,NOW)
+  self.assertIn(news,h.calls);self.assertNotIn(external,h.calls);self.assertNotIn(ir+'product-news',h.calls)
+  self.assertEqual(h.calls.count(news),1)
+  self.assertEqual([s['url'] for s in sources if s.get('type')=='IR_FEED'],[feed])
+  for label in ['News','Latest News','Company News','Newsroom','Press']:
+   self.assertTrue(news_navigation(label))
+  for label in ['Latest news from the industry','News about investors','Download news presentation']:
+   self.assertFalse(news_navigation(label))
+
  def test_explicit_pdf_filenames_recover_icon_links_without_classifying_html_or_product_files(self):
   from company_intelligence.feeds import parse_links
   page='https://apple.com/investors'

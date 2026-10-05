@@ -123,6 +123,11 @@ def is_event_feed(url):
     return not re.search(r'press[-_/]?releases|news[-_/]?releases|newsroom|presentation', url, re.I) and bool(re.search(r'events|financialevent|/rss/event\.', url, re.I))
 
 
+def news_navigation(label):
+    return bool(re.search(r'press releases|news releases|newsroom', label, re.I)
+                or re.fullmatch(r'(?:latest |company )?news|press', label.strip(), re.I))
+
+
 def is_material_feed(url):
     return bool(re.search(r'/rss/presentations?\.', url, re.I))
 
@@ -224,7 +229,7 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
         configs.append({'companyId': company['companyId'], 'irHomepage': response['finalUrl'],
                         'pageRole': 'IR' if not investor_subscription_page(response['finalUrl']) and (page in {l['url'] for l in ir_links} or re.search(r'://(?:ir|investors?)\.|/investors?(?:/|$)|/investor-relations', response['finalUrl'], re.I)) else 'CORPORATE',
                         'documents': page_documents(company, links, response['finalUrl'], now),
-                        'pressReleaseUrl': next((l['url'] for l in links if re.search(r'press releases|news releases|newsroom', l['text'], re.I)), None),
+                        'pressReleaseUrl': next((l['url'] for l in links if news_navigation(l['text'])), None),
                         'eventsUrl': event_links[0]['url'] if event_links else None,
                         'presentationsUrl': next((l['url'] for l in links if re.search(r'\bpresentations?\b|\bslides?\b', l['text'], re.I)), None),
                         'reportsUrl': next((l['url'] for l in links if re.search(r'annual reports|financial reports|shareholder letter', l['text'], re.I)), None),
@@ -238,7 +243,7 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
         extra = None
         # Follow one linked newsroom/event page if no structured feed is advertised.
         if not feed_links and len(trusted_pages) < max_pages + 1:
-            candidate = next((l for l in links if re.search(r'press releases|news releases|events', l['text'], re.I) and not re.search(r'/static-files/|\.(?:pdf|zip|xml)(?:\?|$)', l['url'], re.I) and within_domain(l['url'], page)), None)
+            candidate = next((l for l in links if (news_navigation(l['text']) or re.search(r'events', l['text'], re.I)) and not re.search(r'/static-files/|\.(?:pdf|zip|xml)(?:\?|$)', l['url'], re.I) and (within_domain(l['url'], page) or news_navigation(l['text']) and (within_domain(l['url'], official_site) or same_web_host(l['url'], official_site)))), None)
             if candidate:
                 extra = optional_page(candidate['url'])
                 if extra and domain(extra['finalUrl']) != domain(candidate['url']) and not same_web_host(extra['finalUrl'],candidate['url']):
