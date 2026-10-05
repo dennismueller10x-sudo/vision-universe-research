@@ -23,6 +23,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const MP = require(join(root, "quant/engines/multi-asset/market-pulse.js"));
+const Identity = require(join(root, "core/identity.js")); // eine Identitaetsregel (ADR-001)
 const args = new Set(process.argv.slice(2));
 const read = (p) => JSON.parse(readFileSync(join(root, p), "utf8"));
 const CFG = read("quant/config/market-pulse.json");
@@ -224,7 +225,7 @@ export function eodChange(points, session, previousSession) {
 
 function eodMoves(factorRows, session) {
   /* Die Vorsitzung laut Benchmark-Reihe (SPY): ein Titel mit Luecke zaehlt nicht. */
-  const spy = seriesPoints("ref_" + CFG.risk.benchmark);
+  const spy = seriesPoints(Identity.securityIdForTicker(CFG.risk.benchmark));
   if (!spy || spy.length < 2 || spy[spy.length - 1][0] !== session) return null;
   const previousSession = spy[spy.length - 2][0];
   const discover = new Set(read("discover/data/stock-index/US_REAL.json").symbols);
