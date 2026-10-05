@@ -83,6 +83,14 @@ test("News-Vertrag liefert Stand und Maximalalter mit - der Verbraucher kann Ver
   assert.equal(n.state, "AVAILABLE");
   assert.ok(n.data.updatedAt);
   assert.ok(Array.isArray(n.data.items));
+  assert.ok(Array.isArray(n.data.sources), "die News-Seite zeigt die Recherchequellen");
+});
+
+test("News-Vertrag: ein kaputter Feed wird UNAVAILABLE, nie eine leere Liste", async () => {
+  const kaputt = Client.create({ load: async () => { throw new Error("HTTP 404"); } });
+  const r = await kaputt.getNews();
+  assert.equal(r.state, "UNAVAILABLE");
+  assert.equal(r.reason, "SOURCE_MISSING");
 });
 
 test("Ein Ladefehler wird nicht gemerkt - der naechste Versuch laedt neu", async () => {
