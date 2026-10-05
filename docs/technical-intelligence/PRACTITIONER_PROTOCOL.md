@@ -181,3 +181,82 @@ e) **Berichtsregeln.**
 f) **Weitere Regeln.**
 * Die Ergebnisstudie läuft danach erneut, ebenfalls erst nach der neuen Versiegelung.
 * Holdouts werden durch diesen Nachtrag **nicht** entsiegelt.
+
+### Nachtrag 7 — 05.10.2026, Mission VII: Konsens mehrerer Praktiker (vor jeder Suche, Extraktion oder Auswertung)
+
+**Zweck.** Unabhängige Analysen derselben historischen Marktlage durch verschiedene Praktiker vergleichen.
+* Bezeichnung: **PRACTITIONER CONSENSUS REFERENCE**, nicht Expert Ground Truth.
+* Die Ausgangsfälle von PRACTITIONER_REFERENCE_V1 bleiben unverändert.
+* Neue Analysen werden als **verknüpfte Referenzen** in einer eigenen Datei geführt (`practitioner-v1/consensus/`).
+* Engine `elliott-3.2.2` bleibt unverändert. Kein Engine 3.3, kein Prognosetest.
+
+a) **Ausgangsfälle.** Alle 78 Fälle von V1.
+* **Geöffnet (35, DEVELOPMENT/VALIDATION):** volle Auswertung.
+* **Holdout (43):**
+  * Abgleich nur über die Fallkennung (Quelle|Symbol|Datum); die Holdout-Zeile wird nicht geparst. Neue Referenzen werden extrahiert.
+  * Jede Auswertung gegen den Ausgangsfall ist verboten: Konsens, Klasse, Mensch–Mensch, VU. Sie wird in `consensus/sealed/` abgelegt und erst bei einer regulären Holdout-Öffnung berechnet.
+  * Berichtet werden nur Anzahlen gefundener Überschneidungen.
+
+b) **Kandidatenrahmen** (vollständige Plattformlisten, keine Suchmaschine; keine Suche nach Erfolg):
+* `frames/` aus Nachtrag 5: EWF (alle Beiträge), Tiedje, EWT/Gilburt, HKCM und Phantom.
+  * HKCM und Phantom: YouTube-Bot-Prüfung, unerreichbar, wird nicht umgangen.
+* **TradingView:** alle 15 nach Nachtrag 5 d qualifizierten Autoren (`tradingview-qualification.json`).
+  * Ausgenommen ist `Elliottwave-Forecast` (gleiche Familie wie EWF).
+  * Bisher wurden 3 gezogen. Die übrigen 11 kommen als eigene Quellenfamilien hinzu: `tv-<autor>`, je Autor eine Familie.
+  * Ihre öffentlichen Ideenlisten werden nur als Metadaten geholt (Titel, Symbol, Zeitrahmen, Datum).
+
+c) **Instrument.**
+* Titel-Aliase je vuSymbol, fest im Code (`consensus-match.mjs`, ALIASES).
+* Bei TradingView zusätzlich das Symbol-Metadatum (z. B. BTCUSD/BTCUSDT/XBTUSD; SPX/ES/SPY; NDX/NQ/QQQ).
+* Proxy-Instrumente nach `instrument-map.json`.
+
+d) **Zeitfenster** (einheitlich, nie fallweise):
+* **Tag:** ±5 Handelstage; nur wenn dann nichts gefunden wird, ±10.
+* **Woche und Monat sowie Holdouts** (deren Zeitrahmen versiegelt ist): ±10, sonst ±20 Handelstage.
+* **Handelstage:** US-Börsentage, für Krypto Kalendertage.
+* Je Fall wird das verwendete Fenster gespeichert.
+* Liegt eine Analyse außerhalb des Fensters, ist das eine Revision bzw. eine spätere Lage und kein Konsens.
+
+e) **Unabhängigkeit und Auswahl.**
+* Gezählt wird nur eine andere Quellenfamilie (`sourceFamily`); HKCM, Hopf und Phantom bilden eine Familie.
+* Reposts, Spiegelungen und Cross-Posts derselben Analyse zählen nicht (Duplikatregeln aus V1).
+* Je Fremdfamilie wird die zeitlich nächste Fundstelle gewählt, bei Gleichstand die frühere. Höchstens eine Referenz je Familie und Fall.
+* Gleich ob vor oder nach dem Ausgangsfall: Jede Referenz hat ihren eigenen Stichtag (ihre Veröffentlichung).
+
+f) **Extraktion** wie in den Nachträgen 2–4 (LLM_DUAL_INDEPENDENT_PRIMARY, Kernfeld-Abgleich, Schlichtung; HIGH nur bei voller Übereinstimmung).
+* Die Extrahierenden sehen weder den Ausgangsfall, VU-Ausgaben noch spätere Kurse.
+* Status INCLUDED nach den Regeln von V1, also nur die Zeitrahmen 1D, 1W und 1M.
+* Keine Screenshots, Transkripte oder Volltexte.
+
+g) **Vergleichsebenen:**
+
+| Ebene | Inhalt | Wann verglichen |
+|---|---|---|
+| L1 | Familie MOTIVE/CORRECTIVE der Struktur, die die laufende Welle enthält (Nachtrag 3) | Zeitrahmen gleich oder Eltern/Kind (1D ↔ 1W ↔ 1M) |
+| L2 | Szenario = Richtung ab jetzt (directionalBias UP/DOWN/SIDEWAYS) | Zeitrahmen gleich oder Eltern/Kind |
+| L3 | Musterklasse | nur bei gleichem Zeitrahmen |
+| L4 | laufende Welle (normalisiert) | nur bei gleichem Zeitrahmen |
+| L5 | Grad, exakt und ±1 | nur bei gleichem Zeitrahmen |
+| L6 | Invalidation (Abstand ≤ 2 ATR des Ausgangsfalls oder ≤ 5 %) und Zielzonen-Überlappung | nur bei gleichem Zeitrahmen |
+
+h) **Klassen.** Gezählt werden nur INCLUDED-Referenzen inklusive Ausgangsfall. Es gibt **keine Mehrheitsentscheidung**: Alle gespeicherten Lesarten bleiben erhalten.
+
+| Klasse | Bedingung |
+|---|---|
+| **A STRONG** | ≥ 2 Familien; alle stimmen in L1 und L2 überein |
+| **B PARTIAL** | ≥ 2 Familien; alle stimmen in L2 überein, aber nicht alle in L1 |
+| **C DISAGREEMENT** | ≥ 2 Familien; nicht alle stimmen in L2 überein |
+| **D SINGLE** | keine weitere INCLUDED-Referenz |
+
+* Die Stärke wird offen ausgewiesen (Anzahl Familien, Zustimmung je Ebene als k/n), ohne Punktzahl.
+
+i) **CONSENSUS_IMPULSE_SET:** geöffnete Fälle, in denen ≥ 2 unabhängige Familien eine Motiv-Lesart haben (Impuls oder Diagonale; L1 = MOTIVE) und in L2 übereinstimmen.
+
+j) **Freeze `PRACTITIONER_CONSENSUS_V1`** mit SHA-256, Fallzahl, Familien, Klassen, Fenstern, Zeitrahmen und Sicherheiten. Der versiegelte Teil bekommt eine eigene Prüfsumme. Commit vor jeder VU-Auswertung.
+
+k) **Danach VU** (`elliott-3.2.2`, unverändert), nur auf geöffneten Fällen, getrennt nach D/A/B/C und CONSENSUS_IMPULSE_SET: Hauptzählung, Alternativen, interne Impulslesart (Forensik) und Enthaltung.
+
+l) **Kostenrahmen.** Der Metadatenabruf der TradingView-Listen und die Extraktion laufen in einer Sitzung mit Netzzugang.
+* Obergrenze ≈ 150 USD für Abruf und Extraktion.
+* Zeichnet sich mehr ab, wird vorher gestoppt und berichtet.
+* Bearbeitungsreihenfolge (vorab): geöffnete Impulsfälle zuerst, dann geöffnete übrige, dann Holdout-Fälle.
