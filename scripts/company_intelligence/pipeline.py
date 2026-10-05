@@ -415,11 +415,11 @@ class Pipeline:
                         self.store.audit(self.now, cid, 'SEC_DOCUMENT_FAILURE', filingId=accession, reason=evidence.get('reason') or evidence.get('exhibitFailure'), retryAfter=evidence.get('retryAfter'))
             if submissions:
                 from .sec_documents import PARSER_VERSION, CLASSIFICATION_COMPATIBLE
-                from .profile_backfill import refresh_cached_sec
-                # Zero-request, accession-driven interpretation of already
-                # cached annual documents; profile backfill is a separate lane.
+                from .profile_backfill import refresh_changed_sec
+                # Cached interpretation; an already authorized SEC refresh may
+                # fetch one genuinely new annual document for a stored profile.
                 try:
-                    refresh_cached_sec(self.root, self.store, company, submissions, self.now)
+                    refresh_changed_sec(self.root, self.store, company, submissions, self.now, client if fetch_sec else None)
                 except Exception as exc:
                     # Optional profile interpretation must never suppress SEC
                     # financial/news/event projection or impose a SEC cooldown.

@@ -129,6 +129,41 @@ def refresh_cached_sec(root, store, company, submissions, now):
     return None
 
 
+def refresh_changed_sec(root, store, company, submissions, now, client=None):
+    """One new annual document on an already authorized SEC change refresh.
+
+    Offline projections and first-time discovery stay cache-only. Restored
+    prepared profiles skip unchanged accessions even when document cache is
+    absent, so a new runner does not redownload its entire profile catalogue.
+    """
+    result = refresh_cached_sec(root, store, company, submissions, now)
+    if result or client is None:
+        return result
+    cid = company['companyId']
+    prior = store.state('companyProfile:' + cid, {})
+    filing = annual_filing(company, submissions, now)
+    attempt = store.state('profileAttempt:' + cid, {})
+    if (not filing or prior.get('state') != 'AVAILABLE'
+            or not any(s.get('type') == 'SEC' for s in prior.get('sources', []))
+            or any(s.get('filingId') == filing['filingId'] for s in prior.get('sources', []))
+            or (attempt.get('annualFilingId') == filing['filingId'] and attempt.get('parserVersion') == PARSER_VERSION
+                and attempt.get('state') == 'UNAVAILABLE')
+            or attempt.get('retryAfter', '') > now):
+        return None
+    try:
+        client.get_bytes(filing['url'])  # Existing SEC client/cache and budget.
+        return refresh_cached_sec(root, store, company, submissions, now)
+    except BudgetExhausted:
+        store.set_state('profileAttempt:' + cid, {**attempt, 'state': 'DEFERRED', 'checkedAt': now,
+                                                  'annualFilingId': filing['filingId']})
+        raise
+    except Exception as exc:
+        store.set_state('profileAttempt:' + cid, {**attempt, 'state': 'FAILED', 'checkedAt': now,
+                                                  'annualFilingId': filing['filingId'],
+                                                  'reason': str(exc)[:240], 'retryAfter': later(now, 1)})
+        raise
+
+
 def run(pipeline, companies, sites, allow_network=False, fetch_sec=False, limit=25, max_seconds=600, sec_budget=60):
     """Each completed issuer persists immediately; budget deferrals remain due.
 

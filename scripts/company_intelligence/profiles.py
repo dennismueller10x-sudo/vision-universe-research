@@ -14,7 +14,7 @@ from .transport import SourceError, BudgetExhausted
 from .q4_events import public_link
 
 VERSION = 'company-profile-1.0.0'
-PARSER_VERSION = 'company-profile-parser-1.0.9'
+PARSER_VERSION = 'company-profile-parser-1.0.10'
 WEB_DAYS = 90
 SEC_STALE_DAYS = 550
 MAX_DOCUMENT = 64 * 1024 * 1024
@@ -253,6 +253,7 @@ def issuer_sentence(raw, company, sec=False):
     text = re.sub(r'\bsecure,\s*trusted,\s*and\s*innovative\s+', '', text, flags=re.I)
     text = subject + PROMOTION.sub('', text[len(subject):])
     text = subject + re.sub(r'\b(?:trusted and |high.quality |robust |highly engineered |patient.centric |unique |advanced )', '', text[len(subject):], flags=re.I)
+    text = re.sub(r'\b(broad|extensive|diverse|full|complete) and (portfolio|range|set|suite|solutions|services|products)\b', r'\1 \2', text, flags=re.I)
     text = subject + re.sub(r'\b(?:disruptive|technology-forward|essential|premium)\s+', '', text[len(subject):], flags=re.I)
     text = re.sub(r'\s+in a \$[\d,.]+\s+(?:billion|million) Total Addressable Market.*', '.', text, flags=re.I)
     text = re.sub(r'\s+using a powerful combination of science and engineering[.!]?$', '.', text, flags=re.I)
@@ -344,7 +345,8 @@ def extract(company, body, source, now, official_website=None):
         text = item[1]
         if customer_only(item):
             return 3
-        if re.search(r'\b(?:is (?:a|an|the)|designs|develops|manufactures|produces|operates through)\b', text, re.I):
+        predicate = text[len(display_name(company['names'][0])):].strip()
+        if re.match(r'^(?:is (?:a|an|the)|designs|develops|manufactures|produces|operates through)\b', predicate, re.I):
             return 0
         return 1
     eligible.sort(key=priority)

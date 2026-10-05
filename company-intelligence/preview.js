@@ -21,7 +21,7 @@
       const a = document.createElement('article'), description = text('p', p.description); description.lang = p.language;
       a.append(description); link(a, 'Company website', p.officialWebsite);
       for (const source of p.sources) link(a, source.type === 'SEC' ? 'Source: annual report' : 'Source: company', source.url);
-      if (p.stale) a.append(text('p', 'Company description last verified ' + p.lastVerifiedAt, 'meta'));
+      if (p.stale) { const filing = p.sources.find(source => source.type === 'SEC' && source.filedAt); a.append(text('p', 'Older company description · ' + (filing ? 'Annual report filed ' + filing.filedAt : 'Last verified ' + p.lastVerifiedAt), 'meta')); }
       return a;
     });
     const materialSince = new Date(Date.parse(payload.generatedAt) - 90 * 86400000).toISOString().slice(0, 10);

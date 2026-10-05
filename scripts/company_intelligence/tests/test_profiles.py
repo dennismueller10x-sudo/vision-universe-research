@@ -471,3 +471,69 @@ class ProfileTests(unittest.TestCase):
             self.assertEqual(state['batches'][0]['networkRequests'], 0)
             self.assertEqual(state['batches'][1]['attempted'], 0)
             self.assertFalse((root / '.company-intelligence/state.sqlite').exists())
+
+    def test_chip_design_noun_does_not_reorder_activity_and_adjective_removal_keeps_grammar(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>We deliver trusted and comprehensive software solutions spanning silicon design and simulation.</p><p>We offer a broad and comprehensive portfolio of semiconductor IP solutions that are used in chip designs.</p>'
+        p = extract(COMPANY, body, source, NOW)
+        self.assertEqual(p['businessActivities'][0], 'Example Holdings Inc. delivers software solutions spanning silicon design and simulation.')
+        self.assertIn('offers a broad portfolio', p['description'])
+        self.assertNotIn('broad and portfolio', p['description'])
+
+    def test_change_driven_sec_profile_downloads_new_annual_once_and_never_rebuilds_catalogue_cache(self):
+        from company_intelligence.profile_backfill import refresh_changed_sec
+        from unittest.mock import Mock
+        old = submissions(); new = submissions('0000000001-26-000002', '2026-09-30')
+        prior = extract(COMPANY, b'<h2>Item 1. Business</h2><p>We manufacture software products for banks.</p>', annual_filing(COMPANY, old, NOW), NOW)
+        body = b'<h2>Item 1. Business</h2><p>We develop software platforms and provide payment services for banks.</p>'
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp); s = Store(root / 'state.sqlite'); s.set_state('companyProfile:' + CID, prior)
+            client = Mock()
+            client.get_bytes.side_effect = lambda url: DiskCache(root / '.sec-cache').put(url, body)
+            self.assertEqual(refresh_changed_sec(root, s, COMPANY, old, NOW, client), prior)
+            client.get_bytes.assert_not_called()
+            self.assertIsNone(refresh_changed_sec(root, s, COMPANY, new, NOW))
+            client.get_bytes.assert_not_called()
+            self.assertIsNotNone(s.state('companyProfile:' + CID)['supersededAnnualFiling'])
+            refreshed = refresh_changed_sec(root, s, COMPANY, new, NOW, client)
+            self.assertIn('payment services', refreshed['description'])
+            self.assertNotIn('supersededAnnualFiling', refreshed)
+            client.get_bytes.assert_called_once_with(annual_filing(COMPANY, new, NOW)['url'])
+            refresh_changed_sec(root, s, COMPANY, new, NOW, client)
+            self.assertEqual(client.get_bytes.call_count, 1)
+            s.close()
+
+    def test_failed_new_annual_profile_preserves_facts_and_retry_cooldown(self):
+        from company_intelligence.profile_backfill import refresh_changed_sec
+        from unittest.mock import Mock
+        old = submissions(); new = submissions('0000000001-26-000002', '2026-09-30')
+        prior = extract(COMPANY, b'<h2>Item 1. Business</h2><p>We manufacture medical devices for hospitals.</p>', annual_filing(COMPANY, old, NOW), NOW)
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp); s = Store(root / 'state.sqlite'); s.set_state('companyProfile:' + CID, prior)
+            client = Mock(); client.get_bytes.side_effect = SourceError('HTTP_503')
+            with self.assertRaises(SourceError):
+                refresh_changed_sec(root, s, COMPANY, new, NOW, client)
+            self.assertEqual(s.state('companyProfile:' + CID)['description'], prior['description'])
+            self.assertTrue(public_profile(s.state('companyProfile:' + CID), CID, NOW)['stale'])
+            self.assertEqual(s.state('profileAttempt:' + CID)['retryAfter'], '2026-10-06T12:00:00Z')
+            self.assertIsNone(refresh_changed_sec(root, s, COMPANY, new, NOW, client))
+            self.assertEqual(client.get_bytes.call_count, 1)
+            s.close()
+
+    def test_unavailable_new_annual_is_not_redownloaded_after_runner_cache_loss(self):
+        from company_intelligence.profile_backfill import refresh_changed_sec
+        from unittest.mock import Mock
+        import shutil
+        old = submissions(); new = submissions('0000000001-26-000002', '2026-09-30')
+        prior = extract(COMPANY, b'<h2>Item 1. Business</h2><p>We manufacture medical devices for hospitals.</p>', annual_filing(COMPANY, old, NOW), NOW)
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp); s = Store(root / 'state.sqlite'); s.set_state('companyProfile:' + CID, prior)
+            client = Mock(); client.get_bytes.side_effect = lambda url: DiskCache(root / '.sec-cache').put(url, b'<p>No explicit business section is present.</p>')
+            self.assertIsNone(refresh_changed_sec(root, s, COMPANY, new, NOW, client))
+            self.assertEqual(s.state('profileAttempt:' + CID)['state'], 'UNAVAILABLE')
+            self.assertEqual(client.get_bytes.call_count, 1)
+            shutil.rmtree(root / '.sec-cache')
+            self.assertIsNone(refresh_changed_sec(root, s, COMPANY, new, NOW, client))
+            self.assertEqual(client.get_bytes.call_count, 1)
+            self.assertEqual(s.state('companyProfile:' + CID)['description'], prior['description'])
+            s.close()
