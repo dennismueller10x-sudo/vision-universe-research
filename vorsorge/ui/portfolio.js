@@ -130,8 +130,11 @@
     // Was hat sich geändert (Portfolio): Ereignisse je ETF x Portfolio-Gewicht
     var agg = {};
     pos.forEach(function (p) { var f = s.holdingFiles[p.symbol]; if (!f || f.derivativeHeavy || !f.changes || !f.changes.events) return; var w = p.weight / total;
-      f.changes.events.forEach(function (e) { if (!/WEIGHT_|HOLDING_ADDED|HOLDING_REMOVED/.test(e.eventType)) return; var dlt = (e.newValue || 0) - (e.oldValue || 0); var k = e.entityName; agg[k] = (agg[k] || 0) + w * dlt; }); });
-    var moves = Object.keys(agg).map(function (k) { return { name: k, d: agg[k] }; }).filter(function (x) { return Math.abs(x.d) >= 0.001; }).sort(function (a, b) { return Math.abs(b.d) - Math.abs(a.d); }).slice(0, 6);
+      // Nur Wertpapier-Ereignisse (Sektor-/Laenderverschiebungen stehen oben effektiv); je kanonischer Kennung, nicht je Schreibweise des Namens.
+      f.changes.events.forEach(function (e) { if (!/^(WEIGHT_INCREASED|WEIGHT_DECREASED|HOLDING_ADDED|HOLDING_REMOVED)$/.test(e.eventType)) return;
+        var m = /^(ISIN|CUSIP):(.+)$/.exec(e.entityId || ""), k = m ? VS.holdingIdentity(m[1] === "ISIN" ? { isin: m[2] } : { cusip: m[2] }) : "N:" + String(e.entityName || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+        var dlt = (e.newValue || 0) - (e.oldValue || 0); if (!agg[k]) agg[k] = { name: e.entityName, d: 0 }; agg[k].d += w * dlt; }); });
+    var moves = Object.keys(agg).map(function (k) { return agg[k]; }).filter(function (x) { return Math.abs(x.d) >= 0.001; }).sort(function (a, b) { return Math.abs(b.d) - Math.abs(a.d); }).slice(0, 6);
     var shown = Object.keys(holdings).map(function (k) { return k + " " + F.pct((s.holdingFiles[k] || {}).shownWeight, 0); }).join(", ");
     var eqTop25 = lt.companies.slice(0, 25).reduce(function (a, c) { return a + c.weight; }, 0);
     var sentence = "Du hältst " + pos.length + " ETF" + (pos.length > 1 ? "s" : "") + ". " + F.pct(eqTop25 / Math.max(lt.coverage, 1e-9), 0) + " des durchschauten Vermögens entfallen effektiv auf die 25 größten Unternehmen.";

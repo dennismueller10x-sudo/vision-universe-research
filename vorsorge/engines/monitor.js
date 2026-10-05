@@ -22,7 +22,7 @@
   var VERSION = "vorsorge-monitor-1.0.0";
 
   var UNMONITORED = [
-    { type: "TER_CHANGE", label: "ETF-Kosten (TER) geändert", reason: "Keine Emittentenquelle für Kostenquoten angeschlossen." },
+    { type: "TER_CHANGE", label: "ETF-Kosten (TER) geändert", reason: "US-Kostenquoten aus SEC-Prospektdaten liegen vor, Änderungen zwischen Prospektständen werden noch nicht verglichen; für UCITS-ETFs keine lizenzierte Kostenquelle." },
     { type: "FUND_MERGER", label: "ETF fusioniert", reason: "Fusionen melden Emittenten; Quelle nicht angeschlossen." },
     { type: "TRACKING_DIFFERENCE", label: "Tracking Difference verändert", reason: "Benötigt Indexstände und Gesamtrendite; nicht angeschlossen." }
   ];

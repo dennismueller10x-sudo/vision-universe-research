@@ -287,7 +287,7 @@
     VS.getJSON("/vorsorge/data/changes.json").then(function (c) {
       root.querySelector("#vs-mon-changes").innerHTML = '<p class="vs-label">Daten & Produkte – was hat sich verändert? · Stand ' + F.date(c.asOf) + '</p><div style="margin-top:8px">' +
         (c.events.length ? c.events.slice(0, 25).map(evRow).join("") : '<p class="vs-sub">Keine Änderungen gegenüber dem vorherigen Datenstand.</p>') +
-        '</div><h3 style="margin-top:16px">Noch nicht überwacht</h3><div style="margin-top:6px">' + c.unmonitored.map(function (u) { return '<div class="vs-row"><span>' + esc(u.label) + '</span><span class="vs-fine" style="text-align:right">' + esc(u.reason) + '</span></div>'; }).join("") +
+        '</div><h3 style="margin-top:16px">Noch nicht überwacht</h3><div style="margin-top:6px">' + (V.Monitor.UNMONITORED || c.unmonitored).map(function (u) { return '<div class="vs-row"><span>' + esc(u.label) + '</span><span class="vs-fine" style="text-align:right">' + esc(u.reason) + '</span></div>'; }).join("") +
         '<div class="vs-row"><span>Regulatorische Änderung</span><span class="vs-fine" style="text-align:right">Nur über neue Versionen der Förderregeln mit Quelle.</span></div></div>';
     }).catch(function () { root.querySelector("#vs-mon-changes").innerHTML = VS.pending("Änderungen nicht verfügbar", "Die Änderungsliste konnte nicht geladen werden."); });
     Promise.all([VS.master(), VS.getJSON("/vorsorge/data/holdings/index.json").catch(function () { return null; })]).then(function (res) {
