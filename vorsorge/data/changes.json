@@ -4,66 +4,71 @@
  "events": [
   {
    "type": "COST_CHANGE",
-   "symbol": "AAAA",
-   "field": "expenseRatio",
-   "from": 0.0063,
-   "to": 0.0057,
-   "asOf": "2026-05-21",
-   "text": "AAAA · Kostenquote (brutto): 0,63 % → 0,57 % (Prospekt 2025-07-07 → 2026-05-21).",
+   "symbol": "VNIE",
+   "fields": [
+    "expenseRatio"
+   ],
+   "magnitude": 0.019999999999999997,
+   "asOf": "2026-04-30",
+   "text": "VNIE · Kostenquote (brutto): 1,11 % → 3,11 % (Prospekt 2025-05-12 → 2026-04-30).",
    "relevance": "HIGH",
    "category": "PRODUCT_CHANGE"
   },
   {
    "type": "COST_CHANGE",
-   "symbol": "AAEQ",
-   "field": "expenseRatio",
-   "from": 0.0015,
-   "to": 0.0009,
-   "asOf": "2026-04-21",
-   "text": "AAEQ · Kostenquote (brutto): 0,15 % → 0,09 % (Prospekt 2025-12-04 → 2026-04-21).",
+   "symbol": "ILS",
+   "fields": [
+    "expenseRatio"
+   ],
+   "magnitude": 0.010699999999999998,
+   "asOf": "2026-04-28",
+   "text": "ILS · Kostenquote (brutto): 1,58 % → 2,65 % (Prospekt 2025-02-27 → 2026-04-28).",
    "relevance": "HIGH",
    "category": "PRODUCT_CHANGE"
   },
   {
    "type": "COST_CHANGE",
-   "symbol": "AAEQ",
-   "field": "managementFee",
-   "from": 0.0015,
-   "to": 0.0009,
-   "asOf": "2026-04-21",
-   "text": "AAEQ · Verwaltungsgebühr: 0,15 % → 0,09 % (Prospekt 2025-12-04 → 2026-04-21).",
+   "symbol": "AMZA",
+   "fields": [
+    "expenseRatio"
+   ],
+   "magnitude": 0.0103,
+   "asOf": "2026-02-27",
+   "text": "AMZA · Kostenquote (brutto): 2,75 % → 1,72 % (Prospekt 2025-09-04 → 2026-02-27).",
    "relevance": "HIGH",
    "category": "PRODUCT_CHANGE"
   },
   {
    "type": "COST_CHANGE",
-   "symbol": "AAUA",
-   "field": "expenseRatio",
-   "from": 0.0015,
-   "to": 0.0009,
-   "asOf": "2026-04-21",
-   "text": "AAUA · Kostenquote (brutto): 0,15 % → 0,09 % (Prospekt 2026-03-13 → 2026-04-21).",
+   "symbol": "MJSC",
+   "fields": [
+    "expenseRatio"
+   ],
+   "magnitude": 0.008299999999999998,
+   "asOf": "2026-06-01",
+   "text": "MJSC · Kostenquote (brutto): 0,85 % → 1,68 % (Prospekt 2026-01-05 → 2026-06-01).",
    "relevance": "HIGH",
    "category": "PRODUCT_CHANGE"
   },
   {
    "type": "COST_CHANGE",
-   "symbol": "AAUA",
-   "field": "managementFee",
-   "from": 0.0015,
-   "to": 0.0009,
-   "asOf": "2026-04-21",
-   "text": "AAUA · Verwaltungsgebühr: 0,15 % → 0,09 % (Prospekt 2026-03-13 → 2026-04-21).",
+   "symbol": "ICAP",
+   "fields": [
+    "expenseRatio"
+   ],
+   "magnitude": 0.007199999999999998,
+   "asOf": "2026-03-30",
+   "text": "ICAP · Kostenquote (brutto): 3,19 % → 2,47 % (Prospekt 2025-03-28 → 2026-03-30).",
    "relevance": "HIGH",
    "category": "PRODUCT_CHANGE"
   },
   {
    "type": "COST_CHANGE",
    "symbol": null,
-   "count": 753,
+   "count": 591,
    "relevance": "LOW",
-   "asOf": "2026-04-21",
-   "text": "753 weitere Listings mit geänderter Kostenquote laut Prospekt (z. B. AAUS, AAUS, AAVM, AFGR, AFGR).",
+   "asOf": "2026-01-27",
+   "text": "591 weitere Listings mit geänderter Kostenquote laut Prospekt (z. B. CPAI, FXED, SEA, YOLO, NBET).",
    "category": "PRODUCT_CHANGE"
   },
   {
@@ -346,5 +351,5 @@
    "category": "PRODUCT_CHANGE"
   }
  ],
- "costEvents": 758
+ "costEvents": 596
 }

@@ -347,7 +347,11 @@ export function build() {
         note: "Laufende Kostenquote laut Prospekt-Gebührentabelle. Handels-, Depot- und Transaktionskosten sind nicht enthalten." }
         : { status: "SOURCE_NOT_CONNECTED", value: null, note: "Keine Kostenquote aus einer Primär- oder Regulierungsquelle verfügbar." }
     }));
-    for (const x of costChanges(sec.c)) costEvents.push({ type: "COST_CHANGE", symbol: full.symbol, field: x.field, from: x.oldValue, to: x.newValue, asOf: x.to, text: full.symbol + " · " + x.text });
+    // Je Ticker eine Meldung (mehrere Kostenfelder zusammengefasst); Groesse = groesste Aenderung in Prozentpunkten
+    const cc = costChanges(sec.c);
+    if (cc.length) costEvents.push({ type: "COST_CHANGE", symbol: full.symbol, fields: cc.map((x) => x.field), // Groesse = Aenderung der tatsaechlich berechneten Kosten (netto, sonst brutto, sonst Verwaltungsgebuehr)
+      magnitude: ((x) => Math.abs(x.newValue - x.oldValue))(cc.find((x) => x.field === "netExpenseRatio") || cc.find((x) => x.field === "expenseRatio") || cc[0]), asOf: cc[0].to,
+      text: full.symbol + " · " + cc.map((x) => x.text.replace(/ \(Prospekt[^)]*\)\.$/, "")).join("; ") + " (Prospekt " + cc[0].from + " → " + cc[0].to + ")." });
     entries.push({ full, priceM, totalM });
   }
 

@@ -69,7 +69,7 @@
   var TYPE_ORDER = ["CLOSED_OR_DELISTED", "COST_CHANGE", "NAME_CHANGE", "INDEX_CHANGE", "REMOVED", "NEW_PRICE_SERIES", "VOLATILITY_CHANGE", "NEW_LISTING", "STATUS_CHANGE", "DATA_REVIEW"];
   var TYPE_LABEL = { CLOSED_OR_DELISTED: "geschlossen oder delistet", COST_CHANGE: "mit geänderter Kostenquote laut Prospekt", NAME_CHANGE: "mit neuem Namen", INDEX_CHANGE: "mit geändertem Index", REMOVED: "nicht mehr im Verzeichnis",
     NEW_PRICE_SERIES: "mit neuer Kursreihe", VOLATILITY_CHANGE: "mit deutlich veränderter Schwankung", NEW_LISTING: "neu im Verzeichnis", STATUS_CHANGE: "mit geändertem Status" };
-  function examples(list) { var s = list.map(function (e) { return e.symbol; }).filter(Boolean); return s.length ? " (z. B. " + s.slice(0, 5).join(", ") + ")" : ""; }
+  function examples(list) { var s = list.map(function (e) { return e.symbol; }).filter(function (x, i, a) { return x && a.indexOf(x) === i; }); return s.length ? " (z. B. " + s.slice(0, 5).join(", ") + ")" : ""; }
   function prioritize(events, layerOf, opts) {
     var BUNDLE = (opts && opts.bundle) || 10, layer = layerOf || {}, out = [], byType = {};
     var review = { ACTIVE: [], REVIEW: [] };
@@ -80,7 +80,7 @@
       (byType[x.type] = byType[x.type] || []).push(x);
     });
     Object.keys(byType).forEach(function (t) {
-      var list = byType[t].sort(function (a, b) { return (a.relevance === "HIGH" ? 0 : 1) - (b.relevance === "HIGH" ? 0 : 1) || String(a.symbol).localeCompare(String(b.symbol)); });
+      var list = byType[t].sort(function (a, b) { return (a.relevance === "HIGH" ? 0 : 1) - (b.relevance === "HIGH" ? 0 : 1) || (b.magnitude || 0) - (a.magnitude || 0) || String(a.symbol).localeCompare(String(b.symbol)); });
       if (list.length <= BUNDLE) { out = out.concat(list); return; }
       var keep = list.filter(function (e) { return e.relevance === "HIGH"; }).slice(0, 5), rest = list.filter(function (e) { return keep.indexOf(e) < 0; });
       out = out.concat(keep);
