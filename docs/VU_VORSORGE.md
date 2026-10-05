@@ -310,7 +310,7 @@ Details: [ETF_EU_FREE_SOURCE_SCORECARD.md](ETF_EU_FREE_SOURCE_SCORECARD.md),
 
 - **Amtlicher UCITS-Status**: ESMA-Register „Cross-border distribution of funds“, zugeordnet
   über den Fondsnamen und das Domizil (Konfidenz mittel). Zusätzlich Verwaltungsgesellschaft,
-  Herkunftsstaat, Aufsicht und Vertriebsländer („zum Vertrieb in Deutschland notifiziert“).
+  Herkunftsstaat, Land der Aufsicht und gemeldete Vertriebsländer. Ältere Notifizierungen fehlen im Register teils – nur positive Aussagen („Vertrieb in Deutschland gemeldet“) werden gezeigt, ein fehlendes Land wird nie als „nicht vertrieben“ dargestellt.
 - **FIRDS-Stamm**: je ISIN aus allen Handelsplatz-Datensätzen – vollständiger Name, Fonds-LEI
   (GLEIF-Kategorie FUND), Domizil aus der Fonds-LEI oder aus dem ISIN-Präfix (`domicileBasis`).
 - **Xetra-Referenzdaten** (WKN, laufende Kosten, Replikation, Ertragsverwendung, Index):

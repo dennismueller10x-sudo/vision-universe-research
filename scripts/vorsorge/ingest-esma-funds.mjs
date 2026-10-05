@@ -58,7 +58,7 @@ export function matchFund(shareClassName, domicile, index) {
 
 if (process.argv[1] && process.argv[1].endsWith("ingest-esma-funds.mjs")) {
   /* ---- 1. UCITS-Fonds (Elterndokumente) seitenweise */
-  const FL = "id,funds_national_name,funds_legal_framework_name,funds_manager_nat_name,funds_manager_nat_code,funds_domicile_cou_code,funds_ca_cou_code_name,funds_status_code_name,funds_host_country_codes,funds_last_update_date";
+  const FL = "id,funds_national_name,funds_legal_framework_name,funds_manager_nat_name,funds_manager_nat_code,funds_domicile_cou_code,funds_ca_cou_code,funds_status_code_name,funds_host_country_codes,funds_last_update_date";
   const funds = [];
   let start = 0, total = null;
   do {
@@ -75,7 +75,7 @@ if (process.argv[1] && process.argv[1].endsWith("ingest-esma-funds.mjs")) {
   for (const f of funds) {
     const k = normName(f.funds_national_name); if (k.split(" ").length < 3) continue;
     const rec = { id: f.id, name: f.funds_national_name, domicile: f.funds_domicile_cou_code || null, manager: f.funds_manager_nat_name || null,
-      authority: f.funds_ca_cou_code_name || null, status: f.funds_status_code_name || null, hosts: new Set(f.funds_host_country_codes || []), updated: (f.funds_last_update_date || "").slice(0, 10) || null };
+      authority: f.funds_ca_cou_code || null,   // Land der zustaendigen Aufsicht (ISO-Code) status: f.funds_status_code_name || null, hosts: new Set(f.funds_host_country_codes || []), updated: (f.funds_last_update_date || "").slice(0, 10) || null };
     if (!index.has(k)) index.set(k, []); index.get(k).push(rec);
   }
   const matched = new Map();   // isin -> rec
@@ -106,6 +106,7 @@ if (process.argv[1] && process.argv[1].endsWith("ingest-esma-funds.mjs")) {
   const out = { schemaVersion: "vu-vorsorge-eu-ucits-1.0.0", source: "ESMA Register Cross-border distribution of funds (Reg. (EU) 2019/1156)",
     attribution: "Quelle: ESMA Registers (Fonds im grenzüberschreitenden Vertrieb), transformiert von Vision Universe.",
     method: "Zuordnung ueber den Fondsnamen (Wortanfang) und gleiches Domizil; Konfidenz MEDIUM. Das Register fuehrt keine ISIN.",
+    hostCountriesNote: "Vertriebslaender laut den im Register gemeldeten Notifizierungen; aeltere Notifizierungen fehlen teils. Nur positive Aussagen sind belastbar.",
     ucitsFundsInRegister: funds.length, fields, rows };
   writeFileSync(join(root, "vorsorge/data/eu/etf-eu-ucits.json"), JSON.stringify(out));
   const de = rows.filter((r) => r[7].split(" ").includes("DE")).length;
