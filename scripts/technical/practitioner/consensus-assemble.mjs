@@ -30,8 +30,21 @@ const TF_REASON = {
 };
 const EXCL_TEXT = { RETROSPECTIVE: "Rueckblick", NO_STRUCTURE: "keine Zaehlung/Muster/Invalidation/Zielzone", NO_FOCUS_INSTRUMENT: "keine Analyse des Zielinstruments", NON_ANALYSIS: "keine Analyse (Werbung/Lehrbeispiel)" };
 
+/* Wellenlabels wie Phase 2 (Korrektur 5): fuehrendes Token ("3 (of 3)" → "3"), eingekreiste Ziffern ("⑤" → "((5))"),
+   "circled 5" → "((5))", Doppellabels ("2,B", "2 or B") → UNKNOWN statt Raten. */
+const CIRCLED = { "①": 1, "②": 2, "③": 3, "④": 4, "⑤": 5, "Ⓐ": "A", "Ⓑ": "B", "Ⓒ": "C", "Ⓓ": "D", "Ⓔ": "E", "Ⓦ": "W", "Ⓧ": "X", "Ⓨ": "Y", "Ⓩ": "Z" };
+export function normLabel(l) {
+  if (l == null || l === "UNKNOWN") return l;
+  let s = String(l).trim();
+  if (/[,/]|\bor\b|\boder\b/i.test(s)) return "UNKNOWN";
+  const c = /^circled\s+([0-9A-Za-z]+)/i.exec(s); if (c) return "((" + c[1] + "))";
+  if (CIRCLED[s[0]] !== undefined) return "((" + CIRCLED[s[0]] + "))";
+  const m = /^(\S+)\s+\((of|von)\b/i.exec(s); if (m) s = m[1];
+  return s;
+}
+const normPass = (p) => { if (!p || !p.primary) return p; const q = JSON.parse(JSON.stringify(p)); q.primary.currentWave = normLabel(q.primary.currentWave); return q; };
 /** leerer Durchgang (Quelle nicht erreicht) → alle Kernfelder null */
-const blank = (p) => (p && p.reachable === false ? Object.assign({}, p, { primary: {}, directionalBias: null, invalidation: null, timeframe: null, instrument: {} }) : p);
+const blank = (p) => (p && p.reachable === false ? Object.assign({}, p, { primary: {}, directionalBias: null, invalidation: null, timeframe: null, instrument: {} }) : normPass(p));
 
 /** Endgueltige Kernfelder aus A (Basis), bei Abweichung aus C */
 function finalize(A, B, C, agree) {
@@ -42,11 +55,20 @@ function finalize(A, B, C, agree) {
     if (agree[f] === true || agree[f] === "NOT_STATED") continue;
     const x = d[f];
     if (f === "family") { if (und(x)) { base.primary.pattern = "UNKNOWN"; base.primary.family = "UNKNOWN"; } else Object.assign(base.primary, { pattern: x.value.pattern, family: x.value.family }); }
-    if (f === "currentWave") { if (und(x)) { base.primary.currentWave = "UNKNOWN"; base.primary.currentWaveRole = "UNKNOWN"; } else Object.assign(base.primary, x.value); }
+    if (f === "currentWave") { if (und(x)) { base.primary.currentWave = "UNKNOWN"; base.primary.currentWaveRole = "UNKNOWN"; } else Object.assign(base.primary, x.value, { currentWave: normLabel(x.value.currentWave) }); }
     if (f === "direction") base.directionalBias = und(x) ? "UNKNOWN" : x.value;
     if (f === "invalidation") base.invalidation = und(x) ? null : x.value;
     if (f === "timeframe") base.timeframe = und(x) ? "UNKNOWN" : x.value;
-    if (f === "instrument") { if (!und(x)) base.instrument = Object.assign({}, base.instrument, x.value); else base.instrument = Object.assign({}, base.instrument, { asShown: "UNKNOWN" }); }
+    if (f === "instrument") {
+      if (und(x)) base.instrument = Object.assign({}, base.instrument, { asShown: "UNKNOWN" });
+      else {
+        /* wie Phase 2 (Korrektur 1, Namensabgleich): C bestaetigt das Instrument; ist C's Schreibweise nicht abbildbar, gilt die
+           erste abbildbare Schreibweise von A/B mit gleichem Typ */
+        const cands = [x.value, A.instrument, B.instrument].filter((i) => i && i.asShown && (!x.value.instrumentType || i.instrumentType === x.value.instrumentType));
+        const hit = cands.find((i) => { const k = instrumentKeyOf(i); return k && k.resolved && k.resolved.mapId; });
+        base.instrument = Object.assign({}, base.instrument, hit || x.value);
+      }
+    }
     notes.push(`${f}=${x ? (typeof x.value === "object" && x.value ? JSON.stringify(x.value) : x.value) : "UNKNOWN"} (${x ? x.basis : "UNDECIDABLE"})`);
   }
   return { base, notes };
@@ -156,7 +178,7 @@ export function assemble(w, A, B, C, opts = {}) {
   } else if (!status) reasons.push("Instrument ohne VU-Reihe (UNMAPPED) – Kandidat");
   if (!status) {
     if (confidence === "LOW") reasons.push("Sicherheit LOW (weniger als zwei bekannte Kernfelder bzw. beide Durchgaenge LOW) – nur Kandidat");
-    const v = validateReference(row, { registry, map });
+    const v = validateReference(Object.assign({}, row, { status: "INCLUDED" }), { registry, map });   // als INCLUDED pruefen (§2.3 greift nur dort)
     if (v.errors.length) reasons.push(cap("Validierung: " + v.errors.join("; ")));
     status = reasons.length ? "CANDIDATE" : "INCLUDED";
   }

@@ -49,14 +49,14 @@
  ],
  "ewf|ZM|2022-08-16|1": [
   {
-   "referenceId": "pr_tiedje_20220722_zoom_mc",
+   "referenceId": "pr_tiedje_20220722_zm_mc",
    "sourceId": "tiedje",
    "family": "tiedje",
    "lag": -17,
    "windowTradingDays": 20,
    "sealedAnchor": false,
-   "status": "CANDIDATE",
-   "anchorInstrumentMatch": false
+   "status": "INCLUDED",
+   "anchorInstrumentMatch": true
   }
  ],
  "tv-cryptoknee|BTCUSD|2022-03-26|1": [
@@ -223,14 +223,14 @@
    "anchorInstrumentMatch": false
   },
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-cryptoknee_20221206_spy_mc",
    "sourceId": "tv-cryptoknee",
    "family": "tv-cryptoknee",
    "lag": 2,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "INCLUDED",
+   "anchorInstrumentMatch": true
   }
  ],
  "tv-cryptoknee|TSLA|2022-12-28|1": [
@@ -245,186 +245,186 @@
    "anchorInstrumentMatch": true
   },
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-tsuth_20221230_teslainc1hnasdaq_mc",
    "sourceId": "tv-tsuth",
    "family": "tv-tsuth",
    "lag": 2,
    "windowTradingDays": 10,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": false
   },
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-stevetan_20221223_tsla_mc",
    "sourceId": "tv-stevetan",
    "family": "tv-stevetan",
    "lag": -3,
    "windowTradingDays": 10,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "INCLUDED",
+   "anchorInstrumentMatch": true
   }
  ],
  "tv-thefifthwave|BTCUSD|2023-01-29|1": [
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-discobiscuit_20230128_btcusd_mc",
    "sourceId": "tv-discobiscuit",
    "family": "tv-discobiscuit",
    "lag": -1,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "CANDIDATE",
+   "anchorInstrumentMatch": true
   },
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-eduwavetrading_20230128_btcusd_mc",
    "sourceId": "tv-eduwavetrading",
    "family": "tv-eduwavetrading",
    "lag": -1,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   },
   {
-   "referenceId": null,
+   "referenceId": "pr_ewf_20230130_btcusd_mc",
    "sourceId": "ewf",
    "family": "ewf",
    "lag": 1,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   },
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-cryptoknee_20230126_btcusd_mc",
    "sourceId": "tv-cryptoknee",
    "family": "tv-cryptoknee",
    "lag": -3,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "INCLUDED",
+   "anchorInstrumentMatch": true
   }
  ],
  "tv-thefifthwave|BTCUSD|2023-04-17|1": [
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-eduwavetrading_20230416_btcusd_mc",
    "sourceId": "tv-eduwavetrading",
    "family": "tv-eduwavetrading",
    "lag": -1,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   },
   {
-   "referenceId": null,
+   "referenceId": "pr_ewf_20230414_btcusd_mc",
    "sourceId": "ewf",
    "family": "ewf",
    "lag": -3,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   }
  ],
  "tv-thefifthwave|BTCUSD|2023-07-10|1": [
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-eduwavetrading_20230708_btcusd_mc",
    "sourceId": "tv-eduwavetrading",
    "family": "tv-eduwavetrading",
    "lag": -2,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   }
  ],
  "tv-thefifthwave|BTCUSD|2024-08-31|1": [
   {
-   "referenceId": null,
+   "referenceId": "pr_tiedje_20240830_btcusd_mc",
    "sourceId": "tiedje",
    "family": "tiedje",
    "lag": -1,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   },
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-pejman_zwin_20240830_btcusd_mc",
    "sourceId": "tv-pejman_zwin",
    "family": "tv-pejman_zwin",
    "lag": -1,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   }
  ],
  "tv-yuchaosng|BTCUSD|2024-03-22|1": [
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-eduwavetrading_20240323_btcusd_mc",
    "sourceId": "tv-eduwavetrading",
    "family": "tv-eduwavetrading",
    "lag": 1,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   },
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-mehdi_abbasi_ewp_20240320_btcusd_mc",
    "sourceId": "tv-mehdi_abbasi_ewp",
    "family": "tv-mehdi_abbasi_ewp",
    "lag": -2,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   },
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-pejman_zwin_20240324_btcusd_mc",
    "sourceId": "tv-pejman_zwin",
    "family": "tv-pejman_zwin",
    "lag": 2,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   },
   {
-   "referenceId": null,
+   "referenceId": "pr_ewf_20240326_btcusd_mc",
    "sourceId": "ewf",
    "family": "ewf",
    "lag": 4,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   }
  ],
  "tv-yuchaosng|BTCUSD|2024-09-29|1": [
   {
-   "referenceId": null,
+   "referenceId": "pr_tiedje_20241001_unknown_mc",
    "sourceId": "tiedje",
    "family": "tiedje",
    "lag": 2,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": false
   },
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-pejman_zwin_20241002_btcusd_mc",
    "sourceId": "tv-pejman_zwin",
    "family": "tv-pejman_zwin",
    "lag": 3,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   },
   {
    "referenceId": null,
@@ -439,36 +439,36 @@
  ],
  "tv-yuchaosng|QQQ|2024-01-21|1": [
   {
-   "referenceId": null,
+   "referenceId": "pr_ewf_20240125_twst_mc",
    "sourceId": "ewf",
    "family": "ewf",
    "lag": 4,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": false
   }
  ],
  "tv-yuchaosng|SPY|2024-07-20|1": [
   {
-   "referenceId": null,
+   "referenceId": "pr_ewf_20240720_spy_mc",
    "sourceId": "ewf",
    "family": "ewf",
    "lag": 0,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "INCLUDED",
+   "anchorInstrumentMatch": true
   },
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-discobiscuit_20240724_spy_mc",
    "sourceId": "tv-discobiscuit",
    "family": "tv-discobiscuit",
    "lag": 3,
    "windowTradingDays": 5,
    "sealedAnchor": false,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "INCLUDED",
+   "anchorInstrumentMatch": true
   }
  ]
 }

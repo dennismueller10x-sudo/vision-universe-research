@@ -1,24 +1,24 @@
 {
  "ewf|QQQ|2025-02-25|1": [
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-theexpert_81_20250214_unknown_mc",
    "sourceId": "tv-theexpert_81",
    "family": "tv-theexpert_81",
    "lag": -7,
    "windowTradingDays": 10,
    "sealedAnchor": true,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": false
   },
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-yuchaosng_20250310_qqq_mc",
    "sourceId": "tv-yuchaosng",
    "family": "tv-yuchaosng",
    "lag": 9,
    "windowTradingDays": 10,
    "sealedAnchor": true,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "CANDIDATE",
+   "anchorInstrumentMatch": true
   },
   {
    "referenceId": null,
@@ -27,64 +27,64 @@
    "lag": 9,
    "windowTradingDays": 10,
    "sealedAnchor": true,
-   "status": "NOT_PROCESSED",
+   "status": "NEEDS_C",
    "anchorInstrumentMatch": null
   }
  ],
  "tiedje|AMD|2022-04-29|1": [
   {
-   "referenceId": null,
+   "referenceId": "pr_ewf_20220415_amd_mc",
    "sourceId": "ewf",
    "family": "ewf",
    "lag": -10,
    "windowTradingDays": 10,
    "sealedAnchor": true,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   }
  ],
  "tiedje|AMD|2022-07-01|1": [
   {
-   "referenceId": null,
+   "referenceId": "pr_ewf_20220701_amd_mc",
    "sourceId": "ewf",
    "family": "ewf",
    "lag": 0,
    "windowTradingDays": 10,
    "sealedAnchor": true,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   }
  ],
  "tiedje|BTCUSD|2022-01-07|1": [
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-digitalsurftrading_20220111_btcusd_mc",
    "sourceId": "tv-digitalsurftrading",
    "family": "tv-digitalsurftrading",
    "lag": 4,
    "windowTradingDays": 10,
    "sealedAnchor": true,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   },
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-stevetan_20220112_btcusd_mc",
    "sourceId": "tv-stevetan",
    "family": "tv-stevetan",
    "lag": 5,
    "windowTradingDays": 10,
    "sealedAnchor": true,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "INCLUDED",
+   "anchorInstrumentMatch": true
   },
   {
-   "referenceId": null,
+   "referenceId": "pr_ewf_20220113_btcusd_mc",
    "sourceId": "ewf",
    "family": "ewf",
    "lag": 6,
    "windowTradingDays": 10,
    "sealedAnchor": true,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   },
   {
    "referenceId": null,
