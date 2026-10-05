@@ -295,3 +295,34 @@ Positionen, Historie je Quartal, Änderungen im Spaltenformat und eine Zeitleist
 ### Nicht verfügbar (benannt, nicht geschätzt)
 Tagesaktuelle Bestände, Holdings und Kosten europäischer UCITS-ETFs, WKN, Replikation, NAV, Tracking Difference
 und Kurse europäischer Listings. Die Gründe stehen in der Quellenmatrix.
+
+## 11. Europa / UCITS: freie offizielle Quellen
+
+Details: [ETF_EU_FREE_SOURCE_SCORECARD.md](ETF_EU_FREE_SOURCE_SCORECARD.md),
+[ETF_DATA_RIGHTS.md](ETF_DATA_RIGHTS.md), [ETF_EU_DATA_ARCHITECTURE.md](ETF_EU_DATA_ARCHITECTURE.md),
+[ETF_EU_MARKET_DATA_GAPS.md](ETF_EU_MARKET_DATA_GAPS.md).
+
+| Datenjob | Skripte | Ausgabe | Veröffentlicht |
+|---|---|---|---|
+| `[vorsorge-eu-probe]` | `probe-eu-etf-sources.mjs` | `data/sources/etf-eu-source-probe.json` | nur Metadaten |
+| `[vorsorge-fundamentals]` | `ingest-esma-firds.mjs` → `ingest-esma-funds.mjs` → `ingest-xetra-refdata.mjs` → `build-etf-data.mjs` | `data/eu/etf-eu-index.json`, `data/eu/etf-eu-ucits.json`, `data/sources/xetra-refdata-stats.json` | FIRDS, GLEIF, ESMA-Register ja; Xetra **nur Zahlen** |
+| `[vorsorge-live-smoke]` | `live-smoke.mjs` | Artefakt (Screenshots, Bericht) | nein |
+
+- **Amtlicher UCITS-Status**: ESMA-Register „Cross-border distribution of funds“, zugeordnet
+  über den Fondsnamen und das Domizil (Konfidenz mittel). Zusätzlich Verwaltungsgesellschaft,
+  Herkunftsstaat, Aufsicht und Vertriebsländer („zum Vertrieb in Deutschland notifiziert“).
+- **FIRDS-Stamm**: je ISIN aus allen Handelsplatz-Datensätzen – vollständiger Name, Fonds-LEI
+  (GLEIF-Kategorie FUND), Domizil aus der Fonds-LEI oder aus dem ISIN-Präfix (`domicileBasis`).
+- **Xetra-Referenzdaten** (WKN, laufende Kosten, Replikation, Ertragsverwendung, Index):
+  Pipeline fertig, Nutzungsrechte UNKNOWN → keine Werte im Produkt. Freigabe nach schriftlicher
+  Bestätigung der Deutschen Börse mit `VU_PUBLISH_XETRA_REFDATA=1` im Fundamentals-Job; das
+  Gate `XETRA_VALUES_PUBLISHED_WITHOUT_RELEASE` verhindert eine Veröffentlichung ohne Freigabe.
+- **Kostenänderungen (US)**: zwischen zwei Prospektständen derselben Anteilklasse, nur gleich
+  definierte Felder; Kosten-Tab und Monitor.
+- **Monitor**: Relevanz und Bündelung („Daten & Produkte“), interne Prüfstatus-Wechsel als eine
+  Datenmeldung, Kostenänderungen je Ticker.
+- **Detaildateien**: `fundamentals` kompakt (`compact`/`expand` in `etf-fundamentals.js`,
+  verlustfrei getestet); `costs` verweist auf `fundamentals` statt die Felder zu kopieren.
+- **Live-Rauchtest**: `vorsorge-live-smoke.yml` meldet sich über das Secret
+  `RESEARCH_ACCESS_PASSWORD` am Zugangstor an (Zustand nur im Browser-Speicher) und prüft
+  22 Routen auf Desktop und Mobil sowie Deep Links gegen die veröffentlichte Seite.

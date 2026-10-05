@@ -200,7 +200,7 @@
   /* ---------------------------------------------- Kosten */
   VS.renderKosten = function (el, e, d) {
     var c = d.costs || {};
-    var f = function (k) { var x = c[k]; return x && typeof x === "object" ? x : null; };
+    var f = function (k) { var x = c[k] || (d.fundamentals || {})[k]; return x && typeof x === "object" ? x : null; };
     el.innerHTML = '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card"><p class="vs-label">Laufende Kosten</p>' +
       (c.status === "AVAILABLE" ? '<p class="vs-kpi">' + VS.costPct(c.value) + '</p><p class="vs-fine">' + (c.basis === "NET_EXPENSE_RATIO" ? "Netto-Kostenquote nach Gebührenverzicht" : "Gesamtkostenquote") + ' laut Prospekt-Gebührentabelle (SEC Risk/Return-Daten)</p>' +
         (f("expenseRatio") ? '<div class="vs-row" style="margin-top:10px"><span>Gesamtkostenquote (brutto)</span><span class="num">' + VS.costPct(f("expenseRatio").value) + '</span></div>' : "") +

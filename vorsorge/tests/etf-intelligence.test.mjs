@@ -302,3 +302,15 @@ test("Kostenaenderung zwischen Prospektstaenden: nur gleich definierte Felder, f
   // Brutto gegen Netto wird nie verglichen
   assert.equal(C.diffFundamentals({ shareClassId: "C1", expenseRatio: f(0.002) }, { shareClassId: "C1", netExpenseRatio: f(0.001) }).events.length, 0);
 });
+test("Fundamentals kompakt ausliefern: verlustfrei (expand(compact(x)) === x)", () => {
+  const fu = { schemaVersion: "2.0.0", fundId: "sec:S1", name: { value: "X ETF", source: "TIINGO", sourceType: "MARKET_DATA_PROVIDER", sourceUrl: null, asOf: null, retrievedAt: null, confidence: "MEDIUM" },
+    isin: null, aum: { value: 1e9, source: "SEC_NPORT", sourceType: "REGULATORY", sourceUrl: "https://sec.example/nport", asOf: "2026-03-31", retrievedAt: null, confidence: "HIGH" },
+    domicile: { value: "US", source: "SEC_NPORT", sourceType: "DERIVED", sourceUrl: "https://sec.example/nport", asOf: "2026-03-31", retrievedAt: null, confidence: "MEDIUM" },
+    expenseRatio: { value: 0.0003, source: "SEC_RR", sourceType: "REGULATORY", sourceUrl: "https://sec.example/rr", asOf: "2025-07-22", retrievedAt: null, confidence: "HIGH", originalField: "Prospekt" },
+    conflicts: [{ field: "aum", reason: "AS_OF_DIFFERS" }] };
+  const c = F.compact(fu);
+  assert.ok(JSON.stringify(c).length < JSON.stringify(fu).length);
+  assert.equal(c.isin, undefined); assert.equal(c.aum.sourceUrl, undefined); assert.equal(c.sourceUrls.SEC_NPORT, "https://sec.example/nport");
+  const e = F.expand(c);
+  for (const k of Object.keys(fu)) assert.deepEqual(e[k], fu[k], k);
+});

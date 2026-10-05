@@ -338,11 +338,12 @@ export function build() {
       { cost: sec.costValue, effectiveNumber: sec.h && Number.isFinite(sec.h[9]) ? sec.h[9] : null, top10: sec.h ? sec.h[3] : null });
     dna.dataQuality = { value: Math.round(q.coverage * 100), status: "CALCULATED", label: "Datenqualität (Feldabdeckung)" };
     writeFileSync(join(detailDir, full.slug + ".json"), JSON.stringify({
-      schemaVersion: "vu-vorsorge-etf-2.0.0", ...full, quality: q, provenance, dna, metrics: priceM, metricsTotal: totalM,
+      schemaVersion: "vu-vorsorge-etf-2.0.0", ...full, fundamentals: FUND.compact(full.fundamentals), quality: q, provenance, dna, metrics: priceM, metricsTotal: totalM,
       totalReturn: rec ? rec.totalReturn : { state: "NO_SERIES" }, seriesPath: s ? "/vorsorge/data/series/" + e.symbol + ".json" : null,
       holdings: sec.h ? { status: "AVAILABLE", source: "SEC_NPORT", sourceType: "REGULATORY", series: sec.h[0], path: "/vorsorge/data/holdings/" + sec.h[0] + ".json", asOf: sec.h[1], positions: sec.h[2], top10: sec.h[3] }
         : { status: full.otc ? "NOT_APPLICABLE" : "NOT_IN_NPORT", reason: full.otc ? "US-Freiverkehrszeile eines ausländischen Fonds." : NOT_IN_NPORT },
-      costs: sec.c ? { status: "AVAILABLE", basis: sec.costBasis, value: sec.costValue, expenseRatio: full.fundamentals.expenseRatio, netExpenseRatio: full.fundamentals.netExpenseRatio, managementFee: full.fundamentals.managementFee,
+      // Kostenfelder stehen mit Herkunft in fundamentals (expenseRatio, netExpenseRatio, managementFee) - hier nur der Verweis.
+      costs: sec.c ? { status: "AVAILABLE", basis: sec.costBasis, value: sec.costValue, fields: ["expenseRatio", "netExpenseRatio", "managementFee"].filter((k) => full.fundamentals[k]),
         ...(sec.c.previous ? { previousFiling: sec.c.previous.filed, changes: costChanges(sec.c) } : {}),
         note: "Laufende Kostenquote laut Prospekt-Gebührentabelle. Handels-, Depot- und Transaktionskosten sind nicht enthalten." }
         : { status: "SOURCE_NOT_CONNECTED", value: null, note: "Keine Kostenquote aus einer Primär- oder Regulierungsquelle verfügbar." }
