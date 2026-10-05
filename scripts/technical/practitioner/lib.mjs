@@ -421,7 +421,9 @@ export function appendReferences(existing, incoming) {
  */
 export function detectDuplicates(refs, windowDays = 2) {
   const { rootOf } = revisionChains(refs);
-  const sorted = refs.slice().sort((a, b) => pubMs(a) - pubMs(b) || (a.viewKind === "LATER_REVISION") - (b.viewKind === "LATER_REVISION") || String(a.referenceId).localeCompare(String(b.referenceId)));
+  /* Minutengenau (Nachtrag 9 d): Neuextraktionen speichern Zeitpunkte oft ohne Sekunden; sonst gaelte die eingefrorene Zeile als Duplikat */
+  const pubMin = (r) => Math.floor(pubMs(r) / 60000);
+  const sorted = refs.slice().sort((a, b) => pubMin(a) - pubMin(b) || (a.viewKind === "LATER_REVISION") - (b.viewKind === "LATER_REVISION") || String(a.referenceId).localeCompare(String(b.referenceId)));
   const urlsOf = (r) => new Set([r.sourceUrl, ...(r.crossPosts || [])].filter(Boolean).map(normUrl));
   const primKey = (r) => `${(r.primary && r.primary.pattern) || "-"}|${normalizeWaveLabel(r.primary && r.primary.currentWave) || "-"}`;
   const dupOf = new Map(), pairs = [];

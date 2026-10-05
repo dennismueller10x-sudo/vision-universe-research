@@ -89,9 +89,14 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
   const { items, fam } = loadFrames();
   const cases = Object.keys(byCase).sort().map((c) => matchCase({ caseId: c, sealed: !open.has(c), timeframe: tf[c] }, items, fam));
-  const out = { schemaVersion: "vu-consensus-match-1.0.0", generatedAt: new Date().toISOString(), freezeSha256: man.sha256, windows: WINDOWS, frames: [...new Set(items.map((x) => x.sourceId))],
-    note: "Nur Metadaten (Titel, Datum, Quelle). Keine Inhalte gelesen. Holdout-Faelle: nur Fallkennung, Ergebnisse versiegelt bis zur Freigabe.", cases };
+  /* Nachtrag 9 c: Abgleich-Zeilen versiegelter Ausgangsfaelle nur unter sealed/; offen nur Anzahlen */
+  const openCases = cases.filter((x) => !x.sealed), sealedCases = cases.filter((x) => x.sealed);
+  const out = { schemaVersion: "vu-consensus-match-1.1.0", generatedAt: new Date().toISOString(), freezeSha256: man.sha256, windows: WINDOWS, frames: [...new Set(items.map((x) => x.sourceId))],
+    note: "Nur Metadaten (Titel, Datum, Quelle). Keine Inhalte gelesen. Holdout-Faelle: nur Anzahlen; Zeilen in sealed/match-candidates-sealed.json, versiegelt bis zur Freigabe.",
+    sealedSummary: { cases: sealedCases.length, withAnyCandidate: sealedCases.filter((x) => x.families > 0).length, candidateLinks: sealedCases.reduce((s, x) => s + x.families, 0) }, cases: openCases };
   const f = arg("out", join(PV1, "consensus/match-candidates.json")); mkdirSync(dirname(f), { recursive: true }); writeFileSync(f, JSON.stringify(out, null, 1) + "\n");
+  const fs2 = arg("sealed-out", join(PV1, "consensus/sealed/match-candidates-sealed.json")); mkdirSync(dirname(fs2), { recursive: true });
+  writeFileSync(fs2, JSON.stringify({ schemaVersion: out.schemaVersion, generatedAt: out.generatedAt, note: "VERSIEGELT – nicht fuer Entwicklung oder Auswertung lesen.", cases: sealedCases }, null, 1) + "\n");
   const by = (a, g) => a.reduce((o, x) => { const k = g(x); o[k] = (o[k] || 0) + 1; return o; }, {});
   console.log(JSON.stringify({ cases: cases.length, withAny: cases.filter((x) => x.families > 0).length, familiesHist: by(cases, (x) => x.families), window: by(cases, (x) => x.windowTradingDays),
     openWithAny: cases.filter((x) => !x.sealed && x.families > 0).length, sealedWithAny: cases.filter((x) => x.sealed && x.families > 0).length,

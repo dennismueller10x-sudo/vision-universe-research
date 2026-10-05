@@ -7,7 +7,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { tfRelation, classifyConsensus, independentLinks, pairLevels } from "../../scripts/technical/practitioner/consensus.mjs";
 import { titleMatches, tradingDaysBetween, matchCase } from "../../scripts/technical/practitioner/consensus-match.mjs";
-import { openedAnchors, buildConsensus, freeze, benchmark, VERSION } from "../../scripts/technical/practitioner/run-consensus.mjs";
+import { openedAnchors, buildConsensus, freeze, benchmark, VERSION, resolveLinks, sensitivityEligible, normUrl } from "../../scripts/technical/practitioner/run-consensus.mjs";
+import { detectDuplicates } from "../../scripts/technical/practitioner/lib.mjs";
 
 const map = { vuSymbol: "SPY", mappingQuality: "EXACT", levelsComparable: true, levelScale: 1 };
 const ref = (id, o = {}) => Object.assign({ referenceId: id, sourceId: "s-" + id, sourceUrl: "https://example.invalid/" + id, timeframe: "1D", directionalBias: "UP",
@@ -72,4 +73,27 @@ test("Freeze deterministisch, ohne VU-Felder; Auswertung verweigert manipulierte
   assert.ok(!/"vuStatus"|"vuPattern"|"engineVersion"/.test(text));
   writeFileSync(join(d, VERSION + ".jsonl"), text.replace("D_SINGLE", "A_STRONG"));
   assert.throws(() => benchmark({ freezeDir: d, outFile: join(d, "b.json") }), /SHA-256/);
+});
+
+test("Nachtrag 9: TradingView-CFD-Aliase (SPXUSD, SPX500USD, NAS100USD) zaehlen; Wortgrenzen bleiben", () => {
+  assert.ok(titleMatches("SPY", "SPXUSD")); assert.ok(titleMatches("SPY", "Shorts for SPX500USD")); assert.ok(titleMatches("QQQ", "NAS100USD wave 5"));
+  assert.ok(!titleMatches("SPY", "SPXL leveraged"));
+});
+test("Nachtrag 9 b: Fundstelle eines versiegelten V1-Falls (URL) wird entfernt, eines geoeffneten durch die V1-Zeile vertreten", () => {
+  const v1 = ref("pr_open", { sourceUrl: "https://www.tradingview.com/chart/SPX/abc-x/" });
+  const refs = [ref("pr_open_mc", { sourceUrl: "https://tradingview.com/chart/SPX/abc-x", caseId: "x|SPY|2023-01-10|1" }), ref("pr_leak_mc", { sourceUrl: "https://example.invalid/sealed", caseId: "y|SPY|2023-01-09|1" }), ref("pr_other")];
+  const links = { anchor: [{ referenceId: "pr_open_mc" }, { referenceId: "pr_leak_mc" }, { referenceId: "pr_other" }] };
+  const r = resolveLinks(links, refs, { openRows: [v1], sealedUrls: new Set([normUrl("https://example.invalid/sealed/")]), sealedCaseIds: [] });
+  assert.deepEqual(r.links.anchor.map((l) => l.referenceId), ["pr_open", "pr_other"]); assert.deepEqual(r.removed, ["pr_leak_mc"]);
+  /* Kennung allein genuegt ebenfalls */
+  assert.deepEqual(resolveLinks(links, refs, { openRows: [], sealedUrls: new Set(), sealedCaseIds: ["y|SPY|2023-01-09|1"] }).removed, ["pr_leak_mc"]);
+});
+test("Nachtrag 9 d/e: Duplikate minutengenau (eingefrorene Zeile bleibt Original); Sensitivitaet nur fuer Plausibilitaet/§ 2.4", () => {
+  const a = ref("pr_x", { publication: { timestamp: "2022-12-06T23:48:17+00:00" } }), b = ref("pr_x_mc", { sourceUrl: a.sourceUrl, publication: { timestamp: "2022-12-06T23:48+00:00" } });
+  const d = detectDuplicates([b, a]); assert.ok(d.isDuplicate("pr_x_mc")); assert.ok(!d.isDuplicate("pr_x"));
+  const cand = (amb) => ref("c", { status: "CANDIDATE", extraction: { confidence: "HIGH", ambiguities: amb } });
+  assert.ok(sensitivityEligible(cand(["A: note", "Plausibilitaet (±60 %, Nachtrag 4) verletzt: x"])));
+  assert.ok(sensitivityEligible(cand(["§2.4: VU-Reihe deckt den Stichtag nicht ab"])));
+  assert.ok(!sensitivityEligible(cand(["Plausibilitaet verletzt", "Sicherheit LOW (…)"])));
+  assert.ok(!sensitivityEligible(cand(["Validierung: §2.3: weder Zaehlung"]))); assert.ok(!sensitivityEligible(ref("i")));
 });

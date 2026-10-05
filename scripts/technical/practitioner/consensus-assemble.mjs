@@ -231,7 +231,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     log.push(rec);
   }
   mkdirSync(join(CONS, "sealed"), { recursive: true });
-  writeFileSync(join(CONS, "references.jsonl"), rows.map((r) => JSON.stringify(r)).join("\n") + (rows.length ? "\n" : ""));
+  /* Nachtrag 9 c: Zeilen, die nur an versiegelten Ausgangsfaellen haengen, nach sealed/ (offene Datei nur mit geoeffneten Verknuepfungen) */
+  const openIds = new Set(Object.values(links).flat().map((l) => l.referenceId)), sealedIds = new Set(Object.values(sealed).flat().map((l) => l.referenceId));
+  const sealedOnly = rows.filter((r) => sealedIds.has(r.referenceId) && !openIds.has(r.referenceId)), openRows = rows.filter((r) => !sealedOnly.includes(r));
+  writeFileSync(join(CONS, "references.jsonl"), openRows.map((r) => JSON.stringify(r)).join("\n") + (openRows.length ? "\n" : ""));
+  writeFileSync(join(CONS, "sealed/references-sealed.jsonl"), sealedOnly.map((r) => JSON.stringify(r)).join("\n") + (sealedOnly.length ? "\n" : ""));
   writeFileSync(join(CONS, "links.json"), JSON.stringify(links, null, 1) + "\n");
   writeFileSync(join(CONS, "sealed/links-sealed.json"), JSON.stringify(sealed, null, 1) + "\n");
   writeFileSync(join(dir, "assemble-log.json"), JSON.stringify(log, null, 1));
