@@ -5,6 +5,13 @@ Websites der Trader weiterhin; abgerufen wurden sie deshalb vom GitHub-Actions-R
 (`scripts/supertrader/validation/fetch-sources.mjs`, Workflow-Modus `sources`). Die Texte sind urheberrechtlich
 geschützt und liegen nur verschlüsselt beim Eigentümer, nicht im Repository.
 
+> **Stand und Gültigkeit (Migration Phase 1, 05.10.2026):** Dieses Dokument hält die Stände von Runde 7 und 8 fest. Mehrere der beschriebenen
+> Versionen sind abgelöst (Momentum 3.1.0, Turtle 1.1.0 und 2.0.0, Darvas 1.2.0 und 2.0.0, Weinstein 1.1.0 bis 3.0.0, Minervini 1.1.0). **Laufend sind:**
+> Momentum 3.2.0, Weinstein 4.0.0, Darvas 3.0.2, Minervini 2.0.0, Turtle 2.0.2 und VU Trendfolge 52W 1.0.0. Die Methodentreue-Tabellen im
+> zweiten Teil (ab „Runde 7“) sind **historisch** und gelten nicht für die laufenden Versionen. Maßgeblich sind die Herkunft je Regel
+> (`scripts/supertrader/fidelity/`, R15), die Regelkarten und Methodenseiten (`supertrader/`), `scripts/supertrader/fidelity.mjs` und
+> `docs/SUPERTRADER_ENTRY_EXIT_RULES.md`.
+
 ## Gelesen
 
 | Methode | Im Volltext gelesen | Nicht zugänglich (Versuche) |
@@ -63,7 +70,7 @@ für Kullamägi nicht; für Darvas sind sie mit Tagesbalken nicht entscheidbar.
 
 ## Neue Versionen (vor jedem Test festgelegt)
 
-- **Momentum 3.0.0** (`kk-breakout-v3.mjs`, PREREGISTRATION-R8.json) und **3.1.0** (`kk-breakout-v31.mjs`, PREREGISTRATION-R8C.json). 3.1.0 entfernt zwei VU-Zusätze, an denen Kullamägis TSLA-Beispiel scheiterte: Kurs über beiden Linien, 5 Sitzungen Sperre. 3.1.0 läuft live.
+- **Momentum 3.0.0** (`kk-breakout-v3.mjs`, PREREGISTRATION-R8.json) und **3.1.0** (`kk-breakout-v31.mjs`, PREREGISTRATION-R8C.json). 3.1.0 entfernt zwei VU-Zusätze, an denen Kullamägis TSLA-Beispiel scheiterte: Kurs über beiden Linien, 5 Sitzungen Sperre. 3.1.0 lief live bis zur Fehlerkorrektur 3.2.0 (Runde 11); laufend ist heute 3.2.0.
 - **Donchian/Turtle 2.0.0** (`donchian-v2.mjs`, PREREGISTRATION-R8-TURTLE.json)
 - **Darvas 3.0.0, Weinstein 3.0.0** (`darvas-v3.mjs`, `weinstein-v3.mjs`, PREREGISTRATION-R8B.json)
 - **Minervini** bleibt 2.0.0: Ohne frei lesbare Primärquelle gibt es keinen belegten Grund für eine neue Version.
@@ -84,7 +91,9 @@ Weiterhin VU, gekennzeichnet:
 
 ---
 
-# Supertrader — Methodentreue, Ursachen, neue Versionen (Runde 7, 02.10.2026)
+# Supertrader — Methodentreue, Ursachen, neue Versionen (Runde 7, 02.10.2026) — historischer Stand, überholt
+
+> **Historisch:** Die Matrix unten beschreibt die Versionen von Runde 7 (u. a. Momentum 1.1.0, Weinstein 1.1.0, Darvas 1.2.0, Minervini 1.1.0, Turtle 1.1.0) und ist für die laufenden Versionen überholt. Gültig ist die Tabelle in `fidelity.mjs` bzw. auf den Methodenseiten.
 
 Dieses Dokument trennt für jede Methode, **was eine Quelle tatsächlich sagt**, **welche Regel im Code steht**
 und **wie diese Regel einzuordnen ist**. Einzige Datenquelle für Produktstatus und Matrix ist
@@ -121,7 +130,7 @@ Die Gründe, warum keine Methode quellentreu ist:
 
 ## Methodentreue-Matrix
 
-### Minervini (SEPA/VCP) — Vision-Universe-Variante
+### Minervini (SEPA/VCP) — Vision-Universe-Variante (Stand Runde 7, historisch)
 
 Trend Template ist mechanisch; ob eine Basis eine echte VCP ist, wo der Pivot liegt und wann in die Stärke verkauft wird, entscheidet Minervini nach Augenmaß.
 
@@ -144,7 +153,7 @@ Trend Template ist mechanisch; ob eine Basis eine echte VCP ist, wo der Pivot li
 **Daten:** historisch Tageskurse aller damals gelisteten US-Aktien ab 2016 (inkl. delisteter); live Tageskurse ~6.000 US-Aktien, ein Jahr Tageshistorie; Lücken: keine Gewinne/Umsätze zum Stichtag; kein IBD-RS.  
 **Benötigtes Originalmaterial:** Trade Like a Stock Market Wizard (2013): Trend Template, VCP, Risiko-Kapitel; Think & Trade Like a Champion (2017): Einstiege, Größe, Einstand; Schwager, Stock Market Wizards (2001): Minervini-Kapitel (10-%-Grenze).
 
-### Weinstein (Stage Analysis) — Vision-Universe-Variante
+### Weinstein (Stage Analysis) — Vision-Universe-Variante (Stand Runde 7, historisch)
 
 Stufen und Steigung der 30-Wochen-Linie beurteilt Weinstein nach Augenmaß; Gruppenstärke und Marktindikatoren werden gewichtet, ohne feste Zahl.
 
@@ -165,7 +174,7 @@ Stufen und Steigung der 30-Wochen-Linie beurteilt Weinstein nach Augenmaß; Grup
 **Daten:** historisch Wochenreihen aus Point-in-Time-Tagesbalken ab 2016, SPY-Wochenschluss; live Lange Wochenschlusskurse + ein Jahr Tagesbalken (Wochenvolumen nur im Tagesfenster); Lücken: keine Gruppenzuordnung zum Stichtag; keine Marktbreite.  
 **Benötigtes Originalmaterial:** Secrets for Profiting in Bull and Bear Markets (1988): Kapitel Kaufzeitpunkt, Verkauf, Langfristindikatoren; Stocks & Commodities Interview V.39:11 (2021).
 
-### Momentum Breakout (Kullamägi) — Vision-Universe-Variante
+### Momentum Breakout (Kullamägi) — Vision-Universe-Variante (Stand Runde 7, historisch)
 
 Kullamägi kauft im Tagesverlauf am Hoch der ersten Minuten (Opening Range); dafür fehlen historische Intraday-Kurse. Basisqualität beurteilt er nach Augenmaß.
 
@@ -185,7 +194,7 @@ Kullamägi kauft im Tagesverlauf am Hoch der ersten Minuten (Opening Range); daf
 **Daten:** historisch Tageskurse ab 2016 (inkl. delisteter); live Tageskurse; Lücken: keine Intraday-Historie; keine Nachrichten-/Gap-Ursache.  
 **Benötigtes Originalmaterial:** qullamaggie.com Beiträge im Volltext (3 timeless setups, FAQ, Episodic Pivots) – frei verfügbar, in dieser Umgebung gesperrt; Historische 1-/5-Minuten-Kurse (kostenpflichtig).
 
-### Darvas Box — Vision-Universe-Variante
+### Darvas Box — Vision-Universe-Variante (Stand Runde 7, historisch)
 
 Was eine Box ist, beschreibt Darvas nicht als Formel; die verbreitete 3-Tage-Regel ist eine spätere Rekonstruktion.
 
@@ -202,7 +211,7 @@ Was eine Box ist, beschreibt Darvas nicht als Formel; die verbreitete 3-Tage-Reg
 **Daten:** historisch Tageskurse ab 2016; live Tageskurse; Lücken: keine Gewinndaten zum Stichtag.  
 **Benötigtes Originalmaterial:** How I Made $2,000,000 in the Stock Market (1960), z. B. über die Ausleihe im Internet Archive.
 
-### Donchian/Turtle — Vision-Universe-Variante
+### Donchian/Turtle — Vision-Universe-Variante (Stand Runde 7, historisch)
 
 Die Turtle-Regeln sind vollständig mechanisch – aber für ein gestreutes Futures-Portfolio geschrieben, nicht für Einzelaktien.
 
