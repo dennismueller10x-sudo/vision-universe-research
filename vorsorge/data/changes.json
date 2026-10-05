@@ -4,13 +4,39 @@
  "events": [
   {
    "type": "COST_CHANGE",
+   "symbol": "RSEE",
+   "fields": [
+    "expenseRatio",
+    "netExpenseRatio"
+   ],
+   "magnitude": 0.012899999999999998,
+   "asOf": "2026-04-27",
+   "text": "RSEE · Kostenquote (brutto): 1,68 % → 3,03 %; Kostenquote (netto): 1,42 % → 2,71 % (Prospekt 2025-01-29 → 2026-04-27).",
+   "relevance": "HIGH",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "COST_CHANGE",
    "symbol": "AMZA",
    "fields": [
     "expenseRatio"
    ],
    "magnitude": 0.0103,
    "asOf": "2026-02-27",
-   "text": "AMZA · Kostenquote (brutto): 2,75 % → 1,72 % (Prospekt 2025-09-04 → 2026-02-27).",
+   "text": "AMZA · Kostenquote (brutto): 2,75 % → 1,72 % (Prospekt 2025-02-28 → 2026-02-27).",
+   "relevance": "HIGH",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "COST_CHANGE",
+   "symbol": "GABF",
+   "fields": [
+    "netExpenseRatio",
+    "expenseRatio"
+   ],
+   "magnitude": 0.0092,
+   "asOf": "2026-05-05",
+   "text": "GABF · Kostenquote (netto): 0,32 % → 1,24 %; Kostenquote (brutto): 0,90 % → 1,64 % (Prospekt 2025-04-30 → 2026-05-05).",
    "relevance": "HIGH",
    "category": "PRODUCT_CHANGE"
   },
@@ -22,7 +48,7 @@
    ],
    "magnitude": 0.008299999999999998,
    "asOf": "2026-06-01",
-   "text": "MJSC · Kostenquote (brutto): 0,85 % → 1,68 % (Prospekt 2026-01-05 → 2026-06-01).",
+   "text": "MJSC · Kostenquote (brutto): 0,85 % → 1,68 % (Prospekt 2025-07-02 → 2026-06-01).",
    "relevance": "HIGH",
    "category": "PRODUCT_CHANGE"
   },
@@ -40,37 +66,11 @@
   },
   {
    "type": "COST_CHANGE",
-   "symbol": "FXED",
-   "fields": [
-    "expenseRatio"
-   ],
-   "magnitude": 0.006200000000000001,
-   "asOf": "2026-03-26",
-   "text": "FXED · Kostenquote (brutto): 2,51 % → 1,89 % (Prospekt 2025-03-26 → 2026-03-26).",
-   "relevance": "HIGH",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "COST_CHANGE",
-   "symbol": "YOLO",
-   "fields": [
-    "expenseRatio",
-    "netExpenseRatio",
-    "managementFee"
-   ],
-   "magnitude": 0.0060999999999999995,
-   "asOf": "2025-10-28",
-   "text": "YOLO · Kostenquote (brutto): 1,55 % → 0,91 %; Kostenquote (netto): 1,12 % → 0,51 %; Verwaltungsgebühr: 0,30 % → 0,37 % (Prospekt 2025-02-05 → 2025-10-28).",
-   "relevance": "HIGH",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "COST_CHANGE",
    "symbol": null,
-   "count": 502,
+   "count": 514,
    "relevance": "LOW",
-   "asOf": "2026-02-27",
-   "text": "502 weitere Listings mit geänderter Kostenquote laut Prospekt (z. B. BBP, SNAV, PJFV, PFFA, MVPL).",
+   "asOf": "2026-03-26",
+   "text": "514 weitere Listings mit geänderter Kostenquote laut Prospekt (z. B. FXED, YOLO, BBP, SNAV, PJFV).",
    "category": "PRODUCT_CHANGE"
   },
   {
@@ -353,5 +353,5 @@
    "category": "PRODUCT_CHANGE"
   }
  ],
- "costEvents": 507
+ "costEvents": 519
 }
