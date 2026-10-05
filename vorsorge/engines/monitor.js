@@ -28,7 +28,7 @@
   ];
 
   var CATEGORY = { NEW_LISTING: "PRODUCT_CHANGE", NAME_CHANGE: "PRODUCT_CHANGE", INDEX_CHANGE: "PRODUCT_CHANGE", CLOSED_OR_DELISTED: "PRODUCT_CHANGE",
-    STATUS_CHANGE: "PRODUCT_CHANGE", REMOVED: "PRODUCT_CHANGE", DATA_REVIEW: "DATA_UPDATE", VOLATILITY_CHANGE: "MARKET_CHANGE", NEW_PRICE_SERIES: "DATA_UPDATE",
+    STATUS_CHANGE: "PRODUCT_CHANGE", REMOVED: "PRODUCT_CHANGE", DATA_REVIEW: "DATA_UPDATE", COST_CHANGE: "PRODUCT_CHANGE", VOLATILITY_CHANGE: "MARKET_CHANGE", NEW_PRICE_SERIES: "DATA_UPDATE",
     GOAL_ATTAINMENT: "PLAN_CHANGE", SAVINGS_RATE: "PLAN_CHANGE", COST: "PLAN_CHANGE", PORTFOLIO: "PORTFOLIO_CHANGE",
     PORTFOLIO_RISK: "MARKET_CHANGE", RULE_VERSION: "REGULATORY_CHANGE", DATA_AS_OF: "DATA_UPDATE" };
   var CATEGORY_LABEL = { MARKET_CHANGE: "Markt", PORTFOLIO_CHANGE: "Portfolio", PLAN_CHANGE: "Plan", PRODUCT_CHANGE: "Produkt", REGULATORY_CHANGE: "Regeln", DATA_UPDATE: "Daten" };
@@ -66,8 +66,8 @@
    * - Mehr als BUNDLE gleichartige Ereignisse: bis zu 5 relevante einzeln, der Rest gebuendelt.
    * Idempotent: bereits gebuendelte Meldungen (count) bleiben unveraendert.
    */
-  var TYPE_ORDER = ["CLOSED_OR_DELISTED", "NAME_CHANGE", "INDEX_CHANGE", "REMOVED", "NEW_PRICE_SERIES", "VOLATILITY_CHANGE", "NEW_LISTING", "STATUS_CHANGE", "DATA_REVIEW"];
-  var TYPE_LABEL = { CLOSED_OR_DELISTED: "geschlossen oder delistet", NAME_CHANGE: "mit neuem Namen", INDEX_CHANGE: "mit geändertem Index", REMOVED: "nicht mehr im Verzeichnis",
+  var TYPE_ORDER = ["CLOSED_OR_DELISTED", "COST_CHANGE", "NAME_CHANGE", "INDEX_CHANGE", "REMOVED", "NEW_PRICE_SERIES", "VOLATILITY_CHANGE", "NEW_LISTING", "STATUS_CHANGE", "DATA_REVIEW"];
+  var TYPE_LABEL = { CLOSED_OR_DELISTED: "geschlossen oder delistet", COST_CHANGE: "mit geänderter Kostenquote laut Prospekt", NAME_CHANGE: "mit neuem Namen", INDEX_CHANGE: "mit geändertem Index", REMOVED: "nicht mehr im Verzeichnis",
     NEW_PRICE_SERIES: "mit neuer Kursreihe", VOLATILITY_CHANGE: "mit deutlich veränderter Schwankung", NEW_LISTING: "neu im Verzeichnis", STATUS_CHANGE: "mit geändertem Status" };
   function examples(list) { var s = list.map(function (e) { return e.symbol; }).filter(Boolean); return s.length ? " (z. B. " + s.slice(0, 5).join(", ") + ")" : ""; }
   function prioritize(events, layerOf, opts) {

@@ -94,14 +94,22 @@ for (const l of links) {
 }
 const bySymbol = {};
 for (const [cls, byFiling] of best) {
-  const latest = [...byFiling.values()].sort((a, b) => (a.filed < b.filed ? 1 : a.filed > b.filed ? -1 : a.adsh < b.adsh ? 1 : -1))[0];
+  const sorted = [...byFiling.values()].sort((a, b) => (a.filed < b.filed ? 1 : a.filed > b.filed ? -1 : a.adsh < b.adsh ? 1 : -1));
+  const latest = sorted[0];
   if (!latest) continue;
   const sym = classToSymbol.get(cls);
-  const filed = latest.filed && /^\d{8}$/.test(latest.filed) ? latest.filed.slice(0, 4) + "-" + latest.filed.slice(4, 6) + "-" + latest.filed.slice(6, 8) : latest.filed || null;
-  const o = bySymbol[sym] = { classId: cls, filed, accession: latest.adsh };
-  for (const [field, v] of Object.entries(latest.fields)) o[field] = { value: Math.round(v.value * 1e7) / 1e7, filed, accession: latest.adsh };
-  // Netto ueber Brutto waere widerspruechlich -> Nettowert verwerfen
-  if (o.netExpenseRatio && o.expenseRatio && o.netExpenseRatio.value > o.expenseRatio.value + 1e-9) { delete o.netExpenseRatio; o.note = "NET_ABOVE_GROSS_DROPPED"; }
+  const iso = (f) => (f && /^\d{8}$/.test(f) ? f.slice(0, 4) + "-" + f.slice(4, 6) + "-" + f.slice(6, 8) : f || null);
+  const pack = (rec) => {
+    const filed = iso(rec.filed), o = { filed, accession: rec.adsh };
+    for (const [field, v] of Object.entries(rec.fields)) o[field] = { value: Math.round(v.value * 1e7) / 1e7, filed, accession: rec.adsh };
+    // Netto ueber Brutto waere widerspruechlich -> Nettowert verwerfen
+    if (o.netExpenseRatio && o.expenseRatio && o.netExpenseRatio.value > o.expenseRatio.value + 1e-9) { delete o.netExpenseRatio; o.note = "NET_ABOVE_GROSS_DROPPED"; }
+    return o;
+  };
+  const o = bySymbol[sym] = Object.assign({ classId: cls }, pack(latest));
+  // Vorheriger Prospektstand (anderes Einreichungsdatum) fuer Kostenaenderungen - nur gleiche Felder werden verglichen.
+  const prev = sorted.find((r) => r.filed && r.filed < latest.filed);
+  if (prev) o.previous = pack(prev);
 }
 report.count = Object.keys(bySymbol).length;
 report.bySymbol = Object.fromEntries(Object.keys(bySymbol).sort().map((k) => [k, bySymbol[k]]));

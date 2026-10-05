@@ -38,6 +38,16 @@ const Identity = require(join(root, "core/identity.js")); // eine Identitaetsreg
 const Master = require(join(root, "vorsorge/engines/etf-master.js"));
 const Tax = require(join(root, "vorsorge/engines/etf-taxonomy.js"));
 const FUND = require(join(root, "vorsorge/engines/etf-fundamentals.js"));
+const CHG = require(join(root, "vorsorge/engines/etf-changes.js"));
+const costEvents = [];   // Kostenaenderungen zwischen zwei Prospektstaenden (SEC Risk/Return)
+/** Vergleicht nur gleich definierte Felder zweier Prospektstaende derselben Anteilklasse. */
+function costChanges(c) {
+  if (!c || !c.previous) return [];
+  const pick = (x) => ({ shareClassId: c.classId, expenseRatio: x.expenseRatio || null, netExpenseRatio: x.netExpenseRatio || null, managementFee: x.managementFee || null });
+  const d = CHG.diffFundamentals(pick(c.previous), pick(c), { from: c.previous.filed, to: c.filed, source: "SEC_RR" });
+  return d.events.map((x) => ({ eventType: x.eventType, field: x.entityId, label: x.entityName, oldValue: x.oldValue, newValue: x.newValue, from: c.previous.filed, to: c.filed,
+    text: x.explanation.replace(/\.$/, "") + " (Prospekt " + c.previous.filed + " → " + c.filed + ")." }));
+}
 const A = require(join(root, "vorsorge/engines/etf-analytics.js"));
 const Codec = require(join(root, "vorsorge/engines/series-codec.js"));
 const Monitor = require(join(root, "vorsorge/engines/monitor.js"));
@@ -333,9 +343,11 @@ export function build() {
       holdings: sec.h ? { status: "AVAILABLE", source: "SEC_NPORT", sourceType: "REGULATORY", series: sec.h[0], path: "/vorsorge/data/holdings/" + sec.h[0] + ".json", asOf: sec.h[1], positions: sec.h[2], top10: sec.h[3] }
         : { status: full.otc ? "NOT_APPLICABLE" : "NOT_IN_NPORT", reason: full.otc ? "US-Freiverkehrszeile eines ausländischen Fonds." : NOT_IN_NPORT },
       costs: sec.c ? { status: "AVAILABLE", basis: sec.costBasis, value: sec.costValue, expenseRatio: full.fundamentals.expenseRatio, netExpenseRatio: full.fundamentals.netExpenseRatio, managementFee: full.fundamentals.managementFee,
+        ...(sec.c.previous ? { previousFiling: sec.c.previous.filed, changes: costChanges(sec.c) } : {}),
         note: "Laufende Kostenquote laut Prospekt-Gebührentabelle. Handels-, Depot- und Transaktionskosten sind nicht enthalten." }
         : { status: "SOURCE_NOT_CONNECTED", value: null, note: "Keine Kostenquote aus einer Primär- oder Regulierungsquelle verfügbar." }
     }));
+    for (const x of costChanges(sec.c)) costEvents.push({ type: "COST_CHANGE", symbol: full.symbol, field: x.field, from: x.oldValue, to: x.newValue, asOf: x.to, text: full.symbol + " · " + x.text });
     entries.push({ full, priceM, totalM });
   }
 
@@ -500,7 +512,9 @@ export function build() {
   const raw = changes.events.length ? changes.events : (prevChanges && (prevChanges.rawEvents || prevChanges.events)) || [];
   const layerOf = Object.fromEntries(nextRows.map((r) => [r.symbol, r.layer]));
   changes.rawEvents = raw;
-  changes.events = Monitor.prioritize(raw, layerOf);
+  // Kostenaenderungen stammen aus Prospektstaenden (nicht aus dem Vergleich zweier Builds) und werden je Build neu ermittelt.
+  changes.costEvents = costEvents.length;
+  changes.events = Monitor.prioritize(raw.concat(costEvents), layerOf);
   writeFileSync(join(OUT, "data/changes.json"), JSON.stringify(changes, null, 1));
 
   // ------------------------------------------------------------ SEO

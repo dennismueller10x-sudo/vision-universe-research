@@ -292,3 +292,13 @@ test("SEC-N-PORT-Pipeline: Quartale -> Snapshots -> Holdings-Datei mit Exposures
   execFileSync("node", [join(root, "scripts/vorsorge/build-etf-intelligence.mjs"), "--work", join(dir, "work"), "--out", out2], { stdio: "pipe" });
   assert.equal(readFileSync(join(out2, "S000004310.json"), "utf8"), readFileSync(join(out, "S000004310.json"), "utf8"));
 });
+test("Kostenaenderung zwischen Prospektstaenden: nur gleich definierte Felder, fehlend ist keine Aenderung", () => {
+  const f = (v) => ({ value: v });
+  const prev = { shareClassId: "C1", expenseRatio: f(0.0009), netExpenseRatio: f(0.0009), managementFee: f(0.0005) };
+  const next = { shareClassId: "C1", expenseRatio: f(0.0009), netExpenseRatio: f(0.0007), managementFee: null };
+  const d = C.diffFundamentals(prev, next, { from: "2025-04-28", to: "2026-04-28", source: "SEC_RR" });
+  assert.deepEqual(d.events.map((e) => e.eventType), ["NET_EXPENSE_RATIO_CHANGED"]);
+  assert.match(d.events[0].explanation, /0,09 % → 0,07 %/);
+  // Brutto gegen Netto wird nie verglichen
+  assert.equal(C.diffFundamentals({ shareClassId: "C1", expenseRatio: f(0.002) }, { shareClassId: "C1", netExpenseRatio: f(0.001) }).events.length, 0);
+});
