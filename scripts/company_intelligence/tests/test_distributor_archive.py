@@ -39,7 +39,7 @@ class Archive(unittest.TestCase):
  def test_resumable_staging_and_article_body_cache_removed(self):
   c=company();r=Resolver({c['companyId']:c});s={'sourceId':'archive','url':INDEX}
   class HTTP:
-   def __init__(self,tmp):self.tmp=Path(tmp);self.calls=0;self.memo={URL:article()}
+   def __init__(self,tmp):self.tmp=Path(tmp);self.calls=0;self.memo={(URL,True):article()}
    def _paths(self,url):return self.tmp/'body',self.tmp/'meta'
    def get(self,url,**kw):
     self.calls+=1
@@ -88,3 +88,43 @@ class Archive(unittest.TestCase):
    self.assertFalse((Path(tmp)/'body').exists());h.recovered=True
    self.assertEqual(len(collect(source,response,h,st,resolver,'2026-10-01T20:00:00Z')),4)
    self.assertFalse((Path(tmp)/'body').exists());st.close()
+
+ def test_real_transport_memo_and_disk_discard_bodies_for_valid_and_invalid_metadata(self):
+  import io
+  from company_intelligence.transport import PublicHTTP
+  from company_intelligence.model import canonical_url
+  class Response(io.BytesIO):
+   headers={'Content-Type':'text/html'}
+  class Clock:
+   def __init__(self):self.value=0
+   def now(self):return self.value
+   def sleep(self,n):self.value+=n
+  for body in (article(),b'<html>FULL ARTICLE WITHOUT VERIFIED METADATA</html>'):
+   with self.subTest(valid=body==article()),tempfile.TemporaryDirectory() as tmp:
+    clock=Clock();calls=[]
+    def opener(request,**kw):
+     calls.append(request.full_url)
+     return Response(b'User-agent: *\nAllow: /\n' if request.full_url.endswith('/robots.txt') else body)
+    h=PublicHTTP(Path(tmp)/'http',opener=opener,validator=canonical_url,clock=clock.now,sleep=clock.sleep)
+    st=Store(Path(tmp)/'s.sqlite');c=company();resolver=Resolver({c['companyId']:c});source={'sourceId':'archive','url':INDEX}
+    h.get(URL,persist=False)
+    self.assertNotIn((URL,True),h.memo);self.assertFalse(any(path.exists() for path in h._paths(URL)))
+    rows=collect(source,{'body':index(),'finalUrl':INDEX},h,st,resolver,NOW)
+    self.assertEqual(len(rows),int(body==article()));self.assertIn(URL,calls)
+    self.assertNotIn((URL,True),h.memo);self.assertFalse(any(path.exists() for path in h._paths(URL)))
+    self.assertTrue(any(key[0].endswith('/robots.txt') for key in h.memo))
+    self.assertNotIn('FULL ARTICLE',json.dumps(st.state('distributorArchive:'+URL)));st.close()
+
+ def test_private_checkpoint_excludes_legacy_interrupted_article_cache_but_restores_staged_metadata(self):
+  import hashlib
+  from company_intelligence.checkpoint import pack,restore
+  from company_intelligence.store import atomic_json
+  from company_intelligence.transport import PublicHTTP
+  with tempfile.TemporaryDirectory() as tmp:
+   root=Path(tmp);state=root/'state';state.mkdir();st=Store(state/'state.sqlite');entry=metadata(article(),URL);st.set_state('distributorArchive:'+URL,{'status':'PARSED','entry':entry});st.close()
+   h=PublicHTTP(state/'http');mp,bp=h._paths(URL);bp.write_bytes(article());atomic_json(mp,{'url':URL,'finalUrl':URL,'sha256':hashlib.sha256(article()).hexdigest(),'checked':1})
+   safe='https://www.globenewswire.com/robots.txt';sm,sb=h._paths(safe);sb.write_bytes(b'User-agent: *\nAllow: /');atomic_json(sm,{'url':safe,'finalUrl':safe,'sha256':hashlib.sha256(sb.read_bytes()).hexdigest(),'checked':1})
+   destination=root/'snapshot.tar.gz';proof=pack(state,destination);fresh=root/'restored';restore(destination,fresh,proof['sha256'])
+   self.assertTrue(bp.exists()) # Packing never mutates the original evidence/cache.
+   self.assertFalse((fresh/'http'/bp.name).exists());self.assertFalse((fresh/'http'/mp.name).exists());self.assertTrue((fresh/'http'/sb.name).exists())
+   restored=Store(fresh/'state.sqlite');self.assertEqual(restored.state('distributorArchive:'+URL)['entry'],entry);restored.close()

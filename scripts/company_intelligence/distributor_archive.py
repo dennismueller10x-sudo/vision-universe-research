@@ -105,7 +105,9 @@ def collect(source,response,http,store,resolver,now):
         if attempted>=limit:break
         attempted+=1
         try:
-            r=http.get(url,ttl=86400)
+            # Only parsed metadata is resumable state; raw article responses
+            # must never enter transport caches, including before a hard stop.
+            r=http.get(url,ttl=86400,persist=False)
             if canonical_url(r['finalUrl'])!=canonical_url(url):raise SourceError('DISTRIBUTOR_ARTICLE_REDIRECT_REQUIRES_REVALIDATION')
             entry=metadata(r['body'],url);out.append(entry)
             consecutive_temporary=0
@@ -125,6 +127,6 @@ def collect(source,response,http,store,resolver,now):
             # removed after metadata extraction, including HTTP memo copies.
             for path in http._paths(canonical_url(url)):
                 path.unlink(missing_ok=True)
-            http.memo.pop(canonical_url(url),None)
+            http.memo.pop((canonical_url(url), True),None)
     store.set_state('distributorArchiveRun:'+source['sourceId'],{'checkedAt':now,'indexedURLs':len(urls),'attempted':attempted,'parsed':len(out),'temporaryFailures':temporary,'stopReason':stop})
     return out
