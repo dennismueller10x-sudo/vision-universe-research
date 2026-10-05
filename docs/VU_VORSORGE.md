@@ -309,7 +309,8 @@ Details: [ETF_EU_FREE_SOURCE_SCORECARD.md](ETF_EU_FREE_SOURCE_SCORECARD.md),
 | `[vorsorge-live-smoke]` | `live-smoke.mjs` | Artefakt (Screenshots, Bericht) | nein |
 
 - **Amtlicher UCITS-Status**: ESMA-Register „Cross-border distribution of funds“, zugeordnet
-  über den Fondsnamen und das Domizil (Konfidenz mittel). Zusätzlich Verwaltungsgesellschaft,
+  über den Fondsnamen und das Domizil (Konfidenz mittel) – 3.144 von 8.084 Anteilklassen, davon
+  2.542 mit gemeldetem Vertrieb in Deutschland. Zusätzlich Verwaltungsgesellschaft,
   Herkunftsstaat, Land der Aufsicht und gemeldete Vertriebsländer. Ältere Notifizierungen fehlen im Register teils – nur positive Aussagen („Vertrieb in Deutschland gemeldet“) werden gezeigt, ein fehlendes Land wird nie als „nicht vertrieben“ dargestellt.
 - **FIRDS-Stamm**: je ISIN aus allen Handelsplatz-Datensätzen – vollständiger Name, Fonds-LEI
   (GLEIF-Kategorie FUND), Domizil aus der Fonds-LEI oder aus dem ISIN-Präfix (`domicileBasis`).

@@ -25,6 +25,18 @@ Stand: 05.10.2026. Faktische Abdeckung, kein Ranking. Status-Werte siehe
 | Indexanbieter | Indexstände | teils | ja | Web | – | nein | nein (keine Ableitung) | – | – | – | nicht nutzbar → keine Tracking Difference |
 | Tiingo | – | – | – | – | – | – | – | – | – | – | führt **keine** europäischen Börsen (geprüft über die Tickerliste) |
 
+## Abdeckung (Lauf 37310881992, 05.10.2026)
+
+| Kennzahl | Wert |
+|---|---|
+| ETF-Anteilklassen an EU-Handelsplätzen (FIRDS) | 8.084 (113.137 Handelsplatz-Datensätze) |
+| Domizil aus Fonds-LEI (GLEIF) / aus ISIN-Präfix / unbekannt | 7.821 / 258 / 5 |
+| Domizil IE / LU / DE / FR | 3.296 / 1.279 / 138 / 130 |
+| amtlicher UCITS-Status (ESMA-Register, Namenszuordnung) | 3.144 Anteilklassen (22.173 UCITS-Fonds im Register) |
+| davon Vertrieb in Deutschland gemeldet | 2.542 |
+| Xetra-ETFs mit WKN / laufenden Kosten / Replikation (nicht veröffentlicht) | 3.013 / 3.008 / 2.491 |
+| laufende Kosten (Xetra, nur Statistik) | Median 0,23 %, P10 0,09 %, P90 0,53 %, Max 3,5 % |
+
 ## Ergebnis
 
 - **Frei, offiziell und veröffentlichbar** sind für UCITS-ETFs: Identität und Listings
