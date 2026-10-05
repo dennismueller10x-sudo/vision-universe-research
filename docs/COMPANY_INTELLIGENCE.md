@@ -1,3 +1,8 @@
+
+## Validated profile catalogue milestone — 2026-10-05 12:08 UTC
+
+**3,684 profiles / 6,078 supported issuers (60.61%)**: 3,673 SEC and 11 verified first-party web profiles. All 5,412 SEC identities have received an initial attempt. Final targeted cache-only quality passes removed 43 weak descriptions, recovered two explicit descriptions and generated source-hash-scoped withdrawals; 77 cumulative withdrawals preserve prior facts privately rather than deleting other intelligence. All 3,684 persisted source hashes validate against cached evidence with zero audit requests. **507 Python tests and 39 Company Intelligence Node tests pass.** The 80–90% profile target remains unmet; the missing expanded discovery ledger and its private checkpoint remain explicitly unresolved locally. This milestone does not recount the original news/event ledger.
+
 # Company Intelligence — stored profiles and conversion continuation
 
 ## Validated milestone, 2026-10-05

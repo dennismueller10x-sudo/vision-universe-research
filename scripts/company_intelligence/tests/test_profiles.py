@@ -131,6 +131,61 @@ class ProfileTests(unittest.TestCase):
         wrong = body.replace(b'Example Holdings Inc. and its subsidiaries', b'Example Holdings Inc. Japan LLC and its subsidiaries')
         self.assertEqual(extract(COMPANY, wrong, source, NOW)['state'], 'UNAVAILABLE')
 
+    def test_web_loan_marketing_and_stock_footer_do_not_become_business_facts(self):
+        body = b'<p>Example Holdings Inc. makes the loan process easy to navigate and quick to close.</p>'
+        self.assertEqual(extract(COMPANY, body, WEB, NOW)['state'], 'UNAVAILABLE')
+        body = b'<p>Example Holdings Inc. is the indirect parent company of Example Bank, and its common stock is traded on an exchange under the symbol EXMP. Investor information and press releases can be viewed on its website.</p>'
+        self.assertEqual(extract(COMPANY, body, WEB, NOW)['description'], 'Example Holdings Inc. is the indirect parent company of Example Bank.')
+        body = b'<p>Example Holdings Inc. is an international metals company with the objective of being foremost in copper.</p>'
+        self.assertEqual(extract(COMPANY, body, WEB, NOW)['description'], 'Example Holdings Inc. is an international metals company.')
+
+    def test_company_timeline_present_tense_does_not_describe_current_operations(self):
+        body = b'<p>Example Holdings Inc. provides regulated energy delivery services.</p><h2>COMPANY HISTORY</h2><h3>2001</h3><p>Example Holdings Inc. sells its coal operations and focuses on mining products.</p><h2>Current Operations</h2><p>Example Holdings Inc. operates electricity and natural gas utilities.</p>'
+        result = extract(COMPANY, body, WEB, NOW)
+        self.assertNotIn('coal', result['description'])
+        self.assertIn('natural gas utilities', result['description'])
+        comparative = b'<p>Example Holdings Inc. provides investors exposure to precious metals without many of the risks of traditional producers.</p>'
+        self.assertEqual(extract(COMPANY, comparative, WEB, NOW)['state'], 'UNAVAILABLE')
+
+    def test_hyphenated_market_superiority_does_not_leave_an_invented_business_type(self):
+        body = b'<p>Example Holdings Inc. is a market-leading provider of agriculture and analytics services.</p>'
+        self.assertEqual(extract(COMPANY, body, WEB, NOW)['description'], 'Example Holdings Inc. is a provider of agriculture and analytics services.')
+
+    def test_team_member_count_is_not_a_backdoor_employee_field(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>We manufacture medical devices, supported by a global team of over 20,000 members.</p><p>We manufacture medical devices for hospitals and clinics.</p>'
+        self.assertEqual(extract(COMPANY, body, source, NOW)['description'], 'Example Holdings Inc. manufactures medical devices for hospitals and clinics.')
+
+    def test_explicit_current_operating_clause_is_not_a_future_plan(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>We intend to leverage our current operations, in which we design, manufacture and sell electric vehicles and energy storage systems, to achieve that objective.</p>'
+        self.assertEqual(extract(COMPANY, body, source, NOW)['description'], 'Example Holdings Inc. designs, manufactures and sells electric vehicles and energy storage systems.')
+        future = body.replace(b'current operations', b'future operations')
+        self.assertEqual(extract(COMPANY, future, source, NOW)['state'], 'UNAVAILABLE')
+
+    def test_business_objectives_and_generic_product_markets_cannot_carry_a_profile(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>Our principal business objective is to generate shareholder returns through energy investments.</p><p>Our products are used in consumer and industrial applications.</p>'
+        self.assertEqual(extract(COMPANY, body, source, NOW)['state'], 'UNAVAILABLE')
+        body = b"<p>Example Holdings Inc. provides precise and reliable thermal process equipment - enabling tomorrow's technologies in energy storage and aerospace.</p>"
+        self.assertEqual(extract(COMPANY, body, WEB, NOW)['description'], 'Example Holdings Inc. provides thermal process equipment.')
+        body = b'<p>Example Holdings Inc. is a market-leading agriculture and analytics services company.</p>'
+        self.assertIn('is an agriculture', extract(COMPANY, body, WEB, NOW)['description'])
+
+    def test_industry_word_in_legal_name_does_not_qualify_administration(self):
+        company = {**COMPANY, 'names': ['Example Energy Inc.']}
+        source = annual_filing(company, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>We operate approximately 98 percent of the net acreage across our assets.</p><p>We make available free of charge our annual reports and corporate governance documents.</p>'
+        self.assertEqual(extract(company, body, source, NOW)['state'], 'UNAVAILABLE')
+        breweries = b'<h2>Item 1. Business</h2><p>We operate primary breweries and a cidery in North America.</p>'
+        self.assertIn('operates primary breweries', extract(company, breweries, source, NOW)['description'])
+        counted = breweries.replace(b'primary breweries and a cidery', b'nine primary breweries, three craft breweries and one cidery')
+        result = extract(company, counted, source, NOW)
+        self.assertNotIn('nine', result['description'])
+        self.assertIn('craft breweries', result['description'])
+        staff = b'<h2>Item 1. Business</h2><p>We provide logistics services through approximately 4,300 dedicated employees.</p><p>We provide logistics services for industrial customers.</p>'
+        self.assertNotIn('4,300', extract(company, staff, source, NOW)['description'])
+
     def test_foreign_private_issuer_20f_business_overview_is_identity_scoped(self):
         data = submissions(); data['filings']['recent']['form'] = ['20-F']
         source = annual_filing(COMPANY, data, NOW)
