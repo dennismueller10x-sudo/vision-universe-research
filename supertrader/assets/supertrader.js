@@ -1157,7 +1157,32 @@
   var NEED = { home: ['registry', 'signals', 'market', 'pilot', 'replay', 'trend52'], strategies: ['registry', 'signals', 'market', 'pilot', 'trend52'], strategy: ['registry', 'signals', 'market', 'pilot', 'sources', 'backtests', 'portfolio', 'trend52'], signals: ['registry', 'signals', 'market'], stock: ['registry', 'signals', 'market', 'portfolio', 'trend52'], backtests: ['registry', 'signals', 'market', 'backtests', 'pilot'], replay: ['registry', 'signals', 'market', 'replay'], sources: ['registry', 'signals', 'market', 'sources'] };
   var FILE = { registry: 'registry.json', signals: 'signals.json', market: 'market.json', backtests: 'backtests.json', pilot: 'pilot-backtest.json', replay: 'replay.json', sources: 'sources.json', portfolio: 'portfolio.json', trend52: 'trend52.json' };
   var need = NEED[page] || NEED.home;
-  Promise.all(need.map(function (k) { return getJSON(FILE[k]).catch(function (e) { if (k === 'pilot' || k === 'replay' || k === 'portfolio' || k === 'trend52') return null; throw e; }); })).then(function (res) {
+  /* Signale nur so weit laden, wie die Seite sie braucht (vorher 3,3 MB auf
+     jeder Seite): Aktienseite ihren Ausschnitt, Signalliste alles, der Rest
+     signals-core.json. Welche Ausschnitte existieren, sagt build.json
+     (slices); ohne diese Angabe (alter Datenstand) oder fuer ein Symbol ohne
+     Ausschnitt laedt die Seite direkt die vollstaendige Datei - ohne
+     vergebliche Anfrage. */
+  var SYM = (body.getAttribute('data-symbol') || new URLSearchParams(location.search).get('s') || '').toUpperCase();
+  var BUILD = null;
+  function build() { return BUILD || (BUILD = getJSON('build.json').catch(function () { return null; })); }
+  function load(k) {
+    /* Regeltexte braucht nur die Strategie-Detailseite. */
+    if (k === 'registry') return build().then(function (b) { return page !== 'strategy' && b && b.slices && b.slices.registry
+      ? getJSON('registry-core.json').catch(function () { return getJSON(FILE.registry); }) : getJSON(FILE.registry); });
+    if (k !== 'signals' || page === 'signals') return getJSON(FILE[k]);
+    return build().then(function (b) {
+      var sl = b && b.slices, part = null;
+      if (sl && page === 'stock') part = (sl.stock || []).indexOf(SYM) >= 0 ? 'stock/' + SYM + '.json' : null;
+      else if (sl) part = 'signals-core.json';
+      if (!part) return getJSON(FILE.signals);
+      return getJSON(part).then(function (s) {
+        if (page === 'stock') { s.asOf = b.asOf; s.inputsGeneratedAt = b.inputsGeneratedAt; }
+        return s;
+      }).catch(function () { return getJSON(FILE.signals); });
+    });
+  }
+  Promise.all(need.map(function (k) { return load(k).catch(function (e) { if (k === 'pilot' || k === 'replay' || k === 'portfolio' || k === 'trend52') return null; throw e; }); })).then(function (res) {
     var D = {}; need.forEach(function (k, i) { D[k] = res[i]; });
     D.srcMap = D.sources ? byId(D.sources.sources, 'source_id') : {};
     if (D.registry) D.registry.strategies.forEach(function (x) { if (x.pending_semantics === 'WATCHLIST' && !isResearchS(x)) WATCH[x.strategy_id] = x.watchlist_label || 'Beobachtung'; if (isResearchS(x)) RESEARCH[x.strategy_id] = true; }); if (D.registry) HAS_CURRENT = D.registry.strategies.some(function (x) { return x.mode === 'LIVE' && !isResearchS(x); });

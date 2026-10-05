@@ -343,7 +343,7 @@ jobs:
           # Konfiguration, sondern eine Identitaet: damit ein spaeterer
           # Schritt feststellen kann, OB er mit der Fassung spricht, die
           # dieser Lauf gerade deployt hat.
-          npx --yes wrangler@4 deploy --var VU_SOCIAL_BUILD:"$GITHUB_SHA" 2>&1 | tee /tmp/deploy.log
+          npx --yes wrangler@4.147.0 deploy --var VU_SOCIAL_BUILD:"$GITHUB_SHA" 2>&1 | tee /tmp/deploy.log
           # Die tatsaechliche Adresse aus der wrangler-Ausgabe lesen. Sie ist
           # die Quelle der Wahrheit — nicht das, was wir vorher geraten haben.
           url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' /tmp/deploy.log | head -1 || true)
@@ -412,7 +412,7 @@ jobs:
       - name: Erneut deployen, damit die Redirect-URI stimmt
         if: steps.mode.outputs.deploy == 'true' && steps.fixurl.outputs.redeploy == 'true'
         working-directory: workers/vision-universe-social
-        run: npx --yes wrangler@4 deploy
+        run: npx --yes wrangler@4.147.0 deploy
 
       - name: Secrets NACH dem Deployment vergleichen
         if: steps.mode.outputs.deploy == 'true'

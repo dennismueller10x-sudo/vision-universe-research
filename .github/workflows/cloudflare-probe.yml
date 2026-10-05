@@ -109,7 +109,7 @@ jobs:
           # Jede 32-stellige Hexfolge raus: Account-IDs stehen in der
           # Ausgabe von whoami, und sie gehen niemanden an, der das Log
           # liest.
-          npx --yes wrangler@4 whoami 2>&1 \
+          npx --yes wrangler@4.147.0 whoami 2>&1 \
             | sed -E 's/[0-9a-f]{32}/<maskiert>/g' \
             | tee /tmp/whoami.txt
           echo "gefunden=ja" >> "$GITHUB_OUTPUT"
@@ -178,7 +178,7 @@ jobs:
         working-directory: worker
         run: |
           set +e
-          npx --yes wrangler@4 deploy --dry-run --outdir /tmp/vu-live-bundle 2>&1 \
+          npx --yes wrangler@4.147.0 deploy --dry-run --outdir /tmp/vu-live-bundle 2>&1 \
             | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tail -40
           echo ""
           if [ -f /tmp/vu-live-bundle/index.js ]; then

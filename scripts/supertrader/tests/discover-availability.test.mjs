@@ -23,7 +23,7 @@ test('Build weist den Zustand vor dem Schreiben von signals.json aus und veraend
   const src = readFileSync(join(ROOT, 'scripts', 'supertrader', 'build.mjs'), 'utf8');
   const i = src.indexOf('signals.discoverAvailability = discoverAvailability(');
   assert.ok(i > 0 && i < src.indexOf("writeJson(path.join(DATA, 'signals.json'), signals)"));
-  assert.match(src, /discoverAvailability\(\s*\[\.\.\.Object\.keys\(signals\.bySymbol\), \.\.\.TREND52_SYMBOLS\]/);
+  assert.match(src, /discoverAvailability\(\s*\[\.\.\.Object\.keys\(signals\.bySymbol\), \.\.\.TREND52_SYMBOLS, \.\.\.symbolsIn\(signals\.partialChecks\)\]/);
 });
 
 test('Seite: jeder Discover-Link laeuft ueber discoverLink, mit Hinweis statt totem Link', () => {
@@ -32,4 +32,21 @@ test('Seite: jeder Discover-Link laeuft ueber discoverLink, mit Hinweis statt to
   assert.match(src, /function discoverLink\(sym, sig, label\)/);
   assert.match(src, /av\.unavailable \|\| \[\]\)\.indexOf\(sym\) >= 0\) return h\('p', \{ class: 'st-hint', 'data-discover': 'unavailable'/);
   assert.match(src, /Aktienansicht vorübergehend nicht verfügbar – Daten werden geprüft\./);
+});
+
+test("geprueft wird jede Seite, die den Discover-Link traegt - auch Teilpruefungs-Titel", () => {
+  const src = readFileSync(new URL("../build.mjs", import.meta.url), "utf8");
+  const pruef = src.slice(src.indexOf("signals.discoverAvailability = discoverAvailability("));
+  const seiten = src.slice(src.indexOf("writeStockPages(signals, ["));
+  const liste = (x) => x.slice(x.indexOf("["), x.indexOf("]") + 1).replace(/\.\.\.Object\.keys\(signals\.bySymbol\),\s*/, "");
+  assert.equal(liste(pruef).replace(/\s+/g, ""), liste(seiten).replace(/\s+/g, ""));
+});
+
+test("der Ausschnitt einer Aktienseite traegt die Discover-Verfuegbarkeit seines Symbols (#397 + #418)", async () => {
+  const { signalsBySymbol } = await import("../build.mjs");
+  const signals = { schema: "x", bySymbol: { LOGI: {}, CORT: {} }, strategies: {}, partialChecks: {},
+    discoverAvailability: { source: "s", checked: 2, unavailable: ["LOGI"], note: "n" } };
+  const s = signalsBySymbol(signals);
+  assert.deepEqual(s.LOGI.discoverAvailability.unavailable, ["LOGI"], "LOGI-Seite muss den Hinweis zeigen koennen");
+  assert.deepEqual(s.CORT.discoverAvailability.unavailable, [], "CORT behaelt den Link");
 });
