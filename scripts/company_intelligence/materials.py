@@ -35,16 +35,25 @@ def from_validated_ir(company, config, now):
     from .model import stable_id
     page=canonical_url(config.get('irHomepage'))
     url=canonical_url(config.get('materialsPage') or config.get('presentationsUrl'))
+    proof=config.get('materialsDomainProof') or {}
+    redirect=proof.get('redirectEvidence') or {}
+    verified_redirect=(proof.get('companyId')==company['companyId'] and proof.get('status')=='VALIDATED'
+                       and canonical_url(proof.get('url'))==url and canonical_url(redirect.get('finalUrl'))==url
+                       and within_domain(redirect.get('fromUrl'),page)
+                       and redirect.get('method')=='INDEPENDENT_DESTINATION_LEGAL_OWNER_VERIFICATION'
+                       and 'INDEPENDENTLY_VERIFIED_REDIRECT_DESTINATION' in proof.get('evidence',[]))
     if (not company.get('officialSites') or config.get('companyId')!=company['companyId'] or
             config.get('pageRole')!='IR' or config.get('evidence')!='LINK_FROM_VERIFIED_OFFICIAL_SITE' or
-            not page or not url or url==page or not within_domain(url,page) or
+            not page or not url or url==page or not (within_domain(url,page) or verified_redirect) or
             re.search(r'/static-files/|\.(?:pdf|zip)(?:\?|$)',url,re.I)):
         return None
     return {'sourceId':stable_id(company['companyId'],url,'html-materials'),'companyId':company['companyId'],
             'url':url,'type':'IR_MATERIALS','format':'HTML_MATERIALS','provider':config.get('providerType','GENERIC'),
             'verified':True,'active':True,'intervalHours':24,'allowedSites':[company['officialSites'][0],page,url],
             'metadata':{'originatingIRHomepage':page},'lastVerified':now,
-            'verificationEvidence':{'method':'ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE','linkedFrom':page}}
+            'verificationEvidence':{'method':'ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE','linkedFrom':page,
+                                    **({'redirectEvidence':redirect,'ownershipContentHash':proof['contentHash'],
+                                        'ownershipVerificationVersion':proof['verificationVersion']} if verified_redirect else {})}}
 
 
 def parse_hub(body, source, company, final_url, now):
@@ -142,6 +151,16 @@ def page_documents(company, links, page, now):
         # presentation filenames in a financial-results row retain their type.
         from urllib.parse import urlsplit
         filename = re.sub(r'[-_+]', ' ', unquote(urlsplit(link['url']).path.rsplit('/', 1)[-1]))
+        # Accessible download buttons may carry only "PDF", an icon, or a
+        # shorter earnings label. Use explicit document filenames only for
+        # PDF attachments advertised by this validated page, never HTML slugs.
+        if not kind and re.search(r'\.pdf$', urlsplit(link['url']).path, re.I):
+            kind = ('PREPARED_REMARKS' if re.search(r'\bprepared remarks\b|\bearnings script\b', filename, re.I)
+                    else 'COMPANY_TRANSCRIPT' if re.search(r'\b(?:company|earnings|conference call) transcript\b', filename, re.I)
+                    else 'SHAREHOLDER_LETTER' if re.search(r'\bshareholder letter\b|\bletter to shareholders\b', filename, re.I)
+                    else 'EARNINGS_RELEASE' if re.search(r'\bearnings release\b', filename, re.I)
+                    else 'PRESENTATION' if re.search(r'\b(?:investor|corporate|earnings|merger) presentation\b|\bearnings slides\b', filename, re.I)
+                    else None)
         if kind == 'PRESENTATION' and re.search(r'annual report|quarterly report|financial statements|10 [KQ]\b', filename, re.I) and not re.search(r'presentation|slides|deck', filename, re.I):
             kind = 'FINANCIAL_REPORT'
         if not kind:

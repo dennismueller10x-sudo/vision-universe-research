@@ -36,6 +36,62 @@ class SitemapTests(unittest.TestCase):
    c=company(name,ticker);self.assertEqual(Resolver({c['companyId']:c}).resolve(r,{'type':'RSS','provider':'GLOBENEWSWIRE_SITEMAP','url':URL}),[])
 
 class ManagementMaterialsTests(unittest.TestCase):
+ def test_explicit_pdf_filenames_recover_icon_links_without_classifying_html_or_product_files(self):
+  from company_intelligence.feeds import parse_links
+  page='https://apple.com/investors'
+  html=b'<a href="https://cdn.example/Q2-2026-Debt-Investor-Presentation.pdf?download=1">Download</a><a href="/q2-2026-earnings-release.pdf">Q2 2026 Apple Earnings</a><a href="/prepared_remarks.pdf"></a><a href="/2026-shareholder-letter.pdf">PDF</a><a href="/corporate-presentation.html">Download</a><a href="/product-presentation.pdf">Download</a><a href="/presentation.pdf">PDF</a><a href="/earnings-release.pdf#section">Earnings Release</a>'
+  docs=page_documents(company(),parse_links(html,page),page,NOW)
+  self.assertEqual([d['type'] for d in docs],['PRESENTATION','EARNINGS_RELEASE','PREPARED_REMARKS','SHAREHOLDER_LETTER','EARNINGS_RELEASE'])
+  self.assertEqual(docs[0]['sourceUrl'],page)
+  self.assertEqual(docs[1]['fiscalQuarter'],'Q2')
+  self.assertEqual(docs[1]['fiscalYear'],2026)
+  self.assertEqual(docs[2]['label'],'')
+
+ def test_advertised_earnings_results_hub_uses_the_existing_single_page_bound(self):
+  from company_intelligence.feeds import discover_ir
+  root='https://investors.apple.com/';hub=root+'earnings'
+  class HTTP:
+   def __init__(self):self.calls=[]
+   def get(self,url,**kw):
+    self.calls.append(url)
+    if url==root:return {'body':b'<a href="/earnings-estimates">Earnings Estimates</a><a href="/earnings">View all earnings results</a>','finalUrl':url}
+    if url==hub:return {'body':b'<a href="/q2-2026-earnings-release.pdf">Q2 2026 Apple Earnings</a><a href="https://cdn.example/2026-investor-presentation.pdf">PDF</a>','finalUrl':url}
+    raise SourceError('HTTP_404')
+  h=HTTP();sources,configs=discover_ir(company(),root,h,NOW)
+  self.assertNotIn(root+'earnings-estimates',h.calls)
+  self.assertEqual(h.calls.count(hub),1)
+  self.assertEqual(configs[0]['materialsPage'],hub)
+  self.assertEqual([d['type'] for d in configs[0]['documents']],['EARNINGS_RELEASE','PRESENTATION'])
+  self.assertEqual([s['url'] for s in sources if s.get('format')=='HTML_MATERIALS'],[hub])
+
+ def test_redirected_materials_hub_requires_independent_destination_ownership(self):
+  from company_intelligence.feeds import discover_ir
+  root='https://investors.apple.com/';hub=root+'earnings';destination='https://ir.example/earnings'
+  class HTTP:
+   def __init__(self,owner):self.owner=owner
+   def get(self,url,**kw):
+    if url==root:return {'body':b'<a href="/earnings">View all earnings results</a>','finalUrl':url}
+    if url==hub:return {'body':('<title>'+self.owner+'</title><footer>Copyright 2026 '+self.owner+'</footer><a href="/2026-investor-presentation.pdf">PDF</a>').encode(),'finalUrl':destination,'redirects':[hub,destination],'sha256':'a'*64}
+    raise SourceError('HTTP_404')
+  for owner,accepted in [('Apple Inc.',True),('Other Company Inc.',False)]:
+   sources,configs=discover_ir(company(),root,HTTP(owner),NOW)
+   if accepted:
+    self.assertEqual(configs[0]['materialsPage'],destination)
+    self.assertEqual(configs[0]['materialsRedirectEvidence']['finalUrl'],destination)
+    self.assertEqual(configs[0]['documents'][0]['url'],'https://ir.example/2026-investor-presentation.pdf')
+    self.assertEqual([s['url'] for s in sources if s.get('format')=='HTML_MATERIALS'],[destination])
+    descriptor=next(s for s in sources if s.get('format')=='HTML_MATERIALS')
+    self.assertEqual(descriptor['verificationEvidence']['redirectEvidence']['finalUrl'],destination)
+    from company_intelligence.materials import from_validated_ir
+    import copy
+    broken=copy.deepcopy(configs[0]);broken['materialsDomainProof']['companyId']='wrong-company'
+    self.assertIsNone(from_validated_ir(company(),broken,NOW))
+    broken=copy.deepcopy(configs[0]);broken['materialsDomainProof']['redirectEvidence']['fromUrl']='https://evil.example/earnings'
+    self.assertIsNone(from_validated_ir(company(),broken,NOW))
+   else:
+    self.assertNotIn('materialsPage',configs[0]);self.assertFalse(configs[0]['documents'])
+    self.assertTrue(any('MATERIALS_REDIRECT_REQUIRES_REVALIDATION' in w['reason'] for w in configs[0]['discoveryWarnings']))
+
  def test_representations_product_navigation_cannot_consume_the_material_hub_walk(self):
   from company_intelligence.feeds import discover_ir
   from company_intelligence.platforms import endpoints

@@ -292,16 +292,29 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
         # One advertised hub can fill a missing material component even when
         # the IR homepage already contains unrelated annual-report links.
         if configs[-1]['pageRole'] == 'IR' and not any(d['type']=='PRESENTATION' for d in configs[-1]['documents']):
-            material_hubs = [l for l in links if within_domain(l['url'], page) and re.search(r'\bpresentations?\b|quarterly results|financial results|shareholder letters|transcripts|prepared remarks', l['text'], re.I) and not re.search(r'\.(?:pdf|zip)(?:\?|$)', l['url'], re.I) and l['url'] != response['finalUrl']]
+            material_hubs = [l for l in links if within_domain(l['url'], page) and re.search(r'\bpresentations?\b|quarterly results|financial results|\bearnings results\b|shareholder letters|transcripts|prepared remarks', l['text'], re.I) and not re.search(r'\.(?:pdf|zip)(?:\?|$)', l['url'], re.I) and l['url'] != response['finalUrl']]
             material_hubs.sort(key=lambda l: (not bool(re.search(r'\bpresentations?\b|\bslides?\b',l['text'],re.I)),l['url']))
             materials_page = next(iter(material_hubs), None)
             if materials_page and materials_page['url'] != response['finalUrl']:
                 materials_response = optional_page(materials_page['url'])
-                if materials_response and within_domain(materials_response['finalUrl'], page):
+                materials_redirect_proof = None
+                if materials_response and not within_domain(materials_response['finalUrl'], page):
+                    try:
+                        materials_redirect_proof = redirected_ir_proof(materials_page['url'], materials_response)
+                    except BudgetExhausted:
+                        raise
+                    except SourceError as error:
+                        warnings.append({'url': materials_page['url'], 'reason': 'MATERIALS_REDIRECT_REQUIRES_REVALIDATION:' + str(error)[:160]})
+                        materials_response = None
+                if materials_response:
                     material_links = parse_links(materials_response['body'], materials_response['finalUrl'])
                     hub_documents=page_documents(company, material_links, materials_response['finalUrl'], now)
                     configs[-1]['documents'].extend(hub_documents)
                     configs[-1]['materialsPage'] = materials_response['finalUrl']
+                    if materials_redirect_proof:
+                        configs[-1]['materialsRedirectEvidence'] = materials_redirect_proof['redirectEvidence']
+                        configs[-1]['materialsOwnershipEvidence'] = materials_redirect_proof['ownershipEvidence']
+                        configs[-1]['materialsDomainProof'] = {**materials_redirect_proof, 'companyId': company['companyId']}
                     if provider=='Q4':
                         from .q4_presentations import discover as discover_q4_presentations
                         try:
