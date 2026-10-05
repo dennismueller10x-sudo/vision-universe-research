@@ -1,0 +1,88 @@
+{
+ "version": "PRACTITIONER_CONSENSUS_V1_1",
+ "file": "PRACTITIONER_CONSENSUS_V1_1.jsonl",
+ "sha256": "5fb8c25b366a148f4db00d51cd93038dbbf15a42d5f21ad52a0e90e520c7650f",
+ "referencesSha256": "1e41101f8c0b377cc88435a340d1fd6d6314a1e73e1272d71f4298a8316d692e",
+ "sealedLinksSha256": "28fd7cf389ad66e975bb1946d56031c4a27d72f45340e1eb58795f8b6e74e23e",
+ "basedOn": {
+  "version": "PRACTITIONER_REFERENCE_V1",
+  "sha256": "7af25c9b5d61f0268f7049103076839e1dd43b3a2d9d24bc942290dd1133f489"
+ },
+ "createdAt": "2026-10-05T06:14:01.718Z",
+ "label": "PRACTITIONER CONSENSUS REFERENCE, NOT GROUND TRUTH",
+ "protocol": "PRACTITIONER_PROTOCOL.md Nachtraege 7 und 8",
+ "supersedes": "PRACTITIONER_CONSENSUS_V1 (Eltern/Kind-Zeitrahmen faelschlich verglichen)",
+ "openedCases": 35,
+ "consensusClasses": {
+  "C_DISAGREEMENT": 4,
+  "D_SINGLE": 28,
+  "E_TIMEFRAME_ONLY": 2,
+  "B_PARTIAL": 1
+ },
+ "independentFamiliesHist": {
+  "1": 28,
+  "2": 6,
+  "3": 1
+ },
+ "consensusImpulseSet": [],
+ "sourceFamilies": {
+  "ewf": 19,
+  "tiedje": 1,
+  "tv-cryptoknee": 9,
+  "tv-digitalsurftrading": 1,
+  "tv-stevetan": 2,
+  "tv-thefifthwave": 5,
+  "tv-yuchaosng": 5,
+  "tv-discobiscuit": 1
+ },
+ "timeframes": {
+  "1W": 20,
+  "1D": 15
+ },
+ "assets": {
+  "ZM": 1,
+  "UNH": 1,
+  "QQQ": 2,
+  "DIS": 1,
+  "CAT": 1,
+  "NVDA": 2,
+  "PHM": 1,
+  "RCL": 1,
+  "FCX": 1,
+  "ABNB": 1,
+  "OLN": 1,
+  "MCD": 1,
+  "COIN": 1,
+  "LLY": 1,
+  "AXP": 1,
+  "MSTR": 1,
+  "NEE": 1,
+  "BTCUSD": 11,
+  "SPY": 3,
+  "TSLA": 1,
+  "IWM": 1
+ },
+ "confidence": {
+  "HIGH": 15,
+  "MEDIUM": 28
+ },
+ "windows": {
+  "5": 13,
+  "10": 5,
+  "20": 3,
+  "null": 14
+ },
+ "referencesTotal": 79,
+ "referencesByStatus": {
+  "EXCLUDED": 58,
+  "CANDIDATE": 8,
+  "INCLUDED": 13
+ },
+ "removedBecauseSameItemAsSealedV1Case": 0,
+ "sealed": {
+  "anchorCases": 43,
+  "anchorsWithLinks": 14,
+  "linkedReferences": 40,
+  "note": "Keine Auswertung gegen versiegelte Ausgangsfaelle."
+ }
+}
