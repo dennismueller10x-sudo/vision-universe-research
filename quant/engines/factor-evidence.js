@@ -67,16 +67,38 @@
 
   var COMPONENT_STATES = ["AVAILABLE", "UNAVAILABLE"];
 
-  /* Display bands. Cut points are the quant-v2.0.0 ratingBands; only the
-     labels are product wording. A band is a position in the universe, not
-     a verdict about the company. */
+  /* STUFEN = RELATIVE POSITION (factor-band-2.0.0, 05.10.2026).
+     Ein Faktorwert ist ein gewichtetes Mittel aus Rangplaetzen (Peer 70 %,
+     Universum 30 %) - relativ gebaut, ohne eine einzige absolute Schwelle.
+     Bis 1.x lagen feste Wertgrenzen (90/75/45/25) auf diesem Mittel: die
+     Grenzen klangen nach Anteilen ("Top 10 %"), waren es aber nicht, und
+     weil sich Mittel zur Mitte ziehen, erreichte "Bilanz- & Ergebnis-
+     qualitaet" die oberste Stufe nie (0 von 3.776), das Risiko bei 7,1 %.
+     Seit 2.0.0 ist die Stufe die gezaehlte Position des Faktorwerts unter
+     allen bewerteten Titeln desselben Faktors und Stichtags: "hoeher als
+     X %". Grenzen und Etiketten sind die der Methodik quant-v2
+     (ratingBands: Top 10 % ... unteres Viertel) - jetzt wahr.
+     Methodik: quant/methodology/factor-bands-v2.json */
+  var BAND_SEMANTICS_VERSION = "factor-band-2.0.0";
+  /* Unter so vielen bewerteten Titeln ist eine Position keine Aussage. */
+  var MIN_POSITION_UNIVERSE = 100;
   var BANDS = [
-    { min: 90, id: "VERY_STRONG", label: "Sehr stark", plain: "Gehört zu den stärksten 10 % im Universum." },
-    { min: 75, id: "STRONG", label: "Stark", plain: "Liegt deutlich über dem Durchschnitt des Universums." },
-    { min: 45, id: "NEUTRAL", label: "Durchschnittlich", plain: "Liegt im mittleren Bereich des Universums." },
-    { min: 25, id: "WEAK", label: "Schwach", plain: "Liegt unter dem Durchschnitt des Universums." },
-    { min: 0, id: "VERY_WEAK", label: "Sehr schwach", plain: "Gehört zum schwächsten Viertel im Universum." }
+    { min: 90, id: "VERY_STRONG", label: "Sehr stark", plain: "Gehört zu den stärksten 10 % der bewerteten Aktien." },
+    { min: 75, id: "STRONG", label: "Stark", plain: "Liegt höher als drei Viertel der bewerteten Aktien." },
+    { min: 45, id: "NEUTRAL", label: "Durchschnittlich", plain: "Liegt im mittleren Bereich der bewerteten Aktien." },
+    { min: 25, id: "WEAK", label: "Schwach", plain: "Liegt unter dem mittleren Bereich der bewerteten Aktien." },
+    { min: 0, id: "VERY_WEAK", label: "Sehr schwach", plain: "Gehört zum schwächsten Viertel der bewerteten Aktien." }
   ];
+
+  /* Position: Anteil der anderen bewerteten Titel mit einem NIEDRIGEREN
+     Faktorwert, in Prozent (0-100, eine Nachkommastelle). Gleichstand
+     zaehlt nicht als niedriger. `sortedAsc` ist aufsteigend sortiert. */
+  function positionOf(sortedAsc, score) {
+    if (!Array.isArray(sortedAsc) || sortedAsc.length < MIN_POSITION_UNIVERSE || !finite(score)) return null;
+    var lo = 0, hi = sortedAsc.length;
+    while (lo < hi) { var mid = (lo + hi) >> 1; if (sortedAsc[mid] < score) lo = mid + 1; else hi = mid; }
+    return Math.round(1000 * lo / (sortedAsc.length - 1)) / 10;
+  }
 
   var CONFIDENCE_BANDS = [
     { min: 90, id: "HIGH", label: "hoch" },
@@ -223,9 +245,10 @@
       "Sobald der Titel länger gehandelt wird, entsteht der Wert von selbst.";
   }
 
-  function band(score) {
-    if (!finite(score)) return null;
-    for (var i = 0; i < BANDS.length; i += 1) if (score >= BANDS[i].min) return BANDS[i];
+  /* Stufe aus der POSITION, nie aus dem Faktorwert (factor-band-2.0.0). */
+  function bandForPosition(position) {
+    if (!finite(position)) return null;
+    for (var i = 0; i < BANDS.length; i += 1) if (position >= BANDS[i].min) return BANDS[i];
     return BANDS[BANDS.length - 1];
   }
 
@@ -446,8 +469,14 @@
     FACTOR_ORDER.forEach(function (factorId) {
       var factor = record.factors && record.factors[factorId];
       if (!factor) { factors[factorId] = { state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", score: null, components: [] }; return; }
+      var bandHead = head && head.bandSemantics;
       factors[factorId] = Object.assign({}, factor, {
         weight: weights[factorId] !== undefined ? weights[factorId] : null,
+        /* Eine Position gilt nur unter der Stufen-Methodik, mit der sie
+           gezaehlt wurde. Ein Artefakt ohne diese Angabe (vor 2.0.0) traegt
+           keine Position - dann gibt es keine Stufe, keine geratene. */
+        position: bandHead && bandHead.version === BAND_SEMANTICS_VERSION && finite(factor.position) ? factor.position : null,
+        positionUniverse: bandHead && bandHead.version === BAND_SEMANTICS_VERSION && bandHead.universe && finite(bandHead.universe[factorId]) ? bandHead.universe[factorId] : null,
         components: (factor.components || []).map(function (component) {
           /* Traegt der Titel eine Branchenvorlage, gilt deren Eintrag: sie
              gewichtet dieselbe Kennzahl anders als die generische Formel
@@ -471,7 +500,9 @@
     return FACTOR_ORDER.map(function (id) {
       var factor = record.factors[id] || { state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", score: null },
         meaning = FACTOR_MEANING[id],
-        display = factor.state === "AVAILABLE" ? band(factor.score) : null,
+        /* Ohne gezaehlte Position keine Stufe - kein Rueckfall auf eine
+           Wertgrenze, sonst staenden zwei Bedeutungen unter einem Wort. */
+        display = factor.state === "AVAILABLE" ? bandForPosition(factor.position) : null,
         /* Nur wenn der Faktor wirklich zu ist: ein verfuegbarer Wert braucht
            keine Erklaerung, warum er fehlen koennte. */
         limit = factor.state === "AVAILABLE" ? null : historyLimit(id, record);
@@ -497,6 +528,8 @@
            die Tiefe selbst ist eine Aussage, die ein Leser braucht. */
         fundamentalYears: finite(record.fundamentalYears) ? record.fundamentalYears : null,
         score: factor.state === "AVAILABLE" ? factor.score : null,
+        position: factor.state === "AVAILABLE" && finite(factor.position) ? factor.position : null,
+        positionUniverse: finite(factor.positionUniverse) ? factor.positionUniverse : null,
         band: display ? display.id : null,
         bandLabel: display ? display.label : "Nicht verfügbar",
         bandPlain: display ? display.plain : null,
@@ -536,17 +569,19 @@
     var alle = ordered(record),
       factors = alle.filter(function (factor) { return factor.state === "AVAILABLE" && finite(factor.score); });
     if (!factors.length) return "Für diesen Titel liegt derzeit keine auswertbare Faktor-Evidenz vor.";
+    /* Nach Position, nicht nach Wert: die Position ist ueber Faktoren
+       vergleichbar, der Wert nicht (factor-band-2.0.0). */
     var stark = factors.filter(function (f) { return STRENGTH_BANDS.indexOf(f.band) >= 0; })
-        .sort(function (a, b) { return b.score - a.score; }),
+        .sort(function (a, b) { return b.position - a.position; }),
       schwach = factors.filter(function (f) { return WEAKNESS_BANDS.indexOf(f.band) >= 0; })
-        .sort(function (a, b) { return a.score - b.score; }),
+        .sort(function (a, b) { return a.position - b.position; }),
       parts = [];
     if (stark.length) parts.push(stark[0].label + " ist mit " + stark[0].bandLabel.toLowerCase() + " die klarste Stärke.");
     if (schwach.length) parts.push(schwach[0].label + " ist mit " + schwach[0].bandLabel.toLowerCase() + " die klarste Schwäche.");
     if (!parts.length) {
       parts.push(factors.length === 1
-        ? "Die eine bewertete Eigenschaft liegt im mittleren Bereich des Universums."
-        : "Keine der " + factors.length + " bewerteten Eigenschaften liegt über oder unter dem Mittelfeld des Universums.");
+        ? "Die eine bewertete Eigenschaft liegt im mittleren Bereich der bewerteten Aktien."
+        : "Keine der " + factors.length + " bewerteten Eigenschaften liegt über oder unter dem Mittelfeld der bewerteten Aktien.");
     }
     var missing = alle.filter(function (factor) { return factor.state !== "AVAILABLE"; });
     if (missing.length) parts.push(missing.length + " von 7 Faktoren bleiben ohne Wert, weil ihre Daten die Methodik nicht erfüllen.");
@@ -576,7 +611,10 @@
     STRENGTH_BANDS: STRENGTH_BANDS.slice(),
     WEAKNESS_BANDS: WEAKNESS_BANDS.slice(),
     historyLimit: historyLimit,
-    band: band,
+    BAND_SEMANTICS_VERSION: BAND_SEMANTICS_VERSION,
+    MIN_POSITION_UNIVERSE: MIN_POSITION_UNIVERSE,
+    positionOf: positionOf,
+    bandForPosition: bandForPosition,
     confidenceBand: confidenceBand,
     winsorBounds: winsorBounds,
     clamp: clamp,

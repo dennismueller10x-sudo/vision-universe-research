@@ -286,15 +286,35 @@ const fPrev = factorDates.length > 1 ? gz(join(FACTOR_HISTORY, factorVersion, fa
 const fIds = (fNow.fields || []).map((f) => f.split(".").pop());
 const factorCoverage = {};
 for (const [t, row] of Object.entries(fNow.rows || {})) factorCoverage[t] = row.filter((v) => typeof v === "number").length;
-if (fPrev) methodGate("FACTOR", fPrev, fNow, () => {
+/* Stufe = Position unter allen bewerteten Titeln desselben Stichtags
+   (factor-band-2.0.0). Beide Staende werden mit derselben Regel gezaehlt -
+   ein Stufenwechsel ist damit ein Wechsel der Position, keine Folge davon,
+   dass sich die Regel geaendert hat. */
+const sortedOf = (rows) => fIds.map((id, i) => Object.values(rows || {}).map((r) => r[i]).filter((v) => typeof v === "number").sort((a, b) => a - b));
+const fNowSorted = sortedOf(fNow.rows), fPrevSorted = fPrev ? sortedOf(fPrev.rows) : null;
+/* SEIT WANN GILT DIE STUFENREGEL? Veroeffentlichte Stichtage werden nie neu
+   geschrieben, ihr Methodik-Stempel kennt die Stufenregel daher nicht. Der
+   Radar merkt sich deshalb selbst, ab welchem Datenstand die aktuelle
+   Stufenregel gilt (factorBandSince). Ein Paar, dessen alter Stand davor
+   liegt, wuerde unter der neuen Regel Wechsel melden, die unter der alten
+   schon anders gemeldet wurden - das ist ein Methodikwechsel, kein
+   Marktereignis, und wird als METHOD_REBASE unterdrueckt. */
+const RADAR_OUT = P("quant/data/product/radar-v1.json.gz");
+const previousRadar = existsSync(RADAR_OUT) ? (() => { try { return gz(RADAR_OUT); } catch { return null; } })() : null;
+const factorBandSince = previousRadar && previousRadar.factorBandSince && previousRadar.factorBandSince.version === VM.BAND_SEMANTICS_VERSION
+  ? previousRadar.factorBandSince : { version: VM.BAND_SEMANTICS_VERSION, asOf: fNow.asOf };
+const bandMethod = (snap, version) => snap && snap.method ? Radar.snapshotMethod(Object.assign({}, snap.method.components, { factorBand: version })) : null;
+const bandAware = (snap, version) => snap ? Object.assign({}, snap, { method: bandMethod(snap, version) }) : snap;
+const prevBandVersion = fPrev && fPrev.asOf < factorBandSince.asOf ? "factor-band-1" : VM.BAND_SEMANTICS_VERSION;
+if (fPrev) methodGate("FACTOR", bandAware(fPrev, prevBandVersion), bandAware(fNow, VM.BAND_SEMANTICS_VERSION), () => {
   for (const [t, row] of Object.entries(fNow.rows || {})) {
     const old = fPrev.rows[t];
     if (!old) continue;
     fIds.forEach((id, i) => {
       const a = old[i], b = row[i];
       if (typeof a !== "number" || typeof b !== "number" || Math.abs(b - a) < FACTOR_MIN_MOVE) return;
-      const ba = VM.band(a), bb = VM.band(b);
-      if (ba === bb) return;
+      const ba = VM.bandIn(fPrevSorted[i], a), bb = VM.bandIn(fNowSorted[i], b);
+      if (!ba || !bb || ba === bb) return;
       const up = b > a, name = VM.FACTORS[id] ? VM.FACTORS[id].name : id;
       /* Beim Risiko-Faktor heisst ein schwaecherer Wert "mehr Schwankung" -
          das ist das Ereignis "Risiko steigt", nicht ein zweites daneben. */
@@ -577,6 +597,7 @@ const radar = {
   /* Intern, nicht fuer Radar, Watchlist oder Alerts: Vergleiche, die eine
      Methodikaenderung statt einer Aenderung der Aktie gemessen haetten. */
   methodRebase: methodRebases,
+  factorBandSince,
   events, cards
 };
 if (violations.length) throw Error("ALERT_CONTRACT_VIOLATED: " + JSON.stringify(Radar.eventViolations(violations[0])) + " " + violations[0].id);

@@ -68,15 +68,19 @@
      der Eigenschaft, die er misst; eine Gesamtnote gibt es nicht. */
   function quantPoster(ctx, t, rowBy, opts) {
     opts = opts || {};
-    var v = rowBy && rowBy[t] ? VM.fromScreeningRow(rowBy[t]) : null;
-    var best = v ? v.factors.filter(function (f) { return f.state === "AVAILABLE"; }).sort(function (a, b) { return b.score - a.score; })[0] : null;
+    var v = rowBy && rowBy[t] ? VM.fromScreeningRow(rowBy[t], rowBy._dist) : null;
+    /* Die staerkste Eigenschaft nach POSITION: Faktorwerte verschiedener
+       Eigenschaften sind nicht gleich verteilt und nicht direkt vergleichbar. */
+    var best = v ? v.factors.filter(function (f) { return f.state === "AVAILABLE"; }).sort(function (a, b) { return (b.position == null ? -1 : b.position) - (a.position == null ? -1 : a.position) || b.score - a.score; })[0] : null;
     return X.poster({ ticker: t, name: nameOf(ctx, t),
       big: best ? String(Math.round(best.score)) : null, bigLabel: best ? best.name : null, tone: best ? best.tone : null,
       story: opts.story || (v && v.overall.id !== "KEINE_DATEN" ? v.overall.text : null), foot: opts.foot, initialOnly: !!opts.initialOnly });
   }
   function screeningRows(ctx) {
     return ctx.api.getFactorEvidenceScreening().then(function (sc) {
-      var by = {}; if (sc && sc.state === "AVAILABLE") sc.rows.forEach(function (r) { by[r.ticker] = r; }); return by;
+      var by = {}; if (sc && sc.state === "AVAILABLE") sc.rows.forEach(function (r) { by[r.ticker] = r; });
+      Object.defineProperty(by, "_dist", { value: sc && sc.state === "AVAILABLE" ? VM.sortedDistribution(sc.rows) : null, enumerable: false });
+      return by;
     }).catch(function () { return {}; });
   }
   var REGIME = { BROAD_WEAKNESS: "Breite Schwäche", BROAD_STRENGTH: "Breite Stärke", NARROW_LEADERSHIP: "Schmale Führung", MIXED: "Gemischte Lage" };
@@ -345,12 +349,15 @@
      damit eine Frage mehr Treffer liefert. */
   var SIMPLE_THRESHOLD = 70;
 
-  function screeningWhy(row, factorIds) {
+  /* Stufe neben dem Wert: die gezaehlte Position unter allen bewerteten
+     Aktien (factor-band-2.0.0), aus derselben Verteilung wie die Aktienseite. */
+  function screeningWhy(row, factorIds, dist) {
     return factorIds.map(function (id) {
       var v = row[FIELD(id)];
-      return VM.FACTORS[id].name + ": " + (typeof v === "number" ? VM.factorLabel(id, v).toLowerCase() : "ohne Wert");
+      return VM.FACTORS[id].name + ": " + (typeof v === "number" ? VM.factorLabel(id, v, dist ? VM.positionIn(dist[id], v) : null).toLowerCase() : "ohne Wert");
     }).join(" · ");
   }
+  function distOrNull(ctx) { return ctx.distributionRows ? ctx.distributionRows().catch(function () { return null; }) : Promise.resolve(null); }
 
   /* Die Filter-Chips der Screener-Tafel. Nur, was Quant misst, ist
      waehlbar; Erwartungstrend und Sentiment stehen da, sind aber ohne Datenbasis
@@ -476,13 +483,13 @@
     /* Dieselbe Abfrage, nur mit dem groessten zulaessigen Limit: der
        Editor begrenzt auf 50, die Frage soll alle Treffer zaehlen. */
     var wide = global.VUQuery.createQuery({ filters: filters, sort: sortBy, limit: global.VUQuery.MAX_LIMIT || 500 });
-    var r = await Promise.all([ctx.api.screen(wide), strategyLabels(ctx)]);
-    var res = r[0], strat = r[1];
+    var r = await Promise.all([ctx.api.screen(wide), strategyLabels(ctx), distOrNull(ctx)]);
+    var res = r[0], strat = r[1], dist = r[2];
     if (!res || res.state !== "AVAILABLE") return { error: true };
     var rows = (res.stocks || []).map(function (s, i) {
-      var v = VM.fromScreeningRow(s.evidence), val = s.evidence && s.evidence[FIELD(factors[0])];
-      return X.stockRow({ ticker: s.ticker, name: X.companyName(s), kicker: strat[s.ticker] || null, why: screeningWhy(s.evidence, factors), withLogo: i < 8,
-        score: { label: shortName(factors[0]), value: typeof val === "number" ? Math.round(val) : null, tone: typeof val === "number" ? VM.factorView({ id: factors[0], state: "AVAILABLE", score: val, components: [] }).tone : null },
+      var v = VM.fromScreeningRow(s.evidence, dist), val = s.evidence && s.evidence[FIELD(factors[0])];
+      return X.stockRow({ ticker: s.ticker, name: X.companyName(s), kicker: strat[s.ticker] || null, why: screeningWhy(s.evidence, factors, dist), withLogo: i < 8,
+        score: { label: shortName(factors[0]), value: typeof val === "number" ? Math.round(val) : null, tone: typeof val === "number" && dist ? VM.factorView({ id: factors[0], state: "AVAILABLE", score: val, position: VM.positionIn(dist[factors[0]], val), components: [] }).tone : null },
         verdict: v && v.overall.id !== "KEINE_DATEN" ? { text: "Eigenschaften: " + v.overall.text.charAt(0).toLowerCase() + v.overall.text.slice(1), tone: v.overall.tone } : null });
     });
     /* Die Zahl der Treffer wird gezaehlt, nicht aus der begrenzten Liste
@@ -495,7 +502,7 @@
     var names = factors.map(function (id) { return VM.FACTORS[id].name; }).join(" und ");
     return { rows: rows, total: total, query: query, sortLabel: "Nach " + shortName(factors[0]),
       summary: total.toLocaleString("de-DE") + " von " + (res.eligible || 0).toLocaleString("de-DE") + " bewerteten Aktien erfüllen das · Stand " + X.dateDe(res.asOf) + ".",
-      method: (min === SIMPLE_THRESHOLD && max === 100 ? "„Stark“ heißt hier: Wert 70 oder mehr (von 100) in " + names + "." : "Gefiltert: Wert zwischen " + min + " und " + max + " (von 100) in " + names + ".") +
+      method: (min === SIMPLE_THRESHOLD && max === 100 ? "Gesucht wird ein Wert von 70 oder mehr (von 100) in " + names + " – eine feste Schwelle auf den Wert. Die Stufe neben jeder Aktie („stark“, „sehr stark“ …) ist dagegen ihre Position unter allen bewerteten Aktien." : "Gefiltert: Wert zwischen " + min + " und " + max + " (von 100) in " + names + ".") +
         " Sortiert nach " + VM.FACTORS[factors[0]].name + "; der Wert rechts ist dieser eine Faktor, keine Gesamtnote. Die Zeile nennt dazu die Gesamteinordnung aus allen gemessenen Eigenschaften – eine Aktie kann in der gesuchten Eigenschaft stark und insgesamt gemischt sein." };
   }
   async function setupHits(ctx) {
@@ -586,6 +593,7 @@
       catch (e) { out.replaceChildren(X.notice("Regeln nicht ausführbar", "Mindestens eine Regel liegt außerhalb dessen, was die Kennzahl zulässt. Es werden keine Treffer gezeigt, bis die Regeln gültig sind.")); return; }
       out.replaceChildren(X.loading("Wird gesucht …"));
       var res = await api.screen(query).catch(function () { return null; });
+      var dist = await distOrNull(ctx);
       if (mine !== request) return;
       code.textContent = JSON.stringify(query, null, 2);
       share.href = X.routes.screenerPro("query=" + encodeURIComponent(W.encode(query)));
@@ -597,7 +605,7 @@
           var why, side = null;
           if (v2 && s.evidence) {
             var ids = filters.map(function (f) { return f.field.replace("quantV2.factorEvidence.", ""); }).filter(function (id) { return VM.FACTORS[id]; });
-            why = screeningWhy(s.evidence, ids.length ? ids : ["momentum"]);
+            why = screeningWhy(s.evidence, ids.length ? ids : ["momentum"], dist);
           } else {
             var m = sel && s[sel.productKey];
             why = sel ? sel.label + ": " + (m && typeof m.value === "number" ? m.value.toLocaleString("de-DE", { maximumFractionDigits: 2 }) + (m.unit === "percent" ? " %" : m.unit === "ratio" ? "" : "") : "ohne Wert") : null;
@@ -673,11 +681,12 @@
     main.append(X.world("Wer passt heute?", countable ? ix.count.toLocaleString("de-DE") + " Aktien erfüllen am " + X.dateDe(index.asOf) + " alle Bedingungen." : "Diese Strategie ist derzeit nicht prüfbar: " + VM.reasonText(ix && ix.availability && ix.availability.reason, "eine benötigte Eigenschaft hat für keine Aktie Werte."), [membersHost]));
     var tr = index && index.historicalEvidence && (index.historicalEvidence.transitions || []).filter(function (t) { return t.profileId === p.profileId; })[0];
     var screening = await ctx.api.getFactorEvidenceScreening().catch(function () { return null; });
+    var dist = await distOrNull(ctx);
     var rowBy = {}; ((screening && screening.rows) || []).forEach(function (r) { rowBy[r.ticker] = r; });
     var ids = p.conditions.map(function (c) { return c.id; });
     membersHost.append(!countable ? X.notice("Keine Zuordnung", "Solange eine benötigte Eigenschaft keine Werte hat, wird keine Aktie diesem Stil zugeordnet – auch nicht näherungsweise.") : members.length ? el("div", { class: "qx-list" }, members.slice(0, 30).map(function (t) {
       var row = rowBy[t];
-      return X.stockRow({ ticker: t, name: nameOf(ctx, t), why: row ? screeningWhy(row, ids) : null });
+      return X.stockRow({ ticker: t, name: nameOf(ctx, t), why: row ? screeningWhy(row, ids, dist) : null });
     })) : X.notice("Heute kein Treffer", "Keine Aktie erfüllt derzeit alle Bedingungen."),
       members.length > 30 ? el("div", { style: "margin-top:16px" }, [el("p", { class: "qx-small", text: "Weitere Treffer:" }), X.tickerChips(members.slice(30), 80)]) : null);
     if (tr) {

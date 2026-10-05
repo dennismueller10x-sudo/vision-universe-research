@@ -187,7 +187,7 @@
       text: gross(phrase),
       why: fahrer ? fahrer.label + (finite(fahrer.raw) ? " · " + fahrer.raw.toLocaleString("de-DE", { maximumFractionDigits: 2 }) : "")
         : (factor.bandPlain || null),
-      evidence: [beleg("factorEvidence", factor.id, factor.score, "percentile")]
+      evidence: [beleg("factorEvidence", factor.id, factor.score, "score")]
         .concat(fahrer ? [beleg("factorComponent", factor.id + "." + fahrer.id, fahrer.raw, fahrer.unit || null)] : [])
     };
   }
@@ -201,10 +201,13 @@
      --------------------------------------------------------------------- */
   function headline(factors, setupState, unavailableHeadline) {
     var bewertet = factors.filter(function (f) { return f.state === "AVAILABLE" && finite(f.score); });
+    /* Nach Position (factor-band-2.0.0): Werte verschiedener Faktoren sind
+       verschieden verteilt, die Position ist vergleichbar. */
+    var pos = function (f) { return finite(f.position) ? f.position : f.score; };
     var stark = bewertet.filter(function (f) { return STRENGTH_BANDS.indexOf(f.band) >= 0; })
-      .sort(function (a, b) { return b.score - a.score; }).slice(0, 2);
+      .sort(function (a, b) { return pos(b) - pos(a); }).slice(0, 2);
     var schwach = bewertet.filter(function (f) { return WEAKNESS_BANDS.indexOf(f.band) >= 0; })
-      .sort(function (a, b) { return a.score - b.score; }).slice(0, 2);
+      .sort(function (a, b) { return pos(a) - pos(b); }).slice(0, 2);
 
     var teile = [], belege = [], zustand = "UNAVAILABLE";
     if (stark.length) {
@@ -247,7 +250,7 @@
        stünde genau die Aussage ohne Beleg da, die dieses Modul verhindern
        soll. */
     (stark.length || schwach.length ? stark.concat(schwach) : bewertet).forEach(function (f) {
-      belege.push(beleg("factorEvidence", f.id, f.score, "percentile"));
+      belege.push(beleg("factorEvidence", f.id, f.score, "score"));
     });
 
     var setupSatz = setupState && SETUP_SENTENCE[setupState] ? SETUP_SENTENCE[setupState] : null;
