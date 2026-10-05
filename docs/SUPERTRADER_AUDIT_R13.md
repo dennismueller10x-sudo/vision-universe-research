@@ -71,7 +71,7 @@ Korrektur:
 
 **Darvas / NEO-DARVAS / VU Trendfolge 52W** werden getrennt geführt:
 
-- **VU Darvas 3.0.2:** Box-Ausbruch nach Darvas, Marktampel (R12, mit S1C bestätigt). *Korrektur R14: Einen Gewinnfilter gibt es im Code nicht (frühere Fassung irrtümlich).*
+- **VU Darvas 3.0.2 (VU Adaptation):** Box-Ausbruch per Kauforder; die Marktampel (R12, mit S1C bestätigt) stammt aus einer TraderFox-Variante, nicht von Darvas. *Korrektur R14: Einen Gewinnfilter gibt es im Code nicht (frühere Fassung irrtümlich).*
 - **TraderFox NEO-DARVAS:**
   - Klasse: mindestens 70 % seit Tief, neues Hoch in 20 Tagen, „weitere Regeln“ nicht öffentlich.
   - Screening vom 24.03.2018: Verkaufstext mehrdeutig.
@@ -83,12 +83,12 @@ Korrektur:
 **Minervini 2.0.0:**
 - Umgesetzt: Trend Template, VCP (VU-Formalisierung), Pivot. *Korrektur R14: EPS/Umsatz aus SEC nutzt erst Version 3.0.0 (Forschung); live 2.0.0 hat keinen Fundamentalfilter.*
 - Fehlend: Verkauf in die Stärke (Hälfte mit Gewinn verkaufen, Stop auf Einstand), Aufstocken.
-- VU-Annahme: Positionsgröße über Risiko je Trade. Die Quelle nennt Konzentration auf wenige Positionen mit großem Gewicht.
+- Positionsgröße: 1,25 % Risiko und 25 % je Position stammen aus Minervinis eigenen Beiträgen (original); Höchstzahl 10 und die Risikohalbierung nach einer Verlustserie sind VU. *Korrektur Migration Phase 1: früher als „VU-Annahme“ geführt.*
 - Version 3.0.0 bleibt Forschung.
 
 **Weinstein 4.0.0:**
-- Stufe-2-Ausbruch und Fortsetzungskauf (Rücksetzer zur Ausbruchszone, VU-Operationalisierung).
-- VU-Annahme: Positionsgröße. Sie führt zu niedriger Investitionsquote.
+- Stufe-2-Ausbruch und Fortsetzungskauf (mindestens 8 Wochen Basis nach einem 52-Wochen-Hoch über der 30-Wochen-Linie, höchstens 25 % tief, Kauf-Stop am Basishoch; VU-Formalisierung einer Checkliste von stageanalysis.net). *Korrektur Migration Phase 1: Es ist kein „Rücksetzer zur Ausbruchszone“.*
+- Positionsgröße: eine Fremdregel (Kullamägis Risikozahl 0,5 %, über die Portfolio-Standardwerte geerbt), keine Weinstein-Regel. Sie führt zu niedriger Investitionsquote.
 
 **Momentum/Kullamägi 3.2.0:**
 - Umgesetzt: Ausbruch nach Basis, Stop am Tagestief, Teilverkauf nach Kullamägis öffentlicher Beschreibung.

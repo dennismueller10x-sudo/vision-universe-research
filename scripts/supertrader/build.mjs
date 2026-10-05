@@ -67,6 +67,9 @@ import { createOracle } from './validation/intraday-oracle.mjs';
 import { nonStockProduct } from './validation/lib.mjs';
 import { buildReplayArtifact } from './replay.mjs';
 import { STRATEGIES, REGISTRY_VERSION, DNA_FIELDS, INTERNAL_SOURCES } from './registry.mjs';
+import { PHASE1_VERSION } from './registry-p1.mjs';
+import { PROVENANCE_LABELS, PRODUCT_CLASS_LABELS, FIDELITY_AREA_LABELS } from './fidelity/provenance-labels.mjs';
+import { LIVE_CLASSIFICATION } from './fidelity/product-classes.mjs';
 import { evidenceFor, EVIDENCE_LEVELS, SOURCE_QUALITY, DATA_QUALITY, NO_PROMISE, EVIDENCE_VERSION } from './evidence.mjs';
 
 export const BUILD_VERSION = 'supertrader-build-1.0.0';
@@ -712,13 +715,32 @@ function buildMarket(asOf, barsGeneratedAt) {
   };
 }
 
+/* Migration Phase 1: Produktklasse und Fidelity je Live-Strategie (Datenbasis, aus fidelity/product-classes.mjs und R15-FIDELITY-MATRIX.json). */
+let FIDELITY_MATRIX = null;
+export function productOf(s) {
+  const c = LIVE_CLASSIFICATION[s.strategy_id];
+  if (!c) return null;
+  FIDELITY_MATRIX ||= readJson(rel('scripts/supertrader/fidelity/R15-FIDELITY-MATRIX.json'));
+  const m = FIDELITY_MATRIX.strategies[s.strategy_id];
+  if (!m || m.liveVersion !== c.version || c.version !== s.strategy_version) throw new Error(`Produktklasse ${s.strategy_id}: Version ${c.version} passt nicht zur Registry ${s.strategy_version}`);
+  const f = m.fidelity;
+  return {
+    schema: 'supertrader-product-1.0.0', product_class: c.productClass, product_class_label: PRODUCT_CLASS_LABELS[c.productClass].label, display_name: c.displayName, live_version: c.version,
+    entry_fidelity: f.entry, exit_fidelity: f.exit, position_sizing_fidelity: f.sizing, portfolio_fidelity: f.portfolio,
+    fundamental_fidelity: f.fundamental, market_fidelity: f.marketRegime, risk_fidelity: f.risk,
+    replication_claim_allowed: m.REPLICATION_CLAIM_ALLOWED, hard_gate: { required: m.hardGate.required, not_high: m.hardGate.notHigh, blocking_portfolio_fields: m.hardGate.blockingPortfolioFields },
+    original_fidelity_overall: m.originalFidelityOverall, note: m.overallNote,
+  };
+}
+
 function buildRegistry(coverage, gbCoverage) {
   const engineParams = Object.fromEntries(LIVE_ENGINES.map((e) => [e.id, { variant: e.variant, version: e.version, params: e.PARAMS, timeframe: e.timeframe, portfolio: portfolioConfig(e), legacyVersions: Object.keys(e.legacy || {}) }]));
   return {
     schema: 'supertrader-registry-1.0.0', registryVersion: REGISTRY_VERSION, dnaFields: DNA_FIELDS,
     lifecycle: { states: STATES, labels: STATE_LABELS, phases: PHASES, persistedFrom: 'SETUP', scannerOnly: ['DISCOVERED', 'WATCH'] },
     execution: describeExecution(), portfolioDefaults: PORTFOLIO_DEFAULTS,
-    strategies: STRATEGIES.map((s) => ({ ...s, engine: engineParams[s.strategy_id] || null, evidence: evidenceFor(s), fidelity: fidelityFor(s.strategy_id), processChain: PROCESS_CHAIN[s.strategy_id] || null })),
+    provenanceClasses: PROVENANCE_LABELS, productClasses: PRODUCT_CLASS_LABELS, fidelityAreas: FIDELITY_AREA_LABELS, migrationPhase: PHASE1_VERSION,
+    strategies: STRATEGIES.map((s) => ({ ...s, engine: engineParams[s.strategy_id] || null, evidence: evidenceFor(s), fidelity: fidelityFor(s.strategy_id), processChain: PROCESS_CHAIN[s.strategy_id] || null, product: productOf(s) })),
     fidelityScale: { schema: FIDELITY_VERSION, ruleClass: RULE_CLASS, sourceAccess: SOURCE_ACCESS, status: FIDELITY_STATUS,
       accessNote: 'Runde 7: Fast alle Primärseiten (Trader-Websites, Bücher, Interviews) waren aus der Arbeitsumgebung nicht abrufbar. Belegt ist, was mehrere unabhängige Suchauszüge übereinstimmend wiedergeben; Wortlaute sind vor einem Zitat am Original zu prüfen.' },
     evidenceScale: { schema: EVIDENCE_VERSION, levels: EVIDENCE_LEVELS, source: SOURCE_QUALITY, data: DATA_QUALITY, noPromise: NO_PROMISE,
@@ -961,7 +983,7 @@ function writeStaticPages() {
 
 function writeStrategyPages(registry) {
   for (const s of registry.strategies) {
-    writeIfChanged(path.join(OUT, 'strategies', s.slug, 'index.html'), pageShell({ title: `${s.world_name} — Supertrader — Vision Universe®`, description: `${s.strategy_name}: Regeln, Evidenz, Signale und Backteststatus.`, page: 'strategy', depth: 3, attrs: ` data-strategy="${s.strategy_id}"` }));
+    writeIfChanged(path.join(OUT, 'strategies', s.slug, 'index.html'), pageShell({ title: `${LIVE_CLASSIFICATION[s.strategy_id]?.displayName || s.world_name} — Supertrader — Vision Universe®`, description: `${s.strategy_name}: Regeln, Evidenz, Signale und Backteststatus.`, page: 'strategy', depth: 3, attrs: ` data-strategy="${s.strategy_id}"` }));
   }
 }
 

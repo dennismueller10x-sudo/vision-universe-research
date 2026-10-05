@@ -105,7 +105,7 @@ Alle Kennzahlen liegen nur verschlüsselt vor, weil sie aus Tiingo-Daten stammen
 - **Gleichgewicht je Platz:** in beiden Zeiträumen besser als die Live-Größe, im Holdout auch über SPY, in DEV nicht.
 - **Signale:** gegen das Universum neutral, gegen SPY in DEV schlechter.
 - **Exits:**
-  - Die VU-Volumenregel („schwaches Ausbruchsvolumen → Verkauf beim ersten Gewinn“) beendet drei Viertel der Trades nach wenigen Tagen.
+  - Die Volumenregel WEIN-VOL-04 („schwaches Ausbruchsvolumen → Verkauf beim ersten Gewinn“; bei Bulkowski mit Buchzitat sekundär belegt, hier in engster Lesart formalisiert) beendet drei Viertel der Trades nach wenigen Tagen. *Einordnung R15/Migration Phase 1: Nicht diese Regel, sondern der Hauptausstieg bei Wochenschluss unter der 30-Wochen-Linie ist eine VU-Vereinfachung (Fall B).*
   - Halten liegt gepaart in beiden Zeiträumen vorn.
 - **Fehlkandidaten:** Die größten Verlustbeiträge sind Buchungsartefakte (Übernahme und SPAC-Auflösungen mit Abschlag).
 - **Kategorie:** **D** (Größe, Stop, Ausstieg), dann **A** (kein Signalvorteil).
