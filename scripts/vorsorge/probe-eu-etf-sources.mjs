@@ -53,7 +53,8 @@ const sleep = (ms) => new Promise((z) => setTimeout(z, ms));
 
 /* ---------------- 1. ESMA FITRS (Transparenz) + Fonds-Register-Kerne */
 {
-  const r = await get(`https://registers.esma.europa.eu/solr/esma_registers_fitrs_files/select?q=*&fq=publication_date:%5B${d(21)}T00:00:00Z+TO+${d(0)}T23:59:59Z%5D&wt=json&start=0&rows=500`);
+  let r = await get(`https://registers.esma.europa.eu/solr/esma_registers_fitrs_files/select?q=*:*&wt=json&start=0&rows=500&sort=publication_date%20desc`);
+  if (r.status !== 200) r = await get(`https://registers.esma.europa.eu/solr/esma_registers_fitrs_files/select?q=*:*&wt=json&start=0&rows=500`);
   const row = { id: "esma-fitrs-files", url: "registers.esma.europa.eu/solr/esma_registers_fitrs_files", status: r.status, error: r.error };
   try {
     const docs = JSON.parse(r.text).response.docs || [];
@@ -101,6 +102,9 @@ for (const core of ["esma_registers_funds_cbdif", "esma_registers_cbdif", "esma_
       row.csv.rows = rows.length;
       const types = {}; rows.forEach((r) => { const k = ti >= 0 ? r[ti] : "?"; types[k] = (types[k] || 0) + 1; }); row.csv.types = Object.fromEntries(Object.entries(types).sort((a, b) => b[1] - a[1]).slice(0, 25));
       row.csv.columnsWithTerOrWkn = head.filter((h) => /TER|WKN|Replic|Distribut|Ertrag|Benchmark|Index/i.test(h));
+      const gi = head.indexOf("Product Assignment Group"), gd = head.indexOf("Product Assignment Group Description"), wi = head.indexOf("WKN"), it = head.indexOf("Instrument Type");
+      const groups = {}; rows.forEach((r) => { const k = r[gi]; if (!groups[k]) groups[k] = { description: r[gd], rows: 0, withWkn: 0, instrumentTypes: {} }; groups[k].rows++; if (r[wi]) groups[k].withWkn++; groups[k].instrumentTypes[r[it]] = (groups[k].instrumentTypes[r[it]] || 0) + 1; });
+      row.csv.groups = groups;
     }
   }
   row.summary = row.csv ? row.csv.rows + " Zeilen" : "kein CSV-Link";
@@ -139,6 +143,70 @@ for (const [id, url] of [
   const r = await get(url);
   add({ id, url, status: r.status, finalUrl: r.finalUrl || null, error: r.error, excerpts: excerpts(r.text), downloadLinks: links(r.text, /href="[^"]*\.(csv|xlsx|xls|zip|xml|pdf)[^"]*"/gi).slice(0, 20).map((x) => x.slice(6, -1)), footerLinks: footerLinks(r.text).slice(0, 15) });
   await sleep(500);
+}
+
+/* ---------------- 2b. Deutsche Boerse: Disclaimer/Nutzungserklaerungen, ETF-Stammdatenblatt */
+for (const [id, url] of [
+  ["db-cashmarket-disclaimer", "https://www.cashmarket.deutsche-boerse.com/cash-en/disclaimer"],
+  ["db-cashmarket-disclaimer-de", "https://www.cashmarket.deutsche-boerse.com/cash-de/disclaimer"],
+  ["db-group-disclaimer", "https://www.deutsche-boerse.com/dbg-en/meta/disclaimer"],
+  ["db-mds-data-usage-declaration", "https://www.mds.deutsche-boerse.com/mds-en/real-time-data/data-usage-declaration"],
+  ["db-mds-disclaimer", "https://www.mds.deutsche-boerse.com/mds-en/disclaimer"],
+  ["db-reference-data", "https://www.mds.deutsche-boerse.com/mds-en/data-services/reference-data"]
+]) {
+  const r = await get(url);
+  add({ id, url, status: r.status, finalUrl: r.finalUrl || null, error: r.error, excerpts: excerpts(r.text, 12), downloadLinks: links(r.text, /href="[^"]*\.(pdf|xlsx|csv)[^"]*"/gi).slice(0, 15).map((x) => x.slice(6, -1)) });
+  await sleep(500);
+}
+{
+  const page = await get("https://www.cashmarket.deutsche-boerse.com/cash-en/Data-Tech/statistics/etf-etp-statistics/etp-list");
+  const f = links(page.text, /\/resource\/blob\/[0-9]+\/[0-9a-f]+\/data\/[^"'\s]+\.(xlsx|xls|csv)/gi)[0];
+  const row = { id: "xetra-master-datasheet", file: f || null };
+  if (f) {
+    const x = await get("https://www.cashmarket.deutsche-boerse.com" + f, { binary: true, timeout: 120000 });
+    row.status = x.status; row.bytes = x.bytes; row.contentType = x.contentType;
+    if (x.buf) {
+      row.magic = x.buf.subarray(0, 8).toString("hex"); row.textStart = x.buf.subarray(0, 300).toString("utf8").replace(/[^\x20-\x7e]/g, ".");
+      const tmp = join(root, ".market-cache/master-datasheet.xls"); mkdirSync(dirname(tmp), { recursive: true }); writeFileSync(tmp, x.buf);
+      try {
+        execFileSync("python3", ["-m", "pip", "install", "-q", "xlrd==2.0.1"], { stdio: "ignore" });
+        const py = `import xlrd,json,sys
+b=xlrd.open_workbook(sys.argv[1])
+out=[]
+for sh in b.sheets():
+    hi=None
+    for r in range(min(sh.nrows,30)):
+        vals=[str(v) for v in sh.row_values(r)]
+        if any('ISIN' in v.upper() for v in vals): hi=r; break
+    head=[str(v) for v in sh.row_values(hi)] if hi is not None else []
+    fill={}
+    if hi is not None:
+        for c,h in enumerate(head):
+            n=sum(1 for r in range(hi+1,sh.nrows) if str(sh.cell_value(r,c)).strip()!='')
+            fill[h]=n
+    out.append({'sheet':sh.name,'rows':sh.nrows,'headerRow':hi,'header':head,'filled':fill,'preamble':[[str(v)[:60] for v in sh.row_values(r)][:6] for r in range(0,min(hi or 0,6))]})
+print(json.dumps(out))`;
+        row.sheets = JSON.parse(execFileSync("python3", ["-c", py, tmp], { maxBuffer: 1 << 26 }).toString("utf8"));
+      } catch (e) { row.parseError = String(e.message).slice(0, 200); }
+      rmSync(tmp, { force: true });
+    }
+  }
+  row.summary = row.sheets ? row.sheets.map((s) => s.sheet + ":" + s.rows).join(",") : (row.parseError || "keine Datei");
+  add(row);
+}
+
+/* ---------------- 2c. ESMA Fondsregister: Rechtsrahmen, ETF-Namen, Vertriebslaender */
+{
+  const base = "https://registers.esma.europa.eu/solr/esma_registers_funds_cbdif/select?wt=json";
+  const row = { id: "esma-funds-cbdif-facets" };
+  const f = await get(base + "&q=*:*&rows=0&facet=true&facet.limit=40&facet.field=funds_legal_framework_name&facet.field=funds_domicile_cou_code&facet.field=funds_status_code_name&facet.field=entity_type&facet.field=type_s");
+  try { row.facets = JSON.parse(f.text).facet_counts.facet_fields; } catch (e) { row.facetError = String(e.message).slice(0, 80) + " " + f.status; }
+  const e = await get(base + "&q=funds_national_name:*ETF*&rows=5");
+  try { const j = JSON.parse(e.text); row.etfNamed = j.response.numFound; row.etfSample = (j.response.docs || []).slice(0, 5); } catch (x) { row.etfError = String(x.message).slice(0, 80) + " " + e.status; }
+  const w = await get(base + "&q=funds_national_name:%22iShares%20Core%20MSCI%20World%20UCITS%20ETF%22&rows=5");
+  try { row.iwdaSample = JSON.parse(w.text).response.docs; } catch (x) { row.iwdaError = w.status; }
+  row.summary = (row.etfNamed || 0) + " Fonds mit ETF im Namen";
+  add(row);
 }
 
 /* ---------------- 3. EZB-Referenzkurse (Waehrungsumrechnung) */
