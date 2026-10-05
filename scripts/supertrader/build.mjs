@@ -572,6 +572,9 @@ export function build() {
     log(`VU_TREND_52W: Positionen ${tl.state.positions.length}, Entscheidungen ${tl.decisions.length}, Rangliste ${preview?.candidates?.length ?? 0}`);
   }
   writeJson(path.join(DATA, 'registry.json'), registry);
+  /* registry-core.json fuer alle Seiten ausser der Strategie-Detailseite:
+     ohne Regeltexte (rules, processChain, fidelity.rules, weitere Regelkarten). */
+  writeJson(path.join(DATA, 'registry-core.json'), registryCore(registry));
   writeJson(path.join(DATA, 'sources.json'), sources);
   writeJson(path.join(DATA, 'market.json'), market);
   writeJson(path.join(DATA, 'coverage.json'), { schema: 'supertrader-coverage-1.0.0', asOf, coverage, greenblatt: gbCoverage, unavailableInstruments: unavailable, gateDefinitions: GATE_DEFS, minHistoryYears: MIN_HISTORY_YEARS });
@@ -612,7 +615,7 @@ export function build() {
   writeStaticPages();
   /* slices: die Seite fragt nur Ausschnitte an, die dieser Lauf geschrieben hat. */
   writeJson(path.join(DATA, 'build.json'), { buildVersion: BUILD_VERSION, registryVersion: REGISTRY_VERSION, asOf, inputsGeneratedAt: barsGeneratedAt,
-    slices: { version: SLICES_VERSION, stock: Object.keys(slices).sort() } });
+    slices: { version: SLICES_VERSION, registry: true, stock: Object.keys(slices).sort() } });
   log(`fertig in ${((Date.now() - t0) / 1000).toFixed(1)} s, Stand ${asOf}`);
   return { asOf, signals, backtests, coverage };
 }
@@ -970,6 +973,22 @@ export function symbolsIn(x, out = new Set()) {
     for (const v of Object.values(x)) if (v && typeof v === 'object') symbolsIn(v, out);
   }
   return out;
+}
+
+/* Was nur die Strategie-Detailseite (renderStrategy) aus der Registry liest. */
+export const REGISTRY_DETAIL_FIELDS = ['rules', 'processChain'];
+
+/** registry.json ohne Detailtexte: Regeln, Prozesskette, Regel-Herkunft
+    (fidelity.rules) und alle Regelkarten ausser der ersten (card0). */
+export function registryCore(registry) {
+  const strategies = registry.strategies.map((s) => {
+    const c = { ...s };
+    for (const k of REGISTRY_DETAIL_FIELDS) delete c[k];
+    if (c.fidelity) { c.fidelity = { ...c.fidelity }; delete c.fidelity.rules; }
+    if (Array.isArray(c.rule_cards)) c.rule_cards = c.rule_cards.slice(0, 1);
+    return c;
+  });
+  return { ...registry, slice: 'core', strategies };
 }
 
 /* Die Listen, die nur Signalliste und Aktienseite brauchen. */

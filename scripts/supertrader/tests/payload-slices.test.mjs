@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { signalsCore, signalsBySymbol, HISTORY_LISTS, SLICES_VERSION } from '../build.mjs';
+import { signalsCore, signalsBySymbol, HISTORY_LISTS, SLICES_VERSION, registryCore, REGISTRY_DETAIL_FIELDS } from '../build.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const signals = JSON.parse(readFileSync(join(ROOT, 'supertrader', 'data', 'signals.json'), 'utf8'));
@@ -56,10 +56,33 @@ test('Aktien-Ausschnitt auch fuer Symbole nur aus Teilpruefungen', () => {
   assert.deepEqual(stockView(slice, nur), stockView(signals, nur));
 });
 
+test('registry-core: ohne Regeltexte der Detailseite, alles andere unveraendert', () => {
+  const registry = JSON.parse(readFileSync(join(ROOT, 'supertrader', 'data', 'registry.json'), 'utf8'));
+  const core = registryCore(registry);
+  assert.equal(core.strategies.length, registry.strategies.length);
+  registry.strategies.forEach((s, i) => {
+    const c = core.strategies[i];
+    for (const k of REGISTRY_DETAIL_FIELDS) assert.equal(c[k], undefined, s.strategy_id + '.' + k);
+    for (const k of Object.keys(s).filter((k) => !REGISTRY_DETAIL_FIELDS.includes(k) && k !== 'fidelity' && k !== 'rule_cards')) assert.deepEqual(c[k], s[k], s.strategy_id + '.' + k);
+    if (s.fidelity) {
+      assert.equal(c.fidelity.rules, undefined);
+      for (const k of Object.keys(s.fidelity).filter((k) => k !== 'rules')) assert.deepEqual(c.fidelity[k], s.fidelity[k], s.strategy_id + '.fidelity.' + k);
+    }
+    if (s.rule_cards) assert.deepEqual(c.rule_cards, s.rule_cards.slice(0, 1), s.strategy_id + '.rule_cards[0] (card0)');
+  });
+  for (const k of Object.keys(registry).filter((k) => k !== 'strategies')) assert.deepEqual(core[k], registry[k], k);
+  assert.ok(registry.strategies[0].rules, 'Quelle unveraendert');
+  assert.ok(size(core) < size(registry) * 0.65, `core ${size(core)} B gegen ${size(registry)} B`);
+});
+
+test('Seite: nur die Strategie-Detailseite laedt die volle Registry', () => {
+  const src = readFileSync(join(ROOT, 'supertrader', 'assets', 'supertrader.js'), 'utf8');
+  assert.match(src, /if \(k === 'registry'\) return build\(\)\.then\(function \(b\) \{ return page !== 'strategy' && b && b\.slices && b\.slices\.registry/);
+});
 test('Seite fragt nur Ausschnitte an, die build.json ausweist (keine vergeblichen 404)', () => {
   const src = readFileSync(join(ROOT, 'supertrader', 'assets', 'supertrader.js'), 'utf8');
   const build = readFileSync(join(ROOT, 'scripts', 'supertrader', 'build.mjs'), 'utf8');
-  assert.match(build, /slices: \{ version: SLICES_VERSION, stock: Object\.keys\(slices\)\.sort\(\) \}/);
+  assert.match(build, /slices: \{ version: SLICES_VERSION, registry: true, stock: Object\.keys\(slices\)\.sort\(\) \}/);
   assert.match(src, /\(sl\.stock \|\| \[\]\)\.indexOf\(SYM\) >= 0 \? 'stock\/' \+ SYM \+ '\.json' : null/);
   assert.match(src, /if \(!part\) return getJSON\(FILE\.signals\);/);
 });
