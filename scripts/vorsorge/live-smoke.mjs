@@ -43,7 +43,7 @@ const problems = [], lines = [];
 const direct = ["/vorsorge/", "/vorsorge/sitemap.xml", "/vorsorge/etf/IVV/", "/vorsorge/etf/VTI/"];
 {
   const ctx = await browser.newContext();
-  if (gate) await ctx.addInitScript(([k, v]) => { try { localStorage.setItem(k, v); } catch (e) {} }, [gate.key, gate.value]);
+  if (gate) await ctx.addInitScript(([k, v, o]) => { try { if (location.origin === o) localStorage.setItem(k, v); } catch (e) {} }, [gate.key, gate.value, new URL(SITE).origin]);
   const p = await ctx.newPage();
   for (const path of direct) {
     const res = await p.goto(SITE + path, { waitUntil: "domcontentloaded" }).catch((e) => ({ status: () => 0, err: e }));
@@ -56,7 +56,8 @@ const direct = ["/vorsorge/", "/vorsorge/sitemap.xml", "/vorsorge/etf/IVV/", "/v
 }
 if (gate) for (const [vp, [w, h]] of Object.entries(VPS)) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h } });
-  await ctx.addInitScript(([k, v, seed]) => { try { localStorage.setItem(k, v); if (!localStorage.getItem("vu-vorsorge-v1")) localStorage.setItem("vu-vorsorge-v1", seed); } catch (e) {} }, [gate.key, gate.value, JSON.stringify(SEED)]);
+  // Anmeldezustand nur fuer die eigene Domain setzen (nie in fremde Frames/Weiterleitungen)
+  await ctx.addInitScript(([k, v, seed, o]) => { try { if (location.origin !== o) return; localStorage.setItem(k, v); if (!localStorage.getItem("vu-vorsorge-v1")) localStorage.setItem("vu-vorsorge-v1", seed); } catch (e) {} }, [gate.key, gate.value, JSON.stringify(SEED), new URL(SITE).origin]);
   const page = await ctx.newPage();
   const errs = [];
   page.on("console", (m) => { if (m.type() === "error") errs.push(m.text().slice(0, 200)); });

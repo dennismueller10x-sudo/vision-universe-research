@@ -84,12 +84,12 @@
       if (list.length <= BUNDLE) { out = out.concat(list); return; }
       var keep = list.filter(function (e) { return e.relevance === "HIGH"; }).slice(0, 5), rest = list.filter(function (e) { return keep.indexOf(e) < 0; });
       out = out.concat(keep);
-      out.push(tag({ type: t, symbol: null, count: rest.length, relevance: "LOW", asOf: rest[0].asOf, text: rest.length + " weitere Listings " + (TYPE_LABEL[t] || t) + examples(rest) + "." }));
+      out.push(tag({ type: t, symbol: null, count: rest.length, relevance: "LOW", asOf: rest[0].asOf, text: rest.length + (rest.length === 1 ? " weiteres Listing " : " weitere Listings ") + (TYPE_LABEL[t] || t) + examples(rest) + "." }));
     });
     if (review.ACTIVE.length) out.push(tag({ type: "DATA_REVIEW", symbol: null, count: review.ACTIVE.length, relevance: "LOW", asOf: review.ACTIVE[0].asOf,
-      text: review.ACTIVE.length + " Listings haben die Datenprüfung bestanden und sind jetzt vollständig analysierbar" + examples(review.ACTIVE) + "." }));
+      text: review.ACTIVE.length + (review.ACTIVE.length === 1 ? " Listing hat die Datenprüfung bestanden und ist" : " Listings haben die Datenprüfung bestanden und sind") + " jetzt vollständig analysierbar" + examples(review.ACTIVE) + "." }));
     if (review.REVIEW.length) out.push(tag({ type: "DATA_REVIEW", symbol: null, count: review.REVIEW.length, relevance: "LOW", asOf: review.REVIEW[0].asOf,
-      text: review.REVIEW.length + " Listings wegen unvollständiger Daten zurück in Prüfung" + examples(review.REVIEW) + "." }));
+      text: review.REVIEW.length + (review.REVIEW.length === 1 ? " Listing" : " Listings") + " wegen unvollständiger Daten zurück in Prüfung" + examples(review.REVIEW) + "." }));
     return out.map(function (e) { return e.category ? e : tag(e); }).sort(function (a, b) {
       return (a.relevance === "HIGH" ? 0 : 1) - (b.relevance === "HIGH" ? 0 : 1) || TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type) || (a.count ? 1 : 0) - (b.count ? 1 : 0);
     });

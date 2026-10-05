@@ -43,9 +43,12 @@ const costEvents = [];   // Kostenaenderungen zwischen zwei Prospektstaenden (SE
 /** Vergleicht nur gleich definierte Felder zweier Prospektstaende derselben Anteilklasse. */
 function costChanges(c) {
   if (!c || !c.previous) return [];
-  const pick = (x) => ({ shareClassId: c.classId, expenseRatio: x.expenseRatio || null, netExpenseRatio: x.netExpenseRatio || null, managementFee: x.managementFee || null });
+  // 0 gilt als fehlend (Platzhalter/Schaetzung neuer Fonds); Brutto-Aenderungen ohne Aenderung der berechneten Netto-Kosten werden nicht gemeldet.
+  const val = (o) => (o && o.value > 0 ? o : null);
+  const pick = (x) => ({ shareClassId: c.classId, expenseRatio: val(x.expenseRatio), netExpenseRatio: val(x.netExpenseRatio), managementFee: val(x.managementFee) });
   const d = CHG.diffFundamentals(pick(c.previous), pick(c), { from: c.previous.filed, to: c.filed, source: "SEC_RR" });
-  return d.events.map((x) => ({ eventType: x.eventType, field: x.entityId, label: x.entityName, oldValue: x.oldValue, newValue: x.newValue, from: c.previous.filed, to: c.filed,
+  const netBoth = val(c.netExpenseRatio) && val(c.previous.netExpenseRatio), netChanged = d.events.some((x) => x.entityId === "netExpenseRatio");
+  return d.events.filter((x) => !(x.entityId === "expenseRatio" && netBoth && !netChanged)).map((x) => ({ eventType: x.eventType, field: x.entityId, label: x.entityName, oldValue: x.oldValue, newValue: x.newValue, from: c.previous.filed, to: c.filed,
     text: x.explanation.replace(/\.$/, "") + " (Prospekt " + c.previous.filed + " → " + c.filed + ")." }));
 }
 const A = require(join(root, "vorsorge/engines/etf-analytics.js"));
@@ -469,7 +472,7 @@ export function build() {
       { id: "SEC_SIC", type: "REGULATORY", status: sicM && sicM.count ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: null, items: sicM ? sicM.count : 0, fields: "Wirtschaftszweig der Emittenten" },
       { id: "ESMA_FIRDS", type: "REGULATORY", status: euIdx ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: euIdx ? euIdx.asOf : null, items: euItems.length, fields: "ISIN, Handelsplätze, Währung, CFI" },
       { id: "GLEIF", type: "REGULATORY", status: euIdx ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: euIdx ? euIdx.asOf : null, items: euItems.filter((x) => x.domicile).length, fields: "Rechtlicher Emittent, Domizil" },
-      { id: "ESMA_FONDSREGISTER", type: "REGULATORY", status: euReg ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: euIdx ? euIdx.asOf : null, items: euReg ? euReg.rows.length : 0, fields: "UCITS-Status (amtlich), Verwaltungsgesellschaft, Vertriebsländer" },
+      { id: "ESMA_FONDSREGISTER", type: "REGULATORY", status: euReg ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: euReg ? euReg.runDate || null : null, items: euReg ? euReg.rows.length : 0, fields: "UCITS-Status (amtlich), Verwaltungsgesellschaft, Vertriebsländer" },
       { id: "DEUTSCHE_BOERSE_REFDATA", type: "MARKET_DATA_PROVIDER", status: xetraStats ? (xetraStats.published ? "HEALTHY" : "RIGHTS_PENDING") : "NOT_CONFIGURED", lastSuccessfulFetch: xetraStats ? xetraStats.masterAsOf : null, items: xetraStats ? xetraStats.masterEtfs : 0, fields: "Laufende Kosten, Replikation, Ertragsverwendung, Index, WKN – Nutzungsrechte in Klärung, nicht veröffentlicht" },
       ...["BLACKROCK", "VANGUARD", "AMUNDI", "DWS", "STATE_STREET", "INVESCO", "WISDOMTREE", "UBS", "JPMORGAN", "HSBC", "VANECK", "LEGAL_GENERAL", "GLOBAL_X", "FIDELITY", "FRANKLIN_TEMPLETON", "BNP_PARIBAS"]
         .map((id) => ({ id, type: "PRIMARY_ISSUER", status: "NOT_PERMITTED", lastSuccessfulFetch: null, items: 0, fields: "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit" }))

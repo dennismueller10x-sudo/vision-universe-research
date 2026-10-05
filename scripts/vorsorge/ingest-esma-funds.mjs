@@ -42,12 +42,28 @@ export function normName(s) {
   return String(s || "").toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/&/g, " and ")
     .replace(/[–—]/g, "-").replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
 }
-/** Laengster Registername, der Wortanfang des Anteilklassennamens ist; gleiches Domizil; eindeutig. */
+/* Woerter, die nach dem Fondsnamen nur die Anteilklasse beschreiben (Waehrung, Ertragsverwendung, Absicherung,
+   Klassen-/Anteilsbezeichnung, Handelsplatz-Zusatz "at XXXX"). Alles andere heisst: anderer Fonds. */
+const CLASS_WORDS = new Set(["usd", "eur", "gbp", "chf", "jpy", "sek", "nok", "dkk", "cad", "aud", "hkd", "sgd", "mxn", "pln", "czk", "huf", "cnh", "cny",
+  "acc", "accumulating", "accumulation", "accumulate", "dist", "distributing", "distribution", "distributes", "capitalisation", "capitalization", "cap", "inc", "income",
+  "hedged", "hdg", "hgd", "unhedged", "unhgd", "h", "class", "share", "shares", "shs", "reg", "registered", "inhaber", "anteile", "namens", "ant", "on", "o", "n",
+  "ucits", "etf", "etfs", "fund", "cmn", "series", "a", "b", "c", "d", "i", "ii", "iii", "x", "s", "de", "ie", "lu", "the", "units", "unit", "monthly", "quarterly", "annual"]);
+export function residualIsShareClass(words) {
+  for (let i = 0; i < words.length; i++) {
+    const w = words[i];
+    if (w === "at" && /^[a-z]{4}$/.test(words[i + 1] || "")) { i++; continue; }   // " AT ETFP" (Handelsplatz)
+    if (CLASS_WORDS.has(w) || /^[0-9][a-z]{1,2}$/.test(w)) continue;           // 1C, 2D, 1CD
+    return false;
+  }
+  return true;
+}
+/** Laengster Registername, der Wortanfang des Anteilklassennamens ist und nach dem nur Anteilklassen-Woerter folgen; gleiches Domizil; eindeutig. */
 export function matchFund(shareClassName, domicile, index) {
   const tokens = normName(shareClassName).split(" ");
   for (let n = tokens.length; n >= 3; n--) {
     const cands = index.get(tokens.slice(0, n).join(" "));
     if (!cands) continue;
+    if (!residualIsShareClass(tokens.slice(n))) return null;   // Rest beschreibt einen anderen Fonds (z. B. "... USA" vs. "... USA SRI Climate")
     const same = domicile ? cands.filter((c) => c.domicile === domicile) : [];
     if (same.length === 1) return same[0];
     if (same.length > 1) return null;          // mehrdeutig
@@ -75,12 +91,23 @@ if (process.argv[1] && process.argv[1].endsWith("ingest-esma-funds.mjs")) {
   for (const f of funds) {
     const k = normName(f.funds_national_name); if (k.split(" ").length < 3) continue;
     const rec = { id: f.id, name: f.funds_national_name, domicile: f.funds_domicile_cou_code || null, manager: f.funds_manager_nat_name || null,
-      authority: f.funds_ca_cou_code || null,   // Land der zustaendigen Aufsicht (ISO-Code) status: f.funds_status_code_name || null, hosts: new Set(f.funds_host_country_codes || []), updated: (f.funds_last_update_date || "").slice(0, 10) || null };
+      /* Land der zustaendigen Aufsicht (ISO-Code) */ authority: f.funds_ca_cou_code || null, status: f.funds_status_code_name || null, hosts: new Set(f.funds_host_country_codes || []), updated: (f.funds_last_update_date || "").slice(0, 10) || null };
     if (!index.has(k)) index.set(k, []); index.get(k).push(rec);
   }
   const matched = new Map();   // isin -> rec
   // Zuerst ueber den rechtlichen Fondsnamen laut GLEIF (sauberer Teilfondsname), dann ueber den FIRDS-Namen der Anteilklasse
-  for (const r of eu.rows) { const m = (r[fi("issuerLegalName")] && matchFund(r[fi("issuerLegalName")], r[fi("domicile")], index)) || matchFund(r[fi("name")], r[fi("domicile")], index); if (m) matched.set(r[0], m); }
+  // Ueber den GLEIF-Namen nur, wenn der Anteilklassenname dazu passt (eine falsch gemeldete LEI eines Schwesterfonds wird so erkannt);
+  // gekuerzte FIRDS-Namen ("... ETFS") koennen das nicht pruefen und werden nur ueber den GLEIF-Namen zugeordnet.
+  const TRUNC = /^.{20,35} ETFS?$/;
+  const consistent = (className, reg) => { const a = normName(className).split(" "), b = new Set(normName(reg.name).split(" ")); return residualIsShareClass(a.filter((w) => !b.has(w))); };
+  for (const r of eu.rows) {
+    const name = r[fi("name")], legal = r[fi("issuerLegalName")], dom = r[fi("domicile")];
+    let m = legal ? matchFund(legal, dom, index) : null;
+    if (m && !TRUNC.test(name) && !consistent(name, m)) m = null;
+    if (!m) m = matchFund(name, dom, index);
+    if (m && m.status && m.status !== "Active") m = null;   // inaktive Registereintraege nicht als aktuellen Status zeigen
+    if (m) matched.set(r[0], m);
+  }
   console.log("ETF-Anteilklassen mit Registertreffer:", matched.size, "von", eu.rows.length);
 
   /* ---- 3. Vertriebslaender aus den Notifizierungen (Kindsdokumente) der getroffenen Fonds */
@@ -103,7 +130,7 @@ if (process.argv[1] && process.argv[1].endsWith("ingest-esma-funds.mjs")) {
   const fields = ["isin", "ucits", "fundName", "manager", "homeState", "authority", "status", "hostCountries", "registerUpdated", "match"];
   const rows = [...matched.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(([isin, m]) =>
     [isin, true, m.name, m.manager, m.domicile, m.authority, m.status, [...m.hosts].sort().join(" "), m.updated, "NAME_PREFIX_SAME_DOMICILE"]);
-  const out = { schemaVersion: "vu-vorsorge-eu-ucits-1.0.0", source: "ESMA Register Cross-border distribution of funds (Reg. (EU) 2019/1156)",
+  const out = { schemaVersion: "vu-vorsorge-eu-ucits-1.0.0", runDate: new Date().toISOString().slice(0, 10), source: "ESMA Register Cross-border distribution of funds (Reg. (EU) 2019/1156)",
     attribution: "Quelle: ESMA Registers (Fonds im grenzüberschreitenden Vertrieb), transformiert von Vision Universe.",
     method: "Zuordnung ueber den Fondsnamen (Wortanfang) und gleiches Domizil; Konfidenz MEDIUM. Das Register fuehrt keine ISIN.",
     hostCountriesNote: "Vertriebslaender laut den im Register gemeldeten Notifizierungen; aeltere Notifizierungen fehlen teils. Nur positive Aussagen sind belastbar.",

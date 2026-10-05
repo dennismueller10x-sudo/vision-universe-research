@@ -108,7 +108,10 @@ for (const [cls, byFiling] of best) {
   };
   const o = bySymbol[sym] = Object.assign({ classId: cls }, pack(latest));
   // Vorheriger Prospektstand (anderes Einreichungsdatum) fuer Kostenaenderungen - nur gleiche Felder werden verglichen.
-  const prev = sorted.find((r) => r.filed && r.filed < latest.filed);
+  // Vorstand: der juengste Prospekt mindestens 180 Tage vor dem aktuellen (jaehrlicher Zyklus) - Nachtraege und
+  // Neueinreichungen weniger Wochen spaeter sind haeufig Schaetzungen/Korrekturen, keine Kostenaenderung.
+  const days = (a, b) => (Date.parse(iso(a)) - Date.parse(iso(b))) / 864e5;
+  const prev = sorted.find((r) => r.filed && r.filed < latest.filed && days(latest.filed, r.filed) >= 180);
   if (prev) o.previous = pack(prev);
 }
 report.count = Object.keys(bySymbol).length;

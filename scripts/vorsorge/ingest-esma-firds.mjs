@@ -137,6 +137,7 @@ function nameScore(n) {
   if (!/UCITS/i.test(n)) s += 1;
   if (n === n.toUpperCase()) s += 1;
   if (n.length > 90) s += 2;
+  if (/ AT [A-Z]{4}$/.test(n)) s += 3;   // Handelsplatz-Zusatz (" AT ETFP")
   return s;
 }
 function bestName(names) {
@@ -159,7 +160,10 @@ for (const e of [...byIsin.values()].sort((a, b) => (a.isin < b.isin ? -1 : 1)))
   if (!F.isValidIsin(e.isin)) continue;
   let iss = bestIssuer(e.leis); const name = bestName(e.names);
   // Fonds-LEI aus einer Rechtsordnung ausserhalb des EWR bei IE/LU-ISIN (z. B. US-Trust, von einem Handelsplatz gemeldet) ist falsch zugeordnet
-  if (iss.basis === "GLEIF_FUND" && /^(IE|LU)$/.test(e.isin.slice(0, 2)) && iss.g.jurisdiction && !EEA.test(iss.g.jurisdiction)) iss = { lei: null, g: {}, basis: "REJECTED_NON_EEA_LEI" };
+  // Ebenso: ISIN eines Nicht-EWR-Landes (z. B. US) mit Fonds-LEI einer anderen Rechtsordnung (Umbrella/Handelsplatz). Im EWR sind
+  // abweichende Praefixe moeglich (deutsche ISIN fuer einen Luxemburger Fonds) und bleiben erhalten.
+  const pre = e.isin.slice(0, 2), jur = iss.g && iss.g.jurisdiction;
+  if (iss.basis === "GLEIF_FUND" && jur && jur !== pre && ISIN_DOMICILE_OK.test(pre) && (/^(IE|LU)$/.test(pre) ? !EEA.test(jur) : !EEA.test(pre))) iss = { lei: null, g: {}, basis: "REJECTED_FOREIGN_LEI" };
   const g = iss.g;
   // Domizil: Rechtsordnung des Fonds laut GLEIF; ohne Fonds-LEI aus dem ISIN-Praefix (abgeleitet).
   const domicile = iss.basis === "GLEIF_FUND" && g.jurisdiction ? g.jurisdiction : ISIN_DOMICILE_OK.test(e.isin.slice(0, 2)) ? e.isin.slice(0, 2) : null;

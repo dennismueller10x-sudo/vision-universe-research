@@ -2,7 +2,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { ongoingCharges, replication, useOfProfits, parseInstrumentsCsv, parseMasterRows } from "../../scripts/vorsorge/ingest-xetra-refdata.mjs";
-import { normName, matchFund } from "../../scripts/vorsorge/ingest-esma-funds.mjs";
+import { normName, matchFund, residualIsShareClass } from "../../scripts/vorsorge/ingest-esma-funds.mjs";
 
 test("Xetra: laufende Kosten in Prozent -> Dezimal; Unplausibles und Leeres bleibt null (Missing != 0)", () => {
   assert.equal(ongoingCharges("0,07%"), 0.0007);
@@ -64,4 +64,19 @@ test("ESMA-Fondsregister: Zuordnung ueber Namensanfang und gleiches Domizil, son
   assert.equal(matchFund("iShares Core MSCI World UCITS ETF USD (Acc)", "LU", idx), null);  // falsches Domizil -> kein Treffer
   assert.equal(matchFund("Vanguard FTSE All-World UCITS ETF", "IE", idx), null);
   assert.equal(normName("L&G Gold Mining UCITS ETF – USD"), "l and g gold mining ucits etf usd");
+});
+
+test("ESMA-Fondsregister: Rest nach dem Registernamen darf nur die Anteilklasse beschreiben", () => {
+  const idx = new Map();
+  const add = (name, domicile, id) => { const k = normName(name); idx.set(k, (idx.get(k) || []).concat([{ id, name, domicile, status: "Active" }])); };
+  add("Amundi MSCI USA", "LU", "usa");
+  add("Xtrackers MSCI World Swap UCITS ETF", "LU", "sw");
+  add("Global Corporate Bond", "LU", "gcb");
+  assert.equal(matchFund("Amundi MSCI USA SRI Climate Paris Aligned UCITS ETF", "LU", idx), null);
+  assert.equal(matchFund("Global Corporate Bond 1-5Y ESG UCITS ETF", "LU", idx), null);
+  assert.equal(matchFund("Amundi MSCI USA UCITS ETF Acc", "LU", idx).id, "usa");
+  assert.equal(matchFund("Xtrackers MSCI World Swap UCITS ETF 1C", "LU", idx).id, "sw");
+  assert.equal(matchFund("Xtrackers MSCI World Swap UCITS ETF Inhaber-Anteile 1C o.N. AT ETFP", "LU", idx).id, "sw");
+  assert.ok(residualIsShareClass(["usd", "acc"]) && residualIsShareClass(["reg", "shares", "usd", "unhgd", "acc", "o", "n"]));
+  assert.ok(!residualIsShareClass(["0", "5"]) && !residualIsShareClass(["esg"]));
 });

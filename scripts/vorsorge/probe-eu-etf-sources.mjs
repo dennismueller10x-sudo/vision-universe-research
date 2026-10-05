@@ -182,7 +182,8 @@ for (const [id, url] of [
           const hi = rows.findIndex((r) => r.some((c) => /ISIN/i.test(String(c))));
           const head = hi >= 0 ? rows[hi].map(String) : [];
           const filled = {}; head.forEach((h, c) => { filled[h] = rows.slice(hi + 1).filter((r) => String(r[c] ?? "").trim() !== "").length; });
-          const distinct = {}; head.forEach((h, c) => { if (/replic|distribut|ertrag|currency|w.hrung|asset|class|domicile|domizil|index|benchmark|issuer|emittent|product|ucits|ter\b|fee|kosten/i.test(h)) { const m = {}; rows.slice(hi + 1).forEach((r) => { const v = String(r[c] ?? "").trim(); if (v) m[v] = (m[v] || 0) + 1; }); distinct[h] = Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 12); } });
+          // Rechte UNKNOWN: keine Werte, nur die Anzahl unterschiedlicher Werte je Spalte
+          const distinct = {}; head.forEach((h, c) => { const m = new Set(); rows.slice(hi + 1).forEach((r) => { const v = String(r[c] ?? "").trim(); if (v) m.add(v); }); distinct[h] = m.size; });
           row.sheets = [{ sheet: wb.sheetNames && wb.sheetNames[0], sheetNames: wb.sheetNames, rows: rows.length, headerRow: hi, header: head, filled, distinct, preamble: rows.slice(0, Math.max(0, hi)).slice(0, 6).map((r) => r.slice(0, 6).map((v) => String(v).slice(0, 80))) }];
         } catch (e) { row.parseError = String(e.message).slice(0, 200); }
       } else try {
