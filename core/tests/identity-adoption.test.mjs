@@ -29,7 +29,7 @@ const AUSNAHMEN = {
   "scripts/market/select-gate-universe.mjs": "regelgleich (/[^A-Z0-9]/gi) auf rohen Anbieterzeilen, darf nicht werfen",
   "scripts/market/tiingo2-refresh.mjs": "Workstream Tiingo 2.0, regelgleich",
   "scripts/universe/verify-company-master.mjs": "prueft, dass instrumentId KEINE Ticker-ID ist",
-  "scripts/supertrader/build.mjs": "Umstellung in PR #387 (Supertrader-Gate A verlangt eigenen PR)"
+  "scripts/supertrader/build.mjs": "nur Kommentar, beschreibt den behobenen Fehler; gebildet wird ueber company-master.js#legacySecurityId (seit #387, Gleichheit unten festgehalten)"
 };
 
 function produktcode() {
