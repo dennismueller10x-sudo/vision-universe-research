@@ -38,9 +38,9 @@ test("Methodik, Engine und Registry sagen dasselbe", () => {
 test("Der Faktorbau haelt einen Boersenwert aus ausgegebenen Aktien zurueck - mit Grund, ohne Ersatz", () => {
   const b = read("scripts/quant/build-factor-evidence.mjs");
   assert.match(b, /const ausstehend = !sharesConcept \|\| MarketCap\.OUTSTANDING_CONCEPTS\.includes\(sharesConcept\)/);
-  assert.match(b, /const marketCap = shares && quote && zuordenbar && ausstehend \? shares\.value \* quote\.close : null;/);
+  assert.match(b, /const marketCap = shares && quote && zuordenbar && ausstehend && gleicheWaehrung \? shares\.value \* quote\.close : null;/);
   assert.match(b, /!ausstehend \? "SHARE_COUNT_NOT_OUTSTANDING"/);
-  assert.match(b, /MARKET_CAP_WITHHELD = \["SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", "SHARE_COUNT_NOT_OUTSTANDING"\]/);
+  assert.match(b, /MARKET_CAP_WITHHELD = \["SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", "SHARE_COUNT_NOT_OUTSTANDING", "REPORTING_CURRENCY_NOT_LISTING_CURRENCY"\]/);
   /* Die Bewertung nennt den Grund, statt "Eingabe nicht materialisiert". */
   assert.match(b, /MARKET_CAP_WITHHELD\.includes\(record\.fundamentals\?\.marketCapReason\)/);
 });
@@ -51,7 +51,7 @@ test("Jeder Grund hat einen Satz - in Engine, Ansicht und Dienst", () => {
   assert.match(fe, /SHARE_COUNT_NOT_OUTSTANDING: "Gemeldet ist nur die Zahl ausgegebener Aktien/);
   assert.match(fe, /SHARE_COUNT_NOT_OUTSTANDING: "Bewertung bewusst zurückgehalten"/);
   assert.match(vm, /SHARE_COUNT_NOT_OUTSTANDING: "Diese Kennzahl braucht den Börsenwert\./);
-  assert.match(svc, /VALUATION_WITHHELD_REASONS=\['SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING','SHARE_COUNT_NOT_OUTSTANDING'\]/);
+  assert.match(svc, /VALUATION_WITHHELD_REASONS=\['SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING','SHARE_COUNT_NOT_OUTSTANDING','REPORTING_CURRENCY_NOT_LISTING_CURRENCY'\]/);
   for (const t of Object.values(MarketCap.REASONS)) assert.doesNotMatch(t, /\b(laesst|fuer|waere|ueber|gemaess)\b/, "Umschrift statt Umlaut im Nutzertext");
 });
 
@@ -67,4 +67,30 @@ test("Die Konsumschicht nennt das Konzept des juengsten Werts und je Kennzahl di
 test("Radar: eine schon gemeldete Meldung sagt das auf der Karte", () => {
   assert.match(read("scripts/quant/build-quant-radar.mjs"), /trustState: e\.trustState, isNew: e\.isNew,/);
   assert.match(read("quant/app/pages.js"), /first\.isNew === false \? "Bereits gemeldet · " : ""/);
+});
+
+/* market-cap-1.1.0 (05.10.2026): CNFinance (CNF) berichtet im 20-F in CNY;
+   1.559.576.960 Stammaktien x Kurs des ADS ergaben 3,0 statt 0,36 Mrd $.
+   Keine CNF-Regel: die Berichtswaehrung entscheidet, fuer jeden Emittenten. */
+test("Gleiche Waehrung: wer nicht in USD berichtet, bekommt keinen Boersenwert", () => {
+  const cny = { net_income: "CNY", eps_diluted: "CNY/shares", shares_outstanding: "shares", total_assets: "CNY" };
+  const usd = { net_income: "USD", eps_diluted: "USD/shares", shares_outstanding: "shares" };
+  assert.equal(MarketCap.reportingCurrency(cny), "CNY");
+  assert.equal(MarketCap.sameCurrencyAsListing(cny), false);
+  assert.equal(MarketCap.sameCurrencyAsListing(usd), true);
+  assert.equal(MarketCap.reportingCurrency({ net_income: "USD", stockholders_equity: "EUR" }), "MIXED");
+  assert.equal(MarketCap.sameCurrencyAsListing({ net_income: "USD", stockholders_equity: "EUR" }), false);
+  /* Eine Nebenkennzahl ausserhalb der Bewertung sperrt nichts. */
+  assert.equal(MarketCap.sameCurrencyAsListing({ net_income: "USD", research_and_development: "AFN" }), true);
+  assert.equal(MarketCap.reportingCurrency({ shares_outstanding: "shares" }), null, "ohne Geldkennzahl keine Waehrung");
+  assert.equal(MarketCap.sameCurrencyAsListing(undefined), true);
+  const b = read("scripts/quant/build-factor-evidence.mjs");
+  assert.match(b, /!gleicheWaehrung \? "REPORTING_CURRENCY_NOT_LISTING_CURRENCY"/);
+  assert.ok(!/\bCNF\b/.test(b.replace(/\/\*[\s\S]*?\*\//g, "")), "Sonderregel fuer CNF im Code");
+  const fe = read("quant/engines/factor-evidence.js"), vm = read("quant/app/view-model.js"), st = read("quant/app/page-stock.js");
+  assert.match(fe, /REPORTING_CURRENCY_NOT_LISTING_CURRENCY: "Bewertung bewusst zurückgehalten"/);
+  assert.match(vm, /REPORTING_CURRENCY_NOT_LISTING_CURRENCY: "Diese Kennzahl braucht den Börsenwert\./);
+  assert.match(st, /m\.reason === "REPORTING_CURRENCY_NOT_LISTING_CURRENCY"/);
+  assert.equal(method.currency.listingCurrency, MarketCap.LISTING_CURRENCY);
+  assert.equal(method.versionHistory.at(-1).version, MarketCap.VERSION);
 });

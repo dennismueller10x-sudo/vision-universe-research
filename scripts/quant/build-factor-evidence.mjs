@@ -37,7 +37,7 @@ const Survivorship = require(join(ROOT, "quant/engines/survivorship-control.js")
 const MarketCap = require(join(ROOT, "quant/engines/market-cap.js"));
 /* Bewusst zurueckgehaltene Boersenwerte (market-cap-1.0.0): die Bewertung
    nennt den Grund, statt "Eingabe nicht materialisiert" zu sagen. */
-const MARKET_CAP_WITHHELD = ["SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", "SHARE_COUNT_NOT_OUTSTANDING"];
+const MARKET_CAP_WITHHELD = ["SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", "SHARE_COUNT_NOT_OUTSTANDING", "REPORTING_CURRENCY_NOT_LISTING_CURRENCY"];
 /* Wer zur Grundgesamtheit der Perzentile gehoert (seit 02.10.2026: das
    kanonische Produktuniversum, nicht die Faktordatei). Teil der Methodik
    jedes Stands - aendert sich die Regel, ist ein Rangwechsel keine
@@ -571,7 +571,15 @@ function main() {
         const sharesConcept = doc.ttm && doc.ttm.shares_outstanding ? doc.ttm.shares_outstanding.concept || null : null;
         const ausstehend = !sharesConcept || MarketCap.OUTSTANDING_CONCEPTS.includes(sharesConcept);
         if (sharesConcept) countGap("SHARE_COUNT_CONCEPT_KNOWN");
-        const marketCap = shares && quote && zuordenbar && ausstehend ? shares.value * quote.close : null;
+        /* GLEICHE WAEHRUNG (market-cap-1.1.0). CNFinance (20-F, berichtet in
+         * CNY) stand mit 1,56 Mrd Stammaktien x Kurs des ADS da - Boersenwert
+         * um das Verhaeltnis Schein:Aktie verfaelscht, und Gewinn in CNY
+         * wurde durch einen Boersenwert in USD geteilt. Rund 650 Emittenten
+         * berichten nicht in USD; keiner traegt eine verlaessliche
+         * ADS-Quote. Also: Berichtswaehrung ungleich USD -> zurueckhalten. */
+        const berichtswaehrung = MarketCap.reportingCurrency(doc.units);
+        const gleicheWaehrung = MarketCap.sameCurrencyAsListing(doc.units);
+        const marketCap = shares && quote && zuordenbar && ausstehend && gleicheWaehrung ? shares.value * quote.close : null;
         fundamentals = FundamentalInputs.compute(doc, cutoff, marketCap);
         if (fundamentals) {
           fundamentals.marketCap = finite(marketCap) ? marketCap : null;
@@ -579,9 +587,12 @@ function main() {
           fundamentals.marketCapReason = finite(marketCap) ? null
             : (!zuordenbar ? "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
               : !shares ? "NO_PIT_SHARE_COUNT"
-              : !ausstehend ? "SHARE_COUNT_NOT_OUTSTANDING" : "NO_PUBLISHED_CLOSE");
+              : !ausstehend ? "SHARE_COUNT_NOT_OUTSTANDING"
+              : !gleicheWaehrung ? "REPORTING_CURRENCY_NOT_LISTING_CURRENCY" : "NO_PUBLISHED_CLOSE");
           fundamentals.sharesConcept = sharesConcept;
+          fundamentals.reportingCurrency = berichtswaehrung;
           if (!ausstehend) countGap("SHARE_COUNT_NOT_OUTSTANDING");
+          if (!gleicheWaehrung) countGap("REPORTING_CURRENCY_NOT_LISTING_CURRENCY");
           if (!zuordenbar) {
             fundamentals.issuerListings = zeilen.slice().sort();
             countGap("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING");

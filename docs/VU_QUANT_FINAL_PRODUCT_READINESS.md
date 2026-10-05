@@ -21,8 +21,34 @@ Produktionsbefunde der letzten Läufe.
 | 9 | Fachsätze der Szenario-Engine nur auf der Radarkarte übersetzt | P2 | dokumentiert |
 | 10 | `total_debt`-Konzeptzuordnung | Owner-Gate | offen (aus Launch-Report) |
 | 11 | Zertifizierung 0 von 6 Backtest-Arten; Benachrichtigungen ohne Versand | POST_LAUNCH | bewusst |
+| 12 | Börsenwert bei Emittenten, die nicht in USD berichten (ADR, 20-F/40-F): Stammaktien × ADS-Kurs, Gewinn in Fremdwährung ÷ Börsenwert in USD (CNF 0,36 → 3,0 Mrd; AMX 1.283 Mrd; BCH 3.888 Mrd) | **P1** | behoben (market-cap-1.1.0, `REPORTING_CURRENCY_NOT_LISTING_CURRENCY`) |
+| 13 | META ohne Börsenwert: Mehrklassen-Emittent, gemeldet ist nur die Summe der Gattungen (NO_PIT_SHARE_COUNT) | P2 | bewusst zurückgehalten; Bestand je Gattung ist Arbeit in der SEC-Schicht |
+| 14 | Qualitätskennzahlen (z. B. Eigenkapitalrendite) bei gemischten Einheiten eines Emittenten | P2 | Verhältnis innerhalb derselben Meldung; nicht am Börsenwert, dokumentiert |
+| 15 | ADR, die in USD berichten: ADS-Verhältnis unbekannt, Börsenwert kann um das Verhältnis abweichen | P2 | kein lokaler Beleg für die Quote; dokumentiert |
 
 Keine weiteren P0/P1 gefunden: Radar, Watchlist, Alerts, Frische, Performance und Datenschutz unten gemessen.
+
+## 1a. Wirkung der Börsenwert-Korrektur (gemessen)
+
+**market-cap-1.0.0** (nur ausstehende Aktien; Artefakt vorher `6d8028e` → nachher `572dead`):
+MARKET_CAP_CHANGED 53 · MARKET_CAP_WITHHELD neu 17 (NO_PIT_SHARE_COUNT) · MARKET_CAP_ADDED 1 ·
+VALUE_COVERAGE 2.591 → 2.584 · VALUE_CHANGED 74 · VALUE_WITHHELD 8.
+
+| Titel | Börsenwert vorher → nachher | Value |
+|---|---|---|
+| JPM | 1.364,4 → 883,5 Mrd $ | 13 → 27 |
+| IBM | 511 → 210 Mrd $ | |
+| MCD | 385 → 164 Mrd $ | |
+| COP | 286 → 152 Mrd $ | |
+| AAPL, MSFT, NVDA, AMZN | unverändert | unverändert |
+| GOOG, GOOGL, T, SO, AGNC | zurückgehalten (mehrere notierte Zeilen) | offen mit Grund |
+| META | zurückgehalten (NO_PIT_SHARE_COUNT, Mehrklassen) | offen mit Grund |
+
+Strategien: STRATEGY_MATCH_ADDED 5, REMOVED 4 (momentum-leader 208 → 209; garp 122 → 121, +2/−3;
+value-momentum 183 → 184, +2/−1; übrige unverändert). Screener: kein Treffer mehr, der auf einem
+Börsenwert aus ausgegebenen Aktien beruht (SHARE_COUNT_PROVENANCE_AUDIT: jüngster Wert „ausgegeben“ 0).
+
+**market-cap-1.1.0** (gleiche Währung): Messung nach der Materialisierung unten in 1b.
 
 ## 2. Bänder – BAND_SEMANTICS_VERDICT = C
 
