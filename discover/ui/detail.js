@@ -310,7 +310,7 @@
    */
   function heroKurs(detail, state) {
     var live = state && state.intraday && state.intraday.live;
-    var snap = state && state.intraday && state.intraday.snapshot;
+    var snap = vortagAusReihe(state && state.intraday && state.intraday.snapshot, state && state.dailyPoints);
     if (!live || !live.fresh || !isNum(live.price)) return { hat: false };
     var basis = snap && isNum(snap.previousClose) ? snap.previousClose : null;
     return {
@@ -1216,7 +1216,7 @@
       return;
     }
     var mobil = global.innerWidth < 860;
-    var snapNativ = mitLaufendemKurs(p);
+    var snapNativ = vortagAusReihe(mitLaufendemKurs(p), state.dailyPoints);
     /* EINMAL UMRECHNEN, DANN NUR NOCH DAMIT RECHNEN.
 
        Kopf, Achse und Tooltip muessen dieselbe Waehrung benutzen. Die
@@ -1592,6 +1592,25 @@
     }
     return { start: start, end: end };
   }
+  /* Der Vortagesschluss eines Tagesverlaufs wird beim Abholen festgehalten.
+     Wird ein Split erst danach veroeffentlicht, ist er falsch (BGM 01.10.:
+     0,25 statt 7,55 -> Kopf +3.928 %; Audit 03.10.2026). Enthaelt die
+     Tagesreihe die Sitzung schon - Splits dieser Sitzung sind dann
+     eingerechnet -, gilt ihr Punkt vor der Sitzung (ADR-002). Gemessen:
+     4.941 vergleichbare Snapshots, genau 3 Aenderungen (die Splits). */
+  function vortagAusReihe(snap, punkte) {
+    if (!snap || !snap.sessionDate || !punkte || !punkte.length) return snap;
+    if (punkte[punkte.length - 1][0] < snap.sessionDate) return snap;
+    var vor = null;
+    for (var i = 0; i < punkte.length && punkte[i][0] < snap.sessionDate; i++) vor = punkte[i][1];
+    if (!isNum(vor) || !(vor > 0) || vor === snap.previousClose) return snap;
+    var kopie = {};
+    for (var k in snap) if (Object.prototype.hasOwnProperty.call(snap, k)) kopie[k] = snap[k];
+    kopie.previousClose = vor;
+    kopie.previousCloseSource = "DAILY_SERIES";
+    return kopie;
+  }
+
   /* 52-Wochen-Hoch/-Tief nach der Plattformdefinition (252 Handelstage
      einschliesslich des letzten, Tageshoch/-tief der Tagesreihe; wie
      market-factors.js): immer aus den TAGESbars bis zum Ende des
