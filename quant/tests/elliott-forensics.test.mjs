@@ -54,3 +54,43 @@ test("Practitioner-Klasse: Impuls und Richtung normalisiert", () => {
   const pc = practitionerClass({ primary: { pattern: "IMPULSE", family: "MOTIVE", currentWave: "(iii)", state: "DEVELOPING" }, directionalBias: "UP" });
   assert.equal(pc.broad, "MOTIVE"); assert.equal(pc.currentWave, "3"); assert.equal(pc.impulseLike, true);
 });
+
+// ---------------------------------------------------------------- §85–§87 (Mission VI)
+import { corpusCase } from "./elliott-corpus.mjs";
+import { createRequire } from "node:module";
+const requireM6 = createRequire(import.meta.url);
+const PAT6 = requireM6("../engines/technical/elliott/patterns.js");
+const synSeries = (cs, f = (x) => x) => seriesFrom(cs.dates.map((d, i) => [d, f(cs.closes[i])]), "1W");
+
+test("Impuls-Kandidat: sauberer synthetischer Impuls (ohne Rauschen) wird als IMPULSE gezaehlt", () => {
+  const cs = corpusCase("IMPULSE", 0, "none", {});
+  const r = runV3(synSeries(cs), "1W");
+  assert.equal(r.primary.pattern, "IMPULSE");
+});
+test("Invarianz: Preis × 10 und Preis + 50 aendern die Hauptzaehlung nicht", () => {
+  for (const cls of ["IMPULSE", "ZIGZAG"]) {
+    const cs = corpusCase(cls, 1, "low", {}), base = runV3(synSeries(cs), "1W");
+    for (const f of [(x) => x * 10, (x) => x + 50]) {
+      const r = runV3(synSeries(cs, f), "1W");
+      assert.equal(r.primary.pattern, base.primary.pattern, cls);
+      assert.deepEqual(r.primary.waves.map((w) => w.toIndex), base.primary.waves.map((w) => w.toIndex), cls);
+    }
+  }
+});
+test("OHLC-Extrem: Welle 2 bleibt auf Schluss ueber dem Ursprung, das TIEF unterschreitet ihn → Regel W2 verletzt", () => {
+  const leg = (a, b, ia, ib) => ({ fromPrice: a, toPrice: b, fromIndex: ia, toIndex: ib, duration: ib - ia, status: "CONFIRMED" });
+  const close = [leg(100, 120, 0, 5), leg(120, 101, 5, 8), leg(101, 140, 8, 14)];
+  assert.equal(PAT6.checkRules("IMPULSE", close), true);                       // Schlusskurse: regelkonform
+  const hl = [leg(100, 121, 0, 5), leg(121, 99.5, 5, 8), leg(99.5, 141, 8, 14)]; // Extreme (Tief der Welle 2 < Ursprung)
+  assert.equal(PAT6.checkRules("IMPULSE", hl), false);
+  assert.ok(PAT6.evaluate("IMPULSE", hl).violations.includes("W2_NOT_BEYOND_W1_ORIGIN"));
+});
+test("3.3-Kandidaten-Optionen sind ohne Gewicht wirkungslos (3.2.2-Ausgabe unveraendert)", () => {
+  const cs = corpusCase("IMPULSE_EXT3", 2, "medium", { cut: "mid" }), s = synSeries(cs);
+  /* parametersHash enthaelt die gesetzten Optionen; der ausgewiesene Komponentenwert trendContext (Gewicht 0) ebenso —
+     Rang, Zaehlung, Anwendbarkeit muessen gleich bleiben */
+  const st = (r) => { const x = Object.assign({}, r); delete x.trace; delete x.parametersHash; return JSON.stringify(x).replace(/"trendContext":[-0-9.e]+/g, ""); };
+  const base = st(runV3(s, "1W"));
+  assert.equal(st(runV3(s, "1W", { engine: { trendContextMode: "COUNTER_DEVELOPING" } })), base);
+  assert.equal(st(runV3(s, "1W", { engine: { coverageMode: "WAVES" } })), base);
+});

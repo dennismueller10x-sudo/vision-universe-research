@@ -431,6 +431,16 @@
       for (var z = q0; z >= 0 && pts[z].i >= lb; z--) if (!pts[z].dev) mx = Math.max(mx, leftSig[z]);
       return (domMemo[key] = mx > 0 ? clamp(leftSig[q0] / mx, 0, 1) : 1);
     }
+    /* Vollstaendigkeit (VU-Heuristik). "WAVES" (3.2.2): Anteil der vorhandenen Wellen am Muster — bevorzugt bei gleichen
+       Wellenenden systematisch das Muster mit weniger Wellen (A-B-C laufend = 100 %, 1-2-3 laufend = 67,5 %).
+       "DEV3" (3.3-Kandidat, Mission VI): ab der dritten vorhandenen Welle gilt eine laufende Zaehlung als gleich vollstaendig
+       wie eine abgeschlossene — 1-2-3 und A-B-C auf denselben Wellenenden sind nach EWP bis Welle 4/5 bzw. C nicht
+       unterscheidbar; die Entscheidung bleibt den uebrigen Merkmalen (Unterteilung, Richtlinien, Kontext) ueberlassen. */
+    function coverageOf(complete, nl, waves) {
+      if (complete) return 1;
+      if (cfg.coverageMode === "DEV3" && nl >= 3) return 1;
+      return Math.min(1, 0.35 + 0.65 * (nl - 1) / Math.max(1, waves - 1));
+    }
     function pathParts(f) {
       var spec = P.PATTERNS[f.type], q0 = f.path[0], qa = f.path[1], ql = f.path[f.path.length - 1], qp = f.path[f.path.length - 2];
       var w1 = Math.abs(close[pts[qa].i] - close[pts[q0].i]), anc = leftSig[q0] / Math.max(1e-9, w1);
@@ -444,7 +454,7 @@
       }
       var nl = f.path.length - 1;
       return { anchor: P.band(anc, [0.9, 1e9], [cfg.anchorMinRatio, 1e9]), dominance: dominanceOf(q0, endI - pts[q0].i),
-               coverage: f.complete ? 1 : Math.min(1, 0.35 + 0.65 * (nl - 1) / Math.max(1, spec.waves - 1)),
+               coverage: coverageOf(f.complete, nl, spec.waves),
                prior: cfg.typePrior[f.type] === undefined ? 0.6 : cfg.typePrior[f.type], tail: tail, residual: resid };
     }
     found.forEach(function (f) { f.parts = pathParts(f); var r = 0; Object.keys(cfg.weights).forEach(function (k) { r += cfg.weights[k] * (k in f.parts ? f.parts[k] : 0.5); }); f.pre = r; });
@@ -512,7 +522,10 @@
         anchor: pp.anchor,
         dominance: pp.dominance,
         similarity: simN ? simOk / simN : 0.5,
-        trendContext: ctx.trendDir === 0 ? 0.5 : (V2.impliedTrend(e) === ctx.trendDir ? 1 : 0.2),
+        /* 3.3-Kandidat (Mission VI): trendContextMode "DEVELOPING_ONLY" — der Trend des hoeheren Grades entscheidet nur bei laufenden
+           Zaehlungen (1-2-3 vs. A-B-C auf denselben Wellenenden, EWP: Korrekturen laufen gegen den Trend des naechsthoeheren Grades);
+           abgeschlossene Muster unterscheidet ihre Struktur, dort neutral 0,5. */
+        trendContext: trendContextOf(e, f),
         coverage: pp.coverage,
         prior: pp.prior,
         higherDegree: 0.5,
@@ -540,6 +553,19 @@
       zs.sort(function (x, y) { return x - y; });
       var r = clamp((zs[Math.floor(zs.length / 2)] - S.a) / (S.b - S.a), S.rMin, 1);
       return cfg.unresolvedFit + r * (v - cfg.unresolvedFit);
+    }
+    /* Trendkontext. Standard (3.2.2, Gewicht 0): mit Trend 1, gegen 0,2, ohne Trend 0,5.
+       "DEVELOPING_ONLY": nur laufende Zaehlungen, mit Trend 1 / gegen 0,2; abgeschlossene 0,5.
+       "COUNTER_DEVELOPING" (3.3-Kandidat, Mission VI): nur eine LAUFENDE Lesart, die eine Korrektur gegen den Trend des hoeheren
+       Grades unterstellt, wird abgewertet (0); alles andere neutral (0,5) — loest 1-2-3 vs. A-B-C auf denselben Wellenenden nach
+       EWP (Korrekturen laufen gegen den Trend des naechsthoeheren Grades), ohne laufende Lesarten allgemein ueber abgeschlossene
+       zu heben. */
+    function trendContextOf(e, f) {
+      if (ctx.trendDir === 0) return 0.5;
+      var agree = V2.impliedTrend(e) === ctx.trendDir;
+      if (cfg.trendContextMode === "COUNTER_DEVELOPING") return !f.complete && !agree ? 0 : 0.5;
+      if (cfg.trendContextMode === "DEVELOPING_ONLY" && f.complete) return 0.5;
+      return agree ? 1 : 0.2;
     }
     function baseRank(c) { var r = 0; Object.keys(cfg.weights).forEach(function (k) { r += cfg.weights[k] * (isNum(c[k]) ? c[k] : 0.5); }); return r; }
     /* 6. hoeherer Grad: Lesart Y, in der X eine einzelne (abgeschlossene oder laufende) Welle ist */
