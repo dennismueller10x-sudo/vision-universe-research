@@ -97,7 +97,12 @@
       if (!f) { el.innerHTML = '<section class="vs-section">' + VS.pending("Bestandsdatei nicht erreichbar", "Bitte später erneut versuchen.") + '</section>'; return; }
       var changeBy = {};
       (f.changes.events || []).forEach(function (ev) { if (/WEIGHT_|HOLDING_ADDED|ENTERED_TOP/.test(ev.eventType)) changeBy[ev.entityId] = changeBy[ev.entityId] || ev; });
-      function rowKeys(r) { return [r.isin ? "ISIN:" + r.isin : null, r.cusip ? "CUSIP:" + r.cusip : null, r.ticker ? "TICKER:" + r.ticker + "@" : null].filter(Boolean); }
+      // Nach einem Kennungswechsel traegt das Ereignis die Kennung aus T0; deshalb auch abgeleitete CUSIP und eindeutigen Namen pruefen.
+      var nameCount = {}; f.rows.forEach(function (r) { var k = "N:" + String(r.name || "").toLowerCase(); nameCount[k] = (nameCount[k] || 0) + 1; });
+      Object.keys(changeBy).forEach(function (id) { var ev = changeBy[id], m = /^ISIN:(US|CA)(\w{9})/.exec(id), nk = "N:" + String(ev.entityName || "").toLowerCase();
+        if (m && !changeBy["CUSIP:" + m[2]]) changeBy["CUSIP:" + m[2]] = ev; if (nameCount[nk] === 1 && !changeBy[nk]) changeBy[nk] = ev; });
+      function rowKeys(r) { var c = r.isin && /^(US|CA)/.test(r.isin) ? r.isin.slice(2, 11) : null, nk = "N:" + String(r.name || "").toLowerCase();
+        return [r.isin ? "ISIN:" + r.isin : null, r.cusip ? "CUSIP:" + r.cusip : null, c ? "CUSIP:" + c : null, r.ticker ? "TICKER:" + r.ticker + "@" : null, nameCount[nk] === 1 ? nk : null].filter(Boolean); }
       var n = 10;
       function draw() {
         var rows = f.rows.slice(0, n);

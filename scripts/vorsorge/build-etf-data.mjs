@@ -201,6 +201,8 @@ export const INDEX_FIELDS = ["slug", "id", "symbol", "name", "issuer", "exchange
 
 /* --------------------------------------------- Primaerquellen (SEC) */
 const NOT_IN_NPORT = "Für diesen Fonds liegt keine N-PORT-Meldung vor (z. B. Unit Investment Trust wie SPY/QQQ/DIA, Rohstoff-Trust oder Nicht-US-Fonds). Holdings eines Emittenten dürfen ohne Lizenz nicht automatisiert übernommen werden.";
+// "2026q2" -> "2026-06-30" (Stand eines SEC-Quartals-Datasets; Feld lastSuccessfulFetch = Datenstand, keine Abrufzeit)
+const quarterEnd = (q) => (q ? q.slice(0, 4) + ["-03-31", "-06-30", "-09-30", "-12-31"][Number(q[5]) - 1] : null);
 function secSources(e, hIdx, rr) {
   // Nur US-Boersenlistings erben SEC-Daten (gleicher Ticker an einer anderen Boerse waere ein anderes Wertpapier).
   const otc = !/^(NYSE|NASDAQ|BATS|ARCA|NYSE ARCA|AMEX|NYSE MKT)$/.test(String(e.exchange || "").toUpperCase());
@@ -436,9 +438,9 @@ export function build() {
       withPriceFeed: 0, isin: euItems.length, wkn: 0, ter: 0, holdings: 0 } : null,
     providers: [
       { id: "TIINGO", type: "MARKET_DATA_PROVIDER", status: rep && rep.complete ? "HEALTHY" : rep ? "DEGRADED" : "NOT_CONFIGURED", lastSuccessfulFetch: (ingest && ingest.asOf) || null, items: counts.withPriceHistory, fields: "Kurse, Ausschüttungen, Splits, Namen" },
-      { id: "SEC_NPORT", type: "REGULATORY", status: nport && nport.snapshots ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: nport ? nport.generatedAt : null, items: nport ? nport.snapshots : 0, fields: "Holdings, Fondsvermögen, Historie (quartalsweise)" },
-      { id: "SEC_RR", type: "REGULATORY", status: rrM && rrM.count ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: rrM ? rrM.generatedAt : null, items: rrM ? rrM.count : 0, fields: "Kostenquote, Verwaltungsgebühr (Prospekt)" },
-      { id: "SEC_SIC", type: "REGULATORY", status: sicM && sicM.count ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: sicM ? sicM.generatedAt : null, items: sicM ? sicM.count : 0, fields: "Wirtschaftszweig der Emittenten" },
+      { id: "SEC_NPORT", type: "REGULATORY", status: nport && nport.snapshots ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: hIdx ? Object.values(hIdx.bySymbol).map((r) => r[1]).filter(Boolean).sort().pop() || null : null, items: nport ? nport.snapshots : 0, fields: "Holdings, Fondsvermögen, Historie (quartalsweise)" },
+      { id: "SEC_RR", type: "REGULATORY", status: rrM && rrM.count ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: rrM ? quarterEnd((rrM.datasets || []).map((d) => (/(\d{4}q[1-4])/.exec(d.file) || [])[1]).filter(Boolean).sort().pop()) : null, items: rrM ? rrM.count : 0, fields: "Kostenquote, Verwaltungsgebühr (Prospekt)" },
+      { id: "SEC_SIC", type: "REGULATORY", status: sicM && sicM.count ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: null, items: sicM ? sicM.count : 0, fields: "Wirtschaftszweig der Emittenten" },
       { id: "ESMA_FIRDS", type: "REGULATORY", status: euIdx ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: euIdx ? euIdx.asOf : null, items: euItems.length, fields: "ISIN, Handelsplätze, Währung, CFI" },
       { id: "GLEIF", type: "REGULATORY", status: euIdx ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: euIdx ? euIdx.asOf : null, items: euItems.filter((x) => x.domicile).length, fields: "Rechtlicher Emittent, Domizil" },
       ...["BLACKROCK", "VANGUARD", "AMUNDI", "DWS", "STATE_STREET", "INVESCO", "WISDOMTREE", "UBS", "JPMORGAN", "HSBC", "VANECK", "LEGAL_GENERAL", "GLOBAL_X", "FIDELITY", "FRANKLIN_TEMPLETON", "BNP_PARIBAS"]

@@ -295,7 +295,7 @@
     parts.push((conc.positions >= 500 ? "Breit gestreuter " : "") + kind + " mit " + conc.positions.toLocaleString("de-DE") + " Positionen.");
     var cl = ex.countries.filter(function (x) { return x.key !== "CASH" && x.weight > 0; }), tot = cl.reduce(function (a, x) { return a + x.weight; }, 0);
     var c = cl.filter(function (x) { return x.key !== "UNASSIGNED"; })[0];
-    if (c && tot > 0 && c.weight / tot >= 0.3) parts.push("Rund " + pct(Math.min(1, c.weight / tot)) + " der Positionen entfallen auf " + (COUNTRY_DE[c.key] || c.key) + ".");
+    if (c && tot > 0 && c.weight / tot >= 0.3) parts.push("Rund " + pct(Math.min(1, c.weight / tot)) + " des Gewichts entfallen auf " + (COUNTRY_DE[c.key] || c.key) + ".");
     if (conc.positions >= 10 && conc.top10 !== null) parts.push("Die zehn größten Positionen machen " + pct(conc.top10) + " des Gewichts aus.");
     return parts.join(" ");
   }

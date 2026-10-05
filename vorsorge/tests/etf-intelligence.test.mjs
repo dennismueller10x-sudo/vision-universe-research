@@ -185,6 +185,13 @@ test("ISIN-Wechsel einer Aktie bei doppeltem Namen im Vorquartal: kein Zu-/Abgan
   const two = roche("CH1499059983").concat([row("Roche Holding AG", 0.5, { holdingIsin: "CH9999999990", sector: "HEALTH", country: "CH" })]).map((r) => r.holdingName === "Rest" ? Object.assign({}, r, { weight: 61.3 }) : r);
   assert.ok(C.diffHoldings(snap("2026-03-31", roche("CH0012032048")), snap("2026-06-30", two)).events.some((e) => e.eventType === "HOLDING_ADDED"));
 });
+test("Zweite Aktiengattung gleichen Namens (Alphabet A neben C) ist ein Zugang, keine Gewichtsänderung", () => {
+  const withC = base().map((r) => r.holdingName === "Rest" ? Object.assign({}, r, { weight: 62.0 }) : r).concat([row("Alphabet Inc", 3.0, { holdingIsin: "US02079K1079", sector: "COMM", country: "US" })]);
+  const withA = withC.map((r) => r.holdingName === "Rest" ? Object.assign({}, r, { weight: 59.5 }) : r).concat([row("Alphabet Inc", 2.5, { holdingIsin: "US02079K3059", sector: "COMM", country: "US" })]);
+  const d = C.diffHoldings(snap("2026-03-31", withC), snap("2026-06-30", withA));
+  assert.ok(d.events.some((e) => e.eventType === "HOLDING_ADDED" && e.entityId === "ISIN:US02079K3059"), JSON.stringify(d.events.map((e) => e.eventType + ":" + e.entityId)));
+  assert.ok(!d.events.some((e) => e.eventType === "WEIGHT_INCREASED" && /Alphabet/.test(e.entityName)));
+});
 test("Gewichtsänderung bei unveränderter Stückzahl = Kursbewegung, eine Stufe niedriger", () => {
   const withShares = (w) => base().map((r) => Object.assign({}, r, { shares: 1000 }, r.holdingName === "NVIDIA" ? { weight: w } : {}));
   const a = snap("2026-03-31", withShares(6.8)), b = snap("2026-06-30", withShares(8.0).map((r) => r.holdingName === "Rest" ? Object.assign({}, r, { weight: 63.8 }) : r));

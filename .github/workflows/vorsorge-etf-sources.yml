@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     concurrency:
-      group: vorsorge-etf-nport-${{ github.ref_name }}
+      group: vorsorge-etf-master-${{ github.ref_name }}   # gemeinsam mit fundamentals: beide schreiben den ETF-Stamm
       cancel-in-progress: false
     if: >-
       (github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'nport') ||
@@ -110,7 +110,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     concurrency:
-      group: vorsorge-etf-fundamentals-${{ github.ref_name }}
+      group: vorsorge-etf-master-${{ github.ref_name }}   # gemeinsam mit nport, nie parallel
       cancel-in-progress: false
     if: >-
       (github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'fundamentals') ||

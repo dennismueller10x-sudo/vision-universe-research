@@ -101,11 +101,14 @@
     });
     return m;
   }
-  /** Ordnet Positionen aus T1 der Kennung aus T0 zu, wenn sie eine gemeinsame Kennung tragen (Namen nur, wenn eindeutig). */
+  /**
+   * Ordnet Positionen aus T1 der Kennung aus T0 zu, wenn sie eine gemeinsame Kennung (ISIN, CUSIP, SEDOL, Ticker) tragen.
+   * Namen zaehlen hier nicht: verschiedene Aktiengattungen (z. B. Alphabet A/C) und Vorzuege tragen oft denselben Namen.
+   * Gleichnamige Paare aus verschwundener und neuer Position ordnet pairByName zu.
+   */
   function aliasRemap(prev) {
-    var idx = {}, nameCount = {};
-    prev.holdings.forEach(function (h) { var n = "NAME:" + normName(h.holdingName); nameCount[n] = (nameCount[n] || 0) + 1; });
-    prev.holdings.forEach(function (h) { if (DERIV[h.assetType]) return; aliases(h).forEach(function (a) { if (/^NAME:/.test(a) && nameCount[a] > 1) return; if (!(a in idx)) idx[a] = h.holdingId; }); });
+    var idx = {};
+    prev.holdings.forEach(function (h) { if (DERIV[h.assetType]) return; aliases(h).forEach(function (a) { if (/^NAME:/.test(a)) return; if (!(a in idx)) idx[a] = h.holdingId; }); });
     var prevIds = {}; prev.holdings.forEach(function (h) { prevIds[h.holdingId] = 1; });
     return function (h) {
       if (prevIds[h.holdingId]) return h.holdingId;
@@ -117,12 +120,14 @@
 
   /**
    * Zweiter Abgleich: verschwundene und neue Aktien/Fonds mit gleichem Namen (je Seite genau einmal)
-   * sind dieselbe Position mit neuer Kennung (z. B. ISIN-Wechsel nach Kapitalmassnahme), kein Zu-/Abgang.
+   * und gleicher Anlageklasse sind dieselbe Position mit neuer Kennung (z. B. ISIN-Wechsel nach
+   * Kapitalmassnahme), kein Zu-/Abgang. Grenze: ein vollstaendiger Tausch zweier gleichnamiger Gattungen
+   * ohne gemeinsame Kennung ist davon nicht unterscheidbar und erscheint als Gewichtsaenderung.
    */
   var NAME_PAIR = { EQUITY: 1, FUND: 1, ETF: 1 };
   function pairByName(A, next, remap0) {
     var B = byId(next, remap0), gone = {}, fresh = {}, extra = {};
-    function count(map, k, v) { var n = normName(v.name); if (!n || !NAME_PAIR[v.assetType]) return; (map[n] = map[n] || []).push(k); }
+    function count(map, k, v) { var n = normName(v.name); if (!n || !NAME_PAIR[v.assetType]) return; n = v.assetType + "|" + n; (map[n] = map[n] || []).push(k); }
     Object.keys(A).forEach(function (k) { if (!B[k]) count(gone, k, A[k]); });
     Object.keys(B).forEach(function (k) { if (!A[k]) count(fresh, k, B[k]); });
     Object.keys(fresh).forEach(function (n) { if (fresh[n].length === 1 && gone[n] && gone[n].length === 1) extra[fresh[n][0]] = gone[n][0]; });

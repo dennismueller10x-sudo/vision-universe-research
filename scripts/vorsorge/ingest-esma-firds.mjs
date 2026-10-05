@@ -57,7 +57,9 @@ const files = cFiles.filter((d) => d.file_name.slice(9, 17) === latest).sort((a,
 console.log("FIRDS Vollversion", latest, files.map((f) => f.file_name).join(", "));
 
 /* ------------------------------------------------ XML streamend lesen */
-const ent = (x) => x.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)));
+const ENT = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'" };
+// Ein Durchgang: "&amp;lt;" bleibt "&lt;" (keine Doppel-Dekodierung); dezimal und hexadezimal.
+const ent = (x) => x.replace(/&(?:#(\d+)|#x([0-9a-f]+)|(amp|lt|gt|quot|apos));/gi, (m, d, h, n) => d ? String.fromCodePoint(Number(d)) : h ? String.fromCodePoint(parseInt(h, 16)) : ENT[n.toLowerCase()]);
 const tag = (s, t) => { const m = s.match(new RegExp("<(?:\\w+:)?" + t + ">([^<]*)</(?:\\w+:)?" + t + ">")); return m ? ent(m[1].trim()) : null; };
 const byIsin = new Map();
 let records = 0;

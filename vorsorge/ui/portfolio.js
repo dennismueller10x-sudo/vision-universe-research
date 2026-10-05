@@ -125,8 +125,8 @@
     }
     var effCountries = effective("countries"), effSectors = effective("sectors");
     var derivSkipped = pos.filter(function (p) { var f = s.holdingFiles[p.symbol]; return f && f.derivativeHeavy; }).map(function (p) { return p.symbol; });
-    // Abdeckung ehrlich: Portfolio-Gewicht x Anteil der gezeigten Positionen am ETF
-    var trueCov = pos.reduce(function (a, p) { var f = s.holdingFiles[p.symbol]; return a + (holdings[p.symbol] && f ? p.weight / total * Math.min(1, f.shownWeight || 0) : 0); }, 0);
+    // Abdeckung ehrlich: Portfolio-Gewicht x Gewicht der tatsaechlich durchschauten Wertpapiere (ohne Liquiditaet/Sicherheiten)
+    var trueCov = pos.reduce(function (a, p) { var x = holdings[p.symbol]; if (!x) return a; var sec = x.holdings.reduce(function (t, h) { return t + h.weight; }, 0); return a + p.weight / total * Math.min(1, sec); }, 0);
     // Was hat sich geändert (Portfolio): Ereignisse je ETF x Portfolio-Gewicht
     var agg = {};
     pos.forEach(function (p) { var f = s.holdingFiles[p.symbol]; if (!f || f.derivativeHeavy || !f.changes || !f.changes.events) return; var w = p.weight / total;
