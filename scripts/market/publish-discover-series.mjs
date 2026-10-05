@@ -38,6 +38,7 @@ import { loadPreviewConfig, resolveScope, expandPreviewConfig } from "./preview-
 const require = createRequire(import.meta.url);
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SC = require(join(HERE, "..", "..", "quant", "engines", "survivorship-control.js"));
+const PublishedClose = require(join(HERE, "..", "..", "quant", "engines", "published-close.js"));
 const DEFAULT_ROOT = join(HERE, "..", "..");
 
 export const SERIES_DIR = join("quant", "data", "market", "discover-series");
@@ -47,7 +48,6 @@ export const SERIES_SCHEMA = "discover-series-1.1.0";
 export const DEFAULT_POINTS = 270;
 
 function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
-function round2(v) { return Math.round(v * 100) / 100; }
 
 /* Split-bereinigte Schlusskurse aus Rohbars - dieselbe Ableitung wie in
    scripts/discover/build-discover-data.mjs und golden-five-series.mjs:
@@ -77,7 +77,8 @@ export function compactSeries(payload, security, permission, opts) {
      Kuerzel eine andere Firma. Ohne diesen Schnitt zeigte DINE 2010 und
      2026 in einem Chart (03.10.2026). */
   const bars = SC.currentListingSegment((payload && payload.bars) || []).bars;
-  const dated = splitAdjustedCloses(bars).filter((b) => isNum(b.close));
+  /* Nur positive Kurse: ein Schluss von 0 ist ein Datenloch, kein Kurs. */
+  const dated = splitAdjustedCloses(bars).filter((b) => isNum(b.close) && b.close > 0);
   if (dated.length < 30) return null;
   const fenster = dated.slice(-maxPoints);
   return {
@@ -98,7 +99,7 @@ export function compactSeries(payload, security, permission, opts) {
     from: fenster[0].date,
     to: fenster[fenster.length - 1].date,
     asOf: fenster[fenster.length - 1].date,
-    points: fenster.map((b) => [b.date, round2(b.close)]),
+    points: fenster.map((b) => [b.date, PublishedClose.roundClose(b.close)]),
     barCount: fenster.length,
     sourceBarCount: bars.length,
     /* Der Stand der Quelle, nicht die Wanduhr: derselbe Bestand ergibt

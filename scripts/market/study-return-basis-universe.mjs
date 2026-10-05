@@ -32,6 +32,7 @@ import zlib from "node:zlib";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const Identity = require(join(ROOT, "core", "identity.js"));
 const Series = require(join(ROOT, "quant/engines/return-series.js"));
 const Compare = require(join(ROOT, "quant/engines/return-basis-comparison.js"));
 const Taxonomy = require(join(ROOT, "quant/engines/sic-peer-taxonomy.js"));
@@ -270,7 +271,7 @@ function main() {
      einen Kursindex zu halten waere ein Vergleich zweier Massstaebe -
      die relative Staerke misst dann die Dividendenrendite des Index
      mit, nicht die Staerke des Titels. */
-  const benchFound = readSeries("ref_" + BENCHMARK);
+  const benchFound = readSeries(Identity.securityIdForTicker(BENCHMARK));
   const bench = benchFound ? Series.build(benchFound.payload) : null;
   if (!bench || !bench.usable) {
     process.stdout.write("Benchmark " + BENCHMARK + " nicht verfuegbar - relative Staerke bleibt leer.\n");

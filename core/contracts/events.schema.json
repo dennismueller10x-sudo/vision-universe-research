@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research.visionuniverse.de/core/contracts/events.schema.json",
+  "title": "Vision Universe Platform Event (v1)",
+  "description": "Vorbereitetes Ereignismodell fuer eine spaetere Notifications-Schicht (docs/architecture/APP_READINESS.md §6). Ereignisse entstehen deterministisch aus dem Vergleich zweier veroeffentlichter Datenstaende (vorher/nachher) - nie aus einer AI-Interpretation. Ein Ereignis traegt seine Evidenz und ist idempotent (eventId = Hash aus type, instrumentId, Stichtag, Regelversion).",
+  "type": "object",
+  "required": ["schemaVersion", "eventId", "type", "occurredAt", "asOf", "source", "evidence"],
+  "properties": {
+    "schemaVersion": { "const": "vu-event-1.0.0" },
+    "eventId": { "type": "string" },
+    "type": { "enum": ["WATCHLIST_NEWS", "EARNINGS", "PRICE_EVENT", "SUPERTRADER_SIGNAL", "QUANT_CHANGE", "MARKET_REGIME_CHANGE"] },
+    "subtype": { "type": ["string", "null"], "description": "z. B. PRICE_EVENT: NEW_52W_HIGH | DAILY_MOVE_ABOVE_THRESHOLD; SUPERTRADER_SIGNAL: SETUP | TRIGGER | INVALIDATED" },
+    "instrumentId": { "type": ["string", "null"], "pattern": "^vu_[a-f0-9]+$" },
+    "securityId": { "type": ["string", "null"], "pattern": "^ref_[A-Z0-9_]+$" },
+    "ticker": { "type": ["string", "null"] },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "asOf": { "type": "string", "format": "date", "description": "Datenstand (Handelstag), auf dem das Ereignis beruht" },
+    "source": {
+      "type": "object",
+      "required": ["domain", "artifact", "ruleVersion"],
+      "properties": {
+        "domain": { "type": "string", "description": "id aus core/registry/domains.json" },
+        "artifact": { "type": "string" },
+        "ruleVersion": { "type": "string" }
+      }
+    },
+    "evidence": { "type": "object", "description": "Zahlen, die das Ereignis begruenden (vorher/nachher), ohne Prognose." },
+    "severity": { "enum": ["INFO", "NOTABLE"], "default": "INFO" },
+    "expiresAt": { "type": ["string", "null"], "format": "date-time" }
+  }
+}

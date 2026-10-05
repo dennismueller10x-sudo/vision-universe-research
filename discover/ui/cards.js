@@ -95,17 +95,21 @@
      Reihe -, bleibt die Originalwaehrung stehen. Das ist der Zustand,
      den O-13 verlangt: der Titel verschwindet nicht, er sagt die
      Wahrheit. */
+  /* Unter 1 $ vier Nachkommastellen: 0,0031 $ ist nicht "0,00 $"
+     (Audit 03.10.2026; die Reihen tragen seitdem die volle Praezision). */
+  function priceDecimals(v) { return isNum(v) && Math.abs(v) < 1 ? 4 : 2; }
   function money(v, when) {
     if (!isNum(v)) return "–";
+    var dec = priceDecimals(v);
     var L = (typeof VUFx !== "undefined" && VUFx) ? VUFx.layer : null;
     if (L) {
       var m = L.money(v, "USD", when || null, when ? "MARKET_PRICE" : "CURRENT_VALUE",
-                      { numberLocale: "de-DE", decimals: 2 });
+                      { numberLocale: "de-DE", decimals: dec });
       if (m.conversionAvailable && m.formatted) return m.formatted;
     }
-    var zentral = vuFormat("formatPrice", v, "USD", { numberLocale: "de-DE", decimals: 2 });
+    var zentral = vuFormat("formatPrice", v, "USD", { numberLocale: "de-DE", decimals: dec });
     if (zentral) return zentral;
-    return v.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " $";
+    return v.toLocaleString("de-DE", { minimumFractionDigits: dec, maximumFractionDigits: dec }) + " $";
   }
   function score(v) { return isNum(v) ? String(Math.round(v)) : "–"; }
   function times(v) { return isNum(v) ? v.toFixed(1) + "x" : "–"; }
@@ -394,6 +398,17 @@
 
   function D() { return global.VUDiscover; }
 
+  /** "29.09." wenn der Kurs der Karte aelter ist als der Stand ihres
+   *  Universums (discover/data/meta.json), sonst null. */
+  function staleAsOf(card) {
+    var meta = global.VUDiscoverMeta, asOf = card && card.asOf;
+    if (!meta || !asOf || !Array.isArray(meta.universes)) return null;
+    var u = meta.universes.filter(function (x) { return x.universeId === (card.universeId || "US_REAL"); })[0] || meta.universes[0];
+    if (!u || !u.asOf || asOf >= u.asOf) return null;
+    var p = String(asOf).split("-");
+    return p.length === 3 ? p[2] + "." + p[1] + "." : String(asOf);
+  }
+
   /* Das Firmenlogo vor dem Namen (ui/logos.js) - fehlt das Modul, fehlt es. */
   function logo(card, size, only) {
     var L = D() && D().Logos;
@@ -450,6 +465,11 @@
     var text = klartext(card, options.rowId) || {};
     var preis = valueOf(card.price);
     var change = valueOf(card.changePercent);
+    /* Ein Kurs, der nicht vom letzten Handelstag des Universums stammt,
+       wird als solcher gekennzeichnet; seine "Tagesaenderung" waere die
+       eines alten Tages und entfaellt (AIXC zeigte -39 % vom 29.09.). */
+    var altStand = staleAsOf(card);
+    if (altStand) change = null;
 
     var gesehen = D() && D().memory && D().memory.opened(card.symbol);
     var node = el("a", {
@@ -475,6 +495,7 @@
             el("span", { class: "dx-poster-sym", text: card.symbol }),
             isNum(preis) ? el("span", { class: "dx-poster-preis" }, [
               document.createTextNode(money(preis, card.asOf)),
+              altStand ? el("small", { class: "dx-poster-stand", text: " · Stand " + altStand }) : null,
               isNum(change) ? el("i", { class: toneClass(change),
                                         text: pctPoints(change) }) : null
             ]) : null

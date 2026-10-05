@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Systemzustand der Vision-Universe-Plattform: Datenfrische und Diagnose je System.">
+<title>Systemzustand · Vision Universe</title>
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<link rel="stylesheet" href="status.css">
+</head>
+<body data-view="status"><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<main class="st-shell" id="app" aria-live="polite">
+  <header class="st-head">
+    <p class="st-kicker">Vision Universe · intern</p>
+    <h1>Systemzustand</h1>
+    <p class="st-lead">Je System: letzter Lauf, erwarteter Stand, Rückstand und Befund – gemessen im Browser gegen die ausgelieferten Daten.</p>
+    <p class="st-overall" id="overall">Wird geprüft …</p>
+  </header>
+  <section aria-labelledby="sys-h">
+    <h2 id="sys-h">Systeme</h2>
+    <div class="st-table-wrap"><table class="st-table" id="systems"><thead><tr><th scope="col">System</th><th scope="col">Zustand</th><th scope="col">Stand</th><th scope="col">Erwartet</th><th scope="col">Datensätze</th><th scope="col">Befund</th></tr></thead><tbody></tbody></table></div>
+  </section>
+  <section aria-labelledby="diag-h" class="st-diag">
+    <h2 id="diag-h">Diagnose je Aktie</h2>
+    <form id="diag-form" class="st-form" autocomplete="off">
+      <label for="ticker">Ticker</label>
+      <input id="ticker" name="ticker" inputmode="text" autocapitalize="characters" spellcheck="false" placeholder="z. B. NVDA" maxlength="24" required>
+      <button type="submit">Prüfen</button>
+    </form>
+    <div id="diag-out"></div>
+  </section>
+  <p class="st-foot">Quelle: <code>core/registry/domains.json</code> · Regeln: <code>core/health.js</code>, <code>core/diagnose.js</code>. Dieselbe Prüfung im Terminal: <code>node scripts/core/system-health.mjs</code>.</p>
+</main>
+<script src="/quant/engines/realtime/market-hours.js"></script>
+<script src="/quant/engines/realtime/trading-session.js"></script>
+<script src="/core/identity.js"></script>
+<script src="/core/client.js"></script>
+<script src="/core/health.js"></script>
+<script src="/core/diagnose.js"></script>
+<script src="status.js"></script>
+</body>
+</html>
