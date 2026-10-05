@@ -917,7 +917,7 @@ function create(options){
   * Faktorschicht ein zeitpunktsicherer Anteilsbestand; das ist eine andere
   * Aussage als "die vorhandene Zahl gilt nicht fuer diese Zeile", und eine
   * Zahl auf anderer Grundlage ist keine Fehlzuordnung. */
- const VALUATION_WITHHELD_REASONS=['SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING','SHARE_COUNT_NOT_OUTSTANDING'];
+ const VALUATION_WITHHELD_REASONS=['SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING','SHARE_COUNT_NOT_OUTSTANDING','REPORTING_CURRENCY_NOT_LISTING_CURRENCY'];
  function withholdValuation(stock){
   if(!stock||VALUATION_WITHHELD_REASONS.indexOf(stock.marketCapReason)<0)return stock;
   const grund=stock.marketCapReason;
