@@ -269,10 +269,28 @@ Positionen, Historie je Quartal, Änderungen im Spaltenformat und eine Zeitleist
   HIGH). Für EU-Anteilklassen gibt es nur den Hinweis „UCITS im amtlichen Namen“. Das ist kein Beleg.
 - **Hebel-/Derivatefonds** (`derivativeHeavy`): N-PORT meldet in % des Nettovermögens, einzelne Positionen liegen
   über 100 %. Diese Fonds werden gekennzeichnet und bei Durchschau und Overlap nicht berücksichtigt.
+  Optionsbeine (z. B. FLEX-Optionen von Floor-ETFs) werden mit Nominalwert gemeldet und dürfen dort einzeln weit über
+  1000 % liegen; Wertpapiere bleiben auch in Derivatefonds auf ±1000 % begrenzt.
+- **Änderungen zwischen Quartalen** (Change Event 1.0): Positionen werden zuerst über gemeinsame Kennungen
+  zugeordnet (ISIN, CUSIP, aus US/CA-ISIN abgeleitete CUSIP, SEDOL, Ticker), danach verschwundene und neue
+  Aktien/Fonds gleichen Namens und gleicher Anlageklasse, wenn der Name auf jeder Seite genau einmal vorkommt
+  (ISIN-Wechsel nach Kapitalmaßnahme). Gleichnamige Gattungen mit eigener Kennung (Alphabet A/C) bleiben getrennt.
+  Grenzen: ein vollständiger Tausch zweier gleichnamiger Gattungen ohne gemeinsame Kennung erscheint als
+  Gewichtsänderung; wechselt die gemeldete Anlageklasse (z. B. Genussschein → Aktie), erscheint es als Zu- und Abgang.
+  Unveränderte Stückzahl kennzeichnet eine Gewichtsänderung als Kursbewegung (`driver = PRICE`, eine Stufe niedriger).
+  Rauschen: unter 0,10 Prozentpunkten kein Ereignis, unter 0,25 Prozentpunkten nicht angezeigt.
 - **Wirtschaftszweig** über den SEC-SIC-Code des Emittenten, als Näherung auf elf Sektoren abgebildet und als
   „SEC-SIC“ beschriftet, nicht als GICS.
 - **Kosten**: die Expense Ratio laut Gebührentabelle im Prospekt (US). Sie ist nicht identisch mit TER oder den
   laufenden Kosten im europäischen Basisinformationsblatt.
+
+### Betrieb der Datenjobs
+- `nport` und `fundamentals` teilen eine Concurrency-Gruppe und laufen nie parallel.
+- Ein abgebrochener Lauf, der schon im Push-Schritt ist, schreibt trotzdem. Ein Lauf checkt den Branch-Kopf bei
+  Start aus; landet danach ein anderer Datencommit, scheitert sein Push an Konflikten in `vorsorge/data`. Dann neu
+  starten (Re-run), der neue Versuch baut auf dem aktuellen Kopf auf.
+- Datenvolumen gegenüber main: Holdings rund 61 MB, ETF-Detaildateien +28 MB (Feldprovenienz), EU-Index und Quellen
+  3 MB. Alles wird je ETF nachgeladen, nicht beim Seitenaufruf.
 
 ### Nicht verfügbar (benannt, nicht geschätzt)
 Tagesaktuelle Bestände, Holdings und Kosten europäischer UCITS-ETFs, WKN, Replikation, NAV, Tracking Difference
