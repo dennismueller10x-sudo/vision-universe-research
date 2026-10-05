@@ -54877,5 +54877,886 @@
     "sourceId": "fbc8c429df0fdd7ebd5def97",
     "bootstrapValidatedAt": "2026-10-05",
     "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "WORDPRESS",
+    "type": "IR_FEED",
+    "allowedSites": [
+      "https://nelnet.com/",
+      "https://nelnet.com/",
+      "https://nelnet.com/"
+    ],
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "format": "WORDPRESS_REST_NEWS",
+    "companyId": "iss_cik_0001258602",
+    "sourceId": "05fc2f5d6699b12fdc2cc4a5",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "apiRoot": "https://nelnet.com/wp-json/",
+      "linkedFrom": "https://nelnet.com/",
+      "method": "ADVERTISED_WORDPRESS_REST_METADATA_CONTRACT"
+    },
+    "url": "https://nelnet.com/wp-json/wp/v2/posts?_fields=date_gmt%2Clink%2Ctitle.rendered&context=view&order=desc&orderby=date&per_page=20",
+    "lastVerified": "2026-10-05T08:30:41Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "STOCKPR",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://www.namibminerals.com/",
+      "https://www.namibminerals.com/investors",
+      "https://www.namibminerals.com/investors/news-events/press-releases/rss"
+    ],
+    "format": "RSS",
+    "companyId": "iss_cik_0002026514",
+    "sourceId": "07d04fb7db57428197d0e084",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.namibminerals.com/investors",
+      "officialSite": "https://www.namibminerals.com/",
+      "validItems": 10
+    },
+    "url": "https://www.namibminerals.com/investors/news-events/press-releases/rss",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "Q4",
+    "type": "IR_MATERIALS",
+    "allowedSites": [
+      "https://www.toyo-solar.com/",
+      "https://investors.toyo-solar.com/overview/default.aspx",
+      "https://investors.toyo-solar.com/overview/default.aspx"
+    ],
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "format": "Q4_REPORTS",
+    "companyId": "iss_cik_0001985273",
+    "sourceId": "09cb9c6ad1d7c788dd1e896b",
+    "intervalHours": 24,
+    "active": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "url": "https://investors.toyo-solar.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "WORDPRESS",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://www.icecure-medical.com/",
+      "https://www.icecure-medical.com/",
+      "https://www.icecure-medical.com/feed/"
+    ],
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "format": "RSS",
+    "companyId": "iss_cik_0001584371",
+    "sourceId": "14abbd56fcc510a9771f378b",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.icecure-medical.com/",
+      "officialSite": "https://www.icecure-medical.com/",
+      "validItems": 1
+    },
+    "url": "https://www.icecure-medical.com/feed/",
+    "lastVerified": "2026-10-05T09:10:39Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "GCS",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://www.onespan.com/",
+      "https://investors.onespan.com/"
+    ],
+    "companyId": "iss_cik_0001044777",
+    "sourceId": "1570a091c7a1ea4151cc0172",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "url": "https://investors.onespan.com/rss/news-releases.xml",
+    "lastVerified": "2026-10-05T08:13:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "Q4",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://www.aii.com/",
+      "https://investor.aii.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0002007587",
+    "sourceId": "29764f4bb557ad7bd152d6cd",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "url": "https://investor.aii.com/rss/PressRelease.aspx?LanguageId=1",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "Q4",
+    "type": "IR_MATERIALS",
+    "allowedSites": [
+      "https://www.arlp.com/",
+      "https://investor.arlp.com/investors/events-and-presentations/default.aspx",
+      "https://investor.arlp.com/investors/events-and-presentations/default.aspx"
+    ],
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "format": "Q4_REPORTS",
+    "companyId": "iss_cik_0001086600",
+    "sourceId": "29bbf7c96291115575b3d68e",
+    "intervalHours": 24,
+    "active": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "url": "https://investor.arlp.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "lastVerified": "2026-10-05T08:21:05Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "Q4",
+    "metadata": {
+      "originatingIRHomepage": "https://ir.curbline.com/overview/default.aspx"
+    },
+    "type": "IR_MATERIALS",
+    "allowedSites": [
+      "https://curbline.com/",
+      "https://ir.curbline.com/",
+      "https://ir.curbline.com/overview/default.aspx"
+    ],
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "format": "Q4_PRESENTATIONS",
+    "companyId": "iss_cik_0002027317",
+    "sourceId": "31b3944f5f11b30db1621c40",
+    "intervalHours": 24,
+    "active": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "url": "https://ir.curbline.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "Q4",
+    "metadata": {
+      "originatingIRHomepage": "https://investors.toyo-solar.com/overview/default.aspx"
+    },
+    "type": "IR_MATERIALS",
+    "allowedSites": [
+      "https://www.toyo-solar.com/",
+      "https://investors.toyo-solar.com/overview/default.aspx",
+      "https://investors.toyo-solar.com/overview/default.aspx"
+    ],
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "format": "Q4_PRESENTATIONS",
+    "companyId": "iss_cik_0001985273",
+    "sourceId": "45656bc37622eb70419ca980",
+    "intervalHours": 24,
+    "active": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "url": "https://investors.toyo-solar.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "STOCKPR",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://www.gtbiopharma.com/",
+      "https://ir.gtbiopharma.com/",
+      "https://ir.gtbiopharma.com/rss"
+    ],
+    "format": "RSS",
+    "companyId": "iss_cik_0000109657",
+    "sourceId": "4adf691b158e1cc077f55587",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.gtbiopharma.com/",
+      "officialSite": "https://www.gtbiopharma.com/",
+      "validItems": 20
+    },
+    "url": "https://ir.gtbiopharma.com/rss",
+    "lastVerified": "2026-10-05T08:04:14Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "WORDPRESS",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://odysseytx.com/",
+      "https://odysseytx.com/",
+      "https://odysseytx.com/feed/"
+    ],
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "format": "RSS",
+    "companyId": "iss_cik_0001882782",
+    "sourceId": "722d78e4b9e05f4e92c19ac1",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://odysseytx.com/",
+      "officialSite": "https://odysseytx.com/",
+      "validItems": 10
+    },
+    "url": "https://odysseytx.com/feed/",
+    "lastVerified": "2026-10-05T08:04:14Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "GENERIC",
+    "metadata": {
+      "originatingIRHomepage": "https://1liberty.com/investor-relations"
+    },
+    "type": "IR_MATERIALS",
+    "allowedSites": [
+      "https://1liberty.com/",
+      "https://1liberty.com/investor-relations",
+      "https://1liberty.com/investor-relations/investor-presentations"
+    ],
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "format": "HTML_MATERIALS",
+    "companyId": "iss_cik_0000712770",
+    "sourceId": "8e695df01c3c1aef72a5ec30",
+    "intervalHours": 24,
+    "active": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://1liberty.com/investor-relations",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "url": "https://1liberty.com/investor-relations/investor-presentations",
+    "lastVerified": "2026-10-05T08:04:14Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "Q4",
+    "type": "IR_EVENTS",
+    "allowedSites": [
+      "https://curbline.com/",
+      "https://ir.curbline.com/",
+      "https://ir.curbline.com/overview/default.aspx"
+    ],
+    "format": "Q4_EVENTS",
+    "companyId": "iss_cik_0002027317",
+    "sourceId": "97fde810a1792030e23e932c",
+    "intervalHours": 12,
+    "active": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "url": "https://ir.curbline.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "Q4",
+    "metadata": {
+      "originatingIRHomepage": "https://investor.arlp.com/investors/events-and-presentations/default.aspx"
+    },
+    "type": "IR_MATERIALS",
+    "allowedSites": [
+      "https://www.arlp.com/",
+      "https://investor.arlp.com/investors/events-and-presentations/default.aspx",
+      "https://investor.arlp.com/investors/events-and-presentations/default.aspx"
+    ],
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "format": "Q4_PRESENTATIONS",
+    "companyId": "iss_cik_0001086600",
+    "sourceId": "a32a27aa05a1f5086036e199",
+    "intervalHours": 24,
+    "active": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "url": "https://investor.arlp.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "lastVerified": "2026-10-05T08:21:05Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "Q4",
+    "type": "IR_EVENTS",
+    "allowedSites": [
+      "https://www.arlp.com/",
+      "https://investor.arlp.com/investors/events-and-presentations/default.aspx",
+      "https://investor.arlp.com/investors/events-and-presentations/default.aspx"
+    ],
+    "format": "Q4_EVENTS",
+    "companyId": "iss_cik_0001086600",
+    "sourceId": "a5723c722100bf2e6ddd33d1",
+    "intervalHours": 12,
+    "active": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "url": "https://investor.arlp.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "lastVerified": "2026-10-05T08:21:05Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "GCS",
+    "metadata": {
+      "originatingIRHomepage": "https://investors.odysseytx.com/"
+    },
+    "type": "IR_MATERIALS",
+    "allowedSites": [
+      "https://odysseytx.com/",
+      "https://investors.odysseytx.com/",
+      "https://investors.odysseytx.com/news-events/presentations"
+    ],
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "format": "HTML_MATERIALS",
+    "companyId": "iss_cik_0001882782",
+    "sourceId": "ac772cc5cffef692ea41d88e",
+    "intervalHours": 24,
+    "active": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.odysseytx.com/",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "url": "https://investors.odysseytx.com/news-events/presentations",
+    "lastVerified": "2026-10-05T08:04:14Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "GENERIC",
+    "metadata": {
+      "originatingIRHomepage": "https://www.ceragon.com/investors/financial-information"
+    },
+    "type": "IR_MATERIALS",
+    "allowedSites": [
+      "https://www.ceragon.com/",
+      "https://www.ceragon.com/investors/financial-information",
+      "https://www.ceragon.com/investors/events"
+    ],
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "format": "HTML_MATERIALS",
+    "companyId": "iss_cik_0001119769",
+    "sourceId": "ac87c125171726209ad6e73b",
+    "intervalHours": 24,
+    "active": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.ceragon.com/investors/financial-information",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "url": "https://www.ceragon.com/investors/events",
+    "lastVerified": "2026-10-05T08:21:05Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "STOCKPR",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://www.namibminerals.com/",
+      "https://www.namibminerals.com/investors",
+      "https://www.namibminerals.com/rss-news-feed"
+    ],
+    "format": "RSS",
+    "companyId": "iss_cik_0002026514",
+    "sourceId": "ad40cec3882c02ae4517b10d",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.namibminerals.com/investors",
+      "officialSite": "https://www.namibminerals.com/",
+      "validItems": 10
+    },
+    "url": "https://www.namibminerals.com/rss-news-feed",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "GCS",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://www.globalshiplease.com/",
+      "https://www.globalshiplease.com/investors/quarterly-results"
+    ],
+    "companyId": "iss_cik_0001430725",
+    "sourceId": "b0a2bb98ce2c8c58038d847c",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "url": "https://www.globalshiplease.com/rss/news-releases.xml",
+    "lastVerified": "2026-10-05T08:39:03Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "WORDPRESS",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://purple-biotech.com/",
+      "https://purple-biotech.com/investors/",
+      "https://purple-biotech.com/feed/"
+    ],
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "format": "RSS",
+    "companyId": "iss_cik_0001614744",
+    "sourceId": "b399632628eb85e621f98e81",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://purple-biotech.com/investors/",
+      "officialSite": "https://purple-biotech.com/",
+      "validItems": 2
+    },
+    "url": "https://purple-biotech.com/feed/",
+    "lastVerified": "2026-10-05T09:18:47Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "STOCKPR",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://www.gtbiopharma.com/",
+      "https://ir.gtbiopharma.com/",
+      "https://ir.gtbiopharma.com/news/rss"
+    ],
+    "format": "RSS",
+    "companyId": "iss_cik_0000109657",
+    "sourceId": "b4b30d22dd21cb36ae444e11",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.gtbiopharma.com/",
+      "officialSite": "https://www.gtbiopharma.com/",
+      "validItems": 20
+    },
+    "url": "https://ir.gtbiopharma.com/news/rss",
+    "lastVerified": "2026-10-05T08:04:14Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "Q4",
+    "type": "IR_MATERIALS",
+    "allowedSites": [
+      "https://www.aii.com/",
+      "https://www.aii.com/investors",
+      "https://investor.aii.com/overview/default.aspx"
+    ],
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "format": "Q4_REPORTS",
+    "companyId": "iss_cik_0002007587",
+    "sourceId": "be7870526232ac6db482454b",
+    "intervalHours": 24,
+    "active": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "url": "https://investor.aii.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "Q4",
+    "type": "IR_EVENTS",
+    "allowedSites": [
+      "https://www.toyo-solar.com/",
+      "https://investors.toyo-solar.com/overview/default.aspx",
+      "https://investors.toyo-solar.com/overview/default.aspx"
+    ],
+    "format": "Q4_EVENTS",
+    "companyId": "iss_cik_0001985273",
+    "sourceId": "c1e535726581215a711bf80f",
+    "intervalHours": 12,
+    "active": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "url": "https://investors.toyo-solar.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "GCS",
+    "type": "IR_EVENTS",
+    "allowedSites": [
+      "https://odysseytx.com/",
+      "https://investors.odysseytx.com/",
+      "https://investors.odysseytx.com/news-events/events"
+    ],
+    "companyId": "iss_cik_0001882782",
+    "sourceId": "c336aa56e0bab9a0e01121a0",
+    "intervalHours": 12,
+    "active": true,
+    "verificationEvidence": "LINKED_BY_VERIFIED_IR_PAGE",
+    "url": "https://investors.odysseytx.com/news-events/events",
+    "lastVerified": "2026-10-05T08:04:14Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "Q4",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://curbline.com/",
+      "https://ir.curbline.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0002027317",
+    "sourceId": "c6cd2948de3387f486ee8c4f",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "url": "https://ir.curbline.com/rss/PressRelease.aspx?LanguageId=1",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "Q4",
+    "metadata": {
+      "originatingIRHomepage": "https://investor.aii.com/overview/default.aspx"
+    },
+    "type": "IR_MATERIALS",
+    "allowedSites": [
+      "https://www.aii.com/",
+      "https://www.aii.com/investors",
+      "https://investor.aii.com/overview/default.aspx"
+    ],
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "format": "Q4_PRESENTATIONS",
+    "companyId": "iss_cik_0002007587",
+    "sourceId": "ccd6a462fef7967ab90c13cd",
+    "intervalHours": 24,
+    "active": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "url": "https://investor.aii.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "GCS",
+    "type": "IR_EVENTS",
+    "allowedSites": [
+      "https://agomab.com/",
+      "https://ir.agomab.com/",
+      "https://ir.agomab.com/news-events/financial-events"
+    ],
+    "companyId": "iss_cik_0002020932",
+    "sourceId": "cd88e90f04dab2ac4d4ea401",
+    "intervalHours": 12,
+    "active": true,
+    "verificationEvidence": "LINKED_BY_VERIFIED_IR_PAGE",
+    "url": "https://ir.agomab.com/news-events/financial-events",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "GCS",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://vtvtherapeutics.com/",
+      "https://ir.vtvtherapeutics.com/investor-overview"
+    ],
+    "companyId": "iss_cik_0001641489",
+    "sourceId": "d41abbe7953b021439a97890",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "url": "https://ir.vtvtherapeutics.com/rss/news-releases.xml",
+    "lastVerified": "2026-10-05T08:04:14Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "STOCKPR",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://www.icecure-medical.com/",
+      "https://ir.icecure-medical.com/",
+      "https://ir.icecure-medical.com/news-events/press-releases/rss"
+    ],
+    "format": "RSS",
+    "companyId": "iss_cik_0001584371",
+    "sourceId": "d7533cb11edc50247833d8d1",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.icecure-medical.com/",
+      "officialSite": "https://www.icecure-medical.com/",
+      "validItems": 10
+    },
+    "url": "https://ir.icecure-medical.com/news-events/press-releases/rss",
+    "lastVerified": "2026-10-05T09:10:39Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "Q4",
+    "type": "IR_MATERIALS",
+    "allowedSites": [
+      "https://curbline.com/",
+      "https://ir.curbline.com/",
+      "https://ir.curbline.com/overview/default.aspx"
+    ],
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "format": "Q4_REPORTS",
+    "companyId": "iss_cik_0002027317",
+    "sourceId": "da6520cf397f7b3dff5c4ba6",
+    "intervalHours": 24,
+    "active": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "url": "https://ir.curbline.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "Q4",
+    "type": "IR_EVENTS",
+    "allowedSites": [
+      "https://www.aii.com/",
+      "https://www.aii.com/investors",
+      "https://investor.aii.com/overview/default.aspx"
+    ],
+    "format": "Q4_EVENTS",
+    "companyId": "iss_cik_0002007587",
+    "sourceId": "dd1684e2b96db69a88d318a9",
+    "intervalHours": 12,
+    "active": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "url": "https://investor.aii.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "GENERIC",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://www.ceragon.com/",
+      "https://www.ceragon.com/",
+      "https://www.ceragon.com/news/rss.xml"
+    ],
+    "format": "RSS",
+    "companyId": "iss_cik_0001119769",
+    "sourceId": "ddb8dc4ad48e1e7e845d8cb3",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.ceragon.com/",
+      "officialSite": "https://www.ceragon.com/",
+      "validItems": 10
+    },
+    "url": "https://www.ceragon.com/news/rss.xml",
+    "lastVerified": "2026-10-05T08:21:05Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "GCS",
+    "type": "IR_EVENTS",
+    "allowedSites": [
+      "https://www.onespan.com/",
+      "https://investors.onespan.com/",
+      "https://investors.onespan.com/news-events/events-presentations"
+    ],
+    "companyId": "iss_cik_0001044777",
+    "sourceId": "e0e48f2128783751655fca84",
+    "intervalHours": 12,
+    "active": true,
+    "verificationEvidence": "LINKED_BY_VERIFIED_IR_PAGE",
+    "url": "https://investors.onespan.com/news-events/events-presentations",
+    "lastVerified": "2026-10-05T08:13:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "STOCKPR",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://www.maxlinear.com/",
+      "https://investors.maxlinear.com/",
+      "https://investors.maxlinear.com/rss"
+    ],
+    "format": "RSS",
+    "companyId": "iss_cik_0001288469",
+    "sourceId": "e12d6cf9da3bc532628c3510",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.maxlinear.com/",
+      "officialSite": "https://www.maxlinear.com/",
+      "validItems": 20
+    },
+    "url": "https://investors.maxlinear.com/rss",
+    "lastVerified": "2026-10-05T08:30:41Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "WORDPRESS",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://safeprogroup.com/",
+      "https://safeprogroup.com/investor-resources/",
+      "https://safeprogroup.com/feed/"
+    ],
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "format": "RSS",
+    "companyId": "iss_cik_0002011208",
+    "sourceId": "ede752d0043bb37b499fa618",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://safeprogroup.com/investor-resources/",
+      "officialSite": "https://safeprogroup.com/",
+      "validItems": 5
+    },
+    "url": "https://safeprogroup.com/feed/",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "GCS",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://agomab.com/",
+      "https://ir.agomab.com/"
+    ],
+    "companyId": "iss_cik_0002020932",
+    "sourceId": "f14b321c08e5efbb71e91471",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "url": "https://ir.agomab.com/rss/news-releases.xml",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "WORDPRESS",
+    "type": "IR_FEED",
+    "allowedSites": [
+      "https://alps-holdings.com/",
+      "https://alps-holdings.com/",
+      "https://alps-holdings.com/"
+    ],
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "format": "WORDPRESS_REST_NEWS",
+    "companyId": "iss_cik_0002025774",
+    "sourceId": "f544cf907acc000e54ba021f",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "apiRoot": "https://alps-holdings.com/wp-json/",
+      "linkedFrom": "https://alps-holdings.com/",
+      "method": "ADVERTISED_WORDPRESS_REST_METADATA_CONTRACT"
+    },
+    "url": "https://alps-holdings.com/wp-json/wp/v2/posts?_fields=date_gmt%2Clink%2Ctitle.rendered&context=view&order=desc&orderby=date&per_page=20",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "provider": "Q4",
+    "type": "IR_FEED",
+    "priority": 1,
+    "allowedSites": [
+      "https://www.toyo-solar.com/",
+      "https://investors.toyo-solar.com/overview/default.aspx"
+    ],
+    "companyId": "iss_cik_0001985273",
+    "sourceId": "fa31cd2e4f7113efed4b532d",
+    "intervalHours": 4,
+    "active": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "url": "https://investors.toyo-solar.com/rss/PressRelease.aspx?LanguageId=1",
+    "lastVerified": "2026-10-05T08:45:35Z",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
   }
 ]
