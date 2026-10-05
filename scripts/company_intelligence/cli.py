@@ -55,7 +55,7 @@ def manifest_batch(document, companies, store, now, limit, tickers=None):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('command', choices=['run', 'backfill', 'export', 'quality', 'probe', 'coverage', 'discover-catalogue', 'discover-backfill', 'verify-domains', 'sweep-inventory', 'news-archive', 'materials-backfill', 'sec-stream', 'poll'])
+    p.add_argument('command', choices=['run', 'backfill', 'export', 'quality', 'probe', 'coverage', 'discover-catalogue', 'discover-backfill', 'verify-domains', 'sweep-inventory', 'news-archive', 'news-backfill', 'materials-backfill', 'sec-stream', 'poll'])
     p.add_argument('--inventory-pass',help='Stable lower-case identifier for resumable candidate discovery')
     p.add_argument('--inventory-lane',choices=['domains','ir'],default='domains')
     p.add_argument('--discovery-admission-interval',type=float,default=2,help='Discovery-only spacing across independent hosts (.5..2 seconds); host cooldowns remain enforced')
@@ -72,6 +72,7 @@ def main(argv=None):
     p.add_argument('--limit', type=int, default=25)
     p.add_argument('--request-budget', type=int, default=60)
     p.add_argument('--max-seconds', type=int, default=600)
+    p.add_argument('--source-backfill-run', default='unpolled-news', help='Frozen existing-news-source cohort identity')
     p.add_argument('--force-sources', action='store_true', help='Recheck selected sources without changing their normal scheduling interval')
     p.add_argument('--network', action='store_true', help='Explicitly enable configured public feeds')
     p.add_argument('--sec-documents', action='store_true', help='Inspect up to two recent SEC candidate primary documents/exhibits per selected issuer')
@@ -97,7 +98,7 @@ def main(argv=None):
         from company_intelligence.inventory_sweep import prefix
         try:prefix(args.inventory_pass,args.inventory_lane)
         except ValueError:p.error('sweep-inventory requires a safe --inventory-pass identifier')
-    if args.command in ('discover-catalogue', 'verify-domains', 'sweep-inventory', 'news-archive', 'materials-backfill') and not args.network:
+    if args.command in ('discover-catalogue', 'verify-domains', 'sweep-inventory', 'news-archive', 'news-backfill', 'materials-backfill') and not args.network:
         p.error('discover-catalogue requires --network')
     if args.command == 'discover-backfill' and not (args.network and args.discover_sites and args.discover_ir):
         p.error('discover-backfill requires --network --discover-sites --discover-ir')
@@ -261,6 +262,15 @@ def main(argv=None):
             current=bool(checkpoint and checkpoint!=prior_checkpoint and checkpoint.get('checkedAt')==now)
             print(json.dumps({'run':pipeline.run,'requests':http.requests,'httpStats':http.stats,
                               'checkpoint':checkpoint,'checkpointCurrentRun':current},sort_keys=True));return 0
+        if args.command=='news-backfill':
+            if (state_dir/'stop-source-backfill').exists():
+                print(json.dumps({'attemptedSources':0,'run':pipeline.run,'requests':0,
+                                  'httpStats':http.stats,'stopReason':'OPERATOR_CHECKPOINT_PAUSE'},sort_keys=True))
+                return 0
+            pipeline.seed_sources(json.loads((config_dir / 'sources.json').read_text()))
+            from company_intelligence.news_backfill import backfill
+            print(json.dumps(backfill(pipeline,args.limit,args.source_backfill_run,selected_ids if args.tickers else None),sort_keys=True))
+            return 0
         if args.command=='materials-backfill':
             if (state_dir/'stop-source-backfill').exists():
                 print(json.dumps({'derivedSources':0,'run':pipeline.run,'requests':0,

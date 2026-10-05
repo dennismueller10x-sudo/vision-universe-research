@@ -1,4 +1,4 @@
-"""Checkpoint bounded material or publisher batches without resetting source health.
+"""Checkpoint bounded materials, publisher or existing-news-feed backfill batches.
 
 The existing CLI owns source selection, due times and each durable fact. A local
 request/time limit is a batch boundary, not evidence that a source is unavailable.
@@ -21,14 +21,14 @@ def drive(root, state, run_id, lane='materials', month=None, batches=10,
           publisher_low_gain_batches=3):
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,47}', run_id or ''):
         raise ValueError('INVALID_SOURCE_BACKFILL_RUN')
-    if lane not in ('materials', 'publisher') or not 1 <= batches <= 500:
+    if lane not in ('materials', 'publisher', 'news') or not 1 <= batches <= 500:
         raise ValueError('INVALID_SOURCE_BACKFILL_LANE_OR_BATCHES')
     if not 1 <= limit <= 100 or not 1 <= request_budget <= 200 or not 30 <= max_seconds <= 1800:
         raise ValueError('INVALID_SOURCE_BACKFILL_BOUNDS')
     if lane == 'publisher' and (not re.fullmatch(r'\d{4}-(?:0[1-9]|1[0-2])', month or '')
                                 or not '2000-01' <= month <= utcnow()[:7]):
         raise ValueError('INVALID_SOURCE_BACKFILL_MONTH')
-    if lane == 'materials' and month is not None:
+    if lane in ('materials', 'news') and month is not None:
         raise ValueError('MATERIALS_BACKFILL_HAS_NO_MONTH')
     if type(publisher_low_gain_batches) is not int or not 0 <= publisher_low_gain_batches <= 20:
         raise ValueError('INVALID_PUBLISHER_LOW_GAIN_BOUND')
@@ -54,10 +54,12 @@ def drive(root, state, run_id, lane='materials', month=None, batches=10,
         finally:
             store.close()
         command = [sys.executable, '-m', 'company_intelligence.cli',
-                   'materials-backfill' if lane == 'materials' else 'news-archive',
+                   {'materials':'materials-backfill','publisher':'news-archive','news':'news-backfill'}[lane],
                    '--root', str(Path(root).resolve()), '--state', str(state), '--network',
                    '--limit', str(limit), '--request-budget', str(request_budget),
                    '--max-seconds', str(max_seconds)]
+        if lane == 'news':
+            command += ['--source-backfill-run', run_id]
         if month is not None:
             command += ['--archive-month', month]
         completed = execute(command, capture_output=True, text=True)
@@ -71,6 +73,8 @@ def drive(root, state, run_id, lane='materials', month=None, batches=10,
             reason = 'CIRCUIT_OPEN'
         elif lane == 'materials':
             reason = reason or ('BATCH_COMPLETED' if report.get('derivedSources') else 'NO_DUE_SOURCES')
+        elif lane == 'news':
+            reason = reason or ('BATCH_COMPLETED' if report.get('attemptedSources') else 'NO_DUE_SOURCES')
         elif not report.get('checkpointCurrentRun'):
             reason = reason or ('SOURCE_FAILURE' if report.get('run', {}).get('sourceFailures') else 'NO_CURRENT_PUBLISHER_BATCH')
         else:
@@ -91,6 +95,8 @@ def drive(root, state, run_id, lane='materials', month=None, batches=10,
                                 ('newNewsItems', report.get('run', {}).get('new', 0)),
                                 ('duplicateMatches', report.get('run', {}).get('duplicate', 0))]:
                 accounting[name] = prior.get(name, 0) + value
+            if lane == 'news':
+                accounting['attemptedSources'] = prior.get('attemptedSources',0) + report.get('attemptedSources',0)
             accounting['recoveredPresentationIssuers'] = sorted(set(prior.get('recoveredPresentationIssuers', [])) |
                                                                set(report.get('recoveredPresentationIssuers', [])))
             added_news = {row[0] for row in store.db.execute('SELECT DISTINCT company FROM items')} - before_news
@@ -115,7 +121,7 @@ def main(argv=None):
     parser.add_argument('--root', type=Path, default=Path(__file__).resolve().parents[2])
     parser.add_argument('--state', type=Path)
     parser.add_argument('--run-id', required=True)
-    parser.add_argument('--lane', choices=['materials', 'publisher'], default='materials')
+    parser.add_argument('--lane', choices=['materials', 'publisher', 'news'], default='materials')
     parser.add_argument('--archive-month')
     parser.add_argument('--max-batches', type=int, default=10)
     parser.add_argument('--limit', type=int, default=32)
