@@ -1,0 +1,65 @@
+name: Elliott-Datenstudie (Close-only vs. OHLC, Mission VI)
+
+# WOZU: Die Elliott-Engine liest heute nur Schlusskurse. Ob Hoch/Tief (OHLC) die Impuls-Erkennung aendert, laesst sich lokal
+# nur fuer fuenf Titel pruefen. Dieser Lauf holt runner-privat Tages-OHLC (bestehender Anbieter Tiingo, ~35 Anfragen) fuer
+# die geoeffneten Practitioner-Faelle und eine Auswahl Produktionstitel, rechnet scripts/technical/elliott-forensics/
+# ohlc-experiment.mjs und committet NUR aggregierte Kennzahlen (keine Kurse). Methodik und Engine unveraendert (elliott-3.2.2).
+#
+# Ausloeser: Push auf claude/** mit der Marke im BETREFF (erste Zeile) der Commit-Nachricht. Ohne Marke laeuft nichts.
+
+on:
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: elliott-ohlc-study
+  cancel-in-progress: false
+
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Marke im Betreff?
+        id: gate
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          subject=$(printf '%s\n' "$COMMIT_MESSAGE" | head -n 1)
+          case "$subject" in *"[elliott-ohlc]"*) echo "run=true" >> "$GITHUB_OUTPUT" ;; *) echo "run=false" >> "$GITHUB_OUTPUT" ;; esac
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.run == 'true'
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.run == 'true'
+        with:
+          node-version: '22'
+      - name: Tages-OHLC holen (runner-privat)
+        if: steps.gate.outputs.run == 'true'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/technical/elliott-forensics/fetch-ohlc.mjs --out "$RUNNER_TEMP/ohlc"
+      - name: Studie (Standardbudget und gleiches erhoehtes Budget)
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          node --max-old-space-size=6144 scripts/technical/elliott-forensics/ohlc-experiment.mjs --ohlc-dir "$RUNNER_TEMP/ohlc"
+          node --max-old-space-size=6144 scripts/technical/elliott-forensics/ohlc-experiment.mjs --ohlc-dir "$RUNNER_TEMP/ohlc" --max-nodes 250000 --out quant/data/technical-intelligence/elliott-forensics/ohlc-experiment-budget250k.json
+      - name: Datenhygiene
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          node scripts/market/assert-public-data-hygiene.mjs
+          node -e 'for (const f of ["ohlc-experiment.json","ohlc-experiment-budget250k.json"]) { const t = require("fs").readFileSync("quant/data/technical-intelligence/elliott-forensics/" + f, "utf8"); if (/"(open|high|low|close)"\s*:/.test(t) || /"bars"\s*:\s*\[/.test(t)) { console.error("Kursfelder im Artefakt: " + f); process.exit(1); } }'
+      - name: Commit (nur Kennzahlen)
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/technical-intelligence/elliott-forensics
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          git commit -m "Elliott-Datenstudie: Close-only vs. OHLC (CI, Kennzahlen ohne Kurse)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

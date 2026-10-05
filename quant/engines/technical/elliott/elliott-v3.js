@@ -223,6 +223,11 @@
     var atrCol = features.columns.atr, atr = isNum(atrCol[asOf]) ? atrCol[asOf] : close[asOf] * 0.02;
     var pool = buildPool(close, atrCol, asOf, cfg.poolAtr), pts = pool.pts, n = pts.length;
     cfg._sigma = noiseSigma(close, asOf, 260);
+    /* FORENSIK (Mission VI, nur Forschung): zaehlt, wo Suchpfade je Musterklasse enden. Ohne input.forensics wird nichts
+       gezaehlt; die Ausgabe ist mit und ohne Forensik identisch (Test practitioner-forensics). */
+    var F = input.forensics ? { byType: {}, anchors: { total: 0, visited: 0, skippedWindow: 0, skippedAnchorAtr: 0, skippedDev: 0 }, scoreDrops: {}, prerank: {}, final: {} } : null;
+    function fT(type) { return F.byType[type] || (F.byType[type] = { reach: {}, prune: {}, found: { complete: 0, developing: 0, internal: 0 }, endTouched: 0 }); }
+    function fz(type, k, why) { if (!F) return; var t = fT(type), key = "w" + k + ":" + why; t.prune[key] = (t.prune[key] || 0) + 1; }
     var ctx = { cfg: Object.assign({}, V2.DEFAULTS, { clarity: cfg.clarity, structural: cfg.structural, maxAlternatives: cfg.maxAlternatives, alternativeMinInvalidationGapAtr: cfg.alternativeMinInvalidationGapAtr }), trendDir: V2.trendDirection(series, asOf, bpy) };
     /* Suffix-Extreme fuer "seither nicht ueberschritten" */
     var sufMax = new Array(asOf + 2), sufMin = new Array(asOf + 2);
@@ -300,30 +305,32 @@
       for (var i3 = l.fromIndex; i3 <= l.toIndex; i3++) lo = up ? Math.min(lo, close[i3]) : Math.max(lo, close[i3]);
       return (extMemo[key] = { ext: e, back: lo });   // ext = Extrem in Wellenrichtung, back = Extrem gegen die Wellenrichtung
     }
-    function intraOk(type, legs) {
+    function intraOk(type, legs) { return intraWhy(type, legs) === null; }
+    /* Grund der Verletzung (null = in Ordnung); gleiche Bedingungen in gleicher Reihenfolge wie bisher intraOk */
+    function intraWhy(type, legs) {
       var s0 = legs[0].toPrice >= legs[0].fromPrice ? 1 : -1, p0 = legs[0].fromPrice, o = function (v) { return s0 * v; };
       function wave(k) { return legs[k - 1]; }
       /* 3.2 (Red-Team 3.2 H1): JEDE Welle mit Unterteilung "M" (Motivwelle: Impuls 1/3/5, Zigzag A/C, Flat C, Doppel-Zigzag a/c)
          laeuft nie hinter ihren eigenen Start zurueck — auch nicht als laufende Welle. Vorher nur fuer Impulse/Diagonalen geprueft. */
       var subM = P.PATTERNS[type].subdivision;
-      for (var km = 1; km <= legs.length; km++) if (subM[km - 1] === "M" && o(extremeAgainst(wave(km)).back) < o(wave(km).fromPrice) - 1e-9) return false;
+      for (var km = 1; km <= legs.length; km++) if (subM[km - 1] === "M" && o(extremeAgainst(wave(km)).back) < o(wave(km).fromPrice) - 1e-9) return "INTRA_MOTIVE_WAVE_BEHIND_START_w" + km;
       if (type === "IMPULSE" || type.indexOf("DIAGONAL") >= 0) {
-        if (wave(2) && o(extremeAgainst(wave(2)).ext) <= o(p0)) return false;                                   // W2 nie hinter W1-Ursprung
-        if (wave(4) && type === "IMPULSE" && o(extremeAgainst(wave(4)).ext) <= o(wave(1).toPrice)) return false;  // W4 nie im Gebiet von W1
-        if (wave(4) && type !== "IMPULSE" && o(extremeAgainst(wave(4)).ext) <= o(wave(3).fromPrice)) return false; // Diagonale: W4 nicht hinter W3-Ursprung
-        for (var k2 = 1; k2 <= legs.length; k2 += 2) if (wave(k2) && o(extremeAgainst(wave(k2)).back) < o(wave(k2).fromPrice) - 1e-9) return false; // Motivwelle unterschreitet ihren Start nicht
+        if (wave(2) && o(extremeAgainst(wave(2)).ext) <= o(p0)) return "INTRA_W2_BEYOND_W1_ORIGIN";                                   // W2 nie hinter W1-Ursprung
+        if (wave(4) && type === "IMPULSE" && o(extremeAgainst(wave(4)).ext) <= o(wave(1).toPrice)) return "INTRA_W4_IN_W1_TERRITORY";  // W4 nie im Gebiet von W1
+        if (wave(4) && type !== "IMPULSE" && o(extremeAgainst(wave(4)).ext) <= o(wave(3).fromPrice)) return "INTRA_DIAG_W4_BEYOND_W3_ORIGIN"; // Diagonale: W4 nicht hinter W3-Ursprung
+        for (var k2 = 1; k2 <= legs.length; k2 += 2) if (wave(k2) && o(extremeAgainst(wave(k2)).back) < o(wave(k2).fromPrice) - 1e-9) return "INTRA_MOTIVE_WAVE_BEHIND_START_w" + k2; // Motivwelle unterschreitet ihren Start nicht
       } else if (type === "ZIGZAG" || type === "DOUBLE_ZIGZAG" || type === "TRIPLE_ZIGZAG" || type === "WXY") {
-        if (wave(2) && o(extremeAgainst(wave(2)).ext) <= o(p0)) return false;                                   // B bzw. X nie hinter dem Ursprung
+        if (wave(2) && o(extremeAgainst(wave(2)).ext) <= o(p0)) return "INTRA_B_BEYOND_ORIGIN";                                   // B bzw. X nie hinter dem Ursprung
       } else if (type === "FLAT") {
-        if (wave(2) && Math.abs(extremeAgainst(wave(2)).ext - wave(1).toPrice) > 2.0 * Math.abs(wave(1).toPrice - p0)) return false; // VU-Grenze B <= 200 % von A
+        if (wave(2) && Math.abs(extremeAgainst(wave(2)).ext - wave(1).toPrice) > 2.0 * Math.abs(wave(1).toPrice - p0)) return "INTRA_FLAT_B_OVER_200PCT"; // VU-Grenze B <= 200 % von A
       } else if (type === "TRIANGLE" && legs.length >= 3) {
         var contracting = o(legs[2].toPrice) < o(legs[0].toPrice);
         if (contracting) for (var k3 = 3; k3 <= legs.length; k3++) {
           var w = wave(k3), ref = wave(k3 - 2).toPrice, dirW = (k3 % 2 === 1) ? s0 : -s0, tol = (k3 === 4 ? 0.05 : 0) * Math.abs(legs[0].toPrice - p0);
-          if (dirW * extremeAgainst(w).ext > dirW * ref + tol) return false;                                    // Dreieck: innerhalb der Begrenzung
+          if (dirW * extremeAgainst(w).ext > dirW * ref + tol) return "INTRA_TRIANGLE_BOUNDARY";                                    // Dreieck: innerhalb der Begrenzung
         }
       }
-      return true;
+      return null;
     }
     /* Wellen-Objekte je Kante einmal erzeugen (Suche erzeugt sonst je Knoten neue Listen → GC-Last). */
     var legMemo = {};
@@ -343,17 +350,19 @@
       if (nodes++ > cfg.maxNodes) { truncated = true; return; }
       var k = path.length - 1, lastP = pts[path[k]], ws = type === "WXY" || type === "TRIPLE_ZIGZAG";
       if (k >= 1) {
-        if (k >= 2 && !cfg.noSimilarity && !lastP.dev && !similar(legs[k - 2], legs[k - 1])) return;
-        if (k === 1 && !cfg.noAnchorPrune && leftSig[path[0]] < cfg.anchorMinRatio * Math.abs(legs[0].toPrice - legs[0].fromPrice)) return;
-        if (!P.checkRules(type, legs)) return;
-        if (!intraOk(type, legs)) return;
-        if (lastP.dev) found.push({ type: type, path: path.slice(), over: overs.slice(), complete: false });
+        if (F) { var tr = fT(type).reach; tr[k] = (tr[k] || 0) + 1; }
+        if (k >= 2 && !cfg.noSimilarity && !lastP.dev && !similar(legs[k - 2], legs[k - 1])) { fz(type, k, "SIMILARITY"); return; }
+        if (k === 1 && !cfg.noAnchorPrune && leftSig[path[0]] < cfg.anchorMinRatio * Math.abs(legs[0].toPrice - legs[0].fromPrice)) { fz(type, k, "ANCHOR_RATIO"); return; }
+        if (!P.checkRules(type, legs)) { if (F) fz(type, k, "RULE:" + P.evaluate(type, legs).violations[0]); return; }
+        if (F) { var iw = intraWhy(type, legs); if (iw) { fz(type, k, iw); return; } }
+        else if (!intraOk(type, legs)) return;
+        if (lastP.dev) { found.push({ type: type, path: path.slice(), over: overs.slice(), complete: false }); if (F) fT(type).found.developing++; }
         else if (untouched(lastP)) {
-          if (k === w) found.push({ type: type, path: path.slice(), over: overs.slice(), complete: true });
+          if (k === w) { found.push({ type: type, path: path.slice(), over: overs.slice(), complete: true }); if (F) fT(type).found.complete++; }
           /* Laufende Welle k mit internem Ruecksetzer: ihr Extrem steht, der Kurs korrigiert darin (kleinerer Grad) */
           var li = legs.slice(0, k - 1); li.push(legAB(path[k - 1], path[k], true, ws));
-          if (P.checkRules(type, li)) found.push({ type: type, path: path.slice(), over: overs.slice(), complete: false, internal: true });
-        }
+          if (P.checkRules(type, li)) { found.push({ type: type, path: path.slice(), over: overs.slice(), complete: false, internal: true }); if (F) fT(type).found.internal++; }
+        } else if (F && k === w) fT(type).endTouched++;
       }
       if (k === w || lastP.dev) return;
       var nx = succ(path[k]);
@@ -361,8 +370,8 @@
         /* Ende hinter dem Extrem nur, wenn sich die Welle als Running Flat, Dreieck oder trunkierter Impuls zerlegt */
         if (nx[q].short > 0) {
           /* 3.1 (Red-Team H1): ein Ende hinter dem Extrem nur an Korrekturpositionen (Unterteilung K) — Motivwellen enden am Extrem */
-          if (P.PATTERNS[type].subdivision[k] !== "K") continue;
-          var cs = classifySegment(series, lastP.i, pts[nx[q].j].i, cfg, subMemo); if (!orthodoxShort(cs)) continue;
+          if (P.PATTERNS[type].subdivision[k] !== "K") { fz(type, k + 1, "SHORT_END_AT_MOTIVE_POSITION"); continue; }
+          var cs = classifySegment(series, lastP.i, pts[nx[q].j].i, cfg, subMemo); if (!orthodoxShort(cs)) { fz(type, k + 1, "SHORT_END_NOT_ORTHODOX"); continue; }
         }
         path.push(nx[q].j); overs.push(nx[q].over); legs.push(legAB(path[k], nx[q].j, false, ws));
         dfs(type, w, path, legs);
@@ -373,13 +382,16 @@
     /* Ursprungsreihenfolge: bedeutendste zuerst — reicht das Suchbudget nicht, fallen die unwahrscheinlichsten weg (nicht die juengsten). */
     var anchorOrder = []; for (var a3 = 0; a3 < n; a3++) anchorOrder.push(a3);
     anchorOrder.sort(function (x, y) { return leftSig[y] - leftSig[x] || x - y; });
+    if (F) F.anchors.total = anchorOrder.length;
     for (var ai = 0; ai < anchorOrder.length && !truncated; ai++) {
       var a2 = anchorOrder[ai];
-      if (pts[a2].i < minAnchorIdx || pts[a2].dev) continue;
+      if (pts[a2].i < minAnchorIdx || pts[a2].dev) { if (F) { if (pts[a2].dev) F.anchors.skippedDev++; else F.anchors.skippedWindow++; } continue; }
       /* Ursprung muss eine Bewegung abschliessen, die deutlich groesser als die Monowellen-Schwelle ist (Suchbudget). */
-      if (cfg.anchorMinAtr && isNum(atrCol[pts[a2].i]) && leftSig[a2] < cfg.anchorMinAtr * atrCol[pts[a2].i]) continue;
+      if (cfg.anchorMinAtr && isNum(atrCol[pts[a2].i]) && leftSig[a2] < cfg.anchorMinAtr * atrCol[pts[a2].i]) { if (F) F.anchors.skippedAnchorAtr++; continue; }
+      if (F) F.anchors.visited++;
       P.TYPES.forEach(function (t) { if (!truncated) dfs(t, P.PATTERNS[t].waves, [a2], []); });
     }
+    if (F) { F.anchors.unvisitedAfterTruncation = truncated ? anchorOrder.length - ai : 0; }
 
     /* Diagnose: warum wurde ein vorgegebener Pfad nicht gefunden? (nur Forschung) */
     var explain = null;
@@ -437,6 +449,7 @@
     }
     found.forEach(function (f) { f.parts = pathParts(f); var r = 0; Object.keys(cfg.weights).forEach(function (k) { r += cfg.weights[k] * (k in f.parts ? f.parts[k] : 0.5); }); f.pre = r; });
     found.sort(function (x, y) { return y.pre - x.pre; });
+    if (F) found.forEach(function (f, ix) { var pr = F.prerank[f.type] || (F.prerank[f.type] = { found: 0, withinMaxScored: 0, bestPrePos: null }); pr.found++; if (ix < cfg.maxScored) pr.withinMaxScored++; if (pr.bestPrePos === null) pr.bestPrePos = ix; });
     var cands = found.slice(0, cfg.maxScored).map(function (f) { var sc = score(f); if (!sc && input.debugTruth) f.dropped = true; else f.cand = sc; return sc; }).filter(Boolean);
     /* Diagnose (nur Forschung): Ist die wahre Lesart im Pool, gefunden, bewertet — und wo steht sie? */
     var truthDiag = null;
@@ -450,20 +463,22 @@
     function score(f) {
       var legs = legsOfPath(f.path, true, f.internal), spec = P.PATTERNS[f.type], e = P.evaluate(f.type, legs);
       /* Diagonale nur mit sichtbarem Definitionsmerkmal (sonst Kopie der Impulslesart) */
-      if (f.type.indexOf("DIAGONAL") >= 0 && !e.rules.some(function (r) { return r.ruleId === "DIAGONAL_W4_OVERLAPS_W1" && r.passed === true; })) return null;
+      function drop(why) { if (F) { var d = F.scoreDrops[f.type] || (F.scoreDrops[f.type] = {}); d[why] = (d[why] || 0) + 1; } return null; }
+      if (f.type.indexOf("DIAGONAL") >= 0 && !e.rules.some(function (r) { return r.ruleId === "DIAGONAL_W4_OVERLAPS_W1" && r.passed === true; })) return drop("DIAGONAL_NO_W4_OVERLAP");
       e = P.evaluate(f.type, legs);   // WXY braucht die Unterteilung
-      if (!e || !e.valid || !intraOk(f.type, legs)) return null;
+      if (!e || !e.valid) return drop(e ? "RULE:" + e.violations[0] : "EVAL_NULL");
+      if (!intraOk(f.type, legs)) return drop(F ? intraWhy(f.type, legs) : "INTRA");
       /* 3.3-Kandidat (Mission IV §26): W und Y einer Doppel-Korrektur muessen sich DEUTLICH korrektiv unterteilen — sonst ist W-X-Y
          ein Auffangbecken fuer beliebige drei Schwuenge (Produktion: 1.877 WXY vs. 44 Impulse; Korpus: WXY 1.305-mal gewaehlt, 13 % richtig). */
       if (cfg.wxyMargin && f.type === "WXY") {
         var okW = function (l) { return l.status === "DEVELOPING" || (l.sub && l.sub.resolved && (l.sub.corrective - l.sub.motive) >= cfg.wxyMargin); };
-        if (!okW(legs[0]) || (legs[2] && !okW(legs[2]))) return null;
+        if (!okW(legs[0]) || (legs[2] && !okW(legs[2]))) return drop("WXY_MARGIN");
       }
       /* orthodoxes Ende: die ueberschiessende Folgewelle muss ein Flat oder Dreieck sein */
       for (var ov = 0; ov < f.over.length; ov++) {
         /* 3.2 (Red-Team 3.2 H1): Ueberschiessen nur an Korrekturpositionen und nur mit SICHTBARER Flat-/Dreieck-Unterteilung —
            eine laufende Welle kann das noch nicht zeigen, also kein Ueberschiessen fuer laufende Wellen. */
-        if (f.over[ov] > 0) { var lg = legs[ov], sp = lg.sub && lg.sub.pattern; if (lg.status === "DEVELOPING" || spec.subdivision[ov].indexOf("K") < 0 || (sp !== "FLAT" && sp !== "TRIANGLE")) return null; lg.orthodoxOvershoot = f.over[ov]; }
+        if (f.over[ov] > 0) { var lg = legs[ov], sp = lg.sub && lg.sub.pattern; if (lg.status === "DEVELOPING" || spec.subdivision[ov].indexOf("K") < 0 || (sp !== "FLAT" && sp !== "TRIANGLE")) return drop("OVERSHOOT_NOT_FLAT_OR_TRIANGLE"); lg.orthodoxOvershoot = f.over[ov]; }
       }
       var conf = legs.filter(function (l) { return l.status !== "DEVELOPING"; });
       var subs = legs.map(function (l, k) { return l.status === "DEVELOPING" ? null : subFit(spec.subdivision[k], l.sub, cfg); }).filter(isNum);
@@ -590,6 +605,13 @@
       top.sort(function (x, y) { return y.rank - x.rank || (y.span[1] - y.span[0]) - (x.span[1] - x.span[0]) || (x.type < y.type ? -1 : 1); });
     }
 
+    if (F) top.forEach(function (t, ix) {
+      var fe = F.final[t.type] || (F.final[t.type] = { scored: 0, bestPos: null, best: null });
+      fe.scored++;
+      if (fe.bestPos === null) { fe.bestPos = ix; fe.best = { complete: t.complete, internal: !!t.internal, rank: t.rank, rankGapToTop: round(top[0].rank - t.rank, 4), wavesPresent: t.waves.length,
+        spanBars: t.span[1] - t.span[0], components: roundMap(t.components), topComponents: roundMap(top[0].components), hierConflict: t.hierConflict ? t.hierConflict.kind : null }; }
+    });
+    if (F) F.scoredTotal = cands.length;
     if (truthDiag) { truthDiag.rank = truthDiag.cands.length ? Math.min.apply(null, truthDiag.cands.map(function (c) { var ix = top.indexOf(c); return ix < 0 ? 9999 : ix; })) : null;
                      truthDiag.best = truthDiag.cands.length ? truthDiag.cands.slice().sort(function (x, y) { return (y.rank || y.base) - (x.rank || x.base); })[0] : null; }
     var degreesInfo = { analysis: "ew3", engine: "hierarchical", poolPivots: n, candidates: cands.length, searchTruncated: truncated, nodes: nodes };
@@ -657,7 +679,7 @@
       applicability: appl, candidateTree: V2.candidateTree(primary, alternatives),
       historicalMap: hmap, atr: round(atr, 4), dataQuality: dq,
       trace: { poolPivots: n, candidates: cands.length, nodes: nodes, truncated: truncated, chosen: { rank: best0.rank, components: roundMap(best0.components) },
-               explain: explain,
+               explain: explain, forensics: F || undefined,
                truth: truthDiag ? { poolDist: truthDiag.poolDist, found: truthDiag.foundInSearch, dropped: truthDiag.droppedInScore, rank: truthDiag.rank, comp: truthDiag.best ? roundMap(truthDiag.best.components) : null, score: truthDiag.best ? (truthDiag.best.rank || truthDiag.best.base) : null } : undefined,
                allCands: input.debugAll ? top.map(function (t) { return { type: t.type, complete: t.complete, pts: [t.waves[0].fromIndex].concat(t.waves.map(function (w) { return w.toIndex; })), c: t.components, subs: t.waves.map(function (w) { return { from: w.fromIndex, to: w.toIndex, st: w.status, p: w.sub ? w.sub.pattern : null }; }) }; }) : undefined,
                debugTop: input.debug ? top.slice(0, input.debug).map(function (t) { return { pattern: t.type, complete: t.complete, rank: t.rank, pts: [t.waves[0].fromIndex].concat(t.waves.map(function (w) { return w.toIndex; })), c: roundMap(t.components), subs: t.waves.map(function (w) { return w.sub ? w.sub.cls + w.sub.count + ':' + w.sub.motive + '/' + w.sub.corrective : '-'; }).join(' ') }; }) : undefined,

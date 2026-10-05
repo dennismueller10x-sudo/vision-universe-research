@@ -1,0 +1,5246 @@
+{
+ "schemaVersion": "vu-elliott-impulse-forensics-1.0.0",
+ "generatedAt": "2026-10-05T01:27:08.991Z",
+ "engine": "elliott-3.2.2",
+ "dataMode": "CLOSE_ONLY (wie Replay/Produktion)",
+ "freeze": {
+  "version": "PRACTITIONER_REFERENCE_V1",
+  "sha256": "7af25c9b5d61f0268f7049103076839e1dd43b3a2d9d24bc942290dd1133f489"
+ },
+ "opened": 35,
+ "sealedHoldoutCasesNotRead": 43,
+ "note": "PRACTITIONER REFERENCE, NOT OBJECTIVE GROUND TRUTH. Forensik ohne Aenderung der Engine-Ausgabe (Neutralitaet je Fall geprueft).",
+ "summary": {
+  "cases": 35,
+  "ok": 33,
+  "practitionerImpulseCases": 25,
+  "categoryImpulseCases": {
+   "IMPULSE_CANDIDATE_RANKED_TOO_LOW": 25
+  },
+  "anyImpulseCandidate": 25,
+  "practitionerLikeImpulseCandidate": 12,
+  "vuPrimaryPattern": {
+   "WXY": 16,
+   "TRIANGLE": 9,
+   "ZIGZAG": 5,
+   "FLAT": 3
+  },
+  "abstention": {
+   "DEVELOPING_CAP_OR_LOW_SCORE": 9,
+   "AMBIGUITY_AND_LOW_SCORE": 6,
+   "LOW_APPLICABILITY_SCORE": 3,
+   "WXY_CAP": 14,
+   "DATA_QUALITY": 1
+  },
+  "truncatedSearch": 15,
+  "neutralityChecked": 33,
+  "neutralityFailed": 0
+ },
+ "rows": [
+  {
+   "referenceId": "pr_ewf_20220816_zm",
+   "split": "VALIDATION",
+   "sourceFamily": "ewf",
+   "vuSymbol": "ZM",
+   "timeframe": "1W",
+   "confidence": "HIGH",
+   "btc": false,
+   "practitioner": {
+    "pattern": "ZIGZAG",
+    "family": "CORRECTIVE",
+    "broad": "CORRECTIVE",
+    "impulseLike": false,
+    "currentWave": "C",
+    "state": "DEVELOPING",
+    "direction": "DOWN",
+    "nextMove": "UP",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 174,
+   "ms": 72,
+   "neutral": true,
+   "vu": {
+    "pattern": "WXY",
+    "family": "CORRECTIVE",
+    "complete": false,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.003,
+    "abstain": true,
+    "alternatives": [
+     "FLAT",
+     "WXY"
+    ],
+    "higherDegree": "FLAT"
+   },
+   "abstention": "DEVELOPING_CAP_OR_LOW_SCORE",
+   "search": {
+    "poolPivots": 42,
+    "nodes": 2492,
+    "truncated": false,
+    "anchors": {
+     "total": 42,
+     "visited": 22,
+     "skippedWindow": 0,
+     "skippedAnchorAtr": 19,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 214,
+    "typesFound": {
+     "IMPULSE": 23,
+     "LEADING_DIAGONAL": 24,
+     "ENDING_DIAGONAL": 24,
+     "ZIGZAG": 30,
+     "FLAT": 33,
+     "TRIANGLE": 80,
+     "WXY": 14,
+     "DOUBLE_ZIGZAG": 42,
+     "TRIPLE_ZIGZAG": 14
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 16,
+     "rankGap": 0.3164
+    },
+    "impulseReadings": 22,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 7,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 0,
+     "developing": 2,
+     "internal": 21
+    },
+    "prerank": {
+     "found": 23,
+     "withinMaxScored": 23,
+     "bestPrePos": 11
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 1
+    },
+    "finalBestPos": 16
+   },
+   "motiveAny": true,
+   "bestMotivePos": 16
+  },
+  {
+   "referenceId": "pr_ewf_20220828_unh",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "vuSymbol": "UNH",
+   "timeframe": "1W",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "practitioner": {
+    "pattern": "FLAT",
+    "family": "CORRECTIVE",
+    "broad": "CORRECTIVE",
+    "impulseLike": false,
+    "currentWave": "C",
+    "state": "DEVELOPING",
+    "direction": "DOWN",
+    "nextMove": "UP",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 1692,
+   "ms": 145,
+   "neutral": true,
+   "vu": {
+    "pattern": "TRIANGLE",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.034,
+    "abstain": true,
+    "alternatives": [
+     "FLAT",
+     "FLAT"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "AMBIGUITY_AND_LOW_SCORE",
+   "search": {
+    "poolPivots": 445,
+    "nodes": 23242,
+    "truncated": false,
+    "anchors": {
+     "total": 445,
+     "visited": 42,
+     "skippedWindow": 358,
+     "skippedAnchorAtr": 44,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 113,
+    "typesFound": {
+     "IMPULSE": 36,
+     "LEADING_DIAGONAL": 29,
+     "ENDING_DIAGONAL": 29,
+     "ZIGZAG": 32,
+     "FLAT": 109,
+     "TRIANGLE": 616,
+     "WXY": 11,
+     "DOUBLE_ZIGZAG": 50,
+     "TRIPLE_ZIGZAG": 12
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 82,
+     "rankGap": 0.42
+    },
+    "impulseReadings": 6,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 6,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 0,
+     "developing": 2,
+     "internal": 34
+    },
+    "prerank": {
+     "found": 36,
+     "withinMaxScored": 6,
+     "bestPrePos": 376
+    },
+    "scoreDrops": {},
+    "finalBestPos": 82
+   },
+   "motiveAny": true,
+   "bestMotivePos": 82
+  },
+  {
+   "referenceId": "pr_ewf_20221025_qqq",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "vuSymbol": "QQQ",
+   "timeframe": "1D",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "practitioner": {
+    "pattern": "WXY",
+    "family": "CORRECTIVE",
+    "broad": "CORRECTIVE",
+    "impulseLike": false,
+    "currentWave": "Y",
+    "state": "DEVELOPING",
+    "direction": "DOWN",
+    "nextMove": "UP",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 5947,
+   "ms": 212,
+   "neutral": true,
+   "vu": {
+    "pattern": "ZIGZAG",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "OK",
+    "applicability": "LOW",
+    "appScore": 0.468,
+    "abstain": true,
+    "alternatives": [
+     "FLAT",
+     "ZIGZAG"
+    ],
+    "higherDegree": "ZIGZAG"
+   },
+   "abstention": "LOW_APPLICABILITY_SCORE",
+   "search": {
+    "poolPivots": 1455,
+    "nodes": 25002,
+    "truncated": true,
+    "anchors": {
+     "total": 1455,
+     "visited": 31,
+     "skippedWindow": 0,
+     "skippedAnchorAtr": 0,
+     "skippedDev": 0,
+     "unvisitedAfterTruncation": 1424
+    },
+    "candidatesScored": 127,
+    "typesFound": {
+     "IMPULSE": 46,
+     "LEADING_DIAGONAL": 48,
+     "ENDING_DIAGONAL": 49,
+     "ZIGZAG": 38,
+     "FLAT": 44,
+     "TRIANGLE": 752,
+     "WXY": 27,
+     "DOUBLE_ZIGZAG": 297,
+     "TRIPLE_ZIGZAG": 46
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 6,
+     "rankGap": 0.0935
+    },
+    "impulseReadings": 7,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 0,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 3,
+     "developing": 14,
+     "internal": 29
+    },
+    "prerank": {
+     "found": 46,
+     "withinMaxScored": 16,
+     "bestPrePos": 1
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 9
+    },
+    "finalBestPos": 6
+   },
+   "motiveAny": true,
+   "bestMotivePos": 6
+  },
+  {
+   "referenceId": "pr_ewf_20230102_dis",
+   "split": "VALIDATION",
+   "sourceFamily": "ewf",
+   "vuSymbol": "DIS",
+   "timeframe": "1W",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "practitioner": {
+    "pattern": "ZIGZAG",
+    "family": "CORRECTIVE",
+    "broad": "CORRECTIVE",
+    "impulseLike": false,
+    "currentWave": "C",
+    "state": "DEVELOPING",
+    "direction": "DOWN",
+    "nextMove": "UP",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 1722,
+   "ms": 114,
+   "neutral": true,
+   "vu": {
+    "pattern": "FLAT",
+    "family": "CORRECTIVE",
+    "complete": false,
+    "status": "OK",
+    "applicability": "LOW",
+    "appScore": 0.002,
+    "abstain": true,
+    "alternatives": [
+     "TRIANGLE",
+     "TRIANGLE"
+    ],
+    "higherDegree": "FLAT"
+   },
+   "abstention": "DEVELOPING_CAP_OR_LOW_SCORE",
+   "search": {
+    "poolPivots": 446,
+    "nodes": 14643,
+    "truncated": false,
+    "anchors": {
+     "total": 446,
+     "visited": 35,
+     "skippedWindow": 368,
+     "skippedAnchorAtr": 42,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 361,
+    "typesFound": {
+     "IMPULSE": 27,
+     "LEADING_DIAGONAL": 24,
+     "ENDING_DIAGONAL": 24,
+     "ZIGZAG": 20,
+     "FLAT": 111,
+     "TRIANGLE": 471,
+     "WXY": 20,
+     "DOUBLE_ZIGZAG": 71,
+     "TRIPLE_ZIGZAG": 15
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 12,
+     "rankGap": 0.1838
+    },
+    "impulseReadings": 20,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 8,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 2,
+     "developing": 7,
+     "internal": 18
+    },
+    "prerank": {
+     "found": 27,
+     "withinMaxScored": 21,
+     "bestPrePos": 0
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 1
+    },
+    "finalBestPos": 12
+   },
+   "motiveAny": true,
+   "bestMotivePos": 12
+  },
+  {
+   "referenceId": "pr_ewf_20230108_cat",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "vuSymbol": "CAT",
+   "timeframe": "1W",
+   "confidence": "HIGH",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "1",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "DOWN",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 1723,
+   "ms": 97,
+   "neutral": true,
+   "vu": {
+    "pattern": "WXY",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.279,
+    "abstain": true,
+    "alternatives": [
+     "TRIANGLE",
+     "ZIGZAG"
+    ],
+    "higherDegree": "FLAT"
+   },
+   "abstention": "WXY_CAP",
+   "search": {
+    "poolPivots": 431,
+    "nodes": 22603,
+    "truncated": false,
+    "anchors": {
+     "total": 431,
+     "visited": 41,
+     "skippedWindow": 344,
+     "skippedAnchorAtr": 45,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 268,
+    "typesFound": {
+     "IMPULSE": 44,
+     "LEADING_DIAGONAL": 57,
+     "ENDING_DIAGONAL": 77,
+     "ZIGZAG": 60,
+     "FLAT": 118,
+     "TRIANGLE": 918,
+     "WXY": 138,
+     "DOUBLE_ZIGZAG": 278,
+     "TRIPLE_ZIGZAG": 44
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 49,
+     "rankGap": 0.1325
+    },
+    "impulseReadings": 13,
+    "practitionerLikeImpulse": 1,
+    "practitionerLikeBestPos": 229,
+    "impulseSameDirection": 4,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 2,
+     "developing": 7,
+     "internal": 35
+    },
+    "prerank": {
+     "found": 44,
+     "withinMaxScored": 14,
+     "bestPrePos": 4
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 1
+    },
+    "finalBestPos": 49
+   },
+   "motiveAny": true,
+   "bestMotivePos": 7
+  },
+  {
+   "referenceId": "pr_ewf_20230404_nvda",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "vuSymbol": "NVDA",
+   "timeframe": "1W",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "1",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "DOWN",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 1263,
+   "ms": 78,
+   "neutral": true,
+   "vu": {
+    "pattern": "WXY",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.113,
+    "abstain": true,
+    "alternatives": [
+     "TRIANGLE",
+     "FLAT"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "WXY_CAP",
+   "search": {
+    "poolPivots": 332,
+    "nodes": 7867,
+    "truncated": false,
+    "anchors": {
+     "total": 332,
+     "visited": 39,
+     "skippedWindow": 262,
+     "skippedAnchorAtr": 30,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 280,
+    "typesFound": {
+     "IMPULSE": 29,
+     "LEADING_DIAGONAL": 25,
+     "ENDING_DIAGONAL": 27,
+     "ZIGZAG": 32,
+     "FLAT": 59,
+     "TRIANGLE": 179,
+     "WXY": 29,
+     "DOUBLE_ZIGZAG": 39,
+     "TRIPLE_ZIGZAG": 12
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 14,
+     "rankGap": 0.0925
+    },
+    "impulseReadings": 28,
+    "practitionerLikeImpulse": 2,
+    "practitionerLikeBestPos": 154,
+    "impulseSameDirection": 8,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 3,
+     "developing": 4,
+     "internal": 22
+    },
+    "prerank": {
+     "found": 29,
+     "withinMaxScored": 29,
+     "bestPrePos": 0
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 1
+    },
+    "finalBestPos": 14
+   },
+   "motiveAny": true,
+   "bestMotivePos": 7
+  },
+  {
+   "referenceId": "pr_ewf_20230613_phm",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "vuSymbol": "PHM",
+   "timeframe": "1W",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "3",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "DOWN",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 1745,
+   "ms": 87,
+   "neutral": true,
+   "vu": {
+    "pattern": "WXY",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.086,
+    "abstain": true,
+    "alternatives": [
+     "TRIANGLE",
+     "ZIGZAG"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "WXY_CAP",
+   "search": {
+    "poolPivots": 457,
+    "nodes": 14414,
+    "truncated": false,
+    "anchors": {
+     "total": 457,
+     "visited": 36,
+     "skippedWindow": 372,
+     "skippedAnchorAtr": 48,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 164,
+    "typesFound": {
+     "IMPULSE": 38,
+     "LEADING_DIAGONAL": 24,
+     "ENDING_DIAGONAL": 25,
+     "ZIGZAG": 37,
+     "FLAT": 55,
+     "TRIANGLE": 709,
+     "WXY": 60,
+     "DOUBLE_ZIGZAG": 96,
+     "TRIPLE_ZIGZAG": 32
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 9,
+     "rankGap": 0.1061
+    },
+    "impulseReadings": 15,
+    "practitionerLikeImpulse": 2,
+    "practitionerLikeBestPos": 93,
+    "impulseSameDirection": 9,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 6,
+     "developing": 9,
+     "internal": 23
+    },
+    "prerank": {
+     "found": 38,
+     "withinMaxScored": 15,
+     "bestPrePos": 0
+    },
+    "scoreDrops": {},
+    "finalBestPos": 9
+   },
+   "motiveAny": true,
+   "bestMotivePos": 9
+  },
+  {
+   "referenceId": "pr_ewf_20230621_rcl",
+   "split": "VALIDATION",
+   "sourceFamily": "ewf",
+   "vuSymbol": "RCL",
+   "timeframe": "1W",
+   "confidence": "HIGH",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "3",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "DOWN",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 1573,
+   "ms": 78,
+   "neutral": true,
+   "vu": {
+    "pattern": "WXY",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.128,
+    "abstain": true,
+    "alternatives": [
+     "TRIANGLE",
+     "FLAT"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "DATA_QUALITY",
+   "search": {
+    "poolPivots": 389,
+    "nodes": 13131,
+    "truncated": false,
+    "anchors": {
+     "total": 389,
+     "visited": 29,
+     "skippedWindow": 311,
+     "skippedAnchorAtr": 48,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 350,
+    "typesFound": {
+     "IMPULSE": 69,
+     "LEADING_DIAGONAL": 46,
+     "ENDING_DIAGONAL": 54,
+     "ZIGZAG": 60,
+     "FLAT": 87,
+     "TRIANGLE": 967,
+     "WXY": 191,
+     "DOUBLE_ZIGZAG": 288,
+     "TRIPLE_ZIGZAG": 27
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 75,
+     "rankGap": 0.1233
+    },
+    "impulseReadings": 32,
+    "practitionerLikeImpulse": 10,
+    "practitionerLikeBestPos": 197,
+    "impulseSameDirection": 23,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 11,
+     "developing": 11,
+     "internal": 47
+    },
+    "prerank": {
+     "found": 69,
+     "withinMaxScored": 34,
+     "bestPrePos": 94
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 2
+    },
+    "finalBestPos": 75
+   },
+   "motiveAny": true,
+   "bestMotivePos": 75
+  },
+  {
+   "referenceId": "pr_ewf_20230725_fcx",
+   "split": "VALIDATION",
+   "sourceFamily": "ewf",
+   "vuSymbol": "FCX",
+   "timeframe": "1W",
+   "confidence": "HIGH",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "1",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "DOWN",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 1463,
+   "ms": 61,
+   "neutral": true,
+   "vu": {
+    "pattern": "WXY",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.026,
+    "abstain": true,
+    "alternatives": [
+     "TRIANGLE",
+     "ZIGZAG"
+    ],
+    "higherDegree": "TRIANGLE"
+   },
+   "abstention": "WXY_CAP",
+   "search": {
+    "poolPivots": 367,
+    "nodes": 14142,
+    "truncated": false,
+    "anchors": {
+     "total": 367,
+     "visited": 39,
+     "skippedWindow": 284,
+     "skippedAnchorAtr": 43,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 278,
+    "typesFound": {
+     "IMPULSE": 49,
+     "LEADING_DIAGONAL": 47,
+     "ENDING_DIAGONAL": 58,
+     "ZIGZAG": 68,
+     "FLAT": 101,
+     "TRIANGLE": 642,
+     "WXY": 60,
+     "DOUBLE_ZIGZAG": 183,
+     "TRIPLE_ZIGZAG": 40
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 11,
+     "rankGap": 0.1465
+    },
+    "impulseReadings": 20,
+    "practitionerLikeImpulse": 1,
+    "practitionerLikeBestPos": 114,
+    "impulseSameDirection": 9,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 4,
+     "developing": 4,
+     "internal": 41
+    },
+    "prerank": {
+     "found": 49,
+     "withinMaxScored": 23,
+     "bestPrePos": 0
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 3
+    },
+    "finalBestPos": 11
+   },
+   "motiveAny": true,
+   "bestMotivePos": 11
+  },
+  {
+   "referenceId": "pr_ewf_20230815_nvda",
+   "split": "VALIDATION",
+   "sourceFamily": "ewf",
+   "vuSymbol": "NVDA",
+   "timeframe": "1W",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "5",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "DOWN",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 1282,
+   "ms": 43,
+   "neutral": true,
+   "vu": {
+    "pattern": "WXY",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.11,
+    "abstain": true,
+    "alternatives": [
+     "TRIANGLE",
+     "FLAT"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "WXY_CAP",
+   "search": {
+    "poolPivots": 335,
+    "nodes": 8066,
+    "truncated": false,
+    "anchors": {
+     "total": 335,
+     "visited": 38,
+     "skippedWindow": 267,
+     "skippedAnchorAtr": 29,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 299,
+    "typesFound": {
+     "IMPULSE": 27,
+     "LEADING_DIAGONAL": 23,
+     "ENDING_DIAGONAL": 25,
+     "ZIGZAG": 30,
+     "FLAT": 65,
+     "TRIANGLE": 195,
+     "WXY": 31,
+     "DOUBLE_ZIGZAG": 32,
+     "TRIPLE_ZIGZAG": 11
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 16,
+     "rankGap": 0.0925
+    },
+    "impulseReadings": 27,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 4,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 3,
+     "developing": 2,
+     "internal": 22
+    },
+    "prerank": {
+     "found": 27,
+     "withinMaxScored": 27,
+     "bestPrePos": 0
+    },
+    "scoreDrops": {},
+    "finalBestPos": 16
+   },
+   "motiveAny": true,
+   "bestMotivePos": 8
+  },
+  {
+   "referenceId": "pr_ewf_20230905_abnb",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "vuSymbol": "ABNB",
+   "timeframe": "1W",
+   "confidence": "HIGH",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "3",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "DOWN",
+    "degreeRank": null
+   },
+   "status": "INSUFFICIENT_DATA"
+  },
+  {
+   "referenceId": "pr_ewf_20230919_oln",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "vuSymbol": "OLN",
+   "timeframe": "1W",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "practitioner": {
+    "pattern": "ZIGZAG",
+    "family": "CORRECTIVE",
+    "broad": "CORRECTIVE",
+    "impulseLike": false,
+    "currentWave": "C",
+    "state": "DEVELOPING",
+    "direction": "DOWN",
+    "nextMove": "UP",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 1759,
+   "ms": 73,
+   "neutral": true,
+   "vu": {
+    "pattern": "WXY",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "OK",
+    "applicability": "LOW",
+    "appScore": 0.41,
+    "abstain": true,
+    "alternatives": [
+     "TRIANGLE",
+     "WXY"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "WXY_CAP",
+   "search": {
+    "poolPivots": 408,
+    "nodes": 12781,
+    "truncated": false,
+    "anchors": {
+     "total": 408,
+     "visited": 39,
+     "skippedWindow": 332,
+     "skippedAnchorAtr": 36,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 140,
+    "typesFound": {
+     "IMPULSE": 58,
+     "LEADING_DIAGONAL": 48,
+     "ENDING_DIAGONAL": 48,
+     "ZIGZAG": 62,
+     "FLAT": 99,
+     "TRIANGLE": 1302,
+     "WXY": 85,
+     "DOUBLE_ZIGZAG": 250,
+     "TRIPLE_ZIGZAG": 46
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 3,
+     "rankGap": 0.0912
+    },
+    "impulseReadings": 8,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 4,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 8,
+     "developing": 5,
+     "internal": 45
+    },
+    "prerank": {
+     "found": 58,
+     "withinMaxScored": 12,
+     "bestPrePos": 2
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 4
+    },
+    "finalBestPos": 3
+   },
+   "motiveAny": true,
+   "bestMotivePos": 3
+  },
+  {
+   "referenceId": "pr_ewf_20230923_mcd",
+   "split": "VALIDATION",
+   "sourceFamily": "ewf",
+   "vuSymbol": "MCD",
+   "timeframe": "1W",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "practitioner": {
+    "pattern": "ZIGZAG",
+    "family": "CORRECTIVE",
+    "broad": "CORRECTIVE",
+    "impulseLike": false,
+    "currentWave": "C",
+    "state": "DEVELOPING",
+    "direction": "DOWN",
+    "nextMove": "UP",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 1760,
+   "ms": 76,
+   "neutral": true,
+   "vu": {
+    "pattern": "TRIANGLE",
+    "family": "CORRECTIVE",
+    "complete": false,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0,
+    "abstain": true,
+    "alternatives": [
+     "WXY",
+     "FLAT"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "DEVELOPING_CAP_OR_LOW_SCORE",
+   "search": {
+    "poolPivots": 484,
+    "nodes": 11929,
+    "truncated": false,
+    "anchors": {
+     "total": 484,
+     "visited": 34,
+     "skippedWindow": 401,
+     "skippedAnchorAtr": 48,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 372,
+    "typesFound": {
+     "IMPULSE": 64,
+     "LEADING_DIAGONAL": 52,
+     "ENDING_DIAGONAL": 56,
+     "ZIGZAG": 62,
+     "FLAT": 74,
+     "TRIANGLE": 254,
+     "WXY": 49,
+     "DOUBLE_ZIGZAG": 170,
+     "TRIPLE_ZIGZAG": 34
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 16,
+     "rankGap": 0.0756
+    },
+    "impulseReadings": 35,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 30,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 5,
+     "developing": 15,
+     "internal": 44
+    },
+    "prerank": {
+     "found": 64,
+     "withinMaxScored": 37,
+     "bestPrePos": 7
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 2
+    },
+    "finalBestPos": 16
+   },
+   "motiveAny": true,
+   "bestMotivePos": 8
+  },
+  {
+   "referenceId": "pr_ewf_20231205_coin",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "vuSymbol": "COIN",
+   "timeframe": "1W",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "3",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "DOWN",
+    "degreeRank": null
+   },
+   "status": "INSUFFICIENT_DATA"
+  },
+  {
+   "referenceId": "pr_ewf_20240220_lly",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "vuSymbol": "LLY",
+   "timeframe": "1W",
+   "confidence": "HIGH",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "3",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "DOWN",
+    "degreeRank": 1
+   },
+   "status": "OK",
+   "bars": 1781,
+   "ms": 66,
+   "neutral": true,
+   "vu": {
+    "pattern": "WXY",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "OK",
+    "applicability": "LOW",
+    "appScore": 0.566,
+    "abstain": true,
+    "alternatives": [
+     "TRIANGLE",
+     "TRIANGLE"
+    ],
+    "higherDegree": "FLAT"
+   },
+   "abstention": "WXY_CAP",
+   "search": {
+    "poolPivots": 449,
+    "nodes": 15028,
+    "truncated": false,
+    "anchors": {
+     "total": 449,
+     "visited": 33,
+     "skippedWindow": 381,
+     "skippedAnchorAtr": 34,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 347,
+    "typesFound": {
+     "IMPULSE": 113,
+     "LEADING_DIAGONAL": 75,
+     "ENDING_DIAGONAL": 75,
+     "ZIGZAG": 73,
+     "FLAT": 60,
+     "TRIANGLE": 315,
+     "WXY": 65,
+     "DOUBLE_ZIGZAG": 365,
+     "TRIPLE_ZIGZAG": 75
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 77,
+     "rankGap": 0.4026
+    },
+    "impulseReadings": 38,
+    "practitionerLikeImpulse": 5,
+    "practitionerLikeBestPos": 180,
+    "impulseSameDirection": 18,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 0,
+     "developing": 47,
+     "internal": 66
+    },
+    "prerank": {
+     "found": 113,
+     "withinMaxScored": 40,
+     "bestPrePos": 135
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 2
+    },
+    "finalBestPos": 77
+   },
+   "motiveAny": true,
+   "bestMotivePos": 77
+  },
+  {
+   "referenceId": "pr_ewf_20240812_axp",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "vuSymbol": "AXP",
+   "timeframe": "1W",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "5",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "DOWN",
+    "degreeRank": 3
+   },
+   "status": "OK",
+   "bars": 1806,
+   "ms": 71,
+   "neutral": true,
+   "vu": {
+    "pattern": "WXY",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.207,
+    "abstain": true,
+    "alternatives": [
+     "FLAT",
+     "TRIANGLE"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "WXY_CAP",
+   "search": {
+    "poolPivots": 481,
+    "nodes": 13845,
+    "truncated": false,
+    "anchors": {
+     "total": 481,
+     "visited": 35,
+     "skippedWindow": 398,
+     "skippedAnchorAtr": 47,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 255,
+    "typesFound": {
+     "IMPULSE": 40,
+     "LEADING_DIAGONAL": 33,
+     "ENDING_DIAGONAL": 35,
+     "ZIGZAG": 53,
+     "FLAT": 72,
+     "TRIANGLE": 444,
+     "WXY": 62,
+     "DOUBLE_ZIGZAG": 115,
+     "TRIPLE_ZIGZAG": 24
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 57,
+     "rankGap": 0.2428
+    },
+    "impulseReadings": 16,
+    "practitionerLikeImpulse": 1,
+    "practitionerLikeBestPos": 126,
+    "impulseSameDirection": 4,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 2,
+     "developing": 3,
+     "internal": 35
+    },
+    "prerank": {
+     "found": 40,
+     "withinMaxScored": 20,
+     "bestPrePos": 0
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 4
+    },
+    "finalBestPos": 57
+   },
+   "motiveAny": true,
+   "bestMotivePos": 57
+  },
+  {
+   "referenceId": "pr_ewf_20241003_mstr",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "vuSymbol": "MSTR",
+   "timeframe": "1W",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "5",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "DOWN",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 1373,
+   "ms": 72,
+   "neutral": true,
+   "vu": {
+    "pattern": "WXY",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "OK",
+    "applicability": "LOW",
+    "appScore": 0.222,
+    "abstain": true,
+    "alternatives": [
+     "FLAT",
+     "TRIANGLE"
+    ],
+    "higherDegree": "FLAT"
+   },
+   "abstention": "WXY_CAP",
+   "search": {
+    "poolPivots": 328,
+    "nodes": 13532,
+    "truncated": false,
+    "anchors": {
+     "total": 328,
+     "visited": 41,
+     "skippedWindow": 244,
+     "skippedAnchorAtr": 42,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 332,
+    "typesFound": {
+     "IMPULSE": 58,
+     "LEADING_DIAGONAL": 50,
+     "ENDING_DIAGONAL": 52,
+     "ZIGZAG": 75,
+     "FLAT": 99,
+     "TRIANGLE": 632,
+     "WXY": 107,
+     "DOUBLE_ZIGZAG": 223,
+     "TRIPLE_ZIGZAG": 42
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 17,
+     "rankGap": 0.093
+    },
+    "impulseReadings": 27,
+    "practitionerLikeImpulse": 4,
+    "practitionerLikeBestPos": 17,
+    "impulseSameDirection": 11,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 6,
+     "developing": 6,
+     "internal": 46
+    },
+    "prerank": {
+     "found": 58,
+     "withinMaxScored": 28,
+     "bestPrePos": 48
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 1
+    },
+    "finalBestPos": 17
+   },
+   "motiveAny": true,
+   "bestMotivePos": 10
+  },
+  {
+   "referenceId": "pr_ewf_20241008_nee",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "vuSymbol": "NEE",
+   "timeframe": "1W",
+   "confidence": "HIGH",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "5",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "DOWN",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 1814,
+   "ms": 64,
+   "neutral": true,
+   "vu": {
+    "pattern": "TRIANGLE",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "OK",
+    "applicability": "LOW",
+    "appScore": 0.115,
+    "abstain": true,
+    "alternatives": [
+     "WXY",
+     "TRIANGLE"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "LOW_APPLICABILITY_SCORE",
+   "search": {
+    "poolPivots": 469,
+    "nodes": 7339,
+    "truncated": false,
+    "anchors": {
+     "total": 469,
+     "visited": 32,
+     "skippedWindow": 393,
+     "skippedAnchorAtr": 43,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 342,
+    "typesFound": {
+     "IMPULSE": 64,
+     "LEADING_DIAGONAL": 60,
+     "ENDING_DIAGONAL": 74,
+     "ZIGZAG": 60,
+     "FLAT": 68,
+     "TRIANGLE": 329,
+     "WXY": 44,
+     "DOUBLE_ZIGZAG": 193,
+     "TRIPLE_ZIGZAG": 39
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 111,
+     "rankGap": 0.3221
+    },
+    "impulseReadings": 33,
+    "practitionerLikeImpulse": 3,
+    "practitionerLikeBestPos": 111,
+    "impulseSameDirection": 17,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 5,
+     "developing": 15,
+     "internal": 44
+    },
+    "prerank": {
+     "found": 64,
+     "withinMaxScored": 35,
+     "bestPrePos": 108
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 2
+    },
+    "finalBestPos": 111
+   },
+   "motiveAny": true,
+   "bestMotivePos": 16
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20220326_btcusd",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-cryptoknee",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "confidence": "MEDIUM",
+   "btc": true,
+   "practitioner": {
+    "pattern": "DOUBLE_ZIGZAG",
+    "family": "CORRECTIVE",
+    "broad": "CORRECTIVE",
+    "impulseLike": false,
+    "currentWave": "Y",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "UNKNOWN",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 3838,
+   "ms": 188,
+   "neutral": true,
+   "vu": {
+    "pattern": "WXY",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "OK",
+    "applicability": "LOW",
+    "appScore": 0.158,
+    "abstain": true,
+    "alternatives": [
+     "FLAT",
+     "TRIANGLE"
+    ],
+    "higherDegree": "FLAT"
+   },
+   "abstention": "WXY_CAP",
+   "search": {
+    "poolPivots": 834,
+    "nodes": 25002,
+    "truncated": true,
+    "anchors": {
+     "total": 834,
+     "visited": 27,
+     "skippedWindow": 2,
+     "skippedAnchorAtr": 0,
+     "skippedDev": 0,
+     "unvisitedAfterTruncation": 805
+    },
+    "candidatesScored": 152,
+    "typesFound": {
+     "IMPULSE": 80,
+     "LEADING_DIAGONAL": 50,
+     "ENDING_DIAGONAL": 59,
+     "ZIGZAG": 53,
+     "FLAT": 136,
+     "TRIANGLE": 1212,
+     "WXY": 71,
+     "DOUBLE_ZIGZAG": 188,
+     "TRIPLE_ZIGZAG": 34
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 16,
+     "rankGap": 0.1225
+    },
+    "impulseReadings": 11,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 4,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 13,
+     "developing": 4,
+     "internal": 63
+    },
+    "prerank": {
+     "found": 80,
+     "withinMaxScored": 31,
+     "bestPrePos": 0
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 20
+    },
+    "finalBestPos": 16
+   },
+   "motiveAny": true,
+   "bestMotivePos": 16
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20220904_btcusd",
+   "split": "VALIDATION",
+   "sourceFamily": "tv-cryptoknee",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1W",
+   "confidence": "MEDIUM",
+   "btc": true,
+   "practitioner": {
+    "pattern": "ZIGZAG",
+    "family": "CORRECTIVE",
+    "broad": "CORRECTIVE",
+    "impulseLike": false,
+    "currentWave": "C",
+    "state": "DEVELOPING",
+    "direction": "DOWN",
+    "nextMove": "UP",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 576,
+   "ms": 34,
+   "neutral": true,
+   "vu": {
+    "pattern": "WXY",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.028,
+    "abstain": true,
+    "alternatives": [
+     "FLAT",
+     "TRIPLE_ZIGZAG"
+    ],
+    "higherDegree": "TRIANGLE"
+   },
+   "abstention": "WXY_CAP",
+   "search": {
+    "poolPivots": 118,
+    "nodes": 5922,
+    "truncated": false,
+    "anchors": {
+     "total": 118,
+     "visited": 33,
+     "skippedWindow": 56,
+     "skippedAnchorAtr": 28,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 285,
+    "typesFound": {
+     "IMPULSE": 61,
+     "LEADING_DIAGONAL": 29,
+     "ENDING_DIAGONAL": 34,
+     "ZIGZAG": 42,
+     "FLAT": 45,
+     "TRIANGLE": 180,
+     "WXY": 29,
+     "DOUBLE_ZIGZAG": 110,
+     "TRIPLE_ZIGZAG": 14
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 8,
+     "rankGap": 0.0938
+    },
+    "impulseReadings": 40,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 27,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 11,
+     "developing": 2,
+     "internal": 48
+    },
+    "prerank": {
+     "found": 61,
+     "withinMaxScored": 58,
+     "bestPrePos": 0
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 18
+    },
+    "finalBestPos": 8
+   },
+   "motiveAny": true,
+   "bestMotivePos": 8
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20221206_spy",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-cryptoknee",
+   "vuSymbol": "SPY",
+   "timeframe": "1D",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "3",
+    "state": "DEVELOPING",
+    "direction": "DOWN",
+    "nextMove": "UP",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 7033,
+   "ms": 158,
+   "neutral": true,
+   "vu": {
+    "pattern": "FLAT",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.032,
+    "abstain": true,
+    "alternatives": [
+     "ZIGZAG",
+     "ZIGZAG"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "AMBIGUITY_AND_LOW_SCORE",
+   "search": {
+    "poolPivots": 1729,
+    "nodes": 25002,
+    "truncated": true,
+    "anchors": {
+     "total": 1729,
+     "visited": 26,
+     "skippedWindow": 0,
+     "skippedAnchorAtr": 0,
+     "skippedDev": 0,
+     "unvisitedAfterTruncation": 1703
+    },
+    "candidatesScored": 104,
+    "typesFound": {
+     "IMPULSE": 43,
+     "LEADING_DIAGONAL": 51,
+     "ENDING_DIAGONAL": 61,
+     "ZIGZAG": 35,
+     "FLAT": 22,
+     "TRIANGLE": 1143,
+     "WXY": 48,
+     "DOUBLE_ZIGZAG": 236,
+     "TRIPLE_ZIGZAG": 93
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 40,
+     "rankGap": 0.1191
+    },
+    "impulseReadings": 4,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 4,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 0,
+     "developing": 13,
+     "internal": 30
+    },
+    "prerank": {
+     "found": 43,
+     "withinMaxScored": 10,
+     "bestPrePos": 0
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 6
+    },
+    "finalBestPos": 40
+   },
+   "motiveAny": true,
+   "bestMotivePos": 7
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20221228_tsla",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-cryptoknee",
+   "vuSymbol": "TSLA",
+   "timeframe": "1W",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "3",
+    "state": "DEVELOPING",
+    "direction": "DOWN",
+    "nextMove": "UP",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 652,
+   "ms": 68,
+   "neutral": true,
+   "vu": {
+    "pattern": "ZIGZAG",
+    "family": "CORRECTIVE",
+    "complete": false,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.002,
+    "abstain": true,
+    "alternatives": [
+     "TRIANGLE",
+     "TRIANGLE"
+    ],
+    "higherDegree": "TRIANGLE"
+   },
+   "abstention": "DEVELOPING_CAP_OR_LOW_SCORE",
+   "search": {
+    "poolPivots": 166,
+    "nodes": 18983,
+    "truncated": false,
+    "anchors": {
+     "total": 166,
+     "visited": 35,
+     "skippedWindow": 84,
+     "skippedAnchorAtr": 46,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 265,
+    "typesFound": {
+     "IMPULSE": 53,
+     "LEADING_DIAGONAL": 56,
+     "ENDING_DIAGONAL": 87,
+     "ZIGZAG": 57,
+     "FLAT": 83,
+     "TRIANGLE": 833,
+     "WXY": 57,
+     "DOUBLE_ZIGZAG": 136,
+     "TRIPLE_ZIGZAG": 26
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 23,
+     "rankGap": 0.0973
+    },
+    "impulseReadings": 16,
+    "practitionerLikeImpulse": 8,
+    "practitionerLikeBestPos": 59,
+    "impulseSameDirection": 12,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 7,
+     "developing": 11,
+     "internal": 35
+    },
+    "prerank": {
+     "found": 53,
+     "withinMaxScored": 19,
+     "bestPrePos": 6
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 3
+    },
+    "finalBestPos": 23
+   },
+   "motiveAny": true,
+   "bestMotivePos": 7
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20230118_btcusd",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-cryptoknee",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "confidence": "MEDIUM",
+   "btc": true,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "4",
+    "state": "DEVELOPING",
+    "direction": "DOWN",
+    "nextMove": "UP",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 4136,
+   "ms": 164,
+   "neutral": true,
+   "vu": {
+    "pattern": "ZIGZAG",
+    "family": "CORRECTIVE",
+    "complete": false,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.001,
+    "abstain": true,
+    "alternatives": [
+     "TRIANGLE",
+     "TRIPLE_ZIGZAG"
+    ],
+    "higherDegree": "FLAT"
+   },
+   "abstention": "DEVELOPING_CAP_OR_LOW_SCORE",
+   "search": {
+    "poolPivots": 904,
+    "nodes": 25002,
+    "truncated": true,
+    "anchors": {
+     "total": 904,
+     "visited": 16,
+     "skippedWindow": 0,
+     "skippedAnchorAtr": 0,
+     "skippedDev": 0,
+     "unvisitedAfterTruncation": 888
+    },
+    "candidatesScored": 152,
+    "typesFound": {
+     "IMPULSE": 40,
+     "LEADING_DIAGONAL": 36,
+     "ENDING_DIAGONAL": 38,
+     "ZIGZAG": 47,
+     "FLAT": 130,
+     "TRIANGLE": 893,
+     "WXY": 39,
+     "DOUBLE_ZIGZAG": 154,
+     "TRIPLE_ZIGZAG": 25
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 14,
+     "rankGap": 0.1506
+    },
+    "impulseReadings": 7,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 2,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 3,
+     "developing": 7,
+     "internal": 30
+    },
+    "prerank": {
+     "found": 40,
+     "withinMaxScored": 8,
+     "bestPrePos": 0
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 1
+    },
+    "finalBestPos": 14
+   },
+   "motiveAny": true,
+   "bestMotivePos": 14
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20230916_btcusd",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-cryptoknee",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1W",
+   "confidence": "MEDIUM",
+   "btc": true,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "5",
+    "state": "DEVELOPING",
+    "direction": "DOWN",
+    "nextMove": "UNKNOWN",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 630,
+   "ms": 47,
+   "neutral": true,
+   "vu": {
+    "pattern": "WXY",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.034,
+    "abstain": true,
+    "alternatives": [
+     "WXY",
+     "TRIPLE_ZIGZAG"
+    ],
+    "higherDegree": "TRIANGLE"
+   },
+   "abstention": "WXY_CAP",
+   "search": {
+    "poolPivots": 134,
+    "nodes": 8386,
+    "truncated": false,
+    "anchors": {
+     "total": 134,
+     "visited": 33,
+     "skippedWindow": 63,
+     "skippedAnchorAtr": 37,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 0
+    },
+    "candidatesScored": 187,
+    "typesFound": {
+     "IMPULSE": 99,
+     "LEADING_DIAGONAL": 39,
+     "ENDING_DIAGONAL": 44,
+     "ZIGZAG": 55,
+     "FLAT": 73,
+     "TRIANGLE": 534,
+     "WXY": 71,
+     "DOUBLE_ZIGZAG": 175,
+     "TRIPLE_ZIGZAG": 38
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 15,
+     "rankGap": 0.093
+    },
+    "impulseReadings": 32,
+    "practitionerLikeImpulse": 7,
+    "practitionerLikeBestPos": 15,
+    "impulseSameDirection": 20,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 20,
+     "developing": 15,
+     "internal": 64
+    },
+    "prerank": {
+     "found": 99,
+     "withinMaxScored": 62,
+     "bestPrePos": 0
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 30
+    },
+    "finalBestPos": 15
+   },
+   "motiveAny": true,
+   "bestMotivePos": 15
+  },
+  {
+   "referenceId": "pr_tv-cryptoknee_20240428_btcusd",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-cryptoknee",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "confidence": "MEDIUM",
+   "btc": true,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "4",
+    "state": "UNKNOWN",
+    "direction": "UP",
+    "nextMove": "UP",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 4602,
+   "ms": 209,
+   "neutral": true,
+   "vu": {
+    "pattern": "TRIANGLE",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.029,
+    "abstain": true,
+    "alternatives": [
+     "WXY",
+     "LEADING_DIAGONAL"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "AMBIGUITY_AND_LOW_SCORE",
+   "search": {
+    "poolPivots": 1011,
+    "nodes": 25002,
+    "truncated": true,
+    "anchors": {
+     "total": 1011,
+     "visited": 5,
+     "skippedWindow": 0,
+     "skippedAnchorAtr": 0,
+     "skippedDev": 0,
+     "unvisitedAfterTruncation": 1006
+    },
+    "candidatesScored": 88,
+    "typesFound": {
+     "IMPULSE": 35,
+     "LEADING_DIAGONAL": 9,
+     "ENDING_DIAGONAL": 9,
+     "ZIGZAG": 29,
+     "FLAT": 109,
+     "TRIANGLE": 711,
+     "WXY": 65,
+     "DOUBLE_ZIGZAG": 190,
+     "TRIPLE_ZIGZAG": 6
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 30,
+     "rankGap": 0.1436
+    },
+    "impulseReadings": 8,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 7,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 14,
+     "developing": 1,
+     "internal": 20
+    },
+    "prerank": {
+     "found": 35,
+     "withinMaxScored": 15,
+     "bestPrePos": 1
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 7
+    },
+    "finalBestPos": 30
+   },
+   "motiveAny": true,
+   "bestMotivePos": 12
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20221203_spy",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-thefifthwave",
+   "vuSymbol": "SPY",
+   "timeframe": "1D",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "3",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "DOWN",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 7031,
+   "ms": 167,
+   "neutral": true,
+   "vu": {
+    "pattern": "FLAT",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.032,
+    "abstain": true,
+    "alternatives": [
+     "ZIGZAG",
+     "WXY"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "AMBIGUITY_AND_LOW_SCORE",
+   "search": {
+    "poolPivots": 1728,
+    "nodes": 25002,
+    "truncated": true,
+    "anchors": {
+     "total": 1728,
+     "visited": 26,
+     "skippedWindow": 0,
+     "skippedAnchorAtr": 0,
+     "skippedDev": 0,
+     "unvisitedAfterTruncation": 1702
+    },
+    "candidatesScored": 75,
+    "typesFound": {
+     "IMPULSE": 30,
+     "LEADING_DIAGONAL": 44,
+     "ENDING_DIAGONAL": 52,
+     "ZIGZAG": 32,
+     "FLAT": 43,
+     "TRIANGLE": 1201,
+     "WXY": 43,
+     "DOUBLE_ZIGZAG": 195,
+     "TRIPLE_ZIGZAG": 62
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 70,
+     "rankGap": 0.2281
+    },
+    "impulseReadings": 2,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 2,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 0,
+     "developing": 13,
+     "internal": 17
+    },
+    "prerank": {
+     "found": 30,
+     "withinMaxScored": 10,
+     "bestPrePos": 231
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 8
+    },
+    "finalBestPos": 70
+   },
+   "motiveAny": true,
+   "bestMotivePos": 8
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20230129_btcusd",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-thefifthwave",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "confidence": "MEDIUM",
+   "btc": true,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "4",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "UP",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 4147,
+   "ms": 187,
+   "neutral": true,
+   "vu": {
+    "pattern": "ZIGZAG",
+    "family": "CORRECTIVE",
+    "complete": false,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.001,
+    "abstain": true,
+    "alternatives": [
+     "TRIANGLE",
+     "TRIPLE_ZIGZAG"
+    ],
+    "higherDegree": "FLAT"
+   },
+   "abstention": "DEVELOPING_CAP_OR_LOW_SCORE",
+   "search": {
+    "poolPivots": 906,
+    "nodes": 25002,
+    "truncated": true,
+    "anchors": {
+     "total": 906,
+     "visited": 16,
+     "skippedWindow": 0,
+     "skippedAnchorAtr": 0,
+     "skippedDev": 0,
+     "unvisitedAfterTruncation": 890
+    },
+    "candidatesScored": 118,
+    "typesFound": {
+     "IMPULSE": 37,
+     "LEADING_DIAGONAL": 27,
+     "ENDING_DIAGONAL": 29,
+     "ZIGZAG": 43,
+     "FLAT": 112,
+     "TRIANGLE": 830,
+     "WXY": 38,
+     "DOUBLE_ZIGZAG": 123,
+     "TRIPLE_ZIGZAG": 24
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 13,
+     "rankGap": 0.1506
+    },
+    "impulseReadings": 6,
+    "practitionerLikeImpulse": 1,
+    "practitionerLikeBestPos": 105,
+    "impulseSameDirection": 4,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 3,
+     "developing": 7,
+     "internal": 27
+    },
+    "prerank": {
+     "found": 37,
+     "withinMaxScored": 7,
+     "bestPrePos": 0
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 1
+    },
+    "finalBestPos": 13
+   },
+   "motiveAny": true,
+   "bestMotivePos": 13
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20230417_btcusd",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-thefifthwave",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "confidence": "MEDIUM",
+   "btc": true,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "2",
+    "state": "DEVELOPING",
+    "direction": "DOWN",
+    "nextMove": "UP",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 4225,
+   "ms": 143,
+   "neutral": true,
+   "vu": {
+    "pattern": "ZIGZAG",
+    "family": "CORRECTIVE",
+    "complete": false,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.001,
+    "abstain": true,
+    "alternatives": [
+     "TRIANGLE",
+     "FLAT"
+    ],
+    "higherDegree": "FLAT"
+   },
+   "abstention": "DEVELOPING_CAP_OR_LOW_SCORE",
+   "search": {
+    "poolPivots": 924,
+    "nodes": 25002,
+    "truncated": true,
+    "anchors": {
+     "total": 924,
+     "visited": 10,
+     "skippedWindow": 0,
+     "skippedAnchorAtr": 0,
+     "skippedDev": 0,
+     "unvisitedAfterTruncation": 914
+    },
+    "candidatesScored": 56,
+    "typesFound": {
+     "IMPULSE": 50,
+     "LEADING_DIAGONAL": 24,
+     "ENDING_DIAGONAL": 26,
+     "ZIGZAG": 25,
+     "FLAT": 110,
+     "TRIANGLE": 950,
+     "WXY": 53,
+     "DOUBLE_ZIGZAG": 118,
+     "TRIPLE_ZIGZAG": 30
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 25,
+     "rankGap": 0.216
+    },
+    "impulseReadings": 4,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 0,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 4,
+     "developing": 21,
+     "internal": 25
+    },
+    "prerank": {
+     "found": 50,
+     "withinMaxScored": 13,
+     "bestPrePos": 0
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 9
+    },
+    "finalBestPos": 25
+   },
+   "motiveAny": true,
+   "bestMotivePos": 25
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20230710_btcusd",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-thefifthwave",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "confidence": "MEDIUM",
+   "btc": true,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "3",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "DOWN",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 4309,
+   "ms": 160,
+   "neutral": true,
+   "vu": {
+    "pattern": "TRIANGLE",
+    "family": "CORRECTIVE",
+    "complete": false,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0,
+    "abstain": true,
+    "alternatives": [
+     "WXY",
+     "FLAT"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "DEVELOPING_CAP_OR_LOW_SCORE",
+   "search": {
+    "poolPivots": 946,
+    "nodes": 25002,
+    "truncated": true,
+    "anchors": {
+     "total": 946,
+     "visited": 6,
+     "skippedWindow": 0,
+     "skippedAnchorAtr": 0,
+     "skippedDev": 0,
+     "unvisitedAfterTruncation": 940
+    },
+    "candidatesScored": 109,
+    "typesFound": {
+     "IMPULSE": 63,
+     "LEADING_DIAGONAL": 25,
+     "ENDING_DIAGONAL": 12,
+     "ZIGZAG": 22,
+     "FLAT": 79,
+     "TRIANGLE": 672,
+     "WXY": 81,
+     "DOUBLE_ZIGZAG": 129,
+     "TRIPLE_ZIGZAG": 22
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 22,
+     "rankGap": 0.0899
+    },
+    "impulseReadings": 21,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 11,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 13,
+     "developing": 0,
+     "internal": 50
+    },
+    "prerank": {
+     "found": 63,
+     "withinMaxScored": 31,
+     "bestPrePos": 0
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 10
+    },
+    "finalBestPos": 22
+   },
+   "motiveAny": true,
+   "bestMotivePos": 22
+  },
+  {
+   "referenceId": "pr_tv-thefifthwave_20240831_btcusd",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-thefifthwave",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "confidence": "HIGH",
+   "btc": true,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "5",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "DOWN",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 4727,
+   "ms": 224,
+   "neutral": true,
+   "vu": {
+    "pattern": "WXY",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.005,
+    "abstain": true,
+    "alternatives": [
+     "WXY",
+     "LEADING_DIAGONAL"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "WXY_CAP",
+   "search": {
+    "poolPivots": 1039,
+    "nodes": 25002,
+    "truncated": true,
+    "anchors": {
+     "total": 1039,
+     "visited": 5,
+     "skippedWindow": 0,
+     "skippedAnchorAtr": 0,
+     "skippedDev": 0,
+     "unvisitedAfterTruncation": 1034
+    },
+    "candidatesScored": 159,
+    "typesFound": {
+     "IMPULSE": 53,
+     "LEADING_DIAGONAL": 64,
+     "ENDING_DIAGONAL": 64,
+     "ZIGZAG": 54,
+     "FLAT": 63,
+     "TRIANGLE": 788,
+     "WXY": 81,
+     "DOUBLE_ZIGZAG": 441,
+     "TRIPLE_ZIGZAG": 39
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 65,
+     "rankGap": 0.2004
+    },
+    "impulseReadings": 9,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 9,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 16,
+     "developing": 1,
+     "internal": 36
+    },
+    "prerank": {
+     "found": 53,
+     "withinMaxScored": 16,
+     "bestPrePos": 0
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 7
+    },
+    "finalBestPos": 65
+   },
+   "motiveAny": true,
+   "bestMotivePos": 2
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240121_qqq",
+   "split": "VALIDATION",
+   "sourceFamily": "tv-yuchaosng",
+   "vuSymbol": "QQQ",
+   "timeframe": "1D",
+   "confidence": "HIGH",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "5",
+    "state": "DEVELOPING",
+    "direction": "UP",
+    "nextMove": "DOWN",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 6257,
+   "ms": 152,
+   "neutral": true,
+   "vu": {
+    "pattern": "TRIANGLE",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.137,
+    "abstain": true,
+    "alternatives": [
+     "ZIGZAG",
+     "WXY"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "AMBIGUITY_AND_LOW_SCORE",
+   "search": {
+    "poolPivots": 1537,
+    "nodes": 25002,
+    "truncated": true,
+    "anchors": {
+     "total": 1537,
+     "visited": 3,
+     "skippedWindow": 0,
+     "skippedAnchorAtr": 0,
+     "skippedDev": 1,
+     "unvisitedAfterTruncation": 1533
+    },
+    "candidatesScored": 265,
+    "typesFound": {
+     "IMPULSE": 82,
+     "LEADING_DIAGONAL": 80,
+     "ENDING_DIAGONAL": 92,
+     "ZIGZAG": 50,
+     "FLAT": 18,
+     "TRIANGLE": 180,
+     "WXY": 42,
+     "DOUBLE_ZIGZAG": 567,
+     "TRIPLE_ZIGZAG": 0
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 8,
+     "rankGap": 0.0493
+    },
+    "impulseReadings": 31,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 24,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 36,
+     "developing": 0,
+     "internal": 46
+    },
+    "prerank": {
+     "found": 82,
+     "withinMaxScored": 52,
+     "bestPrePos": 1
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 21
+    },
+    "finalBestPos": 8
+   },
+   "motiveAny": true,
+   "bestMotivePos": 8
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240322_btcusd",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-yuchaosng",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "confidence": "MEDIUM",
+   "btc": true,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": null,
+    "state": "UNKNOWN",
+    "direction": "DOWN",
+    "nextMove": "UNKNOWN",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 4565,
+   "ms": 150,
+   "neutral": true,
+   "vu": {
+    "pattern": "TRIANGLE",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0.027,
+    "abstain": true,
+    "alternatives": [
+     "WXY",
+     "WXY"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "AMBIGUITY_AND_LOW_SCORE",
+   "search": {
+    "poolPivots": 1005,
+    "nodes": 25002,
+    "truncated": true,
+    "anchors": {
+     "total": 1005,
+     "visited": 5,
+     "skippedWindow": 0,
+     "skippedAnchorAtr": 0,
+     "skippedDev": 0,
+     "unvisitedAfterTruncation": 1000
+    },
+    "candidatesScored": 75,
+    "typesFound": {
+     "IMPULSE": 35,
+     "LEADING_DIAGONAL": 7,
+     "ENDING_DIAGONAL": 8,
+     "ZIGZAG": 29,
+     "FLAT": 84,
+     "TRIANGLE": 656,
+     "WXY": 65,
+     "DOUBLE_ZIGZAG": 174,
+     "TRIPLE_ZIGZAG": 8
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 29,
+     "rankGap": 0.1436
+    },
+    "impulseReadings": 10,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 3,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 14,
+     "developing": 1,
+     "internal": 20
+    },
+    "prerank": {
+     "found": 35,
+     "withinMaxScored": 20,
+     "bestPrePos": 2
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 10
+    },
+    "finalBestPos": 29
+   },
+   "motiveAny": true,
+   "bestMotivePos": 29
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240720_spy",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-yuchaosng",
+   "vuSymbol": "SPY",
+   "timeframe": "1D",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": null,
+    "state": "CONFIRMED_COMPLETE",
+    "direction": "DOWN",
+    "nextMove": "UNKNOWN",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 7438,
+   "ms": 151,
+   "neutral": true,
+   "vu": {
+    "pattern": "TRIANGLE",
+    "family": "CORRECTIVE",
+    "complete": false,
+    "status": "AMBIGUOUS",
+    "applicability": "LOW",
+    "appScore": 0,
+    "abstain": true,
+    "alternatives": [
+     "WXY",
+     "FLAT"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "DEVELOPING_CAP_OR_LOW_SCORE",
+   "search": {
+    "poolPivots": 1835,
+    "nodes": 25002,
+    "truncated": true,
+    "anchors": {
+     "total": 1835,
+     "visited": 14,
+     "skippedWindow": 0,
+     "skippedAnchorAtr": 0,
+     "skippedDev": 0,
+     "unvisitedAfterTruncation": 1821
+    },
+    "candidatesScored": 184,
+    "typesFound": {
+     "IMPULSE": 42,
+     "LEADING_DIAGONAL": 44,
+     "ENDING_DIAGONAL": 58,
+     "ZIGZAG": 45,
+     "FLAT": 36,
+     "TRIANGLE": 328,
+     "WXY": 53,
+     "DOUBLE_ZIGZAG": 266,
+     "TRIPLE_ZIGZAG": 14
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 48,
+     "rankGap": 0.1119
+    },
+    "impulseReadings": 10,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 5,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 14,
+     "developing": 1,
+     "internal": 27
+    },
+    "prerank": {
+     "found": 42,
+     "withinMaxScored": 28,
+     "bestPrePos": 2
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 18
+    },
+    "finalBestPos": 48
+   },
+   "motiveAny": true,
+   "bestMotivePos": 20
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240828_iwm",
+   "split": "VALIDATION",
+   "sourceFamily": "tv-yuchaosng",
+   "vuSymbol": "IWM",
+   "timeframe": "1D",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "3",
+    "state": "DEVELOPING",
+    "direction": "DOWN",
+    "nextMove": "UP",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 6101,
+   "ms": 306,
+   "neutral": true,
+   "vu": {
+    "pattern": "TRIANGLE",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "OK",
+    "applicability": "LOW",
+    "appScore": 0.057,
+    "abstain": true,
+    "alternatives": [
+     "ZIGZAG",
+     "FLAT"
+    ],
+    "higherDegree": null
+   },
+   "abstention": "LOW_APPLICABILITY_SCORE",
+   "search": {
+    "poolPivots": 1572,
+    "nodes": 25002,
+    "truncated": true,
+    "anchors": {
+     "total": 1572,
+     "visited": 9,
+     "skippedWindow": 0,
+     "skippedAnchorAtr": 0,
+     "skippedDev": 0,
+     "unvisitedAfterTruncation": 1563
+    },
+    "candidatesScored": 223,
+    "typesFound": {
+     "IMPULSE": 19,
+     "LEADING_DIAGONAL": 13,
+     "ENDING_DIAGONAL": 22,
+     "ZIGZAG": 39,
+     "FLAT": 42,
+     "TRIANGLE": 1149,
+     "WXY": 67,
+     "DOUBLE_ZIGZAG": 224,
+     "TRIPLE_ZIGZAG": 4
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 27,
+     "rankGap": 0.0559
+    },
+    "impulseReadings": 3,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 0,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 3,
+     "developing": 0,
+     "internal": 16
+    },
+    "prerank": {
+     "found": 19,
+     "withinMaxScored": 3,
+     "bestPrePos": 0
+    },
+    "scoreDrops": {},
+    "finalBestPos": 27
+   },
+   "motiveAny": true,
+   "bestMotivePos": 27
+  },
+  {
+   "referenceId": "pr_tv-yuchaosng_20240929_btcusd",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-yuchaosng",
+   "vuSymbol": "BTCUSD",
+   "timeframe": "1D",
+   "confidence": "MEDIUM",
+   "btc": true,
+   "practitioner": {
+    "pattern": "IMPULSE",
+    "family": "MOTIVE",
+    "broad": "MOTIVE",
+    "impulseLike": true,
+    "currentWave": "3",
+    "state": "DEVELOPING",
+    "direction": "DOWN",
+    "nextMove": "UP",
+    "degreeRank": null
+   },
+   "status": "OK",
+   "bars": 4756,
+   "ms": 190,
+   "neutral": true,
+   "vu": {
+    "pattern": "WXY",
+    "family": "CORRECTIVE",
+    "complete": true,
+    "status": "OK",
+    "applicability": "LOW",
+    "appScore": 0.161,
+    "abstain": true,
+    "alternatives": [
+     "FLAT",
+     "TRIANGLE"
+    ],
+    "higherDegree": "FLAT"
+   },
+   "abstention": "WXY_CAP",
+   "search": {
+    "poolPivots": 1046,
+    "nodes": 25002,
+    "truncated": true,
+    "anchors": {
+     "total": 1046,
+     "visited": 4,
+     "skippedWindow": 0,
+     "skippedAnchorAtr": 0,
+     "skippedDev": 0,
+     "unvisitedAfterTruncation": 1042
+    },
+    "candidatesScored": 159,
+    "typesFound": {
+     "IMPULSE": 56,
+     "LEADING_DIAGONAL": 67,
+     "ENDING_DIAGONAL": 67,
+     "ZIGZAG": 54,
+     "FLAT": 75,
+     "TRIANGLE": 807,
+     "WXY": 56,
+     "DOUBLE_ZIGZAG": 463,
+     "TRIPLE_ZIGZAG": 43
+    }
+   },
+   "impulse": {
+    "category": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+    "detail": {
+     "bestPos": 10,
+     "rankGap": 0.0563
+    },
+    "impulseReadings": 10,
+    "practitionerLikeImpulse": 0,
+    "practitionerLikeBestPos": null,
+    "impulseSameDirection": 0,
+    "maxWavesReached": 5,
+    "found": {
+     "complete": 17,
+     "developing": 2,
+     "internal": 37
+    },
+    "prerank": {
+     "found": 56,
+     "withinMaxScored": 17,
+     "bestPrePos": 0
+    },
+    "scoreDrops": {
+     "OVERSHOOT_NOT_FLAT_OR_TRIANGLE": 7
+    },
+    "finalBestPos": 10
+   },
+   "motiveAny": true,
+   "bestMotivePos": 4
+  }
+ ],
+ "ablations": {
+  "budgetX10": {
+   "engine": {
+    "maxNodes": 250000
+   },
+   "summary": {
+    "cases": 35,
+    "ok": 33,
+    "practitionerImpulseCases": 25,
+    "categoryImpulseCases": {
+     "IMPULSE_CANDIDATE_RANKED_TOO_LOW": 23,
+     "IMPULSE_IS_ALTERNATIVE": 2
+    },
+    "anyImpulseCandidate": 25,
+    "practitionerLikeImpulseCandidate": 12,
+    "vuPrimaryPattern": {
+     "WXY": 16,
+     "TRIANGLE": 6,
+     "FLAT": 7,
+     "ZIGZAG": 4
+    },
+    "abstention": {
+     "DEVELOPING_CAP_OR_LOW_SCORE": 8,
+     "AMBIGUITY_AND_LOW_SCORE": 7,
+     "WXY_CAP": 14,
+     "DATA_QUALITY": 1,
+     "LOW_APPLICABILITY_SCORE": 3
+    },
+    "truncatedSearch": 10,
+    "neutralityChecked": 0,
+    "neutralityFailed": 0
+   },
+   "perCase": [
+    {
+     "referenceId": "pr_ewf_20220816_zm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 18
+    },
+    {
+     "referenceId": "pr_ewf_20220828_unh",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 85
+    },
+    {
+     "referenceId": "pr_ewf_20221025_qqq",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 895
+    },
+    {
+     "referenceId": "pr_ewf_20230102_dis",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 72
+    },
+    {
+     "referenceId": "pr_ewf_20230108_cat",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 229,
+     "vu": "WXY",
+     "ms": 91
+    },
+    {
+     "referenceId": "pr_ewf_20230404_nvda",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 2,
+     "likePos": 154,
+     "vu": "WXY",
+     "ms": 43
+    },
+    {
+     "referenceId": "pr_ewf_20230613_phm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 2,
+     "likePos": 93,
+     "vu": "WXY",
+     "ms": 62
+    },
+    {
+     "referenceId": "pr_ewf_20230621_rcl",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 10,
+     "likePos": 197,
+     "vu": "WXY",
+     "ms": 86
+    },
+    {
+     "referenceId": "pr_ewf_20230725_fcx",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 114,
+     "vu": "WXY",
+     "ms": 66
+    },
+    {
+     "referenceId": "pr_ewf_20230815_nvda",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 38
+    },
+    {
+     "referenceId": "pr_ewf_20230905_abnb"
+    },
+    {
+     "referenceId": "pr_ewf_20230919_oln",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 62
+    },
+    {
+     "referenceId": "pr_ewf_20230923_mcd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 50
+    },
+    {
+     "referenceId": "pr_ewf_20231205_coin"
+    },
+    {
+     "referenceId": "pr_ewf_20240220_lly",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 5,
+     "likePos": 180,
+     "vu": "WXY",
+     "ms": 53
+    },
+    {
+     "referenceId": "pr_ewf_20240812_axp",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 126,
+     "vu": "WXY",
+     "ms": 53
+    },
+    {
+     "referenceId": "pr_ewf_20241003_mstr",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 4,
+     "likePos": 17,
+     "vu": "WXY",
+     "ms": 64
+    },
+    {
+     "referenceId": "pr_ewf_20241008_nee",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 3,
+     "likePos": 111,
+     "vu": "TRIANGLE",
+     "ms": 96
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20220326_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 980
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20220904_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 42
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20221206_spy",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 847
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20221228_tsla",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 8,
+     "likePos": 59,
+     "vu": "ZIGZAG",
+     "ms": 89
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20230118_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "ZIGZAG",
+     "ms": 804
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20230916_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 7,
+     "likePos": 15,
+     "vu": "WXY",
+     "ms": 38
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20240428_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 767
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20221203_spy",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 854
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230129_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 208,
+     "vu": "ZIGZAG",
+     "ms": 719
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230417_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "ZIGZAG",
+     "ms": 697
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230710_btcusd",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 838
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20240831_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 866
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240121_qqq",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 994
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240322_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 706
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240720_spy",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 737
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240828_iwm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 1146
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240929_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 803
+    }
+   ]
+  },
+  "maxScoredX4": {
+   "engine": {
+    "maxScored": 2000
+   },
+   "summary": {
+    "cases": 35,
+    "ok": 33,
+    "practitionerImpulseCases": 25,
+    "categoryImpulseCases": {
+     "IMPULSE_CANDIDATE_RANKED_TOO_LOW": 25
+    },
+    "anyImpulseCandidate": 25,
+    "practitionerLikeImpulseCandidate": 17,
+    "vuPrimaryPattern": {
+     "WXY": 16,
+     "TRIANGLE": 9,
+     "ZIGZAG": 5,
+     "FLAT": 3
+    },
+    "abstention": {
+     "DEVELOPING_CAP_OR_LOW_SCORE": 9,
+     "AMBIGUITY_AND_LOW_SCORE": 6,
+     "LOW_APPLICABILITY_SCORE": 3,
+     "WXY_CAP": 14,
+     "DATA_QUALITY": 1
+    },
+    "truncatedSearch": 15,
+    "neutralityChecked": 0,
+    "neutralityFailed": 0
+   },
+   "perCase": [
+    {
+     "referenceId": "pr_ewf_20220816_zm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 15
+    },
+    {
+     "referenceId": "pr_ewf_20220828_unh",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 80
+    },
+    {
+     "referenceId": "pr_ewf_20221025_qqq",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "ZIGZAG",
+     "ms": 202
+    },
+    {
+     "referenceId": "pr_ewf_20230102_dis",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 66
+    },
+    {
+     "referenceId": "pr_ewf_20230108_cat",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 252,
+     "vu": "WXY",
+     "ms": 95
+    },
+    {
+     "referenceId": "pr_ewf_20230404_nvda",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 2,
+     "likePos": 154,
+     "vu": "WXY",
+     "ms": 32
+    },
+    {
+     "referenceId": "pr_ewf_20230613_phm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 6,
+     "likePos": 94,
+     "vu": "WXY",
+     "ms": 59
+    },
+    {
+     "referenceId": "pr_ewf_20230621_rcl",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 9,
+     "likePos": 198,
+     "vu": "WXY",
+     "ms": 85
+    },
+    {
+     "referenceId": "pr_ewf_20230725_fcx",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 2,
+     "likePos": 114,
+     "vu": "WXY",
+     "ms": 71
+    },
+    {
+     "referenceId": "pr_ewf_20230815_nvda",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 34
+    },
+    {
+     "referenceId": "pr_ewf_20230905_abnb"
+    },
+    {
+     "referenceId": "pr_ewf_20230919_oln",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 74
+    },
+    {
+     "referenceId": "pr_ewf_20230923_mcd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 53
+    },
+    {
+     "referenceId": "pr_ewf_20231205_coin"
+    },
+    {
+     "referenceId": "pr_ewf_20240220_lly",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 6,
+     "likePos": 181,
+     "vu": "WXY",
+     "ms": 57
+    },
+    {
+     "referenceId": "pr_ewf_20240812_axp",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 126,
+     "vu": "WXY",
+     "ms": 64
+    },
+    {
+     "referenceId": "pr_ewf_20241003_mstr",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 4,
+     "likePos": 17,
+     "vu": "WXY",
+     "ms": 100
+    },
+    {
+     "referenceId": "pr_ewf_20241008_nee",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 3,
+     "likePos": 111,
+     "vu": "TRIANGLE",
+     "ms": 54
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20220326_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 186
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20220904_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 32
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20221206_spy",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 7,
+     "likePos": 98,
+     "vu": "FLAT",
+     "ms": 159
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20221228_tsla",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 9,
+     "likePos": 59,
+     "vu": "ZIGZAG",
+     "ms": 70
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20230118_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "ZIGZAG",
+     "ms": 157
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20230916_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 7,
+     "likePos": 15,
+     "vu": "WXY",
+     "ms": 61
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20240428_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 171
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20221203_spy",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 163
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230129_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 3,
+     "likePos": 128,
+     "vu": "ZIGZAG",
+     "ms": 173
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230417_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 3,
+     "likePos": 184,
+     "vu": "ZIGZAG",
+     "ms": 160
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230710_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 4,
+     "likePos": 100,
+     "vu": "TRIANGLE",
+     "ms": 156
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20240831_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 205
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240121_qqq",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 174
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240322_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 165
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240720_spy",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 164
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240828_iwm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 378,
+     "vu": "TRIANGLE",
+     "ms": 332
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240929_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 318,
+     "vu": "WXY",
+     "ms": 192
+    }
+   ]
+  },
+  "noSimilarity": {
+   "engine": {
+    "noSimilarity": true
+   },
+   "summary": {
+    "cases": 35,
+    "ok": 33,
+    "practitionerImpulseCases": 25,
+    "categoryImpulseCases": {
+     "IMPULSE_CANDIDATE_RANKED_TOO_LOW": 13,
+     "IMPULSE_IS_ALTERNATIVE": 9,
+     "IMPULSE_IS_PRIMARY": 3
+    },
+    "anyImpulseCandidate": 25,
+    "practitionerLikeImpulseCandidate": 6,
+    "vuPrimaryPattern": {
+     "WXY": 11,
+     "TRIANGLE": 13,
+     "FLAT": 2,
+     "ZIGZAG": 4,
+     "IMPULSE": 3
+    },
+    "abstention": {
+     "DEVELOPING_CAP_OR_LOW_SCORE": 7,
+     "AMBIGUITY_AND_LOW_SCORE": 8,
+     "WXY_CAP": 9,
+     "DATA_QUALITY": 1,
+     "LOW_APPLICABILITY_SCORE": 8
+    },
+    "truncatedSearch": 26,
+    "neutralityChecked": 0,
+    "neutralityFailed": 0
+   },
+   "perCase": [
+    {
+     "referenceId": "pr_ewf_20220816_zm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 42
+    },
+    {
+     "referenceId": "pr_ewf_20220828_unh",
+     "cat": "IMPULSE_PRUNED_BEFORE_SCORING",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 96
+    },
+    {
+     "referenceId": "pr_ewf_20221025_qqq",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 212
+    },
+    {
+     "referenceId": "pr_ewf_20230102_dis",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 107
+    },
+    {
+     "referenceId": "pr_ewf_20230108_cat",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 108
+    },
+    {
+     "referenceId": "pr_ewf_20230404_nvda",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 110
+    },
+    {
+     "referenceId": "pr_ewf_20230613_phm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 102
+    },
+    {
+     "referenceId": "pr_ewf_20230621_rcl",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 101
+    },
+    {
+     "referenceId": "pr_ewf_20230725_fcx",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 261,
+     "vu": "WXY",
+     "ms": 128
+    },
+    {
+     "referenceId": "pr_ewf_20230815_nvda",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 82
+    },
+    {
+     "referenceId": "pr_ewf_20230905_abnb"
+    },
+    {
+     "referenceId": "pr_ewf_20230919_oln",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 118
+    },
+    {
+     "referenceId": "pr_ewf_20230923_mcd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 103
+    },
+    {
+     "referenceId": "pr_ewf_20231205_coin"
+    },
+    {
+     "referenceId": "pr_ewf_20240220_lly",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 107
+    },
+    {
+     "referenceId": "pr_ewf_20240812_axp",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 6,
+     "likePos": 150,
+     "vu": "WXY",
+     "ms": 105
+    },
+    {
+     "referenceId": "pr_ewf_20241003_mstr",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 21,
+     "likePos": 31,
+     "vu": "TRIANGLE",
+     "ms": 177
+    },
+    {
+     "referenceId": "pr_ewf_20241008_nee",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 5,
+     "likePos": 304,
+     "vu": "TRIANGLE",
+     "ms": 97
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20220326_btcusd",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 180
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20220904_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 75
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20221206_spy",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "ZIGZAG",
+     "ms": 177
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20221228_tsla",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 6,
+     "likePos": 121,
+     "vu": "ZIGZAG",
+     "ms": 104
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20230118_btcusd",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 169
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20230916_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 4,
+     "likePos": 30,
+     "vu": "TRIANGLE",
+     "ms": 99
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20240428_btcusd",
+     "cat": "IMPULSE_IS_PRIMARY",
+     "like": 0,
+     "likePos": null,
+     "vu": "IMPULSE",
+     "ms": 202
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20221203_spy",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 196
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230129_btcusd",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 230
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230417_btcusd",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 179
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230710_btcusd",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 224
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20240831_btcusd",
+     "cat": "IMPULSE_IS_PRIMARY",
+     "like": 0,
+     "likePos": null,
+     "vu": "IMPULSE",
+     "ms": 194
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240121_qqq",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "ZIGZAG",
+     "ms": 176
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240322_btcusd",
+     "cat": "IMPULSE_IS_PRIMARY",
+     "like": 0,
+     "likePos": null,
+     "vu": "IMPULSE",
+     "ms": 188
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240720_spy",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 189
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240828_iwm",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 273
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240929_btcusd",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "ZIGZAG",
+     "ms": 270
+    }
+   ]
+  },
+  "noAnchorPrunes": {
+   "engine": {
+    "noAnchorPrune": true,
+    "anchorMinAtr": 0
+   },
+   "summary": {
+    "cases": 35,
+    "ok": 33,
+    "practitionerImpulseCases": 25,
+    "categoryImpulseCases": {
+     "IMPULSE_CANDIDATE_RANKED_TOO_LOW": 25
+    },
+    "anyImpulseCandidate": 25,
+    "practitionerLikeImpulseCandidate": 12,
+    "vuPrimaryPattern": {
+     "WXY": 16,
+     "TRIANGLE": 9,
+     "ZIGZAG": 5,
+     "FLAT": 3
+    },
+    "abstention": {
+     "DEVELOPING_CAP_OR_LOW_SCORE": 9,
+     "AMBIGUITY_AND_LOW_SCORE": 6,
+     "LOW_APPLICABILITY_SCORE": 3,
+     "WXY_CAP": 14,
+     "DATA_QUALITY": 1
+    },
+    "truncatedSearch": 30,
+    "neutralityChecked": 0,
+    "neutralityFailed": 0
+   },
+   "perCase": [
+    {
+     "referenceId": "pr_ewf_20220816_zm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 38
+    },
+    {
+     "referenceId": "pr_ewf_20220828_unh",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 81
+    },
+    {
+     "referenceId": "pr_ewf_20221025_qqq",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "ZIGZAG",
+     "ms": 213
+    },
+    {
+     "referenceId": "pr_ewf_20230102_dis",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 98
+    },
+    {
+     "referenceId": "pr_ewf_20230108_cat",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 229,
+     "vu": "WXY",
+     "ms": 130
+    },
+    {
+     "referenceId": "pr_ewf_20230404_nvda",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 2,
+     "likePos": 154,
+     "vu": "WXY",
+     "ms": 113
+    },
+    {
+     "referenceId": "pr_ewf_20230613_phm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 2,
+     "likePos": 93,
+     "vu": "WXY",
+     "ms": 99
+    },
+    {
+     "referenceId": "pr_ewf_20230621_rcl",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 10,
+     "likePos": 197,
+     "vu": "WXY",
+     "ms": 181
+    },
+    {
+     "referenceId": "pr_ewf_20230725_fcx",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 2,
+     "likePos": 115,
+     "vu": "WXY",
+     "ms": 100
+    },
+    {
+     "referenceId": "pr_ewf_20230815_nvda",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 72
+    },
+    {
+     "referenceId": "pr_ewf_20230905_abnb"
+    },
+    {
+     "referenceId": "pr_ewf_20230919_oln",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 93
+    },
+    {
+     "referenceId": "pr_ewf_20230923_mcd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 85
+    },
+    {
+     "referenceId": "pr_ewf_20231205_coin"
+    },
+    {
+     "referenceId": "pr_ewf_20240220_lly",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 7,
+     "likePos": 181,
+     "vu": "WXY",
+     "ms": 80
+    },
+    {
+     "referenceId": "pr_ewf_20240812_axp",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 126,
+     "vu": "WXY",
+     "ms": 89
+    },
+    {
+     "referenceId": "pr_ewf_20241003_mstr",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 4,
+     "likePos": 17,
+     "vu": "WXY",
+     "ms": 109
+    },
+    {
+     "referenceId": "pr_ewf_20241008_nee",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 3,
+     "likePos": 111,
+     "vu": "TRIANGLE",
+     "ms": 105
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20220326_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 204
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20220904_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 65
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20221206_spy",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 206
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20221228_tsla",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 8,
+     "likePos": 59,
+     "vu": "ZIGZAG",
+     "ms": 89
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20230118_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "ZIGZAG",
+     "ms": 146
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20230916_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 7,
+     "likePos": 15,
+     "vu": "WXY",
+     "ms": 78
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20240428_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 181
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20221203_spy",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 169
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230129_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 105,
+     "vu": "ZIGZAG",
+     "ms": 177
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230417_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "ZIGZAG",
+     "ms": 143
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230710_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 151
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20240831_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 215
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240121_qqq",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 268
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240322_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 212
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240720_spy",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 171
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240828_iwm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 320
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240929_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 233
+    }
+   ]
+  },
+  "pool05": {
+   "engine": {
+    "poolAtr": 0.5
+   },
+   "summary": {
+    "cases": 35,
+    "ok": 33,
+    "practitionerImpulseCases": 25,
+    "categoryImpulseCases": {
+     "IMPULSE_CANDIDATE_RANKED_TOO_LOW": 24,
+     "IMPULSE_IS_ALTERNATIVE": 1
+    },
+    "anyImpulseCandidate": 25,
+    "practitionerLikeImpulseCandidate": 12,
+    "vuPrimaryPattern": {
+     "WXY": 20,
+     "TRIANGLE": 7,
+     "FLAT": 5,
+     "ZIGZAG": 1
+    },
+    "abstention": {
+     "WXY_CAP": 18,
+     "LOW_APPLICABILITY_SCORE": 1,
+     "DEVELOPING_CAP_OR_LOW_SCORE": 8,
+     "DATA_QUALITY": 1,
+     "AMBIGUITY_AND_LOW_SCORE": 5
+    },
+    "truncatedSearch": 23,
+    "neutralityChecked": 0,
+    "neutralityFailed": 0
+   },
+   "perCase": [
+    {
+     "referenceId": "pr_ewf_20220816_zm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 19
+    },
+    {
+     "referenceId": "pr_ewf_20220828_unh",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 74
+    },
+    {
+     "referenceId": "pr_ewf_20221025_qqq",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 137
+    },
+    {
+     "referenceId": "pr_ewf_20230102_dis",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 82
+    },
+    {
+     "referenceId": "pr_ewf_20230108_cat",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 283,
+     "vu": "WXY",
+     "ms": 91
+    },
+    {
+     "referenceId": "pr_ewf_20230404_nvda",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 216,
+     "vu": "WXY",
+     "ms": 58
+    },
+    {
+     "referenceId": "pr_ewf_20230613_phm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 122,
+     "vu": "WXY",
+     "ms": 86
+    },
+    {
+     "referenceId": "pr_ewf_20230621_rcl",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 123
+    },
+    {
+     "referenceId": "pr_ewf_20230725_fcx",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 205,
+     "vu": "TRIANGLE",
+     "ms": 125
+    },
+    {
+     "referenceId": "pr_ewf_20230815_nvda",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 71
+    },
+    {
+     "referenceId": "pr_ewf_20230905_abnb"
+    },
+    {
+     "referenceId": "pr_ewf_20230919_oln",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 92
+    },
+    {
+     "referenceId": "pr_ewf_20230923_mcd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 87
+    },
+    {
+     "referenceId": "pr_ewf_20231205_coin"
+    },
+    {
+     "referenceId": "pr_ewf_20240220_lly",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 3,
+     "likePos": 281,
+     "vu": "WXY",
+     "ms": 77
+    },
+    {
+     "referenceId": "pr_ewf_20240812_axp",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 139,
+     "vu": "WXY",
+     "ms": 85
+    },
+    {
+     "referenceId": "pr_ewf_20241003_mstr",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 5,
+     "likePos": 21,
+     "vu": "WXY",
+     "ms": 103
+    },
+    {
+     "referenceId": "pr_ewf_20241008_nee",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 2,
+     "likePos": 157,
+     "vu": "WXY",
+     "ms": 70
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20220326_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 120
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20220904_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 43
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20221206_spy",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 2,
+     "likePos": 73,
+     "vu": "ZIGZAG",
+     "ms": 143
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20221228_tsla",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 6,
+     "likePos": 85,
+     "vu": "WXY",
+     "ms": 90
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20230118_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 148
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20230916_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 7,
+     "likePos": 20,
+     "vu": "WXY",
+     "ms": 51
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20240428_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 167
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20221203_spy",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 160
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230129_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 2,
+     "likePos": 44,
+     "vu": "FLAT",
+     "ms": 180
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230417_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 157
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230710_btcusd",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 177
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20240831_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 237
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240121_qqq",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 180
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240322_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 170
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240720_spy",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 175
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240828_iwm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 329
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240929_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 185
+    }
+   ]
+  },
+  "pool20": {
+   "engine": {
+    "poolAtr": 2
+   },
+   "summary": {
+    "cases": 35,
+    "ok": 33,
+    "practitionerImpulseCases": 25,
+    "categoryImpulseCases": {
+     "IMPULSE_CANDIDATE_RANKED_TOO_LOW": 25
+    },
+    "anyImpulseCandidate": 25,
+    "practitionerLikeImpulseCandidate": 13,
+    "vuPrimaryPattern": {
+     "FLAT": 8,
+     "TRIANGLE": 10,
+     "WXY": 10,
+     "ZIGZAG": 5
+    },
+    "abstention": {
+     "AMBIGUITY_AND_LOW_SCORE": 12,
+     "WXY_CAP": 8,
+     "DEVELOPING_CAP_OR_LOW_SCORE": 8,
+     "LOW_APPLICABILITY_SCORE": 3,
+     "DATA_QUALITY": 1,
+     "NOT_ABSTAINED": 1
+    },
+    "truncatedSearch": 15,
+    "neutralityChecked": 0,
+    "neutralityFailed": 0
+   },
+   "perCase": [
+    {
+     "referenceId": "pr_ewf_20220816_zm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 8
+    },
+    {
+     "referenceId": "pr_ewf_20220828_unh",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 70
+    },
+    {
+     "referenceId": "pr_ewf_20221025_qqq",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 178
+    },
+    {
+     "referenceId": "pr_ewf_20230102_dis",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 42
+    },
+    {
+     "referenceId": "pr_ewf_20230108_cat",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 161,
+     "vu": "WXY",
+     "ms": 46
+    },
+    {
+     "referenceId": "pr_ewf_20230404_nvda",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 77,
+     "vu": "TRIANGLE",
+     "ms": 20
+    },
+    {
+     "referenceId": "pr_ewf_20230613_phm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 4,
+     "likePos": 68,
+     "vu": "TRIANGLE",
+     "ms": 24
+    },
+    {
+     "referenceId": "pr_ewf_20230621_rcl",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 10,
+     "likePos": 176,
+     "vu": "WXY",
+     "ms": 50
+    },
+    {
+     "referenceId": "pr_ewf_20230725_fcx",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 3,
+     "likePos": 88,
+     "vu": "WXY",
+     "ms": 36
+    },
+    {
+     "referenceId": "pr_ewf_20230815_nvda",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 18
+    },
+    {
+     "referenceId": "pr_ewf_20230905_abnb"
+    },
+    {
+     "referenceId": "pr_ewf_20230919_oln",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 36
+    },
+    {
+     "referenceId": "pr_ewf_20230923_mcd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 38
+    },
+    {
+     "referenceId": "pr_ewf_20231205_coin"
+    },
+    {
+     "referenceId": "pr_ewf_20240220_lly",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 6,
+     "likePos": 158,
+     "vu": "TRIANGLE",
+     "ms": 38
+    },
+    {
+     "referenceId": "pr_ewf_20240812_axp",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 49
+    },
+    {
+     "referenceId": "pr_ewf_20241003_mstr",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 5,
+     "likePos": 39,
+     "vu": "WXY",
+     "ms": 43
+    },
+    {
+     "referenceId": "pr_ewf_20241008_nee",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 75,
+     "vu": "WXY",
+     "ms": 31
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20220326_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 163
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20220904_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 19
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20221206_spy",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 2,
+     "likePos": 72,
+     "vu": "FLAT",
+     "ms": 160
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20221228_tsla",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 6,
+     "likePos": 42,
+     "vu": "ZIGZAG",
+     "ms": 33
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20230118_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 191,
+     "vu": "ZIGZAG",
+     "ms": 149
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20230916_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 4,
+     "likePos": 12,
+     "vu": "WXY",
+     "ms": 35
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20240428_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 167
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20221203_spy",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 143
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230129_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 2,
+     "likePos": 159,
+     "vu": "ZIGZAG",
+     "ms": 148
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230417_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "ZIGZAG",
+     "ms": 117
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230710_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 155
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20240831_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 167
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240121_qqq",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "ZIGZAG",
+     "ms": 181
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240322_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 138
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240720_spy",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 148
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240828_iwm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 274
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240929_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 159
+    }
+   ]
+  },
+  "combinedSearch": {
+   "engine": {
+    "maxNodes": 250000,
+    "maxScored": 2000,
+    "noSimilarity": true,
+    "noAnchorPrune": true,
+    "anchorMinAtr": 0
+   },
+   "summary": {
+    "cases": 35,
+    "ok": 33,
+    "practitionerImpulseCases": 25,
+    "categoryImpulseCases": {
+     "IMPULSE_CANDIDATE_RANKED_TOO_LOW": 18,
+     "IMPULSE_IS_ALTERNATIVE": 7
+    },
+    "anyImpulseCandidate": 25,
+    "practitionerLikeImpulseCandidate": 9,
+    "vuPrimaryPattern": {
+     "WXY": 12,
+     "TRIANGLE": 12,
+     "ZIGZAG": 6,
+     "FLAT": 3
+    },
+    "abstention": {
+     "DEVELOPING_CAP_OR_LOW_SCORE": 8,
+     "AMBIGUITY_AND_LOW_SCORE": 11,
+     "WXY_CAP": 10,
+     "DATA_QUALITY": 1,
+     "LOW_APPLICABILITY_SCORE": 3
+    },
+    "truncatedSearch": 16,
+    "neutralityChecked": 0,
+    "neutralityFailed": 0
+   },
+   "perCase": [
+    {
+     "referenceId": "pr_ewf_20220816_zm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 98
+    },
+    {
+     "referenceId": "pr_ewf_20220828_unh",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 839
+    },
+    {
+     "referenceId": "pr_ewf_20221025_qqq",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "ZIGZAG",
+     "ms": 1078
+    },
+    {
+     "referenceId": "pr_ewf_20230102_dis",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 303
+    },
+    {
+     "referenceId": "pr_ewf_20230108_cat",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 511
+    },
+    {
+     "referenceId": "pr_ewf_20230404_nvda",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 299
+    },
+    {
+     "referenceId": "pr_ewf_20230613_phm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 273,
+     "vu": "WXY",
+     "ms": 368
+    },
+    {
+     "referenceId": "pr_ewf_20230621_rcl",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 2,
+     "likePos": 333,
+     "vu": "WXY",
+     "ms": 212
+    },
+    {
+     "referenceId": "pr_ewf_20230725_fcx",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 1,
+     "likePos": 348,
+     "vu": "WXY",
+     "ms": 418
+    },
+    {
+     "referenceId": "pr_ewf_20230815_nvda",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 2,
+     "likePos": 320,
+     "vu": "WXY",
+     "ms": 200
+    },
+    {
+     "referenceId": "pr_ewf_20230905_abnb"
+    },
+    {
+     "referenceId": "pr_ewf_20230919_oln",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 246
+    },
+    {
+     "referenceId": "pr_ewf_20230923_mcd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 258
+    },
+    {
+     "referenceId": "pr_ewf_20231205_coin"
+    },
+    {
+     "referenceId": "pr_ewf_20240220_lly",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 573
+    },
+    {
+     "referenceId": "pr_ewf_20240812_axp",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 16,
+     "likePos": 154,
+     "vu": "WXY",
+     "ms": 306
+    },
+    {
+     "referenceId": "pr_ewf_20241003_mstr",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 19,
+     "likePos": 31,
+     "vu": "TRIANGLE",
+     "ms": 296
+    },
+    {
+     "referenceId": "pr_ewf_20241008_nee",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 293
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20220326_btcusd",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 1426
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20220904_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "WXY",
+     "ms": 243
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20221206_spy",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 1184
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20221228_tsla",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 8,
+     "likePos": 121,
+     "vu": "ZIGZAG",
+     "ms": 421
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20230118_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "ZIGZAG",
+     "ms": 1322
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20230916_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 8,
+     "likePos": 49,
+     "vu": "WXY",
+     "ms": 295
+    },
+    {
+     "referenceId": "pr_tv-cryptoknee_20240428_btcusd",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 1520
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20221203_spy",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 1074
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230129_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 3,
+     "likePos": 194,
+     "vu": "ZIGZAG",
+     "ms": 1314
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230417_btcusd",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "ZIGZAG",
+     "ms": 1139
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20230710_btcusd",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 1232
+    },
+    {
+     "referenceId": "pr_tv-thefifthwave_20240831_btcusd",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 1443
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240121_qqq",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "ZIGZAG",
+     "ms": 1184
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240322_btcusd",
+     "cat": "IMPULSE_IS_ALTERNATIVE",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 1712
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240720_spy",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 1371
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240828_iwm",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "TRIANGLE",
+     "ms": 1855
+    },
+    {
+     "referenceId": "pr_tv-yuchaosng_20240929_btcusd",
+     "cat": "IMPULSE_CANDIDATE_RANKED_TOO_LOW",
+     "like": 0,
+     "likePos": null,
+     "vu": "FLAT",
+     "ms": 1541
+    }
+   ]
+  }
+ }
+}
