@@ -343,62 +343,63 @@ Concurrent remote discovery milestone `d30133ae5dc03d7b50ac816ba3c57b9f7a4b39fb`
 
 # Company Intelligence — candidate completion and recovery (in progress)
 
-Coverage measured **2026-10-05T11:20:26Z**; pass/queue checkpoint snapshot **2026-10-05T11:21:30Z**. Branch `feature/company-intelligence-rollout`, PR [#356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356). **Do not merge.** Production gates remain off. This report follows the requested 32-section structure and will be refreshed as resumable discovery continues.
+Coverage measured **2026-10-05T12:47:20Z**; pass/queue checkpoint snapshot **2026-10-05T12:48:52Z**. Branch `feature/company-intelligence-rollout`, PR [#356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356). **Do not merge.** Production gates remain off. This report follows the requested 32-section structure and will be refreshed as resumable discovery continues.
 
 ## 1. Executive result
 
-Verified domains increased **769 → 2411**. The **1642-new-domain cohort** now has **1063 IR pages, 954 issuers with accepted news, 402 calls, 383 webcasts, 869 presentations and 499 issuers with management content**. These are actual stored/consumer-exported references and metadata, not just candidate processing. The original frozen inventory is fully classified: 4248 / 4248, with 0 unchecked. Supplementary and due-time recovery queues remain separate. Downstream IR and source expansion continues.
+Verified domains increased **769 → 2411**. The **1642-new-domain cohort** now has **1154 IR pages, 1017 issuers with accepted news, 431 calls, 418 webcasts, 946 presentations and 543 issuers with management content**. These are actual stored/consumer-exported references and metadata, not just candidate processing. The original frozen inventory is fully classified: 4248 / 4248, with 0 unchecked. Supplementary and due-time recovery queues remain separate. Downstream IR and source expansion continues.
 
 **Historical-state limitation:** the preceding expanded private research ledger was not uploaded to R2 and is absent from this fresh workspace. No authenticated R2 credential bindings are available. Its committed 769 domains/510 source descriptors survive. New ledger totals are reconstructed measurements; they must not be added to lost historical per-issuer sets. The historical 519-news/137-call/212-presentation totals cannot be reported as exact current unions. Original historical reports are retained below with their timestamps.
 
 | Component | Historical baseline | Current reconstructed ledger | Actual new-domain cohort | Current universe percentage |
 |---|---:|---:|---:|---:|
 | Verified domain | 769 | 2,411 | 1,642 | 39.67% |
-| IR | 326 | 1,147 | 1,063 | 18.87% |
-| News 180d | 519 | 1,573 | 0 | 25.88% |
-| Call | 137 | 486 | 402 | 8.0% |
-| Dated call | 120 | 403 | 337 | 6.63% |
-| Webcast | 111 | 423 | 383 | 6.96% |
-| Presentation | 212 | 950 | 869 | 15.63% |
-| Transcript reference | 64 | 203 | 190 | 3.34% |
-| Any management content | 149 | 540 | 499 | 8.88% |
-| Confirmed upcoming earnings | 44 | 91 | 66 | 1.5% |
+| IR | 326 | 1,239 | 1,154 | 20.38% |
+| News 180d | 519 | 1,692 | 0 | 27.84% |
+| Call | 137 | 528 | 431 | 8.69% |
+| Dated call | 120 | 432 | 361 | 7.11% |
+| Webcast | 111 | 467 | 418 | 7.68% |
+| Presentation | 212 | 1,028 | 946 | 16.91% |
+| Transcript reference | 64 | 223 | 206 | 3.67% |
+| Any management content | 149 | 593 | 543 | 9.76% |
+| Confirmed upcoming earnings | 44 | 92 | 67 | 1.51% |
 
 ## 2. Candidate inventory — starting versus current
 
-Prior private ledger: 4,283 total / 2,358 classified / 1,925 unchecked. Reconstructed original frozen inventory: **4,248**, with 35 old identities unavailable from Git. Runtime metadata imports have produced **4399** candidate identities. The current exact runtime funnel is **4399 processed / 0 unchecked**. Configured seeds and durable ambiguity/cooldown outcomes count as classifications, not fresh network verification.
+Prior private ledger: 4,283 total / 2,358 classified / 1,925 unchecked. Reconstructed original frozen inventory: **4,248**, with 35 old identities unavailable from Git. Runtime metadata imports have produced **4412** candidate identities. The current exact runtime funnel is **4399 processed / 13 unchecked**. Configured seeds and durable ambiguity/cooldown outcomes count as classifications, not fresh network verification.
 
 | Durable current classification | Candidate identities |
 |---|---:|
-| AMBIGUOUS | 238 |
-| BLOCKED | 148 |
-| CONFLICTING_OWNER | 509 |
+| AMBIGUOUS | 256 |
+| BLOCKED | 146 |
+| CONFLICTING_OWNER | 504 |
 | DEFERRED_BUDGET | 69 |
-| INSUFFICIENT_EVIDENCE | 774 |
-| MISSING_PAGE | 22 |
+| INSUFFICIENT_EVIDENCE | 769 |
+| MISSING_PAGE | 21 |
+| NOT_CHECKED | 13 |
 | REDIRECTED | 64 |
-| TEMPORARILY_UNAVAILABLE | 138 |
-| UNRESOLVED | 27 |
+| TEMPORARILY_UNAVAILABLE | 134 |
+| UNRESOLVED | 26 |
 | VERIFIED_OFFICIAL | 2,410 |
 
 | Requested funnel field | Current checkpoint count |
 |---|---:|
-| TOTAL CANDIDATES | 4,399 |
+| TOTAL CANDIDATES | 4,412 |
 | PROCESSED | 4,399 |
 | VERIFIED | 2,410 |
-| INSUFFICIENT OWNERSHIP | 774 |
-| TEMPORARY FAILURE | 138 |
-| BLOCKED | 148 |
-| CONFLICTING | 509 |
+| INSUFFICIENT OWNERSHIP | 769 |
+| TEMPORARY FAILURE | 134 |
+| BLOCKED | 146 |
+| CONFLICTING | 504 |
 | REDIRECTED | 64 |
 | WRONG | 0 |
 | DEAD | 0 |
-| UNRESOLVED (explicit state) | 27 |
-| UNCHECKED | 0 |
+| UNRESOLVED (explicit state) | 26 |
+| UNCHECKED | 13 |
 | RECOVERED ON SECOND PASS | 219 |
 | RECOVERED ON THIRD PASS | 54 |
 
-WRONG_COMPANY, DEAD, PARKED, SUBSIDIARY_ONLY and BRAND_ONLY are zero explicit classifications; missing pages/unproven ownership/DNS failures are not relabelled as those states. The total unresolved/unproven population is **1989**; the explicit UNRESOLVED state is 27. Neither is an unchecked-candidate count. Second-pass unique verified recoveries: **219**; third-pass unique verified recoveries: **54**. Cohorts overlap historically; pass rows are not blindly summed into total candidates.
+WRONG_COMPANY, DEAD, PARKED, SUBSIDIARY_ONLY and BRAND_ONLY are zero explicit classifications; missing pages/unproven ownership/DNS failures are not relabelled as those states. The total unresolved/unproven population is **2002**; the explicit UNRESOLVED state is 26. Neither is an unchecked-candidate count. Second-pass unique verified recoveries: **219**; third-pass unique verified recoveries: **54**. Cohorts overlap historically; pass rows are not blindly summed into total candidates.
 
 ## 3. First pass
 
@@ -416,7 +417,8 @@ Live prior insufficient-ownership and temporary-failure cohorts remain resumable
 | second-dns-live | 125 | 125 | 0 | 41 | 433 |
 | second-budget-live | 215 | 215 | 0 | 100 | 1436 |
 | second-owner-v10 | 458 | 458 | 0 | 16 | 1821 |
-| third-due-temporary | 223 | 223 | 0 | 39 | 602 |
+| third-due-temporary | 223 | 223 | 0 | 39 | 618 |
+| third-orphan-recovery | 40 | 0 | 40 | 0 | 0 |
 | publisher-owner | 25 | 25 | 0 | 0 | 48 |
 | supplementary | 67 | 67 | 0 | 27 | 211 |
 | metadata-new | 7 | 7 | 0 | 3 | 25 |
@@ -431,6 +433,7 @@ Live prior insufficient-ownership and temporary-failure cohorts remain resumable
 | third-redirect-live | 29 | 29 | 0 | 5 | 146 |
 | third-legal-priority | 20 | 20 | 0 | 2 | 17 |
 | third-copyright | 2 | 2 | 0 | 2 | 0 |
+| metadata-after-backfill | 13 | 0 | 13 | 0 | 0 |
 
 A current zero-request home-logo ownership shadow review examined 875 eligible unresolved states, 45 retained root pages and 15 pages with scoped home-logo labels. It found zero additional strong ownership proofs; no verifier change or new recovery is claimed. Live older-version ownership rechecks continue in the durable cohort. Cached second reviews additionally recorded all missing-cache/rejected outcomes with zero requests; they are not claimed as recoveries. The missing preceding 578-temporary/578-insufficient cohorts cannot be fabricated; current logical second cohorts derive from retained reconstructed outcomes.
 
@@ -448,10 +451,10 @@ Old ledger: approximately 578 insufficient ownership, 578 temporary failures, 89
 
 | Cause | Current identities |
 |---|---:|
-| INSUFFICIENT_EVIDENCE | 804 |
+| INSUFFICIENT_EVIDENCE | 805 |
 | CONFLICTING_OWNER | 535 |
 | BLOCKED | 157 |
-| TEMPORARILY_UNAVAILABLE | 150 |
+| TEMPORARILY_UNAVAILABLE | 149 |
 | DEFERRED_BUDGET | 75 |
 | REDIRECTED | 73 |
 | UNRESOLVED | 28 |
@@ -473,9 +476,9 @@ The Q4 and GCS cohorts are fully classified, and due retries have recovered addi
 
 Actual new verified cohort: 1642; committed audited seeds: 2405. Actual per-seed verifier versions, URLs, evidence hashes and timestamps are retained. Missing cached bodies retain original strong proof; a current cached rejection cannot be promoted. Exact-CIK non-mock SEC legal aliases enrich the existing resolver copy without changing Company Master.
 
-## 8. IR pages — historical 326; current reconstructed 1147
+## 8. IR pages — historical 326; current reconstructed 1239
 
-New-domain cohort: **1063** actual IR pages. The frozen broader native/platform cohort has **901 verified roots / 399 classified / 502 pending**, with 344 successful outcomes and 3888 cumulative requests. Its first bounded batch stored 31 news items and added five presentation issuers; 19 successfully ingested source descriptors were promoted after quality review; the following five bounded IR batches produced another 120 independently successful descriptors (1,948 configured sources in total). The cumulative discovery-plus-follow-up traffic is **3888 requests / 275,256,397 bytes**; the current snapshot has **399 classifications / 344 successful outcomes** and retained cooldown/local-capacity records. New domains are queued for bounded root/navigation/platform/source discovery; a substantial unattempted IR cohort remains. Cached partial results are preserved. Corporate dropdown self/fragment links and retail investing stories do not count as IR. Root ownership survives an IR redirect/parser/temporary failure.
+New-domain cohort: **1154** actual IR pages. The frozen broader native/platform cohort has **901 verified roots / 501 classified / 400 pending**, with 422 successful outcomes and 4951 cumulative requests. Its first bounded batch stored 31 news items and added five presentation issuers; 19 successfully ingested source descriptors were promoted after quality review; the following five bounded IR batches produced another 120 independently successful descriptors (1,948 configured sources in total). The cumulative discovery-plus-follow-up traffic is **4951 requests / 349,010,402 bytes**; the current snapshot has **501 classifications / 422 successful outcomes** and retained cooldown/local-capacity records. New domains are queued for bounded root/navigation/platform/source discovery; a substantial unattempted IR cohort remains. Cached partial results are preserved. Corporate dropdown self/fragment links and retail investing stories do not count as IR. Root ownership survives an IR redirect/parser/temporary failure.
 
 ## 9. Platform families
 
@@ -483,13 +486,13 @@ Actual IR fingerprints, not corporate CMS hints:
 
 | Family | IR issuer fingerprints |
 |---|---:|
-| Q4 | 389 |
-| GCS | 369 |
-| STOCKPR | 131 |
-| GENERIC | 127 |
-| WORDPRESS | 112 |
+| Q4 | 413 |
+| GCS | 403 |
+| STOCKPR | 145 |
+| GENERIC | 138 |
+| WORDPRESS | 122 |
 | INVESTIS | 36 |
-| WEB_DRIVER | 27 |
+| WEB_DRIVER | 29 |
 | NOTIFIED | 1 |
 | BUSINESS_WIRE | 1 |
 
@@ -497,13 +500,13 @@ Registry capability/accessibility ranking (issuer count × supported source type
 
 | Family | Registry issuers | Sources | Ever successfully polled | Source types |
 |---|---:|---:|---:|---|
-| GCS | 433 | 886 | 781 | IR_EVENTS, IR_FEED, IR_MATERIALS |
-| Q4 | 397 | 1601 | 1371 | IR_EVENTS, IR_FEED, IR_MATERIALS |
-| STOCKPR | 163 | 264 | 241 | IR_EVENTS, IR_FEED, IR_MATERIALS |
-| WORDPRESS | 166 | 200 | 171 | IR_EVENTS, IR_FEED, IR_MATERIALS |
-| GENERIC | 70 | 82 | 68 | IR_EVENTS, IR_FEED, IR_MATERIALS |
-| WEB_DRIVER | 29 | 37 | 32 | IR_FEED, IR_MATERIALS |
-| INVESTIS | 17 | 23 | 19 | IR_EVENTS, IR_FEED, IR_MATERIALS |
+| GCS | 465 | 966 | 845 | IR_EVENTS, IR_FEED, IR_MATERIALS |
+| Q4 | 418 | 1677 | 1457 | IR_EVENTS, IR_FEED, IR_MATERIALS |
+| STOCKPR | 177 | 295 | 268 | IR_EVENTS, IR_FEED, IR_MATERIALS |
+| WORDPRESS | 188 | 227 | 191 | IR_EVENTS, IR_FEED, IR_MATERIALS |
+| GENERIC | 82 | 94 | 76 | IR_EVENTS, IR_FEED, IR_MATERIALS |
+| WEB_DRIVER | 31 | 40 | 35 | IR_FEED, IR_MATERIALS |
+| INVESTIS | 18 | 25 | 20 | IR_EVENTS, IR_FEED, IR_MATERIALS |
 | FIRST_PARTY | 1 | 1 | 1 | IR_FEED |
 | GLOBENEWSWIRE_ARTICLE | 0 | 1 | 1 | RSS |
 | PUBLIC_RSS | 0 | 1 | 0 | RSS |
@@ -538,69 +541,69 @@ The preserved advertised WordPress REST adapter supplies metadata-only news from
 
 The publisher collector now opts out of disk and memo response persistence for article fetches. Normal source, robots and index caching retain their defaults. Corrected cleanup uses the transport's real `(canonical URL, robots)` memo key. A real-transport test covers valid/invalid metadata and proves raw responses never enter disk/memo caches. Private checkpoints exclude legacy GlobeNewswire article cache pairs left by an abruptly interrupted older collector while preserving staged SQLite metadata and safe robots/index cache. A restore-backed test proves the raw body is absent, staged metadata survives exactly and packing does not change the live ledger. The inherited URL-only fake had masked tuple-key memo retention. No full article body is exported, committed or included in the corrected private checkpoint.
 
-The new one-time backfill freezes existing verified, active, unpolled issuer-owned news feeds for companies without stored news. The exact source/company/URL identity and optional issuer scope survive restore; changed identities are withheld. Existing ingestion, issuer matching, source health, cooldowns and four-hour production cadence remain authoritative. Its continuing run has **182 frozen sources**, **182 attempted source instances**, **1567 new stories**, **155 distinct newly news-covered issuers**, **340 requests / 11,732,088 bytes**, and stop reason **NO_DUE_SOURCES**. Nine meaningful tests cover restored continuation, cooldowns, shared failures, unsent budget deferrals, identity/scope preservation and existing CLI/runner isolation. Resume the same frozen cohort with `PYTHONPATH=scripts python -m company_intelligence.source_backfill_runner --run-id unpolled-news-oct5 --lane news --max-batches 8 --limit 32 --request-budget 160 --max-seconds 360 --network`; failed sources remain governed by their existing due times. It does not poll global feeds or download article bodies. The new verified-IR-feed item audit replayed current resolver identity for **458 newly accepted items across 48 issuers**, preserving exact current source/company/URL identity, frozen identities where applicable, and original timestamps; **0** were explicitly external destinations from an owned feed and retain their normal external match evidence.
+The new one-time backfill freezes existing verified, active, unpolled issuer-owned news feeds for companies without stored news. The exact source/company/URL identity and optional issuer scope survive restore; changed identities are withheld. Existing ingestion, issuer matching, source health, cooldowns and four-hour production cadence remain authoritative. Its continuing run has **182 frozen sources**, **184 attempted source instances**, **1577 new stories**, **156 distinct newly news-covered issuers**, **344 requests / 11,743,819 bytes**, and stop reason **NO_DUE_SOURCES**. Nine meaningful tests cover restored continuation, cooldowns, shared failures, unsent budget deferrals, identity/scope preservation and existing CLI/runner isolation. Resume the same frozen cohort with `PYTHONPATH=scripts python -m company_intelligence.source_backfill_runner --run-id unpolled-news-oct5 --lane news --max-batches 8 --limit 32 --request-budget 160 --max-seconds 360 --network`; failed sources remain governed by their existing due times. It does not poll global feeds or download article bodies. The new verified-IR-feed item audit replayed current resolver identity for **579 newly accepted items across 60 issuers**, preserving exact current source/company/URL identity, frozen identities where applicable, and original timestamps; **0** were explicitly external destinations from an owned feed and retain their normal external match evidence.
 
 The retained Q4 vendor-template correction withholds explicit TestItem labels and placeholder documents from presentation/management coverage. Sixteen reference instances across CVS, TTI, AGEN, VC, GKOS, OTTR, DKL and Alphabet were retired without HTTP or source-health mutation; original evidence remains private. Legitimate scientific testing and similarly named presentation titles remain accepted. Fresh parsing and retained consumer correction tests pass. The preceding nine-ticker audit (including GOOG/GOOGL's shared identity) proved those exact false references absent through local storage, API and browser delivery.
 
-## 11. News — historical 519; current reconstructed 180-day coverage 1573
+## 11. News — historical 519; current reconstructed 180-day coverage 1692
 
-**954 new-domain issuers** have accepted recent metadata, from 834 news-source issuers. Total stored metadata items: **10862**, across 1580 issuers including older retained metadata. First-party metadata: 9847 items / 993 issuers; external metadata: 1220 items / 732 issuers (sets can overlap). These item counts use explicit verified-first-party match evidence. External destinations linked by an official feed remain external items with the normal resolver proof; route-level first-party coverage retains its existing verified-source definition. Publisher/issuer identity precision remains unchanged; full article bodies are not retained. The initial local recovery checkpoint contains zero news items / zero news-covered identities; all 1580 identities in this reconstructed ledger were added during this run. That checkpoint is separate from the unavailable historical 519-issuer set, whose union cannot be reconstructed.
+**1017 new-domain issuers** have accepted recent metadata, from 902 news-source issuers. Total stored metadata items: **11635**, across 1699 issuers including older retained metadata. First-party metadata: 10441 items / 1052 issuers; external metadata: 1461 items / 827 issuers (sets can overlap). These item counts use explicit verified-first-party match evidence. External destinations linked by an official feed remain external items with the normal resolver proof; route-level first-party coverage retains its existing verified-source definition. Publisher/issuer identity precision remains unchanged; full article bodies are not retained. The initial local recovery checkpoint contains zero news items / zero news-covered identities; all 1699 identities in this reconstructed ledger were added during this run. That checkpoint is separate from the unavailable historical 519-issuer set, whose union cannot be reconstructed.
 
 ## 12. News freshness
 
 | Window | Issuers |
 |---|---:|
-| 7 days | 532 |
-| 30 days | 1228 |
-| 90 days | 1563 |
-| 180 days | 1573 |
+| 7 days | 520 |
+| 30 days | 1332 |
+| 90 days | 1679 |
+| 180 days | 1692 |
 
 Accepted timestamps retain publication/observation distinction; event starts never derive from RSS publication time.
 
 ## 13. GlobeNewswire monthly backfill
 
-September publisher-advertised sitemap contains 11,968 release URLs. Resumed completed batches have **2031 attempted / 2009 parsed releases**, **1089 newly stored items / 119 duplicate matches**, and **1197 source-associated issuer-scoped items from 1194 distinct accepted release URLs**, covering **721 current-master identities**. Aggregate duplicate-match rate is 9.85% of accepted matches. Vivakor VIVK/VIVKD and CareCloud CCLD/CCLDO/CCLDP are explicitly listed publisher stock representations; one release may map to multiple retained master identities without cross-company leakage. These are master-identity counts, not invented distinct-economic-company counts. A publisher robots-503 attempt made three requests/zero accepted items and retained the release cursor. Current publisher nextCheck: **2026-10-12T09:23:39Z** (healthy explicit monthly backfill may continue; failed cooldowns cannot). Retry due times, parsed/ingested per-URL checkpoints and source failure counts survive fresh invocations. Full article bodies retained: **0**. The later publisher recovery processed 93 releases / 92 parsed and added 54 items / seven duplicate matches in 95 requests / 8,554,133 bytes. It added 30 global news-covered issuer identities (679 → 709), so incremental gain remains material. A subsequent shared-failure publisher attempt made three requests / zero bytes and retained that prior checkpoint without recounting it.
+September publisher-advertised sitemap contains 11,968 release URLs. Resumed completed batches have **2425 attempted / 2395 parsed releases**, **1289 newly stored items / 161 duplicate matches**, and **1439 source-associated issuer-scoped items from 1436 distinct accepted release URLs**, covering **817 current-master identities**. Aggregate duplicate-match rate is 11.1% of accepted matches. Vivakor VIVK/VIVKD and CareCloud CCLD/CCLDO/CCLDP are explicitly listed publisher stock representations; one release may map to multiple retained master identities without cross-company leakage. These are master-identity counts, not invented distinct-economic-company counts. A publisher robots-503 attempt made three requests/zero accepted items and retained the release cursor. Current publisher nextCheck: **2026-10-12T11:50:33Z** (healthy explicit monthly backfill may continue; failed cooldowns cannot). Retry due times, parsed/ingested per-URL checkpoints and source failure counts survive fresh invocations. Full article bodies retained: **0**. The later publisher recovery processed 93 releases / 92 parsed and added 54 items / seven duplicate matches in 95 requests / 8,554,133 bytes. It added 30 global news-covered issuer identities (679 → 709), so incremental gain remains material. A subsequent shared-failure publisher attempt made three requests / zero bytes and retained that prior checkpoint without recounting it.
 
 The preceding 93-release batch expanded publisher coverage from 339 to 374 identities. Four further healthy bounded October-5 batches attempted 376 releases, parsed 369, added 186 stored items with 18 duplicate matches and added 99 global news-covered identities; publisher coverage reached 483. The latest of those batches added 21 global news identities in 95 requests / 8,381,517 bytes, so the source ceiling has not been reached. An explicit checkpoint boundary pause retained the current cursor and source health; it was not a source failure. Eleven newly advertised domain candidates were all classified (seven validated, two insufficient, one conflicting owner, one authorization-blocked). An initial selector also included 736 existing configured seeds; they reused proof with zero requests. The corrected 11-candidate frozen cohort retains the exact original results. Both snapshots remain private; its 35 actual requests are counted once.
 
-The continuing `september-oct5` run has completed **9 bounded batches** with **876 attempted / 880 parsed releases**, **456 newly stored stories**, **77 duplicate matches**, **889 requests / 79,599,339 bytes**, and **203 distinct newly covered global news issuers**. The healthy low-gain counter is **0** and current stop reason **BATCH_COMPLETED**. Request limits are resumable batch boundaries, not site failures. Parsed releases are durably staged before ingestion; an interruption replays metadata without fetching/storing article bodies. The preceding three batches added 74 global news issuers with per-batch gains 26 / 27 / 21. Cumulative monthly accounting above includes those batches once. Older September releases are not presented as seven-day news. Backfill continues while incremental issuer gain remains material and source access allows it.
+The continuing `september-oct5` run has completed **13 bounded batches** with **1,270 attempted / 1,266 parsed releases**, **656 newly stored stories**, **119 duplicate matches**, **1,289 requests / 115,497,665 bytes**, and **276 distinct newly covered global news issuers**. The healthy low-gain counter is **0** and current stop reason **BUDGET_DEFERRED**. Request limits are resumable batch boundaries, not site failures. Parsed releases are durably staged before ingestion; an interruption replays metadata without fetching/storing article bodies. The preceding three batches added 74 global news issuers with per-batch gains 26 / 27 / 21. Cumulative monthly accounting above includes those batches once. Older September releases are not presented as seven-day news. Backfill continues while incremental issuer gain remains material and source access allows it.
 
-## 14. Calls — historical 137; current reconstructed 486
+## 14. Calls — historical 137; current reconstructed 528
 
-New-domain cohort: **402 call-exists issuers / 337 dated-call issuers**. Structured event JSON-LD/iCalendar/Q4/GCS/feed metadata and issuer-authored release call schedules provide evidence. An announcement's results-release date cannot become a distinct conference-call date without explicit call evidence.
+New-domain cohort: **431 call-exists issuers / 361 dated-call issuers**. Structured event JSON-LD/iCalendar/Q4/GCS/feed metadata and issuer-authored release call schedules provide evidence. An announcement's results-release date cannot become a distinct conference-call date without explicit call evidence.
 
-## 15. Webcasts — historical 111; current reconstructed 423
+## 15. Webcasts — historical 111; current reconstructed 467
 
-New-domain cohort: **383** issuers. Replay issuer count: **6**. Public webcast references are retained; explicit replay/recording availability is separate and never inferred from a webcast URL.
+New-domain cohort: **418** issuers. Replay issuer count: **6**. Public webcast references are retained; explicit replay/recording availability is separate and never inferred from a webcast URL.
 
-## 16. Presentations — historical 212; current reconstructed 950
+## 16. Presentations — historical 212; current reconstructed 1028
 
-New-domain cohort: **869** issuers. Official platform/document/event/results pages provide presentation references; arbitrary PDFs and self-navigation anchors do not.
+New-domain cohort: **946** issuers. Official platform/document/event/results pages provide presentation references; arbitrary PDFs and self-navigation anchors do not.
 
-The continuing materials runner has completed **9 batches**, using **515 requests / 13,121,863 bytes**, and recovered **77 distinct presentation issuers**. These are measured material-lane recoveries, not all newly discovered IR presentation gains. Original source health and due times remain authoritative.
+The continuing materials runner has completed **11 batches**, using **637 requests / 17,765,817 bytes**, and recovered **80 distinct presentation issuers**. These are measured material-lane recoveries, not all newly discovered IR presentation gains. Original source health and due times remain authoritative.
 
-## 17. Transcripts — historical 64; current reconstructed 203
+## 17. Transcripts — historical 64; current reconstructed 223
 
-New-domain cohort: **190** issuers with company transcript references. URLs are reference evidence, not claims that transcript bodies were downloaded, generated or licensed.
+New-domain cohort: **206** issuers with company transcript references. URLs are reference evidence, not claims that transcript bodies were downloaded, generated or licensed.
 
-## 18. Management content — historical 149; current reconstructed 540
+## 18. Management content — historical 149; current reconstructed 593
 
-Current issuer counts: transcript 203; prepared remarks 36; shareholder letters 36; other management commentary 15; any management content 540. New-domain any-content cohort: **499**. Public webcast references contribute under the existing measured definition; success is not limited to transcript links.
+Current issuer counts: transcript 223; prepared remarks 40; shareholder letters 42; other management commentary 15; any management content 593. New-domain any-content cohort: **543**. Public webcast references contribute under the existing measured definition; success is not limited to transcript links.
 
-## 19. Confirmed earnings — historical 44; current reconstructed 91
+## 19. Confirmed earnings — historical 44; current reconstructed 92
 
-New-domain confirmed-upcoming cohort: **66**. Existing model reconciled 19 stale estimates overlapping official confirmation; no forecast parameters changed. Current estimated upcoming windows: **3188**. Historical backtest remains 95.48% window coverage over 3,847 predictions; it is historical validated evidence, not rerun/invented performance.
+New-domain confirmed-upcoming cohort: **67**. Existing model reconciled 19 stale estimates overlapping official confirmation; no forecast parameters changed. Current estimated upcoming windows: **3187**. Historical backtest remains 95.48% window coverage over 3,847 predictions; it is historical validated evidence, not rerun/invented performance.
 
 ## 20. Downstream funnel
 
-**1642 new verified domains → 1063 IR → 834 news-source issuers → 529 event-source issuers → 402 calls → 383 webcasts → 869 presentations → 499 management-content issuers.** These are overlapping component sets, not a claim that each sequential subset contains the next. 2483 operational source descriptors belong to the new-domain cohort; actual accepted news coverage is measured separately from source count.
+**1642 new verified domains → 1154 IR → 902 news-source issuers → 574 event-source issuers → 431 calls → 418 webcasts → 946 presentations → 543 management-content issuers.** These are overlapping component sets, not a claim that each sequential subset contains the next. 2714 operational source descriptors belong to the new-domain cohort; actual accepted news coverage is measured separately from source count.
 
 ## 21. Coverage tiers and component percentages
 
 | Existing tier | Issuers | Percentage |
 |---|---:|---:|
-| A_FULL | 118 | 1.94% |
-| B_STRONG | 3130 | 51.5% |
+| A_FULL | 121 | 1.99% |
+| B_STRONG | 3127 | 51.45% |
 | C_BASIC | 1621 | 26.67% |
 | D_LIMITED | 1209 | 19.89% |
 
@@ -608,12 +611,12 @@ Component counts and percentages **within each tier** (financial strength alone 
 
 | Tier | News 180d | News 30d | Calls | Dated calls | Presentations | Management content |
 |---|---:|---:|---:|---:|---:|---:|
-| A_FULL | 118 (100.0%) | 73 (61.9%) | 118 (100.0%) | 118 (100.0%) | 118 (100.0%) | 117 (99.2%) |
-| B_STRONG | 1016 (32.5%) | 788 (25.2%) | 271 (8.7%) | 208 (6.6%) | 608 (19.4%) | 296 (9.5%) |
-| C_BASIC | 390 (24.1%) | 323 (19.9%) | 93 (5.7%) | 73 (4.5%) | 205 (12.6%) | 119 (7.3%) |
-| D_LIMITED | 49 (4.1%) | 44 (3.6%) | 4 (0.3%) | 4 (0.3%) | 19 (1.6%) | 8 (0.7%) |
+| A_FULL | 121 (100.0%) | 76 (62.8%) | 121 (100.0%) | 121 (100.0%) | 121 (100.0%) | 120 (99.2%) |
+| B_STRONG | 1093 (35.0%) | 857 (27.4%) | 299 (9.6%) | 225 (7.2%) | 664 (21.2%) | 337 (10.8%) |
+| C_BASIC | 422 (26.0%) | 348 (21.5%) | 103 (6.4%) | 81 (5.0%) | 222 (13.7%) | 127 (7.8%) |
+| D_LIMITED | 56 (4.6%) | 51 (4.2%) | 5 (0.4%) | 5 (0.4%) | 21 (1.7%) | 9 (0.7%) |
 
-Strong includes preserved financial/calendar/SEC identity evidence and must not imply broad current news/call coverage. Component percentages: news 25.88%; IR 18.87%; calls 8.0%; presentations 15.63%; management 8.88%; financial summaries 80.11%; SEC identities 89.04%. Financial summaries remain 4869; current summaries 3721; SEC identities 5412.
+Strong includes preserved financial/calendar/SEC identity evidence and must not imply broad current news/call coverage. Component percentages: news 27.84%; IR 20.38%; calls 8.69%; presentations 16.91%; management 9.76%; financial summaries 80.11%; SEC identities 89.04%. Financial summaries remain 4869; current summaries 3721; SEC identities 5412.
 
 ## 22. Random quality audit
 
@@ -637,9 +640,9 @@ The preceding four-stock new-content consumer audit required exact additions rel
 
 A subsequent random 12-stock audit selected actual new content from 54 eligible issuers relative to the immutable preceding checkpoint: **MPLX, FBIZ, EDSA, POST, GOGO, SLI, ETN, HTB, TPST, IPDN, FWONA and NPCE**. Exact newly acquired decks, prepared remarks, first-party news or public webcast references were required; existing filings alone did not qualify. All passed local delivery → API → browser checks: 25 assets / 442,612 bytes, maximum 92,239 bytes, with three private paths rejected. Investor-day/clinical-conference references remain their actual event types; a public webcast URL is not a transcript or a newly inferred earnings date.
 
-The latest publisher identity audit checked **0 newly accepted stories** relative to the final milestone58 checkpoint and sampled up to 12 with seed 356. Each checked item retained current-master identity, exact contributor and explicit exchange/ticker evidence, canonical URL/publication timestamp pair retained in provenance; an exact GT Biopharma first-party duplicate correctly retains the issuer-owned canonical URL. Full article bodies remain absent.
+The latest publisher identity audit checked **200 newly accepted stories** relative to the final milestone59 checkpoint and sampled up to 12 with seed 356. Each checked item retained current-master identity, exact contributor and explicit exchange/ticker evidence, canonical URL/publication timestamp pair retained in provenance; an exact GT Biopharma first-party duplicate correctly retains the issuer-owned canonical URL. Full article bodies remain absent.
 
-The actual consumer audit found **63 stocks with newly visible content** relative to the immutable milestone58 export and sampled **SNDR / CRNX / HFFG / KRRO / HGV / PUMP / STTK / LBRX / SNES / VRRM / SLGL / ZLAB**. Exact newly acquired URLs/types passed local storage → API → browser checks: **24 assets / 564,059 bytes**, maximum **92,345 bytes**, with three private-path probes rejected. The preceding milestone54 audit passed for REXR, ELTX, ZM, GRNQ, HRTG, AUPH, PANL, WVE, QTTB, ATEN, VIRT and NERV (25 assets / 427,825 bytes / max 102,843 bytes); earlier eight-stock recovery/custom-collection and 12-stock materials audits also passed. External company news can enrich a stock without inventing an official domain. No authenticated deployment is implied.
+The actual consumer audit found **281 stocks with newly visible content** relative to the immutable milestone59 export and sampled **PPC / INCR / SEER / HOOD / IRON / HTOO / SLXN / GIXI / FLYW / ATER / OPEN / PRFX**. Exact newly acquired URLs/types passed local storage → API → browser checks: **25 assets / 261,329 bytes**, maximum **59,493 bytes**, with three private-path probes rejected. The preceding milestone54 audit passed for REXR, ELTX, ZM, GRNQ, HRTG, AUPH, PANL, WVE, QTTB, ATEN, VIRT and NERV (25 assets / 427,825 bytes / max 102,843 bytes); earlier eight-stock recovery/custom-collection and 12-stock materials audits also passed. External company news can enrich a stock without inventing an official domain. No authenticated deployment is implied.
 
 The live collision audit retained separate current identities for ROOT, U, XYZ, TOST, TGT, AFRM, META, AAPL, ORCL, RCI, PFS, PROV and PVBC. Correct newly acquired news for **AAPL / AFRM / ROOT / GOOG / GOOGL** passed actual storage → API → browser delivery: **9 assets / 273,224 bytes**, maximum **184,282 bytes**, three private-path probes rejected. GOOG/GOOGL resolve to one stable Alphabet CIK. Other stress identities still lacking accepted news are recorded as uncovered.
 
@@ -651,17 +654,17 @@ Explicit fixtures retain ROOT, UNITY, BLOCK/XYZ, TOAST, TARGET, AFFIRM, META, AP
 
 ## 24. Requests and bandwidth
 
-Main completed-batch accounting: **11007 requests / 902887766 downloaded bytes**. Supplementary completed batches: **211 requests / 11596440 bytes**. Main per-candidate counters retain 10977 requests; preceding local-reuse rows lost some counters before the preservation fix, so completed-batch accounting is the traffic authority. No per-candidate values are invented to fill that historical gap. Second/third per-pass counts are above. Discovery admission/per-host robots pacing remains bounded; downloaded bytes are retained per batch/candidate. Completed September metadata batches and the publisher failure used **2085 requests / 187283346 downloaded bytes**. Two successful known-family recovery batches accepted 290 stories in 62 requests / 2,822,276 bytes; the later shared-failure probe stopped after ten requests/zero bytes. These operational batch populations are separate and must not double-count stale last-batch reports. HTML and Q4 material batches used a separate 133 requests / 4,622,557 bytes; public SDK/API probes used three requests / 45,402 bytes. A subsequent Q4 outage batch stopped after 13 requests / zero bytes, with five isolated source failures and a four-host IR circuit; it added no coverage. Two later materials outage attempts each stopped after ten requests / zero bytes (four and five attempted descriptors), adding no coverage; their IR cooldowns are retained. The publisher robots outage used three requests / zero bytes and did not recount its preceding archive checkpoint. Discovery/backfill traffic is not recurring production traffic.
+Main completed-batch accounting: **11007 requests / 902887766 downloaded bytes**. Supplementary completed batches: **211 requests / 11596440 bytes**. Main per-candidate counters retain 10977 requests; preceding local-reuse rows lost some counters before the preservation fix, so completed-batch accounting is the traffic authority. No per-candidate values are invented to fill that historical gap. Second/third per-pass counts are above. Discovery admission/per-host robots pacing remains bounded; downloaded bytes are retained per batch/candidate. Completed September metadata batches and the publisher failure used **2485 requests / 223181672 downloaded bytes**. Two successful known-family recovery batches accepted 290 stories in 62 requests / 2,822,276 bytes; the later shared-failure probe stopped after ten requests/zero bytes. These operational batch populations are separate and must not double-count stale last-batch reports. HTML and Q4 material batches used a separate 133 requests / 4,622,557 bytes; public SDK/API probes used three requests / 45,402 bytes. A subsequent Q4 outage batch stopped after 13 requests / zero bytes, with five isolated source failures and a four-host IR circuit; it added no coverage. Two later materials outage attempts each stopped after ten requests / zero bytes (four and five attempted descriptors), adding no coverage; their IR cooldowns are retained. The publisher robots outage used three requests / zero bytes and did not recount its preceding archive checkpoint. Discovery/backfill traffic is not recurring production traffic.
 
 ## 25. Actions cost model
 
-Current 3101-source registry plans **9503 polls/day / 285090 per 30-day month**, before excluded SEC/robots/retry/discovery requests. Six existing 160-request runs admit at most **960/day**. At the planning assumption of eight minutes/run, six runs/day consume **1440 Actions minutes/month**. Shared URLs reduce the one-request-per-due-route scenario to **9473 network requests/day / 284190 per month**. With the existing serial two-second global pacing, this scenario alone needs at least **9467.0 aggregate Actions minutes/month**, excluding HTTP latency, robots, retries and five-second same-host waits. The eight-minute figure is therefore the bounded workflow cost, not a full-coverage runtime forecast. At least 10 disjoint 160-request capacity lanes would be needed before overhead; at the stated runtime assumption their aggregate capacity scenario is 14400 minutes/month. Parallel lanes reduce elapsed time but do not erase aggregate billed minutes. Shared-URL demand, the serial pacing floor and disabled sources are covered by a meaningful cost test. Sharding or scheduler optimization remains a planning requirement before broad activation. No broad production activation or higher polling frequency occurs.
+Current 3332-source registry plans **10183 polls/day / 305490 per 30-day month**, before excluded SEC/robots/retry/discovery requests. Six existing 160-request runs admit at most **960/day**. At the planning assumption of eight minutes/run, six runs/day consume **1440 Actions minutes/month**. Shared URLs reduce the one-request-per-due-route scenario to **10150 network requests/day / 304500 per month**. With the existing serial two-second global pacing, this scenario alone needs at least **10144.0 aggregate Actions minutes/month**, excluding HTTP latency, robots, retries and five-second same-host waits. The eight-minute figure is therefore the bounded workflow cost, not a full-coverage runtime forecast. At least 11 disjoint 160-request capacity lanes would be needed before overhead; at the stated runtime assumption their aggregate capacity scenario is 15840 minutes/month. Parallel lanes reduce elapsed time but do not erase aggregate billed minutes. Shared-URL demand, the serial pacing floor and disabled sources are covered by a meaningful cost test. Sharding or scheduler optimization remains a planning requirement before broad activation. No broad production activation or higher polling frequency occurs.
 
 ## 26. R2 cost model and recovery
 
-Sizing-only consumer projection: **5028 payloads / 5667 assets / 103519993 bytes**, maximum payload 184282 bytes. Conservative full-change monthly bounds: public PUT 1020780; public verification GET 2040840; private PUT 540; private restore GET 900; two public/two private slots retain approximately 0.255272 GB. User delivery reads are excluded; unchanged-object hashes reduce actual writes, not all source requests.
+Sizing-only consumer projection: **5076 payloads / 5715 assets / 107418458 bytes**, maximum payload 184282 bytes. Conservative full-change monthly bounds: public PUT 1029420; public verification GET 2058120; private PUT 540; private restore GET 900; two public/two private slots retain approximately 0.268203 GB. User delivery reads are excluded; unchanged-object hashes reduce actual writes, not all source requests.
 
-Latest local proof checkpoint: `936a4c2c0b9a0dfcb87cdcec2e4530a0fceed8db7e9cd295dd8e1b2ced286924`, 24115951 compressed bytes; exact six-table logical hash `217be0fb48f382916d679984a8e130139bb60429e2b3d486c95c3c4b9f40c379`, immutable generation `e82119c3f58320d52c577e7f`. Fresh restore/reprojection passed. **Authenticated R2 acceptance is unavailable**: `VU_HISTORY_S3_ENDPOINT`, `VU_HISTORY_S3_BUCKET`, `VU_HISTORY_S3_ACCESS_KEY_ID` and `VU_HISTORY_S3_SECRET_ACCESS_KEY` credential bindings are absent. State remains in the existing ignored private ledger/checkpoints; databases/generated exports/secrets are not committed.
+Latest local proof checkpoint: `20a266218ad2a824907930d166ce55eaba21bd674d5fbb161f1947c91a0bcd5a`, 26682889 compressed bytes; exact six-table logical hash `c76b9060289e4726f8ca793a3be6011f462b282a9949ed3f92ada79bc6cc4bdf`, immutable generation `4d90abcc634c03d8055aa4f5`. Fresh restore/reprojection passed. **Authenticated R2 acceptance is unavailable**: `VU_HISTORY_S3_ENDPOINT`, `VU_HISTORY_S3_BUCKET`, `VU_HISTORY_S3_ACCESS_KEY_ID` and `VU_HISTORY_S3_SECRET_ACCESS_KEY` credential bindings are absent. State remains in the existing ignored private ledger/checkpoints; databases/generated exports/secrets are not committed.
 
 ## 27. Estimated monthly operating cost
 
@@ -675,11 +678,11 @@ At 09:00 UTC another execution-server disconnect stopped the running processes. 
 
 The 10:28 execution interruption eventually stopped the discovery processes after 16 priority outcomes (13 successful, 20 pending). An immediate private checkpoint (24,814,336 bytes; SHA-256 `462b14a4c03fec1898bb39ca863cbfcfe8744f34bfb79fbf5bb62c8923dea019`) restored the exact ledger into a fresh directory with zero HTTP. This is an exact ledger proof; the final export/reprojection proof is reported separately. Same frozen cohorts resumed without repeating successful discovery. Retained per-candidate discovery counters are exact, but the interrupted child's partial ingestion/driver traffic is unavailable. All cumulative completed-batch traffic remains a lower bound for physical traffic; no missing total is invented. The next due temporary retry hit shared proxy signatures across fhnc.com, nytco.com and the two PrimeEnergy routes; its circuit opened after ten requests and retained its 15-minute due time while IR work continued independently.
 
-The due-retry selector now prioritizes never-attempted candidates, then the oldest due verification attempt instead of repeatedly selecting early CIKs. A private lastAttemptAt persists discovery attempts, including DNS preflight without a paid HTTP request. Three restore-backed tests prove rotation after shared proxy failure, exact cooldown preservation and zero-HTTP DNS rotation; the isolated pre-fix implementation fails the new behavioral contracts. Successful outcomes, frozen cohort identity, source health and production cadence remain unchanged. The live retry reached older previously starved cases and still recorded shared infrastructure failure without inventing ownership recoveries. All ten workflows passed on combined remote parent 5ccf9398e2c2e8e6e0358cea07a25294cf274ac0; the immediately preceding discovery head had nine passes and one run superseded by the newer head.
+This checkpoint promotes 193 additional successfully ingested descriptors (3,057 configured total), with no new domain-seed claim. Six broad IR batches added 539 stored news items; four continuing September metadata batches added 200 accepted stories and 73 previously news-uncovered issuers. The older verified-feed retry added ten stories and one previously uncovered issuer using four requests. Two material batches recovered three presentation issuers. The targeted high-capability IR cohort improved from 31 to 34 successes; two retry records remain. The broad inventory is now 501 / 901 classified, with 400 pending and 64 retry records. Newly discovered publisher/IR metadata supplies 13 unchecked domain candidates, separately frozen as inventory-20261005-metadata-after-backfill. An additional 40 single-route unseeded budget/time/infrastructure deferrals outside the two current live recovery cohorts are frozen as inventory-20261005-third-orphan-recovery; ambiguous and access-blocked cases are excluded, and original source cooldowns remain authoritative. Neither newly frozen queue is falsely reported as processed. Both queues resume next, followed by scoped IR discovery of any strong recoveries.
 
-This checkpoint promotes 136 additional successfully ingested descriptors (2,864 total) and no new ownership seed. The broad IR cohort has 399 of 901 identities classified, including 344 successful outcomes and 502 pending; five bounded batches completed after the previous checkpoint. The priority 36-identity IR cohort is complete with 31 successes and five retries. The 14-source verified-feed cohort retains 73 stories and nine new news-covered issuers, with its remaining source cooldowns intact. The random consumer audit covers 63 actually enriched stocks relative to milestone58. The final exact restore and reprojection matches generation e82119c3f58320d52c577e7f.
+The due-retry selector prioritizes unattempted identities, then oldest eligible discovery attempt with stable issuer-ID ties. Private lastAttemptAt survives restore and cooldown reuse, including DNS preflight without invented HTTP counts. The three behavioral restore/cooldown/DNS tests remain green. The latest ownership retry again detected shared proxy failure and preserved its circuit due time; no unsupported recovery was claimed. The final fresh restore and reprojection matches generation 4d90abcc634c03d8055aa4f5. Actual new-content delivery passed for 281 enriched stocks' sampling pool; source-identity/current resolver replay passed for 579 newly accepted first-party items across 60 issuers.
 
-Winchester retains the owned Word attachment and canonical HTML release with their distinct original timestamps. The item audit checks all current source identities and original resolver evidence, then verifies the retained canonical URL/timestamp pair among valid provenance. No production matching or deduplication rule changed.
+Rolling news windows use the current exact timestamp. Seven-day coverage changed from 532 to 520 as older stories aged out; 30-day and 180-day coverage increased to 1,332 and 1,692. Historical September metadata is never reclassified as seven-day news.
 
 ## 28. Tests
 
@@ -689,9 +692,11 @@ All ten workflows on the strict integration checkpoint `086fed6749174fc7fda0c2b3
 
 All ten reported workflows also passed on audited coverage checkpoint `8aae9cd5693caa2f01549f3f31ea0d808160398d`, including Company Intelligence, Discover, Quant CI and Quant Browser QA. All 408 Python tests passed after its seed/source promotion; the subsequent navigation, event-detail and restored terminal-run regression tests bring current validation to 411. All ten reported workflows passed on milestone `075c1f05485e714a6994e8a2d8500cc8ab2b011e`; the next preserved milestone will be checked separately.
 
-The current combined implementation passed all **500 Python tests and 39 Node tests**. The source descriptor expansion preserves verified ownership and successful ingestion evidence; no polling cadence changed. The final configuration audit, exact restored generation and actual consumer delivery proof are reported above.
+The current combined implementation passed all **508 Python tests and 39 Node tests**. Final source-configuration and operating-cost checks are included. The final configuration audit, exact restored generation and actual consumer delivery proof are reported above.
 
 The first Company Intelligence validation checkout timed out before tests started after a 20-minute GitHub fetch stall. One unchanged retry of that cancelled job passed; no tests or time thresholds were weakened. All ten workflows passed on the preceding Q4 template checkpoint `9dc8e701cb0dc4e06a1796a52bd794fd70faf7c9` and the verified-news-source checkpoint `ad56547106c9f0f3f72f8e29050a3e91fb382b1e`. The latter passed 441 Python tests, 22 targeted backfill/runner/circuit tests and six configuration/cost tests. A dry integration check against later main `9c4dd6ba3ef73d62ba191b33233f21f712add1a5` was conflict-free, using actual merge base `3a13a31dd41efd65ce34f3b975030d3f715f7d51`; no branch merge occurred. Latest private restore and consumer proofs must match the final export generation.
+
+All ten workflows passed on preserved coverage head 68e6390d7662d426427b97de742acb4433343a4f and the later combined 3,684-profile head 3c8b2fbb1438ed06dd7bdf9131b3ff984f851fa1. The next preserved checkpoint will be checked independently.
 
 ## 29. Regressions / pre-existing main failures
 
@@ -702,6 +707,8 @@ Company Master, SEC, Quant, Discover, Supertrader, Screener, Markets, calendar e
 ## 30. Remaining unresolved candidates
 
 **0 frozen main-pass identities remain pending**, plus due recoverable cases in the exact funnel/pass tables. Missing preceding 35 inventory identities and unavailable private historical rows are explicit gaps. Temporary DNS/Envoy/proxy/site failures keep retry evidence and due times; unsafe parent/subsidiary/brand/conflicting-owner cases stay unproven rather than automatically resolved. No free-source ceiling is claimed prematurely.
+
+A cache-only review of 57 existing HTML material hubs found one additional issuer with an explicit Investor Deck label missed by the current parser. No live parser, ownership outcome or coverage metric changed; that isolated label extension remains uncounted and lower leverage than the remaining IR inventory. The recent empty-material-hub cluster spans known WordPress, GCS, Q4, STOCKPR, Investis and generic families rather than a newly dominant unsupported vendor. Two bounded material batches were allowed to finish before effort returned to pending IR; three new presentation issuers were recovered. Source health and due times remain authoritative.
 
 ## 31. True remaining high-leverage opportunities
 
