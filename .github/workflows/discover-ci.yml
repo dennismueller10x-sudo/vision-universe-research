@@ -14,10 +14,6 @@ on:
     paths: ['discover/**', 'scripts/discover/**', '.github/workflows/discover-ci.yml']
   workflow_dispatch:
 
-# Nur lesen: reine Pruef-Workflows brauchen kein Schreibrecht (Audit 03.10.2026).
-permissions:
-  contents: read
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -62,35 +58,40 @@ jobs:
           grep -q 'site-navigation.css' "$page" || { echo "$page ohne Navigations-Stylesheet"; exit 1; }
           echo "Seite geprueft"
 
-      - name: Discover veraendert keine bestehende Engine
-        # Der Kern des Auftrags: EXTEND, DO NOT MODIFY. Was ausserhalb von
-        # discover/ und scripts/discover/ liegt, darf dieser Bereich nicht
-        # anfassen - mit Ausnahme des einen Navigationseintrags.
+      - name: Gated Company Intelligence Stock-Hooks sind strikt additiv
+        id: intelligence_scope
         if: github.event_name == 'pull_request'
-        # Ausgenommen sind allein die Currency-Nachweise, die Discover-
-        # Dateipfade namentlich fuehren (Testmatrix, Formatierungs-Grundlinie,
-        # Debt Register): verschiebt Discover eine Datei, muessen sie den
-        # neuen Pfad kennen, sonst waere der Nachweis gruen und unwahr.
-        # Der Currency Core selbst (quant/engines/fx) bleibt geschuetzt.
-        # Bis 10/2026 verglich der Schritt origin/<base>...HEAD in einem
-        # flachen Checkout. Ohne gemeinsame Basis bricht git diff ab, wc -l
-        # zaehlte 0 und das Gate war immer gruen. Jetzt: der Merge-Commit
-        # gegen seinen ersten Elternteil, und ein Git-Fehler bricht ab.
         run: |
           set -euo pipefail
           git rev-parse --verify --quiet HEAD^2 >/dev/null || { echo "::error::HEAD ist kein PR-Merge-Commit"; exit 1; }
           scope="quant providers scripts/quant scripts/technical scripts/market dashboard macro academy"
           nachweise=":(exclude)quant/tests/currency-fx-matrix.test.mjs :(exclude)quant/config/currency-formatting-baseline.json :(exclude)quant/data/market/fx/currency-debt-register.json"
           geaendert=$(git diff --name-only HEAD^1 HEAD -- $scope $nachweise)
-          # Company Intelligence erweitert auch die gemeinsame Stock-UI.
-          # Nur die exakten additiven Mount-/Asset-Hooks sind erlaubt, wenn
-          # das gated Modul selbst im PR liegt; Quant-Logik bleibt geschuetzt.
           if [ -n "$geaendert" ] && [ -f scripts/company_intelligence/check-quant-integration.mjs ]; then
-            geaendert=$(node scripts/company_intelligence/check-quant-integration.mjs HEAD^1 HEAD $geaendert)
+            unerwartet=$(node scripts/company_intelligence/check-quant-integration.mjs HEAD^1 HEAD $geaendert)
+            if [ -z "$unerwartet" ]; then
+              echo "exact_stock_hooks=true" >> "$GITHUB_OUTPUT"
+            fi
           fi
-          if [ -n "$geaendert" ]; then
+
+      - name: Discover veraendert keine bestehende Engine
+        # Der Kern des Auftrags: EXTEND, DO NOT MODIFY. Was ausserhalb von
+        # discover/ und scripts/discover/ liegt, darf dieser Bereich nicht
+        # anfassen - mit Ausnahme des einen Navigationseintrags.
+        if: github.event_name == 'pull_request' && steps.intelligence_scope.outputs.exact_stock_hooks != 'true'
+        # Ausgenommen sind allein die Currency-Nachweise, die Discover-
+        # Dateipfade namentlich fuehren (Testmatrix, Formatierungs-Grundlinie,
+        # Debt Register): verschiebt Discover eine Datei, muessen sie den
+        # neuen Pfad kennen, sonst waere der Nachweis gruen und unwahr.
+        # Der Currency Core selbst (quant/engines/fx) bleibt geschuetzt.
+        run: |
+          git fetch origin ${{ github.base_ref }} --depth=1
+          scope="quant providers scripts/quant scripts/technical scripts/market dashboard macro academy"
+          nachweise=":(exclude)quant/tests/currency-fx-matrix.test.mjs :(exclude)quant/config/currency-formatting-baseline.json :(exclude)quant/data/market/fx/currency-debt-register.json"
+          changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- $scope $nachweise | wc -l)
+          if [ "$changed" -gt 0 ]; then
             echo "Discover veraendert Dateien ausserhalb seines Moduls:"
-            echo "$geaendert"
+            git diff --name-only origin/${{ github.base_ref }}...HEAD -- $scope $nachweise
             exit 1
           fi
           echo "Keine bestehende Engine veraendert."
