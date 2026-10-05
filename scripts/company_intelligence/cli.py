@@ -55,7 +55,7 @@ def manifest_batch(document, companies, store, now, limit, tickers=None):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('command', choices=['run', 'backfill', 'export', 'quality', 'probe', 'coverage', 'discover-catalogue', 'discover-backfill', 'verify-domains', 'sweep-inventory', 'news-archive', 'news-backfill', 'materials-backfill', 'sec-stream', 'poll'])
+    p.add_argument('command', choices=['run', 'backfill', 'export', 'quality', 'probe', 'coverage', 'discover-catalogue', 'discover-backfill', 'verify-domains', 'sweep-inventory', 'news-archive', 'news-backfill', 'materials-backfill', 'sec-stream', 'poll', 'profile-backfill'])
     p.add_argument('--inventory-pass',help='Stable lower-case identifier for resumable candidate discovery')
     p.add_argument('--inventory-lane',choices=['domains','ir'],default='domains')
     p.add_argument('--discovery-admission-interval',type=float,default=2,help='Discovery-only spacing across independent hosts (.5..2 seconds); host cooldowns remain enforced')
@@ -118,6 +118,8 @@ def main(argv=None):
         p.error('source-tickers is only supported for poll and sec-stream')
     root = args.root.resolve()
     state_dir = (args.state or root / '.company-intelligence').resolve()
+    if args.command == 'profile-backfill' and not (state_dir / 'state.sqlite').is_file():
+        p.error('PROFILE_BACKFILL_REQUIRES_EXISTING_LEDGER: restore the durable checkpoint first; no replacement state will be initialized')
     output = (args.out or state_dir / 'public/company-intelligence/data').resolve()
     # Reject exports into protected producers or repository source trees.
     protected = [root / name for name in ('quant', 'discover', 'supertrader', 'screener', 'dashboard', 'scripts', 'api', 'server', '.git', '.github')]
@@ -168,6 +170,10 @@ def main(argv=None):
         deferred = False
         selected_ids = {c['companyId'] for c in selected}
         config_dir = root / 'company-intelligence/config'
+        profile_catalogue = config_dir / 'company-profiles.json'
+        if profile_catalogue.is_file():
+            from company_intelligence.profile_catalogue import seed as seed_profiles
+            seed_profiles(store, companies, json.loads(profile_catalogue.read_text()), now)
         sites = json.loads((config_dir / 'official-sites.json').read_text())
         for company in companies.values():
             seeded = sites.get(company['cik'])
@@ -177,6 +183,20 @@ def main(argv=None):
                 verified = store.state('officialSite:' + company['companyId'], {})
                 if verified.get('status') == 'VALIDATED':
                     company['officialSites'] = [verified['url']]
+        if args.command == 'profile-backfill':
+            from company_intelligence.profile_backfill import run as profile_run
+            from company_intelligence.coverage import report as coverage_report
+            cohort = selected if args.tickers else list(companies.values())
+            result = profile_run(pipeline, cohort, sites, args.network, args.sec_fetch,
+                                 len(cohort) if args.all_offline else args.limit, args.max_seconds, sec_budget)
+            exported = store.export(companies, output, now)
+            coverage = coverage_report(store, companies, now)
+            atomic_json(state_dir / 'coverage.json', coverage)
+            report = {'schema': SCHEMA, 'generatedAt': now, 'profiles': result, 'export': exported,
+                      'coverage': {k: v for k, v in coverage.items() if k != 'companies'}}
+            atomic_json(state_dir / 'latest-run.json', report)
+            print(json.dumps(report, sort_keys=True))
+            return 0
         if args.command in ('discover-backfill', 'discover-catalogue', 'verify-domains','sweep-inventory'):
             from company_intelligence.site_inventory import import_inventory
             import_inventory(root, companies, store, now)

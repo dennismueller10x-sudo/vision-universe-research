@@ -44,6 +44,10 @@ def project(payload):
     """Bounded public view. Remove private source health, checkpoints and rejected candidates."""
     value = deepcopy({k: payload[k] for k in ('schema', 'companyId', 'companyName', 'listings', 'generatedAt', 'state', 'latestFinancials') if k in payload})
     now = datetime.fromisoformat(payload['generatedAt'].replace('Z', '+00:00'))
+    from .profiles import public_profile
+    profile = public_profile(payload.get('companyProfile'), payload['companyId'], payload['generatedAt'])
+    if profile:
+        value['companyProfile'] = profile
     news_cutoff = (now - timedelta(days=180)).date().isoformat()
     event_cutoff = (now - timedelta(days=90)).date().isoformat()
     for key, cap in [('news', 20), ('earnings', 12), ('events', 15), ('calls', 10), ('filings', 8), ('materials', 30), ('presentations', 15), ('materialEvents', 15), ('timeline', 30)]:

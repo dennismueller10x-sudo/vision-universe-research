@@ -177,6 +177,8 @@ class Store:
             return 'NEW'
 
     def event(self, event, now):
+        from .q4_events import correct_event
+        event = correct_event(event)
         event = dict(event)
         incoming_id = event['eventId']
         alias = self.db.execute('SELECT target FROM event_alias WHERE alias=?', (incoming_id,)).fetchone()
@@ -203,6 +205,7 @@ class Store:
                 "SELECT payload FROM events WHERE company=? AND kind='EARNINGS_PUBLISHED' AND date=? AND json_extract(payload,'$.reportingPeriod')=? AND json_extract(payload,'$.fiscalQuarter')=? AND json_extract(payload,'$.fiscalYear')=?",
                 (event['companyId'], event['date'], event.get('reportingPeriod'), event.get('fiscalQuarter'), event.get('fiscalYear')))] if earnings_group else [json.loads(r[0]) for r in self.db.execute("SELECT payload FROM events WHERE company=? AND kind='EARNINGS_CALL' AND json_extract(payload,'$.startsAt')=? AND json_extract(payload,'$.confirmationStatus')='CONFIRMED'", (event['companyId'], event['startsAt']))]
             peers = [p for p in peers if not p.get('isAmendment') and not re.search(r'correct(?:ion|ed)|restated|revised', p.get('headline', ''), re.I)]
+            peers = [correct_event(p) for p in peers]
             if call_group:
                 peers = [p for p in peers if all(not event.get(k) or not p.get(k) or event[k] == p[k] for k in ('fiscalQuarter', 'fiscalYear'))]
             if peers:
@@ -238,7 +241,7 @@ class Store:
                 event = combined
         old = self.db.execute('SELECT payload FROM events WHERE id=?', (event['eventId'],)).fetchone()
         if old:
-            prior = json.loads(old[0])
+            prior = correct_event(json.loads(old[0]))
             event['discoveredAt'] = prior.get('discoveredAt', now)
             event.setdefault('confirmationHistory', prior.get('confirmationHistory', []))
             for key in ('webcastUrl', 'replayUrl', 'presentationUrl', 'transcriptUrl', 'materialEvidence'):
@@ -368,6 +371,8 @@ class Store:
                     entry['relatedEventIds'] = [e['eventId'] for e in events if e.get('filingId') == original['filingId'] and e['eventId'] != original['eventId']]
         configuration_documents = [d for cfg in self.state('ir:' + cid, {}).get('configurations', []) for d in cfg.get('documents', [])]
         financials = self.state('financials:' + cid, {'state': 'UNAVAILABLE', 'reason': 'NOT_PROJECTED'})
+        from .profiles import public_profile
+        profile = public_profile(self.state('companyProfile:' + cid), cid, now)
         references = {}
         if company.get('cik'):
             from .earnings import filing_url
@@ -386,7 +391,8 @@ class Store:
         recordings = [d for d in event_documents if d['type'] in ('WEBCAST','CALL_RECORDING')]
         materials = list({(d['url'], d['type']): d for d in recordings + configuration_documents + event_documents + list(references.values())}.values())
         return {'schema': SCHEMA, 'companyId': cid, 'listings': company['listings'], 'companyName': company['names'][0] if company['names'] else None,
-                'generatedAt': now, 'state': 'AVAILABLE' if items or events or materials or financials.get('state')=='AVAILABLE' else 'NO_DATA',
+                'generatedAt': now, 'state': 'AVAILABLE' if profile or items or events or materials or financials.get('state')=='AVAILABLE' else 'NO_DATA',
+                **({'companyProfile': profile} if profile else {}),
                 'news': [i for i in items if i['eventType'] == 'NEWS'],
                 'filings': [e for e in events if e['eventType'] == 'SEC_FILING'][:30],
                 'earnings': [e for e in events if e['eventType'] in ('EARNINGS_PUBLISHED', 'EARNINGS_CANDIDATE', 'PERIODIC_REPORT_PUBLISHED')][:12],
@@ -410,7 +416,7 @@ class Store:
         for table in ('items', 'events', 'sources'):
             for row in self.db.execute('SELECT payload FROM ' + table + ' ORDER BY id'):
                 digest.update(row[0].encode())
-        for row in self.db.execute("SELECT key,payload FROM state WHERE key LIKE 'sec:%' OR key LIKE 'ir:%' OR key LIKE 'financials:%' ORDER BY key"):
+        for row in self.db.execute("SELECT key,payload FROM state WHERE key LIKE 'sec:%' OR key LIKE 'ir:%' OR key LIKE 'financials:%' OR key LIKE 'companyProfile:%' ORDER BY key"):
             digest.update(row[0].encode())
             digest.update(row[1].encode())
         generation = digest.hexdigest()[:24]

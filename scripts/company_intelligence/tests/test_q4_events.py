@@ -57,3 +57,35 @@ class Q4Tests(unittest.TestCase):
   self.assertFalse(issuer_earnings_announcement('Q3 2026 The Boeing Company Earnings Conference Call',go))
   self.assertFalse(issuer_earnings_announcement('2026 Q2 NVIDIA Corporation Earnings Call',go))
   self.assertFalse(issuer_earnings_announcement('4th Quarter FY26 Root Inc. Earnings Call',go))
+
+ def test_event_attachments_prioritize_management_text_and_reject_pdf_webcast_and_templates(self):
+  row=copy.deepcopy(self.rows()[0]);row.update(Title='Q3 2026 Financial Results',WebCastLink='https://cdn.example.com/results.pdf')
+  row['Attachments']=[{'Title':'Presentation and Q&A Transcript','Url':'https://cdn.example.com/qa.pdf'},
+                      {'Title':'Presentation and Prepared Remarks','Url':'https://cdn.example.com/remarks.pdf'},
+                      {'Title':'Earnings Supplement','Url':'https://cdn.example.com/supplement.pdf'},
+                      {'Title':'Test Item: Presentation','Url':'https://cdn.example.com/template.pdf'},
+                      {'Title':'Investor Presentation','Url':'https://cdn.example.com/deck.pdf?token=private'},
+                      {'Title':'Representations and Warranties','Url':'https://cdn.example.com/terms.pdf'}]
+  e=parse(self.payload([row]),self.source(),NOW)[0]
+  self.assertIsNone(e['webcastUrl']);self.assertEqual(e['eventType'],'EARNINGS_SCHEDULED')
+  documents=[d for d in e['sourceDocuments'] if d.get('evidence')=='Q4_EVENT_ATTACHMENT_LABEL']
+  self.assertEqual([d['type'] for d in documents],['COMPANY_TRANSCRIPT','PREPARED_REMARKS','FINANCIAL_REPORT'])
+  self.assertEqual(e['transcriptUrl'],'https://cdn.example.com/qa.pdf');self.assertIsNone(e['presentationUrl'])
+
+ def test_later_q4_poll_retires_wrong_attachment_type_without_resurrecting_old_presentation_field(self):
+  import tempfile
+  from company_intelligence.store import Store
+  row=copy.deepcopy(self.rows()[0]);row.update(Title='Q3 2026 Earnings Call',StartDate='10/23/2026 08:30:00',TimeZone='EST',WebCastLink='https://events.example.com/real-webcast')
+  row['Attachments']=[{'Title':'Presentation and Q&A Transcript','Url':'https://cdn.example.com/qa.pdf'}]
+  fresh=parse(self.payload([row]),self.source(),NOW)[0]
+  old={**fresh,'sourceDocuments':[{'type':'PRESENTATION','url':'https://cdn.example.com/qa.pdf','label':'Presentation and Q&A Transcript','evidence':'Q4_EVENT_ATTACHMENT_LABEL'}], 'presentationUrl':'https://cdn.example.com/qa.pdf','transcriptUrl':None}
+  with tempfile.TemporaryDirectory() as temp:
+   store=Store(Path(temp)/'state.sqlite')
+   # Insert the original legacy record, bypassing today's correction as a real
+   # restored checkpoint would. The next poll must clean both merged fields.
+   store.db.execute('INSERT INTO events VALUES(?,?,?,?,?)',(old['eventId'],old['companyId'],old['eventType'],old['date'],json.dumps(old)));store.db.commit()
+   store.event(fresh,NOW)
+   saved=json.loads(store.db.execute('SELECT payload FROM events').fetchone()[0])
+   self.assertFalse(saved.get('presentationUrl'));self.assertEqual(saved['transcriptUrl'],'https://cdn.example.com/qa.pdf')
+   self.assertEqual([d['type'] for d in saved['sourceDocuments'] if d['url'].endswith('qa.pdf')],['COMPANY_TRANSCRIPT'])
+   self.assertEqual(saved['webcastUrl'],'https://events.example.com/real-webcast');store.close()

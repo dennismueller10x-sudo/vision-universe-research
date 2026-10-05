@@ -57,6 +57,8 @@ def report(store, companies, now):
     statuses = Counter(source_status(s, now) for s in sources)
     platform_health = defaultdict(lambda: {'sources': 0, 'active': 0, 'blocked': 0, 'stale': 0, 'failures': 0, 'parserFailures': 0, 'undatedMetadataAvailable':0, 'issuerIds': set(), 'lastSuccess': None})
     tiers = Counter()
+    profile_confidence = Counter()
+    conversion = defaultdict(Counter)
     for source in sources:
         health = platform_health[source.get('provider', 'UNKNOWN')]
         health['sources'] += 1
@@ -81,7 +83,19 @@ def report(store, companies, now):
         fresh_news = [i for i in news_items[cid] if recent <= (i.get('publishedAt') or '') <= now]
         fresh_external = [i for i in fresh_news if any(p.get('sourceId') in active_ids and p.get('discoverySource') in ('RSS', 'GDELT') for p in i.get('provenance', []))]
         docs = [d for cfg in configs for d in cfg.get('documents', [])] + [d for e in all_events[cid] for d in e.get('sourceDocuments', [])]
+        from .profiles import public_profile
+        profile = public_profile(state.get('companyProfile:' + cid), cid, now)
+        profile_types = {s['type'] for s in profile['sources']} if profile else set()
+        if profile:
+            profile_confidence[profile['confidence']] += 1
         flags = {
+            'companyProfileAvailable': bool(profile),
+            'companyProfileFromSEC': 'SEC' in profile_types,
+            'companyProfileFromFirstPartyWeb': 'FIRST_PARTY_WEB' in profile_types,
+            'companyProfileFromCombinedSources': len(profile_types) > 1,
+            'companyProfileUnavailable': not profile,
+            'companyProfileAmbiguous': state.get('profileAttempt:' + cid, {}).get('state') == 'AMBIGUOUS',
+            'companyProfileStale': bool(profile and profile.get('stale')),
             'officialDomainFound': bool(c.get('officialSites') or state.get('officialSite:' + cid, {}).get('status') == 'VALIDATED'),
             'officialDomainCandidate': bool(state.get('siteCandidates:' + cid, {}).get('candidates')),
             'discoveryAttempted': bool(state.get('siteCandidates:' + cid) or ir),
@@ -105,7 +119,7 @@ def report(store, companies, now):
             'shareholderLetters': any(d.get('type') == 'SHAREHOLDER_LETTER' for d in docs),
             'presentations': any(d.get('type') == 'PRESENTATION' for d in docs) or any(e.get('presentationUrl') for e in all_events[cid]),
             'transcriptLinks': any(d.get('type') == 'COMPANY_TRANSCRIPT' for d in docs) or any(e.get('transcriptUrl') for e in all_events[cid]),
-            'consumerPayloadAvailable': bool(docs or news_items[cid] or all_events[cid] or state.get('financials:' + cid, {}).get('state') == 'AVAILABLE'),
+            'consumerPayloadAvailable': bool(profile or docs or news_items[cid] or all_events[cid] or state.get('financials:' + cid, {}).get('state') == 'AVAILABLE'),
             'eventSourceFound': any(s['type'] == 'IR_EVENTS' for s in registry),
             'eventSourceActive': any(s['type'] == 'IR_EVENTS' and source_status(s, now) == 'ACTIVE' for s in registry),
             'earningsPageFound': bool(endpoints['earningsUrl']),
@@ -120,6 +134,16 @@ def report(store, companies, now):
             'noNewsOrSubmissionSource': not registry and not state.get('sec:' + cid, {}).get('hasSubmissions'),
             'noCompanySource': not registry and not state.get('sec:' + cid, {}).get('hasSubmissions') and not c.get('officialSites') and state.get('financials:' + cid, {}).get('state') != 'AVAILABLE',
         }
+        owned_ids = {s['sourceId'] for s in registry if s.get('verified') and s.get('companyId') == cid}
+        first_party_news = any(p.get('sourceId') in owned_ids for i in fresh_news for p in i.get('provenance', []))
+        first_party_events = any(e.get('sourceId') in owned_ids for e in all_events[cid])
+        first_party_materials = any(cfg.get('documents') for cfg in configs)
+        flags['verifiedDomainWithUsefulData'] = bool(flags['officialDomainFound'] and ('FIRST_PARTY_WEB' in profile_types or first_party_news or first_party_events or first_party_materials))
+        flags['verifiedDomainWithoutConversion'] = bool(flags['officialDomainFound'] and not flags['verifiedDomainWithUsefulData'])
+        flags['irPageWithSources'] = bool(ir_configs and owned_ids)
+        flags['irPageWithNews'] = bool(ir_configs and first_party_news)
+        flags['irPageWithEvents'] = bool(ir_configs and first_party_events)
+        flags['irPageWithMaterials'] = bool(ir_configs and first_party_materials)
         from .model import classify
         flags['recentMaterialNews'] = any(classify(i['headline'])['importance'] in ('HIGH', 'CRITICAL') for i in fresh_news)
         flags['anyMaterialIntelligence'] = bool(flags['financialSummaryCurrent'] or flags['recentMaterialNews'] or flags['confirmedUpcomingEarnings'] or flags['recentMaterialSEC'] or any(e['eventType'] in ('EARNINGS_PUBLISHED', 'PERIODIC_REPORT_PUBLISHED', 'OPERATING_RESULTS_PUBLISHED', 'PRESENTATION_PUBLISHED') and recent[:10] <= e.get('date', '') <= now[:10] for e in all_events[cid]))
@@ -144,6 +168,9 @@ def report(store, companies, now):
         counts.update(k for k, v in flags.items() if v)
         families = {cfg.get('providerType', 'GENERIC') for cfg in ir_configs}
         platforms.update(families)
+        for family in families | {s.get('provider', 'UNKNOWN') for s in registry}:
+            conversion[family].update(issuers=1)
+            conversion[family].update(k for k in ('companyProfileAvailable', 'anyNews', 'calls', 'webcasts', 'presentations', 'anyCallContentReference', 'confirmedUpcomingEarnings') if flags[k])
         for exchange in {l.get('exchange') or 'UNKNOWN' for l in c['listings']}:
             exchanges[exchange].update(total=1)
             exchanges[exchange].update(k for k, v in flags.items() if v)
@@ -159,6 +186,15 @@ def report(store, companies, now):
             'coverageTiers': {k: {'companies': tiers[k], 'percent': round(100 * tiers[k] / total, 2)} for k in ('A_FULL', 'B_STRONG', 'C_BASIC', 'D_LIMITED')},
             'tierDefinitions': {'A_FULL':'Current news + fresh financials + SEC identity + upcoming calendar + calls/presentation evidence within 365 days', 'B_STRONG':'Fresh financials + SEC identity + confirmed/estimated upcoming calendar', 'C_BASIC':'Financial summary + SEC identity', 'D_LIMITED':'Does not meet the preceding tiers'},
             'platformHealth': {k: {**{f:v for f,v in h.items() if f != 'issuerIds'}, 'issuers': len(h['issuerIds']), 'healthySourcePercent': round(100 * h['active'] / h['sources'], 2)} for k,h in platform_health.items()},
+            'companyProfiles': {'totalSupportedIssuers': total, 'available': counts['companyProfileAvailable'], 'unavailable': counts['companyProfileUnavailable'],
+                                'fromSEC': counts['companyProfileFromSEC'], 'fromFirstPartyWeb': counts['companyProfileFromFirstPartyWeb'],
+                                'fromCombinedSources': counts['companyProfileFromCombinedSources'], 'ambiguous': counts['companyProfileAmbiguous'],
+                                'stale': counts['companyProfileStale'], 'confidenceDistribution': dict(profile_confidence),
+                                'sourceCountsOverlap': True},
+            'platformConversion': {k: {**dict(v), 'newsPercent': round(100 * v['anyNews'] / v['issuers'], 2),
+                                        'callsPercent': round(100 * v['calls'] / v['issuers'], 2),
+                                        'presentationsPercent': round(100 * v['presentations'] / v['issuers'], 2)} for k,v in conversion.items()},
+            'conversionInterpretation': 'Verified-domain conversion requires actual first-party profile/news/events/materials, not SEC identity or source configuration alone. IR source discovery and downstream outputs are separate. Platform conversion measures issuer overlap with verified platform/source membership; it does not claim every output was produced by that platform.',
             'sourceStatuses': dict(statuses), 'parserFailures': sum(any(code in (s.get('lastError') or '') for code in ('MALFORMED', 'INVALID_JSON', 'NOT_FEED', 'UNSAFE_OR_OVERSIZED_XML')) for s in sources), 'discoveryStatuses': dict(discovery_statuses), 'platformCompanies': dict(platforms),
             'byExchange': dict(exchanges), 'byMasterListingCountry': dict(countries), 'companies': rows,
             'freshnessWindowsDays': {'news': 180, 'newsBands': [7,30,90,180], 'materialSEC': 90, 'financials': 180},

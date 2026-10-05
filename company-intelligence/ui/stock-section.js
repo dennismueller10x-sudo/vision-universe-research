@@ -18,6 +18,8 @@ function render(host,payload){
  host.replaceChildren(node('p','Company Intelligence','dv2-detail-eyebrow'),node('h2','Was passiert im Unternehmen?'));
  if(payload.state!=='AVAILABLE'){host.append(node('p','Unternehmensmeldungen sind derzeit nicht verfügbar.','ci-meta'));return;}
  if(payload.stale)host.append(node('p','Letzter Datenstand: '+day(payload.generatedAt)+'. Neue Meldungen können fehlen.','ci-warning'));
+ const profile=payload.companyProfile;
+ if(profile?.state==='AVAILABLE'&&profile.companyId===payload.companyId){const s=block(host,'Unternehmen');const summary=node('p',profile.description);summary.lang=profile.language||'en';s.append(summary);link(s,'Unternehmenswebsite',profile.officialWebsite);for(const source of profile.sources||[])link(s,source.type==='SEC'?'Quelle: Jahresbericht':'Quelle: Unternehmen',source.url);if(profile.stale)s.append(node('p','Unternehmensbeschreibung: Stand '+day(profile.lastVerifiedAt)+'.','ci-meta'));}
  const recentCutoff=new Date(Date.now()-90*86400000).toISOString().slice(0,10);
  const latest=[...payload.news.filter(n=>['HIGH','CRITICAL'].includes(n.importance)),...(payload.materialEvents||[]).filter(e=>['HIGH','CRITICAL'].includes(e.importance)),...payload.earnings.filter(e=>!e.isAmendment&&['EARNINGS_PUBLISHED','PERIODIC_REPORT_PUBLISHED'].includes(e.eventType)&&(e.date||'')>=recentCutoff)].sort((a,b)=>(b.publishedAt||b.date||'').localeCompare(a.publishedAt||a.date||''))[0];
  if(latest)block(host,'Aktuell wichtig').append(story(latest));
@@ -25,10 +27,9 @@ function render(host,payload){
  const liveEvents = payload.events.filter(e => e.startsAt ? Date.parse(e.startsAt) >= Date.now() : (e.dateEnd || e.date || '') >= today);
  const next=liveEvents.filter(e=>['EARNINGS_SCHEDULED','EARNINGS_ESTIMATED'].includes(e.eventType)).sort((a,b)=>(a.date||a.dateStart||'').localeCompare(b.date||b.dateStart||''));
  const confirmed=next.find(e=>e.confirmationStatus==='CONFIRMED')||liveEvents.find(e=>e.eventType==='EARNINGS_CALL'&&e.confirmationStatus==='CONFIRMED'), estimate=next.find(e=>e.confirmationStatus==='ESTIMATED');
- const upcoming=block(host,'Nächste Quartalszahlen');
+ const upcoming=confirmed||estimate?block(host,'Nächste Quartalszahlen'):null;
  if(confirmed){upcoming.append(node('p',day(confirmed.startsAt||confirmed.date,confirmed.startsAt?'Europe/Berlin':'UTC')+(confirmed.eventType==='EARNINGS_CALL'?' · Ergebnisgespräch · Bestätigt':' · Bestätigt'),'ci-headline'));if(confirmed.startsAt)upcoming.append(node('p',new Intl.DateTimeFormat('de-DE',{timeZone:'Europe/Berlin',hour:'2-digit',minute:'2-digit',timeZoneName:'short'}).format(new Date(confirmed.startsAt))));link(upcoming,'Ankündigung',confirmed.sourceUrl);}
  else if(estimate)upcoming.append(node('p',day(estimate.dateStart)+' – '+day(estimate.dateEnd)+' · Geschätzt','ci-headline'),node('p','Zeitfenster aus historischen Berichten; kein offizieller Termin.','ci-meta'));
- else upcoming.append(node('p','Noch kein belastbarer Termin verfügbar.','ci-meta'));
  const f=payload.latestFinancials;
  if(f?.state==='AVAILABLE'){
  const earnings=block(host,'Letzte Quartalszahlen');earnings.append(node('p',(f.fiscalQuarter||'Berichtsperiode')+' FY '+f.fiscalYear+' · '+day(f.reportingPeriod),'ci-meta'));

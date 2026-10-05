@@ -9,6 +9,20 @@
     try { const url = new URL(value); const host = url.hostname.toLowerCase().replace(/\.$/, ''); const privateHost = host.endsWith('.localhost') || /^(?:localhost|127\.|0\.|10\.|192\.168\.|169\.254\.|172\.(?:1[6-9]|2[0-9]|3[01])\.|\[|metadata\.)/.test(host) || /\.(?:local|internal)$/.test(host); return ['https:', 'http:'].includes(url.protocol) && !url.username && !url.password && !privateHost && (!url.port || ['80','443'].includes(url.port)) ? url.href : null; }
     catch { return null; }
   }
+  function validProfile(p, companyId, generatedAt) {
+    if (!p || p.schema !== 'company-profile-1.0.0' || p.state !== 'AVAILABLE' || p.companyId !== companyId ||
+        typeof p.companyName !== 'string' || p.companyName.length > 200 || typeof p.description !== 'string' || p.description.length < 40 || p.description.length > 1200 ||
+        p.language !== 'en' || !['HIGH','MEDIUM'].includes(p.confidence) || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(p.lastVerifiedAt) ||
+        !Number.isFinite(Date.parse(p.lastVerifiedAt)) || p.lastVerifiedAt > generatedAt || (p.officialWebsite && !safeLink(p.officialWebsite))) return false;
+    for (const key of ['businessActivities','productsServices','customerMarkets','majorSegments']) {
+      if (!Array.isArray(p[key]) || p[key].length > 5 || p[key].some(v => typeof v !== 'string' || v.length > 700)) return false;
+    }
+    return Array.isArray(p.sources) && p.sources.length > 0 && p.sources.length <= 4 && p.sources.every(s => {
+      if (!s || s.companyId !== companyId || !['SEC','FIRST_PARTY_WEB'].includes(s.type) || !safeLink(s.url) || !/^[a-f0-9]{64}$/.test(s.contentHash)) return false;
+      if (s.type === 'SEC') { const cik = companyId.match(/^iss_cik_(\d{10})$/)?.[1]; const path = new URL(s.url); return Boolean(cik) && path.hostname === 'www.sec.gov' && path.pathname.startsWith('/Archives/edgar/data/' + Number(cik) + '/') && ['10-K','20-F','40-F'].includes(s.form); }
+      return true;
+    });
+  }
   async function load(ticker, options = {}) {
     if (options.enabled !== true) return unavailable('FEATURE_DISABLED');
     const symbol = String(ticker || '').trim().toUpperCase();
@@ -51,6 +65,7 @@
       if (payload.latestFinancials !== undefined && (!payload.latestFinancials || !['AVAILABLE', 'UNAVAILABLE'].includes(payload.latestFinancials.state))) return unavailable('INVALID_FINANCIAL_SUMMARY');
       const generated = Date.parse(payload.generatedAt), now = options.now === undefined ? Date.now() : Date.parse(options.now);
       if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(payload.generatedAt) || !Number.isFinite(generated) || !Number.isFinite(now) || generated > now + 300000 || new Date(generated).toISOString().replace('.000Z', 'Z') !== payload.generatedAt) return unavailable('INVALID_TIMESTAMP');
+      if (payload.companyProfile !== undefined && !validProfile(payload.companyProfile, companyId, payload.generatedAt)) return unavailable('INVALID_COMPANY_PROFILE');
       if (now - generated > 7 * 86400000) return unavailable('SNAPSHOT_EXPIRED');
       // Estimated dates must never cross the data boundary as confirmed.
       if (payload.events.some(e => e.eventType === 'EARNINGS_ESTIMATED' && (e.confirmationStatus !== 'ESTIMATED' || !validDay(e.dateStart) || !validDay(e.dateEnd) || e.dateStart > e.dateEnd))) return unavailable('INVALID_CALENDAR_CONFIDENCE');
@@ -59,7 +74,7 @@
       return { ...payload, ticker: symbol, preview: index.state === 'PREVIEW', stale: now - generated > 48 * 3600000 };
     } catch (error) { return unavailable(error?.name === 'AbortError' ? 'REQUEST_ABORTED' : 'FETCH_FAILED'); }
   }
-  const api = { SCHEMA, load, safeLink };
+  const api = { SCHEMA, load, safeLink, validProfile };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else global.VUCompanyIntelligence = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

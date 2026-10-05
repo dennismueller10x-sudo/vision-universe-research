@@ -1,3 +1,25 @@
+# Company Intelligence — stored profiles and conversion continuation
+
+## Validated milestone, 2026-10-05
+
+Repository/PR starting head: `9dc8e701cb0dc4e06a1796a52bd794fd70faf7c9`; branch `feature/company-intelligence-rollout`, [PR #356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356). Do not merge. Existing production gates and schedules remain unchanged.
+
+**Exact restore boundary:** this fresh workspace does not contain the preceding private expanded ledger, retained web cache or discovery queues. That ledger was not uploaded in the preceding run; there are no configured private R2 credentials here and it is not in the inspected Actions artifacts. Its reported SHA-256 is `b5b1fc59f7f394d0859b172e005f26d8c998e6ea2bc5656bfb5bb11bafe9a789`. A checkpoint location has been requested. No substitute rollout ledger has been initialized. Existing committed seeds and the full preceding report below are preserved. Consequently old discovery, broad-IR, remaining-candidate and GlobeNewswire queues cannot honestly be resumed until that checkpoint is supplied.
+
+Exact committed baseline: **6,078 supported issuers; 5,412 SEC identities; 2,353 official-site seeds; 2,378 source descriptors**. Site seeds are not a fresh recount of the preceding ledger's 2,359 verified domains. The preceding measured ledger snapshot remains 2026-10-05T06:18:48Z; its counters below are historical evidence, not newly verified after counts.
+
+An additive public factual profile catalogue now supplies **74 SEC-grounded issuer profiles (1.22% of supported issuers)** at the first milestone. This is prepared coverage, not a claim that the missing deployed ledger has been updated. Catalogue import prevalidates every profile and writes only profile state; newer and stronger existing profiles survive. Independent per-issuer attempt checkpoints and immutable SEC document caches are private/ignored. No discovery inventory or queue is rebuilt. Subsequent bounded batches continue from this new profile lane's checkpoints.
+
+Implemented: normalized stored `companyProfile`, provenance/CIK/ownership checks, cached annual-business extraction, explicit issuer-subject first-party About extraction, deterministic neutral rewriting, slow filing-driven/quarterly refresh, bounded budgets/cooldowns/circuit breakers, public export and consumer contract, profile metrics, and shared Discover/Quant `Unternehmen` chapter. Existing English-source content remains English under German UI labels with a language attribute, following news conventions. No translation/model calls, employee count, generated page-time descriptions or paid provider are introduced. Unsupported structured facts remain empty.
+
+A simultaneous Q4 conversion fix correctly classifies transcript, prepared-remarks, shareholder-letter and financial-supplement attachments; it prevents PDF links becoming webcasts and repairs inherited legacy attachment classifications on source polling. It does not assert numerical coverage gains against the absent ledger.
+
+Initial evidence audits include Apple, NVIDIA, Tesla, Microsoft, Palantir, XPeng, a bank holding company, an insurer, industrial, biotech, consumer, software, semiconductor and foreign issuers. Marketing predicates, plural-verb rewriting, split business headings, legal comma suffixes and duplicate platform lists found during inspection were corrected through zero-request cache replays. IHG's annual document exceeds the 16 MiB parser ceiling and remains unavailable. Neither identity nor sector alone is used as a profile.
+
+First 100 new-issuer SEC batch: **200 requests, 58 initial acceptances, 41 abstentions, one document-size failure, 429,880,101 returned decoded bytes**, 200.914 seconds. The 15 priority profiles reused audit caches with zero requests. Subsequent local parser replays use zero HTTP; their accepted counts describe reanalysis, not new network discoveries. Actual compressed wire bandwidth was not measured. Full Company Intelligence checks: **452 Python tests and 39 Node tests passed**. Browser, wider regressions, additional batches and the final coverage/cost report follow in subsequent remotely preserved milestones.
+
+<!-- PROFILE-CONTINUATION-MILESTONE-END -->
+
 # Company Intelligence — candidate completion and recovery (in progress)
 
 Coverage measured **2026-10-05T07:55:12Z**; pass/queue checkpoint snapshot **2026-10-05T07:58:24Z**. Branch `feature/company-intelligence-rollout`, PR [#356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356). **Do not merge.** Production gates remain off. This report follows the requested 32-section structure and will be refreshed as resumable discovery continues.
