@@ -3,6 +3,70 @@
  "asOf": "2026-10-02",
  "events": [
   {
+   "type": "COST_CHANGE",
+   "symbol": "AAAA",
+   "field": "expenseRatio",
+   "from": 0.0063,
+   "to": 0.0057,
+   "asOf": "2026-05-21",
+   "text": "AAAA · Kostenquote (brutto): 0,63 % → 0,57 % (Prospekt 2025-07-07 → 2026-05-21).",
+   "relevance": "HIGH",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "COST_CHANGE",
+   "symbol": "AAEQ",
+   "field": "expenseRatio",
+   "from": 0.0015,
+   "to": 0.0009,
+   "asOf": "2026-04-21",
+   "text": "AAEQ · Kostenquote (brutto): 0,15 % → 0,09 % (Prospekt 2025-12-04 → 2026-04-21).",
+   "relevance": "HIGH",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "COST_CHANGE",
+   "symbol": "AAEQ",
+   "field": "managementFee",
+   "from": 0.0015,
+   "to": 0.0009,
+   "asOf": "2026-04-21",
+   "text": "AAEQ · Verwaltungsgebühr: 0,15 % → 0,09 % (Prospekt 2025-12-04 → 2026-04-21).",
+   "relevance": "HIGH",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "COST_CHANGE",
+   "symbol": "AAUA",
+   "field": "expenseRatio",
+   "from": 0.0015,
+   "to": 0.0009,
+   "asOf": "2026-04-21",
+   "text": "AAUA · Kostenquote (brutto): 0,15 % → 0,09 % (Prospekt 2026-03-13 → 2026-04-21).",
+   "relevance": "HIGH",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "COST_CHANGE",
+   "symbol": "AAUA",
+   "field": "managementFee",
+   "from": 0.0015,
+   "to": 0.0009,
+   "asOf": "2026-04-21",
+   "text": "AAUA · Verwaltungsgebühr: 0,15 % → 0,09 % (Prospekt 2026-03-13 → 2026-04-21).",
+   "relevance": "HIGH",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "COST_CHANGE",
+   "symbol": null,
+   "count": 753,
+   "relevance": "LOW",
+   "asOf": "2026-04-21",
+   "text": "753 weitere Listings mit geänderter Kostenquote laut Prospekt (z. B. AAUS, AAUS, AAVM, AFGR, AFGR).",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
    "type": "DATA_REVIEW",
    "symbol": null,
    "count": 23,
@@ -282,5 +346,5 @@
    "category": "PRODUCT_CHANGE"
   }
  ],
- "costEvents": 0
+ "costEvents": 758
 }
