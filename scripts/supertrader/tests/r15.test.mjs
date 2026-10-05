@@ -94,3 +94,26 @@ test('R15-T2 Turtle-Notionalkonto: Fix ändert kein Ergebnis, das vorher termini
   const pb = run.taken.find((p) => p.tr.id === 'B');
   assert.ok(!pb || pb.entryShares * 5 < 10, 'Notionalkonto ≈ 0 → neue Position < 0,01 % des Startkapitals');
 });
+
+import { classifyDelisting, classifyDelistingR15, selectDelistCik, normName } from '../validation/sec-pit.mjs';
+const FX = JSON.parse(fs.readFileSync(path.join(root, 'scripts/supertrader/tests/fixtures/delist-cases-r15.json'), 'utf8'));
+const asFilings = (w) => ({ form: w.map((x) => x[0]), filingDate: w.map((x) => x[1]) });
+test('R15-D1 Regression R14-Fälle (DESP, BEL, HLAH, HIII, BSKY): R13 verfehlt sie, R15-Klassifikator bucht sie richtig', () => {
+  assert.equal(FX.cases.length, 5);
+  for (const c of FX.cases) {
+    const cik = selectDelistCik(c.nameNorm, c.candidates.filter((k) => k.name));
+    assert.ok(cik, `${c.ticker}: keine eindeutige CIK`);
+    const k = c.candidates.find((x) => x.cik === cik);
+    if (c.ticker === 'HIII') assert.match(k.name, /III/, 'Fonds III, nicht II');
+    const fl = asFilings(k.filingsInWindow);
+    assert.equal(classifyDelisting(fl, c.listEnd).cls, 'UNKNOWN', `${c.ticker}: R13-Ergebnis reproduziert`);
+    assert.equal(classifyDelistingR15({ filings: fl, sic: k.sic, listEnd: c.listEnd, distress: c.distress }).cls, c.expect, c.ticker);
+  }
+});
+test('R15-D2 Abmeldung allein reicht bei Notlagen-Signatur nicht (Insolvenzen dürfen nicht als Übernahme gelten)', () => {
+  const fl = { form: ['S-8 POS', '25-NSE'], filingDate: ['2020-05-01', '2020-05-01'] };
+  assert.equal(classifyDelistingR15({ filings: fl, sic: '3711', listEnd: '2020-05-01', distress: true }).cls, 'UNKNOWN');
+  assert.equal(classifyDelistingR15({ filings: fl, sic: '3711', listEnd: '2020-05-01', distress: false }).basis, 'DEREGISTRATION_NO_DISTRESS');
+  assert.equal(classifyDelistingR15({ filings: { form: ['S-8 POS'], filingDate: ['2020-03-01'] }, sic: '3711', listEnd: '2020-05-01', distress: false }).cls, 'UNKNOWN'); // außerhalb ±5/10 Tage
+  assert.equal(selectDelistCik(normName('Foo Corp'), [{ cik: '1', name: 'Foo Holdings' }, { cik: '2', name: 'Foo Inc' }]), null); // mehrdeutig → keine Zuordnung
+});
