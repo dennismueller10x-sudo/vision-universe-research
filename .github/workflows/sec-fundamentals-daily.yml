@@ -153,7 +153,11 @@ jobs:
             [[ "$IN_CIKS" =~ ^[0-9,\ ]+$ ]] || { echo "::error::ciks: nur Ziffern, Komma, Leerzeichen"; exit 1; }
             args+=(--ciks $IN_CIKS)
           fi
-          [ "$IN_DRY_RUN" = "true" ] && args+=(--dry-run)
+          # Ein Push auf claude/** ist nur der Nachweis, dass der Lauf startet:
+          # erkennen, nichts holen, nichts schreiben, nichts committen. Sonst landen
+          # Produktionsdaten im Feature-Zweig, und ein Merge rollt main zurueck
+          # (#386, #413, #421 trugen solche Commits; Audit 05.10.2026).
+          if [ "$IN_DRY_RUN" = "true" ] || [ "$GITHUB_EVENT_NAME" = "push" ]; then args+=(--dry-run); fi
           python3 scripts/quant/cli.py daily "${args[@]}"
 
       - name: Wie viele Emittenten wurden aktualisiert?
