@@ -284,3 +284,48 @@ d) **Neue Klasse E_TIMEFRAME_ONLY:** Hat ein Fall unabhängige Referenzen nur au
 e) **Neue Version:** Neu eingefroren wird `PRACTITIONER_CONSENSUS_V1_1`. V1 bleibt unverändert.
 
 f) **VU-Vergleich:** Er wird auf V1.1 neu gerechnet. Der Bericht nennt beide Läufe.
+
+### Nachtrag 9 — 05.10.2026, nach dem unabhängigen Red-Team zu PRACTITIONER_CONSENSUS_V1_1, vor der endgültigen Interpretation
+
+**Offenlegung.** `PRACTITIONER_CONSENSUS_V1_1` (Commit `368f4d13c`) ist eingefroren. Ein VU-Lauf darauf ist committet (`514202d97`); VU enthält sich darin in allen 35 Fällen. Das Red-Team (`reviews/CONSENSUS_REDTEAM.md`) hat die folgenden Mängel bestätigt. V1.1 bleibt unverändert archiviert.
+
+**Festlegung (V1.2):**
+
+a) **Alias-Lücke (bestätigt):**
+   * Nachtrag 7 c verlangt den Abgleich der TradingView-Symbolvarianten. Es fehlten SPY `SPXUSD`, `SPX500` und `SPX500USD` sowie QQQ `NAS100`, `NAS100USD` und `NDQ`. Sie werden ergänzt.
+   * Der Abgleich läuft für **alle** Fälle erneut, unverändert sonst, ohne Fallauswahl.
+   * Neu kommen 3 Verknüpfungen an geöffneten Ausgangsfällen hinzu, mit 2 neuen Fundstellen und einer bereits eingefrorenen V1-Fundstelle. Versiegelte Fälle: 0 Änderungen.
+   * Neue Fundstellen werden nach Nachtrag 7 f doppelt extrahiert, bevor ein Freeze stattfindet.
+
+b) **Fundstelle = eingefrorene V1-Zeile:**
+   * Ist eine verknüpfte Fundstelle (gleiche URL) ein **geöffneter** V1-Fall, vertritt die eingefrorene V1-Zeile sie; es gibt keine Neuextraktion.
+   * Ist sie ein **versiegelter** V1-Fall, wird sie entfernt und nur gezählt.
+   * Der Schutz prüft künftig die normalisierte URL **und** die Fallkennung. Revisionen tragen die Kennung des Ursprungsfalls.
+
+c) **Trennung versiegelter Daten (bestätigt):**
+   * Was nicht in den offenen Dateien bleibt:
+     * Abgleich-Zeilen versiegelter Ausgangsfälle;
+     * Referenzzeilen, die **nur** mit versiegelten Ausgangsfällen verknüpft sind.
+   * Beides zieht nach `consensus/sealed/`. Die offenen Dateien enthalten nur Anzahlen.
+   * **Offenlegung:** Frühere Commits enthalten diese Zeilen. Die Versiegelung bleibt prozedural (KNOWN_LIMITATIONS 56). Die Ausgangslabels der versiegelten Fälle selbst waren nie offen; ein URL-Abgleich ergab 0 Treffer.
+
+d) **Deduplikation:**
+   * **Mensch-Mensch-Kennzahlen:** Jedes ungeordnete Paar von Fundstellen-URLs zählt einmal. Dasselbe Postpaar kann sonst über zwei Ausgangsfälle doppelt eingehen.
+   * **Manifest:** Die Summen zählen Referenzen je URL.
+   * **Duplikaterkennung:** Sie vergleicht den Zeitpunkt auf Minutengenauigkeit.
+
+e) **Plausibilitätsband und VU-Abdeckung (bestätigt, Sensitivität):**
+   * Die vorab festgelegten CANDIDATE-Regeln bleiben für die Hauptklassen bestehen.
+   * Zusätzlich erscheint eine **Sensitivität**: Klassen mit allen CANDIDATE-Referenzen, deren einziger Grund das Plausibilitätsband (Nachtrag 4) oder die fehlende VU-Reihe (§ 2.4) ist.
+   * Der Bericht nennt die Spanne.
+
+f) **Handelstage (Dokumentation):**
+   * `tradingDaysBetween` zählt Mo–Fr **ohne** Börsenfeiertage. Das ist konservativ, weil es engere Fenster ergibt. Nachtrag 7 d sprach von „US-Börsentagen“.
+   * Die Zählung bleibt unverändert, um keinen neuen Abgleich auszulösen.
+   * Einzige Auswirkung laut Red-Team: CAT 08.01.2023 hätte Fenster 10 statt 20, bei gleicher Klasse.
+
+g) **Auswertung:**
+   * Der VU-Vergleich weist zusätzlich die Gruppen E_TIMEFRAME_ONLY und UNDETERMINED aus.
+   * Familienpaare zählen nur auf gleichem Zeitrahmen.
+
+h) **Neue Version:** `PRACTITIONER_CONSENSUS_V1_2`. V1 und V1.1 bleiben unverändert. Der VU-Vergleich läuft auf V1.2 neu, und der Bericht nennt alle drei Läufe.

@@ -22,7 +22,7 @@ const arg = (n, d) => { const i = process.argv.indexOf("--" + n); return i >= 0 
 
 /* Titel-Aliase je vuSymbol (Wortgrenzen, Gross/Klein egal). Vorab festgelegt; nur Instrumentnamen, keine Inhaltswoerter. */
 export const ALIASES = {
-  BTCUSD: ["BTC", "BTCUSD", "BTCUSDT", "Bitcoin"], SPY: ["SPY", "SPX", "S&P 500", "S&P500", "SP500", "ES_F", "ES1!", "US500"], QQQ: ["QQQ", "NDX", "Nasdaq", "Nasdaq 100", "Nasdaq-100", "NQ", "NQ1!", "US100"],
+  BTCUSD: ["BTC", "BTCUSD", "BTCUSDT", "Bitcoin"], SPY: ["SPY", "SPX", "S&P 500", "S&P500", "SP500", "ES_F", "ES1!", "US500", "SPXUSD", "SPX500", "SPX500USD"], QQQ: ["QQQ", "NDX", "Nasdaq", "Nasdaq 100", "Nasdaq-100", "NQ", "NQ1!", "US100", "NAS100", "NAS100USD", "NDQ"],
   IWM: ["IWM", "Russell", "RUT", "Russell 2000", "RTY"], XAUUSD: ["Gold", "XAUUSD", "XAU", "GLD", "GC1!"], NVDA: ["NVDA", "Nvidia"], TSLA: ["TSLA", "Tesla"], AMD: ["AMD"], MSFT: ["MSFT", "Microsoft"],
   GOOGL: ["GOOGL", "GOOG", "Alphabet", "Google"], COIN: ["COIN", "Coinbase"], MSTR: ["MSTR", "MicroStrategy", "Strategy"], PLTR: ["PLTR", "Palantir"], HOOD: ["HOOD", "Robinhood"], TSM: ["TSM", "TSMC", "Taiwan Semiconductor"],
   ASML: ["ASML"], LLY: ["LLY", "Eli Lilly", "Lilly"], UNH: ["UNH", "UnitedHealth"], DIS: ["DIS", "Disney"], KO: ["KO", "Coca-Cola", "Coca Cola"], MCD: ["MCD", "McDonald's", "McDonalds"], NKE: ["NKE", "Nike"],
