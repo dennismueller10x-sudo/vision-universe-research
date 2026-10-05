@@ -77,3 +77,9 @@
 49. **Alerts nur in der App.** Push/E-Mail fehlen (keine Zustell-Infrastruktur).
 50. **VU Ask:** Das Sprachmodell sieht die Chartbild-Werte nicht; die Werte stammen deterministisch aus dem Index im Browser.
 51. **Regulatorik:** Begriffe „Einstiegszone“, „Ziel“ und personalisierte Watchlist-Ereignisse — LEGAL REVIEW REQUIRED.
+53. **Elliott liest nur Schlusskurse** (Mission VI): `elliott-v3.js` nutzt `series.close`, auch wenn OHLC vorliegt; Hoch/Tief wirken nur über die ATR. Der Test mit Hoch/Tief-Pfad und Tagesauflösung (OHLC_ELLIOTT_STUDY.md) brachte keine bessere Impulserkennung.
+54. **Impulse werden intern gefunden, aber nie ausgegeben** (ELLIOTT_IMPULSE_FORENSICS.md): In 25/25 Practitioner-Impulsfällen gibt es gültige Impulslesarten. Sie verlieren im Rang durch Unterteilung (60 %), Vollständigkeits-Heuristik (24 %) und Dominanz (16 %). Synthetisch werden laufende Motivmuster nur zu ≈ 11 % als Motiv gelesen.
+55. **Kein Engine 3.3** (ELLIOTT_ENGINE33_REPORT.md): Der Kandidat `elliott-3.3.0-rc1` ist nicht eingefroren (Red-Team §57). Der Practitioner-Holdout bleibt versiegelt.
+56. **Versiegelung nur prozedural:** Holdout-Labels liegen im Klartext im Repository. Derselbe Agent hat sie extrahiert und die Engine untersucht. Die Versiegelung beruht auf Werkzeugen, die Holdout-Zeilen vor dem Lesen verwerfen, nicht auf Zugriffsschutz.
+57. **Datenabweichung ältere Wochen NVDA/TSLA:** `discover-series-long` und die Split-Rekonstruktion aus Rohkurs + splitFactor weichen in älteren Wochen ab (NVDA 292/≈ 700, TSLA 34/652). Die Ursache ist ungeklärt.
+58. **Kein menschlicher Extraktions-Audit:** Paket, Seite und Import sind fertig (Status READY), aber es gibt keinen Reviewer und keine Ergebnisse. MEDIUM-Fälle bleiben ungeprüft.

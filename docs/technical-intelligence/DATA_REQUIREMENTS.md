@@ -16,6 +16,15 @@
 | Intraday | Minutenbars historisch | nur 2 Tagesschnappschüsse | nein | Intraday-Zeitebene `UNAVAILABLE` |
 | Earnings-Termine | Kalender | nicht im Repository verbunden | — | Hinweis „Ereignisrisiko" noch nicht umgesetzt (Roadmap) |
 
+## Elliott und OHLC (Mission VI)
+
+* **Eingang:** Die Elliott-Engine (`elliott-3.2.2`) ist eine **Schlusskurs-Methode**. Sie liest nur `close`, auch bei vorhandenem OHLC.
+* **OHLC ist keine Voraussetzung:** Die Studie OHLC_ELLIOTT_STUDY.md zeigt keinen Gewinn durch Hoch/Tief oder Tagesauflösung bei der Impulserkennung. OHLC wird deshalb **nicht** zur formalen Voraussetzung.
+* **Verfügbarkeit:** Tages-OHLC für US-Titel liegt runner-privat in der kanonischen Historie, US-ETFs und BTC über den bestehenden Anbieter.
+  * Weitergabe: LEGAL_REVIEW_REQUIRED.
+  * International: nicht vorhanden.
+* **Künftiger OHLC-Pfad:** nur versioniert, mit gemeinsam bereinigtem O/H/L/C, ausschließlich abgeschlossenen Bars und offengelegter Annahme zur Intraday-Reihenfolge.
+
 ## Datenqualitätsregeln im Code
 
 * `TI.prepare()` lehnt alles außer `SPLIT_ADJUSTED` ab.

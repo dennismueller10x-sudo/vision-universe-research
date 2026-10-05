@@ -94,3 +94,12 @@ test("3.3-Kandidaten-Optionen sind ohne Gewicht wirkungslos (3.2.2-Ausgabe unver
   assert.equal(st(runV3(s, "1W", { engine: { trendContextMode: "COUNTER_DEVELOPING" } })), base);
   assert.equal(st(runV3(s, "1W", { engine: { coverageMode: "WAVES" } })), base);
 });
+test("Profil elliott-3.3.0-rc1 = gemessene Konfiguration; Uebersteuerung verboten (Red-Team §57 Befund 8)", () => {
+  const cs = corpusCase("IMPULSE_EXT3", 3, "low", { cut: "mid" }), s = synSeries(cs);
+  const st = (r) => { const x = Object.assign({}, r); delete x.trace; delete x.parametersHash; delete x.engineVersion; return JSON.stringify(x); };
+  const a = runV3(s, "1W", { profile: "elliott-3.3.0-rc1" });
+  assert.equal(a.engineVersion, "elliott-3.3.0-rc1");
+  assert.equal(st(a), st(runV3(s, "1W", { engine: { noSimilarity: true, trendContextMode: "COUNTER_DEVELOPING", weights: { trendContext: 0.2 } } })));
+  assert.throws(() => runV3(s, "1W", { profile: "elliott-3.3.0-rc1", engine: { maxNodes: 1 } }), /nicht uebersteuert/);
+  assert.throws(() => runV3(s, "1W", { profile: "elliott-9" }), /Unbekanntes/);
+});

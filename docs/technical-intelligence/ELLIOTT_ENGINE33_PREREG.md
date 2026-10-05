@@ -30,3 +30,12 @@ Die Practitioner-Fälle aus VALIDATION (5 Impulsfälle, 4 Korrekturfälle) werde
   3. Danach **einmalig** die 43 versiegelten Practitioner-Holdout-Fälle öffnen („PRACTITIONER HOLDOUT“, nicht HOLDOUT-4).
 * **Bei Nichtbestehen:** kein 3.3, Holdout bleibt versiegelt.
 * **Produkt:** Die Produktivschaltung ist ein eigener Schritt. Elliott bleibt in jedem Fall EXPERIMENTAL STRUCTURE MODEL, ohne Prognosegewicht.
+
+## Nachtrag — Offenlegung nach dem Red-Team (05.10.2026)
+
+Diese Präregistrierung war **nicht** sauber; Befunde des Red-Teams, reviews/ELLIOTT_33_REDTEAM.md:
+* **VALIDATION schon gesehen:** Vor dem Festlegen der Kriterien lief bereits ein synthetischer VALIDATION-Lauf der Variante `trendPen02`, mit Practitioner-VAL (`variants-validation.json`, Commit f48386ec9). Der hier genannte „einmalige“ Lauf war der zweite Blick.
+* **Ähnlichkeitsschranke nachträglich:** Sie wurde erst nach diesem Blick hinzugefügt. Ihr Anstoß stammt aus einer Practitioner-Ablation auf DEV und VAL.
+* **Practitioner-VAL sind Entwicklungsdaten:** Sie sind keine unabhängige Prüfung.
+
+Das bestandene Ergebnis begründet deshalb **keinen** Freeze. Der Kandidat heißt jetzt `elliott-3.3.0-rc1` und ist nur ein Forschungsprofil. Practitioner-Holdout bleibt versiegelt.

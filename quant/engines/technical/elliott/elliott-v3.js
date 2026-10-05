@@ -81,14 +81,14 @@
   };
 
   /* VERSIONIERTE PROFILE (Mission VI §90). Produktionsstandard bleibt elliott-3.2.2 (DEFAULTS). Ein Profil aendert NUR die
-     aufgefuehrten Parameter und meldet seine eigene Version. Datenmodus beider: Schlusskurse (Close-only), Vorverarbeitung
-     unveraendert. Freeze-Records: quant/data/technical-intelligence/elliott-validation/freeze-<version>.json.
-       elliott-3.3.0 = 3.2.2 + (a) keine Aehnlichkeitsschranke in der Suche (NEoWave-Regel; laut Quellenmatrix keine VU-Regel,
-                       die Proportion bleibt Rangmerkmal) + (b) Trendkontext COUNTER_DEVELOPING mit Gewicht 0,2 (EWP: Korrekturen
-                       laufen gegen den Trend des naechsthoeheren Grades; nur laufende Gegentrend-Korrekturen werden abgewertet).
-                       Abnahme: ELLIOTT_ENGINE33_PREREG.md (synthetisch VALIDATION, einmalig). */
+     aufgefuehrten Parameter und meldet seinen Namen als engineVersion. Datenmodus: Schlusskurse (Close-only).
+       elliott-3.3.0-rc1 = NICHT EINGEFROREN, NUR FORSCHUNG (Red-Team §57, reviews/ELLIOTT_33_REDTEAM.md: zweiter Blick auf
+                       VALIDATION, praktikerinformierte Auswahl, budgetabhaengig). 3.2.2 + (a) keine Aehnlichkeitsschranke in der
+                       Suche + (b) Trendkontext COUNTER_DEVELOPING, Gewicht 0,2: JEDE laufende Lesart, deren unterstellter Trend
+                       dem gemessenen Trend widerspricht, erhaelt 0 (auch laufende Gegentrend-Impulse), alles andere 0,5.
+                       Uebersteuerungen durch input.engine sind fuer Profile verboten (Ergebnis waere nicht mehr das Profil). */
   var PROFILES = {
-    "elliott-3.3.0": { noSimilarity: true, trendContextMode: "COUNTER_DEVELOPING", weights: { trendContext: 0.2 } }
+    "elliott-3.3.0-rc1": { noSimilarity: true, trendContextMode: "COUNTER_DEVELOPING", weights: { trendContext: 0.2 } }
   };
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function round(v, d) { var m = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * m) / m; }
@@ -226,6 +226,7 @@
     var m = (input.methodology && input.methodology.elliottV3) || {};
     var profileName = input.profile || (m.engine && m.engine.profile) || null;
     if (profileName && !PROFILES[profileName]) throw new Error("Unbekanntes Elliott-Profil " + profileName);
+    if (profileName && ((input.engine && Object.keys(input.engine).length) || (m.engine && Object.keys(m.engine).some(function (k) { return k !== "profile"; })))) throw new Error("Profil " + profileName + " darf nicht uebersteuert werden");
     var prof = profileName ? PROFILES[profileName] : {};
     var cfg = Object.assign({}, DEFAULTS, prof, m.engine || {}, input.engine || {});
     cfg.weights = Object.assign({}, DEFAULTS.weights, prof.weights || {}, (m.engine && m.engine.weights) || (input.engine && input.engine.weights) || {});
@@ -570,10 +571,10 @@
     }
     /* Trendkontext. Standard (3.2.2, Gewicht 0): mit Trend 1, gegen 0,2, ohne Trend 0,5.
        "DEVELOPING_ONLY": nur laufende Zaehlungen, mit Trend 1 / gegen 0,2; abgeschlossene 0,5.
-       "COUNTER_DEVELOPING" (3.3-Kandidat, Mission VI): nur eine LAUFENDE Lesart, die eine Korrektur gegen den Trend des hoeheren
-       Grades unterstellt, wird abgewertet (0); alles andere neutral (0,5) — loest 1-2-3 vs. A-B-C auf denselben Wellenenden nach
-       EWP (Korrekturen laufen gegen den Trend des naechsthoeheren Grades), ohne laufende Lesarten allgemein ueber abgeschlossene
-       zu heben. */
+       "COUNTER_DEVELOPING" (3.3-Kandidat rc1, Mission VI, nicht eingefroren): JEDE laufende Lesart, deren unterstellter Trend dem
+       gemessenen Trend (V2.trendDirection, 1 Jahr bis asOf) widerspricht, wird abgewertet (0) — gemeint war die EWP-Regel
+       "Korrekturen laufen gegen den Trend des naechsthoeheren Grades" (1-2-3 vs. A-B-C); die Umsetzung trifft auch laufende
+       Gegentrend-Impulse, und der Jahrestrend ist nur eine Naeherung des hoeheren Grades. Alles andere neutral (0,5). */
     function trendContextOf(e, f) {
       if (ctx.trendDir === 0) return 0.5;
       var agree = V2.impliedTrend(e) === ctx.trendDir;

@@ -87,7 +87,10 @@ function productionNames() {
     const o = loadOHLC(sym); if (!o) { out.push({ symbol: sym, profile: PRODUCTION_NAMES[sym], status: "OHLC_UNAVAILABLE" }); continue; }
     for (const asOf of PRODUCTION_ASOF) {
       const d = o.rows.filter((x) => x.date <= asOf); if (d.length < 400) continue;
-      const w = weeklyOHLC(d, { cutoff: asOf }), dd = d.slice(-252 * 6 - 300);
+      /* nur abgeschlossene Wochen (Red-Team §57 LOW): letzte Woche entfaellt, wenn ihr letzter Handelstag vor Freitag liegt
+         und der Stichtag selbst kein Freitag ist (konservativ) */
+      const fri = (x) => new Date(x + "T00:00:00Z").getUTCDay() === 5, lastD = d[d.length - 1].date;
+      const w = weeklyOHLC(d, { cutoff: asOf, completeWeekEnd: fri(lastD) ? lastD : "0000-00-00" }), dd = d.slice(-252 * 6 - 300);
       out.push({ symbol: sym, profile: PRODUCTION_NAMES[sym], source: o.source, asOf,
         daily: { A: measure(seriesOf(dd, "1D", { closeOnly: true }), "1D", 252, null), B: measure(seriesOf(hlPath(dd), "1D"), "1D", 504, null) },
         weekly: { A: measure(seriesOf(w, "1W", { closeOnly: true }), "1W", 52, null), B: measure(seriesOf(hlPath(w), "1W"), "1W", 104, null) } });
