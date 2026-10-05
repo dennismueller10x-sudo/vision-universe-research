@@ -17,7 +17,7 @@
   "linkedNotIncluded": { "type": "array" },
   "rejectedLinks": { "type": "array" },
   "independentSourceFamilyCount": { "type": "integer", "minimum": 1 },
-  "consensusClass": { "enum": ["A_STRONG", "B_PARTIAL", "C_DISAGREEMENT", "D_SINGLE", "UNDETERMINED"] },
+  "consensusClass": { "enum": ["A_STRONG", "B_PARTIAL", "C_DISAGREEMENT", "D_SINGLE", "E_TIMEFRAME_ONLY", "UNDETERMINED"] },
   "strength": { "type": "object", "required": ["sourceFamilies"] },
   "pairs": { "type": "array" },
   "impulse": { "type": "object", "required": ["motiveFamilies", "consensusImpulse", "anchorMotive"] },

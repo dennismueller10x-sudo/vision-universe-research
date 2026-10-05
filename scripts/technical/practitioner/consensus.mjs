@@ -20,11 +20,11 @@ export function pairLevels(a, b, ma, mb, ctx = {}) {
   const A = practitionerView(a, ma, ctx), B = practitionerView(b, mb, ctx);
   const r = compareViews(A, B, Object.assign({ absoluteComparable: ma.mappingQuality === "EXACT" && mb.mappingQuality === "EXACT" }, ctx));
   const out = { timeframeRelation: tf, L1_family: NC, L2_scenario: NC, L3_pattern: NC, L4_currentWave: NC, L5_degreeExact: NC, L5_degreePm1: NC, L6_invalidation: NC, L6_targets: NC };
-  if (tf === "INCOMPATIBLE") return out;
+  /* Nachtrag 8: nur gleicher Zeitrahmen wird beurteilt; Eltern/Kind ist TIMEFRAME_DIVERGENT (weder Konsens noch Widerspruch) */
+  if (tf !== "SAME") return out;
   out.L1_family = r.metrics.B;
   /* L2 = Richtung ab jetzt; SIDEWAYS ist zwischen Praktikern normal vergleichbar */
   out.L2_scenario = A.currentMove && B.currentMove ? (A.currentMove === B.currentMove ? M : X) : NC;
-  if (tf !== "SAME") return out;   // L3–L6 nur bei gleichem Zeitrahmen
   out.L3_pattern = A.pattern && B.pattern ? (A.pattern === B.pattern ? M : X) : NC;
   out.L4_currentWave = r.metrics.C;
   out.L5_degreeExact = r.metrics.D; out.L5_degreePm1 = r.metrics.E;
@@ -43,16 +43,24 @@ export function classifyConsensus(members, ctx = {}) {
     pairs.push(Object.assign({ a: members[i].ref.referenceId, b: members[j].ref.referenceId, families: [members[i].family, members[j].family] }, pairLevels(members[i].ref, members[j].ref, members[i].mapping, members[j].mapping, ctx)));
   const strength = { sourceFamilies: members.length };
   for (const L of LEVELS) { const c = pairs.filter((p) => p[L] !== NC); strength[L] = c.length ? `${c.filter((p) => p[L] === M).length}/${c.length}` : "n/a"; }
+  /* Nachtrag 8: Klassen nur ueber Mitglieder mit dem Zeitrahmen des Ausgangsfalls */
+  const anchor = members.find((m) => m.role === "ANCHOR") || members[0];
+  const same = pairs.filter((p) => p.timeframeRelation === "SAME" && members.some((m) => m.ref.timeframe === anchor.ref.timeframe && (m.ref.referenceId === p.a || m.ref.referenceId === p.b)));
+  strength.sameTimeframeFamilies = members.filter((m) => m.ref.timeframe === anchor.ref.timeframe).length;
+  strength.timeframeDivergentPairs = pairs.filter((p) => p.timeframeRelation !== "SAME").length;
   let cls;
   if (members.length < 2) cls = "D_SINGLE";
-  else if (pairs.some((p) => p.L2_scenario === X)) cls = "C_DISAGREEMENT";
-  else if (pairs.some((p) => p.L2_scenario === NC)) cls = "UNDETERMINED";
-  else if (pairs.every((p) => p.L1_family === M)) cls = "A_STRONG";
+  else if (strength.sameTimeframeFamilies < 2) cls = "E_TIMEFRAME_ONLY";
+  else if (same.some((p) => p.L2_scenario === X)) cls = "C_DISAGREEMENT";
+  else if (same.some((p) => p.L2_scenario === NC)) cls = "UNDETERMINED";
+  else if (same.every((p) => p.L1_family === M)) cls = "A_STRONG";
   else cls = "B_PARTIAL";
   const motive = members.filter((m) => MOTIVE_PATTERNS.includes(m.ref.primary && m.ref.primary.pattern) || (m.ref.primary && m.ref.primary.family === "MOTIVE"));
   const motiveFams = new Set(motive.map((m) => m.family));
-  const motivePairsAgreeL2 = motive.length >= 2 && pairs.filter((p) => motive.some((m) => m.ref.referenceId === p.a) && motive.some((m) => m.ref.referenceId === p.b)).every((p) => p.L2_scenario === M);
-  const impulse = { motiveFamilies: motiveFams.size, consensusImpulse: motiveFams.size >= 2 && motivePairsAgreeL2,
+  /* Impuls-Konsens nur auf gleichem Zeitrahmen (Nachtrag 8) */
+  const motiveSameTf = motive.filter((m) => m.ref.timeframe === anchor.ref.timeframe);
+  const motivePairsAgreeL2 = motiveSameTf.length >= 2 && pairs.filter((p) => motiveSameTf.some((m) => m.ref.referenceId === p.a) && motiveSameTf.some((m) => m.ref.referenceId === p.b)).every((p) => p.L2_scenario === M);
+  const impulse = { motiveFamilies: motiveFams.size, motiveFamiliesSameTimeframe: new Set(motiveSameTf.map((m) => m.family)).size, consensusImpulse: new Set(motiveSameTf.map((m) => m.family)).size >= 2 && motivePairsAgreeL2,
                     anchorMotive: members.some((m) => m.role === "ANCHOR" && motive.includes(m)) };
   return { consensusClass: cls, strength, pairs, impulse };
 }

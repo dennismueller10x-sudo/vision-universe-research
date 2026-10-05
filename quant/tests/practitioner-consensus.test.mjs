@@ -19,7 +19,13 @@ const ctx = { close: 100, atr: 2 };
 test("Zeitrahmen: gleich, Eltern/Kind, unvereinbar", () => {
   assert.equal(tfRelation("1D", "1D"), "SAME"); assert.equal(tfRelation("1D", "1W"), "PARENT_CHILD"); assert.equal(tfRelation("1W", "1M"), "PARENT_CHILD"); assert.equal(tfRelation("1D", "4H"), "INCOMPATIBLE");
   const p = pairLevels(ref("a"), ref("b", { timeframe: "1W", primary: { pattern: "ZIGZAG", family: "CORRECTIVE", currentWave: "C" } }), map, map, ctx);
-  assert.equal(p.timeframeRelation, "PARENT_CHILD"); assert.equal(p.L3_pattern, "NOT_COMPARABLE"); assert.equal(p.L4_currentWave, "NOT_COMPARABLE");   // nur L1/L2 bei Eltern/Kind
+  assert.equal(p.timeframeRelation, "PARENT_CHILD"); assert.equal(p.L3_pattern, "NOT_COMPARABLE"); assert.equal(p.L4_currentWave, "NOT_COMPARABLE");
+  assert.equal(p.L1_family, "NOT_COMPARABLE"); assert.equal(p.L2_scenario, "NOT_COMPARABLE");   // Nachtrag 8: Eltern/Kind wird nicht beurteilt
+  /* nur Referenzen auf anderem Zeitrahmen → kein Konsensurteil (E), auch bei entgegengesetzter Richtung */
+  const e = classifyConsensus([mem(ref("a"), "f1", "ANCHOR"), mem(ref("w", { timeframe: "1M", directionalBias: "DOWN" }), "f2")], ctx);
+  assert.equal(e.consensusClass, "E_TIMEFRAME_ONLY"); assert.equal(e.impulse.consensusImpulse, false);
+  /* dritte Referenz auf anderem Zeitrahmen beeinflusst die Klasse der gleichen Zeitebene nicht */
+  assert.equal(classifyConsensus([mem(ref("a"), "f1", "ANCHOR"), mem(ref("b"), "f2"), mem(ref("w", { timeframe: "1M", directionalBias: "DOWN" }), "f3")], ctx).consensusClass, "A_STRONG");
 });
 test("Unabhaengigkeit: gleiche Familie wie Ausgangsfall und zweite Referenz derselben Familie zaehlen nicht", () => {
   const r = independentLinks("ewf", [{ referenceId: "x", family: "ewf" }, { referenceId: "y", family: "tiedje" }, { referenceId: "z", family: "tiedje" }, { referenceId: "w", family: "tv-a" }]);

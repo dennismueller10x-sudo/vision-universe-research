@@ -15,7 +15,7 @@ import { replayProjection, replayOne, EXPECTED_ENGINE_VERSION, ENGINE_VERSION } 
 import { compareCase } from "./compare.mjs";
 import { classifyConsensus, independentLinks, LEVELS } from "./consensus.mjs";
 
-export const CONS = join(PV1, "consensus"), FREEZE_DIR = join(PV1, "freeze"), VERSION = "PRACTITIONER_CONSENSUS_V1";
+export const CONS = join(PV1, "consensus"), FREEZE_DIR = join(PV1, "freeze"), VERSION = "PRACTITIONER_CONSENSUS_V1_1";   // V1 (Nachtrag 7) bleibt eingefroren; V1.1 = Nachtrag 8
 const sha = (s) => createHash("sha256").update(s).digest("hex");
 const by = (a, f) => a.reduce((o, x) => { const k = f(x); o[k] = (o[k] || 0) + 1; return o; }, {});
 
@@ -81,7 +81,7 @@ export function freeze({ outDir = FREEZE_DIR, now = new Date().toISOString() } =
   const sealedContent = canonicalJson(Object.fromEntries(Object.keys(sealedLinks).sort().map((k) => [k, sealedLinks[k].map((l) => l.referenceId).sort()])));
   const refsContent = refs.map(canonicalJson).sort().join("\n") + "\n";
   const man = { version: VERSION, file: VERSION + ".jsonl", sha256: sha(content), referencesSha256: sha(refsContent), sealedLinksSha256: sha(sealedContent), basedOn: { version: "PRACTITIONER_REFERENCE_V1", sha256: v1Sha256 },
-    createdAt: now, label: "PRACTITIONER CONSENSUS REFERENCE, NOT GROUND TRUTH", protocol: "PRACTITIONER_PROTOCOL.md Nachtrag 7",
+    createdAt: now, label: "PRACTITIONER CONSENSUS REFERENCE, NOT GROUND TRUTH", protocol: "PRACTITIONER_PROTOCOL.md Nachtraege 7 und 8", supersedes: "PRACTITIONER_CONSENSUS_V1 (Eltern/Kind-Zeitrahmen faelschlich verglichen)",
     openedCases: cases.length, consensusClasses: by(cases, (c) => c.consensusClass), independentFamiliesHist: by(cases, (c) => c.independentSourceFamilyCount),
     consensusImpulseSet: cases.filter((c) => c.impulse.consensusImpulse).map((c) => c.consensusCaseId),
     sourceFamilies: by(cases.flatMap((c) => c.practitionerReferences), (r) => r.sourceFamily), timeframes: by(cases, (c) => c.timeframe), assets: by(cases, (c) => c.asset),

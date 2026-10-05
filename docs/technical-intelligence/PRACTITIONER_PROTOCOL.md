@@ -260,3 +260,27 @@ l) **Kostenrahmen.** Der Metadatenabruf der TradingView-Listen und die Extraktio
 * Obergrenze ≈ 150 USD für Abruf und Extraktion.
 * Zeichnet sich mehr ab, wird vorher gestoppt und berichtet.
 * Bearbeitungsreihenfolge (vorab): geöffnete Impulsfälle zuerst, dann geöffnete übrige, dann Holdout-Fälle.
+
+### Nachtrag 8 — 05.10.2026, nach dem Freeze PRACTITIONER_CONSENSUS_V1 und einem ersten VU-Lauf, vor jeder Interpretation
+
+**Offenlegung.** `PRACTITIONER_CONSENSUS_V1` (Commit `eeec9ffa7`) ist eingefroren. Ein VU-Vergleich lief einmal (`benchmark/consensus-benchmark-v1.json`) und wird unverändert aufbewahrt. Erst beim Durchsehen der Mehrfamilien-Fälle fiel der folgende Fehler auf.
+
+**Fehler (echt).** Nachtrag 7 g verglich L1 (Familie) und L2 (Richtung ab jetzt) auch zwischen **verschiedenen Zeitrahmen** (Eltern/Kind). Das widerspricht dem Missionsauftrag §15 („nicht automatisch Widerspruch“) und der Elliott-Logik:
+* Ein Tages-Impuls abwärts kann Teil einer Korrekturwelle innerhalb einer Monatswelle aufwärts sein.
+* Eine Diagonale im Tageschart kann die C-Welle eines Wochen-Zickzacks sein.
+
+Gleiche Familie oder Richtung über Grade hinweg ist kein Konsens. Unterschiedliche Familie oder Richtung über Grade hinweg ist kein Widerspruch.
+
+**Festlegung (V1.1):**
+
+a) **Gleicher Zeitrahmen:** Nur Paare mit **gleichem** Zeitrahmen werden auf L1–L6 verglichen.
+
+b) **Eltern/Kind-Paare** (1D ↔ 1W ↔ 1M) werden **nicht beurteilt** (`TIMEFRAME_DIVERGENT`). Beide Lesarten bleiben gespeichert und gehen zur menschlichen Prüfung, ob sie verschachtelt vereinbar sind.
+
+c) **Klassen** werden nur über die Mitglieder mit dem Zeitrahmen des Ausgangsfalls gebildet (A/B/C wie Nachtrag 7 h).
+
+d) **Neue Klasse E_TIMEFRAME_ONLY:** Hat ein Fall unabhängige Referenzen nur auf anderen Zeitrahmen, gibt es kein Konsensurteil.
+
+e) **Neue Version:** Neu eingefroren wird `PRACTITIONER_CONSENSUS_V1_1`. V1 bleibt unverändert.
+
+f) **VU-Vergleich:** Er wird auf V1.1 neu gerechnet. Der Bericht nennt beide Läufe.
