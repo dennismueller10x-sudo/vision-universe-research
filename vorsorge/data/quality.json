@@ -2859,7 +2859,11 @@
    "isin": 8084,
    "wkn": 0,
    "ter": 0,
-   "holdings": 0
+   "holdings": 0,
+   "ucitsRegister": 0,
+   "notifiedInGermany": 0,
+   "domicileFromIsin": 0,
+   "pendingRights": null
   },
   "providers": [
    {
@@ -2909,6 +2913,22 @@
     "lastSuccessfulFetch": "2026-10-03",
     "items": 8084,
     "fields": "Rechtlicher Emittent, Domizil"
+   },
+   {
+    "id": "ESMA_FONDSREGISTER",
+    "type": "REGULATORY",
+    "status": "NOT_CONFIGURED",
+    "lastSuccessfulFetch": "2026-10-03",
+    "items": 0,
+    "fields": "UCITS-Status (amtlich), Verwaltungsgesellschaft, Vertriebsländer"
+   },
+   {
+    "id": "DEUTSCHE_BOERSE_REFDATA",
+    "type": "MARKET_DATA_PROVIDER",
+    "status": "NOT_CONFIGURED",
+    "lastSuccessfulFetch": null,
+    "items": 0,
+    "fields": "Laufende Kosten, Replikation, Ertragsverwendung, Index, WKN – Nutzungsrechte in Klärung, nicht veröffentlicht"
    },
    {
     "id": "BLACKROCK",

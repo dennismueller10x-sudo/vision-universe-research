@@ -90,7 +90,23 @@ if (existsSync(euP)) {
     for (const r of eu.rows) { if (!/^[A-Z]{2}[A-Z0-9]{9}\d$/.test(r[ii])) bad++; if (seen.has(r[ii])) errors.push("EU_DUPLICATE_ISIN " + r[ii]); seen.add(r[ii]); }
     if (bad) errors.push("EU_INVALID_ISIN " + bad);
     if (!/ESMA/.test(eu.attribution || "")) errors.push("EU_MISSING_ATTRIBUTION");
+    // ESMA-Fondsregister: nur ISINs aus dem EU-Stamm, keine Dubletten, Quellenangabe
+    const regP = join(D, "eu/etf-eu-ucits.json");
+    if (existsSync(regP)) {
+      const reg = read(regP);
+      if (reg) {
+        const ri = reg.fields.indexOf("isin"), rs = new Set();
+        for (const r of reg.rows) { if (!seen.has(r[ri])) errors.push("EU_REGISTER_UNKNOWN_ISIN " + r[ri]); if (rs.has(r[ri])) errors.push("EU_REGISTER_DUPLICATE " + r[ri]); rs.add(r[ri]); }
+        if (!/ESMA/.test(reg.attribution || "")) errors.push("EU_REGISTER_MISSING_ATTRIBUTION");
+        if (reg.rows.length > eu.rows.length) errors.push("EU_REGISTER_MORE_THAN_INDEX");
+      }
+    }
   }
+}
+// Xetra-Referenzdaten: Rechte UNKNOWN -> Werte duerfen ohne Freigabe nicht im veroeffentlichten Verzeichnis liegen
+{
+  const st = existsSync(join(D, "sources/xetra-refdata-stats.json")) ? read(join(D, "sources/xetra-refdata-stats.json")) : null;
+  if (existsSync(join(D, "eu/etf-eu-xetra.json")) && !(st && st.published)) errors.push("XETRA_VALUES_PUBLISHED_WITHOUT_RELEASE");
 }
 const rrP = join(D, "sources/sec-rr-costs.json");
 if (existsSync(rrP)) { const rr = read(rrP); if (rr) for (const [sym, v] of Object.entries(rr.bySymbol)) for (const k of ["expenseRatio", "netExpenseRatio", "managementFee"]) if (v[k] && !(v[k].value >= 0 && v[k].value < 0.1)) errors.push("COST_OUT_OF_RANGE " + sym + "." + k); }

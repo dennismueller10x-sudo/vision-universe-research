@@ -433,6 +433,9 @@ export function build() {
   const fv = (e, k) => FUND.valueOf(e.fundamentals && e.fundamentals[k]);
   const euIdx = tryJson(join(OUT, "data/eu/etf-eu-index.json"));
   const euItems = euIdx ? euIdx.rows.map((r) => Object.fromEntries(euIdx.fields.map((f, i) => [f, r[i]]))) : [];
+  const euReg = tryJson(join(OUT, "data/eu/etf-eu-ucits.json"));          // ESMA-Fondsregister (amtlicher UCITS-Status)
+  const xetraStats = tryJson(join(OUT, "data/sources/xetra-refdata-stats.json"));   // Xetra-Referenzdaten: nur Abdeckung, Rechte UNKNOWN
+  const regHosts = euReg ? euReg.rows.map((r) => String(r[euReg.fields.indexOf("hostCountries")] || "").split(" ")) : [];
   const nport = tryJson(join(OUT, "data/sources/nport-manifest.json"));
   const rrM = tryJson(join(OUT, "data/sources/sec-rr-costs.json"));
   const sicM = tryJson(join(OUT, "data/sources/sec-sic.json"));
@@ -452,7 +455,12 @@ export function build() {
       venues: euItems.reduce((a, x) => a + String(x.venues || "").split(" ").filter(Boolean).length, 0),
       domicile: euItems.reduce((a, x) => { const k = x.domicile || "UNKNOWN"; a[k] = (a[k] || 0) + 1; return a; }, {}),
       distribution: euItems.reduce((a, x) => { const k = x.distribution || "UNKNOWN"; a[k] = (a[k] || 0) + 1; return a; }, {}),
-      withPriceFeed: 0, isin: euItems.length, wkn: 0, ter: 0, holdings: 0 } : null,
+      withPriceFeed: 0, isin: euItems.length, wkn: 0, ter: 0, holdings: 0,
+      ucitsRegister: euReg ? euReg.rows.length : 0, notifiedInGermany: regHosts.filter((h) => h.includes("DE")).length,
+      domicileFromIsin: euItems.filter((x) => x.domicileBasis === "ISIN_PREFIX").length,
+      // Gefunden, aber nicht veroeffentlicht (Nutzungsrechte UNKNOWN): Abdeckung der Xetra-Referenzdaten
+      pendingRights: xetraStats ? { source: "Deutsche Börse (Xetra-Referenzdaten)", asOf: xetraStats.masterAsOf, etfs: xetraStats.masterEtfs, ongoingCharges: xetraStats.coverage.ongoingCharges,
+        replication: xetraStats.coverage.replication, distribution: xetraStats.coverage.distribution, benchmark: xetraStats.coverage.benchmark, wkn: xetraStats.coverage.wkn, published: !!xetraStats.published } : null } : null,
     providers: [
       { id: "TIINGO", type: "MARKET_DATA_PROVIDER", status: rep && rep.complete ? "HEALTHY" : rep ? "DEGRADED" : "NOT_CONFIGURED", lastSuccessfulFetch: (ingest && ingest.asOf) || null, items: counts.withPriceHistory, fields: "Kurse, Ausschüttungen, Splits, Namen" },
       { id: "SEC_NPORT", type: "REGULATORY", status: nport && nport.snapshots ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: hIdx ? Object.values(hIdx.bySymbol).map((r) => r[1]).filter(Boolean).sort().pop() || null : null, items: nport ? nport.snapshots : 0, fields: "Holdings, Fondsvermögen, Historie (quartalsweise)" },
@@ -460,6 +468,8 @@ export function build() {
       { id: "SEC_SIC", type: "REGULATORY", status: sicM && sicM.count ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: null, items: sicM ? sicM.count : 0, fields: "Wirtschaftszweig der Emittenten" },
       { id: "ESMA_FIRDS", type: "REGULATORY", status: euIdx ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: euIdx ? euIdx.asOf : null, items: euItems.length, fields: "ISIN, Handelsplätze, Währung, CFI" },
       { id: "GLEIF", type: "REGULATORY", status: euIdx ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: euIdx ? euIdx.asOf : null, items: euItems.filter((x) => x.domicile).length, fields: "Rechtlicher Emittent, Domizil" },
+      { id: "ESMA_FONDSREGISTER", type: "REGULATORY", status: euReg ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: euIdx ? euIdx.asOf : null, items: euReg ? euReg.rows.length : 0, fields: "UCITS-Status (amtlich), Verwaltungsgesellschaft, Vertriebsländer" },
+      { id: "DEUTSCHE_BOERSE_REFDATA", type: "MARKET_DATA_PROVIDER", status: xetraStats ? (xetraStats.published ? "HEALTHY" : "RIGHTS_PENDING") : "NOT_CONFIGURED", lastSuccessfulFetch: xetraStats ? xetraStats.masterAsOf : null, items: xetraStats ? xetraStats.masterEtfs : 0, fields: "Laufende Kosten, Replikation, Ertragsverwendung, Index, WKN – Nutzungsrechte in Klärung, nicht veröffentlicht" },
       ...["BLACKROCK", "VANGUARD", "AMUNDI", "DWS", "STATE_STREET", "INVESCO", "WISDOMTREE", "UBS", "JPMORGAN", "HSBC", "VANECK", "LEGAL_GENERAL", "GLOBAL_X", "FIDELITY", "FRANKLIN_TEMPLETON", "BNP_PARIBAS"]
         .map((id) => ({ id, type: "PRIMARY_ISSUER", status: "NOT_PERMITTED", lastSuccessfulFetch: null, items: 0, fields: "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit" }))
     ],
@@ -497,9 +507,11 @@ export function build() {
       ["UCITS-Holdings", "keine", 0, "ja – Lizenz eines Emittenten/Datenanbieters"],
       ["Kostenquote (US)", "SEC Prospektdaten (Risk/Return)", quality.intelligence.coverage.costs.ratio, "TER/laufende Kosten für UCITS: EMT/Emittent (Lizenz)"],
       ["Fondsvermögen (US)", "SEC N-PORT (Fondsebene)", quality.intelligence.coverage.aum.ratio, "Anteilklassen-Ebene: Emittent"],
-      ["ISIN (EU)", "ESMA FIRDS", euIdx ? 1 : 0, "nein"], ["ISIN (US-Listings)", "keine", 0, "ja"], ["WKN", "keine (offizielle Quelle ohne geprüfte Lizenz)", 0, "ja"],
+      ["ISIN (EU)", "ESMA FIRDS", euIdx ? 1 : 0, "nein"], ["ISIN (US-Listings)", "keine", 0, "ja"], ["WKN", "Deutsche Börse Instrumentenliste – gefunden, Nutzungsrechte in Klärung, nicht veröffentlicht", 0, "Freigabe Deutsche Börse oder Lizenz"],
       ["Domizil", "SEC (US) · GLEIF (EU)", quality.intelligence.coverage.domicile.ratio, "nein"],
-      ["UCITS-Status", "SEC (US = kein UCITS) · EU nur Hinweis aus amtlichem Namen", quality.intelligence.coverage.ucitsStatus.ratio, "verbindlich nur Emittent/KID"],
+      ["UCITS-Status", "SEC (US = kein UCITS) · ESMA-Fondsregister (EU, amtlich, Namenszuordnung)", quality.intelligence.coverage.ucitsStatus.ratio, euReg ? "EU-Anteilklassen ohne eindeutigen Registertreffer: nur Hinweis aus dem Namen" : "verbindlich nur Emittent/KID"],
+      ["UCITS-Status (EU)", "ESMA-Fondsregister (grenzüberschreitender Vertrieb)", euReg && euItems.length ? r4(euReg.rows.length / euItems.length) : 0, "Register ohne ISIN – Zuordnung über Fondsnamen"],
+      ["Laufende Kosten (EU)", "Deutsche Börse Referenzdaten – gefunden, Nutzungsrechte in Klärung, nicht veröffentlicht", 0, "Freigabe Deutsche Börse oder Lizenz (EMT/Datenanbieter)"],
       ["Ertragsverwendung", "Ausschüttungen beobachtet (US) · CFI (EU)", r4(all.filter((e) => e.distributionPolicy).length / Math.max(1, all.length)), "thesaurierend (US) nicht belegbar"],
       ["Replikation", "keine", 0, "ja"], ["Index (verbindlich)", "aus Namen abgeleitet", cov("index"), "ja"], ["Tracking Difference", "nicht berechenbar ohne Indexstände", 0, "ja"],
       ["NAV", "keine", 0, "ja"], ["Börse (US)", "Tiingo-Tickerliste", cov("exchange"), "nein"], ["Börsen (EU)", "ESMA FIRDS", euIdx ? 1 : 0, "nein"]
