@@ -29,6 +29,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
+const Identity = require(join(root, "core", "identity.js"));
 
 const SecAdapterModule = require(join(root, "providers", "sec", "adapter.js"));
 const SecAdapter = SecAdapterModule.createSecProvider();
@@ -52,7 +53,7 @@ const results = [];
 const problems = [];
 
 for (const entry of GOLDEN_FIVE) {
-  const marketFile = join(MARKET_DIR, "ref_" + entry.ticker + ".json");
+  const marketFile = join(MARKET_DIR, Identity.securityIdForTicker(entry.ticker) + ".json");
   const result = { ticker: entry.ticker };
 
   if (!existsSync(marketFile)) {

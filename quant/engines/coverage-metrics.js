@@ -170,7 +170,12 @@
                     missingProviderUnavailable: 0, missingUnexplained: 0,
                     missingSymbols: [] };
     var chart = { denominator: 0, renderable: 0, notRenderable: 0, notRenderableSymbols: [] };
-    var technical = { denominator: 0, eligible: 0, tooShort: 0 };
+    /* tooShortSymbols: die Ausnahmen namentlich, wie bei den Charts.
+       Erst damit ist "alle anderen sind technisch gedeckt" eine
+       vollstaendige Aufzaehlung und kein Rueckgriff auf einen aelteren
+       Bericht (Abgleich 04.10.2026: technical-coverage vom 11.09. war
+       nach den Listing-Kuerzungen aus #367 veraltet). */
+    var technical = { denominator: 0, eligible: 0, tooShort: 0, tooShortSymbols: [] };
     var longHistory = {
       universeSize: universe.length,
       ELIGIBLE_FOR_LONG_HISTORY_CHECK: 0,
@@ -214,7 +219,7 @@
       if (product) {
         technical.denominator++;
         if (bars >= techMin) technical.eligible++;
-        else technical.tooShort++;
+        else { technical.tooShort++; technical.tooShortSymbols.push(t); }
       }
 
       /* 4. Langhistorie mit nennerbewusster Eignung. */

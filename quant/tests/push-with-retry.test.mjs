@@ -16,15 +16,22 @@
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 
 const SCRIPT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "scripts", "ci", "push-with-retry.sh");
+/* Keine automatische Wartung in den Testrepos: ein abgekoppeltes
+   `git gc --auto` nach Fetch/Rebase schrieb noch in .git/objects, waehrend
+   der Test aufraeumte (CI 04.10.2026, #395: ENOTEMPTY in rmSync, PR2). */
 const ENV = Object.assign({}, process.env, { GIT_AUTHOR_NAME: "t", GIT_AUTHOR_EMAIL: "t@t", GIT_COMMITTER_NAME: "t",
-                                             GIT_COMMITTER_EMAIL: "t@t", GIT_CONFIG_GLOBAL: "/dev/null", GIT_CONFIG_NOSYSTEM: "1" });
+                                             GIT_COMMITTER_EMAIL: "t@t", GIT_CONFIG_GLOBAL: "/dev/null", GIT_CONFIG_NOSYSTEM: "1",
+                                             GIT_CONFIG_COUNT: "3", GIT_CONFIG_KEY_0: "gc.auto", GIT_CONFIG_VALUE_0: "0",
+                                             GIT_CONFIG_KEY_1: "maintenance.auto", GIT_CONFIG_VALUE_1: "false",
+                                             GIT_CONFIG_KEY_2: "gc.autoDetach", GIT_CONFIG_VALUE_2: "false" });
+const aufraeumen = (dir) => rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 const git = (cwd, ...args) => {
   const r = spawnSync("git", args, { cwd, env: ENV, encoding: "utf8" });
   if (r.status !== 0) throw new Error("git " + args.join(" ") + ": " + r.stderr);
@@ -67,7 +74,7 @@ test("PR1 · Matrix und Produkt-Projektion im Konflikt: eigener Stand, Push geli
     assert.match(w.r.stdout, /Erzeugerhoheit aufgeloest \(eigener Stand\): quant\/data\/product\/capabilities-v1\.json/);
     assert.equal(w.head, "refresh");
     for (const f of [MATRIX, PROJ, PROJ_SUM]) assert.equal(w.lies(f), "refresh", f);
-  } finally { rmSync(w.root, { recursive: true, force: true }); }
+  } finally { aufraeumen(w.root); }
 });
 
 test("PR2 · Gegenprobe: ein Konflikt in Kursdaten bricht ab, nichts wird geschoben", () => {
@@ -77,7 +84,7 @@ test("PR2 · Gegenprobe: ein Konflikt in Kursdaten bricht ab, nichts wird gescho
     assert.match(w.r.stderr, /Konflikt ausserhalb erzeugter Artefakte: quant\/data\/market\/discover-series\/ref_AAPL\.json/);
     assert.equal(w.head, "intraday");
     assert.equal(w.lies(REIHE), "intraday");
-  } finally { rmSync(w.root, { recursive: true, force: true }); }
+  } finally { aufraeumen(w.root); }
 });
 
 test("PR3 · Jeder Pfad, den der Refresh UND ein Intraday-/Takt-Lauf committen, steht unter Erzeugerhoheit", () => {
@@ -98,4 +105,81 @@ test("PR3 · Jeder Pfad, den der Refresh UND ein Intraday-/Takt-Lauf committen, 
   for (const p of geteilt) assert.ok(deckt(p), "geteilter Pfad ohne Erzeugerhoheit: " + p);
   /* Kursdaten stehen nie unter Erzeugerhoheit. */
   for (const e of erzeugt) assert.ok(!/discover-series|golden-preview|intraday\/20|discover\/data/.test(e), e);
+});
+
+/* PR4 · ZWEI EIGENE COMMITS, DER ZWEITE IM ECHTEN KONFLIKT.
+   Der Taktgeber committet je Zyklus und schiebt nicht immer erfolgreich
+   (run-pacemaker.mjs: ein fehlgeschlagener Push ist nicht fatal). Dann
+   stehen mehrere eigene Commits an, und der Rebase haelt mehrmals.
+   Vorher loeste das Skript den ersten Halt nach Erzeugerhoheit, rief
+   `rebase --continue` - und meldete Erfolg, auch wenn der Rebase beim
+   zweiten Commit im Konflikt stehen blieb. Geschoben wurde dann ein halb
+   rebaster HEAD. Jetzt: jeder Halt wird geprueft; ein Konflikt ausserhalb
+   der Erzeugerhoheit bricht ab, nichts wird geschoben, kein Rebase bleibt
+   offen. */
+function zweiCommits(zweiteDatei) {
+  const root = mkdtempSync(join(tmpdir(), "vu-push2-"));
+  const remote = join(root, "remote.git");
+  git(root, "init", "-q", "--bare", "-b", "main", remote);
+  const seed = join(root, "seed");
+  git(root, "clone", "-q", remote, seed);
+  for (const f of [MATRIX, PROJ, PROJ_SUM, REIHE]) schreibe(seed, f, { stand: "basis", n: 1 });
+  git(seed, "add", "-A"); git(seed, "commit", "-q", "-m", "basis"); git(seed, "push", "-q", "origin", "HEAD:main");
+  const takt = join(root, "takt"), andere = join(root, "andere");
+  git(root, "clone", "-q", remote, takt); git(root, "clone", "-q", remote, andere);
+  for (const f of [MATRIX, zweiteDatei]) schreibe(andere, f, { stand: "andere", n: 2 });
+  git(andere, "add", "-A"); git(andere, "commit", "-q", "-m", "andere"); git(andere, "push", "-q", "origin", "HEAD:main");
+  /* Zyklus 1: nur die Matrix (Erzeugerhoheit). Zyklus 2: die zweite Datei. */
+  schreibe(takt, MATRIX, { stand: "takt-1", n: 3 });
+  git(takt, "add", "-A"); git(takt, "commit", "-q", "-m", "takt-1");
+  schreibe(takt, zweiteDatei, { stand: "takt-2", n: 4 });
+  git(takt, "add", "-A"); git(takt, "commit", "-q", "-m", "takt-2");
+  const r = spawnSync("bash", [SCRIPT, "main", "2"], { cwd: takt, env: ENV, encoding: "utf8" });
+  const pruef = join(root, "pruef");
+  git(root, "clone", "-q", remote, pruef);
+  const lies = (f) => JSON.parse(readFileSync(join(pruef, f), "utf8")).stand;
+  const rebaseOffen = spawnSync("git", ["rev-parse", "--git-path", "rebase-merge"], { cwd: takt, env: ENV, encoding: "utf8" }).stdout.trim();
+  return { root, r, lies, head: git(pruef, "log", "-1", "--format=%s"), rebaseOffen: existsSync(join(takt, rebaseOffen)) };
+}
+
+test("PR4 · Zwei eigene Commits, beide in Erzeugerhoheit: beide landen, kein offener Rebase", () => {
+  const w = zweiCommits(PROJ);
+  try {
+    assert.equal(w.r.status, 0, w.r.stdout + w.r.stderr);
+    assert.equal(w.head, "takt-2");
+    assert.equal(w.lies(MATRIX), "takt-1");
+    assert.equal(w.lies(PROJ), "takt-2");
+    assert.equal(w.rebaseOffen, false);
+  } finally { aufraeumen(w.root); }
+});
+
+test("PR5 · Zweiter Commit im Kursdaten-Konflikt: Abbruch, nichts halb Rebastes wird geschoben", () => {
+  const w = zweiCommits(REIHE);
+  try {
+    assert.equal(w.r.status, 1, w.r.stdout + w.r.stderr);
+    assert.match(w.r.stderr, /Konflikt ausserhalb erzeugter Artefakte: quant\/data\/market\/discover-series\/ref_AAPL\.json/);
+    assert.equal(w.head, "andere", "ein halb rebaster Stand wurde geschoben");
+    assert.equal(w.lies(REIHE), "andere");
+    assert.equal(w.lies(MATRIX), "andere");
+    assert.equal(w.rebaseOffen, false, "der Rebase blieb offen");
+  } finally { aufraeumen(w.root); }
+});
+
+test("PR6 · Konflikt im Intraday-Verzeichnis (von einem Feature-PR mitgebracht): eigener Stand, Push gelingt", () => {
+  /* Lauf 37083168221: 5.237 geschriebene Tagesverlaeufe wurden an genau
+     diesem Konflikt verworfen. */
+  const w = wettlauf("quant/data/market/intraday/index.json");
+  try {
+    assert.equal(w.r.status, 0, w.r.stdout + w.r.stderr);
+    assert.match(w.r.stdout, /Erzeugerhoheit aufgeloest \(eigener Stand\): quant\/data\/market\/intraday\/index\.json/);
+    assert.equal(w.lies("quant/data/market/intraday/index.json"), "refresh");
+  } finally { aufraeumen(w.root); }
+});
+
+test("PR7 · Ein Tagesverlauf im Sitzungsordner steht nie unter Erzeugerhoheit", () => {
+  const w = wettlauf("quant/data/market/intraday/2026-10-02/ref_AAPL.json");
+  try {
+    assert.equal(w.r.status, 1);
+    assert.equal(w.lies("quant/data/market/intraday/2026-10-02/ref_AAPL.json"), "intraday");
+  } finally { aufraeumen(w.root); }
 });

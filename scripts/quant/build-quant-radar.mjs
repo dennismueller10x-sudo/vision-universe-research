@@ -111,7 +111,11 @@ function nextStep(t) {
   if (!s || !s.row) return null;
   const cascade = SetupEngine.explainCascade(mapping, s.row, { close: s.close, previous: s.previous });
   const own = cascade.find((r) => s.observation && r.ruleId === s.observation.r) || null;
-  const higher = cascade.filter((r) => r.tier === "POINT_IN_TIME" && !r.unanswerable && (!own || r.order < own.order) && r.matched !== true && (r.open || []).length > 0)
+  /* Naechste Bedingung heisst naechste STUFE: eine andere Regel derselben
+     Stufe (z. B. eine zweite Beobachten-Regel) ist kein Schritt nach vorn. */
+  const curRank = Radar.MATURITY[(lifecycle[t] || [])[0]] ?? (own ? Radar.MATURITY[own.state] ?? 0 : 0);
+  const higher = cascade.filter((r) => r.tier === "POINT_IN_TIME" && !r.unanswerable && (!own || r.order < own.order) && r.matched !== true && (r.open || []).length > 0
+      && (Radar.MATURITY[r.state] ?? -1) > curRank)
     .sort((a, b) => a.open.length - b.open.length || b.order - a.order)[0];
   if (!higher) return null;
   const open = higher.conditions.filter((c) => c.met === false).map((c) => ({ field: c.field, demand: c.demand, value: c.value }));
@@ -154,6 +158,10 @@ function backtestEvidenceFor(type) {
       medianExcess: c.medianExcess, trust: rule.trust, sentence: rule.display.sentence, caveats: rule.display.caveats,
       basePositiveShare: c.basePositiveShare, deltaPositiveShare: c.deltaPositiveShare, deltaCi: c.deltaCi, effectiveN: c.effectiveN,
       edgeOutOfSample: !!rule.edgeOutOfSample,
+      /* Welche Vertrauensbausteine offen sind - fuer die Checkliste in
+         Alltagssprache (quant/methodology/evidence-language-v1.json). */
+      openChecks: Object.entries(rule.checks || {}).filter(([, v]) => v && v.state !== "PASS").map(([k]) => k).sort(),
+      checkedIds: Object.keys(rule.checks || {}).sort(),
       certification: (() => { const k = certKind("SIGNAL_BACKTEST"), r = k && (k.rules || []).find((x) => x.id === rule.id); return r ? { status: r.status, tier: k.tier, readiness: r.readiness } : null; })() };
   }
   return (backtestCache[type] = out);
@@ -278,15 +286,35 @@ const fPrev = factorDates.length > 1 ? gz(join(FACTOR_HISTORY, factorVersion, fa
 const fIds = (fNow.fields || []).map((f) => f.split(".").pop());
 const factorCoverage = {};
 for (const [t, row] of Object.entries(fNow.rows || {})) factorCoverage[t] = row.filter((v) => typeof v === "number").length;
-if (fPrev) methodGate("FACTOR", fPrev, fNow, () => {
+/* Stufe = Position unter allen bewerteten Titeln desselben Stichtags
+   (factor-band-2.0.0). Beide Staende werden mit derselben Regel gezaehlt -
+   ein Stufenwechsel ist damit ein Wechsel der Position, keine Folge davon,
+   dass sich die Regel geaendert hat. */
+const sortedOf = (rows) => fIds.map((id, i) => Object.values(rows || {}).map((r) => r[i]).filter((v) => typeof v === "number").sort((a, b) => a - b));
+const fNowSorted = sortedOf(fNow.rows), fPrevSorted = fPrev ? sortedOf(fPrev.rows) : null;
+/* SEIT WANN GILT DIE STUFENREGEL? Veroeffentlichte Stichtage werden nie neu
+   geschrieben, ihr Methodik-Stempel kennt die Stufenregel daher nicht. Der
+   Radar merkt sich deshalb selbst, ab welchem Datenstand die aktuelle
+   Stufenregel gilt (factorBandSince). Ein Paar, dessen alter Stand davor
+   liegt, wuerde unter der neuen Regel Wechsel melden, die unter der alten
+   schon anders gemeldet wurden - das ist ein Methodikwechsel, kein
+   Marktereignis, und wird als METHOD_REBASE unterdrueckt. */
+const RADAR_OUT = P("quant/data/product/radar-v1.json.gz");
+const previousRadar = existsSync(RADAR_OUT) ? (() => { try { return gz(RADAR_OUT); } catch { return null; } })() : null;
+const factorBandSince = previousRadar && previousRadar.factorBandSince && previousRadar.factorBandSince.version === VM.BAND_SEMANTICS_VERSION
+  ? previousRadar.factorBandSince : { version: VM.BAND_SEMANTICS_VERSION, asOf: fNow.asOf };
+const bandMethod = (snap, version) => snap && snap.method ? Radar.snapshotMethod(Object.assign({}, snap.method.components, { factorBand: version })) : null;
+const bandAware = (snap, version) => snap ? Object.assign({}, snap, { method: bandMethod(snap, version) }) : snap;
+const prevBandVersion = fPrev && fPrev.asOf < factorBandSince.asOf ? "factor-band-1" : VM.BAND_SEMANTICS_VERSION;
+if (fPrev) methodGate("FACTOR", bandAware(fPrev, prevBandVersion), bandAware(fNow, VM.BAND_SEMANTICS_VERSION), () => {
   for (const [t, row] of Object.entries(fNow.rows || {})) {
     const old = fPrev.rows[t];
     if (!old) continue;
     fIds.forEach((id, i) => {
       const a = old[i], b = row[i];
       if (typeof a !== "number" || typeof b !== "number" || Math.abs(b - a) < FACTOR_MIN_MOVE) return;
-      const ba = VM.band(a), bb = VM.band(b);
-      if (ba === bb) return;
+      const ba = VM.bandIn(fPrevSorted[i], a), bb = VM.bandIn(fNowSorted[i], b);
+      if (!ba || !bb || ba === bb) return;
       const up = b > a, name = VM.FACTORS[id] ? VM.FACTORS[id].name : id;
       /* Beim Risiko-Faktor heisst ein schwaecherer Wert "mehr Schwankung" -
          das ist das Ereignis "Risiko steigt", nicht ein zweites daneben. */
@@ -446,14 +474,15 @@ const byTicker = {};
 for (const e of events) (byTicker[e.ticker] = byTicker[e.ticker] || []).push(e);
 const compactBacktest = (be) => (be.state === "AVAILABLE"
   ? { state: "AVAILABLE", n: be.n, positiveShare: be.positiveShare, median: be.median, typicalDrawdown: be.typicalDrawdown, chanceRisk: be.chanceRisk, medianExcess: be.medianExcess, trust: be.trust, returnType: be.returnType, horizon: be.horizon,
-      basePositiveShare: be.basePositiveShare, deltaPositiveShare: be.deltaPositiveShare, deltaCi: be.deltaCi, effectiveN: be.effectiveN, edgeOutOfSample: be.edgeOutOfSample === true, certification: be.certification || null }
+      basePositiveShare: be.basePositiveShare, deltaPositiveShare: be.deltaPositiveShare, deltaCi: be.deltaCi, effectiveN: be.effectiveN, edgeOutOfSample: be.edgeOutOfSample === true,
+      occurrences: be.occurrences, openChecks: be.openChecks || [], checkedIds: be.checkedIds || [], certification: be.certification || null }
   : { state: "WITHHELD", reason: be.reason, trust: be.trust, certification: be.certification || null, progress: be.progress || null });
 
 let cards = Object.keys(byTicker).map((t) => {
   const s = setupNow[t], lc = lifecycle[t];
   return {
     ticker: t, securityId: securityOf(t),
-    events: byTicker[t].map((e) => ({ id: e.id, eventType: e.eventType, direction: e.direction, occurredAt: e.occurredAt, explanation: e.explanation, trustState: e.trustState, backtest: compactBacktest(e.backtestEvidence) })),
+    events: byTicker[t].map((e) => ({ id: e.id, eventType: e.eventType, direction: e.direction, occurredAt: e.occurredAt, explanation: e.explanation, trustState: e.trustState, isNew: e.isNew, backtest: compactBacktest(e.backtestEvidence) })),
     setup: lc ? { state: lc[0], since: lc[1], sinceIsLowerBound: !!lc[2], previous: lc[3], previousAsOf: lc[4],
       /* Nur eine Marke UNTER dem Kurs ist eine Invalidierung eines
          Aufwaerts-Setups; liegt sie darueber, stammt sie aus einem
@@ -532,7 +561,13 @@ const radar = {
   priorityRule: Radar.PRIORITY_RULE,
   summary: {
     newSetups: byType.SETUP_NEW, confirmedSetups: byType.SETUP_CONFIRMED, weakenedSetups: byType.SETUP_WEAKENED,
-    improvingTickers: tickersUp.size, riskRisingTickers: tickersRisk.size, newStrategyMatches: byType.STRATEGY_MATCH_NEW, newHighs: byType.NEW_52W_HIGH
+    improvingTickers: tickersUp.size, riskRisingTickers: tickersRisk.size, newStrategyMatches: byType.STRATEGY_MATCH_NEW, newHighs: byType.NEW_52W_HIGH,
+    /* evidence-language-1.0.0: messbarer Vorteil heisst 95-%-Band der
+       Differenz zur Base Rate ganz ueber 0 (schwaecher: ganz unter 0). */
+    edgeTickers: new Set(events.filter((e) => e.backtestEvidence && e.backtestEvidence.state === "AVAILABLE" && Array.isArray(e.backtestEvidence.deltaCi) && e.backtestEvidence.deltaCi[0] > 0).map((e) => e.ticker)).size,
+    weakerEdgeTickers: new Set(events.filter((e) => e.backtestEvidence && e.backtestEvidence.state === "AVAILABLE" && Array.isArray(e.backtestEvidence.deltaCi) && e.backtestEvidence.deltaCi[1] < 0).map((e) => e.ticker)).size,
+    testedSignalTickers: new Set(events.filter((e) => e.backtestEvidence && e.backtestEvidence.state === "AVAILABLE").map((e) => e.ticker)).size,
+    edgeLanguage: "evidence-language-1.0.0"
   },
   caveats: {
     /* Gemessen im Aktivierungs-Gate der Setup-Engine: welcher Anteil der
@@ -562,6 +597,7 @@ const radar = {
   /* Intern, nicht fuer Radar, Watchlist oder Alerts: Vergleiche, die eine
      Methodikaenderung statt einer Aenderung der Aktie gemessen haetten. */
   methodRebase: methodRebases,
+  factorBandSince,
   events, cards
 };
 if (violations.length) throw Error("ALERT_CONTRACT_VIOLATED: " + JSON.stringify(Radar.eventViolations(violations[0])) + " " + violations[0].id);

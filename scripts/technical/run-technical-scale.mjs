@@ -42,6 +42,7 @@ const T = (n) => require(join(engines, "technical", n));
 const Canonical = T("canonical-bars.js");
 const Analysis = T("technical-analysis.js");
 const MarketStore = require(join(engines, "market-store.js"));
+const Identity = require(join(root, "core", "identity.js"));
 
 const METH = {
   technical: JSON.parse(readFileSync(join(root, "quant", "methodology", "technical-v1.json"), "utf8")),
@@ -124,7 +125,7 @@ function toSeries(payload, ticker) {
 /* --------------------------------------------------------- Benchmark */
 
 let benchSeries = null;
-const benchPayload = store.readBars("ref_" + BENCHMARK, "working");
+const benchPayload = store.readBars(Identity.securityIdForTicker(BENCHMARK), "working");
 if (benchPayload && (benchPayload.bars || []).length >= MIN_BARS) {
   benchSeries = toSeries(benchPayload, BENCHMARK);
   console.log(`  Benchmark: ${BENCHMARK}, ${benchSeries ? benchSeries.length : 0} Bars`);

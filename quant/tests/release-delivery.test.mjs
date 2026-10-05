@@ -36,7 +36,7 @@ test('builder rejects contaminated destinations and symlink inputs without delet
   await writeFile(join(root,'quant/data/sec/inspector_index.json'),JSON.stringify({companies:[]}));
   for(const name of ['quant-factor-inputs.json','coverage_matrix.json','pit_gates.json'])await writeFile(join(root,'quant/data/sec/'+name),JSON.stringify({evidence:'retained',name}));
   await writeFile(join(root,'index.html'),'existing home');
-  await mkdir(join(root,'quant/app'),{recursive:true});await writeFile(join(root,'quant/index.html'),'<body><script src="/quant/app/ui.js"></script><script src="/quant/app/app.js"></script></body>');
+  await mkdir(join(root,'quant/app'),{recursive:true});await writeFile(join(root,'quant/index.html'),'<head><script>document.documentElement.setAttribute("data-theme","dark")</script></head><body><vu-navigation theme-switch></vu-navigation><script>void "nav-sync";</script><script src="/quant/app/ui.js"></script><script src="/quant/app/app.js"></script></body>');
   await writeFile(join(root,'quant/app/ui.js'),'var ui=0;');await writeFile(join(root,'quant/app/app.js'),'void 0;');
   /* Die Quelle von vu2/index.html ist irrelevant: das Release ueberschreibt sie mit der Weiterleitung. */
   await mkdir(join(root,'vu2'));await writeFile(join(root,'vu2/index.html'),'<body>alt</body>');
@@ -46,7 +46,10 @@ test('builder rejects contaminated destinations and symlink inputs without delet
   const report=await buildRelease({root,output});assert.equal(report.status,'PASS');
   /* /quant/ ist das gebuendelte kanonische Produkt. */
   const firstHTML=await readFile(join(output,'quant/index.html'),'utf8');assert.match(firstHTML,/<script src="\/quant\/release-bundle\.js\?v=[a-f0-9]{16}"><\/script>/);
-  assert.equal((firstHTML.match(/<script\b/g)||[]).length,1,'only the bundle script remains in the canonical page');
+  assert.equal((firstHTML.match(/<script src=/g)||[]).length,1,'only the bundle remains as external script in the canonical page');
+  /* Attributlose Inline-Skripte (Farbschema, Navigation) bleiben an ihrer Stelle. */
+  assert.match(firstHTML,/<head><script>document\.documentElement\.setAttribute\("data-theme","dark"\)<\/script><\/head>/);
+  assert.match(firstHTML,/<script>void "nav-sync";<\/script>/);
   assert.doesNotMatch(firstHTML,/location\.replace/,'the canonical product must not redirect anywhere');
   assert.doesNotMatch(firstHTML,/\/vu2\//,'the canonical product must not point back to /vu2/');
   const bundle=await readFile(join(output,'quant/release-bundle.js'),'utf8');

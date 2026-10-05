@@ -1,7 +1,7 @@
 {
  "schemaVersion": "backtest-certification-1.0.0",
- "generatedAt": "2026-10-03T11:38:13.444Z",
- "asOf": "2026-10-03",
+ "generatedAt": "2026-10-05T07:00:47.212Z",
+ "asOf": "2026-10-05",
  "methodology": "backtest-certification-1.0.0",
  "kinds": [
   {
@@ -253,7 +253,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "89039 Fälle mit 6-Monats-Ergebnis aus 5167 Titeln",
+       "value": "89028 Fälle mit 6-Monats-Ergebnis aus 5167 Titeln",
        "required": null,
        "reason": null
       },
@@ -334,7 +334,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1837 Wochen, 141 Quartale, effektiv ≈ 19950 unabhängige Fälle",
+       "value": "1837 Wochen, 141 Quartale, effektiv ≈ 19899 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -352,7 +352,7 @@
        "label": "Vollständigkeit",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "0.998 der abgeschlossenen Fälle mit allen vier Zeiträumen",
+       "value": "0.999 der abgeschlossenen Fälle mit allen vier Zeiträumen",
        "required": null,
        "reason": null
       },
@@ -393,7 +393,7 @@
       }
      ],
      "sample": {
-      "n": 89039,
+      "n": 89028,
       "titles": 5167
      },
      "independence": {
@@ -401,8 +401,8 @@
       "uniquePeriods": 1837,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 19950,
-      "designEffect": 4.46
+      "effectiveN": 19899,
+      "designEffect": 4.47
      },
      "returnType": "TOTAL_RETURN",
      "baseRate": {
@@ -411,7 +411,7 @@
       "delta": -0.0137,
       "ci": [
        -0.0201,
-       -0.0073
+       -0.0072
       ]
      }
     },
@@ -441,7 +441,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "89392 Fälle mit 6-Monats-Ergebnis aus 5191 Titeln",
+       "value": "89383 Fälle mit 6-Monats-Ergebnis aus 5191 Titeln",
        "required": null,
        "reason": null
       },
@@ -522,7 +522,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1838 Wochen, 141 Quartale, effektiv ≈ 24367 unabhängige Fälle",
+       "value": "1838 Wochen, 141 Quartale, effektiv ≈ 24257 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -602,7 +602,7 @@
       }
      ],
      "sample": {
-      "n": 89392,
+      "n": 89383,
       "titles": 5191
      },
      "independence": {
@@ -610,17 +610,17 @@
       "uniquePeriods": 1838,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 24367,
-      "designEffect": 3.67
+      "effectiveN": 24257,
+      "designEffect": 3.68
      },
      "returnType": "TOTAL_RETURN",
      "baseRate": {
-      "positiveShare": 0.569,
-      "base": 0.5715,
+      "positiveShare": 0.5689,
+      "base": 0.5714,
       "delta": -0.0025,
       "ci": [
-       -0.0084,
-       0.0033
+       -0.0083,
+       0.0034
       ]
      }
     },
@@ -650,7 +650,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "86267 Fälle mit 6-Monats-Ergebnis aus 5138 Titeln",
+       "value": "86260 Fälle mit 6-Monats-Ergebnis aus 5137 Titeln",
        "required": null,
        "reason": null
       },
@@ -731,7 +731,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1837 Wochen, 141 Quartale, effektiv ≈ 26077 unabhängige Fälle",
+       "value": "1837 Wochen, 141 Quartale, effektiv ≈ 26093 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -797,15 +797,15 @@
       }
      ],
      "sample": {
-      "n": 86267,
-      "titles": 5138
+      "n": 86260,
+      "titles": 5137
      },
      "independence": {
-      "uniqueTitles": 5138,
+      "uniqueTitles": 5137,
       "uniquePeriods": 1837,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 26077,
+      "effectiveN": 26093,
       "designEffect": 3.31
      },
      "returnType": "TOTAL_RETURN",
@@ -845,7 +845,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "86456 Fälle mit 6-Monats-Ergebnis aus 5162 Titeln",
+       "value": "86446 Fälle mit 6-Monats-Ergebnis aus 5161 Titeln",
        "required": null,
        "reason": null
       },
@@ -926,7 +926,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1836 Wochen, 141 Quartale, effektiv ≈ 25422 unabhängige Fälle",
+       "value": "1836 Wochen, 141 Quartale, effektiv ≈ 24754 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -953,7 +953,7 @@
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
        "state": "FAIL",
-       "value": "Δ -0.001",
+       "value": "Δ -0.0009",
        "required": null,
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
       }
@@ -1008,30 +1008,30 @@
        "id": "edgeOutOfSample",
        "category": "QUALITY",
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
-       "value": "Δ -0.001",
+       "value": "Δ -0.0009",
        "required": null
       }
      ],
      "sample": {
-      "n": 86456,
-      "titles": 5162
+      "n": 86446,
+      "titles": 5161
      },
      "independence": {
-      "uniqueTitles": 5162,
+      "uniqueTitles": 5161,
       "uniquePeriods": 1836,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 25422,
-      "designEffect": 3.4
+      "effectiveN": 24754,
+      "designEffect": 3.49
      },
      "returnType": "TOTAL_RETURN",
      "baseRate": {
       "positiveShare": 0.5683,
-      "base": 0.5693,
-      "delta": -0.001,
+      "base": 0.5692,
+      "delta": -0.0009,
       "ci": [
        -0.0067,
-       0.0047
+       0.0049
       ]
      }
     },
@@ -1043,7 +1043,7 @@
        "label": "Point-in-Time",
        "category": "HARD",
        "state": "PASS",
-       "value": "302 Fälle mit abgeschnittener und verfälschter Zukunft geprüft, 0 Abweichungen",
+       "value": "301 Fälle mit abgeschnittener und verfälschter Zukunft geprüft, 0 Abweichungen",
        "required": null,
        "reason": null
       },
@@ -1061,7 +1061,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "56433 Fälle mit 6-Monats-Ergebnis aus 4921 Titeln",
+       "value": "56425 Fälle mit 6-Monats-Ergebnis aus 4920 Titeln",
        "required": null,
        "reason": null
       },
@@ -1142,7 +1142,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1832 Wochen, 141 Quartale, effektiv ≈ 11055 unabhängige Fälle",
+       "value": "1832 Wochen, 141 Quartale, effektiv ≈ 11026 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -1222,25 +1222,25 @@
       }
      ],
      "sample": {
-      "n": 56433,
-      "titles": 4921
+      "n": 56425,
+      "titles": 4920
      },
      "independence": {
-      "uniqueTitles": 4921,
+      "uniqueTitles": 4920,
       "uniquePeriods": 1832,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 11055,
-      "designEffect": 5.1
+      "effectiveN": 11026,
+      "designEffect": 5.12
      },
      "returnType": "TOTAL_RETURN",
      "baseRate": {
-      "positiveShare": 0.5831,
-      "base": 0.5694,
+      "positiveShare": 0.583,
+      "base": 0.5693,
       "delta": 0.0137,
       "ci": [
        0.005,
-       0.0223
+       0.0224
       ]
      }
     }
@@ -1483,7 +1483,7 @@
    },
    "replay": {
     "role": "PIT-Nachweis der Engine (rekonstruiert, keine Ergebnisquelle)",
-    "parity": "992/992",
+    "parity": "1034/1034",
     "mismatches": 0
    }
   },
@@ -1515,7 +1515,7 @@
      "label": "Monate mit Index-Zugehörigkeit",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "1 (2 Stände seit 2026-09-15)",
+     "value": "2 (3 Stände seit 2026-09-15)",
      "required": 24,
      "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
     },
@@ -1571,7 +1571,7 @@
      "id": "membershipHistory",
      "category": "HISTORY",
      "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
-     "value": "1 (2 Stände seit 2026-09-15)",
+     "value": "2 (3 Stände seit 2026-09-15)",
      "required": 24
     },
     {
@@ -1584,31 +1584,31 @@
    ],
    "membership": {
     "SP500": {
-     "snapshots": 2,
-     "months": 1,
+     "snapshots": 3,
+     "months": 2,
      "earliest": "2026-09-15",
-     "latest": "2026-09-26",
+     "latest": "2026-10-03",
      "maxGapDays": 11,
      "medianGapDays": 11,
-     "staleDays": 7
+     "staleDays": 2
     },
     "NDX": {
-     "snapshots": 2,
-     "months": 1,
+     "snapshots": 3,
+     "months": 2,
      "earliest": "2026-09-15",
-     "latest": "2026-09-26",
+     "latest": "2026-10-03",
      "maxGapDays": 11,
      "medianGapDays": 11,
-     "staleDays": 7
+     "staleDays": 2
     },
     "DJIA": {
-     "snapshots": 2,
-     "months": 1,
+     "snapshots": 3,
+     "months": 2,
      "earliest": "2026-09-15",
-     "latest": "2026-09-26",
+     "latest": "2026-10-03",
      "maxGapDays": 11,
      "medianGapDays": 11,
-     "staleDays": 7
+     "staleDays": 2
     }
    },
    "factor": {
@@ -1619,12 +1619,12 @@
     "latest": "2026-10-02",
     "maxGapDays": 3,
     "medianGapDays": 1,
-    "staleDays": 1
+    "staleDays": 3
    },
    "eta": {
     "membership": {
-     "remaining": 23,
-     "date": "2028-08-26"
+     "remaining": 22,
+     "date": "2028-08-02"
     },
     "factor": {
      "remaining": 22,
@@ -1678,7 +1678,7 @@
      "label": "Monate mit Index-Zugehörigkeit",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": 1,
+     "value": 2,
      "required": 24,
      "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
     },
@@ -1721,7 +1721,7 @@
      "id": "membershipHistory",
      "category": "HISTORY",
      "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
-     "value": 1,
+     "value": 2,
      "required": 24
     }
    ],

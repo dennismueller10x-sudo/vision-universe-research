@@ -16,6 +16,12 @@ async function readJson(req, path) {
   return response.json();
 }
 
+function freshnessOf(asOf, regularComplete) {
+  const t = Date.parse(asOf);
+  return { servedAt: new Date().toISOString(), ageMinutes: Number.isFinite(t) ? Math.round((Date.now() - t) / 60000) : null,
+           final: regularComplete === true };
+}
+
 module.exports = async function handler(req, res) {
   if (preflight(req, res)) return;
   if (req.method !== "GET") return json(req, res, 405, { state: "METHOD_NOT_ALLOWED" });
@@ -46,6 +52,10 @@ module.exports = async function handler(req, res) {
       sessionDate: snapshot.sessionDate, marketState: snapshot.marketStateAtFetch,
       asOf: snapshot.asOf, interval: snapshot.interval, delayMinutes: snapshot.delayMinutes,
       regularComplete: snapshot.regularComplete, points: snapshot.points,
+      /* Alter beim Ausliefern: ein eingefrorener Tagesverlauf (Takt steht,
+         Schluss fehlt) war sonst nicht von einem laufenden zu unterscheiden
+         (Plattform-Audit 03.10.2026). Additiv; bestehende Felder bleiben. */
+      freshness: freshnessOf(snapshot.asOf, snapshot.regularComplete),
       priceSemantics: "UNSPECIFIED", provenance: { source: "CANONICAL_INTRADAY_SNAPSHOT" }
     });
   } catch {

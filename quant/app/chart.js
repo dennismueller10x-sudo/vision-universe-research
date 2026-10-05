@@ -98,6 +98,24 @@
     return copy;
   }
 
+  /* Vortagesschluss aus der Tagesreihe, sobald sie die Sitzung enthaelt
+     (Splits dieser Sitzung sind dann eingerechnet). Der Snapshot haelt den
+     Wert beim Abholen fest; ein spaeter veroeffentlichter Split machte ihn
+     falsch (BGM 01.10.2026: +3.928 %). Dieselbe Regel wie
+     discover/ui/detail.js#vortagAusReihe (ADR-002). */
+  function vortagAusReihe(snap, punkte) {
+    if (!snap || !snap.sessionDate || !punkte || !punkte.length) return snap;
+    if (punkte[punkte.length - 1][0] < snap.sessionDate) return snap;
+    var vor = null;
+    for (var i = 0; i < punkte.length && punkte[i][0] < snap.sessionDate; i++) vor = punkte[i][1];
+    if (!isNum(vor) || !(vor > 0) || vor === snap.previousClose) return snap;
+    var kopie = {};
+    Object.keys(snap).forEach(function (k) { kopie[k] = snap[k]; });
+    kopie.previousClose = vor;
+    kopie.previousCloseSource = "DAILY_SERIES";
+    return kopie;
+  }
+
   /**
    * @param {object} o {ticker, eod:[[date,close]], currency, adjusted, splitEvents,
    *                    longPath, loadJSON, onPrice(fn)}
@@ -214,14 +232,17 @@
     }
 
     function drawIntraday() {
-      var p = st.intraday, snap = withLive(p, st.trade);
+      var p = st.intraday, snap = vortagAusReihe(withLive(p, st.trade), o.adjusted ? eod : null);
       var pts = (snap.points || []).filter(function (x) { return x && isNum(x[1]); });
       var last = pts.length ? pts[pts.length - 1][1] : null;
       var base = isNum(snap.previousClose) ? snap.previousClose : (pts.length ? pts[0][1] : null);
       var delta = isNum(last) && isNum(base) && base > 0 ? (last / base - 1) * 100 : null;
       var q = SS ? SS.bestimme({ resolution: Hub && Hub.resolution ? Hub.resolution() : null, snapshot: p.snapshot, live: st.trade, now: new Date() }) : null;
       var frozen = !!(q && q.isFrozen) || snap.regularComplete === true;
-      head(last, delta, frozen ? "am " + dateDe(snap.sessionDate) + (snap.lastRegularLocal ? ", letzter 5-Minuten-Kurs " + String(snap.lastRegularLocal).slice(0, 5) + " Uhr" : "") : "heute",
+      /* Ein Stand, der nicht live ist (STALE: Schluss fehlt, Takt steht),
+         heisst nicht "heute" - er traegt sein Datum und seine Uhrzeit. */
+      var datiert = frozen || !!(q && q.state === "STALE");
+      head(last, delta, datiert ? "am " + dateDe(snap.sessionDate) + (snap.lastRegularLocal ? ", letzter 5-Minuten-Kurs " + String(snap.lastRegularLocal).slice(0, 5) + " Uhr" : "") : "heute",
         (isNum(snap.previousClose) ? "seit Vortagesschluss " + global.QX.money(snap.previousClose, o.currency || "USD") : "seit dem ersten Kurs des Tages") +
         (q && q.label ? " · " + q.label : ""));
       var svg = MC && MC.renderIntraday ? MC.renderIntraday(snap, { width: width(), height: height(), axis: true, symbol: o.ticker, label: q && q.label }) : null;

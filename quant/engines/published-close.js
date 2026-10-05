@@ -55,7 +55,21 @@
     return { close: kurs, date: tag, currency: series.currency, basis: BASIS };
   }
 
-  var api = { SCHEMA: SCHEMA, BASIS: BASIS, lastPoint: lastPoint };
+  /* RUNDUNG EINES VEROEFFENTLICHTEN SCHLUSSKURSES (Plattform-Audit 03.10.2026).
+     Beide Publisher (discover-series, discover-series-long) rundeten auf
+     Cent. Unter 0,5 Cent wurde daraus 0 (CPTAF, DMN lieferten Kurs 0), und
+     unter einem Dollar ging die Praezision verloren (0,0149 -> 0,01 sind
+     -33 %; DQ-PX-3 meldete solche Spruenge als unplausibel). Ab 1 $ bleibt
+     es beim Cent - kein einziger veroeffentlichter Wert ab 1 $ aendert sich;
+     darunter vier signifikante Stellen. Kein positiver Kurs wird 0, und ein
+     nicht positiver Kurs ist kein Kurs (null). */
+  function roundClose(value) {
+    if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) return null;
+    if (value >= 1) return Math.round(value * 100) / 100;
+    return Number(value.toPrecision(4));
+  }
+
+  var api = { SCHEMA: SCHEMA, BASIS: BASIS, lastPoint: lastPoint, roundClose: roundClose };
   if (isNode) module.exports = api;
   else global.VUPublishedClose = api;
 })(typeof window !== "undefined" ? window : globalThis);

@@ -92,9 +92,33 @@ test("bands use the contract cut points", () => {
   contract.score.ratingBands.forEach((band) => {
     assert.ok(FactorEvidence.BANDS.some((entry) => entry.min === band.min), "missing band at " + band.min);
   });
-  assert.equal(FactorEvidence.band(95).id, "VERY_STRONG");
-  assert.equal(FactorEvidence.band(50).id, "NEUTRAL");
-  assert.equal(FactorEvidence.band(10).id, "VERY_WEAK");
+  /* factor-band-2.0.0: die Grenzen gelten fuer die POSITION. */
+  assert.equal(FactorEvidence.BAND_SEMANTICS_VERSION, "factor-band-2.0.0");
+  assert.equal(FactorEvidence.bandForPosition(95).id, "VERY_STRONG");
+  assert.equal(FactorEvidence.bandForPosition(50).id, "NEUTRAL");
+  assert.equal(FactorEvidence.bandForPosition(10).id, "VERY_WEAK");
+  assert.equal(FactorEvidence.bandForPosition(null), null);
+  assert.equal(FactorEvidence.band, undefined, "keine Stufe mehr direkt aus dem Faktorwert");
+});
+
+test("position: Anteil niedrigerer Werte, Gleichstand zaehlt nicht, unter 100 Titeln keine", () => {
+  const sorted = Array.from({ length: 201 }, (_, i) => i / 2);   /* 0, 0.5, ..., 100 */
+  assert.equal(FactorEvidence.positionOf(sorted, 0), 0);
+  assert.equal(FactorEvidence.positionOf(sorted, 100), 100);
+  assert.equal(FactorEvidence.positionOf(sorted, 50), 50);
+  assert.equal(FactorEvidence.positionOf([...sorted, 50, 50].sort((a, b) => a - b), 50), 49.5);
+  assert.equal(FactorEvidence.positionOf(sorted.slice(0, 99), 10), null);
+  assert.equal(FactorEvidence.positionOf(sorted, NaN), null);
+});
+
+test("hydrate: Position nur unter der Stufen-Methodik, mit der sie gezaehlt wurde", () => {
+  const rec = { factors: { momentum: { state: "AVAILABLE", score: 70, position: 81.2, components: [] } } };
+  const neu = FactorEvidence.hydrate(rec, { bandSemantics: { version: "factor-band-2.0.0", universe: { momentum: 5760 } } });
+  assert.equal(neu.factors.momentum.position, 81.2);
+  assert.equal(neu.factors.momentum.positionUniverse, 5760);
+  const alt = FactorEvidence.hydrate(rec, { bandSemantics: { version: "factor-band-1" } });
+  assert.equal(alt.factors.momentum.position, null, "Position einer anderen Stufen-Methodik gilt nicht");
+  assert.equal(FactorEvidence.hydrate(rec, {}).factors.momentum.position, null);
 });
 
 test("the publication gate rejects a composite score, a rank or a stray factor", () => {
@@ -114,7 +138,7 @@ test("the publication gate rejects a composite score, a rank or a stray factor",
 test("ordered() keeps the canonical order and explains every closed factor", () => {
   const record = {
     factors: Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id, index) => [id,
-      index === 2 ? { state: "AVAILABLE", score: 80, availableWeight: 0.8, confidence: 90, components: [] }
+      index === 2 ? { state: "AVAILABLE", score: 70, position: 80, availableWeight: 0.8, confidence: 90, components: [] }
         : { state: "UNAVAILABLE", reason: "BLOCKED_EXTERNAL", score: null, components: [] }]))
   };
   const ordered = FactorEvidence.ordered(record);
@@ -123,7 +147,11 @@ test("ordered() keeps the canonical order and explains every closed factor", () 
     assert.ok(entry.reasonText && entry.reasonText.length > 20, "a closed factor needs a readable reason");
     assert.equal(entry.score, null);
   });
-  assert.equal(ordered[2].band, "STRONG");
+  assert.equal(ordered[2].band, "STRONG", "Stufe aus der Position 80, nicht aus dem Wert 70");
+  assert.equal(ordered[2].position, 80);
+  /* Ohne Position keine Stufe - kein Rueckfall auf eine Wertgrenze. */
+  const ohne = FactorEvidence.ordered({ factors: { ...record.factors, momentum: { state: "AVAILABLE", score: 95, components: [] } } });
+  assert.equal(ohne[2].band, null);
 });
 
 /* ------------------------------------------------------------- change engine */
@@ -607,4 +635,30 @@ test("die Oberflaeche trennt 'fehlt' von 'bewusst zurueckgehalten'", () => {
   for (const text of Object.values(FactorEvidence.REASON_HEADLINE || {})) {
     assert.equal(/[A-Z]{3,}_[A-Z_]{3,}/.test(text), false, "interner Code als Ueberschrift: " + text);
   }
+});
+
+/* factor-band-2.0.0: Stufe und Position sind EINE Zaehlung. Traegt das
+   veroeffentlichte Artefakt die Position, muss sie genau die sein, die
+   Produktdienst und Oberflaeche aus dem Screening-Artefakt desselben
+   Stichtags zaehlen - sonst stuenden zwei Positionen fuer einen Titel. */
+test("veroeffentlichte Position = gezaehlte Position aus dem Screening-Artefakt", () => {
+  const dir = join(ROOT, "quant/data/product/factor-evidence-v1");
+  if (!existsSync(join(dir, "screening.json.gz"))) return;
+  const sc = JSON.parse(gunzipSync(readFileSync(join(dir, "screening.json.gz"))));
+  const dist = Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id, i) => [id,
+    Object.values(sc.rows).map((r) => r[i]).filter((v) => typeof v === "number").sort((a, b) => a - b)]));
+  let geprueft = 0;
+  for (const f of readdirSync(dir).filter((n) => n.endsWith(".json.gz") && !/screening|summary/.test(n)).slice(0, 40)) {
+    const shard = JSON.parse(gunzipSync(readFileSync(join(dir, f))));
+    if (!shard.bandSemantics) return;   /* Artefakt vor 2.0.0: der Produktdienst zaehlt selbst */
+    assert.equal(shard.bandSemantics.version, FactorEvidence.BAND_SEMANTICS_VERSION);
+    assert.equal(shard.asOf, sc.asOf, "Shard und Screening aus verschiedenen Laeufen");
+    for (const r of Object.values(shard.securities)) for (const id of FactorEvidence.FACTOR_ORDER) {
+      const x = r.factors[id];
+      if (x.state !== "AVAILABLE") { assert.equal(x.position, undefined, "Position ohne Wert"); continue; }
+      assert.equal(x.position, FactorEvidence.positionOf(dist[id], x.score), r.ticker + " " + id);
+      geprueft++;
+    }
+  }
+  assert.ok(geprueft > 500, "zu wenige Werte geprueft: " + geprueft);
 });

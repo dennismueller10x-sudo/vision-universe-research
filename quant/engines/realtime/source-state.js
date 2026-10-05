@@ -62,6 +62,12 @@
     return !!snap.regularComplete;
   }
 
+  var TAGE = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
+  function tagName(iso) {
+    var d = new Date(String(iso) + "T12:00:00Z");
+    return isNaN(d.getTime()) ? String(iso) : TAGE[d.getUTCDay()];
+  }
+
   /**
    * @param {object} eingabe
    *   resolution  Aufloesung der Handelszeiten (TradingSession.resolve)
@@ -132,12 +138,15 @@
 
     /* ---- 3. Geschlossene Boerse: nur was abgeschlossen ist, ist final */
     if (snap.sessionDate === erwartet) {
+      /* "Heute" nur am Tag der Sitzung. Am Samstag hiess der Freitagsstand
+         sonst "Heute · Stand 14:20" (Plattform-Audit 03.10.2026). */
+      var tag = r && r.localDate && r.localDate !== snap.sessionDate ? tagName(snap.sessionDate) : "Heute";
       if (!nachSchlussGeholt(snap)) {
         /* Owner-Regel 6: niemals einen unvollstaendigen Snapshot als
            final darstellen. Kein "Schluss folgt" mehr - das las sich wie
            eine Zusage und war eine Vertroestung. */
         out.state = "STALE"; out.reason = "closeMissing";
-        out.label = "Heute · Stand " + (stand || "?") + " · Schluss fehlt noch"; out.tone = "stale";
+        out.label = tag + " · Stand " + (stand || "?") + " · Schluss fehlt noch"; out.tone = "stale";
         out.sourceText = "5-Minuten-Kurse";
         return out;
       }
@@ -146,12 +155,12 @@
       out.sourceText = "5-Minuten-Kurse";
       if (traegtSchluss(snap)) {
         out.reason = "sessionComplete";
-        out.label = "Heute · Schluss " + schluss + (snap.earlyClose ? " (verkürzt)" : "");
+        out.label = tag + " · Schluss " + schluss + (snap.earlyClose ? " (verkürzt)" : "");
       } else {
         /* Ein illiquider Titel ohne Handel bis zur Glocke. Es kommt
            nichts mehr - aber ein Schluss um 16:00 waere erfunden. */
         out.reason = "sessionCompleteNoLateTrades";
-        out.label = "Heute · Schluss · letzter Kurs " + (out.lastRegularLocal || stand || "?");
+        out.label = tag + " · Schluss · letzter Kurs " + (out.lastRegularLocal || stand || "?");
       }
       return out;
     }
