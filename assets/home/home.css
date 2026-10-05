@@ -487,3 +487,46 @@ a:hover .hud,.module:hover .hud{box-shadow:0 0 0 1px rgba(200,245,49,.6),0 14px 
 @media (max-width:1180px){.modules{grid-template-columns:1fr}.kv{grid-template-columns:1fr 1fr}.kv div:nth-child(3){border-left:0}.kv div:nth-child(n+3){border-top:1px solid var(--screen-line)}}
 @media (max-width:980px){.eco,.dark-band .feature{grid-template-columns:1fr}.modules{grid-template-columns:1fr 1fr}}
 @media (max-width:760px){.modules{grid-template-columns:1fr}.node em{font-size:10px}.hub{max-width:100%}.fx{grid-template-columns:84px 1fr 24px}.disc-hero{height:130px}}
+
+/* ---------- Live-Kennzeichnung statt Datum ---------- */
+.live{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#c8f531}
+.live i{width:7px;height:7px;border-radius:50%;background:#c8f531;box-shadow:0 0 0 0 rgba(200,245,49,.6);animation:livepulse 1.8s ease-out infinite}
+@keyframes livepulse{0%{box-shadow:0 0 0 0 rgba(200,245,49,.6)}100%{box-shadow:0 0 0 8px rgba(200,245,49,0)}}
+.down{color:#f0675c}
+
+/* ---------- Vorsorge ---------- */
+.module-wide{grid-column:1/-1;border-color:rgba(200,245,49,.45);background:linear-gradient(120deg,var(--lime-soft),var(--bg-card) 55%)}
+.tag-new{display:inline-block!important;margin:0 0 0 6px!important;vertical-align:2px;font-size:10px!important;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:var(--lime);color:var(--on-lime)!important;border-radius:999px;padding:2px 8px}
+.plan{padding:14px 16px 16px}
+.plan-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.plan-kpis div{background:var(--screen-card);border:1px solid var(--screen-line);border-radius:10px;padding:10px}
+.plan-kpis small{display:block;font-size:9.5px;color:var(--screen-muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.plan-kpis b{display:block;font-size:14px;margin-top:3px}
+.plan-kpis b.lime{color:#c8f531}
+.plan-bars{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;align-items:end;height:170px;margin-top:16px;padding:0 4px;border-bottom:1px solid var(--screen-line)}
+.plan-bars div{position:relative;height:100%;display:flex;align-items:flex-end;justify-content:center}
+.plan-bars i{position:absolute;bottom:0;left:12%;right:12%;border-radius:6px 6px 0 0;background:linear-gradient(180deg,#c8f531,#6f8f12);box-shadow:0 0 14px rgba(200,245,49,.35)}
+.plan-bars em{position:absolute;bottom:0;left:12%;right:12%;border-radius:6px 6px 0 0;background:rgba(255,255,255,.18)}
+.plan-bars span{position:absolute;bottom:-20px;font-size:10px;color:var(--screen-muted);font-weight:700}
+.plan-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:28px;font-size:10.5px;color:var(--screen-muted);font-weight:700;align-items:center}
+.plan-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.plan-legend .l1{background:#c8f531}.plan-legend .l2{background:rgba(255,255,255,.3)}
+.plan-legend .note{flex-basis:100%;font-weight:600;opacity:.8}
+
+/* ---------- Mitlaufender App-Button ---------- */
+.sticky-cta{position:fixed;left:0;right:24px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:900;display:flex;justify-content:flex-end;pointer-events:none;transform:translateY(140%);opacity:0;transition:transform .35s cubic-bezier(.22,.7,.26,1),opacity .25s}
+.sticky-cta.on{transform:none;opacity:1}
+.sticky-inner{pointer-events:auto;display:flex;align-items:center;gap:14px;padding:8px 8px 8px 10px;border-radius:999px;background:rgba(10,12,15,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);color:#f4f5f1;box-shadow:0 0 0 1px rgba(200,245,49,.35),0 20px 50px -12px rgba(0,0,0,.6),0 0 40px -10px rgba(200,245,49,.45)}
+.sticky-inner .hud{--s:42px;border-radius:50%}
+.sticky-inner .hud::after{display:none}
+.sticky-copy b{display:block;font-size:14px;line-height:1.2;white-space:nowrap}
+.sticky-copy span{display:block;font-size:12px;color:#9aa0a8}
+.sticky-inner .btn{min-height:46px;padding:0 22px}
+@media (max-width:760px){
+  .sticky-cta{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom))}
+  .sticky-inner{width:100%;border-radius:20px}
+  .sticky-inner .btn{margin-left:auto}
+  .sticky-copy span{display:none}
+  .plan-bars{height:140px;gap:6px}
+}
+@media (prefers-reduced-motion:reduce){.sticky-cta{transition:none}}
