@@ -45,6 +45,7 @@ const { resolveProductUniverse } = await import(join(root, "scripts", "market", 
 
 const Factors = require(join(root, "quant", "engines", "market-factors.js"));
 const PublishedClose = require(join(root, "quant", "engines", "published-close.js"));
+const ReturnSeries = require(join(root, "quant", "engines", "return-series.js"));
 const DisplayPolicy = require(join(root, "quant", "engines", "display-policy.js"));
 const Generator = require(join(root, "quant", "engines", "mock-generator.js"));
 const MockProvider = require(join(root, "quant", "engines", "mock-provider.js"));
@@ -285,17 +286,11 @@ function loadGoldenPreviewBars() {
   return out;
 }
 
-/* Split-bereinigte Schlusskurse aus Tiingo-Rohbars. Dieselbe Ableitung
-   wie im Technical-Build: aus splitFactor, nicht aus adjClose. */
+/* Split-bereinigte Kurse aus Tiingo-Rohbars: aus splitFactor, nicht aus
+   adjClose. Der Faktor kommt aus der EINEN Definition
+   (quant/engines/return-series.js#splitFactors, ADR-002). */
 function splitAdjustedCloses(bars) {
-  const n = bars.length;
-  const factors = new Array(n).fill(1);
-  let cumulative = 1;
-  for (let i = n - 1; i >= 0; i--) {
-    factors[i] = cumulative;
-    const sf = bars[i].splitFactor;
-    if (isNum(sf) && sf !== 1) cumulative *= sf;
-  }
+  const factors = ReturnSeries.splitFactors(bars);
   return bars.map((b, i) => ({
     date: String(b.date).slice(0, 10),
     open: isNum(b.open) ? b.open / factors[i] : null,
@@ -516,7 +511,12 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
        Nur Titel mit voller Historie und ohne kompakte Reihe bekommen eine
        Kopie im Series-Store. */
     const seriesPath = kompakt ? "/quant/data/market/discover-series/" + (kompakt.securityId || sec.securityId) + ".json" : null;
-    const kursCloses = goldenCloses || (kompaktDated ? kompaktDated.map((b) => b.close) : null);
+    /* Kurs und Tagesaenderung aus der EINEN veroeffentlichten Tagesreihe
+       (ADR-002, dieselbe Definition wie core/client.js#getLatestPrice):
+       vorher hatten die Golden-Five-Titel ungerundete Kurse aus den
+       Rohbars. Gemessen bitgleich auf allen 5.980 Titeln; die Golden-Reihe
+       bleibt nur Rueckfall ohne kompakte Reihe. */
+    const kursCloses = (kompaktDated ? kompaktDated.map((b) => b.close) : null) || goldenCloses;
 
     const stock = Contract.normalizeStock({
       symbol: sec.ticker,
