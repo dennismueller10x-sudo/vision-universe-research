@@ -11,9 +11,9 @@ import { fileURLToPath } from "node:url";
 const DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", ".github", "workflows");
 const EXPR = /\$\{\{\s*(?:github\.event\.)?inputs\.[\w-]+\s*\}\}/;
 
-/* Noch offen, mit eigenem Weg: company-intelligence (#389). Eine Ausnahme, die nicht mehr verletzt,
-   laesst den Test scheitern - die Liste schrumpft nur. */
-const AUSNAHMEN = new Set(["company-intelligence.yml"]);
+/* Keine offene Ausnahme mehr: company-intelligence ist mit #389 auf env umgestellt. Eine neue
+   Ausnahme braucht einen eigenen Weg; eine, die nicht mehr verletzt, laesst den Test scheitern. */
+const AUSNAHMEN = new Set();
 
 /** Zeilen innerhalb von run:-Bloecken, die eine Eingabe direkt einsetzen. */
 export function inputsInRun(text) {
