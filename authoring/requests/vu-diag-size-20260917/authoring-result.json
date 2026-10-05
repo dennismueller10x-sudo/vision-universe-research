@@ -1,0 +1,157 @@
+{
+  "author": {
+    "api_mode": "no_classic_openai_api",
+    "role": "creative_agent",
+    "type": "chatgpt_work"
+  },
+  "brief_id": "vu-diag-size-brief-20260917",
+  "caption": "Wie viel Brief verträgt ein Creative-Workflow? Dieser interne Diagnoselauf vergrößert gezielt die Nutzlast durch inhaltlich bedeutungslose Füllung. Der Auftrag bleibt klar: drei neugierig machende Hook-Fragen, eine Caption und ein echtes Bild innerhalb der vorgegebenen Future-Tech-Strategie. Geprüft wird der Weg vom Brief bis zum zurückgelesenen Ergebnis. Nicht produktive Testfixture; keine Marktbehauptung, keine Anlageberatung und keine Veröffentlichung.",
+  "content_id": "vu-diag-size-20260917",
+  "evidence_refs": [
+    {
+      "brief_blob_sha": "1886e2eae8970135683eb9dfd78a6e807cc27b9a",
+      "json_pointer": "/hook_strategy",
+      "source": "authoring-brief.json",
+      "supports": "hook_strategy and hook_type"
+    },
+    {
+      "brief_blob_sha": "1886e2eae8970135683eb9dfd78a6e807cc27b9a",
+      "json_pointer": "/visual_strategy",
+      "source": "authoring-brief.json",
+      "supports": "visual_strategy and visual_brief"
+    },
+    {
+      "brief_blob_sha": "1886e2eae8970135683eb9dfd78a6e807cc27b9a",
+      "json_pointer": "/objective",
+      "source": "authoring-brief.json",
+      "supports": "hook wording and caption"
+    },
+    {
+      "brief_blob_sha": "1886e2eae8970135683eb9dfd78a6e807cc27b9a",
+      "json_pointer": "/publishing_allowed",
+      "source": "authoring-brief.json",
+      "supports": "closed publishing gate"
+    }
+  ],
+  "fixture_type": "provider_capability_diagnostic",
+  "hook_strategy": {
+    "hook_type": "curiosity_gap",
+    "instruction": "Formuliere neugierig machende Fragen zum Diagnoselauf. Keine Marktbehauptung, keine Renditeaussage und keine alternative Hook-Strategie.",
+    "strategy_id": "curiosity-gap-system-proof-v2"
+  },
+  "hook_variants": [
+    {
+      "brief_revision": "1886e2eae8970135683eb9dfd78a6e807cc27b9a",
+      "hook_type": "curiosity_gap",
+      "hook_variant_id": "vu-diag-size-20260917:1886e2eae8970135683eb9dfd78a6e807cc27b9a:curiosity_gap:01",
+      "text": "Kann ein größerer Brief denselben Weg vom Auftrag bis zum fertigen Bild durchlaufen?"
+    },
+    {
+      "brief_revision": "1886e2eae8970135683eb9dfd78a6e807cc27b9a",
+      "hook_type": "curiosity_gap",
+      "hook_variant_id": "vu-diag-size-20260917:1886e2eae8970135683eb9dfd78a6e807cc27b9a:curiosity_gap:02",
+      "text": "Was passiert mit dem Creative-Workflow, wenn nur der Brief länger wird?"
+    },
+    {
+      "brief_revision": "1886e2eae8970135683eb9dfd78a6e807cc27b9a",
+      "hook_type": "curiosity_gap",
+      "hook_variant_id": "vu-diag-size-20260917:1886e2eae8970135683eb9dfd78a6e807cc27b9a:curiosity_gap:03",
+      "text": "Kommt der Creative Agent auch dann ans Ziel, wenn der Brief mehr Platz braucht?"
+    }
+  ],
+  "processing": {
+    "brief_blob_sha": "1886e2eae8970135683eb9dfd78a6e807cc27b9a",
+    "brief_revision": "1886e2eae8970135683eb9dfd78a6e807cc27b9a",
+    "canonical_hook_selected": false,
+    "idempotency_mode": "reuse_completed_result",
+    "image_generation_mode": "built_in_chatgpt_work",
+    "immutable_variant_mapping": true,
+    "processing_key": "vu-diag-size-brief-20260917:vu-diag-size-20260917:1886e2eae8970135683eb9dfd78a6e807cc27b9a:1.0",
+    "status": "completed",
+    "variant_identity_version": "2"
+  },
+  "publishing_allowed": false,
+  "quality": {
+    "checks": {
+      "actual_raster_generated": true,
+      "actual_raster_visually_inspected": true,
+      "brief_id_matches": true,
+      "content_id_matches": true,
+      "hook_ids_bound_to_brief_blob_sha": true,
+      "hook_strategy_inherited": true,
+      "hook_variant_count_met": true,
+      "no_canonical_hook_selection": true,
+      "no_market_claims": true,
+      "no_on_image_text_or_logos": true,
+      "publishing_gate_closed": true,
+      "visual_strategy_inherited": true
+    },
+    "notes": [
+      "Generator output is 1254x1254 PNG; the brief's 1024x1024 dimensions are preferred, not mandatory. The exact original binary is preserved without resizing."
+    ],
+    "status": "pass_for_technical_proof"
+  },
+  "schema_version": "1.0",
+  "test_fixture": true,
+  "visual_brief": {
+    "composition": "Quadratische, zentrierte Dreierkomposition in räumlicher Tiefe, verbunden durch feine Lichtbahnen; großzügiger negativer Raum.",
+    "generation_prompt": "Use case: stylized-concept. Generate one real square raster image, preferred PNG 1024x1024. Strategy strictly FUTURE_TECH. Premium cinematic 3D visualization of a controlled transformation flow, centered with generous negative space on deep black. A layered structured data module made of chrome and dark glass connects by fine electric-cyan light paths to a glowing creative core, which connects to a finished square image panel showing an abstract cyan/violet sculptural form. The three elements have clear spatial depth and elegant restrained materials, subtle violet reflections, white rim lighting. No text, no letters, no numbers, no logos, no prices, no charts, no market or performance claims, no watermarks. Structured visual brief: {\"visual_strategy\":\"FUTURE_TECH\",\"purpose\":\"Abstrakte Visualisierung des kontrollierten Authoring-Flusses für eine nicht produktive Diagnose\",\"motif\":\"Ein strukturiertes, geschichtetes Datenmodul speist einen leuchtenden Creative-Core, aus dem ein fertiges quadratisches Bildpanel hervorgeht.\",\"composition\":\"Quadratische, zentrierte Dreierkomposition in räumlicher Tiefe, verbunden durch feine Lichtbahnen; großzügiger negativer Raum.\",\"style\":\"premium cinematic 3D technology visualization\",\"palette\":[\"deep black\",\"white\",\"chrome\",\"electric cyan\",\"subtle violet\"],\"materials\":\"Chrom, dunkles Glas und transluzentes Licht\",\"lighting\":\"Elektrisch cyanfarbener Kern, weiche weiße Kantenlichter und dezente violette Reflexionen auf tiefschwarzem Grund\",\"on_image_text\":[],\"restrictions\":[\"Kein Text im Bild\",\"Kein Logo\",\"Keine Aktienkurse\",\"Keine Renditezahlen\",\"Keine Marktprognose\",\"Kein Wasserzeichen\"]}",
+    "lighting": "Elektrisch cyanfarbener Kern, weiche weiße Kantenlichter und dezente violette Reflexionen auf tiefschwarzem Grund",
+    "materials": "Chrom, dunkles Glas und transluzentes Licht",
+    "motif": "Ein strukturiertes, geschichtetes Datenmodul speist einen leuchtenden Creative-Core, aus dem ein fertiges quadratisches Bildpanel hervorgeht.",
+    "on_image_text": [],
+    "palette": [
+      "deep black",
+      "white",
+      "chrome",
+      "electric cyan",
+      "subtle violet"
+    ],
+    "purpose": "Abstrakte Visualisierung des kontrollierten Authoring-Flusses für eine nicht produktive Diagnose",
+    "restrictions": [
+      "Kein Text im Bild",
+      "Kein Logo",
+      "Keine Aktienkurse",
+      "Keine Renditezahlen",
+      "Keine Marktprognose",
+      "Kein Wasserzeichen"
+    ],
+    "style": "premium cinematic 3D technology visualization",
+    "visual_strategy": "FUTURE_TECH"
+  },
+  "visual_strategy": {
+    "composition": "square, centered transformation flow, generous negative space",
+    "creative_freedom": "Motivdetails, räumliche Komposition, Lichtführung und Materialität innerhalb FUTURE_TECH.",
+    "instruction": "Eine hochwertige, abstrakte Future-Tech-Szene visualisiert den kontrollierten Fluss von einem strukturierten Datenmodul über einen leuchtenden Creative-Core zu einem fertigen Bildasset.",
+    "palette": [
+      "deep black",
+      "white",
+      "chrome",
+      "electric cyan",
+      "subtle violet"
+    ],
+    "restrictions": [
+      "Kein Text im Bild",
+      "Kein Logo",
+      "Keine Aktienkurse",
+      "Keine Renditezahlen",
+      "Keine Marktprognose",
+      "Kein Wasserzeichen"
+    ],
+    "strategy_id": "FUTURE_TECH",
+    "style": "premium cinematic 3D technology visualization"
+  },
+  "visual_variants": [
+    {
+      "asset_path": "authoring/requests/vu-diag-size-20260917/assets/visual-01.png",
+      "asset_sha256": "8b35e0bfeab3f96e513fb930df0ceb52d2b6378a1d4278ea891bcc9495f37e98",
+      "brief_revision": "1886e2eae8970135683eb9dfd78a6e807cc27b9a",
+      "byte_size": 1262586,
+      "height": 1254,
+      "mime_type": "image/png",
+      "visual_strategy": "FUTURE_TECH",
+      "visual_variant_id": "vu-diag-size-20260917:1886e2eae8970135683eb9dfd78a6e807cc27b9a:visual:FUTURE_TECH:01",
+      "width": 1254
+    }
+  ]
+}
