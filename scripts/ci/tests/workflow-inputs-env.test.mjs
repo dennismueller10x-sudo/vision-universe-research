@@ -11,14 +11,9 @@ import { fileURLToPath } from "node:url";
 const DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", ".github", "workflows");
 const EXPR = /\$\{\{\s*(?:github\.event\.)?inputs\.[\w-]+\s*\}\}/;
 
-/* Noch offen, mit eigenem Weg: Social (Workstream Social, ADR-005) und
-   company-intelligence (#389). Eine Ausnahme, die nicht mehr verletzt,
+/* Noch offen, mit eigenem Weg: company-intelligence (#389). Eine Ausnahme, die nicht mehr verletzt,
    laesst den Test scheitern - die Liste schrumpft nur. */
-const AUSNAHMEN = new Set([
-  "company-intelligence.yml",
-  "social-cloudflare.yml", "social-external-intelligence.yml", "social-manual-dispatch-proof.yml",
-  "social-publish-candidate.yml", "social-smoke-publish.yml"
-]);
+const AUSNAHMEN = new Set(["company-intelligence.yml"]);
 
 /** Zeilen innerhalb von run:-Bloecken, die eine Eingabe direkt einsetzen. */
 export function inputsInRun(text) {
@@ -57,4 +52,22 @@ test("Erkennung: run-Block mit Eingabe, env-Zuweisung und if: sind erlaubt", () 
     "  run:", "    steps:", "      - env:", "          X: ${{ inputs.mode }}", "        run: echo \"$X\""
   ].join("\n");
   assert.deepEqual(inputsInRun(wf), [10, 13]);
+});
+
+test("Jeder Workflow deklariert seine Token-Rechte (permissions) ausdruecklich", () => {
+  const ohne = [];
+  for (const f of readdirSync(DIR).filter((n) => /\.ya?ml$/.test(n))) {
+    const t = readFileSync(join(DIR, f), "utf8");
+    const top = /^permissions:/m.test(t);
+    const jobs = t.split(/^jobs:\s*$/m)[1] || "";
+    const jobNames = (jobs.match(/^  [A-Za-z0-9_-]+:\s*$/gm) || []).length;
+    const jobPerms = (jobs.match(/^    permissions:/gm) || []).length;
+    if (!top && !(jobNames && jobPerms >= jobNames)) ohne.push(f);
+  }
+  assert.deepEqual(ohne, [], "ohne permissions erbt ein Workflow die Standardrechte des Repositorys");
+});
+
+test("social-publish-candidate prueft candidateId, bevor sie in einen Pfad geht", () => {
+  const t = readFileSync(join(DIR, "social-publish-candidate.yml"), "utf8");
+  assert.equal((t.match(/case "\$IN_CANDIDATEID" in \*\[!A-Za-z0-9\._-\]\*\|\*\.\.\*\)/g) || []).length, 2);
 });
