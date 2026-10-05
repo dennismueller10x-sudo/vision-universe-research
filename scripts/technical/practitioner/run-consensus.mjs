@@ -68,6 +68,11 @@ export function freeze({ outDir = FREEZE_DIR, now = new Date().toISOString() } =
   const invalid = refs.filter((r) => r.status === "INCLUDED").map((r) => [r.referenceId, validateReference(r, { registry }).errors]).filter(([, e]) => e.length);
   if (invalid.length) throw new Error("Ungueltige Konsens-Referenzen:\n" + invalid.map(([id, e]) => id + ": " + e.join("; ")).join("\n"));
   for (const k of Object.keys(links)) if (sealedCaseIds.includes(k)) throw new Error("Holdout-Ausgangsfall in links.json (gehoert nach sealed/): " + k);
+  /* Schutz: eine verknuepfte Referenz, die dieselbe Fundstelle wie ein VERSIEGELTER V1-Fall ist (gleiche Quelle|Symbol|Datum),
+     wuerde dessen Label ueber den Konsens offenlegen → aus dem geoeffneten Konsens entfernen (nur gezaehlt). */
+  const sealedSet = new Set(sealedCaseIds), refById = new Map(refs.map((r) => [r.referenceId, r]));
+  const sealedLeak = [];
+  for (const k of Object.keys(links)) links[k] = links[k].filter((l) => { const r = refById.get(l.referenceId); const hit = r && sealedSet.has(r.caseId); if (hit) sealedLeak.push(l.referenceId); return !hit; });
   const cases = buildConsensus({ anchors, refs, links, registry });
   const schema = readJson(join(PV1, "schema/consensus-case-1.0.0.json"));
   const bad = cases.map((c) => [c.consensusCaseId, validateSchema(c, schema, schema, "$", [], false)]).filter(([, e]) => e.length);
@@ -82,6 +87,7 @@ export function freeze({ outDir = FREEZE_DIR, now = new Date().toISOString() } =
     sourceFamilies: by(cases.flatMap((c) => c.practitionerReferences), (r) => r.sourceFamily), timeframes: by(cases, (c) => c.timeframe), assets: by(cases, (c) => c.asset),
     confidence: by(cases.flatMap((c) => c.practitionerReferences), (r) => r.confidence), windows: by(cases, (c) => c.referenceDateWindow.windowTradingDays),
     referencesTotal: refs.length, referencesByStatus: by(refs, (r) => r.status),
+    removedBecauseSameItemAsSealedV1Case: sealedLeak.length,
     sealed: { anchorCases: sealedCaseIds.length, anchorsWithLinks: Object.keys(sealedLinks).length, linkedReferences: Object.values(sealedLinks).reduce((s, l) => s + l.length, 0), note: "Keine Auswertung gegen versiegelte Ausgangsfaelle." } };
   mkdirSync(outDir, { recursive: true });
   const f = join(outDir, VERSION + ".jsonl"), mf = join(outDir, VERSION + ".manifest.json");
