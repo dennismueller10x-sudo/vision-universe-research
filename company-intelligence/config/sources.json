@@ -84756,5 +84756,2130 @@
     "companyId": "iss_cik_0001920406",
     "bootstrapValidatedAt": "2026-10-05",
     "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "WORDPRESS",
+    "verified": true,
+    "verificationEvidence": {
+      "apiRoot": "https://allient.com/wp-json/",
+      "linkedFrom": "https://allient.com/",
+      "method": "ADVERTISED_WORDPRESS_REST_METADATA_CONTRACT"
+    },
+    "companyId": "iss_cik_0000046129",
+    "url": "https://allient.com/wp-json/wp/v2/posts?_fields=date_gmt%2Clink%2Ctitle.rendered&context=view&order=desc&orderby=date&per_page=20",
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "format": "WORDPRESS_REST_NEWS",
+    "lastVerified": "2026-10-05T18:43:15Z",
+    "sourceId": "0170e365fc0f6e05df1df7f6",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "active": true,
+    "allowedSites": [
+      "https://allient.com/",
+      "https://allient.com/",
+      "https://allient.com/"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "companyId": "iss_cik_0001865631",
+    "url": "https://ir.nextnav.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "format": "Q4_EVENTS",
+    "lastVerified": "2026-10-05T18:41:23Z",
+    "sourceId": "0298ac84ed7489b5b286c406",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "active": true,
+    "allowedSites": [
+      "https://nextnav.com/",
+      "https://ir.nextnav.com/",
+      "https://ir.nextnav.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "companyId": "iss_cik_0000091419",
+    "url": "https://investors.jmsmucker.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "format": "Q4_EVENTS",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "029c1fe09f8c6c5e295c24fc",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "active": true,
+    "allowedSites": [
+      "https://www.jmsmucker.com/",
+      "https://investors.jmsmucker.com/",
+      "https://investors.jmsmucker.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000008818",
+    "url": "https://www.investors.averydennison.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "metadata": {
+      "originatingIRHomepage": "https://www.investors.averydennison.com/overview/default.aspx"
+    },
+    "format": "Q4_PRESENTATIONS",
+    "lastVerified": "2026-10-05T18:24:03Z",
+    "sourceId": "03320fac80f0b67ee21db52b",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.averydennison.com/en/home.html",
+      "https://www.investors.averydennison.com/",
+      "https://www.investors.averydennison.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GCS",
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0001828588",
+    "url": "https://ir.hanoverbank.com/rss/news-releases.xml",
+    "lastVerified": "2026-10-05T18:41:23Z",
+    "sourceId": "078a2b8126e00069d9196f85",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://hanoverbank.com/",
+      "https://ir.hanoverbank.com/"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "companyId": "iss_cik_0000093751",
+    "url": "https://investors.statestreet.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "format": "Q4_EVENTS",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "118ec01b465002ab6a8a5d21",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "active": true,
+    "allowedSites": [
+      "https://www.statestreet.com/us/en",
+      "https://investors.statestreet.com/investor-relations/default.aspx",
+      "https://investors.statestreet.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0001865631",
+    "url": "https://ir.nextnav.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "metadata": {
+      "originatingIRHomepage": "https://ir.nextnav.com/overview/default.aspx"
+    },
+    "format": "Q4_PRESENTATIONS",
+    "lastVerified": "2026-10-05T18:41:23Z",
+    "sourceId": "1312305106e34c324f9b8420",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://nextnav.com/",
+      "https://ir.nextnav.com/",
+      "https://ir.nextnav.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "STOCKPR",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.investorrelations.pitneybowes.com/",
+      "officialSite": "https://www.pitneybowes.com/us",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000078814",
+    "url": "https://investorrelations.pitneybowes.com/news-events/press-releases/rss",
+    "format": "RSS",
+    "lastVerified": "2026-10-05T18:56:56Z",
+    "sourceId": "14a9375d35595cbfb3ce28e5",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.pitneybowes.com/us",
+      "https://www.investorrelations.pitneybowes.com/",
+      "https://investorrelations.pitneybowes.com/news-events/press-releases/rss"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000065270",
+    "url": "https://ir.methode.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "format": "Q4_REPORTS",
+    "lastVerified": "2026-10-05T18:51:39Z",
+    "sourceId": "1991e014d1fb352c63805825",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.methode.com/",
+      "https://ir.methode.com/",
+      "https://ir.methode.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "STOCKPR",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.smithfieldfoods.com/investors",
+      "officialSite": "https://www.smithfieldfoods.com/",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000091388",
+    "url": "https://investors.smithfieldfoods.com/rss-news-feed",
+    "format": "RSS",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "199cf54be2c2458dd25ff6c9",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.smithfieldfoods.com/",
+      "https://www.smithfieldfoods.com/investors",
+      "https://investors.smithfieldfoods.com/rss-news-feed"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GENERIC",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://corporate.target.com/investors/financial-information/financial-news",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000027419",
+    "url": "https://corporate.target.com/investors/events-presentations",
+    "metadata": {
+      "originatingIRHomepage": "https://corporate.target.com/investors/financial-information/financial-news"
+    },
+    "format": "HTML_MATERIALS",
+    "lastVerified": "2026-10-05T18:34:09Z",
+    "sourceId": "19bdefa078d7d307704331be",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://corporate.target.com/investors",
+      "https://corporate.target.com/investors/financial-information/financial-news",
+      "https://corporate.target.com/investors/events-presentations"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GCS",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.cohu.com/",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000021535",
+    "url": "https://ir.cohu.com/news-events/investor-presentations",
+    "metadata": {
+      "originatingIRHomepage": "https://ir.cohu.com/"
+    },
+    "format": "HTML_MATERIALS",
+    "lastVerified": "2026-10-05T18:29:04Z",
+    "sourceId": "19f763afb746ee361caeb102",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.cohu.com/",
+      "https://ir.cohu.com/",
+      "https://ir.cohu.com/news-events/investor-presentations"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "companyId": "iss_cik_0000037785",
+    "url": "https://investors.fmc.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "format": "Q4_EVENTS",
+    "lastVerified": "2026-10-05T18:43:15Z",
+    "sourceId": "1caaa32d9099c7c6bfa59e77",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "active": true,
+    "allowedSites": [
+      "https://www.fmc.com/en",
+      "https://investors.fmc.com/home/default.aspx",
+      "https://investors.fmc.com/home/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000097216",
+    "url": "https://investors.terex.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "metadata": {
+      "originatingIRHomepage": "https://investors.terex.com/overview/default.aspx"
+    },
+    "format": "Q4_PRESENTATIONS",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "1d8684caaad46d537b14d5a1",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.terex.com/",
+      "https://investors.terex.com/overview/default.aspx",
+      "https://investors.terex.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GCS",
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000066004",
+    "url": "https://investors.middlesexwater.com/rss/news-releases.xml",
+    "lastVerified": "2026-10-05T18:51:39Z",
+    "sourceId": "1f843f090910dfd204683859",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.middlesexwater.com/",
+      "https://investors.middlesexwater.com/"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "WORDPRESS",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.mdu.com/",
+      "officialSite": "https://www.mdu.com/",
+      "validItems": 8
+    },
+    "companyId": "iss_cik_0000067716",
+    "url": "https://www.mdu.com/feed/",
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "format": "RSS",
+    "lastVerified": "2026-10-05T18:51:39Z",
+    "sourceId": "22ee0c62ab45a293ab32c885",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.mdu.com/",
+      "https://www.mdu.com/",
+      "https://www.mdu.com/feed/"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GCS",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investor.aosmith.com/",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000091142",
+    "url": "https://investor.aosmith.com/news-events/events-and-presentations",
+    "metadata": {
+      "originatingIRHomepage": "https://investor.aosmith.com/"
+    },
+    "format": "HTML_MATERIALS",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "23054b6b76a7963b50e8864e",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.aosmith.com/",
+      "https://investor.aosmith.com/",
+      "https://investor.aosmith.com/news-events/events-and-presentations"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "WEB_DRIVER",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investor.azz.com/",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000008947",
+    "url": "https://investor.azz.com/presentations",
+    "metadata": {
+      "originatingIRHomepage": "https://investor.azz.com/"
+    },
+    "format": "HTML_MATERIALS",
+    "lastVerified": "2026-10-05T18:24:03Z",
+    "sourceId": "246334370fc070db7cb347b5",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.azz.com/",
+      "https://investor.azz.com/",
+      "https://investor.azz.com/presentations"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 1
+    },
+    "companyId": "iss_cik_0000005981",
+    "url": "https://www.investors-american-vanguard.com/rss/PressRelease.aspx?LanguageId=1",
+    "lastVerified": "2026-10-05T18:24:03Z",
+    "sourceId": "2ba847584e4720e6ac04e8f4",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.american-vanguard.com/",
+      "https://www.investors-american-vanguard.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.americanexpress.com/investor-relations/default.aspx?inav=en_us_footer_about_investor_relations",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE",
+      "ownershipContentHash": "8e07ef84a7d2d96af3e96dd0b1b12f0387a8b6dded61a2da59b74800795bd2ea",
+      "ownershipVerificationVersion": "corporate-ownership-10",
+      "redirectEvidence": {
+        "finalUrl": "https://amex2020ir.q4web.com/fixed-income-investors/",
+        "fromUrl": "https://ir.americanexpress.com/fixed-income-investors",
+        "method": "INDEPENDENT_DESTINATION_LEGAL_OWNER_VERIFICATION",
+        "redirects": [
+          "https://ir.americanexpress.com/fixed-income-investors"
+        ]
+      }
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000004962",
+    "url": "https://amex2020ir.q4web.com/fixed-income-investors/",
+    "metadata": {
+      "originatingIRHomepage": "https://ir.americanexpress.com/investor-relations/default.aspx?inav=en_us_footer_about_investor_relations"
+    },
+    "format": "HTML_MATERIALS",
+    "lastVerified": "2026-10-05T18:24:03Z",
+    "sourceId": "2f62082d97c159577fdf86af",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.americanexpress.com/",
+      "https://ir.americanexpress.com/investor-relations/default.aspx?inav=en_us_footer_about_investor_relations",
+      "https://amex2020ir.q4web.com/fixed-income-investors/"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000091419",
+    "url": "https://investors.jmsmucker.com/rss/PressRelease.aspx?LanguageId=1",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "3485a833f51ffec48969875c",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.jmsmucker.com/",
+      "https://investors.jmsmucker.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000065270",
+    "url": "https://ir.methode.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "metadata": {
+      "originatingIRHomepage": "https://ir.methode.com/overview/default.aspx"
+    },
+    "format": "Q4_PRESENTATIONS",
+    "lastVerified": "2026-10-05T18:51:39Z",
+    "sourceId": "377ad29738bece890349fe03",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.methode.com/",
+      "https://ir.methode.com/",
+      "https://ir.methode.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "STOCKPR",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.alicoinc.com/investors/news-events",
+      "officialSite": "https://www.alicoinc.com/",
+      "validItems": 20
+    },
+    "companyId": "iss_cik_0000003545",
+    "url": "https://ir.alicoinc.com/rss",
+    "format": "RSS",
+    "lastVerified": "2026-10-05T18:24:03Z",
+    "sourceId": "3a57b68d01d3b1c3189e45b2",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.alicoinc.com/",
+      "https://www.alicoinc.com/investors/news-events",
+      "https://ir.alicoinc.com/rss"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GCS",
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000021535",
+    "url": "https://ir.cohu.com/rss/news-releases.xml",
+    "lastVerified": "2026-10-05T18:29:04Z",
+    "sourceId": "3ad8c7d05244a50847f5019d",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.cohu.com/",
+      "https://ir.cohu.com/"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000037785",
+    "url": "https://investors.fmc.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "metadata": {
+      "originatingIRHomepage": "https://investors.fmc.com/home/default.aspx"
+    },
+    "format": "Q4_PRESENTATIONS",
+    "lastVerified": "2026-10-05T18:43:15Z",
+    "sourceId": "3bc736344d566434dbe0f2be",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.fmc.com/en",
+      "https://investors.fmc.com/home/default.aspx",
+      "https://investors.fmc.com/home/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000091419",
+    "url": "https://investors.jmsmucker.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "metadata": {
+      "originatingIRHomepage": "https://investors.jmsmucker.com/overview/default.aspx"
+    },
+    "format": "Q4_PRESENTATIONS",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "3d4503c1f9c7a13af7b2f424",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.jmsmucker.com/",
+      "https://investors.jmsmucker.com/",
+      "https://investors.jmsmucker.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GCS",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.lee.net/ir-resources/rss-feeds",
+      "officialSite": "https://www.lee.net/",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000058361",
+    "url": "https://investors.lee.net/rss/news-releases.xml",
+    "format": "RSS",
+    "lastVerified": "2026-10-05T18:47:26Z",
+    "sourceId": "3e7955883edb0dbc8dfc1d59",
+    "type": "IR_FEED",
+    "intervalHours": 6,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.lee.net/",
+      "https://www.lee.net/financial/",
+      "https://investors.lee.net/rss/news-releases.xml"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000065270",
+    "url": "https://ir.methode.com/rss/PressRelease.aspx?LanguageId=1",
+    "lastVerified": "2026-10-05T18:51:39Z",
+    "sourceId": "461eb759deffd8623ae21adc",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.methode.com/",
+      "https://ir.methode.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GCS",
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000006845",
+    "url": "https://www.apog.com/rss/news-releases.xml",
+    "lastVerified": "2026-10-05T18:24:03Z",
+    "sourceId": "46d94b03957207cdb9a9d5a9",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.apog.com/",
+      "https://www.apog.com/investor-relations"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0001829576",
+    "url": "https://investors.carterbank.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "format": "Q4_REPORTS",
+    "lastVerified": "2026-10-05T18:41:23Z",
+    "sourceId": "49835395a1a7e2b31ec5edec",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.carterbank.com/",
+      "https://investors.carterbank.com/",
+      "https://investors.carterbank.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0001865631",
+    "url": "https://ir.nextnav.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "format": "Q4_REPORTS",
+    "lastVerified": "2026-10-05T18:41:23Z",
+    "sourceId": "4ff54e91baaa175ff176838d",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://nextnav.com/",
+      "https://ir.nextnav.com/",
+      "https://ir.nextnav.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "companyId": "iss_cik_0000097745",
+    "url": "https://ir.thermofisher.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "format": "Q4_EVENTS",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "54622b1285e72f66cf17000e",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "active": true,
+    "allowedSites": [
+      "https://www.thermofisher.com/us/en/home.html",
+      "https://ir.thermofisher.com/",
+      "https://ir.thermofisher.com/investors/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000096223",
+    "url": "https://ir.jefferies.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "format": "Q4_REPORTS",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "5a829dcd6f75f647238a7510",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.jefferies.com/",
+      "https://ir.jefferies.com/overview/",
+      "https://ir.jefferies.com/overview/"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000029644",
+    "url": "https://ir.donaldson.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "format": "Q4_REPORTS",
+    "lastVerified": "2026-10-05T18:34:09Z",
+    "sourceId": "5d3400f04eac7a41ea58ce98",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.donaldson.com/en/",
+      "https://www.donaldson.com/en/company/investors/",
+      "https://ir.donaldson.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000096223",
+    "url": "https://ir.jefferies.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "metadata": {
+      "originatingIRHomepage": "https://ir.jefferies.com/overview/"
+    },
+    "format": "Q4_PRESENTATIONS",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "5d7f6a7a15b6a78ab5882b02",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.jefferies.com/",
+      "https://ir.jefferies.com/overview/",
+      "https://ir.jefferies.com/overview/"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GCS",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.lee.net/ir-resources/rss-feeds",
+      "officialSite": "https://www.lee.net/",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000058361",
+    "url": "https://investors.lee.net/rss/events.xml",
+    "format": "RSS_EVENTS",
+    "lastVerified": "2026-10-05T18:47:26Z",
+    "sourceId": "5dcaaeb705388a6057b67d64",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.lee.net/",
+      "https://www.lee.net/financial/",
+      "https://investors.lee.net/rss/events.xml"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000018926",
+    "url": "https://ir.lumen.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "format": "Q4_REPORTS",
+    "lastVerified": "2026-10-05T18:29:04Z",
+    "sourceId": "5dfd9ea952d7bf8717133c06",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.lumen.com/en-us/home.html",
+      "https://ir.lumen.com/overview/default.aspx",
+      "https://ir.lumen.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000039911",
+    "url": "https://investors.gapinc.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "metadata": {
+      "originatingIRHomepage": "https://investors.gapinc.com/Investor-Relation/default.aspx"
+    },
+    "format": "Q4_PRESENTATIONS",
+    "lastVerified": "2026-10-05T18:43:15Z",
+    "sourceId": "5ec77554310dd96724b25b85",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.gapinc.com/en-us/",
+      "https://investors.gapinc.com/",
+      "https://investors.gapinc.com/Investor-Relation/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000037785",
+    "url": "https://investors.fmc.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "format": "Q4_REPORTS",
+    "lastVerified": "2026-10-05T18:43:15Z",
+    "sourceId": "641d170af8f8dd9e9ed671bc",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.fmc.com/en",
+      "https://investors.fmc.com/home/default.aspx",
+      "https://investors.fmc.com/home/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GCS",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.chpk.com/investors/",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000019745",
+    "url": "https://www.chpk.com/investors/events-presentations/quarterly-results/",
+    "metadata": {
+      "originatingIRHomepage": "https://www.chpk.com/investors/"
+    },
+    "format": "HTML_MATERIALS",
+    "lastVerified": "2026-10-05T18:29:04Z",
+    "sourceId": "6435a81a732fe3842a7492c1",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.chpk.com/",
+      "https://www.chpk.com/investors/",
+      "https://www.chpk.com/investors/events-presentations/quarterly-results/"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000029644",
+    "url": "https://ir.donaldson.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "metadata": {
+      "originatingIRHomepage": "https://ir.donaldson.com/overview/default.aspx"
+    },
+    "format": "Q4_PRESENTATIONS",
+    "lastVerified": "2026-10-05T18:34:09Z",
+    "sourceId": "662cf53a23d2308378b6fdb6",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.donaldson.com/en/",
+      "https://www.donaldson.com/en/company/investors/",
+      "https://ir.donaldson.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "STOCKPR",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.matw.com/investors/news-events/in-the-news",
+      "officialSite": "https://www.matw.com/",
+      "validItems": 3
+    },
+    "companyId": "iss_cik_0000063296",
+    "url": "https://www.matw.com/investors/news-events/in-the-news/rss",
+    "format": "RSS_EVENTS",
+    "lastVerified": "2026-10-05T18:47:26Z",
+    "sourceId": "665185909273cccf424e5924",
+    "type": "IR_EVENTS",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.matw.com/",
+      "https://www.matw.com/investors/news-events/in-the-news",
+      "https://www.matw.com/investors/news-events/in-the-news/rss"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.conagrabrands.com/investor-relations/financial-reports",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000023217",
+    "url": "https://www.conagrabrands.com/investor-relations/financial-news/events-calendar",
+    "metadata": {
+      "originatingIRHomepage": "https://www.conagrabrands.com/investor-relations/financial-reports"
+    },
+    "format": "HTML_MATERIALS",
+    "lastVerified": "2026-10-05T18:34:09Z",
+    "sourceId": "68a5c52b3b48106043341d46",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.conagrabrands.com/",
+      "https://www.conagrabrands.com/investor-relations/financial-reports",
+      "https://www.conagrabrands.com/investor-relations/financial-news/events-calendar"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "companyId": "iss_cik_0000039911",
+    "url": "https://investors.gapinc.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "format": "Q4_EVENTS",
+    "lastVerified": "2026-10-05T18:43:15Z",
+    "sourceId": "6cbed7311d61a362f9e0636b",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "active": true,
+    "allowedSites": [
+      "https://www.gapinc.com/en-us/",
+      "https://investors.gapinc.com/",
+      "https://investors.gapinc.com/Investor-Relation/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "STOCKPR",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.usgoldcorp.com/investors",
+      "officialSite": "https://www.usgoldcorp.com/",
+      "validItems": 20
+    },
+    "companyId": "iss_cik_0000027093",
+    "url": "https://ir.usgoldcorp.com/rss",
+    "format": "RSS",
+    "lastVerified": "2026-10-05T18:34:09Z",
+    "sourceId": "6ef66728f1f63a3ca034a625",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.usgoldcorp.com/",
+      "https://www.usgoldcorp.com/investors",
+      "https://ir.usgoldcorp.com/rss"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "STOCKPR",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.smithfieldfoods.com/investors",
+      "officialSite": "https://www.smithfieldfoods.com/",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000091388",
+    "url": "https://investors.smithfieldfoods.com/news-events/press-releases/rss",
+    "format": "RSS",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "73d73bf4194c00c32bb4ab84",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.smithfieldfoods.com/",
+      "https://www.smithfieldfoods.com/investors",
+      "https://investors.smithfieldfoods.com/news-events/press-releases/rss"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000018926",
+    "url": "https://ir.lumen.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "metadata": {
+      "originatingIRHomepage": "https://ir.lumen.com/overview/default.aspx"
+    },
+    "format": "Q4_PRESENTATIONS",
+    "lastVerified": "2026-10-05T18:29:04Z",
+    "sourceId": "76081c95d10ca9f2454cbe81",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.lumen.com/en-us/home.html",
+      "https://ir.lumen.com/overview/default.aspx",
+      "https://ir.lumen.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "companyId": "iss_cik_0000018230",
+    "url": "https://investors.caterpillar.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "format": "Q4_EVENTS",
+    "lastVerified": "2026-10-05T18:29:04Z",
+    "sourceId": "76f8168f6f57c87bca245116",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "active": true,
+    "allowedSites": [
+      "https://www.caterpillar.com/",
+      "https://www.caterpillar.com/en/investors.html",
+      "https://investors.caterpillar.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000093751",
+    "url": "https://investors.statestreet.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "metadata": {
+      "originatingIRHomepage": "https://investors.statestreet.com/overview/default.aspx"
+    },
+    "format": "Q4_PRESENTATIONS",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "770c387c20925d5c8e2c2e7d",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.statestreet.com/us/en",
+      "https://investors.statestreet.com/investor-relations/default.aspx",
+      "https://investors.statestreet.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "STOCKPR",
+    "verified": true,
+    "verificationEvidence": "LINKED_BY_VERIFIED_IR_PAGE",
+    "companyId": "iss_cik_0000033185",
+    "url": "https://investor.equifax.com/news-events",
+    "lastVerified": "2026-10-05T18:34:09Z",
+    "sourceId": "77198163c5a440aa213300ea",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "active": true,
+    "allowedSites": [
+      "https://www.equifax.com/",
+      "https://investor.equifax.com/",
+      "https://investor.equifax.com/news-events"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GENERIC",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.nrucfc.coop/content/nrucfc/en/investor-relations/financial-reporting.html",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000070502",
+    "url": "https://www.nrucfc.coop/content/nrucfc/en/investor-relations/events-presentations.html",
+    "metadata": {
+      "originatingIRHomepage": "https://www.nrucfc.coop/content/nrucfc/en/investor-relations/financial-reporting.html"
+    },
+    "format": "HTML_MATERIALS",
+    "lastVerified": "2026-10-05T18:51:39Z",
+    "sourceId": "7c277d22b989bf17012f8d0b",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.nrucfc.coop/",
+      "https://www.nrucfc.coop/content/nrucfc/en/investor-relations/financial-reporting.html",
+      "https://www.nrucfc.coop/content/nrucfc/en/investor-relations/events-presentations.html"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000018230",
+    "url": "https://investors.caterpillar.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "format": "Q4_REPORTS",
+    "lastVerified": "2026-10-05T18:29:04Z",
+    "sourceId": "7f1bfb403d5d1174d9ee3d85",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.caterpillar.com/",
+      "https://www.caterpillar.com/en/investors.html",
+      "https://investors.caterpillar.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "companyId": "iss_cik_0000065984",
+    "url": "https://investors.entergy.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "format": "Q4_EVENTS",
+    "lastVerified": "2026-10-05T18:51:39Z",
+    "sourceId": "82265be67f21192b6433ed36",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "active": true,
+    "allowedSites": [
+      "https://www.entergy.com/",
+      "https://investors.entergy.com/investors/events-and-presentations/default.aspx",
+      "https://investors.entergy.com/investors/events-and-presentations/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000065984",
+    "url": "https://investors.entergy.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "metadata": {
+      "originatingIRHomepage": "https://investors.entergy.com/investors/events-and-presentations/default.aspx"
+    },
+    "format": "Q4_PRESENTATIONS",
+    "lastVerified": "2026-10-05T18:51:39Z",
+    "sourceId": "85c78d9585a4895ef80aa125",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.entergy.com/",
+      "https://investors.entergy.com/investors/events-and-presentations/default.aspx",
+      "https://investors.entergy.com/investors/events-and-presentations/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000091419",
+    "url": "https://investors.jmsmucker.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "format": "Q4_REPORTS",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "85d9514ca537e464e67883f6",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.jmsmucker.com/",
+      "https://investors.jmsmucker.com/",
+      "https://investors.jmsmucker.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000093751",
+    "url": "https://investors.statestreet.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "format": "Q4_REPORTS",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "898b9835389ed0a01e8d12c0",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.statestreet.com/us/en",
+      "https://investors.statestreet.com/investor-relations/default.aspx",
+      "https://investors.statestreet.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000093751",
+    "url": "https://investors.statestreet.com/rss/PressRelease.aspx?LanguageId=1",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "8eb12089c99510c32386ca51",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.statestreet.com/us/en",
+      "https://investors.statestreet.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000098222",
+    "url": "https://investor.tdw.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "metadata": {
+      "originatingIRHomepage": "https://investor.tdw.com/overview/default.aspx"
+    },
+    "format": "Q4_PRESENTATIONS",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "8f1b8672a680ebb549110af0",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.tdw.com/",
+      "https://investor.tdw.com/",
+      "https://investor.tdw.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "WORDPRESS",
+    "verified": true,
+    "verificationEvidence": {
+      "apiRoot": "https://www.hawkinsinc.com/wp-json/",
+      "linkedFrom": "https://www.hawkinsinc.com/",
+      "method": "ADVERTISED_WORDPRESS_REST_METADATA_CONTRACT"
+    },
+    "companyId": "iss_cik_0000046250",
+    "url": "https://www.hawkinsinc.com/wp-json/wp/v2/posts?_fields=date_gmt%2Clink%2Ctitle.rendered&context=view&order=desc&orderby=date&per_page=20",
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "format": "WORDPRESS_REST_NEWS",
+    "lastVerified": "2026-10-05T18:43:15Z",
+    "sourceId": "9690286f92ae16dbab319cae",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "active": true,
+    "allowedSites": [
+      "https://www.hawkinsinc.com/",
+      "https://www.hawkinsinc.com/",
+      "https://www.hawkinsinc.com/"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GCS",
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000067215",
+    "url": "https://ir.dycomind.com/rss/news-releases.xml",
+    "lastVerified": "2026-10-05T18:51:39Z",
+    "sourceId": "96912d9dcd6a12ec310d8712",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://dycomind.com/",
+      "https://ir.dycomind.com/events-presentations"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "WORDPRESS",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://nextnav.com/",
+      "officialSite": "https://nextnav.com/",
+      "validItems": 8
+    },
+    "companyId": "iss_cik_0001865631",
+    "url": "https://nextnav.com/feed/",
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "format": "RSS",
+    "lastVerified": "2026-10-05T18:41:23Z",
+    "sourceId": "9722596a625c91ff707bb92a",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://nextnav.com/",
+      "https://nextnav.com/",
+      "https://nextnav.com/feed/"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000039911",
+    "url": "https://investors.gapinc.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "format": "Q4_REPORTS",
+    "lastVerified": "2026-10-05T18:43:15Z",
+    "sourceId": "a9f38d3bce300cf89c6f931e",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.gapinc.com/en-us/",
+      "https://investors.gapinc.com/",
+      "https://investors.gapinc.com/Investor-Relation/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "companyId": "iss_cik_0000097216",
+    "url": "https://investors.terex.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "format": "Q4_EVENTS",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "ab83c42d410a6fd473c753dd",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "active": true,
+    "allowedSites": [
+      "https://www.terex.com/",
+      "https://investors.terex.com/overview/default.aspx",
+      "https://investors.terex.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0001829576",
+    "url": "https://investors.carterbank.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "metadata": {
+      "originatingIRHomepage": "https://investors.carterbank.com/overview/default.aspx"
+    },
+    "format": "Q4_PRESENTATIONS",
+    "lastVerified": "2026-10-05T18:41:23Z",
+    "sourceId": "adc43b455f15366296c670e6",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.carterbank.com/",
+      "https://investors.carterbank.com/",
+      "https://investors.carterbank.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "companyId": "iss_cik_0000029644",
+    "url": "https://ir.donaldson.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "format": "Q4_EVENTS",
+    "lastVerified": "2026-10-05T18:34:09Z",
+    "sourceId": "aee9cec2a2872535c4143549",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "active": true,
+    "allowedSites": [
+      "https://www.donaldson.com/en/",
+      "https://www.donaldson.com/en/company/investors/",
+      "https://ir.donaldson.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GCS",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.kingstonecompanies.com/resources/investor-faqs",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000033992",
+    "url": "https://www.kingstonecompanies.com/news-events/presentations",
+    "metadata": {
+      "originatingIRHomepage": "https://www.kingstonecompanies.com/resources/investor-faqs"
+    },
+    "format": "HTML_MATERIALS",
+    "lastVerified": "2026-10-05T18:43:15Z",
+    "sourceId": "b1322e68ee5f109e25520139",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.kingstonecompanies.com/",
+      "https://www.kingstonecompanies.com/resources/investor-faqs",
+      "https://www.kingstonecompanies.com/news-events/presentations"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "STOCKPR",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.investorrelations.pitneybowes.com/",
+      "officialSite": "https://www.pitneybowes.com/us",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000078814",
+    "url": "https://investorrelations.pitneybowes.com/rss-news-feed",
+    "format": "RSS",
+    "lastVerified": "2026-10-05T18:56:56Z",
+    "sourceId": "b1ced03f09faa456d4629466",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.pitneybowes.com/us",
+      "https://www.investorrelations.pitneybowes.com/",
+      "https://investorrelations.pitneybowes.com/rss-news-feed"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000097745",
+    "url": "https://ir.thermofisher.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "metadata": {
+      "originatingIRHomepage": "https://ir.thermofisher.com/investors/overview/default.aspx"
+    },
+    "format": "Q4_PRESENTATIONS",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "b6f6beb9aedd3cb0cc90d835",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.thermofisher.com/us/en/home.html",
+      "https://ir.thermofisher.com/",
+      "https://ir.thermofisher.com/investors/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GCS",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.chemed.com/investor-relations/quarterly-results",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000019584",
+    "url": "https://www.chemed.com/news-events/events-and-presentations",
+    "metadata": {
+      "originatingIRHomepage": "https://www.chemed.com/investor-relations/quarterly-results"
+    },
+    "format": "HTML_MATERIALS",
+    "lastVerified": "2026-10-05T18:29:04Z",
+    "sourceId": "b943fccada227c9d597d2cf8",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.chemed.com/",
+      "https://www.chemed.com/investor-relations/quarterly-results",
+      "https://www.chemed.com/news-events/events-and-presentations"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GCS",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.appliedmaterials.com/rss-feeds",
+      "officialSite": "https://www.appliedmaterials.com/",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000006951",
+    "url": "https://ir.appliedmaterials.com/rss/events.xml",
+    "format": "RSS_EVENTS",
+    "lastVerified": "2026-10-05T18:24:03Z",
+    "sourceId": "bb142e8b809bdb05a44f8490",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.appliedmaterials.com/",
+      "https://ir.appliedmaterials.com/",
+      "https://ir.appliedmaterials.com/rss/events.xml"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000037785",
+    "url": "https://investors.fmc.com/rss/PressRelease.aspx?LanguageId=1",
+    "lastVerified": "2026-10-05T18:43:15Z",
+    "sourceId": "c37f89e270c7162271aedaa1",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.fmc.com/en",
+      "https://investors.fmc.com/home/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "companyId": "iss_cik_0000065270",
+    "url": "https://ir.methode.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "format": "Q4_EVENTS",
+    "lastVerified": "2026-10-05T18:51:39Z",
+    "sourceId": "c6829e4fa85e64237873f5c5",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "active": true,
+    "allowedSites": [
+      "https://www.methode.com/",
+      "https://ir.methode.com/",
+      "https://ir.methode.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GENERIC",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.avnet.com/americas/about-avnet/rss-feeds/",
+      "officialSite": "https://www.avnet.com/americas/",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000008858",
+    "url": "https://news.avnet.com/rss/pressrelease.aspx?CategoryWorkflowId=b99a406a-4a75-41bb-8f69-5d113825c367",
+    "format": "RSS",
+    "lastVerified": "2026-10-05T18:24:03Z",
+    "sourceId": "c69c672b9fd976de51a41009",
+    "type": "IR_FEED",
+    "intervalHours": 6,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.avnet.com/americas/",
+      "https://www.avnet.com/americas/",
+      "https://news.avnet.com/rss/pressrelease.aspx?CategoryWorkflowId=b99a406a-4a75-41bb-8f69-5d113825c367"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "companyId": "iss_cik_0000018926",
+    "url": "https://ir.lumen.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "format": "Q4_EVENTS",
+    "lastVerified": "2026-10-05T18:29:04Z",
+    "sourceId": "c71513487721a6af3fe38ab4",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "active": true,
+    "allowedSites": [
+      "https://www.lumen.com/en-us/home.html",
+      "https://ir.lumen.com/overview/default.aspx",
+      "https://ir.lumen.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000018926",
+    "url": "https://ir.lumen.com/rss/PressRelease.aspx?LanguageId=1",
+    "lastVerified": "2026-10-05T18:29:04Z",
+    "sourceId": "c8f1057e3b829fe864722dea",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.lumen.com/en-us/home.html",
+      "https://ir.lumen.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GENERIC",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.motorolasolutions.com/investors.html",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000068505",
+    "url": "https://www.motorolasolutions.com/investors/events-and-presentations.html",
+    "metadata": {
+      "originatingIRHomepage": "https://www.motorolasolutions.com/investors.html"
+    },
+    "format": "HTML_MATERIALS",
+    "lastVerified": "2026-10-05T18:51:39Z",
+    "sourceId": "c96f2f3ea4577c4968090df0",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.motorolasolutions.com/en_us.html?geo=redirect",
+      "https://www.motorolasolutions.com/investors.html",
+      "https://www.motorolasolutions.com/investors/events-and-presentations.html"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GCS",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.genesco.com/investor-relations/financial-information/sec-filings",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000018498",
+    "url": "https://www.genesco.com/investor-relations/financial-information/quarterly-results",
+    "metadata": {
+      "originatingIRHomepage": "https://www.genesco.com/investor-relations/financial-information/sec-filings"
+    },
+    "format": "HTML_MATERIALS",
+    "lastVerified": "2026-10-05T18:29:04Z",
+    "sourceId": "c9e10479890eeae101942e88",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.genesco.com/",
+      "https://www.genesco.com/investor-relations/financial-information/sec-filings",
+      "https://www.genesco.com/investor-relations/financial-information/quarterly-results"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "companyId": "iss_cik_0000008818",
+    "url": "https://www.investors.averydennison.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "format": "Q4_EVENTS",
+    "lastVerified": "2026-10-05T18:24:03Z",
+    "sourceId": "ce01fa729337ea4c9c7fc8f4",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "active": true,
+    "allowedSites": [
+      "https://www.averydennison.com/en/home.html",
+      "https://www.investors.averydennison.com/",
+      "https://www.investors.averydennison.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0001829576",
+    "url": "https://investors.carterbank.com/rss/PressRelease.aspx?LanguageId=1",
+    "lastVerified": "2026-10-05T18:41:23Z",
+    "sourceId": "ceef3592cd5c96c47a5200db",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.carterbank.com/",
+      "https://investors.carterbank.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GCS",
+    "verified": true,
+    "verificationEvidence": "LINKED_BY_VERIFIED_IR_PAGE",
+    "companyId": "iss_cik_0000012659",
+    "url": "https://investors.hrblock.com/news-events/events",
+    "lastVerified": "2026-10-05T18:24:03Z",
+    "sourceId": "d0e56140e361bcd598bb639b",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "active": true,
+    "allowedSites": [
+      "https://www.hrblock.com/",
+      "https://investors.hrblock.com/",
+      "https://investors.hrblock.com/news-events/events"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000018230",
+    "url": "https://investors.caterpillar.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "metadata": {
+      "originatingIRHomepage": "https://investors.caterpillar.com/overview/default.aspx"
+    },
+    "format": "Q4_PRESENTATIONS",
+    "lastVerified": "2026-10-05T18:29:04Z",
+    "sourceId": "d34b6bca55ac9f04574bd586",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.caterpillar.com/",
+      "https://www.caterpillar.com/en/investors.html",
+      "https://investors.caterpillar.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "INVESTIS",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.franklin-electric.com/investors/",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000038725",
+    "url": "https://www.franklin-electric.com/investors/events-and-presentations/",
+    "metadata": {
+      "originatingIRHomepage": "https://www.franklin-electric.com/investors/"
+    },
+    "format": "HTML_MATERIALS",
+    "lastVerified": "2026-10-05T18:43:15Z",
+    "sourceId": "d56251bb6c20d20fdfb78201",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.franklin-electric.com/",
+      "https://www.franklin-electric.com/investors/",
+      "https://www.franklin-electric.com/investors/events-and-presentations/"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000008818",
+    "url": "https://www.investors.averydennison.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "format": "Q4_REPORTS",
+    "lastVerified": "2026-10-05T18:24:03Z",
+    "sourceId": "d8f4b3aade86b9c3b4f162f0",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.averydennison.com/en/home.html",
+      "https://www.investors.averydennison.com/",
+      "https://www.investors.averydennison.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000097216",
+    "url": "https://investors.terex.com/rss/PressRelease.aspx?LanguageId=1",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "dbddf4324db042cb2ff17f87",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.terex.com/",
+      "https://investors.terex.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "companyId": "iss_cik_0000098222",
+    "url": "https://investor.tdw.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "format": "Q4_EVENTS",
+    "lastVerified": "2026-10-05T19:01:05Z",
+    "sourceId": "dc0efe287258380ad1a40a78",
+    "type": "IR_EVENTS",
+    "intervalHours": 12,
+    "active": true,
+    "allowedSites": [
+      "https://www.tdw.com/",
+      "https://investor.tdw.com/",
+      "https://investor.tdw.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "STOCKPR",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.randcapital.com/",
+      "officialSite": "https://www.randcapital.com/",
+      "validItems": 20
+    },
+    "companyId": "iss_cik_0000081955",
+    "url": "https://ir.randcapital.com/rss",
+    "format": "RSS",
+    "lastVerified": "2026-10-05T18:56:56Z",
+    "sourceId": "de24b535fd36f923af477064",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.randcapital.com/",
+      "https://ir.randcapital.com/",
+      "https://ir.randcapital.com/rss"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GCS",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.kellyservices.com/investor-relations/",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000055135",
+    "url": "https://ir.kellyservices.com/news-events/events-and-presentations",
+    "metadata": {
+      "originatingIRHomepage": "https://ir.kellyservices.com/investor-relations/"
+    },
+    "format": "HTML_MATERIALS",
+    "lastVerified": "2026-10-05T18:47:26Z",
+    "sourceId": "e40cf68b92ffd443ad9ead3d",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.kellyservices.com/",
+      "https://ir.kellyservices.com/investor-relations/",
+      "https://ir.kellyservices.com/news-events/events-and-presentations"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000065984",
+    "url": "https://investors.entergy.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "format": "Q4_REPORTS",
+    "lastVerified": "2026-10-05T18:51:39Z",
+    "sourceId": "e87481943a49915c064a72fb",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.entergy.com/",
+      "https://investors.entergy.com/investors/events-and-presentations/default.aspx",
+      "https://investors.entergy.com/investors/events-and-presentations/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "STOCKPR",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.matw.com/investors/news-events/in-the-news",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "companyId": "iss_cik_0000063296",
+    "url": "https://www.matw.com/investors/company-information/presentations",
+    "metadata": {
+      "originatingIRHomepage": "https://www.matw.com/investors/news-events/in-the-news"
+    },
+    "format": "HTML_MATERIALS",
+    "lastVerified": "2026-10-05T18:47:26Z",
+    "sourceId": "ecbc71c60d0f94a87975dc2d",
+    "type": "IR_MATERIALS",
+    "intervalHours": 24,
+    "active": true,
+    "allowedSites": [
+      "https://www.matw.com/",
+      "https://www.matw.com/investors/news-events/in-the-news",
+      "https://www.matw.com/investors/company-information/presentations"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "GENERIC",
+    "verified": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://www.avnet.com/americas/about-avnet/rss-feeds/",
+      "officialSite": "https://www.avnet.com/americas/",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000008858",
+    "url": "https://news.avnet.com/rss/pressrelease.aspx?CategoryWorkflowId=1cb807d2-208f-4bc3-9133-6a9ad45ac3b0",
+    "format": "RSS",
+    "lastVerified": "2026-10-05T18:24:03Z",
+    "sourceId": "f122a15958a3292796202dc3",
+    "type": "IR_FEED",
+    "intervalHours": 6,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.avnet.com/americas/",
+      "https://www.avnet.com/americas/",
+      "https://news.avnet.com/rss/pressrelease.aspx?CategoryWorkflowId=1cb807d2-208f-4bc3-9133-6a9ad45ac3b0"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "provider": "Q4",
+    "verified": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "companyId": "iss_cik_0000029644",
+    "url": "https://ir.donaldson.com/rss/PressRelease.aspx?LanguageId=1",
+    "lastVerified": "2026-10-05T18:34:09Z",
+    "sourceId": "f5361f79d7704827769bde3d",
+    "type": "IR_FEED",
+    "intervalHours": 4,
+    "priority": 1,
+    "active": true,
+    "allowedSites": [
+      "https://www.donaldson.com/en/",
+      "https://ir.donaldson.com/overview/default.aspx"
+    ],
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
   }
 ]

@@ -171,13 +171,20 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
         parts = urlsplit(link['url'])
         if re.search(r'/static-files/|\.(?:ico|png|jpg|jpeg|svg|webp|css|js|json|pdf|xml|zip|woff2?)(?:$)', parts.path, re.I):
             return False
-        return bool(re.fullmatch(r'(?:for |our )?investors?(?: relations| overview| information| center| resources)?', link['text'].strip(), re.I) or
+        return bool(re.fullmatch(r'(?:for |our )?investors?(?: relations| overview| information| center| resources)?', ir_label(link), re.I) or
                     re.search(r'/(?:investor[-_]?relations|investors?)(?:[/._-]|$)', parts.path, re.I) or
                     (parts.path in ('', '/') and re.match(r'(?:ir|investors?)\.', parts.hostname or '', re.I)))
+    def ir_label(link):
+        # Accessible new-tab hints and repeated title/visible labels can
+        # obscure an otherwise exact investor navigation label. Normalize
+        # only those forms; arbitrary investing prose stays ineligible.
+        text = re.sub(r'^opens? in (?:a )?new (?:browser )?(?:tab|window)\s*', '', link['text'].strip(), flags=re.I)
+        repeated = re.fullmatch(r'((?:for |our )?investors?(?: relations| overview| information| center| resources)?)\s*\1', text, re.I)
+        return repeated[1] if repeated else text
     def ir_rank(link):
         # Navigation order often puts investor FAQs/governance before the hub.
         # Rank observed links only; never expand the bounded page walk.
-        parts=urlsplit(link['url']);text=link['text'].strip().casefold()
+        parts=urlsplit(link['url']);text=ir_label(link).casefold()
         if re.fullmatch(r'investors?|investor relations|investor overview',text) or (parts.path in ('','/') and re.match(r'(?:ir|investors?)\.',parts.hostname or '',re.I)):return 0
         if re.search(r'faq|governance|contact|tools|why.invest',text+' '+parts.path,re.I):return 4
         if re.search(r'financial|quarterly|results|earnings|events|calendar|presentations',text+' '+parts.path,re.I):return 1
