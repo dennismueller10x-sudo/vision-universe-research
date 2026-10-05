@@ -7,7 +7,7 @@
     "quality_rules": "1.0.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.5.0"
+      "mapping_version": "1.6.0"
     }
   },
   "note": "Das langfristige Ziel ist TECHNICAL_WITHOUT_FUNDAMENTALS gegen null. Die Zahl steht hier, damit sie sinkt und nicht behauptet wird.",
@@ -18,10 +18,10 @@
     "status": "NOT_CONNECTED",
     "canonicalOwner": "R2-Workstream (quant/data/market/history)",
     "accepted": {
-      "PRODUCT_TITLES": 6875,
+      "PRODUCT_TITLES": 6853,
       "R2_SERIES_AVAILABLE": 7802,
-      "HISTORICAL_CHART_AVAILABLE": 6871,
-      "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.94
+      "HISTORICAL_CHART_AVAILABLE": 6850,
+      "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.96
     },
     "note": "Uebernommene Kennzahlen des abgenommenen R2-Stands. Dieser Workstream liest sie NICHT ein und rechnet nicht mit ihnen - sie stehen hier als benannte Fremdquelle, damit niemand die Gate-Ableitung unten fuer die Marktdatendeckung haelt."
   },
@@ -36,5 +36,5 @@
   "TECHNICAL_WITHOUT_FUNDAMENTALS": null,
   "FUNDAMENTALS_WITHOUT_TECHNICAL": null,
   "unmeasured": "Der Overlap wird erst berechnet, wenn die kanonische Marktdaten-/R2-Quelle in diesen Workstream eingebunden ist. Bis dahin waere jede Zahl hier eine Verrechnung zweier verschiedener Bestaende auf zwei verschiedenen Ebenen (Instrument gegen Mitglied).",
-  "generatedAtUtc": "2026-10-04T12:24:50+00:00"
+  "generatedAtUtc": "2026-10-05T14:38:55+00:00"
 }
