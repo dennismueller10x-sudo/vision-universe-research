@@ -31,6 +31,8 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+const Identity = createRequire(import.meta.url)("../../core/identity.js"); // eine Identitaetsregel
 import { resolveProductUniverse, SECURITY_MASTER_FILE, isConsumerInstrument } from "./universe-source.mjs";
 
 export const MATRIX_VERSION = "capability-matrix-1.0.0";
@@ -60,8 +62,8 @@ export function buildCapabilityMatrix(opt) {
   const perSecurity = (status && status.securities) || {};
   const seriesDir = join(root, "quant", "data", "market", "discover-series");
   const factors = maybeJSON(join(root, "quant", "data", "market", "factors", "factors-FULL_UNIVERSE.json"));
-  const factorRows = new Map((factors && factors.securities || []).map((r) => [r.securityId || "ref_" + r.ticker, r]));
-  const factorSkipped = new Map((factors && factors.skipped || []).map((r) => ["ref_" + r.ticker, r]));
+  const factorRows = new Map((factors && factors.securities || []).map((r) => [r.securityId || Identity.securityIdForTicker(r.ticker), r]));
+  const factorSkipped = new Map((factors && factors.skipped || []).map((r) => [Identity.securityIdForTicker(r.ticker), r]));
   const intradayIndex = maybeJSON(join(root, "quant", "data", "market", "intraday", "index.json"));
   const intradayStatus = maybeJSON(join(root, "quant", "data", "market", "intraday", "status.json"));
   const sessions = intradayIndex ? Object.keys(intradayIndex.available || {}).sort() : [];
@@ -94,7 +96,7 @@ export function buildCapabilityMatrix(opt) {
 
   const rows = [];
   for (const e of master.decisions || []) {
-    const id = e.securityId || "ref_" + e.ticker;
+    const id = e.securityId || Identity.securityIdForTicker(e.ticker);
     const sym = e.ticker;
     const inProduct = produktIds.has(id);
     const st = perSecurity[id] || null;

@@ -81,7 +81,8 @@
     return v.toLocaleString('de-DE', { minimumFractionDigits: a >= 1000 ? 0 : 2, maximumFractionDigits: a >= 1000 ? 0 : 2 });
   }
   function fmtVol(v) { if (!isFinite(v)) return '–'; if (v >= 1e9) return (v / 1e9).toFixed(1).replace('.', ',') + ' Mrd.'; if (v >= 1e6) return (v / 1e6).toFixed(1).replace('.', ',') + ' Mio.'; if (v >= 1e3) return Math.round(v / 1e3) + ' Tsd.'; return String(Math.round(v)); }
-  function fmtDate(d) { var p = d.split('-'); return p[2] + '.' + p[1] + '.' + p[0]; }
+  // Ohne Datum kein Absturz im Tooltip-Handler (vorher: d.split auf null).
+  function fmtDate(d) { var p = String(d || '').slice(0, 10).split('-'); return p.length === 3 ? p[2] + '.' + p[1] + '.' + p[0] : (d ? String(d) : '–'); }
 
   /**
    * cfg: { bars, mode: 'candles'|'line', window, overlays:[{id,label,color,values,on}],

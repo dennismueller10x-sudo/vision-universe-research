@@ -137,7 +137,9 @@ test("the caption follows the series instead of asserting a basis", async () => 
   /* Die Aktienseite leitet die Basis aus dem Vertrag ab und setzt sie nicht
      fest. */
   const seite = readFileSync(new URL("quant/app/page-stock.js", ROOT), "utf8");
-  assert.match(seite, /adjusted:\s*s\.chart && s\.chart\.adjustmentStatus === "splitAdjusted"/,
+  /* Beide Schreibweisen derselben Aussage: "splitAdjusted" (Golden-Rekonstruktion)
+     und "SPLIT_ADJUSTED" (veroeffentlichte Reihe aller anderen Titel). */
+  assert.match(seite, /adjusted: !!\(s\.chart && \/\^\(splitAdjusted\|SPLIT_ADJUSTED\)\$\/\.test\(s\.chart\.adjustmentStatus/,
     "die Aktienseite leitet die Basis des Charts nicht aus adjustmentStatus ab");
   /* Und die Engine ist in der Seite geladen, sonst faellt die
      Rekonstruktion im Browser still aus. Kanonisch ist quant/index.html;

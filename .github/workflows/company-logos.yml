@@ -57,7 +57,10 @@ permissions:
   contents: write
 
 concurrency:
-  group: company-logos
+  # Je Zweig eine Gruppe: Laeufe auf claude/** stehen nicht mehr in der
+  # Warteschlange von main (eine neue wartende Anfrage verdraengt die
+  # aeltere wartende - auch eine uebersprungene). Audit 03.10.2026.
+  group: company-logos-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -76,7 +79,7 @@ jobs:
           node-version: '22'
 
       - name: Bildbibliothek fuer die Website-Icons
-        run: npm install --no-save --no-package-lock --no-audit --no-fund sharp@0.34
+        run: npm install --no-save --no-package-lock --no-audit --no-fund sharp@0.34.5
 
       - name: Kandidaten-Bilder (nur mit Eingabe candidates)
         if: ${{ github.event.inputs.candidates }}

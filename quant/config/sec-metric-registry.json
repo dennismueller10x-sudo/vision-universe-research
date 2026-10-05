@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "mapping_version": "1.5.0",
+  "mapping_version": "1.6.0",
   "description": "Canonical Metric Registry. Maps Vision Universe metrics onto accepted SEC XBRL concepts. Central, config-driven, extensible. No company-specific rules are permitted here or anywhere downstream: a mapping is either generic or it does not exist. Stand 1.1.0: 13 Kennzahlen ergaenzt, damit die Fundamentalhistorie die Positionen aus dem Auftrag (§5) tragen kann - Abschreibungen (und damit EBITDA), kurzfristige Aktiva und Passiva, Vorraete, Forderungen, Gewinnruecklagen, Goodwill, immaterielle Vermoegenswerte, Investitions- und Finanzierungscashflow, Aktienrueckkaeufe, Schuldenaufnahme und -tilgung. Neue Kennzahlen sind optional: ein Emittent, der eine Position nicht ausweist, ist kein Fehlerfall. Version 1.2.0 ergaenzt die IFRS-Taxonomie (ifrs-full) fuer 20-F- und 40-F-Einreicher sowie die Bilanzidentitaet LiabilitiesAndStockholdersEquity. Jedes ergaenzte Konzept wurde im Bestand GEMESSEN (quant/data/fundamentals/unmapped-concepts.json, Lauf 34743708708), keines aus dem Gedaechtnis uebernommen.",
   "sector_rules": [
     {
@@ -1177,13 +1177,11 @@
           "taxonomy": "us-gaap",
           "concept": "CommonStockSharesOutstanding",
           "priority": 20
-        },
-        {
-          "taxonomy": "us-gaap",
-          "concept": "CommonStockSharesIssued",
-          "priority": 30
         }
-      ]
+      ],
+      "excludedConcepts": {
+        "us-gaap:CommonStockSharesIssued": "Ausgegebene Aktien einschliesslich eigener im Bestand - keine ausstehenden Aktien. Bis Mapping 1.5.0 Rueckfall mit Prioritaet 30; dadurch fuehrte JPMorgan je Periode abwechselnd 2,7 Mrd (ausstehend) und 4,10 Mrd (ausgegeben) und der Boersenwert lag 50 % zu hoch. Fehlt eine ausstehende Zahl, fehlt der Wert - kein Ersatz (market-cap-1.0.0)."
+      }
     },
     "diluted_weighted_average_shares": {
       "label": "Diluted Weighted Average Shares",

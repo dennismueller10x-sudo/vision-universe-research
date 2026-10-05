@@ -1,11 +1,11 @@
 {
   "schema": "sec-concept-census-1.0.0",
-  "generated_at_utc": "2026-09-23T14:27:50+00:00",
+  "generated_at_utc": "2026-10-05T02:08:49+00:00",
   "versions": {
     "census_logic": "1.1.0",
     "metric_registry": {
       "schema_version": 1,
-      "mapping_version": "1.5.0"
+      "mapping_version": "1.6.0"
     }
   },
   "metrics": [
@@ -13,14 +13,14 @@
     "long_term_debt"
   ],
   "pattern": "debt|borrow|notespayable|capitallease|financelease",
-  "issuers": 5148,
+  "issuers": 5146,
   "mapped": [
     {
       "concept": "us-gaap:LongTermDebt",
       "servesMetrics": [
         "long_term_debt"
       ],
-      "issuers": 2875
+      "issuers": 2873
     },
     {
       "concept": "us-gaap:LongTermDebtNoncurrent",
@@ -54,31 +54,31 @@
   "unmapped": [
     {
       "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalInYearTwo",
-      "issuers": 2347
+      "issuers": 2345
     },
     {
       "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths",
-      "issuers": 2337
+      "issuers": 2335
     },
     {
       "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalInYearThree",
-      "issuers": 2296
+      "issuers": 2294
     },
     {
       "concept": "us-gaap:GainsLossesOnExtinguishmentOfDebt",
-      "issuers": 2291
+      "issuers": 2290
     },
     {
       "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFour",
-      "issuers": 2215
+      "issuers": 2213
     },
     {
       "concept": "us-gaap:LongTermDebtCurrent",
-      "issuers": 2088
+      "issuers": 2087
     },
     {
       "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFive",
-      "issuers": 2050
+      "issuers": 2048
     },
     {
       "concept": "us-gaap:RepaymentsOfLongTermDebt",
@@ -90,51 +90,51 @@
     },
     {
       "concept": "us-gaap:ProceedsFromIssuanceOfLongTermDebt",
-      "issuers": 1955
+      "issuers": 1954
     },
     {
       "concept": "us-gaap:DebtInstrumentCarryingAmount",
-      "issuers": 1840
+      "issuers": 1838
     },
     {
       "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalAfterYearFive",
-      "issuers": 1707
+      "issuers": 1705
     },
     {
       "concept": "us-gaap:FinanceLeaseLiability",
-      "issuers": 1622
+      "issuers": 1621
     },
     {
       "concept": "us-gaap:FinanceLeasePrincipalPayments",
-      "issuers": 1481
+      "issuers": 1480
     },
     {
       "concept": "us-gaap:FinanceLeaseLiabilityPaymentsDue",
-      "issuers": 1442
+      "issuers": 1441
     },
     {
       "concept": "us-gaap:FinanceLeaseWeightedAverageDiscountRatePercent",
-      "issuers": 1387
-    },
-    {
-      "concept": "us-gaap:FinanceLeaseLiabilityPaymentsDueNextTwelveMonths",
-      "issuers": 1384
+      "issuers": 1385
     },
     {
       "concept": "us-gaap:FinanceLeaseRightOfUseAsset",
-      "issuers": 1384
+      "issuers": 1383
+    },
+    {
+      "concept": "us-gaap:FinanceLeaseLiabilityPaymentsDueNextTwelveMonths",
+      "issuers": 1383
     },
     {
       "concept": "us-gaap:FinanceLeaseLiabilityPaymentsDueYearTwo",
-      "issuers": 1382
-    },
-    {
-      "concept": "us-gaap:FinanceLeaseLiabilityUndiscountedExcessAmount",
-      "issuers": 1379
+      "issuers": 1381
     },
     {
       "concept": "us-gaap:FinanceLeaseRightOfUseAssetAmortization",
       "issuers": 1379
+    },
+    {
+      "concept": "us-gaap:FinanceLeaseLiabilityUndiscountedExcessAmount",
+      "issuers": 1378
     },
     {
       "concept": "us-gaap:AvailableForSaleSecuritiesDebtSecurities",
@@ -142,7 +142,7 @@
     },
     {
       "concept": "us-gaap:FinanceLeaseLiabilityPaymentsDueYearThree",
-      "issuers": 1358
+      "issuers": 1357
     },
     {
       "concept": "us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity",
@@ -150,11 +150,11 @@
     },
     {
       "concept": "us-gaap:ShortTermBorrowings",
-      "issuers": 1345
+      "issuers": 1346
     },
     {
       "concept": "us-gaap:FinanceLeaseLiabilityNoncurrent",
-      "issuers": 1327
+      "issuers": 1326
     },
     {
       "concept": "us-gaap:FinanceLeaseLiabilityCurrent",
@@ -170,7 +170,7 @@
     },
     {
       "concept": "us-gaap:DebtInstrumentFaceAmount",
-      "issuers": 1268
+      "issuers": 1269
     }
   ],
   "slots": [
@@ -181,7 +181,7 @@
         "us-gaap:LongTermDebt",
         "ifrs-full:LongtermBorrowings"
       ],
-      "issuers": 3456
+      "issuers": 3454
     },
     {
       "slot": "ST",
@@ -201,7 +201,7 @@
         "us-gaap:FinanceLeaseLiabilityCurrent",
         "us-gaap:FinanceLeaseLiability"
       ],
-      "issuers": 1753
+      "issuers": 1752
     },
     {
       "slot": "COMBINED",
@@ -226,7 +226,7 @@
       "requires": [
         "COMBINED|LT+ST"
       ],
-      "issuers": 2929,
+      "issuers": 2928,
       "semantics": "Sammelangabe, sonst long_term_debt + short_term_debt. Das ist der heutige Zustand."
     },
     {
@@ -234,7 +234,7 @@
       "requires": [
         "LT"
       ],
-      "issuers": 3456,
+      "issuers": 3454,
       "semantics": "Nur die langfristige Schuld. Weitere Reichweite, aber eine ANDERE Kennzahl: kurzfristige Schulden fehlen darin, und das ist keine Abdeckungsluecke, sondern eine andere Aussage."
     },
     {
@@ -243,7 +243,7 @@
         "COMBINED|LT+ST",
         "FL"
       ],
-      "issuers": 1281,
+      "issuers": 1280,
       "semantics": "Wie heute, zusaetzlich Finanzierungsleasing-Verbindlichkeiten. Nach ASC 842 schuldaehnlich; ob sie in 'Gesamtverschuldung' gehoeren, ist eine Methodikentscheidung und keine Messung."
     },
     {
@@ -251,7 +251,7 @@
       "requires": [
         "COMBINED|LT+ST|FL"
       ],
-      "issuers": 3401,
+      "issuers": 3400,
       "semantics": "Wie heute, und wo das nicht traegt, ersatzweise Finanzierungsleasing allein. Zur Vollstaendigkeit gemessen; semantisch am wenigsten sauber."
     }
   ],

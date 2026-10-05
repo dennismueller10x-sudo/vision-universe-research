@@ -34,6 +34,10 @@ const Catalog = require(join(ROOT, "quant/engines/catalog.js"));
 const Radar = require(join(ROOT, "quant/engines/quant-radar.js"));
 const SecurityMaster = require(join(ROOT, "quant/engines/us-security-master.js"));
 const Survivorship = require(join(ROOT, "quant/engines/survivorship-control.js"));
+const MarketCap = require(join(ROOT, "quant/engines/market-cap.js"));
+/* Bewusst zurueckgehaltene Boersenwerte (market-cap-1.0.0): die Bewertung
+   nennt den Grund, statt "Eingabe nicht materialisiert" zu sagen. */
+const MARKET_CAP_WITHHELD = ["SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", "SHARE_COUNT_NOT_OUTSTANDING", "REPORTING_CURRENCY_NOT_LISTING_CURRENCY"];
 /* Wer zur Grundgesamtheit der Perzentile gehoert (seit 02.10.2026: das
    kanonische Produktuniversum, nicht die Faktordatei). Teil der Methodik
    jedes Stands - aendert sich die Regel, ist ein Rangwechsel keine
@@ -558,14 +562,37 @@ function main() {
          * zusammen. Das ist Arbeit in der SEC-Schicht, kein Anbieterkauf. */
         const zeilen = listingsByCik.get(peer.cik) || [];
         const zuordenbar = zeilen.length <= 1;
-        const marketCap = shares && quote && zuordenbar ? shares.value * quote.close : null;
+        /* BOERSENWERT NUR AUS AUSSTEHENDEN AKTIEN (market-cap-1.0.0).
+         * Bis Mapping 1.5.0 fiel die SEC-Schicht auf `CommonStockSharesIssued`
+         * zurueck - ausgegebene Aktien einschliesslich eigener. JPMorgan stand
+         * so mit 4,10 statt 2,66 Mrd Aktien da, der Boersenwert 54 % zu hoch.
+         * Nennt die Konsumschicht das Konzept der Aktienzahl, muss es eine
+         * ausstehende Zahl sein; sonst wird zurueckgehalten, nie ersetzt. */
+        const sharesConcept = doc.ttm && doc.ttm.shares_outstanding ? doc.ttm.shares_outstanding.concept || null : null;
+        const ausstehend = !sharesConcept || MarketCap.OUTSTANDING_CONCEPTS.includes(sharesConcept);
+        if (sharesConcept) countGap("SHARE_COUNT_CONCEPT_KNOWN");
+        /* GLEICHE WAEHRUNG (market-cap-1.1.0). CNFinance (20-F, berichtet in
+         * CNY) stand mit 1,56 Mrd Stammaktien x Kurs des ADS da - Boersenwert
+         * um das Verhaeltnis Schein:Aktie verfaelscht, und Gewinn in CNY
+         * wurde durch einen Boersenwert in USD geteilt. Rund 650 Emittenten
+         * berichten nicht in USD; keiner traegt eine verlaessliche
+         * ADS-Quote. Also: Berichtswaehrung ungleich USD -> zurueckhalten. */
+        const berichtswaehrung = MarketCap.reportingCurrency(doc.units);
+        const gleicheWaehrung = MarketCap.sameCurrencyAsListing(doc.units);
+        const marketCap = shares && quote && zuordenbar && ausstehend && gleicheWaehrung ? shares.value * quote.close : null;
         fundamentals = FundamentalInputs.compute(doc, cutoff, marketCap);
         if (fundamentals) {
           fundamentals.marketCap = finite(marketCap) ? marketCap : null;
           fundamentals.priceAsOf = quote?.asOf || null;
           fundamentals.marketCapReason = finite(marketCap) ? null
             : (!zuordenbar ? "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
-              : !shares ? "NO_PIT_SHARE_COUNT" : "NO_PUBLISHED_CLOSE");
+              : !shares ? "NO_PIT_SHARE_COUNT"
+              : !ausstehend ? "SHARE_COUNT_NOT_OUTSTANDING"
+              : !gleicheWaehrung ? "REPORTING_CURRENCY_NOT_LISTING_CURRENCY" : "NO_PUBLISHED_CLOSE");
+          fundamentals.sharesConcept = sharesConcept;
+          fundamentals.reportingCurrency = berichtswaehrung;
+          if (!ausstehend) countGap("SHARE_COUNT_NOT_OUTSTANDING");
+          if (!gleicheWaehrung) countGap("REPORTING_CURRENCY_NOT_LISTING_CURRENCY");
           if (!zuordenbar) {
             fundamentals.issuerListings = zeilen.slice().sort();
             countGap("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING");
@@ -742,8 +769,8 @@ function main() {
              Boersenwert zurueckgehalten wurde. */
           const haengtAmBoersenwert = FundamentalInputs.MARKET_CAP_DEPENDENT_RAWS.includes(spec.id);
           const reason = fundamentalFactor && !record.fundamentals ? "FUNDAMENTALS_UNAVAILABLE"
-            : (haengtAmBoersenwert && record.fundamentals?.marketCapReason === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING")
-              ? "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
+            : (haengtAmBoersenwert && MARKET_CAP_WITHHELD.includes(record.fundamentals?.marketCapReason))
+              ? record.fundamentals.marketCapReason
               : "INPUT_NOT_MATERIALIZED";
           return { ...base, state: "UNAVAILABLE", reason, raw: null, score: null };
         }
@@ -775,8 +802,9 @@ function main() {
          waehrend darunter fuenfmal der eigentliche Grund steht. */
       if (assembled.state !== "AVAILABLE") {
         const fehlende = components.filter((component) => component.state !== "AVAILABLE");
-        if (fehlende.length && fehlende.every((component) => component.reason === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING")) {
-          assembled = { ...assembled, reason: "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING" };
+        const grund = fehlende.length ? fehlende[0].reason : null;
+        if (MARKET_CAP_WITHHELD.includes(grund) && fehlende.every((component) => component.reason === grund)) {
+          assembled = { ...assembled, reason: grund };
         }
       }
 

@@ -1,6 +1,6 @@
 {
  "schemaVersion": "return-basis-universe-study-1.0.0",
- "generatedAt": "2026-10-04T06:44:03.000Z",
+ "generatedAt": "2026-10-05T03:16:26.000Z",
  "versions": {
   "study_logic": "1.0.0",
   "return_series": "vu-return-series-1.0.0",
@@ -3871,11 +3871,11 @@
    "STRATEGY_IMPACT": {
     "momentum-leader": {
      "label": "Momentum Leader",
-     "MEMBERS_ON_PRICE_RETURN": 347,
-     "MEMBERS_ON_TOTAL_RETURN": 340,
+     "MEMBERS_ON_PRICE_RETURN": 349,
+     "MEMBERS_ON_TOTAL_RETURN": 342,
      "LEAVING": 16,
      "ENTERING": 9,
-     "MEMBERSHIP_CHURN_SHARE": 0.072,
+     "MEMBERSHIP_CHURN_SHARE": 0.0716,
      "leavingExamples": [
       "EQIX",
       "NX",
@@ -3934,13 +3934,14 @@
     },
     "value-momentum": {
      "label": "Value Momentum",
-     "MEMBERS_ON_PRICE_RETURN": 189,
-     "MEMBERS_ON_TOTAL_RETURN": 184,
-     "LEAVING": 7,
+     "MEMBERS_ON_PRICE_RETURN": 191,
+     "MEMBERS_ON_TOTAL_RETURN": 185,
+     "LEAVING": 8,
      "ENTERING": 2,
-     "MEMBERSHIP_CHURN_SHARE": 0.0476,
+     "MEMBERSHIP_CHURN_SHARE": 0.0524,
      "leavingExamples": [
       "GTIM",
+      "TAYD",
       "TACT",
       "COLM",
       "ICFI",
@@ -12199,5 +12200,5 @@
   "METHODOLOGY_DECISION_READY": "FAIL",
   "QUANT_V2_MOMENTUM_RETURN_BASIS": "PENDING_METHOD_DECISION"
  },
- "runtimeMs": 43439
+ "runtimeMs": 43090
 }

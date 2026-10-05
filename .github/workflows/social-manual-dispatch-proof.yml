@@ -61,9 +61,11 @@ jobs:
           node-version: '22'
 
       - name: Bestaetigung
+        env:
+          IN_CONFIRM: ${{ inputs.confirm }}
         run: |
           set -euo pipefail
-          if [ "${{ inputs.confirm }}" != "PRUEFEN" ]; then
+          if [ "$IN_CONFIRM" != "PRUEFEN" ]; then
             echo "::error::Ohne getippte Bestaetigung wird nicht gedrueckt."
             exit 1
           fi

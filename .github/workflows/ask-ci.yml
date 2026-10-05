@@ -23,4 +23,4 @@ jobs:
         run: node --test "workers/vu-ask/tests/*.test.mjs" "ask/tests/*.test.mjs"
       - name: Worker laesst sich buendeln (ohne Ausrollen)
         working-directory: workers/vu-ask
-        run: npx --yes wrangler@4 deploy --dry-run --outdir /tmp/vu-ask-bundle
+        run: npx --yes wrangler@4.147.0 deploy --dry-run --outdir /tmp/vu-ask-bundle

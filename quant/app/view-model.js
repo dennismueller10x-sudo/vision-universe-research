@@ -115,6 +115,8 @@
     FUNDAMENTALS_UNAVAILABLE: "Für diesen Titel liegen keine Geschäftszahlen aus SEC-Meldungen vor.",
     MARKET_CAP_UNAVAILABLE: "Der Börsenwert ist nicht belegt; Bewertungskennzahlen lassen sich deshalb nicht bilden.",
     SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING: "Diese Kennzahl braucht den Börsenwert genau dieser Notierung. Das Unternehmen hat mehrere börsennotierte Wertpapiere, und die veröffentlichte Aktienzahl gilt für das Unternehmen als Ganzes – welcher Anteil auf dieses Papier entfällt, steht nicht in den Unterlagen. Die Kennzahl wird deshalb bewusst nicht genannt, statt sie zu schätzen.",
+    SHARE_COUNT_NOT_OUTSTANDING: "Diese Kennzahl braucht den Börsenwert. Gemeldet ist nur die Zahl ausgegebener Aktien einschließlich der Aktien, die das Unternehmen selbst hält – ein Börsenwert daraus wäre zu hoch. Die Kennzahl wird deshalb bewusst nicht genannt.",
+    REPORTING_CURRENCY_NOT_LISTING_CURRENCY: "Diese Kennzahl braucht den Börsenwert. Das Unternehmen berichtet nicht in US-Dollar, der Kurs steht in US-Dollar – Gewinn und Börsenwert wären nicht vergleichbar.",
     DISPLAY_NOT_PERMITTED: "Für diesen Titel ist die Anzeige des Kurses und marktbezogener Werte nicht freigegeben.",
     NOT_APPLICABLE: "Für diese Art von Unternehmen ist die Kennzahl nicht aussagekräftig.",
     TEMPLATE_NOT_APPLICABLE: "Für diese Art von Unternehmen ist die Kennzahl nicht aussagekräftig.",

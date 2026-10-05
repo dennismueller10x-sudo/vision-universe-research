@@ -225,6 +225,29 @@
     { levels: { volatility: ["NORMAL", "ELEVATED", "HIGH"][sv], drawdown: ["NORMAL", "ELEVATED", "HIGH"][sd2] } });
   }
 
+  /* Neue 52-Wochen-Hochs und -Tiefs SYMMETRISCH: beide auf dem Schlusskurs
+     gegen das Fensterextrem (Tageshochs/-tiefs der letzten 252 Handelstage,
+     market-factors). Bis breadth-extremes-close-1.0.0 zaehlte der Pulse Hochs
+     per Tageshoch (newHigh52w), Tiefs aber per Schlusskurs - der Vergleich
+     "Hochs gegen Tiefs" war damit zugunsten der Hochs verzerrt. */
+  var EXTREMES_VERSION = "breadth-extremes-close-1.0.0";
+  function breadthExtremes(rows) {
+    var hi = 0, lo = 0, n = 0;
+    (rows || []).forEach(function (s) {
+      var v = s && s.values, st = (s && s.fieldStatus) || {};
+      if (!v || typeof v.closeAtHigh52w !== "boolean" || !isNum(v.distanceTo52wLow)) return;
+      if ((st.closeAtHigh52w && st.closeAtHigh52w !== "CALCULATED") || (st.distanceTo52wLow && st.distanceTo52wLow !== "CALCULATED")) return;
+      n++;
+      if (v.closeAtHigh52w) hi++;
+      if (v.distanceTo52wLow <= 0) lo++;
+    });
+    return {
+      version: EXTREMES_VERSION,
+      newHighs: { count: hi, evaluated: n, label: "Schluss auf 52-Wochen-Hoch" },
+      newLows: { count: lo, evaluated: n, label: "Schluss auf 52-Wochen-Tief" }
+    };
+  }
+
   /**
    * BREADTH: wie viele Aktien des Discover-Universums den Markt tragen.
    * Schwelle 50 % ist definitorisch (Mehrheit), nicht kalibriert.
@@ -235,7 +258,9 @@
     var meth = "Grundlage: " + (b && b.universe ? b.universe.label : "Aktienuniversum") + ". Anteil der Titel mit Schlusskurs über dem 50- bzw. " +
       "200-Tage-Durchschnitt (Nenner: Titel mit ausreichender Historie). Breit, wenn jeweils mehr als die Hälfte darüber liegt; schmal, wenn " +
       "jeweils weniger als die Hälfte; sonst gemischt. Die 50-%-Schwelle ist die Mehrheit, keine optimierte Zahl. Neue 52-Wochen-Hochs/-Tiefs " +
-      "und steigende/fallende Titel werden gezeigt, fließen aber nicht in den Zustand ein. Veraltete Daten ergeben keinen Zustand.";
+      "und steigende/fallende Titel werden gezeigt, fließen aber nicht in den Zustand ein" +
+      (b && b.extremesVersion === EXTREMES_VERSION ? "; neue Hochs und Tiefs zählen beide den Schlusskurs am höchsten Tageshoch bzw. tiefsten Tagestief der letzten 252 Handelstage" : "") +
+      ". Veraltete Daten ergeben keinen Zustand.";
     if (!b || !b.above50 || !b.above200 || !(b.above50.evaluated > 0) || !(b.above200.evaluated > 0)) {
       return dim("BREADTH", "UNAVAILABLE", "Nicht bestimmbar", "Keine Breitendaten.", [], null, meth);
     }
@@ -253,9 +278,9 @@
       { key: "above200", label: "Über 200-Tage-Linie", text: fmt(p200, 1) + " % (" + b.above200.matched + " von " + b.above200.evaluated + ")",
         value: rnd(p200, 2), matched: b.above200.matched, evaluated: b.above200.evaluated, asOf: b.asOf, current: current }
     ];
-    if (b.newHighs) ev.push({ key: "newHighs", label: "Neue 52-Wochen-Hochs", text: b.newHighs.count + " von " + b.newHighs.evaluated,
+    if (b.newHighs) ev.push({ key: "newHighs", label: b.newHighs.label || "Neue 52-Wochen-Hochs", text: b.newHighs.count + " von " + b.newHighs.evaluated,
                               value: b.newHighs.count, evaluated: b.newHighs.evaluated, asOf: b.asOf, current: current });
-    if (b.newLows) ev.push({ key: "newLows", label: "Neue 52-Wochen-Tiefs", text: b.newLows.count + " von " + b.newLows.evaluated,
+    if (b.newLows) ev.push({ key: "newLows", label: b.newLows.label || "Neue 52-Wochen-Tiefs", text: b.newLows.count + " von " + b.newLows.evaluated,
                              value: b.newLows.count, evaluated: b.newLows.evaluated, asOf: b.asOf, current: current });
     var ad = b.advDecl;
     if (ad && ad.evaluated > 0) {
@@ -932,6 +957,7 @@
 
   var api = {
     METHOD_VERSION: METHOD_VERSION, HORIZONS: H,
+    EXTREMES_VERSION: EXTREMES_VERSION, breadthExtremes: breadthExtremes,
     seriesSignals: seriesSignals, moveRatio: moveRatio,
     trend: trend, momentum: momentum, risk: risk, breadth: breadth, crossAsset: crossAsset,
     headline: headline, marketNow: marketNow,

@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { execFileSync } from "node:child_process";
 
 const ROOT = new URL("../../", import.meta.url);
@@ -22,12 +24,19 @@ test("the total-return question was actually asked, and answered from evidence",
 
 test("the check is reproducible and reads only committed files", () => {
   /* A verdict nobody can re-derive is an assertion with extra steps. */
-  execFileSync(process.execPath, ["scripts/market/verify-total-return-capability.mjs"],
-    { cwd: new URL(".", ROOT).pathname, stdio: "pipe" });
-  const again = JSON.parse(readFileSync(new URL("quant/data/providers/total-return-verification.json", ROOT), "utf8"));
-  assert.equal(again.verdict, report.verdict);
-  assert.equal(again.dividendEventsChecked, report.dividendEventsChecked);
-  assert.equal(again.worstRelativeError, report.worstRelativeError);
+  /* Gegen eine Kopie: die Suite darf das committete Artefakt nie
+     veraendern. Vorher schrieb dieser Fall die Produktionsdatei neu, sobald
+     die Kursreihen einen Handelstag weiter waren als der Bericht. */
+  const dir = mkdtempSync(join(tmpdir(), "vu-trv-"));
+  try {
+    const out = join(dir, "report.json");
+    execFileSync(process.execPath, ["scripts/market/verify-total-return-capability.mjs", "--out=" + out],
+      { cwd: new URL(".", ROOT).pathname, stdio: "pipe" });
+    const again = JSON.parse(readFileSync(out, "utf8"));
+    assert.equal(again.verdict, report.verdict);
+    assert.equal(again.dividendEventsChecked, report.dividendEventsChecked);
+    assert.equal(again.worstRelativeError, report.worstRelativeError);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
 test("a run that changes nothing leaves the artifact untouched", () => {
@@ -46,14 +55,18 @@ test("a run that changes nothing leaves the artifact untouched", () => {
      Stempel - der Fall bestand also auch mit einem Schreiber, der IMMER
      schreibt. Deshalb steht jetzt ein Stempel von 2020 in der Datei: bleibt
      er stehen, wurde nicht geschrieben, und daran ist nichts zufaellig. */
-  const pfad = new URL("quant/data/providers/total-return-verification.json", ROOT);
-  const original = readFileSync(pfad, "utf8");
+  /* Ausgangslage ist ein frisch berechneter Bericht in einer Kopie - nicht
+     die committete Datei, die hinter den Kursreihen zuruecksein darf. */
+  const dir = mkdtempSync(join(tmpdir(), "vu-trv-"));
+  const pfad = join(dir, "report.json");
+  const run = () => execFileSync(process.execPath, ["scripts/market/verify-total-return-capability.mjs", "--out=" + pfad],
+    { cwd: new URL(".", ROOT).pathname, stdio: "pipe" });
   try {
-    const alt = JSON.parse(original);
+    run();
+    const alt = JSON.parse(readFileSync(pfad, "utf8"));
     alt.generatedAt = "2020-01-01T00:00:00.000Z";
     writeFileSync(pfad, JSON.stringify(alt, null, 1) + "\n");
-    execFileSync(process.execPath, ["scripts/market/verify-total-return-capability.mjs"],
-      { cwd: new URL(".", ROOT).pathname, stdio: "pipe" });
+    run();
     const danach = JSON.parse(readFileSync(pfad, "utf8"));
     assert.equal(danach.generatedAt, "2020-01-01T00:00:00.000Z",
       "der Lauf hat die Datei neu geschrieben, obwohl sich am Befund nichts geaendert hat");
@@ -61,7 +74,7 @@ test("a run that changes nothing leaves the artifact untouched", () => {
     assert.equal(danach.verdict, "TOTAL_RETURN_CONFIRMED");
     assert.equal(danach.dividendEventsChecked, report.dividendEventsChecked);
   } finally {
-    writeFileSync(pfad, original);
+    rmSync(dir, { recursive: true, force: true });
   }
 });
 
@@ -93,5 +106,5 @@ test("the measurement changes no published value", () => {
   const source = readFileSync(new URL("scripts/market/verify-total-return-capability.mjs", ROOT), "utf8");
   const writes = [...source.matchAll(/writeFileSync\(([^,]+),/g)].map((m) => m[1].trim());
   assert.deepEqual(writes, ["OUT"], "the verification writes somewhere other than its own report");
-  assert.match(source, /const OUT = join\(ROOT, "quant\/data\/providers\/total-return-verification\.json"\)/);
+  assert.match(source, /const DEFAULT_OUT = join\(ROOT, "quant\/data\/providers\/total-return-verification\.json"\)/);
 });

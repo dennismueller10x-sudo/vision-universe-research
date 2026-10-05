@@ -60,7 +60,9 @@
     "IDENTITY_UNRESOLVED",              /* no canonical issuer join */
     "FUNDAMENTALS_UNAVAILABLE",         /* no PIT-safe filing observation */
     "PRICE_FACTORS_UNAVAILABLE",        /* no certified price factor row */
-    "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING" /* one issuer share count, several listed lines */
+    "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", /* one issuer share count, several listed lines */
+    "SHARE_COUNT_NOT_OUTSTANDING",      /* only issued shares (incl. treasury) reported - market-cap-1.0.0 */
+    "REPORTING_CURRENCY_NOT_LISTING_CURRENCY" /* fundamentals not in USD (ADR / foreign filer) - market-cap-1.1.0 */
   ];
 
   var COMPONENT_STATES = ["AVAILABLE", "UNAVAILABLE"];
@@ -157,7 +159,15 @@
     SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING: "Dieses Unternehmen hat mehrere notierte Wertpapiere, und die " +
       "veröffentlichte Aktienzahl gilt für das Unternehmen als Ganzes. Ein Börsenwert für genau diese " +
       "Notierung ließe sich daraus nur schätzen - und darauf beruhen alle Bewertungskennzahlen. " +
-      "Sie bleiben deshalb offen, statt eine Zahl zu nennen, die es nicht gibt."
+      "Sie bleiben deshalb offen, statt eine Zahl zu nennen, die es nicht gibt.",
+    /* market-cap-1.0.0: ausgegebene Aktien zaehlen eigene im Bestand mit. */
+    SHARE_COUNT_NOT_OUTSTANDING: "Gemeldet ist nur die Zahl ausgegebener Aktien – einschließlich der Aktien, die das " +
+      "Unternehmen selbst hält. Ein Börsenwert daraus wäre zu hoch, und darauf beruhen alle Bewertungskennzahlen. " +
+      "Sie bleiben deshalb offen, bis eine ausstehende Aktienzahl gemeldet ist.",
+    /* market-cap-1.1.0: Kurs in USD, Geschaeftszahlen in einer anderen Waehrung. */
+    REPORTING_CURRENCY_NOT_LISTING_CURRENCY: "Das Unternehmen berichtet seine Geschäftszahlen nicht in US-Dollar, der Kurs steht in US-Dollar. " +
+      "Bei Hinterlegungsscheinen (ADR) entspricht ein gehandelter Schein außerdem nicht einer gemeldeten Aktie. " +
+      "Ein Börsenwert und alle Bewertungskennzahlen daraus wären verfälscht; sie bleiben deshalb offen."
   };
 
   /* ---------------------------------------------------------------------
@@ -187,6 +197,8 @@
    * nicht in der Oberflaeche, damit nicht zwei Stellen den Code kennen. */
   var REASON_HEADLINE = {
     SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING: "Bewertung bewusst zurückgehalten",
+    SHARE_COUNT_NOT_OUTSTANDING: "Bewertung bewusst zurückgehalten",
+    REPORTING_CURRENCY_NOT_LISTING_CURRENCY: "Bewertung bewusst zurückgehalten",
     BLOCKED_EXTERNAL: "Bewusst offen gelassen",
     SECTOR_TEMPLATE_MISSING: "Für diese Branche nicht anwendbar",
     FUNDAMENTALS_UNAVAILABLE: "Noch keine Geschäftszahlen veröffentlicht"

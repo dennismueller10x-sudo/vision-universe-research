@@ -1,21 +1,21 @@
 {
  "schemaVersion": "pattern-match-1.0.0",
- "generatedAt": "2026-10-04T07:03:20.000Z",
+ "generatedAt": "2026-10-05T03:35:54.000Z",
  "asOf": "2026-10-02",
  "horizon": "H24",
  "horizonMonths": 24,
  "winnerThreshold": "W100",
  "winnerMinReturn": 1,
  "lossThreshold": -0.5,
- "baseRate": 0.108149,
+ "baseRate": 0.108139,
  "studies": {
   "price": {
    "methodologyVersion": "pattern-research-1.0.0",
-   "contentHash": "424a213da1631ea9"
+   "contentHash": "63e3f1a42b05a1c4"
   },
   "fundamental": {
    "methodologyVersion": "pattern-research-fundamentals-1.0.0",
-   "contentHash": "309adc3fe457d900"
+   "contentHash": "a27941c5259eaa01"
   }
  },
  "caveats": {
@@ -36,13 +36,13 @@
   },
   "fundamental": {
    "PARAMETER_SENSITIVE": 3,
-   "IN_SAMPLE_ONLY": 111,
+   "IN_SAMPLE_ONLY": 110,
    "NOT_SIGNIFICANT": 39,
    "INSUFFICIENT_SUPPORT": 1
   }
  },
  "withheldNote": "Nur Muster mit dem Urteil ROBUST werden neben einem Titel gezeigt. Was zurueckgehalten wurde, steht hier gezaehlt statt zu verschwinden.",
- "instruments": 5403,
+ "instruments": 5405,
  "withoutFundamentals": 1320,
  "shards": [
   "AA",
@@ -695,10 +695,10 @@
  "candidates": 30,
  "unavailableSchemaVersion": "pattern-unavailable-1.0.0",
  "unavailable": {
-  "total": 1450,
+  "total": 1448,
   "requiredWeeks": 104,
   "reasons": {
-   "INSUFFICIENT_WEEKLY_HISTORY": 885,
+   "INSUFFICIENT_WEEKLY_HISTORY": 883,
    "NO_WEEKLY_SERIES": 563,
    "NO_MEASURABLE_FEATURES": 2
   },
@@ -706,6 +706,6 @@
  },
  "findingCount": {
   "price": 69,
-  "fundamental": 183
+  "fundamental": 184
  }
 }

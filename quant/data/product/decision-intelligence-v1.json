@@ -1,6 +1,6 @@
 {
  "schemaVersion": "decision-intelligence-1.0.0",
- "generatedAt": "2026-10-04T07:15:32.867Z",
+ "generatedAt": "2026-10-05T03:48:05.055Z",
  "asOf": "2026-10-02",
  "measures": {
   "RADAR_EVENTS_TOTAL": 689,
@@ -28,21 +28,21 @@
   "BACKTEST_WITHHELD_RULES": 62,
   "HISTORICAL_REPLAY_COVERAGE": {
    "universe": 5746,
-   "covered": 5400,
-   "available": 4563,
+   "covered": 5402,
+   "available": 4567,
    "sufficient": {
-    "m1": 2155,
-    "m3": 2085,
-    "m6": 2015,
-    "m12": 1910
+    "m1": 2152,
+    "m3": 2082,
+    "m6": 2013,
+    "m12": 1907
    },
    "broad": {
-    "m6": 672
+    "m6": 669
    },
    "reasons": {
-    "NOT_COVERED": 346,
+    "NOT_COVERED": 344,
     "NO_PRICE_CONDITION_TODAY": 776,
-    "NO_COMPARABLE_CASE": 61
+    "NO_COMPARABLE_CASE": 59
    }
   },
   "WATCHLIST_TRACKABLE_TITLES": 5876,
@@ -77,7 +77,7 @@
   {
    "question": "was historisch bei derselben Lage geschah",
    "pass": true,
-   "measured": "2015 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
+   "measured": "2013 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
   },
   {
    "question": "wie belastbar diese Evidenz ist",
@@ -563,7 +563,7 @@
     "previous": null
    },
    "levels": {
-    "reason": "SOURCE_MISSING"
+    "reason": "TECHNICAL_BUNDLE_NOT_PUBLISHED"
    },
    "replay": {
     "reason": "NOT_COVERED_BY_PATTERN_MATCH"

@@ -34,6 +34,7 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const Identity = require(join(root, "core", "identity.js"));
 const engines = join(root, "quant", "engines");
 
 const MarketFactors = require(join(engines, "market-factors.js"));
@@ -108,7 +109,7 @@ console.log(`  Titel: ${universe.securities.length}`);
    Ohne Benchmarkreihe bleibt die relative Staerke leer - mit Grund und
    nicht mit Null. Eine relative Staerke gegen sich selbst waere keine. */
 let benchmark = null;
-const benchPayload = store.readBars("ref_" + BENCHMARK, "working");
+const benchPayload = store.readBars(Identity.securityIdForTicker(BENCHMARK), "working");
 if (benchPayload && Array.isArray(benchPayload.bars) && benchPayload.bars.length) {
   /* SEIT DER OWNER-ENTSCHEIDUNG VOM 2026-09-24 GEBUNDEN.
 

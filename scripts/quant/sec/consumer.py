@@ -88,6 +88,22 @@ def _row(fact, derived=False):
             str(filed)[:10] if filed else None, accession, 1 if derived else 0]
 
 
+def _concept(fact):
+    """The SEC concept a value came from ("dei:EntityCommonStockSharesOutstanding").
+
+    The row layout does not carry it (that would double the export), but the
+    market capitalization depends on WHICH share count it is: outstanding or
+    issued including treasury. The latest value carries it, and every bundle
+    lists the concepts each metric was built from, so a series that mixes
+    concept classes is measurable instead of invisible."""
+    prov = getattr(fact, "provenance", None)
+    concept = getattr(prov, "concept", None)
+    if not concept:
+        return None
+    taxonomy = getattr(prov, "taxonomy", None)
+    return f"{taxonomy}:{concept}" if taxonomy else concept
+
+
 def rowdict(row):
     return dict(zip(ROW_COLUMNS, row))
 
@@ -131,6 +147,9 @@ def _ttm(resolver, registry, as_of, policy):
         definition = resolver._definition(metric)
         row["kind"] = "INSTANT" if definition is not None and definition.kind == KIND_INSTANT else "TTM"
         row["unit"] = fact.unit
+        concept = _concept(fact)
+        if concept:
+            row["concept"] = concept
         out[metric] = row
     # One TTM window for the whole bundle: every trailing sum must end in the
     # same quarter. A metric whose last four standalone quarters lie years back
@@ -204,10 +223,13 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
     annual_scope = years[-annual_years:] if years else []
     annual = {}
     units = {}
+    concepts_used = {}
     for fiscal_year in annual_scope:
         for metric, (fact, derived) in _facts_for_period(resolver, registry, fiscal_year, "FY",
                                                          as_of_text, policy).items():
             annual.setdefault(metric, []).append(_row(fact, derived))
+            if not derived and _concept(fact):
+                concepts_used.setdefault(metric, set()).add(_concept(fact))
             units.setdefault(metric, fact.unit)
 
     quarterly = {}
@@ -226,6 +248,8 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
             rows = quarterly.setdefault(metric, [])
             if len(rows) < quarters:
                 rows.append(_row(fact, derived))
+                if not derived and _concept(fact):
+                    concepts_used.setdefault(metric, set()).add(_concept(fact))
                 units.setdefault(metric, fact.unit)
     for metric in list(quarterly):
         quarterly[metric] = list(reversed(quarterly[metric]))     # oldest first, like annual
@@ -265,6 +289,7 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
                      "latestFiscalYearEnd": (calendar.to_dict().get("fiscal_years") or [{}])[-1].get("period_end")},
         "columns": ROW_COLUMNS,
         "units": units,
+        "conceptsUsed": {metric: sorted(values) for metric, values in sorted(concepts_used.items())},
         "semantics": {"annual": "fiscal-year figures (FY) - 10-K, or four standalone quarters summed",
                       "quarterly": "standalone quarters (YTD de-accumulated), newest last",
                       "ttm": "sum of the four most recent standalone quarters; instants = latest balance sheet"},
