@@ -130,6 +130,9 @@ class Pipeline:
                     from .q4_presentations import parse as parse_presentations
                     documents=parse_presentations(response['body'],source,self.now)
                 previous=[d for cfg in ir.get('configurations',[]) if cfg.get('materialsSourceId')==sid for d in cfg.get('documents',[])]
+                if source['format']=='Q4_PRESENTATIONS':
+                    from .q4_presentations import correct_documents
+                    previous=correct_documents(previous)
                 current_urls={d['url'] for d in documents}
                 # A corrected type has a new stable ID. Retire the preceding
                 # classification of that URL rather than keeping both types.

@@ -17,7 +17,8 @@ from .store import Store
 
 
 def drive(root, state, run_id, lane='materials', month=None, batches=10,
-          limit=32, request_budget=160, max_seconds=360, execute=subprocess.run):
+          limit=32, request_budget=160, max_seconds=360, execute=subprocess.run,
+          publisher_low_gain_batches=3):
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,47}', run_id or ''):
         raise ValueError('INVALID_SOURCE_BACKFILL_RUN')
     if lane not in ('materials', 'publisher') or not 1 <= batches <= 500:
@@ -29,6 +30,8 @@ def drive(root, state, run_id, lane='materials', month=None, batches=10,
         raise ValueError('INVALID_SOURCE_BACKFILL_MONTH')
     if lane == 'materials' and month is not None:
         raise ValueError('MATERIALS_BACKFILL_HAS_NO_MONTH')
+    if type(publisher_low_gain_batches) is not int or not 0 <= publisher_low_gain_batches <= 20:
+        raise ValueError('INVALID_PUBLISHER_LOW_GAIN_BOUND')
     state = Path(state).resolve()
     key = f'sourceBackfillRunner:{run_id}:{lane}'
     checkpoint = state / 'checkpoints' / (run_id + '-' + lane + '.tar.gz')
@@ -41,6 +44,7 @@ def drive(root, state, run_id, lane='materials', month=None, batches=10,
             prior = store.state(key, {})
             if prior and prior.get('month') != month:
                 raise ValueError('SOURCE_BACKFILL_RUN_MONTH_CHANGED')
+            before_news = {row[0] for row in store.db.execute('SELECT DISTINCT company FROM items')}
         finally:
             store.close()
         command = [sys.executable, '-m', 'company_intelligence.cli',
@@ -83,6 +87,13 @@ def drive(root, state, run_id, lane='materials', month=None, batches=10,
                 accounting[name] = prior.get(name, 0) + value
             accounting['recoveredPresentationIssuers'] = sorted(set(prior.get('recoveredPresentationIssuers', [])) |
                                                                set(report.get('recoveredPresentationIssuers', [])))
+            added_news = {row[0] for row in store.db.execute('SELECT DISTINCT company FROM items')} - before_news
+            accounting['newNewsIssuerIds'] = sorted(added_news)
+            accounting['recoveredNewsIssuers'] = sorted(set(prior.get('recoveredNewsIssuers', [])) | added_news)
+            if lane == 'publisher' and report.get('checkpointCurrentRun') and reason in ('BATCH_COMPLETED', 'BUDGET_DEFERRED'):
+                accounting['consecutiveLowGainBatches'] = prior.get('consecutiveLowGainBatches', 0) + 1 if len(added_news) <= 1 else 0
+                if publisher_low_gain_batches and accounting['consecutiveLowGainBatches'] >= publisher_low_gain_batches:
+                    reason = accounting['stopReason'] = 'NEGLIGIBLE_INCREMENTAL_ISSUER_COVERAGE'
             store.set_state(key, accounting)
         finally:
             store.close()
@@ -104,13 +115,16 @@ def main(argv=None):
     parser.add_argument('--limit', type=int, default=32)
     parser.add_argument('--request-budget', type=int, default=160)
     parser.add_argument('--max-seconds', type=int, default=360)
+    parser.add_argument('--publisher-low-gain-batches', type=int, default=3,
+                        help='Pause after this many healthy publisher batches add at most one news issuer each (0 disables)')
     parser.add_argument('--network', action='store_true')
     args = parser.parse_args(argv)
     if not args.network:
         parser.error('source-backfill-runner requires explicit --network')
     drive(args.root, args.state or args.root / '.company-intelligence', args.run_id,
           args.lane, args.archive_month, args.max_batches, args.limit,
-          args.request_budget, args.max_seconds)
+          args.request_budget, args.max_seconds,
+          publisher_low_gain_batches=args.publisher_low_gain_batches)
 
 
 if __name__ == '__main__':

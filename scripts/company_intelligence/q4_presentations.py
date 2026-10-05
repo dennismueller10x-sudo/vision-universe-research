@@ -6,7 +6,7 @@ become article text, publication timestamps or confirmed earnings events.
 """
 import json
 import re
-from urllib.parse import urlsplit,urlencode,parse_qsl
+from urllib.parse import urlsplit,urlencode,parse_qsl,unquote
 from .model import clean,stable_id,within_domain
 from .q4_events import public_link
 from .transport import SourceError
@@ -28,6 +28,36 @@ def attachment(value):
     return url
 
 
+def document_kind(title, url):
+    """A presentation index may also contain explicitly labelled other materials."""
+    if re.search(r'prepared remarks|earnings script',title,re.I):return 'PREPARED_REMARKS'
+    if re.search(r'transcript',title,re.I):return 'COMPANY_TRANSCRIPT'
+    if re.search(r'shareholder letter|letter to shareholders',title,re.I):return 'SHAREHOLDER_LETTER'
+    if re.search(r'management commentary|management discussion|ceo letter|letter from (?:the )?ceo',title,re.I):return 'MANAGEMENT_COMMENTARY'
+    filename=re.sub(r'[-_+]', ' ', unquote(urlsplit(url).path.rsplit('/',1)[-1]))
+    evidence=title+' '+filename
+    if re.search(r'(?:impact|sustainability|esg|environmental|csr)\s+report|proxy statement|investor reference book|committee charter',evidence,re.I):return None
+    financial=r'annual report|quarterly report|financial statements|financial supplement|earnings? supplement|10 [KQ]\b|10-[KQ]\b'
+    if (re.search(financial,filename,re.I) and not re.search(r'presentation|slides|deck',filename,re.I) or
+            re.search(financial,title,re.I) and not re.search(r'presentation|slides|deck',title,re.I)):
+        return 'FINANCIAL_REPORT'
+    return 'PRESENTATION'
+
+
+def correct_documents(documents):
+    """Retain old references while retiring known index classification mistakes."""
+    corrected=[]
+    for doc in documents:
+        if doc.get('type')=='WEBCAST' and re.search(r'\.pdf(?:$|[?#])',doc.get('url',''),re.I):continue
+        if doc.get('type')=='PRESENTATION':
+            kind=document_kind(doc.get('label',''),doc['url'])
+            if kind is None:continue
+            if kind!=doc['type']:
+                doc={**doc,'type':kind,'documentId':stable_id(doc['companyId'],doc['url'],kind)}
+        corrected.append(doc)
+    return corrected
+
+
 def parse(body,source,now):
     if (not source.get('verified') or source.get('provider')!='Q4' or source.get('format')!='Q4_PRESENTATIONS' or
             urlsplit(source.get('url','')).path!='/feed/Presentation.svc/GetPresentationList' or
@@ -46,6 +76,9 @@ def parse(body,source,now):
         for field,kind,suffix in [('DocumentPath','PRESENTATION',''),('AudioFile','WEBCAST',' (audio reference)'),('VideoFile','WEBCAST',' (video reference)')]:
             url=attachment(row.get(field))
             if not url:continue
+            if field=='DocumentPath':kind=document_kind(title,url)
+            elif re.search(r'\.pdf(?:$|[?#])',url,re.I):continue
+            if kind is None:continue
             documents.append({'documentId':stable_id(source['companyId'],url,kind),'companyId':source['companyId'],
                               'type':kind,'url':url,'label':clean(title,180)+suffix,'sourceId':source['sourceId'],
                               'sourceUrl':source['url'],'eventId':None,'reportingPeriod':None,'date':None,

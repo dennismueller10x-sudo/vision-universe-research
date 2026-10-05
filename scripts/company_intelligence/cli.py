@@ -233,6 +233,12 @@ def main(argv=None):
         if args.command=='news-archive':
             import re
             if not args.archive_month or not re.fullmatch(r'\d{4}-(?:0[1-9]|1[0-2])',args.archive_month) or not '2000-01'<=args.archive_month<=now[:7]:p.error('news-archive requires a valid non-future --archive-month YYYY-MM')
+            if (state_dir/'stop-source-backfill').exists():
+                print(json.dumps({'run':pipeline.run,'requests':0,'httpStats':http.stats,
+                                  'checkpoint':store.state('distributorArchiveRun:gnn-archive-'+args.archive_month),
+                                  'checkpointCurrentRun':False,'deferred':True,
+                                  'stopReason':'OPERATOR_CHECKPOINT_PAUSE'},sort_keys=True))
+                return 0
             source={'sourceId':'gnn-archive-'+args.archive_month,'url':'https://sitemaps.globenewswire.com/news/en/'+args.archive_month+'.xml',
                     'type':'RSS','format':'GNN_ARCHIVE','provider':'GLOBENEWSWIRE_ARTICLE','verified':False,'active':False,'intervalHours':168,'batchSize':args.limit,
                     'metadata':{'access':'Publisher robots-advertised public archive/NewsArticle metadata; headline/date/link and bounded scheduling evidence only. Full article body cache deleted.',
@@ -256,6 +262,11 @@ def main(argv=None):
             print(json.dumps({'run':pipeline.run,'requests':http.requests,'httpStats':http.stats,
                               'checkpoint':checkpoint,'checkpointCurrentRun':current},sort_keys=True));return 0
         if args.command=='materials-backfill':
+            if (state_dir/'stop-source-backfill').exists():
+                print(json.dumps({'derivedSources':0,'run':pipeline.run,'requests':0,
+                                  'httpStats':http.stats,'deferred':True,
+                                  'stopReason':'OPERATOR_CHECKPOINT_PAUSE'},sort_keys=True))
+                return 0
             from company_intelligence.materials import backfill
             print(json.dumps(backfill(pipeline,args.limit,selected_ids if args.tickers else None,companies),sort_keys=True));return 0
         if args.command == 'verify-domains':

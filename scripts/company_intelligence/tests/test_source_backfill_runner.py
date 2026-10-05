@@ -103,3 +103,30 @@ class SourceBackfillRunnerTests(unittest.TestCase):
             store = Store(state / 'state.sqlite')
             self.assertEqual(store.state('sourceBackfillRunner:publisher-pause:publisher')['newNewsItems'], 2)
             store.close()
+
+    def test_actual_news_issuer_gain_is_distinct_and_low_gain_pause_survives_restore(self):
+        from test_engine import item
+        with tempfile.TemporaryDirectory() as tmp, contextlib.redirect_stdout(io.StringIO()):
+            state = Path(tmp) / 'state'; Store(state / 'state.sqlite').close(); calls = []
+            def accepted(command, **kwargs):
+                calls.append(command)
+                store = Store(state / 'state.sqlite')
+                for n in range(2):
+                    news = item('Issuer ' + str(n) + ' announces earnings results')
+                    news.update(companyId='issuer-' + str(n), newsId='news-' + str(n))
+                    store.ingest(news)
+                store.close()
+                return SimpleNamespace(returncode=0, stdout=json.dumps({'requests': 4,
+                    'checkpointCurrentRun': True, 'checkpoint': {'attempted': 4, 'parsed': 4, 'stopReason': 'BATCH_COMPLETED'},
+                    'run': {'new': 2 if len(calls) == 1 else 0, 'duplicate': 0 if len(calls) == 1 else 2}}))
+            drive(tmp, state, 'gain', lane='publisher', month='2026-09', batches=2, execute=accepted)
+            fresh = Path(tmp) / 'restore'
+            restore(state / 'checkpoints/gain-publisher.tar.gz', fresh)
+            state = fresh
+            drive(tmp, state, 'gain', lane='publisher', month='2026-09', batches=8, execute=accepted)
+            self.assertEqual(len(calls), 4)  # First gain, then three healthy duplicate-only batches.
+            store = Store(state / 'state.sqlite'); value = store.state('sourceBackfillRunner:gain:publisher')
+            self.assertEqual(value['recoveredNewsIssuers'], ['issuer-0', 'issuer-1'])
+            self.assertEqual(value['newNewsIssuerIds'], [])
+            self.assertEqual(value['consecutiveLowGainBatches'], 3)
+            self.assertEqual(value['stopReason'], 'NEGLIGIBLE_INCREMENTAL_ISSUER_COVERAGE'); store.close()

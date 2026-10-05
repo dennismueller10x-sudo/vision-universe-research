@@ -12,6 +12,29 @@ from test_engine import company, NOW
 
 
 class ArchiveCooldownTests(unittest.TestCase):
+ def test_operator_pause_preserves_archive_checkpoint_and_source_health_without_http(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   r=Path(tmp);self.seed(r,2,'2099-01-01T00:00:00Z')
+   (r/'.company-intelligence/stop-source-backfill').touch()
+   result,calls=self.run_archive(r,AssertionError('REQUEST_DURING_OPERATOR_PAUSE'))
+   self.assertEqual(calls,0);self.assertEqual(result['stopReason'],'OPERATOR_CHECKPOINT_PAUSE')
+   self.assertFalse(result['checkpointCurrentRun']);self.assertEqual(result['checkpoint'],{'attempted':7,'parsed':5})
+   s=Store(r/'.company-intelligence/state.sqlite')
+   v=json.loads(s.db.execute("select payload from sources where id='gnn-archive-2026-09'").fetchone()[0])
+   self.assertEqual((v['failureCount'],v['nextCheck'],v['active']), (2,'2099-01-01T00:00:00Z',False))
+   self.assertEqual(s.state('distributorArchive:retained-release'),{'status':'INGESTED'});s.close()
+
+ def test_material_operator_pause_does_not_derive_sources_or_change_health(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   r=Path(tmp);cfg=r/'company-intelligence/config';cfg.mkdir(parents=True)
+   (cfg/'official-sites.json').write_text('{}');state=r/'.company-intelligence'
+   s=Store(state/'state.sqlite');health={'sourceId':'material','url':'https://apple.com/materials','type':'IR_MATERIALS','failureCount':3,'nextCheck':'2099-01-01T00:00:00Z'}
+   s.source(health);s.close();(state/'stop-source-backfill').touch();output=io.StringIO();c=company()
+   with patch('company_intelligence.cli.load_universe',return_value={c['companyId']:c}),patch('company_intelligence.materials.backfill',side_effect=AssertionError('DERIVATION_DURING_PAUSE')),contextlib.redirect_stdout(output):
+    self.assertEqual(main(['materials-backfill','--root',str(r),'--state',str(state),'--network']),0)
+   self.assertEqual(json.loads(output.getvalue())['stopReason'],'OPERATOR_CHECKPOINT_PAUSE')
+   s=Store(state/'state.sqlite');v=s.sources()[0];self.assertEqual(v['failureCount'],3);self.assertEqual(v['nextCheck'],health['nextCheck']);s.close()
+
  def run_archive(self, root, response):
   cfg=root/'company-intelligence/config';cfg.mkdir(parents=True,exist_ok=True)
   (cfg/'sources.json').write_text('[]');(cfg/'official-sites.json').write_text('{}')

@@ -16,6 +16,42 @@ def body(rows):return json.dumps({'GetPresentationListResult':rows}).encode()
 
 
 class Q4PresentationTests(unittest.TestCase):
+ def test_specific_material_evidence_overrides_index_name_and_pdf_is_not_audio(self):
+  rows=[{'Title':'HY26 Presentation and Q&A Transcript','DocumentPath':'https://cdn.example/qr-presentation.pdf'},
+        {'Title':'Prepared remarks presentation','DocumentPath':'https://cdn.example/remarks.pdf'},
+        {'Title':'Letter to shareholders','DocumentPath':'https://cdn.example/letter.pdf'},
+        {'Title':'2Q26 Earnings Supplement','DocumentPath':'https://cdn.example/supplement.pdf'},
+        {'Title':'Download presentation','DocumentPath':'https://cdn.example/annual-report.pdf'},
+        {'Title':'Investor Presentation','DocumentPath':'https://cdn.example/doc_financials/investor-deck.pdf'},
+        {'Title':'Interface Impact Report','DocumentPath':'https://cdn.example/impact-report.pdf'},
+        {'Title':'Investor Reference Book','DocumentPath':'https://cdn.example/reference.pdf'},
+        {'Title':'2026 Outlook Meeting','AudioFile':'https://cdn.example/presentation.pdf','VideoFile':'https://cdn.example/video.mp4'}]
+  docs=parse(body(rows),source(),NOW)
+  self.assertEqual([d['type'] for d in docs],['COMPANY_TRANSCRIPT','PREPARED_REMARKS','SHAREHOLDER_LETTER','FINANCIAL_REPORT','FINANCIAL_REPORT','PRESENTATION','WEBCAST'])
+  self.assertFalse(any(d['url'].endswith(('impact-report.pdf','reference.pdf','presentation.pdf')) and d['type']=='WEBCAST' for d in docs))
+  self.assertTrue(all(d['date'] is None for d in docs))
+
+ def test_ingestion_corrects_retained_old_types_without_restoring_omitted_reports(self):
+  import tempfile
+  from pathlib import Path
+  from company_intelligence.pipeline import Pipeline
+  from company_intelligence.store import Store
+  from company_intelligence.model import stable_id
+  with tempfile.TemporaryDirectory() as tmp:
+   c=company();s=Store(Path(tmp)/'state.sqlite');src={**source(),'metadata':{'originatingIRHomepage':PAGE}}
+   docs=[{'companyId':c['companyId'],'documentId':stable_id(c['companyId'],name),'type':kind,'label':label,'url':'https://cdn.example/'+name,'sourceId':src['sourceId']} for name,kind,label in [
+    ('impact.pdf','PRESENTATION','2025 Impact Report'),('supplement.pdf','PRESENTATION','2Q26 Financial Supplement'),
+    ('deck.pdf','PRESENTATION','2025 Investor Presentation'),('audio.pdf','WEBCAST','Audio reference')]]
+   s.set_state('ir:'+c['companyId'],{'lastSuccess':NOW,'configurations':[{'companyId':c['companyId'],'irHomepage':PAGE,'pageRole':'IR','materialsSourceId':src['sourceId'],'documents':docs}]})
+   class HTTP:
+    def get(self,*args,**kwargs):return {'body':body([]),'finalUrl':src['url']}
+   p=Pipeline(tmp,{c['companyId']:c},s,HTTP(),NOW);p.ingest_source(src);payload=s.company_payload(c,NOW)
+   by_url={d['url']:d for d in payload['materials']}
+   self.assertNotIn('https://cdn.example/impact.pdf',by_url);self.assertNotIn('https://cdn.example/audio.pdf',by_url)
+   self.assertEqual(by_url['https://cdn.example/supplement.pdf']['type'],'FINANCIAL_REPORT')
+   self.assertEqual([d['url'] for d in payload['presentations']],['https://cdn.example/deck.pdf'])
+   self.assertEqual(s.state('ir:'+c['companyId'])['lastSuccess'],NOW);s.close()
+
  def test_observed_public_contract_preserves_metadata_without_inventing_dates_or_calls(self):
   raw=body([{'Title':'2026 Outlook Meeting','PresentationId':'observed-id','PresentationDate':'02/05/2026 00:00:00',
             'DocumentPath':'https://s201.q4cdn.com/630564768/files/doc_financials/2025/q4/outlook.pdf',
