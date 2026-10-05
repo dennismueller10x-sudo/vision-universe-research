@@ -14,7 +14,7 @@ from .transport import SourceError, BudgetExhausted
 from .q4_events import public_link
 
 VERSION = 'company-profile-1.0.0'
-PARSER_VERSION = 'company-profile-parser-1.0.6'
+PARSER_VERSION = 'company-profile-parser-1.0.9'
 WEB_DAYS = 90
 SEC_STALE_DAYS = 550
 MAX_DOCUMENT = 64 * 1024 * 1024
@@ -138,6 +138,15 @@ def issuer_sentence(raw, company, sec=False):
     must start with the issuer; mentions in customer/partner copy do not qualify.
     """
     text = clean(raw, 2000).replace('’', "'").replace('™', '').replace('®', '')
+    if sec:
+        # Keep the explicit issuer clause, dropping an introductory promotional
+        # phrase. Segment wording remains attached; it cannot become a claim
+        # about a different issuer or a broader product portfolio.
+        text = re.sub(r'^Leveraging [^.!?]{1,200}, we (?=(?:design|develop|manufacture|provide|operate|offer)\b)', 'We ', text, flags=re.I)
+        segment = re.match(r'^Through our ([^,.!?]{1,100} segment), we (.+)', text, re.I)
+        if segment:
+            text = 'We ' + segment[2].rstrip('.') + ' through our ' + segment[1] + '.'
+        text = re.sub(r'^We report our business in ((?:two|three|four|five|six|\d+) segments: .+)', r'We operate through \1', text, flags=re.I)
     text = re.sub(r'\bindustry-leading\s+', '', text, flags=re.I)
     if not 40 <= len(text) <= 1000 or not re.search(r'[.!?]$', text) or EXCLUDED.search(text):
         return None
@@ -157,6 +166,8 @@ def issuer_sentence(raw, company, sec=False):
         match = re.match(r'^' + re.escape(n) + r'(?!\w)(?:[, ]+(?:incorporated|inc\.?|corporation|corp\.?|limited|ltd\.?|plc)(?!\w))?', text, re.I) if n else None
         if match:
             subject = match[0]
+            if re.search(r'\b(?:Inc|Corp|Ltd|Co)$', subject, re.I) and text[len(subject):].startswith('.'):
+                subject += '.'
             break
     first_person = sec and bool(re.match(r'^(?:we|the company)\s', text, re.I))
     possessive = sec and re.match(r'^our\s+(?:principal |main |core )?(?:products|product (?:portfolio|offering|line)s?|brands?|merchandise|platforms?|services|business|software platforms|technology stack|(?:comprehensive )?set of software|(?:auto )?insurance products?|field programmable gate array)\b', text, re.I)
@@ -195,10 +206,31 @@ def issuer_sentence(raw, company, sec=False):
     tail = text[len(subject):]
     # Reject a legal extension ("Root Inc. Japan LLC") and financial/history
     # sentences. Activity must be the issuer's predicate, not a customer's.
+    delegation = None
     if sec:
-        tail = re.sub(r'^\s+and its (?:consolidated )?subsidiaries\b', '', tail, flags=re.I)
+        tail = re.sub(r'^\s*,?\s*(?:and|together with) its (?:consolidated )?subsidiaries\b', '', tail, flags=re.I)
         for _ in range(3):
-            tail = re.sub(r'^\s*\([^)]{0,300}\)', '', tail)
+            # Nested legal definitions are common in business introductions.
+            # Bound the balanced prefix and never consume the predicate.
+            prefix = re.match(r'^\s*,?\s*\(', tail)
+            if not prefix:
+                break
+            depth = 1; end = None
+            for i in range(prefix.end(), min(len(tail), prefix.end() + 500)):
+                depth += (tail[i] == '(') - (tail[i] == ')')
+                if depth == 0:
+                    end = i + 1
+                    break
+            if end is None:
+                break
+            tail = tail[end:]
+        delegated = re.match(r'^\s*,?\s*through its (Operating Subsidiaries)\b', tail, re.I)
+        if delegated:
+            delegation = 'through its ' + delegated[1]
+            tail = tail[delegated.end():]
+            prefix = re.match(r'^\s*\([^)]{0,300}\)', tail)
+            if prefix:
+                tail = tail[prefix.end():]
         # Corporate legal appositives can contain a parenthetical definition.
         tail = re.sub(r'^\s*,\s*a\s+(?:\w+\s+){0,4}corporation(?: incorporated in \d{4})?\s*(?:\([^)]{0,200}\))?\s*,?', '', tail, flags=re.I)
         tail = re.sub(r'^\s*,\s*a\s+(?:\w+\s+){0,4}(?:corporation|company)\s*,?', '', tail, flags=re.I)
@@ -209,13 +241,24 @@ def issuer_sentence(raw, company, sec=False):
     if sec and not possessive and subject != name:
         subject = name
     text = subject + ' ' + tail.strip(' ,')
+    if delegation:
+        text = text.rstrip('.') + ' ' + delegation + '.'
+    # Remove superiority/rank claims while retaining the explicitly stated
+    # business role; this is a grammatical normalization, not a new fact.
+    roles = {'companies': 'company', 'providers': 'provider', 'suppliers': 'supplier', 'manufacturers': 'manufacturer', 'producers': 'producer', 'retailers': 'retailer', 'operators': 'operator', 'distributors': 'distributor'}
+    predicate = text[len(subject):]
+    predicate = re.sub(r'^ is one of (?:the )?(?:(?:world\'s|global|industry) )?(?:leading|largest) ([a-z -]{0,60})(' + '|'.join(roles) + r')\b', lambda m: ' is a ' + m[1] + roles[m[2].lower()], predicate, flags=re.I)
+    predicate = re.sub(r'^ is the (?:first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|\d+(?:st|nd|rd|th)) largest ([a-z -]{0,60})(company|provider|supplier|manufacturer|producer|retailer|operator|distributor|bank)\b', r' is a \1\2', predicate, flags=re.I)
+    text = subject + predicate
     text = re.sub(r'\bsecure,\s*trusted,\s*and\s*innovative\s+', '', text, flags=re.I)
     text = subject + PROMOTION.sub('', text[len(subject):])
+    text = subject + re.sub(r'\b(?:trusted and |high.quality |robust |highly engineered |patient.centric |unique |advanced )', '', text[len(subject):], flags=re.I)
     text = subject + re.sub(r'\b(?:disruptive|technology-forward|essential|premium)\s+', '', text[len(subject):], flags=re.I)
     text = re.sub(r'\s+in a \$[\d,.]+\s+(?:billion|million) Total Addressable Market.*', '.', text, flags=re.I)
     text = re.sub(r'\s+using a powerful combination of science and engineering[.!]?$', '.', text, flags=re.I)
     text = re.sub(r'\b(?:an?|the) innovator,\s*', 'a ', text, flags=re.I)
     text = re.sub(r'\ban (power|software|technology)\b', r'a \1', text, flags=re.I)
+    text = re.sub(r'\ba (environmental|environmentally|investment|industrial|international|integrated|insurance)\b', r'an \1', text, flags=re.I)
     text = re.sub(r',\s*as well as\b.*', '.', text, flags=re.I)
     # Keep a factual company type, dropping an attached mission, founding story
     # or unsupported positioning clause. Do not manufacture an industry type.
@@ -234,6 +277,8 @@ def issuer_sentence(raw, company, sec=False):
     text = re.sub(r'\band have\b', 'and has', text, flags=re.I) if first_person else text
     text = re.sub(r'\bempowers\b', 'helps', text, flags=re.I)
     if re.search(r'\b(?:we|our|us)\b', text, re.I):
+        return None
+    if re.search(r'\b(?:no single product contributed|individual part numbers|direct sales force|field sales employees|focuses its investments|products are sold|sells (?:product|the majority of its products) (?:primarily|through))\b', text, re.I):
         return None
     return clean(text, 1000) if len(text) <= 700 else None
 
@@ -285,12 +330,27 @@ def extract(company, body, source, now, official_website=None):
                         eligible[duplicate] = (raw, normalized)
                 else:
                     eligible.append((raw, normalized))
-            if len(eligible) == 3:
+            if len(eligible) == 8:
                 break
-        if len(eligible) == 3:
+        if len(eligible) == 8:
             break
     if not eligible:
         return {'state': 'UNAVAILABLE', 'reason': 'NO_EXPLICIT_ISSUER_BUSINESS_DESCRIPTION'}
+    # Put what the issuer does before who it serves. A customers-only sentence
+    # cannot carry an otherwise missing business description.
+    def customer_only(item):
+        return bool(re.search(r'\bserves\b', item[1])) and not re.search(r'\b(?:providing|manufactures|develops|offers|products|services|bank|insurance)\b', item[1], re.I)
+    def priority(item):
+        text = item[1]
+        if customer_only(item):
+            return 3
+        if re.search(r'\b(?:is (?:a|an|the)|designs|develops|manufactures|produces|operates through)\b', text, re.I):
+            return 0
+        return 1
+    eligible.sort(key=priority)
+    if all(customer_only(item) for item in eligible):
+        return {'state': 'UNAVAILABLE', 'reason': 'NO_EXPLICIT_ISSUER_BUSINESS_DESCRIPTION'}
+    eligible = eligible[:3]
     description = ' '.join(s[1] for s in eligible)
     # Keep complete sentences within a consumer bound, never truncate a fact.
     while len(description) > 800 and len(eligible) > 1:
@@ -307,7 +367,7 @@ def extract(company, body, source, now, official_website=None):
                 if 3 <= len(value) <= 240 and value not in values:
                     values.append(value)
         return values[:5]
-    products = facts(r'\b(?:products|platforms|services)(?:\s+(?:include|such as)|[:,])\s+([^.;]+)')
+    products = facts(r'\b(?:products|platforms|services)(?:\s+(?:include|such as)|:)\s+([^.;]+)')
     markets = facts(r'\bserves\s+([^.;]+)')
     return {'schema': VERSION, 'parserVersion': PARSER_VERSION, 'state': 'AVAILABLE', 'companyId': company['companyId'], 'companyName': display_name(company['names'][0]),
             'description': description, 'language': 'en', 'primaryBusinessActivity': eligible[0][1],

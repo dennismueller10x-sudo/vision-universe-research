@@ -9,6 +9,7 @@ import argparse
 from contextlib import contextmanager
 import fcntl
 import json
+import re
 import sys
 import time
 from collections import Counter
@@ -57,7 +58,20 @@ def seed(store, companies, catalogue, now):
     for cid, profile in validated:
         prior = store.state('companyProfile:' + cid, {})
         if prior.get('state') == 'AVAILABLE' and prior.get('lastVerifiedAt', '') >= profile['lastVerifiedAt']:
-            continue
+            def revision(value):
+                match = re.fullmatch(r'company-profile-parser-(\d+)\.(\d+)\.(\d+)', value or '')
+                return tuple(map(int, match.groups())) if match else (0, 0, 0)
+            def evidence(value):
+                return sorted((s.get('type', ''), s.get('url', ''), s.get('contentHash', '')) for s in value.get('sources', []))
+            # Cache-only normalization keeps the source verification time.
+            # Permit a parser upgrade only for the same immutable evidence;
+            # later verification, supersession and stronger sources survive.
+            upgrade = (prior.get('lastVerifiedAt') == profile['lastVerifiedAt']
+                       and revision(profile.get('parserVersion')) > revision(prior.get('parserVersion'))
+                       and evidence(prior) == evidence(profile)
+                       and not prior.get('supersededAnnualFiling'))
+            if not upgrade:
+                continue
         if prior.get('confidence') == 'HIGH' and profile['confidence'] == 'MEDIUM' and not prior.get('stale'):
             continue
         store.set_state('companyProfile:' + cid, profile)
@@ -141,7 +155,8 @@ def backfill(args, root, catalogue_path, checkpoint_path):
             if sub.get('name') and sub['name'] not in company['names']:
                 company = {**company, 'names': company['names'] + [sub['name']]}
             filing = annual_filing(company, sub, now)
-            verified_at = prior['lastVerifiedAt'] if args.reparse and prior else now
+            same_filing = bool(prior and filing and any(s.get('filingId') == filing['filingId'] for s in prior.get('sources', [])))
+            verified_at = prior['lastVerifiedAt'] if prior and (args.reparse or same_filing) else now
             result = extract(company, client.get_bytes(filing['url']), filing, verified_at, sites.get(company['cik'], {}).get('url')) if filing else {'state': 'UNAVAILABLE', 'reason': 'NO_EXPLICIT_ANNUAL_PRIMARY_DOCUMENT'}
             status = result['state']; consecutive_failures = 0
             if status == 'AVAILABLE':
@@ -150,8 +165,13 @@ def backfill(args, root, catalogue_path, checkpoint_path):
                     raise ValueError('PROFILE_PUBLIC_VALIDATION_FAILED')
                 catalogue['profiles'][cid] = public; new.append(cid)
                 atomic_json(catalogue_path, catalogue)
-            if args.reparse and status != 'AVAILABLE' and prior:
+            if status != 'AVAILABLE' and prior and (args.reparse or (same_filing and prior.get('parserVersion') != PARSER_VERSION)):
                 del catalogue['profiles'][cid]
+                atomic_json(catalogue_path, catalogue)
+            elif status != 'AVAILABLE' and prior and filing and not same_filing:
+                # A newer filing that cannot be normalized does not invalidate
+                # the preceding sourced facts, but must surface their staleness.
+                catalogue['profiles'][cid] = {**prior, 'stale': True}
                 atomic_json(catalogue_path, catalogue)
             checkpoint['attempts'][cid] = {'state': status, 'reason': result.get('reason'), 'parserVersion': PARSER_VERSION,
                 'checkedAt': now, 'nextCheck': later(now, 90), 'filingId': filing['filingId'] if filing else None}

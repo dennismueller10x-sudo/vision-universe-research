@@ -378,3 +378,96 @@ class ProfileTests(unittest.TestCase):
             if withdrawn in companies:
                 self.assertIsNotNone(store.state('companyProfile:' + withdrawn))
             other.close(); store.close()
+
+    def test_filing_segment_activity_precedes_customer_only_statement(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>We serve hospitals, universities and research institutions.</p><p>We report our business in four segments: Life Sciences, Instruments, Diagnostics, and Laboratory Products.</p><p>Through our Life Sciences segment, we provide reagents and instruments for medical research.</p>'
+        p = extract(COMPANY, body, source, NOW)
+        self.assertTrue(p['description'].startswith('Example Holdings Inc. operates through four segments:'))
+        self.assertIn('provides reagents and instruments for medical research through its Life Sciences segment.', p['description'])
+        self.assertEqual(p['sources'][0]['evidence'][0], 'We report our business in four segments: Life Sciences, Instruments, Diagnostics, and Laboratory Products.')
+        self.assertEqual(extract(COMPANY, b'<h2>Item 1. Business</h2><p>We serve hospitals, universities and research institutions.</p>', source, NOW)['state'], 'UNAVAILABLE')
+        self.assertEqual(extract(COMPANY, body, WEB, NOW)['state'], 'UNAVAILABLE')
+
+    def test_legal_period_and_market_ranking_keep_only_supported_business_role(self):
+        company = {**COMPANY, 'names': ['Example Holdings Corp']}
+        p = extract(company, b'<p>Example Holdings Corp. is the fourth largest commercial bank holding company in its region.</p>', WEB, NOW)
+        self.assertEqual(p['description'], 'Example Holdings Corp. is a commercial bank holding company in its region.')
+        p = extract(COMPANY, b'<p>Example Holdings Inc. is one of the world\'s leading suppliers of packaging products for beverage customers.</p>', WEB, NOW)
+        self.assertEqual(p['description'], 'Example Holdings Inc. is a supplier of packaging products for beverage customers.')
+        wrong = b'<p>Example Holdings Corp. Japan LLC develops software products for customers.</p>'
+        self.assertEqual(extract(company, wrong, WEB, NOW)['state'], 'UNAVAILABLE')
+
+    def test_introductory_marketing_clause_preserves_explicit_design_activity(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>Leveraging a unique combination of technologies, we design, manufacture, and provide control equipment for aerospace markets.</p>'
+        p = extract(COMPANY, body, source, NOW)
+        self.assertIn('designs, manufactures, and provides control equipment', p['description'])
+        self.assertNotIn('Leveraging', p['description'])
+        self.assertEqual(extract(COMPANY, body, WEB, NOW)['state'], 'UNAVAILABLE')
+
+    def test_nested_consolidated_legal_definition_preserves_issuer_business(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>Example Holdings Inc., together with its subsidiaries (collectively the "Company," "we," or "our" (Nasdaq: EXMP)), delivers high-quality semiconductor products to electronics manufacturers.</p>'
+        p = extract(COMPANY, body, source, NOW)
+        self.assertEqual(p['description'], 'Example Holdings Inc. delivers semiconductor products to electronics manufacturers.')
+        self.assertEqual(extract(COMPANY, body, WEB, NOW)['state'], 'UNAVAILABLE')
+
+    def test_operating_subsidiary_business_keeps_parent_relationship(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>Example Holdings Inc. ("Parent"), through its Operating Subsidiaries (together, the "Company"), is a leading investment bank and broker-dealer.</p>'
+        p = extract(COMPANY, body, source, NOW)
+        self.assertEqual(p['description'], 'Example Holdings Inc. is an investment bank and broker-dealer through its Operating Subsidiaries.')
+
+    def test_product_comma_is_not_a_product_list_and_vague_distribution_abstains(self):
+        p = extract(COMPANY, b'<p>Example Holdings Inc. designs software products, and licenses its trademarks to others worldwide.</p>', WEB, NOW)
+        self.assertEqual(p['productsServices'], [])
+        for text in ['Example Holdings Inc. sells product primarily through its operations in Asia and Europe.', 'Example Holdings Inc. focuses its investments and resources towards categories with value-creation potential.']:
+            self.assertEqual(extract(COMPANY, ('<p>'+text+'</p>').encode(), WEB, NOW)['state'], 'UNAVAILABLE')
+
+    def test_catalogue_cached_parser_upgrade_requires_same_verification_and_evidence(self):
+        from company_intelligence.profile_catalogue import seed, CATALOGUE_SCHEMA
+        profile = extract(COMPANY, TEXT, WEB, NOW)
+        prior = {**profile, 'parserVersion': 'company-profile-parser-1.0.5', 'description': 'Example Holdings Inc. develops software products for insurance markets.'}
+        catalogue = {'schema': CATALOGUE_SCHEMA, 'profiles': {CID: profile}}
+        with tempfile.TemporaryDirectory() as temp:
+            store = Store(Path(temp) / 'state.sqlite')
+            store.set_state('companyProfile:' + CID, prior)
+            self.assertEqual(seed(store, {CID: COMPANY}, catalogue, NOW), 1)
+            self.assertEqual(store.state('companyProfile:' + CID)['description'], profile['description'])
+            for protected in [{**prior, 'lastVerifiedAt': '2026-10-05T12:01:00Z'}, {**prior, 'supersededAnnualFiling': '0000000001-26-000002'}, {**prior, 'sources': [{**prior['sources'][0], 'contentHash': 'f'*64}]}]:
+                store.set_state('companyProfile:' + CID, protected)
+                self.assertEqual(seed(store, {CID: COMPANY}, catalogue, NOW), 0)
+                self.assertEqual(store.state('companyProfile:' + CID), protected)
+            store.close()
+
+    def test_independent_backfill_quality_retirement_is_cache_only_and_checkpointed(self):
+        import argparse, hashlib, io
+        from contextlib import redirect_stdout
+        from company_intelligence.profile_catalogue import backfill, CATALOGUE_SCHEMA
+        from quant.sec.http_client import SECHttpClient
+        filing = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>We serve hospitals, universities and research institutions.</p>'
+        prior = extract(COMPANY, b'<h2>Item 1. Business</h2><p>We manufacture medical devices for hospital customers.</p>', filing, NOW)
+        prior['parserVersion'] = 'company-profile-parser-1.0.5'
+        prior['description'] = 'Example Holdings Inc. serves hospitals, universities and research institutions.'
+        prior['sources'][0]['contentHash'] = hashlib.sha256(body).hexdigest()
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp); (root / 'company-intelligence/config').mkdir(parents=True)
+            (root / 'company-intelligence/config/official-sites.json').write_text('{}')
+            cat = root / 'catalogue.json'; cp = root / 'private-checkpoint.json'
+            cat.write_text(json.dumps({'schema': CATALOGUE_SCHEMA, 'profiles': {CID: prior}}))
+            cache = DiskCache(root / '.sec-cache', ttl_seconds=None)
+            cache.put('https://data.sec.gov/submissions/CIK0000000001.json', json.dumps(submissions()).encode())
+            cache.put(filing['url'], body)
+            args = argparse.Namespace(tickers=None, network=True, reparse=False, limit=1, request_budget=2, max_seconds=30, rate=1)
+            with patch('company_intelligence.profile_catalogue.load_universe', return_value={CID: COMPANY}), patch('company_intelligence.profile_catalogue.utcnow', return_value=NOW), patch.object(Pipeline, 'ensure_aliases'), patch.object(SECHttpClient, '_urlopen', side_effect=AssertionError('cached source must not be downloaded')), redirect_stdout(io.StringIO()):
+                backfill(args, root, cat, cp)
+                backfill(args, root, cat, cp)
+            self.assertEqual(json.loads(cat.read_text())['profiles'], {})
+            state = json.loads(cp.read_text())
+            self.assertEqual(state['attempts'][CID]['state'], 'UNAVAILABLE')
+            self.assertEqual(state['batches'][0]['retiredProfiles'], 1)
+            self.assertEqual(state['batches'][0]['networkRequests'], 0)
+            self.assertEqual(state['batches'][1]['attempted'], 0)
+            self.assertFalse((root / '.company-intelligence/state.sqlite').exists())

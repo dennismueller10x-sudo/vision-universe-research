@@ -42,6 +42,12 @@ The prepared catalogue now contains **1093 profiles / 6,078 issuers (17.98%)** a
 
 Optional profile failures are isolated from the existing SEC financial/news pipeline. Failed extraction of a genuinely newer annual filing marks the preceding profile stale; a same-document parser update does not imply a new filing. **477 Python tests and 39 feature Node tests pass**; all ten GitHub workflows passed on lifecycle-correction head `73d327b3ddd133440e6c2161fdfb72c63c49ef55`. Further source backfill and consumer-quality review continue. The original discovery checkpoint remains unavailable; all inherited queues and prior reports are preserved.
 
+## Fourth validated milestone — business-first quality selection
+
+The source parser prioritizes explicit core business predicates ahead of customer-only sentences. It preserves SEC-described segment relationships and nested consolidated legal definitions, removes market-rank/superiority claims, fixes legal-suffix punctuation and avoids distribution-only descriptions or accidental product-list fragments. A prepared description that no longer satisfies these quality rules is retired from this new catalogue using its identical cached filing, with an explicit durable outcome; the preceding rollout ledger is not touched. Changed annual filings preserve earlier sourced facts with a stale flag if new extraction is unavailable.
+
+Cache-only upgrades retain their original verification time. Catalogue import permits a newer parser on identical evidence at that timestamp, while preserving later verification, stronger sources and supersession. Regression coverage includes parent/subsidiary wording, wrong issuer, marketing introductions, ranked bank descriptions, customer-only abstention, nested legal definitions, no-request retirement and repeated-run cooldown. **485 Python tests / 39 feature Node tests pass.** All ten workflows passed on the preceding remotely preserved head. The next catalogue milestone follows after the cache replay and additional SEC cohorts; current source discovery queues remain unrestored.
+
 <!-- PROFILE-CONTINUATION-MILESTONE-END -->
 
 # Company Intelligence — candidate completion and recovery (in progress)
