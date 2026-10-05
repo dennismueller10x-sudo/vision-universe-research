@@ -79,7 +79,8 @@ if (process.argv[1] && process.argv[1].endsWith("ingest-esma-funds.mjs")) {
     if (!index.has(k)) index.set(k, []); index.get(k).push(rec);
   }
   const matched = new Map();   // isin -> rec
-  for (const r of eu.rows) { const m = matchFund(r[fi("name")], r[fi("domicile")], index); if (m) matched.set(r[0], m); }
+  // Zuerst ueber den rechtlichen Fondsnamen laut GLEIF (sauberer Teilfondsname), dann ueber den FIRDS-Namen der Anteilklasse
+  for (const r of eu.rows) { const m = (r[fi("issuerLegalName")] && matchFund(r[fi("issuerLegalName")], r[fi("domicile")], index)) || matchFund(r[fi("name")], r[fi("domicile")], index); if (m) matched.set(r[0], m); }
   console.log("ETF-Anteilklassen mit Registertreffer:", matched.size, "von", eu.rows.length);
 
   /* ---- 3. Vertriebslaender aus den Notifizierungen (Kindsdokumente) der getroffenen Fonds */

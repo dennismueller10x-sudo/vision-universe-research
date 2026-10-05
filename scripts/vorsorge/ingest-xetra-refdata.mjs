@@ -56,14 +56,15 @@ export function parseInstrumentsCsv(text) {
   const need = ["ISIN", "WKN", "Mnemonic", "Instrument Type", "Product Assignment Group"];
   const miss = need.filter((k) => ix(k) < 0); if (miss.length) throw new Error("Instrumentenliste: Spalten fehlen: " + miss.join(", "));
   const asOf = (lines.slice(0, hi).join(" ").match(/(\d{2})\.(\d{2})\.(\d{4})/) || []).slice(1);
-  const out = new Map();
+  const out = new Map(), wknShapes = {};
   for (const l of lines.slice(hi + 1)) {
-    const c = l.split(";"); if (c[ix("Instrument Type")] !== "ETF") continue;
+    const c = l.split(";").map((x) => x.replace(/^"|"$/g, "").trim()); if (c[ix("Instrument Type")] !== "ETF") continue;
     const isin = c[ix("ISIN")], wkn = String(c[ix("WKN")] || "").trim().toUpperCase();
     if (!F.isValidIsin(isin)) continue;
+    if (wkn && !F.isValidWkn(wkn)) { const shape = wkn.replace(/[A-Z]/g, "A").replace(/[0-9]/g, "9"); wknShapes[shape] = (wknShapes[shape] || 0) + 1; }
     out.set(isin, { isin, wkn: F.isValidWkn(wkn) ? wkn : null, mnemonic: c[ix("Mnemonic")] || null, group: c[ix("Product Assignment Group")] || null });
   }
-  return { asOf: asOf.length ? asOf[2] + "-" + asOf[1] + "-" + asOf[0] : null, rows: out };
+  return { asOf: asOf.length ? asOf[2] + "-" + asOf[1] + "-" + asOf[0] : null, rows: out, wknRejectedShapes: wknShapes, headerWkn: head.filter((h) => /WKN/i.test(h)) };
 }
 export function parseMasterRows(rows) {
   const hi = rows.findIndex((r) => r.some((c) => String(c).trim().toUpperCase() === "ISIN"));
@@ -107,7 +108,7 @@ if (process.argv[1] && process.argv[1].endsWith("ingest-xetra-refdata.mjs")) {
     coverage: { ongoingCharges: n((r) => r.ongoingCharges !== null), distribution: n((r) => r.distribution && r.distribution !== "OTHER"), replication: n((r) => r.replication && r.replication !== "OTHER"),
       benchmark: n((r) => r.benchmark), fundCurrency: n((r) => r.fundCurrency), wkn: [...inst.rows.values()].filter((r) => r.wkn).length,
       inFirdsIndex: etfs.filter((r) => euIsins.has(r.isin)).length, wknInFirdsIndex: [...inst.rows.values()].filter((r) => r.wkn && euIsins.has(r.isin)).length },
-    rejected: { ongoingChargesUnparsable: n((r) => r.ongoingChargesRaw && r.ongoingCharges === null) },
+    rejected: { wknShapes: inst.wknRejectedShapes, wknHeaders: inst.headerWkn, ongoingChargesUnparsable: n((r) => r.ongoingChargesRaw && r.ongoingCharges === null) },
     distributions: { replication: Object.entries(etfs.reduce((m, r) => ((m[r.replication || "null"] = (m[r.replication || "null"] || 0) + 1), m), {})), distribution: Object.entries(etfs.reduce((m, r) => ((m[r.distribution || "null"] = (m[r.distribution || "null"] || 0) + 1), m), {})) } };
   writeFileSync(join(root, "vorsorge/data/sources/xetra-refdata-stats.json"), JSON.stringify(stats, null, 1) + "\n");
   console.log(JSON.stringify(stats.coverage), "veroeffentlicht:", stats.published);

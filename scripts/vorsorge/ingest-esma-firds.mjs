@@ -126,10 +126,21 @@ console.log("GLEIF:", gleif.size, "von", leis.length, "LEI");
 
 /* ----------------------------------------------------------- Ausgabe */
 const DIST = { I: "DISTRIBUTING", G: "ACCUMULATING", J: "MIXED" };
-/* Belastbarster Name: vollstaendig (nicht auf ~30 Zeichen + " ETFS" gekuerzt), dann laengster, dann haeufigster. */
+/* Lesbarster Name: nicht gekuerzt (~30 Zeichen + " ETFS"), keine zusammengesetzte Langform
+   ("... PUBLIC LIMITED COMPANY - ... CMN CLASS ETF ETF ON ..."), bevorzugt mit "UCITS",
+   gemischte Schreibweise; danach haeufigster, dann kuerzester. */
 const TRUNC = /^.{20,35} ETFS?$/;
+function nameScore(n) {
+  let s = 0;
+  if (TRUNC.test(n)) s += 8;
+  if (/\bCMN\b|\bETF ON\b|ETF ETF|PUBLIC LIMITED COMPANY|\bICAV\b -|SERIES ETF/i.test(n)) s += 4;
+  if (!/UCITS/i.test(n)) s += 1;
+  if (n === n.toUpperCase()) s += 1;
+  if (n.length > 90) s += 2;
+  return s;
+}
 function bestName(names) {
-  return Object.entries(names).sort((a, b) => (TRUNC.test(a[0]) ? 1 : 0) - (TRUNC.test(b[0]) ? 1 : 0) || b[0].length - a[0].length || b[1] - a[1])[0]?.[0] || "";
+  return Object.entries(names).sort((a, b) => nameScore(a[0]) - nameScore(b[0]) || b[1] - a[1] || a[0].length - b[0].length)[0]?.[0] || "";
 }
 /* Emittent: bevorzugt eine LEI, die GLEIF als Fonds (FUND) fuehrt; Handelsplaetze/Banken als "Emittent" werden verworfen. */
 function bestIssuer(leis) {
@@ -140,12 +151,16 @@ function bestIssuer(leis) {
   return other ? { lei: other.lei, g: other.g, basis: "OTHER_ENTITY" } : { lei: null, g: {}, basis: null };
 }
 // ISO-6166: Laenderpraefix der ISIN = Land des Emittenten; fuer Fonds in der Regel das Domizil (XS/EU ausgenommen).
+const EEA = /^(AT|BE|BG|HR|CY|CZ|DK|EE|FI|FR|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE|IS|LI|NO)$/;
 const ISIN_DOMICILE_OK = /^(IE|LU|DE|FR|NL|AT|BE|DK|FI|SE|NO|IT|ES|PT|CH|GB|LI|PL|CZ|HU|HR|BG|RO|SI|SK|GR|CY|MT|EE|LV|LT|IS|US|CA|AU|JP|HK|SG|KR|ZA|IL)$/;
 const fields = ["isin", "name", "cfi", "currency", "issuerLei", "issuerLegalName", "issuerBrand", "domicile", "distribution", "ucitsInName", "venues", "firstTrade", "active", "domicileBasis"];
 const rows = [];
 for (const e of [...byIsin.values()].sort((a, b) => (a.isin < b.isin ? -1 : 1))) {
   if (!F.isValidIsin(e.isin)) continue;
-  const iss = bestIssuer(e.leis), g = iss.g, name = bestName(e.names);
+  let iss = bestIssuer(e.leis); const name = bestName(e.names);
+  // Fonds-LEI aus einer Rechtsordnung ausserhalb des EWR bei IE/LU-ISIN (z. B. US-Trust, von einem Handelsplatz gemeldet) ist falsch zugeordnet
+  if (iss.basis === "GLEIF_FUND" && /^(IE|LU)$/.test(e.isin.slice(0, 2)) && iss.g.jurisdiction && !EEA.test(iss.g.jurisdiction)) iss = { lei: null, g: {}, basis: "REJECTED_NON_EEA_LEI" };
+  const g = iss.g;
   // Domizil: Rechtsordnung des Fonds laut GLEIF; ohne Fonds-LEI aus dem ISIN-Praefix (abgeleitet).
   const domicile = iss.basis === "GLEIF_FUND" && g.jurisdiction ? g.jurisdiction : ISIN_DOMICILE_OK.test(e.isin.slice(0, 2)) ? e.isin.slice(0, 2) : null;
   const domicileBasis = iss.basis === "GLEIF_FUND" && g.jurisdiction ? "GLEIF" : domicile ? "ISIN_PREFIX" : null;
