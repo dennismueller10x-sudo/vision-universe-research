@@ -863,6 +863,655 @@
     "procedure": "scripts/technical/practitioner/sampling-frame.mjs: Fenster → Titel-/Kategorieregeln (ergebnisblind, vorab) → E chronologisch; k=floor(|E|/sampleTarget); startIndex=SHA-256(\"20261004|\"+sourceId) mod k (erste 8 Hex); S=E[start+j·k]; Pilot: m=floor(|S|/pilotQuota), p0=SHA-256(\"20261004|pilot|\"+sourceId) mod m, Pilot=S[p0+j·m]",
     "status": "SET 2026-10-04 vor jeder Extraktion dieser Quelle"
    }
+  },
+  {
+   "sourceId": "tv-mehdi_abbasi_ewp",
+   "name": "TradingView-Autor Mehdi_Abbasi_EWP",
+   "organisation": "—",
+   "elliottSchool": "UNKNOWN_MIXED",
+   "priorityGroup": "C",
+   "platforms": [
+    "WEBSITE"
+   ],
+   "urls": [
+    "https://www.tradingview.com/u/Mehdi_Abbasi_EWP/"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "laut Metadaten: US-Aktien/Indizes/BTC"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W",
+    "1M",
+    "INTRADAY"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Ideen-Zeitstempel (created_at, Sekunde, UTC) aus Plattform-API; Ideen nachtraeglich nur per Update-Anhang ergaenzbar (updated_at)",
+   "historicalContentAccessible": "oeffentlich (API /api/v1/ideas/?by=)",
+   "laterEditingPossible": "Updates als Anhang; Ursprungs-Idee bleibt",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "C (vorläufig)",
+   "tierRationale": "Auswahl nach vorab festgelegter Regel (Nachtrag 5 d, aufgenommen nach Nachtrag 7 b), nicht nach Reichweite oder Erfolg. PROVISIONAL: Qualitätsmerkmale ungeprüft.",
+   "language": "en",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-05: oeffentliche Ideen-API ohne Login (200)",
+   "sourceFamily": "tv-mehdi_abbasi_ewp",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": "TradingView oeffentliche Ideen-Liste /api/v1/ideas/?by=Mehdi_Abbasi_EWP (Metadaten), Nachtrag 7 b",
+    "frameFile": "consensus/frames/tv-mehdi_abbasi_ewp.json",
+    "retrievedAt": "2026-10-05",
+    "frameSize": 144,
+    "instrumentFilter": "AT_DRAW",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {},
+    "eligibleCount": 144,
+    "coverage": {
+     "ideasCrawled": 1000,
+     "apiCount": 1000,
+     "earliestCrawled": "2023-07-26",
+     "truncatedByApiCap": true
+    },
+    "procedure": "scripts/technical/practitioner/tradingview-consensus-frames.py (Regeln tradingview-frame.py, Nachtrag 5 d); keine Ziehung — Auswahl je Konsensfall in consensus-match.mjs (Nachtrag 7 d/e)",
+    "status": "SET 2026-10-05 vor jeder Extraktion dieser Quelle (Mission VII)"
+   },
+   "provisional": true
+  },
+  {
+   "sourceId": "tv-m_gheysvandi",
+   "name": "TradingView-Autor M_Gheysvandi",
+   "organisation": "—",
+   "elliottSchool": "UNKNOWN_MIXED",
+   "priorityGroup": "C",
+   "platforms": [
+    "WEBSITE"
+   ],
+   "urls": [
+    "https://www.tradingview.com/u/M_Gheysvandi/"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "laut Metadaten: US-Aktien/Indizes/BTC"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W",
+    "1M",
+    "INTRADAY"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Ideen-Zeitstempel (created_at, Sekunde, UTC) aus Plattform-API; Ideen nachtraeglich nur per Update-Anhang ergaenzbar (updated_at)",
+   "historicalContentAccessible": "oeffentlich (API /api/v1/ideas/?by=)",
+   "laterEditingPossible": "Updates als Anhang; Ursprungs-Idee bleibt",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "C (vorläufig)",
+   "tierRationale": "Auswahl nach vorab festgelegter Regel (Nachtrag 5 d, aufgenommen nach Nachtrag 7 b), nicht nach Reichweite oder Erfolg. PROVISIONAL: Qualitätsmerkmale ungeprüft.",
+   "language": "en",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-05: oeffentliche Ideen-API ohne Login (200)",
+   "sourceFamily": "tv-m_gheysvandi",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": "TradingView oeffentliche Ideen-Liste /api/v1/ideas/?by=M_Gheysvandi (Metadaten), Nachtrag 7 b",
+    "frameFile": "consensus/frames/tv-m_gheysvandi.json",
+    "retrievedAt": "2026-10-05",
+    "frameSize": 43,
+    "instrumentFilter": "AT_DRAW",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {},
+    "eligibleCount": 43,
+    "coverage": {
+     "ideasCrawled": 180,
+     "apiCount": 202,
+     "earliestCrawled": "2020-07-29",
+     "truncatedByApiCap": false
+    },
+    "procedure": "scripts/technical/practitioner/tradingview-consensus-frames.py (Regeln tradingview-frame.py, Nachtrag 5 d); keine Ziehung — Auswahl je Konsensfall in consensus-match.mjs (Nachtrag 7 d/e)",
+    "status": "SET 2026-10-05 vor jeder Extraktion dieser Quelle (Mission VII)"
+   },
+   "provisional": true
+  },
+  {
+   "sourceId": "tv-thepennyman",
+   "name": "TradingView-Autor ThePennyMan",
+   "organisation": "—",
+   "elliottSchool": "UNKNOWN_MIXED",
+   "priorityGroup": "C",
+   "platforms": [
+    "WEBSITE"
+   ],
+   "urls": [
+    "https://www.tradingview.com/u/ThePennyMan/"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "laut Metadaten: US-Aktien/Indizes/BTC"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W",
+    "1M",
+    "INTRADAY"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Ideen-Zeitstempel (created_at, Sekunde, UTC) aus Plattform-API; Ideen nachtraeglich nur per Update-Anhang ergaenzbar (updated_at)",
+   "historicalContentAccessible": "oeffentlich (API /api/v1/ideas/?by=)",
+   "laterEditingPossible": "Updates als Anhang; Ursprungs-Idee bleibt",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "C (vorläufig)",
+   "tierRationale": "Auswahl nach vorab festgelegter Regel (Nachtrag 5 d, aufgenommen nach Nachtrag 7 b), nicht nach Reichweite oder Erfolg. PROVISIONAL: Qualitätsmerkmale ungeprüft.",
+   "language": "en",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-05: oeffentliche Ideen-API ohne Login (200)",
+   "sourceFamily": "tv-thepennyman",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": "TradingView oeffentliche Ideen-Liste /api/v1/ideas/?by=ThePennyMan (Metadaten), Nachtrag 7 b",
+    "frameFile": "consensus/frames/tv-thepennyman.json",
+    "retrievedAt": "2026-10-05",
+    "frameSize": 56,
+    "instrumentFilter": "AT_DRAW",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {},
+    "eligibleCount": 56,
+    "coverage": {
+     "ideasCrawled": 102,
+     "apiCount": 102,
+     "earliestCrawled": "2023-06-16",
+     "truncatedByApiCap": false
+    },
+    "procedure": "scripts/technical/practitioner/tradingview-consensus-frames.py (Regeln tradingview-frame.py, Nachtrag 5 d); keine Ziehung — Auswahl je Konsensfall in consensus-match.mjs (Nachtrag 7 d/e)",
+    "status": "SET 2026-10-05 vor jeder Extraktion dieser Quelle (Mission VII)"
+   },
+   "provisional": true
+  },
+  {
+   "sourceId": "tv-tsuth",
+   "name": "TradingView-Autor TSuth",
+   "organisation": "—",
+   "elliottSchool": "UNKNOWN_MIXED",
+   "priorityGroup": "C",
+   "platforms": [
+    "WEBSITE"
+   ],
+   "urls": [
+    "https://www.tradingview.com/u/TSuth/"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "laut Metadaten: US-Aktien/Indizes/BTC"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W",
+    "1M",
+    "INTRADAY"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Ideen-Zeitstempel (created_at, Sekunde, UTC) aus Plattform-API; Ideen nachtraeglich nur per Update-Anhang ergaenzbar (updated_at)",
+   "historicalContentAccessible": "oeffentlich (API /api/v1/ideas/?by=)",
+   "laterEditingPossible": "Updates als Anhang; Ursprungs-Idee bleibt",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "C (vorläufig)",
+   "tierRationale": "Auswahl nach vorab festgelegter Regel (Nachtrag 5 d, aufgenommen nach Nachtrag 7 b), nicht nach Reichweite oder Erfolg. PROVISIONAL: Qualitätsmerkmale ungeprüft.",
+   "language": "en",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-05: oeffentliche Ideen-API ohne Login (200)",
+   "sourceFamily": "tv-tsuth",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": "TradingView oeffentliche Ideen-Liste /api/v1/ideas/?by=TSuth (Metadaten), Nachtrag 7 b",
+    "frameFile": "consensus/frames/tv-tsuth.json",
+    "retrievedAt": "2026-10-05",
+    "frameSize": 418,
+    "instrumentFilter": "AT_DRAW",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {},
+    "eligibleCount": 418,
+    "coverage": {
+     "ideasCrawled": 573,
+     "apiCount": 573,
+     "earliestCrawled": "2022-09-09",
+     "truncatedByApiCap": false
+    },
+    "procedure": "scripts/technical/practitioner/tradingview-consensus-frames.py (Regeln tradingview-frame.py, Nachtrag 5 d); keine Ziehung — Auswahl je Konsensfall in consensus-match.mjs (Nachtrag 7 d/e)",
+    "status": "SET 2026-10-05 vor jeder Extraktion dieser Quelle (Mission VII)"
+   },
+   "provisional": true
+  },
+  {
+   "sourceId": "tv-eduwavetrading",
+   "name": "TradingView-Autor EduwaveTrading",
+   "organisation": "—",
+   "elliottSchool": "UNKNOWN_MIXED",
+   "priorityGroup": "C",
+   "platforms": [
+    "WEBSITE"
+   ],
+   "urls": [
+    "https://www.tradingview.com/u/EduwaveTrading/"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "laut Metadaten: US-Aktien/Indizes/BTC"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W",
+    "1M",
+    "INTRADAY"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Ideen-Zeitstempel (created_at, Sekunde, UTC) aus Plattform-API; Ideen nachtraeglich nur per Update-Anhang ergaenzbar (updated_at)",
+   "historicalContentAccessible": "oeffentlich (API /api/v1/ideas/?by=)",
+   "laterEditingPossible": "Updates als Anhang; Ursprungs-Idee bleibt",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "C (vorläufig)",
+   "tierRationale": "Auswahl nach vorab festgelegter Regel (Nachtrag 5 d, aufgenommen nach Nachtrag 7 b), nicht nach Reichweite oder Erfolg. PROVISIONAL: Qualitätsmerkmale ungeprüft.",
+   "language": "en",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-05: oeffentliche Ideen-API ohne Login (200)",
+   "sourceFamily": "tv-eduwavetrading",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": "TradingView oeffentliche Ideen-Liste /api/v1/ideas/?by=EduwaveTrading (Metadaten), Nachtrag 7 b",
+    "frameFile": "consensus/frames/tv-eduwavetrading.json",
+    "retrievedAt": "2026-10-05",
+    "frameSize": 350,
+    "instrumentFilter": "AT_DRAW",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {},
+    "eligibleCount": 350,
+    "coverage": {
+     "ideasCrawled": 920,
+     "apiCount": 1000,
+     "earliestCrawled": "2021-06-27",
+     "truncatedByApiCap": false
+    },
+    "procedure": "scripts/technical/practitioner/tradingview-consensus-frames.py (Regeln tradingview-frame.py, Nachtrag 5 d); keine Ziehung — Auswahl je Konsensfall in consensus-match.mjs (Nachtrag 7 d/e)",
+    "status": "SET 2026-10-05 vor jeder Extraktion dieser Quelle (Mission VII)"
+   },
+   "provisional": true
+  },
+  {
+   "sourceId": "tv-theexpert_81",
+   "name": "TradingView-Autor TheExpert_81",
+   "organisation": "—",
+   "elliottSchool": "UNKNOWN_MIXED",
+   "priorityGroup": "C",
+   "platforms": [
+    "WEBSITE"
+   ],
+   "urls": [
+    "https://www.tradingview.com/u/TheExpert_81/"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "laut Metadaten: US-Aktien/Indizes/BTC"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W",
+    "1M",
+    "INTRADAY"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Ideen-Zeitstempel (created_at, Sekunde, UTC) aus Plattform-API; Ideen nachtraeglich nur per Update-Anhang ergaenzbar (updated_at)",
+   "historicalContentAccessible": "oeffentlich (API /api/v1/ideas/?by=)",
+   "laterEditingPossible": "Updates als Anhang; Ursprungs-Idee bleibt",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "C (vorläufig)",
+   "tierRationale": "Auswahl nach vorab festgelegter Regel (Nachtrag 5 d, aufgenommen nach Nachtrag 7 b), nicht nach Reichweite oder Erfolg. PROVISIONAL: Qualitätsmerkmale ungeprüft.",
+   "language": "en",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-05: oeffentliche Ideen-API ohne Login (200)",
+   "sourceFamily": "tv-theexpert_81",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": "TradingView oeffentliche Ideen-Liste /api/v1/ideas/?by=TheExpert_81 (Metadaten), Nachtrag 7 b",
+    "frameFile": "consensus/frames/tv-theexpert_81.json",
+    "retrievedAt": "2026-10-05",
+    "frameSize": 47,
+    "instrumentFilter": "AT_DRAW",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {},
+    "eligibleCount": 47,
+    "coverage": {
+     "ideasCrawled": 240,
+     "apiCount": 254,
+     "earliestCrawled": "2020-06-22",
+     "truncatedByApiCap": false
+    },
+    "procedure": "scripts/technical/practitioner/tradingview-consensus-frames.py (Regeln tradingview-frame.py, Nachtrag 5 d); keine Ziehung — Auswahl je Konsensfall in consensus-match.mjs (Nachtrag 7 d/e)",
+    "status": "SET 2026-10-05 vor jeder Extraktion dieser Quelle (Mission VII)"
+   },
+   "provisional": true
+  },
+  {
+   "sourceId": "tv-elliottchart",
+   "name": "TradingView-Autor ElliottChart",
+   "organisation": "—",
+   "elliottSchool": "UNKNOWN_MIXED",
+   "priorityGroup": "C",
+   "platforms": [
+    "WEBSITE"
+   ],
+   "urls": [
+    "https://www.tradingview.com/u/ElliottChart/"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "laut Metadaten: US-Aktien/Indizes/BTC"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W",
+    "1M",
+    "INTRADAY"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Ideen-Zeitstempel (created_at, Sekunde, UTC) aus Plattform-API; Ideen nachtraeglich nur per Update-Anhang ergaenzbar (updated_at)",
+   "historicalContentAccessible": "oeffentlich (API /api/v1/ideas/?by=)",
+   "laterEditingPossible": "Updates als Anhang; Ursprungs-Idee bleibt",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "C (vorläufig)",
+   "tierRationale": "Auswahl nach vorab festgelegter Regel (Nachtrag 5 d, aufgenommen nach Nachtrag 7 b), nicht nach Reichweite oder Erfolg. PROVISIONAL: Qualitätsmerkmale ungeprüft.",
+   "language": "en",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-05: oeffentliche Ideen-API ohne Login (200)",
+   "sourceFamily": "tv-elliottchart",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": "TradingView oeffentliche Ideen-Liste /api/v1/ideas/?by=ElliottChart (Metadaten), Nachtrag 7 b",
+    "frameFile": "consensus/frames/tv-elliottchart.json",
+    "retrievedAt": "2026-10-05",
+    "frameSize": 533,
+    "instrumentFilter": "AT_DRAW",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {},
+    "eligibleCount": 533,
+    "coverage": {
+     "ideasCrawled": 780,
+     "apiCount": 786,
+     "earliestCrawled": "2019-01-16",
+     "truncatedByApiCap": false
+    },
+    "procedure": "scripts/technical/practitioner/tradingview-consensus-frames.py (Regeln tradingview-frame.py, Nachtrag 5 d); keine Ziehung — Auswahl je Konsensfall in consensus-match.mjs (Nachtrag 7 d/e)",
+    "status": "SET 2026-10-05 vor jeder Extraktion dieser Quelle (Mission VII)"
+   },
+   "provisional": true
+  },
+  {
+   "sourceId": "tv-digitalsurftrading",
+   "name": "TradingView-Autor DigitalSurfTrading",
+   "organisation": "—",
+   "elliottSchool": "UNKNOWN_MIXED",
+   "priorityGroup": "C",
+   "platforms": [
+    "WEBSITE"
+   ],
+   "urls": [
+    "https://www.tradingview.com/u/DigitalSurfTrading/"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "laut Metadaten: US-Aktien/Indizes/BTC"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W",
+    "1M",
+    "INTRADAY"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Ideen-Zeitstempel (created_at, Sekunde, UTC) aus Plattform-API; Ideen nachtraeglich nur per Update-Anhang ergaenzbar (updated_at)",
+   "historicalContentAccessible": "oeffentlich (API /api/v1/ideas/?by=)",
+   "laterEditingPossible": "Updates als Anhang; Ursprungs-Idee bleibt",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "C (vorläufig)",
+   "tierRationale": "Auswahl nach vorab festgelegter Regel (Nachtrag 5 d, aufgenommen nach Nachtrag 7 b), nicht nach Reichweite oder Erfolg. PROVISIONAL: Qualitätsmerkmale ungeprüft.",
+   "language": "en",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-05: oeffentliche Ideen-API ohne Login (200)",
+   "sourceFamily": "tv-digitalsurftrading",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": "TradingView oeffentliche Ideen-Liste /api/v1/ideas/?by=DigitalSurfTrading (Metadaten), Nachtrag 7 b",
+    "frameFile": "consensus/frames/tv-digitalsurftrading.json",
+    "retrievedAt": "2026-10-05",
+    "frameSize": 57,
+    "instrumentFilter": "AT_DRAW",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {},
+    "eligibleCount": 57,
+    "coverage": {
+     "ideasCrawled": 200,
+     "apiCount": 253,
+     "earliestCrawled": "2021-02-13",
+     "truncatedByApiCap": false
+    },
+    "procedure": "scripts/technical/practitioner/tradingview-consensus-frames.py (Regeln tradingview-frame.py, Nachtrag 5 d); keine Ziehung — Auswahl je Konsensfall in consensus-match.mjs (Nachtrag 7 d/e)",
+    "status": "SET 2026-10-05 vor jeder Extraktion dieser Quelle (Mission VII)"
+   },
+   "provisional": true
+  },
+  {
+   "sourceId": "tv-stevetan",
+   "name": "TradingView-Autor SteveTan",
+   "organisation": "—",
+   "elliottSchool": "UNKNOWN_MIXED",
+   "priorityGroup": "C",
+   "platforms": [
+    "WEBSITE"
+   ],
+   "urls": [
+    "https://www.tradingview.com/u/SteveTan/"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "laut Metadaten: US-Aktien/Indizes/BTC"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W",
+    "1M",
+    "INTRADAY"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Ideen-Zeitstempel (created_at, Sekunde, UTC) aus Plattform-API; Ideen nachtraeglich nur per Update-Anhang ergaenzbar (updated_at)",
+   "historicalContentAccessible": "oeffentlich (API /api/v1/ideas/?by=)",
+   "laterEditingPossible": "Updates als Anhang; Ursprungs-Idee bleibt",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "C (vorläufig)",
+   "tierRationale": "Auswahl nach vorab festgelegter Regel (Nachtrag 5 d, aufgenommen nach Nachtrag 7 b), nicht nach Reichweite oder Erfolg. PROVISIONAL: Qualitätsmerkmale ungeprüft.",
+   "language": "en",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-05: oeffentliche Ideen-API ohne Login (200)",
+   "sourceFamily": "tv-stevetan",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": "TradingView oeffentliche Ideen-Liste /api/v1/ideas/?by=SteveTan (Metadaten), Nachtrag 7 b",
+    "frameFile": "consensus/frames/tv-stevetan.json",
+    "retrievedAt": "2026-10-05",
+    "frameSize": 51,
+    "instrumentFilter": "AT_DRAW",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {},
+    "eligibleCount": 51,
+    "coverage": {
+     "ideasCrawled": 780,
+     "apiCount": 1000,
+     "earliestCrawled": "2021-11-16",
+     "truncatedByApiCap": false
+    },
+    "procedure": "scripts/technical/practitioner/tradingview-consensus-frames.py (Regeln tradingview-frame.py, Nachtrag 5 d); keine Ziehung — Auswahl je Konsensfall in consensus-match.mjs (Nachtrag 7 d/e)",
+    "status": "SET 2026-10-05 vor jeder Extraktion dieser Quelle (Mission VII)"
+   },
+   "provisional": true
+  },
+  {
+   "sourceId": "tv-discobiscuit",
+   "name": "TradingView-Autor discobiscuit",
+   "organisation": "—",
+   "elliottSchool": "UNKNOWN_MIXED",
+   "priorityGroup": "C",
+   "platforms": [
+    "WEBSITE"
+   ],
+   "urls": [
+    "https://www.tradingview.com/u/discobiscuit/"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "laut Metadaten: US-Aktien/Indizes/BTC"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W",
+    "1M",
+    "INTRADAY"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Ideen-Zeitstempel (created_at, Sekunde, UTC) aus Plattform-API; Ideen nachtraeglich nur per Update-Anhang ergaenzbar (updated_at)",
+   "historicalContentAccessible": "oeffentlich (API /api/v1/ideas/?by=)",
+   "laterEditingPossible": "Updates als Anhang; Ursprungs-Idee bleibt",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "C (vorläufig)",
+   "tierRationale": "Auswahl nach vorab festgelegter Regel (Nachtrag 5 d, aufgenommen nach Nachtrag 7 b), nicht nach Reichweite oder Erfolg. PROVISIONAL: Qualitätsmerkmale ungeprüft.",
+   "language": "en",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-05: oeffentliche Ideen-API ohne Login (200)",
+   "sourceFamily": "tv-discobiscuit",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": "TradingView oeffentliche Ideen-Liste /api/v1/ideas/?by=discobiscuit (Metadaten), Nachtrag 7 b",
+    "frameFile": "consensus/frames/tv-discobiscuit.json",
+    "retrievedAt": "2026-10-05",
+    "frameSize": 123,
+    "instrumentFilter": "AT_DRAW",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {},
+    "eligibleCount": 123,
+    "coverage": {
+     "ideasCrawled": 296,
+     "apiCount": 296,
+     "earliestCrawled": "2021-08-14",
+     "truncatedByApiCap": false
+    },
+    "procedure": "scripts/technical/practitioner/tradingview-consensus-frames.py (Regeln tradingview-frame.py, Nachtrag 5 d); keine Ziehung — Auswahl je Konsensfall in consensus-match.mjs (Nachtrag 7 d/e)",
+    "status": "SET 2026-10-05 vor jeder Extraktion dieser Quelle (Mission VII)"
+   },
+   "provisional": true
+  },
+  {
+   "sourceId": "tv-pejman_zwin",
+   "name": "TradingView-Autor pejman_zwin",
+   "organisation": "—",
+   "elliottSchool": "UNKNOWN_MIXED",
+   "priorityGroup": "C",
+   "platforms": [
+    "WEBSITE"
+   ],
+   "urls": [
+    "https://www.tradingview.com/u/pejman_zwin/"
+   ],
+   "activeSince": "UNVERIFIED",
+   "typicalAssets": [
+    "laut Metadaten: US-Aktien/Indizes/BTC"
+   ],
+   "typicalTimeframes": [
+    "1D",
+    "1W",
+    "1M",
+    "INTRADAY"
+   ],
+   "showsConcreteCounts": "UNVERIFIED",
+   "showsAlternativeCounts": "UNVERIFIED",
+   "namesTargets": "UNVERIFIED",
+   "namesInvalidations": "UNVERIFIED",
+   "publicationTimeUnambiguous": "Ideen-Zeitstempel (created_at, Sekunde, UTC) aus Plattform-API; Ideen nachtraeglich nur per Update-Anhang ergaenzbar (updated_at)",
+   "historicalContentAccessible": "oeffentlich (API /api/v1/ideas/?by=)",
+   "laterEditingPossible": "Updates als Anhang; Ursprungs-Idee bleibt",
+   "documentationQuality": "UNVERIFIED",
+   "benchmarkTier": "C (vorläufig)",
+   "tierRationale": "Auswahl nach vorab festgelegter Regel (Nachtrag 5 d, aufgenommen nach Nachtrag 7 b), nicht nach Reichweite oder Erfolg. PROVISIONAL: Qualitätsmerkmale ungeprüft.",
+   "language": "en",
+   "accessFromBuildEnvironment": "GEPRUEFT 2026-10-05: oeffentliche Ideen-API ohne Login (200)",
+   "sourceFamily": "tv-pejman_zwin",
+   "samplingFrame": {
+    "window": [
+     "2022-01-01",
+     "2026-06-30"
+    ],
+    "frameSource": "TradingView oeffentliche Ideen-Liste /api/v1/ideas/?by=pejman_zwin (Metadaten), Nachtrag 7 b",
+    "frameFile": "consensus/frames/tv-pejman_zwin.json",
+    "retrievedAt": "2026-10-05",
+    "frameSize": 231,
+    "instrumentFilter": "AT_DRAW",
+    "rulesVersion": "frame-rules-1.0.0",
+    "excludedAtFrame": {},
+    "eligibleCount": 231,
+    "coverage": {
+     "ideasCrawled": 1000,
+     "apiCount": 1000,
+     "earliestCrawled": "2022-07-03",
+     "truncatedByApiCap": true
+    },
+    "procedure": "scripts/technical/practitioner/tradingview-consensus-frames.py (Regeln tradingview-frame.py, Nachtrag 5 d); keine Ziehung — Auswahl je Konsensfall in consensus-match.mjs (Nachtrag 7 d/e)",
+    "status": "SET 2026-10-05 vor jeder Extraktion dieser Quelle (Mission VII)"
+   },
+   "provisional": true
   }
  ]
 }
