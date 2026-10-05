@@ -115,8 +115,8 @@
         el("tbody", {}, [
           line("Fälle", A.cases, B.cases, B.cases - A.cases, int),
           line("Anteil im Plus", A.positiveShare, B.positiveShare, D.positiveShare, function (v) { return share(v); }),
-          line("Base Rate", A.baseRate, B.baseRate, D.baseRate, function (v) { return share(v); }),
-          line("Abstand zur Base Rate", A.delta, B.delta, D.delta, function (v) { return pp(v); }),
+          line("Markt (gleiche Wochen)", A.baseRate, B.baseRate, D.baseRate, function (v) { return share(v); }),
+          line("Abstand zum Markt", A.delta, B.delta, D.delta, function (v) { return pp(v); }),
           line("Median", A.median, B.median, D.median, function (v) { return pct(v, 1, true); }),
           line("Rückgang (Median)", A.maxDrawdownMedian, B.maxDrawdownMedian, D.maxDrawdownMedian, function (v) { return pct(v, 1, true); })])])]),
       el("p", { class: "qx-small", text: int(B.censored) + " Fälle reichen über das Ende eines delisteten Titels hinaus. Ihr Ausgang (Übernahme, Insolvenz oder Rückzug) ist unbekannt; sie werden nicht gewertet. Vor 2016 fehlen delistete Titel ganz. Aus diesem Vergleich folgt keine höhere Vertrauensstufe." })]);
@@ -157,7 +157,7 @@
         el("div", { class: "q-evidence" }, [
           el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: int(m6.n) }), el("span", { text: "Fälle" }), el("small", { text: "≈ " + int(r.independence ? r.independence.effectiveN : null) + " unabhängig (" + int(r.independence ? r.independence.independentClusters : null) + " Quartale)" })]),
           el("div", { class: "q-ev-tile" }, [el("b", { class: "num " + (m6.baseRate && m6.baseRate.deltaPositiveShare > 0 ? "up" : m6.baseRate && m6.baseRate.deltaPositiveShare < 0 ? "down" : ""), text: m6.baseRate ? pp(m6.baseRate.deltaPositiveShare) : share(m6.positiveShare) }),
-            el("span", { text: "gegenüber Base Rate" }), el("small", { text: share(m6.positiveShare) + " im Plus vs. " + (m6.baseRate ? share(m6.baseRate.matchedPositiveShare) : "–") + " derselben Wochen" + (m6.baseRate && m6.baseRate.ci ? " · 95 %: " + pp(m6.baseRate.ci[0]) + " bis " + pp(m6.baseRate.ci[1]) : "") })]),
+            el("span", { text: "gegenüber dem Markt" }), el("small", { text: share(m6.positiveShare) + " im Plus vs. " + (m6.baseRate ? share(m6.baseRate.matchedPositiveShare) : "–") + " derselben Wochen" + (m6.baseRate && m6.baseRate.ci ? " · 95 %: " + pp(m6.baseRate.ci[0]) + " bis " + pp(m6.baseRate.ci[1]) : "") })]),
           el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: pct(m6.median, 1, true) }), el("span", { text: "Median 6 M." }), el("small", { text: "Markt derselben Woche: Abstand " + pct(m6.vsMarket.medianExcess, 1, true) + " · Mittel " + pct(m6.mean, 1, true) })]),
           el("div", { class: "q-ev-tile" }, [el("b", { class: "num down", text: pct(m6.maxDrawdown.median, 1) }), el("span", { text: "typischer Rückgang" }), el("small", { text: "größter Rückgang im Zeitraum (Median)" })]),
           el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: num(m6.chanceRisk) }), el("span", { text: "Chance / Risiko" }), el("small", { text: "Median größter Anstieg ÷ größter Rückgang" })])]),
@@ -247,7 +247,7 @@
         ["Freigabe", kindCert.ownerApproval && kindCert.ownerApproval.required ? "Die Setup-Methodik verlangt nach bestandenen Gates eine ausdrückliche Owner-Freigabe." : "automatisch"]
       ].map(function (x) { return [el("dt", { text: x[0] }), el("dd", { text: x[1] })]; }))) : null,
       el("p", { class: "qx-small", text: "Einstieg zum Schluss des Folgetags (Vergleich: Schluss des Stichtags); Ausstieg bei Schluss unter der Invalidierung, Schluss an der ersten Zielzone, veröffentlichtem Abstieg oder nach 126 Handelstagen. Kosten LOW/BASE/HIGH. Ergebniszahlen erscheinen erst nach der Zertifizierung." }),
-      kindCert.replay ? el("p", { class: "qx-small", text: "Nachweis der Engine: " + kindCert.replay.parity + " veröffentlichte Setup-Stände wurden aus Kursen bis zum jeweiligen Tag exakt nachgerechnet. Die Rekonstruktion ist kein Ersatz für veröffentlichte Stände und liefert keine Ergebnisse." }) : null
+      kindCert.replay ? el("p", { class: "qx-small", text: "Nachgeprüft: " + kindCert.replay.parity + " veröffentlichte Setup-Stände wurden aus Kursen bis zum jeweiligen Tag exakt nachgerechnet. Die Rekonstruktion ist kein Ersatz für veröffentlichte Stände und liefert keine Ergebnisse." }) : null
     ]));
     return out;
   }
