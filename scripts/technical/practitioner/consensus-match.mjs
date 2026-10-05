@@ -12,8 +12,8 @@
    Keine Erfolgssuche: Titel werden nur auf Instrument-Aliase geprueft, nicht auf Inhalt.
 
    node scripts/technical/practitioner/consensus-match.mjs [--out FILE] */
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
+import { join, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
@@ -53,10 +53,14 @@ export const WINDOWS = { "1D": [5, 10], "1W": [10, 20], "1M": [10, 20], SEALED: 
 export function loadFrames() {
   const reg = JSON.parse(readFileSync(join(PV1, "source-registry.json"), "utf8"));
   const fam = Object.fromEntries((reg.sources || reg).map((s) => [s.sourceId, s.sourceFamily || s.sourceId]));
-  const files = ["ewf", "tiedje", "ewt-gilburt", "tv-cryptoknee", "tv-thefifthwave", "tv-yuchaosng", "hkcm", "phantom-hkcm"];
+  /* alle Rahmen aus frames/ (Nachtrag 5) und consensus/frames/ (Nachtrag 7 b: weitere qualifizierte TradingView-Autoren) */
+  const dirs = [join(PV1, "frames"), join(PV1, "consensus/frames")].filter((d) => existsSync(d));
+  const files = dirs.flatMap((d) => readdirSync(d).filter((x) => x.endsWith(".json")).map((x) => join(d, x)));
   const items = [];
-  for (const f of files) {
-    const j = JSON.parse(readFileSync(join(PV1, "frames", f + ".json"), "utf8"));
+  for (const path of files) {
+    const f = basename(path, ".json");
+    if (!fam[f]) fam[f] = f;   // neue TradingView-Autoren: eigene Familie tv-<autor>
+    const j = JSON.parse(readFileSync(path, "utf8"));
     for (const it of j.items) items.push({ sourceId: f, family: fam[f] || f, url: it[0], date: String(it[1]).slice(0, 10), title: it[2], meta: it[3] || null, access: /hkcm/.test(f) ? "YOUTUBE_BLOCKED" : "PUBLIC" });
   }
   return { items, fam };
@@ -64,7 +68,9 @@ export function loadFrames() {
 export function matchCase(c, items, fam) {
   const [sourceId, sym, date] = c.caseId.split("|"), own = fam[sourceId] || sourceId, crypto = CRYPTO.has(sym);
   const w = WINDOWS[c.sealed ? "SEALED" : c.timeframe] || WINDOWS["1W"];
-  const cands = items.filter((it) => it.family !== own && titleMatches(sym, it.title)).map((it) => Object.assign({}, it, { lag: tradingDaysBetween(date, it.date, crypto) }));
+  /* TradingView: das Symbol steht im Pfad /chart/<SYMBOL>/ — zaehlt wie ein Titel-Alias */
+  const symOf = (u) => { const m = /\/chart\/([^/]+)\//.exec(u || ""); return m ? m[1] : ""; };
+  const cands = items.filter((it) => it.family !== own && (titleMatches(sym, it.title) || titleMatches(sym, symOf(it.url)))).map((it) => Object.assign({}, it, { lag: tradingDaysBetween(date, it.date, crypto) }));
   let used = w[0], hits = cands.filter((x) => Math.abs(x.lag) <= w[0]);
   if (!hits.length) { used = w[1]; hits = cands.filter((x) => Math.abs(x.lag) <= w[1]); }
   /* je Fremdfamilie die zeitlich naechste Fundstelle (bei Gleichstand die fruehere) */
