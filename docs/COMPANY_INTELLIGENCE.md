@@ -32,6 +32,10 @@ The source-grounded parser now recovers explicit legal short-name definitions, p
 
 The incorporated remote conversion milestone preserves exact historical progress: verified domains 2,359 → 2,378; IR 910 → 938; 180-day news 1,168 → 1,416; calls 372 → 413; webcasts 332 → 353; presentations 760 → 785; management content 425 → 450; confirmed earnings 80 → 87. Those before/after numbers come from the two remotely committed measurement snapshots, not a new local recount. The original 15-candidate tail was processed remotely; the current remote checkpoint advertises a separate 20-candidate tail. Original broad IR remains 236/901 classified, and the September archive remains at seven batches. Both require the missing private checkpoint; neither is restarted.
 
+## CI lifecycle correction
+
+The second milestone's Company Intelligence merge-tree workflow failed on the new catalogue-membership test: current main had withdrawn Qwest Corp from supported equity scope after the branch's frozen master was prepared. This was an incorrect assumption in our new test, not a pre-existing main failure. The import implementation already intersects the current authoritative master and withholds absent identities. The corrected test validates every profile's exact CIK/provenance, asserts the complete supported import set, deliberately withdraws an issuer, proves it cannot be imported or exported, and proves its preceding private factual record survives. Twenty-seven targeted profile tests pass. Current-main dry master: 6,073 issuers versus the branch's fixed 6,078; the catalogue's Qwest record is withheld on main. No Company Master data or eligibility rules are changed and no main merge occurs. Subsequent workflow validation is required before merge-ready is asserted.
+
 <!-- PROFILE-CONTINUATION-MILESTONE-END -->
 
 # Company Intelligence — candidate completion and recovery (in progress)

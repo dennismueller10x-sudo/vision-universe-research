@@ -291,7 +291,7 @@ class ProfileTests(unittest.TestCase):
             self.assertEqual(seed(store, companies, {'schema': CATALOGUE_SCHEMA, 'profiles': {CID: profile}}, NOW), 0)
             store.close()
 
-    def test_shipped_catalogue_has_master_identity_sources_and_no_private_text(self):
+    def test_shipped_catalogue_has_exact_issuer_sources_and_only_master_members_are_imported(self):
         from company_intelligence.model import load_universe
         root = Path(__file__).resolve().parents[3]
         path = root / 'company-intelligence/config/company-profiles.json'
@@ -299,8 +299,28 @@ class ProfileTests(unittest.TestCase):
             self.skipTest('catalogue not yet populated')
         catalogue = json.loads(path.read_text()); companies = load_universe(root)
         for cid, value in catalogue['profiles'].items():
-            self.assertIn(cid, companies)
             self.assertIsNotNone(public_profile(value, cid, '2099-01-01T00:00:00Z'))
             self.assertNotIn('evidence', value['sources'][0])
             self.assertNotIn('employeeCount', value)
             self.assertNotIn('articleBody', value)
+        # The authoritative master can deactivate a listing between branch
+        # validation and PR merge-tree CI. Keep correct historical issuer facts,
+        # but import/export only identities still supported by that checkout.
+        from company_intelligence.profile_catalogue import seed
+        with tempfile.TemporaryDirectory() as temp:
+            store = Store(Path(temp) / 'state.sqlite')
+            expected = set(catalogue['profiles']) & set(companies)
+            self.assertEqual(seed(store, companies, catalogue, '2099-01-01T00:00:00Z'), len(expected))
+            actual = {row[0].removeprefix('companyProfile:') for row in store.db.execute("SELECT key FROM state WHERE key LIKE 'companyProfile:%'")}
+            self.assertEqual(actual, expected)
+            # Also exercise a deliberate master withdrawal in every environment.
+            withdrawn = next(iter(catalogue['profiles']))
+            filtered = {k: v for k, v in companies.items() if k != withdrawn}
+            other = Store(Path(temp) / 'filtered.sqlite')
+            seed(other, filtered, catalogue, '2099-01-01T00:00:00Z')
+            self.assertIsNone(other.state('companyProfile:' + withdrawn))
+            exported = store.export(filtered, Path(temp) / 'export', '2099-01-01T00:00:00Z')
+            self.assertFalse((Path(temp) / 'export' / 'snapshots' / exported['generation'] / (withdrawn + '.json')).exists())
+            if withdrawn in companies:
+                self.assertIsNotNone(store.state('companyProfile:' + withdrawn))
+            other.close(); store.close()
