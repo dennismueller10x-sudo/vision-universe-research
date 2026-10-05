@@ -178,3 +178,61 @@ class ProductUniverseTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ShareCountConceptTest(unittest.TestCase):
+    """market-cap-1.0.0: a share count is OUTSTANDING shares or nothing.
+
+    Until mapping 1.5.0 `CommonStockSharesIssued` (issued including treasury
+    stock) was a priority-30 fallback. JPMorgan reports outstanding shares on
+    the cover page of some filings and only issued shares in the balance sheet
+    of others; the series alternated between 2.7 and 4.1 billion and the latest
+    value - the one a market capitalization uses - was the issued count."""
+
+    OUTSTANDING, ISSUED = 900.0, 1400.0
+
+    @classmethod
+    def build(cls, registry):
+        fy_ends = build_year_ends(date(2013, 12, 31), 13)
+        builder, _ = standard_company(2000000099, fy_ends, lambda year: 1000.0 * (year - 2010))
+        assets = builder._units["us-gaap"]["Assets"]["units"]["USD"]
+        ordered = sorted(assets, key=lambda e: e["end"])
+        newest = ordered[-1]["end"]
+        for entry in ordered:
+            keep = {k: entry[k] for k in ("accn", "form", "filed", "fy", "fp")}
+            # Issued is reported for every balance sheet, outstanding for all but the newest.
+            builder.add("us-gaap", "CommonStockSharesIssued", "shares", cls.ISSUED, entry["end"], None, **keep)
+            if entry["end"] != newest:
+                builder.add("us-gaap", "CommonStockSharesOutstanding", "shares", cls.OUTSTANDING, entry["end"], None, **keep)
+        payload = builder.company_facts("SYNTHETIC TREASURY ISSUER")
+        return consumer.build_consumer_bundle(2000000099, payload, registry, as_of="2026-09-14",
+                                              tickers=["TRSY"], security_ids=["ref_TRSY"], name="Synthetic Treasury")
+
+    def test_issued_shares_never_stand_in_for_outstanding(self):
+        bundle = self.build(MetricRegistry.load())
+        values = [R(r)["v"] for kind in ("annual", "quarterly") for r in bundle[kind].get("shares_outstanding", [])]
+        self.assertTrue(values, "outstanding shares were reported and must be exported")
+        self.assertNotIn(self.ISSUED, values, "issued shares (incl. treasury) leaked into shares_outstanding")
+        ttm = bundle["ttm"].get("shares_outstanding")
+        self.assertIsNotNone(ttm, "the latest share count is what a market capitalization uses")
+        if ttm is not None:
+            self.assertEqual(ttm["v"], self.OUTSTANDING)
+            self.assertEqual(ttm.get("concept"), "us-gaap:CommonStockSharesOutstanding")
+        self.assertEqual(bundle["conceptsUsed"]["shares_outstanding"], ["us-gaap:CommonStockSharesOutstanding"])
+
+    def test_the_old_fallback_would_have_mixed_the_series(self):
+        # Gegenprobe: with the priority-30 fallback restored, the newest period
+        # takes the issued count - the test above would fail on that registry.
+        from quant.sec.registry import DEFAULT_REGISTRY_PATH
+        payload = json.loads(DEFAULT_REGISTRY_PATH.read_text(encoding="utf-8"))
+        payload["metrics"]["shares_outstanding"]["concepts"].append(
+            {"taxonomy": "us-gaap", "concept": "CommonStockSharesIssued", "priority": 30})
+        bundle = self.build(MetricRegistry(payload))
+        values = [R(r)["v"] for kind in ("annual", "quarterly") for r in bundle[kind].get("shares_outstanding", [])]
+        self.assertIn(self.ISSUED, values)
+        self.assertIn("us-gaap:CommonStockSharesIssued", bundle["conceptsUsed"]["shares_outstanding"])
+
+    def test_registry_declares_why_issued_is_excluded(self):
+        definition = MetricRegistry.load().get("shares_outstanding")
+        concepts = {f"{c.taxonomy}:{c.concept}" for c in definition.concepts}
+        self.assertEqual(concepts, {"dei:EntityCommonStockSharesOutstanding", "us-gaap:CommonStockSharesOutstanding"})

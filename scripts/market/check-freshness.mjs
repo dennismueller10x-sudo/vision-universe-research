@@ -44,6 +44,7 @@ const OUT = join(root, "quant", "data", "market", "freshness", "health.json");
 
 const TS = require(join(root, "quant", "engines", "realtime", "trading-session.js"));
 const Freshness = require(join(root, "quant", "engines", "realtime", "freshness.js"));
+const Identity = require(join(DEFAULT_ROOT, "core", "identity.js"));
 const CAL = JSON.parse(readFileSync(join(root, "quant", "config", "market-calendar.json"), "utf8"));
 const PREVIEW = JSON.parse(readFileSync(join(root, "quant", "config", "development-preview.json"), "utf8"));
 const INTRADAY = PREVIEW.intraday || {};
@@ -143,7 +144,7 @@ try {
     const idxSeries = SITE ? null : JSON.parse(readFileSync(join(root, "quant", "data", "market", "discover-series", "index.json"), "utf8"));
     const befunde = [];
     for (const sym of symbole) {
-      const id = "ref_" + sym.replace(/-/g, "_");
+      const id = Identity.securityIdForTicker(sym);
       let reihe;
       try { reihe = await lade("/quant/data/market/discover-series/" + id + ".json"); } catch (e) { befunde.push(befund(null, "daily", { symbol: sym })); continue; }
       befunde.push(befund({ symbol: sym, securityId: reihe.securityId, to: reihe.to, asOf: reihe.asOf, source: reihe.provider || reihe.source }, "daily"));

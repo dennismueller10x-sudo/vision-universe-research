@@ -152,25 +152,28 @@ jobs:
 
       - name: Query Portfolio — wer bekommt heute einen Aufruf?
         if: steps.quelle.outputs.aktiv == 'ja'
+        env:
+          IN_SEARCHES: ${{ inputs.searches }}
         run: |
           set -euo pipefail
           ARGS=""
-          if [ -n "${{ inputs.searches }}" ]; then
-            ARGS="--searches ${{ inputs.searches }}"
+          if [ -n "$IN_SEARCHES" ]; then
+            ARGS="--searches ${IN_SEARCHES}"
           fi
           node scripts/social/discover-creators.mjs $ARGS | tee tmp-plan.txt
 
       - name: Suchen und Watch Universe fortschreiben
         if: steps.key.outputs.vorhanden == 'ja'
         env:
+          IN_SEARCHES: ${{ inputs.searches }}
           # Der Schluessel kommt als Variable herein; das Skript setzt ihn
           # in die Kopfzeile X-goog-api-key und nie in eine Adresse.
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: |
           set -euo pipefail
           ARGS=""
-          if [ -n "${{ inputs.searches }}" ]; then
-            ARGS="--searches ${{ inputs.searches }}"
+          if [ -n "$IN_SEARCHES" ]; then
+            ARGS="--searches ${IN_SEARCHES}"
           fi
           node scripts/social/discover-creators.mjs $ARGS --discover
 

@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Stand der Messung | 2026-10-04T05:10:58.000Z |
+| Stand der Messung | 2026-10-04T06:44:03.000Z |
 | Bestand | `CANONICAL_HISTORY` |
 | Studienlogik | `1.0.0` · Reihen `vu-return-series-1.0.0` · Vergleich `vu-return-basis-comparison-1.0.0` |
 | Entscheidung | **PENDING_METHOD_DECISION** |
@@ -95,8 +95,8 @@ Diese Frage stand im Return-Semantics-Vertrag als `UNKNOWN_UNTIL_MEASURED`. Sie 
 | | |
 |---|---|
 | Artefakt | `quant/data/product/factor-evidence-v1` |
-| Einträge | 6.289 |
-| Preisbasis | `close` 6.289 |
+| Einträge | 6.601 |
+| Preisbasis | `close` 6.601 |
 | gemessene Quant-V2-Momentumbasis | **MIXED_OR_UNCONFIRMED** |
 
 **Befund: Methodiktext und Rechnung sagen nicht dasselbe.**
@@ -194,20 +194,20 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 
 | Sektor | Titel | Δ Rendite (Median) | Δ Rang (Median) | Δ Perzentil (Median) | Δ Perzentil (P95) |
 |---|---:|---:|---:|---:|---:|
-| REITs | 207 | 5,44 % | -106 | 1,80 | 12,39 |
-| Utilities | 153 | 3,15 % | 0 | 0,00 | 5,24 |
-| (unclassified) | 1.091 | 0,81 % | 0 | 0,00 | 8,34 |
-| Energy | 149 | 2,45 % | 1 | -0,02 | 6,11 |
-| Financials | 904 | 1,90 % | 4 | -0,06 | 5,67 |
-| Consumer Staples | 109 | 1,92 % | 10 | -0,17 | 3,84 |
-| Real Estate | 67 | 0,00 % | 13 | -0,22 | 9,59 |
-| Communication | 123 | 0,00 % | 14 | -0,24 | 5,57 |
-| Industrials | 426 | 0,24 % | 20 | -0,33 | 4,91 |
-| (other) | 462 | 0,00 % | 21 | -0,36 | 4,31 |
-| Health Care | 826 | 0,00 % | 24 | -0,41 | 4,02 |
-| Materials | 293 | 0,00 % | 25 | -0,42 | 4,14 |
-| Technology | 682 | 0,00 % | 26 | -0,43 | 3,95 |
-| Consumer Discretionary | 402 | 0,00 % | 27 | -0,45 | 4,67 |
+| REITs | 206 | 5,03 % | -99 | 1,67 | 12,40 |
+| (unclassified) | 794 | 4,75 % | -94 | 1,60 | 9,24 |
+| Energy | 149 | 2,35 % | 1 | -0,02 | 6,11 |
+| Utilities | 156 | 3,00 % | 1 | -0,02 | 5,18 |
+| Financials | 924 | 1,73 % | 4 | -0,07 | 5,67 |
+| Consumer Staples | 117 | 0,95 % | 7 | -0,12 | 3,78 |
+| Real Estate | 69 | 0,00 % | 12 | -0,20 | 9,56 |
+| Communication | 134 | 0,00 % | 15 | -0,25 | 5,14 |
+| Industrials | 450 | 0,00 % | 17 | -0,29 | 4,86 |
+| (other) | 501 | 0,00 % | 19 | -0,32 | 4,29 |
+| Health Care | 933 | 0,00 % | 20 | -0,34 | 3,88 |
+| Technology | 729 | 0,00 % | 22 | -0,37 | 3,91 |
+| Materials | 300 | 0,00 % | 22 | -0,37 | 4,13 |
+| Consumer Discretionary | 432 | 0,00 % | 25 | -0,42 | 4,44 |
 
 > Einteilung `AUDIT_LOCAL_SIC_RANGES`. Gilt nur fuer diese Studie und ist keine Produkttaxonomie. Die Bereiche stehen hier, damit jede Zuordnung nachrechenbar ist. Die SIC-Bereiche: Energy 1200–1399/2900–2999/4600–4619 · Utilities 4900–4991 · REITs 6798 · Financials 6000–6499/6700–6797/6799 · Real Estate 6500–6599 · Health Care 2833–2836/3826/3841–3851/8000–8099 · Technology 3570–3579/3600–3699/7370–7379 · Communication 2700–2799/4800–4899/7800–7841 · Materials 1000–1099/1400–1499/2600–2699/2800–2824/2840–2899/3200–3399 · Consumer Staples 2000–2199/2825–2832/5400–5499/5912 · Consumer Discretionary 2200–2399/3700–3799/5200–5399/5500–5911/5913–5999/7000–7099/7900–7999 · Industrials 1500–1799/3400–3569/3580–3599/3710–3728/4000–4599/4620–4799/8700–8748.
 
@@ -215,16 +215,16 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 
 | Sektor | Titel | Δ Rendite (Median) | Δ Rang (Median) | Δ Perzentil (Median) | Δ Perzentil (P95) |
 |---|---:|---:|---:|---:|---:|
-| H · Finance, Insurance, And Real Estate | 1.178 | 2,52 % | 0 | 0,00 | 6,78 |
-| (unclassified) | 1.091 | 0,81 % | 0 | 0,00 | 8,34 |
-| E · Transportation, Communications, Electric, Gas, And Sanitary Services | 395 | 2,12 % | 4 | -0,07 | 4,88 |
-| F · Wholesale Trade | 91 | 0,39 % | 19 | -0,32 | 4,06 |
-| B · Mining | 240 | 0,00 % | 20 | -0,34 | 5,03 |
-| D · Manufacturing | 1.785 | 0,00 % | 22 | -0,37 | 4,02 |
-| A · Agriculture, Forestry, And Fishing | 18 | 0,00 % | 24 | -0,40 | 4,19 |
-| I · Services | 826 | 0,00 % | 25 | -0,42 | 4,53 |
-| G · Retail Trade | 209 | 0,00 % | 26 | -0,44 | 4,44 |
-| C · Construction | 61 | 0,00 % | 39 | -0,66 | 4,96 |
+| (unclassified) | 794 | 4,75 % | -94 | 1,60 | 9,24 |
+| H · Finance, Insurance, And Real Estate | 1.199 | 2,34 % | 0 | 0,00 | 6,45 |
+| E · Transportation, Communications, Electric, Gas, And Sanitary Services | 415 | 1,63 % | 4 | -0,07 | 4,86 |
+| F · Wholesale Trade | 100 | 0,00 % | 19 | -0,31 | 3,84 |
+| D · Manufacturing | 1.940 | 0,00 % | 19 | -0,32 | 3,95 |
+| I · Services | 895 | 0,00 % | 20 | -0,34 | 4,47 |
+| B · Mining | 244 | 0,00 % | 20 | -0,34 | 5,01 |
+| A · Agriculture, Forestry, And Fishing | 20 | 0,00 % | 23 | -0,38 | 4,18 |
+| G · Retail Trade | 223 | 0,00 % | 25 | -0,42 | 4,41 |
+| C · Construction | 64 | 0,00 % | 28 | -0,47 | 4,94 |
 
 Sektoren mit weniger als zehn Titeln sind ausgelassen: aus vier Titeln einen Sektorbefund zu machen wäre eine Zahl ohne Aussage.
 
@@ -237,18 +237,18 @@ Die Momentumnote wird auf beiden Basen aus denselben sechs Komponenten und dense
 | Grundlage | `EVIDENCE_AT_OR_BEFORE_CUTOFF` |
 | veröffentlichtes Evidence vom | 2026-10-02 (0 Tage nach dem Stichtag) |
 | ausgeschlossen, weil Fundamentaldaten erst nach dem Stichtag öffentlich | 0 |
-| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9457 |
-| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9566 |
-| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.447 / 5.894 / 5.894 |
+| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9422 |
+| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9526 |
+| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.750 / 5.894 / 5.894 |
 
 **Die Momentumnote selbst, Kurs gegen gesamt:** ρ 0,9923 · Median 59 Ränge · P95 414,3 · Maximum 3.359 · 632 Titel bewegen sich um mindestens 5 Perzentilpunkte, 122 um mindestens 10.
 
 | Strategie | Treffer auf Kursrendite | auf Gesamtrendite | fallen heraus | kommen hinzu | Wechselanteil |
 |---|---:|---:|---:|---:|---:|
-| Momentum Leader (`momentum-leader`) | 328 | 319 | 16 | 7 | 7,0 % |
-| Quality Momentum (`quality-momentum`) | 40 | 38 | 3 | 1 | 10,0 % |
-| Future Leader (`future-leader`) | 28 | 26 | 3 | 1 | 14,3 % |
-| Value Momentum (`value-momentum`) | 180 | 175 | 7 | 2 | 5,0 % |
+| Momentum Leader (`momentum-leader`) | 347 | 340 | 16 | 9 | 7,2 % |
+| Quality Momentum (`quality-momentum`) | 41 | 39 | 3 | 1 | 9,8 % |
+| Future Leader (`future-leader`) | 29 | 27 | 3 | 1 | 13,8 % |
+| Value Momentum (`value-momentum`) | 189 | 184 | 7 | 2 | 4,8 % |
 
 Keine Produktionsstrategie wurde dabei überschrieben. Die Simulation läuft neben der Produktion.
 

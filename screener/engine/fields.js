@@ -188,7 +188,7 @@
     n('priceVsEma21', { col: 'distEma21', group: 'technical', unit: 'pct', label: 'Kurs vs. EMA21', en: 'Price vs EMA', source: 'technical', domain: [-0.3, 0.3, 0.005], tech: 'ema', period: 21, pro: true, formula: 'distEma21',
       desc: 'Abstand des Kurses zum exponentiellen 21-Tage-Durchschnitt.', keywords: ['ema', 'ema21', 'exponential'], presets: [['Über EMA21', 'gt', 0]] }),
     n('distance52wHigh', { col: 'dist52wH', group: 'technical', unit: 'pct', label: 'Abstand zum 52W-Hoch', short: '52W-Hoch', en: 'Distance from 52W High', source: 'technical', domain: [-0.8, 0, 0.005], tech: 'high', better: 1,
-      desc: 'Wie weit der Kurs unter dem höchsten Schlusskurs der letzten 52 Wochen liegt.', keywords: ['52w', '52 wochen', 'hoch', 'high', 'jahreshoch'], presets: [['Näher als 5 %', 'gt', -0.05], ['Näher als 10 %', 'gt', -0.1], ['Mehr als 30 % darunter', 'lt', -0.3]] }),
+      desc: 'Wie weit der Kurs unter dem höchsten Tageskurs (Tageshoch) der letzten 52 Wochen liegt.', keywords: ['52w', '52 wochen', 'hoch', 'high', 'jahreshoch'], presets: [['Näher als 5 %', 'gt', -0.05], ['Näher als 10 %', 'gt', -0.1], ['Mehr als 30 % darunter', 'lt', -0.3]] }),
     n('distance52wLow', { col: 'dist52wL', group: 'technical', unit: 'pct', label: 'Abstand zum 52W-Tief', short: '52W-Tief', en: 'Distance from 52W Low', source: 'technical', domain: [0, 3, 0.01], tech: 'low',
       desc: 'Wie weit der Kurs über dem tiefsten Schlusskurs der letzten 52 Wochen liegt.', keywords: ['52w', 'tief', 'low', 'jahrestief'], presets: [['Näher als 10 %', 'lt', 0.1]] }),
     n('newHigh52w', { col: 'newHigh', group: 'technical', kind: 'bool', label: 'Neues 52W-Hoch', en: 'New 52W High', source: 'technical',

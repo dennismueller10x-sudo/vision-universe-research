@@ -392,7 +392,7 @@
         if (!wanted[fam.id] || wanted[fam.id].indexOf(m.metricId) < 0) return;
         /* Bewusst zurueckgehalten ist nicht dasselbe wie fehlend: der Wert
            steht als "bewusst nicht genannt" da, der Grund darunter. */
-        if (m.reason === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING" || m.reason === "DISPLAY_NOT_PERMITTED") {
+        if (m.reason === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING" || m.reason === "SHARE_COUNT_NOT_OUTSTANDING" || m.reason === "DISPLAY_NOT_PERMITTED") {
           withheld[m.reason] = true; stats.push(X.stat(m.label, "Bewusst nicht genannt")); return;
         }
         if (m.state !== "AVAILABLE" || typeof m.value !== "number") return;
@@ -515,9 +515,19 @@
     if (card && card.next && card.next.open && card.next.open.length) {
       out.push(el("p", { class: "q-now-line" }, [el("b", { text: "Nächster Schritt: " }), el("span", { text: "Für „" + lifecycleLabel(card.next.state) + "“ " + (card.next.open.length === 1 ? "fehlt noch eine von " : "fehlen noch " + card.next.open.length + " von ") + card.next.total + " Bedingungen." })]));
     }
+    /* Historisch: zuerst das marktweit GETESTETE Signal mit der Quote des
+       Markts daneben, dann die nur BEOBACHTETE Vergangenheit dieser Aktie -
+       getrennt beschriftet, nie eine nackte Trefferquote ohne Stufe. */
+    var E = global.QXEvidence;
+    var tested = card ? (card.events || []).filter(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; })[0] : null;
+    if (tested && E) {
+      var b = tested.backtest, tl = (Radar && Radar.TYPE[tested.eventType] || {}).label || tested.eventType;
+      out.push(el("p", { class: "q-now-line" }, [el("b", { text: "Historisch getestet („" + tl + "“, ganzer Markt): " }),
+        el("span", { text: E.share1(b.positiveShare) + " der Fälle lagen nach 6 Monaten höher – der Markt " + E.share1(b.basePositiveShare) + " (" + E.pp(b.deltaPositiveShare) + "). " + E.edgeSentence(b) })]));
+    }
     if (card && card.replay && card.replay.sufficient) {
       var rp = card.replay;
-      out.push(el("p", { class: "q-now-line" }, [el("b", { text: "Früher in derselben Kurslage: " }), el("span", { text: Math.round(rp.positiveShare * 100) + " % im Plus, Median " + VM.pct(rp.medianReturn, 1, true) + " nach 6 Monaten (" + rp.completed + " Fälle)." })]));
+      out.push(el("p", { class: "q-now-line" }, [el("b", { text: "Bei dieser Aktie beobachtet: " }), el("span", { text: "in derselben Kurslage früher " + Math.round(rp.positiveShare * 100) + " % im Plus, Median " + VM.pct(rp.medianReturn, 1, true) + " nach 6 Monaten (" + rp.completed + " Fälle, ohne Marktvergleich)." })]));
     }
     return out.length ? out : [el("p", { class: "qx-small", text: "Für diese Aktie liegt kein Radar-Stand vor." })];
   }
@@ -638,7 +648,10 @@
     /* ---------------------------------------------------------- Chart */
     var chart = !priceAllowed ? { node: X.section("Kursverlauf", null, [X.notice("Kursverlauf nicht freigegeben", VM.reasonText("DISPLAY_NOT_PERMITTED"))], null, null, "kurs", "dx-chapter--chart"), dispose: function () {} }
       : global.VUQuantChart.create({ ticker: ticker, eod: eod, currency: "USD",
-      adjusted: s.chart && s.chart.adjustmentStatus === "splitAdjusted", splitEvents: s.chart && s.chart.splitEvents,
+      /* Zwei Schreibweisen derselben Aussage: "splitAdjusted" (Golden-Rekonstruktion)
+         und "SPLIT_ADJUSTED" (veroeffentlichte Reihe, alle anderen Titel). Nur die
+         erste zu pruefen hiess: "nicht splitbereinigt" unter fast jedem Chart. */
+      adjusted: !!(s.chart && /^(splitAdjusted|SPLIT_ADJUSTED)$/.test(s.chart.adjustmentStatus || "")), splitEvents: s.chart && s.chart.splitEvents,
       longPath: s.masterMemberId && /^[A-Za-z0-9_-]+$/.test(s.masterMemberId) ? "/quant/data/market/discover-series-long/" + s.masterMemberId + ".json" : null,
       loadJSON: global.QuantShell.loadJSON,
       realtime: function () { return api.getRealtimeCapability(ticker); },
