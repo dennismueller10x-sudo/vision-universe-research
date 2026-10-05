@@ -8,6 +8,7 @@ from xml.etree import ElementTree as ET
 from .feeds import parse_date
 from .model import canonical_url, clean, domain
 from .transport import SourceError
+from .news_quality import promotional_solicitation
 
 URL = 'https://globenewswire.com/NewsRoom/GoogleSitemap'
 NS = {'s': 'http://www.sitemaps.org/schemas/sitemap/0.9',
@@ -42,7 +43,7 @@ def parse(body, url):
                     'publisher': publisher, 'evidenceText': '',
                     'distributionMetadata': {'stocks': stocks},
                     'issuerKeywords':clean(node.findtext('n:keywords',namespaces=NS),1000),
-                    'promotionalSolicitation': bool(re.search(r'law firm|law offices|law office|lead plaintiff|secure counsel|contact.{0,80}(?:law|llp)|opportunity to lead.{0,100}lawsuit|(?:investors?|shareholders?).{0,100}(?:urged|encouraged).{0,80}(?:contact|act)|(?:investors?|shareholders?).{0,80}deadline|class action.{0,100}deadline|\b(?:ROSEN|Bronstein|Kaplan Fox|Robbins LLP|Hagens Berman|Grabar Law)\b', headline, re.I)),
+                    'promotionalSolicitation': promotional_solicitation(headline),
                     'metadataEvidence': 'ROBOTS_ADVERTISED_NEWS_SITEMAP_EXPLICIT_TITLE_PUBLICATION_DATE'})
     if not out:
         raise SourceError('EMPTY_OR_NON_NEWS_SITEMAP')

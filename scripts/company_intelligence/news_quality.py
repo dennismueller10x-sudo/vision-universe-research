@@ -7,6 +7,17 @@ import re
 from .model import Resolver,normalize,SUFFIX,AMBIGUOUS,AMBIGUOUS_ALIASES
 
 
+def promotional_solicitation(headline):
+    """Identify legal advertising templates, preserving factual legal news."""
+    if not isinstance(headline, str):
+        return False
+    existing = r'law firm|law offices|law office|lead plaintiff|secure counsel|contact.{0,80}(?:law|llp)|opportunity to lead.{0,100}lawsuit|(?:investors?|shareholders?).{0,100}(?:urged|encouraged).{0,80}(?:contact|act)|(?:investors?|shareholders?).{0,80}deadline|class action.{0,100}deadline|\b(?:ROSEN|Bronstein|Kaplan Fox|Robbins LLP|Hagens Berman|Grabar Law)\b'
+    alert = r'\b(?:investor|shareholder)s?\s+alert\b.{0,260}\b(?:LLP|law firm|law offices?|class action|secure counsel|(?:Julie\s*(?:&|and)\s*Holleman|Johnson\s+Fistel)\s+investigates?)\b'
+    recruitment = r'\bopportunity\b.{0,80}\b(?:investors?|shareholders?)\b.{0,40}\blead\b.{0,80}\b(?:class action|lawsuit)\b'
+    return bool(re.search(existing, headline, re.I) or re.search(alert, headline, re.I)
+                or re.search(recruitment, headline, re.I))
+
+
 def owned_actor(title,company):
     """Explicit authoritative name on an already verified corporate CMS feed.
 

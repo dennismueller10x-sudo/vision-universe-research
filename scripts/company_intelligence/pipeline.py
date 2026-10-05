@@ -202,7 +202,7 @@ class Pipeline:
                     entries = wordpress_entries
                 else:
                     entries = parse_gdelt(response['body']) if source['type'] == 'GDELT' else news_index(response['body'], source, response['finalUrl']) if source.get('format') == 'JSONLD_NEWS' else parse_feed(response['body'], response['finalUrl'])
-            from .news_quality import wordpress_feed,eligible
+            from .news_quality import wordpress_feed,eligible,promotional_solicitation
             wordpress=(wordpress_feed(response['body']) or source.get('provider')=='WORDPRESS' or source.get('cmsNewsPolicy')=='WORDPRESS_EXPLICIT_ISSUER_ACTOR') if source['type']=='IR_FEED' else False
             if wordpress:source['cmsNewsPolicy']='WORDPRESS_EXPLICIT_ISSUER_ACTOR'
             for entry in entries:
@@ -210,7 +210,7 @@ class Pipeline:
                     rejected+=1
                     self.store.audit(self.now,sid,'CMS_NON_ANNOUNCEMENT_REJECTED',headline=entry.get('headline'),url=entry.get('url'))
                     continue
-                if entry.get('promotionalSolicitation'):
+                if entry.get('promotionalSolicitation') or (not source.get('verified') and promotional_solicitation(entry.get('headline'))):
                     rejected += 1
                     self.run['promotionalRejected'] += 1
                     self.store.audit(self.now, sid, 'PROMOTIONAL_SOLICITATION_REJECTED', headline=entry.get('headline'), url=entry.get('url'))
