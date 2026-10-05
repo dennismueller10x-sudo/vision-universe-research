@@ -28,8 +28,17 @@ def attachment(value):
     return url
 
 
+def placeholder_reference(title, url):
+    """Public issuer feeds can retain explicitly labelled vendor template assets."""
+    if re.match(r'^test\s+item\s*(?::|$)', clean(title, 200), re.I):
+        return True
+    path = unquote(urlsplit(url).path)
+    return bool(re.search(r'(?:^|/)(?:placeholders?(?:/|$)|placeholder(?:[-_ ]presentation)?\.(?:pdf|pptx?)$)', path, re.I))
+
+
 def document_kind(title, url):
     """A presentation index may also contain explicitly labelled other materials."""
+    if placeholder_reference(title, url):return None
     if re.search(r'prepared remarks|earnings script',title,re.I):return 'PREPARED_REMARKS'
     if re.search(r'transcript',title,re.I):return 'COMPANY_TRANSCRIPT'
     if re.search(r'shareholder letter|letter to shareholders',title,re.I):return 'SHAREHOLDER_LETTER'
@@ -53,6 +62,7 @@ def correct_documents(documents):
     """Retain old references while retiring known index classification mistakes."""
     corrected=[]
     for doc in documents:
+        if placeholder_reference(doc.get('label',''),doc.get('url','')):continue
         if doc.get('type')=='WEBCAST' and re.search(r'\.pdf(?:$|[?#])',doc.get('url',''),re.I):continue
         if doc.get('type')=='PRESENTATION':
             kind=document_kind(doc.get('label',''),doc['url'])
@@ -80,7 +90,7 @@ def parse(body,source,now):
         if not isinstance(title,str) or not clean(title,200):continue
         for field,kind,suffix in [('DocumentPath','PRESENTATION',''),('AudioFile','WEBCAST',' (audio reference)'),('VideoFile','WEBCAST',' (video reference)')]:
             url=attachment(row.get(field))
-            if not url:continue
+            if not url or placeholder_reference(title,url):continue
             if field=='DocumentPath':kind=document_kind(title,url)
             elif re.search(r'\.pdf(?:$|[?#])',url,re.I):continue
             if kind is None:continue

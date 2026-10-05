@@ -16,6 +16,37 @@ def body(rows):return json.dumps({'GetPresentationListResult':rows}).encode()
 
 
 class Q4PresentationTests(unittest.TestCase):
+ def test_explicit_vendor_test_items_and_placeholder_assets_are_not_intelligence(self):
+  rows=[{'Title':'Test Item: Presents at JP Morgan','DocumentPath':'https://cdn.example/Placeholder-Presentation.pdf','AudioFile':'https://cdn.example/demo.mp3','VideoFile':'https://cdn.example/demo.mp4'},
+        {'Title':'Test Item: Presents at an Important Event','DocumentPath':'https://cdn.example/test.pdf'},
+        {'Title':'Investor Presentation','DocumentPath':'https://ir.apple.com/placeholders/pdf-landscape.pdf'},
+        {'Title':'Prepared Remarks','DocumentPath':'https://cdn.example/Placeholder.pdf'},
+        {'Title':'Clinical Testing Investor Presentation','DocumentPath':'https://cdn.example/testing-results.pdf'},
+        {'Title':'Placeholder Strategy Investor Presentation','DocumentPath':'https://cdn.example/strategy.pdf'},
+        {'Title':'Test Item Dynamics Investor Presentation','DocumentPath':'https://cdn.example/deck.pdf'}]
+  docs=parse(body(rows),source(),NOW)
+  self.assertEqual([d['url'] for d in docs],['https://cdn.example/testing-results.pdf','https://cdn.example/strategy.pdf','https://cdn.example/deck.pdf'])
+  self.assertEqual({d['type'] for d in docs},{'PRESENTATION'})
+
+ def test_later_poll_retires_template_documents_from_actual_consumer_payload(self):
+  import tempfile
+  from pathlib import Path
+  from company_intelligence.pipeline import Pipeline
+  from company_intelligence.store import Store
+  from company_intelligence.model import stable_id
+  from company_intelligence.product import project
+  with tempfile.TemporaryDirectory() as tmp:
+   c=company();s=Store(Path(tmp)/'state.sqlite');src={**source(),'metadata':{'originatingIRHomepage':PAGE}}
+   docs=[{'companyId':c['companyId'],'documentId':stable_id(c['companyId'],name),'type':kind,'label':label,'url':'https://cdn.example/'+name,'sourceId':src['sourceId']} for name,kind,label in [
+    ('test.pdf','PRESENTATION','Test Item: Quarterly Earnings Presentation'),('demo.mp3','WEBCAST','Test Item: Presents at JP Morgan (audio reference)'),
+    ('Placeholder-Presentation.pdf','PRESENTATION','Investor Presentation'),('deck.pdf','PRESENTATION','Clinical Testing Investor Presentation')]]
+   s.set_state('ir:'+c['companyId'],{'lastSuccess':NOW,'configurations':[{'companyId':c['companyId'],'irHomepage':PAGE,'pageRole':'IR','materialsSourceId':src['sourceId'],'documents':docs}]})
+   class HTTP:
+    def get(self,*args,**kwargs):return {'body':body([{'Title':'Test Item: Presents at JP Morgan','DocumentPath':'https://cdn.example/test.pdf','AudioFile':'https://cdn.example/demo.mp3'}]),'finalUrl':src['url']}
+   Pipeline(tmp,{c['companyId']:c},s,HTTP(),NOW).ingest_source(src)
+   public=project(s.company_payload(c,NOW));self.assertEqual([d['url'] for d in public['materials']],['https://cdn.example/deck.pdf']);self.assertEqual(public['calls'],[])
+   self.assertEqual(s.sources()[0]['lastItemCount'],1);self.assertEqual(s.state('ir:'+c['companyId'])['lastSuccess'],NOW);s.close()
+
  def test_presentation_index_cannot_authorize_a_news_story_as_a_deck(self):
   rows=[{'Title':'2026 Clinical Presentations','DocumentPath':'https://ir.apple.com/news-releases/news-release-details/scientific-2026-presentations'},
         {'Title':'Company Announces 2026 Presentations','DocumentPath':'https://ir.apple.com/announcement'},
