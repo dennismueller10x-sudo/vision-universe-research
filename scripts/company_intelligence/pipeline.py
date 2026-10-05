@@ -210,11 +210,6 @@ class Pipeline:
                     rejected+=1
                     self.store.audit(self.now,sid,'CMS_NON_ANNOUNCEMENT_REJECTED',headline=entry.get('headline'),url=entry.get('url'))
                     continue
-                if entry.get('promotionalSolicitation') or (not source.get('verified') and promotional_solicitation(entry.get('headline'))):
-                    rejected += 1
-                    self.run['promotionalRejected'] += 1
-                    self.store.audit(self.now, sid, 'PROMOTIONAL_SOLICITATION_REJECTED', headline=entry.get('headline'), url=entry.get('url'))
-                    continue
                 entry_time = entry.get('publishedAt') or entry.get('updatedAt')
                 if not entry.get('headline') or not entry.get('url') or not entry_time or entry_time > self.now:
                     self.run['invalid'] += 1
@@ -229,6 +224,11 @@ class Pipeline:
                 effective = {**source, 'verified': False} if shared_publisher(entry['url']) else source
                 if source.get('verified') and not any(within_domain(entry['url'], s) for s in source.get('allowedSites', [])):
                     effective = {**source, 'verified': False}
+                if entry.get('promotionalSolicitation') or (not effective.get('verified') and promotional_solicitation(entry.get('headline'))):
+                    rejected += 1
+                    self.run['promotionalRejected'] += 1
+                    self.store.audit(self.now, sid, 'PROMOTIONAL_SOLICITATION_REJECTED', headline=entry.get('headline'), url=entry.get('url'))
+                    continue
                 candidates = set()
                 for stock in (entry.get('distributionMetadata') or {}).get('stocks', [])[:20]:
                     ticker = re.fullmatch(r'(?:Nasdaq|NYSE|NYSE American|AMEX):\s*([A-Z][A-Z0-9.-]{0,14})', stock, re.I)

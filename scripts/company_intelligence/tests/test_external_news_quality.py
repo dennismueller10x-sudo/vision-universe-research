@@ -22,11 +22,12 @@ ADS = (
 
 
 class HTTP:
-    def __init__(self, headline):
+    def __init__(self, headline, target="https://apple.com/story"):
         self.headline = headline
+        self.target = target
 
     def get(self, url, **kwargs):
-        body = f'<rss><channel><item><title>{escape(self.headline)}</title><link>https://apple.com/story</link><pubDate>Thu, 01 Oct 2026 12:00:00 GMT</pubDate><category domain="https://www.globenewswire.com/rss/stock">NASDAQ:AAPL</category></item></channel></rss>'
+        body = f'<rss><channel><item><title>{escape(self.headline)}</title><link>{escape(self.target)}</link><pubDate>Thu, 01 Oct 2026 12:00:00 GMT</pubDate><category domain="https://www.globenewswire.com/rss/stock">NASDAQ:AAPL</category></item></channel></rss>'
         return {'body': body.encode(), 'finalUrl': url}
 
 
@@ -64,6 +65,19 @@ class ExternalNewsQualityTests(unittest.TestCase):
             self.assertEqual(pipeline.run['promotionalRejected'], 1)
             self.assertFalse(store.state('siteCandidates:' + c['companyId']))
             store.close()
+
+    def test_verified_feed_rejects_external_solicitation_using_effective_trust(self):
+        for target in ('https://www.globenewswire.com/news-release/story', 'https://unrelated.example/story'):
+            with self.subTest(target=target), tempfile.TemporaryDirectory() as tmp:
+                c = company(); store = Store(Path(tmp) / 'state.sqlite')
+                source = {'sourceId': 'owned', 'companyId': c['companyId'], 'url': 'https://apple.com/feed', 'type': 'IR_FEED', 'verified': True, 'allowedSites': ['https://apple.com/']}
+                pipeline = Pipeline(tmp, {c['companyId']: c}, store, HTTP('Apple Inc. Investor Alert: Example LLP Investigates Securities Losses', target), NOW)
+                pipeline.ingest_source(source)
+                self.assertEqual(store.db.execute('select count(*) from items').fetchone()[0], 0)
+                self.assertEqual(store.db.execute('select count(*) from events').fetchone()[0], 0)
+                self.assertEqual(pipeline.run['promotionalRejected'], 1)
+                self.assertFalse(store.state('siteCandidates:' + c['companyId']))
+                store.close()
 
     def test_verified_first_party_feed_keeps_direct_issuer_legal_announcement(self):
         with tempfile.TemporaryDirectory() as tmp:

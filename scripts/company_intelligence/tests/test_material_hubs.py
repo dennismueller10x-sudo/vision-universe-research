@@ -55,6 +55,14 @@ class MaterialHubTests(unittest.TestCase):
   self.assertEqual([d['type'] for d in docs],['FINANCIAL_REPORT','FINANCIAL_REPORT','PRESENTATION','PRESENTATION'])
   self.assertTrue(all(d['date'] is None and d['companyId']==c['companyId'] for d in docs))
 
+ def test_shareholder_report_attachment_overrides_generic_view_presentation(self):
+  c=company();src=from_validated_ir(c,config(),NOW)
+  body=b'<a href="/static-files/report">Combined Shareholders Report 2025. Final.pdfView Presentation</a><a href="/static-files/deck">2026 Investor Presentation - Shareholders Report Review</a><a href="/static-files/letter">2026 Shareholder Letter</a>'
+  docs=parse_hub(body,src,c,HUB,NOW)
+  self.assertEqual([d['type'] for d in docs],['FINANCIAL_REPORT','PRESENTATION','SHAREHOLDER_LETTER'])
+  self.assertEqual([d['url'] for d in docs],[HUB.split('/investor')[0]+'/static-files/report',HUB.split('/investor')[0]+'/static-files/deck',HUB.split('/investor')[0]+'/static-files/letter'])
+  self.assertTrue(all(d['date'] is None for d in docs))
+
  def test_compound_transcript_label_replaces_old_type_without_losing_other_materials(self):
   from company_intelligence.model import stable_id
   with tempfile.TemporaryDirectory() as tmp:

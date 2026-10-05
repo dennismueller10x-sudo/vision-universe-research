@@ -163,6 +163,10 @@ def page_documents(company, links, page, now):
                     else None)
         if kind == 'PRESENTATION' and re.search(r'annual report|quarterly report|financial statements|10 [KQ]\b', filename, re.I) and not re.search(r'presentation|slides|deck', filename, re.I):
             kind = 'FINANCIAL_REPORT'
+        # A named shareholder report is a report even when its UUID attachment
+        # button says "View Presentation"; explicit slide/deck titles retain precedence.
+        if kind == 'PRESENTATION' and re.search(r'\bshareholders? report\b', filename+' '+label, re.I) and not re.search(r'\b(?:investor|corporate|earnings) presentation\b|\bslides?\b|\bdeck\b', filename+' '+label, re.I):
+            kind = 'FINANCIAL_REPORT'
         if not kind:
             continue
         if kind == 'PRESENTATION' and presentation_news_link(link['url'], label):
