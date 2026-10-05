@@ -636,3 +636,29 @@ test("die Oberflaeche trennt 'fehlt' von 'bewusst zurueckgehalten'", () => {
     assert.equal(/[A-Z]{3,}_[A-Z_]{3,}/.test(text), false, "interner Code als Ueberschrift: " + text);
   }
 });
+
+/* factor-band-2.0.0: Stufe und Position sind EINE Zaehlung. Traegt das
+   veroeffentlichte Artefakt die Position, muss sie genau die sein, die
+   Produktdienst und Oberflaeche aus dem Screening-Artefakt desselben
+   Stichtags zaehlen - sonst stuenden zwei Positionen fuer einen Titel. */
+test("veroeffentlichte Position = gezaehlte Position aus dem Screening-Artefakt", () => {
+  const dir = join(ROOT, "quant/data/product/factor-evidence-v1");
+  if (!existsSync(join(dir, "screening.json.gz"))) return;
+  const sc = JSON.parse(gunzipSync(readFileSync(join(dir, "screening.json.gz"))));
+  const dist = Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id, i) => [id,
+    Object.values(sc.rows).map((r) => r[i]).filter((v) => typeof v === "number").sort((a, b) => a - b)]));
+  let geprueft = 0;
+  for (const f of readdirSync(dir).filter((n) => n.endsWith(".json.gz") && !/screening|summary/.test(n)).slice(0, 40)) {
+    const shard = JSON.parse(gunzipSync(readFileSync(join(dir, f))));
+    if (!shard.bandSemantics) return;   /* Artefakt vor 2.0.0: der Produktdienst zaehlt selbst */
+    assert.equal(shard.bandSemantics.version, FactorEvidence.BAND_SEMANTICS_VERSION);
+    assert.equal(shard.asOf, sc.asOf, "Shard und Screening aus verschiedenen Laeufen");
+    for (const r of Object.values(shard.securities)) for (const id of FactorEvidence.FACTOR_ORDER) {
+      const x = r.factors[id];
+      if (x.state !== "AVAILABLE") { assert.equal(x.position, undefined, "Position ohne Wert"); continue; }
+      assert.equal(x.position, FactorEvidence.positionOf(dist[id], x.score), r.ticker + " " + id);
+      geprueft++;
+    }
+  }
+  assert.ok(geprueft > 500, "zu wenige Werte geprueft: " + geprueft);
+});
