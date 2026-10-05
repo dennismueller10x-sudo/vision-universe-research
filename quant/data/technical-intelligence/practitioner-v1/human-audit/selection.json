@@ -1,0 +1,453 @@
+{
+ "format": "vu-practitioner-human-audit-selection-1",
+ "label": "PRACTITIONER REFERENCE, NOT OBJECTIVE GROUND TRUTH",
+ "audit": "Extraktions-Audit — blind, ohne VU-Ausgaben",
+ "createdFor": "Mission V — menschliches Extraktions-Audit (Stichprobe der geöffneten Fälle)",
+ "dataset": {
+  "version": "PRACTITIONER_REFERENCE_V1",
+  "file": "quant/data/technical-intelligence/practitioner-v1/freeze/PRACTITIONER_REFERENCE_V1.jsonl",
+  "sha256": "7af25c9b5d61f0268f7049103076839e1dd43b3a2d9d24bc942290dd1133f489"
+ },
+ "population": {
+  "openedSplits": [
+   "DEVELOPMENT",
+   "VALIDATION"
+  ],
+  "openedCases": 35,
+  "sealedCases": 43,
+  "sealedLinesNotRead": 56
+ },
+ "rule": {
+  "size": 20,
+  "includeAllHigh": true,
+  "minPerSourceFamily": 2,
+  "minPerTimeframe": 1,
+  "timeframes": [
+   "1D",
+   "1W",
+   "1M"
+  ],
+  "minCorrective": 3,
+  "minMotiveShare": 0.6,
+  "maxBtc": 6,
+  "order": "aufsteigend SHA-256(\"20261005|human-audit|\" + caseId)",
+  "seed": "20261005|human-audit|",
+  "steps": [
+   "1. alle geöffneten Fälle mit extraction.confidence = HIGH (Obergrenzen gelten)",
+   "2. Mindestbelegungen in fester Reihenfolge, je erster zulässiger Fall in Hash-Reihenfolge: je Quellenfamilie ≥ 2, je vorhandenem Zeitrahmen (1D/1W/1M) ≥ 1, CORRECTIVE ≥ 3, MOTIVE ≥ 60 % (je soweit vorhanden)",
+   "3. Auffüllen bis 20 in Hash-Reihenfolge",
+   "zulässig = BTC ≤ 6 und Nicht-MOTIVE ≤ 20 − MOTIVE-Minimum (damit die MOTIVE-Quote erreichbar bleibt)",
+   "geprüft wird die Fassung ORIGINAL_PUBLISHED; spätere Revisionen desselben Falls erscheinen nur als Kontext"
+  ]
+ },
+ "checks": {
+  "size": {
+   "value": 20,
+   "target": 20,
+   "ok": true
+  },
+  "allHigh": {
+   "value": 9,
+   "available": 9
+  },
+  "sourceFamilies": {
+   "ewf": {
+    "value": 13,
+    "min": 2
+   },
+   "tv-cryptoknee": {
+    "value": 3,
+    "min": 2
+   },
+   "tv-thefifthwave": {
+    "value": 2,
+    "min": 2
+   },
+   "tv-yuchaosng": {
+    "value": 2,
+    "min": 2
+   }
+  },
+  "timeframes": {
+   "1D": {
+    "value": 8,
+    "min": 1
+   },
+   "1W": {
+    "value": 12,
+    "min": 1
+   }
+  },
+  "corrective": {
+   "value": 4,
+   "min": 3
+  },
+  "motive": {
+   "value": 16,
+   "min": 12,
+   "share": 0.8
+  },
+  "btc": {
+   "value": 4,
+   "max": 6
+  },
+  "allOk": true
+ },
+ "log": [],
+ "strata": {
+  "opened": {
+   "n": 35,
+   "sourceFamily": {
+    "ewf": 18,
+    "tv-cryptoknee": 7,
+    "tv-thefifthwave": 5,
+    "tv-yuchaosng": 5
+   },
+   "timeframe": {
+    "1D": 15,
+    "1W": 20
+   },
+   "family": {
+    "CORRECTIVE": 8,
+    "MOTIVE": 27
+   },
+   "pattern": {
+    "DOUBLE_ZIGZAG": 1,
+    "FLAT": 1,
+    "IMPULSE": 27,
+    "WXY": 1,
+    "ZIGZAG": 5
+   },
+   "confidence": {
+    "HIGH": 9,
+    "MEDIUM": 26
+   },
+   "btc": {
+    "BTC": 11,
+    "NON_BTC": 24
+   },
+   "split": {
+    "DEVELOPMENT": 26,
+    "VALIDATION": 9
+   }
+  },
+  "selected": {
+   "n": 20,
+   "sourceFamily": {
+    "ewf": 13,
+    "tv-cryptoknee": 3,
+    "tv-thefifthwave": 2,
+    "tv-yuchaosng": 2
+   },
+   "timeframe": {
+    "1D": 8,
+    "1W": 12
+   },
+   "family": {
+    "CORRECTIVE": 4,
+    "MOTIVE": 16
+   },
+   "pattern": {
+    "IMPULSE": 16,
+    "WXY": 1,
+    "ZIGZAG": 3
+   },
+   "confidence": {
+    "HIGH": 9,
+    "MEDIUM": 11
+   },
+   "btc": {
+    "BTC": 4,
+    "NON_BTC": 16
+   },
+   "split": {
+    "DEVELOPMENT": 14,
+    "VALIDATION": 6
+   }
+  }
+ },
+ "cases": [
+  {
+   "caseId": "ewf|CAT|2023-01-08|1",
+   "referenceId": "pr_ewf_20230108_cat",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "timeframe": "1W",
+   "family": "MOTIVE",
+   "pattern": "IMPULSE",
+   "confidence": "HIGH",
+   "btc": false,
+   "reason": "HIGH",
+   "hash": "0dd57b20ce307871768af698173891912bf1ad2fed9814daa2b91389b874cea6",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "tv-thefifthwave|BTCUSD|2024-08-31|1",
+   "referenceId": "pr_tv-thefifthwave_20240831_btcusd",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-thefifthwave",
+   "timeframe": "1D",
+   "family": "MOTIVE",
+   "pattern": "IMPULSE",
+   "confidence": "HIGH",
+   "btc": true,
+   "reason": "HIGH",
+   "hash": "390a9e4d2d38a5d1c6af26ab74d941abd6e5130f98305ac4c67d31137e22eff4",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "tv-yuchaosng|QQQ|2024-01-21|1",
+   "referenceId": "pr_tv-yuchaosng_20240121_qqq",
+   "split": "VALIDATION",
+   "sourceFamily": "tv-yuchaosng",
+   "timeframe": "1D",
+   "family": "MOTIVE",
+   "pattern": "IMPULSE",
+   "confidence": "HIGH",
+   "btc": false,
+   "reason": "HIGH",
+   "hash": "533e3049ac357d3d85f7c67bbd9f1c78da393e7a2ca30edde3c95b720555671c",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "ewf|ABNB|2023-09-05|1",
+   "referenceId": "pr_ewf_20230905_abnb",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "timeframe": "1W",
+   "family": "MOTIVE",
+   "pattern": "IMPULSE",
+   "confidence": "HIGH",
+   "btc": false,
+   "reason": "HIGH",
+   "hash": "79c434820b98bc7d5b77bd5d579ba3d4e7fd6bc48f81c7acf12e06863253fe85",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "ewf|RCL|2023-06-21|1",
+   "referenceId": "pr_ewf_20230621_rcl",
+   "split": "VALIDATION",
+   "sourceFamily": "ewf",
+   "timeframe": "1W",
+   "family": "MOTIVE",
+   "pattern": "IMPULSE",
+   "confidence": "HIGH",
+   "btc": false,
+   "reason": "HIGH",
+   "hash": "800f32fd31c328c14f643c679a1afdf5b649aa67d05e3abcb63ba79807435c83",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "ewf|LLY|2024-02-20|1",
+   "referenceId": "pr_ewf_20240220_lly",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "timeframe": "1W",
+   "family": "MOTIVE",
+   "pattern": "IMPULSE",
+   "confidence": "HIGH",
+   "btc": false,
+   "reason": "HIGH",
+   "hash": "a5c9ac2b3a190027e60123a6adff7b99c0f873d8aef136dba2c6cd2727fbddd4",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "ewf|ZM|2022-08-16|1",
+   "referenceId": "pr_ewf_20220816_zm",
+   "split": "VALIDATION",
+   "sourceFamily": "ewf",
+   "timeframe": "1W",
+   "family": "CORRECTIVE",
+   "pattern": "ZIGZAG",
+   "confidence": "HIGH",
+   "btc": false,
+   "reason": "HIGH",
+   "hash": "cbbfee0db688892e7b3e8930b8fbc0a013b55cd635bfaa5f78a14dd7bcd952c5",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "ewf|NEE|2024-10-08|1",
+   "referenceId": "pr_ewf_20241008_nee",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "timeframe": "1W",
+   "family": "MOTIVE",
+   "pattern": "IMPULSE",
+   "confidence": "HIGH",
+   "btc": false,
+   "reason": "HIGH",
+   "hash": "cf838937375a144505931a30a4a59dda2282ca9e0fe31c711ab8429b4aaa3863",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "ewf|FCX|2023-07-25|1",
+   "referenceId": "pr_ewf_20230725_fcx",
+   "split": "VALIDATION",
+   "sourceFamily": "ewf",
+   "timeframe": "1W",
+   "family": "MOTIVE",
+   "pattern": "IMPULSE",
+   "confidence": "HIGH",
+   "btc": false,
+   "reason": "HIGH",
+   "hash": "f355189ea604339527efb7604a6c034ac6f1aefbe2ed43d3ba5c37aceeeea95b",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "tv-cryptoknee|BTCUSD|2023-01-18|1",
+   "referenceId": "pr_tv-cryptoknee_20230118_btcusd",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-cryptoknee",
+   "timeframe": "1D",
+   "family": "MOTIVE",
+   "pattern": "IMPULSE",
+   "confidence": "MEDIUM",
+   "btc": true,
+   "reason": "MIN:sourceFamily=tv-cryptoknee",
+   "hash": "2c7c054ceaa8826f9205733f96260f91e17aecda2d7b7e1e49dee20b77fa0ad8",
+   "contextRevisions": [
+    "pr_tv-cryptoknee_20230126_btcusd"
+   ]
+  },
+  {
+   "caseId": "tv-cryptoknee|BTCUSD|2024-04-28|1",
+   "referenceId": "pr_tv-cryptoknee_20240428_btcusd",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-cryptoknee",
+   "timeframe": "1D",
+   "family": "MOTIVE",
+   "pattern": "IMPULSE",
+   "confidence": "MEDIUM",
+   "btc": true,
+   "reason": "MIN:sourceFamily=tv-cryptoknee",
+   "hash": "4688e270253c3174698c14b86e8048b016af9ccd5542f49496866c66a1f33d54",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "tv-thefifthwave|SPY|2022-12-03|1",
+   "referenceId": "pr_tv-thefifthwave_20221203_spy",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-thefifthwave",
+   "timeframe": "1D",
+   "family": "MOTIVE",
+   "pattern": "IMPULSE",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "reason": "MIN:sourceFamily=tv-thefifthwave",
+   "hash": "2fbfc7ded6836b4e5faa1c2410fd50438b030f2e39342186dbf1897ba045d39f",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "tv-yuchaosng|BTCUSD|2024-03-22|1",
+   "referenceId": "pr_tv-yuchaosng_20240322_btcusd",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-yuchaosng",
+   "timeframe": "1D",
+   "family": "MOTIVE",
+   "pattern": "IMPULSE",
+   "confidence": "MEDIUM",
+   "btc": true,
+   "reason": "MIN:sourceFamily=tv-yuchaosng",
+   "hash": "3ac02a62aaf3170ab2f5d7e4e99e1a418104d7e8326d7813cbadf408f0e5a234",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "ewf|QQQ|2022-10-25|1",
+   "referenceId": "pr_ewf_20221025_qqq",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "timeframe": "1D",
+   "family": "CORRECTIVE",
+   "pattern": "WXY",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "reason": "MIN:family=CORRECTIVE",
+   "hash": "0486940a43a55ef09ce031a84cb4d5f4cfe262c512966053faf12f87390b872d",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "ewf|MCD|2023-09-23|1",
+   "referenceId": "pr_ewf_20230923_mcd",
+   "split": "VALIDATION",
+   "sourceFamily": "ewf",
+   "timeframe": "1W",
+   "family": "CORRECTIVE",
+   "pattern": "ZIGZAG",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "reason": "MIN:family=CORRECTIVE",
+   "hash": "55a26ad6350abbab3e459ebcddbce53455d72bd706353c285580d93b70afb985",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "ewf|AXP|2024-08-12|1",
+   "referenceId": "pr_ewf_20240812_axp",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "timeframe": "1W",
+   "family": "MOTIVE",
+   "pattern": "IMPULSE",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "reason": "FILL",
+   "hash": "2d634376510c2dd66c0d258824218e56ffce72c6d82081755b7916525391b479",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "ewf|PHM|2023-06-13|1",
+   "referenceId": "pr_ewf_20230613_phm",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "timeframe": "1W",
+   "family": "MOTIVE",
+   "pattern": "IMPULSE",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "reason": "FILL",
+   "hash": "38971301b1b8ffdbd04e1354fb2237b96ba62345ca1f836cb34e73c4c94e8913",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "ewf|COIN|2023-12-05|1",
+   "referenceId": "pr_ewf_20231205_coin",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "ewf",
+   "timeframe": "1W",
+   "family": "MOTIVE",
+   "pattern": "IMPULSE",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "reason": "FILL",
+   "hash": "469dfe72bbb1acf87b8052c5c6042faf83971e888f5d27f04fdaa33400f94f2b",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "ewf|DIS|2023-01-02|1",
+   "referenceId": "pr_ewf_20230102_dis",
+   "split": "VALIDATION",
+   "sourceFamily": "ewf",
+   "timeframe": "1W",
+   "family": "CORRECTIVE",
+   "pattern": "ZIGZAG",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "reason": "FILL",
+   "hash": "5c1d970ba1ea3f033e0787d4b8fdbac88731eec4cd43e3c0a3d450e4a85b09df",
+   "contextRevisions": []
+  },
+  {
+   "caseId": "tv-cryptoknee|SPY|2022-12-06|1",
+   "referenceId": "pr_tv-cryptoknee_20221206_spy",
+   "split": "DEVELOPMENT",
+   "sourceFamily": "tv-cryptoknee",
+   "timeframe": "1D",
+   "family": "MOTIVE",
+   "pattern": "IMPULSE",
+   "confidence": "MEDIUM",
+   "btc": false,
+   "reason": "FILL",
+   "hash": "6cf9cc93600171a8a0e3578984c58973f13d5638e0133f63ec32cc102d974483",
+   "contextRevisions": []
+  }
+ ]
+}

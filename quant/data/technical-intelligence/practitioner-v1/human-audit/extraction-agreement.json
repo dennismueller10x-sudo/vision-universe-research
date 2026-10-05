@@ -1,0 +1,751 @@
+{
+ "format": "vu-practitioner-extraction-agreement-1",
+ "label": "PRACTITIONER REFERENCE, NOT OBJECTIVE GROUND TRUTH",
+ "audit": "nur geöffnete Fälle (DEVELOPMENT/VALIDATION); Holdouts versiegelt, nur gezählt; keine VU-Ausgaben",
+ "sources": {
+  "workingFile": "quant/data/technical-intelligence/practitioner-v1/references.jsonl",
+  "workingFileSha256": "d0b96318caef4b7323e04d07e8066152e103e23f58816d62fc26483c6a10cb94",
+  "freeze": "quant/data/technical-intelligence/practitioner-v1/freeze/PRACTITIONER_REFERENCE_V1.jsonl",
+  "freezeSha256": "7af25c9b5d61f0268f7049103076839e1dd43b3a2d9d24bc942290dd1133f489"
+ },
+ "population": {
+  "openedCases": 35,
+  "sealedCases": 43,
+  "workingRowsOpened": 46,
+  "workingRowsSealedNotRead": 288,
+  "rowsWithPasses": 46,
+  "byStatus": {
+   "CANDIDATE": 3,
+   "INCLUDED": 43
+  },
+  "byViewKind": {
+   "LATER_REVISION": 11,
+   "ORIGINAL_PUBLISHED": 35
+  }
+ },
+ "definitions": {
+  "coreFieldAgreement": "aus extraction.passes (dual-extraction.mjs): true = A und B gleich, false = abweichend, NOT_STATED = in beiden nicht genannt; agreementRate = agree/(agree+disagree)",
+  "note": "HIGH setzt per Definition (Nachtrag 2 Punkt 3) Übereinstimmung aller genannten Kernfelder voraus — Abweichungsquote bei HIGH ist daher konstruktionsbedingt 0. passes enthält außer a, b, adjudication und coreFieldAgreement keine weiteren Feldangaben."
+ },
+ "agreement": {
+  "overall": {
+   "rows": 46,
+   "anyDisagreement": 16,
+   "adjudicated": 16,
+   "perField": {
+    "family": {
+     "agree": 44,
+     "disagree": 2,
+     "notStated": 0,
+     "n": 46,
+     "agreementRate": 0.9565217391304348
+    },
+    "currentWave": {
+     "agree": 32,
+     "disagree": 13,
+     "notStated": 1,
+     "n": 46,
+     "agreementRate": 0.7111111111111111
+    },
+    "direction": {
+     "agree": 45,
+     "disagree": 1,
+     "notStated": 0,
+     "n": 46,
+     "agreementRate": 0.9782608695652174
+    },
+    "invalidation": {
+     "agree": 21,
+     "disagree": 5,
+     "notStated": 20,
+     "n": 46,
+     "agreementRate": 0.8076923076923077
+    },
+    "timeframe": {
+     "agree": 45,
+     "disagree": 1,
+     "notStated": 0,
+     "n": 46,
+     "agreementRate": 0.9782608695652174
+    },
+    "instrument": {
+     "agree": 46,
+     "disagree": 0,
+     "notStated": 0,
+     "n": 46,
+     "agreementRate": 1
+    }
+   }
+  },
+  "byConfidence": {
+   "HIGH": {
+    "rows": 12,
+    "anyDisagreement": 0,
+    "adjudicated": 0,
+    "perField": {
+     "family": {
+      "agree": 12,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 12,
+      "agreementRate": 1
+     },
+     "currentWave": {
+      "agree": 12,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 12,
+      "agreementRate": 1
+     },
+     "direction": {
+      "agree": 12,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 12,
+      "agreementRate": 1
+     },
+     "invalidation": {
+      "agree": 7,
+      "disagree": 0,
+      "notStated": 5,
+      "n": 12,
+      "agreementRate": 1
+     },
+     "timeframe": {
+      "agree": 12,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 12,
+      "agreementRate": 1
+     },
+     "instrument": {
+      "agree": 12,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 12,
+      "agreementRate": 1
+     }
+    }
+   },
+   "MEDIUM": {
+    "rows": 34,
+    "anyDisagreement": 16,
+    "adjudicated": 16,
+    "perField": {
+     "family": {
+      "agree": 32,
+      "disagree": 2,
+      "notStated": 0,
+      "n": 34,
+      "agreementRate": 0.9411764705882353
+     },
+     "currentWave": {
+      "agree": 20,
+      "disagree": 13,
+      "notStated": 1,
+      "n": 34,
+      "agreementRate": 0.6060606060606061
+     },
+     "direction": {
+      "agree": 33,
+      "disagree": 1,
+      "notStated": 0,
+      "n": 34,
+      "agreementRate": 0.9705882352941176
+     },
+     "invalidation": {
+      "agree": 14,
+      "disagree": 5,
+      "notStated": 15,
+      "n": 34,
+      "agreementRate": 0.7368421052631579
+     },
+     "timeframe": {
+      "agree": 33,
+      "disagree": 1,
+      "notStated": 0,
+      "n": 34,
+      "agreementRate": 0.9705882352941176
+     },
+     "instrument": {
+      "agree": 34,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 34,
+      "agreementRate": 1
+     }
+    }
+   }
+  },
+  "bySourceFamily": {
+   "ewf": {
+    "rows": 18,
+    "anyDisagreement": 4,
+    "adjudicated": 4,
+    "perField": {
+     "family": {
+      "agree": 17,
+      "disagree": 1,
+      "notStated": 0,
+      "n": 18,
+      "agreementRate": 0.9444444444444444
+     },
+     "currentWave": {
+      "agree": 16,
+      "disagree": 2,
+      "notStated": 0,
+      "n": 18,
+      "agreementRate": 0.8888888888888888
+     },
+     "direction": {
+      "agree": 17,
+      "disagree": 1,
+      "notStated": 0,
+      "n": 18,
+      "agreementRate": 0.9444444444444444
+     },
+     "invalidation": {
+      "agree": 17,
+      "disagree": 0,
+      "notStated": 1,
+      "n": 18,
+      "agreementRate": 1
+     },
+     "timeframe": {
+      "agree": 17,
+      "disagree": 1,
+      "notStated": 0,
+      "n": 18,
+      "agreementRate": 0.9444444444444444
+     },
+     "instrument": {
+      "agree": 18,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 18,
+      "agreementRate": 1
+     }
+    }
+   },
+   "tv-cryptoknee": {
+    "rows": 9,
+    "anyDisagreement": 6,
+    "adjudicated": 6,
+    "perField": {
+     "family": {
+      "agree": 8,
+      "disagree": 1,
+      "notStated": 0,
+      "n": 9,
+      "agreementRate": 0.8888888888888888
+     },
+     "currentWave": {
+      "agree": 3,
+      "disagree": 6,
+      "notStated": 0,
+      "n": 9,
+      "agreementRate": 0.3333333333333333
+     },
+     "direction": {
+      "agree": 9,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 9,
+      "agreementRate": 1
+     },
+     "invalidation": {
+      "agree": 3,
+      "disagree": 1,
+      "notStated": 5,
+      "n": 9,
+      "agreementRate": 0.75
+     },
+     "timeframe": {
+      "agree": 9,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 9,
+      "agreementRate": 1
+     },
+     "instrument": {
+      "agree": 9,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 9,
+      "agreementRate": 1
+     }
+    }
+   },
+   "tv-thefifthwave": {
+    "rows": 8,
+    "anyDisagreement": 2,
+    "adjudicated": 2,
+    "perField": {
+     "family": {
+      "agree": 8,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 8,
+      "agreementRate": 1
+     },
+     "currentWave": {
+      "agree": 6,
+      "disagree": 2,
+      "notStated": 0,
+      "n": 8,
+      "agreementRate": 0.75
+     },
+     "direction": {
+      "agree": 8,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 8,
+      "agreementRate": 1
+     },
+     "invalidation": {
+      "agree": 0,
+      "disagree": 2,
+      "notStated": 6,
+      "n": 8,
+      "agreementRate": 0
+     },
+     "timeframe": {
+      "agree": 8,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 8,
+      "agreementRate": 1
+     },
+     "instrument": {
+      "agree": 8,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 8,
+      "agreementRate": 1
+     }
+    }
+   },
+   "tv-yuchaosng": {
+    "rows": 11,
+    "anyDisagreement": 4,
+    "adjudicated": 4,
+    "perField": {
+     "family": {
+      "agree": 11,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 11,
+      "agreementRate": 1
+     },
+     "currentWave": {
+      "agree": 7,
+      "disagree": 3,
+      "notStated": 1,
+      "n": 11,
+      "agreementRate": 0.7
+     },
+     "direction": {
+      "agree": 11,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 11,
+      "agreementRate": 1
+     },
+     "invalidation": {
+      "agree": 1,
+      "disagree": 2,
+      "notStated": 8,
+      "n": 11,
+      "agreementRate": 0.3333333333333333
+     },
+     "timeframe": {
+      "agree": 11,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 11,
+      "agreementRate": 1
+     },
+     "instrument": {
+      "agree": 11,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 11,
+      "agreementRate": 1
+     }
+    }
+   }
+  },
+  "byViewKind": {
+   "LATER_REVISION": {
+    "rows": 11,
+    "anyDisagreement": 4,
+    "adjudicated": 4,
+    "perField": {
+     "family": {
+      "agree": 11,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 11,
+      "agreementRate": 1
+     },
+     "currentWave": {
+      "agree": 8,
+      "disagree": 3,
+      "notStated": 0,
+      "n": 11,
+      "agreementRate": 0.7272727272727273
+     },
+     "direction": {
+      "agree": 11,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 11,
+      "agreementRate": 1
+     },
+     "invalidation": {
+      "agree": 1,
+      "disagree": 3,
+      "notStated": 7,
+      "n": 11,
+      "agreementRate": 0.25
+     },
+     "timeframe": {
+      "agree": 11,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 11,
+      "agreementRate": 1
+     },
+     "instrument": {
+      "agree": 11,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 11,
+      "agreementRate": 1
+     }
+    }
+   },
+   "ORIGINAL_PUBLISHED": {
+    "rows": 35,
+    "anyDisagreement": 12,
+    "adjudicated": 12,
+    "perField": {
+     "family": {
+      "agree": 33,
+      "disagree": 2,
+      "notStated": 0,
+      "n": 35,
+      "agreementRate": 0.9428571428571428
+     },
+     "currentWave": {
+      "agree": 24,
+      "disagree": 10,
+      "notStated": 1,
+      "n": 35,
+      "agreementRate": 0.7058823529411765
+     },
+     "direction": {
+      "agree": 34,
+      "disagree": 1,
+      "notStated": 0,
+      "n": 35,
+      "agreementRate": 0.9714285714285714
+     },
+     "invalidation": {
+      "agree": 20,
+      "disagree": 2,
+      "notStated": 13,
+      "n": 35,
+      "agreementRate": 0.9090909090909091
+     },
+     "timeframe": {
+      "agree": 34,
+      "disagree": 1,
+      "notStated": 0,
+      "n": 35,
+      "agreementRate": 0.9714285714285714
+     },
+     "instrument": {
+      "agree": 35,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 35,
+      "agreementRate": 1
+     }
+    }
+   }
+  },
+  "byStatus": {
+   "CANDIDATE": {
+    "rows": 3,
+    "anyDisagreement": 0,
+    "adjudicated": 0,
+    "perField": {
+     "family": {
+      "agree": 3,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 3,
+      "agreementRate": 1
+     },
+     "currentWave": {
+      "agree": 3,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 3,
+      "agreementRate": 1
+     },
+     "direction": {
+      "agree": 3,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 3,
+      "agreementRate": 1
+     },
+     "invalidation": {
+      "agree": 0,
+      "disagree": 0,
+      "notStated": 3,
+      "n": 3,
+      "agreementRate": null
+     },
+     "timeframe": {
+      "agree": 3,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 3,
+      "agreementRate": 1
+     },
+     "instrument": {
+      "agree": 3,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 3,
+      "agreementRate": 1
+     }
+    }
+   },
+   "INCLUDED": {
+    "rows": 43,
+    "anyDisagreement": 16,
+    "adjudicated": 16,
+    "perField": {
+     "family": {
+      "agree": 41,
+      "disagree": 2,
+      "notStated": 0,
+      "n": 43,
+      "agreementRate": 0.9534883720930233
+     },
+     "currentWave": {
+      "agree": 29,
+      "disagree": 13,
+      "notStated": 1,
+      "n": 43,
+      "agreementRate": 0.6904761904761905
+     },
+     "direction": {
+      "agree": 42,
+      "disagree": 1,
+      "notStated": 0,
+      "n": 43,
+      "agreementRate": 0.9767441860465116
+     },
+     "invalidation": {
+      "agree": 21,
+      "disagree": 5,
+      "notStated": 17,
+      "n": 43,
+      "agreementRate": 0.8076923076923077
+     },
+     "timeframe": {
+      "agree": 42,
+      "disagree": 1,
+      "notStated": 0,
+      "n": 43,
+      "agreementRate": 0.9767441860465116
+     },
+     "instrument": {
+      "agree": 43,
+      "disagree": 0,
+      "notStated": 0,
+      "n": 43,
+      "agreementRate": 1
+     }
+    }
+   }
+  },
+  "evidenceNotesByPass": {
+   "A": 236,
+   "B": 138
+  },
+  "ambiguityNotesAB": {
+   "rowsWithABNote": 46,
+   "notes": 230
+  }
+ },
+ "descriptiveOpenedCases": {
+  "basis": "eingefrorene Originale (ORIGINAL_PUBLISHED) der 35 geöffneten Fälle",
+  "overall": {
+   "n": 35,
+   "impulse": 27,
+   "impulseRate": 0.7714285714285715,
+   "motive": 27,
+   "motiveRate": 0.7714285714285715,
+   "pattern": {
+    "DOUBLE_ZIGZAG": 1,
+    "FLAT": 1,
+    "IMPULSE": 27,
+    "WXY": 1,
+    "ZIGZAG": 5
+   },
+   "family": {
+    "CORRECTIVE": 8,
+    "MOTIVE": 27
+   }
+  },
+  "bySourceFamily": {
+   "ewf": {
+    "n": 18,
+    "impulse": 12,
+    "impulseRate": 0.6666666666666666,
+    "motive": 12,
+    "motiveRate": 0.6666666666666666,
+    "pattern": {
+     "FLAT": 1,
+     "IMPULSE": 12,
+     "WXY": 1,
+     "ZIGZAG": 4
+    }
+   },
+   "tv-cryptoknee": {
+    "n": 7,
+    "impulse": 5,
+    "impulseRate": 0.7142857142857143,
+    "motive": 5,
+    "motiveRate": 0.7142857142857143,
+    "pattern": {
+     "DOUBLE_ZIGZAG": 1,
+     "IMPULSE": 5,
+     "ZIGZAG": 1
+    }
+   },
+   "tv-thefifthwave": {
+    "n": 5,
+    "impulse": 5,
+    "impulseRate": 1,
+    "motive": 5,
+    "motiveRate": 1,
+    "pattern": {
+     "IMPULSE": 5
+    }
+   },
+   "tv-yuchaosng": {
+    "n": 5,
+    "impulse": 5,
+    "impulseRate": 1,
+    "motive": 5,
+    "motiveRate": 1,
+    "pattern": {
+     "IMPULSE": 5
+    }
+   }
+  },
+  "byTimeframe": {
+   "1D": {
+    "n": 15,
+    "impulse": 13,
+    "impulseRate": 0.8666666666666667,
+    "motive": 13,
+    "motiveRate": 0.8666666666666667,
+    "pattern": {
+     "DOUBLE_ZIGZAG": 1,
+     "IMPULSE": 13,
+     "WXY": 1
+    }
+   },
+   "1W": {
+    "n": 20,
+    "impulse": 14,
+    "impulseRate": 0.7,
+    "motive": 14,
+    "motiveRate": 0.7,
+    "pattern": {
+     "FLAT": 1,
+     "IMPULSE": 14,
+     "ZIGZAG": 5
+    }
+   }
+  },
+  "byBtc": {
+   "BTC": {
+    "n": 11,
+    "impulse": 9,
+    "impulseRate": 0.8181818181818182,
+    "motive": 9,
+    "motiveRate": 0.8181818181818182,
+    "pattern": {
+     "DOUBLE_ZIGZAG": 1,
+     "IMPULSE": 9,
+     "ZIGZAG": 1
+    }
+   },
+   "NON_BTC": {
+    "n": 24,
+    "impulse": 18,
+    "impulseRate": 0.75,
+    "motive": 18,
+    "motiveRate": 0.75,
+    "pattern": {
+     "FLAT": 1,
+     "IMPULSE": 18,
+     "WXY": 1,
+     "ZIGZAG": 4
+    }
+   }
+  },
+  "byConfidence": {
+   "HIGH": {
+    "n": 9,
+    "impulse": 8,
+    "impulseRate": 0.8888888888888888,
+    "motive": 8,
+    "motiveRate": 0.8888888888888888,
+    "pattern": {
+     "IMPULSE": 8,
+     "ZIGZAG": 1
+    }
+   },
+   "MEDIUM": {
+    "n": 26,
+    "impulse": 19,
+    "impulseRate": 0.7307692307692307,
+    "motive": 19,
+    "motiveRate": 0.7307692307692307,
+    "pattern": {
+     "DOUBLE_ZIGZAG": 1,
+     "FLAT": 1,
+     "IMPULSE": 19,
+     "WXY": 1,
+     "ZIGZAG": 4
+    }
+   }
+  },
+  "familyBySourceFamily": {
+   "ewf": {
+    "CORRECTIVE": 6,
+    "MOTIVE": 12
+   },
+   "tv-cryptoknee": {
+    "CORRECTIVE": 2,
+    "MOTIVE": 5
+   },
+   "tv-thefifthwave": {
+    "MOTIVE": 5
+   },
+   "tv-yuchaosng": {
+    "MOTIVE": 5
+   }
+  }
+ }
+}

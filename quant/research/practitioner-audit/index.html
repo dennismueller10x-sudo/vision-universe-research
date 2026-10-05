@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Extraktions-Audit · Praktiker-Referenzen · INTERN · Vision Universe</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="audit.css">
+</head>
+<body>
+<a class="skip" href="#main">Zum Inhalt springen</a>
+<header>
+  <h1>Extraktions-Audit — blind, ohne VU-Ausgaben</h1>
+  <div class="banners">
+    <span class="banner" id="label-reference">PRACTITIONER REFERENCE — keine objektive Wahrheit</span>
+    <span class="banner blind" id="label-blind">Blind: keine VU-/Engine-Ausgaben</span>
+    <span class="banner internal">INTERN – nicht für Kunden</span>
+    <span class="banner neutral">Keine Trefferquoten, keine Rankings von Praktikern</span>
+  </div>
+  <p>Geprüft wird nur eines: <strong>Gibt die extrahierte Zeile die Praktikerquelle richtig wieder?</strong> Nicht, ob der Praktiker recht hatte. Öffnen Sie die Quelle über den Link, vergleichen Sie Feld für Feld und vergeben Sie je Feld ein Urteil. Bei <code>INCORRECT</code> ist ein korrigierter Wert Pflicht (Wert laut Quelle oder <code>UNKNOWN</code>). Entwürfe bleiben in diesem Browser, bis Sie CSV oder JSON exportieren; die Datei wird mit <code>node scripts/technical/practitioner/human-audit.mjs import &lt;datei&gt;</code> eingelesen. Nur pseudonyme Prüfer-Codes, keine Namen. Doku: <code>docs/technical-intelligence/PRACTITIONER_HUMAN_AUDIT.md</code>.</p>
+  <p class="note" id="data-status" role="status">Lade Prüfpaket …</p>
+  <div class="progress" aria-hidden="true"><span id="progress-bar" style="width:0"></span></div>
+</header>
+<div class="toolbar" id="toolbar">
+  <div class="fld"><label for="t-code">Prüfer-Code (pseudonym)</label><input type="text" id="t-code" autocomplete="off" spellcheck="false" placeholder="z. B. REV-01"></div>
+  <div class="fld"><label for="t-date">Prüfdatum</label><input type="date" id="t-date"></div>
+  <button class="btn primary" type="button" id="t-csv">Export CSV</button>
+  <button class="btn" type="button" id="t-json">Export JSON</button>
+  <label class="btn" for="t-imp" style="margin:0;display:inline-flex;align-items:center">Entwurf laden (JSON/CSV)</label><input type="file" id="t-imp" accept=".json,.csv,application/json,text/csv" hidden>
+  <button class="btn warn" type="button" id="t-reset">Entwurf löschen</button>
+  <span class="note" id="t-msg" role="status" aria-live="polite"></span>
+</div>
+<main id="main">
+  <div class="layout">
+    <nav class="cases" id="case-nav" aria-label="Fälle"></nav>
+    <div id="detail" aria-live="polite"><div class="card"><p class="note">Noch kein Prüfpaket geladen. Erzeugen mit <code>node scripts/technical/practitioner/human-audit.mjs select</code> und <code>export</code>.</p></div></div>
+  </div>
+</main>
+<script src="audit.js"></script>
+<script src="/quant/ui/shell.js"></script>
+</body>
+</html>
