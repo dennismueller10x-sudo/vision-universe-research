@@ -158,7 +158,7 @@ export const FIDELITY = Object.freeze({
       r('Positionsgröße', 'Risiko meist 0,3–0,5 %, selten > 1 %; Positionen meist 10–20 %, „generally 5%-25%“; nie > 30 % über Nacht', 'PRIMARY_FULL', '0,5 % Risiko · 2.0.0: max. 20 % · 3.0.0: max. 25 %', 'ORIGINAL'),
       r('Portfolio', 'keine Höchstzahl genannt', 'PRIMARY_FULL', 'max. 10 Positionen', 'VU_EXTENSION'),
       r('Marktfilter', 'keine schriftliche Regel auf seiner Website', 'PRIMARY_FULL', 'kein Filter', 'ORIGINAL', 'Bewusst nicht ergänzt – eine Regel aus Streams/Tweets ist nicht belegt.'),
-      r('Sperre', 'keine Sperre in der Quelle', 'PRIMARY_FULL', '5 Sitzungen Sperre nach jedem Trade, nach Basistief-Bruch und nach Verfall; keine Sperre nach einem Setup-Verlust ohne Trade (seit 3.1.0)', 'VU_EXTENSION', 'LC-COOLDOWN-01 ist VU-eigen und gilt für alle Methoden.'),
+      r('Sperre', 'keine Sperre in der Quelle', 'PRIMARY_FULL', '5 Sitzungen Sperre nach jedem Trade, nach Basistief-Bruch und nach Verfall; keine Sperre nach einem Setup-Verlust ohne Trade (seit 3.1.0)', 'VU_EXTENSION', 'Die Sperre ist VU-eigen und gilt für alle Methoden.'),
       r('Liquidität', 'keine Vorgabe der Methode', 'NONE', 'Kurs ≥ 5 USD, 5 Mio. USD Tagesumsatz, ADR ≥ 2 %', 'VU_EXTENSION'),
     ],
     missing: ['Einstieg am Opening-Range-Hoch der ersten Minuten (Intraday-Historie fehlt)', 'Episodic Pivots als eigenes Modell (Gap-Ursache und Analystenschätzungen fehlen)', 'Parabolic Shorts'],

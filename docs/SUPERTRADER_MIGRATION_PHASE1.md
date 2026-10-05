@@ -170,7 +170,9 @@ Zusätzlich angepasst: `artifacts.test.mjs` (zulässige Herkunftswerte der Absch
 
 Vor dem Merge: Browser-QA (`scripts/supertrader/browser-qa.mjs`) auf 390 px und 1280 px gegen das aus dem Repository gebaute Release-Artefakt mit den neu erzeugten Registry-Daten – alle Supertrader-Routen ohne
 Seiten- oder Konsolenfehler, ohne horizontalen Überlauf. Geprüft wurden Strategienamen, Versionsnummern, Methodik, Prozessketten, Tooltips (Herkunftsklassen), Kennzeichen, die Abschnitte „Was ist belegt?“ bzw. die
-Regelkarten, ältere gegenüber aktuellen Versionen (Regelliste, Beispielseite). Ergebnisse: Abschnitt 9.
+Regelkarten, ältere gegenüber aktuellen Versionen (Regelliste, Beispielseite). Ergebnis: **54 Seitenaufrufe (alle Routen, 390 px und 1280 px), 0 Fehler.** Die erste Runde fand acht Fehler – interne Regelcodes in Kundentexten (z. B. „MIN-EXIT-02“, „KK-RISK-01“);
+sie sind aus den Texten entfernt, ein Test (M1-I) verhindert Wiederholung. Die Screenshots (Strategienamen mit Produktkennzeichen, Versionsnummern, Prozessketten, Regelkarten) wurden gesichtet; widersprüchliche
+Texte zwischen Methodenseite, Regelkarte, Prozesskette und Portfolioblock wurden nicht gefunden.
 
 ## 9. CI, Release, Produktions-Smoke
 

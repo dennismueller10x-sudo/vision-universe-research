@@ -304,3 +304,15 @@ test('M1-H2 Suche in allen Live-Texten: „Originalmethode“, „Replikation“
   assert.ok(!/wie in den Originalquellen beschrieben/.test(js));
   assert.ok(!/Dieselben Regeln wie live, an echten vergangenen Kursen nachgespielt/.test(js));
 });
+
+test('M1-I Kundentexte (Regelkarte, DNA, Prozesskette, Portfolio-Quelle) enthalten keine internen Regelcodes (Browser-QA prüft dasselbe auf der Seite)', () => {
+  const re = /\b(?:DON|KK|DAR|MIN|WEIN?|LC|PILOT|TUR|TR52|PORT)-[A-Z0-9]+(?:-[A-Z0-9]+)*\b/g;
+  const prose = [];
+  for (const id of LIVE) {
+    const s = S[id], c = s.rule_cards[0];
+    prose.push(...cardTexts(s), ...(c.executable.gaps || []));
+  }
+  for (const chain of Object.values(PROCESS_CHAIN)) prose.push(chain.finding, ...chain.steps.flatMap((x) => [x.rule, x.source]));
+  prose.push(...Object.values(PORTFOLIO_SOURCE_TEXT));
+  for (const t of prose) assert.deepEqual(t.match(re) || [], [], `interner Code im Kundentext: ${t.slice(0, 100)}`);
+});
