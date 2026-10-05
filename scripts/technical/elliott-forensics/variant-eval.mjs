@@ -35,7 +35,10 @@ export const VARIANTS = {
   trendPen02: { trendContextMode: "COUNTER_DEVELOPING", weights: { trendContext: 0.2 } },
   trendPen03: { trendContextMode: "COUNTER_DEVELOPING", weights: { trendContext: 0.3 } },
   subdiv03: { weights: { subdivision: 0.3 } },
-  subdiv015: { weights: { subdivision: 0.15 } }
+  subdiv015: { weights: { subdivision: 0.15 } },
+  noSimilarity: { noSimilarity: true },
+  candidate33: { noSimilarity: true, trendContextMode: "COUNTER_DEVELOPING", weights: { trendContext: 0.2 } },
+  noSimilarity_trendPen02: { noSimilarity: true, trendContextMode: "COUNTER_DEVELOPING", weights: { trendContext: 0.2 } }
 };
 const withV3 = (e) => Object.assign({ v3: true }, e, e.weights ? { weights: Object.assign({ guidelines: 0.06, subdivision: 0.45, separation: 0.03, anchor: 0.45, dominance: 0.45, similarity: 0, trendContext: 0, coverage: 0.45, prior: 0.15, higherDegree: 0, tail: 0.2, residual: 0, hierarchy: 0, proportion: 0 }, e.weights) } : {});
 const pct = (a, b) => (b ? +(100 * a / b).toFixed(1) : null);

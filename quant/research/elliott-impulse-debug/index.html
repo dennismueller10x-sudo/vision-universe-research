@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Impuls-Debug · Elliott · INTERN · Vision Universe</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="dark light">
+<link rel="stylesheet" href="debug.css">
+</head>
+<body>
+<a class="skip" href="#main">Zum Inhalt springen</a>
+<header>
+  <h1>Elliott · Impuls-Debug — Warum verliert die Impulslesart? (INTERN)</h1>
+  <div class="banners">
+    <span class="banner internal">INTERN · Forschung · keine Produktaussage</span>
+    <span class="banner" id="data-label">Lade Datenbeschriftung …</span>
+    <span class="banner neutral" id="engine">Engine –</span>
+  </div>
+  <p>Interne Fehleranalyse (Mission VI §30, §67, §68): Für jeden geöffneten Praktiker-Fall zeigt die Seite die VU-Hauptzählung und die beste (möglichst praktikernahe) Impulslesart auf denselben Schlusskursen — mit Rangabstand je Bewertungskomponente und den Suchzählern. Der sichtbare Grund des Verlusts soll ohne Logs verständlich sein. Eine Praktiker-Zählung ist eine Referenz, keine objektive Wahrheit. Holdout-Fälle bleiben versiegelt und sind nicht enthalten.</p>
+  <p class="note" id="data-status" role="status">Lade <code>impulse-debug-data.json</code> …</p>
+</header>
+<div class="toolbar" id="toolbar">
+  <div class="fld"><label for="f-family">Quellfamilie</label><select id="f-family"><option value="">alle</option></select></div>
+  <div class="fld"><label for="f-split">Split</label><select id="f-split"><option value="">alle</option></select></div>
+  <div class="fld"><label for="f-pfam">Praktiker-Familie</label><select id="f-pfam"><option value="">alle</option></select></div>
+  <span class="note" id="f-count" role="status" aria-live="polite"></span>
+</div>
+<main id="main">
+  <div class="layout">
+    <nav class="cases" id="case-nav" aria-label="Fälle"></nav>
+    <div id="detail" aria-live="polite">
+      <div class="card empty"><p class="note">Fall links auswählen.</p></div>
+    </div>
+  </div>
+</main>
+<script src="debug.js"></script>
+<script src="/quant/ui/shell.js"></script>
+</body>
+</html>
