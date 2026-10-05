@@ -29,10 +29,14 @@ test("Xetra-Instrumentenliste: Praeambel, nur ETFs, WKN nur wenn gueltig", () =>
     "Active;Active;ISHS C.MSCI WORLD;IE00B4L5Y983;1;2;A0RPWH;EUNL;XETR;FON0;ETF",
     "Active;Active;SOME SHARE;DE0007164600;1;3;716460;SAP;XETR;GER0;CS",
     "Active;Active;BROKEN;IE00B4L5Y983X;1;4;XYZ;BAD;XETR;FON0;ETF",
-    "Active;Active;NOWKN;LU0274208692;1;5;;DBXW;XETR;FON1;ETF"].join("\n");
+    "Active;Active;NOWKN;LU0274208692;1;5;;DBXW;XETR;FON1;ETF",
+    "Active;Active;PADDED;IE00B5BMR087;1;6;000A0YEDGL;SXR8;XETR;FON0;ETF",
+    "Active;Active;PADDEDNUM;DE0005933931;1;7;000593393;EXS1;XETR;FON0;ETF"].join("\n");
   const r = parseInstrumentsCsv(csv);
   assert.equal(r.asOf, "2026-10-05");
-  assert.equal(r.rows.size, 2);
+  assert.equal(r.rows.size, 4);
+  assert.equal(r.rows.get("IE00B5BMR087").wkn, null);       // 10 Zeichen: keine WKN
+  assert.equal(r.rows.get("DE0005933931").wkn, "593393");   // 9-stellig mit fuehrenden Nullen
   assert.equal(r.rows.get("IE00B4L5Y983").wkn, "A0RPWH");
   assert.equal(r.rows.get("LU0274208692").wkn, null);
   assert.ok(!r.rows.has("DE0007164600"));

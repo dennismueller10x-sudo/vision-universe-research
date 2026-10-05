@@ -59,7 +59,8 @@ export function parseInstrumentsCsv(text) {
   const out = new Map(), wknShapes = {};
   for (const l of lines.slice(hi + 1)) {
     const c = l.split(";").map((x) => x.replace(/^"|"$/g, "").trim()); if (c[ix("Instrument Type")] !== "ETF") continue;
-    const isin = c[ix("ISIN")], wkn = String(c[ix("WKN")] || "").trim().toUpperCase();
+    // Die Liste fuehrt die WKN 9-stellig mit fuehrenden Nullen ("000A0RPWH"); die WKN sind die letzten sechs Zeichen.
+    const isin = c[ix("ISIN")], wknRaw = String(c[ix("WKN")] || "").trim().toUpperCase(), wkn = /^000[0-9A-Z]{6}$/.test(wknRaw) ? wknRaw.slice(3) : wknRaw;
     if (!F.isValidIsin(isin)) continue;
     if (wkn && !F.isValidWkn(wkn)) { const shape = wkn.replace(/[A-Z]/g, "A").replace(/[0-9]/g, "9"); wknShapes[shape] = (wknShapes[shape] || 0) + 1; }
     out.set(isin, { isin, wkn: F.isValidWkn(wkn) ? wkn : null, mnemonic: c[ix("Mnemonic")] || null, group: c[ix("Product Assignment Group")] || null });
