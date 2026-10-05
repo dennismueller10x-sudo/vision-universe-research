@@ -95,14 +95,14 @@
    "primarySource": "SEC (US = kein UCITS) · ESMA-Fondsregister (EU, amtlich, Namenszuordnung)",
    "tiingo": "SEC (US = kein UCITS) · ESMA-Fondsregister (EU, amtlich, Namenszuordnung)",
    "coverage": 0.6308,
-   "gap": "verbindlich nur Emittent/KID",
-   "secondProviderNeeded": "verbindlich nur Emittent/KID"
+   "gap": "EU-Anteilklassen ohne eindeutigen Registertreffer: nur Hinweis aus dem Namen",
+   "secondProviderNeeded": "EU-Anteilklassen ohne eindeutigen Registertreffer: nur Hinweis aus dem Namen"
   },
   {
    "field": "UCITS-Status (EU)",
    "primarySource": "ESMA-Fondsregister (grenzüberschreitender Vertrieb)",
    "tiingo": "ESMA-Fondsregister (grenzüberschreitender Vertrieb)",
-   "coverage": 0,
+   "coverage": 0.1051,
    "gap": "Register ohne ISIN – Zuordnung über Fondsnamen",
    "secondProviderNeeded": "Register ohne ISIN – Zuordnung über Fondsnamen"
   },
