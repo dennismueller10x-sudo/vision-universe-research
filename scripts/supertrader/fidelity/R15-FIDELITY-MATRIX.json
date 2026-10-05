@@ -1,0 +1,281 @@
+{
+ "schema": "supertrader-r15-1.0.0",
+ "kind": "FIDELITY_MATRIX",
+ "note": "Interner, nicht marketingfähiger Score. REPLICATION_CLAIM_ALLOWED nur, wenn Entry/Exit/Sizing/Portfolio/Risk (bei Fundamentalmethoden zusätzlich Fundamental) HIGH sind und kein Kernbereich eine Fremd-/VU-/ungeklärte Regel enthält.",
+ "strategies": {
+  "MOMENTUM_BREAKOUT": {
+   "liveVersion": "3.2.0",
+   "productClass": "VU_ADAPTATION",
+   "displayName": "VU-Adaption nach Kullamägi (Breakout)",
+   "fidelity": {
+    "entry": "MEDIUM",
+    "exit": "HIGH",
+    "sizing": "HIGH",
+    "portfolio": "LOW",
+    "fundamental": "HIGH",
+    "marketRegime": "LOW",
+    "risk": "HIGH"
+   },
+   "originalFidelityOverall": "MEDIUM",
+   "overallNote": "Breakout-Kern quellennah (Stop, Teilverkauf, SMA-Ausstieg, Risiko); EP/PS fehlen",
+   "hardGate": {
+    "required": [
+     "entry",
+     "exit",
+     "sizing",
+     "portfolio",
+     "risk"
+    ],
+    "notHigh": [
+     "entry",
+     "portfolio"
+    ],
+    "blockingPortfolioFields": [
+     {
+      "field": "maxPositions",
+      "provenance": "VU_OWN",
+      "note": "Kullamägi nennt keine Höchstzahl"
+     },
+     {
+      "field": "maxExposure",
+      "provenance": "VU_OWN",
+      "note": "ohne Margin; Kullamägi nutzt Margin"
+     }
+    ]
+   },
+   "REPLICATION_CLAIM_ALLOWED": false
+  },
+  "WEINSTEIN_STAGE": {
+   "liveVersion": "4.0.0",
+   "productClass": "VU_ADAPTATION",
+   "displayName": "VU-Adaption nach Weinstein (Einstiegsidee, long-only)",
+   "fidelity": {
+    "entry": "MEDIUM",
+    "exit": "LOW",
+    "sizing": "LOW",
+    "portfolio": "LOW",
+    "fundamental": "HIGH",
+    "marketRegime": "MEDIUM",
+    "risk": "LOW"
+   },
+   "originalFidelityOverall": "LOW",
+   "overallNote": "nur Einstiegsidee; Größe Fremdregel, Stop/Ausstieg VU",
+   "hardGate": {
+    "required": [
+     "entry",
+     "exit",
+     "sizing",
+     "portfolio",
+     "risk"
+    ],
+    "notHigh": [
+     "entry",
+     "exit",
+     "sizing",
+     "portfolio",
+     "risk"
+    ],
+    "blockingPortfolioFields": [
+     {
+      "field": "riskPerTrade",
+      "provenance": "FOREIGN_RULE",
+      "note": "Kullamägis Risikozahl, still geerbt – keine Weinstein-Quelle"
+     },
+     {
+      "field": "maxPositionPct",
+      "provenance": "VU_OWN",
+      "note": "still geerbt"
+     },
+     {
+      "field": "maxPositions",
+      "provenance": "VU_OWN",
+      "note": "still geerbt"
+     },
+     {
+      "field": "maxExposure",
+      "provenance": "VU_OWN",
+      "note": "still geerbt"
+     }
+    ]
+   },
+   "REPLICATION_CLAIM_ALLOWED": false
+  },
+  "DARVAS_BOX": {
+   "liveVersion": "3.0.2",
+   "productClass": "VU_ADAPTATION",
+   "displayName": "VU-Adaption nach Darvas (Box-Ausbruch)",
+   "fidelity": {
+    "entry": "MEDIUM",
+    "exit": "MEDIUM",
+    "sizing": "LOW",
+    "portfolio": "MEDIUM",
+    "fundamental": "LOW",
+    "marketRegime": "LOW",
+    "risk": "LOW"
+   },
+   "originalFidelityOverall": "LOW",
+   "overallNote": "Kauforder über Box + Stop knapp darunter original; Zahlen, Filter, Marktampel VU/TraderFox",
+   "hardGate": {
+    "required": [
+     "entry",
+     "exit",
+     "sizing",
+     "portfolio",
+     "risk",
+     "fundamental"
+    ],
+    "notHigh": [
+     "entry",
+     "exit",
+     "sizing",
+     "portfolio",
+     "risk",
+     "fundamental"
+    ],
+    "blockingPortfolioFields": [
+     {
+      "field": "riskPerTrade",
+      "provenance": "FOREIGN_RULE",
+      "note": "Zahlenwert aus Kullamägis Regel; bindet nie, weil die 1/6-Kappe greift"
+     },
+     {
+      "field": "maxExposure",
+      "provenance": "VU_OWN",
+      "note": "ohne Kredit; Darvas nutzte Kredit"
+     },
+     {
+      "field": "marketFilter",
+      "provenance": "FOREIGN_RULE",
+      "note": "TraderFox-Marktampel, keine Darvas-Regel"
+     }
+    ]
+   },
+   "REPLICATION_CLAIM_ALLOWED": false
+  },
+  "MINERVINI_VCP": {
+   "liveVersion": "2.0.0",
+   "productClass": "VU_ADAPTATION",
+   "displayName": "VU-Adaption nach Minervini (Trend Template + VCP, ohne SEPA)",
+   "fidelity": {
+    "entry": "MEDIUM",
+    "exit": "LOW",
+    "sizing": "MEDIUM",
+    "portfolio": "MEDIUM",
+    "fundamental": "LOW",
+    "marketRegime": "MEDIUM",
+    "risk": "LOW"
+   },
+   "originalFidelityOverall": "LOW",
+   "overallNote": "Trend Template + VU-VCP ohne SEPA und ohne Verkauf in die Stärke",
+   "hardGate": {
+    "required": [
+     "entry",
+     "exit",
+     "sizing",
+     "portfolio",
+     "risk",
+     "fundamental"
+    ],
+    "notHigh": [
+     "entry",
+     "exit",
+     "sizing",
+     "portfolio",
+     "risk",
+     "fundamental"
+    ],
+    "blockingPortfolioFields": [
+     {
+      "field": "maxExposure",
+      "provenance": "VU_OWN",
+      "note": "ohne Margin"
+     }
+    ]
+   },
+   "REPLICATION_CLAIM_ALLOWED": false
+  },
+  "DONCHIAN_TURTLE": {
+   "liveVersion": "2.0.2",
+   "productClass": "VU_ADAPTATION",
+   "displayName": "Turtle Equity Adaptation (System 1 auf US-Aktien, ungehebelt)",
+   "fidelity": {
+    "entry": "MEDIUM",
+    "exit": "HIGH",
+    "sizing": "LOW",
+    "portfolio": "LOW",
+    "fundamental": "HIGH",
+    "marketRegime": "HIGH",
+    "risk": "LOW"
+   },
+   "originalFidelityOverall": "LOW",
+   "overallNote": "System-1-Signale nah am Original; Anlageklasse, Units, Portfolio fremd",
+   "hardGate": {
+    "required": [
+     "entry",
+     "exit",
+     "sizing",
+     "portfolio",
+     "risk"
+    ],
+    "notHigh": [
+     "entry",
+     "sizing",
+     "portfolio",
+     "risk"
+    ],
+    "blockingPortfolioFields": [
+     {
+      "field": "maxPositionPct",
+      "provenance": "VU_OWN",
+      "note": "keine Gewichtsgrenze je Aktie – bei Futures über Margin/Units begrenzt; bei Aktien sehr hohe Einzelgewichte beobachtet"
+     },
+     {
+      "field": "maxExposure",
+      "provenance": "VU_OWN",
+      "note": "ohne Hebel; Turtles handelten gehebelte Futures"
+     },
+     {
+      "field": "priority",
+      "provenance": "VU_OWN",
+      "note": "alphabetisch – ökonomisch bedeutungslos; Turtle Rules nennen Stärke-Rang"
+     }
+    ]
+   },
+   "REPLICATION_CLAIM_ALLOWED": false
+  },
+  "VU_TREND_52W": {
+   "liveVersion": "1.0.0",
+   "productClass": "VU_NATIVE",
+   "displayName": "VU Trendfolge 52W (eigene VU-Strategie nach öffentlichen TraderFox-Regeln)",
+   "fidelity": {
+    "entry": "MEDIUM",
+    "exit": "MEDIUM",
+    "sizing": "MEDIUM",
+    "portfolio": "MEDIUM",
+    "fundamental": "HIGH",
+    "marketRegime": "MEDIUM",
+    "risk": "MEDIUM"
+   },
+   "originalFidelityOverall": "MEDIUM",
+   "overallNote": "keine Trader-Methode; Treue gemessen an öffentlichen TraderFox-Regeln",
+   "hardGate": {
+    "required": [
+     "entry",
+     "exit",
+     "sizing",
+     "portfolio",
+     "risk"
+    ],
+    "notHigh": [
+     "entry",
+     "exit",
+     "sizing",
+     "portfolio",
+     "risk"
+    ],
+    "blockingPortfolioFields": []
+   },
+   "REPLICATION_CLAIM_ALLOWED": false
+  }
+ }
+}

@@ -117,3 +117,85 @@ test('R15-D2 Abmeldung allein reicht bei Notlagen-Signatur nicht (Insolvenzen d�
   assert.equal(classifyDelistingR15({ filings: { form: ['S-8 POS'], filingDate: ['2020-03-01'] }, sic: '3711', listEnd: '2020-05-01', distress: false }).cls, 'UNKNOWN'); // außerhalb ±5/10 Tage
   assert.equal(selectDelistCik(normName('Foo Corp'), [{ cik: '1', name: 'Foo Holdings' }, { cik: '2', name: 'Foo Inc' }]), null); // mehrdeutig → keine Zuordnung
 });
+
+// ---- Rule Provenance, Artefakte, Fundamentaldaten, Benennung ----
+import { build, rulesOf, normClass } from '../fidelity/build-r15-artifacts.mjs';
+import { NAMING, LIVE_CLASSIFICATION } from '../fidelity/product-classes.mjs';
+import { earningsAt } from '../engine/earnings.mjs';
+import minerviniV2 from '../engine/strategies/minervini-v2.mjs';
+import minerviniV3 from '../engine/strategies/minervini-v3.mjs';
+
+const FID = path.join(root, 'scripts/supertrader/fidelity');
+const VALID = new Set(Object.values(PROVENANCE));
+const readJ = (f) => JSON.parse(fs.readFileSync(path.join(FID, f), 'utf8'));
+
+test('R15-R1 Rule Provenance: jede kanonische Regel hat Rule-ID, Quelle und gültige Herkunftsklasse; IDs je Methode eindeutig', () => {
+  const { canonical } = build();
+  for (const [id, s] of Object.entries(canonical.strategies)) {
+    const seen = new Set();
+    for (const r of s.rules) {
+      assert.ok(r.ruleId, `${id}: Regel ohne ID`);
+      assert.ok(!seen.has(`${r.subsystem}:${r.ruleId}`), `${id}: doppelte ID ${r.ruleId}`); seen.add(`${r.subsystem}:${r.ruleId}`);
+      assert.ok(r.source, `${id}/${r.ruleId}: keine Quelle`);
+      assert.ok(VALID.has(normClass(r.provenanceClass)), `${id}/${r.ruleId}: ungültige Herkunft ${r.provenanceClass}`);
+    }
+  }
+});
+
+test('R15-R2 Rule Provenance: jede Live-Komponente (Signal, Policy, geteilte Regel) hat eine gültige Klasse; Darvas/Weinstein-Fremdregeln sind ausgewiesen', () => {
+  const { provenance } = build();
+  for (const [id, s] of Object.entries(provenance.strategies)) {
+    assert.ok(s.components.length > 0, id);
+    for (const c of s.components) assert.ok(VALID.has(c.provenance), `${id}/${c.component}: ${c.provenance}`);
+  }
+  assert.ok(provenance.strategies.WEINSTEIN_STAGE.foreignOrUnresolved.includes('portfolio.riskPerTrade'));
+  assert.ok(provenance.strategies.DARVAS_BOX.foreignOrUnresolved.includes('portfolio.marketFilter'));
+});
+
+test('R15-R3 Zusammengesetzte Herkunftsangaben werden konservativ auf die strengste enthaltene Klasse abgebildet', () => {
+  assert.equal(normClass('ORIGINAL (0,5 %, 25 %) / VU_OWN (10, 1,0, 100k)'), 'VU_OWN');
+  assert.equal(normClass('ORIGINAL + VU-Bedingung'), 'VU_FORMALIZATION');
+  assert.equal(normClass('ORIGINAL (untere Spannenenden)'), 'ORIGINAL');
+  assert.equal(normClass('TRADERFOX'), 'FOREIGN_RULE');
+  assert.equal(normClass('irgendwas'), 'UNRESOLVED');
+});
+
+test('R15-R4 Artefakte sind reproduzierbar: build() entspricht den eingecheckten R15-JSON-Dateien', () => {
+  const out = build();
+  const strip = (o) => JSON.parse(JSON.stringify(o));
+  assert.deepEqual(readJ('R15-CANONICAL-RULES.json'), strip(out.canonical));
+  assert.deepEqual(readJ('R15-RULE-PROVENANCE.json'), strip(out.provenance));
+  assert.deepEqual(readJ('R15-FIDELITY-MATRIX.json'), strip(out.matrix));
+  assert.deepEqual(readJ('R15-STRATEGY-GAPS.json'), strip(out.gaps));
+});
+
+test('R15-R5 Hard Gate: keine Live-Version darf heute als Replication bezeichnet werden', () => {
+  const { matrix } = build();
+  for (const [id, s] of Object.entries(matrix.strategies)) {
+    assert.equal(s.REPLICATION_CLAIM_ALLOWED, false, id);
+    assert.ok(s.hardGate.notHigh.length > 0 || s.hardGate.blockingPortfolioFields.length > 0, `${id}: Gate ohne Begründung`);
+  }
+});
+
+test('R15-F1 Fundamental Integration: Live-Minervini 2.0.0 nutzt keine Fundamentaldaten; 3.0.0 sieht Werte erst nach dem Einreichungstag', () => {
+  const src2 = fs.readFileSync(path.join(root, 'scripts/supertrader/engine/strategies/minervini-v2.mjs'), 'utf8');
+  assert.ok(!/ctx\.fund|earningsAt/.test(src2), 'Minervini 2.0.0 darf (heute) keine Fundamentaldaten lesen – sonst ist der Befund überholt');
+  assert.equal(minerviniV2.version, '2.0.0');
+  assert.ok(LIVE_ENGINES.some((e) => e.id === 'MINERVINI_VCP' && e.version === '2.0.0'));
+  const src3 = fs.readFileSync(path.join(root, 'scripts/supertrader/engine/strategies/minervini-v3.mjs'), 'utf8');
+  assert.ok(/earningsAt\(ctx\.fund/.test(src3)); assert.equal(minerviniV3.id, 'MINERVINI_VCP');
+  const buildSrc = fs.readFileSync(path.join(root, 'scripts/supertrader/build.mjs'), 'utf8');
+  assert.ok(!/const ctxOf = [^\n]*fund/.test(buildSrc), 'Live-Kontext enthält kein fund');
+  const fund = { eps: [['2022-06-30', 1.0, '2022-08-01'], ['2023-03-31', 1.1, '2023-05-01'], ['2023-06-30', 2.0, '2023-08-01'], ['2022-03-31', 1.0, '2022-05-01']], rev: [['2022-06-30', 10, '2022-08-01'], ['2023-06-30', 12, '2023-08-01']] };
+  assert.notEqual(earningsAt(fund, '2023-08-01').facts?.quarterEnd, '2023-06-30', 'am Einreichungstag noch nicht sichtbar');
+  assert.equal(earningsAt(fund, '2023-08-02').facts.quarterEnd, '2023-06-30');
+});
+
+test('R15-N1 Benennung: Beispiele und Migrationskandidaten folgen <methode>-<klasse>-<semver>; Phasen 1–6 ohne Automatik', () => {
+  for (const n of NAMING.examples) assert.match(n, NAMING.pattern);
+  const plan = readJ('R15-MIGRATION-PLAN.json');
+  assert.deepEqual(plan.phases.map((p) => p.phase), [1, 2, 3, 4, 5, 6]);
+  for (const p of plan.phases) assert.equal(p.automatic, false);
+  for (const c of plan.phases[1].candidates) assert.match(c.name, NAMING.pattern);
+  for (const id of Object.keys(LIVE_CLASSIFICATION)) assert.ok(!/replication/.test(LIVE_CLASSIFICATION[id].displayName.toLowerCase()), id);
+});

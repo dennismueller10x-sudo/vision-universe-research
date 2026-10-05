@@ -10,16 +10,16 @@ export const NAMING = Object.freeze({
 
 // Einstufung der heutigen Live-Versionen nach R15 (Belege: docs/SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md, R15-FIDELITY-MATRIX.json).
 export const LIVE_CLASSIFICATION = Object.freeze({
-  MOMENTUM_BREAKOUT: { version: '3.2.0', productClass: C.VU_ADAPTATION, displayName: 'VU-Adaption nach Kullamägi (Breakout)', replicationClaimAllowed: false,
+  MOMENTUM_BREAKOUT: { version: '3.2.0', productClass: C.VU_ADAPTATION, displayName: 'VU-Adaption nach Kullamägi (Breakout)', replicationClaimAllowed: false, overall: F.MEDIUM, overallNote: 'Breakout-Kern quellennah (Stop, Teilverkauf, SMA-Ausstieg, Risiko); EP/PS fehlen',
     fidelity: { entry: F.MEDIUM, exit: F.HIGH, sizing: F.HIGH, portfolio: F.LOW, fundamental: F.HIGH, marketRegime: F.LOW } },
-  WEINSTEIN_STAGE: { version: '4.0.0', productClass: C.VU_ADAPTATION, displayName: 'VU-Adaption nach Weinstein (Einstiegsidee, long-only)', replicationClaimAllowed: false,
+  WEINSTEIN_STAGE: { version: '4.0.0', productClass: C.VU_ADAPTATION, displayName: 'VU-Adaption nach Weinstein (Einstiegsidee, long-only)', replicationClaimAllowed: false, overall: F.LOW, overallNote: 'nur Einstiegsidee; Größe Fremdregel, Stop/Ausstieg VU',
     fidelity: { entry: F.MEDIUM, exit: F.LOW, sizing: F.LOW, portfolio: F.LOW, fundamental: F.HIGH, marketRegime: F.MEDIUM } },
-  DARVAS_BOX: { version: '3.0.2', productClass: C.VU_ADAPTATION, displayName: 'VU-Adaption nach Darvas (Box-Ausbruch)', replicationClaimAllowed: false,
-    fidelity: { entry: F.MEDIUM, exit: F.LOW, sizing: F.MEDIUM, portfolio: F.LOW, fundamental: F.LOW, marketRegime: F.LOW } },
-  MINERVINI_VCP: { version: '2.0.0', productClass: C.VU_ADAPTATION, displayName: 'VU-Adaption nach Minervini (Trend Template + VCP, ohne SEPA)', replicationClaimAllowed: false,
-    fidelity: { entry: F.MEDIUM, exit: F.LOW, sizing: F.MEDIUM, portfolio: F.LOW, fundamental: F.LOW, marketRegime: F.LOW } },
-  DONCHIAN_TURTLE: { version: '2.0.2', productClass: C.VU_ADAPTATION, displayName: 'Turtle Equity Adaptation (System 1 auf US-Aktien, ungehebelt)', replicationClaimAllowed: false,
-    fidelity: { entry: F.HIGH, exit: F.MEDIUM, sizing: F.LOW, portfolio: F.LOW, fundamental: F.HIGH, marketRegime: F.HIGH } },
-  VU_TREND_52W: { version: '1.0.0', productClass: C.VU_NATIVE, displayName: 'VU Trendfolge 52W (eigene VU-Strategie nach öffentlichen TraderFox-Regeln)', replicationClaimAllowed: false,
+  DARVAS_BOX: { version: '3.0.2', productClass: C.VU_ADAPTATION, displayName: 'VU-Adaption nach Darvas (Box-Ausbruch)', replicationClaimAllowed: false, overall: F.LOW, overallNote: 'Kauforder über Box + Stop knapp darunter original; Zahlen, Filter, Marktampel VU/TraderFox',
+    fidelity: { entry: F.MEDIUM, exit: F.MEDIUM, sizing: F.LOW, portfolio: F.MEDIUM, fundamental: F.LOW, marketRegime: F.LOW } },
+  MINERVINI_VCP: { version: '2.0.0', productClass: C.VU_ADAPTATION, displayName: 'VU-Adaption nach Minervini (Trend Template + VCP, ohne SEPA)', replicationClaimAllowed: false, overall: F.LOW, overallNote: 'Trend Template + VU-VCP ohne SEPA und ohne Verkauf in die Stärke',
+    fidelity: { entry: F.MEDIUM, exit: F.LOW, sizing: F.MEDIUM, portfolio: F.MEDIUM, fundamental: F.LOW, marketRegime: F.MEDIUM } },
+  DONCHIAN_TURTLE: { version: '2.0.2', productClass: C.VU_ADAPTATION, displayName: 'Turtle Equity Adaptation (System 1 auf US-Aktien, ungehebelt)', replicationClaimAllowed: false, overall: F.LOW, overallNote: 'System-1-Signale nah am Original; Anlageklasse, Units, Portfolio fremd',
+    fidelity: { entry: F.MEDIUM, exit: F.HIGH, sizing: F.LOW, portfolio: F.LOW, fundamental: F.HIGH, marketRegime: F.HIGH } },
+  VU_TREND_52W: { version: '1.0.0', productClass: C.VU_NATIVE, displayName: 'VU Trendfolge 52W (eigene VU-Strategie nach öffentlichen TraderFox-Regeln)', replicationClaimAllowed: false, overall: F.MEDIUM, overallNote: 'keine Trader-Methode; Treue gemessen an öffentlichen TraderFox-Regeln',
     fidelity: { entry: F.MEDIUM, exit: F.MEDIUM, sizing: F.MEDIUM, portfolio: F.MEDIUM, fundamental: F.HIGH, marketRegime: F.MEDIUM } },
 });

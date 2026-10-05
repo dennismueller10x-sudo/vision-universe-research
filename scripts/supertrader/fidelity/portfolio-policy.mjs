@@ -65,7 +65,7 @@ export const PORTFOLIO_POLICIES = Object.freeze({
     version: '2.0.2',
     fields: {
       riskPerTrade: f(0.02, P.ORIGINAL, 'SRC-TURTLE-PDF (TUR-UNIT-01)', '1 % je N bei 2N-Stop = 2 % Risiko'),
-      maxPositionPct: f(1.0, P.VU_OWN, 'donchian-v2.mjs PORTFOLIO', 'keine Gewichtsgrenze je Aktie – bei Futures über Margin/Units begrenzt; bei Aktien bis 74 % in einem Titel beobachtet'),
+      maxPositionPct: f(1.0, P.VU_OWN, 'donchian-v2.mjs PORTFOLIO', 'keine Gewichtsgrenze je Aktie – bei Futures über Margin/Units begrenzt; bei Aktien sehr hohe Einzelgewichte beobachtet'),
       maxPositions: f(12, P.ORIGINAL_INTERPRETATION, 'SRC-TURTLE-PDF', '12 Units je Richtung; hier eine Unit je Aktie (VU-Anpassung)'),
       maxExposure: f(1.0, P.VU_OWN, 'SRC-INTERNAL-VU', 'ohne Hebel; Turtles handelten gehebelte Futures'),
       priority: f('ALPHA', P.VU_OWN, 'model-portfolio.mjs RANK_RS (Turtle nicht enthalten)', 'alphabetisch – ökonomisch bedeutungslos; Turtle Rules nennen Stärke-Rang'),
