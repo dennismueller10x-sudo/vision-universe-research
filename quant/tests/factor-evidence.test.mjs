@@ -92,9 +92,33 @@ test("bands use the contract cut points", () => {
   contract.score.ratingBands.forEach((band) => {
     assert.ok(FactorEvidence.BANDS.some((entry) => entry.min === band.min), "missing band at " + band.min);
   });
-  assert.equal(FactorEvidence.band(95).id, "VERY_STRONG");
-  assert.equal(FactorEvidence.band(50).id, "NEUTRAL");
-  assert.equal(FactorEvidence.band(10).id, "VERY_WEAK");
+  /* factor-band-2.0.0: die Grenzen gelten fuer die POSITION. */
+  assert.equal(FactorEvidence.BAND_SEMANTICS_VERSION, "factor-band-2.0.0");
+  assert.equal(FactorEvidence.bandForPosition(95).id, "VERY_STRONG");
+  assert.equal(FactorEvidence.bandForPosition(50).id, "NEUTRAL");
+  assert.equal(FactorEvidence.bandForPosition(10).id, "VERY_WEAK");
+  assert.equal(FactorEvidence.bandForPosition(null), null);
+  assert.equal(FactorEvidence.band, undefined, "keine Stufe mehr direkt aus dem Faktorwert");
+});
+
+test("position: Anteil niedrigerer Werte, Gleichstand zaehlt nicht, unter 100 Titeln keine", () => {
+  const sorted = Array.from({ length: 201 }, (_, i) => i / 2);   /* 0, 0.5, ..., 100 */
+  assert.equal(FactorEvidence.positionOf(sorted, 0), 0);
+  assert.equal(FactorEvidence.positionOf(sorted, 100), 100);
+  assert.equal(FactorEvidence.positionOf(sorted, 50), 50);
+  assert.equal(FactorEvidence.positionOf([...sorted, 50, 50].sort((a, b) => a - b), 50), 49.5);
+  assert.equal(FactorEvidence.positionOf(sorted.slice(0, 99), 10), null);
+  assert.equal(FactorEvidence.positionOf(sorted, NaN), null);
+});
+
+test("hydrate: Position nur unter der Stufen-Methodik, mit der sie gezaehlt wurde", () => {
+  const rec = { factors: { momentum: { state: "AVAILABLE", score: 70, position: 81.2, components: [] } } };
+  const neu = FactorEvidence.hydrate(rec, { bandSemantics: { version: "factor-band-2.0.0", universe: { momentum: 5760 } } });
+  assert.equal(neu.factors.momentum.position, 81.2);
+  assert.equal(neu.factors.momentum.positionUniverse, 5760);
+  const alt = FactorEvidence.hydrate(rec, { bandSemantics: { version: "factor-band-1" } });
+  assert.equal(alt.factors.momentum.position, null, "Position einer anderen Stufen-Methodik gilt nicht");
+  assert.equal(FactorEvidence.hydrate(rec, {}).factors.momentum.position, null);
 });
 
 test("the publication gate rejects a composite score, a rank or a stray factor", () => {
@@ -114,7 +138,7 @@ test("the publication gate rejects a composite score, a rank or a stray factor",
 test("ordered() keeps the canonical order and explains every closed factor", () => {
   const record = {
     factors: Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id, index) => [id,
-      index === 2 ? { state: "AVAILABLE", score: 80, availableWeight: 0.8, confidence: 90, components: [] }
+      index === 2 ? { state: "AVAILABLE", score: 70, position: 80, availableWeight: 0.8, confidence: 90, components: [] }
         : { state: "UNAVAILABLE", reason: "BLOCKED_EXTERNAL", score: null, components: [] }]))
   };
   const ordered = FactorEvidence.ordered(record);
@@ -123,7 +147,11 @@ test("ordered() keeps the canonical order and explains every closed factor", () 
     assert.ok(entry.reasonText && entry.reasonText.length > 20, "a closed factor needs a readable reason");
     assert.equal(entry.score, null);
   });
-  assert.equal(ordered[2].band, "STRONG");
+  assert.equal(ordered[2].band, "STRONG", "Stufe aus der Position 80, nicht aus dem Wert 70");
+  assert.equal(ordered[2].position, 80);
+  /* Ohne Position keine Stufe - kein Rueckfall auf eine Wertgrenze. */
+  const ohne = FactorEvidence.ordered({ factors: { ...record.factors, momentum: { state: "AVAILABLE", score: 95, components: [] } } });
+  assert.equal(ohne[2].band, null);
 });
 
 /* ------------------------------------------------------------- change engine */

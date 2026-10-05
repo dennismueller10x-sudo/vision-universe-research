@@ -36,13 +36,15 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const Evidence = require(join(ROOT, "quant/engines/factor-evidence.js"));
 const Verdict = require(join(ROOT, "quant/engines/plain-verdict.js"));
 
-/** Ein Datensatz mit genau diesen Faktorwerten. */
+/** Ein Datensatz mit genau diesen Faktorwerten. Die Fixtur setzt die
+    Position gleich dem Wert (factor-band-2.0.0: die Stufe kommt aus der
+    Position); so bleiben die Faelle lesbar. */
 function titel(werte) {
   const factors = {};
   for (const [id, score] of Object.entries(werte)) {
     factors[id] = score === null
       ? { state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", score: null }
-      : { state: "AVAILABLE", score };
+      : { state: "AVAILABLE", score, position: score };
   }
   return { factors };
 }

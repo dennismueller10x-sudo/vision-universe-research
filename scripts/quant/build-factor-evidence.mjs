@@ -931,6 +931,36 @@ function main() {
     out.get(shard)[record.ticker] = published;
   });
 
+  /* 4b. Stufen-Methodik factor-band-2.0.0: die Position jedes Faktorwerts
+     unter allen bewerteten Titeln desselben Faktors und Stichtags. Gezaehlt
+     ueber genau die Titel, die dieses Artefakt veroeffentlicht - dieselbe
+     Menge, die Screener und Methodik als Verteilung lesen. Die Faktorwerte
+     selbst bleiben unberuehrt. */
+  const bandUniverse = {}, bandCuts = {};
+  for (const factorId of FactorEvidence.FACTOR_ORDER) {
+    const sorted = [];
+    for (const securities of out.values()) for (const rec of Object.values(securities)) {
+      const f = rec.factors[factorId];
+      if (f && f.state === "AVAILABLE" && finite(f.score)) sorted.push(f.score);
+    }
+    sorted.sort((a, b) => a - b);
+    bandUniverse[factorId] = sorted.length;
+    /* Welcher Faktorwert heute fuer welche Stufe reicht - nur zur
+       Offenlegung (Methodik-Seite), die Stufe selbst kommt aus der Position. */
+    bandCuts[factorId] = sorted.length >= FactorEvidence.MIN_POSITION_UNIVERSE
+      ? Object.fromEntries(FactorEvidence.BANDS.filter((b) => b.min > 0).map((b) => [b.id, sorted[Math.ceil(b.min / 100 * (sorted.length - 1))]]))
+      : null;
+    for (const securities of out.values()) for (const rec of Object.values(securities)) {
+      const f = rec.factors[factorId];
+      if (f && f.state === "AVAILABLE" && finite(f.score)) {
+        const position = FactorEvidence.positionOf(sorted, f.score);
+        if (position !== null) f.position = position;
+      }
+    }
+  }
+  const bandSemantics = { version: FactorEvidence.BAND_SEMANTICS_VERSION, basis: "RELATIVE_POSITION", universe: bandUniverse, scoreCuts: bandCuts,
+    minimumUniverse: FactorEvidence.MIN_POSITION_UNIVERSE, methodology: "quant/methodology/factor-bands-v2.json" };
+
   /* 5. Write. */
   if (existsSync(OUT_DIR)) rmSync(OUT_DIR, { recursive: true });
   mkdirSync(OUT_DIR, { recursive: true });
@@ -946,6 +976,7 @@ function main() {
     publication: { compositeAllowed: false, rankingAllowed: false, reason: "QUANT_V2_NOT_ACTIVE", explanation: contract.publication.reason },
     factorOrder: contract.factorOrder,
     factorWeights: contract.factorWeights,
+    bandSemantics,
     componentSpecs
   };
 

@@ -7,8 +7,9 @@
    gezaehlt - nichts ist hineingeschrieben, was sich aendern kann.
 
    Der Abschnitt "Wie die Stufen verteilt sind" ist die oeffentliche
-   Antwort auf das Band-Audit: die Stufen sind feste Wertgrenzen, keine
-   Anteile, und die gemessene Verteilung steht daneben.
+   Antwort auf das Band-Audit: seit factor-band-2.0.0 ist die Stufe die
+   gezaehlte Position unter allen bewerteten Aktien; welcher Faktorwert
+   heute fuer welche Stufe reicht, steht daneben.
    ========================================================================= */
 (function (global) {
   "use strict";
@@ -67,13 +68,13 @@
     }));
   }
 
-  /* Die Stufen-Skala mit den echten Wertgrenzen (VM.BAND_MIN, gespiegelt
-     aus der Engine) - von sehr schwach bis sehr stark. */
+  /* Die Stufen-Skala: Grenzen der POSITION unter allen bewerteten Aktien
+     (VM.BAND_MIN, gespiegelt aus der Engine, factor-band-2.0.0). */
+  var BAND_SCALE_TEXT = { VERY_WEAK: "schwächstes Viertel", WEAK: "25–45 %", NEUTRAL: "45–75 %", STRONG: "75–90 %", VERY_STRONG: "stärkste 10 %" };
   function bandScale() {
     var order = VM.BAND_ORDER.slice().reverse(), words = { VERY_WEAK: "sehr schwach", WEAK: "schwach", NEUTRAL: "durchschnittlich", STRONG: "stark", VERY_STRONG: "sehr stark" };
-    return el("div", { class: "q-bands", role: "list", "aria-label": "Stufen eines Faktorwerts" }, order.map(function (b, i) {
-      var lo = VM.BAND_MIN[b], next = order[i + 1], hi = next ? VM.BAND_MIN[next] - 1 : 100;
-      return el("div", { class: "b" + (i + 1), role: "listitem" }, [el("b", { class: "num", text: lo + "–" + hi }), el("small", { text: words[b] })]);
+    return el("div", { class: "q-bands", role: "list", "aria-label": "Stufen nach Position unter allen bewerteten Aktien" }, order.map(function (b, i) {
+      return el("div", { class: "b" + (i + 1), role: "listitem" }, [el("b", { class: "num", text: BAND_SCALE_TEXT[b] }), el("small", { text: words[b] })]);
     }));
   }
 
@@ -115,8 +116,8 @@
         ["Lieber keine Aussage als eine falsche", "Fehlt eine Kennzahl, wird sie nicht geschätzt. Reicht die Datenlage nicht, sagt Quant das – mit der Zahl, die fehlt."],
         ["Keine Gesamtnote, keine Prognose", "Eine einzelne Zahl würde Zielkonflikte verbergen – etwa hohe Qualität bei hohem Preis. Quant zeigt die Eigenschaften einzeln und sagt nie, was passieren wird."]
       ].map(function (p, i) { return el("li", { class: "q-rowlink is-static" }, [el("span", { class: "q-num", text: "0" + (i + 1) }), el("span", {}, [el("strong", { text: p[0] }), el("small", { text: p[1] })])]); }))]));
-    main.append(X.section("Wie ein Faktorwert zu lesen ist", "Jeder Faktor ist ein Wert von 0 bis 100 im Vergleich zu allen anderen US-Aktien. Die Stufen sind feste Wertgrenzen – keine Anteile des Marktes.", [bandScale(),
-      el("p", { class: "qx-small", text: "Weil ein Faktorwert ein Mittel aus mehreren Rangplätzen ist, sammeln sich die Werte in der Mitte – „sehr stark“ ist deshalb deutlich seltener als jede zehnte Aktie. Die gemessene Verteilung steht unter „Faktoren“." })],
+    main.append(X.section("Wie ein Faktorwert zu lesen ist", "Jeder Faktor ist ein Wert von 0 bis 100, gebildet aus Rangplätzen im Vergleich zu anderen US-Aktien. Die Stufe sagt, wo dieser Wert unter allen bewerteten Aktien liegt.", [bandScale(),
+      el("p", { class: "qx-small", text: "„Sehr stark“ heißt: höher als mindestens 90 % der bewerteten Aktien – gezählt am selben Stichtag, je Eigenschaft. Die Stufe ist damit eine relative Einordnung, kein absolutes Gütesiegel: Sie sagt, wie eine Aktie im Vergleich dasteht, nicht, ob sie für sich genommen gut ist." })],
       { href: X.routes.method("faktoren"), label: "Verteilung ansehen" }));
     main.append(X.section("Grenzen offenlegen", "Was Quant bewusst nicht sagt – und wo die Daten derzeit enden.", [el("div", { class: "q-limits" }, [
       ["ban", "Keine Empfehlung", "Quant ordnet ein. Keine Kauf- oder Verkaufsempfehlungen, keine Wahrscheinlichkeiten für künftige Kurse. Setup-Marken sind gekennzeichnete Szenarien."],
@@ -179,16 +180,16 @@
     var dist = gap.dist;
     if (dist) main.append(await histogramSection(ctx, dist, focus));
     if (dist) {
-      main.append(X.section("Wie die Stufen verteilt sind", "Die Stufen sind feste Wertgrenzen auf dem Faktorwert – keine Anteile des Marktes. Weil ein Faktorwert ein Mittel aus mehreren Rangplätzen ist, sammeln sich die Werte in der Mitte. „Sehr stark“ ist deshalb viel seltener als jede zehnte Aktie. Gezählt über alle veröffentlichten Werte:", [
-        el("div", { class: "qx-card qx-table-wrap", tabindex: "0", "aria-label": "Verteilung der Stufen je Faktor" }, [el("table", { class: "qx-table" }, [
-          el("thead", {}, [el("tr", {}, ["Eigenschaft", "bewertet", "sehr stark (≥ 90)", "stark (≥ 75)", "durchschn. (≥ 45)", "schwach (≥ 25)", "sehr schwach"].map(function (h) { return el("th", { text: h }); }))]),
+      main.append(X.section("Welcher Wert reicht heute für welche Stufe?", "Die Stufe ist die Position unter allen bewerteten Aktien. Weil ein Faktorwert ein Mittel aus mehreren Rangplätzen ist, liegen die Werte je Eigenschaft unterschiedlich eng beieinander – derselbe Wert kann deshalb bei einer Eigenschaft „stark“ und bei einer anderen „durchschnittlich“ sein. Gezählt über alle veröffentlichten Werte:", [
+        el("div", { class: "qx-card qx-table-wrap", tabindex: "0", "aria-label": "Mindestwert je Stufe und Eigenschaft" }, [el("table", { class: "qx-table" }, [
+          el("thead", {}, [el("tr", {}, ["Eigenschaft", "bewertet", "sehr stark ab", "stark ab", "durchschn. ab", "schwach ab"].map(function (h) { return el("th", { text: h }); }))]),
           el("tbody", {}, VM.ORDER.map(function (id) {
             var d = VM.distributionOf(dist[id] || []);
-            return el("tr", {}, [el("td", { text: VM.FACTORS[id].name }), el("td", { class: "num", text: d.n.toLocaleString("de-DE") })].concat(VM.BAND_ORDER.map(function (b) {
-              return el("td", { class: "num", text: d.n ? (d.bands[b] / d.n * 100).toLocaleString("de-DE", { maximumFractionDigits: 1 }) + " %" : "–" });
+            return el("tr", {}, [el("td", { text: VM.FACTORS[id].name }), el("td", { class: "num", text: d.n.toLocaleString("de-DE") })].concat(["VERY_STRONG", "STRONG", "NEUTRAL", "WEAK"].map(function (b) {
+              return el("td", { class: "num", text: d.n && typeof d.cuts[b] === "number" ? "Wert " + Math.ceil(d.cuts[b]) : "–" });
             })));
           }))])]),
-        el("p", { class: "qx-small", text: "Auf jeder Aktienseite steht deshalb zusätzlich die gezählte Position: „höher als bei X % der bewerteten Aktien“. Eine Neukalibrierung der Stufen wäre eine neue, versionierte Methodik – sie wird nicht stillschweigend vorgenommen." })
+        el("p", { class: "qx-small", text: "Auf jeder Aktienseite steht neben der Stufe die gezählte Position: „höher als bei X % der bewerteten Aktien“ – dieselbe Zählung, aus der die Stufe kommt. Bis zur Fassung factor-band 1 waren die Stufen feste Wertgrenzen (ab 90, 75, 45, 25); sie klangen nach Anteilen, waren aber keine. Fassung factor-band-2.0.0, Methodik: factor-bands-v2.json." })
       ], null, "Offen gelegt"));
     }
   }
@@ -206,6 +207,7 @@
     var pick = el("div", { class: "q-chips", role: "group", "aria-label": "Faktor wählen" });
     function draw() {
       var vals = dist[cur] || [], bins = []; for (var k = 0; k < 20; k++) bins.push(0);
+      var sortedCur = vals.slice().sort(function (a, b) { return a - b; });
       vals.forEach(function (v) { bins[Math.min(19, Math.max(0, Math.floor(v / 5)))]++; });
       var max = Math.max.apply(null, bins) || 1, W = 800, H = 220, bw = W / 20;
       var ns = "http://www.w3.org/2000/svg";
@@ -215,7 +217,7 @@
       var svg = s("svg", { viewBox: "0 0 " + W + " " + (H + 22), role: "img", "aria-label": "Verteilung " + VM.FACTORS[cur].name + ": " + bins.map(function (b, i) { return (i * 5) + "–" + (i * 5 + 4) + ": " + b; }).join(", ") });
       bins.forEach(function (b, i) {
         var h = Math.max(1, b / max * (H - 14));
-        var band = VM.band(i * 5 + 2);
+        var band = VM.bandIn(sortedCur, i * 5 + 2.5);
         svg.append(s("rect", { x: i * bw + 2, y: H - h, width: bw - 4, height: h, rx: 3, style: "fill:var(" + ({ VERY_WEAK: "--q-band-1", WEAK: "--q-band-2", NEUTRAL: "--q-band-3", STRONG: "--q-band-4", VERY_STRONG: "--q-band-5" }[band] || "--q-band-none") + ")" }));
         if (i % 2 === 0) { var t = s("text", { x: i * bw, y: H + 16, "text-anchor": i ? "middle" : "start", class: "q-hist-axis" }); t.textContent = String(i * 5); svg.append(t); }
       });
@@ -230,7 +232,7 @@
     }
     ids.forEach(function (id) { pick.append(el("button", { type: "button", class: "q-chip", dataset: { factor: id }, text: VM.FACTORS[id].name, onclick: function () { cur = id; draw(); } })); });
     draw();
-    return X.section("Wie sich die Werte verteilen", "Anzahl der Aktien je Wertebereich (Klassen zu 5 Punkten), gezählt aus allen veröffentlichten Faktorwerten. Die Farben sind die Stufen; die gestrichelte Linie zeigt NVIDIA als Beispiel.", [pick, host, bandScale()], null, "Offen gelegt");
+    return X.section("Wie sich die Werte verteilen", "Anzahl der Aktien je Wertebereich (Klassen zu 5 Punkten), gezählt aus allen veröffentlichten Faktorwerten. Die Farben zeigen die Stufe, die ein Wert dieser Klasse heute erreicht (Position unter allen bewerteten Aktien); die gestrichelte Linie zeigt NVIDIA als Beispiel.", [pick, host, bandScale()], null, "Offen gelegt");
   }
 
   async function gewichtung(main, ctx, t) {
