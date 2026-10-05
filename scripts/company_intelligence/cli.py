@@ -55,7 +55,7 @@ def manifest_batch(document, companies, store, now, limit, tickers=None):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('command', choices=['run', 'backfill', 'export', 'quality', 'probe', 'coverage', 'discover-catalogue', 'discover-backfill', 'verify-domains', 'sweep-inventory', 'news-archive', 'news-backfill', 'materials-backfill', 'sec-stream', 'poll', 'profile-backfill'])
+    p.add_argument('command', choices=['run', 'backfill', 'export', 'quality', 'probe', 'coverage', 'discover-catalogue', 'discover-backfill', 'verify-domains', 'sweep-inventory', 'news-archive', 'news-backfill', 'events-backfill', 'materials-backfill', 'sec-stream', 'poll', 'profile-backfill'])
     p.add_argument('--inventory-pass',help='Stable lower-case identifier for resumable candidate discovery')
     p.add_argument('--inventory-lane',choices=['domains','ir'],default='domains')
     p.add_argument('--discovery-admission-interval',type=float,default=2,help='Discovery-only spacing across independent hosts (.5..2 seconds); host cooldowns remain enforced')
@@ -101,7 +101,7 @@ def main(argv=None):
         from company_intelligence.inventory_sweep import prefix
         try:prefix(args.inventory_pass,args.inventory_lane)
         except ValueError:p.error('sweep-inventory requires a safe --inventory-pass identifier')
-    if args.command in ('discover-catalogue', 'verify-domains', 'sweep-inventory', 'news-archive', 'news-backfill', 'materials-backfill') and not args.network:
+    if args.command in ('discover-catalogue', 'verify-domains', 'sweep-inventory', 'news-archive', 'news-backfill', 'events-backfill', 'materials-backfill') and not args.network:
         p.error('discover-catalogue requires --network')
     if args.command == 'discover-backfill' and not (args.network and args.discover_sites and args.discover_ir):
         p.error('discover-backfill requires --network --discover-sites --discover-ir')
@@ -293,6 +293,15 @@ def main(argv=None):
             pipeline.seed_sources(json.loads((config_dir / 'sources.json').read_text()))
             from company_intelligence.news_backfill import backfill
             print(json.dumps(backfill(pipeline,args.limit,args.source_backfill_run,selected_ids if args.tickers else None,include_covered=args.news_backfill_include_covered),sort_keys=True))
+            return 0
+        if args.command=='events-backfill':
+            if (state_dir/'stop-source-backfill').exists():
+                print(json.dumps({'attemptedSources':0,'run':pipeline.run,'requests':0,
+                                  'httpStats':http.stats,'stopReason':'OPERATOR_CHECKPOINT_PAUSE'},sort_keys=True))
+                return 0
+            pipeline.seed_sources(json.loads((config_dir / 'sources.json').read_text()))
+            from company_intelligence.event_backfill import backfill
+            print(json.dumps(backfill(pipeline,args.limit,args.source_backfill_run,selected_ids if args.tickers else None),sort_keys=True))
             return 0
         if args.command=='materials-backfill':
             if (state_dir/'stop-source-backfill').exists():
