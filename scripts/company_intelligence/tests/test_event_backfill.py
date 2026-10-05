@@ -138,6 +138,36 @@ class EventBackfillTests(unittest.TestCase):
             with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
                 main(['events-backfill', '--root', tmp, '--state', str(state)])
 
+    def test_empty_frozen_cohort_finishes_and_restores_without_absorbing_later_sources(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            state = Path(tmp) / 'state'; store, companies = self.setup(state)
+            for source in store.sources():
+                store.source({**source, 'lastSuccess': NOW, 'nextCheck': '2099-01-01T00:00:00Z'})
+            before = store.sources(); http, calls = self.http(state)
+            first = backfill(Pipeline(tmp, companies, store, http, NOW), 10, 'empty')
+            self.assertEqual(first['stopReason'], 'NO_DUE_SOURCES')
+            self.assertEqual(first['frozenSources'], 0)
+            self.assertEqual(first['attemptedSources'], 0)
+            self.assertEqual(first['requests'], 0)
+            self.assertEqual(first['recoveredCallIssuers'], [])
+            self.assertEqual(first['recoveredConfirmedEarningsIssuers'], [])
+            self.assertEqual(calls, []); self.assertEqual(store.sources(), before)
+            pack(state, Path(tmp) / 'saved.tar.gz'); store.close()
+            fresh = Path(tmp) / 'restore'; restore(Path(tmp) / 'saved.tar.gz', fresh)
+            store = Store(fresh / 'state.sqlite')
+            source = next(s for s in store.sources() if s['sourceId'] == 'b')
+            store.source({k: v for k, v in {**source, 'sourceId': 'later',
+                'url': 'https://root.example/later-events'}.items() if k not in ('lastSuccess', 'nextCheck')})
+            before = store.sources(); http, calls = self.http(fresh)
+            second = backfill(Pipeline(tmp, companies, store, http, NOW), 10, 'empty')
+            self.assertEqual(second['stopReason'], 'NO_DUE_SOURCES')
+            self.assertEqual(second['frozenSources'], 0)
+            self.assertEqual(calls, []); self.assertEqual(store.sources(), before)
+            third = backfill(Pipeline(tmp, companies, store, http, NOW), 10, 'later')
+            self.assertEqual(third['attemptedSourceIds'], ['later'])
+            self.assertEqual(third['recoveredCallIssuers'], ['iss_cik_0001788882'])
+            store.close()
+
     def test_runner_restores_event_accounting_without_forced_sources(self):
         with tempfile.TemporaryDirectory() as tmp, contextlib.redirect_stdout(io.StringIO()):
             state = Path(tmp) / 'state'; Store(state / 'state.sqlite').close(); calls = []

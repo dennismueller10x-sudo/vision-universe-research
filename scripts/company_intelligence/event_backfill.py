@@ -76,7 +76,9 @@ def backfill(pipeline, limit=32, run_id='unpolled-events', scope=None):
 def metrics(pipeline, company_ids):
     from .coverage import report
     companies = {cid: c for cid, c in pipeline.companies.items() if cid in company_ids}
-    rows = report(pipeline.store, companies, pipeline.now)['companies']
+    # A fully ingested source registry legitimately freezes an empty cohort.
+    # There are no recovery deltas to measure, and no universe to aggregate.
+    rows = report(pipeline.store, companies, pipeline.now)['companies'] if companies else []
     fields = {'recoveredCallIssuers': 'calls', 'recoveredDatedCallIssuers': 'callDates',
               'recoveredWebcastIssuers': 'webcastLinks', 'recoveredPresentationIssuers': 'presentations',
               'recoveredManagementIssuers': 'anyCallContentReference',
