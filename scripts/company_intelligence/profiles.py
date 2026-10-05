@@ -14,7 +14,7 @@ from .transport import SourceError, BudgetExhausted
 from .q4_events import public_link
 
 VERSION = 'company-profile-1.0.0'
-PARSER_VERSION = 'company-profile-parser-1.0.10'
+PARSER_VERSION = 'company-profile-parser-1.0.11'
 WEB_DAYS = 90
 SEC_STALE_DAYS = 550
 MAX_DOCUMENT = 64 * 1024 * 1024
@@ -41,6 +41,8 @@ class TextBlocks(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.blocks, self.parts, self.stack = [], [], []
         self.language = None
+        self.registrants = set()
+        self.registrant_parts = None
 
     def flush(self):
         value = clean(''.join(self.parts), 20000)
@@ -50,6 +52,8 @@ class TextBlocks(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
+        if attrs.get('name', '').lower() == 'dei:entityregistrantname':
+            self.registrant_parts = []
         if tag == 'html':
             self.language = (attrs.get('lang') or '').lower().split('-')[0]
         hidden = bool(self.stack and self.stack[-1][1]) or tag in ('script', 'style', 'nav', 'footer', 'header', 'ix:hidden') or 'hidden' in attrs or re.search(r'display\s*:\s*none', attrs.get('style', ''), re.I) is not None
@@ -59,6 +63,11 @@ class TextBlocks(HTMLParser):
             self.stack.append((tag, hidden))
 
     def handle_endtag(self, tag):
+        if tag == 'ix:nonnumeric' and self.registrant_parts is not None:
+            name = ' '.join(re.sub(r'[^a-z0-9 ]', ' ', ''.join(self.registrant_parts).lower()).split())
+            if name:
+                self.registrants.add(name)
+            self.registrant_parts = None
         if tag in ('p', 'div', 'h1', 'h2', 'h3', 'h4', 'li', 'td'):
             self.flush()
         for i in range(len(self.stack) - 1, -1, -1):
@@ -67,6 +76,8 @@ class TextBlocks(HTMLParser):
                 break
 
     def handle_data(self, data):
+        if self.registrant_parts is not None:
+            self.registrant_parts.append(data)
         if not self.stack or not self.stack[-1][1]:
             self.parts.append(data)
 
@@ -105,7 +116,7 @@ def annual_filing(company, submissions, now):
 
 
 def business_blocks(doc, form):
-    patterns = [r'^(?:part\s+i\s*)?item\s*1[. :–-]*business\b'] if form == '10-K' else [r'^item\s*4[. :–-]*information on the company\b', r'^(?:[bB][. :–-]*)?business overview\b']
+    patterns = [r'^(?:part\s+i\s*)?item\s*1[. :–-]*business\b', r'^items?\s*1\.?\s*(?:and|&)\s*2[. :–-]*business(?: and properties)?\b'] if form == '10-K' else [r'^item\s*4[. :–-]*information on the company\b', r'^(?:[bB][. :–-]*)?business overview\b']
     starts = [i for i, text in enumerate(doc.blocks) if any(re.search(p, text, re.I) for p in patterns)]
     for i in range(len(doc.blocks) - 1):
         if re.fullmatch(r'item\s*1[. :–-]*', doc.blocks[i], re.I) and re.fullmatch(r'business[. :–-]*', doc.blocks[i + 1], re.I) and form == '10-K':
@@ -131,7 +142,7 @@ def sentences(text):
     return [s.replace('\u2024', '.') for s in re.split(r'(?<=[.!?])\s+(?=[A-Z“\"])', text)]
 
 
-def issuer_sentence(raw, company, sec=False):
+def issuer_sentence(raw, company, sec=False, allow_first_person=True):
     """Require a first-person SEC business statement or exact issuer subject.
 
     Holding-company/subsidiary names are never interchangeable. Web evidence
@@ -153,7 +164,7 @@ def issuer_sentence(raw, company, sec=False):
     if re.search(r'\b(?:employee count|number of employees|(?:[\d,.]+|hundreds?|thousands?|million|one|two|three|four|five|six|seven|eight|nine|ten)(?:\s+(?:full.time|part.time))?\s+employees?)\b', text, re.I):
         return None
     text = re.sub(r'(\bcompany\b)\s+(?:committed|dedicated|founded|reshaping)\b.*', r'\1.', text, flags=re.I)
-    if re.search(r'revolutioniz|reshaping|tremendous|competitive|benefiting|strengthening|momentum|market leaders|utmost urgency|scalable|scalability|seasonal fluctuations|must.not.fail|inspires? confidence|off.mall|best.in.class|differentiating value|low.cost,? high.quality|\b(?:are|is) (?:also expanding|focused|committed)\b', text, re.I):
+    if re.search(r'revolutioniz|reshaping|tremendous|competitive|purpose.driven|company culture|long.term happiness|most recognized|preeminent|synergistic|secular growth|compelling demographics|benefiting|strengthening|momentum|market leaders|utmost urgency|scalable|scalability|seasonal fluctuations|must.not.fail|inspires? confidence|off.mall|best.in.class|differentiating value|low.cost,? high.quality|\b(?:are|is) (?:also expanding|focused|committed)\b', text, re.I):
         return None
     name = display_name(company['names'][0])
     names = []
@@ -169,13 +180,13 @@ def issuer_sentence(raw, company, sec=False):
             if re.search(r'\b(?:Inc|Corp|Ltd|Co)$', subject, re.I) and text[len(subject):].startswith('.'):
                 subject += '.'
             break
-    first_person = sec and bool(re.match(r'^(?:we|the company)\s', text, re.I))
-    possessive = sec and re.match(r'^our\s+(?:principal |main |core )?(?:products|product (?:portfolio|offering|line)s?|brands?|merchandise|platforms?|services|business|software platforms|technology stack|(?:comprehensive )?set of software|(?:auto )?insurance products?|field programmable gate array)\b', text, re.I)
+    first_person = sec and allow_first_person and bool(re.match(r'^(?:we|the company|the corporation|the registrant)\s', text, re.I))
+    possessive = sec and allow_first_person and re.match(r'^our\s+(?:principal |main |core )?(?:products|product (?:portfolio|offering|line)s?|brands?|merchandise|platforms?|services|business|software platforms|technology stack|(?:comprehensive )?set of software|(?:auto )?insurance products?|field programmable gate array)\b', text, re.I)
     if possessive:
         text = re.sub(r'^our\b', lambda m: name + "'s", text, flags=re.I)
         subject = name + "'s"
     if first_person:
-        text = re.sub(r'^(?:we|the company)\b', lambda m: name, text, flags=re.I)
+        text = re.sub(r'^(?:we|the company|the corporation|the registrant)\b', lambda m: name, text, flags=re.I)
         text = re.sub(r'^' + re.escape(name) + r'\s+(?:also|currently|primarily|generally)\s+', lambda m: name + ' ', text, flags=re.I)
         expertise = re.match(r'^' + re.escape(name) + r' are experts in the ([a-z, ]+) of (.+)', text, re.I)
         if expertise:
@@ -196,7 +207,8 @@ def issuer_sentence(raw, company, sec=False):
         main_clause = re.split(r'\b(?:that|which)\b', text, maxsplit=1)[0]
         rest = text[len(main_clause):]
         clear_verbs = {k: v for k, v in verbs if k in ('manufacture', 'distribute', 'operate', 'produce', 'commercialize', 'serve', 'sell', 'provide', 'offer', 'deliver', 'develop')}
-        main_clause = re.sub(r'\band (' + '|'.join(clear_verbs) + r')\b', lambda m: 'and ' + clear_verbs[m[1].lower()], main_clause, flags=re.I)
+        if not re.search(r'\bto (?:acquire|design|develop|manufacture|provide|operate|offer|produce|sell|serve|build)\b', main_clause, re.I):
+            main_clause = re.sub(r'\band (' + '|'.join(clear_verbs) + r')\b', lambda m: 'and ' + clear_verbs[m[1].lower()], main_clause, flags=re.I)
         main_clause = re.sub(r'\band are\b', 'and is', main_clause, flags=re.I)
         text = main_clause + rest
         text = re.sub(r',?\s+and continue to grow\b.*', '.', text, flags=re.I)
@@ -320,7 +332,10 @@ def extract(company, body, source, now, official_website=None):
     eligible = []
     for text in selected_blocks:
         for raw in sentences(text):
-            normalized = issuer_sentence(raw, company, sec=sec)
+            # Combined annual reports can change the meaning of 'we' by
+            # subsidiary section. Exact requested-issuer subjects remain safe;
+            # a shared CIK archive route alone cannot resolve that voice.
+            normalized = issuer_sentence(raw, company, sec=sec, allow_first_person=len(doc.registrants) <= 1)
             if normalized and normalized not in [s[1] for s in eligible]:
                 # Repeated platform lists with the same issuer predicate add
                 # no consumer value; keep the shorter complete statement.
@@ -358,6 +373,8 @@ def extract(company, body, source, now, official_website=None):
     while len(description) > 800 and len(eligible) > 1:
         eligible.pop()
         description = ' '.join(s[1] for s in eligible)
+    if len(description) < 40:
+        return {'state': 'UNAVAILABLE', 'reason': 'NO_EXPLICIT_ISSUER_BUSINESS_DESCRIPTION'}
     provenance = {k: source[k] for k in ('type', 'filingId', 'form', 'filedAt') if k in source}
     provenance.update(companyId=company['companyId'], url=url, contentHash=hashlib.sha256(body).hexdigest(), verifiedAt=now,
                       evidence=[s[0] for s in eligible], method='EXPLICIT_ISSUER_BUSINESS_SENTENCES')

@@ -81,6 +81,33 @@ class ProfileTests(unittest.TestCase):
             extract(COMPANY, body, wrong, NOW)
         self.assertIsNone(annual_filing(COMPANY, {**submissions(), 'cik': '0000000002'}, NOW))
 
+    def test_combined_registrant_report_requires_named_issuer_not_subsidiary_voice(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        header = b'<ix:hidden><ix:nonNumeric name="dei:EntityRegistrantName">Example Holdings Inc.</ix:nonNumeric><ix:nonNumeric name="dei:EntityRegistrantName">Example Operating LLC</ix:nonNumeric></ix:hidden>'
+        body = header + b'<h2>Item 1. Business</h2><p>Example Holdings Inc. is a holding company for regulated electric utilities.</p><h3>Example Operating LLC</h3><p>We provide electricity services to residential customers.</p><p>Our products include electricity and gas services.</p>'
+        result = extract(COMPANY, body, source, NOW)
+        self.assertEqual(result['description'], 'Example Holdings Inc. is a holding company for regulated electric utilities.')
+        only_voice = header + b'<h2>Item 1. Business</h2><p>We provide electricity services to residential customers.</p>'
+        self.assertEqual(extract(COMPANY, only_voice, source, NOW)['state'], 'UNAVAILABLE')
+        # Repeated share-class tags for the same entity do not suppress voice.
+        one_entity = header.replace(b'Example Operating LLC', b'Example Holdings Inc.')
+        self.assertEqual(extract(COMPANY, one_entity + b'<h2>Item 1. Business</h2><p>We provide electricity services to residential customers.</p>', source, NOW)['state'], 'AVAILABLE')
+
+    def test_combined_business_properties_heading_and_single_registrant_voice(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Items 1. and 2. Business and Properties</h2><p>The Corporation manufactures specialty metal products for industrial customers.</p><h2>Item 1A. Risk Factors</h2>'
+        self.assertIn('manufactures specialty metal products', extract(COMPANY, body, source, NOW)['description'])
+        marketing = body.replace(b'The Corporation manufactures specialty metal products for industrial customers.', b'We provide software services for banks and insurance companies. We focus on a company culture supporting the long-term happiness of its employees.')
+        self.assertEqual(extract(COMPANY, marketing, source, NOW)['description'], 'Example Holdings Inc. provides software services for banks and insurance companies.')
+
+    def test_issuer_voice_preserves_infinitives_and_short_normalization_abstains(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>We are a self-advised REIT formed in 2003 to acquire and develop net-leased healthcare facilities.</p>'
+        self.assertIn('to acquire and develop', extract(COMPANY, body, source, NOW)['description'])
+        short = b'<h2>Item 1. Business</h2><p>Example is a technology company founded by two engineers.</p>'
+        company = {**COMPANY, 'names': ['Example']}
+        self.assertEqual(extract(company, short, source, NOW)['state'], 'UNAVAILABLE')
+
     def test_foreign_private_issuer_20f_business_overview_is_identity_scoped(self):
         data = submissions(); data['filings']['recent']['form'] = ['20-F']
         source = annual_filing(COMPANY, data, NOW)
