@@ -208,8 +208,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const fremdesUrteil=urteile.filter(t=>!erlaubt.includes(t));
    if(!urteile.length)befund(view,width,'keine einzige Trefferzeile traegt ein Urteil');
    if(fremdesUrteil.length)befund(view,width,'Trefferzeile traegt kein Klartext-Urteil: '+JSON.stringify(fremdesUrteil[0]));
-   /* Die Methodik der Frage steht dabei: was "stark" heisst. */
-   await page.getByText(/„Stark“ heißt hier: Wert 70 oder mehr/).waitFor();
+   /* Die Methodik der Frage steht dabei: die Schwelle ist ein WERT (70),
+      die Stufe daneben eine POSITION (factor-band-2.0.0) - beides gesagt. */
+   await page.getByText(/Gesucht wird ein Wert von 70 oder mehr .*Die Stufe neben jeder Aktie .* ist dagegen ihre Position unter allen bewerteten Aktien/).waitFor();
    /* Und der Weg in den Profi-Modus traegt die Regel mit. */
    await page.getByRole('link',{name:'Im Profi-Modus verfeinern',exact:true}).click();
    await bereit(page,'screener');

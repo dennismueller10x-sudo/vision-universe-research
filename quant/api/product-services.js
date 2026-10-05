@@ -668,6 +668,33 @@ function create(options){
   return {reason:'NOT_AN_EQUITY_LISTING',securityType:belegt.securityType,
    securityTypeBasis:belegt.securityTypeBasis,name:(i&&i.companyName)||null};
  }
+ /* STUFE = POSITION (factor-band-2.0.0). Ein Artefakt ab 2.0.0 traegt die
+  * Position je Faktor. Ein aelteres (vor dem ersten Lauf nach dem Wechsel)
+  * traegt sie nicht - dann wird sie hier mit DERSELBEN Zaehlung
+  * (FactorEvidence.positionOf) aus dem Screening-Artefakt desselben Stichtags
+  * gezaehlt: dieselben veroeffentlichten Werte, dieselbe Menge. Weicht der
+  * Stichtag ab, gibt es keine Position und keine Stufe - nichts Geratenes. */
+ let bandDistPromise=null;
+ async function withBandPositions(record,shard){
+  if(!record||!record.factors)return record;
+  const fehlt=FactorEvidence.FACTOR_ORDER.some(id=>{const f=record.factors[id];return f&&f.state==='AVAILABLE'&&typeof f.position!=='number';});
+  if(!fehlt)return record;
+  if(!bandDistPromise)bandDistPromise=getFactorEvidenceScreening().then(sc=>{
+   if(!sc||sc.state!=='AVAILABLE')return null;
+   const out={asOf:sc.asOf,byId:{}};
+   for(const id of FactorEvidence.FACTOR_ORDER)out.byId[id]=sc.rows.map(r=>r[FactorEvidence.NAMESPACE+'.'+id]).filter(v=>typeof v==='number'&&Number.isFinite(v)).sort((a,b)=>a-b);
+   return out;
+  }).catch(()=>null);
+  const dist=await bandDistPromise;
+  if(!dist||dist.asOf!==(shard&&shard.asOf))return record;
+  const factors={};
+  for(const id of Object.keys(record.factors)){
+   const f=record.factors[id],sorted=dist.byId[id];
+   factors[id]=f&&f.state==='AVAILABLE'&&typeof f.position!=='number'&&sorted
+    ?Object.assign({},f,{position:FactorEvidence.positionOf(sorted,f.score),positionUniverse:sorted.length}):f;
+  }
+  return Object.assign({},record,{factors});
+ }
  async function getFactorEvidence(ticker){
   ticker=String(ticker||'').toUpperCase();
   if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
@@ -682,7 +709,7 @@ function create(options){
    if(!source)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_FACTOR_EVIDENCE'};
    const violations=FactorEvidence.publicationViolations(source);
    if(violations.length)return {state:'UNAVAILABLE',reason:'PUBLICATION_GATE_VIOLATED'};
-   const record=FactorEvidence.hydrate(source,shard);
+   const record=await withBandPositions(FactorEvidence.hydrate(source,shard),shard);
    /* Kein Kuerzel als Name - dieselbe Regel wie in ohneErfundenenNamen, hier
       an der Quelle, weil die Quant-Ansicht diesen Namen als Ueberschrift
       setzt. Gemessen betraf das 6 von 977 Titeln einer Probe. */
