@@ -1909,10 +1909,18 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
   } else series.long = null;
 
   if (!series.available && stock.dataMode === "real") {
-    series.reason = "WITHHELD_REDISTRIBUTION";
-    series.message = "Die Kursreihe dieses Titels stammt vom Anbieter und wird nach der " +
-                     "Redistributionsregel nicht ausgeliefert. Alle Kennzahlen auf dieser " +
-                     "Seite sind daraus abgeleitete Zustände, Abstände und Renditen.";
+    /* Der wahre Grund: ist die Reihe zu kurz (z. B. nur Kurse <= 0, GROM),
+       ist das keine Redistributionsregel (Red-Team 05.10.2026). */
+    if (stock.priceSeries && stock.priceSeries.status === "INSUFFICIENT_HISTORY") {
+      series.reason = "INSUFFICIENT_HISTORY";
+      series.message = "Für diesen Titel liegen zu wenige gültige Tageskurse für einen Verlauf vor. " +
+                       "Kennzahlen, die mehr Historie brauchen, bleiben gesperrt.";
+    } else {
+      series.reason = "WITHHELD_REDISTRIBUTION";
+      series.message = "Die Kursreihe dieses Titels stammt vom Anbieter und wird nach der " +
+                       "Redistributionsregel nicht ausgeliefert. Alle Kennzahlen auf dieser " +
+                       "Seite sind daraus abgeleitete Zustände, Abstände und Renditen.";
+    }
   }
 
   const detail = {
