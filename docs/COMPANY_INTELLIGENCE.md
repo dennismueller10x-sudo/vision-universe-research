@@ -1,3 +1,18 @@
+# Source-family execution checkpoint — 2026-10-05
+
+The new `company_intelligence.source_backfill_runner` drives existing material and publisher CLI batches; it does not replace source adapters, relax ownership, force source checks or change production cadence. Each completed batch stores cumulative request/byte totals, distinct presentation recoveries, fresh publisher counts and failure clusters in the private ledger and packs an ignored recovery checkpoint. Reusing the run ID resumes existing due-time selection and accounting. A local request/time boundary continues in another bounded batch; a shared circuit, publisher cooldown or repeated publisher transport pause stops the lane. An operator stop file takes effect after the current checkpoint. Interrupted children preserve their durable source facts and the last completed accounting; a stale publisher checkpoint is never counted as a fresh release batch. The full Company Intelligence Python suite passes **403/403 tests**.
+
+Five targeted tests cover continuation after healthy time exhaustion, exact checkpoint restore and resumed accounting, unchanged blocked-source health, shared circuit/operator pause, interrupted children, publisher budget continuation, stale cooldown counts, month isolation and partial accepted gain during a publisher failure pause. The preceding strict integration-boundary checkpoint `086fed6749174fc7fda0c2b3e3dd8cfe7c1f9cdc` passed all ten reported GitHub workflows, including Company Intelligence, Discover, Quant CI and Quant Browser QA. PR #356 remains open, draft and unmerged. No Quant implementation changed.
+
+Example bounded invocations (normal source cooldowns remain authoritative):
+
+```bash
+PYTHONPATH=scripts python -m company_intelligence.source_backfill_runner --run-id materials-oct5 --lane materials --max-batches 20 --limit 32 --request-budget 160 --max-seconds 360 --network
+PYTHONPATH=scripts python -m company_intelligence.source_backfill_runner --run-id gnn-september-oct5 --lane publisher --archive-month 2026-09 --max-batches 10 --limit 100 --request-budget 100 --max-seconds 480 --network
+```
+
+Use `.company-intelligence/stop-source-backfill` for a checkpoint boundary pause. Removing it and invoking the same run ID resumes. The checkpoint and traffic accounting are operational data, not committed SQLite/generated output. Authenticated private R2 backup remains unavailable because the four existing `VU_HISTORY_S3_*` credential bindings are absent; local exact restore is verified separately below. Consumer coverage figures below retain their measurement timestamp while active bounded discovery adds facts; runtime gains will be re-exported and audited at the next coverage checkpoint.
+
 # CI compatibility checkpoint — 2026-10-05 (discovery continues)
 
 A new main-branch Discover isolation gate correctly exposed the pre-existing Company Intelligence stock-page mount and asset imports as changes under `quant/`. Discover's engine tests, delivered-data verification and reproducible build passed; its path-isolation step failed on `quant/app/page-stock.js` and `quant/index.html`. These existing integration files are unchanged by this run.
