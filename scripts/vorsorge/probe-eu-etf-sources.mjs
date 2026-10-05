@@ -59,8 +59,9 @@ const sleep = (ms) => new Promise((z) => setTimeout(z, ms));
   try {
     const docs = JSON.parse(r.text).response.docs || [];
     row.fileTypes = [...new Set(docs.map((x) => x.file_type))];
+    row.sampleNames = [...new Set(docs.map((x) => x.file_name))].slice(0, 40); row.docKeys = Object.keys(docs[0] || {});
     row.files = docs.filter((x) => /^FULECR_/.test(x.file_name)).map((x) => ({ file_name: x.file_name, download_link: x.download_link, publication_date: x.publication_date })).slice(0, 30);
-    const ce = docs.filter((x) => /^FULECR_\d{8}_C_/.test(x.file_name)).sort((a, b) => (a.file_name < b.file_name ? 1 : -1))[0];
+    const ce = docs.filter((x) => /^FULECR_\d{8}_C/.test(x.file_name)).sort((a, b) => (a.file_name < b.file_name ? 1 : -1))[0];
     if (ce) {
       const z = await get(ce.download_link, { binary: true, timeout: 300000 });
       row.sampleFile = { name: ce.file_name, status: z.status, bytes: z.bytes };
@@ -155,7 +156,8 @@ for (const [id, url] of [
   ["db-reference-data", "https://www.mds.deutsche-boerse.com/mds-en/data-services/reference-data"]
 ]) {
   const r = await get(url);
-  add({ id, url, status: r.status, finalUrl: r.finalUrl || null, error: r.error, excerpts: excerpts(r.text, 12), downloadLinks: links(r.text, /href="[^"]*\.(pdf|xlsx|csv)[^"]*"/gi).slice(0, 15).map((x) => x.slice(6, -1)) });
+  const txt = strip(r.text); const main = Math.max(0, txt.search(/(Disclaimer|Haftungsausschluss|Nutzungs|Terms|Declaration|Erkl)/i) - 200);
+  add({ id, url, status: r.status, finalUrl: r.finalUrl || null, error: r.error, excerpts: excerpts(r.text, 12), fullText: txt.slice(main, main + 9000), downloadLinks: links(r.text, /href="[^"]*\.(pdf|xlsx|csv)[^"]*"/gi).slice(0, 15).map((x) => x.slice(6, -1)) });
   await sleep(500);
 }
 {
@@ -168,7 +170,17 @@ for (const [id, url] of [
     if (x.buf) {
       row.magic = x.buf.subarray(0, 8).toString("hex"); row.textStart = x.buf.subarray(0, 300).toString("utf8").replace(/[^\x20-\x7e]/g, ".");
       const tmp = join(root, ".market-cache/master-datasheet.xls"); mkdirSync(dirname(tmp), { recursive: true }); writeFileSync(tmp, x.buf);
-      try {
+      if (row.magic.startsWith("504b")) {
+        try {
+          const { readXlsx } = await import(join(root, "scripts/vorsorge/adapters/xlsx.mjs"));
+          const wb = readXlsx(x.buf); const rows = wb.rows || [];
+          const hi = rows.findIndex((r) => r.some((c) => /ISIN/i.test(String(c))));
+          const head = hi >= 0 ? rows[hi].map(String) : [];
+          const filled = {}; head.forEach((h, c) => { filled[h] = rows.slice(hi + 1).filter((r) => String(r[c] ?? "").trim() !== "").length; });
+          const distinct = {}; head.forEach((h, c) => { if (/replic|distribut|ertrag|currency|w.hrung|asset|class|domicile|domizil|index|benchmark|issuer|emittent|product|ucits|ter\b|fee|kosten/i.test(h)) { const m = {}; rows.slice(hi + 1).forEach((r) => { const v = String(r[c] ?? "").trim(); if (v) m[v] = (m[v] || 0) + 1; }); distinct[h] = Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 12); } });
+          row.sheets = [{ sheet: wb.sheetNames && wb.sheetNames[0], sheetNames: wb.sheetNames, rows: rows.length, headerRow: hi, header: head, filled, distinct, preamble: rows.slice(0, Math.max(0, hi)).slice(0, 6).map((r) => r.slice(0, 6).map((v) => String(v).slice(0, 80))) }];
+        } catch (e) { row.parseError = String(e.message).slice(0, 200); }
+      } else try {
         execFileSync("python3", ["-m", "pip", "install", "-q", "xlrd==2.0.1"], { stdio: "ignore" });
         const py = `import xlrd,json,sys
 b=xlrd.open_workbook(sys.argv[1])
