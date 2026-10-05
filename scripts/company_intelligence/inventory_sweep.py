@@ -97,7 +97,13 @@ def select(companies, store, now, pass_id, lane, limit=50, allow_network=True):
         url=(c.get('officialSites') or [site.get('url')])[0] if lane=='ir' else value['candidates'][0]['url']
         host=domain(url)
         if host in hosts:continue  # Pending identity stays pending, never silently completed.
-        hosts.add(host);selected.append(c)
+        # A prior per-candidate time ceiling may stop legal-route evidence
+        # gathering even while a bounded batch still has time and requests.
+        # This hint is local to this invocation, never a model/state field.
+        selected_company = ({**c, '_ownershipTimeBudgetRetry': True}
+                            if lane == 'domains' and site.get('status') == 'DEFERRED'
+                            and site.get('reason') == 'NETWORK_TIME_BUDGET_EXHAUSTED' else c)
+        hosts.add(host);selected.append(selected_company)
         if len(selected)>=limit:break
     return selected,candidates
 
