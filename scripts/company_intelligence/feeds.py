@@ -260,6 +260,16 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
             structured_source.update(url=news_page['finalUrl'], sourceId=stable_id(company['companyId'], news_page['finalUrl'], 'schema-news'))
             if news_index(news_page['body'], structured_source, news_page['finalUrl']):
                 sources[structured_source['sourceId']] = {**structured_source, 'type': 'IR_FEED', 'format': 'JSONLD_NEWS', 'active': True, 'intervalHours': 4, 'lastVerified': now, 'verificationEvidence': 'OFFICIAL_SCHEMA_ORG_NEWS_INDEX'}
+        if (provider == 'WORDPRESS' or any('https://api.w.org/' in l.get('rel', '') for l in links)) and not feed_links and not any(s.get('type') == 'IR_FEED' for s in sources.values()):
+            from .wordpress_news import discover as discover_wordpress_news
+            try:
+                wordpress_source = discover_wordpress_news(links, response['finalUrl'], company,
+                                                            structured_source['allowedSites'], http, now)
+                if wordpress_source:
+                    sources[wordpress_source['sourceId']] = wordpress_source
+            except SourceError as error:
+                if isinstance(error, BudgetExhausted):raise
+                warnings.append({'url': response['finalUrl'], 'reason': str(error)[:200], 'provider': 'WORDPRESS'})
         if provider == 'Q4':
             from .q4_events import discover as discover_q4
             from .q4_reports import discover as discover_q4_reports

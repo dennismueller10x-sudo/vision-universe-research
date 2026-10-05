@@ -113,6 +113,9 @@ class Pipeline:
                     self.http.MAX_BYTES=8*1024*1024
                     response=self.http.get(source['url'])
                 finally:self.http.MAX_BYTES=original_limit
+            elif source.get('format') == 'WORDPRESS_REST_NEWS':
+                from .wordpress_news import fetch as fetch_wordpress_news
+                response, wordpress_entries = fetch_wordpress_news(self.http, source)
             else:
                 response = self.http.get(source['url'], robots=source['type'] != 'GDELT')
             if source.get('provider') == 'GLOBENEWSWIRE_RSS':
@@ -195,6 +198,8 @@ class Pipeline:
                 elif source.get('format') == 'GNN_NEWS_SITEMAP':
                     from .news_sitemap import parse as parse_news_sitemap
                     entries = parse_news_sitemap(response['body'], response['finalUrl'])
+                elif source.get('format') == 'WORDPRESS_REST_NEWS':
+                    entries = wordpress_entries
                 else:
                     entries = parse_gdelt(response['body']) if source['type'] == 'GDELT' else news_index(response['body'], source, response['finalUrl']) if source.get('format') == 'JSONLD_NEWS' else parse_feed(response['body'], response['finalUrl'])
             from .news_quality import wordpress_feed,eligible
