@@ -12,11 +12,11 @@
   var X = global.QX, el = X.el, VM = global.VUQuantViewModel;
   var TRUST_WORD = { NOT_READY: "nicht bereit", LIMITED: "eingeschränkt", USABLE: "belastbar", ROBUST: "robust" };
   var REASON = {
-    TOO_FEW_TITLES_OR_CASES: "Zu wenige Titel mit vollständiger Tageshistorie – die Stichprobe wächst mit jedem Pipeline-Lauf.",
+    TOO_FEW_TITLES_OR_CASES: "Zu wenige Titel mit vollständiger Tageshistorie – die Stichprobe wächst mit jeder täglichen Aktualisierung.",
     FACTOR_HISTORY_TOO_SHORT: "Die Faktorhistorie ist noch zu kurz.",
     MEMBERSHIP_AND_FACTOR_HISTORY_TOO_SHORT: "Historische Index-Zugehörigkeit und Faktorhistorie sind noch zu kurz.",
     PATTERN_MATCH_HISTORY_TOO_SHORT: "Die Musterhistorie hat gerade erst begonnen.",
-    PATH_STATES_CLOSED: "Die Pfadzustände der Setup-Engine sind noch nicht freigeschaltet.",
+    PATH_STATES_CLOSED: "Die späteren Setup-Stufen (läuft, ungültig, Ausstieg) sind noch nicht freigeschaltet.",
     NOT_A_TRADABLE_EVENT: "Beschreibt die Datenlage, kein Kursereignis.",
     STUDY_NOT_PUBLISHED: "Die Studie ist nicht veröffentlicht.",
     TRUST_NOT_READY: "Die Vertrauensstufe reicht nicht.",
@@ -27,17 +27,17 @@
     PARTIAL_SENSITIVITY_ONLY: "Delistete Titel sind nur ab 2016 und nur in einer Vergleichsrechnung enthalten.",
     TOTAL_RETURN_COVERAGE_SHORT: "Gesamtrendite ist für zu wenige Titel bestätigt; gerechnet wird ohne Dividenden, nicht gemischt.",
     HAND_PICKED_SURVIVORS: "Nur ausgewählte, heute gelistete Titel.",
-    DAILY_HISTORY_ONLY_IN_PRIVATE_STORE: "Die volle Tageshistorie liegt nur in der Pipeline vor.",
+    DAILY_HISTORY_ONLY_IN_PRIVATE_STORE: "Die volle Tageshistorie wird nur intern ausgewertet und nicht veröffentlicht.",
     STUDY_DECLARES_BACKTEST_NOT_CERTIFIED: "Die Studie ist als Häufigkeitsauswertung freigegeben, nicht als Backtest.",
     PRESENT_AND_UNQUANTIFIED_IN_PART: "Der Überlebenden-Effekt ist nicht quantifiziert.",
     NO_INDEX_LEVEL_SERIES_PUBLISHED: "Es gibt keine Indexreihe mit Gesamtrendite.",
     OOS_DIRECTION_NOT_CONFIRMED: "Die Richtung bestätigt sich außerhalb des Lernzeitraums nicht.",
-    FOLDS_DISAGREE: "Die Walk-Forward-Abschnitte zeigen in verschiedene Richtungen.",
+    FOLDS_DISAGREE: "In verschiedenen Zeitabschnitten zeigt das Ergebnis in verschiedene Richtungen.",
     REGIME_UNDERSAMPLED: "Zu wenige Fälle in mindestens einer Marktphase.",
     NEIGHBOURS_DISAGREE: "Benachbarte Parameter zeigen in eine andere Richtung.",
     FIXED_MAPPING_NOT_SWEPT: "Die freigegebene Zuordnung wird nicht variiert.",
     OUTCOMES_INCOMPLETE: "Zu viele Fälle ohne vollständigen Ausgang.",
-    PIT_NOT_PROVEN: "Point-in-Time ist nicht belegt.",
+    PIT_NOT_PROVEN: "Nicht belegt, dass nur damals bekannte Daten benutzt wurden.",
     PIT_OR_PARITY_MISMATCH: "Die Nachrechnung weicht von veröffentlichten Ständen ab.",
     PARITY_NOT_MEASURED: "Die Nachrechnung ist nicht gemessen.",
     NO_REBALANCE_CONTRACT: "Es gibt keinen Rebalancing-Vertrag.",
@@ -47,7 +47,7 @@
     HISTORY_TOO_SHORT: "Die Historie ist zu kurz.",
     NO_STUDY: "Es gibt keine Studie.",
     TOTAL_RETURN_MISSING: "Die Gesamtrendite fehlt.",
-    SETUP_HISTORY_TOO_SHORT: "Die veröffentlichte Setup-Historie ist noch zu kurz – sie wächst mit jedem Pipeline-Lauf.",
+    SETUP_HISTORY_TOO_SHORT: "Die veröffentlichte Setup-Historie ist noch zu kurz – sie wächst mit jeder täglichen Aktualisierung.",
     SETUP_HISTORY_SPAN_TOO_SHORT: "Die veröffentlichte Setup-Historie umfasst noch zu wenige Monate.",
     COMPLETED_OUTCOMES_TOO_FEW: "Zu wenige abgeschlossene Ergebnisse – ein 6-Monats-Ergebnis braucht 6 Monate.",
     TOO_FEW_TITLES: "Zu wenige Titel mit abgeschlossenem Ergebnis.",
@@ -58,10 +58,10 @@
     DESCRIPTIVE_NOT_A_TEST: "Beschreibt, was geschah; prüft keine Regel.",
     CLUSTERED_SAMPLE: "Die Fälle ballen sich in wenigen Zeiträumen.",
     REGIME_HISTORY_NOT_CERTIFIED: "Die Historie der Marktphasen ist nicht zertifiziert.",
-    EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE: "Ein Vorteil gegenüber der Base Rate bestätigt sich im Testzeitraum nicht.",
+    EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE: "Ein Vorteil gegenüber dem Markt bestätigt sich in neueren Daten nicht.",
     NO_RULE_CERTIFIED: "Keine Regel erfüllt alle Gates.",
     OWNER_APPROVAL_REQUIRED: "Alle Gates bestanden – die Methodik verlangt eine ausdrückliche Owner-Freigabe.",
-    TOTAL_RETURN_NOT_IN_THIS_RUN: "Dieser Lauf rechnet mit Kursrendite; die Pipeline rechnet mit Gesamtrendite.",
+    TOTAL_RETURN_NOT_IN_THIS_RUN: "Diese Auswertung rechnet ohne Dividenden; die tägliche Auswertung rechnet mit Dividenden.",
     VARIANTS_NOT_MEASURABLE_YET: "Die Einstiegsvarianten lassen sich erst mit abgeschlossenen Ergebnissen vergleichen.",
     OOS_NOT_MEASURABLE_YET: "Die Prüfung außerhalb des Lernzeitraums braucht abgeschlossene Ergebnisse.",
     PRESENT_AND_UNQUANTIFIED_IN_PART: "Der Überlebenden-Effekt ist nicht quantifiziert."
@@ -77,7 +77,7 @@
   function baseLine(b) {
     if (typeof b.deltaPositiveShare !== "number") return null;
     /* Eine Nachkommastelle: sonst passt die gerundete Differenz nicht zu den Quoten. */
-    return share1(b.positiveShare) + " im Plus nach 6 M. vs. " + share1(b.basePositiveShare) + " Base Rate derselben Wochen → " + pp(b.deltaPositiveShare) +
+    return share1(b.positiveShare) + " im Plus nach 6 M. vs. " + share1(b.basePositiveShare) + " Markt in denselben Wochen → " + pp(b.deltaPositiveShare) +
       (b.deltaCi ? " (95 %: " + pp(b.deltaCi[0]) + " bis " + pp(b.deltaCi[1]) + ")" : "");
   }
   /* Hält der Abstand zur Base Rate im jüngsten Testzeitraum? Ohne diesen Satz
@@ -85,7 +85,7 @@
   function oosHint(b) {
     if (!b || typeof b.deltaPositiveShare !== "number" || typeof b.edgeOutOfSample !== "boolean") return null;
     if (!b.edgeOutOfSample) return "Im jüngsten Testzeitraum nicht robust genug bestätigt.";
-    return b.deltaPositiveShare < 0 ? "Im jüngsten Testzeitraum bestätigt – schwächer als die Base Rate." : "Im jüngsten Testzeitraum bestätigt.";
+    return b.deltaPositiveShare < 0 ? "In neueren Daten bestätigt – schwächer als der Markt." : "Im jüngsten Testzeitraum bestätigt.";
   }
   function reasonText(code) { return REASON[code] || "Eine Bedingung der Vertrauensregel ist nicht erfüllt."; }
   function pct(v, d, signed) { return typeof v === "number" && isFinite(v) ? VM.pct(v, d === undefined ? 1 : d, signed) : "–"; }

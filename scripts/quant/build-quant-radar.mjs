@@ -462,7 +462,7 @@ let cards = Object.keys(byTicker).map((t) => {
   const s = setupNow[t], lc = lifecycle[t];
   return {
     ticker: t, securityId: securityOf(t),
-    events: byTicker[t].map((e) => ({ id: e.id, eventType: e.eventType, direction: e.direction, occurredAt: e.occurredAt, explanation: e.explanation, trustState: e.trustState, backtest: compactBacktest(e.backtestEvidence) })),
+    events: byTicker[t].map((e) => ({ id: e.id, eventType: e.eventType, direction: e.direction, occurredAt: e.occurredAt, explanation: e.explanation, trustState: e.trustState, isNew: e.isNew, backtest: compactBacktest(e.backtestEvidence) })),
     setup: lc ? { state: lc[0], since: lc[1], sinceIsLowerBound: !!lc[2], previous: lc[3], previousAsOf: lc[4],
       /* Nur eine Marke UNTER dem Kurs ist eine Invalidierung eines
          Aufwaerts-Setups; liegt sie darueber, stammt sie aus einem
