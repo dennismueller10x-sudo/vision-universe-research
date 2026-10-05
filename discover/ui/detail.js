@@ -287,6 +287,7 @@
         state.dailyPoints = loaded.dailyPoints || null;
         state.weeklyPoints = loaded.weeklyPoints || null;
         state.seriesAsOf = loaded.asOf || null;
+        state.closeOnly = !!loaded.closeOnly;
       }
       if (state.intraday) state.range = "1D";
       else if (!loaded) { chartHost.appendChild(noSeries(detail)); return; }
@@ -923,12 +924,14 @@
         annotations.push(seriesAnnotation("bbMiddle", "Bollinger Mitte", "bb-mid"));
       }
       if (state.overlays.high52w) {
-        var hoch = Math.max.apply(null, slice.high.filter(isNum).slice(-252));
-        var tief = Math.min.apply(null, slice.low.filter(isNum).slice(-252));
-        annotations.push(levelAnnotation(hoch, "52W Hoch", slice.timestamps[0],
-                                         slice.timestamps[slice.timestamps.length - 1]));
-        annotations.push(levelAnnotation(tief, "52W Tief", slice.timestamps[0],
-                                         slice.timestamps[slice.timestamps.length - 1]));
+        var jahr = jahresExtreme(state.bars, slice.timestamps[slice.timestamps.length - 1]);
+        if (jahr) {
+          var art = state.closeOnly ? " (Schluss)" : "";
+          annotations.push(levelAnnotation(jahr.hoch, "52W Hoch" + art, slice.timestamps[0],
+                                           slice.timestamps[slice.timestamps.length - 1]));
+          annotations.push(levelAnnotation(jahr.tief, "52W Tief" + art, slice.timestamps[0],
+                                           slice.timestamps[slice.timestamps.length - 1]));
+        }
       }
       if (state.bundle && state.bundle.annotations) {
         var ebenen = OVERLAYS.filter(function (o) { return o.source === "layer" && state.overlays[o.id]; })
@@ -1589,6 +1592,25 @@
     }
     return { start: start, end: end };
   }
+  /* 52-Wochen-Hoch/-Tief nach der Plattformdefinition (252 Handelstage
+     einschliesslich des letzten, Tageshoch/-tief der Tagesreihe; wie
+     market-factors.js): immer aus den TAGESbars bis zum Ende des
+     Ausschnitts, nie aus dem gewaehlten Zeitraum. Vorher stand bei "3M"
+     das 3-Monats-Hoch als "52W Hoch", auf Wochenbasis 252 Wochen
+     (Audit 03.10.2026). Unter 252 Tagen: keine Linie. */
+  function jahresExtreme(bars, bis) {
+    if (!bars || !bars.timestamps || !bars.timestamps.length) return null;
+    var ende = bars.timestamps.length - 1;
+    while (ende >= 0 && bars.timestamps[ende] > bis) ende--;
+    if (ende + 1 < 252) return null;
+    var hoch = -Infinity, tief = Infinity;
+    for (var i = ende - 251; i <= ende; i++) {
+      if (isNum(bars.high[i]) && bars.high[i] > hoch) hoch = bars.high[i];
+      if (isNum(bars.low[i]) && bars.low[i] < tief) tief = bars.low[i];
+    }
+    return isFinite(hoch) && isFinite(tief) ? { hoch: hoch, tief: tief } : null;
+  }
+
   function sliceBars(bars, bounds) {
     var cut = function (a) { return a ? a.slice(bounds.start, bounds.end + 1) : []; };
     return { timestamps: cut(bars.timestamps), open: cut(bars.open), high: cut(bars.high),
