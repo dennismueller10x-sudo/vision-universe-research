@@ -36,6 +36,25 @@ class SitemapTests(unittest.TestCase):
    c=company(name,ticker);self.assertEqual(Resolver({c['companyId']:c}).resolve(r,{'type':'RSS','provider':'GLOBENEWSWIRE_SITEMAP','url':URL}),[])
 
 class ManagementMaterialsTests(unittest.TestCase):
+ def test_representations_product_navigation_cannot_consume_the_material_hub_walk(self):
+  from company_intelligence.feeds import discover_ir
+  from company_intelligence.platforms import endpoints
+  root='https://investors.apple.com/';hub=root+'presentations';product=root+'representations-and-warranties'
+  class HTTP:
+   def __init__(self):self.calls=[]
+   def get(self,url,**kw):
+    self.calls.append(url)
+    if url==root:return {'body':b'<a href="/representations-and-warranties">Representations and Warranties</a><a href="/presentations">Presentations</a>','finalUrl':url}
+    if url==hub:return {'body':b'<a href="/2026-deck.pdf">2026 Investor Presentation</a>','finalUrl':url}
+    raise SourceError('HTTP_404')
+  h=HTTP();_,configs=discover_ir(company(),root,h,NOW)
+  self.assertNotIn(product,h.calls);self.assertEqual(configs[0]['presentationsUrl'],hub)
+  self.assertEqual(configs[0]['materialsPage'],hub)
+  self.assertEqual([d['url'] for d in configs[0]['documents']],[root+'2026-deck.pdf'])
+  self.assertIsNone(endpoints([{'url':product,'text':'Representations and Warranties'}],root)['presentationsUrl'])
+  links=[{'url':root+'agreement.pdf','text':'2026 Representations and Warranties'},{'url':root+'2026-deck.pdf','text':'2026 Investor Presentation'}]
+  self.assertEqual([d['url'] for d in page_documents(company(),links,root,NOW)],[root+'2026-deck.pdf'])
+
  def test_in_page_buttons_do_not_create_presentation_or_webcast_evidence(self):
   from company_intelligence.feeds import parse_links
   from company_intelligence.materials import discover_links

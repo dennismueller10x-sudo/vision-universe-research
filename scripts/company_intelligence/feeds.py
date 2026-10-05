@@ -226,7 +226,7 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
                         'documents': page_documents(company, links, response['finalUrl'], now),
                         'pressReleaseUrl': next((l['url'] for l in links if re.search(r'press releases|news releases|newsroom', l['text'], re.I)), None),
                         'eventsUrl': event_links[0]['url'] if event_links else None,
-                        'presentationsUrl': next((l['url'] for l in links if re.search(r'presentations|slides', l['text'], re.I)), None),
+                        'presentationsUrl': next((l['url'] for l in links if re.search(r'\bpresentations?\b|\bslides?\b', l['text'], re.I)), None),
                         'reportsUrl': next((l['url'] for l in links if re.search(r'annual reports|financial reports|shareholder letter', l['text'], re.I)), None),
                         **endpoints(links, response['finalUrl']),
                         'providerType': provider, 'lastVerified': now,
@@ -292,8 +292,8 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
         # One advertised hub can fill a missing material component even when
         # the IR homepage already contains unrelated annual-report links.
         if configs[-1]['pageRole'] == 'IR' and not any(d['type']=='PRESENTATION' for d in configs[-1]['documents']):
-            material_hubs = [l for l in links if within_domain(l['url'], page) and re.search(r'presentations|quarterly results|financial results|shareholder letters|transcripts|prepared remarks', l['text'], re.I) and not re.search(r'\.(?:pdf|zip)(?:\?|$)', l['url'], re.I) and l['url'] != response['finalUrl']]
-            material_hubs.sort(key=lambda l: (not bool(re.search(r'presentations|slides',l['text'],re.I)),l['url']))
+            material_hubs = [l for l in links if within_domain(l['url'], page) and re.search(r'\bpresentations?\b|quarterly results|financial results|shareholder letters|transcripts|prepared remarks', l['text'], re.I) and not re.search(r'\.(?:pdf|zip)(?:\?|$)', l['url'], re.I) and l['url'] != response['finalUrl']]
+            material_hubs.sort(key=lambda l: (not bool(re.search(r'\bpresentations?\b|\bslides?\b',l['text'],re.I)),l['url']))
             materials_page = next(iter(material_hubs), None)
             if materials_page and materials_page['url'] != response['finalUrl']:
                 materials_response = optional_page(materials_page['url'])
