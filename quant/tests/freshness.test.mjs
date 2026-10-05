@@ -225,3 +225,14 @@ test("FR15 · Eine STALE-Beschriftung enthaelt in keinem Zustand 'Letzter Handel
     assert.ok(/nicht aktuell/.test(b.label.label), b.label.label);
   }
 });
+
+test("Audit 03.10.2026 · am Samstag heisst der Freitagsstand nicht 'Heute'", () => {
+  const SS = require("../engines/realtime/source-state.js");
+  const r = { marketState: "CLOSED", localDate: "2026-10-03", lastCompletedSession: { sessionDate: "2026-10-02" } };
+  const snap = { sessionDate: "2026-10-02", asOfLocal: "14:20", regularComplete: false, points: [["2026-10-02T18:20:00Z", 234.62]] };
+  const q = SS.bestimme({ resolution: r, snapshot: snap, now: "2026-10-03T12:00:00Z" });
+  assert.equal(q.state, "STALE");
+  assert.equal(q.label, "Freitag · Stand 14:20 · Schluss fehlt noch");
+  const amTag = SS.bestimme({ resolution: Object.assign({}, r, { localDate: "2026-10-02" }), snapshot: snap, now: "2026-10-02T21:00:00Z" });
+  assert.equal(amTag.label, "Heute · Stand 14:20 · Schluss fehlt noch");
+});

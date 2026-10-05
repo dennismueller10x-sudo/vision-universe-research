@@ -222,7 +222,9 @@ test("die Startseite fuehrt mit einer Antwort, nicht mit einer Erklaerung", () =
   assert.ok(heroAt > 0, "die Startseite hat keinen ersten Bildschirm mehr");
   const hero = kopf.slice(heroAt, kopf.indexOf("]));", heroAt));
   assert.ok(hero.length > 50, "die Startseite hat keinen ersten Bildschirm mehr");
-  assert.match(hero, /el\("h1", \{ text: "Was möchtest du heute analysieren\?"/,
+  /* Produktpositionierung (Owner, 04.10.2026): die Frage wird zum Claim -
+     der erste Bildschirm sagt, was Quant ist (docs/VU_QUANT_PRODUCT_POSITIONING.md). */
+  assert.match(hero, /el\("h1", \{ class: "q-claim", text: CLAIM \}/,
     "das Versprechen der Startseite ist verschwunden");
   assert.match(hero, /onclick: ctx\.openSearch/, "der erste Bildschirm bietet keine Antwort an (Suche)");
   assert.ok(heroAt < kopf.indexOf("doors(["), "die Startseite fuehrt mit den Wegen statt mit dem Versprechen");

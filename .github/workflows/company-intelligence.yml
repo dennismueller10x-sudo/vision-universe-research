@@ -35,9 +35,13 @@ on:
         default: false
 permissions:
   contents: read
+# PR-Laeufe bekommen eine eigene Gruppe je PR. Die gemeinsame Gruppe
+# 'company-intelligence-state' bleibt den Laeufen vorbehalten, die sie brauchen (main,
+# Zeitplan, Dispatch). Vorher konnte ein wartender PR-Lauf einen
+# wartenden Lauf dieser Gruppe verdraengen (Audit 03.10.2026).
 concurrency:
-  group: company-intelligence-state
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('company-intelligence-state-pr-{0}', github.event.pull_request.number) || 'company-intelligence-state' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   validate:
     if: github.event_name != 'schedule'
