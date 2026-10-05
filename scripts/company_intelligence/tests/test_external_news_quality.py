@@ -12,6 +12,9 @@ from test_news_sitemap import xml
 
 
 ADS = (
+    "Gainey McKenna & Egleston Announces A Class Action Lawsuit Has Been Filed Against Alphabet Inc. (GOOG; GOOGL)",
+    "DEEP FISSION, INC. (NASDAQ: FISN) INVESTIGATION: Johnson Fistel Investigates Potential Securities Claims Following Short-Seller Report",
+    "Brodsky & Smith Shareholder Update: Notifying Investors of the Following Investigations: RXO, PTC, Lifecore Biomedical (NASDAQ: LFCR)",
     'MILLROSE PROPERTIES INVESTOR ALERT: Julie & Holleman Investigates Potential Misconduct Related to Dealings with Lennar',
     'Integra LifeSciences (NASDAQ: IART) Investor Alert: Johnson Fistel Investigates Following Flooding-Related Outlook Cuts and 21% Stock Decline',
     'BBNX Investor Alert: Schall, Brown & Schwartz LLP Files Class Action Lawsuit Against Beta Bionics, Inc. and Announces Opportunity for Investors to Lead Class Action Lawsuit',
@@ -40,6 +43,7 @@ class ExternalNewsQualityTests(unittest.TestCase):
     def test_factual_litigation_company_warnings_and_law_partner_business_survive(self):
         for headline in (
             'Apple Inc. reaches settlement in patent litigation',
+            'Algorhythm’s CEO Andrew Thompson Issues Shareholder Update Outlining Strategic Vision',
             'Apple Inc. alerts investors to impersonation scams',
             'Apple Inc. Investor Alert: Protect Your Account',
             'Apple Inc. expands enterprise services partnership with Example LLP',

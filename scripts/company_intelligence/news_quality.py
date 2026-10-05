@@ -13,9 +13,11 @@ def promotional_solicitation(headline):
         return False
     existing = r'law firm|law offices|law office|lead plaintiff|secure counsel|contact.{0,80}(?:law|llp)|opportunity to lead.{0,100}lawsuit|(?:investors?|shareholders?).{0,100}(?:urged|encouraged).{0,80}(?:contact|act)|(?:investors?|shareholders?).{0,80}deadline|class action.{0,100}deadline|\b(?:ROSEN|Bronstein|Kaplan Fox|Robbins LLP|Hagens Berman|Grabar Law)\b'
     alert = r'\b(?:investor|shareholder)s?\s+alert\b.{0,260}\b(?:LLP|law firm|law offices?|class action|secure counsel|(?:Julie\s*(?:&|and)\s*Holleman|Johnson\s+Fistel)\s+investigates?)\b'
+    named_ad = r'\bBrodsky\s*(?:&|and)\s*Smith\b.{0,260}\b(?:shareholder update|investigations?|securities losses)\b'
+    named_claim = r'\b(?:Gainey\s+McKenna\s*(?:&|and)\s*Egleston\s+announces?\s+a\s+class\s+action\s+lawsuit|Johnson\s+Fistel\s+investigates?\s+potential\s+securities\s+claims)\b'
     recruitment = r'\bopportunity\b.{0,80}\b(?:investors?|shareholders?)\b.{0,40}\blead\b.{0,80}\b(?:class action|lawsuit)\b'
     return bool(re.search(existing, headline, re.I) or re.search(alert, headline, re.I)
-                or re.search(recruitment, headline, re.I))
+                or re.search(recruitment, headline, re.I) or re.search(named_ad, headline, re.I) or re.search(named_claim, headline, re.I))
 
 
 def owned_actor(title,company):
