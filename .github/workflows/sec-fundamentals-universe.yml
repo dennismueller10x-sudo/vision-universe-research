@@ -72,6 +72,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -177,8 +180,13 @@ jobs:
           c = json.load(open("quant/data/fundamentals/coverage-report.json"))
           titel = c["universe"]["PRODUCT_TITLES"]
           verfuegbar = c["fundamentals"]["COMPANY_FACTS_AVAILABLE"]
-          if titel < 7000:
-              sys.exit(f"Produktuniversum nur {titel} Titel - der Master ist nicht synchron")
+          # Exakt gegen die Eignungsschicht statt einer festen Untergrenze:
+          # "titel < 7000" stammte aus der Zeit vor der Produkt-Datenhygiene
+          # (14./15.09.2026, 7004 -> 6875) und #366 (-> 6853) und schlug seither
+          # bei jedem Lauf fehl (04.10.2026).
+          soll = json.load(open("quant/data/market/security-master/eligibility.json"))["counts"]["productUniverse"]
+          if titel != soll:
+              sys.exit(f"Produktuniversum {titel} Titel, Eignungsschicht {soll} - der Master ist nicht synchron")
           for name, row in c["metrics"].items():
               if row["COUNT"] > titel:
                   sys.exit(f"{name}: {row['COUNT']} von {titel} - mehr gedeckt als vorhanden")
@@ -228,10 +236,16 @@ jobs:
     # Re-Normalisierung von 70 Minuten mittendrin abzubrechen verliert
     # alles bis zum Checkpoint. Also Warteschlange, kein Abbruch.
     concurrency:
-      group: sec-backfill
+      # Je Zweig eine Gruppe: Laeufe auf claude/** stehen nicht mehr in der
+      # Warteschlange von main (eine neue wartende Anfrage verdraengt die
+      # aeltere wartende - auch eine uebersprungene). Audit 03.10.2026.
+      group: sec-backfill-${{ github.ref_name }}
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -277,9 +291,13 @@ jobs:
           node scripts/universe/build-issuer-master.mjs
 
       - name: SEC-Universum aus dem Master
+        env:
+          # Eingaben nur ueber env: - nie direkt in das Skript interpoliert (Script-Injection, Audit 03.10.2026).
+          IN_LIMIT: ${{ inputs.limit }}
         run: |
-          if [ -n "${{ inputs.limit }}" ]; then
-            node scripts/universe/build-sec-universe.mjs --max "${{ inputs.limit }}"
+          if [ -n "$IN_LIMIT" ]; then
+            case "$IN_LIMIT" in *[!0-9]*) echo "::error::limit muss eine Zahl sein"; exit 1;; esac
+            node scripts/universe/build-sec-universe.mjs --max "$IN_LIMIT"
           else
             node scripts/universe/build-sec-universe.mjs
           fi
@@ -296,10 +314,12 @@ jobs:
           # damit den sprechenden Standard-User-Agent ueberschreiben - die
           # SEC weist Anfragen ohne Kontaktadresse ab.
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
+          IN_SINCE: ${{ inputs.since }}
         run: |
-          if [ -n "${{ inputs.since }}" ]; then
+          if [ -n "$IN_SINCE" ]; then
+            [[ "$IN_SINCE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "::error::since muss JJJJ-MM-TT sein"; exit 1; }
             python3 scripts/quant/cli.py update \
-              --since "${{ inputs.since }}" \
+              --since "$IN_SINCE" \
               --universe quant/data/universe/sec-universe.json
           else
             python3 scripts/quant/cli.py ingest \

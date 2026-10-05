@@ -131,7 +131,7 @@ test("CN5 · Anbieter-Stammdaten: nur bei gleichem Symbol; kein Name -> kein Nam
   const dir = mkdtempSync(join(tmpdir(), "vu-cn-"));
   try {
     for (const f of ["quant/data/market/security-master/eligibility.json", "quant/data/market/scale/universe-FULL_UNIVERSE.json",
-                     "scripts/market/universe-source.mjs", "discover/config/company-names.json"]) {
+                     "scripts/market/universe-source.mjs", "discover/config/company-names.json", "core/identity.js"]) {
       mkdirSync(join(dir, dirname(f)), { recursive: true }); cpSync(join(root, f), join(dir, f));
     }
     const antworten = {

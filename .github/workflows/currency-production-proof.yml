@@ -23,6 +23,10 @@ on:
 permissions:
   contents: read
 
+# Eingaben nur ueber env: - nie direkt in das Skript interpoliert (Script-Injection, Audit 03.10.2026).
+env:
+  IN_SITE: ${{ inputs.site }}
+
 jobs:
   proof:
     runs-on: ubuntu-latest
@@ -47,7 +51,7 @@ jobs:
         id: delivered
         run: |
           set -o pipefail
-          SITE='${{ inputs.site }}'
+          SITE="$IN_SITE"
           fehlt=0
           # /discover-v2/ ist seit der Discover-Konsolidierung nur noch ein
           # Weiterleitungs-Alias ohne eigene Skripte; gezaehlt wird die eine
@@ -76,7 +80,7 @@ jobs:
           fehl=""
           for t in AAPL NVDA MSFT SAP ASML NVO TM BABA GSK; do
             echo "::group::$t"
-            if node scripts/quality/verify-currency-ui.mjs --url '${{ inputs.site }}' --ticker "$t" 2>&1 | tee "proof-$t.txt"; then
+            if node scripts/quality/verify-currency-ui.mjs --url "$IN_SITE" --ticker "$t" 2>&1 | tee "proof-$t.txt"; then
               grep -q 'CURRENCY_UI_PROOF = FAIL' "proof-$t.txt" && fehl="$fehl $t"
             else
               fehl="$fehl $t"
@@ -100,7 +104,7 @@ jobs:
           {
             echo "## Currency Layer am ausgelieferten Stand"
             echo ""
-            echo "- Seite: ${{ inputs.site }}"
+            echo "- Seite: $IN_SITE"
             echo "- Vertrag ausgeliefert: ${{ steps.delivered.outcome }}"
             echo "- Neun Nachweistitel: ${{ steps.titles.outcome }}"
           } >> "$GITHUB_STEP_SUMMARY"

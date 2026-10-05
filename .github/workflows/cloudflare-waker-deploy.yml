@@ -78,7 +78,7 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          npx --yes wrangler@4 deploy 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g'
+          npx --yes wrangler@4.147.0 deploy 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g'
 
       # `wrangler secret list` gibt Namen und Typen aus, nie Werte. Die
       # Ausgabe wird trotzdem nicht roh gedruckt - gepruefte Anwesenheit
@@ -91,7 +91,7 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          if npx --yes wrangler@4 secret list 2>/dev/null | grep -q 'GITHUB_APP_PRIVATE_KEY'; then
+          if npx --yes wrangler@4.147.0 secret list 2>/dev/null | grep -q 'GITHUB_APP_PRIVATE_KEY'; then
             echo "vorhanden=true" >> "$GITHUB_OUTPUT"
             echo "GITHUB_APP_PRIVATE_KEY ist hinterlegt."
           else
@@ -125,7 +125,7 @@ jobs:
               echo ''
               echo '```'
               echo 'cd worker-waker'
-              echo 'npx wrangler@4 secret put GITHUB_APP_PRIVATE_KEY < /pfad/zur/app.pem'
+              echo 'npx wrangler@4.147.0 secret put GITHUB_APP_PRIVATE_KEY < /pfad/zur/app.pem'
               echo '```'
               echo ''
               echo 'Der Schluessel geht damit direkt zu Cloudflare und beruehrt GitHub nie.'

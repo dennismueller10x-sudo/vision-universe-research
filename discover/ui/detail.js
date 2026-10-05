@@ -1028,7 +1028,7 @@
     var FX = (typeof VUFx !== "undefined") ? VUFx : null;
     var waehrung = (FX && FX.layer) ? FX.layer.preference.get() : "USD";
     if (FX && FX.Format && typeof FX.Format.formatPrice === "function") {
-      return FX.Format.formatPrice(v, waehrung, { numberLocale: "de-DE", decimals: 2 });
+      return FX.Format.formatPrice(v, waehrung, { numberLocale: "de-DE", decimals: Math.abs(v) < 1 ? 4 : 2 });
     }
     return C().money(v);
   }

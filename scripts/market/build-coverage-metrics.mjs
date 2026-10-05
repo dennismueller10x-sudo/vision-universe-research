@@ -233,6 +233,10 @@ const payload = {
    belegen sie. Wer alles braucht, laesst den Lauf mit --index laufen. */
 payload.STORAGE_COVERAGE = { ...S, missingSymbols: S.missingSymbols.slice(0, 200) };
 payload.CHART_AVAILABILITY = { ...C, notRenderableSymbols: C.notRenderableSymbols.slice(0, 200) };
+/* Die technischen Ausnahmen bleiben VOLLSTAENDIG: build-universe-indexes
+   leitet daraus je Titel TECHNICAL_READY ab. Eine gekuerzte Liste machte
+   die Umkehrung falsch und die Deckung zu hoch. */
+payload.TECHNICAL_HISTORY_ELIGIBILITY = { ...T, tooShortSymbols: [...T.tooShortSymbols].sort() };
 payload.LONG_HISTORY = { ...L, failSymbols: L.failSymbols.slice(0, 200),
                          failSymbolsTotal: L.failSymbols.length };
 
