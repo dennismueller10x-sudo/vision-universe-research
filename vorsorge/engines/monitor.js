@@ -28,7 +28,7 @@
   ];
 
   var CATEGORY = { NEW_LISTING: "PRODUCT_CHANGE", NAME_CHANGE: "PRODUCT_CHANGE", INDEX_CHANGE: "PRODUCT_CHANGE", CLOSED_OR_DELISTED: "PRODUCT_CHANGE",
-    STATUS_CHANGE: "PRODUCT_CHANGE", REMOVED: "PRODUCT_CHANGE", VOLATILITY_CHANGE: "MARKET_CHANGE", NEW_PRICE_SERIES: "DATA_UPDATE",
+    STATUS_CHANGE: "PRODUCT_CHANGE", REMOVED: "PRODUCT_CHANGE", DATA_REVIEW: "DATA_UPDATE", VOLATILITY_CHANGE: "MARKET_CHANGE", NEW_PRICE_SERIES: "DATA_UPDATE",
     GOAL_ATTAINMENT: "PLAN_CHANGE", SAVINGS_RATE: "PLAN_CHANGE", COST: "PLAN_CHANGE", PORTFOLIO: "PORTFOLIO_CHANGE",
     PORTFOLIO_RISK: "MARKET_CHANGE", RULE_VERSION: "REGULATORY_CHANGE", DATA_AS_OF: "DATA_UPDATE" };
   var CATEGORY_LABEL = { MARKET_CHANGE: "Markt", PORTFOLIO_CHANGE: "Portfolio", PLAN_CHANGE: "Plan", PRODUCT_CHANGE: "Produkt", REGULATORY_CHANGE: "Regeln", DATA_UPDATE: "Daten" };
@@ -56,6 +56,43 @@
     var news = events.filter(function (e) { return e.type === "NEW_LISTING"; });
     if (news.length > 50) events = events.filter(function (e) { return e.type !== "NEW_LISTING"; }).concat([{ type: "NEW_LISTING", symbol: null, count: news.length, text: news.length + " ETF-Listings neu im Verzeichnis (Aufnahme des Tiingo-ETF-Universums).", asOf: asOf }]);
     return { version: VERSION, asOf: asOf, events: events.map(tag), unmonitored: UNMONITORED, categories: CATEGORY_LABEL };
+  }
+
+  /**
+   * Relevanz und Buendelung fuer "Daten & Produkte" (Monitor, Home).
+   * - Wechsel des internen Pruefstatus (REVIEW <-> ACTIVE) sind keine Produktaenderung:
+   *   je Richtung eine Datenmeldung mit Anzahl und Beispielen.
+   * - Relevanz HIGH fuer Listings im oeffentlichen Analyse-Universum, sonst LOW.
+   * - Mehr als BUNDLE gleichartige Ereignisse: bis zu 5 relevante einzeln, der Rest gebuendelt.
+   * Idempotent: bereits gebuendelte Meldungen (count) bleiben unveraendert.
+   */
+  var TYPE_ORDER = ["CLOSED_OR_DELISTED", "NAME_CHANGE", "INDEX_CHANGE", "REMOVED", "NEW_PRICE_SERIES", "VOLATILITY_CHANGE", "NEW_LISTING", "STATUS_CHANGE", "DATA_REVIEW"];
+  var TYPE_LABEL = { CLOSED_OR_DELISTED: "geschlossen oder delistet", NAME_CHANGE: "mit neuem Namen", INDEX_CHANGE: "mit geändertem Index", REMOVED: "nicht mehr im Verzeichnis",
+    NEW_PRICE_SERIES: "mit neuer Kursreihe", VOLATILITY_CHANGE: "mit deutlich veränderter Schwankung", NEW_LISTING: "neu im Verzeichnis", STATUS_CHANGE: "mit geändertem Status" };
+  function examples(list) { var s = list.map(function (e) { return e.symbol; }).filter(Boolean); return s.length ? " (z. B. " + s.slice(0, 5).join(", ") + ")" : ""; }
+  function prioritize(events, layerOf, opts) {
+    var BUNDLE = (opts && opts.bundle) || 10, layer = layerOf || {}, out = [], byType = {};
+    var review = { ACTIVE: [], REVIEW: [] };
+    (events || []).forEach(function (e) {
+      if (e.count) { out.push(e); return; }
+      if (e.type === "STATUS_CHANGE" && (e.from === "REVIEW" || e.from === "ACTIVE") && (e.to === "REVIEW" || e.to === "ACTIVE")) { review[e.to].push(e); return; }
+      var x = Object.assign({}, e, { relevance: layer[e.symbol] === "PUBLIC_ANALYSIS" ? "HIGH" : "LOW" });
+      (byType[x.type] = byType[x.type] || []).push(x);
+    });
+    Object.keys(byType).forEach(function (t) {
+      var list = byType[t].sort(function (a, b) { return (a.relevance === "HIGH" ? 0 : 1) - (b.relevance === "HIGH" ? 0 : 1) || String(a.symbol).localeCompare(String(b.symbol)); });
+      if (list.length <= BUNDLE) { out = out.concat(list); return; }
+      var keep = list.filter(function (e) { return e.relevance === "HIGH"; }).slice(0, 5), rest = list.filter(function (e) { return keep.indexOf(e) < 0; });
+      out = out.concat(keep);
+      out.push(tag({ type: t, symbol: null, count: rest.length, relevance: "LOW", asOf: rest[0].asOf, text: rest.length + " weitere Listings " + (TYPE_LABEL[t] || t) + examples(rest) + "." }));
+    });
+    if (review.ACTIVE.length) out.push(tag({ type: "DATA_REVIEW", symbol: null, count: review.ACTIVE.length, relevance: "LOW", asOf: review.ACTIVE[0].asOf,
+      text: review.ACTIVE.length + " Listings haben die Datenprüfung bestanden und sind jetzt vollständig analysierbar" + examples(review.ACTIVE) + "." }));
+    if (review.REVIEW.length) out.push(tag({ type: "DATA_REVIEW", symbol: null, count: review.REVIEW.length, relevance: "LOW", asOf: review.REVIEW[0].asOf,
+      text: review.REVIEW.length + " Listings wegen unvollständiger Daten zurück in Prüfung" + examples(review.REVIEW) + "." }));
+    return out.map(function (e) { return e.category ? e : tag(e); }).sort(function (a, b) {
+      return (a.relevance === "HIGH" ? 0 : 1) - (b.relevance === "HIGH" ? 0 : 1) || TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type) || (a.count ? 1 : 0) - (b.count ? 1 : 0);
+    });
   }
 
   /** Plan-Schnappschuss: nur, was sich spaeter vergleichen laesst. */
@@ -120,7 +157,7 @@
     };
   }
 
-  var api = { VERSION: VERSION, CATEGORY: CATEGORY, CATEGORY_LABEL: CATEGORY_LABEL, UNMONITORED: UNMONITORED, diffMasters: diffMasters, snapshotPlan: snapshotPlan,
+  var api = { VERSION: VERSION, prioritize: prioritize, CATEGORY: CATEGORY, CATEGORY_LABEL: CATEGORY_LABEL, UNMONITORED: UNMONITORED, diffMasters: diffMasters, snapshotPlan: snapshotPlan,
     diffPlan: diffPlan, onTrack: onTrack, riesterComparison: riesterComparison };
   if (isNode) module.exports = api;
   else { global.VUVorsorge = global.VUVorsorge || {}; global.VUVorsorge.Monitor = api; }

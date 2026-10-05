@@ -3,6 +3,51 @@
  "asOf": "2026-10-02",
  "events": [
   {
+   "type": "DATA_REVIEW",
+   "symbol": null,
+   "count": 23,
+   "relevance": "LOW",
+   "asOf": "2026-10-02",
+   "text": "23 Listings haben die Datenprüfung bestanden und sind jetzt vollständig analysierbar (z. B. 158063, 159636, 512410, 515120, 515290).",
+   "category": "DATA_UPDATE"
+  },
+  {
+   "type": "DATA_REVIEW",
+   "symbol": null,
+   "count": 3,
+   "relevance": "LOW",
+   "asOf": "2026-10-02",
+   "text": "3 Listings wegen unvollständiger Daten zurück in Prüfung (z. B. BNKSF, CEE, TEUUF).",
+   "category": "DATA_UPDATE"
+  }
+ ],
+ "unmonitored": [
+  {
+   "type": "TER_CHANGE",
+   "label": "ETF-Kosten (TER) geändert",
+   "reason": "US-Kostenquoten aus SEC-Prospektdaten liegen vor, Änderungen zwischen Prospektständen werden noch nicht verglichen; für UCITS-ETFs keine lizenzierte Kostenquelle."
+  },
+  {
+   "type": "FUND_MERGER",
+   "label": "ETF fusioniert",
+   "reason": "Fusionen melden Emittenten; Quelle nicht angeschlossen."
+  },
+  {
+   "type": "TRACKING_DIFFERENCE",
+   "label": "Tracking Difference verändert",
+   "reason": "Benötigt Indexstände und Gesamtrendite; nicht angeschlossen."
+  }
+ ],
+ "categories": {
+  "MARKET_CHANGE": "Markt",
+  "PORTFOLIO_CHANGE": "Portfolio",
+  "PLAN_CHANGE": "Plan",
+  "PRODUCT_CHANGE": "Produkt",
+  "REGULATORY_CHANGE": "Regeln",
+  "DATA_UPDATE": "Daten"
+ },
+ "rawEvents": [
+  {
    "type": "STATUS_CHANGE",
    "symbol": "158063",
    "from": "REVIEW",
@@ -236,30 +281,5 @@
    "asOf": "2026-10-02",
    "category": "PRODUCT_CHANGE"
   }
- ],
- "unmonitored": [
-  {
-   "type": "TER_CHANGE",
-   "label": "ETF-Kosten (TER) geändert",
-   "reason": "US-Kostenquoten aus SEC-Prospektdaten liegen vor, Änderungen zwischen Prospektständen werden noch nicht verglichen; für UCITS-ETFs keine lizenzierte Kostenquelle."
-  },
-  {
-   "type": "FUND_MERGER",
-   "label": "ETF fusioniert",
-   "reason": "Fusionen melden Emittenten; Quelle nicht angeschlossen."
-  },
-  {
-   "type": "TRACKING_DIFFERENCE",
-   "label": "Tracking Difference verändert",
-   "reason": "Benötigt Indexstände und Gesamtrendite; nicht angeschlossen."
-  }
- ],
- "categories": {
-  "MARKET_CHANGE": "Markt",
-  "PORTFOLIO_CHANGE": "Portfolio",
-  "PLAN_CHANGE": "Plan",
-  "PRODUCT_CHANGE": "Produkt",
-  "REGULATORY_CHANGE": "Regeln",
-  "DATA_UPDATE": "Daten"
- }
+ ]
 }

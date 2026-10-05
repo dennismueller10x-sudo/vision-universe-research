@@ -496,7 +496,11 @@ export function build() {
   const toM = (list) => list && { etfs: list.map((r) => ({ listingId: r.id, symbol: r.symbol, name: r.name, status: r.status, index: r.index, vol: r.vol, hy: r.hy })) };
   const changes = Monitor.diffMasters(toM(prevRows), toM(nextRows), asOf);
   const prevChanges = tryJson(join(OUT, "data/changes.json"));
-  if (!changes.events.length && prevChanges && prevChanges.events) changes.events = prevChanges.events;
+  // Rohereignisse aufbewahren; angezeigt wird die priorisierte, gebuendelte Liste (Monitor-Rauschen).
+  const raw = changes.events.length ? changes.events : (prevChanges && (prevChanges.rawEvents || prevChanges.events)) || [];
+  const layerOf = Object.fromEntries(nextRows.map((r) => [r.symbol, r.layer]));
+  changes.rawEvents = raw;
+  changes.events = Monitor.prioritize(raw, layerOf);
   writeFileSync(join(OUT, "data/changes.json"), JSON.stringify(changes, null, 1));
 
   // ------------------------------------------------------------ SEO
