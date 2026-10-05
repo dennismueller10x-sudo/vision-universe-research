@@ -16,6 +16,15 @@ def body(rows):return json.dumps({'GetPresentationListResult':rows}).encode()
 
 
 class Q4PresentationTests(unittest.TestCase):
+ def test_presentation_index_cannot_authorize_a_news_story_as_a_deck(self):
+  rows=[{'Title':'2026 Clinical Presentations','DocumentPath':'https://ir.apple.com/news-releases/news-release-details/scientific-2026-presentations'},
+        {'Title':'Company Announces 2026 Presentations','DocumentPath':'https://ir.apple.com/announcement'},
+        {'Title':'2026 Investor Presentation','DocumentPath':'https://cdn.example/news/deck.pdf'},
+        {'Title':'2026 Financial Supplement','DocumentPath':'https://ir.apple.com/news/financial-supplement'}]
+  docs=parse(body(rows),source(),NOW)
+  self.assertEqual([d['url'] for d in docs],['https://cdn.example/news/deck.pdf','https://ir.apple.com/news/financial-supplement'])
+  self.assertEqual([d['type'] for d in docs],['PRESENTATION','FINANCIAL_REPORT'])
+
  def test_specific_material_evidence_overrides_index_name_and_pdf_is_not_audio(self):
   rows=[{'Title':'HY26 Presentation and Q&A Transcript','DocumentPath':'https://cdn.example/qr-presentation.pdf'},
         {'Title':'Prepared remarks presentation','DocumentPath':'https://cdn.example/remarks.pdf'},

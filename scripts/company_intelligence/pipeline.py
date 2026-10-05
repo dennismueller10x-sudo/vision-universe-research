@@ -133,6 +133,9 @@ class Pipeline:
                 if source['format']=='Q4_PRESENTATIONS':
                     from .q4_presentations import correct_documents
                     previous=correct_documents(previous)
+                else:
+                    from .materials import correct_documents
+                    previous=correct_documents(previous)
                 current_urls={d['url'] for d in documents}
                 # A corrected type has a new stable ID. Retire the preceding
                 # classification of that URL rather than keeping both types.

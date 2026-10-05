@@ -12,20 +12,41 @@ def estimate(sources, payloads, consumer_bytes, checkpoint_bytes, runtime_minute
     # remain twice daily; weekly discovery is a separate bounded operation.
     assets = 2 * payloads + 1 if asset_count is None else asset_count
     if type(assets) is not int or assets < 0: raise ValueError('INVALID_ASSET_COUNT')
-    requests = sum(min(6, math.ceil(24 / max(4, s.get('intervalHours', 4))))
-                   for s in sources if s.get('active', True))
+    route_polls = {}
+    requests = 0
+    for index, source in enumerate(sources):
+        if not source.get('active', True):
+            continue
+        daily = min(6, math.ceil(24 / max(4, source.get('intervalHours', 4))))
+        requests += daily
+        # Distinct formats/issuer descriptors can share one URL and one HTTP
+        # memo entry in a run. Missing URLs cannot be assumed to share a route.
+        route = source.get('url') or ('missing-url', index)
+        route_polls[route] = max(route_polls.get(route, 0), daily)
+    unique_requests = sum(route_polls.values())
     runs = 6 * 30
+    lanes = math.ceil(unique_requests / (6 * 160))
     return {
         'assumptions': {'daysPerMonth': 30, 'runsPerDay': 6,
                         'runtimeMinutesPerRun': runtime_minutes,
                         'payloadsPerGeneration': payloads, 'consumerAssetsPerGeneration': assets,
                         'consumerBytesPerGeneration': consumer_bytes,
                         'compressedCheckpointBytes': checkpoint_bytes,
+                        'serialNetworkIntervalSeconds': 2,
+                        'networkScenario': 'One network request per due unique URL; source health, memo reuse and actual due times can reduce demand.',
                         'retainedPublicSlots': 2, 'retainedPrivateSlots': 2},
         'dataProviderDollars': 0,
         'actionsMinutesPerMonth': runs * runtime_minutes,
         'plannedSourceRequestsPerDay': requests,
         'plannedSourceRequestsPerMonth': requests * 30,
+        'plannedUniqueRouteRequestsPerDay': unique_requests,
+        'plannedUniqueRouteRequestsPerMonth': unique_requests * 30,
+        # Each six-run day can send its first request without the global gap.
+        # This floor excludes HTTP latency, robots, retries and five-second
+        # same-host pacing. Parallel lanes reduce wall time, not billed sum.
+        'serialPacingMinutesPerMonthFloor': max(0, unique_requests - 6) * 2 * 30 / 60,
+        'fullDemand160RequestCapacityLanes': lanes,
+        'fullDemandActionsMinutesAtAssumedRuntime': lanes * runs * runtime_minutes,
         'excludedRequestCosts': 'SEC changed-issuer metadata/index, robots refresh, bounded retries and weekly discovery; quantify separately from observed runs.',
         # Conservative upper bound: all payloads change every run. Publisher
         # skips identical objects already in the destination slot by hash.

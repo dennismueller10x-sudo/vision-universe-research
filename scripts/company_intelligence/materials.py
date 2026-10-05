@@ -5,6 +5,21 @@ from .model import within_domain, canonical_url
 from .transport import SourceError
 
 
+def presentation_news_link(url, label):
+    """A story about presentations is not an independently linked deck."""
+    from urllib.parse import unquote, urlsplit
+    path = unquote(urlsplit(url).path)
+    if re.search(r'\.pdf(?:$|[?#])|/static-files/', url, re.I):
+        return False
+    return bool(re.search(r'/(?:news(?:room)?|press)/|/(?:news|press)[-_](?:releases?|details?|articles?|items?)(?:/|[-_])', path, re.I)
+                or re.search(r'\b(?:announces?|reports?)\b', label, re.I))
+
+
+def correct_documents(documents):
+    return [doc for doc in documents if doc.get('type') != 'PRESENTATION'
+            or not presentation_news_link(doc.get('url', ''), doc.get('label', ''))]
+
+
 def retain_source_configurations(store, company_id, configurations):
     """IR navigation rediscovery must not erase separately polled materials."""
     current={cfg.get('materialsSourceId') for cfg in configurations if cfg.get('materialsSourceId')}
@@ -131,6 +146,8 @@ def page_documents(company, links, page, now):
             kind = 'FINANCIAL_REPORT'
         if not kind:
             continue
+        if kind == 'PRESENTATION' and presentation_news_link(link['url'], label):
+            continue
         if re.fullmatch(r'presentations?|annual reports?(?: and prox(?:y|ies))?|quarterly reports?|financial reports?|transcripts?',label.strip(),re.I) and not re.search(r'\.pdf(?:\?|$)|/static-files/',link['url'],re.I):
             continue  # Navigation hubs are not individual document evidence.
         # HTML management materials must stay on the validated issuer host.
@@ -164,6 +181,8 @@ def discover_links(event, source, http):
             continue
         label = link['text']
         kind = 'webcastUrl' if re.search(r'webcast|listen|watch webcast', label, re.I) else 'presentationUrl' if re.search(r'\bpresentations?\b|\bslides?\b', label, re.I) else 'transcriptUrl' if re.search(r'transcript', label, re.I) else None
+        if kind == 'presentationUrl' and presentation_news_link(link['url'], label):
+            continue
         if kind and not out.get(kind) and (kind != 'transcriptUrl' or any(within_domain(link['url'], site) for site in source.get('allowedSites', []))):
             out[kind] = link['url']
             evidence.append({'field': kind, 'url': link['url'], 'linkedFrom': response['finalUrl'], 'label': label[:120]})

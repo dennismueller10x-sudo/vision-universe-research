@@ -34,6 +34,20 @@ class HTTP:
 
 
 class MaterialHubTests(unittest.TestCase):
+ def test_news_about_scientific_presentations_does_not_become_a_deck_or_return_on_poll(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   c=company();s=Store(Path(tmp)/'state.sqlite');src=from_validated_ir(c,config(),NOW)
+   wrong=PAGE+'news-releases/news-release-details/company-announces-2026-presentations'
+   old={'documentId':'wrong','companyId':c['companyId'],'type':'PRESENTATION','url':wrong,
+        'label':'Company Announces 2026 Scientific Presentations','sourceId':src['sourceId']}
+   s.set_state('ir:'+c['companyId'],{'lastSuccess':NOW,'configurations':[{**config(),'materialsSourceId':src['sourceId'],'documents':[old]}]})
+   html='<html><a href="'+wrong+'">2026 Clinical Presentations</a><a href="/company-announces-2026-presentations">Company Announces 2026 Presentations</a><a href="/2026-investor-presentation">2026 Investor Presentation</a><a href="/news/deck.pdf">2026 Investor Presentation</a></html>'
+   h=HTTP({HUB:html});p=Pipeline(tmp,{c['companyId']:c},s,h,NOW);p.ingest_source(src)
+   docs=s.company_payload(c,NOW)['presentations']
+   self.assertEqual({d['url'] for d in docs},{'https://apple.com/2026-investor-presentation','https://apple.com/news/deck.pdf'})
+   self.assertEqual(s.state('ir:'+c['companyId'])['lastSuccess'],NOW)
+   self.assertEqual(h.requests,1);s.close()
+
  def test_generic_presentation_label_cannot_turn_report_filename_into_slides(self):
   c=company();src=from_validated_ir(c,config(),NOW)
   body=b'<a href="Himalaya-Shipping-Annual-Report-2021.pdf">Download presentation: Annual Report</a><a href="Consolidated-financial-statements-Q4-2021.pdf">Download presentation: financial statements</a><a href="H1-2026-Investor-Presentation.pdf">Interim Financial Report - Investor Presentation</a><a href="Financial-Statements-and-Presentation.pdf">Investor Presentation</a>'

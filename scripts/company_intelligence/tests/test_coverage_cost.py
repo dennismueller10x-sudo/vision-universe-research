@@ -57,6 +57,21 @@ class CoverageCostTests(unittest.TestCase):
         self.assertIn("cron: '43 */4 * * *'", workflow)
         self.assertIn('% 4', (root / 'scripts/company_intelligence/pilot.sh').read_text())
 
+    def test_full_demand_cost_accounts_for_shared_routes_and_serial_network_pacing(self):
+        sources = [{'url': 'https://issuer.example/news', 'intervalHours': 4},
+                   {'url': 'https://issuer.example/news', 'intervalHours': 12},
+                   {'url': 'https://issuer.example/events', 'intervalHours': 12},
+                   {'url': 'https://issuer.example/disabled', 'active': False}]
+        value = estimate(sources, 20, 700000, 300000, runtime_minutes=8)
+        self.assertEqual(value['plannedSourceRequestsPerDay'], 10)
+        self.assertEqual(value['plannedUniqueRouteRequestsPerDay'], 8)
+        self.assertEqual(value['serialPacingMinutesPerMonthFloor'], 2)
+        many = estimate([{'url': 'https://issuer.example/' + str(n)} for n in range(1000)],
+                        20, 700000, 300000, runtime_minutes=8)
+        self.assertEqual(many['fullDemand160RequestCapacityLanes'], 7)
+        self.assertEqual(many['fullDemandActionsMinutesAtAssumedRuntime'], 10080)
+        self.assertEqual(many['serialPacingMinutesPerMonthFloor'], 5994)
+
     def test_bootstrap_configuration_contains_no_private_health_and_uses_current_issuers(self):
         import json
         from company_intelligence.model import load_universe, within_domain

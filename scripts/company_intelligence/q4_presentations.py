@@ -41,6 +41,8 @@ def document_kind(title, url):
     if (re.search(financial,filename,re.I) and not re.search(r'presentation|slides|deck',filename,re.I) or
             re.search(financial,title,re.I) and not re.search(r'presentation|slides|deck',title,re.I)):
         return 'FINANCIAL_REPORT'
+    from .materials import presentation_news_link
+    if presentation_news_link(url, title):return None
     return 'PRESENTATION'
 
 
