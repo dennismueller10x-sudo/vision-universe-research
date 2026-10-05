@@ -648,7 +648,10 @@
     /* ---------------------------------------------------------- Chart */
     var chart = !priceAllowed ? { node: X.section("Kursverlauf", null, [X.notice("Kursverlauf nicht freigegeben", VM.reasonText("DISPLAY_NOT_PERMITTED"))], null, null, "kurs", "dx-chapter--chart"), dispose: function () {} }
       : global.VUQuantChart.create({ ticker: ticker, eod: eod, currency: "USD",
-      adjusted: s.chart && s.chart.adjustmentStatus === "splitAdjusted", splitEvents: s.chart && s.chart.splitEvents,
+      /* Zwei Schreibweisen derselben Aussage: "splitAdjusted" (Golden-Rekonstruktion)
+         und "SPLIT_ADJUSTED" (veroeffentlichte Reihe, alle anderen Titel). Nur die
+         erste zu pruefen hiess: "nicht splitbereinigt" unter fast jedem Chart. */
+      adjusted: !!(s.chart && /^(splitAdjusted|SPLIT_ADJUSTED)$/.test(s.chart.adjustmentStatus || "")), splitEvents: s.chart && s.chart.splitEvents,
       longPath: s.masterMemberId && /^[A-Za-z0-9_-]+$/.test(s.masterMemberId) ? "/quant/data/market/discover-series-long/" + s.masterMemberId + ".json" : null,
       loadJSON: global.QuantShell.loadJSON,
       realtime: function () { return api.getRealtimeCapability(ticker); },
