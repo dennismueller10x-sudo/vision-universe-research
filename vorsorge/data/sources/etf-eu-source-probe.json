@@ -6,8 +6,13 @@
   {
    "id": "esma-fitrs-files",
    "url": "registers.esma.europa.eu/solr/esma_registers_fitrs_files",
-   "status": 400,
-   "parseError": "Cannot read properties of undefined (reading 'docs')"
+   "status": 200,
+   "fileTypes": [
+    "Full",
+    "Delta"
+   ],
+   "files": [],
+   "summary": "0 FULECR-Dateien"
   },
   {
    "id": "esma-core-esma_registers_funds_cbdif",
@@ -305,7 +310,227 @@
      "FloatAbsVolaInterruptionLimit",
      "FixedPctVolaInterruptionLimit",
      "FloatPctVolaInterruptionLimit"
-    ]
+    ],
+    "groups": {
+     "AST0": {
+      "description": "OESTERREICH",
+      "rows": 18,
+      "withWkn": 18,
+      "instrumentTypes": {
+       "CS": 18
+      }
+     },
+     "SDX1": {
+      "description": "SDAX",
+      "rows": 74,
+      "withWkn": 74,
+      "instrumentTypes": {
+       "CS": 74
+      }
+     },
+     "AUS0": {
+      "description": "AUSTRALIEN NEUSEELAND OZEANIEN",
+      "rows": 1,
+      "withWkn": 1,
+      "instrumentTypes": {
+       "CS": 1
+      }
+     },
+     "LUX0": {
+      "description": "BELGIEN NIEDERLANDE LUXEMBURG",
+      "rows": 64,
+      "withWkn": 64,
+      "instrumentTypes": {
+       "CS": 64
+      }
+     },
+     "NEWX": {
+      "description": "NEWEX",
+      "rows": 1,
+      "withWkn": 1,
+      "instrumentTypes": {
+       "CS": 1
+      }
+     },
+     "FON1": {
+      "description": "EXCHANGE TRADED FUNDS - PASSIV",
+      "rows": 598,
+      "withWkn": 598,
+      "instrumentTypes": {
+       "ETF": 598
+      }
+     },
+     "NAM0": {
+      "description": "NORDAMERIKA",
+      "rows": 703,
+      "withWkn": 703,
+      "instrumentTypes": {
+       "CS": 703
+      }
+     },
+     "SWI0": {
+      "description": "SCHWEIZ LIECHTENSTEIN",
+      "rows": 30,
+      "withWkn": 30,
+      "instrumentTypes": {
+       "CS": 30
+      }
+     },
+     "ETN0": {
+      "description": "EXCHANGE TRADED NOTES",
+      "rows": 385,
+      "withWkn": 385,
+      "instrumentTypes": {
+       "ETN": 385
+      }
+     },
+     "ASI0": {
+      "description": "ASIEN",
+      "rows": 1,
+      "withWkn": 1,
+      "instrumentTypes": {
+       "CS": 1
+      }
+     },
+     "GER0": {
+      "description": "DEUTSCHLAND",
+      "rows": 249,
+      "withWkn": 249,
+      "instrumentTypes": {
+       "CS": 248,
+       "SR": 1
+      }
+     },
+     "FONA": {
+      "description": "EXCHANGE TRADED FUNDS - RENTEN",
+      "rows": 712,
+      "withWkn": 712,
+      "instrumentTypes": {
+       "ETF": 712
+      }
+     },
+     "MDX1": {
+      "description": "MDAX",
+      "rows": 53,
+      "withWkn": 53,
+      "instrumentTypes": {
+       "CS": 53
+      }
+     },
+     "DAX1": {
+      "description": "DAX",
+      "rows": 43,
+      "withWkn": 43,
+      "instrumentTypes": {
+       "CS": 43
+      }
+     },
+     "FON0": {
+      "description": "EXCHANGE TRADED FUNDS - PASSIV",
+      "rows": 1237,
+      "withWkn": 1237,
+      "instrumentTypes": {
+       "ETF": 1237
+      }
+     },
+     "FDL0": {
+      "description": "ETF - CURRENCY USD",
+      "rows": 76,
+      "withWkn": 76,
+      "instrumentTypes": {
+       "ETF": 76
+      }
+     },
+     "FON2": {
+      "description": "EXCHANGE TRADED FUNDS - AKTIV",
+      "rows": 456,
+      "withWkn": 456,
+      "instrumentTypes": {
+       "ETF": 456
+      }
+     },
+     "ETC1": {
+      "description": "EXCHANGE TRADED COMMODITIES",
+      "rows": 207,
+      "withWkn": 207,
+      "instrumentTypes": {
+       "ETC": 206,
+       "ETN": 1
+      }
+     },
+     "SKA0": {
+      "description": "SKANDINAVIEN",
+      "rows": 30,
+      "withWkn": 30,
+      "instrumentTypes": {
+       "CS": 30
+      }
+     },
+     "ESP0": {
+      "description": "SPANIEN PORTUGAL",
+      "rows": 15,
+      "withWkn": 15,
+      "instrumentTypes": {
+       "CS": 15
+      }
+     },
+     "FRA0": {
+      "description": "FRANKREICH",
+      "rows": 52,
+      "withWkn": 52,
+      "instrumentTypes": {
+       "CS": 52
+      }
+     },
+     "UKI0": {
+      "description": "GROSSBRITANNIEN",
+      "rows": 60,
+      "withWkn": 60,
+      "instrumentTypes": {
+       "CS": 60
+      }
+     },
+     "FDLA": {
+      "description": "ETF RENTEN - FOREIGN CURRENCY",
+      "rows": 42,
+      "withWkn": 42,
+      "instrumentTypes": {
+       "ETF": 42
+      }
+     },
+     "FSF0": {
+      "description": "ETF - CURRENCY CHF & SEK",
+      "rows": 4,
+      "withWkn": 4,
+      "instrumentTypes": {
+       "ETF": 4
+      }
+     },
+     "FLS0": {
+      "description": "ETF - CURRENCY GBP",
+      "rows": 15,
+      "withWkn": 15,
+      "instrumentTypes": {
+       "ETF": 15
+      }
+     },
+     "ITA0": {
+      "description": "ITALIEN GRIECHENLAND",
+      "rows": 23,
+      "withWkn": 23,
+      "instrumentTypes": {
+       "CS": 23
+      }
+     },
+     "SAM0": {
+      "description": "SUEDAMERIKA MITTELAMERIKA",
+      "rows": 1,
+      "withWkn": 1,
+      "instrumentTypes": {
+       "CS": 1
+      }
+     }
+    }
    },
    "summary": "5150 Zeilen"
   },
@@ -592,6 +817,517 @@
    "excerpts": [],
    "downloadLinks": [],
    "footerLinks": []
+  },
+  {
+   "id": "db-cashmarket-disclaimer",
+   "url": "https://www.cashmarket.deutsche-boerse.com/cash-en/disclaimer",
+   "status": 200,
+   "finalUrl": "https://www.cashmarket.deutsche-boerse.com/cash-en/disclaimer",
+   "excerpts": [],
+   "downloadLinks": []
+  },
+  {
+   "id": "db-cashmarket-disclaimer-de",
+   "url": "https://www.cashmarket.deutsche-boerse.com/cash-de/disclaimer",
+   "status": 200,
+   "finalUrl": "https://www.cashmarket.deutsche-boerse.com/cash-de/disclaimer",
+   "excerpts": [
+    "te Dritter geschützt sind. Die STOXX®-Indizes, die darin enthaltenen Daten und die in den Indexnamen verwendeten Marken sind geistiges Eigentum von STOXX Ltd. mit Sitz in Zug, Schweiz, und/oder ihrer Lizenzgeber. Die auf den STOXX-Indizes basierenden Eurex-Derivate werden in keiner Weise von STOXX und ihren Lizenzgebern gesponsert, unterstützt, verkauft oder beworben und weder STOXX noch ihre Lize"
+   ],
+   "downloadLinks": []
+  },
+  {
+   "id": "db-group-disclaimer",
+   "url": "https://www.deutsche-boerse.com/dbg-en/meta/disclaimer",
+   "status": 200,
+   "finalUrl": "https://www.deutsche-boerse.com/dbg-en/meta/disclaimer",
+   "excerpts": [],
+   "downloadLinks": []
+  },
+  {
+   "id": "db-mds-data-usage-declaration",
+   "url": "https://www.mds.deutsche-boerse.com/mds-en/real-time-data/data-usage-declaration",
+   "status": 200,
+   "finalUrl": "https://www.mds.deutsche-boerse.com/mds-en/real-time-data/data-usage-declaration",
+   "excerpts": [],
+   "downloadLinks": []
+  },
+  {
+   "id": "db-mds-disclaimer",
+   "url": "https://www.mds.deutsche-boerse.com/mds-en/disclaimer",
+   "status": 200,
+   "finalUrl": "https://www.mds.deutsche-boerse.com/mds-en/disclaimer",
+   "excerpts": [],
+   "downloadLinks": []
+  },
+  {
+   "id": "db-reference-data",
+   "url": "https://www.mds.deutsche-boerse.com/mds-en/data-services/reference-data",
+   "status": 404,
+   "finalUrl": "https://www.mds.deutsche-boerse.com/mds-en/data-services/reference-data",
+   "excerpts": [],
+   "downloadLinks": []
+  },
+  {
+   "id": "xetra-master-datasheet",
+   "file": "/resource/blob/1553442/9918f6e6122d0875824edffc90b0f92c/data/Master_DataSheet_Download.xls",
+   "status": 200,
+   "bytes": 516662,
+   "contentType": "application/vnd.ms-excel;charset=UTF-8",
+   "magic": "504b030414000000",
+   "textStart": "PK..........?...:.j...<.......[Content_Types].xml...N.0.E.H.C.-J.@.5...*Q>...4~....;i+@mS.n.$3..;N..d..d....9.f....FH]..c....=..FCN6.d2....6.0.j.9.....\".@1...*.q....Jj......`pG....O}. ....lQ..y.^.I..H..1.r..%g>..R.?.tK....JZ.....$..q.q...P.8ZS.....N.H...W.B...O..H.#;M>0.)..!x,T.d........",
+   "parseError": "Command failed: python3 -c import xlrd,json,sys\nb=xlrd.open_workbook(sys.argv[1])\nout=[]\nfor sh in b.sheets():\n    hi=None\n    for r in range(min(sh.nrows,30)):\n        vals=[str(v) for v in sh.row_va",
+   "summary": "Command failed: python3 -c import xlrd,json,sys\nb=xlrd.open_workbook(sys.argv[1])\nout=[]\nfor sh in b.sheets():\n    hi=None\n    for r in range(min(sh.nrows,30)):\n        vals=[str(v) for v in sh.row_va"
+  },
+  {
+   "id": "esma-funds-cbdif-facets",
+   "facets": {
+    "funds_legal_framework_name": [
+     "UCITS",
+     156321,
+     "AIF",
+     107688,
+     "EuVECA",
+     10295,
+     "ELTIF",
+     2257,
+     "EuSEF",
+     109
+    ],
+    "funds_domicile_cou_code": [
+     "LU",
+     22254,
+     "IE",
+     6747,
+     "FR",
+     1234,
+     "DE",
+     902,
+     "SE",
+     785,
+     "AT",
+     533,
+     "LI",
+     427,
+     "BE",
+     333,
+     "FI",
+     261,
+     "NO",
+     193,
+     "NL",
+     174,
+     "MT",
+     153,
+     "IT",
+     110,
+     "GB",
+     89,
+     "DK",
+     69,
+     "CZ",
+     59,
+     "ES",
+     35,
+     "BG",
+     16,
+     "SI",
+     14,
+     "LT",
+     6,
+     "PT",
+     6,
+     "HU",
+     5,
+     "SK",
+     5,
+     "GR",
+     2,
+     "LV",
+     2,
+     "CY",
+     1,
+     "EE",
+     1,
+     "HR",
+     1,
+     "PL",
+     1,
+     "RO",
+     1
+    ],
+    "funds_status_code_name": [],
+    "entity_type": [
+     "marketing_notification_data",
+     241682,
+     "funds_report",
+     34988
+    ],
+    "type_s": [
+     "child",
+     241682,
+     "parent",
+     34988
+    ]
+   },
+   "etfNamed": 2734,
+   "etfSample": [
+    {
+     "entity_type": "funds_report",
+     "type_s": "parent",
+     "id": "125309",
+     "_root_": "125309",
+     "funds_national_name": "WisdomTree US SmallCap Dividend UCITS ETF",
+     "collectorParent": [
+      "WisdomTree US SmallCap Dividend UCITS ETF",
+      "UCITS",
+      "WisdomTree Management Limited",
+      "WisdomTree Management Limited",
+      "Central Bank of Ireland (CBI)",
+      "Active",
+      "IRELAND"
+     ],
+     "funds_national_name_2": "WisdomTree US SmallCap Dividend UCITS ETF",
+     "funds_legal_framework": "UCIT",
+     "funds_legal_framework_name": "UCITS",
+     "funds_legal_framework_name_parent": "UCITS",
+     "funds_manager_nat_name": "WisdomTree Management Limited",
+     "funds_manager_nat_names": [
+      "WisdomTree Management Limited",
+      "WisdomTree Management Limited"
+     ],
+     "funds_manager_nat_code": "C131686",
+     "funds_manager_comp_cou_code": "Central Bank of Ireland (CBI)",
+     "funds_status_code": "ACTV",
+     "funds_status_code_name": "Active",
+     "funds_domicile_cou_code": "IE",
+     "funds_domicile_cou_code_name": "IRELAND",
+     "funds_ca_cou_code": "IE",
+     "funds_manager_legal_framework_name": "UCITS",
+     "funds_ca_cou_code_name": "IRELAND",
+     "funds_other_legal_framework_name": "N/A",
+     "funds_mgmnt_structure_code_name": "Externally Managed",
+     "funds_created_date": "2022-07-05T00:00:00Z",
+     "funds_last_update_date": "2024-09-11T00:00:00Z",
+     "funds_ca_cou_code_name_2": "IRELAND",
+     "funds_host_country_codes": [
+      "AT",
+      "DE",
+      "ES",
+      "FI",
+      "IT",
+      "LU",
+      "NL"
+     ],
+     "funds_notif_event1_dates": [
+      "2014-11-17T00:00:00Z",
+      "2015-01-05T00:00:00Z",
+      "2015-05-06T00:00:00Z",
+      "2016-05-17T00:00:00Z",
+      "2018-11-15T00:00:00Z",
+      "2018-12-18T00:00:00Z",
+      "2019-02-21T00:00:00Z"
+     ],
+     "funds_mgmnt_structure_code": "EXTL",
+     "funds_host_country_codes_2": "AT,DE,ES,FI,IT,LU,NL",
+     "_version_": 1872055795562053600,
+     "timestamp": "2026-07-29T13:25:31.072Z"
+    },
+    {
+     "entity_type": "funds_report",
+     "type_s": "parent",
+     "id": "125312",
+     "_root_": "125312",
+     "funds_national_name": "WisdomTree Emerging Asia Equity Income UCITS ETF",
+     "collectorParent": [
+      "WisdomTree Emerging Asia Equity Income UCITS ETF",
+      "UCITS",
+      "WisdomTree Management Limited",
+      "WisdomTree Management Limited",
+      "Central Bank of Ireland (CBI)",
+      "Active",
+      "IRELAND"
+     ],
+     "funds_national_name_2": "WisdomTree Emerging Asia Equity Income UCITS ETF",
+     "funds_legal_framework": "UCIT",
+     "funds_legal_framework_name": "UCITS",
+     "funds_legal_framework_name_parent": "UCITS",
+     "funds_manager_nat_name": "WisdomTree Management Limited",
+     "funds_manager_nat_names": [
+      "WisdomTree Management Limited",
+      "WisdomTree Management Limited"
+     ],
+     "funds_manager_nat_code": "C131686",
+     "funds_manager_comp_cou_code": "Central Bank of Ireland (CBI)",
+     "funds_status_code": "ACTV",
+     "funds_status_code_name": "Active",
+     "funds_domicile_cou_code": "IE",
+     "funds_domicile_cou_code_name": "IRELAND",
+     "funds_ca_cou_code": "IE",
+     "funds_manager_legal_framework_name": "UCITS",
+     "funds_ca_cou_code_name": "IRELAND",
+     "funds_other_legal_framework_name": "N/A",
+     "funds_mgmnt_structure_code_name": "Externally Managed",
+     "funds_created_date": "2022-07-05T00:00:00Z",
+     "funds_last_update_date": "2024-09-11T00:00:00Z",
+     "funds_ca_cou_code_name_2": "IRELAND",
+     "funds_host_country_codes": [
+      "AT",
+      "ES",
+      "FI",
+      "LU",
+      "SE"
+     ],
+     "funds_notif_event1_dates": [
+      "2016-05-17T00:00:00Z",
+      "2016-06-12T00:00:00Z",
+      "2018-11-15T00:00:00Z",
+      "2018-12-18T00:00:00Z",
+      "2019-02-21T00:00:00Z"
+     ],
+     "funds_mgmnt_structure_code": "EXTL",
+     "funds_host_country_codes_2": "AT,ES,FI,LU,SE",
+     "_version_": 1872055795562053600,
+     "timestamp": "2026-07-29T13:25:31.072Z"
+    },
+    {
+     "entity_type": "funds_report",
+     "type_s": "parent",
+     "id": "125479",
+     "_root_": "125479",
+     "funds_national_name": "WisdomTree ISEQ 20® UCITS ETF",
+     "collectorParent": [
+      "WisdomTree ISEQ 20® UCITS ETF",
+      "UCITS",
+      "WisdomTree Management Limited",
+      "WisdomTree Management Limited",
+      "Central Bank of Ireland (CBI)",
+      "Active",
+      "IRELAND"
+     ],
+     "funds_national_name_2": "WisdomTree ISEQ 20® UCITS ETF",
+     "funds_legal_framework": "UCIT",
+     "funds_legal_framework_name": "UCITS",
+     "funds_legal_framework_name_parent": "UCITS",
+     "funds_manager_nat_name": "WisdomTree Management Limited",
+     "funds_manager_nat_names": [
+      "WisdomTree Management Limited",
+      "WisdomTree Management Limited"
+     ],
+     "funds_manager_nat_code": "C131686",
+     "funds_manager_comp_cou_code": "Central Bank of Ireland (CBI)",
+     "funds_status_code": "ACTV",
+     "funds_status_code_name": "Active",
+     "funds_domicile_cou_code": "IE",
+     "funds_domicile_cou_code_name": "IRELAND",
+     "funds_ca_cou_code": "IE",
+     "funds_manager_legal_framework_name": "UCITS",
+     "funds_ca_cou_code_name": "IRELAND",
+     "funds_other_legal_framework_name": "N/A",
+     "funds_mgmnt_structure_code_name": "Externally Managed",
+     "funds_created_date": "2022-07-05T00:00:00Z",
+     "funds_last_update_date": "2024-09-11T00:00:00Z",
+     "funds_ca_cou_code_name_2": "IRELAND",
+     "funds_host_country_codes": [
+      "DE",
+      "FI",
+      "IT",
+      "NL",
+      "SE"
+     ],
+     "funds_notif_event1_dates": [
+      "2015-10-21T00:00:00Z",
+      "2015-10-21T00:00:00Z",
+      "2015-10-21T00:00:00Z",
+      "2016-05-17T00:00:00Z",
+      "2016-06-12T00:00:00Z"
+     ],
+     "funds_mgmnt_structure_code": "EXTL",
+     "funds_host_country_codes_2": "DE,FI,IT,NL,SE",
+     "_version_": 1872055795562053600,
+     "timestamp": "2026-07-29T13:25:31.072Z"
+    },
+    {
+     "entity_type": "funds_report",
+     "type_s": "parent",
+     "id": "125527",
+     "_root_": "125527",
+     "funds_national_name": "WisdomTree Germany Equity UCITS ETF",
+     "collectorParent": [
+      "WisdomTree Germany Equity UCITS ETF",
+      "UCITS",
+      "WisdomTree Management Limited",
+      "WisdomTree Management Limited",
+      "Central Bank of Ireland (CBI)",
+      "Active",
+      "IRELAND"
+     ],
+     "funds_national_name_2": "WisdomTree Germany Equity UCITS ETF",
+     "funds_legal_framework": "UCIT",
+     "funds_legal_framework_name": "UCITS",
+     "funds_legal_framework_name_parent": "UCITS",
+     "funds_manager_nat_name": "WisdomTree Management Limited",
+     "funds_manager_nat_names": [
+      "WisdomTree Management Limited",
+      "WisdomTree Management Limited"
+     ],
+     "funds_manager_nat_code": "C131686",
+     "funds_manager_comp_cou_code": "Central Bank of Ireland (CBI)",
+     "funds_status_code": "ACTV",
+     "funds_status_code_name": "Active",
+     "funds_domicile_cou_code": "IE",
+     "funds_domicile_cou_code_name": "IRELAND",
+     "funds_ca_cou_code": "IE",
+     "funds_manager_legal_framework_name": "UCITS",
+     "funds_ca_cou_code_name": "IRELAND",
+     "funds_other_legal_framework_name": "N/A",
+     "funds_mgmnt_structure_code_name": "Externally Managed",
+     "funds_created_date": "2022-07-05T00:00:00Z",
+     "funds_last_update_date": "2024-09-11T00:00:00Z",
+     "funds_ca_cou_code_name_2": "IRELAND",
+     "funds_host_country_codes": [
+      "DE",
+      "ES",
+      "FI",
+      "IT",
+      "LU",
+      "NL",
+      "SE"
+     ],
+     "funds_notif_event1_dates": [
+      "2015-10-21T00:00:00Z",
+      "2015-10-21T00:00:00Z",
+      "2015-10-21T00:00:00Z",
+      "2016-05-17T00:00:00Z",
+      "2016-06-12T00:00:00Z",
+      "2018-11-15T00:00:00Z",
+      "2018-12-18T00:00:00Z"
+     ],
+     "funds_mgmnt_structure_code": "EXTL",
+     "funds_host_country_codes_2": "DE,ES,FI,IT,LU,NL,SE",
+     "_version_": 1872055795562053600,
+     "timestamp": "2026-07-29T13:25:31.072Z"
+    },
+    {
+     "entity_type": "funds_report",
+     "type_s": "parent",
+     "id": "126059",
+     "_root_": "126059",
+     "funds_national_name": "WisdomTree India Quality UCITS ETF",
+     "collectorParent": [
+      "WisdomTree India Quality UCITS ETF",
+      "UCITS",
+      "WisdomTree Management Limited",
+      "WisdomTree Management Limited",
+      "Central Bank of Ireland (CBI)",
+      "Active",
+      "IRELAND"
+     ],
+     "funds_national_name_2": "WisdomTree India Quality UCITS ETF",
+     "funds_legal_framework": "UCIT",
+     "funds_legal_framework_name": "UCITS",
+     "funds_legal_framework_name_parent": "UCITS",
+     "funds_manager_nat_name": "WisdomTree Management Limited",
+     "funds_manager_nat_names": [
+      "WisdomTree Management Limited",
+      "WisdomTree Management Limited"
+     ],
+     "funds_manager_nat_code": "C131686",
+     "funds_manager_comp_cou_code": "Central Bank of Ireland (CBI)",
+     "funds_status_code": "ACTV",
+     "funds_status_code_name": "Active",
+     "funds_domicile_cou_code": "IE",
+     "funds_domicile_cou_code_name": "IRELAND",
+     "funds_ca_cou_code": "IE",
+     "funds_manager_legal_framework_name": "UCITS",
+     "funds_ca_cou_code_name": "IRELAND",
+     "funds_other_legal_framework_name": "N/A",
+     "funds_mgmnt_structure_code_name": "Externally Managed",
+     "funds_created_date": "2022-07-05T00:00:00Z",
+     "funds_last_update_date": "2024-09-11T00:00:00Z",
+     "funds_ca_cou_code_name_2": "IRELAND",
+     "funds_host_country_codes": [
+      "AT",
+      "ES",
+      "LU"
+     ],
+     "funds_notif_event1_dates": [
+      "2018-11-15T00:00:00Z",
+      "2018-12-18T00:00:00Z",
+      "2019-02-21T00:00:00Z"
+     ],
+     "funds_mgmnt_structure_code": "EXTL",
+     "funds_host_country_codes_2": "AT,ES,LU",
+     "_version_": 1872055795562053600,
+     "timestamp": "2026-07-29T13:25:31.072Z"
+    }
+   ],
+   "iwdaSample": [
+    {
+     "entity_type": "funds_report",
+     "type_s": "parent",
+     "id": "2836341",
+     "_root_": "2836341",
+     "funds_national_name": "iShares Core MSCI World UCITS ETF",
+     "collectorParent": [
+      "iShares Core MSCI World UCITS ETF",
+      "UCITS",
+      "BlackRock Asset Management Ireland Limited",
+      "BlackRock Asset Management Ireland Limited",
+      "Central Bank of Ireland (CBI)",
+      "Active",
+      "IRELAND"
+     ],
+     "funds_national_name_2": "iShares Core MSCI World UCITS ETF",
+     "funds_legal_framework": "UCIT",
+     "funds_legal_framework_name": "UCITS",
+     "funds_legal_framework_name_parent": "UCITS",
+     "funds_manager_nat_name": "BlackRock Asset Management Ireland Limited",
+     "funds_manager_nat_names": [
+      "BlackRock Asset Management Ireland Limited",
+      "BlackRock Asset Management Ireland Limited"
+     ],
+     "funds_manager_nat_code": "C21345",
+     "funds_manager_comp_cou_code": "Central Bank of Ireland (CBI)",
+     "funds_status_code": "ACTV",
+     "funds_status_code_name": "Active",
+     "funds_domicile_cou_code": "IE",
+     "funds_domicile_cou_code_name": "IRELAND",
+     "funds_ca_cou_code": "IE",
+     "funds_manager_legal_framework_name": "UCITS",
+     "funds_ca_cou_code_name": "IRELAND",
+     "funds_other_legal_framework_name": "N/A",
+     "funds_mgmnt_structure_code_name": "Externally Managed",
+     "funds_created_date": "2026-09-28T00:00:00Z",
+     "funds_last_update_date": "2026-09-28T00:00:00Z",
+     "funds_ca_cou_code_name_2": "IRELAND",
+     "funds_host_country_codes": [
+      "CZ",
+      "EE",
+      "GR",
+      "HU",
+      "LI",
+      "PL",
+      "RO",
+      "SK"
+     ],
+     "funds_notif_event1_dates": [
+      "2017-11-14T00:00:00Z",
+      "2018-03-06T00:00:00Z",
+      "2021-03-22T00:00:00Z",
+      "2022-06-07T00:00:00Z",
+      "2023-12-20T00:00:00Z",
+      "2026-03-14T00:00:00Z",
+      "2026-09-22T00:00:00Z",
+      "2026-09-29T00:00:00Z"
+     ],
+     "funds_mgmnt_structure_code": "EXTL",
+     "funds_host_country_codes_2": "CZ,EE,GR,HU,LI,PL,RO,SK",
+     "_version_": 1878094005420425200,
+     "timestamp": "2026-10-04T05:00:16.719Z"
+    }
+   ],
+   "summary": "2734 Fonds mit ETF im Namen"
   },
   {
    "id": "ecb-exr-api",
