@@ -102,9 +102,11 @@ export function freeze({ outDir = FREEZE_DIR, now = new Date().toISOString() } =
   /* Schutz (Nachtrag 9 b): Fundstelle eines VERSIEGELTEN V1-Falls (URL oder Kennung) wuerde dessen Label offenlegen → entfernen (nur gezaehlt);
      Fundstelle eines GEOEFFNETEN V1-Falls → durch die eingefrorene V1-Zeile vertreten (keine zweite Lesart derselben Fundstelle). */
   const { links, removed: sealedLeak, remapped } = resolveLinks(rawLinks, refs, { openRows: anchors.concat(revisions), sealedUrls, sealedCaseIds });
-  const cases = buildConsensus({ anchors, refs, links, registry, extraRefs: revisions });
+  /* vertretene Neuextraktionen gehen nicht in den Duplikat-Pool (sonst koennte die eingefrorene Zeile als Duplikat gelten) */
+  const represented = new Set(remapped.map((x) => x.from)), poolRefs = refs.filter((r) => !represented.has(r.referenceId));
+  const cases = buildConsensus({ anchors, refs: poolRefs, links, registry, extraRefs: revisions });
   /* Nachtrag 9 e: Sensitivitaet mit CANDIDATE-Referenzen, die nur am Plausibilitaetsband oder an der VU-Reihe scheitern */
-  const sens = buildConsensus({ anchors, refs, links, registry, extraRefs: revisions, acceptCandidate: sensitivityEligible });
+  const sens = buildConsensus({ anchors, refs: poolRefs, links, registry, extraRefs: revisions, acceptCandidate: sensitivityEligible });
   const sensitivity = { rule: "CANDIDATE nur wegen Plausibilitaetsband (Nachtrag 4) oder § 2.4 als INCLUDED", consensusClasses: by(sens, (c) => c.consensusClass),
     changed: sens.filter((c) => c.consensusClass !== cases.find((x) => x.consensusCaseId === c.consensusCaseId).consensusClass).map((c) => ({ consensusCaseId: c.consensusCaseId, from: cases.find((x) => x.consensusCaseId === c.consensusCaseId).consensusClass, to: c.consensusClass,
       added: c.practitionerReferences.filter((r) => r.role === "LINKED").map((r) => r.referenceId).filter((id) => !cases.find((x) => x.consensusCaseId === c.consensusCaseId).practitionerReferences.some((q) => q.referenceId === id)) })),

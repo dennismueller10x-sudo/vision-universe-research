@@ -1,15 +1,14 @@
 {
  "schemaVersion": "vu-consensus-benchmark-1.0.0",
- "generatedAt": "2026-10-05T06:28:37.263Z",
+ "generatedAt": "2026-10-05T06:14:14.615Z",
  "label": "PRACTITIONER CONSENSUS REFERENCE, NOT GROUND TRUTH — INTERN",
  "engine": "elliott-3.2.2",
  "freeze": {
-  "version": "PRACTITIONER_CONSENSUS_V1_2",
-  "sha256": "a33999d1af19bc431caad33a62fec78b3f1bf60d8ca788c92fbedc400d66ed61"
+  "version": "PRACTITIONER_CONSENSUS_V1_1",
+  "sha256": "5fb8c25b366a148f4db00d51cd93038dbbf15a42d5f21ad52a0e90e520c7650f"
  },
  "humanHuman": {
   "pairs": 9,
-  "pairsBeforeUrlDedup": 10,
   "levels": {
    "L1_family": "3/5",
    "L2_scenario": "1/5",
@@ -18,7 +17,7 @@
    "L5_degreeExact": "n/a",
    "L5_degreePm1": "n/a",
    "L6_invalidation": "n/a",
-   "L6_targets": "0/2"
+   "L6_targets": "0/3"
   },
   "byFamilyPair": {
    "ewf+tiedje": {
@@ -26,20 +25,35 @@
     "L2": 0,
     "L1": 0
    },
+   "tv-cryptoknee+tv-digitalsurftrading": {
+    "n": 1,
+    "L2": 0,
+    "L1": 0
+   },
+   "tv-cryptoknee+tv-stevetan": {
+    "n": 2,
+    "L2": 1,
+    "L1": 0
+   },
    "tv-cryptoknee+tv-thefifthwave": {
     "n": 2,
     "L2": 0,
     "L1": 2
    },
-   "tv-cryptoknee+tv-stevetan": {
+   "ewf+tv-yuchaosng": {
     "n": 1,
-    "L2": 1,
+    "L2": 0,
     "L1": 0
    },
    "tv-discobiscuit+tv-yuchaosng": {
     "n": 1,
     "L2": 0,
     "L1": 1
+   },
+   "ewf+tv-discobiscuit": {
+    "n": 1,
+    "L2": 0,
+    "L1": 0
    }
   },
   "timeframeRelation": {
@@ -49,14 +63,14 @@
  },
  "vuByGroup": {
   "D_SINGLE": {
-   "cases": 27,
-   "vuAbstainAll": 27,
-   "A1": "17/25",
+   "cases": 28,
+   "vuAbstainAll": 28,
+   "A1": "17/26",
    "B": "4/12",
-   "S": "13/25",
+   "S": "13/26",
    "anchorImpulse": {
     "VALID_IMPULSE_CANDIDATE_RANKED_LOW+LIKE": 9,
-    "VALID_IMPULSE_CANDIDATE_RANKED_LOW": 10
+    "VALID_IMPULSE_CANDIDATE_RANKED_LOW": 11
    }
   },
   "A_STRONG": {
@@ -78,33 +92,15 @@
    }
   },
   "C_DISAGREEMENT": {
-   "cases": 5,
-   "vuAbstainAll": 5,
-   "A1": "7/10",
+   "cases": 4,
+   "vuAbstainAll": 4,
+   "A1": "6/8",
    "B": "1/5",
-   "S": "5/10",
+   "S": "4/8",
    "anchorImpulse": {
-    "VALID_IMPULSE_CANDIDATE_RANKED_LOW": 3,
+    "VALID_IMPULSE_CANDIDATE_RANKED_LOW": 2,
     "VALID_IMPULSE_CANDIDATE_RANKED_LOW+LIKE": 1
    }
-  },
-  "E_TIMEFRAME_ONLY": {
-   "cases": 2,
-   "vuAbstainAll": 2,
-   "A1": "2/4",
-   "B": "1/4",
-   "S": "1/4",
-   "anchorImpulse": {
-    "VALID_IMPULSE_CANDIDATE_RANKED_LOW+LIKE": 1
-   }
-  },
-  "UNDETERMINED": {
-   "cases": 0,
-   "vuAbstainAll": 0,
-   "A1": "n/a",
-   "B": "n/a",
-   "S": "n/a",
-   "anchorImpulse": {}
   },
   "CONSENSUS_IMPULSE_SET": {
    "cases": 0,
@@ -620,8 +616,8 @@
   },
   {
    "consensusCaseId": "cc_tv-cryptoknee_20221206_spy",
-   "consensusClass": "C_DISAGREEMENT",
-   "families": 2,
+   "consensusClass": "D_SINGLE",
+   "families": 1,
    "consensusImpulse": false,
    "vu": [
     {
@@ -634,17 +630,6 @@
      "A1": "MISMATCH",
      "B": "NOT_COMPARABLE",
      "S": "MISMATCH"
-    },
-    {
-     "referenceId": "pr_tv-thefifthwave_20221203_spy",
-     "role": "LINKED",
-     "family": "tv-thefifthwave",
-     "vuStatus": "OK",
-     "vuAbstain": true,
-     "vuPattern": "FLAT",
-     "A1": "MATCH",
-     "B": "NOT_COMPARABLE",
-     "S": "MATCH"
     }
    ],
    "vuAbstainAll": true,
@@ -804,7 +789,7 @@
      "S": "MATCH"
     },
     {
-     "referenceId": "pr_tv-cryptoknee_20221206_spy",
+     "referenceId": "pr_tv-cryptoknee_20221206_spy_mc",
      "role": "LINKED",
      "family": "tv-cryptoknee",
      "vuStatus": "OK",
@@ -842,7 +827,7 @@
      "S": "MISMATCH"
     },
     {
-     "referenceId": "pr_tv-cryptoknee_20230126_btcusd",
+     "referenceId": "pr_tv-cryptoknee_20230126_btcusd_mc",
      "role": "LINKED",
      "family": "tv-cryptoknee",
      "vuStatus": "OK",
