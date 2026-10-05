@@ -133,6 +133,14 @@ class BatchTests(unittest.TestCase):
     self.assertEqual(retained['nextCheck'],source['nextCheck']);self.assertEqual(retained['failureCount'],3)
    s.close()
 
+ def test_domain_auth_denial_uses_slow_retry_without_rejecting_identity(self):
+  from company_intelligence.pipeline import advance
+  with tempfile.TemporaryDirectory() as tmp:
+   c=company();s=Store(Path(tmp)/'state.sqlite')
+   persist([{'companyId':c['companyId'],'domainOnly':True,'status':'DEFERRED','reason':'ROBOTS_UNAVAILABLE:HTTP_401','requests':1,'stats':{}}],s,{c['companyId']:c},NOW)
+   state=s.state('officialSite:'+c['companyId'])
+   self.assertEqual(state['status'],'DEFERRED');self.assertEqual(state['retryAfter'],advance(NOW,168));s.close()
+
  def test_serial_callback_persists_before_batch_return(self):
   import threading
   with tempfile.TemporaryDirectory() as tmp:

@@ -113,12 +113,22 @@ def from_announcement(item, source, now):
             label, url = material['label'], canonical_url(material['url'])
             if not url:
                 continue
-            if re.search(r'webcast|listen', label, re.I):
+            pdf = (material.get('mediaType','').split(';',1)[0].strip().lower() == 'application/pdf' or
+                   bool(re.search(r'\.pdf(?:$|[?#])', url, re.I)) or
+                   bool(re.search(r'\.pdf(?:\b|view\b|download\b)', label, re.I)))
+            kind = None
+            if re.search(r'transcript', label, re.I) and any(within_domain(url, s) for s in source.get('allowedSites', [])):
+                result['transcriptUrl'] = url
+                kind = 'COMPANY_TRANSCRIPT'
+            elif pdf and re.search(r'presentation|slides', label, re.I):
+                result['presentationUrl'] = url
+                kind = 'PRESENTATION'
+            elif not pdf and re.search(r'webcast|listen', label, re.I):
                 result['webcastUrl'] = url
             elif re.search(r'presentation|slides', label, re.I):
                 result['presentationUrl'] = url
-            elif re.search(r'transcript', label, re.I) and any(within_domain(url, s) for s in source.get('allowedSites', [])):
-                result['transcriptUrl'] = url
+            if pdf and kind:
+                result['sourceDocuments'].append({'type':kind,'url':url,'mimeType':'application/pdf'})
     if result and result['eventType'] == 'EARNINGS_SCHEDULED' and not structured and not TIME.search(name) and re.search(r'conference call|earnings call|webcast', item.get('evidenceText', ''), re.I):
         # A call's body time does not establish the separate release time.
         result.update(startsAt=None, time=None, timezone=None)

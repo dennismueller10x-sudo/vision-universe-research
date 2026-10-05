@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 from difflib import SequenceMatcher
 from pathlib import Path
 import re
-from .model import SCHEMA, normalize, stable_id
+from .model import SCHEMA, normalize, stable_id, canonical_url
 
 def item_time(item):
     return item.get('publishedAt') or item.get('observedAt')
@@ -197,6 +197,7 @@ class Store:
         correction = bool(re.search(r'correct(?:ion|ed)|restated|revised', event.get('headline', '') + ' ' + (event.get('documentEvidence', {}).get('evidence') or ''), re.I))
         earnings_group = (not correction and event['eventType'] == 'EARNINGS_PUBLISHED' and event.get('reportingPeriod') and event.get('fiscalQuarter') and event.get('fiscalYear') and not event.get('isAmendment'))
         call_group = event['eventType'] == 'EARNINGS_CALL' and event.get('startsAt') and event.get('confirmationStatus') == 'CONFIRMED'
+        peers = []
         if earnings_group or call_group:
             peers = [json.loads(r[0]) for r in self.db.execute(
                 "SELECT payload FROM events WHERE company=? AND kind='EARNINGS_PUBLISHED' AND date=? AND json_extract(payload,'$.reportingPeriod')=? AND json_extract(payload,'$.fiscalQuarter')=? AND json_extract(payload,'$.fiscalYear')=?",
@@ -249,6 +250,15 @@ class Store:
                 self.audit(now, event.get('sourceId'), 'CALENDAR_CHANGED', eventId=event['eventId'], previous=prior_date, current=new_date)
             else:
                 event['dateHistory'] = prior.get('dateHistory', [])
+        # Explicit PDF-document metadata cannot survive as a webcast/replay
+        # merely because an earlier source used ambiguous attachment wording.
+        pdf_urls = {canonical_url(d.get('url')) for d in event.get('sourceDocuments', [])
+                    if d.get('mimeType') == 'application/pdf' and
+                    d.get('type') in ('PRESENTATION','COMPANY_TRANSCRIPT')}
+        for field in ('webcastUrl','replayUrl'):
+            if event.get(field) and canonical_url(event[field]) in pdf_urls:
+                event[field] = next((record[field] for record in peers + [prior_event]
+                                     if record.get(field) and canonical_url(record[field]) not in pdf_urls), None)
         with self.db:
             encoded = dumps(event)
             if old and old[0] == encoded:

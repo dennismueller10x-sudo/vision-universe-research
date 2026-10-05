@@ -119,7 +119,7 @@ def persist(results,store,companies,now):
         cid=r['companyId'];reason=r.get('reason') or ''
         if r.get('domainOnly'):
             reason=r.get('reason') or ''
-            category='VERIFIED' if r['status']=='VALIDATED' else 'BLOCKED' if any(code in reason for code in ('403','ROBOTS_DISALLOWED')) else 'UNAVAILABLE' if any(code in reason for code in ('404','DNS','NETWORK_UNAVAILABLE')) else 'DEFERRED' if r['status']=='DEFERRED' else 'IDENTITY_NOT_CORROBORATED' if 'OWNER_NOT_VALIDATED' in reason else 'FAILED'
+            category='VERIFIED' if r['status']=='VALIDATED' else 'BLOCKED' if any(code in reason for code in ('403','401','ROBOTS_DISALLOWED')) else 'UNAVAILABLE' if any(code in reason for code in ('404','DNS','NETWORK_UNAVAILABLE')) else 'DEFERRED' if r['status']=='DEFERRED' else 'IDENTITY_NOT_CORROBORATED' if 'OWNER_NOT_VALIDATED' in reason else 'FAILED'
             store.set_state('domainValidation:'+cid,{'status':r['status'],'category':category,'reason':reason,'checkedAt':now,'nextAttempt':advance(now,24 if category in ('DEFERRED','UNAVAILABLE') else 7*24)})
         if r.get('site'):store.set_state('officialSite:'+cid,r['site']);companies[cid]['officialSites']=[r['site']['url']]
         if not r.get('domainOnly') and r['status'] in ('DEFERRED','DEGRADED'):
