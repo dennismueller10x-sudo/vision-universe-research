@@ -84,7 +84,8 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
             result.update(status='VALIDATED',sources=sources,configurations=configs,domainOnly=domain_only)
         except BudgetExhausted as e:
             result.update(reason=str(e),sources=getattr(e,'discoverySources',[]),
-                          configurations=getattr(e,'discoveryConfigurations',[]))
+                          configurations=getattr(e,'discoveryConfigurations',[]),
+                          failureEvidence=getattr(e,'ownershipEvidence',{}))
         except (SourceError,ValueError,TypeError,KeyError) as e:
             circuit.failure(candidate['url'], e)
             transient=any(code in str(e) for code in ('HTTP_429','HTTP_500','HTTP_502','HTTP_503','HTTP_504','NETWORK_UNAVAILABLE','NETWORK_TIMEOUT','DNS_UNAVAILABLE','ROBOTS_UNAVAILABLE'))
@@ -146,10 +147,10 @@ def persist(results,store,companies,now):
             store.set_state('ir:'+cid,{'lastSuccess':now,'configurations':configurations,'sources':len(r['sources']),'nextVerify':advance(now,7*24)})
         elif r.get('domainOnly') and r['status']=='DEFERRED':
             prior=store.state('officialSite:'+cid,{})
-            if prior.get('status')!='VALIDATED':store.set_state('officialSite:'+cid,{**prior,'status':'DEFERRED','lastFailure':now,'reason':r.get('reason'),'retryAfter':advance(now,7*24 if category=='BLOCKED' else .25 if 'CIRCUIT_OPEN' in reason else 1)})
+            if prior.get('status')!='VALIDATED':store.set_state('officialSite:'+cid,{**prior,'status':'DEFERRED','lastFailure':now,'reason':r.get('reason'),'lastFailureEvidence':r.get('failureEvidence') or prior.get('lastFailureEvidence',{}),'retryAfter':advance(now,7*24 if category=='BLOCKED' else .25 if 'CIRCUIT_OPEN' in reason else 1)})
         elif r['status']=='REJECTED':
             store.set_state('officialSite:'+cid,{'status':'REJECTED','lastChecked':now,'reason':r['reason'],'ownershipEvidence':r.get('failureEvidence',{}),'ownershipVerifierVersion':OWNERSHIP_VERSION,'oversizedIRRecoveryVersion':OVERSIZED_IR_RECOVERY_VERSION,'retryAfter':advance(now,7*24)})
         elif r['status']=='DEGRADED':
             store.set_state('ir:'+cid,{**store.state('ir:'+cid,{}),'lastFailure':now,'reason':r['reason'],'retryAfter':advance(now,.25 if 'CIRCUIT_OPEN' in reason else 24)})
-        store.set_state('inventoryDiscovery:'+cid,{'status':r['status'],'checkedAt':now,'requests':r['requests'],'stats':r.get('stats',{}),'reason':r.get('reason')})
+        store.set_state('inventoryDiscovery:'+cid,{'status':r['status'],'checkedAt':now,'requests':r['requests'],'stats':r.get('stats',{}),'reason':r.get('reason'),'failureEvidence':r.get('failureEvidence',{})})
         if r['status']!='VALIDATED':store.audit(now,cid,'INVENTORY_DISCOVERY_'+r['status'],reason=r.get('reason'),requests=r['requests'])

@@ -35,7 +35,8 @@ class OversizedIRTests(unittest.TestCase):
    self.assertEqual(h.calls,[ROOT])
  def test_budget_remains_deferred_and_proxy_failure_remains_temporary(self):
   h=HTTP(self.pages());h.pages[IR]=BudgetExhausted('NETWORK_BUDGET_EXHAUSTED')
-  with self.assertRaises(BudgetExhausted):validate_discovery_candidate(company(),{'url':ROOT,'evidence':'candidate'},h,NOW)
+  with self.assertRaises(BudgetExhausted) as caught:validate_discovery_candidate(company(),{'url':ROOT,'evidence':'candidate'},h,NOW)
+  self.assertEqual(caught.exception.ownershipEvidence['alternateIRAttempts'],[{'url':IR,'reason':'NETWORK_BUDGET_EXHAUSTED'}])
   self.assertEqual(h.calls,[ROOT,IR])
   h=HTTP(self.pages());h.pages[IR]=SourceError('HTTP_503')
   with self.assertRaisesRegex(SourceError,'OWNERSHIP_EVIDENCE_TEMPORARY_FAILURE:HTTP_503'):validate_discovery_candidate(company(),{'url':ROOT,'evidence':'candidate'},h,NOW)

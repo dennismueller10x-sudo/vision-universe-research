@@ -125,7 +125,7 @@ def record(result,store,now,pass_id,lane):
                             'retryAfter':lane_state.get('retryAfter') or now,
                             'stats':{key:prior.get('stats',{}).get(key,0)+value for key,value in result.get('stats',{}).items()},
                             'status':result['status'],'category':failure_category(result['status'],result.get('reason','')),
-                            'reason':result.get('reason'),'checkedAt':now,'networkRequests':prior.get('networkRequests',0)+result.get('requests',0)})
+                            'reason':result.get('reason'),'failureEvidence':result.get('failureEvidence') or prior.get('failureEvidence',{}),'checkedAt':now,'networkRequests':prior.get('networkRequests',0)+result.get('requests',0)})
 
 
 def progress(store,pass_id,lane):

@@ -238,6 +238,11 @@ def _recover_oversized_root_ir(company, candidate, http, now, original):
             return proof
         except SourceError as error:
             if isinstance(error, BudgetExhausted):
+                error.ownershipEvidence = {**getattr(error, 'ownershipEvidence', {}),
+                                           'originalCandidateURL': candidate['url'],
+                                           'primaryFailure': str(original),
+                                           'alternateIRAttempts': attempts + [{'url': route, 'reason': str(error)}],
+                                           'oversizedIRRecoveryVersion': OVERSIZED_IR_RECOVERY_VERSION}
                 raise
             attempts.append({'url': route, 'reason': str(error)[:150],
                              'ownershipEvidence': getattr(error, 'ownershipEvidence', {})})
