@@ -1,3 +1,13 @@
+# CI compatibility checkpoint — 2026-10-05 (discovery continues)
+
+A new main-branch Discover isolation gate correctly exposed the pre-existing Company Intelligence stock-page mount and asset imports as changes under `quant/`. Discover's engine tests, delivered-data verification and reproducible build passed; its path-isolation step failed on `quant/app/page-stock.js` and `quant/index.html`. These existing integration files are unchanged by this run.
+
+The gate now permits only the exact additive Company Intelligence mount and four fixed asset imports, and only when the gated module's rollout and stock UI files are present in the PR. Removed lines, renamed/copied files, mode changes, duplicate loading and other Quant logic remain rejected. Git failures fail the check. The corrected two-parent merge comparison from current main is retained. **37 Node tests pass**, including eight new boundary tests, real Git history with allowed integration and rejected engine/stock mutations, and checks against PR #356's actual two-file patch. Python validation remains **398 passing tests**. Remote CI for this compatibility checkpoint is pending; merge readiness will be reassessed after it completes.
+
+Q4 recovery now has 59/60 successful IR outcomes and GCS has 62/63, with one retained cooldown/failure in each cohort. The next materials batch attempted 30 sources in 59 requests and recovered presentation coverage for 16 issuers before its bounded time allowance expired. Additional material-source work remains due. Publisher metadata backfill is running with per-release checkpoints and bounded batch accounting. The following export report retains its timestamp until the next fresh projection and consumer audit; these operational gains are not claimed as delivered coverage yet.
+
+---
+
 # Validated StockPR event adapter — 2026-10-05 (discovery continues)
 
 The StockPR/Equisolve source family now parses observed, bounded `article.media` event cards from a verified IR host. A card must contain one explicit `time` element and an owned `ir-calendar/detail` or `events/detail` link. Visible date/time evidence must agree with the machine-readable date/time; no timezone is assumed. Release cards, foreign event hosts, conflicting timestamps, clinical-result titles and oversized cards are rejected. The unchanged issuer-actor guard remains in live ingestion, and the existing official-confirmation/estimate reconciliation runs for accepted calls.
