@@ -1,3 +1,252 @@
+# Company Intelligence — profile and conversion continuation final report
+
+Report date: 2026-10-05. Repository: `dennismueller10x-sudo/vision-universe-research`; branch: `feature/company-intelligence-rollout`; [PR #356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356), open and unmerged.
+
+## 1. Executive result
+
+**3,670 sourced company profiles (60.38% of 6,078 issuers)** are prepared, stored and exposed through the existing consumer projection and Discover/Quant stock component. All 5,412 SEC identities received an initial bounded attempt. Multiple network cohorts, cache-only recovery rounds and quality withdrawals were completed and preserved in successive Git milestones. This is substantial new coverage, but the requested 80–90% profile target is **not achieved**.
+
+This work also adds Q4 materials classification and short-form quarterly-results confirmation fixes. Concurrent remotely preserved source conversion was fetched and incorporated without overwriting source/configuration progress. Its latest reported coverage improves news, IR, calls, webcasts, presentations and management content. These source-ledger gains are attributed to the remote conversion snapshots, not invented as local discoveries.
+
+**Exact state boundary:** initial remote/PR head was `9dc8e701cb0dc4e06a1796a52bd794fd70faf7c9`. The latest incorporated conversion head is `68e6390d7662d426427b97de742acb4433343a4f`, with coverage measured at **2026-10-05T11:20:26Z**. Its private checkpoint is SHA-256 `936a4c2c0b9a0dfcb87cdcec2e4530a0fceed8db7e9cd295dd8e1b2ced286924`, **24,115,951 bytes**, logical hash `217be0fb48f382916d679984a8e130139bb60429e2b3d486c95c3c4b9f40c379`, generation `e82119c3f58320d52c577e7f`. That expanded ledger/cache/queue checkpoint is unavailable in this workspace; no private R2 credentials are configured. **No replacement rollout ledger or discovery queue was initialized.** A checkpoint location was requested but not received. Original IR/GlobeNewswire continuation cannot truthfully be claimed locally. The additive profile lane resumes its own per-issuer checkpoints and stores successful factual profiles in Git.
+
+## 2. Company profile
+
+The reusable `company-profile-1.0.0` contract contains issuer name, concise description, primary activity, explicit activities/products/markets, optional segments, official website, source provenance/hash/filing identity, confidence and verification time. No employee count is added. Empty fact arrays remain empty when evidence cannot support extraction.
+
+SEC Business/Item 1 and foreign annual-report overview extraction reuse the existing SEC client and immutable compressed filing cache. First-party extraction is restricted to proven issuer roots and advertised About/overview routes. Deterministic rewriting removes ranks, promotional clauses and first-person wording; no paid provider, model, live translation or page-time generation is introduced. A profile can be one concise sentence when that is the only explicit safe evidence, rather than padding it with assumptions.
+
+Profiles persist once per canonical issuer. Filing-driven updates join existing SEC change processing; first-party reviews are quarterly. Failed/new filing retrieval preserves previous facts and displays appropriate staleness. The catalogue lane uses one-writer locking, atomic per-issuer checkpoint writes, bounded budgets, cooldowns and a three-failure circuit. The production backfill refuses to initialize a missing discovery ledger.
+
+## 3. Company profile coverage
+
+| Metric | Exact prepared catalogue |
+|---|---:|
+| Supported issuers | 6,078 |
+| SEC identities attempted | 5,412 / 5,412 |
+| Available | 3,670 (60.38%) |
+| From SEC | 3,659 (60.20%) |
+| From first-party web | 11 (0.18%) |
+| Combined SEC + web | 0 |
+| Unavailable | 2,408 (39.62%) |
+| Ambiguous profile attempt state | 0 |
+| Stale | 7 |
+| HIGH confidence | 3,659 |
+| MEDIUM confidence | 11 |
+| Source-hash-scoped quality withdrawals | 91 |
+
+Confidence describes source/identity strength, **not completeness or statistical accuracy**. Unknown ownership and multiple-registrant first-person prose are excluded; zero AMBIGUOUS profile states does not mean all underlying ownership cases are resolved. 67.61% of SEC identities yield accepted descriptions. On current main's 6,073-issuer universe, 3,668 profiles are supported; two historically supported CIDs remain in the branch catalogue but are excluded by main's issuer intersection. The Master universe was not changed.
+
+## 4. Company profile sources
+
+3,659 profiles cite exact-CIK 10-K/20-F/40-F annual documents; 11 cite verified first-party pages; no low-quality third-party descriptions are imported. Annual documents are cached once and reprocessed locally. A separate 96-issuer missing-profile web fallback used 236 requests / 24,054,093 decoded bytes. Thirteen initial candidates were reviewed; two marketing-dominated candidates were rejected, leaving eleven sourced profiles. Web verification does not infer business facts from a ticker, sector, or domain alone.
+
+First-party examples include MDU's regulated energy-delivery business, Scully Royalty's Royalty/Industrial/Merchant Banking segments, Worthington's building/consumer/energy products, and CVD's chemical-vapor-deposition and thermal-process equipment. Fifth Third's indirect bank-parent relationship is preserved; it is a deliberately partial holding-company description.
+
+## 5. Company profile quality audit
+
+All **3,670 public profiles and their cached source hashes** were checked with **zero HTTP audit requests and zero hash/contract errors**. A deterministic seed-356 manual/source sample covers the six requested tickers, small/micro caps, banking, insurance, industrial, biotech, consumer, software, semiconductor, ADR/FPI issuers, all eleven web profiles, and twelve random selections: **40 distinct profiles** in the final audit.
+
+| Issuer | Consumer facts verified in source |
+|---|---|
+| AAPL | Smartphones, computers, tablets, wearables/accessories, related services and AppleCare. |
+| NVDA | AI/computing infrastructure, CUDA/GPU platforms and stated computing markets. |
+| TSLA | Current design/manufacture/sale of electric vehicles and energy generation/storage systems; future objective excluded. |
+| MSFT | Software/cloud services, devices and stated business/product offerings. |
+| PLTR | Government/commercial data software; Gotham, Foundry, Apollo and AIP. |
+| XPEV | Smart EVs in China and explicitly stated driver-assistance technology. |
+| ROOT | Personal auto-insurance products and explicitly stated US market. |
+| BOH | Consumer Banking, Commercial Banking and Treasury segments. |
+| LSCC | Programmable-logic semiconductors, enabling products, services and licenses. |
+| MDU | Current regulated energy delivery; an About-page historical 2001 coal claim excluded. |
+
+Audits rejected legal-formation-only MGRT/ILPT descriptions, mission/strategy copy, HR/employee counts, unsupported superlatives, corporate timelines and headings detached from regional facility counts. Combined annual-report registrant names are inspected: unqualified “we/the company” cannot safely describe the requested parent/subsidiary when multiple legal registrants exist. Named issuer statements remain eligible. Some accepted profiles are sparse or use source abbreviations and retain industry terminology; they are useful factual summaries, not a claim of uniform editorial polish or comprehensive segments/products.
+
+## 6. Discover integration
+
+The shared stock component places **Unternehmen** before the existing financial/intelligence chapters in Discover and Quant. It shows prepared description, company website where known and annual/source citation. German interface labels with English sourced prose (`lang="en"`) follow existing news conventions; no uncontrolled translation service is added. Existing sector/industry fundamentals are reused, not duplicated.
+
+A stale annual description shows “Ältere Unternehmensbeschreibung” with the filing date, rather than disguising a cached replay as fresh verification. Unsupported profiles do not produce empty chapters. Wrong-issuer/unsafe source payloads are refused and prose is escaped as plain text. Existing rollout gates remain in force; this is not an unauthorized production expansion.
+
+## 7. Verified domain conversion
+
+Reported verified domains: **2,359 → 2,411**; committed official-site seeds: **2,353 → 2,405**. These distinct measures must not be conflated. The profile catalogue covers **1,799 / 2,405 seeded-site issuers (74.80%)**; **1,796** profiles carry a website. That is issuer overlap, not proof that SEC profiles were extracted from those websites.
+
+The preserved remote report separately measures a 1,642-new-domain cohort: 1,063 IR, 954 accepted-news issuers, 402 calls, 383 webcasts, 869 presentations and 499 management-content issuers. These overlapping sets are not summed. The report's top table says zero cohort 180-day news while its executive and news sections say 954; **954 is narrative-reported accepted-news coverage, not an independently recounted union**. An exact “any useful intelligence” union for all 2,411 domains requires the absent ledger.
+
+## 8. IR conversion
+
+Reported IR pages: **910 → 1,147**. Latest source registry: **3,101 operational descriptors**, **2,864 committed descriptors**, versus 2,378 committed at start. Remote broad-IR checkpoint: **399 / 901 roots classified, 502 pending, 344 successful outcomes; 3,888 requests / 275,256,397 decoded bytes**. The queue was not restarted locally. Exact all-IR issuer unions for news/events/calls/materials and zero-conversion clusters remain unavailable until original checkpoint restore; fingerprints alone cannot supply those conversion rates.
+
+## 9. News
+
+180-day issuer coverage: **1,168 → 1,573**, **+405 (+34.67%)**, latest **25.88%** of the universe. Known structured adapters/feeds remain issuer-matched. Remote native-feed cohort processed 182/182 sources, accepted 1,567 stories and added 155 news issuers using 340 requests / 11,732,088 bytes; it reached NO_DUE. This is preserved remote evidence, not a rerun against an empty ledger.
+
+## 10. News freshness
+
+| Window | Before | After | Change |
+|---|---:|---:|---:|
+| 7 days | 474 | 532 | +58 |
+| 30 days | 934 | 1,228 | +294 |
+| 90 days | 1,163 | 1,563 | +400 |
+| 180 days | 1,168 | 1,573 | +405 |
+
+These are two dated remote snapshots. Snapshot windows move with time; counts are not all causal additions from this profile work. News retains approximately four-hour polling.
+
+## 11. Confirmed earnings
+
+**80 → 91** confirmed upcoming issuers; estimates **3,198 → 3,188**. Confirmation still requires explicit owner-matched dated announcement/event evidence, not pattern forecasts. The added short-quarter adapter recognizes owner-verified “Q3 FY26 Results” style event titles while rejecting clinical/production/generic third-party results. Existing event IDs are reclassified in place, period/year is only stored when explicit, and linked estimates retire without duplicate events. No numerical adapter-only gain is claimed without the ledger.
+
+## 12. Calls
+
+**372 → 486** call issuers; dated **316 → 403**. Fiscal periods and owner relationships remain required. Remote event audit still identifies two duplicate untimed-call groups, including EPR; no ledger deletion or claimed fix is made without the actual event records. This is an explicit remaining bundling limitation, not inflated issuer coverage.
+
+## 13. Webcasts
+
+**332 → 423** webcast issuers; replay **4 → 6**. Only public URLs are admitted; no login/captcha/access bypass is introduced. Q4 PDF attachments no longer become webcast links, and token/test/unsafe URLs are excluded.
+
+## 14. Presentations
+
+**760 → 950** issuers. Remote materials follow-up completed nine batches using **515 requests / 13,121,863 bytes**, with **77 new presentation issuers** reported. Earnings/investor slides, supplemental reports and shareholder materials retain owner/source provenance. Q4 classification gives transcript/remarks/letter/report wording precedence over generic presentation labels and repairs inherited misclassifications on successful polling.
+
+## 15. Transcripts / management content
+
+Transcript references **157 → 203**; prepared remarks **31 → 36**; shareholder letters **26 → 36**; any management content **425 → 540**. Latest remote other-management count is 15. References are not represented as downloaded/licensed transcript bodies; public metadata and source links are preserved. Caption/transcript expansion still requires publicly supplied evidence.
+
+## 16. GlobeNewswire backfill
+
+Preserved monthly archive: **2,031 attempted / 2,009 parsed / 1,089 new items / 119 duplicate matches / 721 identities**; accepted issuer-scoped set **1,197 items / 1,194 URLs**. Continuing September–October 5 checkpoint: **nine batches; 876 attempted / 880 parsed / 456 stories / 77 duplicates; 889 requests / 79,599,339 bytes; 203 new news issuers**. Last three reported issuer gains: **26 / 27 / 21**, low-gain streak zero. This remains meaningful marginal coverage, not a source ceiling.
+
+The continuing parsed count exceeds attempted because of staged/replayed accounting in the remote report; it must not be presented as a clean unique-item funnel. Bodies retained: **zero**. Continuation must restore the actual private publisher checkpoint; none was recreated in this workspace.
+
+## 17. Platform conversion rates
+
+| Platform | Sources ever successful / operational sources | Rate |
+|---|---:|---:|
+| Q4 | 1,371 / 1,601 | 85.63% |
+| GCS | 781 / 886 | 88.15% |
+| WordPress | 171 / 200 | 85.50% |
+| STOCKPR | 241 / 264 | 91.29% |
+| Generic | 68 / 82 | 82.93% |
+| Web Driver | 32 / 37 | 86.49% |
+| Investis | 19 / 23 | 82.61% |
+
+**These are preserved source polling success rates, not issuer-to-news/call/material conversion rates.** Platform fingerprint issuer sets overlap: Q4 389, GCS 369, STOCKPR 131, generic 127, WordPress 112, Investis 36, Web Driver 27, others two. Exact downstream per-platform unions require restored ledger queries.
+
+## 18. Remaining candidates
+
+Remote original frozen inventory: **4,248 / 4,248 classified**; advertised/runtime inventory **4,399 / 4,399 processed; zero unchecked**. The 15-candidate tail and subsequently advertised tails were processed remotely. **1,989 unproven/unresolved outcomes** remain classifications with evidence/cooldowns, not 1,989 unchecked candidates. Broad IR's **502 pending roots** remain the largest explicit live continuation queue. Profile missing cases are distinct from domain candidates.
+
+## 19. Random consumer audit
+
+A disposable, explicitly profile-only audit database imports the actual prepared catalogue and projects the full 6,078-issuer universe; it is not a substitute rollout database. A 15-stock consumer cohort produces **31 assets / 40,655 bytes**, maximum payload **2,904 bytes**. Actual filesystem-backed public delivery and both stock pages were checked at 390/430/768/1440 widths.
+
+Final browser validation covers **77 cases**: 64 responsive stock views, two disabled-gate zero-request cases, eight wrong-issuer/unsafe-link/XSS/stale cases and three private-path rejections. Profiles reuse the existing three lookup URLs (rerenders can abort/repeat requests); no extra profile endpoint/request is added. BOH's audit inclusion is browser-only; production cohort gates remain unchanged.
+
+This local profile-only audit cannot show the latest original-ledger news/calls/events because that ledger is missing. Rich historical/current remote consumer cohorts are preserved below with their own generations and provenance; they are not described as fresh local all-section audits.
+
+## 20. False positive audit
+
+Exact CIK and legal issuer subject checks prevent same-name company, parent/subsidiary, renamed-issuer and ticker-reuse contamination. Multiple share classes reuse canonical issuer profiles. ADR/FPI priority XPEV and stratified VEON source wording were checked; combined registrant annuals cannot borrow subsidiary first-person text. Official website ownership comes from existing proof, not inferred SEC name similarity.
+
+**91 cumulative exact-source withdrawals** suppress previously weaker descriptions only when the old parser/source hash matches; prior factual/source data remain private. Newer/manual/changed-source profiles survive. No news/event/source queues are reset. The final audit removes bare legal formation and excludes promotional IT/mission claims rather than importing invented products/customers.
+
+## 21. Full-universe metrics
+
+Profile counts below are exact local prepared-catalogue counts; other rows compare the initial and latest incorporated **remote measurement snapshots**, not a local ledger recount or deployed production claim.
+
+| Measure | Starting snapshot | Latest snapshot | Change | Latest / 6,078 |
+|---|---:|---:|---:|---:|
+| Company profile | 0 | 3,670 | +3,670 | 60.38% |
+| Verified domains | 2,359 | 2,411 | +52 | 39.67% |
+| IR pages | 910 | 1,147 | +237 | 18.87% |
+| News 7d | 474 | 532 | +58 | 8.75% |
+| News 30d | 934 | 1,228 | +294 | 20.20% |
+| News 90d | 1,163 | 1,563 | +400 | 25.72% |
+| News 180d | 1,168 | 1,573 | +405 | 25.88% |
+| Calls | 372 | 486 | +114 | 8.00% |
+| Dated calls | 316 | 403 | +87 | 6.63% |
+| Webcasts | 332 | 423 | +91 | 6.96% |
+| Replays | 4 | 6 | +2 | 0.10% |
+| Presentations | 760 | 950 | +190 | 15.63% |
+| Transcript references | 157 | 203 | +46 | 3.34% |
+| Prepared remarks | 31 | 36 | +5 | 0.59% |
+| Shareholder letters | 26 | 36 | +10 | 0.59% |
+| Any management content | 425 | 540 | +115 | 8.88% |
+| Confirmed upcoming earnings | 80 | 91 | +11 | 1.50% |
+| Estimated earnings windows | 3,198 | 3,188 | -10 | 52.45% |
+| Consumer sizing payloads | 4,914 | 5,028 | +114 | 82.72% |
+
+Financial summaries remain remotely reported **4,869**, current summaries **3,721**, SEC identities **5,412**. Historical material-intelligence coverage was approximately **4,021**; an exact latest original-ledger material-intelligence union is unavailable here and is **not fabricated**. Profiles enrich AVAILABLE payloads without relabelling their historical material-intelligence flag. The latest **5,028 consumer-sizing payloads** includes the remotely imported earlier 3,177-profile catalogue, not necessarily this final catalogue. Do not add the final profile-only export count to that number. Exact final combined consumer/material union must follow checkpoint restore and projection.
+
+## 22. Request / bandwidth metrics
+
+Initial profile lane: **10,882 requests / 20,381,052,023 returned decoded bytes** (20.381 GB decimal); compressed wire bandwidth was **not measured**. These counters include SEC cohorts and the separately measured priority/web audits; successful immutable filing downloads are reused. Catalogue completed-batch runtime **7,902.835 seconds** is local execution, not Actions billing or total human elapsed time. At least **99 catalogue batches** used zero HTTP, plus read-only reviews and full source audits.
+
+Broad IR, native feed, materials and publisher request counters are separate overlapping remote cohort/run measurements; they are not blindly summed into a claimed global total. Read-only cached missing-profile reviews examined 1,200 cases in four rounds with candidate gains 14/5/12/3. Every recovered profile was rechecked by the real extractor; candidate gains are not profile coverage counts.
+
+## 23. Profile cost model
+
+Paid data/model/translation provider cost: **$0**. Initial extraction requests are measured above. Conservative steady-state scenario: one new annual document per SEC profile/year, existing submissions refresh reused, and eleven web-only profiles reviewed quarterly with at most six source/robots requests per review: **326.92 source requests/month**. Real filing-driven activity is uneven, not a fixed monthly cron for each issuer.
+
+No extra consumer profile request or recurring news wakeup is added. Prepared catalogue JSON occupies **6,406,504 bytes**; two public-slot profile content scenario **12,813,008 bytes**, before wrappers/index/compression. This is a scenario, not measured final combined R2 increment. Private compressed SEC cache is excluded from the existing R2 checkpoint allowlist; do not upload full filing bodies to public storage.
+
+## 24. Total Actions cost model
+
+Latest remote operational plan: **9,503 planned polls/day / 285,090 per month**, **9,473 unique URLs/day / 284,190 per month**. At two seconds serially that is a **9,467 aggregate-minute/month floor**, not measured or billed runtime. Existing bounded six-times-daily 160-source lane supports **960 polls/day**, with eight-minute × 180-run monthly envelope **1,440 minutes**; it does not cover the complete current source registry at all desired cadences. Ten disjoint lanes would be a **14,400-minute monthly capacity scenario**, not activated here.
+
+Local profile backfills consume no GitHub Actions runner minutes. Milestone pushes do trigger existing CI, so the work is not represented as zero CI cost. No new recurring production workflow is enabled. Existing free-plan/runner-rate eligibility and actual execution duration determine the bill; no unsupported dollar invoice is asserted.
+
+## 25. R2 cost model
+
+Remote two-public/two-private-slot retained-footprint scenario: **0.255272 GB**; conservative full-change monthly public PUT **1,020,780**, public verification GET **2,040,840**, private PUT **540**, restore GET **900**. Hash skipping lowers writes; user delivery traffic is excluded. The remote footprint already includes earlier profile content, so adding the final full catalogue size would double-count some data. Final incremental combined bytes need exact restored export/checkpoint measurement.
+
+The existing two-slot policy remains; no new bucket or per-profile object is introduced. Expanded checkpoint upload and final authenticated R2 delivery were **not performed** without credentials. Git preserves the new prepared facts; private negative attempts/cache are locally durable but not magically remotely recoverable. No “$0 R2” claim is made without accounting for operation thresholds and consumer traffic.
+
+## 26. Tests
+
+Final local feature validation: **508 Python tests / 39 Company Intelligence Node tests**. Source hash/contract audit: **3,670 sources, zero errors**. Actual browser: **77 cases**. Broader existing Node regressions: **2,574 total; 2,569 pass, five intentional skips, zero failures**. A dry three-way integration check against current main is required before final preservation; it does not merge PR #356.
+
+Tests cover wrong issuer/URL/XSS, staleness, single/multiple registrants, annual filing changes/failure retention, cache-only reparse, budgets/circuits, no missing-ledger initialization, selective quality withdrawal, short-quarter confirmation and Q4 attachment classification. Full feature tests are rerun after final parser changes. Final GitHub workflow conclusions and exact preservation SHAs are recorded in the PR/final response; cancelled concurrency jobs are not called passing.
+
+## 27. Regressions
+
+Existing financial/news/event/material source states are additive and preserved. No Master/fundamentals/production currency data is changed. Broader tests' generated total-return verification file was inspected and restored; unrelated generated artifacts are not committed. News ≈4h, SEC ≈4h/change-driven, events ≈12h, materials 12–24h, IR days, domains slow/weekly, profiles annual-change/quarterly conventions remain. Sparse consumers show available sections, with no empty profile clutter.
+
+## 28. Limitations
+
+80–90% profile coverage is unmet; **2,408 issuers lack an accepted profile**. Missing-case reasons include absent annual primary documents (roughly 235 SEC identities after web successes), explicit business text not safely extractable, linked 40-F/S-1/F-1 evidence, combined registrants, and 666 issuers without SEC identity. Some accepted type/holding descriptions remain partial. No language translation has been added. Seven profiles are marked stale rather than pretending current evidence.
+
+The expanded discovery checkpoint is unavailable locally; therefore broad-IR/Globe continuation, exact domain/IR downstream unions, final combined material-intelligence coverage and full production R2 acceptance are blocked. Remote metrics have the two documented news/archive accounting inconsistencies. Untimed duplicate-call groups remain. Full-registry scheduling capacity is not proven. The free/public-source ceiling is not established.
+
+## 29. Remaining high-leverage opportunities
+
+1. Restore the exact expanded private checkpoint, preserve its digest/queue IDs, import this catalogue, resume the remaining 502 broad-IR roots and the profitable September–October metadata checkpoint, then reproject/audit the actual combined generation.
+2. Exploit cached annual missing cases first: precise linked 40-F/annual business exhibits and issuer-scoped organization/managed-assets patterns; avoid weak identity-only fallbacks. Follow with bounded verified About/IR overview expansion beyond the initial 96 fallback issuers.
+3. Query zero-downstream verified-domain and known-IR cohorts by platform; expand Q4/GCS/WordPress/STOCKPR explicit structured events/news/material feeds without relaxing owner matching.
+4. Reconcile the two untimed call groups using actual event/fiscal-period/public-link evidence, improve public replay/captions/remarks discovery, and measure distinct issuer unions rather than adding overlapping channel totals.
+5. Validate capacity and authenticated recovery/delivery for the precise final generation before widening Discover rollout. No production gate is widened merely because CI passes.
+
+## 30. Readiness
+
+Breakthroughs below refer to new prepared profiles and the incorporated remote source-conversion snapshots, not a completed 80–90% target or production activation. Code readiness requires final checks; pilot/broad readiness require missing checkpoint/authenticated delivery/capacity evidence.
+
+COMPANY-PROFILE-BREAKTHROUGH: YES
+DOMAIN-TO-INTELLIGENCE-CONVERSION-BREAKTHROUGH: YES
+NEWS-COVERAGE-BREAKTHROUGH: YES
+CALLS-MATERIALS-BREAKTHROUGH: YES
+CODE-MERGE-READY: YES
+PILOT-READY: NO
+BROAD-ROLLOUT-READY: NO
+
+PR #356 must remain open and unmerged. Successive validated milestones are preserved remotely in branch history, including the 3,177-profile milestone `d6abce3188ff603e8b6b894a2e87a7cd3c9ab875` and the 3,684-profile milestone `3c8b2fbb1438ed06dd7bdf9131b3ff984f851fa1`. Exact final local/remote/PR head verification belongs in the final response because a commit cannot contain its own SHA. Branch preservation uses verified Git Data API non-force ref updates when smart-HTTP pushes reject authentication.
+
+---
+
+## Preserved earlier reports and source-conversion checkpoints
+
+The following reports are historical, contain earlier counts/limits and are retained for provenance. The 30-section report above is the current prepared-profile summary; historical source-ledger totals retain their own snapshot scope.
+
 
 ## Validated profile catalogue milestone — 2026-10-05 12:08 UTC
 

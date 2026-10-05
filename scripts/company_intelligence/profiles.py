@@ -14,7 +14,7 @@ from .transport import SourceError, BudgetExhausted
 from .q4_events import public_link
 
 VERSION = 'company-profile-1.0.0'
-PARSER_VERSION = 'company-profile-parser-1.0.19'
+PARSER_VERSION = 'company-profile-parser-1.0.20'
 WEB_DAYS = 90
 SEC_STALE_DAYS = 550
 MAX_DOCUMENT = 64 * 1024 * 1024
@@ -189,6 +189,9 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True):
     text = re.sub(r'\s*[–—-]\s*enabling tomorrow[’\']s technologies\b.*', '.', text, flags=re.I)
     text = re.sub(r'\s+with the objective of\b.*', '.', text, flags=re.I)
     text = re.sub(r'\bindustry-leading\s+', '', text, flags=re.I)
+    text = re.sub(r'\b(?:company|platform)\b\s+(?:whose mission|that allows any business to simplify)\b.*', lambda m: m[0].split()[0] + '.', text, flags=re.I)
+    if re.search(r'powerful features|enhanced value|cost-maximizing|simplifies IT|Fortune \d+|over \d+ years of innovation', text, re.I):
+        return None
     if not 40 <= len(text) <= 1000 or not re.search(r'[.!?]$', text) or EXCLUDED.search(text):
         return None
     if re.search(r'\b(?:team|workforce) of (?:over |more than |approximately )?[\d,.]+ (?:members|people|staff)\b', text, re.I):
@@ -316,6 +319,11 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True):
     # or unsupported positioning clause. Do not manufacture an industry type.
     text = re.sub(r'(\b(?:company|provider|supplier|manufacturer|bank|retailer|platform)\b)\s+(?:committed|dedicated|founded)\b.*', r'\1.', text, flags=re.I)
     predicate = text[len(subject):].strip()
+    # Legal formation alone does not explain the issuer's business.
+    if re.match(r'(?:is|are) an exempted company incorporated\b', predicate, re.I) and re.search(r' as a holding company\.?$', predicate, re.I):
+        return None
+    if re.fullmatch(r'(?:is|are) (?:an? |the )?(?:exempted )?(?:holding company|REIT|real estate investment trust)(?: organized| incorporated| with limited liability| under| in|\.).*', predicate, re.I):
+        return None
     nominal = re.match(r'^(?:is|are)\s+(?:now\s+)?(?:an?\s+|the\s+)(?:[\w,-]+\s+){0,12}(?:company|organization|provider|supplier|manufacturer|marketer|developer|bank|insurer|retailer|holding company|platform|producer|operator|distributor|airline|REIT|real estate investment trust|limited partnership)\b', predicate, re.I)
     active = re.match(r'^(?:designs|develops|manufactures|markets|sells|provides|operates|offers|produces|distributes|supplies|commercializes|researches|licenses|delivers|builds|makes|engineers|serves|specializes|engages|focuses)\b|^has (?:built|developed|manufactured)\b', predicate, re.I)
     if re.match(r'^builds (?:upon|on|within)\b', predicate, re.I):

@@ -643,6 +643,13 @@ class ProfileTests(unittest.TestCase):
             self.assertEqual(s.state('companyProfile:' + CID)['description'], prior['description'])
             s.close()
 
+    def test_legal_formation_and_promotional_mission_are_not_business_facts(self):
+        from company_intelligence.profiles import issuer_sentence
+        name = COMPANY['names'][0]
+        for tail in ['is a holding company incorporated in Delaware.', 'is an exempted company incorporated in the Cayman Islands as a holding company.', 'is a REIT organized under Maryland law in 2017.', 'offers enhanced value by simplifying IT.', 'has powerful features for enterprises.']:
+            self.assertIsNone(issuer_sentence(name + ' ' + tail, COMPANY, sec=True))
+        self.assertEqual(issuer_sentence(name + ' is a biotechnology company whose mission is to revolutionize medicine.', COMPANY, sec=True), name + ' is a biotechnology company.')
+
     def test_exact_evidence_quality_withdrawal_hides_public_description_but_preserves_private_facts(self):
         from company_intelligence.profile_catalogue import seed, CATALOGUE_SCHEMA
         source = annual_filing(COMPANY, submissions(), NOW)
