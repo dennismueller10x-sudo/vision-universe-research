@@ -80,6 +80,16 @@
     applicability: { coef: [-9.665, 7.516, 0.852, 1.339, 0, -2.677, -0.801, 3.151, -2.667], high: 0.75, moderate: 0.55, highMinZ: null, developingCap: true, capPatterns: ["WXY"] }
   };
 
+  /* VERSIONIERTE PROFILE (Mission VI §90). Produktionsstandard bleibt elliott-3.2.2 (DEFAULTS). Ein Profil aendert NUR die
+     aufgefuehrten Parameter und meldet seine eigene Version. Datenmodus beider: Schlusskurse (Close-only), Vorverarbeitung
+     unveraendert. Freeze-Records: quant/data/technical-intelligence/elliott-validation/freeze-<version>.json.
+       elliott-3.3.0 = 3.2.2 + (a) keine Aehnlichkeitsschranke in der Suche (NEoWave-Regel; laut Quellenmatrix keine VU-Regel,
+                       die Proportion bleibt Rangmerkmal) + (b) Trendkontext COUNTER_DEVELOPING mit Gewicht 0,2 (EWP: Korrekturen
+                       laufen gegen den Trend des naechsthoeheren Grades; nur laufende Gegentrend-Korrekturen werden abgewertet).
+                       Abnahme: ELLIOTT_ENGINE33_PREREG.md (synthetisch VALIDATION, einmalig). */
+  var PROFILES = {
+    "elliott-3.3.0": { noSimilarity: true, trendContextMode: "COUNTER_DEVELOPING", weights: { trendContext: 0.2 } }
+  };
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
   function round(v, d) { var m = Math.pow(10, d === undefined ? 4 : d); return Math.round(v * m) / m; }
   function mean(a) { a = a.filter(isNum); return a.length ? a.reduce(function (x, y) { return x + y; }, 0) / a.length : null; }
@@ -214,8 +224,12 @@
   // =================================================================
   function analyze(input) {
     var m = (input.methodology && input.methodology.elliottV3) || {};
-    var cfg = Object.assign({}, DEFAULTS, m.engine || {}, input.engine || {});
-    cfg.weights = Object.assign({}, DEFAULTS.weights, (m.engine && m.engine.weights) || (input.engine && input.engine.weights) || {});
+    var profileName = input.profile || (m.engine && m.engine.profile) || null;
+    if (profileName && !PROFILES[profileName]) throw new Error("Unbekanntes Elliott-Profil " + profileName);
+    var prof = profileName ? PROFILES[profileName] : {};
+    var cfg = Object.assign({}, DEFAULTS, prof, m.engine || {}, input.engine || {});
+    cfg.weights = Object.assign({}, DEFAULTS.weights, prof.weights || {}, (m.engine && m.engine.weights) || (input.engine && input.engine.weights) || {});
+    var engineVersion = profileName || ENGINE_VERSION;
     cfg.typePrior = Object.assign({}, DEFAULTS.typePrior, (m.engine && m.engine.typePrior) || {}, (input.engine && input.engine.typePrior) || {});
     var series = input.series, features = input.features, close = series.close;
     var asOf = isNum(input.asOfIndex) ? Math.min(input.asOfIndex, series.length - 1) : series.length - 1;
@@ -641,8 +655,8 @@
     if (truthDiag) { truthDiag.rank = truthDiag.cands.length ? Math.min.apply(null, truthDiag.cands.map(function (c) { var ix = top.indexOf(c); return ix < 0 ? 9999 : ix; })) : null;
                      truthDiag.best = truthDiag.cands.length ? truthDiag.cands.slice().sort(function (x, y) { return (y.rank || y.base) - (x.rank || x.base); })[0] : null; }
     var degreesInfo = { analysis: "ew3", engine: "hierarchical", poolPivots: n, candidates: cands.length, searchTruncated: truncated, nodes: nodes };
-    var base = { engineVersion: ENGINE_VERSION, ruleSetVersion: P.RULE_SET_VERSION, repaintingPolicy: "CONFIRMS_WITH_DELAY", isProbability: false,
-                 parametersHash: Hash.hashValue({ v: ENGINE_VERSION, cfg: Object.assign({}, cfg, { _sigma: undefined }) }), asOfIndex: asOf, asOf: series.timestamps[asOf], degrees: degreesInfo };
+    var base = { engineVersion: engineVersion, ruleSetVersion: P.RULE_SET_VERSION, repaintingPolicy: "CONFIRMS_WITH_DELAY", isProbability: false,
+                 parametersHash: Hash.hashValue({ v: engineVersion, cfg: Object.assign({}, cfg, { _sigma: undefined }) }), asOfIndex: asOf, asOf: series.timestamps[asOf], degrees: degreesInfo };
     if (!top.length) return Object.assign(base, { status: "UNAVAILABLE", reason: n < 6 ? "TOO_FEW_SWINGS" : "NO_VALID_COUNT", detail: n < 6 ? "Zu wenige Schwünge für eine Wellenzählung" : "Keine regelkonforme Lesart der jüngsten Schwünge",
                                                  primary: null, alternatives: [], higherDegree: null, historicalMap: null, applicability: { score: null, level: "LOW", abstain: true, components: {}, reasons: ["Keine regelkonforme Lesart"] } });
     /* Persistenz (kausal, aus dem Vortag) */
@@ -813,7 +827,7 @@
     return pick;
   }
 
-  var api = { ENGINE_VERSION: ENGINE_VERSION, DEFAULTS: DEFAULTS, analyzeElliottV3: analyze, buildPool: buildPool, classifySegment: classifySegment, zigzagSegment: zigzagSegment };
+  var api = { ENGINE_VERSION: ENGINE_VERSION, DEFAULTS: DEFAULTS, PROFILES: PROFILES, analyzeElliottV3: analyze, buildPool: buildPool, classifySegment: classifySegment, zigzagSegment: zigzagSegment };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ElliottV3 = api; }
 })(typeof window !== "undefined" ? window : globalThis);
