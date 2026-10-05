@@ -40,7 +40,7 @@ const SEED = { watchlist: ["IVV", "QQQM", "AGG"], portfolio: [{ symbol: "VTI", w
 const browser = await chromium.launch();
 const problems = [], lines = [];
 // Einstieg ohne Hash (Deep Link /vorsorge/) und eine statische SEO-Seite
-const direct = ["/vorsorge/", "/vorsorge/etf/", "/vorsorge/sitemap.xml"];
+const direct = ["/vorsorge/", "/vorsorge/sitemap.xml", "/vorsorge/etf/IVV/", "/vorsorge/etf/VTI/"];
 {
   const ctx = await browser.newContext();
   if (gate) await ctx.addInitScript(([k, v]) => { try { localStorage.setItem(k, v); } catch (e) {} }, [gate.key, gate.value]);
