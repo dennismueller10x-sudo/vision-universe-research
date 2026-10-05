@@ -164,6 +164,8 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=6144
         run: node scripts/vorsorge/ingest-esma-firds.mjs
+      - name: ESMA-Fondsregister (amtlicher UCITS-Status, Verwalter, Vertriebslaender)
+        run: node scripts/vorsorge/ingest-esma-funds.mjs
       - name: ETF-Stamm mit den neuen Daten neu bauen, Gates, Hygiene
         run: |
           node scripts/vorsorge/build-etf-data.mjs --quiet
