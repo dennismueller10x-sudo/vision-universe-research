@@ -392,7 +392,7 @@
         if (!wanted[fam.id] || wanted[fam.id].indexOf(m.metricId) < 0) return;
         /* Bewusst zurueckgehalten ist nicht dasselbe wie fehlend: der Wert
            steht als "bewusst nicht genannt" da, der Grund darunter. */
-        if (m.reason === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING" || m.reason === "DISPLAY_NOT_PERMITTED") {
+        if (m.reason === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING" || m.reason === "SHARE_COUNT_NOT_OUTSTANDING" || m.reason === "DISPLAY_NOT_PERMITTED") {
           withheld[m.reason] = true; stats.push(X.stat(m.label, "Bewusst nicht genannt")); return;
         }
         if (m.state !== "AVAILABLE" || typeof m.value !== "number") return;

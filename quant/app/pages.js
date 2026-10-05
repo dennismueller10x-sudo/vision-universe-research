@@ -129,7 +129,9 @@
       withheld && E ? el("p", { class: "q-rc-withheld" }, [el("span", { class: "q-ev-tier tier-tested is-off", text: "Getestet" }), el("span", { text: " " + E.reasonText(withheld.backtest.reason) })]) : null,
       (function () { var hit = E && E.alertMatch ? c.events.map(function (e) { return E.alertMatch(c.ticker, e); }).filter(Boolean)[0] : null;
         return hit ? el("p", { class: "q-alert-hit", text: "Passt zu deiner Benachrichtigung: " + hit }) : null; })(),
-      el("small", { class: "q-rc-date", text: "Stand " + X.dateDe(first.occurredAt) })
+      /* Schon in einem frueheren Lauf gemeldet (Alert-Ledger, isNew=false):
+         die Karte sagt es, statt eine alte Meldung als heutige zu zeigen. */
+      el("small", { class: "q-rc-date", text: (first.isNew === false ? "Bereits gemeldet · " : "") + "Stand " + X.dateDe(first.occurredAt) })
     ]);
   }
   function radarSummary(radar) {
