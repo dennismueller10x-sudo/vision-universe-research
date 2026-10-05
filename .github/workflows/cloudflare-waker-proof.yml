@@ -104,9 +104,11 @@ jobs:
       - name: Drei Takte mithoeren
         working-directory: worker-waker
         env:
-          IN_MINUTEN: ${{ inputs.minuten }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # Eingaben nur ueber env: - nie direkt in das Skript interpoliert (Script-Injection, Audit 03.10.2026).
+          IN_MINUTEN: ${{ inputs.minuten }}
         run: |
+          case "$IN_MINUTEN" in ''|*[!0-9]*) echo "::error::minuten muss eine Zahl sein"; exit 1;; esac
           echo "Zuhoeren ab $(date -u '+%H:%M:%S') UTC fuer ${IN_MINUTEN} Minuten."
           set +e
           timeout "${IN_MINUTEN}m" npx --yes wrangler@4 tail --format json \

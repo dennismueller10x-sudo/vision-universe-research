@@ -68,7 +68,7 @@
       "tests": ["benchmark", "etf"],
       "expectation": "Die Vergleichsgroesse fuer jeden Backtest. Zugleich der Test, ob ETFs ueber dieselbe Schnittstelle laufen wie Einzelaktien." },
 
-    { "securityId": "ref_BRKB", "ticker": "BRK-B", "name": "Berkshire Hathaway Inc. Class B",
+    { "securityId": "ref_BRK_B", "ticker": "BRK-B", "name": "Berkshire Hathaway Inc. Class B",
       "mic": "XNYS", "exchange": "NYSE", "sector": "Financials",
       "tests": ["symbolSonderzeichen", "keineDividende"],
       "expectation": "Der Bindestrich im Ticker. Prueft, ob die Symbolkodierung durch die URL kommt - eine haeufige und unauffaellige Fehlerquelle. Zahlt keine Dividende: Kursrendite und Gesamtrendite muessen hier identisch sein." }

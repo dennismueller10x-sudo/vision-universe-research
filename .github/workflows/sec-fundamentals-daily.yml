@@ -58,7 +58,10 @@ permissions:
 # Dieselbe Gruppe wie der Backfill: zwei Laeufe, die denselben
 # Faktenspeicher und dieselbe Ablage schreiben, laufen nie gleichzeitig.
 concurrency:
-  group: sec-backfill
+  # Je Zweig eine Gruppe: Laeufe auf claude/** stehen nicht mehr in der
+  # Warteschlange von main (eine neue wartende Anfrage verdraengt die
+  # aeltere wartende - auch eine uebersprungene). Audit 03.10.2026.
+  group: sec-backfill-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -68,6 +71,9 @@ jobs:
     timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -132,16 +138,27 @@ jobs:
 
       - name: Neue und geaenderte Filings verarbeiten
         env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
+          # Eingaben nur ueber env: - nie direkt in das Skript interpoliert (Script-Injection, Audit 03.10.2026).
+          IN_SINCE: ${{ inputs.since }}
           IN_CIKS: ${{ inputs.ciks }}
           IN_DRY_RUN: ${{ inputs.dry_run }}
-          IN_SINCE: ${{ inputs.since }}
-          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
         run: |
-          args=""
-          [ -n "$IN_SINCE" ] && args="$args --since ${IN_SINCE}"
-          [ -n "$IN_CIKS" ] && args="$args --ciks ${IN_CIKS}"
-          [ "$IN_DRY_RUN" = "true" ] && args="$args --dry-run"
-          python3 scripts/quant/cli.py daily $args
+          args=()
+          if [ -n "$IN_SINCE" ]; then
+            [[ "$IN_SINCE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "::error::since muss JJJJ-MM-TT sein"; exit 1; }
+            args+=(--since "$IN_SINCE")
+          fi
+          if [ -n "$IN_CIKS" ]; then
+            [[ "$IN_CIKS" =~ ^[0-9,\ ]+$ ]] || { echo "::error::ciks: nur Ziffern, Komma, Leerzeichen"; exit 1; }
+            args+=(--ciks $IN_CIKS)
+          fi
+          # Ein Push auf claude/** ist nur der Nachweis, dass der Lauf startet:
+          # erkennen, nichts holen, nichts schreiben, nichts committen. Sonst landen
+          # Produktionsdaten im Feature-Zweig, und ein Merge rollt main zurueck
+          # (#386, #413, #421 trugen solche Commits; Audit 05.10.2026).
+          if [ "$IN_DRY_RUN" = "true" ] || [ "$GITHUB_EVENT_NAME" = "push" ]; then args+=(--dry-run); fi
+          python3 scripts/quant/cli.py daily "${args[@]}"
 
       - name: Wie viele Emittenten wurden aktualisiert?
         id: updated

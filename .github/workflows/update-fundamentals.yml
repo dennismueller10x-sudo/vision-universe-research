@@ -16,6 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
 
       - uses: actions/setup-python@v5
         with:
@@ -23,9 +26,12 @@ jobs:
 
       - name: Fetch fundamentals
         env:
-          IN_SYMBOLS: ${{ github.event.inputs.symbols }}
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
-        run: python scripts/dashboard/fetch_fundamentals.py --symbols "$IN_SYMBOLS"
+          # Eingaben nur ueber env: - nie direkt in das Skript interpoliert (Script-Injection, Audit 03.10.2026).
+          IN_SYMBOLS: ${{ github.event.inputs.symbols }}
+        run: |
+          [[ "$IN_SYMBOLS" =~ ^[A-Za-z0-9.,\ -]*$ ]] || { echo "::error::symbols: nur Ticker, Komma, Leerzeichen"; exit 1; }
+          python scripts/dashboard/fetch_fundamentals.py --symbols "$IN_SYMBOLS"
 
       - name: Verify generated-file-only scope
         shell: bash
@@ -39,8 +45,6 @@ jobs:
 
       - name: Commit generated data
         shell: bash
-        env:
-          IN_SYMBOLS: ${{ github.event.inputs.symbols }}
         run: |
           if git diff --quiet -- dashboard/data/fundamental_metrics.json; then
             exit 0
@@ -48,5 +52,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add dashboard/data/fundamental_metrics.json
-          git commit -m "chore: update dashboard fundamentals (${IN_SYMBOLS})"
-          git push
+          git commit -m "chore: update dashboard fundamentals"
+          # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

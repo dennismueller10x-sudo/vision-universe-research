@@ -23,6 +23,10 @@ on:
 permissions:
   contents: read
 
+# Eingaben nur ueber env: - nie direkt in das Skript interpoliert (Script-Injection, Audit 03.10.2026).
+env:
+  IN_SITE: ${{ inputs.site }}
+
 jobs:
   proof:
     runs-on: ubuntu-latest
@@ -45,8 +49,6 @@ jobs:
       # nichts um, und jeder weitere Nachweis waere Theater.
       - name: Der Vertrag wird ausgeliefert
         id: delivered
-        env:
-          IN_SITE: ${{ inputs.site }}
         run: |
           set -o pipefail
           SITE="$IN_SITE"
@@ -73,8 +75,6 @@ jobs:
       - name: UI1-UI8 fuer die neun Nachweistitel
         id: titles
         continue-on-error: true
-        env:
-          IN_SITE: ${{ inputs.site }}
         run: |
           set -o pipefail
           fehl=""
@@ -100,13 +100,11 @@ jobs:
 
       - name: Zusammenfassung
         if: always()
-        env:
-          IN_SITE: ${{ inputs.site }}
         run: |
           {
             echo "## Currency Layer am ausgelieferten Stand"
             echo ""
-            echo "- Seite: ${IN_SITE}"
+            echo "- Seite: $IN_SITE"
             echo "- Vertrag ausgeliefert: ${{ steps.delivered.outcome }}"
             echo "- Neun Nachweistitel: ${{ steps.titles.outcome }}"
           } >> "$GITHUB_STEP_SUMMARY"

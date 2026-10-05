@@ -76,6 +76,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -142,6 +145,9 @@ jobs:
       (github.event_name == 'push' && contains(github.event.head_commit.message, '[universe-sync]'))
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -169,10 +175,12 @@ jobs:
 
       - name: SEC-Universum aus dem Master
         env:
-          IN_SECMAX: ${{ inputs.secMax }}
+          # Eingaben nur ueber env: - nie direkt in das Skript interpoliert (Script-Injection, Audit 03.10.2026).
+          IN_SEC_MAX: ${{ inputs.secMax }}
         run: |
-          if [ -n "$IN_SECMAX" ]; then
-            node scripts/universe/build-sec-universe.mjs --max "$IN_SECMAX"
+          if [ -n "$IN_SEC_MAX" ]; then
+            case "$IN_SEC_MAX" in *[!0-9]*) echo "::error::secMax muss eine Zahl sein"; exit 1;; esac
+            node scripts/universe/build-sec-universe.mjs --max "$IN_SEC_MAX"
           else
             node scripts/universe/build-sec-universe.mjs
           fi
@@ -214,17 +222,10 @@ jobs:
             # rot wurde. Zwischen Checkout und Push koennen Stunden liegen;
             # dass der Zweig sich bewegt hat, ist der Normalfall und kein
             # Ausnahmezustand. Deshalb vor jedem Versuch rebasen.
-            gepusht=0
-            for i in 1 2 3 4; do
-              git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
-              if git push origin "HEAD:${GITHUB_REF_NAME}"; then gepusht=1; break; fi
-              echo "Push fehlgeschlagen, neuer Versuch in $((2**i))s"
-              sleep $((2**i))
-            done
-            if [ "$gepusht" -ne 1 ]; then
-              echo "::error::Vier Push-Versuche fehlgeschlagen. Das Ergebnis dieses Laufs ist NICHT im Zweig."
-              exit 1
-            fi
+            # Die Schleife mit `git pull --rebase ... || true` schluckte
+            # einen haengenden Rebase und schob danach einen halb rebasten
+            # Stand. Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}" 4
           fi
 
       - name: Bilanz

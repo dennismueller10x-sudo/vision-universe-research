@@ -58,13 +58,14 @@ jobs:
       - name: Aktienseiten in Produktion beobachten
         id: smoke
         env:
+          # Eingaben nur ueber env: - nie direkt in das Skript interpoliert (Script-Injection, Audit 03.10.2026).
           IN_SYMBOLS: ${{ inputs.symbols }}
-          IN_WATCHSECONDS: ${{ inputs.watchSeconds }}
+          IN_WATCH_SECONDS: ${{ inputs.watchSeconds }}
         run: |
           set -o pipefail
           node scripts/discover/browser-qa-realtime.mjs --live \
             --symbols "$IN_SYMBOLS" \
-            --watch-seconds "$IN_WATCHSECONDS" \
+            --watch-seconds "$IN_WATCH_SECONDS" \
             --shots production-shots | tee production-smoke.txt
 
       - name: Cloudflare-Zustand nach dem Lauf (Budget-Waechter, keine Schluessel)
@@ -114,8 +115,9 @@ jobs:
             [ -e "$pfad" ] && git add "$pfad"
           done
           git diff --cached --quiet || git commit -m "Realtime Production Smoke aus Lauf ${{ github.run_id }}"
-          git pull --rebase --autostash origin main || true
-          git push origin HEAD:main || true
+          # Vorher: `|| true` auf Pull UND Push - der Schritt war immer gruen,
+          # auch wenn nichts ankam. Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+          scripts/ci/push-with-retry.sh main
 
       - name: Zusammenfassung
         if: always()

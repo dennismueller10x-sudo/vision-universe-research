@@ -4,9 +4,12 @@
 'use strict';
 const node=typeof module!=='undefined'&&module.exports;
 const Hours=node?require('../engines/realtime/market-hours.js'):g.VURealtime.MarketHours,Calendar=node?require('../config/market-calendar.json'):null;
+/* Identitaet aus core/identity.js (ADR-001): 'ref_'+ticker ohne Normalisierung gab
+   Share-Class-Titeln (BRK-B, BF-B, MOG-A; 25 im Universum) eine falsche ID. */
+const Identity=node?require('../../core/identity.js'):g.VUCore.Identity;
 const Panel=node?require('../engines/panel-builder.js'):g.VUPanelBuilder,Factors=node?require('../engines/factors.js'):g.VUFactors,Query=node?require('../engines/query.js'):g.VUQuery,Rules=node?require('../engines/rule-contract.js'):g.VURuleContract,Hash=node?require('../engines/hash.js'):g.VUHash;
 function fail(reason){return {state:'UNAVAILABLE',reason,events:[]};}
-function build(source,{ticker,securityId='ref_'+ticker,recipes,now=new Date().toISOString(),lookback=20,calendar=Calendar}){
+function build(source,{ticker,securityId=Identity.securityIdForTicker(ticker),recipes,now=new Date().toISOString(),lookback=20,calendar=Calendar}){
  const bars=source?.bars,id=securityId;
  if(!/^ref_[A-Z0-9_]{1,32}$/.test(id))return fail('INVALID_SIGNAL_IDENTITY');
  if(source?.securityId!==id||source.ticker!==ticker||source.provider!=='tiingo'||source.isMock===true||source.dataMode==='mock'||!source.publishBasis||source.currency!=='USD'||source.adjustmentStatus!=='adjusted')return fail('INVALID_SIGNAL_PROVENANCE');

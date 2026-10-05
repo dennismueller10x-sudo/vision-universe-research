@@ -19,7 +19,10 @@ permissions:
   contents: write
 
 concurrency:
-  group: market-data
+  # Je Zweig eine Gruppe: Laeufe auf claude/** stehen nicht mehr in der
+  # Warteschlange von main (eine neue wartende Anfrage verdraengt die
+  # aeltere wartende - auch eine uebersprungene). Audit 03.10.2026.
+  group: market-data-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -27,6 +30,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -80,6 +86,17 @@ jobs:
           node scripts/universe/verify-company-master.mjs
           python3 scripts/quant/cli.py reconcile
 
+      # Eine neue Messung ersetzt den abgenommenen Stand nur, wenn jede
+      # Abweichung je Titel einen belegten Grund hat (DEBT, Listing-Kuerzung,
+      # junge Reihe ueber der Schwelle). Unerklaertes bricht VOR dem Commit ab.
+      - name: Abweichung je Titel erklaeren (lesend)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/diagnose/coverage-delta.mjs
+
       - name: Regressionssuite
         run: |
           python3 scripts/quant/cli.py test
@@ -93,5 +110,12 @@ jobs:
           if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
           Z=$(node -e 'const m=require("./quant/data/market/history/coverage-metrics.json"); console.log("Charts "+m.CHART_AVAILABILITY.renderable+"/"+m.CHART_AVAILABILITY.denominator+", Technik "+m.TECHNICAL_HISTORY_ELIGIBILITY.eligible)')
           git commit -m "Deckungskennzahlen gegen das Produktuniversum neu gerechnet: $Z (Lauf ${{ github.run_id }})"
-          git pull --rebase origin "${{ github.ref_name }}"
-          git push origin HEAD:"${{ github.ref_name }}"
+          # Die Regressionssuite veraendert nebenbei committete Dateien
+          # ausserhalb der Kennzahlpfade (z. B. total-return-verification.json).
+          # Geschoben wird nur, was oben committet wurde; der Rest wird
+          # verworfen, sonst bricht das Rebase ab (Lauf 37181495758: alles
+          # gruen, Commit gebaut, "cannot pull with rebase: You have unstaged
+          # changes").
+          git checkout -- .
+          # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
