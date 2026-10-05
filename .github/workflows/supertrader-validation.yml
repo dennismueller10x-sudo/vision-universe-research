@@ -25,7 +25,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4, sources-r12, r12, trend52, trend52-smoke, audit13, audit13-smoke, r13b, trend52-s1c, holdout-fetch, holdout-sec, audit14, audit14-smoke, audit14-holdout, audit14-holdout-smoke]
+        options: [subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4, sources-r12, r12, trend52, trend52-smoke, audit13, audit13-smoke, r13b, trend52-s1c, holdout-fetch, holdout-sec, audit14, audit14-smoke, audit14-holdout, audit14-holdout-smoke, r15-delist-cases]
         default: subset
   push:
     branches:
@@ -207,6 +207,9 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=14500
         run: node scripts/supertrader/validation/audit-r14.mjs --out "$RUNNER_TEMP/val" ${{ (steps.mode.outputs.mode == 'audit14-smoke' || steps.mode.outputs.mode == 'audit14-holdout-smoke') && '--limit 600' || '' }}
+      - name: Delisting-Regressionsfaelle (Runde 15, SEC-Einreichungen, verschluesselt)
+        if: steps.mode.outputs.mode == 'r15-delist-cases'
+        run: node scripts/supertrader/validation/delist-cases-r15.mjs --out "$RUNNER_TEMP/val"
       - name: SEC-Gewinnhistorie zum damaligen Stand (Runde 11, privat + verschluesselt)
         if: steps.mode.outputs.mode == 'sec-pit' || steps.mode.outputs.mode == 'holdout-sec'
         env:

@@ -42,6 +42,36 @@ export function classifyDelisting(filings, listEnd) {
   return hits.length ? { cls: 'ACQUISITION', evidence: hits.slice(0, 6) } : { cls: 'UNKNOWN', evidence: [] };
 }
 
+// Runde 15 (R14-Regressionsfaelle DESP, BEL, HLAH, HIII, BSKY): R13 scheiterte an zwei Stellen –
+//  (1) keine CIK-Zuordnung, weil die Zuordnung XBRL-Gewinndaten im Notierungszeitraum verlangte (SPACs, Auslandsemittenten);
+//  (2) Uebernahmen ohne Proxy-/Tender-Formular im Fenster (Vollzug erkennbar an S-8 POS / POS AM am Delisting-Tag).
+// R15-Regeln (VU-Formalisierung, versioniert; R13-Klassifikator bleibt unveraendert fuer die Reproduktion):
+//  A) Uebernahmeformulare wie R13 → ACQUISITION (basis MERGER_FORM)
+//  B) SIC 6770 "Blank Checks" → SPAC_TRUST: Aufloesung zum Treuhandwert ≈ letzter Kurs
+//  C) Abmeldung von Registrierungen (S-8 POS, POS AM, POSASR, POS462B) zwischen 5 Tagen vor und 10 Tagen nach dem letzten
+//     Handelstag UND keine Notlagen-Signatur im Kurs → ACQUISITION (basis DEREGISTRATION_NO_DISTRESS)
+export const DEREG_FORMS = new Set(['S-8 POS', 'POS AM', 'POSASR', 'POS462B']);
+export const DELIST_CLASSIFIER_R15 = 'supertrader-delist-classifier-r15-1.0.0';
+export function classifyDelistingR15({ filings, sic, listEnd, distress }) {
+  const r13 = classifyDelisting(filings, listEnd);
+  if (r13.cls === 'ACQUISITION') return { cls: 'ACQUISITION', basis: 'MERGER_FORM', evidence: r13.evidence };
+  if (String(sic) === '6770') return { cls: 'SPAC_TRUST', basis: 'SIC_6770', evidence: [['SIC', '6770']] };
+  const end = Date.parse(listEnd), lo = end - 5 * 864e5, hi = end + 10 * 864e5;
+  const dereg = [];
+  for (let i = 0; i < (filings.form || []).length; i++) { const d = Date.parse(filings.filingDate[i]); if (d >= lo && d <= hi && DEREG_FORMS.has(filings.form[i])) dereg.push([filings.form[i], filings.filingDate[i]]); }
+  if (dereg.length && distress === false) return { cls: 'ACQUISITION', basis: 'DEREGISTRATION_NO_DISTRESS', evidence: dereg.slice(0, 6) };
+  return { cls: 'UNKNOWN', basis: dereg.length ? 'DEREGISTRATION_WITH_DISTRESS' : 'NO_EVIDENCE', evidence: dereg.slice(0, 6) };
+}
+// R15: CIK fuer die Delisting-Klassifikation ohne XBRL-Zwang. Mehrere Kandidaten → nur der mit identischem normalisiertem
+// Namen (z. B. Fonds II vs. III); sonst keine Zuordnung (lieber UNKNOWN als falsche Firma).
+// Kandidaten ohne Einreichungen im Fenster um das Delisting (filingsInWindow leer) scheiden aus.
+export function selectDelistCik(listingNameNorm, candidates) {
+  const live = candidates.filter((c) => c && c.cik && c.name && (!Array.isArray(c.filingsInWindow) || c.filingsInWindow.length > 0));
+  if (live.length === 1) return live[0].cik;
+  const exact = live.filter((c) => normName(c.name) === listingNameNorm);
+  return exact.length === 1 ? exact[0].cik : null;
+}
+
 const SUFFIX = /\b(INC|INCORPORATED|CORP|CORPORATION|CO|COMPANY|LTD|LIMITED|LLC|L\.?L\.?C|PLC|LP|L\.?P|HOLDINGS?|GROUP|THE|SA|NV|AG|SE|N\.?V|S\.?A|CL(ASS)? [A-Z]|COMMON STOCK|ORDINARY SHARES|ADR|ADS|NEW|DEL|DE|NY|MD|NV|CAN)\b/g;
 export function normName(s) {
   return String(s || '').toUpperCase().replace(/\/[A-Z]{2,3}\//g, ' ').replace(/&/g, ' AND ').replace(/[^A-Z0-9 ]/g, ' ').replace(SUFFIX, ' ').replace(/\s+/g, ' ').trim();
