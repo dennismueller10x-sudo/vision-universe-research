@@ -40,7 +40,8 @@ def roots_for(company, store, sites):
     # candidate or an arbitrary subdomain is not a first-party profile source.
     ir = store.state('ir:' + cid, {})
     for cfg in ir.get('configurations', []):
-        if ir.get('lastSuccess') and cfg.get('irHomepage'):
+        if (ir.get('lastSuccess') and cfg.get('companyId') == cid and cfg.get('lastVerified')
+                and cfg.get('evidence') == 'LINK_FROM_VERIFIED_OFFICIAL_SITE' and cfg.get('irHomepage')):
             roots.append(cfg['irHomepage'])
     if seeded.get('irHomepage'):
         roots.append(seeded['irHomepage'])
@@ -110,6 +111,8 @@ def refresh_cached_sec(root, store, company, submissions, now):
         return prior
     body = cached_sec(root, filing['url'])
     if body is None:
+        if prior.get('state') == 'AVAILABLE' and any(s.get('type') == 'SEC' for s in prior.get('sources', [])):
+            store.set_state('companyProfile:' + cid, {**prior, 'supersededAnnualFiling': filing['filingId']})
         return None
     digest = hashlib.sha256(body).hexdigest()
     if attempt.get('secContentHash') == digest and attempt.get('parserVersion') == PARSER_VERSION:

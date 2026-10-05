@@ -4,12 +4,24 @@ import unittest
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from company_intelligence.coverage import report
-from company_intelligence.operating_cost import estimate
+from company_intelligence.operating_cost import estimate, profile_estimate
 from company_intelligence.store import Store
 from test_engine import company, NOW
 
 
 class CoverageCostTests(unittest.TestCase):
+    def test_profile_cost_does_not_turn_annual_sec_refresh_into_quarterly_web_polling(self):
+        profiles = {'a': {'sources': [{'type': 'SEC'}, {'type': 'FIRST_PARTY_WEB'}]},
+                    'b': {'sources': [{'type': 'FIRST_PARTY_WEB'}]}}
+        cost = profile_estimate(profiles, 10, 1000)
+        self.assertEqual(cost['secProfiles'], 1)
+        self.assertEqual(cost['webOnlyProfiles'], 1)
+        self.assertEqual(cost['steadyStateSourceRequestsPerMonthScenario'], 2.08)
+        self.assertEqual(cost['extraConsumerRequestsPerPage'], 0)
+        self.assertEqual(cost['extraScheduledNewsWakeupsPerMonth'], 0)
+        self.assertIsNone(cost['initialWireBytesMeasured'])
+        with self.assertRaises(ValueError): profile_estimate(profiles, -1)
+
     def test_tiers_partition_issuers_and_candidates_are_not_validated(self):
         with tempfile.TemporaryDirectory() as tmp:
             s = Store(Path(tmp) / 's.sqlite')

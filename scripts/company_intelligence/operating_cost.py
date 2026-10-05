@@ -59,6 +59,24 @@ def estimate(sources, payloads, consumer_bytes, checkpoint_bytes, runtime_minute
         'limits': 'Estimates omit user-delivery GET traffic and long-term ledger event growth. Conditional GET saves bytes, not request count. Do not treat reference free-tier limits as guaranteed billing.'}
 
 
+def profile_estimate(profiles, initial_requests=0, initial_decoded_bytes=0):
+    """Separate slow-profile scenario; never add profile work to every news wakeup."""
+    if any(type(n) is not int or n < 0 for n in (initial_requests, initial_decoded_bytes)):
+        raise ValueError('INVALID_PROFILE_COST_MEASUREMENT')
+    sec = sum(any(s.get('type') == 'SEC' for s in p.get('sources', [])) for p in profiles.values())
+    web = sum(not any(s.get('type') == 'SEC' for s in p.get('sources', [])) and any(s.get('type') == 'FIRST_PARTY_WEB' for s in p.get('sources', [])) for p in profiles.values())
+    public_bytes = len(json.dumps(profiles, ensure_ascii=False, separators=(',', ':')).encode())
+    return {'dataProviderDollars': 0, 'initialRequestsMeasured': initial_requests,
+            'initialDecodedBytesMeasured': initial_decoded_bytes, 'initialWireBytesMeasured': None,
+            'secProfiles': sec, 'webOnlyProfiles': web,
+            'steadyStateSourceRequestsPerMonthScenario': round(sec / 12 + web * 2, 2),
+            'extraConsumerRequestsPerPage': 0, 'extraScheduledNewsWakeupsPerMonth': 0,
+            'preparedProfileBytes': public_bytes, 'twoPublicSlotProfileBytes': 2 * public_bytes,
+            'assumptions': 'One new annual filing/document per SEC profile/year, reusing existing submissions refresh; web-only profiles quarterly, at most two roots plus one advertised About each and two robots requests (six per review). This is a scenario, not activated scheduling or a measured bill.',
+            'actionsImpact': 'Extraction joins existing change-driven projection or explicit bounded backfill; initial local runs are not billed GitHub Actions minutes. No extra recurring workflow enabled.',
+            'storageImpact': 'Prepared facts occupy existing payloads and ledger/checkpoint; no new bucket or per-profile public asset. Immutable annual cache remains private and is reused locally.'}
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--sources', type=Path, required=True)

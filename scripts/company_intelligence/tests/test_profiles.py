@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 from company_intelligence.profiles import extract, public_profile, annual_filing, VERSION
-from company_intelligence.profile_backfill import run, refresh_cached_sec
+from company_intelligence.profile_backfill import run, refresh_cached_sec, roots_for
 from company_intelligence.store import Store
 from company_intelligence.pipeline import Pipeline
 from company_intelligence.transport import PublicHTTP, SourceError, BudgetExhausted
@@ -29,6 +29,19 @@ def submissions(acc='0000000001-26-000001', date='2026-03-05'):
 
 
 class ProfileTests(unittest.TestCase):
+    def test_catalogue_writer_exclusion_releases_after_interruption(self):
+        from company_intelligence.profile_catalogue import writer_lock
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / 'checkpoint.json'
+            with self.assertRaises(RuntimeError):
+                with writer_lock(path):
+                    with self.assertRaisesRegex(ValueError, 'ALREADY_RUNNING'):
+                        with writer_lock(path):
+                            pass
+                    raise RuntimeError('interrupted')
+            with writer_lock(path):
+                pass
+
     def test_factual_web_profile_is_bounded_with_source_evidence_and_no_guessed_products(self):
         p = extract(COMPANY, TEXT, WEB, NOW, 'https://example.com/')
         self.assertEqual(p['state'], 'AVAILABLE')
@@ -199,6 +212,67 @@ class ProfileTests(unittest.TestCase):
         source = annual_filing(COMPANY, submissions(), NOW)
         body = b'<p>Item 1.</p><h2>Business</h2><p>Example Holdings, Inc. (the Company) is a manufacturer and marketer of software products for banks.</p><h2>Item 1A. Risk Factors</h2>'
         self.assertIn('manufacturer and marketer', extract(COMPANY, body, source, NOW)['description'])
+
+    def test_explicit_sec_short_name_definition_is_scoped_to_exact_parent(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>Example Holdings Inc. (also referred to herein as "EH") was incorporated in 1990.</p><p>EH develops software products for banks worldwide.</p><p>Example Holdings Inc. acquired Other Inc. ("OTHER").</p><p>OTHER manufactures industrial equipment for customers.</p>'
+        p = extract(COMPANY, body, source, NOW)
+        self.assertIn('Example Holdings Inc. develops software', p['description'])
+        self.assertNotIn('industrial', p['description'])
+        self.assertEqual(extract(COMPANY, body.replace(b'Example Holdings Inc. (also', b'Other Holdings Inc. (also'), source, NOW)['state'], 'UNAVAILABLE')
+
+    def test_two_legal_parentheticals_preserve_holding_company_role(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>Example Holdings Inc. (NYSE: EXMP) (the "Company") is a holding company that provides software products through its operating subsidiary.</p>'
+        p = extract(COMPANY, body, source, NOW)
+        self.assertIn('holding company', p['description'])
+        self.assertIn('through its operating subsidiary', p['description'])
+
+    def test_seasonality_and_product_criticality_do_not_replace_business_description(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>Our business also experiences seasonal fluctuations in the software market.</p><p>Our products are often in must-not-fail safety-critical software applications.</p><p>We manufacture industry-leading software products for financial institutions.</p>'
+        p = extract(COMPANY, body, source, NOW)
+        self.assertEqual(p['description'], 'Example Holdings Inc. manufactures software products for financial institutions.')
+
+    def test_tax_marketing_and_retail_footprint_are_not_the_company_activity(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>We provide help and inspire confidence through financial services.</p><p>We are a predominantly off-mall retailer with stores in North America.</p><p>Our product offerings include candles, soaps and personal care products.</p>'
+        p = extract(COMPANY, body, source, NOW)
+        self.assertIn('candles, soaps and personal care products', p['description'])
+        self.assertNotIn('confidence', p['description'])
+        self.assertNotIn('off-mall', p['description'])
+
+    def test_current_development_conjugation_and_promotional_tail(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>We provide water purification products and are developing disruptive software products.</p><p>We provide medical products using a powerful combination of science and engineering.</p>'
+        p = extract(COMPANY, body, source, NOW)
+        self.assertIn('and is developing software products', p['description'])
+        self.assertNotIn('powerful', p['description'])
+
+    def test_explicit_mineral_producer_is_a_business_description(self):
+        body = b'<p>Example Holdings Inc. is a gold and silver producer with mines in Canada.</p>'
+        self.assertEqual(extract(COMPANY, body, WEB, NOW)['state'], 'AVAILABLE')
+
+    def test_delegated_profile_host_requires_issuer_discovery_provenance(self):
+        with tempfile.TemporaryDirectory() as temp:
+            s = Store(Path(temp) / 'state.sqlite')
+            cfg = {'companyId': CID, 'lastVerified': NOW, 'evidence': 'LINK_FROM_VERIFIED_OFFICIAL_SITE', 'irHomepage': 'https://investor.example.com/'}
+            s.set_state('ir:' + CID, {'lastSuccess': NOW, 'configurations': [{**cfg, 'companyId': 'iss_cik_0000000002'}]})
+            self.assertEqual(roots_for(COMPANY, s, {}), [])
+            s.set_state('ir:' + CID, {'lastSuccess': NOW, 'configurations': [cfg]})
+            self.assertEqual(roots_for(COMPANY, s, {}), ['https://investor.example.com/'])
+            s.close()
+
+    def test_new_annual_filing_without_body_marks_prior_description_stale_without_removal(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp); s = Store(root / 'state.sqlite')
+            p = extract(COMPANY, b'<h2>Item 1. Business</h2><p>We develop software products for financial institutions.</p>', annual_filing(COMPANY, submissions(), NOW), NOW)
+            s.set_state('companyProfile:' + CID, p)
+            self.assertIsNone(refresh_cached_sec(root, s, COMPANY, submissions(acc='0000000001-26-000002'), NOW))
+            current = s.state('companyProfile:' + CID)
+            self.assertEqual(current['description'], p['description'])
+            self.assertTrue(public_profile(current, CID, NOW)['stale'])
+            s.close()
 
     def test_catalogue_seed_validates_all_rows_first_and_preserves_existing_state(self):
         from company_intelligence.profile_catalogue import seed, CATALOGUE_SCHEMA

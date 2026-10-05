@@ -6,6 +6,8 @@ metadata and SEC cache stay private/ignored. Existing discovery queues, source
 health, news and event state are never opened or initialized by this command.
 """
 import argparse
+from contextlib import contextmanager
+import fcntl
 import json
 import sys
 import time
@@ -21,6 +23,22 @@ from company_intelligence.store import atomic_json
 from company_intelligence.transport import BudgetExhausted
 
 CATALOGUE_SCHEMA = 'vu-company-profile-catalogue-1.0.0'
+
+
+@contextmanager
+def writer_lock(checkpoint):
+    """One writer per independent checkpoint; interrupted processes release it."""
+    path = Path(checkpoint).with_suffix('.lock')
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('a') as handle:
+        try:
+            fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise ValueError('PROFILE_CATALOGUE_ALREADY_RUNNING') from exc
+        try:
+            yield
+        finally:
+            fcntl.flock(handle, fcntl.LOCK_UN)
 
 
 def seed(store, companies, catalogue, now):
@@ -58,17 +76,24 @@ def main(argv=None):
     p.add_argument('--limit', type=int, default=50)
     p.add_argument('--request-budget', type=int, default=100)
     p.add_argument('--max-seconds', type=int, default=600)
+    p.add_argument('--rate', type=float, default=1, help='Initial profile lane only: 1..3 SEC requests/second; no scheduled cadence change')
     args = p.parse_args(argv)
     if args.reparse and args.network:
         p.error('--reparse is cache-only; source refresh is the existing ledger profile lane')
-    if not 1 <= args.limit <= 100 or not 1 <= args.request_budget <= 200 or not 30 <= args.max_seconds <= 1800:
-        p.error('limit 1..100, request budget 1..200 and max seconds 30..1800 required')
+    if not 1 <= args.limit <= 100 or not 1 <= args.request_budget <= 200 or not 30 <= args.max_seconds <= 1800 or not 1 <= args.rate <= 3:
+        p.error('limit 1..100, request budget 1..200, max seconds 30..1800 and rate 1..3 required')
     root = args.root.resolve()
     catalogue_path = args.catalogue or root / 'company-intelligence/config/company-profiles.json'
     checkpoint_path = args.checkpoint or root / '.company-intelligence/profile-catalogue-checkpoint.json'
+    with writer_lock(checkpoint_path):
+        return backfill(args, root, catalogue_path, checkpoint_path)
+
+
+def backfill(args, root, catalogue_path, checkpoint_path):
     catalogue = json.loads(catalogue_path.read_text()) if catalogue_path.is_file() else {'schema': CATALOGUE_SCHEMA, 'profiles': {}}
     if catalogue.get('schema') != CATALOGUE_SCHEMA or not isinstance(catalogue.get('profiles'), dict):
         raise ValueError('INVALID_COMPANY_PROFILE_CATALOGUE')
+    before_ids = set(catalogue['profiles'])
     checkpoint = json.loads(checkpoint_path.read_text()) if checkpoint_path.is_file() else {'schema': VERSION, 'attempts': {}, 'batches': []}
     companies = load_universe(root)
     from company_intelligence.cli import select
@@ -76,15 +101,16 @@ def main(argv=None):
     from quant.sec.http_client import SECHttpClient, DiskCache, RateLimiter
     from quant.sec.provider import SECProvider
     from quant.sec.store import JsonRawStore
-    client = SECHttpClient(cache=DiskCache(root / '.sec-cache', ttl_seconds=None), rate_limiter=RateLimiter(rate_per_second=1, burst=1), timeout=15, max_retries=1)
-    started = time.monotonic(); downloaded = 0
+    client = SECHttpClient(cache=DiskCache(root / '.sec-cache', ttl_seconds=None), rate_limiter=RateLimiter(rate_per_second=args.rate, burst=1), timeout=15, max_retries=1)
+    started = time.monotonic(); downloaded = 0; network_requests = 0
     def bounded(url, headers, timeout):
-        nonlocal downloaded
+        nonlocal downloaded, network_requests
         if not args.network:
             raise BudgetExhausted('PROFILE_CATALOGUE_CACHE_ONLY')
         remaining = args.max_seconds - (time.monotonic() - started)
         if client.stats['requests'] > args.request_budget or remaining <= 0:
             raise BudgetExhausted('PROFILE_CATALOGUE_BUDGET_DEFERRED')
+        network_requests += 1
         body = client._urlopen(url, headers, min(timeout, remaining))
         downloaded += len(body)
         return body
@@ -143,8 +169,10 @@ def main(argv=None):
         atomic_json(checkpoint_path, checkpoint)
         if consecutive_failures >= 3:
             break
-    batch = {'generatedAt': now, 'attempted': attempts, 'newProfiles': len(new), 'newIssuerIds': new,
-             'outcomes': dict(counts), 'secStats': dict(client.stats), 'downloadedBytes': downloaded,
+    created = [cid for cid in new if cid not in before_ids]
+    batch = {'generatedAt': now, 'attempted': attempts, 'acceptedProfiles': len(new), 'newProfiles': len(created), 'newIssuerIds': created,
+             'updatedProfiles': len(new) - len(created), 'retiredProfiles': len(before_ids - set(catalogue['profiles'])), 'ratePerSecond': args.rate,
+             'outcomes': dict(counts), 'secStats': dict(client.stats), 'networkRequests': network_requests, 'downloadedBytes': downloaded,
              'runtimeSeconds': round(time.monotonic() - started, 3), 'catalogueAvailable': len(catalogue['profiles'])}
     checkpoint['batches'].append(batch)
     atomic_json(checkpoint_path, checkpoint)
