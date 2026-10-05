@@ -13,6 +13,14 @@ ANNOUNCEMENT = re.compile(r'\b(will|scheduled|schedule|to (?:report|announce|rel
 TIME = re.compile(r'\b(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)\s*(ET|EST|EDT|PT|PST|PDT|UTC|GMT|Eastern(?: Daylight| Standard)? Time|Pacific(?: Daylight| Standard)? Time)\b', re.I)
 
 
+def publication_dateline(text, match):
+    """Wire labels adjacent to either side of a date identify publication."""
+    return bool(re.search(r'^\s*[,–—-]*\s*[( /]*(?:GLOBE NEWSWIRE|Business Wire|PRNewswire)\b',
+                          text[match.end():match.end() + 45], re.I)
+                or re.search(r'\(?(?:BUSINESS WIRE|GLOBE NEWSWIRE|PRNewswire)\)?\s*[-–—:]*\s*$',
+                             text[max(0, match.start() - 80):match.start()], re.I))
+
+
 def event_type(name):
     operating = re.search(r'\b(production|deliveries|delivery|operating results|operational results|phase[ -]?[123]|clinical|trial|study)\b', name, re.I) and not re.search(r'financial results|earnings', name, re.I)
     if EARNINGS.search(name) and not operating:
@@ -57,7 +65,7 @@ def from_announcement(item, source, now):
         if re.search(r'\b(?:quarter|year|period|months?)\s+ended\s*$', text[max(0, match.start() - 70):match.start()], re.I):
             continue  # A reporting-period end is not the announced event date.
         # Ignore a syndicated press-release dateline; it is publication evidence, not an event date.
-        if re.search(r'GLOBE NEWSWIRE|Business Wire|PRNewswire', text[match.end():match.end() + 45], re.I):
+        if publication_dateline(text, match):
             continue
         try:
             parsed.add(date(int(match[3]), MONTHS[match[1].lower()], int(match[2])).isoformat())
