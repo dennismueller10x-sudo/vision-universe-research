@@ -50,6 +50,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
+const Identity = require(join(root, "core", "identity.js"));
 const engines = join(root, "quant", "engines");
 
 const Schema = require(join(engines, "schema.js"));
@@ -142,7 +143,7 @@ function buildPricePanel() {
        als der SEC-Adapter (sec_<TICKER>). Das Panel selbst wird unter
        entry.securityId (sec_<TICKER>) gefuehrt, damit buildSecurity() beide
        Quellen unter demselben Schluessel nachschlagen kann. */
-    const file = join(GOLDEN_PREVIEW_DIR, "ref_" + entry.ticker + ".json");
+    const file = join(GOLDEN_PREVIEW_DIR, Identity.securityIdForTicker(entry.ticker) + ".json");
     if (!existsSync(file)) continue;
     const payload = JSON.parse(readFileSync(file, "utf8"));
     if (!Array.isArray(payload.bars) || !payload.bars.length) continue;
