@@ -586,6 +586,18 @@ export function build() {
     [...Object.keys(signals.bySymbol), ...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)],
     readJson(rel('discover/data/stock-index/US_REAL.json')).symbols || []);
   writeJson(path.join(DATA, 'signals.json'), signals);
+  /* Ausschnitte (Payload-Audit 03.10.2026: jede der 822 Seiten lud 3,3 MB):
+     signals-core.json fuer Start, Strategien, Methodik, Backtests (ohne die
+     Historienlisten), stock/<SYM>.json fuer die Aktienseite. signals.json
+     bleibt vollstaendig fuer die Signalliste. */
+  writeJson(path.join(DATA, 'signals-core.json'), signalsCore(signals));
+  const slices = signalsBySymbol(signals, [...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)]);
+  /* Ein Ausschnitt eines Symbols, das heraus faellt, darf nicht stehen
+     bleiben - er zeigte sonst alte Signale. Ohne Ausschnitt laedt die Seite
+     die vollstaendige Datei. */
+  const sliceDir = path.join(DATA, 'stock');
+  if (exists(sliceDir)) for (const f of fs.readdirSync(sliceDir)) if (f.endsWith('.json') && !slices[f.slice(0, -5)]) fs.rmSync(path.join(sliceDir, f));
+  for (const [sym, slice] of Object.entries(slices)) writeIfChanged(path.join(sliceDir, sym + '.json'), JSON.stringify(slice) + '\n');
   if (pilot) backtests.pilot = { path: '/supertrader/data/pilot-backtest.json', status: pilot.status, id: pilot.spec.id };
   writeJson(path.join(DATA, 'backtests.json'), backtests);
   if (pilot) writeJson(path.join(DATA, 'pilot-backtest.json'), pilot);
@@ -598,7 +610,9 @@ export function build() {
   writeStockPages(signals, [...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)]);
   writeStrategyPages(registry);
   writeStaticPages();
-  writeJson(path.join(DATA, 'build.json'), { buildVersion: BUILD_VERSION, registryVersion: REGISTRY_VERSION, asOf, inputsGeneratedAt: barsGeneratedAt });
+  /* slices: die Seite fragt nur Ausschnitte an, die dieser Lauf geschrieben hat. */
+  writeJson(path.join(DATA, 'build.json'), { buildVersion: BUILD_VERSION, registryVersion: REGISTRY_VERSION, asOf, inputsGeneratedAt: barsGeneratedAt,
+    slices: { version: SLICES_VERSION, stock: Object.keys(slices).sort() } });
   log(`fertig in ${((Date.now() - t0) / 1000).toFixed(1)} s, Stand ${asOf}`);
   return { asOf, signals, backtests, coverage };
 }
@@ -954,6 +968,52 @@ export function symbolsIn(x, out = new Set()) {
   else if (x && typeof x === 'object') {
     if (typeof x.symbol === 'string') out.add(x.symbol);
     for (const v of Object.values(x)) if (v && typeof v === 'object') symbolsIn(v, out);
+  }
+  return out;
+}
+
+/* Die Listen, die nur Signalliste und Aktienseite brauchen. */
+export const HISTORY_LISTS = ['invalidated', 'retired', 'scanner'];
+
+/* Steht in build.json, sobald signals-core.json und stock/<SYM>.json geschrieben sind. */
+export const SLICES_VERSION = 'signals-slices-1';
+
+/** signals.json ohne die Historienlisten; Zaehler (invalidatedTotal ...) bleiben. */
+export function signalsCore(signals) {
+  const strategies = {};
+  for (const [id, st] of Object.entries(signals.strategies || {})) {
+    const c = { ...st };
+    for (const k of HISTORY_LISTS) delete c[k];
+    strategies[id] = c;
+  }
+  return { ...signals, slice: 'core', strategies };
+}
+
+/** Je Symbol genau die Eintraege, die die Aktienseite liest (renderStock). */
+export function signalsBySymbol(signals, extra = []) {
+  const out = {};
+  const syms = new Set([...Object.keys(signals.bySymbol || {}), ...extra].filter((x) => /^[A-Z0-9.\-]+$/.test(x)));
+  /* Ohne asOf/inputsGeneratedAt/counts: die wechseln jeden Tag und haetten
+     sonst jeden Ausschnitt taeglich neu geschrieben (Repo-Wachstum). Den
+     Stand liefert build.json; die Seite setzt ihn ein. */
+  const head = { schema: signals.schema, policy: signals.policy, disclaimer: signals.disclaimer };
+  for (const sym of syms) {
+    const strategies = {};
+    for (const [id, st] of Object.entries(signals.strategies || {})) {
+      const mine = (list) => (list || []).filter((x) => x.symbol === sym);
+      const scanner = st.scanner ? { ...st.scanner, top: mine(st.scanner.top) } : { top: [] };
+      strategies[id] = { ...st, open: mine(st.open), closed: mine(st.closed), invalidated: mine(st.invalidated), retired: mine(st.retired), scanner };
+    }
+    const partialChecks = {};
+    for (const [id, pc] of Object.entries(signals.partialChecks || {})) {
+      partialChecks[id] = { ...pc, candidates: (pc.candidates || []).filter((r) => r.symbol === sym), near: (pc.near || []).filter((r) => r.symbol === sym) };
+    }
+    /* Die Aktienseite liest nur den Ausschnitt: er traegt die
+       Discover-Verfuegbarkeit seines Symbols mit, sonst zeigte sie fuer LOGI
+       wieder den toten Link (#418). */
+    const av = signals.discoverAvailability;
+    const discoverAvailability = av ? { source: av.source, unavailable: (av.unavailable || []).filter((x) => x === sym), note: av.note } : undefined;
+    out[sym] = { ...head, slice: 'stock', symbol: sym, bySymbol: signals.bySymbol && signals.bySymbol[sym] ? { [sym]: signals.bySymbol[sym] } : {}, strategies, partialChecks, discoverAvailability };
   }
   return out;
 }

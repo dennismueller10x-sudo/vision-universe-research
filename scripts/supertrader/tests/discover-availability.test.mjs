@@ -41,3 +41,12 @@ test("geprueft wird jede Seite, die den Discover-Link traegt - auch Teilpruefung
   const liste = (x) => x.slice(x.indexOf("["), x.indexOf("]") + 1).replace(/\.\.\.Object\.keys\(signals\.bySymbol\),\s*/, "");
   assert.equal(liste(pruef).replace(/\s+/g, ""), liste(seiten).replace(/\s+/g, ""));
 });
+
+test("der Ausschnitt einer Aktienseite traegt die Discover-Verfuegbarkeit seines Symbols (#397 + #418)", async () => {
+  const { signalsBySymbol } = await import("../build.mjs");
+  const signals = { schema: "x", bySymbol: { LOGI: {}, CORT: {} }, strategies: {}, partialChecks: {},
+    discoverAvailability: { source: "s", checked: 2, unavailable: ["LOGI"], note: "n" } };
+  const s = signalsBySymbol(signals);
+  assert.deepEqual(s.LOGI.discoverAvailability.unavailable, ["LOGI"], "LOGI-Seite muss den Hinweis zeigen koennen");
+  assert.deepEqual(s.CORT.discoverAvailability.unavailable, [], "CORT behaelt den Link");
+});
