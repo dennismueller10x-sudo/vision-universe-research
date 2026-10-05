@@ -1,117 +1,110 @@
-# Supertrader — Ein- und Ausstiegsregeln (Stand 30.09.2026, Daten bis 28.09.2026)
+# Supertrader — Ein- und Ausstiegsregeln der laufenden Versionen
 
-Maschinenlesbare Quelle: `rule_cards` je Strategie in `scripts/supertrader/registry.mjs`
-(ausgeliefert in `supertrader/data/registry.json`). Die Herkunft je Abschnitt (Original / VU /
-gemischt) wird aus den Regel-IDs abgeleitet und nicht von Hand behauptet. Kein Modell ist
-backtest-validiert; nichts hier ist ein Beleg für Überlegenheit.
+Stand: Migration Phase 1 (05.10.2026). Dieses Dokument beschreibt die **laufenden** Versionen:
+Momentum Breakout 3.2.0, Weinstein 4.0.0, Darvas 3.0.2, Minervini 2.0.0, Turtle 2.0.2 und VU Trendfolge 52W 1.0.0.
+Frühere Fassungen dieses Dokuments (Stand 30.09.2026, Versionen 1.1.0/1.2.0) sind überholt.
 
-## Daten- und Zeitregel (für alle Live-Varianten)
+Maschinenlesbare Quelle: `rule_cards` und `rules` je Strategie in `scripts/supertrader/registry.mjs` samt Overlays
+(ausgeliefert in `supertrader/data/registry.json`). Jede Regel trägt Status (aktiv / nicht mehr aktiv / nicht umgesetzt)
+und eine Herkunftsklasse (`provenance_class`, Klassen aus `scripts/supertrader/fidelity/taxonomy.mjs`); die Herkunft wird nicht
+mehr aus einem einzigen VU-Flag abgeleitet. Kein Modell ist backtest-validiert; nichts hier ist ein Beleg für Überlegenheit.
 
-Es liegen nur Tagesbalken vor (split-adjustiert, ~1 Jahr). Ob und zu welchem Kurs intraday über
-einem Trigger gehandelt wurde, ist damit **nicht belegbar**. Deshalb:
+## Produktklassen (R15, Migration Phase 1)
 
-| Schritt | Regel | Was passiert |
+| Strategie | Version | Produktklasse |
 |---|---|---|
-| Bestätigung | `LC-CONFIRM-CLOSE` | Einstieg gilt erst als bestätigt, wenn der **Tagesschluss** (Weinstein: **Wochenschluss**) über dem am Vortag bekannten Trigger liegt. Ein Hoch darüber ohne Schluss darüber ist keine Bestätigung. |
-| Modelleinstieg | `LC-MODEL-ENTRY` | Zur **Eröffnung des nächsten Handelstags** + 10 bp Slippage. Nie zum idealen Triggerkurs. Keine reale Order. |
+| VU Adaptation – Kullamägi Breakout | 3.2.0 | VU Adaptation |
+| VU Adaptation – Weinstein Stage Analysis | 4.0.0 | VU Adaptation |
+| VU Adaptation – Darvas | 3.0.2 | VU Adaptation |
+| VU Adaptation – Minervini | 2.0.0 | VU Adaptation |
+| VU Equity Adaptation – Turtle Trading | 2.0.2 | VU Adaptation (Aktien-Adaption des Futures-Systems) |
+| VU Native – Trendfolge 52W | 1.0.0 | VU Native |
+
+Keine laufende Version darf als **Replication** bezeichnet werden (`REPLICATION_CLAIM_ALLOWED = false`, siehe
+`scripts/supertrader/fidelity/R15-FIDELITY-MATRIX.json`).
+
+## Daten- und Zeitregel
+
+Es liegen Tagesbalken vor (split-adjustiert); Intraday-Kurse fehlen. Zwei Einstiegsarten sind live:
+
+| Einstiegsart | Methoden | Regel | Was passiert |
+|---|---|---|---|
+| Kauf-Stop im Tagesverlauf | Momentum, Weinstein, Darvas, Turtle | `LC-BUY-STOP`, `LC-MODEL-ENTRY` | Der Trigger steht seit dem Vortagesschluss fest. Steigt das Tageshoch darüber, gilt das Modell als gekauft – zum Trigger oder, bei Eröffnung darüber, zur Eröffnung, plus 10 bp Slippage. Das ist eine Tageschart-Annahme; ob der Stop am Einstiegstag hielt, zeigen Tagesbalken nicht (`LC-SAME-DAY`). |
+| Schlusskurs-Bestätigung | Minervini | `LC-CONFIRM-CLOSE`, `LC-MODEL-ENTRY` | Einstieg gilt als bestätigt, wenn der Tagesschluss über dem Pivot liegt (mit ≥ 1,4× Volumen); Modelleinstieg zur Eröffnung des nächsten Handelstags, plus 10 bp Slippage. |
+
+`LC-CONFIRM-CLOSE` ist für Momentum, Weinstein, Darvas und Turtle **nicht mehr aktiv** (galt bis Runde 7); sie stehen in der Regelliste unter
+„Nicht mehr aktiv“.
+
+| Weitere Regel | Regel-ID | Was passiert |
+|---|---|---|
 | Eröffnung unter Stop | `LC-OPEN-BELOW-STOP` | Kein Modelleinstieg, Setup bleibt protokolliert. |
-| Stop | `LC-STOP-ORDER-ASSUMPTION` | Ruhende Stop-Order-**Annahme**: Tagestief ≤ Stop → Ausführung zum Stop, bei Eröffnung darunter zur Eröffnung. Je Ausstieg als Annahme gekennzeichnet. |
+| Stop | `LC-STOP-ORDER-ASSUMPTION` | Ruhende Stop-Order-**Annahme**: Tagestief ≤ Stop → Ausführung zum Stop, bei Eröffnung darunter zur Eröffnung. |
 | Konflikt vor Einstieg | `LC-CONFLICT-01` | Invalidation und Bestätigung im selben Balken → Invalidation gewinnt. |
-| Konflikt in Position | `LC-CONFLICT-02` | Stop vor Ausstiegsregel vor Warnung. Kein fixes Kursziel → keine Stop-/Ziel-Mehrdeutigkeit in einer Kerze. |
-| Fehlende Daten | `LC-DATA-GAP` | Keine Entscheidung, kein erfundener Kurs; offene Orders zur nächsten verfügbaren Eröffnung, markiert. Titel ohne aktuelle Daten bleiben mit `dataStatus = NO_CURRENT_DATA` im Ledger. |
-| Regelversion | `LC-VERSION-RETIRED` | Wartende Setups der alten Version werden protokolliert beendet (nicht umgedeutet) und unter der neuen Version auf demselben Datenstand neu gesucht (neue ID mit `:v<Version>`). Positionen laufen nur weiter, wenn die neue Version sie per `manageCompatible` übernimmt — sonst bricht der Build ab. |
+| Konflikt in Position | `LC-CONFLICT-02` | Stop vor Ausstiegsregel vor Warnung. Kein fixes Kursziel. |
+| Fehlende Daten | `LC-DATA-GAP` | Keine Entscheidung, kein erfundener Kurs; offene Orders zur nächsten verfügbaren Eröffnung, markiert. |
+| Regelversion | `LC-VERSION-RETIRED` | Wartende Setups der alten Version werden protokolliert beendet (nicht umgedeutet) und unter der neuen Version neu gesucht. Positionen laufen nur weiter, wenn die neue Version sie per `manageCompatible` übernimmt. |
+| Sperre | `LC-COOLDOWN-01` | **VU-eigen, für alle Methoden:** 5 Sitzungen Sperre je Titel nach Abschluss oder Ungültigkeit (Momentum: keine Sperre nach einem Setup-Verlust ohne Trade). Keine Quelle der Methoden kennt diese Regel. |
+| Eine Position je Titel | – | **VU-eigen:** kein Aufstocken, kein Pyramidisieren (Darvas, Minervini und Turtle kennen es). |
 
 ## Phasen (strikt getrennt)
 
 | Phase | Interne Zustände | Bedeutung |
 |---|---|---|
 | Kandidat | DISCOVERED, WATCH | Momentaufnahme, nicht protokolliert |
-| Einstieg vorbereitet | SETUP, ENTRY_READY | Trigger und Invalidation bekannt. „Nahe Trigger“ (≤ 3 %) ist **kein** Einstieg. |
-| Einstieg bestätigt | TRIGGERED | Schlusskurs über Trigger. Modelleinstieg steht zur nächsten Eröffnung aus. |
-| Modellposition aktiv | ACTIVE | Einstieg zur Eröffnung erfasst (keine reale Order) |
+| Einstieg vorbereitet | SETUP, ENTRY_READY | Trigger und Invalidation bekannt. „Nahe Trigger“ ist **kein** Einstieg. |
+| Einstieg bestätigt | TRIGGERED | Nur bei Schlusskurs-Bestätigung (Minervini): Schluss über Trigger, Modelleinstieg steht zur nächsten Eröffnung aus. |
+| Modellposition aktiv | ACTIVE | Einstieg erfasst (keine reale Order) |
 | Warnung | WARNING | Position läuft, Warnregel ausgelöst |
-| Ausstieg ausgelöst | EXIT | Ausstiegsregel ausgelöst, Ausführung zur nächsten Eröffnung |
+| Ausstieg ausgelöst | EXIT | Ausstiegsregel ausgelöst |
 | Geschlossen | CLOSED | vollständig geschlossen, Ergebnis im Ledger |
 | Ungültig | INVALIDATED | Setup vor dem Modelleinstieg beendet |
 
-`TRIGGERED → CLOSED` ist unzulässig: eine Bestätigung ist nie schon eine Position.
+## Tabelle je laufender Strategie
 
-## Tabelle je aktiver Strategie — Regeln
+Herkunft: **O** Original · **L** Original mit VU-Lesart · **F** VU-Formalisierung · **E** VU-eigen · **X** Fremdregel · **?** Herkunft ungeklärt.
 
-| Strategie (Version) | Einstieg bestätigt | Modelleinstieg | Invalidation (vor Einstieg) | Anfangsstop | Ausstieg |
-|---|---|---|---|---|---|
-| Momentum Breakout, Daily (1.1.0) | Tagesschluss > Hoch der vorherigen 5 Sitzungen (`KK-BO-ENTRY-D1`, VU) | nächste Eröffnung; > Trigger + 0,5 ADR → kein Einstieg (`KK-BO-GAP-01`, VU) | Schluss < Basistief (`KK-BO-INV-01`); 20 Sitzungen (`KK-BO-INV-02`) | Tief des Bestätigungstags, ≤ 1 ADR unter Eröffnung (`KK-BO-STOP-D1`, VU; Original `KK-BO-STOP-01`) | nach 3 Sitzungen ⅓ zur Eröffnung, Stop auf Einstand (`KK-BO-SCALE-01`); Rest bei Schluss < 10-Tage-Linie (`KK-BO-TRAIL-01`) |
-| Weinstein Stage 2, Woche (1.1.0) | Wochenschluss > Widerstand und ≥ 1,5× Wochenvolumen (`WEIN-ST2-01`, `WEIN-VOL-01`); Volumen fehlt → bestätigt, „nicht prüfbar“ (`WEIN-VOL-02`) | Eröffnung nach Wochenschluss, keine Gap-Sperre | Schluss < Basisstop (`WEIN-INV-01`); 60 Sitzungen (`WEIN-INV-02`) | 2 % unter tiefstem Wochenschluss der Basis (`WEIN-STOP-VU`) | Stop wöchentlich 2 % unter 30-Wochen-Linie (`WEIN-TRAIL-VU`); Wochenschluss < 30-Wochen-Linie (`WEIN-EXIT-01`) |
-| Darvas Box N3 (1.2.0) | Tagesschluss > Boxoberkante (`DAR-ENTRY-D1`, VU; Original `DAR-ENTRY-01` intraday) | nächste Eröffnung, keine Gap-Sperre, Gap wird ausgewiesen | Tagestief < Unterkante (`DAR-INV-01`); 30 Sitzungen (`DAR-INV-02`) | Boxunterkante (`DAR-STOP-01`) | nur nachgezogener Box-Stop (`DAR-STOP-01`) |
-| Minervini TT + VCP (1.1.0) | Tagesschluss > Pivot (`MIN-ENTRY-D1`, VU) | nächste Eröffnung, keine Gap-Sperre | Schluss < Kontraktionstief (`MIN-INV-01`); 20 Sitzungen (`MIN-INV-02`) | Kontraktionstief, ≤ 10 % unter Eröffnung (`MIN-STOP-VU`) | Schluss < 50-Tage-Linie (`MIN-EXIT-VU-01`, nur VU-Hilfsregel) |
-| Greenblatt Magic Formula (1.0.0) | kein Kurs-Trigger: Rang EY + ROC (`GB-RANK-01`) | Rebalancing 20–30 Titel gleichgewichtet, gestaffelt | — | kein Stop (Original) | nach ~1 Jahr ersetzen (`GB-EXIT-01`) |
+| Strategie (Version) | Einstieg | Anfangsstop | Ausstieg |
+|---|---|---|---|
+| Momentum Breakout (3.2.0) | Kauf-Stop über dem Hoch der letzten 5 Sitzungen (`KK-BO-ENTRY-ORH-D`, L; Original: Opening-Range-Hoch, nicht umgesetzt) | Tagestief des Einstiegstags, höchstens 1 ADR (`KK-BO-STOP-LOD`, `KK-BO-STOP-ADR`, O) | Nach 3 Sitzungen 1/3 verkaufen, Rest-Stop auf Einstand, sobald ein Schluss über dem Einstieg liegt (`KK-BO-SCALE-01` O, `KK-BO-BE-02` F); Rest bei Schluss unter der 10-Tage-Linie (`KK-BO-TRAIL-02`, O) |
+| Weinstein Stage (4.0.0) | Kauf-Stop über dem höchsten Tageshoch der Basis (`WEIN-ENTRY-BS`, O, sekundär belegt); Markt und relative Stärke zum letzten Wochenschluss (`WEIN-MKT-01`, `WEIN-RS-02`, L); Fortsetzungsbasis in Stufe 2 (`WEIN-CONT-01`, F) | 2 % unter dem tiefsten Wochenschluss der Basis (`WEIN-STOP-01`, F) | Wochenschluss unter der 30-Wochen-Linie (`WEIN-EXIT-01`, F – VU-Vereinfachung); schwaches Ausbruchsvolumen → Verkauf beim ersten Gewinn (`WEIN-VOL-04`, L). **Kein nachgezogener Stop** (Weinstein: `WEIN-TRAIL-ORIG`, nicht umgesetzt) |
+| Darvas Box (3.0.2) | Kauf-Stop über der Boxoberkante (`DAR-ENTRY-BS`, O); Box mit Dreitagesregel (`DAR-BOX-01/02`, X – TraderFox-Zuschreibung); Marktampel (`PORT-MARKET-200`, X – TraderFox) | 1 % unter der Kauforder (`DAR-STOP-03`, E – Zahl VU; Prinzip „knapp darunter“ original) | Stop mit jeder höheren bestätigten Box nachziehen (`DAR-STOP-01`, L); kein Pyramidisieren (`DAR-PYR-01`, nicht umgesetzt) |
+| Minervini TT + VCP (2.0.0) | Schluss über dem Pivot bei ≥ 1,4× 50-Tage-Volumen (`MIN-ENTRY-D2`, X – O’Neil-Konvention), Kauf zur nächsten Eröffnung | Kontraktionstief, höchstens 10 % unter der Einstiegseröffnung (`MIN-STOP-01`, L) | Stop; Einstand ab 3 Anfangsrisiken Gewinn (`MIN-BE-01`, O); Schluss unter der 50-Tage-Linie mit überdurchschnittlichem Volumen (`MIN-EXIT-02`, **?** – keine Minervini-Fundstelle). Verkauf in die Stärke fehlt. **Keine SEPA-Fundamentaldaten** (weder Filter noch Anzeige) |
+| Turtle Equity Adaptation (2.0.2) | Kauf-Stop über dem 20-Tage-Hoch (`TUR-ENTRY-S1-20`, O), Filter nach Gewinner-Ausbruch und 55-Tage-Failsafe (`TUR-S1-FILTER`, `TUR-FAILSAFE-55`, L). Aufnahme nur ≤ 6 % unter dem Ausbruchspunkt, Verfall nach 10 Sitzungen (`DON-NEAR-VU`, `DON-INV-02`, E) – **kann echte Ausbrüche verlieren** | 2N (`TUR-STOP-2N`, O) | 10-Tage-Tief im Tagesverlauf (`TUR-EXIT-S1-10D`, O). Kein Aufstocken, kein Short, keine Korrelationsgrenzen |
+| VU Trendfolge 52W (1.0.0) | Monatsende; ≥ 100 % seit Tief, neues Hoch, Kurslücke ≥ 6 %, Marktampel (alle X – TraderFox) | kein Stop | Kein neues Hoch in 65 Handelstagen oder < 100 % seit Tief (X – TraderFox) |
+
+Positionsgröße und Portfolio je Methode (Layer C): `scripts/supertrader/fidelity/portfolio-policy.mjs`. Dort ist je Feld die Herkunft ausgewiesen;
+u. a. stammt die Zahl 0,5 % Risiko in Weinstein und Darvas aus Kullamägis Risikospanne (Fremdregel), und die Turtle-Auswahl gleichzeitiger Signale ist
+alphabetisch (VU-eigen).
 
 ## Drei getrennte Aussagen je Variante
 
-„Ausführbar“ heißt nur: jede Phase ist mechanisch definiert und läuft im Simulator. Es heißt
-**nicht**, dass die Regel dem Original treu ist, und **nicht**, dass sie historisch funktioniert.
-Die Registry führt deshalb je Regelkarte drei getrennte Felder (`executable`, `source_basis`,
-`historical_validation`); ein pauschales „vollständig“ gibt es nicht mehr.
+„Ausführbar“ heißt nur: jede Phase ist mechanisch definiert und läuft im Simulator. Es heißt **nicht**, dass die Regel dem Original treu ist, und
+**nicht**, dass sie historisch funktioniert. Die Registry führt deshalb je Regelkarte drei getrennte Felder (`executable`, `source_basis`,
+`historical_validation`).
 
 | Variante | 1 · Technisch ausführbar | 2 · Quellenlage | 3 · Historische Validierung |
 |---|---|---|---|
-| Momentum Breakout Daily | ja | Original-Prinzipien (Momentum, Teilverkauf, 10-Tage-Trailing) mit VU-Umsetzung; Original-Einstieg (Opening Range) nicht abgebildet | nicht validiert |
-| Weinstein Stage 2 | ja; Volumenregel nur ~1 Jahr prüfbar | Sekundärquellen, Buch nicht vollständig gelesen; Stage-Klassifikator und Schwellen VU | nicht validiert |
-| Darvas Box N3 | ja; Pyramiding nicht simuliert | Sekundärquellen; Boxdefinition, A/B und Regime-Sperre VU | nicht validiert |
-| Minervini TT + VCP | ja, Ausstieg aber nur über VU-Hilfsregel | **Ausstieg nicht quellenbelegt**; VCP-Erkennung VU | nicht validiert |
-| Greenblatt | **nein** — ROC-Felder und PIT-Daten fehlen | offizielle Website + unabhängige Replikationen | nicht validiert |
+| Momentum Breakout | ja (Breakout-Setup; Episodic Pivot und Parabolic Short nicht umgesetzt) | Original-Prinzipien (Momentum, Stop, Teilverkauf, 10-Tage-Trailing) mit VU-Umsetzung; Quelle im Volltext gelesen | nicht validiert |
+| Weinstein Stage | ja; Volumenregel nur ~1 Jahr prüfbar | Sekundärquellen, Buch nicht gelesen; Positionsgröße ist Fremdregel, Stop und Hauptausstieg sind VU | nicht validiert |
+| Darvas Box | ja; Pyramiding nicht simuliert | TIME 1959/1960 im Volltext; Boxdefinition, 1-%-Stop und Qualitätsstufen VU; Marktampel und 0,5 % Risiko Fremdregeln | nicht validiert |
+| Minervini TT + VCP | ja; SEPA und Verkauf in die Stärke fehlen | Trend Template belegt; VCP VU; Ausstieg bei 50-Tage-Linie ohne Fundstelle | nicht validiert |
+| Turtle Equity | ja (System 1, long-only, ohne Aufstocken) | Turtle Rules im Volltext; Futures-System, hier auf Aktien adaptiert | nicht validiert |
 
-Für alle gilt: Die Quellen sind nur per Suchtreffer bestätigt, die Inhalte wurden nicht direkt
-abgerufen (`fidelityReview: NOT_PERFORMED`). **Originaltreue ist damit für keine Variante
-geprüft.** Die historische Validierung wird im Build aus den gemessenen Datengates gesetzt, nicht
-von Hand; offen sind unter anderem Survivorship, historisches Universum und Historienlänge.
+Die historische Validierung wird im Build aus den gemessenen Datengates gesetzt, nicht von Hand; offen sind unter anderem Survivorship, historisches
+Universum und Historienlänge.
 
-## Darvas A/B (korrigiert)
+## Darvas A/B
 
-- **A-Kandidat** (vor dem Ausbruch): Regime nicht schwach, 6-Monats-Stärke Top 10 %, Box ≤ 12 %,
-  Stop ≥ 4 % und ≥ 1 ADR. Volumen ist offen und zählt **nicht** gegen A.
-- **A-Einstieg** (nach Schluss über der Oberkante): zusätzlich Volumen am Bestätigungstag ≥ 1,5×
-  des 50-Tage-Schnitts. Fehlt Volumen → **B-Einstieg**.
-- **Regime-Sperre** `DAR-Q-REGIME`: Vision-Universe-Annahme (`VU_EXTENSION`), **keine
-  Darvas-Originalregel**, Quelle nur `SRC-INTERNAL-VU`, nicht backtest-geprüft.
-- Analyse der 157 B-Setups am 28.09.2026: **15** scheitern ausschließlich an der Regime-Sperre,
-  **142** zusätzlich an weiteren Kriterien (Box zu weit: 112, Stärke unter Top 10 %: 98;
-  Mehrfachnennung). Ohne Regime-Sperre gäbe es heute 15 A-Kandidaten — ein Hinweis, keine Evidenz.
+- **A-Kandidat** (vor dem Ausbruch): Regime nicht schwach, 6-Monats-Stärke Top 10 %, Box ≤ 12 %, Stop ≥ 4 % und ≥ 1 ADR. Volumen ist offen und zählt
+  **nicht** gegen A.
+- **A-Einstieg** (nach dem Ausbruch): zusätzlich Volumen am Bestätigungstag ≥ 1,5× des 50-Tage-Schnitts. Fehlt Volumen → **B-Einstieg**.
+- **Regime-Sperre** `DAR-Q-REGIME`: Vision-Universe-Annahme (VU-eigen), **keine Darvas-Originalregel**, Quelle nur `SRC-INTERNAL-VU`, nicht
+  backtest-geprüft.
 
 ## Ledger (append-only)
 
-Jedes Signal ab „Einstieg vorbereitet“ trägt: `discovery {date, dataAsOf, ruleVersion,
-recordedAt, simulator}`, `levelHistory` (jede Trigger-/Invalidation-Änderung), `transitions`
-(Zustand, Datum, Datenstand, Regel, Regelversion, Materialisierungszeitpunkt, Preis und
-Preisbasis), nach dem Einstieg `entry`, `stopHistory`, `exits`, `result`. Der Build prüft bei
-jedem Lauf (`assertAppendOnly`): kein Signal verschwindet, abgeschlossene Signale bleiben
-bytegleich, offene Signale dürfen ihr Protokoll nur verlängern.
-
-Prüfung mit Beispielen und behobene Lücken:
-
-1. **Ideale Trigger-Fills** (Einstieg zum Triggerkurs ohne Intraday-Beleg) → ersetzt durch
-   Schluss-Bestätigung + Eröffnung.
-2. **Signale ohne aktuelle Kursdaten fielen aus dem Ledger** → werden jetzt mit `dataStatus`
-   übernommen.
-3. **Keine Versionspolitik** → `LC-VERSION-RETIRED`; bei diesem Rollout wurden 2 Momentum-, 2
-   Weinstein- und 157 Darvas-Setups der Vorversion protokolliert abgelöst und neu gesucht.
-6. **Regelwechsel sah wie Marktereignis aus** → Die 161 unter der neuen Version wiedererkannten
-   Setups tragen `discovery.kind = RULE_VERSION_REASSESSMENT` mit Vorgänger-ID, Vorgängerversion,
-   ursprünglichem Entdeckungsdatum und verwendetem Kursstand (28.09.2026; Weinstein: Wochenschluss
-   25.09.2026). Der Vorgänger verweist per `retiredBy.successorId` auf den Nachfolger. Zähler
-   trennen `NEW_SINCE_PREVIOUS_DATA` (heute 0), `REASSESSED_AFTER_RULE_CHANGE` (161),
-   `RETIRED_BY_RULE_VERSION` (161) und `INVALIDATED` (0); abgelöste Setups erscheinen im
-   Signalzentrum unter „Regelwechsel“, nicht unter „Ungültig“. Das Entdeckungsdatum ist der
-   Kursstand, nie das Laufdatum.
-4. **Darvas-„A“ vor dem Ausbruch** war missverständlich → getrennte Phasen A-Kandidat / A-Einstieg.
-5. **Regime-Sperre mit Darvas-Sekundärquelle belegt** → nur noch VU-Quelle.
-
-## Echte Beispiele aus dem Ledger (keine erfundenen)
-
-- **Kandidat:** `SVRN`, Momentum Breakout, 28.09.2026 — Momentum-Perzentil 100, Vorlauf erfüllt,
-  aber keine enge Basis (`KK-BO-BASE-01` nicht erfüllt). Nicht protokolliert (Momentaufnahme).
-- **Einstieg vorbereitet:** `MOMENTUM_BREAKOUT:FET:2026-09-28:v1.1.0` — nahe Trigger, Neubewertung nach Regelwechsel von `MOMENTUM_BREAKOUT:FET:2026-09-28` (v1.0.0, zuerst entdeckt 28.09.2026). Trigger
-  85,30 (geplant, Tagesschluss darüber), Invalidation 74,26, Schluss 82,99 am 28.09.2026,
-  Regelversion 1.1.0, materialisiert 2026-09-29T04:15Z.
-- **Bestätigter Einstieg: keiner.** **Geschlossener Modelltrade: keiner.** Das Live-Protokoll
-  läuft seit dem 28.09.2026, und seitdem liegt kein neuer Handelstag in den kanonischen Daten vor.
+Jedes Signal ab „Einstieg vorbereitet“ trägt: `discovery {date, dataAsOf, ruleVersion, recordedAt, simulator}`, `levelHistory`, `transitions` (Zustand,
+Datum, Datenstand, Regel, Regelversion, Materialisierungszeitpunkt, Preis und Preisbasis), nach dem Einstieg `entry`, `stopHistory`, `exits`, `result`.
+Der Build prüft bei jedem Lauf (`assertAppendOnly`): kein Signal verschwindet, abgeschlossene Signale bleiben bytegleich, offene Signale dürfen ihr
+Protokoll nur verlängern. Offene Positionen älterer Versionen laufen unter der Regelversion ihres Einstiegs weiter; Regeln früherer Versionen bleiben
+dafür lesbar und sind in der Oberfläche als „nicht mehr aktiv“ gekennzeichnet.

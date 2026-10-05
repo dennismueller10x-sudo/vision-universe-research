@@ -233,6 +233,8 @@ p { margin: 0; }
 .st-rcl .row, .st-rules .row { padding: 10px; border-radius: 10px; background: var(--st-bg-2); }
 .st-rcl .h, .st-rules .h { display: flex; justify-content: space-between; gap: 8px; align-items: center; margin-bottom: 3px; }
 .st-rcl p, .st-rules p { font-size: 13px; color: var(--st-text-2); }
+.st-rules .h .tags { display: inline-flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.st-rules .row.legacy { opacity: .8; }
 .st-rcl code, .st-rules code { font-size: 11.5px; color: var(--st-muted); overflow-wrap: anywhere; }
 .st-rules code.m { display: block; margin-top: 4px; }
 .st-ul { margin: 0; padding-left: 18px; font-size: 13.5px; color: var(--st-text-2); display: grid; gap: 4px; }
