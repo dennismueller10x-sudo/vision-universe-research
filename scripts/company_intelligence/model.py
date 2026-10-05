@@ -249,6 +249,11 @@ def issuer_earnings_announcement(headline, company):
     titles = {title, re.sub(r'^the\s+', '', re.sub(lead, '', title))}
     aliases = {legal_normalize(n) for n in company['names']} | {legal_normalize(SUFFIX.sub('', n)) for n in company['names']}
     action = r'(?:reports?|announces?|releases?|will|to|sets?|schedules?|holds?|hosts?|confirms?|q[1-4]|first|second|third|fourth|quarterly|fiscal|annual|earnings|financial)\b'
+    # Issuer platforms commonly advertise "Q3 2026 Results" without the
+    # word financial. Require a pure explicit-quarter title; a named company,
+    # operating/clinical qualifier or ambiguous generic results title fails.
+    if re.fullmatch(r'q[1-4](?:\s+(?:fy20\d{2}|20\d{2}))?\s+results(?:\s+(?:earnings|conference|call|webcast|release|announcement|presentation|date))*', title):
+        return True
     for candidate in titles:
         # Pure financial/event titles are safe on a validated issuer source.
         # A fiscal prefix followed by another named company is not generic.

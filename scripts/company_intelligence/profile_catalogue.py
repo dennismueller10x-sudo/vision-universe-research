@@ -8,6 +8,7 @@ health, news and event state are never opened or initialized by this command.
 import argparse
 from contextlib import contextmanager
 import fcntl
+import hashlib
 import json
 import re
 import sys
@@ -17,13 +18,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from company_intelligence.model import load_universe
+from company_intelligence.model import load_universe, timestamp
 from company_intelligence.pipeline import Pipeline, utcnow
 from company_intelligence.profiles import VERSION, PARSER_VERSION, annual_filing, extract, public_profile, later
 from company_intelligence.store import atomic_json
 from company_intelligence.transport import BudgetExhausted
 
 CATALOGUE_SCHEMA = 'vu-company-profile-catalogue-1.0.0'
+
+
+def parser_revision(value):
+    match = re.fullmatch(r'company-profile-parser-(\d+)\.(\d+)\.(\d+)', value or '')
+    return tuple(map(int, match.groups())) if match else (0, 0, 0)
 
 
 @contextmanager
@@ -48,6 +54,17 @@ def seed(store, companies, catalogue, now):
         raise ValueError('INVALID_COMPANY_PROFILE_CATALOGUE')
     imported = 0
     validated = []
+    withdrawals = catalogue.get('withdrawals', {})
+    if not isinstance(withdrawals, dict):
+        raise ValueError('INVALID_PROFILE_WITHDRAWALS')
+    for cid, value in withdrawals.items():
+        if (not isinstance(value, dict) or value.get('companyId') != cid
+                or parser_revision(value.get('parserVersion')) == (0, 0, 0)
+                or timestamp(value.get('checkedAt')) != value.get('checkedAt') or not value.get('checkedAt')
+                or value['checkedAt'] > now or value.get('reason') != 'NO_EXPLICIT_ISSUER_BUSINESS_DESCRIPTION'
+                or not isinstance(value.get('sourceContentHashes'), list) or not 1 <= len(value['sourceContentHashes']) <= 4
+                or any(not re.fullmatch(r'[a-f0-9]{64}', str(h)) for h in value['sourceContentHashes'])):
+            raise ValueError('INVALID_PROFILE_WITHDRAWAL:' + cid)
     for cid, value in sorted(catalogue['profiles'].items()):
         if cid not in companies:
             continue
@@ -55,24 +72,38 @@ def seed(store, companies, catalogue, now):
         if profile is None:
             raise ValueError('INVALID_CATALOGUE_PROFILE:' + cid)
         validated.append((cid, profile))
+    for cid, value in sorted(withdrawals.items()):
+        if cid not in companies or cid in catalogue['profiles']:
+            continue
+        prior = store.state('companyProfile:' + cid, {})
+        revision = parser_revision(prior.get('parserVersion'))
+        sources = prior.get('sources', [])
+        if (prior.get('state') == 'AVAILABLE' and revision != (0, 0, 0)
+                and revision < parser_revision(value['parserVersion'])
+                and prior.get('lastVerifiedAt', '') <= value['checkedAt']
+                and sources and all(s.get('type') == 'SEC' and s.get('companyId') == cid for s in sources)
+                and sorted(s.get('contentHash', '') for s in sources) == sorted(value['sourceContentHashes'])
+                and not prior.get('supersededAnnualFiling')):
+            # Retain every sourced factual field privately, withholding only
+            # the disproved prepared description's public eligibility.
+            store.set_state('companyProfile:' + cid, {**prior, 'state': 'UNAVAILABLE',
+                                                       'qualityWithdrawal': value, 'priorState': 'AVAILABLE'})
+            store.audit(now, cid, 'PROFILE_DESCRIPTION_WITHHELD', reason=value['reason'])
     for cid, profile in validated:
         prior = store.state('companyProfile:' + cid, {})
         if prior.get('state') == 'AVAILABLE' and prior.get('lastVerifiedAt', '') >= profile['lastVerifiedAt']:
-            def revision(value):
-                match = re.fullmatch(r'company-profile-parser-(\d+)\.(\d+)\.(\d+)', value or '')
-                return tuple(map(int, match.groups())) if match else (0, 0, 0)
             def evidence(value):
                 return sorted((s.get('type', ''), s.get('url', ''), s.get('contentHash', '')) for s in value.get('sources', []))
             # Cache-only normalization keeps the source verification time.
             # Permit a parser upgrade only for the same immutable evidence;
             # later verification, supersession and stronger sources survive.
             upgrade = (prior.get('lastVerifiedAt') == profile['lastVerifiedAt']
-                       and revision(profile.get('parserVersion')) > revision(prior.get('parserVersion'))
+                       and parser_revision(profile.get('parserVersion')) > parser_revision(prior.get('parserVersion'))
                        and evidence(prior) == evidence(profile)
                        and not prior.get('supersededAnnualFiling'))
             if not upgrade:
                 continue
-        if prior.get('confidence') == 'HIGH' and profile['confidence'] == 'MEDIUM' and not prior.get('stale'):
+        if prior.get('state') == 'AVAILABLE' and prior.get('confidence') == 'HIGH' and profile['confidence'] == 'MEDIUM' and not prior.get('stale'):
             continue
         store.set_state('companyProfile:' + cid, profile)
         imported += 1
@@ -157,16 +188,26 @@ def backfill(args, root, catalogue_path, checkpoint_path):
             filing = annual_filing(company, sub, now)
             same_filing = bool(prior and filing and any(s.get('filingId') == filing['filingId'] for s in prior.get('sources', [])))
             verified_at = prior['lastVerifiedAt'] if prior and (args.reparse or same_filing) else now
-            result = extract(company, client.get_bytes(filing['url']), filing, verified_at, sites.get(company['cik'], {}).get('url')) if filing else {'state': 'UNAVAILABLE', 'reason': 'NO_EXPLICIT_ANNUAL_PRIMARY_DOCUMENT'}
+            body = client.get_bytes(filing['url']) if filing else None
+            result = extract(company, body, filing, verified_at, sites.get(company['cik'], {}).get('url')) if filing else {'state': 'UNAVAILABLE', 'reason': 'NO_EXPLICIT_ANNUAL_PRIMARY_DOCUMENT'}
             status = result['state']; consecutive_failures = 0
             if status == 'AVAILABLE':
                 public = public_profile(result, cid, now)
                 if public is None:
                     raise ValueError('PROFILE_PUBLIC_VALIDATION_FAILED')
                 catalogue['profiles'][cid] = public; new.append(cid)
+                catalogue.get('withdrawals', {}).pop(cid, None)
                 atomic_json(catalogue_path, catalogue)
-            if status != 'AVAILABLE' and prior and (args.reparse or (same_filing and prior.get('parserVersion') != PARSER_VERSION)):
-                del catalogue['profiles'][cid]
+            if (status != 'AVAILABLE' and prior and same_filing and prior.get('parserVersion') != PARSER_VERSION
+                    and result.get('reason') == 'NO_EXPLICIT_ISSUER_BUSINESS_DESCRIPTION'):
+                body_hash = hashlib.sha256(body).hexdigest()
+                if all(s.get('type') == 'SEC' and s.get('contentHash') == body_hash for s in prior.get('sources', [])):
+                    catalogue.setdefault('withdrawals', {})[cid] = {'companyId': cid, 'parserVersion': PARSER_VERSION,
+                        'sourceContentHashes': [s['contentHash'] for s in prior['sources']], 'checkedAt': now,
+                        'reason': result['reason']}
+                    del catalogue['profiles'][cid]
+                else:
+                    catalogue['profiles'][cid] = {**prior, 'stale': True}
                 atomic_json(catalogue_path, catalogue)
             elif status != 'AVAILABLE' and prior and filing and not same_filing:
                 # A newer filing that cannot be normalized does not invalidate

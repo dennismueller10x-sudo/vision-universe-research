@@ -87,3 +87,17 @@ class IngestionCalendarTests(unittest.TestCase):
         self.assertEqual(self.store.db.execute("SELECT COUNT(*) FROM events WHERE kind='EARNINGS_PUBLISHED'").fetchone()[0], 1)
         self.assertEqual({r[0] for r in self.store.db.execute("SELECT company FROM events WHERE kind='EARNINGS_ESTIMATED'")}, {self.other['companyId']})
         self.assertTrue(self.store.state('calendarModel:' + self.issuer['companyId']))
+
+    def test_short_quarter_results_poll_reclassifies_existing_event_and_reconciles_once(self):
+        from company_intelligence.q4_events import parse
+        row={'EventId':123,'Title':'Q3 2026 Results Conference Call','LinkToDetailPage':'https://apple.com/events/q3',
+             'StartDate':'10/08/2026 08:30:00','TimeZone':'ET','WebCastLink':'','Attachments':[]}
+        configured={**source(),'type':'IR_EVENTS','format':'Q4_EVENTS','provider':'Q4','verified':True,'allowedSites':['https://apple.com/']}
+        body=json.dumps({'GetEventListResult':[row]}).encode()
+        value=parse(body,configured,NOW)[0]
+        self.store.event({**value,'eventType':'IR_EVENT'},NOW)
+        self.pipeline(body).ingest_source(configured)
+        self.assert_reconciled()
+        self.assertEqual(self.store.db.execute("SELECT COUNT(*) FROM events WHERE id=?",(value['eventId'],)).fetchone()[0],1)
+        self.pipeline(body).ingest_source(configured)
+        self.assert_reconciled()

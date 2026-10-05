@@ -89,3 +89,20 @@ class Q4Tests(unittest.TestCase):
    self.assertFalse(saved.get('presentationUrl'));self.assertEqual(saved['transcriptUrl'],'https://cdn.example.com/qa.pdf')
    self.assertEqual([d['type'] for d in saved['sourceDocuments'] if d['url'].endswith('qa.pdf')],['COMPANY_TRANSCRIPT'])
    self.assertEqual(saved['webcastUrl'],'https://events.example.com/real-webcast');store.close()
+
+ def test_explicit_short_quarter_results_convert_to_confirmed_events_without_inference(self):
+  from company_intelligence.model import issuer_earnings_announcement
+  from test_engine import company
+  from company_intelligence.ir_events import event_type
+  issuer=company('Example Holdings Inc.','EXMP')
+  for title in ['Q3 2026 Results','2026 Q3 Results','Q3 FY26 Results']:
+   row={**self.rows()[0],'Title':title,'StartDate':'10/28/2026 08:30:00','TimeZone':'ET','WebCastLink':''}
+   e=parse(self.payload([row]),self.source(),NOW)[0]
+   self.assertEqual(e['eventType'],'EARNINGS_SCHEDULED');self.assertEqual(e['confirmationStatus'],'CONFIRMED')
+   self.assertEqual(e['date'],'2026-10-28');self.assertTrue(issuer_earnings_announcement(e['headline'],issuer))
+   self.assertEqual((e['fiscalQuarter'],e['fiscalYear']),('Q3',2026))
+  self.assertFalse(issuer_earnings_announcement('Q3 2026 Other Corporation Results',issuer))
+  self.assertFalse(issuer_earnings_announcement('Q3 2026 Production Results',issuer))
+  self.assertIsNone(event_type('Q3 2026 Clinical Trial Results'))
+  self.assertIsNone(event_type('Q3 2026 Production Results'))
+  self.assertFalse(issuer_earnings_announcement('Results',issuer))

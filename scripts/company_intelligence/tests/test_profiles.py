@@ -537,3 +537,24 @@ class ProfileTests(unittest.TestCase):
             self.assertEqual(client.get_bytes.call_count, 1)
             self.assertEqual(s.state('companyProfile:' + CID)['description'], prior['description'])
             s.close()
+
+    def test_exact_evidence_quality_withdrawal_hides_public_description_but_preserves_private_facts(self):
+        from company_intelligence.profile_catalogue import seed, CATALOGUE_SCHEMA
+        source = annual_filing(COMPANY, submissions(), NOW)
+        prior = extract(COMPANY, b'<h2>Item 1. Business</h2><p>We manufacture medical devices for hospitals.</p>', source, NOW)
+        prior['parserVersion'] = 'company-profile-parser-1.0.5'
+        withdrawal = {'companyId': CID, 'parserVersion': 'company-profile-parser-1.0.10', 'checkedAt': NOW,
+                      'sourceContentHashes': [prior['sources'][0]['contentHash']], 'reason': 'NO_EXPLICIT_ISSUER_BUSINESS_DESCRIPTION'}
+        catalogue = {'schema': CATALOGUE_SCHEMA, 'profiles': {}, 'withdrawals': {CID: withdrawal}}
+        with tempfile.TemporaryDirectory() as temp:
+            store = Store(Path(temp) / 'state.sqlite')
+            store.set_state('companyProfile:' + CID, prior); store.set_state('irPending', [CID]); store.set_state('financials:' + CID, {'state': 'AVAILABLE'})
+            seed(store, {CID: COMPANY}, catalogue, NOW)
+            kept = store.state('companyProfile:' + CID)
+            self.assertEqual(kept['description'], prior['description']);self.assertEqual(kept['sources'], prior['sources'])
+            self.assertIsNone(public_profile(kept, CID, NOW));self.assertEqual(store.state('irPending'), [CID])
+            self.assertEqual(store.state('financials:' + CID), {'state': 'AVAILABLE'})
+            for protected in [{**prior, 'lastVerifiedAt': '2026-10-05T12:01:00Z'}, {**prior, 'parserVersion': 'manually-reviewed-1'}, {**prior, 'sources': [{**prior['sources'][0], 'contentHash': 'f'*64}]}, {**prior, 'supersededAnnualFiling': '0000000001-26-000002'}]:
+                store.set_state('companyProfile:' + CID, protected);seed(store, {CID: COMPANY}, catalogue, NOW)
+                self.assertEqual(store.state('companyProfile:' + CID), protected)
+            store.close()

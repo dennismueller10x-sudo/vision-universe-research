@@ -8,7 +8,7 @@ from .model import canonical_url, clean, stable_id, timestamp, within_domain
 
 MONTHS = {m.lower(): n for n, m in enumerate(['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], 1)}
 DATE = re.compile(r'\b(' + '|'.join(MONTHS) + r')\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(20\d{2})\b', re.I)
-EARNINGS = re.compile(r'earnings|(?:quarter|quarterly|fiscal|financial|full.year).{0,30}results', re.I)
+EARNINGS = re.compile(r'earnings|(?:quarter|quarterly|fiscal|financial|full.year).{0,30}results|\bQ[1-4]\b(?:\s+(?:FY\s*(?:20)?\d{2}|20\d{2}))?\s+results\b', re.I)
 ANNOUNCEMENT = re.compile(r'\b(will|scheduled|schedule|to (?:report|announce|release|host|present|participate)|sets|date for)\b', re.I)
 TIME = re.compile(r'\b(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)\s*(ET|EST|EDT|PT|PST|PDT|UTC|GMT|Eastern(?: Daylight| Standard)? Time|Pacific(?: Daylight| Standard)? Time)\b', re.I)
 
