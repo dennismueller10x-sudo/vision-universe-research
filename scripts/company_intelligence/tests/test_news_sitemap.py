@@ -55,6 +55,17 @@ class ManagementMaterialsTests(unittest.TestCase):
   links=[{'url':root+'agreement.pdf','text':'2026 Representations and Warranties'},{'url':root+'2026-deck.pdf','text':'2026 Investor Presentation'}]
   self.assertEqual([d['url'] for d in page_documents(company(),links,root,NOW)],[root+'2026-deck.pdf'])
 
+ def test_event_detail_product_link_cannot_hide_the_actual_presentation(self):
+  from company_intelligence.materials import discover_links
+  page='https://apple.com/investors/earnings'
+  class HTTP:
+   def get(self,*a,**kw):
+    return {'body':b'<a href="/agreement.pdf">Representations and Warranties</a><a href="/slides.pdf">Earnings Slides</a>','finalUrl':page}
+  result=discover_links({'sourceUrl':page,'eventType':'EARNINGS_CALL'},
+                        {'verified':True,'allowedSites':['https://apple.com/']},HTTP())
+  self.assertEqual(result['presentationUrl'],'https://apple.com/slides.pdf')
+  self.assertEqual(result['materialEvidence'][0]['url'],'https://apple.com/slides.pdf')
+
  def test_in_page_buttons_do_not_create_presentation_or_webcast_evidence(self):
   from company_intelligence.feeds import parse_links
   from company_intelligence.materials import discover_links

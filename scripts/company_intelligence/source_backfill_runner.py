@@ -44,6 +44,12 @@ def drive(root, state, run_id, lane='materials', month=None, batches=10,
             prior = store.state(key, {})
             if prior and prior.get('month') != month:
                 raise ValueError('SOURCE_BACKFILL_RUN_MONTH_CHANGED')
+            # Restarting the same completed low-gain run must not keep issuing
+            # one extra batch on every invocation. A new review uses a new ID;
+            # transport and source cooldowns remain eligible for normal resume.
+            if lane == 'publisher' and prior.get('stopReason') == 'NEGLIGIBLE_INCREMENTAL_ISSUER_COVERAGE':
+                print(json.dumps(prior, sort_keys=True), flush=True)
+                return prior.get('lastBatch')
             before_news = {row[0] for row in store.db.execute('SELECT DISTINCT company FROM items')}
         finally:
             store.close()

@@ -11,6 +11,23 @@ from company_intelligence.store import Store
 
 
 class SourceBackfillRunnerTests(unittest.TestCase):
+    def test_restored_low_gain_terminal_run_does_not_spend_another_batch(self):
+        with tempfile.TemporaryDirectory() as tmp, contextlib.redirect_stdout(io.StringIO()):
+            state = Path(tmp) / 'state'; store = Store(state / 'state.sqlite')
+            key = 'sourceBackfillRunner:finished:publisher'
+            report = {'requests': 7, 'checkpointCurrentRun': True}
+            accounting = {'month': '2026-09', 'stopReason': 'NEGLIGIBLE_INCREMENTAL_ISSUER_COVERAGE',
+                          'requests': 21, 'completedBatches': 3, 'lastBatch': report}
+            store.set_state(key, accounting); store.close()
+            from company_intelligence.checkpoint import pack
+            pack(state, Path(tmp) / 'done.tar.gz')
+            fresh = Path(tmp) / 'restored'; restore(Path(tmp) / 'done.tar.gz', fresh)
+            calls = []
+            self.assertEqual(drive(tmp, fresh, 'finished', lane='publisher', month='2026-09',
+                                   execute=self.execute([], calls)), report)
+            self.assertEqual(calls, [])
+            store = Store(fresh / 'state.sqlite'); self.assertEqual(store.state(key), accounting); store.close()
+
     def execute(self, reports, calls):
         pending = iter(reports)
         def run(command, **kwargs):
