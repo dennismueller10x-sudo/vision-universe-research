@@ -42,7 +42,7 @@ jobs:
           grep -q 'vu-navigation' "$page"
           grep -q 'site-navigation.css' "$page"
           grep -q 'keine individuelle Anlage-, Steuer- oder Rechtsberatung' vorsorge/app.js
-          for e in vorsorge-math series-codec etf-taxonomy etf-analytics etf-master etf-provider xray funding monitor; do grep -q "engines/$e.js" "$page" || { echo "$e fehlt"; exit 1; }; done
+          for e in vorsorge-math series-codec etf-taxonomy etf-analytics etf-master etf-provider etf-fundamentals etf-holdings etf-changes xray funding monitor; do grep -q "engines/$e.js" "$page" || { echo "$e fehlt"; exit 1; }; done
       - name: Qualitaets- und Regressions-Gates der Vorsorge-Daten
         run: node scripts/vorsorge/assert-vorsorge-data.mjs
       - name: Foerderregeln - Pruefsumme und Primaerquellen

@@ -323,20 +323,23 @@
    * ETF-DNA: sieben Achsen 0..100. Achsen ohne Datengrundlage bleiben null
    * ("Noch nicht verfuegbar") - keine Schaetzung.
    */
-  function dna(entry, metrics) {
-    metrics = metrics || {};
+  function dna(entry, metrics, extra) {
+    metrics = metrics || {}; extra = extra || {};
     var vol = metrics.volatility, mdd = metrics.maxDrawdown, mom = metrics.momentum12m, histYears = metrics.historyYears;
     function clamp(x) { return Math.max(0, Math.min(100, Math.round(x))); }
     var regionalBreadth = null;
     if (entry.region) regionalBreadth = { GLOBAL: 95, INTERNATIONAL: 70, DEVELOPED_EX_US: 70, EMERGING_MARKETS: 60, EUROPE: 50, USA: 40 }[entry.region] || 15;
     return {
-      diversification: { value: null, status: "HOLDINGS_PENDING", label: "Diversifikation" },
-      concentration: { value: null, status: "HOLDINGS_PENDING", label: "Konzentration" },
+      diversification: Number.isFinite(extra.effectiveNumber) ? { value: clamp(Math.log10(Math.max(1, extra.effectiveNumber)) / Math.log10(300) * 100), status: "CALCULATED", label: "Diversifikation", raw: extra.effectiveNumber, basis: "Effektive Anzahl Positionen (Holdings)" }
+        : { value: null, status: "HOLDINGS_PENDING", label: "Diversifikation" },
+      concentration: Number.isFinite(extra.top10) ? { value: clamp(100 - extra.top10 * 100), status: "CALCULATED", label: "Geringe Konzentration", raw: extra.top10, basis: "100 − Anteil der zehn größten Positionen" }
+        : { value: null, status: "HOLDINGS_PENDING", label: "Konzentration" },
       momentum: mom === null || mom === undefined ? { value: null, status: "INSUFFICIENT_HISTORY", label: "Momentum" }
         : { value: clamp(50 + mom * 125), status: "CALCULATED", label: "Momentum", raw: mom },
       volatility: vol === null || vol === undefined ? { value: null, status: "INSUFFICIENT_HISTORY", label: "Ruhe (niedrige Schwankung)" }
         : { value: clamp(100 - vol * 200), status: "CALCULATED", label: "Ruhe (niedrige Schwankung)", raw: vol },
-      cost: { value: null, status: "TER_SOURCE_PENDING", label: "Kosten" },
+      cost: Number.isFinite(extra.cost) ? { value: clamp(100 - extra.cost * 10000 / 1.2), status: "CALCULATED", label: "Kosten (niedrig = hoch bewertet)", raw: extra.cost, basis: "Kostenquote laut Prospekt (SEC)" }
+        : { value: null, status: "TER_SOURCE_PENDING", label: "Kosten" },
       stability: mdd === null || mdd === undefined || !histYears || histYears < 3 ? { value: null, status: "INSUFFICIENT_HISTORY", label: "Historische Stabilität" }
         : { value: clamp(100 + mdd * 150), status: "CALCULATED", label: "Historische Stabilität", raw: mdd },
       regionalBreadth: regionalBreadth === null ? { value: null, status: "REGION_UNKNOWN", label: "Regionale Breite" }

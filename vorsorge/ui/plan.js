@@ -43,6 +43,7 @@
       var q = input.value.trim();
       if (!q) { box.innerHTML = ""; return; }
       var items = [];
+      if (/^[A-Za-z]{2}[A-Za-z0-9]{9}\d$/.test(q)) items.push('<li><a href="#/europa/' + esc(q.toUpperCase()) + '"><span>ISIN ' + esc(q.toUpperCase()) + ' im EU-Register öffnen</span><span class="vs-sub">Europa →</span></a></li>');
       ROUTE_HINTS.forEach(function (h) { if (h[0].test(q)) items.push('<li><a href="' + h[1] + '"><span>' + esc(h[2]) + '</span><span class="vs-sub">Öffnen →</span></a></li>'); });
       V.Master.search(master.etfs.filter(function (e) { return e.layer !== "REVIEW"; }), q, 6).forEach(function (e) {
         items.push('<li><a href="' + VS.etfHref(e) + '"><span><b>' + esc(e.symbol) + '</b> · ' + esc(e.name) + '</span><span class="vs-sub">' + esc(e.category) + '</span></a></li>');
@@ -113,13 +114,23 @@
         core.map(function (e) { return '<div class="vs-row"><span><a href="' + VS.etfHref(e) + '"><b style="color:var(--ink)">' + esc(e.symbol) + '</b></a> ' + esc(e.category) + '</span><span class="num ' + F.cls(e.m && e.m.p["1Y"]) + '">1J ' + F.spct(e.m && e.m.p["1Y"]) + '</span></div>'; }).join("") +
         '<div class="vs-tabs"><a class="vs-pill small primary" href="#/etfs">Alle ETFs</a><a class="vs-pill small" href="#/watchlist">Watchlist (' + VS.state.watchlist.length + ')</a></div>';
     }).catch(function () { root.querySelector("#vs-home-world").innerHTML = VS.pending("ETF-Verzeichnis nicht erreichbar", "Die ETF-Daten konnten nicht geladen werden. Planer und Rechner funktionieren weiter."); });
-    VS.getJSON("/vorsorge/data/changes.json").then(function (c) {
+    Promise.all([VS.getJSON("/vorsorge/data/changes.json").catch(function () { return { events: [] }; }), VS.getJSON("/vorsorge/data/holdings/index.json").catch(function () { return null; }), VS.master().catch(function () { return null; })]).then(function (res) {
+      var c = res[0], hi = res[1], m = res[2];
       var plan = VS.state.snapshot ? V.Monitor.diffPlan(VS.state.snapshot, V.Monitor.snapshotPlan(p, VS.state.portfolio)) : [];
-      var ev = plan.map(function (x) { return x.text; }).concat(c.events.slice(0, 4).map(function (x) { return x.text; }));
-      root.querySelector("#vs-home-changes").innerHTML = '<span class="vs-num-badge">3</span><p class="vs-label">Was hat sich verändert?</p>' +
-        (ev.length ? ev.slice(0, 5).map(function (t) { return '<div class="vs-row"><span style="color:var(--ink)">' + esc(t) + '</span></div>'; }).join("")
-          : '<p class="vs-sub" style="margin-top:8px">Seit dem letzten Datenstand (' + F.date(c.asOf) + ') keine Änderungen im ETF-Verzeichnis.</p>') +
-        '<a class="vs-pill small" style="margin-top:10px" href="#/monitor">Zum Monitor</a>';
+      var mine = {}; VS.state.watchlist.concat(VS.state.portfolio.map(function (x) { return x.symbol; })).forEach(function (s) { var e = m && m.find(s); if (e) mine[e.symbol] = e; });
+      var mineList = Object.keys(mine).map(function (k) { return mine[k]; });
+      var changed = mineList.filter(function (e) { return e.holdingsChanges > 0; });
+      var feed = hi ? hi.feed : [];
+      var feedMine = feed.filter(function (f) { return mine[f.symbol]; });
+      var lines = plan.map(function (x) { return esc(x.text); });
+      if (mineList.length) lines.push(changed.length ? '<b>' + changed.length + ' deiner ' + mineList.length + ' ETFs</b> mit relevanten Bestandsänderungen: ' + changed.slice(0, 4).map(function (e) { return '<a href="' + VS.etfHref(e) + '?tab=aenderungen">' + esc(e.symbol) + '</a>'; }).join(", ") : "Keine relevanten Bestandsänderungen bei deinen " + mineList.length + " ETFs.");
+      (feedMine.length ? feedMine : feed).slice(0, mineList.length ? 2 : 3).forEach(function (f) { lines.push('<a href="#/etf/' + encodeURIComponent(f.symbol) + '?tab=aenderungen"><b>' + esc(f.symbol) + '</b></a> ' + esc(f.text)); });
+      c.events.slice(0, 2).forEach(function (x) { lines.push(esc(x.text)); });
+      root.querySelector("#vs-home-changes").innerHTML = '<span class="vs-num-badge">3</span><p class="vs-label">Was hat sich in deiner ETF-Welt geändert?</p>' +
+        (lines.length ? lines.slice(0, 6).map(function (t) { return '<div class="vs-row"><span style="color:var(--ink)">' + t + '</span></div>'; }).join("")
+          : '<p class="vs-sub" style="margin-top:8px">Keine Änderungen seit dem letzten Datenstand.</p>') +
+        '<p class="vs-fine" style="margin-top:6px">Bestände: SEC N-PORT, Stand ' + (hi ? esc(hi.quarters.join(", ")) : "–") + ' · Kurse: Tiingo ' + F.date(c.asOf) + '</p>' +
+        '<a class="vs-pill small" style="margin-top:10px" href="#/watchlist">Watchlist</a> <a class="vs-pill small" style="margin-top:10px" href="#/monitor">Monitor</a>';
     }).catch(function () { root.querySelector("#vs-home-changes").innerHTML = VS.pending("Änderungen nicht verfügbar", "Die Änderungsliste konnte nicht geladen werden."); });
   };
 
@@ -213,13 +224,15 @@
   }
 
   /* ============================================================== KOSTEN */
-  VS.views.kosten = function () {
+  VS.views.kosten = function (r) {
     var pl = VS.state.plan;
+    // Kostenquote aus ETF-Detail oder Portfolio uebernehmen (?ter=0.07 in Prozent) - nur laufende Produktkosten.
+    var terQ = r && r.query && r.query.ter && isFinite(Number(r.query.ter)) ? Number(r.query.ter) : null;
     var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Kostenanalyse</p><h1>Was kosten mich Gebühren wirklich?</h1><p class="vs-lead">Ein Prozentpunkt klingt nach wenig. Über Jahrzehnte frisst er durch den Zinseszins einen großen Teil des Vermögens.</p></section>' +
       '<section class="vs-section"><div class="vs-grid side"><form class="vs-card app" id="vs-fee-form"><p class="vs-label">Annahmen</p><div class="vs-form" style="margin-top:12px">' +
       VS.field("start", "Startkapital", pl.start, { min: 0, unit: "€" }) + VS.field("monthly", "Sparrate", pl.monthly, { min: 0, unit: "€ / Monat" }) +
       VS.field("years", "Laufzeit", Math.max(1, pl.targetAge - pl.age), { min: 1, max: 70, unit: "Jahre" }) + VS.field("ret", "Rendite vor Kosten", (pl.returns.basis * 100).toFixed(1), { step: 0.5, unit: "% p.a." }) +
-      VS.field("ca", "Kosten A", "0.20", { step: 0.05, min: 0, unit: "% p.a. (z. B. ETF)" }) + VS.field("cb", "Kosten B", "1.50", { step: 0.05, min: 0, unit: "% p.a. (z. B. aktiver Fonds, Versicherung)" }) +
+      VS.field("ca", terQ !== null ? "Kosten A (übernommen)" : "Kosten A", terQ !== null ? terQ.toFixed(2) : "0.20", { step: 0.01, min: 0, unit: terQ !== null ? "% p.a. laufende Produktkosten (Prospekt)" : "% p.a. (z. B. ETF)" }) + VS.field("cb", "Kosten B", "1.50", { step: 0.05, min: 0, unit: "% p.a. (z. B. aktiver Fonds, Versicherung)" }) +
       '</div></form><div id="vs-fee-out"></div></div></section>');
     var form = root.querySelector("#vs-fee-form"), sent = false;
     function draw() {
@@ -263,6 +276,7 @@
       }).join("") + '</div><p class="vs-fine" style="margin-top:8px">Veränderung der Zielerreichung im Basisszenario. Modellrechnung, keine Empfehlung.</p></div></div></section>' +
       '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card" id="vs-mon-plan"><p class="vs-label">Was hat sich bei dir verändert?</p><div class="vs-loading">…</div></div>' +
       '<div class="vs-card" id="vs-mon-portfolio"><p class="vs-label">Portfolio · Risiko & Allokation</p><div class="vs-loading">…</div></div></div></section>' +
+      '<section class="vs-section"><div class="vs-card" id="vs-mon-holdings"><p class="vs-label">Bestandsänderungen deiner ETFs</p><div class="vs-loading">…</div></div></section>' +
       '<section class="vs-section"><div class="vs-card" id="vs-mon-changes"><p class="vs-label">Daten & Produkte – was hat sich verändert?</p><div class="vs-loading">…</div></div></section>');
     function evRow(e) { return '<div class="vs-row"><span style="color:var(--ink)">' + esc(e.text) + '</span><span class="vs-badge">' + esc(LBL[e.category] || e.category) + '</span></div>'; }
     VS.snapshotContext().then(function (ctx) {
@@ -273,9 +287,21 @@
     VS.getJSON("/vorsorge/data/changes.json").then(function (c) {
       root.querySelector("#vs-mon-changes").innerHTML = '<p class="vs-label">Daten & Produkte – was hat sich verändert? · Stand ' + F.date(c.asOf) + '</p><div style="margin-top:8px">' +
         (c.events.length ? c.events.slice(0, 25).map(evRow).join("") : '<p class="vs-sub">Keine Änderungen gegenüber dem vorherigen Datenstand.</p>') +
-        '</div><h3 style="margin-top:16px">Noch nicht überwacht</h3><div style="margin-top:6px">' + c.unmonitored.map(function (u) { return '<div class="vs-row"><span>' + esc(u.label) + '</span><span class="vs-fine" style="text-align:right">' + esc(u.reason) + '</span></div>'; }).join("") +
+        '</div><h3 style="margin-top:16px">Noch nicht überwacht</h3><div style="margin-top:6px">' + (V.Monitor.UNMONITORED || c.unmonitored).map(function (u) { return '<div class="vs-row"><span>' + esc(u.label) + '</span><span class="vs-fine" style="text-align:right">' + esc(u.reason) + '</span></div>'; }).join("") +
         '<div class="vs-row"><span>Regulatorische Änderung</span><span class="vs-fine" style="text-align:right">Nur über neue Versionen der Förderregeln mit Quelle.</span></div></div>';
     }).catch(function () { root.querySelector("#vs-mon-changes").innerHTML = VS.pending("Änderungen nicht verfügbar", "Die Änderungsliste konnte nicht geladen werden."); });
+    Promise.all([VS.master(), VS.getJSON("/vorsorge/data/holdings/index.json").catch(function () { return null; })]).then(function (res) {
+      var m = res[0], hi = res[1], seen = {}, mine = [];
+      VS.state.watchlist.concat(VS.state.portfolio.map(function (x) { return x.symbol; })).forEach(function (s) { var e = m.find(s); if (e && !seen[e.symbol]) { seen[e.symbol] = 1; mine.push(e); } });
+      var feed = hi ? hi.feed : [];
+      var head = '<p class="vs-label">Bestandsänderungen deiner ETFs' + (hi ? ' · Quartale ' + esc(hi.quarters.join(", ")) : "") + '</p><div style="margin-top:8px">';
+      var body = mine.length ? mine.map(function (e) {
+        var st = e.holdingsAsOf ? (e.holdingsChanges > 0 ? e.holdingsChanges + " relevante Änderung" + (e.holdingsChanges === 1 ? "" : "en") : "keine relevante Änderung") : "keine Bestandsdaten (nicht in SEC N-PORT)";
+        return '<div class="vs-row"><span><a href="' + VS.etfHref(e) + (e.holdingsAsOf ? "?tab=aenderungen" : "") + '"><b style="color:var(--ink)">' + esc(e.symbol) + '</b></a> ' + esc(e.name || "") + '</span><span class="vs-fine" style="text-align:right">' + esc(st) + (e.holdingsAsOf ? " · Stand " + F.date(e.holdingsAsOf) : "") + '</span></div>';
+      }).join("") : '<p class="vs-sub">Noch keine ETFs in Watchlist oder Portfolio. Auffällige Änderungen im gesamten Bestand:</p>' +
+        feed.slice(0, 6).map(function (f) { return '<div class="vs-row"><span><a href="#/etf/' + encodeURIComponent(f.symbol) + '?tab=aenderungen"><b>' + esc(f.symbol) + '</b></a> ' + esc(f.text) + '</span></div>'; }).join("");
+      root.querySelector("#vs-mon-holdings").innerHTML = head + body + '</div><p class="vs-fine" style="margin-top:8px">Quelle: SEC N-PORT (Quartalsberichte US-registrierter Fonds). Änderungen unter 0,25 Prozentpunkten zählen als Rauschen. Europäische ETFs: Bestände noch nicht angebunden.</p>';
+    }).catch(function () { root.querySelector("#vs-mon-holdings").innerHTML = VS.pending("Bestandsänderungen nicht verfügbar", "Die Holdings-Übersicht konnte nicht geladen werden."); });
     Promise.all([VS.master(), VS.seriesFor(VS.state.portfolio.map(function (x) { return x.symbol; }))]).then(function (res) {
       var m = res[0], x = V.XRay.portfolioXRay(VS.state.portfolio, m._bySymbol, res[1].series, { regionLabels: VS.REGION });
       root.querySelector("#vs-mon-portfolio").innerHTML = '<p class="vs-label">Portfolio · Risiko & Allokation</p>' +

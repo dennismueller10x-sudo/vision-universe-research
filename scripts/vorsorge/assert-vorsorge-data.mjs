@@ -48,10 +48,52 @@ for (const f of existsSync(join(D, "etf")) ? readdirSync(join(D, "etf")) : []) {
   if (d && (d.ter !== null || d.isin !== null)) errors.push("UNSOURCED_TER_OR_ISIN " + f);
 }
 // Kein Schluessel-Muster (Tiingo-Token sind 40 Hex-Zeichen) in Berichten
-for (const f of ["ingest/ingest-report.json", "ingest/failed-etf-ingest.json", "ingest/catalog-stats.json", "quality.json"]) {
+for (const f of ["ingest/ingest-report.json", "ingest/failed-etf-ingest.json", "ingest/catalog-stats.json", "quality.json", "sources/etf-source-probe.json", "sources/nport-manifest.json", "sources/sec-rr-costs.json"]) {
   const p = join(D, f);
   if (existsSync(p) && /token\s+[0-9a-f]{40}|[?&]token=[0-9a-f]{40}/i.test(readFileSync(p, "utf8"))) errors.push("SECRET_PATTERN " + f);
 }
+
+// ------------------------------------------- ETF Intelligence (Holdings, EU, Quellen)
+const hDir = join(D, "holdings");
+if (existsSync(join(hDir, "index.json"))) {
+  const hi = read(join(hDir, "index.json"));
+  if (hi) {
+    const series = new Set(Object.values(hi.bySymbol).map((r) => r[0]));
+    for (const sid of series) {
+      const p = join(hDir, sid + ".json");
+      if (!existsSync(p)) { errors.push("MISSING_HOLDINGS_FILE " + sid); continue; }
+      const f = read(p); if (!f) continue;
+      if (f.seriesName === "Test Series" || /TEST TRUST/.test(f.registrant || "")) errors.push("FIXTURE_DATA_PUBLISHED " + sid);
+      if (!f.asOf || f.asOf > today) errors.push("HOLDINGS_BAD_AS_OF " + sid);
+      if (f.source !== "SEC_NPORT" || f.sourceType !== "REGULATORY") errors.push("HOLDINGS_UNKNOWN_SOURCE " + sid);
+      const wi = f.rowFields.indexOf("weight"), ti = f.rowFields.indexOf("assetType");
+      // Hebel-/Derivatefonds melden Gewichte in % des Nettovermoegens auch ueber 100 % (Sicherheiten, Swaps): nur dort zulaessig.
+      // Gegenlaeufige Optionsbeine (z. B. FLEX-Optionen mit Floor) werden mit Nominalwert gemeldet und koennen dort
+      // einzeln weit ueber 1000 % liegen; fuer Derivate in Derivatefonds gilt daher nur: endlicher Wert.
+      const DERIV = new Set(["FUTURE", "OPTION", "SWAP", "FORWARD", "DERIVATIVE"]);
+      const lim = f.derivativeHeavy ? 10 : 1;
+      for (const r of f.holdings) {
+        const w = r[wi]; if (w === null) continue;
+        if (!Number.isFinite(w)) { errors.push("HOLDINGS_WEIGHT_NOT_FINITE " + sid); break; }
+        if (f.derivativeHeavy && DERIV.has(r[ti])) continue;
+        if (w > lim || w < -lim) { errors.push("HOLDINGS_WEIGHT_OUT_OF_RANGE " + sid); break; }
+      }
+      if (!f.derivativeHeavy && f.concentration && f.concentration.top10 !== null && (f.concentration.top10 < 0 || f.concentration.top10 > 1.5)) errors.push("HOLDINGS_TOP10_IMPLAUSIBLE " + sid);
+    }
+  }
+}
+const euP = join(D, "eu/etf-eu-index.json");
+if (existsSync(euP)) {
+  const eu = read(euP);
+  if (eu) {
+    const ii = eu.fields.indexOf("isin"); let bad = 0; const seen = new Set();
+    for (const r of eu.rows) { if (!/^[A-Z]{2}[A-Z0-9]{9}\d$/.test(r[ii])) bad++; if (seen.has(r[ii])) errors.push("EU_DUPLICATE_ISIN " + r[ii]); seen.add(r[ii]); }
+    if (bad) errors.push("EU_INVALID_ISIN " + bad);
+    if (!/ESMA/.test(eu.attribution || "")) errors.push("EU_MISSING_ATTRIBUTION");
+  }
+}
+const rrP = join(D, "sources/sec-rr-costs.json");
+if (existsSync(rrP)) { const rr = read(rrP); if (rr) for (const [sym, v] of Object.entries(rr.bySymbol)) for (const k of ["expenseRatio", "netExpenseRatio", "managementFee"]) if (v[k] && !(v[k].value >= 0 && v[k].value < 0.1)) errors.push("COST_OUT_OF_RANGE " + sym + "." + k); }
 
 const q = read(join(D, "quality.json"));
 let prev = null;

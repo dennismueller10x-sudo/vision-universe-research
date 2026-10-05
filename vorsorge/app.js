@@ -105,7 +105,9 @@
       strategy: o.strategy, retirementClass: o.retirementClass, layer: o.layer, leverage: o.leverage || 1, inverse: !!o.inverse,
       status: o.status, singleStockUnderlying: o.single, from: o.from, coverage: o.coverage, distributionPolicy: o.dist, ucits: o.ucits,
       complex: o.retirementClass !== "STANDARD", consumerVisible: o.layer === "PUBLIC_ANALYSIS" || o.layer === "COMPLEX",
-      priceHistoryAvailable: o.hy !== null && o.hy !== undefined };
+      priceHistoryAvailable: o.hy !== null && o.hy !== undefined,
+      cost: o.ter === undefined ? null : o.ter, aum: o.aum === undefined ? null : o.aum, positions: o.hp === undefined ? null : o.hp, top10: o.t10 === undefined ? null : o.t10,
+      holdingsAsOf: o.hAsOf || null, holdingsChanges: o.hch === undefined ? null : o.hch, usShare: o.us === undefined ? null : o.us, series: o.hs || null, domicile: o.dom || null };
     e.m = e.priceHistoryAvailable ? { price: o.price, priceDate: o.priceDate, d1: o.d1, hy: o.hy, vol: o.vol, mdd: o.mdd, trend: o.trend, rs: o.rs,
       t1Y: o.t1Y, t5Y: o.t5Y, p: { "1W": o.p1W, "1M": o.p1M, "3M": o.p3M, "6M": o.p6M, "YTD": o.pYTD, "1Y": o.p1Y, "3Y": o.p3Y, "5Y": o.p5Y, "10Y": o.p10Y, "MAX": o.pMAX } } : null;
     return e;
@@ -308,7 +310,7 @@
     catch (e) { VS.render('<section class="vs-section"><h2>Diese Ansicht konnte nicht geladen werden.</h2><p class="vs-sub">' + VS.esc(e.message) + '</p></section>'); if (global.console) console.error(e); }
     if (!r.query.keepScroll) global.scrollTo(0, 0);
     var t = { home: "Vorsorge", plan: "Vorsorgeplaner", etfs: "ETF Intelligence", etf: (r.args[0] || "") + " · ETF", portfolio: "Vorsorge-Portfolio",
-      vergleichen: "Vergleichen", foerderung: "Förderung", monitor: "Vorsorge-Monitor", wissen: "Wissen" }[r.name] || "Vorsorge";
+      vergleichen: "Vergleichen", foerderung: "Förderung", monitor: "Vorsorge-Monitor", wissen: "Wissen", europa: "Europäische ETFs" }[r.name] || "Vorsorge";
     document.title = t + " — Vision Universe®";
   }
   VS.go = function (hash) { if (location.hash === hash) route(); else location.hash = hash; };

@@ -2736,5 +2736,309 @@
   "REVIEW": 227,
   "INACTIVE": 8
  },
- "unknownClassification": 833
+ "unknownClassification": 833,
+ "intelligence": {
+  "publicUniverse": 6072,
+  "coverage": {
+   "costs": {
+    "count": 3994,
+    "ratio": 0.6578
+   },
+   "aum": {
+    "count": 3830,
+    "ratio": 0.6308
+   },
+   "holdings": {
+    "count": 3830,
+    "ratio": 0.6308
+   },
+   "domicile": {
+    "count": 3830,
+    "ratio": 0.6308
+   },
+   "ucitsStatus": {
+    "count": 3830,
+    "ratio": 0.6308
+   },
+   "isin": {
+    "count": 0,
+    "ratio": 0
+   },
+   "wkn": {
+    "count": 0,
+    "ratio": 0
+   },
+   "replication": {
+    "count": 0,
+    "ratio": 0
+   },
+   "nav": {
+    "count": 0,
+    "ratio": 0
+   }
+  },
+  "holdings": {
+   "series": 4167,
+   "symbols": 4167,
+   "snapshots": 15505,
+   "currentHoldingRows": 1299805,
+   "events": 544983,
+   "eventsByType": {
+    "HOLDING_REMOVED": 120278,
+    "WEIGHT_INCREASED": 53630,
+    "HOLDING_ADDED": 155751,
+    "ENTERED_TOP_10": 26898,
+    "LEFT_TOP_10": 27076,
+    "LEFT_TOP_20": 28642,
+    "WEIGHT_DECREASED": 59600,
+    "ENTERED_TOP_20": 27862,
+    "HOLDINGS_COUNT_CHANGED": 2441,
+    "SECTOR_WEIGHT_CHANGED": 18613,
+    "COUNTRY_WEIGHT_CHANGED": 23601,
+    "CASH_CHANGED": 591
+   },
+   "medianMappedShareOfEquity": 0.737492,
+   "qualityErrors": 345,
+   "qualityWarnings": 5526
+  },
+  "holdingsQuarters": [
+   "2026q2",
+   "2026q1",
+   "2025q4",
+   "2025q3"
+  ],
+  "europe": {
+   "asOf": "2026-10-03",
+   "shareClasses": 8084,
+   "ucitsInName": 4378,
+   "listedInGermany": 4701,
+   "venues": 113137,
+   "domicile": {
+    "AU": 9,
+    "NL": 152,
+    "BG": 15,
+    "CA": 83,
+    "CH": 87,
+    "CZ": 1,
+    "DE": 139,
+    "LU": 1266,
+    "DK": 458,
+    "FI": 2,
+    "EE": 1,
+    "ES": 2,
+    "FR": 135,
+    "GG": 1,
+    "GR": 1,
+    "HK": 26,
+    "HR": 12,
+    "HU": 2,
+    "IE": 3270,
+    "GB": 7,
+    "US": 2336,
+    "IL": 3,
+    "IS": 1,
+    "JP": 12,
+    "KR": 1,
+    "MT": 1,
+    "NO": 12,
+    "AT": 1,
+    "PL": 20,
+    "RO": 6,
+    "SE": 11,
+    "SG": 7,
+    "SI": 2,
+    "ZA": 2
+   },
+   "distribution": {
+    "UNKNOWN": 173,
+    "DISTRIBUTING": 2289,
+    "MIXED": 2231,
+    "ACCUMULATING": 3391
+   },
+   "withPriceFeed": 0,
+   "isin": 8084,
+   "wkn": 0,
+   "ter": 0,
+   "holdings": 0
+  },
+  "providers": [
+   {
+    "id": "TIINGO",
+    "type": "MARKET_DATA_PROVIDER",
+    "status": "HEALTHY",
+    "lastSuccessfulFetch": "2026-10-02",
+    "items": 7405,
+    "fields": "Kurse, Ausschüttungen, Splits, Namen"
+   },
+   {
+    "id": "SEC_NPORT",
+    "type": "REGULATORY",
+    "status": "HEALTHY",
+    "lastSuccessfulFetch": "2026-04-30",
+    "items": 15508,
+    "fields": "Holdings, Fondsvermögen, Historie (quartalsweise)"
+   },
+   {
+    "id": "SEC_RR",
+    "type": "REGULATORY",
+    "status": "HEALTHY",
+    "lastSuccessfulFetch": "2026-06-30",
+    "items": 4363,
+    "fields": "Kostenquote, Verwaltungsgebühr (Prospekt)"
+   },
+   {
+    "id": "SEC_SIC",
+    "type": "REGULATORY",
+    "status": "HEALTHY",
+    "lastSuccessfulFetch": null,
+    "items": 9075,
+    "fields": "Wirtschaftszweig der Emittenten"
+   },
+   {
+    "id": "ESMA_FIRDS",
+    "type": "REGULATORY",
+    "status": "HEALTHY",
+    "lastSuccessfulFetch": "2026-10-03",
+    "items": 8084,
+    "fields": "ISIN, Handelsplätze, Währung, CFI"
+   },
+   {
+    "id": "GLEIF",
+    "type": "REGULATORY",
+    "status": "HEALTHY",
+    "lastSuccessfulFetch": "2026-10-03",
+    "items": 8084,
+    "fields": "Rechtlicher Emittent, Domizil"
+   },
+   {
+    "id": "BLACKROCK",
+    "type": "PRIMARY_ISSUER",
+    "status": "NOT_PERMITTED",
+    "lastSuccessfulFetch": null,
+    "items": 0,
+    "fields": "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit"
+   },
+   {
+    "id": "VANGUARD",
+    "type": "PRIMARY_ISSUER",
+    "status": "NOT_PERMITTED",
+    "lastSuccessfulFetch": null,
+    "items": 0,
+    "fields": "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit"
+   },
+   {
+    "id": "AMUNDI",
+    "type": "PRIMARY_ISSUER",
+    "status": "NOT_PERMITTED",
+    "lastSuccessfulFetch": null,
+    "items": 0,
+    "fields": "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit"
+   },
+   {
+    "id": "DWS",
+    "type": "PRIMARY_ISSUER",
+    "status": "NOT_PERMITTED",
+    "lastSuccessfulFetch": null,
+    "items": 0,
+    "fields": "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit"
+   },
+   {
+    "id": "STATE_STREET",
+    "type": "PRIMARY_ISSUER",
+    "status": "NOT_PERMITTED",
+    "lastSuccessfulFetch": null,
+    "items": 0,
+    "fields": "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit"
+   },
+   {
+    "id": "INVESCO",
+    "type": "PRIMARY_ISSUER",
+    "status": "NOT_PERMITTED",
+    "lastSuccessfulFetch": null,
+    "items": 0,
+    "fields": "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit"
+   },
+   {
+    "id": "WISDOMTREE",
+    "type": "PRIMARY_ISSUER",
+    "status": "NOT_PERMITTED",
+    "lastSuccessfulFetch": null,
+    "items": 0,
+    "fields": "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit"
+   },
+   {
+    "id": "UBS",
+    "type": "PRIMARY_ISSUER",
+    "status": "NOT_PERMITTED",
+    "lastSuccessfulFetch": null,
+    "items": 0,
+    "fields": "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit"
+   },
+   {
+    "id": "JPMORGAN",
+    "type": "PRIMARY_ISSUER",
+    "status": "NOT_PERMITTED",
+    "lastSuccessfulFetch": null,
+    "items": 0,
+    "fields": "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit"
+   },
+   {
+    "id": "HSBC",
+    "type": "PRIMARY_ISSUER",
+    "status": "NOT_PERMITTED",
+    "lastSuccessfulFetch": null,
+    "items": 0,
+    "fields": "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit"
+   },
+   {
+    "id": "VANECK",
+    "type": "PRIMARY_ISSUER",
+    "status": "NOT_PERMITTED",
+    "lastSuccessfulFetch": null,
+    "items": 0,
+    "fields": "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit"
+   },
+   {
+    "id": "LEGAL_GENERAL",
+    "type": "PRIMARY_ISSUER",
+    "status": "NOT_PERMITTED",
+    "lastSuccessfulFetch": null,
+    "items": 0,
+    "fields": "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit"
+   },
+   {
+    "id": "GLOBAL_X",
+    "type": "PRIMARY_ISSUER",
+    "status": "NOT_PERMITTED",
+    "lastSuccessfulFetch": null,
+    "items": 0,
+    "fields": "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit"
+   },
+   {
+    "id": "FIDELITY",
+    "type": "PRIMARY_ISSUER",
+    "status": "NOT_PERMITTED",
+    "lastSuccessfulFetch": null,
+    "items": 0,
+    "fields": "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit"
+   },
+   {
+    "id": "FRANKLIN_TEMPLETON",
+    "type": "PRIMARY_ISSUER",
+    "status": "NOT_PERMITTED",
+    "lastSuccessfulFetch": null,
+    "items": 0,
+    "fields": "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit"
+   },
+   {
+    "id": "BNP_PARIBAS",
+    "type": "PRIMARY_ISSUER",
+    "status": "NOT_PERMITTED",
+    "lastSuccessfulFetch": null,
+    "items": 0,
+    "fields": "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit"
+   }
+  ],
+  "termsChecked": 21
+ }
 }
