@@ -145,6 +145,8 @@ main.vs-main{padding-bottom:110px;min-height:70vh}
 .vs-table tbody tr:hover{background:var(--panel)}
 .vs-table a{text-decoration:none;font-weight:750}
 .vs-table .t-name{display:block;color:var(--muted);font-size:12px;font-weight:500}
+.vs-table.ranked th:first-child,.vs-table.ranked td:first-child{min-width:0;width:44px;color:var(--muted)}
+.vs-table.ranked th:nth-child(2),.vs-table.ranked td:nth-child(2){text-align:left;white-space:normal;min-width:200px}
 
 /* ---------------------------------------------------------------- Filter */
 .vs-filters{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
