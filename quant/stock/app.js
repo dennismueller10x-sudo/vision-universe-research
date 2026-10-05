@@ -310,15 +310,34 @@
       }));
   }
 
+  /* Die Golden-Preview-Bars sind ROH (OHLC wie gehandelt, splitFactor je
+     Balken). Ungebereinigt zeigten 3J/5J/10J/Max bei NVDA (4:1 2021, 10:1
+     2024) und AAPL (4:1 2020) einen Absturz um bis zu 90 %, den es nie gab
+     (Plattform-Audit 03.10.2026). Dieselbe Bereinigung wie Discover,
+     Supertrader und Technical: return-series.js#splitAdjustedColumn. */
+  function splitBereinigt(bars) {
+    var RS = window.VUReturnSeries;
+    if (!RS || !bars.length) return null;
+    try {
+      var o = RS.splitAdjustedColumn(bars, "open"), h = RS.splitAdjustedColumn(bars, "high"),
+          l = RS.splitAdjustedColumn(bars, "low"), c = RS.splitAdjustedColumn(bars, "close");
+      return bars.map(function (b, i) { return Object.assign({}, b, { open: o[i], high: h[i], low: l[i], close: c[i] }); })
+        .filter(function (b) { return b.close !== null; });
+    } catch (e) { return null; }
+  }
+
   function drawChart(ticker, market, wrap) {
-    var daten = { eod: market.bars || [], intraday: [], adjustmentStatus: market.adjustmentStatus || "RAW" };
+    var bereinigt = splitBereinigt(market.bars || []);
+    var daten = bereinigt
+      ? { eod: bereinigt, intraday: [], adjustmentStatus: "SPLIT_ADJUSTED" }
+      : { eod: market.bars || [], intraday: [], adjustmentStatus: market.adjustmentStatus || "RAW" };
     var res = Ranges.selectRange(chartState[ticker], daten, { gates: {} });
     var chartHost = el("div", { class: "q-chart-wrap" });
     if (res.ok) {
       chartHost.appendChild(Charts.candlestickChart({
         bars: res.bars,
         title: ticker + " — " + res.rangeId,
-        description: "Tagesschluss, " + res.bars.length + " Kurspunkte, " + res.from + " bis " + res.to + ".",
+        description: "Tagesschluss" + (bereinigt ? " (split-bereinigt)" : "") + ", " + res.bars.length + " Kurspunkte, " + res.from + " bis " + res.to + ".",
         yFormat: function (v) { return v.toFixed(2); }
       }));
     } else {

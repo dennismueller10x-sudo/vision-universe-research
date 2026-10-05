@@ -44,6 +44,7 @@ const root = join(here, "..", "..");
 const { resolveProductUniverse } = await import(join(root, "scripts", "market", "universe-source.mjs"));
 
 const Factors = require(join(root, "quant", "engines", "market-factors.js"));
+const PublishedClose = require(join(root, "quant", "engines", "published-close.js"));
 const ReturnSeries = require(join(root, "quant", "engines", "return-series.js"));
 const DisplayPolicy = require(join(root, "quant", "engines", "display-policy.js"));
 const Generator = require(join(root, "quant", "engines", "mock-generator.js"));
@@ -356,7 +357,7 @@ function weeklySparkline(closes, points = 40) {
 const MICRO_DAYS = 270;
 
 function microSeries(dated, source, priceSeriesType) {
-  const valid = (dated || []).filter((b) => isNum(b.close) && b.date);
+  const valid = (dated || []).filter((b) => isNum(b.close) && b.close > 0 && b.date);
   if (valid.length < 10) {
     return withheldSeries("INSUFFICIENT_HISTORY", "Zu wenig Historie für einen Verlauf.");
   }
@@ -364,7 +365,9 @@ function microSeries(dated, source, priceSeriesType) {
   return { status: "CALCULATED", source, priceSeriesType: priceSeriesType || "SPLIT_ADJUSTED",
            dataMode: null, grain: "daily", asOf: fenster[fenster.length - 1].date,
            from: fenster[0].date, to: fenster[fenster.length - 1].date,
-           points: fenster.map((b) => [b.date, round(b.close, 2)]), path: null, message: null };
+           /* Dieselbe Rundung wie die veroeffentlichte Reihe (published-close.js):
+              unter 1 $ kein Verlust auf Cent, nie eine 0. */
+           points: fenster.map((b) => [b.date, PublishedClose.roundClose(b.close)]), path: null, message: null };
 }
 function withheldSeries(status, message) {
   return { status, source: null, priceSeriesType: null, asOf: null, from: null, to: null,

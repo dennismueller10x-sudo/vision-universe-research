@@ -63,8 +63,10 @@ jobs:
 
     steps:
       - name: Bestaetigung pruefen
+        env:
+          IN_BESTAETIGUNG: ${{ inputs.bestaetigung }}
         run: |
-          if [ "${{ inputs.bestaetigung }}" != "VEROEFFENTLICHEN" ]; then
+          if [ "$IN_BESTAETIGUNG" != "VEROEFFENTLICHEN" ]; then
             echo "::error::Dieser Lauf veroeffentlicht einen ECHTEN Beitrag. Er laeuft nur, wenn im Feld exakt VEROEFFENTLICHEN steht."
             exit 1
           fi

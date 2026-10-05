@@ -83,6 +83,12 @@
       el("h1", { class: "qx-h1", text: "Transparenz schafft Vertrauen." }),
       el("p", { class: "q-hero-lead v2-lead qx-lead", text: "Keine Blackbox. Jede Einschätzung hat einen Grund – und jeder Grund führt bis zu den Daten, aus denen er entsteht." })]),
       tabs(null));
+    /* Abgrenzung in drei Saetzen (Produktpositionierung 04.10.2026). */
+    main.append(X.section("Quant, Screener, Discover – was ist was?", null, [el("div", { class: "q-roles" }, [
+      ["Quant", "Beobachtet Zustände und Veränderungen nach festen Regeln und vergleicht sie mit dem, was früher im ganzen Markt geschah. Quant meldet sich – du musst nicht suchen.", X.routes.radar(), "Zum Radar"],
+      ["Quant Screener", "Findet Aktien, die deine Bedingungen heute erfüllen. Du gibst die Bedingung vor; eine Veränderung oder ein historischer Vergleich ist das nicht.", X.routes.screener(), "Zum Screener"],
+      ["Discover", "Entdecken: Themen, Unternehmen und Marktwelten. Keine Regeln, keine Backtests – dafür der Überblick.", "/discover/", "Zu Discover"]
+    ].map(function (r) { return el("div", { class: "q-role" }, [el("h3", { text: r[0] }), el("p", { text: r[1] }), el("p", {}, [X.link(r[3], r[2])])]); }))]));
     main.append(X.section("So arbeitet Quant", null, [el("div", { class: "q-rows v2-world-directory qx-method-grid" }, TOPICS.map(function (t) {
       return el("a", { class: "q-rowlink", href: X.routes.method(t.id) }, [el("span", { class: "q-icon", "aria-hidden": "true" }, [X.icon(TOPIC_ICON[t.id] || "doc")]),
         el("span", {}, [el("strong", { text: t.title }), el("small", { text: t.text })])]);
@@ -203,18 +209,20 @@
       vals.forEach(function (v) { bins[Math.min(19, Math.max(0, Math.floor(v / 5)))]++; });
       var max = Math.max.apply(null, bins) || 1, W = 800, H = 220, bw = W / 20;
       var ns = "http://www.w3.org/2000/svg";
+      /* Farben als CSS-Variablen (--q-band-*, app.css): sie folgen dem
+         Schema Hell/Dunkel ohne Neuzeichnen. */
       function s(tag, a) { var n = document.createElementNS(ns, tag); Object.keys(a).forEach(function (k) { n.setAttribute(k, a[k]); }); return n; }
       var svg = s("svg", { viewBox: "0 0 " + W + " " + (H + 22), role: "img", "aria-label": "Verteilung " + VM.FACTORS[cur].name + ": " + bins.map(function (b, i) { return (i * 5) + "–" + (i * 5 + 4) + ": " + b; }).join(", ") });
       bins.forEach(function (b, i) {
         var h = Math.max(1, b / max * (H - 14));
         var band = VM.band(i * 5 + 2);
-        svg.append(s("rect", { x: i * bw + 2, y: H - h, width: bw - 4, height: h, rx: 3, fill: { VERY_WEAK: "#f09a90", WEAK: "#f5bf87", NEUTRAL: "#eed977", STRONG: "#b9e46a", VERY_STRONG: "#8fd12a" }[band] || "#ccc" }));
+        svg.append(s("rect", { x: i * bw + 2, y: H - h, width: bw - 4, height: h, rx: 3, style: "fill:var(" + ({ VERY_WEAK: "--q-band-1", WEAK: "--q-band-2", NEUTRAL: "--q-band-3", STRONG: "--q-band-4", VERY_STRONG: "--q-band-5" }[band] || "--q-band-none") + ")" }));
         if (i % 2 === 0) { var t = s("text", { x: i * bw, y: H + 16, "text-anchor": i ? "middle" : "start", class: "q-hist-axis" }); t.textContent = String(i * 5); svg.append(t); }
       });
       var mark = exScore[cur];
       if (typeof mark === "number") {
         var x = mark / 100 * W;
-        svg.append(s("line", { x1: x, x2: x, y1: 0, y2: H, stroke: "#111", "stroke-width": 2, "stroke-dasharray": "4 3" }));
+        svg.append(s("line", { x1: x, x2: x, y1: 0, y2: H, style: "stroke:var(--q-hist-mark)", "stroke-width": 2, "stroke-dasharray": "4 3" }));
         var lt = s("text", { x: x > W - 90 ? x - 6 : x + 6, y: 12, "text-anchor": x > W - 90 ? "end" : "start", class: "q-hist-axis", "font-weight": "800" }); lt.textContent = "NVDA " + Math.round(mark); svg.append(lt);
       }
       host.replaceChildren(el("p", { class: "q-hist-title" }, [el("b", { text: VM.FACTORS[cur].name + " " }), el("span", { text: vals.length.toLocaleString("de-DE") + " bewertete Aktien" })]), svg);

@@ -60,11 +60,24 @@ WARTE=3
 # Matrix und Projektion aus demselben Lauf stammen (Gate B prueft genau
 # das: "committed projection is reproducible from the existing capability
 # matrix"). Genannt sind die zwei Dateien, nicht das ganze Verzeichnis.
+#
+# FUENFTENS (Lauf 37083168221, 03.10.2026): der Universumslauf nach
+# Schluss hatte 6.876 Anfragen gestellt und 5.237 Tagesverlaeufe
+# geschrieben - und verwarf alles an einem Konflikt in
+# intraday/index.json. Den hatte kein zweiter Datenlauf erzeugt, sondern
+# ein Feature-PR (#366), der die erzeugte Datei mit nach main brachte. Das
+# Verzeichnis (und status/Ledger daneben) wird in JEDEM Lauf aus den
+# Sitzungsordnern neu gebaut; der eigene Stand ist richtig, und der
+# naechste Takt heilt jede Luecke. Die Sitzungsordner selbst (die
+# Kursverlaeufe) stehen weiterhin NICHT unter Erzeugerhoheit.
 ERZEUGT=(
   "quant/data/market/capabilities/"
   "quant/data/market/freshness/"
   "quant/data/product/capabilities-v1.json"
   "quant/data/product/capabilities-summary-v1.json"
+  "quant/data/market/intraday/index.json"
+  "quant/data/market/intraday/status.json"
+  "quant/data/market/intraday/pacemaker-ledger.json"
 )
 
 eigener_stand() {
@@ -97,22 +110,57 @@ konflikte_aufloesen() {
   return $offen
 }
 
+rebase_laeuft() {
+  [ -d "$(git rev-parse --git-path rebase-merge)" ] || [ -d "$(git rev-parse --git-path rebase-apply)" ]
+}
+
+# VIERTENS (Plattform-Audit 03.10.2026): MEHRERE EIGENE COMMITS.
+# Der Taktgeber committet je Zyklus; ein fehlgeschlagener Push ist dort
+# nicht fatal, also koennen mehrere eigene Commits anstehen - und der
+# Rebase haelt dann mehrmals. Die erste Fassung loeste nur den ersten
+# Halt, rief `rebase --continue` und meldete Erfolg, auch wenn der Rebase
+# am naechsten Commit wieder im Konflikt stand (die Funktion laeuft unter
+# `|| exit 1`, also ohne errexit). Geschoben wurde ein halb rebaster HEAD.
+# Jetzt wird JEDER Halt geprueft, bis kein Rebase mehr offen ist, und vor
+# dem Push steht fest: kein offener Rebase, keine ungeloesten Pfade.
 neu_aufsetzen() {
-  git fetch origin "$BRANCH"
+  git fetch origin "$BRANCH" || return 1
   # --autostash: die Regressionssuite laesst Dateien mit neuem
   # Zeitstempel ungestaged zurueck; ohne Autostash verweigert git den
   # Rebase und der Lauf verliert seinen Commit (Lauf 34987245529).
   if git rebase --autostash "origin/$BRANCH"; then
     return 0
   fi
-  echo "Rebase mit Konflikten - wird geprueft:"
-  if konflikte_aufloesen; then
-    GIT_EDITOR=true git rebase --continue
-    return 0
+  local halte=0
+  while rebase_laeuft; do
+    halte=$((halte + 1))
+    if [ "$halte" -gt 200 ]; then
+      echo "Rebase kommt nicht zum Ende. Abbruch." >&2
+      git rebase --abort || true
+      return 1
+    fi
+    echo "Rebase mit Konflikten (Halt ${halte}) - wird geprueft:"
+    if ! konflikte_aufloesen; then
+      echo "Konflikt, den kein Skript entscheiden darf. Abbruch." >&2
+      git rebase --abort || true
+      return 1
+    fi
+    if ! GIT_EDITOR=true git rebase --continue; then
+      # Ein neuer Halt mit Konflikten wird in der naechsten Runde geprueft.
+      # Haelt der Rebase OHNE ungeloeste Pfade, ist es kein Konflikt, den
+      # dieses Skript versteht.
+      if rebase_laeuft && [ -z "$(git diff --name-only --diff-filter=U)" ]; then
+        echo "Rebase haelt ohne erkennbaren Konflikt. Abbruch." >&2
+        git rebase --abort || true
+        return 1
+      fi
+    fi
+  done
+  if [ -n "$(git diff --name-only --diff-filter=U)" ]; then
+    echo "Ungeloeste Pfade nach dem Rebase. Abbruch." >&2
+    return 1
   fi
-  echo "Konflikt, den kein Skript entscheiden darf. Abbruch." >&2
-  git rebase --abort || true
-  return 1
+  return 0
 }
 
 for ((i = 1; i <= VERSUCHE; i++)); do

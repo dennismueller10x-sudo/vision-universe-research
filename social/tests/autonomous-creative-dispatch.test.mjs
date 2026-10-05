@@ -362,8 +362,10 @@ test("AD25 · Ohne die Datei deployt ein Push nicht", () => {
   const cf = readFileSync(".github/workflows/social-cloudflare.yml", "utf8");
   assert.match(cf, /Push ohne DEPLOY_REQUEST — nur Preflight/);
   /* Und ein Deploy per Dispatch verlangt weiterhin die getippte
-     Bestaetigung. */
-  assert.match(cf, /confirm_deploy \}\}" != "DEPLOY"/);
+     Bestaetigung. Seit #421 ueber env statt Inline-Ausdruck: die Variable
+     muss aus inputs.confirm_deploy kommen, der Vergleich muss stehen. */
+  assert.match(cf, /IN_CONFIRM_DEPLOY: \$\{\{ inputs\.confirm_deploy \}\}/);
+  assert.match(cf, /"\$IN_CONFIRM_DEPLOY" != "DEPLOY"/);
 });
 
 /* ------------------------------------------------------------------ */
