@@ -1,3 +1,13 @@
+# Validated StockPR event adapter — 2026-10-05 (discovery continues)
+
+The StockPR/Equisolve source family now parses observed, bounded `article.media` event cards from a verified IR host. A card must contain one explicit `time` element and an owned `ir-calendar/detail` or `events/detail` link. Visible date/time evidence must agree with the machine-readable date/time; no timezone is assumed. Release cards, foreign event hosts, conflicting timestamps, clinical-result titles and oversized cards are rejected. The unchanged issuer-actor guard remains in live ingestion, and the existing official-confirmation/estimate reconciliation runs for accepted calls.
+
+All **398 Python tests and 29 consumer/storage Node tests pass**. Nine StockPR tests cover actual discovery and live polling, wrong-company rejection, date/time/offset disagreement, missing-timezone behavior, card bounds and separate PDF/webcast evidence. Current hashed cached pages expose three call issuers previously missed by the parser, including Janus and Optimum. This is validated parser evidence; operational replay and a fresh consumer export are still pending and are not counted as delivered gains yet.
+
+The 215-case budget cohort is fully classified, with 100 validated outcomes (62 more domains recovered in the resumed run). StockPR 18/18, Investis 7/7 and Web Driver 2/2 root cohorts have successful IR outcomes and private checkpoints. The due temporary cohort hit a four-host shared proxy circuit and retained 212 pending identities; IR discovery continued through unaffected hosts. Q4/GCS retries, material indexes and monthly publisher metadata remain active. The 32-section coverage report below retains its measured export timestamp; it will be regenerated at the next operational checkpoint. Eight workflows passed on the preceding GCS milestone `71aed2111a5048ac5290657f874a7db55911707a`; Production Pages was canceled without a test failure. PR #356 remains draft and unmerged.
+
+---
+
 # Company Intelligence — candidate completion and recovery (in progress)
 
 Coverage measured **2026-10-05T00:12:04Z**; pass/queue checkpoint snapshot **2026-10-05T00:13:15Z**. Branch `feature/company-intelligence-rollout`, PR [#356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356). **Do not merge.** Production gates remain off. This report follows the requested 32-section structure and will be refreshed as resumable discovery continues.

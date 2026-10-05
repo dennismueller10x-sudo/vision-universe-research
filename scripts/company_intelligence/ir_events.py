@@ -44,7 +44,7 @@ def event(source, name, url, day, now, start=None, evidence=None, clock=None, zo
 def from_announcement(item, source, now):
     if not source.get('verified') or source.get('type') not in ('IR_FEED', 'IR_EVENTS'):
         return []
-    structured = source.get('type') == 'IR_EVENTS' and source.get('format') in ('RSS_EVENTS', 'GCS_EVENTS')
+    structured = source.get('type') == 'IR_EVENTS' and source.get('format') in ('RSS_EVENTS', 'GCS_EVENTS', 'STOCKPR_EVENTS')
     text = clean(item.get('headline', '') + ' ' + item.get('evidenceText', ''), 3000)
     if re.search(r'\bboard\b.{0,80}\b(meet|meeting|consider|review|approve)\b', text, re.I) and not re.search(r'\b(?:will|to)\s+(?:release|report|announce|host)\s+(?:its?\s+)?(?:financial results|earnings|conference call|webcast)', text, re.I):
         return []  # Approval/review dates do not establish publication or call dates.

@@ -9,6 +9,7 @@ from .model import domain, Resolver, canonical_url, make_item, stable_id, within
 from .transport import BudgetExhausted, SourceError
 from .feeds import parse_feed, parse_gdelt, discover_ir
 from .structured_sources import news_index, gcs_events
+from .stockpr_events import parse as stockpr_events
 from .ir_events import from_announcement, parse_jsonld, parse_ics, guidance_evidence, event
 from .earnings import project_sec, estimate_calendar, summary
 from .store import atomic_json
@@ -170,7 +171,7 @@ class Pipeline:
                     from .q4_events import parse as parse_q4
                     events = parse_q4(response['body'], source, self.now)
                 else:
-                    events = parse_ics(response['body'], source, self.now) if response['body'].lstrip().startswith(b'BEGIN:VCALENDAR') else parse_jsonld(response['body'], source, self.now) + gcs_events(response['body'], source, self.now)
+                    events = parse_ics(response['body'], source, self.now) if response['body'].lstrip().startswith(b'BEGIN:VCALENDAR') else parse_jsonld(response['body'], source, self.now) + gcs_events(response['body'], source, self.now) + stockpr_events(response['body'], source, self.now)
                 for e in events:
                     if e['eventType'] in ('EARNINGS_CALL', 'EARNINGS_SCHEDULED') and not issuer_earnings_announcement(e['headline'], self.companies[source['companyId']]):
                         rejected += 1

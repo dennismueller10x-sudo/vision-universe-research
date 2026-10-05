@@ -249,6 +249,7 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
                 more = parse_links(extra['body'], extra['finalUrl']) if extra else []
                 feed_links += [l for l in more if 'rss' in l['type'] or 'atom' in l['type'] or re.search(r'rss(?:handler|\.aspx|/)|\brss\b', l['url'] + ' ' + l['text'], re.I)]
         from .structured_sources import news_index, gcs_events
+        from .stockpr_events import parse as stockpr_events
         structured_source = {'companyId': company['companyId'], 'verified': True, 'allowedSites': [official_site,page,response['finalUrl']], 'provider': provider, 'url': response['finalUrl']}
         for news_page in [response] + ([extra] if extra else []):
             structured_source.update(url=news_page['finalUrl'], sourceId=stable_id(company['companyId'], news_page['finalUrl'], 'schema-news'))
@@ -280,7 +281,7 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
                                 'verified': True, 'allowedSites': [official_site, page, link['url']], 'provider': provider,
                                 'active': True, 'intervalHours': 12, 'lastVerified': now, 'verificationEvidence': 'LINKED_BY_VERIFIED_IR_PAGE'}
                 content = structured['body']
-                events = parse_ics(content, event_source, now) if content.lstrip().startswith(b'BEGIN:VCALENDAR') else parse_jsonld(content, event_source, now) + gcs_events(content, event_source, now)
+                events = parse_ics(content, event_source, now) if content.lstrip().startswith(b'BEGIN:VCALENDAR') else parse_jsonld(content, event_source, now) + gcs_events(content, event_source, now) + stockpr_events(content, event_source, now)
                 if events:
                     sources[sid] = event_source
             except (SourceError, ValueError):
