@@ -136,7 +136,7 @@ test("das Urteil der Trefferzeile kommt aus derselben Engine wie die Aktienseite
      Bruecke ist VM.fromScreeningRow; Aktienseite (VM.stock) und
      Trefferzeile gehen beide durch VM.overall -> VUPlainVerdict.urteil. */
   const factorHits = QUELLE.slice(QUELLE.indexOf("async function factorHits("), QUELLE.indexOf("async function setupHits("));
-  assert.match(factorHits, /VM\.fromScreeningRow\(s\.evidence\)/,
+  assert.match(factorHits, /VM\.fromScreeningRow\(s\.evidence, dist\)/,
     "die Bruecke von der Evidenzzeile zum Urteil fehlt");
   const overall = VM_QUELLE.slice(VM_QUELLE.indexOf("function overall("), VM_QUELLE.indexOf("function proCon("));
   assert.match(overall, /PV\.urteil\(/,
@@ -149,8 +149,11 @@ test("das Urteil der Trefferzeile kommt aus derselben Engine wie die Aktienseite
   /* Aktienseite und Trefferzeile kommen fuer dieselben Werte zum selben Urteil. */
   const werte = { quality: 92, growth: 78, momentum: 40, value: 22, profitability: 81, risk: 55 };
   const row = Object.fromEntries(Object.entries(werte).map(([id, v]) => ["quantV2.factorEvidence." + id, v]));
-  const zeile = VM.fromScreeningRow(row).overall;
-  const seite = VM.stock({ factors: { state: "AVAILABLE", factors: Object.entries(werte).map(([id, score]) => ({ id, state: "AVAILABLE", score, components: [] })) } }).overall;
+  /* Eine Verteilung 0..100, in der die Position eines ganzzahligen Werts
+     gleich dem Wert ist - so bleibt der Fall lesbar (factor-band-2.0.0). */
+  const linear = Object.fromEntries(Evidence.FACTOR_ORDER.map((id) => [id, Array.from({ length: 101 }, (_, i) => i)]));
+  const zeile = VM.fromScreeningRow(row, linear).overall;
+  const seite = VM.stock({ factors: { state: "AVAILABLE", factors: Object.entries(werte).map(([id, score]) => ({ id, state: "AVAILABLE", score, position: score, components: [] })) } }).overall;
   assert.equal(zeile.id, seite.id);
   assert.equal(zeile.text, seite.text);
 });
@@ -194,12 +197,14 @@ test("das Urteil laesst sich aus einer Screening-Zeile wirklich bilden", () => {
 
   let ohneUrteil = 0;
   const stufen = new Set();
+  /* Position aus der Verteilung desselben Artefakts - wie die Oberflaeche. */
+  const dist = VM.sortedDistribution(rows.map(([, v]) => Object.fromEntries(felder.map((f, i) => [f, v[i]]))));
   for (const [, werte] of treffer) {
     const factors = {};
     Evidence.FACTOR_ORDER.forEach((id) => {
       const wert = werte[felder.indexOf("quantV2.factorEvidence." + id)];
       factors[id] = Number.isFinite(wert)
-        ? { state: "AVAILABLE", score: wert }
+        ? { state: "AVAILABLE", score: wert, position: Evidence.positionOf(dist[id], wert) }
         : { state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", score: null };
     });
     const u = Verdict.urteil({ factors });
@@ -211,7 +216,7 @@ test("das Urteil laesst sich aus einer Screening-Zeile wirklich bilden", () => {
     /* Und die Oberflaeche (View Model) kommt ueber dieselbe Zeile zum
        selben Urteil. */
     const row = Object.fromEntries(felder.map((f, i) => [f, werte[i]]));
-    const v = VM.fromScreeningRow(row).overall;
+    const v = VM.fromScreeningRow(row, dist).overall;
     assert.equal(v.id, u.stufeId, "Trefferzeile und Engine urteilen verschieden");
     assert.notEqual(v.id, "KEINE_DATEN");
   }
@@ -230,7 +235,7 @@ test("der Nenner des Urteils sind die geprueften Punkte, nicht die sieben", () =
   const factors = {};
   Evidence.FACTOR_ORDER.forEach((id, i) => {
     factors[id] = i < 4
-      ? { state: "AVAILABLE", score: 90 - i * 25 }
+      ? { state: "AVAILABLE", score: 90 - i * 25, position: 90 - i * 25 }
       : { state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", score: null };
   });
   const u = Verdict.urteil({ factors });
@@ -241,7 +246,7 @@ test("der Nenner des Urteils sind die geprueften Punkte, nicht die sieben", () =
     "das Urteil rechnet gegen sieben, obwohl nur vier geprueft sind");
   /* Dasselbe am View Model, das die Oberflaeche zeichnet. */
   const vm = VM.overall(Evidence.FACTOR_ORDER.map((id, i) => VM.factorView(i < 4
-    ? { id, state: "AVAILABLE", score: 90 - i * 25, components: [] }
+    ? { id, state: "AVAILABLE", score: 90 - i * 25, position: 90 - i * 25, components: [] }
     : { id, state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", components: [] })));
   assert.equal(vm.rated, 4);
   assert.match(vm.sub, /von 4 gemessenen Eigenschaften/, "die Oberflaeche nennt einen anderen Nenner: " + vm.sub);

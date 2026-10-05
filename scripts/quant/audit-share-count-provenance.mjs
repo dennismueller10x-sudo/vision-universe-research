@@ -114,6 +114,37 @@ async function main() {
   const konsumDateien = existsSync(konsumDir) ? (await readdir(konsumDir)).filter((n) => n.endsWith(".json")).length : 0;
   const geprueft = new Set(Object.values(reihen).map((e) => e.ticker)).size;
 
+  /* UNIVERSUMSWEIT (market-cap-1.0.0, SEC-Mapping 1.6.0): seit die
+     Konsumschicht das Konzept des juengsten Werts (ttm.concept) und je
+     Kennzahl die verwendeten Konzepte (conceptsUsed) fuehrt, ist die
+     Reichweite messbar - fuer jeden Emittenten, nicht fuer fuenf. */
+  const universum = { issuers: 0, withShareCount: 0, withConceptProvenance: 0, latestByConcept: {}, latestByClass: {},
+    seriesMixedClasses: 0, seriesWithIssued: 0, latestIssued: 0, latestStale: 0, noShareCount: 0, examplesMixed: [] };
+  if (existsSync(konsumDir)) {
+    for (const datei of (await readdir(konsumDir)).filter((n) => n.endsWith(".json"))) {
+      const doc = JSON.parse(await readFile(join(konsumDir, datei), "utf8"));
+      universum.issuers += 1;
+      const latest = doc.ttm && doc.ttm.shares_outstanding;
+      if (!latest) { universum.noShareCount += 1; continue; }
+      universum.withShareCount += 1;
+      if (latest.end && doc.asOf && (Date.parse(doc.asOf) - Date.parse(latest.end)) / 86400000 > 400) universum.latestStale += 1;
+      const used = doc.conceptsUsed && doc.conceptsUsed.shares_outstanding;
+      if (!latest.concept && !used) continue;
+      universum.withConceptProvenance += 1;
+      const lk = latest.concept || "UNKNOWN";
+      universum.latestByConcept[lk] = (universum.latestByConcept[lk] || 0) + 1;
+      const lc = KONZEPTKLASSEN[lk] || "UNKNOWN";
+      universum.latestByClass[lc] = (universum.latestByClass[lc] || 0) + 1;
+      if (lc === "ISSUED_INCLUDING_TREASURY") universum.latestIssued += 1;
+      const klassen = new Set((used || []).map((c) => KONZEPTKLASSEN[c] || "UNKNOWN"));
+      if (klassen.has("ISSUED_INCLUDING_TREASURY")) universum.seriesWithIssued += 1;
+      if (klassen.size > 1) {
+        universum.seriesMixedClasses += 1;
+        if (universum.examplesMixed.length < 10) universum.examplesMixed.push({ cik: doc.cik, tickers: doc.tickers, concepts: used });
+      }
+    }
+  }
+
   const bericht = {
     schemaVersion: "share-count-provenance-1.0.0",
     generatedAt: new Date().toISOString().replace(/\.\d{3}Z$/, ".000Z"),
@@ -125,7 +156,7 @@ async function main() {
     conceptClasses: KONZEPTKLASSEN,
     requestedProvenanceFields: GEFORDERTE_HERKUNFT,
     DATA_CONTRACT_GAP: {
-      state: "OPEN",
+      state: universum.withConceptProvenance > 0 ? "CLOSED" : "OPEN",
       missing: Object.entries(GEFORDERTE_HERKUNFT).filter(([, v]) => !v.present).map(([k]) => k),
       statement: "Die Konsumschicht fuehrt Einreichungsdatum, Aktennummer und Periode je Wert, aber " +
         "nicht das Konzept, aus dem der Wert kam. Ohne es ist nicht entscheidbar, ob eine " +
@@ -146,6 +177,12 @@ async function main() {
       auditedMetrics: audit ? audit.auditedMetrics : null,
       note: "Der Beleg reicht ueber " + geprueft + " von " + konsumDateien + " Emittenten. Die " +
         "Vermischung ist damit belegt, ihre universumsweite Reichweite nicht."
+    },
+    SHARE_COUNT_PROVENANCE_AUDIT: {
+      contract: "market-cap-1.0.0 · SEC-Mapping 1.6.0 (CommonStockSharesIssued ausgeschlossen)",
+      ...universum,
+      verdict: universum.withConceptProvenance === 0 ? "NOT_YET_MEASURABLE (Konsumschicht vor Mapping 1.6.0 ohne Konzeptangabe)"
+        : universum.latestIssued === 0 && universum.seriesWithIssued === 0 && universum.seriesMixedClasses === 0 ? "CLEAN" : "VIOLATED"
     },
     MIXED_CONCEPT_SERIES: vermischt,
     SAME_CLASS_DIFFERENT_CONCEPT: harmlos,
@@ -175,7 +212,8 @@ async function main() {
   }
   process.stdout.write("\nREIHEN MIT ZWEI KONZEPTEN DERSELBEN KLASSE (harmlos)\n");
   for (const z of harmlos) process.stdout.write("  " + (z.ticker + "|" + z.metric).padEnd(28) + z.classes.join("") + "\n");
-  process.stdout.write("\nDATA_CONTRACT_GAP = OPEN · fehlt: " + bericht.DATA_CONTRACT_GAP.missing.join(", ") + "\n");
+  process.stdout.write("\nUNIVERSUM " + JSON.stringify(bericht.SHARE_COUNT_PROVENANCE_AUDIT) + "\n");
+  process.stdout.write("\nDATA_CONTRACT_GAP = " + bericht.DATA_CONTRACT_GAP.state + " · fehlt (vor Mapping 1.6.0): " + bericht.DATA_CONTRACT_GAP.missing.join(", ") + "\n");
   process.stdout.write("\n  " + OUT.replace(ROOT + "/", "") + "\n");
 }
 

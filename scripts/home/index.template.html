@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="de" data-theme="light" data-theme-mode="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<title>Vision Universe® Research – Alle Aktienanalysen in einer App</title>
+<meta name="description" content="Die Vision Universe App: Discover, Quant, Screener, Supertrader, Elliott-Wave-Analysen, technische Analyse und Fundamentaldaten mit Einschätzungen zu über 6.000 US-Aktien – in einer App.">
+<meta property="og:title" content="Vision Universe® Research – Alle Aktienanalysen in einer App">
+<meta property="og:description" content="Fundamental, technisch, Elliott Wave, Quant und Methoden: jede Perspektive auf eine Aktie – in einer App.">
+<meta property="og:image" content="/assets/themen/00-discovery-hero.webp">
+<link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/home/home.css">
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<script src="/assets/pwa.js" defer></script>
+</head>
+<body>
+<vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script>
+<script src="/assets/site-navigation.js"></script>
+
+<!-- Icons. h-*: HUD-Icons (in .hud-Kacheln), i-*: kleine Bedien-Icons.
+     Die Produktabbildungen zeigen echte Werte aus den Datendateien der
+     Plattform (Kurse vom 02.10.2026). Chart und Sparklines erzeugt
+     scripts/home/build-home.mjs aus diesem Template; die Zahlen im Text
+     sind von Hand auf denselben Stand gesetzt. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".18"/><path d="m7.5 12.2 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-5 5-5 13 0 18m0-18c5 5 5 13 0 18"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19V5m0 14h16M7 15l4-5 3 2 5-7"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 8.5c0 4-4.4 7.6-8.8 11-4.4-3.4-8.8-7-8.8-11a5 5 0 0 1 8.8-3.1 5 5 0 0 1 8.8 3.1z"/></symbol>
+  <symbol id="i-laptop" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="11" rx="2"/><path d="M2 19h20"/></symbol>
+  <symbol id="i-tablet" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/><path d="M18.6 14.6c.2 1.6.9 2.5 2.6 2.8-1.7.3-2.4 1.2-2.6 2.8-.2-1.6-.9-2.5-2.6-2.8 1.7-.3 2.4-1.2 2.6-2.8z" opacity=".7"/></symbol>
+%%HUD_SYMBOLS%%
+  <!-- NVIDIA, Tageskurse 08.09.2025–02.10.2026, SMA 50/200, Elliott-Zählung, Setup-Zonen -->
+  <symbol id="chart-nvda" viewBox="0 0 690 270">
+    <defs><linearGradient id="nvda-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8f531" stop-opacity=".32"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></linearGradient></defs>
+    <g stroke="rgba(255,255,255,.07)" stroke-width="1"><path d="M0 0H600M0 40H600M0 80H600M0 120H600M0 160H600M0 200H600M0 240H600"/></g>
+    <g fill="#8a9099" font-size="10" font-family="Inter,sans-serif" font-weight="600"><text x="608" y="4">280</text><text x="608" y="44">260</text><text x="608" y="84">240</text><text x="608" y="124">220</text><text x="608" y="164">200</text><text x="608" y="204">180</text><text x="608" y="244">160</text></g>
+    <rect x="0" y="%%T1%%" width="600" height="%%TH%%" fill="rgba(200,245,49,.14)" stroke="rgba(200,245,49,.55)" stroke-dasharray="4 4"/>
+    <text x="8" y="%%T_LABEL%%" fill="#c8f531" font-size="10.5" font-weight="800" font-family="Inter,sans-serif">ZIELZONE %%T_TEXT%%</text>
+    <rect x="0" y="%%E1%%" width="600" height="%%EH%%" fill="rgba(255,255,255,.06)"/>
+    <path d="M0 %%INV%%H600" stroke="#f0675c" stroke-width="1.4" stroke-dasharray="6 5"/>
+    <text x="8" y="%%INV_LABEL%%" fill="#f0675c" font-size="10.5" font-weight="800" font-family="Inter,sans-serif">INVALIDIERUNG %%INV_TEXT%%</text>
+    <path d="%%AREA%%" fill="url(#nvda-fill)"/>
+    <path d="%%S200%%" fill="none" stroke="#6f7680" stroke-width="1.4"/>
+    <path d="%%S50%%" fill="none" stroke="#e9e3c9" stroke-width="1.3" stroke-opacity=".7"/>
+    <path d="%%CLOSE%%" fill="none" stroke="#c8f531" stroke-width="2.2" stroke-linejoin="round"/>
+    <path d="%%WAVE%%" fill="none" stroke="#f4f5f1" stroke-width="1.3" stroke-dasharray="3 4"/>
+    %%WAVE_NODES%%
+  </symbol>
+</svg>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="shell hero-grid">
+    <div class="hero-copy">
+      <div class="hero-logo"><img src="/assets/vision-universe-logo.png" width="2172" height="724" alt="Vision Universe®"></div>
+      <span class="hero-badge"><b>App</b> Fundamental · Technik · Elliott Wave · Quant</span>
+      <h1>Alle Aktien&shy;analysen. <em>Eine&nbsp;App.</em></h1>
+      <p class="lead">Discover, Quant, Screener, Supertrader, Elliott-Wave-Analysen, technische Details und sämtliche Fundamentaldaten – mit klaren Einschätzungen zu jeder Aktie. Unabhängig, nachvollziehbar und auf echten Daten.</p>
+      <div class="hero-cta">
+        <a class="btn btn-app btn-xl" href="/discover/">App öffnen <svg><use href="#i-arrow"/></svg></a>
+        <a class="btn btn-ghost btn-xl" href="#app-module">Alle Module ansehen</a>
+      </div>
+      <ul class="hero-checks">
+        <li><svg><use href="#i-check"/></svg>Über 6.000 US-Aktien</li>
+        <li><svg><use href="#i-check"/></svg>8 Module in einer App</li>
+        <li><svg><use href="#i-check"/></svg>Desktop &amp; Smartphone</li>
+      </ul>
+    </div>
+
+    <div class="stage" aria-hidden="true">
+      <!-- Desktop: Technik & Elliott -->
+      <div class="browser">
+        <div class="browser-bar"><i></i><i></i><i></i><span>research.visionuniverse.de/quant/#/aktie/NVDA/technik</span></div>
+        <div class="desk">
+          <div class="desk-side"><b>NVDA</b><span>Überblick</span><span>Zahlen</span><span class="on">Technik</span><span>Elliott</span><span>Faktoren</span><span>Setups</span></div>
+          <div class="desk-main">
+            <div class="desk-kpis">
+              <div class="desk-kpi"><b>Welle 3</b><small>Elliott · Impuls</small></div>
+              <div class="desk-kpi"><b>78,8</b><small>Trend-Score · bullisch</small></div>
+              <div class="desk-kpi"><b>62,9</b><small>RSI 14</small></div>
+            </div>
+            <div class="desk-chart">
+              <div class="lbl"><b>NVIDIA · Kursstruktur &amp; Elliott</b><span>1J</span></div>
+              <svg class="chart" viewBox="0 0 690 270"><use href="#chart-nvda"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Smartphone: Aktienseite NVIDIA -->
+      <div class="phone">
+        <div class="screen">
+          <div class="app-status"><span>9:41</span><span>●●● ▮</span></div>
+          <div class="app-top"><img src="/assets/vision-universe-logo.png" alt=""><span class="app-avatar"><svg><use href="#i-spark"/></svg></span></div>
+          <div class="stock-head">
+            <span class="app-logo big">NVDA</span>
+            <div><b>NVIDIA</b><small>Chips für KI und Grafik</small></div>
+            <div class="px"><b>233,95 $</b><small class="up">+1,34 %</small></div>
+          </div>
+          <div class="app-badges"><span>Neues Jahreshoch</span><span>Marktführer · Top 7 %</span></div>
+          <div class="app-tabs"><span class="on">Überblick</span><span>Zahlen</span><span>Technik</span><span>Elliott</span><span>Quant</span></div>
+          <div class="app-mini"><svg viewBox="0 0 690 270"><use href="#chart-nvda"/></svg></div>
+          <div class="app-grid">
+            <div><small>Umsatz TTM</small><b>303,0 Mrd. $</b><em class="up">+83 %</em></div>
+            <div><small>Nettomarge</small><b>55,6 %</b><em>KGV 29,6</em></div>
+            <div><small>Elliott Wave</small><b>Welle 3</b><em>Impuls · Beta</em></div>
+            <div><small>Supertrader</small><b>Darvas Box</b><em class="up">aktiv</em></div>
+          </div>
+          <div class="app-tabbar">
+            <span class="on"><svg><use href="#i-home"/></svg>Start</span>
+            <span><svg><use href="#i-globe"/></svg>Welten</span>
+            <span><svg><use href="#i-chart"/></svg>Analyse</span>
+            <span><svg><use href="#i-search"/></svg>Suchen</span>
+            <span><svg><use href="#i-heart"/></svg>Watchlist</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="float-card fc-1"><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott Wave</b><small>Szenarien &amp; Zielzonen</small></div></div>
+      <div class="float-card fc-2"><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>12 Geschäftsjahre</b><small>Fundamentaldaten aus SEC-Berichten</small></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ KENNZAHLEN ============ -->
+<section class="stats" aria-label="Vision Universe in Zahlen">
+  <div class="shell stats-grid">
+    <div class="stat"><b>6.000+</b><span>US-Aktien im Universum</span></div>
+    <div class="stat"><b>8</b><span>Analyse-Module in einer App</span></div>
+    <div class="stat"><b>12 J.</b><span>Fundamentaldaten je Aktie</span></div>
+    <div class="stat"><b>54</b><span>Themenwelten</span></div>
+  </div>
+</section>
+
+<!-- ============ APP-MODULE + SCHAUBILD ============ -->
+<section class="section" id="app-module">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <span class="kicker">Die Vision Universe App</span>
+        <h2 class="h2">Ein System. Acht Module.<br>Jede Perspektive auf eine Aktie.</h2>
+      </div>
+      <p class="lead">Alle Analysen greifen auf dieselben Daten zu und sind miteinander verbunden: Von jeder Aktie kommst du mit einem Tipp zu Zahlen, Chart, Elliott-Zählung, Faktoren und Setups.</p>
+    </div>
+
+    <div class="eco">
+      <div class="hub" aria-hidden="true">
+        <svg class="hub-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width=".25" stroke-dasharray=".8 1.2"/>
+          <circle cx="50" cy="50" r="27" fill="none" stroke="currentColor" stroke-width=".2" opacity=".6"/>
+          <g stroke="#c8f531" stroke-width=".35" opacity=".8">
+            <path d="M50 50 50 10M50 50 78.3 21.7M50 50 90 50M50 50 78.3 78.3M50 50 50 90M50 50 21.7 78.3M50 50 10 50M50 50 21.7 21.7"/>
+          </g>
+          <g fill="#c8f531"><circle cx="50" cy="23" r=".9"/><circle cx="69.1" cy="30.9" r=".9"/><circle cx="77" cy="50" r=".9"/><circle cx="69.1" cy="69.1" r=".9"/><circle cx="50" cy="77" r=".9"/><circle cx="30.9" cy="69.1" r=".9"/><circle cx="23" cy="50" r=".9"/><circle cx="30.9" cy="30.9" r=".9"/></g>
+        </svg>
+        <div class="hub-core"><img src="/assets/vision-universe-logo.png" alt=""><b>APP</b></div>
+        <span class="node" style="--x:50%;--y:10%"><span class="hud"><svg><use href="#h-discover"/></svg></span><em>Discover</em></span>
+        <span class="node" style="--x:78.3%;--y:21.7%"><span class="hud"><svg><use href="#h-quant"/></svg></span><em>Quant</em></span>
+        <span class="node" style="--x:90%;--y:50%"><span class="hud"><svg><use href="#h-screener"/></svg></span><em>Screener</em></span>
+        <span class="node" style="--x:78.3%;--y:78.3%"><span class="hud"><svg><use href="#h-super"/></svg></span><em>Supertrader</em></span>
+        <span class="node" style="--x:50%;--y:90%"><span class="hud"><svg><use href="#h-elliott"/></svg></span><em>Elliott Wave</em></span>
+        <span class="node" style="--x:21.7%;--y:78.3%"><span class="hud"><svg><use href="#h-technical"/></svg></span><em>Technik</em></span>
+        <span class="node" style="--x:10%;--y:50%"><span class="hud"><svg><use href="#h-fundamental"/></svg></span><em>Fundamental</em></span>
+        <span class="node" style="--x:21.7%;--y:21.7%"><span class="hud"><svg><use href="#h-atlas"/></svg></span><em>AI Atlas</em></span>
+      </div>
+
+      <div class="modules">
+        <a class="module" href="/discover/"><span class="hud hud-sm"><svg><use href="#h-discover"/></svg></span><div><b>Discover</b><span>Aktien entdecken: Themenwelten, Rankings und Märkte zum Swipen.</span></div></a>
+        <a class="module" href="/quant/"><span class="hud hud-sm"><svg><use href="#h-quant"/></svg></span><div><b>Quant</b><span>Faktoren, Ereignisse und historische Vergleichsfälle je Aktie.</span></div></a>
+        <a class="module" href="/screener/"><span class="hud hud-sm"><svg><use href="#h-screener"/></svg></span><div><b>Screener</b><span>Eigene Kriterien filtern, gewichten und vergleichen.</span></div></a>
+        <a class="module" href="/supertrader/"><span class="hud hud-sm"><svg><use href="#h-super"/></svg></span><div><b>Supertrader</b><span>11 Methoden mit festen Regeln, Setups und Backtests.</span></div></a>
+        <a class="module" href="/quant/#/aktie/NVDA/technik?elliott=1"><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott Wave</b><span>Wellenzählung mit Szenarien, Invalidierung und Zielzonen.</span></div></a>
+        <a class="module" href="/quant/#/aktie/NVDA/technik"><span class="hud hud-sm"><svg><use href="#h-technical"/></svg></span><div><b>Technische Analyse</b><span>Trend, Momentum, Unterstützungen, Fibonacci und Struktur.</span></div></a>
+        <a class="module" href="/quant/#/aktie/NVDA/zahlen"><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>Fundamentaldaten</b><span>Umsatz, Gewinn, Margen, Bewertung – mit Einschätzung.</span></div></a>
+        <a class="module" href="/ask/"><span class="hud hud-sm"><svg><use href="#h-atlas"/></svg></span><div><b>AI Atlas</b><span>Frag in eigenen Worten – Atlas rechnet auf den Daten.</span></div></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EINE AKTIE, JEDE PERSPEKTIVE ============ -->
+<section class="section dark-band" id="analyse">
+  <div class="shell">
+    <div class="feature">
+      <div class="feature-copy">
+        <span class="kicker">Aktienanalyse komplett</span>
+        <h2 class="h2">Eine Aktie. Jede Perspektive.</h2>
+        <p class="lead">Fundamental, technisch, Elliott Wave und Quant auf einer Seite – regelbasiert berechnet, reproduzierbar und ohne menschliches Einzeichnen.</p>
+        <ul class="points">
+          <li><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>Fundamentaldaten &amp; Einschätzung</b><span>12 Geschäftsjahre aus SEC-Berichten: Umsatz, Gewinn, Margen, Verschuldung, Bewertung.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-technical"/></svg></span><div><b>Technische Details</b><span>Trend, Momentum, gleitende Durchschnitte, Unterstützungen, Widerstände und Fibonacci.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott-Wave-Analysen</b><span>Wellenzählung mit Szenarien, Invalidierung und Zielzonen.</span></div></li>
+        </ul>
+        <a class="btn btn-app" href="/quant/#/aktie/NVDA/technik?elliott=1">Analyse öffnen <svg><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="visual visual-dark" aria-hidden="true">
+        <div class="panel panel-wide">
+          <div class="panel-head"><b>NVIDIA (NVDA) · Technik &amp; Elliott</b><small>Datenstand 02.10.2026 · keine Empfehlung</small></div>
+          <div class="chips"><span class="chip on">Elliott</span><span class="chip">SMA 50</span><span class="chip">SMA 200</span><span class="chip">Zonen</span></div>
+          <div style="padding:0 14px 6px"><svg class="chart" viewBox="0 0 690 270"><use href="#chart-nvda"/></svg></div>
+          <div class="kv">
+            <div><small>Elliott</small><b>Welle 3 · Impuls</b><em>in Entwicklung · Beta</em></div>
+            <div><small>Trend</small><b class="up">Bullisch 78,8</b><em>über SMA 50 &amp; 200</em></div>
+            <div><small>Umsatz TTM</small><b>303,0 Mrd. $</b><em class="up">+83,4 % ggü. Vorjahr</em></div>
+            <div><small>Nettomarge</small><b>55,6 %</b><em>KGV 29,6</em></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MODULE IM DETAIL ============ -->
+<section class="section">
+  <div class="shell">
+
+    <!-- Discover -->
+    <div class="feature flip" id="discover">
+      <div class="feature-copy">
+        <span class="kicker">Discover</span>
+        <h2 class="h2">Entdecke Aktien, wie du Musik entdeckst.</h2>
+        <p class="lead">Swipe durch Themenwelten, Rankings und Märkte. Discover zeigt dir, was sich bewegt – und von dort geht es direkt in die volle Analyse.</p>
+        <ul class="points">
+          <li><span class="hud hud-sm"><svg><use href="#h-globe"/></svg></span><div><b>54 Themenwelten</b><span>Künstliche Intelligenz, Halbleiter, Raumfahrt, Wasserstoff und viele mehr.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-rank"/></svg></span><div><b>Rankings &amp; Perspektiven</b><span>Die stärksten Aktien je Index, Branche und Thema.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-heart"/></svg></span><div><b>Deine Watchlist</b><span>Merke dir Ideen und verfolge sie über alle Module hinweg.</span></div></li>
+        </ul>
+        <a class="btn btn-app" href="/discover/">Discover öffnen <svg><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="visual" aria-hidden="true">
+        <div class="disc">
+          <div class="disc-hero"><img src="/assets/themen/01-kuenstliche-intelligenz.webp" alt="" loading="lazy"><span><small>Themenwelt</small>Künstliche Intelligenz</span></div>
+          <div class="panel">
+            <div class="panel-head"><b>Stärkste Aktien · Thema KI</b><small>Datenstand 02.10.2026</small></div>
+            <table class="tbl">
+              <thead><tr><th>Rang</th><th>Unternehmen</th><th>3 Monate</th></tr></thead>
+              <tbody>
+                <tr><td>#7</td><td><span class="t"><i>NVDA</i>NVIDIA</span></td><td><svg class="spk" viewBox="0 0 60 24"><path d="%%SPK_NVDA%%"/></svg> <span class="up">%%CHG_NVDA%%</span></td></tr>
+                <tr><td>#8</td><td><span class="t"><i>AAPL</i>Apple</span></td><td><svg class="spk" viewBox="0 0 60 24"><path d="%%SPK_AAPL%%"/></svg> <span class="up">%%CHG_AAPL%%</span></td></tr>
+                <tr><td>#13</td><td><span class="t"><i>MSFT</i>Microsoft</span></td><td><svg class="spk" viewBox="0 0 60 24"><path d="%%SPK_MSFT%%"/></svg> <span class="up">%%CHG_MSFT%%</span></td></tr>
+                <tr><td>#15</td><td><span class="t"><i>META</i>Meta Platforms</span></td><td><svg class="spk" viewBox="0 0 60 24"><path d="%%SPK_META%%"/></svg> <span class="up">%%CHG_META%%</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screener -->
+    <div class="feature" id="screener">
+      <div class="feature-copy">
+        <span class="kicker">Screener</span>
+        <h2 class="h2">Dein Universum. Deine Kriterien.</h2>
+        <p class="lead">Filtere über 6.000 US-Aktien Schritt für Schritt – einfach für den Einstieg, im Pro-Modus mit Gruppen, gewichtetem Ranking und allen Kriterien.</p>
+        <ul class="points">
+          <li><span class="hud hud-sm"><svg><use href="#h-sliders"/></svg></span><div><b>Einfach &amp; Pro</b><span>Starte mit wenigen Kriterien und vertiefe, wann du willst.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-rank"/></svg></span><div><b>Gewichtetes Ranking</b><span>Bestimme selbst, welche Faktoren dir wichtig sind.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-save"/></svg></span><div><b>Screens speichern</b><span>Gespeicherte und zuletzt genutzte Screens immer griffbereit.</span></div></li>
+        </ul>
+        <a class="btn btn-app" href="/screener/">Screener öffnen <svg><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="visual" aria-hidden="true">
+        <div class="panel">
+          <div class="panel-head"><b>Screen: Wachstum mit Marge</b><small>Datenstand 02.10.2026</small></div>
+          <div class="chips"><span class="chip on">Umsatzwachstum &gt; 10 %</span><span class="chip on">Nettomarge &gt; 10 %</span><span class="chip on">KGV &lt; 50</span><span class="chip">+ Kriterium</span></div>
+          <table class="tbl">
+            <thead><tr><th>Unternehmen</th><th>Umsatz&nbsp;+</th><th class="hide-s">Marge</th><th>KGV</th></tr></thead>
+            <tbody>
+              <tr><td><span class="t"><i>NVDA</i>NVIDIA</span></td><td><span class="bar"><i style="width:100%"></i></span> 83,4 %</td><td class="hide-s">55,6 %</td><td>29,6</td></tr>
+              <tr><td><span class="t"><i>AVGO</i>Broadcom</span></td><td><span class="bar"><i style="width:58%"></i></span> 48,7 %</td><td class="hide-s">36,2 %</td><td>45,3</td></tr>
+              <tr><td><span class="t"><i>META</i>Meta Platforms</span></td><td><span class="bar"><i style="width:33%"></i></span> 27,7 %</td><td class="hide-s">30,1 %</td><td>27,4</td></tr>
+              <tr><td><span class="t"><i>MSFT</i>Microsoft</span></td><td><span class="bar"><i style="width:21%"></i></span> 17,8 %</td><td class="hide-s">40,3 %</td><td>28,8</td></tr>
+              <tr><td><span class="t"><i>AMZN</i>Amazon</span></td><td><span class="bar"><i style="width:19%"></i></span> 15,8 %</td><td class="hide-s">10,8 %</td><td>20,2</td></tr>
+              <tr><td><span class="t"><i>AAPL</i>Apple</span></td><td><span class="bar"><i style="width:17%"></i></span> 14,2 %</td><td class="hide-s">26,9 %</td><td>38,3</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Supertrader -->
+    <div class="feature flip" id="supertrader">
+      <div class="feature-copy">
+        <span class="kicker">Supertrader</span>
+        <h2 class="h2">Methoden. Setups. Klare Regeln.</h2>
+        <p class="lead">Bewährte Strategien, transparente Regeln, ehrliche Backtests und laufende Modell-Signale – von CAN SLIM über Darvas Boxes bis Weinstein Stages.</p>
+        <ul class="points">
+          <li><span class="hud hud-sm"><svg><use href="#h-rules"/></svg></span><div><b>11 Methoden, feste Regeln</b><span>Jede Regelversion ist dokumentiert und nachvollziehbar.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-eye"/></svg></span><div><b>Was die Modelle beobachten</b><span>Setups in Vorbereitung, bestätigte Einstiege und Modellpositionen.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-shield"/></svg></span><div><b>Ehrliche Evidenz</b><span>Wie belastbar jede Methode ist – als Forschung, nicht als Empfehlung.</span></div></li>
+        </ul>
+        <a class="btn btn-app" href="/supertrader/">Supertrader öffnen <svg><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="visual" aria-hidden="true">
+        <div class="panel">
+          <div class="panel-head"><b>Was die Modelle gerade beobachten</b><small>Datenstand 02.10.2026</small></div>
+          <div class="sig-list">
+            <div class="sig"><span class="t"><i>NVDA</i></span><div><b>Darvas Boxes</b><small>Box 208,93 – 234,76 $</small></div><span class="state on">Aktiv</span></div>
+            <div class="sig"><span class="t"><i>NVDA</i></span><div><b>Donchian / Turtle</b><small>Auslöser 234,76 $</small></div><span class="state on">Aktiv</span></div>
+            <div class="sig"><span class="t"><i>MSFT</i></span><div><b>Donchian / Turtle</b><small>Auslöser 522,85 $ · Invalidierung 491,22 $</small></div><span class="state ready">Einstieg bereit</span></div>
+            <div class="sig"><span class="t"><i>AAPL</i></span><div><b>Donchian / Turtle</b><small>Beobachtung</small></div><span class="state">Watch</span></div>
+            <div class="sig"><span class="t"><i>AMZN</i></span><div><b>Donchian / Turtle</b><small>Beobachtung</small></div><span class="state">Watch</span></div>
+          </div>
+        </div>
+        <div class="float-note" style="right:18px;bottom:18px"><i></i>Modellbeobachtung, keine Empfehlung</div>
+      </div>
+    </div>
+
+    <!-- Quant -->
+    <div class="feature" id="quant">
+      <div class="feature-copy">
+        <span class="kicker">Quant</span>
+        <h2 class="h2">Von der Frage zur Entscheidung.</h2>
+        <p class="lead">Quant prüft über 6.000 US-Aktien nach festen Daten und Regeln – was dafür spricht, was dagegen, was sich verändert und was früher in ähnlichen Situationen geschah.</p>
+        <ul class="points">
+          <li><span class="hud hud-sm"><svg><use href="#h-layers"/></svg></span><div><b>Faktor-DNA</b><span>Qualität, Wachstum, Momentum, Bewertung, Profitabilität und Risiko.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-history"/></svg></span><div><b>Historische Vergleichsfälle</b><span>Was früher in ähnlichen Situationen geschah – mit Backtests.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-data"/></svg></span><div><b>Bis zu den Rohdaten</b><span>Offene Methodik und Datenherkunft statt Blackbox.</span></div></li>
+        </ul>
+        <a class="btn btn-app" href="/quant/#/aktie/NVDA">Quant öffnen <svg><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="visual" aria-hidden="true">
+        <div class="panel">
+          <div class="panel-head"><b>NVIDIA · Faktor-DNA</b><small>Datenstand 02.10.2026</small></div>
+          <div class="factors">
+            <div class="fx"><span>Profitabilität</span><span class="fbar"><i style="width:98.3%"></i></span><b>98</b></div>
+            <div class="fx"><span>Wachstum</span><span class="fbar"><i style="width:86.7%"></i></span><b>87</b></div>
+            <div class="fx"><span>Risiko-Score</span><span class="fbar"><i style="width:84.1%"></i></span><b>84</b></div>
+            <div class="fx"><span>Momentum</span><span class="fbar"><i style="width:65%"></i></span><b>65</b></div>
+            <div class="fx"><span>Bewertung</span><span class="fbar"><i style="width:59.4%"></i></span><b>59</b></div>
+            <div class="fx"><span>Qualität</span><span class="fbar"><i style="width:43.4%"></i></span><b>43</b></div>
+          </div>
+          <div class="event"><span class="hud hud-sm"><svg><use href="#h-history"/></svg></span><div><b>Ereignis: Neues 52-Wochen-Hoch</b><small>02.10.2026 · 56 historische Vergleichsfälle, davon 70 % mit positivem Verlauf. Historisch, kein Versprechen.</small></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ ATLAS ============ -->
+<section class="section" style="padding-top:0">
+  <div class="shell">
+    <div class="atlas-band">
+      <div>
+        <span class="hud hud-lg" style="margin-bottom:22px"><svg><use href="#h-atlas"/></svg></span>
+        <span class="kicker">AI Atlas</span>
+        <h2 class="h2">Frag einfach. Atlas rechnet auf echten Daten.</h2>
+        <p class="lead">Stelle eine Investmentfrage in eigenen Worten – Atlas übersetzt sie in Filter und rechnet sie auf den Daten aus Screener, Supertrader und Quant aus.</p>
+        <div class="hero-cta"><a class="btn btn-app" href="/ask/">AI Atlas fragen <svg><use href="#i-arrow"/></svg></a></div>
+      </div>
+      <div class="chat" aria-hidden="true">
+        <div class="bubble q">Zeig mir günstig bewertete Small Caps mit wenig Schulden.</div>
+        <div class="bubble a">Ich habe das in <b>drei Filter</b> übersetzt: Marktkapitalisierung unter 2 Mrd. USD, KGV unter Branchenschnitt und niedrige Nettoverschuldung.<div class="src"><span>Screener</span><span>Quant</span><span>Datenstand heute</span></div></div>
+        <div class="chat-input"><span>Deine Frage an Atlas …</span><i>→</i></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SO FUNKTIONIERT'S ============ -->
+<section class="section" style="background:var(--bg-soft);border-block:1px solid var(--line)">
+  <div class="shell">
+    <div class="section-head">
+      <div><span class="kicker">So einfach geht's</span><h2 class="h2">In drei Schritten zur klaren Einordnung.</h2></div>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="hud"><svg><use href="#h-discover"/></svg></span><h3>Entdecken</h3><p>Starte mit Themenwelten, Rankings und Perspektiven und finde Unternehmen, die dich interessieren.</p></div>
+      <div class="step"><span class="hud"><svg><use href="#h-screener"/></svg></span><h3>Eingrenzen</h3><p>Filtere nach deinen Kriterien und sieh, welche Methoden und Setups gerade anschlagen.</p></div>
+      <div class="step"><span class="hud"><svg><use href="#h-elliott"/></svg></span><h3>Verstehen</h3><p>Prüfe Fundamentaldaten, Chart, Elliott-Zählung und Faktoren – mit klarer Einschätzung.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APP-EINSTIEG ============ -->
+<section class="section" id="app">
+  <div class="shell">
+    <div class="appcta">
+      <div class="appcta-copy">
+        <span class="kicker">Die Vision Universe App</span>
+        <h2 class="h2">Dein Research. Auf jedem Gerät.</h2>
+        <p class="lead">Alle Module in einer App – am Desktop, auf dem Tablet und auf dem Smartphone. Auf dem Handy einfach zum Home-Bildschirm hinzufügen und wie eine native App nutzen.</p>
+        <div class="hero-cta">
+          <a class="btn btn-dark btn-xl" href="/discover/">Jetzt App öffnen <svg><use href="#i-arrow"/></svg></a>
+          <a class="btn btn-ghost btn-xl" href="/ask/">AI Atlas</a>
+        </div>
+        <div class="devices">
+          <span><svg><use href="#i-laptop"/></svg>Desktop</span>
+          <span><svg><use href="#i-tablet"/></svg>Tablet</span>
+          <span><svg><use href="#i-phone"/></svg>Smartphone</span>
+        </div>
+      </div>
+      <div class="appcta-phones" aria-hidden="true">
+        <div class="phone p1"><div class="screen">
+          <div class="app-status"><span>9:41</span><span>●●● ▮</span></div>
+          <div class="app-top"><img src="/assets/vision-universe-logo.png" alt=""><span class="app-avatar"><svg><use href="#i-spark"/></svg></span></div>
+          <div class="app-h"><b>Themenwelten</b><span>Alle 54</span></div>
+          <div class="app-tiles">
+            <div class="app-tile"><img src="/assets/themen/01-kuenstliche-intelligenz.webp" alt="" loading="lazy"><span>Künstliche<br>Intelligenz</span></div>
+            <div class="app-tile"><img src="/assets/themen/02-halbleiter-chips.webp" alt="" loading="lazy"><span>Halbleiter</span></div>
+            <div class="app-tile"><img src="/assets/themen/16-raumfahrt.webp" alt="" loading="lazy"><span>Raumfahrt</span></div>
+            <div class="app-tile"><img src="/assets/themen/05-quantencomputing.webp" alt="" loading="lazy"><span>Quanten&shy;computing</span></div>
+            <div class="app-tile"><img src="/assets/themen/12-erneuerbare-energien.webp" alt="" loading="lazy"><span>Erneuerbare</span></div>
+            <div class="app-tile"><img src="/assets/themen/04-cybersecurity.webp" alt="" loading="lazy"><span>Cyber&shy;security</span></div>
+          </div>
+        </div></div>
+        <div class="phone p2"><div class="screen">
+          <div class="app-status"><span>9:41</span><span>●●● ▮</span></div>
+          <div class="app-top"><img src="/assets/vision-universe-logo.png" alt=""><span class="app-avatar"><svg><use href="#i-spark"/></svg></span></div>
+          <div class="app-h"><b>Watchlist</b><span>02.10.</span></div>
+          <div class="app-list" style="margin-top:0">
+            <div class="app-row"><span class="app-logo">NVDA</span><div><b>NVIDIA</b><small>233,95 $ · Welle 3</small></div><svg viewBox="0 0 60 24"><path d="%%SPK_NVDA%%" fill="none" stroke="#c8f531" stroke-width="2"/></svg></div>
+            <div class="app-row"><span class="app-logo">MSFT</span><div><b>Microsoft</b><small>517,53 $ · Turtle bereit</small></div><svg viewBox="0 0 60 24"><path d="%%SPK_MSFT%%" fill="none" stroke="#c8f531" stroke-width="2"/></svg></div>
+            <div class="app-row"><span class="app-logo">AAPL</span><div><b>Apple</b><small>333,69 $ · Trend bullisch</small></div><svg viewBox="0 0 60 24"><path d="%%SPK_AAPL%%" fill="none" stroke="#c8f531" stroke-width="2"/></svg></div>
+            <div class="app-row"><span class="app-logo">AMZN</span><div><b>Amazon</b><small>251,52 $ · Trend neutral</small></div><svg viewBox="0 0 60 24"><path d="%%SPK_AMZN%%" fill="none" stroke="#c8f531" stroke-width="2"/></svg></div>
+            <div class="app-row"><span class="app-logo">META</span><div><b>Meta Platforms</b><small>728,08 $ · Trend bullisch</small></div><svg viewBox="0 0 60 24"><path d="%%SPK_META%%" fill="none" stroke="#c8f531" stroke-width="2"/></svg></div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRINZIPIEN ============ -->
+<section class="section" style="padding-top:20px">
+  <div class="shell">
+    <div class="section-head">
+      <div><span class="kicker">Worauf du dich verlassen kannst</span><h2 class="h2">Research mit Haltung.</h2></div>
+      <p class="lead">Farbe ist Signal, nicht Schmuck. Und jede Zahl hat eine Quelle.</p>
+    </div>
+    <div class="principles">
+      <div class="principle"><span class="hud"><svg><use href="#h-shield"/></svg></span><h3>Unabhängig</h3><p>Keine Produktvermittlung, keine bezahlten Platzierungen – nur Daten und Methode.</p></div>
+      <div class="principle"><span class="hud"><svg><use href="#h-data"/></svg></span><h3>Transparent</h3><p>Datenstand, Regelversion und Methodik stehen offen – nachvollziehbar bis zu den Rohdaten.</p></div>
+      <div class="principle"><span class="hud"><svg><use href="#h-eye"/></svg></span><h3>Ehrlich</h3><p>Wo es keine belastbare Evidenz gibt, sagen wir es. Keine Stufe ist ein Versprechen.</p></div>
+      <div class="principle"><span class="hud"><svg><use href="#h-spark"/></svg></span><h3>Verständlich</h3><p>Klare Sprache statt Fachjargon – für Einsteiger und Profis gleichermaßen.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section" style="padding-top:20px" id="faq">
+  <div class="shell faq-grid">
+    <div><span class="kicker">FAQ</span><h2 class="h2">Häufige Fragen</h2><p class="lead">Noch etwas unklar? Frag einfach AI Atlas.</p></div>
+    <div class="faq">
+      <details open><summary>Was ist die Vision Universe App?</summary><p>Eine App für das komplette Aktien-Research: Discover, Quant, Screener, Supertrader, Elliott-Wave-Analysen, technische Analyse, Fundamentaldaten mit Einschätzungen und AI Atlas – alles auf denselben Daten und miteinander verbunden.</p></details>
+      <details><summary>Muss ich etwas installieren?</summary><p>Nein. Die App läuft im Browser auf Desktop, Tablet und Smartphone. Auf dem Handy kannst du sie zum Home-Bildschirm hinzufügen und wie eine native App starten.</p></details>
+      <details><summary>Welche Aktien sind abgedeckt?</summary><p>Aktuell über 6.000 US-Aktien mit Kursdaten, Fundamentaldaten aus bis zu 12 Geschäftsjahren, technischer Analyse und Elliott-Zählung – geordnet nach Branchen, Märkten und 54 Themenwelten.</p></details>
+      <details><summary>Wie entstehen die Elliott-Wave-Analysen?</summary><p>Regelbasiert und reproduzierbar: Die Zählung wird aus bestätigten Wendepunkten berechnet – mit Szenarien, Invalidierung und Zielzonen, ohne menschliches Einzeichnen. Die Elliott-Analyse ist als Beta gekennzeichnet.</p></details>
+      <details><summary>Sind die Signale Kaufempfehlungen?</summary><p>Nein. Alle Inhalte dienen der Information und Forschung. Setups sind Modellbeobachtungen nach festen Regeln, keine Anlageberatung und keine Empfehlung.</p></details>
+      <details><summary>Woher kommen die Daten?</summary><p>Aus Markt- und Unternehmensdaten, unter anderem Tageskursen und SEC-Berichten. Datenstand und Methodik sind in jedem Modul ausgewiesen.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCHLUSS ============ -->
+<section class="final">
+  <div class="shell">
+    <span class="kicker">Entdecken. Verstehen. Investieren.</span>
+    <h2 class="h2">Sieh den Markt mit anderen Augen.</h2>
+    <p class="lead">Öffne die App und starte deine Recherche – in wenigen Sekunden.</p>
+    <div class="hero-cta"><a class="btn btn-app btn-xl" href="/discover/">App öffnen <svg><use href="#i-arrow"/></svg></a></div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="shell">
+    <div class="footer-grid">
+      <div><img class="footer-logo" src="/assets/vision-universe-logo.png" width="2172" height="724" alt="Vision Universe®"><p>Unabhängiges Aktien-Research: entdecken, verstehen, investieren.</p></div>
+      <div><h4>App-Module</h4><ul><li><a href="/discover/">Discover</a></li><li><a href="/quant/">Quant</a></li><li><a href="/screener/">Screener</a></li><li><a href="/supertrader/">Supertrader</a></li><li><a href="/quant/#/aktie/NVDA/technik?elliott=1">Elliott Wave &amp; Technik</a></li><li><a href="/ask/">AI Atlas</a></li></ul></div>
+      <div><h4>Märkte &amp; Research</h4><ul><li><a href="/dashboard/">Dashboard</a></li><li><a href="/macro/">Macro</a></li><li><a href="/news/">News</a></li><li><a href="/morning/">Morning</a></li><li><a href="/magazin/">Magazin</a></li><li><a href="/vorsorge/">Vorsorge</a></li></ul></div>
+      <div><h4>Rechtliches</h4><ul>
+        <li><a href="https://www.visionuniverse.de/policies/legal-notice">Impressum</a></li>
+        <li><a href="https://www.visionuniverse.de/policies/privacy-policy">Datenschutz</a></li>
+        <li><a href="https://www.visionuniverse.de/policies/terms-of-service">AGB</a></li>
+        <li><a href="mailto:info@visionuniverse.de">Kontakt</a></li>
+      </ul></div>
+    </div>
+    <div class="disclaimer">
+      <p>Alle Inhalte dienen ausschließlich der Information und stellen keine Anlageberatung, Empfehlung oder Aufforderung zum Kauf oder Verkauf von Wertpapieren dar. Historische Entwicklungen sind kein verlässlicher Indikator für künftige Ergebnisse. Werte in den Produktabbildungen: Datenstand 02.10.2026.</p>
+      <span>© <span data-year>2026</span> Vision Universe®</span>
+    </div>
+  </div>
+</footer>
+<script>document.querySelector("[data-year]").textContent=new Date().getFullYear();</script>
+</body>
+</html>

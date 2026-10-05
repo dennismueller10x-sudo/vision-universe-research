@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="robots" content="noindex">
+<title>Offline — Vision Universe®</title>
+<style>
+:root{--bg:#ffffff;--fg:#0b0b0d;--muted:#5b5b66;--line:#e4e4ea}
+@media (prefers-color-scheme:dark){:root{--bg:#08080a;--fg:#f4f4f6;--muted:#a0a0ab;--line:#26262c}}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:32rem;margin:0 auto;padding:18vh 16px 32px}
+h1{font-size:1.5rem;margin:0 0 .5rem}
+p{color:var(--muted);margin:0 0 1.5rem}
+button{font:inherit;padding:.6rem 1.1rem;border-radius:999px;border:1px solid var(--line);background:var(--fg);color:var(--bg);cursor:pointer}
+</style>
+<link rel="stylesheet" href="/assets/site-navigation.css"></head>
+<body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<main>
+<h1>Keine Verbindung</h1>
+<p>Vision Universe zeigt Kurse und Kennzahlen nur mit aktuellem Stand. Ohne Internetverbindung kann die Seite nicht geladen werden.</p>
+<button type="button" onclick="location.reload()">Erneut versuchen</button>
+</main>
+</body>
+</html>

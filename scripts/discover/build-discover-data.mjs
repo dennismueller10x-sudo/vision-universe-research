@@ -44,6 +44,8 @@ const root = join(here, "..", "..");
 const { resolveProductUniverse } = await import(join(root, "scripts", "market", "universe-source.mjs"));
 
 const Factors = require(join(root, "quant", "engines", "market-factors.js"));
+const PublishedClose = require(join(root, "quant", "engines", "published-close.js"));
+const ReturnSeries = require(join(root, "quant", "engines", "return-series.js"));
 const DisplayPolicy = require(join(root, "quant", "engines", "display-policy.js"));
 const Generator = require(join(root, "quant", "engines", "mock-generator.js"));
 const MockProvider = require(join(root, "quant", "engines", "mock-provider.js"));
@@ -284,17 +286,11 @@ function loadGoldenPreviewBars() {
   return out;
 }
 
-/* Split-bereinigte Schlusskurse aus Tiingo-Rohbars. Dieselbe Ableitung
-   wie im Technical-Build: aus splitFactor, nicht aus adjClose. */
+/* Split-bereinigte Kurse aus Tiingo-Rohbars: aus splitFactor, nicht aus
+   adjClose. Der Faktor kommt aus der EINEN Definition
+   (quant/engines/return-series.js#splitFactors, ADR-002). */
 function splitAdjustedCloses(bars) {
-  const n = bars.length;
-  const factors = new Array(n).fill(1);
-  let cumulative = 1;
-  for (let i = n - 1; i >= 0; i--) {
-    factors[i] = cumulative;
-    const sf = bars[i].splitFactor;
-    if (isNum(sf) && sf !== 1) cumulative *= sf;
-  }
+  const factors = ReturnSeries.splitFactors(bars);
   return bars.map((b, i) => ({
     date: String(b.date).slice(0, 10),
     open: isNum(b.open) ? b.open / factors[i] : null,
@@ -361,7 +357,7 @@ function weeklySparkline(closes, points = 40) {
 const MICRO_DAYS = 270;
 
 function microSeries(dated, source, priceSeriesType) {
-  const valid = (dated || []).filter((b) => isNum(b.close) && b.date);
+  const valid = (dated || []).filter((b) => isNum(b.close) && b.close > 0 && b.date);
   if (valid.length < 10) {
     return withheldSeries("INSUFFICIENT_HISTORY", "Zu wenig Historie für einen Verlauf.");
   }
@@ -369,7 +365,9 @@ function microSeries(dated, source, priceSeriesType) {
   return { status: "CALCULATED", source, priceSeriesType: priceSeriesType || "SPLIT_ADJUSTED",
            dataMode: null, grain: "daily", asOf: fenster[fenster.length - 1].date,
            from: fenster[0].date, to: fenster[fenster.length - 1].date,
-           points: fenster.map((b) => [b.date, round(b.close, 2)]), path: null, message: null };
+           /* Dieselbe Rundung wie die veroeffentlichte Reihe (published-close.js):
+              unter 1 $ kein Verlust auf Cent, nie eine 0. */
+           points: fenster.map((b) => [b.date, PublishedClose.roundClose(b.close)]), path: null, message: null };
 }
 function withheldSeries(status, message) {
   return { status, source: null, priceSeriesType: null, asOf: null, from: null, to: null,
@@ -513,7 +511,12 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
        Nur Titel mit voller Historie und ohne kompakte Reihe bekommen eine
        Kopie im Series-Store. */
     const seriesPath = kompakt ? "/quant/data/market/discover-series/" + (kompakt.securityId || sec.securityId) + ".json" : null;
-    const kursCloses = goldenCloses || (kompaktDated ? kompaktDated.map((b) => b.close) : null);
+    /* Kurs und Tagesaenderung aus der EINEN veroeffentlichten Tagesreihe
+       (ADR-002, dieselbe Definition wie core/client.js#getLatestPrice):
+       vorher hatten die Golden-Five-Titel ungerundete Kurse aus den
+       Rohbars. Gemessen bitgleich auf allen 5.980 Titeln; die Golden-Reihe
+       bleibt nur Rueckfall ohne kompakte Reihe. */
+    const kursCloses = (kompaktDated ? kompaktDated.map((b) => b.close) : null) || goldenCloses;
 
     const stock = Contract.normalizeStock({
       symbol: sec.ticker,
@@ -1906,10 +1909,18 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
   } else series.long = null;
 
   if (!series.available && stock.dataMode === "real") {
-    series.reason = "WITHHELD_REDISTRIBUTION";
-    series.message = "Die Kursreihe dieses Titels stammt vom Anbieter und wird nach der " +
-                     "Redistributionsregel nicht ausgeliefert. Alle Kennzahlen auf dieser " +
-                     "Seite sind daraus abgeleitete Zustände, Abstände und Renditen.";
+    /* Der wahre Grund: ist die Reihe zu kurz (z. B. nur Kurse <= 0, GROM),
+       ist das keine Redistributionsregel (Red-Team 05.10.2026). */
+    if (stock.priceSeries && stock.priceSeries.status === "INSUFFICIENT_HISTORY") {
+      series.reason = "INSUFFICIENT_HISTORY";
+      series.message = "Für diesen Titel liegen zu wenige gültige Tageskurse für einen Verlauf vor. " +
+                       "Kennzahlen, die mehr Historie brauchen, bleiben gesperrt.";
+    } else {
+      series.reason = "WITHHELD_REDISTRIBUTION";
+      series.message = "Die Kursreihe dieses Titels stammt vom Anbieter und wird nach der " +
+                       "Redistributionsregel nicht ausgeliefert. Alle Kennzahlen auf dieser " +
+                       "Seite sind daraus abgeleitete Zustände, Abstände und Renditen.";
+    }
   }
 
   const detail = {

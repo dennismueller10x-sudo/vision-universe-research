@@ -126,6 +126,24 @@ test("Movers: Links zur Aktienseite, Sitzung genannt", () => {
   assert.match(text(node), /Sitzung vom/);
 });
 
+test("Movers: 'heute' nur am heutigen US-Handelstag, sonst das Sitzungsdatum", () => {
+  // 2026-10-02 (Fr) 20:00 UTC = 16:00 New York: dieselbe Sitzung -> heute.
+  assert.equal(MK.moversTitel("2026-10-02", new Date("2026-10-02T20:00:00Z")), "Top & Flop heute");
+  // Samstag in Berlin, Freitagssitzung: kein "heute".
+  assert.equal(MK.moversTitel("2026-10-02", new Date("2026-10-03T08:00:00Z")), "Top & Flop vom 02.10.2026");
+  // 03:00 UTC am 3.10. ist in New York noch der 2.10.
+  assert.equal(MK.moversTitel("2026-10-02", new Date("2026-10-03T03:00:00Z")), "Top & Flop heute");
+  assert.equal(MK.moversTitel(null, new Date()), "Top & Flop der letzten Sitzung");
+  const s = pulse.movers && pulse.movers.session;
+  if (s && pulse.movers.gainers) {
+    const node = MK.moversBereich(pulse, new Date(s + "T12:00:00-04:00"));
+    assert.equal(node.attrs["aria-label"], "Top & Flop heute");
+    const spaeter = MK.moversBereich(pulse, new Date(Date.parse(s + "T12:00:00Z") + 3 * 864e5));
+    assert.match(text(spaeter), /Top & Flop vom \d{2}\.\d{2}\.\d{4}/);
+    assert.doesNotMatch(text(spaeter), /heute/);
+  }
+});
+
 test("Keine Anbieterlogik und keine Umrechnung von Hand in Discover", () => {
   for (const f of ["../ui/market-detail.js", "../ui/markets.js"]) {
     const src = readFileSync(new URL(f, import.meta.url), "utf8");

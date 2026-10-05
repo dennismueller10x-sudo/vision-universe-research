@@ -34,6 +34,7 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const Identity = require(join(root, "core/identity.js")); // eine Identitaetsregel (ADR-001)
 const Master = require(join(root, "vorsorge/engines/etf-master.js"));
 const Tax = require(join(root, "vorsorge/engines/etf-taxonomy.js"));
 const FUND = require(join(root, "vorsorge/engines/etf-fundamentals.js"));
@@ -95,8 +96,8 @@ function loadRows() {
 function repoSeries(symbol) {
   const ma = tryJson(join(root, "quant/data/market/multi-asset/series", symbol + ".json"));
   if (ma?.points?.length && ma.assetClass === "ETF") return { daily: A.clean(ma.points), weekly: A.toWeekly(ma.points), sources: ["tiingo:multi-asset"] };
-  const d = tryJson(join(root, "quant/data/market/discover-series", "ref_" + symbol + ".json"));
-  const w = tryJson(join(root, "quant/data/market/discover-series-long", "ref_" + symbol + ".json"));
+  const d = tryJson(join(root, "quant/data/market/discover-series", Identity.securityIdForTicker(symbol) + ".json"));
+  const w = tryJson(join(root, "quant/data/market/discover-series-long", Identity.securityIdForTicker(symbol) + ".json"));
   const daily = A.clean(d?.points || []), longWeekly = A.clean(w?.points || []);
   if (!daily.length && !longWeekly.length) return null;
   return { daily, weekly: A.splice(longWeekly, A.toWeekly(daily)).points, sources: [d && "tiingo:discover-series", w && "tiingo:discover-series-long"].filter(Boolean) };

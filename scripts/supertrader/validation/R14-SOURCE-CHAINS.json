@@ -1,0 +1,1626 @@
+{
+ "schema": "supertrader-r14-source-chains-1.0.0",
+ "auditRound": "R14",
+ "createdAt": "2026-10-03",
+ "repoCommit": "98f57f6deb9 (read-only)",
+ "sourceTexts": "val/*-sources-r8.json, *-sources-r8b.json (Turtle-PDF als Scan, Seiten als Bild gelesen: val/tpages), *-sources-r10-minervini.json, val/tf.json (TraderFox). Zitate <= 15 Woerter, sonst Paraphrase.",
+ "classificationLegend": {
+  "ORIGINAL": "steht so beim Trader (Primaerquelle oder woertliches Zitat)",
+  "FORMALISIERUNG": "belegte Regel, mechanisch uebersetzt; Zahlen/Algorithmus teils VU",
+  "VU-ANNAHME": "Ergaenzung von Vision Universe ohne Traderbeleg",
+  "NICHT OEFFENTLICH": "Regel existiert, ist aber nicht oeffentlich",
+  "NICHT REPRODUZIERBAR": "Ermessen oder fehlende Daten",
+  "FREMDREGEL": "Regel aus einer anderen Quelle (TraderFox, anderer Trader, Website-Betreiber)"
+ },
+ "portfolioEngine": {
+  "formula": "shares = min( Base*r/(E-S0), eq*maxPositionPct/E, cash/(E*(1+comm)), max(0, eq*maxExposure-(eq-cash))/E ); Base = eq (Bargeld + offene Positionen zum Vortagesschluss) bzw. Turtle-Notionalkonto; r = riskPerTrade, bei progressive: r*factor wenn Summe PnL der letzten lookback abgeschlossenen Trades < 0. Gewicht w = E*shares/eq = min( r/d, maxPositionPct, cash/eq, maxExposure-investiert ) mit d=(E-S0)/E (Stopabstand).",
+  "rows": [
+   {
+    "rule": "Positionsgroesse (Formel)",
+    "sourceStatement": "siehe je Methode",
+    "source": "-",
+    "classification": "VU-ANNAHME",
+    "codeLocation": "scripts/supertrader/validation/portfolio.mjs:101-110 (identisch scripts/supertrader/engine/backtest.mjs:57-60, scripts/supertrader/model-portfolio.mjs:48)",
+    "liveValue": "shares = min( Base*r/(E-S0), eq*maxPositionPct/E, cash/(E*(1+comm)), max(0, eq*maxExposure-(eq-cash))/E ); Base = eq (Bargeld + offene Positionen zum Vortagesschluss) bzw. Turtle-Notionalkonto; r = riskPerTrade, bei progressive: r*factor wenn Summe PnL der letzten lookback abgeschlossenen Trades < 0. Gewicht w = E*shares/eq = min( r/d, maxPositionPct, cash/eq, maxExposure-investiert ) mit d=(E-S0)/E (Stopabstand).",
+    "assessment": "Eine Formel fuer alle Risiko-Methoden; Unterschiede nur ueber PORTFOLIO-Konstanten."
+   },
+   {
+    "rule": "Reihenfolge gleichzeitiger Einstiege",
+    "sourceStatement": "methodenspezifisch",
+    "source": "-",
+    "classification": "VU-ANNAHME",
+    "codeLocation": "scripts/supertrader/validation/portfolio.mjs:39-46; scripts/supertrader/model-portfolio.mjs:20-27",
+    "liveValue": "Seed (Zufall, Robustheit) > SCORE > RS (VU-RS-Perzentil Vortag, 0,4*r63+0,2*r126+0,2*r189+0,2*r252, build.mjs:164-165) > alphabetisch; live: RS fuer KK/Weinstein/Darvas/Minervini, ALPHA fuer Turtle",
+    "assessment": "Sequenziell: jeder Einstieg verbraucht Bargeld, spaetere desselben Tages bekommen weniger/nichts."
+   },
+   {
+    "rule": "Skip-Gruende",
+    "sourceStatement": "-",
+    "source": "-",
+    "classification": "VU-ANNAHME",
+    "codeLocation": "scripts/supertrader/validation/portfolio.mjs:97-110",
+    "liveValue": "MARKET_FILTER (nur cfg.marketFilter), MAX_POSITIONS, NO_RISK (Stop >= Einstieg), NO_CASH (shares <= 0)",
+    "assessment": "Ausstiege werden vor Einstiegen gebucht (Zeile 81-88) - frei gewordenes Kapital steht am selben Tag zur Verfuegung."
+   },
+   {
+    "rule": "Eine Position je Signal / kein Nachkauf",
+    "sourceStatement": "-",
+    "source": "-",
+    "classification": "VU-ANNAHME",
+    "codeLocation": "scripts/supertrader/engine/simulator.mjs:48,73,97-126 (state.signal genau eines je Titel)",
+    "liveValue": "pyramiding unmoeglich",
+    "assessment": "Strukturell: keine Add-ons/Units, fuer alle Methoden."
+   },
+   {
+    "rule": "Sperre nach geschlossenem Trade",
+    "sourceStatement": "-",
+    "source": "-",
+    "classification": "VU-ANNAHME",
+    "codeLocation": "scripts/supertrader/engine/simulator.mjs:28,123,141,152,230,277",
+    "liveValue": "COOLDOWN_SESSIONS = 5",
+    "assessment": "Gilt fuer alle Methoden; KK 3.1.0+ nur die Sperre nach verlorenem Setup auf 0 (kk-breakout-v31.mjs:24)."
+   },
+   {
+    "rule": "Kosten",
+    "sourceStatement": "-",
+    "source": "-",
+    "classification": "VU-ANNAHME",
+    "codeLocation": "scripts/supertrader/engine/execution.mjs:15-19",
+    "liveValue": "10 bp Slippage/Seite, 1 bp Gebuehr/Seite",
+    "assessment": "Neutral."
+   }
+  ],
+  "defaults": {
+   "where": "scripts/supertrader/engine/backtest.mjs:9-16",
+   "riskPerTrade": 0.005,
+   "maxPositionPct": 0.2,
+   "maxPositions": 10,
+   "maxExposure": 1.0,
+   "note": "Kommentar \"KK-RISK-01 Mitte der Spanne 0.3-0.5 %\": Kullamaegi-Zahl, gilt fuer jede Methode mit portfolio:null (live: Weinstein 4.0.0)."
+  },
+  "liveSnapshot_portfolio_json_2026-10-02": {
+   "DARVAS_BOX": "6 offen, 5x Gewicht 16,67 % (Kappung) mit Anfangsrisiko 0,18-0,29 %; NTAP (Altsignal 1.2.0, Stop Boxunterkante 23 % tiefer) 2,1 %; 7x MAX_POSITIONS; 2 Gleichtags-Ausstopps -1,22 %",
+   "DONCHIAN_TURTLE": "4 offen (ABCL, ACLS, ADI, AEO - alphabetisch erste; Altsignale 1.1.0 mit 2.0.2-Groesse) = 100 % investiert, Gewichte 19-36 % bei je 2 % Risiko; 108x NO_CASH",
+   "MOMENTUM_BREAKOUT": "0 offen, 1 Altsignal 1.1.0 am Einstiegstag ausgestoppt",
+   "WEINSTEIN_STAGE": "noch kein Einstieg",
+   "MINERVINI_VCP": "noch kein Einstieg"
+  }
+ },
+ "strategies": {
+  "MOMENTUM_BREAKOUT": {
+   "version": "3.2.0",
+   "rows": [
+    {
+     "rule": "Auswahl: staerkste 1-2 %",
+     "sourceStatement": "Scanne die 1-2 % Aktien mit dem groessten Anstieg ueber 1, 3 und 6 Monate.",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021), Abschnitt Breakouts",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout.mjs:19,46-50; build.mjs:150-176",
+     "liveValue": "max(Perzentil 21/63/126 Tage) >= 98; Querschnitt nur Titel mit 20-Tage-Dollarumsatz >= 1 Mio.",
+     "assessment": "faithful. LC-RANK-AT-DISCOVERY (kk-breakout.mjs:49: Rang gilt ab Entdeckung weiter) ist VU."
+    },
+    {
+     "rule": "Vorlauf 30-100 %+ in 1-3 Monaten",
+     "sourceStatement": "Grosse Bewegung (30-100 %+) irgendwann in den letzten 1-3 Monaten.",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout.mjs:20-21,53-59",
+     "liveValue": "minPriorRun 0,30; Tief bis Hoch innerhalb 63 Sitzungen vor dem Hoch; Hoch in den letzten 40 Sitzungen",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Konsolidierung 2 Wochen bis 2 Monate",
+     "sourceStatement": "Konsolidierung meist 2 Wochen bis 2 Monate.",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout.mjs:22-23,77",
+     "liveValue": "baseMinBars 10, baseMaxBars 40 (seit dem Hoch)",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Basisform: hoehere Tiefs, enger werdende Spanne",
+     "sourceStatement": "Geordneter Ruecksetzer mit hoeheren Tiefs und enger werdender Spanne.",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout.mjs:24,61-80",
+     "liveValue": "Tiefe <= 25 % (VU); 2. Basishaelfte-Tief >= 1. Haelfte; Mittel Tagesspanne letzte 5 < erste Basishaelfte",
+     "assessment": "Algorithmus und 25 % sind VU; starr gegenueber Augenmass (R10: viele Gewinner nie Kandidat)."
+    },
+    {
+     "rule": "Trend: Kurs surft steigende 10/20-Tage-Linie",
+     "sourceStatement": "Waehrend der Konsolidierung \"surft\" der Kurs die steigende 10- und 20-Tage-Linie (manchmal 50).",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout.mjs:84-85; kk-breakout-v31.mjs:16-17",
+     "liveValue": "Schluss > min(SMA10, SMA20) und SMA20 > SMA20 vor 5 Sitzungen",
+     "assessment": "faithful (50-Tage-Variante nicht abgebildet)."
+    },
+    {
+     "rule": "Liquiditaet",
+     "sourceStatement": "Antwort im Kommentarbereich: \"too thin\" meint den Dollarumsatz; keine Zahl.",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021), Kommentar KK 28.03.2021",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout.mjs:31-32,36-41",
+     "liveValue": "Kurs >= 5 USD, Dollarumsatz20 >= 5 Mio., ADR20 >= 2 %",
+     "assessment": "Konzept bei KK vorhanden, Schwellen VU."
+    },
+    {
+     "rule": "ADR-Definition",
+     "sourceStatement": "ADR = durchschnittliche Tagesspanne in % ueber 20 Sitzungen (Formel H/L).",
+     "source": "qullamaggie.com/faq/",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/indicators.mjs:23-26",
+     "liveValue": "adrPct(high, low, 20)",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Fundamentaldaten",
+     "sourceStatement": "Wachstum gibt nur mehr Ueberzeugung; Momentum ist das Wichtigste (Kommentar 09.02.2021). Keine feste Regel fuer Breakouts.",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021), Kommentar KK 09.02.2021",
+     "classification": "NICHT REPRODUZIERBAR",
+     "codeLocation": "-",
+     "liveValue": "kein Filter",
+     "assessment": "faithful (keine Regel); Ueberzeugungs-Gewichtung nicht abbildbar."
+    },
+    {
+     "rule": "Einstieg / Pivot",
+     "sourceStatement": "Kauf am Opening-Range-Hoch (1/5/60 Min.) oder nach Tageschart, wenn der Ausbruch beginnt.",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout.mjs:25,88; kk-breakout-v3.mjs:51-66; scripts/supertrader/engine/simulator.mjs:182-212",
+     "liveValue": "Kauf-Stop am Hoch der letzten 5 Sitzungen (Stand Vortag), Fuellung max(Eroeffnung, Trigger)+10 bp",
+     "assessment": "deviates: ORH fehlt (keine Intraday-Historie), 5-Tage-Hoch ist VU; entryReadyDistance 3 % VU."
+    },
+    {
+     "rule": "Gap-Regel",
+     "sourceStatement": "Keine Gap-Sperre in der Quelle.",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021)",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout-v3.mjs:40",
+     "liveValue": "gapSkipAdrMultiple null",
+     "assessment": "faithful (Sperre bis 2.0.0 war VU)."
+    },
+    {
+     "rule": "Anfangsstop",
+     "sourceStatement": "Stop immer am Tagestief, nicht weiter als ATR/ADR.",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout-v3.mjs:55-59; scripts/supertrader/engine/simulator.mjs:213-231",
+     "liveValue": "Stop = max(min(Tagestief, Fill*0,9999), Fill*(1-ADR20 Vortag)); sicherer Gleichtagsausstieg nur bei Schluss <= Stop",
+     "assessment": "deviates leicht: Tagestief des ganzen Tages statt bis zum Kauf (R9: zu guenstig)."
+    },
+    {
+     "rule": "Teilverkauf",
+     "sourceStatement": "1/3 bis 1/2 nach 3-5 Tagen verkaufen.",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout-v32.mjs:13; kk-breakout.mjs:28-29",
+     "liveValue": "1/3 zur Eroeffnung nach 3 gehaltenen Sitzungen",
+     "assessment": "faithful (jeweils unteres Ende der Spannen)."
+    },
+    {
+     "rule": "Stop auf Einstand",
+     "sourceStatement": "Danach den Stop auf Einstand ziehen.",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout-v32.mjs:14-15",
+     "liveValue": "Einstand nur, wenn Schluss > Einstieg",
+     "assessment": "faithful mit VU-Bedingung (verhindert Stop ueber dem Markt)."
+    },
+    {
+     "rule": "Trailing des Rests",
+     "sourceStatement": "Rest mit 10- oder 20-Tage-Linie; Anfaenger: erster SCHLUSS unter der 10-Tage-Linie.",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021)",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout-v32.mjs:16-17",
+     "liveValue": "nach Teilverkauf: Schluss < SMA10 -> Verkauf naechste Eroeffnung",
+     "assessment": "faithful (10-Tage-Variante)."
+    },
+    {
+     "rule": "Invalidation vor Einstieg",
+     "sourceStatement": "nicht in der Quelle",
+     "source": "-",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout.mjs:33,125-129",
+     "liveValue": "Schluss < Basistief oder > 20 Sitzungen wartend",
+     "assessment": "VU."
+    },
+    {
+     "rule": "Zeitausstieg",
+     "sourceStatement": "keiner",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021)",
+     "classification": "ORIGINAL",
+     "codeLocation": "-",
+     "liveValue": "keiner",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Marktfilter",
+     "sourceStatement": "Keine schriftliche Regel; Kommentar: handelt das Setup \"in bullish markets\", Einzelaktie/Gruppe zaehlt mehr.",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021), Kommentar KK 09.02.2021",
+     "classification": "NICHT REPRODUZIERBAR",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout-v3.mjs:68 (kein marketFilter)",
+     "liveValue": "kein Filter (PORT-MARKET-200 in R12 nicht uebernommen)",
+     "assessment": "faithful als schriftliche Regel; Ermessen ueber Marktlage fehlt."
+    },
+    {
+     "rule": "Risiko je Trade",
+     "sourceStatement": "Artikel: meist 0,25-1 %, selten > 1 %; FAQ: meist 0,3-0,5 %.",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021); qullamaggie.com/faq/",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout-v3.mjs:68",
+     "liveValue": "riskPerTrade 0,005 (fix)",
+     "assessment": "faithful; Abhaengigkeit von Liquiditaet/Ueberzeugung nicht abgebildet."
+    },
+    {
+     "rule": "Positionsgewicht",
+     "sourceStatement": "Artikel: meist 10-20 % des Kontos; FAQ: generell 5-25 %, meist 10-15 %.",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021); qullamaggie.com/faq/",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/validation/portfolio.mjs:106-109",
+     "liveValue": "w = min(0,5 %/d, 25 %, Bargeld); d <= ADR",
+     "assessment": "faithful bei d 2,5-5 % (w 10-20 %)."
+    },
+    {
+     "rule": "Hoechstens 30 % ueber Nacht in einer Aktie",
+     "sourceStatement": "Nie mehr als 30 % des Kontos ueber Nacht in einer Aktie/ETF.",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021)",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout-v3.mjs:68",
+     "liveValue": "maxPositionPct 0,25",
+     "assessment": "faithful (strenger)."
+    },
+    {
+     "rule": "Hoechstzahl Positionen",
+     "sourceStatement": "keine Zahl in der Quelle",
+     "source": "-",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout-v3.mjs:68",
+     "liveValue": "maxPositions 10",
+     "assessment": "VU; bei 10-15 % Gewicht implizit 7-10 Titel plausibel."
+    },
+    {
+     "rule": "Hebel/Margin",
+     "sourceStatement": "Nutzt Margin (\"if you have to ask you don't get to use it\"); intraday mehr als 30 %.",
+     "source": "qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021), Kommentar KK 19.05.2021",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/kk-breakout-v3.mjs:68; scripts/supertrader/validation/portfolio.mjs:109",
+     "liveValue": "maxExposure 1,0 (kein Hebel)",
+     "assessment": "deviates."
+    },
+    {
+     "rule": "Aufstocken",
+     "sourceStatement": "EP-Artikel: nach Kauf am 1-Min-Hoch evtl. am 5-Min-Hoch nachkaufen fuer mehr Groesse.",
+     "source": "qullamaggie.com/how-to-master-a-setup-episodic-pivots/ (02.11.2021)",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/simulator.mjs:97-126",
+     "liveValue": "nicht moeglich",
+     "assessment": "missing (intraday, gering)."
+    },
+    {
+     "rule": "Rang gleichzeitiger Signale",
+     "sourceStatement": "keine Regel (Auswahl der Staerksten)",
+     "source": "-",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/model-portfolio.mjs:23-27; scripts/supertrader/validation/analyze-methods.mjs:134",
+     "liveValue": "RS-Perzentil Vortag",
+     "assessment": "VU, passt zur Idee."
+    },
+    {
+     "rule": "Wiedereinstieg",
+     "sourceStatement": "keine Regel",
+     "source": "-",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/simulator.mjs:28,277; scripts/supertrader/engine/strategies/kk-breakout-v31.mjs:24",
+     "liveValue": "5 Sitzungen Sperre nach Trade; 0 nach verlorenem Setup",
+     "assessment": "VU."
+    }
+   ],
+   "missing": [
+    "Episodic Pivot und Parabolic Short/Long (2 von 3 Setups)",
+    "Opening-Range-Einstieg intraday (1/5/60 Min.)",
+    "Intraday-Aufstocken (EP-Artikel)",
+    "Margin/Hebel",
+    "Groesse nach Liquiditaet und Ueberzeugung (5-25 %)",
+    "Teilverkauf 1/2 und 20-Tage-Trailing fuer schnelle Aktien (Wahlvarianten)",
+    "Ermessen ueber Marktlage (\"bullish markets\")",
+    "Basisbeurteilung nach Augenmass",
+    "Leerverkauf"
+   ],
+   "sizing": {
+    "describedByTrader": {
+     "riskPerTrade": "0,25-1 % (Artikel), meist 0,3-0,5 % (FAQ), selten > 1 %; frueher mit kleinem Konto 0,5-1,5 %",
+     "positionWeight": "meist 10-20 % (Artikel), 5-25 %, meist 10-15 % (FAQ)",
+     "maxSingle": "nie > 30 % ueber Nacht",
+     "numberOfPositions": "nicht genannt",
+     "leverage": "Margin ja (Kommentar 19.05.2021); intraday mehr",
+     "evidence": "alles im abgerufenen Volltext (qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/ (08.01.2021), qullamaggie.com/faq/)"
+    },
+    "vuFormula": "w = min(0,005/d, 0,25, cash/eq); d = (Fill - Stop)/Fill <= ADR20 (>= 2 %)",
+    "constants": {
+     "riskPerTrade": 0.005,
+     "maxPositionPct": 0.25,
+     "maxPositions": 10,
+     "maxExposure": 1.0,
+     "priority": "RS",
+     "marketFilter": false,
+     "where": "scripts/supertrader/engine/strategies/kk-breakout-v3.mjs:68 (via v31/v32 durchgereicht)"
+    },
+    "examples": {
+     "d=2 %": "25 % (Kappe)",
+     "d=4 %": "12,5 %",
+     "d=6 %": "8,3 %"
+    },
+    "lowCapitalCause": "Nicht die Formel (Gewichte liegen im KK-Bereich), sondern wenige gleichzeitige Setups (Top-2-%-Rang + starre Basisformel) und kurze Haltedauer (Stop am Kauftag, Teilverkauf nach 3 Tagen); R13: Rueckstand fast ganz durch Cash."
+   },
+   "verdict": "Testet Kullamaegis Breakout-Einstiegs- und Positionsfuehrungsregeln (Auswahl, Basis, Kauf-Stop, Tagestief-Stop, 1/3 nach 3 Tagen, 10-Tage-Trailing) recht quellennah, aber als mechanische VU-Variante in einem VU-Portfolio (fix 0,5 %, max. 10, ohne Margin, RS-Rang) und nur fuer 1 von 3 Setups ohne Intraday-ORH und Ermessen. => \"Einstiegs- und Exit-Idee des Traders im VU-Portfolio\", nicht \"die Methode\"."
+  },
+  "WEINSTEIN_STAGE": {
+   "version": "4.0.0",
+   "rows": [
+    {
+     "rule": "Stufenmodell / 30-Wochen-Linie",
+     "sourceStatement": "Kauf in Stufe 2: Kurs ueber flacher oder steigender 30-Wochen-Linie.",
+     "source": "stageanalysis.net/blog/4372 Breakout Quality Checklist (Betreiber-Checkliste, zitiert Buch S. 75); thepatternsite.com/TradingWeinstein.html (Bulkowski, mit Buchzitaten)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/weinstein.mjs:15-19,30-48",
+     "liveValue": "Steigung MA30 ueber 4 Wochen > +0,5 % und Schluss > MA30 = Stufe 2; |Steigung| <= 0,5 % flach",
+     "assessment": "Schwellen VU (keine Zahl bei Weinstein)."
+    },
+    {
+     "rule": "Stufe-1-Basis",
+     "sourceStatement": "Basis vor dem Ausbruch (Bulkowski: flache Linie durch >= 3 Spitzen = seine Interpretation).",
+     "source": "thepatternsite.com/TradingWeinstein.html (Bulkowski, mit Buchzitaten)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/weinstein.mjs:19-20,50-65,87",
+     "liveValue": ">= 10 Wochen MA30 flach (<= 1 %/4 Wo) und Kurs +-15 % um MA30",
+     "assessment": "VU-Formel."
+    },
+    {
+     "rule": "Fortsetzungskauf in Stufe 2 (4.0.0)",
+     "sourceStatement": "Trader-Methode: Fortsetzungsausbruch nach mehrmonatiger Konsolidierung ueber steigender 30-Wochen-Linie, 10-Wochen-Linie steigt, neue Hochs.",
+     "source": "stageanalysis.net/blog/4372 Breakout Quality Checklist (Betreiber-Checkliste, zitiert Buch S. 75)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/weinstein-v4.mjs:10,14-33,35-56",
+     "liveValue": "H = hoechster Wochenschluss 52 Wo; >= 8 Wochen ohne neuen Schluss > H; jeder Wochenschluss > MA30; Tiefe <= 25 %; MA10 > MA10 vor 4 Wo; Kauf-Stop max(Tageshoch seit j0, H)",
+     "assessment": "Fremdregel-Anteil: Checkliste des Site-Betreibers (nicht Weinsteins Wortlaut); Zahlen 8 Wo/25 %/52 Wo VU. Weinstein bevorzugt als Investor fruehe Stufe 2."
+    },
+    {
+     "rule": "Einstieg per Buy-Stop",
+     "sourceStatement": "Weinstein zitiert: Kauf \"with a buy-stop order\"; Bulkowski: Buy-Stop einen Cent ueber der Basis.",
+     "source": "thepatternsite.com/TradingWeinstein.html (Bulkowski, mit Buchzitaten)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/weinstein-v3.mjs:31-43,47-60",
+     "liveValue": "Trigger = hoechstes Tageshoch seit Basisbeginn; Fill max(Eroeffnung, Trigger)+10 bp",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Marktfilter (Forest to the Trees)",
+     "sourceStatement": "Ist der Markttrend negativ, sehr wenig oder gar nicht kaufen (Buch S. 75).",
+     "source": "stageanalysis.net/blog/4372 Breakout Quality Checklist (Betreiber-Checkliste, zitiert Buch S. 75)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/weinstein-v2.mjs:28-34; weinstein-v3.mjs:51-53",
+     "liveValue": "SPY-Wochenschluss > MA30 und MA30 >= MA30 vor 4 Wo * (1-0,005), Stand letzter Wochenschluss",
+     "assessment": "faithful im Sinn, binaer."
+    },
+    {
+     "rule": "Gruppe/Sektor",
+     "sourceStatement": "Zuerst die technisch besten Gruppen, dann die 1-2 besten Charts darin (Buch S. 75).",
+     "source": "stageanalysis.net/blog/4372 Breakout Quality Checklist (Betreiber-Checkliste, zitiert Buch S. 75); thepatternsite.com/TradingWeinstein.html (Bulkowski, mit Buchzitaten)",
+     "classification": "NICHT REPRODUZIERBAR",
+     "codeLocation": "-",
+     "liveValue": "fehlt",
+     "assessment": "missing (keine PIT-Gruppendaten); laut Weinstein zentral."
+    },
+    {
+     "rule": "Relative Staerke",
+     "sourceStatement": "RS gegen S&P 500 ueber der Nulllinie (Mansfield); nie mit negativer RS kaufen.",
+     "source": "stageanalysis.net/blog/4372 Breakout Quality Checklist (Betreiber-Checkliste, zitiert Buch S. 75)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/weekly.mjs:46-47; scripts/supertrader/engine/strategies/weinstein-v3.mjs:54-55",
+     "liveValue": "Mansfield-RS > 0 zum letzten Wochenschluss",
+     "assessment": "faithful; Steigung der Nulllinie fehlt."
+    },
+    {
+     "rule": "Ausbruchsvolumen",
+     "sourceStatement": "Ohne deutlichen Volumenanstieg meiden; mit Buy-Stop gekauft: beim Anstieg schnell mit Gewinn verkaufen. >= 2x Schnitt der 4 Vorwochen.",
+     "source": "thepatternsite.com/TradingWeinstein.html (Bulkowski, mit Buchzitaten); stageanalysis.net/blog/4372 Breakout Quality Checklist (Betreiber-Checkliste, zitiert Buch S. 75)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/weinstein-v2.mjs:28; weinstein-v3.mjs:65-75; scripts/supertrader/engine/weekly.mjs:48-52",
+     "liveValue": "Ausbruchswoche < 2x volAvg4 -> Verkauf naechste Eroeffnung beim ersten Schluss > Einstieg",
+     "assessment": "faithful; Wochenvolumen live nur im 1-Jahres-Tagesfenster (weekly.mjs:30-37)."
+    },
+    {
+     "rule": "Liquiditaet",
+     "sourceStatement": "keine Weinstein-Regel ($5-Minimum ist Bulkowskis eigene Wahl)",
+     "source": "thepatternsite.com/TradingWeinstein.html (Bulkowski, mit Buchzitaten)",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/weinstein.mjs:26,77; weinstein-v4.mjs:42",
+     "liveValue": "Kurs >= 5, Dollarumsatz20 >= 5 Mio.",
+     "assessment": "VU."
+    },
+    {
+     "rule": "Anfangsstop",
+     "sourceStatement": "Stop unter dem naechsten bedeutenden Zwischentief unter dem Ausbruch, nicht auf runden Zahlen; je nach Chart (z. B. 8-10 %).",
+     "source": "thepatternsite.com/WeinsteinStops.html (Bulkowski); thepatternsite.com/TradingWeinstein.html (Bulkowski, mit Buchzitaten)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/weinstein.mjs:25; weinstein-v2.mjs:61; weinstein-v4.mjs:51; weinstein-v3.mjs:58",
+     "liveValue": "2 % unter dem tiefsten WOCHENSCHLUSS der Basis (Fortsetzung: seit j0)",
+     "assessment": "deviates: Basistief statt naechstes Zwischentief -> oft sehr weit (process-chain: im Mittel ~17 %); keine Rundungsregel; keine Hoechstdistanz."
+    },
+    {
+     "rule": "Stop nachziehen",
+     "sourceStatement": "Stop unter dem tieferen Wert von 30-Wochen-Linie und Zwischentief, erst nachziehen wenn der Kurs das alte Hoch erreicht; in Stufe 3 enger.",
+     "source": "thepatternsite.com/WeinsteinStops.html (Bulkowski)",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/strategies/weinstein-v2.mjs:20-22,90-101",
+     "liveValue": "kein Nachziehen (WEIN-TRAIL-VU seit 2.0.0 entfernt)",
+     "assessment": "missing. process-chain.mjs:34 behauptet woechentliches Nachziehen 2 % unter MA30 - nicht im Live-Code."
+    },
+    {
+     "rule": "Ausstieg",
+     "sourceStatement": "Investor: halten bis der Stop greift; spaetestens bei Stufe 4 raus.",
+     "source": "thepatternsite.com/WeinsteinStops.html (Bulkowski)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/weinstein-v2.mjs:96",
+     "liveValue": "Wochenschluss < MA30 -> Verkauf naechste Eroeffnung",
+     "assessment": "deviates: frueher als Weinsteins Stop unter MA30 UND Zwischentief; keine Stufe-3-Verengung."
+    },
+    {
+     "rule": "Invalidation vor Einstieg",
+     "sourceStatement": "nicht in der Quelle",
+     "source": "-",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/weinstein.mjs:27,123-127",
+     "liveValue": "Schluss < Stopmarke oder > 60 Sitzungen",
+     "assessment": "VU."
+    },
+    {
+     "rule": "Halbe Position + Ruecksetzerkauf",
+     "sourceStatement": "Weinstein schlaegt vor: halbe Position beim Ausbruch, halbe beim Ruecksetzer.",
+     "source": "thepatternsite.com/TradingWeinstein.html (Bulkowski, mit Buchzitaten)",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/simulator.mjs:97-126",
+     "liveValue": "fehlt",
+     "assessment": "missing (einzige Positionsaufbau-Regel im Text)."
+    },
+    {
+     "rule": "Risiko je Trade",
+     "sourceStatement": "keine Zahl in den abgerufenen Texten",
+     "source": "-",
+     "classification": "FREMDREGEL",
+     "codeLocation": "scripts/supertrader/engine/backtest.mjs:9-16; scripts/supertrader/engine/strategies/weinstein-v3.mjs:84; scripts/supertrader/model-portfolio.mjs:25",
+     "liveValue": "portfolio null -> 0,5 % (Kommentar KK-RISK-01 = Kullamaegi-Zahl)",
+     "assessment": "Hauptursache der niedrigen Investitionsquote: w ~ 0,5 %/17 % ~ 3 %."
+    },
+    {
+     "rule": "Hoechstgewicht",
+     "sourceStatement": "keine Zahl",
+     "source": "-",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/backtest.mjs:12",
+     "liveValue": "20 %",
+     "assessment": "nie bindend bei weiten Stops."
+    },
+    {
+     "rule": "Hoechstzahl Positionen",
+     "sourceStatement": "keine Zahl (Buch S. 75: 1-2 beste Charts je Gruppe)",
+     "source": "stageanalysis.net/blog/4372 Breakout Quality Checklist (Betreiber-Checkliste, zitiert Buch S. 75)",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/backtest.mjs:13",
+     "liveValue": "10",
+     "assessment": "bindet bei ~3 % Gewicht: max. ~30 % investiert."
+    },
+    {
+     "rule": "Rang gleichzeitiger Signale",
+     "sourceStatement": "beste Charts in besten Gruppen",
+     "source": "stageanalysis.net/blog/4372 Breakout Quality Checklist (Betreiber-Checkliste, zitiert Buch S. 75)",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/model-portfolio.mjs:23-27",
+     "liveValue": "RS-Perzentil Vortag",
+     "assessment": "VU-naeherung ohne Gruppen."
+    },
+    {
+     "rule": "Wiedereinstieg",
+     "sourceStatement": "keine Regel",
+     "source": "-",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/simulator.mjs:28",
+     "liveValue": "5 Sitzungen Sperre",
+     "assessment": "VU."
+    },
+    {
+     "rule": "Leerverkauf Stufe 4, Langfristindikatoren, Saisonalitaet",
+     "sourceStatement": "im Buch behandelt (Bulkowski erwaehnt 4-Jahres-Zyklus, beste Monate/Tage)",
+     "source": "thepatternsite.com/TradingWeinstein.html (Bulkowski, mit Buchzitaten)",
+     "classification": "NICHT REPRODUZIERBAR",
+     "codeLocation": "-",
+     "liveValue": "fehlt",
+     "assessment": "missing (Long-only-Rahmen)."
+    }
+   ],
+   "missing": [
+    "Gruppen-/Sektorstufe (Forest to the Trees Schritt 2)",
+    "Halbe Position beim Ausbruch + Rest beim Ruecksetzer",
+    "Nachziehen des Stops unter MA30/Zwischentief, Stufe-3-Verengung",
+    "Rundungsregel fuer Stops",
+    "Anfangsstop am naechsten Zwischentief statt Basistief",
+    "Langfristige Marktindikatoren (A/D-Linie u. a.)",
+    "Leerverkauf in Stufe 4"
+   ],
+   "sizing": {
+    "describedByTrader": {
+     "positionBuild": "halbe Position beim Ausbruch, halbe beim Ruecksetzer (Bulkowski ueber das Buch)",
+     "riskPerTrade": "nicht in abgerufenen Texten",
+     "numberOfPositions": "nicht genannt; Fokus auf 1-2 beste Charts in den besten Gruppen (Buch S. 75 via stageanalysis.net)",
+     "note": "Weitere Portfolio-Hinweise des Buchs (Streuung) sind NICHT in den abgerufenen Texten - nur Gedaechtnis/unbelegt."
+    },
+    "vuFormula": "w = min(0,005/d, 0,20, cash/eq); d = (Fill - 0,98*tiefster Wochenschluss der Basis)/Fill",
+    "constants": {
+     "riskPerTrade": 0.005,
+     "maxPositionPct": 0.2,
+     "maxPositions": 10,
+     "maxExposure": 1.0,
+     "priority": "RS",
+     "marketFilter": false,
+     "where": "scripts/supertrader/engine/backtest.mjs:9-16 (portfolio: null, scripts/supertrader/engine/strategies/weinstein-v3.mjs:84)"
+    },
+    "examples": {
+     "d=10 %": "5 %",
+     "d=17 % (Mittel laut process-chain.mjs:33)": "2,9 % -> 10 Positionen ~29 % investiert",
+     "d=27 % (Fortsetzungsbasis 25 % tief + 2 %)": "1,9 %"
+    },
+    "lowCapitalCause": "Formel-bedingt (strukturell): 0,5 % Risiko geteilt durch weite Wochen-Stops ergibt ~2-5 % Gewicht; mit 10 Plaetzen nie mehr als ~30-50 % investiert; dazu wenige Signale."
+   },
+   "verdict": "Testet Weinsteins Einstiegsidee (Stufe-2-Ausbruch per Buy-Stop, Markt-, RS- und Volumenpruefung, Fortsetzungsbasis nach Checkliste eines Dritten) in einem VU-Risiko- und Exitmodell: Positionsgroesse ist eine Kullamaegi-Zahl, Stop am Basistief statt Zwischentief, kein Nachziehen, Ausstieg am MA-Schluss, keine Gruppen und keine Halbposition. => \"Einstiegsidee im VU-Portfolio/Risiko/Exit-Modell\"."
+  },
+  "DARVAS_BOX": {
+   "version": "3.0.2",
+   "rows": [
+    {
+     "rule": "Auswahl: guter Anstieg mit starkem Volumen",
+     "sourceStatement": "Beobachtet eine Aktie erst, wenn sie mit starkem Volumen gut steigt.",
+     "source": "TIME 25.05.1959 \"Business: Pas de Dough\" (time.com/archive/6803538)",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/darvas.mjs:16-17,102-111",
+     "liveValue": "Schluss >= 90 % des 252-Tage-Hochs (oder Boxoberkante >= 95 %), 6-Monats-Perzentil >= 80; KEIN Volumenkriterium",
+     "assessment": "deviates: Volumen fehlt, Zahlen VU."
+    },
+    {
+     "rule": "Wachstumsfirmen / Gewinne",
+     "sourceStatement": "Nur \"infant industries\", deren Gewinne sich verdoppeln oder verdreifachen koennten; keine KGV/Dividenden.",
+     "source": "TIME 25.05.1959 \"Business: Pas de Dough\" (time.com/archive/6803538)",
+     "classification": "ORIGINAL",
+     "codeLocation": "-",
+     "liveValue": "fehlt",
+     "assessment": "missing (R13-Doku nennt faelschlich einen Gewinnfilter als VU-Annahme)."
+    },
+    {
+     "rule": "Boxbildung (3-Tage-Regel)",
+     "sourceStatement": "TIME beschreibt keine Box. TraderFox schreibt Darvas die 3-Tage-Regel fuer Ober-/Unterkante zu (Sekundaerrekonstruktion).",
+     "source": "traderfox.de 21.04.2018 Regelbasiertes NEO-DARVAS-Musterdepot (Artikel 795)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/darvas.mjs:14-15,76-95",
+     "liveValue": "Oberkante = neues 20-Tage-Hoch, 3 Sitzungen nicht ueberschritten; Unterkante = tiefstes Tief danach, 3 Sitzungen gehalten",
+     "assessment": "nicht auf Darvas-Primaertext rueckfuehrbar; 20-Tage-Hoch VU."
+    },
+    {
+     "rule": "Boxhoehe",
+     "sourceStatement": "-",
+     "source": "-",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/darvas.mjs:19-20,118-123",
+     "liveValue": "3-25 %",
+     "assessment": "VU."
+    },
+    {
+     "rule": "Box an den Hochs",
+     "sourceStatement": "TraderFox: Darvas kaufte nur, wenn die Boxoberkante ein historisches bzw. Mehrjahreshoch war.",
+     "source": "traderfox.de 21.04.2018 Regelbasiertes NEO-DARVAS-Musterdepot (Artikel 795)",
+     "classification": "FREMDREGEL",
+     "codeLocation": "scripts/supertrader/engine/strategies/darvas.mjs:21,121",
+     "liveValue": "Oberkante >= 95 % des 252-Tage-Hochs",
+     "assessment": "VU-Abschwaechung einer Fremdbehauptung."
+    },
+    {
+     "rule": "Einstieg",
+     "sourceStatement": "Kauforders auf Kursniveaus, die er fuer Ausbruchspunkte haelt.",
+     "source": "TIME 25.05.1959 \"Business: Pas de Dough\" (time.com/archive/6803538)",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/strategies/darvas-v3.mjs:25-33; scripts/supertrader/engine/simulator.mjs:182-212",
+     "liveValue": "Kauf-Stop an der Boxoberkante, Fill max(Eroeffnung, Oberkante)+10 bp",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Anfangsstop",
+     "sourceStatement": "Stop-Loss knapp unter der Kauforder; Bild: 100 $ setzen, mit 98 $ raus.",
+     "source": "TIME 25.05.1959 \"Business: Pas de Dough\" (time.com/archive/6803538)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/darvas-v2.mjs:15; darvas-v3.mjs:30",
+     "liveValue": "Stop = Oberkante * 0,99",
+     "assessment": "deviates: 1 % VU, enger als das ~2-%-Bild der Quelle; liegt in der Tagesschwankung (live: 2 Gleichtags-Ausstopps)."
+    },
+    {
+     "rule": "Stop nachziehen",
+     "sourceStatement": "Mit grossem Gewinn: Stop knapp unter das Niveau, an dem eine fallende Aktie Halt finden sollte.",
+     "source": "TIME 25.05.1959 \"Business: Pas de Dough\" (time.com/archive/6803538)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/darvas-v2.mjs:21-28",
+     "liveValue": "Stop auf Unterkante einer neueren bestaetigten Box mit Oberkante > Einstieg",
+     "assessment": "plausibel."
+    },
+    {
+     "rule": "Invalidation vor Einstieg",
+     "sourceStatement": "-",
+     "source": "-",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/darvas.mjs:24,153-157",
+     "liveValue": "Tagestief < Unterkante oder > 30 Sitzungen",
+     "assessment": "VU."
+    },
+    {
+     "rule": "Liquiditaet",
+     "sourceStatement": "-",
+     "source": "-",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/darvas.mjs:23,101",
+     "liveValue": "Kurs >= 5, Dollarumsatz20 >= 5 Mio.",
+     "assessment": "VU."
+    },
+    {
+     "rule": "A/B-Qualitaet, Regime",
+     "sourceStatement": "-",
+     "source": "-",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/darvas.mjs:25-72",
+     "liveValue": "nur Klassifikation, kein Filter",
+     "assessment": "ohne Handelswirkung."
+    },
+    {
+     "rule": "Hoechstzahl Positionen",
+     "sourceStatement": "Beschraenkt sich auf fuenf oder sechs Aktien gleichzeitig.",
+     "source": "TIME 25.05.1959 \"Business: Pas de Dough\" (time.com/archive/6803538)",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/strategies/darvas-v3.mjs:35",
+     "liveValue": "maxPositions 6",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Hoechstgewicht",
+     "sourceStatement": "-",
+     "source": "-",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/darvas-v301.mjs:10",
+     "liveValue": "1/6",
+     "assessment": "bindet wegen 1-%-Stop praktisch immer -> faktisch Gleichgewichtung 16,7 %."
+    },
+    {
+     "rule": "Risiko je Trade",
+     "sourceStatement": "keine Zahl",
+     "source": "-",
+     "classification": "FREMDREGEL",
+     "codeLocation": "scripts/supertrader/engine/strategies/darvas-v3.mjs:35",
+     "liveValue": "0,5 % (VU-Standard = Kullamaegi-Zahl)",
+     "assessment": "nicht bindend; effektiv 0,17-0,3 % (live)."
+    },
+    {
+     "rule": "Marktampel",
+     "sourceStatement": "TraderFox NEO-DARVAS: neue Trades nur bei S&P 500 ueber GD 200.",
+     "source": "traderfox.de 24.03.2018 NEO-DARVAS-SCREENING (Artikel 780)",
+     "classification": "FREMDREGEL",
+     "codeLocation": "scripts/supertrader/engine/strategies/darvas-v302.mjs:10-11; scripts/supertrader/validation/portfolio.mjs:97,174-181",
+     "liveValue": "keine neue Position, wenn SPY am Vortag <= SMA200",
+     "assessment": "nicht Darvas."
+    },
+    {
+     "rule": "Rang gleichzeitiger Signale",
+     "sourceStatement": "-",
+     "source": "-",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/darvas-v301.mjs:10; scripts/supertrader/validation/portfolio.mjs:44",
+     "liveValue": "RS-Perzentil Vortag",
+     "assessment": "VU (TraderFox rangiert anders: Trendstabilitaet)."
+    },
+    {
+     "rule": "Aufstocken (Pyramiding)",
+     "sourceStatement": "TIME: nicht erwaehnt. Buch (Gedaechtnis, NICHT im abgerufenen Text): Nachkauf in steigende Boxen.",
+     "source": "Buch 1960 (nicht abgerufen)",
+     "classification": "NICHT REPRODUZIERBAR",
+     "codeLocation": "scripts/supertrader/engine/strategies/darvas.mjs:10; scripts/supertrader/engine/simulator.mjs:97-126",
+     "liveValue": "fehlt",
+     "assessment": "missing."
+    },
+    {
+     "rule": "Konzentration/Margin",
+     "sourceStatement": "TIME: 5-6 Titel. Buch (Gedaechtnis, nicht abgerufen): grosse Bloecke, Kredit.",
+     "source": "TIME 25.05.1959 \"Business: Pas de Dough\" (time.com/archive/6803538)",
+     "classification": "NICHT REPRODUZIERBAR",
+     "codeLocation": "scripts/supertrader/validation/portfolio.mjs:108-109",
+     "liveValue": "max 1/6, kein Hebel",
+     "assessment": "unclear."
+    },
+    {
+     "rule": "Beobachtung vor Kauf",
+     "sourceStatement": "Studiert eine Aktie oft Wochen oder Monate vor dem Kauf.",
+     "source": "TIME 25.05.1959 \"Business: Pas de Dough\" (time.com/archive/6803538)",
+     "classification": "NICHT REPRODUZIERBAR",
+     "codeLocation": "scripts/supertrader/engine/strategies/darvas.mjs:24",
+     "liveValue": "maxPendingSessions 30",
+     "assessment": "Ermessen."
+    },
+    {
+     "rule": "Wiedereinstieg",
+     "sourceStatement": "-",
+     "source": "-",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/simulator.mjs:28",
+     "liveValue": "5 Sitzungen Sperre",
+     "assessment": "VU."
+    }
+   ],
+   "missing": [
+    "Volumen als Auswahlbedingung (TIME 1959)",
+    "Gewinn-/Wachstumsfilter \"earnings could double or treble\" (TIME 1959)",
+    "Pyramiding in steigende Boxen (nur Buch/Gedaechtnis)",
+    "Konzentration grosser Positionen, Kredit (nur Buch/Gedaechtnis)",
+    "Boxdefinition des Buchs (nicht abgerufen)",
+    "Breiterer Anfangsstop (~2 % laut TIME-Bild)"
+   ],
+   "sizing": {
+    "describedByTrader": {
+     "numberOfPositions": "5-6 gleichzeitig (TIME 1959, Volltext)",
+     "riskPerTrade": "nur Bild: 100 $ Einsatz, 98 $ Ausstieg (~2 %), keine Konto-Regel",
+     "concentration/pyramiding/margin": "NICHT in abgerufenen Texten; aus Buchkenntnis/Gedaechtnis: Nachkaeufe in steigende Boxen, grosse Bloecke, Kredit - unbelegt"
+    },
+    "vuFormula": "w = min(0,005/d, 1/6, cash/eq); d = (Fill - 0,99*Oberkante)/Fill ~ 1,1-1,7 % -> roh 30-45 % -> Kappe 16,7 %",
+    "constants": {
+     "riskPerTrade": 0.005,
+     "maxPositionPct": 0.1667,
+     "maxPositions": 6,
+     "maxExposure": 1.0,
+     "priority": "RS",
+     "marketFilter": true,
+     "where": "scripts/supertrader/engine/strategies/darvas-v302.mjs:10; darvas-v301.mjs:10; darvas-v3.mjs:35"
+    },
+    "examples": {
+     "d=1,1 %": "16,7 % (Kappe), Risiko 0,18 %",
+     "d=3 %": "16,7 %",
+     "d=23 % (Altsignal 1.2.0 NTAP)": "2,1 %"
+    },
+    "lowCapitalCause": "Nicht die Formel (Kappe bindet, 6 Plaetze = bis 100 %), sondern Platzzahl, haeufige Ausstopps am 1-%-Stop und Marktampel; R13: Rueckstand vor allem auf dem investierten Kapital."
+   },
+   "darvasSeparation": {
+    "originalDarvas_TIME": [
+     "Kauforder am Ausbruchspunkt (T59)",
+     "Stop knapp unter der Kauforder, Bild 100->98 (T59)",
+     "Mit grossem Gewinn Stop unter Unterstuetzung (T59)",
+     "5-6 Aktien gleichzeitig (T59)",
+     "Aufmerksamkeit bei gutem Anstieg mit starkem Volumen (T59)",
+     "Nur Wachstumsbranchen mit moeglicher Gewinnverdopplung (T59)",
+     "Ignoriert Tipps, KGV, Dividenden (T59)",
+     "Stop-Loss-Order als Kernbaustein; Gap-Risiko des Stops (T60)"
+    ],
+    "originalDarvas_nurBuch_Gedaechtnis_unbelegt": [
+     "Box-Definition",
+     "Pyramiding",
+     "Konzentration/Kredit",
+     "Bevorzugung neuer Allzeithochs"
+    ],
+    "traderFox_NEO_DARVAS": [
+     "Klasse: >= 70 % seit 52W-Tief, neues 52W-Hoch in 20 Tagen (TF18B)",
+     "Screening 2018: Hoch in 4 Wochen, >= 70 %, S&P > GD200; Top 10 nach Trendstabilitaet; Verkauf (Wortlaut \"3 Bedingungen\") kein Hoch 65 Tage / < 70 % / S&P < GD200 (TF18)",
+     "Pivotal-Points: 1.800 groesste US-Firmen, monatlich, 10 % Zielgewicht, >= 1 Mio. $ Umsatz, >= 100 %, Up-Gap >= 6 % in 20 Tagen; Verkauf < 3 %, < 100 %, Ampel rot -> max 5 %, kein Hoch 65 Tage, > 20 % -> 15 % (TFPP)",
+     "TraderFox schreibt Darvas die 100-%-Regel und die 3-Tage-Box zu - in TIME nicht belegt",
+     "Trendstabilitaet und Musterdepot-Detailregeln: NICHT OEFFENTLICH"
+    ],
+    "vuTrend52": "folgt TraderFox Pivotal-Points + VU-Ersatz (Universum Umsatz, SPY, Clenow) - siehe VU_TREND_52W",
+    "darvasCodeRulesNotTraceableToDarvas": [
+     "DAR-MOM-01 Naehe 52W-Hoch 90 %/95 % (VU)",
+     "DAR-MOM-02 6-Monats-Perzentil >= 80 (VU)",
+     "DAR-BOX-01/02 3-Tage-Bestaetigung, 20-Tage-Hoch (Sekundaer/TraderFox + VU)",
+     "DAR-BOX-03 Boxhoehe 3-25 % (VU)",
+     "DAR-BOX-04 Oberkante >= 95 % 52W-Hoch (VU/Fremd)",
+     "Stopabstand exakt 1 % (VU)",
+     "DAR-INV-01/02 Invalidation, 30 Sitzungen (VU)",
+     "Liquiditaet 5 $/5 Mio. (VU)",
+     "A/B-Qualitaet, DAR-Q-REGIME (VU)",
+     "riskPerTrade 0,5 % (Kullamaegi-Standard)",
+     "maxPositionPct 1/6 (VU-Ableitung)",
+     "Rang RS (VU)",
+     "PORT-MARKET-200 Marktampel (TraderFox)",
+     "Sperre 5 Sitzungen (VU)",
+     "Kosten/Slippage (VU)"
+    ]
+   },
+   "verdict": "Testet Darvas' Einstiegsidee (Kauforder am Box-Ausbruch, enger Stop, 5-6 Titel) mit VU-Boxformel, VU-Stopabstand, Fremdregel-Marktampel (TraderFox) und VU-Groesse; Volumen-, Gewinn-, Pyramiding- und Konzentrationsbausteine fehlen. => \"Einstiegsidee im VU-Portfolio/Exit-Modell\", nicht Darvas' Methode."
+  },
+  "MINERVINI_VCP": {
+   "version": "2.0.0",
+   "rows": [
+    {
+     "rule": "Trend Template (MA)",
+     "sourceStatement": "Kurs > 150/200-Tage-Linie, 50 > 150 > 200, 200-Tage-Linie steigt mind. 1 Monat (Buchnotizen).",
+     "source": "tradershall.wordpress.com 2019-07-15 Buchnotizen TLSMW (sekundaer); whatheheckaboom.wordpress.com 2014-05-04 Buchnotizen Trade Like a Stock Market Wizard (sekundaer)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini.mjs:17,91-105",
+     "liveValue": "Kurs > SMA50/150/200; SMA50 > SMA150 > SMA200; SMA200 > SMA200 vor 21 Sitzungen",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Abstand 52W-Tief",
+     "sourceStatement": "Mindestens 25-30 % ueber dem 52-Wochen-Tief.",
+     "source": "tradershall.wordpress.com 2019-07-15 Buchnotizen TLSMW (sekundaer); whatheheckaboom.wordpress.com 2014-05-04 Buchnotizen Trade Like a Stock Market Wizard (sekundaer)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini-v2.mjs:26,30",
+     "liveValue": "Kurs >= 1,30 * 52W-Tief",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Abstand 52W-Hoch",
+     "sourceStatement": "Hoechstens 25 % unter dem 52-Wochen-Hoch.",
+     "source": "whatheheckaboom.wordpress.com 2014-05-04 Buchnotizen Trade Like a Stock Market Wizard (sekundaer)",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini.mjs:15,100",
+     "liveValue": "Kurs >= 0,75 * 52W-Hoch",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Relative Staerke",
+     "sourceStatement": "IBD-RS nicht unter 70, besser 80-90.",
+     "source": "whatheheckaboom.wordpress.com 2014-05-04 Buchnotizen Trade Like a Stock Market Wizard (sekundaer)",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini.mjs:16,102; build.mjs:164-165",
+     "liveValue": "VU-RS-Perzentil >= 70",
+     "assessment": "IBD-RS proprietaer; VU-Ersatz."
+    },
+    {
+     "rule": "VCP",
+     "sourceStatement": "2-6 Kontraktionen, jede etwa halb so tief; konstruktiv 10-35 % (Buchnotizen).",
+     "source": "tradershall.wordpress.com 2019-07-15 Buchnotizen TLSMW (sekundaer)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini.mjs:18-22,57-87",
+     "liveValue": "Zickzack 4 %, >= 2 fallende Tiefen, erste <= 35 %, letzte <= 10 %, Schluss <= Pivot",
+     "assessment": "starr (R10: 11 von 19 Gewinnern nie Kandidat)."
+    },
+    {
+     "rule": "Volumen trocknet aus",
+     "sourceStatement": "Volumen zieht sich in der Basis zusammen.",
+     "source": "tradershall.wordpress.com 2019-07-15 Buchnotizen TLSMW (sekundaer)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini.mjs:23,119",
+     "liveValue": "Vol10/Vol50 < 0,8",
+     "assessment": "Zahl VU."
+    },
+    {
+     "rule": "Risiko-Setup-Filter",
+     "sourceStatement": "absolute Verlustgrenze 10 %",
+     "source": "whatheheckaboom.wordpress.com 2014-05-11 \"Notes from Mark Minervini interviews\" (Sekundaer-Notizen)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini.mjs:25,123-130",
+     "liveValue": "Pivot-zu-Kontraktionstief <= 10 %",
+     "assessment": "plausibel."
+    },
+    {
+     "rule": "Einstieg",
+     "sourceStatement": "Kauf beim Ausbruch ueber den Pivot mit Volumen.",
+     "source": "whatheheckaboom.wordpress.com 2014-05-04 Buchnotizen Trade Like a Stock Market Wizard (sekundaer)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini-v2.mjs:35-42; scripts/supertrader/engine/simulator.mjs:96-114",
+     "liveValue": "SCHLUSS > Pivot und Volumen >= 1,4x Vol50 -> Kauf naechste Eroeffnung",
+     "assessment": "deviates: kein Kauf-Stop im Tagesverlauf (anders als KK/Darvas/Turtle); 1,4x nur sekundaer."
+    },
+    {
+     "rule": "Cheat-/Low-Cheat-Einstieg",
+     "sourceStatement": "Einstieg vor dem Pivot (Buecher; TraderFox-Taktiken)",
+     "source": "mobile.traderfox.com p-109817 (Fremddarstellung)",
+     "classification": "NICHT REPRODUZIERBAR",
+     "codeLocation": "-",
+     "liveValue": "fehlt",
+     "assessment": "missing."
+    },
+    {
+     "rule": "Fundamentaldaten",
+     "sourceStatement": "Bei Wachstumsaktien zaehlen Gewinne, Umsatz, Margen - und der Chart.",
+     "source": "stockopedia.com Minervini-Interview 2018 (Primaerinterview); Code 33: whatheheckaboom.wordpress.com 2014-05-04 Buchnotizen Trade Like a Stock Market Wizard (sekundaer)",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini-v3.mjs (nur Forschung)",
+     "liveValue": "2.0.0: kein Filter",
+     "assessment": "missing live (R13-Doku nennt EPS faelschlich als umgesetzt)."
+    },
+    {
+     "rule": "Anfangsstop",
+     "sourceStatement": "Wer mit 8-10 % Stop nicht richtig liegt, hat ein Auswahlproblem; Ø Verlust 4-5 %; \"uncle point\" 10 %.",
+     "source": "stockopedia.com Minervini-Interview 2018 (Primaerinterview); whatheheckaboom.wordpress.com 2014-05-11 \"Notes from Mark Minervini interviews\" (Sekundaer-Notizen)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini-v2.mjs:44-47",
+     "liveValue": "Stop = max(Kontraktionstief, Eroeffnung*0,90)",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Gestaffelte Stops",
+     "sourceStatement": "Stop aufteilen (z. B. halbe Position 6 %, halbe 10 %).",
+     "source": "stockopedia.com Minervini-Interview 2018 (Primaerinterview)",
+     "classification": "ORIGINAL",
+     "codeLocation": "-",
+     "liveValue": "fehlt",
+     "assessment": "missing."
+    },
+    {
+     "rule": "Einstand",
+     "sourceStatement": "Erreicht der Kurs den Ø Gewinn als Vielfaches des Risikos, kaum noch Verlust zulassen.",
+     "source": "whatheheckaboom.wordpress.com 2014-05-11 \"Notes from Mark Minervini interviews\" (Sekundaer-Notizen)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini-v2.mjs:52-53",
+     "liveValue": "Stop auf Einstieg bei Schluss >= Einstieg + 3R",
+     "assessment": "3R VU."
+    },
+    {
+     "rule": "Verkauf in die Staerke / Teilverkauf",
+     "sourceStatement": "Oft Gewinn mitnehmen; Teil (meist die Haelfte) mit Gewinn verkaufen, Rest-Stop auf Einstand.",
+     "source": "whatheheckaboom.wordpress.com 2014-05-11 \"Notes from Mark Minervini interviews\" (Sekundaer-Notizen)",
+     "classification": "ORIGINAL",
+     "codeLocation": "-",
+     "liveValue": "fehlt",
+     "assessment": "missing (zentral)."
+    },
+    {
+     "rule": "Ausstieg 50-Tage-Linie",
+     "sourceStatement": "Bruch der 50-Tage-Linie mit Volumen (nur sekundaer).",
+     "source": "fidelity.mjs:65 (sekundaer)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini-v2.mjs:54-55",
+     "liveValue": "Schluss < SMA50 und Volumen > Vol50 -> Verkauf naechste Eroeffnung",
+     "assessment": "unclear."
+    },
+    {
+     "rule": "Liquiditaet",
+     "sourceStatement": "Keine Volumengrenze; bei kleinen Titeln kleinere Position.",
+     "source": "stockopedia.com Minervini-Interview 2018 (Primaerinterview)",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini.mjs:26,110",
+     "liveValue": "Kurs >= 5, Dollarumsatz20 >= 5 Mio.",
+     "assessment": "deviates."
+    },
+    {
+     "rule": "Marktlage",
+     "sourceStatement": "Beobachtet hauptsaechlich Einzelaktien; in schwierigen Maerkten Stops enger, Exposure runter, raus aus Margin.",
+     "source": "stockopedia.com Minervini-Interview 2018 (Primaerinterview); goodreads Zitat TLSMW",
+     "classification": "NICHT REPRODUZIERBAR",
+     "codeLocation": "-",
+     "liveValue": "kein Marktfilter",
+     "assessment": "teils missing."
+    },
+    {
+     "rule": "Progressive Exposure",
+     "sourceStatement": "Nie 100 % aus Cash; mit Pilotpositionen 25 oder 50 % investiert, schrittweise erhoehen.",
+     "source": "stockopedia.com Minervini-Interview 2018 (Primaerinterview)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini-v2.mjs:61; scripts/supertrader/validation/portfolio.mjs:101-105",
+     "liveValue": "halbes Risiko, wenn Summe PnL der letzten 5 Trades < 0",
+     "assessment": "deviates: Halbierungsregel VU, Anfangsquote 25-50 % fehlt."
+    },
+    {
+     "rule": "Risiko je Trade",
+     "sourceStatement": "Notizen: 1-2 % des Kapitals je Trade. (1,25 % aus R7-X-Auszug, im R10-Abruf NICHT enthalten.)",
+     "source": "whatheheckaboom.wordpress.com 2014-05-11 \"Notes from Mark Minervini interviews\" (Sekundaer-Notizen)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini-v2.mjs:61",
+     "liveValue": "0,0125",
+     "assessment": "faithful im Bereich; 1,25 % selbst nicht verifizierbar."
+    },
+    {
+     "rule": "Hoechstgewicht",
+     "sourceStatement": "Nicht mehr als 25 % des Kapitals in einer Position.",
+     "source": "whatheheckaboom.wordpress.com 2014-05-11 \"Notes from Mark Minervini interviews\" (Sekundaer-Notizen)",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini-v2.mjs:61",
+     "liveValue": "0,25",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Anzahl Positionen",
+     "sourceStatement": "8-10 reichen, evtl. 12; nie mehr als 15-20. Buchnotizen: 4-6 klein, 10-12 gross.",
+     "source": "whatheheckaboom.wordpress.com 2014-05-11 \"Notes from Mark Minervini interviews\" (Sekundaer-Notizen); tradershall.wordpress.com 2019-07-15 Buchnotizen TLSMW (sekundaer)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini-v2.mjs:61",
+     "liveValue": "maxPositions 10",
+     "assessment": "faithful (Codekommentar nennt es faelschlich VU)."
+    },
+    {
+     "rule": "Konzentration/Margin",
+     "sourceStatement": "Ziel: alles Geld in 4 Aktien bar, 8 mit Margin; 2021: massiver Hebel, sparsam.",
+     "source": "whatheheckaboom.wordpress.com 2014-05-11 \"Notes from Mark Minervini interviews\" (Sekundaer-Notizen); X/Twitter @markminervini 20.01.2022 (Archivkopie, primaer)",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/validation/portfolio.mjs:109",
+     "liveValue": "maxExposure 1,0",
+     "assessment": "deviates."
+    },
+    {
+     "rule": "Rang",
+     "sourceStatement": "Zuerst die staerksten Fuehrer kaufen.",
+     "source": "whatheheckaboom.wordpress.com 2014-05-04 Buchnotizen Trade Like a Stock Market Wizard (sekundaer)",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/model-portfolio.mjs:23-27",
+     "liveValue": "RS-Perzentil Vortag",
+     "assessment": "faithful im Sinn."
+    },
+    {
+     "rule": "Invalidation vor Einstieg",
+     "sourceStatement": "-",
+     "source": "-",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/minervini.mjs:27,153-157",
+     "liveValue": "Schluss < Kontraktionstief, 20 Sitzungen",
+     "assessment": "VU."
+    },
+    {
+     "rule": "Wiedereinstieg",
+     "sourceStatement": "Profis sind beim Wiedereinstieg objektiv.",
+     "source": "tradershall.wordpress.com 2019-07-15 Buchnotizen TLSMW (sekundaer)",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/simulator.mjs:28",
+     "liveValue": "5 Sitzungen Sperre",
+     "assessment": "leicht deviates."
+    },
+    {
+     "rule": "Leerverkauf",
+     "sourceStatement": "Long und Short (2021).",
+     "source": "X/Twitter @markminervini 20.01.2022 (Archivkopie, primaer)",
+     "classification": "NICHT REPRODUZIERBAR",
+     "codeLocation": "-",
+     "liveValue": "fehlt",
+     "assessment": "Long-only-Rahmen."
+    }
+   ],
+   "missing": [
+    "Verkauf in die Staerke / Teilverkauf der Haelfte",
+    "Gestaffelte Stops",
+    "Code 33 / EPS-Umsatz-Margen (live; 3.0.0 nur Forschung)",
+    "Cheat-/Low-Cheat-Einstiege, Intraday-Kauf am Pivot",
+    "Konzentration (4 Titel bar) und Margin",
+    "Anfangsexposure 25-50 % mit Pilotpositionen",
+    "Marktabhaengige Verengung von Stops/Exposure",
+    "Leerverkauf",
+    "Diskretionaere VCP-Beurteilung"
+   ],
+   "sizing": {
+    "describedByTrader": {
+     "riskPerTrade": "1-2 % je Trade (Interviewnotizen, sekundaer); Ø 1,25 % nur R7-Suchauszug, nicht im Abruf",
+     "maxWeight": "<= 25 % je Position (Interviewnotizen)",
+     "numberOfPositions": "8-10, evtl. 12, nie > 15-20; Buchnotizen: 4-6 klein, 10-12 gross",
+     "concentration": "\"all of my money in 4 stocks cash and 8 stocks margin\" (Notizen)",
+     "leverage": "Margin; 2021 \"massive leverage but sparingly\" (X, primaer)",
+     "exposure": "progressive exposure 25/50 % Pilot (Stockopedia, primaer)"
+    },
+    "vuFormula": "w = min(r/d, 0,25, cash/eq); r = 0,0125 (0,00625 nach netto negativen letzten 5 Trades); d <= 10 %",
+    "constants": {
+     "riskPerTrade": 0.0125,
+     "maxPositionPct": 0.25,
+     "maxPositions": 10,
+     "maxExposure": 1.0,
+     "progressive": {
+      "lookback": 5,
+      "factor": 0.5
+     },
+     "priority": "RS",
+     "marketFilter": false,
+     "where": "scripts/supertrader/engine/strategies/minervini-v2.mjs:61"
+    },
+    "examples": {
+     "d=5 %": "25 % (Kappe)",
+     "d=8 %": "15,6 % (halbiert 7,8 %)",
+     "d=10 %": "12,5 % (halbiert 6,25 %)"
+    },
+    "lowCapitalCause": "Formel ergibt 12,5-25 % je Position (nahe Minervini); niedrige Investitionsquote durch wenige erkannte VCP-Setups, Volumenfilter beim Ausbruch und Halbierung nach Verlustserien; kein Margin."
+   },
+   "verdict": "Testet Trend Template + mechanische VCP + Pivot-Ausbruch per Schlusskurs mit Groessenkonstanten nahe Minervinis Aussagen, aber ohne Verkauf in die Staerke, Code 33, gestaffelte Stops, Konzentration/Margin und Pilot-Exposure. => \"Einstiegsidee im VU-Exit-/Portfoliomodell\"."
+  },
+  "DONCHIAN_TURTLE": {
+   "version": "2.0.2",
+   "rows": [
+    {
+     "rule": "Universum",
+     "sourceStatement": "Liste von ~20 Futures (Anleihen, Waehrungen, Rohstoffe, Metalle, Energie, ein S&P-500-Future).",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 10-11",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/donchian-v2.mjs:33,78-81,96",
+     "liveValue": "US-Aktien, Kurs >= 10, Dollarumsatz20 >= 20 Mio., ADR >= 1 %, Kanalbreite >= 2 %",
+     "assessment": "strukturelle Uebertragung auf eine Anlageklasse."
+    },
+    {
+     "rule": "N",
+     "sourceStatement": "N = 20-Tage-EMA der True Range: (19*PDN + TR)/20, Start mit 20-Tage-Mittel.",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 13",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/strategies/donchian-v2.mjs:38-49",
+     "liveValue": "turtleN",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Unit-Groesse",
+     "sourceStatement": "Unit so, dass 1 N = 1 % des Kontos.",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 14",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/strategies/donchian-v2.mjs:135; scripts/supertrader/validation/portfolio.mjs:106",
+     "liveValue": "riskPerTrade 0,02 bei Stop 2N => shares = Basis*1 %/N",
+     "assessment": "Formel faithful; Aktien-Nominalwert je Unit = 1 %/ATR% des Kontos (~25-50 %)."
+    },
+    {
+     "rule": "System-1-Einstieg",
+     "sourceStatement": "20-Tage-Hoch um einen Tick ueberschritten, im Tagesverlauf; bei Gap zur Eroeffnung.",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 18-19",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/strategies/donchian-v2.mjs:83-116",
+     "liveValue": "Kauf-Stop am 20-Tage-Hoch, Fill max(Eroeffnung, Trigger)+10 bp",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "S1-Filter / Failsafe 55",
+     "sourceStatement": "Auslassen, wenn der letzte Ausbruch ein Gewinner gewesen waere (Verlierer = 2N gegen die Position vor profitablem 10-Tage-Ausstieg); dann 55-Tage-Ausbruch.",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 19",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/donchian-v2.mjs:54-76,90-92",
+     "liveValue": "gedachte S1-Trades; offener gedachter Trade zaehlt als Gewinner (VU)",
+     "assessment": "faithful bis auf VU-Detail."
+    },
+    {
+     "rule": "System 2",
+     "sourceStatement": "55-Tage-Ausbruch ohne Filter, Ausstieg 20-Tage-Tief; Aufteilung S1/S2 frei.",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 18-19, 26",
+     "classification": "ORIGINAL",
+     "codeLocation": "-",
+     "liveValue": "fehlt",
+     "assessment": "missing."
+    },
+    {
+     "rule": "Units aufstocken",
+     "sourceStatement": "Nachkauf in 1/2-N-Schritten bis 4 Units (Fill-basiert).",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 19-20",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/simulator.mjs:97-126",
+     "liveValue": "fehlt",
+     "assessment": "missing."
+    },
+    {
+     "rule": "Stop 2N",
+     "sourceStatement": "Stop 2 N unter dem Einstieg; kein Trade > 2 % Risiko.",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 22",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/strategies/donchian-v2.mjs:114",
+     "liveValue": "Fill - 2*N(Vortag)",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Stops beim Aufstocken anheben",
+     "sourceStatement": "Fruehere Stops um 1/2 N anheben.",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 22-23",
+     "classification": "ORIGINAL",
+     "codeLocation": "-",
+     "liveValue": "entfaellt",
+     "assessment": "missing (folgt aus fehlendem Aufstocken)."
+    },
+    {
+     "rule": "Whipsaw-Alternative",
+     "sourceStatement": "Stop 1/2 N, Wiedereinstieg am alten Einstiegskurs (optional).",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 23-24",
+     "classification": "ORIGINAL",
+     "codeLocation": "-",
+     "liveValue": "fehlt",
+     "assessment": "optional; nicht noetig."
+    },
+    {
+     "rule": "System-1-Ausstieg",
+     "sourceStatement": "10-Tage-Tief; Order sobald der Kurs die Marke durchschreitet.",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 26",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/strategies/donchian-v2.mjs:124-133",
+     "liveValue": "Stop = 10-Tage-Tief bis t, wirkt ab t+1",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Unit-Grenzen",
+     "sourceStatement": "4 je Markt, 6 eng korreliert, 10 lose korreliert, 12 je Richtung.",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 16",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/donchian-v2.mjs:135",
+     "liveValue": "maxPositions 12 (1 Unit je Titel), keine Korrelationsgruppen",
+     "assessment": "deviates: 12 nie bindend (Bargeld), alle Aktien waeren eine korrelierte Gruppe (<= 6)."
+    },
+    {
+     "rule": "Notionales Konto",
+     "sourceStatement": "Notionales Konto, jaehrlich (subjektiv durch Dennis) angepasst; je 10 % Verlust -20 %.",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 17",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/strategies/donchian-v2.mjs:136; scripts/supertrader/validation/portfolio.mjs:53-67",
+     "liveValue": "stepLoss 0,10, cut 0,20; Basis = tatsaechliches Kapital zum Jahresbeginn",
+     "assessment": "faithful, Jahresanpassung VU."
+    },
+    {
+     "rule": "Hebel",
+     "sourceStatement": "Futures (Margin) - Nominalwert ist nicht durch das Konto begrenzt.",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 14-16 (implizit)",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/donchian-v2.mjs:135; scripts/supertrader/validation/portfolio.mjs:108-109",
+     "liveValue": "maxPositionPct 1,0, maxExposure 1,0",
+     "assessment": "deviates strukturell: Bargeld bindet (live 108x NO_CASH)."
+    },
+    {
+     "rule": "Gleichzeitige Signale",
+     "sourceStatement": "Signale nehmen, wie sie kommen, bis zu den Grenzen; bei gleichzeitigen immer die staerksten (z. B. Kursaenderung 3 Monate / N).",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 28-29",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/model-portfolio.mjs:20-27",
+     "liveValue": "alphabetisch (2.1.0 mit Staerke/N nur Forschung)",
+     "assessment": "deviates; Codekommentar \"keine Quelle\" ist falsch."
+    },
+    {
+     "rule": "Konsistenz",
+     "sourceStatement": "Jedes Signal nehmen - die Gewinne eines Jahres kommen oft aus 2-3 Trades.",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 20",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/validation/portfolio.mjs:98-110",
+     "liveValue": "Skips MAX_POSITIONS/NO_CASH",
+     "assessment": "deviates."
+    },
+    {
+     "rule": "Marktfilter",
+     "sourceStatement": "keiner",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten)",
+     "classification": "ORIGINAL",
+     "codeLocation": "scripts/supertrader/engine/strategies/donchian-v202.mjs:6",
+     "liveValue": "kein Filter (2.0.1 zurueckgenommen)",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Ordertaktik",
+     "sourceStatement": "Limit statt Market, in schnellen Maerkten abwarten.",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 27-28",
+     "classification": "NICHT REPRODUZIERBAR",
+     "codeLocation": "scripts/supertrader/engine/execution.mjs:15-19",
+     "liveValue": "10 bp Slippage",
+     "assessment": "VU-Naeherung."
+    },
+    {
+     "rule": "Invalidation/Vorbereitung",
+     "sourceStatement": "-",
+     "source": "-",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/strategies/donchian-v2.mjs:34,118-122",
+     "liveValue": "Schluss < 10-Tage-Tief, 10 Sitzungen; bereit <= 3 %, Beobachtung <= 6 %",
+     "assessment": "VU (geringe Wirkung)."
+    },
+    {
+     "rule": "Wiedereinstieg",
+     "sourceStatement": "Neuer Ausbruch nach Verlierer sofort gueltig.",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 19",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/simulator.mjs:28,277",
+     "liveValue": "5 Sitzungen Sperre",
+     "assessment": "deviates."
+    },
+    {
+     "rule": "Leerverkauf",
+     "sourceStatement": "Short-Einstiege symmetrisch.",
+     "source": "The Original Turtle Trading Rules (tradingblox PDF, gescannt; Seitenzahlen = Druckseiten) S. 19",
+     "classification": "ORIGINAL",
+     "codeLocation": "-",
+     "liveValue": "fehlt",
+     "assessment": "missing (Long-only)."
+    }
+   ],
+   "missing": [
+    "System 2 (55/20)",
+    "Aufstocken bis 4 Units in 1/2-N-Schritten mit Stop-Anhebung",
+    "Korrelationsgrenzen 6/10 Units",
+    "Hebel / Futures-Margin",
+    "Rang \"Buy Strength\" bei gleichzeitigen Signalen (2.1.0 nur Forschung)",
+    "Leerverkauf",
+    "Diversifikation ueber Anlageklassen",
+    "Whipsaw-Variante (optional)",
+    "Jedes Signal nehmen (Konsistenz)"
+   ],
+   "sizing": {
+    "describedByTrader": {
+     "unit": "1 N = 1 % des Kontos (S. 14); Stop 2N = 2 % Risiko je Unit (S. 22)",
+     "limits": "4 Units/Markt, 6 eng korreliert, 10 lose, 12 je Richtung (S. 16)",
+     "notional": "-20 % je 10 % Verlust, jaehrliche Anpassung (S. 17)",
+     "addOns": "bis 4 Units, 1/2 N Abstand (S. 19-20)",
+     "evidence": "Volltext-Scan gelesen"
+    },
+    "vuFormula": "shares = Notional*0,02/(2N) = Notional*1 %/N; w = min(1 %*(Notional/eq)/(N/E), 1,0, cash/eq, 1-investiert)",
+    "constants": {
+     "riskPerTrade": 0.02,
+     "maxPositionPct": 1.0,
+     "maxPositions": 12,
+     "maxExposure": 1.0,
+     "turtleNotional": {
+      "stepLoss": 0.1,
+      "cut": 0.2
+     },
+     "priority": "ALPHA",
+     "marketFilter": false,
+     "where": "scripts/supertrader/engine/strategies/donchian-v2.mjs:135-137 (v202 uebernimmt)"
+    },
+    "examples": {
+     "ATR%=2 %": "50 %",
+     "ATR%=3 %": "33 %",
+     "ATR%=5 %": "20 %",
+     "live": "4 Titel = 100 %"
+    },
+    "lowCapitalCause": "Gegenteil: stets voll investiert; Bargeld und Alphabet entscheiden, welche Signale Kapital bekommen; Rueckstand auf investiertem Kapital."
+   },
+   "turtleTransfer": {
+    "transferred": [
+     "N-Formel",
+     "Unit 1 % je N",
+     "Stop 2N",
+     "S1-Einstieg 20 Tage intraday, Gap zur Eroeffnung",
+     "S1-Filter + 55-Failsafe",
+     "10-Tage-Ausstieg intraday",
+     "notionales Konto -20 %/10 %",
+     "12-Unit-Grenze als 12 Titel",
+     "kein Marktfilter"
+    ],
+    "dropped": [
+     "System 2",
+     "Aufstocken bis 4 Units und Stop-Anhebung",
+     "Korrelationsgrenzen",
+     "Leerverkauf",
+     "Futures-Hebel",
+     "Buy-Strength-Rang",
+     "Whipsaw",
+     "Konsistenz (jedes Signal)"
+    ],
+    "structuralIssues": [
+     "Unit auf Aktien: Nominalwert = 1 %/ATR% des Kontos -> 2-5 Units fuellen das ungehebelte Depot; die 12-Unit-Grenze greift nie.",
+     "Bei den Turtles war die Aktienmarkt-Komponente ein einziger S&P-Future (max. 4 Units von 12); alle US-Aktien sind hoch korreliert -> nach Turtle-Logik hoechstens 6 Units (eng korreliert).",
+     "Ohne Korrelationsgrenze und ohne Rang entscheidet Bargeld + Alphabet (live: ABCL, ACLS, ADI, AEO; 108 NO_CASH).",
+     "Nur Long, nur eine Anlageklasse: die Diversifikation, auf der die Turtle-Groesse beruht (S. 15), fehlt.",
+     "maxPositionPct 1,0: ein Titel mit ATR% <= 1 % koennte 100 % beanspruchen.",
+     "Sperre 5 Sitzungen widerspricht dem Turtle-Filter (nach Verlierer sofort wieder)."
+    ]
+   },
+   "verdict": "Signal-, Stop- und Ausstiegslogik von System 1 nahezu original, Unit-Formel original; aber ohne Hebel, Korrelationsgrenzen, Aufstocken, System 2 und Buy-Strength-Rang auf Einzelaktien uebertragen. => \"Turtle-System-1-Signale in einem ungehebelten VU-Aktienportfolio\", nicht die Turtle-Methode."
+  },
+  "VU_TREND_52W": {
+   "version": "1.0.0",
+   "rows": [
+    {
+     "rule": "Universum",
+     "sourceStatement": "Groesste 1.800 US-Unternehmen.",
+     "source": "aktien Magazin/TraderFox 23.06.2018 (p-16969) und 08./13.02.2021 (p-55974): exakte Regeln NEO-DARVAS mit Pivotal-Points",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/rotation-52w.mjs:19,134-145; scripts/supertrader/validation/PREREGISTRATION-R12.json",
+     "liveValue": "1.800 Titel mit hoechstem 63-Tage-Dollarumsatz, ohne ETF/ETN/Fonds",
+     "assessment": "Ersatz (keine PIT-Marktkapitalisierung)."
+    },
+    {
+     "rule": "Liquiditaet",
+     "sourceStatement": "Mindestens 1 Mio. $ taeglicher Handelsumsatz.",
+     "source": "aktien Magazin/TraderFox 23.06.2018 (p-16969) und 08./13.02.2021 (p-55974): exakte Regeln NEO-DARVAS mit Pivotal-Points",
+     "classification": "FREMDREGEL",
+     "codeLocation": "scripts/supertrader/engine/rotation-52w.mjs:19,78",
+     "liveValue": "Dollarumsatz20 >= 1e6",
+     "assessment": "faithful zu TraderFox."
+    },
+    {
+     "rule": "Performance seit Jahrestief",
+     "sourceStatement": "Mindestens 100 % seit Jahrestief (Pivotal-Points); Basis 2018: 70 %.",
+     "source": "aktien Magazin/TraderFox 23.06.2018 (p-16969) und 08./13.02.2021 (p-55974): exakte Regeln NEO-DARVAS mit Pivotal-Points; traderfox.de 24.03.2018 NEO-DARVAS-SCREENING (Artikel 780)",
+     "classification": "FREMDREGEL",
+     "codeLocation": "scripts/supertrader/engine/rotation-52w.mjs:22-23,67,79",
+     "liveValue": "Schluss/min(Tief 252) - 1 >= 1,0",
+     "assessment": "faithful zu TF; Darvas-Zuschreibung in TIME nicht belegt."
+    },
+    {
+     "rule": "Neues Jahreshoch",
+     "sourceStatement": "Neues Jahreshoch in den vergangenen 20 Handelstagen.",
+     "source": "aktien Magazin/TraderFox 23.06.2018 (p-16969) und 08./13.02.2021 (p-55974): exakte Regeln NEO-DARVAS mit Pivotal-Points",
+     "classification": "FREMDREGEL",
+     "codeLocation": "scripts/supertrader/engine/rotation-52w.mjs:19,56,80",
+     "liveValue": "max(Hoch 20) >= max(Hoch 252)",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Up-Gap",
+     "sourceStatement": "Up-Gap >= 6 % in 20 Handelstagen.",
+     "source": "aktien Magazin/TraderFox 23.06.2018 (p-16969) und 08./13.02.2021 (p-55974): exakte Regeln NEO-DARVAS mit Pivotal-Points",
+     "classification": "FREMDREGEL",
+     "codeLocation": "scripts/supertrader/engine/rotation-52w.mjs:19,64,81",
+     "liveValue": "Eroeffnung/Vortagesschluss - 1 >= 0,06",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Marktampel Kauf",
+     "sourceStatement": "S&P 500 > GD 200.",
+     "source": "aktien Magazin/TraderFox 23.06.2018 (p-16969) und 08./13.02.2021 (p-55974): exakte Regeln NEO-DARVAS mit Pivotal-Points",
+     "classification": "FREMDREGEL",
+     "codeLocation": "scripts/supertrader/engine/rotation-52w.mjs:70-74,119,156",
+     "liveValue": "SPY > SMA200 am Entscheidungstag; sonst keine Kaeufe",
+     "assessment": "SPY statt Index (VU-Ersatz)."
+    },
+    {
+     "rule": "Rang",
+     "sourceStatement": "Ranking nach Trendstabilitaet (Definition nicht oeffentlich).",
+     "source": "aktien Magazin/TraderFox 23.06.2018 (p-16969) und 08./13.02.2021 (p-55974): exakte Regeln NEO-DARVAS mit Pivotal-Points",
+     "classification": "NICHT OEFFENTLICH",
+     "codeLocation": "scripts/supertrader/engine/rotation-52w.mjs:37-49,151-154",
+     "liveValue": "Clenow: (exp(252*Steigung ln-Kurs 90 T)-1)*R2; Gleichstand alphabetisch",
+     "assessment": "VU-Ersatz (SRC-CLENOW-2015)."
+    },
+    {
+     "rule": "Termin",
+     "sourceStatement": "Monatliche Umschichtung; Transaktionen 3 Tage vorab.",
+     "source": "aktien Magazin/TraderFox 23.06.2018 (p-16969) und 08./13.02.2021 (p-55974): exakte Regeln NEO-DARVAS mit Pivotal-Points; mobilepro p-16467",
+     "classification": "FORMALISIERUNG",
+     "codeLocation": "scripts/supertrader/engine/rotation-52w.mjs:163-170",
+     "liveValue": "Entscheidung letzter Handelstag nach Schluss, Ausfuehrung erste Eroeffnung Folgemonat",
+     "assessment": "VU-Timing."
+    },
+    {
+     "rule": "Positionsgroesse",
+     "sourceStatement": "10 % Zielgewicht bei Kauf (= 10 Positionen).",
+     "source": "aktien Magazin/TraderFox 23.06.2018 (p-16969) und 08./13.02.2021 (p-55974): exakte Regeln NEO-DARVAS mit Pivotal-Points",
+     "classification": "FREMDREGEL",
+     "codeLocation": "scripts/supertrader/engine/rotation-52w.mjs:18,184-193",
+     "liveValue": "min(10 % Depotwert zur Eroeffnung, Bargeld); 10 Plaetze",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Mindestkauf 3 %",
+     "sourceStatement": "- (TF: Verkauf unter 3 %)",
+     "source": "aktien Magazin/TraderFox 23.06.2018 (p-16969) und 08./13.02.2021 (p-55974): exakte Regeln NEO-DARVAS mit Pivotal-Points",
+     "classification": "VU-ANNAHME",
+     "codeLocation": "scripts/supertrader/engine/rotation-52w.mjs:190",
+     "liveValue": "Kauf entfaellt (NO_CASH), wenn < 3 % moeglich",
+     "assessment": "konsistent abgeleitet."
+    },
+    {
+     "rule": "Verkauf Gewicht < 3 %",
+     "sourceStatement": "Gewichtung < 3 % -> Verkauf.",
+     "source": "aktien Magazin/TraderFox 23.06.2018 (p-16969) und 08./13.02.2021 (p-55974): exakte Regeln NEO-DARVAS mit Pivotal-Points",
+     "classification": "FREMDREGEL",
+     "codeLocation": "scripts/supertrader/engine/rotation-52w.mjs:126",
+     "liveValue": "TR52-SELL-WEIGHT",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Verkauf < 100 %",
+     "sourceStatement": "Performance < 100 % seit Jahrestief -> Verkauf.",
+     "source": "aktien Magazin/TraderFox 23.06.2018 (p-16969) und 08./13.02.2021 (p-55974): exakte Regeln NEO-DARVAS mit Pivotal-Points",
+     "classification": "FREMDREGEL",
+     "codeLocation": "scripts/supertrader/engine/rotation-52w.mjs:127",
+     "liveValue": "TR52-SELL-PERF",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Verkauf kein Hoch 65 Tage",
+     "sourceStatement": "Kein neues Hoch in den vergangenen 65 Handelstagen -> Verkauf.",
+     "source": "aktien Magazin/TraderFox 23.06.2018 (p-16969) und 08./13.02.2021 (p-55974): exakte Regeln NEO-DARVAS mit Pivotal-Points; traderfox.de 24.03.2018 NEO-DARVAS-SCREENING (Artikel 780)",
+     "classification": "FREMDREGEL",
+     "codeLocation": "scripts/supertrader/engine/rotation-52w.mjs:57-62,128",
+     "liveValue": "kein 252-Tage-Hoch in 65 Sitzungen",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Ampel rot",
+     "sourceStatement": "S&P 500 < GD 200: alle Positionen auf max. 5 %.",
+     "source": "aktien Magazin/TraderFox 23.06.2018 (p-16969) und 08./13.02.2021 (p-55974): exakte Regeln NEO-DARVAS mit Pivotal-Points",
+     "classification": "FREMDREGEL",
+     "codeLocation": "scripts/supertrader/engine/rotation-52w.mjs:18,131",
+     "liveValue": "Kappung 5 % (PP)",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Trim > 20 %",
+     "sourceStatement": "Gewicht > 20 % -> auf 15 %.",
+     "source": "aktien Magazin/TraderFox 23.06.2018 (p-16969) und 08./13.02.2021 (p-55974): exakte Regeln NEO-DARVAS mit Pivotal-Points",
+     "classification": "FREMDREGEL",
+     "codeLocation": "scripts/supertrader/engine/rotation-52w.mjs:18,132",
+     "liveValue": "TR52-TRIM",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Stop",
+     "sourceStatement": "kein Stop genannt",
+     "source": "aktien Magazin/TraderFox 23.06.2018 (p-16969) und 08./13.02.2021 (p-55974): exakte Regeln NEO-DARVAS mit Pivotal-Points",
+     "classification": "FREMDREGEL",
+     "codeLocation": "scripts/supertrader/engine/rotation-52w.mjs:5-6",
+     "liveValue": "kein Stop",
+     "assessment": "faithful."
+    },
+    {
+     "rule": "Pivotal-News-Points",
+     "sourceStatement": "Zweite Variante beruecksichtigt Pivotal-News-Points (Unterstuetzungszonen).",
+     "source": "traderfox.de 24.03.2018 NEO-DARVAS-SCREENING (Artikel 780)",
+     "classification": "NICHT REPRODUZIERBAR",
+     "codeLocation": "-",
+     "liveValue": "fehlt",
+     "assessment": "missing (keine Konsensdaten)."
+    },
+    {
+     "rule": "Musterdepot-Detailregeln",
+     "sourceStatement": "Exaktes Regelwerk im Kundenbereich.",
+     "source": "traderfox.de 21.04.2018 Regelbasiertes NEO-DARVAS-Musterdepot (Artikel 795)",
+     "classification": "NICHT OEFFENTLICH",
+     "codeLocation": "-",
+     "liveValue": "-",
+     "assessment": "unclear."
+    }
+   ],
+   "missing": [
+    "Trendstabilitaet (nicht oeffentlich)",
+    "Pivotal-News-Points",
+    "Point-in-Time-Marktkapitalisierung (Universum)",
+    "TraderFox-Musterdepot-Details (Kundenbereich)"
+   ],
+   "sizing": {
+    "describedByThirdParty": "TraderFox: 10 % Zielgewicht, 10 Positionen, < 3 % verkaufen, > 20 % -> 15 %, Ampel rot -> max 5 %",
+    "vuFormula": "Kaufbetrag = min(0,10*Depotwert(Eroeffnung), Bargeld/(1+Gebuehr)); Kauf nur wenn >= 0,03*Depotwert",
+    "constants": {
+     "slots": 10,
+     "targetWeight": 0.1,
+     "minWeight": 0.03,
+     "maxWeight": 0.2,
+     "trimTo": 0.15,
+     "redCap": 0.05,
+     "where": "scripts/supertrader/engine/rotation-52w.mjs:17-25"
+    },
+    "lowCapitalCause": "Nur bei roter Ampel (Kappung 5 %, keine Kaeufe) oder wenigen Kandidaten; sonst bis 100 %."
+   },
+   "verdict": "Keine Trader-Methode: VU-Umsetzung der oeffentlich dokumentierten TraderFox-Variante \"NEO-DARVAS mit Pivotal-Points\" mit drei VU-Ersatzannahmen (Universum, SPY, Clenow-Rang). Testet weder Darvas noch das TraderFox-System selbst (Trendstabilitaet und Musterdepot-Details nicht oeffentlich)."
+  }
+ },
+ "documentationInconsistencies": [
+  {
+   "where": "scripts/supertrader/process-chain.mjs:34",
+   "claim": "Weinstein: Stop woechentlich 2 % unter die steigende 30-Wochen-Linie nachziehen",
+   "code": "seit 2.0.0 entfernt (weinstein-v2.mjs:20-22, manage 90-101); live kein Nachziehen"
+  },
+  {
+   "where": "scripts/supertrader/process-chain.mjs:29",
+   "claim": "Weinstein-Kandidat: Wochenvolumen >= 2x Schnitt",
+   "code": "seit 3.0.0 Volumen nur als Ausstiegsregel nach dem Kauf (weinstein-v3.mjs:65-75)"
+  },
+  {
+   "where": "docs/SUPERTRADER_AUDIT_R13.md Abschnitt 5",
+   "claim": "VU Darvas 3.0.2: Gewinnfilter als VU-Annahme",
+   "code": "kein Gewinnfilter in darvas*.mjs; process-chain.mjs:48 fuehrt ihn als MISSING"
+  },
+  {
+   "where": "docs/SUPERTRADER_AUDIT_R13.md Abschnitt 5",
+   "claim": "Minervini 2.0.0 umgesetzt: EPS/Umsatz aus SEC",
+   "code": "nur minervini-v3.mjs (Forschung); live 2.0.0 ohne EPS-Filter"
+  },
+  {
+   "where": "scripts/supertrader/model-portfolio.mjs:21-22; PREREGISTRATION-R10-FIXES K3",
+   "claim": "Turtle: keine Quelle fuer eine Rangfolge",
+   "code": "Turtle Rules S. 29 \"Buy Strength - Sell Weakness\" nennt Rang (Kursaenderung 3 Monate / N)"
+  },
+  {
+   "where": "scripts/supertrader/engine/strategies/minervini-v2.mjs:61",
+   "claim": "Hoechstzahl 10 ist VU",
+   "code": "Interviewnotizen: 8-10 (evtl. 12) Positionen - quellennah"
+  },
+  {
+   "where": "scripts/supertrader/engine/backtest.mjs:11",
+   "claim": "riskPerTrade-Standard mit Kommentar KK-RISK-01",
+   "code": "gilt als Default fuer Weinstein 4.0.0 (portfolio:null) = Fremdzahl"
+  },
+  {
+   "where": "docs/SUPERTRADER_ENTRY_EXIT_RULES.md",
+   "claim": "Stand 30.09.2026: Schlusskurs-Bestaetigung, Versionen 1.1.0/1.2.0",
+   "code": "veraltet gegenueber Live (Kauf-Stop 3.x/4.0.0)"
+  },
+  {
+   "where": "docs/SUPERTRADER_AUDIT_R13.md / fidelity.mjs:33",
+   "claim": "Pivotal-Points-Regeln veroeffentlicht 13.02.2021",
+   "code": "bereits im aktien-Magazin-Artikel 23.06.2018 (p-16969) enthalten"
+  },
+  {
+   "where": "supertrader/data/portfolio.json (2026-10-02)",
+   "claim": "-",
+   "code": "Altsignale (Turtle 1.1.0, Darvas 1.2.0) werden mit der Groessenregel der Live-Version dimensioniert"
+  }
+ ]
+}

@@ -112,7 +112,7 @@ async function main() {
     const { createS3DriverFromEnv } = await import(path.join(root, 'scripts/market/storage/s3-driver.mjs'));
     driver = createS3DriverFromEnv(process.env);
     budget = Guard.createBudget({ classAOperations: 20000, classBOperations: 20000 });
-    store = Store.createHistoryStore({ driver, provider: 'tiingo-delisted', market: 'US', budget });
+    store = Store.createHistoryStore({ driver, provider: L.SERIES_PROVIDER, market: 'US', budget });
     const main = Store.createHistoryStore({ driver, provider: 'tiingo', market: 'US', budget });
     const mine = await store.readUsage();
     const theirs = await main.readUsage();
@@ -190,11 +190,11 @@ async function main() {
   }
   log(`Ende: ${done} Listings bearbeitet, ${requests} Tiingo-Anfragen, HTTP ${JSON.stringify(stats.http)}, Stopp ${stats.stoppedBy || '-'}`);
   log(`Manifest-Status: ${JSON.stringify(statusCount)}`);
-  const summary = { schema: 'supertrader-validation-fetch-1.0.0', mode: MODE, at: new Date().toISOString(), tableHash: hash, listings: listings.length, requests, http: stats.http, stoppedBy: stats.stoppedBy, statusCount, listingTable: listings, manifest: manifest.entries };
+  const summary = { schema: 'supertrader-validation-fetch-1.0.0', window: L.WINDOW_NAME, mode: MODE, at: new Date().toISOString(), tableHash: hash, listings: listings.length, requests, http: stats.http, stoppedBy: stats.stoppedBy, statusCount, listingTable: listings, manifest: manifest.entries };
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
   const sealed = L.encryptForOwner(pem, Buffer.from(JSON.stringify(summary)));
   if (KEY && sealed.includes(KEY)) throw new Error('Schluessel im Ergebnis');
-  fs.writeFileSync(path.join(OUT_DIR, `fetch-${MODE}.sealed.json`), sealed);
+  fs.writeFileSync(path.join(OUT_DIR, `fetch-${MODE}${L.WINDOW_NAME === 'HOLDOUT' ? '-holdout' : ''}.sealed.json`), sealed);
   log(`Verschlüsseltes Ergebnis geschrieben (${sealed.length} Byte)`);
   if (stats.stoppedBy && !['MAX_REQUESTS', 'MAX_MINUTES', 'QUIET_WINDOW_MARKET_RUN'].includes(stats.stoppedBy)) process.exitCode = 5;
 }

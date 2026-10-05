@@ -71,7 +71,10 @@ concurrency:
   # Eine Gruppe fuer alle drei heisst: immer genau ein Schreiber. Wer
   # kommt, waehrend einer laeuft, wartet (cancel-in-progress: false) -
   # kein Abbruch, kein Datenverlust, keine Commit-Konflikte.
-  group: intraday-pacemaker
+  # Je Zweig eine Gruppe: Laeufe auf claude/** stehen nicht mehr in der
+  # Warteschlange von main (eine neue wartende Anfrage verdraengt die
+  # aeltere wartende - auch eine uebersprungene). Audit 03.10.2026.
+  group: intraday-pacemaker-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -84,6 +87,9 @@ jobs:
       contains(github.event.head_commit.message, '[intraday-snapshot')
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

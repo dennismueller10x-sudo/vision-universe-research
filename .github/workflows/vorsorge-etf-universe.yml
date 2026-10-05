@@ -73,8 +73,12 @@ jobs:
         id: params
         env:
           MSG: ${{ github.event.head_commit.message }}
+          # Eingaben nur ueber env: - nie direkt in das Skript interpoliert (Script-Injection, Audit 03.10.2026).
+          IN_LIMIT: ${{ github.event.inputs.limit }}
+          IN_PER_HOUR: ${{ github.event.inputs.per_hour }}
         run: |
-          limit="${{ github.event.inputs.limit }}"; per_hour="${{ github.event.inputs.per_hour }}"
+          limit="$IN_LIMIT"; per_hour="$IN_PER_HOUR"
+          case "$limit$per_hour" in *[!0-9]*) echo "::error::limit und per_hour muessen Zahlen sein"; exit 1;; esac
           if printf '%s' "$MSG" | grep -q '\[vorsorge-ingest-canary\]'; then limit=40; fi
           echo "limit=${limit:-0}" >> "$GITHUB_OUTPUT"
           echo "per_hour=${per_hour:-4500}" >> "$GITHUB_OUTPUT"

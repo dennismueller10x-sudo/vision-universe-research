@@ -304,7 +304,7 @@ function rawFromStoreBars(bars) {
 
 // Laedt Listentabelle, Reihen (privater Eimer), Segmente (A2) und den
 // Point-in-Time-Querschnitt. Gemeinsam fuer analyze-methods und diagnose-methods.
-export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity = false, secPit = false, delistPit = false } = {}) {
+export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity = false, secPit = false, delistPit = false, secPitKey = '_validation/sec-pit-r11.json.gz' } = {}) {
   const KEY = process.env.TIINGO_API_KEY || '';
   const zip = Buffer.from(await (await fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer());
   const rows = L.parseTickerCsv(L.unzipCsv(zip));
@@ -320,7 +320,7 @@ export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity 
   const { createS3DriverFromEnv } = await import(path.join(root, 'scripts/market/storage/s3-driver.mjs'));
   const driver = createS3DriverFromEnv(process.env);
   const budget = Guard.createBudget({ classAOperations: 50, classBOperations: 30000 });
-  const mine = Store.createHistoryStore({ driver, provider: 'tiingo-delisted', market: 'US', budget });
+  const mine = Store.createHistoryStore({ driver, provider: L.SERIES_PROVIDER, market: 'US', budget }); // Runde 14: HOLDOUT eigener Namensraum
   const mainStore = Store.createHistoryStore({ driver, provider: 'tiingo', market: 'US', budget });
   {
     const u = await mine.readUsage(), v = await mainStore.readUsage();
@@ -398,7 +398,7 @@ export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity 
   let secCoverage = null;
   if (secPit) {
     budget.consumeClassB(1, 'GET sec pit');
-    const sbuf = await driver.get(mine.seriesPrefix + '_validation/sec-pit-r11.json.gz');
+    const sbuf = await driver.get(mine.seriesPrefix + secPitKey);
     const pit = sbuf ? JSON.parse(zlib.gunzipSync(sbuf).toString('utf8')) : {};
     let withFund = 0;
     for (const seg of segs) { const f = pit[seg.id.split('#')[0]]; if (f) { seg.fund = { eps: f.eps, rev: f.rev }; withFund++; } }
@@ -456,7 +456,7 @@ export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity 
   }
   for (const seg of segs) delete seg.vals;
 
-  return { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, spyAdj, spyRaw, bench, budget, mine, nonEquityExcluded, secCoverage, delistCoverage, dataFingerprint };
+  return { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, spyAdj, spyRaw, bench, budget, mine, mainStore, driver, nonEquityExcluded, secCoverage, delistCoverage, dataFingerprint };
 }
 
 // Beispielspur R8: Kullamaegis eigene Beispiele gegen die Engine (TSLA-Breakout

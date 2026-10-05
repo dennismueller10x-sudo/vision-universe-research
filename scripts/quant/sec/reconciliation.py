@@ -494,13 +494,19 @@ def overlap_report(records, market):
 # (Testsymbole und belegte Nicht-Aktien EXCLUDED, Vorzuege P/O/N/M
 # SEPARATE_CLASS; Produkttitel 7 004 -> 6 875) - gemessen mit denselben
 # kanonischen Artefakten, siehe docs/VU_RECONCILIATION_ACCEPTANCE_REPORT.md §11.
+# Neuabnahme 04.10.2026 (coverage-metrics.yml). Gegen den Stand vom
+# 20.09.2026 (6875 / 6871 / 5884) ist jede Abweichung je Titel erklaert
+# (scripts/diagnose/coverage-delta.mjs): 22 DEBT aus der Produktpolicy (#366),
+# 139 Listing-Kuerzungen (#367), 43 junge Reihen ueber 300 Bars, BRTM als
+# nach dem Bezug nachgeladenes neues Listing. Rueckfall, falls die Quelle
+# ihre Zahlen nicht selbst traegt.
 ACCEPTED_R2 = {
-    "PRODUCT_TITLES": 6875,
+    "PRODUCT_TITLES": 6853,
     "R2_SERIES_AVAILABLE": 7802,
-    "HISTORICAL_CHART_AVAILABLE": 6871,
-    "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.94,
-    "TECHNICAL_HISTORY_ELIGIBLE": 5884,
-    "TECHNICAL_HISTORY_ELIGIBLE_PERCENT": 85.59,
+    "HISTORICAL_CHART_AVAILABLE": 6850,
+    "HISTORICAL_CHART_AVAILABLE_PERCENT": 99.96,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5780,
+    "TECHNICAL_HISTORY_ELIGIBLE_PERCENT": 84.34,
 }
 
 
