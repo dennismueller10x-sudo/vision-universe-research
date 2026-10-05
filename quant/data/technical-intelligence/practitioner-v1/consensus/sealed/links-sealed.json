@@ -225,14 +225,14 @@
  ],
  "tiedje|PLTR|2023-05-19|1": [
   {
-   "referenceId": null,
+   "referenceId": "pr_ewf_20230526_pltr_mc",
    "sourceId": "ewf",
    "family": "ewf",
    "lag": 5,
    "windowTradingDays": 10,
    "sealedAnchor": true,
-   "status": "NEEDS_C",
-   "anchorInstrumentMatch": null
+   "status": "CANDIDATE",
+   "anchorInstrumentMatch": true
   }
  ],
  "tiedje|XAUUSD|2022-09-09|1": [
@@ -375,14 +375,14 @@
  ],
  "tv-yuchaosng|BTCUSD|2025-11-08|1": [
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-pejman_zwin_20251107_btcusd_mc",
    "sourceId": "tv-pejman_zwin",
    "family": "tv-pejman_zwin",
    "lag": -1,
    "windowTradingDays": 10,
    "sealedAnchor": true,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   },
   {
    "referenceId": "pr_ewf_20251109_btcusd_mc",
@@ -405,26 +405,26 @@
    "anchorInstrumentMatch": null
   },
   {
-   "referenceId": null,
+   "referenceId": "pr_tv-eduwavetrading_20251101_btcusd_mc",
    "sourceId": "tv-eduwavetrading",
    "family": "tv-eduwavetrading",
    "lag": -7,
    "windowTradingDays": 10,
    "sealedAnchor": true,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   }
  ],
  "tv-yuchaosng|QQQ|2026-02-14|1": [
   {
-   "referenceId": null,
+   "referenceId": "pr_ewf_20260213_qqq_mc",
    "sourceId": "ewf",
    "family": "ewf",
    "lag": -1,
    "windowTradingDays": 10,
    "sealedAnchor": true,
-   "status": "NOT_PROCESSED",
-   "anchorInstrumentMatch": null
+   "status": "EXCLUDED",
+   "anchorInstrumentMatch": true
   }
  ]
 }
