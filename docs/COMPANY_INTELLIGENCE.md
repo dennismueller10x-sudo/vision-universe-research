@@ -2,6 +2,18 @@
 > Latest operational snapshot: **2026-10-05T17:09:03Z**. Verified domains **2,433**, IR pages **1,464**, news within 180 days **1,845**, calls **644**, webcasts **612**, presentations **1,232**, management content **760**. See the [current 32-section candidate and coverage report](#company-intelligence--candidate-completion-and-recovery-in-progress). Earlier profile and historical reports retain their stated checkpoint scope. Production gates remain off; PR #356 must not be merged.
 <!-- COMPANY_INTELLIGENCE_CURRENT_CHECKPOINT_END -->
 
+## Independent profile recovery — 2026-10-05T17:21:53Z
+
+The prepared profile catalogue increases **3,670 → 3,678 (60.51% of the unchanged 6,078-issuer universe)**. Eight issuer-owned web descriptions were source-reviewed and added for **CTOR, NAT, GOOD, ARIS, ATEX, NICM, CETX and SII**. All preceding profiles and exact-hash withdrawals remain identical. These are additive prepared catalogue facts; this workspace has not imported them into the absent operational ledger or published a new consumer generation.
+
+A bounded review classified **80 currently missing profiles with committed verified websites**, across three completed batches and one retained time-budget boundary: **211 HTTP requests / 18,284,527 returned decoded bytes**. Thirteen parser proposals were reviewed; five with retained promotional or positioning statements were withheld without changing the shared parser or ownership rules. Sixty-six sources supplied no eligible explicit description and one retained a robots/403 failure. The other **531 seeded missing-profile cases remain unreviewed in this independent lane**; the 80–90% target remains unmet. Private attempts and corporate-page cache remain outside Git; no SEC filings were downloaded and no discovery/source queue was recreated.
+
+Zero-HTTP acceptance checked every new exact source URL/body hash and reproduced all eight accepted descriptions. All 3,678 public contracts pass, and an isolated profile-only import accepts the complete catalogue with zero news, event or source rows. The existing 59 profile tests pass. This is a prepared-profile audit, separate from the operational restore/browser audit below.
+
+Before preservation, concurrent audited head `d29454b3db5724256bfe4a0ddc33a77da33e0bf9` was incorporated: its 17:09:03 UTC operational snapshot reports **2,433 domains / 1,464 IR pages / 1,845 recent-news issuers / 644 calls / 612 webcasts / 1,232 presentations / 114 confirmed upcoming earnings**, with **741 / 901 broad-IR roots classified and 160 pending**. Its 180-source event cohort was already attempted in seven batches. These remain inherited operational measurements, not a local ledger recount or a newly executed backfill. The exact private checkpoint (27,102,249 bytes, SHA-256 `74507f671362bbd6d5ad816042f6cac70c7cf0a10edccd5fe8884d56ebb94476`) and SEC document cache are absent from this workspace; original IR/news/GlobeNewswire continuation is blocked here until that state is supplied. PR #356 remains draft and unmerged; production gates and polling cadence remain unchanged.
+
+---
+
 # Company Intelligence — profile and conversion continuation final report
 
 Report date: 2026-10-05. Repository: `dennismueller10x-sudo/vision-universe-research`; branch: `feature/company-intelligence-rollout`; [PR #356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356), open and unmerged.
