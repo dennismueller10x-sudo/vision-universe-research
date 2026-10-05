@@ -193,3 +193,21 @@ Schiedsdurchgänge C gab es 3: k005 (Instrument „ZOOM“ gegenüber ZM), k045 
 * Die LLM-Extraktoren haben allgemeines Wissen über den späteren Marktverlauf. Nach eigener Angabe haben sie es nicht genutzt; in keiner Ausgabe ist `usedOwnMarketKnowledge` gesetzt.
 * Die Kandidatenauswahl hängt an Titel- bzw. Symbol-Aliasen. Fundstellen ohne Instrument im Titel fehlen (z. B. Tiedje-Sammelartikel „DOW – …“ werden nur über genannte Einzelwerte gefunden).
 * Der Konsens wird nur aus INCLUDED-Referenzen gebildet: 13 Zeilen, 8 davon an geöffneten Fällen. Die Mehrheit der geöffneten Fälle bleibt voraussichtlich D SINGLE. Die Klassifikation macht der Auftraggeber.
+
+## Nachtrag 9: zwei weitere Fundstellen
+
+Anlass: Nachtrag 9 a (ergänzte TradingView-Aliase SPY `SPXUSD/SPX500/SPX500USD`, QQQ `NAS100/NAS100USD/NDQ`). Der erneute Lauf von `consensus-match.mjs` (hier nur nach `/tmp`, die Abgleichsdatei verantwortet der Auftraggeber) ergibt 3 neue Verknüpfungen an geöffneten Ausgangsfällen. Eine davon ist eine eingefrorene geöffnete V1-Fundstelle (tv-thefifthwave SPXUSD, 03.12.2022); sie wird nach Nachtrag 9 b nicht neu extrahiert. Versiegelte Fälle: keine Änderung. Neu extrahiert, mit unverändertem Verfahren (A und B unabhängig, C-Skip-Regel, Zusammenführung mit `consensus-assemble.mjs`):
+
+| Nr. | Fundstelle | verknüpft mit | Zeitrahmen | Status | Grund |
+|---|---|---|---|---|---|
+| k083 | tv-eduwavetrading, 04.12.2022, „Shorts for SPX500USD if it reaches the 4H supply?“ | tv-cryptoknee\|SPY\|2022-12-06 (−1, Fenster 5), tv-thefifthwave\|SPY\|2022-12-03 (0, Fenster 5) | INTRADAY (4H) | EXCLUDED | § 3 (A und B unabhängig): nur Angebots-/Nachfragezonen, keine Zählung, kein Muster, keine Invalidation, kein Zahlenziel |
+| k084 | tv-eduwavetrading, 21.07.2024, „Big correction down for SPX500USD“ | tv-yuchaosng\|SPY\|2024-07-20 (0, Fenster 5) | INTRADAY | EXCLUDED | § 2.2 Zeitrahmen INTRADAY |
+
+**A↔B:**
+* k083: Richtung, Zeitrahmen und Instrument gleich; Familie, Welle und Invalidation von beiden nicht genannt.
+* k084: Familie (MOTIVE), Welle ((4)), Richtung (DOWN), Zeitrahmen und Instrument gleich; Invalidation nicht genannt.
+* Kein Schiedsdurchgang. Sicherheit beider Zeilen HIGH.
+
+**Kosten:** 4 Agentenläufe ≈ 2,40 USD. Gesamt Mission VII damit ≈ 107 USD.
+
+**Bestand danach:** 81 Zeilen in `consensus/references.jsonl` (INCLUDED 13 · CANDIDATE 8 · EXCLUDED 60). `consensus/links.json`: 46 Verknüpfungen an geöffnete Ausgangsfälle.
