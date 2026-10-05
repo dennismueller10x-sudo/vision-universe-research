@@ -10,6 +10,11 @@ name: Vorsorge ETF-Primaerquellen (Probe, SEC N-PORT, ESMA FIRDS)
 #                          mit Quellenangabe): europaeische Listings, ISIN, Handelsplatz, CFI
 # Ohne Marker laeuft nichts. Der Push muss einen der unter paths genannten Pfade
 # beruehren. nport und fundamentals bauen beide den ETF-Stamm neu: nacheinander ausloesen.
+# Abbrechen ist kein Rueckgaengigmachen: ein Lauf, der schon im Push-Schritt ist, schreibt
+# trotzdem (gesehen 05.10.2026, Lauf 37281536857). Ein Lauf checkt den Branch-Kopf bei Start aus;
+# landet danach ein anderer Datencommit, scheitert sein Push an Konflikten in vorsorge/data
+# (push-with-retry loest nur Quant-Artefakte auf). Dann abbrechen und neu starten (Re-run),
+# der neue Versuch baut auf dem aktuellen Kopf auf.
 #
 # Emittenten-Datenendpunkte werden NICHT abgerufen (Bedingungen, siehe
 # docs/ETF_PRIMARY_SOURCE_MATRIX.md).
