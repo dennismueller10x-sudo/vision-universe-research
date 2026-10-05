@@ -75,3 +75,54 @@ class WordPressNewsTests(unittest.TestCase):
             self.assertEqual(len(items),1);self.assertEqual(items[0]['canonicalUrl'],'https://apple.com/results')
             self.assertEqual(st.sources()[0]['cmsNewsPolicy'],'WORDPRESS_EXPLICIT_ISSUER_ACTOR')
             self.assertNotIn('content',items[0]);st.close()
+
+    def test_advertised_custom_news_collection_after_stale_blog_preserves_metadata_contract(self):
+        from urllib.parse import urlencode
+        from company_intelligence.model import canonical_url
+        page='https://apple.com/investors/';root='https://apple.com/wp-json/';api=endpoint(root);custom=endpoint(root,'press-releases');index=canonical_url(root+'?'+urlencode({'_fields':'namespaces,routes'}))
+        class HTTP:
+            def __init__(self):self.calls=[]
+            def get(self,url,**kw):
+                self.calls.append(url)
+                if url==api:body=[row(stamp='2022-01-01T12:00:00')]
+                elif url==index:body={'routes':{'/wp/v2/press-releases':{'endpoints':[{'methods':['GET'],'args':{'per_page':{},'orderby':{'enum':['date','title']}}}]}}}
+                elif url==custom:body=[row()]
+                else:raise SourceError('UNEXPECTED_ROUTE')
+                return {'body':json.dumps(body).encode(),'finalUrl':url}
+        h=HTTP();links=parse_links(b'<link rel="https://api.w.org/" href="https://apple.com/wp-json/">',page);s=discover(links,page,company(),['https://apple.com/'],h,NOW)
+        self.assertEqual(h.calls,[api,index,custom]);self.assertEqual(s['restCollection'],'press-releases');self.assertEqual(s['intervalHours'],4)
+        self.assertEqual(len(parse(json.dumps([row()]).encode(),s,s['url'])),1)
+        with tempfile.TemporaryDirectory() as tmp:
+            st=Store(Path(tmp)/'s.sqlite');c=company();p=Pipeline(Path(tmp),{c['companyId']:c},st,h,NOW);p.ingest_source(s)
+            self.assertEqual(st.sources()[0]['restCollection'],'press-releases')
+            self.assertEqual(p.run['new'],1);st.close()
+        for bad in [{**s,'restCollection':'posts'},{**s,'restCollection':None},{**s,'verificationEvidence':{}},{**s,'verificationEvidence':{**s['verificationEvidence'],'collectionSchemaHash':None}},{**s,'url':endpoint(root,'news')}]:
+            with self.assertRaises(SourceError):parse(json.dumps([row()]).encode(),bad,bad['url'])
+
+    def test_taxonomy_invalid_index_and_unadvertised_custom_routes_do_not_become_news_sources(self):
+        from urllib.parse import urlencode
+        from company_intelligence.model import canonical_url
+        root='https://apple.com/wp-json/';api=endpoint(root);index=canonical_url(root+'?'+urlencode({'_fields':'namespaces,routes'}));links=parse_links(b'<link rel="https://api.w.org/" href="https://apple.com/wp-json/">',root)
+        class HTTP:
+            def __init__(self,data):self.data=data;self.calls=[]
+            def get(self,url,**kw):
+                self.calls.append(url)
+                return {'body':json.dumps([] if url==api else self.data).encode(),'finalUrl':url}
+        for descriptor in [{'endpoints':[{'methods':['GET'],'args':{'per_page':{},'orderby':{'enum':['name','slug']}}}]},{'endpoints':[{'methods':'GET','args':{}}]},{'endpoints':[{'methods':['GET'],'args':{'per_page':{},'orderby':'date'}}]}]:
+            h=HTTP({'routes':{'/wp/v2/news':descriptor,'/wp/v2/news-source':descriptor}});self.assertIsNone(discover(links,root,company(),[root],h,NOW));self.assertEqual(h.calls,[api,index])
+        self.assertIsNone(endpoint(root,'news-source'));self.assertIsNone(endpoint(root,'../users'))
+        for raw in [[],{}, {'routes':[]}]:
+            with self.assertRaisesRegex(SourceError,'INDEX_INVALID_SCHEMA'):discover(links,root,company(),[root],HTTP(raw),NOW)
+
+    def test_invalid_api_index_discards_unexpected_content_from_real_cache_and_memo(self):
+        from urllib.parse import urlencode
+        from company_intelligence.model import canonical_url
+        root='https://apple.com/wp-json/';index=canonical_url(root+'?'+urlencode({'_fields':'namespaces,routes'}));api=endpoint(root)
+        with tempfile.TemporaryDirectory() as tmp:
+            h=PublicHTTP(Path(tmp));raw=json.dumps({'routes':{},'content':{'rendered':'ARTICLE BODY'}}).encode();key=(index,True)
+            for path in h._paths(index):path.write_bytes(raw)
+            h.memo[key]={'body':raw,'finalUrl':index}
+            h.get=lambda url,**kw:{'body':b'[]','finalUrl':api} if url==api else h.memo[key]
+            links=parse_links(b'<link rel="https://api.w.org/" href="https://apple.com/wp-json/">',root)
+            with self.assertRaisesRegex(SourceError,'INDEX_INVALID_SCHEMA'):discover(links,root,company(),[root],h,NOW)
+            self.assertFalse(any(path.exists() for path in h._paths(index)));self.assertNotIn(key,h.memo)

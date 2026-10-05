@@ -48474,5 +48474,443 @@
     "provider": "WORDPRESS",
     "bootstrapValidatedAt": "2026-10-05",
     "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://ir.relmada.com/wp-json/wp/v2/press_releases?_fields=date_gmt%2Clink%2Ctitle.rendered&context=view&order=desc&orderby=date&per_page=20",
+    "intervalHours": 4,
+    "format": "WORDPRESS_REST_NEWS",
+    "companyId": "iss_cik_0001553643",
+    "allowedSites": [
+      "https://www.relmada.com/",
+      "https://ir.relmada.com/investors/events/"
+    ],
+    "restCollection": "press_releases",
+    "sourceId": "2534285160a9682278beea32",
+    "lastVerified": "2026-10-05T04:33:33Z",
+    "type": "IR_FEED",
+    "provider": "WORDPRESS",
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "active": true,
+    "verificationEvidence": {
+      "apiRoot": "https://ir.relmada.com/wp-json/",
+      "collectionRoute": "/wp/v2/press_releases",
+      "collectionSchemaHash": "e257c622100033e60eafb4cbb3514580ece0ac2a6e591155de3b59b65f281a3a",
+      "linkedFrom": "https://ir.relmada.com/investors/events/",
+      "method": "ADVERTISED_WORDPRESS_REST_METADATA_CONTRACT"
+    },
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://investor.sands.com/rss/PressRelease.aspx?LanguageId=1",
+    "intervalHours": 4,
+    "companyId": "iss_cik_0001300514",
+    "priority": 1,
+    "allowedSites": [
+      "https://www.sands.com/",
+      "https://investor.sands.com/home/default.aspx"
+    ],
+    "sourceId": "2cf753fed2cc609829a3bff3",
+    "lastVerified": "2026-10-05T04:33:37Z",
+    "type": "IR_FEED",
+    "provider": "Q4",
+    "active": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://alamosgold.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "intervalHours": 24,
+    "format": "Q4_PRESENTATIONS",
+    "companyId": "iss_cik_0001178819",
+    "allowedSites": [
+      "https://alamosgold.com/",
+      "https://alamosgold.com/investors/default.aspx",
+      "https://alamosgold.com/investors/default.aspx"
+    ],
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "sourceId": "3687a2366246760b03c3773f",
+    "lastVerified": "2026-10-05T04:33:37Z",
+    "type": "IR_MATERIALS",
+    "metadata": {
+      "originatingIRHomepage": "https://alamosgold.com/investors/default.aspx"
+    },
+    "provider": "Q4",
+    "active": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://www.alamosgold.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "intervalHours": 24,
+    "format": "Q4_PRESENTATIONS",
+    "companyId": "iss_cik_0001178819",
+    "allowedSites": [
+      "https://alamosgold.com/",
+      "https://www.alamosgold.com/investors/default.aspx",
+      "https://www.alamosgold.com/investors/default.aspx"
+    ],
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "sourceId": "46774b94a36025e0d3b18338",
+    "lastVerified": "2026-10-05T04:33:37Z",
+    "type": "IR_MATERIALS",
+    "metadata": {
+      "originatingIRHomepage": "https://www.alamosgold.com/investors/default.aspx"
+    },
+    "provider": "Q4",
+    "active": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://www.insperity.com/wp-json/wp/v2/news?_fields=date_gmt%2Clink%2Ctitle.rendered&context=view&order=desc&orderby=date&per_page=20",
+    "intervalHours": 4,
+    "format": "WORDPRESS_REST_NEWS",
+    "companyId": "iss_cik_0001000753",
+    "allowedSites": [
+      "https://www.insperity.com/",
+      "https://www.insperity.com/"
+    ],
+    "restCollection": "news",
+    "sourceId": "6a392c1e2865750b0286e940",
+    "lastVerified": "2026-10-05T04:33:33Z",
+    "type": "IR_FEED",
+    "provider": "WORDPRESS",
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "active": true,
+    "verificationEvidence": {
+      "apiRoot": "https://www.insperity.com/wp-json/",
+      "collectionRoute": "/wp/v2/news",
+      "collectionSchemaHash": "fcede5b5677f3cd165d639555c555dc68265930be31103a11bb074c4c021d2c6",
+      "linkedFrom": "https://www.insperity.com/",
+      "method": "ADVERTISED_WORDPRESS_REST_METADATA_CONTRACT"
+    },
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://www.cionbdc.com/wp-json/wp/v2/press-releases?_fields=date_gmt%2Clink%2Ctitle.rendered&context=view&order=desc&orderby=date&per_page=20",
+    "intervalHours": 4,
+    "format": "WORDPRESS_REST_NEWS",
+    "companyId": "iss_cik_0001534254",
+    "allowedSites": [
+      "https://www.cionbdc.com/",
+      "https://www.cionbdc.com/"
+    ],
+    "restCollection": "press-releases",
+    "sourceId": "7899960e070286e801862afa",
+    "lastVerified": "2026-10-05T04:33:33Z",
+    "type": "IR_FEED",
+    "provider": "WORDPRESS",
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "active": true,
+    "verificationEvidence": {
+      "apiRoot": "https://www.cionbdc.com/wp-json/",
+      "collectionRoute": "/wp/v2/press-releases",
+      "collectionSchemaHash": "a2b1d081a6b3b78fe2a57db400496567f1c6144c66620109170193de87109d37",
+      "linkedFrom": "https://www.cionbdc.com/",
+      "method": "ADVERTISED_WORDPRESS_REST_METADATA_CONTRACT"
+    },
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://investor.drhc.com/rss/events.xml",
+    "intervalHours": 12,
+    "format": "RSS_EVENTS",
+    "companyId": "iss_cik_0001298946",
+    "priority": 1,
+    "allowedSites": [
+      "https://drhc.com/",
+      "https://investor.drhc.com/",
+      "https://investor.drhc.com/rss/events.xml"
+    ],
+    "sourceId": "7edb0596c6f2f3506bb04c82",
+    "lastVerified": "2026-10-05T04:33:37Z",
+    "type": "IR_EVENTS",
+    "provider": "GCS",
+    "active": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investor.drhc.com/5951",
+      "officialSite": "https://drhc.com/",
+      "validItems": 10
+    },
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://investor.sands.com/feed/Presentation.svc/GetPresentationList?LanguageId=1&pageSize=20&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1&presentationDateFilter=1",
+    "intervalHours": 24,
+    "format": "Q4_PRESENTATIONS",
+    "companyId": "iss_cik_0001300514",
+    "allowedSites": [
+      "https://www.sands.com/",
+      "https://investor.sands.com/",
+      "https://investor.sands.com/home/default.aspx"
+    ],
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "sourceId": "86de728dae0c26f6b623dc0e",
+    "lastVerified": "2026-10-05T04:33:37Z",
+    "type": "IR_MATERIALS",
+    "metadata": {
+      "originatingIRHomepage": "https://investor.sands.com/home/default.aspx"
+    },
+    "provider": "Q4",
+    "active": true,
+    "verificationEvidence": "VERIFIED_IR_Q4_WIDGET_PUBLIC_PRESENTATION_CONTRACT",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://investor.sands.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "intervalHours": 24,
+    "format": "Q4_REPORTS",
+    "companyId": "iss_cik_0001300514",
+    "allowedSites": [
+      "https://www.sands.com/",
+      "https://investor.sands.com/",
+      "https://investor.sands.com/home/default.aspx"
+    ],
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "sourceId": "8ba7e3aff2f0a650c78539fa",
+    "lastVerified": "2026-10-05T04:33:37Z",
+    "type": "IR_MATERIALS",
+    "provider": "Q4",
+    "active": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://investors.pubmatic.com/rss/news-releases.xml",
+    "intervalHours": 4,
+    "companyId": "iss_cik_0001422930",
+    "priority": 1,
+    "allowedSites": [
+      "https://pubmatic.com/",
+      "https://investors.pubmatic.com/"
+    ],
+    "sourceId": "96cb8d8e0e16d85666aa157f",
+    "lastVerified": "2026-10-05T04:33:37Z",
+    "type": "IR_FEED",
+    "provider": "GCS",
+    "active": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://investors.pubmatic.com/news-events/events-and-presentations",
+    "intervalHours": 12,
+    "companyId": "iss_cik_0001422930",
+    "allowedSites": [
+      "https://pubmatic.com/",
+      "https://investors.pubmatic.com/",
+      "https://investors.pubmatic.com/news-events/events-and-presentations"
+    ],
+    "sourceId": "ad1d0a8a6f8180c6f89a0e6a",
+    "lastVerified": "2026-10-05T04:33:37Z",
+    "type": "IR_EVENTS",
+    "provider": "GCS",
+    "active": true,
+    "verificationEvidence": "LINKED_BY_VERIFIED_IR_PAGE",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://investor.drhc.com/rss/news-releases.xml",
+    "intervalHours": 6,
+    "format": "RSS",
+    "companyId": "iss_cik_0001298946",
+    "priority": 1,
+    "allowedSites": [
+      "https://drhc.com/",
+      "https://investor.drhc.com/",
+      "https://investor.drhc.com/rss/news-releases.xml"
+    ],
+    "sourceId": "ae0d4764465d9c890dd7aafb",
+    "lastVerified": "2026-10-05T04:33:37Z",
+    "type": "IR_FEED",
+    "provider": "GCS",
+    "active": true,
+    "verificationEvidence": {
+      "linkedFrom": "https://investor.drhc.com/5951",
+      "officialSite": "https://drhc.com/",
+      "validItems": 10
+    },
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://alamosgold.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "intervalHours": 24,
+    "format": "Q4_REPORTS",
+    "companyId": "iss_cik_0001178819",
+    "allowedSites": [
+      "https://alamosgold.com/",
+      "https://alamosgold.com/investors/default.aspx",
+      "https://alamosgold.com/investors/default.aspx"
+    ],
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "sourceId": "ae80c8745d17541f1c63bebf",
+    "lastVerified": "2026-10-05T04:33:37Z",
+    "type": "IR_MATERIALS",
+    "provider": "Q4",
+    "active": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://www.alamosgold.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "intervalHours": 12,
+    "format": "Q4_EVENTS",
+    "companyId": "iss_cik_0001178819",
+    "allowedSites": [
+      "https://alamosgold.com/",
+      "https://www.alamosgold.com/investors/default.aspx",
+      "https://www.alamosgold.com/investors/default.aspx"
+    ],
+    "sourceId": "b13188180c050571becb8d07",
+    "lastVerified": "2026-10-05T04:33:37Z",
+    "type": "IR_EVENTS",
+    "provider": "Q4",
+    "active": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://www.alamosgold.com/rss/PressRelease.aspx?LanguageId=1",
+    "intervalHours": 4,
+    "companyId": "iss_cik_0001178819",
+    "priority": 1,
+    "allowedSites": [
+      "https://alamosgold.com/",
+      "https://www.alamosgold.com/investors/default.aspx"
+    ],
+    "sourceId": "bcef654ce849595a8a6cce47",
+    "lastVerified": "2026-10-05T04:33:37Z",
+    "type": "IR_FEED",
+    "provider": "Q4",
+    "active": true,
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 10
+    },
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://908devices.com/wp-json/wp/v2/news?_fields=date_gmt%2Clink%2Ctitle.rendered&context=view&order=desc&orderby=date&per_page=20",
+    "intervalHours": 4,
+    "format": "WORDPRESS_REST_NEWS",
+    "companyId": "iss_cik_0001555279",
+    "allowedSites": [
+      "https://908devices.com/",
+      "https://908devices.com/"
+    ],
+    "restCollection": "news",
+    "sourceId": "c2a1bd8a93bc338da5bd6cba",
+    "lastVerified": "2026-10-05T04:33:33Z",
+    "type": "IR_FEED",
+    "provider": "WORDPRESS",
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "active": true,
+    "verificationEvidence": {
+      "apiRoot": "https://908devices.com/wp-json/",
+      "collectionRoute": "/wp/v2/news",
+      "collectionSchemaHash": "bbcedaa5dd8b1a7bb1af3fffc35ebd905d338749b6e7bf453d12cc21c846092d",
+      "linkedFrom": "https://908devices.com/",
+      "method": "ADVERTISED_WORDPRESS_REST_METADATA_CONTRACT"
+    },
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://alamosgold.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "intervalHours": 12,
+    "format": "Q4_EVENTS",
+    "companyId": "iss_cik_0001178819",
+    "allowedSites": [
+      "https://alamosgold.com/",
+      "https://alamosgold.com/investors/default.aspx",
+      "https://alamosgold.com/investors/default.aspx"
+    ],
+    "sourceId": "ccff15c0197d456a9f2a949e",
+    "lastVerified": "2026-10-05T04:33:37Z",
+    "type": "IR_EVENTS",
+    "provider": "Q4",
+    "active": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://investor.sands.com/feed/Event.svc/GetEventList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&includeTags=true&eventSelection=3&eventDateFilter=3&includeFinancialReports=true&includePresentations=true&includePressReleases=false&sortOperator=1",
+    "intervalHours": 12,
+    "format": "Q4_EVENTS",
+    "companyId": "iss_cik_0001300514",
+    "allowedSites": [
+      "https://www.sands.com/",
+      "https://investor.sands.com/",
+      "https://investor.sands.com/home/default.aspx"
+    ],
+    "sourceId": "d301b3c1170a3ffb0a0aeb68",
+    "lastVerified": "2026-10-05T04:33:37Z",
+    "type": "IR_EVENTS",
+    "provider": "Q4",
+    "active": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_PUBLIC_EVENT_CONTRACT",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "verified": true,
+    "url": "https://www.alamosgold.com/feed/FinancialReport.svc/GetFinancialReportList?LanguageId=1&pageSize=20&pageNumber=0&year=-1&reportTypes=First+Quarter%2CSecond+Quarter%2CThird+Quarter%2CFourth+Quarter&reportTypeId=0",
+    "intervalHours": 24,
+    "format": "Q4_REPORTS",
+    "companyId": "iss_cik_0001178819",
+    "allowedSites": [
+      "https://alamosgold.com/",
+      "https://www.alamosgold.com/investors/default.aspx",
+      "https://www.alamosgold.com/investors/default.aspx"
+    ],
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "sourceId": "df3eb2fb94d6c51584f44532",
+    "lastVerified": "2026-10-05T04:33:37Z",
+    "type": "IR_MATERIALS",
+    "provider": "Q4",
+    "active": true,
+    "verificationEvidence": "VALIDATED_IR_Q4_WIDGET_FINANCIAL_DOCUMENT_CONTRACT",
+    "bootstrapValidatedAt": "2026-10-05",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
   }
 ]
