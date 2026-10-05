@@ -71,7 +71,7 @@ Korrektur:
 
 **Darvas / NEO-DARVAS / VU Trendfolge 52W** werden getrennt geführt:
 
-- **VU Darvas 3.0.2:** Box-Ausbruch nach Darvas, Gewinnfilter als VU-Annahme, Marktampel (R12, mit S1C bestätigt).
+- **VU Darvas 3.0.2:** Box-Ausbruch nach Darvas, Marktampel (R12, mit S1C bestätigt). *Korrektur R14: Einen Gewinnfilter gibt es im Code nicht (frühere Fassung irrtümlich).*
 - **TraderFox NEO-DARVAS:**
   - Klasse: mindestens 70 % seit Tief, neues Hoch in 20 Tagen, „weitere Regeln“ nicht öffentlich.
   - Screening vom 24.03.2018: Verkaufstext mehrdeutig.
@@ -81,7 +81,7 @@ Korrektur:
 - Die Schwelle „100 % seit Tief“ stammt von TraderFox und ist in Darvas' eigenem Material nicht belegt.
 
 **Minervini 2.0.0:**
-- Umgesetzt: Trend Template, EPS/Umsatz aus SEC zum Einreichungsdatum, VCP (VU-Formalisierung), Pivot.
+- Umgesetzt: Trend Template, VCP (VU-Formalisierung), Pivot. *Korrektur R14: EPS/Umsatz aus SEC nutzt erst Version 3.0.0 (Forschung); live 2.0.0 hat keinen Fundamentalfilter.*
 - Fehlend: Verkauf in die Stärke (Hälfte mit Gewinn verkaufen, Stop auf Einstand), Aufstocken.
 - VU-Annahme: Positionsgröße über Risiko je Trade. Die Quelle nennt Konzentration auf wenige Positionen mit großem Gewicht.
 - Version 3.0.0 bleibt Forschung.
