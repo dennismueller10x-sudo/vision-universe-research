@@ -14,18 +14,25 @@ from .transport import SourceError, BudgetExhausted
 from .q4_events import public_link
 
 VERSION = 'company-profile-1.0.0'
-PARSER_VERSION = 'company-profile-parser-1.0.5'
+PARSER_VERSION = 'company-profile-parser-1.0.6'
 WEB_DAYS = 90
 SEC_STALE_DAYS = 550
-MAX_DOCUMENT = 16 * 1024 * 1024
+MAX_DOCUMENT = 64 * 1024 * 1024
 ACTIVITY = re.compile(r'\b(?:designs?|develops?|manufactures?|markets?|sells?|provides?|operates?|offers?|distributes?|produces?|supplies?|commercializes?|researches?|licenses?|delivers?|builds?|serves?|specializes?|engages?|focuses?)\b', re.I)
-BUSINESS = re.compile(r'\b(?:software|platforms?|products?|services?|solutions?|bank|banking|insurance|insurer|manufacturer|provider|supplier|developer|retailer|retail|holding company|biotechnology|biopharmaceutical|pharmaceutical|semiconductors?|computing|infrastructure|power management|energy|mining|real estate|transportation|technology|equipment|devices?|vehicles?|EVs?|NEVs?|food|beverages?|materials|merchandise|airline|utilities|utility|producers?|drilling|agribusiness|land management|telecommunications|communications|logistics|restaurants?|medical|furnishings|clothing|chemicals|oil|gas|gold|silver|copper|steel|REIT)\b', re.I)
-EXCLUDED = re.compile(r'\b(?:employees?|headcount|forward.looking|may|might|could|will|expects?|intends?|plans?|believes?|aims?|aspires?|best|revolutionary|unrivaled|unparalleled|world.class|award.winning|visionary|transforming the future|market leader)\b', re.I)
+BUSINESS = re.compile(r'\b(?:software|platforms?|products?|services?|solutions?|bank|banking|insurance|insurer|manufacturer|provider|supplier|developer|retailer|retail|holding company|biotechnology|biopharmaceutical|pharmaceutical|semiconductors?|computing|infrastructure|power management|energy|mining|real estate|transportation|technology|equipment|devices?|vehicles?|EVs?|NEVs?|food|beverages?|materials|merchandise|airline|utilities|utility|producers?|drilling|agribusiness|land management|telecommunications|communications|logistics|restaurants?|medical|furnishings|clothing|chemicals|oil|gas|gold|silver|copper|steel|REIT|education|training|publishing|media|entertainment|gaming|hospitality|hotels?|travel|apparel|textiles|fabrics|construction|engineering|aerospace|defen[sc]e|financial|investments?|asset management|mortgages?|lending|loans|blank check company|acquisition company|furniture|personal care|cosmetics|candles|packaging|paper|forestry|wood|lumber|timber|electricity|renewable|water|waste|shipping|freight|oilfield|distribution|healthcare|payroll)\b', re.I)
+EXCLUDED = re.compile(r'\b(?:headcount|forward.looking|may|might|could|will|expects?|intends?|plans?|believes?|aims?|aspires?|best|revolutionary|unrivaled|unparalleled|world.class|award.winning|visionary|transforming the future|market leader)\b', re.I)
 PROMOTION = re.compile(r'\b(?:(?:world[’\']?s? |global |industry |market )?(?:leading|largest|premier|top.ranked)|innovative|cutting.edge|state.of.the.art|intelligent|novel|differentiated|fashionable|comprehensive|most advanced|effectively)\s*,?\s*', re.I)
 
 
 def later(now, days):
     return (datetime.fromisoformat(now.replace('Z', '+00:00')) + timedelta(days=days)).isoformat(timespec='seconds').replace('+00:00', 'Z')
+
+
+def display_name(value):
+    # Existing master legal names can carry legacy jurisdiction annotations.
+    # This only cleans display text; exact CIK/master identity never changes.
+    value = re.sub(r'[/\\][A-Z]{2,3}[/\\]?$', '', value, flags=re.I)
+    return re.sub(r'\s+(?:class\s+[a-z]|ordinary shares|common stock)\b.*', '', value, flags=re.I).strip()
 
 
 class TextBlocks(HTMLParser):
@@ -108,7 +115,7 @@ def business_blocks(doc, form):
     for start in sorted(set(starts)):
         selected = []
         for text in doc.blocks[start:start + 100]:
-            if selected and re.match(r'^(?:item\s*(?:1[abc]|2|3|4[ab]|5)\b|risk factors\b|properties\b|organizational structure\b)', text, re.I):
+            if selected and re.match(r'^(?:item\s*(?:1[abc]|2|3|4[ab]|5)\b|risk factors\b|properties\b|organizational structure\b|human capital\b|human resources\b|employees\b|our people\b|corporate governance\b)', text, re.I):
                 break
             selected.append(text)
             if sum(map(len, selected)) >= 12000:
@@ -134,10 +141,12 @@ def issuer_sentence(raw, company, sec=False):
     text = re.sub(r'\bindustry-leading\s+', '', text, flags=re.I)
     if not 40 <= len(text) <= 1000 or not re.search(r'[.!?]$', text) or EXCLUDED.search(text):
         return None
+    if re.search(r'\b(?:employee count|number of employees|(?:[\d,.]+|hundreds?|thousands?|million|one|two|three|four|five|six|seven|eight|nine|ten)(?:\s+(?:full.time|part.time))?\s+employees?)\b', text, re.I):
+        return None
     text = re.sub(r'(\bcompany\b)\s+(?:committed|dedicated|founded|reshaping)\b.*', r'\1.', text, flags=re.I)
     if re.search(r'revolutioniz|reshaping|tremendous|competitive|benefiting|strengthening|momentum|market leaders|utmost urgency|scalable|scalability|seasonal fluctuations|must.not.fail|inspires? confidence|off.mall|best.in.class|differentiating value|low.cost,? high.quality|\b(?:are|is) (?:also expanding|focused|committed)\b', text, re.I):
         return None
-    name = company['names'][0]
+    name = display_name(company['names'][0])
     names = []
     for n in company['names']:
         n = re.sub(r'\s+(?:class\s+[a-z]|ordinary shares|common stock)\b.*', '', n, flags=re.I)
@@ -152,11 +161,11 @@ def issuer_sentence(raw, company, sec=False):
     first_person = sec and bool(re.match(r'^(?:we|the company)\s', text, re.I))
     possessive = sec and re.match(r'^our\s+(?:principal |main |core )?(?:products|product (?:portfolio|offering|line)s?|brands?|merchandise|platforms?|services|business|software platforms|technology stack|(?:comprehensive )?set of software|(?:auto )?insurance products?|field programmable gate array)\b', text, re.I)
     if possessive:
-        text = re.sub(r'^our\b', name + "'s", text, flags=re.I)
+        text = re.sub(r'^our\b', lambda m: name + "'s", text, flags=re.I)
         subject = name + "'s"
     if first_person:
-        text = re.sub(r'^(?:we|the company)\b', name, text, flags=re.I)
-        text = re.sub(r'^' + re.escape(name) + r'\s+(?:also|currently|primarily|generally)\s+', name + ' ', text, flags=re.I)
+        text = re.sub(r'^(?:we|the company)\b', lambda m: name, text, flags=re.I)
+        text = re.sub(r'^' + re.escape(name) + r'\s+(?:also|currently|primarily|generally)\s+', lambda m: name + ' ', text, flags=re.I)
         expertise = re.match(r'^' + re.escape(name) + r' are experts in the ([a-z, ]+) of (.+)', text, re.I)
         if expertise:
             activity_map = {'design': 'designs', 'development': 'develops', 'production': 'produces', 'servicing': 'services', 'manufacturing': 'manufactures', 'distribution': 'distributes', 'marketing': 'markets'}
@@ -201,8 +210,9 @@ def issuer_sentence(raw, company, sec=False):
         subject = name
     text = subject + ' ' + tail.strip(' ,')
     text = re.sub(r'\bsecure,\s*trusted,\s*and\s*innovative\s+', '', text, flags=re.I)
-    text = PROMOTION.sub('', text)
-    text = re.sub(r'\b(?:disruptive|technology-forward|essential|premium)\s+', '', text, flags=re.I)
+    text = subject + PROMOTION.sub('', text[len(subject):])
+    text = subject + re.sub(r'\b(?:disruptive|technology-forward|essential|premium)\s+', '', text[len(subject):], flags=re.I)
+    text = re.sub(r'\s+in a \$[\d,.]+\s+(?:billion|million) Total Addressable Market.*', '.', text, flags=re.I)
     text = re.sub(r'\s+using a powerful combination of science and engineering[.!]?$', '.', text, flags=re.I)
     text = re.sub(r'\b(?:an?|the) innovator,\s*', 'a ', text, flags=re.I)
     text = re.sub(r'\ban (power|software|technology)\b', r'a \1', text, flags=re.I)
@@ -299,7 +309,7 @@ def extract(company, body, source, now, official_website=None):
         return values[:5]
     products = facts(r'\b(?:products|platforms|services)(?:\s+(?:include|such as)|[:,])\s+([^.;]+)')
     markets = facts(r'\bserves\s+([^.;]+)')
-    return {'schema': VERSION, 'parserVersion': PARSER_VERSION, 'state': 'AVAILABLE', 'companyId': company['companyId'], 'companyName': company['names'][0],
+    return {'schema': VERSION, 'parserVersion': PARSER_VERSION, 'state': 'AVAILABLE', 'companyId': company['companyId'], 'companyName': display_name(company['names'][0]),
             'description': description, 'language': 'en', 'primaryBusinessActivity': eligible[0][1],
             'businessActivities': [s[1] for s in eligible], 'productsServices': products, 'customerMarkets': markets, 'majorSegments': [],
             'officialWebsite': canonical_url(official_website), 'sources': [provenance], 'confidence': 'HIGH' if sec else 'MEDIUM',

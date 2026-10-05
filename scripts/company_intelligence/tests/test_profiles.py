@@ -253,6 +253,35 @@ class ProfileTests(unittest.TestCase):
         body = b'<p>Example Holdings Inc. is a gold and silver producer with mines in Canada.</p>'
         self.assertEqual(extract(COMPANY, body, WEB, NOW)['state'], 'AVAILABLE')
 
+    def test_legacy_jurisdiction_annotations_are_display_only_and_never_regex_replacements(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        c = {**COMPANY, 'names': ['Example Holdings Inc. \\DE\\']}
+        body = b'<h2>Item 1. Business</h2><p>We develop software products for financial institutions.</p>'
+        p = extract(c, body, source, NOW)
+        self.assertEqual(p['companyId'], CID)
+        self.assertEqual(p['companyName'], 'Example Holdings Inc.')
+        self.assertEqual(p['description'], 'Example Holdings Inc. develops software products for financial institutions.')
+
+    def test_human_capital_training_is_not_a_customer_business_line(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>We are a bank holding company whose principal activity is community banking.</p><h3>Human Capital Management</h3><p>We offer functional training, bank history and software training throughout each year.</p>'
+        p = extract(COMPANY, body, source, NOW)
+        self.assertIn('bank holding company', p['description'])
+        self.assertNotIn('training', p['description'])
+
+    def test_employee_benefit_products_are_allowed_but_headcounts_are_excluded(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        body = b'<h2>Item 1. Business</h2><p>We provide payroll and employee benefit services for businesses.</p><p>We provide bank services with 500 full-time employees worldwide.</p>'
+        p = extract(COMPANY, body, source, NOW)
+        self.assertIn('employee benefit services', p['description'])
+        self.assertNotIn('500', p['description'])
+
+    def test_company_legal_name_is_not_stripped_as_a_promotional_adjective(self):
+        source = annual_filing(COMPANY, submissions(), NOW)
+        c = {**COMPANY, 'names': ['Leading Holdings Inc.']}
+        body = b'<h2>Item 1. Business</h2><p>We are a leading provider of software services for businesses.</p>'
+        self.assertEqual(extract(c, body, source, NOW)['description'], 'Leading Holdings Inc. is a provider of software services for businesses.')
+
     def test_delegated_profile_host_requires_issuer_discovery_provenance(self):
         with tempfile.TemporaryDirectory() as temp:
             s = Store(Path(temp) / 'state.sqlite')
@@ -272,6 +301,31 @@ class ProfileTests(unittest.TestCase):
             current = s.state('companyProfile:' + CID)
             self.assertEqual(current['description'], p['description'])
             self.assertTrue(public_profile(current, CID, NOW)['stale'])
+            s.close()
+
+    def test_parser_upgrade_without_source_cache_does_not_invent_a_new_filing(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp); s = Store(root / 'state.sqlite')
+            p = extract(COMPANY, b'<h2>Item 1. Business</h2><p>We develop software products for financial institutions.</p>', annual_filing(COMPANY, submissions(), NOW), NOW)
+            p['parserVersion'] = 'older-parser'
+            s.set_state('companyProfile:' + CID, p)
+            self.assertIsNone(refresh_cached_sec(root, s, COMPANY, submissions(), NOW))
+            self.assertEqual(s.state('companyProfile:' + CID), p)
+            self.assertFalse(public_profile(p, CID, NOW)['stale'])
+            s.close()
+
+    def test_unexpected_profile_failure_does_not_suppress_financial_projection_or_cool_down_sec(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp); s = Store(root / 'state.sqlite'); http = PublicHTTP(root / 'http')
+            s.set_state('sec-submissions:' + CID, submissions())
+            pipeline = Pipeline(root, {CID: COMPANY}, s, http, NOW)
+            summary = {'state': 'AVAILABLE', 'metrics': {'revenue': {'current': {'value': 10, 'unit': 'USD', 'periodEnd': '2026-09-30'}}}}
+            with patch('company_intelligence.profile_backfill.refresh_cached_sec', side_effect=RuntimeError('broken optional parser')), patch('company_intelligence.pipeline.summary', return_value=summary):
+                pipeline.project_company(COMPANY)
+            self.assertEqual(pipeline.run['secFailures'], 0)
+            self.assertEqual(s.state('financials:' + CID)['state'], 'AVAILABLE')
+            self.assertTrue(s.state('sec:' + CID)['hasSubmissions'])
+            self.assertIsNone(s.state('sec:' + CID).get('retryAfter'))
             s.close()
 
     def test_catalogue_seed_validates_all_rows_first_and_preserves_existing_state(self):

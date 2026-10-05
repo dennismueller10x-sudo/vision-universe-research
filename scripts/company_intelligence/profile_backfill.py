@@ -109,10 +109,12 @@ def refresh_cached_sec(root, store, company, submissions, now):
     attempt = store.state('profileAttempt:' + cid, {})
     if any(s.get('filingId') == filing['filingId'] for s in prior.get('sources', [])) and prior.get('parserVersion') == PARSER_VERSION:
         return prior
+    superseded = (prior.get('state') == 'AVAILABLE' and any(s.get('type') == 'SEC' for s in prior.get('sources', []))
+                  and not any(s.get('filingId') == filing['filingId'] for s in prior.get('sources', [])))
+    if superseded:
+        store.set_state('companyProfile:' + cid, {**prior, 'supersededAnnualFiling': filing['filingId']})
     body = cached_sec(root, filing['url'])
     if body is None:
-        if prior.get('state') == 'AVAILABLE' and any(s.get('type') == 'SEC' for s in prior.get('sources', [])):
-            store.set_state('companyProfile:' + cid, {**prior, 'supersededAnnualFiling': filing['filingId']})
         return None
     digest = hashlib.sha256(body).hexdigest()
     if attempt.get('secContentHash') == digest and attempt.get('parserVersion') == PARSER_VERSION:
@@ -124,8 +126,6 @@ def refresh_cached_sec(root, store, company, submissions, now):
     if result['state'] == 'AVAILABLE':
         store.set_state('companyProfile:' + cid, result)
         return result
-    if prior.get('state') == 'AVAILABLE' and any(s.get('type') == 'SEC' for s in prior.get('sources', [])):
-        store.set_state('companyProfile:' + cid, {**prior, 'supersededAnnualFiling': filing['filingId']})
     return None
 
 

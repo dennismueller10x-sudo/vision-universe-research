@@ -420,7 +420,9 @@ class Pipeline:
                 # cached annual documents; profile backfill is a separate lane.
                 try:
                     refresh_cached_sec(self.root, self.store, company, submissions, self.now)
-                except (ValueError, SourceError, OSError) as exc:
+                except Exception as exc:
+                    # Optional profile interpretation must never suppress SEC
+                    # financial/news/event projection or impose a SEC cooldown.
                     self.store.audit(self.now, cid, 'CACHED_PROFILE_UNAVAILABLE', reason=str(exc)[:200])
                 evidence = {acc: self.store.state('sec-document:' + cid + ':' + acc) for acc in submissions.get('filings', {}).get('recent', {}).get('accessionNumber', [])}
                 from .sec_documents import inspect_html

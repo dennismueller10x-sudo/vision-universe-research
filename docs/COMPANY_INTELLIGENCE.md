@@ -36,6 +36,12 @@ The incorporated remote conversion milestone preserves exact historical progress
 
 The second milestone's Company Intelligence merge-tree workflow failed on the new catalogue-membership test: current main had withdrawn Qwest Corp from supported equity scope after the branch's frozen master was prepared. This was an incorrect assumption in our new test, not a pre-existing main failure. The import implementation already intersects the current authoritative master and withholds absent identities. The corrected test validates every profile's exact CIK/provenance, asserts the complete supported import set, deliberately withdraws an issuer, proves it cannot be imported or exported, and proves its preceding private factual record survives. Twenty-seven targeted profile tests pass. Current-main dry master: 6,073 issuers versus the branch's fixed 6,078; the catalogue's Qwest record is withheld on main. No Company Master data or eligibility rules are changed and no main merge occurs. Subsequent workflow validation is required before merge-ready is asserted.
 
+## Third validated milestone — cached quality recovery
+
+The prepared catalogue now contains **1093 profiles / 6,078 issuers (17.98%)** after **1515 exact-CIK attempts**. All prepared profiles have SEC annual-filing provenance. Cache-only parser recovery adds no network requests. This pass strips legacy jurisdiction annotations from display names, excludes human-capital sections and employee-count facts while retaining employee-benefit products, preserves issuer names during adjective removal, and accepts larger annual documents within a 64 MiB ceiling. IHG now fits that ceiling but still lacks an eligible complete business statement; it remains unavailable rather than being assigned a guessed description.
+
+Optional profile failures are isolated from the existing SEC financial/news pipeline. Failed extraction of a genuinely newer annual filing marks the preceding profile stale; a same-document parser update does not imply a new filing. **477 Python tests and 39 feature Node tests pass**; all ten GitHub workflows passed on lifecycle-correction head `73d327b3ddd133440e6c2161fdfb72c63c49ef55`. Further source backfill and consumer-quality review continue. The original discovery checkpoint remains unavailable; all inherited queues and prior reports are preserved.
+
 <!-- PROFILE-CONTINUATION-MILESTONE-END -->
 
 # Company Intelligence — candidate completion and recovery (in progress)
