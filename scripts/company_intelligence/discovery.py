@@ -5,6 +5,7 @@ from .model import canonical_url, domain
 from .transport import SourceError
 
 OWNERSHIP_VERSION = 'corporate-ownership-10'
+OVERSIZED_IR_RECOVERY_VERSION = 'owned-ir-after-size-limit-1'
 
 
 def wikidata_catalogue(companies, http):
@@ -170,6 +171,8 @@ def validate_discovery_candidate(company, candidate, http, now):
     try:
         return validate_candidate(company, candidate, http, now, recover_redirects=True)
     except SourceError as original:
+        if str(original) == 'SOURCE_TOO_LARGE':
+            return _recover_oversized_root_ir(company, candidate, http, now, original)
         # A missing DNS record for one conventional host spelling does not
         # establish that the company site is dead. Never use this route to
         # work around robots/access denials or shared proxy failures.
@@ -185,6 +188,75 @@ def validate_discovery_candidate(company, candidate, http, now):
             'alternateURL':route,'primaryFailure':str(original),'scope':'CONVENTIONAL_WWW_HOST_ALIAS'}
         verified['evidence'].append('INDEPENDENTLY_VERIFIED_WWW_ALIAS_AFTER_DNS_FAILURE')
         return verified
+
+
+def _recover_oversized_root_ir(company, candidate, http, now, original):
+    """Verify a small IR page independently; never authorize the unread root.
+
+    Only an actual corporate HTML size failure enters this route. Each request
+    retains normal robots, size, pacing and shared-budget enforcement.
+    """
+    import re
+    from .feeds import parse_links
+    from .transport import BudgetExhausted
+    parts = urlsplit(candidate['url'])
+    host = parts.hostname or ''
+    base = host.removeprefix('www.')
+    if (parts.path not in ('', '/') or parts.query or parts.port or '.' not in base
+            or ':' in base or base.replace('.', '').isdigit()
+            or base in ('co.uk', 'com.au', 'co.jp', 'com.br', 'com.cn')):
+        raise original
+    attempts = []
+    temporary = []
+    for prefix in ('investors', 'investor', 'ir'):
+        route = 'https://' + prefix + '.' + base + '/'
+        try:
+            proof = validate_candidate(company, {**candidate, 'url': route}, http, now,
+                                       recover_redirects=True)
+            response = http.get(proof['url'], ttl=86400)
+            import hashlib
+            if (response['finalUrl'] != proof['url'] or
+                    hashlib.sha256(response['body']).hexdigest() != proof['contentHash']):
+                raise SourceError('OWNERSHIP_RECOVERY_EVIDENCE_CHANGED')
+            links = parse_links(response['body'], response['finalUrl'])
+            backlinks = sorted({link['url'] for link in links
+                                if same_web_host(link['url'], candidate['url'])})
+            body = response['body'].decode('utf-8', 'replace')
+            # Text evidence, not the guessed hostname, establishes IR context.
+            visible = re.sub(r'<(?:script|style)\b[^>]*>.*?</(?:script|style)>', '', body,
+                             flags=re.I | re.S)
+            visible = re.sub(r'<[^>]+>', ' ', visible)
+            if not backlinks or not re.search(r'\binvestor(?:s| relations)?\b', visible, re.I):
+                attempts.append({'url': route, 'reason': 'OWNED_ROUTE_WITHOUT_IR_CONTEXT_OR_CORPORATE_BACKLINK'})
+                continue
+            proof['ownershipEvidence']['transportRecovery'] = {
+                'originalCandidateURL': candidate['url'], 'alternateURL': proof['url'],
+                'primaryFailure': str(original), 'corporateBacklinks': backlinks,
+                'scope': 'INDEPENDENTLY_OWNED_IR_WITH_CORPORATE_BACKLINK',
+                'version': OVERSIZED_IR_RECOVERY_VERSION, 'alternateIRAttempts': attempts}
+            proof['evidence'].append('INDEPENDENTLY_VERIFIED_IR_AFTER_CORPORATE_SIZE_LIMIT')
+            return proof
+        except SourceError as error:
+            if isinstance(error, BudgetExhausted):
+                raise
+            attempts.append({'url': route, 'reason': str(error)[:150],
+                             'ownershipEvidence': getattr(error, 'ownershipEvidence', {})})
+            if any(code in str(error) for code in ('CONFLICTING_COPYRIGHT_OWNER', 'STRUCTURED_CIK_CONFLICT')):
+                error.ownershipEvidence = {**getattr(error, 'ownershipEvidence', {}),
+                                           'alternateIRAttempts': attempts,
+                                           'originalCandidateURL': candidate['url']}
+                raise
+            if any(code in str(error) for code in ('HTTP_429', 'HTTP_50', 'DNS_UNAVAILABLE',
+                                                  'NETWORK_UNAVAILABLE', 'NETWORK_TIMEOUT', 'RATE_LIMIT', 'CIRCUIT_OPEN')):
+                temporary.append(str(error))
+    error = SourceError('OWNERSHIP_EVIDENCE_TEMPORARY_FAILURE:' + temporary[0]) if temporary else original
+    error.ownershipEvidence = {**getattr(original, 'ownershipEvidence', {}),
+                               'originalCandidateURL': candidate['url'],
+                               'alternateIRAttempts': attempts,
+                               'oversizedIRRecoveryVersion': OVERSIZED_IR_RECOVERY_VERSION}
+    if error is original:
+        raise original
+    raise error from original
 
 
 def _validate_response(company, candidate, response, now, header_body=None):

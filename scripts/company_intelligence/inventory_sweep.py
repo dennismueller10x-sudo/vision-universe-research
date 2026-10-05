@@ -9,7 +9,7 @@ import re
 from collections import Counter
 from .model import domain
 from .site_inventory import candidate_routes
-from .discovery import OWNERSHIP_VERSION
+from .discovery import OWNERSHIP_VERSION, OVERSIZED_IR_RECOVERY_VERSION
 
 PRIOR_OWNERSHIP_VERSIONS = tuple('corporate-ownership-' + str(version)
                                for version in range(1, int(OWNERSHIP_VERSION.rsplit('-', 1)[1])))
@@ -63,6 +63,9 @@ def select(companies, store, now, pass_id, lane, limit=50, allow_network=True):
                           site.get('reason') in ('OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED',
                                                 'OFFICIAL_SITE_CANDIDATE_REDIRECT_OWNER_NOT_VALIDATED') and
                           site.get('ownershipVerifierVersion') in PRIOR_OWNERSHIP_VERSIONS)
+        evidence_upgrade = evidence_upgrade or (lane == 'domains' and site.get('status') == 'REJECTED'
+                          and site.get('reason') == 'SOURCE_TOO_LARGE'
+                          and site.get('oversizedIRRecoveryVersion') is None)
         retryable = prior and (prior.get('status')=='COOLDOWN' or prior.get('category') in ('TEMPORARILY_UNAVAILABLE','DEFERRED_BUDGET'))
         due_after=(prior or {}).get('retryAfter') or (site if lane=='domains' else store.state('ir:'+cid,{})).get('retryAfter') or '9999'
         if prior and not evidence_upgrade and not (retryable and due_after<=now) and not (lane=='ir' and prior.get('status')=='NO_VERIFIED_DOMAIN' and official):continue

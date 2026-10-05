@@ -185,3 +185,20 @@ class InventorySweepTests(unittest.TestCase):
    self.assertEqual(select(self.cs,self.s,NOW,pid,'domains')[0],[])
    self.assertEqual(self.s.state('officialSite:'+cid),site)
    self.assertEqual(self.s.state(key+cid)['retryAfter'],future)
+
+ def test_size_recovery_upgrade_is_scoped_once_and_keeps_access_cooldowns(self):
+  from company_intelligence.discovery_batch import persist
+  from company_intelligence.discovery import OVERSIZED_IR_RECOVERY_VERSION
+  cid=self.a['companyId'];future='2099-01-01T00:00:00Z'
+  key='inventorySweep:size-upgrade:domains:'
+  self.s.set_state(key+'inventory',[cid])
+  self.s.set_state(key+cid,{'status':'COOLDOWN','retryAfter':future})
+  self.s.set_state('officialSite:'+cid,{'status':'REJECTED','reason':'SOURCE_TOO_LARGE','retryAfter':future})
+  self.assertEqual([c['companyId'] for c in select(self.cs,self.s,NOW,'size-upgrade','domains')[0]],[cid])
+  row={'companyId':cid,'status':'REJECTED','reason':'SOURCE_TOO_LARGE','requests':4}
+  persist([row],self.s,self.cs,NOW);record(row,self.s,NOW,'size-upgrade','domains')
+  self.assertEqual(self.s.state('officialSite:'+cid)['oversizedIRRecoveryVersion'],OVERSIZED_IR_RECOVERY_VERSION)
+  self.assertEqual(select(self.cs,self.s,NOW,'size-upgrade','domains')[0],[])
+  for reason in ('ROBOTS_UNAVAILABLE:SOURCE_TOO_LARGE','HTTP_403','OFFICIAL_SITE_CANDIDATE_CONFLICTING_COPYRIGHT_OWNER'):
+   self.s.set_state('officialSite:'+cid,{'status':'REJECTED','reason':reason,'retryAfter':future})
+   self.assertEqual(select(self.cs,self.s,NOW,'size-upgrade','domains')[0],[])
