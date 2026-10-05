@@ -91,8 +91,7 @@
   /* Das Live-Abonnement der Aktienseite - eines je Seite, gekuendigt,
      sobald die naechste Seite gezeichnet wird. */
   var detailAbo = null;
-  var detailResize = null;
-  var intelligenceDispose = null;
+  var detailResize = null; var intelligenceDispose = null;
 
   /* V4 §13: die lange Wochenreihe (5J, Max) aus der Historienablage, wenn
      der Build sie am Titel nennt. Fehlt sie, bleiben 5J und Max ehrlich
@@ -166,8 +165,7 @@
   /* =================================================================== */
   function render(root, detail, options) {
     options = options || {};
-    var state = createState(detail);
-    if (intelligenceDispose) { intelligenceDispose(); intelligenceDispose = null; }
+    var state = createState(detail); if (intelligenceDispose) { intelligenceDispose(); intelligenceDispose = null; }
     S.clear(root);
     if (detailAbo) { detailAbo(); detailAbo = null; }
     if (detailResize) { global.removeEventListener("resize", detailResize); detailResize = null; }
@@ -227,8 +225,7 @@
        das Unternehmen in Zahlen (Cluster), damals vs. heute, Bewertung,
        Chancen und Risiken, weiter entdecken - und erst dann die Analyse. */
     var DF = D.DetailFundamentals || {};
-    var kapitel = function (node) { if (node) root.appendChild(node); };
-    if (global.VUCompanyIntelligenceStock) intelligenceDispose = global.VUCompanyIntelligenceStock.mount(root, detail.symbol);
+    var kapitel = function (node) { if (node) root.appendChild(node); }; if (global.VUCompanyIntelligenceStock) intelligenceDispose = global.VUCompanyIntelligenceStock.mount(root, detail.symbol);
     kapitel(why(detail));
     kapitel(ueberblick(detail));
     kapitel(unternehmen(detail));
