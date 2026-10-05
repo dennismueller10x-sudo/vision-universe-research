@@ -48,7 +48,21 @@ Strategien: STRATEGY_MATCH_ADDED 5, REMOVED 4 (momentum-leader 208 → 209; garp
 value-momentum 183 → 184, +2/−1; übrige unverändert). Screener: kein Treffer mehr, der auf einem
 Börsenwert aus ausgegebenen Aktien beruht (SHARE_COUNT_PROVENANCE_AUDIT: jüngster Wert „ausgegeben“ 0).
 
-**market-cap-1.1.0** (gleiche Währung): Messung nach der Materialisierung unten in 1b.
+## 1b. Wirkung market-cap-1.1.0 – gleiche Währung (gemessen)
+
+Artefakt vorher `572dead` → nachher `49c47ee` (erzwungene Materialisierung nach #442):
+MARKET_CAP_WITHHELD neu 338, alle `REPORTING_CURRENCY_NOT_LISTING_CURRENCY` (lokale Vorhersage 338) ·
+MARKET_CAP_CHANGED 0 · MARKET_CAP_ADDED 0 · VALUE_COVERAGE 2.584 → 2.566 · VALUE_CHANGED 92
+(Perzentile verschieben sich, weil 338 verfälschte Werte aus der Vergleichsgruppe fallen) · VALUE_WITHHELD 18.
+
+Zurückgehalten u. a.: CNF (vorher 3,0 Mrd statt ≈0,36), AMX (1.283 Mrd), BCH (3.888 Mrd), ASML, BABA –
+je Emittent nach der Berichtswährung, keine Kürzel-Regel. Varonis (VRNS, eine Nebenkennzahl in AFN)
+behält die Bewertung, weil nur die Bewertungseingaben zählen. Unverändert: JPM 883,5 Mrd/Value 27,
+AAPL 50, MSFT 46, NVDA 59, AMZN 39; GOOG/GOOGL/T/SO/AGNC und META unverändert zurückgehalten.
+
+Strategien: STRATEGY_MATCH_ADDED 2, REMOVED 3 (garp 121 → 120, −1; value-momentum 184 → 184, +2/−2;
+übrige unverändert). Screener: kein Treffer beruht mehr auf einem Börsenwert in fremder Währung oder aus
+ausgegebenen Aktien.
 
 ## 2. Bänder – BAND_SEMANTICS_VERDICT = C
 
@@ -112,7 +126,12 @@ Aktienseite. Keine Änderung nötig.
 
 LATEST_SESSION 02.10.2026 (Freitag; heute Montag vor Börsenbeginn) · STORE_ASOF / Faktoren 02.10.2026
 (Lauf 03.10.) · PRODUCT_ASOF (Faktor-Evidenz, Setups, Radar) 02.10.2026 · BACKTEST_ASOF (Signalstudie)
-Daten bis 02.10.2026, gerechnet 04.10. · DEPLOY_ASOF 05.10.2026 01:21 UTC.
+Daten bis 02.10.2026, gerechnet 04.10. · DEPLOY_ASOF 05.10.2026 03:59 UTC (Produktion `49c47ee`,
+Pages-Lauf 37261090748: Smoke über das gebaute und das zugangsgeprüfte Release grün).
+
+**Performance (gebautes Release, gleiche Kompaktierung wie der Release-Lauf):** 8 von 8 Budgets ohne
+Anhebung bestanden (Home 1,73 MB/21 Anfragen, Screener 6,47 MB/28, Aktie 5,52 MB/39), 88 Prüfungen,
+0 Befunde, 76 Seiten ohne Barrierefreiheits-Verstoß.
 
 ## 6. Demo in 90 Sekunden
 
