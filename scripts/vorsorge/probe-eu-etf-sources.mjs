@@ -153,11 +153,16 @@ for (const [id, url] of [
   ["db-group-disclaimer", "https://www.deutsche-boerse.com/dbg-en/meta/disclaimer"],
   ["db-mds-data-usage-declaration", "https://www.mds.deutsche-boerse.com/mds-en/real-time-data/data-usage-declaration"],
   ["db-mds-disclaimer", "https://www.mds.deutsche-boerse.com/mds-en/disclaimer"],
-  ["db-reference-data", "https://www.mds.deutsche-boerse.com/mds-en/data-services/reference-data"]
+  ["db-reference-data", "https://www.mds.deutsche-boerse.com/mds-en/data-services/reference-data"],
+  ["db-mds-agreements", "https://www.mds.deutsche-boerse.com/mds-en/real-time-data/agreements"],
+  ["db-cashmarket-imprint", "https://www.cashmarket.deutsche-boerse.com/cash-en/imprint"],
+  ["db-cashmarket-impressum", "https://www.cashmarket.deutsche-boerse.com/cash-de/impressum"]
 ]) {
   const r = await get(url);
-  const txt = strip(r.text); const main = Math.max(0, txt.search(/(Disclaimer|Haftungsausschluss|Nutzungs|Terms|Declaration|Erkl)/i) - 200);
-  add({ id, url, status: r.status, finalUrl: r.finalUrl || null, error: r.error, excerpts: excerpts(r.text, 12), fullText: txt.slice(main, main + 9000), downloadLinks: links(r.text, /href="[^"]*\.(pdf|xlsx|csv)[^"]*"/gi).slice(0, 15).map((x) => x.slice(6, -1)) });
+  // Navigation abschneiden: den Textkoerper ab der ersten Stelle mit rechtlichem Inhalt (Haftung, Urheberrecht, Vervielfaeltigung) nehmen.
+  const txt = strip(r.text); const body = txt.search(/(liab|haftung|copyright|urheberrecht|reproduc|vervielf|weitergabe|redistribut|without (the )?prior|ohne (vorherige|ausdr))/i);
+  const startAt = body >= 0 ? Math.max(0, body - 1500) : Math.max(0, txt.length - 9000);
+  add({ id, url, status: r.status, finalUrl: r.finalUrl || null, error: r.error, excerpts: excerpts(r.text, 12), fullText: txt.slice(startAt, startAt + 9000), downloadLinks: links(r.text, /href="[^"]*\.(pdf|xlsx|csv)[^"]*"/gi).slice(0, 15).map((x) => x.slice(6, -1)) });
   await sleep(500);
 }
 {
