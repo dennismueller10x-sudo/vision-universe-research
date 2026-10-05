@@ -57,6 +57,13 @@ export function residualIsShareClass(words) {
   }
   return true;
 }
+/** Passt der Anteilklassenname zum (ueber die LEI gefundenen) Registerfonds? FIRDS-Namen sind oft abgekuerzt
+    ("JPM", "Em.Markts.") oder veraltet (Umbenennung) - das allein ist kein Widerspruch. Widerspruch heisst: Zahlen
+    im Anteilklassennamen, die der Fondsname nicht hat (z. B. "TIPS 0-5" gegen "TIPS" - LEI des Schwesterfonds). */
+export function consistentWithFund(className, fundName) {
+  const reg = new Set(normName(fundName).split(" "));
+  return normName(className).split(" ").filter((w) => /^[0-9]+$/.test(w)).every((w) => reg.has(w));
+}
 /** Laengster Registername, der Wortanfang des Anteilklassennamens ist und nach dem nur Anteilklassen-Woerter folgen; gleiches Domizil; eindeutig. */
 export function matchFund(shareClassName, domicile, index) {
   const tokens = normName(shareClassName).split(" ");
@@ -95,16 +102,16 @@ if (process.argv[1] && process.argv[1].endsWith("ingest-esma-funds.mjs")) {
     if (!index.has(k)) index.set(k, []); index.get(k).push(rec);
   }
   const matched = new Map();   // isin -> rec
-  // Zuerst ueber den rechtlichen Fondsnamen laut GLEIF (sauberer Teilfondsname), dann ueber den FIRDS-Namen der Anteilklasse
-  // Ueber den GLEIF-Namen nur, wenn der Anteilklassenname dazu passt (eine falsch gemeldete LEI eines Schwesterfonds wird so erkannt);
-  // gekuerzte FIRDS-Namen ("... ETFS") koennen das nicht pruefen und werden nur ueber den GLEIF-Namen zugeordnet.
-  const TRUNC = /^.{20,35} ETFS?$/;
-  const consistent = (className, reg) => { const a = normName(className).split(" "), b = new Set(normName(reg.name).split(" ")); return residualIsShareClass(a.filter((w) => !b.has(w))); };
+  // Zuerst ueber den rechtlichen Fondsnamen laut GLEIF (aktueller Teilfondsname zur Fonds-LEI), dann ueber den FIRDS-Namen.
+  // Eine falsch gemeldete LEI (Schwesterfonds) wird verworfen, wenn der Anteilklassenname Zahlen enthaelt, die der Fonds nicht
+  // hat, oder wenn der Anteilklassenname selbst eindeutig einem anderen Registerfonds entspricht (Widerspruch -> keine Zuordnung).
   for (const r of eu.rows) {
     const name = r[fi("name")], legal = r[fi("issuerLegalName")], dom = r[fi("domicile")];
+    const byName = matchFund(name, dom, index);
     let m = legal ? matchFund(legal, dom, index) : null;
-    if (m && !TRUNC.test(name) && !consistent(name, m)) m = null;
-    if (!m) m = matchFund(name, dom, index);
+    if (m && !consistentWithFund(name, m.name)) m = null;
+    if (m && byName && byName.id !== m.id) m = null;   // beide plausibel, aber verschieden: nicht raten
+    else if (!m) m = byName;
     if (m && m.status && m.status !== "Active") m = null;   // inaktive Registereintraege nicht als aktuellen Status zeigen
     if (m) matched.set(r[0], m);
   }

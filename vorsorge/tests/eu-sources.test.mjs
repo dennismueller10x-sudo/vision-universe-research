@@ -1,8 +1,8 @@
 /* EU/UCITS-Quellen: Normalisierung und Zuordnung (synthetische Fixtures im Aufbau der echten Dateien). */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { ongoingCharges, replication, useOfProfits, parseInstrumentsCsv, parseMasterRows } from "../../scripts/vorsorge/ingest-xetra-refdata.mjs";
-import { normName, matchFund, residualIsShareClass } from "../../scripts/vorsorge/ingest-esma-funds.mjs";
+import { ongoingCharges, chargesUnit, replication, useOfProfits, parseInstrumentsCsv, parseMasterRows } from "../../scripts/vorsorge/ingest-xetra-refdata.mjs";
+import { normName, matchFund, residualIsShareClass, consistentWithFund } from "../../scripts/vorsorge/ingest-esma-funds.mjs";
 
 test("Xetra: laufende Kosten in Prozent -> Dezimal; Unplausibles und Leeres bleibt null (Missing != 0)", () => {
   assert.equal(ongoingCharges("0,07%"), 0.0007);
@@ -79,4 +79,24 @@ test("ESMA-Fondsregister: Rest nach dem Registernamen darf nur die Anteilklasse 
   assert.equal(matchFund("Xtrackers MSCI World Swap UCITS ETF Inhaber-Anteile 1C o.N. AT ETFP", "LU", idx).id, "sw");
   assert.ok(residualIsShareClass(["usd", "acc"]) && residualIsShareClass(["reg", "shares", "usd", "unhgd", "acc", "o", "n"]));
   assert.ok(!residualIsShareClass(["0", "5"]) && !residualIsShareClass(["esg"]));
+});
+
+test("Xetra: Kostenspalte als Excel-Anteil (0.002 = 0,20 %) wird erkannt und nicht doppelt geteilt", () => {
+  assert.equal(chargesUnit(["0.002", "0.0007", "0.0035", ""]), "fraction");
+  assert.equal(chargesUnit(["0.20", "0.07", "0.35"]), "percent");
+  assert.equal(ongoingCharges("0.002", "fraction"), 0.002);
+  assert.equal(ongoingCharges("2.3E-3", "fraction"), 0.0023);
+  assert.equal(ongoingCharges("0.2", "fraction"), null);   // 20 % unplausibel
+  assert.equal(ongoingCharges("0,07%", "fraction"), 0.0007); // explizites Prozentzeichen gewinnt
+  const rows = [["ISIN", "PRODUCT TYPE", "ONGOING CHARGES"], ["IE00B4L5Y983", "ETF", "0.002"], ["IE00B5BMR087", "ETF", "0.0007"], ["IE00BK5BQT80", "ETF", "0.0022"]];
+  const m = parseMasterRows(rows);
+  assert.equal(m.chargesUnit, "fraction");
+  assert.equal(m.rows.get("IE00B4L5Y983").ongoingCharges, 0.002);
+});
+
+test("ESMA-Fondsregister: LEI-Treffer nur, wenn der Anteilklassenname nicht widerspricht", () => {
+  assert.equal(consistentWithFund("JPM Japan Research Enhanced Index Equity Active UCITS ETF USD (dist)", "JPMorgan ETFs (Ireland) ICAV - Japan Research Enhanced Index Equity Active UCITS ETF"), true);  // Abkuerzung
+  assert.equal(consistentWithFund("HSBC MSCI Em.Markts. UCITS ETFRegistered Inc.Shares USD o.N.", "HSBC MSCI EMERGING MARKETS UCITS ETF"), true);
+  assert.equal(consistentWithFund("iShares $ TIPS 0-5 UCITS ETF USD (Acc)", "iShares $ TIPS UCITS ETF"), false);   // Schwesterfonds-LEI
+  assert.equal(consistentWithFund("iShares $ Treasury Bond 1-3yr UCITS ETF", "iShares $ Treasury Bond 1-3yr UCITS ETF"), true);
 });

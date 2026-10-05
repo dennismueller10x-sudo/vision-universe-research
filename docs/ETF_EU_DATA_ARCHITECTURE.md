@@ -16,8 +16,12 @@ Fonds (Teilfonds, ESMA-Register)  ──  Anteilklasse (ISIN, FIRDS)  ──  Li
   (`domicileBasis = ISIN_PREFIX`).
 - **Fonds** kommt aus dem ESMA-Fondsregister. Das Register führt keine ISIN; die
   Zuordnung läuft über den normalisierten Fondsnamen (Wortanfang des Anteilklassennamens,
-  mindestens drei Wörter, längster Treffer) und gleiches Domizil. Mehrdeutige Treffer
-  werden verworfen. Konfidenz MEDIUM.
+  mindestens drei Wörter, längster Treffer; danach nur Anteilklassen-Wörter wie Währung,
+  Acc/Dist, Hedged) und gleiches Domizil. Zuerst über den GLEIF-Namen der Fonds-LEI, dann
+  über den FIRDS-Namen. Ein LEI-Treffer wird verworfen, wenn der Anteilklassenname Zahlen
+  enthält, die der Fondsname nicht hat (z. B. „TIPS 0-5“ gegen „TIPS“), oder wenn der
+  Anteilklassenname eindeutig einem anderen Registerfonds entspricht. Mehrdeutige und
+  inaktive Treffer werden verworfen. Konfidenz MEDIUM.
 - **Listing** = ISIN × MIC aus FIRDS.
 
 ## Pipeline (GitHub Actions, Marker `[vorsorge-fundamentals]`)

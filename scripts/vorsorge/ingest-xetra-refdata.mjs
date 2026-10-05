@@ -33,11 +33,18 @@ const HOST = "https://www.cashmarket.deutsche-boerse.com";
 
 /* ------------------------------------------------ Normalisierung (getestet) */
 /** "0,07%" | "0.07 %" | "0.07" -> 0.0007 ; Werte > 5 (%) oder < 0 -> null (unplausibel). Ohne Prozentangabe gilt die Spalte als Prozent. */
-export function ongoingCharges(raw) {
-  const s = String(raw ?? "").trim().replace(/\s/g, "").replace(",", ".").replace(/%$/, "");
-  if (!s || !/^-?\d+(\.\d+)?$/.test(s)) return null;
-  const v = Number(s);
-  return v >= 0 && v <= 5 ? Math.round(v * 1e5) / 1e7 : null;
+/** unit "percent": "0.20" = 0,20 %; unit "fraction": Excel-Prozentzelle, 0.002 = 0,20 %. Ergebnis immer dezimal (0.002). */
+export function ongoingCharges(raw, unit = "percent") {
+  const str = String(raw ?? "").trim().replace(/\s/g, "").replace(",", ".");
+  const pct = /%$/.test(str), s = str.replace(/%$/, "");
+  if (!s || !/^-?\d+(\.\d+)?(e-?\d+)?$/i.test(s)) return null;
+  const v = Number(s) / (pct || unit === "percent" ? 100 : 1);
+  return v >= 0 && v <= 0.05 ? Math.round(v * 1e7) / 1e7 : null;
+}
+/** Einheit der Kostenspalte aus dem Median der Rohwerte: Prozentangaben liegen um 0,2, Excel-Anteile um 0,002. */
+export function chargesUnit(raws) {
+  const v = raws.map((x) => String(x ?? "").trim()).filter((x) => x && !/%$/.test(x)).map((x) => Number(x.replace(",", "."))).filter(Number.isFinite).sort((a, b) => a - b);
+  return v.length && v[Math.floor(v.length / 2)] < 0.05 ? "fraction" : "percent";
 }
 const REPL = [[/full/i, "PHYSICAL_FULL"], [/optimi[sz]ed|sampl/i, "PHYSICAL_SAMPLING"], [/swap|synth/i, "SYNTHETIC_SWAP"], [/hybrid/i, "HYBRID"]];
 export function replication(raw) { const s = String(raw ?? "").trim(); if (!s) return null; for (const [re, v] of REPL) if (re.test(s)) return v; return "OTHER"; }
@@ -75,15 +82,16 @@ export function parseMasterRows(rows) {
   const miss = need.filter((k) => ix(k) < 0); if (miss.length) throw new Error("Stammdatenblatt: Spalten fehlen: " + miss.join(", "));
   const asOf = (rows.slice(0, hi).flat().join(" ").match(/(\d{2})\/(\d{2})\/(\d{4})/) || []).slice(1);
   const out = new Map();
+  const unit = chargesUnit(rows.slice(hi + 1).map((r) => r[ix("ONGOING CHARGES")]));
   for (const r of rows.slice(hi + 1)) {
     const isin = String(r[ix("ISIN")] ?? "").trim(); if (!F.isValidIsin(isin)) continue;
     const get = (k) => (ix(k) >= 0 ? String(r[ix(k)] ?? "").trim() || null : null);
     out.set(isin, { isin, productType: productType(get("PRODUCT TYPE")), name: get("PRODUCT NAME"), family: get("PRODUCT FAMILY"), symbol: get("XETRA SYMBOL"),
-      ongoingCharges: ongoingCharges(get("ONGOING CHARGES")), ongoingChargesRaw: get("ONGOING CHARGES"), distribution: useOfProfits(get("USE OF PROFITS")),
+      ongoingCharges: ongoingCharges(get("ONGOING CHARGES"), unit), ongoingChargesRaw: get("ONGOING CHARGES"), distribution: useOfProfits(get("USE OF PROFITS")),
       replication: replication(get("REPLICATION METHOD")), fundCurrency: get("FUND CURRENCY"), tradingCurrency: get("TRADING CURRENCY"), benchmark: get("BENCHMARK") });
   }
   // Datum im Kopf "As of 05/10/2026" = TT/MM/JJJJ
-  return { asOf: asOf.length ? asOf[2] + "-" + asOf[1] + "-" + asOf[0] : null, rows: out };
+  return { asOf: asOf.length ? asOf[2] + "-" + asOf[1] + "-" + asOf[0] : null, chargesUnit: unit, rows: out };
 }
 
 /* -------------------------------------------------------------- Lauf */
@@ -110,7 +118,7 @@ if (process.argv[1] && process.argv[1].endsWith("ingest-xetra-refdata.mjs")) {
       benchmark: n((r) => r.benchmark), fundCurrency: n((r) => r.fundCurrency), wkn: [...inst.rows.values()].filter((r) => r.wkn).length,
       inFirdsIndex: etfs.filter((r) => euIsins.has(r.isin)).length, wknInFirdsIndex: [...inst.rows.values()].filter((r) => r.wkn && euIsins.has(r.isin)).length },
     // Einheitenpruefung ohne Einzelwerte: liegt der Median unter 0,01 %, war die Spalte vermutlich ein Bruch statt Prozent
-    ongoingChargesQuantiles: ((v) => v.length ? { p10: v[Math.floor(v.length * 0.1)], p50: v[Math.floor(v.length / 2)], p90: v[Math.floor(v.length * 0.9)], max: v[v.length - 1], unitSuspect: v[Math.floor(v.length / 2)] < 0.0001 } : null)(etfs.map((r) => r.ongoingCharges).filter((x) => x !== null).sort((a, b) => a - b)),
+    ongoingChargesQuantiles: ((v) => v.length ? { p10: v[Math.floor(v.length * 0.1)], p50: v[Math.floor(v.length / 2)], p90: v[Math.floor(v.length * 0.9)], max: v[v.length - 1], unitSuspect: v[Math.floor(v.length / 2)] < 0.0005 || v[Math.floor(v.length / 2)] > 0.02, chargesUnit: master.chargesUnit } : null)(etfs.map((r) => r.ongoingCharges).filter((x) => x !== null).sort((a, b) => a - b)),
     rejected: { wknShapes: inst.wknRejectedShapes, wknHeaders: inst.headerWkn, ongoingChargesUnparsable: n((r) => r.ongoingChargesRaw && r.ongoingCharges === null) },
     distributions: { replication: Object.entries(etfs.reduce((m, r) => ((m[r.replication || "null"] = (m[r.replication || "null"] || 0) + 1), m), {})), distribution: Object.entries(etfs.reduce((m, r) => ((m[r.distribution || "null"] = (m[r.distribution || "null"] || 0) + 1), m), {})) } };
   writeFileSync(join(root, "vorsorge/data/sources/xetra-refdata-stats.json"), JSON.stringify(stats, null, 1) + "\n");
