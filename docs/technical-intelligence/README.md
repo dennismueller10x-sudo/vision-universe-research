@@ -37,6 +37,8 @@ Kurzfassung der Evidenz (Nachlauf mit Engine 2.2 und Elliott-Gewicht 0, siehe TE
 * [MISSION4_FINAL_REPORT.md](MISSION4_FINAL_REPORT.md) — Abschlussbericht, Statustabelle, Selbstkritik
 * [MISSION6_FINAL_REPORT.md](MISSION6_FINAL_REPORT.md) — Mission VI: Impuls-Forensik, OHLC-Studie, Human-Audit, Entscheidung „kein Engine 3.3“
   * [ELLIOTT_IMPULSE_FORENSICS.md](ELLIOTT_IMPULSE_FORENSICS.md) · [OHLC_ELLIOTT_STUDY.md](OHLC_ELLIOTT_STUDY.md) · [PRACTITIONER_HUMAN_AUDIT.md](PRACTITIONER_HUMAN_AUDIT.md) · [ELLIOTT_ENGINE33_REPORT.md](ELLIOTT_ENGINE33_REPORT.md) · [reviews/ELLIOTT_33_REDTEAM.md](reviews/ELLIOTT_33_REDTEAM.md)
+* [PRACTITIONER_CONSENSUS_BENCHMARK.md](PRACTITIONER_CONSENSUS_BENCHMARK.md) — Mission VII: Konsens mehrerer Praktiker. 0 starke Konsensfälle, 5 Widersprüche, 0 Konsens-Impulse; Entscheidung „kein Engine 3.3“ (Fall B + D)
+  * [PRACTITIONER_CONSENSUS_MINING_LOG.md](PRACTITIONER_CONSENSUS_MINING_LOG.md) · [reviews/CONSENSUS_REDTEAM.md](reviews/CONSENSUS_REDTEAM.md) · Protokoll-Nachträge 7–9 in [PRACTITIONER_PROTOCOL.md](PRACTITIONER_PROTOCOL.md)
 * [FINAL_OPEN_ITEM_MATRIX.md](FINAL_OPEN_ITEM_MATRIX.md) — alle offenen Punkte Mission I–IV
 * [STATISTICS_AUDIT.md](STATISTICS_AUDIT.md) — Cluster-Bootstrap, Mehrfachtests, zeitraumgleiche Baseline
 * Reviews: [Code-Review](reviews/MISSION4_CODE_REVIEW.md), [Red-Team 2](reviews/MISSION4_REDTEAM_2.md), [Generator-Audit 2](reviews/ELLIOTT_GENERATOR_AUDIT_2.md), [Sprachaudit](reviews/REGULATORY_LANGUAGE_AUDIT.md)
