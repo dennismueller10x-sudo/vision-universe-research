@@ -3,7 +3,7 @@
  "methodologyVersion": "vu-factor-evidence-2.0.0",
  "derivedFrom": "quant-v2.2.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-10-05T03:30:03.000Z",
+ "generatedAt": "2026-10-05T06:44:03.000Z",
  "asOf": "2026-10-02",
  "publication": {
   "compositeAllowed": false,
@@ -28,6 +28,60 @@
   "profitability": 0.15,
   "revisions": 0.15,
   "risk": 0.05
+ },
+ "bandSemantics": {
+  "version": "factor-band-2.0.0",
+  "basis": "RELATIVE_POSITION",
+  "universe": {
+   "quality": 3776,
+   "growth": 3324,
+   "momentum": 5760,
+   "value": 2566,
+   "profitability": 1994,
+   "revisions": 0,
+   "risk": 5760
+  },
+  "scoreCuts": {
+   "quality": {
+    "VERY_STRONG": 67.91,
+    "STRONG": 60.59,
+    "NEUTRAL": 50.45,
+    "WEAK": 41.83
+   },
+   "growth": {
+    "VERY_STRONG": 75.86,
+    "STRONG": 64.55,
+    "NEUTRAL": 46.87,
+    "WEAK": 36.24
+   },
+   "momentum": {
+    "VERY_STRONG": 82.12,
+    "STRONG": 68.87,
+    "NEUTRAL": 48.05,
+    "WEAK": 33.27
+   },
+   "value": {
+    "VERY_STRONG": 77.72,
+    "STRONG": 66.7,
+    "NEUTRAL": 49.15,
+    "WEAK": 38.55
+   },
+   "profitability": {
+    "VERY_STRONG": 81.52,
+    "STRONG": 68.45,
+    "NEUTRAL": 49.47,
+    "WEAK": 36.82
+   },
+   "revisions": null,
+   "risk": {
+    "VERY_STRONG": 87.45,
+    "STRONG": 75.44,
+    "NEUTRAL": 49.9,
+    "WEAK": 30.96
+   }
+  },
+  "minimumUniverse": 100,
+  "methodology": "quant/methodology/factor-bands-v2.json"
  },
  "componentSpecs": {
   "quality:accrualRatio": {
@@ -1107,6 +1161,6 @@
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 437,
   "NOT_AN_EQUITY_LISTING:PREFERRED": 8
  },
- "runtimeMs": 17830,
- "contentHash": "daae021dafe0184f"
+ "runtimeMs": 18835,
+ "contentHash": "9a94bb2515ef8eda"
 }
