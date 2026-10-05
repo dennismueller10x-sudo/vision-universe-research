@@ -18,7 +18,7 @@ from .store import Store
 
 def drive(root, state, run_id, lane='materials', month=None, batches=10,
           limit=32, request_budget=160, max_seconds=360, execute=subprocess.run,
-          publisher_low_gain_batches=3):
+          publisher_low_gain_batches=3, news_include_covered=False):
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,47}', run_id or ''):
         raise ValueError('INVALID_SOURCE_BACKFILL_RUN')
     if lane not in ('materials', 'publisher', 'news') or not 1 <= batches <= 500:
@@ -32,6 +32,8 @@ def drive(root, state, run_id, lane='materials', month=None, batches=10,
         raise ValueError('MATERIALS_BACKFILL_HAS_NO_MONTH')
     if type(publisher_low_gain_batches) is not int or not 0 <= publisher_low_gain_batches <= 20:
         raise ValueError('INVALID_PUBLISHER_LOW_GAIN_BOUND')
+    if type(news_include_covered) is not bool or (news_include_covered and lane != 'news'):
+        raise ValueError('INVALID_NEWS_BACKFILL_COVERAGE_MODE')
     state = Path(state).resolve()
     key = f'sourceBackfillRunner:{run_id}:{lane}'
     checkpoint = state / 'checkpoints' / (run_id + '-' + lane + '.tar.gz')
@@ -42,6 +44,8 @@ def drive(root, state, run_id, lane='materials', month=None, batches=10,
         store = Store(state / 'state.sqlite')
         try:
             prior = store.state(key, {})
+            if prior and prior.get('newsIncludeCovered', False) != news_include_covered:
+                raise ValueError('SOURCE_BACKFILL_COVERAGE_MODE_CHANGED')
             if prior and prior.get('month') != month:
                 raise ValueError('SOURCE_BACKFILL_RUN_MONTH_CHANGED')
             # Restarting the same completed low-gain run must not keep issuing
@@ -60,6 +64,8 @@ def drive(root, state, run_id, lane='materials', month=None, batches=10,
                    '--max-seconds', str(max_seconds)]
         if lane == 'news':
             command += ['--source-backfill-run', run_id]
+            if news_include_covered:
+                command.append('--news-backfill-include-covered')
         if month is not None:
             command += ['--archive-month', month]
         completed = execute(command, capture_output=True, text=True)
@@ -85,6 +91,7 @@ def drive(root, state, run_id, lane='materials', month=None, batches=10,
         try:
             fresh = report.get('checkpoint', {}) if lane == 'publisher' and report.get('checkpointCurrentRun') else {}
             accounting = {**prior, 'runId': run_id, 'lane': lane, 'month': month,
+                          'newsIncludeCovered': news_include_covered,
                           'checkedAt': utcnow(), 'completedBatches': prior.get('completedBatches', 0) + 1,
                           'lastBatch': report, 'stopReason': reason,
                           'failureClusters': failure_clusters(store, 'ir')}
@@ -129,6 +136,8 @@ def main(argv=None):
     parser.add_argument('--max-seconds', type=int, default=360)
     parser.add_argument('--publisher-low-gain-batches', type=int, default=3,
                         help='Pause after this many healthy publisher batches add at most one news issuer each (0 disables)')
+    parser.add_argument('--news-backfill-include-covered', action='store_true',
+                        help='News lane only: frozen one-time recovery of verified unpolled feeds for already news-covered issuers')
     parser.add_argument('--network', action='store_true')
     args = parser.parse_args(argv)
     if not args.network:
@@ -136,7 +145,8 @@ def main(argv=None):
     drive(args.root, args.state or args.root / '.company-intelligence', args.run_id,
           args.lane, args.archive_month, args.max_batches, args.limit,
           args.request_budget, args.max_seconds,
-          publisher_low_gain_batches=args.publisher_low_gain_batches)
+          publisher_low_gain_batches=args.publisher_low_gain_batches,
+          news_include_covered=args.news_backfill_include_covered)
 
 
 if __name__ == '__main__':

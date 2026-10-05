@@ -281,14 +281,20 @@ class Pipeline:
                     if (effective.get('verified') and match['companyId'] == effective.get('companyId')) or distributed_author:
                         announcer = {**effective, 'verified': True, 'type': 'IR_FEED', 'companyId': match['companyId']} if distributed_author else effective
                         announcements = from_announcement(entry, announcer, self.now) if issuer_earnings_announcement(entry['headline'], self.companies[match['companyId']]) else []
-                        if distributed_author and entry.get('callEvidence'):
-                            call_entry={**entry,'headline':entry['distributionMetadata']['contributor']+' Earnings Conference Call','evidenceText':entry['callEvidence']}
+                        from .distributor_archive import publisher_call_actor
+                        if distributed_author and entry.get('callEvidence') and publisher_call_actor(entry['headline'], self.companies[match['companyId']]):
+                            from .distributor_archive import earnings_call_context
+                            earnings_call = earnings_call_context(entry['headline'], entry['callEvidence'])
+                            # A dated clinical/strategy webcast is useful IR content,
+                            # but cannot confirm earnings or retire an estimate.
+                            call_label = ' Earnings Conference Call' if earnings_call else ' Investor Conference Call'
+                            call_entry={**entry,'headline':entry['distributionMetadata']['contributor']+call_label,'evidenceText':entry['callEvidence']}
                             from .sec_documents import release_period
                             call_events=from_announcement(call_entry,announcer,self.now)
-                            call_period=release_period(entry['headline']) or {}
+                            call_period=(release_period(entry['headline']) or {}) if earnings_call else {}
                             for call in call_events:
                                 call.update(call_period)
-                                call['evidence']={'method':'EXPLICIT_ISSUER_AUTHORED_CALL_SCHEDULE','excerpt':entry['callEvidence'][:1200]}
+                                call['evidence']={'method':'EXPLICIT_ISSUER_AUTHORED_CALL_SCHEDULE' if earnings_call else 'EXPLICIT_ISSUER_AUTHORED_INVESTOR_CALL_SCHEDULE','excerpt':entry['callEvidence'][:1200]}
                             announcements += call_events
                         if distributed_author and entry.get('authorSiteCandidate'):
                             candidate=entry['authorSiteCandidate']

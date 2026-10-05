@@ -72,6 +72,7 @@ def main(argv=None):
     p.add_argument('--limit', type=int, default=25)
     p.add_argument('--request-budget', type=int, default=60)
     p.add_argument('--max-seconds', type=int, default=600)
+    p.add_argument('--news-backfill-include-covered', action='store_true', help='Explicit one-time recovery of verified unpolled feeds even when publisher news already covers the issuer')
     p.add_argument('--source-backfill-run', default='unpolled-news', help='Frozen existing-news-source cohort identity')
     p.add_argument('--force-sources', action='store_true', help='Recheck selected sources without changing their normal scheduling interval')
     p.add_argument('--network', action='store_true', help='Explicitly enable configured public feeds')
@@ -84,6 +85,8 @@ def main(argv=None):
     p.add_argument('--discover-sites', action='store_true', help='Exact CIK Wikidata candidates, automatically used only if unique')
     p.add_argument('--gdelt', action='store_true', help='Optional, unreliable discovery metadata')
     args = p.parse_args(argv)
+    if args.news_backfill_include_covered and args.command != 'news-backfill':
+        p.error('--news-backfill-include-covered requires news-backfill')
     if not 1 <= args.limit <= 100 or not 1 <= args.request_budget <= 200 or not 30 <= args.max_seconds <= 1800:
         p.error('limit must be 1..100; request budget 1..200; max seconds 30..1800')
     if not 1 <= args.discovery_workers <= 8 or (args.discovery_workers > 1 and args.command not in ('discover-backfill', 'verify-domains','sweep-inventory')):
@@ -289,7 +292,7 @@ def main(argv=None):
                 return 0
             pipeline.seed_sources(json.loads((config_dir / 'sources.json').read_text()))
             from company_intelligence.news_backfill import backfill
-            print(json.dumps(backfill(pipeline,args.limit,args.source_backfill_run,selected_ids if args.tickers else None),sort_keys=True))
+            print(json.dumps(backfill(pipeline,args.limit,args.source_backfill_run,selected_ids if args.tickers else None,include_covered=args.news_backfill_include_covered),sort_keys=True))
             return 0
         if args.command=='materials-backfill':
             if (state_dir/'stop-source-backfill').exists():

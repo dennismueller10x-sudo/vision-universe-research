@@ -54,6 +54,53 @@ class Metadata(HTMLParser):
         if tag=='p' and self.paragraph:self.paragraphs.append(clean(' '.join(self.p),2000));self.paragraph=False
 
 
+
+
+def publisher_call_actor(headline, company):
+    """A joint release's author/ticker does not make every participant the host."""
+    from .model import normalize, SUFFIX, issuer_earnings_announcement
+    # Keep the leading issuer actor while removing an explicit parent descriptor.
+    actor_headline = re.sub(r',\s*a subsidiary of.{1,160}?,\s*(?=(?:schedules?|announces?|reports?|hosts?)\b)',
+                            ' ', headline, flags=re.I)
+    title = normalize(actor_headline)
+    names = {normalize(n) for n in company['names']} | {
+        normalize(SUFFIX.sub('', n)) for n in company['names']}
+    action = re.search(r'\b(?:announces?|reports?|releases?|hosts?|presents?)\b', title)
+    actor = title[:action.start()].strip() if action else ''
+    if ' and ' in ' ' + actor + ' ' and actor not in names:
+        return False
+    if issuer_earnings_announcement(headline, company):
+        return True
+    actor_words = r'(?:reports?|announces?|releases?|hosts?|presents?|schedules?|sets?|enters?|completes?|to|will)\b'
+    if any(len(name) >= 3 and re.match(re.escape(name) + r'\s+' + actor_words, title) for name in names):
+        return True
+    # Shortened financial brands must share the legal-name prefix and put the
+    # reporting actor immediately after it; a different company cannot pass.
+    if not earnings_call_context(headline, ''):
+        return False
+    words = title.split()
+    for name in names:
+        common = 0
+        for left, right in zip(words, name.split()):
+            if left != right:
+                break
+            common += 1
+        next_actor = common
+        if common == 1 and len(words[0]) >= 6 and len(words) > common and words[common] == 'group':
+            next_actor += 1
+        if common and (common >= 2 or len(words[0]) >= 6) and len(words) > next_actor and re.fullmatch(actor_words, words[next_actor]):
+            return True
+    return False
+
+
+def earnings_call_context(headline, evidence):
+    """Financial reporting proof distinguishes earnings from other investor calls."""
+    from .model import financial_release_evidence
+    from .ir_events import event_type
+    return bool(financial_release_evidence(headline, evidence)) or event_type(
+        headline + ' ' + evidence) in ('EARNINGS_CALL', 'EARNINGS_SCHEDULED')
+
+
 def metadata(body,url):
     if len(body)>2*1024*1024 or domain(url)!='www.globenewswire.com' or '/news-release/' not in url:raise SourceError('UNSAFE_DISTRIBUTOR_ARTICLE')
     p=Metadata();p.feed(body.decode('utf-8','replace'))
@@ -72,7 +119,7 @@ def metadata(body,url):
     stock=clean(p.meta.get('ticker'),100)
     paragraphs=[v for v in p.paragraphs if re.search(r'(?:conference|earnings) call|webcast',v,re.I) and re.search(r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2}',v,re.I)]
     # Keep a short scheduling evidence clause, never the complete article.
-    evidence=next((v for v in paragraphs if re.search(r'(?:will|to) (?:host|hold)|conference call.{0,100}(?:will|held)|management.{0,100}call',v,re.I) and not re.search(r'forward.looking|risk factors|risks and uncertainties',v,re.I)),'')[:1200]
+    evidence=next((v for v in paragraphs if re.search(r'(?:will|to)\s+(?:host|hold)|(?:conference|earnings) call.{0,100}(?:will be held|will follow|is scheduled|scheduled at|scheduled for)|\bwill\s+(?:review|discuss)\b.{0,100}\bconference call\b',v,re.I) and not re.search(r'forward.looking|risk factors|risks and uncertainties',v,re.I)),'')[:1200]
     links=[]
     from .q4_events import public_link
     for l in p.body_links:
