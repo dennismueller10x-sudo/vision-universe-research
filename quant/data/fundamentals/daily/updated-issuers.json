@@ -1,9 +1,54 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-10-05T14:38:56+00:00",
-  "RUN_DATE": "2026-10-05",
+  "generated_at_utc": "2026-10-06T13:23:29+00:00",
+  "RUN_DATE": "2026-10-06",
   "STATUS": "SUCCESS",
-  "UPDATED_ISSUERS": [],
+  "UPDATED_ISSUERS": [
+    {
+      "issuerId": "iss_cik_0000033002",
+      "cik": "0000033002",
+      "reason": "NEW_FILING",
+      "latestAccession": "0001193125-26-413659",
+      "latestFiledAt": "2026-10-05",
+      "latestAcceptedAt": "2026-10-05T19:15:09.000Z",
+      "latestForm": "10-Q",
+      "metricsChanged": [
+        "basic_weighted_average_shares",
+        "capital_expenditures",
+        "cash_and_equivalents",
+        "cost_of_revenue",
+        "current_assets",
+        "current_liabilities",
+        "depreciation_and_amortization",
+        "diluted_weighted_average_shares",
+        "dividends_paid",
+        "eps_basic",
+        "eps_diluted",
+        "financing_cash_flow",
+        "goodwill",
+        "gross_profit",
+        "income_tax_expense",
+        "intangible_assets",
+        "inventory",
+        "investing_cash_flow",
+        "net_income",
+        "operating_cash_flow",
+        "operating_income",
+        "pretax_income",
+        "receivables",
+        "retained_earnings",
+        "revenue",
+        "sga_expense",
+        "share_repurchases",
+        "shares_outstanding",
+        "stock_based_compensation",
+        "stockholders_equity",
+        "total_assets",
+        "total_liabilities"
+      ],
+      "wasNew": false
+    }
+  ],
   "INVALIDATE": [
     "Fundamental History",
     "Quant",
@@ -16,6 +61,6 @@
     "Atlas / AI"
   ],
   "note": "Nur diese Emittenten haben neue oder geaenderte Fundamentals. Module, die je Emittent zwischenspeichern, aktualisieren genau diese; alles andere ist unveraendert. Kein Frontend liest diese Datei direkt.",
-  "R2_OBJECTS_WRITTEN": 0,
-  "RELOAD_WITHOUT_SEC_REFETCH": "NOT_NEEDED"
+  "R2_OBJECTS_WRITTEN": 1,
+  "RELOAD_WITHOUT_SEC_REFETCH": "PASS"
 }
