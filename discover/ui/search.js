@@ -28,6 +28,7 @@
     var indexCache = Object.create(null);
     var aktiv = -1;
     var treffer = [];
+    var searchGeneration = 0;
 
     var input = el("input", { type: "search", placeholder: "Welche Aktie suchst du?",
                               "aria-label": "Aktien suchen", autocomplete: "off",
@@ -61,6 +62,7 @@
 
     function suchen() {
       var q = input.value.trim().toUpperCase();
+      var generation = ++searchGeneration;
       aktiv = -1;
       if (!q) {
         S.clear(results);
@@ -68,7 +70,9 @@
         hint.textContent = "Tippen zum Suchen · ↑ ↓ zum Auswählen · Enter zum Öffnen · Esc schließt";
         return;
       }
-      ladeIndex().then(function (index) {
+      Promise.all([ladeIndex(), options.localListings ? options.localListings.search(q).catch(function () { return null; }) : null]).then(function (values) {
+        if (generation !== searchGeneration) return;
+        var index = values[0], local = values[1];
         /* Reihenfolge mit Absicht: ein exakter Ticker zuerst, dann Ticker,
            die so beginnen, dann Namenstreffer. Wer "NVDA" tippt, meint
            nicht "NVR". */
@@ -83,9 +87,14 @@
           else if (q.length >= 3 && sec.indexOf(q) !== -1) sektor.push(e);
         });
         /* Firma, Ticker, dann Sektor - und nie mehr als 14 Knoten im DOM. */
-        treffer = exakt.concat(beginnt, nameBeginnt, enthaelt, sektor).slice(0, 14);
+        var localHits = local && local.state === 'AVAILABLE' ? (local.data.listings || []).map(function (row) {
+          return { s: row.ticker, n: row.name, a: [row.mic, row.tradingCurrency, row.isin].filter(Boolean).join(' · '), m: true,
+            listingId: row.listingId, logoSymbol: D.LocalListings.logoSymbol(row) };
+        }) : [];
+        treffer = exakt.concat(localHits, beginnt, nameBeginnt, enthaelt, sektor).slice(0, 14);
         zeichnen(index);
       }).catch(function () {
+        if (generation !== searchGeneration) return;
         S.clear(results);
         results.appendChild(el("div", { class: "dx-empty" }, [
           el("b", { text: "Suchindex nicht ladbar" }),
@@ -97,10 +106,10 @@
     function zeichnen(index) {
       S.clear(results);
       if (!treffer.length) {
-        hint.textContent = "Kein Titel in »" + index.universeLabel + "« passt zu „" + input.value + "“.";
+        hint.textContent = "Kein belegter Titel passt zu „" + input.value + "“.";
         return;
       }
-      hint.textContent = treffer.length + " Treffer in »" + index.universeLabel + "«";
+      hint.textContent = treffer.length + " Treffer";
       treffer.forEach(function (hit, i) {
         /* Ein Treffer traegt dieselbe Farbwelt wie die Reihe, in der er
            stuende - und dasselbe Gestaltungsmittel: das Kuerzel gross im
@@ -109,7 +118,7 @@
         var knopf = el("button", { class: "dx-result", type: "button", role: "option",
                                    "aria-selected": "false", "data-world": hit.w || null }, [
           el("span", { class: "dx-result-mark", "aria-hidden": "true", text: hit.s }),
-          D.Logos ? D.Logos.mark(hit.s, { name: hit.n, size: "sm" }) : el("span"),
+          D.Logos ? D.Logos.mark(hit.listingId ? hit.logoSymbol : hit.s, { name: hit.n, size: "sm" }) : el("span"),
           /* Zuerst die Firma, dann das Kuerzel - dieselbe Reihenfolge wie
              auf der Karte. Wer sucht, tippt "energ" und erwartet
              Firmennamen, keine Kuerzelliste. */
@@ -166,7 +175,7 @@
       var hit = treffer[i === undefined || i < 0 ? 0 : i];
       if (!hit) return;
       schliessen();
-      location.hash = "#/s/" + universum() + "/" + hit.s;
+      location.hash = hit.listingId ? D.LocalListings.href(hit) : "#/s/" + universum() + "/" + hit.s;
     }
 
     function oeffnenOverlay() {
@@ -180,6 +189,7 @@
     }
 
     function schliessen() {
+      searchGeneration++;
       overlay.classList.remove("on");
       document.body.classList.remove("dx-suche-offen");
       document.body.style.overflow = "";
