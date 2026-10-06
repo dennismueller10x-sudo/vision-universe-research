@@ -107,8 +107,10 @@ function forward(s, t, h) { return t + h < s.close.length ? s.close[t + h] / s.c
 function rMultiple(s, t, g, o) {
   if (!o || !RESOLVED.has(o.outcome)) return null;
   const c0 = s.close[t], risk = Math.abs(c0 - g.inv); if (!(risk > 0)) return null;
-  if (o.outcome === "TARGET1") return Math.abs((g.dir > 0 ? g.t1Lo : g.t1Hi) - c0) / risk;
-  const k = Math.min(s.close.length - 1, t + o.bars); return (g.dir * (s.close[k] - c0)) / risk;
+  /* Winsorisiert auf ±5 R (Protokollnachtrag nach W_VAL, vor jeder Holdout-Oeffnung): winzige Risikoabstaende und Gaps erzeugen sonst Ausreisser von ±50 R. */
+  const w = (x) => Math.max(-5, Math.min(5, x));
+  if (o.outcome === "TARGET1") return w(Math.abs((g.dir > 0 ? g.t1Lo : g.t1Hi) - c0) / risk);
+  const k = Math.min(s.close.length - 1, t + o.bars); return w((g.dir * (s.close[k] - c0)) / risk);
 }
 
 /** Kontroll-Geometrie in ATR-Einheiten: dieselben Abstaende an einer anderen Reihe/Zeit. */
