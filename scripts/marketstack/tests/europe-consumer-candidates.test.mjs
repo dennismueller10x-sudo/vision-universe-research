@@ -14,7 +14,7 @@ const inputs=(rows=[],core=[coreRow()])=>({source:{sourceDate:'2026-10-01',listi
 test('canonical local IDs preserve legacy ticker IDs and never imply current provider/Company admission',()=>{
  const before=Identity.securityIdForTicker('SAP');const out=buildCandidates(inputs([candidate({currentProviderVerified:true,providerVerified:true,companyId:'unproven-id'})]));
  const c=out.core.listings[0],r=out.germany.listings[0];assert.equal(c.listingId,Identity.listingIdFor({isin:c.isin,mic:c.mic}));assert.notEqual(c.securityId,before);assert.equal(Identity.securityIdForTicker('SAP'),before);
- assert.equal(r.companyId,null);assert.equal(r.referencedIssuerId,Identity.companyIdForLEI(LEI));assert.equal(r.currentProviderVerified,false);assert.equal(r.providerVerified,false);assert.equal(r.priceRelease,'NOT_GRANTED');assert.equal(r.mappingStatus,'VERIFIED');
+ assert.equal(r.companyId,null);assert.equal(r.referencedIssuerId,Identity.companyIdForLEI(LEI));assert.equal(r.currentProviderVerified,false);assert.equal(r.providerVerified,false);assert.equal(r.priceRelease,'NOT_GRANTED');assert.equal(r.mappingStatus,'VERIFIED');assert.equal(r.listingPreference,'VERIFIED_LOCAL_VENUE_PRIMARY_STATUS_UNCONFIRMED');
 });
 test('mandatory security wins its preferred listing; diagnostic alternatives never overwrite it',()=>{
  const source=candidate({isin:'DE0007164600',mic:'XFRA',providerSymbolCandidates:['SAP.F'],availableListingAlternatives:[{mic:'XFRA',currency:'EUR',providerSymbolCandidates:['SAP.F']}]});
@@ -22,7 +22,7 @@ test('mandatory security wins its preferred listing; diagnostic alternatives nev
 });
 test('regional selection is based on issuer domicile and non-index memberships stay empty',()=>{
  const out=buildCandidates(inputs([candidate({isin:'NL0010273215',issuerDomicile:'NL',mic:'XAMS',tradingCurrency:'EUR',officialLocalTicker:'ASML',providerSymbolCandidates:['ASML.AS'],indexMemberships:['invented-AEX'],alternativeListing:true,preferredMICs:['XAMS']})]));
- assert.equal(out.germany.listings.length,0);assert.equal(out.europe.listings.length,1);assert.deepEqual(out.europe.listings[0].indexMemberships,[]);assert.equal(out.europe.listings[0].alternativeListing,true);assert.equal(out.europe.listings[0].primaryListingVerified,false);
+ assert.equal(out.germany.listings.length,0);assert.equal(out.europe.listings.length,1);assert.deepEqual(out.europe.listings[0].indexMemberships,[]);assert.equal(out.europe.listings[0].alternativeListing,true);assert.equal(out.europe.listings[0].listingPreference,'ALTERNATIVE_HOME_LISTING_UNAVAILABLE');assert.equal(out.europe.listings[0].primaryListingVerified,false);
 });
 test('future, explicit inactive, fund/rights/depositary classes and out-of-scope issuers are skipped with causes',()=>{
  for(const patch of [{effectiveDate:'2026-12-01'},{referenceEvidence:[{effectiveDate:'2026-12-01'}]},{listingActive:false},{assetType:'ETF'},{shareClass:'DEPOSITARY_RECEIPT'},{issuerDomicile:'US'},{shareClass:'RIGHT'},{officialActivityStatus:'NOT_IN_CURRENT_XETRA_REFERENCE'}]){

@@ -71,7 +71,7 @@ function normalize(row,{asOf,core=false}){
   providerIdentityBasis:association.basis,providerIdentityEvidence:association.evidence,
   providerQuarantineReasons:strings(row.providerQuarantineReasons),indexMemberships:core?strings(row.indexMemberships):[],
   tier:core?'A':row.tier,tierBasis:core?'MANDATORY_CORE_SELECTION':row.tierBasis||null,
-  alternativeListing:row.alternativeListing===true,preferredMIC:row.preferredMIC||null,preferredMICs:strings(row.preferredMICs),
+  alternativeListing:row.alternativeListing===true,listingPreference:row.alternativeListing===true?'ALTERNATIVE_HOME_LISTING_UNAVAILABLE':'VERIFIED_LOCAL_VENUE_PRIMARY_STATUS_UNCONFIRMED',preferredMIC:row.preferredMIC||null,preferredMICs:strings(row.preferredMICs),
   selectionReason:row.selectionReason||row.alternativeListing===true&&'EXPLICIT_VERIFIED_ALTERNATIVE_VENUE'||null,
   primaryListingVerified:row.primaryListingVerified===true,officialReportedPrimaryMIC:row.officialReportedPrimaryMIC||row.officialReportedPrimaryMarketMIC||null,
   officialActivityStatus:row.officialActivityStatus||row.officialActive===true&&'CURRENT_OFFICIAL_ACTIVE'||'UNCONFIRMED',
