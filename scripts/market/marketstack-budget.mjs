@@ -49,6 +49,7 @@ export function createSharedBudget({file,runId,evidence,runLimit,monthlyCeiling,
   const checked=validateAccountEvidence(evidence,now());let ledger;
   try{ledger=JSON.parse(await readFile(file,'utf8'));}catch(e){if(e.code!=='ENOENT')fail('BUDGET_LEDGER_CORRUPT');}
   const newLedger=!ledger;
+  if(newLedger&&authorized&&checked.previousLedgerHash)fail('BUDGET_PRIOR_LEDGER_REQUIRED');
   if(!ledger)ledger={version:authorized?'de-eu-marketstack-budget-2':'de-eu-marketstack-budget-1',authorizationHash:authorized?authorizationKey(checked):null,authorizationRevisions:authorized?[{sourceSHA:checked.sourceSHA,referenceHash:checked.referenceHash,observedAt:checked.observedAt,previousLedgerHash:null}]:[],month:checked.month,evidenceId:checked.id,openingAccountRemainder:checked.remainingCredits,requestsAttempted:0,estimatedCreditsConsumed:0,runs:{}};
   if(ledger.version!==(authorized?'de-eu-marketstack-budget-2':'de-eu-marketstack-budget-1')||ledger.month!==checked.month||ledger.evidenceId!==checked.id||ledger.openingAccountRemainder!==checked.remainingCredits||!nonnegative(ledger.estimatedCreditsConsumed)||!nonnegative(ledger.requestsAttempted)||!ledger.runs||typeof ledger.runs!=='object')fail('BUDGET_RECONCILIATION_REQUIRED');
   let credits=0,requests=0;for(const row of Object.values(ledger.runs)){if(!nonnegative(row.estimatedCreditsConsumed)||!nonnegative(row.requestsAttempted))fail('BUDGET_LEDGER_CORRUPT');credits+=row.estimatedCreditsConsumed;requests+=row.requestsAttempted;}

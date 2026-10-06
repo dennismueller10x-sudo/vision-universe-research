@@ -31,3 +31,14 @@ Use `actions-handoff.mjs encrypt-request --input=<PRIVATE_JSON> --public=<PUBLIC
 The live job decrypts in ephemeral private runner storage, validates the frozen map, SHA and authorization, and persists an encrypted ACTIVE execution lease before the first paid call. If a runner crashes or a cache cannot be persisted, later work must reconcile the lease; it cannot silently receive a fresh 20,000 allowance. Every client request/page/retry reserves from the same durable ledger. GitHub rerun attempts are blocked pending reconciliation. A completed identical request is not queried again. The root importer controls sample, real browser proof and mandatory continuation; this handoff does not bypass those gates.
 
 Results include privately stored provider source responses, normalized cache, counter, status and preview in an RSA/AES-GCM encrypted tar archive addressed only to the local result public key. The bootstrap private RSA key is omitted from the result. GitHub artifacts contain only the public recipient or ciphertext; raw responses, account evidence and the Marketstack API key never enter plaintext artifacts. Use `actions-handoff.mjs decrypt-result --input=<CIPHERTEXT_JSON> --private=<LOCAL_RESULT_KEY> --out=<PRIVATE_TAR_GZ>` and extract into authorized private storage. Public display and automatic production publication remain independently gated.
+
+Before preparing a paid lease, authenticated Actions history for this workflow and
+head branch is read (bounded to 1,000 runs; inaccessible/truncated history fails
+closed). The newest earlier run whose live prepare succeeded or whose execution
+started must match the restored COMPLETED lease, exact final counter and ledger
+hash. Bootstrap-only runs do not reset that evidence. Restoring an older bootstrap
+cache after a final/lease cache eviction therefore cannot restart the allowance.
+Attempted reruns and unreconciled ACTIVE leases remain blocked. A revised
+authorization carrying `previousLedgerHash` also requires the original ledger to
+exist; it cannot create a replacement zero ledger. No paid transport happens
+before these checks and the independent exact remote lease-cache verification.

@@ -33,7 +33,7 @@ test('source/reference binding, persisted execution lease and encrypted full-res
  const listingMap={schemaVersion:'de-eu-listing-map-1.0.0',asOf:'2026-10-06',listings:[]},referenceHash=hash(listingMap),authorization={...authorized(),sourceSHA,referenceHash};
  const request={version:'vu-marketstack-live-request-1',context,sourceSHA,runId:authorization.runId,phase:'sample',asOf:'2026-10-06',listingMap,authorization,resultPublicKey:resultKeys.publicKey};const requestPath=join(root,REQUEST_PATH);mkdirSync(join(root,'scripts/marketstack/private-bootstrap'),{recursive:true});writeFileSync(requestPath,JSON.stringify(encryptHandoff(Buffer.from(JSON.stringify(request)),recipient.publicKey)));git('add',REQUEST_PATH);git('-c','user.name=Test','-c','user.email=test@example.invalid','commit','-m','ciphertext only');
  assert.equal(verifyPrivateRequest(request,{context,root}).referenceHash,referenceHash);assert.throws(()=>verifyPrivateRequest({...request,authorization:{...authorization,referenceHash:'0'.repeat(64)}},{context,root}),/PRIVATE_REQUEST_AUTHORIZATION_MISMATCH/);
- const options={privateDir,previewDir,context,githubRunId:'test-gh-run',requestPath,root,out:join(dir,'result.enc.json')};await preparePrivateExecution(options);await assert.rejects(preparePrivateExecution({...options,githubRunId:'another-run'}),/PRIOR_EXECUTION_RECONCILIATION_REQUIRED/);
+ const options={privateDir,previewDir,context,githubRunId:'1234',actionsContext:{repo:'test/test',branch:'fixture',attempt:1,token:'TEST_TOKEN',fetchImpl:async()=>({ok:true,json:async()=>({workflow_runs:[]})})},requestPath,root,out:join(dir,'result.enc.json')};await preparePrivateExecution(options);await assert.rejects(preparePrivateExecution({...options,githubRunId:'1235'}),/PRIOR_EXECUTION_RECONCILIATION_REQUIRED/);
  const result=await executePrivateRequest({...options,ingestImpl:async({privateDir,accountEvidence,runId})=>{await createSharedBudget({file:join(privateDir,'shared-budget.json'),runId,evidence:accountEvidence}).reserve({cost:1,endpoint:'/eod'});writeFileSync(join(privateDir,'source-test.json'),'private raw provider fixture');return {fixture:true};}});
  assert.equal(result.estimatedCredits,1);assert.ok(!readFileSync(options.out,'utf8').includes('private raw provider fixture'));const archive=decryptHandoff(JSON.parse(readFileSync(options.out,'utf8')),resultKeys.privateKey,'result');assert.ok(archive.length>0);
  await assert.rejects(preparePrivateExecution(options),/REQUEST_ALREADY_COMPLETED/);
@@ -55,3 +55,7 @@ test('Actions workflow exports only public key or authenticated ciphertext and p
  test('workflow explicitly verifies exact lease cache persistence before live execution',()=>{
   const s=readFileSync(new URL('../../../.github/workflows/marketstack-private-live.yml',import.meta.url),'utf8');assert.match(s,/actions: read/);assert.match(s,/verifySavedActionsCache/);assert.ok(s.indexOf('Verify exact encrypted lease')<s.indexOf('Execute explicitly authorized'));assert.doesNotMatch(s,/\$\{\{ runner.temp \}\}/);
  });
+ test('a missing revised ledger cannot accept previousLedgerHash and restart its allowance',()=>fixture(async dir=>{
+  const evidence={...authorized(),previousLedgerHash:'1'.repeat(64)};
+  await assert.rejects(createSharedBudget({file:join(dir,'missing.json'),runId:evidence.runId,evidence}).status(),/BUDGET_PRIOR_LEDGER_REQUIRED/);
+ }));

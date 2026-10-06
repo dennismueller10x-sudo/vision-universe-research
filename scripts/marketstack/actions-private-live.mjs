@@ -5,13 +5,16 @@ import { fileURLToPath } from 'node:url';
 import { loadPrivateRequest,encryptResultArchive } from './actions-handoff.mjs';
 import { validateAccountEvidence,createSharedBudget } from '../market/marketstack-budget.mjs';
 import { assertPrivateOutput,rejectSymlinkAncestors } from './private-output.mjs';
+import { assertPrivateActionsContinuity } from './actions-import-guard.mjs';
 const write=(path,value)=>{rejectSymlinkAncestors(path);mkdirSync(resolve(path,'..'),{recursive:true,mode:0o700});writeFileSync(path,JSON.stringify(value)+'\n',{mode:0o600});};
 const fail=code=>{throw Error(code);};
-export async function preparePrivateExecution({privateDir,context,githubRunId,requestPath,root}={}){
+export async function preparePrivateExecution({privateDir,context,githubRunId,requestPath,root,actionsContext}={}){
  assertPrivateOutput(privateDir,{allowCache:true});if(!githubRunId)fail('EXECUTION_RUN_REQUIRED');
  const {request,ciphertextHash}=loadPrivateRequest({privateDir,context,requestPath,root});validateAccountEvidence(request.authorization);
  const leasePath=join(privateDir,'execution-lease.json');let previous;
  try{previous=JSON.parse(readFileSync(leasePath,'utf8'));}catch(e){if(e.code!=='ENOENT')fail('EXECUTION_LEASE_CORRUPT');}
+ let priorLedger=null;try{priorLedger=JSON.parse(readFileSync(join(privateDir,'shared-budget.json'),'utf8'));}catch(e){if(e.code!=='ENOENT')fail('BUDGET_LEDGER_CORRUPT');}
+ if(process.env.GITHUB_ACTIONS==='true'||actionsContext)await assertPrivateActionsContinuity({...actionsContext,repo:actionsContext?.repo||process.env.GITHUB_REPOSITORY,branch:actionsContext?.branch||process.env.GITHUB_HEAD_REF,runId:githubRunId,attempt:actionsContext?.attempt||process.env.GITHUB_RUN_ATTEMPT,token:actionsContext?.token||process.env.GH_TOKEN,marker:previous,ledger:priorLedger});
  if(previous?.state==='ACTIVE')fail('PRIOR_EXECUTION_RECONCILIATION_REQUIRED');
  if(previous?.ciphertextHash===ciphertextHash&&previous?.state==='COMPLETED')fail('REQUEST_ALREADY_COMPLETED_USE_EXISTING_ENCRYPTED_RESULT');
  const budget=createSharedBudget({file:join(privateDir,'shared-budget.json'),runId:request.runId,evidence:request.authorization});const opening=await budget.status();
@@ -34,7 +37,7 @@ export async function executePrivateRequest({privateDir,previewDir,context,githu
  const budget=createSharedBudget({file:join(privateDir,'shared-budget.json'),runId:request.runId,evidence:request.authorization});const final=await budget.status();
  write(join(privateDir,'execution-result.json'),{version:'marketstack-private-execution-1',runId:request.runId,sourceSHA:request.sourceSHA,ciphertextHash,phase:request.phase,status:status?'COMPLETED':'FAILED',error,budget:final,sourceContract:'MARKETSTACK_V2',publicDisplay:false});
  const artifact=encryptResultArchive({privateDir,previewDir,publicKey:request.resultPublicKey,out});
- write(leasePath,{...lease,state:'COMPLETED',finishedAt:new Date().toISOString(),finalEstimatedCredits:final.totalEstimatedCreditsConsumed,resultCiphertextSha256:artifact.ciphertextSha256});
+ write(leasePath,{...lease,state:'COMPLETED',finishedAt:new Date().toISOString(),finalEstimatedCredits:final.totalEstimatedCreditsConsumed,finalLedgerHash:final.ledgerHash,resultCiphertextSha256:artifact.ciphertextSha256});
  return {completed:!!status,error,phase:request.phase,requests:final.requestsAttempted,estimatedCredits:final.estimatedCreditsConsumed,resultCiphertextSha256:artifact.ciphertextSha256,publicDisplay:false};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){

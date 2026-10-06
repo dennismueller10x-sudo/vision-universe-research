@@ -34,7 +34,7 @@ jobs:
           echo "VU_MARKETSTACK_PRIVATE_DIR=$RUNNER_TEMP/vu-marketstack-private/marketstack" >> "$GITHUB_ENV"
           echo "VU_MARKETSTACK_PREVIEW_DIR=$RUNNER_TEMP/vu-marketstack-private/preview" >> "$GITHUB_ENV"
       - name: Verify bounded transport and authenticated private storage
-        run: node --test --test-reporter=dot quant/tests/marketstack-budget.test.mjs quant/tests/marketstack-cache.test.mjs scripts/marketstack/tests/actions-handoff.test.mjs
+        run: node --test --test-reporter=dot quant/tests/marketstack-budget.test.mjs quant/tests/marketstack-cache.test.mjs scripts/marketstack/tests/actions-handoff.test.mjs scripts/marketstack/tests/actions-import-guard.test.mjs
       - uses: actions/cache/restore@v4
         with:
           path: .market-cache/marketstack-private-live.enc
@@ -61,6 +61,7 @@ jobs:
       - name: Reserve a crash-safe execution lease before paid requests
         if: env.VU_MARKETSTACK_PHASE == 'live'
         env:
+          GH_TOKEN: ${{ github.token }}
           MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
         run: |
           node scripts/marketstack/actions-private-live.mjs prepare
