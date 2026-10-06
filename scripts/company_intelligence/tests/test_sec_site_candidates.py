@@ -70,6 +70,20 @@ class SecSiteCandidateTests(unittest.TestCase):
     def test_unrelated_unlabelled_sites_and_distant_links_do_not_become_candidates(self):
         self.assertEqual(self.sites('Supplier website is wrong.com. Our website ' + 'x' * 250 + 'issuer.com'), [])
 
+    def test_window_edge_cannot_truncate_sec_or_company_url_into_another_host(self):
+        for url, partial in [('http://www.sec.gov/reports', 'http://www.s'),
+                             ('https://legitimate-issuer.com/investors', 'https://legitimate-issuer.co')]:
+            with self.subTest(url=url):
+                filler = ' ' + 'x' * (238 - len(partial)) + ' '
+                self.assertEqual(self.sites('Our website' + filler + url), [])
+
+    def test_complete_url_at_window_edge_is_accepted_without_scanning_beyond_budget(self):
+        url = 'https://issuer.com'
+        # Whitespace is normalized, so use a non-whitespace filler within one word.
+        filler = ' ' + 'x' * (238 - len(url)) + ' '
+        self.assertEqual(self.sites('Our website' + filler + url + ' reports')[0]['url'], 'https://issuer.com/')
+        self.assertEqual(self.sites('Our website ' + 'x' * 240 + ' https://issuer.com'), [])
+
     def test_only_hash_and_bounded_evidence_are_returned_not_filing_body(self):
         body = b'<p>Our website is issuer.com.</p>'
         class Provider:

@@ -74,6 +74,9 @@ def declared_sites(body, annual, issuer_names=()):
         window = text[match.end():match.end() + 240]
         found = re.search(address, window, re.I)
         if not found: continue
+        edge = match.end() + found.end()
+        if found.end() == len(window) and edge < len(text) and not re.match(r"[\s<>\"\x27]", text[edge]):
+            continue  # The evidence window must not truncate a URL into another host.
         raw = found[0].rstrip('.,);]')
         url = canonical_url(raw if raw.startswith(('http://', 'https://')) else 'https://' + raw)
         if not url: continue
