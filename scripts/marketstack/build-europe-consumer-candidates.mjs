@@ -25,6 +25,17 @@ function proof(row,core){
  const shareProof=SHARES.has(share)&&!!(security?.responseSHA256||security?.sourceResponseSHA256)&&cfi.some(c=>share==='PREFERRED_SHARE'?/^EP[A-Z]{4}$/.test(c):/^ES[A-Z]{4}$/.test(c));
  return row.mappingBasis===BASIS&&sources.length>0&&shareProof&&!!row.issuerEvidence&&!!issuerId(row);
 }
+function providerAssociation(row,{providerSymbol,isin,mic,core}){
+ const evidence=row.providerIdentityEvidence;
+ const exact=row.historicalProviderIdentity==='EXACT_IDENTITY_VERIFIED'&&!!providerSymbol&&
+  evidence?.providerSymbol===providerSymbol&&Identity.normalizeISIN(evidence?.isin)===isin&&evidence?.mic===mic&&
+  /^[a-f0-9]{64}$/.test(evidence?.sourceHash||'')&&typeof evidence?.sourcePath==='string'&&evidence.sourcePath.length>0;
+ if(!exact)return {basis:providerSymbol?'REQUEST_CANDIDATE_REQUIRE_RESPONSE_ISIN':'UNRESOLVED',evidence:null};
+ const basis=core&&typeof row.providerIdentityBasis==='string'&&row.providerIdentityBasis.startsWith('HISTORICAL_EXACT_ISIN_MIC')?
+  row.providerIdentityBasis:'HISTORICAL_EXACT_ISIN_MIC_RESPONSE_ASSOCIATION';
+ return {basis,evidence:{providerSymbol,isin,mic,sourceHash:evidence.sourceHash,sourcePath:evidence.sourcePath,
+  gitSHA:evidence.gitSHA||null,jsonPointer:evidence.jsonPointer||null,checkedAt:evidence.checkedAt||null}};
+}
 function normalize(row,{asOf,core=false}){
  const isin=Identity.normalizeISIN(row.isin),mic=typeof row.mic==='string'?row.mic.trim().toUpperCase():null;
  const fail=(cause,reason)=>({rejected:{name:row.name||null,isin:row.isin||null,mic:row.mic||null,cause,reason,tier:row.tier||null}});
@@ -48,7 +59,7 @@ function normalize(row,{asOf,core=false}){
  const providerSymbol=quarantined?null:explicit||candidates[0]||null;
  const ticker=Identity.normalizeTicker(row.ticker||row.localTicker||row.officialLocalTicker)||Identity.normalizeTicker(providerSymbol);
  if(!ticker)return fail('MAPPING_ERROR','No source-backed exchange ticker or observed provider symbol; a provider symbol is never fabricated.');
- const referencedIssuerId=issuerId(row),mappingSource=identitySources(row,core);
+ const referencedIssuerId=issuerId(row),mappingSource=identitySources(row,core),association=providerAssociation(row,{providerSymbol,isin,mic,core});
  const normalized={name:String(row.name||row.officialInstrumentName||''),isin,mic,securityId:Identity.securityIdForISIN(isin),listingId:Identity.listingIdFor({isin,mic}),
   companyId:null,referencedIssuerId,issuerLEI:row.issuerLEI||row.companyReference?.lei||null,companyCountry:row.issuerDomicile||row.companyReference?.domicileCountry||null,
   companyAssociationStatus:'EXISTING_VU_COMPANY_ASSOCIATION_UNRESOLVED',ticker,localTicker:row.localTicker||row.officialLocalTicker||null,
@@ -57,7 +68,7 @@ function normalize(row,{asOf,core=false}){
   mappingStatus:'VERIFIED',mappingSource,mappingVerification:'INDEPENDENT_LISTING_IDENTITY_ONLY',
   providerSymbol,providerSymbolCandidates:candidates,providerVerified:false,currentProviderVerified:false,
   providerStatus:quarantined?'HISTORICAL_PROVIDER_CONTRADICTION':providerSymbol?'HISTORICAL_CANDIDATE_REVALIDATION_REQUIRED':'PROVIDER_SYMBOL_UNRESOLVED',
-  providerIdentityBasis:providerSymbol?'HISTORICAL_EXACT_ISIN_MIC_METADATA_NOT_CURRENT_PRICE_RELEASE':'UNRESOLVED',
+  providerIdentityBasis:association.basis,providerIdentityEvidence:association.evidence,
   providerQuarantineReasons:strings(row.providerQuarantineReasons),indexMemberships:core?strings(row.indexMemberships):[],
   tier:core?'A':row.tier,tierBasis:core?'MANDATORY_CORE_SELECTION':row.tierBasis||null,
   alternativeListing:row.alternativeListing===true,preferredMIC:row.preferredMIC||null,preferredMICs:strings(row.preferredMICs),

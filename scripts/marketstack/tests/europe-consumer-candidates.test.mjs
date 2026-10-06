@@ -64,3 +64,30 @@ test('CLI requires private explicit inputs, rejects symlinks and any Git checkou
   assert.throws(()=>run([...args.slice(0,4),'--out',resolve(new URL('../../..',import.meta.url).pathname,'public-europe-output')]),/PRIVATE_OUTPUT_OUTSIDE_REPOSITORY_REQUIRED/);
  }finally{rmSync(root,{recursive:true,force:true});}
 });
+
+test('an operator/FIRDS identity or EXACT status cannot certify an arbitrary provider symbol',()=>{
+ const evidence={providerSymbol:'BAS.DE',isin:'DE000BASF111',mic:'XETR',sourceHash:'a'.repeat(64),sourcePath:'private-source-report.json'};
+ for(const patch of [
+  {historicalProviderIdentity:'EXACT_IDENTITY_VERIFIED'},
+  {historicalProviderIdentity:'EXACT_IDENTITY_VERIFIED',providerIdentityEvidence:{...evidence,providerSymbol:'RANDOM.DE'}},
+  {historicalProviderIdentity:'EXACT_IDENTITY_VERIFIED',providerIdentityEvidence:{...evidence,isin:'DE0007164600'}},
+  {historicalProviderIdentity:'EXACT_IDENTITY_VERIFIED',providerIdentityEvidence:{...evidence,mic:'XFRA'}},
+  {historicalProviderIdentity:'EXACT_IDENTITY_VERIFIED',providerIdentityEvidence:{...evidence,sourceHash:null}},
+  {providerIdentityEvidence:evidence}
+ ]){
+  const r=buildCandidates(inputs([candidate(patch)])).germany.listings[0];assert.equal(r.mappingStatus,'VERIFIED');assert.equal(r.providerIdentityBasis,'REQUEST_CANDIDATE_REQUIRE_RESPONSE_ISIN');assert.equal(r.providerIdentityEvidence,null);
+ }
+ const attack=buildCandidates(inputs([candidate({providerSymbolCandidates:['RANDOM.DE'],historicalProviderIdentity:'EXACT_IDENTITY_VERIFIED',providerIdentityEvidence:evidence})])).germany.listings[0];
+ assert.equal(attack.providerSymbol,'RANDOM.DE');assert.equal(attack.providerIdentityBasis,'REQUEST_CANDIDATE_REQUIRE_RESPONSE_ISIN');assert.equal(attack.currentProviderVerified,false);
+});
+test('exact historical response association is tied to the chosen symbol, ISIN, MIC and hashed source',()=>{
+ const evidence={providerSymbol:'BAS.DE',isin:'DE000BASF111',mic:'XETR',sourceHash:'a'.repeat(64),sourcePath:'private-source-report.json'};
+ const r=buildCandidates(inputs([candidate({historicalProviderIdentity:'EXACT_IDENTITY_VERIFIED',providerIdentityEvidence:evidence})])).germany.listings[0];
+ assert.equal(r.providerIdentityBasis,'HISTORICAL_EXACT_ISIN_MIC_RESPONSE_ASSOCIATION');assert.equal(r.providerIdentityEvidence.sourceHash,evidence.sourceHash);assert.equal(r.currentProviderVerified,false);
+});
+test('core historical basis is preserved only with the same explicit symbol association proof',()=>{
+ const legacy='HISTORICAL_EXACT_ISIN_MIC_METADATA_NOT_CURRENT_PRICE_RELEASE',evidence={providerSymbol:'SAP.DE',isin:'DE0007164600',mic:'XETR',sourceHash:'b'.repeat(64),sourcePath:'historical-git-report.json'};
+ const core=coreRow({historicalProviderIdentity:'EXACT_IDENTITY_VERIFIED',providerIdentityBasis:legacy,providerIdentityEvidence:evidence});
+ assert.equal(buildCandidates(inputs([],[core])).core.listings[0].providerIdentityBasis,legacy);
+ assert.equal(buildCandidates(inputs([],[{...core,providerIdentityEvidence:{...evidence,providerSymbol:'OTHER.DE'}}])).core.listings[0].providerIdentityBasis,'REQUEST_CANDIDATE_REQUIRE_RESPONSE_ISIN');
+});
