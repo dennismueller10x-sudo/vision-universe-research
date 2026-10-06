@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {sampleSelection,mergeBars,ingest,dedicatedActionCoverage} from '../ingest-de-eu.mjs';
+import test from 'node:test';import assert from 'node:assert/strict';import {sampleSelection,mergeBars,ingest,dedicatedActionCoverage,mergeQuarantine} from '../ingest-de-eu.mjs';
 import {mkdtempSync,rmSync,readFileSync,writeFileSync} from 'node:fs';import {join} from 'node:path';import {tmpdir} from 'node:os';
 import {createRequire} from 'node:module';import {createHash} from 'node:crypto';
 const require=createRequire(import.meta.url),I=require('../../../core/identity.js');
@@ -60,3 +60,10 @@ test('missing current account evidence stops before constructing any provider',a
  for(const mic of ['XETR','XPAR','XHEL','XLON']){const c=dedicatedActionCoverage(mic);assert.equal(c.actionsComplete,false);assert.equal(c.verified,false);assert.equal(c.embeddedObservationsPreserved,true);assert.equal(c.reason,'documentedMarketNotCovered');assert.ok(c.evidence[0].sha256);}
  assert.equal(dedicatedActionCoverage('XNAS'),null);assert.equal(dedicatedActionCoverage('UNKNOWN'),null);
  });
+
+test('incremental overlap retains old invalid observations until their exact session is source-corrected',()=>{
+ const old=[{date:'2026-03-27T00:00:00+0000',reason:'invalidOHLC'},{date:'2026-09-25T00:00:00+0000',reason:'invalidOHLC'}];
+ const recent=[{date:'2026-09-28T00:00:00+0000',reason:'invalidOHLC'}];
+ const merged=mergeQuarantine(old,recent,[{date:'2026-09-25',close:100},{date:'2026-10-02',close:101}]);
+ assert.deepEqual(merged,[old[0],recent[0]]);assert.deepEqual(mergeQuarantine(merged,recent,[{date:'2026-10-02'}]),merged);
+});
