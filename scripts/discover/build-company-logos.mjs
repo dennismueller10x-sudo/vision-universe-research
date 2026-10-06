@@ -5,6 +5,9 @@
  *   node scripts/discover/build-company-logos.mjs [--limit=N] [--dry-run]
  *        [--no-name-search] [--no-web] [--refresh-web] [--refresh-sites]
  *        [--only=NVDA,PYPL --debug]   Diagnose einzelner Titel, schreibt nichts
+ *        [--input=/private/companies.json --out=/private/logos
+ *         --reviewed=/private/reviewed.json --inherit-existing
+ *         --cache-from=/private/previous-logos --cache-only]
  *
  * 1. Wikimedia Commons: Logo ueber Wikidata, nur mit freier Lizenz
  *    (Regeln: scripts/discover/company-logos-lib.mjs).
@@ -24,18 +27,22 @@
  * dort landet, was ein Rechteinhaber entfernt haben moechte.
  */
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync, mkdtempSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, resolve } from "node:path";
+import { createRequire } from "node:module";
+import { execFileSync } from "node:child_process";
+import { assertPrivateOutput, rejectSymlinkAncestors } from "../marketstack/private-output.mjs";
+const Identity = createRequire(import.meta.url)("../../core/identity.js");
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import {
   normalizeSite, parseIconLinks, parseManifest, orderCandidates, toPng, genericIcons,
-  WEB_USER_AGENT, websiteFromFiling, filingText, latestReport, rootDomain, isLightOnTransparent,
+  WEB_USER_AGENT, sniff, websiteFromFiling, filingText, latestReport, rootDomain, isLightOnTransparent,
   normalizeLogo, logoFilings, secLogoImages, parseIsharesUsTickers, WIDE_RATIO
 } from "./company-logos-web.mjs";
 import {
   USER_AGENT, THUMB_WIDTH, SPARQL_BY_CIK, SPARQL_BY_TICKER, SPARQL_SITE_BY_CIK, SPARQL_SITE_BY_TICKER, MIME_EXT,
-  collectItems, matchUniverse, checkLicense, safeSymbol, entityToItem, matchByName, searchName
+  collectItems, matchUniverse, checkLicense, safeSymbol, entityToItem, matchByName, searchName, namesAgree
 } from "./company-logos-lib.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -50,7 +57,14 @@ const ONLY = args.only ? new Set(String(args.only).toUpperCase().split(",").map(
 const DEBUG = Boolean(args.debug) || Boolean(ONLY);
 const dbg = (...a) => { if (DEBUG) console.log("  [diag]", ...a); };
 /* Diagnose schreibt in einen Wegwerf-Ordner, nie ins Repository. */
-const OUT = ONLY ? mkdtempSync(join(tmpdir(), "logos-diag-")) : REAL_OUT;
+const PRIVATE = Boolean(args.input);
+if (args.out && !PRIVATE) throw new Error("PRIVATE_LOGO_INPUT_REQUIRED");
+if (PRIVATE && (!args.out || ONLY || Number.isFinite(LIMIT))) throw new Error("PRIVATE_LOGO_INPUT_AND_OUT_REQUIRED_NO_ONLY_OR_LIMIT");
+const OUT = PRIVATE ? assertPrivateOutput(args.out) : ONLY ? mkdtempSync(join(tmpdir(), "logos-diag-")) : REAL_OUT;
+if (PRIVATE) {
+  rejectSymlinkAncestors(resolve(args.input));
+  for (const child of ["files", "files/wide", "index.json", "credits.json", "logo_status.json", "summary.json", "missing.json"]) rejectSymlinkAncestors(join(OUT, child));
+}
 const FILES = join(OUT, "files");
 
 const readJson = (p, fallback) => (existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : fallback);
@@ -146,7 +160,7 @@ async function webIcon(site, sharp, sym, companyName, iconOpts = {}) {
   }
   let grund = "WEB_KEIN_ICON";
   for (const c of orderCandidates(found, new URL(base).origin).slice(0, 12)) {
-    if (gesperrt(c.href)) { dbg(sym, c.kind, c.href, "gesperrt"); continue; }
+    if ((iconOpts.rejected ? Boolean(iconOpts.rejected[c.href]) : gesperrt(c.href))) { dbg(sym, c.kind, c.href, "gesperrt"); continue; }
     try {
       const { buf } = await holen(c.href, 3 * 1024 * 1024);
       const res = await toPng(buf, sharp, { logo: c.kind === "logo", minIcon: iconOpts.minIcon });
@@ -155,7 +169,7 @@ async function webIcon(site, sharp, sym, companyName, iconOpts = {}) {
       grund = res.reason;
     } catch (e) { dbg(sym, c.kind, c.href, "Fehler", e.message); }
   }
-  if (inlineSvg && !gesperrt(base + "#inline-svg-logo")) {
+  if (inlineSvg && !(iconOpts.rejected ? Boolean(iconOpts.rejected[base + "#inline-svg-logo"]) : gesperrt(base + "#inline-svg-logo"))) {
     try {
       const res = await toPng(Buffer.from(inlineSvg), sharp, { logo: true });
       dbg(sym, "inline-svg", res.png ? "OK" : res.reason);
@@ -205,7 +219,139 @@ async function imageinfo(titles) {
   return out;
 }
 
+/* Approved Commons cache reuse is an explicit source path, never a ticker identity
+   shortcut. Read only the approved central namespace at the supplied protected main
+   commit; the exact Wikidata ISIN/LEI/site graph and private image review remain required. */
+function cachedCommons(r, site, graphBytes) {
+  const c=r.cachedCentralLogo;
+  if (!c || !/^[a-f0-9]{40}$/.test(c.sourceMainSHA || "") || !/^[a-f0-9]{40}$/.test(c.sourceBlobSHA || "") || !safeSymbol(c.sourceSymbol)) throw new Error("APPROVED_CENTRAL_COMMONS_SOURCE_REQUIRED");
+  const git=(...args)=>execFileSync("git",args,{cwd:root,maxBuffer:4*1024*1024});
+  const index=JSON.parse(git("show",c.sourceMainSHA+":discover/logos/index.json"));
+  const credit=JSON.parse(git("show",c.sourceMainSHA+":discover/logos/credits.json")).credits?.[c.sourceSymbol];
+  const path=index.files?.[c.sourceSymbol];
+  const reviewed=JSON.parse(git("show",c.sourceMainSHA+":discover/config/logo-reviewed.json")).symbols?.[c.sourceSymbol];
+  if (!credit || credit.source!=="WIKIMEDIA_COMMONS" || credit.pending || !path || path!==credit.path || path!=="files/"+c.sourceSymbol+".png" || reviewed!==credit.sha1 || !/^Q[0-9]+$/.test(credit.wikidata || "")) throw new Error("CENTRAL_COMMONS_NOT_APPROVED");
+  const exclusions=JSON.parse(git("show",c.sourceMainSHA+":discover/config/logo-exclusions.json")).symbols || {};
+  const rejects=JSON.parse(git("show",c.sourceMainSHA+":discover/config/logo-rejects.json"));
+  if(exclusions[c.sourceSymbol] || rejects.titles?.[credit.title] || rejects.urls?.[credit.page]) throw new Error("CENTRAL_COMMONS_SOURCE_EXCLUDED");
+  const currentExclusions=readJson(join(root,"discover/config/logo-exclusions.json"),{symbols:{}}).symbols || {};
+  const currentRejects=readJson(join(root,"discover/config/logo-rejects.json"),{urls:{},titles:{}});
+  if(currentExclusions[c.sourceSymbol] || currentRejects.titles?.[credit.title] || currentRejects.urls?.[credit.page]) throw new Error("CURRENT_CENTRAL_COMMONS_SOURCE_EXCLUDED");
+  const license=checkLicense({extmetadata:{License:{value:credit.license},LicenseShortName:{value:credit.licenseName},Artist:{value:credit.author}}});
+  if(!license.ok) throw new Error("CENTRAL_COMMONS_LICENSE_NOT_ALLOWED");
+  const graph=JSON.parse(graphBytes.toString("utf8")).results?.bindings;
+  if(!Array.isArray(graph) || !r.securities.every(s=>graph.some(g=>g.item?.value==="http://www.wikidata.org/entity/"+credit.wikidata && g.isin?.value===s.isin && g.lei?.value===r.lei && g.site?.value===site.url))) throw new Error("EXACT_COMMONS_ISIN_LEI_SITE_GRAPH_REQUIRED");
+  const asset=join(REAL_OUT,path);rejectSymlinkAncestors(asset);
+  const png=readFileSync(asset), expected=git("show",c.sourceMainSHA+":discover/logos/"+path);
+  const blob=git("rev-parse",c.sourceMainSHA+":discover/logos/"+path).toString().trim();
+  if(blob!==c.sourceBlobSHA || !png.equals(expected) || sniff(png)!=="png" || png.length<24 || png.readUInt32BE(16)!==128 || png.readUInt32BE(20)!==128) throw new Error("CENTRAL_COMMONS_PNG_BLOB_OR_FORMAT_MISMATCH");
+  return {png,credit,dark:(index.dark || []).includes(c.sourceSymbol),sourceBlobSHA:blob,sourceMainSHA:c.sourceMainSHA,sourceSymbol:c.sourceSymbol};
+}
+
 /* ------------------------------------------------------------ Universum */
+/* Explicit private company input keeps local listings out of the US ticker namespace.
+   The website extractor and image normalization below are the same central pipeline.
+   Exact official-domain documents and canonical issuer IDs are mandatory; names alone
+   never authorize an asset. Newly found images retain the existing exact-hash review gate. */
+if (PRIVATE) {
+  const input = JSON.parse(readFileSync(resolve(args.input), "utf8"));
+  if (input.schemaVersion !== "vu-private-company-logos-1" || !Array.isArray(input.companies)) throw new Error("INVALID_PRIVATE_LOGO_INPUT");
+  const seen = new Set();
+  const companies = input.companies.map((r) => {
+    const issuerId = r.companyId || r.referencedIssuerId;
+    if (!r.lei || Identity.companyIdForLEI(r.lei) !== issuerId || seen.has(issuerId)) throw new Error("INVALID_OR_DUPLICATE_COMPANY_ID");
+    seen.add(issuerId);
+    r = {...r, canonicalCompanyId:r.companyId || null, referencedIssuerId:r.referencedIssuerId || issuerId, companyId:issuerId};
+    for (const path of ["files/LEI-"+r.lei+".png","files/wide/LEI-"+r.lei+".png"]) rejectSymlinkAncestors(join(OUT,path));
+    const site = normalizeSite(r.officialWebsite);
+    if (!Array.isArray(r.securities) || !r.securities.length) throw new Error("OFFICIAL_DOMAIN_AND_SECURITIES_REQUIRED");
+    for (const security of r.securities) if (Identity.securityIdForISIN(security.isin) !== security.securityId || Identity.listingIdFor({isin:security.isin,mic:security.mic}) !== security.listingId) throw new Error("EXACT_LOCAL_SECURITY_DOMAIN_EVIDENCE_REQUIRED");
+    if (!site && !r.officialWebsite && r.domainStatus === "UNVERIFIED") {
+      const ref=r.issuerReference;
+      if (!ref || ref.lei!==r.lei || ref.legalName!==r.legalName || !["EXACT_GLEIF_ISIN_LEI_REFERENCE","EXACT_ESMA_ISIN_LEI_REFERENCE"].includes(ref.basis) || !/^[a-f0-9]{64}$/.test((ref.basis==="EXACT_ESMA_ISIN_LEI_REFERENCE" ? ref.evidence?.regulatoryResponseSHA256 : ref.evidence?.mappingZipSHA256) || "") || !/^[a-f0-9]{64}$/.test(ref.evidence?.leiBatchResponseSHA256 || "")) throw new Error("EXACT_ISSUER_REFERENCE_REQUIRED");
+      return {...r,site:null};
+    }
+    if (!site) throw new Error("OFFICIAL_DOMAIN_AND_SECURITIES_REQUIRED");
+    const e = r.domainEvidence;
+    if (!e || !["OFFICIAL_ISSUER_SHARE_CLASS_IDENTIFIER_PAGE","EXACT_WIKIDATA_ISIN_LEI_OFFICIAL_SITE_GRAPH"].includes(e.type) || !e.path || !e.sha256 || !Number.isFinite(Date.parse(e.retrievedAt))) throw new Error("OFFICIAL_DOMAIN_EVIDENCE_REQUIRED");
+    rejectSymlinkAncestors(e.path);
+    const bytes = readFileSync(e.path), text = bytes.toString("utf8").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ");
+    const graphSource=e.type==="EXACT_WIKIDATA_ISIN_LEI_OFFICIAL_SITE_GRAPH";
+    if (createHash("sha256").update(bytes).digest("hex") !== e.sha256 || !/^https:/.test(e.url) || (graphSource ? new URL(e.url).hostname!=="query.wikidata.org" || new URL(e.url).pathname!=="/sparql" : rootDomain(new URL(e.url).hostname)!==rootDomain(site.host))) throw new Error("OFFICIAL_DOMAIN_EVIDENCE_MISMATCH");
+    const g = r.issuerEvidence;
+    if (!g || g.url !== "https://api.gleif.org/api/v1/lei-records/" + r.lei || !g.path || !g.sha256) throw new Error("EXACT_ISSUER_EVIDENCE_REQUIRED");
+    rejectSymlinkAncestors(g.path);
+    const gb = readFileSync(g.path), gd = JSON.parse(gb.toString("utf8"));
+    const entity = gd.data && gd.data.attributes && gd.data.attributes.entity;
+    if (createHash("sha256").update(gb).digest("hex") !== g.sha256 || gd.data?.id !== r.lei || entity?.legalName?.name !== r.legalName || !namesAgree(r.legalName, r.name)) throw new Error("EXACT_ISSUER_EVIDENCE_MISMATCH");
+    for (const security of r.securities) {
+      if (Identity.securityIdForISIN(security.isin) !== security.securityId || Identity.listingIdFor({isin:security.isin,mic:security.mic}) !== security.listingId || !text.includes(security.isin)) throw new Error("EXACT_LOCAL_SECURITY_DOMAIN_EVIDENCE_REQUIRED");
+    }
+    return {...r, site, approvedCommons:graphSource ? cachedCommons(r,site,bytes) : null};
+  });
+  if (DRY) { console.log(JSON.stringify({privateInput:true,validatedCompanies:companies.length,providerRequests:0,writes:0})); process.exit(0); }
+  mkdirSync(join(FILES, "wide"), {recursive:true, mode:0o700});
+  const sharp = companies.some(r=>r.site && !r.approvedCommons) ? (await import("sharp")).default : null;
+  const rejected = readJson(join(root,"discover/config/logo-rejects.json"),{urls:{}}).urls || {};
+  const excluded = readJson(join(root,"discover/config/logo-exclusions.json"),{symbols:{}}).symbols || {};
+  const review = args.reviewed ? readJson(assertPrivateOutput(args.reviewed), {companies:{}}).companies || {} : {};
+  const CACHE = args["cache-from"] ? assertPrivateOutput(args["cache-from"]) : OUT;
+  rejectSymlinkAncestors(join(CACHE,"credits.json"));rejectSymlinkAncestors(join(CACHE,"missing.json"));
+  const old = readJson(join(CACHE,"credits.json"),{credits:{}}).credits || {};
+  const previousMissing=readJson(join(CACHE,"missing.json"),{reasons:{}}).reasons || {};
+  const icons = new Map(), failures = new Map();
+  for (const r of companies) {
+    if (!r.site) { failures.set(r.companyId,r.domainResolutionCause || "MISSING_VERIFIED_OFFICIAL_DOMAIN"); continue; }
+    for(const path of ["files/LEI-"+r.lei+".png","files/wide/LEI-"+r.lei+".png"]) rejectSymlinkAncestors(join(CACHE,path));
+    if (excluded[r.companyId] || r.securities.some(s => excluded[s.securityId] || excluded[s.listingId])) { failures.set(r.companyId,"AUSGESCHLOSSEN"); continue; }
+    if(r.approvedCommons) {
+      const meta=sharp ? await sharp(r.approvedCommons.png).metadata() : {format:"png",width:r.approvedCommons.png.readUInt32BE(16),height:r.approvedCommons.png.readUInt32BE(20)};
+      if(meta.format!=="png" || meta.width!==128 || meta.height!==128) throw new Error("CENTRAL_COMMONS_PNG_DECODE_MISMATCH");
+      icons.set(r.companyId,{png:r.approvedCommons.png,hash:createHash("sha1").update(r.approvedCommons.png).digest("hex"),host:r.site.host,site:r.site,ratio:r.approvedCommons.credit.ratio || 1,commons:r.approvedCommons});continue;
+    }
+    const prior = old["LEI-" + r.lei];
+    if (!args["refresh-web"] && prior && prior.companyId === r.companyId && prior.host === r.site.host && prior.path === "files/LEI-"+r.lei+".png" && existsSync(join(CACHE,prior.path))) {
+      const png = readFileSync(join(CACHE,prior.path));
+      if (createHash("sha1").update(png).digest("hex") === prior.sha1 && !rejected[prior.iconUrl]) { icons.set(r.companyId,{png,hash:prior.sha1,host:prior.host,site:r.site,ratio:prior.ratio,iconUrl:prior.iconUrl,wide:prior.wide === "files/wide/LEI-"+r.lei+".png" && existsSync(join(CACHE,prior.wide)) && createHash("sha1").update(readFileSync(join(CACHE,prior.wide))).digest("hex") === prior.wideSha1 ? readFileSync(join(CACHE,prior.wide)) : null}); continue; }
+    }
+    if(args["cache-only"]) { failures.set(r.companyId,previousMissing[r.companyId] || "MISSING_VERIFIED_CACHED_LOGO"); continue; }
+    const icon = await webIcon(r.site,sharp,r.companyId,r.name,{rejected});
+    if (icon.png && !rejected[icon.iconUrl]) icons.set(r.companyId,{...icon,hash:createHash("sha1").update(icon.png).digest("hex"),host:r.site.host,site:r.site});
+    else failures.set(r.companyId,icon.reason || "WEB_ICON_REJECTED");
+  }
+  const generic = genericIcons(icons), files = {}, credits = {}, dark = [], rows = [];
+  for (const r of companies) {
+    const icon = icons.get(r.companyId), valid = icon && !generic.has(r.companyId);
+    let state="LOGO_FALLBACK", reason=failures.get(r.companyId)||"WEB_ICON_GENERISCH";
+    if (valid) {
+      const symbol="LEI-"+r.lei,path="files/"+symbol+".png";
+      writeFileSync(join(OUT,path),icon.png,{mode:0o600});
+      const wide=icon.wide ? "files/wide/"+symbol+".png" : null;
+      if(wide) writeFileSync(join(OUT,wide),icon.wide,{mode:0o600});
+      credits[symbol]={source:"WEBSITE",companyId:r.companyId,path,wide,wideSha1:icon.wide?createHash("sha1").update(icon.wide).digest("hex"):null,sha1:icon.hash,iconUrl:icon.iconUrl,host:r.site.host,page:r.site.url,via:"EXACT_LEI_AND_OFFICIAL_ISIN_DOMAIN",licenseName:"Marke des Inhabers",ratio:icon.ratio,fmt:3,pending:review[r.companyId]!==icon.hash,domainEvidence:r.domainEvidence,issuerEvidence:r.issuerEvidence};
+      if(icon.commons) {
+        const original=icon.commons.credit;
+        Object.assign(credits[symbol],{source:"WIKIMEDIA_COMMONS",via:"VERIFIED_EXISTING_APPROVED_ASSET_WITH_EXACT_REFERENCE_GRAPH",page:original.page,title:original.title,wikidata:original.wikidata,license:original.license,licenseName:original.licenseName,licenseUrl:original.licenseUrl,author:original.author,attributionRequired:original.attributionRequired,sourceSHA1:original.sha1,sourceMainSHA:icon.commons.sourceMainSHA,sourceBlobSHA:icon.commons.sourceBlobSHA,sourceSymbol:icon.commons.sourceSymbol,mime:"image/png",width:128,height:128});
+        delete credits[symbol].iconUrl;
+      }
+      if(!credits[symbol].pending) { state="LOGO_VALID";reason=null;files[symbol]=path;if(icon.commons ? icon.commons.dark : await isLightOnTransparent(icon.png,sharp))dark.push(symbol); }
+      else {state="LOGO_SUSPECT";reason="WARTET_AUF_SICHTPRUEFUNG";}
+    }
+    rows.push({companyId:r.canonicalCompanyId,referencedIssuerId:r.referencedIssuerId,name:r.name,legalName:r.legalName,lei:r.lei,securities:r.securities,status:state,canonicalStatus:state==="LOGO_VALID"?"VERIFIED_LOGO":state==="LOGO_SUSPECT"?"SUSPECT_QUARANTINED":"EXISTING_FALLBACK",symbol:files["LEI-"+r.lei]?"LEI-"+r.lei:null,asset:files["LEI-"+r.lei]||null,logo:{status:state==="LOGO_VALID"?"VERIFIED_LOGO":state==="LOGO_SUSPECT"?"SUSPECT_QUARANTINED":"EXISTING_FALLBACK",symbol:files["LEI-"+r.lei]?"LEI-"+r.lei:null,companyId:r.companyId},reason});
+  }
+  const generatedAt=new Date(Math.max(0,...companies.map(r=>Date.parse(r.domainEvidence?.retrievedAt || input.asOf || "1970-01-01T00:00:00Z")))).toISOString();
+  const save=(name,value)=>writeFileSync(join(OUT,name),JSON.stringify(value,null,2)+"\n",{mode:0o600});
+  const baseIndex=args["inherit-existing"] ? readJson(join(REAL_OUT,"index.json"),{files:{},dark:[],wide:{}}) : {files:{},dark:[],wide:{}};
+  const baseCredits=args["inherit-existing"] ? readJson(join(REAL_OUT,"credits.json"),{credits:{}}).credits || {} : {};
+  for(const symbol of Object.keys(credits)) if(baseIndex.files[symbol] || baseCredits[symbol]) throw new Error("LOGO_ASSET_NAMESPACE_COLLISION");
+  const renderedFiles={...baseIndex.files,...files};
+  save("index.json",{version:"company-logos-1.0.0",generatedAt,private:true,count:Object.keys(renderedFiles).length,localCount:Object.keys(files).length,files:renderedFiles,dark:[...new Set([...(baseIndex.dark||[]),...dark])].sort(),wide:baseIndex.wide||{}});
+  save("credits.json",{version:"company-logos-1.0.0",generatedAt,credits:{...baseCredits,...credits}});
+  save("logo_status.json",{schemaVersion:"vu-private-company-logos-1",generatedAt,rows});
+  save("summary.json",{generatedAt,private:true,companies:companies.length,verified:Object.keys(files).length,pending:rows.filter(r=>r.status==="LOGO_SUSPECT").length,fallback:rows.filter(r=>r.status==="LOGO_FALLBACK").length,missingVerifiedDomain:companies.filter(r=>!r.site).length,cacheOnly:Boolean(args["cache-only"]),providerRequests:0});
+  save("missing.json",{generatedAt,reasons:Object.fromEntries(rows.filter(r=>r.status!=="LOGO_VALID").map(r=>[r.companyId || r.referencedIssuerId,r.reason]))});
+  console.log(JSON.stringify({private:true,companies:companies.length,verified:Object.keys(files).length,providerRequests:0}));process.exit(0);
+}
 const search = readJson(join(root, "discover", "data", "search", "US_REAL.json"));
 const names = readJson(join(root, "quant", "data", "market", "security-master", "company-names.json"), { rows: [] });
 const exclusions = readJson(join(root, "discover", "config", "logo-exclusions.json"), { symbols: {} }).symbols || {};
