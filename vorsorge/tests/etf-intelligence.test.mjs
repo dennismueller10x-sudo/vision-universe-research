@@ -314,3 +314,31 @@ test("Fundamentals kompakt ausliefern: verlustfrei (expand(compact(x)) === x)", 
   const e = F.expand(c);
   for (const k of Object.keys(fu)) assert.deepEqual(e[k], fu[k], k);
 });
+test("Kostenzustand: belegte 0,00 % ist VALID_ZERO, nicht fehlend; Platzhalter und fehlende Felder sind nicht vergleichbar", () => {
+  const v = (x) => ({ value: x });
+  assert.equal(F.costState({ expenseRatio: v(0.0055), netExpenseRatio: v(0) }, "netExpenseRatio"), "VALID_ZERO");
+  assert.equal(F.costState({ expenseRatio: v(0.001), managementFee: v(0) }, "managementFee"), "VALID_ZERO");
+  assert.equal(F.costState({ expenseRatio: v(0.001) }, "netExpenseRatio"), "NOT_REPORTED");
+  assert.equal(F.costState(null, "expenseRatio"), "MISSING");
+  assert.equal(F.costState({ expenseRatio: v(0), managementFee: v(0) }, "expenseRatio"), "PLACEHOLDER", "alle Kostenfelder 0 = Vorlage");
+  assert.equal(F.costState({ expenseRatio: v(0), managementFee: v(0.004) }, "expenseRatio"), "PLACEHOLDER", "brutto unter Verwaltungsgebuehr ist unmoeglich");
+  assert.equal(F.costState({ expenseRatio: v(0.2) }, "expenseRatio"), "UNKNOWN");
+  assert.equal(F.costState({ expenseRatio: v(NaN) }, "expenseRatio"), "UNKNOWN");
+  assert.equal(F.costState({ expenseRatio: v(0.0009) }, "expenseRatio"), "VALUE");
+});
+test("Kostenaenderung mit Nullwerten: 0 → positiv, positiv → 0 erzeugen Ereignisse; 0 → 0, fehlend → positiv, positiv → fehlend nicht", () => {
+  const v = (x) => ({ value: x });
+  const diff = (a, b) => {
+    const pick = (r) => { const st = F.costStates(r); return { shareClassId: "C1", expenseRatio: st.expenseRatio.value, netExpenseRatio: st.netExpenseRatio.value, managementFee: st.managementFee.value }; };
+    return C.diffFundamentals(pick(a), pick(b), { from: "2025-04-28", to: "2026-04-28", source: "SEC_RR" }).events.map((e) => [e.eventType, e.oldValue, e.newValue]);
+  };
+  const G = v(0.0055);
+  assert.deepEqual(diff({ expenseRatio: G, netExpenseRatio: v(0) }, { expenseRatio: G, netExpenseRatio: v(0.0001) }), [["NET_EXPENSE_RATIO_CHANGED", 0, 0.0001]], "0 → positiv");
+  assert.deepEqual(diff({ expenseRatio: G, netExpenseRatio: v(0.0001) }, { expenseRatio: G, netExpenseRatio: v(0) }), [["NET_EXPENSE_RATIO_CHANGED", 0.0001, 0]], "positiv → 0");
+  assert.deepEqual(diff({ expenseRatio: G, netExpenseRatio: v(0) }, { expenseRatio: G, netExpenseRatio: v(0) }), [], "0 → 0");
+  assert.deepEqual(diff({ expenseRatio: G }, { expenseRatio: G, netExpenseRatio: v(0.0004) }), [], "fehlend → positiv");
+  assert.deepEqual(diff({ expenseRatio: G, netExpenseRatio: v(0.0004) }, { expenseRatio: G }), [], "positiv → fehlend");
+  assert.deepEqual(diff({ expenseRatio: v(0), managementFee: v(0) }, { expenseRatio: v(0.0059), managementFee: v(0.004) }).map((x) => x[0]), [], "Platzhalter → positiv ist keine Aenderung");
+  assert.deepEqual(diff({ expenseRatio: v(0), managementFee: v(0.004) }, { expenseRatio: v(0.0059), managementFee: v(0.004) }), [], "Brutto-Platzhalter (FCG-Fall) → positiv ist keine Aenderung");
+  assert.match(C.diffFundamentals({ shareClassId: "C1", managementFee: 0 }, { shareClassId: "C1", managementFee: 0.0003 }).events[0].explanation, /0,00 % → 0,03 %/);
+});

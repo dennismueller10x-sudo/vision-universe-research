@@ -1,6 +1,6 @@
 {
  "version": "vorsorge-monitor-1.0.0",
- "asOf": "2026-10-02",
+ "asOf": "2026-10-05",
  "events": [
   {
    "type": "COST_CHANGE",
@@ -11,7 +11,7 @@
    ],
    "magnitude": 0.012899999999999998,
    "asOf": "2026-04-27",
-   "text": "RSEE · Kostenquote (brutto): 1,68 % → 3,03 %; Kostenquote (netto): 1,42 % → 2,71 % (Prospekt 2025-01-29 → 2026-04-27).",
+   "text": "RSEE · Expense Ratio (brutto): 1,68 % → 3,03 %; Net Expense Ratio (netto): 1,42 % → 2,71 % (Prospekt 2025-01-29 → 2026-04-27).",
    "relevance": "HIGH",
    "category": "PRODUCT_CHANGE"
   },
@@ -23,7 +23,7 @@
    ],
    "magnitude": 0.0103,
    "asOf": "2026-02-27",
-   "text": "AMZA · Kostenquote (brutto): 2,75 % → 1,72 % (Prospekt 2025-02-28 → 2026-02-27).",
+   "text": "AMZA · Expense Ratio (brutto): 2,75 % → 1,72 % (Prospekt 2025-02-28 → 2026-02-27).",
    "relevance": "HIGH",
    "category": "PRODUCT_CHANGE"
   },
@@ -36,7 +36,7 @@
    ],
    "magnitude": 0.0092,
    "asOf": "2026-05-05",
-   "text": "GABF · Kostenquote (netto): 0,32 % → 1,24 %; Kostenquote (brutto): 0,90 % → 1,64 % (Prospekt 2025-04-30 → 2026-05-05).",
+   "text": "GABF · Net Expense Ratio (netto): 0,32 % → 1,24 %; Expense Ratio (brutto): 0,90 % → 1,64 % (Prospekt 2025-04-30 → 2026-05-05).",
    "relevance": "HIGH",
    "category": "PRODUCT_CHANGE"
   },
@@ -48,7 +48,7 @@
    ],
    "magnitude": 0.008299999999999998,
    "asOf": "2026-06-01",
-   "text": "MJSC · Kostenquote (brutto): 0,85 % → 1,68 % (Prospekt 2025-07-02 → 2026-06-01).",
+   "text": "MJSC · Expense Ratio (brutto): 0,85 % → 1,68 % (Prospekt 2025-07-02 → 2026-06-01).",
    "relevance": "HIGH",
    "category": "PRODUCT_CHANGE"
   },
@@ -60,17 +60,17 @@
    ],
    "magnitude": 0.007199999999999998,
    "asOf": "2026-03-30",
-   "text": "ICAP · Kostenquote (brutto): 3,19 % → 2,47 % (Prospekt 2025-03-28 → 2026-03-30).",
+   "text": "ICAP · Expense Ratio (brutto): 3,19 % → 2,47 % (Prospekt 2025-03-28 → 2026-03-30).",
    "relevance": "HIGH",
    "category": "PRODUCT_CHANGE"
   },
   {
    "type": "COST_CHANGE",
    "symbol": null,
-   "count": 514,
+   "count": 518,
    "relevance": "LOW",
    "asOf": "2026-03-26",
-   "text": "514 weitere Listings mit geänderter Kostenquote laut Prospekt (z. B. FXED, YOLO, BBP, SNAV, PJFV).",
+   "text": "518 weitere Listings mit geänderter Expense Ratio laut US-Prospekt (z. B. FXED, YOLO, BBP, SNAV, PJFV).",
    "category": "PRODUCT_CHANGE"
   },
   {
@@ -95,8 +95,8 @@
  "unmonitored": [
   {
    "type": "TER_CHANGE",
-   "label": "ETF-Kosten (TER) geändert",
-   "reason": "US-Kostenquoten aus SEC-Prospektdaten liegen vor, Änderungen zwischen Prospektständen werden noch nicht verglichen; für UCITS-ETFs keine lizenzierte Kostenquelle."
+   "label": "Kostenänderung europäischer UCITS-ETFs (TER/laufende Kosten)",
+   "reason": "Für UCITS-ETFs ist keine veröffentlichbare Kostenquelle angeschlossen. US-Kosten (Expense Ratio) werden zwischen Prospektständen verglichen."
   },
   {
    "type": "FUND_MERGER",
@@ -353,5 +353,5 @@
    "category": "PRODUCT_CHANGE"
   }
  ],
- "costEvents": 519
+ "costEvents": 523
 }

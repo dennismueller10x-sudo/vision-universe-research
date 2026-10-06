@@ -34,7 +34,8 @@ test("Detaildateien: Provenienz, Taxonomie, keine TER/ISIN ohne Quelle, Holdings
       assert.equal(d.holdings.source, "SEC_NPORT", r.symbol);
       assert.ok(existsSync(new URL("." + d.holdings.path.replace("/vorsorge", ""), root)), d.holdings.path);
     } else assert.ok(d.holdings.reason, r.symbol);
-    assert.ok(["AVAILABLE", "SOURCE_NOT_CONNECTED"].includes(d.costs.status), r.symbol);
+    assert.ok(["AVAILABLE", "PLACEHOLDER_ONLY", "SOURCE_NOT_CONNECTED"].includes(d.costs.status), r.symbol);
+    if (d.costs.basis === "MANAGEMENT_FEE_ONLY") assert.equal(d.costs.value, null, r.symbol);
     if (d.costs.status === "AVAILABLE") assert.ok(d.costs.basis && (d.costs.value === null || (d.costs.value >= 0 && d.costs.value < 0.1)), r.symbol);
     else assert.equal(d.costs.value, null, r.symbol);
     for (const k of ["source", "sourceId", "asOf", "classificationMethod", "classificationConfidence", "coverage", "missingFields", "canonicalizationMethod"]) assert.ok(k in d.provenance, k);

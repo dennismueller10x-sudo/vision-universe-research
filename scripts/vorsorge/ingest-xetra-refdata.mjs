@@ -117,12 +117,16 @@ if (process.argv[1] && process.argv[1].endsWith("ingest-xetra-refdata.mjs")) {
     coverage: { ongoingCharges: n((r) => r.ongoingCharges !== null), distribution: n((r) => r.distribution && r.distribution !== "OTHER"), replication: n((r) => r.replication && r.replication !== "OTHER"),
       benchmark: n((r) => r.benchmark), fundCurrency: n((r) => r.fundCurrency), wkn: [...inst.rows.values()].filter((r) => r.wkn).length,
       inFirdsIndex: etfs.filter((r) => euIsins.has(r.isin)).length, wknInFirdsIndex: [...inst.rows.values()].filter((r) => r.wkn && euIsins.has(r.isin)).length },
-    // Einheitenpruefung ohne Einzelwerte: liegt der Median unter 0,01 %, war die Spalte vermutlich ein Bruch statt Prozent
+  };
+  // Nur Abdeckungszahlen gehen in die oeffentliche Datei. Verteilungen und Quantile sind aus den Werten abgeleitet
+  // und bleiben ohne Freigabe im CI-Protokoll (Einheitenpruefung: Median unter 0,05 % deutet auf Bruch statt Prozent).
+  const internal = {
     ongoingChargesQuantiles: ((v) => v.length ? { p10: v[Math.floor(v.length * 0.1)], p50: v[Math.floor(v.length / 2)], p90: v[Math.floor(v.length * 0.9)], max: v[v.length - 1], unitSuspect: v[Math.floor(v.length / 2)] < 0.0005 || v[Math.floor(v.length / 2)] > 0.02, chargesUnit: master.chargesUnit } : null)(etfs.map((r) => r.ongoingCharges).filter((x) => x !== null).sort((a, b) => a - b)),
-    rejected: { wknShapes: inst.wknRejectedShapes, wknHeaders: inst.headerWkn, ongoingChargesUnparsable: n((r) => r.ongoingChargesRaw && r.ongoingCharges === null) },
     distributions: { replication: Object.entries(etfs.reduce((m, r) => ((m[r.replication || "null"] = (m[r.replication || "null"] || 0) + 1), m), {})), distribution: Object.entries(etfs.reduce((m, r) => ((m[r.distribution || "null"] = (m[r.distribution || "null"] || 0) + 1), m), {})) } };
+  stats.rejected = { wknShapes: inst.wknRejectedShapes, wknHeaders: inst.headerWkn, ongoingChargesUnparsable: n((r) => r.ongoingChargesRaw && r.ongoingCharges === null) };
   writeFileSync(join(root, "vorsorge/data/sources/xetra-refdata-stats.json"), JSON.stringify(stats, null, 1) + "\n");
   console.log(JSON.stringify(stats.coverage), "veroeffentlicht:", stats.published);
+  console.log("intern (nicht veroeffentlicht):", JSON.stringify(internal));
   if (stats.published) {
     const fields = ["isin", "wkn", "mnemonic", "productType", "family", "ongoingCharges", "distribution", "replication", "fundCurrency", "tradingCurrency", "benchmark"];
     const isins = [...new Set([...etfs.map((r) => r.isin), ...[...inst.rows.keys()]])].sort();

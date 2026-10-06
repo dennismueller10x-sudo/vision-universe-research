@@ -175,14 +175,24 @@
     if (ev.eventType === "SECTOR_WEIGHT_CHANGED") return VS.sectorName(ev.entityName) + ": " + wpct(ev.oldValue) + " → " + wpct(ev.newValue);
     return ev.explanation;
   }
+  // Kostenänderungen zwischen Prospektständen (SEC Risk/Return) – auch für ETFs ohne Holdings
+  function costChangeCard(d) {
+    var c = d.costs || {};
+    if (c.status !== "AVAILABLE" || !c.previousFiling) return "";
+    return '<section class="vs-section"><div class="vs-card"><p class="vs-label">Kosten laut US-Prospekt</p>' +
+      ((c.changes || []).length ? c.changes.map(function (x) { return '<div class="vs-row"><span><span class="vs-badge">Kosten</span> ' + esc(x.label) + '</span><span class="num">' + VS.costPct(x.oldValue) + ' → ' + VS.costPct(x.newValue) + '</span></div>'; }).join("") +
+        '<p class="vs-fine">Prospekt ' + F.date(c.previousFiling) + ' → ' + F.date((c.changes[0] || {}).to) + '.</p>'
+        : '<p class="vs-sub" style="margin-top:6px">Keine Kostenänderung seit dem Prospekt vom ' + F.date(c.previousFiling) + '.</p>') + '</div></section>';
+  }
   VS.renderChanges = function (el, e, d) {
-    if (!d.holdings || d.holdings.status !== "AVAILABLE") { el.innerHTML = '<section class="vs-section">' + noHoldings(d) + '</section>'; return; }
+    if (!d.holdings || d.holdings.status !== "AVAILABLE") { el.innerHTML = costChangeCard(d) + '<section class="vs-section">' + noHoldings(d) + '</section>'; return; }
+    el.innerHTML = '<section class="vs-section"><div class="vs-loading">Bestandsänderungen werden geladen …</div></section>';
     VS.holdings(d.holdings.series).then(function (f) {
-      if (!f) return;
+      if (!f) { el.innerHTML = costChangeCard(d) + '<section class="vs-section">' + VS.pending("Bestandsdatei nicht erreichbar", "Die Holdings-Historie konnte nicht geladen werden. Bitte später erneut versuchen.") + '</section>'; return; }
       var ch = f.changes || {}, evs = ch.events || [], showAll = false;
       function draw() {
         var list = showAll ? evs : evs.filter(function (x) { return x.importance !== "LOW"; });
-        el.innerHTML = '<section class="vs-section"><div class="vs-card app"><p class="vs-label">Seit dem letzten Holdings-Update</p>' +
+        el.innerHTML = costChangeCard(d) + '<section class="vs-section"><div class="vs-card app"><p class="vs-label">Seit dem letzten Holdings-Update</p>' +
           (ch.status === "BASELINE" ? '<p style="margin-top:8px;color:var(--app-ink)">Erster erfasster Bestand – es gibt noch keinen Vergleich.</p>'
             : '<p style="margin-top:8px;color:var(--app-ink)">' + esc((ch.sentence || "Keine wesentlichen Änderungen.").replace(/^Seit dem letzten Holdings-Update: /, "")) + '</p><p class="vs-fine" style="margin-top:6px;color:var(--app-sub)">Vergleich der Bestände zum ' + F.date(ch.from) + ' und ' + F.date(ch.to) + ' (SEC N-PORT). ' + ch.eventCount + ' Änderungen erkannt. Gewichtsänderungen unter 0,25 Prozentpunkten werden nicht gezeigt; bei unveränderter Stückzahl ist eine Änderung als Kursbewegung gekennzeichnet.</p>') + '</div></section>' +
           (evs.length ? '<section class="vs-section"><div class="vs-card"><div class="vs-section-head"><p class="vs-label">Änderungen</p><label class="vs-fine"><input type="checkbox" id="vs-ch-all"' + (showAll ? " checked" : "") + '> auch kleine Änderungen</label></div>' +
@@ -190,7 +200,7 @@
             (list.length > 40 ? '<p class="vs-fine">… und ' + (list.length - 40) + ' weitere.</p>' : "") + '</div></section>' : "") +
           '<section class="vs-section"><div class="vs-card"><p class="vs-label">Zeitleiste</p>' + (f.timeline && f.timeline.length ? f.timeline.map(function (t) { return '<div class="vs-row"><span class="num">' + F.date(t.asOf) + '</span><span style="text-align:right">' + esc(t.text) + '</span></div>'; }).join("")
             : '<p class="vs-fine">Noch keine Historie.</p>') +
-          '<p class="vs-fine" style="margin-top:8px">Bestände: ' + f.history.map(function (h) { return F.date(h.asOf) + " (" + h.positions.toLocaleString("de-DE") + ")"; }).join(" · ") + '</p></div></section>';
+          '<p class="vs-fine" style="margin-top:8px">Bestände: ' + (f.history || []).map(function (h) { return F.date(h.asOf) + " (" + h.positions.toLocaleString("de-DE") + ")"; }).join(" · ") + '</p></div></section>';
         var cb = el.querySelector("#vs-ch-all"); if (cb) cb.onchange = function () { showAll = cb.checked; draw(); };
       }
       draw();
@@ -201,12 +211,12 @@
   VS.renderKosten = function (el, e, d) {
     var c = d.costs || {};
     var f = function (k) { var x = c[k] || (d.fundamentals || {})[k]; return x && typeof x === "object" ? x : null; };
-    el.innerHTML = '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card"><p class="vs-label">Laufende Kosten</p>' +
-      (c.status === "AVAILABLE" ? '<p class="vs-kpi">' + VS.costPct(c.value) + '</p><p class="vs-fine">' + (c.basis === "NET_EXPENSE_RATIO" ? "Netto-Kostenquote nach Gebührenverzicht" : "Gesamtkostenquote") + ' laut Prospekt-Gebührentabelle (SEC Risk/Return-Daten)</p>' +
-        (f("expenseRatio") ? '<div class="vs-row" style="margin-top:10px"><span>Gesamtkostenquote (brutto)</span><span class="num">' + VS.costPct(f("expenseRatio").value) + '</span></div>' : "") +
-        (f("netExpenseRatio") ? '<div class="vs-row"><span>Nach Gebührenverzicht (netto)</span><span class="num">' + VS.costPct(f("netExpenseRatio").value) + '</span></div>' : "") +
-        (f("managementFee") ? '<div class="vs-row"><span>Verwaltungsgebühr</span><span class="num">' + VS.costPct(f("managementFee").value) + '</span></div>' : "") +
-        '<p class="vs-fine" style="margin-top:8px">Prospekt vom ' + F.date((f("netExpenseRatio") || f("expenseRatio") || {}).asOf) + '. ' + esc(c.note || "") + ' Für US-Fonds ist das die „Expense Ratio“ – nicht identisch mit TER oder laufenden Kosten im europäischen Basisinformationsblatt.</p>' +
+    el.innerHTML = '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card"><p class="vs-label">Kosten laut US-Prospekt</p>' +
+      (c.status === "AVAILABLE" ? '<p class="vs-kpi">' + (c.basis === "MANAGEMENT_FEE_ONLY" ? "–" : VS.costPct(c.value)) + '</p><p class="vs-fine">' + (c.basis === "NET_EXPENSE_RATIO" ? "Net Expense Ratio – Kostenquote nach Gebührenverzicht" : c.basis === "MANAGEMENT_FEE_ONLY" ? "Im Prospekt ist nur die Management Fee gemeldet, keine Expense Ratio" : "Expense Ratio – Gesamtkostenquote") + ' laut Prospekt-Gebührentabelle (SEC Risk/Return-Daten)' + (c.value === 0 ? " · 0,00 % ist ein belegter Wert (z. B. voller Gebührenverzicht), keine fehlende Angabe" : "") + '</p>' +
+        (f("expenseRatio") ? '<div class="vs-row" style="margin-top:10px"><span>Expense Ratio <span class="vs-fine">Gesamtkostenquote, brutto</span></span><span class="num">' + VS.costPct(f("expenseRatio").value) + '</span></div>' : "") +
+        (f("netExpenseRatio") ? '<div class="vs-row"><span>Net Expense Ratio <span class="vs-fine">nach Gebührenverzicht</span></span><span class="num">' + VS.costPct(f("netExpenseRatio").value) + '</span></div>' : "") +
+        (f("managementFee") ? '<div class="vs-row"><span>Management Fee <span class="vs-fine">Verwaltungsgebühr</span></span><span class="num">' + VS.costPct(f("managementFee").value) + '</span></div>' : "") +
+        '<p class="vs-fine" style="margin-top:8px">Prospekt vom ' + F.date((f("netExpenseRatio") || f("expenseRatio") || {}).asOf) + '. ' + esc(c.note || "") + ' Für US-Fonds ist das die „Expense Ratio“ – nicht identisch mit TER oder laufenden Kosten im europäischen Basisinformationsblatt.' + ((c.placeholders || []).length ? ' Ein Prospektwert von 0 wurde als Platzhalter erkannt und nicht angezeigt.' : '') + '</p>' +
         // Kostenaenderung nur zwischen zwei echten Prospektstaenden und nur je gleich definiertem Feld
         '<p class="vs-label" style="margin-top:14px">Änderung gegenüber dem vorherigen Prospekt</p>' +
         ((c.changes || []).length ? c.changes.map(function (x) { return '<div class="vs-row"><span>' + esc(x.label) + '</span><span class="num ' + (x.newValue < x.oldValue ? "up" : "down") + '">' + VS.costPct(x.oldValue) + ' → ' + VS.costPct(x.newValue) + '</span></div>'; }).join("") + '<p class="vs-fine">Prospekt ' + F.date(c.previousFiling) + ' → ' + F.date((c.changes[0] || {}).to) + '.</p>'
@@ -220,7 +230,7 @@
   VS.renderDaten = function (el, e, d, qualityHtml) {
     var fu = d.fundamentals || {};
     var LABEL = { name: "Name", ticker: "Ticker", exchange: "Börse", listingCurrency: "Handelswährung", issuer: "Anbieter", aum: "Fondsvermögen (alle Anteilklassen)", aumLevel: "Ebene Fondsvermögen", numberOfHoldings: "Positionen",
-      domicile: "Domizil", ucits: "UCITS", legalStructure: "Rechtsform", fundStatus: "Status", expenseRatio: "Gesamtkostenquote", netExpenseRatio: "Netto-Kostenquote", managementFee: "Verwaltungsgebühr" };
+      domicile: "Domizil", ucits: "UCITS", legalStructure: "Rechtsform", fundStatus: "Status", expenseRatio: "Expense Ratio", netExpenseRatio: "Net Expense Ratio", managementFee: "Management Fee" };
     var SRC = { TIINGO: "Tiingo (Kursdaten-Anbieter)", SEC_NPORT: "SEC Form N-PORT", SEC_RR: "SEC Prospekt-Daten (Risk/Return)", VU_NAME_RULES: "Vision Universe (aus dem Namen abgeleitet)" };
     var rows = Object.keys(LABEL).filter(function (k) { return fu[k]; }).map(function (k) {
       var x = fu[k], v = x.value;
@@ -229,8 +239,12 @@
     });
     el.innerHTML = '<section class="vs-section"><div class="vs-card"><p class="vs-label">Herkunft je Feld</p><div class="vs-table-wrap"><table class="vs-table"><thead><tr><th>Feld</th><th>Wert</th><th>Quelle</th><th>Stand</th><th>Konfidenz</th></tr></thead><tbody>' + rows.join("") + '</tbody></table></div>' +
       ((fu.conflicts || []).length ? '<p class="vs-fine" style="margin-top:8px">Abweichungen zwischen Quellen: ' + esc(fu.conflicts.map(function (c) { return c.field + " (" + c.reason + ")"; }).join(", ")) + '</p>' : "") +
-      '<div class="vs-row" style="margin-top:10px"><span>Kurse</span><span>Tiingo · Stand ' + F.date(d.metrics && d.metrics.asOf) + '</span></div>' +
-      '<div class="vs-row"><span>Holdings</span><span>' + (d.holdings && d.holdings.status === "AVAILABLE" ? "SEC Form N-PORT · Bestand " + F.date(d.holdings.asOf) : "nicht verfügbar") + '</span></div>' +
+      '<p class="vs-label" style="margin-top:14px">Anbieter je Datenart</p>' +
+      '<div class="vs-row"><span>Kurse (Price Provider)</span><span>' + (d.metrics ? "Tiingo · Stand " + F.date(d.metrics.asOf) : '<span class="vs-fine">keine Kursreihe</span>') + '</span></div>' +
+      '<div class="vs-row"><span>Holdings (Holdings Provider)</span><span>' + (d.holdings && d.holdings.status === "AVAILABLE" ? "SEC Form N-PORT · Bestand " + F.date(d.holdings.asOf) : '<span class="vs-fine">nicht verfügbar' + (d.holdings && d.holdings.reason ? " – " + esc(d.holdings.reason) : "") + '</span>') + '</span></div>' +
+      '<div class="vs-row"><span>Kosten (Fundamentals Provider)</span><span>' + (d.costs && d.costs.status === "AVAILABLE" ? "SEC Prospekt-Daten (Risk/Return) · Prospekt " + F.date((fu.netExpenseRatio || fu.expenseRatio || fu.managementFee || {}).asOf) : '<span class="vs-fine">nicht verfügbar</span>') + '</span></div>' +
+      '<div class="vs-row"><span>Register (Register Provider)</span><span>' + (fu.domicile && fu.domicile.source === "SEC_NPORT" ? "SEC (US-Investmentgesellschaft, kein UCITS)" : '<span class="vs-fine">kein Registereintrag</span>') + '</span></div>' +
+      '<div class="vs-row"><span>Fehlende Felder</span><span class="vs-fine" style="text-align:right">' + esc(((d.provenance || {}).missingFields || []).join(", ") || "–") + '</span></div>' +
       '<div class="vs-row"><span>Fondsdaten des Emittenten</span><span class="vs-fine">nicht angebunden (Nutzungsbedingungen erlauben keinen automatisierten Abruf)</span></div>' +
       '<div class="vs-row"><span>ISIN · WKN</span><span class="vs-fine">für US-Listings nicht verfügbar</span></div></div></section>' +
       '<section class="vs-section">' + (qualityHtml || "") + '</section>';

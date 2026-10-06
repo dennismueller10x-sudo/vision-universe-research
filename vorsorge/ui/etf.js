@@ -31,7 +31,7 @@
     { id: "trend", label: "Trend (Abst. Ø)", get: function (e) { return e.m && e.m.trend; }, pct: true },
     { id: "rs", label: "Rel. Stärke vs. SPY", get: function (e) { return e.m && e.m.rs; }, pct: true },
     { id: "hy", label: "Historie", get: function (e) { return e.m && e.m.hy; }, years: true },
-    { id: "cost", label: "Kostenquote", get: function (e) { return e.cost; }, cost: true },
+    { id: "cost", label: "Expense Ratio (US)", get: function (e) { return e.cost; }, cost: true },
     { id: "aum", label: "Fondsvermögen (Fonds)", get: function (e) { return e.aum; }, money: true },
     { id: "t10", label: "Top-10-Anteil", get: function (e) { return e.top10; }, pct: true, neutral: true }
   ];
@@ -55,7 +55,7 @@
     var q = r.query || {};
     var st = { q: q.q || "", ac: q.ac || "", region: q.region || "", theme: q.theme || "", issuer: q.issuer || "", exchange: q.exchange || "", currency: q.currency || "",
       index: q.index || "", hist: q.hist || "", ptype: q.ptype || "", strat: q.strat || "", rc: q.rc || "", maxvol: "", maxdd: "", trendUp: false, dist: false,
-      maxcost: q.maxcost || "", minaum: q.minaum || "", minpos: "", maxt10: "", hasHoldings: q.holdings === "1", dom: q.dom || "",
+      maxcost: q.maxcost || "", minaum: q.minaum || "", minpos: "", maxt10: "", hasHoldings: q.holdings === "1", hasPrice: q.price === "1", hasCost: q.cost === "1", layerSel: q.layer || "", dom: q.dom || "",
       complex: q.complex === "1", inactive: false, sort: q.sort || "p1Y", dir: -1, limit: 50, row: q.row || "" };
     var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">ETF Intelligence</p><h1>Die ETF-Welt.<br>Klar eingeordnet.</h1><p class="vs-lead">Alle ETFs, die unser Datenanbieter Tiingo führt und für die Kurse vorliegen – mit echter Historie, Schwankung, größtem Rückgang und Trend. Hebel-, Short-, Options- und Krypto-Produkte sind getrennt und markiert.</p>' +
       '<form id="vs-search-form" class="vs-search" role="search"><span aria-hidden="true">⌕</span><input id="vs-q" autocomplete="off" value="' + esc(st.q) + '" placeholder="Ticker, ISIN, Name, Index, Thema, Anbieter …" aria-label="ETFs durchsuchen"><button type="submit">Suchen</button></form><div class="vs-suggest" id="vs-suggest"></div></section>' +
@@ -90,7 +90,9 @@
       }
       function sel(k, label, values, labeler) { return '<select data-k="' + k + '" aria-label="' + esc(label) + '"><option value="">' + esc(label) + ': alle</option>' + values.map(function (v) { return opt(v, labeler ? labeler(v) : v, st[k]); }).join("") + '</select>'; }
       function controls(pool) {
-        return '<div class="vs-filters" role="group" aria-label="Filter">' +
+        return '<div class="vs-seg" role="group" aria-label="Markt" style="margin-bottom:10px"><button aria-pressed="true">USA · ' + all.filter(function (e) { return e.layer === "PUBLIC_ANALYSIS" || e.layer === "COMPLEX"; }).length.toLocaleString("de-DE") + ' ETFs mit Kursen</button><a class="vs-pill small" href="#/europa">Europa · UCITS-Anteilklassen →</a><a class="vs-pill small" href="#/europa?reg=1">UCITS-Register →</a><a class="vs-pill small" href="#/europa?notifDe=1">Deutschland gemeldet →</a></div>' +
+          '<div class="vs-filters" role="group" aria-label="Filter">' +
+          '<select data-k="layerSel" aria-label="Einordnung">' + [["", "Einordnung: Standard" + (st.complex ? " + Komplex" : "")], ["PUBLIC_ANALYSIS", "nur Standard"], ["COMPLEX", "nur Komplex (Hebel, Short, Optionen, Krypto …)"]].map(function (h) { return opt(h[0], h[1], st.layerSel); }).join("") + '</select>' +
           sel("ptype", "Produkttyp", uniq(pool, "productType")) +
           sel("strat", "Bauart", uniq(pool, "strategy"), function (k) { return VS.STRATEGY[k] || k; }) +
           sel("ac", "Assetklasse", uniq(pool, "assetClass"), function (k) { return VS.ASSET[k] || k; }) +
@@ -102,11 +104,13 @@
           '<select data-k="maxdd" aria-label="Größter Rückgang">' + [["", "Max. Rückgang: jeder"], ["-0.1", "nicht tiefer als −10 %"], ["-0.2", "nicht tiefer als −20 %"], ["-0.35", "nicht tiefer als −35 %"], ["-0.5", "nicht tiefer als −50 %"]].map(function (h) { return opt(h[0], h[1], st.maxdd); }).join("") + '</select>' +
           '<label class="vs-check"><input type="checkbox" data-k="trendUp"' + (st.trendUp ? " checked" : "") + '> Über Durchschnittslinie</label>' +
           (hasDist ? '<label class="vs-check"><input type="checkbox" data-k="dist"' + (st.dist ? " checked" : "") + '> Ausschüttungen beobachtet</label>' : '<select disabled aria-label="Ausschüttung" title="Ausschüttungsart: Datenquelle folgt"><option>Ausschüttungsart · Daten folgen</option></select>') +
-          '<select data-k="maxcost" aria-label="Kostenquote">' + [["", "Kostenquote: jede"], ["0.001", "bis 0,10 %"], ["0.002", "bis 0,20 %"], ["0.005", "bis 0,50 %"], ["0.01", "bis 1,00 %"]].map(function (h) { return opt(h[0], h[1], st.maxcost); }).join("") + '</select>' +
+          '<select data-k="maxcost" aria-label="Expense Ratio (US-Prospekt)">' + [["", "Expense Ratio: jede"], ["0.001", "bis 0,10 %"], ["0.002", "bis 0,20 %"], ["0.005", "bis 0,50 %"], ["0.01", "bis 1,00 %"]].map(function (h) { return opt(h[0], h[1], st.maxcost); }).join("") + '</select>' +
           '<select data-k="minaum" aria-label="Fondsvermögen">' + [["", "Fondsvermögen: jedes"], ["1e8", "ab 100 Mio. $"], ["1e9", "ab 1 Mrd. $"], ["1e10", "ab 10 Mrd. $"], ["1e11", "ab 100 Mrd. $"]].map(function (h) { return opt(h[0], h[1], st.minaum); }).join("") + '</select>' +
           '<select data-k="minpos" aria-label="Positionen">' + [["", "Positionen: beliebig"], ["50", "ab 50"], ["200", "ab 200"], ["500", "ab 500"], ["1000", "ab 1.000"]].map(function (h) { return opt(h[0], h[1], st.minpos); }).join("") + '</select>' +
           '<select data-k="maxt10" aria-label="Top-10-Konzentration">' + [["", "Top-10-Anteil: jeder"], ["0.2", "bis 20 %"], ["0.3", "bis 30 %"], ["0.4", "bis 40 %"], ["0.6", "bis 60 %"]].map(function (h) { return opt(h[0], h[1], st.maxt10); }).join("") + '</select>' +
-          '<label class="vs-check"><input type="checkbox" data-k="hasHoldings"' + (st.hasHoldings ? " checked" : "") + '> Bestandsdaten vorhanden</label>' +
+          '<label class="vs-check"><input type="checkbox" data-k="hasPrice"' + (st.hasPrice ? " checked" : "") + '> Mit Kursanalyse</label>' +
+          '<label class="vs-check"><input type="checkbox" data-k="hasHoldings"' + (st.hasHoldings ? " checked" : "") + '> Mit Holdings &amp; X-Ray</label>' +
+          '<label class="vs-check"><input type="checkbox" data-k="hasCost"' + (st.hasCost ? " checked" : "") + '> Mit Kosten</label>' +
           '<label class="vs-check"><input type="checkbox" data-k="complex"' + (st.complex ? " checked" : "") + '> Komplexe Produkte zeigen</label>' +
           '<label class="vs-check"><input type="checkbox" data-k="inactive"' + (st.inactive ? " checked" : "") + '> Inaktive zeigen</label></div>';
       }
@@ -114,7 +118,11 @@
         var list = st.q ? V.Master.search(all, st.q, 20000) : all.slice();
         return list.filter(function (e) {
           if (e.layer === "ARCHIVE" && !st.inactive) return false;
-          if (e.layer === "COMPLEX" && !st.complex) return false;
+          // Komplexe Produkte: per Schalter, per Einordnung oder als Suchtreffer (immer markiert)
+          if (e.layer === "COMPLEX" && !st.complex && !st.q && st.layerSel !== "COMPLEX") return false;
+          if (st.layerSel && e.layer !== st.layerSel) return false;
+          if (st.hasPrice && !e.m) return false;
+          if (st.hasCost && e.cost === null) return false;
           if (st.ptype && e.productType !== st.ptype) return false;
           if (st.strat && e.strategy !== st.strat) return false;
           if (st.ac && e.assetClass !== st.ac) return false;
@@ -154,7 +162,7 @@
           '<div class="vs-table-wrap"><table class="vs-table"><caption class="vs-sr">ETF-Screener, sortierbar</caption><thead><tr>' + COLS.map(function (c) {
             return '<th scope="col" data-sort="' + c.id + '"' + (c.id === st.sort ? ' aria-sort="' + (st.dir < 0 ? "descending" : "ascending") + '"' : "") + ' tabindex="0">' + esc(c.label) + '</th>';
           }).join("") + '</tr></thead><tbody>' + list.slice(0, st.limit).map(function (e) {
-            return '<tr><td><a href="' + VS.etfHref(e) + '">' + esc(e.symbol) + '</a> ' + (e.retirementClass === "SEHR_KOMPLEX" ? '<span class="vs-badge bad" title="Sehr komplex">⚠</span>' : e.complex ? '<span class="vs-badge complex" title="Komplexes Produkt">⚠</span>' : "") + (e.status === "INACTIVE" ? ' <span class="vs-badge bad">inaktiv</span>' : "") + '<span class="t-name">' + esc(e.name) + '</span><span class="t-name">' + esc(e.category) + '</span></td>' +
+            return '<tr><td><a href="' + VS.etfHref(e) + '">' + esc(e.symbol) + '</a> ' + (e.retirementClass === "SEHR_KOMPLEX" ? '<span class="vs-badge bad" title="Sehr komplexes Produkt">⚠ ' + esc(VS.STRATEGY[e.strategy] || "sehr komplex") + '</span>' : e.complex ? '<span class="vs-badge complex" title="Komplexes Produkt">⚠ ' + esc(VS.STRATEGY[e.strategy] || e.productType || "komplex") + '</span>' : "") + (e.status === "INACTIVE" ? ' <span class="vs-badge bad">inaktiv</span>' : "") + '<span class="t-name">' + esc(e.name) + '</span><span class="t-name">' + esc(e.category) + '</span></td>' +
               COLS.slice(1).map(function (c) {
                 var v = c.get(e);
                 return '<td class="num ' + (c.pct && !c.neutral && c.id !== "mdd" ? F.cls(v) : "") + '">' + (c.cost ? VS.costPct(v) : c.money ? VS.money(v, "USD") : c.years ? F.years(v) : c.id === "mdd" || c.neutral ? F.pct(v) : F.spct(v)) + '</td>';
@@ -162,7 +170,7 @@
           }).join("") + '</tbody></table></div>' +
           (list.length > st.limit ? '<div style="text-align:center;margin-top:14px"><button class="vs-pill" id="vs-more">Weitere ' + Math.min(50, list.length - st.limit) + ' von ' + (list.length - st.limit).toLocaleString("de-DE") + ' anzeigen</button></div>' : "") +
           (list.length === 0 ? '<div class="vs-empty">Kein ETF passt zu diesen Filtern.</div>' : "") +
-          '<p class="vs-fine" style="margin-top:12px">Kostenquote laut Prospekt und Fondsvermögen (Fondsebene) aus SEC-Daten, Positionen und Top-10-Anteil aus SEC N-PORT – nur für US-registrierte Fonds. Fehlende Werte zählen bei Filtern nicht als null. Europäische UCITS-ETFs: <a href="#/europa">eigener Bereich</a>.</p>';
+          '<p class="vs-fine" style="margin-top:12px">Expense Ratio laut US-Prospekt und Fondsvermögen (Fondsebene) aus SEC-Daten, Positionen und Top-10-Anteil aus SEC N-PORT – nur für US-registrierte Fonds. Fehlende Werte zählen bei Filtern nicht als null. Europäische UCITS-ETFs: <a href="#/europa">eigener Bereich</a>.</p>';
         host.querySelectorAll("select[data-k]").forEach(function (s) { s.addEventListener("change", function () { st[s.dataset.k] = s.value; st.limit = 50; draw(); }); });
         host.querySelectorAll("input[data-k]").forEach(function (c) { c.addEventListener("change", function () {
           if (c.dataset.k === "inactive" && c.checked && !m.extraLoaded) { VS.masterAll().then(function (full) { all = full.etfs.filter(function (e) { return e.layer !== "REVIEW"; }); m.extraLoaded = true; st.inactive = true; draw(); }); return; }
@@ -237,6 +245,11 @@
       var mt = d.metrics, watched = VS.state.watchlist.indexOf(sym) >= 0;
       var TABS = [["uebersicht", "Übersicht"], ["performance", "Performance"], ["risiko", "Risiko"], ["bestandteile", "Bestandteile"], ["xray", "ETF X-Ray"], ["aenderungen", "Was hat sich geändert?"], ["kosten", "Kosten"], ["daten", "Daten"]];
       tab = { inhalte: "bestandteile", faktoren: "xray", vergleich: "uebersicht" }[tab] || tab;
+      // Nur Tabs mit Daten: Kurse -> Performance/Risiko, Holdings -> Bestandteile/X-Ray, Holdings oder Kostenvergleich -> Änderungen
+      var hasH = d.holdings && d.holdings.status === "AVAILABLE", hasC = d.costs && d.costs.status === "AVAILABLE";
+      var has = { performance: !!mt, risiko: !!mt, bestandteile: hasH, xray: hasH, aenderungen: hasH || !!(hasC && d.costs.previousFiling), kosten: hasC };
+      TABS = TABS.filter(function (t) { return has[t[0]] !== false; });
+      if (!TABS.some(function (t) { return t[0] === tab; })) tab = "uebersicht";
       root.innerHTML = '<section class="vs-hero"><p class="vs-eyebrow"><a href="#/etfs" style="text-decoration:none">ETF Intelligence</a> · ' + esc(e.category || "") + '</p>' +
         '<div class="vs-etf-head"><div style="min-width:0"><h1 style="font-size:clamp(28px,5vw,52px)">' + esc(d.name || sym) + '</h1><p class="vs-sub" style="margin-top:8px"><b style="color:var(--ink)">' + esc(e.symbol) + '</b> · ' + esc(VS.STRATEGY[e.strategy] || "") + ' · ' + esc(d.exchange || "Börse unbekannt") + ' · ' + esc(d.currency || "") + (d.issuer ? " · " + esc(d.issuer) : "") + '</p><div style="margin-top:10px">' + VS.badges(e) + '</div></div>' +
         '<div style="text-align:right"><div class="vs-price num">' + F.price(mt && mt.price, d.currency) + '</div><div class="num ' + F.cls(mt && mt.change1D) + '" style="font-weight:800">' + F.spct(mt && mt.change1D, 2) + ' <span class="vs-sub">1 Tag · ' + F.date(mt && mt.priceDate) + '</span></div></div></div>' +
@@ -340,10 +353,12 @@
   VS.views.vergleich = function (r) {
     var syms = (r.query.s || "URTH,SPY").split(",").map(function (s) { return s.trim().toUpperCase(); }).filter(Boolean).slice(0, 4);
     var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">ETF-Vergleich</p><h1>Wo unterscheiden<br>sie sich wirklich?</h1><p class="vs-lead">2 bis 4 ETFs nebeneinander. Kein Gewinner – nur die größten Unterschiede.</p>' +
-      '<form class="vs-search" id="vs-cmp-form"><span aria-hidden="true">+</span><input id="vs-cmp-q" placeholder="ETF hinzufügen (Ticker oder Name)" autocomplete="off" aria-label="ETF hinzufügen"><button type="submit">Hinzufügen</button></form><div class="vs-suggest" id="vs-cmp-s"></div>' +
+      '<form class="vs-search" id="vs-cmp-form"><span aria-hidden="true">+</span><input id="vs-cmp-q" placeholder="ETF hinzufügen (Ticker, Name oder ISIN)" autocomplete="off" aria-label="ETF hinzufügen"><button type="submit">Hinzufügen</button></form><div class="vs-suggest" id="vs-cmp-s"></div>' +
       '<div class="vs-tabs" id="vs-cmp-chips"></div></section><section class="vs-section" id="vs-cmp"><div class="vs-loading">…</div></section>');
+    var isIsin = function (s) { return /^[A-Z]{2}[A-Z0-9]{9}\d$/.test(s); };
     VS.master().then(function (m) {
-      syms = syms.map(function (s) { var e = m.find(s); return e ? e.slug : null; }).filter(Boolean);
+      var euKeys = syms.filter(function (s) { return isIsin(s) && !m.find(s); });
+      syms = syms.map(function (s) { if (euKeys.indexOf(s) >= 0) return s; var e = m.find(s); return e ? e.slug : null; }).filter(Boolean);
       var chips = root.querySelector("#vs-cmp-chips");
       chips.innerHTML = syms.map(function (s) { return '<a class="vs-pill small primary" href="#/vergleich?s=' + encodeURIComponent(syms.filter(function (x) { return x !== s; }).join(",")) + '" aria-label="' + s + ' entfernen">' + esc(s) + ' ×</a>'; }).join("");
       var q = root.querySelector("#vs-cmp-q"), box = root.querySelector("#vs-cmp-s");
@@ -351,13 +366,41 @@
         var res = V.Master.search(m.etfs.filter(function (e) { return e.layer !== "REVIEW"; }), q.value, 6);
         box.innerHTML = res.length ? '<ul>' + res.map(function (e) { return '<li><a href="#/vergleich?s=' + encodeURIComponent(syms.concat(e.slug).slice(-4).join(",")) + '"><span><b>' + esc(e.symbol) + '</b> · ' + esc(e.name) + '</span></a></li>'; }).join("") + '</ul>' : "";
       });
-      root.querySelector("#vs-cmp-form").addEventListener("submit", function (ev) { ev.preventDefault(); var hit = V.Master.search(m.etfs, q.value, 1)[0]; if (hit) VS.go("#/vergleich?s=" + encodeURIComponent(syms.concat(hit.slug).slice(-4).join(","))); });
+      root.querySelector("#vs-cmp-form").addEventListener("submit", function (ev) { ev.preventDefault(); var iq = q.value.trim().toUpperCase(); if (isIsin(iq)) return VS.go("#/vergleich?s=" + encodeURIComponent(syms.concat(iq).slice(-4).join(","))); var hit = V.Master.search(m.etfs, q.value, 1)[0]; if (hit) VS.go("#/vergleich?s=" + encodeURIComponent(syms.concat(hit.slug).slice(-4).join(","))); });
       var host = root.querySelector("#vs-cmp");
       if (syms.length < 2) { host.innerHTML = VS.pending("Mindestens zwei ETFs", "Füge oben einen weiteren ETF hinzu."); return; }
       VS.analytics.track("etf_compare", { symbols: syms.join(",") });
+      if (euKeys.length) {
+        // Europa beteiligt: keine Kurs-/Holdings-Analyse, nur Felder, die alle Seiten besitzen
+        Promise.all([VS.euIndex(), Promise.all(syms.filter(function (s) { return euKeys.indexOf(s) < 0; }).map(VS.etf))]).then(function (res) { drawCompareCommon(host, syms, euKeys, res[0], res[1]); })
+          .catch(function () { host.innerHTML = VS.pending("Vergleich nicht möglich", "Die europäischen Stammdaten konnten nicht geladen werden."); });
+        return;
+      }
       Promise.all(syms.map(VS.etf)).then(function (ds) { drawCompare(host, ds, m); });
     });
   };
+
+  /* Vergleich mit europäischen Anteilklassen: nur Felder, die ALLE Seiten besitzen – keine Scheingenauigkeit */
+  function drawCompareCommon(host, syms, euKeys, j, usDetails) {
+    var us = {}; usDetails.forEach(function (d) { us[d.slug] = d; });
+    var DIST = { ACCUMULATING: "thesaurierend", DISTRIBUTING: "ausschüttend", MIXED: "gemischt" };
+    var cols = syms.map(function (s) {
+      if (euKeys.indexOf(s) >= 0) { var x = j.byIsin[s]; return x ? { key: s, href: "#/europa/" + s, region: "Europa", name: x.name, isin: x.isin, issuer: VS.euBrand(x), domicile: x.domicile ? VS.countryName(x.domicile) : null, currency: x.currency,
+        distribution: DIST[x.distribution] || null, ucits: x.reg ? "UCITS (ESMA-Register, Zuordnung Konfidenz mittel)" : null, venues: x.venueList.length } : { key: s, missing: true }; }
+      var d = us[s] || {}, f = d.fundamentals || {};
+      return { key: s, href: "#/etf/" + s, region: "USA", name: d.name, isin: null, issuer: d.issuer, domicile: f.domicile ? VS.countryName(f.domicile.value) : null, currency: d.currency,
+        distribution: d.distributionPolicy === "DISTRIBUTING_OBSERVED" ? "ausschüttend (beobachtet)" : null, ucits: f.ucits && f.ucits.value === false ? "kein UCITS (US-Fonds)" : null, venues: d.exchange ? 1 : null };
+    });
+    var fields = [["Markt", "region"], ["Name", "name"], ["ISIN", "isin"], ["Emittent", "issuer"], ["Domizil", "domicile"], ["Währung", "currency"], ["Ertragsverwendung", "distribution"], ["UCITS-Status", "ucits"], ["Handelsplätze", "venues"]];
+    var ok = cols.filter(function (c) { return !c.missing; });
+    var common = fields.filter(function (f) { return ok.every(function (c) { return c[f[1]] !== null && c[f[1]] !== undefined && c[f[1]] !== ""; }); });
+    var skipped = fields.filter(function (f) { return common.indexOf(f) < 0; }).map(function (f) { return f[0]; });
+    host.innerHTML = '<div class="vs-note">Mindestens eine europäische Anteilklasse im Vergleich. Für Europa liegen keine Kurse, Holdings und Kosten vor – verglichen werden nur Felder, die alle Produkte besitzen. Performance, Risiko, Kosten und Überschneidung entfallen.</div>' +
+      '<div class="vs-table-wrap" style="margin-top:14px"><table class="vs-table"><thead><tr><th scope="col">Merkmal</th>' + ok.map(function (c) { return '<th scope="col"><a href="' + c.href + '">' + esc(c.key) + '</a></th>'; }).join("") + '</tr></thead><tbody>' +
+      common.map(function (f) { return '<tr><th scope="row">' + esc(f[0]) + '</th>' + ok.map(function (c) { return '<td>' + esc(String(c[f[1]])) + '</td>'; }).join("") + '</tr>'; }).join("") + '</tbody></table></div>' +
+      (skipped.length ? '<p class="vs-fine" style="margin-top:10px">Nicht verglichen, weil nicht für alle Produkte belegt: ' + esc(skipped.join(", ")) + ', Performance, Risiko, Kosten, Holdings.</p>' : "") +
+      (cols.some(function (c) { return c.missing; }) ? '<p class="vs-fine">Nicht gefunden: ' + esc(cols.filter(function (c) { return c.missing; }).map(function (c) { return c.key; }).join(", ")) + '</p>' : "");
+  }
 
   function drawCompare(host, ds, m) {
     function val(d, path) { try { return path.split(".").reduce(function (o, k) { return o === null || o === undefined ? null : o[k]; }, d); } catch (e) { return null; } }
@@ -374,7 +417,7 @@
       ["Schwankung p.a.", function (d) { return F.pct(val(d, "metrics.volatility.value")); }, "metrics.volatility.value"],
       ["Größter Rückgang", function (d) { return F.pct(val(d, "metrics.maxDrawdown.value")); }, "metrics.maxDrawdown.value"],
       ["Historie", function (d) { return F.years(val(d, "metrics.historyYears")); }],
-      ["Kostenquote (Prospekt)", function (d) { return d.costs && d.costs.status === "AVAILABLE" ? VS.costPct(d.costs.value) : '<span class="vs-fine">Quelle fehlt</span>'; }, "costs.value"],
+      ["Expense Ratio (US-Prospekt)", function (d) { return d.costs && d.costs.status === "AVAILABLE" && d.costs.value !== null ? VS.costPct(d.costs.value) : '<span class="vs-fine">Quelle fehlt</span>'; }, "costs.value"],
       ["Fondsvermögen (alle Anteilklassen)", function (d) { var a = d.fundamentals && d.fundamentals.aum; return a ? VS.money(a.value, "USD") + ' <span class="vs-fine">' + F.date(a.asOf) + '</span>' : '<span class="vs-fine">Quelle fehlt</span>'; }],
       ["Positionen", function (d) { return d.holdings && d.holdings.positions ? d.holdings.positions.toLocaleString("de-DE") : '<span class="vs-fine">keine Holdings</span>'; }],
       ["Top-10-Anteil", function (d) { return d.holdings && d.holdings.top10 !== undefined && d.holdings.top10 !== null ? F.pct(d.holdings.top10) : '<span class="vs-fine">–</span>'; }, "holdings.top10"],
@@ -396,7 +439,7 @@
     spread("vol", "metrics.volatility.value", 0.05, function (lo, hi) { return hi.s + ": höhere Schwankung (" + F.pct(hi.v) + " p.a.) · " + lo.s + ": geringere Schwankung (" + F.pct(lo.v) + " p.a.)."; });
     spread("mdd", "metrics.maxDrawdown.value", 0.1, function (lo, hi) { return "Größter Rückgang: " + lo.s + " " + F.pct(lo.v) + ", " + hi.s + " " + F.pct(hi.v) + " – beachte die unterschiedlich langen Historien."; });
     spread("1y", "metrics.windows.1Y.value", 0.05, function (lo, hi) { return "Kursentwicklung der letzten 12 Monate: " + hi.s + " " + F.spct(hi.v) + ", " + lo.s + " " + F.spct(lo.v) + " (Vergangenheit, kein Qualitätsurteil)."; });
-    spread("cost", "costs.value", 0.001, function (lo, hi) { return "Laufende Kosten laut Prospekt: " + hi.s + " " + VS.costPct(hi.v) + " · " + lo.s + " " + VS.costPct(lo.v) + "."; });
+    spread("cost", "costs.value", 0.001, function (lo, hi) { return "Expense Ratio laut US-Prospekt: " + hi.s + " " + VS.costPct(hi.v) + " · " + lo.s + " " + VS.costPct(lo.v) + "."; });
     spread("t10", "holdings.top10", 0.1, function (lo, hi) { return "Konzentration: Die zehn größten Positionen machen bei " + hi.s + " " + F.pct(hi.v) + " aus, bei " + lo.s + " " + F.pct(lo.v) + "."; });
     spread("hy", "metrics.historyYears", 3, function (lo, hi) { return hi.s + ": längere Historie (" + F.years(hi.v) + ") · " + lo.s + ": " + F.years(lo.v) + " – Kennzahlen sind nur begrenzt vergleichbar."; });
     var regions = ds.map(function (d) { return d.region; }); if (regions.some(function (r) { return r !== regions[0]; })) diffs.push({ score: 2, text: "Unterschiedliche Regionen: " + ds.map(function (d) { return d.symbol + " " + (VS.REGION[d.region] || "unbekannt"); }).join(", ") + "." });
@@ -435,9 +478,17 @@
   /* ========================================================== WATCHLIST */
   VS.views.watchlist = function () {
     var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Watchlist</p><h1>ETFs beobachten.</h1><p class="vs-lead">Performance, Status und Änderungen deiner beobachteten ETFs. Gespeichert nur in diesem Browser.</p></section><section class="vs-section" id="vs-wl"><div class="vs-loading">…</div></section>');
-    Promise.all([VS.masterAll(), VS.getJSON("/vorsorge/data/changes.json").catch(function () { return { events: [] }; })]).then(function (res) {
-      var m = res[0], ch = res[1], list = VS.state.watchlist.map(function (s) { return m.find(s); }).filter(Boolean), missing = VS.state.watchlist.filter(function (s) { return !m.find(s); });
+    var isIsin = function (s) { return /^[A-Z]{2}[A-Z0-9]{9}\d$/.test(s); };
+    Promise.all([VS.masterAll(), VS.getJSON("/vorsorge/data/changes.json").catch(function () { return { events: [] }; }),
+      VS.state.watchlist.some(isIsin) ? VS.euIndex().catch(function () { return null; }) : null]).then(function (res) {
+      var m = res[0], ch = res[1], ej = res[2], list = VS.state.watchlist.map(function (s) { return m.find(s); }).filter(Boolean);
+      var euItems = ej ? VS.state.watchlist.filter(isIsin).map(function (s) { return ej.byIsin[s]; }).filter(Boolean) : [];
+      var missing = VS.state.watchlist.filter(function (s) { return !m.find(s) && !(ej && ej.byIsin[s]); });
       var host = root.querySelector("#vs-wl");
+      var euBlock = euItems.length ? '<div class="vs-card" style="margin-top:14px"><p class="vs-label">Europäische Anteilklassen</p>' + euItems.map(function (x) {
+        return '<div class="vs-row"><span><a href="#/europa/' + esc(x.isin) + '"><b>' + esc(x.isin) + '</b></a> ' + esc(x.name) + '</span><span class="vs-fine" style="text-align:right">' + (x.reg ? "UCITS-Zuordnung über ESMA-Register" + (x.reg.hosts.indexOf("DE") >= 0 ? " · Vertrieb in Deutschland gemeldet" : "") : "kein Registertreffer") + '</span></div>'; }).join("") +
+        '<p class="vs-fine" style="margin-top:6px">Für europäische Anteilklassen sind Kurse, Holdings und Kosten noch nicht verfügbar.</p></div>' : "";
+      if (!list.length && euItems.length) { host.innerHTML = euBlock; return; }
       if (!list.length) { host.innerHTML = '<div class="vs-card soft vs-empty">Noch keine ETFs beobachtet. Öffne einen ETF und tippe auf „♡ Beobachten“.<div class="vs-tabs" style="justify-content:center"><a class="vs-pill primary" href="#/etfs">ETFs entdecken</a></div></div>'; return; }
       var changed = list.filter(function (e) { return e.holdingsChanges > 0; });
       host.innerHTML = '<div class="vs-card app"><p class="vs-label">Seit dem letzten Holdings-Update</p><p style="margin-top:6px;color:var(--app-ink);font-size:17px">' +
@@ -447,7 +498,7 @@
         var hc = e.holdingsAsOf ? (e.holdingsChanges > 0 ? '<a href="' + VS.etfHref(e) + '?tab=aenderungen">' + e.holdingsChanges + ' relevante Änderung' + (e.holdingsChanges === 1 ? "" : "en") + '</a>' : '<span class="vs-fine">keine relevanten Änderungen</span>') + '<span class="t-name">Stand ' + F.date(e.holdingsAsOf) + '</span>' : '<span class="vs-fine">keine Bestandsdaten</span>';
         return '<tr><td><a href="' + VS.etfHref(e) + '">' + esc(e.symbol) + '</a><span class="t-name">' + esc(e.name) + '</span><span class="t-name">' + esc(e.index || e.category) + '</span></td><td class="num">' + F.price(e.m && e.m.price, e.currency) + '</td><td class="num ' + F.cls(e.m && e.m.d1) + '">' + F.spct(e.m && e.m.d1, 2) + '</td><td class="num ' + F.cls(e.m && e.m.p["1Y"]) + '">' + F.spct(e.m && e.m.p["1Y"]) + '</td><td class="num">' + F.pct(e.m && e.m.vol) + '</td><td>' + (e.status === "INACTIVE" ? '<span class="vs-badge bad">inaktiv</span>' : e.layer === "REVIEW" ? '<span class="vs-badge bad">in Prüfung</span>' : "aktiv") + (evs.length ? '<span class="t-name">' + esc(evs[0].text) + '</span>' : "") + '</td>' +
           '<td class="num">' + (e.cost !== null ? VS.costPct(e.cost) : '<span class="vs-fine">–</span>') + '</td><td class="num">' + (e.aum !== null ? VS.money(e.aum, "USD") : '<span class="vs-fine">–</span>') + '</td><td>' + hc + '</td></tr>';
-      }).join("") + '</tbody></table></div>' + (missing.length ? '<p class="vs-fine" style="margin-top:10px">Nicht mehr im Verzeichnis: ' + esc(missing.join(", ")) + ' (Ticker entfernt oder umbenannt).</p>' : "");
+      }).join("") + '</tbody></table></div>' + euBlock + (missing.length ? '<p class="vs-fine" style="margin-top:10px">Nicht mehr im Verzeichnis: ' + esc(missing.join(", ")) + ' (Ticker entfernt oder umbenannt).</p>' : "");
     });
   };
 })(window);

@@ -327,3 +327,60 @@ Details: [ETF_EU_FREE_SOURCE_SCORECARD.md](ETF_EU_FREE_SOURCE_SCORECARD.md),
 - **Live-Rauchtest**: `vorsorge-live-smoke.yml` meldet sich über das Secret
   `RESEARCH_ACCESS_PASSWORD` am Zugangstor an (Zustand nur im Browser-Speicher) und prüft
   22 Routen auf Desktop und Mobil sowie Deep Links gegen die veröffentlichte Seite.
+
+## 12. Launch V1: Abschluss und Konsolidierung (06.10.2026)
+
+### Stand zum Launch
+| Bereich | Wert | Quelle |
+|---|---|---|
+| US-Listings / mit Kursreihe / mit Gesamtrendite | 7.414 / 7.405 / 7.010 | Tiingo (Freigabe 13.09.2026, `quant/config/development-preview.json`) |
+| Standard (PUBLIC_ANALYSIS) / Komplex / Prüfung / Archiv | 4.007 / 2.065 / 1.334 / 8 | Schichten (§4) |
+| mit Holdings (N-PORT) / mit Kosten (SEC Prospekt) | 3.830 / 3.992 | SEC |
+| EU-Anteilklassen (ISIN) / UCITS-Registerzuordnung / Vertrieb in Deutschland gemeldet | 8.084 / 3.144 / 2.542 | ESMA FIRDS, GLEIF, ESMA-Fondsregister |
+| veröffentlichte Xetra-Werte | 0 | gesperrt (`UNKNOWN`) |
+
+### Einordnung der offenen Punkte
+**A · vor dem Launch behoben**
+- Kostenänderungen: Eine belegte 0,00 % ist ein gültiger Wert (`VALID_ZERO`). Daneben gibt es die Zustände
+  `MISSING`, `NOT_REPORTED`, `PLACEHOLDER` (alle Kostenfelder 0, oder brutto 0 bei positiver Management Fee) und
+  `UNKNOWN`. Nur `VALUE`/`VALID_ZERO` erzeugen Ereignisse (`etf-fundamentals.js#costState`, Tests für
+  0→positiv, positiv→0, 0→0, fehlend→positiv, positiv→fehlend). Platzhalter werden auch nicht als Kosten angezeigt.
+  Ergebnis: neue Ereignisse u. a. bei GBHI, GCAD, FYEE (Net 0 → positiv) und VTG/VTP/VGVT (Management Fee). FCG wird
+  nicht mehr gemeldet (Platzhalter).
+- US-Kosten heißen Expense Ratio / Net Expense Ratio / Management Fee, nicht TER oder laufende Kosten.
+- ETF-Detail: Tabs nur mit Daten (Performance/Risiko nur mit Kursen, Bestandteile/X-Ray nur mit Holdings, Kosten
+  nur mit Kostenquelle). „Was hat sich geändert?“ zeigt auch Kostenänderungen und einen Fehlerzustand.
+- Europa: Wortlaut „UCITS-Zuordnung über ESMA-Register · Konfidenz mittel“ und „Vertrieb in Deutschland gemeldet“,
+  sonst „Deutschland nicht gemeldet“ bzw. „Herkunftsstaat Deutschland“; nie „zugelassen“. Eine ISIN-Suche findet
+  die Anteilklasse unabhängig von Filtern. Die Suche umfasst Name, ISIN, Emittent, Börse/MIC, Domizil, UCITS und
+  Deutschland. Die Detailseite zeigt „Verfügbare Informationen“ und „Noch nicht verfügbar“. Dazu kommen Beobachten,
+  Portfolio und Vergleich.
+- Vergleich mit EU-Anteilklassen nur über gemeinsame Felder (vorher wurden ISINs stillschweigend verworfen).
+- Portfolio-X-Ray: „Für X % deines Portfolios liegen Holdings vor“. Länder- und Branchenbalken weisen den Rest
+  „Ohne Bestandsdaten“ aus. EU-ISINs lassen sich hinzufügen und zählen nicht als 0-Exposure.
+- Screener: Markt USA/Europa, Einordnung Standard/Komplex, „Mit Kursanalyse“, „Mit Holdings & X-Ray“, „Mit Kosten“.
+  Komplexe Produkte sind als Suchtreffer sichtbar und mit ihrer Bauart markiert.
+- Home: Planen · ETFs entdecken · ETF verstehen · Portfolio durchleuchten · Veränderungen erkennen. Produkt- und
+  Kostenmeldungen nur zu eigenen ETFs.
+- Monitor: eigene ETFs zuerst, dann Kosten, Fondsstatus, Produkt. Datenaktualisierungen sind eingeklappt. Der
+  Widerspruch „TER-Änderungen nicht überwacht“ ist entfernt.
+- Xetra-Hygiene: Die öffentliche Statistik enthält nur Abdeckungszahlen, keine Kostenquantile oder Verteilungen.
+  Der öffentliche Qualitätsbericht nennt die Referenzdaten ohne Freigabe nicht. Neue Gates:
+  `XETRA_DERIVED_VALUES_WITHOUT_RELEASE`, `XETRA_REFDATA_IN_PUBLIC_QUALITY_WITHOUT_RELEASE`.
+- Tiingo-Status in `ETF_DATA_RIGHTS.md` auf die dokumentierte Eigentümerfreigabe korrigiert.
+
+**B · gültige Datenlücken (kein Launch-Blocker)**
+EU-Kurse, EU-Holdings, EU-TER/laufende Kosten, EU-Fondsvolumen, NAV, Replikation, WKN und Tracking Difference.
+SPY, DIA und andere UITs sowie Rohstoff-Trusts haben keine Holdings (melden kein N-PORT); der Empty State nennt den
+Grund. Die UCITS-Zuordnung deckt 3.144 von 8.084 Anteilklassen ab; die übrigen tragen nur den Namenshinweis.
+
+**C · später (nicht vor dem Launch gebaut)**
+Europäischer Kursanbieter mit Display-Lizenz (`ETF_EU_MARKET_DATA_GAPS.md`); Xetra-Freigabe; eine kleine
+Home-Zusammenfassung statt des vollen ETF-Index (2,75 MB, 0,6 MB gzip); Kursreihen in Jahresblöcken oder R2 vor
+einem häufigeren Refresh; Kostenänderungen je eigenem ETF im Monitor auch außerhalb der Top-Meldungen; Prüfung von
+`scripts/market/build-index-membership.mjs` (Emittenten-Holdings).
+
+### Aktualisierung (konservativ)
+Es gibt keinen täglichen Vollrefresh. Tiingo-Vollingest höchstens monatlich (`workflow_dispatch`). N-PORT
+quartalsweise nach Veröffentlichung, SEC Risk/Return und ESMA mit dem Fundamentals-Lauf. Die Vorsorge-Daten
+werden über `build-etf-data.mjs` aus den Repository-Quellen neu gebaut, die ohnehin aktualisiert werden.

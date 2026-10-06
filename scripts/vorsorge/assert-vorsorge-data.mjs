@@ -107,6 +107,9 @@ if (existsSync(euP)) {
 {
   const st = existsSync(join(D, "sources/xetra-refdata-stats.json")) ? read(join(D, "sources/xetra-refdata-stats.json")) : null;
   if (existsSync(join(D, "eu/etf-eu-xetra.json")) && !(st && st.published)) errors.push("XETRA_VALUES_PUBLISHED_WITHOUT_RELEASE");
+  // Ohne Freigabe nur Abdeckungszahlen: keine aus Werten abgeleiteten Verteilungen/Quantile, keine Erwaehnung im oeffentlichen Qualitaetsbericht
+  if (st && !st.published && (st.ongoingChargesQuantiles || st.distributions)) errors.push("XETRA_DERIVED_VALUES_WITHOUT_RELEASE");
+  if (st && !st.published && /DEUTSCHE_BOERSE_REFDATA|Xetra-Referenzdaten/.test(readFileSync(join(D, "quality.json"), "utf8"))) errors.push("XETRA_REFDATA_IN_PUBLIC_QUALITY_WITHOUT_RELEASE");
 }
 const rrP = join(D, "sources/sec-rr-costs.json");
 if (existsSync(rrP)) { const rr = read(rrP); if (rr) for (const [sym, v] of Object.entries(rr.bySymbol)) for (const k of ["expenseRatio", "netExpenseRatio", "managementFee"]) if (v[k] && !(v[k].value >= 0 && v[k].value < 0.1)) errors.push("COST_OUT_OF_RANGE " + sym + "." + k); }

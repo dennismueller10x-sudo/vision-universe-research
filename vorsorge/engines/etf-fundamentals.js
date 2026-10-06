@@ -332,7 +332,38 @@
     return out;
   }
 
-  var api = { SCHEMA: SCHEMA, ETF_FUNDAMENTALS_SCHEMA_VERSION: SCHEMA, compact: compact, expand: expand, FIELDS: FIELDS, ENUMS: ENUMS, SOURCE_TYPES: SOURCE_TYPES, CONFIDENCE: CONFIDENCE,
+  /* ---------------------------------------------------- Kostenzustand je Feld eines Prospektstands
+     VALID_ZERO   belegte 0,00 % (z. B. voller Gebührenverzicht) – ein gültiger, vergleichbarer Wert
+     VALUE        belegter positiver Wert
+     MISSING      kein Prospektstand vorhanden
+     NOT_REPORTED Prospektstand vorhanden, Feld nicht gemeldet
+     PLACEHOLDER  0 ohne Aussagekraft: alle gemeldeten Kostenfelder 0 (Vorlage eines neuen Fonds) oder
+                  Brutto 0 bei positiver Verwaltungsgebühr/Netto-Quote (Brutto kann nicht darunter liegen)
+     UNKNOWN      Wert nicht lesbar oder außerhalb 0 … 10 %
+     Nur VALUE und VALID_ZERO sind vergleichbar und erzeugen Änderungsereignisse. */
+  var COST_FIELDS = ["expenseRatio", "netExpenseRatio", "managementFee"];
+  var COMPARABLE_COST_STATES = ["VALUE", "VALID_ZERO"];
+  function costState(rec, k) {
+    if (!rec) return "MISSING";
+    var f = rec[k];
+    if (f === null || f === undefined) return "NOT_REPORTED";
+    var x = valueOf(f);
+    if (x === null || x === undefined) return "NOT_REPORTED";
+    if (typeof x !== "number" || !isFinite(x) || x < 0 || x >= 0.1) return "UNKNOWN";
+    if (x > 0) return "VALUE";
+    var reported = COST_FIELDS.filter(function (kk) { return rec[kk] !== null && rec[kk] !== undefined && typeof valueOf(rec[kk]) === "number"; });
+    if (reported.every(function (kk) { return valueOf(rec[kk]) === 0; })) return "PLACEHOLDER";
+    if (k === "expenseRatio" && reported.some(function (kk) { return kk !== k && valueOf(rec[kk]) > 0; })) return "PLACEHOLDER";
+    return "VALID_ZERO";
+  }
+  /** Kostenfelder eines Prospektstands mit Zustand; comparable = nur VALUE/VALID_ZERO. */
+  function costStates(rec) {
+    var out = {};
+    COST_FIELDS.forEach(function (k) { var s = costState(rec, k); out[k] = { state: s, value: COMPARABLE_COST_STATES.indexOf(s) >= 0 ? valueOf(rec[k]) : null, comparable: COMPARABLE_COST_STATES.indexOf(s) >= 0 }; });
+    return out;
+  }
+
+  var api = { SCHEMA: SCHEMA, ETF_FUNDAMENTALS_SCHEMA_VERSION: SCHEMA, compact: compact, COST_FIELDS: COST_FIELDS, costState: costState, costStates: costStates, expand: expand, FIELDS: FIELDS, ENUMS: ENUMS, SOURCE_TYPES: SOURCE_TYPES, CONFIDENCE: CONFIDENCE,
     isValidIsin: isValidIsin, isValidCusip: isValidCusip, isValidSedol: isValidSedol, isValidWkn: isValidWkn, cleanId: cleanId,
     normalizeIssuer: normalizeIssuer, normalizeCost: normalizeCost, normalizeReplication: normalizeReplication,
     normalizeDistribution: normalizeDistribution, normalizeFrequency: normalizeFrequency, normalizeUcits: normalizeUcits, isoDate: isoDate,

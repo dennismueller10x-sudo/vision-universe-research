@@ -1,6 +1,6 @@
 {
  "schemaVersion": "vu-vorsorge-data-gaps-1.0.0",
- "asOf": "2026-10-02",
+ "asOf": "2026-10-05",
  "fields": [
   {
    "field": "US-Kurse",
@@ -46,7 +46,7 @@
    "field": "Kostenquote (US)",
    "primarySource": "SEC Prospektdaten (Risk/Return)",
    "tiingo": "SEC Prospektdaten (Risk/Return)",
-   "coverage": 0.6578,
+   "coverage": 0.6574,
    "gap": "TER/laufende Kosten für UCITS: EMT/Emittent (Lizenz)",
    "secondProviderNeeded": "TER/laufende Kosten für UCITS: EMT/Emittent (Lizenz)"
   },
@@ -76,11 +76,11 @@
   },
   {
    "field": "WKN",
-   "primarySource": "Deutsche Börse Instrumentenliste – gefunden, Nutzungsrechte in Klärung, nicht veröffentlicht",
-   "tiingo": "Deutsche Börse Instrumentenliste – gefunden, Nutzungsrechte in Klärung, nicht veröffentlicht",
+   "primarySource": "keine veröffentlichbare Quelle angebunden",
+   "tiingo": "keine veröffentlichbare Quelle angebunden",
    "coverage": 0,
-   "gap": "Freigabe Deutsche Börse oder Lizenz",
-   "secondProviderNeeded": "Freigabe Deutsche Börse oder Lizenz"
+   "gap": "Quelle mit geklärter Lizenz",
+   "secondProviderNeeded": "Quelle mit geklärter Lizenz"
   },
   {
    "field": "Domizil",
@@ -108,11 +108,11 @@
   },
   {
    "field": "Laufende Kosten (EU)",
-   "primarySource": "Deutsche Börse Referenzdaten – gefunden, Nutzungsrechte in Klärung, nicht veröffentlicht",
-   "tiingo": "Deutsche Börse Referenzdaten – gefunden, Nutzungsrechte in Klärung, nicht veröffentlicht",
+   "primarySource": "keine veröffentlichbare Quelle angebunden",
+   "tiingo": "keine veröffentlichbare Quelle angebunden",
    "coverage": 0,
-   "gap": "Freigabe Deutsche Börse oder Lizenz (EMT/Datenanbieter)",
-   "secondProviderNeeded": "Freigabe Deutsche Börse oder Lizenz (EMT/Datenanbieter)"
+   "gap": "Datenanbieter oder Emittent mit Lizenz (EMT)",
+   "secondProviderNeeded": "Datenanbieter oder Emittent mit Lizenz (EMT)"
   },
   {
    "field": "Ertragsverwendung",

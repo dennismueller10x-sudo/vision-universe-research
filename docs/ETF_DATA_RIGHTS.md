@@ -40,17 +40,19 @@ nicht nur, ob ein Abruf technisch möglich ist, sondern ob **Anzeige (Redisplay)
 | Euronext, SIX, LSE, Borsa Italiana, Tradegate, gettex, Börse Stuttgart | Kurse, Listen | `NOT_PERMITTED` / `LICENSE_REQUIRED` | jeweils persönliche/nicht-kommerzielle Nutzung, Weitergabe nur mit Zustimmung | nein |
 | Indexanbieter (MSCI, STOXX, FTSE, S&P DJI, Solactive) | Indexstände | `LICENSE_REQUIRED` | keine Ableitung/Weitergabe ohne Lizenz | nein – Tracking Difference daher nicht berechnet |
 | 17 ETF-Emittenten (iShares, Vanguard, Amundi, Xtrackers, SPDR, Invesco, WisdomTree, UBS, HSBC, JPMorgan, Fidelity, VanEck, BNP Paribas, L&G, Franklin Templeton, Global X, First Trust) | Holdings, Factsheets, KID, EMT/EPT | `NOT_PERMITTED` / `LICENSE_REQUIRED`; EMT/EPT `INTERNAL_ONLY` (nur für Vertriebe) | Website-Bedingungen: persönliche, nicht-kommerzielle Nutzung; Weitergabe nur mit schriftlicher Zustimmung; Vanguard verbietet automatisierten Zugriff ausdrücklich | nein – nur manueller Import-Parser |
-| Tiingo | US-Kurse | **Risiko** | laut Bedingungen (Suchauszug): Power/Commercial ohne Weitergaberecht; Anzeige auf einer Website erfordert eine Redistribution-/Display-Lizenz | ja (bestehend) – **Lizenzstatus prüfen** |
+| Tiingo | US-Kurse, Ausschüttungen, Splits (Tages- und abgeleitete Werte) | `ALLOWED` laut Projektstatus | Eigentümerfreigabe vom 13.09.2026, dokumentiert in `quant/config/development-preview.json` (Grants `marketData` und `intraday`: `publicRawDisplayAllowed`, `publicDerivedDisplayAllowed`): öffentliche Anzeige der Tiingo-Marktdaten des Produktuniversums auf research.visionuniverse.de („freigegebenes großes Paket“). Grundlage ist die Erklärung des Eigentümers; der Vertragstext liegt dem Repository nicht vor. | ja (bestehend). Die Vorsorge-ETF-Seiten zeigen dieselbe Datenart (Tages-Schlusskurse und abgeleitete Kennzahlen) für das ETF-Universum. Follow-up nur, falls die Freigabe ETFs ausdrücklich nicht umfasst. Das wird in diesem Lauf nicht neu geprüft. |
 
 ## Offene Rechtsfragen (Entscheidung nötig)
 
-1. **Deutsche Börse Referenzdaten**: schriftlich anfragen (Market Data + Services,
-   mds.agreements@deutsche-boerse.com), ob WKN, laufende Kosten, Replikation,
-   Ertragsverwendung und Index aus den öffentlichen Xetra-Downloads auf einer
-   werbefinanzierten bzw. kostenpflichtigen Website angezeigt werden dürfen.
-   Die Pipeline ist fertig; Abdeckung siehe `vorsorge/data/sources/xetra-refdata-stats.json`.
-2. **Tiingo**: Prüfen, ob der bestehende Plan die öffentliche Anzeige der US-Kurscharts
-   abdeckt. Die öffentlich auffindbaren Bedingungen sehen dafür eine separate Lizenz vor.
+1. **Deutsche Börse Referenzdaten**: bleiben gesperrt (Status `UNKNOWN`). Es gibt keine Anfrage und
+   keine Freischaltung. Die Pipeline ist vorbereitet. Öffentlich sind nur Abdeckungszahlen
+   (`vorsorge/data/sources/xetra-refdata-stats.json`), keine Werte und keine daraus
+   abgeleiteten Verteilungen. Die Gates `XETRA_VALUES_PUBLISHED_WITHOUT_RELEASE`,
+   `XETRA_DERIVED_VALUES_WITHOUT_RELEASE` und `XETRA_REFDATA_IN_PUBLIC_QUALITY_WITHOUT_RELEASE`
+   sichern das ab. Kein Launch-Blocker.
+2. **Tiingo**: keine offene Frage. Die Freigabe des Eigentümers vom 13.09.2026 steht in
+   `quant/config/development-preview.json`. Ein Follow-up gibt es nur, falls sich zeigt, dass
+   ETFs nicht zum freigegebenen Paket gehören.
 3. **Bestehender Index-Abruf** `scripts/market/build-index-membership.mjs` lädt
    Emittenten-Holdings automatisiert – nach den geprüften Bedingungen nicht erlaubt.
 4. **KID-Verlinkung**: auf offizielle KID-URLs zu verlinken ist nach EU-Rechtsprechung

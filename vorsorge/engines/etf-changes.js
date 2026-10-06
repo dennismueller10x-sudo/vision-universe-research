@@ -249,8 +249,8 @@
   function v(f) { return f && typeof f === "object" && "value" in f ? f.value : f === undefined ? null : f; }
   var FUND_FIELDS = [
     ["ter", "TER_CHANGED", "TER", "cost"], ["ongoingCharges", "ONGOING_CHARGES_CHANGED", "Laufende Kosten", "cost"],
-    ["expenseRatio", "EXPENSE_RATIO_CHANGED", "Kostenquote (brutto)", "cost"], ["netExpenseRatio", "NET_EXPENSE_RATIO_CHANGED", "Kostenquote (netto)", "cost"],
-    ["managementFee", "MANAGEMENT_FEE_CHANGED", "Verwaltungsgebühr", "cost"], ["benchmarkName", "BENCHMARK_CHANGED", "Index", "text"],
+    ["expenseRatio", "EXPENSE_RATIO_CHANGED", "Expense Ratio (brutto)", "cost"], ["netExpenseRatio", "NET_EXPENSE_RATIO_CHANGED", "Net Expense Ratio (netto)", "cost"],
+    ["managementFee", "MANAGEMENT_FEE_CHANGED", "Management Fee (Verwaltungsgebühr)", "cost"], ["benchmarkName", "BENCHMARK_CHANGED", "Index", "text"],
     ["replicationMethod", "REPLICATION_CHANGED", "Replikation", "text"], ["distributionPolicy", "DISTRIBUTION_CHANGED", "Ertragsverwendung", "text"],
     ["name", "NAME_CHANGED", "Name", "text"], ["ucits", "UCITS_CHANGED", "UCITS", "text"], ["domicile", "DOMICILE_CHANGED", "Domizil", "text"],
     ["fundStatus", "FUND_STATUS_CHANGED", "Status", "status"]
