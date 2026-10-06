@@ -289,7 +289,50 @@
     return { total: n, fields: out };
   }
 
-  var api = { SCHEMA: SCHEMA, ETF_FUNDAMENTALS_SCHEMA_VERSION: SCHEMA, FIELDS: FIELDS, ENUMS: ENUMS, SOURCE_TYPES: SOURCE_TYPES, CONFIDENCE: CONFIDENCE,
+  /**
+   * Kompakte Auslieferung ohne Informationsverlust (ETF-Detaildateien):
+   * - Felder ohne Wert (null) und Herkunftsangaben mit null entfallen (fehlend = null),
+   * - die Quell-URL steht einmal je Quelle in sourceUrls statt in jedem Feld.
+   * expand() stellt das Fundamentals-2.0-Objekt wieder her.
+   */
+  function compact(fu) {
+    if (!fu) return fu;
+    var out = {}, urls = {};
+    Object.keys(fu).forEach(function (k) {
+      var v = fu[k];
+      if (v === null || v === undefined) return;
+      if (v && typeof v === "object" && !Array.isArray(v) && "value" in v) {
+        var o = {};
+        Object.keys(v).forEach(function (kk) {
+          var x = v[kk];
+          if (x === null || x === undefined) return;
+          if (kk === "sourceUrl" && v.source) { if (!(v.source in urls)) urls[v.source] = x; if (urls[v.source] === x) return; }
+          o[kk] = x;
+        });
+        out[k] = o;
+      } else out[k] = v;
+    });
+    if (Object.keys(urls).length) out.sourceUrls = urls;
+    return out;
+  }
+  var PROV_KEYS = ["value", "source", "sourceType", "sourceUrl", "asOf", "retrievedAt", "confidence"];
+  function expand(c) {
+    if (!c) return c;
+    var urls = c.sourceUrls || {}, out = {};
+    Object.keys(c).forEach(function (k) {
+      if (k === "sourceUrls") return;
+      var v = c[k];
+      if (v && typeof v === "object" && !Array.isArray(v) && "value" in v) {
+        var o = {}; PROV_KEYS.forEach(function (kk) { o[kk] = kk in v ? v[kk] : kk === "sourceUrl" ? (urls[v.source] || null) : null; });
+        Object.keys(v).forEach(function (kk) { if (!(kk in o)) o[kk] = v[kk]; });
+        out[k] = o;
+      } else out[k] = v;
+    });
+    FIELDS.forEach(function (f) { if (!(f in out)) out[f] = null; });
+    return out;
+  }
+
+  var api = { SCHEMA: SCHEMA, ETF_FUNDAMENTALS_SCHEMA_VERSION: SCHEMA, compact: compact, expand: expand, FIELDS: FIELDS, ENUMS: ENUMS, SOURCE_TYPES: SOURCE_TYPES, CONFIDENCE: CONFIDENCE,
     isValidIsin: isValidIsin, isValidCusip: isValidCusip, isValidSedol: isValidSedol, isValidWkn: isValidWkn, cleanId: cleanId,
     normalizeIssuer: normalizeIssuer, normalizeCost: normalizeCost, normalizeReplication: normalizeReplication,
     normalizeDistribution: normalizeDistribution, normalizeFrequency: normalizeFrequency, normalizeUcits: normalizeUcits, isoDate: isoDate,

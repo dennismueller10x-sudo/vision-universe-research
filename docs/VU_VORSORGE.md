@@ -295,3 +295,66 @@ Positionen, Historie je Quartal, Änderungen im Spaltenformat und eine Zeitleist
 ### Nicht verfügbar (benannt, nicht geschätzt)
 Tagesaktuelle Bestände, Holdings und Kosten europäischer UCITS-ETFs, WKN, Replikation, NAV, Tracking Difference
 und Kurse europäischer Listings. Die Gründe stehen in der Quellenmatrix.
+
+## 11. Europa / UCITS: freie offizielle Quellen
+
+Details: [ETF_EU_FREE_SOURCE_SCORECARD.md](ETF_EU_FREE_SOURCE_SCORECARD.md),
+[ETF_DATA_RIGHTS.md](ETF_DATA_RIGHTS.md), [ETF_EU_DATA_ARCHITECTURE.md](ETF_EU_DATA_ARCHITECTURE.md),
+[ETF_EU_MARKET_DATA_GAPS.md](ETF_EU_MARKET_DATA_GAPS.md).
+
+| Datenjob | Skripte | Ausgabe | Veröffentlicht |
+|---|---|---|---|
+| `[vorsorge-eu-probe]` | `probe-eu-etf-sources.mjs` | `data/sources/etf-eu-source-probe.json` | nur Metadaten |
+| `[vorsorge-fundamentals]` | `ingest-sec-rr.mjs` → `ingest-esma-firds.mjs` → `ingest-esma-funds.mjs` → `build-etf-data.mjs` | `data/sources/sec-rr-costs.json`, `data/eu/etf-eu-index.json`, `data/eu/etf-eu-ucits.json` | ja |
+| `[vorsorge-live-smoke]` | `live-smoke.mjs` | Artefakt (Screenshots, Bericht) | nein |
+
+- **Amtlicher UCITS-Status**: ESMA-Register „Cross-border distribution of funds“, zugeordnet
+  über den Fondsnamen und das Domizil (Konfidenz mittel) – 3.144 von 8.084 Anteilklassen, davon
+  2.542 mit gemeldetem Vertrieb in Deutschland. Zusätzlich Verwaltungsgesellschaft,
+  Herkunftsstaat, Land der Aufsicht und gemeldete Vertriebsländer. Ältere Notifizierungen fehlen im Register teils – nur positive Aussagen („Vertrieb in Deutschland gemeldet“) werden gezeigt, ein fehlendes Land wird nie als „nicht vertrieben“ dargestellt.
+- **FIRDS-Stamm**: je ISIN aus allen Handelsplatz-Datensätzen – vollständiger Name, Fonds-LEI
+  (GLEIF-Kategorie FUND), Domizil aus der Fonds-LEI oder aus dem ISIN-Präfix (`domicileBasis`).
+- **Xetra-Referenzdaten** (WKN, laufende Kosten, Replikation, Ertragsverwendung, Index):
+  Nutzungsrechte nicht geklärt → zurückgestellt (Entscheidung 06.10.2026, keine Anfrage). Das
+  Skript bleibt vorbereitet, läuft nicht automatisch und schreibt nichts ins Repository; vier
+  Gates in `assert-vorsorge-data.mjs` verhindern jede Spur im veröffentlichten Verzeichnis.
+- **Kostenänderungen (US)**: zwischen zwei Prospektständen derselben Anteilklasse, nur gleich
+  definierte Felder (`etf-changes.js#costChanges`). Kostenzustände (`costState`): `VALID`,
+  `VALID_ZERO` (belegte 0,00 %, z. B. gebührenfreie ETFs), `MISSING`, `NOT_REPORTED`,
+  `PLACEHOLDER` (0 als Gesamtquote trotz positiver Verwaltungsgebühr), `UNKNOWN`. Nur `VALID` und
+  `VALID_ZERO` werden verglichen und angezeigt.
+- **Monitor**: Relevanz und Bündelung („Daten & Produkte“), interne Prüfstatus-Wechsel als eine
+  Datenmeldung, Kostenänderungen je Ticker.
+- **Detaildateien**: `fundamentals` kompakt (`compact`/`expand` in `etf-fundamentals.js`,
+  verlustfrei getestet); `costs` verweist auf `fundamentals` statt die Felder zu kopieren.
+- **Live-Rauchtest**: `vorsorge-live-smoke.yml` meldet sich über das Secret
+  `RESEARCH_ACCESS_PASSWORD` am Zugangstor an (Zustand nur im Browser-Speicher) und prüft
+  22 Routen auf Desktop und Mobil sowie Deep Links gegen die veröffentlichte Seite.
+
+## 12. Vorsorge V1 (Launch 06.10.2026) und Folge-Backlog
+
+**V1 live:** Planer, Vorsorgelücke, Kostenanalyse, ETF-Screener (USA) mit Datenabdeckungs-Filtern
+(Kursanalyse, Holdings & X-Ray, Kosten), ETF-Detail mit Tabs nur bei vorhandenen Daten,
+Bestandteile, ETF X-Ray, „Was hat sich geändert?“ (Holdings und Kosten laut Prospekt),
+Vergleich, Portfolio X-Ray mit Look-through und Abdeckungsangabe, Überschneidung, Watchlist,
+Monitor, Europa (8.084 Anteilklassen, Suche über ISIN/Name/Anbieter/Handelsplatz/Land,
+UCITS-Zuordnung über ESMA-Register, „Vertrieb in Deutschland gemeldet“, EU-Vergleich der
+Stamm- und Registerdaten), Datenquellen & Datenqualität mit Abdeckung USA/Europa.
+
+**Bewusst offen (kein Launch-Blocker):**
+
+| Priorität | Thema | Stand |
+|---|---|---|
+| P1 | EU-Tageskurse (EOD) | keine frei nutzbare Quelle; Anforderungen in `ETF_EU_MARKET_DATA_GAPS.md` |
+| P1 | UCITS-Holdings | nur Emittenten/Lizenz |
+| P1 | UCITS-Kosten, Fondsvolumen, Replikation | keine freigegebene Quelle (Xetra-Referenzdaten zurückgestellt) |
+| P2 | WKN | keine freigegebene Quelle |
+| P2 | NAV | keine Quelle |
+| P2 | Tracking Difference | braucht Gesamtrendite und lizenzierte Indexstände |
+| P2 | Storage/Auslieferung | `etf-index.json` (2,7 MB, ca. 0,6 MB komprimiert) wird je Sitzung einmal geladen; leichter Suchindex und Auslieferung großer Historien außerhalb des Repositorys (z. B. R2) |
+| – | EU-Anteilklassen im Portfolio und in der Watchlist | **erledigt**: EU-ISINs lassen sich hinzufügen und zählen zum Portfolio-Gewicht, ohne 0-Exposure; Länder- und Branchenbalken weisen „Ohne Bestandsdaten“ aus |
+
+**Ergänzt in der Abschlussprüfung:** Monitor (eigene ETFs zuerst, Kosten vor Fondsstatus, Datenaktualisierungen
+eingeklappt; kein Widerspruch mehr zu „TER-Änderungen nicht überwacht“), Startseite (Produkt- und Kostenmeldungen nur zu
+eigenen ETFs), komplexe Produkte als Suchtreffer mit Bauart-Badge, Anbieter je Datenart im Daten-Tab, „Herkunftsstaat
+Deutschland“ für inländische Fonds (das Register führt nur Gastländer), „gehandelt“ statt „zugelassen“.

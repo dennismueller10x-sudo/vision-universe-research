@@ -124,13 +124,29 @@
    * Kapitalmassnahme), kein Zu-/Abgang. Grenze: ein vollstaendiger Tausch zweier gleichnamiger Gattungen
    * ohne gemeinsame Kennung ist davon nicht unterscheidbar und erscheint als Gewichtsaenderung.
    */
-  var NAME_PAIR = { EQUITY: 1, FUND: 1, ETF: 1 };
+  var NAME_PAIR = { EQUITY: 1, FUND: 1, ETF: 1, BOND: 1, LOAN: 1 };
+  /* Anleihen/Kredite ohne Kennung: der Kupon gehoert nicht zur Identitaet (variabel verzinste Kredite setzen ihn jedes
+     Quartal neu: "Whatabrands LLC 6,172 % 2028" -> "6,152 % 2028" ist dieselbe Position, kein Verkauf plus Kauf). */
+  function pairName(v) {
+    var n = String(v.name || "");
+    if (v.assetType === "BOND" || v.assetType === "LOAN") n = n.replace(/\d+(?:[.,]\d+)?\s*%/g, " ");
+    return normName(n);
+  }
   function pairByName(A, next, remap0) {
     var B = byId(next, remap0), gone = {}, fresh = {}, extra = {};
-    function count(map, k, v) { var n = normName(v.name); if (!n || !NAME_PAIR[v.assetType]) return; n = v.assetType + "|" + n; (map[n] = map[n] || []).push(k); }
+    function count(map, k, v) { var n = pairName(v); if (!n || !NAME_PAIR[v.assetType]) return; n = v.assetType + "|" + n; (map[n] = map[n] || []).push(k); }
     Object.keys(A).forEach(function (k) { if (!B[k]) count(gone, k, A[k]); });
     Object.keys(B).forEach(function (k) { if (!A[k]) count(fresh, k, B[k]); });
-    Object.keys(fresh).forEach(function (n) { if (fresh[n].length === 1 && gone[n] && gone[n].length === 1) extra[fresh[n][0]] = gone[n][0]; });
+    Object.keys(fresh).forEach(function (n) {
+      if (!gone[n]) return;
+      if (fresh[n].length === 1 && gone[n].length === 1) { extra[fresh[n][0]] = gone[n][0]; return; }
+      // Mehrere Tranchen desselben Emittenten und derselben Faelligkeit (Anleihen/Kredite): nach Gewicht paaren
+      // (Kuponanpassung, keine Umschichtung); nur der Ueberhang bleibt echter Zu- oder Abgang.
+      if (/^(BOND|LOAN)\|/.test(n)) {
+        var f = fresh[n].slice().sort(function (x, y) { return B[y].weight - B[x].weight; }), g = gone[n].slice().sort(function (x, y) { return A[y].weight - A[x].weight; });
+        for (var i = 0; i < Math.min(f.length, g.length); i++) extra[f[i]] = g[i];
+      }
+    });
     return function (h) { var k = remap0(h); return extra[k] || k; };
   }
 
@@ -249,11 +265,55 @@
   function v(f) { return f && typeof f === "object" && "value" in f ? f.value : f === undefined ? null : f; }
   var FUND_FIELDS = [
     ["ter", "TER_CHANGED", "TER", "cost"], ["ongoingCharges", "ONGOING_CHARGES_CHANGED", "Laufende Kosten", "cost"],
-    ["expenseRatio", "EXPENSE_RATIO_CHANGED", "Kostenquote", "cost"], ["benchmarkName", "BENCHMARK_CHANGED", "Index", "text"],
+    ["expenseRatio", "EXPENSE_RATIO_CHANGED", "Kostenquote (brutto)", "cost"], ["netExpenseRatio", "NET_EXPENSE_RATIO_CHANGED", "Kostenquote (netto)", "cost"],
+    ["managementFee", "MANAGEMENT_FEE_CHANGED", "Verwaltungsgebühr", "cost"], ["benchmarkName", "BENCHMARK_CHANGED", "Index", "text"],
     ["replicationMethod", "REPLICATION_CHANGED", "Replikation", "text"], ["distributionPolicy", "DISTRIBUTION_CHANGED", "Ertragsverwendung", "text"],
     ["name", "NAME_CHANGED", "Name", "text"], ["ucits", "UCITS_CHANGED", "UCITS", "text"], ["domicile", "DOMICILE_CHANGED", "Domizil", "text"],
     ["fundStatus", "FUND_STATUS_CHANGED", "Status", "status"]
   ];
+  /** Zustand eines Kostenfelds in einem Prospektstand (SEC Risk/Return):
+      MISSING      - kein Prospektstand vorhanden,
+      NOT_REPORTED - Prospektstand vorhanden, Feld nicht gemeldet,
+      UNKNOWN      - Wert nicht numerisch,
+      PLACEHOLDER  - 0 als Gesamtkostenquote, obwohl eine Teilkomponente (Verwaltungsgebuehr, Netto) positiv ist - widerspruechlich;
+                     0 als Verwaltungsgebuehr neben positiver Gesamtkostenquote (nicht ausgewiesen),
+      VALID_ZERO   - belegte 0,00 % (z. B. gebuehrenfreie ETFs, vollstaendiger Verzicht),
+      VALID        - belegter positiver Wert.
+      Nur VALID und VALID_ZERO sind vergleichbar; fehlend ist nie 0. */
+  var MAX_COST_JUMP = 0.02;
+  var COST_STATES = ["VALID", "VALID_ZERO", "MISSING", "NOT_REPORTED", "PLACEHOLDER", "UNKNOWN"];
+  function costState(rec, field) {
+    if (!rec) return "MISSING";
+    var o = rec[field];
+    if (o === undefined || o === null) return "NOT_REPORTED";
+    var x = typeof o === "object" ? o.value : o;
+    if (x === null || x === undefined || x === "") return "NOT_REPORTED";
+    if (typeof x !== "number" || !isFinite(x) || x < 0) return "UNKNOWN";
+    if (x > 0) return "VALID";
+    var pos = function (k) { var y = rec[k]; y = y && typeof y === "object" ? y.value : y; return typeof y === "number" && y > 0; };
+    if (field === "expenseRatio" && (pos("managementFee") || pos("netExpenseRatio"))) return "PLACEHOLDER";
+    // Verwaltungsgebuehr 0 neben positiver Gesamtkostenquote: meist nicht ausgewiesen statt gebuehrenfrei -> nicht belegt
+    if (field === "managementFee" && (pos("expenseRatio") || pos("netExpenseRatio"))) return "PLACEHOLDER";
+    return "VALID_ZERO";
+  }
+  function costComparable(state) { return state === "VALID" || state === "VALID_ZERO"; }
+  /** Kostenaenderungen zweier Prospektstaende ({ expenseRatio|netExpenseRatio|managementFee: { value } }).
+      Nur gleich definierte, beidseitig belegte Felder (VALID/VALID_ZERO); eine Brutto-Aenderung ohne Aenderung der
+      berechneten Netto-Kosten wird nicht gemeldet. opts: { shareClassId, from, to, source }. */
+  function costChanges(prev, next, opts) {
+    var o = opts || {};
+    if (!prev || !next) return [];
+    var val = function (x, k) { return costComparable(costState(x, k)) ? x[k] : null; };
+    var pick = function (x) { return { shareClassId: o.shareClassId || null, expenseRatio: val(x, "expenseRatio"), netExpenseRatio: val(x, "netExpenseRatio"), managementFee: val(x, "managementFee") }; };
+    var d = diffFundamentals(pick(prev), pick(next), { from: o.from, to: o.to, source: o.source || null });
+    var netBoth = val(next, "netExpenseRatio") && val(prev, "netExpenseRatio");
+    var netChanged = d.events.some(function (x) { return x.entityId === "netExpenseRatio"; });
+    // Spruenge ueber 2 Prozentpunkte zwischen zwei Prospekten sind fuer ETFs unplausibel (meist Klassenverwechslung) -> nicht melden
+    return d.events.filter(function (x) { return !(x.entityId === "expenseRatio" && netBoth && !netChanged) && Math.abs(x.newValue - x.oldValue) <= MAX_COST_JUMP; }).map(function (x) {
+      return { eventType: x.eventType, field: x.entityId, label: x.entityName, oldValue: x.oldValue, newValue: x.newValue, from: o.from || null, to: o.to || null,
+        text: x.explanation.replace(/\.$/, "") + " (Prospekt " + o.from + " → " + o.to + ")." };
+    });
+  }
   /** prev/next: kanonische Fondsdaten (Fundamentals 2.0). opts: { from, to, aumRel }. */
   function diffFundamentals(prev, next, opts) {
     var cfg = Object.assign({}, DEFAULTS, opts || {});
@@ -306,7 +366,7 @@
   }
 
   var api = { VERSION: VERSION, ETF_CHANGE_EVENT_VERSION: VERSION, IMPORTANCE: IMPORTANCE, DEFAULTS: DEFAULTS, eventId: eventId, comparable: comparable,
-    diffHoldings: diffHoldings, diffFundamentals: diffFundamentals, summarize: summarize, relevant: relevant, changeSentence: changeSentence };
+    diffHoldings: diffHoldings, diffFundamentals: diffFundamentals, COST_STATES: COST_STATES, costState: costState, costComparable: costComparable, costChanges: costChanges, summarize: summarize, relevant: relevant, changeSentence: changeSentence };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else { global.VUVorsorge = global.VUVorsorge || {}; global.VUVorsorge.Changes = api; }
 })(typeof window !== "undefined" ? window : globalThis);

@@ -175,8 +175,18 @@
     if (ev.eventType === "SECTOR_WEIGHT_CHANGED") return VS.sectorName(ev.entityName) + ": " + wpct(ev.oldValue) + " → " + wpct(ev.newValue);
     return ev.explanation;
   }
+  /* Kostenaenderungen laut Prospekt (nur echte, gleich definierte Felder) - Teil von "Was hat sich geaendert?". */
+  function costChangeCard(d) {
+    var c = d.costs || {};
+    if (c.status !== "AVAILABLE" || !c.previousFiling) return "";
+    var ch = c.changes || [];
+    return '<section class="vs-section"><div class="vs-card"><p class="vs-label">Kosten laut Prospekt</p>' +
+      (ch.length ? ch.map(function (x) { return '<div class="vs-row"><span>' + esc(x.label) + '</span><span class="num">' + VS.costPct(x.oldValue) + ' → ' + VS.costPct(x.newValue) + '</span></div>'; }).join("") +
+        '<p class="vs-fine" style="margin-top:6px">Prospekt ' + F.date(c.previousFiling) + ' → ' + F.date(ch[0].to) + ' (SEC Risk/Return-Daten).</p>'
+        : '<p class="vs-sub" style="margin-top:6px">Keine Änderung der Kostenquote seit dem Prospekt vom ' + F.date(c.previousFiling) + '.</p>') + '</div></section>';
+  }
   VS.renderChanges = function (el, e, d) {
-    if (!d.holdings || d.holdings.status !== "AVAILABLE") { el.innerHTML = '<section class="vs-section">' + noHoldings(d) + '</section>'; return; }
+    if (!d.holdings || d.holdings.status !== "AVAILABLE") { el.innerHTML = costChangeCard(d) || ('<section class="vs-section">' + noHoldings(d) + '</section>'); return; }
     VS.holdings(d.holdings.series).then(function (f) {
       if (!f) return;
       var ch = f.changes || {}, evs = ch.events || [], showAll = false;
@@ -190,7 +200,7 @@
             (list.length > 40 ? '<p class="vs-fine">… und ' + (list.length - 40) + ' weitere.</p>' : "") + '</div></section>' : "") +
           '<section class="vs-section"><div class="vs-card"><p class="vs-label">Zeitleiste</p>' + (f.timeline && f.timeline.length ? f.timeline.map(function (t) { return '<div class="vs-row"><span class="num">' + F.date(t.asOf) + '</span><span style="text-align:right">' + esc(t.text) + '</span></div>'; }).join("")
             : '<p class="vs-fine">Noch keine Historie.</p>') +
-          '<p class="vs-fine" style="margin-top:8px">Bestände: ' + f.history.map(function (h) { return F.date(h.asOf) + " (" + h.positions.toLocaleString("de-DE") + ")"; }).join(" · ") + '</p></div></section>';
+          '<p class="vs-fine" style="margin-top:8px">Bestände: ' + f.history.map(function (h) { return F.date(h.asOf) + " (" + h.positions.toLocaleString("de-DE") + ")"; }).join(" · ") + '</p></div></section>' + costChangeCard(d);
         var cb = el.querySelector("#vs-ch-all"); if (cb) cb.onchange = function () { showAll = cb.checked; draw(); };
       }
       draw();
@@ -200,16 +210,20 @@
   /* ---------------------------------------------- Kosten */
   VS.renderKosten = function (el, e, d) {
     var c = d.costs || {};
-    var f = function (k) { var x = c[k]; return x && typeof x === "object" ? x : null; };
+    var f = function (k) { var x = c[k] || (d.fundamentals || {})[k]; return x && typeof x === "object" ? x : null; };
     el.innerHTML = '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card"><p class="vs-label">Laufende Kosten</p>' +
-      (c.status === "AVAILABLE" ? '<p class="vs-kpi">' + VS.costPct(c.value) + '</p><p class="vs-fine">' + (c.basis === "NET_EXPENSE_RATIO" ? "Netto-Kostenquote nach Gebührenverzicht" : "Gesamtkostenquote") + ' laut Prospekt-Gebührentabelle (SEC Risk/Return-Daten)</p>' +
-        (f("expenseRatio") ? '<div class="vs-row" style="margin-top:10px"><span>Gesamtkostenquote (brutto)</span><span class="num">' + VS.costPct(f("expenseRatio").value) + '</span></div>' : "") +
-        (f("netExpenseRatio") ? '<div class="vs-row"><span>Nach Gebührenverzicht (netto)</span><span class="num">' + VS.costPct(f("netExpenseRatio").value) + '</span></div>' : "") +
-        (f("managementFee") ? '<div class="vs-row"><span>Verwaltungsgebühr</span><span class="num">' + VS.costPct(f("managementFee").value) + '</span></div>' : "") +
-        '<p class="vs-fine" style="margin-top:8px">Prospekt vom ' + F.date((f("netExpenseRatio") || f("expenseRatio") || {}).asOf) + '. ' + esc(c.note || "") + ' Für US-Fonds ist das die „Expense Ratio“ – nicht identisch mit TER oder laufenden Kosten im europäischen Basisinformationsblatt.</p>'
+      (c.status === "AVAILABLE" ? '<p class="vs-kpi">' + VS.costPct(c.value) + '</p><p class="vs-fine">' + ({ NET_EXPENSE_RATIO: "Netto-Kostenquote nach Gebührenverzicht (Net Expense Ratio)", EXPENSE_RATIO: "Gesamtkostenquote (Expense Ratio)", MANAGEMENT_FEE_ONLY: "Nur die Verwaltungsgebühr ist gemeldet – eine Gesamtkostenquote steht nicht im Prospektdatensatz" }[c.basis] || "Kostenquote") + ' laut Prospekt-Gebührentabelle (SEC Risk/Return-Daten)' + (c.value === 0 ? '. 0,00 % ist der im Prospekt gemeldete Wert (z. B. gebührenfreier ETF oder vollständiger Gebührenverzicht).' : '') + '</p>' +
+        (f("expenseRatio") ? '<div class="vs-row" style="margin-top:10px"><span>Gesamtkostenquote, brutto (Expense Ratio)</span><span class="num">' + VS.costPct(f("expenseRatio").value) + '</span></div>' : "") +
+        (f("netExpenseRatio") ? '<div class="vs-row"><span>Nach Gebührenverzicht, netto (Net Expense Ratio)</span><span class="num">' + VS.costPct(f("netExpenseRatio").value) + '</span></div>' : "") +
+        (f("managementFee") ? '<div class="vs-row"><span>Verwaltungsgebühr (Management Fee)</span><span class="num">' + VS.costPct(f("managementFee").value) + '</span></div>' : "") +
+        '<p class="vs-fine" style="margin-top:8px">Prospekt vom ' + F.date((f("netExpenseRatio") || f("expenseRatio") || f("managementFee") || {}).asOf) + '. ' + esc(c.note || "") + ' Für US-Fonds ist das die „Expense Ratio“ – nicht identisch mit TER oder laufenden Kosten im europäischen Basisinformationsblatt.</p>' +
+        // Kostenaenderung nur zwischen zwei echten Prospektstaenden und nur je gleich definiertem Feld
+        '<p class="vs-label" style="margin-top:14px">Änderung gegenüber dem vorherigen Prospekt</p>' +
+        ((c.changes || []).length ? c.changes.map(function (x) { return '<div class="vs-row"><span>' + esc(x.label) + '</span><span class="num ' + (x.newValue < x.oldValue ? "up" : "down") + '">' + VS.costPct(x.oldValue) + ' → ' + VS.costPct(x.newValue) + '</span></div>'; }).join("") + '<p class="vs-fine">Prospekt ' + F.date(c.previousFiling) + ' → ' + F.date((c.changes[0] || {}).to) + '.</p>'
+          : c.previousFiling ? '<p class="vs-sub">Keine Änderung seit dem Prospekt vom ' + F.date(c.previousFiling) + '.</p>' : '<p class="vs-sub">Nur ein Prospektstand im Datensatz – ein Vergleich ist ab dem nächsten Prospekt möglich.</p>')
         : VS.pending("Keine Kostenquote", (c.note || "Keine Primär- oder Regulierungsquelle verfügbar.") + " Wir schätzen keine Kosten.")) +
       '<div class="vs-row" style="margin-top:12px"><span>Tracking Difference</span><span class="vs-fine">nicht berechnet (Indexdaten fehlen)</span></div></div>' +
-      '<a class="vs-card app link" href="#/kosten' + (c.status === "AVAILABLE" ? "?ter=" + (c.value * 100).toFixed(2) : "") + '"><p class="vs-label">Selbst rechnen</p><p class="vs-kpi small" style="margin-top:6px">Was kosten ' + (c.status === "AVAILABLE" ? VS.costPct(c.value) : "die laufenden Kosten") + ' über deine Laufzeit?</p><p class="vs-sub" style="margin-top:8px">Die Kostenanalyse rechnet den Effekt über Jahre – nur die laufenden Produktkosten, ohne Depot- und Handelskosten.</p></a></div></section>';
+      '<a class="vs-card app link" href="#/kosten' + (Number.isFinite(c.value) ? "?ter=" + (c.value * 100).toFixed(2) : "") + '"><p class="vs-label">Selbst rechnen</p><p class="vs-kpi small" style="margin-top:6px">Was kosten ' + (Number.isFinite(c.value) ? VS.costPct(c.value) : "die laufenden Kosten") + ' über deine Laufzeit?</p><p class="vs-sub" style="margin-top:8px">Die Kostenanalyse rechnet den Effekt über Jahre – nur die laufenden Produktkosten, ohne Depot- und Handelskosten.</p></a></div></section>';
   };
 
   /* ---------------------------------------------- Daten / Herkunft */
@@ -225,8 +239,12 @@
     });
     el.innerHTML = '<section class="vs-section"><div class="vs-card"><p class="vs-label">Herkunft je Feld</p><div class="vs-table-wrap"><table class="vs-table"><thead><tr><th>Feld</th><th>Wert</th><th>Quelle</th><th>Stand</th><th>Konfidenz</th></tr></thead><tbody>' + rows.join("") + '</tbody></table></div>' +
       ((fu.conflicts || []).length ? '<p class="vs-fine" style="margin-top:8px">Abweichungen zwischen Quellen: ' + esc(fu.conflicts.map(function (c) { return c.field + " (" + c.reason + ")"; }).join(", ")) + '</p>' : "") +
-      '<div class="vs-row" style="margin-top:10px"><span>Kurse</span><span>Tiingo · Stand ' + F.date(d.metrics && d.metrics.asOf) + '</span></div>' +
-      '<div class="vs-row"><span>Holdings</span><span>' + (d.holdings && d.holdings.status === "AVAILABLE" ? "SEC Form N-PORT · Bestand " + F.date(d.holdings.asOf) : "nicht verfügbar") + '</span></div>' +
+      '<p class="vs-label" style="margin-top:14px">Anbieter je Datenart</p>' +
+      '<div class="vs-row"><span>Kurse (Price Provider)</span><span>' + (d.metrics ? "Tiingo · Stand " + F.date(d.metrics.asOf) : '<span class="vs-fine">keine Kursreihe</span>') + '</span></div>' +
+      '<div class="vs-row"><span>Holdings (Holdings Provider)</span><span>' + (d.holdings && d.holdings.status === "AVAILABLE" ? "SEC Form N-PORT · Bestand " + F.date(d.holdings.asOf) : '<span class="vs-fine">nicht verfügbar' + (d.holdings && d.holdings.reason ? " – " + esc(d.holdings.reason) : "") + '</span>') + '</span></div>' +
+      '<div class="vs-row"><span>Kosten (Fundamentals Provider)</span><span>' + (d.costs && d.costs.status === "AVAILABLE" ? "SEC Prospekt-Daten (Risk/Return) · Prospekt " + F.date((fu.netExpenseRatio || fu.expenseRatio || fu.managementFee || {}).asOf) : '<span class="vs-fine">nicht verfügbar</span>') + '</span></div>' +
+      '<div class="vs-row"><span>Register (Register Provider)</span><span>' + (fu.domicile && fu.domicile.source === "SEC_NPORT" ? "SEC (US-Investmentgesellschaft, kein UCITS)" : '<span class="vs-fine">kein Registereintrag</span>') + '</span></div>' +
+      '<div class="vs-row"><span>Fehlende Felder</span><span class="vs-fine" style="text-align:right">' + esc(((d.provenance || {}).missingFields || []).join(", ") || "–") + '</span></div>' +
       '<div class="vs-row"><span>Fondsdaten des Emittenten</span><span class="vs-fine">nicht angebunden (Nutzungsbedingungen erlauben keinen automatisierten Abruf)</span></div>' +
       '<div class="vs-row"><span>ISIN · WKN</span><span class="vs-fine">für US-Listings nicht verfügbar</span></div></div></section>' +
       '<section class="vs-section">' + (qualityHtml || "") + '</section>';

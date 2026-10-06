@@ -38,6 +38,12 @@ const Identity = require(join(root, "core/identity.js")); // eine Identitaetsreg
 const Master = require(join(root, "vorsorge/engines/etf-master.js"));
 const Tax = require(join(root, "vorsorge/engines/etf-taxonomy.js"));
 const FUND = require(join(root, "vorsorge/engines/etf-fundamentals.js"));
+const CHG = require(join(root, "vorsorge/engines/etf-changes.js"));
+const costEvents = [];   // Kostenaenderungen zwischen zwei Prospektstaenden (SEC Risk/Return)
+/** Kostenaenderungen zwischen zwei Prospektstaenden derselben Anteilklasse (Regeln in etf-changes.js#costChanges). */
+function costChanges(c) {
+  return c && c.previous ? CHG.costChanges(c.previous, c, { shareClassId: c.classId, from: c.previous.filed, to: c.filed, source: "SEC_RR" }) : [];
+}
 const A = require(join(root, "vorsorge/engines/etf-analytics.js"));
 const Codec = require(join(root, "vorsorge/engines/series-codec.js"));
 const Monitor = require(join(root, "vorsorge/engines/monitor.js"));
@@ -230,15 +236,15 @@ function secSources(e, hIdx, rr) {
   }
   if (c) {
     const cx = (f) => ({ source: "SEC_RR", sourceType: "REGULATORY", sourceUrl: "https://www.sec.gov/data-research/sec-markets-data/mutual-fund-prospectus-riskreturn-summary-data-sets", asOf: f.filed, confidence: "HIGH", originalField: "Prospekt-Gebührentabelle (XBRL)" });
-    srcs.push({ fields: {
-      expenseRatio: c.expenseRatio ? FUND.field(c.expenseRatio.value, cx(c.expenseRatio)) : null,
-      netExpenseRatio: c.netExpenseRatio ? FUND.field(c.netExpenseRatio.value, cx(c.netExpenseRatio)) : null,
-      managementFee: c.managementFee ? FUND.field(c.managementFee.value, cx(c.managementFee)) : null
-    } });
+    // Nur belegte Werte (positiv oder belegte 0,00 %) - widerspruechliche Nullen werden nicht angezeigt.
+    const ok = (k) => (CHG.costComparable(CHG.costState(c, k)) ? FUND.field(c[k].value, cx(c[k])) : null);
+    srcs.push({ fields: { expenseRatio: ok("expenseRatio"), netExpenseRatio: ok("netExpenseRatio"), managementFee: ok("managementFee") } });
   }
   const merged = FUND.merge(srcs, { fundId: h ? "sec:" + h[0] : e.canonicalETFId || null, shareClassId: e.shareClassId || null, listingId: e.listingId || null }).record;
-  const er = c && (c.netExpenseRatio || c.expenseRatio);
-  return { h, c, merged, costValue: er ? er.value : null, costBasis: c ? (c.netExpenseRatio ? "NET_EXPENSE_RATIO" : "EXPENSE_RATIO") : null };
+  const valid = (k) => c && CHG.costComparable(CHG.costState(c, k));
+  const basis = valid("netExpenseRatio") ? "netExpenseRatio" : valid("expenseRatio") ? "expenseRatio" : null;
+  return { h, c: basis || valid("managementFee") ? c : null, merged, costValue: basis ? c[basis].value : null,
+    costBasis: basis === "netExpenseRatio" ? "NET_EXPENSE_RATIO" : basis ? "EXPENSE_RATIO" : valid("managementFee") ? "MANAGEMENT_FEE_ONLY" : null };
 }
 
 /* ------------------------------------------------------------------ Lauf */
@@ -328,14 +334,21 @@ export function build() {
       { cost: sec.costValue, effectiveNumber: sec.h && Number.isFinite(sec.h[9]) ? sec.h[9] : null, top10: sec.h ? sec.h[3] : null });
     dna.dataQuality = { value: Math.round(q.coverage * 100), status: "CALCULATED", label: "Datenqualität (Feldabdeckung)" };
     writeFileSync(join(detailDir, full.slug + ".json"), JSON.stringify({
-      schemaVersion: "vu-vorsorge-etf-2.0.0", ...full, quality: q, provenance, dna, metrics: priceM, metricsTotal: totalM,
+      schemaVersion: "vu-vorsorge-etf-2.0.0", ...full, fundamentals: FUND.compact(full.fundamentals), quality: q, provenance, dna, metrics: priceM, metricsTotal: totalM,
       totalReturn: rec ? rec.totalReturn : { state: "NO_SERIES" }, seriesPath: s ? "/vorsorge/data/series/" + e.symbol + ".json" : null,
       holdings: sec.h ? { status: "AVAILABLE", source: "SEC_NPORT", sourceType: "REGULATORY", series: sec.h[0], path: "/vorsorge/data/holdings/" + sec.h[0] + ".json", asOf: sec.h[1], positions: sec.h[2], top10: sec.h[3] }
         : { status: full.otc ? "NOT_APPLICABLE" : "NOT_IN_NPORT", reason: full.otc ? "US-Freiverkehrszeile eines ausländischen Fonds." : NOT_IN_NPORT },
-      costs: sec.c ? { status: "AVAILABLE", basis: sec.costBasis, value: sec.costValue, expenseRatio: full.fundamentals.expenseRatio, netExpenseRatio: full.fundamentals.netExpenseRatio, managementFee: full.fundamentals.managementFee,
+      // Kostenfelder stehen mit Herkunft in fundamentals (expenseRatio, netExpenseRatio, managementFee) - hier nur der Verweis.
+      costs: sec.c ? { status: "AVAILABLE", basis: sec.costBasis, value: sec.costValue, fields: ["expenseRatio", "netExpenseRatio", "managementFee"].filter((k) => full.fundamentals[k]),
+        ...(sec.c.previous ? { previousFiling: sec.c.previous.filed, changes: costChanges(sec.c) } : {}),
         note: "Laufende Kostenquote laut Prospekt-Gebührentabelle. Handels-, Depot- und Transaktionskosten sind nicht enthalten." }
         : { status: "SOURCE_NOT_CONNECTED", value: null, note: "Keine Kostenquote aus einer Primär- oder Regulierungsquelle verfügbar." }
     }));
+    // Je Ticker eine Meldung (mehrere Kostenfelder zusammengefasst); Groesse = groesste Aenderung in Prozentpunkten
+    const cc = costChanges(sec.c);
+    if (cc.length) costEvents.push({ type: "COST_CHANGE", symbol: full.symbol, fields: cc.map((x) => x.field), // Groesse = Aenderung der tatsaechlich berechneten Kosten (netto, sonst brutto, sonst Verwaltungsgebuehr)
+      magnitude: ((x) => Math.abs(x.newValue - x.oldValue))(cc.find((x) => x.field === "netExpenseRatio") || cc.find((x) => x.field === "expenseRatio") || cc[0]), asOf: cc[0].to,
+      text: full.symbol + " · " + cc.map((x) => x.text.replace(/ \(Prospekt[^)]*\)\.$/, "")).join("; ") + " (Prospekt " + cc[0].from + " → " + cc[0].to + ")." });
     entries.push({ full, priceM, totalM });
   }
 
@@ -417,6 +430,8 @@ export function build() {
   const fv = (e, k) => FUND.valueOf(e.fundamentals && e.fundamentals[k]);
   const euIdx = tryJson(join(OUT, "data/eu/etf-eu-index.json"));
   const euItems = euIdx ? euIdx.rows.map((r) => Object.fromEntries(euIdx.fields.map((f, i) => [f, r[i]]))) : [];
+  const euReg = tryJson(join(OUT, "data/eu/etf-eu-ucits.json"));          // ESMA-Fondsregister (amtlicher UCITS-Status)
+  const regHosts = euReg ? euReg.rows.map((r) => String(r[euReg.fields.indexOf("hostCountries")] || "").split(" ")) : [];
   const nport = tryJson(join(OUT, "data/sources/nport-manifest.json"));
   const rrM = tryJson(join(OUT, "data/sources/sec-rr-costs.json"));
   const sicM = tryJson(join(OUT, "data/sources/sec-sic.json"));
@@ -436,7 +451,9 @@ export function build() {
       venues: euItems.reduce((a, x) => a + String(x.venues || "").split(" ").filter(Boolean).length, 0),
       domicile: euItems.reduce((a, x) => { const k = x.domicile || "UNKNOWN"; a[k] = (a[k] || 0) + 1; return a; }, {}),
       distribution: euItems.reduce((a, x) => { const k = x.distribution || "UNKNOWN"; a[k] = (a[k] || 0) + 1; return a; }, {}),
-      withPriceFeed: 0, isin: euItems.length, wkn: 0, ter: 0, holdings: 0 } : null,
+      withPriceFeed: 0, isin: euItems.length, wkn: 0, ter: 0, holdings: 0,
+      ucitsRegister: euReg ? euReg.rows.length : 0, notifiedInGermany: regHosts.filter((h) => h.includes("DE")).length,
+      domicileFromIsin: euItems.filter((x) => x.domicileBasis === "ISIN_PREFIX").length } : null,
     providers: [
       { id: "TIINGO", type: "MARKET_DATA_PROVIDER", status: rep && rep.complete ? "HEALTHY" : rep ? "DEGRADED" : "NOT_CONFIGURED", lastSuccessfulFetch: (ingest && ingest.asOf) || null, items: counts.withPriceHistory, fields: "Kurse, Ausschüttungen, Splits, Namen" },
       { id: "SEC_NPORT", type: "REGULATORY", status: nport && nport.snapshots ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: hIdx ? Object.values(hIdx.bySymbol).map((r) => r[1]).filter(Boolean).sort().pop() || null : null, items: nport ? nport.snapshots : 0, fields: "Holdings, Fondsvermögen, Historie (quartalsweise)" },
@@ -444,6 +461,7 @@ export function build() {
       { id: "SEC_SIC", type: "REGULATORY", status: sicM && sicM.count ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: null, items: sicM ? sicM.count : 0, fields: "Wirtschaftszweig der Emittenten" },
       { id: "ESMA_FIRDS", type: "REGULATORY", status: euIdx ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: euIdx ? euIdx.asOf : null, items: euItems.length, fields: "ISIN, Handelsplätze, Währung, CFI" },
       { id: "GLEIF", type: "REGULATORY", status: euIdx ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: euIdx ? euIdx.asOf : null, items: euItems.filter((x) => x.domicile).length, fields: "Rechtlicher Emittent, Domizil" },
+      { id: "ESMA_FONDSREGISTER", type: "REGULATORY", status: euReg ? "HEALTHY" : "NOT_CONFIGURED", lastSuccessfulFetch: euReg ? euReg.runDate || null : null, items: euReg ? euReg.rows.length : 0, fields: "UCITS-Status (amtlich), Verwaltungsgesellschaft, Vertriebsländer" },
       ...["BLACKROCK", "VANGUARD", "AMUNDI", "DWS", "STATE_STREET", "INVESCO", "WISDOMTREE", "UBS", "JPMORGAN", "HSBC", "VANECK", "LEGAL_GENERAL", "GLOBAL_X", "FIDELITY", "FRANKLIN_TEMPLETON", "BNP_PARIBAS"]
         .map((id) => ({ id, type: "PRIMARY_ISSUER", status: "NOT_PERMITTED", lastSuccessfulFetch: null, items: 0, fields: "Nutzungsbedingungen erlauben keinen automatisierten Abruf; Import-Parser bereit" }))
     ],
@@ -464,7 +482,7 @@ export function build() {
     conclusion: (euEx.length + all.filter((e) => e.ucits).length) === 0
       ? "Im gemessenen Tiingo-Bestand ist kein UCITS-Listing (europäische Börse, UCITS im Namen oder EUR/GBP/CHF-Handelswährung) enthalten. Für deutsche Privatanleger relevante UCITS-ETFs brauchen eine zweite Datenquelle."
       : euEx.length === 0
-        ? `${all.filter((e) => e.ucits).length} UCITS-Fonds erscheinen nur als US-Freiverkehrszeile (OTC, z. B. PINK, in USD) – nicht als europäisches Börsenlisting, ohne ISIN. Die für deutsche Privatanleger handelbaren Listings (Xetra, LSE, Euronext …) fehlen; dafür braucht es eine zweite Datenquelle.`
+        ? `Im US-Kursdatenbestand (Tiingo) erscheinen ${all.filter((e) => e.ucits).length} Zeilen mit „UCITS“ im Namen nur als US-Freiverkehrszeilen (OTC, in USD) – das sind keine europäischen Börsenlistings und sie werden nicht als solche gezeigt. Europäische Anteilklassen mit ISIN und Handelsplätzen kommen aus dem amtlichen ESMA-Register (Bereich Europa).`
         : "Einzelne europäische Listings vorhanden; ISIN fehlt. Abdeckung für deutsche Privatanleger unzureichend.",
     ucitsByExchange: all.filter((e) => e.ucits).reduce((a, e) => { a[e.exchange] = (a[e.exchange] || 0) + 1; return a; }, {})
   }, null, 1));
@@ -481,9 +499,11 @@ export function build() {
       ["UCITS-Holdings", "keine", 0, "ja – Lizenz eines Emittenten/Datenanbieters"],
       ["Kostenquote (US)", "SEC Prospektdaten (Risk/Return)", quality.intelligence.coverage.costs.ratio, "TER/laufende Kosten für UCITS: EMT/Emittent (Lizenz)"],
       ["Fondsvermögen (US)", "SEC N-PORT (Fondsebene)", quality.intelligence.coverage.aum.ratio, "Anteilklassen-Ebene: Emittent"],
-      ["ISIN (EU)", "ESMA FIRDS", euIdx ? 1 : 0, "nein"], ["ISIN (US-Listings)", "keine", 0, "ja"], ["WKN", "keine (offizielle Quelle ohne geprüfte Lizenz)", 0, "ja"],
+      ["ISIN (EU)", "ESMA FIRDS", euIdx ? 1 : 0, "nein"], ["ISIN (US-Listings)", "keine", 0, "ja"], ["WKN", "keine freigegebene Quelle", 0, "ja – lizenzierte Referenzdaten"],
       ["Domizil", "SEC (US) · GLEIF (EU)", quality.intelligence.coverage.domicile.ratio, "nein"],
-      ["UCITS-Status", "SEC (US = kein UCITS) · EU nur Hinweis aus amtlichem Namen", quality.intelligence.coverage.ucitsStatus.ratio, "verbindlich nur Emittent/KID"],
+      ["UCITS-Status", "SEC (US = kein UCITS) · ESMA-Fondsregister (EU, amtlich, Namenszuordnung)", quality.intelligence.coverage.ucitsStatus.ratio, euReg ? "EU-Anteilklassen ohne eindeutigen Registertreffer: nur Hinweis aus dem Namen" : "verbindlich nur Emittent/KID"],
+      ["UCITS-Status (EU)", "ESMA-Fondsregister (grenzüberschreitender Vertrieb)", euReg && euItems.length ? r4(euReg.rows.length / euItems.length) : 0, "Register ohne ISIN – Zuordnung über Fondsnamen"],
+      ["Laufende Kosten (EU)", "keine freigegebene Quelle", 0, "ja – lizenzierte Fonds- oder Referenzdaten"],
       ["Ertragsverwendung", "Ausschüttungen beobachtet (US) · CFI (EU)", r4(all.filter((e) => e.distributionPolicy).length / Math.max(1, all.length)), "thesaurierend (US) nicht belegbar"],
       ["Replikation", "keine", 0, "ja"], ["Index (verbindlich)", "aus Namen abgeleitet", cov("index"), "ja"], ["Tracking Difference", "nicht berechenbar ohne Indexstände", 0, "ja"],
       ["NAV", "keine", 0, "ja"], ["Börse (US)", "Tiingo-Tickerliste", cov("exchange"), "nein"], ["Börsen (EU)", "ESMA FIRDS", euIdx ? 1 : 0, "nein"]
@@ -496,7 +516,13 @@ export function build() {
   const toM = (list) => list && { etfs: list.map((r) => ({ listingId: r.id, symbol: r.symbol, name: r.name, status: r.status, index: r.index, vol: r.vol, hy: r.hy })) };
   const changes = Monitor.diffMasters(toM(prevRows), toM(nextRows), asOf);
   const prevChanges = tryJson(join(OUT, "data/changes.json"));
-  if (!changes.events.length && prevChanges && prevChanges.events) changes.events = prevChanges.events;
+  // Rohereignisse aufbewahren; angezeigt wird die priorisierte, gebuendelte Liste (Monitor-Rauschen).
+  const raw = changes.events.length ? changes.events : (prevChanges && (prevChanges.rawEvents || prevChanges.events)) || [];
+  const layerOf = Object.fromEntries(nextRows.map((r) => [r.symbol, r.layer]));
+  changes.rawEvents = raw;
+  // Kostenaenderungen stammen aus Prospektstaenden (nicht aus dem Vergleich zweier Builds) und werden je Build neu ermittelt.
+  changes.costEvents = costEvents.length;
+  changes.events = Monitor.prioritize(raw.concat(costEvents), layerOf);
   writeFileSync(join(OUT, "data/changes.json"), JSON.stringify(changes, null, 1));
 
   // ------------------------------------------------------------ SEO
