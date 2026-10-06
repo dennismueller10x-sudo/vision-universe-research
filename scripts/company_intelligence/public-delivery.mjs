@@ -27,6 +27,68 @@ async function manifest(driver, key) {
   if (bytes.length > MAX) throw new Error('INVALID_CONSUMER_MANIFEST');
   return validateManifest(JSON.parse(bytes));
 }
+// Validate every local object before the first remote write. A correct hash alone
+// does not prove a complete, correctly scoped consumer generation.
+export function preflight(root, m, prior = null, {localReview = false} = {}) {
+  if (!localReview && m.releaseState === 'REVIEW_ONLY') throw new Error('REVIEW_ONLY_PUBLICATION_REFUSED');
+  const assets = new Map();
+  for (const [path, meta] of Object.entries(m.assets)) {
+    const file = realpathSync(resolve(root, path));
+    if (!file.startsWith(root + sep) || statSync(file).size > MAX) throw new Error('UNSAFE_PUBLIC_FILE');
+    const bytes = readFileSync(file);
+    if (bytes.length !== meta.bytes || sha(bytes) !== meta.sha256) throw new Error('LOCAL_CONSUMER_INTEGRITY_FAILED');
+    const data = JSON.parse(bytes);
+    if (data.coverage?.sources || data.coverage?.sec || data.coverage?.ir || data.checkpoints || data.state === 'DISABLED') throw new Error('PRIVATE_OR_DISABLED_CONTENT');
+    assets.set(path, {bytes, data});
+  }
+  const index = assets.get('index.json').data;
+  if (index.schema !== 'vu-company-intelligence-1.0.0' || !['PREVIEW','AVAILABLE'].includes(index.state) || index.generation !== m.generation || index.generatedAt !== m.generatedAt) throw new Error('INVALID_PUBLIC_INDEX');
+  const issuerPaths = [...assets.keys()].filter(p => p !== 'index.json' && !p.includes('/lookup/'));
+  if (!issuerPaths.length) throw new Error('EMPTY_PUBLICATION_REFUSED');
+  if (prior) {
+    const missingTickers = prior.tickers.filter(t => !m.tickers.includes(t));
+    const ids = new Set(issuerPaths.map(p => p.split('/').at(-1)));
+    const missingIssuers = Object.keys(prior.assets).filter(p => p !== 'index.json' && !p.includes('/lookup/') && !ids.has(p.split('/').at(-1)));
+    if (missingTickers.length || missingIssuers.length) throw new Error('SHRUNK_PUBLICATION_REFUSED');
+  }
+  const lookups = Array.isArray(index.lookupShards) ? index.lookupShards.map(prefix => {
+    const lookup = assets.get(`snapshots/${m.generation}/lookup/${prefix}.json`)?.data;
+    if (!lookup || lookup.schema !== index.schema || lookup.generation !== m.generation) throw new Error('INCOMPLETE_LOOKUP_GENERATION');
+    return lookup;
+  }) : [index];
+  for (const ticker of m.tickers) {
+    const lookup = lookups.find(l => l.tickers?.[ticker]);
+    const listings = lookup?.tickers?.[ticker];
+    if (!Array.isArray(listings) || !listings.length || new Set(listings.map(l => l.companyId)).size !== 1) throw new Error('PUBLIC_IDENTITY_NOT_UNIQUE');
+    const path = lookup.companies?.[listings[0].companyId];
+    if (path && !assets.has(path)) throw new Error('INCOMPLETE_COMPANY_GENERATION');
+    if (path) {
+      const payload = assets.get(path).data;
+      if (!payload.listings?.some(l => l.symbol === ticker && listings.some(m => m.instrumentId === l.instrumentId))) throw new Error('PUBLIC_LISTING_MISMATCH');
+    }
+  }
+  for (const path of issuerPaths) {
+    const p = assets.get(path).data;
+    if (!localReview && (p.companyProfile?.editorialStatus === 'REVIEW_ONLY' || p.previewBasis === 'CATALOGUE_AND_EXISTING_FACTS')) throw new Error('REVIEW_ONLY_PUBLICATION_REFUSED');
+    if (p.companyId + '.json' !== path.split('/').at(-1) || p.schema !== index.schema || p.state !== 'AVAILABLE' || p.generatedAt !== m.generatedAt) throw new Error('INVALID_PUBLIC_COMPANY');
+    for (const key of ['news','events','earnings','filings','calls','timeline']) {
+      if (!Array.isArray(p[key]) || p[key].length > 200 || p[key].some(row => row?.companyId !== p.companyId)) throw new Error('INVALID_PUBLIC_SECTIONS');
+    }
+  }
+  const counts = contentCounts(assets);
+  if (prior?.contentCounts && Object.entries(prior.contentCounts).some(([key, count]) => count > 0 && counts[key] < count * 0.75)) throw new Error('CONTENT_REGRESSION_REFUSED');
+  return assets;
+}
+function contentCounts(assets) {
+  const counts = {profiles:0,financials:0,news:0,earnings:0,calls:0,materials:0};
+  for (const [path, {data:p}] of assets) {
+    if (path === 'index.json' || path.includes('/lookup/')) continue;
+    counts.profiles += p.companyProfile?.state === 'AVAILABLE' ? 1 : 0;
+    counts.financials += p.latestFinancials?.state === 'AVAILABLE' ? 1 : 0;
+    for (const key of ['news','earnings','calls','materials']) counts[key] += p[key]?.length || 0;
+  }
+  return counts;
+}
 export async function readAsset(driver, {namespace, asset, now = Date.now()}) {
   if (!allowedAsset(asset)) throw new Error('INVALID_CONSUMER_PATH');
   const prefix = prefixFor(namespace);
@@ -52,15 +114,12 @@ export async function publish(driver, {namespace, directory}) {
   const prior = await manifest(driver, prefix + 'manifest.json');
   if (prior && Date.parse(m.generatedAt) < Date.parse(prior.generatedAt)) throw new Error('STALE_PUBLICATION_REFUSED');
   if (prior?.generation === m.generation && JSON.stringify(prior.assets) !== JSON.stringify(m.assets)) throw new Error('IMMUTABLE_GENERATION_COLLISION');
+  const checked = preflight(root, m, prior);
+  m.contentCounts = contentCounts(checked);
   m.slot = prior?.generation === m.generation ? prior.slot : prior ? 1 - (prior.slot || 0) : 0;
   let put = 0, unchanged = 0, bytes = 0;
   for (const [path, meta] of Object.entries(m.assets)) {
-    const file = realpathSync(resolve(root, path));
-    if (!file.startsWith(root + sep) || statSync(file).size > MAX) throw new Error('UNSAFE_PUBLIC_FILE');
-    const data = readFileSync(file);
-    if (data.length !== meta.bytes || sha(data) !== meta.sha256) throw new Error('LOCAL_CONSUMER_INTEGRITY_FAILED');
-    const parsed = JSON.parse(data);
-    if (parsed.coverage?.sources || parsed.coverage?.sec || parsed.coverage?.ir || parsed.checkpoints || parsed.state === 'DISABLED') throw new Error('PRIVATE_OR_DISABLED_CONTENT');
+    const data = checked.get(path).bytes;
     const key = prefix + `slot-${m.slot}/` + (path === 'index.json' ? path : path.split('/').slice(2).join('/'));
     const existing = await driver.get(key);
     if (existing && sha(existing) === meta.sha256) {

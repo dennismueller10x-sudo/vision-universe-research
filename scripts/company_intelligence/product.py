@@ -42,10 +42,12 @@ def bundles(payload):
 
 def project(payload):
     """Bounded public view. Remove private source health, checkpoints and rejected candidates."""
-    value = deepcopy({k: payload[k] for k in ('schema', 'companyId', 'companyName', 'listings', 'generatedAt', 'state', 'latestFinancials') if k in payload})
+    value = deepcopy({k: payload[k] for k in ('schema', 'companyId', 'companyName', 'listings', 'generatedAt', 'state', 'latestFinancials', 'previewBasis') if k in payload})
     now = datetime.fromisoformat(payload['generatedAt'].replace('Z', '+00:00'))
     from .profiles import public_profile
     profile = public_profile(payload.get('companyProfile'), payload['companyId'], payload['generatedAt'])
+    from .editorial import german_profile
+    profile = german_profile(profile)
     if profile:
         value['companyProfile'] = profile
     news_cutoff = (now - timedelta(days=180)).date().isoformat()

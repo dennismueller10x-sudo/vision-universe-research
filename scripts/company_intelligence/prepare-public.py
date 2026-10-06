@@ -61,6 +61,8 @@ def prepare(source, output, tickers):
         write(f'snapshots/{digest}/lookup/{prefix}.json', {'schema': SCHEMA, 'generation': digest, 'tickers': rows, 'companies': {cid: paths[cid] for cid in ids if cid in paths}})
     write('index.json', {'schema': SCHEMA, 'state': 'PREVIEW', 'generatedAt': index['generatedAt'], 'generation': digest, 'lookupShards': prefixes, 'companyCount': len({l['companyId'] for ls in members.values() for l in ls}), 'coveredCompanyCount': len(values), 'scope': 'CONTROLLED_COHORT'})
     manifest = {'schema': 1, 'generation': digest, 'generatedAt': index['generatedAt'], 'assets': assets, 'tickers': requested}
+    if any(v.get('companyProfile', {}).get('editorialStatus') == 'REVIEW_ONLY' or v.get('previewBasis') == 'CATALOGUE_AND_EXISTING_FACTS' for v in values.values()):
+        manifest['releaseState'] = 'REVIEW_ONLY'
     atomic_json(output / 'manifest.json', manifest)
     return {'generation': digest, 'companies': len(values), 'assets': len(assets), 'bytes': sum(v['bytes'] for v in assets.values()), 'maxPayloadBytes': max(v['bytes'] for v in assets.values())}
 

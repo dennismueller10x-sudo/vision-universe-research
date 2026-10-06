@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,writeFileSync,mkdirSync,rmSync} from 'node:fs';
+import {mkdtempSync,writeFileSync,readFileSync,mkdirSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
@@ -11,8 +11,8 @@ const rollout=require('../../../company-intelligence/config/rollout.js');
 function driver(){const objects=new Map();return {objects,get:async k=>objects.get(k)||null,put:async(k,b)=>objects.set(k,b)}}
 function fixture(generation='a'.repeat(24), stamp='2026-10-02T12:00:00Z'){
  const root=mkdtempSync(join(tmpdir(),'intelligence-public-')), path=`snapshots/${generation}/iss_cik_0000320193.json`;
- const payload={schema:'vu-company-intelligence-1.0.0',state:'AVAILABLE',companyId:'iss_cik_0000320193',news:[],coverage:{newsGuarantee:false}};
- const values={'index.json':{schema:payload.schema,generation,state:'PREVIEW'},[path]:payload}, assets={};
+ const payload={schema:'vu-company-intelligence-1.0.0',state:'AVAILABLE',companyId:'iss_cik_0000320193',generatedAt:stamp,listings:[{symbol:'AAPL',instrumentId:'vu_12345678901234'}],news:[],events:[],earnings:[],filings:[],calls:[],timeline:[],coverage:{newsGuarantee:false}};
+ const values={'index.json':{schema:payload.schema,generation,generatedAt:stamp,state:'PREVIEW',companies:{[payload.companyId]:path},tickers:{AAPL:[{companyId:payload.companyId,instrumentId:'vu_12345678901234'}]}},[path]:payload}, assets={};
  for(const [p,v] of Object.entries(values)){mkdirSync(join(root,p,'..'),{recursive:true});const data=Buffer.from(JSON.stringify(v));writeFileSync(join(root,p),data);assets[p]={bytes:data.length,sha256:createHash('sha256').update(data).digest('hex')};}
  writeFileSync(join(root,'manifest.json'),JSON.stringify({schema:1,generation,generatedAt:stamp,assets,tickers:['AAPL']}));return {root,path};
 }
@@ -31,3 +31,38 @@ test('Pages projection copies current and previous consumer generations only',as
 test('failed Pages integrity check preserves the disabled release index',async()=>{const {download}=await import('../download-public.mjs'),d=driver(),a=fixture(),out=mkdtempSync(join(tmpdir(),'intelligence-release-'));try{writeFileSync(join(out,'index.json'),'{"state":"DISABLED"}');await publish(d,{namespace:'pages',directory:a.root});d.objects.set(prefixFor('pages')+'slot-0/iss_cik_0000320193.json',Buffer.from('corrupt'));await assert.rejects(download(d,{namespace:'pages',output:out,now}));const {readFileSync}=await import('node:fs');assert.equal(JSON.parse(readFileSync(join(out,'index.json'))).state,'DISABLED');}finally{for(const f of [a.root,out])rmSync(f,{recursive:true})}});
 test('Pages download pins manifests and checks the pointer again before any write',async()=>{const {download}=await import('../download-public.mjs'),d=driver(),a=fixture(),b=fixture('b'.repeat(24)),out=mkdtempSync(join(tmpdir(),'intelligence-release-'));try{await publish(d,{namespace:'pinned',directory:a.root});await publish(d,{namespace:'pinned',directory:b.root});let reads=0;const get=d.get;d.get=async key=>{if(key.endsWith('manifest.json')||key.endsWith('previous.json'))reads++;return get(key)};await download(d,{namespace:'pinned',output:out,now});assert.equal(reads,3);}finally{for(const f of [a.root,b.root,out])rmSync(f,{recursive:true})}});
 test('a pointer swap during Pages download fails before replacing the disabled index',async()=>{const {download}=await import('../download-public.mjs'),d=driver(),a=fixture(),out=mkdtempSync(join(tmpdir(),'intelligence-release-'));try{await publish(d,{namespace:'race',directory:a.root});writeFileSync(join(out,'index.json'),'{"state":"DISABLED"}');let reads=0;const get=d.get;d.get=async key=>{const value=await get(key);if(key.endsWith('manifest.json')&&++reads===2)return Buffer.from('{}');return value};await assert.rejects(download(d,{namespace:'race',output:out,now}),/GENERATION_CHANGED/);const {readFileSync}=await import('node:fs');assert.equal(JSON.parse(readFileSync(join(out,'index.json'))).state,'DISABLED');}finally{for(const f of [a.root,out])rmSync(f,{recursive:true})}});
+
+test('a damaged late local asset causes zero remote writes and preserves the fallback slot',async()=>{
+ const d=driver(),a=fixture(),b=fixture('b'.repeat(24),'2026-10-02T13:00:00Z');
+ try{
+  await publish(d,{namespace:'preflight',directory:a.root});const before=new Map(d.objects);
+  writeFileSync(join(b.root,b.path),'broken');
+  await assert.rejects(publish(d,{namespace:'preflight',directory:b.root}),/LOCAL_CONSUMER_INTEGRITY/);
+  assert.deepEqual(d.objects,before);
+ }finally{for(const f of [a.root,b.root])rmSync(f,{recursive:true})}
+});
+test('a smaller cohort and review-only candidate cannot change any remote object',async()=>{
+ const d=driver(),a=fixture(),b=fixture('b'.repeat(24),'2026-10-02T13:00:00Z');
+ try{
+  await publish(d,{namespace:'release-gate',directory:a.root});const before=new Map(d.objects);
+  const manifestPath=join(b.root,'manifest.json'),m=JSON.parse(readFileSync(manifestPath));
+  m.releaseState='REVIEW_ONLY';writeFileSync(manifestPath,JSON.stringify(m));
+  await assert.rejects(publish(d,{namespace:'release-gate',directory:b.root}),/REVIEW_ONLY/);assert.deepEqual(d.objects,before);
+  delete m.releaseState;m.tickers=['MSFT'];writeFileSync(manifestPath,JSON.stringify(m));
+  await assert.rejects(publish(d,{namespace:'release-gate',directory:b.root}),/SHRUNK/);assert.deepEqual(d.objects,before);
+ }finally{for(const f of [a.root,b.root])rmSync(f,{recursive:true})}
+});
+
+test('large content loss inside an unchanged issuer cohort is refused before writes',async()=>{
+ const d=driver(),a=fixture(),b=fixture('b'.repeat(24),'2026-10-02T13:00:00Z');
+ function news(directory,path,rows){
+  const file=join(directory,path),p=JSON.parse(readFileSync(file));p.news=rows;
+  const bytes=Buffer.from(JSON.stringify(p));writeFileSync(file,bytes);
+  const mf=join(directory,'manifest.json'),m=JSON.parse(readFileSync(mf));m.assets[path]={bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')};writeFileSync(mf,JSON.stringify(m));
+ }
+ try{
+  news(a.root,a.path,[{companyId:'iss_cik_0000320193',newsId:'retained'}]);
+  await publish(d,{namespace:'content-floor',directory:a.root});const before=new Map(d.objects);
+  await assert.rejects(publish(d,{namespace:'content-floor',directory:b.root}),/CONTENT_REGRESSION/);assert.deepEqual(d.objects,before);
+ }finally{for(const f of [a.root,b.root])rmSync(f,{recursive:true})}
+});
