@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<script>/* Intro-Animation im Hero nur, wenn Bewegung erlaubt ist (vor dem ersten Zeichnen gesetzt) */try{if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("intro");}catch(e){}</script>
 <title>Vision Universe® – Investieren mit Weitblick. Alles in einer App.</title>
 <meta name="description" content="Die Vision Universe App: Aktien entdecken und analysieren – Fundamentaldaten, Technik, Elliott Wave, Quant, Screener, Supertrader – und die Altersvorsorge planen. Alles in einer App.">
 <link rel="canonical" href="https://research.visionuniverse.de/">
@@ -31,6 +32,7 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <script src="/assets/pwa.js" defer></script>
+<script src="/assets/home/hero-intro.js" defer></script>
 </head>
 <body>
 <vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script>
@@ -53,25 +55,18 @@
   <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></symbol>
   <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/><path d="M18.6 14.6c.2 1.6.9 2.5 2.6 2.8-1.7.3-2.4 1.2-2.6 2.8-.2-1.6-.9-2.5-2.6-2.8 1.7-.3 2.4-1.2 2.6-2.8z" opacity=".7"/></symbol>
 %%HUD_SYMBOLS%%
+  <defs><linearGradient id="nvda-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8f531" stop-opacity=".32"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></linearGradient></defs>
   <!-- NVIDIA: Tageskurse der letzten 270 Handelstage, SMA 50/200, Elliott-Zählung, Setup-Zonen -->
   <symbol id="chart-nvda" viewBox="0 -14 690 298">
-    <defs><linearGradient id="nvda-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8f531" stop-opacity=".32"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></linearGradient></defs>
-    <g stroke="rgba(255,255,255,.07)" stroke-width="1"><path d="%%GRID%%"/></g>
-    <g fill="#8a9099" font-size="10" font-family="Inter,sans-serif" font-weight="600">%%GRID_LABELS%%</g>
-    %%ZONES%%
-    <path d="%%AREA%%" fill="url(#nvda-fill)"/>
-    <path d="%%S200%%" fill="none" stroke="#6f7680" stroke-width="1.4"/>
-    <path d="%%S50%%" fill="none" stroke="#e9e3c9" stroke-width="1.3" stroke-opacity=".7"/>
-    <path d="%%CLOSE%%" fill="none" stroke="#c8f531" stroke-width="2.2" stroke-linejoin="round"/>
-    <path d="%%WAVE%%" fill="none" stroke="#f4f5f1" stroke-width="1.3" stroke-dasharray="3 4"/>
-    %%WAVE_NODES%%
+    %%CHART_BODY%%
   </symbol>
 </svg>
 
 <main>
 
 <!-- ============ HERO ============ -->
-<section class="hero">
+<section class="hero" id="hero">
+  <div class="hero-fx" aria-hidden="true"><i class="hero-grid-fx"></i><i class="hero-scan"></i></div>
   <div class="shell hero-grid">
     <div class="hero-copy">
       <div class="hero-logo"><img src="/assets/vision-universe-logo.png" width="2172" height="724" alt="Vision Universe®"></div>
@@ -98,12 +93,14 @@
           <div class="desk-main">
             <div class="desk-kpis">
               <div class="desk-kpi"><b>%%NVDA_WAVE_SHORT%%</b><small>Elliott Wave</small></div>
-              <div class="desk-kpi"><b>%%NVDA_TREND%%</b><small>Trend-Score · %%NVDA_TREND_DIR%%</small></div>
-              <div class="desk-kpi"><b>%%NVDA_RSI%%</b><small>RSI 14</small></div>
+              <div class="desk-kpi"><b data-count>%%NVDA_TREND%%</b><small>Trend-Score · %%NVDA_TREND_DIR%%</small></div>
+              <div class="desk-kpi"><b data-count>%%NVDA_RSI%%</b><small>RSI 14</small></div>
             </div>
             <div class="desk-chart">
               <div class="lbl"><b>NVIDIA · Kursstruktur &amp; Elliott</b><span>1J</span></div>
-              <svg class="chart" viewBox="0 0 690 298"><use href="#chart-nvda"/></svg>
+              <svg class="chart intro-chart" viewBox="0 -14 690 298">
+    %%CHART_BODY%%
+              </svg>
             </div>
           </div>
         </div>
@@ -117,14 +114,14 @@
           <div class="stock-head">
             <span class="app-logo big">NVDA</span>
             <div><b>NVIDIA</b><small>%%NVDA_WHAT%%</small></div>
-            <div class="px"><b>%%NVDA_PRICE%%</b><small class="%%NVDA_CHG_CLASS%%">%%NVDA_CHG%%</small></div>
+            <div class="px"><b data-count>%%NVDA_PRICE%%</b><small class="%%NVDA_CHG_CLASS%%">%%NVDA_CHG%%</small></div>
           </div>
           <div class="app-badges">%%NVDA_BADGES%%</div>
           <div class="app-tabs"><span class="on">Überblick</span><span>Zahlen</span><span>Technik</span><span>Elliott</span><span>Quant</span></div>
           <div class="app-mini"><svg viewBox="0 0 690 298"><use href="#chart-nvda"/></svg></div>
           <div class="app-grid">
-            <div><small>Umsatz TTM</small><b>%%NVDA_REV%%</b><em class="up">%%NVDA_REV_G%%</em></div>
-            <div><small>Nettomarge</small><b>%%NVDA_MARGIN%%</b><em>KGV %%NVDA_PE%%</em></div>
+            <div><small>Umsatz TTM</small><b data-count>%%NVDA_REV%%</b><em class="up">%%NVDA_REV_G%%</em></div>
+            <div><small>Nettomarge</small><b data-count>%%NVDA_MARGIN%%</b><em>KGV %%NVDA_PE%%</em></div>
             <div><small>Elliott Wave</small><b>%%NVDA_WAVE_SHORT%%</b><em>Beta</em></div>
             <div><small>Supertrader</small><b>%%NVDA_SIGNAL%%</b><em class="up">%%NVDA_SIGNAL_STATE%%</em></div>
           </div>
@@ -138,6 +135,7 @@
         </div>
       </div>
 
+      <div class="orbit" aria-hidden="true"><span class="hud hud-sm orb" style="--k:0"><svg><use href="#h-discover"/></svg></span><span class="hud hud-sm orb" style="--k:1"><svg><use href="#h-quant"/></svg></span><span class="hud hud-sm orb" style="--k:2"><svg><use href="#h-screener"/></svg></span><span class="hud hud-sm orb" style="--k:3"><svg><use href="#h-super"/></svg></span><span class="hud hud-sm orb" style="--k:4"><svg><use href="#h-elliott"/></svg></span><span class="hud hud-sm orb" style="--k:5"><svg><use href="#h-technical"/></svg></span><span class="hud hud-sm orb" style="--k:6"><svg><use href="#h-fundamental"/></svg></span><span class="hud hud-sm orb" style="--k:7"><svg><use href="#h-vorsorge"/></svg></span><span class="hud hud-sm orb" style="--k:8"><svg><use href="#h-atlas"/></svg></span></div>
       <div class="float-card fc-1"><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott Wave</b><small>Szenarien &amp; Zielzonen</small></div></div>
       <div class="float-card fc-2"><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>12 Geschäftsjahre</b><small>Fundamentaldaten aus SEC-Berichten</small></div></div>
     </div>

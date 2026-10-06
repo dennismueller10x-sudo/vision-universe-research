@@ -335,6 +335,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var
   .browser{display:none}
   .fc-1{left:0;bottom:24px}
   .fc-2{display:none}
+  .hero .fc-1{display:none}
   .stats-grid{grid-template-columns:1fr 1fr}
   .stat:nth-child(3){border-left:0}
   .stat:nth-child(n+3){border-top:1px solid var(--line)}
@@ -530,3 +531,77 @@ a:hover .hud,.module:hover .hud{box-shadow:0 0 0 1px rgba(200,245,49,.6),0 14px 
   .plan-bars{height:140px;gap:6px}
 }
 @media (prefers-reduced-motion:reduce){.sticky-cta{transition:none}}
+
+/* =====================================================================
+   HERO-INTRO
+   Der Hero ist immer dunkel (HUD-Buehne). Unter html.intro laeuft eine
+   Zeitachse von rund fuenf Sekunden; alle Animationen enden im normalen
+   Zustand (fill-mode both), ohne html.intro steht der Endzustand sofort.
+   ===================================================================== */
+.hero{background:#07090b;color:#f4f5f1;--ink:#f4f5f1;--ink-2:#c3c7cc;--muted:#8b919a;--line:rgba(255,255,255,.09);--line-2:rgba(255,255,255,.16);--bg-card:#121519;--bg-soft:#0e1013;--lime-ink:#c8f531}
+.hero::before{background:radial-gradient(circle,rgba(200,245,49,.2),rgba(200,245,49,0) 62%)!important}
+.hero .hero-logo img{filter:invert(1) brightness(1.08)}
+.hero h1 em{background:none!important;color:#c8f531;text-shadow:0 0 34px rgba(200,245,49,.35)}
+.hero .btn-ghost{color:#f4f5f1;border-color:rgba(255,255,255,.22)}
+.hero .btn-ghost:hover{background:rgba(255,255,255,.06)}
+.hero .float-card{background:rgba(18,21,25,.92);color:#f4f5f1;border-color:rgba(255,255,255,.1)}
+.hero-copy,.stage{position:relative;z-index:2}
+.hero-fx{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.hero-grid-fx{position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,rgba(200,245,49,.06) 0 1px,transparent 1px 48px),repeating-linear-gradient(90deg,rgba(200,245,49,.06) 0 1px,transparent 1px 48px);
+  -webkit-mask:radial-gradient(circle at 70% 45%,#000 0,transparent 70%);mask:radial-gradient(circle at 70% 45%,#000 0,transparent 70%)}
+.hero-scan{position:absolute;left:0;right:0;top:0;height:2px;opacity:0;background:linear-gradient(90deg,transparent,#c8f531 30%,#f4ffc4 50%,#c8f531 70%,transparent);box-shadow:0 0 24px 4px rgba(200,245,49,.55)}
+.hero-logo{position:relative}
+.orbit{position:absolute;inset:0;pointer-events:none}
+.orb{position:absolute;left:0;top:0;opacity:0;will-change:transform,opacity}
+.hero .phone{z-index:3}
+.c-dot{fill:#f4ffc4;filter:drop-shadow(0 0 6px #c8f531) drop-shadow(0 0 14px #c8f531);opacity:0}
+.hero .btn-app{position:relative}
+.stage{transition:transform .25s ease-out;transform-style:preserve-3d}
+
+@keyframes hx-grid{from{-webkit-mask-size:0 0;mask-size:0 0;opacity:0}to{opacity:1}}
+@keyframes hx-gridr{from{clip-path:circle(0% at 70% 45%)}to{clip-path:circle(150% at 70% 45%)}}
+@keyframes hx-scan{0%{opacity:0;transform:translateY(0)}10%{opacity:1}85%{opacity:.9}100%{opacity:0;transform:translateY(var(--scan-h,760px))}}
+@keyframes hx-logo{from{clip-path:inset(0 100% 0 0);filter:invert(1) brightness(3) drop-shadow(0 0 18px #c8f531)}to{clip-path:inset(0 0 0 0);filter:invert(1) brightness(1.08)}}
+@keyframes hx-up{from{opacity:0;transform:translateY(26px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+@keyframes hx-em{0%,100%{text-shadow:0 0 34px rgba(200,245,49,.35)}40%{text-shadow:0 0 22px #c8f531,0 0 60px rgba(200,245,49,.9)}}
+@keyframes hx-browser{from{opacity:0;translate:120px 30px;rotate:0 1 0 -28deg}to{opacity:1;translate:0 0;rotate:0 1 0 0deg}}
+@keyframes hx-phone{from{opacity:0;translate:0 180px;rotate:-9deg}to{opacity:1;translate:0 0;rotate:0deg}}
+@keyframes hx-draw{from{stroke-dasharray:1;stroke-dashoffset:1}to{stroke-dasharray:1;stroke-dashoffset:0}}
+@keyframes hx-fade{from{opacity:0}to{opacity:1}}
+@keyframes hx-pop{0%{opacity:0;transform:scale(0)}70%{opacity:1;transform:scale(1.35)}100%{opacity:1;transform:scale(1)}}
+@keyframes hx-card{from{opacity:0;transform:translateY(18px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes hx-pulse{0%,100%{box-shadow:0 0 0 1px rgba(200,245,49,.4),0 14px 36px -10px rgba(200,245,49,.65),0 0 0 0 rgba(200,245,49,.45)}50%{box-shadow:0 0 0 1px rgba(200,245,49,.6),0 18px 44px -8px rgba(200,245,49,.85),0 0 0 14px rgba(200,245,49,0)}}
+
+html.intro .hero-grid-fx{animation:hx-gridr 1.6s cubic-bezier(.3,.7,.2,1) both}
+html.intro .hero-scan{animation:hx-scan 1.5s .15s cubic-bezier(.5,0,.3,1) both}
+html.intro .hero-logo img{animation:hx-logo 1s .25s cubic-bezier(.6,0,.2,1) both}
+html.intro .hero-badge{animation:hx-up .6s .55s both}
+html.intro .hero h1{animation:hx-up .9s .7s cubic-bezier(.2,.7,.2,1) both}
+html.intro .hero h1 em{animation:hx-em 1.4s 1.4s ease-in-out both}
+html.intro .hero .lead{animation:hx-up .7s 1s both}
+html.intro .hero-cta{animation:hx-up .7s 1.2s both}
+html.intro .hero-checks{animation:hx-up .7s 1.35s both}
+html.intro .hero .browser{animation:hx-browser 1.1s .6s cubic-bezier(.2,.8,.2,1) both}
+html.intro .intro-chart .c-s200{animation:hx-draw 1.8s 1.2s ease-in-out both}
+html.intro .intro-chart .c-s50{animation:hx-draw 1.8s 1.3s ease-in-out both}
+html.intro .intro-chart .c-close{animation:hx-draw 2s 1.2s cubic-bezier(.45,0,.25,1) both}
+html.intro .intro-chart .c-area{animation:hx-fade .8s 2.6s both}
+html.intro .intro-chart .c-zones{animation:hx-fade .7s 3s both}
+html.intro .intro-chart .c-wave{animation:hx-fade .6s 2.9s both}
+.intro-chart .wn{transform-box:fill-box;transform-origin:center}
+html.intro .intro-chart .wn{animation:hx-pop .5s calc(2.9s + var(--i) * .2s) cubic-bezier(.3,1.6,.5,1) both}
+html.intro .hero .phone{animation:hx-phone 1.1s 2.2s cubic-bezier(.2,.9,.25,1) both}
+html.intro .hero .fc-1{animation:hx-card .6s 4.1s both,bob 6s ease-in-out 4.8s infinite}
+html.intro .hero .fc-2{animation:hx-card .6s 4.4s both,bob 7s ease-in-out 5s infinite}
+html.intro .hero .hero-cta .btn-app{animation:hx-pulse 2.4s 2.2s ease-in-out infinite}
+
+@media (max-width:760px){
+  .hero-grid-fx{-webkit-mask:radial-gradient(circle at 50% 70%,#000 0,transparent 75%);mask:radial-gradient(circle at 50% 70%,#000 0,transparent 75%)}
+}
+@media (prefers-reduced-motion:reduce){.orb{opacity:1}}
+/* Buehne unterhalb des Bildes: Zeitachse wartet, beim Hinscrollen startet sie verkuerzt */
+html.intro .stage.wait,html.intro .stage.wait *{animation-play-state:paused!important}
+html.intro .stage.late .phone{animation-delay:.05s!important}
+html.intro .stage.late .fc-1{animation-delay:1.5s,2.2s!important}
+html.intro .stage.late .fc-2{animation-delay:1.8s,2.5s!important}
