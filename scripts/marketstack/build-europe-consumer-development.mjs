@@ -1,0 +1,149 @@
+/** Private aggregate only: no fetching, model changes, data publication or UI claims. */
+import {readFileSync,writeFileSync,mkdirSync,chmodSync} from 'node:fs';
+import {join,resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
+import {createRequire} from 'node:module';
+import {evaluateListingReadiness} from './de-eu-readiness.mjs';
+import {assertPrivateOutput,rejectSymlinkAncestors} from './private-output.mjs';
+const require=createRequire(import.meta.url),Identity=require('../../core/identity.js');
+export const TECHNICAL_FIELDS=['sma20','sma50','sma200','high52w','low52w','momentum1M','momentum3M','momentum6M','momentum12M','realizedVolatility20d','realizedVolatility60d','atr14','relativeVolume'];
+const date=d=>typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d)&&Number.isFinite(Date.parse(d))&&new Date(d).toISOString().slice(0,10)===d;
+const refs=v=>Array.isArray(v)&&v.length>0&&v.every(x=>typeof x==='string'&&x.trim());
+const arrayRefs=v=>typeof v==='string'&&v.trim()?[v]:refs(v)?v:[];
+const hash=v=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
+const statusSet=new Set(['READY','PARTIAL','BLOCKED','NOT_TESTED','NOT_APPLICABLE']);
+const decision=(status,causes,evidence=[],window=null,nextStep=null)=>({status,causes:[...new Set(causes)],evidence:arrayRefs(evidence),window,nextStep});
+const missing=(cause='PRODUCT_INTEGRATION_MISSING')=>decision('NOT_TESTED',[cause],[],null,'Supply actual function-specific evidence for this listing.');
+const numeric=v=>typeof v==='number'&&Number.isFinite(v);
+function rowsOf(value){return Array.isArray(value)?value:Array.isArray(value?.listings)?value.listings:[];}
+function byId(value,id){return rowsOf(value).find(r=>r.listingId===id)||value?.[id]||null;}
+function certified(row,h,cert,asOf){return !!h&&Array.isArray(h.bars)&&cert?.schemaVersion==='europe-history-certification-1.0.0'&&cert.listingId===row.listingId&&cert.securityId===row.securityId&&cert.isin===row.isin&&cert.mic===row.mic&&cert.asOf===asOf&&cert.inputSeriesHash===hash(h.bars);}
+function historyFacts(row,h,asOf){
+ if(!h)return {state:'MISSING',causes:['MISSING_HISTORY'],bars:0,first:null,last:null,inputSeriesHash:null};
+ const bars=Array.isArray(h.bars)?h.bars:Array.isArray(h.points)?h.points.map(p=>({date:p[0],close:p[1]})):[];
+ const causes=[];let previous=null;
+ if(h.isin!==row.isin||h.mic!==row.mic||h.currency!==row.tradingCurrency||h.quoteUnit!==row.quoteUnit)causes.push('MAPPING_ERROR');
+ if(!bars.length)causes.push('MISSING_HISTORY');
+ for(const b of bars){
+  if(!date(b?.date)||b.date>asOf||previous&&b.date<=previous||!numeric(b?.close)||b.close<=0)causes.push('PROVIDER_DATA_DEFECT');
+  if(date(b?.date))previous=b.date;
+  if(['open','high','low'].every(k=>b?.[k]!==undefined&&b[k]!==null)&&(!['open','high','low'].every(k=>numeric(b[k])&&b[k]>0)||b.high<Math.max(b.open,b.close,b.low)||b.low>Math.min(b.open,b.close,b.high)))causes.push('PROVIDER_DATA_DEFECT');
+ }
+ if(!arrayRefs(h.sourceEvidence).length||!h.apiVersion||!h.source)causes.push('PROVIDER_PROVENANCE_UNVERIFIED');
+ return {state:causes.length?'INVALID':'AVAILABLE',causes:[...new Set(causes)],bars:bars.length,first:bars[0]?.date||null,last:bars.at(-1)?.date||null,
+  inputSeriesHash:Array.isArray(h.bars)?hash(h.bars):null,basis:h.adjustmentStatus?.priceSeriesType||'UNKNOWN',retrievedAt:h.retrievedAt||null,source:h.source||h.provider||null,apiVersion:h.apiVersion||null,
+  currency:h.currency||null,quoteUnit:h.quoteUnit||null,latestClose:causes.length?null:bars.at(-1)?.close??null,barsForEvaluator:bars};
+}
+function freshness(facts,cert,certMatches){
+ const f=certMatches?cert.freshness:null;
+ if(facts.state==='MISSING')return {status:'MISSING',cause:'MISSING_HISTORY',latestDate:null,expectedLastSession:null,dataKind:'EOD'};
+ if(facts.state==='INVALID')return {status:'INVALID',cause:facts.causes[0],latestDate:facts.last,expectedLastSession:null,dataKind:'EOD'};
+ if(!f||!refs(f.evidence)||!date(f.expectedLastSession)||f.latestDate!==facts.last)return {status:'MISSING',cause:cert&&!certMatches?'CERTIFICATION_INPUT_DRIFT':'MISSING_CALENDAR_BASIS',latestDate:facts.last,dataPresent:true,expectedLastSession:null,dataKind:'EOD'};
+ if(f.cause==='PROVIDER_DATA_DEFECT')return {status:'INVALID',cause:f.cause,latestDate:facts.last,expectedLastSession:f.expectedLastSession,evidence:f.evidence,dataKind:'EOD'};
+ if(f.status==='READY'&&facts.last===f.expectedLastSession)return {...f,status:'CURRENT',dataKind:'EOD'};
+ if((f.status==='DELAYED_EXPECTED'||f.freshness==='DELAYED_EXPECTED')&&refs(f.providerDeliveryEvidence)&&facts.last<f.expectedLastSession)return {...f,status:'DELAYED_EXPECTED',dataKind:'EOD'};
+ if(f.status==='PARTIAL'&&f.cause==='STALE_EOD'&&facts.last<f.expectedLastSession)return {...f,status:'STALE',dataKind:'EOD'};
+ return {status:'MISSING',cause:f.cause||'MISSING_CALENDAR_BASIS',latestDate:facts.last,dataPresent:true,expectedLastSession:null,dataKind:'EOD'};
+}
+function uiProof(input,id,name){
+ const p=input.integrationEvidence;
+ if(p?.passed!==true||p.fixture!==false||p.sourceSHA!==input.sourceSHA)return null;
+ const local=byId(p,id)?.functions?.[name];
+ if(local?.verified===true&&refs(local.evidence))return local;
+ if(!Array.isArray(p.listingIds)||!p.listingIds.includes(id)||!Array.isArray(p.products)||!p.products.includes(name)||!arrayRefs(p.evidence).length)return null;
+ return {verified:true,evidence:arrayRefs(p.evidence)};
+}
+function fundamental(row,value,asOf){
+ if(!value)return decision('BLOCKED',['MISSING_FUNDAMENTALS'],[],null,'Locate existing canonical company/period facts; do not start broad ingestion.');
+ if(!row.companyId||value.companyId!==row.companyId||value.verified!==true||!refs(value.evidence)||!date(value.period)||!date(value.filingDate)||value.period>value.filingDate||value.filingDate>asOf)return decision('BLOCKED',['MISSING_FUNDAMENTALS'],value.evidence||[],null,'Resolve exact Company, period, filing/PIT and reporting-currency provenance.');
+ return decision('PARTIAL',[],value.evidence,{period:value.period,filingDate:value.filingDate,asOf},'Validate individual factor, shares, valuation and FX contracts; matched facts are not a Quant score.');
+}
+function logoRecord(row,input){
+ const l=byId(input.logoStatus,row.listingId);
+ if(!l)return {listingId:row.listingId,status:'MISSING',evidence:[],asset:null,reason:'No supplied logo/asset evidence.'};
+ const known=['VERIFIED_LOGO','EXISTING_FALLBACK','SUSPECT_QUARANTINED','MISSING'].includes(l.status)?l.status:'MISSING';
+ const linked=l.listingId===row.listingId&&(!l.isin||l.isin===row.isin)&&(!l.referencedIssuerId||l.referencedIssuerId===row.referencedIssuerId)&&(!l.companyId||l.companyId===row.companyId);
+ const verified=known==='VERIFIED_LOGO'&&linked&&l.verified===true&&refs(l.evidence)&&typeof l.asset==='string'&&l.asset.length>0;
+ return {listingId:row.listingId,status:known==='VERIFIED_LOGO'&&!verified?'SUSPECT_QUARANTINED':known,verified,evidence:arrayRefs(l.evidence),asset:l.asset||null,reason:verified?null:l.reason||'Supplied asset is not fully verified for this listing/issuer.'};
+}
+export function aggregateDevelopment(input){
+ if(!input||!Array.isArray(input.listingMaps)||!date(input.asOf)||!/^[a-f0-9]{40}$/.test(input.sourceSHA||'')||typeof input.now!=='string'||!/(Z|[+-]\d\d:\d\d)$/.test(input.now)||!Number.isFinite(Date.parse(input.now)))throw Error('FIXED_PRIVATE_REPORT_INPUT_REQUIRED');
+ if(input.asOf>new Date(input.now).toISOString().slice(0,10))throw Error('FUTURE_DATA_STICHTAG_REJECTED');
+ const selected=new Map(),securityMIC=new Map();
+ for(const map of input.listingMaps){
+  if(map.schemaVersion!=='de-eu-listing-map-1.0.0'||!Array.isArray(map.listings)||!date(map.asOf)||map.asOf>input.asOf)throw Error('FROZEN_LISTING_MAP_REQUIRED');
+  for(const r of map.listings){
+   if(r.listingId!==Identity.listingIdFor(r)||r.securityId!==Identity.securityIdForISIN(r.isin))throw Error('CANONICAL_LISTING_IDENTITY_REQUIRED');
+   if(securityMIC.has(r.securityId)&&securityMIC.get(r.securityId)!==r.mic)throw Error('MULTIPLE_SELECTED_VENUES_FOR_SECURITY');securityMIC.set(r.securityId,r.mic);
+   if(selected.has(r.listingId)){const old=selected.get(r.listingId);if(old.isin!==r.isin||old.tradingCurrency!==r.tradingCurrency||old.providerSymbol!==r.providerSymbol)throw Error('DUPLICATE_LISTING_INPUT_CONFLICT');old.indexMemberships=[...new Set([...old.indexMemberships,...(r.indexMemberships||[])])].sort();continue;}
+   let referencedIssuerId=r.referencedIssuerId||null;try{if(!referencedIssuerId&&(r.issuerLEI||r.companyReference?.lei))referencedIssuerId=Identity.companyIdForLEI(r.issuerLEI||r.companyReference.lei);}catch{}
+   const companyProven=['VERIFIED_EXISTING_VU_COMPANY','EXACT_EXISTING_VU_COMPANY_LINK'].includes(r.companyAssociationStatus)&&refs(r.companyAssociationEvidence);
+   selected.set(r.listingId,{...r,companyId:companyProven?r.companyId||null:null,referencedIssuerId,indexMemberships:[...new Set(r.indexMemberships||[])].sort()});
+  }
+ }
+ const rows=[...selected.values()].sort((a,b)=>a.listingId.localeCompare(b.listingId)),readiness=[],ingestion=[],logos=[];
+ for(const row of rows){
+  const h=input.histories?.[row.listingId]||null,facts=historyFacts(row,h,input.asOf),cert=byId(input.certifications,row.listingId),certMatches=facts.state==='AVAILABLE'&&certified(row,h,cert,input.asOf),fresh=freshness(facts,cert,certMatches);
+  const sourceRefs=arrayRefs(h?.sourceEvidence),mappingRefs=arrayRefs(row.mappingSource),mapped=row.mappingStatus==='VERIFIED'&&mappingRefs.length>0;
+  const baseline=evaluateListingReadiness({listing:{...row,currency:row.tradingCurrency},history:h?{...h,bars:facts.barsForEvaluator||[],sourceEvidence:sourceRefs}:{},asOf:input.asOf,metadata:{identityVerified:mapped,identityEvidence:mappingRefs,currencyVerified:mapped&&!!row.tradingCurrency,currencyEvidence:mappingRefs,quoteUnit:row.quoteUnit,
+   rights:{privateDevelopment:true,publicDisplay:false,evidence:['User-authorized isolated private DE/EU consumer development']}}});
+  const functions=baseline.functions;
+  if(facts.state==='INVALID')functions.privateCloseChart=decision('BLOCKED',facts.causes,sourceRefs,{start:facts.first,end:facts.last,asOf:input.asOf},'Validate exact canonical history identity and source rows.');
+  for(const name of ['search','detail','watchlist','chart','screener']){
+   const proof=uiProof(input,row.listingId,name),causes=[...(mapped?[]:['MAPPING_ERROR']),...(proof?[]:['PRODUCT_INTEGRATION_MISSING'])];
+   if(name==='chart')causes.push(...functions.privateCloseChart.causes);
+   functions[name]=decision(causes.length?'BLOCKED':'READY',causes,proof?.evidence||[],{start:facts.first,end:facts.last,asOf:input.asOf},causes.length?'Validate the actual central product loader/UI on this listing.':null);
+  }
+  functions.latestEod=decision(fresh.status==='CURRENT'?'READY':['STALE','DELAYED_EXPECTED'].includes(fresh.status)?'PARTIAL':'BLOCKED',fresh.cause?[fresh.cause]:[],fresh.evidence||[],{start:facts.last,end:facts.last,asOf:input.asOf},fresh.status==='CURRENT'?null:'Obtain/verifiy the latest completed local session and documented provider delivery.');
+  functions.regionFilter=decision(mapped&&row.companyCountry?'READY':'PARTIAL',row.companyCountry?[]:['MAPPING_ERROR'],mappingRefs,null,'Issuer domicile, listing venue and membership remain separate attributes.');
+  functions.indexFilter=decision(mapped&&row.indexMemberships.length&&row.referenceEvidence?.length?'READY':row.indexMemberships.length?'PARTIAL':'NOT_APPLICABLE',row.indexMemberships.length&&!row.referenceEvidence?.length?['REFERENCE_UNRESOLVED']:[],row.referenceEvidence?.map(e=>e.membershipSourceId).filter(Boolean)||[]);
+  const fields={};
+  for(const name of TECHNICAL_FIELDS){
+   const f=certMatches?cert.technicalFields?.[name]:null;
+   if(!f)fields[name]=decision('NOT_TESTED',[cert&&!certMatches?'CERTIFICATION_INPUT_DRIFT':facts.state==='MISSING'?'MISSING_HISTORY':'UNKNOWN_ADJUSTMENT_BASIS'],[],null,'Use the existing central certification for this exact input history.');
+   else if(!statusSet.has(f.status)||f.inputSeriesHash!==facts.inputSeriesHash||f.status==='READY'&&(!refs(f.evidence)||!numeric(f.value)||!date(f.asOf)||f.asOf!==facts.last||cert.splitAdjustedOHLC?.status!=='READY'||cert.calendar?.status!=='READY'||name==='relativeVolume'&&cert.splitAdjustedVolume?.status!=='READY'))fields[name]=decision('BLOCKED',['CERTIFICATION_INPUT_DRIFT'],[],null,'Recompute central certification after input/evidence drift.');
+   else fields[name]={...f,nextStep:f.status==='READY'?null:f.nextStep||cert.nextStep||'Resolve the named field/window cause.'};
+  }
+  const fundamentalRecord=byId(input.fundamentalStatus,row.listingId)||(row.companyId?(input.fundamentalStatus?.[row.companyId]||rowsOf(input.fundamentalStatus).find(f=>f.companyId===row.companyId)):null);
+  functions.fundamentalInputs=fundamental(row,fundamentalRecord,input.asOf);
+  functions.quantFullScore=decision('BLOCKED',['PRODUCT_INTEGRATION_MISSING',...(functions.fundamentalInputs.status==='BLOCKED'?['MISSING_FUNDAMENTALS']:[]),'MISSING_FX_OR_SHARE_BASIS'],functions.fundamentalInputs.evidence,null,'Satisfy the unchanged full-factor and EU-population contract; never synthesize missing factors.');
+  functions.supertrader=decision('BLOCKED',['PRODUCT_INTEGRATION_MISSING',...(certMatches&&cert.splitAdjustedVolume?.status==='READY'?[]:['UNVERIFIED_VOLUME_BASIS']),'MISSING_FX_OR_SHARE_BASIS'],certMatches?cert.splitAdjustedVolume?.evidence||[]:[],null,'Supply unchanged strategy, verified monetary/liquidity, weekly-calendar and isolated EU context.');
+  const logo=logoRecord(row,input);logos.push(logo);functions.logo=decision(logo.verified?'READY':logo.status==='EXISTING_FALLBACK'?'PARTIAL':'BLOCKED',logo.verified?[]:['PRODUCT_INTEGRATION_MISSING'],logo.evidence,null,logo.reason);
+  const statusEvidence=(input.statuses||[]).flatMap(s=>s.decisions||s.listings||[]).filter(d=>d.listingId===row.listingId);
+  const {barsForEvaluator,...storedFacts}=facts;
+  ingestion.push({listingId:row.listingId,isin:row.isin,mic:row.mic,name:row.name,history:storedFacts,latest:{price:facts.latestClose??null,date:facts.last,currency:row.tradingCurrency,quoteUnit:row.quoteUnit,source:h?.source||null,apiVersion:h?.apiVersion||null,retrievedAt:h?.retrievedAt||null,dataKind:'EOD'},freshness:fresh,sourceEvidence:sourceRefs,statusEvidence,certificationInputMatched:certMatches});
+  readiness.push({listingId:row.listingId,securityId:row.securityId,companyId:row.companyId||null,referencedIssuerId:row.referencedIssuerId||null,isin:row.isin,mic:row.mic,asOf:input.asOf,functions,technicalFields:fields,inputSeriesHash:facts.inputSeriesHash});
+ }
+ const byReady=new Map(readiness.map(r=>[r.listingId,r])),byIngestion=new Map(ingestion.map(r=>[r.listingId,r])),byLogo=new Map(logos.map(r=>[r.listingId,r]));
+ const counts={selectedShareClasses:new Set(rows.map(r=>r.securityId)).size,selectedListings:rows.length,actualCompanyLinks:new Set(rows.map(r=>r.companyId).filter(Boolean)).size,referencedLEIIssuers:new Set(rows.map(r=>r.referencedIssuerId).filter(Boolean)).size,currentEod:ingestion.filter(r=>r.freshness.status==='CURRENT').length,verifiedLogos:logos.filter(l=>l.verified).length,fallbacks:logos.filter(l=>l.status==='EXISTING_FALLBACK').length,historyAvailable:ingestion.filter(r=>r.history.state==='AVAILABLE').length,searchReady:readiness.filter(r=>r.functions.search.status==='READY').length,watchlistReady:readiness.filter(r=>r.functions.watchlist.status==='READY').length,technicalListings:readiness.filter(r=>Object.values(r.technicalFields).some(f=>f.status==='READY')).length};
+ const indexKeys=[...new Set([...(input.referenceUniverse?.indexes||[]).map(i=>i.index),...rows.flatMap(r=>r.indexMemberships)])].sort();
+ const matrix=indexKeys.map(index=>{const rr=rows.filter(r=>r.indexMemberships.includes(index)),ref=input.referenceUniverse?.indexes?.find(i=>i.index===index);return {index,referenceCompleteness:ref?.referenceCompleteness||'REFERENCE_UNRESOLVED',referenceDate:ref?.referenceDate||null,effectiveDate:ref?.effectiveDate||null,targetShareClasses:ref?.observedMembers??rr.length,mappedLocalListings:rr.filter(r=>r.mappingStatus==='VERIFIED').length,currentEod:rr.filter(r=>byIngestion.get(r.listingId).freshness.status==='CURRENT').length,historyAvailable:rr.filter(r=>byIngestion.get(r.listingId).history.state==='AVAILABLE').length,verifiedLogos:rr.filter(r=>byLogo.get(r.listingId).verified).length,fallbacks:rr.filter(r=>byLogo.get(r.listingId).status==='EXISTING_FALLBACK').length,technicalListings:rr.filter(r=>Object.values(byReady.get(r.listingId).technicalFields).some(f=>f.status==='READY')).length,open:[...new Set(rr.flatMap(r=>Object.values(byReady.get(r.listingId).functions).flatMap(f=>f.causes)))]};});
+ const budget=input.budget||{},n=rows.filter(r=>r.providerSymbol).length,caPages=Number.isSafeInteger(input.refreshModel?.corporateActionPagesPerListingPerMonth)?input.refreshModel.corporateActionPagesPerListingPerMonth:null;
+ if(caPages!==null&&caPages<0)throw Error('INVALID_REFRESH_MODEL');
+ const baseMonthly=n*23,caMonthly=caPages===null?null:n*caPages,retryReserve=Math.ceil((baseMonthly+(caMonthly||0))*.1);
+ const common={asOf:input.asOf,generatedAt:input.now,sourceSHA:input.sourceSHA,privateDevelopment:true,publicDisplay:false};
+ const safeBudget=Object.fromEntries(['version','ledgerHash','authorizationRevisions','month','runId','requestsAttempted','estimatedCreditsConsumed','totalEstimatedCreditsConsumed','runLimit','targetLimit','monthlyCeiling','reserveCredits','creditsRemaining','semantics','accountEvidenceState','targetExceeded'].filter(k=>budget[k]!==undefined).map(k=>[k,budget[k]]));
+ const requestBudget={...common,schemaVersion:'europe-consumer-request-budget-1.0.0',actualSharedStatus:safeBudget,requestsAttempted:numeric(budget.requestsAttempted)?budget.requestsAttempted:null,requestsScope:budget.runId?'REPORTED_SHARED_LEDGER_RUN':'UNKNOWN',estimatedCreditsConsumed:numeric(budget.totalEstimatedCreditsConsumed)?budget.totalEstimatedCreditsConsumed:numeric(budget.estimatedCreditsConsumed)?budget.estimatedCreditsConsumed:null,hardCap:budget.runLimit??budget.hardLimit??null,targetLimit:budget.targetLimit??null,runAllowanceRemaining:budget.creditsRemaining??null,accountRemainingVerified:budget.accountEvidenceState==='CURRENT_VERIFIED_BOUND',accountRemainingCredits:budget.accountRemainingCredits??null,scheduleActivated:false,monthlyRefreshModel:{listings:n,modelSessions:22,eodPagesPerListingSession:1,metadataPagesPerListingMonth:1,baseEstimatedSymbolCredits:baseMonthly,corporateActionPagesPerListingMonth:caPages,corporateActionCredits:caMonthly,retriesReserveModel:retryReserve,estimatedTotalSymbolCredits:caMonthly===null?null:baseMonthly+caMonthly+retryReserve,estimatedMinimumWithRetryReserve:baseMonthly+retryReserve,assumptions:['One EOD page per listing and modeled session; overlap must fit that page.','Monthly metadata; separate action pages only if required.','10% conservative retry reserve is a model, not actual billing.','Actual calendar sessions, pagination and corrections can change cost.'],activation:'NOT_ACTIVATED'},newRequestsByReportGenerator:0};
+ const listingMap={...common,schemaVersion:'de-eu-listing-map-1.0.0',listings:rows,counts};
+ const reference={...common,schemaVersion:'europe-consumer-reference-universe-1.0.0',selectionSemantics:'CURRENT_SELECTION_NOT_HISTORICAL_PIT_UNIVERSE',originalReference:input.referenceUniverse||null,members:rows.map(r=>({isin:r.isin,securityId:r.securityId,name:r.name,indexMemberships:r.indexMemberships,companyCountry:r.companyCountry||null,mic:r.mic,tier:r.tier||null})),counts};
+ const summary={...common,schemaVersion:'europe-consumer-development-summary-1.0.0',counts,indexMatrix:matrix,publicDeployment:false,quantReady:0,supertraderReady:0,budget:requestBudget,missingProviderSymbols:rows.filter(r=>!r.providerSymbol).map(r=>({name:r.name,isin:r.isin,mic:r.mic})),limitations:['READY applies only to the named listing/field/window/evidence.','Current selection is not historical PIT index membership.','No USA, Tiingo, Vorsorge, rankings or running jobs are changed by this report; their regression evidence must be supplied separately.']};
+ const outputs={europe_consumer_reference_universe:reference,europe_consumer_listing_map:listingMap,europe_consumer_ingestion_status:{...common,schemaVersion:'europe-consumer-ingestion-status-1.0.0',listings:ingestion},europe_consumer_product_readiness:{...common,schemaVersion:'europe-consumer-product-readiness-1.0.0',listings:readiness},europe_consumer_logo_status:{...common,schemaVersion:'europe-consumer-logo-status-1.0.0',listings:logos},europe_consumer_request_budget:requestBudget,europe_consumer_development_summary:summary};
+ const columns=['name','isin','indices','issuerDomicile','exchange','currency','quoteUnit','lastPriceDate','historyStart','freshness','logo','chart','search','watchlist','screener','quant','supertrader','fundamentals'];
+ const q=v=>'"'+String(v??'').replaceAll('"','""')+'"';
+ const csv=columns.join(',')+'\n'+rows.map(r=>{const i=byIngestion.get(r.listingId),f=byReady.get(r.listingId).functions;return [r.name,r.isin,r.indexMemberships.join('|'),r.companyCountry,r.mic,r.tradingCurrency,r.quoteUnit,i.latest.date,i.history.first,i.freshness.status,byLogo.get(r.listingId).status,f.chart.status,f.search.status,f.watchlist.status,f.screener.status,f.quantFullScore.status,f.supertrader.status,f.fundamentalInputs.status].map(q).join(',');}).join('\n')+'\n';
+ const esc=v=>String(v??'unresolved').replaceAll('|','/').replaceAll('\n',' ');
+ const report=['|Index|Reference / date|Share classes|Local listing|Current EOD|History available|Logo verified / fallback|Technical listings|Open|','|---|---|---:|---:|---:|---:|---:|---:|---|',...matrix.map(r=>`|${esc(r.index)}|${esc(r.referenceCompleteness)} / ${esc(r.referenceDate)}|${r.targetShareClasses}|${r.mappedLocalListings}|${r.currentEod}|${r.historyAvailable}|${r.verifiedLogos} / ${r.fallbacks}|${r.technicalListings}|${esc(r.open.join(', '))}|`),'',`Private development: ${counts.selectedShareClasses} share classes, ${counts.selectedListings} selected listings, ${counts.actualCompanyLinks} actual VU Company links, ${counts.referencedLEIIssuers} separate LEI issuer references.`,`Search READY: ${counts.searchReady}; Watchlist READY: ${counts.watchlistReady}; current verified EOD: ${counts.currentEod}; listings with a certified technical field: ${counts.technicalListings}.`,'No public deployment, complete Quant score or SuperTrader readiness is granted.',`Reported shared-counter credits: ${requestBudget.estimatedCreditsConsumed??'unknown'}; hard cap: ${requestBudget.hardCap??'unknown'}; account balance is ${requestBudget.accountRemainingVerified?'bounded by supplied current evidence':'unverified'}. Monthly model minimum including retry reserve: ${requestBudget.monthlyRefreshModel.estimatedMinimumWithRetryReserve}; separate corporate-action pages ${caPages===null?'unresolved':caPages}. Schedule remains inactive.`,`Code SHA: ${input.sourceSHA}; fixed asOf: ${input.asOf}; generatedAt: ${input.now}.`,'Current selection is not a survivorship-bias-free historical index backtest.',''].join('\n');
+ return {outputs,csv,report,summary};
+}
+export function run(argv=process.argv.slice(2)){
+ const arg=n=>{const ix=argv.indexOf('--'+n);return ix<0?argv.find(a=>a.startsWith('--'+n+'='))?.slice(n.length+3):argv[ix+1];};
+ if(!arg('input')||!arg('out'))throw Error('EXPLICIT_PRIVATE_INPUT_OUTPUT_REQUIRED');
+ const inputPath=assertPrivateOutput(arg('input'),{allowCache:true}),out=assertPrivateOutput(arg('out'),{allowCache:true});
+ if(/(^|\/)(_site|dist|public|release)(\/|$)/.test(out))throw Error('PUBLIC_REPORT_OUTPUT_REJECTED');
+ const result=aggregateDevelopment(JSON.parse(readFileSync(inputPath,'utf8'))),files={...Object.fromEntries(Object.entries(result.outputs).map(([n,v])=>[n+'.json',JSON.stringify(v,null,2)+'\n'])),'europe_consumer_target_stocks.csv':result.csv,'EUROPE_CONSUMER_REPORT.md':result.report};
+ for(const n of Object.keys(files))rejectSymlinkAncestors(join(out,n));mkdirSync(out,{recursive:true,mode:0o700});chmodSync(out,0o700);
+ for(const [n,value]of Object.entries(files)){const p=join(out,n);writeFileSync(p,value,{mode:0o600});chmodSync(p,0o600);}
+ return result.summary.counts;
+}
+if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){try{console.log(JSON.stringify(run()));}catch(e){console.error(/^[A-Z0-9_]+$/.test(e.message)?e.message:'PRIVATE_REPORT_INPUT_FAILURE');process.exitCode=1;}}

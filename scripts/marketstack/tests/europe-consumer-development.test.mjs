@@ -1,0 +1,60 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {createRequire} from 'node:module';
+import {mkdtempSync,writeFileSync,readFileSync,statSync,symlinkSync,rmSync,readdirSync} from 'node:fs';
+import {join} from 'node:path';
+import {tmpdir} from 'node:os';
+import {aggregateDevelopment,run,TECHNICAL_FIELDS} from '../build-europe-consumer-development.mjs';
+const require=createRequire(import.meta.url),I=require('../../../core/identity.js'),SHA='a'.repeat(40),h=v=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
+const row=(extra={})=>({name:'Synthetic "issuer"',isin:'DE0007164600',mic:'XETR',securityId:I.securityIdForISIN('DE0007164600'),listingId:I.listingIdFor({isin:'DE0007164600',mic:'XETR'}),ticker:'SAP',mappingStatus:'VERIFIED',mappingSource:['synthetic-official-ISIN-MIC-currency'],tradingCurrency:'EUR',quoteUnit:'MAJOR',companyCountry:'DE',companyId:null,referencedIssuerId:I.companyIdForLEI('529900D6BF99LW9R2E68'),providerSymbol:'SAP.DE',indexMemberships:['DAX'],referenceEvidence:[{membershipSourceId:'synthetic-index-source'}],...extra});
+const history=r=>({source:'marketstack',provider:'marketstack',apiVersion:'v2',isin:r.isin,mic:r.mic,currency:'EUR',quoteUnit:'MAJOR',retrievedAt:'2026-10-06T18:00:00Z',sourceEvidence:['synthetic-source-response'],adjustmentStatus:{verified:false,priceSeriesType:'UNKNOWN'},bars:[{date:'2026-10-05',open:10,high:12,low:9,close:11,volume:100},{date:'2026-10-06',open:11,high:13,low:10,close:12,volume:0}]});
+const input=(extra={})=>({asOf:'2026-10-06',now:'2026-10-06T19:00:00Z',sourceSHA:SHA,listingMaps:[{schemaVersion:'de-eu-listing-map-1.0.0',asOf:'2026-10-06',listings:[row()]}],histories:{},statuses:[],...extra});
+const proof=r=>({passed:true,fixture:false,sourceSHA:SHA,listingIds:[r.listingId],products:['search','detail','chart','watchlist','screener'],evidence:['synthetic-actual-browser-proof']});
+function certificate(r,data){const hash=h(data.bars);return {schemaVersion:'europe-history-certification-1.0.0',listingId:r.listingId,securityId:r.securityId,isin:r.isin,mic:r.mic,asOf:'2026-10-06',inputSeriesHash:hash,calendar:{status:'READY',evidence:['synthetic-full-calendar']},splitAdjustedOHLC:{status:'READY',evidence:['synthetic-field-basis']},splitAdjustedVolume:{status:'BLOCKED',causes:['UNVERIFIED_VOLUME_BASIS']},freshness:{status:'READY',cause:null,latestDate:'2026-10-06',expectedLastSession:'2026-10-06',evidence:['synthetic-session-calendar']},technicalFields:{sma20:{status:'READY',causes:[],value:11.5,asOf:'2026-10-06',inputSeriesHash:hash,evidence:['synthetic-central-engine-result'],window:{from:'2026-10-05',to:'2026-10-06'}}}};}
+
+test('no input history or proof produces no fake current courses, UI, logos, factors or technical READY',()=>{
+ const out=aggregateDevelopment(input()),r=out.outputs.europe_consumer_product_readiness.listings[0];assert.equal(out.summary.counts.currentEod,0);assert.equal(out.summary.counts.searchReady,0);assert.equal(out.summary.counts.verifiedLogos,0);assert.equal(out.summary.counts.actualCompanyLinks,0);assert.equal(out.summary.counts.referencedLEIIssuers,1);
+ assert.equal(Object.keys(r.technicalFields).length,13);assert.ok(Object.values(r.technicalFields).every(f=>f.status!=='READY'));assert.equal(r.functions.fundamentalInputs.causes[0],'MISSING_FUNDAMENTALS');assert.equal(out.outputs.europe_consumer_ingestion_status.listings[0].latest.price,null);assert.equal(out.outputs.europe_consumer_request_budget.estimatedCreditsConsumed,null);
+});
+test('current price and central technical field require matching source hash and calendar certificate',()=>{
+ const r=row(),data=history(r),cert=certificate(r,data),out=aggregateDevelopment(input({histories:{[r.listingId]:data},certifications:{[r.listingId]:cert},integrationEvidence:proof(r)}));
+ assert.equal(out.summary.counts.currentEod,1);assert.equal(out.summary.counts.technicalListings,1);const rr=out.outputs.europe_consumer_product_readiness.listings[0];assert.equal(rr.technicalFields.sma20.status,'READY');assert.equal(rr.functions.chart.status,'READY');assert.equal(rr.functions.quantFullScore.status,'BLOCKED');assert.equal(rr.functions.supertrader.status,'BLOCKED');assert.equal(out.outputs.europe_consumer_ingestion_status.listings[0].latest.price,data.bars.at(-1).close);
+});
+test('certificate drift, identity/currency conflict or forged field readiness cannot certify data',()=>{
+ const r=row(),data=history(r),cert=certificate(r,data);
+ for(const extra of [{certifications:{[r.listingId]:{...cert,inputSeriesHash:'old'}}},{histories:{[r.listingId]:{...data,mic:'XNYS'}}},{certifications:{[r.listingId]:{...cert,splitAdjustedOHLC:{status:'BLOCKED'}}}},{certifications:{[r.listingId]:{...cert,technicalFields:{sma20:{...cert.technicalFields.sma20,inputSeriesHash:'forged'}}}}}]){
+  const out=aggregateDevelopment(input({histories:{[r.listingId]:data},certifications:{[r.listingId]:cert},integrationEvidence:proof(r),...extra}));assert.equal(out.summary.counts.technicalListings,0);
+  if(extra.histories)assert.equal(out.outputs.europe_consumer_product_readiness.listings[0].functions.chart.status,'BLOCKED');
+ }
+});
+test('uncertified old history has missing freshness evidence, not guessed calendar-day stale/current',()=>{
+ const r=row(),data=history(r);data.bars=data.bars.slice(0,1);const out=aggregateDevelopment(input({histories:{[r.listingId]:data}}));assert.equal(out.outputs.europe_consumer_ingestion_status.listings[0].freshness.status,'MISSING');assert.equal(out.outputs.europe_consumer_ingestion_status.listings[0].freshness.cause,'MISSING_CALENDAR_BASIS');
+ const cert=certificate(r,data);cert.freshness={status:'PARTIAL',cause:'STALE_EOD',latestDate:'2026-10-05',expectedLastSession:'2026-10-06',evidence:['synthetic-calendar']};assert.equal(aggregateDevelopment(input({histories:{[r.listingId]:data},certifications:{[r.listingId]:cert}})).outputs.europe_consumer_ingestion_status.listings[0].freshness.status,'STALE');
+ cert.freshness.status='DELAYED_EXPECTED';assert.equal(aggregateDevelopment(input({histories:{[r.listingId]:data},certifications:{[r.listingId]:cert}})).outputs.europe_consumer_ingestion_status.listings[0].freshness.status,'MISSING');cert.freshness.providerDeliveryEvidence=['synthetic-provider-delivery-window'];assert.equal(aggregateDevelopment(input({histories:{[r.listingId]:data},certifications:{[r.listingId]:cert}})).outputs.europe_consumer_ingestion_status.listings[0].freshness.status,'DELAYED_EXPECTED');
+});
+test('only actual evidence for exact IDs/code revision grants Search/Watchlist, independently of Quant/history',()=>{
+ const r=row();const good=aggregateDevelopment(input({integrationEvidence:proof(r)}));assert.equal(good.summary.counts.searchReady,1);assert.equal(good.summary.counts.watchlistReady,1);assert.equal(good.outputs.europe_consumer_product_readiness.listings[0].functions.chart.status,'BLOCKED');
+ for(const change of [{fixture:true},{sourceSHA:'b'.repeat(40)},{listingIds:[]},{passed:false},{products:['detail']}])assert.equal(aggregateDevelopment(input({integrationEvidence:{...proof(r),...change}})).summary.counts.searchReady,0);
+});
+test('LEI references never become actual VU Companies; canonical fundamentals stay separate from prices',()=>{
+ const r=row({companyId:I.companyIdForLEI('529900D6BF99LW9R2E68')}),out=aggregateDevelopment(input({listingMaps:[{schemaVersion:'de-eu-listing-map-1.0.0',asOf:'2026-10-06',listings:[r]}]}));assert.equal(out.summary.counts.actualCompanyLinks,0);
+ const existing=row({companyId:'iss_cik_0001000184',companyAssociationStatus:'VERIFIED_EXISTING_VU_COMPANY',companyAssociationEvidence:['synthetic-exact-existing-company-proof']});const f={companyId:existing.companyId,verified:true,period:'2025-12-31',filingDate:'2026-02-01',evidence:['synthetic-canonical-facts']};const yes=aggregateDevelopment(input({listingMaps:[{schemaVersion:'de-eu-listing-map-1.0.0',asOf:'2026-10-06',listings:[existing]}],fundamentalStatus:{[existing.listingId]:f}}));assert.equal(yes.summary.counts.actualCompanyLinks,1);assert.equal(yes.outputs.europe_consumer_product_readiness.listings[0].functions.fundamentalInputs.status,'PARTIAL');assert.equal(yes.outputs.europe_consumer_product_readiness.listings[0].functions.quantFullScore.status,'BLOCKED');
+});
+test('duplicate identical listings deduplicate; conflicting currency or selected MIC fails closed',()=>{
+ const one=input();one.listingMaps.push(structuredClone(one.listingMaps[0]));assert.equal(aggregateDevelopment(one).summary.counts.selectedListings,1);one.listingMaps[1].listings[0].tradingCurrency='USD';assert.throws(()=>aggregateDevelopment(one),/DUPLICATE_LISTING_INPUT_CONFLICT/);
+ const other=input();other.listingMaps.push({...other.listingMaps[0],listings:[row({mic:'XFRA',listingId:I.listingIdFor({isin:'DE0007164600',mic:'XFRA'})})]});assert.throws(()=>aggregateDevelopment(other),/MULTIPLE_SELECTED_VENUES_FOR_SECURITY/);
+});
+test('budget uses actual shared counter once, unknown balance remains unknown and monthly model never activates',()=>{
+ const out=aggregateDevelopment(input({budget:{runId:'actual-shared',requestsAttempted:12,estimatedCreditsConsumed:13,totalEstimatedCreditsConsumed:99,runLimit:20000,targetLimit:15000,creditsRemaining:19901,accountEvidenceState:'UNKNOWN_USER_AUTHORIZED_DETERMINISTIC_COUNTER'},refreshModel:{corporateActionPagesPerListingPerMonth:0}}));const b=out.outputs.europe_consumer_request_budget;assert.equal(b.estimatedCreditsConsumed,99);assert.equal(b.requestsAttempted,12);assert.equal(b.accountRemainingCredits,null);assert.equal(b.accountRemainingVerified,false);assert.equal(b.hardCap,20000);assert.equal(b.scheduleActivated,false);assert.equal(b.monthlyRefreshModel.estimatedTotalSymbolCredits,26);
+});
+test('logo verification needs exact issuer/listing/asset evidence; fallback is not a verified logo',()=>{
+ const r=row(),base={listingId:r.listingId,status:'VERIFIED_LOGO',asset:'/synthetic-logo.png',evidence:['synthetic-loaded-asset'],verified:true};assert.equal(aggregateDevelopment(input({logoStatus:[base]})).summary.counts.verifiedLogos,1);assert.equal(aggregateDevelopment(input({logoStatus:[{...base,isin:'DE000BASF111'}]})).summary.counts.verifiedLogos,0);assert.equal(aggregateDevelopment(input({logoStatus:[{...base,status:'EXISTING_FALLBACK'}]})).summary.counts.verifiedLogos,0);
+});
+test('repeat aggregation is deterministic and CSV correctly quotes actual target metadata',()=>{
+ const one=aggregateDevelopment(input());assert.deepEqual(one,aggregateDevelopment(input()));assert.ok(one.csv.includes('"Synthetic ""issuer"""'));assert.ok(one.report.startsWith('|Index|'));assert.equal(Object.keys(one.outputs).length,7);
+});
+test('CLI requires private input/output, writes six data reports plus summary/CSV/Markdown with private permissions',()=>{
+ assert.throws(()=>run([]),/EXPLICIT_PRIVATE_INPUT_OUTPUT_REQUIRED/);const root=mkdtempSync(join(tmpdir(),'eu-report-test-'));
+ try{const source=join(root,'input.json'),out=join(root,'out');writeFileSync(source,JSON.stringify(input()));assert.equal(run(['--input',source,'--out',out]).selectedListings,1);assert.equal(readdirSync(out).length,9);assert.equal(statSync(join(out,'europe_consumer_ingestion_status.json')).mode&0o777,0o600);assert.equal(statSync(out).mode&0o777,0o700);symlinkSync(out,join(root,'link'));assert.throws(()=>run(['--input',source,'--out',join(root,'link')]),/SYMLINK_REJECTED/);assert.throws(()=>run(['--input',source,'--out',join(root,'public')]),/PUBLIC_REPORT_OUTPUT_REJECTED/);assert.equal(JSON.parse(readFileSync(join(out,'europe_consumer_request_budget.json'))).scheduleActivated,false);}finally{rmSync(root,{recursive:true,force:true});}
+});
