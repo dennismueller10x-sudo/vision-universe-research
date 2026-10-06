@@ -96,3 +96,14 @@ test('core domicile can be copied from exact independent GLEIF reference without
  const yes=aggregateDevelopment(input({listingMaps:[{schemaVersion:'de-eu-listing-map-1.0.0',asOf:'2026-10-06',listings:[r]}]}));assert.equal(yes.outputs.europe_consumer_listing_map.listings[0].companyCountry,'DE');assert.equal(yes.summary.counts.actualCompanyLinks,0);
  const bad=structuredClone(r);bad.companyReference.evidence={};assert.equal(aggregateDevelopment(input({listingMaps:[{schemaVersion:'de-eu-listing-map-1.0.0',asOf:'2026-10-06',listings:[bad]}]})).outputs.europe_consumer_listing_map.listings[0].companyCountry,null);
 });
+
+test('all-company producer with null Company IDs binds only exact referenced issuers: two verified and 161 fallbacks',()=>{
+ const reference=row().referencedIssuerId;
+ const targetRows=Array.from({length:163},(_,i)=>{const prefix='DE'+String(i+1).padStart(9,'0');const isin=Array.from({length:10},(_,n)=>prefix+n).find(s=>I.normalizeISIN(s));return row({isin,listingId:I.listingIdFor({isin,mic:'XETR'}),securityId:I.securityIdForISIN(isin),referencedIssuerId:reference,companyId:null});});
+ const security=r=>({isin:r.isin,securityId:r.securityId,listingId:r.listingId,mic:r.mic});
+ const rows=targetRows.map((r,i)=>({companyId:null,referencedIssuerId:reference,securities:[security(r)],canonicalStatus:i<2?'VERIFIED_LOGO':'EXISTING_FALLBACK',asset:i<2?'files/synthetic-'+i+'.png':null,logo:{companyId:reference,status:i<2?'VERIFIED_LOGO':'EXISTING_FALLBACK'}}));
+ const companies=targetRows.slice(0,2).map(r=>({companyId:null,referencedIssuerId:reference,securities:[security(r)],issuerEvidence:{url:'https://example.test/issuer',path:'/private/issuer.json',sha256:'a'.repeat(64)},domainEvidence:{url:'https://example.test/stock',path:'/private/domain.html',sha256:'b'.repeat(64)}}));
+ const logoEvidence={companies,reviewed:{companies:{[reference]:'c'.repeat(40)}},assetLoads:rows.slice(0,2).map(r=>({companyId:null,referencedIssuerId:reference,asset:r.asset,loaded:true,sha1:'c'.repeat(40),evidence:['synthetic-exact-asset-load']}))};
+ const report=aggregateDevelopment(input({listingMaps:[{schemaVersion:'de-eu-listing-map-1.0.0',asOf:'2026-10-06',listings:targetRows}],logoStatus:{rows},logoEvidence}));assert.equal(report.summary.counts.verifiedLogos,2);assert.equal(report.summary.counts.fallbacks,161);assert.equal(report.summary.counts.actualCompanyLinks,0);assert.ok(report.outputs.europe_consumer_logo_status.listings.every(l=>l.status!=='SUSPECT_QUARANTINED'));
+ const wrong=structuredClone(rows);wrong[0].logo.companyId='iss_lei_WRONG';const attack=aggregateDevelopment(input({listingMaps:[{schemaVersion:'de-eu-listing-map-1.0.0',asOf:'2026-10-06',listings:targetRows}],logoStatus:{rows:wrong},logoEvidence}));assert.equal(attack.summary.counts.verifiedLogos,1);assert.equal(attack.outputs.europe_consumer_logo_status.listings.find(l=>l.listingId===targetRows[0].listingId).status,'SUSPECT_QUARANTINED');
+});

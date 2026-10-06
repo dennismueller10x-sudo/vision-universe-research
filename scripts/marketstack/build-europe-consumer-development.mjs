@@ -77,14 +77,15 @@ function logoRecord(row,input){
  const literal=Array.isArray(input.logoStatus?.rows)?input.logoStatus.rows.find(l=>l.securities?.some(s=>s.listingId===row.listingId)):null;
  const l=literal||byId(input.logoStatus,row.listingId),fallback={listingId:row.listingId,status:'EXISTING_FALLBACK',verified:false,evidence:[],asset:null,reason:'Existing central fallback; no exact issuer and loaded-asset proof supplied.'};
  if(!l)return fallback;
+ const issuerId=l.companyId||l.referencedIssuerId||null;
  const supplied=l.canonicalStatus||l.status,known=['VERIFIED_LOGO','EXISTING_FALLBACK','SUSPECT_QUARANTINED','MISSING'].includes(supplied)?supplied:'EXISTING_FALLBACK';
  const exactSecurity=s=>s?.listingId===row.listingId&&s.securityId===row.securityId&&s.isin===row.isin&&s.mic===row.mic;
- const linked=literal?l.securities.some(exactSecurity)&&[row.companyId,row.referencedIssuerId].filter(Boolean).includes(l.companyId):l.listingId===row.listingId&&l.isin===row.isin&&l.referencedIssuerId===row.referencedIssuerId;
- const company=input.logoEvidence?.companies?.find(c=>c.companyId===l.companyId&&c.securities?.some(exactSecurity));
+ const linked=literal?l.securities.some(exactSecurity)&&!!issuerId&&[row.companyId,row.referencedIssuerId].filter(Boolean).includes(issuerId)&&(!l.logo?.companyId||l.logo.companyId===issuerId):l.listingId===row.listingId&&l.isin===row.isin&&l.referencedIssuerId===row.referencedIssuerId;
+ const company=input.logoEvidence?.companies?.find(c=>(c.companyId||c.referencedIssuerId)===issuerId&&c.securities?.some(exactSecurity));
  const proof=e=>typeof e?.path==='string'&&/^[a-f0-9]{64}$/.test(e.sha256||'')&&typeof e.url==='string'&&e.url.startsWith('https://');
  const issuerProven=literal?!!company&&proof(company.issuerEvidence)&&proof(company.domainEvidence):l.issuerVerified===true&&refs(l.issuerEvidence);
  const asset=typeof l.asset==='string'?l.asset:null;
- const loaded=(input.logoEvidence?.assetLoads||[]).find(a=>a.companyId===l.companyId&&a.asset===asset&&a.loaded===true&&refs(a.evidence)&&/^[a-f0-9]{40}$/.test(a.sha1||'')&&input.logoEvidence?.reviewed?.companies?.[l.companyId]===a.sha1);
+ const loaded=(input.logoEvidence?.assetLoads||[]).find(a=>(a.companyId||a.referencedIssuerId)===issuerId&&a.asset===asset&&a.loaded===true&&refs(a.evidence)&&/^[a-f0-9]{40}$/.test(a.sha1||'')&&input.logoEvidence?.reviewed?.companies?.[issuerId]===a.sha1);
  const flatLoaded=!literal&&l.assetLoad?.loaded===true&&l.assetLoad.asset===asset&&refs(l.assetLoad.evidence);
  const verified=known==='VERIFIED_LOGO'&&linked&&issuerProven&&!!asset&&(!!loaded||flatLoaded);
  const evidence=[...arrayRefs(l.evidence),...arrayRefs(loaded?.evidence),...arrayRefs(l.assetLoad?.evidence),...(company?[company.issuerEvidence?.path,company.domainEvidence?.path].filter(Boolean):arrayRefs(l.issuerEvidence))];
