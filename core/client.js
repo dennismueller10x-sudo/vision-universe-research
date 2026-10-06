@@ -299,7 +299,9 @@
             price.date > d.dataAsOf || !Number.isFinite(price.close) || price.close <= 0 || price.kind !== "EOD_CLOSE"))
           return unavailable("LOCAL_SCREENER_PRICE_INVALID", src);
         for (var field of Object.values(row.fields)) if (!field || (field.status === "READY" &&
-            (!Number.isFinite(field.value) || !Array.isArray(field.evidence) || !field.evidence.length || !validDay(field.asOf))))
+            (!price || !Number.isFinite(field.value) || !Array.isArray(field.evidence) || !field.evidence.length || !validDay(field.asOf) ||
+             field.asOf > d.dataAsOf || field.asOf !== price.date || !/^[a-f0-9]{64}$/.test(field.inputSeriesHash || "") ||
+             !field.window || !validDay(field.window.from) || !validDay(field.window.to) || field.window.from > field.window.to || field.window.to !== field.asOf)))
           return unavailable("LOCAL_SCREENER_FIELD_INVALID", src);
       }
       var wanted = new Set(selected.data.listings.map(function (r) { return r.listingId; }));

@@ -28,7 +28,7 @@ test('consumer projection rejects US identity, currency contamination and unevid
  const r={...row,listingId:I.listingIdFor(row),securityId:I.securityIdForISIN(row.isin)};
  const d={schemaVersion:'de-eu-directory-1.0.0',privateDevelopment:true,referenceAsOf:'2026-10-06',dataAsOf:'2026-10-06',listings:[r]};
  const projection={schemaVersion:'de-eu-screener-1.0.0',privateDevelopment:true,publicDisplay:false,referenceAsOf:d.referenceAsOf,dataAsOf:d.dataAsOf,listings:[{...r,price:null,fields:{}}]};
- for(const patch of [{securityId:'ref_SAP'},{price:{listingId:r.listingId,securityId:r.securityId,mic:'XETR',currency:'USD',quoteUnit:'MAJOR',date:'2026-10-02',close:1,kind:'EOD_CLOSE'}},{fields:{sma200:{status:'READY',value:0,evidence:[],asOf:'2026-10-02'}}}]){
+ for(const patch of [{securityId:'ref_SAP'},{price:{listingId:r.listingId,securityId:r.securityId,mic:'XETR',currency:'USD',quoteUnit:'MAJOR',date:'2026-10-02',close:1,kind:'EOD_CLOSE'}},{fields:{sma200:{status:'READY',value:0,evidence:[],asOf:'2026-10-02'}}},{fields:{sma200:{status:'READY',value:200,evidence:['TEST_ENGINE'],asOf:'2027-01-01',inputSeriesHash:'a'.repeat(64),window:{from:'2026-10-01',to:'2027-01-01'}}}}]){
   const c=Core.create({load:async p=>p===Core.PATHS.localListings()?d:{...projection,listings:[{...projection.listings[0],...patch}]}});
   assert.equal((await c.getListingScreener()).state,'UNAVAILABLE');
  }

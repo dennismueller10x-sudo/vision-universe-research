@@ -3,6 +3,7 @@ import {mkdirSync,writeFileSync,existsSync,readFileSync,renameSync,mkdtempSync,r
 import {resolve,dirname,join,sep} from 'node:path';
 import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
 import {assertPrivateOutput,rejectSymlinkAncestors} from './private-output.mjs';
 const require=createRequire(import.meta.url),Identity=require('../../core/identity.js'),Published=require('../../quant/engines/published-close.js'),Core=require('../../core/client.js');
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
@@ -39,6 +40,11 @@ export function materialize({rows,histories={},asOf,referenceAsOf=asOf,expectedS
  out=resolve(out);if(!disabled)assertPrivateOutput(out);else rejectSymlinkAncestors(out);
  const d=directory(disabled?[]:rows,referenceAsOf,asOf),series={};
  for(const r of d.listings)if(histories[r.listingId])series[r.listingId]=closeSeries(r,histories[r.listingId],{asOf,expectedSession:expectedSessions[r.mic]||null});
+ for(const r of d.listings)for(const field of Object.values(technicalFields[r.listingId]||{}))if(field.status==='READY'){
+  const s=series[r.listingId],h=histories[r.listingId],hash=h?.bars&&createHash('sha256').update(JSON.stringify(h.bars)).digest('hex');
+  if(!s||!hash||field.inputSeriesHash!==hash||!Number.isFinite(field.value)||!Array.isArray(field.evidence)||!field.evidence.length||
+   field.asOf!==s.asOf||!day(field.window?.from)||!day(field.window?.to)||field.window.to!==s.asOf||field.window.from>s.asOf||field.window.from<s.points[0][0])throw Error('TECHNICAL_INPUT_EVIDENCE_MISMATCH');
+ }
  const target=join(out,'core/data/de-eu');rejectSymlinkAncestors(target);rejectSymlinkAncestors(target+'.previous');mkdirSync(dirname(target),{recursive:true});
  const stage=mkdtempSync(join(dirname(target),'.de-eu-stage-'));
  const write=(p,v)=>{mkdirSync(dirname(p),{recursive:true});writeFileSync(p,JSON.stringify(v)+'\n');};
