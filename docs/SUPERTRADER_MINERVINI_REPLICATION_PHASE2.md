@@ -315,9 +315,53 @@ Vollständig in `MINERVINI-DATA-MAPPING.json`.
 
 Auch „High-Fidelity Adaptation“ ist nicht gedeckt, weil die Gesamt-Fidelity LOW ist.
 
-## 9. Red-Team-Review (Lead, vor dem Freeze)
+## 9. Red-Team-Review (vor dem Freeze)
 
-Abschnitt 9 wird nach Abschluss des Reviews ergänzt.
+**Zu widerlegende Aussage:** „Diese Engine bildet die öffentlich rekonstruierbare Minervini-Methode so originalgetreu ab, wie es mit den verfügbaren Daten möglich ist.“
+
+### 9.1 Code-Red-Team
+
+Ein unabhängiger adversarialer Prüflauf mit eigenen Reproduktionsskripten fand 7 Befunde. Alle sind behoben und durch Regressionstests MR-T-RT-* gesichert.
+
+| # | Befund | Schwere | Behebung |
+|---|---|---|---|
+| 1 | Stückelungseinheit invertiert (close/rawClose statt rawClose/close). Folge: spätere Splits falsch gestückelt, Titel mit späterem Reverse-Split fielen still heraus (Survivorship-artig) | hoch | Einheit korrigiert; Stückelung zusätzlich am Ausführungstag (MR-T-RT-UNIT) |
+| 2 | Fehlende Split-Historie vor der Vorjahres-Einreichung wurde als Fundamentalurteil verbucht | mittel | Bewusst konservativ beibehalten (keine Annahme „kein Split“), jetzt als Datengrund MR-PIT-01 / `PIT_SPLIT_HISTORY_UNKNOWN` ausgewiesen. **Folge für die Messung:** In den ersten Monaten jedes Fensters gibt es kaum Setups (Kursvorlauf nur 1 Jahr). |
+| 3 | Dividende auch bei Kauf am Ex-Tag gutgeschrieben | niedrig–mittel | nur ab dem Tag nach dem Einstieg (MR-T-RT-DIVIDEND-ENTRY-DAY) |
+| 4 | Fehlende Eröffnung am Ausbruchstag brach den Lauf ab | niedrig, schwer | Füllung am Pivot (MR-T-RT-NAN-OPEN) |
+| 5 | Währung einer SEC-Reihe: USD auch als kleine Minderheit bevorzugt | niedrig | häufigste Einheit, USD nur bei Gleichstand (MR-T-RT-UNIT-MAJORITY) |
+| 6 | Periodenlängen der SEC-Extraktion als Konstanten außerhalb des Regelbuchs | Hard Gate | `pit.quarterDays`, `pit.yearDays` ins Regelbuch. Kalenderkonstanten (365,25 Tage), Gleitkomma-Toleranzen und die Messstückzahl der Signalmessung sind keine Strategiewerte und im Code kommentiert. |
+| 7 | Delisting am Einstiegstag in der Signalmessung als „offen“ gebucht | niedrig | als Delisting gebucht (MR-T-RT-SIGNAL-DELIST) |
+| – | Order nach einer Datenlücke Tage später ohne Neubewertung ausgeführt (Verdacht) | – | Order verfällt, wenn der nächste Balken nicht der nächste Kalendertag ist (MR-T-RT-ORDER-GAP) |
+
+**Bestätigt korrekt durch den Prüflauf:**
+- **Kausalität:** `scanSegment` auf voller gegen abgeschnittener Reihe, 0 Abweichungen.
+- **Split-Richtung:** 2:1 und 1:10 korrekt.
+- **Buchungsidentität:** 200 Zufallswelten, Endkapital = Start + Summe der Trade-Ergebnisse, Bargeld nie negativ.
+- **Ausstiegslogik:** Stop vor Ziel, Gap-Behandlung, nur aufwärts nachgezogen.
+- **SEC-Extraktion:** Q4-Ableitung, Erstmeldung vor Änderung, Bruttogewinn-Sichtbarkeit.
+
+### 9.2 Quellen-Red-Team (Lead)
+
+| Prüfpunkt | Ergebnis |
+|---|---|
+| Fremdregeln | Volumen ≥ 1,4× (O'Neil), Ausstieg unter SMA50 mit Volumen, Indexfilter, 5-Sitzungen-Sperre, alphabetische Auswahl, `PORTFOLIO_DEFAULTS`: alle entfernt. Test MR-T-NO-FOREIGN-RULES. Keine Regel mit FOREIGN_RULE oder UNRESOLVED wirkt. |
+| CAN SLIM statt Minervini | Nicht übernommen: 25 % EPS (O'Neils C; 3.0.0 lag damit näher an O'Neil als an Minervini), jährliches EPS-Wachstum (A), institutionelle Sponsorship (I) als Ersatz, Marktrichtung (M) als Indexfilter, Ausbruchsvolumen 40–50 %. Die übernommenen Fundamentalregeln (20 %, Beschleunigung, Umsatz, Code 33, Margen) haben Minervini-Fundstellen. |
+| Versteckte Defaults | Alle 40 strategiebestimmenden Werte im Regelbuch; Proxy wirft bei unbekanntem Namen; Tests auf `??`/`\|\|`-Zahlen und Default-Parameter. |
+| Falsch interpretierte Quellen | 1,25 % jetzt primär belegt. „Sell half“ primär belegt; die 3R-Kopplung ist als VU-Formalisierung gekennzeichnet. Der SMA50-Einzelfall wurde nicht verallgemeinert. Zeitstopp ohne Zahl, also nicht umgesetzt. |
+| Lookahead | Setup am Schluss t, Order für t+1. RS-Querschnitt am Tag t. Reservierung aus dem Vortagesstand; Verkaufserlöse erst ab d+1. Volumenbestätigung ist zum Kaufzeitpunkt unbekannt und wird deshalb nur protokolliert. |
+| SEC-Timing | Einreichung < Handelstag. Erstmeldung je Periode. Abgeleitete Werte sichtbar ab der späteren Einreichung. Split-Bereinigung nach ADR-002. Frischeprüfung. Tests MR-T-PIT-*. |
+| Sizing | 1,25 % / 25 % primär. Nach einem Gap kann das Risiko je Trade bis etwa 2,5 % steigen (Stop höchstens 10 % unter der Füllung bei höchstens 25 % Gewicht). Das liegt innerhalb von Minervinis Höchstwert. |
+| Generische VU-Portfoliologik | eigener Simulator; Messrahmen offen als VU_OWN in Schicht C |
+| Exit | nur Minervini-Gründe; Lücken (Zeitstopp, Klimax, 20-Tage-Linie) offen ausgewiesen |
+| VCP-Parameter | Keine Zickzack-Schwelle. Basisdauer und Kontraktionszahl aus Quellen. Volumen < 1,0 × SMA50 nach Quellenbezug. Die Zerlegung ist als VU-Formalisierung markiert. |
+
+**Ergebnis.** Die Aussage hält mit drei offen ausgewiesenen Einschränkungen:
+1. Mehrere belegte Regeln sind mangels Daten oder Zahl nicht reproduzierbar (Abschnitt 6 und 7).
+2. Der VCP und der Verkauf in die Stärke sind VU-Formalisierungen.
+3. Die Fidelity reicht nicht für den Namen „Replication“ (Abschnitt 8).
+
+Eine Fremdregel, ein versteckter Default oder ein Lookahead wurde nach den Korrekturen nicht gefunden. **Red Team bestanden → Freeze freigegeben.**
 
 ## 10. Fidelity Freeze
 
