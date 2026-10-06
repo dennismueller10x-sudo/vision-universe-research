@@ -111133,5 +111133,99 @@
     "provider": "GCS",
     "bootstrapValidatedAt": "2026-10-06",
     "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://arraytechinc.com/",
+      "https://ir.arraytechinc.com/",
+      "https://ir.arraytechinc.com/rss/events.xml"
+    ],
+    "companyId": "iss_cik_0001820721",
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.arraytechinc.com/shareholder-services/rss-feeds",
+      "officialSite": "https://arraytechinc.com/",
+      "validItems": 10
+    },
+    "provider": "GCS",
+    "verified": true,
+    "priority": 1,
+    "active": true,
+    "intervalHours": 12,
+    "url": "https://ir.arraytechinc.com/rss/events.xml",
+    "sourceId": "590f131866f78d433b7d9efb",
+    "format": "RSS_EVENTS",
+    "lastVerified": "2026-10-06T03:49:47Z",
+    "type": "IR_EVENTS",
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://arraytechinc.com/",
+      "https://ir.arraytechinc.com/",
+      "https://ir.arraytechinc.com/rss/news-releases.xml"
+    ],
+    "companyId": "iss_cik_0001820721",
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.arraytechinc.com/shareholder-services/rss-feeds",
+      "officialSite": "https://arraytechinc.com/",
+      "validItems": 10
+    },
+    "provider": "GCS",
+    "verified": true,
+    "priority": 1,
+    "active": true,
+    "intervalHours": 6,
+    "url": "https://ir.arraytechinc.com/rss/news-releases.xml",
+    "sourceId": "bc5c2ef51ed2c2c7213d573d",
+    "format": "RSS",
+    "lastVerified": "2026-10-06T03:49:47Z",
+    "type": "IR_FEED",
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://arraytechinc.com/",
+      "https://ir.arraytechinc.com/",
+      "https://ir.arraytechinc.com/news-events/investor-calendar"
+    ],
+    "companyId": "iss_cik_0001820721",
+    "verificationEvidence": "LINKED_BY_VERIFIED_IR_PAGE",
+    "provider": "GCS",
+    "verified": true,
+    "active": true,
+    "intervalHours": 12,
+    "url": "https://ir.arraytechinc.com/news-events/investor-calendar",
+    "sourceId": "c4c2255d1f583acb1bda2e09",
+    "lastVerified": "2026-10-06T03:49:47Z",
+    "type": "IR_EVENTS",
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "allowedSites": [
+      "https://tryhard.me/",
+      "https://tryhard.me/",
+      "https://tryhard.me/"
+    ],
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "companyId": "iss_cik_0002044241",
+    "verificationEvidence": {
+      "apiRoot": "https://tryhard.me/wp-json/",
+      "linkedFrom": "https://tryhard.me/",
+      "method": "ADVERTISED_WORDPRESS_REST_METADATA_CONTRACT"
+    },
+    "provider": "WORDPRESS",
+    "verified": true,
+    "active": true,
+    "intervalHours": 4,
+    "url": "https://tryhard.me/wp-json/wp/v2/posts?_fields=date_gmt%2Clink%2Ctitle.rendered&context=view&order=desc&orderby=date&per_page=20",
+    "sourceId": "c87c1f61b23243dad6714efe",
+    "format": "WORDPRESS_REST_NEWS",
+    "lastVerified": "2026-10-06T03:49:47Z",
+    "type": "IR_FEED",
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
   }
 ]
