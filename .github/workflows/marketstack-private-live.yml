@@ -23,7 +23,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
+          # The encrypted request approves its immediate parent code commit.
+          # Two commits prove that binding without downloading data history.
+          fetch-depth: 2
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
