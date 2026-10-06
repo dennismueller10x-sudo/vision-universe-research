@@ -24,7 +24,11 @@ import { STORE_KEY as EVENTS_STORE_KEY } from '../../data-layer/sec/build-sec-ev
 import { sicAt } from '../../data-layer/sec/industry-sic.mjs';
 import { EV, EVENT } from '../../data-layer/sec/earnings-events.mjs';
 import { industryRecord } from './industry-record.mjs';
-import { verifyFreeze } from './freeze.mjs';
+import { verifyFreeze, FREEZE_PATH } from './freeze.mjs';
+import { RULEBOOK } from './params.mjs';
+import { buildParamTable, paramAccessor, P as P2A } from '../minervini/params.mjs';
+import { simulatePortfolio as simulate2A } from '../minervini/portfolio-sim.mjs';
+import { exposureDiagnostics, cashAttribution, exitRuleProvenance, postExitDiagnostics, forwardReturns, publicDiagnostics, publicExitCounts } from './diagnostics.mjs';
 import ENGINE, { CLASSIFICATION } from './engine.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -50,6 +54,29 @@ export function releasesDuringHold(events, entryDate, exitDate) {
 }
 // Mindestabdeckung des Datenlayers (Anteil CIKs ohne Abruffehler); sonst kein Messlauf (fail closed).
 export const MIN_LAYER_COVERAGE = 0.99;
+
+// 1.0.0-Vergleich: 1.1-Simulation mit den Stufenwerten von 1.0.0 (Startstufe 50 %, Gewicht 25 %). Alle anderen Parameter
+// sind identisch (MR11-T-PARAMS-DELTA). Gleichheit mit der eingefrorenen 2A-Simulation wird im selben Lauf geprueft.
+export function params10Equivalent() {
+  const rb = JSON.parse(JSON.stringify(RULEBOOK));
+  const pf2 = rb.rules.find((r) => r.id === 'MR-PF-02').formalization.parameters;
+  pf2['pf.initialExposureCeiling'].value = P2A['pf.initialExposureCeiling'];
+  pf2['pf.initialMaxPositionPct'].value = P2A['size.maxPositionPct'];
+  return paramAccessor(buildParamTable(rb));
+}
+
+// Diagnose eines Portfoliolaufs (Exposure, Bargeldgruende, Entwicklung nach dem Ausstieg).
+function portfolioDiagnostics(run, days, segById, Pv, provenanceOf) {
+  const exits = [];
+  for (const t of run.trades) {
+    if (t.kind !== 'EXIT') continue;
+    const s = segById.get(t.segId), last = t.exits[t.exits.length - 1];
+    const exitIndex = s.date.indexOf(t.exitDate);
+    if (exitIndex < 0) continue;
+    exits.push({ seg: t.segId, exitIndex, exitPrice: last.price, entryPrice: t.entryBase, finalRule: last.ruleId, partial: t.exits.some((x) => x.ruleId === 'MR-EXIT-02') });
+  }
+  return { exposure: exposureDiagnostics(run.curve), cash: cashAttribution(days, run.curve, Pv), postExit: postExitDiagnostics(exits, segById, provenanceOf) };
+}
 
 async function main() {
   const argv = process.argv.slice(2);
@@ -78,6 +105,9 @@ async function main() {
   const ebuf = await driver.get(mine.seriesPrefix + EVENTS_STORE_KEY);
   if (!ebuf) { console.error(`SEC-Datenlayer ${EVENTS_STORE_KEY} fehlt (erst Modus sec-events laufen lassen).`); process.exit(3); }
   const ev = JSON.parse(zlib.gunzipSync(ebuf).toString('utf8'));
+  const frozen = JSON.parse(fs.readFileSync(FREEZE_PATH, 'utf8'));
+  const wantBuild = frozen.dataBuilds?.[L.WINDOW_NAME]?.commit;
+  if (!LIMIT && (!wantBuild || ev.commit !== wantBuild)) { console.error(`Datenlayer stammt nicht aus dem im Freeze festgehaltenen Bau (${ev.commit} statt ${wantBuild}).`); process.exit(3); }
   if (!ev.stats || !(ev.stats.ciks > 0) || (ev.stats.ciks - ev.stats.errors) / ev.stats.ciks < MIN_LAYER_COVERAGE) { console.error('SEC-Datenlayer unvollstaendig oder ohne Statistik (neu bauen).'); process.exit(3); }
   const cikOf = (segId) => ev.listingCik[segId.split('#')[0]] || null;
   const dataOf = (segId) => { const c = cikOf(segId); return c ? ev.byCik[c] || null : null; };
@@ -101,7 +131,11 @@ async function main() {
       const s = segmentOf(seg, a, scan);
       portfolioSegs.push(s);
       for (const t of scan.setups.keys()) setupDates.add(a.date[t]);
-      for (const x of simulateSignals(s, P)) if (x.entryDate >= W.from && x.entryDate <= W.to) signals.push(x);
+      for (const x of simulateSignals(s, P)) if (x.entryDate >= W.from && x.entryDate <= W.to) {
+        const su = s.setups.get(x.entryIndex - 1);
+        const entryPrice = Number.isFinite(s.open[x.entryIndex]) ? Math.max(s.open[x.entryIndex], su.pivot) : su.pivot;
+        signals.push({ ...x, seg: s.id, entryPrice });
+      }
     }
     if (++k % 1000 === 0) log(`Titel ${k}/${segs.length}`);
   }
@@ -130,7 +164,18 @@ async function main() {
   }
 
   const cal = calendar.filter((d) => d >= W.from && d <= W.to);
-  const run = simulatePortfolio(portfolioSegs, cal, P);
+  const days11 = [], days10 = [];
+  const run = simulatePortfolio(portfolioSegs, cal, P, { onDay: (d) => days11.push(d) });
+  const P10 = params10Equivalent();
+  const run10 = simulatePortfolio(portfolioSegs, cal, P10, { onDay: (d) => days10.push(d) });
+  const run2A = simulate2A(portfolioSegs, cal, P2A);
+  const equivalentTo2A = JSON.stringify(run10.trades) === JSON.stringify(run2A.trades) && JSON.stringify(run10.curve.map(({ stage, ...c }) => c)) === JSON.stringify(run2A.curve);
+  if (!equivalentTo2A) log('WARNUNG: 1.0-Vergleichslauf weicht von der eingefrorenen 2A-Simulation ab');
+  const segById = new Map(portfolioSegs.map((s) => [s.id, s]));
+  const provenanceOf = exitRuleProvenance(RULEBOOK);
+  const diag11 = portfolioDiagnostics(run, days11, segById, P, provenanceOf), diag10 = portfolioDiagnostics(run10, days10, segById, P10, provenanceOf);
+  const sigExits = signals.filter((x) => !x.open).map((x) => { const s = segById.get(x.seg); return { seg: x.seg, exitIndex: x.exitIndex, exitPrice: s.close[x.exitIndex], entryPrice: x.entryPrice, finalRule: x.exits[x.exits.length - 1], partial: x.exits.includes('MR-EXIT-02') }; }).filter((x) => x.finalRule !== 'MR-EXE-04-DELIST');
+  const signalDiag = { forward: forwardReturns(signals, segById, new Map(spyTR.map((p) => [p.date, p.value]))), postExitCloseRef: postExitDiagnostics(sigExits, segById, provenanceOf) };
   const spyByDate = new Map(spyTR.map((p) => [p.date, p.value]));
   const pf = curveStats(run.curve), spy = benchmarkStats(spyTR, cal[0], cal[cal.length - 1]);
   const stageDays = run.curve.reduce((m, c) => { m[c.stage] = (c.stage in m ? m[c.stage] : 0) + 1; return m; }, {});
@@ -158,6 +203,7 @@ async function main() {
     signals: { ...tradeStats(signals), vsSpySameHolding: signalVsSpy(signals, spyByDate) },
     spy,
     recorded: { industry: ind, earningsDuringHold: earn },
+    diagnostics: { v11: diag11, v10: diag10, signals: signalDiag, comparison10: { equivalentTo2A, portfolio: curveStats(run10.curve), trades: tradeStats(run10.trades), turnoverPerYear: turnover(run10.trades, run10.curve) } },
     tradesCompact,
     curve: run.curve,
   };
@@ -165,6 +211,15 @@ async function main() {
   const name = `minervini-adaptation-1.1-${L.WINDOW_NAME.toLowerCase()}${LIMIT ? '-smoke' : ''}`;
   fs.writeFileSync(path.join(OUT, `${name}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify(result))));
   log(`Trades Portfolio ${result.portfolio.trades.count}, Signale ${result.signals.count}; Branche bekannt ${ind.known}/${ind.setups} Setups; Ereignisdaten ${earn.withEventData}/${earn.trades} Trades`);
+  const pub = { v11: publicDiagnostics(diag11), v10: publicDiagnostics(diag10), exits11: publicExitCounts(diag11.postExit), exits10: publicExitCounts(diag10.postExit), signalExits: publicExitCounts(signalDiag.postExitCloseRef), signalsN: signals.length, trades11: run.trades.length, trades10: run10.trades.length, equivalentTo2A };
+  // Struktur-, Zaehl- und Anteilswerte (keine Renditen/Kurse) – oeffentlich; im Probelauf ebenfalls nur Technik.
+  log(`DIAGNOSE ${JSON.stringify(pub)}`);
+  if (!LIMIT) {
+    const p10 = curveStats(run10.curve), dir = (a, b) => (a > b ? 'hoeher' : 'niedriger');
+    log(`Richtung 1.1 vs 1.0: CAGR ${dir(pf.cagr, p10.cagr)}; Max Drawdown ${pf.maxDrawdown > p10.maxDrawdown ? 'kleiner' : 'groesser'}; Volatilitaet ${dir(pf.volatility, p10.volatility)}`);
+    const fw = signalDiag.forward;
+    log(`Richtung Signale vs SPY (Mittel/Median): ${Object.entries(fw).map(([h, v]) => `${h}T ${v.meanExcessVsSpy > 0 ? 'ueber' : 'unter'}/${v.medianExcessVsSpy > 0 ? 'ueber' : 'unter'} (Anteil ueber SPY ${v.shareAboveSpy === null ? '?' : Math.round(v.shareAboveSpy * 100)} %)`).join('; ')}`);
+  }
   if (!LIMIT) log(`Richtung: CAGR ${pf && spy ? (pf.cagr > spy.cagr ? 'ueber' : 'unter') : '?'} SPY; Max Drawdown ${pf && spy ? (pf.maxDrawdown > spy.maxDrawdown ? 'kleiner' : 'groesser') : '?'} als SPY; Signale im Mittel ${result.signals.vsSpySameHolding.meanExcess > 0 ? 'ueber' : 'unter'} SPY bei gleicher Haltedauer`);
   log(`verschluesselt: ${name}.sealed.json`);
 }

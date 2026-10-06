@@ -272,3 +272,91 @@ test('MR11-T-MARGIN-PERIOD: Marge nur bei gleichem Periodenende (Toleranz), Umsa
   assert.equal(marginsAt(fund, '2023-09-01', '2023-06-30', 14).gross.margin, null, 'Umsatz 0');
   assert.equal(quarterlyFirst([e('2023-01-01', '2023-03-31', 5, '2023-05-01', '10-K')], 'T').length, 1, 'Quartalswert aus einem 10-K zaehlt (Formular periodisch)');
 });
+
+// ---------------------------------------------------------------- Finalisierung: Diff, Artefakte, Diagnose
+import { strategyDiff } from '../replication/minervini-1.1/build-rulebook.mjs';
+import { buildSourceToCode, buildDataMapping, S2C_PATH, MAPPING_PATH } from '../replication/minervini-1.1/artifacts.mjs';
+import { exposureDiagnostics, classifyCashDay, cashAttribution, exitRuleProvenance, postExitDiagnostics, forwardReturns } from '../replication/minervini-1.1/diagnostics.mjs';
+import { params10Equivalent } from '../replication/minervini-1.1/measure.mjs';
+
+test('MR11-T-DIFF: jede Aenderung 1.0.0 -> 1.1.0 ist dokumentiert; nur MR-PF-02 aendert Verhalten; Leistung nie Entscheidungsgrund', () => {
+  const d = strategyDiff(RB2A, RULEBOOK);
+  for (const p of d.parameters) assert.ok(p.documentedIn, `${p.name} undokumentiert`);
+  for (const s of d.status) assert.ok(s.documentedIn, `${s.ruleId} undokumentiert`);
+  assert.deepEqual(d.behaviourChangingParameters.sort(), ['pf.initialExposureCeiling', 'pf.initialMaxPositionPct']);
+  for (const c of RULEBOOK.changes) { assert.equal(c.performanceUsedForDecision, false, c.ruleId); assert.ok(c.sourceConfidence && c.era, c.ruleId); }
+  assert.deepEqual(RULEBOOK.changes.filter((c) => c.strategyAffecting).map((c) => c.ruleId), ['MR-PF-02']);
+  const pf2 = RULEBOOK.rules.find((r) => r.id === 'MR-PF-02');
+  const vu = pf2.components.filter((c) => c.provenance === 'VU_FORMALIZATION');
+  assert.equal(vu.length, 2, 'Stufenwechsel und Rueckkehr sind VU-Formalisierung');
+  for (const c of vu) assert.match(c.note, /KEINE Minervini-Regel/);
+  const sepa12 = RULEBOOK.rules.find((r) => r.id === 'MR-SEPA-12');
+  assert.match(sepa12.formalization.text, /nicht Minervinis Branchentaxonomie|VU-FORMALISIERUNG/);
+  assert.match(sepa12.formalization.text, /Filtert nicht/);
+});
+
+test('MR11-T-ARTIFACTS: Source-to-Code 1.1.0 und Data Mapping 1.1.0 aktuell; jede Kette mit vorhandenem Test und exportierter Funktion', async () => {
+  const s2c = await buildSourceToCode();
+  assert.equal(fs.readFileSync(S2C_PATH, 'utf8'), JSON.stringify(s2c, null, 2) + '\n', 'artifacts.mjs --write');
+  assert.equal(fs.readFileSync(MAPPING_PATH, 'utf8'), JSON.stringify(buildDataMapping(), null, 2) + '\n');
+  for (const c of s2c.chains) { for (const t of c.tests) assert.ok(t.present, `${c.ruleId}: ${t.id}`); if (c.code.module) assert.equal(c.code.exported, true, c.ruleId); }
+  const gaps = buildDataMapping().gaps;
+  for (const k of ['Analystenschaetzungen', 'kommende', '13F', 'SIC', 'Intraday', 'IBD RS']) assert.ok(gaps.some((g) => g.item.includes(k)), k);
+  for (const g of gaps) assert.ok(['A', 'B', 'C'].includes(g.class), g.item);
+});
+
+test('MR11-T-SIM-HOOK: der Diagnose-Haken aendert kein Handelsverhalten; 1.0-Vergleichsparameter = 2A-Stufenwerte', () => {
+  const mk = () => { const a = seg('A', [100, 103, 110], { 0: { pivot: 101, stop: 97, baseStart: 0 } }, { delisted: true }); const b = seg('B', [50, 50, 50, 50, 55, 56], { 2: { pivot: 51, stop: 49.5, baseStart: 0 } }); b.open[3] = 50; b.high[3] = 52; return [a, b]; };
+  const days = [];
+  const w1 = mk(), w2 = mk();
+  const r1 = simulatePortfolio(w1, w1[1].date, P, { onDay: (d) => days.push(d) }), r2 = simulatePortfolio(w2, w2[1].date, P);
+  assert.deepEqual(r1.trades, r2.trades); assert.deepEqual(r1.curve, r2.curve);
+  assert.equal(days.length, w1[1].date.length);
+  const P10 = params10Equivalent();
+  assert.equal(P10['pf.initialExposureCeiling'], P2A['pf.initialExposureCeiling']); assert.equal(P10['pf.initialMaxPositionPct'], P2A['size.maxPositionPct']);
+  const w3 = mk(), w4 = mk();
+  assert.deepEqual(simulatePortfolio(w3, w3[1].date, P10).trades, simulate2A(w4, w4[1].date, P2A).trades);
+});
+
+test('MR11-T-DIAG-EXPOSURE / MR11-T-DIAG-CASH: Exposure-Verteilung und Bargeld nach dominanter Bindung', () => {
+  const curve = [0, 0.1, 0.3, 0.6, 0.9, 0.97].map((e, i) => ({ date: `d${i}`, exposure: e, positions: e > 0 ? 2 : 0, stage: i < 3 ? 'PILOT' : 'FULL' }));
+  const x = exposureDiagnostics(curve);
+  assert.deepEqual(x.buckets.map((b) => b.shareOfDays), [2 / 6, 1 / 6, 1 / 6, 2 / 6]);
+  assert.equal(x.shareNearlyFull, 1 / 6); assert.equal(x.positionsMedian, 2); assert.equal(x.stageShareOfDays.PILOT, 0.5);
+  const base = { stage: 'PILOT', ceiling: 0.25, maxPositionPct: 0.05, equity: 1e5, openValue: 0, cash: 1e5, openCount: 0, filled: 1 };
+  assert.equal(classifyCashDay({ ...base, rawOrders: 0, candidates: 0, reserved: [] }, P), 'NO_SIGNAL');
+  assert.equal(classifyCashDay({ ...base, rawOrders: 2, candidates: 0, reserved: [] }, P), 'OTHER_RULES');
+  assert.equal(classifyCashDay({ ...base, rawOrders: 2, candidates: 2, openValue: 24000, reserved: [{ shares: 9, price: 100, pivot: 100, stop: 97, unit: 1 }] }, P), 'START_EXPOSURE');
+  assert.equal(classifyCashDay({ ...base, rawOrders: 1, candidates: 1, openCount: 12, reserved: [] }, P), 'POSITION_COUNT');
+  assert.equal(classifyCashDay({ ...base, rawOrders: 1, candidates: 1, filled: 0, reserved: [{ shares: 49, price: 100.1, pivot: 100, stop: 97, unit: 1 }] }, P), 'NOT_TRIGGERED');
+  assert.equal(classifyCashDay({ ...base, rawOrders: 1, candidates: 1, reserved: [{ shares: 49, price: 100.1, pivot: 100, stop: 97, unit: 1 }] }, P), 'START_EXPOSURE', '5-%-Kappung');
+  const full = { ...base, stage: 'FULL', ceiling: 1, maxPositionPct: 0.25 };
+  assert.equal(classifyCashDay({ ...full, rawOrders: 1, candidates: 1, reserved: [{ shares: 100, price: 100.1, pivot: 100, stop: 90, unit: 1 }] }, P), 'RISK', '1,25 % / 10 % Stop = 12,5 % < 25 %');
+  assert.equal(classifyCashDay({ ...full, rawOrders: 1, candidates: 1, reserved: [{ shares: 249, price: 100.1, pivot: 100, stop: 97, unit: 1 }] }, P), 'POSITION_CAP');
+  const att = cashAttribution([{ ...base, date: 'd0', rawOrders: 0, candidates: 0, reserved: [] }, { ...full, date: 'd5', rawOrders: 1, candidates: 1, reserved: [{ shares: 100, price: 100.1, pivot: 100, stop: 90, unit: 1 }] }], curve, P);
+  assert.ok(Math.abs(att.groups.missingSignals - 1 / 1.03) < 1e-9); assert.ok(Math.abs(att.groups.risk - 0.03 / 1.03) < 1e-9);
+});
+
+test('MR11-T-DIAG-EXIT: Entwicklung nach dem Ausstieg je Regel und Herkunft; Fenster endet am Segmentende', () => {
+  const prov = exitRuleProvenance(RULEBOOK);
+  assert.equal(prov['MR-EXIT-03'], 'VU_FORMALIZATION', 'Trailing 50 % ist VU-Formalisierung');
+  assert.equal(prov['MR-EXIT-02'], 'VU_FORMALIZATION', 'Teilverkauf bei 3R: Ausloeser VU');
+  assert.equal(prov['MR-EXIT-01'], 'ORIGINAL'); assert.equal(prov['MR-RSK-02'], 'ORIGINAL');
+  const s = { date: ['a', 'b', 'c', 'd'], close: [100, 90, 130, 210], high: [101, 91, 131, 211] };
+  const pe = postExitDiagnostics([{ seg: 'S', exitIndex: 1, exitPrice: 90, entryPrice: 100, finalRule: 'MR-EXIT-03', partial: true }], new Map([['S', s]]), prov);
+  assert.deepEqual(pe.all.laterAboveExit, { 0.25: 1, 0.5: 1, 1: 1 }); assert.deepEqual(pe.all.laterAboveEntry, { 0.25: 1, 0.5: 1, 1: 1 });
+  assert.equal(pe.all.fullWindow, 0); assert.equal(pe.byProvenance.VU_FORMALIZATION.n, 1); assert.equal(pe.partialThenStopped.n, 1);
+  const fr = forwardReturns([{ seg: 'S', entryIndex: 0, entryPrice: 100 }], new Map([['S', s]]), new Map([['a', 1], ['b', 1]]));
+  assert.equal(fr[21].n, 0, 'Horizont jenseits der Reihe wird nicht gezaehlt');
+});
+
+test('MR11-T-MEASURE-FREEZE: Messung nur mit Freeze, unveraenderten gemeinsamen Bausteinen, festgehaltenem Datenbau und >= 99 % Abdeckung', async () => {
+  const src = read('scripts/supertrader/replication/minervini-1.1/measure.mjs');
+  for (const needle of ['verifyFreeze()', 'freeze.sharedChanged.length', 'dataBuilds?.[L.WINDOW_NAME]?.commit', 'MIN_LAYER_COVERAGE', 'equivalentTo2A', 'process.exit(3)']) assert.ok(src.includes(needle), needle);
+  const { MIN_LAYER_COVERAGE } = await import('../replication/minervini-1.1/measure.mjs');
+  assert.equal(MIN_LAYER_COVERAGE, 0.99);
+  const fz = await import('../replication/minervini-1.1/freeze.mjs');
+  const files = fz.engineFiles();
+  for (const f of [...fz.BUILDER_FILES.filter((x) => !x.includes('/validation/')), ...fz.MEASUREMENT_FILES]) assert.ok(files.includes(f), `${f} nicht im Code-Hash`);
+  for (const f of ['scripts/supertrader/engine/indicators.mjs', 'quant/engines/return-series.js', 'scripts/supertrader/validation/lib.mjs', 'scripts/supertrader/validation/analyze-methods.mjs']) assert.ok(fz.SHARED_DEPENDENCIES.includes(f), f);
+});

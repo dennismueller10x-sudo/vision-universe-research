@@ -64,7 +64,7 @@ export const REASSESS_2A = {
 // Ausdrueckliche Aenderungsliste Phase 2B -> Kandidat 1.1.0.
 export const CHANGES = [
   {
-    ruleId: 'MR-PF-02', kind: 'RULE_CHANGE', source: 'SRC-X-2022-07-18-EXPOSURE (primaer, LATER_PUBLIC) konkretisiert SRC-NOTES-WHB-2014-05-04 (25-50 %) am unteren Ende', newData: 'keine',
+    ruleId: 'MR-PF-02', kind: 'RULE_CHANGE', strategyAffecting: true, sourceConfidence: 'HIGH (Grundsatz: SRC-INT-STOCKOPEDIA-2018 im Volltext); Zahlen MEDIUM (ein eigener Beitrag, Suchindex)', era: 'LATER_PUBLIC (2022) innerhalb SEPA-PUBLISHED-2013-2022', performanceUsedForDecision: false, source: 'SRC-X-2022-07-18-EXPOSURE (primaer, LATER_PUBLIC) konkretisiert SRC-NOTES-WHB-2014-05-04 (25-50 %) am unteren Ende', newData: 'keine',
     old: 'Startphase: Exposure-Obergrenze 50 %, je Position bis 25 % (size.maxPositionPct)', new: 'Startphase: Exposure-Obergrenze 25 %, je Position hoechstens 5 % (pf.initialMaxPositionPct); nach einem Gewinn-Trade volle Stufe 100 % / 25 %, nach einem Verlust-Trade zurueck (Uebergang unveraendert VU_FORMALIZATION)',
     why: 'Primaerbeleg fuer die Zahlen der Startphase; widerspricht der Buchspanne nicht (Konflikt CF-06). Keine Messung beteiligt.',
     apply(r) {
@@ -80,10 +80,16 @@ export const CHANGES = [
       r.test = ['MR11-T-PF-STAGE', 'MR11-T-PF-STAGE-SIM'];
       r.implementationFidelity = 'MEDIUM';
       r.decision = 'Phase 2B: Startstufe nach Primaerbeleg 2022';
+      r.components = [
+        { part: 'Grundsatz progressive Exposure (nie 0 -> 100 %, erst bei Erfolg erhoehen, bei Misserfolg zurueck)', provenance: 'ORIGINAL', sources: ['SRC-INT-STOCKOPEDIA-2018', 'SRC-NOTES-WHB-2014-05-04'] },
+        { part: 'Startstufe 25 % Exposure, hoechstens 5 % je Position', provenance: 'ORIGINAL_INTERPRETATION', sources: ['SRC-X-2022-07-18-EXPOSURE'], note: 'Rechenbeispiel Minervinis' },
+        { part: 'Wechsel auf die volle Stufe (100 % / 25 %) nach EINEM gewinnbringenden abgeschlossenen Trade', provenance: 'VU_FORMALIZATION', sources: [], note: 'KEINE Minervini-Regel: Quelle sagt nur "erst bei Erfolg erhoehen"; Zwischenstufen und Ausloeser nicht oeffentlich beziffert' },
+        { part: 'Rueckkehr in die Startstufe nach einem verlustbringenden abgeschlossenen Trade', provenance: 'VU_FORMALIZATION', sources: [], note: 'KEINE Minervini-Regel: Quelle sagt nur "zurueckfahren, wenn die Trades nicht laufen"' },
+      ];
     },
   },
   {
-    ruleId: 'MR-SIZ-02', kind: 'PROVENANCE_CORRECTION', source: 'Konflikt CF-04: 25 % nur als Rechenbeispiel (SRC-X-2018-04-24) und Interviewnotizen; 50 % nur in Drittzitaten', newData: 'keine',
+    ruleId: 'MR-SIZ-02', kind: 'PROVENANCE_CORRECTION', strategyAffecting: false, sourceConfidence: 'MEDIUM', era: 'BOOK_ERA / LATER_PUBLIC', performanceUsedForDecision: false, source: 'Konflikt CF-04: 25 % nur als Rechenbeispiel (SRC-X-2018-04-24) und Interviewnotizen; 50 % nur in Drittzitaten', newData: 'keine',
     old: 'size.maxPositionPct 0,25 als ORIGINAL', new: 'size.maxPositionPct 0,25 als ORIGINAL_INTERPRETATION; gilt in der vollen Stufe (Startstufe: MR-PF-02)',
     why: 'Keine Primaerfundstelle nennt 25 % ausdruecklich als Obergrenze.',
     apply(r) {
@@ -93,7 +99,7 @@ export const CHANGES = [
     },
   },
   {
-    ruleId: 'MR-PF-01', kind: 'PROVENANCE_CORRECTION', source: 'Konflikt CF-05: SRC-X-2020-10-20 nennt "8, 12 or more" (keine Obergrenze)', newData: 'keine',
+    ruleId: 'MR-PF-01', kind: 'PROVENANCE_CORRECTION', strategyAffecting: false, sourceConfidence: 'MEDIUM', era: 'BOOK_ERA / LATER_PUBLIC', performanceUsedForDecision: false, source: 'Konflikt CF-05: SRC-X-2020-10-20 nennt "8, 12 or more" (keine Obergrenze)', newData: 'keine',
     old: 'pf.maxPositions 12 als ORIGINAL_INTERPRETATION', new: 'pf.maxPositions 12 als VU_FORMALIZATION',
     why: "'or more' ist keine Obergrenze; 12 ist eine VU-Wahl am oberen Ende der normalen Spanne.",
     apply(r) {
@@ -101,7 +107,7 @@ export const CHANGES = [
     },
   },
   {
-    ruleId: 'MR-SEPA-12', kind: 'DATA_AND_STATUS', source: 'SRC-SEC-HEADER-SIC (Daten); Regel: SRC-NOTES-WHB-2014-05-04', newData: 'SIC point-in-time je Einreichung (data-layer/sec/industry-sic.mjs, Speicher sec-events-sic-1)',
+    ruleId: 'MR-SEPA-12', kind: 'DATA_AND_STATUS', strategyAffecting: false, sourceConfidence: 'MEDIUM (Buchnotizen)', era: 'BOOK_ERA', performanceUsedForDecision: false, source: 'SRC-SEC-HEADER-SIC (Daten); Regel: SRC-NOTES-WHB-2014-05-04', newData: 'SIC point-in-time je Einreichung (data-layer/sec/industry-sic.mjs, Speicher sec-events-sic-1)',
     old: 'NOT_IMPLEMENTED, NOT_REPRODUCIBLE_WITH_CURRENT_DATA (nur heutige SIC)', new: 'RECORDED_ONLY: Rang des Titels in seiner SIC-Gruppe (point-in-time) nach VU-RS und Gruppenstaerke werden je Setup protokolliert, filtern nicht',
     why: "Die Daten sind jetzt point-in-time vorhanden. Kein Filter: Minervinis Branchen (vermutlich IBD-Gruppen) sind nicht oeffentlich abbildbar, SIC ist eine andere Taxonomie, und '4-5 fuehrende Sektoren' ist ohne Sektordefinition. Ein Gate waere eine VU-Taxonomie-Entscheidung mit Wirkung auf die Auswahl (Konflikt CF-12).",
     apply(r) {
@@ -123,7 +129,7 @@ export const CHANGES = [
     },
   },
   {
-    ruleId: 'MR-ERN-01', kind: 'DATA_DOCUMENTED', source: 'SRC-SEC-8K-ITEM202; Regel SRC-X-2017-10-25 (kanonisch in Aera 2013-2022), SRC-X-2024-EARNINGS (CURRENT_PUBLIC, nicht uebernommen)', newData: 'Ergebnis-Ereignisse 8-K Item 2.02 point-in-time (data-layer/sec/earnings-events.mjs)',
+    ruleId: 'MR-ERN-01', kind: 'DATA_DOCUMENTED', strategyAffecting: false, sourceConfidence: 'MEDIUM', era: 'LATER_PUBLIC (2017) kanonisch; CURRENT_PUBLIC (2024) nicht uebernommen', performanceUsedForDecision: false, source: 'SRC-SEC-8K-ITEM202; Regel SRC-X-2017-10-25 (kanonisch in Aera 2013-2022), SRC-X-2024-EARNINGS (CURRENT_PUBLIC, nicht uebernommen)', newData: 'Ergebnis-Ereignisse 8-K Item 2.02 point-in-time (data-layer/sec/earnings-events.mjs)',
     old: 'NOT_REPRODUCIBLE: Meldetermin fehlt', new: 'weiter NOT_REPRODUCIBLE: vergangene Termine sind jetzt point-in-time vorhanden, die Regel braucht den NAECHSTEN Termin; den kennen SEC-Daten nicht. Keine Fortschreibung aus Vorjahresterminen (Proxy).',
     why: 'Neue Daten aendern die Reproduzierbarkeit nicht; ehrlich ausgewiesen statt Proxy.',
     apply(r) {
@@ -133,17 +139,17 @@ export const CHANGES = [
     },
   },
   {
-    ruleId: 'MR-SEPA-07', kind: 'DATA_DOCUMENTED', source: 'Worker E/B: keine amtliche kostenlose Quelle fuer Erwartungen', newData: 'keine',
+    ruleId: 'MR-SEPA-07', kind: 'DATA_DOCUMENTED', strategyAffecting: false, sourceConfidence: 'MEDIUM', era: 'BOOK_ERA', performanceUsedForDecision: false, source: 'Worker E/B: keine amtliche kostenlose Quelle fuer Erwartungen', newData: 'keine',
     old: 'NOT_REPRODUCIBLE', new: 'NOT AVAILABLE FROM CURRENT OFFICIAL FREE SOURCES', why: 'Konsens und Ueberraschung sind Anbieterdaten; kein Proxy (Kurssprung am Meldetag).',
     apply(r) { r.availableData = 'NOT AVAILABLE FROM CURRENT OFFICIAL FREE SOURCES'; },
   },
   {
-    ruleId: 'MR-SEPA-08', kind: 'DATA_DOCUMENTED', source: 'Worker E/B', newData: 'keine',
+    ruleId: 'MR-SEPA-08', kind: 'DATA_DOCUMENTED', strategyAffecting: false, sourceConfidence: 'MEDIUM', era: 'BOOK_ERA', performanceUsedForDecision: false, source: 'Worker E/B', newData: 'keine',
     old: 'NOT_REPRODUCIBLE', new: 'NOT AVAILABLE FROM CURRENT OFFICIAL FREE SOURCES', why: 'Schaetzungsrevisionen sind Anbieterdaten.',
     apply(r) { r.availableData = 'NOT AVAILABLE FROM CURRENT OFFICIAL FREE SOURCES'; },
   },
   {
-    ruleId: 'MR-SEPA-11', kind: 'DATA_DOCUMENTED', source: 'Worker A/C: Minervini beschreibt institutionelle Nachfrage ueber Kurs-Volumen-Akkumulation; 13F-Zaehlung ist O\'Neils "I" (CAN SLIM)', newData: 'keine (13F bewusst nicht gebaut)',
+    ruleId: 'MR-SEPA-11', kind: 'DATA_DOCUMENTED', strategyAffecting: false, sourceConfidence: 'MEDIUM', era: 'BOOK_ERA', performanceUsedForDecision: false, source: 'Worker A/C: Minervini beschreibt institutionelle Nachfrage ueber Kurs-Volumen-Akkumulation; 13F-Zaehlung ist O\'Neils "I" (CAN SLIM)', newData: 'keine (13F bewusst nicht gebaut)',
     old: 'NOT_REPRODUCIBLE_WITH_CURRENT_DATA (13F dokumentiert)', new: 'DISCRETIONARY_NOT_FORMALIZED; 13F nicht als Minervini-Regel',
     why: '13F-Daten erst ab 2013Q2 strukturiert, bekannt erst ab Einreichung (bis 45 Tage nach Quartalsende), CUSIP-Zuordnung lizenzpflichtig; vor allem keine Minervini-Fundstelle fuer eine 13F-Regel.',
     apply(r) {
@@ -197,6 +203,16 @@ function rescore2A(rb2a) {
   return rules;
 }
 
+// Vollstaendiger Parameter- und Status-Diff 1.0.0 -> 1.1.0 (maschinell, damit keine Aenderung undokumentiert bleibt).
+export function strategyDiff(rb2a, rb11) {
+  const params = (rb) => Object.fromEntries(rb.rules.flatMap((r) => Object.entries(r.formalization.parameters).map(([k, v]) => [k, { ruleId: r.id, value: v.value, provenance: v.provenance }])));
+  const a = params(rb2a), b = params(rb11);
+  const parameters = [...new Set([...Object.keys(a), ...Object.keys(b)])].sort().filter((k) => JSON.stringify(a[k]) !== JSON.stringify(b[k])).map((k) => ({ name: k, ruleId: (b[k] || a[k]).ruleId, old: a[k] || null, new: b[k] || null, documentedIn: CHANGES.some((c) => c.ruleId === (b[k] || a[k]).ruleId) }));
+  const status = rb11.rules.map((r) => { const o = rb2a.rules.find((x) => x.id === r.id); return o.implementation.status !== r.implementation.status || o.provenanceClass !== r.provenanceClass || o.reproducibility !== r.reproducibility ? { ruleId: r.id, old: { status: o.implementation.status, provenance: o.provenanceClass, reproducibility: o.reproducibility }, new: { status: r.implementation.status, provenance: r.provenanceClass, reproducibility: r.reproducibility }, documentedIn: CHANGES.some((c) => c.ruleId === r.id) } : null; }).filter(Boolean);
+  const behaviour = parameters.filter((p) => p.old && p.new && JSON.stringify(p.old.value) !== JSON.stringify(p.new.value)).map((p) => p.name).concat(parameters.filter((p) => !p.old && p.new && p.ruleId !== 'MR-SEPA-12').map((p) => p.name));
+  return { parameters, status, behaviourChangingParameters: behaviour, note: 'Nur MR-PF-02 aendert Handelsverhalten; ind.* (MR-SEPA-12) wirkt nur im Protokoll. Leistung wurde fuer keine Entscheidung verwendet.' };
+}
+
 export function build() {
   const buf2a = fs.readFileSync(RULEBOOK_2A), rb2a = JSON.parse(buf2a);
   const freeze = JSON.parse(fs.readFileSync(FREEZE_2A, 'utf8'));
@@ -234,6 +250,7 @@ export function build() {
     gateAreas: { phase2AAsFrozen: gateAsFrozen, phase2ARescored: gateRescored, phase2B: gateCand, overall: { phase2AAsFrozen: overall(gateAsFrozen), phase2ARescored: overall(gateRescored), phase2B: overall(gateCand) } },
     rules: ruleRows,
     changes: rb11.changes,
+    strategyDiff: strategyDiff(rb2a, rb11),
     hardQuestion: {
       question: 'Hat Phase 2B die Fidelity tatsaechlich erhoeht?',
       improvedRulesVsRescored2A: improvedRules,

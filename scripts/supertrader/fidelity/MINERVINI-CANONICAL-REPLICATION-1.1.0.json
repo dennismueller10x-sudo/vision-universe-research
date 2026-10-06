@@ -2427,7 +2427,37 @@
       "r15Ref": "MIN-C-PF-02",
       "decision": "Phase 2B: Startstufe nach Primaerbeleg 2022",
       "sourceConfidence2A": "HIGH",
-      "implementationFidelity": "MEDIUM"
+      "implementationFidelity": "MEDIUM",
+      "components": [
+        {
+          "part": "Grundsatz progressive Exposure (nie 0 -> 100 %, erst bei Erfolg erhoehen, bei Misserfolg zurueck)",
+          "provenance": "ORIGINAL",
+          "sources": [
+            "SRC-INT-STOCKOPEDIA-2018",
+            "SRC-NOTES-WHB-2014-05-04"
+          ]
+        },
+        {
+          "part": "Startstufe 25 % Exposure, hoechstens 5 % je Position",
+          "provenance": "ORIGINAL_INTERPRETATION",
+          "sources": [
+            "SRC-X-2022-07-18-EXPOSURE"
+          ],
+          "note": "Rechenbeispiel Minervinis"
+        },
+        {
+          "part": "Wechsel auf die volle Stufe (100 % / 25 %) nach EINEM gewinnbringenden abgeschlossenen Trade",
+          "provenance": "VU_FORMALIZATION",
+          "sources": [],
+          "note": "KEINE Minervini-Regel: Quelle sagt nur \"erst bei Erfolg erhoehen\"; Zwischenstufen und Ausloeser nicht oeffentlich beziffert"
+        },
+        {
+          "part": "Rueckkehr in die Startstufe nach einem verlustbringenden abgeschlossenen Trade",
+          "provenance": "VU_FORMALIZATION",
+          "sources": [],
+          "note": "KEINE Minervini-Regel: Quelle sagt nur \"zurueckfahren, wenn die Trades nicht laufen\""
+        }
+      ]
     },
     {
       "id": "MR-PF-03",
@@ -3089,6 +3119,10 @@
     {
       "ruleId": "MR-PF-02",
       "kind": "RULE_CHANGE",
+      "strategyAffecting": true,
+      "sourceConfidence": "HIGH (Grundsatz: SRC-INT-STOCKOPEDIA-2018 im Volltext); Zahlen MEDIUM (ein eigener Beitrag, Suchindex)",
+      "era": "LATER_PUBLIC (2022) innerhalb SEPA-PUBLISHED-2013-2022",
+      "performanceUsedForDecision": false,
       "source": "SRC-X-2022-07-18-EXPOSURE (primaer, LATER_PUBLIC) konkretisiert SRC-NOTES-WHB-2014-05-04 (25-50 %) am unteren Ende",
       "newData": "keine",
       "old": "Startphase: Exposure-Obergrenze 50 %, je Position bis 25 % (size.maxPositionPct)",
@@ -3098,6 +3132,10 @@
     {
       "ruleId": "MR-SIZ-02",
       "kind": "PROVENANCE_CORRECTION",
+      "strategyAffecting": false,
+      "sourceConfidence": "MEDIUM",
+      "era": "BOOK_ERA / LATER_PUBLIC",
+      "performanceUsedForDecision": false,
       "source": "Konflikt CF-04: 25 % nur als Rechenbeispiel (SRC-X-2018-04-24) und Interviewnotizen; 50 % nur in Drittzitaten",
       "newData": "keine",
       "old": "size.maxPositionPct 0,25 als ORIGINAL",
@@ -3107,6 +3145,10 @@
     {
       "ruleId": "MR-PF-01",
       "kind": "PROVENANCE_CORRECTION",
+      "strategyAffecting": false,
+      "sourceConfidence": "MEDIUM",
+      "era": "BOOK_ERA / LATER_PUBLIC",
+      "performanceUsedForDecision": false,
       "source": "Konflikt CF-05: SRC-X-2020-10-20 nennt \"8, 12 or more\" (keine Obergrenze)",
       "newData": "keine",
       "old": "pf.maxPositions 12 als ORIGINAL_INTERPRETATION",
@@ -3116,6 +3158,10 @@
     {
       "ruleId": "MR-SEPA-12",
       "kind": "DATA_AND_STATUS",
+      "strategyAffecting": false,
+      "sourceConfidence": "MEDIUM (Buchnotizen)",
+      "era": "BOOK_ERA",
+      "performanceUsedForDecision": false,
       "source": "SRC-SEC-HEADER-SIC (Daten); Regel: SRC-NOTES-WHB-2014-05-04",
       "newData": "SIC point-in-time je Einreichung (data-layer/sec/industry-sic.mjs, Speicher sec-events-sic-1)",
       "old": "NOT_IMPLEMENTED, NOT_REPRODUCIBLE_WITH_CURRENT_DATA (nur heutige SIC)",
@@ -3125,6 +3171,10 @@
     {
       "ruleId": "MR-ERN-01",
       "kind": "DATA_DOCUMENTED",
+      "strategyAffecting": false,
+      "sourceConfidence": "MEDIUM",
+      "era": "LATER_PUBLIC (2017) kanonisch; CURRENT_PUBLIC (2024) nicht uebernommen",
+      "performanceUsedForDecision": false,
       "source": "SRC-SEC-8K-ITEM202; Regel SRC-X-2017-10-25 (kanonisch in Aera 2013-2022), SRC-X-2024-EARNINGS (CURRENT_PUBLIC, nicht uebernommen)",
       "newData": "Ergebnis-Ereignisse 8-K Item 2.02 point-in-time (data-layer/sec/earnings-events.mjs)",
       "old": "NOT_REPRODUCIBLE: Meldetermin fehlt",
@@ -3134,6 +3184,10 @@
     {
       "ruleId": "MR-SEPA-07",
       "kind": "DATA_DOCUMENTED",
+      "strategyAffecting": false,
+      "sourceConfidence": "MEDIUM",
+      "era": "BOOK_ERA",
+      "performanceUsedForDecision": false,
       "source": "Worker E/B: keine amtliche kostenlose Quelle fuer Erwartungen",
       "newData": "keine",
       "old": "NOT_REPRODUCIBLE",
@@ -3143,6 +3197,10 @@
     {
       "ruleId": "MR-SEPA-08",
       "kind": "DATA_DOCUMENTED",
+      "strategyAffecting": false,
+      "sourceConfidence": "MEDIUM",
+      "era": "BOOK_ERA",
+      "performanceUsedForDecision": false,
       "source": "Worker E/B",
       "newData": "keine",
       "old": "NOT_REPRODUCIBLE",
@@ -3152,6 +3210,10 @@
     {
       "ruleId": "MR-SEPA-11",
       "kind": "DATA_DOCUMENTED",
+      "strategyAffecting": false,
+      "sourceConfidence": "MEDIUM",
+      "era": "BOOK_ERA",
+      "performanceUsedForDecision": false,
       "source": "Worker A/C: Minervini beschreibt institutionelle Nachfrage ueber Kurs-Volumen-Akkumulation; 13F-Zaehlung ist O'Neils \"I\" (CAN SLIM)",
       "newData": "keine (13F bewusst nicht gebaut)",
       "old": "NOT_REPRODUCIBLE_WITH_CURRENT_DATA (13F dokumentiert)",

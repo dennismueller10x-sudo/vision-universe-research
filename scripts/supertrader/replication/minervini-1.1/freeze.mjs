@@ -46,6 +46,18 @@ export const REUSED_FILES = Object.freeze([
 ]);
 // Gemeinsame Bausteine anderer Produkte: nicht im Code-Hash (sonst blockiert jede fremde Aenderung die Tests), aber
 // measure.mjs bricht ab, wenn sich einer seit dem Freeze geaendert hat (fail closed, Red-Team M1).
+// Erzeuger des Datenlayers samt Modulen, deren Verhalten den gespeicherten Inhalt bestimmt.
+export const BUILDER_FILES = Object.freeze([
+  'scripts/supertrader/data-layer/sec/build-sec-events.mjs',
+  'scripts/supertrader/data-layer/sec/earnings-events.mjs',
+  'scripts/supertrader/data-layer/sec/industry-sic.mjs',
+  'scripts/supertrader/validation/sec-pit.mjs', // Schluessel der CIK-Quellen (PIT_KEY_R12, DELIST_KEY)
+]);
+export const MEASUREMENT_FILES = Object.freeze([
+  'scripts/supertrader/replication/minervini-1.1/measure.mjs',
+  'scripts/supertrader/replication/minervini-1.1/diagnostics.mjs',
+  'scripts/supertrader/replication/minervini/metrics.mjs',
+]);
 export const SHARED_DEPENDENCIES = Object.freeze([
   'scripts/supertrader/engine/indicators.mjs',
   'quant/engines/return-series.js',
@@ -111,6 +123,14 @@ async function main() {
   if (argv.includes('--check')) { const v = verifyFreeze(); console.log(JSON.stringify(v, null, 2)); process.exit(v.ok ? 0 : 1); }
   if (!argv.includes('--write')) { console.error('Aufruf: --check | --write --commit <sha>'); process.exit(2); }
   const i = argv.indexOf('--commit'); const commit = i >= 0 ? argv[i + 1] : null;
+  // Datenbauten je Fenster (Commit des Workflow-Laufs, der den Datenlayer mit dem eingefrorenen Builder erzeugt hat).
+  const arg = (k) => { const j = argv.indexOf(k); return j >= 0 ? argv[j + 1] : null; };
+  const dataBuilds = { DEV: { commit: arg('--data-dev'), run: arg('--run-dev') }, HOLDOUT: { commit: arg('--data-holdout'), run: arg('--run-holdout') } };
+  for (const [w, b] of Object.entries(dataBuilds)) if (!b.commit || !/^[0-9a-f]{40}$/.test(b.commit)) { console.error(`--data-${w.toLowerCase()} <volle sha> fehlt`); process.exit(2); }
+  // Der Builder darf sich zwischen Datenbau und Freeze nicht geaendert haben.
+  for (const b of Object.values(dataBuilds)) for (const f of BUILDER_FILES) {
+    const then = execFileSync('git', ['show', `${b.commit}:${f}`], { cwd: root }); if (sha(then) !== sha(fs.readFileSync(R(f)))) { console.error(`${f} seit dem Datenbau ${b.commit.slice(0, 9)} geaendert`); process.exit(2); }
+  }
   if (!commit || !/^[0-9a-f]{7,40}$/.test(commit)) { console.error('--commit <sha> fehlt'); process.exit(2); }
   const head = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
   if (!head.startsWith(commit)) { console.error(`--commit ${commit} ist nicht HEAD (${head.slice(0, 12)})`); process.exit(2); }
@@ -128,6 +148,11 @@ async function main() {
     codeHash: h.codeHash, codeFiles: h.files, sharedDependencies: h.shared,
     dataSchema: dataSchema(), dataSchemaHashes: h.dataSchemaHashes,
     delta: DELTA_REL, deltaHash: h.deltaHash,
+    cleanTree: true, timestamp: new Date().toISOString(),
+    builderHash: sha(BUILDER_FILES.map((f) => `${f}:${sha(fs.readFileSync(R(f)))}`).join('\n')), builderFiles: BUILDER_FILES,
+    measurementHash: sha(MEASUREMENT_FILES.map((f) => `${f}:${sha(fs.readFileSync(R(f)))}`).join('\n')), measurementFiles: MEASUREMENT_FILES,
+    dataBuilds,
+    fidelityMatrix: JSON.parse(fs.readFileSync(R(DELTA_REL), 'utf8')).areas.map(({ area, phase2AAsFrozen, phase2ARescored, phase2B }) => ({ area, phase2AAsFrozen, phase2ARescored, phase2B })),
     classification: { productClass: CLASSIFICATION.productClass, canonicalName: CLASSIFICATION.canonicalName, displayName: CLASSIFICATION.displayName, replicationClaimAllowed: CLASSIFICATION.replicationClaimAllowed, overallFidelity: CLASSIFICATION.overall, gateAreas: CLASSIFICATION.areas, reportAreas: reportAreas(), blockingReasons: CLASSIFICATION.blockingReasons },
     backtestPolicy: 'Erst nach diesem Freeze. Nur Messung im Rahmen von 2A; das Ergebnis aendert die Engine nicht. DEV und HOLDOUT sind GESEHENE DATEN.',
   };

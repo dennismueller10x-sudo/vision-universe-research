@@ -20,7 +20,8 @@ import { exposureStage, rankOrders, reserveOrdersStaged, wholeShares } from './p
 // segment: {id, date[], open[], high[], low[], close[], rawClose[], volume[], volAvg[], divAdj[], delisted, setups: Map(localIdx -> setup)}
 // rawClose dient nur der Stueckelung in ganze echte Aktien: unit = bereinigte Stueckzahl je Roh-Aktie = rawClose / close.
 // setup:   {pivot, stop, stopPct, baseStart, rsScore, rsPct, sepa, vcp}
-export function simulatePortfolio(segments, calendar, P, { recordSkipped = false } = {}) {
+// onDay (optional, nur Diagnose): erhaelt je Handelstag das Reservierungsprotokoll; aendert kein Verhalten (MR11-T-SIM-EQUIV).
+export function simulatePortfolio(segments, calendar, P, { recordSkipped = false, onDay = null } = {}) {
   requireP(P);
   const slip = P['exe.slippageBps'] / 1e4, comm = P['exe.commissionBps'] / 1e4;
   const segById = new Map(segments.map((s) => [s.id, s]));
@@ -77,6 +78,8 @@ export function simulatePortfolio(segments, calendar, P, { recordSkipped = false
     book.ordersSeen += cand.length;
     const reserved = reserveOrdersStaged(rankOrders(cand), { equity, openValue, openCount: positions.size, cash }, stage, P);
     book.reservedTotal += reserved.length;
+    const dayLog = onDay ? { date: D, stage: stage.stage, ceiling, maxPositionPct: stage.maxPositionPct, rawOrders: (ordersByDay.get(D) || []).length, candidates: cand.length, openCount: positions.size, equity, openValue, cash,
+      reserved: reserved.map((r) => ({ shares: r.shares, price: r.price, pivot: r.order.pivot, stop: r.order.stop, unit: r.order.unit })), filled: 0 } : null;
     if (recordSkipped) for (const o of cand) if (!reserved.some((r) => r.order === o)) skipped.push({ date: D, segId: o.segId });
     // 3. Bestehende Positionen
     const closedToday = [];
@@ -101,6 +104,7 @@ export function simulatePortfolio(segments, calendar, P, { recordSkipped = false
       if (!(shares > 0)) { book.reservedNotFilled++; continue; }
       const cost = shares * px, c = cost * comm;
       cash -= cost + c; budget -= cost + c; book.commissions += c; book.filled++;
+      if (dayLog) dayLog.filled++;
       const pos = openPosition({ fillBase: base, technicalStop: o.stop, shares, entryIndex: i, shareUnit: unitFill }, P);
       Object.assign(pos, { entryDate: D, fillPrice: px, cost, commissions: c, proceeds: 0, dividends: 0, exits: [],
         setupInfo: { setupDate: seg.date[o.setupIndex], pivot: o.pivot, technicalStop: o.stop, stopPct: o.stopPct, rsPct: o.rsPct, rsScore: o.rsScore,
@@ -129,6 +133,7 @@ export function simulatePortfolio(segments, calendar, P, { recordSkipped = false
     let posValue = 0;
     for (const [id, pos] of positions) posValue += pos.shares * lastClose.get(id);
     curve.push({ date: D, equity: cash + posValue, cash, exposure: posValue / (cash + posValue), positions: positions.size, ceiling, stage: stage.stage });
+    if (dayLog) onDay(dayLog);
   }
   // Offene Positionen am Ende: zum letzten Schluss bewertet, als OPEN_AT_END ausgewiesen (keine Kosten).
   const end = calendar[calendar.length - 1];
