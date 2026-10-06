@@ -306,7 +306,8 @@
       }
       var wanted = new Set(selected.data.listings.map(function (r) { return r.listingId; }));
       if (seen.size !== byId.size) return unavailable("LOCAL_SCREENER_SELECTION_INCOMPLETE", src);
-      return available(src, d.dataAsOf, { listings: d.listings.filter(function (r) { return wanted.has(r.listingId); }),
+      return available(src, d.dataAsOf, { listings: d.listings.filter(function (r) { return wanted.has(r.listingId); })
+        .map(function (r) { return Object.assign({}, byId.get(r.listingId), { price: r.price, fields: r.fields }); }),
         referenceAsOf: d.referenceAsOf, dataAsOf: d.dataAsOf, privateDevelopment: true });
     }
 

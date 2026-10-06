@@ -34,3 +34,11 @@ test('consumer projection rejects US identity, currency contamination and unevid
  }
  assert.equal(permitted('core/data/de-eu/screener.json'),false);
 });
+test('compact projection cannot replace canonical company, logo or index references',async()=>{
+ const r={...row,listingId:I.listingIdFor(row),securityId:I.securityIdForISIN(row.isin),companyId:null,logo:{status:'EXISTING_FALLBACK'}};
+ const d={schemaVersion:'de-eu-directory-1.0.0',privateDevelopment:true,referenceAsOf:'2026-10-06',dataAsOf:'2026-10-06',listings:[r]};
+ const s={schemaVersion:'de-eu-screener-1.0.0',privateDevelopment:true,publicDisplay:false,referenceAsOf:d.referenceAsOf,dataAsOf:d.dataAsOf,
+  listings:[{...r,name:'Wrong issuer',companyId:'ref_SAP',logo:{status:'VERIFIED_LOGO',path:'/wrong.png'},indexMemberships:['FAKE'],price:null,fields:{}}]};
+ const c=Core.create({load:async p=>p===Core.PATHS.localListings()?d:s});
+ assert.deepEqual((await c.getListingScreener()).data.listings[0],{...r,price:null,fields:{}});
+});
