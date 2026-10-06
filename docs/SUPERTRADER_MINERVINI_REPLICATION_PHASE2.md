@@ -443,7 +443,33 @@ Das Log zeigt keine Richtungen. Keine Codeänderung danach.
 | Max Drawdown gegen SPY | **kleiner als SPY** |
 | Signale gegen SPY bei gleicher Haltedauer (Mittel) | **unter SPY** |
 
-Abschnitt 11.3 (HOLDOUT) folgt nach dem zweiten Lauf.
+### 11.3 HOLDOUT 2008-01-02 bis 2015-12-31 (Lauf 37461929479, `minervini-replication-holdout.sealed.json`)
+
+| Größe | Wert |
+|---|---|
+| Titel (Segmente) | 5.218, davon mit SEC-Erstmeldungen 3.875 |
+| Setups | 7.858 bei 699 Titeln |
+| Ausgelöste Signale ohne Kapitalgrenze | 937 |
+| Portfolio-Trades | 229 |
+| Portfolio-CAGR gegen SPY-Gesamtrendite | **unter SPY** |
+| Max Drawdown gegen SPY | **kleiner als SPY** |
+| Signale gegen SPY bei gleicher Haltedauer (Mittel) | **über SPY** (nach oben verzerrt durch Survivorship) |
+
+### 11.4 Einordnung (ohne Reaktion)
+
+**Portfolioqualität:** In beiden Zeiträumen schlägt das Depot SPY nicht. Der Drawdown ist geringer als bei SPY. Die Exposure ist begrenzt durch:
+- die Startquote und die Rückmeldung aus den eigenen Trades;
+- die Fundamentalfilter;
+- die Anlaufphase ohne Split-Historie zu Beginn jedes Fensters.
+
+**Signalqualität:** Bei gleicher Haltedauer liegen die Signale gegen SPY im Mittel uneinheitlich: in DEV darunter, im HOLDOUT darüber. Der HOLDOUT-Wert ist wegen Survivorship nach oben verzerrt. **Ein robuster Signalvorteil ist nicht belegt.**
+
+**Gültigkeit der Aussagen:**
+- Alle Aussagen gelten für diese VU-Umsetzung (VU Adaptation), nicht für Minervinis Methode als solche. Ein schwaches Ergebnis widerlegt den Trader nicht.
+- Das Ergebnis verändert die Engine nicht (Auftrag Abschnitt 25).
+- Jede Anpassung wäre eine neue Version mit Präregistrierung und Vorwärtsprüfung. Beide Zeiträume sind gesehen.
+
+**Zahlen** (CAGR, Total Return, Drawdown, Volatilität, Sharpe, Exposure, Positionen, Umschlag, Trefferquote, Ø Gewinn/Verlust, MFE/MAE, Ausstiegsgründe, SPY) stehen verschlüsselt in den beiden `.sealed.json` für den Eigentümer.
 
 ## 12. Abschlussbericht
 
