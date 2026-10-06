@@ -1,0 +1,301 @@
+{
+ "schemaVersion": "index-membership-1.0.0",
+ "engineVersion": "index-membership-1.0.0",
+ "indexId": "DJIA",
+ "indexName": "Dow Jones Industrial Average",
+ "source": "ETF_HOLDINGS",
+ "proxy": {
+  "etf": "DIA",
+  "issuer": "State Street (SPDR)",
+  "url": "https://www.ssga.com/us/en/intermediary/library-content/products/fund-data/etfs/us/holdings-daily-us-en-dia.xlsx",
+  "format": "SSGA_XLSX"
+ },
+ "asOf": "2026-10-03",
+ "asOfSource": "FETCH_DATE",
+ "fetchedAt": "2026-10-03T12:35:56.658Z",
+ "holdingsCount": 30,
+ "memberCount": 30,
+ "unmatchedCount": 0,
+ "members": [
+  {
+   "symbol": "GS",
+   "securityId": "ref_GS",
+   "name": "GOLDMAN SACHS GROUP INC",
+   "weight": 10.462526,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GS"
+  },
+  {
+   "symbol": "CAT",
+   "securityId": "ref_CAT",
+   "name": "CATERPILLAR INC",
+   "weight": 9.642018,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CAT"
+  },
+  {
+   "symbol": "MSFT",
+   "securityId": "ref_MSFT",
+   "name": "MICROSOFT CORP",
+   "weight": 5.983454,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MSFT"
+  },
+  {
+   "symbol": "AMGN",
+   "securityId": "ref_AMGN",
+   "name": "AMGEN INC",
+   "weight": 4.752108,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AMGN"
+  },
+  {
+   "symbol": "UNH",
+   "securityId": "ref_UNH",
+   "name": "UNITEDHEALTH GROUP INC",
+   "weight": 4.261227,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "UNH"
+  },
+  {
+   "symbol": "TRV",
+   "securityId": "ref_TRV",
+   "name": "TRAVELERS COS INC/THE",
+   "weight": 4.219688,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "TRV"
+  },
+  {
+   "symbol": "V",
+   "securityId": "ref_V",
+   "name": "VISA INC CLASS A SHARES",
+   "weight": 4.198802,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "V"
+  },
+  {
+   "symbol": "GOOGL",
+   "securityId": "ref_GOOGL",
+   "name": "ALPHABET INC CL A",
+   "weight": 3.946652,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "GOOGL"
+  },
+  {
+   "symbol": "JPM",
+   "securityId": "ref_JPM",
+   "name": "JPMORGAN CHASE + CO",
+   "weight": 3.887611,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "JPM"
+  },
+  {
+   "symbol": "AAPL",
+   "securityId": "ref_AAPL",
+   "name": "APPLE INC",
+   "weight": 3.85424,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AAPL"
+  },
+  {
+   "symbol": "SHW",
+   "securityId": "ref_SHW",
+   "name": "SHERWIN WILLIAMS CO/THE",
+   "weight": 3.742926,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "SHW"
+  },
+  {
+   "symbol": "AXP",
+   "securityId": "ref_AXP",
+   "name": "AMERICAN EXPRESS CO",
+   "weight": 3.524847,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AXP"
+  },
+  {
+   "symbol": "HD",
+   "securityId": "ref_HD",
+   "name": "HOME DEPOT INC",
+   "weight": 3.2958,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HD"
+  },
+  {
+   "symbol": "JNJ",
+   "securityId": "ref_JNJ",
+   "name": "JOHNSON + JOHNSON",
+   "weight": 3.018097,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "JNJ"
+  },
+  {
+   "symbol": "AMZN",
+   "securityId": "ref_AMZN",
+   "name": "AMAZON.COM INC",
+   "weight": 2.896398,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "AMZN"
+  },
+  {
+   "symbol": "CRM",
+   "securityId": "ref_CRM",
+   "name": "SALESFORCE INC",
+   "weight": 2.761747,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CRM"
+  },
+  {
+   "symbol": "MCD",
+   "securityId": "ref_MCD",
+   "name": "MCDONALD S CORP",
+   "weight": 2.705039,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MCD"
+  },
+  {
+   "symbol": "NVDA",
+   "securityId": "ref_NVDA",
+   "name": "NVIDIA CORP",
+   "weight": 2.693721,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NVDA"
+  },
+  {
+   "symbol": "IBM",
+   "securityId": "ref_IBM",
+   "name": "INTL BUSINESS MACHINES CORP",
+   "weight": 2.63258,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "IBM"
+  },
+  {
+   "symbol": "HON",
+   "securityId": "ref_HON",
+   "name": "HONEYWELL INTERNATIONAL INC",
+   "weight": 2.494661,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "HON"
+  },
+  {
+   "symbol": "CVX",
+   "securityId": "ref_CVX",
+   "name": "CHEVRON CORP",
+   "weight": 2.416484,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CVX"
+  },
+  {
+   "symbol": "BA",
+   "securityId": "ref_BA",
+   "name": "BOEING CO/THE",
+   "weight": 2.243562,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "BA"
+  },
+  {
+   "symbol": "MMM",
+   "securityId": "ref_MMM",
+   "name": "3M CO",
+   "weight": 1.90215,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MMM"
+  },
+  {
+   "symbol": "PG",
+   "securityId": "ref_PG",
+   "name": "PROCTER + GAMBLE CO/THE",
+   "weight": 1.679638,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "PG"
+  },
+  {
+   "symbol": "MRK",
+   "securityId": "ref_MRK",
+   "name": "MERCK + CO. INC.",
+   "weight": 1.678004,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "MRK"
+  },
+  {
+   "symbol": "CSCO",
+   "securityId": "ref_CSCO",
+   "name": "CISCO SYSTEMS INC",
+   "weight": 1.264133,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "CSCO"
+  },
+  {
+   "symbol": "WMT",
+   "securityId": "ref_WMT",
+   "name": "WALMART INC",
+   "weight": 1.216527,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "WMT"
+  },
+  {
+   "symbol": "DIS",
+   "securityId": "ref_DIS",
+   "name": "WALT DISNEY CO/THE",
+   "weight": 1.182339,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "DIS"
+  },
+  {
+   "symbol": "KO",
+   "securityId": "ref_KO",
+   "name": "COCA COLA CO/THE",
+   "weight": 1.004632,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "KO"
+  },
+  {
+   "symbol": "NKE",
+   "securityId": "ref_NKE",
+   "name": "NIKE INC  CL B",
+   "weight": 0.410137,
+   "sector": "-",
+   "matched": "EXACT",
+   "sourceTicker": "NKE"
+  }
+ ],
+ "unmatched": [],
+ "changes": {
+  "previousAsOf": "2026-09-26",
+  "added": [],
+  "removed": []
+ },
+ "note": "Dow Jones Industrial Average: Mitgliedschaft laut veroeffentlichtem Bestand des abbildenden Fonds DIA (State Street (SPDR)) zum Stichtag 2026-10-03. Zuordnung zum Company Master ueber den Ticker (Trennzeichen ignoriert, nur bei Eindeutigkeit). Keine Ticker-Heuristik ueber die Mitgliedschaft selbst; nicht zuordenbare Bestandszeilen stehen unter unmatched. Indexnamen sind Marken ihrer Eigentuemer; die Datei nennt einen Fondsbestand, keine offizielle Indexliste.",
+ "sourcesTried": [],
+ "shortLabel": "Dow Jones",
+ "sourceFile": null
+}

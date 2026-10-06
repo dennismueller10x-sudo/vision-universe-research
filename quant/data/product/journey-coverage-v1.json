@@ -1,0 +1,191 @@
+{
+ "schemaVersion": "journey-coverage-1.1.0",
+ "generatedAt": "2026-10-06T04:27:00.000Z",
+ "universe": 6853,
+ "sample": 500,
+ "sampling": "jeder 13. Titel der alphabetisch sortierten Liste - deterministisch, damit zwei Laeufe vergleichbar sind",
+ "evidenceAsOf": "2026-10-05",
+ "evidenceMethodologyVersion": "vu-factor-evidence-2.0.0",
+ "stations": [
+  {
+   "id": "identity",
+   "label": "Titel und letzter Kurs",
+   "answered": 500,
+   "findings": 0,
+   "findingReasons": {},
+   "withheld": 0,
+   "share": 1,
+   "reasons": {}
+  },
+  {
+   "id": "chart",
+   "label": "Kursverlauf",
+   "answered": 496,
+   "findings": 0,
+   "findingReasons": {},
+   "withheld": 4,
+   "share": 0.992,
+   "reasons": {
+    "SOURCE_MISSING": 4
+   }
+  },
+  {
+   "id": "factorStrength",
+   "label": "Wie stark ist die Aktie",
+   "answered": 481,
+   "findings": 0,
+   "findingReasons": {},
+   "withheld": 19,
+   "share": 0.962,
+   "reasons": {
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 19
+   }
+  },
+  {
+   "id": "change",
+   "label": "Was hat sich veraendert",
+   "answered": 476,
+   "findings": 0,
+   "findingReasons": {},
+   "withheld": 24,
+   "share": 0.952,
+   "reasons": {
+    "NO_COMPARABLE_OBSERVATION": 24
+   }
+  },
+  {
+   "id": "setup",
+   "label": "Baut sich eine Situation auf",
+   "answered": 430,
+   "findings": 0,
+   "findingReasons": {},
+   "withheld": 70,
+   "share": 0.86,
+   "reasons": {
+    "INSUFFICIENT_HISTORY": 69,
+    "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 1
+   }
+  },
+  {
+   "id": "setupChange",
+   "label": "Was diesen Zustand aendern wuerde",
+   "answered": 430,
+   "findings": 0,
+   "findingReasons": {},
+   "withheld": 70,
+   "share": 0.86,
+   "reasons": {
+    "INSUFFICIENT_HISTORY": 69,
+    "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 1
+   }
+  },
+  {
+   "id": "patterns",
+   "label": "Chance und Risiko in aehnlichen Lagen",
+   "answered": 410,
+   "findings": 75,
+   "findingReasons": {
+    "NO_PATTERN_HOLDS": 75
+   },
+   "withheld": 90,
+   "share": 0.82,
+   "reasons": {
+    "NOT_COVERED_BY_PATTERN_MATCH": 90
+   }
+  },
+  {
+   "id": "strategy",
+   "label": "Welcher Anlagestil passt",
+   "answered": 428,
+   "findings": 178,
+   "findingReasons": {
+    "NO_PROFILE_FITS_WELL": 178
+   },
+   "withheld": 72,
+   "share": 0.856,
+   "reasons": {
+    "NO_EVIDENCE": 53,
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 13,
+    "NOT_AN_EQUITY_LISTING": 6
+   }
+  },
+  {
+   "id": "assignmentChange",
+   "label": "Hat sich die Zuordnung geaendert",
+   "answered": 500,
+   "findings": 494,
+   "findingReasons": {
+    "NO_ASSIGNMENT_CHANGE": 494
+   },
+   "withheld": 0,
+   "share": 1,
+   "reasons": {}
+  },
+  {
+   "id": "technical",
+   "label": "Kursstruktur",
+   "answered": 430,
+   "findings": 0,
+   "findingReasons": {},
+   "withheld": 70,
+   "share": 0.86,
+   "reasons": {
+    "INSUFFICIENT_HISTORY": 69,
+    "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 1
+   }
+  },
+  {
+   "id": "business",
+   "label": "Unternehmenszahlen",
+   "answered": 500,
+   "findings": 0,
+   "findingReasons": {},
+   "withheld": 0,
+   "share": 1,
+   "reasons": {}
+  }
+ ],
+ "answeredStationsPerTitle": {
+  "3": 2,
+  "4": 6,
+  "5": 5,
+  "6": 47,
+  "7": 14,
+  "8": 7,
+  "9": 1,
+  "10": 17,
+  "11": 401
+ },
+ "shapes": {
+  "full": 418,
+  "reduced": 80,
+  "minimal": 2,
+  "noticeBoxesBefore": 518,
+  "noticeBoxesAfter": 213,
+  "worstPageNoticeBoxes": 4,
+  "dataPoorPages": 82,
+  "dataPoorNoticeBoxesBefore": 501,
+  "dataPoorNoticeBoxesAfter": 196,
+  "substantiveStationsPerTitle": {
+   "1": 2,
+   "3": 8,
+   "4": 24,
+   "5": 27,
+   "6": 4,
+   "7": 16,
+   "8": 1,
+   "10": 17,
+   "11": 401
+  },
+  "causes": {
+   "SHORT_HISTORY": 90,
+   "NO_WEEKLY_SERIES": 38,
+   "NO_FIGURES": 74,
+   "NOT_AN_EQUITY_LISTING": 6,
+   "NO_SERIES": 4,
+   "RARELY_TRADED": 1
+  },
+  "note": "FULL: hoechstens zwei Absagen, die volle Reise bleibt. REDUCED: verdichtete Auskunft, vorhandene Erkenntnisse zuerst, Absagen zu Ursachen gruppiert. MINIMAL: hoechstens eine gehaltvolle Station - eine eigene Aussage statt einer kurzen Reise."
+ },
+ "note": "Gemessen ueber dieselben Dienste, die die Oberflaeche aufruft. 'withheld' heisst: die Station nennt einen Grund statt einer Zahl - kein Fehler, sondern der veroeffentlichte Zustand."
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "factor-band-methodology-1.0.0",
+  "BAND_SEMANTICS_VERSION": "factor-band-2.0.0",
+  "methodologyVersion": "factor-band-2.0.0",
+  "status": "APPROVED",
+  "effectiveFrom": "2026-10-05",
+  "purpose": "Was die Stufe eines Faktors (sehr stark … sehr schwach) bedeutet, woraus sie gezählt wird und wie sie sich vom Faktorwert unterscheidet.",
+  "scoreSemantics": {
+    "basis": "RELATIVE",
+    "statement": "Ein Faktorwert (0–100) ist das gewichtete Mittel der Rangplätze seiner Kennzahlen. Jeder Rangplatz ist ein Perzentil: 70 % innerhalb der Vergleichsgruppe (Branche, sonst Wirtschaftszweig, sonst Gesamtmarkt), 30 % im Gesamtmarkt (quant-v2 normalization.peerBlend). Es gibt keine absolute Schwelle im Faktorwert – er ist durch seine Bauart relativ.",
+    "engine": "quant/engines/factor-evidence.js (blend, assembleFactor), quant/methodology/quant-v2.json (score.factorFormula, score.semantics: \"Relative rank\")",
+    "notAProbability": true
+  },
+  "bandSemantics": {
+    "basis": "RELATIVE_POSITION",
+    "statement": "Die Stufe ist die Position des Faktorwerts unter allen bewerteten Aktien desselben Faktors und Stichtags: der Anteil der anderen bewerteten Aktien mit einem niedrigeren Faktorwert. Stufe und angezeigte Position („höher als X % der bewerteten Aktien“) sind dieselbe Zählung.",
+    "position": "position = 100 × (Anzahl bewerteter Werte < eigener Wert) / (Anzahl bewerteter Werte − 1), eine Nachkommastelle; Gleichstand zählt nicht als niedriger.",
+    "bands": [
+      { "id": "VERY_STRONG", "label": "Sehr stark", "positionMin": 90, "meaning": "stärkste 10 %" },
+      { "id": "STRONG", "label": "Stark", "positionMin": 75, "meaning": "höher als 75 bis 90 %" },
+      { "id": "NEUTRAL", "label": "Durchschnittlich", "positionMin": 45, "meaning": "höher als 45 bis 75 %" },
+      { "id": "WEAK", "label": "Schwach", "positionMin": 25, "meaning": "höher als 25 bis 45 %" },
+      { "id": "VERY_WEAK", "label": "Sehr schwach", "positionMin": 0, "meaning": "schwächstes Viertel" }
+    ],
+    "factorSpecificWords": { "value": "sehr günstig … sehr teuer", "risk": "sehr niedrig … hoch" },
+    "sourceOfCutPoints": "quant-v2.json score.ratingBands (Top 10% / Above average / Average range / Below average / Bottom quartile) – Grenzen und Bedeutung unverändert, jetzt auf die Position angewandt, für die sie formuliert waren."
+  },
+  "referenceUniverse": {
+    "definition": "Alle Titel, die das Faktor-Artefakt factor-evidence-v1 am selben Stichtag mit einem verfügbaren Wert für diesen Faktor veröffentlicht – dieselbe Menge, die Screener und Methodik als Verteilung lesen.",
+    "perFactor": true,
+    "minimumSize": 100,
+    "belowMinimum": "Keine Position und keine Stufe; der Faktorwert bleibt sichtbar.",
+    "materializedIn": "factor-evidence-v1 Shard-Kopf bandSemantics {version, universe, scoreCuts} und je Titel factors.<id>.position"
+  },
+  "dataDate": "Der Stichtag des Faktor-Artefakts (asOf). Position und Stufe gelten für genau diesen Stand und werden mit jedem Lauf neu gezählt.",
+  "industryTemplates": "Branchenvorlagen (Banken, Versicherer, REITs) ändern, welche Kennzahlen in den Faktorwert eingehen; die Position wird über alle Titel gemeinsam gezählt. Gemessen am 02.10.2026 liegt der Median jeder Vorlage je Faktor zwischen 46,9 und 60,1 – die Rangplätze innerhalb der Vergleichsgruppe gleichen Branchenniveaus bereits aus.",
+  "missingData": "Ohne verfügbaren Faktorwert keine Position und keine Stufe. Fehlende Kennzahlen werden nicht geschätzt; ein Faktor mit weniger als 80 % Kennzahlgewicht ist nicht verfügbar (quant-v2 minimumWeightedComponentCoverage). Datenarme Titel werden unter denselben Titeln gezählt wie datenreiche.",
+  "comparabilityOverTime": "Relativ. Dieselbe Stufe zu zwei Zeitpunkten heißt: dieselbe Stellung im damaligen Universum – nicht dieselbe absolute Güte. Steigt das ganze Universum, steigt keine Stufe. Ein absoluter Vergleich über die Zeit ist mit diesem Faktorwert nicht möglich, weil schon der Wert aus Rangplätzen besteht.",
+  "screenerThresholds": "Screener und Strategien filtern weiterhin auf den Faktorwert (z. B. „Wert 70 oder mehr“, Strategie „quality ≥ 75“). Das ist eine Schwelle auf den Wert, keine Stufe; die Oberfläche nennt es so.",
+  "decision": {
+    "date": "2026-10-05",
+    "question": "Feste Wertgrenzen (A) oder Stufen nach Position (B)?",
+    "verdict": "B",
+    "reason": "Der Faktorwert ist durch seine Bauart relativ (Mittel aus Perzentilen, keine absolute Schwelle). Feste Grenzen darauf geben keine absolute Güte, sondern eine relative Einordnung mit je Faktor zufällig verschiedenen Anteilen – Mischsemantik. Die Owner-Präferenz A (absolute Bedeutung, die über die Zeit gleich bleibt) setzt einen absolut gebauten Wert voraus; den gibt es in dieser Engine nicht. Die Ursprungsmethodik nennt die Bänder ausdrücklich als Anteile (Top 10 %, unteres Viertel).",
+    "measured": {
+      "asOf": "2026-10-02",
+      "artifact": "49c47ee",
+      "scoreDistribution": {
+        "quality":       { "n": 3776, "p10": 32.1, "p25": 41.8, "p50": 52.0, "p75": 60.6, "p90": 67.9, "p99": 76.5 },
+        "growth":        { "n": 3324, "p10": 25.1, "p25": 36.2, "p50": 49.3, "p75": 64.5, "p90": 75.8, "p99": 93.9 },
+        "momentum":      { "n": 5760, "p10": 16.0, "p25": 33.3, "p50": 51.4, "p75": 68.9, "p90": 82.1, "p99": 94.6 },
+        "value":         { "n": 2566, "p10": 25.6, "p25": 38.5, "p50": 52.2, "p75": 66.7, "p90": 77.7, "p99": 91.9 },
+        "profitability": { "n": 1994, "p10": 19.7, "p25": 36.8, "p50": 52.5, "p75": 68.5, "p90": 81.5, "p99": 92.8 },
+        "revisions":     { "n": 0, "state": "BLOCKED_EXTERNAL" },
+        "risk":          { "n": 5760, "p10": 16.5, "p25": 31.0, "p50": 54.6, "p75": 75.4, "p90": 87.4, "p99": 97.6 }
+      },
+      "variantA_shareVeryStrongPct": { "quality": 0.0, "growth": 1.9, "momentum": 3.7, "value": 1.7, "profitability": 2.9, "risk": 7.1 },
+      "variantA_shareVeryWeakPct": { "quality": 4.8, "growth": 9.8, "momentum": 17.4, "value": 9.6, "profitability": 13.3, "risk": 18.5 },
+      "variantB_sharesPct": { "VERY_STRONG": 10, "STRONG": 15, "NEUTRAL": 30, "WEAK": 20, "VERY_WEAK": 25 },
+      "medianByTemplateRange": "46,9–60,1 (Banken, Versicherer, REITs, Standard)",
+      "medianBySicDivisionRange": "45,4–55,0 (Divisionen mit ≥ 50 Titeln, ohne unbekannte Division)",
+      "dataRichVsPoor": "Median datenreich (volles Kennzahlgewicht) vs. datenarm je Faktor höchstens 2,5 Punkte auseinander (Growth 50,8 vs. 48,3)",
+      "stability7Days": "Grenzwerte p10/p50/p90 zwischen 28.09. und 02.10. höchstens 1,1 Punkte verschoben; gleiche Stufe nach Variante A bei 84–98 % der Titel"
+    },
+    "tradeOffs": {
+      "A_fixedValueCuts": { "pro": ["Grenze ist eine feste Zahl"], "contra": ["keine absolute Bedeutung, weil der Wert relativ ist", "Anteile je Faktor zufällig (Quality nie „sehr stark“, Risiko 7,1 %)", "Etiketten der Methodik („Top 10 %“) wären falsch"] },
+      "B_relativePosition": { "pro": ["Stufe sagt wahr, was sie behauptet", "gleiche Bedeutung für jeden Faktor", "eine Zählung für Stufe und Position"], "contra": ["eine mittelmäßige Aktie kann „sehr stark“ sein, wenn das Universum schwächer ist", "Stufe ist über die Zeit nur relativ vergleichbar"] }
+    }
+  },
+  "versionHistory": [
+    { "version": "factor-band-1", "until": "2026-10-05", "rule": "Feste Wertgrenzen 90/75/45/25 auf den Faktorwert." },
+    { "version": "factor-band-2.0.0", "date": "2026-10-05", "rule": "Stufe = gezählte Position unter allen bewerteten Aktien (Owner-Gate BAND_SEMANTICS, gemessen und entschieden)." }
+  ]
+}

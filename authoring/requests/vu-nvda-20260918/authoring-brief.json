@@ -1,0 +1,399 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "production_authoring_request",
+  "request_type": "FULL_CREATIVE",
+  "visual": {
+    "mode": "GENERATE_NEW_ASSET",
+    "regeneration_allowed": true
+  },
+  "test_fixture": false,
+  "brief_id": "brief_d85438b24249dbb6",
+  "content_id": "vu-nvda-20260918",
+  "attempt": 1,
+  "supersedes_attempt": null,
+  "attempt_reason": null,
+  "brand": "Vision Universe",
+  "language": "de",
+  "channel": "instagram",
+  "format": "single-post",
+  "topic": "NVDA — technische Lage zum 2026-09-18",
+  "objective": "Aus der freigegebenen technischen Evidenz einen belegbaren, nuechternen Beitrag formulieren, der die Leitzahl EINORDNET statt sie zu feiern.",
+  "audience": "Anleger, die wissen wollen, woher eine Zahl kommt",
+  "hook_strategy": {
+    "strategy_id": "vu-stock-story-value-first-v1",
+    "hook_type": "value_first",
+    "instruction": "Formuliere vier deutlich verschiedene Hooks innerhalb dieser Strategie. Jede Zahl muss exakt aus `evidence` stammen. Keine Prognose, keine Empfehlung, keine Ursachenbehauptung."
+  },
+  "visual_strategy": {
+    "strategy_id": "SEMICONDUCTOR_WORLD",
+    "instruction": "Eine hochwertige, abstrakte Szene aus der Halbleiterfertigung: Wafer, Reinraum, Chip-Struktur in Makroaufnahme. Keine lesbare Marke, kein Logo eines Dritten.",
+    "creative_freedom": "Motiv, Komposition, Lichtfuehrung und Materialitaet innerhalb der Strategie.",
+    "palette": [
+      "deep black",
+      "white",
+      "chrome",
+      "electric cyan",
+      "subtle violet"
+    ],
+    "style": "premium cinematic 3D technology visualization",
+    "composition": "portrait 4:5, centered, generous negative space",
+    "restrictions": [
+      "Kein Text im Bild",
+      "Kein Logo",
+      "Keine Kurse im Bild",
+      "Keine Renditezahlen",
+      "Kein Wasserzeichen"
+    ]
+  },
+  "evidence": [
+    {
+      "id": "score",
+      "dimension": "SCORE",
+      "statement": "Technical Opportunity Score 68.4 von 100 (Band „Konstruktiv“ ab 60).",
+      "value": 68.4,
+      "unit": null,
+      "entity": "NVDA",
+      "metric": "Technical Opportunity Score",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/opportunityScore/score"
+    },
+    {
+      "id": "score-meaning",
+      "dimension": "SCORE",
+      "statement": "Methodologischer Setup-Rang 0–100. Keine Wahrscheinlichkeit, keine Renditeerwartung.",
+      "value": null,
+      "unit": null,
+      "entity": "NVDA",
+      "metric": "Bedeutung des Scores",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/opportunityScore/disclaimer"
+    },
+    {
+      "id": "score-not-probability",
+      "dimension": "SCORE",
+      "statement": "Der Wert ist ein methodischer Rang (methodology_rank), keine Wahrscheinlichkeit und keine Renditeerwartung.",
+      "value": null,
+      "unit": null,
+      "entity": "NVDA",
+      "metric": "Interpretation",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/opportunityScore/interpretation"
+    },
+    {
+      "id": "score-contribution-trend_structure",
+      "dimension": "SCORE",
+      "statement": "TREND_STRUCTURE trägt 24.27 von 30 Punkten bei.",
+      "value": 24.27,
+      "unit": "Punkte",
+      "entity": "NVDA",
+      "metric": "Beitrag TREND_STRUCTURE",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/opportunityScore/contributions/TREND_STRUCTURE"
+    },
+    {
+      "id": "score-contribution-momentum",
+      "dimension": "SCORE",
+      "statement": "MOMENTUM trägt 13.32 von 20 Punkten bei.",
+      "value": 13.32,
+      "unit": "Punkte",
+      "entity": "NVDA",
+      "metric": "Beitrag MOMENTUM",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/opportunityScore/contributions/MOMENTUM"
+    },
+    {
+      "id": "score-contribution-volume",
+      "dimension": "SCORE",
+      "statement": "VOLUME trägt 5.68 von 10 Punkten bei.",
+      "value": 5.68,
+      "unit": "Punkte",
+      "entity": "NVDA",
+      "metric": "Beitrag VOLUME",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/opportunityScore/contributions/VOLUME"
+    },
+    {
+      "id": "score-contribution-volatility",
+      "dimension": "SCORE",
+      "statement": "VOLATILITY trägt 8 von 10 Punkten bei.",
+      "value": 8,
+      "unit": "Punkte",
+      "entity": "NVDA",
+      "metric": "Beitrag VOLATILITY",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/opportunityScore/contributions/VOLATILITY"
+    },
+    {
+      "id": "score-contribution-setup",
+      "dimension": "SCORE",
+      "statement": "SETUP trägt 7.13 von 20 Punkten bei.",
+      "value": 7.13,
+      "unit": "Punkte",
+      "entity": "NVDA",
+      "metric": "Beitrag SETUP",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/opportunityScore/contributions/SETUP"
+    },
+    {
+      "id": "score-contribution-projection_auxiliary",
+      "dimension": "SCORE",
+      "statement": "PROJECTION_AUXILIARY trägt 10 von 10 Punkten bei.",
+      "value": 10,
+      "unit": "Punkte",
+      "entity": "NVDA",
+      "metric": "Beitrag PROJECTION_AUXILIARY",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/opportunityScore/contributions/PROJECTION_AUXILIARY"
+    },
+    {
+      "id": "score-note-1",
+      "dimension": "SCORE",
+      "statement": "Relative Stärke nicht verfügbar — Momentum-Beitrag nur absolut.",
+      "value": null,
+      "unit": null,
+      "entity": "NVDA",
+      "metric": "Hinweis",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/opportunityScore/notes/0"
+    },
+    {
+      "id": "price-close",
+      "dimension": "PRICE",
+      "statement": "Schlusskurs 222.27 USD am 2026-09-18.",
+      "value": 222.27,
+      "unit": "USD",
+      "entity": "NVDA",
+      "metric": "Schlusskurs",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/lastBar/close"
+    },
+    {
+      "id": "trend",
+      "dimension": "TREND",
+      "statement": "Trendrichtung BULLISH, Trendwert 71.8.",
+      "value": 71.8,
+      "unit": null,
+      "entity": "NVDA",
+      "metric": "Trend",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/trend/trendScore"
+    },
+    {
+      "id": "trend-SMA50",
+      "dimension": "TREND",
+      "statement": "Kurs über SMA50 (1.24 ATR)",
+      "value": 1.244931,
+      "unit": null,
+      "entity": "NVDA",
+      "metric": "SMA50",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/trend/evidence/0"
+    },
+    {
+      "id": "trend-SMA200",
+      "dimension": "TREND",
+      "statement": "Kurs über SMA200 (3.72 ATR)",
+      "value": 3.719171,
+      "unit": null,
+      "entity": "NVDA",
+      "metric": "SMA200",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/trend/evidence/1"
+    },
+    {
+      "id": "trend-SMA50_vs_SMA200",
+      "dimension": "TREND",
+      "statement": "SMA50 über SMA200 (2.47 ATR)",
+      "value": 2.47424,
+      "unit": null,
+      "entity": "NVDA",
+      "metric": "SMA50_vs_SMA200",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/trend/evidence/2"
+    },
+    {
+      "id": "trend-SMA50_slope",
+      "dimension": "TREND",
+      "statement": "SMA50 steigt (1.09 ATR / 20 Bars)",
+      "value": 1.086804,
+      "unit": null,
+      "entity": "NVDA",
+      "metric": "SMA50_slope",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/trend/evidence/3"
+    },
+    {
+      "id": "momentum",
+      "dimension": "MOMENTUM",
+      "statement": "Momentum POSITIVE, Wert 66.6.",
+      "value": 66.6,
+      "unit": null,
+      "entity": "NVDA",
+      "metric": "Momentum",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/momentum/momentumScore"
+    },
+    {
+      "id": "momentum-1m",
+      "dimension": "MOMENTUM",
+      "statement": "1M-Entwicklung 2.2 % (z=0.189).",
+      "value": 2.2,
+      "unit": "%",
+      "entity": "NVDA",
+      "metric": "1M-Rendite",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/momentum/horizons/1M/return"
+    },
+    {
+      "id": "momentum-3m",
+      "dimension": "MOMENTUM",
+      "statement": "3M-Entwicklung 5.5 % (z=0.273).",
+      "value": 5.5,
+      "unit": "%",
+      "entity": "NVDA",
+      "metric": "3M-Rendite",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/momentum/horizons/3M/return"
+    },
+    {
+      "id": "momentum-12m",
+      "dimension": "MOMENTUM",
+      "statement": "12M-Entwicklung 30.5 % (z=0.68).",
+      "value": 30.5,
+      "unit": "%",
+      "entity": "NVDA",
+      "metric": "12M-Rendite",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/momentum/horizons/12M/return"
+    },
+    {
+      "id": "volatility",
+      "dimension": "VOLATILITY",
+      "statement": "Volatilität LOW, ATR 2.89 % des Kurses (Perzentil 17).",
+      "value": 2.89,
+      "unit": "%",
+      "entity": "NVDA",
+      "metric": "Volatilitaetsregime",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/volatility/metrics/atrPct"
+    },
+    {
+      "id": "volume",
+      "dimension": "VOLUME",
+      "statement": "Volumen NORMAL, relativ 1.521× zum Median.",
+      "value": 1.521,
+      "unit": "x",
+      "entity": "NVDA",
+      "metric": "Relatives Volumen",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/volume/metrics/relativeVolume"
+    },
+    {
+      "id": "data-basis",
+      "dimension": "SCORE",
+      "statement": "Grundlage sind 2945 Handelstage seit 2015-01-02.",
+      "value": 2945,
+      "unit": "Handelstage",
+      "entity": "NVDA",
+      "metric": "Datengrundlage",
+      "source": "tiingo",
+      "observed_at": "2026-09-18",
+      "pointer": "/analysisLookback/bars"
+    }
+  ],
+  "must_not_claim": [
+    {
+      "id": "causality",
+      "text": "Keine Ursache behaupten. Die Belege beschreiben eine Lage; eine Lage ist nicht ihr eigener Grund."
+    },
+    {
+      "id": "forecast",
+      "text": "Keine Prognose. Kein Beleg sagt etwas ueber die Zukunft."
+    },
+    {
+      "id": "recommendation",
+      "text": "Keine Empfehlung, keine Handlungsaufforderung zum Kaufen oder Verkaufen."
+    },
+    {
+      "id": "comparison",
+      "text": "Kein Vergleich mit anderen Titeln, Zeitraeumen oder Durchschnitten — es liegt nur ein Beleg zu einem Gegenstand vor."
+    }
+  ],
+  "asset_requirements": {
+    "count": 1,
+    "preferred_mime_type": "image/png",
+    "preferred_width": 1080,
+    "preferred_height": 1350,
+    "deterministic_path": "authoring/requests/vu-nvda-20260918/assets/visual-01.png",
+    "announced_fields_required": [
+      "asset_path",
+      "mime_type",
+      "width",
+      "height",
+      "asset_byte_size",
+      "asset_sha256"
+    ],
+    "announcement_note": "asset_byte_size ist die Groesse der geschriebenen Datei in Bytes, asset_sha256 ihr SHA-256 ueber den gesamten Inhalt. Beides wird nach dem finalen Commit frisch zurueckgelesen und verglichen."
+  },
+  "authoring_requirements": {
+    "hook_variant_count": 4,
+    "stable_hook_variant_ids": true,
+    "hook_ids_bound_to_brief_blob_sha": true,
+    "visual_variant_ids_bound_to_brief_blob_sha": true,
+    "recommended_hook_allowed": true,
+    "canonical_selected_hook_allowed": false,
+    "evidence_refs_required": true,
+    "actual_image_asset_required": true,
+    "publishing_allowed": false
+  },
+  "constraints": [
+    "Jede Zahl im Text muss exakt aus `evidence` stammen.",
+    "Nichts ausrechnen, nichts aufrunden, keine Jahreszahlen ergaenzen.",
+    "Keine anderen Titel nennen.",
+    "Hook-Strategie ausschliesslich aus diesem Brief uebernehmen.",
+    "Visual Strategy ausschliesslich aus diesem Brief uebernehmen.",
+    "Kein `selected_hook` — nur `recommended_hook`.",
+    "Keine Placeholder- oder programmatisch erzeugte Ersatzgrafik.",
+    "Keine Veroeffentlichung."
+  ],
+  "publishing_allowed": false,
+  "unavailable": [
+    {
+      "dimension": "RELATIVE_STRENGTH",
+      "reason": "Benchmark nicht verfuegbar",
+      "pointer": "/relativeStrength/reason"
+    },
+    {
+      "dimension": "STRUCTURE",
+      "reason": "Kein Strukturbefund."
+    }
+  ],
+  "evidence_package": {
+    "package_id": "evp_ed98de49b299f1bd",
+    "as_of": "2026-09-18",
+    "methodology_version": "technical-v1.0.0",
+    "data_version": "dv_2f52fb80115c"
+  }
+}

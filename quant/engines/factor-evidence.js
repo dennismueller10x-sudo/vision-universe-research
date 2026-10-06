@@ -1,0 +1,638 @@
+/* =========================================================================
+   VISION UNIVERSE QUANT 2.0 — FACTOR EVIDENCE ENGINE v1
+
+   What this is: the per-factor evidence layer of the canonical Quant V2
+   factor definitions (quant/methodology/quant-v2.json). It answers
+   "how strong is this factor, why, and how sure are we", across the broad
+   product universe, from inputs that already exist.
+
+   What this deliberately is NOT: the VU Quant Score. Quant V2 publication
+   is closed (publication.allowed = false, fullScoreRequiresEveryFactor =
+   true). This engine therefore never emits a composite score, never emits
+   a ranking, and never redistributes the weight of a missing factor.
+   A factor that cannot be computed against its own contract stays
+   UNAVAILABLE with a typed reason; its raw inputs may still be shown as
+   evidence, but they never become a score.
+
+   Methodology identity: vu-factor-evidence-1.0.0, derived from
+   quant-v2.0.0. It is a separate, independently versioned product
+   contract so that a later Quant V2 activation is a new decision and not
+   a silent reinterpretation of what was published here.
+   ========================================================================= */
+(function (global) {
+  "use strict";
+
+  var isNode = typeof module !== "undefined" && module.exports;
+
+    /* 2.0.0 seit der Owner-Entscheidung vom 2026-09-24 (Option C): der
+     Momentumfaktor rechnet auf splitbereinigten Kursen, drei seiner
+     Komponenten heissen anders, und die Gesamtrendite steht als eigene
+     Anlegerevidenz daneben. Eine neue Bedeutung bekommt eine neue
+     Version - die 1.0.0-Beobachtungen bleiben unveraendert unter ihrer
+     eigenen Reihe stehen. */
+  var METHODOLOGY_VERSION = "vu-factor-evidence-2.0.0";
+  var DERIVED_FROM = "quant-v2.2.0";
+  var SHARD_SCHEMA = "factor-evidence-product-1.0.0";
+  var SUMMARY_SCHEMA = "factor-evidence-summary-1.0.0";
+  var SCREENING_SCHEMA = "factor-evidence-screening-1.0.0";
+  var SNAPSHOT_SCHEMA = "factor-evidence-snapshot-1.0.0";
+  var SNAPSHOT_INDEX_SCHEMA = "factor-evidence-snapshot-index-1.0.0";
+
+  /* Der Katalog-Namensraum, unter dem diese Evidenz selektierbar ist.
+     Quant V1 behaelt seine eigenen Felder; keiner der beiden Namensraeume
+     wird je auf den anderen umgedeutet. */
+  var NAMESPACE = "quantV2.factorEvidence";
+
+  /* Canonical seven-factor order. Identical to quant-v2.0.0 factorOrder;
+     the order is part of the product promise and never sorted by value. */
+  var FACTOR_ORDER = ["quality", "growth", "momentum", "value", "profitability", "revisions", "risk"];
+
+  /* Typed unavailability. A factor is never silently absent. */
+  var FACTOR_STATES = ["AVAILABLE", "UNAVAILABLE", "NOT_APPLICABLE"];
+  var FACTOR_REASONS = [
+    "INSUFFICIENT_COMPONENTS",          /* fewer components than the contract demands */
+    "INSUFFICIENT_WEIGHTED_COVERAGE",   /* available component weight below minimum */
+    "MANDATORY_COMPONENT_MISSING",      /* a component the contract marks mandatory is absent */
+    "INPUT_NOT_MATERIALIZED",           /* the input exists in the contract, not in any artifact */
+    "PEER_GROUP_UNAVAILABLE",           /* no peer level reaches its minimum issuer count */
+    "SECTOR_TEMPLATE_MISSING",          /* generic formula not applicable, no versioned template */
+    "BLOCKED_EXTERNAL",                 /* licensed source absent; Revisions */
+    "IDENTITY_UNRESOLVED",              /* no canonical issuer join */
+    "FUNDAMENTALS_UNAVAILABLE",         /* no PIT-safe filing observation */
+    "PRICE_FACTORS_UNAVAILABLE",        /* no certified price factor row */
+    "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", /* one issuer share count, several listed lines */
+    "SHARE_COUNT_NOT_OUTSTANDING",      /* only issued shares (incl. treasury) reported - market-cap-1.0.0 */
+    "REPORTING_CURRENCY_NOT_LISTING_CURRENCY" /* fundamentals not in USD (ADR / foreign filer) - market-cap-1.1.0 */
+  ];
+
+  var COMPONENT_STATES = ["AVAILABLE", "UNAVAILABLE"];
+
+  /* STUFEN = RELATIVE POSITION (factor-band-2.0.0, 05.10.2026).
+     Ein Faktorwert ist ein gewichtetes Mittel aus Rangplaetzen (Peer 70 %,
+     Universum 30 %) - relativ gebaut, ohne eine einzige absolute Schwelle.
+     Bis 1.x lagen feste Wertgrenzen (90/75/45/25) auf diesem Mittel: die
+     Grenzen klangen nach Anteilen ("Top 10 %"), waren es aber nicht, und
+     weil sich Mittel zur Mitte ziehen, erreichte "Bilanz- & Ergebnis-
+     qualitaet" die oberste Stufe nie (0 von 3.776), das Risiko bei 7,1 %.
+     Seit 2.0.0 ist die Stufe die gezaehlte Position des Faktorwerts unter
+     allen bewerteten Titeln desselben Faktors und Stichtags: "hoeher als
+     X %". Grenzen und Etiketten sind die der Methodik quant-v2
+     (ratingBands: Top 10 % ... unteres Viertel) - jetzt wahr.
+     Methodik: quant/methodology/factor-bands-v2.json */
+  var BAND_SEMANTICS_VERSION = "factor-band-2.0.0";
+  /* Unter so vielen bewerteten Titeln ist eine Position keine Aussage. */
+  var MIN_POSITION_UNIVERSE = 100;
+  var BANDS = [
+    { min: 90, id: "VERY_STRONG", label: "Sehr stark", plain: "Gehört zu den stärksten 10 % der bewerteten Aktien." },
+    { min: 75, id: "STRONG", label: "Stark", plain: "Liegt höher als drei Viertel der bewerteten Aktien." },
+    { min: 45, id: "NEUTRAL", label: "Durchschnittlich", plain: "Liegt im mittleren Bereich der bewerteten Aktien." },
+    { min: 25, id: "WEAK", label: "Schwach", plain: "Liegt unter dem mittleren Bereich der bewerteten Aktien." },
+    { min: 0, id: "VERY_WEAK", label: "Sehr schwach", plain: "Gehört zum schwächsten Viertel der bewerteten Aktien." }
+  ];
+
+  /* Position: Anteil der anderen bewerteten Titel mit einem NIEDRIGEREN
+     Faktorwert, in Prozent (0-100, eine Nachkommastelle). Gleichstand
+     zaehlt nicht als niedriger. `sortedAsc` ist aufsteigend sortiert. */
+  function positionOf(sortedAsc, score) {
+    if (!Array.isArray(sortedAsc) || sortedAsc.length < MIN_POSITION_UNIVERSE || !finite(score)) return null;
+    var lo = 0, hi = sortedAsc.length;
+    while (lo < hi) { var mid = (lo + hi) >> 1; if (sortedAsc[mid] < score) lo = mid + 1; else hi = mid; }
+    return Math.round(1000 * lo / (sortedAsc.length - 1)) / 10;
+  }
+
+  var CONFIDENCE_BANDS = [
+    { min: 90, id: "HIGH", label: "hoch" },
+    { min: 75, id: "MEDIUM", label: "mittel" },
+    { min: 60, id: "LOW", label: "niedrig" },
+    { min: 0, id: "INSUFFICIENT", label: "nicht ausreichend" }
+  ];
+
+  /* quant-v2.0.0 confidence.formulaWeights, unchanged. */
+  var CONFIDENCE_WEIGHTS = { coverage: 0.50, freshness: 0.20, peerQuality: 0.15, historyDepth: 0.10, provenance: 0.05 };
+
+  /* Beginner-facing meaning per factor. This is the Meaning layer: it must
+     be understandable before any formula is shown. */
+  var FACTOR_MEANING = {
+    quality: {
+      /* NVDA-Audit 30.09.2026 (docs/VU_QUANT_FRONTEND_REBUILD.md): der
+         Faktor misst Bilanz, Ergebnisqualitaet und Stabilitaet - keine
+         Ertragskraft. "Unternehmensqualitaet" versprach mehr. */
+      label: "Bilanz- & Ergebnisqualität",
+      question: "Wie belastbar sind Bilanz und ausgewiesene Gewinne?",
+      plain: "Qualität fragt, ob ein Unternehmen stabil finanziert ist und ob die ausgewiesenen Gewinne durch echten Zahlungsfluss gedeckt sind.",
+      higherMeans: "Höher bedeutet solidere Bilanz und belastbarere Rechnungslegung. Es ist keine Empfehlung."
+    },
+    growth: {
+      label: "Wachstum",
+      question: "Wächst das Geschäft — und wird es schneller oder langsamer?",
+      plain: "Wachstum misst, wie stark Umsatz, Gewinn und Zahlungsfluss über mehrere Jahre zugenommen haben und ob sich das Tempo verändert.",
+      higherMeans: "Höher bedeutet stärkeres bereits realisiertes Wachstum. Es ist keine Prognose."
+    },
+    momentum: {
+      label: "Kursstärke",
+      question: "Wie hat sich der Kurs im Vergleich zum Markt entwickelt?",
+      plain: "Kursstärke misst die Kursentwicklung über mehrere Zeiträume und den Abstand zu wichtigen Trendbereichen.",
+      higherMeans: "Höher bedeutet stärkere bisherige Marktbestätigung. Es ist keine Vorhersage."
+    },
+    value: {
+      label: "Bewertung",
+      question: "Was bezahle ich für das, was das Unternehmen verdient?",
+      plain: "Bewertung setzt den Börsenwert ins Verhältnis zu Gewinn, Zahlungsfluss, Umsatz und Eigenkapital.",
+      higherMeans: "Höher bedeutet günstiger bewertet im Vergleich zum Universum. Es ist keine Aussage über einen fairen Preis."
+    },
+    profitability: {
+      label: "Profitabilität",
+      question: "Wie viel bleibt vom Geschäft übrig?",
+      plain: "Profitabilität misst, wie viel Ertrag ein Unternehmen aus seinem eingesetzten Kapital und seinem Umsatz erzielt.",
+      higherMeans: "Höher bedeutet stärkere laufende Ertragskraft. Es ist keine Empfehlung."
+    },
+    revisions: {
+      label: "Erwartungstrend",
+      question: "Werden die Erwartungen der Analysten angehoben oder gesenkt?",
+      plain: "Erwartungstrend misst, wie sich die Gewinnschätzungen von Analysten in den letzten Monaten verändert haben.",
+      higherMeans: "Höher bedeutet steigende Erwartungen. Dieser Faktor benötigt eine lizenzierte Datenquelle."
+    },
+    risk: {
+      label: "Risiko",
+      question: "Wie stark hat der Kurs bisher geschwankt?",
+      plain: "Risiko misst Schwankungsbreite und die größten zwischenzeitlichen Verluste der Vergangenheit.",
+      higherMeans: "Höher bedeutet geringeres beobachtetes Schwankungsrisiko. Vergangene Schwankungen sind keine Verlustprognose."
+    }
+  };
+
+  /* Typed reason wording. A user must be able to read why something is
+     missing without reading the code. */
+  var REASON_TEXT = {
+    INSUFFICIENT_COMPONENTS: "Zu wenige Einzelkennzahlen erfüllen die Methodik. Der Faktorwert bleibt geschlossen; die vorhandenen Kennzahlen stehen als Evidenz darunter.",
+    INSUFFICIENT_WEIGHTED_COVERAGE: "Die vorhandenen Einzelkennzahlen decken zu wenig Gewicht der Methodik ab. Der Faktorwert bleibt geschlossen; die vorhandenen Kennzahlen stehen als Evidenz darunter.",
+    MANDATORY_COMPONENT_MISSING: "Eine in der Methodik zwingende Kennzahl fehlt. Es wird kein Ersatzwert gebildet.",
+    INPUT_NOT_MATERIALIZED: "Der benötigte Eingabewert ist in der bestehenden Datenplattform noch nicht materialisiert.",
+    PEER_GROUP_UNAVAILABLE: "Keine Vergleichsgruppe erreicht die methodisch geforderte Mindestgröße.",
+    SECTOR_TEMPLATE_MISSING: "Die allgemeine Formel gilt für diese Branche nicht. Eine eigene, versionierte Branchenvorlage existiert noch nicht.",
+    BLOCKED_EXTERNAL: "Es liegt keine lizenzierte, zeitpunktgenaue Datenquelle vor. Ein Ersatz wäre erfunden und wird nicht gebildet.",
+    IDENTITY_UNRESOLVED: "Für diesen Titel besteht keine eindeutige kanonische Emittenten-Zuordnung.",
+    FUNDAMENTALS_UNAVAILABLE: "Für diesen Titel liegt keine zeitpunktsichere Geschäftszahlen-Beobachtung vor.",
+    PRICE_FACTORS_UNAVAILABLE: "Für diesen Titel liegt keine zertifizierte Kursfaktor-Zeile vor.",
+    /* Gemessen am 26.09.2026: 110 Emittenten fuehren 304 notierte Zeilen, und
+       der Anteilsbestand, den die SEC meldet, gilt fuer den Emittenten - nicht
+       fuer eine einzelne Zeile. Wer ihn trotzdem mit dem Kurs einer Zeile
+       multipliziert, erhaelt Zahlen, die es nicht gibt: eine
+       Schuldverschreibung von JPMorgan trug so 1.408 Mrd. */
+    SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING: "Dieses Unternehmen hat mehrere notierte Wertpapiere, und die " +
+      "veröffentlichte Aktienzahl gilt für das Unternehmen als Ganzes. Ein Börsenwert für genau diese " +
+      "Notierung ließe sich daraus nur schätzen - und darauf beruhen alle Bewertungskennzahlen. " +
+      "Sie bleiben deshalb offen, statt eine Zahl zu nennen, die es nicht gibt.",
+    /* market-cap-1.0.0: ausgegebene Aktien zaehlen eigene im Bestand mit. */
+    SHARE_COUNT_NOT_OUTSTANDING: "Gemeldet ist nur die Zahl ausgegebener Aktien – einschließlich der Aktien, die das " +
+      "Unternehmen selbst hält. Ein Börsenwert daraus wäre zu hoch, und darauf beruhen alle Bewertungskennzahlen. " +
+      "Sie bleiben deshalb offen, bis eine ausstehende Aktienzahl gemeldet ist.",
+    /* market-cap-1.1.0: Kurs in USD, Geschaeftszahlen in einer anderen Waehrung. */
+    REPORTING_CURRENCY_NOT_LISTING_CURRENCY: "Das Unternehmen berichtet seine Geschäftszahlen nicht in US-Dollar, der Kurs steht in US-Dollar. " +
+      "Bei Hinterlegungsscheinen (ADR) entspricht ein gehandelter Schein außerdem nicht einer gemeldeten Aktie. " +
+      "Ein Börsenwert und alle Bewertungskennzahlen daraus wären verfälscht; sie bleiben deshalb offen."
+  };
+
+  /* ---------------------------------------------------------------------
+     WIE VIELE HANDELSTAGE DIE KURSFAKTOREN BRAUCHEN.
+
+     "Zu wenige Einzelkennzahlen erfuellen die Methodik" ist wahr und sagt
+     einem Leser nichts. Gemessen am 26.09.2026 tragen 784 der 786 Titel ohne
+     einen einzigen Faktorwert weniger als 252 Handelstage - fuer sie ist der
+     ganze Grund, dass sie noch nicht lange genug gehandelt werden, und das
+     aendert sich von selbst.
+
+     Die Zahlen stammen aus den Fenstern des Vertrags, nicht aus dem Gefuehl:
+     Schwankungsbreite, Verlusttage, groesster Rueckgang und Beta rechnen auf
+     252 Sitzungen. Das Momentumfenster "12 Monate ohne den letzten Monat"
+     braucht dieselben 252 plus die 21 Sitzungen, die es auslaesst - 273.
+     Beide Zahlen sind in `quant-v2.json` als Fenster der Komponenten
+     hinterlegt, und ein Test haelt sie dagegen.
+     --------------------------------------------------------------------- */
+  var REQUIRED_BARS = { momentum: 273, risk: 252 };
+
+  /* NICHT VORHANDEN UND BEWUSST ZURUECKGEHALTEN SIND ZWEI ZUSTAENDE.
+   *
+   * Beide standen unter derselben Ueberschrift "Kein Wert fuer diesen
+   * Faktor". Fuer einen Leser ist das ein Unterschied: im ersten Fall fehlt
+   * etwas, im zweiten hat das Haus sich entschieden, eine Zahl nicht zu
+   * nennen, die es nur schaetzen koennte. Die Ueberschrift steht hier und
+   * nicht in der Oberflaeche, damit nicht zwei Stellen den Code kennen. */
+  var REASON_HEADLINE = {
+    SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING: "Bewertung bewusst zurückgehalten",
+    SHARE_COUNT_NOT_OUTSTANDING: "Bewertung bewusst zurückgehalten",
+    REPORTING_CURRENCY_NOT_LISTING_CURRENCY: "Bewertung bewusst zurückgehalten",
+    BLOCKED_EXTERNAL: "Bewusst offen gelassen",
+    SECTOR_TEMPLATE_MISSING: "Für diese Branche nicht anwendbar",
+    FUNDAMENTALS_UNAVAILABLE: "Noch keine Geschäftszahlen veröffentlicht"
+  };
+  var HEADLINE_SHORT_HISTORY = "Noch nicht genug Kursgeschichte";
+  var HEADLINE_DEFAULT = "Kein Wert für diesen Faktor";
+
+  function finite(value) { return typeof value === "number" && Number.isFinite(value); }
+
+  /* Was der Nutzer statt des Codes liest, wenn die Kursgeschichte die ganze
+     Ursache ist. Der Code bleibt daneben stehen - er gehoert in die
+     Methodikebene, nicht in den ersten Satz. */
+  function historyLimit(factorId, record) {
+    var required = REQUIRED_BARS[factorId];
+    if (!required || !record || !finite(record.bars) || record.bars >= required) return null;
+    return { bars: record.bars, requiredBars: required, missingBars: required - record.bars };
+  }
+
+  function shortHistorySentence(limit) {
+    return "Noch nicht ausreichend Historie: für diese Auswertung werden " + limit.requiredBars +
+      " Handelstage benötigt, aktuell liegen " + limit.bars + " vor. " +
+      "Sobald der Titel länger gehandelt wird, entsteht der Wert von selbst.";
+  }
+
+  /* Stufe aus der POSITION, nie aus dem Faktorwert (factor-band-2.0.0). */
+  function bandForPosition(position) {
+    if (!finite(position)) return null;
+    for (var i = 0; i < BANDS.length; i += 1) if (position >= BANDS[i].min) return BANDS[i];
+    return BANDS[BANDS.length - 1];
+  }
+
+  function confidenceBand(value) {
+    if (!finite(value)) return null;
+    for (var i = 0; i < CONFIDENCE_BANDS.length; i += 1) if (value >= CONFIDENCE_BANDS[i].min) return CONFIDENCE_BANDS[i];
+    return CONFIDENCE_BANDS[CONFIDENCE_BANDS.length - 1];
+  }
+
+  /* ---------------------------------------------------------------------
+     Cross-sectional normalization.
+
+     Winsorization at the 2nd/98th percentile and deterministic midrank
+     percentiles, exactly as quant-v2.0.0 normalization describes. Ties
+     share their average rank so that two identical inputs can never be
+     ordered by array position. Counts and binaries are excluded from
+     winsorization by the caller.
+     --------------------------------------------------------------------- */
+  function percentileOf(sorted, fraction) {
+    if (!sorted.length) return null;
+    if (sorted.length === 1) return sorted[0];
+    var position = fraction * (sorted.length - 1),
+      lower = Math.floor(position),
+      upper = Math.ceil(position);
+    if (lower === upper) return sorted[lower];
+    return sorted[lower] + (sorted[upper] - sorted[lower]) * (position - lower);
+  }
+
+  function winsorBounds(values) {
+    var sorted = values.filter(finite).slice().sort(function (a, b) { return a - b; });
+    if (!sorted.length) return null;
+    return { low: percentileOf(sorted, 0.02), high: percentileOf(sorted, 0.98), count: sorted.length };
+  }
+
+  function clamp(value, bounds) {
+    if (!bounds || !finite(value)) return value;
+    if (value < bounds.low) return bounds.low;
+    if (value > bounds.high) return bounds.high;
+    return value;
+  }
+
+  /* Deterministic midrank percentile in [0,100]. direction "lower" means a
+     lower input is the better outcome and is inverted here, never later. */
+  function midrankPercentiles(values, direction) {
+    var indexed = [];
+    values.forEach(function (value, index) { if (finite(value)) indexed.push({ value: value, index: index }); });
+    var out = values.map(function () { return null; });
+    if (indexed.length < 2) {
+      indexed.forEach(function (entry) { out[entry.index] = 50; });
+      return out;
+    }
+    indexed.sort(function (a, b) { return a.value - b.value || a.index - b.index; });
+    var i = 0;
+    while (i < indexed.length) {
+      var j = i;
+      while (j + 1 < indexed.length && indexed[j + 1].value === indexed[i].value) j += 1;
+      var midrank = (i + j) / 2,
+        percentile = (midrank / (indexed.length - 1)) * 100;
+      for (var k = i; k <= j; k += 1) out[indexed[k].index] = percentile;
+      i = j + 1;
+    }
+    if (direction === "lower") {
+      out = out.map(function (value) { return finite(value) ? 100 - value : null; });
+    }
+    return out;
+  }
+
+  /* Peer blend, quant-v2.0.0 normalization.peerBlend. Universe-only is an
+     allowed fallback and always carries a confidence penalty. */
+  function blend(peerPercentile, universePercentile, peerLevel) {
+    if (peerLevel === "universe" || !finite(peerPercentile)) {
+      return finite(universePercentile) ? universePercentile : null;
+    }
+    if (!finite(universePercentile)) return peerPercentile;
+    return 0.70 * peerPercentile + 0.30 * universePercentile;
+  }
+
+  /* ---------------------------------------------------------------------
+     Factor assembly against a factor contract taken from quant-v2.json.
+     The contract decides; this function only applies it.
+     --------------------------------------------------------------------- */
+  function assembleFactor(contract, components) {
+    var available = components.filter(function (component) { return component.state === "AVAILABLE" && finite(component.score); }),
+      availableWeight = available.reduce(function (sum, component) { return sum + component.weight; }, 0),
+      requirements = contract.minimumDataRequirements || {},
+      minimumComponents = requirements.minimumComponents || 1,
+      minimumWeight = requirements.minimumOriginalWeight || 0;
+
+    if (!available.length) return { state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", score: null, availableWeight: 0 };
+    if (available.length < minimumComponents) return { state: "UNAVAILABLE", reason: "INSUFFICIENT_COMPONENTS", score: null, availableWeight: availableWeight };
+    if (availableWeight + 1e-9 < minimumWeight) return { state: "UNAVAILABLE", reason: "INSUFFICIENT_WEIGHTED_COVERAGE", score: null, availableWeight: availableWeight };
+
+    /* factorFormula: sum(componentWeight*componentScore)/sum(availableComponentWeight).
+       Renormalization happens only inside the factor and is disclosed as
+       availableWeight; it never crosses a factor boundary. */
+    var weighted = available.reduce(function (sum, component) { return sum + component.weight * component.score; }, 0);
+    return { state: "AVAILABLE", reason: null, score: weighted / availableWeight, availableWeight: availableWeight };
+  }
+
+  /* quant-v2.0.0 confidence. Not a probability of success, and stated as
+     such wherever it is shown. */
+  function confidence(parts) {
+    var total = 0;
+    Object.keys(CONFIDENCE_WEIGHTS).forEach(function (key) {
+      var value = finite(parts[key]) ? Math.max(0, Math.min(100, parts[key])) : 0;
+      total += CONFIDENCE_WEIGHTS[key] * value;
+    });
+    return Math.round(total * 10) / 10;
+  }
+
+  /* ---------------------------------------------------------------------
+     Artifact validation. A browser must be able to refuse an artifact that
+     drifted, rather than render whatever it received.
+     --------------------------------------------------------------------- */
+  function validShard(payload, shard) {
+    if (!payload || payload.schemaVersion !== SHARD_SCHEMA) return false;
+    if (payload.methodologyVersion !== METHODOLOGY_VERSION || payload.derivedFrom !== DERIVED_FROM) return false;
+    if (shard && payload.shard !== shard) return false;
+    if (!payload.publication || payload.publication.compositeAllowed !== false || payload.publication.rankingAllowed !== false) return false;
+    if (!payload.securities || typeof payload.securities !== "object") return false;
+    return true;
+  }
+
+  /* Zeile fuer die gemeinsame Regel-Engine: Spaltenreihenfolge aus dem
+     Artefakt, Feldnamen aus dem Katalog. Ein Leser, der die Faktorreihen-
+     folge ein zweites Mal annimmt, wuerde genau dann falsch liegen, wenn
+     sie sich einmal aendert. */
+  function screeningRow(ticker, values, fields) {
+    if (!Array.isArray(values) || !Array.isArray(fields) || values.length !== fields.length) return null;
+    var row = { ticker: ticker };
+    fields.forEach(function (fieldId, index) {
+      var value = values[index];
+      row[fieldId] = finite(value) ? value : null;
+    });
+    return row;
+  }
+
+  /* WARTET DAS ARTEFAKT NOCH AUF DEN NEUBAU, ODER IST ES KAPUTT?
+
+     Zwei sehr verschiedene Lagen, die ohne diese Unterscheidung
+     denselben Fehler ergeben. Nach einem Methodikwechsel traegt das
+     veroeffentlichte Artefakt noch die vorige Version - strukturell
+     einwandfrei, nur nicht mehr aktuell. Das ist ein Zustand mit einem
+     Ablaufdatum ("der naechste Lauf holt es nach") und keine
+     Datenstoerung.
+
+     Ein Artefakt, dessen Aufbau nicht stimmt, ist etwas anderes, und
+     beides gleich zu melden hiesse, bei jedem Versionswechsel einen
+     Defekt anzuzeigen - bis niemand mehr hinschaut. */
+  function screeningVersionState(payload) {
+    if (!payload || payload.schemaVersion !== SCREENING_SCHEMA || payload.namespace !== NAMESPACE ||
+        !Array.isArray(payload.fields) || !payload.fields.length ||
+        !payload.rows || typeof payload.rows !== "object" ||
+        !payload.publication || payload.publication.compositeAllowed !== false ||
+        payload.publication.rankingAllowed !== false) {
+      return "INVALID";
+    }
+    if (payload.methodologyVersion === METHODOLOGY_VERSION && payload.derivedFrom === DERIVED_FROM) {
+      return "CURRENT";
+    }
+    return "SUPERSEDED";
+  }
+
+  function validScreening(payload) {
+    if (!payload || payload.schemaVersion !== SCREENING_SCHEMA) return false;
+    if (payload.methodologyVersion !== METHODOLOGY_VERSION || payload.derivedFrom !== DERIVED_FROM) return false;
+    if (payload.namespace !== NAMESPACE) return false;
+    if (!payload.publication || payload.publication.compositeAllowed !== false || payload.publication.rankingAllowed !== false) return false;
+    if (!Array.isArray(payload.fields) || !payload.fields.length) return false;
+    if (!payload.fields.every(function (id) { return id.indexOf(NAMESPACE + ".") === 0; })) return false;
+    if (!payload.rows || typeof payload.rows !== "object") return false;
+    return true;
+  }
+
+  function validSummary(payload) {
+    if (!payload || payload.schemaVersion !== SUMMARY_SCHEMA) return false;
+    if (payload.methodologyVersion !== METHODOLOGY_VERSION || payload.derivedFrom !== DERIVED_FROM) return false;
+    if (!payload.publication || payload.publication.compositeAllowed !== false || payload.publication.rankingAllowed !== false) return false;
+    if (!payload.counts || !Number.isSafeInteger(payload.counts.productUniverse)) return false;
+    if (!payload.factorStates || typeof payload.factorStates !== "object") return false;
+    return true;
+  }
+
+  /* A published record must never carry a composite score or a rank. This
+     is the gate, not a convention: it is asserted on write and on read. */
+  function publicationViolations(record) {
+    var errors = [];
+    if (!record || typeof record !== "object") return ["record must be an object"];
+    ["compositeScore", "quantScore", "score", "rank", "universeRank", "percentileRank"].forEach(function (key) {
+      if (record[key] !== undefined) errors.push("forbidden published field '" + key + "'");
+    });
+    if (record.composite && record.composite.state !== "WITHHELD") errors.push("composite must be WITHHELD while Quant V2 is not active");
+    if (record.factors) {
+      FACTOR_ORDER.forEach(function (id) {
+        var factor = record.factors[id];
+        if (!factor) { errors.push("missing factor '" + id + "'"); return; }
+        if (FACTOR_STATES.indexOf(factor.state) === -1) errors.push("invalid state for factor '" + id + "'");
+        if (factor.state === "AVAILABLE" && !finite(factor.score)) errors.push("available factor '" + id + "' without score");
+        if (factor.state !== "AVAILABLE" && finite(factor.score)) errors.push("unavailable factor '" + id + "' must not carry a score");
+        if (factor.state !== "AVAILABLE" && FACTOR_REASONS.indexOf(factor.reason) === -1) errors.push("invalid reason for factor '" + id + "'");
+      });
+      if (Object.keys(record.factors).length !== FACTOR_ORDER.length) errors.push("factor set must be exactly the canonical seven");
+    }
+    return errors;
+  }
+
+  /* ---------------------------------------------------------------------
+     Wire format. Component wording, weight, window and contract input are
+     identical for every security, so the artifact carries them once in its
+     head under componentSpecs and the record carries only measurements.
+     hydrate() joins the two back together before anything is rendered.
+     --------------------------------------------------------------------- */
+  function hydrate(record, head) {
+    if (!record) return null;
+    var specs = (head && head.componentSpecs) || {},
+      weights = (head && head.factorWeights) || {},
+      factors = {};
+    FACTOR_ORDER.forEach(function (factorId) {
+      var factor = record.factors && record.factors[factorId];
+      if (!factor) { factors[factorId] = { state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", score: null, components: [] }; return; }
+      var bandHead = head && head.bandSemantics;
+      factors[factorId] = Object.assign({}, factor, {
+        weight: weights[factorId] !== undefined ? weights[factorId] : null,
+        /* Eine Position gilt nur unter der Stufen-Methodik, mit der sie
+           gezaehlt wurde. Ein Artefakt ohne diese Angabe (vor 2.0.0) traegt
+           keine Position - dann gibt es keine Stufe, keine geratene. */
+        position: bandHead && bandHead.version === BAND_SEMANTICS_VERSION && finite(factor.position) ? factor.position : null,
+        positionUniverse: bandHead && bandHead.version === BAND_SEMANTICS_VERSION && bandHead.universe && finite(bandHead.universe[factorId]) ? bandHead.universe[factorId] : null,
+        components: (factor.components || []).map(function (component) {
+          /* Traegt der Titel eine Branchenvorlage, gilt deren Eintrag: sie
+             gewichtet dieselbe Kennzahl anders als die generische Formel
+             und nennt eine andere Formelzeile. Ohne Vorlageneintrag bleibt
+             es beim generischen - und ein Artefakt ohne Vorlagen verhaelt
+             sich Zeichen fuer Zeichen wie vorher. */
+          var templateId = record.template && record.template.id,
+            spec = (templateId && specs[templateId + ":" + factorId + ":" + component.id]) ||
+              specs[factorId + ":" + component.id] || {};
+          return Object.assign({}, spec, component);
+        })
+      });
+    });
+    return Object.assign({}, record, { factors: factors });
+  }
+
+  /* Ordered view for the UI. Never sorted by value: the canonical order is
+     part of what the user learns to read. */
+  function ordered(record) {
+    if (!record || !record.factors) return [];
+    return FACTOR_ORDER.map(function (id) {
+      var factor = record.factors[id] || { state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", score: null },
+        meaning = FACTOR_MEANING[id],
+        /* Ohne gezaehlte Position keine Stufe - kein Rueckfall auf eine
+           Wertgrenze, sonst staenden zwei Bedeutungen unter einem Wort. */
+        display = factor.state === "AVAILABLE" ? bandForPosition(factor.position) : null,
+        /* Nur wenn der Faktor wirklich zu ist: ein verfuegbarer Wert braucht
+           keine Erklaerung, warum er fehlen koennte. */
+        limit = factor.state === "AVAILABLE" ? null : historyLimit(id, record);
+      return {
+        id: id,
+        label: meaning.label,
+        question: meaning.question,
+        plain: meaning.plain,
+        higherMeans: meaning.higherMeans,
+        state: factor.state,
+        reason: factor.reason || null,
+        reasonText: factor.state === "AVAILABLE" ? null
+          : (limit ? shortHistorySentence(limit) : (REASON_TEXT[factor.reason] || REASON_TEXT.INPUT_NOT_MATERIALIZED)),
+        /* Die Ueberschrift zum Satz: sie trennt "fehlt" von "wird bewusst
+           nicht genannt", und die Oberflaeche muss dafuer keinen Code kennen. */
+        reasonHeadline: factor.state === "AVAILABLE" ? null
+          : (limit ? HEADLINE_SHORT_HISTORY : (REASON_HEADLINE[factor.reason] || HEADLINE_DEFAULT)),
+        /* Die Zahlen auch strukturiert, damit die Oberflaeche sie in ihre
+           eigene Ursachengruppe einsortieren kann, statt den Satz zu zerlegen. */
+        history: limit,
+        /* Wie tief die Geschaeftszahlen reichen. Keine Schwelle behauptet -
+           die Fenster dieser Methodik sind je Komponente verschieden -, aber
+           die Tiefe selbst ist eine Aussage, die ein Leser braucht. */
+        fundamentalYears: finite(record.fundamentalYears) ? record.fundamentalYears : null,
+        score: factor.state === "AVAILABLE" ? factor.score : null,
+        position: factor.state === "AVAILABLE" && finite(factor.position) ? factor.position : null,
+        positionUniverse: finite(factor.positionUniverse) ? factor.positionUniverse : null,
+        band: display ? display.id : null,
+        bandLabel: display ? display.label : "Nicht verfügbar",
+        bandPlain: display ? display.plain : null,
+        components: Array.isArray(factor.components) ? factor.components : [],
+        coverage: finite(factor.availableWeight) ? factor.availableWeight : null,
+        confidence: finite(factor.confidence) ? factor.confidence : null,
+        confidenceBand: confidenceBand(factor.confidence),
+        peer: factor.peer || null
+      };
+    });
+  }
+
+  /* One sentence a beginner can act on, built only from what is available.
+     It states position and gaps; it never advises.
+
+     EINE STÄRKE MUSS EINE STÄRKE SEIN.
+
+     Hier stand: die höchste der bewerteten Eigenschaften ist „die klarste
+     Stärke", die niedrigste „die klarste Schwäche" - unabhängig davon, wo
+     beide liegen. Gemessen am 26.09.2026 über 6.441 Titel ergab das bei
+     743 den Satz „Unternehmensqualität ist mit schwach die klarste Stärke."
+     Er ist aus richtigen Zahlen gebaut und trotzdem falsch: die schwächste
+     Eigenschaft eines schwachen Titels ist keine Stärke, und „stark" und
+     „schwach" in einem Satz macht aus einer Einordnung ein Rätsel. Bei
+     AACG kam dazu, dass Stärke und Schwäche im GLEICHEN Band lagen - dann
+     ist die Unterscheidung nicht nur schief, sie existiert nicht.
+
+     Die Grenze ist deshalb das Band und nicht die Reihenfolge: über dem
+     Mittelfeld ist eine Stärke, darunter eine Schwäche, im Mittelfeld
+     keines von beidem - und dass nichts heraussticht, ist selbst eine
+     Aussage. Die Bänder sind die der Methodik (ratingBands); hier steht
+     nur, welche davon einen Satz verdienen. */
+  var STRENGTH_BANDS = ["VERY_STRONG", "STRONG"];
+  var WEAKNESS_BANDS = ["WEAK", "VERY_WEAK"];
+
+  function summarySentence(record) {
+    var alle = ordered(record),
+      factors = alle.filter(function (factor) { return factor.state === "AVAILABLE" && finite(factor.score); });
+    if (!factors.length) return "Für diesen Titel liegt derzeit keine auswertbare Faktor-Evidenz vor.";
+    /* Nach Position, nicht nach Wert: die Position ist ueber Faktoren
+       vergleichbar, der Wert nicht (factor-band-2.0.0). */
+    var stark = factors.filter(function (f) { return STRENGTH_BANDS.indexOf(f.band) >= 0; })
+        .sort(function (a, b) { return b.position - a.position; }),
+      schwach = factors.filter(function (f) { return WEAKNESS_BANDS.indexOf(f.band) >= 0; })
+        .sort(function (a, b) { return a.position - b.position; }),
+      parts = [];
+    if (stark.length) parts.push(stark[0].label + " ist mit " + stark[0].bandLabel.toLowerCase() + " die klarste Stärke.");
+    if (schwach.length) parts.push(schwach[0].label + " ist mit " + schwach[0].bandLabel.toLowerCase() + " die klarste Schwäche.");
+    if (!parts.length) {
+      parts.push(factors.length === 1
+        ? "Die eine bewertete Eigenschaft liegt im mittleren Bereich der bewerteten Aktien."
+        : "Keine der " + factors.length + " bewerteten Eigenschaften liegt über oder unter dem Mittelfeld der bewerteten Aktien.");
+    }
+    var missing = alle.filter(function (factor) { return factor.state !== "AVAILABLE"; });
+    if (missing.length) parts.push(missing.length + " von 7 Faktoren bleiben ohne Wert, weil ihre Daten die Methodik nicht erfüllen.");
+    return parts.join(" ");
+  }
+
+  var api = {
+    METHODOLOGY_VERSION: METHODOLOGY_VERSION,
+    DERIVED_FROM: DERIVED_FROM,
+    SHARD_SCHEMA: SHARD_SCHEMA,
+    SUMMARY_SCHEMA: SUMMARY_SCHEMA,
+    SCREENING_SCHEMA: SCREENING_SCHEMA,
+    SNAPSHOT_SCHEMA: SNAPSHOT_SCHEMA,
+    SNAPSHOT_INDEX_SCHEMA: SNAPSHOT_INDEX_SCHEMA,
+    NAMESPACE: NAMESPACE,
+    FACTOR_ORDER: FACTOR_ORDER.slice(),
+    FACTOR_STATES: FACTOR_STATES.slice(),
+    FACTOR_REASONS: FACTOR_REASONS.slice(),
+    COMPONENT_STATES: COMPONENT_STATES.slice(),
+    BANDS: BANDS.map(function (entry) { return Object.assign({}, entry); }),
+    CONFIDENCE_BANDS: CONFIDENCE_BANDS.map(function (entry) { return Object.assign({}, entry); }),
+    CONFIDENCE_WEIGHTS: Object.assign({}, CONFIDENCE_WEIGHTS),
+    FACTOR_MEANING: JSON.parse(JSON.stringify(FACTOR_MEANING)),
+    REASON_TEXT: Object.assign({}, REASON_TEXT),
+    REASON_HEADLINE: Object.assign({}, REASON_HEADLINE),
+    REQUIRED_BARS: Object.assign({}, REQUIRED_BARS),
+    STRENGTH_BANDS: STRENGTH_BANDS.slice(),
+    WEAKNESS_BANDS: WEAKNESS_BANDS.slice(),
+    historyLimit: historyLimit,
+    BAND_SEMANTICS_VERSION: BAND_SEMANTICS_VERSION,
+    MIN_POSITION_UNIVERSE: MIN_POSITION_UNIVERSE,
+    positionOf: positionOf,
+    bandForPosition: bandForPosition,
+    confidenceBand: confidenceBand,
+    winsorBounds: winsorBounds,
+    clamp: clamp,
+    midrankPercentiles: midrankPercentiles,
+    blend: blend,
+    assembleFactor: assembleFactor,
+    confidence: confidence,
+    validShard: validShard,
+    validSummary: validSummary,
+    validScreening: validScreening,
+    screeningVersionState: screeningVersionState,
+    screeningRow: screeningRow,
+    publicationViolations: publicationViolations,
+    hydrate: hydrate,
+    ordered: ordered,
+    summarySentence: summarySentence
+  };
+
+  if (isNode) module.exports = api;
+  else global.VUFactorEvidence = api;
+})(typeof window !== "undefined" ? window : globalThis);

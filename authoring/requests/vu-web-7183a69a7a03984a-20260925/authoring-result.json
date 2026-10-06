@@ -1,0 +1,203 @@
+{
+  "schema_version": "1.0",
+  "brief_id": "brief_0ab8eb53e21c5d3f",
+  "content_id": "vu-web-7183a69a7a03984a-20260925",
+  "request_type": "FULL_CREATIVE",
+  "fixture_type": "production_authoring_request",
+  "author": {
+    "type": "chatgpt_work",
+    "role": "creative_agent",
+    "api_mode": "no_classic_openai_api"
+  },
+  "hook_strategy": {
+    "source": "authoring_brief",
+    "strategy_id": "vu-web-story-grounded-de-v1",
+    "hook_type": "web_story_grounded_de",
+    "agent_discretion": "single_german_grounded_adaptation"
+  },
+  "hook_variants": [
+    {
+      "hook_variant_id": "vu-web-7183a69a7a03984a-20260925:dbedd7c117e5df72f1312a18f9d4a210599c3b03:web_story_grounded_de:01",
+      "hook_type": "web_story_grounded_de",
+      "text": "10-JÄHRIGE US-RENDITEN AUF 19-JAHRES-HOCH EINIGE ANLEGER SEHEN KAUFCHANCEN",
+      "brief_revision": "dbedd7c117e5df72f1312a18f9d4a210599c3b03",
+      "evidence_refs": [
+        "ev1",
+        "ev2"
+      ]
+    }
+  ],
+  "recommended_hook": {
+    "recommended_hook_variant_id": "vu-web-7183a69a7a03984a-20260925:dbedd7c117e5df72f1312a18f9d4a210599c3b03:web_story_grounded_de:01",
+    "recommendation_reason": "Die Variante überträgt den belegten Renditebefund und die im Bericht genannte Anlegerperspektive kompakt ins Deutsche, ohne eine eigene Empfehlung oder Prognose abzuleiten.",
+    "recommendation_scope": "creative_agent_editorial_only",
+    "is_canonical_selection": false
+  },
+  "caption": "CNBC beschreibt einen Anleihemarkt, in dem das aktuelle Renditeniveau neue Aufmerksamkeit erhält. Einzelne Investoren sehen darin Chancen; das ist eine dokumentierte Einschätzung, keine allgemeine Anlageempfehlung und keine Prognose.",
+  "visual_brief": {
+    "purpose": "Einen vollständig komponierten, veröffentlichungsreifen Markenpost zur aktuellen US-Anleihenstory erzeugen, in dem Motiv, deutscher Hook, Original-Logo und Original-Atlas bereits gemeinsam gestaltet sind.",
+    "visual_strategy": "GENERATIVE",
+    "motif": "Nächtliche US-Finanz- und Zentralbankarchitektur mit einem abstrakten, vollständig unbeschrifteten Anleihenpapier im Vordergrund.",
+    "composition": "Hochformat 4:5. Große deutsche Headline im oberen bis mittleren Bereich, exaktes Vision-Universe-Logo klein oben links, exakter Atlas klein unten rechts und Hauptmotiv zentriert bis rechts der Mitte.",
+    "style": "Fotorealistische Premium-Editorial-Fotografie mit cineastischer Tiefe und subtiler hochwertiger 3D-Politur.",
+    "palette": [
+      "near-black #050505",
+      "white",
+      "soft grey",
+      "restrained mint #5FE0C0",
+      "warm architectural amber"
+    ],
+    "lighting": "Nächtliches institutionelles Licht mit kontrollierten Amber-Akzenten und sehr zurückhaltendem Mint-Akzent.",
+    "materials": [
+      "dark stone",
+      "architectural glass",
+      "brushed metal",
+      "unmarked premium bond paper"
+    ],
+    "narrative": "Aktuelle institutionelle Aufmerksamkeit für US-Anleihen, ohne Kurs-, Rendite-, Performance- oder Prognosezahl im Motiv.",
+    "on_image_text": [
+      "10-JÄHRIGE US-RENDITEN AUF 19-JAHRES-HOCH EINIGE ANLEGER SEHEN KAUFCHANCEN"
+    ],
+    "brand_elements": {
+      "logo": {
+        "source_asset_path": "assets/vision-universe-logo.png",
+        "source_asset_sha256": "8ff5215f61184494b591a3d61f5145626b1d38773d20ed95026456754a6d63c8",
+        "placement": "top-left",
+        "usage": "reference asset, scale only"
+      },
+      "atlas": {
+        "source_asset_path": "assets/atlas.png",
+        "source_asset_sha256": "fbfa15601222b76fca4a7a3d89696476bbc5cf4e39a9a03743a4b733e5b4de0a",
+        "placement": "bottom-right",
+        "usage": "reference asset, scale only"
+      }
+    },
+    "restrictions": [
+      "Keine Kurse im Bild",
+      "Keine Renditezahlen im Bild",
+      "Kein Wasserzeichen",
+      "Keine Prognose-Aussage im Bildtext",
+      "Kein weiterer Bildtext außerhalb von Hook und Markenlogo",
+      "Kein Rechenzentrum",
+      "Kein Serverraum",
+      "Kein Technologie-Motiv",
+      "Kein lesbarer Börsenticker",
+      "Kein Diagramm",
+      "Kein Bildschirmfoto",
+      "Kein Dashboard"
+    ]
+  },
+  "visual_variants": [
+    {
+      "visual_variant_id": "vu-web-7183a69a7a03984a-20260925:dbedd7c117e5df72f1312a18f9d4a210599c3b03:visual:GENERATIVE:01",
+      "visual_strategy": "GENERATIVE",
+      "brief_revision": "dbedd7c117e5df72f1312a18f9d4a210599c3b03",
+      "asset_path": "authoring/requests/vu-web-7183a69a7a03984a-20260925/assets/visual-01.png",
+      "asset_sha256": "70f3c21cc01787917110de1379679d0ebddc01b32ccfb9e80f5552f71baec18a",
+      "asset_byte_size": 2136373,
+      "mime_type": "image/png",
+      "width": 1122,
+      "height": 1402,
+      "brand_elements": {
+        "logo_source_asset_path": "assets/vision-universe-logo.png",
+        "logo_source_asset_sha256": "8ff5215f61184494b591a3d61f5145626b1d38773d20ed95026456754a6d63c8",
+        "logo_placement": "top-left",
+        "atlas_source_asset_path": "assets/atlas.png",
+        "atlas_source_asset_sha256": "fbfa15601222b76fca4a7a3d89696476bbc5cf4e39a9a03743a4b733e5b4de0a",
+        "atlas_placement": "bottom-right",
+        "integration_mode": "built_in_imagegen_reference_compositing",
+        "visual_inspection_status": "passed"
+      }
+    }
+  ],
+  "evidence_refs": [
+    {
+      "ref_id": "ev1",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/0",
+      "supports": "Laufzeit der US-Staatsanleihe und aktueller Renditebefund"
+    },
+    {
+      "ref_id": "ev2",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/1",
+      "supports": "Historische Einordnung als 19-Jahres-Hoch"
+    },
+    {
+      "ref_id": "grounding-hook",
+      "source": "authoring-brief.json",
+      "json_pointer": "/grounding_hook_en",
+      "supports": "Deterministische englische Ausgangsaussage für die deutsche Adaption"
+    },
+    {
+      "ref_id": "source-story",
+      "source": "authoring-brief.json",
+      "json_pointer": "/source_story",
+      "supports": "Quelle und Attribution"
+    },
+    {
+      "ref_id": "visual-strategy",
+      "source": "authoring-brief.json",
+      "json_pointer": "/visual_strategy",
+      "supports": "Visual Strategy, Komposition und Restriktionen"
+    },
+    {
+      "ref_id": "brand-assets",
+      "source": "authoring-brief.json",
+      "json_pointer": "/brand_assets",
+      "supports": "Verbindliche Logo- und Atlas-Referenzen"
+    },
+    {
+      "ref_id": "publishing-gate",
+      "source": "authoring-brief.json",
+      "json_pointer": "/publishing_allowed",
+      "supports": "publishing_allowed"
+    }
+  ],
+  "quality": {
+    "status": "pass_for_authoring",
+    "checks": {
+      "brief_id_matches": true,
+      "content_id_matches_directory": true,
+      "request_type_supported": true,
+      "hook_strategy_inherited": true,
+      "required_hook_variant_count_met": true,
+      "hook_language_german": true,
+      "grounding_claim_preserved": true,
+      "hook_ids_bound_to_full_brief_sha": true,
+      "all_numeric_text_claims_evidence_bound": true,
+      "no_forecast": true,
+      "no_agent_recommendation": true,
+      "no_causality_claim": true,
+      "hook_and_caption_complementary": true,
+      "visual_strategy_inherited": true,
+      "visual_topic_matches_rates_and_bonds": true,
+      "required_on_image_hook_present": true,
+      "prohibited_extra_image_text_absent": true,
+      "logo_reference_used": true,
+      "atlas_reference_used": true,
+      "brand_elements_visually_inspected": true,
+      "visual_id_bound_to_full_brief_sha": true,
+      "real_raster_asset_present": true,
+      "png_structure_valid_through_iend": true,
+      "asset_hash_recorded": true,
+      "asset_byte_size_recorded": true,
+      "selected_hook_absent": true,
+      "recommendation_non_canonical": true,
+      "publishing_gate_closed": true
+    }
+  },
+  "processing": {
+    "status": "completed",
+    "brief_blob_sha": "dbedd7c117e5df72f1312a18f9d4a210599c3b03",
+    "brief_revision": "dbedd7c117e5df72f1312a18f9d4a210599c3b03",
+    "processing_key": "brief_0ab8eb53e21c5d3f:vu-web-7183a69a7a03984a-20260925:dbedd7c117e5df72f1312a18f9d4a210599c3b03:1.0",
+    "variant_identity_version": "2",
+    "idempotency_mode": "reuse_completed_result",
+    "immutable_variant_mapping": true,
+    "canonical_hook_selected": false,
+    "request_type": "FULL_CREATIVE",
+    "image_generation_mode": "built_in_chatgpt_work"
+  },
+  "publishing_allowed": false
+}

@@ -1,0 +1,183 @@
+{
+  "generatedAt": "2026-10-06T13:39:53.776Z",
+  "overall": "UNAVAILABLE",
+  "counts": {
+    "PASS": 6,
+    "WARNING": 1,
+    "FAIL": 0,
+    "UNAVAILABLE": 10
+  },
+  "rows": [
+    {
+      "component": "providers.auth",
+      "label": "Provider-Authentifizierung",
+      "state": "PASS",
+      "dataSource": "mock",
+      "lastSuccessAt": null,
+      "failureMode": null,
+      "nextAction": null,
+      "detail": null
+    },
+    {
+      "component": "providers.publishing",
+      "label": "Veroeffentlichung",
+      "state": "PASS",
+      "dataSource": "mock",
+      "lastSuccessAt": null,
+      "failureMode": null,
+      "nextAction": null,
+      "detail": null
+    },
+    {
+      "component": "providers.analytics",
+      "label": "Kennzahlenabruf",
+      "state": "PASS",
+      "dataSource": "mock",
+      "lastSuccessAt": null,
+      "failureMode": null,
+      "nextAction": null,
+      "detail": null
+    },
+    {
+      "component": "providers.audience",
+      "label": "Publikumssignale",
+      "state": "PASS",
+      "dataSource": "mock",
+      "lastSuccessAt": null,
+      "failureMode": null,
+      "nextAction": null,
+      "detail": null
+    },
+    {
+      "component": "signals.internal",
+      "label": "Interne VU-Signale",
+      "state": "WARNING",
+      "dataSource": "social/data/signals.json",
+      "lastSuccessAt": "2026-09-19T15:46:36.650Z",
+      "failureMode": "Letzter Erfolg vor 406 h (Frist 48 h).",
+      "nextAction": "Pruefen, warum der Lauf ueberfaellig ist.",
+      "detail": "Letzter Erfolg vor 406 h (Frist 48 h)."
+    },
+    {
+      "component": "signals.market",
+      "label": "Marktsignale",
+      "state": "UNAVAILABLE",
+      "dataSource": null,
+      "lastSuccessAt": null,
+      "failureMode": "Kein Zustandsbericht vorhanden.",
+      "nextAction": "Den zustaendigen Lauf einrichten oder ihn seinen Zustand schreiben lassen.",
+      "detail": null
+    },
+    {
+      "component": "signals.news",
+      "label": "Nachrichtensignale",
+      "state": "UNAVAILABLE",
+      "dataSource": null,
+      "lastSuccessAt": null,
+      "failureMode": "Kein lizenzierter News-Provider angebunden.",
+      "nextAction": "NewsDataProvider (quant/engines/provider.js) ist bereits definiert.",
+      "detail": null
+    },
+    {
+      "component": "signals.social",
+      "label": "Externe Social-Signale",
+      "state": "UNAVAILABLE",
+      "dataSource": null,
+      "lastSuccessAt": null,
+      "failureMode": "Keine Plattform-API mit Trenddaten angebunden; Lizenz- und Plattformregeln sind vorher zu klaeren.",
+      "nextAction": "SocialAudienceProvider liefert Kommentare; oeffentliche Trends brauchen eine eigene Quelle.",
+      "detail": null
+    },
+    {
+      "component": "intelligence.trend",
+      "label": "Trend Intelligence",
+      "state": "UNAVAILABLE",
+      "dataSource": null,
+      "lastSuccessAt": null,
+      "failureMode": "Keine externe Trendquelle angebunden; der Trend Score enthaelt sich (§45).",
+      "nextAction": "Einrichten oder Zugangsdaten hinterlegen.",
+      "detail": null
+    },
+    {
+      "component": "intelligence.opportunity",
+      "label": "Opportunity Engine",
+      "state": "UNAVAILABLE",
+      "dataSource": null,
+      "lastSuccessAt": null,
+      "failureMode": "Keine nutzbare Platte (PLATTE_VERALTET), also keine Gelegenheiten.",
+      "nextAction": "Einrichten oder Zugangsdaten hinterlegen.",
+      "detail": "Dieser Lauf hat nie erfolgreich stattgefunden."
+    },
+    {
+      "component": "content.pipeline",
+      "label": "Content-Pipeline",
+      "state": "UNAVAILABLE",
+      "dataSource": null,
+      "lastSuccessAt": null,
+      "failureMode": "Keine Kandidaten.",
+      "nextAction": "Einrichten oder Zugangsdaten hinterlegen.",
+      "detail": "Dieser Lauf hat nie erfolgreich stattgefunden."
+    },
+    {
+      "component": "content.validation",
+      "label": "Fakten- und Markenpruefung",
+      "state": "UNAVAILABLE",
+      "dataSource": null,
+      "lastSuccessAt": null,
+      "failureMode": "Keine Pakete zu pruefen.",
+      "nextAction": "Einrichten oder Zugangsdaten hinterlegen.",
+      "detail": "Dieser Lauf hat nie erfolgreich stattgefunden."
+    },
+    {
+      "component": "scheduler",
+      "label": "Terminierung",
+      "state": "UNAVAILABLE",
+      "dataSource": null,
+      "lastSuccessAt": null,
+      "failureMode": "Nichts zu terminieren.",
+      "nextAction": "Einrichten oder Zugangsdaten hinterlegen.",
+      "detail": "Dieser Lauf hat nie erfolgreich stattgefunden."
+    },
+    {
+      "component": "queue",
+      "label": "Warteschlange",
+      "state": "PASS",
+      "dataSource": null,
+      "lastSuccessAt": "2026-10-06T13:39:53.776Z",
+      "failureMode": null,
+      "nextAction": null,
+      "detail": "Letzter Erfolg vor 0 h."
+    },
+    {
+      "component": "learning",
+      "label": "Learning Engine",
+      "state": "UNAVAILABLE",
+      "dataSource": null,
+      "lastSuccessAt": null,
+      "failureMode": "Kein Zustandsbericht vorhanden.",
+      "nextAction": "Den zustaendigen Lauf einrichten oder ihn seinen Zustand schreiben lassen.",
+      "detail": null
+    },
+    {
+      "component": "experiments",
+      "label": "Experimente",
+      "state": "UNAVAILABLE",
+      "dataSource": null,
+      "lastSuccessAt": null,
+      "failureMode": "Kein Zustandsbericht vorhanden.",
+      "nextAction": "Den zustaendigen Lauf einrichten oder ihn seinen Zustand schreiben lassen.",
+      "detail": null
+    },
+    {
+      "component": "killSwitch",
+      "label": "Kill Switch",
+      "state": "PASS",
+      "dataSource": "social/config/kill-switch.json",
+      "lastSuccessAt": "2026-10-06T13:39:53.776Z",
+      "failureMode": null,
+      "nextAction": null,
+      "detail": "Letzter Erfolg vor 0 h."
+    }
+  ],
+  "explanation": "Gesamtzustand UNAVAILABLE: 6 PASS, 1 WARNING, 0 FAIL, 10 UNAVAILABLE. Auffaellig: Interne VU-Signale. Noch nicht eingerichtet (10): Marktsignale, Nachrichtensignale, Externe Social-Signale, Trend Intelligence, Opportunity Engine, Content-Pipeline, Fakten- und Markenpruefung, Terminierung, Learning Engine, Experimente."
+}

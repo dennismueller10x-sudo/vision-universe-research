@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "note": "Der GEMESSENE Stand vor dem finalen Recovery-Zyklus (Kalender 1.8.0, Branchenschicht, NO_XBRL-Ursachen). Festgehalten aus den Artefakten von Lauf 34749245361, damit der Vergleich aus zwei Messungen besteht.",
+  "takenAt": "2026-09-13T13:50:54+00:00",
+  "sourceRun": "34749245361",
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.7.1",
+    "formula": "1.2.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.3.0"
+    }
+  },
+  "overlap": {
+    "PRODUCT_TITLES": 7004,
+    "R2_HISTORY_AVAILABLE": 6997,
+    "R2_HISTORY_UNAVAILABLE": 7,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5963,
+    "TECHNICAL_INSUFFICIENT_HISTORY": 1041,
+    "R2_AND_FUNDAMENTAL": 5810,
+    "R2_WITHOUT_FUNDAMENTAL": 1187,
+    "TECHNICAL_WITHOUT_FUNDAMENTAL": 748,
+    "PIT_AND_R2": 5469,
+    "PIT_R2_AND_TECHNICAL": 5139,
+    "PIT_R2_TECHNICAL_AND_CORE_FUNDAMENTALS": 4480,
+    "MARKET_HISTORY_AVAILABLE": 6997,
+    "TECHNICAL_COVERED": 5963,
+    "FUNDAMENTAL_COMPANY_FACTS_AVAILABLE": 5813,
+    "PIT_READY": 5470,
+    "TECHNICAL_AND_FUNDAMENTAL": 5215,
+    "TECHNICAL_WITHOUT_FUNDAMENTALS": 748,
+    "FUNDAMENTALS_WITHOUT_TECHNICAL": 598,
+    "HISTORICAL_PRICE_AND_FUNDAMENTAL": 5810,
+    "PIT_AND_TECHNICAL": 5139,
+    "PIT_AND_HISTORICAL_PRICE": 5469,
+    "PIT_TECHNICAL_AND_HISTORICAL_PRICE": 5139
+  },
+  "coreMetricsOfTechnical": {
+    "TECHNICAL_WITH_REVENUE": 4485,
+    "TECHNICAL_WITH_NET_INCOME": 5134,
+    "TECHNICAL_WITH_EPS": 4876,
+    "TECHNICAL_WITH_OPERATING_CASH_FLOW": 5120,
+    "TECHNICAL_WITH_FCF": 4593,
+    "TECHNICAL_WITH_ASSETS": 5132,
+    "TECHNICAL_WITH_DEBT": 2897,
+    "TECHNICAL_WITH_EQUITY": 5102
+  },
+  "history": {
+    "TECHNICAL_WITH_ANNUAL_1Y": 5102,
+    "TECHNICAL_WITH_ANNUAL_3Y": 4879,
+    "TECHNICAL_WITH_ANNUAL_5Y": 4424,
+    "TECHNICAL_WITH_ANNUAL_10Y": 3017,
+    "TECHNICAL_WITH_ANNUAL_15Y": 2242,
+    "TECHNICAL_WITH_QUARTERLY_1Y": 5082,
+    "TECHNICAL_WITH_QUARTERLY_3Y": 4205,
+    "TECHNICAL_WITH_QUARTERLY_5Y": 3774,
+    "TECHNICAL_WITH_QUARTERLY_10Y": 2759
+  },
+  "backtest": {
+    "BACKTEST_PRICE_READY": 6997,
+    "BACKTEST_PRICE_TECHNICAL_READY": 5963,
+    "BACKTEST_PRICE_FUNDAMENTAL_READY": 5139,
+    "BACKTEST_PIT_FUNDAMENTAL_READY": 5139,
+    "BACKTEST_5Y_READY": 4424,
+    "BACKTEST_10Y_READY": 3017,
+    "BACKTEST_15Y_READY": 2242
+  },
+  "gaps": {
+    "SEC_RECOVERABLE": 384,
+    "EXTERNAL_PROVIDER_CANDIDATE": 111,
+    "RESOLVES_WITH_TIME": 821,
+    "BY_DESIGN": 312,
+    "REQUIRES_REVIEW": 389
+  },
+  "titleStates": {
+    "AVAILABLE": 4987,
+    "PARTIAL": 483,
+    "MISSING": 343,
+    "UNAVAILABLE": 1191
+  },
+  "fine": {
+    "denominator": {
+      "SEC_RECOVERABLE": 384
+    },
+    "byConsequence": {
+      "NOT_APPLICABLE": 219,
+      "SEC_RECOVERABLE": 72,
+      "INDUSTRY_LAYER": 10,
+      "REQUIRES_REVIEW": 83
+    },
+    "stillRecoverableBySec": 72,
+    "byCause": {
+      "SPAC_BLANK_CHECK": 171,
+      "SPECIAL_PURPOSE_ENTITY": 48,
+      "BANK": 3,
+      "ASSET_MANAGER": 7,
+      "BALANCE_SHEET_ONLY": 28,
+      "IFRS_REMAINING": 3,
+      "PERIOD_MAPPING": 9,
+      "TRUE_MISSING_TAG_MAPPING": 32,
+      "INSUFFICIENT_DISCLOSURE": 29,
+      "REQUIRES_REVIEW": 54
+    }
+  },
+  "fundamentals": {
+    "COMPANY_FACTS_AVAILABLE": 5406,
+    "ISSUERS_INGESTED_TOTAL": 5437
+  },
+  "externalCandidates": {
+    "COUNT": 111,
+    "FOREIGN_ISSUERS": 27,
+    "OTHER": 84
+  }
+}

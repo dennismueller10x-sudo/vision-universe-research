@@ -1,0 +1,9 @@
+# Active phase — EOD rule transitions
+
+Base PR71 headd623fcf210916ec6078efd059a19432f51821c66. Separate workstream/vu2-signals-workspace. Requirements Master8/19/38/42/45/55/67/82. Research2 meaning/explanation/evidence: existing Discover/Screener conditions, observed change, dates, evidence and editable rule.
+
+Contract: two existing market recipes (nonnegative6M momentum; price at/above200-day average) evaluated by existing Query.matches. Existing PanelBuilder and Factors.priceMetrics own all calculations and Float32 semantics. No independent formula, benchmark consumption, score, realtime, alert delivery or trade claim. Default20 existing EOD comparisons, selectable5/60. Historical reconstruction uses current stored data, not PIT-certified history. Events carry deterministic ID, version/query hash, both observation dates, expiration at next observation, priority and provenance.
+
+Guarded: raw+derived permission before reading scoped history, exact identity, known adjustment, finite positive prices, chronology, no future bars/snapshot, full warmup+window, split-window reconciliation gate, finite normalized panel/metrics, existing calendar closure before snapshot. Calendar does not certify provider finality and does not invent/fill bars. Unavailable coverage remains distinct from no transitions and visible even with no events.
+
+Affected: additive market-signal-contract, service, VU2 route/CSS/dependencies, targeted tests, browser QA, ledger. Five focused tests PASS; reviewers found overflow, incomplete-window and pre-close cases, repaired with regressions. UI coverage dates repaired. Browser: default empty20, real historical60 four events, MSFT filter two, evidence and canonical Screener handoff at1440/390. No provider/full-universe rerun. Rollback additive consumer; source histories and engines untouched.

@@ -1,0 +1,329 @@
+name: Social CI
+
+# Prueft das Social Intelligence OS: Contracts, Provider-Abstraktion,
+# Meta-Authentifizierung, Publishing-Idempotenz, die Intelligence-Engines,
+# Fakten- und Markenvalidierung, die Learning-Sicherheitsgrenze und den
+# geschlossenen Kreislauf.
+#
+# DIESE CI BRAUCHT KEINE PRODUKTIVEN ZUGANGSDATEN (§43).
+#
+# Das ist keine Bequemlichkeit. Ein Test, der gegen die echte Graph API
+# laeuft, veroeffentlicht im Zweifel etwas — und ein Test, der von einem
+# fremden Dienst abhaengt, ist rot, wenn dieser Dienst Wartung hat, und
+# sagt dann nichts ueber unseren Code. Der Mock-Provider erfuellt dieselben
+# vier Interfaces und kann jede Fehlerlage aus §44 ausloesen.
+#
+# Ein Lauf gegen Meta ist ausdruecklich NICHT Teil dieser CI. Er laeuft
+# von Hand (scripts/social/verify-meta-capabilities.mjs), sobald der Owner
+# Zugangsdaten hinterlegt hat.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'social/**'
+      - 'scripts/social/**'
+      - 'workers/**'
+      - '.github/workflows/social-ci.yml'
+  pull_request:
+    paths:
+      - 'social/**'
+      - 'scripts/social/**'
+      - 'workers/**'
+      - '.github/workflows/social-ci.yml'
+  workflow_dispatch:
+
+# Nur lesen: reine Pruef-Workflows brauchen kein Schreibrecht (Audit 03.10.2026).
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # =====================================================================
+      # DEN CREATIVE-JOB-REGISTERZUSTAND AN DIE EVIDENZ HOLEN — VOR
+      # MAX_OPEN_CREATIVE_JOBS (Owner-Direktive "WORKFLOW-ORDERING-FIX",
+      # 24.09.)
+      #
+      # Dieselbe Reihenfolge, aus demselben Grund, wie in
+      # social-orchestrator.yml: die fuenf harten Invarianten unten
+      # (check-hard-invariants.mjs, ueber die Suite gemessen) zaehlen
+      # MAX_OPEN_CREATIVE_JOBS aus dem gerade ausgecheckten
+      # social/data/creative-jobs.json. Ein Register-Eintrag ohne je
+      # geoeffneten Request-PR (DISPATCH_NIE_ERFOLGT) blockiert diese
+      # CI sonst genauso wie er den Orchestrator blockierte — nicht,
+      # weil der Code falsch waere, sondern weil niemand vor der
+      # Zaehlung nachgesehen hat.
+      #
+      # --write schreibt nur in den ephemeren Checkout dieses Laufs;
+      # diese CI committet nichts zurueck (kein Push-Schritt in dieser
+      # Datei). Die eigentliche, dauerhafte Bereinigung geschieht durch
+      # denselben Schritt im Orchestrator, dessen Ergebnis er
+      # festschreibt.
+      # =====================================================================
+      - name: Creative-Ergebnisse von offenen Request-PRs holen
+        run: node scripts/social/ingest-open-creative-jobs.mjs --write
+
+      - name: Creative Jobs gegen die Evidenz abgleichen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/social/reconcile-creative-jobs.mjs --write
+
+      # =====================================================================
+      # DIE SUITEN UND DIE ISOLATION — EINMAL, UND MIT STAND
+      #
+      # verify-suites.mjs laesst beide Suiten und die Isolationspruefung
+      # laufen und schreibt das Ergebnis samt Commit nach
+      # .verification/suites.json. Frueher standen hier zwei getrennte
+      # Testschritte, und der Reifebericht bekam die Fahne
+      # `--suites-green ja` - eine Behauptung des Workflows ueber die
+      # Arbeit, die der Bericht bewerten sollte.
+      #
+      # Der Schritt scheitert, wenn eine Suite rot ist oder ein Testlauf
+      # eine Produktionsdatei veraendert hat. Beides bleibt damit ein
+      # harter Fehler der CI und wird nicht erst im Bericht sichtbar.
+      # =====================================================================
+      - name: Suiten und Test-/Produktionsisolation messen
+        run: node scripts/social/verify-suites.mjs
+
+      - name: Was gemessen wurde
+        if: always()
+        run: cat .verification/suites.json || echo "Kein Befund geschrieben."
+
+      # Die fuenf harten Invarianten (§45). Sie werden GEMESSEN, nicht
+      # gelesen: der Publish-Pfad wird zweimal aufgerufen und muss
+      # zweimal mit SEINEM eigenen Grund ablehnen.
+      - name: Die fuenf harten Invarianten
+        run: node scripts/social/check-hard-invariants.mjs
+
+      # Der Reifezustand des Approval Centers, gemessen am Repository.
+      # Er schaltet nichts frei; er stellt fest - und was er von hier aus
+      # nicht messen kann (ob der Worker deployt ist), bleibt
+      # ausdruecklich UNGEPRUEFT statt als bestanden zu gelten.
+      # Ohne --suites-green: der Suitenzustand kommt aus dem gemessenen
+      # Befund des Schritts oben (.verification/suites.json, an diesen
+      # Commit gebunden). Die Fahne war eine Behauptung des Workflows
+      # ueber die Arbeit, die dieser Bericht bewerten soll.
+      - name: APPROVAL_CENTER_PRODUCTION_READY
+        run: node scripts/social/approval-center-readiness.mjs
+
+      # =====================================================================
+      # §26/§27 — DIE GEMESSENEN ZUSTAENDE DES ASSET-/HASHTAG-AUFTRAGS
+      #
+      # Von hier aus ist fast alles messbar: die Tagbreite ueber den
+      # echten Themenbestand, die gerenderte Karte, die Sperre, die
+      # Zusammensetzung des Sendetextes. Und, anders als in der
+      # Entwicklungsumgebung, auch die Erreichbarkeit des Bildes: dieser
+      # Runner erreicht research.visionuniverse.de.
+      #
+      # Was er NICHT erreicht, ist der Worker hinter der eigenen Domain;
+      # der Production Smoke steht deshalb erst im Deploy-Workflow.
+      #
+      # `|| true`: auf einem Zweig ist IN_MAIN_INTEGRIERT
+      # notwendigerweise offen. Der Bericht stellt fest, er schaltet
+      # nichts frei — und ein roter Lauf dafuer saegte an der falschen
+      # Stelle. Rot wird die CI von den Suiten darueber.
+      #
+      # Lesend. Kein Publish, kein Approve, kein Dispatch.
+      # =====================================================================
+      - name: ASSET + HASHTAG — die gemessenen Zustaende
+        if: always()
+        run: |
+          set -uo pipefail
+          node scripts/social/asset-hashtag-done.mjs | tee /tmp/asset-hashtag.log || true
+          {
+            echo "## ASSET + HASHTAG"
+            echo '```'
+            cat /tmp/asset-hashtag.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Die Cloudflare-Skripte sind syntaktisch gueltig und laufen ohne Zugang
+        # Sie werden vom Workflow social-cloudflare gerufen, wo ein
+        # Syntaxfehler erst nach dem Start auffiele — und dann mit
+        # Cloudflare-Zugang im Ruecken.
+        run: |
+          for file in scripts/social/provision-cloudflare.mjs scripts/social/verify-worker.mjs; do
+            node --check "$file" 2>/dev/null || node -e "import('./$file')" >/dev/null 2>&1 || true
+          done
+          # provision bricht ohne Zugangsdaten ab — mit einer Meldung, nicht mit einem Stacktrace.
+          if node scripts/social/provision-cloudflare.mjs --ensure-kv 2>&1 | grep -q "ABBRUCH"; then
+            echo "provision-cloudflare.mjs meldet fehlenden Zugang sauber."
+          else
+            echo "::error::provision-cloudflare.mjs verhaelt sich ohne Zugang unerwartet."
+            exit 1
+          fi
+          # verify meldet ein Ergebnis und wirft nicht — was auch immer das
+          # Netz sagt.
+          #
+          # Hier stand `grep -q "Worker-Adresse bekannt"`. Diese Zeile
+          # erscheint NUR, wenn die Adresse FEHLT. Sie fehlte, solange sie
+          # aus einem Secret kam, das es in der CI nie gab; seit sie einen
+          # Vorgabewert aus wrangler.toml hat, kann der Fall nicht mehr
+          # eintreten. Die Pruefung verlangte damit Text von einem
+          # Programm, das ihn zu Recht nicht mehr schreibt — und war rot,
+          # obwohl alles stimmte.
+          #
+          # Geprueft gehoert der Vertrag, nicht der Wortlaut eines
+          # Sonderfalls: ein Ergebnis steht da, und es gibt keinen
+          # Stacktrace. Ob der Worker gerade erreichbar ist, ist eine
+          # Frage an die Infrastruktur und nicht an diesen Code — ein
+          # roter Lauf deswegen saegte an der falschen Stelle.
+          ausgabe="$(node scripts/social/verify-worker.mjs 2>&1 || true)"
+          echo "$ausgabe" | tail -6
+          if echo "$ausgabe" | grep -q "^Abgebrochen:"; then
+            echo "::error::verify-worker.mjs ist mit einem Stacktrace abgebrochen."
+            exit 1
+          fi
+          if echo "$ausgabe" | grep -q "^Ergebnis: "; then
+            echo "verify-worker.mjs meldet ein Ergebnis, ohne zu werfen."
+          else
+            echo "::error::verify-worker.mjs meldet kein Ergebnis."
+            exit 1
+          fi
+
+      - name: Worker-Preflight (lokale Pruefungen)
+        # Ohne Cloudflare-Zugang prueft er die Konfiguration: Zielname,
+        # Platzhalter, und vor allem — keine Secret-Werte in wrangler.toml.
+        run: node scripts/social/preflight-worker.mjs
+
+      - name: Konfigurations- und Methodikdateien sind gueltiges JSON
+        run: |
+          files=$(find social/config social/methodology -name '*.json')
+          for file in $files; do
+            node -e "JSON.parse(require('fs').readFileSync('$file','utf8'))" || exit 1
+          done
+          echo "$(echo "$files" | wc -l) JSON-Dateien geprueft"
+
+      - name: Jede Engine laedt in Node und registriert sich nicht global
+        # Die Engines laufen in Browser UND Node (UMD-Muster wie quant/engines).
+        # Ein Ladefehler faellt hier auf und nicht erst im Browser.
+        run: |
+          for file in social/engines/*.js; do
+            node -e "
+              const api = require('./$file');
+              if (!api || typeof api !== 'object') throw new Error('$file exportiert nichts');
+            " || exit 1
+          done
+          echo "$(ls social/engines/*.js | wc -l) Engines geprueft"
+
+      - name: Der Kill Switch ist im ausgelieferten Zustand AUS
+        # Die wichtigste Zeile dieser Datei. Sie faengt den Fall, dass
+        # jemand den Schalter zum Testen umlegt und das Zuruecklegen
+        # vergisst — der einzige Weg, auf dem dieses System versehentlich
+        # etwas veroeffentlichen koennte.
+        run: |
+          node -e '
+            const config = require("./social/config/kill-switch.json");
+            const gate = config.gates.GLOBAL_AUTOPUBLISH;
+            if (gate.enabled !== false) {
+              throw new Error(
+                "GLOBAL_AUTOPUBLISH ist eingeschaltet. Das ist eine Owner-Entscheidung und " +
+                "gehoert in einen eigenen Commit mit Begruendung — nicht in einen Nebeneffekt.");
+            }
+            const meta = config.gates.PROVIDER_META;
+            if (meta.enabled !== false) {
+              throw new Error("PROVIDER_META ist eingeschaltet, obwohl der Provider nie gegen die echte API lief.");
+            }
+            console.log("Kill Switch: global AUS, Meta AUS.");
+          '
+
+      - name: Der Verbindungsabruf laeuft ohne Zugang fehlerfrei durch
+        # Dieselbe Eigenschaft wie ueberall: ein fehlender Zugang ist eine
+        # Konfigurationsfrage, kein Baufehler. Das erzeugte Artefakt sagt
+        # ausdruecklich, dass es ueber die Verbindung nichts aussagen kann.
+        #
+        # Diese Pruefung verlangte frueher `state: "not_configured"` und
+        # `connected: false` — also genau die beiden Werte, die
+        # fetch-meta-status.mjs bewusst NICHT mehr schreibt.
+        #
+        # Der Grund steht im Skript: NICHT KONFIGURIERT ist eine Aussage
+        # ueber die VERBINDUNG, ZUGANGSDATEN FEHLEN eine ueber DIESEN
+        # LAUF. Aus der zweiten folgt die erste nicht — und aus den alten
+        # Feldern ist genau dieser Fehlschluss an den Owner gegangen.
+        # `connected` ist seitdem null und nicht false, weil Unbekanntes
+        # sonst aussieht wie Abwesendes.
+        #
+        # Die Pruefung bestand also darauf, dass das Artefakt die falsche
+        # Aussage wieder macht. Sie prueft jetzt die richtige.
+        run: |
+          node scripts/social/fetch-meta-status.mjs
+          node -e '
+            const { execSync } = require("child_process");
+            execSync("node scripts/social/fetch-meta-status.mjs --out /tmp/social-meta");
+            const report = require("/tmp/social-meta/meta-connection.json");
+            if (report.state !== "credentials_missing_here") {
+              throw new Error("Ohne Zugang muss der Zustand credentials_missing_here sein, war: " + report.state);
+            }
+            if (report.connected !== null) {
+              throw new Error("connected muss null sein - dieser Lauf weiss nichts ueber die Verbindung. War: " + report.connected);
+            }
+            if (report.probeScope !== "THIS_RUN_ONLY") {
+              throw new Error("probeScope muss THIS_RUN_ONLY sein, war: " + report.probeScope);
+            }
+            console.log("Verbindungsbericht korrekt: " + report.state + ", connected=null, Reichweite " + report.probeScope);
+          '
+
+      - name: Die Signalsammlung laeuft ohne Zugang fehlerfrei durch
+        # Dieselbe Eigenschaft wie beim Marktdatenabruf in quant-ci.yml:
+        # ein fehlender Zugang ist eine Konfigurationsfrage, kein Baufehler.
+        run: |
+          node scripts/social/collect-vu-signals.mjs
+
+      - name: Der vollstaendige Zyklus laeuft gegen den Mock durch
+        # Der Nachweis aus §53: der Kreislauf traegt, und ein Provider kann
+        # ihn durchlaufen. Veroeffentlicht wird dabei nichts — der globale
+        # Schalter ist aus, und der Mock verlaesst den Prozess ohnehin nie.
+        run: |
+          node scripts/social/collect-vu-signals.mjs --out /tmp/social-ci
+          cp /tmp/social-ci/signals.json social/data/signals.json
+          node scripts/social/run-social-cycle.mjs --provider mock
+          git checkout -- social/data/signals.json 2>/dev/null || true
+
+      - name: Keine Zugangsdaten und keine Anbieterbindung in ausgelieferten Pfaden
+        run: node scripts/social/assert-no-secrets.mjs
+
+      - name: Die Seiten des Command Center binden Shell und Navigation ein
+        run: |
+          for page in $(find social -name 'index.html'); do
+            grep -q 'vu-navigation' "$page" || { echo "$page ohne Vision-Universe-Navigation"; exit 1; }
+            grep -q 'site-navigation.css' "$page" || { echo "$page ohne Navigations-Stylesheet"; exit 1; }
+          done
+          echo "$(find social -name 'index.html' | wc -l) Seiten geprueft"
+
+      - name: Der bestehende Quant-Bereich bleibt unberuehrt
+        # §48: Social ist eine neue Faehigkeit INNERHALB des bestehenden
+        # Systems. Wenn dieser Schritt rot wird, hat der Social-Build etwas
+        # angefasst, das ihm nicht gehoert.
+        run: node --test "quant/tests/*.test.mjs"
+
+      - name: Hinweis - der Quant-Lauf veraendert zwei committete Artefakte
+        # BESTEHENDER BEFUND, NICHT VOM SOCIAL-BUILD VERURSACHT.
+        #
+        # `node --test "quant/tests/*.test.mjs"` schreibt
+        # quant/data/universe/cik-resolution.json und issuer-manifest.json
+        # neu - es aendert sich nur `generatedAt`, aber es aendert sich.
+        # Das widerspricht MASTER §31.10 ("Tests duerfen Produktionsdaten
+        # nicht veraendern", die Lehre aus technical_scenarios.json).
+        #
+        # Dieser Schritt macht den Befund SICHTBAR, statt ihn wegzuraeumen:
+        # er meldet ihn und laesst den Lauf gruen, weil die Ursache im
+        # Quant-Bereich liegt und dort behoben gehoert. Er bricht bewusst
+        # nicht ab - eine rote Social-CI wegen eines fremden Befunds wuerde
+        # nur dazu fuehren, dass jemand diesen Schritt entfernt.
+        if: always()
+        run: |
+          if ! git diff --quiet -- quant/data; then
+            echo "::warning::Der Quant-Testlauf hat committete Artefakte unter quant/data veraendert."
+            git diff --stat -- quant/data
+            echo "Siehe docs/VU_SOCIAL_HANDOFF.md, Abschnitt 'Befund am Rande'."
+            git checkout -- quant/data
+          else
+            echo "Keine Veraenderung an quant/data."
+          fi

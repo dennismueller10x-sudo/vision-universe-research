@@ -1,0 +1,103 @@
+# =============================================================================
+# VISION UNIVERSE — worker/wrangler.toml
+#
+# Zero-Cost Realtime V1. Alles hier ist so gewaehlt, dass es in die
+# kostenlosen Kontingente passt und dort bleibt.
+#
+# WAS HIER ABSICHTLICH FEHLT
+#
+#   Kein usage_model = "bundled"/"unbound"   -> kein Workers Paid
+#   Keine zweite Durable-Object-Klasse       -> keine Shards
+#   Kein Cron-Trigger                        -> das Objekt weckt sich selbst
+#                                               nur, solange jemand zusieht
+#   Kein KV, kein R2, kein D1                -> es wird nichts gespeichert;
+#                                               Historie kommt aus dem
+#                                               bestehenden statischen Pfad
+#
+# WAS NOCH NICHT PASSIERT IST
+#
+# Dieses Projekt ist NICHT veroeffentlicht - aber nicht, weil etwas
+# fehlte. Am 17.09.2026 ist nachgemessen worden: CLOUDFLARE_API_TOKEN
+# liegt unter genau diesem Namen im Repository, sein Umfang deckt
+# Workers und Durable Objects (lesend belegt), und die Account-ID ist
+# aus dem bestehenden R2-Endpunkt ableitbar. Was fehlt, ist die
+# Entscheidung auszurollen - und der Tiingo-Schluessel als
+# Cloudflare-Secret. Siehe docs/VU_ZERO_COST_REALTIME_V1.md §1.
+# =============================================================================
+
+name = "vu-live"
+main = "src/index.mjs"
+compatibility_date = "2026-09-17"
+
+# Der Endpunkt fuer den Smoke-Test: <name>.<subdomain>.workers.dev.
+# Kostenlos, und er beruehrt keine Domain. Der bevorzugte Endpunkt
+# live.visionuniverse.de kommt danach als eigener Schritt dazu (siehe
+# unten) - erst wird bewiesen, dass die Laufzeit steht, dann bekommt sie
+# einen Namen.
+workers_dev = true
+
+# Kein nodejs_compat: die geliehenen Engines sind reines ES5 ohne
+# Node-Bausteine. Jede Kompatibilitaetsfahne mehr ist Startzeit, die
+# jeder Verbindungsaufbau bezahlt.
+compatibility_flags = []
+
+# Die Beobachtung ist an, damit ein Fehlerbild ueberhaupt sichtbar wird.
+# Protokolliert werden nur Anzahlen und Gruende - kein Schluessel, keine
+# Kurse (siehe vu-live.mjs, notiere()).
+[observability]
+enabled = true
+
+# --- Das eine Durable Object -------------------------------------------------
+[[durable_objects.bindings]]
+name = "VU_LIVE"
+class_name = "VuLive"
+
+# SQLite-Backend ist auf dem kostenlosen Plan Pflicht - der klassische
+# Key-Value-Speicher eines Durable Object ist dort nicht verfuegbar.
+# Gespeichert wird trotzdem nichts ausser dem Wecker.
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["VuLive"]
+
+# --- Variablen ---------------------------------------------------------------
+# Hier stehen nur Schalter. Der Tiingo-Schluessel gehoert NICHT hierher,
+# sondern als Secret in die Umgebung:
+#
+#     wrangler secret put TIINGO_API_KEY
+#
+# Diese Datei liegt im Git. Ein Schluessel in ihr waere ein Schluessel im
+# Git - und der bliebe es auch nach dem Loeschen.
+[vars]
+# Nachmeldung auf der offenen Anbieterverbindung.
+#
+# GEMESSEN am 17.09.2026 um 09:53 New York, bei laufender Sitzung
+# (quant/data/market/commercial/dynamic-subscribe-verification.json):
+#
+#   Kontrolle    AAPL 46, NVDA 63 Ereignisse - beide handeln
+#   P0 ["AAPL"]  AAPL 52, NVDA 0  - die Tickerliste filtert wirklich
+#   P1 +NVDA     AAPL 55, NVDA 74 - Nachmelden wirkt
+#   P2 -AAPL     AAPL 0,  NVDA 65 - Abmelden wirkt auch
+#
+#   Dieselbe Verbindung ueber alle drei Phasen, keine Ablehnung.
+#
+# Damit darf der Subscription Manager nachmelden statt neu aufzubauen:
+# ein Titelwechsel kostet keinen Verbindungsaufbau und keine Luecke von
+# ein, zwei Sekunden mehr. Faellt die Nachmeldung im Betrieb doch einmal
+# aus, faellt der Manager von selbst auf "reconnect" zurueck - der Modus
+# ist gebaut, getestet und bleibt es.
+TIINGO_DYNAMIC_SUBSCRIBE = "true"
+# Ursprungspruefung fuer die oertliche Entwicklung. In der
+# veroeffentlichten Umgebung nicht gesetzt.
+ALLOW_LOCAL_ORIGIN = "false"
+
+# --- Endpunkt ----------------------------------------------------------------
+# Bevorzugt: live.visionuniverse.de
+#
+# Auskommentiert, weil eine Route ohne die zugehoerige Zone im
+# Cloudflare-Konto das Deployment abbricht. Sie wird eingeschaltet, wenn
+# die Zone visionuniverse.de im Konto liegt und der Owner den Endpunkt
+# freigibt - eine Zeile, kein Umbau.
+#
+# [[routes]]
+# pattern = "live.visionuniverse.de"
+# custom_domain = true

@@ -1,0 +1,14 @@
+{
+  "research_mode": "WORK_WEB_RESEARCH",
+  "web_access_verified": true,
+  "delivery_mode": "MULTI_ASSET",
+  "multi_asset_contract": true,
+  "note": "research_mode: der Agent recherchiert nachweislich selbst im Web (PR #360, 02.10.: Reuters und Rivian IR mit opened_by_agent=true). delivery_mode: Owner-Entscheidung 03.10. - drei Slides in EINEM Auftrag (MULTI_ASSET, assets/slide-01..03.png). Voraussetzung: die ChatGPT-Work-Automation erlaubt mehrere Bilddateien (docs/social/WORK_OUTPUT_CONTRACT.md). Zurueck auf COVER_FIRST, falls Work das ablehnt.",
+  "contract_findings": [
+    "PR #299: request_type muss FULL_CREATIVE oder TEXT_REVISION sein.",
+    "PR #300: FULL_CREATIVE verlangt visual_strategy und erlaubt EIN Asset (assets/visual-01.png).",
+    "PR #303: ein Mehr-Paneel-Bogen scheitert - die Bildgenerierung lieferte zweimal 1942x809 statt 3240x1350.",
+    "PR #296: auch ein Einzelbild kommt in den Massen des Werkzeugs (1092x1440), nicht exakt 1080x1350.",
+    "PR #360 (02.10.): Cover-First angenommen, Web-Recherche selbst durchgefuehrt, Referenzbilder gesehen."
+  ]
+}

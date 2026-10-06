@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "index-membership-config-1.0.0",
+  "note": "Quellen fuer die Index-Mitgliedschaft (V4 §19-20): die veroeffentlichten Tagesbestaende der abbildenden Fonds. Kein Kursanbieter dieses Projekts liefert Konstituenten; die Fondsbestaende sind oeffentliche Pflichtveroeffentlichungen der Emittenten mit Stichtag. Die Mitgliedschaft ist damit 'im Bestand des abbildenden Fonds zum Stichtag' - benannt, versioniert, ohne Ticker-Heuristik. Indexnamen sind Marken ihrer Eigentuemer (S&P Dow Jones Indices, Nasdaq); die Seite nennt den Fondsbestand als Quelle. Aendert ein Emittent Adresse oder Dateikopf, scheitert der Lauf laut (build-index-membership.mjs) und der letzte gute Stand bleibt liegen. Je Index stehen mehrere Quellen (sources) in Reihenfolge; genommen wird die erste, die antwortet und parsebar ist - Fonds-Bestandslisten zuerst, fuer den NASDAQ-100 zusaetzlich die Quote-API des Indexeigentuemers. Schlaegt eine Quelle fehl, nennt das Protokoll Status, Inhaltstyp und die ersten Zeichen der Antwort.",
+  "outputDir": "quant/data/market/index-membership",
+  "indexes": [
+    {
+      "indexId": "SP500",
+      "indexName": "S&P 500",
+      "shortLabel": "S&P 500",
+      "expectedMembers": {
+        "min": 490,
+        "max": 510
+      },
+      "sources": [
+        {
+          "etf": "IVV",
+          "issuer": "iShares (BlackRock)",
+          "format": "ISHARES_CSV",
+          "url": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf/1467271812596.ajax?fileType=csv&fileName=IVV_holdings&dataType=fund"
+        },
+        {
+          "etf": "SPY",
+          "issuer": "State Street (SPDR)",
+          "format": "SSGA_XLSX",
+          "url": "https://www.ssga.com/us/en/intermediary/library-content/products/fund-data/etfs/us/holdings-daily-us-en-spy.xlsx"
+        }
+      ]
+    },
+    {
+      "indexId": "NDX",
+      "indexName": "NASDAQ-100",
+      "shortLabel": "NASDAQ-100",
+      "expectedMembers": {
+        "min": 95,
+        "max": 105
+      },
+      "sources": [
+        {
+          "etf": "QQQ",
+          "issuer": "Invesco",
+          "format": "INVESCO_CSV",
+          "url": "https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ"
+        },
+        {
+          "etf": "QQQM",
+          "issuer": "Invesco",
+          "format": "INVESCO_CSV",
+          "url": "https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQM"
+        },
+        {
+          "etf": null,
+          "issuer": "Nasdaq, Inc. (Indexeigentuemer, Quote-API)",
+          "format": "NASDAQ_API_JSON",
+          "url": "https://api.nasdaq.com/api/quote/list-type/nasdaq100"
+        }
+      ]
+    },
+    {
+      "indexId": "DJIA",
+      "indexName": "Dow Jones Industrial Average",
+      "shortLabel": "Dow Jones",
+      "expectedMembers": {
+        "min": 28,
+        "max": 32
+      },
+      "sources": [
+        {
+          "etf": "DIA",
+          "issuer": "State Street (SPDR)",
+          "format": "SSGA_XLSX",
+          "url": "https://www.ssga.com/us/en/intermediary/library-content/products/fund-data/etfs/us/holdings-daily-us-en-dia.xlsx"
+        }
+      ]
+    }
+  ]
+}

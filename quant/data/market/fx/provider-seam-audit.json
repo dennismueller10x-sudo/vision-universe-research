@@ -1,0 +1,786 @@
+{
+  "schema": "vu-fx-provider-seam-audit-1.0.0",
+  "generatedAtUtc": "2026-09-22T09:49:29.013Z",
+  "note": "Wurzelursache der Abweichung zwischen Tiingo-Tagesschluss und EZB-Referenzkurs (O-14). Enthaelt keine Kursstaende - nur relative Differenzen, Korrelationen und Kalenderbefunde.",
+  "hypotheses": {
+    "H1": "Zeitversatz: verschiedene Tageszeitpunkte. Unverzerrt, kleiner als die Tagesbewegung, negativ mit der Tagesrendite korreliert.",
+    "H2": "Definition: andere Preisart oder Zusammensetzung. Systematisches Vorzeichen.",
+    "H3": "Fehler: Richtung, Inversion oder Tagesgrenze. Steigung nahe -1 oder strukturelle Abweichung."
+  },
+  "timestampSemantics": {
+    "tiingo": {
+      "field": "close",
+      "fieldsServed": [
+        "close",
+        "date",
+        "high",
+        "low",
+        "open",
+        "ticker"
+      ],
+      "rawDateExample": "2026-08-09T00:00:00.000Z",
+      "hasTime": true,
+      "hasZone": true,
+      "midnightUtc": true,
+      "dayBoundary": "UTC-Kalendertag",
+      "priceBasis": "Tagesschluss der Bar (resampleFreq=1day)",
+      "closeInstantUtcApprox": 24,
+      "basis": "probe-tiingo-fx.json#timestampSemantics",
+      "servedDirections": [
+        {
+          "pair": "USD/EUR",
+          "served": false
+        },
+        {
+          "pair": "EUR/USD",
+          "served": true
+        }
+      ],
+      "inversionRequired": true
+    },
+    "ecb": {
+      "field": "eurofxref rate",
+      "dayBoundary": "TARGET-Geschaeftstag",
+      "priceBasis": "Referenzkurs (Fixing), ueblicherweise gegen 14:15 UTC erhoben, gegen 16:00 MEZ veroeffentlicht",
+      "fixingInstantUtcApprox": 14.25,
+      "quotation": "EUR-basiert: Einheiten Fremdwaehrung je 1 EUR",
+      "basis": "providers/ecb/adapter.js; EZB-Veroeffentlichungspraxis",
+      "inversionRequired": "nur fuer Nicht-EUR-Basis"
+    },
+    "expectedSlopeIfTimingOnly": -0.40625,
+    "sameEconomicInstant": false,
+    "sameEconomicInstantBasis": "Tiingo-Bar endet am UTC-Tagesende, EZB fixiert gegen 14:15 UTC. Die beiden Zahlen beschreiben denselben KALENDERTAG, aber nicht denselben ZEITPUNKT."
+  },
+  "sourcesLoaded": {
+    "tiingo": 40,
+    "ecb": 22,
+    "tiingoDir": "/home/runner/work/vision-universe-research/vision-universe-research/.market-cache/currency/fx",
+    "ecbDir": "/home/runner/work/vision-universe-research/vision-universe-research/.market-cache/currency/fx-ecb"
+  },
+  "pairsCompared": 15,
+  "verdictCounts": {
+    "TIMING_DIFFERENCE": 14,
+    "TIMING_DIFFERENCE_WITH_BIAS": 1
+  },
+  "verdict": "TIMING_DIFFERENCE",
+  "headline": {
+    "pair": "EUR/USD",
+    "comparedDays": 1649,
+    "medianAbsRelDiff": 0.001789512779822422,
+    "p95AbsRelDiff": 0.007304281325633655,
+    "maxAbsRelDiff": 0.023332482976510582,
+    "medianSignedRelDiff": -0.00001767221574255906,
+    "corrWithSameDayReturn": -0.7252405693839441,
+    "slopeOnSameDayReturn": -0.5526740820337064,
+    "expectedSlopeIfTimingOnly": -0.40625,
+    "impliedFixingHourUtc": 10.735822031191047,
+    "verdict": "TIMING_DIFFERENCE"
+  },
+  "pairs": [
+    {
+      "pair": "EUR/USD",
+      "tiingoStoredAs": "EUR/USD",
+      "tiingoInverted": false,
+      "overlapDays": 1659,
+      "comparedDays": 1649,
+      "medianAbsRelDiff": 0.001789512779822422,
+      "p95AbsRelDiff": 0.007304281325633655,
+      "maxAbsRelDiff": 0.023332482976510582,
+      "medianSignedRelDiff": -0.00001767221574255906,
+      "meanSignedRelDiff": -0.00012360834679422332,
+      "medianAbsDailyReturn": 0.0026743592055049614,
+      "diffToMoveRatio": 0.669137031457423,
+      "corrWithSameDayReturn": -0.7252405693839441,
+      "slopeOnSameDayReturn": -0.5526740820337064,
+      "corrWithNextDayReturn": 0.007948851026916167,
+      "slopeOnNextDayReturn": 0.006033274333554579,
+      "impliedFixingHourUtc": 10.735822031191047,
+      "maxInversionRoundTripError": 0,
+      "weekendRowsTiingo": 326,
+      "weekendRowsEcb": 0,
+      "daysOnlyTiingo": 32,
+      "daysOnlyEcb": 5438,
+      "worstDays": [
+        {
+          "date": "2022-11-10",
+          "relDiff": -0.023332482976510582
+        },
+        {
+          "date": "2022-09-13",
+          "relDiff": 0.019722996131566806
+        },
+        {
+          "date": "2025-04-10",
+          "relDiff": -0.01594363120529585
+        },
+        {
+          "date": "2025-08-01",
+          "relDiff": -0.015844523456108206
+        },
+        {
+          "date": "2022-09-28",
+          "relDiff": -0.014501712902145636
+        }
+      ],
+      "verdict": "TIMING_DIFFERENCE"
+    },
+    {
+      "pair": "EUR/CAD",
+      "tiingoStoredAs": "EUR/CAD",
+      "tiingoInverted": false,
+      "overlapDays": 1657,
+      "comparedDays": 1646,
+      "medianAbsRelDiff": 0.0017262156792495764,
+      "p95AbsRelDiff": 0.0060653749057408834,
+      "maxAbsRelDiff": 0.01593632787485122,
+      "medianSignedRelDiff": 0.00007160268603478848,
+      "meanSignedRelDiff": 0.0000022163897608719545,
+      "medianAbsDailyReturn": 0.002336376980896948,
+      "diffToMoveRatio": 0.7388429578632779,
+      "corrWithSameDayReturn": -0.7480569681781907,
+      "slopeOnSameDayReturn": -0.55633688027136,
+      "corrWithNextDayReturn": 0.08414144020810706,
+      "slopeOnNextDayReturn": 0.06245892637643335,
+      "impliedFixingHourUtc": 10.64791487348736,
+      "maxInversionRoundTripError": 1.5327162623388643e-16,
+      "weekendRowsTiingo": 325,
+      "weekendRowsEcb": 0,
+      "daysOnlyTiingo": 32,
+      "daysOnlyEcb": 5440,
+      "worstDays": [
+        {
+          "date": "2022-06-16",
+          "relDiff": -0.01593632787485122
+        },
+        {
+          "date": "2025-04-09",
+          "relDiff": 0.014832971224489011
+        },
+        {
+          "date": "2020-04-30",
+          "relDiff": -0.012703817693667685
+        },
+        {
+          "date": "2022-02-03",
+          "relDiff": -0.011431231572958112
+        },
+        {
+          "date": "2022-10-27",
+          "relDiff": 0.011321145503164098
+        }
+      ],
+      "verdict": "TIMING_DIFFERENCE"
+    },
+    {
+      "pair": "EUR/JPY",
+      "tiingoStoredAs": "EUR/JPY",
+      "tiingoInverted": false,
+      "overlapDays": 1657,
+      "comparedDays": 1646,
+      "medianAbsRelDiff": 0.001740119157828346,
+      "p95AbsRelDiff": 0.007100993858884186,
+      "maxAbsRelDiff": 0.02304897908054615,
+      "medianSignedRelDiff": -0.0002784292307856928,
+      "meanSignedRelDiff": -0.00017089350468998209,
+      "medianAbsDailyReturn": 0.0030254783392427154,
+      "diffToMoveRatio": 0.5751550540811018,
+      "corrWithSameDayReturn": -0.5899377953541302,
+      "slopeOnSameDayReturn": -0.37494464954382095,
+      "corrWithNextDayReturn": -0.002599460514416159,
+      "slopeOnNextDayReturn": -0.0016393694680774313,
+      "impliedFixingHourUtc": 15.001328410948298,
+      "maxInversionRoundTripError": 1.2300575361552845e-16,
+      "weekendRowsTiingo": 326,
+      "weekendRowsEcb": 0,
+      "daysOnlyTiingo": 32,
+      "daysOnlyEcb": 5440,
+      "worstDays": [
+        {
+          "date": "2024-08-05",
+          "relDiff": -0.02304897908054615
+        },
+        {
+          "date": "2023-07-27",
+          "relDiff": 0.022904668826824404
+        },
+        {
+          "date": "2024-07-11",
+          "relDiff": 0.018897738429274336
+        },
+        {
+          "date": "2025-03-04",
+          "relDiff": -0.01681775633414373
+        },
+        {
+          "date": "2024-07-30",
+          "relDiff": 0.01511375439467777
+        }
+      ],
+      "verdict": "TIMING_DIFFERENCE"
+    },
+    {
+      "pair": "EUR/AUD",
+      "tiingoStoredAs": "EUR/AUD",
+      "tiingoInverted": false,
+      "overlapDays": 1656,
+      "comparedDays": 1645,
+      "medianAbsRelDiff": 0.0017243451261399478,
+      "p95AbsRelDiff": 0.006359396765792447,
+      "maxAbsRelDiff": 0.030028255628022693,
+      "medianSignedRelDiff": 0.00013035814483353114,
+      "meanSignedRelDiff": -0.00003649642849280552,
+      "medianAbsDailyReturn": 0.0028586114542847874,
+      "diffToMoveRatio": 0.6032107384007428,
+      "corrWithSameDayReturn": -0.6271064623374158,
+      "slopeOnSameDayReturn": -0.4116479064772013,
+      "corrWithNextDayReturn": 0.08021531037857697,
+      "slopeOnNextDayReturn": 0.052415802633392156,
+      "impliedFixingHourUtc": 14.120450244547168,
+      "maxInversionRoundTripError": 1.4831648181486292e-16,
+      "weekendRowsTiingo": 324,
+      "weekendRowsEcb": 0,
+      "daysOnlyTiingo": 32,
+      "daysOnlyEcb": 5441,
+      "worstDays": [
+        {
+          "date": "2025-04-09",
+          "relDiff": 0.030028255628022693
+        },
+        {
+          "date": "2025-04-08",
+          "relDiff": -0.019920988484491975
+        },
+        {
+          "date": "2025-10-10",
+          "relDiff": -0.016937635414752128
+        },
+        {
+          "date": "2022-04-29",
+          "relDiff": -0.015775447618282423
+        },
+        {
+          "date": "2022-09-30",
+          "relDiff": -0.015187640853120854
+        }
+      ],
+      "verdict": "TIMING_DIFFERENCE"
+    },
+    {
+      "pair": "EUR/CHF",
+      "tiingoStoredAs": "EUR/CHF",
+      "tiingoInverted": false,
+      "overlapDays": 1656,
+      "comparedDays": 1645,
+      "medianAbsRelDiff": 0.0011899415215509412,
+      "p95AbsRelDiff": 0.004338922568480008,
+      "maxAbsRelDiff": 0.01414444256389169,
+      "medianSignedRelDiff": 0.000031617982501730424,
+      "meanSignedRelDiff": 0.000059602815268381785,
+      "medianAbsDailyReturn": 0.0018646101769468348,
+      "diffToMoveRatio": 0.6381717402719452,
+      "corrWithSameDayReturn": -0.6323722576722189,
+      "slopeOnSameDayReturn": -0.44151897506332227,
+      "corrWithNextDayReturn": -0.015913487194439534,
+      "slopeOnNextDayReturn": -0.011034175692436034,
+      "impliedFixingHourUtc": 13.403544598480266,
+      "maxInversionRoundTripError": 0,
+      "weekendRowsTiingo": 325,
+      "weekendRowsEcb": 0,
+      "daysOnlyTiingo": 32,
+      "daysOnlyEcb": 5441,
+      "worstDays": [
+        {
+          "date": "2022-05-18",
+          "relDiff": 0.01414444256389169
+        },
+        {
+          "date": "2023-03-15",
+          "relDiff": -0.013248660931666878
+        },
+        {
+          "date": "2022-09-30",
+          "relDiff": -0.011982081130934907
+        },
+        {
+          "date": "2022-02-03",
+          "relDiff": -0.01127246298328366
+        },
+        {
+          "date": "2022-10-03",
+          "relDiff": -0.010775155686660098
+        }
+      ],
+      "verdict": "TIMING_DIFFERENCE"
+    },
+    {
+      "pair": "EUR/GBP",
+      "tiingoStoredAs": "EUR/GBP",
+      "tiingoInverted": false,
+      "overlapDays": 1656,
+      "comparedDays": 1645,
+      "medianAbsRelDiff": 0.0012437951582446871,
+      "p95AbsRelDiff": 0.00453982201194103,
+      "maxAbsRelDiff": 0.017025242365349413,
+      "medianSignedRelDiff": 0.00010682365787939574,
+      "meanSignedRelDiff": 0.00004073925165781033,
+      "medianAbsDailyReturn": 0.0018969110793658484,
+      "diffToMoveRatio": 0.6556950253358724,
+      "corrWithSameDayReturn": -0.6222518390724334,
+      "slopeOnSameDayReturn": -0.4034163771920793,
+      "corrWithNextDayReturn": 0.04261069271810663,
+      "slopeOnNextDayReturn": 0.027554994891636268,
+      "impliedFixingHourUtc": 14.318006947390096,
+      "maxInversionRoundTripError": 1.3436889859305977e-16,
+      "weekendRowsTiingo": 325,
+      "weekendRowsEcb": 0,
+      "daysOnlyTiingo": 32,
+      "daysOnlyEcb": 5441,
+      "worstDays": [
+        {
+          "date": "2022-09-29",
+          "relDiff": 0.017025242365349413
+        },
+        {
+          "date": "2022-12-15",
+          "relDiff": -0.012312575557045236
+        },
+        {
+          "date": "2025-04-09",
+          "relDiff": 0.012237966975055636
+        },
+        {
+          "date": "2022-09-23",
+          "relDiff": -0.012218339828876101
+        },
+        {
+          "date": "2022-02-03",
+          "relDiff": -0.01060642092746722
+        }
+      ],
+      "verdict": "TIMING_DIFFERENCE"
+    },
+    {
+      "pair": "EUR/TRY",
+      "tiingoStoredAs": "EUR/TRY",
+      "tiingoInverted": false,
+      "overlapDays": 1656,
+      "comparedDays": 1645,
+      "medianAbsRelDiff": 0.002614848608588849,
+      "p95AbsRelDiff": 0.010484590736661081,
+      "maxAbsRelDiff": 0.31798487730813707,
+      "medianSignedRelDiff": -0.0014216970121675443,
+      "meanSignedRelDiff": -0.0011768732663400708,
+      "medianAbsDailyReturn": 0.0036044197124598387,
+      "diffToMoveRatio": 0.7254561946683905,
+      "corrWithSameDayReturn": -0.642814775045665,
+      "slopeOnSameDayReturn": -0.5644469164014784,
+      "corrWithNextDayReturn": -0.1525645304983475,
+      "slopeOnNextDayReturn": -0.13353325785043957,
+      "impliedFixingHourUtc": 10.45327400636452,
+      "maxInversionRoundTripError": 1.4977587367730885e-16,
+      "weekendRowsTiingo": 323,
+      "weekendRowsEcb": 0,
+      "daysOnlyTiingo": 31,
+      "daysOnlyEcb": 3904,
+      "worstDays": [
+        {
+          "date": "2021-12-20",
+          "relDiff": 0.31798487730813707
+        },
+        {
+          "date": "2021-12-24",
+          "relDiff": 0.08412218953346606
+        },
+        {
+          "date": "2021-12-21",
+          "relDiff": 0.04346272010076335
+        },
+        {
+          "date": "2021-12-22",
+          "relDiff": 0.030211428385264583
+        },
+        {
+          "date": "2021-12-17",
+          "relDiff": 0.030202771908617088
+        }
+      ],
+      "verdict": "TIMING_DIFFERENCE_WITH_BIAS"
+    },
+    {
+      "pair": "EUR/SEK",
+      "tiingoStoredAs": "EUR/SEK",
+      "tiingoInverted": false,
+      "overlapDays": 1654,
+      "comparedDays": 1642,
+      "medianAbsRelDiff": 0.0014900504268298143,
+      "p95AbsRelDiff": 0.005159178185299318,
+      "maxAbsRelDiff": 0.01441195213027413,
+      "medianSignedRelDiff": -0.00003213486756725725,
+      "meanSignedRelDiff": -0.00009947765677579751,
+      "medianAbsDailyReturn": 0.002360753042748298,
+      "diffToMoveRatio": 0.6311759001674968,
+      "corrWithSameDayReturn": -0.6390961976185474,
+      "slopeOnSameDayReturn": -0.42739547434973,
+      "corrWithNextDayReturn": 0.05593384701318587,
+      "slopeOnNextDayReturn": 0.03751166261543287,
+      "impliedFixingHourUtc": 13.742508615606479,
+      "maxInversionRoundTripError": 0,
+      "weekendRowsTiingo": 326,
+      "weekendRowsEcb": 0,
+      "daysOnlyTiingo": 32,
+      "daysOnlyEcb": 5443,
+      "worstDays": [
+        {
+          "date": "2025-04-09",
+          "relDiff": 0.01441195213027413
+        },
+        {
+          "date": "2023-11-14",
+          "relDiff": 0.011572534933743661
+        },
+        {
+          "date": "2025-03-03",
+          "relDiff": 0.011386029720236168
+        },
+        {
+          "date": "2023-07-12",
+          "relDiff": 0.01126635569649026
+        },
+        {
+          "date": "2022-05-05",
+          "relDiff": -0.010668772194822318
+        }
+      ],
+      "verdict": "TIMING_DIFFERENCE"
+    },
+    {
+      "pair": "EUR/MXN",
+      "tiingoStoredAs": "EUR/MXN",
+      "tiingoInverted": false,
+      "overlapDays": 1437,
+      "comparedDays": 1427,
+      "medianAbsRelDiff": 0.002845218440703068,
+      "p95AbsRelDiff": 0.010594621472344135,
+      "maxAbsRelDiff": 0.039913249636295056,
+      "medianSignedRelDiff": -0.000024681156028827367,
+      "meanSignedRelDiff": -0.000051702479296143926,
+      "medianAbsDailyReturn": 0.003430156298179332,
+      "diffToMoveRatio": 0.8294719521128704,
+      "corrWithSameDayReturn": -0.7794818637670701,
+      "slopeOnSameDayReturn": -0.6353854280424304,
+      "corrWithNextDayReturn": 0.004991701350661696,
+      "slopeOnNextDayReturn": 0.00405651058599007,
+      "impliedFixingHourUtc": 8.75074972698167,
+      "maxInversionRoundTripError": 1.5067662262072496e-16,
+      "weekendRowsTiingo": 281,
+      "weekendRowsEcb": 0,
+      "daysOnlyTiingo": 27,
+      "daysOnlyEcb": 3356,
+      "worstDays": [
+        {
+          "date": "2025-04-09",
+          "relDiff": 0.039913249636295056
+        },
+        {
+          "date": "2024-08-05",
+          "relDiff": 0.029142243556150582
+        },
+        {
+          "date": "2023-03-09",
+          "relDiff": -0.025266267388989183
+        },
+        {
+          "date": "2025-04-10",
+          "relDiff": -0.023553146747753773
+        },
+        {
+          "date": "2024-08-08",
+          "relDiff": 0.02208612888315553
+        }
+      ],
+      "verdict": "TIMING_DIFFERENCE"
+    },
+    {
+      "pair": "EUR/SGD",
+      "tiingoStoredAs": "EUR/SGD",
+      "tiingoInverted": false,
+      "overlapDays": 1437,
+      "comparedDays": 1427,
+      "medianAbsRelDiff": 0.0010265893438665685,
+      "p95AbsRelDiff": 0.004053039779834955,
+      "maxAbsRelDiff": 0.01247652997360471,
+      "medianSignedRelDiff": -0.00006461727866025058,
+      "meanSignedRelDiff": -0.00006330619323467255,
+      "medianAbsDailyReturn": 0.001563631686894551,
+      "diffToMoveRatio": 0.6565416603352578,
+      "corrWithSameDayReturn": -0.6841854606289792,
+      "slopeOnSameDayReturn": -0.49099667841242584,
+      "corrWithNextDayReturn": 0.05901416725555881,
+      "slopeOnNextDayReturn": 0.04199150008683188,
+      "impliedFixingHourUtc": 12.216079718101781,
+      "maxInversionRoundTripError": 1.5552609436508463e-16,
+      "weekendRowsTiingo": 280,
+      "weekendRowsEcb": 0,
+      "daysOnlyTiingo": 27,
+      "daysOnlyEcb": 5660,
+      "worstDays": [
+        {
+          "date": "2025-04-09",
+          "relDiff": 0.01247652997360471
+        },
+        {
+          "date": "2025-04-02",
+          "relDiff": -0.011531451736530918
+        },
+        {
+          "date": "2022-09-13",
+          "relDiff": 0.010960505123929432
+        },
+        {
+          "date": "2022-02-03",
+          "relDiff": -0.01034093533581204
+        },
+        {
+          "date": "2025-04-10",
+          "relDiff": -0.009944012701596061
+        }
+      ],
+      "verdict": "TIMING_DIFFERENCE"
+    },
+    {
+      "pair": "EUR/ZAR",
+      "tiingoStoredAs": "EUR/ZAR",
+      "tiingoInverted": false,
+      "overlapDays": 1437,
+      "comparedDays": 1427,
+      "medianAbsRelDiff": 0.002464083430336106,
+      "p95AbsRelDiff": 0.009815408682273152,
+      "maxAbsRelDiff": 0.02760728184501282,
+      "medianSignedRelDiff": 0.000026803747689374546,
+      "meanSignedRelDiff": -0.00012116095226979448,
+      "medianAbsDailyReturn": 0.004208281563605087,
+      "diffToMoveRatio": 0.5855319785744593,
+      "corrWithSameDayReturn": -0.6531410430509804,
+      "slopeOnSameDayReturn": -0.4298736272606412,
+      "corrWithNextDayReturn": 0.03202683145907622,
+      "slopeOnNextDayReturn": 0.020981455224649247,
+      "impliedFixingHourUtc": 13.683032945744612,
+      "maxInversionRoundTripError": 1.120800580099849e-16,
+      "weekendRowsTiingo": 283,
+      "weekendRowsEcb": 0,
+      "daysOnlyTiingo": 27,
+      "daysOnlyEcb": 5660,
+      "worstDays": [
+        {
+          "date": "2025-04-02",
+          "relDiff": -0.02760728184501282
+        },
+        {
+          "date": "2025-04-08",
+          "relDiff": -0.023835272922435924
+        },
+        {
+          "date": "2025-04-09",
+          "relDiff": 0.023752958512771594
+        },
+        {
+          "date": "2023-05-25",
+          "relDiff": -0.02342033534416188
+        },
+        {
+          "date": "2026-07-23",
+          "relDiff": -0.02121204461867654
+        }
+      ],
+      "verdict": "TIMING_DIFFERENCE"
+    },
+    {
+      "pair": "EUR/DKK",
+      "tiingoStoredAs": "EUR/DKK",
+      "tiingoInverted": false,
+      "overlapDays": 1436,
+      "comparedDays": 1426,
+      "medianAbsRelDiff": 0.000048277175356048474,
+      "p95AbsRelDiff": 0.00020974056705236332,
+      "maxAbsRelDiff": 0.0007125742096583121,
+      "medianSignedRelDiff": 0.000006691424939031521,
+      "meanSignedRelDiff": 0.000004952815561405711,
+      "medianAbsDailyReturn": 0.00006168373808823624,
+      "diffToMoveRatio": 0.7826564480737178,
+      "corrWithSameDayReturn": -0.609328541419182,
+      "slopeOnSameDayReturn": -0.4551229277037018,
+      "corrWithNextDayReturn": 0.173233462105868,
+      "slopeOnNextDayReturn": 0.1296429945914044,
+      "impliedFixingHourUtc": 13.077049735111157,
+      "maxInversionRoundTripError": 1.194430365384784e-16,
+      "weekendRowsTiingo": 280,
+      "weekendRowsEcb": 0,
+      "daysOnlyTiingo": 27,
+      "daysOnlyEcb": 5661,
+      "worstDays": [
+        {
+          "date": "2021-04-23",
+          "relDiff": 0.0007125742096583121
+        },
+        {
+          "date": "2022-02-04",
+          "relDiff": -0.0005538901551899178
+        },
+        {
+          "date": "2023-02-10",
+          "relDiff": -0.0005437299877157908
+        },
+        {
+          "date": "2025-04-09",
+          "relDiff": 0.00046011252999611507
+        },
+        {
+          "date": "2024-01-08",
+          "relDiff": 0.00044246601056552315
+        }
+      ],
+      "verdict": "TIMING_DIFFERENCE"
+    },
+    {
+      "pair": "EUR/HKD",
+      "tiingoStoredAs": "EUR/HKD",
+      "tiingoInverted": false,
+      "overlapDays": 1199,
+      "comparedDays": 1190,
+      "medianAbsRelDiff": 0.0018579452484152048,
+      "p95AbsRelDiff": 0.007481916528950139,
+      "maxAbsRelDiff": 0.022907789799111233,
+      "medianSignedRelDiff": -0.0000243370728882919,
+      "meanSignedRelDiff": -0.00013062074821025666,
+      "medianAbsDailyReturn": 0.0027375203189171637,
+      "diffToMoveRatio": 0.6786964230278744,
+      "corrWithSameDayReturn": -0.7329875941224144,
+      "slopeOnSameDayReturn": -0.5612545937412504,
+      "corrWithNextDayReturn": -0.03918013188209503,
+      "slopeOnNextDayReturn": -0.02972983710066363,
+      "impliedFixingHourUtc": 10.529889750209989,
+      "maxInversionRoundTripError": 1.1729773107502976e-16,
+      "weekendRowsTiingo": 235,
+      "weekendRowsEcb": 0,
+      "daysOnlyTiingo": 25,
+      "daysOnlyEcb": 5898,
+      "worstDays": [
+        {
+          "date": "2022-11-10",
+          "relDiff": -0.022907789799111233
+        },
+        {
+          "date": "2022-09-13",
+          "relDiff": 0.019543755605703206
+        },
+        {
+          "date": "2025-08-01",
+          "relDiff": -0.015805533613350686
+        },
+        {
+          "date": "2025-04-10",
+          "relDiff": -0.015594659048181359
+        },
+        {
+          "date": "2022-09-28",
+          "relDiff": -0.014384390612734665
+        }
+      ],
+      "verdict": "TIMING_DIFFERENCE"
+    },
+    {
+      "pair": "EUR/ILS",
+      "tiingoStoredAs": "EUR/ILS",
+      "tiingoInverted": false,
+      "overlapDays": 364,
+      "comparedDays": 361,
+      "medianAbsRelDiff": 0.001856627127385324,
+      "p95AbsRelDiff": 0.0070177905913789695,
+      "maxAbsRelDiff": 0.014494343503599683,
+      "medianSignedRelDiff": 0.00018494055482154437,
+      "meanSignedRelDiff": 0.00018746708200042056,
+      "medianAbsDailyReturn": 0.0025334093356133014,
+      "diffToMoveRatio": 0.732857142857201,
+      "corrWithSameDayReturn": -0.6433562212025163,
+      "slopeOnSameDayReturn": -0.43482677004614345,
+      "corrWithNextDayReturn": 0.17337399569968384,
+      "slopeOnNextDayReturn": 0.11703363100331887,
+      "impliedFixingHourUtc": 13.564157518892557,
+      "maxInversionRoundTripError": 1.281346903601081e-16,
+      "weekendRowsTiingo": 69,
+      "weekendRowsEcb": 0,
+      "daysOnlyTiingo": 4,
+      "daysOnlyEcb": 3659,
+      "worstDays": [
+        {
+          "date": "2022-06-16",
+          "relDiff": -0.014494343503599683
+        },
+        {
+          "date": "2022-02-03",
+          "relDiff": -0.013474204171240456
+        },
+        {
+          "date": "2022-02-24",
+          "relDiff": 0.011896373056994758
+        },
+        {
+          "date": "2021-12-17",
+          "relDiff": 0.010965536884078642
+        },
+        {
+          "date": "2022-05-03",
+          "relDiff": 0.010919417820376198
+        }
+      ],
+      "verdict": "TIMING_DIFFERENCE"
+    },
+    {
+      "pair": "EUR/RUB",
+      "tiingoStoredAs": "EUR/RUB",
+      "tiingoInverted": false,
+      "overlapDays": 275,
+      "comparedDays": 273,
+      "medianAbsRelDiff": 0.002345895235832618,
+      "p95AbsRelDiff": 0.011043076913873184,
+      "maxAbsRelDiff": 0.07187190040922031,
+      "medianSignedRelDiff": -0.00018318291484231697,
+      "meanSignedRelDiff": -0.0007646602911970325,
+      "medianAbsDailyReturn": 0.0034667659766439707,
+      "diffToMoveRatio": 0.6766811638389216,
+      "corrWithSameDayReturn": -0.45118998023082874,
+      "slopeOnSameDayReturn": -0.17903452749530263,
+      "corrWithNextDayReturn": -0.205805791401678,
+      "slopeOnNextDayReturn": -0.0616853177364497,
+      "impliedFixingHourUtc": 19.703171340112736,
+      "maxInversionRoundTripError": 1.2125199200691123e-16,
+      "weekendRowsTiingo": 52,
+      "weekendRowsEcb": 0,
+      "daysOnlyTiingo": 92,
+      "daysOnlyEcb": 4058,
+      "worstDays": [
+        {
+          "date": "2022-03-01",
+          "relDiff": -0.07187190040922031
+        },
+        {
+          "date": "2022-02-11",
+          "relDiff": -0.02506742370475512
+        },
+        {
+          "date": "2022-02-25",
+          "relDiff": -0.021404558525033757
+        },
+        {
+          "date": "2022-02-21",
+          "relDiff": -0.01949905484642278
+        },
+        {
+          "date": "2022-02-24",
+          "relDiff": 0.01845817450542797
+        }
+      ],
+      "verdict": "TIMING_DIFFERENCE"
+    }
+  ]
+}

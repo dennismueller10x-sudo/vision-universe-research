@@ -1,0 +1,2355 @@
+{
+  "generatedAt": "2026-09-07T06:15:51.251Z",
+  "researchedAt": "2026-09-07",
+  "retrievalNote": "Die Primaerdokumentation der Anbieter konnte in dieser Umgebung NICHT direkt abgerufen werden - der Egress-Proxy blockiert die Anbieterdomains (sharadar.com, docs.intrinio.com, data.nasdaq.com). Alle Befunde stammen aus Suchergebnissen. Wo ein Suchergebnis Inhalt der anbietereigenen Dokumentationsseite wiedergibt, ist er als DOCUMENTATION_VERIFIED eingestuft und traegt retrievalMethod 'search-extract'; wo er aus Vergleichsartikeln stammt, als THIRD_PARTY_REPORTED. Keiner der Befunde ist RUNTIME_VERIFIED - es wurde keine einzige Anfrage an einen dieser Anbieter gestellt.",
+  "specVersion": "backtest-evidence-v1.0.0",
+  "decisionTable": [
+    {
+      "provider": "sharadar",
+      "bestRole": "RESEARCH_DATA_PROVIDER",
+      "pit": "PASSED",
+      "delisted": "UNKNOWN",
+      "restatements": "UNKNOWN",
+      "corporateActions": null,
+      "licenseConfidence": "LEGAL_REVIEW_REQUIRED",
+      "qualification": "PARTIALLY_QUALIFIED",
+      "runtimeVerifiedCount": 0,
+      "evidenceTotal": 15
+    },
+    {
+      "provider": "intrinio",
+      "bestRole": "RESEARCH_DATA_PROVIDER",
+      "pit": "UNKNOWN",
+      "delisted": "UNKNOWN",
+      "restatements": "UNKNOWN",
+      "corporateActions": null,
+      "licenseConfidence": "LEGAL_REVIEW_REQUIRED",
+      "qualification": "PARTIALLY_QUALIFIED",
+      "runtimeVerifiedCount": 0,
+      "evidenceTotal": 15
+    },
+    {
+      "provider": "twelve-data",
+      "bestRole": "MARKET_DATA_PROVIDER",
+      "pit": "FAILED",
+      "delisted": "FAILED",
+      "restatements": "FAILED",
+      "corporateActions": false,
+      "licenseConfidence": "LEGAL_REVIEW_REQUIRED",
+      "qualification": "PARTIALLY_QUALIFIED",
+      "runtimeVerifiedCount": 0,
+      "evidenceTotal": 15
+    },
+    {
+      "provider": "eodhd",
+      "bestRole": "-",
+      "pit": "UNKNOWN",
+      "delisted": "UNKNOWN",
+      "restatements": "UNKNOWN",
+      "corporateActions": true,
+      "licenseConfidence": "LEGAL_REVIEW_REQUIRED",
+      "qualification": "UNKNOWN",
+      "runtimeVerifiedCount": 0,
+      "evidenceTotal": 15
+    },
+    {
+      "provider": "fmp",
+      "bestRole": "-",
+      "pit": "UNKNOWN",
+      "delisted": "UNKNOWN",
+      "restatements": "UNKNOWN",
+      "corporateActions": null,
+      "licenseConfidence": "LEGAL_REVIEW_REQUIRED",
+      "qualification": "UNKNOWN",
+      "runtimeVerifiedCount": 0,
+      "evidenceTotal": 15
+    },
+    {
+      "provider": "polygon",
+      "bestRole": "-",
+      "pit": "UNKNOWN",
+      "delisted": "UNKNOWN",
+      "restatements": "UNKNOWN",
+      "corporateActions": null,
+      "licenseConfidence": "LEGAL_REVIEW_REQUIRED",
+      "qualification": "UNKNOWN",
+      "runtimeVerifiedCount": 0,
+      "evidenceTotal": 15
+    }
+  ],
+  "results": [
+    {
+      "providerId": "sharadar",
+      "plan": "Full History Bundle (recherchiert, nicht abgeschlossen)",
+      "evaluatedAt": "2026-09-07",
+      "qualificationStatus": "PARTIALLY_QUALIFIED",
+      "bestRole": "RESEARCH_DATA_PROVIDER",
+      "roles": {
+        "MARKET_DATA_PROVIDER": {
+          "role": "MARKET_DATA_PROVIDER",
+          "label": "Marktdaten",
+          "purpose": "Kurse fuer Anzeige, Charts und kursbasierte Kennzahlen.",
+          "missing": [],
+          "contradicted": [],
+          "unknown": [],
+          "weak": [],
+          "gates": [],
+          "status": "QUALIFIED",
+          "reason": "Alle Anforderungen dieser Rolle belegt."
+        },
+        "RESEARCH_DATA_PROVIDER": {
+          "role": "RESEARCH_DATA_PROVIDER",
+          "label": "Research",
+          "purpose": "Aktuelle Fundamentaldaten und Kennzahlen fuer die heutige Bewertung eines Unternehmens.",
+          "missing": [],
+          "contradicted": [],
+          "unknown": [],
+          "weak": [],
+          "gates": [],
+          "status": "QUALIFIED",
+          "reason": "Alle Anforderungen dieser Rolle belegt."
+        },
+        "BACKTEST_EVIDENCE_PROVIDER": {
+          "role": "BACKTEST_EVIDENCE_PROVIDER",
+          "label": "Backtest-Evidenz",
+          "purpose": "Historische Auswertungen, deren Ergebnis als Nachweis gelten darf.",
+          "missing": [],
+          "contradicted": [],
+          "unknown": [
+            "corporateActions",
+            "totalReturnPrices",
+            "GATE_A_RESTATEMENT",
+            "GATE_B_DELISTING"
+          ],
+          "weak": [
+            "restatementSemantics (RUNTIME_VERIFICATION_REQUIRED)"
+          ],
+          "gates": [
+            {
+              "gate": "GATE_A_RESTATEMENT",
+              "result": "UNKNOWN"
+            },
+            {
+              "gate": "GATE_B_DELISTING",
+              "result": "UNKNOWN"
+            },
+            {
+              "gate": "GATE_C_AVAILABILITY",
+              "result": "PASSED"
+            }
+          ],
+          "status": "UNKNOWN",
+          "reason": "Ohne belastbaren Befund: corporateActions, totalReturnPrices, GATE_A_RESTATEMENT, GATE_B_DELISTING."
+        }
+      },
+      "gates": {
+        "GATE_A_RESTATEMENT": {
+          "gate": "GATE_A_RESTATEMENT",
+          "label": "Gate A - Restatement",
+          "question": "Kann zu einem historischen Datum exakt der damals bekannte Fundamentalwert rekonstruiert werden?",
+          "requirements": [
+            {
+              "requirement": "originalHistoricalValues",
+              "value": true,
+              "level": "DOCUMENTATION_VERIFIED",
+              "source": "sharadar.com/docs/fundamentals (ueber Suchauszug)"
+            },
+            {
+              "requirement": "restatementSemantics",
+              "value": true,
+              "level": "RUNTIME_VERIFICATION_REQUIRED",
+              "source": "sharadar.com/docs/fundamentals (ueber Suchauszug)"
+            }
+          ],
+          "evidenceLevel": "RUNTIME_VERIFICATION_REQUIRED",
+          "result": "UNKNOWN",
+          "reason": "Nur schwach belegt: restatementSemantics (RUNTIME_VERIFICATION_REQUIRED). Ein Gate verlangt mindestens Primaerdokumentation."
+        },
+        "GATE_B_DELISTING": {
+          "gate": "GATE_B_DELISTING",
+          "label": "Gate B - Delisting",
+          "question": "Bleiben Wertpapiere abrufbar, die heute delistet oder insolvent sind?",
+          "requirements": [
+            {
+              "requirement": "delistedSecurities",
+              "value": true,
+              "level": "DOCUMENTATION_VERIFIED",
+              "source": "sharadar.com (ueber Suchauszug), gestuetzt durch quantrocket.com/sharadar"
+            },
+            {
+              "requirement": "survivorshipBiasControls",
+              "value": true,
+              "level": "THIRD_PARTY_REPORTED",
+              "source": "quantrocket.com/sharadar"
+            }
+          ],
+          "evidenceLevel": "THIRD_PARTY_REPORTED",
+          "result": "UNKNOWN",
+          "reason": "Nur schwach belegt: survivorshipBiasControls (THIRD_PARTY_REPORTED). Ein Gate verlangt mindestens Primaerdokumentation."
+        },
+        "GATE_C_AVAILABILITY": {
+          "gate": "GATE_C_AVAILABILITY",
+          "label": "Gate C - Verfuegbarkeitszeitpunkt",
+          "question": "Laesst sich zuverlaessig bestimmen, wann eine Information tatsaechlich verfuegbar wurde?",
+          "requirements": [
+            {
+              "requirement": "pointInTimeFundamentals",
+              "value": true,
+              "level": "DOCUMENTATION_VERIFIED",
+              "source": "sharadar.com/docs/fundamentals (ueber Suchauszug)"
+            },
+            {
+              "requirement": "filingTimestamps",
+              "value": true,
+              "level": "DOCUMENTATION_VERIFIED",
+              "source": "sharadar.com/docs/fundamentals (ueber Suchauszug)"
+            }
+          ],
+          "evidenceLevel": "DOCUMENTATION_VERIFIED",
+          "result": "PASSED",
+          "reason": "2 Anforderung(en) belegt."
+        }
+      },
+      "pitCapability": "PASSED",
+      "restatementCapability": "UNKNOWN",
+      "delistingCapability": "UNKNOWN",
+      "corporateActions": {
+        "requirement": "corporateActions",
+        "value": null,
+        "level": "UNKNOWN",
+        "levelRank": 0,
+        "source": null,
+        "checkedAt": null,
+        "note": "Nicht geprueft. Die Kursdatenbank (SEP) fuehrt bereinigte Kurse; ob Splits und Dividenden auch als einzelne Ereignisse abrufbar sind, wurde nicht festgestellt.",
+        "quote": null
+      },
+      "capabilities": null,
+      "dataQuality": null,
+      "licensingStatus": {
+        "status": "LEGAL_REVIEW_REQUIRED",
+        "checkedAt": "2026-09-07",
+        "findings": {
+          "developmentUse": "UNKNOWN",
+          "commercialUse": "UNKNOWN",
+          "externalDisplay": "UNKNOWN",
+          "derivedValues": "UNKNOWN",
+          "redistribution": "UNKNOWN",
+          "caching": "UNKNOWN",
+          "historicalStorage": "UNKNOWN",
+          "publicGithubStorage": "UNKNOWN",
+          "mobileApp": "UNKNOWN",
+          "aiUsage": "UNKNOWN",
+          "modelTraining": "UNKNOWN"
+        },
+        "note": "Ein einziger belastbarer Hinweis: professionelle Nutzer muessen die Daten ueber Nasdaq Data Link beziehen, nicht ueber das Direktabonnement. Eine oeffentliche Website ist mit hoher Wahrscheinlichkeit professionelle Nutzung. Damit ist der guenstige Direkttarif fuer Vision Universe voraussichtlich nicht der zutreffende - das ist vor jeder Kostenrechnung zu klaeren.",
+        "criticalOpenQuestion": "Duerfen aus diesen Daten abgeleitete Werte (Quant Score, Ranglisten, Backtest-Ergebnisse) oeffentlich angezeigt werden, und duerfen die Rohdaten in einem oeffentlichen Git-Repository liegen?"
+      },
+      "cost": {
+        "checkedAt": "2026-09-07",
+        "source": "sharadar.com/subscribe (ueber Suchauszug)",
+        "confidence": "THIRD_PARTY_REPORTED",
+        "observed": [
+          {
+            "plan": "Bundle, 5 Jahre Historie",
+            "amount": 29,
+            "currency": "USD",
+            "period": "month"
+          },
+          {
+            "plan": "Full History Bundle",
+            "amount": 69,
+            "currency": "USD",
+            "period": "month"
+          },
+          {
+            "plan": "Full History Bundle",
+            "amount": 499,
+            "currency": "USD",
+            "period": "year"
+          }
+        ],
+        "uncertain": "Diese Tarife gelten fuer nicht-professionelle Nutzung. Der fuer eine oeffentliche Website zutreffende Preis ueber Nasdaq Data Link wurde nicht ermittelt und liegt erfahrungsgemaess deutlich darueber.",
+        "exchangeFees": "UNKNOWN",
+        "enterpriseRequired": "UNKNOWN"
+      },
+      "findings": {
+        "pointInTimeFundamentals": {
+          "requirement": "pointInTimeFundamentals",
+          "value": true,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "sharadar.com/docs/fundamentals (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": "Die AR-Dimensionen (ARQ/ARY/ART) sind ausdruecklich als Point-in-Time-Sicht angelegt, die MR-Dimensionen (MRQ/MRY/MRT) ausdruecklich nicht. Ein Backtest, der versehentlich MR verwendet, sieht rueckwirkend korrigierte Zahlen - die Faehigkeit ist also vorhanden, aber falsch bedienbar.",
+          "quote": "The As-Reported dimensions present a point-in-time view with data time-indexed to the date of the form 10 regulatory filing to the SEC"
+        },
+        "filingTimestamps": {
+          "requirement": "filingTimestamps",
+          "value": true,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "sharadar.com/docs/fundamentals (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": "datekey ist das Einreichungsdatum bei der SEC, nicht der Zeitpunkt der Datenbankaktualisierung. Genau das verlangt Gate C.",
+          "quote": "Every record carries the actual filing date (datekey) alongside the reporting period."
+        },
+        "originalHistoricalValues": {
+          "requirement": "originalHistoricalValues",
+          "value": true,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "sharadar.com/docs/fundamentals (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": "Folgt aus der Trennung von AR- und MR-Dimensionen: AR haelt den damals gemeldeten Wert fest.",
+          "quote": null
+        },
+        "restatementSemantics": {
+          "requirement": "restatementSemantics",
+          "value": true,
+          "level": "RUNTIME_VERIFICATION_REQUIRED",
+          "levelRank": 1,
+          "source": "sharadar.com/docs/fundamentals (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": "Die Dimensionslogik ist dokumentiert, aber genau hier liegt der Punkt, den keine Dokumentation belegen kann: ob die AR-Reihe bei einer echten Korrektur tatsaechlich zwei unterscheidbare Auspraegungen fuehrt. Das laesst sich nur an einem realen Restatement-Fall pruefen.",
+          "quote": "When quarterly values are not restated, the entire impact of the restatement will be captured in the final MRQ data point."
+        },
+        "delistedSecurities": {
+          "requirement": "delistedSecurities",
+          "value": true,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "sharadar.com (ueber Suchauszug), gestuetzt durch quantrocket.com/sharadar",
+          "checkedAt": "2026-09-07",
+          "note": "Ausdruecklich auch Fundamentaldaten delisteter Titel, nicht nur Kurse. Die Kursdatenbank nennt 25.000+ Ticker, davon rund 15.000 delistet.",
+          "quote": "16,000+ US companies including delisted names (no survivorship bias), with fundamentals history reaching back to 1990"
+        },
+        "survivorshipBiasControls": {
+          "requirement": "survivorshipBiasControls",
+          "value": true,
+          "level": "THIRD_PARTY_REPORTED",
+          "levelRank": 2,
+          "source": "quantrocket.com/sharadar",
+          "checkedAt": "2026-09-07",
+          "note": "Sekundaerquelle, aber inhaltlich konkret: es geht um die Rekonstruierbarkeit des historischen Universums, nicht nur um das Vorhandensein delisteter Titel.",
+          "quote": "SF1 and the ticker tables retain securities that have left the market, with metadata about their fate, so you can construct a historical universe that contains the losers as well as the survivors."
+        },
+        "corporateActions": {
+          "requirement": "corporateActions",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": "Nicht geprueft. Die Kursdatenbank (SEP) fuehrt bereinigte Kurse; ob Splits und Dividenden auch als einzelne Ereignisse abrufbar sind, wurde nicht festgestellt.",
+          "quote": null
+        },
+        "splits": {
+          "requirement": "splits",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": "Nicht geprueft.",
+          "quote": null
+        },
+        "dividends": {
+          "requirement": "dividends",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": "Nicht geprueft.",
+          "quote": null
+        },
+        "totalReturnPrices": {
+          "requirement": "totalReturnPrices",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": "SEP fuehrt bereinigte Kurse; ob die Bereinigung Dividenden einschliesst (TOTAL_RETURN) oder nur Splits (SPLIT_ADJUSTED), wurde nicht festgestellt. Nach der Semantik aus price-adjustment-v1.json ist das der Unterschied zwischen backtestfaehig und nicht.",
+          "quote": null
+        },
+        "historicalIdentifiers": {
+          "requirement": "historicalIdentifiers",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "historicalExchangeInfo": {
+          "requirement": "historicalExchangeInfo",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "historicalUniverseMembership": {
+          "requirement": "historicalUniverseMembership",
+          "value": true,
+          "level": "THIRD_PARTY_REPORTED",
+          "levelRank": 2,
+          "source": "quantrocket.com/sharadar",
+          "checkedAt": "2026-09-07",
+          "note": "Ein eigener Datensatz fuer S&P-500-Zugehoerigkeit wird genannt.",
+          "quote": null
+        },
+        "currentFundamentals": {
+          "requirement": "currentFundamentals",
+          "value": true,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "sharadar.com (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": "Rund 150 Kennzahlen und Verhaeltniszahlen.",
+          "quote": null
+        },
+        "historicalDaily": {
+          "requirement": "historicalDaily",
+          "value": true,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "sharadar.com/prices (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": null,
+          "quote": null
+        }
+      },
+      "evidence": {
+        "total": 15,
+        "byLevel": {
+          "CONTRADICTED": 0,
+          "UNKNOWN": 6,
+          "REQUIRES_PAID_VALIDATION": 0,
+          "RUNTIME_VERIFICATION_REQUIRED": 1,
+          "THIRD_PARTY_REPORTED": 2,
+          "DOCUMENTATION_VERIFIED": 6,
+          "RUNTIME_VERIFIED": 0
+        },
+        "runtimeVerified": [],
+        "documentationVerified": [
+          "pointInTimeFundamentals",
+          "filingTimestamps",
+          "originalHistoricalValues",
+          "delistedSecurities",
+          "currentFundamentals",
+          "historicalDaily"
+        ],
+        "thirdPartyOnly": [
+          "survivorshipBiasControls",
+          "historicalUniverseMembership"
+        ],
+        "requiresPaidValidation": [],
+        "unknown": [
+          "corporateActions",
+          "splits",
+          "dividends",
+          "totalReturnPrices",
+          "historicalIdentifiers",
+          "historicalExchangeInfo"
+        ]
+      },
+      "warnings": [
+        "Keine einzige Faehigkeit wurde zur Laufzeit geprueft. Alle Aussagen sind Aussagen ueber Aussagen."
+      ]
+    },
+    {
+      "providerId": "intrinio",
+      "plan": "Developer Sandbox (kostenlos) bzw. Developer (kostenpflichtig)",
+      "evaluatedAt": "2026-09-07",
+      "qualificationStatus": "PARTIALLY_QUALIFIED",
+      "bestRole": "RESEARCH_DATA_PROVIDER",
+      "roles": {
+        "MARKET_DATA_PROVIDER": {
+          "role": "MARKET_DATA_PROVIDER",
+          "label": "Marktdaten",
+          "purpose": "Kurse fuer Anzeige, Charts und kursbasierte Kennzahlen.",
+          "missing": [],
+          "contradicted": [],
+          "unknown": [],
+          "weak": [
+            "historicalDaily (THIRD_PARTY_REPORTED)"
+          ],
+          "gates": [],
+          "status": "UNKNOWN",
+          "reason": "Nur schwach belegt: historicalDaily (THIRD_PARTY_REPORTED). Eine Rolle verlangt mindestens Primaerdokumentation."
+        },
+        "RESEARCH_DATA_PROVIDER": {
+          "role": "RESEARCH_DATA_PROVIDER",
+          "label": "Research",
+          "purpose": "Aktuelle Fundamentaldaten und Kennzahlen fuer die heutige Bewertung eines Unternehmens.",
+          "missing": [],
+          "contradicted": [],
+          "unknown": [],
+          "weak": [],
+          "gates": [],
+          "status": "QUALIFIED",
+          "reason": "Alle Anforderungen dieser Rolle belegt."
+        },
+        "BACKTEST_EVIDENCE_PROVIDER": {
+          "role": "BACKTEST_EVIDENCE_PROVIDER",
+          "label": "Backtest-Evidenz",
+          "purpose": "Historische Auswertungen, deren Ergebnis als Nachweis gelten darf.",
+          "missing": [],
+          "contradicted": [],
+          "unknown": [
+            "pointInTimeFundamentals",
+            "corporateActions",
+            "totalReturnPrices",
+            "GATE_A_RESTATEMENT",
+            "GATE_B_DELISTING",
+            "GATE_C_AVAILABILITY"
+          ],
+          "weak": [
+            "originalHistoricalValues (RUNTIME_VERIFICATION_REQUIRED)",
+            "restatementSemantics (RUNTIME_VERIFICATION_REQUIRED)",
+            "delistedSecurities (THIRD_PARTY_REPORTED)"
+          ],
+          "gates": [
+            {
+              "gate": "GATE_A_RESTATEMENT",
+              "result": "UNKNOWN"
+            },
+            {
+              "gate": "GATE_B_DELISTING",
+              "result": "UNKNOWN"
+            },
+            {
+              "gate": "GATE_C_AVAILABILITY",
+              "result": "UNKNOWN"
+            }
+          ],
+          "status": "UNKNOWN",
+          "reason": "Ohne belastbaren Befund: pointInTimeFundamentals, corporateActions, totalReturnPrices, GATE_A_RESTATEMENT, GATE_B_DELISTING, GATE_C_AVAILABILITY."
+        }
+      },
+      "gates": {
+        "GATE_A_RESTATEMENT": {
+          "gate": "GATE_A_RESTATEMENT",
+          "label": "Gate A - Restatement",
+          "question": "Kann zu einem historischen Datum exakt der damals bekannte Fundamentalwert rekonstruiert werden?",
+          "requirements": [
+            {
+              "requirement": "originalHistoricalValues",
+              "value": true,
+              "level": "RUNTIME_VERIFICATION_REQUIRED",
+              "source": "help.intrinio.com, 'Filings, Fundamentals, and Financials' (ueber Suchauszug)"
+            },
+            {
+              "requirement": "restatementSemantics",
+              "value": true,
+              "level": "RUNTIME_VERIFICATION_REQUIRED",
+              "source": "help.intrinio.com (ueber Suchauszug)"
+            }
+          ],
+          "evidenceLevel": "RUNTIME_VERIFICATION_REQUIRED",
+          "result": "UNKNOWN",
+          "reason": "Nur schwach belegt: originalHistoricalValues (RUNTIME_VERIFICATION_REQUIRED), restatementSemantics (RUNTIME_VERIFICATION_REQUIRED). Ein Gate verlangt mindestens Primaerdokumentation."
+        },
+        "GATE_B_DELISTING": {
+          "gate": "GATE_B_DELISTING",
+          "label": "Gate B - Delisting",
+          "question": "Bleiben Wertpapiere abrufbar, die heute delistet oder insolvent sind?",
+          "requirements": [
+            {
+              "requirement": "delistedSecurities",
+              "value": true,
+              "level": "THIRD_PARTY_REPORTED",
+              "source": "docs.intrinio.com, get_all_securities_v2 (ueber Suchauszug)"
+            },
+            {
+              "requirement": "survivorshipBiasControls",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            }
+          ],
+          "evidenceLevel": "UNKNOWN",
+          "result": "UNKNOWN",
+          "reason": "Ohne Befund: survivorshipBiasControls. Nichts zu wissen ist etwas anderes, als etwas zu widerlegen."
+        },
+        "GATE_C_AVAILABILITY": {
+          "gate": "GATE_C_AVAILABILITY",
+          "label": "Gate C - Verfuegbarkeitszeitpunkt",
+          "question": "Laesst sich zuverlaessig bestimmen, wann eine Information tatsaechlich verfuegbar wurde?",
+          "requirements": [
+            {
+              "requirement": "pointInTimeFundamentals",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": "intrinio.com/products/us-fundamentals (ueber Suchauszug)"
+            },
+            {
+              "requirement": "filingTimestamps",
+              "value": true,
+              "level": "DOCUMENTATION_VERIFIED",
+              "source": "docs.intrinio.com, get_filing_fundamentals_v2 und get_all_filings_v2 (ueber Suchauszug)"
+            }
+          ],
+          "evidenceLevel": "UNKNOWN",
+          "result": "UNKNOWN",
+          "reason": "Ohne Befund: pointInTimeFundamentals. Nichts zu wissen ist etwas anderes, als etwas zu widerlegen."
+        }
+      },
+      "pitCapability": "UNKNOWN",
+      "restatementCapability": "UNKNOWN",
+      "delistingCapability": "UNKNOWN",
+      "corporateActions": {
+        "requirement": "corporateActions",
+        "value": null,
+        "level": "UNKNOWN",
+        "levelRank": 0,
+        "source": null,
+        "checkedAt": null,
+        "note": null,
+        "quote": null
+      },
+      "capabilities": null,
+      "dataQuality": null,
+      "licensingStatus": {
+        "status": "LEGAL_REVIEW_REQUIRED",
+        "checkedAt": "2026-09-07",
+        "findings": {
+          "developmentUse": "UNKNOWN",
+          "commercialUse": "UNKNOWN",
+          "externalDisplay": "UNKNOWN",
+          "derivedValues": "UNKNOWN",
+          "redistribution": "UNKNOWN",
+          "caching": "UNKNOWN",
+          "historicalStorage": "UNKNOWN",
+          "publicGithubStorage": "UNKNOWN",
+          "mobileApp": "UNKNOWN",
+          "aiUsage": "UNKNOWN",
+          "modelTraining": "UNKNOWN"
+        },
+        "note": "Nicht geprueft. Der Sandbox-Zugang ist ausdruecklich fuer Entwicklung und Test gedacht; daraus folgt nichts fuer die Veroeffentlichung."
+      },
+      "cost": {
+        "checkedAt": "2026-09-07",
+        "source": "intrinio.com/pricing (ueber Suchauszug)",
+        "confidence": "THIRD_PARTY_REPORTED",
+        "observed": [
+          {
+            "plan": "Developer Sandbox",
+            "amount": 0,
+            "currency": "USD",
+            "period": "month"
+          },
+          {
+            "plan": "Developer",
+            "amount": 150,
+            "currency": "USD",
+            "period": "month"
+          },
+          {
+            "plan": "Startup",
+            "amount": 333,
+            "currency": "USD",
+            "period": "month"
+          },
+          {
+            "plan": "US Fundamentals (Einzelprodukt)",
+            "amount": 9600,
+            "currency": "USD",
+            "period": "year"
+          }
+        ],
+        "uncertain": "Welcher Plan die fuer Gate A und B noetigen Daten enthaelt, wurde nicht ermittelt. Der Developer-Plan koennte auf aktuelle Fundamentaldaten begrenzt sein.",
+        "exchangeFees": "UNKNOWN",
+        "enterpriseRequired": "UNKNOWN"
+      },
+      "findings": {
+        "pointInTimeFundamentals": {
+          "requirement": "pointInTimeFundamentals",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": "intrinio.com/products/us-fundamentals (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": "ACHTUNG - Begriffsverwechslung. Die auffindbare Stelle lautet: 'Balance sheet data is available on a FY or QTR basis only due to its point-in-time nature.' Das meint die Bilanz als Stichtagsrechnung, NICHT die bitemporale Verfuegbarkeit einer Kennzahl. Es ist derselbe Begriff fuer eine voellig andere Sache. Wer diese Stelle als PIT-Beleg nimmt, qualifiziert den Anbieter auf einem Missverstaendnis.",
+          "quote": null
+        },
+        "filingTimestamps": {
+          "requirement": "filingTimestamps",
+          "value": true,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "docs.intrinio.com, get_filing_fundamentals_v2 und get_all_filings_v2 (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": "Es gibt einen eigenen Filings-Endpunkt und Filterparameter filed_after / filed_before. Fundamentaldaten sind ueber eine Filing-ID mit dem zugehoerigen Filing verknuepft.",
+          "quote": null
+        },
+        "originalHistoricalValues": {
+          "requirement": "originalHistoricalValues",
+          "value": true,
+          "level": "RUNTIME_VERIFICATION_REQUIRED",
+          "levelRank": 1,
+          "source": "help.intrinio.com, 'Filings, Fundamentals, and Financials' (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": "Ein type-Feld, das Original und Korrektur unterscheidet, ist genau das fuer Gate A Verlangte. Dass das Feld existiert, sagt aber nichts darueber, ob die Originalreihe fuer die Vergangenheit auch tatsaechlich gefuellt ist.",
+          "quote": "Intrinio specifies whether each fundamental is restated or reported (original, non-restated) using the type field"
+        },
+        "restatementSemantics": {
+          "requirement": "restatementSemantics",
+          "value": true,
+          "level": "RUNTIME_VERIFICATION_REQUIRED",
+          "levelRank": 1,
+          "source": "help.intrinio.com (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": "Wie oben. Diese Faehigkeit laesst sich im kostenlosen Sandbox-Zugang an einem Dow-30-Titel mit bekannter Korrektur pruefen.",
+          "quote": null
+        },
+        "delistedSecurities": {
+          "requirement": "delistedSecurities",
+          "value": true,
+          "level": "THIRD_PARTY_REPORTED",
+          "levelRank": 2,
+          "source": "docs.intrinio.com, get_all_securities_v2 (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": "Der Securities-Endpunkt schliesst delistete Titel ein. Ob auch deren FUNDAMENTALDATEN vorliegen - was Gate B verlangt - wurde nicht festgestellt. Der Sandbox-Zugang kann das nicht klaeren: die Dow 30 sind per Definition Ueberlebende.",
+          "quote": null
+        },
+        "survivorshipBiasControls": {
+          "requirement": "survivorshipBiasControls",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "corporateActions": {
+          "requirement": "corporateActions",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "splits": {
+          "requirement": "splits",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "dividends": {
+          "requirement": "dividends",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "totalReturnPrices": {
+          "requirement": "totalReturnPrices",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "historicalIdentifiers": {
+          "requirement": "historicalIdentifiers",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "historicalExchangeInfo": {
+          "requirement": "historicalExchangeInfo",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "historicalUniverseMembership": {
+          "requirement": "historicalUniverseMembership",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "currentFundamentals": {
+          "requirement": "currentFundamentals",
+          "value": true,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "intrinio.com/products/us-fundamentals (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": "Standardisierte und as-reported Abschluesse getrennt abrufbar, direkt aus SEC-Quellen.",
+          "quote": null
+        },
+        "historicalDaily": {
+          "requirement": "historicalDaily",
+          "value": true,
+          "level": "THIRD_PARTY_REPORTED",
+          "levelRank": 2,
+          "source": "intrinio.com/pricing (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": null,
+          "quote": null
+        }
+      },
+      "evidence": {
+        "total": 15,
+        "byLevel": {
+          "CONTRADICTED": 0,
+          "UNKNOWN": 9,
+          "REQUIRES_PAID_VALIDATION": 0,
+          "RUNTIME_VERIFICATION_REQUIRED": 2,
+          "THIRD_PARTY_REPORTED": 2,
+          "DOCUMENTATION_VERIFIED": 2,
+          "RUNTIME_VERIFIED": 0
+        },
+        "runtimeVerified": [],
+        "documentationVerified": [
+          "filingTimestamps",
+          "currentFundamentals"
+        ],
+        "thirdPartyOnly": [
+          "delistedSecurities",
+          "historicalDaily"
+        ],
+        "requiresPaidValidation": [],
+        "unknown": [
+          "pointInTimeFundamentals",
+          "survivorshipBiasControls",
+          "corporateActions",
+          "splits",
+          "dividends",
+          "totalReturnPrices",
+          "historicalIdentifiers",
+          "historicalExchangeInfo",
+          "historicalUniverseMembership"
+        ]
+      },
+      "warnings": [
+        "Keine einzige Faehigkeit wurde zur Laufzeit geprueft. Alle Aussagen sind Aussagen ueber Aussagen."
+      ]
+    },
+    {
+      "providerId": "twelve-data",
+      "plan": "Free",
+      "evaluatedAt": "2026-09-07",
+      "qualificationStatus": "PARTIALLY_QUALIFIED",
+      "bestRole": "MARKET_DATA_PROVIDER",
+      "roles": {
+        "MARKET_DATA_PROVIDER": {
+          "role": "MARKET_DATA_PROVIDER",
+          "label": "Marktdaten",
+          "purpose": "Kurse fuer Anzeige, Charts und kursbasierte Kennzahlen.",
+          "missing": [],
+          "contradicted": [],
+          "unknown": [],
+          "weak": [],
+          "gates": [],
+          "status": "QUALIFIED",
+          "reason": "Alle Anforderungen dieser Rolle belegt."
+        },
+        "RESEARCH_DATA_PROVIDER": {
+          "role": "RESEARCH_DATA_PROVIDER",
+          "label": "Research",
+          "purpose": "Aktuelle Fundamentaldaten und Kennzahlen fuer die heutige Bewertung eines Unternehmens.",
+          "missing": [],
+          "contradicted": [],
+          "unknown": [
+            "currentFundamentals"
+          ],
+          "weak": [],
+          "gates": [],
+          "status": "UNKNOWN",
+          "reason": "Ohne belastbaren Befund: currentFundamentals."
+        },
+        "BACKTEST_EVIDENCE_PROVIDER": {
+          "role": "BACKTEST_EVIDENCE_PROVIDER",
+          "label": "Backtest-Evidenz",
+          "purpose": "Historische Auswertungen, deren Ergebnis als Nachweis gelten darf.",
+          "missing": [],
+          "contradicted": [
+            "pointInTimeFundamentals",
+            "originalHistoricalValues",
+            "restatementSemantics",
+            "delistedSecurities",
+            "corporateActions",
+            "totalReturnPrices",
+            "GATE_A_RESTATEMENT",
+            "GATE_B_DELISTING",
+            "GATE_C_AVAILABILITY"
+          ],
+          "unknown": [
+            "filingTimestamps"
+          ],
+          "weak": [],
+          "gates": [
+            {
+              "gate": "GATE_A_RESTATEMENT",
+              "result": "FAILED"
+            },
+            {
+              "gate": "GATE_B_DELISTING",
+              "result": "FAILED"
+            },
+            {
+              "gate": "GATE_C_AVAILABILITY",
+              "result": "FAILED"
+            }
+          ],
+          "status": "NOT_QUALIFIED",
+          "reason": "Nicht erfuellt: pointInTimeFundamentals, originalHistoricalValues, restatementSemantics, delistedSecurities, corporateActions, totalReturnPrices, GATE_A_RESTATEMENT, GATE_B_DELISTING, GATE_C_AVAILABILITY."
+        }
+      },
+      "gates": {
+        "GATE_A_RESTATEMENT": {
+          "gate": "GATE_A_RESTATEMENT",
+          "label": "Gate A - Restatement",
+          "question": "Kann zu einem historischen Datum exakt der damals bekannte Fundamentalwert rekonstruiert werden?",
+          "requirements": [
+            {
+              "requirement": "originalHistoricalValues",
+              "value": false,
+              "level": "DOCUMENTATION_VERIFIED",
+              "source": "Phase-2-Deklaration"
+            },
+            {
+              "requirement": "restatementSemantics",
+              "value": false,
+              "level": "DOCUMENTATION_VERIFIED",
+              "source": "Phase-2-Deklaration"
+            }
+          ],
+          "evidenceLevel": "DOCUMENTATION_VERIFIED",
+          "result": "FAILED",
+          "reason": "Widerlegt: originalHistoricalValues, restatementSemantics."
+        },
+        "GATE_B_DELISTING": {
+          "gate": "GATE_B_DELISTING",
+          "label": "Gate B - Delisting",
+          "question": "Bleiben Wertpapiere abrufbar, die heute delistet oder insolvent sind?",
+          "requirements": [
+            {
+              "requirement": "delistedSecurities",
+              "value": false,
+              "level": "DOCUMENTATION_VERIFIED",
+              "source": "Phase-2-Deklaration"
+            },
+            {
+              "requirement": "survivorshipBiasControls",
+              "value": false,
+              "level": "DOCUMENTATION_VERIFIED",
+              "source": "Folgt aus delistedSecurities: false"
+            }
+          ],
+          "evidenceLevel": "DOCUMENTATION_VERIFIED",
+          "result": "FAILED",
+          "reason": "Widerlegt: delistedSecurities, survivorshipBiasControls."
+        },
+        "GATE_C_AVAILABILITY": {
+          "gate": "GATE_C_AVAILABILITY",
+          "label": "Gate C - Verfuegbarkeitszeitpunkt",
+          "question": "Laesst sich zuverlaessig bestimmen, wann eine Information tatsaechlich verfuegbar wurde?",
+          "requirements": [
+            {
+              "requirement": "pointInTimeFundamentals",
+              "value": false,
+              "level": "DOCUMENTATION_VERIFIED",
+              "source": "providers/twelve-data/adapter.js, freePlanCapabilities() - eigene Deklaration aus Phase 2"
+            },
+            {
+              "requirement": "filingTimestamps",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            }
+          ],
+          "evidenceLevel": "UNKNOWN",
+          "result": "FAILED",
+          "reason": "Widerlegt: pointInTimeFundamentals."
+        }
+      },
+      "pitCapability": "FAILED",
+      "restatementCapability": "FAILED",
+      "delistingCapability": "FAILED",
+      "corporateActions": {
+        "requirement": "corporateActions",
+        "value": false,
+        "level": "DOCUMENTATION_VERIFIED",
+        "levelRank": 3,
+        "source": "Phase-2-Deklaration: splits und dividends nicht im Free Plan",
+        "checkedAt": "2026-09-07",
+        "note": null,
+        "quote": null
+      },
+      "capabilities": null,
+      "dataQuality": null,
+      "licensingStatus": {
+        "status": "LEGAL_REVIEW_REQUIRED",
+        "checkedAt": "2026-09-07",
+        "findings": {
+          "developmentUse": "UNKNOWN",
+          "commercialUse": "UNKNOWN",
+          "externalDisplay": "UNKNOWN",
+          "derivedValues": "UNKNOWN",
+          "redistribution": "UNKNOWN",
+          "caching": "UNKNOWN",
+          "historicalStorage": "UNKNOWN",
+          "publicGithubStorage": "UNKNOWN",
+          "mobileApp": "UNKNOWN",
+          "aiUsage": "UNKNOWN",
+          "modelTraining": "UNKNOWN"
+        },
+        "note": "Unveraendert offen seit Phase 2. Die drei Veroeffentlichungsfragen aus VU_PROVIDER_LICENSE_CHECKLIST.md sind weiterhin nicht beantwortet."
+      },
+      "cost": {
+        "checkedAt": "2026-09-07",
+        "source": "Phase 2",
+        "confidence": "DOCUMENTATION_VERIFIED",
+        "observed": [
+          {
+            "plan": "Free",
+            "amount": 0,
+            "currency": "USD",
+            "period": "month"
+          }
+        ],
+        "uncertain": "Kontingente (8/min, 800/Tag) sind dokumentiert, aber nicht vertraglich geprueft.",
+        "exchangeFees": "UNKNOWN",
+        "enterpriseRequired": "UNKNOWN"
+      },
+      "findings": {
+        "pointInTimeFundamentals": {
+          "requirement": "pointInTimeFundamentals",
+          "value": false,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "providers/twelve-data/adapter.js, freePlanCapabilities() - eigene Deklaration aus Phase 2",
+          "checkedAt": "2026-09-07",
+          "note": "Ausdruecklich als nicht vorhanden deklariert. Widerlegt, nicht ungeprueft.",
+          "quote": null
+        },
+        "filingTimestamps": {
+          "requirement": "filingTimestamps",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "originalHistoricalValues": {
+          "requirement": "originalHistoricalValues",
+          "value": false,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "Phase-2-Deklaration",
+          "checkedAt": "2026-09-07",
+          "note": null,
+          "quote": null
+        },
+        "restatementSemantics": {
+          "requirement": "restatementSemantics",
+          "value": false,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "Phase-2-Deklaration",
+          "checkedAt": "2026-09-07",
+          "note": null,
+          "quote": null
+        },
+        "delistedSecurities": {
+          "requirement": "delistedSecurities",
+          "value": false,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "Phase-2-Deklaration",
+          "checkedAt": "2026-09-07",
+          "note": null,
+          "quote": null
+        },
+        "survivorshipBiasControls": {
+          "requirement": "survivorshipBiasControls",
+          "value": false,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "Folgt aus delistedSecurities: false",
+          "checkedAt": "2026-09-07",
+          "note": null,
+          "quote": null
+        },
+        "corporateActions": {
+          "requirement": "corporateActions",
+          "value": false,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "Phase-2-Deklaration: splits und dividends nicht im Free Plan",
+          "checkedAt": "2026-09-07",
+          "note": null,
+          "quote": null
+        },
+        "splits": {
+          "requirement": "splits",
+          "value": false,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "Phase-2-Deklaration",
+          "checkedAt": "2026-09-07",
+          "note": null,
+          "quote": null
+        },
+        "dividends": {
+          "requirement": "dividends",
+          "value": false,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "Phase-2-Deklaration",
+          "checkedAt": "2026-09-07",
+          "note": null,
+          "quote": null
+        },
+        "totalReturnPrices": {
+          "requirement": "totalReturnPrices",
+          "value": false,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "Phase-2-Deklaration: kein adjusted_close-Feld",
+          "checkedAt": "2026-09-07",
+          "note": "Die Reihe ist nach empirischem Befund splitbereinigt (SPLIT_ADJUSTED), aber nicht dividendenbereinigt. Nach price-adjustment-v1.json reicht das fuer Momentum und Charts, nicht fuer Renditeaussagen.",
+          "quote": null
+        },
+        "historicalIdentifiers": {
+          "requirement": "historicalIdentifiers",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "historicalExchangeInfo": {
+          "requirement": "historicalExchangeInfo",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "historicalUniverseMembership": {
+          "requirement": "historicalUniverseMembership",
+          "value": false,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "Phase-2-Deklaration",
+          "checkedAt": "2026-09-07",
+          "note": null,
+          "quote": null
+        },
+        "currentFundamentals": {
+          "requirement": "currentFundamentals",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": "Fundamentalendpunkte existieren, wurden aber nie geprueft - in Phase 2 nicht gebraucht.",
+          "quote": null
+        },
+        "historicalDaily": {
+          "requirement": "historicalDaily",
+          "value": true,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "Phase 2, Adapter und Referenzuniversum",
+          "checkedAt": "2026-09-07",
+          "note": "Die einzige Faehigkeit, die diesem Anbieter im System tatsaechlich abverlangt wird.",
+          "quote": null
+        }
+      },
+      "evidence": {
+        "total": 15,
+        "byLevel": {
+          "CONTRADICTED": 0,
+          "UNKNOWN": 4,
+          "REQUIRES_PAID_VALIDATION": 0,
+          "RUNTIME_VERIFICATION_REQUIRED": 0,
+          "THIRD_PARTY_REPORTED": 0,
+          "DOCUMENTATION_VERIFIED": 11,
+          "RUNTIME_VERIFIED": 0
+        },
+        "runtimeVerified": [],
+        "documentationVerified": [
+          "pointInTimeFundamentals",
+          "originalHistoricalValues",
+          "restatementSemantics",
+          "delistedSecurities",
+          "survivorshipBiasControls",
+          "corporateActions",
+          "splits",
+          "dividends",
+          "totalReturnPrices",
+          "historicalUniverseMembership",
+          "historicalDaily"
+        ],
+        "thirdPartyOnly": [],
+        "requiresPaidValidation": [],
+        "unknown": [
+          "filingTimestamps",
+          "historicalIdentifiers",
+          "historicalExchangeInfo",
+          "currentFundamentals"
+        ]
+      },
+      "warnings": [
+        "Keine einzige Faehigkeit wurde zur Laufzeit geprueft. Alle Aussagen sind Aussagen ueber Aussagen."
+      ]
+    },
+    {
+      "providerId": "eodhd",
+      "plan": "nicht festgelegt",
+      "evaluatedAt": "2026-09-07",
+      "qualificationStatus": "UNKNOWN",
+      "bestRole": null,
+      "roles": {
+        "MARKET_DATA_PROVIDER": {
+          "role": "MARKET_DATA_PROVIDER",
+          "label": "Marktdaten",
+          "purpose": "Kurse fuer Anzeige, Charts und kursbasierte Kennzahlen.",
+          "missing": [],
+          "contradicted": [],
+          "unknown": [],
+          "weak": [
+            "historicalDaily (THIRD_PARTY_REPORTED)"
+          ],
+          "gates": [],
+          "status": "UNKNOWN",
+          "reason": "Nur schwach belegt: historicalDaily (THIRD_PARTY_REPORTED). Eine Rolle verlangt mindestens Primaerdokumentation."
+        },
+        "RESEARCH_DATA_PROVIDER": {
+          "role": "RESEARCH_DATA_PROVIDER",
+          "label": "Research",
+          "purpose": "Aktuelle Fundamentaldaten und Kennzahlen fuer die heutige Bewertung eines Unternehmens.",
+          "missing": [],
+          "contradicted": [],
+          "unknown": [],
+          "weak": [
+            "currentFundamentals (THIRD_PARTY_REPORTED)"
+          ],
+          "gates": [],
+          "status": "UNKNOWN",
+          "reason": "Nur schwach belegt: currentFundamentals (THIRD_PARTY_REPORTED). Eine Rolle verlangt mindestens Primaerdokumentation."
+        },
+        "BACKTEST_EVIDENCE_PROVIDER": {
+          "role": "BACKTEST_EVIDENCE_PROVIDER",
+          "label": "Backtest-Evidenz",
+          "purpose": "Historische Auswertungen, deren Ergebnis als Nachweis gelten darf.",
+          "missing": [],
+          "contradicted": [],
+          "unknown": [
+            "pointInTimeFundamentals",
+            "filingTimestamps",
+            "originalHistoricalValues",
+            "restatementSemantics",
+            "totalReturnPrices",
+            "GATE_A_RESTATEMENT",
+            "GATE_B_DELISTING",
+            "GATE_C_AVAILABILITY"
+          ],
+          "weak": [
+            "corporateActions (THIRD_PARTY_REPORTED)"
+          ],
+          "gates": [
+            {
+              "gate": "GATE_A_RESTATEMENT",
+              "result": "UNKNOWN"
+            },
+            {
+              "gate": "GATE_B_DELISTING",
+              "result": "UNKNOWN"
+            },
+            {
+              "gate": "GATE_C_AVAILABILITY",
+              "result": "UNKNOWN"
+            }
+          ],
+          "status": "UNKNOWN",
+          "reason": "Ohne belastbaren Befund: pointInTimeFundamentals, filingTimestamps, originalHistoricalValues, restatementSemantics, totalReturnPrices, GATE_A_RESTATEMENT, GATE_B_DELISTING, GATE_C_AVAILABILITY."
+        }
+      },
+      "gates": {
+        "GATE_A_RESTATEMENT": {
+          "gate": "GATE_A_RESTATEMENT",
+          "label": "Gate A - Restatement",
+          "question": "Kann zu einem historischen Datum exakt der damals bekannte Fundamentalwert rekonstruiert werden?",
+          "requirements": [
+            {
+              "requirement": "originalHistoricalValues",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            },
+            {
+              "requirement": "restatementSemantics",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            }
+          ],
+          "evidenceLevel": "UNKNOWN",
+          "result": "UNKNOWN",
+          "reason": "Ohne Befund: originalHistoricalValues, restatementSemantics. Nichts zu wissen ist etwas anderes, als etwas zu widerlegen."
+        },
+        "GATE_B_DELISTING": {
+          "gate": "GATE_B_DELISTING",
+          "label": "Gate B - Delisting",
+          "question": "Bleiben Wertpapiere abrufbar, die heute delistet oder insolvent sind?",
+          "requirements": [
+            {
+              "requirement": "delistedSecurities",
+              "value": true,
+              "level": "DOCUMENTATION_VERIFIED",
+              "source": "eodhd.com/financial-apis/delisted-stock-companies-data (ueber Suchauszug)"
+            },
+            {
+              "requirement": "survivorshipBiasControls",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            }
+          ],
+          "evidenceLevel": "UNKNOWN",
+          "result": "UNKNOWN",
+          "reason": "Ohne Befund: survivorshipBiasControls. Nichts zu wissen ist etwas anderes, als etwas zu widerlegen."
+        },
+        "GATE_C_AVAILABILITY": {
+          "gate": "GATE_C_AVAILABILITY",
+          "label": "Gate C - Verfuegbarkeitszeitpunkt",
+          "question": "Laesst sich zuverlaessig bestimmen, wann eine Information tatsaechlich verfuegbar wurde?",
+          "requirements": [
+            {
+              "requirement": "pointInTimeFundamentals",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            },
+            {
+              "requirement": "filingTimestamps",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            }
+          ],
+          "evidenceLevel": "UNKNOWN",
+          "result": "UNKNOWN",
+          "reason": "Ohne Befund: pointInTimeFundamentals, filingTimestamps. Nichts zu wissen ist etwas anderes, als etwas zu widerlegen."
+        }
+      },
+      "pitCapability": "UNKNOWN",
+      "restatementCapability": "UNKNOWN",
+      "delistingCapability": "UNKNOWN",
+      "corporateActions": {
+        "requirement": "corporateActions",
+        "value": true,
+        "level": "THIRD_PARTY_REPORTED",
+        "levelRank": 2,
+        "source": "eodhd.com (ueber Suchauszug)",
+        "checkedAt": "2026-09-07",
+        "note": "Dividenden und Splits werden als eigene Datenklassen genannt.",
+        "quote": null
+      },
+      "capabilities": null,
+      "dataQuality": null,
+      "licensingStatus": {
+        "status": "LEGAL_REVIEW_REQUIRED",
+        "checkedAt": "2026-09-07",
+        "findings": {
+          "developmentUse": "UNKNOWN",
+          "commercialUse": "UNKNOWN",
+          "externalDisplay": "UNKNOWN",
+          "derivedValues": "UNKNOWN",
+          "redistribution": "UNKNOWN",
+          "caching": "UNKNOWN",
+          "historicalStorage": "UNKNOWN",
+          "publicGithubStorage": "UNKNOWN",
+          "mobileApp": "UNKNOWN",
+          "aiUsage": "UNKNOWN",
+          "modelTraining": "UNKNOWN"
+        },
+        "note": "Nicht geprueft."
+      },
+      "cost": {
+        "checkedAt": "2026-09-07",
+        "confidence": "UNKNOWN",
+        "observed": [],
+        "uncertain": "Keine Preise ermittelt.",
+        "exchangeFees": "UNKNOWN",
+        "enterpriseRequired": "UNKNOWN"
+      },
+      "findings": {
+        "pointInTimeFundamentals": {
+          "requirement": "pointInTimeFundamentals",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": "Nicht festgestellt. Die entscheidende offene Frage ist, ob die Fundamentalhistorie zeitpunktgenau ist oder rueckwirkend gefuellt wurde.",
+          "quote": null
+        },
+        "filingTimestamps": {
+          "requirement": "filingTimestamps",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "originalHistoricalValues": {
+          "requirement": "originalHistoricalValues",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "restatementSemantics": {
+          "requirement": "restatementSemantics",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "delistedSecurities": {
+          "requirement": "delistedSecurities",
+          "value": true,
+          "level": "DOCUMENTATION_VERIFIED",
+          "levelRank": 3,
+          "source": "eodhd.com/financial-apis/delisted-stock-companies-data (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": "Mit einer wichtigen Einschraenkung, die den Wert fuer Backtests begrenzt: Fundamentaldaten delisteter Titel gibt es nur fuer Delistings NACH 2018. Davor ausschliesslich Kursdaten. Ein Backtest ueber 2008 saehe die damaligen Insolvenzen also ohne Fundamentaldaten - und damit nicht.",
+          "quote": null
+        },
+        "survivorshipBiasControls": {
+          "requirement": "survivorshipBiasControls",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "corporateActions": {
+          "requirement": "corporateActions",
+          "value": true,
+          "level": "THIRD_PARTY_REPORTED",
+          "levelRank": 2,
+          "source": "eodhd.com (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": "Dividenden und Splits werden als eigene Datenklassen genannt.",
+          "quote": null
+        },
+        "splits": {
+          "requirement": "splits",
+          "value": true,
+          "level": "THIRD_PARTY_REPORTED",
+          "levelRank": 2,
+          "source": "eodhd.com (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": null,
+          "quote": null
+        },
+        "dividends": {
+          "requirement": "dividends",
+          "value": true,
+          "level": "THIRD_PARTY_REPORTED",
+          "levelRank": 2,
+          "source": "eodhd.com (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": null,
+          "quote": null
+        },
+        "totalReturnPrices": {
+          "requirement": "totalReturnPrices",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "historicalIdentifiers": {
+          "requirement": "historicalIdentifiers",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "historicalExchangeInfo": {
+          "requirement": "historicalExchangeInfo",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "historicalUniverseMembership": {
+          "requirement": "historicalUniverseMembership",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "currentFundamentals": {
+          "requirement": "currentFundamentals",
+          "value": true,
+          "level": "THIRD_PARTY_REPORTED",
+          "levelRank": 2,
+          "source": "eodhd.com (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": null,
+          "quote": null
+        },
+        "historicalDaily": {
+          "requirement": "historicalDaily",
+          "value": true,
+          "level": "THIRD_PARTY_REPORTED",
+          "levelRank": 2,
+          "source": "eodhd.com (ueber Suchauszug)",
+          "checkedAt": "2026-09-07",
+          "note": null,
+          "quote": null
+        }
+      },
+      "evidence": {
+        "total": 15,
+        "byLevel": {
+          "CONTRADICTED": 0,
+          "UNKNOWN": 9,
+          "REQUIRES_PAID_VALIDATION": 0,
+          "RUNTIME_VERIFICATION_REQUIRED": 0,
+          "THIRD_PARTY_REPORTED": 5,
+          "DOCUMENTATION_VERIFIED": 1,
+          "RUNTIME_VERIFIED": 0
+        },
+        "runtimeVerified": [],
+        "documentationVerified": [
+          "delistedSecurities"
+        ],
+        "thirdPartyOnly": [
+          "corporateActions",
+          "splits",
+          "dividends",
+          "currentFundamentals",
+          "historicalDaily"
+        ],
+        "requiresPaidValidation": [],
+        "unknown": [
+          "pointInTimeFundamentals",
+          "filingTimestamps",
+          "originalHistoricalValues",
+          "restatementSemantics",
+          "survivorshipBiasControls",
+          "totalReturnPrices",
+          "historicalIdentifiers",
+          "historicalExchangeInfo",
+          "historicalUniverseMembership"
+        ]
+      },
+      "warnings": [
+        "Keine einzige Faehigkeit wurde zur Laufzeit geprueft. Alle Aussagen sind Aussagen ueber Aussagen.",
+        "Mehr Befunde aus Sekundaerquellen als aus Primaerdokumentation. Die Einstufung ist entsprechend vorlaeufig."
+      ]
+    },
+    {
+      "providerId": "fmp",
+      "plan": "nicht festgelegt",
+      "evaluatedAt": "2026-09-07",
+      "qualificationStatus": "UNKNOWN",
+      "bestRole": null,
+      "roles": {
+        "MARKET_DATA_PROVIDER": {
+          "role": "MARKET_DATA_PROVIDER",
+          "label": "Marktdaten",
+          "purpose": "Kurse fuer Anzeige, Charts und kursbasierte Kennzahlen.",
+          "missing": [],
+          "contradicted": [],
+          "unknown": [],
+          "weak": [
+            "historicalDaily (THIRD_PARTY_REPORTED)"
+          ],
+          "gates": [],
+          "status": "UNKNOWN",
+          "reason": "Nur schwach belegt: historicalDaily (THIRD_PARTY_REPORTED). Eine Rolle verlangt mindestens Primaerdokumentation."
+        },
+        "RESEARCH_DATA_PROVIDER": {
+          "role": "RESEARCH_DATA_PROVIDER",
+          "label": "Research",
+          "purpose": "Aktuelle Fundamentaldaten und Kennzahlen fuer die heutige Bewertung eines Unternehmens.",
+          "missing": [],
+          "contradicted": [],
+          "unknown": [],
+          "weak": [
+            "currentFundamentals (THIRD_PARTY_REPORTED)"
+          ],
+          "gates": [],
+          "status": "UNKNOWN",
+          "reason": "Nur schwach belegt: currentFundamentals (THIRD_PARTY_REPORTED). Eine Rolle verlangt mindestens Primaerdokumentation."
+        },
+        "BACKTEST_EVIDENCE_PROVIDER": {
+          "role": "BACKTEST_EVIDENCE_PROVIDER",
+          "label": "Backtest-Evidenz",
+          "purpose": "Historische Auswertungen, deren Ergebnis als Nachweis gelten darf.",
+          "missing": [],
+          "contradicted": [],
+          "unknown": [
+            "pointInTimeFundamentals",
+            "filingTimestamps",
+            "originalHistoricalValues",
+            "restatementSemantics",
+            "delistedSecurities",
+            "corporateActions",
+            "totalReturnPrices",
+            "GATE_A_RESTATEMENT",
+            "GATE_B_DELISTING",
+            "GATE_C_AVAILABILITY"
+          ],
+          "weak": [],
+          "gates": [
+            {
+              "gate": "GATE_A_RESTATEMENT",
+              "result": "UNKNOWN"
+            },
+            {
+              "gate": "GATE_B_DELISTING",
+              "result": "UNKNOWN"
+            },
+            {
+              "gate": "GATE_C_AVAILABILITY",
+              "result": "UNKNOWN"
+            }
+          ],
+          "status": "UNKNOWN",
+          "reason": "Ohne belastbaren Befund: pointInTimeFundamentals, filingTimestamps, originalHistoricalValues, restatementSemantics, delistedSecurities, corporateActions, totalReturnPrices, GATE_A_RESTATEMENT, GATE_B_DELISTING, GATE_C_AVAILABILITY."
+        }
+      },
+      "gates": {
+        "GATE_A_RESTATEMENT": {
+          "gate": "GATE_A_RESTATEMENT",
+          "label": "Gate A - Restatement",
+          "question": "Kann zu einem historischen Datum exakt der damals bekannte Fundamentalwert rekonstruiert werden?",
+          "requirements": [
+            {
+              "requirement": "originalHistoricalValues",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            },
+            {
+              "requirement": "restatementSemantics",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            }
+          ],
+          "evidenceLevel": "UNKNOWN",
+          "result": "UNKNOWN",
+          "reason": "Ohne Befund: originalHistoricalValues, restatementSemantics. Nichts zu wissen ist etwas anderes, als etwas zu widerlegen."
+        },
+        "GATE_B_DELISTING": {
+          "gate": "GATE_B_DELISTING",
+          "label": "Gate B - Delisting",
+          "question": "Bleiben Wertpapiere abrufbar, die heute delistet oder insolvent sind?",
+          "requirements": [
+            {
+              "requirement": "delistedSecurities",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            },
+            {
+              "requirement": "survivorshipBiasControls",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            }
+          ],
+          "evidenceLevel": "UNKNOWN",
+          "result": "UNKNOWN",
+          "reason": "Ohne Befund: delistedSecurities, survivorshipBiasControls. Nichts zu wissen ist etwas anderes, als etwas zu widerlegen."
+        },
+        "GATE_C_AVAILABILITY": {
+          "gate": "GATE_C_AVAILABILITY",
+          "label": "Gate C - Verfuegbarkeitszeitpunkt",
+          "question": "Laesst sich zuverlaessig bestimmen, wann eine Information tatsaechlich verfuegbar wurde?",
+          "requirements": [
+            {
+              "requirement": "pointInTimeFundamentals",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            },
+            {
+              "requirement": "filingTimestamps",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            }
+          ],
+          "evidenceLevel": "UNKNOWN",
+          "result": "UNKNOWN",
+          "reason": "Ohne Befund: pointInTimeFundamentals, filingTimestamps. Nichts zu wissen ist etwas anderes, als etwas zu widerlegen."
+        }
+      },
+      "pitCapability": "UNKNOWN",
+      "restatementCapability": "UNKNOWN",
+      "delistingCapability": "UNKNOWN",
+      "corporateActions": {
+        "requirement": "corporateActions",
+        "value": null,
+        "level": "UNKNOWN",
+        "levelRank": 0,
+        "source": null,
+        "checkedAt": null,
+        "note": null,
+        "quote": null
+      },
+      "capabilities": null,
+      "dataQuality": null,
+      "licensingStatus": {
+        "status": "LEGAL_REVIEW_REQUIRED",
+        "checkedAt": "2026-09-07",
+        "findings": {
+          "developmentUse": "UNKNOWN",
+          "commercialUse": "UNKNOWN",
+          "externalDisplay": "UNKNOWN",
+          "derivedValues": "UNKNOWN",
+          "redistribution": "UNKNOWN",
+          "caching": "UNKNOWN",
+          "historicalStorage": "UNKNOWN",
+          "publicGithubStorage": "UNKNOWN",
+          "mobileApp": "UNKNOWN",
+          "aiUsage": "UNKNOWN",
+          "modelTraining": "UNKNOWN"
+        },
+        "note": "Nicht geprueft."
+      },
+      "cost": {
+        "checkedAt": "2026-09-07",
+        "confidence": "UNKNOWN",
+        "observed": [],
+        "uncertain": "Keine Preise ermittelt.",
+        "exchangeFees": "UNKNOWN",
+        "enterpriseRequired": "UNKNOWN"
+      },
+      "findings": {
+        "pointInTimeFundamentals": {
+          "requirement": "pointInTimeFundamentals",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "filingTimestamps": {
+          "requirement": "filingTimestamps",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": "Die Naehe zu SEC EDGAR laesst Einreichungsdaten erwarten, aber erwartet ist nicht geprueft.",
+          "quote": null
+        },
+        "originalHistoricalValues": {
+          "requirement": "originalHistoricalValues",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "restatementSemantics": {
+          "requirement": "restatementSemantics",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "delistedSecurities": {
+          "requirement": "delistedSecurities",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "survivorshipBiasControls": {
+          "requirement": "survivorshipBiasControls",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "corporateActions": {
+          "requirement": "corporateActions",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "splits": {
+          "requirement": "splits",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "dividends": {
+          "requirement": "dividends",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "totalReturnPrices": {
+          "requirement": "totalReturnPrices",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "historicalIdentifiers": {
+          "requirement": "historicalIdentifiers",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "historicalExchangeInfo": {
+          "requirement": "historicalExchangeInfo",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "historicalUniverseMembership": {
+          "requirement": "historicalUniverseMembership",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "currentFundamentals": {
+          "requirement": "currentFundamentals",
+          "value": true,
+          "level": "THIRD_PARTY_REPORTED",
+          "levelRank": 2,
+          "source": "Vergleichsartikel (medium.com, findmymoat.com)",
+          "checkedAt": "2026-09-07",
+          "note": "Wird durchgaengig fuer Fundamentaldaten und SEC-EDGAR-Naehe gelobt. Sekundaerquellen, ungeprueft.",
+          "quote": null
+        },
+        "historicalDaily": {
+          "requirement": "historicalDaily",
+          "value": true,
+          "level": "THIRD_PARTY_REPORTED",
+          "levelRank": 2,
+          "source": "Vergleichsartikel",
+          "checkedAt": "2026-09-07",
+          "note": null,
+          "quote": null
+        }
+      },
+      "evidence": {
+        "total": 15,
+        "byLevel": {
+          "CONTRADICTED": 0,
+          "UNKNOWN": 13,
+          "REQUIRES_PAID_VALIDATION": 0,
+          "RUNTIME_VERIFICATION_REQUIRED": 0,
+          "THIRD_PARTY_REPORTED": 2,
+          "DOCUMENTATION_VERIFIED": 0,
+          "RUNTIME_VERIFIED": 0
+        },
+        "runtimeVerified": [],
+        "documentationVerified": [],
+        "thirdPartyOnly": [
+          "currentFundamentals",
+          "historicalDaily"
+        ],
+        "requiresPaidValidation": [],
+        "unknown": [
+          "pointInTimeFundamentals",
+          "filingTimestamps",
+          "originalHistoricalValues",
+          "restatementSemantics",
+          "delistedSecurities",
+          "survivorshipBiasControls",
+          "corporateActions",
+          "splits",
+          "dividends",
+          "totalReturnPrices",
+          "historicalIdentifiers",
+          "historicalExchangeInfo",
+          "historicalUniverseMembership"
+        ]
+      },
+      "warnings": [
+        "Keine einzige Faehigkeit wurde zur Laufzeit geprueft. Alle Aussagen sind Aussagen ueber Aussagen.",
+        "Mehr Befunde aus Sekundaerquellen als aus Primaerdokumentation. Die Einstufung ist entsprechend vorlaeufig."
+      ]
+    },
+    {
+      "providerId": "polygon",
+      "plan": "nicht festgelegt",
+      "evaluatedAt": "2026-09-07",
+      "qualificationStatus": "UNKNOWN",
+      "bestRole": null,
+      "roles": {
+        "MARKET_DATA_PROVIDER": {
+          "role": "MARKET_DATA_PROVIDER",
+          "label": "Marktdaten",
+          "purpose": "Kurse fuer Anzeige, Charts und kursbasierte Kennzahlen.",
+          "missing": [],
+          "contradicted": [],
+          "unknown": [],
+          "weak": [
+            "historicalDaily (THIRD_PARTY_REPORTED)"
+          ],
+          "gates": [],
+          "status": "UNKNOWN",
+          "reason": "Nur schwach belegt: historicalDaily (THIRD_PARTY_REPORTED). Eine Rolle verlangt mindestens Primaerdokumentation."
+        },
+        "RESEARCH_DATA_PROVIDER": {
+          "role": "RESEARCH_DATA_PROVIDER",
+          "label": "Research",
+          "purpose": "Aktuelle Fundamentaldaten und Kennzahlen fuer die heutige Bewertung eines Unternehmens.",
+          "missing": [],
+          "contradicted": [],
+          "unknown": [
+            "currentFundamentals"
+          ],
+          "weak": [],
+          "gates": [],
+          "status": "UNKNOWN",
+          "reason": "Ohne belastbaren Befund: currentFundamentals."
+        },
+        "BACKTEST_EVIDENCE_PROVIDER": {
+          "role": "BACKTEST_EVIDENCE_PROVIDER",
+          "label": "Backtest-Evidenz",
+          "purpose": "Historische Auswertungen, deren Ergebnis als Nachweis gelten darf.",
+          "missing": [],
+          "contradicted": [],
+          "unknown": [
+            "pointInTimeFundamentals",
+            "filingTimestamps",
+            "originalHistoricalValues",
+            "restatementSemantics",
+            "delistedSecurities",
+            "corporateActions",
+            "totalReturnPrices",
+            "GATE_A_RESTATEMENT",
+            "GATE_B_DELISTING",
+            "GATE_C_AVAILABILITY"
+          ],
+          "weak": [],
+          "gates": [
+            {
+              "gate": "GATE_A_RESTATEMENT",
+              "result": "UNKNOWN"
+            },
+            {
+              "gate": "GATE_B_DELISTING",
+              "result": "UNKNOWN"
+            },
+            {
+              "gate": "GATE_C_AVAILABILITY",
+              "result": "UNKNOWN"
+            }
+          ],
+          "status": "UNKNOWN",
+          "reason": "Ohne belastbaren Befund: pointInTimeFundamentals, filingTimestamps, originalHistoricalValues, restatementSemantics, delistedSecurities, corporateActions, totalReturnPrices, GATE_A_RESTATEMENT, GATE_B_DELISTING, GATE_C_AVAILABILITY."
+        }
+      },
+      "gates": {
+        "GATE_A_RESTATEMENT": {
+          "gate": "GATE_A_RESTATEMENT",
+          "label": "Gate A - Restatement",
+          "question": "Kann zu einem historischen Datum exakt der damals bekannte Fundamentalwert rekonstruiert werden?",
+          "requirements": [
+            {
+              "requirement": "originalHistoricalValues",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            },
+            {
+              "requirement": "restatementSemantics",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            }
+          ],
+          "evidenceLevel": "UNKNOWN",
+          "result": "UNKNOWN",
+          "reason": "Ohne Befund: originalHistoricalValues, restatementSemantics. Nichts zu wissen ist etwas anderes, als etwas zu widerlegen."
+        },
+        "GATE_B_DELISTING": {
+          "gate": "GATE_B_DELISTING",
+          "label": "Gate B - Delisting",
+          "question": "Bleiben Wertpapiere abrufbar, die heute delistet oder insolvent sind?",
+          "requirements": [
+            {
+              "requirement": "delistedSecurities",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            },
+            {
+              "requirement": "survivorshipBiasControls",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            }
+          ],
+          "evidenceLevel": "UNKNOWN",
+          "result": "UNKNOWN",
+          "reason": "Ohne Befund: delistedSecurities, survivorshipBiasControls. Nichts zu wissen ist etwas anderes, als etwas zu widerlegen."
+        },
+        "GATE_C_AVAILABILITY": {
+          "gate": "GATE_C_AVAILABILITY",
+          "label": "Gate C - Verfuegbarkeitszeitpunkt",
+          "question": "Laesst sich zuverlaessig bestimmen, wann eine Information tatsaechlich verfuegbar wurde?",
+          "requirements": [
+            {
+              "requirement": "pointInTimeFundamentals",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            },
+            {
+              "requirement": "filingTimestamps",
+              "value": null,
+              "level": "UNKNOWN",
+              "source": null
+            }
+          ],
+          "evidenceLevel": "UNKNOWN",
+          "result": "UNKNOWN",
+          "reason": "Ohne Befund: pointInTimeFundamentals, filingTimestamps. Nichts zu wissen ist etwas anderes, als etwas zu widerlegen."
+        }
+      },
+      "pitCapability": "UNKNOWN",
+      "restatementCapability": "UNKNOWN",
+      "delistingCapability": "UNKNOWN",
+      "corporateActions": {
+        "requirement": "corporateActions",
+        "value": null,
+        "level": "UNKNOWN",
+        "levelRank": 0,
+        "source": null,
+        "checkedAt": null,
+        "note": null,
+        "quote": null
+      },
+      "capabilities": null,
+      "dataQuality": null,
+      "licensingStatus": {
+        "status": "LEGAL_REVIEW_REQUIRED",
+        "checkedAt": "2026-09-07",
+        "findings": {
+          "developmentUse": "UNKNOWN",
+          "commercialUse": "UNKNOWN",
+          "externalDisplay": "UNKNOWN",
+          "derivedValues": "UNKNOWN",
+          "redistribution": "UNKNOWN",
+          "caching": "UNKNOWN",
+          "historicalStorage": "UNKNOWN",
+          "publicGithubStorage": "UNKNOWN",
+          "mobileApp": "UNKNOWN",
+          "aiUsage": "UNKNOWN",
+          "modelTraining": "UNKNOWN"
+        },
+        "note": "Nicht geprueft."
+      },
+      "cost": {
+        "checkedAt": "2026-09-07",
+        "confidence": "UNKNOWN",
+        "observed": [],
+        "uncertain": "Keine Preise ermittelt.",
+        "exchangeFees": "UNKNOWN",
+        "enterpriseRequired": "UNKNOWN"
+      },
+      "findings": {
+        "pointInTimeFundamentals": {
+          "requirement": "pointInTimeFundamentals",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "filingTimestamps": {
+          "requirement": "filingTimestamps",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "originalHistoricalValues": {
+          "requirement": "originalHistoricalValues",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "restatementSemantics": {
+          "requirement": "restatementSemantics",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "delistedSecurities": {
+          "requirement": "delistedSecurities",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "survivorshipBiasControls": {
+          "requirement": "survivorshipBiasControls",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "corporateActions": {
+          "requirement": "corporateActions",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "splits": {
+          "requirement": "splits",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "dividends": {
+          "requirement": "dividends",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "totalReturnPrices": {
+          "requirement": "totalReturnPrices",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "historicalIdentifiers": {
+          "requirement": "historicalIdentifiers",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "historicalExchangeInfo": {
+          "requirement": "historicalExchangeInfo",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "historicalUniverseMembership": {
+          "requirement": "historicalUniverseMembership",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "currentFundamentals": {
+          "requirement": "currentFundamentals",
+          "value": null,
+          "level": "UNKNOWN",
+          "levelRank": 0,
+          "source": null,
+          "checkedAt": null,
+          "note": null,
+          "quote": null
+        },
+        "historicalDaily": {
+          "requirement": "historicalDaily",
+          "value": true,
+          "level": "THIRD_PARTY_REPORTED",
+          "levelRank": 2,
+          "source": "Vergleichsartikel",
+          "checkedAt": "2026-09-07",
+          "note": "Wird durchgaengig als marktdatenstark beschrieben - Tick-Daten, Intraday, WebSocket. Die Staerke liegt erkennbar bei Marktdaten, nicht bei Fundamentalhistorie.",
+          "quote": null
+        }
+      },
+      "evidence": {
+        "total": 15,
+        "byLevel": {
+          "CONTRADICTED": 0,
+          "UNKNOWN": 14,
+          "REQUIRES_PAID_VALIDATION": 0,
+          "RUNTIME_VERIFICATION_REQUIRED": 0,
+          "THIRD_PARTY_REPORTED": 1,
+          "DOCUMENTATION_VERIFIED": 0,
+          "RUNTIME_VERIFIED": 0
+        },
+        "runtimeVerified": [],
+        "documentationVerified": [],
+        "thirdPartyOnly": [
+          "historicalDaily"
+        ],
+        "requiresPaidValidation": [],
+        "unknown": [
+          "pointInTimeFundamentals",
+          "filingTimestamps",
+          "originalHistoricalValues",
+          "restatementSemantics",
+          "delistedSecurities",
+          "survivorshipBiasControls",
+          "corporateActions",
+          "splits",
+          "dividends",
+          "totalReturnPrices",
+          "historicalIdentifiers",
+          "historicalExchangeInfo",
+          "historicalUniverseMembership",
+          "currentFundamentals"
+        ]
+      },
+      "warnings": [
+        "Keine einzige Faehigkeit wurde zur Laufzeit geprueft. Alle Aussagen sind Aussagen ueber Aussagen.",
+        "Mehr Befunde aus Sekundaerquellen als aus Primaerdokumentation. Die Einstufung ist entsprechend vorlaeufig."
+      ]
+    }
+  ]
+}

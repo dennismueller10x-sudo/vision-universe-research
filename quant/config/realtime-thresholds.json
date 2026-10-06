@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0.0",
+  "thresholdSetId": "realtime-thresholds-v1",
+  "changedAt": "2026-09-08",
+  "note": "Ab wann ein Kurs nicht mehr als aktuell gilt. Die Zahlen sind Betriebsannahmen, keine Zusicherungen des Anbieters. Sobald ein Anbieter eine Aktualisierungsfrequenz vertraglich nennt, gehoert sie hier hinein - und dann mit Herkunft. Versioniert, damit eine Aenderung ein Commit ist und kein Nebeneffekt.",
+  "basis": "Abgeleitet aus der erwarteten Aktualisierungsfrequenz je Datenklasse, nicht gemessen. Ein Stream, der pro Trade sendet, ist bei einem liquiden Titel im Sekundenbereich; eine Kursabfrage im Pollingtakt; eine Intraday-Bar im Intervalltakt.",
+  "classes": {
+    "REALTIME_STREAM": {
+      "freshMs": 15000,
+      "degradedMs": 60000,
+      "fallbackMs": 180000,
+      "basis": "Ein Stream ohne Nachricht in 15 Sekunden ist bei laufendem Handel auffaellig, nach einer Minute unbrauchbar."
+    },
+    "REALTIME_QUOTE": {
+      "freshMs": 30000,
+      "degradedMs": 120000,
+      "fallbackMs": 300000,
+      "basis": "Der Pollingtakt bestimmt die Untergrenze. Zwei ausgefallene Abrufe sind ein Befund, zehn sind ein Ausfall."
+    },
+    "INTRADAY": {
+      "freshMsPerIntervalFactor": 2,
+      "degradedMsPerIntervalFactor": 4,
+      "fallbackMsPerIntervalFactor": 8,
+      "minFreshMs": 120000,
+      "basis": "Relativ zum Bar-Intervall statt absolut: eine 5-Minuten-Bar ist nach 6 Minuten normal, eine 1-Minuten-Bar nicht."
+    },
+    "EOD": {
+      "freshMsAfterCloseHours": 30,
+      "degradedMsAfterCloseHours": 96,
+      "basis": "Ein Tagesschluss ist bis zum naechsten Schluss aktuell. Erst wenn mehrere Handelstage fehlen, stimmt etwas nicht."
+    }
+  },
+  "sessions": {
+    "REGULAR": { "applies": true, "factor": 1 },
+    "PRE": { "applies": false, "factor": 4, "note": "Erweiterte Zeiten sind duenn. Ein stiller Kurs ist dort kein Befund, solange nicht ausdruecklich erweiterte Daten bezogen werden." },
+    "AFTER": { "applies": false, "factor": 4, "note": "Wie PRE." },
+    "CLOSED": { "applies": false, "factor": null, "note": "Bei geschlossener Boerse gibt es keine Staleness. Ein unveraenderter Kurs ist dann die richtige Antwort - er wird nur nicht mehr LIVE genannt." }
+  }
+}

@@ -1,0 +1,884 @@
+{
+ "schema": "supertrader-r15-1.0.0",
+ "kind": "STRATEGY_GAPS",
+ "strategies": {
+  "MOMENTUM_BREAKOUT": {
+   "answers": {
+    "originalWhat": "Drei Setups (Breakout, Episodic Pivot, Parabolic Short/Long) mit expliziten Kernregeln: Top-1–2 %-Scan 1/3/6 Monate, 30–100 % Vorlauf, 2 Wochen–2 Monate geordnete Basis mit höheren Tiefs an steigender 10/20(50)-Linie; ORH-Einstieg oder Tageschart; Stop Tagestief <= ADR; 1/3–1/2 nach 3–5 Tagen, Einstand, Rest an SMA10/20 (Schluss); EP: Gap >= 10 %, großes Volumen, Wachstum+Überraschung, ORH, Stop Tagestief <= 1–1,5 ADR; PS: 50–100 %+/300–1000 %+, 3–5+ Tage hoch, ORL/VWAP, Stop Tageshoch, Ziel SMA10/20; Risiko 0,25–1 %, Gewicht 5–25 %, max 30 % über Nacht; ADR-Formel 20 Tage.",
+    "notReproducible": "Basisqualität nach Augenmaß, Größe nach Überzeugung, Markt-Ermessen („fewer or no trades“), Varianten-Wahl 10/20-Tage, gelegentliches Übergehen von Stops, Kauf des Retests, Aufstocken intraday, Margin-Umfang, EP-Katalysator-Beurteilung, Locates; dazu alles nur aus Videos/Streams (ADR-/Umsatz-Schwellen, HTF-Zahlen, Scans).",
+    "currentlyImplemented": "Nur Breakout als Tageschart-Variante 3.2.0: Top-2 %-Perzentil, Vorlauf >= 30 %, VU-Basis, SMA10/20-Surfen, Kauf-Stop am 5-Tage-Hoch, Stop Tagestief <= 1 ADR, 1/3 nach 3 Sitzungen, Einstand bei Schluss > Einstieg, Rest bei Schluss < SMA10; 0,5 % Risiko, max 25 %, 10 Positionen, RS-Rang.",
+    "missing": "Episodic Pivot (Engine fehlt), Parabolic Short/Long (Engine, Short-Simulation fehlen), ORH-Einstieg mit konsolidierten Minuten, 20-Tage-Trailing/1/2-Teilverkauf-Varianten, 50-Tage-Surfen, Aufstocken, Margin, Markt-Ermessen, Liquiditäts-/Überzeugungs-Sizing, ETFs.",
+    "foreign": "Keine Fremdregel im KK-Live-Pfad gefunden (kein SPY-200-Filter, kein progressive). Umgekehrt ist KKs Risikostandard als Fremdregel in anderen Methoden (Weinstein) im Einsatz (R14).",
+    "vuOwn": "Basis-Algorithmus (25 % Tiefe, Hälftenvergleich, Spannenkontraktion), Trigger 5-Tage-Hoch, ENTRY_READY 3 %, INV-01/02, Liquidität 5 USD/5 Mio./ADR 2 %, Querschnitt 1 Mio., LC-RANK-AT-DISCOVERY, Einstand-Bedingung, Gleichtagsregel, Sperre 5 Sitzungen, 10 Positionen, maxExposure 1,0, RS-Rang, Kosten, ETF-Ausschluss, Warnstatus.",
+    "mayBeCalledKullamaegi": "Nein für „Kullamägi-Methode“/„Replikation“. Zulässig: „Momentum Breakout – research-basiert auf Kullamägis Breakout-Setup (VU-Variante, Tageschart)“. EP/PS nur als „in Forschung“."
+   },
+   "critical": [],
+   "high": [],
+   "missingInCode": [
+    "KK-BO-C08",
+    "KK-BO-C09",
+    "KK-BO-C15",
+    "KK-EP-C01",
+    "KK-EP-C02",
+    "KK-EP-C03",
+    "KK-EP-C04",
+    "KK-EP-C05",
+    "KK-EP-C06",
+    "KK-EP-C07",
+    "KK-EP-C08",
+    "KK-EP-C10",
+    "KK-PS-C01",
+    "KK-PS-C02",
+    "KK-PS-C03",
+    "KK-PS-C04",
+    "KK-PS-C05",
+    "KK-PS-C06",
+    "KK-CO-C05",
+    "KK-CO-C06",
+    "KK-CO-C08",
+    "KK-CO-C09",
+    "KK-CO-C14"
+   ],
+   "foreignRules": [],
+   "liveTextMismatches": [
+    {
+     "id": "R15-T17",
+     "file": "scripts/supertrader/registry-r8.mjs:58",
+     "severity": "LOW",
+     "text": "Regelkarte \"Ungültig\": \"... Danach keine Sperre – die Suche läuft weiter\""
+    },
+    {
+     "id": "R15-T18",
+     "file": "scripts/supertrader/registry.mjs:213-221 (rule(KK_V,...))",
+     "severity": "MEDIUM",
+     "text": "Regeln KK-BO-TREND-01 (über beiden Linien), KK-BO-ENTRY-D1 (Schluss + nächste Eröffnung), KK-BO-GAP-01 (Gap-Sperre 0,5 ADR), KK-BO-STOP-D1, LC-CONFIRM-CLOSE als 3.2.0-Regeln gelistet; Tag \"Original\"/\"VU-Formalisierung\""
+    },
+    {
+     "id": "R15-T19",
+     "file": "scripts/supertrader/registry.mjs:542",
+     "severity": "MEDIUM",
+     "text": "source_basis.note: \"Einstieg per Tagesschluss, enge Basis, Gap- und Invalidationsregeln sind VU\""
+    },
+    {
+     "id": "R15-T20",
+     "file": "scripts/supertrader/registry.mjs:175,188",
+     "severity": "LOW",
+     "text": "DNA entry_zone/gap_policy \"Eröffnung > Trigger + 0,5 ADR wird nicht verfolgt\""
+    },
+    {
+     "id": "R15-T21",
+     "file": "docs/SUPERTRADER_METHOD_FIDELITY.md:65,176,177,180",
+     "severity": "MEDIUM",
+     "text": "Doku Methodentreue: \"3.1.0 läuft live\"; R7-Matrix: \"Schluss über 5-Tage-Hoch, Kauf zur nächsten Eröffnung; Gap > 0,5 ADR ausgelassen\", \"max. 20 %\""
+    }
+   ]
+  },
+  "WEINSTEIN_STAGE": {
+   "answers": {
+    "originalWhat": "Stufenmodell mit 30-Wochen-Linie; Kauf nur in Stufe 2 per Kauf-Stop über dem Widerstand; deutlicher Volumenanstieg (sonst meiden bzw. bei Kauf-Stop-Kauf schnell mit Gewinn verkaufen); positive relative Stärke; Forest-to-Trees (Markt → beste Gruppen → 1–2 beste Charts); Halbposition beim Ausbruch + Rest beim Rücksetzer; Anfangsstop unter dem nächsten Zwischentief, nicht auf runden Zahlen; Nachziehen unter MA30/Zwischentief bei neuen Hochs, Verengung in Stufe 3; raus spätestens in Stufe 4; Shorts in Stufe 4.",
+    "notReproducible": "Gruppen-/Sektorstärke (keine PIT-Gruppendaten); gewichtete Langfrist-Marktindikatoren (keine Marktbreite); Weinsteins Positionsgrößen- und Streuungsregeln (Buch nicht abgerufen); Augenmaß-Urteile über Basis und Stufe; Trader-Stopregeln.",
+    "currentlyImplemented": "Stufenklassifikation, Stufe-1-Basis und Fortsetzungsbasis, Kauf-Stop im Tagesverlauf, Marktfilter SPY/MA30, Mansfield-RS > 0, Volumen-Schnellverkauf (WEIN-VOL-04), Anfangsstop am Basistief, Ausstieg per Wochenschluss < MA30, Stufe-3-Warnung.",
+    "missing": "Gruppenfilter; Halbposition + Rücksetzerkauf; Pullback-Einstieg; Zwischentief-Stop; Rundungsregel; Nachziehen des Stops; Stufe-3-Verengung; Überkopf-Widerstand; Volumen-Aufbau-Alternative; RS-Nulllinien-Steigung; Langfristindikatoren; Shorts (bewusst).",
+    "foreign": "0,5 % Risiko je Trade (Kullamägi, KK-RISK-01); IBD-artiges RS-Perzentil als Rang; Fortsetzungs-Checkliste eines Site-Betreibers (Idee, nicht Buchwortlaut); 5-$-Minimum (Bulkowski).",
+    "vuOwn": "Stufenschwellen ±0,5 %/4 Wo; Basis ≥10 Wo ±15 %; Fortsetzungszahlen 8 Wo/25 %/52 Wo/MA10; Stoppuffer 2 % unter Wochenschluss; Ausstieg per Wochenschluss < MA30; Invalidation/60 Sitzungen; 5-Sitzungen-Sperre; 10 Plätze, 20 % Höchstgewicht; Liquidität 5 Mio. $; Kosten 10 bp/1 bp.",
+    "mayBeCalledWeinstein": "Nur als 'VU-Variante nach Weinstein (Stufenanalyse, Einstiegsidee; Teilumfang long-only)'. Nicht als 'Weinstein-Methode', 'Original' oder Replikation; Positionsgröße, Stop und Hauptausstieg sind nicht Weinsteins Regeln."
+   },
+   "critical": [
+    {
+     "ruleId": "WEI-C-SIZE-01",
+     "rule": "Positionsgröße/Risiko je Trade: in den abgerufenen Texten keine Zahl; nur Positionsaufbau (halb/halb).",
+     "deviation": "Fremdregel (Kullamägi) auf eine Wochenmethode mit weiten Stops übertragen; dominiert die Investitionsquote.",
+     "decision": "als VU-Regel ausweisen"
+    }
+   ],
+   "high": [
+    {
+     "ruleId": "WEI-C-GRP-01",
+     "rule": "Gruppen-/Sektorstärke: nur in den technisch besten Gruppen kaufen; gleiche Charts entwickeln sich in starken vs. schwachen Gruppen sehr unterschiedlich; den Gruppenführer kaufen.",
+     "deviation": "Zentraler Baustein fehlt vollständig.",
+     "decision": "korrigieren"
+    },
+    {
+     "ruleId": "WEI-C-STOP-01",
+     "rule": "Anfangsstop: unter dem nächsten bedeutenden Zwischentief (minor low) unter dem Ausbruch – chartabhängig, keine feste Prozentzahl.",
+     "deviation": "Tiefster Basisschluss statt nächstes Zwischentief → systematisch weiter; Wochenschluss statt Tief; kein 20-%-Deckel (Bulkowski, eigene Regel).",
+     "decision": "korrigieren"
+    },
+    {
+     "ruleId": "WEI-C-TRAIL-01",
+     "rule": "Stop nachziehen (Investor): unter den tieferen Wert von 30-Wochen-Linie und Zwischentief; erst nachziehen, wenn der Kurs das alte Hoch wieder erreicht; nur anheben.",
+     "deviation": "Fehlt vollständig (WEIN-TRAIL-VU seit 2.0.0 entfernt).",
+     "decision": "korrigieren"
+    },
+    {
+     "ruleId": "WEI-C-EXIT-01",
+     "rule": "Ausstieg (VU-Lesart): Wochenschluss unter der 30-Wochen-Linie → Verkauf zur nächsten Eröffnung.",
+     "deviation": "In Stufe-2-Rücksetzern früher als Weinstein (Schluss unter MA, aber über Zwischentief → VU verkauft); in Stufe 3 später (keine Verengung). Für Trader-Lesart evtl. näher – UNRESOLVED ohne Buch.",
+     "decision": "als VU-Regel ausweisen"
+    }
+   ],
+   "missingInCode": [
+    "WEI-C-GRP-01",
+    "WEI-C-MKT-02",
+    "WEI-C-RES-01",
+    "WEI-C-ENTRY-03",
+    "WEI-C-ENTRY-04",
+    "WEI-C-STOP-02",
+    "WEI-C-TRAIL-01",
+    "WEI-C-TRAIL-02",
+    "WEI-C-PORT-01",
+    "WEI-C-SHORT-01"
+   ],
+   "foreignRules": [],
+   "liveTextMismatches": [
+    {
+     "id": "R15-T01",
+     "file": "scripts/supertrader/process-chain.mjs:34",
+     "severity": "HIGH",
+     "text": "Prozesskette Halten: \"Stop wöchentlich 2 % unter die steigende 30-Wochen-Linie nachziehen\" (cls ORIGINAL)"
+    },
+    {
+     "id": "R15-T02",
+     "file": "scripts/supertrader/process-chain.mjs:29",
+     "severity": "HIGH",
+     "text": "Prozesskette Kandidat: \"... relative Stärke > 0; Wochenvolumen ≥ 2× Schnitt\" (Volumen als Kandidatenfilter)"
+    },
+    {
+     "id": "R15-T05",
+     "file": "scripts/supertrader/registry.mjs:560 → registry.json rule_cards[0] (rule_version 4.0.0)",
+     "severity": "HIGH",
+     "text": "Regelkarte 4.0.0 \"Halten\": \"Stage 2: Stop wöchentlich auf 2 % unter die 30-Wochen-Linie nachziehen\" [WEIN-TRAIL-VU]"
+    },
+    {
+     "id": "R15-T06",
+     "file": "scripts/supertrader/registry.mjs:555",
+     "severity": "MEDIUM",
+     "text": "Regelkarte 4.0.0 \"Kandidat\": \"Stage 1 ...; relative Stärke steigt\" [WEIN-RS-01, 13 Wochen]"
+    },
+    {
+     "id": "R15-T07",
+     "file": "scripts/supertrader/registry.mjs:563",
+     "severity": "MEDIUM",
+     "text": "Regelkarte 4.0.0 \"Ungültig\": \"... Ausbruch ohne Volumen ...\" [WEIN-VOL-01]"
+    },
+    {
+     "id": "R15-T08",
+     "file": "scripts/supertrader/registry-r7.mjs:43",
+     "severity": "HIGH",
+     "text": "Regel WEIN-VOL-03 \"Volumen ... mindestens doppelt ... Sonst kein Einstieg\" (strategy_version 4.0.0, MULTI_SOURCE_CONFIRMED, ohne legacy_only)"
+    },
+    {
+     "id": "R15-T09",
+     "file": "scripts/supertrader/registry.mjs:294-299",
+     "severity": "MEDIUM",
+     "text": "Regeln WEIN-ST2-01 (\"Wochenschluss ... Kauf zur nächsten Eröffnung\"), WEIN-VOL-01 (1,5×), WEIN-RS-01, WEIN-TRAIL-VU, WEIN-STOP-VU als v4.0.0-Regeln gelistet"
+    },
+    {
+     "id": "R15-T10",
+     "file": "scripts/supertrader/registry.mjs:249,258,260,269",
+     "severity": "MEDIUM",
+     "text": "DNA trailing_stop \"2 % unter der 30-Wochen-Linie nachgezogen\"; volume_filters \"1,5×\"; market_regime \"V1 zeigt das Regime an, filtert nicht\"; entry_trigger \"Wochenschluss ... nächste Eröffnung\""
+    },
+    {
+     "id": "R15-T12",
+     "file": "docs/SUPERTRADER_AUDIT_R13.md:90",
+     "severity": "LOW",
+     "text": "R13-Doku: \"Fortsetzungskauf (Rücksetzer zur Ausbruchszone, VU-Operationalisierung)\""
+    },
+    {
+     "id": "R15-T13",
+     "file": "scripts/supertrader/fidelity.mjs:114-126",
+     "severity": "LOW",
+     "text": "Fidelity-Matrix ohne Zeile für Fortsetzungskauf (4.0.0)"
+    }
+   ]
+  },
+  "DARVAS_BOX": {
+   "answers": {
+    "originalWhat": "Belegt (TIME 1959, HIGH): Auswahl starker Aktien mit starkem Volumen; nur wachsende Firmen in jungen Branchen mit möglicher Gewinnverdopplung, KGV/Dividende egal; Kauforder am Ausbruchspunkt; Stop knapp unter der Kauforder; bei großem Gewinn Stop knapp unter Unterstützung; kein Verkauf am Hoch; 5-6 Titel; langes Beobachten. TIME 1960: Stop-Loss als Kernbaustein, Gap-Risiko. Buch (MEDIUM): Boxen, neue Hochs, Volumen, Pyramidisieren, Techno-Fundamentalismus, Cash in Baisse über Stops.",
+    "notReproducible": "Exakte Boxdefinition, Kaufpunkt-Aufschlag, Stopabstand, Pyramiding-Mengen, Ermessen beim Beobachten, Gewinnerwartung 'could double' – ohne Buch nicht festlegbar; TraderFox: Trendstabilität, Kundenbereichs-Regeln, Pivotal-News-Points, dynamisierte Variante.",
+    "currentlyImplemented": "DARVAS_BOX 3.0.2: Kauf-Stop an Boxoberkante, Stop 1 % darunter, Nachziehen an neue Boxunterkante, nur Stop-Ausstieg, 6 Titel.",
+    "missing": "Gewinn-/Wachstumsfilter, Volumenbedingung, Pyramiding, Konzentration/Kredit, Puffer unter nachgezogenem Stop.",
+    "foreign": "Marktampel SPY>GD200 (TraderFox), 0,5 % Risiko (Kullamägi), 3-Tage-Box (Sekundärrekonstruktion/TraderFox-Zuschreibung).",
+    "vuOwn": "1 %-Abstand, 20-Tage-Hoch-Oberkante, Boxhöhe 3-25 %, Nähe 90/95 %, Momentum-Perzentil >= 80, Liquidität, Verfall 30, Cooldown 5, Kappe 1/6, RS-Rang, A/B-Qualität, Ausführungsannahmen; Trend52: Universum, SPY, Clenow, Timing.",
+    "mayBeCalledDarvas": "Nur 'VU-Variante nach Darvas (Box-Ausbruch per Kauforder, Stop knapp unter der Kauforder – 1 % VU)' mit Hinweis auf Fremd-/VU-Regeln; nie 'Darvas-Methode', 'Original' oder 'Replikation'. VU_TREND_52W darf nicht 'Darvas' heißen (nur 'nach öffentlichen Regeln der TraderFox-Variante NEO-DARVAS')."
+   },
+   "critical": [],
+   "high": [
+    {
+     "ruleId": "DAR-C-FUND-01",
+     "rule": "Nur wachsende Unternehmen in jungen Zukunftsbranchen, deren Gewinne sich verdoppeln oder verdreifachen könnten; KGV und Dividende spielen keine Rolle.",
+     "deviation": "Kein Gewinn-/Wachstumsfilter im Live-Code (darvas*.mjs).",
+     "decision": "korrigieren"
+    },
+    {
+     "ruleId": "DAR-F-STOP-02",
+     "rule": "Stopabstand genau 1 % unter der Kauforder.",
+     "deviation": "Enger als das ~2-%-Bild; liegt in der Tagesschwankung -> viele Gleichtags-/Folgetagsausstopps.",
+     "decision": "als VU-Regel ausweisen"
+    },
+    {
+     "ruleId": "DAR-C-PYR-01",
+     "rule": "Aufstocken (Pyramidisieren): Nachkauf, wenn die Aktie in eine neue höhere Box ausbricht; Stop für die Gesamtposition nachgezogen.",
+     "deviation": "Wesentlicher Baustein der Gewinnmechanik fehlt.",
+     "decision": "korrigieren"
+    }
+   ],
+   "missingInCode": [
+    "DAR-C-FUND-01",
+    "DAR-C-FUND-02",
+    "DAR-C-VOL-01",
+    "DAR-C-PYR-01",
+    "DAR-C-SIZE-01",
+    "TF-NEO-DYN-2019"
+   ],
+   "foreignRules": [
+    {
+     "ruleId": "DAR-F-RISK-01",
+     "rule": "Risiko je Trade 0,5 % des Kapitals (KK-RISK-01)."
+    },
+    {
+     "ruleId": "DAR-F-MKT-02",
+     "rule": "Marktampel: keine neue Modellposition, wenn SPY am Vortag nicht über dem GD 200 schloss."
+    },
+    {
+     "ruleId": "TR52-LIQ",
+     "rule": "20-Tage-Dollarumsatz >= 1 Mio."
+    },
+    {
+     "ruleId": "TR52-PERF",
+     "rule": ">= 100 % über 252-Tage-Tief (Kauf), < 100 % -> Verkauf."
+    },
+    {
+     "ruleId": "TR52-HIGH20",
+     "rule": "Neues 52W-Hoch in den letzten 20 Handelstagen."
+    },
+    {
+     "ruleId": "TR52-GAP",
+     "rule": "Up-Gap >= 6 % in 20 Handelstagen."
+    },
+    {
+     "ruleId": "TR52-MARKET",
+     "rule": "Marktampel SPY > SMA200 am Entscheidungstag; sonst keine Käufe, Positionen auf max. 5 %."
+    },
+    {
+     "ruleId": "TR52-SIZE",
+     "rule": "10 % Zielgewicht je Neukauf, 10 Plätze, kein Hebel; Kauf entfällt, wenn < 3 % möglich."
+    },
+    {
+     "ruleId": "TR52-SELL",
+     "rule": "Verkauf bei Gewicht < 3 %, < 100 %, kein 52W-Hoch in 65 Sitzungen; Trim > 20 % -> 15 %; jedes Kriterium einzeln."
+    },
+    {
+     "ruleId": "TR52-NOSTOP",
+     "rule": "Kein Stop zwischen den Terminen."
+    },
+    {
+     "ruleId": "TR52-BASE",
+     "rule": "Sensitivität BASE: 70 %, ohne Gap- und Gewichtsregeln, Ampel rot -> Verkauf."
+    }
+   ],
+   "liveTextMismatches": [
+    {
+     "id": "R15-T25",
+     "file": "scripts/supertrader/registry-r8.mjs:91",
+     "severity": "LOW",
+     "text": "Regelkarte \"Ausführung\": \"... Höchstens 6 Titel.\" (keine Marktampel)"
+    },
+    {
+     "id": "R15-T26",
+     "file": "scripts/supertrader/registry.mjs:381-382 (+ DAR-STOP-02 registry-r7.mjs)",
+     "severity": "MEDIUM",
+     "text": "Regeln DAR-ENTRY-D1 (\"Live wird DAR-ENTRY-D1 gerechnet\", Schluss + nächste Eröffnung), DAR-ENTRY-01 Text \"Live wird DAR-ENTRY-D1 gerechnet\", DAR-STOP-02"
+    },
+    {
+     "id": "R15-T27",
+     "file": "scripts/supertrader/fidelity.mjs:191-192; registry-r8.mjs:93",
+     "severity": "LOW",
+     "text": "Fidelity data.gaps \"keine Gewinndaten zum Stichtag\" vs. missing \"SEC-Gewinne zum Stichtag liegen seit Runde 11 vor\"; Karte executable.gaps \"Fundamentalfilter fehlt (keine Gewinndaten zum Stichtag)\""
+    },
+    {
+     "id": "R15-T28",
+     "file": "scripts/supertrader/fidelity.mjs:183-189",
+     "severity": "LOW",
+     "text": "Fidelity-Matrix ohne Zeile Marktampel (PORT-MARKET-200)"
+    }
+   ]
+  },
+  "MINERVINI_VCP": {
+   "answers": {
+    "originalWhat": "Original belegt (meist ueber Buch-/Interviewnotizen, teils primaer): die acht Trend-Template-Kriterien (30 % ueber Tief, max. 25 % unter Hoch, RS >= 70), SEPA-Fundamentaldaten (Gewinn, Umsatz, Margen, Beschleunigung/Code 33, Ueberraschungen, Revisionen, Fuehrerschaft), VCP qualitativ (2-6 kleiner werdende Kontraktionen, Volumenrueckgang, Pivot), Kauf beim Ueberschreiten des Pivots mit steigendem Volumen, Cheat-Einstiege, Verlustgrenze 10 % mit kleinerem Durchschnittsverlust, Einstand bei 3x Risiko, Verkauf in die Staerke (oft Haelfte), Zeitstop, Wiedereinstieg, Pilotkaeufe/progressive Exposure 25-50 %, max. 25 % je Position, 1-2 % Risiko, 8-12 Positionen, Konzentration und Margin, gestaffelte Stops.",
+    "notReproducible": "IBD-RS, Konsens-/Ueberraschungs-/Revisionsdaten zum damaligen Stand, Katalysatoren, diskretionaere Basis-/Pivotbeurteilung, Minervinis Marktmodell, historische Intraday-Ausbruchszeitpunkte; die Wettbewerbsergebnisse (Hebel, Short, Hunderte Titel) ohnehin nicht.",
+    "currentlyImplemented": "Live 2.0.0: Trend Template (RS als VU-Proxy), mechanische VU-VCP, Volumenrueckgang 0,8, Setup-Risiko <= 10 %, Schlussbestaetigung ueber Pivot mit >= 1,4x Volumen, Kauf naechste Eroeffnung, Stop max(Kontraktionstief, -10 %), Einstand ab 3R, Vollausstieg bei Schluss unter SMA50 mit Volumen, 1,25 % Risiko, max. 25 %, 10 Positionen, RS-Rang, Risikohalbierung nach Verlustserie, kein Marktfilter, kein Margin.",
+    "missing": "SEPA-Fundamentalfilter live (EPS/Umsatz/Margen/Code 33), Verkauf in die Staerke/Teilverkauf, Nachziehen ueber Einstand, Zeitstop, gestaffelte Stops, Cheat-/Low-Cheat-/Power-Play-Einstiege, Intraday-Einstieg am Pivot, Pilotkaeufe/Pyramidisieren, Startquote 25-50 %, Margin, Short, Branchen-/Fuehrerschaftsregel, Anpassung von Stops/Gewinnzielen an schwierige Maerkte.",
+    "foreign": "Ausbruchsvolumen >= 1,4x (O'Neil-40-50-%-Konvention, im Abruf nicht von Minervini belegt); Ausstieg 'Schluss unter 50-Tage-Linie mit Volumen' (ungeklaerte Herkunft, eher O'Neil-Verkaufsregel).",
+    "vuOwn": "VCP-Zickzackmechanik und Grenzen 35 %/10 %, Vol10/Vol50 < 0,8, Setup-Risiko-Filter, Invalidation und 20-Sitzungen-Verfall, RS-Pruefung nur bei Entdeckung, Liquiditaet 5 USD/5 Mio., Schlussbestaetigung + naechste Eroeffnung, Slippage/Gebuehren, 5-Sitzungen-Sperre, ein Signal je Titel, Risikohalbierung nach 5 Trades, RS-Rang gleichzeitiger Signale, Sizing-Formel mit Vortagesbewertung, Universum, ungefilterte Fundamentaldaten-Anzeige.",
+    "mayBeCalledMinervini": "Nein als 'Minervini-Methode' oder 'SEPA'. Zulaessig: 'VU-Version nach Minervinis Trend Template und VCP-Idee (ohne SEPA-Fundamentaldaten, ohne Verkauf in die Staerke)'. Ergebnisse gelten fuer die VU-Version, nicht fuer Minervini."
+   },
+   "critical": [],
+   "high": [
+    {
+     "ruleId": "MIN-C-SEPA-01",
+     "rule": "EPS-Wachstum: deutlicher Gewinnanstieg im zuletzt gemeldeten Quartal gegenueber dem Vorjahresquartal, auch in den 2-3 Quartalen davor; Marktfuehrer >= 20 %, Superperformer typischerweise 30-40 % und mehr (Notizen: 'ideally 30% or more'). Keine harte Schwelle im Original.",
+     "deviation": "Live fehlt der Kernbaustein von SEPA vollstaendig. 25 % in 3.0.0 ist eine VU-Schwelle innerhalb der Spanne 20-30 %.",
+     "decision": "korrigieren"
+    },
+    {
+     "ruleId": "MIN-C-SEPA-02",
+     "rule": "Gewinnbeschleunigung: Wachstumsrate steigt von Quartal zu Quartal, idealerweise ueber mindestens drei Quartale ('Code 33': drei Quartale Beschleunigung bei Gewinn, Umsatz und Marge).",
+     "deviation": "Live fehlt; 3.0.0 prueft nur eine Stufe statt drei.",
+     "decision": "korrigieren"
+    },
+    {
+     "ruleId": "MIN-C-SEPA-03",
+     "rule": "Umsatzwachstum und -beschleunigung; Gewinne muessen von Umsatz getragen sein (Code 33).",
+     "deviation": "Live fehlt; 3.0.0 nur Vorzeichen, keine Beschleunigung.",
+     "decision": "korrigieren"
+    },
+    {
+     "ruleId": "MIN-C-SEPA-04",
+     "rule": "Margen: steigende Gewinnmargen (dritter Teil von Code 33).",
+     "deviation": "Fehlt in allen Versionen. GrossProfit/Umsatz sind in SEC-companyfacts vorhanden, werden aber nicht als Erstmeldung extrahiert.",
+     "decision": "korrigieren"
+    },
+    {
+     "ruleId": "MIN-C-EXIT-03",
+     "rule": "Verkauf in die Staerke: bei einem Vielfachen des Risikos Gewinne mitnehmen ('ring the register'); oft halbe Position verkaufen und Rest-Stop auf Einstand; Durchschnittshaltedauer ca. 20 Handelstage, laengere Trades 2-3 Quartale.",
+     "deviation": "Zentraler Ausstiegsbaustein fehlt; ohne Teilverkauf haelt die VU-Version bis Stop/50-Tage-Linie.",
+     "decision": "korrigieren"
+    }
+   ],
+   "missingInCode": [
+    "MIN-C-SEPA-01",
+    "MIN-C-SEPA-02",
+    "MIN-C-SEPA-03",
+    "MIN-C-SEPA-04",
+    "MIN-C-SEPA-07",
+    "MIN-C-SEPA-08",
+    "MIN-C-SEPA-09",
+    "MIN-C-ENT-03",
+    "MIN-C-ENT-04",
+    "MIN-C-RSK-02",
+    "MIN-C-EXIT-02",
+    "MIN-C-EXIT-03",
+    "MIN-C-EXIT-05",
+    "MIN-C-EXIT-06",
+    "MIN-C-EXIT-07",
+    "MIN-C-ADD-01",
+    "MIN-C-PF-03",
+    "MIN-C-PF-05"
+   ],
+   "foreignRules": [
+    {
+     "ruleId": "MIN-C-ENT-02",
+     "rule": "Ausbruch mit zunehmendem Volumen ('on expanding volume'); in den abgerufenen Quellen ohne Zahl."
+    }
+   ],
+   "liveTextMismatches": [
+    {
+     "id": "R15-T29",
+     "file": "scripts/supertrader/process-chain.mjs:59",
+     "severity": "MEDIUM",
+     "text": "Prozesskette Ausstieg: \"Stop oder Schluss unter der 50-Tage-Linie; kein Verkauf in die Stärke\""
+    },
+    {
+     "id": "R15-T30",
+     "file": "scripts/supertrader/process-chain.mjs:58",
+     "severity": "LOW",
+     "text": "Prozesskette Halten: \"Halten über der 50-Tage-Linie\" Quelle \"VU (kein belegter Halteausstieg)\""
+    },
+    {
+     "id": "R15-T33",
+     "file": "scripts/supertrader/registry.mjs:615,617; plan.confirmRuleId registry.mjs:608",
+     "severity": "HIGH",
+     "text": "Regelkarte \"Kandidat\" nutzt MIN-LOW-01 (25 %), \"Bestätigung\": \"Bestätigt am Tagesschluss über dem Pivot\" [MIN-ENTRY-D1, ohne Volumen]"
+    },
+    {
+     "id": "R15-T34",
+     "file": "scripts/supertrader/registry.mjs:620,622",
+     "severity": "MEDIUM",
+     "text": "Regelkarte \"Halten\": \"Minervinis eigene Verkaufsregeln (Stärke-Verkäufe, Einstand) sind nicht mechanisch belegt\" vs. Karte \"Ausstieg\": \"Ab 3 Anfangsrisiken ... Einstand\" (Tag ORIGINAL)"
+    },
+    {
+     "id": "R15-T35",
+     "file": "scripts/supertrader/registry.mjs:630",
+     "severity": "MEDIUM",
+     "text": "executable.note: \"Technisch ausführbar — der Ausstieg allerdings nur über eine VU-Hilfsregel\""
+    },
+    {
+     "id": "R15-T37",
+     "file": "scripts/supertrader/fidelity.mjs:93,106",
+     "severity": "MEDIUM",
+     "text": "Fidelity Fundamentaldaten: \"SEC-Daten mit Einreichungsdatum liegen intern vor, aber nur für heute gelistete Firmen (Survivorship); deshalb noch kein Filter\"; data.gaps \"keine Gewinne/Umsätze zum Stichtag\""
+    },
+    {
+     "id": "R15-T39",
+     "file": "scripts/supertrader/registry.mjs:430,434,435",
+     "severity": "LOW",
+     "text": "DNA trailing_stop/regular_exit MIN-EXIT-VU-01 \"(VU)\"; position_sizing \"Backtest risikobasiert (VU)\""
+    }
+   ]
+  },
+  "DONCHIAN_TURTLE": {
+   "answers": {
+    "originalWhat": "Vollmechanisches Futures-Trendfolgesystem: ~20 liquide US-Futures, System 1 (20/10 mit Gewinner-Filter + 55-Failsafe) und System 2 (55/20), Long und Short, N = EMA20 der TR, Unit 1 % je N, Aufstocken ½ N bis 4 Units, Stop 2N mit Nachzug, Grenzen 4/6/10/12 Units, notionelles Konto -20 % je 10 % Verlust, bei gleichzeitigen Signalen die stärksten (S. 10-31).",
+    "notReproducible": "Dennis' subjektive Jahresanpassung des notionellen Kontos; Ordertaktik (Limit statt Market, Abwarten in schnellen Märkten); genaue Korrelationsgruppen; individuelle S1/S2-Allokation und Marktauswahl einzelner Turtles; die tatsächlichen Turtle-Ergebnisse.",
+    "currentlyImplemented": "S1-Einstieg per Kauf-Stop inkl. Gap, Gewinner-Filter (nur Long) mit 55-Failsafe, N-Formel, Stop 2N, 10-Tage-Ausstieg, Unit-Formel 1 %/N, notionelles Konto, kein Marktfilter, Long-only, max. 12 Titel ohne Hebel.",
+    "missing": "System 2 (zulässig ausgelassen), Short-Seite, Aufstocken ½ N + Stop-Nachzug, Korrelationsgrenzen 6/10, Unit-Heat, Stärke-Rang (nur Forschung 2.1.0), richtungsunabhängiger Filter, Vollständigkeit der Signale.",
+    "foreign": "Anlageklasse US-Einzelaktien statt diversifizierter Futures; Unit-Größe ohne Hebel als Kassa-Nominal (Gewichte von etwa einem Fünftel bis weit über ein Drittel); Cash als faktische Positionsgrenze.",
+    "vuOwn": "Liquiditäts-/ADR-/Kanalfilter, Lebenszyklus (3 %/6 %-Nähe, 10-Sitzungen-Verfall, 5-Sitzungen-Sperre), alphabetische Reihenfolge, maxPositionPct 1,0/maxExposure 1,0, Jahresbasis = tatsächliches Kapital, OPEN-als-Gewinner, Failsafe-Ausstieg nach S1, 10 bp Slippage, Warnung unter Einstand, (2.0.1 Marktampel, zurückgenommen).",
+    "mayBeCalledTurtle": "Nein als „Turtle Trading System“ oder „Replikation“. Zulässig nur: „Turtle-System-1-Signale auf US-Aktien (VU-Variante, ohne Aufstocken/Short/Korrelationsgrenzen; Portfolio VU-eigen)“ - und erst nach Korrektur des falschen „keine Rangregel“-Textes."
+   },
+   "critical": [
+    {
+     "ruleId": "TUR-F-MKT-01",
+     "rule": "Gehandelt wurden nur die liquidesten US-Futures (Anleihen/Zinsen, Währungen, Kakao/Kaffee/Zucker/Baumwolle, Gold/Silber/Kupfer, Rohöl/Heizöl/Benzin, S&P-500-Future); ausgenommen Getreide (Dennis' Positionslimits) und Fleisch (Korruption in den Pits). Liquidität war das Hauptkriterium.",
+     "deviation": "Andere Anlageklasse (ca. 20 diversifizierte Futures -> Tausende Einzelaktien einer Anlageklasse). Der S&P-500-Future war im Original EIN Markt.",
+     "decision": "Nur als dokumentierte Equity-Adaptation zulässig (siehe TUR-E-*); keine Replikationsaussage."
+    },
+    {
+     "ruleId": "TUR-E-WEIGHT-01",
+     "rule": "Höchstgewicht je Aktie (Vorschlag: <= 1/12 bis 10 % des Kontos) zusätzlich zur Unit-Formel; die kleinere Größe gilt.",
+     "deviation": "Klumpenrisiko; einzelne Übernahme/Gap kostet große Depotanteile.",
+     "decision": "Vor jeder weiteren Bewertung festlegen (vorab registriert)."
+    }
+   ],
+   "high": [
+    {
+     "ruleId": "TUR-F-UNIT-02",
+     "rule": "Die Unit ist Maß für Positions- UND Portfoliorisiko; Diversifikation über viele Märkte mit gleich großen Volatilitäts-Bets ist Zweck der Größenregel. Kleine Konten verlieren durch Ganzzahl-Rundung Diversifikation.",
+     "deviation": "Portfolio-Risikomaß (Units) durch Bargeldgrenze ersetzt.",
+     "decision": "Equity-Adaptation muss Portfolio-Heat in Units/Risiko zählen (TUR-E-HEAT-01)."
+    },
+    {
+     "ruleId": "TUR-F-LIM-01",
+     "rule": "Unit-Grenzen: 4 je Markt; 6 je Richtung in eng korrelierten Märkten; 10 in lose korrelierten; 12 je Richtung insgesamt (12 long und 12 short gleichzeitig möglich).",
+     "deviation": "12 bindet praktisch nie (Bargeld begrenzt auf ca. 2-5 Positionen); 6/10-Grenzen fehlen; alle US-Aktien bilden eine (mind. lose) korrelierte Gruppe.",
+     "decision": "Für Futures-Replikation vollständig umsetzen; für Aktien Sektor-/Marktgruppen definieren (TUR-E-CORR-01)."
+    },
+    {
+     "ruleId": "TUR-F-ADD-01",
+     "rule": "Aufstocken: weitere Units im Abstand ½ N, gemessen am tatsächlichen Fill der vorigen Order, bis zur Höchstzahl (4 je Markt); bei schnellem Markt bis zu 4 Units an einem Tag. Langsameres Aufstocken ist eine Regeländerung, die schaden kann.",
+     "deviation": "Kernbaustein fehlt; das Original nennt langsameres Aufstocken ausdrücklich als schädliche Änderung (S. 31).",
+     "decision": "Futures-Replikation: Pflicht. Equity: mit kleinerer Unit (z. B. 0,25 %/N) und Gewichtsdeckel abbildbar - nicht „ohne Hebel unmöglich“."
+    },
+    {
+     "ruleId": "TUR-F-CONS-01",
+     "rule": "Konsistenz: jedes Einstiegssignal nehmen; die Jahresgewinne kommen oft aus 2-3 großen Trades, ausgelassene Signale beschädigen das Jahresergebnis.",
+     "deviation": "Mehrere VU-Schichten unterdrücken Original-Signale: Gap-Ausbrüche aus > 3-6 % Abstand fehlen ganz (synthetisch belegt: Gap über das 20-Tage-Hoch aus 12 % Abstand -> kein Einstieg, Modell kauft 2 Tage später 13 % höher); Ausbrüche in der 5-Tage-Sperre fehlen; im Portfolio entscheidet Bargeld (live häufig NO_CASH).",
+     "decision": "Signalerzeugung vom Lebenszyklus entkoppeln: jeder Ausbruch über das Hoch der Vortage ist ein Signal, ohne Nähe-/Verfall-/Sperrregeln."
+    },
+    {
+     "ruleId": "TUR-F-STOP-ADD",
+     "rule": "Beim Aufstocken werden Stops früherer Units um ½ N angehoben, so dass alle Stops 2N unter der zuletzt gekauften Unit liegen (Ausnahme: Gaps/Slippage).",
+     "deviation": "Folgt aus TUR-F-ADD-01.",
+     "decision": "Mit TUR-F-ADD-01 umsetzen."
+    },
+    {
+     "ruleId": "TUR-F-SIM-01",
+     "rule": "Gleichzeitige Signale: über den Tag verteilte Signale nehmen, wie sie kommen, bis zu den Grenzen; nur eine Unit je Markt zur selben Zeit (stärkster Kontraktmonat).",
+     "deviation": "Zeitliche Reihenfolge der Auslösung wird durch Alphabet ersetzt.",
+     "decision": "Equity: Rangregel TUR-E-RANK-01."
+    },
+    {
+     "ruleId": "TUR-F-RANK-01",
+     "rule": "„Buy Strength - Sell Weakness“: kamen Signale gleichzeitig, wurden immer die stärksten Märkte gekauft und die schwächsten einer Gruppe leerverkauft. Maße: Chartbild, N seit Ausbruch, oder (Kurs - Kurs vor 3 Monaten)/N.",
+     "deviation": "Live widerspricht der Quelle; Code-Kommentar und veröffentlichter Konfigurationstext behaupten „keine Rangregel in der Quelle“ - falsch.",
+     "decision": "Rang (C - C[63])/N live übernehmen ODER Alphabet als VU-Abweichung mit Quellenhinweis ausweisen; Texte korrigieren."
+    },
+    {
+     "ruleId": "TUR-F-LS-01",
+     "rule": "Long und Short gleichberechtigt; zu jedem Zeitpunkt gibt es einen Long- und einen Short-Trigger; 12 Units long und 12 short gleichzeitig möglich.",
+     "deviation": "Hälfte des Systems fehlt; Netto-Exposure dadurch strukturell long-beta.",
+     "decision": "Futures-Replikation: Pflicht. Equity: dokumentierte Auslassung oder Short mit Leihkosten/Locate."
+    },
+    {
+     "ruleId": "TUR-F-LIFECYCLE-VU",
+     "rule": "VU-Lebenszyklus: Setup nur bei <= 3 % Abstand zum Trigger (Vortagesschluss), Verfall nach 10 Sitzungen oder Schluss < 10-Tage-Tief, 5 Sitzungen Sperre nach Verfall/Ausstieg.",
+     "deviation": "Unterdrückt Original-Signale (siehe TUR-F-CONS-01); R14 „geringe Wirkung“ ist nicht quantifiziert.",
+     "decision": "Für Turtle entfernen oder Wirkung vorab registriert messen."
+    },
+    {
+     "ruleId": "TUR-E-UNIT-01",
+     "rule": "Unit-Größe skalieren, so dass 12 Units je Richtung ohne Hebel Platz haben: z. B. Unit = k % des Kontos je N mit k so, dass 12 x typisches Unit-Gewicht <= 100 % (bei N/Kurs ~2-3 % etwa k = 0,15-0,25 %). Alternativ: 1 %/N beibehalten und offen sagen, dass nur ~3-5 Units passen.",
+     "deviation": "Original-Zahl bei Aktien nicht tragfähig ohne Hebel.",
+     "decision": "Entscheidung dokumentieren; Variante vorab registrieren."
+    },
+    {
+     "ruleId": "TUR-E-HEAT-01",
+     "rule": "Portfolio-Heat in Units zählen (Summe offener Units je Richtung und je Gruppe) statt Bargeld als implizite Grenze.",
+     "deviation": "Bargeld entscheidet (live häufig NO_CASH).",
+     "decision": "Unit-Zähler je Richtung/Gruppe implementieren."
+    },
+    {
+     "ruleId": "TUR-E-CORR-01",
+     "rule": "Korrelationsgrenzen über Sektoren/Industrien abbilden: eng korreliert = gleiche Industrie (<= 6 Units), lose = gleicher Sektor (<= 10), gesamt <= 12 je Richtung; da alle US-Aktien hoch mit dem Index korrelieren, ist das ganze Buch mindestens eine lose Gruppe.",
+     "deviation": "fehlt",
+     "decision": "Sektor-/Industrie-Zuordnung zum Stichtag (PIT) und Grenzen vorab festlegen."
+    },
+    {
+     "ruleId": "TUR-E-PYR-01",
+     "rule": "Aufstocken bis 4 Units in ½-N-Schritten mit Stop-Nachzug; nur mit kleinerer Unit (TUR-E-UNIT-01) und Gewichtsdeckel (TUR-E-WEIGHT-01) machbar.",
+     "deviation": "Behauptung zu stark: Mit kleinerer Unit ohne Hebel abbildbar.",
+     "decision": "Simulator um Zusatz-Units erweitern oder Abweichung offen deklarieren."
+    },
+    {
+     "ruleId": "TUR-E-RANK-01",
+     "rule": "Rangregel für gleichzeitige Signale (Tagesbalken ohne Uhrzeit): Stärke = (Schluss - Schluss vor 63 Sitzungen)/N am Vortag, Gleichstand alphabetisch; optional N seit Ausbruch.",
+     "deviation": "Quelle vorhanden, live nicht genutzt.",
+     "decision": "2.1.0-Rang live übernehmen oder ALPHA als Abweichung deklarieren."
+    },
+    {
+     "ruleId": "TUR-E-UNIV-01",
+     "rule": "Universum und Diversifikation: Original ~20 unkorrelierte Märkte über 6+ Sektoren (Zins, Währung, Metalle, Energie, Softs, Index). Aktien-Adaptation muss erklären, wie Diversifikation erreicht wird (Sektorgrenzen) oder alternativ ein Multi-Asset-ETF-Universum nutzen.",
+     "deviation": "Diversifikationszweck der Größenregel verfehlt.",
+     "decision": "Entscheiden: Aktien mit Sektorgrenzen oder ETF/Futures-Universum für eine echte Replikation."
+    },
+    {
+     "ruleId": "TUR-E-CONS-01",
+     "rule": "Signalvollständigkeit: jeder Ausbruch wird protokolliert; VU-Lebenszyklus (3 %-Nähe, 10-Sitzungen-Verfall, 5-Sitzungen-Sperre) gilt nicht für Turtle.",
+     "deviation": "Original-Signale fehlen.",
+     "decision": "Entkoppeln (siehe TUR-F-CONS-01)."
+    },
+    {
+     "ruleId": "TUR-E-CORP-01",
+     "rule": "Aktien-Ereignisrisiken statt Rollregeln: Übernahmen (eingefrorener Kurs, kleines N => riesige Unit), Delistings, Splits, Dividenden, Earnings-Gaps; Mindest-N/Kurs oder Ausschluss von Titeln mit laufendem Übernahmeangebot.",
+     "deviation": "DESP-Fall (sehr hohes Einzelgewicht) zeigt: ADR-Grenze 1 % genügt nicht als Größenschutz.",
+     "decision": "Mit TUR-E-WEIGHT-01 koppeln."
+    }
+   ],
+   "missingInCode": [
+    "TUR-F-MKT-01",
+    "TUR-F-UNIT-02",
+    "TUR-F-S2-ENTRY",
+    "TUR-F-ADD-01",
+    "TUR-F-STOP-ADD",
+    "TUR-F-WHIPSAW",
+    "TUR-F-EXIT-S2",
+    "TUR-F-SIM-01",
+    "TUR-F-RANK-01",
+    "TUR-F-ROLL-01",
+    "TUR-F-LS-01",
+    "TUR-E-CONS-01"
+   ],
+   "foreignRules": [],
+   "liveTextMismatches": [
+    {
+     "id": "R15-T43",
+     "file": "scripts/supertrader/registry-r4.mjs:60-62 → registry.json",
+     "severity": "MEDIUM",
+     "text": "Regeln DON-ENTRY-D1 (\"Live: Tagesschluss ... nächste Eröffnung\"), DON-EXIT-01 (\"live: Tagesschluss\"), DON-STOP-01 (N = 20-Tage-ATR)"
+    },
+    {
+     "id": "R15-T44",
+     "file": "scripts/supertrader/registry-r4.mjs:192",
+     "severity": "MEDIUM",
+     "text": "source_basis.note: \"... Aktien statt Futures, Schluss-Bestätigung und Liquiditätsgrenze sind VU\""
+    },
+    {
+     "id": "R15-T45",
+     "file": "scripts/supertrader/registry-r4.mjs:27,40",
+     "severity": "LOW",
+     "text": "DNA source_fidelity \"Schluss-Bestätigung statt Intraday-Stop-Order, ... keine Unit-Größen\"; position_sizing \"1 Unit ... nicht simuliert\""
+    },
+    {
+     "id": "R15-T46",
+     "file": "registry.json rule_cards[0].sections.candidate",
+     "severity": "LOW",
+     "text": "Regelkarte Kandidat: \"Liquide Aktie, Kurs 3–6 % unter dem 20-Tage-Hoch\""
+    },
+    {
+     "id": "R15-T47",
+     "file": "docs/SUPERTRADER_METHOD_FIDELITY.md:211-216",
+     "severity": "LOW",
+     "text": "Doku Methodentreue R7-Matrix: \"Schluss über 20-Tage-Hoch, nächste Eröffnung\", \"Filter fehlt\", \"0,5 % Risiko\", \"max. 10 Positionen\""
+    }
+   ]
+  }
+ },
+ "liveText": {
+  "total": 56,
+  "mismatches": 46,
+  "notMatchingCode": 31,
+  "notLiveVersion": 27,
+  "high": 7,
+  "byMethod": {
+   "WEINSTEIN_STAGE": {
+    "total": 14,
+    "mismatches": 14,
+    "high": 4,
+    "notMatchingCode": 9,
+    "notLiveVersion": 9
+   },
+   "MOMENTUM_BREAKOUT": {
+    "total": 7,
+    "mismatches": 5,
+    "high": 0,
+    "notMatchingCode": 5,
+    "notLiveVersion": 4
+   },
+   "DARVAS_BOX": {
+    "total": 7,
+    "mismatches": 6,
+    "high": 0,
+    "notMatchingCode": 2,
+    "notLiveVersion": 3
+   },
+   "MINERVINI_VCP": {
+    "total": 12,
+    "mismatches": 10,
+    "high": 1,
+    "notMatchingCode": 7,
+    "notLiveVersion": 4
+   },
+   "DONCHIAN_TURTLE": {
+    "total": 7,
+    "mismatches": 6,
+    "high": 0,
+    "notMatchingCode": 5,
+    "notLiveVersion": 4
+   },
+   "VU_TREND_52W": {
+    "total": 3,
+    "mismatches": 1,
+    "high": 0,
+    "notMatchingCode": 0,
+    "notLiveVersion": 0
+   },
+   "ALL": {
+    "total": 6,
+    "mismatches": 4,
+    "high": 2,
+    "notMatchingCode": 3,
+    "notLiveVersion": 3
+   }
+  }
+ },
+ "fundamentals": {
+  "datasets": [
+   {
+    "id": "SEC_CONSUMER",
+    "path": "quant/data/sec/consumer/CIK*.json (5.073 Dateien, ~128 MB, committed)",
+    "pointInTime": "TEILWEISE – policy \"as_of_latest\": je Periode der zuletzt gemeldete (ggf. restated) Wert mit dessen filed/accession; kein Erstmeldewert, nur 8 Quartale → für Backtests nicht PIT",
+    "usedBy": [
+     "build.mjs loadSecFundamentals → CANSLIM-/Piotroski-Teilprüfung (net_income Q/A, total_assets, OCF, LTD, shares, GP, revenue, equity)",
+     "Discover (discover/engines/fundamentals.js)"
+    ],
+    "live": "JA (Teilprüfungen CANSLIM/PIOTROSKI_F, Discover); von keiner Supertrader-Live-Strategie genutzt"
+   },
+   {
+    "id": "DISCOVER_STOCK_METRICS",
+    "path": "discover/data/stocks/US_REAL/<SYM>.json metrics.f_* (f_revenueGrowthTTM, f_revenueGrowth3y/10y, f_netMargin, f_fcfMargin, f_earningsAcceleration, f_marginExpansion3y, f_roe, f_pe, f_ps, f_fcfYield)",
+    "pointInTime": "NEIN (Momentaufnahme)",
+    "usedBy": [
+     "build.mjs:517-528,749 → signals.json fundamentalsDisplay für MINERVINI_VCP (filtered:false)"
+    ],
+    "live": "Daten ja; in der Supertrader-UI nicht gerendert (MIN-FUND-HYBRID \"wird angezeigt\" trifft nicht zu)"
+   },
+   {
+    "id": "FUNDAMENTALS_ISSUERS",
+    "path": "quant/data/fundamentals/issuers/000-995.json (5.479 Emittenten) + Berichte (coverage, quality, reconciliation, history-coverage …)",
+    "pointInTime": "Werte NICHT im Repo: Arbeitsablage quant/data/sec/facts/** ist gitignored und in diesem Checkout nicht vorhanden; Metadaten melden pit.state=PIT_READY",
+    "usedBy": [
+     "Abdeckungs-/Qualitätsberichte"
+    ],
+    "live": "nein (Metadaten)"
+   },
+   {
+    "id": "SEC_CANONICAL_GOLDEN5",
+    "path": "quant/data/sec/canonical/{AAPL,JPM,MSFT,NVDA,XOM}.json + inspector/ + golden-five-pit-coverage/ + quant-factor-inputs.json",
+    "pointInTime": "JA – facts mit filedAt/availableAt/revisionId/restatementStatus (original vs. restated)",
+    "usedBy": [
+     "VU Quant Golden Universe (Faktor-Rohwerte)"
+    ],
+    "live": "nicht für Supertrader"
+   },
+   {
+    "id": "SEC_PIT_R11",
+    "path": "privater R2-Eimer: _validation/sec-pit-r11.json.gz",
+    "pointInTime": "JA – nur erste Einreichung je Periode; sichtbar erst nach filed (engine/earnings.mjs filter r[2] < asOf); Granularität Einreichungstag",
+    "usedBy": [
+     "engine/earnings.mjs earningsAt (MIN-EPS-01/ACC, MIN-REV-01) → minervini-v3.mjs (3.0.0)",
+     "validation/analyze-methods.mjs, case-study.mjs (R11)"
+    ],
+    "live": "NEIN (3.0.0 = Forschung, verfehlte Übernahmebedingung)"
+   },
+   {
+    "id": "SEC_PIT_R12",
+    "path": "privater R2-Eimer: _validation/sec-pit-r12.json.gz",
+    "pointInTime": "JA (erste Einreichung) + Ursache fehlender Reihen",
+    "usedBy": [
+     "validation/audit-r14.mjs (Minervini-3.0.0-Gegenprobe)"
+    ],
+    "live": "NEIN"
+   },
+   {
+    "id": "SEC_DELIST_R13",
+    "path": "privater R2-Eimer: _validation/sec-delist-r13.json.gz",
+    "pointInTime": "JA (Filing-Datum)",
+    "usedBy": [
+     "Szenario S1C in Validierung/Audit"
+    ],
+    "live": "nein (nur Bewertung)"
+   },
+   {
+    "id": "EXTERNAL_NOT_PRESENT",
+    "path": "–",
+    "pointInTime": "–",
+    "usedBy": [],
+    "live": "nein"
+   }
+  ],
+  "sepaCoverage": [
+   {
+    "criterion": "Quartals-EPS-Wachstum y/y (≥ 25 %)",
+    "dataPresent": "ja (SEC_PIT_R11/R12; SEC_CONSUMER 8 Q)",
+    "pointInTime": "ja (PIT-Store, Erstmeldung)",
+    "integratedIn": "engine/earnings.mjs MIN-EPS-01 → minervini-v3.mjs",
+    "live": false,
+    "status": "INTEGRATED_NOT_LIVE",
+    "note": "Live 2.0.0 ohne Filter; ~1/3 der Titel ohne historische EPS (process-chain.mjs:62)."
+   },
+   {
+    "criterion": "EPS-Beschleunigung",
+    "dataPresent": "ja",
+    "pointInTime": "ja",
+    "integratedIn": "MIN-EPS-ACC (nur aktuelles vs. Vorquartal; \"Code 33\" verlangt 3 Quartale)",
+    "live": false,
+    "status": "INTEGRATED_NOT_LIVE (vereinfacht)",
+    "note": "Mehrquartals-Beschleunigung nicht formalisiert."
+   },
+   {
+    "criterion": "Umsatzwachstum y/y",
+    "dataPresent": "ja (PIT rev)",
+    "pointInTime": "ja",
+    "integratedIn": "MIN-REV-01 (nur > 0 %)",
+    "live": false,
+    "status": "INTEGRATED_NOT_LIVE (abgeschwächt)",
+    "note": "Keine 25-%-Schwelle, keine Umsatzbeschleunigung."
+   },
+   {
+    "criterion": "Umsatzbeschleunigung",
+    "dataPresent": "ja (PIT rev)",
+    "pointInTime": "ja",
+    "integratedIn": "–",
+    "live": false,
+    "status": "DERIVABLE_NOT_INTEGRATED",
+    "note": ""
+   },
+   {
+    "criterion": "Margenausweitung (Brutto/operativ/netto, quartalsweise)",
+    "dataPresent": "ja in SEC_CONSUMER (GP, OpInc, NI, Revenue; 8 Q) / Discover jährlich",
+    "pointInTime": "NEIN (PIT-Store hat nur EPS+Umsatz; consumer = as_of_latest)",
+    "integratedIn": "–",
+    "live": false,
+    "status": "PRESENT_NOT_PIT_NOT_INTEGRATED",
+    "note": "Für Backtest müsste sec-pit.mjs um GrossProfit/OperatingIncomeLoss/NetIncomeLoss erweitert werden."
+   },
+   {
+    "criterion": "Nettogewinn-Wachstum",
+    "dataPresent": "ja (SEC_CONSUMER)",
+    "pointInTime": "nein",
+    "integratedIn": "CANSLIM-Teilprüfung C/A (net_income, zuletzt berichtet); Discover f_earningsAcceleration",
+    "live": "nur Teilprüfung",
+    "status": "PRESENT_NOT_PIT",
+    "note": "CANSLIM \"Quartalsgewinn\" nutzt Net Income statt EPS."
+   },
+   {
+    "criterion": "Jährliches EPS-Wachstum (3 Jahre)",
+    "dataPresent": "ja (SEC_CONSUMER annual eps_diluted, 13 J.)",
+    "pointInTime": "nein",
+    "integratedIn": "–",
+    "live": false,
+    "status": "PRESENT_NOT_INTEGRATED",
+    "note": ""
+   },
+   {
+    "criterion": "ROE / Kapitalrendite",
+    "dataPresent": "ja (NI + Equity; Discover f_roe)",
+    "pointInTime": "nein",
+    "integratedIn": "–",
+    "live": false,
+    "status": "PRESENT_NOT_INTEGRATED",
+    "note": ""
+   },
+   {
+    "criterion": "Cashflow/FCF-Qualität",
+    "dataPresent": "ja (SEC_CONSUMER)",
+    "pointInTime": "nein",
+    "integratedIn": "Piotroski-Teilprüfung (CFO, Accrual)",
+    "live": "nur Teilprüfung",
+    "status": "PRESENT_NOT_PIT",
+    "note": ""
+   },
+   {
+    "criterion": "Aktienzahl / Angebot (Float, Rückkäufe)",
+    "dataPresent": "Aktienzahl ja, Float nein",
+    "pointInTime": "nein",
+    "integratedIn": "CANSLIM S nur Anzeige",
+    "live": false,
+    "status": "PARTIAL",
+    "note": ""
+   },
+   {
+    "criterion": "Analystenschätzungen / Revisionen",
+    "dataPresent": "nein",
+    "pointInTime": "–",
+    "integratedIn": "–",
+    "live": false,
+    "status": "NOT_PRESENT",
+    "note": "pit_gates.json: analystEstimates=false."
+   },
+   {
+    "criterion": "Earnings Surprises (Ist vs. Konsens)",
+    "dataPresent": "nein",
+    "pointInTime": "–",
+    "integratedIn": "–",
+    "live": false,
+    "status": "NOT_PRESENT",
+    "note": "Auch für Kullamägi-Episodic-Pivots und TraderFox Pivotal-News-Points fehlend."
+   },
+   {
+    "criterion": "Institutionelle Halter / Sponsorship (13F)",
+    "dataPresent": "nein",
+    "pointInTime": "–",
+    "integratedIn": "CANSLIM I = CS-I-NA",
+    "live": false,
+    "status": "NOT_PRESENT",
+    "note": ""
+   },
+   {
+    "criterion": "Branchengruppen-Rang (RS der Gruppe)",
+    "dataPresent": "nur heutige SIC/Sektor",
+    "pointInTime": "nein (keine PIT-Gruppenzugehörigkeit)",
+    "integratedIn": "–",
+    "live": false,
+    "status": "NOT_PRESENT_PIT",
+    "note": "Auch für Weinstein-Gruppenstufe fehlend."
+   },
+   {
+    "criterion": "Öffentliche Reproduzierbarkeit der PIT-Fundamentaltests",
+    "dataPresent": "Skript öffentlich, Daten privat",
+    "pointInTime": "–",
+    "integratedIn": "–",
+    "live": false,
+    "status": "NOT_PUBLICLY_REPRODUCIBLE",
+    "note": "sec-pit-r11/r12 liegen nur im privaten Eimer."
+   }
+  ],
+  "summary": {
+   "liveStrategiesUsingFundamentals": [],
+   "partialChecksUsingFundamentals": [
+    "CANSLIM",
+    "PIOTROSKI_F"
+   ],
+   "pitEpsRevenue": "privat, nur Minervini 3.0.0 (Forschung)",
+   "missingEntirely": [
+    "estimates",
+    "surprises",
+    "13F",
+    "PIT industry group"
+   ]
+  }
+ }
+}

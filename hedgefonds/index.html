@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Hedgefonds — Vision Universe®</title>
+<meta name="description" content="Was die besten Investoren kaufen: 13F-Portfolios von Bill Ackman, Warren Buffett, Michael Burry, David Tepper, Stanley Druckenmiller und über 40 weiteren Hedgefonds – mit allen Käufen und Verkäufen, direkt von der SEC.">
+<link rel="icon" href="data:,">
+<!-- Farbschema vor dem ersten Bild: dieselbe gemerkte Wahl wie Discover -->
+<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#0b0d10":"#ffffff");})();</script>
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<link rel="stylesheet" href="/hedgefonds/app.css">
+</head>
+<body class="hf"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<a class="hf-skip" href="#hf-root">Zum Inhalt</a>
+<!-- VISION UNIVERSE® Hedgefonds: 13F-Daten werden serverseitig von data.sec.gov
+     geladen (scripts/hedgefonds/fetch_edgar_data.py) und hier nur gelesen. -->
+<script>var DATA_URL = "/hedgefonds/data/hedgefonds.json"; window.HF_DATA_URL = DATA_URL;</script>
+<!-- Beträge formatiert der zentrale Currency Core (nur Formatierung, keine
+     Umrechnung: 13F-Werte sind immer USD, §49). -->
+<script src="/quant/engines/fx/currency-registry.js"></script>
+<script src="/quant/engines/fx/money-format.js"></script>
+<script>window.HF_FORMAT_USD = function (n) {
+  var F = window.VUFx && VUFx.Format;
+  if (!F || typeof F.formatCompact !== "function") return null;
+  var a = Math.abs(n);
+  return a >= 1e3 ? F.formatCompact(n, "USD", { numberLocale: "de-DE", decimals: a >= 1e9 ? 1 : 0 })
+    : F.formatPrice(n, "USD", { numberLocale: "de-DE", decimals: 0 });
+};</script>
+<main class="hf-main hf-wrap" id="hf-root" tabindex="-1"></main>
+<script src="/hedgefonds/app.js"></script>
+</body>
+</html>

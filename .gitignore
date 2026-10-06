@@ -1,0 +1,68 @@
+scripts/hedgefonds/__pycache__/
+scripts/dashboard/__pycache__/
+
+# Phase 2 — Zugangsdaten fuer Marktdatenanbieter.
+# Der Schluessel gehoert in die Umgebung oder in ein GitHub-Secret,
+# niemals in das Repository. Siehe docs/VU_MARKET_DATA_ARCHITECTURE.md.
+.env
+.env.*
+!.env.example
+*.key
+secrets.json
+providers/**/credentials.json
+
+# Phase 4 — SEC Financial Data Core.
+# SEC-Rohdaten und der Abruf-Cache sind gross und jederzeit reproduzierbar; sie
+# duerfen das oeffentliche Repository nie erreichen. Die normalisierten
+# Factbooks sind ebenfalls reproduzierbar und bleiben lokal. Committet werden
+# nur die kompakten, pruefbaren Artefakte unter quant/data/sec/.
+.sec-cache/
+.quant-state/
+quant/data/sec/raw/
+quant/data/sec/facts/
+scripts/quant/**/__pycache__/
+
+# Phase 4A — Arbeitsablage fuer Kursdaten.
+# Provider-Historien gehoeren nicht in ein oeffentliches Repository:
+# zu gross, und Rohdaten-, Display- sowie Derived-Data-Rechte sind
+# ungeklärt. Auch Ausschnitte bleiben bis zur Lizenzfreigabe intern.
+.market-cache/
+
+# Lokale Werkzeuge (z. B. Playwright fuer scripts/discover/browser-qa.mjs).
+# Das Repository hat keinen Paketmanager-Stand; was hier liegt, gehoert
+# der jeweiligen Arbeitsumgebung und nie der Auslieferung.
+node_modules/
+node_modules
+
+# Rueckgeladene Factbooks aus der dauerhaften Ablage - Pruefmaterial, kein Bestand.
+.sec-reload/
+tmp/
+.vercel-public/
+
+# Gemessene Suiten-/Isolationsbefunde (scripts/social/verify-suites.mjs).
+# Sie gehoeren zu einem Stand, nicht ins Repository: der Bericht misst
+# neu, statt einem eingecheckten "gruen" zu glauben.
+.verification/
+
+# Der Produktnachweis erzeugt ein Bild und einen Befund. Beide gehoeren
+# zu einem Lauf, nicht ins Repository - das Bild ist reproduzierbar,
+# und der Befund gilt fuer genau einen Stand.
+tmp/product-proof/
+scripts/vu2/__pycache__/
+server/__pycache__/
+.launch/
+
+# Screener-Universum: Release-Projektion aus den Discover-Daten
+# (scripts/screener/build-universe.mjs). Lokal mit demselben Skript erzeugen.
+screener/data/
+
+# Der Frische-Bericht gilt fuer genau einen Lauf. Committet waere er eine
+# Datei, deren Stichtag eine Aktualitaet behauptet, die sie nicht mehr hat -
+# und das war der P0: ein Artefakt, das gruen aussah, waehrend es stillstand.
+# Die Kette liest ihn aus dem Lauf (Step Summary), nicht aus dem Repository.
+quant/data/product/pipeline-freshness-v1.json
+
+# Company Intelligence: incremental state, HTTP cache, and raw source material.
+.company-intelligence/
+scripts/company_intelligence/**/__pycache__/
+.logo-candidates/

@@ -1,0 +1,169 @@
+name: Cloudflare — Fragefunktion (vu-ask) ausrollen
+
+# Rollt workers/vu-ask aus (Cloudflare Workers Free, ein Durable Object).
+#
+# EINZURICHTEN IST GENAU EIN SECRET: ANTHROPIC_API_KEY
+# (GitHub -> Settings -> Secrets and variables -> Actions). Alles andere
+# ergibt sich von selbst:
+#   CLOUDFLARE_API_TOKEN  liegt bereits vor
+#   VU_ASK_ADMIN_KEY      wird aus CLOUDFLARE_API_TOKEN abgeleitet (HMAC),
+#                         wenn kein eigenes Secret gesetzt ist - er steht
+#                         nirgends im Klartext und nie im Protokoll
+#   Salz                  erzeugt der Worker beim ersten Start selbst
+# Fehlt ANTHROPIC_API_KEY, wird trotzdem ausgerollt; die Seite /ask/ sagt
+# dann "noch nicht freigeschaltet", und es geht keine Anfrage an Anthropic.
+#
+# Das Repository ist oeffentlich: Kein Wert und kein Lernbericht wird in
+# diesem Protokoll ausgegeben.
+
+on:
+  workflow_dispatch:
+    inputs:
+      liveTest:
+        description: 'Nach dem Ausrollen eine echte Testfrage stellen (kostet unter 1 Cent)'
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths:
+      - 'workers/vu-ask/**'
+      - '.github/workflows/cloudflare-ask-deploy.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vu-ask-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Tests, Ausrollen, Smoke-Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Tests (Budget, Limits, Lernprotokoll)
+        run: node --test "workers/vu-ask/tests/*.test.mjs" "ask/tests/*.test.mjs"
+
+      - name: Liegt der Cloudflare-Zugang vor?
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          [ -n "$CLOUDFLARE_API_TOKEN" ] || { echo "::error::CLOUDFLARE_API_TOKEN fehlt"; exit 1; }
+
+      - name: Ausrollen
+        id: deploy
+        working-directory: workers/vu-ask
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # Optional: GitHub -> Settings -> Secrets and variables -> Actions ->
+          # Variables. Hat Vorrang vor wrangler.toml - so laesst sich die
+          # Fragenzahl ohne Codeaenderung umstellen.
+          PER_USER_DAILY: ${{ vars.VU_ASK_PER_USER_DAILY }}
+        run: |
+          extra=()
+          if [ -n "$PER_USER_DAILY" ]; then
+            [[ "$PER_USER_DAILY" =~ ^[0-9]{1,4}$ ]] || { echo "::error::VU_ASK_PER_USER_DAILY muss eine Zahl sein"; exit 1; }
+            extra+=(--var "VU_ASK_PER_USER_DAILY:$PER_USER_DAILY")
+            echo "Fragen pro Nutzer und Tag aus GitHub-Variable: $PER_USER_DAILY"
+          fi
+          npx --yes wrangler@4.147.0 deploy "${extra[@]}" 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tee /tmp/deploy.log
+          url=$(grep -oE 'https://vu-ask\.[a-z0-9-]+\.workers\.dev' /tmp/deploy.log | head -1)
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Schluessel zu Cloudflare (nie ins Protokoll)
+        id: keys
+        working-directory: workers/vu-ask
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          VU_ASK_ADMIN_KEY: ${{ secrets.VU_ASK_ADMIN_KEY }}
+          TURNSTILE_SECRET: ${{ secrets.TURNSTILE_SECRET }}
+          VU_ASK_ACCESS_PASSWORD: ${{ secrets.VU_ASK_ACCESS_PASSWORD }}
+          ANTHROPIC_WORKSPACE_ID: ${{ secrets.ANTHROPIC_WORKSPACE_ID }}
+        run: |
+          if [ -z "$VU_ASK_ADMIN_KEY" ]; then
+            VU_ASK_ADMIN_KEY=$(printf '%s' "vu-ask-admin-v1" | openssl dgst -sha256 -hmac "$CLOUDFLARE_API_TOKEN" -r | cut -d' ' -f1)
+          fi
+          echo "::add-mask::$VU_ASK_ADMIN_KEY"
+          put() { printf '%s' "$2" | npx --yes wrangler@4.147.0 secret put "$1" > /dev/null 2>&1 && echo "$1 hinterlegt" || { echo "::error::$1 nicht hinterlegt"; exit 1; }; }
+          put VU_ASK_ADMIN_KEY "$VU_ASK_ADMIN_KEY"
+          if [ -n "$TURNSTILE_SECRET" ]; then put TURNSTILE_SECRET "$TURNSTILE_SECRET"; fi
+          if [ -n "$VU_ASK_ACCESS_PASSWORD" ]; then put VU_ASK_ACCESS_PASSWORD "$VU_ASK_ACCESS_PASSWORD"; fi
+          # Nur noetig, wenn der API-Schluessel keinem Workspace zugeordnet ist.
+          if [ -n "$ANTHROPIC_WORKSPACE_ID" ]; then
+            ws=$(printf '%s' "$ANTHROPIC_WORKSPACE_ID" | tr -d '[:space:]')
+            # Die Form wird geprueft, der Wert nie ausgegeben.
+            if [[ "$ws" =~ ^wrkspc_[A-Za-z0-9]+$ ]]; then
+              put ANTHROPIC_WORKSPACE_ID "$ws"
+            else
+              echo "::warning::ANTHROPIC_WORKSPACE_ID hat nicht die Form wrkspc_… (Laenge ${#ws}, beginnt mit '${ws:0:3}…') - wird nicht verwendet."
+              printf '%s' "" | npx --yes wrangler@4.147.0 secret delete ANTHROPIC_WORKSPACE_ID --force > /dev/null 2>&1 || true
+            fi
+          fi
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            put ANTHROPIC_API_KEY "$ANTHROPIC_API_KEY"
+            echo "claude=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::ANTHROPIC_API_KEY fehlt - die Fragefunktion bleibt aus, bis er als GitHub-Secret hinterlegt und dieser Workflow erneut gelaufen ist."
+            echo "claude=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Smoke-Test (ohne Frage, kostet nichts)
+        if: ${{ steps.deploy.outputs.url != '' }}
+        run: |
+          sleep 5
+          curl --fail --silent "${{ steps.deploy.outputs.url }}/v1/health" > /dev/null
+          code=$(curl --silent -o /dev/null -w '%{http_code}' "${{ steps.deploy.outputs.url }}/v1/quota?client=smoketest0001")
+          case "$code" in
+            200) echo "Worker antwortet (ohne Zugangsschranke).";;
+            401) echo "Worker antwortet, Zugangsschranke aktiv.";;
+            *) echo "::error::Unerwartete Antwort $code"; exit 1;;
+          esac
+
+      # Eine echte Frage durch die ganze Kette: Schranke, Budget, Anthropic,
+      # Uebersetzung. Ausgegeben werden nur Status und erkannte Felder - kein
+      # Schluessel, keine Kosten-Interna.
+      - name: Live-Test mit echter Frage
+        if: ${{ inputs.liveTest && steps.keys.outputs.claude == 'true' && steps.deploy.outputs.url != '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_ASK_ADMIN_KEY: ${{ secrets.VU_ASK_ADMIN_KEY }}
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          ADMIN="$VU_ASK_ADMIN_KEY"
+          [ -n "$ADMIN" ] || ADMIN=$(printf '%s' "vu-ask-admin-v1" | openssl dgst -sha256 -hmac "$CLOUDFLARE_API_TOKEN" -r | cut -d' ' -f1)
+          echo "::add-mask::$ADMIN"
+          sleep 5
+          body='{"question":"äh zeig mir mal alle Aktien mit neuem Jahreshoch zwischen 300 Millionen und 2 Milliarden, die ins Minervini Raster passen, und den Quant Score","clientId":"livetest-deploy-01"}'
+          curl --silent -X POST "$URL/v1/ask" -H 'content-type: application/json' -H 'origin: https://research.visionuniverse.de' \
+               -H "x-vu-access: $ADMIN" --data "$body" > /tmp/answer.json
+          node -e '
+            const a = JSON.parse(require("fs").readFileSync("/tmp/answer.json", "utf8"));
+            if (!a.ok) { console.log("::error::Live-Test fehlgeschlagen:", a.reason, a.code || "", a.detail || "", a.message || ""); process.exit(1); }
+            const r = a.result;
+            console.log("Quelle:", a.source, "| Status:", a.status, "| Art:", r.kind);
+            console.log("Verstanden:", r.understood);
+            console.log("Filter:", JSON.stringify((r.query ? r.query.groups[0].filters : []).map((f) => [f.field, f.op, f.value, f.value2])));
+            console.log("Supertrader:", JSON.stringify(r.supertrader), "| Fehlend:", JSON.stringify(r.missing));
+            console.log("Kontingent heute noch:", a.quota && a.quota.remainingToday);
+          '
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Fragefunktion vu-ask'
+            echo ''
+            echo "Adresse: \`${{ steps.deploy.outputs.url }}\`"
+            if [ "${{ steps.keys.outputs.claude }}" = "true" ]; then
+              echo ''; echo 'Anthropic-Schluessel hinterlegt - /ask/ ist aktiv.'
+            else
+              echo ''; echo '**Anthropic-Schluessel fehlt** - /ask/ zeigt "noch nicht freigeschaltet".'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

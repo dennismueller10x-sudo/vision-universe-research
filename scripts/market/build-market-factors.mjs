@@ -1,0 +1,508 @@
+/* =========================================================================
+   VISION UNIVERSE — build-market-factors.mjs   (Tiingo Commercial, §14–§17, §30)
+
+   Rechnet die Marktfaktoren des Gate-Universums und baut daraus das
+   Datenmodell, aus dem der Screener seine Fragen beantwortet.
+
+   ZWEI AUSGABEN, ZWEI ZWECKE
+
+     factors-<GATE>.json    eine Zeile je Titel. Zustaende und Abstaende,
+                            keine Kursniveaus (§34) - "5 % unter dem
+                            52-Wochen-Hoch" darf ausgeliefert werden, "das
+                            Hoch liegt bei 184,20" nicht.
+
+     screener-<GATE>.json   die Fragen aus §15, bereits beantwortet. Je
+                            Frage: wer erfuellt sie, wie viele, und - das
+                            ist der Punkt - fuer wie viele Titel sie gar
+                            nicht entscheidbar war.
+
+   DAS DRITTE FELD IST DAS WICHTIGE
+
+   Ein Screener, der auf "alle Aktien ueber SMA200" 340 Titel meldet,
+   sagt nicht, ob die uebrigen 660 darunter liegen oder ob 200 von ihnen
+   keine 200 Bars haben. Der Unterschied entscheidet, ob das Ergebnis eine
+   Auswahl ist oder eine Luecke. Deshalb traegt jede Frage hier drei
+   Zahlen: matched, notMatched, notEvaluable - und nie nur die erste.
+
+   Ausfuehren:
+     node scripts/market/build-market-factors.mjs --gate GATE_100
+   ========================================================================= */
+import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const Identity = require(join(root, "core", "identity.js"));
+const engines = join(root, "quant", "engines");
+
+const MarketFactors = require(join(engines, "market-factors.js"));
+const Semantics = require(join(engines, "return-semantics.js"));
+const MarketQuality = require(join(engines, "market-quality.js"));
+const MarketStore = require(join(engines, "market-store.js"));
+const RankingHygiene = require(join(engines, "ranking-hygiene.js"));
+
+const SCALE = JSON.parse(readFileSync(join(root, "quant", "config", "tiingo-scale.json"), "utf8"));
+
+const argv = process.argv.slice(2);
+function arg(name, fallback) {
+  const i = argv.indexOf(name);
+  return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : fallback;
+}
+const GATE = arg("--gate", "GATE_100");
+const SCALE_DIR = arg("--scale-dir", join(root, "quant", "data", "market", "scale"));
+const OUT_DIR = arg("--out", join(root, "quant", "data", "market", "factors"));
+const WORK_DIR = arg("--work-dir", null);
+const BENCHMARK = arg("--benchmark", "SPY");
+/* Wie viele Titel eine Rangliste ausweist. Alle 2.000 zu listen macht die
+   Datei gross und die Antwort nicht besser - die Frage lautet "wer ist am
+   staerksten", nicht "wie ist die Reihenfolge aller". */
+const RANK_LIMIT = parseInt(arg("--rank-limit", "50"), 10) || 50;
+/* Ab wie vielen Titeln bleibt die Einzelzeile in der Arbeitsablage?
+
+   Gemessen: die Faktorzeilen von 5.684 Titeln sind 15,5 MB. In jedem Lauf
+   erneut in die Versionierung geschrieben ist das kein Datensatz mehr,
+   sondern Ballast - und §26 zieht die Grenze ausdruecklich zwischen
+   ausgeliefertem Ergebnis und Arbeitsmaterial.
+
+   Bis zu dieser Zahl wird die Einzelzeile mit ausgeliefert: sie ist klein
+   genug und beim Arbeiten am Datenmodell das Nuetzlichste, was es gibt.
+   Darueber wandert sie in die Arbeitsablage, und ausgeliefert werden die
+   Deckungsbilanz und der Screener - genau das, was die Fragen aus §15
+   beantwortet. */
+/* Bis 2026-09-13 blieben Einzelzeilen ueber 500 Titel in der Arbeitsablage
+   (MVP-Grenze). Faktorzeilen sind abgeleitete Werte ohne Kursniveaus und
+   seit der Eigentuemerentscheidung fuer das ganze Produktuniversum
+   ausgeliefert - der Discover-Build liest sie. --detail-limit bleibt als
+   Schalter fuer Sonderfaelle. */
+const DETAIL_LIMIT = parseInt(arg("--detail-limit", "1000000"), 10) || 1000000;
+
+/* --product-universe: die Titel kommen aus der kanonischen Universumsquelle
+   (Company Master, scripts/market/universe-source.mjs) statt aus der
+   Gate-Datei - das Produktuniversum, nicht die Skalierungsstufe. Die
+   Ausgabedateien tragen weiterhin den Gate-Namen (FULL_UNIVERSE). */
+const PRODUCT_UNIVERSE = process.argv.includes("--product-universe");
+let universe;
+if (PRODUCT_UNIVERSE) {
+  const { resolveProductUniverse } = await import("./universe-source.mjs");
+  const q = resolveProductUniverse(root);
+  universe = { gate: GATE, universeSource: q.source, universeFile: q.file, securities: q.securities };
+  console.log(`  Universum: ${q.source} (${q.file}), ${q.securities.length} Titel`);
+} else {
+  const universeFile = join(SCALE_DIR, `universe-${GATE}.json`);
+  if (!existsSync(universeFile)) {
+    console.error(`Kein Gate-Universum unter ${universeFile}.`);
+    process.exit(2);
+  }
+  universe = JSON.parse(readFileSync(universeFile, "utf8"));
+}
+const store = MarketStore.createMarketStore({
+  root, providerId: "tiingo", workingDir: WORK_DIR || undefined
+});
+
+console.log(`Vision Universe — Marktfaktoren ${GATE}\n`);
+console.log(`  Titel: ${universe.securities.length}`);
+
+/* ------------------------------------------------------- Benchmark
+
+   Ohne Benchmarkreihe bleibt die relative Staerke leer - mit Grund und
+   nicht mit Null. Eine relative Staerke gegen sich selbst waere keine. */
+let benchmark = null;
+const benchPayload = store.readBars(Identity.securityIdForTicker(BENCHMARK), "working");
+if (benchPayload && Array.isArray(benchPayload.bars) && benchPayload.bars.length) {
+  /* SEIT DER OWNER-ENTSCHEIDUNG VOM 2026-09-24 GEBUNDEN.
+
+     Die Vergleichsreihe der relativen Staerke traegt dieselbe Basis wie
+     der Titel, gegen den sie verglichen wird: splitbereinigter Kurs.
+     Eine Gesamtrenditereihe gegen einen Kursverlauf zu halten hiesse,
+     die Dividendenrendite des Index in die relative Staerke jedes Titels
+     hineinzurechnen.
+
+     Die Reihe wird konstruiert, nicht ausgewaehlt - der Anbieter
+     liefert Rohkurs und Splitfaktor, und daraus entsteht sie. */
+  const benchSeries = MarketFactors.priceSeries(
+    benchPayload.bars, benchPayload.adjustmentStatus, "relativeStrengthBenchmark");
+  benchmark = {
+    id: BENCHMARK,
+    returnBasis: benchSeries.basis,
+    priceSource: benchSeries.source,
+    /* Die Datumsspalte gehoert dazu: ohne sie vergleicht ein Titel mit
+       aelterem Stichtag gegen den heutigen Indexstand. */
+    adjustmentStatus: benchPayload.adjustmentStatus || null,
+    adjustmentClaim: benchPayload.adjustmentClaim || null,
+    dates: benchPayload.bars.map((b) => b.date),
+    closes: benchSeries.close.map((v) => (typeof v === "number" && isFinite(v) && v > 0 ? v : null)),
+    last: benchPayload.bars[benchPayload.bars.length - 1].date,
+    bars: benchPayload.bars.length
+  };
+  console.log(`  Benchmark: ${BENCHMARK} (${benchmark.bars} Bars bis ${benchmark.last}, ` +
+              `${benchmark.returnBasis} via ${benchmark.priceSource}, deklariert ${benchmark.adjustmentStatus})`);
+  if (benchmark.adjustmentClaim) {
+    console.log(`             bereinigte Spalte widerlegt (${benchmark.adjustmentClaim.refutedClaim} → ` +
+                `${benchmark.adjustmentClaim.ceiling}); Gesamtrendite dieser Reihe gesperrt.`);
+  }
+} else {
+  console.log(`  Benchmark: ${BENCHMARK} nicht in der Arbeitsablage - relative Staerke bleibt leer.`);
+}
+
+/* --------------------------------------------------------- Rechnen */
+
+const today = new Date().toISOString().slice(0, 10);
+const t0 = Date.now();
+const rows = [];
+const skipped = [];
+const fieldCoverage = {};
+
+/* Gesammelt waehrend des Laufs, ausgewiesen am Ende. */
+const benchmarkFreshness = { staleSecurities: 0, maxLagSessions: 0, newestSecurityDate: null };
+
+function countField(name, status) {
+  const c = (fieldCoverage[name] = fieldCoverage[name] ||
+    { CALCULATED: 0, INSUFFICIENT_HISTORY: 0, SOURCE_MISSING: 0, NOT_APPLICABLE: 0 });
+  c[status] = (c[status] || 0) + 1;
+}
+
+for (const sec of universe.securities) {
+  const payload = store.readBars(sec.securityId, "working");
+  if (!payload || !Array.isArray(payload.bars) || !payload.bars.length) {
+    skipped.push({ ticker: sec.ticker, reason: "SOURCE_MISSING",
+                   message: "Keine Kursreihe in der Arbeitsablage." });
+    continue;
+  }
+
+  /* Ein Titel, dessen Reihe die Qualitaetspruefung nicht besteht, bekommt
+     keine Faktoren. Faktoren auf einer als FAIL beurteilten Reihe waeren
+     rechenbar und wertlos - und im Screener nicht von guten zu
+     unterscheiden. */
+  const assessment = MarketQuality.assessSeries(payload, { today });
+  if (assessment.status === "FAIL" || assessment.status === "UNAVAILABLE") {
+    skipped.push({ ticker: sec.ticker, reason: assessment.status,
+                   message: assessment.statusReason });
+    continue;
+  }
+
+  /* Gebunden. Die ganze Faktorzeile rechnet auf splitbereinigtem Kurs:
+     gleitende Durchschnitte, 52-Wochen-Hoch, Renditen, Volatilitaet,
+     relative Staerke. Sie beschreibt Kursstruktur, und dafuer ist die
+     Gesamtrendite die falsche Reihe - eine Dividende ist keine
+     Kursbewegung.
+
+     Was ein Anleger inklusive Ausschuettungen verdient haette, ist eine
+     andere Frage und bekommt unten ihre eigene Zahl. */
+  let factors;
+  try {
+    factors = MarketFactors.computeFactors(
+      Object.assign({ ticker: sec.ticker }, payload),
+      { benchmark: benchmark, module: "quantV2Momentum" });
+  } catch (error) {
+    /* Seit der Bindung kann die Basis verweigert werden: wer keinen
+       Splitfaktor mitbringt, bekommt keine splitbereinigte Reihe und
+       auch keinen Ersatz. Das ist die gewollte Haerte - aber sie darf
+       einen Titel kosten und nicht den ganzen Lauf. Der Grund steht im
+       Bericht, damit aus dem Ausfall eine Zahl wird und keine Luecke. */
+    skipped.push({ ticker: sec.ticker,
+      reason: error.reason || "RETURN_BASIS_UNAVAILABLE",
+      message: error.message });
+    continue;
+  }
+  if (factors.status !== "OK") {
+    skipped.push({ ticker: sec.ticker, reason: "UNAVAILABLE", message: factors.statusReason });
+    continue;
+  }
+
+  if (factors.benchmarkStale) {
+    benchmarkFreshness.staleSecurities += 1;
+    if (Number.isFinite(factors.benchmarkLagSessions) &&
+        factors.benchmarkLagSessions > benchmarkFreshness.maxLagSessions) {
+      benchmarkFreshness.maxLagSessions = factors.benchmarkLagSessions;
+    }
+  }
+  if (factors.asOf && (!benchmarkFreshness.newestSecurityDate ||
+      factors.asOf > benchmarkFreshness.newestSecurityDate)) {
+    benchmarkFreshness.newestSecurityDate = factors.asOf;
+  }
+
+  const publicFactors = MarketFactors.stripPriceLevels(factors);
+  const investor = MarketFactors.investorReturn(payload.bars, payload.adjustmentStatus);
+
+  Object.keys(factors.fieldStatus).forEach((f) => {
+    const st = factors.fieldStatus[f];
+    if (typeof st === "string") countField(f, st);
+    else if (st && typeof st === "object") {
+      Object.keys(st).forEach((h) => countField(f + "." + h, st[h]));
+    }
+  });
+
+  rows.push({
+    ticker: sec.ticker,
+    securityId: sec.securityId,
+    exchange: sec.exchange || null,
+    sector: sec.sector || null,
+    sectorStatus: sec.sectorStatus || "SOURCE_MISSING",
+    instrumentType: sec.instrumentType || null,
+    dataQuality: assessment.status,
+    dataQualityReason: assessment.statusReason,
+    bars: factors.bars,
+    asOf: factors.asOf,
+    basis: factors.basis,
+    /* Die Spalte allein sagt nicht, WAS in ihr steht: adjustedClose kann
+       splitbereinigt oder total-return-bereinigt sein, und das ist der
+       Unterschied, um den der Return-Semantics-Vertrag sich dreht. Ohne
+       diesen Stand im Artefakt laesst sich die heutige Basis des
+       Momentumfaktors nicht nachtraeglich feststellen - was genau die
+       Luecke war, die eine voreilige Bindung beinahe verdeckt haette. */
+    adjustmentStatus: payload.adjustmentStatus || null,
+    /* Was der Anbieter liefert - und daneben, worauf wirklich gerechnet
+       wurde. Seit Option C sind das zwei verschiedene Dinge: geliefert
+       wird eine gesamtrenditebereinigte Spalte, gerechnet wird auf der
+       daraus nicht ableitbaren, sondern aus Rohkurs und Splitfaktor
+       rekonstruierten splitbereinigten Reihe. */
+    providedBasis: Semantics.basisOfAdjustmentStatus(payload.adjustmentStatus),
+    returnBasis: factors.returnBasis,
+    priceSource: factors.priceSource,
+    values: publicFactors.values,
+    fieldStatus: publicFactors.fieldStatus,
+    /* Die Anlegerrendite steht NEBEN den Faktorwerten, nicht in ihnen.
+       Sie beantwortet eine andere Frage und geht in keine Faktornote
+       ein - genau das ist Option C. */
+    investorReturn: investor
+  });
+}
+
+const runtimeMs = Date.now() - t0;
+console.log(`  Gerechnet: ${rows.length}, uebersprungen ${skipped.length}, ` +
+            `${(runtimeMs / 1000).toFixed(1)} s ` +
+            `(${rows.length ? Math.round(runtimeMs / rows.length) : 0} ms/Titel)`);
+
+/* ------------------------------------------------------- Screener
+
+   Jede Frage ist ein Praedikat auf einer Faktorzeile. Es gibt genau drei
+   Antworten je Titel: ja, nein, nicht entscheidbar. */
+
+function booleanQuestion(id, label, pick) {
+  const matched = [], notEvaluable = [];
+  let notMatched = 0;
+  for (const r of rows) {
+    const v = pick(r.values);
+    if (v === true) matched.push(r.ticker);
+    else if (v === false) notMatched++;
+    else notEvaluable.push(r.ticker);
+  }
+  return { id, label, kind: "boolean",
+           matched: matched.length, notMatched, notEvaluable: notEvaluable.length,
+           evaluatedOf: rows.length,
+           tickers: matched.slice(0, RANK_LIMIT),
+           tickersTruncated: matched.length > RANK_LIMIT,
+           notEvaluableSample: notEvaluable.slice(0, 10),
+           notEvaluableNote: notEvaluable.length
+             ? "Fuer diese Titel ist die Frage nicht entscheidbar - meist zu kurze Historie. " +
+               "Sie zaehlen ausdruecklich weder als Treffer noch als Nichttreffer."
+             : null };
+}
+
+function rankedQuestion(id, label, metric, pick, direction) {
+  const ranked = RankingHygiene.rankRows(rows, { metric, pick, direction, limit: RANK_LIMIT });
+  return { id, label, kind: "ranked", direction,
+           metric, evaluated: ranked.evaluated, notEvaluable: ranked.notEvaluable.length,
+           quarantined: ranked.quarantined,
+           quarantinedCount: ranked.quarantinedCount,
+           rankingHygiene: { version: ranked.hygieneVersion, policy: ranked.policy },
+           evaluatedOf: rows.length,
+           top: ranked.top,
+           notEvaluableSample: ranked.notEvaluable.slice(0, 10) };
+}
+
+const questions = [
+  booleanQuestion("aboveSMA20", "Alle Aktien ueber SMA20", (v) => v.priceAboveSMA20),
+  booleanQuestion("aboveSMA50", "Alle Aktien ueber SMA50", (v) => v.priceAboveSMA50),
+  booleanQuestion("aboveSMA100", "Alle Aktien ueber SMA100", (v) => v.priceAboveSMA100),
+  booleanQuestion("aboveSMA200", "Alle Aktien ueber SMA200", (v) => v.priceAboveSMA200),
+  booleanQuestion("aboveSMA20And50And200", "Ueber SMA20 und SMA50 und SMA200",
+                  (v) => v.aboveSMA20And50And200),
+  booleanQuestion("aboveAllSMA", "Ueber allen vier Durchschnitten", (v) => v.aboveAllSMA),
+  booleanQuestion("newHigh52w", "Neue 52-Wochen-Hochs", (v) => v.newHigh52w),
+  booleanQuestion("within5PctOf52wHigh", "Innerhalb 5 % vom 52-Wochen-Hoch",
+                  (v) => v.within5PctOf52wHigh),
+  booleanQuestion("volumeBreakout", "Volumen-Ausbruch (Tagesvolumen >= 2x 20-Tage-Mittel)",
+                  (v) => v.volumeBreakout),
+  rankedQuestion("strongestMomentum12M", "Staerkstes Momentum (12 Monate)",
+                 "returns.12M", (v) => v.returns && v.returns["12M"], "desc"),
+  rankedQuestion("strongestMomentum6M", "Staerkstes Momentum (6 Monate)",
+                 "returns.6M", (v) => v.returns && v.returns["6M"], "desc"),
+  rankedQuestion("strongestMomentum12M1M", "Staerkstes Momentum (12 Monate ohne den letzten)",
+                 "return12M1M", (v) => v.return12M1M, "desc"),
+  rankedQuestion("strongestRelativeStrength12M",
+                 `Staerkste relative Staerke gegen ${BENCHMARK} (12 Monate)`,
+                 "relativeStrength.12M", (v) => v.relativeStrength && v.relativeStrength["12M"], "desc"),
+  rankedQuestion("trendAcceleration", "Trendbeschleunigung (1M gegen 3M)",
+                 "momentumAcceleration", (v) => v.momentumAcceleration, "desc"),
+  rankedQuestion("highVolatility", "Hoechste Volatilitaet (60 Tage, annualisiert)",
+                 "volatility60d", (v) => v.volatility60d, "desc"),
+  rankedQuestion("lowVolatility", "Niedrigste Volatilitaet (60 Tage, annualisiert)",
+                 "volatility60d", (v) => v.volatility60d, "asc"),
+  rankedQuestion("nearest52wHigh", "Geringster Abstand zum 52-Wochen-Hoch",
+                 "distanceTo52wHigh", (v) => v.distanceTo52wHigh, "desc"),
+  rankedQuestion("deepestDrawdown", "Groesster Rueckgang im letzten Jahr",
+                 "maxDrawdown252d", (v) => v.maxDrawdown252d, "asc")
+];
+
+mkdirSync(OUT_DIR, { recursive: true });
+
+const provenance = {
+  generatedAt: new Date().toISOString(),
+  gate: GATE,
+  universeSource: universe.universeSource || null,
+  universeFile: universe.universeFile || null,
+  provider: "tiingo",
+  engine: MarketFactors.VERSION,
+  benchmark: benchmark ? {
+                           id: benchmark.id, bars: benchmark.bars, last: benchmark.last,
+                           returnBasis: benchmark.returnBasis, priceSource: benchmark.priceSource,
+                           /* Unter welcher Deklaration die Vergleichsreihe im
+                              Bestand liegt, und - falls ihre bereinigte
+                              Spalte widerlegt wurde - warum. Ohne diese
+                              Angabe liest sich eine rekonstruierte Reihe wie
+                              eine vom Anbieter bestaetigte. */
+                           adjustmentStatus: benchmark.adjustmentStatus,
+                           adjustmentClaim: benchmark.adjustmentClaim,
+                           /* DIE FRISCHE DER VERGLEICHSREIHE
+
+                              Ein Benchmark, der hinter den Titeln
+                              zurueckliegt, ist kein fehlender Benchmark -
+                              er ist ein falscher. Die relative Staerke
+                              verglich sonst Kursbewegung bis heute gegen
+                              einen Index von vorletzter Woche und wies
+                              die Differenz als Vorsprung aus.
+
+                              Deshalb steht hier, wie viele Titel ihre
+                              relative Staerke deswegen NICHT bekommen
+                              haben. Null ist die Aussage "der Vergleich
+                              trug"; alles andere nennt den Preis. */
+                           maxLagSessions: MarketFactors.MAX_BENCHMARK_LAG_SESSIONS,
+                           newestSecurityDate: benchmarkFreshness.newestSecurityDate,
+                           lagBehindNewestSessions: benchmarkFreshness.maxLagSessions,
+                           securitiesWithoutRelativeStrength: benchmarkFreshness.staleSecurities,
+                           state: benchmarkFreshness.staleSecurities > 0 ? "STALE" : "CURRENT"
+                         }
+                       : { id: BENCHMARK, status: "SOURCE_MISSING",
+                           note: "Keine Benchmarkreihe in der Arbeitsablage. Relative Staerke " +
+                                 "bleibt fuer alle Titel leer." },
+  run: {
+    source: process.env.GITHUB_ACTIONS ? "github-actions" : "local",
+    runId: process.env.GITHUB_RUN_ID || null,
+    commit: process.env.GITHUB_SHA || null,
+    runtimeMs, msPerSymbol: rows.length ? Math.round(runtimeMs / rows.length) : null
+  },
+  redistribution: {
+    priceLevels: "WITHHELD",
+    note: "Absolute Kursniveaus (SMA-Werte, 52-Wochen-Hoch/Tief, letzter Kurs) sind " +
+          "Anbieterkurse und bleiben in der Arbeitsablage. Ausgeliefert werden Zustaende, " +
+          "Abstaende und Renditen."
+  }
+};
+
+const coverage = {
+  requested: universe.securities.length,
+  computed: rows.length,
+  skipped: skipped.length,
+  skippedByReason: skipped.reduce((acc, s) => {
+    acc[s.reason] = (acc[s.reason] || 0) + 1; return acc;
+  }, {}),
+  fieldCoverage
+};
+
+/* Die Deckungsbilanz wird IMMER ausgeliefert. Sie ist klein, sie beantwortet
+   "wie viele Titel tragen SMA200", und der Gesundheitsbericht liest sie. */
+/* Der Canary bleibt IMMER im ausgelieferten Bericht (§12).
+
+   Fuenf Zeilen kosten nichts, und ohne sie ist "der Canary ist sauber"
+   eine Behauptung: die Faktorzeilen sind genau das, woran sich ein
+   Rueckschritt bei SMA, Momentum oder relativer Staerke zeigen wuerde. */
+const canarySymbols = (SCALE.canary && SCALE.canary.symbols) || [];
+const canaryRows = rows.filter((r) => canarySymbols.includes(r.ticker));
+
+const summaryFile = join(OUT_DIR, `factors-${GATE}-summary.json`);
+const detailInRepo = rows.length <= DETAIL_LIMIT;
+writeFileSync(summaryFile, JSON.stringify(Object.assign({}, provenance, {
+  coverage,
+  skipped,
+  detail: detailInRepo
+    ? { location: "repository", file: `quant/data/market/factors/factors-${GATE}.json`,
+        symbols: rows.length }
+    : { location: "workingStore",
+        file: join(WORK_DIR || join(root, SCALE.storage.workingDir),
+                   "tiingo", "factors", `factors-${GATE}.json`).replace(root + "/", ""),
+        symbols: rows.length,
+        canaryAlwaysIncluded: canaryRows.map((r) => r.ticker),
+        reason: `Mehr als ${DETAIL_LIMIT} Titel. Die Einzelzeilen bleiben in der ` +
+                `Arbeitsablage; ausgeliefert werden Deckungsbilanz, Screener und der ` +
+                `Canary-Satz (§12, §26).` },
+  /* Der Regressionssatz, immer mitgeliefert. */
+  canary: canaryRows
+}), null, 2) + "\n");
+
+/* Kompakt, nicht eingerueckt: die Detaildatei ist das groesste Artefakt der
+   Seite (Quant-Screener laedt sie ganz). Die Einrueckung machte 30 % ihrer
+   Groesse aus (27,55 MB eingerueckt, 19,28 MB kompakt, 02.10.2026) und hat das
+   Ressourcenbudget des Screeners gerissen. Inhalt und Feldreihenfolge bleiben
+   gleich. */
+const detailPayload = JSON.stringify(Object.assign({}, provenance, {
+  coverage, skipped, securities: rows
+})) + "\n";
+
+let detailFile;
+if (detailInRepo) {
+  detailFile = join(OUT_DIR, `factors-${GATE}.json`);
+} else {
+  detailFile = join(WORK_DIR || join(root, SCALE.storage.workingDir),
+                    "tiingo", "factors", `factors-${GATE}.json`);
+  mkdirSync(dirname(detailFile), { recursive: true });
+  /* Eine frueher ausgelieferte Einzelzeile wieder entfernen: sonst bleibt
+     ein alter, kleinerer Stand im Repository stehen und sieht aus wie der
+     aktuelle. */
+  const stale = join(OUT_DIR, `factors-${GATE}.json`);
+  if (existsSync(stale)) rmSync(stale);
+}
+writeFileSync(detailFile, detailPayload);
+
+writeFileSync(join(OUT_DIR, `screener-${GATE}.json`), JSON.stringify(Object.assign({}, provenance, {
+  universeSize: universe.securities.length,
+  evaluable: rows.length,
+  notEvaluable: skipped.length,
+  note: "Jede Frage traegt drei Zahlen: Treffer, Nichttreffer und nicht entscheidbar. " +
+        "Die dritte ist die wichtigste - ohne sie liest sich eine Luecke wie ein Befund.",
+  questions
+}), null, 2) + "\n");
+
+console.log("\n  Screener:");
+questions.forEach((q) => {
+  if (q.kind === "boolean") {
+    console.log(`    ${q.id.padEnd(24)} ${String(q.matched).padStart(5)} Treffer, ` +
+                `${String(q.notMatched).padStart(5)} nein, ${String(q.notEvaluable).padStart(5)} n/a`);
+  } else {
+    console.log(`    ${q.id.padEnd(24)} ${String(q.evaluated).padStart(5)} bewertbar, ` +
+                `${String(q.notEvaluable).padStart(5)} n/a` +
+                (q.top.length ? `  Spitze: ${q.top[0].ticker}` : ""));
+  }
+});
+/* Die Frische der Vergleichsreihe gehoert in die Zusammenfassung des
+   Laufs, nicht nur ins Artefakt: ein Benchmark, der zurueckliegt, kostet
+   Titel ihre relative Staerke, und das soll man sehen, ohne eine Datei
+   zu oeffnen. */
+if (benchmark) {
+  if (benchmarkFreshness.staleSecurities > 0) {
+    console.log(`\n  Vergleichsreihe zu alt: ${benchmark.id} endet am ${benchmark.last}, ` +
+      `juengster Titel am ${benchmarkFreshness.newestSecurityDate} ` +
+      `(${benchmarkFreshness.maxLagSessions} Sitzungen). ` +
+      `${benchmarkFreshness.staleSecurities} Titel ohne relative Staerke.`);
+  } else {
+    console.log(`\n  Vergleichsreihe aktuell: ${benchmark.id} bis ${benchmark.last}.`);
+  }
+}
+
+console.log(`\n  ${summaryFile.replace(root + "/", "")}`);
+console.log(`  ${detailFile.replace(root + "/", "")}` +
+            (detailInRepo ? "" : "   (Arbeitsablage - zu gross fuer die Auslieferung)"));
+console.log(`  ${join(OUT_DIR, `screener-${GATE}.json`).replace(root + "/", "")}`);
+console.log("\nFertig.");

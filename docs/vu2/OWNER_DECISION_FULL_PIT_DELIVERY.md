@@ -1,0 +1,70 @@
+# Decision boundary: full canonical fundamental history and PIT delivery
+
+Status 2026-09-19: Owner clarified that PIT, restatements and complete revisions
+are internal Vision Universe infrastructure. Normal product views consume
+materialized Product Data; they do not require a freely accessible PIT/R2 API or
+Vercel R2 credentials. Implementation evidence is recorded in
+`PHASE_PIT_ADAPTER_SCOPE.md`.
+
+This is a bounded remaining requirement, not a claim that the whole build is blocked.
+No additional service or secret is activated by this document or PR118.
+
+## Evidence from current committed artifacts
+
+- quant/data/fundamentals/persistence.json, generated2026-09-19:5,480persisted
+  factbooks,5,337PIT histories,639,862,725stored bytes in the existing R2 prefix.
+  Versions:5,433normalization1.9.0 and47normalization1.10.0. These are recorded
+  pipeline measurements, not a new independent R2 read.
+- Current daily health2026-09-19:9factbooks updated; R2 persistence and reload
+  without SEC refetch PASS. Full sources retain versions and PIT fields.
+- Existing committed SEC consumer is a separate bounded delivery projection:
+  5,067files, latest-as-of snapshot, default eight quarters. It has no complete
+  revision chain or acceptance-time history. Example TSLA consumer is generated
+  2026-09-14, normalization1.6.0. Serving that snapshot does NOT imply current
+  R2 contents have been integrated. UI now states the actual preparation date.
+- PR118 only exposes those existing standalone quarter facts with provenance;
+  it does not regenerate them, alter SEC normalization, supply full lifetime
+  history, or certify PIT. Older consumer/source refresh remains an explicit gap.
+- Full consumer files alone still use13,959,164bytes when compressed per issuer;
+  complete stored R2 factbooks are substantially larger. The8MiB release gate is
+  unchanged. This does not preclude small projections; PR118 demonstrates those.
+
+## Precisely missing capability
+
+A professional research/backtest request for an arbitrary security and historical
+as-of instant must select the canonical revision and availability timestamp then
+known, across the full history. A latest-known eight-quarter snapshot cannot
+recover removed revisions or acceptance timestamps. Current compact issuer shards
+only describe coverage, not the complete historical facts. Do not infer PIT from
+filing-date granularity or relabel current values as historically available.
+
+## Internal retained-adapter decision
+
+Reuse the retained PR111 read-only Python projection
+(`scripts/vu2/fundamentals-serving.py`,
+`scripts/vu2/fundamentals-r2-adapter.py`, `server/r2_reader.py`) only inside
+Vision Universe processing and future explicitly authorized jobs.
+Its projection delegates to the existing SEC PeriodResolver and verifies the
+existing R2 index/object digest. R2 remains the only historical source of truth.
+Do not activate the parked History/Intraday/Realtime API alternatives. Existing
+canonical series, snapshots and Cloudflare live relay stay unchanged. Discovery
+stays unchanged.
+
+The normal path remains: canonical SEC/R2/PIT -> internal processing -> materialized
+Product Data -> existing frontend delivery. Vercel is not required for that path.
+This is not a request for Tiingo licensing, a request to raise8MiB, or a request
+for new or transferred secrets.
+
+## Conditions before any future on-demand activation
+
+Atlas Deep Dive, targeted PIT queries or individual Strategy/Backtest jobs require
+a separate product decision. Revalidate identity/as-of semantics, authenticated
+caller scope, caching, decompression, concurrency and budget before activation.
+Do not enable unrestricted historical exports or duplicate credentials. If paid
+capacity is required, stop for Owner approval. Production smoke and negative tests
+remain mandatory for that later on-demand feature.
+
+The current decision is artifact delivery with internal PIT processing. The former
+Production R2-secret/public-endpoint blocker does not apply to the standard product
+path. No implementation of a new serving path should precede a later explicit
+on-demand decision.

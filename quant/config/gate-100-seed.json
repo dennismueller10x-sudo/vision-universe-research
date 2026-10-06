@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "gate": "GATE_100",
+  "createdAt": "2026-09-09",
+  "provenance": "CURATED_SEED",
+  "purpose": "Ein realistisches, diversifiziertes 100-Aktienuniversum fuer GATE_100 (§9). Bewusst kuratiert und nicht algorithmisch gezogen: Sektor und Branche stehen in Tiingos Tickerliste nicht (siehe quant/data/market/universe/summary.json, coverageGaps.sector), und eine Sektorverteilung laesst sich ohne Sektorangabe nicht aus dem Anbieteruniversum ableiten. Die Sektorzuordnung unten ist deshalb ausdruecklich CURATED und keine Anbieterangabe.",
+
+  "boundary": "Diese Liste ist eine AUSWAHL von 100 Titeln, kein hart kodiertes Universum. Das Universum selbst kommt aus scripts/market/build-market-universe.mjs. Jeder Titel hier muss sich im Anbieteruniversum als screenerfaehige Aktie wiederfinden - wer das nicht tut, faellt heraus und wird durch einen Ersatz aus demselben Sektor ersetzt. GATE_500 und darueber werden regelbasiert aus dem Anbieteruniversum gezogen, nicht kuratiert.",
+
+  "canaryIncluded": ["AAPL", "MSFT", "NVDA", "JPM", "XOM"],
+  "canaryNote": "Die Golden Five sind enthalten, weil ein Gate ohne sie den Canary-Vergleich verlieren wuerde. Sie zaehlen ausdruecklich nicht als Qualitaetsbeweis fuer die uebrigen 95.",
+
+  "sectors": {
+    "Technology": {
+      "target": 18,
+      "tickers": ["AAPL", "MSFT", "NVDA", "AVGO", "CSCO", "ORCL", "CRM", "ADBE", "AMD",
+                  "INTC", "TXN", "QCOM", "IBM", "ACN", "NOW", "INTU", "AMAT", "MU"],
+      "alternates": ["ADI", "LRCX", "KLAC", "PANW", "SNPS"]
+    },
+    "Financials": {
+      "target": 14,
+      "tickers": ["JPM", "BAC", "WFC", "GS", "MS", "C", "BLK", "SCHW", "AXP",
+                  "USB", "PNC", "TFC", "CB", "MMC"],
+      "alternates": ["AON", "AIG", "MET", "PRU", "BK"]
+    },
+    "Health Care": {
+      "target": 13,
+      "tickers": ["JNJ", "UNH", "PFE", "MRK", "ABBV", "LLY", "TMO", "ABT", "AMGN",
+                  "GILD", "BMY", "CVS", "MDT"],
+      "alternates": ["ISRG", "SYK", "BSX", "ZTS", "REGN"]
+    },
+    "Consumer Discretionary": {
+      "target": 11,
+      "tickers": ["AMZN", "TSLA", "HD", "MCD", "NKE", "LOW", "SBUX", "TJX", "BKNG",
+                  "GM", "F"],
+      "alternates": ["ORLY", "ROST", "YUM", "DHI", "MAR"]
+    },
+    "Consumer Staples": {
+      "target": 9,
+      "tickers": ["PG", "KO", "PEP", "WMT", "COST", "PM", "MO", "CL", "GIS"],
+      "alternates": ["KMB", "SYY", "KHC", "STZ", "HSY"]
+    },
+    "Industrials": {
+      "target": 12,
+      "tickers": ["CAT", "BA", "HON", "UNP", "GE", "MMM", "LMT", "RTX", "DE",
+                  "UPS", "FDX", "EMR"],
+      "alternates": ["NOC", "GD", "CSX", "NSC", "ETN"]
+    },
+    "Energy": {
+      "target": 8,
+      "tickers": ["XOM", "CVX", "COP", "SLB", "EOG", "PSX", "VLO", "OXY"],
+      "alternates": ["MPC", "HAL", "DVN", "WMB", "KMI"]
+    },
+    "Utilities": {
+      "target": 7,
+      "tickers": ["NEE", "DUK", "SO", "D", "AEP", "EXC", "XEL"],
+      "alternates": ["SRE", "PEG", "ED", "WEC", "ES"]
+    },
+    "Real Estate": {
+      "target": 8,
+      "tickers": ["AMT", "PLD", "CCI", "EQIX", "SPG", "PSA", "O", "WELL"],
+      "alternates": ["DLR", "AVB", "EQR", "VTR", "SBAC"]
+    }
+  }
+}

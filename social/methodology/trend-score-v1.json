@@ -1,0 +1,30 @@
+{
+  "id": "vu-trend-score",
+  "version": "1.0.0",
+  "changedAt": "2026-09-15",
+  "note": "Gewichte des VU Trend Score. Versioniert, weil die Learning Engine sie aendern darf (§21) — eine Aenderung ist dann eine neue Version mit Begruendung, kein stilles Ueberschreiben.",
+  "minimumCoverage": 0.5,
+  "minimumCoverageNote": "Unter dieser Abdeckung gibt es KEINE Zahl, sondern UNAVAILABLE. Ein Trend Score aus zwei von zwoelf Dimensionen ist eine Behauptung, keine Messung (§45).",
+  "requiredDimensions": ["velocity", "freshness"],
+  "requiredDimensionsNote": "Ohne Geschwindigkeit und Frische ist es kein Trend, sondern ein Thema.",
+  "weights": {
+    "velocity": 0.14,
+    "acceleration": 0.12,
+    "engagement": 0.10,
+    "freshness": 0.09,
+    "crossPlatform": 0.08,
+    "marketRelevance": 0.11,
+    "vuRelevance": 0.11,
+    "audienceFit": 0.08,
+    "novelty": 0.06,
+    "saturation": 0.05,
+    "credibility": 0.04,
+    "risk": 0.02
+  },
+  "inverted": ["saturation", "risk"],
+  "invertedNote": "Saettigung und Risiko wirken mindernd: ein hoher Rohwert senkt den Score.",
+  "halfLifeHours": 18,
+  "halfLifeNote": "Frische zerfaellt exponentiell. 18 Stunden ist die Groessenordnung eines Handelstages plus Abend.",
+  "saturationThreshold": 3,
+  "saturationThresholdNote": "Ab wie vielen eigenen Beitraegen zum selben Thema im Fenster die Saettigung zu greifen beginnt."
+}

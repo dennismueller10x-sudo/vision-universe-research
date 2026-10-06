@@ -1,0 +1,69 @@
+{
+  "methodologyVersion": "trust-score-v1.0.0",
+  "label": "VU Backtest Trust Score V1",
+  "scale": [0, 100],
+  "purpose": "Der Trust Score bewertet die methodische Qualitaet eines Backtests, nicht seine Rendite. Ein optisch starkes Ergebnis mit methodischen Maengeln darf keinen hohen Trust Score erhalten.",
+  "blocks": {
+    "dataIntegrity": {
+      "label": "Data Integrity",
+      "points": 35,
+      "checks": {
+        "pointInTimeFundamentals": { "points": 12, "label": "Point-in-Time-Fundamentaldaten" },
+        "delistedSecurities":      { "points": 7,  "label": "Delistete Titel im historischen Universum" },
+        "originalVsRestated":      { "points": 6,  "label": "Original- statt rueckwirkend korrigierter Daten" },
+        "corporateActions":        { "points": 5,  "label": "Corporate Actions beruecksichtigt" },
+        "historicalUniverse":      { "points": 5,  "label": "Historische Universumszugehoerigkeit" }
+      }
+    },
+    "executionRealism": {
+      "label": "Execution Realism",
+      "points": 20,
+      "checks": {
+        "transactionCosts":   { "points": 7, "label": "Transaktionskosten" },
+        "slippage":           { "points": 5, "label": "Slippage" },
+        "liquidityConstraints": { "points": 5, "label": "Liquiditaetsgrenzen" },
+        "executionTiming":    { "points": 3, "label": "Ausfuehrung nach Signalzeitpunkt" }
+      }
+    },
+    "statisticalValidation": {
+      "label": "Statistical Validation",
+      "points": 30,
+      "checks": {
+        "outOfSample":       { "points": 10, "label": "Out-of-Sample- / Walk-Forward-Abschnitt" },
+        "parameterRobustness": { "points": 7, "label": "Parameter-Sensitivitaet geprueft" },
+        "multipleTesting":   { "points": 7, "label": "Multiple Testing / Deflated Sharpe / PBO" },
+        "crossPeriod":       { "points": 6, "label": "Teilperioden- bzw. Cross-Market-Validierung" }
+      }
+    },
+    "sampleQuality": {
+      "label": "Sample Quality",
+      "points": 15,
+      "checks": {
+        "historyLength":  { "points": 6, "label": "Historie ueber mehrere Marktzyklen" },
+        "observations":   { "points": 4, "label": "Ausreichende Zahl an Beobachtungen" },
+        "breadth":        { "points": 5, "label": "Breite und Turnover-Qualitaet" }
+      }
+    }
+  },
+  "hardCaps": [
+    { "id": "noPointInTime",   "condition": "pointInTimeFundamentals === false", "maxScore": 60, "label": "Keine Point-in-Time-Fundamentaldaten" },
+    { "id": "noDelisted",      "condition": "delistedSecurities === false",      "maxScore": 70, "label": "Keine delisteten Titel im Universum" },
+    { "id": "optimizedNoOos",  "condition": "userOptimized && !outOfSample",     "maxScore": 75, "label": "Optimierte Strategie ohne Out-of-Sample-Validierung" },
+    { "id": "neverInvested",   "condition": "everInvested === false",           "maxScore": 5,  "label": "Es wurde nie eine Position gehalten - kein Testergebnis" },
+    { "id": "mostlyCash",      "condition": "timeInvestedPct < 50",             "maxScore": 40, "label": "Ueberwiegend Barmittel statt investierter Strategie" }
+  ],
+  "sampleQualityThresholds": {
+    "historyFullPointsYears": 15,
+    "historyPartialPointsYears": 8,
+    "observationsFullPoints": 40,
+    "observationsPartialPoints": 16,
+    "breadthFullPointsPositions": 20,
+    "breadthMaxAnnualTurnoverPct": 400
+  },
+  "ratingBands": [
+    { "min": 85, "label": "Hohe methodische Guete" },
+    { "min": 70, "label": "Solide, mit benannten Einschraenkungen" },
+    { "min": 50, "label": "Eingeschraenkt belastbar" },
+    { "min": 0,  "label": "Nicht als Evidenz geeignet" }
+  ]
+}

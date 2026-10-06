@@ -1,0 +1,177 @@
+{
+  "methodologyVersion": "technical-v1.0.0",
+  "label": "VU Technical Intelligence V1",
+  "purpose": "Alle Parameter, Schwellen und Gewichte der Technical-Intelligence-Engines. Keine Magic Numbers im Code. Alle Zahlen sind Designparameter (Methodology Contract), keine wissenschaftlichen Konstanten und keine Wahrscheinlichkeiten.",
+  "priceSeries": {
+    "technical": "SPLIT_ADJUSTED",
+    "totalReturnMomentum": "TOTAL_RETURN",
+    "audit": "RAW",
+    "rule": "Pivots, Struktur, Support/Resistance, Fibonacci, Elliott und alle Preislevel rechnen ausschliesslich auf SPLIT_ADJUSTED. TOTAL_RETURN nur fuer Performance/Total-Return-Momentum. RAW nur fuer Corporate-Action-Audit und Execution-Replay."
+  },
+  "timeframes": {
+    "supported": ["1m", "5m", "15m", "30m", "1h", "4h", "1D", "1W", "1M"],
+    "foundation": "1D",
+    "aggregationVersion": "tf-agg-1.0.0",
+    "sessionPolicy": {
+      "policyId": "XNYS-regular-v1",
+      "exchange": "XNYS",
+      "timezone": "America/New_York",
+      "sessionStart": "09:30",
+      "sessionEnd": "16:00",
+      "fourHourAnchor": "SESSION_START",
+      "fourHourBars": ["09:30-13:30", "13:30-16:00 (partial, sessionClose)"],
+      "weekClose": "last trading day of ISO week",
+      "monthClose": "last trading day of calendar month",
+      "note": "4h ist kein neutrales Intervall. Bar-Grenzen entstehen aus Session-Start und Boerdenkalender, nicht aus UTC-Vielfachen."
+    }
+  },
+  "features": {
+    "featureVersion": "features-1.0.0",
+    "atrPeriod": 14,
+    "realizedVolWindow": 20,
+    "realizedVolLongWindow": 60,
+    "smaPeriods": [20, 50, 200],
+    "emaPeriods": [20, 50],
+    "rsiPeriod": 14,
+    "macd": { "fast": 12, "slow": 26, "signal": 9 },
+    "rocPeriods": [10, 21],
+    "rollingWindow": 20,
+    "yearWindow": 252,
+    "volumeWindow": 20,
+    "volumeLongWindow": 60,
+    "regressionWindow": 60,
+    "adxPeriod": 14,
+    "momentumHorizons": { "1M": 21, "3M": 63, "6M": 126, "12M": 252 },
+    "annualizationFactor": 252
+  },
+  "pivots": {
+    "engineVersion": "pivot-1.0.0",
+    "method": "causal volatility-adaptive ZigZag state machine; threshold D_t = max(P_t * minPct, kAtr * ATR_t)",
+    "scales": [
+      { "scaleId": "scale-1", "kAtr": 1.5, "minPct": 0.02, "label": "fein" },
+      { "scaleId": "scale-2", "kAtr": 3.0, "minPct": 0.04, "label": "minor" },
+      { "scaleId": "scale-3", "kAtr": 5.0, "minPct": 0.08, "label": "intermediate" },
+      { "scaleId": "scale-4", "kAtr": 8.0, "minPct": 0.15, "label": "major" }
+    ],
+    "setupScaleId": "scale-2",
+    "contextScaleId": "scale-3",
+    "warmupBars": 14,
+    "note": "ATR-Multiplikatoren sind Sensitivitaets-Designparameter, keine per Backtest optimierten Werte. pivotTime ist das tatsaechliche Extrem, confirmedAt die Bar, an der die Gegenbewegung die Schwelle ueberschritt."
+  },
+  "structure": {
+    "engineVersion": "structure-1.0.0",
+    "toleranceAtr": 0.25,
+    "bosBufferAtr": 0.1,
+    "rangeMaxSpanAtr": 1.5,
+    "rangeMinPivots": 4,
+    "compressionSwings": 3,
+    "sweepBufferAtr": 0.1,
+    "note": "Break of Structure ist close-basiert (Close > letztes bestaetigtes Strukturhoch + Buffer). Structure Change (formal: Close-Bruch des letzten bestaetigten Strukturtiefs bei zuvor bullischer Struktur) ersetzt CHoCH-Narrative."
+  },
+  "trend": {
+    "engineVersion": "trend-1.0.0",
+    "weights": { "maState": 0.35, "regressionSlope": 0.25, "persistence": 0.20, "highProximity": 0.10, "directionalStrength": 0.10 },
+    "bullishAbove": 65,
+    "bearishBelow": 35,
+    "persistenceWindow": 63,
+    "slopeAtrWindow": 20,
+    "note": "Score = Methodology Score 0-100, keine Wahrscheinlichkeit. Schwellen 65/35 sind versionierte Designparameter."
+  },
+  "momentum": {
+    "engineVersion": "momentum-1.0.0",
+    "horizonWeights": { "1M": 0.15, "3M": 0.30, "6M": 0.30, "12M": 0.25 },
+    "zClamp": 3,
+    "explanatoryOnly": ["rsi14", "macd"],
+    "note": "Kern-Momentum = direkte Multi-Horizon-Log-Returns, volatilitaetsstandardisiert. RSI/MACD werden dargestellt, erhalten aber keinen eigenen Confluence-Vote (Double Counting)."
+  },
+  "relativeStrength": {
+    "engineVersion": "rs-1.0.0",
+    "horizons": { "1M": 21, "3M": 63, "6M": 126, "12M": 252 },
+    "horizonWeights": { "1M": 0.15, "3M": 0.30, "6M": 0.30, "12M": 0.25 },
+    "ratioTrendWindow": 63,
+    "scaleAbs": 0.25
+  },
+  "volatility": {
+    "engineVersion": "volatility-1.0.0",
+    "percentileWindow": 252,
+    "compressionBelowPercentile": 20,
+    "expansionAbovePercentile": 80,
+    "regime": { "lowBelowPercentile": 25, "highAbovePercentile": 75 }
+  },
+  "volume": {
+    "engineVersion": "volume-1.0.0",
+    "dryUpBelow": 0.6,
+    "dryUpBars": 5,
+    "breakoutAbove": 1.5,
+    "expansionAbove": 1.3,
+    "trendWindow": 20,
+    "trendLongWindow": 60
+  },
+  "supportResistance": {
+    "engineVersion": "sr-1.0.0",
+    "scaleWeights": { "scale-1": 0.5, "scale-2": 1.0, "scale-3": 2.0, "scale-4": 3.5 },
+    "recencyHalfLifeBars": 504,
+    "bandwidthAtr": 0.75,
+    "minZoneHalfWidthAtr": 0.25,
+    "touchCooldownBars": 5,
+    "maxZones": 12,
+    "brokenBufferAtr": 0.5,
+    "gapMinAtr": 0.5,
+    "note": "Keine manuellen Linien. Zonen entstehen aus gewichtetem 1-D-Clustering bestaetigter Pivots (Log-Preis, ATR-normalisierte Bandbreite), Gaps und Periodenleveln. Zonenkern = gewichteter Median."
+  },
+  "fibonacci": {
+    "engineVersion": "fib-1.0.0",
+    "role": "AUXILIARY",
+    "retracements": [0.236, 0.382, 0.5, 0.618, 0.786],
+    "extensions": [1.0, 1.272, 1.618, 2.618],
+    "clusterToleranceAtr": 0.5,
+    "anchorScales": ["scale-2", "scale-3"],
+    "note": "50 % ist ein konventionelles Half-Retracement, keine Fibonacci-Zahl. Anker sind ausschliesslich bestaetigte Pivot-Paare der Anker-Skalen; kein nachtraegliches Ausprobieren von Swing-Paaren."
+  },
+  "scenario": {
+    "engineVersion": "scenario-1.0.0",
+    "entryZoneMinWidthAtr": 0.5,
+    "entryZoneMaxWidthAtr": 2.0,
+    "invalidationBufferAtr": 0.5,
+    "retracementBand": [0.382, 0.618],
+    "deepRetracementBand": [0.618, 0.786],
+    "targetMinDistanceAtr": 1.0,
+    "projectionHorizonBars": 60,
+    "minRiskRewardForSetup": 1.5,
+    "maxEntryDistanceAtr": 4.0
+  },
+  "confluence": {
+    "engineVersion": "confluence-1.0.0",
+    "families": ["STRUCTURE", "TREND", "MOMENTUM", "RELATIVE_STRENGTH", "VOLATILITY", "VOLUME", "PRICE_ZONES", "PROJECTION_AUXILIARY"],
+    "conflictPenalty": 0.15
+  },
+  "opportunityScore": {
+    "scoreVersion": "tos-1.0.0",
+    "interpretation": "methodology_rank",
+    "maxContribution": {
+      "TREND_STRUCTURE": 30,
+      "MOMENTUM": 20,
+      "VOLUME": 10,
+      "VOLATILITY": 10,
+      "SETUP": 20,
+      "PROJECTION_AUXILIARY": 10
+    },
+    "bands": [
+      { "min": 80, "label": "Starkes Setup", "tone": "good" },
+      { "min": 60, "label": "Konstruktiv", "tone": "neutral" },
+      { "min": 40, "label": "Neutral", "tone": "neutral" },
+      { "min": 0, "label": "Schwach", "tone": "poor" }
+    ],
+    "note": "0-100 Methodology Rank. Keine Erfolgswahrscheinlichkeit. Fibonacci/Elliott sind auf 10 Punkte gekappt und koennen einen schwachen Trend-/Strukturzustand nicht kompensieren."
+  },
+  "display": {
+    "precisionPolicyVersion": "precision-1.0.0",
+    "rule": "Rundungsschritt aus ATR: step = 10^floor(log10(ATR/4)); nie feiner als Tick.",
+    "confidenceLabel": "Methodology Confidence",
+    "forbiddenPhrases": ["% Wahrscheinlichkeit", "% Chance", "garantiert", "sicher kaufen"]
+  },
+  "evidence": {
+    "minEffectiveSample": 30,
+    "sameBarPolicy": "conservative: stop before target when both hit within one daily bar"
+  }
+}

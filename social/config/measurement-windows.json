@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "note": "Wann eine Messung was bedeutet. Diese Zahlen sind eine Annahme ueber Instagram und keine Naturkonstante — sie stehen deshalb in der Konfiguration, und sobald genug eigene Messreihen vorliegen, lassen sie sich an ihnen pruefen statt zu glauben.",
+  "windows": [
+    { "id": "EARLY",       "fromHours": 0,   "purpose": "Betriebskontrolle: ist der Beitrag da, kommen ueberhaupt Zahlen an? Keine Aussage ueber Leistung." },
+    { "id": "PRELIMINARY", "fromHours": 24,  "purpose": "Erste Form erkennbar. Die Reichweite waechst noch deutlich." },
+    { "id": "SETTLING",    "fromHours": 72,  "purpose": "Die Kurve flacht ab. Vergleichbar untereinander, aber noch nicht final." },
+    { "id": "MATURE",      "fromHours": 168, "purpose": "Ab hier gilt die Messung als final. Nur MATURE-Messungen gehen ins Lernen." }
+  ],
+  "matureFromHours": 168
+}

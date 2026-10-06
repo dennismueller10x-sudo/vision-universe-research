@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "daily-lifecycle-health-1.0.0",
+  "auftrag": "Owner 18.09.2026 P0: ein Tageslauf, der den ueberwiegenden Teil des Universums nicht einmal fragt, darf nicht gruen sein",
+  "checkedAt": "2026-10-06T03:41:35.579Z",
+  "verdict": "PASS",
+  "reasons": [],
+  "universe": 6854,
+  "checked": 6854,
+  "checkedShare": 1,
+  "deferred": 0,
+  "deferredByClass": {},
+  "retriedAfterRejection": 0,
+  "recoveredAfterRejection": 0,
+  "requests": 6854,
+  "rejectionLedger": {
+    "offen": 3,
+    "PERMANENT_REJECT": 0,
+    "TEMPORARY_REJECT": 3,
+    "STALE_REJECT": 0
+  },
+  "dailyAsOf": "2026-10-05",
+  "dailyState": "LAST_SESSION",
+  "expectedSession": "2026-10-05",
+  "sessionsBehind": 0,
+  "thresholds": {
+    "geprueftMin": 0.6,
+    "geprueftWarn": 0.9,
+    "rueckstandWarn": 1,
+    "rueckstandFail": 2,
+    "registerAnteilFail": 0.5
+  }
+}

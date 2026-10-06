@@ -1,0 +1,104 @@
+# Discover Live-Rauchtest: die Browser-QA des kanonischen Discover und die
+# Live-Suite gegen die VEROEFFENTLICHTE Seite - plus der strenge
+# Freshness-Check. Seit der Discover-Konsolidierung gibt es nur noch EIN
+# Discover (/discover/); die frueheren Suiten V3, V4 und V4.1 prueften das
+# abgeloeste Discover-1-DOM und sind mit ihm entfallen. Nur per Hand startbar; schreibt nichts ins
+# Repository, laedt Screenshots als Artefakt hoch. Grund: die Abnahme muss
+# den ausgelieferten Stand pruefen, nicht den Arbeitsbaum.
+name: Discover Live-Rauchtest (Browser-QA gegen die veroeffentlichte Seite)
+
+on:
+  workflow_dispatch:
+    inputs:
+      site:
+        description: 'Basis-URL der veroeffentlichten Seite'
+        type: string
+        default: 'https://research.visionuniverse.de'
+
+permissions:
+  contents: read
+
+# Eingaben nur ueber env: - nie direkt in das Skript interpoliert (Script-Injection, Audit 03.10.2026).
+env:
+  IN_SITE: ${{ inputs.site }}
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Playwright (Chromium)
+        run: |
+          npm init -y > /dev/null
+          npm install --no-save --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
+          npx playwright install --with-deps chromium webkit
+
+      - name: Freshness der veroeffentlichten Seite (streng)
+        id: freshness
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          node scripts/market/check-freshness.mjs --strict --site="$IN_SITE" | tee smoke-freshness.txt
+
+      - name: Browser-QA Discover (Start, Welten, Suche, Feed, Aktienseite, Barrierefreiheit)
+        id: qa
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          node scripts/discover/browser-qa.mjs --url "$IN_SITE" --out smoke-shots/discover | tee smoke-qa.txt
+
+      - name: Browser-QA Live (Tagesverlauf, Frische, Zeitraeume, Verbraucher-Chart)
+        id: qalive
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          node scripts/discover/browser-qa-live.mjs "$IN_SITE" smoke-shots/live | tee smoke-qalive.txt
+
+      - name: Browser-QA Maerkte (Uebersicht, Markt jetzt, Pulse, Details; Chromium + WebKit)
+        id: qamaerkte
+        continue-on-error: true
+        run: |
+          # Beide Engines laufen immer - ein roter Chromium-Lauf darf den
+          # WebKit-Befund nicht verdecken. Rot, wenn eine der beiden rot ist.
+          set -o pipefail
+          chromium=0; webkit=0
+          node scripts/discover/browser-qa-maerkte.mjs --url "$IN_SITE" --out smoke-shots/maerkte --realtime | tee smoke-qamaerkte.txt || chromium=$?
+          node scripts/discover/browser-qa-maerkte.mjs --url "$IN_SITE" --out smoke-shots/maerkte --engine webkit | tee -a smoke-qamaerkte.txt || webkit=$?
+          test "$chromium" -eq 0 && test "$webkit" -eq 0
+
+      - name: Screenshots und Protokolle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: discover-live-smoke
+          path: |
+            smoke-shots
+            smoke-*.txt
+          if-no-files-found: ignore
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo "### Discover Live-Rauchtest gegen $IN_SITE"
+            echo ''
+            echo "| Pruefung | Ergebnis |"; echo "|---|---|"
+            echo "| Freshness (streng) | ${{ steps.freshness.outcome }} |"
+            echo "| Browser-QA Discover | ${{ steps.qa.outcome }} |"
+            echo "| Browser-QA Live | ${{ steps.qalive.outcome }} |"
+            echo "| Browser-QA Maerkte | ${{ steps.qamaerkte.outcome }} |"
+            for f in smoke-freshness.txt smoke-qa.txt smoke-qalive.txt smoke-qamaerkte.txt; do
+              echo ''; echo "#### $f"; echo '```'; tail -40 "$f" 2>/dev/null || echo "kein Ergebnis"; echo '```'
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Ergebnis
+        if: steps.freshness.outcome == 'failure' || steps.qa.outcome == 'failure' || steps.qalive.outcome == 'failure' || steps.qamaerkte.outcome == 'failure'
+        run: |
+          echo "::error::Live-Rauchtest nicht bestanden (siehe Zusammenfassung)."
+          exit 1

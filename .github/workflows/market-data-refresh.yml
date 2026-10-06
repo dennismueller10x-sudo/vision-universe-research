@@ -1,0 +1,549 @@
+name: Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)
+
+# Eigentuemerentscheidung 2026-09-13 - siehe quant/config/development-preview.json.
+# Holt und veroeffentlicht Tiingo-Tageskurse fuer den dort freigegebenen Umfang
+# (scopeUniverse = PRODUCT_UNIVERSE: der Company Master,
+# quant/data/market/security-master/eligibility.json - siehe scripts/market/universe-source.mjs):
+#   - Arbeitsablage (.market-cache) aus dem letzten Lauf, inkrementell nachgeladen
+#   - volle Historie fuer die fullHistory-Titel  -> quant/data/market/golden-preview/daily/
+#   - ein Jahr Tagesschluss fuer alle im Umfang  -> quant/data/market/discover-series/
+#   - Faktorzeilen fuer das ganze Universum      -> quant/data/market/factors/factors-FULL_UNIVERSE.json
+#   - Discover-Daten (Reihen, Startseite, Live-Umfang) -> discover/data/
+# Der Umfang steht nicht in diesem Workflow und in keinem Skript - nur in der
+# Konfiguration. Der Schluessel bleibt serverseitig (GitHub-Secret); er
+# erscheint nicht im Log, nicht im Bericht, nicht im Repository.
+#
+# Nachfolger von golden-five-market-data.yml (Phase 5, fuenf Titel). Der
+# Zeitplan laeuft nur auf dem Default-Branch; auf Entwicklungsbranches dient
+# ein Push mit der Marke `[market-data-refresh]` in der Commit-Nachricht als
+# Ausloeser - ohne Pfadfilter: die Marke ist das Tor, nicht die Datei.
+# Ohne Marke laeuft nichts.
+
+on:
+  workflow_dispatch:
+    inputs:
+      initial:
+        description: 'Erstimport (volle Historie ab initialFrom/historyFrom statt inkrementell)'
+        type: boolean
+        default: false
+  schedule:
+    # Taeglich nach dem US-Handelsschluss (16:00 New York = 20:00/21:00 UTC), um 22:30 UTC.
+    - cron: '30 22 * * 1-5'
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  # Je Zweig eine Gruppe: Laeufe auf claude/** stehen nicht mehr in der
+  # Warteschlange von main (eine neue wartende Anfrage verdraengt die
+  # aeltere wartende - auch eine uebersprungene). Audit 03.10.2026.
+  group: market-data-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      contains(github.event.head_commit.message, '[market-data-refresh]')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # EOD-Publish-Gates (quant/config/eod-publish-gates.json), Vorfall
+      # 18.-23.09.2026: die Regressionssuite lief erst NACH dem Abruf und
+      # verwarf viermal einen vollstaendigen Tageslauf. Jetzt:
+      #   A PRE_FETCH_CODE_REGRESSION   hier, vor jeder Anfrage - rot = kein Abruf
+      #   B POST_FETCH_DATA_INTEGRITY   nach dem Bau, vor dem Commit - rot = kein Commit
+      #   C NON_BLOCKING_OBSERVABILITY  nach dem Commit - rot = ::error, Lauf bleibt gruen
+      - name: 'Gate A: Code-Regression vor dem Abruf (rot = keine Provider-Anfrage)'
+        run: node scripts/market/run-eod-publish-gates.mjs --phase=pre
+
+      - name: Ist ein Zugang hinterlegt?
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -z "$TIINGO_API_KEY" ]; then
+            echo "Kein TIINGO_API_KEY hinterlegt. Ohne Zugang wird nichts abgerufen oder veroeffentlicht."
+            exit 1
+          fi
+          echo "Zugang vorhanden."
+
+      # Die Arbeitsablage zwischen Laeufen erhalten: der zweite Lauf laedt nur
+      # die Tage seit dem ersten nach. Eigener Schluessel, damit der 7-GB-Stand
+      # des Skalierungs-Workflows (volle Historie ab 1990) hier nicht landet.
+      - name: Arbeitsablage aus dem letzten Lauf holen
+        id: restore
+        uses: actions/cache/restore@v4
+        with:
+          path: .market-cache
+          key: discover-market-cache-${{ github.run_id }}
+          restore-keys: |
+            discover-market-cache-
+
+      - name: Universumsquelle
+        run: node scripts/market/universe-source.mjs
+
+      # Vor dem Abruf: wer steht im Ablehnungsregister und warum noch? Der
+      # Bericht laeuft auch dann, wenn nichts zu tun ist - ein leeres
+      # Register ist eine Aussage, kein Schweigen.
+      - name: Ablehnungsregister klassifizieren (Bericht)
+        run: node scripts/market/classify-rejections.mjs
+
+      - name: Faellige Ablehnungen freigeben (nur was die Ordnung erlaubt)
+        run: node scripts/market/classify-rejections.mjs --apply
+
+      - name: Tageskurse fuer das Produktuniversum (inkrementell) + kompakte Discover-Reihen
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node scripts/market/ingest-tiingo.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.initial) && '--initial' || '' }} \
+            --scope-from-preview --publish-preview --commercial --request-budget=7500 --concurrency=4
+
+      # SPY als BENCHMARK_REFERENCE (Owner-Entscheid 02.10.2026): die ganze
+      # Reihe ab 1990 in EINER Anfrage, mit einer einzigen Bereinigung. Der
+      # taegliche Anhang behaelt die adjustedClose-Skala des Abruftags und
+      # verliert damit jede spaetere Ausschuettung - fuer die Gesamtrendite
+      # des Vergleichs waere das falsch. Die volle Ablage fuehrt SPY danach
+      # mit (sync-history-store); das Produktuniversum bleibt unveraendert.
+      # Faellt die Pruefung durch, bleibt der Cache wie er ist und die
+      # Backtests bleiben geschlossen bei Kursrendite.
+      - name: Benchmark-Referenz SPY (volle Reihe, eine Bereinigung)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/refresh-benchmark-history.mjs --report "$RUNNER_TEMP/benchmark-refresh.json"
+
+      # Gesamtrendite-Vertrag fuer Aktien (Owner-Programm 02.10.2026): der
+      # taegliche Anhang behaelt die adjustedClose-Skala des Abruftags, also
+      # kommt jede spaetere Ausschuettung in der bereinigten Spalte nicht an.
+      # Dieselbe Pruefung wie fuer SPY (market-quality.js totalReturnVerdict)
+      # findet diese Reihen; fuer sie gibt es denselben vollen Abruf wie fuer
+      # SPY, juengste Luecke zuerst, hoechstens 1500 je Lauf (Commercial: 5.000/h). Uebernommen wird
+      # NUR die Gesamtrendite-Spalte auf den gespeicherten Tagen (Rohkurse,
+      # Volumen und Tagesmenge bleiben bitgleich), wenn die Reihe den Vertrag
+      # besteht und die Rohschluesse
+      # bestaetigt. Faellt etwas durch, bleibt die Reihe abgelehnt und rechnet
+      # in keinem Backtest als Gesamtrendite. Der Lauf wird davon nicht rot.
+      - name: Gesamtrendite-Reparatur (Aktien, voller Abruf nur bei Vertragsbruch)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          # Nur lesend: Rueckholung von Reihen, die die erste Fassung der
+          # Reparatur im Runner-Cache als Ganzes ersetzt hat.
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          node scripts/market/repair-total-return-history.mjs --max 1500 --report "$RUNNER_TEMP/total-return-repair.json"
+          node -e '
+            const r = require(process.env.RUNNER_TEMP + "/total-return-repair.json");
+            const l = ["### Gesamtrendite-Vertrag (Aktien)", "", "Zustand: " + r.state + (r.reason ? " (" + r.reason + ")" : ""),
+              "Vorher: " + JSON.stringify(r.before), "Nachher: " + JSON.stringify(r.after),
+              "Zurueckgeholt (erste Fassung): " + JSON.stringify(r.restoredFromDurable || {}), "Repariert: " + (r.repairedCount ?? 0) + " · fehlgeschlagen: " + (r.failedCount ?? 0) + " " + JSON.stringify(r.failReasons || {}) + " · offen: " + (r.remainingRepairable ?? r.repairable)];
+            require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY, l.join("\n") + "\n");
+          ' || true
+
+      # Ein Kuerzel ist keine Identitaet: der Anbieter fuehrt darunter die
+      # Kerzen jeder Firma, die es je trug (DINE 2010 und 2026 in einer
+      # Reihe). Nach Abruf und Reparatur, vor allen Ableitungen: jede Reihe
+      # auf ihr juengstes Listing kuerzen (Luecke > 365 Tage = neues
+      # Listing); der Push ersetzt so gekuerzte Reihen in der Ablage.
+      - name: Listing-Kontinuitaet (Kuerzel-Neuvergabe in der Reihe)
+        run: node scripts/market/guard-listing-continuity.mjs --public quant/data/market/listing-continuity-v1.json
+
+      # Der Benchmark ist ein Einzelpunkt, an dem die relative Staerke des
+      # GANZEN Universums haengt. Faellt er durch die Qualitaetspruefung,
+      # altert seine Reihe, und seit dem Frische-Gate verlieren damit alle
+      # Titel ihre relative Staerke - sichtbar, aber nur wenn jemand
+      # hinsieht. Diese Zeile sorgt dafuer, dass man hinsehen muss.
+      - name: Zustand der Vergleichsreihe
+        run: |
+          node -e '
+            const fs = require("fs");
+            const status = JSON.parse(fs.readFileSync("quant/data/market/tiingo-status.json", "utf8"));
+            const spy = (status.securities || {}).ref_SPY || (status.securities || {}).SPY || null;
+            const store = ".market-cache/tiingo/daily/ref_SPY.json";
+            const bars = fs.existsSync(store) ? JSON.parse(fs.readFileSync(store, "utf8")).bars : null;
+            const letzter = bars && bars.length ? bars[bars.length - 1].date : null;
+            let juengster = null;
+            const dir = ".market-cache/tiingo/daily";
+            if (fs.existsSync(dir)) {
+              for (const f of fs.readdirSync(dir).slice(0, 400)) {
+                try {
+                  const b = JSON.parse(fs.readFileSync(dir + "/" + f, "utf8")).bars;
+                  const d = b && b.length ? b[b.length - 1].date : null;
+                  if (d && (!juengster || d > juengster)) juengster = d;
+                } catch {}
+              }
+            }
+            console.log("Vergleichsreihe SPY");
+            console.log("  Abrufergebnis: " + JSON.stringify(spy));
+            console.log("  gespeichert bis: " + letzter);
+            console.log("  juengster Titel (Stichprobe 400): " + juengster);
+            /* Owner-Vorgabe vom 25.09.2026, Schritte 1 bis 3: gemessen statt
+               angenommen. Was die splitbereinigte Rekonstruktion braucht,
+               steht hier als Zahl - und wenn etwas fehlt, mit Namen. */
+            const payload = bars ? JSON.parse(fs.readFileSync(store, "utf8")) : null;
+            if (payload) {
+              const Series = require("./quant/engines/return-series.js");
+              const m = Series.splitAdjustedInputs(payload.bars);
+              console.log("  Deklaration: " + payload.adjustmentStatus);
+              console.log("  Rekonstruktionseingaben: " + JSON.stringify({
+                constructible: m.constructible, missing: m.missing, bars: m.bars,
+                first: m.first, last: m.last, splitEvents: m.splitEvents }));
+              if (payload.adjustmentClaim) {
+                console.log("  bereinigte Spalte widerlegt: " + JSON.stringify(payload.adjustmentClaim));
+              }
+              if (!m.constructible) {
+                console.log("  FEHLENDER EINGANG: " + m.missing.join(", ") +
+                            " - hier wird nichts improvisiert.");
+              }
+            }
+            if (letzter && juengster && letzter < juengster) {
+              console.log("  ZURUECK: die relative Staerke faellt damit universumsweit aus.");
+            } else if (letzter) {
+              console.log("  aktuell.");
+            }
+          '
+
+      - name: Faktorzeilen fuer das ganze Universum
+        run: node scripts/market/build-market-factors.mjs --gate FULL_UNIVERSE --product-universe
+
+      - name: Technical Intelligence + Elliott + SEC-Quant-Panel neu bauen (frische Kurse)
+        run: |
+          node scripts/technical/build-technical-data.mjs
+          node scripts/quant/build-sec-quant-panel.mjs
+
+      - name: Neu gebaute Daten stimmen mit den Engines ueberein
+        run: node scripts/technical/verify-technical-data.mjs
+
+      - name: Discover-Daten (Reihen, Startseite, Live-Umfang)
+        run: |
+          node scripts/discover/build-discover-data.mjs
+          node scripts/discover/verify-discover-data.mjs
+
+      - name: Capability Matrix je Instrument (Company Master x Marktdaten)
+        run: node scripts/market/build-capability-matrix.mjs
+
+      - name: Kompakte Product-Capability-Projektion fuer Quant 2.0
+        run: node scripts/vu2/build-product-capabilities.mjs
+
+      # Aktuelle SEC-SIC-Klassifikation auf die bereits gebauten Faktorzeilen
+      # projizieren. Das ist keine neue Quelle und keine historische Taxonomie:
+      # Backtests bleiben ohne datierte Klassifikationen fail-closed.
+      - name: Quant V2 Peer-Taxonomie (SEC SIC, nur aktueller Snapshot)
+        run: node scripts/quant/build-sic-peer-taxonomy.mjs
+
+      - name: Kein Schluessel im Statusbericht
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Freshness-Check (Health-Bericht, kein Abbruch)
+        run: node scripts/market/check-freshness.mjs
+
+      # Der Waechter aus dem Vorfall vom 18.09.2026: ein Lauf, der den
+      # ueberwiegenden Teil des Universums nicht einmal gefragt hat, ist
+      # nicht gruen - auch wenn kein Schritt rot war.
+      - name: Taeglicher Lebenszyklus - Gesundheitsurteil
+        run: node scripts/market/assert-daily-lifecycle-health.mjs --strict
+
+      # NACH dem Waechter, nicht davor: er schreibt selbst ein
+      # ausgeliefertes Artefakt (daily-lifecycle-health.json). Stand die
+      # Hygienepruefung davor, sah sie es nie - gefunden hat den Verstoss
+      # dann erst die Regressionssuite, nach 66 Minuten Abruf (Lauf
+      # 35349647216). Eine Pruefung, die die juengsten Artefakte des
+      # eigenen Laufs auslaesst, prueft die Haelfte.
+      - name: Public-Data-Hygiene - nur der deklarierte Umfang, nur mit Grundlage
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      # Gate B: nur Pruefungen, die die neuen Daten gegen einen Datenvertrag
+      # messen. Die uebrigen Testdateien liefen in Gate A auf demselben Code
+      # gruen; sie laufen nach dem Commit als Gate C erneut.
+      - name: 'Gate B: Data-Integrity der neuen Daten (rot = keine Veroeffentlichung)'
+        run: node scripts/market/run-eod-publish-gates.mjs --phase=integrity
+
+      - name: Ist ein Zugang zur dauerhaften Ablage hinterlegt?
+        id: history_store
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          # Fehlt ein Zugang, bleibt der Abgleich aus - und sagt es. Ein
+          # stiller Ausfall waere genau der Rueckstand, den dieser Schritt
+          # beseitigt.
+          ready=true
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then echo "::warning::$v fehlt - die dauerhafte Ablage wird nicht nachgezogen"; ready=false; fi
+          done
+          echo "ready=$ready" >> "$GITHUB_OUTPUT"
+
+      # DIE DAUERHAFTE ABLAGE NACHZIEHEN - der fehlende zweite Halbsatz.
+      #
+      # sync-history-store.mjs beschreibt seinen Vertrag selbst: "--pull
+      # Ablage -> .market-cache (vor Faktoren und Technical), --push
+      # .market-cache -> Ablage (nach dem Gate-Lauf)". Der Pull war in der
+      # Materialisierung verdrahtet, der Push nirgends. Folge, am 25.09.2026
+      # gemessen: die Produkt-Kursstruktur endet am 2026-09-10, der
+      # veroeffentlichte Kursstand am 2026-09-24 - bei 5.646 von 5.676
+      # Titeln dieselben ZEHN Handelstage Rueckstand. Der Abruf hielt seine
+      # frischen Bars nur im Actions-Cache; die Materialisierung liest die
+      # Ablage und sah sie nie.
+      #
+      # Steht bewusst NACH Gate B: was nicht veroeffentlicht werden darf,
+      # wird auch nicht dauerhaft abgelegt. Und vor dem Cache-Save, damit
+      # ein Abbruch hier nicht den frischen Stand verliert.
+      #
+      # Die Kosten rechnet die Vorpruefung, nicht dieser Schritt: ein
+      # DAILY_UPDATE schreibt ein Objekt je geaendertem Titel plus einen
+      # Index (~6.900 Class-A-Operationen, Decke 750.000 im Monat). Reicht
+      # das Budget nicht, bricht der Waechter mit "OWNER DECISION REQUIRED"
+      # ab - er rechnet sich seine Freigabe nicht selbst aus.
+      - name: Vorabrechnung fuer den Abgleich der dauerhaften Ablage
+        if: steps.history_store.outputs.ready == 'true'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/preflight-zero-cost.mjs --operation DAILY_UPDATE --gate FULL_UNIVERSE
+          --out "$RUNNER_TEMP/history-store-push-preflight.json"
+
+      - name: Dauerhafte Ablage auf den frischen Stand bringen
+        if: steps.history_store.outputs.ready == 'true'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --push --gate FULL_UNIVERSE --concurrency 16
+          --operation DAILY_UPDATE
+          --preflight "$RUNNER_TEMP/history-store-push-preflight.json"
+          --report "$RUNNER_TEMP/history-store-push.json"
+
+      # Was angekommen ist, wird gezaehlt und nicht angenommen: der Index
+      # der Ablage traegt je Titel den Zeitpunkt des dauerhaften Schreibens.
+      # Diese Zeile ist die Gegenprobe, an der der naechste Rueckstand
+      # auffaellt, bevor ihn ein Leser auf der Aktienseite sieht.
+      - name: Stand der dauerhaften Ablage
+        if: always() && steps.history_store.outputs.ready == 'true'
+        run: |
+          node -e '
+            const fs = require("fs");
+            const path = process.env.RUNNER_TEMP + "/history-store-push.json";
+            if (!fs.existsSync(path)) { console.log("kein Abgleichsbericht - der Schritt lief nicht."); process.exit(0); }
+            const r = JSON.parse(fs.readFileSync(path, "utf8"));
+            console.log("Abgleich " + (r.direction || "?") + " · " + JSON.stringify(r.tally || {}));
+            console.log("Ablage: " + JSON.stringify(r.storage || {}));
+          '
+
+      - name: Groesse der Arbeitsablage
+        id: disk
+        if: always()
+        run: |
+          if [ -d .market-cache ]; then
+            SIZE_MB=$(du -sm .market-cache | cut -f1)
+            echo "Arbeitsablage: ${SIZE_MB} MB"
+            echo "cache_mb=$SIZE_MB" >> "$GITHUB_OUTPUT"
+          else
+            echo "cache_mb=0" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Nur sichern, was zurueckgeholt wurde. Lauf 37052123489 (02.10.2026)
+      # brach in Gate A ab - VOR dem Zurueckholen - und sicherte trotzdem
+      # (always()) eine leere Arbeitsablage von 1 MB als juengsten Stand. Der
+      # naechste Lauf holte genau diese, lud nur das Standardfenster nach
+      # (941 Tage je Titel) und die Gesamtrendite-Reparatur pruefte nur dieses
+      # Fenster. Ein Cache-Treffer auf eine leere Ablage ist schlimmer als
+      # keiner: er sieht aus wie ein Bestand.
+      - name: Arbeitsablage sichern (nur unterhalb der Ablagegrenze)
+        if: always() && steps.restore.outcome == 'success' && steps.disk.outputs.cache_mb != '' && fromJSON(steps.disk.outputs.cache_mb) < 2500
+        uses: actions/cache/save@v4
+        with:
+          path: .market-cache
+          key: discover-market-cache-${{ github.run_id }}
+
+      - name: Commit und Push
+        # Der Push laeuft ueber scripts/ci/push-with-retry.sh: Autostash
+        # gegen die ungestagten Zeitstempel der Regressionssuite (Lauf
+        # 34987245529) UND Wiederholung gegen den verlorenen Wettlauf um
+        # main (Lauf 35351616026). Siebzig Minuten Abruf duerfen nicht an
+        # einer Sekunde scheitern.
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          # Jeden Pfad einzeln und nur, wenn es ihn gibt. `git add` bricht
+          # bei einem unbekannten Pfad mit exit 128 ab und reisst den
+          # ganzen Schritt mit: Lauf 35366297664 war vollstaendig gruen -
+          # Abruf, Folgeketten, Waechter, Hygiene, Regressionssuite - und
+          # hat trotzdem nichts veroeffentlicht, weil eine der genannten
+          # Dateien in diesem Lauf nicht entstanden war. Ein fehlendes
+          # Berichtsartefakt ist kein Grund, siebzig Minuten Kursdaten
+          # wegzuwerfen.
+          for pfad in quant/data/market/golden-preview \
+                      quant/data/market/discover-series \
+                      quant/data/market/factors \
+                      quant/data/market/tiingo-status.json \
+                      quant/data/market/listing-continuity-v1.json \
+                      quant/data/technical \
+                      quant/data/sec/quant-factor-inputs.json \
+                      discover/data \
+                      quant/data/market/capabilities \
+                      quant/data/product/capabilities-v1.json \
+                      quant/data/product/capabilities-summary-v1.json \
+                      quant/data/product/sic-peer-taxonomy-v1.json \
+                      quant/data/market/freshness \
+                      quant/data/market/commercial/rejection-ledger.json \
+                      quant/data/market/commercial/daily-lifecycle-health.json; do
+            if [ -e "$pfad" ]; then
+              git add "$pfad"
+            else
+              echo "Nicht vorhanden, wird uebersprungen: $pfad"
+            fi
+          done
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung an veroeffentlichten Marktdaten."
+          else
+            git commit -m "Marktdaten-Refresh: Tageskurse, Faktoren und Discover-Daten fuer das Produktuniversum (Tiingo EOD)"
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+          fi
+
+      # Gate C: nach der Veroeffentlichung. Ein Test, der erst mit den neuen
+      # Werten rot wird, wird als ::error gemeldet; der Lauf bleibt gruen,
+      # weil pages-release nur bei conclusion == success ausliefert.
+      - name: 'Gate C: Beobachtung - uebrige Regressionstests mit den neuen Daten (nicht blockierend)'
+        continue-on-error: true
+        run: node scripts/market/run-eod-publish-gates.mjs --phase=observability
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Marktdaten-Refresh - Produktuniversum'
+            echo ''
+            if [ -f quant/data/market/tiingo-status.json ]; then
+              node -e '
+                const s = require("./quant/data/market/tiingo-status.json");
+                const z = s.summary || {};
+                console.log("| Kennzahl | Wert |"); console.log("|---|---|");
+                console.log("| Titel angefragt | " + (z.requested ?? "-") + " |");
+                console.log("| erfolgreich | " + (z.ok ?? "-") + " |");
+                console.log("| fehlgeschlagen | " + (z.failed ?? "-") + " |");
+                console.log("| abgelehnt (Qualitaet) | " + (z.rejected ?? "-") + " |");
+                console.log("| Anfragen | " + (z.requests ?? "-") + " |");
+                console.log("| Kontingent Stunde | " + (s.quota ? s.quota.hourUsed + "/" + s.quota.hourLimit : "-") + " |");
+              '
+            fi
+            if [ -f quant/data/market/discover-series/index.json ]; then
+              node -e 'const i = require("./quant/data/market/discover-series/index.json"); console.log("\nKompakte Reihen: " + i.count + " (Umfang " + i.scope.tickers.length + ")");'
+            fi
+            if [ -f discover/data/meta.json ]; then
+              node -e 'const m = require("./discover/data/meta.json"); const u = m.universes.find(x => x.universeId === "US_REAL"); console.log("\nDiscover US_REAL: " + u.securities + " Titel, " + u.withPriceSeries + " mit Kursreihe, Faktoren " + JSON.stringify(u.factorCoverage));'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ===================================================================
+  # DIE KANONISCHE KETTE
+  #
+  #   MARKET REFRESH -> DURABLE STORE -> PRODUCT MATERIALIZATION
+  #                  -> PRODUCT COMMIT -> PRODUCTION DEPLOY
+  #
+  # Owner-Entscheid vom 29.09.2026, nach einem P0: die Materialisierung
+  # haengt nicht mehr daran, dass ein zweiter Workflow ueber `workflow_run`
+  # zuverlaessig ausgeloest wird. Gemessen hatte dieser Ausloeser auf main
+  # NIE gefeuert - der Marktlauf war jede Nacht gruen, der Produktstand
+  # stand vier Tage still, und nichts hat angeschlagen.
+  #
+  # Kein PAT, kein externer API-Trigger, kein Secret nur zum Starten der
+  # naechsten Stufe: `needs` innerhalb derselben Orchestrierung.
+  #
+  # Die Materialisierung bleibt eine logisch getrennte Stufe in ihrer
+  # eigenen Datei - sie wird hier nur AUFGERUFEN statt gehofft.
+  # ===================================================================
+  materialize:
+    needs: refresh
+    # Nur wenn der Marktlauf wirklich durch ist, und nur auf dem
+    # Default-Branch: ein Entwicklungszweig soll keine Produktdaten
+    # veroeffentlichen.
+    if: needs.refresh.result == 'success' && github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/product-intelligence-materialization.yml
+    with:
+      orchestrated: true
+    secrets: inherit
+
+  # ===================================================================
+  # FAIL CLOSED: EIN GRUENER MARKTLAUF IST KEIN AKTUELLER QUANT-STAND.
+  #
+  # Diese Stufe laeuft IMMER, auch wenn die Materialisierung
+  # fehlgeschlagen ist - denn genau dann muss jemand es erfahren. Sie
+  # misst den Freshness-Contract und faellt zu, wenn Ablage und
+  # Produktstand nicht auf derselben abgeschlossenen Sitzung stehen.
+  # ===================================================================
+  freshness-contract:
+    needs: [refresh, materialize]
+    if: always() && needs.refresh.result == 'success' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Drei Zustaende messen, nicht einen behaupten
+        id: contract
+        run: |
+          set +e
+          node scripts/quant/measure-pipeline-freshness.mjs --strict \
+            --out=quant/data/product/pipeline-freshness-v1.json
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+          set -e
+
+      - name: Bericht in die Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Pipeline-Frische'
+            echo ''
+            if [ -f quant/data/product/pipeline-freshness-v1.json ]; then
+              node -e '
+                const j = require("./quant/data/product/pipeline-freshness-v1.json");
+                console.log("| Stufe | Stichtag | Rueckstand | Zustand |");
+                console.log("|---|---|---|---|");
+                console.log("| Letzte Sitzung | " + j.LATEST_MARKET_SESSION + " | - | - |");
+                console.log("| Dauerhafte Ablage | " + (j.LATEST_DURABLE_STORE_ASOF ?? "-") + " | " + (j.STORE_LAG_SESSIONS ?? "?") + " | " + j.MARKET_STORE_CURRENT + " |");
+                console.log("| Produkt | " + (j.LATEST_PRODUCT_ASOF ?? "-") + " | " + (j.PRODUCT_LAG_SESSIONS ?? "?") + " | " + j.PRODUCT_MATERIALIZATION_CURRENT + " |");
+                console.log("");
+                console.log("**QUANT_CURRENT = " + j.QUANT_CURRENT + "**");
+                console.log("");
+                console.log(j.headline);
+              '
+            else
+              echo 'Kein Bericht erzeugt.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail closed, wenn der Produktstand nicht mitgekommen ist
+        if: steps.contract.outputs.code != '0'
+        run: |
+          echo "::error::P0_DATA_PIPELINE_FROZEN - der Marktlauf war gruen, der Produktstand ist es nicht."
+          exit 1

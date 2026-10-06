@@ -1,0 +1,591 @@
+{
+  "schema": "vu-tiingo-fx-probe-2.0.0",
+  "generatedAtUtc": "2026-09-22T08:14:01.791Z",
+  "provider": "tiingo",
+  "baseUrl": "https://api.tiingo.com",
+  "configured": true,
+  "dryRun": false,
+  "pairRequirements": {
+    "source": "quant/data/market/fx/pair-requirements.json",
+    "totalPairs": 62,
+    "probed": [
+      "USD/EUR",
+      "CNY/EUR",
+      "CNY/USD",
+      "CAD/EUR",
+      "CAD/USD",
+      "EUR/USD"
+    ]
+  },
+  "findings": [
+    {
+      "capability": "fxCurrent",
+      "result": true,
+      "verificationLevel": "MEASURED_PRESENT",
+      "detail": "HTTP 200 fuer eurusd, Preisfeld vorhanden, Zeitstempel 2026-09-22T08:14:01.601000+00:00, Alter 1 s.",
+      "httpStatus": 200,
+      "ticker": "eurusd",
+      "servedDirection": "INVERSE",
+      "timestamp": "2026-09-22T08:14:01.601000+00:00",
+      "ageSeconds": 1,
+      "fields": [
+        "askPrice",
+        "askSize",
+        "bidPrice",
+        "bidSize",
+        "midPrice",
+        "quoteTimestamp",
+        "ticker"
+      ]
+    },
+    {
+      "capability": "fxRealtime",
+      "result": true,
+      "verificationLevel": "MEASURED_PRESENT",
+      "detail": "Der juengste Quote ist 1 s alt und liegt damit innerhalb der Realtime-Toleranz (120 s).",
+      "ageSeconds": 1
+    },
+    {
+      "capability": "fxBulkQuotes",
+      "result": null,
+      "verificationLevel": "INCONCLUSIVE",
+      "detail": "2 gefuehrte Symbole angefragt (eurusd, usdcny), nur 1 zurueck. Das kann eine fehlende Sammelfaehigkeit sein oder ein Symbol ohne aktuellen Quote - die Messung unterscheidet das nicht.",
+      "requested": [
+        "eurusd",
+        "usdcny"
+      ],
+      "returned": 1
+    },
+    {
+      "capability": "fxCrossPairs",
+      "result": false,
+      "verificationLevel": "MEASURED_ABSENT",
+      "detail": "CNY/EUR wird weder als cnyeur noch als eurcny gefuehrt. Die Engine muss dieses Paar ueber USD triangulieren (fx-rates.js DERIVATION TRIANGULATED).",
+      "pair": "CNY/EUR",
+      "attempts": [
+        {
+          "ticker": "cnyeur",
+          "direction": "DIRECT",
+          "httpStatus": 200,
+          "observations": 0,
+          "lastDate": null
+        },
+        {
+          "ticker": "eurcny",
+          "direction": "INVERSE",
+          "httpStatus": 200,
+          "observations": 0,
+          "lastDate": null
+        }
+      ],
+      "reason": "pairNotServed"
+    },
+    {
+      "capability": "fxDaily",
+      "result": true,
+      "verificationLevel": "MEASURED_PRESENT",
+      "detail": "39 Tageszeilen fuer eurusd von 2026-08-09 bis 2026-09-22.",
+      "ticker": "eurusd",
+      "observations": 39,
+      "first": "2026-08-09",
+      "last": "2026-09-22",
+      "fields": [
+        "close",
+        "date",
+        "high",
+        "low",
+        "open",
+        "ticker"
+      ]
+    },
+    {
+      "capability": "fxHistoricalDaily",
+      "result": true,
+      "verificationLevel": "MEASURED_PRESENT",
+      "detail": "Historie von eurusd reicht bis mindestens 2020-02-29 zurueck; ein Fenster ab 2019-11-07 wird mit HTTP 400 abgelehnt. Ein Import darf nicht frueher anfragen.",
+      "ticker": "eurusd",
+      "earliestAvailableDate": "2020-02-29",
+      "depthAtLeast": "5 Jahre",
+      "probes": [
+        {
+          "label": "1 Jahr",
+          "days": 365,
+          "from": "2025-09-22",
+          "to": "2025-10-02",
+          "ok": true,
+          "observations": 10,
+          "firstDate": "2025-09-22"
+        },
+        {
+          "label": "5 Jahre",
+          "days": 1826,
+          "from": "2021-09-22",
+          "to": "2021-10-02",
+          "ok": true,
+          "observations": 9,
+          "firstDate": "2021-09-22"
+        },
+        {
+          "label": "10 Jahre",
+          "days": 3652,
+          "from": "2016-09-22",
+          "to": "2016-10-02",
+          "ok": false,
+          "httpStatus": 400,
+          "detail": "HTTP 400: keine belastbare Aussage."
+        }
+      ],
+      "bisection": [
+        {
+          "days": 2739,
+          "from": "2019-03-24",
+          "httpStatus": 400,
+          "observations": 0
+        },
+        {
+          "days": 2283,
+          "from": "2020-06-22",
+          "httpStatus": 200,
+          "observations": 10
+        },
+        {
+          "days": 2511,
+          "from": "2019-11-07",
+          "httpStatus": 400,
+          "observations": 0
+        },
+        {
+          "days": 2397,
+          "from": "2020-02-29",
+          "httpStatus": 200,
+          "observations": 9
+        }
+      ]
+    },
+    {
+      "capability": "fxIntraday",
+      "result": true,
+      "verificationLevel": "MEASURED_PRESENT",
+      "detail": "81 Stundenbars, juengste 2026-09-22T08:00:00.000Z (844 s alt).",
+      "observations": 81,
+      "newest": "2026-09-22T08:00:00.000Z",
+      "ageSeconds": 844
+    },
+    {
+      "capability": "fxWebsocket",
+      "result": null,
+      "verificationLevel": "NOT_ATTEMPTED",
+      "detail": "Es wurde keine Push-Verbindung aufgebaut. Der WebSocket-Nachweis gehoert in einen eigenen Lauf mit eigenem Betriebszustand."
+    }
+  ],
+  "capabilities": {
+    "fxCurrent": true,
+    "fxDaily": true,
+    "fxHistoricalDaily": true,
+    "fxIntraday": true,
+    "fxRealtime": true,
+    "fxWebsocket": null,
+    "fxCrossPairs": false,
+    "fxBulkQuotes": null
+  },
+  "realtimeTier": {
+    "tier": "A",
+    "recommended": "A",
+    "available": "C",
+    "label": "Realtime-Aktie x letzter aktueller FX-Stand",
+    "reason": "Stufe C waere verfuegbar, gefahren wird A: Fuer eine Consumer-Anzeige in EUR ist die Bewegung des Aktienkurses um Groessenordnungen groesser als die des Wechselkurses innerhalb derselben Minute. Ein Wechsel auf C ist eine Owner-Entscheidung mit belegtem Consumer-Nutzen (O-5, §12).",
+    "upgradePossible": true,
+    "blocked": []
+  },
+  "secondSource": {
+    "answer": "NO",
+    "missing": [],
+    "unknown": [],
+    "action": "USE_PRIMARY",
+    "reason": "Der bestehende Zugang deckt den Bedarf. Eine zweite kommerzielle Quelle waere Komfort, kein Erfordernis."
+  },
+  "timestampSemantics": {
+    "raw": "2026-08-09T00:00:00.000Z",
+    "hasTime": true,
+    "hasZone": true,
+    "midnight": true
+  },
+  "missingDataBehaviour": {
+    "window": {
+      "from": "2025-12-20",
+      "to": "2026-01-06"
+    },
+    "ok": true,
+    "calendarDays": 18,
+    "observations": 15,
+    "missing": [
+      {
+        "date": "2025-12-20",
+        "weekday": "Sa",
+        "kind": "WEEKEND"
+      },
+      {
+        "date": "2025-12-27",
+        "weekday": "Sa",
+        "kind": "WEEKEND"
+      },
+      {
+        "date": "2026-01-03",
+        "weekday": "Sa",
+        "kind": "WEEKEND"
+      }
+    ],
+    "weekendGaps": 3,
+    "holidayGaps": 0
+  },
+  "directionality": {
+    "directions": [
+      {
+        "pair": "USD/EUR",
+        "ticker": "usdeur",
+        "ok": false,
+        "httpStatus": 200,
+        "observations": 0,
+        "closePresent": false,
+        "lastDate": null
+      },
+      {
+        "pair": "EUR/USD",
+        "ticker": "eurusd",
+        "ok": true,
+        "httpStatus": 200,
+        "observations": 9,
+        "closePresent": true,
+        "lastDate": "2026-09-22"
+      }
+    ],
+    "bothDirectionsServed": false,
+    "inversionRequired": true,
+    "consistency": null
+  },
+  "historicalDepth": {
+    "reached": [
+      {
+        "label": "1 Jahr",
+        "days": 365,
+        "from": "2025-09-22",
+        "to": "2025-10-02",
+        "ok": true,
+        "observations": 10,
+        "firstDate": "2025-09-22"
+      },
+      {
+        "label": "5 Jahre",
+        "days": 1826,
+        "from": "2021-09-22",
+        "to": "2021-10-02",
+        "ok": true,
+        "observations": 9,
+        "firstDate": "2021-09-22"
+      },
+      {
+        "label": "10 Jahre",
+        "days": 3652,
+        "from": "2016-09-22",
+        "to": "2016-10-02",
+        "ok": false,
+        "httpStatus": 400,
+        "detail": "HTTP 400: keine belastbare Aussage."
+      }
+    ],
+    "deepest": {
+      "label": "5 Jahre",
+      "days": 1826
+    },
+    "bisection": [
+      {
+        "days": 2739,
+        "from": "2019-03-24",
+        "httpStatus": 400,
+        "observations": 0
+      },
+      {
+        "days": 2283,
+        "from": "2020-06-22",
+        "httpStatus": 200,
+        "observations": 10
+      },
+      {
+        "days": 2511,
+        "from": "2019-11-07",
+        "httpStatus": 400,
+        "observations": 0
+      },
+      {
+        "days": 2397,
+        "from": "2020-02-29",
+        "httpStatus": 200,
+        "observations": 9
+      }
+    ],
+    "earliestAvailableDate": "2020-02-29",
+    "safeStartDate": "2020-03-30",
+    "note": "safeStartDate ist das Datum, ab dem build-fx-history.mjs anfragen darf. Frueher liefert der Anbieter HTTP 400 - das ist eine Fenstergrenze, kein fehlendes Paar."
+  },
+  "requests": {
+    "count": 20,
+    "rateLimitHeaders": {}
+  },
+  "notMeasured": {
+    "fxWebsocket": "Eine Push-Verbindung wird hier nicht aufgebaut - sie haette einen eigenen Betriebszustand und gehoert in einen eigenen Nachweis.",
+    "requestLimits": "Kontingente zeigen sich erst unter Last. Dieses Skript zaehlt seine eigenen Anfragen und sammelt Kontingent-Header, es laeuft nicht gegen die Grenze.",
+    "license": "Redistribution und oeffentliche Darstellung sind Rechtsfragen. display-policy.js entscheidet sie, nicht ein HTTP-Statuscode."
+  },
+  "tickerResolution": {
+    "note": "Welche Schreibweise der Anbieter fuehrt, ist gemessen und nicht gewaehlt. Die Gegenrichtung entsteht in fx-rates.js durch Inversion (exakte Identitaet).",
+    "primary": {
+      "pair": "USD/EUR",
+      "ticker": "eurusd",
+      "direction": "INVERSE",
+      "served": true,
+      "attempts": [
+        {
+          "ticker": "usdeur",
+          "direction": "DIRECT",
+          "httpStatus": 200,
+          "observations": 0,
+          "lastDate": null
+        },
+        {
+          "ticker": "eurusd",
+          "direction": "INVERSE",
+          "httpStatus": 200,
+          "observations": 11,
+          "lastDate": "2026-09-22"
+        }
+      ]
+    },
+    "all": [
+      {
+        "requestedPair": "USD/EUR",
+        "servedAs": "eurusd",
+        "direction": "INVERSE",
+        "served": true,
+        "observations": 11
+      },
+      {
+        "requestedPair": "CNY/EUR",
+        "servedAs": null,
+        "direction": null,
+        "served": false,
+        "observations": 0
+      },
+      {
+        "requestedPair": "CNY/USD",
+        "servedAs": "usdcny",
+        "direction": "INVERSE",
+        "served": true,
+        "observations": 11
+      }
+    ]
+  },
+  "dailyWindow": {
+    "first": "2026-08-09",
+    "last": "2026-09-22",
+    "weekendRows": [
+      "2026-08-09",
+      "2026-08-16",
+      "2026-08-23",
+      "2026-08-30",
+      "2026-09-06",
+      "2026-09-13",
+      "2026-09-20"
+    ],
+    "gaps": [
+      {
+        "from": "2026-08-14",
+        "to": "2026-08-16",
+        "days": 2
+      },
+      {
+        "from": "2026-08-21",
+        "to": "2026-08-23",
+        "days": 2
+      },
+      {
+        "from": "2026-08-28",
+        "to": "2026-08-30",
+        "days": 2
+      },
+      {
+        "from": "2026-09-04",
+        "to": "2026-09-06",
+        "days": 2
+      },
+      {
+        "from": "2026-09-11",
+        "to": "2026-09-13",
+        "days": 2
+      },
+      {
+        "from": "2026-09-18",
+        "to": "2026-09-20",
+        "days": 2
+      }
+    ]
+  },
+  "evidence": {
+    "fxCurrent": {
+      "verificationLevel": "MEASURED_PRESENT",
+      "reason": "HTTP 200 fuer eurusd, Preisfeld vorhanden, Zeitstempel 2026-09-22T08:14:01.601000+00:00, Alter 1 s.",
+      "measuredAt": "2026-09-22T08:14:02.905Z",
+      "httpStatus": 200,
+      "ticker": "eurusd",
+      "servedDirection": "INVERSE",
+      "timestamp": "2026-09-22T08:14:01.601000+00:00",
+      "ageSeconds": 1,
+      "fields": [
+        "askPrice",
+        "askSize",
+        "bidPrice",
+        "bidSize",
+        "midPrice",
+        "quoteTimestamp",
+        "ticker"
+      ]
+    },
+    "fxRealtime": {
+      "verificationLevel": "MEASURED_PRESENT",
+      "reason": "Der juengste Quote ist 1 s alt und liegt damit innerhalb der Realtime-Toleranz (120 s).",
+      "measuredAt": "2026-09-22T08:14:02.905Z",
+      "ageSeconds": 1
+    },
+    "fxBulkQuotes": {
+      "verificationLevel": "INCONCLUSIVE",
+      "reason": "2 gefuehrte Symbole angefragt (eurusd, usdcny), nur 1 zurueck. Das kann eine fehlende Sammelfaehigkeit sein oder ein Symbol ohne aktuellen Quote - die Messung unterscheidet das nicht.",
+      "measuredAt": "2026-09-22T08:14:03.022Z",
+      "requested": [
+        "eurusd",
+        "usdcny"
+      ],
+      "returned": 1
+    },
+    "fxCrossPairs": {
+      "verificationLevel": "MEASURED_ABSENT",
+      "reason": "pairNotServed",
+      "measuredAt": "2026-09-22T08:14:03.022Z",
+      "pair": "CNY/EUR",
+      "attempts": [
+        {
+          "ticker": "cnyeur",
+          "direction": "DIRECT",
+          "httpStatus": 200,
+          "observations": 0,
+          "lastDate": null
+        },
+        {
+          "ticker": "eurcny",
+          "direction": "INVERSE",
+          "httpStatus": 200,
+          "observations": 0,
+          "lastDate": null
+        }
+      ]
+    },
+    "fxDaily": {
+      "verificationLevel": "MEASURED_PRESENT",
+      "reason": "39 Tageszeilen fuer eurusd von 2026-08-09 bis 2026-09-22.",
+      "measuredAt": "2026-09-22T08:14:03.151Z",
+      "ticker": "eurusd",
+      "observations": 39,
+      "first": "2026-08-09",
+      "last": "2026-09-22",
+      "fields": [
+        "close",
+        "date",
+        "high",
+        "low",
+        "open",
+        "ticker"
+      ]
+    },
+    "fxHistoricalDaily": {
+      "verificationLevel": "MEASURED_PRESENT",
+      "reason": "Historie von eurusd reicht bis mindestens 2020-02-29 zurueck; ein Fenster ab 2019-11-07 wird mit HTTP 400 abgelehnt. Ein Import darf nicht frueher anfragen.",
+      "measuredAt": "2026-09-22T08:14:03.863Z",
+      "ticker": "eurusd",
+      "earliestAvailableDate": "2020-02-29",
+      "depthAtLeast": "5 Jahre",
+      "probes": [
+        {
+          "label": "1 Jahr",
+          "days": 365,
+          "from": "2025-09-22",
+          "to": "2025-10-02",
+          "ok": true,
+          "observations": 10,
+          "firstDate": "2025-09-22"
+        },
+        {
+          "label": "5 Jahre",
+          "days": 1826,
+          "from": "2021-09-22",
+          "to": "2021-10-02",
+          "ok": true,
+          "observations": 9,
+          "firstDate": "2021-09-22"
+        },
+        {
+          "label": "10 Jahre",
+          "days": 3652,
+          "from": "2016-09-22",
+          "to": "2016-10-02",
+          "ok": false,
+          "httpStatus": 400,
+          "detail": "HTTP 400: keine belastbare Aussage."
+        }
+      ],
+      "bisection": [
+        {
+          "days": 2739,
+          "from": "2019-03-24",
+          "httpStatus": 400,
+          "observations": 0
+        },
+        {
+          "days": 2283,
+          "from": "2020-06-22",
+          "httpStatus": 200,
+          "observations": 10
+        },
+        {
+          "days": 2511,
+          "from": "2019-11-07",
+          "httpStatus": 400,
+          "observations": 0
+        },
+        {
+          "days": 2397,
+          "from": "2020-02-29",
+          "httpStatus": 200,
+          "observations": 9
+        }
+      ]
+    },
+    "fxIntraday": {
+      "verificationLevel": "MEASURED_PRESENT",
+      "reason": "81 Stundenbars, juengste 2026-09-22T08:00:00.000Z (844 s alt).",
+      "measuredAt": "2026-09-22T08:14:04.108Z",
+      "observations": 81,
+      "newest": "2026-09-22T08:00:00.000Z",
+      "ageSeconds": 844
+    },
+    "fxWebsocket": {
+      "verificationLevel": "NOT_ATTEMPTED",
+      "reason": "Es wurde keine Push-Verbindung aufgebaut. Der WebSocket-Nachweis gehoert in einen eigenen Lauf mit eigenem Betriebszustand.",
+      "measuredAt": "2026-09-22T08:14:04.431Z"
+    }
+  },
+  "capabilityState": "MEASURED",
+  "capabilityStateDetail": "Alle vertragskritischen Faehigkeiten gemessen (fxCurrent, fxDaily, fxHistoricalDaily).",
+  "summary": {
+    "measuredPresent": 5,
+    "measuredAbsent": 1,
+    "unverified": 2
+  }
+}

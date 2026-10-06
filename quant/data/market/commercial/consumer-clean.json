@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "consumer-clean-1.1.0",
+  "auftrag": "Owner 17.09.2026 §14 (Quellen an einer Stelle) und §18 (keine Development Preview); Owner 18.09.2026 Entscheidung 1: §18 gilt site-wide fuer die gesamte sichtbare Consumer-Erfahrung",
+  "checkedAt": "2026-09-19T05:11:37.374Z",
+  "scanned": {
+    "pages": 42,
+    "uiModules": 37
+  },
+  "scope": "Ausgelieferte Seiten und die Module, die Consumer-Text erzeugen. Kommentare und Dokumentation sind ausgenommen - sie sprechen ueber die Sache, sie zeigen sie nicht.",
+  "sourcesPage": [
+    "discover/ui/daten.js",
+    "discover/quellen.html",
+    "discover/data"
+  ],
+  "findings": {
+    "developmentPreview": [],
+    "developmentPreviewAusserhalbConsumer": [],
+    "anbieterImConsumerText": []
+  },
+  "ownerDecision": {
+    "entschieden": "18.09.2026",
+    "frage": "Soll die Plakette 'Development Preview' auch ausserhalb von Discover verschwinden?",
+    "antwort": "Ja - site-wide aus der sichtbaren Consumer-Erfahrung. Interne Entwicklungs- und QA-Metadaten bleiben bestehen.",
+    "umgesetzt": "assets/site-navigation.js baut die Plakette nicht mehr; das Attribut no-preview bleibt zulaessig und wirkungslos. Diese Pruefung sucht seitdem im ganzen Baum."
+  },
+  "verdict": "PASS"
+}

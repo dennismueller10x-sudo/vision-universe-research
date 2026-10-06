@@ -1,0 +1,463 @@
+{
+  "schema": "vu-currency-layer-proof-1.0.0",
+  "generatedAtUtc": "2026-09-22T06:27:35.770Z",
+  "contractVersion": "currency-fx-v1.0.0",
+  "fxSource": "FIXTURE",
+  "fxSourceNote": "Kein qualifizierter FX-Bestand unter /home/user/vision-universe-research/quant/data/market/fx. Die Faehigkeitssondierung steht auf ungeprueft. Gerechnet wird mit der Testreihe: die Regeln sind damit belegt, die Kursstaende nicht.",
+  "verdict": "PASS_RULES_ONLY",
+  "verdictMeaning": "Die Umrechnungsregeln sind an echten Kurs- und Fundamentaldaten belegt. Die verwendeten WECHSELKURSE stammen aus der Testreihe - ein Produktionsnachweis steht aus.",
+  "counts": {
+    "PASS": 10,
+    "NOT_PROVEN": 1
+  },
+  "checks": [
+    {
+      "id": "P-AAPL",
+      "title": "AAPL: historische EUR-Kurse punktweise nachgerechnet",
+      "state": "PASS",
+      "detail": "4 von 4 Stuetzpunkten nachgerechnet.",
+      "rows": [
+        {
+          "label": "heute",
+          "date": "2026-09-10",
+          "nativePrice": 326.57,
+          "nativeCurrency": "USD",
+          "fxRate": 0.852557,
+          "fxAsOf": "2026-09-10",
+          "fxMethod": "DAILY_AT_DATE",
+          "displayEur": 278.4195,
+          "formatted": "278,42 €"
+        },
+        {
+          "label": "vor 1 Monat",
+          "date": "2026-08-07",
+          "nativePrice": 313.33,
+          "nativeCurrency": "USD",
+          "fxRate": 0.851808,
+          "fxAsOf": "2026-08-07",
+          "fxMethod": "DAILY_AT_DATE",
+          "displayEur": 266.897,
+          "formatted": "266,90 €"
+        },
+        {
+          "label": "vor 1 Jahr",
+          "date": "2025-09-05",
+          "nativePrice": 239.69,
+          "nativeCurrency": "USD",
+          "fxRate": 0.846175,
+          "fxAsOf": "2025-09-05",
+          "fxMethod": "DAILY_AT_DATE",
+          "displayEur": 202.8197,
+          "formatted": "202,82 €"
+        },
+        {
+          "label": "vor 5 Jahren",
+          "date": "2021-09-10",
+          "nativePrice": 148.97,
+          "nativeCurrency": "USD",
+          "fxRate": 0.849845,
+          "fxAsOf": "2021-09-10",
+          "fxMethod": "DAILY_AT_DATE",
+          "displayEur": 126.6014,
+          "formatted": "126,60 €"
+        }
+      ]
+    },
+    {
+      "id": "R-AAPL",
+      "title": "AAPL: USD-Rendite vs. EUR-Rendite ist mathematisch erklaerbar",
+      "state": "PASS",
+      "detail": "Die Zerlegung (1+r_EUR) = (1+r_USD) x (FX_Ende/FX_Anfang) geht exakt auf.",
+      "rows": [
+        {
+          "von": "2021-09-10",
+          "bis": "2026-09-10",
+          "punkte": 262,
+          "renditeUSD": 119.22,
+          "renditeEUR": 119.92,
+          "waehrungseffektPp": 0.7,
+          "fxAnfang": 0.849845,
+          "fxEnde": 0.852557
+        }
+      ]
+    },
+    {
+      "id": "P-NVDA",
+      "title": "NVDA: historische EUR-Kurse punktweise nachgerechnet",
+      "state": "PASS",
+      "detail": "4 von 4 Stuetzpunkten nachgerechnet.",
+      "rows": [
+        {
+          "label": "heute",
+          "date": "2026-09-10",
+          "nativePrice": 218.36,
+          "nativeCurrency": "USD",
+          "fxRate": 0.852557,
+          "fxAsOf": "2026-09-10",
+          "fxMethod": "DAILY_AT_DATE",
+          "displayEur": 186.1643,
+          "formatted": "186,16 €"
+        },
+        {
+          "label": "vor 1 Monat",
+          "date": "2026-08-07",
+          "nativePrice": 223.96,
+          "nativeCurrency": "USD",
+          "fxRate": 0.851808,
+          "fxAsOf": "2026-08-07",
+          "fxMethod": "DAILY_AT_DATE",
+          "displayEur": 190.7709,
+          "formatted": "190,77 €"
+        },
+        {
+          "label": "vor 1 Jahr",
+          "date": "2025-09-05",
+          "nativePrice": 167.02,
+          "nativeCurrency": "USD",
+          "fxRate": 0.846175,
+          "fxAsOf": "2025-09-05",
+          "fxMethod": "DAILY_AT_DATE",
+          "displayEur": 141.3281,
+          "formatted": "141,33 €"
+        },
+        {
+          "label": "vor 5 Jahren",
+          "date": "2021-09-10",
+          "nativePrice": 22.48,
+          "nativeCurrency": "USD",
+          "fxRate": 0.849845,
+          "fxAsOf": "2021-09-10",
+          "fxMethod": "DAILY_AT_DATE",
+          "displayEur": 19.1045,
+          "formatted": "19,10 €"
+        }
+      ]
+    },
+    {
+      "id": "R-NVDA",
+      "title": "NVDA: USD-Rendite vs. EUR-Rendite ist mathematisch erklaerbar",
+      "state": "PASS",
+      "detail": "Die Zerlegung (1+r_EUR) = (1+r_USD) x (FX_Ende/FX_Anfang) geht exakt auf.",
+      "rows": [
+        {
+          "von": "2021-09-10",
+          "bis": "2026-09-10",
+          "punkte": 262,
+          "renditeUSD": 871.35,
+          "renditeEUR": 874.45,
+          "waehrungseffektPp": 3.1,
+          "fxAnfang": 0.849845,
+          "fxEnde": 0.852557
+        }
+      ]
+    },
+    {
+      "id": "P-MSFT",
+      "title": "MSFT: historische EUR-Kurse punktweise nachgerechnet",
+      "state": "PASS",
+      "detail": "4 von 4 Stuetzpunkten nachgerechnet.",
+      "rows": [
+        {
+          "label": "heute",
+          "date": "2026-09-10",
+          "nativePrice": 492.44,
+          "nativeCurrency": "USD",
+          "fxRate": 0.852557,
+          "fxAsOf": "2026-09-10",
+          "fxMethod": "DAILY_AT_DATE",
+          "displayEur": 419.8332,
+          "formatted": "419,83 €"
+        },
+        {
+          "label": "vor 1 Monat",
+          "date": "2026-08-07",
+          "nativePrice": 499.99,
+          "nativeCurrency": "USD",
+          "fxRate": 0.851808,
+          "fxAsOf": "2026-08-07",
+          "fxMethod": "DAILY_AT_DATE",
+          "displayEur": 425.8955,
+          "formatted": "425,90 €"
+        },
+        {
+          "label": "vor 1 Jahr",
+          "date": "2025-09-05",
+          "nativePrice": 495,
+          "nativeCurrency": "USD",
+          "fxRate": 0.846175,
+          "fxAsOf": "2025-09-05",
+          "fxMethod": "DAILY_AT_DATE",
+          "displayEur": 418.8566,
+          "formatted": "418,86 €"
+        },
+        {
+          "label": "vor 5 Jahren",
+          "date": "2021-09-10",
+          "nativePrice": 295.71,
+          "nativeCurrency": "USD",
+          "fxRate": 0.849845,
+          "fxAsOf": "2021-09-10",
+          "fxMethod": "DAILY_AT_DATE",
+          "displayEur": 251.3077,
+          "formatted": "251,31 €"
+        }
+      ]
+    },
+    {
+      "id": "R-MSFT",
+      "title": "MSFT: USD-Rendite vs. EUR-Rendite ist mathematisch erklaerbar",
+      "state": "PASS",
+      "detail": "Die Zerlegung (1+r_EUR) = (1+r_USD) x (FX_Ende/FX_Anfang) geht exakt auf.",
+      "rows": [
+        {
+          "von": "2021-09-10",
+          "bis": "2026-09-10",
+          "punkte": 262,
+          "renditeUSD": 66.53,
+          "renditeEUR": 67.06,
+          "waehrungseffektPp": 0.53,
+          "fxAnfang": 0.849845,
+          "fxEnde": 0.852557
+        }
+      ]
+    },
+    {
+      "id": "F1",
+      "title": "Abweichendes Geschaeftsjahr: Periodengrenzen aus den Daten, nicht aus dem Kalender",
+      "state": "PASS",
+      "detail": "AAR Corp, Geschaeftsjahresende 2026-05-31. Periodenanfaenge aus der Vorperiode abgeleitet, nicht aus dem Kalender.",
+      "rows": [
+        {
+          "fy": 2024,
+          "periodStart": "2023-06-01",
+          "periodEnd": "2024-05-31",
+          "provenance": "DERIVED_FROM_PRIOR_PERIOD",
+          "nativeValue": 2318900000,
+          "nativeCurrency": "USD",
+          "fxAverage": 0.851522,
+          "fxObservations": 262,
+          "fxCoverage": 1.004,
+          "displayEur": 1974594499,
+          "formatted": "1,97 Mrd. €"
+        },
+        {
+          "fy": 2025,
+          "periodStart": "2024-06-01",
+          "periodEnd": "2025-05-31",
+          "provenance": "DERIVED_FROM_PRIOR_PERIOD",
+          "nativeValue": 2780500000,
+          "nativeCurrency": "USD",
+          "fxAverage": 0.846498,
+          "fxObservations": 260,
+          "fxCoverage": 0.996,
+          "displayEur": 2353688320,
+          "formatted": "2,35 Mrd. €"
+        },
+        {
+          "fy": 2026,
+          "periodStart": "2025-06-01",
+          "periodEnd": "2026-05-31",
+          "provenance": "DERIVED_FROM_PRIOR_PERIOD",
+          "nativeValue": 3308000000,
+          "nativeCurrency": "USD",
+          "fxAverage": 0.84742,
+          "fxObservations": 260,
+          "fxCoverage": 0.996,
+          "displayEur": 2803264406,
+          "formatted": "2,80 Mrd. €"
+        }
+      ]
+    },
+    {
+      "id": "F2",
+      "title": "Bilanzstichtag am Wochenende faellt deterministisch auf den Vortag zurueck",
+      "state": "PASS",
+      "detail": "Apple Inc: 3 Wochenendstichtag(e) geprueft, jeder auf den letzten vorherigen Kurs.",
+      "rows": [
+        {
+          "fy": 2023,
+          "fp": "FY",
+          "periodEnd": "2023-09-30",
+          "wochentag": "Sa",
+          "fxAsOf": "2023-09-29",
+          "fxMethod": "PREVIOUS_AVAILABLE",
+          "freshness": "LAST_AVAILABLE",
+          "nativeValue": 30737000000,
+          "displayEur": 26206980940
+        },
+        {
+          "fy": 2024,
+          "fp": "FY",
+          "periodEnd": "2024-09-28",
+          "wochentag": "Sa",
+          "fxAsOf": "2024-09-27",
+          "fxMethod": "PREVIOUS_AVAILABLE",
+          "freshness": "LAST_AVAILABLE",
+          "nativeValue": 29943000000,
+          "displayEur": 25357648752
+        },
+        {
+          "fy": 2025,
+          "fp": "FY",
+          "periodEnd": "2025-09-27",
+          "wochentag": "Sa",
+          "fxAsOf": "2025-09-26",
+          "fxMethod": "PREVIOUS_AVAILABLE",
+          "freshness": "LAST_AVAILABLE",
+          "nativeValue": 35934000000,
+          "displayEur": 30413495514
+        }
+      ]
+    },
+    {
+      "id": "F3",
+      "title": "SEC ist NICHT automatisch USD - gemessen am ganzen Universum (§16)",
+      "state": "PASS",
+      "detail": "5069 SEC-Datensaetze, jeder mit der Waehrung aus units gelesen. 400 von 4215 berichten NICHT in USD (9.5 %) — in 28 verschiedenen Waehrungen. 854 Datensaetze fuehren keine Waehrung und werden nicht umgerechnet. OFFEN: fuer 27 dieser Waehrungen liegt kein FX-Paar vor (ARS, AUD, BRL, CAD, CHF, CLP, CNY, COP, DKK, GBP, HKD, ILS, INR, JPY, KRW, KZT, MXN, MYR, PEN, PHP, RUB, SEK, SGD, TRY, TWD, VND, ZAR); ihre monetaeren Werte bleiben in der Originalwaehrung.",
+      "rows": [
+        {
+          "verteilung": {
+            "USD": 3815,
+            "CAD": 65,
+            "JPY": 14,
+            "PHP": 1,
+            "EUR": 52,
+            "ZAR": 4,
+            "DKK": 2,
+            "SEK": 1,
+            "CNY": 116,
+            "GBP": 20,
+            "KRW": 8,
+            "CLP": 3,
+            "ARS": 9,
+            "MXN": 11,
+            "PEN": 3,
+            "TWD": 6,
+            "BRL": 19,
+            "TRY": 1,
+            "AUD": 11,
+            "INR": 6,
+            "COP": 2,
+            "RUB": 1,
+            "CHF": 3,
+            "ILS": 4,
+            "HKD": 16,
+            "SGD": 16,
+            "VND": 1,
+            "MYR": 4,
+            "KZT": 1
+          },
+          "ohneAngabe": 854
+        },
+        {
+          "beispiele": {
+            "CAD": "BNS",
+            "JPY": "MUFG",
+            "PHP": "PHI",
+            "EUR": "UL",
+            "ZAR": "SSL",
+            "DKK": "NVO",
+            "SEK": "ERIC",
+            "CNY": "CHNR",
+            "GBP": "WPP",
+            "KRW": "KEP",
+            "CLP": "CCU",
+            "ARS": "YPF",
+            "MXN": "KOF",
+            "PEN": "BAP",
+            "TWD": "UMC",
+            "BRL": "ELPC",
+            "TRY": "TKC",
+            "AUD": "KZIA",
+            "INR": "SIFY",
+            "COP": "EC",
+            "RUB": "NBIS",
+            "CHF": "UBS",
+            "ILS": "CLGN",
+            "HKD": "FUTU",
+            "SGD": "GDTC",
+            "VND": "VFS",
+            "MYR": "ARBB",
+            "KZT": "KSPI"
+          }
+        },
+        {
+          "fremdwaehrungenOhneFxPaar": [
+            "ARS",
+            "AUD",
+            "BRL",
+            "CAD",
+            "CHF",
+            "CLP",
+            "CNY",
+            "COP",
+            "DKK",
+            "GBP",
+            "HKD",
+            "ILS",
+            "INR",
+            "JPY",
+            "KRW",
+            "KZT",
+            "MXN",
+            "MYR",
+            "PEN",
+            "PHP",
+            "RUB",
+            "SEK",
+            "SGD",
+            "TRY",
+            "TWD",
+            "VND",
+            "ZAR"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "F4",
+      "title": "Prozentkennzahlen und Multiples sind unter dem Waehrungswechsel unveraendert",
+      "state": "PASS",
+      "detail": "Werte identisch; nur die Zahlenformatierung folgt der Locale.",
+      "rows": [
+        {
+          "metricId": "operatingMargin",
+          "klasse": "RATIO_METRIC",
+          "eur": "31,2 %",
+          "usd": "31.2 %"
+        },
+        {
+          "metricId": "roic",
+          "klasse": "RATIO_METRIC",
+          "eur": "29,9 %",
+          "usd": "29.9 %"
+        },
+        {
+          "metricId": "revenueGrowth",
+          "klasse": "RATIO_METRIC",
+          "eur": "18,2 %",
+          "usd": "18.2 %"
+        },
+        {
+          "metricId": "evToEbitda",
+          "klasse": "MULTIPLE",
+          "eur": "24,3x",
+          "usd": "24.3x"
+        },
+        {
+          "metricId": "quantScore",
+          "klasse": "SCORE",
+          "eur": "87",
+          "usd": "87"
+        }
+      ]
+    },
+    {
+      "id": "RT1",
+      "title": "Realtime-Nachweis bei offener US-Sitzung",
+      "state": "NOT_PROVEN",
+      "detail": "Kein laufender Realtime-Stream und keine gemessene offene US-Sitzung in diesem Lauf. Der Pfad ist in quant/tests/currency-fx-matrix.test.mjs (I10-I12) gegen den Store geprueft: ein FX-Stand bedient viele Ticks, doppelte Umrechnung wird verhindert, STALE verbietet den Realtime-Anspruch. Der Nachweis am offenen Markt steht aus und wird nicht als erbracht gemeldet.",
+      "rows": null
+    }
+  ]
+}

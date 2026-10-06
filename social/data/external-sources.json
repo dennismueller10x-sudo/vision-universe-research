@@ -1,0 +1,22 @@
+{
+  "_zweck": "Der Owner-Entscheid darueber, welche externen Sensoren eingeschaltet sind. Einzige Quelle der Wahrheit fuer diese Frage; social/engines/source-registry.js liest sie.",
+  "_warumNichtImCode": "Ein Zustand, den der Owner aendert, gehoert nicht in eine Datei, die nur Entwickler anfassen. Er steht hier, mit Datum und Begruendung, und ist im Diff sichtbar.",
+  "decidedAt": "2026-09-20",
+  "decidedBy": "owner",
+  "decision": "Vision Universe Social Intelligence wird vorerst OHNE neue externe APIs oder Plattformzugaenge weiterentwickelt.",
+  "sources": {
+    "INSTAGRAM_PUBLIC_CONTENT": {
+      "state": "NOT_ACTIVATED_BY_OWNER",
+      "decidedAt": "2026-09-20",
+      "reason": "Owner-Entscheidung. Der Zugang waere technisch erreichbar - gemessen am 2026-09-19 fehlen die Freischaltung 'Instagram Public Content Access' und das Recht pages_read_engagement. Beides wird bewusst NICHT beantragt.",
+      "_nichtVerwechseln": "Das ist kein Fehlschlag. Die Kette ist vollstaendig gebaut und bis zur Plattformantwort geprueft."
+    },
+    "YOUTUBE_EXTERNAL_INTELLIGENCE": {
+      "state": "NOT_ACTIVATED_BY_OWNER",
+      "decidedAt": "2026-09-20",
+      "reason": "Owner-Entscheidung. Es wird kein Google-Cloud-Projekt angelegt und kein YOUTUBE_API_KEY hinterlegt.",
+      "_nichtVerwechseln": "Der Plan laeuft ohne Schluessel gruen und zeigt, was gesucht wuerde. Nichts daran ist defekt."
+    }
+  },
+  "_reaktivierung": "Zustand auf ACTIVE setzen und die im Registry genannten Owner-Schritte gehen. Kein Architekturumbau noetig - die Komponenten bleiben erhalten und sind als dormant markiert."
+}

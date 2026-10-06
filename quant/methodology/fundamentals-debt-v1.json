@@ -1,0 +1,86 @@
+{
+ "schemaVersion": "fundamentals-debt-1.0.0",
+ "methodologyVersion": "fundamentals-debt-v1.0.0",
+ "status": "APPROVED",
+ "effectiveFrom": "2026-09-23",
+ "purpose": "Die kanonische Definition von total_debt, als Vertrag statt als Notiz. Option B war bereits das Verhalten des Codes; was fehlte, war eine geschriebene, versionierte, maschinell geprüfte Entscheidung. Ohne die driftet eine Registry-Änderung oder eine neue Ableitungsregel irgendwann still in eine andere Bedeutung, und niemandem fällt es auf, weil die Kennzahl weiter denselben Namen trägt.",
+ "approval": {
+  "state": "APPROVED",
+  "approvedBy": "info@visionuniverse.de",
+  "approvedAt": "2026-09-23",
+  "approvedOption": "OPTION_B",
+  "basis": "docs/VU_QUANT_2_TOTAL_DEBT_CENSUS.md, gemessen über 5.148 Emittenten (census_logic 1.1.0, Registry-Mapping 1.5.0)",
+  "scope": "Freigegeben ist die Definition der Kennzahl. Freigegeben ist damit KEINE Erwartung an ihre Abdeckung: 2.929 Emittenten sind das gemessene Ergebnis dieser Definition, nicht ihr Ziel."
+ },
+ "gateStatus": {
+  "TOTAL_DEBT_METHOD": "OPTION_B",
+  "LONG_TERM_DEBT_FALLBACK": false,
+  "FINANCE_LEASE_SILENT_MERGE": false,
+  "note": "Maschinenlesbar, damit kein Konsument den Zustand aus Prosa ableiten muss."
+ },
+ "definition": {
+  "id": "OPTION_B",
+  "label": "Sammelangabe, sonst dokumentierte Ableitung",
+  "order": [
+   {
+    "step": 1,
+    "source": "REPORTED",
+    "concepts": ["us-gaap:DebtLongtermAndShorttermCombinedAmount", "ifrs-full:Borrowings"],
+    "plain": "Die gemeldete Sammelangabe, wenn der Emittent sie taggt."
+   },
+   {
+    "step": 2,
+    "source": "DERIVED",
+    "formula": "long_term_debt + short_term_debt",
+    "implementation": "scripts/quant/sec/derived.py",
+    "plain": "Sonst die Summe aus langfristiger und kurzfristiger Schuld. Jede Zeile trägt ein derived-Flag, das sagt, ob der Wert gemeldet oder gerechnet ist — die Ableitung ist damit sichtbar und keine stille Ersetzung."
+   }
+  ],
+  "measured": {
+   "issuersMeasured": 5148,
+   "coverage": 2929,
+   "reportedDirectly": 525,
+   "derived": 2120,
+   "note": "reportedDirectly und derived sind über die 5.069 exportierten Emittenten gezählt, coverage über die 5.148 des Zensus. Die beiden Grundgesamtheiten sind nicht dieselbe; sie werden deshalb nicht zu einer Zahl vermischt."
+  }
+ },
+ "forbidden": [
+  {
+   "id": "LONG_TERM_DEBT_FALLBACK",
+   "rule": "total_debt darf NIE auf long_term_debt allein zurückfallen.",
+   "why": "Gemessen erreicht die langfristige Schuld allein 3.456 statt 2.929 Emittenten. Die 527 zusätzlichen sind kein geschlossenes Abdeckungsloch, sondern eine andere Kennzahl unter demselben Namen: die kurzfristigen Schulden fehlen darin. Der Preis dieser Ablehnung ist gemessen und beträgt 527 Emittenten.",
+   "enforcedBy": "quant/tests/fundamentals-debt-contract.test.mjs"
+  },
+  {
+   "id": "FINANCE_LEASE_SILENT_MERGE",
+   "rule": "Finanzierungsleasing-Verbindlichkeiten dürfen nicht still in total_debt einfließen — weder als verlangter noch als optionaler Summand.",
+   "why": "Als VERLANGTER Bestandteil kostet Leasing Reichweite: 1.281 statt 2.929 Emittenten, also 1.648 weniger. Als OPTIONALER Summand bliebe die Abdeckung bei 2.929, aber total_debt hieße dann für die 1.281 leasenden Emittenten etwas anderes als für die übrigen 1.648. Ein Name für zwei Definitionen ist schlechter als eine engere Definition.",
+   "enforcedBy": "quant/tests/fundamentals-debt-contract.test.mjs",
+   "concepts": ["us-gaap:FinanceLeaseLiability", "us-gaap:FinanceLeaseLiabilityCurrent", "us-gaap:FinanceLeaseLiabilityNoncurrent"]
+  }
+ ],
+ "financeLeaseOption": {
+  "state": "NOT_MODELLED",
+  "allowed": "Als eigene, klar benannte Kennzahl beziehungsweise Evidenzschicht — nie als stiller Bestandteil von total_debt.",
+  "measuredReach": 1753,
+  "note": "Der Owner hat das ausdrücklich freigestellt, nicht beauftragt. Es ist hier als gemessene Option festgehalten, damit die Zahl nicht neu erhoben werden muss, wenn die Entscheidung ansteht. Eine Aufnahme wäre eine neue Kennzahl mit eigener Registry-Version, kein Zusatz zu dieser."
+ },
+ "openMeasurement": {
+  "id": "ISSUERS_WITHOUT_ANY_DEBT_CONCEPT",
+  "issuers": 1692,
+  "state": "NOT_MEASURED",
+  "question": "Welche Konzepte benutzen die Emittenten, die keines der langfristigen Schuldenkonzepte taggen?",
+  "note": "Die naheliegende Erklärung trägt nicht: die Kohorte enthält die erwarteten Banken und Versicherer, aber Lumen Technologies und MasTec tragen im Export ebenfalls keine Schuldenkennzahl. Ausdrücklich nicht blockierend für den laufenden Produktmeilenstein.",
+  "blocksProduct": false
+ },
+ "semanticTraps": {
+  "note": "Abdeckung ohne Semantik hätte hier direkt danebengegriffen. Diese fünf Konzepte reichen alle weiter als die heutige Abbildung und sind trotzdem keine Bilanzgröße. Sie stehen hier, damit der nächste Leser nicht dieselbe Prüfung noch einmal machen muss.",
+  "entries": [
+   {"concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalInYearTwo", "issuers": 2347, "why": "Fälligkeitsplan, undiskontierte Tilgung je Jahr — nicht der Buchwert."},
+   {"concept": "us-gaap:GainsLossesOnExtinguishmentOfDebt", "issuers": 2291, "why": "Ergebnisposten aus Schuldentilgung, keine Bestandsgröße."},
+   {"concept": "us-gaap:RepaymentsOfLongTermDebt", "issuers": 2040, "why": "Kapitalflussgröße einer Periode, kein Bestand."},
+   {"concept": "us-gaap:DebtInstrumentCarryingAmount", "issuers": 1840, "why": "Angabe je Instrument mit dimensionalen Achsen. Eine Summe darüber doppelt oder unterschlägt, je nach Gliederung."},
+   {"concept": "us-gaap:DebtInstrumentFaceAmount", "issuers": 1268, "why": "Nominalbetrag je Instrument, nicht der Buchwert."}
+  ]
+ }
+}

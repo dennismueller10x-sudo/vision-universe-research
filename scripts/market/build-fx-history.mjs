@@ -1,0 +1,421 @@
+/* =========================================================================
+   VISION UNIVERSE — build-fx-history.mjs   (Currency Layer, O-1/O-3)
+
+   HOLT DIE WAEHRUNGSPAAR-ZEITREIHEN, DIE DER BESTAND BRAUCHT.
+
+   Zentral, einmal je Paar. Nicht je Aktie (§8): eine USD/EUR-Reihe
+   bedient 10.790 Titel, und sechs Kopien davon haben zwei Zustaende -
+   gleich oder auseinandergelaufen - ohne dass man ihnen ansieht, welchen.
+
+   WAS ES NICHT TUT
+
+   Es entscheidet nicht, welche Paare gebraucht werden. Das steht in
+   pair-requirements.json und ist aus dem Bestand abgeleitet (O-3).
+   Kommt ein Titel mit neuer Berichtswaehrung hinzu, taucht das Paar dort
+   auf, und dieses Skript holt es - ohne dass jemand eine Liste pflegt.
+
+   Es laeuft auch NICHT gegen eine ungepruefte Faehigkeit. Ohne
+   gemessenes fxDaily/fxHistoricalDaily bricht es ab und sagt, welcher
+   Lauf fehlt. Ein Import, der auf Verdacht 60 Paare anfragt und an
+   HTTP 403 scheitert, hat das Kontingent verbraucht und nichts gelernt.
+
+   LIZENZ
+
+   Was hier entsteht, sind Anbieterreihen. Sie gehoeren nicht in einen
+   oeffentlich ausgelieferten Pfad, solange die Lizenzfrage nicht mit
+   Datum und Grundlage in display-policy.js steht. Standardziel ist
+   deshalb die Arbeitsablage; --publish ist eine bewusste Handlung.
+
+   Ausfuehren:
+     TIINGO_API_KEY=... node scripts/market/build-fx-history.mjs
+     TIINGO_API_KEY=... node scripts/market/build-fx-history.mjs --required-only
+     node scripts/market/build-fx-history.mjs --dry-run
+   ========================================================================= */
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const Rates = require(join(ROOT, "quant", "engines", "fx", "fx-rates.js"));
+/* Die Rolle kommt aus der Registry und nicht aus dieser Datei. Ein
+   handgeschriebenes Meta-Objekt liess die Reihe ohne Rolle in den Store
+   fallen (UNKNOWN, Prioritaet 99) - und damit hinter den Fallback. */
+const Providers = require(join(ROOT, "quant", "engines", "fx", "fx-provider-registry.js"));
+const Capabilities = require(join(ROOT, "quant", "engines", "capabilities.js"));
+
+const args = process.argv.slice(2);
+const flags = new Set(args.filter((a) => a.startsWith("--")));
+const DRY_RUN = flags.has("--dry-run");
+const PUBLISH = flags.has("--publish");
+const REQUIRED_ONLY = flags.has("--required-only");
+const startArg = args.find((a) => a.startsWith("--start="));
+const REQUESTED_START = startArg ? startArg.slice("--start=".length) : "2015-01-01";
+const maxArg = args.find((a) => a.startsWith("--max-pairs="));
+const MAX_PAIRS = maxArg ? Number(maxArg.slice("--max-pairs=".length)) : 40;
+
+const BASE = process.env.TIINGO_BASE_URL || "https://api.tiingo.com";
+const KEY = process.env.TIINGO_API_KEY || "";
+
+const OUT_DIR = PUBLISH
+  ? resolve(ROOT, "quant", "data", "market", "fx")
+  : resolve(ROOT, ".market-cache", "currency", "fx");
+
+function readFirst(...candidates) {
+  for (const file of candidates) {
+    if (existsSync(file)) return { file, data: JSON.parse(readFileSync(file, "utf8")) };
+  }
+  return null;
+}
+
+const requirements = readFirst(
+  resolve(ROOT, "quant", "data", "market", "fx", "pair-requirements.json"),
+  resolve(ROOT, ".market-cache", "currency", "pair-requirements.json"));
+
+if (!requirements) {
+  console.error("Kein Paarbedarf gefunden. Erst ausfuehren:");
+  console.error("  node scripts/market/build-fx-pair-requirements.mjs");
+  process.exit(1);
+}
+
+const probe = readFirst(
+  resolve(ROOT, "quant", "data", "market", "capabilities", "tiingo-fx-probe.json"),
+  resolve(ROOT, ".market-cache", "currency", "tiingo-fx-probe.json"));
+
+/* WIE WEIT ZURUECK DARF GEFRAGT WERDEN?
+
+   Nicht so weit, wie man moechte. Der erste Ingest-Lauf hat alle 39
+   Paare an HTTP 400 verloren, weil er ab 2015 fragte und die FX-Historie
+   des Anbieters spaeter beginnt. Das Fenster war zu gross, nicht der
+   Zugang zu klein - und der Unterschied war teuer: 78 Anfragen fuer
+   nichts.
+
+   Die Sondierung misst die Grenze (historicalDepth.safeStartDate). Liegt
+   sie vor, gilt der spaetere der beiden Werte. Liegt sie nicht vor, wird
+   nicht geraten: der Lauf bricht ab und verlangt die Messung. */
+const measuredStart = probe && probe.data.historicalDepth && probe.data.historicalDepth.safeStartDate;
+const START = measuredStart && measuredStart > REQUESTED_START ? measuredStart : REQUESTED_START;
+const startClamped = START !== REQUESTED_START;
+
+/* Die Sperre: ohne belegte Faehigkeit wird nicht importiert. */
+if (!DRY_RUN) {
+  const caps = probe && probe.data.capabilities;
+  const declaration = Capabilities.declare("tiingo", { fx: caps || {} });
+  const needed = ["fxDaily", "fxHistoricalDaily"];
+  const missing = needed.filter((c) => !Capabilities.supports(declaration, "fx", c));
+  if (missing.length) {
+    console.error("ABBRUCH: die noetigen FX-Faehigkeiten sind nicht belegt.");
+    console.error(`  Ungeprueft oder nicht vorhanden: ${missing.join(", ")}`);
+    console.error("  Erst messen: node scripts/market/probe-tiingo-fx.mjs (mit TIINGO_API_KEY)");
+    console.error("  Ein Import auf Verdacht verbraucht Kontingent und lernt nichts.");
+    process.exit(2);
+  }
+  if (!KEY) {
+    console.error("ABBRUCH: TIINGO_API_KEY fehlt. Der Import laeuft nur mit Zugang.");
+    process.exit(2);
+  }
+}
+
+const pairs = (requirements.data.pairs || [])
+  .filter((p) => !REQUIRED_ONLY || p.priority === "REQUIRED")
+  .slice(0, MAX_PAIRS);
+
+/* Ein Paar wird nur EINMAL geholt. USD/EUR und EUR/USD tragen dieselbe
+   Information; die Gegenrichtung entsteht in fx-rates.js durch
+   Inversion und nicht durch eine zweite Anfrage. Das halbiert das
+   Kontingent, ohne eine Zahl zu verlieren. */
+const canonical = new Map();
+for (const p of pairs) {
+  const key = [p.base, p.quote].sort().join("|");
+  if (!canonical.has(key)) canonical.set(key, { base: p.base, quote: p.quote, securities: p.securities, priority: p.priority });
+  else canonical.get(key).securities += p.securities;
+}
+const toFetch = [...canonical.values()].sort((a, b) => b.securities - a.securities);
+
+function tiingoTicker(base, quote) { return (base + quote).toLowerCase(); }
+
+let requests = 0;
+const results = [];
+
+async function get(ticker, startDate) {
+  requests++;
+  const res = await fetch(`${BASE}/tiingo/fx/${ticker}/prices?resampleFreq=1day&startDate=${startDate}`,
+    { headers: { Authorization: `Token ${KEY}`, "Content-Type": "application/json" } });
+  if (!res.ok) return { ok: false, httpStatus: res.status, rows: [] };
+  const body = await res.json();
+  return { ok: true, httpStatus: res.status, rows: Array.isArray(body) ? body : [] };
+}
+
+/**
+ * Holt ein Paar in der Richtung, die der Anbieter FUEHRT.
+ *
+ * Tiingo folgt der Marktkonvention: EUR/USD gibt es als `eurusd`, die
+ * Gegenrichtung `usdeur` antwortet mit HTTP 200 und einem leeren Array.
+ * Der erste Produktivlauf der Sondierung (35696630585) hat das gemessen.
+ *
+ * Der Store braucht die Gegenrichtung nicht als eigene Reihe: fx-rates.js
+ * invertiert (DERIVATION INVERSE) und das ist eine exakte Identitaet,
+ * keine Naeherung. Abgelegt wird deshalb, was kam - unter der Richtung,
+ * in der es kam. Wer stattdessen beim Ingest invertierte, wuerde eine
+ * gerundete Zahl speichern und die Originalreihe verlieren (§3).
+ */
+async function fetchPair(pair) {
+  const candidates = [
+    { ticker: tiingoTicker(pair.base, pair.quote), base: pair.base, quote: pair.quote, direction: "DIRECT" },
+    { ticker: tiingoTicker(pair.quote, pair.base), base: pair.quote, quote: pair.base, direction: "INVERSE" }
+  ];
+
+  const attempts = [];
+  let hit = null;
+  for (const candidate of candidates) {
+    const res = await get(candidate.ticker, START);
+    attempts.push({ ticker: candidate.ticker, httpStatus: res.httpStatus, rows: res.rows.length, startDate: START });
+    if (res.ok && res.rows.length) { hit = { candidate, body: res.rows }; break; }
+    if (res.httpStatus === 403 || res.httpStatus === 404) break;
+  }
+
+  if (!hit) {
+    /* HTTP 400 heisst "dieses Fenster nehme ich nicht" und NICHT "dieses
+       Paar fuehre ich nicht". Die beiden zu verwechseln kostet genau
+       einen Ingest-Lauf, und der erste hat es getan: 39 Paare als
+       pairNotServed gemeldet, die alle vorhanden sind. */
+    const rejectedWindow = attempts.some((a) => a.httpStatus === 400);
+    return {
+      pair, ok: false, attempts,
+      reason: attempts.some((a) => a.httpStatus === 403 || a.httpStatus === 404) ? "accessDenied"
+            : rejectedWindow ? "windowRejected"
+            : "pairNotServed",
+      detail: rejectedWindow
+        ? `HTTP 400 ab ${START}. Das Fenster liegt vor dem Beginn der Anbieterhistorie - ` +
+          "erst die Tiefe messen (probe-tiingo-fx.mjs), dann mit dem gemessenen safeStartDate importieren."
+        : null
+    };
+  }
+
+  const stored = hit.candidate;
+  const body = hit.body;
+
+  /* Der Tagesschluss ist der Referenzkurs. Bewusst close und nicht mid
+     aus dem Quote-Endpunkt: ein Schlusskurs ist reproduzierbar, ein
+     Mittelkurs von jetzt ist es nicht - und §8 verlangt, dass ein Wert
+     aus 2021 morgen dieselbe Zahl ergibt. */
+  const points = body
+    .map((row) => [String(row.date || "").slice(0, 10), Number(row.close)])
+    .filter(([date, rate]) => /^\d{4}-\d{2}-\d{2}$/.test(date) && Number.isFinite(rate) && rate > 0);
+
+  /* Gegenprobe im eigenen Store, bevor etwas geschrieben wird: eine
+     Reihe, die der Store nicht annimmt, hat hier nichts verloren. */
+  const store = Rates.createStore();
+  const stats = store.ingest(stored.base, stored.quote, points, Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+
+  /* Und die Gegenprobe zur Inversion: die angefragte Richtung muss aus
+     der gespeicherten herauskommen. Sonst steht die Reihe da, und das
+     Paar, fuer das sie geholt wurde, ist trotzdem nicht bedient. */
+  const backCheck = store.rateAt(pair.base, pair.quote, null);
+  if (!backCheck.available) {
+    return { pair, ok: false, attempts, reason: "inversionFailed" };
+  }
+
+  return { pair, ok: true, points, stats, stored, attempts,
+           rawRows: body.length, servedDirection: stored.direction,
+           resolvedVia: backCheck.derivation };
+}
+
+async function main() {
+  if (startClamped) {
+    console.log(`Startdatum auf ${START} gesetzt (angefragt ${REQUESTED_START}).`);
+    console.log(`  Grund: die gemessene Anbieterhistorie beginnt nicht frueher. Ein groesseres Fenster wird mit HTTP 400 abgelehnt.`);
+  } else if (!measuredStart) {
+    console.log(`Hinweis: keine gemessene Historientiefe in der Sondierung. Startdatum ${START} ist ungeprueft.`);
+  }
+
+  if (DRY_RUN) {
+    console.log(`--dry-run: ${toFetch.length} kanonische Paare waeren zu holen (aus ${pairs.length} Richtungen).`);
+    for (const p of toFetch.slice(0, 15)) {
+      console.log(`  ${p.base}/${p.quote}  ${tiingoTicker(p.base, p.quote)}  ${p.securities} Titel  ${p.priority}`);
+    }
+    console.log(`\nKontingent: ${toFetch.length} Anfragen ab ${START}.`);
+    process.exit(0);
+  }
+
+  mkdirSync(OUT_DIR, { recursive: true });
+  const asOf = new Date().toISOString();
+  const written = new Set();
+
+  for (const pair of toFetch) {
+    const result = await fetchPair(pair);
+    results.push(result);
+    if (!result.ok) {
+      const tried = (result.attempts || []).map((a) => `${a.ticker}:${a.httpStatus}/${a.rows}`).join(" ");
+      console.log(`  ${pair.base}/${pair.quote}  --  ${result.reason}${tried ? `  (${tried})` : ""}`);
+      continue;
+    }
+    const stored = result.stored;
+    const file = join(OUT_DIR, `${stored.base}${stored.quote}.json`);
+    /* Eine Datei je GEFUEHRTER Richtung. Zwei Dateien fuer dasselbe Paar
+       waeren zwei Staende, die auseinanderlaufen koennen - genau das,
+       was §8 verhindern soll. */
+    if (written.has(file)) {
+      console.log(`  ${pair.base}/${pair.quote}  ok  bereits als ${stored.base}/${stored.quote} abgelegt (Inversion)`);
+      continue;
+    }
+    written.add(file);
+    writeFileSync(file, JSON.stringify({
+      schema: "vu-fx-series-1.0.0",
+      base: stored.base, quote: stored.quote,
+      requestedAs: `${pair.base}/${pair.quote}`,
+      servedDirection: result.servedDirection,
+      inversionNote: result.servedDirection === "INVERSE"
+        ? `Der Anbieter fuehrt ${stored.base}/${stored.quote}; ${pair.base}/${pair.quote} entsteht in fx-rates.js durch Inversion (exakte Identitaet, keine Naeherung).`
+        : null,
+      source: "tiingo", frequency: "DAILY",
+      /* O-14: historisch die zweite Wahl, in der Gegenwart die erste. */
+      roles: { HISTORICAL_DAILY: "FALLBACK", CURRENT: "PRIMARY" },
+      priceBasis: "daily close",
+      /* Gemessen (probe-tiingo-fx.json#timestampSemantics): der Stempel
+         der Bar ist 00:00:00.000Z, die Bar umfasst also einen
+         UTC-Kalendertag und ihr Schluss liegt am Tagesende. Das ist der
+         Grund, warum dieselbe Zahl nicht mit einem Fixing um 14:15 UTC
+         vergleichbar ist - siehe provider-seam-audit.json. */
+      priceInstantUtcApprox: 24.0,
+      dayBoundary: "UTC-Kalendertag",
+      asOf,
+      first: result.stats.first, last: result.stats.last,
+      observations: result.stats.observations,
+      rejectedRows: result.stats.rejectedRows,
+      duplicateDates: result.stats.duplicateDates,
+      securitiesServed: pair.securities,
+      points: result.points
+    }, null, 2) + "\n");
+    console.log(`  ${pair.base}/${pair.quote}  ok  als ${stored.ticker} (${result.servedDirection})  ${result.stats.observations} Zeilen  ${result.stats.first} .. ${result.stats.last}`);
+  }
+
+  const ok = results.filter((r) => r.ok);
+  const summary = {
+    schema: "vu-fx-history-run-1.0.0",
+    generatedAtUtc: asOf,
+    startDate: START,
+    requestedStartDate: REQUESTED_START,
+    startClampedToMeasuredDepth: startClamped,
+    outputDir: OUT_DIR.replace(ROOT + "/", ""),
+    published: PUBLISH,
+    requests,
+    pairsAttempted: toFetch.length,
+    pairsWritten: ok.length,
+    pairsFailed: results.filter((r) => !r.ok).map((r) => ({ pair: `${r.pair.base}/${r.pair.quote}`, reason: r.reason, attempts: r.attempts || null })),
+    filesWritten: [...written].map((f) => f.split("/").pop()),
+    totalObservations: ok.reduce((n, r) => n + r.stats.observations, 0)
+  };
+  writeFileSync(join(OUT_DIR, "_run.json"), JSON.stringify(summary, null, 2) + "\n");
+
+  /* DIE ABDECKUNGSKARTE - OHNE EINEN EINZIGEN KURS.
+
+     Welche Berichtswaehrung ein FX-Paar hat und welche nicht, ist eine
+     Faehigkeitsaussage wie die Sondierung selbst: sie enthaelt
+     Paarnamen, Zeilenzahlen und Gruende, aber keinen Kurswert. Sie darf
+     deshalb committet werden, waehrend die Reihen es nicht duerfen.
+
+     Ohne sie waere der wichtigste Befund dieses Laufs unsichtbar: 21 der
+     61 gebrauchten Richtungen fuehrt der Anbieter nicht. Die
+     Unternehmen, die in diesen Waehrungen berichten, behalten ihre
+     Originalwaehrung - dauerhaft, nicht bis zum naechsten Lauf. Das ist
+     eine Produktaussage und gehoert vor die Augen des Owners, nicht in
+     eine Arbeitsablage, die mit dem Runner stirbt. */
+  /* EFFEKTIVE ABDECKUNG, NICHT ABRUFERGEBNIS.
+
+     Die erste Fassung meldete je Paar, ob der ABRUF geklappt hat. Das
+     ergab 21 "nicht gefuehrte" Richtungen - darunter CNY/EUR mit 124
+     betroffenen Titeln. Die Zahl war richtig und die Aussage falsch:
+     USD/CNY liegt mit 2.030 Zeilen im Store, und fx-rates.js bildet
+     CNY/EUR daraus ueber das Pivot. Alibaba rechnet seit Lauf
+     35697879962 korrekt in Euro.
+
+     Ein Bericht, der 124 Titel als nicht umrechenbar fuehrt, waehrend
+     sie umgerechnet werden, laedt zu genau der Entscheidung ein, die
+     O-2 vermeiden soll: eine zweite Quelle fuer ein Problem, das es
+     nicht gibt.
+
+     Gefragt wird deshalb die Engine selbst, nicht das Abrufprotokoll. */
+  const store = Rates.createStore();
+  for (const r of ok) {
+    store.ingest(r.stored.base, r.stored.quote, r.points, Providers.ingestMeta("tiingo", { frequency: "DAILY" }));
+  }
+
+  const coverage = [];
+  for (const p of pairs) {
+    const hit = store.rateAt(p.base, p.quote, null);
+    coverage.push({
+      pair: `${p.base}/${p.quote}`,
+      resolvable: hit.available === true,
+      resolution: hit.available ? hit.derivation : "NONE",
+      via: hit.available && hit.derivation === "TRIANGULATED" ? hit.legs
+         : hit.available && hit.derivation === "INVERSE" ? [hit.derivedFrom]
+         : null,
+      securitiesAffected: p.securities,
+      consequence: hit.available
+        ? null
+        : "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    });
+  }
+  const unresolvable = coverage.filter((c) => !c.resolvable);
+
+  const availability = {
+    schema: "vu-fx-pair-availability-2.0.0",
+    generatedAtUtc: asOf,
+    note: "Welche gebrauchten Waehrungspaare der Currency Layer AUFLOESEN kann - direkt, " +
+          "durch Inversion oder ueber das Pivot. Ein Paar, das der Anbieter nicht direkt fuehrt, " +
+          "ist deshalb nicht unbedient. Enthaelt keine Kurse, nur Paarnamen und Zeilenzahlen.",
+    provider: "tiingo",
+    startDate: START,
+    requestedStartDate: REQUESTED_START,
+    startClampedToMeasuredDepth: startClamped,
+    directionsNeeded: pairs.length,
+    canonicalPairsAttempted: toFetch.length,
+    served: ok.map((r) => ({
+      requested: `${r.pair.base}/${r.pair.quote}`,
+      storedAs: `${r.stored.base}/${r.stored.quote}`,
+      direction: r.servedDirection,
+      observations: r.stats.observations,
+      first: r.stats.first, last: r.stats.last,
+      securitiesServed: r.pair.securities
+    })),
+    notServed: results.filter((r) => !r.ok).map((r) => ({
+      requested: `${r.pair.base}/${r.pair.quote}`,
+      reason: r.reason,
+      triedTickers: (r.attempts || []).map((a) => a.ticker),
+      securitiesAffected: r.pair.securities,
+      consequence: "Monetaere Werte dieser Unternehmen bleiben in der Originalwaehrung; es wird nicht umgerechnet."
+    })),
+    /* Das ist die Zahl, die zaehlt. */
+    coverage,
+    resolvablePairs: coverage.filter((c) => c.resolvable).length,
+    unresolvablePairs: unresolvable.length,
+    byResolution: coverage.reduce((acc, c) => { acc[c.resolution] = (acc[c.resolution] || 0) + 1; return acc; }, {}),
+    unresolvableCurrencies: [...new Set(unresolvable
+      .flatMap((c) => c.pair.split("/"))
+      .filter((c) => c !== "EUR" && c !== "USD"))].sort(),
+    securitiesWithoutCoverage: unresolvable.reduce((n, c) => n + (c.securitiesAffected || 0), 0)
+  };
+
+  const availabilityFile = (PUBLISH || flags.has("--publish-availability"))
+    ? join(ROOT, "quant", "data", "market", "fx", "pair-availability.json")
+    : join(OUT_DIR, "..", "pair-availability.json");
+  mkdirSync(dirname(availabilityFile), { recursive: true });
+  writeFileSync(availabilityFile, JSON.stringify(availability, null, 2) + "\n");
+  console.log(`  Abrufe:          ${availability.served.length} Paare geholt, ${availability.notServed.length} nicht gefuehrt`);
+  console.log(`  Aufloesbar:      ${availability.resolvablePairs} von ${coverage.length} gebrauchten Richtungen ` +
+    `(${Object.entries(availability.byResolution).map(([k, v]) => `${k}:${v}`).join(", ")})`);
+  if (unresolvable.length) {
+    console.log(`  OHNE ABDECKUNG:  ${unresolvable.length} Richtungen, ${availability.securitiesWithoutCoverage} Titel - ` +
+      `${availability.unresolvableCurrencies.join(", ")}`);
+  } else {
+    console.log(`  OHNE ABDECKUNG:  keine - jede gebrauchte Richtung ist aufloesbar`);
+  }
+
+  console.log(`\n${ok.length} von ${toFetch.length} Paaren geschrieben, ${summary.totalObservations} Beobachtungen, ${requests} Anfragen.`);
+  console.log(`Ziel: ${summary.outputDir}`);
+  process.exit(0);
+}
+
+main().catch((err) => { console.error(err); process.exit(1); });

@@ -1,0 +1,105 @@
+{
+  "methodologyVersion": "strategies-v1.0.0",
+  "note": "Die fuenf V1-Bibliotheksstrategien. Jede ist eine vollstaendige, validierbare StrategyDefinition und wird von genau derselben Engine verarbeitet wie eine im Builder oder per AI erzeugte Strategie (§62).",
+  "strategies": [
+    {
+      "strategyId": "vu-quality-compounders",
+      "name": "VU Quality Compounders",
+      "thesis": "Unternehmen mit hoher Kapitalrendite, verlaesslicher Cash-Erzeugung und solider Bilanz koennen ihren Wert ueber lange Zeitraeume verzinsen. Die Strategie sucht nicht den billigsten, sondern den bestaendigsten Teil des Universums.",
+      "mainRisk": "Qualitaet ist selten guenstig. In Phasen steigender Zinsen oder ausgepraegter Value-Rotation kann die Bewertungspraemie zurueckkommen.",
+      "definition": {
+        "schemaVersion": "1.0",
+        "universe": { "universeId": "US_EQUITIES", "region": "US", "assetType": "equity" },
+        "filters": [
+          { "field": "marketCap", "operator": "gte", "value": 1000 },
+          { "field": "avgDollarVolume", "operator": "gte", "value": 5 },
+          { "field": "freeCashFlow", "operator": "gt", "value": 0 },
+          { "field": "roic", "operator": "gte", "value": 10 }
+        ],
+        "ranking": { "factors": [ { "factor": "quality", "weight": 0.70 }, { "factor": "growth", "weight": 0.30 } ] },
+        "portfolio": { "positions": 30, "weighting": "equal", "maxPositionWeight": 0.06, "maxSectorWeight": 0.30 },
+        "rebalance": "quarterly",
+        "execution": { "timing": "next_open", "transactionCostsBps": 5, "slippageBps": 5 }
+      }
+    },
+    {
+      "strategyId": "vu-momentum-leaders",
+      "name": "VU Momentum Leaders",
+      "thesis": "Relative Staerke ueber mittlere Horizonte hat sich empirisch als eine der bestaendigsten Querschnittsanomalien erwiesen. Die Strategie haelt die Titel mit der staerksten bestaetigten Kursentwicklung.",
+      "mainRisk": "Momentum-Crashes an Wendepunkten und deutlich hoeherer Turnover als bei Fundamentalstrategien.",
+      "definition": {
+        "schemaVersion": "1.0",
+        "universe": { "universeId": "US_EQUITIES", "region": "US", "assetType": "equity" },
+        "filters": [
+          { "field": "marketCap", "operator": "gte", "value": 2000 },
+          { "field": "avgDollarVolume", "operator": "gte", "value": 10 },
+          { "field": "priceTo200dma", "operator": "gt", "value": 0 }
+        ],
+        "ranking": { "factors": [ { "factor": "momentum", "weight": 1.0 } ] },
+        "portfolio": { "positions": 25, "weighting": "equal", "maxPositionWeight": 0.06, "maxSectorWeight": 0.35 },
+        "rebalance": "monthly",
+        "execution": { "timing": "next_open", "transactionCostsBps": 5, "slippageBps": 8 }
+      }
+    },
+    {
+      "strategyId": "vu-quality-momentum",
+      "name": "VU Quality Momentum",
+      "thesis": "Die Kombination aus fundamentaler Qualitaet und relativer Kursstaerke verbindet zwei weitgehend unkorrelierte Faktoren: das Unternehmen muss operativ ueberzeugen und der Markt muss es bereits bestaetigen.",
+      "mainRisk": "Konzentration in wachstumsstarken Sektoren; in breiten Korrekturen fallen beide Faktoren gleichzeitig zurueck.",
+      "definition": {
+        "schemaVersion": "1.0",
+        "universe": { "universeId": "US_EQUITIES", "region": "US", "assetType": "equity" },
+        "filters": [
+          { "field": "marketCap", "operator": "gte", "value": 1000 },
+          { "field": "avgDollarVolume", "operator": "gte", "value": 5 },
+          { "field": "freeCashFlow", "operator": "gt", "value": 0 }
+        ],
+        "ranking": { "factors": [ { "factor": "quality", "weight": 0.50 }, { "factor": "momentum", "weight": 0.50 } ] },
+        "portfolio": { "positions": 25, "weighting": "equal", "maxPositionWeight": 0.06, "maxSectorWeight": 0.30 },
+        "rebalance": "monthly",
+        "execution": { "timing": "next_open", "transactionCostsBps": 5, "slippageBps": 5 }
+      }
+    },
+    {
+      "strategyId": "vu-garp",
+      "name": "VU GARP",
+      "thesis": "Growth at a Reasonable Price: Wachstum und Qualitaet, aber ausdruecklich mit Bewertungsdisziplin. Die Strategie meidet sowohl das teuerste Wachstumssegment als auch klassische Value-Fallen.",
+      "mainRisk": "Definitionsrisiko — die Balance zwischen Wachstum und Bewertung entscheidet ueber das Ergebnis und ist anfaellig fuer Overfitting.",
+      "definition": {
+        "schemaVersion": "1.0",
+        "universe": { "universeId": "US_EQUITIES", "region": "US", "assetType": "equity" },
+        "filters": [
+          { "field": "marketCap", "operator": "gte", "value": 1000 },
+          { "field": "avgDollarVolume", "operator": "gte", "value": 5 },
+          { "field": "revenueGrowth", "operator": "gte", "value": 8 },
+          { "field": "freeCashFlow", "operator": "gt", "value": 0 },
+          { "field": "evToEbitda", "operator": "lte", "value": 25 }
+        ],
+        "ranking": { "factors": [ { "factor": "growth", "weight": 0.40 }, { "factor": "quality", "weight": 0.35 }, { "factor": "value", "weight": 0.25 } ] },
+        "portfolio": { "positions": 30, "weighting": "equal", "maxPositionWeight": 0.06, "maxSectorWeight": 0.30 },
+        "rebalance": "quarterly",
+        "execution": { "timing": "next_open", "transactionCostsBps": 5, "slippageBps": 5 }
+      }
+    },
+    {
+      "strategyId": "vu-future-leaders",
+      "name": "VU Future Leaders",
+      "thesis": "Schnell wachsende Unternehmen, die ihr Wachstum bereits in Cashflow uebersetzen und deren Kursentwicklung dies bestaetigt. Bewusst der offensivste Baustein der Bibliothek.",
+      "mainRisk": "Deutlich hoehere Volatilitaet und tiefere Drawdowns als die uebrigen Strategien. Ohne Revisionsdaten fehlt in V1 ein wichtiger Bestaetigungsfaktor.",
+      "definition": {
+        "schemaVersion": "1.0",
+        "universe": { "universeId": "US_EQUITIES", "region": "US", "assetType": "equity" },
+        "filters": [
+          { "field": "marketCap", "operator": "gte", "value": 500 },
+          { "field": "avgDollarVolume", "operator": "gte", "value": 5 },
+          { "field": "revenueGrowth", "operator": "gte", "value": 15 },
+          { "field": "freeCashFlow", "operator": "gt", "value": 0 }
+        ],
+        "ranking": { "factors": [ { "factor": "growth", "weight": 0.45 }, { "factor": "momentum", "weight": 0.35 }, { "factor": "quality", "weight": 0.20 } ] },
+        "portfolio": { "positions": 20, "weighting": "equal", "maxPositionWeight": 0.08, "maxSectorWeight": 0.40 },
+        "rebalance": "monthly",
+        "execution": { "timing": "next_open", "transactionCostsBps": 5, "slippageBps": 8 }
+      }
+    }
+  ]
+}

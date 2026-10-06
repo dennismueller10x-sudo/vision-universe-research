@@ -1,0 +1,76 @@
+{
+  "generatedAt": "2026-09-09T17:19:50.436Z",
+  "note": "Pruefungen, die erst ueber viele Titel sichtbar werden. Je Titel prueft market-quality.js; beide zusammen ergeben das Urteil.",
+  "run": {
+    "source": "local",
+    "runId": null,
+    "commit": null
+  },
+  "thresholds": {
+    "maxDateSpreadTradingDays": 5,
+    "nullExplosionRate": 0.5
+  },
+  "status": "PASSED_WITH_WARNINGS",
+  "gate": "FULL_UNIVERSE",
+  "checksRun": [
+    "duplicateSecurities",
+    "tickerCollisions",
+    "nonFiniteNumbers",
+    "nullExplosion",
+    "dateAlignment",
+    "technicalBundles",
+    "relativeStrengthAlignment",
+    "accountingConsistency"
+  ],
+  "errors": 0,
+  "warnings": 1,
+  "findings": [
+    {
+      "severity": "WARNING",
+      "check": "dateAlignment",
+      "message": "34 Titel liegen mehr als 5 Handelstage hinter dem Feld (0.6 % der aufgeloesten).",
+      "examples": [
+        {
+          "ticker": "WBS",
+          "staleTradingDays": 14
+        },
+        {
+          "ticker": "LEG",
+          "staleTradingDays": 9
+        },
+        {
+          "ticker": "AVB",
+          "staleTradingDays": 17
+        },
+        {
+          "ticker": "HLX",
+          "staleTradingDays": 6
+        },
+        {
+          "ticker": "AREN",
+          "staleTradingDays": 8
+        },
+        {
+          "ticker": "TWO",
+          "staleTradingDays": 11
+        },
+        {
+          "ticker": "BCAR",
+          "staleTradingDays": 9
+        },
+        {
+          "ticker": "RMAX",
+          "staleTradingDays": 11
+        },
+        {
+          "ticker": "LBRDA",
+          "staleTradingDays": 13
+        },
+        {
+          "ticker": "LBRDK",
+          "staleTradingDays": 13
+        }
+      ]
+    }
+  ]
+}

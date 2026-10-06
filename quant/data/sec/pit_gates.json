@@ -1,0 +1,693 @@
+{
+  "generated_at_utc": "2026-09-08T04:32:31.171Z",
+  "versions": {
+    "normalization_schema": "1.0.0",
+    "normalization_logic": "1.5.0",
+    "formula": "1.0.0",
+    "provider_adapter": "sec-edgar-1.0.0",
+    "quality_rules": "1.0.0",
+    "metric_registry": {
+      "schema_version": 1,
+      "mapping_version": "1.0.0"
+    }
+  },
+  "provider": "sec-edgar",
+  "declared_capabilities": {
+    "pointInTimeFundamentals": true,
+    "filingTimestamps": true,
+    "originalHistoricalValues": true,
+    "restatementSemantics": true,
+    "annualPeriods": true,
+    "quarterlyPeriods": true,
+    "survivorshipBiasControls": false,
+    "marketDataOhlcv": false,
+    "corporateActions": false,
+    "splits": false,
+    "analystEstimates": false,
+    "delistedSecurities": null,
+    "historicalCoverage": null
+  },
+  "capability_source": "quant/config/provider-profiles.json (providers.sec-edgar)",
+  "provider_level": {
+    "results": [
+      {
+        "gate": "MARKET_DATA_AVAILABLE",
+        "status": "NOT_APPLICABLE",
+        "reason": "SEC/EDGAR publishes no price data; OHLCV stays the MarketDataProvider's responsibility. Value and Momentum factors are computed by quant/engines/factors.js from market data, never from this provider.",
+        "evidence": {}
+      },
+      {
+        "gate": "SURVIVORSHIP_FREE_UNIVERSE",
+        "status": "FAIL",
+        "reason": "SEC/EDGAR has no security master and no delisting event feed; a point-in-time index or exchange listing history is required to build a survivorship-free universe (docs/SEC_COVERAGE_REPORT.md)",
+        "evidence": {}
+      },
+      {
+        "gate": "PIT_NO_FUTURE_DATA_LEAK",
+        "status": "UNKNOWN",
+        "reason": "no factbook supplied",
+        "evidence": {}
+      },
+      {
+        "gate": "PROVENANCE_COMPLETE",
+        "status": "UNKNOWN",
+        "reason": "no factbook supplied",
+        "evidence": {}
+      },
+      {
+        "gate": "PERIOD_INTEGRITY",
+        "status": "UNKNOWN",
+        "reason": "no factbook supplied",
+        "evidence": {}
+      },
+      {
+        "gate": "UNIT_INTEGRITY",
+        "status": "UNKNOWN",
+        "reason": "no factbook supplied",
+        "evidence": {}
+      },
+      {
+        "gate": "NO_INVENTED_VALUES",
+        "status": "UNKNOWN",
+        "reason": "no facts supplied",
+        "evidence": {}
+      },
+      {
+        "gate": "DERIVED_SEPARATION",
+        "status": "UNKNOWN",
+        "reason": "no derived metrics supplied",
+        "evidence": {}
+      }
+    ],
+    "summary": {
+      "total": 8,
+      "by_status": {
+        "PASS": 0,
+        "FAIL": 1,
+        "UNKNOWN": 6,
+        "NOT_APPLICABLE": 1
+      },
+      "blocking_failures": [
+        "SURVIVORSHIP_FREE_UNIVERSE"
+      ]
+    }
+  },
+  "note": "Gate A/B/C stammen aus der bestehenden Qualifikationsinstanz und laufen gegen den SEC-Adapter. Die Ingestion-Pruefungen darunter stammen aus scripts/quant/cli.py gates. Keine Ergebnisse werden hier nachtraeglich angehoben.",
+  "per_company": [
+    {
+      "cik": "0000019617",
+      "ticker": "JPM",
+      "results": [
+        {
+          "gate": "MARKET_DATA_AVAILABLE",
+          "status": "NOT_APPLICABLE",
+          "reason": "SEC/EDGAR publishes no price data; OHLCV stays the MarketDataProvider's responsibility. Value and Momentum factors are computed by quant/engines/factors.js from market data, never from this provider.",
+          "evidence": {}
+        },
+        {
+          "gate": "SURVIVORSHIP_FREE_UNIVERSE",
+          "status": "FAIL",
+          "reason": "SEC/EDGAR has no security master and no delisting event feed; a point-in-time index or exchange listing history is required to build a survivorship-free universe (docs/SEC_COVERAGE_REPORT.md)",
+          "evidence": {}
+        },
+        {
+          "gate": "PIT_NO_FUTURE_DATA_LEAK",
+          "status": "PASS",
+          "reason": "all 4060 observations become available on or after their period end",
+          "evidence": {
+            "observations_checked": 4060
+          }
+        },
+        {
+          "gate": "PROVENANCE_COMPLETE",
+          "status": "PASS",
+          "reason": "all 4060 observations carry concept, accession, form, filing date and availability",
+          "evidence": {
+            "observations_checked": 4060
+          }
+        },
+        {
+          "gate": "PERIOD_INTEGRITY",
+          "status": "PASS",
+          "reason": "all 1044 quarterly observations span a single quarter",
+          "evidence": {}
+        },
+        {
+          "gate": "UNIT_INTEGRITY",
+          "status": "PASS",
+          "reason": "all 4060 observations use a registry-allowed unit",
+          "evidence": {}
+        },
+        {
+          "gate": "NO_INVENTED_VALUES",
+          "status": "PASS",
+          "reason": "all 81 evaluated metrics are either available or explicitly null with a reason code",
+          "evidence": {}
+        },
+        {
+          "gate": "DERIVED_SEPARATION",
+          "status": "PASS",
+          "reason": "6 of 6 canonical metrics were computed here; each carries source VISION_UNIVERSE_DERIVED and a formula version, and the rest are reported facts passed through unchanged",
+          "evidence": {}
+        }
+      ],
+      "summary": {
+        "total": 8,
+        "by_status": {
+          "PASS": 6,
+          "FAIL": 1,
+          "UNKNOWN": 0,
+          "NOT_APPLICABLE": 1
+        },
+        "blocking_failures": [
+          "SURVIVORSHIP_FREE_UNIVERSE"
+        ]
+      }
+    },
+    {
+      "cik": "0000034088",
+      "ticker": "XOM",
+      "results": [
+        {
+          "gate": "MARKET_DATA_AVAILABLE",
+          "status": "NOT_APPLICABLE",
+          "reason": "SEC/EDGAR publishes no price data; OHLCV stays the MarketDataProvider's responsibility. Value and Momentum factors are computed by quant/engines/factors.js from market data, never from this provider.",
+          "evidence": {}
+        },
+        {
+          "gate": "SURVIVORSHIP_FREE_UNIVERSE",
+          "status": "FAIL",
+          "reason": "SEC/EDGAR has no security master and no delisting event feed; a point-in-time index or exchange listing history is required to build a survivorship-free universe (docs/SEC_COVERAGE_REPORT.md)",
+          "evidence": {}
+        },
+        {
+          "gate": "PIT_NO_FUTURE_DATA_LEAK",
+          "status": "PASS",
+          "reason": "all 4535 observations become available on or after their period end",
+          "evidence": {
+            "observations_checked": 4535
+          }
+        },
+        {
+          "gate": "PROVENANCE_COMPLETE",
+          "status": "PASS",
+          "reason": "all 4535 observations carry concept, accession, form, filing date and availability",
+          "evidence": {
+            "observations_checked": 4535
+          }
+        },
+        {
+          "gate": "PERIOD_INTEGRITY",
+          "status": "PASS",
+          "reason": "all 960 quarterly observations span a single quarter",
+          "evidence": {}
+        },
+        {
+          "gate": "UNIT_INTEGRITY",
+          "status": "PASS",
+          "reason": "all 4535 observations use a registry-allowed unit",
+          "evidence": {}
+        },
+        {
+          "gate": "NO_INVENTED_VALUES",
+          "status": "PASS",
+          "reason": "all 81 evaluated metrics are either available or explicitly null with a reason code",
+          "evidence": {}
+        },
+        {
+          "gate": "DERIVED_SEPARATION",
+          "status": "PASS",
+          "reason": "6 of 6 canonical metrics were computed here; each carries source VISION_UNIVERSE_DERIVED and a formula version, and the rest are reported facts passed through unchanged",
+          "evidence": {}
+        }
+      ],
+      "summary": {
+        "total": 8,
+        "by_status": {
+          "PASS": 6,
+          "FAIL": 1,
+          "UNKNOWN": 0,
+          "NOT_APPLICABLE": 1
+        },
+        "blocking_failures": [
+          "SURVIVORSHIP_FREE_UNIVERSE"
+        ]
+      }
+    },
+    {
+      "cik": "0000320193",
+      "ticker": "AAPL",
+      "results": [
+        {
+          "gate": "MARKET_DATA_AVAILABLE",
+          "status": "NOT_APPLICABLE",
+          "reason": "SEC/EDGAR publishes no price data; OHLCV stays the MarketDataProvider's responsibility. Value and Momentum factors are computed by quant/engines/factors.js from market data, never from this provider.",
+          "evidence": {}
+        },
+        {
+          "gate": "SURVIVORSHIP_FREE_UNIVERSE",
+          "status": "FAIL",
+          "reason": "SEC/EDGAR has no security master and no delisting event feed; a point-in-time index or exchange listing history is required to build a survivorship-free universe (docs/SEC_COVERAGE_REPORT.md)",
+          "evidence": {}
+        },
+        {
+          "gate": "PIT_NO_FUTURE_DATA_LEAK",
+          "status": "PASS",
+          "reason": "all 6286 observations become available on or after their period end",
+          "evidence": {
+            "observations_checked": 6286
+          }
+        },
+        {
+          "gate": "PROVENANCE_COMPLETE",
+          "status": "PASS",
+          "reason": "all 6286 observations carry concept, accession, form, filing date and availability",
+          "evidence": {
+            "observations_checked": 6286
+          }
+        },
+        {
+          "gate": "PERIOD_INTEGRITY",
+          "status": "PASS",
+          "reason": "all 2163 quarterly observations span a single quarter",
+          "evidence": {}
+        },
+        {
+          "gate": "UNIT_INTEGRITY",
+          "status": "PASS",
+          "reason": "all 6286 observations use a registry-allowed unit",
+          "evidence": {}
+        },
+        {
+          "gate": "NO_INVENTED_VALUES",
+          "status": "PASS",
+          "reason": "all 81 evaluated metrics are either available or explicitly null with a reason code",
+          "evidence": {}
+        },
+        {
+          "gate": "DERIVED_SEPARATION",
+          "status": "PASS",
+          "reason": "6 of 6 canonical metrics were computed here; each carries source VISION_UNIVERSE_DERIVED and a formula version, and the rest are reported facts passed through unchanged",
+          "evidence": {}
+        }
+      ],
+      "summary": {
+        "total": 8,
+        "by_status": {
+          "PASS": 6,
+          "FAIL": 1,
+          "UNKNOWN": 0,
+          "NOT_APPLICABLE": 1
+        },
+        "blocking_failures": [
+          "SURVIVORSHIP_FREE_UNIVERSE"
+        ]
+      }
+    },
+    {
+      "cik": "0000789019",
+      "ticker": "MSFT",
+      "results": [
+        {
+          "gate": "MARKET_DATA_AVAILABLE",
+          "status": "NOT_APPLICABLE",
+          "reason": "SEC/EDGAR publishes no price data; OHLCV stays the MarketDataProvider's responsibility. Value and Momentum factors are computed by quant/engines/factors.js from market data, never from this provider.",
+          "evidence": {}
+        },
+        {
+          "gate": "SURVIVORSHIP_FREE_UNIVERSE",
+          "status": "FAIL",
+          "reason": "SEC/EDGAR has no security master and no delisting event feed; a point-in-time index or exchange listing history is required to build a survivorship-free universe (docs/SEC_COVERAGE_REPORT.md)",
+          "evidence": {}
+        },
+        {
+          "gate": "PIT_NO_FUTURE_DATA_LEAK",
+          "status": "PASS",
+          "reason": "all 6528 observations become available on or after their period end",
+          "evidence": {
+            "observations_checked": 6528
+          }
+        },
+        {
+          "gate": "PROVENANCE_COMPLETE",
+          "status": "PASS",
+          "reason": "all 6528 observations carry concept, accession, form, filing date and availability",
+          "evidence": {
+            "observations_checked": 6528
+          }
+        },
+        {
+          "gate": "PERIOD_INTEGRITY",
+          "status": "PASS",
+          "reason": "all 2332 quarterly observations span a single quarter",
+          "evidence": {}
+        },
+        {
+          "gate": "UNIT_INTEGRITY",
+          "status": "PASS",
+          "reason": "all 6528 observations use a registry-allowed unit",
+          "evidence": {}
+        },
+        {
+          "gate": "NO_INVENTED_VALUES",
+          "status": "PASS",
+          "reason": "all 81 evaluated metrics are either available or explicitly null with a reason code",
+          "evidence": {}
+        },
+        {
+          "gate": "DERIVED_SEPARATION",
+          "status": "PASS",
+          "reason": "5 of 6 canonical metrics were computed here; each carries source VISION_UNIVERSE_DERIVED and a formula version, and the rest are reported facts passed through unchanged",
+          "evidence": {}
+        }
+      ],
+      "summary": {
+        "total": 8,
+        "by_status": {
+          "PASS": 6,
+          "FAIL": 1,
+          "UNKNOWN": 0,
+          "NOT_APPLICABLE": 1
+        },
+        "blocking_failures": [
+          "SURVIVORSHIP_FREE_UNIVERSE"
+        ]
+      }
+    },
+    {
+      "cik": "0001045810",
+      "ticker": "NVDA",
+      "results": [
+        {
+          "gate": "MARKET_DATA_AVAILABLE",
+          "status": "NOT_APPLICABLE",
+          "reason": "SEC/EDGAR publishes no price data; OHLCV stays the MarketDataProvider's responsibility. Value and Momentum factors are computed by quant/engines/factors.js from market data, never from this provider.",
+          "evidence": {}
+        },
+        {
+          "gate": "SURVIVORSHIP_FREE_UNIVERSE",
+          "status": "FAIL",
+          "reason": "SEC/EDGAR has no security master and no delisting event feed; a point-in-time index or exchange listing history is required to build a survivorship-free universe (docs/SEC_COVERAGE_REPORT.md)",
+          "evidence": {}
+        },
+        {
+          "gate": "PIT_NO_FUTURE_DATA_LEAK",
+          "status": "PASS",
+          "reason": "all 5976 observations become available on or after their period end",
+          "evidence": {
+            "observations_checked": 5976
+          }
+        },
+        {
+          "gate": "PROVENANCE_COMPLETE",
+          "status": "PASS",
+          "reason": "all 5976 observations carry concept, accession, form, filing date and availability",
+          "evidence": {
+            "observations_checked": 5976
+          }
+        },
+        {
+          "gate": "PERIOD_INTEGRITY",
+          "status": "PASS",
+          "reason": "all 2127 quarterly observations span a single quarter",
+          "evidence": {}
+        },
+        {
+          "gate": "UNIT_INTEGRITY",
+          "status": "PASS",
+          "reason": "all 5976 observations use a registry-allowed unit",
+          "evidence": {}
+        },
+        {
+          "gate": "NO_INVENTED_VALUES",
+          "status": "PASS",
+          "reason": "all 81 evaluated metrics are either available or explicitly null with a reason code",
+          "evidence": {}
+        },
+        {
+          "gate": "DERIVED_SEPARATION",
+          "status": "PASS",
+          "reason": "6 of 6 canonical metrics were computed here; each carries source VISION_UNIVERSE_DERIVED and a formula version, and the rest are reported facts passed through unchanged",
+          "evidence": {}
+        }
+      ],
+      "summary": {
+        "total": 8,
+        "by_status": {
+          "PASS": 6,
+          "FAIL": 1,
+          "UNKNOWN": 0,
+          "NOT_APPLICABLE": 1
+        },
+        "blocking_failures": [
+          "SURVIVORSHIP_FREE_UNIVERSE"
+        ]
+      }
+    }
+  ],
+  "schema_version": 1,
+  "status": "generated",
+  "engine": "quant/engines/gate-tests.js (unveraendert)",
+  "provider_gates": [
+    {
+      "ticker": "AAPL",
+      "securityId": "sec_AAPL",
+      "gates": {
+        "GATE_A_RESTATEMENT": {
+          "gate": "GATE_A_RESTATEMENT",
+          "result": "PASSED",
+          "message": "Der fruehe Stichtag liefert die Erstmeldung (14532), der spaete die Korrektur (14531). Die Korrektur wirkt nicht rueckwaerts.",
+          "evidence": {
+            "beforeValue": 14532,
+            "afterValue": 14531,
+            "beforeStatus": "original",
+            "afterStatus": "restated",
+            "beforeAvailableAt": "2009-10-27",
+            "afterAvailableAt": "2010-01-25"
+          }
+        },
+        "GATE_B_DELISTING": {
+          "gate": "GATE_B_DELISTING",
+          "result": "FAILED",
+          "message": "Der delistete Titel fehlt im historischen Universum. Ein Backtest ueber diesen Zeitraum saehe nur die Ueberlebenden - und zwar ohne dass es auffiele.",
+          "evidence": {
+            "inHistoricalUniverse": false,
+            "inCurrentUniverse": false,
+            "fundamentalRecords": 853,
+            "universeSizeDuring": 0,
+            "universeSizeAfter": 0
+          }
+        },
+        "GATE_C_AVAILABILITY": {
+          "gate": "GATE_C_AVAILABILITY",
+          "result": "PASSED",
+          "message": "853 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
+          "evidence": {
+            "total": 853,
+            "withoutTimestamp": 0,
+            "availableAfterAsOf": 0,
+            "timestampNotAfterPeriodEnd": 0,
+            "sampleTimestampField": "availableAt"
+          }
+        }
+      },
+      "passed": 2,
+      "total": 3,
+      "allPassed": false,
+      "verificationLevel": "RUNTIME_VERIFIED",
+      "note": null
+    },
+    {
+      "ticker": "JPM",
+      "securityId": "sec_JPM",
+      "gates": {
+        "GATE_A_RESTATEMENT": {
+          "gate": "GATE_A_RESTATEMENT",
+          "result": "PASSED",
+          "message": "Der fruehe Stichtag liefert die Erstmeldung (3973.010673), der spaete die Korrektur (4104.933895). Die Korrektur wirkt nicht rueckwaerts.",
+          "evidence": {
+            "beforeValue": 3973.010673,
+            "afterValue": 4104.933895,
+            "beforeStatus": "original",
+            "afterStatus": "restated",
+            "beforeAvailableAt": "2010-02-24",
+            "afterAvailableAt": "2010-05-10"
+          }
+        },
+        "GATE_B_DELISTING": {
+          "gate": "GATE_B_DELISTING",
+          "result": "FAILED",
+          "message": "Der delistete Titel fehlt im historischen Universum. Ein Backtest ueber diesen Zeitraum saehe nur die Ueberlebenden - und zwar ohne dass es auffiele.",
+          "evidence": {
+            "inHistoricalUniverse": false,
+            "inCurrentUniverse": false,
+            "fundamentalRecords": 449,
+            "universeSizeDuring": 0,
+            "universeSizeAfter": 0
+          }
+        },
+        "GATE_C_AVAILABILITY": {
+          "gate": "GATE_C_AVAILABILITY",
+          "result": "PASSED",
+          "message": "449 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
+          "evidence": {
+            "total": 449,
+            "withoutTimestamp": 0,
+            "availableAfterAsOf": 0,
+            "timestampNotAfterPeriodEnd": 0,
+            "sampleTimestampField": "availableAt"
+          }
+        }
+      },
+      "passed": 2,
+      "total": 3,
+      "allPassed": false,
+      "verificationLevel": "RUNTIME_VERIFIED",
+      "note": null
+    },
+    {
+      "ticker": "MSFT",
+      "securityId": "sec_MSFT",
+      "gates": {
+        "GATE_A_RESTATEMENT": {
+          "gate": "GATE_A_RESTATEMENT",
+          "result": "PASSED",
+          "message": "Der fruehe Stichtag liefert die Erstmeldung (8653.567331), der spaete die Korrektur (8668). Die Korrektur wirkt nicht rueckwaerts.",
+          "evidence": {
+            "beforeValue": 8653.567331,
+            "afterValue": 8668,
+            "beforeStatus": "original",
+            "afterStatus": "restated",
+            "beforeAvailableAt": "2010-07-30",
+            "afterAvailableAt": "2010-10-28"
+          }
+        },
+        "GATE_B_DELISTING": {
+          "gate": "GATE_B_DELISTING",
+          "result": "FAILED",
+          "message": "Der delistete Titel fehlt im historischen Universum. Ein Backtest ueber diesen Zeitraum saehe nur die Ueberlebenden - und zwar ohne dass es auffiele.",
+          "evidence": {
+            "inHistoricalUniverse": false,
+            "inCurrentUniverse": false,
+            "fundamentalRecords": 925,
+            "universeSizeDuring": 0,
+            "universeSizeAfter": 0
+          }
+        },
+        "GATE_C_AVAILABILITY": {
+          "gate": "GATE_C_AVAILABILITY",
+          "result": "PASSED",
+          "message": "925 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
+          "evidence": {
+            "total": 925,
+            "withoutTimestamp": 0,
+            "availableAfterAsOf": 0,
+            "timestampNotAfterPeriodEnd": 0,
+            "sampleTimestampField": "availableAt"
+          }
+        }
+      },
+      "passed": 2,
+      "total": 3,
+      "allPassed": false,
+      "verificationLevel": "RUNTIME_VERIFIED",
+      "note": null
+    },
+    {
+      "ticker": "NVDA",
+      "securityId": "sec_NVDA",
+      "gates": {
+        "GATE_A_RESTATEMENT": {
+          "gate": "GATE_A_RESTATEMENT",
+          "result": "PASSED",
+          "message": "Der fruehe Stichtag liefert die Erstmeldung (566.5), der spaete die Korrektur (561.465851). Die Korrektur wirkt nicht rueckwaerts.",
+          "evidence": {
+            "beforeValue": 566.5,
+            "afterValue": 561.465851,
+            "beforeStatus": "original",
+            "afterStatus": "restated",
+            "beforeAvailableAt": "2010-03-18",
+            "afterAvailableAt": "2011-03-16"
+          }
+        },
+        "GATE_B_DELISTING": {
+          "gate": "GATE_B_DELISTING",
+          "result": "FAILED",
+          "message": "Der delistete Titel fehlt im historischen Universum. Ein Backtest ueber diesen Zeitraum saehe nur die Ueberlebenden - und zwar ohne dass es auffiele.",
+          "evidence": {
+            "inHistoricalUniverse": false,
+            "inCurrentUniverse": false,
+            "fundamentalRecords": 767,
+            "universeSizeDuring": 0,
+            "universeSizeAfter": 0
+          }
+        },
+        "GATE_C_AVAILABILITY": {
+          "gate": "GATE_C_AVAILABILITY",
+          "result": "PASSED",
+          "message": "767 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
+          "evidence": {
+            "total": 767,
+            "withoutTimestamp": 0,
+            "availableAfterAsOf": 0,
+            "timestampNotAfterPeriodEnd": 0,
+            "sampleTimestampField": "availableAt"
+          }
+        }
+      },
+      "passed": 2,
+      "total": 3,
+      "allPassed": false,
+      "verificationLevel": "RUNTIME_VERIFIED",
+      "note": null
+    },
+    {
+      "ticker": "XOM",
+      "securityId": "sec_XOM",
+      "gates": {
+        "GATE_A_RESTATEMENT": {
+          "gate": "GATE_A_RESTATEMENT",
+          "result": "PASSED",
+          "message": "Der fruehe Stichtag liefert die Erstmeldung (8019), der spaete die Korrektur (4747.283776). Die Korrektur wirkt nicht rueckwaerts.",
+          "evidence": {
+            "beforeValue": 8019,
+            "afterValue": 4747.283776,
+            "beforeStatus": "original",
+            "afterStatus": "restated",
+            "beforeAvailableAt": "2009-08-05",
+            "afterAvailableAt": "2009-11-05"
+          }
+        },
+        "GATE_B_DELISTING": {
+          "gate": "GATE_B_DELISTING",
+          "result": "FAILED",
+          "message": "Der delistete Titel fehlt im historischen Universum. Ein Backtest ueber diesen Zeitraum saehe nur die Ueberlebenden - und zwar ohne dass es auffiele.",
+          "evidence": {
+            "inHistoricalUniverse": false,
+            "inCurrentUniverse": false,
+            "fundamentalRecords": 642,
+            "universeSizeDuring": 0,
+            "universeSizeAfter": 0
+          }
+        },
+        "GATE_C_AVAILABILITY": {
+          "gate": "GATE_C_AVAILABILITY",
+          "result": "PASSED",
+          "message": "642 Kennzahlen, alle mit Verfuegbarkeitszeitpunkt, keine nach dem Stichtag veroeffentlichte darunter.",
+          "evidence": {
+            "total": 642,
+            "withoutTimestamp": 0,
+            "availableAfterAsOf": 0,
+            "timestampNotAfterPeriodEnd": 0,
+            "sampleTimestampField": "availableAt"
+          }
+        }
+      },
+      "passed": 2,
+      "total": 3,
+      "allPassed": false,
+      "verificationLevel": "RUNTIME_VERIFIED",
+      "note": null
+    }
+  ]
+}

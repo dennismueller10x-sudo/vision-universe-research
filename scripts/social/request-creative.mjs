@@ -1,0 +1,311 @@
+/* =========================================================================
+   VISION UNIVERSE SOCIAL — scripts/social/request-creative.mjs
+
+   DER ANSTOSS AN DEN CREATIVE AGENT
+
+   Vision Universe legt einen Brief auf einen Request-Branch. Das
+   PR-Ereignis loest den Agenten aus. Er schreibt sein Ergebnis samt
+   Bildasset auf denselben Branch zurueck.
+
+   Dieses Skript macht die erste Haelfte: es baut den Brief aus dem
+   kanonischen Evidenzpaket, schreibt ihn an den vorgesehenen Ort und
+   traegt den Anstoss ins Ledger ein.
+
+   -------------------------------------------------------------------------
+   DER LEDGER-EINTRAG STEHT VOR DEM PULL REQUEST
+   -------------------------------------------------------------------------
+
+   Dieselbe Reihenfolge wie beim Veroeffentlichungsanspruch, und aus
+   demselben Grund: zwischen "PR geoeffnet" und "Agent gestartet" liegt
+   ein fremdes System. Wer erst danach eintraegt, hat bei einem Abbruch
+   keinen Eintrag — und der naechste Lauf stoesst denselben Brief erneut
+   an.
+
+   -------------------------------------------------------------------------
+   WAS ES NICHT TUT
+   -------------------------------------------------------------------------
+
+   Es oeffnet keinen Pull Request. Das ist eine Handlung mit
+   Aussenwirkung, sie loest einen fremden Agenten aus, und sie gehoert
+   deshalb in einen Schritt, den ein Mensch oder ein Workflow
+   ausdruecklich ausfuehrt.
+
+   Ausfuehren:
+     node scripts/social/request-creative.mjs --symbol XOM
+     node scripts/social/request-creative.mjs --symbol XOM --write
+   ========================================================================= */
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+import { hydrateVerifiedJob } from "./ingest-creative.mjs";
+
+const require = createRequire(import.meta.url);
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+
+const EvidencePackage = require(join(ROOT, "social/engines/evidence-package.js"));
+const ContentBrief = require(join(ROOT, "social/engines/content-brief.js"));
+const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
+const Ledger = require(join(ROOT, "social/engines/invocation-ledger.js"));
+const VisualMotif = require(join(ROOT, "social/engines/visual-motif.js"));
+const CreativeJob = require(join(ROOT, "social/engines/creative-job.js"));
+
+/** Die VERIFIED Jobs zu einem Inhaltsobjekt — aus dem echten
+    Produktionsregister, nicht aus einer Kopie. */
+export function verifizierteJobsFuer(contentId, root) {
+  const pfad = join(root || ROOT, "social/data/creative-jobs.json");
+  if (!existsSync(pfad)) return [];
+  let datei;
+  try { datei = JSON.parse(readFileSync(pfad, "utf8")); }
+  catch (err) { return []; }
+  const registry = CreativeJob.createRegistry(datei.jobs || []);
+  return registry.byContent(contentId)
+    .filter((j) => j.state === "CREATIVE_JOB_VERIFIED");
+}
+
+/* -------------------------------------------------------------------
+   CURRENT EVIDENCE REVALIDATION — DIE REINE ENTSCHEIDUNG
+
+   Getrennt von hydrateVerifiedJob() (das I/O macht: git fetch, git
+   show) genau damit sich DIESE Entscheidung ohne Netz und ohne
+   Fixture testen laesst. package_id traegt Entitaet + Datenstand +
+   jede Beleg-ID:Wert-Paarung (evidence-package.js) — er aendert sich
+   NICHT durch eine Wortlautkorrektur (der AUDIENCE_SEPARATION-Fix vom
+   21.09. liess ihn fuer MSFT unveraendert), aber SEHR WOHL, wenn sich
+   ein tatsaechlicher Wert geaendert haette. Das ist §4 der Owner-
+   Entscheidung: CREATIVE PRODUCTION IDENTITY (briefBlobSha/
+   processingKey — haengt an der Wortwahl) gegen CURRENT EVIDENCE
+   VALIDATION (package_id — haengt an den Fakten). */
+export function entscheideWiederverwendung(archivierterBrief, aktuellePackageId) {
+  const archivierteEvidenz = (archivierterBrief && archivierterBrief.evidence_package) || {};
+  const archiviertePackageId = archivierteEvidenz.package_id || null;
+
+  if (archiviertePackageId && archiviertePackageId === aktuellePackageId) {
+    return { action: "REUSE_VERIFIED_CREATIVE", packageId: archiviertePackageId };
+  }
+  return { action: "NEW_CREATIVE_JOB_REQUIRED",
+    from: archiviertePackageId, to: aktuellePackageId };
+}
+
+export const LEDGER_DATEI = "social/data/creative-invocations.json";
+
+/** Die Inhaltskennung. Eine Definition, in der Engine — der Zyklus
+    rechnet dieselbe aus, um das Ergebnis spaeter wiederzufinden. */
+export const contentIdFor = EvidencePackage.contentIdFor;
+
+/* --------------------------------------------------------------- Lauf */
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const args = process.argv.slice(2);
+  const arg = (n, d) => { const i = args.indexOf("--" + n); return i === -1 ? d : args[i + 1]; };
+  const WRITE = args.includes("--write");
+
+  const SYMBOL = String(arg("symbol", "")).toUpperCase();
+  const NOW = arg("now", new Date().toISOString());
+
+  if (!SYMBOL) { console.error("Kein --symbol."); process.exit(2); }
+
+  const bundlePfad = join(ROOT, "quant/data/technical/instruments", SYMBOL + ".json");
+  if (!existsSync(bundlePfad)) {
+    console.error("Kein technisches Bundle fuer " + SYMBOL + ".");
+    process.exit(2);
+  }
+
+  const roh = JSON.parse(readFileSync(bundlePfad, "utf8"));
+  const paket = EvidencePackage.fromTechnicalBundle(roh.bundle, {
+    entity: SYMBOL, source: roh.bundle.source, now: NOW });
+
+  console.log("VISION UNIVERSE SOCIAL — Creative Request");
+  console.log("Titel:      " + SYMBOL);
+  console.log("Datenstand: " + paket.asOf);
+  console.log("Evidenz:    " + paket.evidence.length + " Aussagen ueber " +
+    paket.dimensionsAvailable.length + " Dimensionen");
+  for (const u of paket.unavailable) {
+    console.log("            nicht verfuegbar: " + u.dimension + " — " + u.reason);
+  }
+
+  /* -----------------------------------------------------------------
+     HYDRATE BEFORE REGENERATE (Owner-Entscheidung, 23.09.)
+
+     VOR jedem neuen Brief: traegt das Register schon ein VERIFIED
+     Ergebnis zu genau diesem Inhaltsobjekt? Ein VERIFIED Job ist ein
+     dauerhaftes Produktionsartefakt — kein neuer Brief, kein neuer
+     Creative Job, nur weil der heutige Checkout frisch ist.
+
+     contentId haengt allein an SYMBOL + paket.asOf (EvidencePackage.
+     contentIdFor) — unabhaengig davon, ob heute ueberhaupt ein neuer
+     Brief entstuende. Ein Treffer hier bedeutet: dieselbe Entitaet,
+     derselbe Datenstand wie beim verifizierten Lauf. Ist der Datenstand
+     weitergelaufen, aendert sich contentId von selbst — dann greift
+     dieser Block nicht, und der normale Weg unten baut den neuen,
+     tatsaechlich neuen Inhalt. */
+  const contentIdVorab = contentIdFor(SYMBOL, paket.asOf);
+  const bestehendeVerified = verifizierteJobsFuer(contentIdVorab);
+
+  if (bestehendeVerified.length) {
+    const jobEintrag = bestehendeVerified[bestehendeVerified.length - 1];
+    console.log("\n--- VERIFIED CREATIVE IM REGISTER ---");
+    console.log(jobEintrag.creativeJobId + " (" + jobEintrag.state + ")");
+
+    const hydriert = hydrateVerifiedJob(contentIdVorab, jobEintrag);
+    if (!hydriert.ok) {
+      /* FAIL CLOSED (§7 der Owner-Entscheidung): das Register sagt
+         VERIFIED, aber keine bekannte Quelle bestaetigt das Ergebnis
+         erneut. Kein stiller neuer Brief, kein Template-Rueckfall -
+         diese Luecke gehoert gemeldet, nicht uebermalt. */
+      console.error("\nVERIFIED_RESULT_UNAVAILABLE: " + hydriert.explanation);
+      process.exit(4);
+    }
+
+    const entscheidung = entscheideWiederverwendung(hydriert.bericht.brief, paket.packageId);
+
+    if (entscheidung.action === "REUSE_VERIFIED_CREATIVE") {
+      console.log("\nREUSE_VERIFIED_CREATIVE: aktuelle Evidenz unveraendert " +
+        "seit der Verifizierung (package_id " + entscheidung.packageId + "). " +
+        "Kein neuer Creative Job, kein neuer Request-PR.");
+      console.log("Ergebnis materialisiert unter " +
+        ChatGptWork.requestDir(contentIdVorab) + "/.");
+      process.exit(0);
+    }
+
+    console.log("\nNEW_CREATIVE_JOB_REQUIRED: aktuelle Evidenz weicht vom " +
+      "verifizierten Stand ab (package_id " + entscheidung.from + " -> " +
+      entscheidung.to + "). Kein stilles Wiederverwenden - ein neuer Brief " +
+      "wird ueber den bestehenden Lifecycle erzeugt.");
+    /* Faellt bewusst durch in den normalen Brief-Bau-Pfad unten. */
+  }
+
+  /* ---------------------------------------------------- Die Hinlaenglichkeit */
+  const hinreichend = EvidencePackage.assessSufficiency(paket);
+  console.log("\n--- STORY SUFFICIENCY ---");
+  console.log(hinreichend.explanation);
+  if (!hinreichend.sufficient) {
+    console.log("\nKEIN REQUEST. Ein hoher Score allein ist keine Geschichte.");
+    process.exit(0);
+  }
+
+  /* ------------------------------------------------------------ Der Brief */
+  const contentId = contentIdVorab;
+
+  /* -----------------------------------------------------------------
+     DAS MOTIV FOLGT DER STORY (§10)
+
+     Bis hierher bat jede Anfrage um dieselbe abstrakte Future-Tech-
+     Szene, unabhaengig vom Symbol. Die Branche steht bereits im
+     Repository, aus einer amtlichen Klassifikation (SIC-Code aus den
+     SEC-Einreichungen, siehe visual-motif.js) - keine neue
+     Datenquelle, nur eine neue Lesart einer vorhandenen. Passt kein
+     SIC-Code zu einem konkreten Motiv, bleibt es beim bisherigen
+     generischen Rueckfall. */
+  const motiv = VisualMotif.motivFuer(SYMBOL, ROOT);
+  console.log("\n--- MOTIV ---");
+  console.log(motiv.explanation);
+
+  const vuBrief = ContentBrief.build({
+    opportunity: { opportunityId: "opp_" + contentId, topic:
+      SYMBOL + " — technische Lage zum " + paket.asOf,
+      premise: "SECURITY_METRIC", hasCause: false, timeSensitivity: "TIMELY" },
+    strategyDecision: { archetype: "STOCK_STORY", mode: "EXPLORE",
+      strategyVersion: arg("strategy-version", "strategy_initial") },
+    visual: { visualType: motiv.strategy },
+    evidence: paket.evidence.map((e) => ({
+      entity: e.entity, metric: e.metric, value: e.value, unit: e.unit,
+      statement: e.statement, temporal: e.temporal === true,
+      source: { source: e.source, observedAt: e.observedAt, state: e.state } })),
+    platform: "instagram",
+    now: NOW
+  });
+
+  const agentBrief = ChatGptWork.buildAgentBrief(vuBrief, {
+    contentId,
+    variants: 4,
+    hookType: "value_first",
+    hookStrategyId: "vu-stock-story-value-first-v1",
+    hookInstruction:
+      "Formuliere vier deutlich verschiedene Hooks innerhalb dieser Strategie. " +
+      "Jede Zahl muss exakt aus `evidence` stammen. Keine Prognose, keine " +
+      "Empfehlung, keine Ursachenbehauptung.",
+    visualStrategy: motiv.strategy,
+    visualInstruction: motiv.instruction,
+    palette: motiv.palette,
+    visualComposition: "portrait 4:5, centered, generous negative space",
+    width: 1080, height: 1350,
+    objective:
+      "Aus der freigegebenen technischen Evidenz einen belegbaren, nuechternen " +
+      "Beitrag formulieren, der die Leitzahl EINORDNET statt sie zu feiern.",
+    audience: "Anleger, die wissen wollen, woher eine Zahl kommt"
+  });
+
+  /* Die Belege reisen als eigener Block mit — der Agent bekommt die
+     fertigen Saetze der Engines und nicht nur Zahlenpaare. */
+  agentBrief.evidence = paket.evidence.map((e) => ({
+    id: e.id, dimension: e.dimension, statement: e.statement,
+    value: e.value, unit: e.unit, entity: e.entity, metric: e.metric,
+    source: e.source, observed_at: e.observedAt, pointer: e.pointer
+  }));
+  agentBrief.unavailable = paket.unavailable;
+  agentBrief.evidence_package = {
+    package_id: paket.packageId, as_of: paket.asOf,
+    methodology_version: paket.methodologyVersion, data_version: paket.dataVersion
+  };
+
+  const inhalt = JSON.stringify(agentBrief, null, 2) + "\n";
+  const sha = ChatGptWork.blobSha(inhalt);
+  const key = ChatGptWork.processingKey(agentBrief.brief_id, contentId, sha, "1.0");
+  const zielPfad = ChatGptWork.requestDir(contentId) + "/authoring-brief.json";
+
+  console.log("\n--- REQUEST ---");
+  console.log("content_id:      " + contentId);
+  console.log("brief_id:        " + agentBrief.brief_id);
+  console.log("brief_blob_sha:  " + sha);
+  console.log("processing_key:  " + key);
+  console.log("Pfad:            " + zielPfad);
+  console.log("Erwartete Kennungen:");
+  for (let i = 0; i < agentBrief.authoring_requirements.hook_variant_count; i += 1) {
+    console.log("  " + ChatGptWork.hookVariantId(contentId, sha,
+      agentBrief.hook_strategy.hook_type, i));
+  }
+
+  /* ----------------------------------------------------------- Das Ledger */
+  const ledgerPfad = join(ROOT, LEDGER_DATEI);
+  const bestand = existsSync(ledgerPfad)
+    ? JSON.parse(readFileSync(ledgerPfad, "utf8")) : { entries: [] };
+  const ledger = Ledger.createLedger(bestand.entries || []);
+
+  const darf = ledger.mayInvoke(key, { now: NOW });
+  console.log("\n--- LEDGER ---");
+  if (!darf.ok) {
+    /* -----------------------------------------------------------------
+       EIN VERWEIGERTER ANSTOSS IST KEIN ERFOLG
+
+       Hier stand `process.exit(0)`. Damit las jede Automation, die den
+       Rueckgabewert prueft - und das ist der Sinn eines Rueckgabewerts -
+       die Verweigerung als "in Ordnung, weiter". Ein Gatter, das mit 0
+       endet, ist kein Gatter, sondern ein Hinweis.
+       ----------------------------------------------------------------- */
+    console.error("KEIN ANSTOSS: " + darf.message);
+    process.exit(4);
+  }
+  console.log("Frei. Kein frueherer Lauf zu diesem Schluessel.");
+
+  if (!WRITE) {
+    console.log("\n(Kein --write: es wurde nichts geschrieben.)");
+    process.exit(0);
+  }
+
+  const abs = join(ROOT, zielPfad);
+  mkdirSync(dirname(abs), { recursive: true });
+  writeFileSync(abs, inhalt);
+
+  /* Der Eintrag steht VOR dem Pull Request. */
+  ledger.record({ processingKey: key, state: "REQUESTED", at: NOW,
+    contentId, briefId: agentBrief.brief_id, briefBlobSha: sha,
+    note: "Brief geschrieben nach " + zielPfad + ". PR folgt." });
+
+  writeFileSync(ledgerPfad,
+    JSON.stringify(ledger.snapshot({ now: NOW }), null, 2) + "\n");
+
+  console.log("\nGeschrieben: " + zielPfad);
+  console.log("Ledger:      " + LEDGER_DATEI + " (REQUESTED)");
+  console.log("\nNaechster Schritt: Branch pushen und Pull Request oeffnen.");
+  console.log("Das PR-Ereignis loest den Creative Agent aus.");
+}

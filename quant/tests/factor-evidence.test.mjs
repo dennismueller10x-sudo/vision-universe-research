@@ -1,0 +1,664 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { readFile } from "node:fs/promises";
+import { gunzipSync } from "node:zlib";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+
+const require = createRequire(import.meta.url);
+const FactorEvidence = require("../engines/factor-evidence.js");
+const ChangeEngine = require("../engines/change-engine.js");
+const contract = require("../methodology/quant-v2.json");
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const ARTIFACT_DIR = join(ROOT, "quant/data/product/factor-evidence-v1");
+
+/* ------------------------------------------------------------------ engine */
+
+test("the published factor set is exactly the canonical seven, in contract order", () => {
+  assert.deepEqual(FactorEvidence.FACTOR_ORDER, contract.factorOrder);
+});
+
+test("this engine is versioned separately from the Quant V2 contract it derives from", () => {
+  assert.equal(FactorEvidence.DERIVED_FROM, contract.methodologyVersion);
+  assert.notEqual(FactorEvidence.METHODOLOGY_VERSION, contract.methodologyVersion);
+});
+
+test("midrank percentiles are deterministic and tie-stable", () => {
+  const values = [10, 20, 20, 30];
+  const higher = FactorEvidence.midrankPercentiles(values, "higher");
+  assert.equal(higher[1], higher[2], "equal inputs must receive the same percentile");
+  assert.ok(higher[0] < higher[1] && higher[1] < higher[3]);
+  /* Array position must not decide the outcome. */
+  const shuffled = FactorEvidence.midrankPercentiles([20, 30, 10, 20], "higher");
+  assert.equal(shuffled[0], higher[1]);
+  assert.equal(shuffled[2], higher[0]);
+});
+
+test("direction lower inverts the percentile rather than the raw input", () => {
+  const lower = FactorEvidence.midrankPercentiles([10, 20, 30], "lower");
+  assert.equal(lower[0], 100);
+  assert.equal(lower[2], 0);
+});
+
+test("winsorization clamps the tails without dropping observations", () => {
+  const values = [-1000, 1, 2, 3, 4, 5, 1000];
+  const bounds = FactorEvidence.winsorBounds(values);
+  assert.equal(bounds.count, values.length);
+  assert.ok(FactorEvidence.clamp(-1000, bounds) > -1000);
+  assert.ok(FactorEvidence.clamp(1000, bounds) < 1000);
+  assert.equal(FactorEvidence.clamp(3, bounds), 3);
+});
+
+test("the peer blend follows the contract and universe-only stays universe-only", () => {
+  assert.equal(FactorEvidence.blend(80, 60, "sic4_industry"), 0.7 * 80 + 0.3 * 60);
+  assert.equal(FactorEvidence.blend(80, 60, "universe"), 60);
+  assert.equal(FactorEvidence.blend(null, 60, "sic4_industry"), 60);
+});
+
+test("a factor falls closed below its own minimum component count or weight", () => {
+  const quality = contract.factors.quality;
+  const two = [
+    { id: "a", weight: 0.4, state: "AVAILABLE", score: 70 },
+    { id: "b", weight: 0.4, state: "AVAILABLE", score: 70 }
+  ];
+  assert.equal(FactorEvidence.assembleFactor(quality, two).reason, "INSUFFICIENT_COMPONENTS");
+  const thin = [
+    { id: "a", weight: 0.1, state: "AVAILABLE", score: 70 },
+    { id: "b", weight: 0.1, state: "AVAILABLE", score: 70 },
+    { id: "c", weight: 0.1, state: "AVAILABLE", score: 70 }
+  ];
+  assert.equal(FactorEvidence.assembleFactor(quality, thin).reason, "INSUFFICIENT_WEIGHTED_COVERAGE");
+});
+
+test("a missing component never has its weight redistributed to another factor", () => {
+  const quality = contract.factors.quality;
+  const components = [
+    { id: "a", weight: 0.25, state: "AVAILABLE", score: 100 },
+    { id: "b", weight: 0.20, state: "AVAILABLE", score: 0 },
+    { id: "c", weight: 0.15, state: "AVAILABLE", score: 50 },
+    { id: "d", weight: 0.20, state: "UNAVAILABLE", score: null }
+  ];
+  const assembled = FactorEvidence.assembleFactor(quality, components);
+  assert.equal(assembled.state, "AVAILABLE");
+  assert.equal(assembled.availableWeight, 0.6);
+  /* Renormalization happens inside the factor only, and is disclosed. */
+  assert.equal(assembled.score, (0.25 * 100 + 0.20 * 0 + 0.15 * 50) / 0.6);
+});
+
+test("bands use the contract cut points", () => {
+  contract.score.ratingBands.forEach((band) => {
+    assert.ok(FactorEvidence.BANDS.some((entry) => entry.min === band.min), "missing band at " + band.min);
+  });
+  /* factor-band-2.0.0: die Grenzen gelten fuer die POSITION. */
+  assert.equal(FactorEvidence.BAND_SEMANTICS_VERSION, "factor-band-2.0.0");
+  assert.equal(FactorEvidence.bandForPosition(95).id, "VERY_STRONG");
+  assert.equal(FactorEvidence.bandForPosition(50).id, "NEUTRAL");
+  assert.equal(FactorEvidence.bandForPosition(10).id, "VERY_WEAK");
+  assert.equal(FactorEvidence.bandForPosition(null), null);
+  assert.equal(FactorEvidence.band, undefined, "keine Stufe mehr direkt aus dem Faktorwert");
+});
+
+test("position: Anteil niedrigerer Werte, Gleichstand zaehlt nicht, unter 100 Titeln keine", () => {
+  const sorted = Array.from({ length: 201 }, (_, i) => i / 2);   /* 0, 0.5, ..., 100 */
+  assert.equal(FactorEvidence.positionOf(sorted, 0), 0);
+  assert.equal(FactorEvidence.positionOf(sorted, 100), 100);
+  assert.equal(FactorEvidence.positionOf(sorted, 50), 50);
+  assert.equal(FactorEvidence.positionOf([...sorted, 50, 50].sort((a, b) => a - b), 50), 49.5);
+  assert.equal(FactorEvidence.positionOf(sorted.slice(0, 99), 10), null);
+  assert.equal(FactorEvidence.positionOf(sorted, NaN), null);
+});
+
+test("hydrate: Position nur unter der Stufen-Methodik, mit der sie gezaehlt wurde", () => {
+  const rec = { factors: { momentum: { state: "AVAILABLE", score: 70, position: 81.2, components: [] } } };
+  const neu = FactorEvidence.hydrate(rec, { bandSemantics: { version: "factor-band-2.0.0", universe: { momentum: 5760 } } });
+  assert.equal(neu.factors.momentum.position, 81.2);
+  assert.equal(neu.factors.momentum.positionUniverse, 5760);
+  const alt = FactorEvidence.hydrate(rec, { bandSemantics: { version: "factor-band-1" } });
+  assert.equal(alt.factors.momentum.position, null, "Position einer anderen Stufen-Methodik gilt nicht");
+  assert.equal(FactorEvidence.hydrate(rec, {}).factors.momentum.position, null);
+});
+
+test("the publication gate rejects a composite score, a rank or a stray factor", () => {
+  const sound = {
+    composite: { state: "WITHHELD", reason: "QUANT_V2_NOT_ACTIVE" },
+    factors: Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id, { state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", score: null }]))
+  };
+  assert.deepEqual(FactorEvidence.publicationViolations(sound), []);
+  assert.ok(FactorEvidence.publicationViolations({ ...sound, quantScore: 82 }).length);
+  assert.ok(FactorEvidence.publicationViolations({ ...sound, rank: 1 }).length);
+  assert.ok(FactorEvidence.publicationViolations({ ...sound, composite: { state: "AVAILABLE" } }).length);
+  const scored = JSON.parse(JSON.stringify(sound));
+  scored.factors.momentum.score = 82;
+  assert.ok(FactorEvidence.publicationViolations(scored).length, "an unavailable factor must not carry a score");
+});
+
+test("ordered() keeps the canonical order and explains every closed factor", () => {
+  const record = {
+    factors: Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id, index) => [id,
+      index === 2 ? { state: "AVAILABLE", score: 70, position: 80, availableWeight: 0.8, confidence: 90, components: [] }
+        : { state: "UNAVAILABLE", reason: "BLOCKED_EXTERNAL", score: null, components: [] }]))
+  };
+  const ordered = FactorEvidence.ordered(record);
+  assert.deepEqual(ordered.map((entry) => entry.id), FactorEvidence.FACTOR_ORDER);
+  ordered.filter((entry) => entry.state !== "AVAILABLE").forEach((entry) => {
+    assert.ok(entry.reasonText && entry.reasonText.length > 20, "a closed factor needs a readable reason");
+    assert.equal(entry.score, null);
+  });
+  assert.equal(ordered[2].band, "STRONG", "Stufe aus der Position 80, nicht aus dem Wert 70");
+  assert.equal(ordered[2].position, 80);
+  /* Ohne Position keine Stufe - kein Rueckfall auf eine Wertgrenze. */
+  const ohne = FactorEvidence.ordered({ factors: { ...record.factors, momentum: { state: "AVAILABLE", score: 95, components: [] } } });
+  assert.equal(ohne[2].band, null);
+});
+
+/* ------------------------------------------------------------- change engine */
+
+test("change is measured on inputs; a factor-score trajectory stays closed", () => {
+  const model = ChangeEngine.build({ price: null, priceStatus: {}, fundamentals: null });
+  const scoreMomentum = model.items.find((entry) => entry.id === "scoreMomentum");
+  assert.equal(scoreMomentum.state, "UNAVAILABLE");
+  assert.equal(scoreMomentum.reason, "FACTOR_SNAPSHOT_HISTORY_NOT_MATERIALIZED");
+  const revisions = model.items.find((entry) => entry.id === "revisionsTrend");
+  assert.equal(revisions.reason, "BLOCKED_EXTERNAL");
+});
+
+test("change directions follow the versioned thresholds", () => {
+  const price = {
+    returns: { "1M": 0.10, "3M": 0.09, "6M": 0.2, "12M": 0.3 },
+    momentumAcceleration: 0.07,
+    relativeStrength: { "1M": 0.05, "3M": 0.06, "6M": 0.06, "12M": 0.1 },
+    volatility20d: 0.2, volatility60d: 0.25, volatility252d: 0.4, maxDrawdown252d: -0.2,
+    avgVolume20d: 200, avgVolume60d: 100, volumeRatio20over60: 2, volumeSpikeRatio: 1.1,
+    priceAboveSMA20: true, priceAboveSMA50: true, priceAboveSMA100: true, priceAboveSMA200: true,
+    distanceTo52wHigh: -0.01, distanceTo52wLow: 0.5, newHigh52w: false, within5PctOf52wHigh: true
+  };
+  const model = ChangeEngine.build({ price, priceStatus: { momentumAcceleration: "CALCULATED" }, fundamentals: null, asOf: "2026-09-18" });
+  const by = (id) => model.items.find((entry) => entry.id === id);
+  assert.equal(by("momentumPace").direction, "IMPROVING");
+  assert.equal(by("volatilityRegime").direction, "IMPROVING", "20d well below 252d is a compression");
+  assert.equal(by("volumeRegime").direction, "IMPROVING");
+  assert.equal(by("trendStructure").direction, "IMPROVING");
+  assert.equal(by("highProximity").direction, "IMPROVING");
+  assert.ok(ChangeEngine.headline(model).includes("Verbessert"));
+});
+
+test("the compact wire format loses no measurement and restores its wording", () => {
+  const model = ChangeEngine.build({
+    price: { returns: { "1M": 0.01, "3M": 0.03 }, momentumAcceleration: 0.0, relativeStrength: { "1M": 0, "6M": 0 } },
+    priceStatus: { momentumAcceleration: "CALCULATED" }, fundamentals: null, asOf: "2026-09-18", basis: "adjustedClose"
+  });
+  const restored = ChangeEngine.hydrate(ChangeEngine.compact(model));
+  assert.equal(restored.items.length, model.items.length);
+  model.items.forEach((entry, index) => {
+    assert.equal(restored.items[index].id, entry.id);
+    assert.equal(restored.items[index].state, entry.state);
+    assert.equal(restored.items[index].direction, entry.direction);
+    assert.equal(restored.items[index].label, entry.label, "wording must survive the round trip");
+    if (entry.state !== "AVAILABLE") assert.ok(restored.items[index].reasonText);
+  });
+});
+
+/* ---------------------------------------------------------------- artifact */
+
+/* The screening table lives in the same directory under its own schema;
+   it is validated by the strategy-match suite, not as a factor shard. */
+const shards = existsSync(ARTIFACT_DIR)
+  ? readdirSync(ARTIFACT_DIR).filter((name) => name.endsWith(".json.gz") && name !== "screening.json.gz")
+  : [];
+
+/* NACH EINEM METHODIKWECHSEL
+
+   Die vier folgenden Tests pruefen das VEROEFFENTLICHTE Artefakt gegen
+   die Engine. Wechselt die Methodikversion, traegt das Artefakt noch die
+   vorige, bis der naechste Materialisierungslauf es nachholt - es ist
+   dann nicht kaputt, sondern veraltet.
+
+   Diese Unterscheidung wird hier gemessen und nicht angenommen: ist das
+   Artefakt aktuell, laufen die Tests vollstaendig; ist es ueberholt,
+   pruefen sie stattdessen, dass es sich sauber als ueberholt zu erkennen
+   gibt. Was NICHT passiert: stillschweigend durchwinken. */
+const publishedSummary = JSON.parse(readFileSync(join(ARTIFACT_DIR, "summary.json"), "utf8"));
+const artifactIsCurrent = publishedSummary.methodologyVersion === FactorEvidence.METHODOLOGY_VERSION &&
+  publishedSummary.derivedFrom === FactorEvidence.DERIVED_FROM;
+
+test("the published artifact either matches the engine or says which methodology it carries", () => {
+  assert.ok(publishedSummary.methodologyVersion, "das Artefakt nennt keine Methodikversion");
+  assert.ok(publishedSummary.derivedFrom, "das Artefakt nennt keine Herkunftsmethodik");
+  if (!artifactIsCurrent) {
+    /* Ueberholt ist erlaubt - unbemerkt ueberholt nicht. */
+    assert.notEqual(publishedSummary.methodologyVersion, FactorEvidence.METHODOLOGY_VERSION);
+    assert.ok(FactorEvidence.validSummary(publishedSummary) === false,
+      "Ein Artefakt aus einer anderen Methodikversion darf nicht als gueltig durchgehen");
+  }
+});
+
+test("the materialized factor evidence exists and declares its gates", () => {
+  if (!artifactIsCurrent) return;
+  assert.ok(shards.length > 100, "expected a sharded broad-universe artifact");
+  const summary = JSON.parse(readFileSync(join(ARTIFACT_DIR, "summary.json"), "utf8"));
+  assert.ok(FactorEvidence.validSummary(summary));
+  assert.equal(summary.publication.compositeAllowed, false);
+  assert.equal(summary.publication.rankingAllowed, false);
+  assert.ok(summary.counts.published > 5000, "the artifact must cover the broad universe, not a sample");
+  assert.ok(Array.isArray(summary.openInputGates) && summary.openInputGates.length);
+  summary.openInputGates.forEach((gate) => {
+    assert.ok(gate.id && Array.isArray(gate.blocks) && gate.blocks.length && gate.owner, "a gate must name what it blocks and who owns it");
+  });
+  /* Revisions is closed for every single security, without exception. */
+  assert.equal(summary.factorStates.revisions.AVAILABLE, 0);
+  assert.equal(summary.factorStates.revisions.UNAVAILABLE, summary.counts.published);
+});
+
+test("every published security passes the publication gate and the contract minima", () => {
+  if (!artifactIsCurrent) return;
+  let checked = 0, available = 0;
+  for (const name of shards) {
+    const shard = JSON.parse(gunzipSync(readFileSync(join(ARTIFACT_DIR, name))));
+    assert.ok(FactorEvidence.validShard(shard, name.replace(".json.gz", "")), "invalid shard " + name);
+    for (const [ticker, record] of Object.entries(shard.securities)) {
+      assert.deepEqual(FactorEvidence.publicationViolations(record), [], ticker);
+      assert.equal(record.ticker, ticker);
+      assert.equal(record.factors.revisions.reason, "BLOCKED_EXTERNAL");
+      for (const id of FactorEvidence.FACTOR_ORDER) {
+        const factor = record.factors[id];
+        if (factor.state !== "AVAILABLE") continue;
+        available += 1;
+        assert.ok(factor.score >= 0 && factor.score <= 100, ticker + "." + id + " out of range");
+        const minimum = contract.factors[id].minimumDataRequirements;
+        const counted = factor.components.filter((component) => component.state === "AVAILABLE");
+        assert.ok(counted.length >= minimum.minimumComponents, ticker + "." + id + " below minimum components");
+        assert.ok(factor.availableWeight + 1e-9 >= minimum.minimumOriginalWeight, ticker + "." + id + " below minimum weight");
+      }
+      checked += 1;
+    }
+  }
+  assert.ok(checked > 5000, "expected broad coverage, got " + checked);
+  assert.ok(available > 10000, "expected a substantial number of available factors, got " + available);
+});
+
+/* ------------------------------------------------- the snapshot history */
+
+const HISTORY_DIR = join(ROOT, "quant/data/product/factor-evidence-history");
+
+test("the snapshot history has started, is versioned by methodology and is immutable", () => {
+  if (!artifactIsCurrent) return;
+  const index = JSON.parse(readFileSync(join(HISTORY_DIR, "index.json"), "utf8"));
+  assert.equal(index.schemaVersion, FactorEvidence.SNAPSHOT_INDEX_SCHEMA);
+  const dates = index.series[FactorEvidence.METHODOLOGY_VERSION];
+  assert.ok(Array.isArray(dates) && dates.length >= 1, "the history must have at least its first snapshot");
+  assert.deepEqual(dates, dates.slice().sort(), "snapshot dates are kept in order");
+
+  /* A snapshot lives under its methodology, so a later methodology starts
+     its own series instead of rewriting this one. */
+  const dir = join(HISTORY_DIR, FactorEvidence.METHODOLOGY_VERSION);
+  dates.forEach((date) => {
+    const snapshot = JSON.parse(gunzipSync(readFileSync(join(dir, date + ".json.gz"))));
+    assert.equal(snapshot.schemaVersion, FactorEvidence.SNAPSHOT_SCHEMA);
+    assert.equal(snapshot.methodologyVersion, FactorEvidence.METHODOLOGY_VERSION);
+    assert.equal(snapshot.namespace, FactorEvidence.NAMESPACE);
+    assert.equal(snapshot.asOf, date, "the file name and the recorded date must agree");
+    assert.equal(snapshot.fields.length, FactorEvidence.FACTOR_ORDER.length);
+    assert.ok(Object.keys(snapshot.rows).length > 5000);
+    /* Every snapshot carries a hash over its own content. */
+    assert.match(String(snapshot.contentHash), /^[a-f0-9]{16}$/);
+  });
+});
+
+test("the snapshot history is not inside the directory a rebuild deletes", () => {
+  assert.ok(!HISTORY_DIR.startsWith(ARTIFACT_DIR + "/"),
+    "a published snapshot must not be something a rebuild of the current artifact can remove");
+});
+
+test("a score trajectory is only published once the history reaches back far enough", () => {
+  if (!artifactIsCurrent) return;
+  const summary = JSON.parse(readFileSync(join(ARTIFACT_DIR, "summary.json"), "utf8"));
+  const dates = summary.snapshotHistory.dates;
+  assert.equal(summary.snapshotHistory.methodologyVersion, FactorEvidence.METHODOLOGY_VERSION);
+  assert.equal(summary.snapshotHistory.velocityWindowDays, ChangeEngine.SCORE_VELOCITY_DAYS);
+
+  /* With one snapshot there is nothing to compare against, and the shipped
+     artifact must say so rather than showing a trajectory of one point. */
+  const shard = JSON.parse(gunzipSync(readFileSync(join(ARTIFACT_DIR, shards[0]))));
+  const [record] = Object.values(shard.securities);
+  const change = ChangeEngine.hydrate(record.change);
+  const scoreMomentum = change.items.find((entry) => entry.id === "scoreMomentum");
+  if (dates.length < 2) {
+    assert.equal(scoreMomentum.state, "UNAVAILABLE");
+    assert.ok(["FACTOR_SNAPSHOT_HISTORY_NOT_MATERIALIZED", "INSUFFICIENT_SNAPSHOT_HISTORY"].includes(scoreMomentum.reason));
+  }
+});
+
+test("the score trajectory compares published values and names why it is closed", () => {
+  const meaning = ChangeEngine.MEANING.scoreMomentum;
+  assert.equal(ChangeEngine.scoreMomentumItem(null, { momentum: 80 }, "2026-09-18").reason,
+    "FACTOR_SNAPSHOT_HISTORY_NOT_MATERIALIZED", "no history at all is its own answer");
+  assert.equal(ChangeEngine.scoreMomentumItem([{ asOf: "2026-09-15", factors: { momentum: 70 } }], { momentum: 80 }, "2026-09-18").reason,
+    "INSUFFICIENT_SNAPSHOT_HISTORY", "a history that is too short is a different answer");
+
+  const open = ChangeEngine.scoreMomentumItem(
+    [{ asOf: "2026-08-19", factors: { momentum: 68, quality: 59 } }],
+    { momentum: 82, quality: 60 }, "2026-09-18");
+  assert.equal(open.state, "AVAILABLE");
+  assert.equal(open.direction, "IMPROVING");
+  assert.equal(open.magnitude, 7.5, "the average move across both factors");
+  assert.ok(open.from.label.includes("2026-08-19"), "the comparison point names its own date");
+  assert.ok(meaning.label.length > 0);
+
+  /* A snapshot dated after the cutoff can never become a comparison point. */
+  const future = ChangeEngine.scoreMomentumItem(
+    [{ asOf: "2026-10-19", factors: { momentum: 68 } }], { momentum: 82 }, "2026-09-18");
+  assert.equal(future.state, "UNAVAILABLE");
+});
+
+test("a hydrated record renders with wording, and never with a composite", () => {
+  const shard = JSON.parse(gunzipSync(readFileSync(join(ARTIFACT_DIR, shards[0]))));
+  const [record] = Object.values(shard.securities);
+  const hydrated = FactorEvidence.hydrate(record, shard);
+  const ordered = FactorEvidence.ordered(hydrated);
+  assert.deepEqual(ordered.map((entry) => entry.id), FactorEvidence.FACTOR_ORDER);
+  ordered.forEach((entry) => {
+    assert.ok(entry.label && entry.question && entry.plain, "every factor needs its meaning layer");
+    entry.components.forEach((component) => {
+      assert.ok(component.label, "every component needs a readable label after hydration");
+      assert.ok(Number.isFinite(component.weight), "every component needs its contract weight after hydration");
+    });
+  });
+  assert.equal(hydrated.composite.state, "WITHHELD");
+  assert.ok(FactorEvidence.summarySentence(hydrated).length > 20);
+});
+
+test("a published snapshot survives a later run that would compute it differently", async () => {
+  /* The defect this pins, which cost a whole materialization run before it
+     was measured: the snapshot is keyed by the MARKET data cutoff, but its
+     values also depend on the fundamentals vintage, which the SEC export
+     refreshes on its own schedule. The factors are percentiles, so when
+     anyone's inputs move, everyone's rank moves with them - 2,653 of 6,403
+     rows differed on 2026-09-21, by hundredths.
+     
+     A later run recomputing a past cutoff differently is therefore the
+     normal case. The materializer's own rule already says what to do with
+     it: a comparison point has to be a value that was PUBLISHED on that
+     date, not one recomputed today. So the published file stands and the
+     recomputation is simply not a snapshot - it must not abort the run,
+     and it must not pass in silence either. */
+  const source = await readFile(new URL("../../scripts/quant/build-factor-evidence.mjs", import.meta.url), "utf8");
+  const guard = source.slice(source.indexOf("snapshot.contentHash = snapshotHash(snapshot);"),
+    source.indexOf("const snapshotDates"));
+  assert.ok(guard.length > 400);
+
+  /* Corruption still stops the run: a file that does not match its own
+     hash is not evidence, and writing past it would launder it. */
+  assert.match(guard, /does not match its own content hash/);
+  assert.match(guard, /throw new Error\("the published snapshot/);
+
+  /* A differing recomputation does not. */
+  assert.equal(/a published past is not rewritten/.test(guard), false,
+    "a legitimate recomputation still aborts the run");
+  assert.match(guard, /recomputationDrift = \{/);
+  assert.match(guard, /rowsDiffering/);
+
+  /* And the published file is only ever written when none exists. */
+  const writes = guard.match(/writeFileSync\(snapshotPath/g) || [];
+  assert.equal(writes.length, 1, "the snapshot is written on more than one path");
+  assert.match(guard, /\} else \{\s*\n\s*writeFileSync\(snapshotPath/);
+});
+
+test("the drift, when it happens, reaches the summary rather than the log", async () => {
+  /* Silent is the one thing it must not be: that the inputs behind an
+     already-published date have moved is worth knowing, and a line in a
+     CI log is not somewhere anybody looks. */
+  const summary = JSON.parse(await readFile(
+    new URL("../data/product/factor-evidence-v1/summary.json", import.meta.url), "utf8"));
+  assert.ok("recomputationDrift" in summary.snapshotHistory,
+    "the summary does not carry the drift field at all");
+  const drift = summary.snapshotHistory.recomputationDrift;
+  if (drift === null) return;
+  assert.match(drift.asOf, /^\d{4}-\d{2}-\d{2}$/);
+  assert.notEqual(drift.publishedHash, drift.recomputedHash);
+  assert.ok(drift.rowsDiffering > 0 && drift.rowsDiffering <= drift.rowsTotal);
+  assert.ok(drift.note.length > 40);
+  /* The published date stays in the series exactly once. */
+  assert.equal(summary.snapshotHistory.dates.filter((d) => d === drift.asOf).length, 1);
+});
+
+/* ---------------------------------------------------------------------------
+   "NOCH NICHT AUSREICHEND HISTORIE" STATT "ZU WENIGE EINZELKENNZAHLEN"
+
+   Gemessen am 26.09.2026: 784 der 786 Titel ohne einen einzigen Faktorwert
+   tragen weniger als 252 Handelstage. Fuer sie war der erste Satz auf der
+   Seite "Zu wenige Einzelkennzahlen erfuellen die Methodik" - wahr, und fuer
+   einen Leser nicht von einem Defekt zu unterscheiden. Die Methodik wird
+   dafuer nicht abgesenkt; es wird nur gesagt, was fehlt und dass es von
+   selbst kommt.
+   --------------------------------------------------------------------------- */
+test("die Mindestzahl an Handelstagen kommt aus den Fenstern des Vertrags", async () => {
+  const contract = JSON.parse(await readFile(
+    new URL("../methodology/quant-v2.json", import.meta.url), "utf8"));
+  /* Die Pflichtkomponente entscheidet, ab wann ein Kursfaktor ueberhaupt
+     rechnen kann - ohne sie ist er MANDATORY_COMPONENT_MISSING, egal wie
+     viele andere vorliegen. */
+  const pflicht = { momentum: "priceReturn12m1m", risk: "realizedVolatility252d" };
+  for (const [factorId, componentId] of Object.entries(pflicht)) {
+    const component = contract.factors[factorId].components.find((c) => c.id === componentId);
+    assert.ok(component, factorId + ": " + componentId + " steht nicht im Vertrag");
+    /* "252 sessions" oder "252/21 sessions": das ausgelassene Fenster zaehlt
+       mit, weil die Reihe es ueberspringen muss, um es auszulassen. */
+    const zahlen = component.window.match(/\d+/g).map(Number);
+    const gebraucht = zahlen.reduce((a, b) => a + b, 0);
+    assert.equal(FactorEvidence.REQUIRED_BARS[factorId], gebraucht,
+      factorId + ": Vertrag nennt " + component.window + ", die Engine " + FactorEvidence.REQUIRED_BARS[factorId]);
+  }
+});
+
+test("ein zu junger Titel liest seine eigene Zahl, nicht den Methodiksatz", () => {
+  const jung = {
+    ticker: "JUNG", bars: 187, fundamentalYears: 1,
+    factors: Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id,
+      { state: "UNAVAILABLE", reason: "INSUFFICIENT_COMPONENTS", score: null, components: [] }]))
+  };
+  const nachId = Object.fromEntries(FactorEvidence.ordered(jung).map((f) => [f.id, f]));
+
+  assert.match(nachId.risk.reasonText, /252 Handelstage benötigt, aktuell liegen 187 vor/);
+  assert.match(nachId.momentum.reasonText, /273 Handelstage benötigt, aktuell liegen 187 vor/);
+  assert.match(nachId.risk.reasonText, /von selbst/, "der Satz sagt nicht, dass es von selbst kommt");
+  assert.deepEqual(nachId.risk.history, { bars: 187, requiredBars: 252, missingBars: 65 });
+  assert.deepEqual(nachId.momentum.history, { bars: 187, requiredBars: 273, missingBars: 86 });
+  assert.equal(nachId.risk.fundamentalYears, 1);
+  /* Der interne Code bleibt daneben stehen - er gehoert in die
+     Methodikebene und verschwindet nicht. */
+  assert.equal(nachId.risk.reason, "INSUFFICIENT_COMPONENTS");
+
+  /* Ein Fundamentalfaktor bekommt KEINE Handelstag-Aussage: seine Fenster
+     zaehlen Geschaeftsjahre und Quartale, und eine Zahl an der falschen
+     Stelle waere eine erfundene Begruendung. */
+  assert.equal(nachId.quality.history, null);
+  assert.equal(nachId.quality.reasonText, FactorEvidence.REASON_TEXT.INSUFFICIENT_COMPONENTS);
+});
+
+test("ein Titel mit genug Historie bekommt die Handelstag-Begruendung nicht", () => {
+  const alt = {
+    ticker: "ALT", bars: 936, fundamentalYears: 12,
+    factors: Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id,
+      { state: "UNAVAILABLE", reason: "INSUFFICIENT_COMPONENTS", score: null, components: [] }]))
+  };
+  const nachId = Object.fromEntries(FactorEvidence.ordered(alt).map((f) => [f.id, f]));
+  assert.equal(nachId.risk.history, null, "936 Handelstage sind keine zu kurze Historie");
+  assert.equal(nachId.risk.reasonText, FactorEvidence.REASON_TEXT.INSUFFICIENT_COMPONENTS);
+
+  /* Und ein verfuegbarer Faktor erklaert gar nichts. */
+  const offen = { ticker: "OFFEN", bars: 100, factors: { ...alt.factors,
+    risk: { state: "AVAILABLE", reason: null, score: 55, components: [] } } };
+  const risiko = FactorEvidence.ordered(offen).find((f) => f.id === "risk");
+  assert.equal(risiko.reasonText, null);
+  assert.equal(risiko.history, null);
+});
+
+test("das Artefakt veroeffentlicht die Tiefe der Geschaeftsjahre", async () => {
+  const shard = JSON.parse(gunzipSync(await readFile(
+    new URL("../data/product/factor-evidence-v1/AA.json.gz", import.meta.url))).toString("utf8"));
+  const zeilen = Object.values(shard.securities);
+  assert.ok(zeilen.every((r) => "fundamentalYears" in r), "fundamentalYears fehlt an einer Zeile");
+  const mitTiefe = zeilen.filter((r) => Number.isFinite(r.fundamentalYears) && r.fundamentalYears > 0);
+  assert.ok(mitTiefe.length > 0, "kein einziger Titel nennt eine Jahrestiefe");
+  /* Wer Geschaeftszahlen hat, hat auch eine Tiefe - und umgekehrt keine
+     Tiefe ohne Berichtsperiode. */
+  for (const r of zeilen) {
+    if (r.fundamentalsAsOf) assert.ok(r.fundamentalYears >= 0, r.ticker);
+    else assert.ok(!r.fundamentalYears, r.ticker + " nennt Jahre ohne Berichtsperiode");
+  }
+});
+
+/* ---------------------------------------------------------------------------
+   EIN ANTEILSBESTAND JE EMITTENT, ABER MEHRERE NOTIERTE ZEILEN
+
+   Gemessen am 26.09.2026 im veröffentlichten Artefakt: 110 Emittenten führten
+   304 Kürzel, 210 davon mit einem Bewertungsfaktor - und jeder dieser
+   Börsenwerte war der Anteilsbestand DES EMITTENTEN mal dem Kurs DIESER
+   ZEILE. AMJB, eine Schuldverschreibung von JPMorgan, trug so 1.408 Mrd; TBB,
+   eine Anleihe von AT&T, 173,9 Mrd; SOJC bis SOJF je die 93,4 Mrd von
+   Southern; vierzehn gehebelte Indexpapiere je die 122 Mrd von BMO. GOOG und
+   GOOGL trugen beide den Gesamtbestand von Alphabet.
+   --------------------------------------------------------------------------- */
+test("keine Bewertung, wo der Anteilsbestand keiner Notierung zuzuordnen ist", async () => {
+  const dir = new URL("../data/product/factor-evidence-v1/", import.meta.url);
+  const proCik = new Map();
+  let mitGrund = 0, mitBoersenwert = 0;
+  for (const name of readdirSync(dir)) {
+    if (!name.endsWith(".json.gz") || name === "screening.json.gz" || name === "summary.json.gz") continue;
+    const shard = JSON.parse(gunzipSync(await readFile(new URL(name, dir))).toString("utf8"));
+    for (const row of Object.values(shard.securities)) {
+      if (row.marketCapReason === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") mitGrund += 1;
+      if (Number.isFinite(row.marketCap)) mitBoersenwert += 1;
+      if (!row.cik) continue;
+      const key = String(row.cik);
+      if (!proCik.has(key)) proCik.set(key, []);
+      proCik.get(key).push(row);
+    }
+  }
+
+  assert.ok(mitGrund > 0, "kein einziger Titel traegt den Grund - die Regel greift nicht");
+  assert.ok(mitBoersenwert > 3000, "die Boersenwerte sind flaechendeckend verschwunden: " + mitBoersenwert);
+
+  /* Die Regel selbst: kein Emittent mit mehreren notierten Zeilen traegt noch
+     einen Boersenwert, und jede dieser Zeilen nennt den Grund samt ihren
+     Geschwistern. */
+  let gruppen = 0;
+  for (const [cik, zeilen] of proCik) {
+    if (zeilen.length < 2) continue;
+    gruppen += 1;
+    for (const row of zeilen) {
+      assert.equal(row.marketCap, null,
+        row.ticker + " (CIK " + cik + ", " + zeilen.length + " Zeilen) traegt weiter einen Boersenwert");
+      /* Den Grund nennt nur, wer ueberhaupt Fundamentaldaten hat: eine Zeile
+         ohne Konsum-Export (ECCC etwa, dessen Factbook keine Periodentatsache
+         fuehrt) hat ihren Boersenwert aus einem frueheren Grund nicht - und
+         zwei Gruende fuer eine fehlende Zahl waeren einer zu viel. */
+      if (!row.fundamentalsAsOf) continue;
+      assert.equal(row.marketCapReason, "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", row.ticker);
+      assert.ok(Array.isArray(row.issuerListings) && row.issuerListings.length === zeilen.length,
+        row.ticker + " nennt seine Geschwisterzeilen nicht");
+      assert.ok(row.issuerListings.includes(row.ticker), row.ticker + " fehlt in seiner eigenen Liste");
+      /* Und jede Bewertungskomponente, die am Boersenwert haengt, nennt diese
+         Ursache - nicht "Eingabe nicht materialisiert". */
+      for (const component of row.factors.value.components || []) {
+        if (component.state === "AVAILABLE") continue;
+        const spec = shardSpecFor(row, "value", component.id);
+        if (spec && typeof spec.input === "string" && spec.input.includes("marketCap")) {
+          assert.equal(component.reason, "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+            row.ticker + ":" + component.id);
+        }
+      }
+    }
+  }
+  assert.ok(gruppen > 50, "nur " + gruppen + " Mehrfachnotierungen gefunden - die Messung stimmt nicht");
+
+  /* Ein Emittent mit genau einer Zeile behaelt seinen Boersenwert: die Regel
+     entfernt gezielt das Unzuordenbare und nicht die Bewertung an sich. */
+  const einzeln = [...proCik.values()].filter((z) => z.length === 1).map((z) => z[0]);
+  assert.ok(einzeln.filter((r) => Number.isFinite(r.marketCap)).length > 3000,
+    "die Einzelnotierungen haben ihren Boersenwert verloren");
+  for (const row of einzeln) {
+    assert.notEqual(row.marketCapReason, "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+      row.ticker + " ist die einzige Zeile seines Emittenten und traegt trotzdem den Zuordnungsgrund");
+  }
+});
+
+/* Die Formelzeile der Komponente steht im Kopf des Shards, nicht an der
+   Zeile - dieselbe Aufteilung, die das Artefakt ueberall benutzt. */
+let specCache = null;
+function shardSpecFor(row, factorId, componentId) {
+  if (!specCache) {
+    specCache = {};
+    const dir = new URL("../data/product/factor-evidence-v1/", import.meta.url);
+    for (const name of readdirSync(dir)) {
+      if (!name.endsWith(".json.gz") || name === "screening.json.gz" || name === "summary.json.gz") continue;
+      const shard = JSON.parse(gunzipSync(readFileSync(new URL(name, dir))).toString("utf8"));
+      Object.assign(specCache, shard.componentSpecs || {});
+      break;
+    }
+  }
+  const template = row.template && row.template.id;
+  return (template && specCache[template + ":" + factorId + ":" + componentId])
+    || specCache[factorId + ":" + componentId] || null;
+}
+
+test("die Oberflaeche trennt 'fehlt' von 'bewusst zurueckgehalten'", () => {
+  const zu = (reason, extra) => FactorEvidence.ordered({ ticker: "X", bars: 900, ...extra,
+    factors: Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id,
+      { state: id === "revisions" ? "UNAVAILABLE" : "UNAVAILABLE", reason, score: null, components: [] }])) })
+    .find((f) => f.id === "value");
+
+  assert.equal(zu("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING").reasonHeadline, "Bewertung bewusst zurückgehalten");
+  assert.equal(zu("INPUT_NOT_MATERIALIZED").reasonHeadline, "Kein Wert für diesen Faktor");
+  assert.equal(zu("FUNDAMENTALS_UNAVAILABLE").reasonHeadline, "Noch keine Geschäftszahlen veröffentlicht");
+  /* Die kurze Historie gewinnt gegen die Tabelle: sie ist die genauere
+     Aussage und traegt eine Zahl. */
+  const jung = FactorEvidence.ordered({ ticker: "J", bars: 100,
+    factors: Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id,
+      { state: "UNAVAILABLE", reason: "INSUFFICIENT_COMPONENTS", score: null, components: [] }])) })
+    .find((f) => f.id === "risk");
+  assert.equal(jung.reasonHeadline, "Noch nicht genug Kursgeschichte");
+
+  /* Ein verfuegbarer Faktor traegt keine Ueberschrift fuer etwas Fehlendes. */
+  const offen = FactorEvidence.ordered({ ticker: "O", bars: 900,
+    factors: { ...Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id,
+      { state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", score: null, components: [] }])),
+      value: { state: "AVAILABLE", reason: null, score: 50, components: [] } } })
+    .find((f) => f.id === "value");
+  assert.equal(offen.reasonHeadline, null);
+  assert.equal(offen.reasonText, null);
+
+  /* Und keine dieser Ueberschriften ist ein interner Code. */
+  for (const text of Object.values(FactorEvidence.REASON_HEADLINE || {})) {
+    assert.equal(/[A-Z]{3,}_[A-Z_]{3,}/.test(text), false, "interner Code als Ueberschrift: " + text);
+  }
+});
+
+/* factor-band-2.0.0: Stufe und Position sind EINE Zaehlung. Traegt das
+   veroeffentlichte Artefakt die Position, muss sie genau die sein, die
+   Produktdienst und Oberflaeche aus dem Screening-Artefakt desselben
+   Stichtags zaehlen - sonst stuenden zwei Positionen fuer einen Titel. */
+test("veroeffentlichte Position = gezaehlte Position aus dem Screening-Artefakt", () => {
+  const dir = join(ROOT, "quant/data/product/factor-evidence-v1");
+  if (!existsSync(join(dir, "screening.json.gz"))) return;
+  const sc = JSON.parse(gunzipSync(readFileSync(join(dir, "screening.json.gz"))));
+  const dist = Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id, i) => [id,
+    Object.values(sc.rows).map((r) => r[i]).filter((v) => typeof v === "number").sort((a, b) => a - b)]));
+  let geprueft = 0;
+  for (const f of readdirSync(dir).filter((n) => n.endsWith(".json.gz") && !/screening|summary/.test(n)).slice(0, 40)) {
+    const shard = JSON.parse(gunzipSync(readFileSync(join(dir, f))));
+    if (!shard.bandSemantics) return;   /* Artefakt vor 2.0.0: der Produktdienst zaehlt selbst */
+    assert.equal(shard.bandSemantics.version, FactorEvidence.BAND_SEMANTICS_VERSION);
+    assert.equal(shard.asOf, sc.asOf, "Shard und Screening aus verschiedenen Laeufen");
+    for (const r of Object.values(shard.securities)) for (const id of FactorEvidence.FACTOR_ORDER) {
+      const x = r.factors[id];
+      if (x.state !== "AVAILABLE") { assert.equal(x.position, undefined, "Position ohne Wert"); continue; }
+      assert.equal(x.position, FactorEvidence.positionOf(dist[id], x.score), r.ticker + " " + id);
+      geprueft++;
+    }
+  }
+  assert.ok(geprueft > 500, "zu wenige Werte geprueft: " + geprueft);
+});

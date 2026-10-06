@@ -1,0 +1,135 @@
+{
+  "_comment": "VISION UNIVERSE MACRO INTELLIGENCE — Berechnungskonfiguration. Enthaelt ausschliesslich Regeln/Gewichte fuer die Score-Engine (calc.js), keine Marktdaten und keine redaktionellen Texte. Werte hier veraendern die Berechnung fuer das gesamte Dashboard zentral.",
+
+  "regimeWeights": {
+    "_comment": "Gewichtung der 7 Teilbereiche im VISION UNIVERSE MACRO REGIME SCORE (0-100). Muss in Summe 1.0 ergeben.",
+    "liquidity": 0.20,
+    "credit": 0.15,
+    "financialConditions": 0.15,
+    "rates": 0.15,
+    "growth": 0.15,
+    "inflation": 0.10,
+    "labor": 0.10
+  },
+
+  "regimeBands": [
+    { "min": 0,  "max": 14,  "label": "HIGH STRESS",          "tone": "stress" },
+    { "min": 15, "max": 28,  "label": "RISK-OFF",              "tone": "off" },
+    { "min": 29, "max": 42,  "label": "SELECTIVE RISK-OFF",    "tone": "off-lite" },
+    { "min": 43, "max": 57,  "label": "NEUTRAL",               "tone": "neutral" },
+    { "min": 58, "max": 71,  "label": "SELECTIVE RISK-ON",     "tone": "on-lite" },
+    { "min": 72, "max": 85,  "label": "RISK-ON",               "tone": "on" },
+    { "min": 86, "max": 100, "label": "STRONG RISK-ON",        "tone": "strong-on" }
+  ],
+
+  "subscoreStatusBands": [
+    { "min": 0,  "max": 39,  "label": "DETERIORATING" },
+    { "min": 40, "max": 60,  "label": "NEUTRAL" },
+    { "min": 61, "max": 100, "label": "IMPROVING" }
+  ],
+
+  "creditStressBands": [
+    { "min": 75, "max": 100, "label": "HEALTHY" },
+    { "min": 55, "max": 74,  "label": "NORMAL" },
+    { "min": 40, "max": 54,  "label": "TIGHTENING" },
+    { "min": 20, "max": 39,  "label": "STRESS RISING" },
+    { "min": 0,  "max": 19,  "label": "HIGH STRESS" }
+  ],
+
+  "growthMomentumBands": [
+    { "min": 75, "max": 100, "label": "ACCELERATING" },
+    { "min": 50, "max": 74,  "label": "EXPANDING" },
+    { "min": 30, "max": 49,  "label": "SLOWING" },
+    { "min": 0,  "max": 29,  "label": "CONTRACTING" }
+  ],
+
+  "profitCycleBands": [
+    { "min": 70, "max": 100, "label": "ACCELERATING" },
+    { "min": 45, "max": 69,  "label": "STABLE" },
+    { "min": 25, "max": 44,  "label": "SLOWING" },
+    { "min": 0,  "max": 24,  "label": "CONTRACTING" }
+  ],
+
+  "fedFlexibilityBands": [
+    { "min": 80, "max": 100, "label": "HIGH" },
+    { "min": 60, "max": 79,  "label": "IMPROVING" },
+    { "min": 35, "max": 59,  "label": "LIMITED" },
+    { "min": 0,  "max": 34,  "label": "VERY LIMITED" }
+  ],
+
+  "categoryMembers": {
+    "_comment": "Welche Indikatoren in welchen Teil-Score einfliessen. Zinsen (rates) nutzt bewusst nur Spreads/Realrenditen/Leitzins, nicht die nominalen Laufzeitrenditen einzeln (die haengen zu stark vom Wachstumsnarrativ ab, um eindeutig 'gut/schlecht' zu werten) — diese werden nur informativ als KPI-Karten gezeigt.",
+    "liquidity": ["m2_yoy", "fed_balance_sheet", "bank_reserves", "reverse_repo", "treasury_general_account", "net_liquidity_proxy"],
+    "credit": ["hy_oas", "ig_oas", "baa_spread", "credit_card_delinquency"],
+    "financialConditions": ["nfci", "anfci"],
+    "rates": ["fed_funds_rate", "spread_10y2y", "spread_10y3m", "real_yield_10y", "real_yield_5y"],
+    "growth": ["real_gdp_yoy", "industrial_production_yoy", "capacity_utilization", "retail_sales_yoy", "durable_goods_yoy", "real_personal_income_yoy"],
+    "inflation": ["cpi_yoy", "core_cpi_yoy", "pce_yoy", "core_pce_yoy", "ppi_yoy", "breakeven_5y", "breakeven_10y"],
+    "labor": ["unemployment_rate", "nonfarm_payrolls_change", "initial_claims", "continuing_claims", "jolts_openings", "avg_weekly_hours", "sahm_rule"],
+    "housing": ["housing_starts", "building_permits", "existing_home_sales", "new_home_sales", "mortgage_rate_30y", "case_shiller_yoy"],
+    "global": ["dollar_index", "wti_crude", "gold_price"],
+    "profitCycle": ["corporate_profits_yoy", "unit_labor_costs_yoy"]
+  },
+
+  "polarity": {
+    "_comment": "higherIsBetter=true bedeutet: ein steigender Wert wird von der Score-Engine als guenstig fuer Risikoassets gewertet. Inflation ist bewusst 'lowerIsBetter', weil dieses Dashboard (Konzept: Fed Flexibility) niedrige/fallende Inflation als Voraussetzung fuer geldpolitischen Spielraum behandelt — siehe PLAYBOOK Prinzip 5.",
+    "m2_yoy": true,
+    "fed_balance_sheet": true,
+    "bank_reserves": true,
+    "reverse_repo": false,
+    "treasury_general_account": false,
+    "net_liquidity_proxy": true,
+    "fed_funds_rate": false,
+    "spread_10y2y": true,
+    "spread_10y3m": true,
+    "real_yield_5y": false,
+    "real_yield_10y": false,
+    "nfci": false,
+    "anfci": false,
+    "hy_oas": false,
+    "ig_oas": false,
+    "baa_spread": false,
+    "credit_card_delinquency": false,
+    "real_gdp_yoy": true,
+    "industrial_production_yoy": true,
+    "capacity_utilization": true,
+    "retail_sales_yoy": true,
+    "durable_goods_yoy": true,
+    "real_personal_income_yoy": true,
+    "corporate_profits_yoy": true,
+    "unit_labor_costs_yoy": false,
+    "cpi_yoy": false,
+    "core_cpi_yoy": false,
+    "pce_yoy": false,
+    "core_pce_yoy": false,
+    "ppi_yoy": false,
+    "breakeven_5y": false,
+    "breakeven_10y": false,
+    "wage_growth_yoy": true,
+    "unemployment_rate": false,
+    "nonfarm_payrolls_change": true,
+    "initial_claims": false,
+    "continuing_claims": false,
+    "jolts_openings": true,
+    "avg_weekly_hours": true,
+    "sahm_rule": false,
+    "housing_starts": true,
+    "building_permits": true,
+    "existing_home_sales": true,
+    "new_home_sales": true,
+    "mortgage_rate_30y": false,
+    "case_shiller_yoy": true,
+    "dollar_index": false,
+    "wti_crude": false,
+    "gold_price": true
+  },
+
+  "inflectionRules": {
+    "_comment": "Schwellenwerte fuer die automatische Wendepunkt-Erkennung in calc.js (detectInflections). flatEpsilonPct = minimale relative Veraenderung, um ueberhaupt von einer Richtung (statt 'flat') zu sprechen.",
+    "flatEpsilonPct": 0.02,
+    "sahmTriggerLevel": 0.50,
+    "hySpreadBreakoutBp": 75,
+    "realYieldSurgeBp": 40,
+    "curveSteepeningBp": 25
+  }
+}

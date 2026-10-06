@@ -1,0 +1,52 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtempSync, rmSync, readFileSync, existsSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {createRequire} from 'node:module';
+import {createFsDriver} from '../../scripts/market/storage/fs-driver.mjs';
+const require=createRequire(import.meta.url);
+const {createHistoryStore}=require('../engines/history-store.js');
+const {createMarketStore}=require('../engines/market-store.js');
+const Gate=require('../engines/market-eod-gate.js');
+const calendar=JSON.parse(readFileSync(new URL('../config/market-calendar.json',import.meta.url)));
+
+test('existing durable layout survives a new runner and preserves incremental EOD planning',async t=>{
+ const root=mkdtempSync(join(tmpdir(),'vu2-history-compat-'));
+ t.after(()=>rmSync(root,{recursive:true,force:true}));
+ const securityId='ref_NVDA', ticker='NVDA';
+ const original=JSON.parse(readFileSync(new URL('../data/market/golden-preview/daily/ref_NVDA.json',import.meta.url)));
+ const before=original.bars.filter(b=>b.date<='2026-09-08');
+ assert.ok(before.length>400,'full stored history, beyond public excerpt');
+ const runner1=createMarketStore({root,workingDir:join(root,'runner1'),providerId:'tiingo'});
+ runner1.mergeBars(securityId,before,{ticker,adjustmentStatus:original.adjustmentStatus});
+ const durableRoot=join(root,'durable');
+ const firstStore=createHistoryStore({driver:createFsDriver(durableRoot),provider:'tiingo'});
+ const payload=runner1.readBars(securityId);
+ await firstStore.appendSeries(ticker,payload.bars,{securityId,provider:'tiingo',adjustmentStatus:payload.adjustmentStatus});
+ // A different store instance and empty runner: no surviving process/cache state.
+ const secondStore=createHistoryStore({driver:createFsDriver(durableRoot),provider:'tiingo'});
+ const recovered=await secondStore.getSeries(ticker);
+ assert.equal(recovered.securityId,securityId);
+ assert.equal(recovered.provider,'tiingo');
+ assert.equal(JSON.stringify(recovered.bars),JSON.stringify(before));
+ const runner2=createMarketStore({root,workingDir:join(root,'runner2'),providerId:'tiingo'});
+ assert.equal(runner2.lastStoredDate(securityId),null);
+ runner2.mergeBars(securityId,recovered.bars,{ticker,adjustmentStatus:recovered.adjustmentStatus});
+ const last=before.at(-1).date;
+ const next=new Date(last+'T00:00:00Z');next.setUTCDate(next.getUTCDate()+1);
+ assert.equal(runner2.nextFetchFrom(securityId),next.toISOString().slice(0,10));
+ assert.equal(Gate.plan(last,{state:'AVAILABLE',date:last},calendar).state,'CURRENT');
+ assert.equal(Gate.latestClosedSession('2026-09-09T22:00:00Z',calendar).providerFinality,'NOT_CERTIFIED');
+ assert.equal(existsSync(join(root,'runner2/tiingo/checkpoints')),false,'history does not fabricate ingestion checkpoints');
+ assert.equal(existsSync(join(root,'quant/data/market')),false,'restore does not publish raw data');
+ const unchanged=await secondStore.appendSeries(ticker,recovered.bars,{securityId,provider:'tiingo',adjustmentStatus:recovered.adjustmentStatus});
+ assert.equal(unchanged.skipped,true);
+ // Explicit historical correction, not a new adjustment/finality assertion.
+ const correction={...before.at(-1),adjustedClose:before.at(-1).adjustedClose/2};
+ await secondStore.appendSeries(ticker,[correction],{securityId,provider:'tiingo',adjustmentStatus:recovered.adjustmentStatus});
+ const corrected=await secondStore.getSeries(ticker);
+ assert.equal(corrected.bars.length,before.length);
+ assert.equal(corrected.bars.at(-1).adjustedClose,correction.adjustedClose);
+ assert.equal(new Set(corrected.bars.map(b=>b.date)).size,before.length);
+});

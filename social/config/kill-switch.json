@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0.0",
+  "note": "Kill Switch des Social-Systems (§33). Wie quant/config/feature-gates.json ist eine Freischaltung ein COMMIT, kein Klick: sie hat einen Autor, ein Datum und eine Begruendung. Auf GitHub Pages gibt es keine Umgebungsvariablen und keine Oberflaeche mit Schreibrecht - diese Datei ist ihr Gegenstueck.",
+  "warning": "GLOBAL_AUTOPUBLISH alleine genuegt nicht. Zusaetzlich muss der jeweilige PROVIDER_*-Schalter an sein UND die effektive Autonomiestufe (social/config/autonomy.json, geprueft gegen die Health Matrix) muss 4 erreichen. Ein Schalter schaltet keine Erlaubnis frei, er setzt eine bereits erteilte um.",
+  "defaultBehaviourNote": "Ein FEHLENDER Eintrag bedeutet AUS. Wer einen neuen Provider hinzufuegt und diese Datei vergisst, bekommt Stille - nicht einen Beitrag.",
+  "gates": {
+    "GLOBAL_AUTOPUBLISH": {
+      "enabled": false,
+      "reason": "Noch nie freigegeben. Autonome Veroeffentlichung setzt nach §16 voraus: stabiler Provider, korrekte Analytics, stabiles Publishing, geprueft laufende Brand- und Faktenvalidierung, Rollback und Kill Switch. Von diesen Voraussetzungen ist keine im Produktionsbetrieb nachgewiesen - der Meta-Provider ist nicht konfiguriert.",
+      "changedAt": "2026-09-15"
+    },
+    "PROVIDER_META": {
+      "enabled": false,
+      "reason": "Der Provider ist implementiert und getestet, aber nicht konfiguriert (META_APP_ID, META_APP_SECRET, META_LONG_LIVED_TOKEN fehlen) und nie gegen die echte Graph API gelaufen.",
+      "changedAt": "2026-09-15"
+    },
+    "PROVIDER_MOCK": {
+      "enabled": true,
+      "reason": "Der Mock-Provider veroeffentlicht nichts ausserhalb des Prozesses. Er ist eingeschaltet, damit die CI den vollstaendigen Publishing-Pfad durchlaufen kann.",
+      "changedAt": "2026-09-15"
+    },
+    "PROVIDER_FACEBOOK":  { "enabled": false, "reason": "Nicht implementiert.", "changedAt": "2026-09-15" },
+    "PROVIDER_LINKEDIN":  { "enabled": false, "reason": "Nicht implementiert.", "changedAt": "2026-09-15" },
+    "PROVIDER_TIKTOK":    { "enabled": false, "reason": "Nicht implementiert.", "changedAt": "2026-09-15" },
+    "PROVIDER_X":         { "enabled": false, "reason": "Nicht implementiert.", "changedAt": "2026-09-15" },
+    "PROVIDER_YOUTUBE":   { "enabled": false, "reason": "Nicht implementiert.", "changedAt": "2026-09-15" },
+    "ACTION_COMMENT": {
+      "enabled": false,
+      "reason": "Automatische Antworten auf Kommentare sind nicht freigegeben. Kommentare sind UNTRUSTED INPUT (§50); eine automatische Antwort waere die direkteste Form, sich von Fremden steuern zu lassen.",
+      "changedAt": "2026-09-15"
+    },
+    "ACTION_DELETE": {
+      "enabled": false,
+      "reason": "Automatisches Loeschen veroeffentlichter Beitraege ist nicht vorgesehen. Loeschen ist eine Owner-Entscheidung.",
+      "changedAt": "2026-09-15"
+    }
+  }
+}

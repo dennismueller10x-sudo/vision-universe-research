@@ -1,0 +1,207 @@
+{
+  "schema_version": "1.0",
+  "brief_id": "brief_d85438b24249dbb6",
+  "content_id": "vu-nvda-20260918",
+  "request_type": "FULL_CREATIVE",
+  "fixture_type": "production_authoring_request",
+  "author": {
+    "type": "chatgpt_work",
+    "role": "creative_agent",
+    "api_mode": "no_classic_openai_api"
+  },
+  "hook_strategy": {
+    "source": "authoring_brief",
+    "strategy_id": "vu-stock-story-value-first-v1",
+    "hook_type": "value_first",
+    "agent_discretion": "wording_variants_only"
+  },
+  "hook_variants": [
+    {
+      "hook_variant_id": "vu-nvda-20260918:478cfbc6973b392fc11579d7347a4f284247d543:value_first:01",
+      "hook_type": "value_first",
+      "text": "68,4 von 100: Was der NVDA-Score einordnet – und was nicht.",
+      "brief_revision": "478cfbc6973b392fc11579d7347a4f284247d543",
+      "evidence_refs": [
+        "score",
+        "score-meaning",
+        "score-not-probability"
+      ]
+    },
+    {
+      "hook_variant_id": "vu-nvda-20260918:478cfbc6973b392fc11579d7347a4f284247d543:value_first:02",
+      "hook_type": "value_first",
+      "text": "30,5 % in 12 Monaten – bei NVDA ein Messwert, keine Prognose.",
+      "brief_revision": "478cfbc6973b392fc11579d7347a4f284247d543",
+      "evidence_refs": [
+        "momentum-12m",
+        "forecast"
+      ]
+    },
+    {
+      "hook_variant_id": "vu-nvda-20260918:478cfbc6973b392fc11579d7347a4f284247d543:value_first:03",
+      "hook_type": "value_first",
+      "text": "24,27 von 30 Punkten aus der Trendstruktur: So entsteht ein Teil des NVDA-Scores.",
+      "brief_revision": "478cfbc6973b392fc11579d7347a4f284247d543",
+      "evidence_refs": [
+        "score-contribution-trend_structure"
+      ]
+    },
+    {
+      "hook_variant_id": "vu-nvda-20260918:478cfbc6973b392fc11579d7347a4f284247d543:value_first:04",
+      "hook_type": "value_first",
+      "text": "222,27 USD Schlusskurs und 68,4 von 100: zwei Werte, keine Kaufempfehlung.",
+      "brief_revision": "478cfbc6973b392fc11579d7347a4f284247d543",
+      "evidence_refs": [
+        "price-close",
+        "score",
+        "recommendation"
+      ]
+    }
+  ],
+  "recommended_hook": {
+    "recommended_hook_variant_id": "vu-nvda-20260918:478cfbc6973b392fc11579d7347a4f284247d543:value_first:01",
+    "recommendation_reason": "Die Variante stellt die belegte Leitzahl voran und öffnet zugleich die erforderliche nüchterne Einordnung, ohne Prognose oder Empfehlung.",
+    "recommendation_scope": "creative_agent_editorial_only",
+    "is_canonical_selection": false
+  },
+  "caption": "NVDA erreicht einen Technical Opportunity Score von 68,4 von 100. Das Band „Konstruktiv“ beginnt bei 60. Der Wert ordnet die technische Lage ein; er ist weder Wahrscheinlichkeit noch Renditeerwartung.\n\nDie Trendstruktur trägt 24,27 von 30 Punkten bei, das Momentum 13,32 von 20. Über 12 Monate lag die Entwicklung bei 30,5 %. Der Schlusskurs am 18.09.2026 betrug 222,27 USD. Diese Messwerte beschreiben den damaligen Zustand – nicht die Zukunft und keine Kauf- oder Verkaufsempfehlung. Quelle: Tiingo. Keine Anlageberatung.",
+  "visual_brief": {
+    "purpose": "Eine technische Evidenzlage über Präzision, Schichtung und kontrollierte Messung visualisieren.",
+    "visual_strategy": "SEMICONDUCTOR_WORLD",
+    "motif": "Ein zentrierter Siliziumwafer mit fein geätzten Chipstrukturen in einer abstrakten, hochwertigen Halbleiterfertigung.",
+    "composition": "Hochformat 4:5, zentrierte vertikale Hierarchie, markanter Wafer als Fokus und großzügiger Negativraum.",
+    "style": "Premium cinematic 3D technology visualization, realistische Materialien, editorial und kontrolliert.",
+    "palette": [
+      "deep black",
+      "white",
+      "chrome",
+      "electric cyan",
+      "subtle violet"
+    ],
+    "lighting": "Kontrolliertes Studiolicht mit klarer Cyan-Kante und subtilen violetten Reflexen.",
+    "materials": [
+      "silicon wafer iridescence",
+      "polished chrome",
+      "smoked glass",
+      "etched circuitry",
+      "cleanroom surfaces"
+    ],
+    "narrative": "Präzision und technische Messung ohne Darstellung von Kursbewegung, Rendite oder Prognose.",
+    "on_image_text": [],
+    "restrictions": [
+      "Kein Text im Bild",
+      "Kein Logo",
+      "Keine Kurse im Bild",
+      "Keine Renditezahlen",
+      "Kein Wasserzeichen",
+      "Keine erkennbare Drittmarke"
+    ]
+  },
+  "visual_variants": [
+    {
+      "visual_variant_id": "vu-nvda-20260918:478cfbc6973b392fc11579d7347a4f284247d543:visual:SEMICONDUCTOR_WORLD:01",
+      "visual_strategy": "SEMICONDUCTOR_WORLD",
+      "brief_revision": "478cfbc6973b392fc11579d7347a4f284247d543",
+      "asset_path": "authoring/requests/vu-nvda-20260918/assets/visual-01.png",
+      "asset_sha256": "620557daf2c97df73c479f03b0e59a5599ad4e3610e373921dc3008398e0c6ed",
+      "asset_byte_size": 2208930,
+      "mime_type": "image/png",
+      "width": 1122,
+      "height": 1402
+    }
+  ],
+  "evidence_refs": [
+    {
+      "ref_id": "score",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/0",
+      "supports": "Technical Opportunity Score und Band"
+    },
+    {
+      "ref_id": "score-meaning",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/1",
+      "supports": "Methodische Einordnung"
+    },
+    {
+      "ref_id": "score-not-probability",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/2",
+      "supports": "Keine Wahrscheinlichkeit oder Renditeerwartung"
+    },
+    {
+      "ref_id": "score-contribution-trend_structure",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/3",
+      "supports": "Beitrag der Trendstruktur"
+    },
+    {
+      "ref_id": "score-contribution-momentum",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/4",
+      "supports": "Momentum-Beitrag"
+    },
+    {
+      "ref_id": "price-close",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/10",
+      "supports": "Schlusskurs und Datum"
+    },
+    {
+      "ref_id": "momentum-12m",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/19",
+      "supports": "12M-Entwicklung"
+    },
+    {
+      "ref_id": "visual-strategy",
+      "source": "authoring-brief.json",
+      "json_pointer": "/visual_strategy",
+      "supports": "Visual Strategy und Bildrestriktionen"
+    },
+    {
+      "ref_id": "publishing-gate",
+      "source": "authoring-brief.json",
+      "json_pointer": "/publishing_allowed",
+      "supports": "publishing_allowed"
+    }
+  ],
+  "quality": {
+    "status": "pass_for_authoring",
+    "checks": {
+      "brief_id_matches": true,
+      "content_id_matches_directory": true,
+      "request_type_supported": true,
+      "hook_strategy_inherited": true,
+      "hook_variant_count_met": true,
+      "hook_ids_bound_to_full_brief_sha": true,
+      "all_numeric_text_claims_evidence_bound": true,
+      "no_forecast": true,
+      "no_recommendation": true,
+      "no_causality_claim": true,
+      "hook_and_caption_complementary": true,
+      "visual_strategy_inherited": true,
+      "visual_id_bound_to_full_brief_sha": true,
+      "real_raster_asset_present": true,
+      "png_structure_valid_through_iend": true,
+      "asset_hash_recorded": true,
+      "asset_byte_size_recorded": true,
+      "selected_hook_absent": true,
+      "recommendation_non_canonical": true,
+      "publishing_gate_closed": true
+    }
+  },
+  "processing": {
+    "status": "completed",
+    "brief_blob_sha": "478cfbc6973b392fc11579d7347a4f284247d543",
+    "brief_revision": "478cfbc6973b392fc11579d7347a4f284247d543",
+    "processing_key": "brief_d85438b24249dbb6:vu-nvda-20260918:478cfbc6973b392fc11579d7347a4f284247d543:1.0",
+    "variant_identity_version": "2",
+    "idempotency_mode": "reuse_completed_result",
+    "immutable_variant_mapping": true,
+    "canonical_hook_selected": false,
+    "request_type": "FULL_CREATIVE",
+    "image_generation_mode": "built_in_chatgpt_work"
+  },
+  "publishing_allowed": false
+}

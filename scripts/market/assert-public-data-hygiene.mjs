@@ -1,0 +1,422 @@
+/* Public-data boundary for the static GitHub Pages tree.
+
+   Commercial-provider raw bars may only live below .market-cache while
+   redistribution is LEGAL_REVIEW_REQUIRED. This guard deliberately checks
+   the generated public artefacts rather than trusting workflow intent. */
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { gunzipSync } from "node:zlib";
+import { resolveScope } from "./preview-scope.mjs";
+
+/* --root=<path> is test-only: it lets DH3/DH4 point this guard at a
+   throwaway fixture tree instead of the real repository, so a test that
+   exercises "does the guard actually catch a leak" never has to write into
+   quant/data/market itself (DO-NOT-BREAK #10 - verification runs on
+   copies, never on committed production data). Without it, root is always
+   this file's real location, exactly as before. */
+const rootArg = process.argv.find((a) => a.startsWith("--root="));
+const root = rootArg ? rootArg.slice("--root=".length)
+  : join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const findings = [];
+
+function json(relativePath) {
+  const file = join(root, relativePath);
+  if (!existsSync(file)) return null;
+  return JSON.parse(readFileSync(file, "utf8"));
+}
+
+function hasBars(value) {
+  if (!value || typeof value !== "object") return false;
+  if (Array.isArray(value.bars) && value.bars.length) return true;
+  if (value.bars && Array.isArray(value.bars.timestamps) && value.bars.timestamps.length) return true;
+  return false;
+}
+
+const publicDaily = join(root, "quant", "data", "market", "daily");
+if (existsSync(publicDaily)) {
+  for (const name of readdirSync(publicDaily).filter((name) => name.endsWith(".json"))) {
+    const payload = json(join("quant", "data", "market", "daily", name));
+    if (hasBars(payload)) findings.push(`quant/data/market/daily/${name}: raw bars in public tree`);
+  }
+}
+
+/* Phase 5, Golden Five: the ONE narrow, explicit exception, not a blind
+   spot. quant/data/market/golden-preview/daily/ may carry real bars, but
+   only for the exact tickers named in development-preview.json's scope -
+   this block re-derives that scope and fails loudly if a bar for any other
+   ticker (or any file without a resolvable ticker) shows up there. The
+   general quant/data/market/daily/ check above is unaffected and still
+   blocks everything, including these same five tickers under that path. */
+const previewConfig = json("quant/config/development-preview.json");
+const previewScope = new Set((previewConfig && previewConfig.scope) || []);
+const previewDaily = join(root, "quant", "data", "market", "golden-preview", "daily");
+if (existsSync(previewDaily)) {
+  if (!previewScope.size) {
+    findings.push("quant/data/market/golden-preview/daily/ exists but quant/config/development-preview.json " +
+                  "declares no scope - remove the directory or restore the declared allowlist.");
+  }
+  for (const name of readdirSync(previewDaily).filter((name) => name.endsWith(".json"))) {
+    const payload = json(join("quant", "data", "market", "golden-preview", "daily", name));
+    if (!hasBars(payload)) continue;
+    if (!payload.ticker || !previewScope.has(payload.ticker)) {
+      findings.push(`quant/data/market/golden-preview/daily/${name}: real bars for ticker ` +
+                    `'${payload.ticker || "unknown"}' outside the declared Golden Five scope ` +
+                    `(${[...previewScope].join(", ")})`);
+    }
+  }
+}
+
+/* Discover-Kursreihen (kompakt, 1 Jahr Tagesschluss): derselbe Umfang wie
+   golden-preview, aufgeloest ueber preview-scope.mjs - eine Tickerliste
+   ODER ein Universum (scopeUniverse). Eine Reihe fuer einen Titel, den die
+   Konfiguration nicht nennt, ist ein Leck, kein Versehen. */
+const seriesDir = join(root, "quant", "data", "market", "discover-series");
+if (existsSync(seriesDir)) {
+  let seriesScope = new Set();
+  try {
+    seriesScope = previewConfig ? resolveScope(root, previewConfig).tickers : new Set();
+  } catch (err) {
+    findings.push("quant/data/market/discover-series/ exists but the preview scope cannot be resolved: " + err.message);
+  }
+  for (const name of readdirSync(seriesDir).filter((n) => n.endsWith(".json") && n !== "index.json")) {
+    const payload = json(join("quant", "data", "market", "discover-series", name));
+    const punkte = payload && Array.isArray(payload.points) ? payload.points.length : 0;
+    if (!punkte) continue;
+    if (!payload.ticker || !seriesScope.has(payload.ticker)) {
+      findings.push(`quant/data/market/discover-series/${name}: real closes for ticker ` +
+                    `'${payload.ticker || "unknown"}' outside the declared preview scope`);
+    }
+    if (!payload.publishBasis) {
+      findings.push(`quant/data/market/discover-series/${name}: published without a stated basis`);
+    }
+  }
+}
+
+/* Lange Discover-Reihen (Wochenschluss, 5J/Max): derselbe Umfang, dieselbe
+   Grundlage wie die Tagesreihen - und nur Wochenpunkte [Datum, Schluss],
+   keine OHLC, kein Volumen. */
+const longDir = join(root, "quant", "data", "market", "discover-series-long");
+if (existsSync(longDir)) {
+  let longScope = new Set();
+  try {
+    longScope = previewConfig ? resolveScope(root, previewConfig).tickers : new Set();
+  } catch (err) {
+    findings.push("quant/data/market/discover-series-long/ exists but the preview scope cannot be resolved: " + err.message);
+  }
+  for (const name of readdirSync(longDir).filter((n) => n.endsWith(".json") && n !== "index.json")) {
+    const payload = json(join("quant", "data", "market", "discover-series-long", name));
+    const punkte = payload && Array.isArray(payload.points) ? payload.points.length : 0;
+    if (!punkte) continue;
+    if (!payload.ticker || !longScope.has(payload.ticker)) {
+      findings.push(`quant/data/market/discover-series-long/${name}: real closes for ticker ` +
+                    `'${payload.ticker || "unknown"}' outside the declared preview scope`);
+    }
+    if (!payload.publishBasis) findings.push(`quant/data/market/discover-series-long/${name}: published without a stated basis`);
+    if (payload.grain !== "weekly") findings.push(`quant/data/market/discover-series-long/${name}: grain ${payload.grain} statt weekly`);
+    if (payload.points.some((p) => !Array.isArray(p) || p.length !== 2)) {
+      findings.push(`quant/data/market/discover-series-long/${name}: points are not [date, close] pairs`);
+    }
+  }
+}
+
+/* Intraday-Snapshots (5-Minuten-Verlaeufe je Sitzung): derselbe Umfang,
+   dieselbe Grundlage. Ein Snapshot fuer einen Titel ausserhalb des
+   Umfangs oder ohne Grundlage ist ein Leck. Und: kein Punkt ausserhalb
+   der regulaeren Sitzung in `points` - erweiterte Zeiten liegen getrennt. */
+const intradayDir = join(root, "quant", "data", "market", "intraday");
+if (existsSync(intradayDir)) {
+  let intradayScope = new Set();
+  try {
+    intradayScope = previewConfig ? resolveScope(root, previewConfig).tickers : new Set();
+  } catch (err) {
+    findings.push("quant/data/market/intraday/ exists but the preview scope cannot be resolved: " + err.message);
+  }
+  for (const date of readdirSync(intradayDir).filter((n) => /^\d{4}-\d{2}-\d{2}$/.test(n))) {
+    for (const name of readdirSync(join(intradayDir, date)).filter((n) => n.endsWith(".json"))) {
+      const payload = json(join("quant", "data", "market", "intraday", date, name));
+      if (!payload || !Array.isArray(payload.points) || !payload.points.length) continue;
+      if (!payload.symbol || !intradayScope.has(payload.symbol)) {
+        findings.push(`quant/data/market/intraday/${date}/${name}: intraday points for ticker ` +
+                      `'${payload.symbol || "unknown"}' outside the declared scope`);
+      }
+      if (!payload.publishBasis) {
+        findings.push(`quant/data/market/intraday/${date}/${name}: published without a stated basis`);
+      }
+      if (payload.sessionDate !== date) {
+        findings.push(`quant/data/market/intraday/${date}/${name}: sessionDate ${payload.sessionDate} does not match its directory`);
+      }
+    }
+  }
+}
+
+const dashboardMarket = json("dashboard/data/market_data.json");
+if (dashboardMarket) {
+  for (const [symbol, rows] of Object.entries(dashboardMarket.symbols || {})) {
+    if (Array.isArray(rows) && rows.length) {
+      findings.push(`dashboard/data/market_data.json: ${symbol} raw bars in public tree`);
+    }
+  }
+  if (dashboardMarket.status === "generated" && Object.keys(dashboardMarket.symbols || {}).length) {
+    findings.push("dashboard/data/market_data.json: generated provider dataset is publicly deliverable");
+  }
+}
+
+for (const relativePath of [
+  "dashboard/data/technical_scores.json",
+  "dashboard/data/technical_scenarios.json",
+  "dashboard/data/backtest_results.json"
+]) {
+  const payload = json(relativePath);
+  if (!payload) continue;
+  if (Object.keys(payload.symbols || {}).length) {
+    findings.push(`${relativePath}: provider-derived symbol output in public tree`);
+  }
+  if (payload.public_data_state && payload.public_data_state.display_allowed === true) {
+    findings.push(`${relativePath}: public display enabled without a documented redistribution grant`);
+  }
+}
+
+/* Phase 5, Golden Five: the same narrow, explicit exception as the raw-bar
+   check above. A real (isMock:false) technical instrument bundle may only
+   exist for a ticker in development-preview.json's declared scope - any
+   other real bundle here is a leak, not a feature. */
+const instruments = join(root, "quant", "data", "technical", "instruments");
+if (existsSync(instruments)) {
+  for (const name of readdirSync(instruments).filter((name) => name.endsWith(".json"))) {
+    const payload = json(join("quant", "data", "technical", "instruments", name));
+    if (payload && payload.isMock === false && hasBars(payload)) {
+      const instrumentId = payload.instrumentId || name.replace(/\.json$/, "");
+      if (!previewScope.has(instrumentId)) {
+        findings.push(`quant/data/technical/instruments/${name}: real bars for '${instrumentId}' ` +
+                      `outside the declared Golden Five scope (${[...previewScope].join(", ")})`);
+      }
+    }
+  }
+}
+
+/* Quant 2.0 Product Intelligence: keine private Vollhistorie und kein
+   Browser-R2-Pfad. Erlaubt ist ausschliesslich das intern berechnete,
+   komprimierte 1Y-Anzeigefenster fuer denselben aufgeloesten Produktumfang.
+   Die volle Analysehistorie bleibt nur als Anzahlen/Hashes in der Provenienz. */
+const productTechnical = join(root, "quant", "data", "product", "technical-signals-v1");
+if (existsSync(productTechnical)) {
+  let productScope = new Set();
+  const productIds = new Map((json("quant/data/universe/market-capability.json")?.members || []).map((member) => [member.s, member.m]));
+  try { productScope = previewConfig ? resolveScope(root, previewConfig).tickers : new Set(); }
+  catch (err) { findings.push("technical-signals-v1 exists but product scope cannot be resolved: " + err.message); }
+  for (const name of readdirSync(productTechnical).filter((n) => /^[A-Z0-9._-]{2}\.json\.gz$/.test(n))) {
+    let shard;
+    try { shard = JSON.parse(gunzipSync(readFileSync(join(productTechnical, name)))); }
+    catch { findings.push(`quant/data/product/technical-signals-v1/${name}: invalid gzip/json`); continue; }
+    if (shard.schemaVersion !== "technical-product-artifact-1.0.0" || shard.shard + ".json.gz" !== name) {
+      findings.push(`quant/data/product/technical-signals-v1/${name}: invalid shard contract`); continue;
+    }
+    for (const [ticker, payload] of Object.entries(shard.instruments || {})) {
+      const bars = payload && payload.bars;
+      if (!productScope.has(ticker) || payload.instrumentId !== ticker || payload.securityId !== productIds.get(ticker)) {
+        findings.push(`quant/data/product/technical-signals-v1/${name}: '${ticker}' outside canonical product scope`);
+      }
+      if (!bars || !Array.isArray(bars.timestamps) || bars.timestamps.length < 2 || bars.timestamps.length > 270 ||
+          !["open", "high", "low", "close", "volume"].every((key) => Array.isArray(bars[key]) && bars[key].length === bars.timestamps.length)) {
+        findings.push(`quant/data/product/technical-signals-v1/${name}: '${ticker}' is not a bounded display artifact`);
+      }
+      if (payload.provenance?.historyOwner !== "quant/engines/history-store.js" ||
+          payload.provenance?.corporateActionReconciliation?.status !== "PASS" ||
+          payload.provenance?.calendarValidation?.status !== "PASS") {
+        findings.push(`quant/data/product/technical-signals-v1/${name}: '${ticker}' lacks materialization provenance`);
+      }
+    }
+  }
+}
+
+/* quant/data/market/tiingo-realtime-verification.json is the SHARED,
+   global path Tiingo.freePlanCapabilities() reads (with no report
+   override) to raise realtime/websocket/delayed/intraday/extendedHours
+   from "unverified" to a measured value for the WHOLE application - not
+   just the Golden Five. .github/workflows/tiingo-verify.yml's own
+   realtime job deliberately treats it as artifact-only and never commits
+   it ("Er veroeffentlicht nichts"). A committed copy would silently
+   promote whichever single ticker last wrote it into an account-wide
+   capability claim, and would make providers/tiingo/adapter.js's own
+   test suite (I01/Q in quant/tests/realtime-*.test.mjs) depend on
+   whatever happens to be checked in. It must never be committed. */
+if (existsSync(join(root, "quant", "data", "market", "tiingo-realtime-verification.json"))) {
+  findings.push("quant/data/market/tiingo-realtime-verification.json: this shared evidence file must stay " +
+                "artifact-only (see .github/workflows/tiingo-verify.yml) - it must never be committed to the repository.");
+}
+
+/* Tiingo Commercial, Scale-Phase: die neuen abgeleiteten Artefakte.
+
+   quant/data/market/{universe,scale,factors,health} und
+   quant/data/technical/scale werden ausgeliefert. Sie duerfen Zustaende,
+   Abstaende, Anzahlen und Renditen tragen - aber keine Kursniveaus und
+   keine Kursreihen. Der Unterschied ist der ganze Grund, warum diese
+   Dateien ueberhaupt committet werden duerfen: "5 % unter dem
+   52-Wochen-Hoch" ist eine abgeleitete Aussage, "das Hoch liegt bei
+   184,20" ist der Kurs des Anbieters.
+
+   Geprueft wird das erzeugte Artefakt und nicht die Absicht des Skripts -
+   aus demselben Grund wie oben: ein Schreibpfad, den jemand spaeter
+   hinzufuegt, faellt hier auf und nicht erst beim Anbieter. */
+const scaleTrees = [
+  ["quant", "data", "market", "universe"],
+  ["quant", "data", "market", "scale"],
+  ["quant", "data", "market", "factors"],
+  ["quant", "data", "market", "health"],
+  ["quant", "data", "market", "commercial"],
+  ["quant", "data", "technical", "scale"]
+];
+
+/* Feldnamen, die ein Kursniveau tragen. adjustedClose und Freunde stehen
+   bewusst mit drin: eine bereinigte Reihe ist genauso Anbieterinhalt wie
+   eine rohe. */
+const PRICE_LEVEL_KEYS = new Set([
+  "close", "open", "high", "low",
+  "adjustedClose", "adjustedOpen", "adjustedHigh", "adjustedLow",
+  "adjClose", "adjOpen", "adjHigh", "adjLow",
+  "sma20", "sma50", "sma100", "sma200",
+  "high52w", "low52w", "price", "last", "previousClose", "referencePrice"
+]);
+
+function scanForPriceLevels(value, path, into) {
+  if (value === null || value === undefined) return;
+  if (Array.isArray(value)) {
+    /* Nur die ersten Elemente: eine Kursreihe faellt im ersten Element
+       auf, und ein vollstaendiger Durchlauf ueber tausende Eintraege
+       kostet bei jedem CI-Lauf Zeit ohne zusaetzliche Aussage. */
+    for (let i = 0; i < Math.min(value.length, 25); i++) {
+      scanForPriceLevels(value[i], `${path}[${i}]`, into);
+    }
+    return;
+  }
+  if (typeof value !== "object") return;
+  for (const [key, child] of Object.entries(value)) {
+    if (PRICE_LEVEL_KEYS.has(key) && typeof child === "number") {
+      into.push(`${path}.${key}`);
+      continue;
+    }
+    scanForPriceLevels(child, `${path}.${key}`, into);
+  }
+}
+
+for (const parts of scaleTrees) {
+  const dir = join(root, ...parts);
+  if (!existsSync(dir)) continue;
+  const relativeDir = parts.join("/");
+  for (const name of readdirSync(dir).filter((name) => name.endsWith(".json"))) {
+    const payload = json(join(relativeDir, name));
+    if (!payload) continue;
+    if (hasBars(payload)) {
+      findings.push(`${relativeDir}/${name}: raw bars in a delivered scale artefact`);
+      continue;
+    }
+    const hits = [];
+    scanForPriceLevels(payload, "", hits);
+    if (hits.length) {
+      findings.push(`${relativeDir}/${name}: provider price levels in a delivered scale artefact ` +
+                    `(${hits.slice(0, 3).join(", ")}${hits.length > 3 ? `, +${hits.length - 3}` : ""})`);
+    }
+  }
+}
+
+/* ==========================================================================
+   UNBELEGTE KURSART DARF NICHT BELEGT KLINGEN (§10/§11 der Nacharbeit)
+
+   Der Echtzeitstrom liefert [Zeitstempel, Ticker, Kurs] ohne Typfeld.
+   Solange der Anbieter die Kursart nicht benennt, ist jede Beschriftung
+   wie "Last Trade" eine Behauptung ueber etwas Ungeprueftes - und
+   ausgerechnet die naheliegendste Beschriftung waere die falsche.
+
+   Diese Pruefung liest den gemessenen Befund und haelt an, wenn ein
+   ausgeliefertes Artefakt mehr behauptet, als er hergibt. Sie prueft
+   das ERZEUGTE Artefakt, nicht die Absicht des Skripts - so wie die
+   Kursniveaupruefung darueber. */
+const VERBOTENE_ETIKETTEN = [
+  /\blast\s*trade\b/i,
+  /\bofficial\s+trade\s+price\b/i,
+  /\brealtime\s+trade\b/i,
+  /\bausgefuehrte[rn]?\s+abschluss\b/i
+];
+
+const streamBefund = json("quant/data/market/commercial/live-candle-verification.json");
+if (streamBefund && streamBefund.priceSemantics &&
+    streamBefund.priceSemantics.outcome !== "VERIFIED_PRICE_TYPE") {
+  const zuPruefen = [
+    "quant/data/market/commercial/live-candle-verification.json",
+    "quant/data/market/health/health.json",
+    "dashboard/data/market_data.json"
+  ];
+  for (const rel of zuPruefen) {
+    const payload = json(rel);
+    if (!payload) continue;
+    const text = JSON.stringify(payload);
+    for (const muster of VERBOTENE_ETIKETTEN) {
+      /* Die Verbotsliste im Bericht selbst ist kein Verstoss - sie ist
+         die Stelle, an der das Verbot steht. Erkennbar daran, dass sie
+         unter labelling.forbidden haengt. */
+      const ohneListe = text.split('"forbidden":').join('"__liste__":')
+        .replace(/"__liste__":\[[^\]]*\]/g, '"__liste__":[]');
+      if (muster.test(ohneListe)) {
+        findings.push(`${rel}: behauptet eine Kursart ("${muster.source}"), die der Anbieter ` +
+                      `nicht belegt hat (priceSemantics.outcome = ${streamBefund.priceSemantics.outcome})`);
+      }
+    }
+  }
+  /* Und die Sperre selbst muss dastehen. Fehlt sie, ist der Befund
+     zwar richtig, aber niemand nachgelagert kann ihn lesen. */
+  const sperre = streamBefund.priceSemantics.intradayIntelligence;
+  if (!sperre || sperre.status !== "BLOCKED") {
+    findings.push("live-candle-verification.json: die Kursart ist unbelegt, aber " +
+                  "priceSemantics.intradayIntelligence sperrt die abgeleitete Nutzung nicht");
+  }
+}
+
+/* Multi-Asset-Segment (quant/data/market/multi-asset/): eine Reihe im
+   Auslieferungspfad nur aus einer Quelle, die multi-asset.json#
+   sourceRegistry ausdruecklich mit publicDisplay: true fuehrt; ein
+   lizenzausstehendes Instrument im Snapshot ohne Wert und ohne Verlauf.
+   Tiingo-Krypto und Tiingo-FX-Edelmetalle bleiben so im Arbeitsstand, bis
+   der Owner sie freigibt. */
+const multiAssetConfig = json("quant/config/multi-asset.json");
+const maSeries = join(root, "quant", "data", "market", "multi-asset", "series");
+if (existsSync(maSeries)) {
+  const registry = (multiAssetConfig && multiAssetConfig.sourceRegistry) || {};
+  for (const name of readdirSync(maSeries).filter((n) => n.endsWith(".json"))) {
+    const payload = json(join("quant", "data", "market", "multi-asset", "series", name));
+    const reg = payload && registry[payload.source];
+    if (!reg || reg.publicDisplay !== true) {
+      findings.push(`quant/data/market/multi-asset/series/${name}: source '${payload && payload.source}' is not cleared for public display`);
+    }
+    if (payload && payload.internalOnly !== undefined) findings.push(`quant/data/market/multi-asset/series/${name}: internal working series in public tree`);
+  }
+}
+/* Tagesverlauf (intraday/<SYM>.json): dieselbe Regel wie fuer die Tagesreihen. */
+const maIntraday = join(root, "quant", "data", "market", "multi-asset", "intraday");
+if (existsSync(maIntraday)) {
+  const registry = (multiAssetConfig && multiAssetConfig.sourceRegistry) || {};
+  for (const name of readdirSync(maIntraday).filter((n) => n.endsWith(".json"))) {
+    const payload = json(join("quant", "data", "market", "multi-asset", "intraday", name));
+    const reg = payload && registry[payload.source];
+    if (!reg || reg.publicDisplay !== true) {
+      findings.push(`quant/data/market/multi-asset/intraday/${name}: source '${payload && payload.source}' is not cleared for public display`);
+    }
+  }
+}
+const maSnapshot = json("quant/data/market/multi-asset/snapshot.json");
+if (maSnapshot && Array.isArray(maSnapshot.instruments)) {
+  for (const c of maSnapshot.instruments) {
+    if (c.quote && c.quote.state !== "AVAILABLE" &&
+        (c.quote.value !== null || (c.history && ((c.history.recent || []).length || c.history.path)))) {
+      findings.push(`quant/data/market/multi-asset/snapshot.json: ${c.instrument && c.instrument.symbol} delivers values while ${c.quote.state}`);
+    }
+  }
+}
+
+if (findings.length) {
+  console.error("PUBLIC DATA HYGIENE FAILED");
+  findings.forEach((finding) => console.error(`  - ${finding}`));
+  process.exit(1);
+}
+
+console.log("Public data hygiene: no commercial-provider raw bars or provider-derived symbol outputs in delivered paths.");

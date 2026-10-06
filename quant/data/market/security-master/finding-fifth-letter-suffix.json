@@ -1,0 +1,218 @@
+{
+  "generatedAt": "2026-09-11T09:17:06.545Z",
+  "finding": "NASDAQ_FIFTH_LETTER_SUFFIX_NOT_CLASSIFIED",
+  "severity": "HIGH",
+  "discoveredIn": "Erweiterungslauf 34574226888",
+  "classifierVersion": "us-security-master-1.0.0",
+  "summary": "Der Klassierer kennt Tiingos Bindestrich-Schreibweisen (-WT, -U, -RT, -WS-A), aber NICHT die NASDAQ-Konvention ohne Bindestrich: ein fuenfstelliger Ticker, dessen letzter Buchstabe W/R/U ist, bezeichnet Optionsschein, Bezugsrecht oder Unit. 583 der 2.119 neu aufgenommenen Titel sind danach keine Stammaktien.",
+  "evidence": {
+    "appendedTotal": 2119,
+    "suspectTotal": 583,
+    "withFourLetterRootAlsoListed": 471,
+    "note": "Von 583 Verdachtsfaellen tragen 471 ihren vierstelligen Stamm als eigenes Listing - das SPAC-Muster: Unit, Optionsschein und Bezugsrecht neben der Aktie.",
+    "byKind": {
+      "WARRANT": 238,
+      "RIGHT": 112,
+      "UNIT": 233
+    },
+    "byStartYear": {
+      "2023": 22,
+      "2024": 95,
+      "2025": 217,
+      "2026": 249
+    },
+    "providerTestTickers": [
+      "MTEST-A"
+    ]
+  },
+  "impact": {
+    "trueNewCommonEquities": 1535,
+    "note": "FINAL_UNIVERSE_COUNT 7.803 enthaelt diese 583. Die Zahl der echten neuen Stammaktien liegt entsprechend niedriger. Die Historien sind vollstaendig in R2 abgelegt - betroffen ist die Klassifikation, nicht die Ablage."
+  },
+  "notDoneHere": {
+    "removal": "NEIN - nicht-destruktive Regel (§2) und Bereinigung ist ein eigener Arbeitsstrang (§11).",
+    "classifierChange": "NEIN - eine Regelaenderung ohne erneuten Abgleich haette Artefakte hinterlassen, die einander widersprechen."
+  },
+  "recommendation": [
+    "tickerMarker() um die fuenfstellige NASDAQ-Konvention erweitern (W/R/U am Ende, ohne Bindestrich).",
+    "Gegenprobe einbauen: ein Verdachtsfall zaehlt schwerer, wenn sein vierstelliger Stamm eigenstaendig gelistet ist.",
+    "Abgleich erneut laufen lassen (0 Kurs-Anfragen) und die 583 als REVIEW fuehren.",
+    "Erst danach entscheiden, ob sie aus dem Primaeruniversum genommen werden - in einer eigenen, freigegebenen Migration."
+  ],
+  "samples": {
+    "WARRANT": [
+      {
+        "ticker": "AACOW",
+        "root": "AACO",
+        "rootListed": true,
+        "startDate": "2026-04-15",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "AACPW",
+        "root": "AACP",
+        "rootListed": true,
+        "startDate": "2026-05-28",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "ACAAW",
+        "root": "ACAA",
+        "rootListed": true,
+        "startDate": "2026-04-14",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "ACGCW",
+        "root": "ACGC",
+        "rootListed": true,
+        "startDate": "2026-05-28",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "ADACW",
+        "root": "ADAC",
+        "rootListed": true,
+        "startDate": "2026-02-09",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "AEAQW",
+        "root": "AEAQ",
+        "rootListed": true,
+        "startDate": "2026-01-26",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "AIRJW",
+        "root": "AIRJ",
+        "rootListed": true,
+        "startDate": "2024-03-15",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "ALDFW",
+        "root": "ALDF",
+        "rootListed": true,
+        "startDate": "2024-12-13",
+        "exchange": "NASDAQ"
+      }
+    ],
+    "RIGHT": [
+      {
+        "ticker": "AACBR",
+        "root": "AACB",
+        "rootListed": true,
+        "startDate": "2025-04-07",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "AACPR",
+        "root": "AACP",
+        "rootListed": true,
+        "startDate": "2026-05-28",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "AFJKR",
+        "root": "AFJK",
+        "rootListed": true,
+        "startDate": "2024-01-22",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "AITRR",
+        "root": "AITR",
+        "rootListed": true,
+        "startDate": "2024-01-02",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "ALISR",
+        "root": "ALIS",
+        "rootListed": true,
+        "startDate": "2025-11-19",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "ALPXR",
+        "root": "ALPX",
+        "rootListed": true,
+        "startDate": "2026-07-07",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "APADR",
+        "root": "APAD",
+        "rootListed": true,
+        "startDate": "2025-08-27",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "APURR",
+        "root": "APUR",
+        "rootListed": true,
+        "startDate": "2026-06-10",
+        "exchange": "NASDAQ"
+      }
+    ],
+    "UNIT": [
+      {
+        "ticker": "AACBU",
+        "root": "AACB",
+        "rootListed": true,
+        "startDate": "2025-02-13",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "AACOU",
+        "root": "AACO",
+        "rootListed": true,
+        "startDate": "2026-02-19",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "AACPU",
+        "root": "AACP",
+        "rootListed": true,
+        "startDate": "2026-04-07",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "ACAAU",
+        "root": "ACAA",
+        "rootListed": true,
+        "startDate": "2026-02-19",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "ACGCU",
+        "root": "ACGC",
+        "rootListed": true,
+        "startDate": "2026-04-07",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "ADACU",
+        "root": "ADAC",
+        "rootListed": true,
+        "startDate": "2025-12-18",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "AEAQU",
+        "root": "AEAQ",
+        "rootListed": true,
+        "startDate": "2025-12-04",
+        "exchange": "NASDAQ"
+      },
+      {
+        "ticker": "AFJKU",
+        "root": "AFJK",
+        "rootListed": true,
+        "startDate": "2023-12-04",
+        "exchange": "NASDAQ"
+      }
+    ]
+  }
+}

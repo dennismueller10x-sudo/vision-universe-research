@@ -1,0 +1,96 @@
+{
+  "methodologyVersion": "price-adjustment-v1.0.0",
+  "label": "VU Price Adjustment Semantics V1",
+  "purpose": "Legt fest, was eine Kursreihe bedeutet und welche Kennzahl aus welcher Reihe berechnet werden darf. Zweck ist nicht Genauigkeit, sondern Vergleichbarkeit: zwei Systemteile, die 'Rendite' sagen und Verschiedenes meinen, erzeugen Zahlen, die niemand nebeneinanderlegen kann.",
+
+  "levels": {
+    "RAW": {
+      "rank": 0,
+      "label": "Unbereinigt",
+      "shortLabel": "roh",
+      "definition": "Der tatsaechlich gehandelte Kurs des jeweiligen Tages. Keine Ruecrechnung fuer Splits, keine fuer Dividenden.",
+      "meaning": "Was am Handelsplatz auf der Tafel stand.",
+      "permits": ["display_current", "volume_analysis", "order_sizing", "gap_detection"],
+      "forbids": ["return_series", "momentum", "volatility", "drawdown", "backtest", "moving_average", "breakout"],
+      "reason": "Ein 4:1-Split laesst den Kurs auf ein Viertel fallen, ohne dass ein Anleger einen Cent verliert. Jede Kennzahl ueber einen Zeitraum, der einen Split enthaelt, wird dadurch falsch - nicht ungenau, falsch."
+    },
+    "SPLIT_ADJUSTED": {
+      "rank": 1,
+      "label": "Splitbereinigt",
+      "shortLabel": "splitbereinigt",
+      "definition": "Kurse sind um Splits und Reverse Splits zurueckgerechnet, Dividenden NICHT.",
+      "meaning": "Die Kursentwicklung eines Anteils, ohne die Ausschuettungen.",
+      "permits": ["display_current", "display_history", "chart", "moving_average", "breakout", "price_return", "momentum", "volatility", "drawdown", "relative_strength"],
+      "forbids": ["total_return", "backtest_evidence", "dividend_yield_from_price", "cagr_claim"],
+      "reason": "Ohne Dividenden fehlt bei einem Ausschuetter ein wesentlicher Teil der Rendite. Ueber zehn Jahre summiert sich das auf mehrere Prozentpunkte pro Jahr. Die Reihe ist nicht falsch - sie beantwortet nur eine andere Frage als 'Was hat der Anleger verdient?'.",
+      "caution": "Der gefaehrlichere der beiden unvollstaendigen Zustaende: die Reihe sieht sauber aus, weil die auffaelligen Splitspruenge fehlen. Der Fehler ist gleichmaessig verteilt und faellt darum nirgends auf."
+    },
+    "TOTAL_RETURN": {
+      "rank": 2,
+      "label": "Total Return",
+      "shortLabel": "total return",
+      "definition": "Kurse sind um Splits UND Dividenden zurueckgerechnet; Ausschuettungen gelten als am Ex-Tag reinvestiert.",
+      "meaning": "Was ein Anleger tatsaechlich verdient haette.",
+      "permits": ["display_current", "display_history", "chart", "moving_average", "breakout", "price_return", "momentum", "volatility", "drawdown", "relative_strength", "total_return", "backtest_evidence", "cagr_claim"],
+      "forbids": ["volume_analysis_by_price", "order_sizing"],
+      "reason": "Die einzige Stufe, aus der eine Renditeaussage abgeleitet werden darf. Fuer die Frage 'zu welchem Kurs haette ich gekauft' ist sie dagegen ungeeignet - der ruecgerechnete Kurs wurde nie gehandelt."
+    },
+    "UNKNOWN": {
+      "rank": -1,
+      "label": "Unbekannt",
+      "shortLabel": "ungeprueft",
+      "definition": "Die Bereinigungsstufe der Reihe ist nicht dokumentiert und nicht geprueft.",
+      "meaning": "Wir wissen nicht, was diese Zahlen bedeuten.",
+      "permits": ["display_current"],
+      "forbids": ["return_series", "momentum", "volatility", "drawdown", "backtest", "total_return", "chart_history", "cagr_claim"],
+      "reason": "Der Zustand, in dem die meisten Datenreihen tatsaechlich ankommen. Er ist ausdruecklich vorgesehen, damit niemand gezwungen ist, zwischen RAW und TOTAL_RETURN zu raten. Eine ungepruefte Reihe darf angezeigt, aber nicht ausgewertet werden.",
+      "caution": "UNKNOWN ist strenger als RAW: bei RAW weiss man wenigstens, was fehlt."
+    }
+  },
+
+  "metrics": {
+    "price_return": {
+      "label": "Kursrendite",
+      "minimumLevel": "SPLIT_ADJUSTED",
+      "statement": "Kursentwicklung ohne Ausschuettungen",
+      "note": "Nicht als 'Rendite' bezeichnen. Der Unterschied zur Gesamtrendite ist die Dividende, und der Leser kann ihn nicht sehen."
+    },
+    "total_return": {
+      "label": "Gesamtrendite",
+      "minimumLevel": "TOTAL_RETURN",
+      "statement": "Kursentwicklung einschliesslich reinvestierter Ausschuettungen"
+    },
+    "momentum": { "label": "Momentum", "minimumLevel": "SPLIT_ADJUSTED", "statement": "Relative Kursentwicklung ueber ein Zeitfenster" },
+    "volatility": { "label": "Volatilitaet", "minimumLevel": "SPLIT_ADJUSTED", "statement": "Streuung der Tagesrenditen" },
+    "drawdown": { "label": "Drawdown", "minimumLevel": "SPLIT_ADJUSTED", "statement": "Rueckgang vom Hoechststand" },
+    "moving_average": { "label": "Gleitender Durchschnitt", "minimumLevel": "SPLIT_ADJUSTED", "statement": "Mittelwert der Schlusskurse" },
+    "breakout": { "label": "Ausbruch", "minimumLevel": "SPLIT_ADJUSTED", "statement": "Ueberschreiten eines Kursniveaus" },
+    "relative_strength": { "label": "Relative Staerke", "minimumLevel": "SPLIT_ADJUSTED", "statement": "Kursentwicklung gegenueber einer Vergleichsgroesse" },
+    "cagr": { "label": "CAGR", "minimumLevel": "TOTAL_RETURN", "statement": "Annualisierte Gesamtrendite" },
+    "backtest_evidence": {
+      "label": "Backtest als Nachweis",
+      "minimumLevel": "TOTAL_RETURN",
+      "statement": "Historische Auswertung mit Anspruch auf Belastbarkeit",
+      "note": "Die Bereinigungsstufe ist nur eine von mehreren Bedingungen. Point-in-Time-Fundamentaldaten und delistete Titel sind die anderen - siehe backtest-evidence-provider-v1.json."
+    },
+    "order_sizing": { "label": "Ordergroesse", "minimumLevel": "RAW", "statement": "Stueckzahl aus tatsaechlichem Kurs", "note": "Hier ist TOTAL_RETURN falsch: der ruecgerechnete Kurs wurde nie gehandelt." },
+    "volume_analysis": { "label": "Volumenanalyse", "minimumLevel": "RAW", "statement": "Umsatz in Stueck oder Waehrung" }
+  },
+
+  "rules": [
+    "Jede Kursreihe im System traegt ein Feld adjustment mit genau einem dieser vier Werte. Fehlt es, gilt UNKNOWN.",
+    "Jede abgeleitete Kennzahl traegt die Stufe mit, aus der sie berechnet wurde.",
+    "Eine Kennzahl darf nur berechnet werden, wenn die Stufe der Reihe mindestens die minimumLevel der Kennzahl erreicht. UNKNOWN erreicht nie etwas.",
+    "Das Wort 'Rendite' ohne Zusatz ist ausschliesslich fuer TOTAL_RETURN zulaessig. Auf jeder niedrigeren Stufe heisst es 'Kursrendite'.",
+    "Zwei Systemteile duerfen nicht dieselbe Bezeichnung fuer Kennzahlen unterschiedlicher Stufe verwenden.",
+    "Eine Hochstufung ist nur mit Daten moeglich, nicht mit Annahmen: RAW wird durch Splitereignisse zu SPLIT_ADJUSTED, SPLIT_ADJUSTED durch Dividendenereignisse zu TOTAL_RETURN."
+  ],
+
+  "providerMapping": {
+    "note": "Wie Anbieterangaben auf diese Stufen abgebildet werden. Im Zweifel die niedrigere Stufe - eine zu niedrig eingestufte Reihe kostet eine Kennzahl, eine zu hoch eingestufte erzeugt eine falsche.",
+    "adjusted": "TOTAL_RETURN",
+    "splitAdjusted": "SPLIT_ADJUSTED",
+    "unadjusted": "RAW",
+    "unknown": "UNKNOWN"
+  }
+}

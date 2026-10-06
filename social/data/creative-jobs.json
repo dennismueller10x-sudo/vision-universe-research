@@ -1,0 +1,1209 @@
+{
+  "generatedAt": "2026-10-03T06:15:37.596Z",
+  "note": "Rekonstruiert aus den Kommentaren der Request-PRs und dem Invocation Ledger. Keine neue Work-Ausfuehrung. Jede Zeile nennt, woher sie stammt; was nicht geprueft wurde, steht als null und nicht als Schaetzung.",
+  "jobs": [
+    {
+      "creativeJobId": "job_vu-image-trigger-proof-20260917-001:54cc6851:attempt1",
+      "contentId": "vu-image-trigger-proof-20260917-001",
+      "briefBlobSha": "54cc68516173cd745674ed837e96e5bbec04bdde",
+      "processingKey": "vu-image-trigger-proof-brief-20260917-001:vu-image-trigger-proof-20260917-001:54cc68516173cd745674ed837e96e5bbec04bdde:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "prNumber": 98,
+      "prState": "open",
+      "deliveryIds": [],
+      "deliveryCount": 1,
+      "observedStarts": 1,
+      "outcome": "success",
+      "durationSeconds": 345,
+      "source": "invocation-ledger latencyObservations (PR 98)",
+      "createdAt": "2026-09-17T09:48:36Z",
+      "updatedAt": "2026-09-17T09:54:21Z"
+    },
+    {
+      "creativeJobId": "job_vu-xom-20260911:dabd1359:attempt1",
+      "contentId": "vu-xom-20260911",
+      "briefBlobSha": "dabd135913761bf0f1be526f3362888359f5561a",
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911:dabd135913761bf0f1be526f3362888359f5561a:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_FAILED",
+      "prNumber": 101,
+      "prState": "open",
+      "deliveryIds": [
+        "2c4ca770-b28d-11f1-9dd2-d4cdebdcbfbd"
+      ],
+      "deliveryCount": 1,
+      "observedStarts": 6,
+      "outcome": "no result commit; IMAGE_GENERATION_UNAVAILABLE_IN_EVENT_AGENT",
+      "durationSeconds": null,
+      "source": "PR 101 Kommentare, direkt gelesen 2026-09-18",
+      "createdAt": "2026-09-17T11:45:48Z",
+      "updatedAt": "2026-09-17T19:44:29Z"
+    },
+    {
+      "creativeJobId": "job_vu-diag-structure-20260917:c6489f55:attempt1",
+      "contentId": "vu-diag-structure-20260917",
+      "briefBlobSha": "c6489f55a1fcd5897ba5de504ce31d0109cdb20b",
+      "processingKey": "vu-diag-structure-brief-20260917:vu-diag-structure-20260917:c6489f55a1fcd5897ba5de504ce31d0109cdb20b:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_FAILED",
+      "prNumber": 102,
+      "prState": "open",
+      "deliveryIds": [],
+      "deliveryCount": 1,
+      "observedStarts": 6,
+      "outcome": "kein Ergebnis-Commit",
+      "durationSeconds": null,
+      "source": "invocation-ledger, aus PR-102-Kommentaren synchronisiert",
+      "createdAt": "2026-09-17T17:04:19Z",
+      "updatedAt": "2026-09-17T18:30:06Z"
+    },
+    {
+      "creativeJobId": "job_vu-diag-size-20260917:1886e2ea:attempt1",
+      "contentId": "vu-diag-size-20260917",
+      "briefBlobSha": "1886e2eae8970135683eb9dfd78a6e807cc27b9a",
+      "processingKey": "vu-diag-size-brief-20260917:vu-diag-size-20260917:1886e2eae8970135683eb9dfd78a6e807cc27b9a:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "prNumber": 103,
+      "prState": "open",
+      "deliveryIds": [],
+      "deliveryCount": 1,
+      "observedStarts": 6,
+      "outcome": "success, Ergebnis-Commit 2026-09-17T18:32:24Z - rund 3,5 min nach dem letzten beobachteten Start",
+      "durationSeconds": null,
+      "source": "invocation-ledger + git log origin/authoring/request/vu-diag-size-20260917",
+      "createdAt": "2026-09-17T17:02:17Z",
+      "updatedAt": "2026-09-17T18:32:24Z"
+    },
+    {
+      "creativeJobId": "job_vu-diag-baseline-20260917:44f45833:attempt1",
+      "contentId": "vu-diag-baseline-20260917",
+      "briefBlobSha": "44f45833921758437311fcecf87c288c22b979f6",
+      "processingKey": "vu-diag-baseline-brief-20260917:vu-diag-baseline-20260917:44f45833921758437311fcecf87c288c22b979f6:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_FAILED",
+      "prNumber": 104,
+      "prState": "open",
+      "deliveryIds": [
+        "67f3b790-b2bb-11f1-8373-2f2c97430b72"
+      ],
+      "deliveryCount": 1,
+      "observedStarts": 6,
+      "outcome": "kein Ergebnis-Commit; IMAGE_GENERATION_UNAVAILABLE_IN_EVENT_AGENT",
+      "durationSeconds": null,
+      "source": "PR 104 Kommentare, direkt gelesen 2026-09-18",
+      "createdAt": "2026-09-17T17:16:36Z",
+      "updatedAt": "2026-09-17T19:28:42Z"
+    },
+    {
+      "creativeJobId": "job_vu-xom-20260911:8a1367e9:attempt2",
+      "contentId": "vu-xom-20260911",
+      "briefBlobSha": "8a1367e93f136ac5c60c27c68f6509b287a010fe",
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911:8a1367e93f136ac5c60c27c68f6509b287a010fe:1.0",
+      "attempt": 2,
+      "revision": null,
+      "state": "CREATIVE_JOB_FAILED",
+      "prNumber": 105,
+      "prState": "closed",
+      "prClosedAt": "2026-09-18T08:05:20Z",
+      "deliveryIds": [
+        "611be490-b2c7-11f1-91e5-90833707ce99"
+      ],
+      "deliveryCount": 1,
+      "observedStarts": 5,
+      "outcome": "kein Ergebnis-Commit; der Anbieter meldete noch 2026-09-18T05:55Z - 11 h 13 min nach der einen Delivery",
+      "durationSeconds": null,
+      "source": "PR 105 Kommentare, direkt gelesen 2026-09-18",
+      "createdAt": "2026-09-17T18:42:25Z",
+      "updatedAt": "2026-09-18T05:55:00Z"
+    },
+    {
+      "creativeJobId": "job_vu-permcheck-20260918:97b580d4:attempt1",
+      "contentId": "vu-permcheck-20260918",
+      "briefBlobSha": "97b580d41878d32fbb68eac4edcf09cf271ad6b9",
+      "processingKey": "vu-permcheck-brief-20260918:vu-permcheck-20260918:97b580d41878d32fbb68eac4edcf09cf271ad6b9:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "prNumber": 106,
+      "prState": "open",
+      "deliveryIds": [],
+      "deliveryCount": 1,
+      "observedStarts": 1,
+      "outcome": "success, Ergebnis-Commit 2026-09-18T03:46:42Z",
+      "durationSeconds": null,
+      "source": "invocation-ledger + git log origin/authoring/request/vu-permcheck-20260918",
+      "createdAt": "2026-09-18T03:43:03Z",
+      "updatedAt": "2026-09-18T03:46:42Z"
+    },
+    {
+      "creativeJobId": "job_vu-xom-20260911:bf22582c:attempt3",
+      "contentId": "vu-xom-20260911",
+      "briefBlobSha": "bf22582cd1dfda53761fd7327e7d1b3f77688ae3",
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911:bf22582cd1dfda53761fd7327e7d1b3f77688ae3:1.0",
+      "attempt": 3,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "prNumber": 108,
+      "prState": "open",
+      "deliveryIds": [
+        "31d72160-b31a-11f1-9c3a-4e11af80d758"
+      ],
+      "deliveryCount": 1,
+      "observedStarts": 1,
+      "outcome": "success, alle neun Transportpruefungen bestanden",
+      "durationSeconds": 148,
+      "source": "PR 108 Kommentare, direkt gelesen 2026-09-18",
+      "createdAt": "2026-09-18T04:36:13Z",
+      "updatedAt": "2026-09-18T04:38:41Z"
+    },
+    {
+      "creativeJobId": "job_vu-xom-20260911-rev1:ab5341804d87b71ee9f1b4d662da06f873b54f11:attempt4:revtext-only",
+      "contentId": "vu-xom-20260911-rev1",
+      "briefId": "brief_00b861f522ad2209",
+      "briefBlobSha": "ab5341804d87b71ee9f1b4d662da06f873b54f11",
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911-rev1:ab5341804d87b71ee9f1b4d662da06f873b54f11:1.0",
+      "attempt": 4,
+      "revision": "text-only",
+      "state": "CREATIVE_JOB_FAILED",
+      "createdAt": "2026-09-18T14:24:02.027Z",
+      "updatedAt": "2026-09-19T06:19:55.815Z",
+      "prNumber": 110,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-18T14:24:02.027Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-18T14:27:22.040Z",
+          "note": "PR 110 geoeffnet"
+        },
+        {
+          "state": "CREATIVE_JOB_STALE",
+          "at": "2026-09-18T14:40:55.163Z",
+          "note": "Kein VU_CREATIVE_AGENT_INVOCATION auf PR 110 — deutlich ausserhalb jeder gemessenen Anlaufzeit."
+        },
+        {
+          "state": "CREATIVE_JOB_FAILED",
+          "at": "2026-09-19T06:19:55.815Z",
+          "note": "CONTRACT_MISMATCH (Owner-Befund)"
+        }
+      ],
+      "prState": "open",
+      "outcome": "Vertragswidrig, nicht unzugestellt. Der Brief verlangte Text neu und Bild geerbt; der damalige Contract kannte nur FULL_CREATIVE mit Bildpflicht. Vom Owner als Ursache benannt.",
+      "source": "dispatch-creative-job Pfad, PR 110",
+      "deliveryCount": 0,
+      "note": "Korrektur einer frueheren Einstufung: hier stand CREATIVE_JOB_STALE mit der Lesart Trigger-/Zustellungsfehler. Das war falsch. Kein TRIGGER_FAILURE, kein DELIVERY_FAILURE, kein PROVIDER_FAILURE, kein CONTENT_FAILURE. Der Befund bleibt als Provenance erhalten; PR 110 wird nicht nachtraeglich so veraendert, als waere er erfolgreich verarbeitet worden.",
+      "failureType": "CONTRACT_MISMATCH"
+    },
+    {
+      "creativeJobId": "job_vu-xom-20260911-rev2:da72a18296c3658ef59907df74acc2dffaee9841:attempt4:revtext-only",
+      "contentId": "vu-xom-20260911-rev2",
+      "briefId": "brief_00b861f522ad2209",
+      "briefBlobSha": "da72a18296c3658ef59907df74acc2dffaee9841",
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911-rev2:da72a18296c3658ef59907df74acc2dffaee9841:1.0",
+      "attempt": 4,
+      "revision": "text-only",
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-09-19T06:25:47.285Z",
+      "updatedAt": "2026-09-21T11:25:01.940Z",
+      "prNumber": 112,
+      "deliveryIds": [
+        "2d1eed70-b3ff-11f1-9185-93442bb605c2"
+      ],
+      "observedStarts": 1,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-19T06:25:47.285Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-19T06:29:48.569Z",
+          "note": "PR 112 geoeffnet"
+        },
+        {
+          "state": "CREATIVE_JOB_STALE",
+          "at": "2026-09-19T07:01:00.945Z",
+          "note": "kein Start; Bildanforderung als einziges Trennmerkmal"
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-19T07:53:25.364Z",
+          "note": "ready_for_review auf PR 112; 17 Vorbedingungen geprueft"
+        },
+        {
+          "state": "CREATIVE_JOB_IN_FLIGHT",
+          "at": "2026-09-19T07:55:19.000Z",
+          "note": "VU_CREATIVE_AGENT_INVOCATION STARTED, 1m54s nach dem Ereignis. Die Quittung nennt request_type TEXT_REVISION - der erweiterte Contract ist auf Providerseite real."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-21T11:25:01.940Z",
+          "note": "authoring/requests/vu-xom-20260911-rev2/authoring-result.json — reconciled aus RESULT_VERIFIED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-21T11:25:01.940Z",
+          "note": "authoring/requests/vu-xom-20260911-rev2/authoring-result.json — reconciled aus RESULT_VERIFIED (Schritt 2 von 2)"
+        }
+      ],
+      "prState": "open",
+      "requestType": "TEXT_REVISION",
+      "visualMode": "INHERIT_VERIFIED_ASSET",
+      "outcome": "Draft -> Ready for Review. Genau ein zulaessiges Ereignis fuer denselben Request: kein neuer Commit, kein neuer Branch, kein neuer PR, kein neuer processing_key.",
+      "source": "dispatch ueber request-creative-revision, PR 112",
+      "deliveryCount": 0,
+      "note": "Beobachtung ueber elf Request-PRs: 9 von 9 mit Bildanforderung sind gestartet, 0 von 2 ohne. Das ist das einzige Merkmal, das die beiden Gruppen trennt. Es stuetzt den Owner-Befund CONTRACT_MISMATCH und zeigt zugleich, dass die VU-seitige Erweiterung allein nicht genuegt. Die Regeln der Automation selbst sind von hier aus nicht beobachtbar - das bleibt eine starke Folgerung und kein Beweis.",
+      "triggerEvent": "pull_request/ready_for_review"
+    },
+    {
+      "creativeJobId": "job_vu-xom-20260911-rev3:ec19138deda55931fe18410a9d6b0af3f2893758:attempt5:revtext-only",
+      "contentId": "vu-xom-20260911-rev3",
+      "briefId": "brief_00b861f522ad2209",
+      "briefBlobSha": "ec19138deda55931fe18410a9d6b0af3f2893758",
+      "processingKey": "brief_00b861f522ad2209:vu-xom-20260911-rev3:ec19138deda55931fe18410a9d6b0af3f2893758:1.0",
+      "attempt": 5,
+      "revision": "text-only",
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-09-19T08:10:16.224Z",
+      "updatedAt": "2026-09-19T08:13:47Z",
+      "prNumber": 116,
+      "deliveryIds": [],
+      "observedStarts": null,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-19T08:10:16.224Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-19T08:11:39Z",
+          "note": "PR 116 direkt als ready geoeffnet. Zeitpunkt: created_at des PR (GitHub).",
+          "timestampSource": "github:pull_request.created_at"
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-19T08:13:47Z",
+          "note": "Ergebnis-Commit auf dem Request-Branch, eine Datei ohne Asset.",
+          "timestampSource": "git:committer-date 5feb543/88e99187"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": null,
+          "note": "Vierzehn Pflichtpruefungen bestanden, geerbtes Asset unveraendert. Der Zeitpunkt der Pruefung wurde nicht mitgeschrieben.",
+          "timestampSource": "unobserved"
+        }
+      ],
+      "prState": "open",
+      "triggerEvent": "pull_request/opened",
+      "outcome": "Revision der Revision. Das Ergebnis zu PR 112 war vertragstreu, aber die Rubrik wies alle vier Varianten zurueck: die Caption zaehlt auf, statt eine Beziehung zu behaupten. Die Anweisung traegt jetzt den gemessenen Befund und die Wortliste, an der die Rubrik eine Beziehung erkennt.",
+      "deliveryCount": 1,
+      "requestType": "TEXT_REVISION",
+      "visualMode": "INHERIT_VERIFIED_ASSET",
+      "registerNote": "Die Zeitpunkte fuer DISPATCHED und RESULT_AVAILABLE stammen aus beobachtbaren Quellen (GitHub bzw. git) und ersetzen zwei geschaetzte Werte, von denen einer VOR dem Ereignis lag, das er quittieren sollte. Fuer VERIFIED und die Zahl der beobachteten Starts gibt es keine Quelle - sie stehen als unobserved statt als plausible Zahl. Ein erfundener Zeitpunkt ist schlimmer als eine Luecke: die Luecke sieht man.",
+      "observedStartsSource": "unobserved"
+    },
+    {
+      "creativeJobId": "job_vu-xom-20260917:e1fde86545f8a836f706a40a195e45735c78da83:attempt1",
+      "contentId": "vu-xom-20260917",
+      "briefId": "brief_df8533a704ebca9b",
+      "briefBlobSha": "e1fde86545f8a836f706a40a195e45735c78da83",
+      "processingKey": "brief_df8533a704ebca9b:vu-xom-20260917:e1fde86545f8a836f706a40a195e45735c78da83:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_FAILED",
+      "createdAt": "2026-09-21T12:32:23.651Z",
+      "updatedAt": "2026-09-22T07:53:29.538Z",
+      "prNumber": null,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "failureType": "NEVER_DISPATCHED",
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-21T12:32:23.651Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_FAILED",
+          "at": "2026-09-22T07:53:29.538Z",
+          "note": "gh pr list --head authoring/request/vu-xom-20260917 — reconciled aus DISPATCH_NIE_ERFOLGT"
+        }
+      ]
+    },
+    {
+      "creativeJobId": "job_vu-nvda-20260918:478cfbc6973b392fc11579d7347a4f284247d543:attempt1",
+      "contentId": "vu-nvda-20260918",
+      "briefId": "brief_d85438b24249dbb6",
+      "briefBlobSha": "478cfbc6973b392fc11579d7347a4f284247d543",
+      "processingKey": "brief_d85438b24249dbb6:vu-nvda-20260918:478cfbc6973b392fc11579d7347a4f284247d543:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-09-22T13:00:16.740Z",
+      "updatedAt": "2026-09-22T18:11:56.856Z",
+      "prNumber": 170,
+      "deliveryIds": [
+        "91b9bb10-b685-11f1-96d6-09d50a374e6c"
+      ],
+      "observedStarts": 1,
+      "deliveryCount": 1,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-22T13:00:16.740Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-22T13:00:16.780Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-22T18:11:56.856Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-22T18:11:56.856Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-22T19:00:00.000Z",
+          "note": "Hand nachgetragen aus PR-170-Kommentar #5776983213 (VU_CREATIVE_AGENT_INVOCATION, delivery_id 91b9bb10-b685-11f1-96d6-09d50a374e6c, status STARTED, 2026-09-22T13:01:25Z): deliveryIds/observedStarts/deliveryCount waren beim automatischen Abgleich leer, weil sync-creative-invocations.mjs — wie ingest-creative.mjs vor PR #177 — in keinem Workflow aufgerufen wird. Reale, bereits am PR sichtbare Meldung nachgetragen, nichts erfunden."
+        }
+      ]
+    },
+    {
+      "creativeJobId": "job_vu-msft-20260918:390d74d595807d8efc385e41843ed080731ff18b:attempt1",
+      "contentId": "vu-msft-20260918",
+      "briefId": "brief_3c400c1a56587e7e",
+      "briefBlobSha": "390d74d595807d8efc385e41843ed080731ff18b",
+      "processingKey": "brief_3c400c1a56587e7e:vu-msft-20260918:390d74d595807d8efc385e41843ed080731ff18b:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-09-23T04:00:23.888Z",
+      "updatedAt": "2026-09-23T04:13:10.024Z",
+      "prNumber": 179,
+      "deliveryIds": [
+        "51237860-b703-11f1-9065-551cd2a35ab9"
+      ],
+      "observedStarts": 1,
+      "deliveryCount": 1,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-23T04:00:23.888Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-23T04:00:23.941Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-23T04:13:10.024Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-23T04:13:10.024Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-23T04:20:00.000Z",
+          "note": "Hand nachgetragen aus PR-179-Kommentar #5788799194 (VU_CREATIVE_AGENT_INVOCATION, delivery_id 51237860-b703-11f1-9065-551cd2a35ab9, status STARTED, 2026-09-23T04:02:58Z): deliveryIds/observedStarts/deliveryCount waren beim automatischen Abgleich leer, weil sync-creative-invocations.mjs — wie ingest-creative.mjs vor PR #177 — in keinem Workflow aufgerufen wird. Reale, bereits am PR sichtbare Meldung nachgetragen, nichts erfunden."
+        }
+      ]
+    },
+    {
+      "creativeJobId": "job_vu-msft-20260918:124cdeca6f67dd265cd2c3a7327a254770a12c40:attempt1",
+      "contentId": "vu-msft-20260918",
+      "briefId": "brief_3c400c1a56587e7e",
+      "briefBlobSha": "124cdeca6f67dd265cd2c3a7327a254770a12c40",
+      "processingKey": "brief_3c400c1a56587e7e:vu-msft-20260918:124cdeca6f67dd265cd2c3a7327a254770a12c40:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_FAILED",
+      "createdAt": "2026-09-23T09:18:23.686Z",
+      "updatedAt": "2026-09-26T15:26:07.226Z",
+      "prNumber": null,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-23T09:18:23.686Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_FAILED",
+          "at": "2026-09-26T15:26:07.226Z",
+          "note": "gh pr list --head authoring/request/vu-msft-20260918 (via GitHub API, 2026-09-26) — nur PR #179 vorhanden, fuer einen anderen processingKey (390d74d5...); kein PR fuer diesen processingKey (124cdeca6f...). — reconciled aus DISPATCH_NIE_ERFOLGT"
+        }
+      ],
+      "failureType": "NEVER_DISPATCHED"
+    },
+    {
+      "creativeJobId": "job_vu-web-c23118efc7199b43-20260923:727a27372a701ee4f18cad1cf1e500b0aa218a05:attempt1",
+      "contentId": "vu-web-c23118efc7199b43-20260923",
+      "briefId": "brief_37b60028316a1f1c",
+      "briefBlobSha": "727a27372a701ee4f18cad1cf1e500b0aa218a05",
+      "processingKey": "brief_37b60028316a1f1c:vu-web-c23118efc7199b43-20260923:727a27372a701ee4f18cad1cf1e500b0aa218a05:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-09-23T17:54:07.118Z",
+      "updatedAt": "2026-09-24T09:31:29.550Z",
+      "prNumber": null,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-23T17:54:07.118Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-24T09:31:29.550Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 3)"
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-24T09:31:29.550Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 3)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-24T09:31:29.550Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 3 von 3)"
+        }
+      ],
+      "resultCommitSha": "5b7846eb146f6a7dcdda59e001d834280950fd5e",
+      "resultRef": "origin/authoring/request/vu-web-c23118efc7199b43-20260923",
+      "resultBlobSha": "247e1b2db4e0266ba9473d8e461dcf48f3d0cb9e",
+      "evidencePackageId": "vu-web-c23118efc7199b43-20260923"
+    },
+    {
+      "creativeJobId": "job_vu-web-8854f83d5a3bdb8f-20260924:a0b0868ca0946b64c487c40e4ea78e34c3dc6e48:attempt1",
+      "contentId": "vu-web-8854f83d5a3bdb8f-20260924",
+      "briefId": "brief_49ed4ea774f950db",
+      "briefBlobSha": "a0b0868ca0946b64c487c40e4ea78e34c3dc6e48",
+      "processingKey": "brief_49ed4ea774f950db:vu-web-8854f83d5a3bdb8f-20260924:a0b0868ca0946b64c487c40e4ea78e34c3dc6e48:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-09-24T11:58:00.653Z",
+      "updatedAt": "2026-09-24T20:07:25.232Z",
+      "prNumber": 197,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-24T11:58:00.653Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-24T11:58:00.708Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-24T20:07:25.232Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-24T20:07:25.232Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "ba4cc7813c7b36059ca2a97506c7ed6012a2cd0a",
+      "resultRef": "origin/authoring/request/vu-web-8854f83d5a3bdb8f-20260924",
+      "resultBlobSha": "0dfd2c0e0cd1a39f90dd23e40eff3e02a49ef1ec",
+      "evidencePackageId": "vu-web-8854f83d5a3bdb8f-20260924"
+    },
+    {
+      "creativeJobId": "job_vu-web-6c42c873029298d1-20260924:a02abfefedc8d6d684bfb78fd76c249dc6628147:attempt1",
+      "contentId": "vu-web-6c42c873029298d1-20260924",
+      "briefId": "brief_8d13d73f83755dbb",
+      "briefBlobSha": "a02abfefedc8d6d684bfb78fd76c249dc6628147",
+      "processingKey": "brief_8d13d73f83755dbb:vu-web-6c42c873029298d1-20260924:a02abfefedc8d6d684bfb78fd76c249dc6628147:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-09-24T20:09:59.166Z",
+      "updatedAt": "2026-09-25T12:09:10.202Z",
+      "prNumber": 204,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-24T20:09:59.166Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-24T20:09:59.209Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-25T12:09:10.202Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-25T12:09:10.202Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "2bd9616bb10e7c25fa3de30b097b64e5c5474bd4",
+      "resultRef": "origin/authoring/request/vu-web-6c42c873029298d1-20260924",
+      "resultBlobSha": "8b44bf845f1f27a5f37aff3f08e35bfe020e3941",
+      "evidencePackageId": "vu-web-6c42c873029298d1-20260924"
+    },
+    {
+      "creativeJobId": "job_vu-web-32193db04816a8b3-20260925:6c49287d8412d597bdd855e402bf83fffaae55ec:attempt1",
+      "contentId": "vu-web-32193db04816a8b3-20260925",
+      "briefId": "brief_09404b2d88bcc319",
+      "briefBlobSha": "6c49287d8412d597bdd855e402bf83fffaae55ec",
+      "processingKey": "brief_09404b2d88bcc319:vu-web-32193db04816a8b3-20260925:6c49287d8412d597bdd855e402bf83fffaae55ec:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-09-25T12:10:57.465Z",
+      "updatedAt": "2026-09-26T11:34:39.650Z",
+      "prNumber": 219,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-25T12:10:57.465Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-25T12:10:57.519Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-26T11:34:39.650Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-26T11:34:39.650Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "9665beb1a1068408ae0c629b5250004c1596b41d",
+      "resultRef": "origin/authoring/request/vu-web-32193db04816a8b3-20260925",
+      "resultBlobSha": "db126751a8b4cb3c4c1d61536fea1581754fcf67",
+      "evidencePackageId": "vu-web-32193db04816a8b3-20260925"
+    },
+    {
+      "creativeJobId": "job_vu-web-7183a69a7a03984a-20260925:dbedd7c117e5df72f1312a18f9d4a210599c3b03:attempt1",
+      "contentId": "vu-web-7183a69a7a03984a-20260925",
+      "briefId": "brief_0ab8eb53e21c5d3f",
+      "briefBlobSha": "dbedd7c117e5df72f1312a18f9d4a210599c3b03",
+      "processingKey": "brief_0ab8eb53e21c5d3f:vu-web-7183a69a7a03984a-20260925:dbedd7c117e5df72f1312a18f9d4a210599c3b03:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-09-26T12:37:00.129Z",
+      "updatedAt": "2026-09-26T14:55:55.284Z",
+      "prNumber": 240,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-26T12:37:00.129Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-26T12:37:00.169Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-26T14:55:55.284Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-26T14:55:55.284Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "860547849d9721633ebd16268a00aa201ec14dcd",
+      "resultRef": "origin/authoring/request/vu-web-7183a69a7a03984a-20260925",
+      "resultBlobSha": "b25daf4302dc9165cb711d6c5114f754b18142d5",
+      "evidencePackageId": "vu-web-7183a69a7a03984a-20260925"
+    },
+    {
+      "creativeJobId": "job_vu-web-787176986cf7f5d8-20260926:83f84f9c8d394ba0bb773def1c9fb1352ef930b8:attempt1",
+      "contentId": "vu-web-787176986cf7f5d8-20260926",
+      "briefId": "brief_852a2221ba91d3e5",
+      "briefBlobSha": "83f84f9c8d394ba0bb773def1c9fb1352ef930b8",
+      "processingKey": "brief_852a2221ba91d3e5:vu-web-787176986cf7f5d8-20260926:83f84f9c8d394ba0bb773def1c9fb1352ef930b8:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-09-26T14:57:49.232Z",
+      "updatedAt": "2026-09-26T15:43:05.422Z",
+      "prNumber": 245,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-26T14:57:49.232Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-26T14:57:49.273Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-26T15:43:05.422Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-26T15:43:05.422Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "9998a5c6ae16d0d27e29a3d6347c3625c9caff8d",
+      "resultRef": "origin/authoring/request/vu-web-787176986cf7f5d8-20260926",
+      "resultBlobSha": "5ea4e0d4c34b2294874092662fa62dccf05202d1",
+      "evidencePackageId": "vu-web-787176986cf7f5d8-20260926"
+    },
+    {
+      "creativeJobId": "job_vu-web-4e4d3aaef2a999a2-20260926:f15ea74f6b51988e5ec7243666b1600508643d69:attempt1",
+      "contentId": "vu-web-4e4d3aaef2a999a2-20260926",
+      "briefId": "brief_d17c14795c50e86d",
+      "briefBlobSha": "f15ea74f6b51988e5ec7243666b1600508643d69",
+      "processingKey": "brief_d17c14795c50e86d:vu-web-4e4d3aaef2a999a2-20260926:f15ea74f6b51988e5ec7243666b1600508643d69:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-09-26T16:03:25.378Z",
+      "updatedAt": "2026-09-26T17:38:26.175Z",
+      "prNumber": 250,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-26T16:03:25.378Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-26T16:03:25.416Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-26T17:38:26.175Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-26T17:38:26.175Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "b4ac7e7c2c9dfef5f6e835a97b495527c3789fbd",
+      "resultRef": "origin/authoring/request/vu-web-4e4d3aaef2a999a2-20260926",
+      "resultBlobSha": "dd5f9d5b63b429a36af4e4c88e1e6592e48a2b31",
+      "evidencePackageId": "vu-web-4e4d3aaef2a999a2-20260926"
+    },
+    {
+      "creativeJobId": "job_vu-web-4e4d3aaef2a999a2-20260926:263a5573bb2b14dbe43e84835a6e86186b929cdf:attempt2",
+      "contentId": "vu-web-4e4d3aaef2a999a2-20260926",
+      "briefId": "brief_d17c14795c50e86d",
+      "briefBlobSha": "263a5573bb2b14dbe43e84835a6e86186b929cdf",
+      "processingKey": "brief_d17c14795c50e86d:vu-web-4e4d3aaef2a999a2-20260926:263a5573bb2b14dbe43e84835a6e86186b929cdf:1.0",
+      "attempt": 2,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-09-26T19:20:56.356Z",
+      "updatedAt": "2026-09-29T13:55:01.860Z",
+      "prNumber": 255,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-26T19:20:56.356Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-27T02:34:19.819Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-29T13:55:01.860Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-29T13:55:01.860Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "b8b83ef950bb91cde42a79a50bd159b32a45ed72",
+      "resultRef": "origin/authoring/request/vu-web-4e4d3aaef2a999a2-20260926-attempt2",
+      "resultBlobSha": "332292649e82234ed8cfab2a59427a0fe872dbc3",
+      "evidencePackageId": "vu-web-4e4d3aaef2a999a2-20260926"
+    },
+    {
+      "creativeJobId": "job_vu-web-32193db04816a8b3-20260926:befa3fcd02dff9b4cb1015d75ece9a0e14a1af9b:attempt2",
+      "contentId": "vu-web-32193db04816a8b3-20260926",
+      "briefId": "brief_4bf3a500cb71afec",
+      "briefBlobSha": "befa3fcd02dff9b4cb1015d75ece9a0e14a1af9b",
+      "processingKey": "brief_4bf3a500cb71afec:vu-web-32193db04816a8b3-20260926:befa3fcd02dff9b4cb1015d75ece9a0e14a1af9b:1.0",
+      "attempt": 2,
+      "revision": null,
+      "state": "CREATIVE_JOB_FAILED",
+      "createdAt": "2026-09-27T05:14:09.558Z",
+      "updatedAt": "2026-09-27T05:30:01.678Z",
+      "prNumber": null,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-27T05:14:09.558Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-27T05:26:52.895Z",
+          "note": "Anlauf-Korrektur: Register verlor den echten Anlauf 1 (PR #254) durch einen fehlgeschlagenen Festschreiben-Commit (Lauf #69). Dieser Job ist inhaltlich der zweite Anlauf zu dieser Story, nur ohne verlorene Historie - Anlauf-Nummer manuell auf 2 korrigiert, damit der Branch-Suffix (PR #253) die Kollision mit dem noch offenen Branch von PR #254 vermeidet."
+        },
+        {
+          "state": "CREATIVE_JOB_FAILED",
+          "at": "2026-09-27T05:30:01.678Z",
+          "note": "Der Brief zu diesem Job wurde nie committet (nur im fluechtigen Runner von Lauf #70 geschrieben) - kein Branch, kein PR, niemand hat je etwas gesehen. Ein echter, korrekt gehashter Anlauf folgt separat. — reconciled aus DISPATCH_NIE_ERFOLGT"
+        }
+      ],
+      "failureType": "NEVER_DISPATCHED"
+    },
+    {
+      "creativeJobId": "job_vu-web-32193db04816a8b3-20260926:e6aa68c144d40ce9ec057e314150c39bee4e2e98:attempt2",
+      "contentId": "vu-web-32193db04816a8b3-20260926",
+      "briefId": "brief_4bf3a500cb71afec",
+      "briefBlobSha": "e6aa68c144d40ce9ec057e314150c39bee4e2e98",
+      "processingKey": "brief_4bf3a500cb71afec:vu-web-32193db04816a8b3-20260926:e6aa68c144d40ce9ec057e314150c39bee4e2e98:1.0",
+      "attempt": 2,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-09-27T05:30:40.059Z",
+      "updatedAt": "2026-09-29T13:55:05.946Z",
+      "prNumber": 258,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-27T05:30:40.059Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-27T08:10:22.410Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-29T13:55:05.946Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-29T13:55:05.946Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "d9e0ea579ce6c33e6d8c3d70cd243b779f3191ee",
+      "resultRef": "origin/authoring/request/vu-web-32193db04816a8b3-20260926-attempt2",
+      "resultBlobSha": "ceccf2623b093bc998d39d96956a0cc70d781aa5",
+      "evidencePackageId": "vu-web-32193db04816a8b3-20260926"
+    },
+    {
+      "creativeJobId": "job_vu-web-15e2974b16c8dc4c-20260929:e12092b47eed4d6e0e998b1c74cbe47dc6abfa7d:attempt1",
+      "contentId": "vu-web-15e2974b16c8dc4c-20260929",
+      "briefId": "brief_f69853c585d49c51",
+      "briefBlobSha": "e12092b47eed4d6e0e998b1c74cbe47dc6abfa7d",
+      "processingKey": "brief_f69853c585d49c51:vu-web-15e2974b16c8dc4c-20260929:e12092b47eed4d6e0e998b1c74cbe47dc6abfa7d:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-09-29T14:17:24.716Z",
+      "updatedAt": "2026-09-29T21:05:45.956Z",
+      "prNumber": 296,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-29T14:17:24.716Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-29T14:17:24.771Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-29T21:05:45.956Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-29T21:05:45.956Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "bfead126bb5e627863f3fc6072320e5ebe72dc00",
+      "resultRef": "origin/authoring/request/vu-web-15e2974b16c8dc4c-20260929",
+      "resultBlobSha": "e73b429ae43fc74c531b8be2c5713797195164f3",
+      "evidencePackageId": "vu-web-15e2974b16c8dc4c-20260929"
+    },
+    {
+      "creativeJobId": "job_vu-post-20260929-d00c2c3d75:c55933fbc79a08b869bd8390d7fc33f5417172a4:attempt1",
+      "contentId": "vu-post-20260929-d00c2c3d75",
+      "briefId": "brief_d4b22c35794bba85",
+      "briefBlobSha": "c55933fbc79a08b869bd8390d7fc33f5417172a4",
+      "processingKey": "brief_d4b22c35794bba85:vu-post-20260929-d00c2c3d75:c55933fbc79a08b869bd8390d7fc33f5417172a4:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_FAILED",
+      "createdAt": "2026-09-29T21:07:05.128Z",
+      "updatedAt": "2026-09-30T21:03:33.921Z",
+      "prNumber": 303,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-29T21:07:05.128Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-29T21:07:05.128Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_FAILED",
+          "at": "2026-09-30T21:03:33.921Z",
+          "note": "gh api issues/303/comments — reconciled aus AGENT_ABBRUCH_GEMELDET"
+        }
+      ],
+      "failureType": "AGENT_REPORTED_ASSET_CONTRACT_MISMATCH"
+    },
+    {
+      "creativeJobId": "job_vu-post-20260930-ff50f15081:e62a2258558caecae19b0740b79026d4d3a9664f:attempt1",
+      "contentId": "vu-post-20260930-ff50f15081",
+      "briefId": "brief_e8d29c2421ec7b96",
+      "briefBlobSha": "e62a2258558caecae19b0740b79026d4d3a9664f",
+      "processingKey": "brief_e8d29c2421ec7b96:vu-post-20260930-ff50f15081:e62a2258558caecae19b0740b79026d4d3a9664f:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-09-30T21:04:46.124Z",
+      "updatedAt": "2026-09-30T21:22:38.459Z",
+      "prNumber": 320,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-30T21:04:46.124Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-30T21:04:46.124Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-30T21:22:38.459Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-30T21:22:38.459Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "1604f5fb36a82712ac99df154009d401e996d1d6",
+      "resultRef": "origin/authoring/request/vu-post-20260930-ff50f15081",
+      "resultBlobSha": "09d80c85dd0f6c8ad2c8e7939cc8977edbc0fd55"
+    },
+    {
+      "creativeJobId": "job_vu-post-20261001-d69124c984:8236b8159522f00fa2486fa264b46e8fa73b1b5d:attempt1",
+      "contentId": "vu-post-20261001-d69124c984",
+      "briefId": "brief_e4f40a2bcf6a6353",
+      "briefBlobSha": "8236b8159522f00fa2486fa264b46e8fa73b1b5d",
+      "processingKey": "brief_e4f40a2bcf6a6353:vu-post-20261001-d69124c984:8236b8159522f00fa2486fa264b46e8fa73b1b5d:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-10-01T13:54:03.976Z",
+      "updatedAt": "2026-10-01T14:09:51.930Z",
+      "prNumber": 332,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-10-01T13:54:03.976Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-10-01T13:54:03.976Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-10-01T14:09:51.930Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-10-01T14:09:51.930Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "d45ca9e5842de48f62c94984de0cf742c542d4e3",
+      "resultRef": "origin/authoring/request/vu-post-20261001-d69124c984",
+      "resultBlobSha": "cbc1d304d256c27e90d4891a7974be9f0605c652"
+    },
+    {
+      "creativeJobId": "job_vu-post-20261001-2dc13b600e:80815522e070ab8ea2926319866425118a7e5505:attempt1",
+      "contentId": "vu-post-20261001-2dc13b600e",
+      "briefId": "brief_c6e30a408ab294b0",
+      "briefBlobSha": "80815522e070ab8ea2926319866425118a7e5505",
+      "processingKey": "brief_c6e30a408ab294b0:vu-post-20261001-2dc13b600e:80815522e070ab8ea2926319866425118a7e5505:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-10-01T21:22:03.584Z",
+      "updatedAt": "2026-10-01T21:37:34.773Z",
+      "prNumber": 337,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-10-01T21:22:03.584Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-10-01T21:22:03.584Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-10-01T21:37:34.773Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-10-01T21:37:34.773Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "97cf4b2103b3f8c3bd75364132cad9a88ff8f2de",
+      "resultRef": "origin/authoring/request/vu-post-20261001-2dc13b600e",
+      "resultBlobSha": "9887b4b6993db18991e845a1e83cd8e580ec1918"
+    },
+    {
+      "creativeJobId": "job_vu-post-20261002-f5bab93d15:12ed53bd1daa1f24060909014d78736158ee4d8a:attempt1",
+      "contentId": "vu-post-20261002-f5bab93d15",
+      "briefId": "brief_dcba5a8352739dbc",
+      "briefBlobSha": "12ed53bd1daa1f24060909014d78736158ee4d8a",
+      "processingKey": "brief_dcba5a8352739dbc:vu-post-20261002-f5bab93d15:12ed53bd1daa1f24060909014d78736158ee4d8a:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-10-02T13:09:26.025Z",
+      "updatedAt": "2026-10-02T13:26:48.316Z",
+      "prNumber": 351,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-10-02T13:09:26.025Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-10-02T13:09:26.025Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-10-02T13:26:48.316Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-10-02T13:26:48.316Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "534bb64f4532547f1a5132b83f84440fb1ede07a",
+      "resultRef": "origin/authoring/request/vu-post-20261002-f5bab93d15",
+      "resultBlobSha": "3027381c133bfc024c93ec33f74733321bfc1107"
+    },
+    {
+      "creativeJobId": "job_vu-post-20261002-1ce0446e64:0409036408f1f7b287cea5eab03b0b8ced3c7e71:attempt1",
+      "contentId": "vu-post-20261002-1ce0446e64",
+      "briefId": "brief_96605b1903ff9dbf",
+      "briefBlobSha": "0409036408f1f7b287cea5eab03b0b8ced3c7e71",
+      "processingKey": "brief_96605b1903ff9dbf:vu-post-20261002-1ce0446e64:0409036408f1f7b287cea5eab03b0b8ced3c7e71:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_VERIFIED",
+      "createdAt": "2026-10-02T15:22:11.201Z",
+      "updatedAt": "2026-10-02T15:40:32.201Z",
+      "prNumber": 360,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-10-02T15:22:11.201Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-10-02T15:22:11.201Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-10-02T15:40:32.201Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-10-02T15:40:32.201Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "703cbcd3ad3a64fb56595b418841b0de5eb6565a",
+      "resultRef": "origin/authoring/request/vu-post-20261002-1ce0446e64",
+      "resultBlobSha": "4ee69f8c8c87235d17fa5641498444f04b834b84"
+    },
+    {
+      "creativeJobId": "job_vu-post-20261002-fd3c1bcd00:cdb3dbe8f9edb821ba20a6116d9770bc9062a07c:attempt1",
+      "contentId": "vu-post-20261002-fd3c1bcd00",
+      "briefId": "brief_6c4b03d96db69f6d",
+      "briefBlobSha": "cdb3dbe8f9edb821ba20a6116d9770bc9062a07c",
+      "processingKey": "brief_6c4b03d96db69f6d:vu-post-20261002-fd3c1bcd00:cdb3dbe8f9edb821ba20a6116d9770bc9062a07c:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_SUPERSEDED",
+      "createdAt": "2026-10-02T21:00:45.821Z",
+      "updatedAt": "2026-10-03T06:14:31.923Z",
+      "prNumber": 364,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-10-02T21:00:45.821Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-10-02T21:00:45.821Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_SUPERSEDED",
+          "at": "2026-10-03T06:14:31.923Z",
+          "note": "social/data/owner-job-storno.json — reconciled aus OWNER_STORNO_NIE_GESTARTET"
+        }
+      ]
+    },
+    {
+      "creativeJobId": "job_vu-post-20261003-a5cd1ac653:6811ceddd46772cbba3ca1a73360a382ee21d8bf:attempt1",
+      "contentId": "vu-post-20261003-a5cd1ac653",
+      "briefId": "brief_dd009a560e723394",
+      "briefBlobSha": "6811ceddd46772cbba3ca1a73360a382ee21d8bf",
+      "processingKey": "brief_dd009a560e723394:vu-post-20261003-a5cd1ac653:6811ceddd46772cbba3ca1a73360a382ee21d8bf:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_DISPATCHED",
+      "createdAt": "2026-10-03T06:15:37.596Z",
+      "updatedAt": "2026-10-03T06:15:37.596Z",
+      "prNumber": 375,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-10-03T06:15:37.596Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-10-03T06:15:37.596Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        }
+      ]
+    }
+  ],
+  "budget": {
+    "dispatchesPerProcessingKey": 1,
+    "concurrentJobsPerContentId": 1,
+    "maxAttemptsPerContentId": 3,
+    "maxRevisionsPerContentId": 3,
+    "diagnosticJobsInProduction": 0
+  },
+  "reconciledAt": "2026-10-03T06:14:31.923Z"
+}

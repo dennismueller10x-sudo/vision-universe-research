@@ -1,0 +1,146 @@
+{
+  "generatedAt": "2026-09-19T15:46:36.650Z",
+  "events": [
+    {
+      "type": "TECHNICAL_SETUP",
+      "entity": "AAPL",
+      "metric": "Technical Opportunity Score",
+      "value": 65.3,
+      "unit": null,
+      "observedAt": "2026-09-11T00:00:00Z",
+      "source": "vu.technical",
+      "provider": "vu-technical-intelligence",
+      "state": "VERIFIED",
+      "strength": 0.653,
+      "context": {
+        "trend": "BULLISH",
+        "primaryDirection": "BULLISH",
+        "elliottStatus": "AMBIGUOUS",
+        "elliottIsBeta": true,
+        "bars": 2940,
+        "snapshotId": "snap_6df01abdef66bea1"
+      }
+    },
+    {
+      "type": "TECHNICAL_SETUP",
+      "entity": "JPM",
+      "metric": "Technical Opportunity Score",
+      "value": 63.3,
+      "unit": null,
+      "observedAt": "2026-09-11T00:00:00Z",
+      "source": "vu.technical",
+      "provider": "vu-technical-intelligence",
+      "state": "VERIFIED",
+      "strength": 0.633,
+      "context": {
+        "trend": "BULLISH",
+        "primaryDirection": "BULLISH",
+        "elliottStatus": "AMBIGUOUS",
+        "elliottIsBeta": true,
+        "bars": 2940,
+        "snapshotId": "snap_d1308f5ba7316677"
+      }
+    },
+    {
+      "type": "TECHNICAL_SETUP",
+      "entity": "MSFT",
+      "metric": "Technical Opportunity Score",
+      "value": 60.6,
+      "unit": null,
+      "observedAt": "2026-09-11T00:00:00Z",
+      "source": "vu.technical",
+      "provider": "vu-technical-intelligence",
+      "state": "VERIFIED",
+      "strength": 0.606,
+      "context": {
+        "trend": "BULLISH",
+        "primaryDirection": "BULLISH",
+        "elliottStatus": "LOW_CONFIDENCE",
+        "elliottIsBeta": true,
+        "bars": 2940,
+        "snapshotId": "snap_8c44a54b4fd2fdef"
+      }
+    },
+    {
+      "type": "TECHNICAL_SETUP",
+      "entity": "XOM",
+      "metric": "Technical Opportunity Score",
+      "value": 76,
+      "unit": null,
+      "observedAt": "2026-09-11T00:00:00Z",
+      "source": "vu.technical",
+      "provider": "vu-technical-intelligence",
+      "state": "VERIFIED",
+      "strength": 0.76,
+      "context": {
+        "trend": "BULLISH",
+        "primaryDirection": "BULLISH",
+        "elliottStatus": "OK",
+        "elliottIsBeta": true,
+        "bars": 2940,
+        "snapshotId": "snap_67138a4aeacd370e"
+      }
+    }
+  ],
+  "externalSignals": [],
+  "summary": {
+    "total": 4,
+    "publishable": 4,
+    "unavailable": 0,
+    "byType": {
+      "TECHNICAL_SETUP": 4
+    }
+  },
+  "sources": [
+    {
+      "id": "quant/data/technical/index.json",
+      "state": "OK",
+      "generatedAt": "2026-09-13T21:05:19.254Z",
+      "real": 5,
+      "mock": 13
+    },
+    {
+      "id": "quant/data/securities.json",
+      "state": "OK",
+      "asOf": "2026-09-04",
+      "rows": 511,
+      "isMock": true,
+      "note": "Synthetisches Universum (meta.json: isMock=true). Erzeugt KEINE veroeffentlichungsfaehigen Signale."
+    },
+    {
+      "id": "quant/data/market/health/health.json",
+      "state": "OK",
+      "generatedAt": "2026-09-09T17:17:10.900Z"
+    }
+  ],
+  "skipped": [
+    {
+      "source": "quant/data/technical/index.json",
+      "count": 13,
+      "reason": "Synthetische Instrumente. Ein Beitrag darueber waere eine erfundene Marktaussage (§27, §45)."
+    },
+    {
+      "source": "quant/data/securities.json",
+      "count": 511,
+      "reason": "Das Quant-Universum ist synthetisch (511 erfundene Unternehmen). Signale daraus sehen aus wie Marktaussagen und sind Zufallszahlen. Mit --include-mock werden sie zur Diagnose erzeugt — als UNAVAILABLE markiert und damit nicht veroeffentlichungsfaehig."
+    }
+  ],
+  "notConnected": [
+    {
+      "id": "news",
+      "reason": "Kein lizenzierter News-Provider angebunden (NewsDataProvider ist definiert, quant/engines/provider.js)."
+    },
+    {
+      "id": "social.trends",
+      "reason": "Keine Plattform-API mit oeffentlichen Trenddaten angebunden. Lizenz- und Plattformregeln sind vorher zu klaeren (§4 D)."
+    },
+    {
+      "id": "audience",
+      "reason": "Setzt veroeffentlichte Beitraege mit Kommentaren voraus (§24)."
+    },
+    {
+      "id": "own.performance",
+      "reason": "Setzt Analytics aus mindestens einer Veroeffentlichung voraus (§4 E)."
+    }
+  ]
+}

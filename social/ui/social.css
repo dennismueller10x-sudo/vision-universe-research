@@ -1,0 +1,220 @@
+/* =========================================================================
+   VISION UNIVERSE SOCIAL — ui/social.css
+   SOCIAL COMMAND CENTER (§31, §49)
+
+   MOBILE FIRST — und zwar woertlich.
+
+   Der Owner soll auf dem Smartphone die Warteschlange sehen, einen
+   Beitrag lesen, die Begruendung verstehen, freigeben oder stoppen und
+   die Provider-Gesundheit pruefen koennen. Das heisst: die Grundlayouts
+   sind fuer 360 px gebaut, und die Desktop-Regeln kommen ueber
+   min-width — nicht umgekehrt.
+
+   KEIN EIGENES DESIGNSYSTEM
+
+   Die Variablen und die Anmutung folgen quant/ui/quant.css. Ein zweites
+   Designsystem im selben Repository waere genau die Parallelarchitektur,
+   die §0 ausschliesst — nur eben im Sichtbaren.
+   ========================================================================= */
+
+:root {
+  --s-ink: #111;
+  --s-ink-soft: #55534e;
+  --s-ink-faint: #8a8781;
+  --s-bg: #fbfaf8;
+  --s-surface: #fff;
+  --s-border: #e5e3dd;
+  --s-border-strong: #cfccc4;
+
+  /* Zustandsfarben. Sie folgen der Health-Matrix und nicht dem Gefuehl:
+     UNAVAILABLE ist NICHT rot, weil "noch nicht eingerichtet" kein Fehler
+     ist (§41). Wer es rot faerbt, erzeugt eine Wand, auf die niemand mehr
+     schaut. */
+  --s-pass: #1c7a4a;
+  --s-pass-bg: #e8f5ee;
+  --s-warn: #8a6100;
+  --s-warn-bg: #fdf3e0;
+  --s-fail: #a32020;
+  --s-fail-bg: #fbeaea;
+  --s-unavail: #55534e;
+  --s-unavail-bg: #f1efea;
+
+  --s-radius: 10px;
+  --s-gap: 12px;
+}
+
+* { box-sizing: border-box; }
+
+body.s-body {
+  margin: 0;
+  background: var(--s-bg);
+  color: var(--s-ink);
+  font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  /* Sichere Bereiche des Geraets: ohne das steht die Kopfzeile unter der
+     Kamerainsel. */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* --------------------------------------------------------- Kopfbereich */
+
+.s-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--s-gap);
+  padding: 14px 16px;
+  background: var(--s-surface);
+  border-bottom: 1px solid var(--s-border);
+}
+.s-header strong { font-size: 16px; letter-spacing: -0.01em; }
+.s-header a { color: var(--s-ink-soft); text-decoration: none; font-size: 13px; }
+
+/* Der Autonomie- und Schalterstreifen. Er steht GANZ OBEN und nicht in
+   einem Einstellungsdialog: die Frage "darf dieses System gerade
+   veroeffentlichen?" ist die erste, die der Owner beantwortet haben will. */
+.s-status-bar {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  padding: 10px 16px;
+  background: var(--s-surface);
+  border-bottom: 1px solid var(--s-border);
+}
+
+.s-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 999px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.01em;
+  border: 1px solid transparent;
+}
+.s-badge--pass    { background: var(--s-pass-bg);    color: var(--s-pass);    border-color: #bfe3d0; }
+.s-badge--warning { background: var(--s-warn-bg);    color: var(--s-warn);    border-color: #f0dcb4; }
+.s-badge--fail    { background: var(--s-fail-bg);    color: var(--s-fail);    border-color: #f0c4c4; }
+.s-badge--unavailable { background: var(--s-unavail-bg); color: var(--s-unavail); border-color: var(--s-border-strong); }
+
+/* ------------------------------------------------------------- Tabs */
+
+.s-tabs {
+  display: flex; gap: 4px;
+  padding: 8px 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  background: var(--s-surface);
+  border-bottom: 1px solid var(--s-border);
+}
+.s-tabs::-webkit-scrollbar { display: none; }
+
+.s-tab {
+  flex: 0 0 auto;
+  padding: 8px 14px;
+  border: 1px solid var(--s-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--s-ink-soft);
+  font: inherit; font-size: 13px;
+  /* 44 px Mindesthoehe fuer den Daumen — nicht optional auf einem Geraet,
+     das man mit einer Hand bedient. */
+  min-height: 40px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.s-tab[aria-selected="true"] {
+  background: var(--s-ink); color: #fff; border-color: var(--s-ink);
+}
+
+/* ------------------------------------------------------------ Inhalt */
+
+.s-main { padding: 16px 12px 40px; max-width: 900px; margin: 0 auto; }
+
+.s-section-title {
+  margin: 0 4px 10px; font-size: 13px; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--s-ink-faint);
+}
+
+.s-card {
+  background: var(--s-surface);
+  border: 1px solid var(--s-border);
+  border-radius: var(--s-radius);
+  padding: 14px;
+  margin-bottom: var(--s-gap);
+}
+.s-card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.s-card__topic { margin: 0; font-size: 16px; font-weight: 650; letter-spacing: -0.01em; }
+.s-card__meta { margin: 4px 0 0; font-size: 12px; color: var(--s-ink-faint); }
+.s-card__hook {
+  margin: 12px 0 0; padding: 10px 12px;
+  background: var(--s-bg); border-left: 3px solid var(--s-border-strong);
+  border-radius: 0 6px 6px 0;
+  font-size: 15px; font-weight: 550;
+}
+.s-card__caption { margin: 10px 0 0; font-size: 14px; color: var(--s-ink-soft); white-space: pre-wrap; }
+
+/* Die Begruendung. Sie ist aufklappbar, weil sie lang ist — aber sie ist
+   VORHANDEN und einen Fingertipp entfernt (§32). */
+.s-why { margin-top: 12px; border-top: 1px solid var(--s-border); padding-top: 10px; }
+.s-why > summary {
+  cursor: pointer; font-size: 13px; font-weight: 600; color: var(--s-ink-soft);
+  list-style: none; min-height: 32px; display: flex; align-items: center;
+}
+.s-why > summary::-webkit-details-marker { display: none; }
+.s-why > summary::before { content: "▸ "; margin-right: 6px; }
+.s-why[open] > summary::before { content: "▾ "; }
+
+.s-why-item { margin: 10px 0 0; }
+.s-why-item dt {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--s-ink-faint);
+}
+.s-why-item dd { margin: 3px 0 0; font-size: 13px; color: var(--s-ink-soft); }
+/* "Was dagegen spricht" wird hervorgehoben und nicht versteckt. */
+.s-why-item--against dd { color: var(--s-warn); }
+
+/* ------------------------------------------------------- Health-Matrix */
+
+.s-matrix { display: grid; gap: 8px; }
+.s-row {
+  display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;
+  padding: 11px 12px;
+  background: var(--s-surface);
+  border: 1px solid var(--s-border);
+  border-radius: 8px;
+}
+.s-row__label { font-size: 14px; font-weight: 550; }
+.s-row__detail { grid-column: 1 / -1; margin: 4px 0 0; font-size: 12px; color: var(--s-ink-faint); }
+.s-row__action { grid-column: 1 / -1; margin: 4px 0 0; font-size: 12px; color: var(--s-ink-soft); }
+
+/* -------------------------------------------------------------- Leere */
+
+/* Der wichtigste Zustand dieses Command Center — heute der Normalfall.
+   Er sagt, WARUM nichts da ist, statt eine leere Flaeche zu zeigen (§45). */
+.s-empty {
+  padding: 22px 16px;
+  background: var(--s-surface);
+  border: 1px dashed var(--s-border-strong);
+  border-radius: var(--s-radius);
+  color: var(--s-ink-soft);
+}
+.s-empty h3 { margin: 0 0 8px; font-size: 15px; color: var(--s-ink); }
+.s-empty p { margin: 0 0 8px; font-size: 13px; }
+.s-empty code {
+  display: inline-block; padding: 2px 6px; border-radius: 4px;
+  background: var(--s-bg); border: 1px solid var(--s-border);
+  font-size: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  word-break: break-all;
+}
+
+.s-note {
+  margin: 0 0 var(--s-gap); padding: 12px 14px;
+  background: var(--s-warn-bg); border: 1px solid #f0dcb4; border-radius: 8px;
+  font-size: 13px; color: var(--s-warn);
+}
+
+/* ----------------------------------------------------------- Desktop */
+
+@media (min-width: 720px) {
+  .s-main { padding: 24px 20px 60px; }
+  .s-header { padding: 16px 24px; }
+  .s-status-bar { padding: 12px 24px; }
+  .s-tabs { padding: 10px 20px; }
+  .s-card { padding: 18px; }
+  .s-row { grid-template-columns: 1fr 1fr auto; }
+  .s-row__detail { grid-column: 1 / 3; }
+}

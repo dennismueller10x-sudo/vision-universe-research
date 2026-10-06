@@ -1,0 +1,65 @@
+name: VU2 canonical lifecycle handoff
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/vu2-lifecycle-handoff.yml'
+      - 'scripts/vu2/verify-history-handoff.mjs'
+      - 'quant/tests/history-handoff-proof.test.mjs'
+permissions:
+  contents: read
+jobs:
+  handoff:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+       github.head_ref == 'workstream/vu2-operating-handoff')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: vu2-canonical-handoff
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Handoff protection tests
+        run: node --test quant/tests/history-handoff-proof.test.mjs quant/tests/history-sync-boundary.test.mjs quant/tests/history-usage-boundary.test.mjs
+      - name: Measured preflight using the existing accounting and storage
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/preflight-zero-cost.mjs --operation RECOVERY --gate GATE_100
+          --out "$RUNNER_TEMP/vu2-handoff/preflight.json"
+      - name: Restore only five existing universe members to private runner state
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --pull --gate GATE_100 --limit 5 --concurrency 1
+          --preflight "$RUNNER_TEMP/vu2-handoff/preflight.json"
+          --work-dir "$RUNNER_TEMP/vu2-private-history"
+          --report "$RUNNER_TEMP/vu2-handoff/sync.json"
+      - name: Verify restored state through the existing market store and EOD gate
+        run: >-
+          node scripts/vu2/verify-history-handoff.mjs
+          --preflight "$RUNNER_TEMP/vu2-handoff/preflight.json"
+          --sync "$RUNNER_TEMP/vu2-handoff/sync.json"
+          --work-dir "$RUNNER_TEMP/vu2-private-history"
+          --out "$RUNNER_TEMP/vu2-handoff/result.json"
+      - name: Retain metadata evidence only, including blocked preflight
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vu2-canonical-handoff
+          path: ${{ runner.temp }}/vu2-handoff/*.json
+          if-no-files-found: warn
+          retention-days: 14

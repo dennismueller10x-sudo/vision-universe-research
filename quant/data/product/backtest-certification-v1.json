@@ -1,0 +1,1797 @@
+{
+ "schemaVersion": "backtest-certification-1.0.0",
+ "generatedAt": "2026-10-06T04:26:20.864Z",
+ "asOf": "2026-10-06",
+ "methodology": "backtest-certification-1.0.0",
+ "kinds": [
+  {
+   "id": "SAME_STOCK_REPLAY",
+   "label": "Rückblick derselben Aktie",
+   "tier": "OBSERVED",
+   "gates": [
+    {
+     "id": "pit",
+     "label": "nur Kurse bis zum jeweiligen Fall",
+     "category": "HARD",
+     "state": "PASS",
+     "value": "Leckage-Vertrag der Musterstudie (historical-cases)",
+     "required": null,
+     "reason": null
+    },
+    {
+     "id": "survivorship",
+     "label": "Überlebende",
+     "category": "STRUCTURAL",
+     "state": "FAIL",
+     "value": "Eine Aktie mit langer Historie hat überlebt",
+     "required": null,
+     "reason": "SURVIVOR_BY_CONSTRUCTION"
+    },
+    {
+     "id": "ruleTest",
+     "label": "prüft eine Regel außerhalb des Lernzeitraums",
+     "category": "QUALITY",
+     "state": "FAIL",
+     "value": "beschreibt, prüft keine Regel",
+     "required": null,
+     "reason": "DESCRIPTIVE_NOT_A_TEST"
+    }
+   ],
+   "trust": "LIMITED",
+   "published": true,
+   "ownerApproval": {
+    "required": false,
+    "given": false
+   },
+   "minimumTrust": "USABLE",
+   "status": "LIMITED",
+   "readiness": "NOT_READY",
+   "reason": "SURVIVOR_BY_CONSTRUCTION",
+   "blockers": [
+    {
+     "id": "survivorship",
+     "category": "STRUCTURAL",
+     "reason": "SURVIVOR_BY_CONSTRUCTION",
+     "value": "Eine Aktie mit langer Historie hat überlebt",
+     "required": null
+    },
+    {
+     "id": "ruleTest",
+     "category": "QUALITY",
+     "reason": "DESCRIPTIVE_NOT_A_TEST",
+     "value": "beschreibt, prüft keine Regel",
+     "required": null
+    }
+   ]
+  },
+  {
+   "id": "PATTERN_EVIDENCE",
+   "label": "Marktweite Muster",
+   "tier": "OBSERVED",
+   "gates": [
+    {
+     "id": "pit",
+     "label": "Leckage-Vertrag, gepurgte Folds",
+     "category": "HARD",
+     "state": "PASS",
+     "value": "assert in observe()",
+     "required": null,
+     "reason": null
+    },
+    {
+     "id": "oos",
+     "label": "außerhalb des Lernzeitraums",
+     "category": "QUALITY",
+     "state": "PASS",
+     "value": "69 robuste Befunde",
+     "required": null,
+     "reason": null
+    },
+    {
+     "id": "survivorship",
+     "label": "Überlebende",
+     "category": "STRUCTURAL",
+     "state": "FAIL",
+     "value": "teilweise nicht quantifiziert",
+     "required": null,
+     "reason": "PRESENT_AND_UNQUANTIFIED_IN_PART"
+    },
+    {
+     "id": "returnBasis",
+     "label": "Gesamtrendite",
+     "category": "STRUCTURAL",
+     "state": "FAIL",
+     "value": "Kursrendite",
+     "required": null,
+     "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
+    },
+    {
+     "id": "certifiedAsBacktest",
+     "label": "als Backtest freigegeben",
+     "category": "QUALITY",
+     "state": "FAIL",
+     "value": "Häufigkeitsauswertung",
+     "required": null,
+     "reason": "STUDY_DECLARES_BACKTEST_NOT_CERTIFIED"
+    }
+   ],
+   "trust": "LIMITED",
+   "published": true,
+   "ownerApproval": {
+    "required": false,
+    "given": false
+   },
+   "minimumTrust": "USABLE",
+   "status": "LIMITED",
+   "readiness": "NOT_READY",
+   "reason": "PRESENT_AND_UNQUANTIFIED_IN_PART",
+   "blockers": [
+    {
+     "id": "survivorship",
+     "category": "STRUCTURAL",
+     "reason": "PRESENT_AND_UNQUANTIFIED_IN_PART",
+     "value": "teilweise nicht quantifiziert",
+     "required": null
+    },
+    {
+     "id": "returnBasis",
+     "category": "STRUCTURAL",
+     "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
+     "value": "Kursrendite",
+     "required": null
+    },
+    {
+     "id": "certifiedAsBacktest",
+     "category": "QUALITY",
+     "reason": "STUDY_DECLARES_BACKTEST_NOT_CERTIFIED",
+     "value": "Häufigkeitsauswertung",
+     "required": null
+    }
+   ]
+  },
+  {
+   "id": "SIGNAL_BACKTEST",
+   "label": "Signal-Backtest",
+   "tier": "TESTED",
+   "gates": [
+    {
+     "id": "pit",
+     "label": "Point-in-Time (alle Regeln)",
+     "category": "HARD",
+     "state": "PASS",
+     "value": "abgeschnittene und verfälschte Zukunft",
+     "required": null,
+     "reason": null
+    },
+    {
+     "id": "lookahead",
+     "label": "Einstieg nach dem Signal",
+     "category": "HARD",
+     "state": "PASS",
+     "value": "Schluss der Folgewoche",
+     "required": null,
+     "reason": null
+    },
+    {
+     "id": "survivorship",
+     "label": "Überlebende-Kontrolle",
+     "category": "STRUCTURAL",
+     "state": "FAIL",
+     "value": "teilweise (Sensitivität ab 2016, nicht in der Hauptstudie)",
+     "required": null,
+     "reason": "PARTIAL_SENSITIVITY_ONLY"
+    },
+    {
+     "id": "returnBasis",
+     "label": "Gesamtrendite",
+     "category": "STRUCTURAL",
+     "state": "PASS",
+     "value": "Gesamtrendite",
+     "required": null,
+     "reason": null
+    },
+    {
+     "id": "ruleCertified",
+     "label": "mindestens eine Regel zertifiziert",
+     "category": "QUALITY",
+     "state": "FAIL",
+     "value": "0 von 5",
+     "required": null,
+     "reason": "NO_RULE_CERTIFIED"
+    }
+   ],
+   "trust": "LIMITED",
+   "published": true,
+   "ownerApproval": {
+    "required": false,
+    "given": false
+   },
+   "minimumTrust": "USABLE",
+   "status": "LIMITED",
+   "readiness": "NOT_READY",
+   "reason": "PARTIAL_SENSITIVITY_ONLY",
+   "blockers": [
+    {
+     "id": "survivorship",
+     "category": "STRUCTURAL",
+     "reason": "PARTIAL_SENSITIVITY_ONLY",
+     "value": "teilweise (Sensitivität ab 2016, nicht in der Hauptstudie)",
+     "required": null
+    },
+    {
+     "id": "ruleCertified",
+     "category": "QUALITY",
+     "reason": "NO_RULE_CERTIFIED",
+     "value": "0 von 5",
+     "required": null
+    }
+   ],
+   "rules": [
+    {
+     "id": "MOMENTUM_IMPROVED",
+     "gates": [
+      {
+       "id": "pit",
+       "label": "Point-in-Time",
+       "category": "HARD",
+       "state": "PASS",
+       "value": "301 Fälle mit abgeschnittener und verfälschter Zukunft geprüft, 0 Abweichungen",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "lookahead",
+       "label": "Kein Blick in die Zukunft",
+       "category": "HARD",
+       "state": "PASS",
+       "value": "Einstieg strikt nach der Signalwoche (Schluss der Folgewoche)",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "sample",
+       "label": "Stichprobe",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "89069 Fälle mit 6-Monats-Ergebnis aus 5168 Titeln",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "oos",
+       "label": "Prüfung außerhalb des Lernzeitraums",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": null,
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "walkForward",
+       "label": "Walk-Forward",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "3 von 4 Folds in derselben Richtung",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "survivorship",
+       "label": "Überlebende-Kontrolle",
+       "category": "STRUCTURAL",
+       "state": "FAIL",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "required": null,
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY"
+      },
+      {
+       "id": "returnBasis",
+       "label": "Gesamtrendite (inkl. Dividenden)",
+       "category": "STRUCTURAL",
+       "state": "PASS",
+       "value": "Gesamtrendite (canonical-total-return-1.0.0, weekly-total-return-1.0.0)",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "costs",
+       "label": "Kosten",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "BASE 30 bps je Runde; LOW 10, HIGH 60 gemessen",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "slippage",
+       "label": "Ausführungsabschlag",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "10 bps je Runde (in BASE enthalten)",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "benchmark",
+       "label": "Vergleich mit Markt und Index",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "Base Rate derselben Woche und SPY über dasselbe Fenster, beide passiv",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "regimeDiversity",
+       "label": "Verschiedene Marktphasen",
+       "category": "QUALITY",
+       "state": "FAIL",
+       "value": "Die Regime-Historie der Market-Regime-Engine ist nicht zertifiziert; keine eigene Ersatz-Einteilung",
+       "required": null,
+       "reason": "REGIME_HISTORY_NOT_CERTIFIED"
+      },
+      {
+       "id": "independence",
+       "label": "Unabhängigkeit der Fälle",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "1837 Wochen, 141 Quartale, effektiv ≈ 19852 unabhängige Fälle",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "parameterStability",
+       "label": "Parameter-Stabilität",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "22 Wochen, 30 Wochen, Verzug 0, Verzug 1, Verzug 2: gleiche Richtung ja",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "completeness",
+       "label": "Vollständigkeit",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "0.999 der abgeschlossenen Fälle mit allen vier Zeiträumen",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "edgeOutOfSample",
+       "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "Δ -0.0137",
+       "required": null,
+       "reason": null
+      }
+     ],
+     "trust": "LIMITED",
+     "published": true,
+     "ownerApproval": {
+      "required": false,
+      "given": false
+     },
+     "minimumTrust": "USABLE",
+     "status": "LIMITED",
+     "readiness": "NOT_READY",
+     "reason": "MAIN_STUDY_SURVIVORS_ONLY",
+     "blockers": [
+      {
+       "id": "survivorship",
+       "category": "STRUCTURAL",
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "required": null
+      },
+      {
+       "id": "regimeDiversity",
+       "category": "QUALITY",
+       "reason": "REGIME_HISTORY_NOT_CERTIFIED",
+       "value": "Die Regime-Historie der Market-Regime-Engine ist nicht zertifiziert; keine eigene Ersatz-Einteilung",
+       "required": null
+      }
+     ],
+     "sample": {
+      "n": 89069,
+      "titles": 5168
+     },
+     "independence": {
+      "uniqueTitles": 5168,
+      "uniquePeriods": 1837,
+      "independentClusters": 141,
+      "clusterUnit": "Quartal",
+      "effectiveN": 19852,
+      "designEffect": 4.49
+     },
+     "returnType": "TOTAL_RETURN",
+     "baseRate": {
+      "positiveShare": 0.5556,
+      "base": 0.5693,
+      "delta": -0.0137,
+      "ci": [
+       -0.0201,
+       -0.0072
+      ]
+     }
+    },
+    {
+     "id": "MOMENTUM_DETERIORATED",
+     "gates": [
+      {
+       "id": "pit",
+       "label": "Point-in-Time",
+       "category": "HARD",
+       "state": "PASS",
+       "value": "301 Fälle mit abgeschnittener und verfälschter Zukunft geprüft, 0 Abweichungen",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "lookahead",
+       "label": "Kein Blick in die Zukunft",
+       "category": "HARD",
+       "state": "PASS",
+       "value": "Einstieg strikt nach der Signalwoche (Schluss der Folgewoche)",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "sample",
+       "label": "Stichprobe",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "89423 Fälle mit 6-Monats-Ergebnis aus 5192 Titeln",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "oos",
+       "label": "Prüfung außerhalb des Lernzeitraums",
+       "category": "QUALITY",
+       "state": "FAIL",
+       "value": null,
+       "required": null,
+       "reason": "OOS_DIRECTION_NOT_CONFIRMED"
+      },
+      {
+       "id": "walkForward",
+       "label": "Walk-Forward",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "3 von 4 Folds in derselben Richtung",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "survivorship",
+       "label": "Überlebende-Kontrolle",
+       "category": "STRUCTURAL",
+       "state": "FAIL",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "required": null,
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY"
+      },
+      {
+       "id": "returnBasis",
+       "label": "Gesamtrendite (inkl. Dividenden)",
+       "category": "STRUCTURAL",
+       "state": "PASS",
+       "value": "Gesamtrendite (canonical-total-return-1.0.0, weekly-total-return-1.0.0)",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "costs",
+       "label": "Kosten",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "BASE 30 bps je Runde; LOW 10, HIGH 60 gemessen",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "slippage",
+       "label": "Ausführungsabschlag",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "10 bps je Runde (in BASE enthalten)",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "benchmark",
+       "label": "Vergleich mit Markt und Index",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "Base Rate derselben Woche und SPY über dasselbe Fenster, beide passiv",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "regimeDiversity",
+       "label": "Verschiedene Marktphasen",
+       "category": "QUALITY",
+       "state": "FAIL",
+       "value": "Die Regime-Historie der Market-Regime-Engine ist nicht zertifiziert; keine eigene Ersatz-Einteilung",
+       "required": null,
+       "reason": "REGIME_HISTORY_NOT_CERTIFIED"
+      },
+      {
+       "id": "independence",
+       "label": "Unabhängigkeit der Fälle",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "1838 Wochen, 141 Quartale, effektiv ≈ 24126 unabhängige Fälle",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "parameterStability",
+       "label": "Parameter-Stabilität",
+       "category": "QUALITY",
+       "state": "FAIL",
+       "value": "22 Wochen, 30 Wochen, Verzug 0, Verzug 1, Verzug 2: gleiche Richtung nein",
+       "required": null,
+       "reason": "NEIGHBOURS_DISAGREE"
+      },
+      {
+       "id": "completeness",
+       "label": "Vollständigkeit",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "0.999 der abgeschlossenen Fälle mit allen vier Zeiträumen",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "edgeOutOfSample",
+       "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
+       "category": "QUALITY",
+       "state": "FAIL",
+       "value": "Δ -0.0024",
+       "required": null,
+       "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
+      }
+     ],
+     "trust": "LIMITED",
+     "published": true,
+     "ownerApproval": {
+      "required": false,
+      "given": false
+     },
+     "minimumTrust": "USABLE",
+     "status": "LIMITED",
+     "readiness": "NOT_READY",
+     "reason": "MAIN_STUDY_SURVIVORS_ONLY",
+     "blockers": [
+      {
+       "id": "survivorship",
+       "category": "STRUCTURAL",
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "required": null
+      },
+      {
+       "id": "oos",
+       "category": "QUALITY",
+       "reason": "OOS_DIRECTION_NOT_CONFIRMED",
+       "value": null,
+       "required": null
+      },
+      {
+       "id": "regimeDiversity",
+       "category": "QUALITY",
+       "reason": "REGIME_HISTORY_NOT_CERTIFIED",
+       "value": "Die Regime-Historie der Market-Regime-Engine ist nicht zertifiziert; keine eigene Ersatz-Einteilung",
+       "required": null
+      },
+      {
+       "id": "parameterStability",
+       "category": "QUALITY",
+       "reason": "NEIGHBOURS_DISAGREE",
+       "value": "22 Wochen, 30 Wochen, Verzug 0, Verzug 1, Verzug 2: gleiche Richtung nein",
+       "required": null
+      },
+      {
+       "id": "edgeOutOfSample",
+       "category": "QUALITY",
+       "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
+       "value": "Δ -0.0024",
+       "required": null
+      }
+     ],
+     "sample": {
+      "n": 89423,
+      "titles": 5192
+     },
+     "independence": {
+      "uniqueTitles": 5192,
+      "uniquePeriods": 1838,
+      "independentClusters": 141,
+      "clusterUnit": "Quartal",
+      "effectiveN": 24126,
+      "designEffect": 3.71
+     },
+     "returnType": "TOTAL_RETURN",
+     "baseRate": {
+      "positiveShare": 0.569,
+      "base": 0.5714,
+      "delta": -0.0024,
+      "ci": [
+       -0.0083,
+       0.0034
+      ]
+     }
+    },
+    {
+     "id": "TREND_UP",
+     "gates": [
+      {
+       "id": "pit",
+       "label": "Point-in-Time",
+       "category": "HARD",
+       "state": "PASS",
+       "value": "301 Fälle mit abgeschnittener und verfälschter Zukunft geprüft, 0 Abweichungen",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "lookahead",
+       "label": "Kein Blick in die Zukunft",
+       "category": "HARD",
+       "state": "PASS",
+       "value": "Einstieg strikt nach der Signalwoche (Schluss der Folgewoche)",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "sample",
+       "label": "Stichprobe",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "86301 Fälle mit 6-Monats-Ergebnis aus 5138 Titeln",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "oos",
+       "label": "Prüfung außerhalb des Lernzeitraums",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": null,
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "walkForward",
+       "label": "Walk-Forward",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "3 von 4 Folds in derselben Richtung",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "survivorship",
+       "label": "Überlebende-Kontrolle",
+       "category": "STRUCTURAL",
+       "state": "FAIL",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "required": null,
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY"
+      },
+      {
+       "id": "returnBasis",
+       "label": "Gesamtrendite (inkl. Dividenden)",
+       "category": "STRUCTURAL",
+       "state": "PASS",
+       "value": "Gesamtrendite (canonical-total-return-1.0.0, weekly-total-return-1.0.0)",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "costs",
+       "label": "Kosten",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "BASE 30 bps je Runde; LOW 10, HIGH 60 gemessen",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "slippage",
+       "label": "Ausführungsabschlag",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "10 bps je Runde (in BASE enthalten)",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "benchmark",
+       "label": "Vergleich mit Markt und Index",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "Base Rate derselben Woche und SPY über dasselbe Fenster, beide passiv",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "regimeDiversity",
+       "label": "Verschiedene Marktphasen",
+       "category": "QUALITY",
+       "state": "FAIL",
+       "value": "Die Regime-Historie der Market-Regime-Engine ist nicht zertifiziert; keine eigene Ersatz-Einteilung",
+       "required": null,
+       "reason": "REGIME_HISTORY_NOT_CERTIFIED"
+      },
+      {
+       "id": "independence",
+       "label": "Unabhängigkeit der Fälle",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "1837 Wochen, 141 Quartale, effektiv ≈ 26060 unabhängige Fälle",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "parameterStability",
+       "label": "Parameter-Stabilität",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "36 Wochen, 44 Wochen, Verzug 0, Verzug 1, Verzug 2: gleiche Richtung ja",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "completeness",
+       "label": "Vollständigkeit",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "0.999 der abgeschlossenen Fälle mit allen vier Zeiträumen",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "edgeOutOfSample",
+       "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
+       "category": "QUALITY",
+       "state": "FAIL",
+       "value": "Δ -0.0116",
+       "required": null,
+       "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
+      }
+     ],
+     "trust": "LIMITED",
+     "published": true,
+     "ownerApproval": {
+      "required": false,
+      "given": false
+     },
+     "minimumTrust": "USABLE",
+     "status": "LIMITED",
+     "readiness": "NOT_READY",
+     "reason": "MAIN_STUDY_SURVIVORS_ONLY",
+     "blockers": [
+      {
+       "id": "survivorship",
+       "category": "STRUCTURAL",
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "required": null
+      },
+      {
+       "id": "regimeDiversity",
+       "category": "QUALITY",
+       "reason": "REGIME_HISTORY_NOT_CERTIFIED",
+       "value": "Die Regime-Historie der Market-Regime-Engine ist nicht zertifiziert; keine eigene Ersatz-Einteilung",
+       "required": null
+      },
+      {
+       "id": "edgeOutOfSample",
+       "category": "QUALITY",
+       "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
+       "value": "Δ -0.0116",
+       "required": null
+      }
+     ],
+     "sample": {
+      "n": 86301,
+      "titles": 5138
+     },
+     "independence": {
+      "uniqueTitles": 5138,
+      "uniquePeriods": 1837,
+      "independentClusters": 141,
+      "clusterUnit": "Quartal",
+      "effectiveN": 26060,
+      "designEffect": 3.31
+     },
+     "returnType": "TOTAL_RETURN",
+     "baseRate": {
+      "positiveShare": 0.5594,
+      "base": 0.571,
+      "delta": -0.0116,
+      "ci": [
+       -0.0172,
+       -0.0059
+      ]
+     }
+    },
+    {
+     "id": "TREND_DOWN",
+     "gates": [
+      {
+       "id": "pit",
+       "label": "Point-in-Time",
+       "category": "HARD",
+       "state": "PASS",
+       "value": "301 Fälle mit abgeschnittener und verfälschter Zukunft geprüft, 0 Abweichungen",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "lookahead",
+       "label": "Kein Blick in die Zukunft",
+       "category": "HARD",
+       "state": "PASS",
+       "value": "Einstieg strikt nach der Signalwoche (Schluss der Folgewoche)",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "sample",
+       "label": "Stichprobe",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "86482 Fälle mit 6-Monats-Ergebnis aus 5162 Titeln",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "oos",
+       "label": "Prüfung außerhalb des Lernzeitraums",
+       "category": "QUALITY",
+       "state": "FAIL",
+       "value": null,
+       "required": null,
+       "reason": "OOS_DIRECTION_NOT_CONFIRMED"
+      },
+      {
+       "id": "walkForward",
+       "label": "Walk-Forward",
+       "category": "QUALITY",
+       "state": "FAIL",
+       "value": "1 von 4 Folds in derselben Richtung",
+       "required": null,
+       "reason": "FOLDS_DISAGREE"
+      },
+      {
+       "id": "survivorship",
+       "label": "Überlebende-Kontrolle",
+       "category": "STRUCTURAL",
+       "state": "FAIL",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "required": null,
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY"
+      },
+      {
+       "id": "returnBasis",
+       "label": "Gesamtrendite (inkl. Dividenden)",
+       "category": "STRUCTURAL",
+       "state": "PASS",
+       "value": "Gesamtrendite (canonical-total-return-1.0.0, weekly-total-return-1.0.0)",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "costs",
+       "label": "Kosten",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "BASE 30 bps je Runde; LOW 10, HIGH 60 gemessen",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "slippage",
+       "label": "Ausführungsabschlag",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "10 bps je Runde (in BASE enthalten)",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "benchmark",
+       "label": "Vergleich mit Markt und Index",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "Base Rate derselben Woche und SPY über dasselbe Fenster, beide passiv",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "regimeDiversity",
+       "label": "Verschiedene Marktphasen",
+       "category": "QUALITY",
+       "state": "FAIL",
+       "value": "Die Regime-Historie der Market-Regime-Engine ist nicht zertifiziert; keine eigene Ersatz-Einteilung",
+       "required": null,
+       "reason": "REGIME_HISTORY_NOT_CERTIFIED"
+      },
+      {
+       "id": "independence",
+       "label": "Unabhängigkeit der Fälle",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "1836 Wochen, 141 Quartale, effektiv ≈ 24823 unabhängige Fälle",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "parameterStability",
+       "label": "Parameter-Stabilität",
+       "category": "QUALITY",
+       "state": "FAIL",
+       "value": "36 Wochen, 44 Wochen, Verzug 0, Verzug 1, Verzug 2: gleiche Richtung nein",
+       "required": null,
+       "reason": "NEIGHBOURS_DISAGREE"
+      },
+      {
+       "id": "completeness",
+       "label": "Vollständigkeit",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "0.999 der abgeschlossenen Fälle mit allen vier Zeiträumen",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "edgeOutOfSample",
+       "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
+       "category": "QUALITY",
+       "state": "FAIL",
+       "value": "Δ -0.0009",
+       "required": null,
+       "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
+      }
+     ],
+     "trust": "LIMITED",
+     "published": true,
+     "ownerApproval": {
+      "required": false,
+      "given": false
+     },
+     "minimumTrust": "USABLE",
+     "status": "LIMITED",
+     "readiness": "NOT_READY",
+     "reason": "MAIN_STUDY_SURVIVORS_ONLY",
+     "blockers": [
+      {
+       "id": "survivorship",
+       "category": "STRUCTURAL",
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "required": null
+      },
+      {
+       "id": "oos",
+       "category": "QUALITY",
+       "reason": "OOS_DIRECTION_NOT_CONFIRMED",
+       "value": null,
+       "required": null
+      },
+      {
+       "id": "walkForward",
+       "category": "QUALITY",
+       "reason": "FOLDS_DISAGREE",
+       "value": "1 von 4 Folds in derselben Richtung",
+       "required": null
+      },
+      {
+       "id": "regimeDiversity",
+       "category": "QUALITY",
+       "reason": "REGIME_HISTORY_NOT_CERTIFIED",
+       "value": "Die Regime-Historie der Market-Regime-Engine ist nicht zertifiziert; keine eigene Ersatz-Einteilung",
+       "required": null
+      },
+      {
+       "id": "parameterStability",
+       "category": "QUALITY",
+       "reason": "NEIGHBOURS_DISAGREE",
+       "value": "36 Wochen, 44 Wochen, Verzug 0, Verzug 1, Verzug 2: gleiche Richtung nein",
+       "required": null
+      },
+      {
+       "id": "edgeOutOfSample",
+       "category": "QUALITY",
+       "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
+       "value": "Δ -0.0009",
+       "required": null
+      }
+     ],
+     "sample": {
+      "n": 86482,
+      "titles": 5162
+     },
+     "independence": {
+      "uniqueTitles": 5162,
+      "uniquePeriods": 1836,
+      "independentClusters": 141,
+      "clusterUnit": "Quartal",
+      "effectiveN": 24823,
+      "designEffect": 3.48
+     },
+     "returnType": "TOTAL_RETURN",
+     "baseRate": {
+      "positiveShare": 0.5683,
+      "base": 0.5692,
+      "delta": -0.0009,
+      "ci": [
+       -0.0067,
+       0.0048
+      ]
+     }
+    },
+    {
+     "id": "NEW_52W_HIGH",
+     "gates": [
+      {
+       "id": "pit",
+       "label": "Point-in-Time",
+       "category": "HARD",
+       "state": "PASS",
+       "value": "302 Fälle mit abgeschnittener und verfälschter Zukunft geprüft, 0 Abweichungen",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "lookahead",
+       "label": "Kein Blick in die Zukunft",
+       "category": "HARD",
+       "state": "PASS",
+       "value": "Einstieg strikt nach der Signalwoche (Schluss der Folgewoche)",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "sample",
+       "label": "Stichprobe",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "56455 Fälle mit 6-Monats-Ergebnis aus 4921 Titeln",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "oos",
+       "label": "Prüfung außerhalb des Lernzeitraums",
+       "category": "QUALITY",
+       "state": "FAIL",
+       "value": null,
+       "required": null,
+       "reason": "OOS_DIRECTION_NOT_CONFIRMED"
+      },
+      {
+       "id": "walkForward",
+       "label": "Walk-Forward",
+       "category": "QUALITY",
+       "state": "FAIL",
+       "value": "2 von 4 Folds in derselben Richtung",
+       "required": null,
+       "reason": "FOLDS_DISAGREE"
+      },
+      {
+       "id": "survivorship",
+       "label": "Überlebende-Kontrolle",
+       "category": "STRUCTURAL",
+       "state": "FAIL",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "required": null,
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY"
+      },
+      {
+       "id": "returnBasis",
+       "label": "Gesamtrendite (inkl. Dividenden)",
+       "category": "STRUCTURAL",
+       "state": "PASS",
+       "value": "Gesamtrendite (canonical-total-return-1.0.0, weekly-total-return-1.0.0)",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "costs",
+       "label": "Kosten",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "BASE 30 bps je Runde; LOW 10, HIGH 60 gemessen",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "slippage",
+       "label": "Ausführungsabschlag",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "10 bps je Runde (in BASE enthalten)",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "benchmark",
+       "label": "Vergleich mit Markt und Index",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "Base Rate derselben Woche und SPY über dasselbe Fenster, beide passiv",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "regimeDiversity",
+       "label": "Verschiedene Marktphasen",
+       "category": "QUALITY",
+       "state": "FAIL",
+       "value": "Die Regime-Historie der Market-Regime-Engine ist nicht zertifiziert; keine eigene Ersatz-Einteilung",
+       "required": null,
+       "reason": "REGIME_HISTORY_NOT_CERTIFIED"
+      },
+      {
+       "id": "independence",
+       "label": "Unabhängigkeit der Fälle",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "1832 Wochen, 141 Quartale, effektiv ≈ 11030 unabhängige Fälle",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "parameterStability",
+       "label": "Parameter-Stabilität",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "48 Wochen, 56 Wochen, Verzug 0, Verzug 1, Verzug 2: gleiche Richtung ja",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "completeness",
+       "label": "Vollständigkeit",
+       "category": "QUALITY",
+       "state": "PASS",
+       "value": "0.999 der abgeschlossenen Fälle mit allen vier Zeiträumen",
+       "required": null,
+       "reason": null
+      },
+      {
+       "id": "edgeOutOfSample",
+       "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
+       "category": "QUALITY",
+       "state": "FAIL",
+       "value": "Δ 0.0137",
+       "required": null,
+       "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
+      }
+     ],
+     "trust": "LIMITED",
+     "published": true,
+     "ownerApproval": {
+      "required": false,
+      "given": false
+     },
+     "minimumTrust": "USABLE",
+     "status": "LIMITED",
+     "readiness": "NOT_READY",
+     "reason": "MAIN_STUDY_SURVIVORS_ONLY",
+     "blockers": [
+      {
+       "id": "survivorship",
+       "category": "STRUCTURAL",
+       "reason": "MAIN_STUDY_SURVIVORS_ONLY",
+       "value": "Hauptstudie: nur heute gelistete Titel. 3082 delistete Listings ab 2016 gehen in die Sensitivitätsrechnung ein, nicht in dieses Ergebnis.",
+       "required": null
+      },
+      {
+       "id": "oos",
+       "category": "QUALITY",
+       "reason": "OOS_DIRECTION_NOT_CONFIRMED",
+       "value": null,
+       "required": null
+      },
+      {
+       "id": "walkForward",
+       "category": "QUALITY",
+       "reason": "FOLDS_DISAGREE",
+       "value": "2 von 4 Folds in derselben Richtung",
+       "required": null
+      },
+      {
+       "id": "regimeDiversity",
+       "category": "QUALITY",
+       "reason": "REGIME_HISTORY_NOT_CERTIFIED",
+       "value": "Die Regime-Historie der Market-Regime-Engine ist nicht zertifiziert; keine eigene Ersatz-Einteilung",
+       "required": null
+      },
+      {
+       "id": "edgeOutOfSample",
+       "category": "QUALITY",
+       "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
+       "value": "Δ 0.0137",
+       "required": null
+      }
+     ],
+     "sample": {
+      "n": 56455,
+      "titles": 4921
+     },
+     "independence": {
+      "uniqueTitles": 4921,
+      "uniquePeriods": 1832,
+      "independentClusters": 141,
+      "clusterUnit": "Quartal",
+      "effectiveN": 11030,
+      "designEffect": 5.12
+     },
+     "returnType": "TOTAL_RETURN",
+     "baseRate": {
+      "positiveShare": 0.5831,
+      "base": 0.5694,
+      "delta": 0.0137,
+      "ci": [
+       0.005,
+       0.0224
+      ]
+     }
+    }
+   ],
+   "collecting": [
+    {
+     "eventType": "SETUP_NEW",
+     "source": "setup-observation-history"
+    },
+    {
+     "eventType": "SETUP_CONFIRMED",
+     "source": "setup-observation-history"
+    },
+    {
+     "eventType": "SETUP_WEAKENED",
+     "source": "setup-observation-history"
+    },
+    {
+     "eventType": "RISK_RISING",
+     "source": "factor-evidence-history"
+    },
+    {
+     "eventType": "FACTOR_CHANGED",
+     "source": "factor-evidence-history"
+    },
+    {
+     "eventType": "STRATEGY_MATCH_NEW",
+     "source": "strategy-index-v1 historicalEvidence"
+    },
+    {
+     "eventType": "STRATEGY_MATCH_LOST",
+     "source": "strategy-index-v1 historicalEvidence"
+    },
+    {
+     "eventType": "PATTERN_MATCH_NEW",
+     "source": "radar-history/pattern-holds"
+    }
+   ]
+  },
+  {
+   "id": "SETUP_BACKTEST",
+   "label": "Setup-Backtest",
+   "tier": "TESTED",
+   "gates": [
+    {
+     "id": "publishedOnly",
+     "label": "nur veröffentlichte Zustände",
+     "category": "HARD",
+     "state": "PASS",
+     "value": "setup-observation-history",
+     "required": null,
+     "reason": null
+    },
+    {
+     "id": "pit",
+     "label": "Stände unverändert (contentHash)",
+     "category": "HARD",
+     "state": "PASS",
+     "value": "8 von 8 geprüft",
+     "required": null,
+     "reason": null
+    },
+    {
+     "id": "lookahead",
+     "label": "Einstieg nach Veröffentlichung",
+     "category": "HARD",
+     "state": "PASS",
+     "value": "Schluss des Folgetags (Standard), Signalschluss nur als Vergleich",
+     "required": null,
+     "reason": null
+    },
+    {
+     "id": "historyDates",
+     "label": "veröffentlichte Stichtage",
+     "category": "HISTORY",
+     "state": "FAIL",
+     "value": 8,
+     "required": 120,
+     "reason": "SETUP_HISTORY_TOO_SHORT"
+    },
+    {
+     "id": "historySpan",
+     "label": "Spanne der Historie",
+     "category": "HISTORY",
+     "state": "FAIL",
+     "value": "25 Tage",
+     "required": "180 Tage",
+     "reason": "SETUP_HISTORY_SPAN_TOO_SHORT"
+    },
+    {
+     "id": "completedOutcomes",
+     "label": "abgeschlossene 6-Monats-Ergebnisse",
+     "category": "HISTORY",
+     "state": "FAIL",
+     "value": 0,
+     "required": 100,
+     "reason": "COMPLETED_OUTCOMES_TOO_FEW"
+    },
+    {
+     "id": "titles",
+     "label": "Titel mit abgeschlossenem Ergebnis",
+     "category": "HISTORY",
+     "state": "FAIL",
+     "value": 0,
+     "required": 20,
+     "reason": "TOO_FEW_TITLES"
+    },
+    {
+     "id": "independence",
+     "label": "verschiedene Monate mit Ereignissen",
+     "category": "HISTORY",
+     "state": "FAIL",
+     "value": 2,
+     "required": 20,
+     "reason": "EVENTS_CLUSTERED_IN_TIME"
+    },
+    {
+     "id": "returnBasis",
+     "label": "Gesamtrendite",
+     "category": "STRUCTURAL",
+     "state": "FAIL",
+     "value": "lokal Kursrendite; Pipeline rechnet mit Gesamtrendite",
+     "required": null,
+     "reason": "TOTAL_RETURN_NOT_IN_THIS_RUN"
+    },
+    {
+     "id": "survivorship",
+     "label": "Überlebende (vorwärts gesammelt, kein Fall weggelassen)",
+     "category": "STRUCTURAL",
+     "state": "PASS",
+     "value": "Universum des jeweiligen Tages; INCOMPLETE wird gezählt",
+     "required": null,
+     "reason": null
+    },
+    {
+     "id": "entryVariant",
+     "label": "Einstiegsvarianten stimmen überein",
+     "category": "QUALITY",
+     "state": "FAIL",
+     "value": "noch nicht messbar",
+     "required": "Δ Median ≤ 1 Pp",
+     "reason": "VARIANTS_NOT_MEASURABLE_YET"
+    },
+    {
+     "id": "oos",
+     "label": "Lernen/Testen (zeitlich)",
+     "category": "QUALITY",
+     "state": "FAIL",
+     "value": "erst mit abgeschlossenen Ergebnissen messbar",
+     "required": null,
+     "reason": "OOS_NOT_MEASURABLE_YET"
+    }
+   ],
+   "trust": "NOT_READY",
+   "published": false,
+   "ownerApproval": {
+    "required": true,
+    "given": false,
+    "source": "quant/methodology/setup-state-v1.json requirements.backtestCertification (setup-state-contract.js erzwingt NOT_CERTIFIED bis zur Freigabe)"
+   },
+   "minimumTrust": "USABLE",
+   "status": "COLLECTING_HISTORY",
+   "readiness": "NOT_READY",
+   "reason": "SETUP_HISTORY_TOO_SHORT",
+   "blockers": [
+    {
+     "id": "historyDates",
+     "category": "HISTORY",
+     "reason": "SETUP_HISTORY_TOO_SHORT",
+     "value": 8,
+     "required": 120
+    },
+    {
+     "id": "historySpan",
+     "category": "HISTORY",
+     "reason": "SETUP_HISTORY_SPAN_TOO_SHORT",
+     "value": "25 Tage",
+     "required": "180 Tage"
+    },
+    {
+     "id": "completedOutcomes",
+     "category": "HISTORY",
+     "reason": "COMPLETED_OUTCOMES_TOO_FEW",
+     "value": 0,
+     "required": 100
+    },
+    {
+     "id": "titles",
+     "category": "HISTORY",
+     "reason": "TOO_FEW_TITLES",
+     "value": 0,
+     "required": 20
+    },
+    {
+     "id": "independence",
+     "category": "HISTORY",
+     "reason": "EVENTS_CLUSTERED_IN_TIME",
+     "value": 2,
+     "required": 20
+    },
+    {
+     "id": "returnBasis",
+     "category": "STRUCTURAL",
+     "reason": "TOTAL_RETURN_NOT_IN_THIS_RUN",
+     "value": "lokal Kursrendite; Pipeline rechnet mit Gesamtrendite",
+     "required": null
+    },
+    {
+     "id": "entryVariant",
+     "category": "QUALITY",
+     "reason": "VARIANTS_NOT_MEASURABLE_YET",
+     "value": "noch nicht messbar",
+     "required": "Δ Median ≤ 1 Pp"
+    },
+    {
+     "id": "oos",
+     "category": "QUALITY",
+     "reason": "OOS_NOT_MEASURABLE_YET",
+     "value": "erst mit abgeschlossenen Ergebnissen messbar",
+     "required": null
+    }
+   ],
+   "eta": {
+    "historyDates": {
+     "remaining": 112,
+     "date": "2027-03-11"
+    },
+    "firstCompletedM6": "2027-03-26"
+   },
+   "progress": {
+    "historyDates": 8,
+    "spanDays": 25,
+    "transitions": {
+     "SETUP_CONFIRMED": 74,
+     "SETUP_NEW": 726,
+     "SETUP_WEAKENED": 1016
+    },
+    "completedM6": 0,
+    "contractTradesCompleted": 241
+   },
+   "replay": {
+    "role": "PIT-Nachweis der Engine (rekonstruiert, keine Ergebnisquelle)",
+    "parity": "1180/1180",
+    "mismatches": 0
+   }
+  },
+  {
+   "id": "STRATEGY_BACKTEST",
+   "label": "Strategie-Backtest",
+   "tier": "TESTED",
+   "gates": [
+    {
+     "id": "contract",
+     "label": "vollständiger Backtest-Vertrag",
+     "category": "HARD",
+     "state": "PASS",
+     "value": "strategy-backtest-contract-1.0.0",
+     "required": null,
+     "reason": null
+    },
+    {
+     "id": "pitGuards",
+     "label": "PIT-Schutz der Engine (Sabotage-Tests)",
+     "category": "HARD",
+     "state": "PASS",
+     "value": "profile-backtest-1.0.0: Stand strikt vor dem Termin, kein heutiges Universum",
+     "required": null,
+     "reason": null
+    },
+    {
+     "id": "membershipHistory",
+     "label": "Monate mit Index-Zugehörigkeit",
+     "category": "HISTORY",
+     "state": "FAIL",
+     "value": "2 (3 Stände seit 2026-09-15)",
+     "required": 24,
+     "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
+    },
+    {
+     "id": "factorHistory",
+     "label": "Monate mit Faktor-Snapshots",
+     "category": "HISTORY",
+     "state": "FAIL",
+     "value": "2 (8 Stände seit 2026-09-23)",
+     "required": 24,
+     "reason": "FACTOR_HISTORY_TOO_SHORT"
+    },
+    {
+     "id": "continuity",
+     "label": "keine Lücke über 45 Tage",
+     "category": "HISTORY",
+     "state": "PASS",
+     "value": "größte Lücke 11 Tage",
+     "required": "45 Tage",
+     "reason": null
+    },
+    {
+     "id": "returnBasis",
+     "label": "Gesamtrendite (Universum und Benchmark)",
+     "category": "STRUCTURAL",
+     "state": "PASS",
+     "value": "in der Renditesemantik bestätigt, läuft in der Pipeline",
+     "required": null,
+     "reason": null
+    },
+    {
+     "id": "survivorship",
+     "label": "Universum je Termin aus vorwärts gesammelter Zugehörigkeit",
+     "category": "STRUCTURAL",
+     "state": "PASS",
+     "value": "keine heutigen Mitglieder rückwirkend",
+     "required": null,
+     "reason": null
+    }
+   ],
+   "trust": "NOT_READY",
+   "published": false,
+   "ownerApproval": {
+    "required": false,
+    "given": false
+   },
+   "minimumTrust": "USABLE",
+   "status": "COLLECTING_HISTORY",
+   "readiness": "NOT_READY",
+   "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+   "blockers": [
+    {
+     "id": "membershipHistory",
+     "category": "HISTORY",
+     "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+     "value": "2 (3 Stände seit 2026-09-15)",
+     "required": 24
+    },
+    {
+     "id": "factorHistory",
+     "category": "HISTORY",
+     "reason": "FACTOR_HISTORY_TOO_SHORT",
+     "value": "2 (8 Stände seit 2026-09-23)",
+     "required": 24
+    }
+   ],
+   "membership": {
+    "SP500": {
+     "snapshots": 3,
+     "months": 2,
+     "earliest": "2026-09-15",
+     "latest": "2026-10-03",
+     "maxGapDays": 11,
+     "medianGapDays": 11,
+     "staleDays": 3
+    },
+    "NDX": {
+     "snapshots": 3,
+     "months": 2,
+     "earliest": "2026-09-15",
+     "latest": "2026-10-03",
+     "maxGapDays": 11,
+     "medianGapDays": 11,
+     "staleDays": 3
+    },
+    "DJIA": {
+     "snapshots": 3,
+     "months": 2,
+     "earliest": "2026-09-15",
+     "latest": "2026-10-03",
+     "maxGapDays": 11,
+     "medianGapDays": 11,
+     "staleDays": 3
+    }
+   },
+   "factor": {
+    "version": "vu-factor-evidence-2.0.0",
+    "snapshots": 8,
+    "months": 2,
+    "earliest": "2026-09-23",
+    "latest": "2026-10-05",
+    "maxGapDays": 3,
+    "medianGapDays": 1,
+    "staleDays": 1
+   },
+   "eta": {
+    "membership": {
+     "remaining": 22,
+     "date": "2028-08-02"
+    },
+    "factor": {
+     "remaining": 22,
+     "date": "2028-08-04"
+    }
+   }
+  },
+  {
+   "id": "FACTOR_RANKING_BACKTEST",
+   "label": "Faktor-/Ranking-Backtest",
+   "tier": "TESTED",
+   "gates": [
+    {
+     "id": "contract",
+     "label": "Quintil-Vertrag",
+     "category": "HARD",
+     "state": "PASS",
+     "value": "strategy-backtest-contract-1.0.0 factorRanking",
+     "required": null,
+     "reason": null
+    },
+    {
+     "id": "pitGuards",
+     "label": "PIT-Schutz der Engine (Sabotage-Tests)",
+     "category": "HARD",
+     "state": "PASS",
+     "value": "Stand strikt vor dem Einstieg",
+     "required": null,
+     "reason": null
+    },
+    {
+     "id": "factorHistory",
+     "label": "Monate mit Faktor-Snapshots",
+     "category": "HISTORY",
+     "state": "FAIL",
+     "value": 2,
+     "required": 24,
+     "reason": "FACTOR_HISTORY_TOO_SHORT"
+    },
+    {
+     "id": "completedForward",
+     "label": "Monate mit abgeschlossenem 3-Monats-Ergebnis",
+     "category": "HISTORY",
+     "state": "FAIL",
+     "value": 0,
+     "required": 12,
+     "reason": "FORWARD_OUTCOMES_TOO_FEW"
+    },
+    {
+     "id": "membershipHistory",
+     "label": "Monate mit Index-Zugehörigkeit",
+     "category": "HISTORY",
+     "state": "FAIL",
+     "value": 2,
+     "required": 24,
+     "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
+    },
+    {
+     "id": "noRetroactive",
+     "label": "keine rückwirkende Faktorberechnung",
+     "category": "HARD",
+     "state": "PASS",
+     "value": "nur veröffentlichte Snapshots",
+     "required": null,
+     "reason": null
+    }
+   ],
+   "trust": "NOT_READY",
+   "published": false,
+   "ownerApproval": {
+    "required": false,
+    "given": false
+   },
+   "minimumTrust": "USABLE",
+   "status": "COLLECTING_HISTORY",
+   "readiness": "NOT_READY",
+   "reason": "FACTOR_HISTORY_TOO_SHORT",
+   "blockers": [
+    {
+     "id": "factorHistory",
+     "category": "HISTORY",
+     "reason": "FACTOR_HISTORY_TOO_SHORT",
+     "value": 2,
+     "required": 24
+    },
+    {
+     "id": "completedForward",
+     "category": "HISTORY",
+     "reason": "FORWARD_OUTCOMES_TOO_FEW",
+     "value": 0,
+     "required": 12
+    },
+    {
+     "id": "membershipHistory",
+     "category": "HISTORY",
+     "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+     "value": 2,
+     "required": 24
+    }
+   ],
+   "eta": {
+    "factor": {
+     "remaining": 22,
+     "date": "2028-08-04"
+    }
+   }
+  }
+ ],
+ "survivorship": {
+  "version": "survivorship-control-1.1.0",
+  "gate": "PASS",
+  "control": "PARTIAL",
+  "SURVIVORSHIP_GATE": {
+   "state": "PASS",
+   "meaning": "Schutz: keine Auswertung ohne Überlebenden-Kontrolle steht über „eingeschränkt“. Das Gate löst das Problem nicht.",
+   "solvesSurvivorship": false
+  },
+  "SURVIVORSHIP_CONTROL": {
+   "state": "PARTIAL",
+   "reasons": [
+    "DELISTED_ONLY_FROM_2016",
+    "REUSED_TICKER_LISTINGS_UNFETCHABLE",
+    "DELIST_OUTCOME_UNKNOWN",
+    "MAIN_STUDY_SURVIVORS_ONLY"
+   ],
+   "inMainStudy": false,
+   "meaning": "Kontrolle: historische Nicht-Überlebende sind in der Studie enthalten. Nur dann ist der Überlebenden-Effekt kontrolliert."
+  },
+  "DELISTED_IDENTIFIED": 3919,
+  "DELISTED_WITH_HISTORY": 3325,
+  "DELISTED_BACKTEST_ELIGIBLE": 3058,
+  "tickerReuseAmbiguous": 514,
+  "securityMasterClasses": {
+   "A": 0,
+   "B": 0,
+   "C": 1,
+   "D": 183,
+   "E": 0,
+   "F": 7
+  },
+  "delistedStoreClasses": {
+   "A": 3257,
+   "B": 68,
+   "C": 79,
+   "D": 178,
+   "E": 0,
+   "F": 146
+  },
+  "plain": "Gate: keine Auswertung ohne Kontrolle steht über „eingeschränkt“; das Gate löst den Überlebenden-Effekt nicht. Kontrolle: delistete Titel ab 2016 sind in einer Sensitivitätsrechnung enthalten, nicht in der Hauptstudie; vor 2016 fehlen sie, der Ausgang eines Delistings ist unbekannt.",
+  "forwardCollected": "Vorwärts gesammelte Stände (Setup-Historie, Index-Zugehörigkeit) enthalten das Universum des jeweiligen Tages und sind damit überlebensfrei, solange kein Fall weggelassen wird."
+ },
+ "measures": {
+  "KINDS_BY_STATUS": {
+   "CERTIFIED": 0,
+   "LIMITED": 3,
+   "COLLECTING_HISTORY": 3,
+   "WITHHELD": 0
+  },
+  "SIGNAL_RULES_BY_STATUS": {
+   "CERTIFIED": 0,
+   "LIMITED": 5,
+   "COLLECTING_HISTORY": 0,
+   "WITHHELD": 0
+  },
+  "CERTIFIED_KINDS": [],
+  "OWNER_APPROVAL_REQUIRED": [
+   "SETUP_BACKTEST"
+  ]
+ }
+}

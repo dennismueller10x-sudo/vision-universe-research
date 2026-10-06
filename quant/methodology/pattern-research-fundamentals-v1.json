@@ -1,0 +1,253 @@
+{
+  "schemaVersion": "1.0.0",
+  "methodologyVersion": "pattern-research-fundamentals-1.0.0",
+  "extends": "pattern-research-1.0.0",
+  "status": "ACTIVE_RESEARCH_ONLY",
+  "publication": {
+    "predictionAllowed": false,
+    "backtestAllowed": false,
+    "rankingAllowed": false,
+    "reason": "Wie die Kursstudie: bedingte Haeufigkeiten in der Vergangenheit. Keine Prognose, kein Backtest, keine Strategie."
+  },
+  "question": "Sah das UNTERNEHMEN vorher anders aus - nicht nur der Kurs? Und traegt eine Geschaeftseigenschaft zusaetzlich zu dem, was die Kursmerkmale schon sagen?",
+  "whySeparate": "Diese Familie hat ihre eigene Datei, ihre eigene Version und ihre eigene Mehrfachtestkorrektur. Sie in die Kursstudie hineinzuschreiben haette deren Hypothesenzahl nachtraeglich veraendert - und eine Korrektur ueber eine nachtraeglich veraenderte Zahl ist keine Korrektur. Die Kursstudie bleibt unveraendert bei pattern-research-1.0.0 und wird durch diese Datei nicht neu erzaehlt.",
+  "pitSource": {
+    "artifact": "quant/data/sec/consumer/CIK*.json (vu-consumer-fundamentals-1.0.0)",
+    "rebuilt": false,
+    "series": "annual",
+    "visibilityRule": "filed <= t",
+    "visibilityNote": "Massgeblich ist das Einreichungsdatum, nicht das Geschaeftsjahresende. Eine Bilanz fuer 2019, die im Maerz 2020 eingereicht wurde, ist im Januar 2020 nicht bekannt und wird an einem Stichtag im Januar 2020 nicht gelesen.",
+    "restatementPolicy": "AS_FILED_FIRST_VISIBLE",
+    "restatementNote": "Sichtbar ist, was zum Stichtag eingereicht war. Eine spaetere Korrektur desselben Geschaeftsjahres aendert nicht, was man damals wusste."
+  },
+  "coverageWindow": {
+    "usableFrom": "2018",
+    "reason": "Die Consumer-Auslieferung traegt Einreichungsdaten in nennenswerter Breite ab 2016/2017 (4 Einreichungen 2011, 288 in 2016, 937 in 2017, danach rund 1.070 je Jahr in der Stichprobe). Ein Stichtag vor 2018 haette fuer die meisten Titel keine sichtbare Bilanz, und ein Muster ueber wenige Titel waere kein Muster.",
+    "consequence": "Das Beobachtungsfenster dieser Familie ist kuerzer als das der Kursstudie und umfasst wenige Marktphasen. Die Walk-Forward-Bloecke sind entsprechend kurz; das steht im Artefakt und ist kein Detail."
+  },
+  "survivorshipBias": {
+    "state": "PRESENT_AND_UNQUANTIFIED_IN_PART",
+    "cause": "Zusaetzlich zur Kursseite gilt hier: Consumer-Bundles existieren nur fuer Emittenten des heutigen Produktuniversums.",
+    "effectOnAbsoluteRates": "UPWARD",
+    "effectOnLift": "LARGELY_CANCELLING"
+  },
+  "features": [
+    {
+      "id": "revenueCagr3y",
+      "label": "Umsatzwachstum, 3 Jahre annualisiert",
+      "kind": "ratio"
+    },
+    {
+      "id": "revenueGrowthYoy",
+      "label": "Umsatzwachstum zum Vorjahr",
+      "kind": "ratio"
+    },
+    {
+      "id": "grossMargin",
+      "label": "Rohertragsmarge",
+      "kind": "ratio"
+    },
+    {
+      "id": "fcfMargin",
+      "label": "Freier-Cashflow-Marge",
+      "kind": "ratio"
+    },
+    {
+      "id": "netMargin",
+      "label": "Nettomarge",
+      "kind": "ratio"
+    },
+    {
+      "id": "equityToAssets",
+      "label": "Eigenkapitalquote",
+      "kind": "ratio"
+    },
+    {
+      "id": "profitableLastYear",
+      "label": "Im letzten sichtbaren Jahr profitabel",
+      "kind": "boolean"
+    },
+    {
+      "id": "shareCountChange3y",
+      "label": "Veraenderung der Aktienzahl, 3 Jahre",
+      "kind": "ratio"
+    },
+    {
+      "id": "capexIntensity",
+      "label": "Investitionen zum Umsatz",
+      "kind": "ratio"
+    },
+    {
+      "id": "cashToAssets",
+      "label": "Kasse zur Bilanzsumme",
+      "kind": "ratio"
+    }
+  ],
+  "forbiddenFeatures": [
+    "total_debt",
+    "net_debt",
+    "roic"
+  ],
+  "forbiddenFeaturesNote": "Die auf total_debt beruhenden Groessen decken hier nur einen Bruchteil der Emittenten ab (offenes Gate COMPONENT_INPUT_NARROW). Ein Merkmal, das fuer vier von fuenf Titeln fehlt, wuerde jede Bedingung, in der es steht, fuer die Mehrheit unmessbar machen und die Stichprobe still auf die gut getaggten Emittenten verengen. Es wird deshalb nicht verwendet, statt mit einem Ersatzwert gefuellt.",
+  "preRegistration": {
+    "state": "FIXED_BEFORE_MEASUREMENT",
+    "fixedAt": "vor jeder Messung dieser Familie; die Kursstudie war zu diesem Zeitpunkt bereits gerechnet, ihre Kandidaten sind unveraendert und werden hier nicht neu bewertet",
+    "multipleTesting": "BENJAMINI_HOCHBERG",
+    "alpha": 0.05,
+    "familyNote": "Korrigiert wird ueber diese Familie: Fundamental-Einzelbedingungen, Fundamental-Paare und Kreuzpaare aus je einer Kurs- und einer Fundamentalbedingung. Die Kursstudie hat ihre eigene Korrektur ueber ihre eigene Familie."
+  },
+  "candidates": [
+    {
+      "id": "high-revenue-growth",
+      "plain": "Der Umsatz wuchs über drei Jahre kräftig",
+      "feature": "revenueCagr3y",
+      "operator": "gte",
+      "value": 0.2
+    },
+    {
+      "id": "very-high-revenue-growth",
+      "plain": "Der Umsatz wuchs über drei Jahre außerordentlich",
+      "feature": "revenueCagr3y",
+      "operator": "gte",
+      "value": 0.4
+    },
+    {
+      "id": "shrinking-revenue",
+      "plain": "Der Umsatz schrumpfte über drei Jahre",
+      "feature": "revenueCagr3y",
+      "operator": "lte",
+      "value": 0
+    },
+    {
+      "id": "high-gross-margin",
+      "plain": "Hohe Rohertragsmarge",
+      "feature": "grossMargin",
+      "operator": "gte",
+      "value": 0.5
+    },
+    {
+      "id": "low-gross-margin",
+      "plain": "Niedrige Rohertragsmarge",
+      "feature": "grossMargin",
+      "operator": "lte",
+      "value": 0.2
+    },
+    {
+      "id": "positive-free-cash-flow",
+      "plain": "Verdiente frei verfügbaren Cashflow",
+      "feature": "fcfMargin",
+      "operator": "gt",
+      "value": 0
+    },
+    {
+      "id": "burning-cash",
+      "plain": "Verbrannte Cash",
+      "feature": "fcfMargin",
+      "operator": "lte",
+      "value": -0.1
+    },
+    {
+      "id": "loss-making",
+      "plain": "Schrieb im letzten sichtbaren Jahr Verlust",
+      "feature": "profitableLastYear",
+      "operator": "eq",
+      "value": false
+    },
+    {
+      "id": "profitable",
+      "plain": "War im letzten sichtbaren Jahr profitabel",
+      "feature": "profitableLastYear",
+      "operator": "eq",
+      "value": true
+    },
+    {
+      "id": "heavy-dilution",
+      "plain": "Die Aktienzahl stieg in drei Jahren deutlich",
+      "feature": "shareCountChange3y",
+      "operator": "gte",
+      "value": 0.2
+    },
+    {
+      "id": "no-dilution",
+      "plain": "Die Aktienzahl blieb nahezu unverändert oder sank",
+      "feature": "shareCountChange3y",
+      "operator": "lte",
+      "value": 0.02
+    },
+    {
+      "id": "strong-equity-base",
+      "plain": "Hohe Eigenkapitalquote",
+      "feature": "equityToAssets",
+      "operator": "gte",
+      "value": 0.5
+    },
+    {
+      "id": "thin-equity-base",
+      "plain": "Dünne Eigenkapitalquote",
+      "feature": "equityToAssets",
+      "operator": "lte",
+      "value": 0.2
+    },
+    {
+      "id": "capex-heavy",
+      "plain": "Investierte viel gemessen am Umsatz",
+      "feature": "capexIntensity",
+      "operator": "gte",
+      "value": 0.1
+    },
+    {
+      "id": "cash-rich",
+      "plain": "Hielt viel Kasse gemessen an der Bilanzsumme",
+      "feature": "cashToAssets",
+      "operator": "gte",
+      "value": 0.3
+    }
+  ],
+  "interactions": {
+    "mode": "FUNDAMENTAL_PAIRS_AND_CROSS_PAIRS_WITH_PRICE",
+    "crossFamilyNote": "Das Kreuzpaar ist die eigentlich interessante Frage: 'war abgestraft UND wuchs' ist eine andere Aussage als jede der beiden Haelften. Es sind ausschliesslich Paare aus den beiden vorregistrierten Listen, kein freies Absuchen."
+  },
+  "robustness": {
+    "walkForward": {
+      "folds": 4,
+      "split": "TIME_BLOCKS",
+      "trainIsStrictlyBefore": true,
+      "embargoWeeks": "= Horizontlaenge"
+    },
+    "outOfSample": {
+      "required": true,
+      "flagIfTestLiftBelow": 1.0
+    },
+    "parameterStability": {
+      "required": true,
+      "sweep": [
+        0.8,
+        0.9,
+        1.0,
+        1.1,
+        1.25
+      ],
+      "unstableIfRelativeSpreadAbove": 0.5
+    },
+    "minimumSupport": 200,
+    "minimumWinners": 20,
+    "foldsNote": "Vier statt fuenf Bloecke, weil das Beobachtungsfenster dieser Familie kuerzer ist. Fuenf Bloecke waeren hier je etwa ein Jahr - zu kurz, um eine Marktphase abzudecken, und das Out-of-Sample-Ergebnis waere vor allem eine Aussage ueber ein einzelnes Jahr."
+  },
+  "reporting": {
+    "primaryStatistic": "LIFT",
+    "incrementalQuestion": "Traegt die Fundamentalbedingung ueber die Kursbedingung hinaus? Fuer jedes Kreuzpaar wird der Lift des Paares neben dem Lift jeder Haelfte ausgewiesen, damit sichtbar ist, ob das Paar etwas hinzufuegt oder nur die staerkere Haelfte wiederholt.",
+    "forbiddenPhrasings": [
+      "wird steigen",
+      "Erfolgswahrscheinlichkeit",
+      "Renditeerwartung",
+      "der naechste <Titel>"
+    ]
+  },
+  "featuresWithoutCandidate": {
+    "ids": [
+      "revenueGrowthYoy",
+      "netMargin"
+    ],
+    "note": "Diese Merkmale werden berechnet und stehen in jeder Beobachtung, tragen in dieser Version aber keine vorregistrierte Bedingung. Sie nachtraeglich mit Kandidaten zu versehen, nachdem diese Familie gemessen wurde, waere genau die nachtraegliche Erweiterung, die die Mehrfachtestkorrektur wertlos macht. Wer sie aufnehmen will, erhoeht die Version."
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "schema_version": "1.0",
+  "brief_id": "brief_37b60028316a1f1c",
+  "content_id": "vu-web-c23118efc7199b43-20260923",
+  "request_type": "FULL_CREATIVE",
+  "fixture_type": "production_authoring_request",
+  "author": {
+    "type": "chatgpt_work",
+    "role": "creative_agent",
+    "api_mode": "no_classic_openai_api"
+  },
+  "hook_strategy": {
+    "source": "authoring_brief",
+    "strategy_id": "vu-web-story-fixed-hook-v1",
+    "hook_type": "web_story_fixed",
+    "agent_discretion": "none_fixed_hook_from_brief"
+  },
+  "hook_variants": [
+    {
+      "hook_variant_id": "vu-web-c23118efc7199b43-20260923:727a27372a701ee4f18cad1cf1e500b0aa218a05:web_story_fixed:01",
+      "hook_type": "web_story_fixed",
+      "text": "Treasury yield tops 5.1%, marking its highest level since 2007.",
+      "brief_revision": "727a27372a701ee4f18cad1cf1e500b0aa218a05",
+      "evidence_refs": [
+        "ev1",
+        "ev2",
+        "ev3",
+        "ev4"
+      ]
+    }
+  ],
+  "recommended_hook": {
+    "recommended_hook_variant_id": "vu-web-c23118efc7199b43-20260923:727a27372a701ee4f18cad1cf1e500b0aa218a05:web_story_fixed:01",
+    "recommendation_reason": "Der Brief gibt genau diesen Hook verbindlich vor; die Empfehlung bestätigt nur seine redaktionelle Verwendung und trifft keine kanonische Publishing-Auswahl.",
+    "recommendation_scope": "creative_agent_editorial_only",
+    "is_canonical_selection": false
+  },
+  "caption": "Der gemeldete Stand betrifft die Rendite zehnjähriger US-Staatsanleihen. Seeking Alpha Market Currents meldet mehr als 5,1 % und damit das höchste Niveau seit 2007. Der Beleg beschreibt eine Momentaufnahme; er nennt weder Ursache noch Prognose. Keine Kauf- oder Verkaufsempfehlung, keine Anlageberatung.",
+  "visual_brief": {
+    "purpose": "Eine monumentale, hochwertige Bildwelt für eine aktuelle Marktstory schaffen, mit großzügiger Freifläche für eine später extern ergänzte Kopfzeile.",
+    "visual_strategy": "GENERATIVE",
+    "motif": "Eine gewaltige futuristische KI-Recheninfrastruktur mit symmetrischen Serverreihen, zentraler Rechensäule und leuchtenden Datenpfaden.",
+    "composition": "Hochformat 4:5, zentrierte Architekturperspektive, cineastische Tiefe und großzügiger ruhiger Negativraum im oberen Bildbereich.",
+    "style": "Premium cinematic 3D technology visualization, fotorealistisch, dunkel und editorial.",
+    "palette": [
+      "deep black",
+      "cool blue",
+      "violet",
+      "subtle chrome"
+    ],
+    "lighting": "Kühles Blau-Violett mit kontrolliertem Kontrast und dezenter volumetrischer Tiefe.",
+    "materials": [
+      "brushed metal",
+      "dark glass",
+      "polished technical surfaces",
+      "luminous data pathways"
+    ],
+    "narrative": "Monumentale technische Skalierung und Präzision ohne Diagramm, Dashboard oder konkrete Marktzahl im Bild.",
+    "on_image_text": [],
+    "restrictions": [
+      "Kein Text im Bild",
+      "Kein Logo",
+      "Keine Kurse im Bild",
+      "Keine Renditezahlen",
+      "Kein Wasserzeichen",
+      "Kein Diagramm",
+      "Kein Bildschirmfoto",
+      "Kein Dashboard"
+    ]
+  },
+  "visual_variants": [
+    {
+      "visual_variant_id": "vu-web-c23118efc7199b43-20260923:727a27372a701ee4f18cad1cf1e500b0aa218a05:visual:GENERATIVE:01",
+      "visual_strategy": "GENERATIVE",
+      "brief_revision": "727a27372a701ee4f18cad1cf1e500b0aa218a05",
+      "asset_path": "authoring/requests/vu-web-c23118efc7199b43-20260923/assets/visual-01.png",
+      "asset_sha256": "188ff4f2941ce0844e758bcfc7589d4caaf20f2b38ceaf69ea062986bd195291",
+      "asset_byte_size": 2205606,
+      "mime_type": "image/png",
+      "width": 1122,
+      "height": 1402
+    }
+  ],
+  "evidence_refs": [
+    {
+      "ref_id": "ev1",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/0",
+      "supports": "Laufzeit der US-Staatsanleihe"
+    },
+    {
+      "ref_id": "ev2",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/1",
+      "supports": "Renditeniveau und historische Einordnung"
+    },
+    {
+      "ref_id": "ev3",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/2",
+      "supports": "Bestandteil der Jahresangabe im gelieferten Evidenzpaket"
+    },
+    {
+      "ref_id": "ev4",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/3",
+      "supports": "Bestandteil der Jahresangabe im gelieferten Evidenzpaket"
+    },
+    {
+      "ref_id": "fixed-hook",
+      "source": "authoring-brief.json",
+      "json_pointer": "/fixed_hook",
+      "supports": "Wortgleicher öffentlicher Hook"
+    },
+    {
+      "ref_id": "visual-strategy",
+      "source": "authoring-brief.json",
+      "json_pointer": "/visual_strategy",
+      "supports": "Visual Strategy und Bildrestriktionen"
+    },
+    {
+      "ref_id": "publishing-gate",
+      "source": "authoring-brief.json",
+      "json_pointer": "/publishing_allowed",
+      "supports": "publishing_allowed"
+    }
+  ],
+  "quality": {
+    "status": "pass_for_authoring",
+    "checks": {
+      "brief_id_matches": true,
+      "content_id_matches_directory": true,
+      "request_type_supported": true,
+      "hook_strategy_inherited": true,
+      "fixed_hook_preserved_verbatim": true,
+      "required_hook_variant_count_met": true,
+      "hook_ids_bound_to_full_brief_sha": true,
+      "all_numeric_text_claims_evidence_bound": true,
+      "no_forecast": true,
+      "no_recommendation": true,
+      "no_causality_claim": true,
+      "hook_and_caption_complementary": true,
+      "visual_strategy_inherited": true,
+      "visual_id_bound_to_full_brief_sha": true,
+      "real_raster_asset_present": true,
+      "png_structure_valid_through_iend": true,
+      "asset_hash_recorded": true,
+      "asset_byte_size_recorded": true,
+      "selected_hook_absent": true,
+      "recommendation_non_canonical": true,
+      "publishing_gate_closed": true
+    }
+  },
+  "processing": {
+    "status": "completed",
+    "brief_blob_sha": "727a27372a701ee4f18cad1cf1e500b0aa218a05",
+    "brief_revision": "727a27372a701ee4f18cad1cf1e500b0aa218a05",
+    "processing_key": "brief_37b60028316a1f1c:vu-web-c23118efc7199b43-20260923:727a27372a701ee4f18cad1cf1e500b0aa218a05:1.0",
+    "variant_identity_version": "2",
+    "idempotency_mode": "reuse_completed_result",
+    "immutable_variant_mapping": true,
+    "canonical_hook_selected": false,
+    "request_type": "FULL_CREATIVE",
+    "image_generation_mode": "built_in_chatgpt_work"
+  },
+  "publishing_allowed": false
+}

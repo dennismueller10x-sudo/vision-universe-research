@@ -1,0 +1,91 @@
+{
+  "generatedAt": "2026-09-09T16:07:59.333Z",
+  "provider": "tiingo",
+  "status": "OK",
+  "classificationVersion": "instrument-classification-1.0.0",
+  "source": {
+    "kind": "providerDownload",
+    "url": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip",
+    "fetchedAt": "2026-09-09T16:07:58.644Z",
+    "bytes": 794106,
+    "columns": [
+      "ticker",
+      "exchange",
+      "assetType",
+      "priceCurrency",
+      "startDate",
+      "endDate"
+    ]
+  },
+  "run": {
+    "source": "github-actions",
+    "runId": "34374652149",
+    "commit": "49fc460e745f1a902463c489da2df6048d45be2e",
+    "classificationRuntimeMs": 317
+  },
+  "totals": {
+    "rows": 108573,
+    "byInstrumentType": {
+      "COMMON_STOCK": 47888,
+      "ADR": 0,
+      "PREFERRED": 29,
+      "ETF": 9587,
+      "ETN": 0,
+      "FUND": 49878,
+      "WARRANT": 697,
+      "OTHER": 494,
+      "UNKNOWN": 0
+    },
+    "screenerEligible": 31320,
+    "screenerEligibleByExchange": {
+      "SHE": 3213,
+      "SHG": 2837,
+      "NYSE": 2718,
+      "NYSE ARCA": 23,
+      "PINK": 15801,
+      "NASDAQ": 4908,
+      "OTCMKTS": 836,
+      "OTCGREY": 176,
+      "BATS": 225,
+      "OTCQB": 205,
+      "OTCD": 29,
+      "EXPM": 33,
+      "AMEX": 252,
+      "OTCQX": 15,
+      "OTCCE": 10,
+      "NYSE MKT": 32,
+      "UNKNOWN": 3,
+      "OTCBB": 2,
+      "NMFQS": 2
+    },
+    "byCurrency": {
+      "USD": 101338,
+      "CNY": 7178,
+      "HKD": 52,
+      "AUD": 5
+    },
+    "activeTrue": 66111,
+    "activeFalse": 42462,
+    "activeUnknown": 0,
+    "otc": 17109,
+    "nonOtc": 14211
+  },
+  "coverageGaps": {
+    "company": {
+      "status": "SOURCE_MISSING",
+      "note": "Die Tickerliste des Anbieters traegt keinen Firmennamen. Namen kaemen aus dem Stammdatenendpunkt - eine Anfrage je Titel."
+    },
+    "sector": {
+      "status": "SOURCE_MISSING",
+      "note": "Sektor und Branche liegen bei Tiingo im Fundamentalzusatz, der in diesem Zugang nicht enthalten ist. Sie bleiben leer und werden nicht geschaetzt."
+    },
+    "adr": {
+      "status": "UNVERIFIED",
+      "note": "Ohne Firmennamen ist eine ADR nicht von einer Stammaktie zu unterscheiden. Die ADR-Zahl unten ist deshalb eine Untergrenze, keine Zaehlung."
+    }
+  },
+  "redistribution": {
+    "fullList": "LEGAL_REVIEW_REQUIRED",
+    "note": "Die vollstaendige Tickerliste ist Anbieterinhalt und bleibt in der Arbeitsablage. Ausgeliefert wird ausschliesslich diese Bilanz."
+  }
+}

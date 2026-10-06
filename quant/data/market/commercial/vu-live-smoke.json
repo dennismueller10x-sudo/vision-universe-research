@@ -1,0 +1,213 @@
+{
+  "schemaVersion": "vu-live-smoke-1.0.0",
+  "auftrag": "Zero-Cost Realtime V1: Smoke-Test der ausgerollten Runtime",
+  "checkedAt": "2026-09-17T17:04:17.025Z",
+  "endpoint": "https://vu-live.little-credit-15d3.workers.dev",
+  "session": {
+    "phase": "REGULAR",
+    "localTime": "13:04:17",
+    "isOpen": true
+  },
+  "checks": [
+    {
+      "id": "version",
+      "question": "antwortet /version mit der richtigen Semantik?",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "service": "vu-live",
+        "version": "vu-live-worker-1.0.0",
+        "priceType": "REALTIME_REFERENCE",
+        "source": "TIINGO_IEX_LEVEL6"
+      }
+    },
+    {
+      "id": "health",
+      "question": "antwortet /health, ohne den Schluessel zu nennen?",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "object": "vu-live",
+        "session": "REGULAR",
+        "tiingoKeyConfigured": true,
+        "keyLeaked": false,
+        "managerState": "IDLE",
+        "budgetVerdict": "OK",
+        "priceType": "REALTIME_REFERENCE",
+        "source": "TIINGO_IEX_LEVEL6"
+      }
+    },
+    {
+      "id": "originRejected",
+      "question": "bleibt ein fremder Ursprung draussen?",
+      "ok": true,
+      "detail": {
+        "preflightStatus": 204,
+        "preflightAllowOrigin": null,
+        "getStatus": 200,
+        "getAllowOrigin": null,
+        "note": "Ohne Access-Control-Allow-Origin lehnt der Browser die Antwort ab, und der WebSocket kommt gar nicht erst zustande."
+      }
+    },
+    {
+      "id": "corsPreflight",
+      "question": "bekommt research.visionuniverse.de den CORS-Kopf?",
+      "ok": true,
+      "detail": {
+        "status": 204,
+        "allowOrigin": "https://research.visionuniverse.de"
+      }
+    },
+    {
+      "id": "websocket",
+      "question": "kommt eine Verbindung zustande und begruesst sie richtig?",
+      "ok": true,
+      "detail": {
+        "mode": "dynamic",
+        "session": "REGULAR",
+        "coalesceMs": 1000,
+        "maxSymbols": 50,
+        "budget": "OK",
+        "priceType": "REALTIME_REFERENCE",
+        "source": "TIINGO_IEX_LEVEL6"
+      }
+    },
+    {
+      "id": "ticks",
+      "question": "liefert ein Abonnement waehrend der Sitzung Kurse?",
+      "ok": true,
+      "detail": {
+        "session": "REGULAR",
+        "delivered": 5,
+        "of": 5,
+        "closeCode": 1000,
+        "ops": [
+          "hello",
+          "subscribed",
+          "status",
+          "u"
+        ],
+        "states": [
+          {
+            "op": "status",
+            "state": "CONNECTING",
+            "reason": null,
+            "mode": "dynamic",
+            "modeReason": null,
+            "verdict": null,
+            "session": "REGULAR",
+            "at": "2026-09-17T17:04:18.209Z"
+          },
+          {
+            "op": "status",
+            "state": "LIVE",
+            "reason": null,
+            "mode": "dynamic",
+            "modeReason": null,
+            "verdict": null,
+            "session": "REGULAR",
+            "at": "2026-09-17T17:04:18.469Z"
+          }
+        ]
+      }
+    }
+  ],
+  "latency": {
+    "firstTickMs": {
+      "AAPL": 2211,
+      "NVDA": 2211,
+      "MSFT": 8824,
+      "VLO": 3234,
+      "PANW": 12631
+    },
+    "median": 3234,
+    "max": 12631,
+    "note": "Zeit vom subscribe des Clients bis zum ersten Kurs desselben Titels beim Client. Enthaelt Cloudflares Kante, den Verbindungsaufbau zum Anbieter und ein Zusammenfassungsfenster von einer Sekunde."
+  },
+  "result": "PASS",
+  "reason": null,
+  "budget": {
+    "verdict": "OK",
+    "share": {
+      "requests": 0,
+      "duration": 0
+    },
+    "reserveRationale": {
+      "decidedBy": "Owner",
+      "decidedAt": "2026-09-17",
+      "covers": [
+        "Clientverbindungen",
+        "Abonnementwechsel",
+        "Wecker",
+        "den Verbrauch des anderen Workers im selben Konto"
+      ],
+      "accountWideLimits": true,
+      "otherWorkersMeasured": false,
+      "note": "Die Freigrenzen gelten je Konto, nicht je Worker. Dieser Waechter zaehlt nur den eigenen Verbrauch; der andere Worker im Konto wird durch die Reserve abgedeckt, sein tatsaechlicher Verbrauch ist nicht gemessen (kein Account Analytics:Read).",
+      "risk": "Verbraucht der andere Worker mehr als die Reserve, kann die Kontogrenze fallen, bevor dieser Waechter PROTECT meldet. Der Ausgang ist dann ein Ausfall mit Rueckfall auf den Snapshot-Pfad, keine Rechnung - der kostenlose Tarif schaltet ab, statt abzurechnen."
+    }
+  },
+  "states": [
+    {
+      "op": "status",
+      "state": "CONNECTING",
+      "reason": null,
+      "mode": "dynamic",
+      "modeReason": null,
+      "verdict": null,
+      "session": "REGULAR",
+      "at": "2026-09-17T17:04:18.209Z"
+    },
+    {
+      "op": "status",
+      "state": "LIVE",
+      "reason": null,
+      "mode": "dynamic",
+      "modeReason": null,
+      "verdict": null,
+      "session": "REGULAR",
+      "at": "2026-09-17T17:04:18.469Z"
+    }
+  ],
+  "healthAfter": {
+    "manager": {
+      "state": "LIVE",
+      "reason": null,
+      "mode": "dynamic",
+      "modeReason": null,
+      "symbols": [
+        "AAPL",
+        "MSFT",
+        "NVDA",
+        "PANW",
+        "VLO"
+      ],
+      "clients": 0
+    },
+    "values": 5,
+    "series": 5,
+    "budget": {
+      "verdict": "OK",
+      "used": {
+        "providerMessages": 115,
+        "clientMessages": 1,
+        "connections": 1,
+        "alarms": 1,
+        "requests": 8,
+        "activeSeconds": 30,
+        "durationGBs": 4,
+        "peakSymbols": 5,
+        "peakClients": 1
+      }
+    },
+    "log": [
+      {
+        "at": "2026-09-17T17:04:18.398Z",
+        "ereignis": "providerOpen",
+        "daten": {
+          "tickers": 5
+        }
+      }
+    ]
+  }
+}

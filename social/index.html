@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Vision Universe® Social — Command Center</title>
+<meta name="description" content="Social Command Center: Warteschlange, Gelegenheiten, Begruendungen, Veroeffentlichungen und Systemzustand des Vision Universe Social Intelligence OS.">
+<!-- Kein Suchmaschinenindex: das Command Center ist ein Betriebswerkzeug
+     des Owners und keine Produktseite. -->
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="/social/ui/social.css">
+<link rel="stylesheet" href="/assets/site-navigation.css"></head>
+<body class="s-body"><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+
+<header class="s-header">
+  <strong>Vision Universe® Social</strong>
+  <a href="/">Vision Universe</a>
+</header>
+
+<!-- Der Zustandsstreifen steht GANZ OBEN: die Frage "darf dieses System
+     gerade veroeffentlichen?" ist die erste, die der Owner beantwortet
+     haben will - nicht eine, die in einem Einstellungsdialog steht. -->
+<div id="s-status"></div>
+
+<nav class="s-tabs" id="s-tabs" role="tablist" aria-label="Command-Center-Navigation"></nav>
+
+<main class="s-main" id="s-main"></main>
+
+<!-- Nur die Oberflaeche. Kein Adapter, kein Abrufskript, kein Zugang.
+     Alles, was der Browser laedt, ist oeffentlich (quant/tests/secrets.test.mjs S3). -->
+<script src="/social/app.js"></script>
+</body>
+</html>

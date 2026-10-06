@@ -1,0 +1,591 @@
+{
+ "schemaVersion": "vu-market-pulse-calibration-1.0.0",
+ "methodVersion": "market-pulse-1.0.0",
+ "generatedFrom": {
+  "SPY": {
+   "from": "1995-01-03",
+   "to": "2026-09-24"
+  },
+  "QQQ": {
+   "from": "1999-03-10",
+   "to": "2026-09-24"
+  },
+  "DIA": {
+   "from": "1998-01-20",
+   "to": "2026-09-24"
+  },
+  "IWM": {
+   "from": "2000-05-26",
+   "to": "2026-09-24"
+  }
+ },
+ "purpose": "Plausibilisierung und Kalibrierung, keine Optimierung auf Rendite. Keine Vorwaertsrenditen, keine Prognose.",
+ "risk": {
+  "vol20": {
+   "series": {
+    "symbol": "SPY",
+    "label": "SPY (S&P-500-Markttracker)",
+    "path": "quant/data/market/multi-asset/series/SPY.json",
+    "source": "tiingo-equity",
+    "attribution": "Daten: Tiingo",
+    "seriesTitle": "SPY (Tiingo, split-bereinigter Schlusskurs)",
+    "from": "1995-01-03",
+    "to": "2026-09-24",
+    "observations": 7985
+   },
+   "calibratedFrom": "1995-02-01",
+   "calibratedTo": "2026-09-24",
+   "samples": 7964,
+   "median": 13.9,
+   "p75": 19.7,
+   "p90": 26.9,
+   "p95": 32.1
+  },
+  "drawdown": {
+   "elevated": -10,
+   "high": -20,
+   "basis": "MARKET_CONVENTION",
+   "note": "-10 % Korrektur, -20 % Baerenmarkt: verbreitete Konventionen, keine optimierten Werte."
+  }
+ },
+ "stateFrequency": {
+  "sampledEvery": "5 Handelstage",
+  "samples": 1273,
+  "from": "2001-06-08",
+  "to": "2026-09-24",
+  "trend": {
+   "MIXED": 28.6,
+   "NEGATIVE": 17,
+   "POSITIVE": 54.4
+  },
+  "momentum": {
+   "MIXED": 20.9,
+   "RISING": 59.8,
+   "FALLING": 19.3
+  },
+  "risk": {
+   "ELEVATED": 15.3,
+   "HIGH": 14.1,
+   "NORMAL": 70.6
+  },
+  "environment": {
+   "CAUTIOUS": 22.6,
+   "DEFENSIVE": 13.6,
+   "SELECTIVE": 18.8,
+   "CONSTRUCTIVE": 45
+  },
+  "environmentNote": "Historisch ohne Marktbreite (nicht rekonstruierbar) - die Stufe BROADLY_CONSTRUCTIVE kommt deshalb nicht vor."
+ },
+ "environment": {
+  "version": "market-environment-1.0.0",
+  "table": {
+   "version": "market-environment-1.0.0",
+   "basis": "DEFINITIONAL_DECISION_TABLE",
+   "note": "Marktumfeld aus den Dimensionszustaenden, ohne Score und ohne Gewichte. Basisstufe aus TREND und MOMENTUM gemeinsam (Ueberschneidung: beide aus denselben Trackern - deshalb eine Stufe, keine zwei Stimmen). RISK deckelt nach oben, BREADTH bestaetigt (Stufe 4 nur mit aktueller breiter Beteiligung). Fehlende Marktbreite: Deckel UNKNOWN (zaehlt weder dafuer noch dagegen). CROSS_ASSET stimmt nicht mit ab. Stufe = min(Basis + Breitenbonus, Risikodeckel, Breitendeckel). Fehlt TREND, MOMENTUM oder RISK: keine Einordnung.",
+   "levels": [
+    {
+     "id": "DEFENSIVE",
+     "label": "Defensiv",
+     "investor": "Das Marktbild spricht derzeit für erhöhte Vorsicht bei neuen Positionen."
+    },
+    {
+     "id": "CAUTIOUS",
+     "label": "Vorsichtig",
+     "investor": "Gegenwind überwiegt – das Umfeld spricht eher für Zurückhaltung als für zusätzliche Risikobereitschaft."
+    },
+    {
+     "id": "SELECTIVE",
+     "label": "Selektiv",
+     "investor": "Chancen sind vorhanden, das Umfeld unterstützt derzeit aber eher selektive Einstiege als breite Risikobereitschaft."
+    },
+    {
+     "id": "CONSTRUCTIVE",
+     "label": "Konstruktiv",
+     "investor": "Das Umfeld ist konstruktiv, aber noch nicht auf breiter Basis bestätigt."
+    },
+    {
+     "id": "BROADLY_CONSTRUCTIVE",
+     "label": "Breit konstruktiv",
+     "investor": "Das Umfeld ist auf breiter Basis konstruktiv: Trend, Dynamik und Marktbreite ziehen mit, die Schwankungen sind normal."
+    }
+   ],
+   "base": {
+    "POSITIVE|RISING": 3,
+    "POSITIVE|MIXED": 2,
+    "POSITIVE|FALLING": 2,
+    "MIXED|RISING": 2,
+    "MIXED|MIXED": 1,
+    "MIXED|FALLING": 1,
+    "NEGATIVE|RISING": 1,
+    "NEGATIVE|MIXED": 1,
+    "NEGATIVE|FALLING": 0
+   },
+   "broadFrom": 3,
+   "riskCap": {
+    "NORMAL": 4,
+    "ELEVATED": 2,
+    "HIGH": 1
+   },
+   "breadthCap": {
+    "BROAD": 4,
+    "MIXED": 3,
+    "UNKNOWN": 3,
+    "NARROW": 2
+   },
+   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
+  }
+ },
+ "phases": [
+  {
+   "date": "2002-10-09",
+   "phase": "Tief des Baerenmarkts 2000-2002",
+   "expect": {
+    "trend": "NEGATIVE"
+   },
+   "observedOn": "2002-10-09",
+   "observed": {
+    "trend": "NEGATIVE",
+    "momentum": "FALLING",
+    "risk": "HIGH",
+    "environment": "DEFENSIVE",
+    "environmentLevel": 0
+   },
+   "pass": true,
+   "checks": [
+    {
+     "dimension": "trend",
+     "expected": "NEGATIVE",
+     "observed": "NEGATIVE",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "hoechstens CAUTIOUS",
+     "observed": "DEFENSIVE",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "date": "2008-10-15",
+   "phase": "Finanzkrise",
+   "expect": {
+    "trend": "NEGATIVE",
+    "risk": "HIGH",
+    "environment": "DEFENSIVE"
+   },
+   "observedOn": "2008-10-15",
+   "observed": {
+    "trend": "NEGATIVE",
+    "momentum": "FALLING",
+    "risk": "HIGH",
+    "environment": "DEFENSIVE",
+    "environmentLevel": 0
+   },
+   "pass": true,
+   "checks": [
+    {
+     "dimension": "trend",
+     "expected": "NEGATIVE",
+     "observed": "NEGATIVE",
+     "pass": true
+    },
+    {
+     "dimension": "risk",
+     "expected": "HIGH",
+     "observed": "HIGH",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "DEFENSIVE",
+     "observed": "DEFENSIVE",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "date": "2009-03-09",
+   "phase": "Tief der Finanzkrise",
+   "expect": {
+    "trend": "NEGATIVE",
+    "risk": "HIGH",
+    "environment": "DEFENSIVE"
+   },
+   "observedOn": "2009-03-09",
+   "observed": {
+    "trend": "NEGATIVE",
+    "momentum": "FALLING",
+    "risk": "HIGH",
+    "environment": "DEFENSIVE",
+    "environmentLevel": 0
+   },
+   "pass": true,
+   "checks": [
+    {
+     "dimension": "trend",
+     "expected": "NEGATIVE",
+     "observed": "NEGATIVE",
+     "pass": true
+    },
+    {
+     "dimension": "risk",
+     "expected": "HIGH",
+     "observed": "HIGH",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "DEFENSIVE",
+     "observed": "DEFENSIVE",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "date": "2010-01-15",
+   "phase": "Erholung nach der Finanzkrise",
+   "expect": {
+    "trend": "POSITIVE"
+   },
+   "observedOn": "2010-01-15",
+   "observed": {
+    "trend": "POSITIVE",
+    "momentum": "RISING",
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE",
+    "environmentLevel": 3
+   },
+   "pass": true,
+   "checks": [
+    {
+     "dimension": "trend",
+     "expected": "POSITIVE",
+     "observed": "POSITIVE",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "mindestens SELECTIVE",
+     "observed": "CONSTRUCTIVE",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "date": "2013-11-15",
+   "phase": "Ruhiger Aufwaertstrend",
+   "expect": {
+    "trend": "POSITIVE",
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE"
+   },
+   "observedOn": "2013-11-15",
+   "observed": {
+    "trend": "POSITIVE",
+    "momentum": "RISING",
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE",
+    "environmentLevel": 3
+   },
+   "pass": true,
+   "checks": [
+    {
+     "dimension": "trend",
+     "expected": "POSITIVE",
+     "observed": "POSITIVE",
+     "pass": true
+    },
+    {
+     "dimension": "risk",
+     "expected": "NORMAL",
+     "observed": "NORMAL",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "CONSTRUCTIVE",
+     "observed": "CONSTRUCTIVE",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "date": "2017-06-15",
+   "phase": "Niedrige Volatilitaet",
+   "expect": {
+    "trend": "POSITIVE",
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE"
+   },
+   "observedOn": "2017-06-15",
+   "observed": {
+    "trend": "POSITIVE",
+    "momentum": "RISING",
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE",
+    "environmentLevel": 3
+   },
+   "pass": true,
+   "checks": [
+    {
+     "dimension": "trend",
+     "expected": "POSITIVE",
+     "observed": "POSITIVE",
+     "pass": true
+    },
+    {
+     "dimension": "risk",
+     "expected": "NORMAL",
+     "observed": "NORMAL",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "CONSTRUCTIVE",
+     "observed": "CONSTRUCTIVE",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "date": "2018-12-24",
+   "phase": "Korrektur Q4 2018",
+   "expect": {
+    "trend": "NEGATIVE",
+    "risk": "HIGH"
+   },
+   "observedOn": "2018-12-24",
+   "observed": {
+    "trend": "NEGATIVE",
+    "momentum": "FALLING",
+    "risk": "HIGH",
+    "environment": "DEFENSIVE",
+    "environmentLevel": 0
+   },
+   "pass": true,
+   "checks": [
+    {
+     "dimension": "trend",
+     "expected": "NEGATIVE",
+     "observed": "NEGATIVE",
+     "pass": true
+    },
+    {
+     "dimension": "risk",
+     "expected": "HIGH",
+     "observed": "HIGH",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "hoechstens CAUTIOUS",
+     "observed": "DEFENSIVE",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "date": "2020-03-20",
+   "phase": "Corona-Crash",
+   "expect": {
+    "trend": "NEGATIVE",
+    "risk": "HIGH",
+    "environment": "DEFENSIVE"
+   },
+   "observedOn": "2020-03-20",
+   "observed": {
+    "trend": "NEGATIVE",
+    "momentum": "FALLING",
+    "risk": "HIGH",
+    "environment": "DEFENSIVE",
+    "environmentLevel": 0
+   },
+   "pass": true,
+   "checks": [
+    {
+     "dimension": "trend",
+     "expected": "NEGATIVE",
+     "observed": "NEGATIVE",
+     "pass": true
+    },
+    {
+     "dimension": "risk",
+     "expected": "HIGH",
+     "observed": "HIGH",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "DEFENSIVE",
+     "observed": "DEFENSIVE",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "date": "2020-08-31",
+   "phase": "Erholung 2020",
+   "expect": {
+    "trend": "POSITIVE"
+   },
+   "observedOn": "2020-08-31",
+   "observed": {
+    "trend": "POSITIVE",
+    "momentum": "RISING",
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE",
+    "environmentLevel": 3
+   },
+   "pass": true,
+   "checks": [
+    {
+     "dimension": "trend",
+     "expected": "POSITIVE",
+     "observed": "POSITIVE",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "mindestens SELECTIVE",
+     "observed": "CONSTRUCTIVE",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "date": "2021-11-15",
+   "phase": "Hoch 2021",
+   "expect": {
+    "trend": "POSITIVE",
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE"
+   },
+   "observedOn": "2021-11-15",
+   "observed": {
+    "trend": "POSITIVE",
+    "momentum": "RISING",
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE",
+    "environmentLevel": 3
+   },
+   "pass": true,
+   "checks": [
+    {
+     "dimension": "trend",
+     "expected": "POSITIVE",
+     "observed": "POSITIVE",
+     "pass": true
+    },
+    {
+     "dimension": "risk",
+     "expected": "NORMAL",
+     "observed": "NORMAL",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "CONSTRUCTIVE",
+     "observed": "CONSTRUCTIVE",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "date": "2022-06-16",
+   "phase": "Baerenmarkt 2022",
+   "expect": {
+    "trend": "NEGATIVE",
+    "risk": "HIGH"
+   },
+   "observedOn": "2022-06-16",
+   "observed": {
+    "trend": "NEGATIVE",
+    "momentum": "FALLING",
+    "risk": "HIGH",
+    "environment": "DEFENSIVE",
+    "environmentLevel": 0
+   },
+   "pass": true,
+   "checks": [
+    {
+     "dimension": "trend",
+     "expected": "NEGATIVE",
+     "observed": "NEGATIVE",
+     "pass": true
+    },
+    {
+     "dimension": "risk",
+     "expected": "HIGH",
+     "observed": "HIGH",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "hoechstens CAUTIOUS",
+     "observed": "DEFENSIVE",
+     "pass": true
+    }
+   ]
+  },
+  {
+   "date": "2023-12-15",
+   "phase": "Erholung 2023",
+   "expect": {
+    "trend": "POSITIVE"
+   },
+   "observedOn": "2023-12-15",
+   "observed": {
+    "trend": "POSITIVE",
+    "momentum": "RISING",
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE",
+    "environmentLevel": 3
+   },
+   "pass": true,
+   "checks": [
+    {
+     "dimension": "trend",
+     "expected": "POSITIVE",
+     "observed": "POSITIVE",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "mindestens SELECTIVE",
+     "observed": "CONSTRUCTIVE",
+     "pass": true
+    }
+   ]
+  }
+ ],
+ "phasesPassed": 12,
+ "phasesTotal": 12,
+ "factorOverlap": [
+  {
+   "between": [
+    "TREND",
+    "MOMENTUM"
+   ],
+   "note": "Lage zur 200-Tage-Linie und 6-Monats-Rendite sind stark korreliert. MOMENTUM fliesst deshalb nicht in die Schlagzeile ein."
+  },
+  {
+   "between": [
+    "TREND",
+    "RISK"
+   ],
+   "note": "Der Abstand zum 52-Wochen-Hoch (RISK) haengt mit der Trendlage zusammen; RISK ergaenzt die Schlagzeile nur bei erhoehter Stufe."
+  },
+  {
+   "between": [
+    "BREADTH",
+    "TREND"
+   ],
+   "note": "Unabhaengige Grundgesamtheit (Einzelaktien statt Tracker); gleiche Methode (gleitende Durchschnitte) - Richtungen koennen und sollen auseinanderlaufen."
+  }
+ ],
+ "breadth": {
+  "state": "NOT_CALIBRATED",
+  "reason": "Es gibt keine Breitenhistorie im Core; eine Rueckrechnung aus heutigen Titeln waere survivorship-verzerrt. Deshalb nur die definitorische Mehrheitsschwelle, keine feineren Stufen."
+ }
+}

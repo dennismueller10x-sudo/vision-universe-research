@@ -1,0 +1,75 @@
+name: Marktdaten aktualisieren
+
+# Phase 2, §13/§14 — der einzige Ort, an dem ein Anbieter-Schluessel existiert.
+#
+#   GitHub Secret  ->  Runner  ->  Abruf  ->  Normalisierung  ->
+#   Qualitaetspruefung  ->  .market-cache im ephemeren Runner
+#
+# Der Schluessel liegt ausschliesslich in `secrets.TWELVE_DATA_API_KEY` und
+# wird nur als Umgebungsvariable an ein Node-Skript gereicht. Er erscheint
+# nicht im Log, nicht im ausgelieferten JSON und nicht im Frontend.
+#
+# OHNE Secret ist dieser Workflow kein Fehler: das Skript schreibt einen
+# Statusbericht mit `configured:false` und beendet sich mit Code 0. Die Seite
+# laeuft dann unveraendert im Mock-Modus weiter.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Nur abrufen und pruefen, nichts schreiben'
+        type: boolean
+        default: false
+
+concurrency:
+  # Je Zweig eine Gruppe: Laeufe auf claude/** stehen nicht mehr in der
+  # Warteschlange von main (eine neue wartende Anfrage verdraengt die
+  # aeltere wartende - auch eine uebersprungene). Audit 03.10.2026.
+  group: market-data-${{ github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Marktdaten abrufen
+        env:
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+          VU_DATA_MODE: ${{ vars.VU_DATA_MODE || 'hybrid' }}
+        run: |
+          node scripts/market/fetch-market-data.mjs \
+            ${{ inputs.dry_run && '--dry-run' || '' }}
+
+      - name: Ausgelieferte Daten enthalten keinen Schluessel
+        # Der dauerhafte Guard prueft den Repository-/Pages-Bestand. Die
+        # interne Arbeitsablage wird weder committed noch als Artefakt
+        # hochgeladen.
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Vollstaendige Pruefung der Marktdaten
+        run: node --test "quant/tests/market-data.test.mjs" "quant/tests/secrets.test.mjs"
+
+      - name: Oeffentliche Datenpfade bleiben unveraendert
+        run: |
+          git diff --exit-code -- quant/data/market dashboard/data/market_data.json quant/data/technical
+          node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Statusbericht in der Zusammenfassung
+        if: always()
+        run: |
+          if [ -f .market-cache/twelve-data/status.json ]; then
+            {
+              echo '### Datenstand'
+              echo '```json'
+              node -e 'const j=require("./.market-cache/twelve-data/status.json");console.log(JSON.stringify({dataMode:j.dataMode,configured:j.configured,provider:j.provider,generatedAt:j.generatedAt,adjustmentStatus:j.adjustmentStatus,summary:j.summary},null,2))'
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
