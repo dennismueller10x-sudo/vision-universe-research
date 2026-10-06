@@ -315,6 +315,8 @@ The previously discarded August index uses publisher-relative dated release path
 
 The current zero-HTTP August index census has {'eligible_UNATTEMPTED': 3421, 'eligible_INGESTED': 293, 'eligible_DEGRADED': 1, 'eligible_PARSED': 0} among 11,325 advertised entries. All supported-company aliases are loaded before the same loose slug budgeting filter is evaluated; excluded entries are not counted as supported issuers. This is a resumable remaining-release queue, separate from accepted news and independently proven company domains. Material incremental issuer coverage warrants the next bounded continuation after this milestone is remotely preserved.
 
+A narrow publisher-article transport fix UTF-8 percent-encodes advertised IRI path characters for HTTP while retaining the original per-release ledger key. Metadata canonical and redirect checks accept only the equivalent request URI; a changed host, release ID or unrelated route still fails. Both original and encoded memo/cache keys are evicted, and raw article bodies remain unpersisted. Two meaningful contracts fail on the previous producer and pass after the fix, covering actual urllib ASCII request-target requirements, staged resume, INGESTED skip, identity metadata, canonical equivalence and unrelated-destination rejection. All 25 archive contracts and 565 full Python tests pass. Two retained literal-Unicode URL failures are queued for a targeted local-format recovery after the active writer reaches its checkpoint; no live issuer gain is inferred from tests.
+
 ## 14. Calls — historical 137; current reconstructed 867
 
 New-domain cohort: **546 call-exists issuers / 465 dated-call issuers**. Structured event JSON-LD/iCalendar/Q4/GCS/feed metadata and issuer-authored release call schedules provide evidence. An announcement's results-release date cannot become a distinct conference-call date without explicit call evidence.
@@ -524,6 +526,8 @@ All ten workflows passed without retries on the preceding preserved external-IR-
 All ten workflows passed without retries on the separately preserved selective IR-capacity head c9e8c6202aaa089cfc912113054d6a1043b0223d. The following coverage/configuration milestone awaits its own exact-head CI and is not credited with that result.
 
 All ten workflows passed without retries on coverage/configuration checkpoint bfb00188a58a7b76fb61903a1000dfb6b027ca36. All ten workflows also passed without retries on exact relative-path parser checkpoint e250cb7df98169dca820009d4f3520b9b3d57b71. The following monthly coverage checkpoint retains its own exact-head CI result.
+
+Coverage checkpoint 926f6a05b8b94b206f2373455be264d6655796c7 completed all ten workflows: nine passed, including Company Intelligence, and Discover Frontend reported one WebKit entry timing of 5,133 ms against the unchanged 5,000-ms threshold. No unchanged retry was made. All other frontend checks passed. The same code had passed all ten on the preceding parser checkpoint; the new source-path transport change is validated independently. Unrelated Discover/Quant code remains unchanged.
 
 ## 29. Regressions / pre-existing main failures
 

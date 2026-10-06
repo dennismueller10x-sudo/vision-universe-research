@@ -7,7 +7,7 @@ Article bodies exist transiently during parsing; no full-text storage/export.
 import json,re,hashlib
 from html.parser import HTMLParser
 from xml.etree import ElementTree as ET
-from urllib.parse import urlsplit,unquote
+from urllib.parse import urlsplit,unquote,quote
 from .model import canonical_url,clean,domain
 from .feeds import parse_date,parse_links
 from .transport import SourceError,BudgetExhausted
@@ -36,6 +36,17 @@ def archive_urls(body,url):
             value = 'https://www.globenewswire.com' + value
         return canonical_url(value)
     return list(dict.fromkeys(u for row in root if (u:=release_url(row.findtext(ns+'loc'))) and domain(u)=='www.globenewswire.com' and '/news-release/' in u))
+
+
+def article_request_url(value):
+    """Encode advertised IRI paths for HTTP without changing ledger identities."""
+    canonical = canonical_url(value)
+    if not canonical:
+        return None
+    parts = urlsplit(canonical)
+    # Preserve existing escapes and reserved path delimiters. No decoding,
+    # origin rewrite or redirect trust is introduced by UTF-8 percent encoding.
+    return parts._replace(path=quote(parts.path, safe="!$&'()*+,-./:;=@_~%")).geturl()
 
 
 class Metadata(HTMLParser):
@@ -123,7 +134,7 @@ def metadata(body,url):
     if not isinstance(publisher,dict) or not isinstance(author,dict):
         raise SourceError('INVALID_PUBLISHER_NEWS_METADATA')
     stamp=parse_date(n.get('datePublished'));headline=clean(n.get('headline'),400);canonical=canonical_url(n.get('url') or n.get('@id'))
-    if not stamp or not headline or publisher.get('name')!='GlobeNewswire' or not canonical or canonical!=canonical_url(url):raise SourceError('INVALID_PUBLISHER_NEWS_METADATA')
+    if not stamp or not headline or publisher.get('name')!='GlobeNewswire' or not canonical or article_request_url(canonical)!=article_request_url(url):raise SourceError('INVALID_PUBLISHER_NEWS_METADATA')
     contributor=clean(author.get('name'),200) if isinstance(author,dict) else ''
     # Exact publisher ticker meta is distinct from arbitrary article body references.
     stock=clean(p.meta.get('ticker'),100)
@@ -161,11 +172,12 @@ def collect(source,response,http,store,resolver,now):
             continue
         if attempted>=limit:break
         attempted+=1
+        request_url=article_request_url(url)
         try:
             # Only parsed metadata is resumable state; raw article responses
             # must never enter transport caches, including before a hard stop.
-            r=http.get(url,ttl=86400,persist=False)
-            if canonical_url(r['finalUrl'])!=canonical_url(url):raise SourceError('DISTRIBUTOR_ARTICLE_REDIRECT_REQUIRES_REVALIDATION')
+            r=http.get(request_url,ttl=86400,persist=False)
+            if article_request_url(r['finalUrl'])!=request_url:raise SourceError('DISTRIBUTOR_ARTICLE_REDIRECT_REQUIRES_REVALIDATION')
             entry=metadata(r['body'],url);out.append(entry)
             consecutive_temporary=0
             store.set_state(key,{'status':'PARSED','checkedAt':now,'publishedAt':entry['publishedAt'],'sourceId':source['sourceId'],'entry':entry})
@@ -182,8 +194,9 @@ def collect(source,response,http,store,resolver,now):
         finally:
             # PublicHTTP persists cache by default. Article bodies are deliberately
             # removed after metadata extraction, including HTTP memo copies.
-            for path in http._paths(canonical_url(url)):
-                path.unlink(missing_ok=True)
-            http.memo.pop((canonical_url(url), True),None)
+            for cache_url in {canonical_url(url),request_url}:
+                for path in http._paths(cache_url):
+                    path.unlink(missing_ok=True)
+                http.memo.pop((cache_url, True),None)
     store.set_state('distributorArchiveRun:'+source['sourceId'],{'checkedAt':now,'indexedURLs':len(urls),'attempted':attempted,'parsed':len(out),'temporaryFailures':temporary,'stopReason':stop})
     return out
