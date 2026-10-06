@@ -132,3 +132,22 @@ test("HSAB-P1 Veroeffentlichung: Kursfelder in CI-Artefakten werden abgewiesen",
   writeFileSync(join(dir, "bad.json"), JSON.stringify({ px: 101.2 }));
   assert.notEqual(spawnSync(process.execPath, [join(ROOT, "scripts/technical/hsab/publish-ci.mjs"), "--check", dir]).status, 0);
 });
+
+test("HSAB-R1 Entscheidung nach Praeregistrierung: Regeln mechanisch (Relevanz, Gates, Aequivalenz)", async () => {
+  const R = await import(join(ROOT, "scripts/technical/hsab/report.mjs"));
+  const mk = (lift, lo, hi, o = {}) => ({ phase: "X", tables: { primary: {
+    vsD: { n: 1000, symbols: 50, rate: 0.6, base: 0.6 - lift, lift, liftCi: [lo, hi], p: lo > 0 ? 0.001 : 0.5 },
+    vsP_timingMatched: { lift: o.p ?? lift, liftCi: [o.pLo ?? lo, hi] }, vsC: { lift: o.c ?? 0, liftCi: [o.cLo ?? -0.001, 0.01] }, vsE: { lift: o.e ?? lift, liftCi: [lo, hi] },
+    vsOppositeDirection: { diff: o.opp ?? 0.03, ci: [o.oppLo ?? 0.01, 0.05] }, ruleZoneMid: { lift }, ruleCloseTarget: { lift }, vsD_blockQuarter: { lift }, vsD_blockYear: { lift }, vsD_unionPool: { lift },
+    sensitivity: { excludingCoarseRounding: { lift }, disjointFromDailyDevSymbols: { lift } } }, customerGridView: { vsD: { lift } } } });
+  const strong = R.decideHoldout(mk(0.03, 0.01, 0.05), "WEEKLY");
+  assert.equal(strong.H.pass, true); assert.equal(strong.meaningful, true); assert.equal(strong.gatesPass, true);
+  assert.equal(R.classify(strong, R.decideHoldout(mk(0.03, 0.01, 0.05), "DAILY")).overall, "MEANINGFUL_EDGE");
+  const failC = R.decideHoldout(mk(0.03, 0.01, 0.05, { cLo: -0.03 }), "WEEKLY");
+  assert.equal(failC.gatesPass, false);
+  assert.equal(R.classify(failC, strong).overall, "DETECTABLE_BUT_NEGLIGIBLE");
+  const nil = R.decideHoldout(mk(0.002, -0.004, 0.008), "DAILY");
+  assert.equal(nil.H.pass, false); assert.equal(nil.equivalentWithin15pp, true);
+  assert.equal(R.classify(nil, nil).overall, "NO_EDGE_EQUIVALENT");
+  assert.equal(R.classify(R.decideHoldout(mk(-0.03, -0.05, -0.01), "DAILY"), nil).overall, "HARM_SIGNAL");
+});

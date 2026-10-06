@@ -86,3 +86,18 @@
 59. **Kaum unabhängige Praktiker-Überdeckung** (PRACTITIONER_CONSENSUS_BENCHMARK.md): Nur 6 von 35 geöffneten Fällen haben eine unabhängige Referenz auf gleichem Zeitrahmen; 53 von 81 Konsens-Fundstellen zählen im Intraday-Chart. Starker Konsens: 0; Konsens-Impuls: 0.
 60. **Praktiker widersprechen sich meist im Szenario:** Das strukturelle Szenario stimmt in 1 von 5 Postpaaren überein, Familie 3/5, Ziele 0/2. Bei n ≤ 5 ist keine Aussage über Schulen oder Autoren belastbar.
 61. **Versiegelte Konsens-Zeilen in der Git-Historie:** Bis Commit `7beb66de1` lagen Abgleich- und Referenzzeilen versiegelter Fälle in offenen Dateien (fremde Lesarten, nicht die Ausgangslabels). Seit V1.2 liegen sie unter `consensus/sealed/`; die Historie bleibt (vgl. 56).
+
+## Mission VIII (Historical Structural Accuracy Benchmark, siehe VU_HISTORICAL_ACCURACY_REPORT.md)
+
+62. **Hohe Trefferquoten sind Geometrie.** PSS liegt bei 57–60 % (Woche) und 69–70 % (Tag). Kontrollen mit denselben Abständen erreichen 55–68 %, die Random-Walk-Erwartung b/(a+b) liegt bei 64 %. Ein Lift von +1,0 bis +2,5 Pp. ist nachweisbar, aber nicht robust: Gegen zeitnahe Zeitpunkte derselben Aktie ist er negativ, gegen die Gegenrichtung nicht vorhanden.
+63. **Kein unberührter Wochen-Holdout für heute gelistete Titel.** Der finale Wochen-Holdout ist die Delisted-Kohorte (ab 2015 abgerufen, Ereignisse ab 2018). Sie ist nach einem Zukunftsereignis selektiert. Der Tages-Holdout ist bedingt: Kalender wochenweise gesehen, Stichprobe von 1.200 Titeln, nur Überlebende.
+64. **Survivorship vor 2018 nicht kontrollierbar.** Es gibt keine Delisting-Historie vor 2015. Ab 2018 beträgt der Effekt auf die absolute Quote ≈ 0,2 Pp.
+65. **Split-Bereinigung und Anzeigerundung.** Rundungsschritte relativ zur ATR hängen auf split-bereinigten Kursen von späteren Splits ab. Die Rundung nach außen begünstigt die absolute Quote. Der Lift ist über die ATR-Geometrie der Kontrollen geschützt (Sensitivität unverändert).
+66. **Elliott-Persistenz im Hauptlauf nicht nachgebildet.** Hauptszenario, Ausblick und Klarheit sind in 2.597 Proben zu 100 % gleich. Die Elliott-Zählung selbst stimmt nur zu 74–78 % mit der Produkt-Kette überein.
+67. **Stage-1-Siegel nicht über Läufe reproduzierbar.** Die Shards hängen von der dynamischen Worker-Verteilung ab. Für den Inhaltsnachweis dienen Titelmenge, Record-Zahl, Jahresverteilung und Engine-Hashes. Ein inhaltsbasiertes Siegel fehlt.
+68. **Ereignisse an Pivot-Bestätigungen.** Die Kundensicht an beliebigen Monatsenden zeigt einen kleineren Lift: Woche +1,2, Tag +0,5 Pp., beide nicht signifikant.
+69. **Ziel 1 bei Anzeige bereits erreicht** in 9,8 % der angezeigten Szenarien (Status EXTENDED). Das ist ein Produktbefund, offen für einen eigenen PR.
+70. **Konfidenzlabel nicht kausal und nicht informativ.** Es liest eine Evidenztabelle aus allen Zeiträumen und zeigt in 99,9 % LOW.
+71. **Tagesstudie als Stichprobe.** Je Lauf 600 bzw. 1.200 Titel und keine Per-Bar-Umdeutungsstichprobe auf Tagesbasis. Die Wochenstudie hat keine Liquiditätsfilter (kein Volumen).
+72. **Test-Isolation (vorbestehend).** `quant/tests/total-return-verification.test.mjs` schreibt `quant/data/providers/total-return-verification.json`.
+73. **Wochen-VAL ohne Per-Bar-Stichprobe.** Der Per-Bar-Hash fällt nur auf DEV-Titel.

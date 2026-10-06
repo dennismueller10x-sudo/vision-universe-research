@@ -42,3 +42,20 @@ Kurzfassung der Evidenz (Nachlauf mit Engine 2.2 und Elliott-Gewicht 0, siehe TE
 * [FINAL_OPEN_ITEM_MATRIX.md](FINAL_OPEN_ITEM_MATRIX.md) — alle offenen Punkte Mission I–IV
 * [STATISTICS_AUDIT.md](STATISTICS_AUDIT.md) — Cluster-Bootstrap, Mehrfachtests, zeitraumgleiche Baseline
 * Reviews: [Code-Review](reviews/MISSION4_CODE_REVIEW.md), [Red-Team 2](reviews/MISSION4_REDTEAM_2.md), [Generator-Audit 2](reviews/ELLIOTT_GENERATOR_AUDIT_2.md), [Sprachaudit](reviews/REGULATORY_LANGUAGE_AUDIT.md)
+
+## Mission VIII (Historical Structural Accuracy Benchmark)
+
+* [VU_HISTORICAL_ACCURACY_REPORT.md](VU_HISTORICAL_ACCURACY_REPORT.md) — Abschlussbericht: Was hätte VU historisch gezeigt, wie oft trat es ein, gegen faire Kontrollen. **Urteil: DETECTABLE BUT NEGLIGIBLE; Einordnung C (deskriptiv / Entscheidungsunterstützung).**
+* [HISTORICAL_ACCURACY_PREREGISTRATION.md](HISTORICAL_ACCURACY_PREREGISTRATION.md) · [HOLDOUT_OPENING_LOG.md](HOLDOUT_OPENING_LOG.md) · [HISTORICAL_DATA_USAGE_REGISTER.md](HISTORICAL_DATA_USAGE_REGISTER.md)
+* [VU_HISTORICAL_REPLAY_METHODOLOGY.md](VU_HISTORICAL_REPLAY_METHODOLOGY.md) · [COVERAGE_ACCURACY_REPORT.md](COVERAGE_ACCURACY_REPORT.md) · [TECHNICAL_METHOD_ATTRIBUTION.md](TECHNICAL_METHOD_ATTRIBUTION.md) · [TECHNICAL_INTELLIGENCE_CLAIMS_MATRIX.md](TECHNICAL_INTELLIGENCE_CLAIMS_MATRIX.md)
+* Vollständige Tabellen: [hsab/HSAB_TABLES.md](hsab/HSAB_TABLES.md) · Reviews: [MISSION8_CODE_REVIEW.md](reviews/MISSION8_CODE_REVIEW.md), [MISSION8_METHODOLOGY_REDTEAM.md](reviews/MISSION8_METHODOLOGY_REDTEAM.md)
+* Code: `scripts/technical/hsab/` · Evidenz: `quant/data/technical-intelligence/historical-accuracy/` · CI: `.github/workflows/technical-intelligence-mission8.yml`
+
+Kurzfassung:
+* Hauptszenarien erreichen Ziel 1 vor der Invalidation zu 69,1 % (Tag, Holdout 2017–2026) bzw. 57,1 % (Woche, delistete Titel). Kontrollen mit denselben Abständen am selben Tag erreichen 68,1 % bzw. 54,6 %.
+* Der kleine Lift hält zwei vorab festgelegten Prüfungen nicht stand:
+  * gleiche Aktie zu nahen Zeitpunkten;
+  * Gegenrichtung.
+* Full TI entspricht praktisch Trend allein.
+* Strukturklarheit misst Stabilität (Umdeutung 12 % vs. 34 %), nicht Treffsicherheit.
+* Elliott spricht an < 1 % der Zeitpunkte und formt nie ein Szenario.

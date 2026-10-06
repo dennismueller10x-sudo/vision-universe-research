@@ -85,6 +85,23 @@ function main() {
     evidenceStatus: "BOUND_TO_ENGINE_VERSION — gilt nur fuer ti-scenario-1.2.1 / elliott-3.2.2; jede Engine-Aenderung macht diese Evidenz zu HISTORICAL_FOR_PREVIOUS_ENGINE bis zur Revalidierung",
     holdout: { weekly: dW, daily: dD, secondaryWeekly: secondary(W), secondaryDaily: secondary(D) },
     classification: classify(dW, dD),
+    /* Einordnung §85/§116 (Regel): MEANINGFUL_EDGE in beiden Holdouts → A; nur selektiv (CLEAR-Stufe S4 bestanden, sonst nicht) → B nur bei
+       MEANINGFUL_EDGE der Stufe; DETECTABLE_BUT_NEGLIGIBLE / NO_EDGE / INCONCLUSIVE mit deskriptivem Produktwert → C; HARM → D. */
+    assessment: (() => { const c = classify(dW, dD).overall;
+      const ew = W && W.tables.elliott ? W.tables.elliott.speakShareOfPoints : null;
+      return { technicalIntelligence: c === "MEANINGFUL_EDGE" ? "A_ROBUST_PREDICTIVE_VALUE" : c === "HARM_SIGNAL" ? "D_NO_MATERIAL_VALUE" : "C_DESCRIPTIVE_DECISION_SUPPORT_VALUE",
+               elliott: isNum(ew) && ew < 0.01 ? "EXPERIMENTAL_ONLY_STRUCTURAL_LANGUAGE" : "SEE_REPORT", elliottSpeakShareWeekly: ew,
+               methodRoles: { TREND: "FORECAST_CONTRIBUTOR_DIRECTION_ONLY", STRUCTURE: "STRUCTURAL_DESCRIPTION", MOMENTUM: "NO_MEASURABLE_VALUE", VOLATILITY: "FILTER_CONTEXT", VOLUME: "NO_MEASURABLE_VALUE",
+                 SUPPORT_RESISTANCE: "STRUCTURAL_DESCRIPTION", AVWAP: "STRUCTURAL_DESCRIPTION", FIBONACCI: "REMOVE_FROM_FORECAST_WEIGHTING", PATTERNS: "STRUCTURAL_DESCRIPTION", ELLIOTT: "EXPERIMENTAL",
+                 WYCKOFF: "NO_MEASURABLE_VALUE", CONFLUENCE: "FILTER_CONTEXT", FULL_TI: "DESCRIPTIVE_DECISION_SUPPORT" },
+               source: "TECHNICAL_METHOD_ATTRIBUTION.md, VU_HISTORICAL_ACCURACY_REPORT.md" }; })(),
+    /* Datenvertrag fuer ein kuenftiges Produkt-Panel „Historische Evidenz“ (§108). publishable nur bei MEANINGFUL_EDGE und Legal Review. */
+    productPanel: (() => { const c = classify(dW, dD).overall, x = (d) => d && { cases: d.n, period: d.kind === "WEEKLY" ? "2018–2026 (delistete Titel)" : "2017–2026", primaryScenarioSuccess: d.pss, matchedBaseline: d.control,
+        liftPp: r4(d.H.lift * 100), ci95Pp: d.H.ci95.map((v) => r4(v * 100)), coverage: d.kind === "WEEKLY" ? (W && W.tables.primary.coverageOfPoints) : (D && D.tables.primary.coverageOfPoints),
+        relabelRate: d.kind === "WEEKLY" ? (W && W.tables.secondary.relabelBeforeResolution.dpBased.rate) : (D && D.tables.secondary.relabelBeforeResolution.dpBased.rate) };
+      return { schema: ["cases", "period", "primaryScenarioSuccess", "matchedBaseline", "liftPp", "ci95Pp", "coverage", "relabelRate", "evidenceVersion"], evidenceVersion: "technical-intelligence-evidence-2.0.0",
+               publishable: false, publishableReason: c === "MEANINGFUL_EDGE" ? "LEGAL_REVIEW_REQUIRED" : "NO_ESTABLISHED_EDGE (" + c + ") — nur als Vergleichsdarstellung mit Pflichtsatz, nach Legal Review",
+               weekly: x(dW), daily: x(dD) }; })(),
     developmentAndValidation: Object.fromEntries(dev)
   };
   const f = arg("out"); mkdirSync(dirname(f), { recursive: true }); writeFileSync(f, JSON.stringify(out, null, 1));

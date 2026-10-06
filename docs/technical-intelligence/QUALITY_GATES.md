@@ -28,3 +28,14 @@
 * Elliott-Qualitäts-Gate: HOLDOUT-3 **FAIL** (Engine 3.2.0). 3.2.1/3.2.2 ohne Holdout-Urteil; kein HOLDOUT-4 (Begründung: MISSION4_FINAL_REPORT.md §4).
 * Generator-Audit 2: Der synthetische Korpus taugt nicht als Qualitäts-Gate, nur als Regressions-/Plausibilitätsprüfung. Ein künftiges Gate braucht einen unabhängigen Maßstab (Expertenannotation über die Werkbank).
 * Prognose-Gate: nicht bestanden (TEST-Lift −0,36 pp, Cluster-KI −1,81 … +1,09); kein Prognose-Backtest der Elliott-Schicht.
+
+## Mission VIII (Historical Structural Accuracy Benchmark)
+
+| Gate | Kriterium | Nachweis | Status |
+|---|---|---|---|
+| G21 Kausales Replay | Präfix-Identität aller Record-Felder, vergiftete Zukunft, Siegel vor Outcomes, Panel-Abgleich | HSAB-C1/C2/C3, S2, Review-Prüfung (1.294 Stichproben) | ✅ (Ausnahmen: Split-Rundung, Shard-Siegel) |
+| G22 Regression bekannter Produktfehler | über alle historischen Ausgaben (564.191 Records): keine Niveaus ≤ 0, keine Ziele > Faktor 3, CRV > 20 = 0, kein Szenario auf toter Reihe, keine Elliott-Formung bei Enthaltung, stabile Szenario-IDs | `local/w-surv-record-audit.json`; Quant-Suite 2.316/2.316 | ✅ (neu: 9,8 % Ziel 1 bei Anzeige erreicht) |
+| G23 Unabhängiger Code-Review | Befunde behoben oder offengelegt | `reviews/MISSION8_CODE_REVIEW.md` (4 HIGH, 10 MEDIUM) | ✅ |
+| G24 Methoden-Red-Team | Befunde vor dem Holdout umgesetzt | `reviews/MISSION8_METHODOLOGY_REDTEAM.md` | ✅ |
+| G25 Präregistrierung | eingefroren im Eltern-Commit, Hash im Protokoll, Engine-Freeze, einmalige Öffnung | `HISTORICAL_ACCURACY_PREREGISTRATION.md`, `HOLDOUT_OPENING_LOG.md`, CI-Guards | ✅ |
+| G26 Prognosevorteil (vorab registriert) | H1 + H2 + Relevanz + G1–G5 | `technical-intelligence-evidence-v2.json` | ❌ **DETECTABLE BUT NEGLIGIBLE** (G2/G4 verfehlt, Tag unter Relevanzschwelle) |

@@ -51,3 +51,15 @@ Bei #13 ist der Kalenderzeitraum aus der Wochenstudie bekannt. Das ist **kein ma
 | W_UNION | Überlebende ab 2018 + Delisted | beide | Survivorship-Sensitivität (Summen aus beiden Kohorten) | — | SENSITIVITY |
 
 Vor der Präregistrierung entstehen für W_HOLDOUT und D_HOLDOUT nur Stage-1-Siegel und Zähler (Anzahl Reihen, Analysezeitpunkte je Jahr). Ergebnisse gibt es dabei nicht.
+
+## 3. Stand nach Mission VIII (06.10.2026)
+
+| Phase | Status jetzt |
+|---|---|
+| W_DEV, W_VAL | CONSUMED |
+| D_DEV | CONSUMED |
+| W_HOLDOUT (delistete Listings ab 2015) | **CONSUMED TEST** (einmal geöffnet, Commit `b2c925807a1`) |
+| D_HOLDOUT (Tag, 1.200 Titel, 2017-01 – 2026-09) | **CONSUMED TEST** |
+| Tag, übrige ≈ 4.700 Stammaktien 2017–2026 | für TI-Tagesszenarien ungeöffnet. Kalender gesehen; als Holdout nur bedingt geeignet. |
+| Kursdaten nach 2026-09-30 | **AVAILABLE HOLDOUT** für eine prospektive Fortschreibung (frühestens 26 Wochen später auswertbar) |
+| Practitioner-Holdout (43), Experten-Holdout (30) | weiterhin **SEALED** |
