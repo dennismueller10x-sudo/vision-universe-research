@@ -25,7 +25,17 @@ def archive_urls(body,url):
     except ET.ParseError as exc:raise SourceError('MALFORMED_DISTRIBUTOR_ARCHIVE') from exc
     ns='{http://www.sitemaps.org/schemas/sitemap/0.9}'
     if root.tag!=ns+'urlset' or len(root)>50000:raise SourceError('INVALID_DISTRIBUTOR_ARCHIVE_SCHEMA')
-    return list(dict.fromkeys(u for row in root if (u:=canonical_url(row.findtext(ns+'loc'))) and domain(u)=='www.globenewswire.com' and '/news-release/' in u))
+    def release_url(value):
+        # Publisher month indexes also advertise root-relative release paths.
+        # Their article origin is the approved publisher, not the sitemap host.
+        # Only dated release routes qualify; arbitrary relative destinations
+        # and scheme-relative hosts never acquire publisher scope.
+        if isinstance(value, str) and re.match(r'^/news-release/\d{4}/\d{2}/\d{2}/\d+/', value):
+            if '..' in urlsplit(value).path.split('/'):
+                return None
+            value = 'https://www.globenewswire.com' + value
+        return canonical_url(value)
+    return list(dict.fromkeys(u for row in root if (u:=release_url(row.findtext(ns+'loc'))) and domain(u)=='www.globenewswire.com' and '/news-release/' in u))
 
 
 class Metadata(HTMLParser):
