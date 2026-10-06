@@ -59,7 +59,12 @@ const USABLE_FROM = methodology.coverageWindow.usableFrom + "-01-01";
 
 /* The two pre-registered families, in one list so a mask bit means the same
    thing everywhere. Price candidates keep their original order and indices. */
-const PRICE = priceMethodology.candidates;
+/* Only the price candidates this family was registered against
+   (pattern-research-1.0.0). The volume candidates of 1.1.0 need daily bars
+   this overlay does not read, and adding them here would change this
+   family's hypothesis count after it was measured - the same reason it has
+   its own file. */
+const PRICE = priceMethodology.candidates.filter((candidate) => !candidate.addedIn);
 const FUNDAMENTAL = methodology.candidates;
 const ALL_CANDIDATES = PRICE.concat(FUNDAMENTAL);
 const PRICE_COUNT = PRICE.length;
@@ -242,6 +247,7 @@ function main() {
     schemaVersion: Patterns.STUDY_SCHEMA,
     methodologyVersion: Patterns.METHODOLOGY_VERSION,
     familyVersion: methodology.methodologyVersion,
+    priceCandidates: { registeredIn: "pattern-research-1.0.0", count: PRICE.length },
     family: "PIT_FUNDAMENTAL_OVERLAY",
     generatedAt,
     backtest: "NOT_CERTIFIED",

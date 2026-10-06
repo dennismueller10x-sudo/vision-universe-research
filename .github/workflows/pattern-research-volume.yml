@@ -1,0 +1,131 @@
+name: Pattern Research - Volumenstudie (Gewinnerstudie mit Tagesvolumen)
+
+# Rechnet NUR die Gewinnerstudie (pattern-research-1.1.0) neu - mit den
+# vorregistrierten Volumenmerkmalen aus der kanonischen Tageshistorie -,
+# dazu die Fundamental-Ueberlagerung und VU Pattern Match, die dieselbe
+# Engine-Version tragen muessen. Kein Anbieter-Abruf; die Tagesbalken kommen
+# aus der privaten Ablage und bleiben im Runner.
+#
+# Warum ein eigener Workflow: die volle Produkt-Materialisierung braucht bis
+# zu fuenf Stunden, ist idempotent auf den Stichtag und schreibt dreissig
+# Artefakte. Fuer eine Methodikaenderung an EINER Studie auf einem
+# Arbeitszweig ist das der falsche Hebel. Auf main uebernimmt die
+# Materialisierung den Schritt mit derselben --work-dir (der geaenderte
+# Methodik-Fingerabdruck loest sie dort aus).
+#
+# Ausloeser: manuell oder eine Marke in der Commit-Nachricht auf claude/**:
+#   [pattern-research-volume]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  # Je Zweig eine Gruppe; Pushes ohne Marke (Job uebersprungen) bekommen
+  # eine eigene, damit sie keinen wartenden Lauf verdraengen.
+  group: pattern-research-volume-${{ github.ref_name }}-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[pattern-research-volume]')) && github.run_id || 'run' }}
+  cancel-in-progress: false
+
+jobs:
+  study:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[pattern-research-volume]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026).
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Existing R2 credentials are available
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then echo "::error::$v fehlt"; exit 1; fi
+          done
+
+      - name: Measured read-only recovery preflight
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/preflight-zero-cost.mjs --operation RECOVERY --gate FULL_UNIVERSE
+          --out "$RUNNER_TEMP/pattern-volume-preflight.json"
+
+      - name: Restore existing canonical history to runner-private state
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --pull --gate FULL_UNIVERSE --concurrency 24
+          --preflight "$RUNNER_TEMP/pattern-volume-preflight.json"
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --report "$RUNNER_TEMP/pattern-volume-sync.json"
+
+      - name: Pattern Research study with volume features (pattern-research-1.1.0)
+        run: >-
+          node --max-old-space-size=6144 scripts/quant/build-pattern-research.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
+
+      - name: Pattern Research fundamental overlay (same engine version)
+        run: node --max-old-space-size=6144 scripts/quant/build-pattern-research-fundamentals.mjs
+
+      - name: VU Pattern Match (reads the studies just written)
+        run: node --max-old-space-size=6144 scripts/quant/build-pattern-match.mjs
+
+      - name: Contract and regression tests
+        run: node --test quant/tests/pattern-research.test.mjs quant/tests/pattern-research-volume.test.mjs quant/tests/pattern-unavailability.test.mjs
+
+      - name: Public data hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Volume findings (aggregates only)
+        run: |
+          node -e '
+            const s = require("./quant/data/product/pattern-research-v1/study.json");
+            const m = require("./quant/methodology/pattern-research-v1.json");
+            const vol = new Set(m.candidates.filter((c) => c.addedIn).map((c) => c.id));
+            console.log({ methodology: s.methodologyVersion, hypotheses: s.primary.hypotheses, baseRate: s.primary.baseRate, volumeCoverage: s.population.volumeCoverage });
+            console.log("1.0.0 allein:", JSON.stringify(s.primary.correctionV100Only));
+            for (const f of s.findings.filter((f) => f.patternId.split("+").some((id) => vol.has(id)))) {
+              console.log([f.verdict, "lift=" + f.lift, "oos=" + (f.outOfSample && f.outOfSample.lift), "n=" + f.support, "w=" + f.winners, "loss=" + f.lossLift, "p=" + f.pValue, f.patternId].join("  "));
+            }'
+
+      - name: Commit the study to the current branch
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1
+          if git diff --cached --quiet; then echo "Studie unveraendert."; exit 0; fi
+          git commit -m "Gewinnerstudie pattern-research-1.1.0 mit Volumenmerkmalen neu gerechnet (Lauf ${GITHUB_RUN_ID})"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+      - name: Retain metadata evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pattern-research-volume-evidence
+          path: |
+            ${{ runner.temp }}/pattern-volume-preflight.json
+            ${{ runner.temp }}/pattern-volume-sync.json
+            quant/data/product/pattern-research-v1/study.json
+          if-no-files-found: warn
+          retention-days: 30

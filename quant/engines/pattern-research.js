@@ -35,11 +35,20 @@
 
   var isNode = typeof module !== "undefined" && module.exports;
 
-  var METHODOLOGY_VERSION = "pattern-research-1.0.0";
+  /* 1.1.0 (06.10.2026): drei vorregistrierte Volumenmerkmale aus Tageskursen
+     (udv50, acc63, dryUp10over50). Die zehn Kursmerkmale und ihre fuenfzehn
+     Kandidaten sind unveraendert; siehe changelog in der Methodikdatei. */
+  var METHODOLOGY_VERSION = "pattern-research-1.1.0";
   var STUDY_SCHEMA = "pattern-research-study-1.0.0";
   var COHORTS = ["WINNER", "NON_WINNER", "OUTCOME_UNAVAILABLE"];
   var FEATURE_IDS = ["return12m1m", "return6m", "return3m", "distanceTo52wHigh", "drawdownFromPeak",
-                     "volatility52w", "aboveSma40w", "sma10wAboveSma40w", "rangeCompression52w", "priceToAllTimeHigh"];
+                     "volatility52w", "aboveSma40w", "sma10wAboveSma40w", "rangeCompression52w", "priceToAllTimeHigh",
+                     "udv50", "acc63", "dryUp10over50"];
+  var VOLUME_FEATURE_IDS = ["udv50", "acc63", "dryUp10over50"];
+  /* Liegt der letzte Tagesbalken <= t mehr als so viele Kalendertage vor t,
+     ist das Volumenbild an t nicht das von t. Dann kein Wert statt eines
+     veralteten. */
+  var VOLUME_MAX_STALE_DAYS = 10;
 
   function finite(value) { return typeof value === "number" && Number.isFinite(value); }
   function mean(values) { return values.length ? values.reduce(function (a, b) { return a + b; }, 0) / values.length : null; }
@@ -70,6 +79,135 @@
     return out;
   }
 
+
+  /* ---------------------------------------------------------------------
+     Volume features at t, from DAILY bars (pattern-research-1.1.0).
+
+     The weekly series carries closes only. Volume therefore comes from the
+     canonical daily bars (runner-private, never published) and is sampled
+     at the weekly observation date: the last daily bar with date <= t.
+
+     `daily` holds RAW arrays as the provider delivers them: close, high,
+     low, volume, splitFactor (1 on ordinary days, the ratio on an ex-date).
+     Raw is deliberate - dollar volume (close x volume) is split-invariant by
+     construction, and the two places that need split consistency do it
+     here, explicitly, with split factors known at t:
+       - up/down day:  close_k * C_k  vs  close_{k-1} * C_{k-1}
+       - share volume: volume_k / C_k
+     where C_k is the running product of split factors up to k.
+
+     Every bar is read through `read`, which throws on any index beyond the
+     anchor. The highest index actually read is returned so the caller can
+     assert it against t instead of trusting the window arithmetic.
+     --------------------------------------------------------------------- */
+  function cumulativeSplitFactors(daily) {
+    var n = daily.close.length;
+    var out = new Float64Array(n);
+    var c = 1;
+    for (var i = 0; i < n; i++) {
+      var f = daily.splitFactor ? daily.splitFactor[i] : 1;
+      if (finite(f) && f > 0) c *= f;
+      out[i] = c;
+    }
+    return out;
+  }
+
+  function emptyVolumeFeatures() { return { udv50: null, acc63: null, dryUp10over50: null }; }
+
+  function volumeFeaturesAt(daily, anchor, cumSplit) {
+    var maxRead = -1;
+    function read(k) {
+      if (k > anchor) throw new Error("pattern-research: volume feature read a bar after t");
+      if (k > maxRead) maxRead = k;
+      var close = daily.close[k], volume = daily.volume[k];
+      return {
+        close: close, high: daily.high[k], low: daily.low[k], volume: volume,
+        c: cumSplit[k],
+        valid: finite(close) && close > 0 && finite(volume) && volume >= 0
+      };
+    }
+    var out = emptyVolumeFeatures();
+    if (!(anchor >= 0) || anchor >= daily.close.length) return { features: out, maxRead: maxRead };
+
+    /* udv50: up-day dollar volume / down-day dollar volume, last 50 days. */
+    if (anchor - 50 >= 0) {
+      var up = 0, down = 0, valid50 = 0;
+      for (var k = anchor - 49; k <= anchor; k++) {
+        var bar = read(k), prev = read(k - 1);
+        if (!bar.valid || !prev.valid) continue;
+        valid50 += 1;
+        var dv = bar.close * bar.volume;
+        var now = bar.close * bar.c, before = prev.close * prev.c;
+        if (now > before) up += dv; else if (now < before) down += dv;
+      }
+      if (valid50 >= 45 && down > 0) out.udv50 = up / down;
+    }
+
+    /* acc63: Chaikin-style accumulation, sum(CLV x DV) / sum(DV), 63 days.
+       A bar with high == low has no range to place the close in; CLV is 0
+       there, the usual convention, rather than a division by zero. */
+    if (anchor - 62 >= 0) {
+      var num = 0, den = 0, valid63 = 0;
+      for (var j = anchor - 62; j <= anchor; j++) {
+        var b = read(j);
+        if (!b.valid || !finite(b.high) || !finite(b.low) || b.high < b.low) continue;
+        valid63 += 1;
+        var dvj = b.close * b.volume;
+        var range = b.high - b.low;
+        var clv = range > 0 ? ((b.close - b.low) - (b.high - b.close)) / range : 0;
+        if (clv > 1) clv = 1; else if (clv < -1) clv = -1;
+        num += clv * dvj; den += dvj;
+      }
+      if (valid63 >= 57 && den > 0) out.acc63 = num / den;
+    }
+
+    /* dryUp10over50: mean split-consistent share volume, 10 days over 50. */
+    if (anchor - 49 >= 0) {
+      var s10 = 0, n10 = 0, s50 = 0, n50 = 0;
+      for (var m = anchor - 49; m <= anchor; m++) {
+        var d = read(m);
+        if (!d.valid || !(d.c > 0)) continue;
+        var shares = d.volume / d.c;
+        s50 += shares; n50 += 1;
+        if (m > anchor - 10) { s10 += shares; n10 += 1; }
+      }
+      if (n10 >= 9 && n50 >= 45 && s50 > 0) out.dryUp10over50 = (s10 / n10) / (s50 / n50);
+    }
+    return { features: out, maxRead: maxRead };
+  }
+
+  /* Last daily index with date <= day (ISO strings compare as dates). */
+  function dailyIndexAtOrBefore(dates, day) {
+    var lo = 0, hi = dates.length - 1, found = -1;
+    while (lo <= hi) {
+      var mid = (lo + hi) >> 1;
+      if (dates[mid] <= day) { found = mid; lo = mid + 1; } else hi = mid - 1;
+    }
+    return found;
+  }
+
+  function daysBetween(a, b) { return Math.round((Date.parse(b) - Date.parse(a)) / 86400000); }
+
+  /* The volume features for the weekly observation at `day`. No daily bars,
+     no bar at or before t, or a stale last bar: all three null - measured as
+     unavailable, never filled. */
+  function volumeFeaturesForDate(daily, day) {
+    if (!daily || !daily.dates || !daily.dates.length || typeof day !== "string") return emptyVolumeFeatures();
+    var anchor = dailyIndexAtOrBefore(daily.dates, day);
+    if (anchor < 0) return emptyVolumeFeatures();
+    if (daysBetween(daily.dates[anchor], day) > VOLUME_MAX_STALE_DAYS) return emptyVolumeFeatures();
+    if (!daily.cumSplit) daily.cumSplit = cumulativeSplitFactors(daily);
+    var result = volumeFeaturesAt(daily, anchor, daily.cumSplit);
+    /* The contract, checked: the latest bar any volume feature read lies at
+       or before t. A violation throws; it is not logged. */
+    if (result.maxRead >= 0 && !(daily.dates[result.maxRead] <= day)) {
+      throw new Error("pattern-research: volume feature window ends after t (" + daily.dates[result.maxRead] + " > " + day + ")");
+    }
+    return result.features;
+  }
+
+  /* `context.daily` + `context.dates` (the weekly dates) add the volume
+     features; without them those three are null, i.e. not measurable. */
   function featuresAt(closes, index, context) {
     if (!Array.isArray(closes) || index < 0 || index >= closes.length) return null;
     var price = closes[index];
@@ -118,6 +256,9 @@
 
     var twelve = at(52), one = at(4);
     var sma10 = sma(10), sma40 = sma(40);
+    var volume = context && context.daily && context.dates
+      ? volumeFeaturesForDate(context.daily, context.dates[index])
+      : emptyVolumeFeatures();
 
     return {
       /* 12 months excluding the last month, the standard way of asking
@@ -131,7 +272,10 @@
       aboveSma40w: sma40 === null ? null : price > sma40,
       sma10wAboveSma40w: sma10 === null || sma40 === null ? null : sma10 > sma40,
       rangeCompression52w: high52 && low52 && low52 > 0 ? (high52 - low52) / low52 : null,
-      priceToAllTimeHigh: peak ? price / peak : null
+      priceToAllTimeHigh: peak ? price / peak : null,
+      udv50: volume.udv50,
+      acc63: volume.acc63,
+      dryUp10over50: volume.dryUp10over50
     };
   }
 
@@ -164,8 +308,8 @@
   /* ---------------------------------------------------------------------
      One observation. This is where the leakage contract is enforced.
      --------------------------------------------------------------------- */
-  function observe(closes, index, horizonWeeks, winnerThreshold) {
-    var features = featuresAt(closes, index);
+  function observe(closes, index, horizonWeeks, winnerThreshold, context) {
+    var features = featuresAt(closes, index, context);
     if (!features) return null;
     var outcome = outcomeAfter(closes, index, horizonWeeks);
 
@@ -191,7 +335,33 @@
      Candidate predicates. A single is one feature comparison; an
      interaction is the conjunction of two singles. Nothing is searched.
      --------------------------------------------------------------------- */
+  /* A candidate may carry `also`: further comparisons that must hold with
+     it, pre-registered as ONE hypothesis (e.g. a volume dry-up only near
+     the yearly high). Unmeasurable if any part is. */
   function matchesCandidate(features, candidate) {
+    if (candidate.also && candidate.also.length) {
+      var head = matchesSingle(features, candidate);
+      if (head === null) return null;
+      var all = head;
+      for (var i = 0; i < candidate.also.length; i++) {
+        var part = matchesSingle(features, candidate.also[i]);
+        if (part === null) return null;
+        if (!part) all = false;
+      }
+      return all;
+    }
+    return matchesSingle(features, candidate);
+  }
+
+  /* Every feature a candidate reads - two candidates sharing one are a
+     range, not an interaction, and are not paired. */
+  function candidateFeatures(candidate) {
+    var out = [candidate.feature];
+    (candidate.also || []).forEach(function (part) { out.push(part.feature); });
+    return out;
+  }
+
+  function matchesSingle(features, candidate) {
     var value = features[candidate.feature];
     if (value === null || value === undefined) return null;
     if (candidate.operator === "eq") return value === candidate.value;
@@ -212,10 +382,18 @@
     return measurable ? true : null;
   }
 
+  function hasNumericThreshold(term) {
+    return typeof term.value === "number" || (term.also || []).some(hasNumericThreshold);
+  }
+
   function scaleCandidate(candidate, factor) {
-    if (typeof candidate.value !== "number") return candidate;
-    return { id: candidate.id, feature: candidate.feature, operator: candidate.operator,
-             value: candidate.value * factor, plain: candidate.plain };
+    var hasAlso = candidate.also && candidate.also.length;
+    if (typeof candidate.value !== "number" && !hasAlso) return candidate;
+    var scaled = { id: candidate.id, feature: candidate.feature, operator: candidate.operator,
+                   value: typeof candidate.value === "number" ? candidate.value * factor : candidate.value,
+                   plain: candidate.plain };
+    if (hasAlso) scaled.also = candidate.also.map(function (part) { return scaleCandidate(part, factor); });
+    return scaled;
   }
 
   /* ---------------------------------------------------------------------
@@ -456,7 +634,7 @@
   function parameterStability(observations, pattern, sweep, minimumSupport) {
     /* Nothing numeric to sweep means there was no test, which must not be
        recorded as a passed one. */
-    var hasThreshold = pattern.terms.some(function (term) { return typeof term.value === "number"; });
+    var hasThreshold = pattern.terms.some(hasNumericThreshold);
     if (!hasThreshold) return { state: "NOT_APPLICABLE_NO_THRESHOLD", points: [] };
     var lifts = [], points = [];
     for (var i = 0; i < sweep.length; i++) {
@@ -515,7 +693,15 @@
     STUDY_SCHEMA: STUDY_SCHEMA,
     COHORTS: COHORTS.slice(),
     FEATURE_IDS: FEATURE_IDS.slice(),
+    VOLUME_FEATURE_IDS: VOLUME_FEATURE_IDS.slice(),
+    VOLUME_MAX_STALE_DAYS: VOLUME_MAX_STALE_DAYS,
     featuresAt: featuresAt,
+    volumeFeaturesAt: volumeFeaturesAt,
+    volumeFeaturesForDate: volumeFeaturesForDate,
+    cumulativeSplitFactors: cumulativeSplitFactors,
+    dailyIndexAtOrBefore: dailyIndexAtOrBefore,
+    candidateFeatures: candidateFeatures,
+    hasNumericThreshold: hasNumericThreshold,
     runningMaxOf: runningMaxOf,
     candidateMasks: candidateMasks,
     evaluateMasked: evaluateMasked,
