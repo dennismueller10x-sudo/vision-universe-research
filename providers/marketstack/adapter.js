@@ -196,6 +196,27 @@ function createMarketstackProvider(options={}) {
       }
       return {...res,data:actions};
     },
+    // Dedicated endpoints are independent observations, not a MIC-complete
+    // action certificate: documented EU coverage and share basis are limited.
+    async getActionEvents(id,kind,opts={}) {
+      const mapping=resolveMapping(id,options);if(mapping.error)return unavailable(mapping.error);
+      if(!['splits','dividends'].includes(kind))return unavailable('invalidActionKind');
+      const endpoint='/'+kind;
+      const res=await client.paginate(endpoint,{symbols:mapping.symbol,date_from:opts.from,date_to:opts.to,sort:'ASC',limit:1000},{maxPages:opts.maxPages||2});
+      if(!res.ok)return result(res,null,endpoint,mapping);
+      const events=[],anomalies=[];
+      for(const row of res.data){
+        const problem=row.symbol!==mapping.symbol?'symbolMismatch':row.isin&&row.isin!==mapping.isin?'isinMismatch':
+          [row.exchange,row.exchange_code].filter(Boolean).some(m=>m!==mapping.mic)?'exchangeMismatch':
+          (row.currency||row.price_currency)&&normalizeCurrency(row.currency||row.price_currency)!==mapping.currency?'currencyMismatch':null;
+        const day=validDate(row.date),value=number(kind==='splits'?row.split_factor:row.dividend);
+        if(problem||!day||day<opts.from||day>opts.to||value===null||value<0||kind==='splits'&&value===0){anomalies.push({row,reason:problem||'invalidAction'});continue;}
+        events.push({...row,date:day,listingId:mapping.listingId,securityId:mapping.securityId,
+          identityState:row.exchange||row.exchange_code?'EXACT_SYMBOL_MIC':'EXACT_SYMBOL_MIC_NOT_REPORTED',
+          shareBasis:'UNVERIFIED',currency:row.currency||row.price_currency||null});
+      }
+      return result(res,{events,anomalies,verified:false,coverage:'EU_COVERAGE_UNCONFIRMED',kind},endpoint,mapping);
+    },
     healthCheck:()=>({provider:PROVIDER_ID,status:client.health().status==='notConfigured'?'not_configured':client.health().status==='degraded'?'degraded':client.health().authenticationState==='NOT_TESTED'?'not_tested':'ok',authenticationState:client.health().authenticationState,message:'Marketstack ingestion only; observed data coverage is listing-specific',checkedAt:new Date().toISOString()}),
     stats:()=>client.stats(),quota:()=>client.stats(),rawHealth:()=>client.health(),clearCache:()=>client.clearCache()};
   return api;

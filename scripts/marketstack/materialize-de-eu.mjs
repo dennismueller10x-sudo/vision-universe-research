@@ -4,7 +4,7 @@ import {resolve,dirname,join,sep} from 'node:path';
 import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
 import {assertPrivateOutput,rejectSymlinkAncestors} from './private-output.mjs';
-const require=createRequire(import.meta.url),Identity=require('../../core/identity.js'),Published=require('../../quant/engines/published-close.js');
+const require=createRequire(import.meta.url),Identity=require('../../core/identity.js'),Published=require('../../quant/engines/published-close.js'),Core=require('../../core/client.js');
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
 const day=v=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
 export function directory(rows,asOf,dataAsOf=asOf){
@@ -12,7 +12,7 @@ export function directory(rows,asOf,dataAsOf=asOf){
  const seen=new Set();const listings=rows.map(row=>{
   const listingId=Identity.listingIdFor(row),securityId=Identity.securityIdForISIN(row.isin);
   if(seen.has(listingId))throw Error('DUPLICATE_LISTING');seen.add(listingId);
-  if(row.assetType!=='EQUITY'||row.mappingStatus!=='VERIFIED'||!row.mappingSource||!Array.isArray(row.indexMemberships)||!row.indexMemberships.length||
+  if(row.assetType!=='EQUITY'||row.mappingStatus!=='VERIFIED'||!row.mappingSource||!Array.isArray(row.indexMemberships)||
      !/^[A-Z]{3}$/.test(row.tradingCurrency||'')||!['MAJOR','MINOR'].includes(row.quoteUnit)||!Identity.normalizeTicker(row.ticker))throw Error('UNVERIFIED_LOCAL_LISTING');
   if(row.listingCountry==='US')throw Error('US_OUT_OF_SCOPE');
   return {...row,listingId,securityId,indexMemberships:[...new Set(row.indexMemberships)].sort(),region:'EUROPE'};
@@ -35,7 +35,7 @@ export function closeSeries(row,history,{asOf,expectedSession=null}={}){
   asOf:last,expectedSession,retrievedAt:history.retrievedAt||null,freshness:history.cacheOnly===true?'STALE_CACHE':expectedSession?(last===expectedSession?'CURRENT':'STALE'):'UNKNOWN',
   changeVerified:history.changeVerified===true&&history.adjustmentStatus?.verified===true,quality:history.quality||{status:'PARTIAL',reason:'UNKNOWN_ADJUSTMENT_BASIS'},points};
 }
-export function materialize({rows,histories={},asOf,referenceAsOf=asOf,expectedSessions={},out,disabled=false}){
+export function materialize({rows,histories={},asOf,referenceAsOf=asOf,expectedSessions={},technicalFields={},out,disabled=false}){
  out=resolve(out);if(!disabled)assertPrivateOutput(out);else rejectSymlinkAncestors(out);
  const d=directory(disabled?[]:rows,referenceAsOf,asOf),series={};
  for(const r of d.listings)if(histories[r.listingId])series[r.listingId]=closeSeries(r,histories[r.listingId],{asOf,expectedSession:expectedSessions[r.mic]||null});
@@ -43,6 +43,9 @@ export function materialize({rows,histories={},asOf,referenceAsOf=asOf,expectedS
  const stage=mkdtempSync(join(dirname(target),'.de-eu-stage-'));
  const write=(p,v)=>{mkdirSync(dirname(p),{recursive:true});writeFileSync(p,JSON.stringify(v)+'\n');};
  write(join(stage,'listings.json'),d);for(const [id,s]of Object.entries(series))write(join(stage,'series',id+'.json'),s);
+ if(!disabled)write(join(stage,'screener.json'),{schemaVersion:'de-eu-screener-1.0.0',privateDevelopment:true,publicDisplay:false,
+  referenceAsOf:d.referenceAsOf,dataAsOf:d.dataAsOf,listings:d.listings.map(r=>({...r,
+   price:series[r.listingId]?Core.listingLatestPriceData(series[r.listingId],r.ticker):null,fields:technicalFields[r.listingId]||{}}))});
  const backup=target+'.previous';if(existsSync(backup))throw Error('PUBLISH_RECOVERY_REQUIRED');
  const prior=existsSync(target);if(prior)renameSync(target,backup);
  try{renameSync(stage,target);}catch(e){if(prior)renameSync(backup,target);throw e;}

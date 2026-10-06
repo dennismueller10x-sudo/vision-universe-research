@@ -53,6 +53,17 @@
   };
   PATHS.localListings = function () { return "/core/data/de-eu/listings.json"; };
   PATHS.localSeries = function (id) { return "/core/data/de-eu/series/" + id + ".json"; };
+  PATHS.localScreener = function () { return "/core/data/de-eu/screener.json"; };
+
+  // The registered producer and consumers share this one close projection.
+  function listingLatestPriceData(s, ticker) {
+    var p = s.points, last = p[p.length - 1], prev = p.length > 1 ? p[p.length - 2] : null;
+    return { listingId: s.listingId, securityId: s.securityId, ticker: ticker, mic: s.mic,
+      close: last[1], date: last[0], previousClose: prev ? prev[1] : null, previousDate: prev ? prev[0] : null,
+      changePercent: prev && s.changeVerified ? Math.round((last[1] / prev[1] - 1) * 1e6) / 1e4 : null,
+      basis: s.basis, currency: s.currency, quoteUnit: s.quoteUnit, kind: "EOD_CLOSE", dataKind: "EOD_CLOSE",
+      freshness: s.freshness, expectedSession: s.expectedSession, retrievedAt: s.retrievedAt };
+  }
 
   function available(source, asOf, data) { return { state: "AVAILABLE", reason: null, source: source, asOf: asOf || null, data: data }; }
   function unavailable(reason, source) { return { state: "UNAVAILABLE", reason: reason, source: source || null, asOf: null, data: null }; }
@@ -225,6 +236,9 @@
       var rows = d.listings.filter(function (r) {
         if (o.region && r.region !== o.region) return false;
         if (o.index && r.indexMemberships.indexOf(o.index) < 0) return false;
+        if (o.country && r.listingCountry !== o.country) return false;
+        if (o.exchange && r.mic !== o.exchange) return false;
+        if (o.currency && r.tradingCurrency !== o.currency) return false;
         return !q || [r.name, r.companyName, r.ticker, r.providerSymbol, r.isin, r.mic].concat(r.aliases || [])
           .some(function (s) { return String(s || "").toLocaleLowerCase("de").indexOf(q) >= 0; });
       });
@@ -264,12 +278,34 @@
     }
     async function getListingLatestPrice(id) {
       var s = await getListingPriceSeries(id); if (s.state !== "AVAILABLE") return s;
-      var p = s.data.points, last = p[p.length - 1], prev = p.length > 1 ? p[p.length - 2] : null;
-      return available(s.source, last[0], { listingId: id, securityId: s.data.securityId, ticker: s.data.ticker, mic: s.data.mic,
-        close: last[1], date: last[0], previousClose: prev ? prev[1] : null, previousDate: prev ? prev[0] : null,
-        changePercent: prev && s.data.changeVerified ? Math.round((last[1] / prev[1] - 1) * 1e6) / 1e4 : null,
-        basis: s.data.basis, currency: s.data.currency, quoteUnit: s.data.quoteUnit, kind: "EOD_CLOSE", dataKind: "EOD_CLOSE",
-        freshness: s.data.freshness, expectedSession: s.data.expectedSession, retrievedAt: s.data.retrievedAt });
+      return available(s.source, s.asOf, listingLatestPriceData(s.data, s.data.ticker));
+    }
+    async function getListingScreener(o) {
+      var selected = await getListings(o); if (selected.state !== "AVAILABLE") return selected;
+      var src = PATHS.localScreener(), loaded = await tryLoad(src), d = loaded.data;
+      if (!loaded.ok) return unavailable("LOCAL_SCREENER_NOT_MATERIALIZED", src);
+      if (!d || d.schemaVersion !== "de-eu-screener-1.0.0" || d.privateDevelopment !== true || d.publicDisplay !== false ||
+          d.referenceAsOf !== selected.data.referenceAsOf || d.dataAsOf !== selected.data.dataAsOf || !Array.isArray(d.listings))
+        return unavailable("LOCAL_SCREENER_CONTRACT_INVALID", src);
+      var all = await getListings(), byId = new Map(all.data.listings.map(function (r) { return [r.listingId, r]; })), seen = new Set();
+      for (var row of d.listings) {
+        var canonical = byId.get(row.listingId), price = row.price;
+        if (!canonical || seen.has(row.listingId) || row.securityId !== canonical.securityId || row.isin !== canonical.isin ||
+            row.mic !== canonical.mic || row.tradingCurrency !== canonical.tradingCurrency || !row.fields || typeof row.fields !== "object")
+          return unavailable("LOCAL_SCREENER_IDENTITY_INVALID", src);
+        seen.add(row.listingId);
+        if (price && (price.listingId !== row.listingId || price.securityId !== row.securityId || price.mic !== row.mic ||
+            price.currency !== row.tradingCurrency || price.quoteUnit !== canonical.quoteUnit || !validDay(price.date) ||
+            price.date > d.dataAsOf || !Number.isFinite(price.close) || price.close <= 0 || price.kind !== "EOD_CLOSE"))
+          return unavailable("LOCAL_SCREENER_PRICE_INVALID", src);
+        for (var field of Object.values(row.fields)) if (!field || (field.status === "READY" &&
+            (!Number.isFinite(field.value) || !Array.isArray(field.evidence) || !field.evidence.length || !validDay(field.asOf))))
+          return unavailable("LOCAL_SCREENER_FIELD_INVALID", src);
+      }
+      var wanted = new Set(selected.data.listings.map(function (r) { return r.listingId; }));
+      if (seen.size !== byId.size) return unavailable("LOCAL_SCREENER_SELECTION_INCOMPLETE", src);
+      return available(src, d.dataAsOf, { listings: d.listings.filter(function (r) { return wanted.has(r.listingId); }),
+        referenceAsOf: d.referenceAsOf, dataAsOf: d.dataAsOf, privateDevelopment: true });
     }
 
     return { CONTRACT_VERSION: CONTRACT_VERSION, universeId: universe, getSecurity: getSecurity, getPriceSeries: getPriceSeries,
@@ -277,8 +313,9 @@
       getQuantData: getQuantData, getIntraday: getIntraday, getNews: getNews, stockPage: stockPage,
       getListings: getListings, searchListings: function (q) { return getListings({ query: q }); }, getListing: getListing,
       getListingPriceSeries: getListingPriceSeries, getListingLatestPrice: getListingLatestPrice,
+      getListingScreener: getListingScreener,
       discoverIndex: function () { return tryLoad(PATHS.discoverIndex(universe)); } };
   }
 
-  return { CONTRACT_VERSION: CONTRACT_VERSION, PATHS: PATHS, create: create };
+  return { CONTRACT_VERSION: CONTRACT_VERSION, PATHS: PATHS, create: create, listingLatestPriceData: listingLatestPriceData };
 });

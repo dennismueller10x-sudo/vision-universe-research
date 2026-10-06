@@ -26,6 +26,7 @@ if(existsSync(localDirectoryFile)){
 }
 const localSeriesDir=join(root,'core','data','de-eu','series');
 if(existsSync(localSeriesDir)&&readdirSync(localSeriesDir).length)findings.push('core/data/de-eu/series: licensed local series in public tree');
+if(existsSync(join(root,'core','data','de-eu','screener.json')))findings.push('core/data/de-eu/screener.json: private consumer prices in public tree');
 
 function json(relativePath) {
   const file = join(root, relativePath);

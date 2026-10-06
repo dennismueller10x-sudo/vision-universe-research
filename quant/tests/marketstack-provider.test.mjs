@@ -10,6 +10,15 @@ const client=(extra={})=>createMarketstackClient({apiKey:'TESTKEY-MARKETSTACK-NE
 const mapping={isin:'DE0007164600',mic:'XETR',mappingVerified:true,currencyVerified:true,mappingSource:'independent listing fixture',currencySource:'independent currency fixture',symbol:'SAP.DE',exchange:'XETR',currency:'EUR',assetType:'equity',listingId:Identity.listingIdFor({isin:'DE0007164600',mic:'XETR'}),securityId:Identity.securityIdForISIN('DE0007164600')};
 const row={symbol:'SAP.DE',exchange:'XETR',price_currency:'EUR',asset_type:'Stock',date:'2026-09-30T00:00:00+0000',open:200,high:210,low:199,close:208,volume:1000,adj_open:100,adj_high:105,adj_low:99.5,adj_close:104,adj_volume:2000,split_factor:2,dividend:1};
 const provider=(fetchImpl,extra={})=>{const mappings=Object.fromEntries(Object.entries(extra.mappings||{sap:mapping}).map(([id,entry])=>{const mic=entry.exchange||entry.mic;return [id,{...entry,mic,listingId:entry.isin?Identity.listingIdFor({isin:entry.isin,mic}):entry.listingId,securityId:entry.isin?Identity.securityIdForISIN(entry.isin):entry.securityId}];}));return createMarketstackProvider({client:client({fetchImpl}),...extra,mappings});};
+test('dedicated action endpoints preserve symbol evidence without inventing MIC or share basis',async()=>{
+ const p=provider(async url=>response({data:[{symbol:'SAP.DE',date:'2026-09-30',split_factor:2}]}));
+ const r=await p.getActionEvents('sap','splits',{from:'2026-09-01',to:'2026-10-06'});
+ assert.equal(r.available,true);assert.equal(r.data.verified,false);assert.equal(r.data.events[0].identityState,'EXACT_SYMBOL_MIC_NOT_REPORTED');
+ assert.equal(r.data.events[0].shareBasis,'UNVERIFIED');assert.equal(r.provenance.endpoint,'/splits');
+ const bad=provider(async()=>response({data:[{symbol:'SAP',exchange:'XNYS',date:'2026-09-30',dividend:1}]}));
+ const b=await bad.getActionEvents('sap','dividends',{from:'2026-09-01',to:'2026-10-06'});
+ assert.equal(b.data.events.length,0);assert.equal(b.data.anomalies[0].reason,'symbolMismatch');
+});
 test('cost accounting reserves ETF multiplier and symbols on every page',()=>{
  assert.equal(estimateCredits('/etflist'),20);assert.equal(estimateCredits('/etfholdings'),20);assert.equal(estimateCredits('/eod',{symbols:'AAPL,MSFT,AAPL'}),2);
 });

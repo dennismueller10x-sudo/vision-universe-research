@@ -26,13 +26,14 @@ export function mergeBars(previous,incoming){
   map.set(b.date,b);
  }return {bars:[...map.values()].sort((a,b)=>a.date.localeCompare(b.date)),restatements};
 }
-export async function ingest({listingMap,accountEvidence,privateDir,previewOut,asOf,runId,providerFactory,now=Date.now,phase='sample',sampleProof=null}={}){
+export async function ingest({listingMap,accountEvidence,privateDir,previewOut,asOf,runId,providerFactory,now=Date.now,phase='sample',sampleProof=null,historyYears=5}={}){
  if(!date(asOf)||!runId)throw Error('FIXED_AS_OF_AND_RUN_ID_REQUIRED');assertPrivateOutput(privateDir,{allowCache:true});assertPrivateOutput(previewOut);
  if(listingMap?.schemaVersion!=='de-eu-listing-map-1.0.0'||!date(listingMap.asOf)||listingMap.asOf>asOf||(phase!=='refresh'&&listingMap.asOf!==asOf))throw Error('FROZEN_REFERENCE_REQUIRED');
+ if(![2,5].includes(historyYears))throw Error('BOUNDED_HISTORY_WINDOW_REQUIRED');
  const budget=createSharedBudget({file:join(privateDir,'shared-budget.json'),runId,evidence:accountEvidence,now});
  // Account evidence is validated before any client, URL, or request exists.
  const opening=await budget.status();const rows=listingMap.listings.filter(r=>r.mappingStatus==='VERIFIED'&&r.quoteUnit==='MAJOR');
- const candidates=rows.filter(r=>r.providerSymbol);const requiredBaseCredits=candidates.length*(phase==='refresh'?2:4);
+ const candidates=rows.filter(r=>r.providerSymbol);const requiredBaseCredits=candidates.length*(phase==='refresh'?2:6);
  if(opening.creditsRemaining<requiredBaseCredits)throw Error('ACCOUNT_BUDGET_INSUFFICIENT_FOR_MANDATORY_BASE');
  const write=(p,v)=>{rejectSymlinkAncestors(p);mkdirSync(resolve(p,'..'),{recursive:true,mode:0o700});writeFileSync(p,JSON.stringify(v)+'\n',{mode:0o600});};
  const read=p=>{rejectSymlinkAncestors(p);return existsSync(p)?JSON.parse(readFileSync(p,'utf8')):null;};
@@ -64,9 +65,11 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
   mappingVerified:true,currencyVerified:true,mappingSource:r.mappingSource,currencySource:r.mappingSource}]));
  const provider=providerFactory?providerFactory({client,mappings,budget,onResponse}):Adapter.createMarketstackProvider({client,mappings});
  const ordered=phase==='sample'?sample:phase==='mandatory'?candidates.filter(r=>!sampleIds.has(r.listingId)):candidates;
- const histories={},decisions=phase==='mandatory'?(previousCheckpoint?.decisions?.filter(d=>d.phase==='SAMPLE')||[]):[],venueFailures=new Map(quarantinedMICs.map(m=>[m,3]));let sampleSuccesses=phase==='sample'?0:sampleProof.successfulListingIds.length;
+ const histories={},decisions=phase==='mandatory'?(previousCheckpoint?.decisions?.filter(d=>d.phase==='SAMPLE')||[]):[],venueFailures=new Map(quarantinedMICs.map(m=>[m,3])),actionEndpointBlocks=new Set();let sampleSuccesses=phase==='sample'?0:sampleProof.successfulListingIds.length;
  for(const r of rows){const h=read(join(privateDir,'normalized',r.listingId+'.json'));if(h&&h.isin===r.isin&&h.mic===r.mic&&h.currency===r.tradingCurrency)histories[r.listingId]=h;}
  for(const r of ordered){
+  const remaining=await budget.status();console.log(JSON.stringify({stage:'BEFORE_SELECTED_LISTING',phase,
+   estimatedBatchCredits:phase==='refresh'?1:6,consumedCredits:remaining.estimatedCreditsConsumed,remainingRunCredits:remaining.creditsRemaining}));
   const samplePhase=sampleIds.has(r.listingId),block=(cause,nextStep)=>decisions.push({listingId:r.listingId,isin:r.isin,mic:r.mic,status:'BLOCKED',cause,nextStep,phase:phase==='refresh'?'REFRESH':samplePhase?'SAMPLE':'MANDATORY'});
   if(!samplePhase&&sampleSuccesses===0){block('PROVIDER_DATA_DEFECT','Resolve the representative end-to-end sample before broad import.');continue;}
   if((venueFailures.get(r.mic)||0)>=3){block('UNSUPPORTED_LISTING','Review three representative failures for this MIC; other venues continue.');continue;}
@@ -76,20 +79,28 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
   if(!metadataState||now()-Date.parse(metadataState.checkedAt)>30*86400000){
    const metadata=await provider.getMetadata(r.listingId);
    const independentIdentity=String(r.providerIdentityBasis||'').startsWith('HISTORICAL_EXACT_ISIN_MIC')&&r.mappingSource?.length>0;
-   if(!metadata.available||metadata.data?.isin&&metadata.data.isin!==r.isin||!metadata.data?.isin&&!independentIdentity){block(metadata.available?'MAPPING_ERROR':reason(metadata.reason),'Verify exact provider identity or independent exact ISIN/MIC evidence; missing optional response ISIN is not invented.');venueFailures.set(r.mic,(venueFailures.get(r.mic)||0)+1);continue;}
+   if(!metadata.available||metadata.data?.isin&&metadata.data.isin!==r.isin||!metadata.data?.isin&&!independentIdentity){block(metadata.available?'MAPPING_ERROR':reason(metadata.reason),'Verify exact provider identity or independent exact ISIN/MIC evidence; missing optional response ISIN is not invented.');if(['authError','quotaExceeded'].includes(metadata.reason))break;venueFailures.set(r.mic,(venueFailures.get(r.mic)||0)+1);continue;}
    write(join(privateDir,'metadata',r.listingId+'.json'),{isin:r.isin,mic:r.mic,checkedAt:new Date(now()).toISOString(),data:metadata.data,sourceEvidence:responseRefs.slice()});
   }
   const quote=phase==='refresh'?null:await provider.getQuote(r.listingId,{frequency:'EOD'});
-  if(quote&&!quote.available){block(reason(quote.reason),'Review latest-EOD identity and entitlement for this listing.');venueFailures.set(r.mic,(venueFailures.get(r.mic)||0)+1);continue;}
+  if(quote&&!quote.available){block(reason(quote.reason),'Review latest-EOD identity and entitlement for this listing.');if(['authError','quotaExceeded'].includes(quote.reason))break;venueFailures.set(r.mic,(venueFailures.get(r.mic)||0)+1);continue;}
   const lastDate=quote?String(quote.data.timestamp).slice(0,10):null;if(quote&&(!date(lastDate)||lastDate>asOf)){block('PROVIDER_DATA_DEFECT','Correct future or invalid provider market date.');continue;}
   // Limited calendar-day overlap is retrieval only, never a session-completeness claim.
-  const from=prior?.bars?.length?new Date(Date.parse(prior.bars.at(-1).date)-10*86400000).toISOString().slice(0,10):new Date(Date.parse(asOf)-2*366*86400000).toISOString().slice(0,10);
+  const from=prior?.bars?.length?new Date(Date.parse(prior.bars.at(-1).date)-10*86400000).toISOString().slice(0,10):new Date(Date.parse(asOf)-historyYears*366*86400000).toISOString().slice(0,10);
   const history=await provider.getHistoricalBars(r.listingId,{from,to:asOf,maxPages:2});
-  if(!history.available){block(reason(history.reason),'Review the bounded history response; preserve prior history.');continue;}
+  if(!history.available){block(reason(history.reason),'Review the bounded history response; preserve prior history.');if(['authError','quotaExceeded'].includes(history.reason))break;continue;}
   if(history.data.bars.some(b=>b.date<from||b.date>asOf)){block('PROVIDER_DATA_DEFECT','Provider returned bars outside the requested window.');continue;}
   const merged=mergeBars(prior?.bars,history.data.bars);const last=merged.bars.at(-1);
   if(!last||quote&&(last.date!==lastDate||last.close!==quote.data.last)){block('PROVIDER_DATA_DEFECT','Reconcile latest endpoint with canonical EOD history; no second product quote source.');continue;}
-  const h={provider:'marketstack',source:'marketstack',apiVersion:'v2',isin:r.isin,mic:r.mic,currency:r.tradingCurrency,quoteUnit:r.quoteUnit,
+  const actions={...prior?.corporateActions};let terminalActionFailure=false;
+  if(phase!=='refresh'&&typeof provider.getActionEvents==='function')for(const kind of ['splits','dividends']){
+   if(actionEndpointBlocks.has(kind)){actions[kind]={available:false,reason:'entitlementRestricted',priorRepresentativeFailure:true};continue;}
+   const action=await provider.getActionEvents(r.listingId,kind,{from,to:asOf,maxPages:2});actions[kind]=action;
+   write(join(privateDir,'actions',r.listingId+'-'+kind+'.json'),action);
+   if(action.reason==='entitlementRestricted')actionEndpointBlocks.add(kind);
+   if(['authError','quotaExceeded'].includes(action.reason)){terminalActionFailure=true;break;}
+  }
+  const h={provider:'marketstack',source:'marketstack',apiVersion:'v2',isin:r.isin,mic:r.mic,currency:r.tradingCurrency,quoteUnit:r.quoteUnit,corporateActions:actions,
    retrievedAt:quote?.data.retrieved_at||history.provenance?.retrieved_at||history.provenance?.ingestedAt||new Date(now()).toISOString(),sourceEvidence:[...new Set([...(prior?.sourceEvidence||[]),...responseRefs])],bars:merged.bars,restatements:merged.restatements,
    quarantined:history.data.anomalies,adjustmentStatus:{verified:false,priceSeriesType:'UNKNOWN',evidence:[]},
    quality:{status:'PARTIAL',quarantinedCandles:history.data.anomalies.length,completenessVerified:false,priceBasis:'PROVIDER_REPORTED_UNVERIFIED'}};
@@ -99,6 +110,7 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
   if(samplePhase)sampleSuccesses++;
   // Crash checkpoint contains private state, never an exported public artifact.
   write(join(privateDir,'checkpoint.json'),{asOf,referenceHash:sha(JSON.stringify(listingMap)),runId,decisions,validatedSampleProofHash:phase==='sample'?null:sha(JSON.stringify(sampleProof)),currentHistoryHashes:Object.fromEntries(Object.entries(histories).map(([id,h])=>[id,sha(JSON.stringify(h))])),budget:await budget.status()});
+  if(terminalActionFailure)break;
  }
  for(const r of rows.filter(r=>!r.providerSymbol))decisions.push({listingId:r.listingId,isin:r.isin,status:'BLOCKED',cause:'MAPPING_ERROR',nextStep:'Find an exact provider ISIN/MIC identity; do not guess the ticker suffix.'});
  const productRows=rows.map(r=>({...r,referencedIssuerId:r.companyId,companyId:null,companyAssociationStatus:'EXISTING_VU_COMPANY_ASSOCIATION_UNRESOLVED',logo:{status:'EXISTING_FALLBACK'}}));

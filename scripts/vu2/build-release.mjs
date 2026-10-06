@@ -26,7 +26,7 @@ export function projectQuarterly(source){
 }
 export const FACTOR_PROJECTION_BUDGET=4*1024*1024,FACTOR_SHARD_BUDGET=256*1024;
 export function permitted(path){
- if(/^reports\/marketstack\/de-eu\//.test(path)||path==='core/config/de-eu-reference-sources.json'||/^core\/data\/de-eu\/series\//.test(path))return false;
+ if(/^reports\/marketstack\/de-eu\//.test(path)||path==='core/config/de-eu-reference-sources.json'||path==='core/data/de-eu/screener.json'||/^core\/data\/de-eu\/series\//.test(path))return false;
  if(path.split('/').some(p=>p.startsWith('.'))&&path!=='.nojekyll')return false;
  if(/^(scripts|docs|providers)\//.test(path)||/\/(tests|fixtures)\//.test(path)||/\.test\.(m?js|py)$/.test(path))return false;
  if(/^quant\/data\/(sec|fundamentals)\//.test(path))return false;
