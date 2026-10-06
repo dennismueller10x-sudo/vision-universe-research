@@ -213,4 +213,22 @@
     var resume = function () { clearTimeout(resumeT); resumeT = setTimeout(start, 4000); };
     if (IO) new IntersectionObserver(function (e) { deckVisible = e[0].isIntersecting; deckVisible ? (setTimeout(function () { if (deckVisible) fly(1); }, 400), start()) : pause(); }, { threshold: 0.4 }).observe(deck);
   }
+  // ---------- 6. Imagefilm: laedt erst beim Klick ----------
+  var film = document.getElementById('film');
+  if (film) {
+    var frame = film.querySelector('.film-frame');
+    var play = function () {
+      if (frame.querySelector('video')) { frame.querySelector('video').play(); return; }
+      var portrait = window.matchMedia('(max-width:760px)').matches, fmt = portrait ? '9x16' : '16x9';
+      var v = document.createElement('video');
+      v.src = '/assets/home/clip/vu-imageclip-' + fmt + '.mp4';
+      v.poster = '/assets/home/clip/vu-imageclip-' + fmt + '.jpg';
+      v.controls = true; v.playsInline = true; v.autoplay = true; v.preload = 'auto';
+      v.setAttribute('playsinline', ''); v.className = 'film-video' + (portrait ? ' portrait' : '');
+      frame.classList.add('playing'); frame.replaceChildren(v);
+      var p = v.play(); if (p && p.catch) p.catch(function () { /* Autoplay blockiert: Steuerung sichtbar */ });
+      v.focus();
+    };
+    [].forEach.call(film.querySelectorAll('[data-film-play]'), function (b) { b.addEventListener('click', play); });
+  }
 })();
