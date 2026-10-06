@@ -69,6 +69,12 @@ def parse_date(value):
         return None
 
 
+def is_sec_filing_feed(url):
+    from urllib.parse import urlsplit, unquote
+    return bool(re.search(r'/rss/sec[-_]?filings?\.(?:aspx|xml|rss)$',
+                          unquote(urlsplit(url).path), re.I))
+
+
 def parse_feed(body, url):
     if len(body) > 2 * 1024 * 1024 or re.search(br'<!\s*(DOCTYPE|ENTITY)\b', body, re.I):
         raise SourceError('UNSAFE_OR_OVERSIZED_XML')
@@ -261,7 +267,7 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
         if redirect_proof:
             configs[-1]['redirectEvidence'] = redirect_proof.get('redirectEvidence') or {'fromUrl':page,'finalUrl':response['finalUrl'], 'redirects':response['redirects'], 'method':'INDEPENDENT_DESTINATION_LEGAL_OWNER_VERIFICATION'}
             configs[-1]['ownershipEvidence'] = redirect_proof['ownershipEvidence']
-        feed_links = [l for l in links if not re.search(r'/comments/feed(?:/|$)|[?&]feed=comments',l['url'],re.I) and (any(m in l['type'] for m in ('rss', 'atom', 'feed+json')) or re.search(r'rss(?:handler|\.aspx|/)|\b(rss|atom)\b|\.rss(?:\?|$)', l['url'] + ' ' + l['text'], re.I))]
+        feed_links = [l for l in links if not is_sec_filing_feed(l['url']) and not re.search(r'/comments/feed(?:/|$)|[?&]feed=comments',l['url'],re.I) and (any(m in l['type'] for m in ('rss', 'atom', 'feed+json')) or re.search(r'rss(?:handler|\.aspx|/)|\b(rss|atom)\b|\.rss(?:\?|$)', l['url'] + ' ' + l['text'], re.I))]
         extra = None
         # Follow one linked newsroom/event page if no structured feed is advertised.
         if not feed_links and len(trusted_pages) < max_pages + 1:
@@ -274,7 +280,7 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
                     except SourceError as error:raise SourceError('IR_REDIRECT_REQUIRES_REVALIDATION:'+str(error)) from error
                 trusted_pages.add(extra['finalUrl'] if extra else candidate['url'])
                 more = parse_links(extra['body'], extra['finalUrl']) if extra else []
-                feed_links += [l for l in more if 'rss' in l['type'] or 'atom' in l['type'] or re.search(r'rss(?:handler|\.aspx|/)|\brss\b', l['url'] + ' ' + l['text'], re.I)]
+                feed_links += [l for l in more if not is_sec_filing_feed(l['url']) and ('rss' in l['type'] or 'atom' in l['type'] or re.search(r'rss(?:handler|\.aspx|/)|\brss\b', l['url'] + ' ' + l['text'], re.I))]
         from .structured_sources import news_index, gcs_events
         from .stockpr_events import parse as stockpr_events
         structured_source = {'companyId': company['companyId'], 'verified': True, 'allowedSites': [official_site,page,response['finalUrl']], 'provider': provider, 'url': response['finalUrl']}
@@ -369,7 +375,7 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
                 feed = http.get(link['url'], ttl=86400)
                 # Many hosted platforms advertise an RSS landing page, then link the actual XML feeds.
                 if 'text/html' in feed.get('contentType', '') or feed['body'].lstrip().lower().startswith(b'<!doctype html'):
-                    advertised = [l for l in parse_links(feed['body'], feed['finalUrl']) if not re.search(r'sec[-_/ ]?filings', l['url'], re.I) and re.search(r'rss/|\.xml(?:\?|$)|application/(?:rss|atom)', l['url'] + ' ' + l['type'], re.I)]
+                    advertised = [l for l in parse_links(feed['body'], feed['finalUrl']) if not is_sec_filing_feed(l['url']) and not re.search(r'sec[-_/ ]?filings', l['url'], re.I) and re.search(r'rss/|\.xml(?:\?|$)|application/(?:rss|atom)', l['url'] + ' ' + l['type'], re.I)]
                     for actual in advertised[:3]:
                         actual_response = http.get(actual['url'], ttl=86400)
                         actual_entries = parse_feed(actual_response['body'], actual_response['finalUrl'])

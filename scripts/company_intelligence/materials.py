@@ -12,12 +12,29 @@ def presentation_news_link(url, label):
     if re.search(r'\.pdf(?:$|[?#])|/static-files/', url, re.I):
         return False
     return bool(re.search(r'/(?:news(?:room)?|press)/|/(?:news|press)[-_](?:releases?|details?|articles?|items?)(?:/|[-_])', path, re.I)
-                or re.search(r'\b(?:announces?|reports?)\b', label, re.I))
+                or re.search(r'\b(?:announces?|reports?)\b|\baccepted for presentation\b', label, re.I))
+
+
+def mislabeled_report_link(url, label):
+    """A generic download label cannot turn a named ESG/report PDF into slides."""
+    from urllib.parse import unquote, urlsplit
+    filename = re.sub(r'[-_+]', ' ', unquote(urlsplit(url).path.rsplit('/', 1)[-1]))
+    return bool(re.search(r'\b(?:ESG|sustainability) report\b', filename, re.I)
+                and not re.search(r'presentation|slides?|deck', filename, re.I))
 
 
 def correct_documents(documents):
-    return [doc for doc in documents if doc.get('type') != 'PRESENTATION'
-            or not presentation_news_link(doc.get('url', ''), doc.get('label', ''))]
+    return [doc for doc in documents
+            if not (doc.get('type') == 'SHAREHOLDER_LETTER'
+                    and shareholder_letter_hub(doc.get('url', ''), doc.get('label', '')))
+            and (doc.get('type') != 'PRESENTATION'
+                 or not (presentation_news_link(doc.get('url', ''), doc.get('label', ''))
+                         or mislabeled_report_link(doc.get('url', ''), doc.get('label', ''))))]
+
+
+def shareholder_letter_hub(url, label):
+    return bool(re.fullmatch(r'shareholder letters', label.strip(), re.I)
+                and not re.search(r'\.pdf(?:\?|$)|/static-files/', url, re.I))
 
 
 def retain_source_configurations(store, company_id, configurations):
@@ -169,9 +186,10 @@ def page_documents(company, links, page, now):
             kind = 'FINANCIAL_REPORT'
         if not kind:
             continue
-        if kind == 'PRESENTATION' and presentation_news_link(link['url'], label):
+        if kind == 'PRESENTATION' and (presentation_news_link(link['url'], label)
+                                     or mislabeled_report_link(link['url'], label)):
             continue
-        if re.fullmatch(r'presentations?|annual reports?(?: and prox(?:y|ies))?|quarterly reports?|financial reports?|transcripts?',label.strip(),re.I) and not re.search(r'\.pdf(?:\?|$)|/static-files/',link['url'],re.I):
+        if re.fullmatch(r'presentations?|annual reports?(?: and prox(?:y|ies))?|quarterly reports?|financial reports?|transcripts?|shareholder letters',label.strip(),re.I) and not re.search(r'\.pdf(?:\?|$)|/static-files/',link['url'],re.I):
             continue  # Navigation hubs are not individual document evidence.
         # HTML management materials must stay on the validated issuer host.
         # Explicit PDF/static-file attachments may be delegated to a CDN.

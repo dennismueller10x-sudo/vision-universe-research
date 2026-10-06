@@ -105,6 +105,9 @@ class Pipeline:
             accepted = 0
             rejected = 0
             accepted_dates = []
+            from .feeds import is_sec_filing_feed
+            if source['type'] in ('IR_FEED', 'RSS') and is_sec_filing_feed(source['url']):
+                raise SourceError('NON_NEWS_SEC_FILING_FEED')
             if source.get('format') == 'GNN_ARCHIVE':
                 from .distributor_archive import pinned_archive
                 if not pinned_archive(source['url']):raise SourceError('UNSAFE_DISTRIBUTOR_ARCHIVE')

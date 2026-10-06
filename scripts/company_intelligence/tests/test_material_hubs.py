@@ -63,6 +63,31 @@ class MaterialHubTests(unittest.TestCase):
   self.assertEqual([d['url'] for d in docs],[HUB.split('/investor')[0]+'/static-files/report',HUB.split('/investor')[0]+'/static-files/deck',HUB.split('/investor')[0]+'/static-files/letter'])
   self.assertTrue(all(d['date'] is None for d in docs))
 
+ def test_presentation_acceptance_story_is_not_a_deck_but_actual_pdf_remains(self):
+  c=company();src=from_validated_ir(c,config(),NOW)
+  body=b'<a href="accepted-for-presentation-at-iecon-2026/">Battery Design Accepted for Presentation at IECON 2026</a><a href="corporate.pdf">Q2 2026 Corporate Presentation</a>'
+  docs=parse_hub(body,src,c,HUB,NOW)
+  self.assertEqual([(d['type'],d['url']) for d in docs],[('PRESENTATION',HUB.rsplit('/',1)[0]+'/corporate.pdf')])
+
+ def test_esg_report_does_not_become_presentation_through_generic_download_label(self):
+  c=company();src=from_validated_ir(c,config(),NOW)
+  body=b'<a href="2025+ESG+Report+-+letter+-+web.pdf">View Presentation</a><a href="2026-Sustainability-Report.pdf">Download Presentation</a><a href="2026-Investor-Presentation-ESG-Report-Review.pdf">Investor Presentation</a>'
+  docs=parse_hub(body,src,c,HUB,NOW)
+  self.assertEqual([(d['type'],d['url']) for d in docs],[('PRESENTATION',HUB.rsplit('/',1)[0]+'/2026-Investor-Presentation-ESG-Report-Review.pdf')])
+
+ def test_plural_shareholder_letter_navigation_is_not_an_individual_letter(self):
+  c=company();src=from_validated_ir(c,config(),NOW)
+  body=b'<a href="shareholder-letters">Shareholder Letters</a><a href="2026-shareholder-letter">2026 Shareholder Letter</a><a href="letter.pdf">Shareholder Letters</a>'
+  docs=parse_hub(body,src,c,HUB,NOW)
+  self.assertEqual([d['url'] for d in docs],[HUB.rsplit('/',1)[0]+'/2026-shareholder-letter',HUB.rsplit('/',1)[0]+'/letter.pdf'])
+  self.assertTrue(all(d['type']=='SHAREHOLDER_LETTER' for d in docs))
+  with tempfile.TemporaryDirectory() as tmp:
+   s=Store(Path(tmp)/'state.sqlite');wrong={'documentId':'old-hub','companyId':c['companyId'],'type':'SHAREHOLDER_LETTER','url':HUB.rsplit('/',1)[0]+'/shareholder-letters','label':'Shareholder Letters','sourceId':src['sourceId']}
+   s.set_state('ir:'+c['companyId'],{'configurations':[{**config(),'materialsSourceId':src['sourceId'],'documents':[wrong]}]})
+   p=Pipeline(tmp,{c['companyId']:c},s,HTTP({HUB:body.decode()}),NOW);p.ingest_source(src)
+   retained=[d for cfg in s.state('ir:'+c['companyId'])['configurations'] for d in cfg.get('documents',[])]
+   self.assertNotIn(wrong['url'],[d['url'] for d in retained]);self.assertIn(HUB.rsplit('/',1)[0]+'/letter.pdf',[d['url'] for d in retained]);s.close()
+
  def test_compound_transcript_label_replaces_old_type_without_losing_other_materials(self):
   from company_intelligence.model import stable_id
   with tempfile.TemporaryDirectory() as tmp:
