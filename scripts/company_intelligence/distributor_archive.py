@@ -147,7 +147,9 @@ def metadata(body,url):
         link=public_link(l['url']);label=clean(l['label'],200)
         if not link or domain(link)=='www.globenewswire.com' and '/Tracker?' in link:continue
         if re.search(r'webcast|replay|presentation|slides|prepared remarks|shareholder letter|transcript',label,re.I):links.append({'url':link,'label':label})
-    return {'headline':headline,'publishedAt':stamp,'url':canonical,'publisher':'GlobeNewswire','evidenceText':'',
+    # The validated canonical may use an encoded spelling of the index IRI.
+    # Keep the index identity so ingestion retires the exact staged ledger key.
+    return {'headline':headline,'publishedAt':stamp,'url':canonical_url(url),'publisher':'GlobeNewswire','evidenceText':'',
             'distributionMetadata':{'contributor':contributor,'stocks':[x.strip() for x in stock.split(',') if x.strip()][:20]},'callEvidence':evidence,
             'materialLinks':links[:10],'authorSiteCandidate':canonical_url(author.get('url')) if isinstance(author,dict) else None,
             'articleContentHash':hashlib.sha256(body).hexdigest(),'metadataEvidence':'PUBLISHER_NEWSARTICLE_EXPLICIT_HEADLINE_DATE_AUTHOR_AND_TICKER'}
@@ -167,7 +169,10 @@ def collect(source,response,http,store,resolver,now):
         key='distributorArchive:'+url;prior=store.state(key,{})
         if prior.get('status')=='INGESTED' or prior.get('nextAttempt','')>now:continue
         if prior.get('status')=='PARSED' and prior.get('entry'):
-            out.append(prior['entry'])
+            entry=prior['entry']
+            if article_request_url(entry.get('url'))==article_request_url(url):
+                entry={**entry,'url':url}
+            out.append(entry)
             if len(out)>=limit:break
             continue
         if attempted>=limit:break
