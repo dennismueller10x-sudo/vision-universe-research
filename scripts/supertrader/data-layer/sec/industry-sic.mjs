@@ -53,7 +53,7 @@ export function groupStrength(members, selfId, selfSic, opts) {
 export function periodicFilings(pages, fromYear) {
   const seen = new Set(), out = [];
   for (const p of pages || []) {
-    const n = p?.form?.length || 0;
+    const n = Array.isArray(p?.form) ? p.form.length : 0;
     for (let i = 0; i < n; i++) {
       const f = p.form[i], d = p.filingDate?.[i], a = p.accessionNumber?.[i];
       if (!d || !a || !/^(10-K|10-Q|20-F|40-F)$/.test(f) || seen.has(a) || Number(d.slice(0, 4)) < fromYear) continue;

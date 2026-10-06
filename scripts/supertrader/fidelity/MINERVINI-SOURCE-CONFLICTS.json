@@ -91,6 +91,13 @@
       "sourceB": { "ref": "Drittbeitraege", "claim": "Schluss unter SMA50 mit hohem Volumen als allgemeine Regel", "date": "2024-2025", "context": "Zuschreibung" },
       "possibleReason": "Verallgemeinerung eines Einzelfalls",
       "decision": "nicht uebernommen (wie Phase 2A)", "confidence": "LOW"
+    },
+    {
+      "id": "CF-12", "ruleId": "MR-SEPA-12",
+      "sourceA": { "ref": "Buchnotizen TLSMW (whatheheckaboom 2014)", "claim": "Nr. 1-3 der Branche kaufen, Titel aus den 4-5 fuehrenden Sektoren", "date": "2013", "context": "Fuehrerschaft und Branche" },
+      "sourceB": { "ref": "Suchindex-Zusammenfassungen (sekundaer; Primaerseiten gesperrt)", "claim": "starke Einzeltitel fuehren zur Gruppe; Gruppe als Bestaetigung", "date": "unbekannt", "context": "Rolle der Gruppe" },
+      "possibleReason": "B ist nicht primaer belegt; A nennt keine Taxonomie (Minervinis Branchen entsprechen vermutlich IBD-Gruppen, nicht oeffentlich und lizenzpflichtig)",
+      "decision": "A bleibt kanonisch. Umsetzung nur als Protokoll (RECORDED_ONLY) auf SIC point-in-time: Rang in der SIC-Gruppe und Gruppenstaerke je Setup. Kein Gate: SIC ist eine andere Taxonomie, und '4-5 fuehrende Sektoren' waere ohne Sektordefinition eine VU-Erfindung. B wird nicht als Beleg genutzt.", "confidence": "MEDIUM (Buchnotizen)"
     }
   ]
 }

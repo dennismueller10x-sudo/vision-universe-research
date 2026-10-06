@@ -24,7 +24,7 @@ const days = (a, b) => (Date.parse(b) - Date.parse(a)) / 864e5;
 export function extractEarningsEvents(pages) {
   const raw = [];
   for (const p of pages || []) {
-    const n = p?.form?.length || 0;
+    const n = Array.isArray(p?.form) ? p.form.length : 0;
     for (let i = 0; i < n; i++) {
       const form = p.form[i];
       const row = [p.filingDate?.[i], p.accessionNumber?.[i], form, null, p.reportDate?.[i] || null, p.acceptanceDateTime?.[i] || null];

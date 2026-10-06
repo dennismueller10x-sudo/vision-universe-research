@@ -1,0 +1,59 @@
+{
+  "schema": "vu-minervini-phase2a-baseline-1.0.0",
+  "createdAt": "2026-10-06",
+  "statement": "PHASE2A_BASELINE: Phase 2A ist eingefroren und bleibt die historische Referenz. Phase 2B aendert keine 2A-Datei; ein besserer Stand bekommt eine neue Version (1.1.0) mit eigenem Freeze.",
+  "freeze": {
+    "path": "scripts/supertrader/fidelity/MINERVINI-FIDELITY-FREEZE.json",
+    "sha256": "138fe93e949609bf9363e2b6b1f976961146e7741db5257ee88bff7b55f72f54",
+    "status": "FROZEN",
+    "commit": "b365b66e5",
+    "rulebookHash": "58de73f048968e7b604e716420a28c48f33c4bccc75c3d00efbda168c71055d5",
+    "codeHash": "f20a12a7a26750daf6dd08732ccaab0dcb7f7bdd5eff6955d03e8f7398acbdcb",
+    "frozenAt": "2026-10-06"
+  },
+  "rulebook": {
+    "path": "scripts/supertrader/fidelity/MINERVINI-CANONICAL-REPLICATION.json",
+    "sha256": "58de73f048968e7b604e716420a28c48f33c4bccc75c3d00efbda168c71055d5",
+    "version": "minervini-canonical-replication-1.0.0",
+    "rules": 64,
+    "parameters": 42
+  },
+  "classification": {
+    "productClass": "VU_ADAPTATION",
+    "canonicalName": "minervini-adaptation-1.0.0",
+    "displayName": "VU Adaptation – Minervini Canonical (Research)",
+    "replicationClaimAllowed": false,
+    "overallFidelity": "LOW"
+  },
+  "areasAsFrozen": {
+    "trend": "MEDIUM",
+    "entry": "LOW",
+    "fundamental": "LOW",
+    "exit": "LOW",
+    "sizing": "MEDIUM",
+    "portfolio": "LOW",
+    "marketRegime": "MEDIUM",
+    "risk": "MEDIUM"
+  },
+  "measurement": {
+    "report": "docs/SUPERTRADER_MINERVINI_REPLICATION_PHASE2.md",
+    "dev": {
+      "run": 37461915341,
+      "segments": 9048,
+      "signals": 2075,
+      "portfolioTrades": 650,
+      "cagrVsSpy": "darunter",
+      "maxDrawdownVsSpy": "kleiner"
+    },
+    "holdout": {
+      "run": 37461929479,
+      "segments": 5218,
+      "signals": 937,
+      "portfolioTrades": 229,
+      "cagrVsSpy": "darunter",
+      "maxDrawdownVsSpy": "kleiner"
+    },
+    "dataStatus": "DEV und HOLDOUT sind GESEHENE DATEN"
+  },
+  "guard": "Test MR-T-FREEZE (2A) und MR11-T-BASELINE pruefen, dass Freeze, Regelbuch und Code von 2A byte-gleich bleiben."
+}
