@@ -143,3 +143,13 @@ class WordPressBackfillTests(unittest.TestCase):
             self.assertTrue(archive.exists())
             restore(archive, root / 'restored')
             s = Store(root / 'restored/state.sqlite'); self.assertEqual(s.state('partialFact'), {'status': 'DURABLE'}); s.close()
+
+    def test_fresh_ir_owner_conflict_blocks_metadata_without_invalidating_prior_domain(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            s = Store(Path(tmp) / 'state.sqlite'); c = company('Root Inc.', 'ROOT', '0001788882')
+            page = setup(s, c, 'https://root.example/')
+            body = b'<title>Root Inc.</title><footer>Copyright Root Inc. Japan East Asia Regional Community Operating Services LLC.</footer><link rel="https://api.w.org/" href="https://root.example/wp-json/">'
+            h = HTTP({page: body}); batch(Path(tmp), s, {c['companyId']: c}, 'wp-run', h, NOW, seeds={})
+            self.assertEqual(h.calls, [page]); self.assertEqual(s.sources(), [])
+            self.assertEqual(s.state('wordpressCoverage:wp-run:' + c['companyId'])['reason'], 'OFFICIAL_SITE_CANDIDATE_CONFLICTING_COPYRIGHT_OWNER')
+            self.assertEqual(s.state('officialSite:' + c['companyId'])['status'], 'VALIDATED'); s.close()

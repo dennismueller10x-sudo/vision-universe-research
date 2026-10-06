@@ -390,6 +390,8 @@ class Store:
         # merely because its event has passed out of the upcoming section.
         recordings = [d for d in event_documents if d['type'] in ('WEBCAST','CALL_RECORDING')]
         materials = list({(d['url'], d['type']): d for d in recordings + configuration_documents + event_documents + list(references.values())}.values())
+        from .materials import placeholder_document_link
+        materials = [d for d in materials if not placeholder_document_link(d['url'])]
         return {'schema': SCHEMA, 'companyId': cid, 'listings': company['listings'], 'companyName': company['names'][0] if company['names'] else None,
                 'generatedAt': now, 'state': 'AVAILABLE' if profile or items or events or materials or financials.get('state')=='AVAILABLE' else 'NO_DATA',
                 **({'companyProfile': profile} if profile else {}),

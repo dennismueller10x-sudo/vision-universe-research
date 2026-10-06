@@ -69,6 +69,32 @@ class MaterialHubTests(unittest.TestCase):
   docs=parse_hub(body,src,c,HUB,NOW)
   self.assertEqual([(d['type'],d['url']) for d in docs],[('PRESENTATION',HUB.rsplit('/',1)[0]+'/corporate.pdf')])
 
+ def test_placeholder_pdf_assets_are_withheld_and_retired_without_hiding_actual_decks(self):
+  from company_intelligence.materials import correct_documents
+  c=company();src=from_validated_ir(c,config(),NOW)
+  body=b'<a href="placeholder.pdf">View Investor Presentation</a><a href="PLACEHOLDER.pdf?download=1">Prepared Remarks</a><a href="%70laceholder.pdf">Company Transcript</a><a href="placeholder-document.pdf">Shareholder Letter</a><a href="2026-investor-presentation.pdf">Investor Presentation</a>'
+  docs=parse_hub(body,src,c,HUB,NOW)
+  self.assertEqual([(d['type'],d['url']) for d in docs],[('PRESENTATION',HUB.rsplit('/',1)[0]+'/2026-investor-presentation.pdf')])
+  old={'documentId':'placeholder','type':'PRESENTATION','url':HUB+'/placeholder.pdf','label':'View Investor Presentation'}
+  self.assertEqual(correct_documents([old,*docs]),docs)
+
+ def test_event_material_followup_never_attaches_a_placeholder_pdf(self):
+  from company_intelligence.materials import discover_links
+  e={'sourceUrl':PAGE};src={'verified':True,'allowedSites':[PAGE]}
+  h=HTTP({PAGE:'<a href="placeholder.pdf">Investor Presentation</a><a href="deck.pdf">Investor Presentation</a>'})
+  result=discover_links(e,src,h)
+  self.assertEqual(result['presentationUrl'],'https://apple.com/investors/deck.pdf')
+  self.assertEqual([x['url'] for x in result['materialEvidence']],[result['presentationUrl']])
+
+ def test_restored_placeholder_reference_is_withheld_from_consumer_before_a_network_poll(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   s=Store(Path(tmp)/'state.sqlite');c=company()
+   bad={'documentId':'placeholder','companyId':c['companyId'],'type':'PRESENTATION','url':HUB+'/placeholder.pdf','label':'View Investor Presentation'}
+   good={**bad,'documentId':'deck','url':HUB+'/2026-investor-presentation.pdf'}
+   ir={'configurations':[{**config(c),'documents':[bad,good]}]};s.set_state('ir:'+c['companyId'],ir)
+   self.assertEqual(s.company_payload(c,NOW)['materials'],[good])
+   self.assertEqual(s.state('ir:'+c['companyId']),ir);s.close()
+
  def test_esg_report_does_not_become_presentation_through_generic_download_label(self):
   c=company();src=from_validated_ir(c,config(),NOW)
   body=b'<a href="2025+ESG+Report+-+letter+-+web.pdf">View Presentation</a><a href="2026-Sustainability-Report.pdf">Download Presentation</a><a href="2026-Investor-Presentation-ESG-Report-Review.pdf">Investor Presentation</a>'

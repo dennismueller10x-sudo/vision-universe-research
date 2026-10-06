@@ -12,6 +12,7 @@ from collections import Counter
 from pathlib import Path
 from .checkpoint import pack
 from .discovery_circuit import DiscoveryCircuit, guarded_poll, failure_signature
+from .discovery import _validate_response
 from .feeds import parse_links
 from .model import canonical_url, load_universe, within_domain
 from .pipeline import Pipeline, utcnow, advance
@@ -108,6 +109,14 @@ def batch(root, store, companies, run_id, http, now=None, limit=16, seeds=None):
                     if not any(within_domain(response['finalUrl'], u) for u in current_roots):
                         raise SourceError('WORDPRESS_IR_REDIRECT_REQUIRES_REVALIDATION')
                     pipe.ensure_aliases([cid])
+                    # Reused approved domain authority does not excuse a fresh
+                    # page disclosing a different legal owner or conflicting CIK.
+                    # A brand-only IR header can retain the approved root proof.
+                    try:
+                        _validate_response(pipe.companies[cid], {'url': page, 'evidence': 'APPROVED_IR_ROUTE'}, response, now)
+                    except SourceError as error:
+                        if str(error) != 'OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED':
+                            raise
                     source = discover(parse_links(response['body'], response['finalUrl']), response['finalUrl'],
                                       pipe.companies[cid], current_roots, http, now)
                     row['pageContentHash'] = response.get('sha256')

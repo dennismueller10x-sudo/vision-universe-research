@@ -23,9 +23,17 @@ def mislabeled_report_link(url, label):
                 and not re.search(r'presentation|slides?|deck', filename, re.I))
 
 
+def placeholder_document_link(url):
+    """Default placeholder PDF assets are not investor materials."""
+    from urllib.parse import unquote, urlsplit
+    return bool(re.fullmatch(r'placeholder(?:[ _-]document)?\.pdf',
+                             unquote(urlsplit(url).path.rsplit('/', 1)[-1]), re.I))
+
+
 def correct_documents(documents):
     return [doc for doc in documents
-            if not (doc.get('type') == 'SHAREHOLDER_LETTER'
+            if not placeholder_document_link(doc.get('url', ''))
+            and not (doc.get('type') == 'SHAREHOLDER_LETTER'
                     and shareholder_letter_hub(doc.get('url', ''), doc.get('label', '')))
             and (doc.get('type') != 'PRESENTATION'
                  or not (presentation_news_link(doc.get('url', ''), doc.get('label', ''))
@@ -155,6 +163,8 @@ def page_documents(company, links, page, now):
     from urllib.parse import unquote
     out, seen = [], set()
     for link in links:
+        if placeholder_document_link(link['url']):
+            continue
         if link.get('href','').strip().startswith('#') or canonical_url(link['url']) == canonical_url(page):
             continue  # In-page navigation is not an independently accessible material.
         if link['url'] in seen:
@@ -218,6 +228,8 @@ def discover_links(event, source, http):
     out = dict(event)
     evidence = []
     for link in parse_links(response['body'], response['finalUrl']):
+        if placeholder_document_link(link['url']):
+            continue
         if link.get('href','').strip().startswith('#') or link['url'] == canonical_url(response['finalUrl']):
             continue
         label = link['text']
