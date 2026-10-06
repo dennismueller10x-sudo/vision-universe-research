@@ -113988,5 +113988,122 @@
     "provider": "GCS",
     "bootstrapValidatedAt": "2026-10-06",
     "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "url": "https://partech.com/wp-json/wp/v2/posts?_fields=date_gmt%2Clink%2Ctitle.rendered&context=view&order=desc&orderby=date&per_page=20",
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "active": true,
+    "allowedSites": [
+      "https://partech.com/"
+    ],
+    "intervalHours": 4,
+    "verified": true,
+    "lastVerified": "2026-10-06T09:48:05Z",
+    "sourceId": "14caff67424e180fba121dcb",
+    "provider": "WORDPRESS",
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "apiRoot": "https://partech.com/wp-json/",
+      "linkedFrom": "https://partech.com/investor-relations/",
+      "method": "ADVERTISED_WORDPRESS_REST_METADATA_CONTRACT"
+    },
+    "format": "WORDPRESS_REST_NEWS",
+    "companyId": "iss_cik_0000708821",
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "priority": 1,
+    "url": "https://www.veracyte.com/feed/",
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "active": true,
+    "allowedSites": [
+      "https://www.veracyte.com/",
+      "https://www.veracyte.com/",
+      "https://www.veracyte.com/feed/"
+    ],
+    "intervalHours": 4,
+    "verified": true,
+    "lastVerified": "2026-10-06T09:44:57Z",
+    "sourceId": "2789f874d8321661de1844c2",
+    "provider": "WORDPRESS",
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "linkedFrom": "https://www.veracyte.com/",
+      "officialSite": "https://www.veracyte.com/",
+      "validItems": 1
+    },
+    "format": "RSS",
+    "companyId": "iss_cik_0001384101",
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "url": "https://investor.veracyte.com/events-presentations",
+    "active": true,
+    "allowedSites": [
+      "https://www.veracyte.com/",
+      "https://investor.veracyte.com/",
+      "https://investor.veracyte.com/events-presentations"
+    ],
+    "intervalHours": 12,
+    "verified": true,
+    "lastVerified": "2026-10-06T09:44:57Z",
+    "sourceId": "54d5ddbe176a0d7703485814",
+    "provider": "GCS",
+    "type": "IR_EVENTS",
+    "verificationEvidence": "LINKED_BY_VERIFIED_IR_PAGE",
+    "companyId": "iss_cik_0001384101",
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "url": "https://ir.oncolyticsbiotech.com/wp-json/wp/v2/press_releases?_fields=date_gmt%2Clink%2Ctitle.rendered&context=view&order=desc&orderby=date&per_page=20",
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "active": true,
+    "allowedSites": [
+      "https://oncolyticsbiotech.com/"
+    ],
+    "intervalHours": 4,
+    "verified": true,
+    "lastVerified": "2026-10-06T09:56:18Z",
+    "sourceId": "733596a8053740f2b3a84e6d",
+    "provider": "WORDPRESS",
+    "type": "IR_FEED",
+    "restCollection": "press_releases",
+    "verificationEvidence": {
+      "apiRoot": "https://ir.oncolyticsbiotech.com/wp-json/",
+      "collectionRoute": "/wp/v2/press_releases",
+      "collectionSchemaHash": "0ebeaab97bad16d43adbe7bebca1dbe204fe63a3707dc7f95ceec84a8c9f6120",
+      "linkedFrom": "https://ir.oncolyticsbiotech.com/",
+      "method": "ADVERTISED_WORDPRESS_REST_METADATA_CONTRACT"
+    },
+    "format": "WORDPRESS_REST_NEWS",
+    "companyId": "iss_cik_0001129928",
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "url": "https://www.teekay.com/wp-json/wp/v2/posts?_fields=date_gmt%2Clink%2Ctitle.rendered&context=view&order=desc&orderby=date&per_page=20",
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "active": true,
+    "allowedSites": [
+      "https://www.teekay.com/"
+    ],
+    "intervalHours": 4,
+    "verified": true,
+    "lastVerified": "2026-10-06T09:52:22Z",
+    "sourceId": "e4f846f1f1170072e6d6c441",
+    "provider": "WORDPRESS",
+    "type": "IR_FEED",
+    "verificationEvidence": {
+      "apiRoot": "https://www.teekay.com/wp-json/",
+      "linkedFrom": "https://www.teekay.com/blog/keyword/investors/",
+      "method": "ADVERTISED_WORDPRESS_REST_METADATA_CONTRACT"
+    },
+    "format": "WORDPRESS_REST_NEWS",
+    "companyId": "iss_cik_0000911971",
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
   }
 ]

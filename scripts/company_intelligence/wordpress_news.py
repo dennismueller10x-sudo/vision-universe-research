@@ -8,7 +8,8 @@ from .model import canonical_url, clean, stable_id, within_domain
 from .transport import SourceError
 
 FIELDS = 'date_gmt,link,title.rendered'
-COLLECTIONS = ('posts', 'news', 'press-releases', 'press_releases', 'news-releases', 'news_releases', 'announcements')
+COLLECTIONS = ('posts', 'news', 'press-releases', 'press_releases', 'news-releases', 'news_releases', 'announcements',
+               'press-release', 'financial-release', 'press', 'press-room', 'press_release', 'news-media', 'pressreleases')
 
 
 def endpoint(api_root, collection='posts'):
@@ -109,7 +110,7 @@ def discover(links, page, company, allowed_sites, http, now):
     _, entries = fetch(http, source)
     if usable(entries):
         return source
-    # One API-index request and at most one advertised dated news collection.
+    # One API-index request and at most two advertised dated news collections.
     # Taxonomies lack the date-order contract; no route guessing or enumeration.
     index_url = canonical_url(api + '?' + urlencode({'_fields': 'namespaces,routes'}))
     response = http.get(index_url)
@@ -127,6 +128,7 @@ def discover(links, page, company, allowed_sites, http, now):
     except SourceError:
         discard(http, index_url)
         raise
+    attempted = 0
     for collection in COLLECTIONS[1:]:
         route = '/wp/v2/' + collection
         descriptor = index['routes'].get(route)
@@ -139,9 +141,11 @@ def discover(links, page, company, allowed_sites, http, now):
             return (isinstance(args, dict) and 'per_page' in args and isinstance(orderby, dict)
                     and isinstance(orderby.get('enum'), list) and 'date' in orderby['enum'])
         if not isinstance(endpoints, list) or not any(dated_collection(e) for e in endpoints):continue
+        if attempted >= 2:break
+        attempted += 1
         source.update(url=endpoint(api, collection), restCollection=collection)
         source['sourceId'] = stable_id(company['companyId'], source['url'])
         source['verificationEvidence'].update(collectionRoute=route, collectionSchemaHash=hashlib.sha256(response['body']).hexdigest())
         _, entries = fetch(http, source)
-        return source if usable(entries) else None
+        if usable(entries):return source
     return None

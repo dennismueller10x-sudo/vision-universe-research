@@ -51,6 +51,25 @@ def wordpress_feed(body):
     return bool(re.search(br'<generator\b[^>]*>[^<]*wordpress\.org',body,re.I))
 
 
+def shadowed_actor(headline, company, resolver):
+    """A listed child's longer name cannot supply its parent's CMS actor.
+
+    Match spans using the existing current-master alias index. An independent
+    parent mention in a joint announcement remains valid; shared share classes
+    have one company identity and cannot shadow themselves.
+    """
+    title = normalize(headline)
+    cid = company['companyId']
+    aliases = {normalize(n) for n in company['names']} | {normalize(SUFFIX.sub('', n)) for n in company['names']}
+    spans = [m.span() for name in aliases if name
+             for m in re.finditer(r'(?<!\w)' + re.escape(name) + r'(?!\w)', title)]
+    candidates = {name for token in title.split() for name in resolver.by_token.get(token, set())}
+    rivals = [m.span() for name in candidates if cid not in resolver.names[name]
+              for m in re.finditer(r'(?<!\w)' + re.escape(name) + r'(?!\w)', title)]
+    return bool(spans) and all(any(a <= start and end <= b and (a < start or end < b)
+                                  for a, b in rivals) for start, end in spans)
+
+
 def eligible(entry, company, wordpress=False):
     title=entry.get('headline') or ''
     if re.fullmatch(r'\s*hello world[!.\s]*',title,re.I) or re.match(r'\s*comment on\b',title,re.I):
