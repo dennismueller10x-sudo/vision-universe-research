@@ -53,8 +53,17 @@ export function buildEuropeanCalendar({ mic, timeZone, annualRules = [], regular
     if (!verified(close) || !timeOK(close.time)) {
       completionVerified = false; completionBasis = halfDays.has(clock.date) ? 'EARLY_CLOSE_TIME_UNRESOLVED' : 'REGULAR_CLOSE_TIME_UNRESOLVED';
     } else {
-      completionBasis = 'VERIFIED_EXCHANGE_LOCAL_CLOSE'; refs.push(...close.evidence);
-      if (clock.time >= close.time) cutoff = clock.date;
+      refs.push(...close.evidence);
+      if (close.meaning === 'NOT_BEFORE') {
+        // Auction plans commonly state only the earliest possible end and
+        // explicitly allow a random extension. That proves yesterday before
+        // the bound, but never proves today's completion after the bound.
+        completionBasis = 'VERIFIED_EARLIEST_LOCAL_CLOSE_BOUND';
+        if (clock.time >= close.time) { completionVerified = false; completionBasis = 'AUCTION_COMPLETION_AFTER_EARLIEST_BOUND_UNRESOLVED'; }
+      } else {
+        completionBasis = 'VERIFIED_EXCHANGE_LOCAL_CLOSE';
+        if (clock.time >= close.time) cutoff = clock.date;
+      }
     }
   }
   const expectedLastSession = sessions.filter((d) => d <= cutoff).at(-1) || null;

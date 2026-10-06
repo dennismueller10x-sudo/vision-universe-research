@@ -39,6 +39,11 @@ test('no regular close evidence still permits daily completeness, but not fresh-
  assert.equal(checkCalendarWindow({calendar:c,mic:'XETR',start:'2026-01-01',end:'2026-10-05'}).status,'READY');
  assert.equal(checkEuropeanEodFreshness({calendar:c,mic:'XETR',latestDate:'2026-10-05'}).status,'BLOCKED');
 });
+test('an earliest auction-end bound proves only the preceding session before that time',()=>{
+ const early={verified:true,time:'17:30',meaning:'NOT_BEFORE',evidence:['synthetic-random-auction-end']};
+ const before=buildEuropeanCalendar({...cfg(),regularClose:early});assert.equal(before.expectedLastSession,'2026-10-05');
+ const after=buildEuropeanCalendar({...cfg(),regularClose:early,now:'2026-10-06T16:00:00Z'});assert.equal(after.verified,false);assert.equal(after.expectedLastSession,null);
+});
 test('bad year/date/source evidence fails instead of manufacturing a calendar',()=>{
  const bad=cfg();bad.annualRules[0].closedDates=['2026-02-30'];assert.equal(buildEuropeanCalendar(bad).historyVerified,false);
  assert.throws(()=>buildEuropeanCalendar({...cfg(),annualRules:[rule(2026),rule(2026)]}),/DUPLICATE/);
