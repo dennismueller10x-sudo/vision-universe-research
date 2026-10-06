@@ -59,7 +59,7 @@ test('CLI requires private explicit inputs, rejects symlinks and any Git checkou
   const source=join(root,'source.json'),core=join(root,'core.json'),out=join(root,'out');const input=inputs([candidate()]);writeFileSync(source,JSON.stringify(input.source));writeFileSync(core,JSON.stringify(input.coreMap));
   const args=['--source',source,'--core-map',core,'--out',out];assert.equal(run(args).germany.shareClasses,1);const file=join(out,'germany_ab_listing_map.json');assert.equal(statSync(file).mode&0o777,0o600);assert.equal(statSync(out).mode&0o777,0o700);
   const map=JSON.parse(readFileSync(file));assert.ok(!('bars' in map.listings[0]));assert.equal(map.listings[0].currentProviderVerified,false);
-  const fakeRepo=join(root,'other-checkout');mkdirSync(fakeRepo);writeFileSync(join(fakeRepo,'.git'),'gitdir: elsewhere');assert.throws(()=>run([...args.slice(0,4),'--out',join(fakeRepo,'public')]),/GIT_REPOSITORY_REJECTED/);
+  const fakeRepo=join(root,'other-checkout');mkdirSync(fakeRepo);writeFileSync(join(fakeRepo,'.git'),'gitdir: elsewhere');assert.throws(()=>run([...args.slice(0,4),'--out',join(fakeRepo,'public')]),/GIT_REPOSITORY_REJECTED|OUTSIDE_REPOSITORY_REQUIRED/);
   symlinkSync(out,join(root,'link'));assert.throws(()=>run([...args.slice(0,4),'--out',join(root,'link')]),/SYMLINK_REJECTED/);
   assert.throws(()=>run([...args.slice(0,4),'--out',resolve(new URL('../../..',import.meta.url).pathname,'public-europe-output')]),/PRIVATE_OUTPUT_OUTSIDE_REPOSITORY_REQUIRED/);
  }finally{rmSync(root,{recursive:true,force:true});}

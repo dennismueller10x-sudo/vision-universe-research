@@ -32,8 +32,8 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
  if(![2,5].includes(historyYears))throw Error('BOUNDED_HISTORY_WINDOW_REQUIRED');
  const budget=createSharedBudget({file:join(privateDir,'shared-budget.json'),runId,evidence:accountEvidence,now});
  // Account evidence is validated before any client, URL, or request exists.
- const opening=await budget.status();const rows=listingMap.listings.filter(r=>r.mappingStatus==='VERIFIED'&&r.quoteUnit==='MAJOR');
- const candidates=rows.filter(r=>r.providerSymbol);const requiredBaseCredits=candidates.length*(phase==='refresh'?2:6);
+ const opening=await budget.status();const rows=listingMap.listings.filter(r=>r.mappingStatus==='VERIFIED');
+ const candidates=rows.filter(r=>r.providerSymbol&&r.quoteUnit==='MAJOR');const requiredBaseCredits=candidates.length*(phase==='refresh'?2:6);
  if(opening.creditsRemaining<requiredBaseCredits)throw Error('ACCOUNT_BUDGET_INSUFFICIENT_FOR_MANDATORY_BASE');
  const write=(p,v)=>{rejectSymlinkAncestors(p);mkdirSync(resolve(p,'..'),{recursive:true,mode:0o700});writeFileSync(p,JSON.stringify(v)+'\n',{mode:0o600});};
  const read=p=>{rejectSymlinkAncestors(p);return existsSync(p)?JSON.parse(readFileSync(p,'utf8')):null;};
@@ -113,6 +113,7 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
   if(terminalActionFailure)break;
  }
  for(const r of rows.filter(r=>!r.providerSymbol))decisions.push({listingId:r.listingId,isin:r.isin,status:'BLOCKED',cause:'MAPPING_ERROR',nextStep:'Find an exact provider ISIN/MIC identity; do not guess the ticker suffix.'});
+ for(const r of rows.filter(r=>r.quoteUnit!=='MAJOR'))decisions.push({listingId:r.listingId,isin:r.isin,status:'BLOCKED',cause:'MISSING_FX_OR_SHARE_BASIS',nextStep:'Verify the quotation unit and a compatible canonical adapter without currency conversion or an inferred FX basis.'});
  const productRows=rows.map(r=>({...r,referencedIssuerId:r.companyId,companyId:null,companyAssociationStatus:'EXISTING_VU_COMPANY_ASSOCIATION_UNRESOLVED',logo:{status:'EXISTING_FALLBACK'}}));
  const converted=Object.fromEntries(Object.entries(histories).map(([id,h])=>[id,{...h,sourceEvidence:h.sourceEvidence.join('|')} ]));
  const result=materialize({rows:productRows,histories:converted,asOf,referenceAsOf:listingMap.asOf,out:previewOut});

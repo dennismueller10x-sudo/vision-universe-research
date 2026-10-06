@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {directory,closeSeries,materialize} from '../materialize-de-eu.mjs';
-import {mkdtempSync,readFileSync,rmSync,symlinkSync,mkdirSync} from 'node:fs';import {join} from 'node:path';import {tmpdir} from 'node:os';
+import {mkdtempSync,readFileSync,writeFileSync,rmSync,symlinkSync,mkdirSync} from 'node:fs';import {join} from 'node:path';import {tmpdir} from 'node:os';
 import {permitted} from '../../vu2/build-release.mjs';
 const row={isin:'DE0007164600',mic:'XETR',ticker:'SAP',assetType:'EQUITY',mappingStatus:'VERIFIED',mappingSource:'official',indexMemberships:['DAX','DAX','TECDAX'],tradingCurrency:'EUR',quoteUnit:'MAJOR',listingCountry:'DE'};
 const h={isin:row.isin,mic:row.mic,currency:'EUR',quoteUnit:'MAJOR',provider:'marketstack',sourceEvidence:'original sha',points:[['2026-10-01',100],['2026-10-02',101]],quality:{status:'PARTIAL',gaps:['2026-09-30']}};
@@ -17,6 +17,8 @@ test('private output rejects symlink parents and nested core/data escapes',()=>{
  symlinkSync(process.cwd(),join(out,'repo'),'dir');assert.throws(()=>materialize({rows:[row],asOf:'2026-10-06',out:join(out,'repo','tmp')}),/SYMLINK/);
  mkdirSync(join(out,'private'));symlinkSync(process.cwd(),join(out,'private','core'),'dir');
  assert.throws(()=>materialize({rows:[row],asOf:'2026-10-06',out:join(out,'private')}),/SYMLINK/);
+ mkdirSync(join(out,'sibling-worktree'));writeFileSync(join(out,'sibling-worktree','.git'),'gitdir: /another/repository/worktrees/sibling');
+ assert.throws(()=>materialize({rows:[row],asOf:'2026-10-06',out:join(out,'sibling-worktree','private')}),/OUTSIDE_REPOSITORY/);
  }finally{rmSync(out,{recursive:true,force:true});}
 });
 test('public release excludes private EU series and internal source metadata',()=>{
