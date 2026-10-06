@@ -423,7 +423,27 @@ Erst nach bestandenem Red-Team-Review. Datei `scripts/supertrader/fidelity/MINER
 
 Das Log zeigt keine Richtungen. Keine Codeänderung danach.
 
-Abschnitt 11 wird nach den Messläufen DEV und HOLDOUT ergänzt.
+### 11.1 Rahmen
+
+- **Nur Messung.** Die Engine wurde nach den Läufen nicht verändert; Freeze und Hashes sind unverändert.
+- **GESEHENE DATEN.** DEV 2016–2026 und HOLDOUT 2008–2015 wurden in R14 geöffnet. Die Ergebnisse dienen der Beschreibung, nicht der Optimierung, und sind keine unabhängige Evidenz.
+- **Kennzahlen.** Sie liegen wie in R14 nur verschlüsselt für den Eigentümer vor (`claude/supertrader-validation-results`; Tiingo-Nutzungsrechte, AT7). Das sind CAGR, Total Return, Max Drawdown, Volatilität, Sharpe, Exposure, Positionen, Umschlag, Trefferquote, Ø Gewinn/Verlust, MFE/MAE, SPY-Gesamtrendite sowie Signal- und Portfolioqualität getrennt.
+- **Öffentlich.** Hier stehen nur Zählwerte und Richtungen, keine Zahlen aus Kursdaten.
+- **Survivorship.** Der HOLDOUT ist nicht frei davon (R14): Positive Ergebnisse sind nach oben verzerrt.
+
+### 11.2 DEV 2016-01-04 bis 2026-09-30 (Lauf 37461915341, `minervini-replication-dev.sealed.json`)
+
+| Größe | Wert |
+|---|---|
+| Titel (Segmente) | 9.048, davon mit SEC-Erstmeldungen 6.405 |
+| Setups (Schluss t → Order t+1) | 17.072 bei 1.342 Titeln |
+| Ausgelöste Signale ohne Kapitalgrenze | 2.075 |
+| Portfolio-Trades | 650 |
+| Portfolio-CAGR gegen SPY-Gesamtrendite | **unter SPY** |
+| Max Drawdown gegen SPY | **kleiner als SPY** |
+| Signale gegen SPY bei gleicher Haltedauer (Mittel) | **unter SPY** |
+
+Abschnitt 11.3 (HOLDOUT) folgt nach dem zweiten Lauf.
 
 ## 12. Abschlussbericht
 
