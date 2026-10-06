@@ -66,3 +66,18 @@ class CompositeAnnouncementTests(unittest.TestCase):
         result=from_announcement(item,source(),NOW)
         self.assertEqual(result[0]['eventType'],'EARNINGS_CALL')
         self.assertEqual(result[0]['date'],'2026-08-11')
+
+    def test_observed_greif_company_possessive_release_date_is_not_a_call(self):
+        item={'headline':'Greif, Inc. Announces 2026 Fourth Quarter Earnings Release and Conference Call Dates',
+              'url':'https://apple.com/announcement','publishedAt':'2026-09-30T12:00:00Z',
+              'evidenceText':'DELAWARE, Ohio, Sept. 30, 2026 (GLOBE NEWSWIRE) -- Greif announced today it will report the company’s 2026 fourth quarter financial results after the market closes on Tuesday, November 3, 2026.'}
+        result=from_announcement(item,source(),NOW)
+        self.assertEqual(result[0]['eventType'],'EARNINGS_SCHEDULED')
+        self.assertEqual(result[0]['date'],'2026-11-03')
+        self.assertIsNone(result[0]['startsAt'])
+
+    def test_unsupported_release_clause_cannot_assign_its_date_to_composite_call(self):
+        item={'headline':'Example Announces Quarterly Earnings Release and Conference Call Dates',
+              'url':'https://apple.com/announcement','publishedAt':'2026-09-30T12:00:00Z',
+              'evidenceText':'The company expects to issue its results on November 3, 2026. Conference call registration will open later.'}
+        self.assertEqual(from_announcement(item,source(),NOW),[])
