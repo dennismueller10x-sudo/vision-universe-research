@@ -1,0 +1,33 @@
+# Private selected-listing Actions execution
+
+The current explicit instruction authorizes a deterministic counter when the account remainder is unavailable: target 15,000, hard maximum 20,000 additional estimated symbol credits for this one run. `USER_AUTHORIZED_BOUNDED_RUN` records this authorization separately from account evidence; it never invents a balance or implies a tariff change. The unmerged historical 5,000-credit opt-in monthly safety default remains for legacy account-bound callers, but is not a current repository/account requirement for the newly authorized run. If a verified smaller account remainder is supplied, it still reduces the bound and retains a reserve. There is no recurring schedule.
+
+Create an owner-authored, same-repository PR and add `vu-marketstack-bootstrap`. The new `pull_request` workflow can run before the workflow exists on main. It verifies the existing Actions secret without printing it, creates an RSA3072 public recipient, persists the private key only in the existing API-key-derived authenticated encrypted cache, and uploads only `marketstack-handoff-public-<PR>.json`. Cache context is the stable `refs/pull/<PR>/merge`; caches are restricted to that PR. An unreadable existing encrypted cache stops rather than resets state.
+
+After fetching the public artifact, generate a separate result-recipient key in authorized private local storage. Construct a private request with these fields:
+
+```js
+{
+  version: 'vu-marketstack-live-request-1',
+  context: 'refs/pull/<PR>/merge',
+  sourceSHA: '<approved code commit before the ciphertext-only commit>',
+  runId: '<stable ID for all phases and all agents in this authorized run>',
+  phase: 'sample', // then mandatory/refresh only with the root importer proof
+  asOf: 'YYYY-MM-DD', listingMap: frozenMap,
+  resultPublicKey: '<local result RSA3072 public key PEM>',
+  authorization: {
+    kind: 'USER_AUTHORIZED_BOUNDED_RUN', id: '<stable authorization ID>',
+    source: 'Current explicit user instruction: target 15000, hard 20000',
+    runId, month: 'YYYY-MM', observedAt: '<current ISO timestamp>',
+    hardLimit: 20000, targetLimit: 15000,
+    unknownAccountUsageAcknowledged: true, sourceSHA,
+    referenceHash: SHA256(JSON.stringify(frozenMap))
+  }
+}
+```
+
+Use `actions-handoff.mjs encrypt-request --input=<PRIVATE_JSON> --public=<PUBLIC_ARTIFACT_JSON> --out=<REQUEST_PATH>`. Commit only the ciphertext at `scripts/marketstack/private-bootstrap/request.enc.json`. Source SHA must be an ancestor of HEAD, and the only intervening changed path may be this ciphertext. All scripts are excluded from site releases. Add `vu-marketstack-live` and remove the bootstrap label before the ciphertext push.
+
+The live job decrypts in ephemeral private runner storage, validates the frozen map, SHA and authorization, and persists an encrypted ACTIVE execution lease before the first paid call. If a runner crashes or a cache cannot be persisted, later work must reconcile the lease; it cannot silently receive a fresh 20,000 allowance. Every client request/page/retry reserves from the same durable ledger. GitHub rerun attempts are blocked pending reconciliation. A completed identical request is not queried again. The root importer controls sample, real browser proof and mandatory continuation; this handoff does not bypass those gates.
+
+Results include privately stored provider source responses, normalized cache, counter, status and preview in an RSA/AES-GCM encrypted tar archive addressed only to the local result public key. The bootstrap private RSA key is omitted from the result. GitHub artifacts contain only the public recipient or ciphertext; raw responses, account evidence and the Marketstack API key never enter plaintext artifacts. Use `actions-handoff.mjs decrypt-result --input=<CIPHERTEXT_JSON> --private=<LOCAL_RESULT_KEY> --out=<PRIVATE_TAR_GZ>` and extract into authorized private storage. Public display and automatic production publication remain independently gated.

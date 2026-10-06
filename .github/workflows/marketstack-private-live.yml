@@ -1,0 +1,96 @@
+name: Marketstack selected EU private bootstrap and live import
+on:
+  pull_request:
+    types: [opened, synchronize, labeled]
+permissions:
+  contents: read
+concurrency:
+  group: marketstack-private-eu-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+jobs:
+  private-selected-import:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login == github.repository_owner &&
+      (github.event.action != 'labeled' || github.event.label.name == 'vu-marketstack-bootstrap' || github.event.label.name == 'vu-marketstack-live') &&
+      (contains(github.event.pull_request.labels.*.name, 'vu-marketstack-bootstrap') || contains(github.event.pull_request.labels.*.name, 'vu-marketstack-live'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      VU_MARKETSTACK_PRIVATE_DIR: ${{ runner.temp }}/vu-marketstack-private/marketstack
+      VU_MARKETSTACK_PREVIEW_DIR: ${{ runner.temp }}/vu-marketstack-private/preview
+      VU_MARKETSTACK_PHASE: ${{ contains(github.event.pull_request.labels.*.name, 'vu-marketstack-live') && 'live' || 'bootstrap' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify bounded transport and authenticated private storage
+        run: node --test --test-reporter=dot quant/tests/marketstack-budget.test.mjs quant/tests/marketstack-cache.test.mjs scripts/marketstack/tests/actions-handoff.test.mjs
+      - uses: actions/cache/restore@v4
+        with:
+          path: .market-cache/marketstack-private-live.enc
+          key: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-
+      - name: Open only authenticated PR-scoped ciphertext
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: |
+          node scripts/market/marketstack-cache.mjs open --work-dir "$VU_MARKETSTACK_PRIVATE_DIR" --file .market-cache/marketstack-private-live.enc --context "$GITHUB_REF" --require-readable true
+      - name: Server-side credential availability (not API authentication)
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node -e 'if (!process.env.MARKETSTACK_API_KEY) { console.error("Marketstack credential unavailable"); process.exit(1); }'
+      - name: Bootstrap public recipient (zero provider calls)
+        if: env.VU_MARKETSTACK_PHASE == 'bootstrap'
+        run: node scripts/marketstack/actions-handoff.mjs bootstrap
+      - uses: actions/upload-artifact@v4
+        if: env.VU_MARKETSTACK_PHASE == 'bootstrap'
+        with:
+          name: marketstack-handoff-public-${{ github.event.pull_request.number }}
+          path: .verification/marketstack-handoff-public.json
+          retention-days: 7
+      - name: Reserve a crash-safe execution lease before paid requests
+        if: env.VU_MARKETSTACK_PHASE == 'live'
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: |
+          node scripts/marketstack/actions-private-live.mjs prepare
+          node scripts/market/marketstack-cache.mjs seal --work-dir "$VU_MARKETSTACK_PRIVATE_DIR" --file .market-cache/marketstack-private-live.enc --context "$GITHUB_REF"
+      - uses: actions/cache/save@v4
+        if: env.VU_MARKETSTACK_PHASE == 'live'
+        with:
+          path: .market-cache/marketstack-private-live.enc
+          key: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}-lease
+      - name: Execute explicitly authorized frozen listing requests privately
+        if: env.VU_MARKETSTACK_PHASE == 'live'
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node scripts/marketstack/actions-private-live.mjs
+      - uses: actions/upload-artifact@v4
+        if: env.VU_MARKETSTACK_PHASE == 'live' && always()
+        with:
+          name: marketstack-private-result-${{ github.event.pull_request.number }}-${{ github.run_id }}
+          path: .verification/marketstack-private-result.enc.json
+          if-no-files-found: ignore
+          retention-days: 7
+      - id: seal-private
+        name: Seal provider data and deterministic ledger even after a bounded import failure
+        if: always()
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node scripts/market/marketstack-cache.mjs seal --work-dir "$VU_MARKETSTACK_PRIVATE_DIR" --file .market-cache/marketstack-private-live.enc --context "$GITHUB_REF"
+      - uses: actions/cache/save@v4
+        if: always() && steps.seal-private.outcome == 'success'
+        with:
+          path: .market-cache/marketstack-private-live.enc
+          key: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Protected published artifacts and production workflows
+        if: always()
+        run: git diff --exit-code -- quant/data discover/data supertrader/data vorsorge core/data .github/workflows/market-data-refresh.yml .github/workflows/tiingo2-universe-refresh.yml
+      - name: Remove ephemeral plaintext
+        if: always()
+        run: rm -rf -- "$RUNNER_TEMP/vu-marketstack-private"
