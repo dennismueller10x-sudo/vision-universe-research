@@ -1,5 +1,7 @@
 # Company Intelligence — sichere Übergabe und Discover-Beta
 
+**Historischer Bericht der ersten Discover-Aufbereitung.** Die aktuelle Fortsetzung und die inzwischen authentifizierte R2-Untersuchung stehen in [COMPANY_INTELLIGENCE_FULL_DATA_HANDOFF.md](COMPANY_INTELLIGENCE_FULL_DATA_HANDOFF.md). Der aktuelle Rollout-Pointer fehlt im privaten Speicher; die frühere Aussage über fehlende lokale Credentials darf nicht mit fehlenden Actions-Credentials gleichgesetzt werden.
+
 Stand: 6. Oktober 2026. Bestehender PR: [#356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356), weiterhin offen, Draft und unmerged. Arbeit bewusst auf `feature/company-intelligence-discover-beta`, ausgehend von `a64582e346aa305db037e0e1b1c02a2dffb7765a`. Separater Draft zur Prüfung: [PR #455](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/455), Basis ist der unveränderte Rollout-Branch. Keine Änderung der Produktions-Zugriffskontrollen, Feature-Flags oder Scheduler.
 
 ## Hauptbericht

@@ -1,5 +1,7 @@
 # Aktuelle sichere Übergabe und Discover-Beta — 6. Oktober 2026
 
+Aktuelle Fortsetzung: [Full-Data State Handoff](COMPANY_INTELLIGENCE_FULL_DATA_HANDOFF.md). Authentifizierte Actions-Prüfung bestätigt den privaten R2-Bucket, findet aber keinen aktuellen Rollout-State-Pointer (`REMOTE_STATE_MISSING_INITIALIZATION_REQUIRED`). Kein Restore, kein kleiner Ersatzbestand und keine externe Full-Data-Freigabe.
+
 Die Produktarbeit erfolgt auf `feature/company-intelligence-discover-beta` (#455). Die neueren Engine-Commits bis `59d8c2d527c58e3f129cf95abe7bc237664a76fb` wurden ohne PR-Merge übernommen. Der fremde aktive Coverage-Worker wird nicht verändert. Dieser Workspace besitzt weiterhin keinen erweiterten privaten Ledger; externe Sicherung und frischer authentifizierter Restore bleiben offen. Die bisherige lokale Vorschau ist ausschließlich der kleinere `REVIEW_ONLY`-Kandidat und kein Full-Data-Nachweis. Bisheriger Produktbericht: [COMPANY_INTELLIGENCE_DISCOVER_BETA.md](COMPANY_INTELLIGENCE_DISCOVER_BETA.md).
 
 ---
