@@ -114,7 +114,7 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
  }
  for(const r of rows.filter(r=>!r.providerSymbol))decisions.push({listingId:r.listingId,isin:r.isin,status:'BLOCKED',cause:'MAPPING_ERROR',nextStep:'Find an exact provider ISIN/MIC identity; do not guess the ticker suffix.'});
  for(const r of rows.filter(r=>r.quoteUnit!=='MAJOR'))decisions.push({listingId:r.listingId,isin:r.isin,status:'BLOCKED',cause:'MISSING_FX_OR_SHARE_BASIS',nextStep:'Verify the quotation unit and a compatible canonical adapter without currency conversion or an inferred FX basis.'});
- const productRows=rows.map(r=>({...r,referencedIssuerId:r.companyId,companyId:null,companyAssociationStatus:'EXISTING_VU_COMPANY_ASSOCIATION_UNRESOLVED',logo:{status:'EXISTING_FALLBACK'}}));
+ const productRows=rows.map(r=>({...r,referencedIssuerId:r.referencedIssuerId||r.companyId||null,companyId:null,companyAssociationStatus:'EXISTING_VU_COMPANY_ASSOCIATION_UNRESOLVED',logo:{status:'EXISTING_FALLBACK'}}));
  const converted=Object.fromEntries(Object.entries(histories).map(([id,h])=>[id,{...h,sourceEvidence:h.sourceEvidence.join('|')} ]));
  const result=materialize({rows:productRows,histories:converted,asOf,referenceAsOf:listingMap.asOf,out:previewOut});
  const status={schemaVersion:'de-eu-ingestion-status-1.0.0',asOf,runId,phase,referenceHash:sha(JSON.stringify(listingMap)),...result,sampleSuccesses,decisions,budget:await budget.status(),publicDisplay:false,scheduleActivated:false};
