@@ -79,13 +79,27 @@ const waveNodes = pts.map(([d, p, l], i) => {
   const px = x(ts.indexOf(d)), py = y(p);
   const below = i === 0 ? (pts[1] && pts[1][1] > p) : pts[i - 1][1] > p;
   const lx = Math.min(Math.max(px, 12), W - 12), ly = below ? py + 20 : py - 12;
-  return `<circle cx="${f1(px)}" cy="${f1(py)}" r="4" fill="#0b0d10" stroke="#f4f5f1" stroke-width="1.6"/><text x="${f1(lx)}" y="${f1(ly)}" text-anchor="middle" fill="#f4f5f1" font-size="13" font-weight="900" font-family="Inter,sans-serif">(${esc(l)})</text>`;
+  return `<g class="wn" style="--i:${i}"><circle cx="${f1(px)}" cy="${f1(py)}" r="4" fill="#0b0d10" stroke="#f4f5f1" stroke-width="1.6"/><text x="${f1(lx)}" y="${f1(ly)}" text-anchor="middle" fill="#f4f5f1" font-size="13" font-weight="900" font-family="Inter,sans-serif">(${esc(l)})</text></g>`;
 }).join('');
 const zones = [
   tgt ? `<rect x="0" y="${f1(y(tgt.zoneHigh))}" width="600" height="${f1(y(tgt.zoneLow) - y(tgt.zoneHigh))}" fill="rgba(200,245,49,.14)" stroke="rgba(200,245,49,.55)" stroke-dasharray="4 4"/><text x="8" y="${f1(y(tgt.zoneLow) + 13)}" fill="#c8f531" font-size="10.5" font-weight="800" font-family="Inter,sans-serif">ZIELZONE ${de(tgt.zoneLow, 0)}–${de(tgt.zoneHigh, 0)}</text>` : '',
   ent ? `<rect x="0" y="${f1(y(ent.zoneHigh))}" width="600" height="${f1(y(ent.zoneLow) - y(ent.zoneHigh))}" fill="rgba(255,255,255,.06)"/>` : '',
   inv != null ? `<path d="M0 ${f1(y(inv))}H600" stroke="#f0675c" stroke-width="1.4" stroke-dasharray="6 5"/><text x="8" y="${f1(y(inv) + 14)}" fill="#f0675c" font-size="10.5" font-weight="800" font-family="Inter,sans-serif">INVALIDIERUNG ${de(inv, 0)}</text>` : '',
 ].join('');
+// Inhalt des Charts: einmal als Symbol (fuer <use>), einmal direkt im Hero,
+// wo die Intro-Animation die Linie zeichnet und die Elliott-Punkte einblendet.
+const wavePath = pts.map(([d, p], i) => (i ? 'L' : 'M') + f1(x(ts.indexOf(d))) + ' ' + f1(y(p))).join(' ');
+const chartBody = [
+  `<g stroke="rgba(255,255,255,.07)" stroke-width="1"><path d="${grid.join('')}"/></g>`,
+  `<g fill="#8a9099" font-size="10" font-family="Inter,sans-serif" font-weight="600">${gridLabels.join('')}</g>`,
+  `<g class="c-zones">${zones}</g>`,
+  `<path class="c-area" d="${path(close)} L${W} ${H} L0 ${H}Z" fill="url(#nvda-fill)"/>`,
+  `<path class="c-s200" d="${path(b.chartSeries.sma200)}" fill="none" stroke="#6f7680" stroke-width="1.4" pathLength="1"/>`,
+  `<path class="c-s50" d="${path(b.chartSeries.sma50)}" fill="none" stroke="#e9e3c9" stroke-width="1.3" stroke-opacity=".7" pathLength="1"/>`,
+  `<path class="c-close" d="${path(close)}" fill="none" stroke="#c8f531" stroke-width="2.2" stroke-linejoin="round" pathLength="1"/>`,
+  `<path class="c-wave" d="${wavePath}" fill="none" stroke="#f4f5f1" stroke-width="1.3" stroke-dasharray="3 4"/>`,
+  `<g class="c-nodes">${waveNodes}</g>`,
+].join('\n    ');
 
 // ---------- NVIDIA: Aktienseite ----------
 const s = stock(MAIN), gzNvda = s.geschaeftszahlen || {};
@@ -149,10 +163,7 @@ const factorRows = Object.entries(fx).filter(([k, v]) => FACTOR[k] && typeof v?.
 
 const values = {
   HUD_SYMBOLS: read('scripts/home/hud-symbols.html').trimEnd(),
-  GRID: grid.join(''), GRID_LABELS: gridLabels.join(''), ZONES: zones,
-  CLOSE: path(close), AREA: path(close) + ` L${W} ${H} L0 ${H}Z`,
-  S50: path(b.chartSeries.sma50), S200: path(b.chartSeries.sma200),
-  WAVE: pts.map(([d, p], i) => (i ? 'L' : 'M') + f1(x(ts.indexOf(d))) + ' ' + f1(y(p))).join(' '), WAVE_NODES: waveNodes,
+  CHART_BODY: chartBody,
   NVDA_PRICE: usd(s.price.value), NVDA_CHG: signed(s.changePercent.value / 100, 2), NVDA_CHG_CLASS: s.changePercent.value >= 0 ? 'up' : 'down',
   NVDA_WHAT: esc(s.was || 'Chips für KI und Grafik'), NVDA_BADGES: badges,
   NVDA_REV: de(gzNvda.umsatzTTM / 1000) + ' Mrd. $', NVDA_REV_G: signed(gzNvda.umsatzWachstum, 1),
