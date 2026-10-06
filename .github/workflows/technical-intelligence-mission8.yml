@@ -107,7 +107,7 @@ jobs:
         run: |
           set -euo pipefail
           sha=$(sha256sum docs/technical-intelligence/HISTORICAL_ACCURACY_PREREGISTRATION.md | cut -d' ' -f1)
-          node --max-old-space-size=7168 scripts/technical/hsab/evaluate.mjs --records "$RUNNER_TEMP/dl-replay" --phase W_HOLDOUT \
+          node --max-old-space-size=7168 scripts/technical/hsab/evaluate.mjs --records "$RUNNER_TEMP/dl-replay" --phase W_HOLDOUT --weekly-dir quant/data/market/discover-series-long \
             --delisted "$RUNNER_TEMP/delisted-weekly.json" --open-holdout "$sha" --out "$OUT/w-holdout-eval.json"
       - name: Publish aggregates only
         run: |
