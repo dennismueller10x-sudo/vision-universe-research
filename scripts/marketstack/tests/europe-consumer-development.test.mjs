@@ -19,7 +19,7 @@ test('no input history or proof produces no fake current courses, UI, logos, fac
 });
 test('current price and central technical field require matching source hash and calendar certificate',()=>{
  const r=row(),data=history(r),cert=certificate(r,data),out=aggregateDevelopment(input({histories:{[r.listingId]:data},certifications:{[r.listingId]:cert},integrationEvidence:proof(r)}));
- assert.equal(out.summary.counts.currentEod,1);assert.equal(out.summary.counts.technicalListings,1);const rr=out.outputs.europe_consumer_product_readiness.listings[0];assert.equal(rr.technicalFields.sma20.status,'READY');assert.equal(rr.functions.chart.status,'READY');assert.equal(rr.functions.quantFullScore.status,'BLOCKED');assert.equal(rr.functions.supertrader.status,'BLOCKED');assert.equal(out.outputs.europe_consumer_ingestion_status.listings[0].latest.price,data.bars.at(-1).close);
+ assert.equal(out.summary.counts.currentEod,1);assert.equal(out.summary.counts.technicalListings,1);const rr=out.outputs.europe_consumer_product_readiness.listings[0];assert.equal(rr.technicalFields.sma20.status,'READY');assert.equal(rr.functions.chart.status,'PARTIAL');assert.equal(rr.functions.quantFullScore.status,'BLOCKED');assert.equal(rr.functions.supertrader.status,'BLOCKED');assert.equal(out.outputs.europe_consumer_ingestion_status.listings[0].latest.price,data.bars.at(-1).close);
 });
 test('certificate drift, identity/currency conflict or forged field readiness cannot certify data',()=>{
  const r=row(),data=history(r),cert=certificate(r,data);
@@ -49,7 +49,7 @@ test('budget uses actual shared counter once, unknown balance remains unknown an
  const out=aggregateDevelopment(input({budget:{runId:'actual-shared',requestsAttempted:12,estimatedCreditsConsumed:13,totalEstimatedCreditsConsumed:99,runLimit:20000,targetLimit:15000,creditsRemaining:19901,accountEvidenceState:'UNKNOWN_USER_AUTHORIZED_DETERMINISTIC_COUNTER'},refreshModel:{corporateActionPagesPerListingPerMonth:0}}));const b=out.outputs.europe_consumer_request_budget;assert.equal(b.estimatedCreditsConsumed,99);assert.equal(b.requestsAttempted,12);assert.equal(b.accountRemainingCredits,null);assert.equal(b.accountRemainingVerified,false);assert.equal(b.hardCap,20000);assert.equal(b.scheduleActivated,false);assert.equal(b.monthlyRefreshModel.estimatedTotalSymbolCredits,26);
 });
 test('logo verification needs exact issuer/listing/asset evidence; fallback is not a verified logo',()=>{
- const r=row(),base={listingId:r.listingId,status:'VERIFIED_LOGO',asset:'/synthetic-logo.png',evidence:['synthetic-loaded-asset'],verified:true};assert.equal(aggregateDevelopment(input({logoStatus:[base]})).summary.counts.verifiedLogos,1);assert.equal(aggregateDevelopment(input({logoStatus:[{...base,isin:'DE000BASF111'}]})).summary.counts.verifiedLogos,0);assert.equal(aggregateDevelopment(input({logoStatus:[{...base,status:'EXISTING_FALLBACK'}]})).summary.counts.verifiedLogos,0);
+ const r=row(),base={listingId:r.listingId,isin:r.isin,referencedIssuerId:r.referencedIssuerId,status:'VERIFIED_LOGO',asset:'/synthetic-logo.png',issuerVerified:true,issuerEvidence:['synthetic-exact-issuer-proof'],assetLoad:{loaded:true,asset:'/synthetic-logo.png',evidence:['synthetic-loaded-asset']}};assert.equal(aggregateDevelopment(input({logoStatus:[base]})).summary.counts.verifiedLogos,1);assert.equal(aggregateDevelopment(input({logoStatus:[{...base,isin:'DE000BASF111'}]})).summary.counts.verifiedLogos,0);assert.equal(aggregateDevelopment(input({logoStatus:[{...base,status:'EXISTING_FALLBACK'}]})).summary.counts.verifiedLogos,0);
 });
 test('repeat aggregation is deterministic and CSV correctly quotes actual target metadata',()=>{
  const one=aggregateDevelopment(input());assert.deepEqual(one,aggregateDevelopment(input()));assert.ok(one.csv.includes('"Synthetic ""issuer"""'));assert.ok(one.report.startsWith('|Index|'));assert.equal(Object.keys(one.outputs).length,7);
@@ -65,7 +65,22 @@ test('a dated older OHLC defect does not invalidate a separately proven current 
  assert.equal(out.outputs.europe_consumer_ingestion_status.listings[0].history.state,'INVALID');
  assert.equal(out.outputs.europe_consumer_ingestion_status.listings[0].latest.price,12);
  assert.equal(out.outputs.europe_consumer_ingestion_status.listings[0].freshness.status,'CURRENT');
- assert.equal(out.outputs.europe_consumer_product_readiness.listings[0].functions.privateCloseChart.status,'BLOCKED');
+ assert.equal(out.outputs.europe_consumer_product_readiness.listings[0].functions.privateCloseChart.status,'PARTIAL');
  const latestBad=structuredClone(data);latestBad.bars.at(-1).high=1;
  assert.equal(aggregateDevelopment(input({histories:{[r.listingId]:latestBad}})).outputs.europe_consumer_ingestion_status.listings[0].freshness.status,'INVALID');
+});
+
+test('actual central logo rows require exact tuple, issuer/domain and separately loaded reviewed asset',()=>{
+ const r=row(),companyId=r.referencedIssuerId,sec={isin:r.isin,listingId:r.listingId,securityId:r.securityId,mic:r.mic},asset='files/synthetic.png';
+ const logoStatus={rows:[{companyId,securities:[sec],canonicalStatus:'VERIFIED_LOGO',asset,logo:{status:'VERIFIED_LOGO',companyId}}]};
+ const evidence={companies:[{companyId,securities:[sec],issuerEvidence:{url:'https://example.test/issuer',path:'/private/issuer.json',sha256:'a'.repeat(64)},domainEvidence:{url:'https://example.test/stock',path:'/private/domain.html',sha256:'b'.repeat(64)}}],reviewed:{companies:{[companyId]:'c'.repeat(40)}},assetLoads:[{companyId,asset,loaded:true,sha1:'c'.repeat(40),evidence:['synthetic-actual-asset-load']}]};
+ const output=aggregateDevelopment(input({logoStatus,logoEvidence:evidence}));assert.equal(output.summary.counts.verifiedLogos,1);assert.equal(output.summary.counts.actualCompanyLinks,0);
+ for(const e of [{...evidence,assetLoads:[]},{...evidence,reviewed:{companies:{[companyId]:'d'.repeat(40)}}},{...evidence,companies:[]}]){const out=aggregateDevelopment(input({logoStatus,logoEvidence:e}));assert.equal(out.summary.counts.verifiedLogos,0);assert.equal(out.summary.counts.fallbacks,1);}
+ const wrong=structuredClone(logoStatus);wrong.rows[0].securities[0].isin='DE000BASF111';assert.equal(aggregateDevelopment(input({logoStatus:wrong,logoEvidence:evidence})).outputs.europe_consumer_logo_status.listings[0].status,'SUSPECT_QUARANTINED');
+});
+test('retained quarantines and missing sessions allow only real partial close-chart points, not technical or UI certification',()=>{
+ const r=row(),data=history(r);data.quarantined=Array.from({length:411},(_,i)=>({date:'2026-09-16',reason:'synthetic-bad-source-OHLC-'+i}));const cert=certificate(r,data);cert.missingSessions=['2026-09-17'];
+ const noUI=aggregateDevelopment(input({histories:{[r.listingId]:data},certifications:{[r.listingId]:cert}}));const f=noUI.outputs.europe_consumer_product_readiness.listings[0].functions;assert.equal(f.privateCloseChart.status,'PARTIAL');assert.equal(f.chart.status,'BLOCKED');assert.equal(f.privateCloseChart.quality.quarantinedRowsRetained,411);assert.equal(f.privateCloseChart.quality.filledSessions,0);assert.deepEqual(f.privateCloseChart.quality.missingSessions,['2026-09-17']);
+ const yesUI=aggregateDevelopment(input({histories:{[r.listingId]:data},certifications:{[r.listingId]:cert},integrationEvidence:proof(r)}));assert.equal(yesUI.outputs.europe_consumer_product_readiness.listings[0].functions.chart.status,'PARTIAL');assert.equal(yesUI.summary.counts.closeChartUsable,1);assert.equal(yesUI.outputs.europe_consumer_ingestion_status.listings[0].history.bars,2);
+ const closeBad=structuredClone(data);closeBad.bars[0].close=-1;assert.equal(aggregateDevelopment(input({histories:{[r.listingId]:closeBad},integrationEvidence:proof(r)})).outputs.europe_consumer_product_readiness.listings[0].functions.chart.status,'BLOCKED');
 });

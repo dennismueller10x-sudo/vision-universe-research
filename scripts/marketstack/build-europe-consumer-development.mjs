@@ -62,12 +62,21 @@ function fundamental(row,value,asOf){
  return decision('PARTIAL',[],value.evidence,{period:value.period,filingDate:value.filingDate,asOf},'Validate individual factor, shares, valuation and FX contracts; matched facts are not a Quant score.');
 }
 function logoRecord(row,input){
- const l=byId(input.logoStatus,row.listingId);
- if(!l)return {listingId:row.listingId,status:'MISSING',evidence:[],asset:null,reason:'No supplied logo/asset evidence.'};
- const known=['VERIFIED_LOGO','EXISTING_FALLBACK','SUSPECT_QUARANTINED','MISSING'].includes(l.status)?l.status:'MISSING';
- const linked=l.listingId===row.listingId&&(!l.isin||l.isin===row.isin)&&(!l.referencedIssuerId||l.referencedIssuerId===row.referencedIssuerId)&&(!l.companyId||l.companyId===row.companyId);
- const verified=known==='VERIFIED_LOGO'&&linked&&l.verified===true&&refs(l.evidence)&&typeof l.asset==='string'&&l.asset.length>0;
- return {listingId:row.listingId,status:known==='VERIFIED_LOGO'&&!verified?'SUSPECT_QUARANTINED':known,verified,evidence:arrayRefs(l.evidence),asset:l.asset||null,reason:verified?null:l.reason||'Supplied asset is not fully verified for this listing/issuer.'};
+ const literal=Array.isArray(input.logoStatus?.rows)?input.logoStatus.rows.find(l=>l.securities?.some(s=>s.listingId===row.listingId)):null;
+ const l=literal||byId(input.logoStatus,row.listingId),fallback={listingId:row.listingId,status:'EXISTING_FALLBACK',verified:false,evidence:[],asset:null,reason:'Existing central fallback; no exact issuer and loaded-asset proof supplied.'};
+ if(!l)return fallback;
+ const supplied=l.canonicalStatus||l.status,known=['VERIFIED_LOGO','EXISTING_FALLBACK','SUSPECT_QUARANTINED','MISSING'].includes(supplied)?supplied:'EXISTING_FALLBACK';
+ const exactSecurity=s=>s?.listingId===row.listingId&&s.securityId===row.securityId&&s.isin===row.isin&&s.mic===row.mic;
+ const linked=literal?l.securities.some(exactSecurity)&&[row.companyId,row.referencedIssuerId].filter(Boolean).includes(l.companyId):l.listingId===row.listingId&&l.isin===row.isin&&l.referencedIssuerId===row.referencedIssuerId;
+ const company=input.logoEvidence?.companies?.find(c=>c.companyId===l.companyId&&c.securities?.some(exactSecurity));
+ const proof=e=>typeof e?.path==='string'&&/^[a-f0-9]{64}$/.test(e.sha256||'')&&typeof e.url==='string'&&e.url.startsWith('https://');
+ const issuerProven=literal?!!company&&proof(company.issuerEvidence)&&proof(company.domainEvidence):l.issuerVerified===true&&refs(l.issuerEvidence);
+ const asset=typeof l.asset==='string'?l.asset:null;
+ const loaded=(input.logoEvidence?.assetLoads||[]).find(a=>a.companyId===l.companyId&&a.asset===asset&&a.loaded===true&&refs(a.evidence)&&/^[a-f0-9]{40}$/.test(a.sha1||'')&&input.logoEvidence?.reviewed?.companies?.[l.companyId]===a.sha1);
+ const flatLoaded=!literal&&l.assetLoad?.loaded===true&&l.assetLoad.asset===asset&&refs(l.assetLoad.evidence);
+ const verified=known==='VERIFIED_LOGO'&&linked&&issuerProven&&!!asset&&(!!loaded||flatLoaded);
+ const evidence=[...arrayRefs(l.evidence),...arrayRefs(loaded?.evidence),...arrayRefs(l.assetLoad?.evidence),...(company?[company.issuerEvidence?.path,company.domainEvidence?.path].filter(Boolean):arrayRefs(l.issuerEvidence))];
+ return {listingId:row.listingId,status:verified?'VERIFIED_LOGO':known==='SUSPECT_QUARANTINED'||!linked?'SUSPECT_QUARANTINED':known==='MISSING'?'MISSING':'EXISTING_FALLBACK',verified,evidence,asset:verified?asset:null,candidateAsset:verified?null:asset,producerCanonicalStatus:supplied,reason:verified?null:l.reason||fallback.reason};
 }
 export function aggregateDevelopment(input){
  if(!input||!Array.isArray(input.listingMaps)||!date(input.asOf)||!/^[a-f0-9]{40}$/.test(input.sourceSHA||'')||typeof input.now!=='string'||!/(Z|[+-]\d\d:\d\d)$/.test(input.now)||!Number.isFinite(Date.parse(input.now)))throw Error('FIXED_PRIVATE_REPORT_INPUT_REQUIRED');
@@ -91,11 +100,20 @@ export function aggregateDevelopment(input){
   const baseline=evaluateListingReadiness({listing:{...row,currency:row.tradingCurrency},history:h?{...h,bars:facts.barsForEvaluator||[],sourceEvidence:sourceRefs}:{},asOf:input.asOf,metadata:{identityVerified:mapped,identityEvidence:mappingRefs,currencyVerified:mapped&&!!row.tradingCurrency,currencyEvidence:mappingRefs,quoteUnit:row.quoteUnit,
    rights:{privateDevelopment:true,publicDisplay:false,evidence:['User-authorized isolated private DE/EU consumer development']}}});
   const functions=baseline.functions;
-  if(facts.state==='INVALID')functions.privateCloseChart=decision('BLOCKED',facts.causes,sourceRefs,{start:facts.first,end:facts.last,asOf:input.asOf},'Validate exact canonical history identity and source rows.');
+  const quarantine=[...(h?.quarantined||[]),...(h?.anomalies||[])],missingSessions=certMatches?cert.missingSessions||[]:[];
+  const chartQuality={quarantinedRowsRetained:quarantine.length,quarantine,historyIssues:certMatches?cert.fullHistoryQuality?.issues||[]:h?.quality?.issues||[],missingSessions,filledSessions:0,basis:facts.basis||'UNKNOWN'};
+  if(functions.privateCloseChart.status==='READY'){
+   const partialCauses=[...(facts.state==='INVALID'||quarantine.length?['PROVIDER_DATA_DEFECT']:[]),...(missingSessions.length?['MISSING_HISTORY']:[]),...(facts.basis==='UNKNOWN'?['UNKNOWN_ADJUSTMENT_BASIS']:[])];
+   if(partialCauses.length)functions.privateCloseChart=decision('PARTIAL',partialCauses,sourceRefs,{start:facts.first,end:facts.last,asOf:input.asOf},'Display only the real registered close points and their dated quality limitations; technical eligibility remains separate.');
+  }
+  if(facts.causes.some(c=>['MAPPING_ERROR','PROVIDER_PROVENANCE_UNVERIFIED'].includes(c)))functions.privateCloseChart=decision('BLOCKED',facts.causes,sourceRefs,{start:facts.first,end:facts.last,asOf:input.asOf},'Validate exact canonical history identity and provenance.');
+  functions.privateCloseChart.quality=chartQuality;
   for(const name of ['search','detail','watchlist','chart','screener']){
    const proof=uiProof(input,row.listingId,name),causes=[...(mapped?[]:['MAPPING_ERROR']),...(proof?[]:['PRODUCT_INTEGRATION_MISSING'])];
+   const hardBlocked=causes.length>0||name==='chart'&&functions.privateCloseChart.status==='BLOCKED';
    if(name==='chart')causes.push(...functions.privateCloseChart.causes);
-   functions[name]=decision(causes.length?'BLOCKED':'READY',causes,proof?.evidence||[],{start:facts.first,end:facts.last,asOf:input.asOf},causes.length?'Validate the actual central product loader/UI on this listing.':null);
+   functions[name]=decision(hardBlocked?'BLOCKED':name==='chart'&&functions.privateCloseChart.status==='PARTIAL'?'PARTIAL':'READY',causes,proof?.evidence||[],{start:facts.first,end:facts.last,asOf:input.asOf},causes.length?'Validate the actual central product loader/UI and preserve the named dated limitations.':null);
+   if(name==='chart')functions[name].quality=chartQuality;
   }
   functions.latestEod=decision(fresh.status==='CURRENT'?'READY':['STALE','DELAYED_EXPECTED'].includes(fresh.status)?'PARTIAL':'BLOCKED',fresh.cause?[fresh.cause]:[],fresh.evidence||[],{start:facts.last,end:facts.last,asOf:input.asOf},fresh.status==='CURRENT'?null:'Obtain/verifiy the latest completed local session and documented provider delivery.');
   functions.regionFilter=decision(mapped&&row.companyCountry?'READY':'PARTIAL',row.companyCountry?[]:['MAPPING_ERROR'],mappingRefs,null,'Issuer domicile, listing venue and membership remain separate attributes.');
@@ -114,11 +132,11 @@ export function aggregateDevelopment(input){
   const logo=logoRecord(row,input);logos.push(logo);functions.logo=decision(logo.verified?'READY':logo.status==='EXISTING_FALLBACK'?'PARTIAL':'BLOCKED',logo.verified?[]:['PRODUCT_INTEGRATION_MISSING'],logo.evidence,null,logo.reason);
   const statusEvidence=(input.statuses||[]).flatMap(s=>s.decisions||s.listings||[]).filter(d=>d.listingId===row.listingId);
   const {barsForEvaluator,...storedFacts}=facts;
-  ingestion.push({listingId:row.listingId,isin:row.isin,mic:row.mic,name:row.name,history:storedFacts,latest:{price:facts.latestClose??null,date:facts.last,currency:row.tradingCurrency,quoteUnit:row.quoteUnit,source:h?.source||null,apiVersion:h?.apiVersion||null,retrievedAt:h?.retrievedAt||null,dataKind:'EOD'},freshness:fresh,sourceEvidence:sourceRefs,statusEvidence,certificationInputMatched:certMatches});
+  ingestion.push({listingId:row.listingId,isin:row.isin,mic:row.mic,name:row.name,history:storedFacts,latest:{price:facts.latestClose??null,date:facts.last,currency:row.tradingCurrency,quoteUnit:row.quoteUnit,source:h?.source||null,apiVersion:h?.apiVersion||null,retrievedAt:h?.retrievedAt||null,dataKind:'EOD'},freshness:fresh,sourceEvidence:sourceRefs,statusEvidence,certificationInputMatched:certMatches,quality:chartQuality});
   readiness.push({listingId:row.listingId,securityId:row.securityId,companyId:row.companyId||null,referencedIssuerId:row.referencedIssuerId||null,isin:row.isin,mic:row.mic,asOf:input.asOf,functions,technicalFields:fields,inputSeriesHash:facts.inputSeriesHash});
  }
  const byReady=new Map(readiness.map(r=>[r.listingId,r])),byIngestion=new Map(ingestion.map(r=>[r.listingId,r])),byLogo=new Map(logos.map(r=>[r.listingId,r]));
- const counts={selectedShareClasses:new Set(rows.map(r=>r.securityId)).size,selectedListings:rows.length,actualCompanyLinks:new Set(rows.map(r=>r.companyId).filter(Boolean)).size,referencedLEIIssuers:new Set(rows.map(r=>r.referencedIssuerId).filter(Boolean)).size,currentEod:ingestion.filter(r=>r.freshness.status==='CURRENT').length,verifiedLogos:logos.filter(l=>l.verified).length,fallbacks:logos.filter(l=>l.status==='EXISTING_FALLBACK').length,historyAvailable:ingestion.filter(r=>r.history.state==='AVAILABLE').length,searchReady:readiness.filter(r=>r.functions.search.status==='READY').length,watchlistReady:readiness.filter(r=>r.functions.watchlist.status==='READY').length,technicalListings:readiness.filter(r=>Object.values(r.technicalFields).some(f=>f.status==='READY')).length};
+ const counts={selectedShareClasses:new Set(rows.map(r=>r.securityId)).size,selectedListings:rows.length,actualCompanyLinks:new Set(rows.map(r=>r.companyId).filter(Boolean)).size,referencedLEIIssuers:new Set(rows.map(r=>r.referencedIssuerId).filter(Boolean)).size,currentEod:ingestion.filter(r=>r.freshness.status==='CURRENT').length,verifiedLogos:logos.filter(l=>l.verified).length,fallbacks:logos.filter(l=>l.status==='EXISTING_FALLBACK').length,historyAvailable:ingestion.filter(r=>r.history.state==='AVAILABLE').length,closeChartUsable:readiness.filter(r=>['READY','PARTIAL'].includes(r.functions.privateCloseChart.status)).length,searchReady:readiness.filter(r=>r.functions.search.status==='READY').length,watchlistReady:readiness.filter(r=>r.functions.watchlist.status==='READY').length,technicalListings:readiness.filter(r=>Object.values(r.technicalFields).some(f=>f.status==='READY')).length};
  const indexKeys=[...new Set([...(input.referenceUniverse?.indexes||[]).map(i=>i.index),...rows.flatMap(r=>r.indexMemberships)])].sort();
  const matrix=indexKeys.map(index=>{const rr=rows.filter(r=>r.indexMemberships.includes(index)),ref=input.referenceUniverse?.indexes?.find(i=>i.index===index);return {index,referenceCompleteness:ref?.referenceCompleteness||'REFERENCE_UNRESOLVED',referenceDate:ref?.referenceDate||null,effectiveDate:ref?.effectiveDate||null,targetShareClasses:ref?.observedMembers??rr.length,mappedLocalListings:rr.filter(r=>r.mappingStatus==='VERIFIED').length,currentEod:rr.filter(r=>byIngestion.get(r.listingId).freshness.status==='CURRENT').length,historyAvailable:rr.filter(r=>byIngestion.get(r.listingId).history.state==='AVAILABLE').length,verifiedLogos:rr.filter(r=>byLogo.get(r.listingId).verified).length,fallbacks:rr.filter(r=>byLogo.get(r.listingId).status==='EXISTING_FALLBACK').length,technicalListings:rr.filter(r=>Object.values(byReady.get(r.listingId).technicalFields).some(f=>f.status==='READY')).length,open:[...new Set(rr.flatMap(r=>Object.values(byReady.get(r.listingId).functions).flatMap(f=>f.causes)))]};});
  const budget=input.budget||{},n=rows.filter(r=>r.providerSymbol).length,caPages=Number.isSafeInteger(input.refreshModel?.corporateActionPagesPerListingPerMonth)?input.refreshModel.corporateActionPagesPerListingPerMonth:null;
