@@ -9,6 +9,15 @@ import {assertPrivateOutput,rejectSymlinkAncestors} from './private-output.mjs';
 import {materialize} from './materialize-de-eu.mjs';
 const require=createRequire(import.meta.url),Client=require('../../providers/marketstack/client.js'),Adapter=require('../../providers/marketstack/adapter.js');
 const sha=s=>createHash('sha256').update(s).digest('hex');
+// Current v2 documentation limits the dedicated action feeds to the named
+// US/China venues. The actual EU sample returned empty action feeds despite
+// embedded EOD dividends. Preserve those observations; never certify empty
+// pages as complete or repeat this unsupported request for every EU security.
+const EU_ACTION_UNCOVERED_MICS=new Set(['XETR','XFRA','XAMS','XPAR','XBRU','XHEL','XLON','XSWX','XSTO','XCSE','XOSL','XMAD','XMIL','XWBO','XLIS']);
+export function dedicatedActionCoverage(mic){return EU_ACTION_UNCOVERED_MICS.has(mic)?{
+ available:false,reason:'documentedMarketNotCovered',verified:false,actionsComplete:false,embeddedObservationsPreserved:true,
+ evidence:[{url:'https://docs.apilayer.com/marketstack/docs/marketstack-api-v2-v-2-0-0',retrievedOn:'2026-10-06',
+ sha256:'c8e56f7c42a7df179237befddda6a0616e766c04733bb7d4d54f1ceb677ac117',scope:'DEDICATED_SPLITS_AND_DIVIDENDS_MARKETS'}]}:null;}
 const date=v=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
 const reason=r=>({entitlementRestricted:'ENTITLEMENT_BLOCKED',authError:'ENTITLEMENT_BLOCKED',dataUnavailable:'UNSUPPORTED_LISTING',identityMismatch:'MAPPING_ERROR',symbolMismatch:'MAPPING_ERROR',exchangeMismatch:'MAPPING_ERROR',isinMismatch:'MAPPING_ERROR',budgetUnverified:'ACCOUNT_BUDGET_UNVERIFIED',SHARED_BUDGET_EXCEEDED:'ACCOUNT_BUDGET_UNVERIFIED'})[r]||'PROVIDER_DATA_DEFECT';
 export function sampleSelection(rows,size=15){
@@ -94,6 +103,8 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
   if(!last||quote&&(last.date!==lastDate||last.close!==quote.data.last)){block('PROVIDER_DATA_DEFECT','Reconcile latest endpoint with canonical EOD history; no second product quote source.');continue;}
   const actions={...prior?.corporateActions};let terminalActionFailure=false;
   if(phase!=='refresh'&&typeof provider.getActionEvents==='function')for(const kind of ['splits','dividends']){
+   const uncovered=phase==='mandatory'&&dedicatedActionCoverage(r.mic);
+   if(uncovered){actions[kind]=uncovered;write(join(privateDir,'actions',r.listingId+'-'+kind+'.json'),uncovered);continue;}
    if(actionEndpointBlocks.has(kind)){actions[kind]={available:false,reason:'entitlementRestricted',priorRepresentativeFailure:true};continue;}
    const action=await provider.getActionEvents(r.listingId,kind,{from,to:asOf,maxPages:2});actions[kind]=action;
    write(join(privateDir,'actions',r.listingId+'-'+kind+'.json'),action);

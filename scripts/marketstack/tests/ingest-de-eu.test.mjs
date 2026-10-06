@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {sampleSelection,mergeBars,ingest} from '../ingest-de-eu.mjs';
+import test from 'node:test';import assert from 'node:assert/strict';import {sampleSelection,mergeBars,ingest,dedicatedActionCoverage} from '../ingest-de-eu.mjs';
 import {mkdtempSync,rmSync,readFileSync,writeFileSync} from 'node:fs';import {join} from 'node:path';import {tmpdir} from 'node:os';
 import {createRequire} from 'node:module';import {createHash} from 'node:crypto';
 const require=createRequire(import.meta.url),I=require('../../../core/identity.js');
@@ -55,3 +55,8 @@ test('missing current account evidence stops before constructing any provider',a
  assert.equal(built,0);
  }finally{rmSync(out,{recursive:true,force:true});}
 });
+
+ test('documented uncovered EU action feeds remain incomplete and preserve embedded observations',()=>{
+ for(const mic of ['XETR','XPAR','XHEL','XLON']){const c=dedicatedActionCoverage(mic);assert.equal(c.actionsComplete,false);assert.equal(c.verified,false);assert.equal(c.embeddedObservationsPreserved,true);assert.equal(c.reason,'documentedMarketNotCovered');assert.ok(c.evidence[0].sha256);}
+ assert.equal(dedicatedActionCoverage('XNAS'),null);assert.equal(dedicatedActionCoverage('UNKNOWN'),null);
+ });
