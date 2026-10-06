@@ -10,7 +10,12 @@ MONTHS = {m.lower(): n for n, m in enumerate(['January', 'February', 'March', 'A
 DATE = re.compile(r'\b(' + '|'.join(MONTHS) + r')\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(20\d{2})\b', re.I)
 EARNINGS = re.compile(r'earnings|(?:quarter|quarterly|fiscal|financial|full.year).{0,30}results|\bQ[1-4]\b(?:\s+(?:FY\s*(?:20)?\d{2}|20\d{2}))?\s+results\b', re.I)
 ANNOUNCEMENT = re.compile(r'\b(will|scheduled|schedule|to (?:report|announce|release|host|present|participate)|sets|date for)\b', re.I)
-TIME = re.compile(r'\b(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)\s*(?:U\.?S\.?\s+)?(ET|EST|EDT|PT|PST|PDT|UTC|GMT|Eastern(?: Daylight| Standard)? Time|Pacific(?: Daylight| Standard)? Time)\b', re.I)
+# Some issuer schedules place the full event date between a clock and its zone.
+# Admit that exact grammar only; never bridge arbitrary text or another clock.
+CLOCK_DATE = (r'(?:on\s+(?:(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+)?'
+              r'(?:' + '|'.join(MONTHS) + r')\s+\d{1,2}(?:st|nd|rd|th)?,?\s+20\d{2},?\s+)?')
+TIME = re.compile(r'\b(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)\s*' + CLOCK_DATE +
+                  r'(?:U\.?S\.?\s+)?(ET|EST|EDT|PT|PST|PDT|UTC|GMT|Eastern(?: Daylight| Standard)? Time|Pacific(?: Daylight| Standard)? Time)\b', re.I)
 
 
 def publication_dateline(text, match):
@@ -81,6 +86,14 @@ def from_announcement(item, source, now):
     time_match = TIME.search(text)
     clock, zone, start = None, None, None
     if time_match:
+        clock_date = DATE.search(time_match[0])
+        if clock_date:
+            try:
+                clock_day = date(int(clock_date[3]), MONTHS[clock_date[1].lower()], int(clock_date[2])).isoformat()
+            except ValueError:
+                return []
+            if clock_day != day:
+                return []
         hour, minute = int(time_match[1]), int(time_match[2] or 0)
         if not 1 <= hour <= 12 or not 0 <= minute < 60:
             return []

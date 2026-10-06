@@ -35,3 +35,35 @@ class USQualifiedTimezonesTests(unittest.TestCase):
         self.assertEqual(from_announcement({'headline':'Example will host earnings call',
             'url':'https://issuer.example/call','publishedAt':'2026-07-01T00:00:00Z',
             'evidenceText':'The earnings call will take place on August 18, 2026 at 8:30 a.m. U.S. EST.'}, SOURCE, NOW), [])
+
+    def test_date_between_clock_and_timezone_keeps_first_dual_zone_clock(self):
+        for date, label in [('August 25, 2026', 'Tuesday, August 25, 2026'),
+                            ('August 26, 2026', 'August 26, 2026')]:
+            with self.subTest(label=label):
+                e = self.call(date, f'8:00 AM on {label}, U.S. Eastern Time '
+                              f'(8:00 PM on {label}, Beijing/Hong Kong Time)')
+                self.assertEqual((e['time'], e['timezone'], e['startsAt']),
+                                 ('08:00', 'America/New_York', e['date']+'T12:00:00Z'))
+
+    def test_date_separated_clock_respects_zone_and_season(self):
+        for date, day, stamp in [('November 12, 2025', '2025-11-12', '16:30:00Z'),
+                                 ('August 18, 2026', '2026-08-18', '15:30:00Z')]:
+            with self.subTest(date=date):
+                e = self.call(date, f'8:30 a.m. on {date}, US Pacific Time')
+                self.assertEqual((e['time'], e['timezone'], e['startsAt']),
+                                 ('08:30', 'America/Los_Angeles', day+'T'+stamp))
+        self.assertEqual(from_announcement({'headline':'Example will host earnings call',
+            'url':'https://issuer.example/call', 'publishedAt':'2026-07-01T00:00:00Z',
+            'evidenceText':'The earnings call is scheduled at 8:00 AM on August 25, 2026, U.S. EST.'}, SOURCE, NOW), [])
+
+    def test_date_separated_clock_cannot_cross_clause_or_unsupported_zone(self):
+        for suffix in ['and another session uses U.S. Eastern Time', '. U.S. Eastern Time',
+                       'Beijing Time', 'Eastern regional time']:
+            with self.subTest(suffix=suffix):
+                e = self.call('August 25, 2026', f'8:00 AM on August 25, 2026, {suffix}')
+                self.assertIsNone(e['time']); self.assertIsNone(e['timezone']); self.assertIsNone(e['startsAt'])
+        for date in ['August 32, 2026', 'February 30, 2026']:
+            with self.subTest(invalid_clock_date=date):
+                self.assertEqual(from_announcement({'headline':'Example will host earnings call on August 25, 2026',
+                    'url':'https://issuer.example/call', 'publishedAt':'2026-07-01T00:00:00Z',
+                    'evidenceText':f'The call is scheduled at 8:00 AM on {date}, U.S. Eastern Time.'}, SOURCE, NOW), [])
