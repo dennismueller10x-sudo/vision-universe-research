@@ -53,7 +53,9 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: company-intelligence-state
+  # Read-only probes cannot evict the writer group's single pending batch.
+  # Every existing mutating job retains the original serialized group.
+  group: ${{ inputs.current_restore_only && format('company-intelligence-read-only-{0}', github.run_id) || 'company-intelligence-state' }}
   cancel-in-progress: false
 jobs:
   validate:
