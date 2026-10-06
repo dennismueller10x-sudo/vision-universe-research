@@ -302,6 +302,35 @@ test("Kostenaenderung zwischen Prospektstaenden: nur gleich definierte Felder, f
   // Brutto gegen Netto wird nie verglichen
   assert.equal(C.diffFundamentals({ shareClassId: "C1", expenseRatio: f(0.002) }, { shareClassId: "C1", netExpenseRatio: f(0.001) }).events.length, 0);
 });
+test("Kosten-Zustaende: 0,00 % ist ein belegter Wert, fehlend/nicht gemeldet/Platzhalter nie", () => {
+  const f = (v) => ({ value: v });
+  assert.equal(C.costState(null, "expenseRatio"), "MISSING");
+  assert.equal(C.costState({ filed: "2026-01-01" }, "expenseRatio"), "NOT_REPORTED");
+  assert.equal(C.costState({ expenseRatio: f(0) }, "expenseRatio"), "VALID_ZERO");                         // gebuehrenfreier ETF
+  assert.equal(C.costState({ expenseRatio: f(0), managementFee: f(0) }, "expenseRatio"), "VALID_ZERO");
+  assert.equal(C.costState({ expenseRatio: f(0), managementFee: f(0.005) }, "expenseRatio"), "PLACEHOLDER"); // Gesamt < Bestandteil
+  assert.equal(C.costState({ netExpenseRatio: f(0), expenseRatio: f(0.004) }, "netExpenseRatio"), "VALID_ZERO"); // voller Verzicht
+  assert.equal(C.costState({ managementFee: f(0) }, "managementFee"), "VALID_ZERO");
+  assert.equal(C.costState({ expenseRatio: f("n/a") }, "expenseRatio"), "UNKNOWN");
+  assert.equal(C.costState({ expenseRatio: f(0.0003) }, "expenseRatio"), "VALID");
+});
+test("Kostenaenderungen: 0 -> positiv, positiv -> 0, 0 -> 0, fehlend <-> positiv, Brutto vs. Netto vs. Verwaltungsgebuehr", () => {
+  const f = (v) => ({ value: v });
+  const ch = (a, b) => C.costChanges(a, b, { from: "2025-02-27", to: "2026-02-27" }).map((e) => e.eventType + ":" + e.oldValue + "->" + e.newValue);
+  assert.deepEqual(ch({ expenseRatio: f(0) }, { expenseRatio: f(0.0015) }), ["EXPENSE_RATIO_CHANGED:0->0.0015"]);   // Verzicht/Nullgebuehr endet
+  assert.deepEqual(ch({ expenseRatio: f(0.0015) }, { expenseRatio: f(0) }), ["EXPENSE_RATIO_CHANGED:0.0015->0"]);
+  assert.deepEqual(ch({ expenseRatio: f(0) }, { expenseRatio: f(0) }), []);
+  assert.deepEqual(ch({}, { expenseRatio: f(0.0015) }), []);                       // fehlend -> positiv: kein Ereignis
+  assert.deepEqual(ch({ expenseRatio: f(0.0015) }, {}), []);                       // positiv -> fehlend: kein Ereignis
+  assert.deepEqual(ch({ expenseRatio: f(0), managementFee: f(0.004) }, { expenseRatio: f(0.006), managementFee: f(0.004) }), []);  // Platzhalter-0 ist nicht vergleichbar
+  assert.deepEqual(ch({ netExpenseRatio: f(0), expenseRatio: f(0.002) }, { netExpenseRatio: f(0.002), expenseRatio: f(0.002) }), ["NET_EXPENSE_RATIO_CHANGED:0->0.002"]);
+  assert.deepEqual(ch({ expenseRatio: f(0.002) }, { netExpenseRatio: f(0.001) }), []);   // Brutto nie gegen Netto
+  assert.deepEqual(ch({ managementFee: f(0) }, { managementFee: f(0.0025) }), ["MANAGEMENT_FEE_CHANGED:0->0.0025"]);
+  // Brutto aendert sich, Netto (berechnete Kosten) bleibt gleich -> nicht melden
+  assert.deepEqual(ch({ expenseRatio: f(0.01), netExpenseRatio: f(0.005) }, { expenseRatio: f(0.012), netExpenseRatio: f(0.005) }), []);
+  const t = C.costChanges({ expenseRatio: f(0.0015) }, { expenseRatio: f(0) }, { from: "2025-02-27", to: "2026-02-27" })[0].text;
+  assert.match(t, /0,15 % → 0,00 %/);
+});
 test("Fundamentals kompakt ausliefern: verlustfrei (expand(compact(x)) === x)", () => {
   const fu = { schemaVersion: "2.0.0", fundId: "sec:S1", name: { value: "X ETF", source: "TIINGO", sourceType: "MARKET_DATA_PROVIDER", sourceUrl: null, asOf: null, retrievedAt: null, confidence: "MEDIUM" },
     isin: null, aum: { value: 1e9, source: "SEC_NPORT", sourceType: "REGULATORY", sourceUrl: "https://sec.example/nport", asOf: "2026-03-31", retrievedAt: null, confidence: "HIGH" },

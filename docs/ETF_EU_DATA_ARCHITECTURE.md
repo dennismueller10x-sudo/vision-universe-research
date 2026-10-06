@@ -31,7 +31,7 @@ Fonds (Teilfonds, ESMA-Register)  ──  Anteilklasse (ISIN, FIRDS)  ──  Li
 | SEC Risk/Return (US-Kosten, Vorstand) | `ingest-sec-rr.mjs` | `data/sources/sec-rr-costs.json` | ja |
 | ESMA FIRDS + GLEIF | `ingest-esma-firds.mjs` | `data/eu/etf-eu-index.json` | ja |
 | ESMA-Fondsregister | `ingest-esma-funds.mjs` | `data/eu/etf-eu-ucits.json` | ja |
-| Xetra-Referenzdaten | `ingest-xetra-refdata.mjs` | `data/sources/xetra-refdata-stats.json` (nur Zahlen); `data/eu/etf-eu-xetra.json` nur mit `VU_PUBLISH_XETRA_REFDATA=1` | Zahlen ja, Werte **nein** |
+| Xetra-Referenzdaten | `ingest-xetra-refdata.mjs` | nichts im Repository (Abdeckung nur temporär, `--stats-out`); kein automatischer Lauf | nein, Werte **nein** |
 | ETF-Stamm, Qualität, Änderungen | `build-etf-data.mjs` | `data/etf-index.json`, `data/quality.json`, `data/changes.json`, … | ja |
 | Gates | `assert-vorsorge-data.mjs` | – | – |
 

@@ -1,6 +1,6 @@
 {
  "schemaVersion": "vu-vorsorge-data-qa-2.0.0",
- "asOf": "2026-10-02",
+ "asOf": "2026-10-05",
  "scope": "TIINGO_ETF_INGEST",
  "ingest": {
   "status": "COMPLETE",
@@ -105,7 +105,7 @@
   "review": 1334,
   "consumerVisible": 6072,
   "withPriceHistory": 7405,
-  "withHistory1Y": 5188,
+  "withHistory1Y": 5189,
   "withHistory3Y": 3522,
   "withHistory5Y": 2758,
   "withHistory10Y": 1620,
@@ -116,7 +116,7 @@
  "priceCoverage": {
   "withAnyHistory": 7405,
   "ratio": 0.9987860803884543,
-  "y1": 5188,
+  "y1": 5189,
   "y3": 3522,
   "y5": 2758,
   "y10": 1620,
@@ -2861,18 +2861,7 @@
    "holdings": 0,
    "ucitsRegister": 3144,
    "notifiedInGermany": 2542,
-   "domicileFromIsin": 258,
-   "pendingRights": {
-    "source": "Deutsche Börse (Xetra-Referenzdaten)",
-    "asOf": "2026-10-05",
-    "etfs": 3008,
-    "ongoingCharges": 3008,
-    "replication": 2491,
-    "distribution": 3008,
-    "benchmark": 2491,
-    "wkn": 3013,
-    "published": false
-   }
+   "domicileFromIsin": 258
   },
   "providers": [
    {
@@ -2930,14 +2919,6 @@
     "lastSuccessfulFetch": "2026-10-05",
     "items": 3144,
     "fields": "UCITS-Status (amtlich), Verwaltungsgesellschaft, Vertriebsländer"
-   },
-   {
-    "id": "DEUTSCHE_BOERSE_REFDATA",
-    "type": "MARKET_DATA_PROVIDER",
-    "status": "RIGHTS_PENDING",
-    "lastSuccessfulFetch": "2026-10-05",
-    "items": 3008,
-    "fields": "Laufende Kosten, Replikation, Ertragsverwendung, Index, WKN – Nutzungsrechte in Klärung, nicht veröffentlicht"
    },
    {
     "id": "BLACKROCK",

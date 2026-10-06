@@ -105,8 +105,19 @@ if (existsSync(euP)) {
 }
 // Xetra-Referenzdaten: Rechte UNKNOWN -> Werte duerfen ohne Freigabe nicht im veroeffentlichten Verzeichnis liegen
 {
-  const st = existsSync(join(D, "sources/xetra-refdata-stats.json")) ? read(join(D, "sources/xetra-refdata-stats.json")) : null;
-  if (existsSync(join(D, "eu/etf-eu-xetra.json")) && !(st && st.published)) errors.push("XETRA_VALUES_PUBLISHED_WITHOUT_RELEASE");
+  // Ohne Freigabe weder Werte noch Abdeckungsdateien im veroeffentlichten Verzeichnis
+  if (existsSync(join(D, "eu/etf-eu-xetra.json"))) errors.push("XETRA_VALUES_PUBLISHED_WITHOUT_RELEASE");
+  if (existsSync(join(D, "sources/xetra-refdata-stats.json"))) errors.push("XETRA_STATS_PUBLISHED_WITHOUT_RELEASE");
+  // EU-Stamm/Register: nur die bekannten Spalten (keine Xetra-Felder wie WKN oder laufende Kosten)
+  for (const [f, allowed] of [["eu/etf-eu-index.json", null], ["eu/etf-eu-ucits.json", ["isin", "ucits", "fundName", "manager", "homeState", "authority", "status", "hostCountries", "registerUpdated", "match"]]]) {
+    const j = existsSync(join(D, f)) ? read(join(D, f)) : null;
+    const bad = j && (j.fields || []).filter((k) => /wkn|ongoing|replication|benchmark|xetra/i.test(k) || (allowed && !allowed.includes(k)));
+    if (bad && bad.length) errors.push("XETRA_FIELDS_IN_EU_DATA: " + f + " " + bad.join(","));
+  }
+  for (const f of ["quality.json", "data-gaps.json", "changes.json", "sources/etf-eu-source-probe.json"]) {   // EU-Stamm: Fondsnamen enthalten Indexnamen wie "Deutsche Börse EUROGOV"
+    const t = existsSync(join(D, f)) ? readFileSync(join(D, f), "utf8") : "";
+    if (/Deutsche B(ö|oe)rse|DEUTSCHE_BOERSE|xetra-master|xetra-all-tradable|ongoingChargesQuantiles|pendingRights/i.test(t)) errors.push("XETRA_REFERENCE_IN_PUBLIC_DATA: " + f);
+  }
 }
 const rrP = join(D, "sources/sec-rr-costs.json");
 if (existsSync(rrP)) { const rr = read(rrP); if (rr) for (const [sym, v] of Object.entries(rr.bySymbol)) for (const k of ["expenseRatio", "netExpenseRatio", "managementFee"]) if (v[k] && !(v[k].value >= 0 && v[k].value < 0.1)) errors.push("COST_OUT_OF_RANGE " + sym + "." + k); }

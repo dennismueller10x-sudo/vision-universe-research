@@ -255,6 +255,46 @@
     ["name", "NAME_CHANGED", "Name", "text"], ["ucits", "UCITS_CHANGED", "UCITS", "text"], ["domicile", "DOMICILE_CHANGED", "Domizil", "text"],
     ["fundStatus", "FUND_STATUS_CHANGED", "Status", "status"]
   ];
+  /** Zustand eines Kostenfelds in einem Prospektstand (SEC Risk/Return):
+      MISSING      - kein Prospektstand vorhanden,
+      NOT_REPORTED - Prospektstand vorhanden, Feld nicht gemeldet,
+      UNKNOWN      - Wert nicht numerisch,
+      PLACEHOLDER  - 0 als Gesamtkostenquote, obwohl eine Teilkomponente (Verwaltungsgebuehr, Netto) positiv ist - widerspruechlich,
+      VALID_ZERO   - belegte 0,00 % (z. B. gebuehrenfreie ETFs, vollstaendiger Verzicht),
+      VALID        - belegter positiver Wert.
+      Nur VALID und VALID_ZERO sind vergleichbar; fehlend ist nie 0. */
+  var COST_STATES = ["VALID", "VALID_ZERO", "MISSING", "NOT_REPORTED", "PLACEHOLDER", "UNKNOWN"];
+  function costState(rec, field) {
+    if (!rec) return "MISSING";
+    var o = rec[field];
+    if (o === undefined || o === null) return "NOT_REPORTED";
+    var x = typeof o === "object" ? o.value : o;
+    if (x === null || x === undefined || x === "") return "NOT_REPORTED";
+    if (typeof x !== "number" || !isFinite(x) || x < 0) return "UNKNOWN";
+    if (x > 0) return "VALID";
+    if (field === "expenseRatio") {
+      var pos = function (k) { var y = rec[k]; y = y && typeof y === "object" ? y.value : y; return typeof y === "number" && y > 0; };
+      if (pos("managementFee") || pos("netExpenseRatio")) return "PLACEHOLDER";
+    }
+    return "VALID_ZERO";
+  }
+  function costComparable(state) { return state === "VALID" || state === "VALID_ZERO"; }
+  /** Kostenaenderungen zweier Prospektstaende ({ expenseRatio|netExpenseRatio|managementFee: { value } }).
+      Nur gleich definierte, beidseitig belegte Felder (VALID/VALID_ZERO); eine Brutto-Aenderung ohne Aenderung der
+      berechneten Netto-Kosten wird nicht gemeldet. opts: { shareClassId, from, to, source }. */
+  function costChanges(prev, next, opts) {
+    var o = opts || {};
+    if (!prev || !next) return [];
+    var val = function (x, k) { return costComparable(costState(x, k)) ? x[k] : null; };
+    var pick = function (x) { return { shareClassId: o.shareClassId || null, expenseRatio: val(x, "expenseRatio"), netExpenseRatio: val(x, "netExpenseRatio"), managementFee: val(x, "managementFee") }; };
+    var d = diffFundamentals(pick(prev), pick(next), { from: o.from, to: o.to, source: o.source || null });
+    var netBoth = val(next, "netExpenseRatio") && val(prev, "netExpenseRatio");
+    var netChanged = d.events.some(function (x) { return x.entityId === "netExpenseRatio"; });
+    return d.events.filter(function (x) { return !(x.entityId === "expenseRatio" && netBoth && !netChanged); }).map(function (x) {
+      return { eventType: x.eventType, field: x.entityId, label: x.entityName, oldValue: x.oldValue, newValue: x.newValue, from: o.from || null, to: o.to || null,
+        text: x.explanation.replace(/\.$/, "") + " (Prospekt " + o.from + " → " + o.to + ")." };
+    });
+  }
   /** prev/next: kanonische Fondsdaten (Fundamentals 2.0). opts: { from, to, aumRel }. */
   function diffFundamentals(prev, next, opts) {
     var cfg = Object.assign({}, DEFAULTS, opts || {});
@@ -307,7 +347,7 @@
   }
 
   var api = { VERSION: VERSION, ETF_CHANGE_EVENT_VERSION: VERSION, IMPORTANCE: IMPORTANCE, DEFAULTS: DEFAULTS, eventId: eventId, comparable: comparable,
-    diffHoldings: diffHoldings, diffFundamentals: diffFundamentals, summarize: summarize, relevant: relevant, changeSentence: changeSentence };
+    diffHoldings: diffHoldings, diffFundamentals: diffFundamentals, COST_STATES: COST_STATES, costState: costState, costComparable: costComparable, costChanges: costChanges, summarize: summarize, relevant: relevant, changeSentence: changeSentence };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else { global.VUVorsorge = global.VUVorsorge || {}; global.VUVorsorge.Changes = api; }
 })(typeof window !== "undefined" ? window : globalThis);

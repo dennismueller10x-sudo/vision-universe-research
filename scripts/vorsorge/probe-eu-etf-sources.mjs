@@ -250,5 +250,9 @@ print(json.dumps(out))`;
 }
 
 mkdirSync(dirname(OUT), { recursive: true });
+// Deutsche-Boerse-Ergebnisse (Rechte nicht geklaert) nur im Lauf-Log, nicht in der veroeffentlichten Datei.
+const isDb = (r) => /^(xetra-|db-)/.test(r.id);
+console.log(JSON.stringify(report.sources.filter(isDb)).slice(0, 20000));
+report.sources = report.sources.filter((r) => !isDb(r));
 writeFileSync(OUT, JSON.stringify(report, null, 1) + "\n");
 console.log("Fertig:", report.sources.length, "Quellen");

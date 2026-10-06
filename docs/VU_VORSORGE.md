@@ -305,7 +305,7 @@ Details: [ETF_EU_FREE_SOURCE_SCORECARD.md](ETF_EU_FREE_SOURCE_SCORECARD.md),
 | Datenjob | Skripte | Ausgabe | Veröffentlicht |
 |---|---|---|---|
 | `[vorsorge-eu-probe]` | `probe-eu-etf-sources.mjs` | `data/sources/etf-eu-source-probe.json` | nur Metadaten |
-| `[vorsorge-fundamentals]` | `ingest-esma-firds.mjs` → `ingest-esma-funds.mjs` → `ingest-xetra-refdata.mjs` → `build-etf-data.mjs` | `data/eu/etf-eu-index.json`, `data/eu/etf-eu-ucits.json`, `data/sources/xetra-refdata-stats.json` | FIRDS, GLEIF, ESMA-Register ja; Xetra **nur Zahlen** |
+| `[vorsorge-fundamentals]` | `ingest-sec-rr.mjs` → `ingest-esma-firds.mjs` → `ingest-esma-funds.mjs` → `build-etf-data.mjs` | `data/sources/sec-rr-costs.json`, `data/eu/etf-eu-index.json`, `data/eu/etf-eu-ucits.json` | ja |
 | `[vorsorge-live-smoke]` | `live-smoke.mjs` | Artefakt (Screenshots, Bericht) | nein |
 
 - **Amtlicher UCITS-Status**: ESMA-Register „Cross-border distribution of funds“, zugeordnet
@@ -315,11 +315,14 @@ Details: [ETF_EU_FREE_SOURCE_SCORECARD.md](ETF_EU_FREE_SOURCE_SCORECARD.md),
 - **FIRDS-Stamm**: je ISIN aus allen Handelsplatz-Datensätzen – vollständiger Name, Fonds-LEI
   (GLEIF-Kategorie FUND), Domizil aus der Fonds-LEI oder aus dem ISIN-Präfix (`domicileBasis`).
 - **Xetra-Referenzdaten** (WKN, laufende Kosten, Replikation, Ertragsverwendung, Index):
-  Pipeline fertig, Nutzungsrechte UNKNOWN → keine Werte im Produkt. Freigabe nach schriftlicher
-  Bestätigung der Deutschen Börse mit `VU_PUBLISH_XETRA_REFDATA=1` im Fundamentals-Job; das
-  Gate `XETRA_VALUES_PUBLISHED_WITHOUT_RELEASE` verhindert eine Veröffentlichung ohne Freigabe.
+  Nutzungsrechte nicht geklärt → zurückgestellt (Entscheidung 06.10.2026, keine Anfrage). Das
+  Skript bleibt vorbereitet, läuft nicht automatisch und schreibt nichts ins Repository; vier
+  Gates in `assert-vorsorge-data.mjs` verhindern jede Spur im veröffentlichten Verzeichnis.
 - **Kostenänderungen (US)**: zwischen zwei Prospektständen derselben Anteilklasse, nur gleich
-  definierte Felder; Kosten-Tab und Monitor.
+  definierte Felder (`etf-changes.js#costChanges`). Kostenzustände (`costState`): `VALID`,
+  `VALID_ZERO` (belegte 0,00 %, z. B. gebührenfreie ETFs), `MISSING`, `NOT_REPORTED`,
+  `PLACEHOLDER` (0 als Gesamtquote trotz positiver Verwaltungsgebühr), `UNKNOWN`. Nur `VALID` und
+  `VALID_ZERO` werden verglichen und angezeigt.
 - **Monitor**: Relevanz und Bündelung („Daten & Produkte“), interne Prüfstatus-Wechsel als eine
   Datenmeldung, Kostenänderungen je Ticker.
 - **Detaildateien**: `fundamentals` kompakt (`compact`/`expand` in `etf-fundamentals.js`,

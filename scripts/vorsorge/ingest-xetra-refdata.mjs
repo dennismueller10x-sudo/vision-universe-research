@@ -15,12 +15,13 @@
    der Liste beruehrt das Datenbankherstellerrecht (§ 87b UrhG).
    Status: UNKNOWN -> standardmaessig NICHT veroeffentlicht. Ohne Freigabe
    schreibt der Lauf nur Abdeckungszahlen (keine Werte):
-     vorsorge/data/sources/xetra-refdata-stats.json
+     Abdeckungszahlen nur temporaer (--stats-out, Standard: Temp-Verzeichnis) - nie im Repository
    Mit Freigabe (Umgebungsvariable VU_PUBLISH_XETRA_REFDATA=1, erst nach
    schriftlicher Bestaetigung der Deutschen Boerse) zusaetzlich:
      vorsorge/data/eu/etf-eu-xetra.json
    ========================================================================= */
 import { readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
@@ -121,7 +122,9 @@ if (process.argv[1] && process.argv[1].endsWith("ingest-xetra-refdata.mjs")) {
     ongoingChargesQuantiles: ((v) => v.length ? { p10: v[Math.floor(v.length * 0.1)], p50: v[Math.floor(v.length / 2)], p90: v[Math.floor(v.length * 0.9)], max: v[v.length - 1], unitSuspect: v[Math.floor(v.length / 2)] < 0.0005 || v[Math.floor(v.length / 2)] > 0.02, chargesUnit: master.chargesUnit } : null)(etfs.map((r) => r.ongoingCharges).filter((x) => x !== null).sort((a, b) => a - b)),
     rejected: { wknShapes: inst.wknRejectedShapes, wknHeaders: inst.headerWkn, ongoingChargesUnparsable: n((r) => r.ongoingChargesRaw && r.ongoingCharges === null) },
     distributions: { replication: Object.entries(etfs.reduce((m, r) => ((m[r.replication || "null"] = (m[r.replication || "null"] || 0) + 1), m), {})), distribution: Object.entries(etfs.reduce((m, r) => ((m[r.distribution || "null"] = (m[r.distribution || "null"] || 0) + 1), m), {})) } };
-  writeFileSync(join(root, "vorsorge/data/sources/xetra-refdata-stats.json"), JSON.stringify(stats, null, 1) + "\n");
+  // Nur lokal/temporaer (nie im veroeffentlichten Verzeichnis): Rechte nicht geklaert.
+  const statsOut = process.argv.includes("--stats-out") ? process.argv[process.argv.indexOf("--stats-out") + 1] : join(tmpdir(), "xetra-refdata-stats.json");
+  writeFileSync(statsOut, JSON.stringify(stats, null, 1) + "\n");
   console.log(JSON.stringify(stats.coverage), "veroeffentlicht:", stats.published);
   if (stats.published) {
     const fields = ["isin", "wkn", "mnemonic", "productType", "family", "ongoingCharges", "distribution", "replication", "fundCurrency", "tradingCurrency", "benchmark"];

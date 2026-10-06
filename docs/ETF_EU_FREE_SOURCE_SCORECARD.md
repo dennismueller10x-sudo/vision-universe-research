@@ -2,7 +2,7 @@
 
 Stand: 05.10.2026. Faktische Abdeckung, kein Ranking. Status-Werte siehe
 [ETF_DATA_RIGHTS.md](ETF_DATA_RIGHTS.md). Zahlen aus den CI-Läufen
-(`vorsorge/data/sources/etf-eu-source-probe.json`, `xetra-refdata-stats.json`,
+(`vorsorge/data/sources/etf-eu-source-probe.json`,
 `vorsorge/data/eu/*.json`).
 
 | Quelle | Felder | kostenlos | offiziell | strukturiert | Automatisierung | Kommerziell | Anzeige | Historie | Aktualisierung | Aufwand | Status |
@@ -35,7 +35,6 @@ Stand: 05.10.2026. Faktische Abdeckung, kein Ranking. Status-Werte siehe
 | amtlicher UCITS-Status (ESMA-Register, Namenszuordnung) | 3.144 Anteilklassen (22.173 UCITS-Fonds im Register) |
 | davon Vertrieb in Deutschland gemeldet | 2.542 |
 | Xetra-ETFs mit WKN / laufenden Kosten / Replikation (nicht veröffentlicht) | 3.013 / 3.008 / 2.491 |
-| laufende Kosten (Xetra, nur Statistik) | Median 0,23 %, P10 0,09 %, P90 0,53 %, Max 3,5 % |
 
 ## Ergebnis
 
@@ -43,7 +42,7 @@ Stand: 05.10.2026. Faktische Abdeckung, kein Ranking. Status-Werte siehe
   (FIRDS), Emittent und Domizil (GLEIF), amtlicher UCITS-Status, Verwaltungsgesellschaft
   und Vertriebsländer (ESMA-Fondsregister).
 - **Gefunden, aber rechtlich offen**: WKN, laufende Kosten, Replikation,
-  Ertragsverwendung, Index (Deutsche Börse). Die Pipeline ist fertig, die Werte werden
-  ohne schriftliche Freigabe nicht gezeigt.
+  Ertragsverwendung, Index (Deutsche Börse). Das Skript ist vorbereitet; kein automatischer
+  Abruf, keine Veröffentlichung, keine Anfrage (Entscheidung 06.10.2026).
 - **Nicht frei verfügbar**: Kurse/Historie, NAV, Fondsvolumen je Anteilklasse,
   Holdings, Indexstände (Tracking Difference).

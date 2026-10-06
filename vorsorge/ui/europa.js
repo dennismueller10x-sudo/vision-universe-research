@@ -113,7 +113,7 @@
             .map(function (c) { return '<div class="vs-row"><span>' + esc(c[0]) + '</span><span style="text-align:right">' + esc(c[1] || "–") + '</span></div>'; }).join("") +
           '<p class="vs-fine" style="margin-top:8px">' + esc(j.register.attribution) + ' Zuordnung über den Fondsnamen und das Domizil (Konfidenz mittel) – das Register führt keine ISIN. Ältere Vertriebsnotifizierungen sind im Register nicht vollständig enthalten; dass ein Land fehlt, heißt nicht, dass der Fonds dort nicht vertrieben wird.</p></div></section>'
           : '<section class="vs-section"><div class="vs-card"><p class="vs-label">ESMA-Fondsregister</p><p class="vs-sub">Kein eindeutiger Treffer im Register der Fonds im grenzüberschreitenden Vertrieb. UCITS-Status deshalb nur als Hinweis aus dem amtlichen Namen.</p></div></section>') +
-        '<section class="vs-section"><div class="vs-card soft"><p class="vs-label">Noch nicht verfügbar</p><p class="vs-sub">Laufende Kosten, Replikation, Index und WKN veröffentlicht die Deutsche Börse in ihren Referenzdateien – die Nutzungsrechte für eine Veröffentlichung hier sind noch nicht geklärt. Fondsvolumen, Holdings und Kurse liefern nur Emittenten oder lizenzierte Anbieter.</p></div></section>' +
+        '<section class="vs-section"><div class="vs-card soft"><p class="vs-label">Noch nicht verfügbar</p><p class="vs-sub">Für europäische Anteilklassen gibt es hier noch keine Kursanalyse, keine Holdings, keine Kosten (TER/laufende Kosten), kein Fondsvolumen, keine Replikation und keinen NAV – dafür ist keine frei nutzbare Quelle angebunden. Wir zeigen nur, was amtlich belegt ist.</p></div></section>' +
         '<p class="vs-disclaimer">' + esc(VS.DISCLAIMER) + '</p>';
     });
   }

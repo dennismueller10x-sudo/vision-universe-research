@@ -11,14 +11,14 @@ Felder, die nach Ausschöpfen der freien offiziellen Quellen fehlen.
 | Kurs (EOD OHLCV) | keine | 0 % | – | – | **ja** – Börsen-Websites nicht nutzbar, Xetra-PDS eingestellt, verzögerte Daten ohne Historie und nur ohne Kommerzialisierung |
 | Bereinigte Kurse, Ausschüttungen, Splits | keine | 0 % | – | – | **ja** |
 | ISIN | ESMA FIRDS | 100 % (Definition des Universums) | ja | ja, mit Quelle | nein |
-| WKN | Deutsche Börse Instrumentenliste | 3.013 Xetra-ETFs (alle im FIRDS-Stamm) von 8.084 Anteilklassen | ja | **unklar** | **Freigabe nötig**; für nicht in Xetra gehandelte ETFs ohnehin Lücke |
-| TER / laufende Kosten | Deutsche Börse Stammdatenblatt (Emittentenangabe) | 3.008 Xetra-ETFs (Median 0,23 %, P10–P90 0,09–0,53 %) | ja | **unklar** | **Freigabe nötig**; KID/EMT nur beim Emittenten (nicht frei) |
+| WKN | Deutsche Börse Instrumentenliste | 3.013 Xetra-ETFs (alle im FIRDS-Stamm) von 8.084 Anteilklassen | ja | **unklar** | **nicht nutzbar** (Rechte nicht geklärt, zurückgestellt); für nicht in Xetra gehandelte ETFs ohnehin Lücke |
+| TER / laufende Kosten | Deutsche Börse Stammdatenblatt (Emittentenangabe) | technisch für Xetra-ETFs vorhanden | ja | **unklar** | **nicht nutzbar** (Rechte nicht geklärt, zurückgestellt); KID/EMT nur beim Emittenten (nicht frei) |
 | Fondsvolumen (AUM) | keine | 0 % | – | – | **ja** (Fonds- und Anteilklassenebene) |
 | Holdings | keine | 0 % | – | – | **ja** – nur Emittenten (Lizenz) |
 | UCITS-Status | ESMA-Fondsregister | 3.144 von 8.084 Anteilklassen (Namenszuordnung, Konfidenz mittel); Vertrieb DE gemeldet: 2.542 | ja | ja, mit Quelle | Rest: nur Hinweis aus dem Namen |
-| Replikation | Deutsche Börse Stammdatenblatt | 2.491 Xetra-ETFs | ja | **unklar** | **Freigabe nötig** |
+| Replikation | Deutsche Börse Stammdatenblatt | 2.491 Xetra-ETFs | ja | **unklar** | **nicht nutzbar** (Rechte nicht geklärt, zurückgestellt) |
 | Ertragsverwendung | FIRDS (CFI-Attribut) · Deutsche Börse | CFI für alle mit Attribut | ja | ja (CFI) | gering |
-| Index / Benchmark | Deutsche Börse Stammdatenblatt | 2.491 Xetra-ETFs | ja | **unklar** | **Freigabe nötig** |
+| Index / Benchmark | Deutsche Börse Stammdatenblatt | 2.491 Xetra-ETFs | ja | **unklar** | **nicht nutzbar** (Rechte nicht geklärt, zurückgestellt) |
 | NAV | keine | 0 % | – | – | **ja** |
 | Tracking Difference | – | 0 % | – | – | **ja** – braucht Gesamtrendite des ETF **und** lizenzierte Indexstände |
 
@@ -37,7 +37,7 @@ Ableitung eigener Kennzahlen (Rendite, Schwankung, Drawdown):
 5. **Holdings** je Fonds (vollständig oder Top-N mit Gewicht, ISIN, Land, Sektor,
    Anlageklasse), mit Stichtag – für Durchschau, Überschneidung und Änderungen.
 
-Optional (falls die Deutsche Börse die Referenzdaten nicht freigibt):
+Optional (Deutsche-Börse-Referenzdaten sind zurückgestellt):
 
 6. **Laufende Kosten (TER/OGC)**, Replikation, Index, Ertragsverwendung, WKN.
 

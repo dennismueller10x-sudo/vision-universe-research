@@ -166,9 +166,8 @@ jobs:
         run: node scripts/vorsorge/ingest-esma-firds.mjs
       - name: ESMA-Fondsregister (amtlicher UCITS-Status, Verwalter, Vertriebslaender)
         run: node scripts/vorsorge/ingest-esma-funds.mjs
-      - name: Xetra-Referenzdaten (Rechte UNKNOWN - ohne Freigabe nur Abdeckungszahlen)
-        # Veroeffentlichung erst nach schriftlicher Bestaetigung der Deutschen Boerse: VU_PUBLISH_XETRA_REFDATA=1
-        run: node scripts/vorsorge/ingest-xetra-refdata.mjs
+      # Xetra-Referenzdaten (scripts/vorsorge/ingest-xetra-refdata.mjs): Nutzungsrechte nicht geklaert -> kein
+      # automatischer Abruf, nichts im Repository. Das Skript bleibt fuer eine spaetere Freigabe vorbereitet.
       - name: ETF-Stamm mit den neuen Daten neu bauen, Gates, Hygiene
         run: |
           node scripts/vorsorge/build-etf-data.mjs --quiet
