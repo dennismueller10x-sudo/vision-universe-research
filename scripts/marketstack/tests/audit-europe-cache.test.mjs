@@ -50,3 +50,22 @@ test('future bars cannot enter a current research window or a READY product fiel
 test('offline CLI refuses writing into any repository path before reading inputs',()=>{
  assert.throws(()=>runEuropeCacheAudit({out:new URL('../../../reports/private-audit/',import.meta.url).pathname}),/PRIVATE_OUTPUT_OUTSIDE_REPOSITORY_REQUIRED/);
 });
+
+test('offline audit checks source content hashes before certification and keeps files private',async()=>{
+ const fs=await import('node:fs'),{tmpdir}=await import('node:os'),path=await import('node:path');
+ const dir=fs.mkdtempSync(path.join(tmpdir(),'vu-private-source-audit-'));
+ try{
+  const input=fixture(),listing={...input.listing,listingId:'lst_XETR_DE0007164600',securityId:'sec_isin_DE0007164600',isin:'DE0007164600'};
+  const history={...input.history,isin:listing.isin,sourceEvidence:[]};input.sources[0].body.isin=listing.isin;
+  fs.mkdirSync(path.join(dir,'normalized'));fs.mkdirSync(path.join(dir,'sources'));
+  for(const s of input.sources){const id=sha(s);history.sourceEvidence.push('sha256:'+id);fs.writeFileSync(path.join(dir,'sources',id+'.json'),JSON.stringify(s));}
+  fs.writeFileSync(path.join(dir,'normalized',listing.listingId+'.json'),JSON.stringify(history));
+  fs.writeFileSync(path.join(dir,'request.json'),JSON.stringify({listingMap:{listings:[listing]}}));
+  fs.writeFileSync(path.join(dir,'calendars.json'),JSON.stringify({configs:{XETR:{mic:'XETR',timeZone:'Europe/Berlin',annualRules:[{year:2026,verified:true,weekdayTrading:true,closedDates:[],halfDays:[],evidence:['synthetic-calendar']}],regularClose:{verified:true,time:'17:30',meaning:'NOT_BEFORE',evidence:['synthetic-close']}}}}));
+  const opts={requestPath:path.join(dir,'request.json'),normalizedDir:path.join(dir,'normalized'),sourceDir:path.join(dir,'sources'),calendarRulesPath:path.join(dir,'calendars.json'),out:path.join(dir,'out'),asOf:input.asOf,now:input.calendar.now};
+  runEuropeCacheAudit(opts);assert.equal(fs.statSync(opts.out).mode&0o777,0o700);assert.equal(fs.statSync(path.join(opts.out,'summary.json')).mode&0o777,0o600);
+  const sourcePath=path.join(dir,'sources',history.sourceEvidence[0].slice(7)+'.json'),tampered=JSON.parse(fs.readFileSync(sourcePath));tampered.body.isin='WRONG';fs.writeFileSync(sourcePath,JSON.stringify(tampered));
+  assert.throws(()=>runEuropeCacheAudit({...opts,out:path.join(dir,'rejected')}),/SOURCE_EVIDENCE_HASH_MISMATCH/);
+  assert.equal(fs.existsSync(path.join(dir,'rejected',listing.listingId+'.json')),false);
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
