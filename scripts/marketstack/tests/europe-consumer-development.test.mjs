@@ -114,6 +114,7 @@ test('private per-listing history files produce identical reports without a mono
   data.quarantined=[{date:'2026-09-16',reason:'synthetic-original-defect-retained'}];writeFileSync(file,JSON.stringify(data)+'\n',{mode:0o600});
   const before=readFileSync(file),mtime=statSync(file).mtimeMs,common={certifications:{[r.listingId]:certificate(r,data)},integrationEvidence:proof(r)};
   const inMemory=aggregateDevelopment(input({...common,histories:{[r.listingId]:data}})),fileBacked=aggregateDevelopment(input({...common,historiesDir:dir}));
+  for(const value of [inMemory.outputs.europe_consumer_ingestion_status.listings[0].quality,inMemory.outputs.europe_consumer_product_readiness.listings[0].functions.privateCloseChart.quality,inMemory.outputs.europe_consumer_product_readiness.listings[0].functions.chart.quality]){delete value.privateHistorySource.inline;value.privateHistorySource.path=file;}
   assert.deepEqual(fileBacked,inMemory);assert.deepEqual(aggregateDevelopment(input({...common,historiesDir:dir})),fileBacked);
   assert.deepEqual(readFileSync(file),before);assert.equal(statSync(file).mtimeMs,mtime,'report reads never modify the original private cache');
   const source=join(root,'report-input.json'),out=join(root,'reports');writeFileSync(source,JSON.stringify(input({...common,historiesDir:dir})));
@@ -211,4 +212,35 @@ test('all alternative certification directories retain private path and file gua
   assert.throws(()=>aggregateDevelopment(input({certificationsDir:dirs})),/SYMLINK_REJECTED/);rmSync(file);linkSync(original,file);
   assert.throws(()=>aggregateDevelopment(input({certificationsDir:dirs})),/CERTIFICATION_INPUT_FILE_TYPE_REJECTED/);
  }finally{rmSync(root,{recursive:true,force:true});}
+});
+
+test('completed-session lower bounds disprove freshness but never prove current or delayed quotes',()=>{
+ const r=row(),data=history(r);data.bars=data.bars.slice(0,1);const cert=certificate(r,data);
+ cert.freshness={status:'BLOCKED',cause:'MISSING_CALENDAR_BASIS',latestDate:'2026-10-05',expectedLastSession:null,lastProvenCompletedSession:'2026-10-06',evidence:['synthetic-official-completed-session']};
+ const check=()=>aggregateDevelopment(input({histories:{[r.listingId]:data},certifications:{[r.listingId]:cert}}));
+ let result=check(),f=result.outputs.europe_consumer_ingestion_status.listings[0].freshness;assert.equal(f.status,'STALE');assert.equal(f.cause,'STALE_EOD');assert.equal(f.expectedLastSession,null);assert.equal(f.lastProvenCompletedSession,'2026-10-06');assert.equal(result.outputs.europe_consumer_product_readiness.listings[0].functions.latestEod.status,'PARTIAL');
+ for(const update of [{lastProvenCompletedSession:'2026-10-05'},{lastProvenCompletedSession:'2026-10-04'},{lastProvenCompletedSession:null},{lastProvenCompletedSession:'2026-10-07'},{lastProvenCompletedSession:'2026-10-06',evidence:[]}]){Object.assign(cert.freshness,update);result=check();assert.equal(result.outputs.europe_consumer_ingestion_status.listings[0].freshness.status,'UNKNOWN');assert.equal(result.summary.counts.currentEod,0);assert.equal(result.summary.counts.unconfirmedFreshnessWithEod,1);}
+ cert.freshness={status:'READY',latestDate:'2026-10-04',expectedLastSession:null,lastProvenCompletedSession:'2026-10-06',evidence:['synthetic-calendar']};assert.equal(check().outputs.europe_consumer_ingestion_status.listings[0].freshness.status,'MISSING','the lower bound cannot excuse latestDate drift');
+ cert.inputSeriesHash='forged';assert.equal(check().outputs.europe_consumer_ingestion_status.listings[0].freshness.cause,'CERTIFICATION_INPUT_DRIFT');
+});
+test('registered wrapper diagnostics are compact, complete and source-hashed without changing field/window decisions',()=>{
+ const root=mkdtempSync(join(tmpdir(),'eu-report-compact-wrapper-'));try{
+  const r=row(),data=history(r),cert=certificate(r,data),dir=join(root,'certifications');mkdirSync(dir,{mode:0o700});
+  data.quarantined=[{date:'2026-09-15',reason:'original-invalid-OHLC'},{date:'2026-09-16',reason:'original-invalid-OHLC'}];
+  cert.fullHistoryQuality={bars:2,first:'2026-10-05',last:'2026-10-06',quarantinedRowsRetained:2,issues:[...Array.from({length:5000},(_,i)=>({date:i%2?'2026-10-06':'2026-10-05',cause:'UNKNOWN_ADJUSTMENT_BASIS',field:'adjustedOHLC',reason:'unverified field basis'})),{date:'2026-09-15',cause:'PROVIDER_DATA_DEFECT',field:'sourceRow',reason:'invalid OHLC'}]};
+  cert.missingSessions=['2026-09-17'];cert.technicalFields.sma20={...cert.technicalFields.sma20,status:'BLOCKED',value:null,causes:['SHORT_HISTORY','UNKNOWN_ADJUSTMENT_BASIS'],evidence:Array.from({length:8},(_,i)=>'synthetic-private-source-'+i)};
+  const file=join(dir,r.listingId+'.json'),wrapper={schemaVersion:'private-europe-cache-audit-1.0.0',recentWindow:cert,fullWindow:{...cert,technicalFields:{sma20:{status:'READY',value:999}}}};writeFileSync(file,JSON.stringify(wrapper)+'\n',{mode:0o600});const bytes=readFileSync(file),sha=createHash('sha256').update(bytes).digest('hex'),mtime=statSync(file).mtimeMs;
+  const report=aggregateDevelopment(input({histories:{[r.listingId]:data},certificationsDir:dir,integrationEvidence:proof(r)})),i=report.outputs.europe_consumer_ingestion_status.listings[0],p=report.outputs.europe_consumer_product_readiness.listings[0];
+  assert.equal(p.functions.privateCloseChart.status,'PARTIAL');assert.equal(p.functions.chart.status,'PARTIAL');assert.ok(p.functions.chart.causes.includes('PROVIDER_DATA_DEFECT'));assert.ok(p.functions.chart.causes.includes('MISSING_HISTORY'));
+  assert.equal(i.quality.historyIssueSummary.count,5001);assert.deepEqual(i.quality.historyIssueSummary.byCause,{UNKNOWN_ADJUSTMENT_BASIS:5000,PROVIDER_DATA_DEFECT:1});assert.deepEqual(i.quality.historyIssueSummary.byField,{adjustedOHLC:5000,sourceRow:1});assert.deepEqual(i.quality.historyIssueSummary.byReason,{'unverified field basis':5000,'invalid OHLC':1});assert.deepEqual(i.quality.historyIssueSummary.window,{start:'2026-09-15',end:'2026-10-06'});assert.equal(i.quality.quarantineSummary.count,2);assert.deepEqual(i.quality.missingSessions,['2026-09-17']);assert.equal(i.quality.filledSessions,0);assert.equal(i.quality.historyIssues,undefined);assert.equal(i.quality.quarantine,undefined);
+  assert.deepEqual(i.quality.privateHistoryIssues,{path:file,sha256:sha,jsonPointer:'/recentWindow/fullHistoryQuality/issues'});
+  const field=p.technicalFields.sma20;for(const key of ['status','causes','window','inputSeriesHash','asOf','value'])assert.deepEqual(field[key],cert.technicalFields.sma20[key]);assert.equal(field.evidenceCount,8);assert.deepEqual(field.privateDetails,{path:file,sha256:sha,jsonPointer:'/recentWindow/technicalFields/sma20'});assert.deepEqual(field.evidence,['sha256:'+sha+'#/recentWindow/technicalFields/sma20']);
+  assert.ok(JSON.stringify(report.outputs.europe_consumer_product_readiness).length<50000);assert.deepEqual(readFileSync(file),bytes);assert.equal(statSync(file).mtimeMs,mtime);
+ }finally{rmSync(root,{recursive:true,force:true});}
+});
+test('CSV technical status uses existing field statuses and generator provenance cannot grant UI readiness',()=>{
+ const r=row(),data=history(r),cert=certificate(r,data),generator='b'.repeat(40),report=aggregateDevelopment(input({generatorSourceSHA:generator,histories:{[r.listingId]:data},certifications:{[r.listingId]:cert},integrationEvidence:proof(r)}));
+ assert.equal(report.summary.sourceSHA,SHA);assert.equal(report.summary.generatorSourceSHA,generator);assert.equal(report.summary.counts.searchReady,1);assert.ok(report.csv.split('\n')[0].includes('technicalStatus'));assert.ok(report.csv.split('\n')[1].includes('"PARTIAL","BLOCKED","BLOCKED"'));
+ const changed=aggregateDevelopment(input({generatorSourceSHA:generator,integrationEvidence:{...proof(r),sourceSHA:generator}}));assert.equal(changed.summary.counts.searchReady,0);assert.throws(()=>aggregateDevelopment(input({generatorSourceSHA:'not-a-sha'})),/GENERATOR_SOURCE_SHA_REQUIRED/);
+ const blocked=aggregateDevelopment(input({histories:{[r.listingId]:data},certifications:{[r.listingId]:{...cert,technicalFields:{sma20:{...cert.technicalFields.sma20,status:'BLOCKED',causes:['SHORT_HISTORY'],value:null}}}}}));assert.ok(blocked.csv.split('\n')[1].includes('"BLOCKED","BLOCKED","BLOCKED","BLOCKED"'));
 });

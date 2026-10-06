@@ -1,6 +1,6 @@
 # Europe Consumer private release candidate — 2026-10-06
 
-This run starts from main `1d56daf897ed7374c6f44c9cdc22faaf1e49b192` and has refreshed its protected baseline to `4cae0cd59001bf2fffd6351bde8acbaa074cb582`. Normal intervening US daily data updates were merged, never restored backwards. #324/#330/#334/#341 are historical unmerged drafts; this candidate ports required implementation only. Core, Discover and Screener form separate code boundaries. No production merge, public market-data release or recurring schedule is activated.
+This run starts from main `1d56daf897ed7374c6f44c9cdc22faaf1e49b192` and has refreshed its protected baseline to `50e94ae84e20e885d9bd2009ce582f629ef0ac8a`. Normal intervening US daily data updates were merged, never restored backwards. #324/#330/#334/#341 are historical unmerged drafts; this candidate ports required implementation only. Core, Discover and Screener form separate code boundaries. No production merge, public market-data release or recurring schedule is activated.
 
 ## Frozen selection and actual execution
 
@@ -12,7 +12,7 @@ Live queries run server-side in a same-repository owner draft PR using the exist
 
 Authenticated execution is complete: 3,702 conservatively reserved symbol credits / HTTP attempts, 3,700 distinct stored source responses and eight ledger authorization revisions. Two earlier attempts without a distinct stored response remain unresolved transport/deduplication uncertainty; no refund or counter reset is inferred. The final ledger is `07ea46621d53989f43e23bda2830c6f0bd3fdfbf3b493a103076fc84c89ff394`. Full expansion run `37485131362` and German long-tail sample/remainder runs `37492322112` / `37494134023` completed all import, lease, encrypted cache, ciphertext export and protected-artifact steps successfully. No additional requests or recurring costs are active.
 
-There are 817 exact-mapped normalized histories covering 788 separate LEI issuer references and 978,454 valid original OHLCV bars. The selected 1,144 references retain 327 individually explained blocked ingestion cases. None of the LEI references is silently assigned to an existing US CIK Company. In Germany, 232 accepted securities have proven German issuer domicile; 236 accepted listings use Xetra, including foreign issuers. Company domicile, venue and share-class counts are never interchangeable.
+There are 817 exact-mapped normalized histories covering 788 separate LEI issuer references and 978,454 valid original OHLCV bars. The selected 1,144 references retain 327 individually explained blocked ingestion cases. None of the LEI references is silently assigned to an existing US CIK Company. In Germany, 232 accepted securities from 224 separate LEI issuer references have proven German issuer domicile, out of 350 selected German-domiciled securities; 236 accepted listings use Xetra, including foreign issuers. Company domicile, venue and share-class counts are never interchangeable. This is bounded verified coverage, not a claim of complete Germany or complete Europe.
 
 The newest observations are 771 series ending 2026-10-02, six ending 2026-10-05 and 40 older series. At the fixed audit times, 400 are provably stale and 417 lack a complete exact freshness-calendar basis. No series is certified CURRENT or realtime. A proven completed-session lower bound is stored separately from an exact expected session: observations below it are STALE, equal/newer dates remain UNKNOWN. No calendar date, earliest possible closing phase or fresh retrieval timestamp becomes an invented current-session approval.
 
@@ -54,6 +54,10 @@ node scripts/market/assert-no-secrets.mjs --all
 
 Supply explicit CLI input/output paths for audit/report commands; no hidden public outputs are generated. Real-reference tests require the private frozen reference and explicitly skip otherwise. Fake transport tests are separate from actual authenticated executions. Browser evidence distinguishes all-directory model checks from representative real Chromium/WebKit journeys. Existing unrelated accessibility defects must be reproduced on unchanged current main with identical inputs, not reported as new failures or silently fixed.
 
+The actual private release built from Screener commit `76aa0eca14298f7549cdc5d96c690d637bc8d7ea` passed 1,144 central listing-model checks and 20 representative real Discover journeys in six Chromium/WebKit desktop/iPhone light/dark profiles. Watchlist model roundtrips on all 1,144 IDs are explicitly separate from the 20 real UI journeys. Europe Screener passed six browser profiles; existing US Screener passed eight fixed-input profiles. Actual frontend transfer is 179,450 bytes across seven resources, below the unchanged 180,000-byte gate. The three verified PNGs loaded in the real UI; missing-history rows retain their missing state.
+
+Not every pre-existing CI gate is green. The unchanged Currency guard fails on the existing `morning/2026-10-06/index.html` hardcoded-currency occurrence; this was independently reproduced on main `c011ff8a2a68c83534d6d916cb712eeb7b3fe965` with the same guard, patterns and baseline, without updating that baseline. The existing Discover accessibility gate has 12 label/content-name failures on identical unchanged main inputs. Neither exception is silently waived or fixed in this scope. Actual browser/build SHAs are retained separately from later report-only commits and normal main data updates.
+
 ## Incremental refresh and apply/rollback
 
 The refresh phase requests only accepted identity-consistent histories from the selected cohort; rejected mappings are carried explicitly as REFRESH_SKIPPED and require a separate deliberate revalidation. It uses a ten-calendar-day EOD overlap and monthly metadata. It retains older quarantines unless an actual returned corrected bar resolves that date. Corporate-action observations and identity changes remain independently gated. No daily complete-history downloads, minutely directory requests or provider calls per user occur. No automatic schedule is installed. Monthly credit cost is modelled for actual accepted histories, not the larger candidate directory: accepted count * (22 EOD pages +1 metadata page) plus10% retries, with dedicated unsupported EU action feeds excluded and incomplete action coverage explicit. For 817 accepted histories this is 18,791 base symbol credits plus 1,880 retry reserve: 20,671 modeled credits/month. This is not the account plan, balance or a monthly authorization. The existing account-bound 5,000 local monthly safety ceiling cannot admit this full refresh; no ceiling is silently loosened for operation. Pagination, calendars and restatements may change that model; operational account quota and rights approval are still required before activation.
@@ -61,6 +65,13 @@ The refresh phase requests only accepted identity-consistent histories from the 
 Review Core code first, then rebase the isolated Discover and Screener code PRs onto the accepted Core/main revision and rerun affected gates. Data application is a separate private registered-producer operation. Re-read main and current private storage before apply; compare protected semantic outputs on identical inputs. A CAS mismatch requires re-reading the relevant baseline and rebuilding only the Europe delta. Never disable isolation/CAS or restore old US total hashes.
 
 Rollback only the private output's core/data/de-eu tree with the registered disabled producer, then revert product code before Core if required. Do not restore US, Tiingo, Quant rankings, SEC/ESEF, Vorsorge, workers, passwords, schedules or secrets from this run. The exact final PRs, SHAs, ledger and preview/test status are recorded in the final private checkpoint.
+
+```bash
+# Disable only the registered private Europe output; leave the US tree untouched.
+node scripts/marketstack/materialize-de-eu.mjs \
+  --out=/workspace/scratch/europe-consumer-preview-release \
+  --as-of=2026-10-06 --disabled
+```
 
 ## Private evidence and reproducibility
 
