@@ -1,0 +1,564 @@
+{
+  "schema": "vu-minervini-measurement-metadata-1.1.0",
+  "createdAt": "2026-10-06",
+  "label": "GESEHENE DATEN: DEV (2016-2026) und HOLDOUT (2008-2015) sind seit R14 geoeffnet. Kein unabhaengiger Holdout, keine Out-of-Sample-Bestaetigung. Nur Beschreibung; keine Regelaenderung aus den Ergebnissen.",
+  "publicPolicy": "Oeffentlich nur Zaehlwerte, Anteile, Strukturwerte (Exposure, Positionen, Bargeldgruende, Exit-Zaehlungen) und Richtungen. Renditen, CAGR, Drawdown-Hoehen und Kurse bleiben verschluesselt (Tiingo-Nutzungsrechte, Verfahren wie R14/Phase 2A).",
+  "engine": {
+    "name": "minervini-adaptation-1.1.0",
+    "freeze": "scripts/supertrader/fidelity/MINERVINI-FIDELITY-FREEZE-1.1.0.json",
+    "frozenCommit": "9db37cb18a4",
+    "rulebookHash": "ae226511dcd045bca2457929e4894e43946c71d096e84c5dbdf0569a18bc6ba7",
+    "codeHash": "2093c8d18adf33495c6ea0aa2312c77bb70aa652e379d194313a2ebf249be930",
+    "measurementHash": "9ef08bf8549fd2f95bb2cac5c097a5ddcf86f52d0d9d6bb0aeb52fb8283296bf"
+  },
+  "dataBuilds": {
+    "DEV": {
+      "commit": "cbbbfcbb988a73ba03bfe72e52784ff8632f41f8",
+      "run": "37497160189"
+    },
+    "HOLDOUT": {
+      "commit": "9db37cb18a4e4004b89e87037b6753f8aab0fbba",
+      "run": "37512610810"
+    }
+  },
+  "dataBuildStats": {
+    "DEV": {
+      "run": 37497160189,
+      "ciks": 5910,
+      "errors": 0,
+      "withSic": 5851,
+      "withEvents": 5896,
+      "sicChanges": 912,
+      "cikWithSicChange": 795,
+      "headersRead": 18391,
+      "headersWithoutSic": 2494
+    },
+    "HOLDOUT": {
+      "run": 37512610810,
+      "ciks": 3760,
+      "errors": 0,
+      "withSic": 3652,
+      "withEvents": 3684,
+      "sicChanges": 405,
+      "cikWithSicChange": 369,
+      "headersRead": 10056,
+      "headersWithoutSic": 838
+    }
+  },
+  "runs": {
+    "smoke": {
+      "run": 37524852463,
+      "commit": "7ea8bfc3863",
+      "note": "technischer Probelauf, 600 Segmente, ohne Richtungen; nicht ausgewertet"
+    },
+    "DEV": {
+      "run": 37527592662,
+      "commit": "d05ea7124cc",
+      "sealed": "minervini-adaptation-1.1-dev.sealed.json (Zweig claude/supertrader-validation-results)"
+    },
+    "HOLDOUT": {
+      "run": 37534855704,
+      "commit": "ee290dff4a1",
+      "sealed": "minervini-adaptation-1.1-holdout.sealed.json"
+    }
+  },
+  "consistency": {
+    "DEV": {
+      "equivalentTo2A": true,
+      "trades10": 650,
+      "phase2ATrades": 650
+    },
+    "HOLDOUT": {
+      "equivalentTo2A": true,
+      "trades10": 229,
+      "phase2ATrades": 229
+    }
+  },
+  "diagnostics": {
+    "DEV": {
+      "v11": {
+        "exposure": {
+          "mean": 0.363,
+          "median": 0.275,
+          "buckets": [
+            0.403,
+            0.346,
+            0.153,
+            0.098
+          ],
+          "nearlyFull": 0.041,
+          "zero": 0.05,
+          "positionsMean": 4.767,
+          "positionsMedian": 5,
+          "positionSizeMean": 0.085,
+          "cashMean": 0.637,
+          "stage": {
+            "PILOT": 0.796,
+            "FULL": 0.204
+          }
+        },
+        "cash": {
+          "missingSignals": 0.201,
+          "startExposureRule": 0.696,
+          "positionLimits": 0.026,
+          "risk": 0.003,
+          "otherRules": 0.074
+        },
+        "cashByReason": {
+          "NO_SIGNAL": 0.097,
+          "NOT_TRIGGERED": 0.104,
+          "START_EXPOSURE": 0.696,
+          "CASH_FUNDING": 0.046,
+          "POSITION_CAP": 0.014,
+          "OTHER_RULES": 0.027,
+          "POSITION_COUNT": 0.011,
+          "EXPOSURE_CEILING": 0.001,
+          "RISK": 0.003
+        }
+      },
+      "v10": {
+        "exposure": {
+          "mean": 0.485,
+          "median": 0.5,
+          "buckets": [
+            0.12,
+            0.375,
+            0.387,
+            0.118
+          ],
+          "nearlyFull": 0.045,
+          "zero": 0.044,
+          "positionsMean": 4.81,
+          "positionsMedian": 5,
+          "positionSizeMean": 0.11,
+          "cashMean": 0.515,
+          "stage": {
+            "PILOT": 0.785,
+            "FULL": 0.215
+          }
+        },
+        "cash": {
+          "missingSignals": 0.212,
+          "startExposureRule": 0.675,
+          "positionLimits": 0.019,
+          "risk": 0.008,
+          "otherRules": 0.086
+        },
+        "cashByReason": {
+          "NO_SIGNAL": 0.111,
+          "NOT_TRIGGERED": 0.101,
+          "START_EXPOSURE": 0.675,
+          "CASH_FUNDING": 0.065,
+          "POSITION_CAP": 0.012,
+          "OTHER_RULES": 0.021,
+          "POSITION_COUNT": 0.006,
+          "EXPOSURE_CEILING": 0.001,
+          "RISK": 0.008
+        }
+      },
+      "exits11": {
+        "all": {
+          "n": 655,
+          "fullWindow": 550,
+          "aboveExit": {
+            "1": 55,
+            "0.25": 367,
+            "0.5": 191
+          },
+          "aboveEntry": {
+            "1": 61,
+            "0.25": 367,
+            "0.5": 186
+          }
+        },
+        "byFinalRule": {
+          "MR-RSK-01": {
+            "provenance": "ORIGINAL_INTERPRETATION",
+            "n": 485,
+            "fullWindow": 406,
+            "aboveExit": {
+              "1": 39,
+              "0.25": 272,
+              "0.5": 144
+            },
+            "aboveEntry": {
+              "1": 35,
+              "0.25": 248,
+              "0.5": 115
+            }
+          },
+          "MR-EXIT-03": {
+            "provenance": "VU_FORMALIZATION",
+            "n": 168,
+            "fullWindow": 143,
+            "aboveExit": {
+              "1": 16,
+              "0.25": 93,
+              "0.5": 47
+            },
+            "aboveEntry": {
+              "1": 26,
+              "0.25": 118,
+              "0.5": 71
+            }
+          },
+          "MR-RSK-02": {
+            "provenance": "ORIGINAL",
+            "n": 2,
+            "fullWindow": 1,
+            "aboveExit": {
+              "1": 0,
+              "0.25": 2,
+              "0.5": 0
+            },
+            "aboveEntry": {
+              "1": 0,
+              "0.25": 1,
+              "0.5": 0
+            }
+          }
+        }
+      },
+      "exits10": {
+        "all": {
+          "n": 633,
+          "fullWindow": 518,
+          "aboveExit": {
+            "1": 49,
+            "0.25": 359,
+            "0.5": 181
+          },
+          "aboveEntry": {
+            "1": 58,
+            "0.25": 358,
+            "0.5": 183
+          }
+        },
+        "byFinalRule": {
+          "MR-RSK-01": {
+            "n": 458,
+            "aboveExit": {
+              "1": 31,
+              "0.25": 251,
+              "0.5": 126
+            }
+          },
+          "MR-EXIT-03": {
+            "n": 173,
+            "aboveExit": {
+              "1": 18,
+              "0.25": 106,
+              "0.5": 55
+            }
+          },
+          "MR-RSK-02": {
+            "n": 2
+          }
+        }
+      },
+      "signalExits": {
+        "all": {
+          "n": 2031,
+          "fullWindow": 1707,
+          "aboveExit": {
+            "1": 121,
+            "0.25": 1053,
+            "0.5": 463
+          },
+          "aboveEntry": {
+            "1": 136,
+            "0.25": 1037,
+            "0.5": 487
+          }
+        },
+        "byFinalRule": {
+          "MR-RSK-01": {
+            "provenance": "ORIGINAL_INTERPRETATION",
+            "n": 1527,
+            "aboveExit": {
+              "1": 85,
+              "0.25": 784,
+              "0.5": 341
+            },
+            "aboveEntry": {
+              "1": 71,
+              "0.25": 683,
+              "0.5": 286
+            }
+          },
+          "MR-EXIT-03": {
+            "provenance": "VU_FORMALIZATION",
+            "n": 499,
+            "aboveExit": {
+              "1": 36,
+              "0.25": 267,
+              "0.5": 122
+            },
+            "aboveEntry": {
+              "1": 65,
+              "0.25": 353,
+              "0.5": 201
+            }
+          },
+          "MR-RSK-02": {
+            "provenance": "ORIGINAL",
+            "n": 5
+          }
+        }
+      },
+      "signalsN": 2075,
+      "trades11": 670,
+      "trades10": 650,
+      "equivalentTo2A": true,
+      "counts": {
+        "segments": 9048,
+        "withSec": 6405,
+        "setups": 17072,
+        "titlesWithSetup": 1342,
+        "industryKnownSetups": 16884,
+        "eventDataTrades": 659
+      },
+      "directions": {
+        "v11VsV10": "CAGR niedriger; Max Drawdown kleiner; Volatilitaet niedriger",
+        "signalsVsSpyFixed": "21T unter/unter (46 %); 63T unter/unter (45 %); 126T unter/unter (45 %)",
+        "v11VsSpy": "CAGR unter SPY; Max Drawdown kleiner als SPY; Signale im Mittel unter SPY bei gleicher Haltedauer"
+      }
+    },
+    "HOLDOUT": {
+      "v11": {
+        "exposure": {
+          "mean": 0.276,
+          "median": 0.251,
+          "buckets": [
+            0.495,
+            0.307,
+            0.102,
+            0.096
+          ],
+          "nearlyFull": 0.042,
+          "zero": 0.303,
+          "positionsMean": 3.688,
+          "positionsMedian": 4,
+          "positionSizeMean": 0.077,
+          "cashMean": 0.724,
+          "stage": {
+            "PILOT": 0.844,
+            "FULL": 0.156
+          }
+        },
+        "cash": {
+          "missingSignals": 0.501,
+          "startExposureRule": 0.417,
+          "positionLimits": 0.016,
+          "risk": 0.001,
+          "otherRules": 0.065
+        },
+        "cashByReason": {
+          "NO_SIGNAL": 0.442,
+          "NOT_TRIGGERED": 0.059,
+          "START_EXPOSURE": 0.417,
+          "OTHER_RULES": 0.042,
+          "POSITION_CAP": 0.008,
+          "CASH_FUNDING": 0.024,
+          "POSITION_COUNT": 0.008,
+          "EXPOSURE_CEILING": 0,
+          "RISK": 0.001
+        }
+      },
+      "v10": {
+        "exposure": {
+          "mean": 0.345,
+          "median": 0.388,
+          "buckets": [
+            0.377,
+            0.233,
+            0.31,
+            0.08
+          ],
+          "nearlyFull": 0.021,
+          "zero": 0.312,
+          "positionsMean": 2.962,
+          "positionsMedian": 3,
+          "positionSizeMean": 0.125,
+          "cashMean": 0.655,
+          "stage": {
+            "PILOT": 0.87,
+            "FULL": 0.13
+          }
+        },
+        "cash": {
+          "missingSignals": 0.549,
+          "startExposureRule": 0.359,
+          "positionLimits": 0.008,
+          "risk": 0.002,
+          "otherRules": 0.082
+        },
+        "cashByReason": {
+          "NO_SIGNAL": 0.483,
+          "NOT_TRIGGERED": 0.066,
+          "START_EXPOSURE": 0.359,
+          "OTHER_RULES": 0.054,
+          "POSITION_CAP": 0.007,
+          "RISK": 0.002,
+          "CASH_FUNDING": 0.028,
+          "EXPOSURE_CEILING": 0,
+          "POSITION_COUNT": 0.001
+        }
+      },
+      "exits11": {
+        "all": {
+          "n": 200,
+          "fullWindow": 155,
+          "aboveExit": {
+            "1": 13,
+            "0.25": 104,
+            "0.5": 51
+          },
+          "aboveEntry": {
+            "1": 13,
+            "0.25": 103,
+            "0.5": 54
+          }
+        },
+        "byFinalRule": {
+          "MR-RSK-01": {
+            "provenance": "ORIGINAL_INTERPRETATION",
+            "n": 141,
+            "fullWindow": 107,
+            "aboveExit": {
+              "1": 10,
+              "0.25": 75,
+              "0.5": 36
+            },
+            "aboveEntry": {
+              "1": 7,
+              "0.25": 66,
+              "0.5": 28
+            }
+          },
+          "MR-EXIT-03": {
+            "provenance": "VU_FORMALIZATION",
+            "n": 59,
+            "fullWindow": 48,
+            "aboveExit": {
+              "1": 3,
+              "0.25": 29,
+              "0.5": 15
+            },
+            "aboveEntry": {
+              "1": 6,
+              "0.25": 37,
+              "0.5": 26
+            }
+          }
+        }
+      },
+      "exits10": {
+        "all": {
+          "n": 223,
+          "fullWindow": 168,
+          "aboveExit": {
+            "1": 11,
+            "0.25": 113,
+            "0.5": 57
+          },
+          "aboveEntry": {
+            "1": 11,
+            "0.25": 114,
+            "0.5": 60
+          }
+        },
+        "byFinalRule": {
+          "MR-RSK-01": {
+            "n": 163,
+            "aboveExit": {
+              "1": 7,
+              "0.25": 81,
+              "0.5": 43
+            }
+          },
+          "MR-EXIT-03": {
+            "n": 60,
+            "aboveExit": {
+              "1": 4,
+              "0.25": 32,
+              "0.5": 14
+            }
+          }
+        }
+      },
+      "signalExits": {
+        "all": {
+          "n": 915,
+          "fullWindow": 680,
+          "aboveExit": {
+            "1": 28,
+            "0.25": 431,
+            "0.5": 167
+          },
+          "aboveEntry": {
+            "1": 35,
+            "0.25": 430,
+            "0.5": 191
+          }
+        },
+        "byFinalRule": {
+          "MR-RSK-01": {
+            "provenance": "ORIGINAL_INTERPRETATION",
+            "n": 646,
+            "aboveExit": {
+              "1": 20,
+              "0.25": 295,
+              "0.5": 110
+            },
+            "aboveEntry": {
+              "1": 14,
+              "0.25": 250,
+              "0.5": 94
+            }
+          },
+          "MR-EXIT-03": {
+            "provenance": "VU_FORMALIZATION",
+            "n": 269,
+            "aboveExit": {
+              "1": 8,
+              "0.25": 136,
+              "0.5": 57
+            },
+            "aboveEntry": {
+              "1": 21,
+              "0.25": 180,
+              "0.5": 97
+            }
+          }
+        }
+      },
+      "signalsN": 937,
+      "trades11": 206,
+      "trades10": 229,
+      "equivalentTo2A": true,
+      "counts": {
+        "segments": 5218,
+        "withSec": 3875,
+        "setups": 7858,
+        "titlesWithSetup": 699,
+        "industryKnownSetups": 7611,
+        "eventDataTrades": 206
+      },
+      "directions": {
+        "v11VsV10": "CAGR niedriger; Max Drawdown kleiner; Volatilitaet niedriger",
+        "signalsVsSpyFixed": "21T ueber/ueber (52 %); 63T unter/unter (48 %); 126T ueber/unter (47 %)",
+        "v11VsSpy": "CAGR unter SPY; Max Drawdown kleiner als SPY; Signale im Mittel ueber SPY bei gleicher Haltedauer"
+      }
+    }
+  },
+  "definitions": {
+    "exposure": "Positionswert / Kapital zum Tagesschluss",
+    "buckets": "Anteil der Tage mit Exposure in [0,25 %), [25,50 %), [50,75 %), [75,100 %]",
+    "nearlyFull": "Anteil Tage mit Exposure >= 95 %",
+    "cash": "Bargeldanteil je Tag einem Grund zugeordnet (dominante Bindung, diagnostics.mjs#classifyCashDay), gewichtet mit dem Bargeldanteil",
+    "exits": "abgeschlossene Ausstiege (ohne Delisting/Periodenende); aboveExit[t] = Hoch innerhalb von 252 Sitzungen nach dem Ausstieg >= Ausloesekurs x (1+t); aboveEntry analog zum Einstiegskurs; fullWindow = volle 252 Sitzungen verfuegbar",
+    "signalExits": "alle ausgeloesten Signale ohne Kapitalgrenze; Bezug Schlusskurs am Ausstiegstag",
+    "provenance": "schwaechste Herkunft der Exit-Regel und ihrer Parameter"
+  }
+}
