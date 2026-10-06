@@ -115,7 +115,8 @@ async function main() {
   fs.writeFileSync(path.join(OUT, `${name}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify(result))));
   // Oeffentliches Log: Zaehlwerte und Richtungen, keine Kennzahlen aus Kursdaten.
   log(`Trades Portfolio ${result.portfolio.trades.count}, Signale ${result.signals.count}`);
-  log(`Richtung: CAGR ${pf && spy ? (pf.cagr > spy.cagr ? 'ueber' : 'unter') : '?'} SPY; Max Drawdown ${pf && spy ? (pf.maxDrawdown > spy.maxDrawdown ? 'kleiner' : 'groesser') : '?'} als SPY; Signale im Mittel ${result.signals.vsSpySameHolding.meanExcess > 0 ? 'ueber' : 'unter'} SPY bei gleicher Haltedauer`);
+  // Technischer Probelauf (--limit): keine Richtungsangaben, damit er nichts ueber das Ergebnis verraet.
+  if (!LIMIT) log(`Richtung: CAGR ${pf && spy ? (pf.cagr > spy.cagr ? 'ueber' : 'unter') : '?'} SPY; Max Drawdown ${pf && spy ? (pf.maxDrawdown > spy.maxDrawdown ? 'kleiner' : 'groesser') : '?'} als SPY; Signale im Mittel ${result.signals.vsSpySameHolding.meanExcess > 0 ? 'ueber' : 'unter'} SPY bei gleicher Haltedauer`);
   log(`verschluesselt: ${name}.sealed.json`);
 }
 

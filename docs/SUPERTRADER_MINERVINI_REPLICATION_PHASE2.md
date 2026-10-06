@@ -363,6 +363,25 @@ Ein unabhängiger adversarialer Prüflauf mit eigenen Reproduktionsskripten fand
 
 Eine Fremdregel, ein versteckter Default oder ein Lookahead wurde nach den Korrekturen nicht gefunden. **Red Team bestanden → Freeze freigegeben.**
 
+### 6.1 SEC-Speicher `sec-pit-mrepl-1` (Lauf 37457779561, DEV)
+
+Gebaut am 06.10.2026, CIK-Zuordnung aus `sec-pit-r12`. Zählwerte aus öffentlichen SEC-Daten:
+
+| Reihe | Listings |
+|---|---|
+| Listings gesamt | 6.384 |
+| mit Datensatz | 6.383 |
+| EPS | 6.368 |
+| Umsatz | 5.971 |
+| Bruttogewinn | 3.969 |
+| operatives Ergebnis | 5.264 |
+| Nettoergebnis | 6.374 |
+
+Weitere Angaben:
+- IFRS-Emittenten: 136.
+- Abgeleitete Q4-EPS-Zeilen: 32.291. Sie werden über einen Split verworfen.
+- Der Bruttogewinn deckt rund 62 % der Listings ab; die Margen bleiben deshalb ein reines Protokollmerkmal.
+
 ## 10. Fidelity Freeze
 
 Abschnitt 10 wird beim Freeze ergänzt.
