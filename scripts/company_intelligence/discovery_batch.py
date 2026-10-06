@@ -14,6 +14,7 @@ from .feeds import discover_ir
 from .model import domain
 from .pipeline import advance
 from .site_inventory import candidate_routes
+from .root_aliases import root_alias_candidates, validate_root_aliases
 
 
 def run(companies, candidates, http, now, request_budget, max_seconds, workers=4, domain_only=False, admission_interval=2,on_result=None,circuit=None):
@@ -27,10 +28,12 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
     for c in companies:
         evidence = {'status':'CANDIDATE','candidates':[{'url':c['officialSites'][0],'evidence':'EXISTING_VALIDATED_SITE'}]} if c.get('officialSites') else candidates.get(c['companyId'],{})
         evidence = {**evidence,'candidates':candidate_routes(evidence)}
-        if evidence.get('status')!='CANDIDATE' or len(evidence.get('candidates',[]))!=1:continue
-        host=domain(evidence['candidates'][0]['url'])
+        aliases = root_alias_candidates(evidence) if domain_only else []
+        if not aliases and (evidence.get('status')!='CANDIDATE' or len(evidence.get('candidates',[]))!=1):continue
+        routes = aliases or evidence['candidates']
+        host=domain(routes[0]['url'])
         if host in hosts:continue
-        selected.append((c,evidence['candidates'][0]));hosts.add(host)
+        selected.append((c,routes));hosts.add(host)
         if len(selected)>=max(1,request_budget//(4 if domain_only else 12)):break
     if not selected:return []
     allowance=request_budget//len(selected);deadline=time.time()+max_seconds
@@ -55,7 +58,7 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
                 # A host cooldown must not monopolize admission for other hosts.
                 time.sleep(delay)
     def work(pair):
-        c,candidate=pair;remaining=deadline-time.time()
+        c,routes=pair;candidate=routes[0];remaining=deadline-time.time()
         if remaining<=0:return {'companyId':c['companyId'],'domainOnly':domain_only,'status':'DEFERRED','reason':'DISCOVERY_DEADLINE','requests':0,'stats':{}}
         def observed_open(request, **kwargs):
             try:
@@ -79,7 +82,8 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
         client=BoundedHTTP(http.cache,budget=candidate_budget,timeout=min(http.timeout,10),interval=2,max_seconds=min(remaining,candidate_seconds),opener=observed_open,validator=http.validator)
         result={'companyId':c['companyId'],'status':'DEFERRED','domainOnly':domain_only}
         try:
-            site = {'status':'VALIDATED','url':c['officialSites'][0]} if c.get('officialSites') else validate_candidate(c,candidate,client,now)
+            site = ({'status':'VALIDATED','url':c['officialSites'][0]} if c.get('officialSites') else
+                    validate_root_aliases(c,routes,client,now) if len(routes)>1 else validate_candidate(c,candidate,client,now))
             if not c.get('officialSites'):result['site']=site
             sources,configs=([],[]) if domain_only else discover_ir(c,site['url'],client,now)
             result.update(status='VALIDATED',sources=sources,configurations=configs,domainOnly=domain_only)

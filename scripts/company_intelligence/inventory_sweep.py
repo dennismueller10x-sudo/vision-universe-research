@@ -9,6 +9,7 @@ import re
 from collections import Counter
 from .model import domain
 from .site_inventory import candidate_routes
+from .root_aliases import root_alias_candidates
 from .discovery import OWNERSHIP_VERSION, OVERSIZED_IR_RECOVERY_VERSION
 
 PRIOR_OWNERSHIP_VERSIONS = tuple('corporate-ownership-' + str(version)
@@ -74,7 +75,8 @@ def select(companies, store, now, pass_id, lane, limit=50, allow_network=True):
                 original=store.state('siteCandidates:'+cid,{})
                 store.set_state('siteCandidates:'+cid,{**original,'status':'AMBIGUOUS',
                     'reason':'MULTIPLE_NON_EQUIVALENT_WEBSITE_CANDIDATES','checkedAt':now})
-            status='ALREADY_VERIFIED' if official else 'AMBIGUOUS' if value.get('status')!='CANDIDATE' or len(value.get('candidates',[]))!=1 else None
+            aliases = root_alias_candidates(value)
+            status='ALREADY_VERIFIED' if official else 'AMBIGUOUS' if not aliases and (value.get('status')!='CANDIDATE' or len(value.get('candidates',[]))!=1) else None
             # A changed evidence collector may revisit an old ownership-only
             # rejection once. Transport/access/conflict cooldowns remain intact;
             # persistence records this version even when ownership still fails.
