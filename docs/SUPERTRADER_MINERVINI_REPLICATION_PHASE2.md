@@ -382,6 +382,19 @@ Weitere Angaben:
 - Abgeleitete Q4-EPS-Zeilen: 32.291. Sie werden über einen Split verworfen.
 - Der Bruttogewinn deckt rund 62 % der Listings ab; die Margen bleiben deshalb ein reines Protokollmerkmal.
 
+**HOLDOUT** (Lauf 37459790385, CIK aus `sec-pit-r12` des Holdout-Namensraums):
+
+| Reihe | Listings |
+|---|---|
+| Listings | 3.896 |
+| EPS | 3.891 |
+| Umsatz | 3.784 |
+| Bruttogewinn | 2.620 |
+| operatives Ergebnis | 3.173 |
+| Nettoergebnis | 3.888 |
+
+Weitere Angaben: IFRS-Emittenten 41; abgeleitete Q4-EPS-Zeilen 20.935.
+
 ## 10. Fidelity Freeze
 
 Erst nach bestandenem Red-Team-Review. Datei `scripts/supertrader/fidelity/MINERVINI-FIDELITY-FREEZE.json`.
@@ -402,7 +415,15 @@ Erst nach bestandenem Red-Team-Review. Datei `scripts/supertrader/fidelity/MINER
 
 ## 11. Messung (nach dem Freeze)
 
-Abschnitt 11 wird nach dem Messlauf ergänzt.
+**Technischer Probelauf** (Lauf 37459842061, DEV, 600 Reihen, gegen den Freeze geprüft):
+- Freeze erkannt.
+- 598 Segmente, davon 380 mit SEC-Daten.
+- 467 Setups bei 40 Titeln.
+- 53 Portfolio-Trades, 55 Signale.
+
+Das Log zeigt keine Richtungen. Keine Codeänderung danach.
+
+Abschnitt 11 wird nach den Messläufen DEV und HOLDOUT ergänzt.
 
 ## 12. Abschlussbericht (28 Fragen des Auftrags)
 
