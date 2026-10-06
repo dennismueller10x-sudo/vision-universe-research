@@ -166,7 +166,7 @@ jobs:
             --universe quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json --sample-symbols 600 --to 2016-06-30 --workers "$(nproc)" --out "$RUNNER_TEMP/d-dev"
           node --max-old-space-size=7168 scripts/technical/hsab/evaluate.mjs --records "$RUNNER_TEMP/d-dev" --phase D_DEV --work-dir "$RUNNER_TEMP/canonical-history" --out "$OUT/d-dev-eval.json"
           node scripts/technical/hsab/publish-ci.mjs --replay "$RUNNER_TEMP/d-dev" --label d-dev --out "$OUT"
-      - name: Daily HOLDOUT window, Stage 1 (dev: seal only, no outcomes; holdout: Stage 2)
+      - name: "Daily HOLDOUT window, Stage 1 (dev = seal only, no outcomes; holdout = Stage 2)"
         run: |
           set -euo pipefail
           node --max-old-space-size=6144 scripts/technical/hsab/replay.mjs --work-dir "$RUNNER_TEMP/canonical-history" \
