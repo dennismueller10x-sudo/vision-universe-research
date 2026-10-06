@@ -14,6 +14,10 @@ async function walk(dir='.') {
     if(file===path.join('vu2','index.html'))continue;
     let html=await readFile(file,'utf8');
     if(!/<body\b/i.test(html))continue;
+    // Landingpages mit eigenem Kopf (die Startseite) tragen
+    // <meta name="vu-navigation" content="none"> und bekommen keine
+    // Plattform-Navigation vorangestellt - sonst stuenden zwei Koepfe uebereinander.
+    if(/<meta\s+name=["']vu-navigation["']\s+content=["']none["']/i.test(html))continue;
     const original=html;
     if(!html.includes('/assets/site-navigation.css'))html=html.replace(/<\/head>/i,css+'</head>');
     // Auf das TAG pruefen, nicht auf die attributlose Schreibweise: seit
