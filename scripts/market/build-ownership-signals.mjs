@@ -85,6 +85,9 @@ export const BASES = {
 /* Spalten der Monatsreihe - Reihenfolge ist Vertrag (manifest.columns). */
 export const HISTORY_COLUMNS = ["ib90", "ib180", "is90", "ibo90", "ibd90", "ibt90", "ibx90", "bv90", "sv90", "svx90", "nbv90", "nbv180",
   "nsh90", "nsp90", "cb", "d13n", "g13n", "d13a", "g13a", "fp", "fh", "fhp", "fnew", "fexit", "finc", "fdec", "fsh", "fshp", "fdsh", "fval", "fio"];
+/* Plausibilitaetsgrenzen je Transaktion (Wert, Preis je Aktie). BRK.A notiert
+   unter 1 Mio. USD; eine einzelne Insider-Transaktion ueber 20 Mrd. USD gab es nicht. */
+export const MAX_TX_USD = 2e10, MAX_PRICE_USD = 1e6;
 const INSIDER_COLS = HISTORY_COLUMNS.slice(0, 15), SCHEDULE_COLS = ["d13n", "g13n", "d13a", "g13a"], F_COLS = HISTORY_COLUMNS.slice(19);
 
 /* ------------------------------------------------------------- Optionen */
@@ -634,7 +637,7 @@ export async function build(opts = {}) {
 
   const stats = {
     ftdFiles: 0, ftdMissing: 0,
-    insiderDatasets: [], insiderMissing: [], insiderTransactions: 0, insiderPurchases: 0, insiderSales: 0, insiderAccessions: 0, insiderAmendmentsSkipped: 0, planColumnSeen: false,
+    insiderDatasets: [], insiderMissing: [], insiderTransactions: 0, implausibleValues: 0, insiderPurchases: 0, insiderSales: 0, insiderAccessions: 0, insiderAmendmentsSkipped: 0, planColumnSeen: false,
     form4: { needed: 0, cached: 0, fetched: 0, failed: 0, cap: form4Max, from: null, to: null },
     indexQuarters: [], indexMissing: [], schedule: { filings: 0, resolved: 0, ambiguous: 0, filerOnly: 0, notInUniverse: 0 },
     thirteenF: { datasets: [], missing: [], filings: 0, newHoldingsAmendments: 0, restatementsSkipped: 0, duplicateOriginals: 0, duplicateAccessions: 0, infoRows: 0, positions: 0, unitThousands: 0, unitDollars: 0, unitOverrides: 0 }
@@ -677,15 +680,27 @@ export async function build(opts = {}) {
 
   /* 3) EDGAR-Index: Schedule 13D/13G und die Form-4-Luecke */
   const scheduleByCik = new Map();
-  const gap = [];
+  const gap = [], scheduleQuarters = [];
   const gapFrom = insiderCoverageEnd || dataFrom;
   stats.form4.from = E.isoOf(E.dayOf(gapFrom) + 1); stats.form4.to = today;
   for (let { year, q } = E.quarterOf(dataFrom); E.quarterEnd(year, q) <= E.quarterEnd(E.quarterOf(today).year, E.quarterOf(today).q); q === 4 ? (q = 1, year++) : q++) {
     const ix = await loadIndexQuarter(src, cache, year, q, today);
     if (!ix) { stats.indexMissing.push(`${year}Q${q}`); continue; }
     stats.indexQuarters.push(`${year}Q${q}`);
+    const counts = new Map();
+    for (const [, , , parties] of ix.schedule) for (const [cik] of parties) counts.set(cik, (counts.get(cik) || 0) + 1);
+    scheduleQuarters.push({ schedule: ix.schedule, counts });
+    for (const [acc, date, ciks, file] of ix.form4) {
+      if (date > gapFrom && date <= today && !insiderAcc.has(acc) && ciks.some((c) => universeCiks.has(c))) gap.push({ acc, date, file });
+    }
+  }
+  /* Wer Vielmelder (Verwalter) ist, wird ueber vier Quartale gezaehlt - das
+     laufende Quartal allein ist in seinen ersten Tagen zu kurz (im ersten
+     CI-Lauf galt JPMorgan am 6. Oktober deshalb als Gegenstand). */
+  for (let qi = 0; qi < scheduleQuarters.length; qi++) {
+    const ix = scheduleQuarters[qi];
     const participation = new Map();
-    for (const [, , , parties] of ix.schedule) for (const [cik] of parties) participation.set(cik, (participation.get(cik) || 0) + 1);
+    for (let k = Math.max(0, qi - 3); k <= qi; k++) for (const [cik, n] of scheduleQuarters[k].counts) participation.set(cik, (participation.get(cik) || 0) + n);
     for (const [acc, form, date, parties] of ix.schedule) {
       if (!date || date > today) continue;
       stats.schedule.filings++;
@@ -695,9 +710,6 @@ export async function build(opts = {}) {
       stats.schedule.resolved++;
       (scheduleByCik.get(res.subjectCik) || scheduleByCik.set(res.subjectCik, []).get(res.subjectCik))
         .push({ f: E.dayOf(date), k: sf.kind, a: sf.amendment, filers: res.filers, acc });
-    }
-    for (const [acc, date, ciks, file] of ix.form4) {
-      if (date > gapFrom && date <= today && !insiderAcc.has(acc) && ciks.some((c) => universeCiks.has(c))) gap.push({ acc, date, file });
     }
   }
 
@@ -755,7 +767,11 @@ export async function build(opts = {}) {
     const arr = txByCik.get(r.i) || txByCik.set(r.i, []).get(r.i);
     const insiderOwner = rs.some((b) => E.isInsider(b));
     for (const x of r.x) {
-      arr.push({ f: r.f, t: x[1], c: x[0], sh: x[2], v: x[3], p: x[4] === 1, os, rs, a: false });
+      /* Tippfehler im Preis (gesehen: 2,27 Mio. USD je Aktie, 10 Billionen USD
+         Kaufwert) duerfen kein Signal tragen: Wert unplausibel -> null. */
+      let v = x[3];
+      if (v !== null && (v > MAX_TX_USD || (x[2] > 0 && v / x[2] > MAX_PRICE_USD))) { v = null; stats.implausibleValues++; }
+      arr.push({ f: r.f, t: x[1], c: x[0], sh: x[2], v, p: x[4] === 1, os, rs, a: false });
       stats.insiderTransactions++;
       if (insiderOwner && x[0] === "P") stats.insiderPurchases++; else if (insiderOwner && x[0] === "S") stats.insiderSales++;
     }
@@ -846,7 +862,9 @@ export async function build(opts = {}) {
         if (!prevLoaded) for (const k of ["fhp", "fnew", "fexit", "finc", "fdec", "fshp", "fdsh"]) r[C[k]] = null;
         if (di === dates.length - 1) {
           const cur = current.get(t) || {};
-          cur.institutions = Object.assign({ period, previousPeriodLoaded: !!prevLoaded }, s, { topNew: s.topNew.map((x) => ({ manager: managerNames[x.manager] || null, shares: x.shares, valueUsd: x.valueUsd })) });
+          /* Wenige Vorquartals-Halter bei vielen heutigen: IPO, Abspaltung oder
+             CUSIP-Wechsel ohne Zuordnung - "neue Positionen" sind dann kein Zufluss. */
+          cur.institutions = Object.assign({ period, previousPeriodLoaded: !!prevLoaded, previousHoldersLow: !!prevLoaded && s.fhp < s.fh / 2 }, s, { topNew: s.topNew.map((x) => ({ manager: managerNames[x.manager] || null, shares: x.shares, valueUsd: x.valueUsd })) });
           current.set(t, cur);
         }
       }
@@ -902,7 +920,7 @@ export async function build(opts = {}) {
       .sort((a, b) => b.netBuyUsd90 - a.netBuyUsd90 || (a.ticker < b.ticker ? -1 : 1)).slice(0, 25),
     new13D90: all.filter(([, x]) => x.schedules && x.schedules.d13n > 0).map(([t, x]) => ({ ticker: t, filings: x.schedules.d13n, latest: x.schedules.recent.find((r) => r.form === "SC 13D") || null }))
       .sort((a, b) => ((b.latest && b.latest.filed) || "").localeCompare((a.latest && a.latest.filed) || "") || (a.ticker < b.ticker ? -1 : 1)).slice(0, 50),
-    mostNewInstitutions: all.filter(([, x]) => x.institutions && x.institutions.fnew > 0).map(([t, x]) => ({ ticker: t, period: x.institutions.period, newPositions: x.institutions.fnew, exits: x.institutions.fexit, holders: x.institutions.fh }))
+    mostNewInstitutions: all.filter(([, x]) => x.institutions && x.institutions.fnew > 0 && !x.institutions.previousHoldersLow).map(([t, x]) => ({ ticker: t, period: x.institutions.period, newPositions: x.institutions.fnew, exits: x.institutions.fexit, holders: x.institutions.fh }))
       .sort((a, b) => b.newPositions - a.newPositions || (a.ticker < b.ticker ? -1 : 1)).slice(0, 25)
   };
   writeFileSync(join(outDir, "highlights.json"), JSON.stringify(highlights, null, 1) + "\n");
@@ -919,7 +937,7 @@ export async function build(opts = {}) {
     coverage: Object.assign({
       universeTickers: universe.length, universeIssuersWithCik: universeCiks.size,
       cusipMap: { cusips: cmap.map.size, tickers: cmap.tickersMapped, ambiguousSymbols: cmap.ambiguousSymbols, rejectedReusedSymbols: cmap.rejectedReuse, latestObservation: cmap.latestObservation, ftdFiles: stats.ftdFiles, ftdMissing: stats.ftdMissing },
-      insider: { datasets: stats.insiderDatasets.length, missing: stats.insiderMissing, coverageEnd: insiderCoverageEnd, accessionsInUniverse: stats.insiderAccessions, transactionsInUniverse: stats.insiderTransactions, purchasesByInsiders: stats.insiderPurchases, salesByInsiders: stats.insiderSales, issuersWithTransactions: txByCik.size, amendmentsSkipped: stats.insiderAmendmentsSkipped, planColumnSeen: stats.planColumnSeen, form4GapFill: stats.form4 },
+      insider: { datasets: stats.insiderDatasets.length, missing: stats.insiderMissing, coverageEnd: insiderCoverageEnd, accessionsInUniverse: stats.insiderAccessions, transactionsInUniverse: stats.insiderTransactions, purchasesByInsiders: stats.insiderPurchases, implausibleValuesNulled: stats.implausibleValues, salesByInsiders: stats.insiderSales, issuersWithTransactions: txByCik.size, amendmentsSkipped: stats.insiderAmendmentsSkipped, planColumnSeen: stats.planColumnSeen, form4GapFill: stats.form4 },
       schedules: Object.assign({ indexQuarters: stats.indexQuarters.length, indexMissing: stats.indexMissing, issuersWithFilings: scheduleByCik.size }, stats.schedule),
       thirteenF: Object.assign({}, stats.thirteenF, { datasets: stats.thirteenF.datasets.length, managers: managerIndex.size, periods: [...filedDay.keys()].sort() }),
       sharesBaseIssuers: sharesBase.size

@@ -279,6 +279,10 @@ test("OS13 · Erzeuger auf Fixtures: Zeitpunkt, Cluster, 13F-Einheit, Zuordnung 
     assert.equal(a.insider.topBuyers[0].name, "SMITH ANNA");
     assert.equal(a.institutions.period, "2024-03-31");
     assert.equal(a.institutions.fh, 2);
+    assert.equal(manifest.coverage.insider.implausibleValuesNulled, 1);
+    const cccMar = read("history/CC.json.gz").issuers.CCC.rows[2];
+    assert.equal(col(cccMar, "ib90"), 1, "der Kauf zaehlt als Insider-Kauf ...");
+    assert.equal(col(cccMar, "bv90"), 0, "... aber ein Preis von 2,27 Mio. USD je Aktie traegt keinen Wert");
     const ccc = read("current/CC.json.gz").issuers.CCC;
     assert.equal(ccc.institutions, null, "alter CUSIP eines anderen Emittenten unter 'CCC' wird nicht zugeordnet");
     assert.equal(ccc.schedules.d13n, 1, "neuer Formularname SCHEDULE 13D");
@@ -325,7 +329,7 @@ test("OS16 · ZIP-Pfad (System-unzip) liefert dasselbe wie das Verzeichnis", asy
     const a = await B.extractInsiderDataset({ dir });
     const b = await B.extractInsiderDataset({ zip });
     assert.deepEqual(b, a);
-    assert.equal(Object.keys(a.accessions).length, 9);
+    assert.equal(Object.keys(a.accessions).length, 10);
     assert.equal(a.stats.amendmentsSkipped, 1);
   } finally { rmSync(tmp, { recursive: true, force: true }); }
 });
