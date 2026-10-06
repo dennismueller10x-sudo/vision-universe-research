@@ -370,6 +370,13 @@ def _validate_response(company, candidate, response, now, header_body=None):
             # standard rights/navigation text is not an owner extension.
             extension = re.split(r'[;|()©]|\b(?:all rights reserved|(?:are|is) (?:registered )?trademarks? of)\b',
                                  tail, maxsplit=1, flags=re.I)[0]
+            # A named legal notice can repeat the same copyright owner after
+            # its address. It is a boundary only for this explicit grammar and
+            # the exact same legal entity; extended or different owners remain.
+            notice = re.search(r'\bUnless otherwise specified,\s+all product names appearing in this internet site\s+'
+                               r'are trademarks owned by(?: or licensed to)?\s+([^,;|()©]{1,100}),', extension, re.I)
+            if notice and not suffixless and legal_normalize(notice[1]) == wanted:
+                extension = extension[:notice.start()]
             extension = legal_normalize(extension)
             if ((suffixless or not re.match(r'(?:all rights|privacy|terms|cookies)\b', extension)) and
                     re.match(r'(?:\w+\s+)*(?:llc|ltd|corp|inc|plc)\b', extension)):

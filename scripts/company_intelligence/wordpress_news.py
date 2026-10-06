@@ -9,7 +9,8 @@ from .transport import SourceError
 
 FIELDS = 'date_gmt,link,title.rendered'
 COLLECTIONS = ('posts', 'news', 'press-releases', 'press_releases', 'news-releases', 'news_releases', 'announcements',
-               'press-release', 'financial-release', 'press', 'press-room', 'press_release', 'news-media', 'pressreleases')
+               'press-release', 'financial-release', 'press', 'press-room', 'press_release', 'news-media', 'pressreleases',
+               'company_news', 'financial_news', 'announcement', 'news_release', 'inv_press_release')
 
 
 def endpoint(api_root, collection='posts'):
