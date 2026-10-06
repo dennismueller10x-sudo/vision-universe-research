@@ -88,7 +88,7 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
   if(!metadataState||now()-Date.parse(metadataState.checkedAt)>30*86400000){
    const metadata=await provider.getMetadata(r.listingId);
    const independentIdentity=String(r.providerIdentityBasis||'').startsWith('HISTORICAL_EXACT_ISIN_MIC')&&r.mappingSource?.length>0;
-   if(!metadata.available||metadata.data?.isin&&metadata.data.isin!==r.isin||!metadata.data?.isin&&!independentIdentity){block(metadata.available?'MAPPING_ERROR':reason(metadata.reason),'Verify exact provider identity or independent exact ISIN/MIC evidence; missing optional response ISIN is not invented.');if(['authError','quotaExceeded'].includes(metadata.reason))break;venueFailures.set(r.mic,(venueFailures.get(r.mic)||0)+1);continue;}
+   if(!metadata.available||metadata.data?.isin&&metadata.data.isin!==r.isin||!metadata.data?.isin&&!independentIdentity){block(metadata.available?'MAPPING_ERROR':reason(metadata.reason),'Verify exact provider identity or independent exact ISIN/MIC evidence; missing optional response ISIN is not invented.');if(['authError','quotaExceeded'].includes(metadata.reason))break;continue;}
    write(join(privateDir,'metadata',r.listingId+'.json'),{isin:r.isin,mic:r.mic,checkedAt:new Date(now()).toISOString(),data:metadata.data,sourceEvidence:responseRefs.slice()});
   }
   const quote=phase==='refresh'?null:await provider.getQuote(r.listingId,{frequency:'EOD'});
