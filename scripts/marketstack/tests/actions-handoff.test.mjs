@@ -42,3 +42,16 @@ test('source/reference binding, persisted execution lease and encrypted full-res
 test('Actions workflow exports only public key or authenticated ciphertext and persists a lease before live transport',()=>{
  const s=readFileSync(new URL('../../../.github/workflows/marketstack-private-live.yml',import.meta.url),'utf8');assert.doesNotMatch(s,/schedule:|pull_request_target|contents: write/);assert.match(s,/head.repo.full_name == github.repository/);assert.match(s,/request.*|execute explicitly/i);assert.match(s,/-lease/);assert.match(s,/marketstack-private-result.enc.json/);assert.ok(s.indexOf('Reserve a crash-safe')<s.indexOf('Execute explicitly authorized'));
 });
+
+ test('explicit source/reference revisions preserve all credits and require the preceding encrypted ledger hash',()=>fixture(async dir=>{
+  const evidence=authorized(),file=join(dir,'budget.json'),initial=createSharedBudget({file,runId:evidence.runId,evidence});await initial.reserve({cost:3,endpoint:'/eod'});const previous=await initial.status();
+  const revised={...evidence,sourceSHA:'c'.repeat(40),referenceHash:'d'.repeat(64)};
+  await assert.rejects(createSharedBudget({file,runId:evidence.runId,evidence:revised}).status(),/BUDGET_RECONCILIATION_REQUIRED/);
+  await assert.rejects(createSharedBudget({file,runId:evidence.runId,evidence:{...revised,previousLedgerHash:'0'.repeat(64)}}).status(),/BUDGET_RECONCILIATION_REQUIRED/);
+  const next=createSharedBudget({file,runId:evidence.runId,evidence:{...revised,previousLedgerHash:previous.ledgerHash}});const start=await next.status();assert.equal(start.estimatedCreditsConsumed,3);assert.equal(start.authorizationRevisions,2);assert.notEqual(start.ledgerHash,previous.ledgerHash);
+  await next.reserve({cost:2,endpoint:'/eod'});assert.equal((await next.status()).estimatedCreditsConsumed,5);assert.equal((await next.status()).creditsRemaining,19995);assert.equal((await next.status()).authorizationRevisions,2);
+  const stored=JSON.parse(readFileSync(file,'utf8'));assert.equal(stored.authorizationRevisions[1].previousLedgerHash,previous.ledgerHash);assert.equal(stored.authorizationRevisions[1].creditsCarried,3);
+ }));
+ test('workflow explicitly verifies exact lease cache persistence before live execution',()=>{
+  const s=readFileSync(new URL('../../../.github/workflows/marketstack-private-live.yml',import.meta.url),'utf8');assert.match(s,/actions: read/);assert.match(s,/verifySavedActionsCache/);assert.ok(s.indexOf('Verify exact encrypted lease')<s.indexOf('Execute explicitly authorized'));assert.doesNotMatch(s,/\$\{\{ runner.temp \}\}/);
+ });

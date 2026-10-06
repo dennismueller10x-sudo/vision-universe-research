@@ -4,6 +4,7 @@ on:
     types: [opened, synchronize, labeled]
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: marketstack-private-eu-${{ github.event.pull_request.number }}
   cancel-in-progress: false
@@ -17,8 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     env:
-      VU_MARKETSTACK_PRIVATE_DIR: ${{ runner.temp }}/vu-marketstack-private/marketstack
-      VU_MARKETSTACK_PREVIEW_DIR: ${{ runner.temp }}/vu-marketstack-private/preview
       VU_MARKETSTACK_PHASE: ${{ contains(github.event.pull_request.labels.*.name, 'vu-marketstack-live') && 'live' || 'bootstrap' }}
     steps:
       - uses: actions/checkout@v4
@@ -28,6 +27,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Configure private ephemeral output paths
+        run: |
+          echo "VU_MARKETSTACK_PRIVATE_DIR=$RUNNER_TEMP/vu-marketstack-private/marketstack" >> "$GITHUB_ENV"
+          echo "VU_MARKETSTACK_PREVIEW_DIR=$RUNNER_TEMP/vu-marketstack-private/preview" >> "$GITHUB_ENV"
       - name: Verify bounded transport and authenticated private storage
         run: node --test --test-reporter=dot quant/tests/marketstack-budget.test.mjs quant/tests/marketstack-cache.test.mjs scripts/marketstack/tests/actions-handoff.test.mjs
       - uses: actions/cache/restore@v4
@@ -65,6 +68,17 @@ jobs:
         with:
           path: .market-cache/marketstack-private-live.enc
           key: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}-lease
+      - name: Verify exact encrypted lease exists before any paid request
+        if: env.VU_MARKETSTACK_PHASE == 'live'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VU_PRIVATE_CACHE_KEY: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}-lease
+        run: |
+          node --input-type=module <<'JS'
+          import {verifySavedActionsCache} from './scripts/marketstack/actions-import-guard.mjs';
+          try {await verifySavedActionsCache({repo:process.env.GITHUB_REPOSITORY,token:process.env.GH_TOKEN,key:process.env.VU_PRIVATE_CACHE_KEY});}
+          catch {console.error('ACTIONS_PRIVATE_LEASE_PERSISTENCE_UNVERIFIED');process.exitCode=1;}
+          JS
       - name: Execute explicitly authorized frozen listing requests privately
         if: env.VU_MARKETSTACK_PHASE == 'live'
         env:
@@ -88,6 +102,17 @@ jobs:
         with:
           path: .market-cache/marketstack-private-live.enc
           key: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Verify final private counter cache is discoverable
+        if: always() && steps.seal-private.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VU_PRIVATE_CACHE_KEY: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          node --input-type=module <<'JS'
+          import {verifySavedActionsCache} from './scripts/marketstack/actions-import-guard.mjs';
+          try {await verifySavedActionsCache({repo:process.env.GITHUB_REPOSITORY,token:process.env.GH_TOKEN,key:process.env.VU_PRIVATE_CACHE_KEY});}
+          catch {console.error('ACTIONS_PRIVATE_COUNTER_PERSISTENCE_UNVERIFIED');process.exitCode=1;}
+          JS
       - name: Protected published artifacts and production workflows
         if: always()
         run: git diff --exit-code -- quant/data discover/data supertrader/data vorsorge core/data .github/workflows/market-data-refresh.yml .github/workflows/tiingo2-universe-refresh.yml
