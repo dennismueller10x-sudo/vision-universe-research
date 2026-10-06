@@ -11,7 +11,7 @@ from company_intelligence.store import atomic_json, dumps
 from company_intelligence.model import SCHEMA
 
 
-def prepare(source, output, tickers):
+def prepare(source, output, tickers, preview_sources=None):
     source, output = Path(source).resolve(), Path(output).resolve()
     if output == source or output.is_relative_to(source) or source.is_relative_to(output):
         raise ValueError('PUBLIC_OUTPUT_MUST_BE_SEPARATE')
@@ -42,6 +42,9 @@ def prepare(source, output, tickers):
         raw = json.loads((source / path).read_text())
         if raw.get('companyId') != cid or raw.get('schema') != SCHEMA or not any(l.get('symbol') == ticker for l in raw.get('listings', [])):
             raise ValueError('IDENTITY_MISMATCH')
+        if preview_sources is not None:
+            from company_intelligence.consumer_usage import filter_for_preview
+            raw, _ = filter_for_preview(raw, preview_sources)
         values[cid] = project(raw)
     digest = hashlib.sha256(dumps({'sourceGeneration': generation, 'cohort': members, 'values': values}).encode()).hexdigest()[:24]
     paths = {cid: f'snapshots/{digest}/{cid}.json' for cid in values}
@@ -61,6 +64,10 @@ def prepare(source, output, tickers):
         write(f'snapshots/{digest}/lookup/{prefix}.json', {'schema': SCHEMA, 'generation': digest, 'tickers': rows, 'companies': {cid: paths[cid] for cid in ids if cid in paths}})
     write('index.json', {'schema': SCHEMA, 'state': 'PREVIEW', 'generatedAt': index['generatedAt'], 'generation': digest, 'lookupShards': prefixes, 'companyCount': len({l['companyId'] for ls in members.values() for l in ls}), 'coveredCompanyCount': len(values), 'scope': 'CONTROLLED_COHORT'})
     manifest = {'schema': 1, 'generation': digest, 'generatedAt': index['generatedAt'], 'assets': assets, 'tickers': requested}
+    if preview_sources is not None:
+        manifest['sourceUsagePolicy'] = 'OWNED_IR_SEC_METADATA_PREVIEW_V1'
+        # Preview evidence is not a public commercial release approval.
+        manifest['releaseState'] = 'REVIEW_ONLY'
     if any(v.get('companyProfile', {}).get('editorialStatus') == 'REVIEW_ONLY' or v.get('previewBasis') == 'CATALOGUE_AND_EXISTING_FACTS' for v in values.values()):
         manifest['releaseState'] = 'REVIEW_ONLY'
     atomic_json(output / 'manifest.json', manifest)
@@ -72,5 +79,7 @@ if __name__ == '__main__':
     p.add_argument('--source', type=Path, required=True)
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--tickers', required=True)
+    p.add_argument('--preview-source-registry', type=Path, help='Explicit verified combined restored/configured registry; apply conservative metadata-only preview policy')
     a = p.parse_args()
-    print(json.dumps(prepare(a.source, a.out, a.tickers.upper().split(',')), sort_keys=True))
+    sources = json.loads(a.preview_source_registry.read_text()) if a.preview_source_registry else None
+    print(json.dumps(prepare(a.source, a.out, a.tickers.upper().split(','), sources), sort_keys=True))
