@@ -101,7 +101,7 @@ jobs:
       - name: Stage 1 replay (delisted weekly cohort)
         run: >-
           node --max-old-space-size=6144 scripts/technical/hsab/replay.mjs --delisted "$RUNNER_TEMP/delisted-weekly.json"
-          --workers "$(nproc)" --perbar 20 --persist 40 --out "$RUNNER_TEMP/dl-replay"
+          --workers "$(nproc)" --perbar 20 --persist 40 --grid month --out "$RUNNER_TEMP/dl-replay"
       - name: Stage 2 (holdout only)
         if: needs.gate.outputs.mode == 'holdout'
         run: |
@@ -175,14 +175,14 @@ jobs:
         run: |
           set -euo pipefail
           node --max-old-space-size=6144 scripts/technical/hsab/replay.mjs --work-dir "$RUNNER_TEMP/canonical-history" \
-            --universe quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json --sample-symbols 600 --to 2016-06-30 --workers "$(nproc)" --out "$RUNNER_TEMP/d-dev"
+            --universe quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json --sample-symbols 600 --to 2016-06-30 --grid month --workers "$(nproc)" --out "$RUNNER_TEMP/d-dev"
           node --max-old-space-size=7168 scripts/technical/hsab/evaluate.mjs --records "$RUNNER_TEMP/d-dev" --phase D_DEV --work-dir "$RUNNER_TEMP/canonical-history" --out "$OUT/d-dev-eval.json"
           node scripts/technical/hsab/publish-ci.mjs --replay "$RUNNER_TEMP/d-dev" --label d-dev --out "$OUT"
       - name: "Daily HOLDOUT window, Stage 1 (dev = seal only, no outcomes; holdout = Stage 2)"
         run: |
           set -euo pipefail
           node --max-old-space-size=6144 scripts/technical/hsab/replay.mjs --work-dir "$RUNNER_TEMP/canonical-history" \
-            --universe quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json --sample-symbols "$SAMPLE" --from 2017-01-01 --to 2026-09-30 --workers "$(nproc)" --out "$RUNNER_TEMP/d-hold"
+            --universe quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json --sample-symbols "$SAMPLE" --from 2017-01-01 --to 2026-09-30 --grid month --persist 40 --workers "$(nproc)" --out "$RUNNER_TEMP/d-hold"
           node scripts/technical/hsab/publish-ci.mjs --replay "$RUNNER_TEMP/d-hold" --label "d-holdout-stage1-$MODE" --out "$OUT"
           if [ "$MODE" = "holdout" ]; then
             sha=$(sha256sum docs/technical-intelligence/HISTORICAL_ACCURACY_PREREGISTRATION.md | cut -d' ' -f1)
