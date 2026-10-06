@@ -1,0 +1,191 @@
+name: Chartbild-Historie (Mission VIII, Historical Structural Accuracy Benchmark)
+
+# WOZU: Die Wochenstudie der Ueberlebenden laeuft lokal. Zwei Datenquellen liegen nur in der
+# dauerhaften Ablage (R2) und duerfen den Runner nicht verlassen:
+#   1. delistete Listings ab 2015 (privater Delisting-Abruf, Wochenbuendel) — von keiner TI-Studie je ausgewertet
+#   2. die Tageshistorie des Universums (OHLCV) — die Tagesengine wurde nie universumsweit gemessen
+# Dieser Lauf rechnet scripts/technical/hsab (Stage 1 Replay, Stage 2 Auswertung) runner-privat und
+# committet NUR aggregierte Kennzahlen (keine Kurse, keine Niveaus).
+#
+# Ausloeser: Push auf claude/** mit einer Marke im BETREFF (erste Zeile) der Commit-Nachricht:
+#   [hsab-ci-dev]    Entwicklungslauf: Tages-DEV (bis 2016-06-30) auswerten; fuer Delisted-Woche und
+#                    Tages-Holdout NUR Stage 1 (Siegel, Zaehler, keine Outcomes)
+#   [hsab-holdout]   einmaliger Holdout-Lauf; verlangt protocol.status PREREGISTERED und den SHA-256 der
+#                    Praeregistrierung (evaluate.mjs prueft); bricht ab, wenn bereits ein Holdout-Ergebnis existiert
+# Ohne Marke laeuft nichts.
+
+on:
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: technical-intelligence-mission8-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.g.outputs.mode }}
+    steps:
+      - id: g
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          subject=$(printf '%s\n' "$COMMIT_MESSAGE" | head -n 1)
+          case "$subject" in
+            *"[hsab-holdout]"*) echo "mode=holdout" >> "$GITHUB_OUTPUT" ;;
+            *"[hsab-ci-dev]"*) echo "mode=dev" >> "$GITHUB_OUTPUT" ;;
+            *) echo "mode=none" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+  weekly-delisted:
+    needs: gate
+    if: needs.gate.outputs.mode != 'none'
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    env:
+      MODE: ${{ needs.gate.outputs.mode }}
+      OUT: quant/data/technical-intelligence/historical-accuracy/ci
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Holdout nur einmal
+        if: needs.gate.outputs.mode == 'holdout'
+        run: |
+          set -euo pipefail
+          if [ -f "$OUT/w-holdout-eval.json" ]; then echo "Wochen-Holdout wurde bereits ausgewertet - kein zweiter Lauf."; exit 1; fi
+      - name: Read-only recovery preflight
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/market/preflight-zero-cost.mjs --operation RECOVERY --gate FULL_UNIVERSE --out "$RUNNER_TEMP/preflight.json"
+      - name: Restore canonical history (runner-private, needed for ticker-change de-duplication)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --pull --gate FULL_UNIVERSE --concurrency 24
+          --preflight "$RUNNER_TEMP/preflight.json" --work-dir "$RUNNER_TEMP/canonical-history" --report "$RUNNER_TEMP/sync.json"
+      - name: Private delisted weekly bundle
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          VU_SURVIVORSHIP_OUT: ${{ runner.temp }}/survivorship-control.json
+        run: >-
+          node --max-old-space-size=6144 scripts/quant/build-survivorship-control.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history" --bundle-out "$RUNNER_TEMP/delisted-weekly.json"
+      - name: Stage 1 replay (delisted weekly cohort)
+        run: >-
+          node --max-old-space-size=6144 scripts/technical/hsab/replay.mjs --delisted "$RUNNER_TEMP/delisted-weekly.json"
+          --workers "$(nproc)" --perbar 20 --persist 40 --out "$RUNNER_TEMP/dl-replay"
+      - name: Stage 2 (holdout only)
+        if: needs.gate.outputs.mode == 'holdout'
+        run: |
+          set -euo pipefail
+          sha=$(sha256sum docs/technical-intelligence/HISTORICAL_ACCURACY_PREREGISTRATION.md | cut -d' ' -f1)
+          node --max-old-space-size=7168 scripts/technical/hsab/evaluate.mjs --records "$RUNNER_TEMP/dl-replay" --phase W_HOLDOUT \
+            --delisted "$RUNNER_TEMP/delisted-weekly.json" --open-holdout "$sha" --out "$OUT/w-holdout-eval.json"
+      - name: Publish aggregates only
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          node scripts/technical/hsab/publish-ci.mjs --replay "$RUNNER_TEMP/dl-replay" --survivorship "$RUNNER_TEMP/survivorship-control.json" --label "w-delisted-$MODE" --out "$OUT"
+          node scripts/market/assert-public-data-hygiene.mjs
+          node scripts/technical/hsab/publish-ci.mjs --check "$OUT"
+      - name: Commit (aggregates only)
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/technical-intelligence/historical-accuracy/ci
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          git commit -m "Mission VIII CI: delistete Wochenkohorte (${MODE}, nur Kennzahlen)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+  daily:
+    needs: gate
+    if: needs.gate.outputs.mode != 'none'
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    env:
+      MODE: ${{ needs.gate.outputs.mode }}
+      OUT: quant/data/technical-intelligence/historical-accuracy/ci
+      SAMPLE: '1200'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Holdout nur einmal
+        if: needs.gate.outputs.mode == 'holdout'
+        run: |
+          set -euo pipefail
+          if [ -f "$OUT/d-holdout-eval.json" ]; then echo "Tages-Holdout wurde bereits ausgewertet - kein zweiter Lauf."; exit 1; fi
+      - name: Read-only recovery preflight
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/market/preflight-zero-cost.mjs --operation RECOVERY --gate FULL_UNIVERSE --out "$RUNNER_TEMP/preflight.json"
+      - name: Restore canonical history to runner-private state
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --pull --gate FULL_UNIVERSE --concurrency 24
+          --preflight "$RUNNER_TEMP/preflight.json" --work-dir "$RUNNER_TEMP/canonical-history" --report "$RUNNER_TEMP/sync.json"
+      - name: Daily DEV (Stage 1 + 2, events up to 2016-06-30)
+        if: needs.gate.outputs.mode == 'dev'
+        run: |
+          set -euo pipefail
+          node --max-old-space-size=6144 scripts/technical/hsab/replay.mjs --work-dir "$RUNNER_TEMP/canonical-history" \
+            --universe quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json --sample-symbols 600 --to 2016-06-30 --workers "$(nproc)" --out "$RUNNER_TEMP/d-dev"
+          node --max-old-space-size=7168 scripts/technical/hsab/evaluate.mjs --records "$RUNNER_TEMP/d-dev" --phase D_DEV --work-dir "$RUNNER_TEMP/canonical-history" --out "$OUT/d-dev-eval.json"
+          node scripts/technical/hsab/publish-ci.mjs --replay "$RUNNER_TEMP/d-dev" --label d-dev --out "$OUT"
+      - name: Daily HOLDOUT window, Stage 1 (dev: seal only, no outcomes; holdout: Stage 2)
+        run: |
+          set -euo pipefail
+          node --max-old-space-size=6144 scripts/technical/hsab/replay.mjs --work-dir "$RUNNER_TEMP/canonical-history" \
+            --universe quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json --sample-symbols "$SAMPLE" --from 2017-01-01 --to 2026-09-30 --workers "$(nproc)" --out "$RUNNER_TEMP/d-hold"
+          node scripts/technical/hsab/publish-ci.mjs --replay "$RUNNER_TEMP/d-hold" --label "d-holdout-stage1-$MODE" --out "$OUT"
+          if [ "$MODE" = "holdout" ]; then
+            sha=$(sha256sum docs/technical-intelligence/HISTORICAL_ACCURACY_PREREGISTRATION.md | cut -d' ' -f1)
+            node --max-old-space-size=7168 scripts/technical/hsab/evaluate.mjs --records "$RUNNER_TEMP/d-hold" --phase D_HOLDOUT --work-dir "$RUNNER_TEMP/canonical-history" \
+              --open-holdout "$sha" --out "$OUT/d-holdout-eval.json"
+          fi
+      - name: Hygiene
+        run: |
+          node scripts/market/assert-public-data-hygiene.mjs
+          node scripts/technical/hsab/publish-ci.mjs --check "$OUT"
+      - name: Commit (aggregates only)
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/technical-intelligence/historical-accuracy/ci
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          git commit -m "Mission VIII CI: Tagesstudie (${MODE}, nur Kennzahlen)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

@@ -1,0 +1,98 @@
+{
+ "schemaVersion": "hsab-protocol-1.0.0",
+ "status": "DEVELOPMENT",
+ "note": "Mission VIII Protokoll. Aenderungen nach status=PREREGISTERED sind verboten (HISTORICAL_ACCURACY_PREREGISTRATION.md).",
+ "preregistration": {
+  "file": "docs/technical-intelligence/HISTORICAL_ACCURACY_PREREGISTRATION.md"
+ },
+ "phases": {
+  "W_DEV": {
+   "cohorts": [
+    "SURV_W"
+   ],
+   "bucket": [
+    0,
+    2
+   ],
+   "usage": "DEVELOPMENT (Daten bereits in Mission I-IV als TRAIN/VALIDATION/TEST gesehen)"
+  },
+  "W_VAL": {
+   "cohorts": [
+    "SURV_W"
+   ],
+   "bucket": [
+    1,
+    2
+   ],
+   "requires": "DEV_FROZEN",
+   "usage": "VALIDATION (Daten bereits gesehen; Titelhaelfte in Mission VIII erst nach DEV-Freeze geoeffnet)"
+  },
+  "W_HOLDOUT": {
+   "cohorts": [
+    "DELISTED_W"
+   ],
+   "requires": "PREREGISTERED",
+   "usage": "FINAL HOLDOUT (delistete Listings ab 2015; von keiner TI-Studie je ausgewertet)"
+  },
+  "W_UNION": {
+   "cohorts": [
+    "SURV_W",
+    "DELISTED_W"
+   ],
+   "from": "2018-01-01",
+   "requires": "PREREGISTERED",
+   "usage": "Survivorship-Sensitivitaet (Ueberlebende ab 2018 bereits gesehen)"
+  },
+  "D_DEV": {
+   "cohorts": [
+    "SURV_D"
+   ],
+   "to": "2016-06-30",
+   "usage": "DEVELOPMENT Tag (Embargo: Ergebnisfenster enden vor 2017)"
+  },
+  "D_HOLDOUT": {
+   "cohorts": [
+    "SURV_D"
+   ],
+   "from": "2017-01-01",
+   "requires": "PREREGISTERED",
+   "usage": "HOLDOUT Tag (Tagesengine nie universumsweit ausgewertet; Kalenderzeitraum wochenweise gesehen)"
+  }
+ },
+ "variants": [
+  "FULL",
+  "NO_TREND",
+  "NO_MOMENTUM",
+  "NO_STRUCTURE",
+  "NO_HTF",
+  "NO_VOLUME",
+  "NO_PATTERN",
+  "NO_SR",
+  "NO_FIB",
+  "NO_ELLIOTT",
+  "NO_WYCKOFF",
+  "TREND_ONLY",
+  "STRUCTURE_ONLY",
+  "MOMENTUM_ONLY",
+  "TREND_STRUCTURE",
+  "TREND_MOMENTUM",
+  "STRUCTURE_VOLUME",
+  "TREND_STRUCTURE_VOLUME"
+ ],
+ "controls": {
+  "B": 3,
+  "C": 3,
+  "D": 5,
+  "E": 5
+ },
+ "minN": {
+  "segment": 300
+ },
+ "bootstrap": {
+  "B": 1000,
+  "timeBlock": "QUARTER"
+ },
+ "selectivity": {
+  "agreementCutoffs": null
+ }
+}
