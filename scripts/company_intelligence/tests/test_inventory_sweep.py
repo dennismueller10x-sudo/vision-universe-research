@@ -202,3 +202,25 @@ class InventorySweepTests(unittest.TestCase):
   for reason in ('ROBOTS_UNAVAILABLE:SOURCE_TOO_LARGE','HTTP_403','OFFICIAL_SITE_CANDIDATE_CONFLICTING_COPYRIGHT_OWNER'):
    self.s.set_state('officialSite:'+cid,{'status':'REJECTED','reason':reason,'retryAfter':future})
    self.assertEqual(select(self.cs,self.s,NOW,'size-upgrade','domains')[0],[])
+
+ def test_header_collector_upgrade_rechecks_exact_footer_failure_once(self):
+  from company_intelligence.discovery import OWNERSHIP_VERSION,CORPORATE_HEADER_EVIDENCE_VERSION
+  from company_intelligence.discovery_batch import persist
+  cid=self.a['companyId'];pid='header-upgrade';key='inventorySweep:'+pid+':domains:';future='2099-01-01T00:00:00Z';gaps={'footerOwnerMatched':True,'shortBrand':False}
+  self.s.set_state(key+'inventory',[cid]);self.s.set_state(key+cid,{'status':'COOLDOWN','retryAfter':future,'networkRequests':7,'attempts':2})
+  self.s.set_state('officialSite:'+cid,{'status':'REJECTED','reason':'OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED','ownershipVerifierVersion':OWNERSHIP_VERSION,'ownershipEvidence':gaps,'retryAfter':future})
+  self.assertEqual([v['companyId'] for v in select(self.cs,self.s,NOW,pid,'domains')[0]],[cid])
+  result={'companyId':cid,'status':'REJECTED','reason':'OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED','failureEvidence':gaps,'requests':2};persist([result],self.s,self.cs,NOW);record(result,self.s,NOW,pid,'domains')
+  self.assertEqual(self.s.state('officialSite:'+cid)['corporateHeaderEvidenceVersion'],CORPORATE_HEADER_EVIDENCE_VERSION)
+  self.assertEqual(select(self.cs,self.s,NOW,pid,'domains')[0],[])
+  self.assertEqual(self.s.state(key+cid)['attempts'],3)
+  self.assertEqual(self.s.state(key+cid)['networkRequests'],9)
+
+ def test_header_collector_upgrade_cannot_override_access_conflicts_or_future_versions(self):
+  from company_intelligence.discovery import OWNERSHIP_VERSION
+  cid=self.a['companyId'];future='2099-01-01T00:00:00Z'
+  cases=[('REJECTED','OFFICIAL_SITE_CANDIDATE_CONFLICTING_COPYRIGHT_OWNER',OWNERSHIP_VERSION,True,None),('DEFERRED','ROBOTS_UNAVAILABLE:HTTP_503',OWNERSHIP_VERSION,True,None),('REJECTED','ROBOTS_DISALLOWED',OWNERSHIP_VERSION,True,None),('REJECTED','OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED','corporate-ownership-999',True,None),('REJECTED','OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED',OWNERSHIP_VERSION,False,None),('REJECTED','OFFICIAL_SITE_CANDIDATE_OWNER_NOT_VALIDATED',OWNERSHIP_VERSION,True,'corporate-header-999')]
+  for i,(status,reason,version,footer,header_version) in enumerate(cases):
+   with self.subTest(reason=reason,version=version,header_version=header_version):
+    pid='header-protected'+str(i);site={'status':status,'reason':reason,'ownershipVerifierVersion':version,'ownershipEvidence':{'footerOwnerMatched':footer,'shortBrand':False},'corporateHeaderEvidenceVersion':header_version,'retryAfter':future};self.s.set_state('inventorySweep:'+pid+':domains:inventory',[cid]);self.s.set_state('officialSite:'+cid,site)
+    self.assertEqual(select(self.cs,self.s,NOW,pid,'domains')[0],[]);self.assertEqual(self.s.state('officialSite:'+cid),site)

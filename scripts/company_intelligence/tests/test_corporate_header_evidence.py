@@ -20,7 +20,7 @@ class CorporateHeaderEvidenceTests(unittest.TestCase):
                 self.assertEqual(self.verify(legal,body)['status'],'VALIDATED')
 
     def test_customer_and_unlinked_images_cannot_supply_corporate_header(self):
-        for link in ('<a href="https://customer.example/">{img}</a>','<a href="/customers">{img}</a>','{img}','<a name="customer">{img}</a>'):
+        for link in ('<a href="https://customer.example/">{img}</a>','<a href="/customers">{img}</a>','<a href="#customer">{img}</a>','<a href="/?customer=1">{img}</a>','{img}','<a name="customer">{img}</a>'):
             with self.subTest(link=link):
                 image='<img src="/logo.svg" alt="Federal Signal">'
                 body='<title>Home</title>'+link.format(img=image)+'<footer>© 2026 Federal Signal Corporation. All rights reserved.</footer>'
@@ -47,3 +47,7 @@ class CorporateHeaderEvidenceTests(unittest.TestCase):
         body='<title>ABC</title><footer>© 2026 Cocoa Industries Inc. All rights reserved.</footer>'
         with self.assertRaisesRegex(SourceError,'OWNER_NOT_VALIDATED'):
             self.verify('Cocoa Industries Inc.',body,'ABC')
+
+    def test_boolean_image_attributes_do_not_abort_valid_logo_evidence(self):
+        body='<title>Home</title><a href="/"><img src="/logo.svg" class alt="Federal Signal"></a><footer>© 2026 Federal Signal Corporation. All rights reserved.</footer>'
+        self.assertEqual(self.verify('Federal Signal Corporation',body)['status'],'VALIDATED')

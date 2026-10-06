@@ -5,6 +5,7 @@ from .model import canonical_url, domain
 from .transport import SourceError
 
 OWNERSHIP_VERSION = 'corporate-ownership-10'
+CORPORATE_HEADER_EVIDENCE_VERSION = 'corporate-header-1'
 OVERSIZED_IR_RECOVERY_VERSION = 'owned-ir-after-size-limit-1'
 
 
@@ -288,9 +289,9 @@ def _validate_response(company, candidate, response, now, header_body=None):
             attrs=dict(attrs)
             if tag=='a':
                 target=canonical_url(urljoin(response['finalUrl'],attrs.get('href') or ''))
-                self.home_anchor=bool(attrs.get('href') and target and same_web_host(target,response['finalUrl']) and
+                self.home_anchor=bool(attrs.get('href') and not attrs['href'].startswith('#') and target and not urlsplit(target).query and same_web_host(target,response['finalUrl']) and
                     re.fullmatch(r'/(?:[a-z]{2}(?:-[a-z]{2})?/?|index\.html?|overview/default\.aspx)?',urlsplit(target).path,re.I))
-            if tag=='img' and self.home_anchor and re.search(r'logo|brand',' '.join(attrs.get(k,'') for k in ('src','class','id')),re.I):
+            if tag=='img' and self.home_anchor and re.search(r'logo|brand',' '.join(attrs.get(k) or '' for k in ('src','class','id')),re.I):
                 self.values.append(clean(attrs.get('alt'),200))
             if tag=='meta' and (attrs.get('property') or attrs.get('name') or '').casefold() in ('og:site_name','og:title','application-name'):
                 self.values.append(clean(attrs.get('content'),200))
