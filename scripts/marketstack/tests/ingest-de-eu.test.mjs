@@ -41,6 +41,16 @@ test('fake end-to-end sample, representative barrier, mandatory remainder and on
   const dir=JSON.parse(readFileSync(join(input.previewOut,'core/data/de-eu/listings.json'),'utf8'));assert.equal(dir.referenceAsOf,'2026-10-06');assert.equal(dir.dataAsOf,'2026-10-07');
  const repeated=await ingest({...input,asOf:'2026-10-07',phase:'refresh',sampleProof:proof});assert.equal(repeated.series,16);assert.equal(repeated.decisions.length,16);assert.equal(repeated.budget.requestsAttempted,96,'legitimate new bars do not invalidate the proven selection');
  const changedPath=join(input.privateDir,'normalized',rows[0].listingId+'.json'),changed=JSON.parse(readFileSync(changedPath,'utf8'));changed.bars[0].close=80;writeFileSync(changedPath,JSON.stringify(changed));const beforeDrift=calls.length;await assert.rejects(ingest({...input,asOf:'2026-10-07',phase:'refresh',sampleProof:proof}),/CACHED_HISTORY_DRIFT/);assert.equal(calls.length,beforeDrift);
+ // A blocked final representative must survive the final checkpoint and the
+ // mandatory remainder; an earlier successful per-listing checkpoint is stale.
+ const changedRows=rows.map((r,i)=>i===14?{...r,providerIdentityBasis:'REQUEST_CANDIDATE_REQUIRE_RESPONSE_ISIN'}:r),changedMap={...listingMap,listings:changedRows};
+ const fresh={...input,listingMap:changedMap,privateDir:join(out,'blocked-last'),previewOut:join(out,'blocked-preview')};future=false;
+ const blockedSample=await ingest(fresh),blockedId=changedRows[14].listingId;
+ assert.ok(JSON.parse(readFileSync(join(fresh.privateDir,'checkpoint.json'))).decisions.some(d=>d.listingId===blockedId&&d.cause==='MAPPING_ERROR'));
+ const successful=sampleSelection(changedRows).map(r=>r.listingId).filter(id=>id!==blockedId);
+ const correctedProof={...proof,referenceHash:hash(changedMap),successfulListingIds:successful,normalizedHistoryHashes:Object.fromEntries(successful.map(id=>[id,hash(JSON.parse(readFileSync(join(fresh.privateDir,'normalized',id+'.json'))))]))};
+ const blockedFull=await ingest({...fresh,phase:'mandatory',sampleProof:correctedProof});
+ assert.equal(blockedSample.series,14);assert.equal(blockedFull.decisions.length,16);assert.ok(blockedFull.decisions.some(d=>d.listingId===blockedId&&d.cause==='MAPPING_ERROR'));
  }finally{rmSync(out,{recursive:true,force:true});}
 });
 test('overlap detects source corrections without filling gaps or double adjusting',()=>{

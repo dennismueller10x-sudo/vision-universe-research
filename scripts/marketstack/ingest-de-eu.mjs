@@ -137,6 +137,7 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
  const converted=Object.fromEntries(Object.entries(histories).map(([id,h])=>[id,{...h,sourceEvidence:h.sourceEvidence.join('|')} ]));
  const result=materialize({rows:productRows,histories:converted,asOf,referenceAsOf:listingMap.asOf,out:previewOut});
  const status={schemaVersion:'de-eu-ingestion-status-1.0.0',asOf,runId,phase,referenceHash:sha(JSON.stringify(listingMap)),...result,sampleSuccesses,decisions,budget:await budget.status(),publicDisplay:false,scheduleActivated:false};
+ write(join(privateDir,'checkpoint.json'),{asOf,referenceHash:sha(JSON.stringify(listingMap)),runId,decisions,validatedSampleProofHash:phase==='sample'?null:sha(JSON.stringify(sampleProof)),currentHistoryHashes:Object.fromEntries(Object.entries(histories).map(([id,h])=>[id,sha(JSON.stringify(h))])),budget:status.budget});
  write(join(privateDir,'de_eu_ingestion_status.json'),status);return status;
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
