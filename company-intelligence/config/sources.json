@@ -111350,5 +111350,57 @@
     "sourceId": "f4a96d6f517a490a23e352dc",
     "bootstrapValidatedAt": "2026-10-06",
     "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_MATERIALS",
+    "provider": "GENERIC",
+    "active": true,
+    "sourceId": "3ac8975ef40d7150502e1658",
+    "allowedSites": [
+      "https://www.hsbc.com/",
+      "https://www.hsbc.com/investors/investing-in-hsbc/financial-calendar",
+      "https://www.hsbc.com/investors/results-and-announcements/investor-events-and-presentations"
+    ],
+    "lastVerified": "2026-10-06T05:15:06Z",
+    "metadata": {
+      "originatingIRHomepage": "https://www.hsbc.com/investors/investing-in-hsbc/financial-calendar"
+    },
+    "verificationEvidence": {
+      "linkedFrom": "https://www.hsbc.com/investors/investing-in-hsbc/financial-calendar",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "format": "HTML_MATERIALS",
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "url": "https://www.hsbc.com/investors/results-and-announcements/investor-events-and-presentations",
+    "verified": true,
+    "companyId": "iss_cik_0001089113",
+    "intervalHours": 24,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_FEED",
+    "provider": "GENERIC",
+    "active": true,
+    "sourceId": "dc4c610aeb41aea64609063e",
+    "allowedSites": [
+      "https://www.hsbc.com/",
+      "https://www.hsbc.com/investors/investing-in-hsbc/financial-calendar",
+      "https://www.hsbc.com/rss-feed"
+    ],
+    "lastVerified": "2026-10-06T05:15:06Z",
+    "verificationEvidence": {
+      "linkedFrom": "https://www.hsbc.com/investors/investing-in-hsbc/financial-calendar",
+      "officialSite": "https://www.hsbc.com/",
+      "validItems": 88
+    },
+    "format": "RSS",
+    "priority": 1,
+    "url": "https://www.hsbc.com/rss-feed",
+    "verified": true,
+    "companyId": "iss_cik_0001089113",
+    "intervalHours": 4,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
   }
 ]
