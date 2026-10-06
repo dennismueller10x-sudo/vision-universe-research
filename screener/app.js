@@ -26,6 +26,14 @@
     VD.theme.onChange(function () { document.dispatchEvent(new Event('vu-theme-change')); });
   }
 
+  if (new URLSearchParams(location.search).get('u') === 'EUROPE') {
+    var localView = document.createElement('script');
+    localView.src = '/screener/ui/local-listings.js';
+    localView.onload = function () { window.VUScreenerLocalView.boot(document.getElementById('sc-root'), { h: h }); };
+    localView.onerror = function () { document.getElementById('sc-root').textContent = 'Die regionale Screener-Ansicht konnte nicht geladen werden.'; };
+    document.head.append(localView); return;
+  }
+
   var PAGE = 30;
   var state = { query: Q.empty(), view: 'start', screenId: null, stock: null, cmp: [], select: false, selected: [], shown: PAGE, error: null, loaded: false, invalidLink: null, targetGroup: null };
   var cache = { key: null, result: null };
@@ -303,6 +311,7 @@
   function viewStart(main) {
     var i = info(), q = state.query;
     main.append(bar('Screener', { right: [mqDesk.matches ? null : modeSeg(), iconBtn('gear', 'Einstellungen', openSettings)] }));
+    main.append(h('a', { class: 'sc-link', href: '/screener/?u=EUROPE' }, 'Deutschland & Europa auswählen'));
     if (state.invalidLink) main.append(invalidNotice());
     var left = h('div', {}), right = h('div', {});
     left.append(h('section', { class: 'sc-hero' }, [
