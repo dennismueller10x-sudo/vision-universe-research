@@ -102,11 +102,15 @@ test("HSAB-S1 Siegel: VALIDATION/HOLDOUT verlangen Freeze bzw. Praeregistrierung
   const dir = mkdtempSync(join(tmpdir(), "hsab-"));
   const proto = JSON.parse(readFileSync(join(ROOT, "scripts/technical/hsab/protocol.json"), "utf8"));
   proto.status = "DEVELOPMENT"; writeFileSync(join(dir, "p.json"), JSON.stringify(proto));
-  await assert.rejects(evaluate({ protocol: join(dir, "p.json"), phase: "W_VAL", records: dir }), /VALIDATION versiegelt/);
+  await assert.rejects(evaluate({ protocol: join(dir, "p.json"), phase: "W_VAL", records: dir }), /versiegelt/);
   proto.status = "DEV_FROZEN"; writeFileSync(join(dir, "p.json"), JSON.stringify(proto));
   await assert.rejects(evaluate({ protocol: join(dir, "p.json"), phase: "W_HOLDOUT", records: dir }), /HOLDOUT versiegelt/);
   proto.status = "PREREGISTERED"; writeFileSync(join(dir, "p.json"), JSON.stringify(proto));
-  await assert.rejects(evaluate({ protocol: join(dir, "p.json"), phase: "W_HOLDOUT", records: dir, openHoldout: "0".repeat(64) }), /HOLDOUT versiegelt|ENOENT/);
+  await assert.rejects(evaluate({ protocol: join(dir, "p.json"), phase: "W_HOLDOUT", records: dir, openHoldout: "0".repeat(64) }), /nur das Repository-Protokoll/);
+  /* Repository-Protokoll: Holdout bleibt zu, solange status != PREREGISTERED bzw. der Hash nicht stimmt */
+  const repo = JSON.parse(readFileSync(join(ROOT, "scripts/technical/hsab/protocol.json"), "utf8"));
+  if (repo.status !== "PREREGISTERED") await assert.rejects(evaluate({ phase: "W_HOLDOUT", records: dir }), /HOLDOUT versiegelt/);
+  else await assert.rejects(evaluate({ phase: "W_HOLDOUT", records: dir, openHoldout: "0".repeat(64) }), /HOLDOUT versiegelt/);
 });
 
 test("HSAB-S2 Siegel: veraenderter Shard wird erkannt", async () => {

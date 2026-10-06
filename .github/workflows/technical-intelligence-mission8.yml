@@ -55,6 +55,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
+          fetch-depth: 2
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -63,6 +64,11 @@ jobs:
         run: |
           set -euo pipefail
           if [ -f "$OUT/w-holdout-eval.json" ]; then echo "Wochen-Holdout wurde bereits ausgewertet - kein zweiter Lauf."; exit 1; fi
+          # Review H3: Die Praeregistrierung muss VOR dem Oeffnungs-Commit committet sein; der Oeffnungs-Commit
+          # selbst darf weder Code, Protokoll, Workflow noch Praeregistrierung aendern.
+          git diff --quiet HEAD~1 HEAD -- scripts/technical/hsab quant/engines scripts/technical/lib .github/workflows/technical-intelligence-mission8.yml docs/technical-intelligence/HISTORICAL_ACCURACY_PREREGISTRATION.md \
+            || { echo "Oeffnungs-Commit aendert Code/Protokoll/Praeregistrierung - verweigert."; exit 1; }
+          git cat-file -e HEAD~1:docs/technical-intelligence/HISTORICAL_ACCURACY_PREREGISTRATION.md
       - name: Read-only recovery preflight
         env:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -132,6 +138,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
+          fetch-depth: 2
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -140,6 +147,11 @@ jobs:
         run: |
           set -euo pipefail
           if [ -f "$OUT/d-holdout-eval.json" ]; then echo "Tages-Holdout wurde bereits ausgewertet - kein zweiter Lauf."; exit 1; fi
+          # Review H3: Die Praeregistrierung muss VOR dem Oeffnungs-Commit committet sein; der Oeffnungs-Commit
+          # selbst darf weder Code, Protokoll, Workflow noch Praeregistrierung aendern.
+          git diff --quiet HEAD~1 HEAD -- scripts/technical/hsab quant/engines scripts/technical/lib .github/workflows/technical-intelligence-mission8.yml docs/technical-intelligence/HISTORICAL_ACCURACY_PREREGISTRATION.md \
+            || { echo "Oeffnungs-Commit aendert Code/Protokoll/Praeregistrierung - verweigert."; exit 1; }
+          git cat-file -e HEAD~1:docs/technical-intelligence/HISTORICAL_ACCURACY_PREREGISTRATION.md
       - name: Read-only recovery preflight
         env:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}

@@ -58,7 +58,8 @@ function processSeries(series, meta, o) {
   const det = new Set(Core.detectionPoints(P, series.length, minBars));
   const h = symHash(meta.symbol);
   const perBar = o.perbar && h % o.perbar === 0;
-  const persist = o.persist && h % o.persist === 0;
+  /* Review H4: eigener Hash-Strom, sonst waeren alle Persistenz-Titel zugleich Per-Bar-Titel (und uebersprungen). */
+  const persist = o.persist && symHash("persist|" + meta.symbol) % o.persist === 0;
   const inWin = (t) => (!o.from || series.timestamps[t] >= o.from) && (!o.to || series.timestamps[t] <= o.to);
   const ts = perBar ? Array.from({ length: series.length - (minBars - 1) }, (_, k) => k + minBars - 1) : Array.from(det);
   const recs = [], checks = [];

@@ -31,6 +31,9 @@ Gemessen wird **strukturelle Prognosequalität** (Ebene A). Die Ausführung (Ebe
 * **Lebenszyklus:** Bis zur Auflösung (Ziel 1, Invalidation, Zeitablauf) zählen spätere Analysezeitpunkte nicht als neue Prognose. Sie prüfen nur, ob das Produkt umgedeutet hat:
   * `RELABEL`, Typ `DIR_CHANGE`: keine oder andere Richtung;
   * `LEVEL_SHIFT`: gleiche Richtung, aber Invalidation oder Ziel 1 um mehr als 1 ATR verschoben.
+* Umdeutungen zählen nur **strikt vor** der Auflösungsbar. Die Invalidation selbst ist keine Umdeutung.
+* Ereignisse auf toten Reihen fallen weg.
+* Bei Überlebenden zählen nur Ereignisse, deren Horizont H vollständig beobachtbar ist (`INCOMPLETE_HORIZON` sonst). Am Datenende würden sonst nur schnelle Auflösungen zählen.
 * Ein über acht Wochen gezeigtes Szenario zählt also **einmal**. Das Ergebnis gilt immer den beim ersten Anzeigen eingefrorenen Niveaus.
 * Abdeckung wird auf Ebene der Analysezeitpunkte gemessen. Der Nenner sind alle zulässigen Analysezeitpunkte; ohne gerichtetes Szenario gilt der Punkt als Enthaltung.
 
@@ -68,7 +71,10 @@ Für die Hauptgröße wird die Geometrie in ATR-Einheiten übertragen: Abstand z
 | C zeitnah | derselbe Titel, Zufallszeit innerhalb ±104 Wochen / ±504 Tage | 3 |
 | **D gleiches Datum (Hauptvergleich)** | dasselbe Datum, zufällige andere Titel derselben Kohorte, gleiche Richtung und ATR-Geometrie. Kontrolliert Drift, Marktregime und Geometrie. | 5 |
 | E struktur-gematcht | wie D, aber nur Titel mit gleichem **einfachem** Trendzustand (SMA 40 W / 200 T plus Steigung) und gleichem ATR%-Terzil am Datum. Ohne VU-Methode. | 5 |
+| P timing-gematcht | wie D, aber nur Titel, die am selben Datum ebenfalls einen Pivot der Setup-Skala bestätigen. Trennt den Wert der VU-Methode vom bloßen Zeitpunkt „Pivot bestätigt“ (Code-Review M14). | 5 |
 | F einfache Modelle | immer long, SMA-Trend, 52-Wochen-Momentum, 52-Wochen-Ausbruch, Rücksetzer im Trend, plus VU-eigene Teilmodelle (TREND_ONLY …). Gemessen an denselben Analysezeitpunkten mit Barriere und festem Horizont. | – |
+
+B und C ziehen nur Zeitpunkte, deren Ergebnisfenster ganz in der Phase liegt; D_DEV greift damit nicht in den Tages-Holdout. Jede Ziehung hat einen eigenen Zufallsstrom je (Variante, Titel, Ereignis, Kontrolle). Ereignisse ohne aufgelöste Kontrollziehung fallen aus dem Lift.
 
 Kontroll-Kandidaten müssen zulässig sein: genug Historie, keine tote Reihe, ATR > 0. Kontrollen, deren Reihe vor der Auflösung endet, sind zensiert, genau wie Ereignisse.
 
@@ -105,11 +111,21 @@ Volatilität ist die Einheit aller Abstände (ATR) und lässt sich nicht ablatie
   * HSAB-C2: vergiftete Zukunft.
   * Bestehend: TI-C1/C2, EV2-C1/C2.
 * Verbleibende, offengelegte Nicht-Kausalitäten:
-  * Split-Bereinigung mit späteren Splits (skaliert Kurse, nicht prozentuale Geometrie; ändert Rundungsschritte);
+  * **Split-Bereinigung mit späteren Splits und Anzeigerundung (Code-Review H1).** Das Produkt rundet Zonen und Grenzen mit festen Kursschritten nach außen (`priceStep`: < 1 → 0,01, < 10 → 0,05 …). Auf split-bereinigten Kursen hängt der Rundungsschritt relativ zur ATR von **späteren** Splits ab. Die Rundung nach außen rückt Ziel 1 näher und die Invalidation weiter weg; das begünstigt die absolute PSS-Quote. Zum Beleg: NVDA-Tagesdaten, abgeschnitten gegen voll, Invalidation/Kurs 0,905 statt 0,910; JPM ohne späteren Split bitgleich. Die Kontrollen erhalten dieselbe Geometrie in ATR-Einheiten (einschließlich Rundung). **Der Lift ist deshalb weitgehend unberührt, die absolute Quote nicht.** Sensitivitäten: ohne Fälle mit Rundungsschritt > 0,25 ATR und das Segment `roundingStepAtr`;
   * heutige Sektor-Taxonomie in Segmenten;
   * Universum = heute gelistete Titel (außer Delisted-Kohorte).
 
 ## 9. Phasen und Siegel
+
+Siegel-Regeln nach dem Code-Review:
+* Versiegelte Phasen laufen nur mit dem Repository-Protokoll; ein eigenes `--protocol` gibt es dort nicht.
+* Der Holdout verlangt:
+  * `protocol.status = PREREGISTERED`;
+  * `protocol.preregistration.sha256` gleich dem Datei-Hash gleich `--open-holdout`;
+  * Engine-Hashes gleich `protocol.freeze.engineFiles`.
+* Im CI muss die Präregistrierung im Eltern-Commit liegen, und der Öffnungs-Commit darf weder Code noch Protokoll, Workflow oder Präregistrierung ändern.
+* Holdout-Ergebnisse erscheinen nicht im Log.
+* „Nur einmal“ ist im CI je Branch technisch erzwungen. Über Branches hinweg gilt es als Verfahrensregel, nachprüfbar in der Git-Historie.
 
 Siehe `HISTORICAL_DATA_USAGE_REGISTER.md` §2 und `protocol.json`:
 * `W_VAL` lässt sich erst nach `status = DEV_FROZEN` auswerten.

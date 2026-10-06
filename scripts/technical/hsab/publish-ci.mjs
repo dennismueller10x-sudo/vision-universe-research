@@ -10,9 +10,11 @@ function arg(k, d) { const i = process.argv.indexOf("--" + k); return i >= 0 ? p
 const check = arg("check", null);
 if (check) {
   const bad = [];
-  for (const f of existsSync(check) ? readdirSync(check).filter((x) => x.endsWith(".json")) : []) {
-    const t = readFileSync(join(check, f), "utf8");
-    if (/"(px|close|open|high|low|points|bars|inv|t1|t2|e|rng|c|w0)"\s*:/.test(t)) bad.push(f);
+  /* rekursiv, alle Dateien; Schluessel, die Kurse oder Kursniveaus tragen koennen (Review LOW) */
+  const walk = (d) => (existsSync(d) ? readdirSync(d, { withFileTypes: true }).flatMap((x) => (x.isDirectory() ? walk(join(d, x.name)) : [join(d, x.name)])) : []);
+  for (const f of walk(check)) {
+    const t = readFileSync(f, "utf8");
+    if (/"(px|close|open|high|low|price|atr|points|bars|inv|t1|t2|e|rng|c|w0|zoneLow|zoneHigh|entryLow|entryHigh|invalidation)"\s*:/.test(t)) bad.push(f);
   }
   if (bad.length) { console.error("Kursfelder in veroeffentlichten Artefakten: " + bad.join(", ")); process.exit(1); }
   console.log("[publish-ci] Hygiene ok");
