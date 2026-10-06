@@ -342,3 +342,9 @@ main.vs-main{padding-bottom:110px;min-height:70vh}
   .vs-table.ranked th:nth-child(2),.vs-table.ranked td:nth-child(2){min-width:0}
   .vs-table.ranked th{white-space:normal;font-size:10.5px}
 }
+/* Kurs im ETF-Kopf: Desktop rechtsbündig, Mobil linksbündig unter dem Namen */
+.vs-etf-price{text-align:right}
+@media (max-width:640px){.vs-etf-price{text-align:left;width:100%}}
+/* Sprungziele (Planspiel, Tabs) nicht unter Navigation + mitlaufender Tab-Leiste verstecken */
+#vs-play,#vs-etf-body,.vs-section[id]{scroll-margin-top:calc(var(--vu-navigation-height,88px) + 130px)}
+
