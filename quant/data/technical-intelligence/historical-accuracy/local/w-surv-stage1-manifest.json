@@ -1,0 +1,94 @@
+{
+ "schemaVersion": "hsab-replay-manifest-1.0.0",
+ "replayVersion": "hsab-replay-1.0.0",
+ "generatedAt": "2026-10-06T18:31:38.098Z",
+ "commit": "04af59281c54b1bcdc2b134b7c701615d49bc9c8",
+ "dirtyEngineFiles": [
+  "M scripts/technical/hsab/evaluate.mjs",
+  " M scripts/technical/hsab/lib/structural-outcomes.cjs",
+  " M scripts/technical/hsab/protocol.json",
+  " M scripts/technical/hsab/replay.mjs"
+ ],
+ "engine": {
+  "scenario": "ti-scenario-1.2.1",
+  "elliott": "elliott-3.2.2",
+  "methodology": {
+   "elliottEngine": "v3"
+  },
+  "files": {
+   "quant/engines/technical/elliott/elliott-v3.js": "2acf44c09739d2fd",
+   "quant/engines/technical/elliott/patterns.js": "2e48b71e8fe602df",
+   "quant/engines/technical/ti/scenario.js": "a876f3d42a6247c1",
+   "quant/engines/technical/ti/engine.js": "95889ba053fc2065",
+   "quant/engines/technical/ti/context.js": "aa7e490c5f3a0598",
+   "quant/engines/technical/ti/dow-trend.js": "534d9e51f67bc91d",
+   "quant/engines/technical/ti/momentum-volatility.js": "2b8eea2f39440818",
+   "quant/engines/technical/ti/levels.js": "8c0c00a0f4fbcc8a",
+   "quant/engines/technical/ti/chart-patterns.js": "c54106a655f3ffe8",
+   "quant/engines/technical/ti/wyckoff.js": "8689fb6dd572f894",
+   "quant/engines/technical/ti/volume-intelligence.js": "5435683eaf88f8ac",
+   "quant/engines/technical/pivot-engine.js": "12ba836ed001a2f3",
+   "quant/engines/technical/feature-store.js": "e43849f26973da14",
+   "scripts/technical/lib/ti-product.mjs": "345c82b46ecedb40",
+   "scripts/technical/lib/ti-data.mjs": "818cc9885eda0ce5",
+   "scripts/technical/hsab/lib/replay-core.mjs": "2d021162136b8d8a",
+   "scripts/technical/hsab/replay.mjs": "f53bfd20deacd3c1"
+  }
+ },
+ "args": [
+  "--weekly-dir",
+  "--workers",
+  "4",
+  "--perbar",
+  "20",
+  "--persist",
+  "40",
+  "--out"
+ ],
+ "opts": {
+  "from": null,
+  "to": null,
+  "perbar": 20,
+  "persist": 40
+ },
+ "bucket": null,
+ "sampleSymbols": null,
+ "delisted": null,
+ "symbols": {
+  "n": 6348,
+  "sha256": "89fd6fc246c36d79d8558a600cba72dee109926c339066eb85a34cb0658777ed"
+ },
+ "counts": {
+  "series": 5292,
+  "tooShort": 1056,
+  "records": 564191,
+  "perBarSymbols": 284,
+  "errors": 0
+ },
+ "errors": [],
+ "shards": [
+  {
+   "file": "records-00.jsonl.gz",
+   "sha256": "081bf7df2d447b3b1b99697ab0f2bf48f33b585c45907f88753a53cc6ecdac76",
+   "records": 137207
+  },
+  {
+   "file": "records-01.jsonl.gz",
+   "sha256": "6756e744d586d77661115a4db525ffe2411877d823205b7becbed0599f8aae43",
+   "records": 140778
+  },
+  {
+   "file": "records-02.jsonl.gz",
+   "sha256": "309842e54a0f2ecedab44246b89236c8dcbe8282c848450d3b5333ea8a84f9dd",
+   "records": 143625
+  },
+  {
+   "file": "records-03.jsonl.gz",
+   "sha256": "3e3a65557dbbf7538077630e6471eb192f469aeb23a0d1f8079f5dd6b8322519",
+   "records": 142581
+  }
+ ],
+ "seconds": 8436,
+ "persistenceCheck": null,
+ "sealHash": "5c16e61dc463b10a7893693fbe25dd75881d7be2c9b97ce41ed553781d318263"
+}
