@@ -71,6 +71,31 @@ class OwnershipRouteTests(unittest.TestCase):
    with self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
     validate_candidate(company('Root Inc.','ROOT'),{'url':url,'evidence':'candidate'},http,NOW)
 
+ def test_long_subsidiary_owner_never_matches_the_listed_parent_prefix(self):
+  url='https://issuer.example/'
+  for owner in ('Root Inc. Japan East Asia Regional Community Operating Services LLC',
+                'Park Hotels & Resorts 2026 International Regional Operating Technology Japan LLC'):
+   name='Root Inc.' if owner.startswith('Root') else 'Park Hotels & Resorts Inc.'
+   http=HTTP({url:f'<title>{name}</title><footer>© 2026 {owner}. All rights reserved.</footer>'})
+   with self.subTest(owner=owner),self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
+    validate_candidate(company(name),{'url':url,'evidence':'candidate'},http,NOW)
+
+ def test_rights_notice_delimits_an_exact_owner_before_later_legal_entities(self):
+  url='https://issuer.example/'
+  for notice in ('All rights reserved. Our regional operating company is Japan Services LLC.',
+                 'All rights reserved | Japan East Asia Regional Community Operating Services LLC.'):
+   http=HTTP({url:f'<title>Root Inc.</title><footer>© 2026 Root Inc. {notice}</footer>'})
+   self.assertEqual(validate_candidate(company('Root Inc.','ROOT'),{'url':url,'evidence':'candidate'},http,NOW)['status'],'VALIDATED')
+
+ def test_trademark_notice_after_exact_owner_preserves_legitimate_copyright(self):
+  url='https://issuer.example/'
+  cases=[('Aquestive Therapeutics, Inc.', 'PharmFilm®, Libervant®, and the Aquestive logo are registered trademarks of Aquestive Therapeutics, Inc. All rights reserved.'),
+         ('Invivyd, Inc.', 'Invivyd and Invymab are trademarks of Invivyd, Inc. All rights reserved.')]
+  for name,notice in cases:
+   http=HTTP({url:f'<title>{name}</title><footer>© 2026 {name} {notice}</footer>'})
+   with self.subTest(name=name):
+    self.assertEqual(validate_candidate(company(name),{'url':url,'evidence':'candidate'},http,NOW)['status'],'VALIDATED')
+
  def test_unlinked_or_untrusted_credit_text_is_not_removed(self):
   url='https://issuer.example/'
   for credit in ('Powered By Q4 Inc.',self.credit('q4inc.com.evil.example'),self.credit(path='/unrelated/')):

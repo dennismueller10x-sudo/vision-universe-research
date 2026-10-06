@@ -2,6 +2,10 @@
 
 Coverage measured **2026-10-06T07:53:59Z**; pass/queue checkpoint snapshot **2026-10-06T07:55:21Z**. Branch `feature/company-intelligence-rollout`, PR [#356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356). **Do not merge.** Production gates remain off. This report follows the requested 32-section structure and will be refreshed as resumable discovery continues.
 
+### Ownership precision checkpoint — long subsidiary names
+
+The copyright verifier now inspects the full existing 300-character ownership region for a legal suffix after the listed-company prefix. It rejects a ROOT-like extended owner even when more than four words separate the parent name from the subsidiary suffix. Hard separators, rights notices and explicit trademark-attribution clauses delimit the region; exact Aquestive and Invivyd copyright owners remain accepted. A new rejection contract fails on the preceding producer, and three new contracts cover extended owners, rights notices and actual cached trademark patterns. All 34 ownership contracts pass. A zero-request, read-only comparison of 54 current hash-verified operational root proofs preserves all 42 previously accepted roots and all 12 previously withheld roots; 1,701 missing current root caches remain untested. No ownership-version bump, global cooldown reset, candidate mutation or coverage gain is claimed. All 589 Company Intelligence Python tests pass (49.323 seconds). Discovery and resumable August metadata work continue; PR #356 remains open and unmerged.
+
 ## 1. Executive result
 
 Verified domains increased **769 → 2522**. The **1753-new-domain cohort** now has **1574 IR pages, 1363 issuers with accepted news, 567 calls, 579 webcasts, 1267 presentations and 737 issuers with management content**. These are actual stored/consumer-exported references and metadata, not just candidate processing. The original frozen inventory is fully classified: 4248 / 4248, with 0 unchecked. Supplementary and due-time recovery queues remain separate. Downstream IR and source expansion continues.

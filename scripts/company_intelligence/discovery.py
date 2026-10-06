@@ -364,12 +364,15 @@ def _validate_response(company, candidate, response, now, header_body=None):
                     return False
             if re.match(r'(?:services|systems|llc|ltd|corp|inc|plc)\b',normalized_tail):return False
             # A period in Inc./Corp. does not end an extended legal owner
-            # such as "Root Inc. Japan LLC". Stop only at hard separators;
+            # such as "Root Inc. Japan LLC". Inspect the entire retained
+            # 300-character region, including longer subsidiary names.
+            # Stop only at hard separators;
             # standard rights/navigation text is not an owner extension.
-            extension = re.split(r'[;|()©]', tail, maxsplit=1)[0]
+            extension = re.split(r'[;|()©]|\b(?:all rights reserved|(?:are|is) (?:registered )?trademarks? of)\b',
+                                 tail, maxsplit=1, flags=re.I)[0]
             extension = legal_normalize(extension)
             if ((suffixless or not re.match(r'(?:all rights|privacy|terms|cookies)\b', extension)) and
-                    re.match(r'(?:\w+\s+){0,4}(?:llc|ltd|corp|inc|plc)\b', extension)):
+                    re.match(r'(?:\w+\s+)*(?:llc|ltd|corp|inc|plc)\b', extension)):
                 return False
             return bool(re.match(r'\s*(?:[.,;|()–—-]|all rights\b|privacy\b|terms\b|cookies\b|(?:19|20)\d{2}\b|©|&copy;|$)',tail,re.I))
         return False
