@@ -1,0 +1,247 @@
+{
+ "schemaVersion": "hsab-ci-stage1-1.0.0",
+ "label": "w-delisted-holdout",
+ "generatedAt": "2026-10-06T21:37:31.297Z",
+ "sealHash": "0c8c6d7b3a787493c96b5c9adcda60d5083fa82d5e4385a59c9dd2b55cbe576b",
+ "commit": "b2c925807a1baf1dadfb9a122bc57b366b8f0aa4",
+ "engine": {
+  "scenario": "ti-scenario-1.2.1",
+  "elliott": "elliott-3.2.2",
+  "methodology": {
+   "elliottEngine": "v3"
+  },
+  "files": {
+   "quant/engines/technical/elliott/elliott-v3.js": "2acf44c09739d2fd",
+   "quant/engines/technical/elliott/patterns.js": "2e48b71e8fe602df",
+   "quant/engines/technical/ti/scenario.js": "a876f3d42a6247c1",
+   "quant/engines/technical/ti/engine.js": "95889ba053fc2065",
+   "quant/engines/technical/ti/context.js": "aa7e490c5f3a0598",
+   "quant/engines/technical/ti/dow-trend.js": "534d9e51f67bc91d",
+   "quant/engines/technical/ti/momentum-volatility.js": "2b8eea2f39440818",
+   "quant/engines/technical/ti/levels.js": "8c0c00a0f4fbcc8a",
+   "quant/engines/technical/ti/chart-patterns.js": "c54106a655f3ffe8",
+   "quant/engines/technical/ti/wyckoff.js": "8689fb6dd572f894",
+   "quant/engines/technical/ti/volume-intelligence.js": "5435683eaf88f8ac",
+   "quant/engines/technical/pivot-engine.js": "12ba836ed001a2f3",
+   "quant/engines/technical/feature-store.js": "e43849f26973da14",
+   "scripts/technical/lib/ti-product.mjs": "345c82b46ecedb40",
+   "scripts/technical/lib/ti-data.mjs": "818cc9885eda0ce5",
+   "scripts/technical/hsab/lib/replay-core.mjs": "2d021162136b8d8a",
+   "scripts/technical/hsab/replay.mjs": "cd923ae94d39ff9a"
+  }
+ },
+ "replayVersion": "hsab-replay-1.0.0",
+ "opts": {
+  "from": null,
+  "to": null,
+  "perbar": 20,
+  "persist": 40,
+  "grid": "month",
+  "historyFrom": null
+ },
+ "sampleSymbols": null,
+ "symbols": {
+  "n": 3082,
+  "sha256": "e559e3cc1b1c2125d0367ed5cd14ab8d449c888550af695311a0b221b0abad6d"
+ },
+ "counts": {
+  "series": 1619,
+  "tooShort": 1463,
+  "records": 86956,
+  "perBarSymbols": 68,
+  "errors": 0
+ },
+ "errors": 0,
+ "seconds": 1361,
+ "delisted": {
+  "version": "delisted-weekly-bundle-1.0.0",
+  "asOf": "2026-10-01",
+  "listings": 3082,
+  "series": 3082
+ },
+ "persistenceCheck": {
+  "n": 105,
+  "samePrimary": 1,
+  "sameOutlook": 1,
+  "sameClarity": 1,
+  "sameElliottKey": 0.7428571428571429,
+  "elliottShapesScenario": 0
+ },
+ "analysisPointsByYear": {
+  "2018": 4743,
+  "2019": 4408,
+  "2020": 4466,
+  "2021": 3561,
+  "2022": 2837,
+  "2023": 2063,
+  "2024": 1748,
+  "2025": 981,
+  "2026": 154
+ },
+ "symbolsByYear": {
+  "2018": 1086,
+  "2019": 914,
+  "2020": 842,
+  "2021": 688,
+  "2022": 566,
+  "2023": 449,
+  "2024": 356,
+  "2025": 242,
+  "2026": 66
+ },
+ "analysisPointsByCohort": {
+  "DELISTED_W": 24961
+ },
+ "survivorship": {
+  "asOf": "2026-10-06",
+  "delisted": {
+   "available": true,
+   "source": "privater Delisting-Abruf (R2, intern; Owner-Freigabe 01.10.2026)",
+   "asOf": "2026-10-01",
+   "listingsInManifest": 7893,
+   "statusCount": {
+    "SKIPPED_CLASS": 3840,
+    "OK": 3574,
+    "PARTIAL": 146,
+    "UNFETCHABLE_REUSED": 253,
+    "EMPTY": 79
+   },
+   "excludedClass": 3916,
+   "activeListings": 248,
+   "delistedListings": 3728,
+   "classes": {
+    "A": 3257,
+    "B": 68,
+    "C": 79,
+    "D": 178,
+    "E": 0,
+    "F": 146
+   },
+   "usableForStudy": 3082,
+   "tickerChangeDuplicates": 159,
+   "totalReturn": {
+    "TOTAL_RETURN_CONFIRMED": 2935,
+    "TOTAL_RETURN_REJECTED_SPLIT_GAP": 79,
+    "TOTAL_RETURN_REJECTED_DIVIDEND_GAP": 68
+   },
+   "window": {
+    "from": "2015-01-01",
+    "note": "Der Abruf reicht ab 2015; vor 2015/16 führt die Quelle Delistings nur lückenhaft (scripts/supertrader/probe/results-2026-10-01.json)."
+   },
+   "unfetchableReusedShare": 0.048
+  },
+  "historicalSecurityMasterCoverage": {
+   "sources": [
+    {
+     "id": "SECURITY_MASTER_SNAPSHOT",
+     "path": "quant/data/market/security-master/us-security-master.json",
+     "rows": 8021,
+     "inactive": 191,
+     "snapshots": 1,
+     "note": "ein Stand; Listing-Start und -Ende je Zeile"
+    },
+    {
+     "id": "TIINGO_LISTING_TABLE",
+     "path": "privat (R2-Manifest)",
+     "rows": 7893,
+     "from": "2015-01-01",
+     "note": "Listings mit Ende ab 2015; volle Liste ist LEGAL_REVIEW_REQUIRED und liegt nicht im Repository"
+    },
+    {
+     "id": "UNIVERSE_BEFORE_EXPANSION",
+     "path": "quant/data/market/security-master/universe-FULL_UNIVERSE.before-expansion.json",
+     "snapshots": 1,
+     "note": "ein früherer Universumsstand, ohne Delistings"
+    },
+    {
+     "id": "INDEX_MEMBERSHIP",
+     "path": "quant/data/market/index-membership/history",
+     "snapshots": 2,
+     "note": "zwei Stichtage im September 2026"
+    },
+    {
+     "id": "CIK_MAP",
+     "path": "quant/data/universe/cik-map.json",
+     "snapshots": 1,
+     "note": "heutige Emittenten; keine historischen CIK-Zuordnungen"
+    }
+   ],
+   "delistedCoverageByEndYear": {
+    "2015": {
+     "endedIncluded": 246,
+     "usable": 237,
+     "share": 0.963,
+     "tickerListEndedAllTypes": 298
+    },
+    "2016": {
+     "endedIncluded": 304,
+     "usable": 295,
+     "share": 0.97,
+     "tickerListEndedAllTypes": 427
+    },
+    "2017": {
+     "endedIncluded": 373,
+     "usable": 354,
+     "share": 0.949,
+     "tickerListEndedAllTypes": 611
+    },
+    "2018": {
+     "endedIncluded": 395,
+     "usable": 351,
+     "share": 0.889,
+     "tickerListEndedAllTypes": 609
+    },
+    "2019": {
+     "endedIncluded": 297,
+     "usable": 289,
+     "share": 0.973,
+     "tickerListEndedAllTypes": 550
+    },
+    "2020": {
+     "endedIncluded": 238,
+     "usable": 229,
+     "share": 0.962,
+     "tickerListEndedAllTypes": 538
+    },
+    "2021": {
+     "endedIncluded": 335,
+     "usable": 323,
+     "share": 0.964,
+     "tickerListEndedAllTypes": 884
+    },
+    "2022": {
+     "endedIncluded": 298,
+     "usable": 286,
+     "share": 0.96,
+     "tickerListEndedAllTypes": 1001
+    },
+    "2023": {
+     "endedIncluded": 357,
+     "usable": 345,
+     "share": 0.966,
+     "tickerListEndedAllTypes": 1167
+    },
+    "2024": {
+     "endedIncluded": 220,
+     "usable": 215,
+     "share": 0.977,
+     "tickerListEndedAllTypes": 601
+    },
+    "2025": {
+     "endedIncluded": 227,
+     "usable": 219,
+     "share": 0.965,
+     "tickerListEndedAllTypes": 434
+    },
+    "2026": {
+     "endedIncluded": 238,
+     "usable": 182,
+     "share": 0.765,
+     "tickerListEndedAllTypes": null
+    }
+   },
+   "before2016": "nicht abgedeckt: weder Listing-Tabelle noch Kursreihen delisteter Titel vor 2015",
+   "plain": "Ab 2016 ist das damalige Universum aus Listing-Fenstern und Kursreihen rekonstruierbar, mit Ausnahme der Alt-Listings später neu vergebener Kürzel. Davor nicht."
+  }
+ }
+}
