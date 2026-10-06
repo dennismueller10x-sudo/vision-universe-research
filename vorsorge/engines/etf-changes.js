@@ -124,10 +124,17 @@
    * Kapitalmassnahme), kein Zu-/Abgang. Grenze: ein vollstaendiger Tausch zweier gleichnamiger Gattungen
    * ohne gemeinsame Kennung ist davon nicht unterscheidbar und erscheint als Gewichtsaenderung.
    */
-  var NAME_PAIR = { EQUITY: 1, FUND: 1, ETF: 1 };
+  var NAME_PAIR = { EQUITY: 1, FUND: 1, ETF: 1, BOND: 1, LOAN: 1 };
+  /* Anleihen/Kredite ohne Kennung: der Kupon gehoert nicht zur Identitaet (variabel verzinste Kredite setzen ihn jedes
+     Quartal neu: "Whatabrands LLC 6,172 % 2028" -> "6,152 % 2028" ist dieselbe Position, kein Verkauf plus Kauf). */
+  function pairName(v) {
+    var n = String(v.name || "");
+    if (v.assetType === "BOND" || v.assetType === "LOAN") n = n.replace(/\d+(?:[.,]\d+)?\s*%/g, " ");
+    return normName(n);
+  }
   function pairByName(A, next, remap0) {
     var B = byId(next, remap0), gone = {}, fresh = {}, extra = {};
-    function count(map, k, v) { var n = normName(v.name); if (!n || !NAME_PAIR[v.assetType]) return; n = v.assetType + "|" + n; (map[n] = map[n] || []).push(k); }
+    function count(map, k, v) { var n = pairName(v); if (!n || !NAME_PAIR[v.assetType]) return; n = v.assetType + "|" + n; (map[n] = map[n] || []).push(k); }
     Object.keys(A).forEach(function (k) { if (!B[k]) count(gone, k, A[k]); });
     Object.keys(B).forEach(function (k) { if (!A[k]) count(fresh, k, B[k]); });
     Object.keys(fresh).forEach(function (n) { if (fresh[n].length === 1 && gone[n] && gone[n].length === 1) extra[fresh[n][0]] = gone[n][0]; });
@@ -259,10 +266,12 @@
       MISSING      - kein Prospektstand vorhanden,
       NOT_REPORTED - Prospektstand vorhanden, Feld nicht gemeldet,
       UNKNOWN      - Wert nicht numerisch,
-      PLACEHOLDER  - 0 als Gesamtkostenquote, obwohl eine Teilkomponente (Verwaltungsgebuehr, Netto) positiv ist - widerspruechlich,
+      PLACEHOLDER  - 0 als Gesamtkostenquote, obwohl eine Teilkomponente (Verwaltungsgebuehr, Netto) positiv ist - widerspruechlich;
+                     0 als Verwaltungsgebuehr neben positiver Gesamtkostenquote (nicht ausgewiesen),
       VALID_ZERO   - belegte 0,00 % (z. B. gebuehrenfreie ETFs, vollstaendiger Verzicht),
       VALID        - belegter positiver Wert.
       Nur VALID und VALID_ZERO sind vergleichbar; fehlend ist nie 0. */
+  var MAX_COST_JUMP = 0.02;
   var COST_STATES = ["VALID", "VALID_ZERO", "MISSING", "NOT_REPORTED", "PLACEHOLDER", "UNKNOWN"];
   function costState(rec, field) {
     if (!rec) return "MISSING";
@@ -272,10 +281,10 @@
     if (x === null || x === undefined || x === "") return "NOT_REPORTED";
     if (typeof x !== "number" || !isFinite(x) || x < 0) return "UNKNOWN";
     if (x > 0) return "VALID";
-    if (field === "expenseRatio") {
-      var pos = function (k) { var y = rec[k]; y = y && typeof y === "object" ? y.value : y; return typeof y === "number" && y > 0; };
-      if (pos("managementFee") || pos("netExpenseRatio")) return "PLACEHOLDER";
-    }
+    var pos = function (k) { var y = rec[k]; y = y && typeof y === "object" ? y.value : y; return typeof y === "number" && y > 0; };
+    if (field === "expenseRatio" && (pos("managementFee") || pos("netExpenseRatio"))) return "PLACEHOLDER";
+    // Verwaltungsgebuehr 0 neben positiver Gesamtkostenquote: meist nicht ausgewiesen statt gebuehrenfrei -> nicht belegt
+    if (field === "managementFee" && (pos("expenseRatio") || pos("netExpenseRatio"))) return "PLACEHOLDER";
     return "VALID_ZERO";
   }
   function costComparable(state) { return state === "VALID" || state === "VALID_ZERO"; }
@@ -290,7 +299,8 @@
     var d = diffFundamentals(pick(prev), pick(next), { from: o.from, to: o.to, source: o.source || null });
     var netBoth = val(next, "netExpenseRatio") && val(prev, "netExpenseRatio");
     var netChanged = d.events.some(function (x) { return x.entityId === "netExpenseRatio"; });
-    return d.events.filter(function (x) { return !(x.entityId === "expenseRatio" && netBoth && !netChanged); }).map(function (x) {
+    // Spruenge ueber 2 Prozentpunkte zwischen zwei Prospekten sind fuer ETFs unplausibel (meist Klassenverwechslung) -> nicht melden
+    return d.events.filter(function (x) { return !(x.entityId === "expenseRatio" && netBoth && !netChanged) && Math.abs(x.newValue - x.oldValue) <= MAX_COST_JUMP; }).map(function (x) {
       return { eventType: x.eventType, field: x.entityId, label: x.entityName, oldValue: x.oldValue, newValue: x.newValue, from: o.from || null, to: o.to || null,
         text: x.explanation.replace(/\.$/, "") + " (Prospekt " + o.from + " → " + o.to + ")." };
     });

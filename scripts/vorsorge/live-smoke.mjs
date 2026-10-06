@@ -33,7 +33,10 @@ if (process.env.RESEARCH_ACCESS_PASSWORD) {
 const ROUTES = ["#/", "#/plan", "#/plan/luecke", "#/kosten", "#/etfs", "#/etfs?holdings=1", "#/etf/IVV", "#/etf/IVV?tab=bestandteile",
   "#/etf/IVV?tab=xray", "#/etf/IVV?tab=aenderungen", "#/etf/IVV?tab=kosten", "#/etf/IVV?tab=daten", "#/etf/VTI?tab=xray",
   "#/etf/QQQM?tab=aenderungen", "#/vergleich?s=IVV,QQQM,VTI", "#/portfolio", "#/watchlist", "#/monitor", "#/europa",
-  "#/europa/IE00B4L5Y983", "#/daten", "#/foerderung"];
+  "#/europa/IE00B4L5Y983", "#/daten", "#/foerderung",
+  // V1: Datenabdeckungs-Filter, US-ETFs mit/ohne Holdings, belegte 0,00 %, Europa (Register, Vergleich)
+  "#/etfs?price=1&cost=1&holdings=1", "#/etf/QQQ?tab=xray", "#/etf/VT?tab=aenderungen", "#/etf/EEM?tab=bestandteile", "#/etf/SPY?tab=aenderungen",
+  "#/etf/BKAG?tab=kosten", "#/europa?reg=1&notif=1", "#/europa?q=IE00B5BMR087", "#/europa/IE00B5BMR087", "#/europa/vergleich?i=IE00B5BMR087,IE00B4L5Y983"];
 const VPS = { desktop: [1440, 900], mobile: [390, 844] };
 const SEED = { watchlist: ["IVV", "QQQM", "AGG"], portfolio: [{ symbol: "VTI", weight: 0.5 }, { symbol: "QQQM", weight: 0.3 }, { symbol: "IVV", weight: 0.2 }] };
 
@@ -52,6 +55,19 @@ const direct = ["/vorsorge/", "/vorsorge/sitemap.xml", "/vorsorge/etf/IVV/", "/v
     if (st >= 400 || st === 0) problems.push("DIRECT " + path + " HTTP " + st);
   }
   if (!gate) { const t = await p.evaluate(() => document.body.innerText.slice(0, 200)); lines.push("GATE-TEXT " + t.replace(/\s+/g, " ")); }
+  await ctx.close();
+}
+// Zugangstor: ohne Anmeldung darf keine Vorsorge-Seite Inhalte zeigen (Startseite, SEO-Seite, Europa-Deep-Link).
+{
+  const ctx = await browser.newContext();
+  const p = await ctx.newPage();
+  for (const path of ["/vorsorge/", "/vorsorge/etf/IVV/", "/vorsorge/#/europa/IE00B5BMR087", "/vorsorge/#/etf/IVV?tab=bestandteile"]) {
+    await p.goto(SITE + path, { waitUntil: "domcontentloaded" }).catch(() => null);
+    await p.waitForTimeout(800);
+    const g = await p.evaluate(() => ({ gate: !!document.getElementById("research-access-gate"), app: !!document.querySelector("#vs-root .vs-hero, #vs-root .vs-section") }));
+    lines.push("GATE " + path + " gate=" + g.gate + " app=" + g.app);
+    if (!g.gate || g.app) problems.push("GATE_NOT_ENFORCED " + path);
+  }
   await ctx.close();
 }
 if (gate) for (const [vp, [w, h]] of Object.entries(VPS)) {

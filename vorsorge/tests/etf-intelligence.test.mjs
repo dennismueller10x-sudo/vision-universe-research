@@ -311,6 +311,8 @@ test("Kosten-Zustaende: 0,00 % ist ein belegter Wert, fehlend/nicht gemeldet/Pla
   assert.equal(C.costState({ expenseRatio: f(0), managementFee: f(0.005) }, "expenseRatio"), "PLACEHOLDER"); // Gesamt < Bestandteil
   assert.equal(C.costState({ netExpenseRatio: f(0), expenseRatio: f(0.004) }, "netExpenseRatio"), "VALID_ZERO"); // voller Verzicht
   assert.equal(C.costState({ managementFee: f(0) }, "managementFee"), "VALID_ZERO");
+  assert.equal(C.costState({ managementFee: f(0), expenseRatio: f(0) }, "managementFee"), "VALID_ZERO");
+  assert.equal(C.costState({ managementFee: f(0), expenseRatio: f(0.0005) }, "managementFee"), "PLACEHOLDER");   // nicht ausgewiesen
   assert.equal(C.costState({ expenseRatio: f("n/a") }, "expenseRatio"), "UNKNOWN");
   assert.equal(C.costState({ expenseRatio: f(0.0003) }, "expenseRatio"), "VALID");
 });
@@ -328,6 +330,10 @@ test("Kostenaenderungen: 0 -> positiv, positiv -> 0, 0 -> 0, fehlend <-> positiv
   assert.deepEqual(ch({ managementFee: f(0) }, { managementFee: f(0.0025) }), ["MANAGEMENT_FEE_CHANGED:0->0.0025"]);
   // Brutto aendert sich, Netto (berechnete Kosten) bleibt gleich -> nicht melden
   assert.deepEqual(ch({ expenseRatio: f(0.01), netExpenseRatio: f(0.005) }, { expenseRatio: f(0.012), netExpenseRatio: f(0.005) }), []);
+  // Verwaltungsgebuehr 0 neben positiver Gesamtquote ist kein "0 -> 0,03 %"
+  assert.deepEqual(ch({ managementFee: f(0), expenseRatio: f(0.0005) }, { managementFee: f(0.0003), expenseRatio: f(0.0005) }), []);
+  // unplausibler Sprung (> 2 Prozentpunkte) wird nicht gemeldet
+  assert.deepEqual(ch({ expenseRatio: f(0.0107) }, { expenseRatio: f(0.0725) }), []);
   const t = C.costChanges({ expenseRatio: f(0.0015) }, { expenseRatio: f(0) }, { from: "2025-02-27", to: "2026-02-27" })[0].text;
   assert.match(t, /0,15 % → 0,00 %/);
 });
@@ -342,4 +348,13 @@ test("Fundamentals kompakt ausliefern: verlustfrei (expand(compact(x)) === x)", 
   assert.equal(c.isin, undefined); assert.equal(c.aum.sourceUrl, undefined); assert.equal(c.sourceUrls.SEC_NPORT, "https://sec.example/nport");
   const e = F.expand(c);
   for (const k of Object.keys(fu)) assert.deepEqual(e[k], fu[k], k);
+});
+test("Variabel verzinster Kredit ohne Kennung: neuer Kupon ist keine neue Position (kein Fake-Add/Remove)", () => {
+  const loans = (c1, c2) => [row("Whatabrands LLC " + c1 + " % 2028", 2.0, { assetType: "LOAN" }), row("Acrisure LLC " + c2 + " % 2031", 1.5, { assetType: "LOAN" }),
+    row("Other Holding", 96.5, { holdingTicker: "OTH" })];
+  const d = C.diffHoldings(snap("2026-01-31", loans("6,172", "7,01")), snap("2026-04-30", loans("6,152", "6,98")));
+  assert.equal(d.events.filter((e) => /HOLDING_(ADDED|REMOVED)/.test(e.eventType)).length, 0, JSON.stringify(d.events.map((e) => e.explanation)));
+  // anderes Faelligkeitsjahr bleibt eine andere Position
+  const d2 = C.diffHoldings(snap("2026-01-31", loans("6,172", "7,01")), snap("2026-04-30", [row("Whatabrands LLC 6,152 % 2030", 2.0, { assetType: "LOAN" }), row("Acrisure LLC 6,98 % 2031", 1.5, { assetType: "LOAN" }), row("Other Holding", 96.5, { holdingTicker: "OTH" })]));
+  assert.ok(d2.events.some((e) => e.eventType === "HOLDING_ADDED"));
 });

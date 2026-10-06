@@ -482,7 +482,7 @@ export function build() {
     conclusion: (euEx.length + all.filter((e) => e.ucits).length) === 0
       ? "Im gemessenen Tiingo-Bestand ist kein UCITS-Listing (europäische Börse, UCITS im Namen oder EUR/GBP/CHF-Handelswährung) enthalten. Für deutsche Privatanleger relevante UCITS-ETFs brauchen eine zweite Datenquelle."
       : euEx.length === 0
-        ? `${all.filter((e) => e.ucits).length} UCITS-Fonds erscheinen nur als US-Freiverkehrszeile (OTC, z. B. PINK, in USD) – nicht als europäisches Börsenlisting, ohne ISIN. Die für deutsche Privatanleger handelbaren Listings (Xetra, LSE, Euronext …) fehlen; dafür braucht es eine zweite Datenquelle.`
+        ? `Im US-Kursdatenbestand (Tiingo) erscheinen ${all.filter((e) => e.ucits).length} Zeilen mit „UCITS“ im Namen nur als US-Freiverkehrszeilen (OTC, in USD) – das sind keine europäischen Börsenlistings und sie werden nicht als solche gezeigt. Europäische Anteilklassen mit ISIN und Handelsplätzen kommen aus dem amtlichen ESMA-Register (Bereich Europa).`
         : "Einzelne europäische Listings vorhanden; ISIN fehlt. Abdeckung für deutsche Privatanleger unzureichend.",
     ucitsByExchange: all.filter((e) => e.ucits).reduce((a, e) => { a[e.exchange] = (a[e.exchange] || 0) + 1; return a; }, {})
   }, null, 1));

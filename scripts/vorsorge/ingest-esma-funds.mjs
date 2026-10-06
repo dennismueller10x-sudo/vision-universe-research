@@ -62,7 +62,31 @@ export function residualIsShareClass(words) {
     im Anteilklassennamen, die der Fondsname nicht hat (z. B. "TIPS 0-5" gegen "TIPS" - LEI des Schwesterfonds). */
 export function consistentWithFund(className, fundName) {
   const reg = new Set(normName(fundName).split(" "));
-  return normName(className).split(" ").filter((w) => /^[0-9]+$/.test(w)).every((w) => reg.has(w));
+  return normName(className).split(" ").filter((w) => /^[0-9]+$/.test(w)).every((w) => reg.has(w)) && !keywordConflict(className, fundName).length;
+}
+/* Unterscheidende Merkmale eines Fondsnamens (Region, Sektor, Anlageklasse, Faktor). Eine LEI, die auf einen Schwesterfonds
+   zeigt ("Cybersecurity" -> "Government Bond", "World ex USA" -> "US Equity"), faellt auf, weil der Anteilklassenname ein
+   Merkmal traegt, das der Registerfonds nicht hat. Nur der Teil vor "UCITS" zaehlt (danach folgt die Anteilklasse,
+   z. B. "(USA) A-dis"), Umbrella-Praefixe ("... PLC - ") werden entfernt. */
+const SYN = { em: "emerging", emerg: "emerging", us: "usa", america: "usa", american: "usa", global: "world", acwi: "world", govt: "government", gov: "government", gilt: "government", gilts: "government",
+  corp: "corporate", credit: "corporate", tech: "technology", healthcare: "health", defence: "defense", japanese: "japan", european: "europe", eurozone: "emu", emu: "emu", treasuries: "treasury",
+  bonds: "bond", bnd: "bond", dividends: "dividend", sm: "small", smallcap: "small", midcap: "mid", industrial: "industrials", financial: "financials", semiconductors: "semiconductor", commodities: "commodity",
+  sterling: "uk", british: "uk", kingdom: "uk", biotechnology: "biotech" };
+const KW = new Set(("world usa europe emu japan china india emerging pacific asia uk germany france italy spain switzerland canada australia korea taiwan brazil latin africa nordic " +
+  "technology health energy financials utilities materials industrials consumer estate reit cybersecurity clean semiconductor biotech robotics water defense infrastructure gold commodity " +
+  "bond treasury government corporate inflation tips loan clo money aggregate dividend small mid value growth momentum quality minimum volatility climate").split(" "));
+export function fundKeywords(name) {
+  let t = " " + String(name || "").replace(/€/g, " euro ").replace(/\$/g, " usd ").replace(/£/g, " gbp ").replace(/\bU\.\s?S\.?(?=\s)/g, " usa ").replace(/all[- ]country world/i, "world") + " ";
+  t = t.split(/\bUCITS\b|\bUCTS\b/i)[0];                                                   // nur der Fondsname
+  const um = t.match(/^(.*?\b(?:PLC|ICAV|SICAV|FUNDS?)\b[^-–]*)\s[-–]\s(.+)$/i); if (um) t = um[2];   // Umbrella-Praefix
+  t = t.replace(/\bglobal\s+(x|funds?)\b/gi, " ").replace(/\b(etfs?\s+)?europe\s+i{1,3}\s+plc\b/gi, " ");
+  const out = new Set();
+  for (let w of normName(t).split(" ")) { if (w === "apac") { out.add("asia"); out.add("pacific"); continue; } if (w in SYN) w = SYN[w]; if (w && KW.has(w)) out.add(w); }
+  return out;
+}
+export function keywordConflict(className, fundName) {
+  const a = fundKeywords(className), b = fundKeywords(fundName);
+  return [...a].filter((k) => !b.has(k));
 }
 /** Laengster Registername, der Wortanfang des Anteilklassennamens ist und nach dem nur Anteilklassen-Woerter folgen; gleiches Domizil; eindeutig. */
 export function matchFund(shareClassName, domicile, index) {
@@ -112,6 +136,7 @@ if (process.argv[1] && process.argv[1].endsWith("ingest-esma-funds.mjs")) {
     if (m && !consistentWithFund(name, m.name)) m = null;
     if (m && byName && byName.id !== m.id) m = null;   // beide plausibel, aber verschieden: nicht raten
     else if (!m) m = byName;
+    if (m && !consistentWithFund(name, m.name)) m = null;   // auch der Namensweg: kein Widerspruch in Zahlen oder Merkmalen
     if (m && m.status && m.status !== "Active") m = null;   // inaktive Registereintraege nicht als aktuellen Status zeigen
     if (m) matched.set(r[0], m);
   }
@@ -139,7 +164,7 @@ if (process.argv[1] && process.argv[1].endsWith("ingest-esma-funds.mjs")) {
     [isin, true, m.name, m.manager, m.domicile, m.authority, m.status, [...m.hosts].sort().join(" "), m.updated, "NAME_PREFIX_SAME_DOMICILE"]);
   const out = { schemaVersion: "vu-vorsorge-eu-ucits-1.0.0", runDate: new Date().toISOString().slice(0, 10), source: "ESMA Register Cross-border distribution of funds (Reg. (EU) 2019/1156)",
     attribution: "Quelle: ESMA Registers (Fonds im grenzüberschreitenden Vertrieb), transformiert von Vision Universe.",
-    method: "Zuordnung ueber den Fondsnamen (Wortanfang) und gleiches Domizil; Konfidenz MEDIUM. Das Register fuehrt keine ISIN.",
+    method: "Zuordnung ueber den Fondsnamen (rechtlicher Name der Fonds-LEI laut GLEIF, sonst Name der Anteilklasse; Wortanfang) und gleiches Domizil; verworfen bei Widerspruch in Zahlen oder Merkmalen. Konfidenz MEDIUM. Das Register fuehrt keine ISIN.",
     hostCountriesNote: "Vertriebslaender laut den im Register gemeldeten Notifizierungen; aeltere Notifizierungen fehlen teils. Nur positive Aussagen sind belastbar.",
     ucitsFundsInRegister: funds.length, fields, rows };
   writeFileSync(join(root, "vorsorge/data/eu/etf-eu-ucits.json"), JSON.stringify(out));
