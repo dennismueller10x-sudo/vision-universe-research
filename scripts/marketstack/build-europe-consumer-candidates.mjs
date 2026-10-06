@@ -72,6 +72,7 @@ function normalize(row,{asOf,core=false}){
 /** Preserve core selection exactly; no diagnostic alternative changes its MIC. */
 export function buildCandidates({source,coreMap}){
  if(!source||!Array.isArray(source.listings)||!coreMap||!Array.isArray(coreMap.listings)||!day(coreMap.asOf))throw Error('EXPLICIT_FROZEN_INPUTS_REQUIRED');
+ if(source.sourceDate&&(!day(source.sourceDate)||source.sourceDate>coreMap.asOf))throw Error('FUTURE_OR_INVALID_REFERENCE_SOURCE');
  const asOf=coreMap.asOf,coreISINs=new Set(),coreRows=[],germany=[],europe=[],rejected=[],deferred=[];
  for(const input of coreMap.listings){
   const isin=Identity.normalizeISIN(input.isin);if(isin&&coreISINs.has(isin))throw Error('DUPLICATE_CORE_SHARE_CLASS');if(isin)coreISINs.add(isin);

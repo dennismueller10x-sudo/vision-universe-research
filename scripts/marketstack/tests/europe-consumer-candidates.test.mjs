@@ -51,6 +51,7 @@ test('duplicate securities abort rather than first-match selection; deterministi
  const input=inputs([candidate()]);assert.deepEqual(buildCandidates(input),buildCandidates(input));
  assert.throws(()=>buildCandidates(inputs([candidate(),candidate({mic:'XFRA'})])),/DUPLICATE_EXPANSION_SHARE_CLASS/);
  assert.throws(()=>buildCandidates(inputs([],[coreRow(),coreRow({mic:'XFRA'})])),/DUPLICATE_CORE_SHARE_CLASS/);
+ const future=inputs([candidate()]);future.source.sourceDate='2026-11-01';assert.throws(()=>buildCandidates(future),/FUTURE_OR_INVALID_REFERENCE_SOURCE/);
 });
 test('CLI requires private explicit inputs, rejects symlinks and any Git checkout output, writes only private metadata maps',()=>{
  assert.throws(()=>run([]),/EXPLICIT_PRIVATE_SOURCE_CORE_MAP_OUT_REQUIRED/);const root=mkdtempSync(join(tmpdir(),'eu-candidate-test-'));
