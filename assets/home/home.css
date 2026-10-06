@@ -786,3 +786,24 @@ html.intro .journey-bars:not(.grow) .jbar i{height:0;transition:none}
 @media (max-width:980px){.film-grid{grid-template-columns:1fr;gap:36px}}
 @media (max-width:760px){.film{padding:72px 0 60px}.film-frame{aspect-ratio:9/16;max-width:420px;margin-inline:auto;width:100%}.film-play{left:50%;bottom:auto;top:62%;margin-left:-36px}}
 @media (prefers-reduced-motion:reduce){.film-play{animation:none}}
+
+/* =====================================================================
+   NEWSLETTER
+   ===================================================================== */
+.newsletter{background:#07090b;color:#f4f5f1;padding:28px 0 60px}
+.nl-box{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;padding:40px;border-radius:28px;background:radial-gradient(120% 140% at 0 0,rgba(200,245,49,.16),transparent 55%),#0d1013;box-shadow:0 0 0 1px rgba(200,245,49,.25),0 30px 70px -30px rgba(0,0,0,.8)}
+.nl-copy{display:flex;gap:22px;align-items:flex-start}
+.nl-copy .hud{--s:64px;flex:none}
+.newsletter .kicker{color:#c8f531}
+.newsletter .h2{font-size:clamp(28px,3.2vw,40px);margin-top:10px}
+.newsletter .lead{color:#c3c7cc;font-size:16px;margin-top:10px}
+.nl-form{display:grid;grid-template-columns:1fr auto;gap:10px}
+.nl-field input{width:100%;height:56px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:#07090b;color:#f4f5f1;font:inherit;font-size:16px;padding:0 22px;outline:none;transition:border-color .2s,box-shadow .2s}
+.nl-field input::placeholder{color:#7f868f}
+.nl-field input:focus{border-color:#c8f531;box-shadow:0 0 0 4px rgba(200,245,49,.15)}
+.nl-form .btn{min-height:56px}
+.nl-note{grid-column:1/-1;font-size:12.5px;color:#8b919a;margin-top:4px}
+.nl-note a{color:#c3c7cc}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:900px){.nl-box{grid-template-columns:1fr;padding:28px}}
+@media (max-width:520px){.nl-form{grid-template-columns:1fr}.nl-copy .hud{display:none}}
