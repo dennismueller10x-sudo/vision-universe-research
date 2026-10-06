@@ -21,6 +21,17 @@ def row(title='Apple Inc. announces quarterly results', url='https://apple.com/r
 
 
 class WordPressNewsTests(unittest.TestCase):
+    def test_unusable_advertised_feed_does_not_suppress_rest_discovery(self):
+        page='https://apple.com/investors/'; api=endpoint('https://apple.com/wp-json/'); feed='https://apple.com/feed/'
+        class HTTP:
+            def get(self,url,**kw):
+                if url==api:return {'body':json.dumps([row()]).encode(),'finalUrl':url}
+                if url==page:return {'body':b'<script src="/wp-includes/core.js"></script><link rel="https://api.w.org/" href="https://apple.com/wp-json/"><link rel="alternate" type="application/rss+xml" href="https://apple.com/feed/">','finalUrl':url}
+                if url==feed:return {'body':b'<rss><channel><item><title>Hello world!</title><link>https://apple.com/blog</link><pubDate>Thu, 1 Oct 2026 12:00:00 GMT</pubDate></item></channel></rss>','finalUrl':url}
+                raise SourceError('HTTP_404')
+        sources,_=discover_ir(company(),page,HTTP(),NOW)
+        self.assertEqual([s['format'] for s in sources],['WORDPRESS_REST_NEWS'])
+
     def test_explicit_utc_metadata_and_html_title_without_body_or_local_date_fallback(self):
         s=source();body=json.dumps([row('Apple Inc. announces results &amp; outlook'),row(url='https://evil.example/news'),row(stamp='2026-10-01T12:00:00+01:00'),row(stamp='0000-00-00T00:00:00')]).encode()
         entries=parse(body,s,s['url'])
