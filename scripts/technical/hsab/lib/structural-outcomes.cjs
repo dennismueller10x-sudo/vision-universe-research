@@ -42,12 +42,14 @@ const RESOLVED = new Set(["TARGET1", "INVALIDATED", "AMBIGUOUS_SAME_BAR", "TIMEO
  * @param {object} g   geometry()
  * @param {number} H   Horizont in Bars
  * @param {number} [atr] ATR bei t (fuer MFE/MAE in ATR)
+ * @param {{closeTarget?:boolean}} [opt] Sensitivitaet: Ziel nur per SCHLUSS erreicht (symmetrisch zur Schluss-Invalidation)
  */
-function primaryOutcome(s, t, g, H, atr) {
+function primaryOutcome(s, t, g, H, atr, opt) {
+  const cT = !!(opt && opt.closeTarget);
   const n = s.close.length, d = g.dir, c0 = s.close[t];
   const t1Near = d > 0 ? g.t1Lo : g.t1Hi, t2Near = d > 0 ? g.t2Lo : g.t2Hi;
   const beyondInv = (c) => (d > 0 ? c < g.inv : c > g.inv);
-  const touches = (hi, lo, lvl) => (d > 0 ? hi >= lvl : lo <= lvl);
+  const touches = (hi, lo, lvl, c) => (cT ? (d > 0 ? c >= lvl : c <= lvl) : d > 0 ? hi >= lvl : lo <= lvl);
   if (beyondInv(c0)) return { outcome: "ALREADY_INVALID" };
   if (d > 0 ? c0 >= t1Near : c0 <= t1Near) return { outcome: "TRIVIAL_TARGET" };
   let outcome = null, k = -1, t2 = null, confIdx = -1, mfe = 0, mae = 0, t1Idx = -1;
@@ -56,7 +58,7 @@ function primaryOutcome(s, t, g, H, atr) {
     const hi = s.high[j], lo = s.low[j], c = s.close[j];
     const fav = d > 0 ? hi - c0 : c0 - lo, adv = d > 0 ? c0 - lo : hi - c0;
     if (fav > mfe) mfe = fav; if (adv > mae) mae = adv;
-    const inv = beyondInv(c), hit = touches(hi, lo, t1Near);
+    const inv = beyondInv(c), hit = touches(hi, lo, t1Near, c);
     if (g.conf !== null && confIdx < 0 && (d > 0 ? c > g.conf : c < g.conf) && !inv) confIdx = j;
     if (hit && inv) { outcome = "AMBIGUOUS_SAME_BAR"; k = j; break; }
     if (inv) { outcome = "INVALIDATED"; k = j; break; }
@@ -71,7 +73,7 @@ function primaryOutcome(s, t, g, H, atr) {
     if (outcome === "TARGET1") {
       /* Beruehrung innerhalb einer Bar liegt vor deren Schluss; danach beendet ein Schluss jenseits der Grenze die Suche. */
       for (let j = t1Idx; j <= last; j++) {
-        if (touches(s.high[j], s.low[j], t2Near)) { t2 = true; break; }
+        if (touches(s.high[j], s.low[j], t2Near, s.close[j])) { t2 = true; break; }
         if (beyondInv(s.close[j])) break;
       }
     }
@@ -101,6 +103,14 @@ function barrier(s, t, d, atr, k, H) {
 /** Rendite nach h Bars (Schluss zu Schluss), null wenn die Reihe vorher endet. */
 function forward(s, t, h) { return t + h < s.close.length ? s.close[t + h] / s.close[t] - 1 : null; }
 
+/** Ergebnis in R (Vielfache des Risikos bis zur Invalidation ab Anzeigeschluss): Ziel 1 → +Abstand/Risiko; sonst Schluss beim Ausgang. */
+function rMultiple(s, t, g, o) {
+  if (!o || !RESOLVED.has(o.outcome)) return null;
+  const c0 = s.close[t], risk = Math.abs(c0 - g.inv); if (!(risk > 0)) return null;
+  if (o.outcome === "TARGET1") return Math.abs((g.dir > 0 ? g.t1Lo : g.t1Hi) - c0) / risk;
+  const k = Math.min(s.close.length - 1, t + o.bars); return (g.dir * (s.close[k] - c0)) / risk;
+}
+
 /** Kontroll-Geometrie in ATR-Einheiten: dieselben Abstaende an einer anderen Reihe/Zeit. */
 function atrGeometry(g, c0, atr) {
   if (!(atr > 0)) return null;
@@ -114,4 +124,4 @@ function applyAtrGeometry(ag, c0, atr) {
   return { dir: d, inv, t1Lo: t1, t1Hi: t1, t2Lo: t2, t2Hi: t2, conf: null };
 }
 
-module.exports = { geometry, primaryOutcome, barrier, forward, atrGeometry, applyAtrGeometry, RESOLVED, VERSION: "hsab-outcomes-1.0.0" };
+module.exports = { geometry, primaryOutcome, rMultiple, barrier, forward, atrGeometry, applyAtrGeometry, RESOLVED, VERSION: "hsab-outcomes-1.0.0" };

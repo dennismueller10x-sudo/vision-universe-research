@@ -32,7 +32,8 @@
     "DELISTED_W"
    ],
    "requires": "PREREGISTERED",
-   "usage": "FINAL HOLDOUT (delistete Listings ab 2015; von keiner TI-Studie je ausgewertet). Survivorship-Sensitivitaet: Summen aus W_HOLDOUT und Ueberlebenden ab 2018 offline kombiniert (keine eigene Phase)."
+   "usage": "FINAL HOLDOUT (delistete Listings ab 2015; von keiner TI-Studie je ausgewertet). Survivorship-Sensitivitaet: Summen aus W_HOLDOUT und Ueberlebenden ab 2018 offline kombiniert (keine eigene Phase).",
+   "unionPool": true
   },
   "D_DEV": {
    "cohorts": [
@@ -47,7 +48,8 @@
    ],
    "from": "2017-01-01",
    "requires": "PREREGISTERED",
-   "usage": "HOLDOUT Tag (Tagesengine nie universumsweit ausgewertet; Kalenderzeitraum wochenweise gesehen)"
+   "usage": "HOLDOUT Tag (Tagesengine nie universumsweit ausgewertet; Kalenderzeitraum wochenweise gesehen)",
+   "devSampleSize": 600
   }
  },
  "variants": [

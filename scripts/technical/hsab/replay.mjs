@@ -61,7 +61,10 @@ function processSeries(series, meta, o) {
   /* Review H4: eigener Hash-Strom, sonst waeren alle Persistenz-Titel zugleich Per-Bar-Titel (und uebersprungen). */
   const persist = o.persist && symHash("persist|" + meta.symbol) % o.persist === 0;
   const inWin = (t) => (!o.from || series.timestamps[t] >= o.from) && (!o.to || series.timestamps[t] <= o.to);
-  const ts = perBar ? Array.from({ length: series.length - (minBars - 1) }, (_, k) => k + minBars - 1) : Array.from(det);
+  /* Kalenderraster (Red Team #3): zusaetzlich die letzte Bar jedes Kalendermonats — „Kunde oeffnet VU an einem beliebigen Tag“. */
+  const grid = new Set();
+  if (o.grid === "month") for (let t = minBars - 1; t < series.length; t++) if (t === series.length - 1 || series.timestamps[t + 1].slice(0, 7) !== series.timestamps[t].slice(0, 7)) grid.add(t);
+  const ts = perBar ? Array.from({ length: series.length - (minBars - 1) }, (_, k) => k + minBars - 1) : Array.from(new Set([...det, ...grid])).sort((a, b) => a - b);
   const recs = [], checks = [];
   let k = 0, chain = null;
   /* Per-Bar-Modus: Elliott-Persistenz wie im Produkt (Vorzustand der Vorbar). Startet 52 Bars vor dem ersten Analysebar. */
@@ -71,7 +74,7 @@ function processSeries(series, meta, o) {
     const r = Core.recordAt(P, series, t, meta, perBar ? { elliottPrevious: chain } : null);
     if (perBar) { chain = r._state; r.ch = 1; }
     delete r._state;
-    r.dp = det.has(t) ? 1 : 0; if (perBar) r.pb = 1;
+    r.dp = det.has(t) ? 1 : 0; if (perBar) r.pb = 1; if (grid.has(t)) r.g = 1;
     recs.push(r);
     if (persist && !perBar && r.dp && (k++ % 10 === 0)) {
       const prev = chainState(P, series, t, PRODUCT_METHODOLOGY);
@@ -93,8 +96,10 @@ if (!isMainThread) {
     if (m.job) {
       try {
         const j = m.job; let series;
-        if (j.kind === "weekly") { const x = readJson(j.path); series = weeklySeriesFromPoints(x.points || [], x.ticker); }
-        else if (j.kind === "inline") series = weeklySeriesFromPoints(j.points, j.symbol);
+        /* --history-from (Red Team #5): Historie vor diesem Datum verwerfen — prueft, was der Start der Delisted-Reihen 2015 an der Analyse aendert. */
+        const hf = (pts) => (opts.historyFrom ? pts.filter((p) => p[0] >= opts.historyFrom) : pts);
+        if (j.kind === "weekly") { const x = readJson(j.path); series = weeklySeriesFromPoints(hf(x.points || []), x.ticker); }
+        else if (j.kind === "inline") series = weeklySeriesFromPoints(hf(j.points), j.symbol);
         else { const x = readJson(j.path); series = dailySeriesFromPayload(x, x.ticker); }
         const r = processSeries(series, { symbol: j.symbol, cohort: j.cohort }, opts);
         if (r.skipped) stats.skipped++; else { stats.series++; if (r.perBar) stats.perBarSymbols++; }
@@ -122,7 +127,7 @@ export function engineHashes() {
 async function main() {
   const out = arg("out", null); if (!out) throw new Error("--out DIR fehlt (Stage-1-Records gehoeren nie in ein committetes Artefakt)");
   mkdirSync(out, { recursive: true });
-  const opts = { from: arg("from", null), to: arg("to", null), perbar: +arg("perbar", "0"), persist: +arg("persist", "0") };
+  const opts = { from: arg("from", null), to: arg("to", null), perbar: +arg("perbar", "0"), persist: +arg("persist", "0"), grid: arg("grid", null), historyFrom: arg("history-from", null) };
   const bucket = arg("bucket", null), limit = +arg("limit", "0"), workers = +arg("workers", "4"), sampleN = +arg("sample-symbols", "0");
   let jobs = [];
   const wdir = arg("weekly-dir", null);

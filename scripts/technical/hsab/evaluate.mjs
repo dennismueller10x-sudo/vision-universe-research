@@ -75,6 +75,12 @@ const priceStep = (p) => (p < 1 ? 0.01 : p < 10 ? 0.05 : p < 50 ? 0.1 : p < 200 
 const roundStepAtr = (r) => (r && r.atr > 0 ? priceStep(r.px) / r.atr : null);
 
 /* ------------------------------------------------------------ Kontrollen */
+/**
+ * Kontrollfabrik. Jede Ziehung: dieselbe Geometrie in ATR-Einheiten (ag) an einer anderen Reihe/Zeit,
+ * ausgewertet mit derselben Outcome-Funktion und DERSELBEN Zensur-Regel wie Ereignisse (voller Horizont noetig, Red Team #5).
+ * Rueckgabe [Treffer, Ziehungen, Summe R].
+ * mode: { closeTarget, mid } fuer die Regel-Sensitivitaeten (Red Team #1).
+ */
 function makeControls(panel, prof, pool, win, dpByKey) {
   /* Fenster der Phase (Review M10): B/C ziehen nur Zeitpunkte, deren Ergebnisfenster ganz in der Phase liegt. */
   const inPhase = (e, u) => (!win.from || e.dates[u] >= win.from) && (!win.to || (u + prof.H < e.length && e.dates[u + prof.H] <= win.to));
@@ -84,26 +90,45 @@ function makeControls(panel, prof, pool, win, dpByKey) {
   const candidates = (key) => {
     let c = tercCache.get(key); if (c) return c;
     const a = byKey.get(key) || [], items = [];
-    for (let q = 0; q < a.length; q += 2) { const e = list[a[q]], i = a[q + 1]; if (pool.has(e.symbol) && eligible(e, i, prof.minBars)) items.push([a[q], i, e.atrPct[i], e.trend[i]]); }
+    for (let q = 0; q < a.length; q += 2) { const e = list[a[q]], i = a[q + 1]; if (pool.has(e.symbol) && eligible(e, i, prof.minBars) && i + prof.H <= e.length - 1) items.push([a[q], i, e.atrPct[i], e.trend[i]]); }
     const v = items.map((x) => x[2]).sort((x, y) => x - y), t1 = v[Math.floor(v.length / 3)], t2 = v[Math.floor((2 * v.length) / 3)];
     items.forEach((x) => { x.push(x[2] <= t1 ? 0 : x[2] <= t2 ? 1 : 2); });
     c = { items, t1, t2 }; tercCache.set(key, c); return c;
   };
-  const evalAt = (e, i, ag) => { const g = SO.applyAtrGeometry(ag, e.close[i], e.atr[i]); if (!g) return null; const o = SO.primaryOutcome(e, i, g, prof.H, e.atr[i]); return SO.RESOLVED.has(o.outcome) ? (o.success ? 1 : 0) : null; };
-  function draw(n, pick) { let h = 0, d = 0; for (let k = 0; k < n * 6 && d < n; k++) { const x = pick(); if (!x) continue; const v = evalAt(x[0], x[1], x[2]); if (v === null) continue; d++; h += v; } return d ? [h, d] : [0, 0]; }
+  const evalAt = (e, i, ag, mode) => {
+    if (i + prof.H > e.length - 1) return null;
+    const g = SO.applyAtrGeometry(ag, e.close[i], e.atr[i]); if (!g) return null;
+    const o = SO.primaryOutcome(e, i, g, prof.H, e.atr[i], mode);
+    return SO.RESOLVED.has(o.outcome) ? [o.success ? 1 : 0, SO.rMultiple(e, i, g, o)] : null;
+  };
+  function draw(n, pick, mode) { let h = 0, d = 0, R = 0; for (let k = 0; k < n * 6 && d < n; k++) { const x = pick(); if (!x) continue; const v = evalAt(x[0], x[1], x[2], mode); if (v === null) continue; d++; h += v[0]; R += isNum(v[1]) ? v[1] : 0; } return [h, d, R]; }
+  const fromList = (c, e, ag, n, rand, mode) => (c.length < 2 ? [0, 0, 0] : draw(n, () => { const x = c[Math.floor(rand() * c.length)]; return list[x[0]] === e ? null : [list[x[0]], x[1], ag]; }, mode));
+  const peCache = new Map();
+  /* Ausfuehrungsebene (Red Team #2): Einstiegszone, Ziel und Invalidation relativ zum Schluss in ATR-Einheiten uebertragen und mit denselben Regeln simulieren. */
+  const execAt = (e, i, eg) => {
+    if (i + prof.H + eg.window > e.length - 1) return null;
+    const px = e.close[i], a = e.atr[i], L = (k) => px + k * a;
+    const g = { dir: eg.dir, entryLow: L(eg.eLo), entryHigh: L(eg.eHi), invalidation: L(eg.inv), t1Low: L(eg.t1Lo), t1High: L(eg.t1Hi) };
+    if (!(g.invalidation > 0 && g.entryLow > 0)) return null;
+    const sim = Out.simulate(e, i, g, { entryWindow: eg.window, horizon: prof.H });
+    return ["TARGET1", "INVALIDATED", "TIMEOUT"].includes(sim.outcome) ? [1, sim.outcome === "TARGET1" ? 1 : 0] : sim.outcome === "NO_ENTRY" ? [0, 0] : null;
+  };
   return {
     candidates,
-    B: (e, t, ag, n, rand) => draw(n, () => { const u = prof.minBars - 1 + Math.floor(rand() * (e.length - prof.minBars)); return Math.abs(u - t) >= prof.H && eligible(e, u, prof.minBars) && inPhase(e, u) ? [e, u, ag] : null; }),
-    C: (e, t, ag, n, rand) => draw(n, () => { const lo = Math.max(prof.minBars - 1, t - prof.nearWin), hi = Math.min(e.length - 1, t + prof.nearWin); const u = lo + Math.floor(rand() * (hi - lo + 1)); return Math.abs(u - t) >= prof.H && eligible(e, u, prof.minBars) && inPhase(e, u) ? [e, u, ag] : null; }),
+    B: (e, t, ag, n, rand, mode) => draw(n, () => { const u = prof.minBars - 1 + Math.floor(rand() * (e.length - prof.minBars)); return Math.abs(u - t) >= prof.H && eligible(e, u, prof.minBars) && inPhase(e, u) ? [e, u, ag] : null; }, mode),
+    C: (e, t, ag, n, rand, mode) => draw(n, () => { const lo = Math.max(prof.minBars - 1, t - prof.nearWin), hi = Math.min(e.length - 1, t + prof.nearWin); const u = lo + Math.floor(rand() * (hi - lo + 1)); return Math.abs(u - t) >= prof.H && eligible(e, u, prof.minBars) && inPhase(e, u) ? [e, u, ag] : null; }, mode),
     /* P (Review M14): gleiches Datum, andere Titel, die an diesem Datum EBENFALLS einen Pivot der Setup-Skala bestaetigen (Timing-gematcht). */
-    P: (e, t, ag, n, rand) => { const c = dpByKey.get(e.keys[t]) || []; if (c.length < 2) return [0, 0];
-      return draw(n, () => { const x = c[Math.floor(rand() * c.length)]; return list[x[0]] === e ? null : [list[x[0]], x[1], ag]; }); },
-    D: (e, t, ag, n, rand) => { const c = candidates(e.keys[t]).items; if (c.length < 2) return [0, 0];
-      return draw(n, () => { const x = c[Math.floor(rand() * c.length)]; return list[x[0]] === e ? null : [list[x[0]], x[1], ag]; }); },
-    E: (e, t, ag, n, rand) => { const C = candidates(e.keys[t]); const terc = e.atrPct[t] <= C.t1 ? 0 : e.atrPct[t] <= C.t2 ? 1 : 2, tr = e.trend[t];
+    P: (e, t, ag, n, rand, mode) => fromList(dpByKey.get(e.keys[t]) || [], e, ag, n, rand, mode),
+    /* P∩E (Red Team #4): Timing-gematcht UND gleicher einfacher Trend (Naeherung an die Swing-Richtung des bestaetigten Pivots). */
+    PE: (e, t, ag, n, rand, mode) => { const k = e.keys[t] + "|" + e.trend[t]; let c = peCache.get(k);
+      if (!c) { c = (dpByKey.get(e.keys[t]) || []).filter((x) => list[x[0]].trend[x[1]] === e.trend[t]); peCache.set(k, c); } return fromList(c, e, ag, n, rand, mode); },
+    D: (e, t, ag, n, rand, mode) => fromList(candidates(e.keys[t]).items, e, ag, n, rand, mode),
+    E: (e, t, ag, n, rand, mode) => { const C = candidates(e.keys[t]); const terc = e.atrPct[t] <= C.t1 ? 0 : e.atrPct[t] <= C.t2 ? 1 : 2, tr = e.trend[t];
       const ck = tr + "|" + terc; C.cells = C.cells || {}; const c = C.cells[ck] || (C.cells[ck] = C.items.filter((x) => x[3] === tr && x[4] === terc));
-      if (c.length < 2) return [0, 0];
-      return draw(n, () => { const x = c[Math.floor(rand() * c.length)]; return list[x[0]] === e ? null : [list[x[0]], x[1], ag]; }); }
+      return fromList(c, e, ag, n, rand, mode); },
+    /* Ausfuehrung: [gefuellte Ziehungen, Ziel 1 unter gefuellten] */
+    Dexec: (e, t, eg, n, rand) => { const c = candidates(e.keys[t]).items; if (c.length < 2) return [0, 0]; let f = 0, h = 0, d = 0;
+      for (let k = 0; k < n * 6 && d < n; k++) { const x = c[Math.floor(rand() * c.length)]; if (list[x[0]] === e) continue; const v = execAt(list[x[0]], x[1], eg); if (!v) continue; d++; f += v[0]; h += v[1]; } return [f, h]; }
   };
 }
 
@@ -150,9 +175,10 @@ function buildEvents(recs, e, prof, variant, opts) {
     if (!s || !s.t1 || !isNum(s.inv)) continue;
     if (!eligible(e, r.i, prof.minBars)) continue;
     const g = SO.geometry(s); if (!g) continue;
-    /* Review M6: Ueberlebende — nur Ereignisse mit vollstaendig beobachtbarem Horizont (sonst zaehlten am Datenende nur schnelle Aufloesungen).
-       Delistete Reihen enden mit dem Delisting: dort bleibt die Zensur-Regel (Sensitivitaet „zensiert = Misserfolg“). */
-    if (e.cohort !== "DELISTED_W" && r.i + prof.H > e.length - 1) { ev.push({ r, s, g, o: { outcome: "INCOMPLETE_HORIZON" }, excluded: "INCOMPLETE_HORIZON" }); continue; }
+    /* Review M6 / Red Team #5: EINE Zensur-Regel fuer alle Kohorten und fuer Kontrollen — nur Zeitpunkte mit vollstaendig
+       beobachtbarem Horizont. Sonst zaehlten am Reihenende (Datenende, Delisting) nur schnelle Aufloesungen.
+       Sensitivitaet: diese Faelle mit ihrem tatsaechlichen Ausgang, Unaufgeloeste als Misserfolg. */
+    if (r.i + prof.H > e.length - 1) { ev.push({ r, s, g, o: { outcome: "INCOMPLETE_HORIZON", real: SO.primaryOutcome(e, r.i, g, prof.H, r.atr) }, excluded: "INCOMPLETE_HORIZON" }); continue; }
     const o = SO.primaryOutcome(e, r.i, g, prof.H, r.atr);
     if (o.outcome === "TRIVIAL_TARGET" || o.outcome === "ALREADY_INVALID") { ev.push({ r, s, g, o, excluded: o.outcome }); continue; }
     act = { r, s, g, o, t: r.i, dir: s.dir, inv: s.inv, t1n: near(s.t1, s.dir), atr: r.atr, end: o.outcome === "CENSORED" ? Infinity : r.i + o.bars, relabel: null, shift: null };
@@ -163,7 +189,7 @@ function buildEvents(recs, e, prof, variant, opts) {
 
 /* ------------------------------------------------------------------ Statistik */
 let BOOT_B = 1000;
-let BLOCK = "QUARTER";
+let BLOCK = "HALF";   /* Red Team #8 / Review M11: Halbjahresbloecke (laenger als der Wochenhorizont von 26 Wochen) */
 const tb = (d) => VS.timeBlockOf(d, BLOCK);
 /** Erfolgsquote, Kontrollquote, Lift mit Zweiweg-Cluster-Bootstrap. rows: { s, d, y (0/1), ch, cd } */
 function liftStat(rows, label) {
@@ -217,7 +243,8 @@ export async function evaluate(o) {
   const cohorts = new Set(phase.cohorts), inBucket = (s) => !phase.bucket || symHash(s) % phase.bucket[1] === phase.bucket[0];
   const recs = all.filter((r) => cohorts.has(r.c) && inBucket(r.s));
   const symbols = Array.from(new Set(recs.map((r) => r.s))).sort();
-  const panel = loadPanel({ weeklyDir: o.weeklyDir, delisted: o.delisted, workDir: o.workDir, only: new Set(symbols) });
+  /* Union-Pool (Red Team #5): Kontrollen aus Ueberlebenden UND Delisteten als Sensitivitaet — Panel dann ohne Titelfilter. */
+  const panel = loadPanel({ weeklyDir: o.weeklyDir, delisted: o.delisted, workDir: o.workDir, only: phase.unionPool ? null : new Set(symbols) });
   const tf = recs.length ? recs[0].tf : "1W", prof = { ...PROFILE[tf] };
   const pool = new Set(symbols);
   /* Review M13: das Kurspanel muss die Daten sein, die Stage 1 gesehen hat (Datum und Schluss je Record). */
@@ -238,6 +265,7 @@ export async function evaluate(o) {
   const win = { from: phase.from || null, to: phase.to || null };
   const inWin = (d) => (!win.from || d >= win.from) && (!win.to || d <= win.to);
   const C = makeControls(panel, prof, pool, win, dpByKey);
+  const Cu = phase.unionPool ? makeControls(panel, prof, new Set(panel.list.map((x) => x.symbol)), win, dpByKey) : null;
 
   /* Records je Titel (sortiert) */
   const bySym = new Map();
@@ -259,9 +287,23 @@ export async function evaluate(o) {
           const ag = SO.atrGeometry(x.g, e.close[x.r.i], e.atr[x.r.i]);
           out.ag = ag;
           if (ag) {
-            out.cD = C.D(e, x.r.i, ag, nCtl.D, rng(v, s, x.r.i, "D"));
-            if (v === "FULL") { out.cB = C.B(e, x.r.i, ag, nCtl.B, rng(v, s, x.r.i, "B")); out.cC = C.C(e, x.r.i, ag, nCtl.C, rng(v, s, x.r.i, "C"));
-              out.cE = C.E(e, x.r.i, ag, nCtl.E, rng(v, s, x.r.i, "E")); out.cP = C.P(e, x.r.i, ag, nCtl.D, rng(v, s, x.r.i, "P")); }
+            const ti = x.r.i, R = (k) => rng(v, s, ti, k);
+            out.cD = C.D(e, ti, ag, nCtl.D, R("D"));
+            if (v === "FULL") {
+              out.cB = C.B(e, ti, ag, nCtl.B, R("B")); out.cC = C.C(e, ti, ag, nCtl.C, R("C"));
+              out.cE = C.E(e, ti, ag, nCtl.E, R("E")); out.cP = C.P(e, ti, ag, nCtl.D, R("P")); out.cPE = C.PE(e, ti, ag, nCtl.D, R("PE"));
+              if (Cu) out.cDu = Cu.D(e, ti, ag, nCtl.D, R("Du"));
+              out.R = SO.rMultiple(e, ti, x.g, x.o);
+              /* Gegenrichtung (Red Team #4/#8): gleicher Titel, gleiche Zeit, gleiche Abstaende, gespiegelte Richtung */
+              const c0 = e.close[ti], a0 = e.atr[ti], gOpp = { dir: -x.g.dir, inv: c0 + x.g.dir * ag.kI * a0, t1Lo: c0 - x.g.dir * ag.kT * a0, t1Hi: c0 - x.g.dir * ag.kT * a0, t2Lo: null, t2Hi: null, conf: null };
+              const oOpp = gOpp.inv > 0 && gOpp.t1Lo > 0 ? SO.primaryOutcome(e, ti, gOpp, prof.H, a0) : null;
+              out.opp = oOpp && SO.RESOLVED.has(oOpp.outcome) ? { y: oOpp.success ? 1 : 0, R: SO.rMultiple(e, ti, gOpp, oOpp) } : null;
+              /* Regel-Sensitivitaeten mit eigener Kontrolle D: Zonenmitte als Ziel; Ziel nur per Schluss */
+              const mid = (x.s.t1[0] + x.s.t1[1]) / 2, gMid = { ...x.g, t1Lo: mid, t1Hi: mid }, oMid = SO.primaryOutcome(e, ti, gMid, prof.H, x.r.atr);
+              if (SO.RESOLVED.has(oMid.outcome)) { const agM = SO.atrGeometry(gMid, c0, a0); out.mid = { y: oMid.success ? 1 : 0, c: agM ? C.D(e, ti, agM, nCtl.D, R("Dmid")) : [0, 0, 0] }; }
+              const oCl = SO.primaryOutcome(e, ti, x.g, prof.H, x.r.atr, { closeTarget: true });
+              if (SO.RESOLVED.has(oCl.outcome)) out.closeT = { y: oCl.success ? 1 : 0, c: C.D(e, ti, ag, nCtl.D, R("Dcl"), { closeTarget: true }) };
+            }
           }
           if (v === "FULL") {
             /* Alternative (Primaer + Alternative), Ausfuehrungsebene (alte Regeln), Barriere */
@@ -270,6 +312,10 @@ export async function evaluate(o) {
             const sim = Out.simulate(e, x.r.i, { dir: x.s.dir, entryLow: x.s.e ? x.s.e[0] : e.close[x.r.i], entryHigh: x.s.e ? x.s.e[1] : e.close[x.r.i], invalidation: x.s.inv, t1Low: x.s.t1[0], t1High: x.s.t1[1] },
               { entryWindow: tf === "1W" ? 8 : 20, horizon: prof.H });
             out.exec = { outcome: sim.outcome, ret: sim.returnPct };
+            /* Ausfuehrung gegen gematchte Kontrolle D (Red Team #2): gleiche Zonen/Ziele/Grenze in ATR-Einheiten relativ zum Schluss */
+            if (x.s.e) { const c0 = e.close[x.r.i], a0 = e.atr[x.r.i], k = (lv) => (lv - c0) / a0;
+              const eg = { dir: x.s.dir, eLo: k(x.s.e[0]), eHi: k(x.s.e[1]), inv: k(x.s.inv), t1Lo: k(x.s.t1[0]), t1Hi: k(x.s.t1[1]), window: tf === "1W" ? 8 : 20 };
+              out.execD = C.Dexec(e, x.r.i, eg, nCtl.D, rng(v, s, x.r.i, "Dexec")); }
             out.barrier = SO.barrier(e, x.r.i, x.s.dir, e.atr[x.r.i], 2, prof.H);
             const pr = rates.get(e.keys[x.r.i]); out.barrierBase = pr ? (x.s.dir > 0 ? pr.up : pr.dn) : null;
           }
@@ -312,8 +358,19 @@ export async function evaluate(o) {
     eventsResolved: fr.length, coverageOfPoints: r4(points.filter((p) => p.dirs.FULL !== 0).length / Math.max(1, nPoints)),
     vsD: liftStat(rowsD(fr), "pss|D"), vsE: liftStat(rowsD(fr, "cE"), "pss|E"), vsB: liftStat(rowsD(fr, "cB"), "pss|B"), vsC: liftStat(rowsD(fr, "cC"), "pss|C"),
     vsP_timingMatched: liftStat(rowsD(fr, "cP"), "pss|P"),
-    vsD_blockHalfYear: (() => { BLOCK = "HALF"; const x = liftStat(rowsD(fr), "pss|D|half"); BLOCK = "QUARTER"; return x; })(),
-    vsD_blockYear: (() => { BLOCK = "YEAR"; const x = liftStat(rowsD(fr), "pss|D|year"); BLOCK = "QUARTER"; return x; })(),
+    vsPE_timingTrendMatched: liftStat(rowsD(fr, "cPE"), "pss|PE"),
+    vsD_unionPool: Cu ? liftStat(rowsD(fr, "cDu"), "pss|Du") : null,
+    vsD_blockQuarter: (() => { BLOCK = "QUARTER"; const x = liftStat(rowsD(fr), "pss|D|q"); BLOCK = "HALF"; return x; })(),
+    vsD_blockYear: (() => { BLOCK = "YEAR"; const x = liftStat(rowsD(fr), "pss|D|year"); BLOCK = "HALF"; return x; })(),
+    /* Richtungswert (Red Team #4/#8): gleiche Zeit, gleiche Abstaende, Gegenrichtung — Differenz > 0 heisst: die VU-Richtung traegt Information */
+    vsOppositeDirection: pairedDiff(fr.filter((x) => x.opp).map((x) => ({ s: x.s, d: x.d, a: x.o.success ? 1 : 0, b: x.opp.y })), "pss|opp"),
+    expectedR: { event: meanStat(fr.filter((x) => isNum(x.R)).map((x) => ({ s: x.s, d: x.d, y: x.R })), "R|ev"),
+                 liftVsD: meanStat(fr.filter((x) => isNum(x.R) && x.cD && x.cD[1]).map((x) => ({ s: x.s, d: x.d, y: x.R - x.cD[2] / x.cD[1] })), "R|D"),
+                 liftVsOpposite: meanStat(fr.filter((x) => isNum(x.R) && x.opp && isNum(x.opp.R)).map((x) => ({ s: x.s, d: x.d, y: x.R - x.opp.R })), "R|opp") },
+    entryBasedVsD: (() => { const rr = fr.filter((x) => x.exec && x.execD && x.execD[0] > 0 && ["TARGET1", "INVALIDATED", "TIMEOUT"].includes(x.exec.outcome));
+      return { ...liftStat(rr.map((x) => ({ s: x.s, d: x.d, y: x.exec.outcome === "TARGET1" ? 1 : 0, ch: x.execD[1], cd: x.execD[0] })), "exec|D"), note: "Ziel 1 unter gefuellten Einstiegen (Ebene B) gegen gematchte Kontrolle D mit denselben Zonen in ATR-Einheiten" }; })(),
+    ruleZoneMid: liftStat(fr.filter((x) => x.mid && x.mid.c[1] > 0).map((x) => ({ s: x.s, d: x.d, y: x.mid.y, ch: x.mid.c[0], cd: x.mid.c[1] })), "pss|mid"),
+    ruleCloseTarget: liftStat(fr.filter((x) => x.closeT && x.closeT.c[1] > 0).map((x) => ({ s: x.s, d: x.d, y: x.closeT.y, ch: x.closeT.c[0], cd: x.closeT.c[1] })), "pss|close"),
     martingale: r4(VS.mean(fr.filter((x) => x.ag).map((x) => x.ag.kI / (x.ag.kI + x.ag.kT)))),
     medianBars: VS.median(fr.filter((x) => x.o.success).map((x) => x.o.bars)),
     sensitivity: {
@@ -321,6 +378,11 @@ export async function evaluate(o) {
       /* Review H1: Anzeigerundung in split-bereinigten Kursen; ohne Faelle mit grobem Rundungsschritt (> 0,25 ATR). */
       excludingCoarseRounding: liftStat(rowsD(fr.filter((x) => roundStepAtr(x.r) <= 0.25)), "pss|round"),
       excludingPerBarSymbols: liftStat(rowsD(fr.filter((x) => !x.r.pb)), "pss|nopb"),
+      /* Kundensicht (Red Team #1): angezeigte Szenarien mit bereits erreichtem Ziel zaehlen als Misserfolg */
+      customerViewTrivialAsFailure: rateStat(full.filter((x) => resolved(x) || x.excluded === "TRIVIAL_TARGET").map((x) => ({ s: x.s, d: x.d, y: !x.excluded && x.o.success ? 1 : 0 })), "pss|trivfail"),
+      incompleteHorizonIncluded: rateStat(full.filter((x) => resolved(x) || x.excluded === "INCOMPLETE_HORIZON").map((x) => ({ s: x.s, d: x.d, y: (x.excluded ? x.o.real && x.o.real.success : x.o.success) ? 1 : 0 })), "pss|incomplete"),
+      disjointFromDailyDevSymbols: phase.devSampleSize ? (() => { const rank = new Map(symbols.slice().sort((a, b) => symHash("sample|" + a) - symHash("sample|" + b)).map((x, k) => [x, k]));
+        return liftStat(rowsD(fr.filter((x) => rank.get(x.s) >= phase.devSampleSize)), "pss|disjoint"); })() : null,
       censoredAsFailure: rateStat(full.filter((x) => !x.excluded && (resolved(x) || x.o.outcome === "CENSORED")).map((x) => ({ s: x.s, d: x.d, y: x.o.success ? 1 : 0 })), "pss|cens")
     }
   };
@@ -345,6 +407,22 @@ export async function evaluate(o) {
                meanReturnAfterCosts: r4(VS.mean(filled.map((x) => x.exec.ret))), note: "Ebene B (Ausfuehrung, Regeln wie ti-evidence): nur berichtet, keine Hauptgroesse." }; })(),
     mfeMaeAtr: { medianMfe: VS.median(fr.map((x) => x.o.mfeAtr)), medianMae: VS.median(fr.map((x) => x.o.maeAtr)) }
   };
+  /* ---- 2b. Kundensicht im Kalenderraster (Red Team #3): jede Monatsend-Bar mit gezeigtem Szenario, ohne Deduplikation ---- */
+  {
+    const gridRecs = []; let gridPoints = 0;
+    for (const [s0, rs] of bySym) { const pi = panel.bySym.get(s0); if (pi === undefined) continue; const e = panel.list[pi];
+      for (const r of rs) { if (!r.g || !inWin(r.d) || !eligible(e, r.i, prof.minBars) || r.i + prof.H > e.length - 1) continue; gridPoints++;
+        const sc = scenOf(r, "FULL"); if (!sc || !sc.t1 || !isNum(sc.inv)) continue; const g = SO.geometry(sc), o2 = SO.primaryOutcome(e, r.i, g, prof.H, r.atr);
+        if (!SO.RESOLVED.has(o2.outcome)) { gridRecs.push({ s: s0, d: r.d, excluded: o2.outcome }); continue; }
+        const ag = SO.atrGeometry(g, e.close[r.i], e.atr[r.i]); const cd = ag ? C.D(e, r.i, ag, nCtl.D, rng("GRID", s0, r.i)) : [0, 0, 0];
+        const c0 = e.close[r.i], a0 = e.atr[r.i], gOpp = ag ? { dir: -g.dir, inv: c0 + g.dir * ag.kI * a0, t1Lo: c0 - g.dir * ag.kT * a0, t1Hi: c0 - g.dir * ag.kT * a0, t2Lo: null, t2Hi: null, conf: null } : null;
+        const oo = gOpp && gOpp.inv > 0 && gOpp.t1Lo > 0 ? SO.primaryOutcome(e, r.i, gOpp, prof.H, a0) : null;
+        gridRecs.push({ s: s0, d: r.d, y: o2.success ? 1 : 0, ch: cd[0], cd: cd[1], opp: oo && SO.RESOLVED.has(oo.outcome) ? (oo.success ? 1 : 0) : null }); } }
+    const ok = gridRecs.filter((x) => !x.excluded);
+    T.customerGridView = gridPoints ? { gridPoints, scenarioShown: r4(gridRecs.length / gridPoints), trivialOrInvalidAtDisplay: r4(gridRecs.filter((x) => x.excluded === "TRIVIAL_TARGET" || x.excluded === "ALREADY_INVALID").length / Math.max(1, gridRecs.length)),
+      vsD: liftStat(ok.filter((x) => x.cd > 0), "grid|D"), vsOppositeDirection: pairedDiff(ok.filter((x) => x.opp !== null).map((x) => ({ s: x.s, d: x.d, a: x.y, b: x.opp })), "grid|opp"),
+      note: "Monatsend-Raster, ueberlappende Beobachtungen (Cluster-Bootstrap); misst die Sicht eines Kunden, der VU an einem beliebigen Tag oeffnet" } : null;
+  }
   /* ---- 3. Richtung, Barriere, einfache Modelle (Analysezeitpunkte, gepaart) ---- */
   const models = ["FULL", ...variants.filter((v) => v !== "FULL"), "ALWAYS_LONG", "MA_TREND", "MOM52", "BREAKOUT", "PULLBACK"];
   const barrierRows = (m) => points.filter((p) => p.dirs[m] && !Number.isNaN(p.dirs[m] > 0 ? p.bUp : p.bDn) && isNum(p.dirs[m] > 0 ? p.poolUp : p.poolDn))
