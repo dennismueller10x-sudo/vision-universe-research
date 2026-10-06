@@ -384,7 +384,21 @@ Weitere Angaben:
 
 ## 10. Fidelity Freeze
 
-Abschnitt 10 wird beim Freeze ergänzt.
+Erst nach bestandenem Red-Team-Review. Datei `scripts/supertrader/fidelity/MINERVINI-FIDELITY-FREEZE.json`.
+
+| Feld | Wert |
+|---|---|
+| Status | FROZEN (06.10.2026) |
+| Commit | `b365b66e5` (Engine-Code und Regelbuch) |
+| Regelbuch-Hash (sha256) | `58de73f048968e7b604e716420a28c48f33c4bccc75c3d00efbda168c71055d5` |
+| Code-Hash (sha256 über alle Engine-Dateien) | `f20a12a7a26750daf6dd08732ccaab0dcb7f7bdd5eff6955d03e8f7398acbdcb` |
+| Engine | `MINERVINI_CANONICAL` 1.0.0, Regelbuch `minervini-canonical-replication-1.0.0` |
+| Datenschema | SEC `vu-sec-pit-mrepl-1.0.0` (Zeile: Periodenende, Wert, Einreichung, Accession, Formular, abgeleitet, Tag, Komponenten-Einreichung); Kurse wie R14; RS `VU-RS-PCT-0.4r63-0.2r126-0.2r189-0.2r252-DV20GE1M` |
+| Gemeinsame Bausteine | mit Hash protokolliert (indicators, return-series, taxonomy, product-classes, lib, analyze-methods), blockieren andere Produkte nicht |
+
+**Absicherung:**
+- `measure.mjs` bricht ohne gültigen Freeze ab (Code 3).
+- Test MR-T-FREEZE scheitert bei jeder späteren Änderung an Regelbuch oder Engine-Code. Eine Änderung braucht eine neue Version und einen neuen Freeze.
 
 ## 11. Messung (nach dem Freeze)
 

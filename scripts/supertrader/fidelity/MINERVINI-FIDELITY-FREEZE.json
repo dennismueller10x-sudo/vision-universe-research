@@ -1,0 +1,140 @@
+{
+  "schema": "vu-minervini-fidelity-freeze-1.0.0",
+  "status": "FROZEN",
+  "frozenAt": "2026-10-06",
+  "engine": {
+    "id": "MINERVINI_CANONICAL",
+    "version": "1.0.0",
+    "rulebookVersion": "minervini-canonical-replication-1.0.0"
+  },
+  "commit": "b365b66e5",
+  "rulebook": "scripts/supertrader/fidelity/MINERVINI-CANONICAL-REPLICATION.json",
+  "rulebookHash": "58de73f048968e7b604e716420a28c48f33c4bccc75c3d00efbda168c71055d5",
+  "codeHash": "f20a12a7a26750daf6dd08732ccaab0dcb7f7bdd5eff6955d03e8f7398acbdcb",
+  "codeFiles": [
+    {
+      "path": "scripts/supertrader/replication/minervini/artifacts.mjs",
+      "sha256": "0ddc89bb8b9e6205d4c3c082cd07e72998c37ef50adc74f29ef84b34f50100bb"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/build-sec-facts.mjs",
+      "sha256": "d379a7a4b2959aabb1afe448b68808876b46c224148616fc641413161f565d95"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/engine.mjs",
+      "sha256": "57d4b883c0f4e3b5861cde6ff6b669ffe5a9336b2e7e6a14737ed71870d36e4c"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/exit-policy.mjs",
+      "sha256": "500c9a27992da5cf2a2b25eae2ad0d16fbd895a3972605186e54ee1ef7a0020c"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/freeze.mjs",
+      "sha256": "17d84b2c194d202c687ceb2aec2600b249c6eec342129db9740b901072cf887b"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/measure.mjs",
+      "sha256": "2a2d2d49b1ac2669b144820202e4d153b2bdaf0579b4dcb44449fb635746a5f2"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/metrics.mjs",
+      "sha256": "ca8747e5b7283b2e09702814bd356cd968258186052cb36d5ec5cc8ee82161a1"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/params.mjs",
+      "sha256": "6ded1b5ea740b201e151b2d3611381b23521f2a83bfc70887dc77eb4f09c367d"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/portfolio-policy.mjs",
+      "sha256": "6bc418d4a5d6b9318beba03fcdda403234ccad5ffe90df05feb513abd95e2907"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/portfolio-sim.mjs",
+      "sha256": "eb446e352f2c2b4edfde5fea064eac47784f11a113087bf4767c37f8f30da4f8"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/sec-facts.mjs",
+      "sha256": "0512753b31a5b8d7054e00c86bef4cc4b0cb7a846a4d71769d35a321bc712b30"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/sepa.mjs",
+      "sha256": "e20823f49ec2bf3dfa442c3fe036d674286eb90ec229602a82cbd05dd9f5c991"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/signal-engine.mjs",
+      "sha256": "4cde6744aaa604bdc43276bf4b51d7e9d237adc94e7cb3e4342e2b9f0036f352"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/trend-template.mjs",
+      "sha256": "e7f9a0644871e0a102a01af4d513f007ed724f982003cbd939941bc2a9d94177"
+    },
+    {
+      "path": "scripts/supertrader/replication/minervini/vcp.mjs",
+      "sha256": "2f003a822e758cdc73641b758a5f7dbfb6466e02014265d27e81ae41f26a9c5d"
+    }
+  ],
+  "sharedDependencies": [
+    {
+      "path": "scripts/supertrader/engine/indicators.mjs",
+      "sha256": "3b2be04dc5eae7d0f2801b5b7a1df644b8e96372d10c3dcfc0e23bc3980a117f"
+    },
+    {
+      "path": "quant/engines/return-series.js",
+      "sha256": "e9467388b93e13ae04a3aedac9f4c89d3de5890b2ed96bc8b0ead0711c7a8d54"
+    },
+    {
+      "path": "scripts/supertrader/fidelity/taxonomy.mjs",
+      "sha256": "9bb3924cf64dc080f0b1f8d08fe014663c3a70e3ef3d2b4f886692ee82495700"
+    },
+    {
+      "path": "scripts/supertrader/fidelity/product-classes.mjs",
+      "sha256": "5243939e8657fade0e2e733b5c3db5d523ac3855a7255b9a97a2ff23d9679ee8"
+    },
+    {
+      "path": "scripts/supertrader/validation/lib.mjs",
+      "sha256": "49fd4a39c60076e32bcb724211a5cb219dd5614d0c316e0e16e8926c82865d5c"
+    },
+    {
+      "path": "scripts/supertrader/validation/analyze-methods.mjs",
+      "sha256": "f66cdbbffbe421829444bf308bcb693be3517444fbe0c535ce5aadaf9657b611"
+    }
+  ],
+  "dataSchema": {
+    "secFacts": {
+      "schema": "vu-sec-pit-mrepl-1.0.0",
+      "rowLayout": [
+        "END",
+        "VALUE",
+        "FILED",
+        "ACCN",
+        "FORM",
+        "DERIVED",
+        "TAG",
+        "COMPONENTS_FROM"
+      ],
+      "storeKey": "_validation/sec-pit-mrepl-1.json.gz (privater Eimer, je Fenster eigener Namensraum)",
+      "visibility": "filed < Ausfuehrungstag (MR-PIT-01)"
+    },
+    "prices": "Tiingo-Rohkerzen, split-bereinigt ueber validation/lib.mjs#adjustSeries (Messung wie R14); Split-Verhaeltnisse fuer EPS aus quant/engines/return-series.js#splitFactors",
+    "relativeStrength": "cross.rs aus validation/analyze-methods.mjs#loadPitData (point-in-time Querschnitt), Definition MR-TT-08 rs.definitionId",
+    "universe": "loadPitData({excludeNonEquity:true, delistPit:true}) wie R14; Messrahmen MR-UNI-01"
+  },
+  "gate": {
+    "decidedBy": "Lead (Opus) nach Red-Team-Review, docs/SUPERTRADER_MINERVINI_REPLICATION_PHASE2.md Abschnitt 9",
+    "rulebookComplete": "ja: 64 Regeln, jede mit Quelle, Herkunft, Reproduzierbarkeit, Daten, Formalisierung, Implementierung, Test, Fidelity",
+    "sourceToCode": "ja: MINERVINI-SOURCE-TO-CODE.json, Test MR-T-SOURCE-TO-CODE",
+    "pointInTime": "ja: MR-PIT-01, Tests MR-T-PIT-*, MR-T-SEPA-SPLIT, MR-T-RT-SPLIT-HISTORY",
+    "noHiddenDefaults": "ja: 40 Parameter mit Rule-ID; Tests MR-T-PARAMS-*, MR-T-NO-HIDDEN-DEFAULTS",
+    "noUnresolvedForeignRules": "ja: keine wirkende FOREIGN_RULE/UNRESOLVED-Regel (MR-T-NO-FOREIGN-RULES)",
+    "testsGreen": "ja: 290/290 Supertrader-Tests, davon 67 Regeltests; Test-Isolation und Gate A ok",
+    "redTeam": "bestanden (7 Code-Befunde behoben, Quellen-Red-Team ohne offenen Befund)"
+  },
+  "classification": {
+    "productClass": "VU_ADAPTATION",
+    "canonicalName": "minervini-adaptation-1.0.0",
+    "displayName": "VU Adaptation – Minervini Canonical (Research)",
+    "replicationClaimAllowed": false,
+    "overallFidelity": "LOW"
+  },
+  "backtestPolicy": "Erst nach diesem Freeze. Nur Messung; das Ergebnis aendert die Engine nicht. DEV und HOLDOUT sind seit R14 GESEHENE DATEN."
+}
