@@ -140,11 +140,11 @@
     Object.keys(fresh).forEach(function (n) {
       if (!gone[n]) return;
       if (fresh[n].length === 1 && gone[n].length === 1) { extra[fresh[n][0]] = gone[n][0]; return; }
-      // Mehrere Tranchen desselben Emittenten und derselben Faelligkeit (Anleihen/Kredite): gleich viele verschwundene wie
-      // neue -> nach Gewicht paaren (Kuponanpassung, keine Umschichtung); ungleiche Anzahl bleibt Zu-/Abgang.
-      if (/^(BOND|LOAN)\|/.test(n) && fresh[n].length === gone[n].length) {
+      // Mehrere Tranchen desselben Emittenten und derselben Faelligkeit (Anleihen/Kredite): nach Gewicht paaren
+      // (Kuponanpassung, keine Umschichtung); nur der Ueberhang bleibt echter Zu- oder Abgang.
+      if (/^(BOND|LOAN)\|/.test(n)) {
         var f = fresh[n].slice().sort(function (x, y) { return B[y].weight - B[x].weight; }), g = gone[n].slice().sort(function (x, y) { return A[y].weight - A[x].weight; });
-        f.forEach(function (k, i) { extra[k] = g[i]; });
+        for (var i = 0; i < Math.min(f.length, g.length); i++) extra[f[i]] = g[i];
       }
     });
     return function (h) { var k = remap0(h); return extra[k] || k; };

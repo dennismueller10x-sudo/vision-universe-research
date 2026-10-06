@@ -363,3 +363,9 @@ test("Mehrere Kredit-Tranchen gleicher Faelligkeit mit neuem Kupon: Paarung nach
   const d = C.diffHoldings(snap("2026-01-31", t("6,916", "7,1")), snap("2026-04-30", t("6,7", "6,9")));
   assert.equal(d.events.filter((e) => /HOLDING_(ADDED|REMOVED)/.test(e.eventType)).length, 0);
 });
+test("Kredit-Tranchen ungleicher Anzahl: Paarung nach Gewicht, nur der Ueberhang ist Zu-/Abgang", () => {
+  const a = [row("Star Parent Inc 7,672 % 2030", 1.2, { assetType: "LOAN" }), row("Star Parent Inc 7,9 % 2030", 0.3, { assetType: "LOAN" }), row("Other", 98.5, { holdingTicker: "OTH" })];
+  const b = [row("Star Parent Inc 7,7 % 2030", 1.25, { assetType: "LOAN" }), row("Other", 98.75, { holdingTicker: "OTH" })];
+  const ev = C.diffHoldings(snap("2026-01-31", a), snap("2026-04-30", b)).events.filter((e) => /HOLDING_(ADDED|REMOVED)/.test(e.eventType));
+  assert.deepEqual(ev.map((e) => e.eventType + " " + e.entityName), ["HOLDING_REMOVED Star Parent Inc 7,9 % 2030"]);
+});
