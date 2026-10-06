@@ -31,7 +31,7 @@ export function bootstrapHandoff({privateDir='.market-cache/marketstack',publicO
  mkdirSync(dirname(publicOut),{recursive:true});const data={version:'vu-marketstack-handoff-public-1',context,publicKey,fingerprint:fingerprint(publicKey),providerRequests:0};writeFileSync(publicOut,JSON.stringify(data)+'\n');return {fingerprint:data.fingerprint,providerRequests:0};
 }
 export function verifyPrivateRequest(request,{context,root=process.cwd()}={}){
- if(!request||request.version!=='vu-marketstack-live-request-1'||request.context!==context||!/^refs\/pull\/\d+\/merge$/.test(context)||!/^([a-f0-9]{40})$/.test(request.sourceSHA||'')||!request.runId||!['sample','mandatory','refresh'].includes(request.phase)||!request.resultPublicKey)fail('PRIVATE_REQUEST_INVALID');
+ if(!request||request.version!=='vu-marketstack-live-request-1'||request.context!==context||!/^refs\/pull\/\d+\/merge$/.test(context)||!/^([a-f0-9]{40})$/.test(request.sourceSHA||'')||!request.runId||!['sample','mandatory','refresh','identity_probe'].includes(request.phase)||!request.resultPublicKey)fail('PRIVATE_REQUEST_INVALID');
  const referenceHash=sha(JSON.stringify(request.listingMap));if(request.authorization?.sourceSHA!==request.sourceSHA||request.authorization?.referenceHash!==referenceHash||request.authorization?.runId!==request.runId)fail('PRIVATE_REQUEST_AUTHORIZATION_MISMATCH');
  execFileSync('git',['merge-base','--is-ancestor',request.sourceSHA,'HEAD'],{cwd:root,stdio:'pipe'});
  const changed=execFileSync('git',['diff','--name-only',request.sourceSHA,'HEAD'],{cwd:root,encoding:'utf8'}).trim().split('\n').filter(Boolean);

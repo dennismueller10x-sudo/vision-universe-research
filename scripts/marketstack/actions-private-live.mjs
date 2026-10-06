@@ -29,7 +29,7 @@ export async function executePrivateRequest({privateDir,previewDir,context,githu
  if(lease.state!=='ACTIVE'||lease.githubRunId!==githubRunId||lease.ciphertextHash!==ciphertextHash)fail('DURABLE_EXECUTION_LEASE_REQUIRED');
  let status=null,error=null;mkdirSync(previewDir,{recursive:true,mode:0o700});
  try{
-  const ingest=ingestImpl||(await import('./ingest-de-eu.mjs')).ingest;
+  const ingest=ingestImpl||(request.phase==='identity_probe'?(await import('./probe-missing-identities.mjs')).probeIdentity:(await import('./ingest-de-eu.mjs')).ingest);
   status=await ingest({listingMap:request.listingMap,accountEvidence:request.authorization,privateDir,previewOut:previewDir,asOf:request.asOf,runId:request.runId,phase:request.phase,sampleProof:request.sampleProof||null});
  }catch(failure){error=/^[A-Z0-9_]+$/.test(failure.code||failure.message)?failure.code||failure.message:'PRIVATE_IMPORT_FAILURE';}
  // Every attempted client call was reserved before transport. Persist the

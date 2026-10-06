@@ -42,3 +42,22 @@ Attempted reruns and unreconciled ACTIVE leases remain blocked. A revised
 authorization carrying `previousLedgerHash` also requires the original ledger to
 exist; it cannot create a replacement zero ledger. No paid transport happens
 before these checks and the independent exact remote lease-cache verification.
+
+`identity_probe` is a metadata-only phase using the same authenticated client,
+private response store, shared counter and durable Actions lease. Place the frozen
+resolution reference under `listingMap.identityProbe`; it is then included in the
+existing authorization reference hash. At most 12 target share classes and 20
+deduplicated request candidates are allowed. The current 12-member reference
+produces 17 candidates (official local ticker `.DE` plus documented cached
+alternatives). Suffix construction creates only an unverified request candidate.
+There are no retries, price requests or history requests in this phase.
+
+Exact returned symbol, ISIN, MIC and compatible share-class evidence are required
+for `FOUND` or `ALIAS_RESOLVED`. A separately sourced current official share class
+can be supplied with `reference.shareClass` and `reference.shareClassSource`.
+Unknown or contradictory class evidence stays PARTIAL, even when ISIN/MIC match.
+Alternative venues receive a canonical distinct listing ID and no inherited
+currency basis. The private `identity-probe/de_eu_identity_probe.json` mapping
+delta always has `priceHistoryAdmitted:false`; applying it and admitting prices
+requires the ordinary selected-listing validation path. No provider key, licensed
+response or plaintext probe reference is added to source control.
