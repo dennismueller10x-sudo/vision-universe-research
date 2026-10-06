@@ -425,6 +425,148 @@ Das Log zeigt keine Richtungen. Keine Codeänderung danach.
 
 Abschnitt 11 wird nach den Messläufen DEV und HOLDOUT ergänzt.
 
-## 12. Abschlussbericht (28 Fragen des Auftrags)
+## 12. Abschlussbericht
 
-Abschnitt 12 wird nach der Messung ergänzt.
+**1. Was ist Minervinis öffentlich rekonstruierbare Methode?**
+
+SEPA ist eine Abfolge von Filtern, dann folgt die Ausführung:
+1. Trend Template (Stufe 2);
+2. fundamental führende Aktie (Gewinn, Umsatz, Margen mit Beschleunigung);
+3. VCP mit klarem Pivot und geringem Risiko;
+4. Kauf beim Durchbruch;
+5. strikte Verlustbegrenzung (≤ 10 %, Einstand bei 3R) und Verkauf in die Stärke;
+6. konzentriertes Portfolio mit 1,25 % Risiko je Trade und höchstens 25 % je Position, progressiv aufgebaut.
+
+**2. Welche Bestandteile sind eindeutig?**
+- Trend-Template-Kriterien 1–7;
+- 2–6 Kontraktionen; Pivot als Kaufpunkt;
+- Verlustgrenze 10 %; Einstand bei 3R;
+- 1,25 % Risiko (Höchstwert 2,5 %), 25 % Höchstgewicht;
+- Positionszahl-Spanne;
+- die Hälfte verkaufen als Werkzeug.
+
+**3. Welche sind diskretionär?**
+- Enge der Basis; Cheat- und Low-Cheat-Zonen;
+- Pilot- und Zukaufpunkte;
+- „schwieriger Markt“;
+- Klimax- und Verletzungssignale; Ermessensverkauf an der 20-Tage-Linie;
+- Zeitpunkt des Teilverkaufs; Gewichtung der Fundamentaldaten (Code 33 als Ideal);
+- Katalysator.
+
+**4. Welche Daten besitzt VU bereits?**
+- Tageskurse inklusive delisteter Titel (2007–2026, privat);
+- point-in-time-RS-Querschnitt;
+- SEC-Erstmeldungen mit Einreichungsdatum: EPS und Umsatz (seit R11); Bruttogewinn, operatives Ergebnis und Nettoergebnis (neu in Phase 2A, aus derselben Quelle);
+- Split- und Dividendenhistorie;
+- Delisting-Klassen.
+
+**5. Welche Daten fehlen?**
+- Konsensschätzungen, Überraschungen, Revisionen;
+- 13F-Bestände;
+- Branchengruppen zum damaligen Stand;
+- Ergebnistermine (Ankündigung);
+- Intraday-Volumen am Pivot (Historie);
+- Kennzeichnung von Einmalposten;
+- IBD-RS (proprietär).
+
+**6. Welche Regeln sind nicht reproduzierbar?**
+- Mangels Daten: MR-SEPA-07/08/09/11/12, MR-ERN-01, MR-ENT-02.
+- Nicht öffentlich: MR-SEPA-13 (Katalysator), Minervinis Marktrisikomodell, IBD-RS.
+- Ohne Zahl: MR-EXIT-05 (Zeitstopp).
+- Diskretionär, bewusst nicht formalisiert: MR-VCP-05, MR-ENT-03, MR-RSK-04/05, MR-EXIT-06/07, MR-PF-03.
+- Außer Umfang: Margin, Short (MR-PF-04/05).
+- Nicht Teil von 1.0.0, belegt: Power Play (MR-ENT-04).
+
+**7. Welche VU-Formalisierungen waren unvermeidbar?**
+- VCP-Zerlegung (MR-VCP-08);
+- RS-Ersatz (MR-TT-08);
+- SMA200-Steigung über 21 Sitzungen (MR-TT-03);
+- Volumen < 1,0 × SMA50 (MR-VCP-04);
+- Kauf-Stop auf Tagesbalken (MR-ENT-01);
+- Teilverkauf an 3R gekoppelt (MR-EXIT-02);
+- 50 % des Höchstgewinns sichern (MR-EXIT-03);
+- Startquote 50 % / voll nach Gewinn-Trade (MR-PF-02);
+- Reihenfolge nach RS und Stopabstand (MR-PF-06);
+- Umsatz > 0 (MR-SEPA-04);
+- point-in-time-Datenregeln (MR-PIT-01).
+
+Der Messrahmen (Universum, Kosten, Ausführung) ist VU_OWN und keine Minervini-Regel.
+
+**8. Was aus 2.0.0 wurde wiederverwendet?**
+- Nur Konzepte, kein Code:
+  - Trend-Template-Kriterien 1–7 (fachlich gleich, neu implementiert);
+  - Einstand bei 3R;
+  - die Werte 1,25 %/25 % (jetzt primär belegt).
+- Gemeinsame reine Primitive: `indicators.mjs#sma/rollingMax/rollingMin`.
+- Die Datenschicht von R14: `loadPitData`, `adjustSeries`, Verschlüsselung.
+
+**9. Was aus 3.0.0 wurde wiederverwendet?**
+- Das Prinzip der Sichtbarkeit (Einreichung vor dem Handelstag).
+- Die bestehende CIK-Zuordnung (`sec-pit-r12/r11`).
+- Code von `earnings.mjs` ist nicht übernommen: 25 %-Schwelle, Verlustbasis als Beschleunigung, keine Split-Bereinigung, kein Quartalsabgleich.
+
+**10. Welche bisherigen Regeln wurden verworfen?**
+- Ausbruchsvolumen ≥ 1,4× (O'Neil).
+- Ausstieg unter SMA50 mit Volumen (ungeklärt).
+- Schlussbestätigung mit Kauf zur nächsten Eröffnung.
+- 4-%-Zickzack, 65-Sitzungen-Fenster, Grenzen 35 %/10 %, Vol10/Vol50 < 0,8.
+- 10 %-Stop als Regelfall.
+- Verfall nach 20 Sitzungen, 5-Sitzungen-Sperre, ENTRY_READY 3 %.
+- RS nur bei Entdeckung; Halbierungsregel.
+- 10 Plätze mit alphabetischem Gleichstand.
+- Gleichtagsfinanzierung.
+- EPS ≥ 25 %; Verlustbasis als Beschleunigung.
+
+Liste: Regelbuch `legacyDisposition`.
+
+**11. Wie hoch ist die Fidelity je Teilbereich?**
+- Trend MEDIUM, Einstieg LOW, Fundamental LOW, Ausstieg LOW.
+- Größe MEDIUM, Portfolio LOW, Marktumfeld MEDIUM, Risiko MEDIUM.
+- Gesamt LOW (strenge Methode, Abschnitt 7).
+
+**12. Darf die Engine „Replication“ heißen?**
+Nein. Der Hard Gate ist nicht erfüllt; Gründe in Abschnitt 8. Name: `minervini-adaptation-1.0.0`, „VU Adaptation – Minervini Canonical (Research)“.
+
+**13. Unterschied zu Live 2.0.0**
+
+| | Live 2.0.0 | Phase 2A (1.0.0) |
+|---|---|---|
+| SEPA | keine | point-in-time-Filter |
+| Einstieg | Schlussbestätigung | Kauf-Stop am Pivot |
+| Volumenfilter | 1,4× (O'Neil) | keiner (Volumen nur protokolliert) |
+| VCP | Zickzack mit VU-Zahlen | Zerlegung ohne erfundene Schwelle, Basis bis 45 Wochen |
+| Ausstieg | SMA50 mit Volumen | Hälfte bei 3R, Einstand, Gewinnsicherung |
+| Lebenszyklus | Sperre, Verfall | keiner |
+| Startquote | keine | progressive Exposure mit Startquote |
+| Plätze | 10 | 12 |
+| Gleichstand | alphabetisch | kein Alphabet |
+| Kurse, Universum, Kosten | gleiche Quelle (Messrahmen R14) | gleiche Quelle (Messrahmen R14) |
+
+**14. Unterschied zu Research 3.0.0**
+- 3.0.0 ist 2.0.0 plus ein EPS-Filter (25 %, eine Beschleunigungsstufe, Umsatz > 0) ohne Split-Bereinigung.
+- 1.0.0 teilt mit 3.0.0 nur das Sichtbarkeitsprinzip. Alles andere ist anders, wie unter Frage 13.
+- Der Fundamentalfilter ist quellennäher (20 %) und datentechnisch korrigiert.
+
+**15. Welche offenen Datenlücken verhindern höhere Fidelity?**
+
+Nach Wirkung geordnet:
+1. Konsens, Überraschungen und Revisionen. Eine kostenlose offizielle Quelle ist nicht bekannt.
+2. Intraday-Volumen für die Ausbruchsbestätigung.
+3. Ergebnistermine (8-K Item 2.02, kostenlos, nicht eingeführt).
+4. 13F-Sponsorship (kostenlos, nicht eingeführt).
+5. Branchengruppen zum damaligen Stand (SIC je Einreichung, kostenlos, nicht eingeführt).
+6. Längerer Kursvorlauf für die Split-Historie, damit SEPA ab Fensterbeginn bewertbar ist.
+7. Ohne Daten-, aber mit Quellenproblem:
+   - Zahl für den Zeitstopp;
+   - Definition von Cheat-Zonen und Pilot-/Zukaufpunkten;
+   - Buch-Volltexte, damit Fundstellen seitengenau belegt sind und die Belegstärke über MEDIUM steigt.
+
+Jede neue Datenquelle braucht eine eigene Freigabe. Danach wäre eine neue Version mit neuem Freeze nötig.
+
+## 13. Stopp
+
+Gemäß Auftrag:
+- kein Weinstein, kein Darvas, kein Turtle, kein Umbau von Kullamägi;
+- kein Live-Release; keine Änderung an Minervini 2.0.0 oder 3.0.0, an Ledgern, Signalen oder der Registry.
+
+Eine spätere VU-Adaptation oder Live-Migration ist ein eigener Auftrag mit eigener Version, Präregistrierung und Vorwärtsprüfung. DEV und HOLDOUT sind gesehene Daten; neue Evidenz entsteht nur vorwärts oder in neuen Zeiträumen.
