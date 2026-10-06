@@ -39,3 +39,20 @@ test('invalid reference and missing authorization stop before client constructio
  let constructions=0;const map=mapping(),common={listingMap:map,accountEvidence:null,privateDir,asOf,runId:'identity-test',clientFactory:()=>{constructions++;throw Error('SHOULD_NOT_CONSTRUCT');}};
  await assert.rejects(probeIdentity(common),/ACCOUNT_BUDGET_UNVERIFIED/);await assert.rejects(probeIdentity({...common,listingMap:{...map,identityProbe:undefined}}),/FROZEN_IDENTITY_PROBE_REQUIRED/);assert.equal(constructions,0);
 }));
+
+import {classifyMetadataFailure,identityResolution} from '../probe-missing-identities.mjs';
+test('404 candidate means unsupported; mixed missing identity retains unresolved identity rather than final-candidate suppression',()=>{
+ const missing=classifyMetadataFailure({status:404,reason:'providerError'});assert.equal(missing.cause,'UNSUPPORTED_LISTING');assert.equal(missing.reason,'PROVIDER_SYMBOL_NOT_FOUND');
+ assert.deepEqual(identityResolution([missing]),{resolutionStatus:'NOT_SUPPORTED',cause:'UNSUPPORTED_LISTING'});
+ const mismatch={accepted:false,cause:'MAPPING_ERROR',reason:'RESPONSE_SHARE_CLASS_MISMATCH'};
+ assert.deepEqual(identityResolution([mismatch,missing]),{resolutionStatus:'IDENTITY_UNRESOLVED',cause:'MAPPING_ERROR'});
+ assert.equal(identityResolution([missing,{cause:'MAPPING_ERROR',reason:'RESPONSE_ISIN_MISSING'}]).resolutionStatus,'IDENTITY_UNRESOLVED');
+ assert.equal(identityResolution([],{resolutionStatus:'FOUND'}).resolutionStatus,'FOUND');assert.equal(identityResolution([],{resolutionStatus:'ALIAS_RESOLVED'}).resolutionStatus,'ALIAS_RESOLVED');
+});
+test('HTTP404 actual-client fixture persists source status and does not turn provider absence into data defect',()=>fixture(async privateDir=>{
+ const map=mapping(),calls=[];const result=await probeIdentity({listingMap:map,accountEvidence:authorization(map),privateDir,asOf,runId:'identity-test',clientFactory:factory(()=>({status:404,body:{error:{type:'not_found'}}}),calls)});
+ assert.equal(calls.length,1);assert.equal(result.results[0].resolutionStatus,'NOT_SUPPORTED');assert.equal(result.results[0].cause,'UNSUPPORTED_LISTING');assert.equal(result.results[0].attempts[0].httpStatus,404);assert.equal(result.budget.estimatedCreditsConsumed,1);assert.equal(result.mappingDelta.length,0);
+}));
+test('an unsupported alternate never conceals an earlier real provider-data defect',()=>{
+ assert.deepEqual(identityResolution([{cause:'PROVIDER_DATA_DEFECT',reason:'INVALID_METADATA_RESPONSE'},{cause:'UNSUPPORTED_LISTING'}]),{resolutionStatus:'IDENTITY_UNRESOLVED',cause:'PROVIDER_DATA_DEFECT'});
+});

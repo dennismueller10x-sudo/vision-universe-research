@@ -53,13 +53,22 @@ export function verifyIdentityResponse(body,target,candidate){
  if(type!==expected&&!(expected==='preferred_equity'&&type==='equity'))return {accepted:false,cause:'MAPPING_ERROR',reason:'RESPONSE_SHARE_CLASS_MISMATCH'};
  return {accepted:true,resolutionStatus:candidate.mic===target.row.mic&&candidate.symbol===target.reference.officialLocalTicker+'.DE'?'FOUND':'ALIAS_RESOLVED'};
 }
+export function classifyMetadataFailure(response){
+ return {accepted:false,cause:['authError','quotaExceeded','entitlementRestricted'].includes(response.reason)?'ENTITLEMENT_BLOCKED':response.status===404||response.reason==='dataUnavailable'?'UNSUPPORTED_LISTING':'PROVIDER_DATA_DEFECT',reason:response.status===404?'PROVIDER_SYMBOL_NOT_FOUND':response.reason};
+}
+export function identityResolution(attempts,accepted=null,terminalReason=null){
+ if(accepted)return {resolutionStatus:accepted.resolutionStatus,cause:null};
+ if(terminalReason)return {resolutionStatus:'IDENTITY_UNRESOLVED',cause:'ENTITLEMENT_BLOCKED'};
+ if(attempts.length&&attempts.every(a=>a.cause==='UNSUPPORTED_LISTING'))return {resolutionStatus:'NOT_SUPPORTED',cause:'UNSUPPORTED_LISTING'};
+ return {resolutionStatus:'IDENTITY_UNRESOLVED',cause:attempts.find(a=>a.cause==='MAPPING_ERROR')?.cause||attempts.find(a=>a.cause==='PROVIDER_DATA_DEFECT')?.cause||attempts.at(-1)?.cause||'MAPPING_ERROR'};
+}
 export async function probeIdentity({listingMap,accountEvidence,privateDir,asOf,runId,clientFactory,now=Date.now}={}){
  assertPrivateOutput(privateDir,{allowCache:true});
  if(listingMap?.asOf!==asOf||!/^\d{4}-\d{2}-\d{2}$/.test(asOf||''))fail('FIXED_IDENTITY_PROBE_AS_OF_REQUIRED');
  const plan=planIdentityProbe(listingMap),budget=createSharedBudget({file:join(privateDir,'shared-budget.json'),runId,evidence:accountEvidence,now});
  const opening=await budget.status();if(opening.creditsRemaining<plan.candidateCount)fail('IDENTITY_PROBE_BUDGET_INSUFFICIENT');
  const write=(p,value)=>{rejectSymlinkAncestors(p);mkdirSync(resolve(p,'..'),{recursive:true,mode:0o700});writeFileSync(p,JSON.stringify(value)+'\n',{mode:0o600});};
- let sourceHashes=[];const onResponse=async response=>{const id=hash(response);write(join(privateDir,'source',id+'.json'),response);sourceHashes.push(id);};
+ let sourceHashes=[],sourceStatuses=[];const onResponse=async response=>{const id=hash(response);write(join(privateDir,'source',id+'.json'),response);sourceHashes.push(id);sourceStatuses.push(response.status);};
  const options={sharedBudget:budget,maxRequests:MAX_IDENTITY_CANDIDATES,maxCredits:MAX_IDENTITY_CANDIDATES,maxRetries:0,onResponse};
  const client=clientFactory?clientFactory(options):Client.createMarketstackClient(options);
  const results=[],mappingDelta=[];let terminalReason=null;
@@ -67,9 +76,9 @@ export async function probeIdentity({listingMap,accountEvidence,privateDir,asOf,
   const attempts=[];let accepted=null;
   for(const candidate of target.candidates){
    if(terminalReason)break;
-   sourceHashes=[];const response=await client.request('/tickers/'+encodeURIComponent(candidate.symbol));
-   const check=response.ok?verifyIdentityResponse(response.data,target,candidate):{accepted:false,cause:['authError','quotaExceeded','entitlementRestricted'].includes(response.reason)?'ENTITLEMENT_BLOCKED':response.reason==='dataUnavailable'?'UNSUPPORTED_LISTING':'PROVIDER_DATA_DEFECT',reason:response.reason};
-   attempts.push({...candidate,...check,sourceHashes:sourceHashes.slice(),apiVersion:'v2',endpoint:'/tickers/'+candidate.symbol});
+   sourceHashes=[];sourceStatuses=[];const response=await client.request('/tickers/'+encodeURIComponent(candidate.symbol));
+   const check=response.ok?verifyIdentityResponse(response.data,target,candidate):classifyMetadataFailure(response);
+   attempts.push({...candidate,...check,sourceHashes:sourceHashes.slice(),httpStatus:response.status??sourceStatuses.at(-1)??null,apiVersion:'v2',endpoint:'/tickers/'+candidate.symbol});
    if(['authError','quotaExceeded','entitlementRestricted','SHARED_BUDGET_EXCEEDED'].includes(response.reason)){terminalReason=response.reason;break;}
    if(check.accepted){
     const sameListing=candidate.mic===target.row.mic;
@@ -78,7 +87,7 @@ export async function probeIdentity({listingMap,accountEvidence,privateDir,asOf,
    }
    if(check.identityMatched)break;
   }
-  results.push({targetListingId:target.row.listingId,name:target.reference.name,isin:target.row.isin,status:accepted?'READY':attempts.some(a=>a.identityMatched)?'PARTIAL':terminalReason?'NOT_TESTED':'BLOCKED',resolutionStatus:accepted?.resolutionStatus||'UNRESOLVED',cause:accepted?null:terminalReason?'ENTITLEMENT_BLOCKED':attempts.at(-1)?.cause||'MAPPING_ERROR',attempts,nextStep:accepted?'Independently verify the selected listing currency and quote basis before price admission.':attempts.some(a=>a.identityMatched)?'Verify the current official share-class basis; retain the exact provider identity privately.':'Resolve the exact-response identity blocker or retain the target as unsupported; no fuzzy approval.',priceHistoryAdmitted:false});
+  results.push({targetListingId:target.row.listingId,name:target.reference.name,isin:target.row.isin,status:accepted?'READY':attempts.some(a=>a.identityMatched)?'PARTIAL':terminalReason?'NOT_TESTED':'BLOCKED',...identityResolution(attempts,accepted,terminalReason),attempts,nextStep:accepted?'Independently verify the selected listing currency and quote basis before price admission.':attempts.some(a=>a.identityMatched)?'Verify the current official share-class basis; retain the exact provider identity privately.':'Resolve the exact-response identity blocker or retain the target as unsupported; no fuzzy approval.',priceHistoryAdmitted:false});
   write(join(privateDir,'identity-probe','checkpoint.json'),{asOf,selectionHash:plan.selectionHash,results,mappingDelta,budget:await budget.status()});
  }
  const result={schemaVersion:'de-eu-identity-probe-1.0.0',asOf,selectionHash:plan.selectionHash,targetCount:plan.targets.length,maxCandidates:MAX_IDENTITY_CANDIDATES,plannedCandidates:plan.candidateCount,resolvedTargets:mappingDelta.length,results,mappingDelta,terminalReason,budget:await budget.status(),publicDisplay:false,priceHistoryRequests:0};
