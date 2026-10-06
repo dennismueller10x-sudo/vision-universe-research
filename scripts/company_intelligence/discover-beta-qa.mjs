@@ -6,6 +6,7 @@ const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const arg=(k,f)=>{const i=process.argv.indexOf('--'+k);return i<0?f:process.argv[i+1]};
 const base=arg('url','http://127.0.0.1:8783').replace(/\/$/,''),out=arg('out','/tmp/discover-beta-qa');
 const candidate=JSON.parse(await readFile(arg('candidate','/tmp/release-candidate.json'),'utf8'));
+const phase=arg('phase','all');assert(['all','actual','adversarial'].includes(phase));
 const cohort=Object.values(candidate.inventory).flatMap(v=>v.tickers);
 await mkdir(out,{recursive:true});
 const browser=await chromium.launch({headless:true,args:['--no-sandbox'],executablePath:process.env.CHROMIUM_PATH||undefined});
@@ -19,7 +20,7 @@ async function pageFor(product,ticker,width=390,preview=true){
 }
 async function mutate(page,change){await page.route('**/company-intelligence/data/**/iss_cik_0000320193.json',async r=>{const response=await r.fetch(),body=await response.json();change(body);await r.fulfill({response,json:body});});}
 try{
- for(const product of ['discover','quant']){
+ for(const product of (phase==='adversarial'?[]:['discover','quant'])){
   const tickers=product==='discover'?cohort:['AAPL','ACU','CHE','GOOG','GOOGL','ROOT','XPEV','VEON'];
   for(const ticker of tickers)for(const width of [390,430,768,1440]){
    const {page,errors,requests}=await pageFor(product,ticker,width),chapter=page.locator('.ci-company-intelligence'),text=await chapter.innerText();
@@ -38,15 +39,15 @@ try{
     await chapter.scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/${product}-${ticker}-${width}-viewport.png`});
     // Long chapter capture omits fixed chrome only during capture. Navigation
     // is still present in the viewport evidence and in all layout assertions.
-    await chapter.screenshot({path:`${out}/${product}-${ticker}-${width}-chapter.png`,style:'vu-navigation,.v2-skip,.dx-dock{visibility:hidden!important}'});
+    await chapter.screenshot({path:`${out}/${product}-${ticker}-${width}-chapter.png`,style:'vu-navigation,.v2-skip,.v2-dock{visibility:hidden!important}'});
     await writeFile(`${out}/${product}-${ticker}.txt`,text);
    }
-   cases.push({product,ticker,width,kind:'ACTUAL_CANDIDATE',status:'PASS'});await page.close();
+   cases.push({product,ticker,width,kind:'ACTUAL_CANDIDATE',status:'PASS'});if(width===1440)console.log(product+' '+ticker+' responsive PASS');await page.close();
   }
   const disabled=await pageFor(product,'AAPL',390,false);assert.equal(await disabled.page.locator('.ci-company-intelligence').count(),0);assert.deepEqual(disabled.requests,[]);await disabled.page.close();cases.push({product,kind:'DISABLED_ZERO_REQUESTS',status:'PASS'});
  }
  const attacks=['INDEX_MISSING','LOOKUP_MISMATCH','COMPANY_TIMESTAMP_MISMATCH','NO_PROFILE','STALE_FINANCIALS','DUPLICATES_AND_OLD_NEWS','CANCELLED_AND_PAST_EVENTS','DATE_ONLY_AND_SEPARATE_CALL','ESTIMATE_ONLY','BERLIN_DST','WEBCAST_AND_LETTER','UNSAFE_LINK','AMBIGUOUS_IDENTITY'];
- for(const product of ['discover','quant'])for(const attack of attacks){
+ for(const product of (phase==='actual'?[]:['discover','quant']))for(const attack of attacks){
   const page=await browser.newPage({viewport:{width:390,height:860}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
   const cid='iss_cik_0000320193',future='2026-10-24';
   if(attack==='INDEX_MISSING')await page.route('**/company-intelligence/data/index.json',r=>r.fulfill({status:404,body:'{}'}));
@@ -70,12 +71,12 @@ try{
   if(attack==='DUPLICATES_AND_OLD_NEWS'){assert.equal(await chapter.getByText('Aktuelle belegte Meldung',{exact:true}).count(),1);assert.equal(await chapter.getByText('Doppelter Titel',{exact:true}).count(),0);assert.equal(await chapter.getByText('Historische Meldung',{exact:true}).isVisible(),false)}
   if(attack==='CANCELLED_AND_PAST_EVENTS'){assert(!text.includes('Abgesagter Call'));assert(!text.includes('Vergangener Call'));assert.equal(await chapter.getByRole('heading',{name:'Nächste Termine',exact:true}).count(),0)}
   if(attack==='DATE_ONLY_AND_SEPARATE_CALL'){assert(text.includes('Ergebnisveröffentlichung'));assert(text.includes('Ergebnisgespräch'));assert(text.includes('Uhrzeit nicht angegeben'));assert(text.includes('25. Okt. 2026'));assert(text.includes('01:30'))}
-  if(attack==='ESTIMATE_ONLY'){assert(text.includes('Kein bestätigter'));assert(text.includes('Geschätzter Berichtszeitraum'));assert(text.includes('kein bestätigter Termin'))}
+  if(attack==='ESTIMATE_ONLY'){assert(text.includes('Kein bestätigter'));assert(text.includes('Geschätzter Berichtszeitraum'));assert(text.toLowerCase().includes('kein bestätigter termin'))}
   if(attack==='BERLIN_DST'){assert(text.includes('02:30'));assert(text.includes('MEZ'))}
   if(attack==='WEBCAST_AND_LETTER'){assert.equal(await chapter.getByRole('link',{name:'Webcast',exact:true}).count(),1);assert.equal(await chapter.getByRole('link',{name:'Aufzeichnung',exact:true}).count(),0);assert.equal(await chapter.getByRole('link',{name:'Unternehmenstranskript',exact:true}).count(),0);assert(text.includes('Aktionärsbrief'))}
   if(attack==='UNSAFE_LINK'){assert.equal(await chapter.locator('a[href^="javascript:"],a[href*="127.0.0.1"]').count(),0);assert.equal(await page.evaluate(()=>window.__ciXss),undefined)}
-  assert.deepEqual(errors,[]);cases.push({product,kind:attack,status:'PASS'});await page.close();
+  assert.deepEqual(errors,[]);cases.push({product,kind:attack,status:'PASS'});console.log(product+' '+attack+' PASS');await page.close();
  }
- const report={status:'PASS',generation:candidate.generation,actualCases:cases.filter(c=>c.kind==='ACTUAL_CANDIDATE').length,adversarialCases:cases.filter(c=>attacks.includes(c.kind)).length,cases};
+ const report={status:'PASS',phase,generation:candidate.generation,actualCases:cases.filter(c=>c.kind==='ACTUAL_CANDIDATE').length,adversarialCases:cases.filter(c=>attacks.includes(c.kind)).length,cases};
  await writeFile(out+'/report.json',JSON.stringify(report,null,2));console.log(JSON.stringify({status:report.status,generation:report.generation,actualCases:report.actualCases,adversarialCases:report.adversarialCases,total:cases.length}));
 }finally{await browser.close()}

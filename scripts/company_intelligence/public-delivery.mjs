@@ -89,6 +89,16 @@ function contentCounts(assets) {
   }
   return counts;
 }
+async function intactGeneration(driver, prefix, meta) {
+  const objects = new Map();
+  for (const [path, expected] of Object.entries(meta.assets)) {
+    const key = prefix + `slot-${meta.slot || 0}/` + (path === 'index.json' ? path : path.split('/').slice(2).join('/'));
+    const bytes = await driver.get(key);
+    if (!bytes || bytes.length !== expected.bytes || sha(bytes) !== expected.sha256) return null;
+    try { objects.set(path, {bytes, data:JSON.parse(bytes)}); } catch { return null; }
+  }
+  return {...meta, contentCounts:contentCounts(objects)};
+}
 export async function readAsset(driver, {namespace, asset, now = Date.now()}) {
   if (!allowedAsset(asset)) throw new Error('INVALID_CONSUMER_PATH');
   const prefix = prefixFor(namespace);
@@ -111,8 +121,19 @@ export async function readAsset(driver, {namespace, asset, now = Date.now()}) {
 export async function publish(driver, {namespace, directory}) {
   const prefix = prefixFor(namespace), root = realpathSync(directory);
   const m = validateManifest(JSON.parse(readFileSync(resolve(root, 'manifest.json'))));
-  const prior = await manifest(driver, prefix + 'manifest.json');
+  let prior = await manifest(driver, prefix + 'manifest.json');
   if (prior && Date.parse(m.generatedAt) < Date.parse(prior.generatedAt)) throw new Error('STALE_PUBLICATION_REFUSED');
+  if (prior) {
+    // Preserve the last fully intact slot, including when the active pointer's
+    // assets are damaged. Legacy manifests gain measured module baselines here.
+    let intact = await intactGeneration(driver, prefix, prior);
+    if (!intact) {
+      const previous = await manifest(driver, prefix + 'previous.json');
+      intact = previous ? await intactGeneration(driver, prefix, previous) : null;
+    }
+    if (!intact) throw new Error('NO_INTACT_PUBLIC_GENERATION');
+    prior = intact;
+  }
   if (prior?.generation === m.generation && JSON.stringify(prior.assets) !== JSON.stringify(m.assets)) throw new Error('IMMUTABLE_GENERATION_COLLISION');
   const checked = preflight(root, m, prior);
   m.contentCounts = contentCounts(checked);

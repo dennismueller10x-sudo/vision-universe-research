@@ -66,3 +66,16 @@ test('large content loss inside an unchanged issuer cohort is refused before wri
   await assert.rejects(publish(d,{namespace:'content-floor',directory:b.root}),/CONTENT_REGRESSION/);assert.deepEqual(d.objects,before);
  }finally{for(const f of [a.root,b.root])rmSync(f,{recursive:true})}
 });
+
+test('a failed update after active-slot corruption preserves the last intact previous generation',async()=>{
+ const d=driver(),a=fixture(),b=fixture('b'.repeat(24),'2026-10-02T13:00:00Z'),c=fixture('c'.repeat(24),'2026-10-02T14:00:00Z');
+ try{
+  await publish(d,{namespace:'intact-fallback',directory:a.root});await publish(d,{namespace:'intact-fallback',directory:b.root});
+  d.objects.set(prefixFor('intact-fallback')+'slot-1/iss_cik_0000320193.json',Buffer.from('corrupt'));
+  const retained=d.objects.get(prefixFor('intact-fallback')+'slot-0/iss_cik_0000320193.json'),normal=d.put;
+  d.put=async(k,v)=>{if(k.includes('slot-1/'))throw Error('upload failed');return normal(k,v)};
+  await assert.rejects(publish(d,{namespace:'intact-fallback',directory:c.root}));
+  assert.deepEqual(d.objects.get(prefixFor('intact-fallback')+'slot-0/iss_cik_0000320193.json'),retained);
+  assert.equal((await readAsset(d,{namespace:'intact-fallback',asset:a.path,now})).generation,'a'.repeat(24));
+ }finally{for(const f of [a.root,b.root,c.root])rmSync(f,{recursive:true})}
+});

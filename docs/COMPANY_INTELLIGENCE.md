@@ -1,3 +1,9 @@
+# Aktuelle sichere Übergabe und Discover-Beta — 6. Oktober 2026
+
+Die neue Produktarbeit erfolgt auf dem isolierten Branch `feature/company-intelligence-discover-beta`. Der aktuelle Rollout-Stand `a64582e…` wurde übernommen; PR #356 bleibt unverändert und unmerged. Dieser frische Workspace besitzt den unten berichteten erweiterten privaten Ledger nicht. Seine externe Sicherung und sein authentifizierter Restore bleiben **offen**. Die neue lokale, echte Discover-Vorschau verwendet ausdrücklich nur den vorhandenen Git-Profilkatalog und bestehende SEC-Fakten; keine Ersatz-Datenbank und keine veröffentlichte Generation. Vollständiger Handoff-, Daten-, UI-, Kosten- und Freigabebericht: [COMPANY_INTELLIGENCE_DISCOVER_BETA.md](COMPANY_INTELLIGENCE_DISCOVER_BETA.md).
+
+---
+
 # Company Intelligence — candidate completion and recovery (in progress)
 
 Coverage measured **2026-10-06T10:07:32Z**; pass/queue checkpoint snapshot **2026-10-06T10:10:56Z**. Branch `feature/company-intelligence-rollout`, PR [#356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356). **Do not merge.** Production gates remain off. This report follows the requested 32-section structure and will be refreshed as resumable discovery continues.
