@@ -1,6 +1,6 @@
 # Historical Accuracy Preregistration (Mission VIII — HSAB)
 
-**Status: ENTWURF (nicht bindend) — wird vor Öffnung der finalen Holdouts eingefroren.**
+**Status: PREREGISTERED (06.10.2026), vor Öffnung der finalen Holdouts.**
 * Diese Datei wird in einem eigenen Commit eingefroren; ihr SHA-256 steht in `scripts/technical/hsab/protocol.json → preregistration.sha256`.
 * Der CI-Holdout-Lauf verweigert die Öffnung, wenn:
   * die Datei nicht unverändert im Eltern-Commit liegt;
@@ -137,6 +137,52 @@ Die extreme Volatilität (frühere explorative Hypothese) ist nur explorativ.
 
 * Engine-Hashes: `protocol.json → freeze.engineFiles`.
 * Stage-1-Siegel der Holdout-Kohorten aus dem CI-Entwicklungslauf (nur Zähler, keine Ergebnisse): `protocol.json → freeze.ciStage1Seals`.
+* CI-Entwicklungslauf (Commit `54e8ed2d92`), Stage 1 ohne Ergebnisse:
+
+| Kohorte | Siegel | Reihen | Records | Persistenzprobe (Hauptszenario gleich) |
+|---|---|---|---|---|
+| W_HOLDOUT (delistet, Woche, mit Monatsraster) | `3983c2539e860605` | 1.619 (1.463 zu kurz) | 86.956 | 105 Proben, 100 % |
+| D_HOLDOUT (Tag, 1.200er Stichprobe, 2017-01-01 – 2026-09-30, mit Monatsraster) | `a9ebe07579ee76ee` | 974 (226 zu kurz) | 163.498 | 213 Proben, 100 % |
+
 * Der Holdout-Lauf berechnet Stage 1 neu und meldet das Siegel. Weicht es ab, wird das berichtet:
   * Ursache kann eine Datenaktualisierung sein, z. B. ein neuer Split oder ein neu abgerufenes Delisting.
   * Code-Änderungen sind über die Engine-Hashes ausgeschlossen.
+
+## 11. Vor der Öffnung bekannte Ergebnisse (offengelegt)
+
+Alle Zahlen: PSS-Lift gegen D, Cluster-KI 95 %.
+
+| Phase | n | PSS | Kontrolle D | Lift | gegen C | Gegenrichtung | Urteil nach §6 |
+|---|---|---|---|---|---|---|---|
+| W_DEV | 94.686 | 59,3 % | 57,2 % | +2,1 (1,5 … 2,6) | −2,0 (−3,2 … −0,7) | +4,4 (2,1 … 6,6) | DETECTABLE_BUT_NEGLIGIBLE (G2 verfehlt) |
+| W_VAL | 91.939 | 59,6 % | 57,3 % | +2,2 (1,6 … 2,8) | −2,1 (−3,5 … −0,7) | +4,7 (2,2 … 7,3) | DETECTABLE_BUT_NEGLIGIBLE (G2 verfehlt) |
+| D_DEV | 21.481 | 70,2 % | 69,8 % | +0,4 (−0,3 … 1,1) | −1,3 (−2,6 … 0,1) | +2,8 (0,3 … 5,2) | INCONCLUSIVE |
+
+Weitere bekannte Entwicklungsbefunde:
+* FULL ist praktisch identisch mit TREND_ONLY: 99,9 % gleiche Szenarien, gepaarte Differenz −0,1 Pp.
+* Unterstützung/Widerstand formt die Geometrie (gepaart +1,1 … +1,3 Pp.).
+* Strukturklarheit ist monoton: CLEAR +2,8 / MODERATE +1,0 / AMBIGUOUS +0,2 Pp. Umdeutungsrate je Bar 12,5 / 26,4 / 42,5 %.
+* Elliott spricht an 0,4 % der Zeitpunkte und formt nie ein Szenario.
+
+Diese Ergebnisse waren vor der Formulierung der Gates bekannt. Die Gates folgen den Empfehlungen des Red Teams (`reviews/MISSION8_METHODOLOGY_REDTEAM.md`); sie wurden nicht auf ein gewünschtes Ergebnis hin gewählt. Gate G2 scheitert in DEV/VAL; es bleibt trotzdem unverändert.
+
+## 12. Protokollnachträge vor der Öffnung
+
+1. Nach dem Code-Review: siehe `reviews/MISSION8_CODE_REVIEW.md` (Disposition).
+2. Nach dem Red Team:
+   * Kontrollen P, P∩E, Gegenrichtung, Union-Pool;
+   * gematchte Ausführungsebene;
+   * Regel-Sensitivitäten;
+   * Monatsraster;
+   * eine Zensur-Regel;
+   * Halbjahresblöcke;
+   * Relevanz- und Äquivalenzregeln.
+3. Nach W_VAL: R-Vielfache auf ±5 R winsorisiert, weil einzelne winzige Risikoabstände ±50 R erzeugten. Betrifft nur S3.
+4. Treue-Prüfung (DEV, Viertel der Titel, Erkennung ab 2018): Historie erst ab 2015, wie bei den Delisted-Reihen.
+   * 8,4 % der angezeigten Richtungen/Vorlagen ändern sich.
+   * Lift +3,0 (1,7 … 4,2) gegen +2,6 (1,4 … 3,7) Pp. mit voller Historie.
+   * Die kurze Historie der Delisted-Kohorte verzerrt den Lift nicht wesentlich.
+5. Elliott-Persistenz (2.279 Proben, Überlebende):
+   * Hauptszenario, Ausblick und Klarheit sind zu 100 % gleich mit der Produkt-Kette.
+   * Die Elliott-Zählung selbst ist zu 75,8 % gleich.
+   * Elliott-Stabilitätsaussagen stammen deshalb nur aus der Per-Bar-Stichprobe mit Kette.

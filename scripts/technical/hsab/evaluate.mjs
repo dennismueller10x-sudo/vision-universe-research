@@ -244,7 +244,7 @@ export async function evaluate(o) {
   const recs = all.filter((r) => cohorts.has(r.c) && inBucket(r.s));
   const symbols = Array.from(new Set(recs.map((r) => r.s))).sort();
   /* Union-Pool (Red Team #5): Kontrollen aus Ueberlebenden UND Delisteten als Sensitivitaet — Panel dann ohne Titelfilter. */
-  const panel = loadPanel({ weeklyDir: o.weeklyDir, delisted: o.delisted, workDir: o.workDir, only: phase.unionPool ? null : new Set(symbols) });
+  const panel = loadPanel({ weeklyDir: o.weeklyDir, delisted: o.delisted, workDir: o.workDir, historyFrom: o.historyFrom || null, only: phase.unionPool ? null : new Set(symbols) });
   const tf = recs.length ? recs[0].tf : "1W", prof = { ...PROFILE[tf] };
   const pool = new Set(symbols);
   /* Review M13: das Kurspanel muss die Daten sein, die Stage 1 gesehen hat (Datum und Schluss je Record). */
@@ -607,7 +607,7 @@ function elliottPSC(bySym, panel, prof, C, protocol, inWin, rng) {
 }
 
 async function main() {
-  const o = { records: arg("records"), phase: arg("phase"), protocol: arg("protocol", null), weeklyDir: arg("weekly-dir", null), delisted: arg("delisted", null), workDir: arg("work-dir", null),
+  const o = { records: arg("records"), phase: arg("phase"), protocol: arg("protocol", null), weeklyDir: arg("weekly-dir", null), delisted: arg("delisted", null), workDir: arg("work-dir", null), historyFrom: arg("history-from", null),
               openHoldout: arg("open-holdout", null), boot: arg("boot", null) ? +arg("boot") : null };
   const out = arg("out"); if (!out) throw new Error("--out fehlt");
   const t0 = Date.now();

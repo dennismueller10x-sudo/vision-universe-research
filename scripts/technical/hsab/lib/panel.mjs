@@ -61,7 +61,7 @@ export function loadPanel(src) {
   const list = [];
   if (src.weeklyDir) for (const f of readdirSync(src.weeklyDir).filter((x) => x.startsWith("ref_") && x.endsWith(".json")).sort()) {
     const sym = f.replace(/\.json$/, ""); if (src.only && !src.only.has(sym)) continue;
-    const x = readJson(join(src.weeklyDir, f)); const s = weeklySeriesFromPoints(x.points || [], x.ticker);
+    const x = readJson(join(src.weeklyDir, f)); const s = weeklySeriesFromPoints((x.points || []).filter((p) => !src.historyFrom || p[0] >= src.historyFrom), x.ticker);
     if (s.length >= 2) list.push(entryOf(s, sym, "SURV_W"));
   }
   if (src.delisted) {
