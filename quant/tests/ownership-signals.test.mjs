@@ -32,6 +32,9 @@ test("OS1 · SEC-Datumsformate werden zu ISO, Unlesbares zu null", () => {
   assert.equal(E.parseSecDate("3/31/2024"), "2024-03-31");
   assert.equal(E.parseSecDate("31-FOO-2024"), null);
   assert.equal(E.parseSecDate("2023-02-30"), null);
+  assert.equal(E.parseSecDate("15-JAN-0024"), null, "Tippfehler im Jahr (im echten Datensatz gesehen)");
+  assert.equal(E.dayOf("24-01-15"), null);
+  assert.equal(E.clusterBuy([{ f: d("2024-03-01"), t: NaN, c: "P", os: ["A"], rs: [E.REL.OFFICER] }], d("2024-03-31")).flag, false);
   assert.equal(E.parseSecDate(""), null);
   assert.equal(E.isoOf(E.dayOf("2024-02-29")), "2024-02-29");
 });

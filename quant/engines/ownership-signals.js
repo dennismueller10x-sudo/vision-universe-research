@@ -60,7 +60,8 @@
     if ((m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(t))) return valid(+m[3], +m[1], +m[2]);
     return null;
     function valid(y, mo, d) {
-      if (!y || !mo || !d || mo > 12 || d > 31) return null;
+      /* Formulare tragen Tippfehler ("15-JAN-0024"): ein Jahr vor 1900 ist keins. */
+      if (!y || y < 1900 || !mo || !d || mo > 12 || d > 31) return null;
       var dt = new Date(Date.UTC(y, mo - 1, d));
       if (dt.getUTCMonth() !== mo - 1) return null;
       return y + "-" + pad(mo) + "-" + pad(d);
@@ -68,8 +69,11 @@
   }
   /** Tage seit 1970-01-01 (UTC). */
   function dayOf(iso) {
-    if (!iso) return null;
-    return Math.round(Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) / DAY_MS);
+    if (!iso || typeof iso !== "string") return null;
+    var y = +iso.slice(0, 4), d = Math.round(Date.UTC(y, +iso.slice(5, 7) - 1, +iso.slice(8, 10)) / DAY_MS);
+    /* Date.UTC deutet Jahre < 100 als 19xx; ein Tippfehler im Formular
+       ("0024") wird so nicht still zu 1924, sondern zu null. */
+    return isFinite(d) && y >= 1900 ? d : null;
   }
   function isoOf(day) { return new Date(day * DAY_MS).toISOString().slice(0, 10); }
 
@@ -241,7 +245,7 @@
     var end = upperBound(txs, day);
     for (var i = upperBound(txs, day - 90); i < end; i++) {
       var x = txs[i];
-      if (x.a || x.c !== "P" || !visible(x.f, day, 90) || x.t === null || x.t === undefined) continue;
+      if (x.a || x.c !== "P" || !visible(x.f, day, 90) || typeof x.t !== "number" || !isFinite(x.t)) continue;
       for (var k = 0; k < x.os.length; k++) if (isInsider(x.rs[k])) buys.push({ t: x.t, o: x.os[k] });
     }
     buys.sort(function (a, b) { return a.t - b.t; });
