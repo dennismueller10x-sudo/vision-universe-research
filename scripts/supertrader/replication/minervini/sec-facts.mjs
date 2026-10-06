@@ -16,9 +16,9 @@
 export const ROW = Object.freeze({ END: 0, VALUE: 1, FILED: 2, ACCN: 3, FORM: 4, DERIVED: 5, TAG: 6, COMPONENTS_FROM: 7 });
 export const SCHEMA = 'vu-sec-pit-mrepl-1.0.0';
 export const PERIODIC_FORMS = new Set(['10-Q', '10-Q/A', '10-K', '10-K/A', '10-QT', '10-QT/A', '10-KT', '10-KT/A', '20-F', '20-F/A', '40-F', '40-F/A', '6-K', '6-K/A']);
-// Periodenlaengen (Tage) wie validation/sec-pit.mjs#quarterly.
-export const QUARTER_DAYS = Object.freeze([80, 100]);
-export const YEAR_DAYS = Object.freeze([350, 380]);
+// Periodenlaengen aus dem Regelbuch (MR-PIT-01), wie validation/sec-pit.mjs#quarterly.
+import { P } from './params.mjs';
+const QUARTER_DAYS = P['pit.quarterDays'], YEAR_DAYS = P['pit.yearDays'];
 
 export const TAGS = Object.freeze({
   'us-gaap': {
@@ -82,9 +82,10 @@ export function pickUnit(tax, tags, perShare) {
     if (perShare ? !isPerShare(u) : !isCurrency(u)) continue;
     count.set(u, (count.has(u) ? count.get(u) : 0) + (Array.isArray(arr) ? arr.length : 0));
   }
+  // Haeufigste Einheit; USD nur bei Gleichstand bevorzugt (Auslandsemittenten berichten mitunter einzelne USD-Werte).
   const pref = perShare ? 'USD/shares' : 'USD';
-  if (count.has(pref)) return pref;
-  return [...count.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0]?.[0] || null;
+  const ranked = [...count.entries()].sort((a, b) => b[1] - a[1] || (a[0] === pref ? -1 : b[0] === pref ? 1 : a[0].localeCompare(b[0])));
+  return ranked.length ? ranked[0][0] : null;
 }
 
 // Reihe mit Tag-Fallback je Periode (Prioritaetsreihenfolge der Tags).

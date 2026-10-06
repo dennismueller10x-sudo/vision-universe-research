@@ -595,3 +595,54 @@ test('MR-T-FREEZE: ein vorhandener Freeze passt zu Regelbuch und Engine-Code (so
   assert.equal(v.ok, true, v.reason);
   assert.equal(f.engine.version, RULEBOOK.engine.version);
 });
+
+// ---------------------------------------------------------------- Regressionen aus dem Code-Red-Team
+test('MR-T-RT-UNIT: Stueckelung in echten Aktien (unit = rawClose/close); spaeterer Reverse-Split verwirft den Trade nicht', () => {
+  const s = seg('X', [10000, 10300, 10300, 10300], { 0: { pivot: 10100, stop: 9700, baseStart: 0 } });
+  s.rawClose = s.close.map((c) => c / 100); // spaeterer 1:100-Reverse-Split: bereinigter Kurs 100x Rohkurs
+  const r = simulatePortfolio([s], s.date, P);
+  assert.equal(r.trades.length, 1);
+  const raw = r.trades[0].shares0 * 100; // unit 0,01 bereinigte Stueck je Roh-Aktie
+  assert.ok(Math.abs(raw - Math.round(raw)) < 1e-6, 'ganze Roh-Aktien');
+  const t = seg('Y', [50, 52, 52, 52], { 0: { pivot: 51, stop: 49, baseStart: 0 } });
+  t.rawClose = t.close.map((c) => c * 2); // spaeterer 2:1-Split
+  const r2 = simulatePortfolio([t], t.date, P);
+  const raw2 = r2.trades[0].shares0 / 2;
+  assert.ok(Math.abs(raw2 - Math.round(raw2)) < 1e-6);
+});
+test('MR-T-RT-DIVIDEND-ENTRY-DAY: Kauf am Ex-Tag erhaelt keine Dividende', () => {
+  const s = seg('X', [100, 103, 103, 103], { 0: { pivot: 101, stop: 97, baseStart: 0 } }, { divAdj: [0, 2, 0, 0] });
+  assert.equal(simulatePortfolio([s], s.date, P).trades.length, 1);
+  const r = simulatePortfolio([s], s.date, P);
+  assert.equal(r.book.dividends, 0);
+});
+test('MR-T-RT-NAN-OPEN: fehlende Eroeffnung am Ausbruchstag -> Fuellung am Pivot statt Abbruch', () => {
+  const s = seg('X', [100, 103, 103, 103], { 0: { pivot: 101, stop: 97, baseStart: 0 } });
+  s.open[1] = NaN;
+  const r = simulatePortfolio([s], s.date, P);
+  assert.ok(Math.abs(r.trades[0].entryPrice - 101 * 1.001) < 1e-9);
+  assert.equal(simulateSignals(s, P).length, 1);
+});
+test('MR-T-RT-ORDER-GAP: Order verfaellt, wenn der naechste Balken nicht der naechste Kalendertag ist', () => {
+  const s = seg('X', [100, 103, 103, 103], { 0: { pivot: 101, stop: 97, baseStart: 0 } });
+  const cal = dates(5, '2021-01-04');
+  const gap = { ...s, date: [cal[0], cal[2], cal[3], cal[4]] };
+  assert.equal(simulatePortfolio([gap], cal, P).trades.length, 0);
+});
+test('MR-T-RT-UNIT-MAJORITY: Waehrung der Reihe = haeufigste Einheit (USD nur bei Gleichstand bevorzugt)', () => {
+  const eur = Array.from({ length: 6 }, (_, k) => e(`202${k}-01-01`, `202${k}-03-31`, 10 + k, `202${k}-05-01`, '20-F'));
+  const cf = { facts: { 'us-gaap': { Revenues: { units: { USD: [e('2023-01-01', '2023-03-31', 1, '2023-05-01')], EUR: eur } }, EarningsPerShareBasic: { units: { 'EUR/shares': eur } } } } };
+  assert.equal(extractCompanyFacts(cf).units.money, 'EUR');
+});
+test('MR-T-RT-SIGNAL-DELIST: Signal am letzten Tag eines delisteten Titels wird als Delisting gebucht', () => {
+  const s = seg('X', [100, 100, 103], { 1: { pivot: 101, stop: 97, baseStart: 0 } }, { delisted: true });
+  const out = simulateSignals(s, P);
+  assert.equal(out[0].open, false);
+  assert.ok(out[0].exits.includes('MR-EXE-04-DELIST'));
+});
+test('MR-T-RT-SPLIT-HISTORY: fehlende Kurshistorie vor der Vorjahres-Einreichung ist ein Datengrund (MR-PIT-01), kein Fundamentalurteil', () => {
+  const f = fundFixture();
+  const raw = dates(300, '2022-09-01').map((d) => ({ date: d, splitFactor: 1 }));
+  const r = evaluateSepa(f, '2023-06-01', makeSplitRatio(raw), P);
+  assert.equal(r.ruleId, 'MR-PIT-01'); assert.match(r.reason, /^PIT_SPLIT_HISTORY_UNKNOWN/);
+});

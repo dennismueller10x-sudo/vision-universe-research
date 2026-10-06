@@ -15,7 +15,7 @@ import { openPosition, stepBar, endOfDay } from './exit-policy.mjs';
 import { exposureCeiling, rankOrders, reserveOrders, wholeShares } from './portfolio-policy.mjs';
 
 // segment: {id, date[], open[], high[], low[], close[], rawClose[], volume[], volAvg[], divAdj[], delisted, setups: Map(localIdx -> setup)}
-// rawClose dient nur der Stueckelung in ganze echte Aktien (unit = close / rawClose).
+// rawClose dient nur der Stueckelung in ganze echte Aktien: unit = bereinigte Stueckzahl je Roh-Aktie = rawClose / close.
 // setup:   {pivot, stop, stopPct, baseStart, rsScore, rsPct, sepa, vcp}
 export function simulatePortfolio(segments, calendar, P, { recordSkipped = false } = {}) {
   requireP(P);
@@ -23,12 +23,16 @@ export function simulatePortfolio(segments, calendar, P, { recordSkipped = false
   const segById = new Map(segments.map((s) => [s.id, s]));
   const idxOf = new Map(segments.map((s) => [s.id, new Map(s.date.map((d, i) => [d, i]))]));
   // Orders je Handelstag: Setup am lokalen Index j -> Order am Balken j+1.
+  // Eine Order gilt nur fuer den naechsten Handelstag des Kalenders; liegt zwischen Setup und naechstem Balken
+  // eine Luecke, verfaellt sie (kein Kauf Tage spaeter ohne neue Bewertung).
+  const prevDay = new Map(calendar.map((d, k) => [d, k ? calendar[k - 1] : null]));
   const ordersByDay = new Map();
   for (const s of segments) for (const [j, setup] of s.setups) {
     if (j + 1 >= s.date.length) continue;
     const d = s.date[j + 1];
+    if (prevDay.has(d) && prevDay.get(d) !== s.date[j]) continue;
     if (!(s.rawClose[j] > 0) || !(s.close[j] > 0)) continue;
-    (ordersByDay.get(d) || ordersByDay.set(d, []).get(d)).push({ segId: s.id, setupIndex: j, unit: s.close[j] / s.rawClose[j], ...setup });
+    (ordersByDay.get(d) || ordersByDay.set(d, []).get(d)).push({ segId: s.id, setupIndex: j, unit: s.rawClose[j] / s.close[j], ...setup });
   }
   let cash = P['pf.initialEquity'];
   const positions = new Map(), lastExit = new Map(), lastClose = new Map();
@@ -85,14 +89,16 @@ export function simulatePortfolio(segments, calendar, P, { recordSkipped = false
       const seg = segById.get(r.order.segId), i = idxOf.get(seg.id).get(D);
       const o = r.order;
       if (!(seg.high[i] > o.pivot)) { book.reservedNotFilled++; continue; }
-      const base = Math.max(seg.open[i], o.pivot);
+      // Fehlt die Eroeffnung, gilt der Pivot als Ausloesekurs (keine erfundene Luecke).
+      const base = Number.isFinite(seg.open[i]) ? Math.max(seg.open[i], o.pivot) : o.pivot;
       const px = base * (1 + slip);
-      let shares = r.shares;
-      if (shares * px * (1 + comm) > budget) shares = wholeShares(budget / (px * (1 + comm)), o.unit);
+      const unitFill = seg.rawClose[i] > 0 && seg.close[i] > 0 ? seg.rawClose[i] / seg.close[i] : o.unit; // Split am Ausfuehrungstag
+      let shares = wholeShares(r.shares, unitFill);
+      if (shares * px * (1 + comm) > budget) shares = wholeShares(budget / (px * (1 + comm)), unitFill);
       if (!(shares > 0)) { book.reservedNotFilled++; continue; }
       const cost = shares * px, c = cost * comm;
       cash -= cost + c; budget -= cost + c; book.commissions += c; book.filled++;
-      const pos = openPosition({ fillBase: base, technicalStop: o.stop, shares, entryIndex: i, shareUnit: o.unit }, P);
+      const pos = openPosition({ fillBase: base, technicalStop: o.stop, shares, entryIndex: i, shareUnit: unitFill }, P);
       Object.assign(pos, { entryDate: D, fillPrice: px, cost, commissions: c, proceeds: 0, dividends: 0, exits: [],
         setupInfo: { setupDate: seg.date[o.setupIndex], pivot: o.pivot, technicalStop: o.stop, stopPct: o.stopPct, rsPct: o.rsPct, rsScore: o.rsScore,
           breakoutVolumeRatio: Number.isFinite(seg.volume?.[i]) && seg.volAvg?.[i - 1] > 0 ? seg.volume[i] / seg.volAvg[i - 1] : null, // MR-ENT-02: nur Protokoll
@@ -106,7 +112,7 @@ export function simulatePortfolio(segments, calendar, P, { recordSkipped = false
       const seg = segById.get(id), i = idxOf.get(id).get(D);
       if (i === undefined) continue;
       const div = seg.divAdj?.[i];
-      if (div > 0) { cash += div * pos.shares; pos.dividends += div * pos.shares; book.dividends += div * pos.shares; }
+      if (div > 0 && pos.entryIndex < i) { cash += div * pos.shares; pos.dividends += div * pos.shares; book.dividends += div * pos.shares; }
       endOfDay(pos, seg.close[i], P);
       if (seg.delisted && i === seg.date.length - 1) { // MR-EXE-04: Delisting zum letzten Schluss
         sell(pos, seg, { price: seg.close[i], shares: pos.shares, ruleId: 'MR-EXE-04-DELIST', basis: 'LAST_CLOSE' }, D);
@@ -155,13 +161,16 @@ export function simulateSignals(segment, P) {
     const setup = s.setups.get(i - 1);
     if (!setup || (lastExitIdx !== undefined && !(setup.baseStart > lastExitIdx))) continue;
     if (!(s.high[i] > setup.pivot)) continue;
-    const base = Math.max(s.open[i], setup.pivot);
+    const base = Number.isFinite(s.open[i]) ? Math.max(s.open[i], setup.pivot) : setup.pivot;
     pos = openPosition({ fillBase: base, technicalStop: setup.stop, shares: SIGNAL_MEASUREMENT_SHARES, entryIndex: i, shareUnit: 1 }, P);
     pos.exits = [];
     pos.setup = setup;
     for (const f of stepBar(pos, { open: s.open[i], high: s.high[i], low: s.low[i] }, P, { entryDay: true })) pos.exits.push({ i, price: f.price, shares: f.shares, ruleId: f.ruleId });
-    if (pos.shares > 0) endOfDay(pos, s.close[i], P);
-    else { out.push(finishSignal(pos, s, i, false)); lastExitIdx = i; pos = null; }
+    if (pos.shares > 0) {
+      endOfDay(pos, s.close[i], P);
+      if (s.delisted && i === s.date.length - 1) { pos.exits.push({ i, price: s.close[i], shares: pos.shares, ruleId: 'MR-EXE-04-DELIST' }); pos.shares = 0; }
+    }
+    if (pos.shares === 0) { out.push(finishSignal(pos, s, i, false)); lastExitIdx = i; pos = null; }
   }
   if (pos) { const i = s.date.length - 1; pos.exits.push({ i, price: s.close[i], shares: pos.shares, ruleId: 'OPEN_AT_END_MARK' }); out.push(finishSignal(pos, s, i, true)); }
   return out;

@@ -438,11 +438,13 @@
       "sources": ["SRC-SEC-FILING-RULES"], "sourceConfidence": "HIGH",
       "provenanceClass": "VU_FORMALIZATION", "reproducibility": "REPRODUCIBLE",
       "requiredData": ["Einreichungsdatum je Wert", "Accession", "Formular", "Einheit"], "availableData": "sec-pit-mrepl-1 (neu: accn, form, unit je Zeile)",
-      "formalization": { "text": "Ein Wert mit Einreichungsdatum f ist fuer eine Order am Handelstag d sichtbar, wenn f < d (EDGAR datiert Einreichungen nach 17:30 Uhr ET auf den naechsten Werktag; alles mit Datum vor d lag vor der Eroeffnung von d vor). Je Periode nur die ERSTE Einreichung (Original; spaetere 10-Q/A, 10-K/A und Vergleichsspalten aendern keine fruehere Entscheidung). Nur periodische Formulare (10-Q, 10-K, 20-F, 40-F, 6-K und deren /A, 10-QT, 10-KT). Quartal = 80-100 Tage; Geschaeftsjahr = 350-380 Tage; YTD-Werte (6/9 Monate) werden nie als Quartal gelesen. Q4 fuer Flussgroessen = Jahr minus drei Quartale, sichtbar ab der spaeteren Einreichung; Q4-EPS nur abgeleitet, wenn zwischen der ersten Quartalseinreichung und dem Jahreswert kein Split lag. Eine Einheit je Reihe (Werte anderer Einheit werden nicht gemischt). Das juengste Quartal muss frisch sein (Periodenende hoechstens maxQuarterAgeDays vor d). EPS-Vorjahreswerte werden um Splits mit Datum zwischen beiden Einreichungen bereinigt (quant/engines/return-series.js#splitFactors, ADR-002); reicht die Kurshistorie nicht bis zur Vorjahres-Einreichung zurueck, ist das Wachstum nicht bewertbar (keine Annahme 'kein Split').", "parameters": {
+      "formalization": { "text": "Ein Wert mit Einreichungsdatum f ist fuer eine Order am Handelstag d sichtbar, wenn f < d (EDGAR datiert Einreichungen nach 17:30 Uhr ET auf den naechsten Werktag; alles mit Datum vor d lag vor der Eroeffnung von d vor). Je Periode nur die ERSTE Einreichung (Original; spaetere 10-Q/A, 10-K/A und Vergleichsspalten aendern keine fruehere Entscheidung). Nur periodische Formulare (10-Q, 10-K, 20-F, 40-F, 6-K und deren /A, 10-QT, 10-KT). Quartal = 80-100 Tage; Geschaeftsjahr = 350-380 Tage; YTD-Werte (6/9 Monate) werden nie als Quartal gelesen. Q4 fuer Flussgroessen = Jahr minus drei Quartale, sichtbar ab der spaeteren Einreichung; Q4-EPS nur abgeleitet, wenn zwischen der ersten Quartalseinreichung und dem Jahreswert kein Split lag. Eine Einheit je Reihe (Werte anderer Einheit werden nicht gemischt). Das juengste Quartal muss frisch sein (Periodenende hoechstens maxQuarterAgeDays vor d). EPS-Vorjahreswerte werden um Splits mit Datum zwischen beiden Einreichungen bereinigt (quant/engines/return-series.js#splitFactors, ADR-002); reicht die Kurshistorie nicht bis zur Vorjahres-Einreichung zurueck, ist das Wachstum nicht bewertbar (keine Annahme 'kein Split'; Grund PIT_SPLIT_HISTORY_UNKNOWN). Folge: In den ersten Monaten jedes Messfensters (Kursvorlauf nur 1 Jahr) entstehen kaum Setups.", "parameters": {
         "pit.yoyToleranceDays": { "value": 14, "unit": "days", "provenance": "VU_FORMALIZATION", "rationale": "52/53-Wochen-Geschaeftsjahre verschieben Periodenenden um bis zu 7 Tage; Toleranz doppelt so gross" },
-        "pit.maxQuarterAgeDays": { "value": 180, "unit": "days", "provenance": "VU_FORMALIZATION", "rationale": "Quartal (ca. 90 Tage) plus laengste 10-K-Frist (90 Tage); aelter heisst: Meldung fehlt" } } },
+        "pit.maxQuarterAgeDays": { "value": 180, "unit": "days", "provenance": "VU_FORMALIZATION", "rationale": "Quartal (ca. 90 Tage) plus laengste 10-K-Frist (90 Tage); aelter heisst: Meldung fehlt" },
+        "pit.quarterDays": { "value": [80, 100], "unit": "days", "provenance": "VU_FORMALIZATION", "rationale": "3-Monats-Periode inkl. 52/53-Wochen-Kalender; wie validation/sec-pit.mjs#quarterly" },
+        "pit.yearDays": { "value": [350, 380], "unit": "days", "provenance": "VU_FORMALIZATION", "rationale": "Geschaeftsjahr inkl. 52/53-Wochen-Kalender; wie validation/sec-pit.mjs#quarterly" } } },
       "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/sepa.mjs", "function": "visibleRows" },
-      "test": ["MR-T-PIT-FILED-DAY", "MR-T-PIT-AMENDMENT", "MR-T-PIT-YTD", "MR-T-PIT-DUP", "MR-T-PIT-UNIT", "MR-T-PIT-Q4", "MR-T-PIT-Q4-SPLIT", "MR-T-PIT-STALE", "MR-T-SEPA-SPLIT"], "fidelity": "HIGH", "r15Ref": "R15 Abschnitt 6", "decision": "Fehler P4/P5/P6/P8/P12/P13/P15 aus dem Worker-A-Audit behoben"
+      "test": ["MR-T-PIT-FILED-DAY", "MR-T-PIT-AMENDMENT", "MR-T-PIT-YTD", "MR-T-PIT-DUP", "MR-T-PIT-UNIT", "MR-T-PIT-Q4", "MR-T-PIT-Q4-SPLIT", "MR-T-PIT-STALE", "MR-T-SEPA-SPLIT", "MR-T-RT-SPLIT-HISTORY", "MR-T-RT-UNIT-MAJORITY"], "fidelity": "HIGH", "r15Ref": "R15 Abschnitt 6", "decision": "Fehler P4/P5/P6/P8/P12/P13/P15 aus dem Worker-A-Audit behoben"
     },
     {
       "id": "MR-RSK-01", "category": "RISK", "layer": "A_CANONICAL",
@@ -694,9 +696,9 @@
       "sources": [], "sourceConfidence": "NONE",
       "provenanceClass": "VU_OWN", "reproducibility": "MEASUREMENT_SCOPE",
       "requiredData": [], "availableData": "-",
-      "formalization": { "text": "Vor Tag d: Rang (MR-PF-06), Stueckzahl (MR-SIZ-01/02), Platz- und Exposure-Grenzen (MR-PF-01/02) und Bargeld werden aus dem Stand zum Schluss d-1 reserviert. Ob eine Order ausloest, entscheidet nur der Balken d; eine nicht ausgeloeste Order gibt ihren Platz am Ende von d frei. Erloese aus Verkaeufen am Tag d finanzieren erst Kaeufe ab d+1 (keine Gleichtagsfinanzierung). Ganze Stueck.", "parameters": {} },
+      "formalization": { "text": "Vor Tag d: Rang (MR-PF-06), Stueckzahl (MR-SIZ-01/02), Platz- und Exposure-Grenzen (MR-PF-01/02) und Bargeld werden aus dem Stand zum Schluss d-1 reserviert. Ob eine Order ausloest, entscheidet nur der Balken d; eine nicht ausgeloeste Order gibt ihren Platz am Ende von d frei; folgt auf das Setup kein Balken am naechsten Kalendertag, verfaellt die Order. Fehlt die Eroeffnung, gilt der Pivot als Fuellkurs. Erloese aus Verkaeufen am Tag d finanzieren erst Kaeufe ab d+1 (keine Gleichtagsfinanzierung). Ganze Stueck.", "parameters": {} },
       "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/portfolio-sim.mjs", "function": "simulatePortfolio" },
-      "test": ["MR-T-NO-SAME-DAY-FUNDING", "MR-T-RESERVE-NO-LOOKAHEAD"], "fidelity": "NONE", "r15Ref": "R15 Abschnitt 7", "decision": "ersetzt die 2.0.0-Konvention 'Ausstiege finanzieren Einstiege desselben Tages'"
+      "test": ["MR-T-NO-SAME-DAY-FUNDING", "MR-T-RESERVE-NO-LOOKAHEAD", "MR-T-RT-UNIT", "MR-T-RT-ORDER-GAP", "MR-T-RT-NAN-OPEN"], "fidelity": "NONE", "r15Ref": "R15 Abschnitt 7", "decision": "ersetzt die 2.0.0-Konvention 'Ausstiege finanzieren Einstiege desselben Tages'"
     },
     {
       "id": "MR-EXE-02", "category": "MEASUREMENT", "layer": "C_PORTFOLIO_EXECUTION",
@@ -722,14 +724,14 @@
     },
     {
       "id": "MR-EXE-04", "category": "MEASUREMENT", "layer": "C_PORTFOLIO_EXECUTION",
-      "canonicalDescription": "VU-Messrahmen: Startkapital 100.000 USD; Dividenden am Ex-Tag gutgeschrieben; Delisting zum letzten Schluss (Szenario S0 wie R14); offene Positionen am Ende zum Schluss bewertet.",
+      "canonicalDescription": "VU-Messrahmen: Startkapital 100.000 USD; Dividenden am Ex-Tag gutgeschrieben; Delisting zum letzten Schluss (Szenario S0 wie R14); offene Positionen am Ende zum Schluss bewertet; Kauf am Ex-Tag erhaelt keine Dividende.",
       "sources": [], "sourceConfidence": "NONE",
       "provenanceClass": "VU_OWN", "reproducibility": "MEASUREMENT_SCOPE",
       "requiredData": [], "availableData": "-",
       "formalization": { "text": "Messkonvention, keine Minervini-Regel.", "parameters": {
         "pf.initialEquity": { "value": 100000, "unit": "USD", "provenance": "VU_OWN", "rationale": "Messrahmen R14" } } },
       "implementation": { "status": "IMPLEMENTED", "module": "scripts/supertrader/replication/minervini/portfolio-sim.mjs", "function": "simulatePortfolio" },
-      "test": ["MR-T-DELIST", "MR-T-DIVIDEND"], "fidelity": "NONE", "r15Ref": "MIN-P-LEGACY-01", "decision": "Messrahmen"
+      "test": ["MR-T-DELIST", "MR-T-DIVIDEND", "MR-T-RT-DIVIDEND-ENTRY-DAY", "MR-T-RT-SIGNAL-DELIST"], "fidelity": "NONE", "r15Ref": "MIN-P-LEGACY-01", "decision": "Messrahmen"
     }
   ],
   "legacyDisposition": {

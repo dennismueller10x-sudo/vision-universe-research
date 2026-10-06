@@ -55,7 +55,7 @@ function yoyGrowth(rows, q, kind, splitRatio, tol) {
       if (s === null || Math.abs(s - 1) > 1e-9) return { growth: null, reason: 'DERIVED_EPS_ACROSS_SPLIT' };
     }
     const s = splitRatio(prior[ROW.FILED], q[ROW.FILED]);
-    if (s === null) return { growth: null, reason: 'SPLIT_HISTORY_UNKNOWN' };
+    if (s === null) return { growth: null, reason: 'SPLIT_HISTORY_UNKNOWN', data: true };
     base = base / s;
   }
   if (!(base > 0)) return { growth: null, reason: 'BASE_NOT_POSITIVE', prior: prior[ROW.VALUE] };
@@ -90,13 +90,15 @@ export function evaluateSepa(fund, execDate, splitRatio, P) {
   facts.epsGrowth = g0.growth;
   if (g0.growth === null) return g0.reason === 'BASE_NOT_POSITIVE'
     ? { ok: false, ruleId: 'MR-SEPA-10', reason: 'SEPA_BASE_NOT_POSITIVE', facts }
-    : { ok: false, ruleId: 'MR-SEPA-00', reason: 'SEPA_EPS_' + g0.reason, facts };
+    : { ok: false, ruleId: g0.data ? 'MR-PIT-01' : 'MR-SEPA-00', reason: (g0.data ? 'PIT_' : 'SEPA_EPS_') + g0.reason, facts };
   // FLOAT_TOLERANCE nur gegen Rundungsfehler (1,2/1,0-1 = 0,19999...), keine Strategiezahl.
   if (!(g0.growth + FLOAT_TOLERANCE >= P['sepa.minEpsGrowth'])) return { ok: false, ruleId: 'MR-SEPA-01', reason: 'SEPA_EPS_GROWTH_LOW', facts };
   const q1 = previousQuarter(eps, q0, tol);
   const g1 = q1 ? yoyGrowth(eps, q1, 'eps', splitRatio, tol) : { growth: null, reason: 'NO_PREVIOUS_QUARTER' };
   facts.epsGrowthPrev = g1.growth;
-  if (g1.growth === null) return { ok: false, ruleId: 'MR-SEPA-02', reason: 'SEPA_ACCEL_NOT_DEMONSTRABLE', facts };
+  if (g1.growth === null) return g1.data
+    ? { ok: false, ruleId: 'MR-PIT-01', reason: 'PIT_' + g1.reason, facts }
+    : { ok: false, ruleId: 'MR-SEPA-02', reason: 'SEPA_ACCEL_NOT_DEMONSTRABLE', facts };
   if (!(g0.growth > g1.growth)) return { ok: false, ruleId: 'MR-SEPA-02', reason: 'SEPA_NO_ACCELERATION', facts };
   const r0 = byEnd(rev, q0[ROW.END], tol);
   const rg0 = r0 ? yoyGrowth(rev, r0, 'rev', splitRatio, tol) : { growth: null, reason: 'NO_REVENUE_FOR_QUARTER' };
