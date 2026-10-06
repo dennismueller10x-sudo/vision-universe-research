@@ -1,9 +1,9 @@
 {
  "schemaVersion": "hsab-ci-stage1-1.0.0",
  "label": "w-delisted-dev",
- "generatedAt": "2026-10-06T16:49:22.883Z",
- "sealHash": "4f301d9eff677bdd3707f18320d2ebe3e15dd7aaa32e579ce567c68ea5d7fd57",
- "commit": "35d454f399b9a9121318d45f549ad82502d2b14c",
+ "generatedAt": "2026-10-06T19:20:58.291Z",
+ "sealHash": "3983c2539e860605096d59ad43eebb480872677a1b46f07bacb97b457ef75662",
+ "commit": "54e8ed2d920083a3539c63e7154d844369c306e9",
  "engine": {
   "scenario": "ti-scenario-1.2.1",
   "elliott": "elliott-3.2.2",
@@ -27,7 +27,7 @@
    "scripts/technical/lib/ti-product.mjs": "345c82b46ecedb40",
    "scripts/technical/lib/ti-data.mjs": "818cc9885eda0ce5",
    "scripts/technical/hsab/lib/replay-core.mjs": "2d021162136b8d8a",
-   "scripts/technical/hsab/replay.mjs": "f53bfd20deacd3c1"
+   "scripts/technical/hsab/replay.mjs": "cd923ae94d39ff9a"
   }
  },
  "replayVersion": "hsab-replay-1.0.0",
@@ -35,7 +35,9 @@
   "from": null,
   "to": null,
   "perbar": 20,
-  "persist": 40
+  "persist": 40,
+  "grid": "month",
+  "historyFrom": null
  },
  "sampleSymbols": null,
  "symbols": {
@@ -45,19 +47,26 @@
  "counts": {
   "series": 1619,
   "tooShort": 1463,
-  "records": 34324,
+  "records": 86956,
   "perBarSymbols": 68,
   "errors": 0
  },
  "errors": 0,
- "seconds": 554,
+ "seconds": 983,
  "delisted": {
   "version": "delisted-weekly-bundle-1.0.0",
   "asOf": "2026-10-01",
   "listings": 3082,
   "series": 3082
  },
- "persistenceCheck": null,
+ "persistenceCheck": {
+  "n": 105,
+  "samePrimary": 1,
+  "sameOutlook": 1,
+  "sameClarity": 1,
+  "sameElliottKey": 0.7428571428571429,
+  "elliottShapesScenario": 0
+ },
  "analysisPointsByYear": {
   "2018": 4743,
   "2019": 4408,
