@@ -19,8 +19,10 @@
      quant/data/market/scale/universe-GATE_500.json    Sektor/Boerse
      quant/data/market/golden-preview/daily/*.json     reale Bars der Golden Five
      quant/data/technical/index.json + instruments/    bestehende TI-Bundles
+     quant/data/securities.json                        Marktkapitalisierung (Modell)
      quant/config/*.json                               Gates, Freigaben, Kalender
      quant/engines/market-factors.js                   DIESELBE Faktorenengine
+     quant/engines/mock-generator.js + mock-provider.js Modelluniversum
 
    ZWEI UNIVERSEN, GETRENNT GERECHNET
 
@@ -45,6 +47,8 @@ const Factors = require(join(root, "quant", "engines", "market-factors.js"));
 const PublishedClose = require(join(root, "quant", "engines", "published-close.js"));
 const ReturnSeries = require(join(root, "quant", "engines", "return-series.js"));
 const DisplayPolicy = require(join(root, "quant", "engines", "display-policy.js"));
+const Generator = require(join(root, "quant", "engines", "mock-generator.js"));
+const MockProvider = require(join(root, "quant", "engines", "mock-provider.js"));
 
 const Contract = require(join(root, "discover", "engines", "contract.js"));
 const High52w = require(join(root, "discover", "engines", "high52w.js"));
@@ -828,6 +832,100 @@ function fundamentalsDetail(universe, stock) {
     compare, journey, story, health, latest,
     valuation: Object.assign({ context: universe.valuationContext || null }, stock.fundamentalValuation || { available: false }),
     priceVsFundamentals: pvf
+  };
+}
+
+/* ==================================================== Universum: MODELL */
+function buildModelUniverse() {
+  const dataset = Generator.generateDataset();
+  const provider = MockProvider.createMockProvider({ dataset });
+  const asOf = dataset.meta.end;
+  const securitiesFile = readJSON(join(root, "quant", "data", "securities.json"));
+  const capByTicker = new Map(securitiesFile.rows.map((r) => [r.ticker, r.marketCap]));
+
+  const benchBars = provider.getBenchmarkBars(Generator.BENCHMARK_ID, {}).data.bars;
+  const benchmark = {
+    closes: benchBars.map((b) => b.level),
+    dates: benchBars.map((b) => b.date)
+  };
+
+  const stocks = [];
+  const barsByTicker = new Map();
+  for (const sec of provider.getSecurities({ asOf, status: "active" }).data) {
+    const bars = provider.getPriceBars(sec.securityId, {}).data;
+    if (!bars || bars.length < 300) continue;
+
+    /* Dieselbe Faktorenengine wie fuer das reale Universum. Zwei
+       Implementierungen derselben Kennzahl waeren zwei Definitionen. */
+    const result = Factors.computeFactors(
+      { ticker: sec.ticker, bars, adjustmentStatus: "SPLIT_ADJUSTED" },
+      { benchmark }
+    );
+    if (result.status === "UNAVAILABLE") continue;
+
+    const values = result.values;
+    const metrics = flatMetrics(values);
+    const scores = scoreAll(metrics, values);
+    metrics.leadershipScore = scores.leadership.score;
+    metrics.momentumScore = scores.momentum.score;
+    metrics.relativeStrengthScore = scores.rs.score;
+    metrics.breakoutScore = scores.breakout.score;
+
+    const closes = bars.map((b) => b.close);
+    const last = closes[closes.length - 1];
+    const prev = closes[closes.length - 2];
+    const marketCap = capByTicker.has(sec.ticker) ? capByTicker.get(sec.ticker) : null;
+
+    const stock = Contract.normalizeStock({
+      symbol: sec.ticker,
+      securityId: sec.securityId,
+      companyName: sec.name,
+      universeId: "VU_MODEL",
+      dataMode: "mock",
+      provider: "VisionUniverseMock",
+      exchange: "XMOC",
+      sector: sec.sector,
+      sectorStatus: "CURATED",
+      industry: sec.industry,
+      marketCap,
+      capBucket: capBucketOf(marketCap),
+      price: Contract.field(round(last, 4)),
+      changePercent: isNum(prev) && prev > 0 ? Contract.field(round((last / prev - 1) * 100, 4))
+                                             : Contract.field(null, "INSUFFICIENT_HISTORY"),
+      sparkline: weeklySparkline(closes),
+      performancePath: performancePath(metrics),
+      hasPriceSeries: true,
+      priceSeries: microSeries(bars.map((b) => ({ date: b.date, close: b.close })),
+                               "VisionUniverseMock", "SPLIT_ADJUSTED"),
+      was: null,
+      recognitionTier: null,
+      metrics,
+      metricStatus: withheldMetricStatus(metrics),
+      dataQuality: result.dataQuality || "PASS",
+      asOf: result.asOf,
+      updatedAt: dataset.meta.dataSnapshotId
+    });
+    stock.scoreDetail = scores;
+    stock.rawValues = values;
+    stocks.push(stock);
+    barsByTicker.set(sec.ticker, bars);
+  }
+
+  return {
+    universeId: "VU_MODEL",
+    label: METHODOLOGY.universes.VU_MODEL.label,
+    kind: "mock",
+    provider: "VisionUniverseMock",
+    benchmark: Generator.BENCHMARK_ID,
+    asOf,
+    /* Deterministisch statt Wanduhr: derselbe Eingabestand muss dieselben
+       Dateien ergeben, sonst ist jeder Vergleich zweier Staende Rauschen.
+       Der Zeitstempel des Laufs steht genau einmal, in meta.json. */
+    generatedAt: asOf + "T00:00:00Z",
+    engine: Factors.VERSION,
+    dataSnapshotId: dataset.meta.dataSnapshotId,
+    sourceFile: "quant/engines/mock-generator.js",
+    stocks, barsByTicker
   };
 }
 
@@ -1675,7 +1773,8 @@ function slug(text) {
 
    Woher kommen Umsatz, Gewinn und Bewertung?
 
-   Fuer reale Titel aus quant/data/sec/canonical/ bzw. den Consumer-Bundles,
+   Fuer das Modelluniversum aus quant/data/securities.json - dort stehen
+   sie fertig gerechnet. Fuer reale Titel aus quant/data/sec/canonical/,
    und das sind genau fuenf: AAPL, MSFT, NVDA, JPM, XOM. Fuer die
    uebrigen 493 gibt es in diesem Repository keine Fundamentaldaten, und
    es wird auch keine erfunden - die Aktienseite sagt dann, dass keine
@@ -1722,7 +1821,10 @@ function consumerFundamentalsIndex() {
   return map;
 }
 
-function geschaeftszahlen(stock, secFakten, fundamentalsByTicker) {
+function geschaeftszahlen(stock, secFakten, modellzeilen, fundamentalsByTicker) {
+  if (stock.dataMode === "mock") {
+    return Unternehmen.ausModellzeile(modellzeilen.get(stock.symbol) || null);
+  }
   const model = fundamentalsByTicker && fundamentalsByTicker.get(stock.symbol);
   if (model) {
     return Unternehmen.ausConsumerBundle(model, {
@@ -1951,9 +2053,8 @@ console.log(`     ${real.stocks.length} Titel, Stand ${real.asOf}, ` +
 
 /* Das synthetische Modelluniversum (VU_MODEL) wird seit dem 15.09.2026 nicht
    mehr ausgeliefert: Discover zeigt ausschliesslich reale Titel. Der
-   Generator bleibt fuer Tests des Quant-Moduls bestehen; der fruehere
-   Aufbau des Modelluniversums ist aus diesem Skript entfernt, ebenso das
-   Lesen von quant/data/securities.json (die Datei existiert nicht mehr). */
+   Generator bleibt fuer Tests des Quant-Moduls bestehen, buildModelUniverse()
+   wird hier nicht mehr aufgerufen. */
 
 const instruments = technicalInstrumentIndex();
 const universes = [real];
@@ -2184,11 +2285,13 @@ for (const universe of universes) {
 
   const memberships = buildMemberships(universe);
   const secFakten = secFaktenIndex();
+  const modellzeilen = new Map(
+    readJSON(join(root, "quant", "data", "securities.json")).rows.map((r) => [r.ticker, r]));
   let written = 0;
   for (const stock of universe.stocks) {
     if (!symbols.has(stock.symbol)) continue;
     const detail = buildDetail(universe, stock, instruments, universe.barsByTicker, memberships);
-    detail.geschaeftszahlen = geschaeftszahlen(stock, secFakten, FUNDAMENTALS);
+    detail.geschaeftszahlen = geschaeftszahlen(stock, secFakten, modellzeilen, FUNDAMENTALS);
     write(`stocks/${universe.universeId}/${stock.symbol}.json`, detail);
     written++;
   }
@@ -2333,6 +2436,7 @@ const meta = {
     "quant/data/market/intraday/index.json",
     "quant/data/market/golden-preview/daily/*.json",
     "quant/data/technical/index.json",
+    "quant/data/securities.json",
     "quant/config/feature-gates.json",
     "quant/config/development-preview.json",
     "quant/config/market-calendar.json"
