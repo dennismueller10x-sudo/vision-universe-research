@@ -33,6 +33,7 @@
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <script src="/assets/pwa.js" defer></script>
 <script src="/assets/home/hero-intro.js" defer></script>
+<script src="/assets/home/home-motion.js" defer></script>
 </head>
 <body>
 <vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script>
@@ -202,6 +203,7 @@
 
     <div class="eco">
       <div class="hub" aria-hidden="true">
+        <div class="hub-ring">
         <svg class="hub-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
           <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width=".25" stroke-dasharray=".8 1.2"/>
           <circle cx="50" cy="50" r="27" fill="none" stroke="currentColor" stroke-width=".2" opacity=".6"/>
@@ -210,28 +212,29 @@
           </g>
           <g fill="#c8f531"><circle cx="50.0" cy="23.0" r=".9"/><circle cx="67.4" cy="29.3" r=".9"/><circle cx="76.6" cy="45.3" r=".9"/><circle cx="73.4" cy="63.5" r=".9"/><circle cx="59.2" cy="75.4" r=".9"/><circle cx="40.8" cy="75.4" r=".9"/><circle cx="26.6" cy="63.5" r=".9"/><circle cx="23.4" cy="45.3" r=".9"/><circle cx="32.6" cy="29.3" r=".9"/></g>
         </svg>
-        <div class="hub-core"><img src="/assets/vision-universe-logo.png" alt=""><b>APP</b></div>
-        <span class="node" style="--x:50.0%;--y:10.0%"><span class="hud"><svg><use href="#h-discover"/></svg></span><em>Discover</em></span>
-        <span class="node" style="--x:75.7%;--y:19.4%"><span class="hud"><svg><use href="#h-quant"/></svg></span><em>Quant</em></span>
-        <span class="node" style="--x:89.4%;--y:43.1%"><span class="hud"><svg><use href="#h-screener"/></svg></span><em>Screener</em></span>
-        <span class="node" style="--x:84.6%;--y:70.0%"><span class="hud"><svg><use href="#h-super"/></svg></span><em>Supertrader</em></span>
-        <span class="node" style="--x:63.7%;--y:87.6%"><span class="hud"><svg><use href="#h-elliott"/></svg></span><em>Elliott Wave</em></span>
-        <span class="node" style="--x:36.3%;--y:87.6%"><span class="hud"><svg><use href="#h-technical"/></svg></span><em>Technik</em></span>
-        <span class="node" style="--x:15.4%;--y:70.0%"><span class="hud"><svg><use href="#h-fundamental"/></svg></span><em>Fundamental</em></span>
-        <span class="node" style="--x:10.6%;--y:43.1%"><span class="hud"><svg><use href="#h-vorsorge"/></svg></span><em>Vorsorge</em></span>
-        <span class="node" style="--x:24.3%;--y:19.4%"><span class="hud"><svg><use href="#h-atlas"/></svg></span><em>AI Atlas</em></span>
+        <span class="node" data-mod="discover" style="--x:50.0%;--y:10.0%"><span class="hud"><svg><use href="#h-discover"/></svg></span><em>Discover</em></span>
+        <span class="node" data-mod="quant" style="--x:75.7%;--y:19.4%"><span class="hud"><svg><use href="#h-quant"/></svg></span><em>Quant</em></span>
+        <span class="node" data-mod="screener" style="--x:89.4%;--y:43.1%"><span class="hud"><svg><use href="#h-screener"/></svg></span><em>Screener</em></span>
+        <span class="node" data-mod="super" style="--x:84.6%;--y:70.0%"><span class="hud"><svg><use href="#h-super"/></svg></span><em>Supertrader</em></span>
+        <span class="node" data-mod="elliott" style="--x:63.7%;--y:87.6%"><span class="hud"><svg><use href="#h-elliott"/></svg></span><em>Elliott Wave</em></span>
+        <span class="node" data-mod="technik" style="--x:36.3%;--y:87.6%"><span class="hud"><svg><use href="#h-technical"/></svg></span><em>Technik</em></span>
+        <span class="node" data-mod="fundamental" style="--x:15.4%;--y:70.0%"><span class="hud"><svg><use href="#h-fundamental"/></svg></span><em>Fundamental</em></span>
+        <span class="node" data-mod="vorsorge" style="--x:10.6%;--y:43.1%"><span class="hud"><svg><use href="#h-vorsorge"/></svg></span><em>Vorsorge</em></span>
+        <span class="node" data-mod="atlas" style="--x:24.3%;--y:19.4%"><span class="hud"><svg><use href="#h-atlas"/></svg></span><em>AI Atlas</em></span>
+        </div>
+        <div class="hub-core"><img src="/assets/vision-universe-logo.png" alt=""><b>APP</b><span class="hub-active">Discover</span></div>
       </div>
 
       <div class="modules">
-        <a class="module" href="/discover/"><span class="hud hud-sm"><svg><use href="#h-discover"/></svg></span><div><b>Discover</b><span>Aktien entdecken: Themenwelten, Rankings und Märkte zum Swipen.</span></div></a>
-        <a class="module" href="/quant/"><span class="hud hud-sm"><svg><use href="#h-quant"/></svg></span><div><b>Quant</b><span>Faktoren, Ereignisse und historische Vergleichsfälle je Aktie.</span></div></a>
-        <a class="module" href="/screener/"><span class="hud hud-sm"><svg><use href="#h-screener"/></svg></span><div><b>Screener</b><span>Eigene Kriterien filtern, gewichten und vergleichen.</span></div></a>
-        <a class="module" href="/supertrader/"><span class="hud hud-sm"><svg><use href="#h-super"/></svg></span><div><b>Supertrader</b><span>11 Methoden mit festen Regeln, Setups und Backtests.</span></div></a>
-        <a class="module" href="/quant/#/aktie/NVDA/technik?elliott=1"><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott Wave</b><span>Wellenzählung mit Szenarien, Invalidierung und Zielzonen.</span></div></a>
-        <a class="module" href="/quant/#/aktie/NVDA/technik"><span class="hud hud-sm"><svg><use href="#h-technical"/></svg></span><div><b>Technische Analyse</b><span>Trend, Momentum, Unterstützungen, Fibonacci und Struktur.</span></div></a>
-        <a class="module" href="/quant/#/aktie/NVDA/zahlen"><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>Fundamentaldaten</b><span>Umsatz, Gewinn, Margen, Bewertung – mit Einschätzung.</span></div></a>
-        <a class="module" href="/ask/"><span class="hud hud-sm"><svg><use href="#h-atlas"/></svg></span><div><b>AI Atlas</b><span>Frag in eigenen Worten – Atlas rechnet auf den Daten.</span></div></a>
-        <a class="module module-wide" href="/vorsorge/"><span class="hud hud-sm"><svg><use href="#h-vorsorge"/></svg></span><div><b>Altersvorsorge <span class="tag-new">Neu</span></b><span>Vorsorgelücke berechnen, ETFs vergleichen, Kosten prüfen und staatliche Förderung nutzen.</span></div></a>
+        <a class="module" data-mod="discover" href="/discover/"><span class="hud hud-sm"><svg><use href="#h-discover"/></svg></span><div><b>Discover</b><span>Aktien entdecken: Themenwelten, Rankings und Märkte zum Swipen.</span></div></a>
+        <a class="module" data-mod="quant" href="/quant/"><span class="hud hud-sm"><svg><use href="#h-quant"/></svg></span><div><b>Quant</b><span>Faktoren, Ereignisse und historische Vergleichsfälle je Aktie.</span></div></a>
+        <a class="module" data-mod="screener" href="/screener/"><span class="hud hud-sm"><svg><use href="#h-screener"/></svg></span><div><b>Screener</b><span>Eigene Kriterien filtern, gewichten und vergleichen.</span></div></a>
+        <a class="module" data-mod="super" href="/supertrader/"><span class="hud hud-sm"><svg><use href="#h-super"/></svg></span><div><b>Supertrader</b><span>11 Methoden mit festen Regeln, Setups und Backtests.</span></div></a>
+        <a class="module" data-mod="elliott" href="/quant/#/aktie/NVDA/technik?elliott=1"><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott Wave</b><span>Wellenzählung mit Szenarien, Invalidierung und Zielzonen.</span></div></a>
+        <a class="module" data-mod="technik" href="/quant/#/aktie/NVDA/technik"><span class="hud hud-sm"><svg><use href="#h-technical"/></svg></span><div><b>Technische Analyse</b><span>Trend, Momentum, Unterstützungen, Fibonacci und Struktur.</span></div></a>
+        <a class="module" data-mod="fundamental" href="/quant/#/aktie/NVDA/zahlen"><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>Fundamentaldaten</b><span>Umsatz, Gewinn, Margen, Bewertung – mit Einschätzung.</span></div></a>
+        <a class="module" data-mod="atlas" href="/ask/"><span class="hud hud-sm"><svg><use href="#h-atlas"/></svg></span><div><b>AI Atlas</b><span>Frag in eigenen Worten – Atlas rechnet auf den Daten.</span></div></a>
+        <a class="module module-wide" data-mod="vorsorge" href="/vorsorge/"><span class="hud hud-sm"><svg><use href="#h-vorsorge"/></svg></span><div><b>Altersvorsorge <span class="tag-new">Neu</span></b><span>Vorsorgelücke berechnen, ETFs vergleichen, Kosten prüfen und staatliche Förderung nutzen.</span></div></a>
       </div>
     </div>
   </div>
@@ -263,6 +266,37 @@
             <div><small>Umsatz TTM</small><b>303,0 Mrd. $</b><em class="up">+83,4 % ggü. Vorjahr</em></div>
             <div><small>Nettomarge</small><b>55,6 %</b><em>KGV 30,2</em></div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ UNTERNEHMENSENTWICKLUNG (aus Discover) ============ -->
+<section class="section" id="entwicklung">
+  <div class="shell">
+    <div class="feature flip">
+      <div class="feature-copy">
+        <span class="kicker">Discover · Unternehmensentwicklung</span>
+        <h2 class="h2">Wachstum, das man sieht.</h2>
+        <p class="lead">Zwölf Geschäftsjahre aus den SEC-Berichten auf einen Blick: Umsatz, Gewinn und Cashflow. Kennzahl wählen, Balken antippen, Jahre vergleichen.</p>
+        <ul class="points">
+          <li><span class="hud hud-sm"><svg><use href="#h-rank"/></svg></span><div><b>Zwölf Jahre Historie</b><span>Jede Zahl mit Geschäftsjahr und Quelle – direkt aus den Pflichtberichten.</span></div></li>
+          <li><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>Klare Einordnung</b><span>Wachstum, Margen und Cashflow – verständlich statt Tabellenwüste.</span></div></li>
+        </ul>
+        <a class="btn btn-app" href="/discover/#/s/US_REAL/NVDA">NVIDIA in Discover ansehen <svg><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="visual visual-dark" aria-hidden="false">
+        <div class="journey" id="journey">
+          <div class="journey-head"><b>Wie sich NVIDIA entwickelt hat</b><span class="live"><i></i>Live-Daten</span></div>
+          <div class="journey-tabs" role="tablist" aria-label="Kennzahl wählen"><button type="button" role="tab" data-track="revenue" aria-selected="true">Umsatz</button><button type="button" role="tab" data-track="net_income" aria-selected="false">Gewinn</button><button type="button" role="tab" data-track="operating_cash_flow" aria-selected="false">Cashflow</button></div>
+          <div class="journey-kpis">
+            <div><b data-j="from">4,7 Mrd. $</b><small data-j="fromYear">GJ 2015</small></div>
+            <div><b data-j="to">215,9 Mrd. $</b><small data-j="toYear">GJ 2026</small></div>
+          </div>
+          <div class="journey-growth"><b data-j="growth">+4.512 %</b><small data-j="span">11 Jahre</small></div>
+          <div class="journey-bars" role="list"><button class="jbar" type="button" role="listitem" style="--h:2.2%;--i:0" data-i="0" aria-label="GJ 2015: 4,7 Mrd. $"><i></i><span>15</span></button><button class="jbar" type="button" role="listitem" style="--h:2.3%;--i:1" data-i="1" aria-label="GJ 2016: 5,0 Mrd. $"><i></i><span>16</span></button><button class="jbar" type="button" role="listitem" style="--h:3.2%;--i:2" data-i="2" aria-label="GJ 2017: 6,9 Mrd. $"><i></i><span>17</span></button><button class="jbar" type="button" role="listitem" style="--h:4.5%;--i:3" data-i="3" aria-label="GJ 2018: 9,7 Mrd. $"><i></i><span>18</span></button><button class="jbar" type="button" role="listitem" style="--h:5.4%;--i:4" data-i="4" aria-label="GJ 2019: 11,7 Mrd. $"><i></i><span>19</span></button><button class="jbar" type="button" role="listitem" style="--h:5.1%;--i:5" data-i="5" aria-label="GJ 2020: 10,9 Mrd. $"><i></i><span>20</span></button><button class="jbar" type="button" role="listitem" style="--h:7.7%;--i:6" data-i="6" aria-label="GJ 2021: 16,7 Mrd. $"><i></i><span>21</span></button><button class="jbar" type="button" role="listitem" style="--h:12.5%;--i:7" data-i="7" aria-label="GJ 2022: 26,9 Mrd. $"><i></i><span>22</span></button><button class="jbar" type="button" role="listitem" style="--h:12.5%;--i:8" data-i="8" aria-label="GJ 2023: 27,0 Mrd. $"><i></i><span>23</span></button><button class="jbar" type="button" role="listitem" style="--h:28.2%;--i:9" data-i="9" aria-label="GJ 2024: 60,9 Mrd. $"><i></i><span>24</span></button><button class="jbar" type="button" role="listitem" style="--h:60.4%;--i:10" data-i="10" aria-label="GJ 2025: 130,5 Mrd. $"><i></i><span>25</span></button><button class="jbar on" type="button" role="listitem" style="--h:100.0%;--i:11" data-i="11" aria-label="GJ 2026: 215,9 Mrd. $"><i></i><span>26</span></button></div>
+          <script type="application/json" id="journey-data">[{"id":"revenue","label":"Umsatz","rows":[{"fy":2015,"v":4682000000},{"fy":2016,"v":5010000000},{"fy":2017,"v":6910000000},{"fy":2018,"v":9714000000},{"fy":2019,"v":11716000000},{"fy":2020,"v":10918000000},{"fy":2021,"v":16675000000},{"fy":2022,"v":26914000000},{"fy":2023,"v":26974000000},{"fy":2024,"v":60922000000},{"fy":2025,"v":130497000000},{"fy":2026,"v":215938000000}]},{"id":"net_income","label":"Gewinn","rows":[{"fy":2015,"v":631000000},{"fy":2016,"v":614000000},{"fy":2017,"v":1666000000},{"fy":2018,"v":3047000000},{"fy":2019,"v":4141000000},{"fy":2020,"v":2796000000},{"fy":2021,"v":4332000000},{"fy":2022,"v":9752000000},{"fy":2023,"v":4368000000},{"fy":2024,"v":29760000000},{"fy":2025,"v":72880000000},{"fy":2026,"v":120067000000}]},{"id":"operating_cash_flow","label":"Cashflow","rows":[{"fy":2015,"v":906000000},{"fy":2016,"v":1175000000},{"fy":2017,"v":1672000000},{"fy":2018,"v":3502000000},{"fy":2019,"v":3743000000},{"fy":2020,"v":4761000000},{"fy":2021,"v":5822000000},{"fy":2022,"v":9108000000},{"fy":2023,"v":5641000000},{"fy":2024,"v":28090000000},{"fy":2025,"v":64089000000},{"fy":2026,"v":102718000000}]}]</script>
         </div>
       </div>
     </div>

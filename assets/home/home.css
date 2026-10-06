@@ -605,3 +605,55 @@ html.intro .stage.wait,html.intro .stage.wait *{animation-play-state:paused!impo
 html.intro .stage.late .phone{animation-delay:.05s!important}
 html.intro .stage.late .fc-1{animation-delay:1.5s,2.2s!important}
 html.intro .stage.late .fc-2{animation-delay:1.8s,2.5s!important}
+
+/* =====================================================================
+   MODUL-KREIS: dreht wie ein Uhrzeiger, das Modul oben springt nach vorne
+   ===================================================================== */
+.hub-ring{position:absolute;inset:0;transform:rotate(var(--rot,0deg));transition:transform 1.2s cubic-bezier(.7,0,.3,1)}
+.hub-ring .node{transform:translate(-50%,-50%) rotate(calc(-1 * var(--rot,0deg)));transition:transform 1.2s cubic-bezier(.7,0,.3,1);z-index:1}
+.hub-ring .node .hud{transition:transform .7s cubic-bezier(.34,1.7,.5,1),box-shadow .5s}
+.hub-ring .node em{transition:transform .6s cubic-bezier(.34,1.6,.5,1),color .3s,background .3s;display:inline-block}
+.hub-ring .node.front{z-index:4}
+.hub-ring .node.front .hud{transform:scale(1.6) translateY(-6px);box-shadow:0 0 0 1px rgba(200,245,49,.8),0 22px 50px -10px rgba(200,245,49,.85),0 0 60px rgba(200,245,49,.45),inset 0 0 22px rgba(200,245,49,.25)}
+.hub-ring .node.front em{transform:translateY(16px) scale(1.15);background:var(--lime);color:var(--on-lime)}
+.hub-core b{transition:opacity .3s}
+.hub-active{display:block;font-size:clamp(11px,1.6vw,15px);font-weight:900;color:#f4f5f1;letter-spacing:.02em;margin-top:2px;min-height:1.2em}
+.hub-active.swap{animation:hubswap .5s cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes hubswap{from{opacity:0;transform:translateY(8px) scale(.9)}to{opacity:1;transform:none}}
+.module{transition:border-color .3s,transform .3s,box-shadow .3s}
+.module.is-active{border-color:var(--lime);transform:translateY(-2px);box-shadow:0 0 0 1px var(--lime),0 16px 40px -18px rgba(200,245,49,.6)}
+@media (prefers-reduced-motion:reduce){.hub-ring,.hub-ring .node,.hub-ring .node .hud{transition:none}}
+
+/* =====================================================================
+   UNTERNEHMENSENTWICKLUNG (aus Discover): Balken wachsen beim Scrollen
+   ===================================================================== */
+.journey{position:relative;width:100%;max-width:560px;color:#f4f5f1;padding:4px 4px 0}
+.journey-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.journey-head b{font-size:clamp(20px,2.2vw,26px);letter-spacing:-.02em;line-height:1.15}
+.journey-tabs{display:flex;gap:6px;margin:18px 0 22px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.1);flex-wrap:wrap}
+.journey-tabs button{font:inherit;font-size:14px;font-weight:800;color:#9aa0a8;background:transparent;border:0;border-radius:999px;padding:9px 18px;cursor:pointer;transition:background .25s,color .25s}
+.journey-tabs button[aria-selected="true"]{background:#f4f5f1;color:#101318}
+.journey-tabs button:hover{color:#f4f5f1}
+.journey-tabs button[aria-selected="true"]:hover{color:#101318}
+.journey-kpis{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.journey-kpis b{display:block;font-size:clamp(26px,3.4vw,40px);font-weight:900;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.journey-kpis div:first-child b{color:#c3c7cc}
+.journey-kpis small{display:block;margin-top:8px;font-size:12px;letter-spacing:.16em;color:#8b919a;font-weight:700}
+.journey-growth{display:flex;align-items:baseline;gap:14px;margin-top:18px}
+.journey-growth b{font-size:clamp(30px,4vw,48px);font-weight:900;letter-spacing:-.04em;color:#3fd07f;line-height:1;font-variant-numeric:tabular-nums}
+.journey-growth b.neg{color:#f0675c}
+.journey-growth small{font-size:12px;letter-spacing:.16em;color:#8b919a;font-weight:700;text-transform:uppercase}
+.journey-bars{display:flex;align-items:stretch;gap:clamp(4px,1vw,9px);height:240px;margin-top:26px;padding-bottom:26px;position:relative}
+.journey-bars::after{content:"";position:absolute;left:0;right:0;bottom:26px;height:1px;background:rgba(255,255,255,.1)}
+.jbar{flex:1;position:relative;display:flex;align-items:flex-end;justify-content:center;background:none;border:0;padding:0;cursor:pointer;font:inherit}
+.jbar i{display:block;width:100%;height:var(--h);border-radius:7px 7px 2px 2px;background:linear-gradient(180deg,rgba(200,245,49,.55),rgba(200,245,49,.18));transition:height .9s cubic-bezier(.2,.9,.25,1.12) calc(var(--i) * 70ms),background .3s,box-shadow .3s}
+.jbar:hover i{background:linear-gradient(180deg,rgba(200,245,49,.8),rgba(200,245,49,.3))}
+.jbar.on i{background:linear-gradient(180deg,#e6ff8a,#c8f531 60%,#8fb31b);box-shadow:0 0 0 2px #f4f5f1,0 0 30px rgba(200,245,49,.55)}
+.jbar span{position:absolute;bottom:-24px;font-size:11px;font-weight:700;color:#8b919a}
+.jbar:nth-child(odd):not(:last-child) span{opacity:.0}
+.jbar:focus-visible{outline:2px solid #c8f531;outline-offset:3px;border-radius:8px}
+html.intro .journey-bars:not(.grow) .jbar i{height:0;transition:none}
+@media (max-width:760px){.journey-bars{height:190px}.journey-tabs button{padding:8px 13px;font-size:13px}}
+.live{white-space:nowrap}
+.journey-kpis b{white-space:nowrap}
+@media (max-width:760px){.journey-kpis b{font-size:clamp(20px,6.6vw,28px)}.journey-head b{font-size:20px}}

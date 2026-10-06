@@ -161,9 +161,26 @@ const factorRows = Object.entries(fx).filter(([k, v]) => FACTOR[k] && typeof v?.
   .sort((a, c) => c[1].score - a[1].score).slice(0, 6)
   .map(([k, v]) => `<div class="fx"><span>${FACTOR[k]}</span><span class="fbar"><i style="width:${f1(v.score)}%"></i></span><b>${Math.round(v.score)}</b></div>`).join('\n            ');
 
+// ---------- Discover: Unternehmensentwicklung NVIDIA (SEC, Geschaeftsjahre) ----------
+const JOURNEY_TRACKS = [['revenue', 'Umsatz'], ['net_income', 'Gewinn'], ['operating_cash_flow', 'Cashflow']];
+const tracks = s.fundamentals?.journey?.tracks || {};
+const journey = JOURNEY_TRACKS.map(([id, label]) => ({ id, label, rows: (Array.isArray(tracks[id]) ? tracks[id] : []).filter(r => Number.isFinite(r.v)).map(r => ({ fy: r.fy, v: r.v })) }))
+  .filter(t => t.rows.length >= 3);
+const bn = v => de(v / 1e9) + ' Mrd. $';
+const growthText = rows => { const a = rows[0].v, z = rows.at(-1).v; return a > 0 ? (z >= a ? '+' : '−') + de(Math.abs(z / a - 1) * 100, 0) + ' %' : '–'; };
+const j0 = journey[0];
+const jMax = Math.max(...j0.rows.map(r => r.v));
+const journeyBars = j0.rows.map((r, i) => `<button class="jbar${i === j0.rows.length - 1 ? ' on' : ''}" type="button" role="listitem" style="--h:${Math.max(1.5, r.v / jMax * 100).toFixed(1)}%;--i:${i}" data-i="${i}" aria-label="GJ ${r.fy}: ${bn(r.v)}"><i></i><span>${String(r.fy).slice(2)}</span></button>`).join('');
+
 const values = {
   HUD_SYMBOLS: read('scripts/home/hud-symbols.html').trimEnd(),
   CHART_BODY: chartBody,
+  JOURNEY_TABS: journey.map((t, i) => `<button type="button" role="tab" data-track="${t.id}" aria-selected="${i === 0}">${t.label}</button>`).join(''),
+  JOURNEY_FROM: bn(j0.rows[0].v), JOURNEY_FROM_YEAR: 'GJ ' + j0.rows[0].fy,
+  JOURNEY_TO: bn(j0.rows.at(-1).v), JOURNEY_TO_YEAR: 'GJ ' + j0.rows.at(-1).fy,
+  JOURNEY_GROWTH: growthText(j0.rows), JOURNEY_SPAN: (j0.rows.at(-1).fy - j0.rows[0].fy) + ' Jahre',
+  JOURNEY_BARS: journeyBars,
+  JOURNEY_JSON: JSON.stringify(journey).replace(/</g, '\\u003c'),
   NVDA_PRICE: usd(s.price.value), NVDA_CHG: signed(s.changePercent.value / 100, 2), NVDA_CHG_CLASS: s.changePercent.value >= 0 ? 'up' : 'down',
   NVDA_WHAT: esc(s.was || 'Chips für KI und Grafik'), NVDA_BADGES: badges,
   NVDA_REV: de(gzNvda.umsatzTTM / 1000) + ' Mrd. $', NVDA_REV_G: signed(gzNvda.umsatzWachstum, 1),
