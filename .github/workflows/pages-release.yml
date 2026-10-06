@@ -55,6 +55,9 @@ on:
       - "Update VISION UNIVERSE analyst ratings"
       - "Update Hedgefonds 13F data"
       - "Build VISION UNIVERSE Morning"
+      # Die Startseite setzt nach den Datenlaeufen ihre Abbildungswerte neu ein
+      # und pusht mit dem GITHUB_TOKEN.
+      - "Startseite: Werte der Produktabbildungen"
     types: [completed]
     branches: [main]
 
