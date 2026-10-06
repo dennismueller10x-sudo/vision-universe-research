@@ -20,6 +20,12 @@ const W = L.WINDOW;
 const readJson = (f) => JSON.parse(fs.readFileSync(path.join(here, f), 'utf8'));
 const PREREG = readJson('PREREGISTRATION-HS1.json');
 const DEV_FROM = PREREG.periods.development.from;
+const OOS_FROM = '2008-01-31';
+// Modus oos: die eingefrorenen Live-Regeln (LIVE-HS4-V03.json) muessen unveraendert sein.
+function assertLiveRules() {
+  const live = readJson('LIVE-HS4-V03.json');
+  for (const [file, want] of Object.entries(live.hashes)) if (fileHash(path.join(here, file)) !== want) throw new Error(`oos gesperrt: ${file} seit dem Einfrieren veraendert`);
+}
 
 // Versuchsreihen. HS2 erbt Zeitraeume und Kontrollen von HS1 (PREREGISTRATION-HS2.json "inherits").
 export const SETS = {
@@ -45,6 +51,9 @@ export const SETS = {
   // HS4 (PREREGISTRATION-HS4.json): explorativ ueber den Gesamtzeitraum (Modus full).
   hs4: { prereg: 'PREREGISTRATION-HS4.json', secPitKey: 'r13', cfg: (t) => ({ concentrated: true, factors: t.factors, n: t.n, sqrtCap: !!t.sqrtCap }),
     selectable: (t) => t.def.id !== 'V06', pboIds: (ids) => ids.filter((id) => id !== 'V06'), priorSets: ['hs1', 'hs2', 'hs3', 'hs3d1', 'hs3d2', 'hs3d3'], halves: true, concRandom: true },
+  // HS4 ausserhalb der Stichprobe 2008-2015 (PREREGISTRATION-HS4-OOS2008.json): gleiche Versuche, V03 fest gewaehlt.
+  hs4oos: { prereg: 'PREREGISTRATION-HS4.json', oosPrereg: 'PREREGISTRATION-HS4-OOS2008.json', secPitKey: 'r13', cfg: (t) => ({ concentrated: true, factors: t.factors, n: t.n, sqrtCap: !!t.sqrtCap }),
+    selectable: (t) => t.def.id === 'V03', pboIds: (ids) => ids.filter((id) => id !== 'V06'), concRandom: true, oos: true },
 };
 
 const slimMonthly = (m) => m.monthly.map((x) => [x.month, +x.r.toFixed(6), +x.b.toFixed(6)]);
@@ -55,10 +64,11 @@ async function main() {
   const arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
   const MODE = arg('--mode', 'dev');
   const SET = arg('--set', 'hs1');
-  if (!SETS[SET]) throw new Error('--set hs1|hs2|hs3|hs3d1|hs3d2|hs3d3|hs4');
+  if (!SETS[SET]) throw new Error('--set hs1|hs2|hs3|hs3d1|hs3d2|hs3d3|hs4|hs4oos');
   const OUT = arg('--out', path.join(os.tmpdir(), 'house'));
   const LIMIT = Number(arg('--limit', '0'));
-  if (!['dev', 'holdout', 'full'].includes(MODE)) throw new Error('--mode dev|holdout|full');
+  if (!['dev', 'holdout', 'full', 'oos'].includes(MODE)) throw new Error('--mode dev|holdout|full|oos');
+  if (MODE === 'oos') { if (L.WINDOW_NAME !== 'HOLDOUT') throw new Error('Modus oos nur mit ST_WINDOW=HOLDOUT'); assertLiveRules(); }
   const frozen = MODE === 'holdout' ? assertFrozen(here, SETS[SET].frozen) : null;
   fs.mkdirSync(OUT, { recursive: true });
   const t0 = Date.now();
@@ -75,12 +85,12 @@ async function main() {
 export function runAnalysis(d, { MODE, SET = 'hs1', LIMIT = 0, frozen = null, log = () => {} }) {
   const S = SETS[SET], P = readJson(S.prereg);
   let segs = d.segs;
-  const end = MODE === 'dev' ? DEV_END : W.to;
+  const end = MODE === 'dev' ? DEV_END : MODE === 'oos' ? '2015-12-31' : W.to;
   if (MODE === 'dev') { segs = truncateForDevelopment(segs); log(`Entwicklungssperre: Segmente nach Kuerzung ${segs.length}`); }
 
   // Kalender und SPY (Gesamtrendite, Verhaeltnis Schluss/SMA200) nur bis zum Modusende.
   const spy = d.spyAdj;
-  const calendar = spy.date.filter((x) => x >= W.warmupFrom && x <= end);
+  const calendar = spy.date.filter((x) => x >= (MODE === 'oos' ? '2007-01-02' : W.warmupFrom) && x <= end);
   const calIndex = new Map(calendar.map((x, i) => [x, i]));
   const bench = new Map(); const spySma = new Float64Array(calendar.length).fill(NaN);
   { let v = 1, sum = 0; const closes = [];
@@ -106,7 +116,7 @@ export function runAnalysis(d, { MODE, SET = 'hs1', LIMIT = 0, frozen = null, lo
   segs = null;
   log(`Aktien ${stocks.length}, delistet ${stocks.filter((s) => s.delisted).length}, mit SEC-Werten ${fundSegs}`);
 
-  const startDate = MODE === 'holdout' ? PREREG.periods.holdout.from : DEV_FROM;
+  const startDate = MODE === 'holdout' ? PREREG.periods.holdout.from : MODE === 'oos' ? OOS_FROM : DEV_FROM;
   const startK = calIndex.get(startDate), endK = calendar.length - 1;
   if (startK === undefined) throw new Error('Startdatum nicht im Kalender: ' + startDate);
   const fullStartK = calIndex.get(DEV_FROM);
@@ -205,6 +215,13 @@ export function runAnalysis(d, { MODE, SET = 'hs1', LIMIT = 0, frozen = null, lo
     E.verdict = Object.values(E).every(Boolean) ? 'EXPLORATORY_PROMISING' : 'EXPLORATORY_NO_EDGE';
     explorative = { halves: halvesAll, criteria: E, randomP80: rq[Math.floor(rq.length * 0.8)] };
   }
+  let oos = null;
+  if (S.oos) {
+    const v3 = trials.V03.metrics, rq = controls.RANDOM_FILTERED.map((x) => x.excessCagr).sort((a, b) => a - b), p80 = rq[Math.floor(rq.length * 0.8)];
+    const O = { O1: v3.excessCagr > 0, O2: controls.COST2.excessCagr > 0, O3: controls.S2.excessCagr > 0, O4: v3.cagr > trials.V06.metrics.cagr, O5: v3.excessCagr > p80 };
+    O.verdict = Object.values(O).every(Boolean) ? 'OOS_CONFIRMED' : 'OOS_NOT_CONFIRMED';
+    oos = { criteria: O, randomP80: p80, prereg: S.oosPrereg, preregHash: fileHash(path.join(here, S.oosPrereg)) };
+  }
   log('Kontrollen fertig');
 
   let holdout = null;
@@ -226,7 +243,7 @@ export function runAnalysis(d, { MODE, SET = 'hs1', LIMIT = 0, frozen = null, lo
     schema: 'supertrader-house-result-1.1.0', set: SET, mode: MODE, limit: LIMIT || null, at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null,
     hashes: { prereg: fileHash(path.join(here, S.prereg)), engine: fileHash(path.join(here, 'engine.mjs')), stats: fileHash(path.join(here, 'stats.mjs')), listingTable: d.hash },
     period: { from: calendar[startK], to: calendar[endK] }, universe: { stocks: stocks.length, delisted: stocks.filter((s) => s.delisted).length, survivors: SURV.list.length, withSec: fundSegs, nonEquityExcluded: d.nonEquityExcluded, secCoverage: d.secCoverage },
-    coverage, gate, explorative, trials, selection: { rule: P.selection, selected: selectedId, candidates: ok.length }, stats, controls, holdout,
+    coverage, gate, explorative, oos, trials, selection: { rule: P.selection, selected: selectedId, candidates: ok.length }, stats, controls, holdout,
   };
   return result;
 }

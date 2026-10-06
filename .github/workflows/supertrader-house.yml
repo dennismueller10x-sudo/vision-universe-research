@@ -7,6 +7,7 @@ name: Supertrader Hausstrategie (HS1, intern)
 #   [house:holdout]    Holdout 2022-2026, nur mit FROZEN-HS1.json (Hash-Pruefung), genau einmal
 #   [house:hs2-dev-smoke] / [house:hs2-dev] / [house:hs2-holdout]  dasselbe fuer HS2 (PREREGISTRATION-HS2.json)
 #   [house:hs3-dev] / [house:hs3-holdout]  HS3 (Marktkapitalisierung, PREREGISTRATION-HS3.json)
+#   [house:hs4oos]  HS4-V03 einmalig 2008-2015 (PREREGISTRATION-HS4-OOS2008.json)
 #   [house:hs4-full]  HS4 Volumenprofil, explorativ 2016-2026 (PREREGISTRATION-HS4.json)
 #   [house:sec-pit-r13]  SEC-Werte zum Einreichungsdatum inkl. Aktienanzahl (privater Eimer, Zusammenfassung verschluesselt)
 # Rohreihen nur im privaten Eimer. Das Repository ist oeffentlich: Logs zeigen nur Zaehlwerte;
@@ -16,7 +17,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [dev-smoke, dev, holdout, hs2-dev-smoke, hs2-dev, hs2-holdout, sec-pit-r13, hs3-dev, hs3-holdout, hs3d1-dev, hs3d1-holdout, hs3d2-dev, hs3d2-holdout, hs3d3-dev, hs3d3-holdout, hs4-full]
+        options: [dev-smoke, dev, holdout, hs2-dev-smoke, hs2-dev, hs2-holdout, sec-pit-r13, hs3-dev, hs3-holdout, hs3d1-dev, hs3d1-holdout, hs3d2-dev, hs3d2-holdout, hs3d3-dev, hs3d3-holdout, hs4-full, hs4oos]
         default: dev-smoke
   push:
     branches:
@@ -43,7 +44,7 @@ jobs:
           INPUT: ${{ inputs.mode }}
         run: |
           m="$INPUT"
-          case "$MSG" in *"[house:hs4-full]"*) m=hs4-full;; *"[house:sec-pit-r13]"*) m=sec-pit-r13;; *"[house:hs3d3-dev]"*) m=hs3d3-dev;; *"[house:hs3d3-holdout]"*) m=hs3d3-holdout;; *"[house:hs3d2-dev]"*) m=hs3d2-dev;; *"[house:hs3d2-holdout]"*) m=hs3d2-holdout;; *"[house:hs3d1-dev]"*) m=hs3d1-dev;; *"[house:hs3d1-holdout]"*) m=hs3d1-holdout;; *"[house:hs3-dev]"*) m=hs3-dev;; *"[house:hs3-holdout]"*) m=hs3-holdout;; *"[house:hs2-dev-smoke]"*) m=hs2-dev-smoke;; *"[house:hs2-dev]"*) m=hs2-dev;; *"[house:hs2-holdout]"*) m=hs2-holdout;; *"[house:dev-smoke]"*) m=dev-smoke;; *"[house:dev]"*) m=dev;; *"[house:holdout]"*) m=holdout;; esac
+          case "$MSG" in *"[house:hs4oos]"*) m=hs4oos;; *"[house:hs4-full]"*) m=hs4-full;; *"[house:sec-pit-r13]"*) m=sec-pit-r13;; *"[house:hs3d3-dev]"*) m=hs3d3-dev;; *"[house:hs3d3-holdout]"*) m=hs3d3-holdout;; *"[house:hs3d2-dev]"*) m=hs3d2-dev;; *"[house:hs3d2-holdout]"*) m=hs3d2-holdout;; *"[house:hs3d1-dev]"*) m=hs3d1-dev;; *"[house:hs3d1-holdout]"*) m=hs3d1-holdout;; *"[house:hs3-dev]"*) m=hs3-dev;; *"[house:hs3-holdout]"*) m=hs3-holdout;; *"[house:hs2-dev-smoke]"*) m=hs2-dev-smoke;; *"[house:hs2-dev]"*) m=hs2-dev;; *"[house:hs2-holdout]"*) m=hs2-holdout;; *"[house:dev-smoke]"*) m=dev-smoke;; *"[house:dev]"*) m=dev;; *"[house:holdout]"*) m=holdout;; esac
           echo "mode=${m:-dev-smoke}" >> "$GITHUB_OUTPUT"
       - name: Tests der Hausstrategie
         run: node --test scripts/supertrader/tests/house-hs1.test.mjs
@@ -66,6 +67,10 @@ jobs:
             hs2-dev) node scripts/supertrader/house/analyze.mjs --set hs2 --mode dev --out "$RUNNER_TEMP/val" ;;
             sec-pit-r13) node scripts/supertrader/validation/sec-pit.mjs --r13 --out "$RUNNER_TEMP/val" ;;
             hs3-dev) node scripts/supertrader/house/analyze.mjs --set hs3 --mode dev --out "$RUNNER_TEMP/val" ;;
+            hs4oos)
+              # Einmaliger Test 2008-2015 (PREREGISTRATION-HS4-OOS2008.json): erst SEC-Aktienzahl im HOLDOUT-Namensraum, dann die Auswertung.
+              ST_WINDOW=HOLDOUT node scripts/supertrader/validation/sec-pit.mjs --r13 --out "$RUNNER_TEMP/secpit"
+              ST_WINDOW=HOLDOUT node scripts/supertrader/house/analyze.mjs --set hs4oos --mode oos --out "$RUNNER_TEMP/val" ;;
             hs4-full) node scripts/supertrader/house/analyze.mjs --set hs4 --mode full --out "$RUNNER_TEMP/val" ;;
             hs3d3-dev) node scripts/supertrader/house/analyze.mjs --set hs3d3 --mode dev --out "$RUNNER_TEMP/val" ;;
             hs3d3-holdout) node scripts/supertrader/house/analyze.mjs --set hs3d3 --mode holdout --out "$RUNNER_TEMP/val" ;;

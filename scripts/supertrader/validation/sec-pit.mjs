@@ -301,7 +301,7 @@ async function main() {
   }
   log(`Delistings: mit CIK ${dstats.delistedWithCik}, Uebernahme ${dstats.ACQUISITION}, unbekannt ${dstats.UNKNOWN}, Abruf fehlgeschlagen ${dstats.failed}`);
   budget.consumeClassA(1, 'PUT sec delist');
-  await driver.put(mine.seriesPrefix + DELIST_KEY, zlib.gzipSync(Buffer.from(JSON.stringify(delist))), { contentType: 'application/gzip' });
+  if (!R13) await driver.put(mine.seriesPrefix + DELIST_KEY, zlib.gzipSync(Buffer.from(JSON.stringify(delist))), { contentType: 'application/gzip' });
   budget.consumeClassA(1, 'PUT sec pit');
   await driver.put(mine.seriesPrefix + (R13 ? PIT_KEY_R13 : PIT_KEY_R12), zlib.gzipSync(Buffer.from(JSON.stringify(out))), { contentType: 'application/gzip' });
   log('Gewinnhistorie im privaten Eimer abgelegt');

@@ -304,3 +304,17 @@ test('Live HS4-V03: Monatsende mit Feiertagen, eingefrorene Regeln, Entscheidung
   assert.ok(Math.abs(d.holdings.reduce((a, h) => a + h.weight, 0) - 1) < 0.01);
   assert.deepEqual(d.sells, []);
 });
+
+test('HS4 ausserhalb der Stichprobe (oos): V03 fest, Kriterien O1–O5', async () => {
+  const { runAnalysis } = await import('../house/analyze.mjs');
+  const cal = []; const dd = new Date('2007-01-01T00:00:00Z');
+  while (dd.toISOString().slice(0, 10) <= '2015-12-31') { const wd = dd.getUTCDay(); if (wd && wd !== 6) cal.push(dd.toISOString().slice(0, 10)); dd.setUTCDate(dd.getUTCDate() + 1); }
+  const mkRaw = (i) => { let p = 20 + i; return cal.map((date, k) => { p *= 1 + (i - 10) * 0.0001 + Math.sin(k * 0.3 + i) * 0.006; return { date, open: p * 0.999, high: p * 1.01, low: p * 0.99, close: p, volume: 1e6 * (1 + i / 10), adjClose: p, dividend: 0, splitFactor: 1 }; }); };
+  const shares = (i) => cal.filter((d, k) => k % 63 === 0).map((d) => [d, 1e6 * (1 + i), d, 'dei']);
+  const segs = Array.from({ length: 40 }, (_, i) => ({ id: `tiingo:NYSE:T${i}:2000-01-01`, raw: mkRaw(i), survivor: true, delisted: false, cls: 'EQUITY_COMMON', fund: { eps: [[cal[10], 1, cal[11]]], rev: [], shares: shares(i), cik: 'C' + i } }));
+  const r = runAnalysis({ segs, spyAdj: L.adjustSeries(mkRaw(3)), hash: 'x', nonEquityExcluded: 0, secCoverage: null }, { MODE: 'oos', SET: 'hs4oos' });
+  assert.equal(r.period.from, '2008-01-31');
+  assert.equal(r.period.to, '2015-12-31');
+  assert.equal(r.selection.selected, 'V03');
+  assert.ok(['OOS_CONFIRMED', 'OOS_NOT_CONFIRMED'].includes(r.oos.criteria.verdict));
+});
