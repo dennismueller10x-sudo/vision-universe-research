@@ -100,6 +100,12 @@ async function main() {
   // Kalender: SPY aus der kanonischen Ablage, sonst Vereinigung der Handelstage grosser Titel.
   let calendar = null;
   for (const key of ['SPY', 'ref_SPY']) { const s = await main.getSeries(key).catch(() => null); if (s?.bars?.length) { calendar = rawFromStoreBars(s.bars).map((b) => b.date); log(`Kalender aus ${key}`); break; } }
+  // Vor dem teuren Laden aller Reihen: nur am Monatsende (oder erzwungen) und nur einmal je Stichtag.
+  if (calendar) {
+    const D0 = calendar.at(-1);
+    if (ledger.decisions.some((x) => x.date === D0)) { log(`Entscheidung fuer ${D0} bereits im Ledger - nichts zu tun`); return; }
+    if (!isMonthEnd(D0, holidays) && !FORCE) { log(`${D0} ist kein Monatsende - nichts zu tun`); return; }
+  }
   const raws = new Map();
   let n = 0;
   for (const l of listings) { const s = await main.getSeries(l.ticker).catch(() => null); if (s?.bars?.length) raws.set(l.id, rawFromStoreBars(s.bars)); if (++n % 1000 === 0) log(`geladen ${n}`); }
