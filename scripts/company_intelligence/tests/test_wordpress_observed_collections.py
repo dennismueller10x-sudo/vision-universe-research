@@ -22,7 +22,8 @@ class HTTP:
 class WordPressObservedCollectionsTests(unittest.TestCase):
  def discover(self,h):return discover(parse_links(b'<link rel="https://api.w.org/" href="https://apple.com/wp-json/">',ROOT),ROOT,company(),[ROOT],h,NOW)
  def test_observed_custom_collections_preserve_dated_schema_and_metadata_only_contract(self):
-  for name in ('press-release','financial-release','press','press-room','press_release','news-media','pressreleases'):
+  for name in ('press-release','financial-release','press','press-room','press_release','news-media','pressreleases',
+               'company_news','financial_news','announcement','news_release','inv_press_release'):
    with self.subTest(name=name):
     h=HTTP([name],{collection_url(name):[row()]});s=self.discover(h);self.assertIsNotNone(s);self.assertEqual(s['restCollection'],name);self.assertEqual(h.calls,[endpoint(ROOT),canonical_url(ROOT+'?'+urlencode({'_fields':'namespaces,routes'})),collection_url(name)]);self.assertEqual(len(parse(json.dumps([row()]).encode(),s,s['url'])),1)
     with self.assertRaisesRegex(SourceError,'VERIFIED_METADATA_CONTRACT'):parse(json.dumps([row()]).encode(),{**s,'verificationEvidence':{}},s['url'])

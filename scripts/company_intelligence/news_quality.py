@@ -4,6 +4,7 @@ Ownership of a site does not make every CMS entry a company announcement.
 This filter is intentionally conservative and does not fetch article bodies.
 """
 import re
+from urllib.parse import unquote, urlsplit
 from .model import Resolver,normalize,SUFFIX,AMBIGUOUS,AMBIGUOUS_ALIASES
 
 
@@ -70,11 +71,23 @@ def shadowed_actor(headline, company, resolver):
                                   for a, b in rivals) for start, end in spans)
 
 
+def instructional_blog(entry):
+    """An instructional CMS blog is not news merely because it names its author."""
+    url = entry.get('url') or ''
+    title = entry.get('headline') or ''
+    if not isinstance(url, str) or '/blog/' not in unquote(urlsplit(url).path).lower():
+        return False
+    if re.search(r'\b(?:earnings|financial results|conference call|webcast|annual meeting|proxy voting)\b', title, re.I):
+        return False
+    return bool(re.match(r'^(?:how to\b|practical .{0,100}\b(?:techniques|tips)\b|(?:a |the )?(?:complete |practical |beginner.s )?guide (?:to|for)\b|tutorial\b)', title, re.I))
+
+
 def eligible(entry, company, wordpress=False):
     title=entry.get('headline') or ''
     if re.fullmatch(r'\s*hello world[!.\s]*',title,re.I) or re.match(r'\s*comment on\b',title,re.I):
         return False
     if not wordpress:return True
+    if instructional_blog(entry):return False
     # A general CMS blog item needs an explicit high-confidence issuer actor.
     # Source ownership alone cannot turn an agency podcast into company news.
     return owned_actor(title,company) or bool(Resolver({company['companyId']:company}).resolve(entry,{'type':'RSS','verified':False}))
