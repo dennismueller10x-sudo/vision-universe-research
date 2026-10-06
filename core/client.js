@@ -51,6 +51,8 @@
     intradayIndex: function () { return "/quant/data/market/intraday/index.json"; },
     news: function () { return "/dashboard/data/news_feed.json"; }
   };
+  PATHS.localListings = function () { return "/core/data/de-eu/listings.json"; };
+  PATHS.localSeries = function (id) { return "/core/data/de-eu/series/" + id + ".json"; };
 
   function available(source, asOf, data) { return { state: "AVAILABLE", reason: null, source: source, asOf: asOf || null, data: data }; }
   function unavailable(reason, source) { return { state: "UNAVAILABLE", reason: reason, source: source || null, asOf: null, data: null }; }
@@ -195,9 +197,87 @@
         sources: Array.isArray(n.data.sources) ? n.data.sources : [], items: items });
     }
 
+    /* Local selections never resolve through a US ticker. ISIN is the
+       share class; listingId is the selected MIC's independent series. */
+    function validListing(row) {
+      try {
+        return row && Identity.listingIdFor(row) === row.listingId &&
+          Identity.securityIdForISIN(row.isin) === row.securityId &&
+          Identity.normalizeTicker(row.ticker) === row.ticker &&
+          /^[A-Z]{3}$/.test(row.tradingCurrency || "") && row.assetType === "EQUITY" &&
+          row.mappingStatus === "VERIFIED" && (typeof row.mappingSource === "string" ? !!row.mappingSource.trim() : Array.isArray(row.mappingSource) && row.mappingSource.length > 0) &&
+          ["MAJOR", "MINOR"].indexOf(row.quoteUnit) >= 0 &&
+          Array.isArray(row.indexMemberships);
+      } catch (_) { return false; }
+    }
+    async function getListings(o) {
+      o = o || {}; var src = PATHS.localListings(), layer = await tryLoad(src);
+      if (!layer.ok) return unavailable("LOCAL_DIRECTORY_NOT_MATERIALIZED", src);
+      var d = layer.data;
+      if (!d || d.schemaVersion !== "de-eu-directory-1.0.0" || !Array.isArray(d.listings) || d.privateDevelopment !== true || !validDay(d.referenceAsOf) || !validDay(d.dataAsOf || d.referenceAsOf) || (d.dataAsOf || d.referenceAsOf) < d.referenceAsOf)
+        return unavailable("LOCAL_DIRECTORY_CONTRACT_INVALID", src);
+      var seen = new Set();
+      for (var row of d.listings) {
+        if (!validListing(row) || seen.has(row.listingId)) return unavailable("LOCAL_IDENTITY_INVALID", src);
+        seen.add(row.listingId);
+      }
+      var q = String(o.query || "").trim().toLocaleLowerCase("de");
+      var rows = d.listings.filter(function (r) {
+        if (o.region && r.region !== o.region) return false;
+        if (o.index && r.indexMemberships.indexOf(o.index) < 0) return false;
+        return !q || [r.name, r.companyName, r.ticker, r.providerSymbol, r.isin, r.mic].concat(r.aliases || [])
+          .some(function (s) { return String(s || "").toLocaleLowerCase("de").indexOf(q) >= 0; });
+      });
+      return available(src, d.dataAsOf || d.referenceAsOf, { listings: rows, referenceAsOf: d.referenceAsOf, dataAsOf: d.dataAsOf || d.referenceAsOf, privateDevelopment: true });
+    }
+    async function getListing(id) {
+      if (!Identity.isListingId(id)) return unavailable("INVALID_LISTING_ID");
+      var result = await getListings(); if (result.state !== "AVAILABLE") return result;
+      var row = result.data.listings.find(function (r) { return r.listingId === id; });
+      return row ? available(result.source, result.asOf, row) : unavailable("LISTING_NOT_IN_SELECTION", result.source);
+    }
+    function validDay(s) {
+      return typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s) && Number.isFinite(Date.parse(s)) && new Date(s).toISOString().slice(0, 10) === s;
+    }
+    async function getListingPriceSeries(id, o) {
+      var listing = await getListing(id); if (listing.state !== "AVAILABLE") return listing;
+      var src = PATHS.localSeries(id), result = await tryLoad(src);
+      if (!result.ok) return unavailable("MISSING_HISTORY", src);
+      var s = result.data, row = listing.data;
+      if (!s || s.schemaVersion !== "de-eu-close-series-1.0.0" || s.listingId !== id || s.securityId !== row.securityId ||
+          s.mic !== row.mic || s.currency !== row.tradingCurrency || s.quoteUnit !== row.quoteUnit || s.provider !== "marketstack" ||
+          s.privateDevelopment !== true || !s.sourceEvidence || !Array.isArray(s.points)) return unavailable("LOCAL_SERIES_CONTRACT_INVALID", src);
+      if (o && (o.range === "MAX" || o.range === "5Y" || o.grain === "weekly")) return unavailable("REQUESTED_RANGE_NOT_MATERIALIZED", src);
+      if (!s.points.length) return unavailable("MISSING_HISTORY", src);
+      var previous = null;
+      for (var point of s.points) {
+        if (!Array.isArray(point) || !validDay(point[0]) || !Number.isFinite(point[1]) || point[1] <= 0 ||
+            (previous && point[0] <= previous)) return unavailable("INVALID_HISTORY", src);
+        previous = point[0];
+      }
+      if (!validDay(s.asOf) || s.points[s.points.length - 1][0] !== s.asOf || s.asOf > listing.asOf ||
+          (s.expectedSession && (!validDay(s.expectedSession) || s.asOf > s.expectedSession))) return unavailable("INVALID_SERIES_DATE", src);
+      return available(src, s.asOf, { listingId: id, securityId: row.securityId, ticker: row.ticker, mic: row.mic,
+        currency: s.currency, quoteUnit: s.quoteUnit, basis: s.basis, grain: "daily", points: s.points,
+        from: s.points[0][0], to: s.asOf, quality: s.quality || null, kind: "EOD_CLOSE", retrievedAt: s.retrievedAt || null,
+        expectedSession: s.expectedSession || null, freshness: s.freshness || "UNKNOWN", changeVerified: s.changeVerified === true });
+    }
+    async function getListingLatestPrice(id) {
+      var s = await getListingPriceSeries(id); if (s.state !== "AVAILABLE") return s;
+      var p = s.data.points, last = p[p.length - 1], prev = p.length > 1 ? p[p.length - 2] : null;
+      return available(s.source, last[0], { listingId: id, securityId: s.data.securityId, ticker: s.data.ticker, mic: s.data.mic,
+        close: last[1], date: last[0], previousClose: prev ? prev[1] : null, previousDate: prev ? prev[0] : null,
+        changePercent: prev && s.data.changeVerified ? Math.round((last[1] / prev[1] - 1) * 1e6) / 1e4 : null,
+        basis: s.data.basis, currency: s.data.currency, quoteUnit: s.data.quoteUnit, kind: "EOD_CLOSE", dataKind: "EOD_CLOSE",
+        freshness: s.data.freshness, expectedSession: s.data.expectedSession, retrievedAt: s.data.retrievedAt });
+    }
+
     return { CONTRACT_VERSION: CONTRACT_VERSION, universeId: universe, getSecurity: getSecurity, getPriceSeries: getPriceSeries,
       getLatestPrice: getLatestPrice, getFundamentals: getFundamentals, getCorporateActions: getCorporateActions,
-      getQuantData: getQuantData, getIntraday: getIntraday, getNews: getNews, stockPage: stockPage, discoverIndex: function () { return tryLoad(PATHS.discoverIndex(universe)); } };
+      getQuantData: getQuantData, getIntraday: getIntraday, getNews: getNews, stockPage: stockPage,
+      getListings: getListings, searchListings: function (q) { return getListings({ query: q }); }, getListing: getListing,
+      getListingPriceSeries: getListingPriceSeries, getListingLatestPrice: getListingLatestPrice,
+      discoverIndex: function () { return tryLoad(PATHS.discoverIndex(universe)); } };
   }
 
   return { CONTRACT_VERSION: CONTRACT_VERSION, PATHS: PATHS, create: create };

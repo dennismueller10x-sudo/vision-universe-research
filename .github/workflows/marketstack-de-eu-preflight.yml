@@ -1,0 +1,127 @@
+name: Marketstack DE-EU private preflight (no provider calls)
+on:
+  workflow_dispatch:
+    inputs:
+      import_selected:
+        description: 'Run bounded selected import only with existing encrypted reference, current budget evidence and required sample proof'
+        type: boolean
+        default: false
+      phase:
+        type: choice
+        options: [sample, mandatory, refresh]
+        default: sample
+      as_of:
+        description: 'Fixed data date YYYY-MM-DD; required for import'
+        type: string
+      run_id:
+        description: 'Shared run ID for all phases; required for import'
+        type: string
+  pull_request:
+    paths:
+      - '.github/workflows/marketstack-de-eu-preflight.yml'
+      - 'providers/marketstack/**'
+      - 'scripts/marketstack/**'
+      - 'scripts/market/marketstack-*.mjs'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: marketstack-de-eu-preflight-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  preflight-only:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Focused fake-transport and unchanged private-cache regressions
+        run: node --test --test-reporter=dot quant/tests/marketstack-*.test.mjs quant/tests/tiingo2-cache.test.mjs
+      - uses: actions/cache/restore@v4
+        with:
+          path: .market-cache/marketstack-cache.enc
+          key: marketstack-private-v1-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: marketstack-private-v1-${{ github.ref_name }}-
+      - name: Restore only authenticated ciphertext
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node scripts/market/marketstack-cache.mjs open --context "$GITHUB_REF_NAME"
+      - name: Credential availability, encryption and budget bound (zero API calls)
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node scripts/market/marketstack-preflight.mjs
+      - name: Optional bounded private import
+        id: selected-import
+        if: github.event_name == 'workflow_dispatch' && inputs.import_selected
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+          VU_IMPORT_PHASE: ${{ inputs.phase }}
+          VU_DATA_AS_OF: ${{ inputs.as_of }}
+          VU_SHARED_RUN_ID: ${{ inputs.run_id }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node --input-type=module <<'JS'
+          import {readFile,writeFile} from 'node:fs/promises';
+          import {ingest} from './scripts/marketstack/ingest-de-eu.mjs';
+          import {assertActionsBudgetContinuity} from './scripts/marketstack/actions-import-guard.mjs';
+          const root='.market-cache/marketstack';
+          const read=async name=>JSON.parse(await readFile(root+'/'+name,'utf8'));
+          try {
+            const phase=process.env.VU_IMPORT_PHASE;
+            const accountEvidence=await read('account-budget-evidence.json');
+            let marker=null;try{marker=await read('actions-execution.json');}catch{}
+            await assertActionsBudgetContinuity({repo:process.env.GITHUB_REPOSITORY,branch:process.env.GITHUB_REF_NAME,
+              runId:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT,token:process.env.GH_TOKEN,evidence:accountEvidence,marker});
+            const result=await ingest({listingMap:await read('listing-map.json'),accountEvidence,
+              privateDir:root,previewOut:'/tmp/vu-de-eu-private-preview',asOf:process.env.VU_DATA_AS_OF,runId:process.env.VU_SHARED_RUN_ID,
+              phase,sampleProof:phase==='sample'?null:await read('sample-proof.json')});
+            console.log(JSON.stringify({phase,listings:result.listings,series:result.series,requests:result.budget.requestsAttempted,
+              estimatedCredits:result.budget.estimatedCreditsConsumed,publicDisplay:false,scheduleActivated:false}));
+          } catch(e) {
+            console.error(/^[A-Z0-9_]+$/.test(e.code||e.message)?e.code||e.message:'PRIVATE_INPUT_OR_IMPORT_FAILURE');
+            process.exitCode=1;
+          } finally {
+            try{await writeFile(root+'/actions-execution.json',JSON.stringify({runId:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT}),{mode:0o600});}catch{}
+          }
+          JS
+      - name: Seal private state including failed attempts
+        id: seal-private-state
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.import_selected && steps.selected-import.outcome != 'skipped'
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node scripts/market/marketstack-cache.mjs seal --context "$GITHUB_REF_NAME"
+      - uses: actions/cache/save@v4
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.import_selected && steps.seal-private-state.outcome == 'success'
+        with:
+          path: .market-cache/marketstack-cache.enc
+          key: marketstack-private-v1-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Verify immutable private ledger cache exists
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.import_selected && steps.seal-private-state.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node --input-type=module <<'JS'
+          import {verifySavedActionsCache} from './scripts/marketstack/actions-import-guard.mjs';
+          try {await verifySavedActionsCache({repo:process.env.GITHUB_REPOSITORY,token:process.env.GH_TOKEN,
+            key:'marketstack-private-v1-'+process.env.GITHUB_REF_NAME+'-'+process.env.GITHUB_RUN_ID+'-'+process.env.GITHUB_RUN_ATTEMPT});}
+          catch{console.error('ACTIONS_PRIVATE_LEDGER_PERSISTENCE_UNVERIFIED');process.exitCode=1;}
+          JS
+      - name: Protected production paths remain unchanged
+        run: git diff --exit-code -- quant/data discover/data dashboard/config supertrader/data vorsorge .github/workflows/market-data-refresh.yml
+      - name: Credential boundary
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs --all
+      # No schedule, plaintext artifact or public preview. Import is opt-in
+      # and fails closed before requests when private prerequisites are absent.
+      - name: State explicit preflight-only result
+        if: github.event_name != 'workflow_dispatch' || !inputs.import_selected
+        run: echo 'Private preflight only. No provider calls, import or publication. Recurring refresh remains disabled.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Remove ephemeral plaintext
+        if: always()
+        run: rm -rf -- .market-cache/marketstack /tmp/vu-de-eu-private-preview

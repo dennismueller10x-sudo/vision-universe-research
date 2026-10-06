@@ -1,0 +1,148 @@
+{
+  "schemaVersion": "marketstack-de-eu-official-source-check-1",
+  "scope": "API v2 field semantics, request accounting and published tariff status only",
+  "providerApiRequests": 0,
+  "paidRequests": 0,
+  "credentialsInspected": false,
+  "accountEntitlement": "NOT_TESTED",
+  "accountBalance": "NOT_INFERRED",
+  "sources": [
+    {
+      "url": "https://docs.apilayer.com/marketstack/docs/marketstack-api-v2-v-2-0-0",
+      "retrievedAt": "2026-10-06T11:04:25.649773+00:00",
+      "httpStatus": 200,
+      "resolvedUrl": "https://docs.apilayer.com/marketstack/docs/marketstack-api-v2-v-2-0-0",
+      "sourceType": "OFFICIAL_PUBLIC_DOCUMENTATION",
+      "completeResponseStored": false
+    },
+    {
+      "url": "https://marketstack.com/faq",
+      "retrievedAt": "2026-10-06T11:04:26.284479+00:00",
+      "httpStatus": 200,
+      "resolvedUrl": "https://marketstack.com/faq",
+      "sourceType": "OFFICIAL_PUBLIC_DOCUMENTATION",
+      "completeResponseStored": false
+    },
+    {
+      "url": "https://marketstack.com/pricing",
+      "retrievedAt": "2026-10-06T11:04:26.785201+00:00",
+      "httpStatus": 200,
+      "resolvedUrl": "https://marketstack.com/pricing",
+      "sourceType": "OFFICIAL_PUBLIC_DOCUMENTATION",
+      "completeResponseStored": false
+    },
+    {
+      "url": "https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json",
+      "retrievedAt": "2026-10-06T11:05:11.184694+00:00",
+      "httpStatus": 200,
+      "sha256": "cf88fea6da0237b5f64fb9a15d0931c5122bbd213e24ea39788f72f55102bdf4",
+      "sourceType": "OFFICIAL_PUBLIC_OPENAPI_SCHEMA",
+      "completeResponseStored": false
+    }
+  ],
+  "api": {
+    "version": "2.0.0",
+    "host": "api.marketstack.com",
+    "basePath": "/v2",
+    "endpoints": [
+      "GET /v2/eod",
+      "GET /v2/eod/latest",
+      "GET /v2/tickers/{symbol}",
+      "GET /v2/splits",
+      "GET /v2/dividends"
+    ],
+    "eodShape": {
+      "pagination": "offset/limit/count/total",
+      "data": "array of EODBar"
+    },
+    "eodFields": {
+      "open": {
+        "type": "number"
+      },
+      "high": {
+        "type": "number"
+      },
+      "low": {
+        "type": "number"
+      },
+      "close": {
+        "type": "number"
+      },
+      "volume": {
+        "type": "number"
+      },
+      "adj_open": {
+        "type": "number"
+      },
+      "adj_high": {
+        "type": "number"
+      },
+      "adj_low": {
+        "type": "number"
+      },
+      "adj_close": {
+        "type": "number"
+      },
+      "adj_volume": {
+        "type": "number"
+      },
+      "split_factor": {
+        "type": "number"
+      },
+      "dividend": {
+        "type": "number"
+      },
+      "name": {
+        "type": "string"
+      },
+      "exchange_code": {
+        "type": "string"
+      },
+      "asset_type": {
+        "type": "string"
+      },
+      "price_currency": {
+        "type": "string"
+      },
+      "symbol": {
+        "type": "string"
+      },
+      "exchange": {
+        "type": "string"
+      },
+      "date": {
+        "type": "string",
+        "description": "Timestamp in ISO 8601 format."
+      }
+    },
+    "parameterDefinitions": {
+      "symbols": "Required comma-separated provider tickers; each symbol consumes a request unit.",
+      "exchange": "Optional MIC filter, independently validate each returned listing.",
+      "date_from": "YYYY-MM-DD start date.",
+      "date_to": "YYYY-MM-DD end date.",
+      "sort": "ASC or DESC, verify sorted unique dates locally.",
+      "limit": "1..1000, default100.",
+      "offset": "Nonnegative page offset."
+    }
+  },
+  "fieldSemantics": {
+    "adjustedFields": "Official EOD description states split/dividend adjusted under CRSP methodology. This does not verify raw/adjusted OHLC or volume basis of a particular response or event.",
+    "splitFactor": "Official SplitItem description: Split ratio applied on the date. Direction/effective-date and historical field basis require listing-specific validation.",
+    "priceCurrency": "EOD schema declares a string, no row-level proof of correct currency or quote unit. Independently verified metadata may fill missing values with explicit provenance.",
+    "volume": "Numeric field; schema does not certify unit or adjustment basis. Zero alone does not reject a price.",
+    "timestamp": "ISO 8601 source timestamp, distinct from retrieval time. Latest is latest available trading day, not a realtime guarantee.",
+    "gbpGbx": "Official docs distinguish XLON GBP and stocks quoted in GBX; do not scale without verified quote-unit metadata."
+  },
+  "requestAccounting": {
+    "source": "https://marketstack.com/faq",
+    "definition": "FAQ states five tickers in one API call consume five requests; API errors are not counted towards monthly quota.",
+    "implementation": "Conservatively reserve each symbol on every page and attempt, including errors/retries.",
+    "billingObserved": false
+  },
+  "publishedPricing": {
+    "source": "https://marketstack.com/pricing",
+    "professionalAdvertisedMonthlyRequests": 100000,
+    "overagePricingPresent": true,
+    "implication": "Published plan is not proof of current subscribed entitlement or remaining account credits. Unknown remaining monthly balance blocks mass requests. No subscription or purchase change performed."
+  }
+}
