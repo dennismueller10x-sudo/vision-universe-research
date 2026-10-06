@@ -88,7 +88,7 @@ function createMarketstackClient(options = {}) {
         if (body && body.error) {
           const numericTypes={101:'invalid_access_key',102:'inactive_user',105:'function_access_restricted',106:'rate_limit_reached',104:'usage_limit_reached',0:'internal_error'};
           const code = String(body.error.type || numericTypes[body.error.code] || body.error.code || 'providerError');
-          const reason = ({invalid_access_key:'authError',inactive_user:'authError',function_access_restricted:'entitlementRestricted',unauthorized:'authError',too_many_requests:'quotaExceeded',usage_limit_reached:'quotaExceeded',daily_limit_reached:'quotaExceeded',fair_use_limit_reached:'quotaExceeded',fairuse_limit_reached:'quotaExceeded',monthly_limit_reached:'quotaExceeded',rate_limit_reached:'rateLimited',data_not_available:'dataUnavailable',internal_error:'internalError',maintenance:'internalError'})[code] || 'providerError';
+          const reason = ({invalid_access_key:'authError',inactive_user:'authError',function_access_restricted:'entitlementRestricted',unauthorized:'authError',too_many_requests:'quotaExceeded',usage_limit_reached:'quotaExceeded',daily_limit_reached:'quotaExceeded',fair_use_limit_reached:'quotaExceeded',fairuse_limit_reached:'quotaExceeded',monthly_limit_reached:'quotaExceeded',rate_limit_reached:'rateLimited',data_not_available:'dataUnavailable',not_found_error:'dataUnavailable',internal_error:'internalError',maintenance:'internalError'})[code] || 'providerError';
           ctx.failure = {...error(reason,response.status,'Marketstack error: ' + code),providerErrorType:sanitize(code),providerErrorCode:sanitize(body.error.code??null)};
           ctx.providerCode = sanitize(code);
         }

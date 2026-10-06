@@ -216,3 +216,8 @@ test('empty singular ticker metadata is unavailable, malformed nonempty arrays r
  for(const payload of [[],{data:[]}]) assert.equal((await provider(async()=>response(payload)).getMetadata('sap')).reason,'dataUnavailable');
  for(const payload of [[{symbol:'SAP.DE'}],{data:[{symbol:'SAP.DE'}]}]) assert.equal((await provider(async()=>response(payload)).getMetadata('sap')).reason,'invalidResponse');
 });
+
+test('documented ticker not-found response is unavailable and never retried',async()=>{
+ let calls=0;const c=client({maxRetries:2,fetchImpl:async()=>{calls++;return response({error:{code:'not_found_error',message:'No ticker metadata'}},404);}});
+ const result=await c.request('/tickers/NO-SUCH.DE');assert.equal(result.reason,'dataUnavailable');assert.equal(result.status,404);assert.equal(calls,1);assert.equal(c.stats().retries,0);
+});
