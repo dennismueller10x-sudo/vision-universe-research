@@ -47,3 +47,22 @@ class CompositeAnnouncementTests(unittest.TestCase):
         item=self.announcement();item['headline']=item['headline'].replace('July 30th','July 29th')
         result=from_announcement(item,source(),NOW)[0]
         self.assertFalse(result['evidence']['retireLegacyCallOnReleaseDate'])
+
+    def test_observed_quarter_release_in_truncated_highpeak_feed_is_not_a_call(self):
+        item={'headline':'HighPeak Energy, Inc. Announces 2026 Second Quarter Earnings Release and Conference Call Dates',
+              'url':'https://apple.com/announcement','publishedAt':'2026-07-31T20:05:27Z',
+              'evidenceText':'FORT WORTH, Texas, July 31, 2026 (GLOBE NEWSWIRE) -- HighPeak Energy today announced that it plans to release its 2026 second quarter financial and operating results after the close of trading on Monday, August 10, 2026.'}
+        result=from_announcement(item,source(),NOW)
+        self.assertEqual(len(result),1)
+        self.assertEqual(result[0]['eventType'],'EARNINGS_SCHEDULED')
+        self.assertEqual(result[0]['date'],'2026-08-10')
+        self.assertFalse(result[0]['evidence']['retireLegacyCallOnReleaseDate'])
+        self.assertIsNone(result[0]['startsAt'])
+
+    def test_quarter_call_with_no_release_clause_still_uses_explicit_call_date(self):
+        item={'headline':'HighPeak Energy, Inc. Announces 2026 Second Quarter Earnings Release and Conference Call Dates',
+              'url':'https://apple.com/announcement','publishedAt':'2026-07-31T20:05:27Z',
+              'evidenceText':'HighPeak Energy will host a conference call on August 11, 2026.'}
+        result=from_announcement(item,source(),NOW)
+        self.assertEqual(result[0]['eventType'],'EARNINGS_CALL')
+        self.assertEqual(result[0]['date'],'2026-08-11')

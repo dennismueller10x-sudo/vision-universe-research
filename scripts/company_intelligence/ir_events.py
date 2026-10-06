@@ -116,7 +116,7 @@ def from_announcement(item, source, now):
         # Composite headlines can name a call whose date lacks a year. Keep only
         # the release clause supported by the one explicit full date in the body.
         release_clause = re.split(composite_call, name, flags=re.I)[0]
-        release_date = any(f'{match[3]}-{MONTHS[match[1].lower()]:02d}-{int(match[2]):02d}' == day and re.search(r'will\s+(?:release|report|announce)\s+(?:its?\s+)?(?:financial\s+results|earnings)(?:(?!\b(?:call|webcast)\b).){0,240}$', text[max(0, match.start() - 300):match.start()], re.I) for match in dates)
+        release_date = any(f'{match[3]}-{MONTHS[match[1].lower()]:02d}-{int(match[2]):02d}' == day and re.search(r'(?:will\s+|plans\s+to\s+)(?:release|report|announce)\s+(?:its?\s+)?(?:(?:20\d{2}\s+)?(?:first|second|third|fourth)\s+quarter\s+)?(?:financial\s+(?:and\s+operating\s+)?results|earnings)(?:(?!\b(?:call|webcast)\b).){0,240}$', text[max(0, match.start() - 300):match.start()], re.I) for match in dates)
         if release_date:
             name = release_clause
             composite_release = True

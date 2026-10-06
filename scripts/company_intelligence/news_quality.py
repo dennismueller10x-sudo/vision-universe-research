@@ -17,8 +17,9 @@ def promotional_solicitation(headline):
     named_ad = r'\bBrodsky\s*(?:&|and)\s*Smith\b.{0,260}\b(?:shareholder update|investigations?|securities losses)\b'
     named_claim = r'\b(?:Gainey\s+McKenna\s*(?:&|and)\s*Egleston\s+announces?\s+a\s+class\s+action\s+lawsuit|Johnson\s+Fistel\s+investigates?\s+potential\s+securities\s+claims)\b'
     recruitment = r'\bopportunity\b.{0,80}\b(?:investors?|shareholders?)\b.{0,40}\blead\b.{0,80}\b(?:class action|lawsuit)\b'
+    firm_contact = r'\bLLP\b[\s,:-]*\b(?:encourages?|urges?)\b.{0,180}\b(?:investors?|shareholders?)\b\s+to\s+contact\s+(?:the|our)\s+firm\b'
     return bool(re.search(existing, headline, re.I) or re.search(alert, headline, re.I)
-                or re.search(recruitment, headline, re.I) or re.search(named_ad, headline, re.I) or re.search(named_claim, headline, re.I))
+                or re.search(recruitment, headline, re.I) or re.search(named_ad, headline, re.I) or re.search(named_claim, headline, re.I) or re.search(firm_contact, headline, re.I))
 
 
 def owned_actor(title,company):

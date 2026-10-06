@@ -114558,5 +114558,772 @@
     "companyId": "iss_cik_0001035354",
     "bootstrapValidatedAt": "2026-10-06",
     "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "restCollection": "inv_press_release",
+    "type": "IR_FEED",
+    "active": true,
+    "companyId": "iss_cik_0001756594",
+    "format": "WORDPRESS_REST_NEWS",
+    "verificationEvidence": {
+      "apiRoot": "https://inventivapharma.com/wp-json/",
+      "collectionRoute": "/wp/v2/inv_press_release",
+      "collectionSchemaHash": "3bf76b87374fb58da79c255b7a10ca5ef3030d0c197647937b34a027063b83a2",
+      "linkedFrom": "https://inventivapharma.com/investors/",
+      "method": "ADVERTISED_WORDPRESS_REST_METADATA_CONTRACT"
+    },
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "allowedSites": [
+      "https://inventivapharma.com/"
+    ],
+    "sourceId": "048ca80ef54e4f01c8cefb82",
+    "url": "https://inventivapharma.com/wp-json/wp/v2/inv_press_release?_fields=date_gmt%2Clink%2Ctitle.rendered&context=view&order=desc&orderby=date&per_page=20",
+    "provider": "WORDPRESS",
+    "lastVerified": "2026-10-06T12:06:58Z",
+    "intervalHours": 4,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_FEED",
+    "active": true,
+    "companyId": "iss_cik_0001575793",
+    "format": "RSS",
+    "verificationEvidence": {
+      "linkedFrom": "https://energous.com/",
+      "officialSite": "https://energous.com/",
+      "validItems": 10
+    },
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "allowedSites": [
+      "https://energous.com/",
+      "https://energous.com/",
+      "https://energous.com/feed/"
+    ],
+    "sourceId": "1b26b6c2ff841a711bd745c0",
+    "priority": 1,
+    "url": "https://energous.com/feed/",
+    "provider": "WORDPRESS",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 4,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_EVENTS",
+    "active": true,
+    "companyId": "iss_cik_0001841968",
+    "format": "RSS_EVENTS",
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.ridgepostcapital.com/rss-feeds",
+      "officialSite": "https://ridgepostcapital.com/",
+      "validItems": 10
+    },
+    "allowedSites": [
+      "https://ridgepostcapital.com/",
+      "https://ir.ridgepostcapital.com/",
+      "https://ir.ridgepostcapital.com/rss/events.xml"
+    ],
+    "sourceId": "1de6e645eae9e25b9977d91b",
+    "priority": 1,
+    "url": "https://ir.ridgepostcapital.com/rss/events.xml",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 12,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_MATERIALS",
+    "active": true,
+    "companyId": "iss_cik_0001575793",
+    "format": "HTML_MATERIALS",
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.energous.com/",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "metadata": {
+      "originatingIRHomepage": "https://ir.energous.com/"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "allowedSites": [
+      "https://energous.com/",
+      "https://ir.energous.com/",
+      "https://ir.energous.com/news-events/presentations"
+    ],
+    "sourceId": "28a0572ecb99ae66f3487b8c",
+    "url": "https://ir.energous.com/news-events/presentations",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 24,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_FEED",
+    "active": true,
+    "companyId": "iss_cik_0001815776",
+    "format": "RSS",
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.lenz-tx.com/",
+      "officialSite": "https://lenz-tx.com/",
+      "validItems": 10
+    },
+    "allowedSites": [
+      "https://lenz-tx.com/",
+      "https://ir.lenz-tx.com/",
+      "https://ir.lenz-tx.com/news-events/press-releases/rss"
+    ],
+    "sourceId": "2f923dc084c27c82bd7a7e72",
+    "priority": 1,
+    "url": "https://ir.lenz-tx.com/news-events/press-releases/rss",
+    "provider": "STOCKPR",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 4,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_EVENTS",
+    "active": true,
+    "companyId": "iss_cik_0001575793",
+    "format": "RSS_EVENTS",
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.energous.com/shareholder-services/rss-feeds",
+      "officialSite": "https://energous.com/",
+      "validItems": 10
+    },
+    "allowedSites": [
+      "https://energous.com/",
+      "https://ir.energous.com/",
+      "https://ir.energous.com/rss/events.xml"
+    ],
+    "sourceId": "2fa9bc30ed86346b28559482",
+    "priority": 1,
+    "url": "https://ir.energous.com/rss/events.xml",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 12,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_MATERIALS",
+    "active": true,
+    "companyId": "iss_cik_0001469443",
+    "format": "HTML_MATERIALS",
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.arcadiabio.com/investor-faq",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "metadata": {
+      "originatingIRHomepage": "https://ir.arcadiabio.com/investor-faq"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "allowedSites": [
+      "https://arcadiabio.com/",
+      "https://ir.arcadiabio.com/investor-faq",
+      "https://ir.arcadiabio.com/news-events/presentations"
+    ],
+    "sourceId": "3d283f4036f80949d792ad6b",
+    "url": "https://ir.arcadiabio.com/news-events/presentations",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T13:02:17Z",
+    "intervalHours": 24,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_FEED",
+    "active": true,
+    "companyId": "iss_cik_0001841968",
+    "format": "RSS",
+    "verificationEvidence": {
+      "linkedFrom": "https://ridgepostcapital.com/",
+      "officialSite": "https://ridgepostcapital.com/",
+      "validItems": 5
+    },
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "allowedSites": [
+      "https://ridgepostcapital.com/",
+      "https://ridgepostcapital.com/",
+      "https://ridgepostcapital.com/feed/"
+    ],
+    "sourceId": "464b4c2d630a34e966045fd4",
+    "priority": 1,
+    "url": "https://ridgepostcapital.com/feed/",
+    "provider": "WORDPRESS",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 4,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_FEED",
+    "active": true,
+    "companyId": "iss_cik_0001516551",
+    "format": "RSS",
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.skyebioscience.com/",
+      "officialSite": "https://skyebioscience.com/",
+      "validItems": 10
+    },
+    "allowedSites": [
+      "https://skyebioscience.com/",
+      "https://ir.skyebioscience.com/",
+      "https://ir.skyebioscience.com/news-releases/rss"
+    ],
+    "sourceId": "56b6a3feb46aa49f968818f6",
+    "priority": 1,
+    "url": "https://ir.skyebioscience.com/news-releases/rss",
+    "provider": "STOCKPR",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 4,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_FEED",
+    "active": true,
+    "companyId": "iss_cik_0001469443",
+    "format": "WORDPRESS_REST_NEWS",
+    "verificationEvidence": {
+      "apiRoot": "https://arcadiabio.com/wp-json/",
+      "linkedFrom": "https://arcadiabio.com/",
+      "method": "ADVERTISED_WORDPRESS_REST_METADATA_CONTRACT"
+    },
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "allowedSites": [
+      "https://arcadiabio.com/",
+      "https://arcadiabio.com/",
+      "https://arcadiabio.com/"
+    ],
+    "sourceId": "6420b9207fbaa54de582c5b2",
+    "url": "https://arcadiabio.com/wp-json/wp/v2/posts?_fields=date_gmt%2Clink%2Ctitle.rendered&context=view&order=desc&orderby=date&per_page=20",
+    "provider": "WORDPRESS",
+    "lastVerified": "2026-10-06T13:02:17Z",
+    "intervalHours": 4,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_EVENTS",
+    "active": true,
+    "companyId": "iss_cik_0002088281",
+    "verificationEvidence": "LINKED_BY_VERIFIED_IR_PAGE",
+    "allowedSites": [
+      "https://midera.com/",
+      "https://investors.midera.com/",
+      "https://investors.midera.com/news-events/events"
+    ],
+    "sourceId": "69105caa5e678089c9256411",
+    "url": "https://investors.midera.com/news-events/events",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 12,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_MATERIALS",
+    "active": true,
+    "companyId": "iss_cik_0001218683",
+    "format": "HTML_MATERIALS",
+    "verificationEvidence": {
+      "linkedFrom": "https://www.bigdigital.energy/investor-hub/sec-filings/",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "metadata": {
+      "originatingIRHomepage": "https://www.bigdigital.energy/investor-hub/sec-filings/"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "allowedSites": [
+      "https://www.bigdigital.energy/",
+      "https://www.bigdigital.energy/investor-hub/sec-filings/",
+      "https://www.bigdigital.energy/investor-hub/company-presentations/"
+    ],
+    "sourceId": "6b671a4ef1ebac195b444d51",
+    "url": "https://www.bigdigital.energy/investor-hub/company-presentations/",
+    "provider": "GENERIC",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 24,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_EVENTS",
+    "active": true,
+    "companyId": "iss_cik_0001469443",
+    "format": "RSS_EVENTS",
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.arcadiabio.com/rss-feeds",
+      "officialSite": "https://arcadiabio.com/",
+      "validItems": 10
+    },
+    "allowedSites": [
+      "https://arcadiabio.com/",
+      "http://ir.arcadiabio.com/investor-faq",
+      "https://ir.arcadiabio.com/rss/events.xml"
+    ],
+    "sourceId": "6e974d778f3f7d5fdd9f9d27",
+    "priority": 1,
+    "url": "https://ir.arcadiabio.com/rss/events.xml",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T13:02:17Z",
+    "intervalHours": 12,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "restCollection": "news_release",
+    "type": "IR_FEED",
+    "active": true,
+    "companyId": "iss_cik_0001728328",
+    "format": "WORDPRESS_REST_NEWS",
+    "verificationEvidence": {
+      "apiRoot": "https://www.inmedpharma.com/wp-json/",
+      "collectionRoute": "/wp/v2/news_release",
+      "collectionSchemaHash": "26ed19ca4471f4a4b7900c2a9bba27282ccd8c7a1f43bb69a2c40910bcbd7060",
+      "linkedFrom": "https://www.inmedpharma.com/investors/",
+      "method": "ADVERTISED_WORDPRESS_REST_METADATA_CONTRACT"
+    },
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "allowedSites": [
+      "https://www.inmedpharma.com/"
+    ],
+    "sourceId": "91f1b9261d4c82e27033d51d",
+    "url": "https://www.inmedpharma.com/wp-json/wp/v2/news_release?_fields=date_gmt%2Clink%2Ctitle.rendered&context=view&order=desc&orderby=date&per_page=20",
+    "provider": "WORDPRESS",
+    "lastVerified": "2026-10-06T12:06:58Z",
+    "intervalHours": 4,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_FEED",
+    "active": true,
+    "companyId": "iss_cik_0001484612",
+    "format": "RSS",
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.outsetmedical.com/resources/rss-feeds",
+      "officialSite": "https://www.outsetmedical.com/",
+      "validItems": 10
+    },
+    "allowedSites": [
+      "https://www.outsetmedical.com/",
+      "https://investors.outsetmedical.com/",
+      "https://investors.outsetmedical.com/rss/news-releases.xml"
+    ],
+    "sourceId": "96acf68671a182278b17e5e3",
+    "priority": 1,
+    "url": "https://investors.outsetmedical.com/rss/news-releases.xml",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T13:02:17Z",
+    "intervalHours": 6,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_EVENTS",
+    "active": true,
+    "companyId": "iss_cik_0001484612",
+    "format": "RSS_EVENTS",
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.outsetmedical.com/resources/rss-feeds",
+      "officialSite": "https://www.outsetmedical.com/",
+      "validItems": 10
+    },
+    "allowedSites": [
+      "https://www.outsetmedical.com/",
+      "https://investors.outsetmedical.com/",
+      "https://investors.outsetmedical.com/rss/events.xml"
+    ],
+    "sourceId": "a2571c8ccd33d4331708d5eb",
+    "priority": 1,
+    "url": "https://investors.outsetmedical.com/rss/events.xml",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T13:02:17Z",
+    "intervalHours": 12,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_FEED",
+    "active": true,
+    "companyId": "iss_cik_0001551152",
+    "format": "RSS",
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.abbvie.com/rss-feeds",
+      "officialSite": "https://investors.abbvie.com/",
+      "validItems": 10
+    },
+    "allowedSites": [
+      "https://investors.abbvie.com/",
+      "https://investors.abbvie.com/shareholder-services/investor-faqs",
+      "https://investors.abbvie.com/rss/news-releases.xml"
+    ],
+    "sourceId": "a6c564b27f2091d705796e92",
+    "priority": 1,
+    "url": "https://investors.abbvie.com/rss/news-releases.xml",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T13:19:54Z",
+    "intervalHours": 6,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_MATERIALS",
+    "active": true,
+    "companyId": "iss_cik_0002088281",
+    "format": "HTML_MATERIALS",
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.midera.com/",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "metadata": {
+      "originatingIRHomepage": "https://investors.midera.com/"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "allowedSites": [
+      "https://midera.com/",
+      "https://investors.midera.com/",
+      "https://investors.midera.com/news-events/presentations"
+    ],
+    "sourceId": "af97a470763da1e48d544920",
+    "url": "https://investors.midera.com/news-events/presentations",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 24,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_EVENTS",
+    "active": true,
+    "companyId": "iss_cik_0001847986",
+    "verificationEvidence": "LINKED_BY_VERIFIED_IR_PAGE",
+    "allowedSites": [
+      "https://dragonflyenergy.com/",
+      "https://investors.dragonflyenergy.com/",
+      "https://investors.dragonflyenergy.com/news-events/events-and-presentations"
+    ],
+    "sourceId": "b08a5cff7313281d1b7e8e81",
+    "url": "https://investors.dragonflyenergy.com/news-events/events-and-presentations",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 12,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_MATERIALS",
+    "active": true,
+    "companyId": "iss_cik_0001815776",
+    "format": "HTML_MATERIALS",
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.lenz-tx.com/",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "metadata": {
+      "originatingIRHomepage": "https://ir.lenz-tx.com/"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "allowedSites": [
+      "https://lenz-tx.com/",
+      "https://ir.lenz-tx.com/",
+      "https://ir.lenz-tx.com/financial-results"
+    ],
+    "sourceId": "c5dee278f93c90804356fc81",
+    "url": "https://ir.lenz-tx.com/financial-results",
+    "provider": "STOCKPR",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 24,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_MATERIALS",
+    "active": true,
+    "companyId": "iss_cik_0001551152",
+    "format": "HTML_MATERIALS",
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.abbvie.com/shareholder-services/investor-faqs",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "metadata": {
+      "originatingIRHomepage": "https://investors.abbvie.com/shareholder-services/investor-faqs"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "allowedSites": [
+      "https://investors.abbvie.com/",
+      "https://investors.abbvie.com/shareholder-services/investor-faqs",
+      "https://investors.abbvie.com/presentations"
+    ],
+    "sourceId": "c8a2b82f1b2e568d990203fe",
+    "url": "https://investors.abbvie.com/presentations",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T13:19:54Z",
+    "intervalHours": 24,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_FEED",
+    "active": true,
+    "companyId": "iss_cik_0002088281",
+    "verificationEvidence": {
+      "method": "VERIFIED_IR_HOST_PROVIDER_RSS_AND_ENTITY_VALIDATION",
+      "validItems": 3
+    },
+    "allowedSites": [
+      "https://midera.com/",
+      "https://investors.midera.com/"
+    ],
+    "sourceId": "d01b415ee339f5e1abdf932a",
+    "priority": 1,
+    "url": "https://investors.midera.com/rss/news-releases.xml",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 4,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_FEED",
+    "active": true,
+    "companyId": "iss_cik_0001818844",
+    "format": "RSS",
+    "verificationEvidence": {
+      "linkedFrom": "https://www.virios.com/",
+      "officialSite": "https://www.virios.com/",
+      "validItems": 6
+    },
+    "allowedSites": [
+      "https://www.virios.com/",
+      "https://www.virios.com/",
+      "https://www.virios.com/blog-feed.xml"
+    ],
+    "sourceId": "dfb1b9ea6443a778a6d20b0c",
+    "priority": 1,
+    "url": "https://www.virios.com/blog-feed.xml",
+    "provider": "GENERIC",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 4,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_FEED",
+    "active": true,
+    "companyId": "iss_cik_0001841968",
+    "format": "RSS",
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.ridgepostcapital.com/rss-feeds",
+      "officialSite": "https://ridgepostcapital.com/",
+      "validItems": 10
+    },
+    "allowedSites": [
+      "https://ridgepostcapital.com/",
+      "https://ir.ridgepostcapital.com/",
+      "https://ir.ridgepostcapital.com/rss/news-releases.xml"
+    ],
+    "sourceId": "e1dc17016ccc2b0cccb76781",
+    "priority": 1,
+    "url": "https://ir.ridgepostcapital.com/rss/news-releases.xml",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 6,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_EVENTS",
+    "active": true,
+    "companyId": "iss_cik_0001551152",
+    "format": "RSS_EVENTS",
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.abbvie.com/rss-feeds",
+      "officialSite": "https://investors.abbvie.com/",
+      "validItems": 10
+    },
+    "allowedSites": [
+      "https://investors.abbvie.com/",
+      "https://investors.abbvie.com/shareholder-services/investor-faqs",
+      "https://investors.abbvie.com/rss/events.xml"
+    ],
+    "sourceId": "e4aed51cdb4b47c9a61bf5da",
+    "priority": 1,
+    "url": "https://investors.abbvie.com/rss/events.xml",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T13:19:54Z",
+    "intervalHours": 12,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_EVENTS",
+    "active": true,
+    "companyId": "iss_cik_0001575793",
+    "verificationEvidence": "LINKED_BY_VERIFIED_IR_PAGE",
+    "allowedSites": [
+      "https://energous.com/",
+      "https://ir.energous.com/",
+      "https://ir.energous.com/news-events/events"
+    ],
+    "sourceId": "e8f79b71b58cc5bc447fa170",
+    "url": "https://ir.energous.com/news-events/events",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 12,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_FEED",
+    "active": true,
+    "companyId": "iss_cik_0001575793",
+    "format": "RSS",
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.energous.com/shareholder-services/rss-feeds",
+      "officialSite": "https://energous.com/",
+      "validItems": 10
+    },
+    "allowedSites": [
+      "https://energous.com/",
+      "https://ir.energous.com/",
+      "https://ir.energous.com/rss/news-releases.xml"
+    ],
+    "sourceId": "eb194e2b3a655e15dd71e63e",
+    "priority": 1,
+    "url": "https://ir.energous.com/rss/news-releases.xml",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 6,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_FEED",
+    "active": true,
+    "companyId": "iss_cik_0001469443",
+    "format": "RSS",
+    "verificationEvidence": {
+      "linkedFrom": "https://ir.arcadiabio.com/rss-feeds",
+      "officialSite": "https://arcadiabio.com/",
+      "validItems": 10
+    },
+    "allowedSites": [
+      "https://arcadiabio.com/",
+      "http://ir.arcadiabio.com/investor-faq",
+      "https://ir.arcadiabio.com/rss/news-releases.xml"
+    ],
+    "sourceId": "fb1f189a6783538ad64b7c40",
+    "priority": 1,
+    "url": "https://ir.arcadiabio.com/rss/news-releases.xml",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T13:02:17Z",
+    "intervalHours": 6,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_EVENTS",
+    "active": true,
+    "companyId": "iss_cik_0001841968",
+    "verificationEvidence": "LINKED_BY_VERIFIED_IR_PAGE",
+    "allowedSites": [
+      "https://ridgepostcapital.com/",
+      "https://ir.ridgepostcapital.com/",
+      "https://ir.ridgepostcapital.com/events"
+    ],
+    "sourceId": "fb24825f7b229f68aff34276",
+    "url": "https://ir.ridgepostcapital.com/events",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 12,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_FEED",
+    "active": true,
+    "companyId": "iss_cik_0001847986",
+    "format": "RSS",
+    "verificationEvidence": {
+      "linkedFrom": "https://dragonflyenergy.com/",
+      "officialSite": "https://dragonflyenergy.com/",
+      "validItems": 11
+    },
+    "cmsNewsPolicy": "WORDPRESS_EXPLICIT_ISSUER_ACTOR",
+    "allowedSites": [
+      "https://dragonflyenergy.com/",
+      "https://dragonflyenergy.com/",
+      "https://dragonflyenergy.com/feed/"
+    ],
+    "sourceId": "fcf6bf1c0a277d6e415ad577",
+    "priority": 1,
+    "url": "https://dragonflyenergy.com/feed/",
+    "provider": "WORDPRESS",
+    "lastVerified": "2026-10-06T12:00:01Z",
+    "intervalHours": 4,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
+  },
+  {
+    "type": "IR_MATERIALS",
+    "active": true,
+    "companyId": "iss_cik_0001484612",
+    "format": "HTML_MATERIALS",
+    "verificationEvidence": {
+      "linkedFrom": "https://investors.outsetmedical.com/",
+      "method": "ADVERTISED_MATERIALS_HUB_FROM_VERIFIED_IR_PAGE"
+    },
+    "metadata": {
+      "originatingIRHomepage": "https://investors.outsetmedical.com/"
+    },
+    "contentDateStatus": "PUBLICATION_DATE_NOT_PROVIDED",
+    "allowedSites": [
+      "https://www.outsetmedical.com/",
+      "https://investors.outsetmedical.com/",
+      "https://investors.outsetmedical.com/news-and-events/events-and-presentations"
+    ],
+    "sourceId": "fe8aac8f24a388bdd72b74ad",
+    "url": "https://investors.outsetmedical.com/news-and-events/events-and-presentations",
+    "provider": "GCS",
+    "lastVerified": "2026-10-06T13:02:17Z",
+    "intervalHours": 24,
+    "verified": true,
+    "bootstrapValidatedAt": "2026-10-06",
+    "bootstrapBasis": "RECORDED_GENERIC_DISCOVERY_AND_SUCCESSFUL_OWNER_SOURCE_INGESTION"
   }
 ]
