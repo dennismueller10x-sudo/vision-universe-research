@@ -181,9 +181,14 @@ def _discover_ir(company, official_site, http, now, max_pages, partial):
         parts = urlsplit(link['url'])
         if re.search(r'/static-files/|\.(?:ico|png|jpg|jpeg|svg|webp|css|js|json|pdf|xml|zip|woff2?)(?:$)', parts.path, re.I):
             return False
-        return bool(re.fullmatch(r'(?:for |our )?investors?(?: relations| overview| information| center| resources)?', ir_label(link), re.I) or
-                    re.search(r'/(?:investor[-_]?relations|investors?)(?:[/._-]|$)', parts.path, re.I) or
-                    (parts.path in ('', '/') and re.match(r'(?:ir|investors?)\.', parts.hostname or '', re.I)))
+        exact_navigation = re.fullmatch(r'(?:for |our )?investors?(?: relations| overview| information| center| resources)?', ir_label(link), re.I)
+        # URL vocabulary establishes an IR route only inside verified company
+        # ownership. An external investing article needs an explicit delegated
+        # IR navigation label before its feeds can acquire first-party trust.
+        owned_route = within_domain(link['url'], official_site) or same_web_host(link['url'], official_site)
+        route_signal = (re.search(r'/(?:investor[-_]?relations|investors?)(?:[/._-]|$)', parts.path, re.I) or
+                        (parts.path in ('', '/') and re.match(r'(?:ir|investors?)\.', parts.hostname or '', re.I)))
+        return bool(exact_navigation or (owned_route and route_signal))
     def ir_label(link):
         # Accessible new-tab hints and repeated title/visible labels can
         # obscure an otherwise exact investor navigation label. Normalize
