@@ -39,7 +39,17 @@ class Links(HTMLParser):
 def parse_links(body, url):
     parser = Links()
     parser.feed(body.decode('utf-8', 'replace'))
-    return [{**l, 'text': clean(l['text']), 'url': canonical_url(urljoin(url, l['href']))} for l in parser.links if canonical_url(urljoin(url, l['href']))]
+    links = []
+    for link in parser.links:
+        try:
+            destination = canonical_url(urljoin(url, link['href']))
+        except ValueError:
+            # Malformed HTML destinations must not discard valid links on
+            # the same page. Canonical validation still rejects unsafe URLs.
+            continue
+        if destination:
+            links.append({**link, 'text': clean(link['text']), 'url': destination})
+    return links
 
 
 def parse_date(value):
