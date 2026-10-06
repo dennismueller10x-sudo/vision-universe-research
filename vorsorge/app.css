@@ -229,3 +229,6 @@ main.vs-main{padding-bottom:110px;min-height:70vh}
 .vs-own{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
 .vs-own>div{background:var(--panel);border-radius:14px;padding:12px 14px}
 .vs-own b{display:block;font-size:16px}
+.vs-seg .vs-seg-link{padding:8px 14px;border-radius:99px;font-weight:750;font-size:13px;white-space:nowrap;color:var(--muted);text-decoration:none}
+.vs-seg .vs-seg-link[aria-pressed=true]{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.vs-hero .vs-seg{width:max-content}

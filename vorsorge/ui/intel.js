@@ -175,8 +175,18 @@
     if (ev.eventType === "SECTOR_WEIGHT_CHANGED") return VS.sectorName(ev.entityName) + ": " + wpct(ev.oldValue) + " → " + wpct(ev.newValue);
     return ev.explanation;
   }
+  /* Kostenaenderungen laut Prospekt (nur echte, gleich definierte Felder) - Teil von "Was hat sich geaendert?". */
+  function costChangeCard(d) {
+    var c = d.costs || {};
+    if (c.status !== "AVAILABLE" || !c.previousFiling) return "";
+    var ch = c.changes || [];
+    return '<section class="vs-section"><div class="vs-card"><p class="vs-label">Kosten laut Prospekt</p>' +
+      (ch.length ? ch.map(function (x) { return '<div class="vs-row"><span>' + esc(x.label) + '</span><span class="num">' + VS.costPct(x.oldValue) + ' → ' + VS.costPct(x.newValue) + '</span></div>'; }).join("") +
+        '<p class="vs-fine" style="margin-top:6px">Prospekt ' + F.date(c.previousFiling) + ' → ' + F.date(ch[0].to) + ' (SEC Risk/Return-Daten).</p>'
+        : '<p class="vs-sub" style="margin-top:6px">Keine Änderung der Kostenquote seit dem Prospekt vom ' + F.date(c.previousFiling) + '.</p>') + '</div></section>';
+  }
   VS.renderChanges = function (el, e, d) {
-    if (!d.holdings || d.holdings.status !== "AVAILABLE") { el.innerHTML = '<section class="vs-section">' + noHoldings(d) + '</section>'; return; }
+    if (!d.holdings || d.holdings.status !== "AVAILABLE") { el.innerHTML = costChangeCard(d) || ('<section class="vs-section">' + noHoldings(d) + '</section>'); return; }
     VS.holdings(d.holdings.series).then(function (f) {
       if (!f) return;
       var ch = f.changes || {}, evs = ch.events || [], showAll = false;
@@ -190,7 +200,7 @@
             (list.length > 40 ? '<p class="vs-fine">… und ' + (list.length - 40) + ' weitere.</p>' : "") + '</div></section>' : "") +
           '<section class="vs-section"><div class="vs-card"><p class="vs-label">Zeitleiste</p>' + (f.timeline && f.timeline.length ? f.timeline.map(function (t) { return '<div class="vs-row"><span class="num">' + F.date(t.asOf) + '</span><span style="text-align:right">' + esc(t.text) + '</span></div>'; }).join("")
             : '<p class="vs-fine">Noch keine Historie.</p>') +
-          '<p class="vs-fine" style="margin-top:8px">Bestände: ' + f.history.map(function (h) { return F.date(h.asOf) + " (" + h.positions.toLocaleString("de-DE") + ")"; }).join(" · ") + '</p></div></section>';
+          '<p class="vs-fine" style="margin-top:8px">Bestände: ' + f.history.map(function (h) { return F.date(h.asOf) + " (" + h.positions.toLocaleString("de-DE") + ")"; }).join(" · ") + '</p></div></section>' + costChangeCard(d);
         var cb = el.querySelector("#vs-ch-all"); if (cb) cb.onchange = function () { showAll = cb.checked; draw(); };
       }
       draw();

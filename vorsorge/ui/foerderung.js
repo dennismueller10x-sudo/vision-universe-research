@@ -193,9 +193,9 @@
       (eu ? '<div class="vs-card" style="margin-top:14px"><p class="vs-label">Europa · ESMA FIRDS + GLEIF (Stand ' + F.date(eu.asOf) + ')</p>' +
         '<div class="vs-row"><span>ETF-Anteilklassen mit ISIN</span><span class="num">' + n(eu.shareClasses) + '</span></div><div class="vs-row"><span>davon „UCITS“ im amtlichen Namen</span><span class="num">' + n(eu.ucitsInName) + '</span></div>' +
         '<div class="vs-row"><span>an deutschen Börsen gelistet</span><span class="num">' + n(eu.listedInGermany) + '</span></div><div class="vs-row"><span>Listings (Anteilklasse × Handelsplatz)</span><span class="num">' + n(eu.venues) + '</span></div>' +
-        (eu.ucitsRegister ? '<div class="vs-row"><span>UCITS laut ESMA-Fondsregister (Namenszuordnung)</span><span class="num">' + n(eu.ucitsRegister) + '</span></div><div class="vs-row"><span>davon Vertrieb in Deutschland im Register gemeldet (ältere Meldungen fehlen teils)</span><span class="num">' + n(eu.notifiedInGermany) + '</span></div>' : "") +
+        (eu.ucitsRegister ? '<div class="vs-row"><span>UCITS-Zuordnung über ESMA-Register (Konfidenz mittel)</span><span class="num">' + n(eu.ucitsRegister) + '</span></div><div class="vs-row"><span>davon Vertrieb in Deutschland im Register gemeldet (ältere Meldungen fehlen teils)</span><span class="num">' + n(eu.notifiedInGermany) + '</span></div>' : "") +
         (eu.domicileFromIsin ? '<div class="vs-row"><span>Domizil aus dem ISIN-Präfix abgeleitet (keine Fonds-LEI)</span><span class="num">' + n(eu.domicileFromIsin) + '</span></div>' : "") +
-        '<div class="vs-row"><span>veröffentlicht mit Kursfeed · WKN · laufenden Kosten · Holdings</span><span class="num">0 · 0 · 0 · 0</span></div>' +
+        '<div class="vs-row"><span>mit Kursanalyse · Holdings · Kosten</span><span class="num">nicht verfügbar</span></div>' +
         '<a class="vs-pill small" style="margin-top:8px" href="#/europa">Europäische ETFs ansehen</a></div>' : "") +
       '<div class="vs-card soft" style="margin-top:14px"><p class="vs-label">Quellen-Status</p><div class="vs-table-wrap"><table class="vs-table" style="min-width:560px"><thead><tr><th>Quelle</th><th>Art</th><th>Status</th><th>Stand</th><th>Einträge</th><th>Felder</th></tr></thead><tbody>' +
       it.providers.map(function (p) { var st = ST[p.status] || ["", p.status]; return '<tr><td>' + esc(p.id) + '</td><td>' + esc({ PRIMARY_ISSUER: "Emittent", REGULATORY: "Regulierung", MARKET_DATA_PROVIDER: "Kursanbieter" }[p.type] || p.type) + '</td><td><span class="vs-badge ' + st[0] + '">' + esc(st[1]) + '</span></td><td>' + F.date(p.lastSuccessfulFetch) + '</td><td class="num">' + n(p.items) + '</td><td style="text-align:left;white-space:normal" class="vs-fine">' + esc(p.fields) + '</td></tr>'; }).join("") +
@@ -204,8 +204,8 @@
 
   VS.views.daten = function () {
     var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Datenquellen & Datenqualität</p><h1>Was wir wissen –<br>und was nicht.</h1><p class="vs-lead">Jede Zahl in Vision Universe Altersvorsorge hat eine Quelle. Was fehlt, steht hier – statt geschätzt zu werden.</p></section><section class="vs-section" id="vs-dq"><div class="vs-loading">…</div></section>');
-    Promise.all([VS.getJSON("/vorsorge/data/quality.json"), VS.master(), VS.getJSON("/vorsorge/data/ucits-coverage.json").catch(function () { return null; }), VS.getJSON("/vorsorge/data/data-gaps.json").catch(function () { return null; })]).then(function (res) {
-      var q = res[0], m = res[1], u = res[2], g = res[3], host = root.querySelector("#vs-dq");
+    Promise.all([VS.getJSON("/vorsorge/data/quality.json"), VS.master(), VS.getJSON("/vorsorge/data/ucits-coverage.json").catch(function () { return null; }), VS.getJSON("/vorsorge/data/data-gaps.json").catch(function () { return null; }), VS.getJSON("/vorsorge/data/changes.json").catch(function () { return null; })]).then(function (res) {
+      var q = res[0], m = res[1], u = res[2], g = res[3], chg = res[4], host = root.querySelector("#vs-dq");
       var n = function (x) { return x === null || x === undefined ? "–" : Number(x).toLocaleString("de-DE"); };
       function tbl(obj, limit) { return Object.keys(obj || {}).sort(function (a, b) { return obj[b] - obj[a]; }).slice(0, limit || 12).map(function (k) { return '<div class="vs-row"><span>' + esc(k) + '</span><span class="num">' + n(obj[k]) + '</span></div>'; }).join(""); }
       var ing = q.ingest || {}, rep = ing.report || {}, cat = ing.catalog || {};
@@ -213,8 +213,25 @@
       var tile = function (label, val, sub) { return '<div class="vs-card app"><p class="vs-label">' + label + '</p><p class="vs-kpi">' + val + '</p><p class="vs-fine">' + sub + '</p></div>'; };
       var STATUS = { ACTIVE: "aktiv", ACTIVE_WHERE_RECONSTRUCTED: "aktiv, wo rekonstruierbar", PARTIAL: "teilweise", NOT_AVAILABLE: "nicht verfügbar", NOT_CONNECTED: "nicht angebunden" };
       var SM = V.Provider.STATUS_MATRIX;
+      // Datenabdeckung auf einen Blick: USA (Tiingo, SEC) und Europa (ESMA) getrennt; Fehlendes bleibt sichtbar.
+      var it = q.intelligence || {}, cv = it.coverage || {}, eu = it.europe || {}, hs = it.holdings || {};
+      var row = function (k, v) { return '<div class="vs-row"><span>' + k + '</span><span class="num">' + v + '</span></div>'; };
+      var na = '<span class="vs-badge">nicht verfügbar</span>';
+      var glance = '<div class="vs-grid g2"><div class="vs-card"><p class="vs-label">USA · Listings an US-Börsen</p>' +
+        row("Listings", n(L.listings)) + row("Analysierbar (Standard + komplex)", n(it.publicUniverse)) +
+        row("Mit Kursanalyse", n(P.withAnyHistory) + " · " + F.pct(P.ratio, 0)) +
+        row("Mit Holdings & X-Ray (SEC N-PORT)", cv.holdings ? n(cv.holdings.count) + " · " + F.pct(cv.holdings.ratio, 0) : "–") +
+        row("Mit Kostenquote (SEC-Prospekt)", cv.costs ? n(cv.costs.count) + " · " + F.pct(cv.costs.ratio, 0) : "–") +
+        row("Holdings-Historie", n(hs.snapshots) + " Quartalsstände") +
+        row("Kostenänderungen laut Prospekt", chg && Number.isFinite(chg.costEvents) ? n(chg.costEvents) + " Listings" : "–") +
+        '<p class="vs-fine" style="margin-top:6px">Anteile bezogen auf das analysierbare Universum (Kursanalyse: alle Listings).</p></div>' +
+        '<div class="vs-card"><p class="vs-label">Europa · UCITS-Anteilklassen (ESMA)</p>' +
+        row("Anteilklassen", n(eu.shareClasses)) + row("UCITS-Zuordnung über ESMA-Register", n(eu.ucitsRegister) + (eu.shareClasses ? " · " + F.pct(eu.ucitsRegister / eu.shareClasses, 0) : "")) +
+        row("Vertrieb in Deutschland gemeldet", n(eu.notifiedInGermany)) + row("Kursanalyse", na) + row("Holdings", na) + row("Kosten (TER / laufende Kosten)", na) +
+        '<p class="vs-fine" style="margin-top:6px">Für europäische Anteilklassen ist keine frei nutzbare Kurs-, Holdings- oder Kostenquelle angebunden. <a href="#/europa">Europäische ETFs</a></p></div></div>';
       host.innerHTML =
-        '<div class="vs-grid g4">' +
+        '<h2 style="margin-bottom:10px">Datenabdeckung auf einen Blick</h2>' + glance +
+        '<div class="vs-grid g4" style="margin-top:14px">' +
         tile("Datenstand", F.date(q.asOf), "letzter Kurstag im Bestand") +
         tile("Tiingo-Ingest", ing.status === "COMPLETE" ? "vollständig" : ing.status === "PARTIAL" ? "teilweise" : "nicht gelaufen", rep.activeTickers ? n(rep.processedOk) + " von " + n(rep.activeTickers) + " aktiven Tickern" : "nur Repository-Auszug") +
         tile("Rohzeilen (ETF)", n(L.raw), cat.catalogRows ? "aus " + n(cat.catalogRows) + " Zeilen der Tiingo-Tickerliste" : "Tiingo-Tickerliste") +

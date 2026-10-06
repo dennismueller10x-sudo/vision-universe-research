@@ -141,6 +141,8 @@
     var pairs = [];
     for (var i = 0; i < pos.length; i++) for (var j = i + 1; j < pos.length; j++) { var a = holdings[pos[i].symbol], b = holdings[pos[j].symbol]; if (a && b) pairs.push({ a: pos[i].symbol, b: pos[j].symbol, o: X.overlap(a, b) }); }
     el.innerHTML = '<div class="vs-card app" style="margin-top:14px"><p class="vs-label">Was du wirklich besitzt</p><p style="margin-top:8px;color:var(--app-ink);font-size:17px">' + esc(sentence) + '</p>' +
+      // Abdeckung prominent: nur der Anteil mit Bestandsdaten wird durchleuchtet; der Rest zaehlt nicht als 0-Engagement.
+      '<p style="margin-top:6px;color:var(--app-ink);font-weight:750">Für ' + F.pct(lt.coverage, 0) + ' deines Portfolios liegen Holdings vor.' + (lt.coverage < 0.995 ? ' Die Durchleuchtung gilt nur für diesen Anteil – der Rest ist nicht durchleuchtet, nicht „ohne Engagement“.' : '') + '</p>' +
       (lt.effectiveDuplicateExposure > 0 ? '<p class="vs-fine" style="margin-top:4px;color:var(--app-muted)">' + F.pct(lt.effectiveDuplicateExposure, 1) + ' deines Portfolios stecken in Unternehmen, die du über mehrere ETFs hältst.</p>' : "") + '</div>' +
       '<div class="vs-own" style="margin-top:12px">' + lt.companies.slice(0, 12).map(function (c) {
         return '<div><b>' + esc(c.name) + '</b><span class="num" style="font-size:20px;font-weight:800">' + F.pct(c.weight, 2) + '</span><span class="vs-fine"> effektiv</span><br>' + (c.via.length > 1 ? '<span class="vs-badge">über ' + c.via.length + ' ETFs</span> ' : "") + '<span class="vs-fine">' + esc(c.via.join(", ")) + '</span></div>';

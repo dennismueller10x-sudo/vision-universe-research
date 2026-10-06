@@ -71,13 +71,13 @@
     var lever = M.leverAnalysis(VS.state.plan, VS.state.plan.returns.basis).levers[0];
     var fee = M.feeImpact({ start: VS.state.plan.start, monthly: VS.state.plan.monthly, years: p.years, annualReturn: VS.state.plan.returns.basis, costA: 0.002, costB: 0.015 });
     var root = VS.render(
-      '<section class="vs-hero"><p class="vs-eyebrow">Vision Universe Altersvorsorge</p><h1>Heute planen.<br>Morgen freier leben.</h1>' +
-      '<p class="vs-lead">Wie viel musst du sparen? Welche ETFs passen zu deinem Ziel? Was kosten dich Gebühren über 30 Jahre? Vision Universe rechnet es dir aus – transparent, ohne Produktverkauf.</p>' +
+      '<section class="vs-hero"><p class="vs-eyebrow">Vision Universe Vorsorge</p><h1>Plane deine Zukunft.<br>Verstehe deine ETFs.</h1>' +
+      '<p class="vs-lead">Plane deine finanzielle Zukunft. Verstehe ETFs. Durchleuchte dein Portfolio. Erkenne Veränderungen. Mit amtlichen Daten, offener Datenabdeckung und ohne Produktverkauf.</p>' +
       '<form id="vs-search-form" class="vs-search" role="search"><span aria-hidden="true">⌕</span><input id="vs-q" autocomplete="off" placeholder="ETF, Ziel oder Frage eingeben …" aria-label="ETF, Ziel oder Frage eingeben"><button type="submit">Suchen</button></form>' +
       '<div class="vs-suggest" id="vs-suggest"></div>' +
       '<nav class="vs-tabs" aria-label="Vorsorge-Bereiche"><a class="vs-pill primary" href="#/plan">Planen</a><a class="vs-pill" href="#/etfs">ETFs</a><a class="vs-pill" href="#/portfolio">Portfolio</a><a class="vs-pill" href="#/vergleichen">Vergleichen</a><a class="vs-pill" href="#/foerderung">Förderung</a><a class="vs-pill" href="#/wissen">Wissen</a></nav></section>' +
 
-      '<section class="vs-section" aria-label="So gehst du vor"><div class="vs-steps">' + [["#/plan", "Ziel definieren"], ["#/plan/luecke", "Vorsorgelücke verstehen"], ["#/plan", "Sparrate simulieren"], ["#/etfs", "ETF-Welt entdecken"], ["#/portfolio", "Portfolio analysieren"]].map(function (x, i) {
+      '<section class="vs-section" aria-label="So gehst du vor"><div class="vs-steps">' + [["#/plan", "Planen"], ["#/etfs", "ETFs entdecken"], ["#/etf/VT", "ETF verstehen"], ["#/portfolio", "Portfolio durchleuchten"], ["#/monitor", "Veränderungen erkennen"]].map(function (x, i) {
         return '<a class="vs-step" href="' + x[0] + '"><b>' + (i + 1) + '</b><span>' + x[1] + '</span></a>'; }).join("") + '</div><p class="vs-fine" style="margin-top:8px">Nichts davon ist Pflicht. Jeder Schritt funktioniert für sich.</p></section>' +
       '<section class="vs-section"><div class="vs-grid g2">' +
       '<a class="vs-card app link" href="#/plan"><span class="vs-num-badge">1</span><p class="vs-label">Dein Plan</p>' +

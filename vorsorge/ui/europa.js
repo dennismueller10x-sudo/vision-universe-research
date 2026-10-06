@@ -37,17 +37,21 @@
   function venueNames(list) { var seen = {}, out = []; list.forEach(function (m) { var n = MIC[m]; if (n && !seen[n]) { seen[n] = 1; out.push(n); } }); return out; }
 
   VS.views.europa = function (r) {
+    if (r.args[0] === "vergleich") return compare((r.query.i || "").split(",").map(function (x) { return x.trim().toUpperCase(); }).filter(Boolean).slice(0, 4));
     if (r.args[0]) return detail(r.args[0].toUpperCase());
     var q = r.query || {};
-    var st = { q: q.q || "", brand: q.brand || "", dom: q.dom || "", dist: q.dist || "", ccy: q.ccy || "", de: q.de === "1", ucits: q.ucits !== "0", limit: 50 };
+    var st = { q: q.q || "", brand: q.brand || "", dom: q.dom || "", dist: q.dist || "", ccy: q.ccy || "", venue: q.venue || "", de: q.de === "1", reg: q.reg === "1", notifDe: q.notif === "1",
+      // Eine ISIN oder ein Registerfilter sucht im ganzen Stamm, nicht nur unter "UCITS im Namen"
+      ucits: q.ucits ? q.ucits !== "0" : !(q.q || q.reg === "1" || q.notif === "1"), limit: 50 };
     var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">ETF Intelligence · Europa</p><h1>Europäische ETFs.<br>Mit ISIN.</h1><p class="vs-lead">Alle ETF-Anteilklassen, die an EU-Handelsplätzen zugelassen sind – aus dem amtlichen Register der EU-Wertpapieraufsicht (ESMA FIRDS) mit Domizil aus dem LEI-Register (GLEIF).</p>' +
       '<div class="vs-note" style="margin-top:14px">Kurse, Kosten und Holdings europäischer Listings sind noch nicht angebunden: Die Emittenten erlauben den automatisierten Abruf nicht, ein europäischer Kursanbieter ist noch nicht verbunden. Wir zeigen deshalb Stammdaten und Handelsplätze – keine Preise.</div>' +
-      '<form class="vs-search" id="vs-eu-f" role="search" style="margin-top:14px"><span aria-hidden="true">⌕</span><input id="vs-eu-q" value="' + esc(st.q) + '" placeholder="ISIN, Name oder Anbieter …" aria-label="Europäische ETFs durchsuchen" autocomplete="off"><button type="submit">Suchen</button></form></section>' +
+      VS.marketSwitch("eu") + '<form class="vs-search" id="vs-eu-f" role="search" style="margin-top:14px"><span aria-hidden="true">⌕</span><input id="vs-eu-q" value="' + esc(st.q) + '" placeholder="ISIN, Name, Anbieter, Börse oder Land …" aria-label="Europäische ETFs durchsuchen" autocomplete="off"><button type="submit">Suchen</button></form></section>' +
       '<section class="vs-section" id="vs-eu"><div class="vs-loading">Register wird geladen …</div></section>');
     VS.euIndex().then(function (j) {
       var host = root.querySelector("#vs-eu"), input = root.querySelector("#vs-eu-q"), t = null;
       root.querySelector("#vs-eu-f").addEventListener("submit", function (ev) { ev.preventDefault(); st.q = input.value; st.limit = 50; draw(); });
       input.addEventListener("input", function () { clearTimeout(t); t = setTimeout(function () { st.q = input.value; st.limit = 50; draw(); }, 150); });
+      var venueOptions = (function () { var c = {}; j.items.forEach(function (x) { venueNames(x.venueList).forEach(function (n) { c[n] = (c[n] || 0) + 1; }); }); return Object.keys(c).sort(function (a, b) { return c[b] - c[a]; }); })();
       function uniq(f) { var s = {}; j.items.forEach(function (x) { if (x[f]) s[x[f]] = (s[x[f]] || 0) + 1; }); return Object.keys(s).sort(function (a, b) { return s[b] - s[a]; }); }
       function sel(k, label, vals, lab) { return '<select data-k="' + k + '" aria-label="' + esc(label) + '"><option value="">' + esc(label) + ': alle</option>' + vals.map(function (v) { return '<option value="' + esc(v) + '"' + (st[k] === v ? " selected" : "") + '>' + esc(lab ? lab(v) : v) + '</option>'; }).join("") + '</select>'; }
       function filtered() {
@@ -60,8 +64,10 @@
           if (st.dom && x.domicile !== st.dom) return false;
           if (st.dist && x.distribution !== st.dist) return false;
           if (st.ccy && x.currency !== st.ccy) return false;
+          if (st.venue && venueNames(x.venueList).indexOf(st.venue) < 0) return false;
           if (st.de && !x.de) return false;
-          if (words.length) { var hay = (x.isin + " " + x.name + " " + (x.issuerLegalName || "") + " " + (BRAND[x.issuerBrand] || "")).toLowerCase(); if (!words.every(function (w) { return hay.indexOf(w) >= 0; })) return false; }
+          if (words.length) { var hay = x.hay || (x.hay = (x.isin + " " + x.name + " " + (x.issuerLegalName || "") + " " + (BRAND[x.issuerBrand] || "") + " " + venueNames(x.venueList).join(" ") + " " + x.venueList.join(" ") + " " +
+              (x.domicile ? VS.countryName(x.domicile) + " " + x.domicile : "") + " " + (x.reg ? x.reg.fundName + " " + (x.reg.manager || "") : "")).toLowerCase()); if (!words.every(function (w) { return hay.indexOf(w) >= 0; })) return false; }
           return true;
         }).sort(function (a, b) { return (b.isin.toLowerCase() === st.q.toLowerCase()) - (a.isin.toLowerCase() === st.q.toLowerCase()) || b.venueList.length - a.venueList.length || (a.name < b.name ? -1 : 1); });
       }
@@ -69,16 +75,16 @@
         var list = filtered();
         host.innerHTML = '<div class="vs-section-head"><div><h2>' + list.length.toLocaleString("de-DE") + ' Anteilklassen</h2><p class="vs-sub">' + j.rows.length.toLocaleString("de-DE") + ' im Register · Stand ' + F.date(j.asOf) + ' · ' + esc(j.attribution) + '</p></div></div>' +
           '<div class="vs-filters" role="group" aria-label="Filter">' + sel("brand", "Anbieter", uniq("issuerBrand"), function (k) { return BRAND[k] || k; }) + sel("dom", "Domizil", uniq("domicile"), VS.countryName) +
-          sel("dist", "Ertragsverwendung", uniq("distribution"), function (k) { return DIST[k] || k; }) + sel("ccy", "Währung", uniq("currency")) +
-          (j.register ? '<label class="vs-check"><input type="checkbox" data-k="reg"' + (st.reg ? " checked" : "") + '> UCITS laut ESMA-Register</label><label class="vs-check"><input type="checkbox" data-k="notifDe"' + (st.notifDe ? " checked" : "") + '> Vertrieb in Deutschland im ESMA-Register gemeldet</label>' : "") +
+          sel("dist", "Ertragsverwendung", uniq("distribution"), function (k) { return DIST[k] || k; }) + sel("ccy", "Währung", uniq("currency")) + sel("venue", "Handelsplatz", venueOptions) +
+          (j.register ? '<label class="vs-check"><input type="checkbox" data-k="reg"' + (st.reg ? " checked" : "") + '> UCITS-Zuordnung über ESMA-Register</label><label class="vs-check"><input type="checkbox" data-k="notifDe"' + (st.notifDe ? " checked" : "") + '> Vertrieb in Deutschland im ESMA-Register gemeldet</label>' : "") +
           '<label class="vs-check"><input type="checkbox" data-k="ucits"' + (st.ucits ? " checked" : "") + '> nur „UCITS“ im amtlichen Namen</label><label class="vs-check"><input type="checkbox" data-k="de"' + (st.de ? " checked" : "") + '> an deutschen Börsen gelistet</label></div>' +
           '<div class="vs-table-wrap"><table class="vs-table"><caption class="vs-sr">Europäische ETF-Anteilklassen</caption><thead><tr><th>Name · ISIN</th><th>Anbieter</th><th>Domizil</th><th>Ertragsverwendung</th><th>Währung</th><th>Handelsplätze</th></tr></thead><tbody>' +
           list.slice(0, st.limit).map(function (x) {
             var v = venueNames(x.venueList);
-            return '<tr><td><a href="#/europa/' + esc(x.isin) + '">' + esc(x.name) + '</a><span class="t-name">' + esc(x.isin) + (x.reg ? ' · UCITS laut ESMA-Register (Namenszuordnung)' : "") + '</span></td><td>' + esc(BRAND[x.issuerBrand] || x.issuerLegalName || "–") + '</td><td>' + esc(x.domicile ? VS.countryName(x.domicile) : "–") + '</td><td>' + esc(DIST[x.distribution] || "–") + '</td><td>' + esc(x.currency || "–") + '</td><td>' + x.venueList.length + (v.length ? '<span class="t-name">' + esc(v.slice(0, 3).join(", ")) + (v.length > 3 ? " …" : "") + '</span>' : "") + '</td></tr>';
+            return '<tr><td><a href="#/europa/' + esc(x.isin) + '">' + esc(x.name) + '</a><span class="t-name">' + esc(x.isin) + (x.reg ? ' · UCITS-Zuordnung über ESMA-Register' + (x.reg.hosts.indexOf("DE") >= 0 ? " · Vertrieb in Deutschland gemeldet" : "") : "") + '</span></td><td>' + esc(BRAND[x.issuerBrand] || x.issuerLegalName || "–") + '</td><td>' + esc(x.domicile ? VS.countryName(x.domicile) : "–") + '</td><td>' + esc(DIST[x.distribution] || "–") + '</td><td>' + esc(x.currency || "–") + '</td><td>' + x.venueList.length + (v.length ? '<span class="t-name">' + esc(v.slice(0, 3).join(", ")) + (v.length > 3 ? " …" : "") + '</span>' : "") + '</td></tr>';
           }).join("") + '</tbody></table></div>' +
           (list.length > st.limit ? '<div style="text-align:center;margin-top:14px"><button class="vs-pill" id="vs-eu-more">Weitere anzeigen</button></div>' : "") + (list.length ? "" : '<div class="vs-empty">Keine Anteilklasse passt zu diesen Filtern.</div>') +
-          '<p class="vs-fine" style="margin-top:12px">Ertragsverwendung laut CFI-Code (vom Emittenten gemeldet). Im Wertpapierregister (FIRDS) ist „UCITS“ kein eigenes Feld – dieser Filter prüft nur den amtlichen Namen. „UCITS laut ESMA-Register“ stammt aus dem Fondsregister, zugeordnet über Fondsname und Domizil. Domizil = Rechtsordnung der Fonds-LEI, sonst aus dem ISIN-Präfix abgeleitet.</p>';
+          '<p class="vs-fine" style="margin-top:12px">Ertragsverwendung laut CFI-Code (vom Emittenten gemeldet). Im Wertpapierregister (FIRDS) ist „UCITS“ kein eigenes Feld – dieser Filter prüft nur den amtlichen Namen. Die „UCITS-Zuordnung über ESMA-Register“ stammt aus dem amtlichen Fondsregister; die Zuordnung zur Anteilklasse erfolgt über Fondsname und Domizil (Konfidenz mittel), nicht über die ISIN. Domizil = Rechtsordnung der Fonds-LEI, sonst aus dem ISIN-Präfix abgeleitet.</p>';
         host.querySelectorAll("select[data-k]").forEach(function (s) { s.onchange = function () { st[s.dataset.k] = s.value; st.limit = 50; draw(); }; });
         host.querySelectorAll("input[data-k]").forEach(function (c) { c.onchange = function () { st[c.dataset.k] = c.checked; st.limit = 50; draw(); }; });
         var more = host.querySelector("#vs-eu-more"); if (more) more.onclick = function () { st.limit += 50; draw(); };
@@ -86,6 +92,38 @@
       draw();
     }).catch(function () { root.querySelector("#vs-eu").innerHTML = VS.pending("Register nicht erreichbar", "Die europäischen Stammdaten konnten nicht geladen werden."); });
   };
+
+  /* Vergleich europaeischer Anteilklassen: nur Felder, die alle besitzen (Stamm- und Registerdaten) - keine Kennzahlen. */
+  function compare(isins) {
+    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow"><a href="#/europa" style="text-decoration:none">ETF Intelligence · Europa</a> · Vergleich</p><h1>Anteilklassen<br>nebeneinander.</h1>' +
+      '<p class="vs-lead">Bis zu vier europäische Anteilklassen – nur Stamm- und Registerdaten. Ohne Kurse, Holdings und Kosten gibt es keinen Kennzahlenvergleich.</p>' +
+      '<form class="vs-search" id="vs-euc-f"><span aria-hidden="true">+</span><input id="vs-euc-q" placeholder="ISIN hinzufügen" autocomplete="off" aria-label="ISIN hinzufügen"><button type="submit">Hinzufügen</button></form><div class="vs-suggest" id="vs-euc-s"></div><div class="vs-tabs" id="vs-euc-chips"></div></section>' +
+      '<section class="vs-section" id="vs-euc"><div class="vs-loading">Register wird geladen …</div></section>');
+    VS.euIndex().then(function (j) {
+      var xs = isins.map(function (i) { return j.byIsin[i]; }).filter(Boolean), ids = xs.map(function (x) { return x.isin; });
+      var href = function (list) { return "#/europa/vergleich?i=" + encodeURIComponent(list.join(",")); };
+      root.querySelector("#vs-euc-chips").innerHTML = ids.map(function (i) { return '<a class="vs-pill small primary" href="' + href(ids.filter(function (y) { return y !== i; })) + '" aria-label="' + i + ' entfernen">' + i + ' ×</a>'; }).join("");
+      var q = root.querySelector("#vs-euc-q"), box = root.querySelector("#vs-euc-s");
+      q.addEventListener("input", function () {
+        var w = q.value.toLowerCase().trim(); if (w.length < 3) { box.innerHTML = ""; return; }
+        var hits = j.items.filter(function (x) { return (x.isin + " " + x.name).toLowerCase().indexOf(w) >= 0; }).slice(0, 6);
+        box.innerHTML = hits.length ? '<ul>' + hits.map(function (x) { return '<li><a href="' + href(ids.concat(x.isin).slice(-4)) + '"><span><b>' + esc(x.isin) + '</b> · ' + esc(x.name) + '</span></a></li>'; }).join("") + '</ul>' : "";
+      });
+      root.querySelector("#vs-euc-f").addEventListener("submit", function (ev) { ev.preventDefault(); var v = q.value.trim().toUpperCase(); if (j.byIsin[v]) VS.go(href(ids.concat(v).slice(-4))); });
+      var host = root.querySelector("#vs-euc");
+      if (xs.length < 2) { host.innerHTML = VS.pending("Mindestens zwei Anteilklassen", "Füge oben eine weitere ISIN hinzu."); return; }
+      var ROWS = [["Anbieter", function (x) { return BRAND[x.issuerBrand] || x.issuerLegalName || "–"; }], ["Domizil", function (x) { return x.domicile ? VS.countryName(x.domicile) : "–"; }],
+        ["Ertragsverwendung (CFI)", function (x) { return DIST[x.distribution] || "–"; }], ["Fondswährung", function (x) { return x.currency || "–"; }],
+        ["Handelsplätze", function (x) { return String(x.venueList.length); }], ["An deutschen Börsen", function (x) { return x.de ? "ja" : "nein"; }],
+        ["Erster Handelstag", function (x) { return F.date(x.firstTrade); }],
+        ["UCITS", function (x) { return x.reg ? "ESMA-Register (Konfidenz mittel)" : x.ucitsInName ? "laut Name" : "nicht belegt"; }],
+        ["Vertrieb in Deutschland", function (x) { return !x.reg ? "kein Registertreffer" : x.reg.hosts.indexOf("DE") >= 0 ? "gemeldet" : "nicht gemeldet"; }],
+        ["Verwaltungsgesellschaft", function (x) { return x.reg ? x.reg.manager || "–" : "–"; }]];
+      host.innerHTML = '<div class="vs-table-wrap"><table class="vs-table"><caption class="vs-sr">Vergleich europäischer Anteilklassen</caption><thead><tr><th>Merkmal</th>' + xs.map(function (x) { return '<th><a href="#/europa/' + esc(x.isin) + '">' + esc(x.isin) + '</a><span class="t-name">' + esc(x.name) + '</span></th>'; }).join("") + '</tr></thead><tbody>' +
+        ROWS.map(function (rw) { var v = xs.map(rw[1]), same = v.every(function (y) { return y === v[0]; }); return '<tr><td>' + esc(rw[0]) + '</td>' + v.map(function (y) { return '<td style="text-align:left' + (same ? "" : ";font-weight:750") + '">' + esc(y) + '</td>'; }).join("") + '</tr>'; }).join("") +
+        '</tbody></table></div><p class="vs-fine" style="margin-top:10px">Fett: Merkmale, in denen sich die Anteilklassen unterscheiden. Kurse, Rendite, Risiko, Holdings und Kosten sind für europäische Anteilklassen nicht angebunden und werden deshalb nicht verglichen. „Nicht gemeldet“ heißt: im ESMA-Register nicht enthalten – ältere Vertriebsnotifizierungen fehlen dort teils. ' + esc(j.attribution) + '</p>';
+    }).catch(function () { root.querySelector("#vs-euc").innerHTML = VS.pending("Register nicht erreichbar", "Die europäischen Stammdaten konnten nicht geladen werden."); });
+  }
 
   function detail(isin) {
     var root = VS.render('<section class="vs-section"><div class="vs-loading">' + esc(isin) + ' wird geladen …</div></section>');
@@ -96,9 +134,9 @@
       var named = venues.filter(function (v) { return v[1]; }), other = venues.filter(function (v) { return !v[1]; });
       root.innerHTML = '<section class="vs-hero"><p class="vs-eyebrow"><a href="#/europa" style="text-decoration:none">ETF Intelligence · Europa</a></p><h1 style="font-size:clamp(26px,4.6vw,48px)">' + esc(x.name) + '</h1>' +
         '<p class="vs-sub" style="margin-top:8px"><b style="color:var(--ink)">' + esc(x.isin) + '</b> · ' + esc(BRAND[x.issuerBrand] || x.issuerLegalName || "Anbieter unbekannt") + ' · ' + esc(x.currency || "") + '</p>' +
-        '<div style="margin-top:10px">' + (x.reg ? '<span class="vs-badge" title="Zuordnung über Fondsname und Domizil">UCITS laut ESMA-Register (Namenszuordnung)</span> ' : x.ucitsInName ? '<span class="vs-badge">UCITS im amtlichen Namen</span> ' : "") + (x.reg && x.reg.hosts.indexOf("DE") >= 0 ? '<span class="vs-badge ok">Vertrieb in Deutschland gemeldet (ESMA)</span> ' : "") + (x.de ? '<span class="vs-badge ok">an deutschen Börsen gelistet</span>' : "") + '</div></section>' +
-        '<section class="vs-section"><div class="vs-quick">' + [["ISIN", esc(x.isin)], ["Domizil", esc(x.domicile ? VS.countryName(x.domicile) : "unbekannt")], ["Ertragsverwendung", esc(DIST[x.distribution] || "unbekannt")], ["Fondswährung", esc(x.currency || "–")],
-          ["Handelsplätze", String(x.venueList.length)], ["Erster Handelstag", F.date(x.firstTrade)], ["Kurs", '<span class="vs-fine">Preisfeed noch nicht angebunden</span>'], ["Kosten · Holdings", '<span class="vs-fine">Emittentenquelle nicht angebunden</span>']]
+        '<div style="margin-top:10px">' + (x.reg ? '<span class="vs-badge" title="Registerangabe amtlich; Zuordnung zur Anteilklasse über Fondsname und Domizil">UCITS-Zuordnung über ESMA-Register · Konfidenz mittel</span> ' : x.ucitsInName ? '<span class="vs-badge">UCITS im amtlichen Namen</span> ' : "") + (x.reg && x.reg.hosts.indexOf("DE") >= 0 ? '<span class="vs-badge ok">Vertrieb in Deutschland gemeldet (ESMA)</span> ' : "") + (x.de ? '<span class="vs-badge ok">an deutschen Börsen gelistet</span>' : "") + '</div><div class="vs-tabs"><a class="vs-pill" href="#/europa/vergleich?i=' + esc(x.isin) + '">Vergleichen</a><a class="vs-pill" href="#/europa">Alle europäischen ETFs</a></div></section>' +
+        '<section class="vs-section"><p class="vs-label">Verfügbare Informationen</p><div class="vs-quick" style="margin-top:8px">' + [["ISIN", esc(x.isin)], ["Domizil", esc(x.domicile ? VS.countryName(x.domicile) : "unbekannt")], ["Ertragsverwendung", esc(DIST[x.distribution] || "unbekannt")], ["Fondswährung", esc(x.currency || "–")],
+          ["Handelsplätze", String(x.venueList.length)], ["Erster Handelstag", F.date(x.firstTrade)], ["UCITS", x.reg ? "Register (Konfidenz mittel)" : x.ucitsInName ? "laut Name" : "nicht belegt"], ["Vertrieb Deutschland", !x.reg ? "kein Registertreffer" : x.reg.hosts.indexOf("DE") >= 0 ? "gemeldet" : "Deutschland nicht gemeldet"]]
           .map(function (c) { return '<div><span>' + c[0] + '</span><b>' + c[1] + '</b></div>'; }).join("") + '</div></section>' +
         '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card"><p class="vs-label">Börsen</p>' + (named.length ? named.map(function (v) { return '<div class="vs-row"><span>' + esc(v[1]) + '</span><span class="vs-fine">' + esc(v[0]) + '</span></div>'; }).join("") : '<p class="vs-fine">Keine Börse aus der bekannten Liste.</p>') +
         (other.length ? '<p class="vs-fine" style="margin-top:8px">Weitere Handelsplätze (MTF, Systematische Internalisierer): ' + esc(other.map(function (v) { return v[0]; }).join(", ")) + '</p>' : "") + '</div>' +
@@ -113,7 +151,9 @@
             .map(function (c) { return '<div class="vs-row"><span>' + esc(c[0]) + '</span><span style="text-align:right">' + esc(c[1] || "–") + '</span></div>'; }).join("") +
           '<p class="vs-fine" style="margin-top:8px">' + esc(j.register.attribution) + ' Zuordnung über den Fondsnamen und das Domizil (Konfidenz mittel) – das Register führt keine ISIN. Ältere Vertriebsnotifizierungen sind im Register nicht vollständig enthalten; dass ein Land fehlt, heißt nicht, dass der Fonds dort nicht vertrieben wird.</p></div></section>'
           : '<section class="vs-section"><div class="vs-card"><p class="vs-label">ESMA-Fondsregister</p><p class="vs-sub">Kein eindeutiger Treffer im Register der Fonds im grenzüberschreitenden Vertrieb. UCITS-Status deshalb nur als Hinweis aus dem amtlichen Namen.</p></div></section>') +
-        '<section class="vs-section"><div class="vs-card soft"><p class="vs-label">Noch nicht verfügbar</p><p class="vs-sub">Für europäische Anteilklassen gibt es hier noch keine Kursanalyse, keine Holdings, keine Kosten (TER/laufende Kosten), kein Fondsvolumen, keine Replikation und keinen NAV – dafür ist keine frei nutzbare Quelle angebunden. Wir zeigen nur, was amtlich belegt ist.</p></div></section>' +
+        '<section class="vs-section"><div class="vs-card soft"><p class="vs-label">Noch nicht verfügbar</p><div class="vs-chips" style="margin-top:8px">' +
+          ["Kursanalyse & Performance", "Risiko", "Holdings & ETF X-Ray", "Kosten (TER / laufende Kosten)", "Fondsvolumen", "Replikation", "NAV", "Portfolio-Durchleuchtung"].map(function (t) { return '<span class="vs-badge">' + t + '</span>'; }).join("") +
+          '</div><p class="vs-sub" style="margin-top:10px">Für europäische Anteilklassen ist dafür noch keine frei nutzbare Quelle angebunden. Wir zeigen nur, was amtlich belegt ist – nichts davon wird geschätzt.</p></div></section>' +
         '<p class="vs-disclaimer">' + esc(VS.DISCLAIMER) + '</p>';
     });
   }
