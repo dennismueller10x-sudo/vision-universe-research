@@ -239,8 +239,12 @@
     });
     el.innerHTML = '<section class="vs-section"><div class="vs-card"><p class="vs-label">Herkunft je Feld</p><div class="vs-table-wrap"><table class="vs-table"><thead><tr><th>Feld</th><th>Wert</th><th>Quelle</th><th>Stand</th><th>Konfidenz</th></tr></thead><tbody>' + rows.join("") + '</tbody></table></div>' +
       ((fu.conflicts || []).length ? '<p class="vs-fine" style="margin-top:8px">Abweichungen zwischen Quellen: ' + esc(fu.conflicts.map(function (c) { return c.field + " (" + c.reason + ")"; }).join(", ")) + '</p>' : "") +
-      '<div class="vs-row" style="margin-top:10px"><span>Kurse</span><span>Tiingo · Stand ' + F.date(d.metrics && d.metrics.asOf) + '</span></div>' +
-      '<div class="vs-row"><span>Holdings</span><span>' + (d.holdings && d.holdings.status === "AVAILABLE" ? "SEC Form N-PORT · Bestand " + F.date(d.holdings.asOf) : "nicht verfügbar") + '</span></div>' +
+      '<p class="vs-label" style="margin-top:14px">Anbieter je Datenart</p>' +
+      '<div class="vs-row"><span>Kurse (Price Provider)</span><span>' + (d.metrics ? "Tiingo · Stand " + F.date(d.metrics.asOf) : '<span class="vs-fine">keine Kursreihe</span>') + '</span></div>' +
+      '<div class="vs-row"><span>Holdings (Holdings Provider)</span><span>' + (d.holdings && d.holdings.status === "AVAILABLE" ? "SEC Form N-PORT · Bestand " + F.date(d.holdings.asOf) : '<span class="vs-fine">nicht verfügbar' + (d.holdings && d.holdings.reason ? " – " + esc(d.holdings.reason) : "") + '</span>') + '</span></div>' +
+      '<div class="vs-row"><span>Kosten (Fundamentals Provider)</span><span>' + (d.costs && d.costs.status === "AVAILABLE" ? "SEC Prospekt-Daten (Risk/Return) · Prospekt " + F.date((fu.netExpenseRatio || fu.expenseRatio || fu.managementFee || {}).asOf) : '<span class="vs-fine">nicht verfügbar</span>') + '</span></div>' +
+      '<div class="vs-row"><span>Register (Register Provider)</span><span>' + (fu.domicile && fu.domicile.source === "SEC_NPORT" ? "SEC (US-Investmentgesellschaft, kein UCITS)" : '<span class="vs-fine">kein Registereintrag</span>') + '</span></div>' +
+      '<div class="vs-row"><span>Fehlende Felder</span><span class="vs-fine" style="text-align:right">' + esc(((d.provenance || {}).missingFields || []).join(", ") || "–") + '</span></div>' +
       '<div class="vs-row"><span>Fondsdaten des Emittenten</span><span class="vs-fine">nicht angebunden (Nutzungsbedingungen erlauben keinen automatisierten Abruf)</span></div>' +
       '<div class="vs-row"><span>ISIN · WKN</span><span class="vs-fine">für US-Listings nicht verfügbar</span></div></div></section>' +
       '<section class="vs-section">' + (qualityHtml || "") + '</section>';

@@ -22,7 +22,7 @@
   var VERSION = "vorsorge-monitor-1.0.0";
 
   var UNMONITORED = [
-    { type: "TER_CHANGE", label: "ETF-Kosten (TER) geändert", reason: "US-Kostenquoten aus SEC-Prospektdaten liegen vor, Änderungen zwischen Prospektständen werden noch nicht verglichen; für UCITS-ETFs keine lizenzierte Kostenquelle." },
+    { type: "TER_CHANGE", label: "Kostenänderung europäischer UCITS-ETFs (TER/laufende Kosten)", reason: "Für UCITS-ETFs ist keine veröffentlichbare Kostenquelle angeschlossen. US-Kosten (Expense Ratio) werden zwischen Prospektständen verglichen." },
     { type: "FUND_MERGER", label: "ETF fusioniert", reason: "Fusionen melden Emittenten; Quelle nicht angeschlossen." },
     { type: "TRACKING_DIFFERENCE", label: "Tracking Difference verändert", reason: "Benötigt Indexstände und Gesamtrendite; nicht angeschlossen." }
   ];
@@ -66,8 +66,9 @@
    * - Mehr als BUNDLE gleichartige Ereignisse: bis zu 5 relevante einzeln, der Rest gebuendelt.
    * Idempotent: bereits gebuendelte Meldungen (count) bleiben unveraendert.
    */
-  var TYPE_ORDER = ["CLOSED_OR_DELISTED", "COST_CHANGE", "NAME_CHANGE", "INDEX_CHANGE", "REMOVED", "NEW_PRICE_SERIES", "VOLATILITY_CHANGE", "NEW_LISTING", "STATUS_CHANGE", "DATA_REVIEW"];
-  var TYPE_LABEL = { CLOSED_OR_DELISTED: "geschlossen oder delistet", COST_CHANGE: "mit geänderter Kostenquote laut Prospekt", NAME_CHANGE: "mit neuem Namen", INDEX_CHANGE: "mit geändertem Index", REMOVED: "nicht mehr im Verzeichnis",
+  // Reihenfolge: Kosten vor Fondsstatus vor Produkt- und Datenmeldungen
+  var TYPE_ORDER = ["COST_CHANGE", "CLOSED_OR_DELISTED", "NAME_CHANGE", "INDEX_CHANGE", "REMOVED", "NEW_PRICE_SERIES", "VOLATILITY_CHANGE", "NEW_LISTING", "STATUS_CHANGE", "DATA_REVIEW"];
+  var TYPE_LABEL = { CLOSED_OR_DELISTED: "geschlossen oder delistet", COST_CHANGE: "mit geänderter Expense Ratio laut US-Prospekt", NAME_CHANGE: "mit neuem Namen", INDEX_CHANGE: "mit geändertem Index", REMOVED: "nicht mehr im Verzeichnis",
     NEW_PRICE_SERIES: "mit neuer Kursreihe", VOLATILITY_CHANGE: "mit deutlich veränderter Schwankung", NEW_LISTING: "neu im Verzeichnis", STATUS_CHANGE: "mit geändertem Status" };
   function examples(list) { var s = list.map(function (e) { return e.symbol; }).filter(function (x, i, a) { return x && a.indexOf(x) === i; }); return s.length ? " (z. B. " + s.slice(0, 5).join(", ") + ")" : ""; }
   function prioritize(events, layerOf, opts) {

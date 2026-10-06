@@ -125,7 +125,8 @@
       var lines = plan.map(function (x) { return esc(x.text); });
       if (mineList.length) lines.push(changed.length ? '<b>' + changed.length + ' deiner ' + mineList.length + ' ETFs</b> mit relevanten Bestandsänderungen: ' + changed.slice(0, 4).map(function (e) { return '<a href="' + VS.etfHref(e) + '?tab=aenderungen">' + esc(e.symbol) + '</a>'; }).join(", ") : "Keine relevanten Bestandsänderungen bei deinen " + mineList.length + " ETFs.");
       (feedMine.length ? feedMine : feed).slice(0, mineList.length ? 2 : 3).forEach(function (f) { lines.push('<a href="#/etf/' + encodeURIComponent(f.symbol) + '?tab=aenderungen"><b>' + esc(f.symbol) + '</b></a> ' + esc(f.text)); });
-      c.events.slice(0, 2).forEach(function (x) { lines.push(esc(x.text)); });
+      // Produkt- und Kostenmeldungen nur zu eigenen ETFs - keine zufaelligen Exoten auf der Startseite
+      c.events.filter(function (x) { return x.symbol && mine[x.symbol]; }).slice(0, 2).forEach(function (x) { lines.push(esc(x.text)); });
       root.querySelector("#vs-home-changes").innerHTML = '<span class="vs-num-badge">3</span><p class="vs-label">Was hat sich in deiner ETF-Welt geändert?</p>' +
         (lines.length ? lines.slice(0, 6).map(function (t) { return '<div class="vs-row"><span style="color:var(--ink)">' + t + '</span></div>'; }).join("")
           : '<p class="vs-sub" style="margin-top:8px">Keine Änderungen seit dem letzten Datenstand.</p>') +
@@ -284,9 +285,17 @@
       root.querySelector("#vs-mon-plan").innerHTML = '<p class="vs-label">Was hat sich bei dir verändert?</p><div style="margin-top:8px">' +
         (snap ? (d.length ? d.map(evRow).join("") : '<p class="vs-sub">Keine Veränderung gegenüber deinem gespeicherten Stand.</p>') : '<p class="vs-sub">Speichere einen Plan, dann vergleicht der Monitor Plan, Portfolio, Regelversionen und Datenstand.</p>') + '</div>';
     });
-    VS.getJSON("/vorsorge/data/changes.json").then(function (c) {
-      root.querySelector("#vs-mon-changes").innerHTML = '<p class="vs-label">Daten & Produkte – was hat sich verändert? · Stand ' + F.date(c.asOf) + '</p><div style="margin-top:8px">' +
-        (c.events.length ? c.events.slice(0, 25).map(evRow).join("") : '<p class="vs-sub">Keine Änderungen gegenüber dem vorherigen Datenstand.</p>') +
+    Promise.all([VS.getJSON("/vorsorge/data/changes.json"), VS.master().catch(function () { return null; })]).then(function (res) {
+      var c = res[0], m = res[1], mineSym = {};
+      VS.state.watchlist.concat(VS.state.portfolio.map(function (x) { return x.symbol; })).forEach(function (s) { var e = m && m.find(s); if (e) mineSym[e.symbol] = 1; });
+      // Prioritaet: eigene ETFs, dann Kosten, Fondsstatus, Produkt; Datenmeldungen (Pipeline) gebuendelt am Ende
+      var RANK = { COST_CHANGE: 0, CLOSED_OR_DELISTED: 1, STATUS_CHANGE: 1, REMOVED: 1 };
+      var rank = function (e) { return RANK[e.type] === undefined ? 2 : RANK[e.type]; };
+      var prod = c.events.filter(function (e) { return e.category !== "DATA_UPDATE"; }), data = c.events.filter(function (e) { return e.category === "DATA_UPDATE"; });
+      prod = prod.map(function (e, i) { return [e, i]; }).sort(function (a, b) { return (mineSym[b[0].symbol] ? 1 : 0) - (mineSym[a[0].symbol] ? 1 : 0) || rank(a[0]) - rank(b[0]) || a[1] - b[1]; }).map(function (x) { return x[0]; });
+      root.querySelector("#vs-mon-changes").innerHTML = '<p class="vs-label">Produkte & Kosten – was hat sich verändert? · Stand ' + F.date(c.asOf) + '</p><div style="margin-top:8px">' +
+        (prod.length ? prod.slice(0, 20).map(function (e) { return mineSym[e.symbol] ? evRow(e).replace('<span class="vs-badge">', '<span class="vs-badge lime">Dein ETF · ') : evRow(e); }).join("") : '<p class="vs-sub">Keine Produkt- oder Kostenänderungen gegenüber dem vorherigen Datenstand.</p>') +
+        (data.length ? '<details style="margin-top:10px"><summary class="vs-fine">Datenaktualisierungen (' + data.length + ')</summary>' + data.map(evRow).join("") + '</details>' : "") +
         '</div><h3 style="margin-top:16px">Noch nicht überwacht</h3><div style="margin-top:6px">' + (V.Monitor.UNMONITORED || c.unmonitored).map(function (u) { return '<div class="vs-row"><span>' + esc(u.label) + '</span><span class="vs-fine" style="text-align:right">' + esc(u.reason) + '</span></div>'; }).join("") +
         '<div class="vs-row"><span>Regulatorische Änderung</span><span class="vs-fine" style="text-align:right">Nur über neue Versionen der Förderregeln mit Quelle.</span></div></div>';
     }).catch(function () { root.querySelector("#vs-mon-changes").innerHTML = VS.pending("Änderungen nicht verfügbar", "Die Änderungsliste konnte nicht geladen werden."); });
