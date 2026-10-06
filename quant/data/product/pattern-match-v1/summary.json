@@ -1,6 +1,6 @@
 {
  "schemaVersion": "pattern-match-1.0.0",
- "generatedAt": "2026-10-06T04:19:08.000Z",
+ "generatedAt": "2026-10-06T14:22:42.000Z",
  "asOf": "2026-10-02",
  "horizon": "H24",
  "horizonMonths": 24,
@@ -10,12 +10,12 @@
  "baseRate": 0.108141,
  "studies": {
   "price": {
-   "methodologyVersion": "pattern-research-1.0.0",
-   "contentHash": "acd0aa99b47a2512"
+   "methodologyVersion": "pattern-research-1.1.0",
+   "contentHash": "b50398d162e450bc"
   },
   "fundamental": {
    "methodologyVersion": "pattern-research-fundamentals-1.0.0",
-   "contentHash": "e48b27ff913c62b1"
+   "contentHash": "487db7f7a1b44253"
   }
  },
  "caveats": {
@@ -31,8 +31,8 @@
   "price": {
    "INSUFFICIENT_SUPPORT": 9,
    "PARAMETER_SENSITIVE": 1,
-   "NOT_SIGNIFICANT": 6,
-   "IN_SAMPLE_ONLY": 29
+   "NOT_SIGNIFICANT": 11,
+   "IN_SAMPLE_ONLY": 45
   },
   "fundamental": {
    "PARAMETER_SENSITIVE": 3,
@@ -692,7 +692,7 @@
   "ZZ",
   "Z_"
  ],
- "candidates": 30,
+ "candidates": 33,
  "unavailableSchemaVersion": "pattern-unavailable-1.0.0",
  "unavailable": {
   "total": 1446,
@@ -704,7 +704,7 @@
   "note": "Je Titel im eigenen Shard nachlesbar. Die Luecke ist eine Datengrenze der Studie (104 Wochen vorregistriert) und kein Fehlschlag des Titels."
  },
  "findingCount": {
-  "price": 69,
+  "price": 97,
   "fundamental": 184
  }
 }
