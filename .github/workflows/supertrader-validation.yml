@@ -25,7 +25,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4, sources-r12, r12, trend52, trend52-smoke, audit13, audit13-smoke, r13b, trend52-s1c, holdout-fetch, holdout-sec, audit14, audit14-smoke, audit14-holdout, audit14-holdout-smoke, r15-delist-cases]
+        options: [subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4, sources-r12, r12, trend52, trend52-smoke, audit13, audit13-smoke, r13b, trend52-s1c, holdout-fetch, holdout-sec, audit14, audit14-smoke, audit14-holdout, audit14-holdout-smoke, r15-delist-cases, mrepl-sec, mrepl-sec-holdout, mrepl-measure, mrepl-measure-smoke, mrepl-measure-holdout]
         default: subset
   push:
     branches:
@@ -59,7 +59,7 @@ jobs:
           INPUT: ${{ inputs.mode }}
         run: |
           m="$INPUT"
-          case "$MSG" in *"[supertrader-validation:sources]"*) m=sources;; *"[supertrader-validation:venue-probe]"*) m=venue-probe;; *"[supertrader-validation:cases-smoke]"*) m=cases-smoke;; *"[supertrader-validation:cases]"*) m=cases;; *"[supertrader-validation:sources-minervini]"*) m=sources-minervini;; *"[supertrader-validation:r8b]"*) m=r8b;; *"[supertrader-validation:intraday-probe]"*) m=intraday-probe;; *"[supertrader-validation:intraday]"*) m=intraday;; *"[supertrader-validation:r9b]"*) m=r9b;; *"[supertrader-validation:r10b]"*) m=r10b;; *"[supertrader-validation:intraday-smoke]"*) m=intraday-smoke;; *"[supertrader-validation:r8c]"*) m=r8c;; *"[supertrader-validation:r8-smoke]"*) m=r8-smoke;; *"[supertrader-validation:r8]"*) m=r8;; *"[supertrader-validation:r7-smoke]"*) m=r7-smoke;; *"[supertrader-validation:r7]"*) m=r7;; *"[supertrader-validation:diagnose-smoke]"*) m=diagnose-smoke;; *"[supertrader-validation:diagnose]"*) m=diagnose;; *"[supertrader-validation:methods-smoke]"*) m=methods-smoke;; *"[supertrader-validation:methods]"*) m=methods;; *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
+          case "$MSG" in *"[supertrader-validation:mrepl-sec-holdout]"*) m=mrepl-sec-holdout;; *"[supertrader-validation:mrepl-sec]"*) m=mrepl-sec;; *"[supertrader-validation:mrepl-measure-holdout]"*) m=mrepl-measure-holdout;; *"[supertrader-validation:mrepl-measure-smoke]"*) m=mrepl-measure-smoke;; *"[supertrader-validation:mrepl-measure]"*) m=mrepl-measure;; *"[supertrader-validation:sources]"*) m=sources;; *"[supertrader-validation:venue-probe]"*) m=venue-probe;; *"[supertrader-validation:cases-smoke]"*) m=cases-smoke;; *"[supertrader-validation:cases]"*) m=cases;; *"[supertrader-validation:sources-minervini]"*) m=sources-minervini;; *"[supertrader-validation:r8b]"*) m=r8b;; *"[supertrader-validation:intraday-probe]"*) m=intraday-probe;; *"[supertrader-validation:intraday]"*) m=intraday;; *"[supertrader-validation:r9b]"*) m=r9b;; *"[supertrader-validation:r10b]"*) m=r10b;; *"[supertrader-validation:intraday-smoke]"*) m=intraday-smoke;; *"[supertrader-validation:r8c]"*) m=r8c;; *"[supertrader-validation:r8-smoke]"*) m=r8-smoke;; *"[supertrader-validation:r8]"*) m=r8;; *"[supertrader-validation:r7-smoke]"*) m=r7-smoke;; *"[supertrader-validation:r7]"*) m=r7;; *"[supertrader-validation:diagnose-smoke]"*) m=diagnose-smoke;; *"[supertrader-validation:diagnose]"*) m=diagnose;; *"[supertrader-validation:methods-smoke]"*) m=methods-smoke;; *"[supertrader-validation:methods]"*) m=methods;; *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
           echo "mode=${m:-subset}" >> "$GITHUB_OUTPUT"
       - name: Oeffentliche Anbieterangaben zu Abrufgrenzen (Beleg, best effort)
         if: steps.mode.outputs.mode == 'subset'
@@ -210,6 +210,30 @@ jobs:
       - name: Delisting-Regressionsfaelle (Runde 15, SEC-Einreichungen, verschluesselt)
         if: steps.mode.outputs.mode == 'r15-delist-cases'
         run: node scripts/supertrader/validation/delist-cases-r15.mjs --out "$RUNNER_TEMP/val"
+      - name: Minervini Canonical Replication – SEC-Erstmeldungen inkl. Margen (Phase 2A, privat + verschluesselt)
+        if: steps.mode.outputs.mode == 'mrepl-sec' || steps.mode.outputs.mode == 'mrepl-sec-holdout'
+        env:
+          ST_WINDOW: ${{ steps.mode.outputs.mode == 'mrepl-sec-holdout' && 'HOLDOUT' || 'DEV' }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+        run: node scripts/supertrader/replication/minervini/build-sec-facts.mjs --out "$RUNNER_TEMP/val"
+      - name: Minervini Canonical Replication – Messlauf nach Fidelity Freeze (Phase 2A, verschluesselt)
+        if: steps.mode.outputs.mode == 'mrepl-measure' || steps.mode.outputs.mode == 'mrepl-measure-smoke' || steps.mode.outputs.mode == 'mrepl-measure-holdout'
+        env:
+          ST_WINDOW: ${{ steps.mode.outputs.mode == 'mrepl-measure-holdout' && 'HOLDOUT' || 'DEV' }}
+          LIMIT_ARG: ${{ steps.mode.outputs.mode == 'mrepl-measure-smoke' && '--limit 600' || '' }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14500
+        run: node scripts/supertrader/replication/minervini/measure.mjs --out "$RUNNER_TEMP/val" $LIMIT_ARG
       - name: SEC-Gewinnhistorie zum damaligen Stand (Runde 11, privat + verschluesselt)
         if: steps.mode.outputs.mode == 'sec-pit' || steps.mode.outputs.mode == 'holdout-sec'
         env:
