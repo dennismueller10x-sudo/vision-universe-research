@@ -9,6 +9,7 @@ html[data-theme=light] body.dv2{--v2-bg:#f7f7f2;--v2-ink:#161b23;--v2-muted:#586
 @media(max-width:760px){body.dv2{padding-top:70px}.dv2 .v2-bar{padding:16px 20px;gap:8px}.dv2 .v2-wordmark{font-size:15px}.dv2 .v2-compare{display:none}.dv2 .v2-theme{margin-left:auto}.dv2 .v2-main{padding:12px 20px 60px}.dv2 .v2-footer{margin:0 20px;padding-bottom:130px}.dv2 .v2-dock{bottom:calc(12px + env(safe-area-inset-bottom))}.dv2 .v2-dock a,.dv2 .v2-dock button{padding:12px 17px}.dv2 .dx-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr))}}
 @media(prefers-reduced-motion:reduce){.dv2 *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 body.dv2 .dx-search:not(.on){visibility:hidden}
+.dx-local-controls{display:grid;gap:12px;padding-top:16px}.dx-local-controls input,.dx-local-controls select{width:100%;min-height:44px;border:1px solid var(--v2-line);border-radius:10px;background:var(--v2-panel);color:var(--v2-ink);padding:10px;font:inherit}
 body.dv2{--discover-dim:var(--v2-muted);--discover-muted:var(--v2-muted)}
 body.dv2 .dx-btn{color:var(--discover-on-text)}
 body.dv2 .dx-search-field input{min-width:0;flex:1}

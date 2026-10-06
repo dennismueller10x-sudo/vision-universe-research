@@ -130,11 +130,17 @@
        Form nichts darueber, ob der Titel im Zeitraum gestiegen ist. */
     node.appendChild(svg("line", { class: "dx-art-base", x1: 0, x2: w,
       y1: y(closes[0]).toFixed(1), y2: y(closes[0]).toFixed(1) }));
-    if (opt.area !== false) {
+    if (opt.pointsOnly) {
+      /* Ungepruefte lokale Historien: echte Beobachtungen als Punkte,
+         ohne Verbindung ueber nicht bestaetigte Handelssitzungen. */
+      punkte.forEach(function (p, i) {
+        if (isNum(p[1])) node.appendChild(svg("circle", { class: "dx-art-node", cx: x(i).toFixed(1), cy: y(p[1]).toFixed(1), r: 2.3 }));
+      });
+    } else if (opt.area !== false) {
       node.appendChild(svg("path", { class: "dx-art-fill", fill: "url(#dxm" + lauf + ")",
         d: d + "L" + x(n - 1).toFixed(1) + " " + h + " L" + x(0).toFixed(1) + " " + h + " Z" }));
     }
-    node.appendChild(svg("path", { class: "dx-art-line", d: d.trim() }));
+    if (!opt.pointsOnly) node.appendChild(svg("path", { class: "dx-art-line", d: d.trim() }));
     node.appendChild(svg("circle", { class: "dx-art-node", cx: x(n - 1).toFixed(1),
       cy: y(closes[closes.length - 1]).toFixed(1), r: 2.8 }));
 
