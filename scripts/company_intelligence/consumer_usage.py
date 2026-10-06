@@ -32,7 +32,6 @@ def first_party(source, cid):
 def filter_for_preview(payload, sources):
     value = deepcopy(payload)
     cid = value['companyId']
-    registry = {s['sourceId']: s for s in sources if s.get('sourceId')}
     owned_hosts = {host(u) for s in sources if first_party(s, cid) for u in [s.get('url'), *s.get('allowedSites', [])]} - {''}
     def allowed(ref):
         url = ref.get('originalUrl') or ref.get('sourceUrl') or ref.get('canonicalUrl') or ref.get('url')
@@ -48,6 +47,15 @@ def filter_for_preview(payload, sources):
         if not isinstance(row, dict):
             return row
         return {k: clean(v) for k, v in row.items() if k not in {'body', 'articleBody', 'fullText', 'html', 'summary', 'excerpt', 'description'}}
+    attached_documents = set()
+    for key in ('earnings', 'events', 'calls'):
+        for row in payload.get(key, []):
+            refs = [row, *row.get('provenance', []), *row.get('eventProvenance', [])]
+            if row.get('companyId', cid) != cid or publisher(row.get('canonicalUrl') or row.get('sourceUrl')) or not any(allowed(r) for r in refs):
+                continue
+            urls = [d.get('url') for d in row.get('sourceDocuments', [])]
+            urls += [row.get(field) for field in ('webcastUrl', 'replayUrl', 'transcriptUrl', 'presentationUrl', 'quarterlyReportUrl', 'earningsReleaseUrl')]
+            attached_documents.update((row.get('eventId'), u) for u in urls if host(u) and not publisher(u))
     accepted, excluded = {}, {}
     for key in ('news', 'earnings', 'events', 'calls', 'filings', 'materials', 'presentations', 'materialEvents', 'timeline'):
         rows = []
@@ -56,7 +64,8 @@ def filter_for_preview(payload, sources):
                 continue
             refs = [r for r in [row, *row.get('provenance', []), *row.get('eventProvenance', [])] if allowed(r)]
             estimated = row.get('eventType') == 'EARNINGS_ESTIMATED' and row.get('confirmationStatus') == 'ESTIMATED'
-            if not refs and not estimated:
+            attached = key in ('materials', 'presentations') and (row.get('eventId'), row.get('url')) in attached_documents
+            if not refs and not estimated and not attached:
                 continue
             row = clean(row)
             row['provenance'] = [clean(r) for r in row.get('provenance', []) if allowed(r)]
@@ -79,4 +88,5 @@ def filter_for_preview(payload, sources):
         value[key] = rows
         accepted[key], excluded[key] = len(rows), len(payload.get(key, [])) - len(rows)
     value['sourceUsagePolicy'] = 'OWNED_IR_SEC_METADATA_PREVIEW_V1'
+    value.setdefault('previewBasis', 'OWNED_IR_SEC_REVIEW')
     return value, {'accepted': accepted, 'excluded': excluded}

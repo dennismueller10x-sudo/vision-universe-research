@@ -67,6 +67,17 @@ test('large content loss inside an unchanged issuer cohort is refused before wri
  }finally{for(const f of [a.root,b.root])rmSync(f,{recursive:true})}
 });
 
+test('filtered source review cannot publish after its manifest review label is removed',async()=>{
+ const d=driver(),a=fixture();
+ try{
+  const file=join(a.root,a.path),p=JSON.parse(readFileSync(file));p.previewBasis='OWNED_IR_SEC_REVIEW';
+  const bytes=Buffer.from(JSON.stringify(p));writeFileSync(file,bytes);
+  const mf=join(a.root,'manifest.json'),m=JSON.parse(readFileSync(mf));m.assets[a.path]={bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')};writeFileSync(mf,JSON.stringify(m));
+  await assert.rejects(publish(d,{namespace:'restore-review',directory:a.root}),/REVIEW_ONLY_PUBLICATION_REFUSED/);
+  assert.equal(d.objects.size,0);
+ }finally{rmSync(a.root,{recursive:true})}
+});
+
 test('a failed update after active-slot corruption preserves the last intact previous generation',async()=>{
  const d=driver(),a=fixture(),b=fixture('b'.repeat(24),'2026-10-02T13:00:00Z'),c=fixture('c'.repeat(24),'2026-10-02T14:00:00Z');
  try{

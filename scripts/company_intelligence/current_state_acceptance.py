@@ -21,6 +21,9 @@ def digest(path):
 def database_proof(path):
     if not Path(path).is_file():
         raise ValueError('CURRENT_STATE_DATABASE_MISSING')
+    def serial(value):
+        return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False,
+                          default=lambda v: {'blobSha256': hashlib.sha256(v).hexdigest(), 'bytes': len(v)}).encode()
     with sqlite3.connect('file:' + str(Path(path).resolve()) + '?mode=ro', uri=True) as db:
         if db.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
             raise ValueError('CURRENT_STATE_DATABASE_CORRUPT')
@@ -33,9 +36,6 @@ def database_proof(path):
             order = ','.join('"' + c[1].replace('"', '""') + '"' for c in columns)
             rows = db.execute('SELECT * FROM ' + quoted + ' ORDER BY ' + order).fetchall()
             indexes = [next(i for i, c in enumerate(columns) if c[1] == col) for col in pk]
-            def serial(value):
-                return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False,
-                                  default=lambda v: {'blobSha256': hashlib.sha256(v).hexdigest(), 'bytes': len(v)}).encode()
             tables[name] = {'count': len(rows), 'sha256': hashlib.sha256(serial(rows)).hexdigest(),
                             'identitySha256': hashlib.sha256(serial([[r[i] for i in indexes] for r in rows])).hexdigest()}
     return {'schemaSha256': hashlib.sha256(serial(schema)).hexdigest(), 'tables': tables,

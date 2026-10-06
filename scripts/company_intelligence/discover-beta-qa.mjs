@@ -6,13 +6,14 @@ const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const arg=(k,f)=>{const i=process.argv.indexOf('--'+k);return i<0?f:process.argv[i+1]};
 const base=arg('url','http://127.0.0.1:8783').replace(/\/$/,''),out=arg('out','/tmp/discover-beta-qa');
 const candidate=JSON.parse(await readFile(arg('candidate','/tmp/release-candidate.json'),'utf8'));
-const phase=arg('phase','all');assert(['all','actual','adversarial'].includes(phase));
+const phase=arg('phase','all');assert(['all','actual','adversarial','dark'].includes(phase));
 const cohort=Object.values(candidate.inventory).flatMap(v=>v.tickers);
 await mkdir(out,{recursive:true});
 const browser=await chromium.launch({headless:true,args:['--no-sandbox'],executablePath:process.env.CHROMIUM_PATH||undefined});
 const cases=[],route=(product,ticker,preview=true)=>product==='quant'?`/quant/${preview?'?company-intelligence=preview':''}#/aktie/${ticker}`:`/discover/${preview?'?company-intelligence=preview':''}#/s/US_REAL/${ticker}`;
 async function pageFor(product,ticker,width=390,preview=true){
  const page=await browser.newPage({viewport:{width,height:860}}),errors=[],requests=[];
+ if(phase==='dark')await page.addInitScript(()=>localStorage.setItem('vu-discover-theme-v1','dark'));
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))requests.push(r.url())});
  await page.goto(base+route(product,ticker,preview),{waitUntil:'domcontentloaded'});
  if(preview)await page.waitForSelector('.ci-company-intelligence h2');else await page.waitForTimeout(1000);
@@ -20,9 +21,9 @@ async function pageFor(product,ticker,width=390,preview=true){
 }
 async function mutate(page,change){await page.route('**/company-intelligence/data/**/iss_cik_0000320193.json',async r=>{const response=await r.fetch(),body=await response.json();change(body);await r.fulfill({response,json:body});});}
 try{
- for(const product of (phase==='adversarial'?[]:['discover','quant'])){
-  const tickers=product==='discover'?cohort:['AAPL','ACU','CHE','GOOG','GOOGL','ROOT','XPEV','VEON'];
-  for(const ticker of tickers)for(const width of [390,430,768,1440]){
+ for(const product of (phase==='adversarial'?[]:phase==='dark'?['discover']:['discover','quant'])){
+  const tickers=phase==='dark'?['AAPL','XPEV']:product==='discover'?cohort:['AAPL','ACU','CHE','GOOG','GOOGL','ROOT','XPEV','VEON'];
+  for(const ticker of tickers)for(const width of (phase==='dark'?[390,430]:[390,430,768,1440])){
    const {page,errors,requests}=await pageFor(product,ticker,width),chapter=page.locator('.ci-company-intelligence'),text=await chapter.innerText();
    const expected=Object.values(candidate.inventory).find(v=>v.tickers.includes(ticker));
    assert(!text.includes('derzeit nicht verfügbar'),ticker+' consumer failed');
@@ -35,6 +36,7 @@ try{
    assert.equal(await chapter.evaluate(e=>e.scrollWidth>e.clientWidth),false);
    assert.equal(await chapter.locator('a').evaluateAll(as=>as.every(a=>a.getBoundingClientRect().height>=44)),true);
    assert.equal(await chapter.evaluate(e=>parseFloat(getComputedStyle(e).paddingLeft)>=14),true);
+   if(phase==='dark'){assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');if(ticker==='XPEV'){assert(text.includes('CNY'));assert(!text.includes('USD'));}await page.screenshot({path:`${out}/${product}-${ticker}-${width}-dark-viewport.png`});}
    if(product==='discover'&&width===390&&['AAPL','ACU','CHE','ROOT','XPEV','VEON'].includes(ticker)){
     await chapter.scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/${product}-${ticker}-${width}-viewport.png`});
     // Long chapter capture omits fixed chrome only during capture. Navigation
@@ -46,8 +48,8 @@ try{
   }
   const disabled=await pageFor(product,'AAPL',390,false);assert.equal(await disabled.page.locator('.ci-company-intelligence').count(),0);assert.deepEqual(disabled.requests,[]);await disabled.page.close();cases.push({product,kind:'DISABLED_ZERO_REQUESTS',status:'PASS'});
  }
- const attacks=['INDEX_MISSING','LOOKUP_MISMATCH','COMPANY_TIMESTAMP_MISMATCH','NO_PROFILE','STALE_FINANCIALS','DUPLICATES_AND_OLD_NEWS','CANCELLED_AND_PAST_EVENTS','DATE_ONLY_AND_SEPARATE_CALL','ESTIMATE_ONLY','BERLIN_DST','WEBCAST_AND_LETTER','UNSAFE_LINK','AMBIGUOUS_IDENTITY'];
- for(const product of (phase==='actual'?[]:['discover','quant']))for(const attack of attacks){
+ const attacks=['INDEX_MISSING','LOOKUP_MISMATCH','COMPANY_TIMESTAMP_MISMATCH','NO_PROFILE','STALE_FINANCIALS','DUPLICATES_AND_OLD_NEWS','CANCELLED_AND_PAST_EVENTS','DATE_ONLY_AND_SEPARATE_CALL','ESTIMATE_ONLY','BERLIN_DST','WEBCAST_AND_LETTER','UNSAFE_LINK','AMBIGUOUS_IDENTITY','ANNUAL_WHAT_CHANGED','UNKNOWN_COMPARISON','CANCELLED_CALL'];
+ for(const product of (phase==='actual'||phase==='dark'?[]:['discover','quant']))for(const attack of attacks){
   const page=await browser.newPage({viewport:{width:390,height:860}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
   const cid='iss_cik_0000320193',future='2026-10-24';
   if(attack==='INDEX_MISSING')await page.route('**/company-intelligence/data/index.json',r=>r.fulfill({status:404,body:'{}'}));
@@ -63,6 +65,9 @@ try{
    if(attack==='BERLIN_DST')body.events=[{companyId:cid,eventType:'EARNINGS_CALL',confirmationStatus:'CONFIRMED',date:'2026-10-25',startsAt:'2026-10-25T01:30:00Z',sourceUrl:'https://www.apple.com/'}];
    if(attack==='WEBCAST_AND_LETTER'){body.calls=[{companyId:cid,eventId:'historic',date:'2026-09-01',eventType:'EARNINGS_CALL',webcastUrl:'https://www.apple.com/webcast/'}];body.materials=[{companyId:cid,type:'SHAREHOLDER_LETTER',url:'https://www.apple.com/letter/'}]}
    if(attack==='UNSAFE_LINK')body.materials=[{companyId:cid,type:'PRESENTATION',url:'javascript:window.__ciXss=true'},{companyId:cid,type:'PRESENTATION',url:'http://127.0.0.1/private'}];
+   if(attack==='ANNUAL_WHAT_CHANGED'){body.latestFinancials.fiscalQuarter=null;body.latestFinancials.periodType='FY';body.latestFinancials.fiscalYear=2025;body.latestFinancials.metrics.gross_margin={current:{value:42,unit:'percent'},changePercentagePoints:2};body.latestFinancials.whatChanged=[{metric:'gross_margin',comparison:'PREVIOUS_YEAR',absolute:2,unit:'percentage_points'}];}
+   if(attack==='UNKNOWN_COMPARISON')body.latestFinancials.whatChanged=[{metric:'revenue',comparison:'UNKNOWN',previous:1,current:2,unit:'USD'}];
+   if(attack==='CANCELLED_CALL')body.calls=[{companyId:cid,eventId:'cancelled',date:'2026-09-01',status:'CANCELLED',webcastUrl:'https://www.apple.com/cancelled/'}];
   });
   await page.goto(base+route(product,'AAPL'));await page.waitForSelector('.ci-company-intelligence h2');const chapter=page.locator('.ci-company-intelligence'),text=await chapter.innerText();
   if(['INDEX_MISSING','LOOKUP_MISMATCH','COMPANY_TIMESTAMP_MISMATCH','AMBIGUOUS_IDENTITY'].includes(attack))assert(text.includes('derzeit nicht verfügbar'));
@@ -75,6 +80,9 @@ try{
   if(attack==='BERLIN_DST'){assert(text.includes('02:30'));assert(text.includes('MEZ'))}
   if(attack==='WEBCAST_AND_LETTER'){assert.equal(await chapter.getByRole('link',{name:'Webcast',exact:true}).count(),1);assert.equal(await chapter.getByRole('link',{name:'Aufzeichnung',exact:true}).count(),0);assert.equal(await chapter.getByRole('link',{name:'Unternehmenstranskript',exact:true}).count(),0);assert(text.includes('Aktionärsbrief'))}
   if(attack==='UNSAFE_LINK'){assert.equal(await chapter.locator('a[href^="javascript:"],a[href*="127.0.0.1"]').count(),0);assert.equal(await page.evaluate(()=>window.__ciXss),undefined)}
+  if(attack==='ANNUAL_WHAT_CHANGED'){assert(text.includes('Geschäftsjahr 2025'));assert(text.includes('Was hat sich verändert?'));assert(text.includes('+2 Prozentpunkte · Vorjahr'));assert(!text.includes('2 Prozentpunkte zum Vorjahresquartal'));}
+  if(attack==='UNKNOWN_COMPARISON')assert.equal(await chapter.getByRole('heading',{name:'Was hat sich verändert?',exact:true}).count(),0);
+  if(attack==='CANCELLED_CALL'){assert.equal(await chapter.getByRole('heading',{name:'Calls / Webcasts',exact:true}).count(),0);assert.equal(await chapter.locator('a[href*="/cancelled/"]').count(),0);}
   assert.deepEqual(errors,[]);cases.push({product,kind:attack,status:'PASS'});console.log(product+' '+attack+' PASS');await page.close();
  }
  const report={status:'PASS',phase,generation:candidate.generation,actualCases:cases.filter(c=>c.kind==='ACTUAL_CANDIDATE').length,adversarialCases:cases.filter(c=>attacks.includes(c.kind)).length,cases};

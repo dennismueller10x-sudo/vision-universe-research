@@ -69,7 +69,7 @@ export function preflight(root, m, prior = null, {localReview = false} = {}) {
   }
   for (const path of issuerPaths) {
     const p = assets.get(path).data;
-    if (!localReview && (p.companyProfile?.editorialStatus === 'REVIEW_ONLY' || p.previewBasis === 'CATALOGUE_AND_EXISTING_FACTS')) throw new Error('REVIEW_ONLY_PUBLICATION_REFUSED');
+    if (!localReview && (p.companyProfile?.editorialStatus === 'REVIEW_ONLY' || ['CATALOGUE_AND_EXISTING_FACTS','OWNED_IR_SEC_REVIEW','RESTORED_OWNED_IR_SEC_REVIEW'].includes(p.previewBasis))) throw new Error('REVIEW_ONLY_PUBLICATION_REFUSED');
     if (p.companyId + '.json' !== path.split('/').at(-1) || p.schema !== index.schema || p.state !== 'AVAILABLE' || p.generatedAt !== m.generatedAt) throw new Error('INVALID_PUBLIC_COMPANY');
     for (const key of ['news','events','earnings','filings','calls','timeline']) {
       if (!Array.isArray(p[key]) || p[key].length > 200 || p[key].some(row => row?.companyId !== p.companyId)) throw new Error('INVALID_PUBLIC_SECTIONS');
