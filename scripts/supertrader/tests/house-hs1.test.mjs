@@ -285,3 +285,22 @@ test('HS4 full end-to-end: explorative Kriterien, Zufallsauswahl, V06 als Kontro
   assert.equal(r.controls.RANDOM_FILTERED.length, 20);
   for (const t of Object.values(r.trials)) assert.ok(t.reconcile < 1e-9 && t.meanPositions <= 20.5);
 });
+
+test('Live HS4-V03: Monatsende mit Feiertagen, eingefrorene Regeln, Entscheidung aus Kunstdaten', async () => {
+  const { nextTradingDay, isMonthEnd, assertLiveFrozen, decide, emptyLedger } = await import('../house/live.mjs');
+  const hol = new Set(['2026-12-25', '2027-01-01']);
+  assert.equal(nextTradingDay('2026-10-30', hol), '2026-11-02');
+  assert.ok(isMonthEnd('2026-10-30', hol));
+  assert.ok(!isMonthEnd('2026-10-29', hol));
+  assert.ok(isMonthEnd('2026-12-31', hol));
+  assert.equal(nextTradingDay('2026-12-24', hol), '2026-12-28');
+  assertLiveFrozen();
+  const cal = calendarOf(320, '2025-01-01');
+  const idx = new Map(cal.map((d, i) => [d, i]));
+  const stocks = Array.from({ length: 30 }, (_, i) => { const s = mkStock('tiingo:NYSE:L' + i + ':2000-01-01', cal, 0.0005 + i * 0.00002, { vol: 2e6 }); s.low = s.close.map((c) => c * 0.99); s.split = cal.map(() => 1); s.cls = 'EQUITY_COMMON'; s.fund = { eps: [[cal[5], 1, cal[6]]], rev: [], shares: [[cal[200], 1e7 * (i + 1), cal[201]], [cal[250], 1e7 * (i + 1), cal[251]], [cal[300], 1e7 * (i + 1), cal[301]]], cik: 'K' + i }; return prepareStock(s, idx); });
+  const d = decide(stocks, cal, emptyLedger());
+  assert.equal(d.date, cal.at(-1));
+  assert.ok(d.holdings.length > 0 && d.holdings.length <= 20);
+  assert.ok(Math.abs(d.holdings.reduce((a, h) => a + h.weight, 0) - 1) < 0.01);
+  assert.deepEqual(d.sells, []);
+});

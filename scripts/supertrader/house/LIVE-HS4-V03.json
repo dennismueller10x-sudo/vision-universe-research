@@ -1,0 +1,30 @@
+{
+  "schema": "supertrader-house-live-1.0.0",
+  "id": "VU_HOUSE_HS4_V03",
+  "label": "VU Volumen-Momentum 20 (Beobachtung)",
+  "frozenAt": "2026-10-06",
+  "basis": "PREREGISTRATION-HS4.json, Versuch V03; Urteil EXPLORATORY_NO_EDGE (DECISION-HS4.json). Start als Beobachtungsdepot auf Eigentümerwunsch; einziger Nachweis ist dieser Vorwärtslauf.",
+  "note": "Regelbasierte Modellbeobachtung. Keine Anlageempfehlung. Historisch kein belegter Vorteil gegenüber dem S&P 500.",
+  "rule": {
+    "factors": [
+      "UDV",
+      "ACC",
+      "SUE",
+      "REVG",
+      "MOM"
+    ],
+    "n": 20
+  },
+  "ruleText": [
+    "Universum: die 500 größten US-Inlandsemittenten nach Marktkapitalisierung (SEC-Aktienzahl × Kurs)",
+    "Filter: Schluss über der 200-Tage-Linie und mindestens 80 % des 52-Wochen-Hochs",
+    "Rang: Plus/Minus-Umsatz (50 Tage), Akkumulation (63 Tage), Gewinnüberraschung, Umsatzwachstum, Momentum 12-1",
+    "Depot: 20 Titel gleich gewichtet; gehaltene Titel bleiben bis Rang 40",
+    "Entscheidung am letzten Handelstag des Monats nach Schluss, Umsetzung zur nächsten Eröffnung"
+  ],
+  "historyFrom": "2023-01-01",
+  "hashes": {
+    "engine.mjs": "55e5841efcb839e3ce9e8db5c49dc7dc8b6a4b6e4b43e9c631b06ebc65ad99eb",
+    "PREREGISTRATION-HS4.json": "dbf9dbd94a73b60fae2b7c4f08c0cf3a62fa0abced79b0c2e5d085837db67211"
+  }
+}
