@@ -358,3 +358,8 @@ test("Variabel verzinster Kredit ohne Kennung: neuer Kupon ist keine neue Positi
   const d2 = C.diffHoldings(snap("2026-01-31", loans("6,172", "7,01")), snap("2026-04-30", [row("Whatabrands LLC 6,152 % 2030", 2.0, { assetType: "LOAN" }), row("Acrisure LLC 6,98 % 2031", 1.5, { assetType: "LOAN" }), row("Other Holding", 96.5, { holdingTicker: "OTH" })]));
   assert.ok(d2.events.some((e) => e.eventType === "HOLDING_ADDED"));
 });
+test("Mehrere Kredit-Tranchen gleicher Faelligkeit mit neuem Kupon: Paarung nach Gewicht, kein Zu-/Abgang", () => {
+  const t = (c1, c2) => [row("Proofpoint Inc " + c1 + " % 2028", 1.3, { assetType: "LOAN" }), row("Proofpoint Inc " + c2 + " % 2028", 0.4, { assetType: "LOAN" }), row("Other", 98.3, { holdingTicker: "OTH" })];
+  const d = C.diffHoldings(snap("2026-01-31", t("6,916", "7,1")), snap("2026-04-30", t("6,7", "6,9")));
+  assert.equal(d.events.filter((e) => /HOLDING_(ADDED|REMOVED)/.test(e.eventType)).length, 0);
+});
