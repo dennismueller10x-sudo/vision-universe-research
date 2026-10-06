@@ -52,9 +52,13 @@ async function stockVM(ticker, withDistribution) {
 test("VM1 · die Stufengrenzen sind die der Engine, nicht eigene", () => {
   for (const b of VM.BAND_ORDER) {
     const probe = VM.BAND_MIN[b];
-    assert.equal(VM.band(probe), Evidence.band(probe).id, "Grenze " + b + " weicht von factor-evidence.js ab");
-    if (probe > 0) assert.equal(VM.band(probe - 0.01), Evidence.band(probe - 0.01).id, "knapp unter " + b);
+    assert.equal(VM.band(probe), Evidence.bandForPosition(probe).id, "Grenze " + b + " weicht von factor-evidence.js ab");
+    if (probe > 0) assert.equal(VM.band(probe - 0.01), Evidence.bandForPosition(probe - 0.01).id, "knapp unter " + b);
   }
+  assert.equal(VM.BAND_SEMANTICS_VERSION, Evidence.BAND_SEMANTICS_VERSION);
+  /* Dieselbe Zaehlung der Position wie die Engine. */
+  const werte = Array.from({ length: 333 }, (_, i) => Math.round(((i * 37) % 101) * 10) / 10).sort((a, b) => a - b);
+  for (const v of [0, 12.3, 50, 50.5, 88, 100, 101]) assert.equal(VM.positionIn(werte, v), Evidence.positionOf(werte, v), "Position " + v);
 });
 
 test("VM2 · NVDA_QUALITY_EXPLAINED: Faktorname, tragende Komponenten und Luecke", async () => {
@@ -81,17 +85,25 @@ test("VM2 · NVDA_QUALITY_EXPLAINED: Faktorname, tragende Komponenten und Luecke
   if (q.state === "AVAILABLE") { assert.ok(q.rank && q.rank.total > 100); assert.match(q.rankText, /^Höher als bei \d+ % der [\d.]+ bewerteten Aktien\.$/); }
 });
 
-test("VM3 · keine Stufe wird als Marktanteil beschrieben", async () => {
-  const { vm } = await stockVM("NVDA");
-  const text = JSON.stringify(vm);
-  assert.doesNotMatch(text, /stärksten 10 %|schwächsten Viertel|Top 10 ?%/, "Stufen sind Wertgrenzen, keine Anteile (Band-Audit)");
+test("VM3 · Stufe und Position sind eine Aussage (factor-band-2.0.0)", async () => {
+  for (const t of ["NVDA", "AAPL", "JPM"]) {
+    const { vm } = await stockVM(t, true);
+    for (const f of vm.factors.filter((x) => x.state === "AVAILABLE")) {
+      assert.ok(typeof f.position === "number", t + " " + f.id + ": verfuegbarer Faktor ohne Position");
+      assert.equal(f.band, VM.band(f.position), t + " " + f.id + ": Stufe passt nicht zur Position");
+      assert.equal(Math.floor(f.position), Number(f.rankText.match(/(\d+) %/)[1]), t + " " + f.id + ": angezeigte Position weicht ab");
+    }
+  }
 });
 
 test("VM4 · Bedeutung und Zahl stehen zusammen", () => {
-  assert.equal(VM.factorLabel("momentum", 82.4), "Stark (82)");
-  assert.equal(VM.factorLabel("value", 58.2), "Durchschnittlich (58)");
-  assert.equal(VM.factorLabel("risk", 83.2), "Niedrig (83)");
-  assert.equal(VM.factorLabel("value", 20), "Sehr teuer (20)");
+  /* Wert (Zahl) und Stufe (aus der Position) - die Stufe kommt nie aus der Zahl. */
+  assert.equal(VM.factorLabel("momentum", 82.4, 86), "Stark (82)");
+  assert.equal(VM.factorLabel("value", 58.2, 60), "Durchschnittlich (58)");
+  assert.equal(VM.factorLabel("risk", 83.2, 80), "Niedrig (83)");
+  assert.equal(VM.factorLabel("value", 20, 5), "Sehr teuer (20)");
+  assert.equal(VM.factorLabel("quality", 68, 91), "Sehr stark (68)", "68 reicht bei Quality fuer die stärksten 10 %");
+  assert.equal(VM.factorLabel("quality", 68, null), "Wert 68", "ohne Position keine Stufe");
   assert.equal(VM.factorLabel("quality", null), null);
 });
 
@@ -111,8 +123,12 @@ test("VM6 · Strategy Match: 'passt' nur, wenn nichts verletzt oder offen ist", 
     const { vm } = await stockVM(t);
     const s = vm.strategy;
     if (s.state !== "AVAILABLE") continue;
-    if (s.best.notMet.length || s.best.open.length) assert.match(s.sentence, /^Am ehesten passt/, t);
-    else assert.match(s.sentence, /^Passt aktuell zu/, t);
+    /* Drei Faelle: alles erfuellt -> "passt"; gute Uebereinstimmung mit
+       Offenem -> "am ehesten"; darunter -> "zu keinem Stil passt gut". */
+    if (!s.best.notMet.length && !s.best.open.length) assert.match(s.sentence, /^Passt aktuell zu/, t);
+    else if (s.good) assert.match(s.sentence, /^Am ehesten passt/, t);
+    else assert.match(s.sentence, /^Zu keinem Anlagestil passt dieser Titel derzeit gut\. Am nächsten kommt /, t);
+    assert.ok(!/^Passt aktuell/.test(s.sentence) || (!s.best.notMet.length && !s.best.open.length), t + ": 'passt' trotz verletzter oder offener Bedingung");
     for (const c of [...s.best.met, ...s.best.notMet, ...s.best.open]) assert.doesNotMatch(c.label, /Quant V2/, "interner Namensraum im Label");
   }
 });
@@ -170,9 +186,13 @@ test("VM11 · gezaehlte Position und Verteilung", () => {
   const sorted = [10, 20, 30, 40, 50];
   assert.deepEqual(VM.rankIn(sorted, 30), { below: 2, total: 5, share: 0.5 });
   assert.equal(VM.rankIn([], 30), null);
-  const d = VM.distributionOf([95, 80, 50, 30, 10, NaN]);
-  assert.equal(d.n, 5);
-  assert.deepEqual(d.bands, { VERY_STRONG: 1, STRONG: 1, NEUTRAL: 1, WEAK: 1, VERY_WEAK: 1 });
+  /* Stufen nach Position: 10 / 15 / 30 / 20 / 25 % - bei jeder Verteilung. */
+  const werte = Array.from({ length: 201 }, (_, i) => 30 + i * 0.2).concat([NaN]);
+  const d = VM.distributionOf(werte);
+  assert.equal(d.n, 201);
+  assert.deepEqual(d.bands, { VERY_STRONG: 21, STRONG: 30, NEUTRAL: 60, WEAK: 40, VERY_WEAK: 50 });
+  assert.equal(d.cuts.VERY_STRONG, 30 + 180 * 0.2, "der kleinste Wert der stärksten 10 %");
+  assert.deepEqual(VM.distributionOf([95, 80, 50]).bands, { VERY_STRONG: 0, STRONG: 0, NEUTRAL: 0, WEAK: 0, VERY_WEAK: 0 }, "unter 100 Werten keine Stufe");
 });
 
 test("VM12 · Identitaetskonflikt: beide Namen, Grund im Klartext, keine Entscheidung", () => {

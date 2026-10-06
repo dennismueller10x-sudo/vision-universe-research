@@ -83,6 +83,7 @@
    *            bewertet:number, gesamt:number, luecke:number, luecketext:string,
    *            gruende:Array<{art:string,text:string,factorId:string,band:string}>}}
    */
+  function pos(f) { return typeof f.position === "number" && isFinite(f.position) ? f.position : f.score; }
   function urteil(record) {
     /* ZWEI FORMEN DESSELBEN DINGES.
        Die Engine-Seite reicht den Rohdatensatz herein (factors als
@@ -132,8 +133,10 @@
     /* Die Gruende: erst die staerkste Staerke, dann die klarste Schwaeche,
        dann weiter im Wechsel. Wer nur drei Zeilen liest, soll beide
        Seiten gesehen haben - eine Liste aus drei Staerken waere Werbung. */
-    var s = stark.slice().sort(function (a, b) { return b.score - a.score; });
-    var w = schwach.slice().sort(function (a, b) { return a.score - b.score; });
+    /* Nach POSITION (factor-band-2.0.0): Faktorwerte verschiedener
+       Eigenschaften sind verschieden verteilt; die Position ist vergleichbar. */
+    var s = stark.slice().sort(function (a, b) { return pos(b) - pos(a); });
+    var w = schwach.slice().sort(function (a, b) { return pos(a) - pos(b); });
     var gruende = [], i = 0;
     while (gruende.length < 4 && (i < s.length || i < w.length)) {
       if (i < s.length) gruende.push(zeile(s[i], "plus"));

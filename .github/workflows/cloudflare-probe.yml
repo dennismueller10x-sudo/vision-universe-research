@@ -48,6 +48,9 @@ jobs:
       contains(github.event.head_commit.message, '[cf-probe]')
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -106,7 +109,7 @@ jobs:
           # Jede 32-stellige Hexfolge raus: Account-IDs stehen in der
           # Ausgabe von whoami, und sie gehen niemanden an, der das Log
           # liest.
-          npx --yes wrangler@4 whoami 2>&1 \
+          npx --yes wrangler@4.147.0 whoami 2>&1 \
             | sed -E 's/[0-9a-f]{32}/<maskiert>/g' \
             | tee /tmp/whoami.txt
           echo "gefunden=ja" >> "$GITHUB_OUTPUT"
@@ -175,7 +178,7 @@ jobs:
         working-directory: worker
         run: |
           set +e
-          npx --yes wrangler@4 deploy --dry-run --outdir /tmp/vu-live-bundle 2>&1 \
+          npx --yes wrangler@4.147.0 deploy --dry-run --outdir /tmp/vu-live-bundle 2>&1 \
             | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tail -40
           echo ""
           if [ -f /tmp/vu-live-bundle/index.js ]; then
@@ -205,8 +208,8 @@ jobs:
             echo "Keine Aenderung."
           else
             git commit -m "Cloudflare-Zugang: was vorhanden ist (Lauf ${{ github.run_id }})"
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
-            git push origin "HEAD:${GITHUB_REF_NAME}"
+            # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
           fi
 
       - name: Zusammenfassung

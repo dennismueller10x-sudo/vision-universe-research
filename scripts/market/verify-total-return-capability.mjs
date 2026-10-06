@@ -37,12 +37,17 @@
    answer is a separate decision.
    ========================================================================= */
 import { readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const DAILY = join(ROOT, "quant/data/market/golden-preview/daily");
-const OUT = join(ROOT, "quant/data/providers/total-return-verification.json");
+const DEFAULT_OUT = join(ROOT, "quant/data/providers/total-return-verification.json");
+/* --out=PFAD: die Testsuite prueft die Reproduzierbarkeit gegen eine Kopie.
+   Ohne Argument schreibt der Lauf wie bisher das committete Artefakt - ein
+   Test darf es nie veraendern (scripts/quality/check-test-isolation.mjs). */
+const OUT_ARG = process.argv.slice(2).find((a) => a.startsWith("--out="));
+const OUT = OUT_ARG ? resolve(OUT_ARG.slice("--out=".length)) : DEFAULT_OUT;
 
 /* A relative error this far above float noise would mean the adjustment is
    doing something else; below it, the dividend is accounted for. */

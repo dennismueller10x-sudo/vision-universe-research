@@ -7,7 +7,15 @@ import zlib from 'node:zlib';
 
 export const PREREG_VERSION = 'supertrader-validation-prereg-1.0.0';
 export const EXCHANGES = new Set(['NYSE', 'NASDAQ', 'AMEX', 'NYSE MKT', 'NYSE ARCA', 'BATS']);
-export const WINDOW = Object.freeze({ warmupFrom: '2015-01-01', from: '2016-01-04', to: '2026-09-30' });
+// Runde 14 (PREREGISTRATION-R14 periods): DEV = bekannter Zeitraum; HOLDOUT = 2008–2015, eigener privater
+// Namensraum, nur per ST_WINDOW=HOLDOUT. Ohne Umgebungsvariable bleibt alles wie bisher (DEV).
+export const WINDOWS = Object.freeze({
+  DEV: Object.freeze({ warmupFrom: '2015-01-01', from: '2016-01-04', to: '2026-09-30' }),
+  HOLDOUT: Object.freeze({ warmupFrom: '2007-01-02', from: '2008-01-02', to: '2015-12-31' }),
+});
+export const WINDOW_NAME = process.env.ST_WINDOW === 'HOLDOUT' ? 'HOLDOUT' : 'DEV';
+export const WINDOW = WINDOWS[WINDOW_NAME];
+export const SERIES_PROVIDER = WINDOW_NAME === 'HOLDOUT' ? 'tiingo-holdout' : 'tiingo-delisted';
 export const INCLUDED_CLASSES = new Set(['EQUITY_COMMON', 'ADR', 'REIT']);
 export const LIST_URL = 'https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip';
 
@@ -61,10 +69,11 @@ export function buildListingTable(rows, storeActive, opts = {}) {
     }
     chains.forEach((c, i) => {
       if (!(c.start <= WINDOW.to && c.end >= WINDOW.warmupFrom)) return;
-      const active = c.end === '9999-12-31' || c.end >= addDays(today, -10);
+      // HOLDOUT: "aktiv" heisst ueber das Fensterende hinaus gelistet; alle Reihen kommen aus dem Holdout-Namensraum.
+      const active = WINDOW_NAME === 'HOLDOUT' ? c.end > WINDOW.to : c.end === '9999-12-31' || c.end >= addDays(today, -10);
       const isNewest = i === chains.length - 1;
       const store = storeActive.get(ticker);
-      const source = !isNewest ? 'UNFETCHABLE_REUSED' : active && store ? 'STORE_ACTIVE' : 'FETCH';
+      const source = !isNewest ? 'UNFETCHABLE_REUSED' : active && store && WINDOW_NAME !== 'HOLDOUT' ? 'STORE_ACTIVE' : 'FETCH';
       out.push({
         id: `tiingo:${c.exchange}:${ticker}:${c.start}`, ticker, exchange: c.exchange, startDate: c.start,
         endDate: active ? null : c.end, listEnd: c.end === '9999-12-31' ? null : c.end, active, source,
@@ -108,7 +117,7 @@ export function classifyFetch(listing, bars, meta) {
   if (!inside.length) { res.status = 'MISMATCH'; return res; }
   res.first = inside[0].date; res.last = inside[inside.length - 1].date;
   const wantFirst = lo > WINDOW.warmupFrom ? lo : WINDOW.warmupFrom;
-  const wantLast = listing.active ? WINDOW.to : listing.listEnd;
+  const wantLast = listing.active ? WINDOW.to : listing.listEnd && listing.listEnd < WINDOW.to ? listing.listEnd : WINDOW.to;
   const startOk = days(wantFirst, res.first) <= 7;
   const endOk = listing.active ? days(res.last, wantLast) <= 7 : Math.abs(days(res.last, wantLast)) <= 7;
   if (res.flags.includes('META_START_MISMATCH') && res.outsideWindow > inside.length) res.status = 'MISMATCH';

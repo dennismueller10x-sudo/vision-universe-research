@@ -33,13 +33,17 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
    Umgebungsvariablen vorkommen - nie als Wert. */
 const ALL = process.argv.includes("--all");
 const TARGETS = ALL
-  ? ["quant/data/market", "worker", "discover/data", "discover/ui", "discover/engines",
+  ? ["quant/data/market", "worker", "workers", "api", "assets", "discover/data", "discover/ui", "discover/engines",
      "quant/config", "providers", ".github/workflows", "scripts/market"].map((r) => join(root, r))
   : [join(root, "quant", "data", "market")];
 
 /* Umgebungsvariablen, deren Wert niemals in einer Datei stehen darf. */
+/* Erweitert (Security-Review M4, 05.10.2026): auch die Schluessel, mit
+   denen Worker, Ask und die Historienablage arbeiten. */
 const SECRET_ENV = ["TWELVE_DATA_API_KEY", "EODHD_API_KEY", "FMP_API_KEY",
-                    "FINNHUB_API_KEY", "TIINGO_API_KEY", "POLYGON_API_KEY"];
+                    "FINNHUB_API_KEY", "TIINGO_API_KEY", "POLYGON_API_KEY",
+                    "ANTHROPIC_API_KEY", "CLOUDFLARE_API_TOKEN",
+                    "VU_HISTORY_S3_ACCESS_KEY_ID", "VU_HISTORY_S3_SECRET_ACCESS_KEY"];
 
 /* Musterbasierte Erkennung, unabhaengig von der Umgebung.
 
@@ -56,6 +60,7 @@ const SECRET_ENV = ["TWELVE_DATA_API_KEY", "EODHD_API_KEY", "FMP_API_KEY",
    OHNE Kontext ein Geheimnis sind - und der Abgleich gegen die
    tatsaechlichen Werte aus der Umgebung, der ueberall gilt. */
 const DATA_PATTERNS = [
+  { name: "Anthropic-Schluessel", re: /\bsk-ant-[A-Za-z0-9_-]{20,}/ },
   { name: "apikey-Parameter", re: /\bapi[_-]?key\s*[:=]\s*["']?[A-Za-z0-9_-]{8,}/i },
   { name: "token-Feld", re: /\b(access_token|auth_token|bearer)\s*[:=]\s*["']?[A-Za-z0-9._-]{12,}/i },
   { name: "Authorization-Header", re: /"authorization"\s*:/i },
@@ -70,6 +75,7 @@ const DATA_PATTERNS = [
    ein fest eingetragenes Geheimnis - ein Name einer Umgebungsvariablen
    sieht anders aus. */
 const SOURCE_PATTERNS = [
+  { name: "Anthropic-Schluessel", re: /\bsk-ant-[A-Za-z0-9_-]{20,}/ },
   { name: "OpenAI-artiger Schluessel", re: /\bsk-[A-Za-z0-9]{16,}/ },
   { name: "AWS-Zugriffsschluessel", re: /\bAKIA[0-9A-Z]{16}\b/ },
   { name: "GitHub-Token", re: /\bgh[pousr]_[A-Za-z0-9]{16,}/ },
@@ -98,7 +104,12 @@ const secrets = SECRET_ENV
   .map((name) => ({ name, value: process.env[name] }))
   .filter((e) => e.value && e.value.length >= 8);
 
-const files = TARGETS.reduce((a, t2) => a.concat(walk(t2)), []);
+/* Tests und Fixtures werden nicht ausgeliefert; sie tragen absichtlich
+   Attrappen ("Bearer admin…" gegen ask.example). Wie in den anderen
+   Waechtern des Repositorys bleiben sie aussen vor. */
+const TESTPFAD = /(^|\/)(tests?|fixtures)\/|\.test\.m?js$/;
+const files = TARGETS.reduce((a, t2) => a.concat(walk(t2)), [])
+  .filter((f) => !TESTPFAD.test(f.slice(root.length + 1)));
 const findings = [];
 
 for (const file of files) {

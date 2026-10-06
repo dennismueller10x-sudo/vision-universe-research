@@ -1,0 +1,449 @@
+{
+  "schema": "r15-fundamentals-matrix-1",
+  "date": "2026-10-05",
+  "fieldKeys": [
+    "revenue",
+    "eps",
+    "netIncome",
+    "grossProfit",
+    "operatingIncome",
+    "margins",
+    "fcf",
+    "operatingCashFlow",
+    "cash",
+    "debt",
+    "capex",
+    "shares",
+    "equity",
+    "totalAssets",
+    "estimates",
+    "surprises",
+    "institutional13F",
+    "industryGroup"
+  ],
+  "datasets": [
+    {
+      "id": "SEC_CONSUMER",
+      "path": "quant/data/sec/consumer/CIK*.json (5.073 Dateien, ~128 MB, committed)",
+      "builtBy": "scripts/quant/cli.py consumer ← scripts/quant/sec/consumer.py; Workflow .github/workflows/sec-consumer-fundamentals.yml (wöchentlich, EDGAR companyfacts.zip)",
+      "fields": {
+        "revenue": "A+Q+TTM",
+        "eps": "A+Q+TTM (eps_diluted)",
+        "netIncome": "A+Q+TTM",
+        "grossProfit": "A+Q+TTM",
+        "operatingIncome": "Q (QUARTERLY_METRICS); annual je nach Emittent",
+        "margins": "ableitbar (GP/NI/OpInc ÷ Revenue)",
+        "fcf": "A+Q+TTM (abgeleitet OCF−Capex)",
+        "operatingCashFlow": "A+Q+TTM",
+        "cash": "A+Q",
+        "debt": "A+Q (total_debt, long_term_debt, net_debt)",
+        "capex": "A+Q+TTM",
+        "shares": "A+Q (shares_outstanding, diluted_weighted_average_shares)",
+        "equity": "A",
+        "totalAssets": "A",
+        "estimates": "nein",
+        "surprises": "nein",
+        "institutional13F": "nein",
+        "industryGroup": "nein"
+      },
+      "depth": "13 Geschäftsjahre, 8 Quartale",
+      "present": true,
+      "pointInTime": "TEILWEISE – policy \"as_of_latest\": je Periode der zuletzt gemeldete (ggf. restated) Wert mit dessen filed/accession; kein Erstmeldewert, nur 8 Quartale → für Backtests nicht PIT",
+      "usedBy": [
+        "build.mjs loadSecFundamentals → CANSLIM-/Piotroski-Teilprüfung (net_income Q/A, total_assets, OCF, LTD, shares, GP, revenue, equity)",
+        "Discover (discover/engines/fundamentals.js)"
+      ],
+      "live": "JA (Teilprüfungen CANSLIM/PIOTROSKI_F, Discover); von keiner Supertrader-Live-Strategie genutzt",
+      "publicReproducible": "ja (Repo + öffentliche SEC-Quelle)",
+      "status": "PRESENT_NOT_INTEGRATED (für die 5 Live-Methoden)"
+    },
+    {
+      "id": "DISCOVER_STOCK_METRICS",
+      "path": "discover/data/stocks/US_REAL/<SYM>.json metrics.f_* (f_revenueGrowthTTM, f_revenueGrowth3y/10y, f_netMargin, f_fcfMargin, f_earningsAcceleration, f_marginExpansion3y, f_roe, f_pe, f_ps, f_fcfYield)",
+      "builtBy": "scripts/discover/build-discover-data.mjs:664-665 ← discover/engines/fundamentals.js",
+      "fields": {
+        "revenue": "Wachstum TTM/3y/10y",
+        "eps": "nein (nur via P/E)",
+        "netIncome": "f_earningsAcceleration = Wachstum NI FY vs. FY−1 (jährlich)",
+        "grossProfit": "nein",
+        "operatingIncome": "f_marginExpansion3y (operative Marge FY − FY−3)",
+        "margins": "net/fcf/operating (jährlich)",
+        "fcf": "f_fcfMargin, f_fcfYield",
+        "operatingCashFlow": "indirekt",
+        "cash": "nein",
+        "debt": "nein",
+        "capex": "nein",
+        "shares": "marketCap",
+        "equity": "f_roe",
+        "totalAssets": "nein",
+        "estimates": "nein",
+        "surprises": "nein",
+        "institutional13F": "nein",
+        "industryGroup": "sector/industry (heute)"
+      },
+      "depth": "nur aktueller Stand",
+      "present": true,
+      "pointInTime": "NEIN (Momentaufnahme)",
+      "usedBy": [
+        "build.mjs:517-528,749 → signals.json fundamentalsDisplay für MINERVINI_VCP (filtered:false)"
+      ],
+      "live": "Daten ja; in der Supertrader-UI nicht gerendert (MIN-FUND-HYBRID \"wird angezeigt\" trifft nicht zu)",
+      "publicReproducible": "ja",
+      "status": "INTEGRATED_DISPLAY_ONLY_NOT_RENDERED"
+    },
+    {
+      "id": "FUNDAMENTALS_ISSUERS",
+      "path": "quant/data/fundamentals/issuers/000-995.json (5.479 Emittenten) + Berichte (coverage, quality, reconciliation, history-coverage …)",
+      "builtBy": "scripts/quant/sec/pipeline.py / persist-fundamentals.mjs; Workflows sec-fundamentals-universe.yml, update-sec-fundamentals.yml",
+      "fields": {
+        "revenue": "nur Abdeckungs-Metadaten (Perioden, erste/letzte Periode), keine Werte",
+        "eps": "nur Abdeckungs-Metadaten (Perioden, erste/letzte Periode), keine Werte",
+        "netIncome": "nur Abdeckungs-Metadaten (Perioden, erste/letzte Periode), keine Werte",
+        "grossProfit": "nur Abdeckungs-Metadaten (Perioden, erste/letzte Periode), keine Werte",
+        "operatingIncome": "nur Abdeckungs-Metadaten (Perioden, erste/letzte Periode), keine Werte",
+        "margins": "nur Abdeckungs-Metadaten (Perioden, erste/letzte Periode), keine Werte",
+        "fcf": "nur Abdeckungs-Metadaten (Perioden, erste/letzte Periode), keine Werte",
+        "operatingCashFlow": "nur Abdeckungs-Metadaten (Perioden, erste/letzte Periode), keine Werte",
+        "cash": "nur Abdeckungs-Metadaten (Perioden, erste/letzte Periode), keine Werte",
+        "debt": "nur Abdeckungs-Metadaten (Perioden, erste/letzte Periode), keine Werte",
+        "capex": "nur Abdeckungs-Metadaten (Perioden, erste/letzte Periode), keine Werte",
+        "shares": "nur Abdeckungs-Metadaten (Perioden, erste/letzte Periode), keine Werte",
+        "equity": "nur Abdeckungs-Metadaten (Perioden, erste/letzte Periode), keine Werte",
+        "totalAssets": "nur Abdeckungs-Metadaten (Perioden, erste/letzte Periode), keine Werte",
+        "estimates": "nein",
+        "surprises": "nein",
+        "institutional13F": "nein",
+        "industryGroup": "nein"
+      },
+      "depth": "bis ~17 Jahre (Metadaten)",
+      "present": true,
+      "pointInTime": "Werte NICHT im Repo: Arbeitsablage quant/data/sec/facts/** ist gitignored und in diesem Checkout nicht vorhanden; Metadaten melden pit.state=PIT_READY",
+      "usedBy": [
+        "Abdeckungs-/Qualitätsberichte"
+      ],
+      "live": "nein (Metadaten)",
+      "publicReproducible": "nur Metadaten",
+      "status": "PRESENT_METADATA_ONLY"
+    },
+    {
+      "id": "SEC_CANONICAL_GOLDEN5",
+      "path": "quant/data/sec/canonical/{AAPL,JPM,MSFT,NVDA,XOM}.json + inspector/ + golden-five-pit-coverage/ + quant-factor-inputs.json",
+      "builtBy": "scripts/quant/sec/canonical.py (providers/sec/adapter.js)",
+      "fields": {
+        "revenue": "ja",
+        "eps": "ja",
+        "netIncome": "ja",
+        "grossProfit": "ja",
+        "operatingIncome": "ja",
+        "margins": "ableitbar",
+        "fcf": "ja",
+        "operatingCashFlow": "ja",
+        "cash": "ja",
+        "debt": "ja",
+        "capex": "ja",
+        "shares": "ja",
+        "equity": "ja",
+        "totalAssets": "ja",
+        "estimates": "nein (pit_gates: analystEstimates=false)",
+        "surprises": "nein",
+        "institutional13F": "nein",
+        "industryGroup": "nein"
+      },
+      "depth": "ab ~2006",
+      "present": true,
+      "pointInTime": "JA – facts mit filedAt/availableAt/revisionId/restatementStatus (original vs. restated)",
+      "usedBy": [
+        "VU Quant Golden Universe (Faktor-Rohwerte)"
+      ],
+      "live": "nicht für Supertrader",
+      "publicReproducible": "ja (5 Titel)",
+      "status": "PIT_SAMPLE_ONLY (5 Titel, nicht integriert)"
+    },
+    {
+      "id": "SEC_PIT_R11",
+      "path": "privater R2-Eimer: _validation/sec-pit-r11.json.gz",
+      "builtBy": "scripts/supertrader/validation/sec-pit.mjs (EDGAR companyfacts.zip, CIK-Zuordnung inkl. delisteter Titel über cik-lookup-data.txt)",
+      "fields": {
+        "revenue": "Q [periodEnd, value, firstFiled, derived] (US-GAAP Revenue-Tags)",
+        "eps": "Q [periodEnd, value, firstFiled, derived] (diluted → basic)",
+        "netIncome": "nein",
+        "grossProfit": "nein",
+        "operatingIncome": "nein",
+        "margins": "nein",
+        "fcf": "nein",
+        "operatingCashFlow": "nein",
+        "cash": "nein",
+        "debt": "nein",
+        "capex": "nein",
+        "shares": "nein",
+        "equity": "nein",
+        "totalAssets": "nein",
+        "estimates": "nein",
+        "surprises": "nein",
+        "institutional13F": "nein",
+        "industryGroup": "nein"
+      },
+      "depth": "ganze EDGAR-Historie je Listing (Q4 = FY − Q1..Q3, als abgeleitet markiert)",
+      "present": true,
+      "pointInTime": "JA – nur erste Einreichung je Periode; sichtbar erst nach filed (engine/earnings.mjs filter r[2] < asOf); Granularität Einreichungstag",
+      "usedBy": [
+        "engine/earnings.mjs earningsAt (MIN-EPS-01/ACC, MIN-REV-01) → minervini-v3.mjs (3.0.0)",
+        "validation/analyze-methods.mjs, case-study.mjs (R11)"
+      ],
+      "live": "NEIN (3.0.0 = Forschung, verfehlte Übernahmebedingung)",
+      "publicReproducible": "NEIN (privater Eimer, Statistik verschlüsselt; Skript öffentlich, Neubau aus SEC möglich)",
+      "status": "INTEGRATED_NOT_LIVE"
+    },
+    {
+      "id": "SEC_PIT_R12",
+      "path": "privater R2-Eimer: _validation/sec-pit-r12.json.gz",
+      "builtBy": "sec-pit.mjs (R12-Erweiterung)",
+      "fields": {
+        "revenue": "Q, + weitere Tags (RevenuesNetOfInterestExpense …) + IFRS",
+        "eps": "Q, + Continuing-Ops-EPS + IFRS",
+        "netIncome": "nein",
+        "grossProfit": "nein",
+        "operatingIncome": "nein",
+        "margins": "nein",
+        "fcf": "nein",
+        "operatingCashFlow": "nein",
+        "cash": "nein",
+        "debt": "nein",
+        "capex": "nein",
+        "shares": "nein",
+        "equity": "nein",
+        "totalAssets": "nein",
+        "estimates": "nein",
+        "surprises": "nein",
+        "institutional13F": "nein",
+        "industryGroup": "nein"
+      },
+      "depth": "wie r11",
+      "present": true,
+      "pointInTime": "JA (erste Einreichung) + Ursache fehlender Reihen",
+      "usedBy": [
+        "validation/audit-r14.mjs (Minervini-3.0.0-Gegenprobe)"
+      ],
+      "live": "NEIN",
+      "publicReproducible": "NEIN (privat)",
+      "status": "INTEGRATED_NOT_LIVE (nur Audit)"
+    },
+    {
+      "id": "SEC_DELIST_R13",
+      "path": "privater R2-Eimer: _validation/sec-delist-r13.json.gz",
+      "builtBy": "sec-pit.mjs classifyDelisting (Merger-Formulare DEFM14A, SC TO-T, 425 …)",
+      "fields": {
+        "revenue": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)",
+        "eps": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)",
+        "netIncome": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)",
+        "grossProfit": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)",
+        "operatingIncome": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)",
+        "margins": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)",
+        "fcf": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)",
+        "operatingCashFlow": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)",
+        "cash": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)",
+        "debt": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)",
+        "capex": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)",
+        "shares": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)",
+        "equity": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)",
+        "totalAssets": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)",
+        "estimates": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)",
+        "surprises": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)",
+        "institutional13F": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)",
+        "industryGroup": "nein (Delisting-Klasse ACQUISITION/UNKNOWN)"
+      },
+      "depth": "–",
+      "present": true,
+      "pointInTime": "JA (Filing-Datum)",
+      "usedBy": [
+        "Szenario S1C in Validierung/Audit"
+      ],
+      "live": "nein (nur Bewertung)",
+      "publicReproducible": "NEIN",
+      "status": "NON_FUNDAMENTAL"
+    },
+    {
+      "id": "EXTERNAL_NOT_PRESENT",
+      "path": "–",
+      "builtBy": "–",
+      "fields": {
+        "revenue": "–",
+        "eps": "–",
+        "netIncome": "–",
+        "grossProfit": "–",
+        "operatingIncome": "–",
+        "margins": "–",
+        "fcf": "–",
+        "operatingCashFlow": "–",
+        "cash": "–",
+        "debt": "–",
+        "capex": "–",
+        "shares": "–",
+        "equity": "–",
+        "totalAssets": "–",
+        "estimates": "FEHLT (Konsens, Revisionen)",
+        "surprises": "FEHLT",
+        "institutional13F": "FEHLT (CANSLIM \"I\": CS-I-NA)",
+        "industryGroup": "FEHLT als PIT-Gruppenrang (nur heutige SIC/Sektor)"
+      },
+      "depth": "–",
+      "present": false,
+      "pointInTime": "–",
+      "usedBy": [],
+      "live": "nein",
+      "publicReproducible": "–",
+      "status": "NOT_PRESENT"
+    }
+  ],
+  "sepaCoverage": [
+    {
+      "criterion": "Quartals-EPS-Wachstum y/y (≥ 25 %)",
+      "dataPresent": "ja (SEC_PIT_R11/R12; SEC_CONSUMER 8 Q)",
+      "pointInTime": "ja (PIT-Store, Erstmeldung)",
+      "integratedIn": "engine/earnings.mjs MIN-EPS-01 → minervini-v3.mjs",
+      "live": false,
+      "status": "INTEGRATED_NOT_LIVE",
+      "note": "Live 2.0.0 ohne Filter; ~1/3 der Titel ohne historische EPS (process-chain.mjs:62)."
+    },
+    {
+      "criterion": "EPS-Beschleunigung",
+      "dataPresent": "ja",
+      "pointInTime": "ja",
+      "integratedIn": "MIN-EPS-ACC (nur aktuelles vs. Vorquartal; \"Code 33\" verlangt 3 Quartale)",
+      "live": false,
+      "status": "INTEGRATED_NOT_LIVE (vereinfacht)",
+      "note": "Mehrquartals-Beschleunigung nicht formalisiert."
+    },
+    {
+      "criterion": "Umsatzwachstum y/y",
+      "dataPresent": "ja (PIT rev)",
+      "pointInTime": "ja",
+      "integratedIn": "MIN-REV-01 (nur > 0 %)",
+      "live": false,
+      "status": "INTEGRATED_NOT_LIVE (abgeschwächt)",
+      "note": "Keine 25-%-Schwelle, keine Umsatzbeschleunigung."
+    },
+    {
+      "criterion": "Umsatzbeschleunigung",
+      "dataPresent": "ja (PIT rev)",
+      "pointInTime": "ja",
+      "integratedIn": "–",
+      "live": false,
+      "status": "DERIVABLE_NOT_INTEGRATED",
+      "note": ""
+    },
+    {
+      "criterion": "Margenausweitung (Brutto/operativ/netto, quartalsweise)",
+      "dataPresent": "ja in SEC_CONSUMER (GP, OpInc, NI, Revenue; 8 Q) / Discover jährlich",
+      "pointInTime": "NEIN (PIT-Store hat nur EPS+Umsatz; consumer = as_of_latest)",
+      "integratedIn": "–",
+      "live": false,
+      "status": "PRESENT_NOT_PIT_NOT_INTEGRATED",
+      "note": "Für Backtest müsste sec-pit.mjs um GrossProfit/OperatingIncomeLoss/NetIncomeLoss erweitert werden."
+    },
+    {
+      "criterion": "Nettogewinn-Wachstum",
+      "dataPresent": "ja (SEC_CONSUMER)",
+      "pointInTime": "nein",
+      "integratedIn": "CANSLIM-Teilprüfung C/A (net_income, zuletzt berichtet); Discover f_earningsAcceleration",
+      "live": "nur Teilprüfung",
+      "status": "PRESENT_NOT_PIT",
+      "note": "CANSLIM \"Quartalsgewinn\" nutzt Net Income statt EPS."
+    },
+    {
+      "criterion": "Jährliches EPS-Wachstum (3 Jahre)",
+      "dataPresent": "ja (SEC_CONSUMER annual eps_diluted, 13 J.)",
+      "pointInTime": "nein",
+      "integratedIn": "–",
+      "live": false,
+      "status": "PRESENT_NOT_INTEGRATED",
+      "note": ""
+    },
+    {
+      "criterion": "ROE / Kapitalrendite",
+      "dataPresent": "ja (NI + Equity; Discover f_roe)",
+      "pointInTime": "nein",
+      "integratedIn": "–",
+      "live": false,
+      "status": "PRESENT_NOT_INTEGRATED",
+      "note": ""
+    },
+    {
+      "criterion": "Cashflow/FCF-Qualität",
+      "dataPresent": "ja (SEC_CONSUMER)",
+      "pointInTime": "nein",
+      "integratedIn": "Piotroski-Teilprüfung (CFO, Accrual)",
+      "live": "nur Teilprüfung",
+      "status": "PRESENT_NOT_PIT",
+      "note": ""
+    },
+    {
+      "criterion": "Aktienzahl / Angebot (Float, Rückkäufe)",
+      "dataPresent": "Aktienzahl ja, Float nein",
+      "pointInTime": "nein",
+      "integratedIn": "CANSLIM S nur Anzeige",
+      "live": false,
+      "status": "PARTIAL",
+      "note": ""
+    },
+    {
+      "criterion": "Analystenschätzungen / Revisionen",
+      "dataPresent": "nein",
+      "pointInTime": "–",
+      "integratedIn": "–",
+      "live": false,
+      "status": "NOT_PRESENT",
+      "note": "pit_gates.json: analystEstimates=false."
+    },
+    {
+      "criterion": "Earnings Surprises (Ist vs. Konsens)",
+      "dataPresent": "nein",
+      "pointInTime": "–",
+      "integratedIn": "–",
+      "live": false,
+      "status": "NOT_PRESENT",
+      "note": "Auch für Kullamägi-Episodic-Pivots und TraderFox Pivotal-News-Points fehlend."
+    },
+    {
+      "criterion": "Institutionelle Halter / Sponsorship (13F)",
+      "dataPresent": "nein",
+      "pointInTime": "–",
+      "integratedIn": "CANSLIM I = CS-I-NA",
+      "live": false,
+      "status": "NOT_PRESENT",
+      "note": ""
+    },
+    {
+      "criterion": "Branchengruppen-Rang (RS der Gruppe)",
+      "dataPresent": "nur heutige SIC/Sektor",
+      "pointInTime": "nein (keine PIT-Gruppenzugehörigkeit)",
+      "integratedIn": "–",
+      "live": false,
+      "status": "NOT_PRESENT_PIT",
+      "note": "Auch für Weinstein-Gruppenstufe fehlend."
+    },
+    {
+      "criterion": "Öffentliche Reproduzierbarkeit der PIT-Fundamentaltests",
+      "dataPresent": "Skript öffentlich, Daten privat",
+      "pointInTime": "–",
+      "integratedIn": "–",
+      "live": false,
+      "status": "NOT_PUBLICLY_REPRODUCIBLE",
+      "note": "sec-pit-r11/r12 liegen nur im privaten Eimer."
+    }
+  ],
+  "summary": {
+    "liveStrategiesUsingFundamentals": [],
+    "partialChecksUsingFundamentals": [
+      "CANSLIM",
+      "PIOTROSKI_F"
+    ],
+    "pitEpsRevenue": "privat, nur Minervini 3.0.0 (Forschung)",
+    "missingEntirely": [
+      "estimates",
+      "surprises",
+      "13F",
+      "PIT industry group"
+    ]
+  }
+}

@@ -270,11 +270,11 @@
       '<div class="regime-scale-track">' + segs + '<div class="regime-scale-marker" style="left:' + pct + '%"></div></div>' +
       '</div>';
   }
+  /* Tonfarben kommen als CSS-Variablen (styles.css, helles/dunkles Theme),
+     damit die Skala beim Theme-Wechsel ohne Neuzeichnen live umfärbt. */
+  var TONES = ["stress", "off", "off-lite", "neutral", "on-lite", "on", "strong-on"];
   function toneColor(tone) {
-    return {
-      "stress": "#7a201a", "off": "#d84d43", "off-lite": "#f2b8a9", "neutral": "#d8d8dc",
-      "on-lite": "#8fe0b2", "on": "#14b85a", "strong-on": "#0e7a3c"
-    }[tone] || "#d8d8dc";
+    return "var(--tone-" + (TONES.indexOf(tone) >= 0 ? tone : "neutral") + ")";
   }
 
   function gaugeScaleHtml(score) {
@@ -326,7 +326,7 @@
       '<div class="read-grid">' +
       '<div class="read-card tailwinds"><h3>Tailwinds</h3><ul>' + S.content.macroRead.tailwinds.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + '</ul></div>' +
       '<div class="read-card headwinds"><h3>Headwinds</h3><ul>' + S.content.macroRead.headwinds.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + '</ul></div>' +
-      '<div class="read-card regime-change"><h3>Regime Change</h3><p style="font-size:13.5px;line-height:1.6;color:#333;margin:0">' + esc(S.content.macroRead.regimeChange) + '</p></div>' +
+      '<div class="read-card regime-change"><h3>Regime Change</h3><p style="font-size:13.5px;line-height:1.6;color:var(--text-3);margin:0">' + esc(S.content.macroRead.regimeChange) + '</p></div>' +
       '<div class="read-card bottom-line"><h3>Bottom Line</h3><p>' + esc(S.content.macroRead.bottomLine) + '</p></div>' +
       '</div>';
 

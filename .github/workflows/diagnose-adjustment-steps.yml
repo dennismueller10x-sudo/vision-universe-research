@@ -1,0 +1,48 @@
+name: Diagnose Bereinigungsstufen (nur lesend)
+
+# Legt offen, warum die Qualitaetspruefung eine Reihe mit
+# unexplained_adjustment_step sperrt: liest die Tagesreihen der genannten
+# Titel NUR LESEND aus der dauerhaften Ablage und rechnet die Pruefung mit
+# derselben Engine nach (scripts/diagnose/adjustment-steps.mjs).
+# Kein Anbieterabruf, kein Schreibvorgang, kein Commit.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tickers:
+        description: 'Titel, mit Komma getrennt (z. B. LOGI,AAPL); leer = alle vom Faktorlauf gesperrten'
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: diagnose-adjustment-steps-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Ablage lesen und Stufen erklaeren
+        env:
+          IN_TICKERS: ${{ inputs.tickers }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          if [ -n "$IN_TICKERS" ]; then sel=(--tickers "$IN_TICKERS"); else sel=(--blocked); fi
+          node scripts/diagnose/adjustment-steps.mjs "${sel[@]}" --out "$RUNNER_TEMP/adjustment-steps.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: adjustment-steps
+          path: ${{ runner.temp }}/adjustment-steps.json
+          if-no-files-found: ignore
+          retention-days: 14

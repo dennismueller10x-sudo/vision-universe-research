@@ -18,11 +18,18 @@ on:
       - ".github/workflows/sec-fundamentals-ci.yml"
   workflow_dispatch:
 
+# Nur lesen: reine Pruef-Workflows brauchen kein Schreibrecht (Audit 03.10.2026).
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # HEAD^1 ist im pull_request-Ereignis die aktuelle Basis (Gate unten).
+          fetch-depth: 2
 
       - uses: actions/setup-python@v5
         with:
@@ -149,7 +156,10 @@ jobs:
                   raise AssertionError(message)
 
           Checker().feed(html)
-          assert "<vu-navigation></vu-navigation>" in html, "shared navigation missing"
+          # Attribute (theme, theme-switch, no-preview) sind erlaubt; geprueft
+          # wird, dass die gemeinsame Navigation als Element vorhanden ist.
+          import re
+          assert re.search(r"<vu-navigation(\s[^>]*)?></vu-navigation>", html), "shared navigation missing"
           # The inspector is a quant page and must use the quant shell, not a
           # second UI stack of its own.
           assert "/quant/ui/shell.js" in html, "shared quant shell missing"
@@ -204,12 +214,18 @@ jobs:
           echo "no credentials found"
 
       - name: Confirm the existing backtest engine is untouched by the bridge
+        if: github.event_name == 'pull_request'
         shell: bash
         run: |
           # The bridge imports scripts/dashboard/backtest_technicals.py; a change
           # to that file is a change to the production technical pipeline and
           # must not arrive through a SEC-pipeline pull request.
-          if git diff --name-only origin/main...HEAD 2>/dev/null | grep -q '^scripts/dashboard/'; then
+          # Bis 10/2026 lief hier origin/main...HEAD mit 2>/dev/null in einem
+          # flachen Checkout ohne origin/main: der Vergleich scheiterte immer
+          # still, das Gate war wirkungslos. Jetzt gegen HEAD^1, laut.
+          set -euo pipefail
+          geaendert=$(git diff --name-only HEAD^1 HEAD)
+          if grep -q '^scripts/dashboard/' <<<"$geaendert"; then
             echo "::error::this pipeline must not modify scripts/dashboard/"
             exit 1
           fi

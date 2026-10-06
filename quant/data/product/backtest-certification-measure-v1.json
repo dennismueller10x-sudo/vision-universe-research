@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-certification-measure-1.0.0",
- "generatedAt": "2026-10-03T11:38:47.460Z",
+ "generatedAt": "2026-10-06T04:26:38.342Z",
  "measures": {
   "CERTIFIED": [],
   "LIMITED": [
@@ -16,20 +16,20 @@
   "WITHHELD": [],
   "SIGNAL_RULES": {
    "MOMENTUM_IMPROVED": "LIMITED Δ -0.0137",
-   "MOMENTUM_DETERIORATED": "LIMITED Δ -0.0025",
+   "MOMENTUM_DETERIORATED": "LIMITED Δ -0.0024",
    "TREND_UP": "LIMITED Δ -0.0116",
-   "TREND_DOWN": "LIMITED Δ -0.001",
+   "TREND_DOWN": "LIMITED Δ -0.0009",
    "NEW_52W_HIGH": "LIMITED Δ 0.0137"
   },
   "SETUP": {
    "status": "COLLECTING_HISTORY",
-   "historyDates": 7,
+   "historyDates": 8,
    "completedM6": 0,
    "ownerApproval": true
   },
   "STRATEGY": {
    "status": "COLLECTING_HISTORY",
-   "membershipMonths": 1,
+   "membershipMonths": 2,
    "factorMonths": 2
   },
   "SURVIVORSHIP_GATE": "PASS",
@@ -39,8 +39,8 @@
   "DELISTED_BACKTEST_ELIGIBLE": 3058,
   "SIGNAL_RETURN_TYPE": "TOTAL_RETURN",
   "UNIQUE_TITLES": {
-   "MOMENTUM_IMPROVED": 5167,
-   "MOMENTUM_DETERIORATED": 5191,
+   "MOMENTUM_IMPROVED": 5168,
+   "MOMENTUM_DETERIORATED": 5192,
    "TREND_UP": 5138,
    "TREND_DOWN": 5162,
    "NEW_52W_HIGH": 4921
@@ -60,15 +60,15 @@
    "NEW_52W_HIGH": 141
   },
   "EFFECTIVE_N": {
-   "MOMENTUM_IMPROVED": 19950,
-   "MOMENTUM_DETERIORATED": 24367,
-   "TREND_UP": 26077,
-   "TREND_DOWN": 25422,
-   "NEW_52W_HIGH": 11055
+   "MOMENTUM_IMPROVED": 19852,
+   "MOMENTUM_DETERIORATED": 24126,
+   "TREND_UP": 26060,
+   "TREND_DOWN": 24823,
+   "NEW_52W_HIGH": 11030
   },
-  "RADAR_EVENTS_WITH_BASE_RATE": 493,
-  "ALERTS_NEW": 672,
-  "WATCHLIST_TRACKED": 5876,
+  "RADAR_EVENTS_WITH_BASE_RATE": 541,
+  "ALERTS_NEW": 714,
+  "WATCHLIST_TRACKED": 5687,
   "DISCOVER_CHANGED": false
  },
  "criteria": [

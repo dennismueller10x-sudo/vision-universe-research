@@ -47,7 +47,32 @@
       : { scope: "discover", reason: "universeCovered" };
   }
 
-  var API = { waehleUmfang: waehleUmfang };
+  /* DAS DISCOVER-SIEGEL NACH SCHLUSS (Plattform-Audit 03.10.2026).
+     Versiegelt ist der sichtbare Umfang, wenn jeder Titel seinen
+     vollstaendigen Tagesverlauf der Sitzung hat. Zwei Fehler hielten das
+     Siegel dauerhaft offen - und damit den Nachzug des Universums nach
+     einem ausgefallenen Lauf (sealConsumerScopeFirst) dauerhaft aus:
+       1. Gesucht wurde "ref_" + Ticker roh; geschrieben wird kanonisch
+          (core/identity.js). MOG-A lag als ref_MOG_A.json und galt als
+          fehlend.
+       2. Titel, fuer die der Anbieter nie einen Tagesverlauf geliefert hat
+          (in keinem aufbewahrten Sitzungsordner), zaehlten mit - sie koennen
+          nie fertig werden. Sie werden jetzt getrennt ausgewiesen
+          (nieGeliefert), nicht verschwiegen.
+     lies(securityId) -> Snapshot der Sitzung oder null
+     jemals(securityId) -> true, wenn irgendein aufbewahrter Ordner ihn hat */
+  function discoverSiegel(tickers, idFor, lies, jemals) {
+    var fertig = 0, gesamt = 0, nie = [];
+    (tickers || []).forEach(function (t) {
+      var id = idFor(t), s = lies(id);
+      if (!s && !jemals(id)) { nie.push(t); return; }
+      gesamt++;
+      if (s && s.regularComplete) fertig++;
+    });
+    return { versiegelt: gesamt > 0 && fertig === gesamt, fertig: fertig, gesamt: gesamt, nieGeliefert: nie };
+  }
+
+  var API = { waehleUmfang: waehleUmfang, discoverSiegel: discoverSiegel };
   if (typeof module !== "undefined" && module.exports) module.exports = API;
   if (global) { global.VURealtime = global.VURealtime || {}; global.VURealtime.IntradayScope = API; }
 })(typeof globalThis !== "undefined" ? globalThis : this);

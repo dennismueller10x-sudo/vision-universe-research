@@ -1,10 +1,10 @@
 {
  "schemaVersion": "journey-coverage-1.1.0",
- "generatedAt": "2026-10-03T11:39:28.000Z",
+ "generatedAt": "2026-10-06T04:27:00.000Z",
  "universe": 6853,
  "sample": 500,
  "sampling": "jeder 13. Titel der alphabetisch sortierten Liste - deterministisch, damit zwei Laeufe vergleichbar sind",
- "evidenceAsOf": "2026-10-02",
+ "evidenceAsOf": "2026-10-05",
  "evidenceMethodologyVersion": "vu-factor-evidence-2.0.0",
  "stations": [
   {
@@ -20,37 +20,37 @@
   {
    "id": "chart",
    "label": "Kursverlauf",
-   "answered": 468,
+   "answered": 496,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 32,
-   "share": 0.936,
+   "withheld": 4,
+   "share": 0.992,
    "reasons": {
-    "SOURCE_MISSING": 32
+    "SOURCE_MISSING": 4
    }
   },
   {
    "id": "factorStrength",
    "label": "Wie stark ist die Aktie",
-   "answered": 458,
+   "answered": 481,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 42,
-   "share": 0.916,
+   "withheld": 19,
+   "share": 0.962,
    "reasons": {
-    "NOT_COVERED_BY_FACTOR_EVIDENCE": 42
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 19
    }
   },
   {
    "id": "change",
    "label": "Was hat sich veraendert",
-   "answered": 453,
+   "answered": 476,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 47,
-   "share": 0.906,
+   "withheld": 24,
+   "share": 0.952,
    "reasons": {
-    "NO_COMPARABLE_OBSERVATION": 47
+    "NO_COMPARABLE_OBSERVATION": 24
    }
   },
   {
@@ -82,30 +82,30 @@
   {
    "id": "patterns",
    "label": "Chance und Risiko in aehnlichen Lagen",
-   "answered": 409,
-   "findings": 73,
+   "answered": 410,
+   "findings": 75,
    "findingReasons": {
-    "NO_PATTERN_HOLDS": 73
+    "NO_PATTERN_HOLDS": 75
    },
-   "withheld": 91,
-   "share": 0.818,
+   "withheld": 90,
+   "share": 0.82,
    "reasons": {
-    "NOT_COVERED_BY_PATTERN_MATCH": 91
+    "NOT_COVERED_BY_PATTERN_MATCH": 90
    }
   },
   {
    "id": "strategy",
    "label": "Welcher Anlagestil passt",
-   "answered": 405,
-   "findings": 164,
+   "answered": 428,
+   "findings": 178,
    "findingReasons": {
-    "NO_PROFILE_FITS_WELL": 164
+    "NO_PROFILE_FITS_WELL": 178
    },
-   "withheld": 95,
-   "share": 0.81,
+   "withheld": 72,
+   "share": 0.856,
    "reasons": {
     "NO_EVIDENCE": 53,
-    "NOT_COVERED_BY_FACTOR_EVIDENCE": 36,
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 13,
     "NOT_AN_EQUITY_LISTING": 6
    }
   },
@@ -113,9 +113,9 @@
    "id": "assignmentChange",
    "label": "Hat sich die Zuordnung geaendert",
    "answered": 500,
-   "findings": 498,
+   "findings": 494,
    "findingReasons": {
-    "NO_ASSIGNMENT_CHANGE": 498
+    "NO_ASSIGNMENT_CHANGE": 494
    },
    "withheld": 0,
    "share": 1,
@@ -124,13 +124,13 @@
   {
    "id": "technical",
    "label": "Kursstruktur",
-   "answered": 434,
+   "answered": 430,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 66,
-   "share": 0.868,
+   "withheld": 70,
+   "share": 0.86,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 65,
+    "INSUFFICIENT_HISTORY": 69,
     "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 1
    }
   },
@@ -147,42 +147,42 @@
  ],
  "answeredStationsPerTitle": {
   "3": 2,
-  "4": 5,
+  "4": 6,
   "5": 5,
-  "6": 50,
-  "7": 35,
-  "8": 8,
+  "6": 47,
+  "7": 14,
+  "8": 7,
   "9": 1,
-  "10": 16,
-  "11": 378
+  "10": 17,
+  "11": 401
  },
  "shapes": {
-  "full": 394,
-  "reduced": 104,
+  "full": 418,
+  "reduced": 80,
   "minimal": 2,
-  "noticeBoxesBefore": 663,
-  "noticeBoxesAfter": 264,
+  "noticeBoxesBefore": 518,
+  "noticeBoxesAfter": 213,
   "worstPageNoticeBoxes": 4,
-  "dataPoorPages": 106,
-  "dataPoorNoticeBoxesBefore": 647,
-  "dataPoorNoticeBoxesAfter": 248,
+  "dataPoorPages": 82,
+  "dataPoorNoticeBoxesBefore": 501,
+  "dataPoorNoticeBoxesAfter": 196,
   "substantiveStationsPerTitle": {
    "1": 2,
-   "3": 7,
-   "4": 27,
-   "5": 52,
-   "6": 3,
-   "7": 10,
-   "8": 5,
-   "10": 16,
-   "11": 378
+   "3": 8,
+   "4": 24,
+   "5": 27,
+   "6": 4,
+   "7": 16,
+   "8": 1,
+   "10": 17,
+   "11": 401
   },
   "causes": {
    "SHORT_HISTORY": 90,
    "NO_WEEKLY_SERIES": 38,
-   "NO_FIGURES": 97,
-   "NO_SERIES": 32,
+   "NO_FIGURES": 74,
    "NOT_AN_EQUITY_LISTING": 6,
+   "NO_SERIES": 4,
    "RARELY_TRADED": 1
   },
   "note": "FULL: hoechstens zwei Absagen, die volle Reise bleibt. REDUCED: verdichtete Auskunft, vorhandene Erkenntnisse zuerst, Absagen zu Ursachen gruppiert. MINIMAL: hoechstens eine gehaltvolle Station - eine eigene Aussage statt einer kurzen Reise."

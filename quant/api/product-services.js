@@ -96,9 +96,27 @@ function create(options){
   const [capabilities,productSummary]=await Promise.all([load('/quant/data/universe/market-capability.json'),load('/quant/data/product/capabilities-summary-v1.json').catch(()=>null)]);
   c.capabilities=capabilities;c.productSummary=productSummary;return c;
  }
+ /* Die Produktprojektion (Release-Build, factor-product-projection.js) traegt
+  * genau die Felder, die broadRow liest: 3,4 statt 19,2 MB. Ohne sie (lokal,
+  * alter Stand) gilt die volle Datei. */
+ /* Die Aktienseite braucht eine Faktorzeile, nicht das Universum: ihr Shard
+  * (Release-Build, wenige KB). Ohne Shard - lokal, alter Stand - die
+  * Universumsdatei. Ist das Universum schon geladen, gilt es. Shard-Zeilen
+  * liegen im gemeinsamen Kontext (factorShardIndex), damit auch die
+  * Arbeitsbereiche der Seite sie sehen. */
+ async function factorsFor(c,ticker){
+  if(c.factorIndex)return c;
+  const shard=await load('/quant/data/market/factors/product-shards/'+Master.shardKey(ticker)+'.json').catch(()=>null);
+  if(!shard||!Array.isArray(shard.securities))return hydrateFullUniverseFactors(c);
+  const idx=c.factorShardIndex||(c.factorShardIndex=Object.create(null));
+  shard.securities.forEach(f=>{if(f&&f.ticker)idx[f.ticker]=f;if(f&&f.securityId)idx[f.securityId]=f;});
+  return c;
+ }
+ /* Eine Faktorzeile aus dem Universum oder aus einem geladenen Shard. */
+ function factorRowOf(c,...keys){for(const ix of [c.factorIndex,c.factorShardIndex])if(ix)for(const k of keys)if(k&&ix[k])return ix[k];return null;}
  async function hydrateFullUniverseFactors(c){
   if(c.factorIndex)return c;
-  const factors=await load('/quant/data/market/factors/factors-FULL_UNIVERSE.json');
+  const factors=await load('/quant/data/market/factors/factors-FULL_UNIVERSE-product.json').catch(()=>load('/quant/data/market/factors/factors-FULL_UNIVERSE.json'));
    const factorIndex=Object.create(null);
    const list=Array.isArray(factors&&factors.securities)?factors.securities:Object.values((factors&&factors.securities)||{});
    list.forEach(f=>{if(f&&f.ticker)factorIndex[f.ticker]=f;if(f&&f.securityId)factorIndex[f.securityId]=f;});
@@ -153,7 +171,7 @@ function create(options){
    * wird deshalb nur noch, ob eine Zeile da ist; der Faktorindex deckt sich
    * gemessen genau mit den Zeilen in den Schichtdateien (6.296 zu 6.296, in
    * beide Richtungen 0 Abweichung). */
-  const f=c.factorIndex&&((c.factorIndex[member.m])||(c.factorIndex[member.s])),factorReady=!!f;
+  const f=factorRowOf(c,member.m,member.s),factorReady=!!f;
   const v=f&&f.values||{}, candidate=c.panel&&c.panel.securities&&c.panel.securities[member.s],today=new Date().toISOString().slice(0,10),legacy=candidate&&candidate.available&&candidate.provenance?.isMock===false&&validDate(candidate.marketData?.asOf)&&candidate.marketData.asOf<=today?candidate:null;
   const finite=x=>typeof x==='number'&&Number.isFinite(x);
   const derived=(value,unit)=>({value:finite(value)?value:null,unit,state:finite(value)?'AVAILABLE':'SOURCE_MISSING'});
@@ -650,6 +668,33 @@ function create(options){
   return {reason:'NOT_AN_EQUITY_LISTING',securityType:belegt.securityType,
    securityTypeBasis:belegt.securityTypeBasis,name:(i&&i.companyName)||null};
  }
+ /* STUFE = POSITION (factor-band-2.0.0). Ein Artefakt ab 2.0.0 traegt die
+  * Position je Faktor. Ein aelteres (vor dem ersten Lauf nach dem Wechsel)
+  * traegt sie nicht - dann wird sie hier mit DERSELBEN Zaehlung
+  * (FactorEvidence.positionOf) aus dem Screening-Artefakt desselben Stichtags
+  * gezaehlt: dieselben veroeffentlichten Werte, dieselbe Menge. Weicht der
+  * Stichtag ab, gibt es keine Position und keine Stufe - nichts Geratenes. */
+ let bandDistPromise=null;
+ async function withBandPositions(record,shard){
+  if(!record||!record.factors)return record;
+  const fehlt=FactorEvidence.FACTOR_ORDER.some(id=>{const f=record.factors[id];return f&&f.state==='AVAILABLE'&&typeof f.position!=='number';});
+  if(!fehlt)return record;
+  if(!bandDistPromise)bandDistPromise=getFactorEvidenceScreening().then(sc=>{
+   if(!sc||sc.state!=='AVAILABLE')return null;
+   const out={asOf:sc.asOf,byId:{}};
+   for(const id of FactorEvidence.FACTOR_ORDER)out.byId[id]=sc.rows.map(r=>r[FactorEvidence.NAMESPACE+'.'+id]).filter(v=>typeof v==='number'&&Number.isFinite(v)).sort((a,b)=>a-b);
+   return out;
+  }).catch(()=>null);
+  const dist=await bandDistPromise;
+  if(!dist||dist.asOf!==(shard&&shard.asOf))return record;
+  const factors={};
+  for(const id of Object.keys(record.factors)){
+   const f=record.factors[id],sorted=dist.byId[id];
+   factors[id]=f&&f.state==='AVAILABLE'&&typeof f.position!=='number'&&sorted
+    ?Object.assign({},f,{position:FactorEvidence.positionOf(sorted,f.score),positionUniverse:sorted.length}):f;
+  }
+  return Object.assign({},record,{factors});
+ }
  async function getFactorEvidence(ticker){
   ticker=String(ticker||'').toUpperCase();
   if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
@@ -664,7 +709,7 @@ function create(options){
    if(!source)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_FACTOR_EVIDENCE'};
    const violations=FactorEvidence.publicationViolations(source);
    if(violations.length)return {state:'UNAVAILABLE',reason:'PUBLICATION_GATE_VIOLATED'};
-   const record=FactorEvidence.hydrate(source,shard);
+   const record=await withBandPositions(FactorEvidence.hydrate(source,shard),shard);
    /* Kein Kuerzel als Name - dieselbe Regel wie in ohneErfundenenNamen, hier
       an der Quelle, weil die Quant-Ansicht diesen Namen als Ueberschrift
       setzt. Gemessen betraf das 6 von 977 Titeln einer Probe. */
@@ -899,7 +944,7 @@ function create(options){
   * Faktorschicht ein zeitpunktsicherer Anteilsbestand; das ist eine andere
   * Aussage als "die vorhandene Zahl gilt nicht fuer diese Zeile", und eine
   * Zahl auf anderer Grundlage ist keine Fehlzuordnung. */
- const VALUATION_WITHHELD_REASONS=['SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING'];
+ const VALUATION_WITHHELD_REASONS=['SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING','SHARE_COUNT_NOT_OUTSTANDING','REPORTING_CURRENCY_NOT_LISTING_CURRENCY'];
  function withholdValuation(stock){
   if(!stock||VALUATION_WITHHELD_REASONS.indexOf(stock.marketCapReason)<0)return stock;
   const grund=stock.marketCapReason;
@@ -995,7 +1040,10 @@ function create(options){
   }catch{return unavailable('SOURCE_MISSING');}
  }
  async function getStockIntelligence(ticker){ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
-  try{const c=await hydrateCapabilities(await init()),canonical=await identity(ticker);if(!canonical)return unavailable('INVALID_IDENTITY');
+  /* Die Aktienseite laedt die Faktoren selbst. Vorher hatte sie sie nur, wenn
+     vorher eine Liste geladen war: Direktaufruf ohne Volatilitaet und Drawdown,
+     Stand der Marktkennzahlen veraltet (Audit 03.10.2026). */
+  try{const c=await factorsFor(await hydrateCapabilities(await init()),ticker),canonical=await identity(ticker);if(!canonical)return unavailable('INVALID_IDENTITY');
    const member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member)return identityOnlyStock(ticker);
    const panelCandidate=c.panel?.securities?.[ticker];if(panelCandidate&&panelCandidate.securityId!=='sec_'+ticker)return unavailable('INVALID_IDENTITY');
    let stock=await row(c,ticker)||broadRow(c,member);if(!stock)return identityOnlyStock(ticker);
@@ -1062,7 +1110,7 @@ function create(options){
      stock.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'NO_PUBLISHED_PRICE_SERIES'};
     }
    }
-   stock._factorValues=(c.factorIndex&&c.factorIndex[member.m]||{}).values||{};stock.quant=await getQuantWorkspace(ticker);stock.setupState=await setupFor(stock);stock.health=await marketHealth([stock]);
+   stock._factorValues=(factorRowOf(c,member.m)||{}).values||{};stock.quant=await getQuantWorkspace(ticker);stock.setupState=await setupFor(stock);stock.health=await marketHealth([stock]);
    /* Dasselbe Verzeichnis, das die Liste liest. Es traegt Name, letzten Kurs
       und die Zahl der Handelstage, auf denen der Faktorlauf gerechnet hat -
       die Aktienseite darf daran nicht weniger wissen als die Liste. */

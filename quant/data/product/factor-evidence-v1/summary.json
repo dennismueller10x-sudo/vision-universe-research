@@ -3,8 +3,8 @@
  "methodologyVersion": "vu-factor-evidence-2.0.0",
  "derivedFrom": "quant-v2.2.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-10-03T11:05:41.000Z",
- "asOf": "2026-10-02",
+ "generatedAt": "2026-10-06T04:15:24.000Z",
+ "asOf": "2026-10-05",
  "publication": {
   "compositeAllowed": false,
   "rankingAllowed": false,
@@ -28,6 +28,60 @@
   "profitability": 0.15,
   "revisions": 0.15,
   "risk": 0.05
+ },
+ "bandSemantics": {
+  "version": "factor-band-2.0.0",
+  "basis": "RELATIVE_POSITION",
+  "universe": {
+   "quality": 3776,
+   "growth": 3325,
+   "momentum": 5761,
+   "value": 2567,
+   "profitability": 1994,
+   "revisions": 0,
+   "risk": 5761
+  },
+  "scoreCuts": {
+   "quality": {
+    "VERY_STRONG": 67.91,
+    "STRONG": 60.59,
+    "NEUTRAL": 50.45,
+    "WEAK": 41.83
+   },
+   "growth": {
+    "VERY_STRONG": 75.86,
+    "STRONG": 64.54,
+    "NEUTRAL": 46.86,
+    "WEAK": 36.21
+   },
+   "momentum": {
+    "VERY_STRONG": 82,
+    "STRONG": 68.87,
+    "NEUTRAL": 47.79,
+    "WEAK": 32.91
+   },
+   "value": {
+    "VERY_STRONG": 77.83,
+    "STRONG": 66.71,
+    "NEUTRAL": 49.19,
+    "WEAK": 38.51
+   },
+   "profitability": {
+    "VERY_STRONG": 81.42,
+    "STRONG": 68.47,
+    "NEUTRAL": 49.47,
+    "WEAK": 36.83
+   },
+   "revisions": null,
+   "risk": {
+    "VERY_STRONG": 87.39,
+    "STRONG": 75.42,
+    "NEUTRAL": 49.9,
+    "WEAK": 31.05
+   }
+  },
+  "minimumUniverse": 100,
+  "methodology": "quant/methodology/factor-bands-v2.json"
  },
  "componentSpecs": {
   "quality:accrualRatio": {
@@ -720,36 +774,30 @@
    "2026-09-28",
    "2026-09-30",
    "2026-10-01",
-   "2026-10-02"
+   "2026-10-02",
+   "2026-10-05"
   ],
   "velocityWindowDays": 30,
   "velocityToleranceDays": 10,
   "scoreMomentumOpen": false,
-  "recomputationDrift": {
-   "asOf": "2026-10-02",
-   "publishedHash": "388415da30ed1f1b",
-   "recomputedHash": "e96982522010cd31",
-   "rowsDiffering": 5577,
-   "rowsTotal": 6289,
-   "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt."
-  }
+  "recomputationDrift": null
  },
  "scope": "CANONICAL_PRODUCT_UNIVERSE",
  "source": {
   "priceFactors": {
    "engine": "market-factors-1.0.0",
-   "generatedAt": "2026-10-03T05:32:57.865Z",
-   "securities": 6433,
+   "generatedAt": "2026-10-06T03:38:24.613Z",
+   "securities": 6742,
    "benchmark": {
     "id": "SPY",
-    "bars": 8477,
-    "last": "2026-10-02",
+    "bars": 8478,
+    "last": "2026-10-05",
     "returnBasis": "SPLIT_ADJUSTED_PRICE",
     "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
     "adjustmentStatus": "adjusted",
     "adjustmentClaim": null,
     "maxLagSessions": 1,
-    "newestSecurityDate": "2026-10-02",
+    "newestSecurityDate": "2026-10-05",
     "lagBehindNewestSessions": 0,
     "securitiesWithoutRelativeStrength": 0,
     "state": "CURRENT"
@@ -757,16 +805,16 @@
   },
   "fundamentals": {
    "schema": "vu-consumer-fundamentals-1.0.0",
-   "issuersRead": 4729
+   "issuersRead": 5026
   },
   "peerTaxonomy": {
    "version": "sic-peer-taxonomy-1.0.0",
-   "rows": 5379,
+   "rows": 5675,
    "snapshotMode": "CURRENT_ONLY"
   },
   "quotes": {
    "source": "technical-product-artifact-1.0.0",
-   "tickers": 6802
+   "tickers": 6811
   }
  },
  "notAnEquityListing": {
@@ -929,115 +977,116 @@
  },
  "counts": {
   "productUniverse": 6853,
-  "priceFactorSecurities": 6433,
+  "priceFactorSecurities": 6742,
   "priceFactorRowsOutsideProductUniverse": 0,
   "notAnEquityListing": 144,
-  "published": 6289,
-  "withFundamentals": 5015,
-  "withMarketCap": 3763,
-  "quotesFromPublishedSeries": 1051,
-  "withMarketCapFromPublishedSeries": 126
+  "published": 6598,
+  "withFundamentals": 5302,
+  "withMarketCap": 3676,
+  "quotesFromPublishedSeries": 1064,
+  "withMarketCapFromPublishedSeries": 113
  },
  "factorStates": {
   "quality": {
-   "AVAILABLE": 3612,
-   "UNAVAILABLE": 2677,
+   "AVAILABLE": 3776,
+   "UNAVAILABLE": 2822,
    "NOT_APPLICABLE": 0
   },
   "growth": {
-   "AVAILABLE": 3201,
-   "UNAVAILABLE": 3088,
+   "AVAILABLE": 3325,
+   "UNAVAILABLE": 3273,
    "NOT_APPLICABLE": 0
   },
   "momentum": {
-   "AVAILABLE": 5458,
-   "UNAVAILABLE": 831,
+   "AVAILABLE": 5761,
+   "UNAVAILABLE": 837,
    "NOT_APPLICABLE": 0
   },
   "value": {
-   "AVAILABLE": 2521,
-   "UNAVAILABLE": 3768,
+   "AVAILABLE": 2567,
+   "UNAVAILABLE": 4031,
    "NOT_APPLICABLE": 0
   },
   "profitability": {
-   "AVAILABLE": 1953,
-   "UNAVAILABLE": 4336,
+   "AVAILABLE": 1994,
+   "UNAVAILABLE": 4604,
    "NOT_APPLICABLE": 0
   },
   "revisions": {
    "AVAILABLE": 0,
-   "UNAVAILABLE": 6289,
+   "UNAVAILABLE": 6598,
    "NOT_APPLICABLE": 0
   },
   "risk": {
-   "AVAILABLE": 5458,
-   "UNAVAILABLE": 831,
+   "AVAILABLE": 5761,
+   "UNAVAILABLE": 837,
    "NOT_APPLICABLE": 0
   }
  },
  "reasonCounts": {
-  "INSUFFICIENT_WEIGHTED_COVERAGE": 2019,
-  "BLOCKED_EXTERNAL": 6289,
-  "INSUFFICIENT_COMPONENTS": 4310,
-  "INPUT_NOT_MATERIALIZED": 8726,
-  "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 451,
-  "MANDATORY_COMPONENT_MISSING": 25
+  "INSUFFICIENT_WEIGHTED_COVERAGE": 2221,
+  "BLOCKED_EXTERNAL": 6598,
+  "INSUFFICIENT_COMPONENTS": 4353,
+  "INPUT_NOT_MATERIALIZED": 9031,
+  "REPORTING_CURRENCY_NOT_LISTING_CURRENCY": 338,
+  "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 437,
+  "MANDATORY_COMPONENT_MISSING": 24
  },
  "componentCoverage": {
-  "quality:accrualRatio": 2997,
-  "quality:equityToAssets": 3887,
-  "quality:positiveFcfYears": 3168,
-  "quality:operatingMarginStability": 2894,
-  "growth:revenueCagr3y": 3651,
-  "growth:epsCagr3y": 2055,
-  "growth:fcfCagr3y": 1942,
-  "growth:revenueGrowthTtmYoy": 3083,
-  "growth:operatingMarginExpansion3y": 3126,
-  "growth:revenueGrowthAcceleration": 3866,
-  "momentum:priceReturn12m1m": 5458,
-  "momentum:priceReturn6m": 5875,
-  "momentum:priceReturn3m": 6205,
-  "momentum:relativeStrength12m1m": 5458,
-  "momentum:distanceTo52wHigh": 5463,
-  "momentum:distanceToSma200": 5565,
-  "value:fcfYield": 2008,
-  "value:earningsYield": 2487,
-  "value:bookToMarket": 3104,
-  "profitability:roicMedian3y": 538,
-  "profitability:operatingMarginTtm": 2350,
-  "profitability:fcfMarginTtm": 2230,
-  "profitability:roaTtm": 3027,
-  "risk:realizedVolatility252d": 5458,
-  "risk:downsideVolatility252d": 5466,
-  "risk:maxDrawdown252d": 5463,
-  "risk:beta252d": 5481,
-  "quality:netDebtToAssets": 467,
-  "INDUSTRY:quality:equityToAssets": 899,
-  "INDUSTRY:quality:roaStability5y": 855,
-  "INDUSTRY:quality:positiveEarningsYears": 863,
-  "INDUSTRY:quality:dividendCoverageByOcf": 505,
-  "INDUSTRY:value:bookToMarket": 616,
-  "INDUSTRY:value:earningsYield": 546,
-  "INDUSTRY:value:pretaxEarningsYield": 379,
-  "INDUSTRY:value:dividendYield": 415,
-  "INDUSTRY:profitability:roaTtm": 762,
-  "INDUSTRY:profitability:roeTtm": 557,
-  "INDUSTRY:profitability:netMarginTtm": 115,
-  "INDUSTRY:profitability:roaMedian3y": 870,
-  "profitability:grossProfitabilityTtm": 1362,
-  "INDUSTRY:value:cashFlowYield": 140,
-  "INDUSTRY:profitability:cashReturnOnAssets": 197,
-  "INDUSTRY:profitability:ocfMarginTtm": 135,
-  "INDUSTRY:profitability:pretaxRoaTtm": 414,
+  "quality:accrualRatio": 3152,
+  "quality:equityToAssets": 4156,
+  "quality:positiveFcfYears": 3372,
+  "quality:operatingMarginStability": 3083,
+  "growth:revenueCagr3y": 3860,
+  "growth:epsCagr3y": 2061,
+  "growth:fcfCagr3y": 1953,
+  "growth:revenueGrowthTtmYoy": 3210,
+  "growth:operatingMarginExpansion3y": 3333,
+  "growth:revenueGrowthAcceleration": 4098,
+  "momentum:priceReturn12m1m": 5761,
+  "momentum:priceReturn6m": 6182,
+  "momentum:priceReturn3m": 6515,
+  "momentum:relativeStrength12m1m": 5761,
+  "momentum:distanceTo52wHigh": 5762,
+  "momentum:distanceToSma200": 5866,
+  "value:fcfYield": 2040,
+  "value:earningsYield": 2607,
+  "value:bookToMarket": 3040,
+  "profitability:roicMedian3y": 539,
+  "profitability:operatingMarginTtm": 2451,
+  "profitability:fcfMarginTtm": 2280,
+  "profitability:roaTtm": 3185,
+  "risk:realizedVolatility252d": 5761,
+  "risk:downsideVolatility252d": 5769,
+  "risk:maxDrawdown252d": 5762,
+  "risk:beta252d": 5780,
+  "quality:netDebtToAssets": 488,
+  "INDUSTRY:quality:equityToAssets": 916,
+  "INDUSTRY:quality:roaStability5y": 873,
+  "INDUSTRY:quality:positiveEarningsYears": 881,
+  "INDUSTRY:quality:dividendCoverageByOcf": 503,
+  "INDUSTRY:value:bookToMarket": 595,
+  "INDUSTRY:value:earningsYield": 563,
+  "INDUSTRY:value:pretaxEarningsYield": 391,
+  "INDUSTRY:value:dividendYield": 408,
+  "INDUSTRY:profitability:roaTtm": 771,
+  "INDUSTRY:profitability:roeTtm": 564,
+  "INDUSTRY:profitability:netMarginTtm": 114,
+  "INDUSTRY:profitability:roaMedian3y": 888,
+  "profitability:grossProfitabilityTtm": 1431,
+  "INDUSTRY:value:cashFlowYield": 142,
+  "INDUSTRY:profitability:cashReturnOnAssets": 196,
+  "INDUSTRY:profitability:ocfMarginTtm": 137,
+  "INDUSTRY:profitability:pretaxRoaTtm": 421,
   "value:ebitdaYield": 82,
   "value:salesYield": 96,
   "profitability:roicTtm": 58
  },
- "shards": 633,
+ "shards": 641,
  "screening": {
   "schemaVersion": "factor-evidence-screening-1.0.0",
   "namespace": "quantV2.factorEvidence",
-  "rows": 6289,
+  "rows": 6598,
   "fields": [
    "quantV2.factorEvidence.quality",
    "quantV2.factorEvidence.growth",
@@ -1053,20 +1102,20 @@
   {
    "id": "COMPONENT_INPUT_NARROW",
    "blocks": [
-    "INDUSTRY:profitability:cashReturnOnAssets (197)",
-    "INDUSTRY:profitability:netMarginTtm (115)",
-    "INDUSTRY:profitability:ocfMarginTtm (135)",
-    "INDUSTRY:profitability:pretaxRoaTtm (414)",
-    "INDUSTRY:profitability:roeTtm (557)",
-    "INDUSTRY:quality:dividendCoverageByOcf (505)",
-    "INDUSTRY:value:bookToMarket (616)",
-    "INDUSTRY:value:cashFlowYield (140)",
-    "INDUSTRY:value:dividendYield (415)",
-    "INDUSTRY:value:earningsYield (546)",
-    "INDUSTRY:value:pretaxEarningsYield (379)",
-    "profitability:roicMedian3y (538)",
+    "INDUSTRY:profitability:cashReturnOnAssets (196)",
+    "INDUSTRY:profitability:netMarginTtm (114)",
+    "INDUSTRY:profitability:ocfMarginTtm (137)",
+    "INDUSTRY:profitability:pretaxRoaTtm (421)",
+    "INDUSTRY:profitability:roeTtm (564)",
+    "INDUSTRY:quality:dividendCoverageByOcf (503)",
+    "INDUSTRY:value:bookToMarket (595)",
+    "INDUSTRY:value:cashFlowYield (142)",
+    "INDUSTRY:value:dividendYield (408)",
+    "INDUSTRY:value:earningsYield (563)",
+    "INDUSTRY:value:pretaxEarningsYield (391)",
+    "profitability:roicMedian3y (539)",
     "profitability:roicTtm (58)",
-    "quality:netDebtToAssets (467)",
+    "quality:netDebtToAssets (488)",
     "value:ebitdaYield (82)",
     "value:salesYield (96)"
    ],
@@ -1098,12 +1147,14 @@
   }
  ],
  "gapCounts": {
+  "SHARE_COUNT_CONCEPT_KNOWN": 4634,
   "NOT_AN_EQUITY_LISTING:ETF": 136,
-  "IDENTITY_UNRESOLVED": 922,
-  "FUNDAMENTALS_DOCUMENT_MISSING": 352,
-  "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 451,
+  "IDENTITY_UNRESOLVED": 935,
+  "REPORTING_CURRENCY_NOT_LISTING_CURRENCY": 501,
+  "FUNDAMENTALS_DOCUMENT_MISSING": 361,
+  "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 437,
   "NOT_AN_EQUITY_LISTING:PREFERRED": 8
  },
- "runtimeMs": 19971,
- "contentHash": "bf2da17daf47f551"
+ "runtimeMs": 10589,
+ "contentHash": "39e517b915f0cb19"
 }

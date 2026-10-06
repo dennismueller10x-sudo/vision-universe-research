@@ -203,20 +203,22 @@
   }
   function stats(list) { return el("div", { class: "q-stats qx-stats" }, list); }
 
-  /* Die Weltkugel der Tafeln - als Linienzeichnung, ohne Bilddatei. */
+  /* Die Weltkugel der Tafeln - als Linienzeichnung, ohne Bilddatei.
+     Farben kommen aus CSS-Variablen (--q-globe-*, app.css) und werden vom
+     Browser bei jedem Wechsel Hell/Dunkel neu aufgeloest - kein Neuzeichnen. */
   function globe() {
     var ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
     svg.setAttribute("viewBox", "0 0 400 400"); svg.setAttribute("class", "q-globe"); svg.setAttribute("aria-hidden", "true");
-    var html = '<defs><radialGradient id="qg-s" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#2a3a14"/><stop offset=".55" stop-color="#0c1108"/><stop offset="1" stop-color="#030403"/></radialGradient>' +
-      '<radialGradient id="qg-g" cx="50%" cy="50%" r="50%"><stop offset=".7" stop-color="rgba(200,245,49,0)"/><stop offset=".92" stop-color="rgba(200,245,49,.22)"/><stop offset="1" stop-color="rgba(200,245,49,0)"/></radialGradient></defs>' +
-      '<circle cx="200" cy="200" r="198" fill="url(#qg-g)"/><circle cx="200" cy="200" r="170" fill="url(#qg-s)" stroke="rgba(200,245,49,.35)" stroke-width="1"/>';
+    var html = '<defs><radialGradient id="qg-s" cx="38%" cy="32%" r="70%"><stop offset="0" style="stop-color:var(--q-globe-1)"/><stop offset=".55" style="stop-color:var(--q-globe-2)"/><stop offset="1" style="stop-color:var(--q-globe-3)"/></radialGradient>' +
+      '<radialGradient id="qg-g" cx="50%" cy="50%" r="50%"><stop offset=".7" style="stop-color:var(--q-globe-glow);stop-opacity:0"/><stop offset=".92" style="stop-color:var(--q-globe-glow)"/><stop offset="1" style="stop-color:var(--q-globe-glow);stop-opacity:0"/></radialGradient></defs>' +
+      '<circle cx="200" cy="200" r="198" fill="url(#qg-g)"/><circle cx="200" cy="200" r="170" fill="url(#qg-s)" style="stroke:var(--q-globe-rim)" stroke-width="1"/>';
     var lines = "";
-    for (var i = 1; i < 6; i++) { var ry = 170 * Math.cos(i * Math.PI / 12); lines += '<ellipse cx="200" cy="200" rx="170" ry="' + (170 - i * 28).toFixed(1) + '" fill="none" stroke="rgba(200,245,49,.14)"/>'; void ry; }
-    for (var k = 1; k < 7; k++) lines += '<ellipse cx="200" cy="200" rx="' + (k * 26).toFixed(1) + '" ry="170" fill="none" stroke="rgba(200,245,49,.12)"/>';
+    for (var i = 1; i < 6; i++) { var ry = 170 * Math.cos(i * Math.PI / 12); lines += '<ellipse cx="200" cy="200" rx="170" ry="' + (170 - i * 28).toFixed(1) + '" fill="none" style="stroke:var(--q-globe-grid)"/>'; void ry; }
+    for (var k = 1; k < 7; k++) lines += '<ellipse cx="200" cy="200" rx="' + (k * 26).toFixed(1) + '" ry="170" fill="none" style="stroke:var(--q-globe-grid)"/>';
     var pts = [[120, 150], [170, 110], [240, 130], [280, 190], [230, 240], [160, 230], [110, 210], [200, 180], [300, 150], [260, 280], [150, 290], [90, 260]];
     var links = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 0], [7, 1], [7, 3], [7, 5], [2, 8], [4, 9], [5, 10], [6, 11], [9, 10]];
-    links.forEach(function (l) { lines += '<line x1="' + pts[l[0]][0] + '" y1="' + pts[l[0]][1] + '" x2="' + pts[l[1]][0] + '" y2="' + pts[l[1]][1] + '" stroke="rgba(214,255,90,.55)" stroke-width="1"/>'; });
-    pts.forEach(function (p, j) { lines += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + (j % 3 ? 2.2 : 3.4) + '" fill="#e4ff7a"/>'; });
+    links.forEach(function (l) { lines += '<line x1="' + pts[l[0]][0] + '" y1="' + pts[l[0]][1] + '" x2="' + pts[l[1]][0] + '" y2="' + pts[l[1]][1] + '" style="stroke:var(--q-globe-link)" stroke-width="1"/>'; });
+    pts.forEach(function (p, j) { lines += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + (j % 3 ? 2.2 : 3.4) + '" style="fill:var(--q-globe-dot)"/>'; });
     svg.innerHTML = html + lines;
     return svg;
   }

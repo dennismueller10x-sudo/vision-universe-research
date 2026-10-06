@@ -17,9 +17,18 @@ import { PORTFOLIO_DEFAULTS } from './engine/backtest.mjs';
 export const MODEL_PORTFOLIO_VERSION = 'supertrader-model-portfolio-1.1.0';
 const r4 = (v) => (Number.isFinite(v) ? Math.round(v * 1e4) / 1e4 : null);
 
-// Runde 10 (PREREGISTRATION-R10-FIXES K3): gleichzeitige Einstiege nach relativer Staerke am Vortag
-// (Quellen bevorzugen die staerksten Aktien), geprueft an Pruefmenge und Vollportfolio. Turtle: keine
-// Quelle fuer eine Rangfolge -> alphabetisch.
+// Runde 10 (PREREGISTRATION-R10-FIXES K3): gleichzeitige Einstiege nach relativer Staerke am Vortag,
+// geprueft an Pruefmenge und Vollportfolio. Turtle: alphabetisch (VU-eigen; die Turtle Rules nennen den
+// Staerke-Rang, Forschungsversion 2.1.0 ging nicht live).
+// Migration Phase 1: ehrliche Herkunft je Portfolioangabe (nur Anzeige; die Werte ändert das nicht).
+// Quelle der Einordnung: fidelity/portfolio-policy.mjs (Layer C) und R15-RULE-PROVENANCE.json.
+export const PORTFOLIO_SOURCE_TEXT = Object.freeze({
+  MOMENTUM_BREAKOUT: 'Kullamägi: Risiko meist 0,3–0,5 % und Positionen meist 10–20 % (FAQ 5–25 %), nie über 30 % über Nacht. Höchstzahl 10, keine Hebelnutzung und der Rang nach relativer Stärke sind VU-eigen (Kullamägi nutzt Margin).',
+  WEINSTEIN_STAGE: 'Bisherige VU-Anpassung, keine Weinstein-Regel: Standardwerte des Modellportfolios (0,5 % Risiko, 20 % je Position, 10 Plätze). Die 0,5 % stammen aus Kullamägis Risikospanne und wurden still geerbt; Weinstein nennt keine Größenregel.',
+  DARVAS_BOX: 'Darvas (TIME 1959): höchstens fünf bis sechs Aktien gleichzeitig. Höchstgewicht 1/6 und Rang nach relativer Stärke sind VU. Das Risiko von 0,5 % je Trade stammt aus Kullamägis Risikospanne (keine Darvas-Regel); die Marktampel (keine neue Position bei SPY unter GD 200) stammt aus einer TraderFox-Variante, nicht von Darvas.',
+  MINERVINI_VCP: 'Minervini (eigene Beiträge auf X): Ø 1,25 % Risiko, 25 % je Position bei 5 % Stop; 8–10 Positionen (Höchstzahl 10 ist VU), Risikohalbierung nach Verlustserie als VU-Formalisierung der progressiven Exposition. Startquote und Aufstocken fehlen.',
+  DONCHIAN_TURTLE: 'Turtle Rules: Unit = 1 % des Kontos je N, Stop 2N (= 2 % Risiko), notionelles Konto −20 % je 10 % Verlust. VU: eine Unit je Aktie, höchstens 12 Titel ohne Hebel, kein Gewichtsdeckel je Aktie, alphabetische Auswahl bei gleichzeitigen Signalen. Das Original handelte gehebelte Futures mit Korrelationsgrenzen und Aufstocken.',
+});
 export const RANK_RS = new Set(['MOMENTUM_BREAKOUT', 'WEINSTEIN_STAGE', 'DARVAS_BOX', 'MINERVINI_VCP']);
 export function portfolioConfig(engine) {
   const c = engine.portfolio ? { ...PORTFOLIO_DEFAULTS, ...engine.portfolio } : { ...PORTFOLIO_DEFAULTS, source: 'VU-Standard: keine belegte Positionsgrößenregel der Methode' };
@@ -33,7 +42,7 @@ export function buildModelPortfolio({ engine, signals, barsOf, calendar, asOf, r
   const cfg = portfolioConfig(engine);
   const entered = signals.filter((s) => s.entry && s.entry.date && Number.isFinite(s.entry.price) && Number.isFinite(s.initialStop));
   const base = { schema: MODEL_PORTFOLIO_VERSION, strategyId: engine.id, currentVersion: engine.version, asOf,
-    config: { initialEquity: cfg.initialEquity, riskPerTrade: cfg.riskPerTrade, maxPositionPct: cfg.maxPositionPct, maxPositions: cfg.maxPositions, progressive: cfg.progressive || null, source: cfg.source || null, simultaneousEntries: cfg.priority === 'RS' ? 'nach relativer Stärke am Vortag (Gleichstand alphabetisch)' : 'alphabetisch nach Symbol (keine Rangregel in der Quelle)', priority: cfg.priority, costs: '1 bp Gebühr je Seite; Einstiegspreise enthalten bereits 10 bp Slippage', marketFilter: !!cfg.marketFilter },
+    config: { initialEquity: cfg.initialEquity, riskPerTrade: cfg.riskPerTrade, maxPositionPct: cfg.maxPositionPct, maxPositions: cfg.maxPositions, progressive: cfg.progressive || null, source: PORTFOLIO_SOURCE_TEXT[engine.id] || cfg.source || null, simultaneousEntries: cfg.priority === 'RS' ? 'nach relativer Stärke am Vortag (Gleichstand alphabetisch)' : 'alphabetisch nach Symbol (VU-eigen, ökonomisch bedeutungslos; die Turtle Rules kaufen bei gleichzeitigen Signalen die stärksten Märkte zuerst)', priority: cfg.priority, costs: '1 bp Gebühr je Seite; Einstiegspreise enthalten bereits 10 bp Slippage', marketFilter: !!cfg.marketFilter },
     publication: 'Zusammensetzung und Einzeltrades. Gesamtrendite und Kurve werden bis zur Klärung der Rechte an abgeleiteten Kennzahlen nicht veröffentlicht.' };
   if (!entered.length) return { ...base, startDate: null, cashPct: 1, investedPct: 0, positions: [], closed: [], notTaken: [], note: 'Noch kein Modelleinstieg dieser Methode im Live-Protokoll.' };
   const start = entered.map((s) => s.entry.date).sort()[0];

@@ -23,6 +23,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const MP = require(join(root, "quant/engines/multi-asset/market-pulse.js"));
+const Identity = require(join(root, "core/identity.js")); // eine Identitaetsregel (ADR-001)
 const args = new Set(process.argv.slice(2));
 const read = (p) => JSON.parse(readFileSync(join(root, p), "utf8"));
 const CFG = read("quant/config/market-pulse.json");
@@ -179,7 +180,7 @@ function breadthInput(expectedAsOf) {
   const asOfCount = {};
   for (const s of rows) asOfCount[s.asOf] = (asOfCount[s.asOf] || 0) + 1;
   const asOf = Object.entries(asOfCount).sort((a, b) => b[1] - a[1])[0][0];
-  const lows = cnt("distanceTo52wLow", (v) => v <= 0);
+  const extremes = MP.breadthExtremes(rows);
   return {
     rows,
     input: {
@@ -187,41 +188,56 @@ function breadthInput(expectedAsOf) {
       asOf, expectedAsOf,
       above50: cnt("priceAboveSMA50", (v) => v === true),
       above200: cnt("priceAboveSMA200", (v) => v === true),
-      newHighs: (() => { const c = cnt("newHigh52w", (v) => v === true); return { count: c.matched, evaluated: c.evaluated }; })(),
-      newLows: { count: lows.matched, evaluated: lows.evaluated }
+      extremesVersion: extremes.version, newHighs: extremes.newHighs, newLows: extremes.newLows
     }
   };
 }
 
-/* ------------------------------------------- Intraday: steigend/fallend, Movers */
+/* ------------------------------------------- EOD: steigend/fallend, Movers */
 
-function lastRegular(snap) {
-  const pts = (snap.points || []).filter((p) => Array.isArray(p) && typeof p[1] === "number" && p[1] > 0);
-  return pts.length ? pts[pts.length - 1][1] : null;
+/* Tagesaenderung = die beiden letzten Punkte der veroeffentlichten
+   Tagesreihe quant/data/market/discover-series/<securityId>.json - dieselbe
+   Definition wie core/client.js#getLatestPrice und die Discover-Karte
+   (ADR-002). Bis 10/2026 kamen Movers und Steigend/Fallend aus dem letzten
+   IEX-5-Minuten-Balken zweier Sitzungen: der Schlussbalken ist nicht der
+   offizielle Schluss (Schlussauktion fehlt), die juengste Sitzung konnte
+   noch laufen, und das Universum hing an der Intraday-Abdeckung. Audit
+   03.10.2026: 817 von 882 Werten wichen um > 0,05 pp ab, 111 mit
+   umgekehrtem Vorzeichen; am Samstag stand ein Freitag-14:25-Stand als
+   "heute". */
+export const MOVERS_METHOD_VERSION = "movers-eod-1.0.0";
+
+function seriesPoints(securityId) {
+  const p = join(root, "quant/data/market/discover-series", securityId + ".json");
+  if (!existsSync(p)) return null;
+  try { return JSON.parse(readFileSync(p, "utf8")).points || null; } catch { return null; }
 }
-function intradayMoves(factorRows) {
-  const ix = read("quant/data/market/intraday/index.json");
-  const sessions = Object.keys(ix.sessions || {}).sort();
-  if (sessions.length < 2) return null;
-  const cur = sessions[sessions.length - 1], prev = sessions[sessions.length - 2];
+
+/** Die beiden letzten Punkte einer Reihe, nur wenn sie genau die Sitzung und die Vorsitzung sind. */
+export function eodChange(points, session, previousSession) {
+  const n = points ? points.length : 0;
+  if (n < 2 || points[n - 1][0] !== session || points[n - 2][0] !== previousSession) return null;
+  const a = points[n - 2][1], b = points[n - 1][1];
+  if (!(a > 0) || !(b > 0)) return null;
+  return { change: Math.round((b / a - 1) * 1e6) / 1e4, last: b };
+}
+
+function eodMoves(factorRows, session) {
+  /* Die Vorsitzung laut Benchmark-Reihe (SPY): ein Titel mit Luecke zaehlt nicht. */
+  const spy = seriesPoints(Identity.securityIdForTicker(CFG.risk.benchmark));
+  if (!spy || spy.length < 2 || spy[spy.length - 1][0] !== session) return null;
+  const previousSession = spy[spy.length - 2][0];
   const discover = new Set(read("discover/data/stock-index/US_REAL.json").symbols);
-  let adv = 0, dec = 0, unch = 0, complete = 0, asOf = null;
+  let adv = 0, dec = 0, unch = 0;
   const moves = [];
   for (const s of factorRows) {
-    const pa = join(root, "quant/data/market/intraday", prev, s.securityId + ".json");
-    const ca = join(root, "quant/data/market/intraday", cur, s.securityId + ".json");
-    if (!existsSync(pa) || !existsSync(ca)) continue;
-    const p = JSON.parse(readFileSync(pa, "utf8")), c = JSON.parse(readFileSync(ca, "utf8"));
-    if (!p.regularComplete || p.dataMode !== "real" || c.dataMode !== "real") continue;
-    const a = lastRegular(p), b = lastRegular(c);
-    if (!a || !b) continue;
-    const ch = 100 * (b / a - 1);
-    if (ch > 0) adv++; else if (ch < 0) dec++; else unch++;
-    if (c.regularComplete) complete++;
-    if (!asOf || c.asOf > asOf) asOf = c.asOf;
-    if (discover.has(s.ticker)) moves.push({ ticker: s.ticker, change: ch, last: b });
+    const c = eodChange(seriesPoints(s.securityId), session, previousSession);
+    if (!c) continue;
+    if (c.change > 0) adv++; else if (c.change < 0) dec++; else unch++;
+    if (discover.has(s.ticker)) moves.push({ ticker: s.ticker, change: c.change, last: c.last });
   }
   const evaluated = adv + dec + unch;
+  if (!evaluated) return null;
   /* Liquiditaet aus den Discover-Titeln (Dollarumsatz 20 Tage). */
   const M = CFG.movers;
   const liquid = moves.filter((m) => m.last >= M.minPrice).map((m) => {
@@ -233,11 +249,12 @@ function intradayMoves(factorRows) {
     return { symbol: m.ticker, name: d.companyName || m.ticker, changePercent: Math.round(m.change * 100) / 100 };
   }).filter(Boolean);
   liquid.sort((x, y) => y.changePercent - x.changePercent || (x.symbol < y.symbol ? -1 : 1));
+  const basis = { methodVersion: MOVERS_METHOD_VERSION, basis: "EOD_PUBLISHED_SERIES" };
   return {
-    advDecl: { advancers: adv, decliners: dec, unchanged: unch, evaluated, session: cur, previousSession: prev,
-               complete: evaluated > 0 && complete / evaluated >= 0.9, asOf },
+    advDecl: { advancers: adv, decliners: dec, unchanged: unch, evaluated, session, previousSession,
+               complete: true, asOf: session, ...basis },
     movers: {
-      session: cur, previousSession: prev, complete: evaluated > 0 && complete / evaluated >= 0.9, asOf,
+      session, previousSession, complete: true, asOf: session, ...basis,
       universe: M.universe, filter: { minAvgDollarVolume20d: M.minAvgDollarVolume20d, minPrice: M.minPrice }, eligible: liquid.length,
       gainers: liquid.slice(0, M.count),
       losers: liquid.slice(-M.count).reverse(),
@@ -303,7 +320,7 @@ function breadthLogUpdate(prev, input, raw) {
   if (raw && input.asOf && !log.some((x) => x.asOf === input.asOf)) {
     log.push({ asOf: input.asOf, state: raw.state, above50Pct: raw.above50Pct, above200Pct: raw.above200Pct,
                newHighs: input.newHighs ? input.newHighs.count : null, newLows: input.newLows ? input.newLows.count : null,
-               evaluated: input.above50.evaluated, source: input.universe.source, sourceGeneratedAt: input.universe.generatedAt,
+               extremesVersion: input.extremesVersion || null, evaluated: input.above50.evaluated, source: input.universe.source, sourceGeneratedAt: input.universe.generatedAt,
                recordedAt: new Date().toISOString() });
   }
   log.sort((a, b) => (a.asOf < b.asOf ? -1 : 1));
@@ -374,7 +391,7 @@ function build() {
   }
 
   const br = breadthInput(expectedAsOf);
-  const intra = intradayMoves(br.rows);
+  const intra = eodMoves(br.rows, expectedAsOf);
   if (intra) br.input.advDecl = intra.advDecl;
 
   const dims = {
@@ -447,17 +464,21 @@ function build() {
     history: { path: "/" + HIST, from: days[0] ? days[0].date : null, to: live.date, days: days.length, method: CFG.history.method },
     dimensions: dims,
     dimensionStates: Object.fromEntries(Object.entries(dims).map(([k, d]) => [k, d.state])),
-    movers: intra ? intra.movers : { state: "UNAVAILABLE", reason: "Weniger als zwei Intraday-Sitzungen im Core." },
+    movers: intra ? intra.movers : { state: "UNAVAILABLE", reason: "Keine Tagesreihe der Benchmark fuer die letzte Sitzung - ohne Sitzung und Vorsitzung keine Tagesaenderung." },
     sectors: CFG.sectors,
     instruments: instrumentSignals(dims),
     inputs: {
       trackers: Object.fromEntries(syms.map((s) => [s, { asOf: sigs[s].asOf, observations: sigs[s].observations, path: `/quant/data/market/multi-asset/series/${s}.json` }])),
       crossAsset: Object.fromEntries(Object.entries(ca).map(([k, v]) => [k, v ? { symbol: v.symbol, asOf: v.to, horizon: v.horizon, samples: v.samples } : null])),
       breadth: { asOf: br.input.asOf, expectedAsOf, universeSize: br.input.universe.size, source: br.input.universe.source },
-      intraday: intra ? { session: intra.advDecl.session, previousSession: intra.advDecl.previousSession, asOf: intra.advDecl.asOf } : null
+      eodMoves: intra ? { session: intra.advDecl.session, previousSession: intra.advDecl.previousSession, asOf: intra.advDecl.asOf, methodVersion: MOVERS_METHOD_VERSION, source: "quant/data/market/discover-series" } : null
     }
   };
 }
 
-if (args.has("--calibrate")) write(join(OUT_DIR, "market-pulse-calibration.json"), calibrate());
-else write(join(OUT_DIR, "market-pulse.json"), build());
+/* Nur als Skript laufen, nicht beim Import (Tests importieren eodChange):
+   sonst schriebe jeder Import die committeten Pulse-Artefakte neu. */
+if (import.meta.url === `file://${process.argv[1]}`) {
+  if (args.has("--calibrate")) write(join(OUT_DIR, "market-pulse-calibration.json"), calibrate());
+  else write(join(OUT_DIR, "market-pulse.json"), build());
+}
