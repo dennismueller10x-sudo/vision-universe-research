@@ -72,6 +72,10 @@ def drive(root, state, pass_id, lane='domains', batches=100, limit=25,
         completed = execute(command, capture_output=True, text=True)
         # Do not overwrite good candidate state on an interrupted/failed child.
         if completed.returncode:
+            # The child may have persisted several candidates before failing.
+            # Preserve those facts now; its incomplete traffic/accounting is
+            # unknown and must not be recorded as a completed batch.
+            pack(state, state / 'checkpoints' / (pass_id + '-' + lane + '.tar.gz'))
             raise RuntimeError('INVENTORY_BATCH_FAILED:' + str(completed.returncode))
         report = json.loads(completed.stdout)
         store = Store(state / 'state.sqlite')

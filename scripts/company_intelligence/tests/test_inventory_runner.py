@@ -44,12 +44,39 @@ class RunnerTests(unittest.TestCase):
    store=Store(state/'state.sqlite');prior=store.state('inventoryRunner:resume:domains');store.close()
    self.assertEqual(prior['requests'],3);self.assertEqual(prior['completedBatches'],1)
    self.assertEqual(prior['failureClusters']['categories'],{'TEMPORARILY_UNAVAILABLE':1})
+   restore(state/'checkpoints/resume-domains.tar.gz',Path(tmp)/'interrupted-restore')
+   store=Store(Path(tmp)/'interrupted-restore/state.sqlite')
+   self.assertEqual(store.state('inventoryRunner:resume:domains'),prior)
+   self.assertEqual(store.state('officialSite:one')['reason'],'ROBOTS_UNAVAILABLE:HTTP_503')
+   store.close()
    def recovered(command,**kwargs):return SimpleNamespace(returncode=0,stdout=json.dumps({'requests':2,'stopReason':'NO_DUE_CANDIDATES'}))
    with contextlib.redirect_stdout(io.StringIO()):drive(tmp,state,'resume',execute=recovered)
    restore(state/'checkpoints/resume-domains.tar.gz',Path(tmp)/'restored')
    store=Store(Path(tmp)/'restored/state.sqlite');value=store.state('inventoryRunner:resume:domains');store.close()
    self.assertEqual(value['requests'],5);self.assertEqual(value['completedBatches'],2)
    self.assertEqual(value['bytesDownloaded'],200)
+
+ def test_first_failed_child_restores_partial_candidate_without_inventing_batch_totals(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   state=Path(tmp)/'state';store=Store(state/'state.sqlite')
+   store.set_state('inventorySweep:partial:domains:inventory',['completed','pending'])
+   store.close();calls=[]
+   def interrupted(command,**kwargs):
+    calls.append(command);store=Store(state/'state.sqlite')
+    store.set_state('inventorySweep:partial:domains:completed',{'status':'VALIDATED'})
+    store.set_state('officialSite:completed',{'status':'VALIDATED','url':'https://owned.example/'})
+    store.close();return SimpleNamespace(returncode=1,stdout='')
+   with self.assertRaisesRegex(RuntimeError,'INVENTORY_BATCH_FAILED:1'):
+    drive(tmp,state,'partial',batches=3,execute=interrupted)
+   self.assertEqual(len(calls),1)
+   fresh=Path(tmp)/'restore';restore(state/'checkpoints/partial-domains.tar.gz',fresh)
+   store=Store(fresh/'state.sqlite')
+   self.assertEqual(store.state('inventorySweep:partial:domains:inventory'),['completed','pending'])
+   self.assertEqual(store.state('inventorySweep:partial:domains:completed'),{'status':'VALIDATED'})
+   self.assertIsNone(store.state('inventorySweep:partial:domains:pending'))
+   self.assertEqual(store.state('officialSite:completed')['url'],'https://owned.example/')
+   self.assertIsNone(store.state('inventoryRunner:partial:domains'))
+   store.close()
 
  def test_circuit_stop_does_not_submit_a_second_batch(self):
   with tempfile.TemporaryDirectory() as tmp:
