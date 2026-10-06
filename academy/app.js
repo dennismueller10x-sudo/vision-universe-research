@@ -98,5 +98,22 @@
     renderWorlds(worldsData.worlds, conceptsData);
   }
 
-  init();
+  /* Ohne Fehlerbehandlung blieb bei einem Ladefehler eine leere Seite
+     stehen (unbehandelte Rejection, drei leere Bereiche). */
+  init().catch(function () {
+    var mount = document.getElementById("worlds-mount") || document.getElementById("questions-mount");
+    if (!mount) return;
+    var box = document.createElement("div");
+    box.className = "vu-a-error";
+    box.setAttribute("role", "status");
+    var p = document.createElement("p");
+    p.textContent = "Die Academy-Inhalte konnten gerade nicht geladen werden. Bitte die Seite in einem Moment neu laden.";
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = "Neu laden";
+    b.addEventListener("click", function () { location.reload(); });
+    box.appendChild(p);
+    box.appendChild(b);
+    mount.appendChild(box);
+  });
 })();

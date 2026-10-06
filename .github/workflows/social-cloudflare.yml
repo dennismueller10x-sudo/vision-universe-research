@@ -111,6 +111,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -166,17 +169,20 @@ jobs:
         # sichtbar, sie hat einen Autor und ein Datum, und sie laesst sich
         # durch Loeschen zurueckziehen. Das ist mehr Nachweis als ein
         # Auswahlfeld, nicht weniger.
+        env:
+          IN_ACTION: ${{ inputs.action }}
+          IN_CONFIRM_DEPLOY: ${{ inputs.confirm_deploy }}
         run: |
           request_file="workers/vision-universe-social/DEPLOY_REQUEST"
           deploy=false
           verify=false
           reason=""
 
-          if [ -n "${{ inputs.action }}" ]; then
+          if [ -n "$IN_ACTION" ]; then
             # Dispatch: die Eingabe entscheidet.
-            case "${{ inputs.action }}" in
+            case "$IN_ACTION" in
               deploy)
-                if [ "${{ inputs.confirm_deploy }}" != "DEPLOY" ]; then
+                if [ "$IN_CONFIRM_DEPLOY" != "DEPLOY" ]; then
                   echo "::error::Fuer action=deploy muss confirm_deploy auf DEPLOY stehen."
                   exit 1
                 fi
@@ -337,7 +343,7 @@ jobs:
           # Konfiguration, sondern eine Identitaet: damit ein spaeterer
           # Schritt feststellen kann, OB er mit der Fassung spricht, die
           # dieser Lauf gerade deployt hat.
-          npx --yes wrangler@4 deploy --var VU_SOCIAL_BUILD:"$GITHUB_SHA" 2>&1 | tee /tmp/deploy.log
+          npx --yes wrangler@4.147.0 deploy --var VU_SOCIAL_BUILD:"$GITHUB_SHA" 2>&1 | tee /tmp/deploy.log
           # Die tatsaechliche Adresse aus der wrangler-Ausgabe lesen. Sie ist
           # die Quelle der Wahrheit — nicht das, was wir vorher geraten haben.
           url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' /tmp/deploy.log | head -1 || true)
@@ -406,7 +412,7 @@ jobs:
       - name: Erneut deployen, damit die Redirect-URI stimmt
         if: steps.mode.outputs.deploy == 'true' && steps.fixurl.outputs.redeploy == 'true'
         working-directory: workers/vision-universe-social
-        run: npx --yes wrangler@4 deploy
+        run: npx --yes wrangler@4.147.0 deploy
 
       - name: Secrets NACH dem Deployment vergleichen
         if: steps.mode.outputs.deploy == 'true'

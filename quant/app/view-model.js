@@ -30,11 +30,13 @@
       Komponenten, die ihn tragen - nie ein pauschales "angreifbare Bilanz".
 
    2. Faktorwerte sind gewichtete Mittel aus Rangplaetzen, KEINE Perzentile.
-      Die Stufengrenzen (90/75/45/25) sind feste Wertgrenzen. Eine
-      Beschreibung wie "gehoert zu den staerksten 10 %" ist deshalb falsch
-      und wird hier nicht verwendet. Wo eine Position im Universum genannt
-      wird, ist sie aus den veroeffentlichten Faktorwerten aller Titel
-      GEZAEHLT (rankIn), nicht aus der Stufe abgeleitet.
+      Bis factor-band 1.x lagen feste Wertgrenzen (90/75/45/25) darauf -
+      Grenzen, die nach Anteilen klangen und keine waren. Seit
+      factor-band-2.0.0 ist die STUFE die gezaehlte Position des Faktorwerts
+      unter allen bewerteten Titeln ("hoeher als X %"), materialisiert im
+      Faktor-Artefakt (factor.position). Stufe und Position sind damit eine
+      Aussage; der Faktorwert (0-100) steht als Zahl daneben.
+      Methodik: quant/methodology/factor-bands-v2.json
    ========================================================================= */
 (function (global) {
   "use strict";
@@ -42,10 +44,13 @@
   var VERSION = "quant-view-model-1.0.0";
   var ORDER = ["quality", "growth", "momentum", "value", "profitability", "revisions", "risk"];
   var BAND_ORDER = ["VERY_STRONG", "STRONG", "NEUTRAL", "WEAK", "VERY_WEAK"];
-  /* Dieselben Grenzen wie quant/engines/factor-evidence.js BANDS. Sie
+  /* Dieselben Grenzen wie quant/engines/factor-evidence.js BANDS - Grenzen
+     der POSITION in Prozent (factor-band-2.0.0), nicht des Faktorwerts. Sie
      werden hier nicht festgelegt, nur gespiegelt - ein Test haelt beide
      gleich. */
+  var BAND_SEMANTICS_VERSION = "factor-band-2.0.0";
   var BAND_MIN = { VERY_STRONG: 90, STRONG: 75, NEUTRAL: 45, WEAK: 25, VERY_WEAK: 0 };
+  var MIN_POSITION_UNIVERSE = 100;
 
   /* ------------------------------------------------------------- Sprache */
 
@@ -115,6 +120,8 @@
     FUNDAMENTALS_UNAVAILABLE: "Für diesen Titel liegen keine Geschäftszahlen aus SEC-Meldungen vor.",
     MARKET_CAP_UNAVAILABLE: "Der Börsenwert ist nicht belegt; Bewertungskennzahlen lassen sich deshalb nicht bilden.",
     SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING: "Diese Kennzahl braucht den Börsenwert genau dieser Notierung. Das Unternehmen hat mehrere börsennotierte Wertpapiere, und die veröffentlichte Aktienzahl gilt für das Unternehmen als Ganzes – welcher Anteil auf dieses Papier entfällt, steht nicht in den Unterlagen. Die Kennzahl wird deshalb bewusst nicht genannt, statt sie zu schätzen.",
+    SHARE_COUNT_NOT_OUTSTANDING: "Diese Kennzahl braucht den Börsenwert. Gemeldet ist nur die Zahl ausgegebener Aktien einschließlich der Aktien, die das Unternehmen selbst hält – ein Börsenwert daraus wäre zu hoch. Die Kennzahl wird deshalb bewusst nicht genannt.",
+    REPORTING_CURRENCY_NOT_LISTING_CURRENCY: "Diese Kennzahl braucht den Börsenwert. Das Unternehmen berichtet nicht in US-Dollar, der Kurs steht in US-Dollar – Gewinn und Börsenwert wären nicht vergleichbar.",
     DISPLAY_NOT_PERMITTED: "Für diesen Titel ist die Anzeige des Kurses und marktbezogener Werte nicht freigegeben.",
     NOT_APPLICABLE: "Für diese Art von Unternehmen ist die Kennzahl nicht aussagekräftig.",
     TEMPLATE_NOT_APPLICABLE: "Für diese Art von Unternehmen ist die Kennzahl nicht aussagekräftig.",
@@ -158,10 +165,19 @@
 
   /* ---------------------------------------------------------- Faktoren */
 
-  function band(scoreValue) {
-    if (!isNum(scoreValue)) return null;
-    for (var i = 0; i < BAND_ORDER.length; i++) if (scoreValue >= BAND_MIN[BAND_ORDER[i]]) return BAND_ORDER[i];
+  /** Stufe aus der POSITION (0-100, Anteil niedrigerer Werte in %). */
+  function band(position) {
+    if (!isNum(position)) return null;
+    for (var i = 0; i < BAND_ORDER.length; i++) if (position >= BAND_MIN[BAND_ORDER[i]]) return BAND_ORDER[i];
     return "VERY_WEAK";
+  }
+  /** Position eines Werts unter aufsteigend sortierten Werten - dieselbe
+      Zaehlung wie FactorEvidence.positionOf (ein Test haelt beide gleich). */
+  function positionIn(sortedValues, value) {
+    if (!Array.isArray(sortedValues) || sortedValues.length < MIN_POSITION_UNIVERSE || !isNum(value)) return null;
+    var lo = 0, hi = sortedValues.length;
+    while (lo < hi) { var mid = (lo + hi) >> 1; if (sortedValues[mid] < value) lo = mid + 1; else hi = mid; }
+    return Math.round(1000 * lo / (sortedValues.length - 1)) / 10;
   }
   function bandWord(id, bandId) {
     return (BAND_WORD[id] || BAND_WORD._)[bandId] || null;
@@ -169,9 +185,10 @@
   function capital(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
 
   /** "Bewertung: günstig (58)" - Bedeutung UND Zahl, nie nur eins davon. */
-  function factorLabel(id, value) {
-    var b = band(value);
-    if (!b) return null;
+  function factorLabel(id, value, position) {
+    var b = band(position);
+    if (!isNum(value)) return null;
+    if (!b) return "Wert " + score(value);
     return capital(bandWord(id, b)) + " (" + score(value) + ")";
   }
 
@@ -188,8 +205,8 @@
   }
   function rankSentence(rank) {
     if (!rank || !isNum(rank.share)) return null;
-    var p = Math.round(rank.share * 100);
-    return "Höher als bei " + p + " % der " + de(rank.total, 0) + " bewerteten Aktien.";
+    var p = Math.floor(rank.share * 100);
+    return "Höher als bei " + p + " % der " + (isNum(rank.total) ? de(rank.total, 0) + " " : "") + "bewerteten Aktien.";
   }
 
   /** Verteilung aller veroeffentlichten Werte eines Faktors (Methodik). */
@@ -197,14 +214,28 @@
     var out = { n: 0, bands: {}, cuts: {} };
     BAND_ORDER.forEach(function (b) { out.bands[b] = 0; });
     var sorted = (values || []).filter(isNum).sort(function (a, b) { return a - b; });
-    sorted.forEach(function (v) { out.bands[band(v)]++; });
     out.n = sorted.length;
+    sorted.forEach(function (v) { var b = band(positionIn(sorted, v)); if (b) out.bands[b]++; });
+    /* Welcher Faktorwert heute fuer eine Stufe reicht: der kleinste Wert,
+       dessen Position die Grenze erreicht. Offenlegung, keine Regel. */
     ["VERY_STRONG", "STRONG", "NEUTRAL", "WEAK"].forEach(function (b) {
-      var r = rankIn(sorted, BAND_MIN[b]); out.cuts[b] = r ? r.share : null;
+      var cut = null;
+      for (var i = 0; i < sorted.length; i++) { var p = positionIn(sorted, sorted[i]); if (p !== null && p >= BAND_MIN[b]) { cut = sorted[i]; break; } }
+      out.cuts[b] = cut;
     });
     out.max = sorted.length ? sorted[sorted.length - 1] : null;
     return out;
   }
+  /** Je Faktor die aufsteigend sortierten Werte aus Screening-Zeilen. */
+  function sortedDistribution(rows) {
+    var out = {};
+    ORDER.forEach(function (id) {
+      out[id] = (rows || []).map(function (r) { return r["quantV2.factorEvidence." + id]; }).filter(isNum).sort(function (a, b) { return a - b; });
+    });
+    return out;
+  }
+  /** Stufe eines Faktorwerts unter einer gezaehlten Verteilung (Screener, Radar). */
+  function bandIn(sortedValues, value) { return band(positionIn(sortedValues, value)); }
 
   /* Zeitfenster der Methodik in Alltagssprache. Unbekannte Fenster
      bleiben wie veroeffentlicht stehen - lieber englisch als falsch. */
@@ -258,7 +289,10 @@
     ctx = ctx || {};
     var meta = FACTORS[f.id] || { name: f.label || f.id, question: f.question || "", measures: f.plain || "" };
     var available = f.state === "AVAILABLE" && isNum(f.score);
-    var b = available ? band(f.score) : null;
+    /* Stufe und Position sind EINE Aussage (factor-band-2.0.0): beide aus
+       der im Artefakt gezaehlten Position. Fehlt sie, gibt es keine Stufe. */
+    var position = available && isNum(f.position) ? f.position : null;
+    var b = band(position);
     var components = (f.components || []).map(function (c) { return componentView(c, f.id); });
     var dr = drivers(components);
     var missing = components.filter(function (c) { return c.state !== "AVAILABLE"; });
@@ -270,14 +304,16 @@
       if (dr.down.length) parts.push("Schwach: " + dr.down.slice(0, 2).map(driverText).join(", "));
       why = parts.length ? parts.join(". ") + "." : "Keine einzelne Kennzahl sticht heraus; die Werte liegen im Mittelfeld.";
     }
-    var rank = available && ctx.distribution ? rankIn(ctx.distribution[f.id], f.score) : null;
+    var rank = position === null ? null : { share: position / 100,
+      total: isNum(f.positionUniverse) ? f.positionUniverse : (ctx.distribution && ctx.distribution[f.id] ? ctx.distribution[f.id].length : null) };
     return {
       id: f.id, name: meta.name, method: meta.method || f.id, question: meta.question,
       measures: meta.measures, notMeasures: meta.notMeasures || null, higher: meta.higher || f.higherMeans || null,
       state: available ? "AVAILABLE" : "UNAVAILABLE",
       score: available ? f.score : null, band: b,
       word: b ? bandWord(f.id, b) : null,
-      label: available ? factorLabel(f.id, f.score) : "Nicht bewertbar",
+      position: position,
+      label: available ? factorLabel(f.id, f.score, position) : "Nicht bewertbar",
       tone: b ? TONE[b] : "unknown",
       why: why, drivers: dr,
       components: components,
@@ -624,6 +660,8 @@
           positivePct: h.sufficient && isNum(h.positiveShare) ? Math.round(h.positiveShare * 100) + " %" : null,
           mean: h.sufficient && isNum(h.meanReturn) ? pct(h.meanReturn, 1, true) : null,
           worstDrawdown: h.sufficient && isNum(h.worstDrawdown) ? pct(h.worstDrawdown, 1) : null,
+          drawdownRaw: h.sufficient && isNum(h.medianDrawdown) ? h.medianDrawdown : null,
+          worstDrawdownRaw: h.sufficient && isNum(h.worstDrawdown) ? h.worstDrawdown : null,
           chanceRisk: h.sufficient && isNum(h.chanceRisk) ? h.chanceRisk : null,
           quartiles: h.sufficient && Array.isArray(h.quartiles) ? h.quartiles : null,
           distribution: h.sufficient && Array.isArray(h.distribution) ? h.distribution : null,
@@ -794,11 +832,15 @@
   }
 
   /* Screening-Zeile -> dieselbe Einordnung wie auf der Aktienseite. */
-  function fromScreeningRow(row) {
+  /* `dist`: je Faktor die aufsteigend sortierten Werte desselben
+     Screening-Artefakts - daraus die Position und damit die Stufe
+     (factor-band-2.0.0). Ohne Verteilung gibt es keine Stufe. */
+  function fromScreeningRow(row, dist) {
     if (!row) return null;
     var factors = ORDER.map(function (id) {
       var v = row["quantV2.factorEvidence." + id];
-      return factorView(isNum(v) ? { id: id, state: "AVAILABLE", score: v, components: [] } : { id: id, state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", components: [] });
+      return factorView(isNum(v) ? { id: id, state: "AVAILABLE", score: v, position: dist ? positionIn(dist[id], v) : null, positionUniverse: dist && dist[id] ? dist[id].length : null, components: [] }
+        : { id: id, state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", components: [] });
     });
     return { factors: factors, overall: overall(factors) };
   }
@@ -818,7 +860,7 @@
   }
 
   var api = {
-    VERSION: VERSION, ORDER: ORDER, TEMPLATE_PLAIN: TEMPLATE_PLAIN, BAND_ORDER: BAND_ORDER, BAND_MIN: BAND_MIN, FACTORS: FACTORS,
+    VERSION: VERSION, ORDER: ORDER, TEMPLATE_PLAIN: TEMPLATE_PLAIN, BAND_ORDER: BAND_ORDER, BAND_MIN: BAND_MIN, BAND_SEMANTICS_VERSION: BAND_SEMANTICS_VERSION, positionIn: positionIn, bandIn: bandIn, sortedDistribution: sortedDistribution, FACTORS: FACTORS,
     SETUP_STAGES: SETUP_STAGES, CHANGE_TEXT: CHANGE_TEXT, REASON: REASON,
     band: band, bandWord: bandWord, factorLabel: factorLabel, rankIn: rankIn, rankSentence: rankSentence,
     distributionOf: distributionOf, windowText: windowText, componentValue: componentValue, reasonText: reasonText, pct: pct,

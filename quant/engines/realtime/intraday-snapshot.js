@@ -121,6 +121,7 @@
     var letzterSlotLocal = letzterSlot ? letzterSlot.clock.slice(0, 5) : null;
     var coversFinalSlot = !!(letzteRegular && letzterSlotLocal && letzteRegular >= letzterSlotLocal);
     var regularComplete = fetchedAfterClose && coversFinalSlot;
+    var vorschluss = previousCloseCheck(input.previousClose, regular.length ? regular[0][1] : null);
     return {
       schemaVersion: SCHEMA,
       instrumentId: input.security.ticker, symbol: input.security.ticker,
@@ -144,7 +145,8 @@
       lastRegularLocal: letzteRegular,
       finalSlotLocal: letzterSlotLocal,
       isComplete: nowMs >= afterMs,
-      previousClose: isNum(input.previousClose) ? round2(input.previousClose) : null,
+      previousClose: vorschluss.value,
+      previousCloseWithheld: vorschluss.withheld,
       points: regular,
       extended: { pre: pre, after: after },
       pointCount: regular.length,
@@ -155,6 +157,28 @@
       note: "Tagesverlauf aus Anbieter-Bars (" + (input.interval || "5min") + ", " + (input.venue || "IEX") +
             "). Punkte sind [Ortszeit, Schluss]; zwischen ihnen liegt nichts Erfundenes."
     };
+  }
+
+  /* DER VORTAGESSCHLUSS AM SPLIT-TAG (Plattform-Audit 03.10.2026, Red Team).
+     previousClose kommt aus der Tagesreihe des letzten EOD-Laufs; der kennt
+     einen Split, der HEUTE wirksam wird, noch nicht. Die Seite zeigte dann
+     -50 % (2:1) oder -90 % (10:1) fuer eine Aktie, die sich kaum bewegt hat.
+     Steht der Vortagesschluss zum ersten Kurs der Sitzung in einem
+     ueblichen Split-Verhaeltnis, wird er zurueckgehalten und benannt - die
+     Startlinie ist dann der erste Kurs des Tages, wie ohne Vortagesschluss.
+     Abwaegung: ein echter Kurssturz um genau 50 % oeffnet ebenfalls im
+     Verhaeltnis 2:1; er zeigt dann die Bewegung seit Eroeffnung, bis der
+     EOD-Lauf den Tag abschliesst. Eine falsche Split-Bewegung bei jedem
+     Split ist der haeufigere und schwerere Fehler. Unter 1 $ kein
+     Cent-Runden (published-close.js). */
+  var SPLIT_RATIOS = [2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50, 100];
+  function previousCloseCheck(prev, firstPrice) {
+    if (!isNum(prev) || prev <= 0) return { value: null, withheld: null };
+    var value = prev >= 1 ? round2(prev) : Number(prev.toPrecision(4));
+    if (!isNum(firstPrice) || firstPrice <= 0) return { value: value, withheld: null };
+    var r = prev > firstPrice ? prev / firstPrice : firstPrice / prev;
+    var split = SPLIT_RATIOS.some(function (k) { return Math.abs(r / k - 1) <= 0.025; });
+    return split ? { value: null, withheld: "SPLIT_SUSPECTED" } : { value: value, withheld: null };
   }
 
   function dedupe(punkte) {
@@ -237,7 +261,8 @@
   }
 
   var api = { SCHEMA: SCHEMA, SERIES_TYPE: SERIES_TYPE, build: build, validate: validate,
-              merge: merge, unchanged: unchanged, cacheKey: cacheKey, minutesOf: minutesOf };
+              merge: merge, unchanged: unchanged, cacheKey: cacheKey, minutesOf: minutesOf,
+              previousCloseCheck: previousCloseCheck };
   if (isNode) module.exports = api;
   else {
     global.VURealtime = global.VURealtime || {};

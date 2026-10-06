@@ -37,6 +37,7 @@ import { splitSegments } from "../supertrader/validation/lib.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const Identity = require(join(ROOT, "core", "identity.js"));
 const SC = require(join(ROOT, "quant/engines/survivorship-control.js"));
 const MQ = require(join(ROOT, "quant/engines/market-quality.js"));
 const CTR = require(join(ROOT, "quant/engines/canonical-total-return.js"));
@@ -65,7 +66,7 @@ function securityMasterInventory() {
   const active = new Set(sm.rows.filter((r) => r.active_status !== "INACTIVE").map((r) => r.ticker));
   const inactive = sm.rows.filter((r) => r.active_status === "INACTIVE" && r.instrument_type === "EQUITY_COMMON");
   const seriesOf = (r) => {
-    const f = join(ROOT, "quant/data/market/discover-series-long", (r.baseline_security_id || "ref_" + r.ticker) + ".json");
+    const f = join(ROOT, "quant/data/market/discover-series-long", (r.baseline_security_id || Identity.securityIdForTicker(r.ticker)) + ".json");
     if (!existsSync(f)) return null;
     const j = JSON.parse(readFileSync(f, "utf8"));
     return { from: j.points.length ? j.points[0][0] : null, to: j.points.length ? j.points[j.points.length - 1][0] : null };

@@ -54,8 +54,8 @@ jobs:
             if (!st.VU_TREND_52W || st.VU_TREND_52W.mode!=="MODEL") throw new Error("VU_TREND_52W fehlt oder falscher Modus");
             if (t.schema!=="supertrader-trend52-1.0.0" || !t.market || !t.schedule || !t.portfolio || !t.prepared) throw new Error("trend52.json unvollstaendig");
             if (JSON.stringify(t).match(/"(totalReturn|cagr|equityCurve|excessCagr)"/)) throw new Error("trend52.json enthaelt Kennzahlen");
-            if (s.strategies.DARVAS_BOX.version!=="3.0.2" || s.strategies.DONCHIAN_TURTLE.version!=="2.0.1") throw new Error("Marktampel-Versionen nicht live");
-            if (!pf.strategies.DARVAS_BOX.config.marketFilter || !pf.strategies.DONCHIAN_TURTLE.config.marketFilter) throw new Error("Marktampel im Modellportfolio fehlt");
+            if (s.strategies.DARVAS_BOX.version!=="3.0.2" || s.strategies.DONCHIAN_TURTLE.version!=="2.0.2" || s.strategies.WEINSTEIN_STAGE.version!=="4.0.0") throw new Error("R13-Versionen nicht live");
+            if (!pf.strategies.DARVAS_BOX.config.marketFilter || pf.strategies.DONCHIAN_TURTLE.config.marketFilter) throw new Error("Marktampel im Modellportfolio falsch (Darvas an, Turtle aus)");
             console.log("VU Trendfolge 52W: Ampel", t.market.green, "Positionen", t.portfolio.used, "Rangliste", t.prepared.candidates.length, "naechste Entscheidung", t.schedule.nextDecision);'
           # Zugangsschranke ist laut docs/RESEARCH_ACCESS_GATE.md eine clientseitige
           # Entwicklungs-/Marketing-Maske, kein Zugriffsschutz: Originaldateien unter

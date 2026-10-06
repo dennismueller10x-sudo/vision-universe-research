@@ -208,8 +208,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const fremdesUrteil=urteile.filter(t=>!erlaubt.includes(t));
    if(!urteile.length)befund(view,width,'keine einzige Trefferzeile traegt ein Urteil');
    if(fremdesUrteil.length)befund(view,width,'Trefferzeile traegt kein Klartext-Urteil: '+JSON.stringify(fremdesUrteil[0]));
-   /* Die Methodik der Frage steht dabei: was "stark" heisst. */
-   await page.getByText(/„Stark“ heißt hier: Wert 70 oder mehr/).waitFor();
+   /* Die Methodik der Frage steht dabei: die Schwelle ist ein WERT (70),
+      die Stufe daneben eine POSITION (factor-band-2.0.0) - beides gesagt. */
+   await page.getByText(/Gesucht wird ein Wert von 70 oder mehr .*Die Stufe neben jeder Aktie .* ist dagegen ihre Position unter allen bewerteten Aktien/).waitFor();
    /* Und der Weg in den Profi-Modus traegt die Regel mit. */
    await page.getByRole('link',{name:'Im Profi-Modus verfeinern',exact:true}).click();
    await bereit(page,'screener');
@@ -282,7 +283,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    /* Setup & Trigger in Alltagssprache; Backtests mit gemessenem Grund. */
    const setupText=await page.locator('#setup').innerText();
    for(const w of ['Interessant ab','Ungültig unter'])if(!setupText.includes(w))befund(view,width,'Setup-Karte ohne "'+w+'"');
-   if(!/Backtests – noch keine Zahlen/.test(await page.locator('#historie').innerText()))befund(view,width,'Backtest-Stand fehlt im Rueckblick');
+   /* Evidence Experience: Stufe C nennt den Zertifizierungsstand und je geschlossener Art den gemessenen Grund. */
+   {const hist=await page.locator('#historie').innerText();
+    if(!/C · Zertifizierter Backtest/i.test(hist)||!/kein vollständig zertifizierter Backtest vor/.test(hist)||!/noch keine Zahlen\. Es fehlt unter anderem: .+\(nötig .+, heute .+\)/.test(hist))befund(view,width,'Backtest-Stand fehlt im Rueckblick');}
    /* Bedeutung ist zu, bis jemand fragt - und oeffnet dann bis zu den Rohdaten. */
    const first=page.locator('details.qx-factor').first();
    if(await first.evaluate(d=>d.open))befund(view,width,'factor evidence not progressively disclosed');
@@ -441,8 +444,8 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
   await page.unroute(serviceRoute);
   await page.getByRole('button',{name:'Erneut versuchen',exact:true}).click();
   await bereit(page,'home');
-  /* Konzept-Design: die Startseite fragt "Was möchtest du heute analysieren?". */
-  await page.locator('#qx-main h1').filter({hasText:'Was möchtest du heute analysieren'}).waitFor();
+  /* Produktpositionierung: die Startseite traegt den Claim. */
+  await page.locator('#qx-main h1').filter({hasText:'Quant zeigt dir jeden Tag'}).waitFor();
   checks.push({view:'render-failure-recovery',width,pass:true});
  });
 

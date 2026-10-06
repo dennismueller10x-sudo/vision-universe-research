@@ -131,7 +131,7 @@
     highProximity: {
       label: "Nähe zum Jahreshoch", window: "52 Wochen",
       question: "Wie weit ist der Kurs vom höchsten Stand des letzten Jahres entfernt?",
-      plain: "Gemessen wird der Abstand des letzten Kurses zum höchsten Schlusskurs der letzten 52 Wochen."
+      plain: "Gemessen wird der Abstand des letzten Kurses zum höchsten Tageskurs (Tageshoch) der letzten 52 Wochen."
     },
     revenueAcceleration: {
       label: "Umsatztempo", window: "zwei Geschäftsjahre",

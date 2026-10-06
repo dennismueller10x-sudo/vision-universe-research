@@ -20,6 +20,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
+import { createRequire } from 'node:module';
+// Die eine securityId-Regel des Company Master (company-master.js#legacySecurityId,
+// byte-gleich zu core/identity.js): BRK-A liegt als ref_BRK_A, nicht ref_BRK-A.
+// Vorher bildete der Build `ref_${symbol}` roh - Wochencharts fuer BRK-A, MOG-A,
+// PBR-A und BF-B zeigten auf Dateien, die es nicht gibt (Plattform-Audit 03.10.2026).
+const CompanyMaster = createRequire(import.meta.url)('../../quant/engines/company-master.js');
+export const weeklySeriesId = (symbol) => CompanyMaster.legacySecurityId(symbol);
 import { computeIndicators, percentileRanks, isoWeekKey, sma } from './engine/indicators.mjs';
 import { buildWeekly } from './engine/weekly.mjs';
 import { simulate, rescaleSignal } from './engine/simulator.mjs';
@@ -39,6 +46,8 @@ import kkBreakout31 from './engine/strategies/kk-breakout-v31.mjs';
 import kkBreakout32 from './engine/strategies/kk-breakout-v32.mjs';
 import darvas302 from './engine/strategies/darvas-v302.mjs';
 import donchian201 from './engine/strategies/donchian-v201.mjs';
+import donchian202 from './engine/strategies/donchian-v202.mjs';
+import weinstein4 from './engine/strategies/weinstein-v4.mjs';
 import { marketOkMap } from './validation/portfolio.mjs';
 import donchian2 from './engine/strategies/donchian-v2.mjs';
 import darvas3 from './engine/strategies/darvas-v3.mjs';
@@ -58,6 +67,9 @@ import { createOracle } from './validation/intraday-oracle.mjs';
 import { nonStockProduct } from './validation/lib.mjs';
 import { buildReplayArtifact } from './replay.mjs';
 import { STRATEGIES, REGISTRY_VERSION, DNA_FIELDS, INTERNAL_SOURCES } from './registry.mjs';
+import { PHASE1_VERSION } from './registry-p1.mjs';
+import { PROVENANCE_LABELS, PRODUCT_CLASS_LABELS, FIDELITY_AREA_LABELS } from './fidelity/provenance-labels.mjs';
+import { LIVE_CLASSIFICATION } from './fidelity/product-classes.mjs';
 import { evidenceFor, EVIDENCE_LEVELS, SOURCE_QUALITY, DATA_QUALITY, NO_PROMISE, EVIDENCE_VERSION } from './evidence.mjs';
 
 export const BUILD_VERSION = 'supertrader-build-1.0.0';
@@ -69,7 +81,9 @@ let TREND52_SYMBOLS = [];
 // Runde 11: Momentum 3.2.0 (Fehlerkorrektur Einstand). Weinstein 4.0.0, Minervini 3.0.0 und Turtle 2.1.0
 // verfehlten die vorab festgelegten Uebernahmebedingungen und bleiben Forschung (PREREGISTRATION-R11).
 // Runde 12: Marktampel (PORT-MARKET-200) fuer Darvas 3.0.2 und Turtle 2.0.1 (vorab festgelegt bestanden).
-export const LIVE_ENGINES = [kkBreakout32, weinstein3, darvas302, minervini2, donchian201];
+// Runde 13 (Audit, Entscheidungen mit S1C neu angewendet): Weinstein 4.0.0 (Fortsetzungskaeufe) live,
+// Turtle 2.0.2 ohne Marktampel (2.0.1 zurueckgenommen); Darvas 3.0.2 behaelt die Ampel.
+export const LIVE_ENGINES = [kkBreakout32, weinstein4, darvas302, minervini2, donchian202];
 export const PREVIOUS_ENGINES = [kkBreakout, kkBreakout2, kkBreakout3, weinstein, weinstein2, darvas, darvas2, darvas3, minervini, donchian];
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
@@ -129,7 +143,7 @@ export function loadBars(universe) {
 }
 
 function loadWeeklyLong(sym) {
-  const p = rel('quant/data/market/discover-series-long', `ref_${sym}.json`);
+  const p = rel('quant/data/market/discover-series-long', `${weeklySeriesId(sym)}.json`);
   if (!exists(p)) return null;
   const j = readJson(p);
   return j.points || null;
@@ -181,7 +195,7 @@ function measureCoverage(instruments, weeklySpans) {
   const dailySpans = [...instruments.values()].map((i) => yearsBetween(i.bars.date[0], i.bars.date[i.bars.date.length - 1]));
   const sm = readJson(rel('quant/data/market/security-master/us-security-master.json'));
   const inactive = sm.rows.filter((r) => r.active_status === 'INACTIVE');
-  const delistedWithPrices = inactive.filter((r) => exists(rel('quant/data/market/discover-series-long', `ref_${r.ticker}.json`))).length;
+  const delistedWithPrices = inactive.filter((r) => exists(rel('quant/data/market/discover-series-long', `${weeklySeriesId(r.ticker)}.json`))).length;
   const pitGates = readJson(rel('quant/data/sec/pit_gates.json'));
   const histDir = rel('quant/data/market/index-membership/history/SP500');
   const membershipDates = exists(histDir) ? fs.readdirSync(histDir).filter((f) => /^\d{4}-\d{2}-\d{2}\.json$/.test(f)).length : 0;
@@ -561,19 +575,50 @@ export function build() {
     log(`VU_TREND_52W: Positionen ${tl.state.positions.length}, Entscheidungen ${tl.decisions.length}, Rangliste ${preview?.candidates?.length ?? 0}`);
   }
   writeJson(path.join(DATA, 'registry.json'), registry);
+  /* registry-core.json fuer alle Seiten ausser der Strategie-Detailseite:
+     ohne Regeltexte (rules, processChain, fidelity.rules, weitere Regelkarten). */
+  writeJson(path.join(DATA, 'registry-core.json'), registryCore(registry));
   writeJson(path.join(DATA, 'sources.json'), sources);
   writeJson(path.join(DATA, 'market.json'), market);
   writeJson(path.join(DATA, 'coverage.json'), { schema: 'supertrader-coverage-1.0.0', asOf, coverage, greenblatt: gbCoverage, unavailableInstruments: unavailable, gateDefinitions: GATE_DEFS, minHistoryYears: MIN_HISTORY_YEARS });
+  /* Discover-Verfuegbarkeit explizit ausweisen (LOGI, 03.10.2026: Signal mit
+     offener Position, Discover-Seite durch das Faktor-Qualitaetsgate entfallen ->
+     toter Link). Signale und Positionen bleiben unveraendert; die Seite zeigt fuer
+     ausgewiesene Titel einen Hinweis statt des Links. */
+  /* Geprueft werden genau die Titel, fuer die unten eine Aktienseite
+     entsteht - auch die Teilpruefungs-Titel, deren Seite ebenfalls den
+     Discover-Link traegt. */
+  signals.discoverAvailability = discoverAvailability(
+    [...Object.keys(signals.bySymbol), ...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)],
+    readJson(rel('discover/data/stock-index/US_REAL.json')).symbols || []);
   writeJson(path.join(DATA, 'signals.json'), signals);
+  /* Ausschnitte (Payload-Audit 03.10.2026: jede der 822 Seiten lud 3,3 MB):
+     signals-core.json fuer Start, Strategien, Methodik, Backtests (ohne die
+     Historienlisten), stock/<SYM>.json fuer die Aktienseite. signals.json
+     bleibt vollstaendig fuer die Signalliste. */
+  writeJson(path.join(DATA, 'signals-core.json'), signalsCore(signals));
+  const slices = signalsBySymbol(signals, [...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)]);
+  /* Ein Ausschnitt eines Symbols, das heraus faellt, darf nicht stehen
+     bleiben - er zeigte sonst alte Signale. Ohne Ausschnitt laedt die Seite
+     die vollstaendige Datei. */
+  const sliceDir = path.join(DATA, 'stock');
+  if (exists(sliceDir)) for (const f of fs.readdirSync(sliceDir)) if (f.endsWith('.json') && !slices[f.slice(0, -5)]) fs.rmSync(path.join(sliceDir, f));
+  for (const [sym, slice] of Object.entries(slices)) writeIfChanged(path.join(sliceDir, sym + '.json'), JSON.stringify(slice) + '\n');
   if (pilot) backtests.pilot = { path: '/supertrader/data/pilot-backtest.json', status: pilot.status, id: pilot.spec.id };
   writeJson(path.join(DATA, 'backtests.json'), backtests);
   if (pilot) writeJson(path.join(DATA, 'pilot-backtest.json'), pilot);
   writeJson(path.join(DATA, 'replay.json'), replay);
   for (const [id, l] of Object.entries(ledgers)) writeJson(ledgerPath(id), l);
-  writeStockPages(signals, TREND52_SYMBOLS);
+  /* Jede Karte verlinkt auf /supertrader/stock/<SYM>/ (supertrader.js
+     stockUrl) - auch die Teilpruefungs-Karten, deren Titel nicht unter den
+     Kandidaten stehen. Ohne Seite war das ein 404 (DAR, ROKU, PECO, ...,
+     Plattform-Audit 03.10.2026). */
+  writeStockPages(signals, [...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)]);
   writeStrategyPages(registry);
   writeStaticPages();
-  writeJson(path.join(DATA, 'build.json'), { buildVersion: BUILD_VERSION, registryVersion: REGISTRY_VERSION, asOf, inputsGeneratedAt: barsGeneratedAt });
+  /* slices: die Seite fragt nur Ausschnitte an, die dieser Lauf geschrieben hat. */
+  writeJson(path.join(DATA, 'build.json'), { buildVersion: BUILD_VERSION, registryVersion: REGISTRY_VERSION, asOf, inputsGeneratedAt: barsGeneratedAt,
+    slices: { version: SLICES_VERSION, registry: true, stock: Object.keys(slices).sort() } });
   log(`fertig in ${((Date.now() - t0) / 1000).toFixed(1)} s, Stand ${asOf}`);
   return { asOf, signals, backtests, coverage };
 }
@@ -670,13 +715,32 @@ function buildMarket(asOf, barsGeneratedAt) {
   };
 }
 
+/* Migration Phase 1: Produktklasse und Fidelity je Live-Strategie (Datenbasis, aus fidelity/product-classes.mjs und R15-FIDELITY-MATRIX.json). */
+let FIDELITY_MATRIX = null;
+export function productOf(s) {
+  const c = LIVE_CLASSIFICATION[s.strategy_id];
+  if (!c) return null;
+  FIDELITY_MATRIX ||= readJson(rel('scripts/supertrader/fidelity/R15-FIDELITY-MATRIX.json'));
+  const m = FIDELITY_MATRIX.strategies[s.strategy_id];
+  if (!m || m.liveVersion !== c.version || c.version !== s.strategy_version) throw new Error(`Produktklasse ${s.strategy_id}: Version ${c.version} passt nicht zur Registry ${s.strategy_version}`);
+  const f = m.fidelity;
+  return {
+    schema: 'supertrader-product-1.0.0', product_class: c.productClass, product_class_label: PRODUCT_CLASS_LABELS[c.productClass].label, display_name: c.displayName, live_version: c.version,
+    entry_fidelity: f.entry, exit_fidelity: f.exit, position_sizing_fidelity: f.sizing, portfolio_fidelity: f.portfolio,
+    fundamental_fidelity: f.fundamental, market_fidelity: f.marketRegime, risk_fidelity: f.risk,
+    replication_claim_allowed: m.REPLICATION_CLAIM_ALLOWED, hard_gate: { required: m.hardGate.required, not_high: m.hardGate.notHigh, blocking_portfolio_fields: m.hardGate.blockingPortfolioFields },
+    original_fidelity_overall: m.originalFidelityOverall, note: m.overallNote,
+  };
+}
+
 function buildRegistry(coverage, gbCoverage) {
   const engineParams = Object.fromEntries(LIVE_ENGINES.map((e) => [e.id, { variant: e.variant, version: e.version, params: e.PARAMS, timeframe: e.timeframe, portfolio: portfolioConfig(e), legacyVersions: Object.keys(e.legacy || {}) }]));
   return {
     schema: 'supertrader-registry-1.0.0', registryVersion: REGISTRY_VERSION, dnaFields: DNA_FIELDS,
     lifecycle: { states: STATES, labels: STATE_LABELS, phases: PHASES, persistedFrom: 'SETUP', scannerOnly: ['DISCOVERED', 'WATCH'] },
     execution: describeExecution(), portfolioDefaults: PORTFOLIO_DEFAULTS,
-    strategies: STRATEGIES.map((s) => ({ ...s, engine: engineParams[s.strategy_id] || null, evidence: evidenceFor(s), fidelity: fidelityFor(s.strategy_id), processChain: PROCESS_CHAIN[s.strategy_id] || null })),
+    provenanceClasses: PROVENANCE_LABELS, productClasses: PRODUCT_CLASS_LABELS, fidelityAreas: FIDELITY_AREA_LABELS, migrationPhase: PHASE1_VERSION,
+    strategies: STRATEGIES.map((s) => ({ ...s, engine: engineParams[s.strategy_id] || null, evidence: evidenceFor(s), fidelity: fidelityFor(s.strategy_id), processChain: PROCESS_CHAIN[s.strategy_id] || null, product: productOf(s) })),
     fidelityScale: { schema: FIDELITY_VERSION, ruleClass: RULE_CLASS, sourceAccess: SOURCE_ACCESS, status: FIDELITY_STATUS,
       accessNote: 'Runde 7: Fast alle Primärseiten (Trader-Websites, Bücher, Interviews) waren aus der Arbeitsumgebung nicht abrufbar. Belegt ist, was mehrere unabhängige Suchauszüge übereinstimmend wiedergeben; Wortlaute sind vor einem Zitat am Original zu prüfen.' },
     evidenceScale: { schema: EVIDENCE_VERSION, levels: EVIDENCE_LEVELS, source: SOURCE_QUALITY, data: DATA_QUALITY, noPromise: NO_PROMISE,
@@ -703,7 +767,7 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
     const fund = fundOf(s.symbol);
     const inst = instruments.get(s.symbol);
     const si = sicInfo().get(s.symbol) || {};
-    const out = { ...s, plan: planOf(s), sicDivision: si.division || null, sicDivisionName: si.name || null, companyName: fund?.companyName || s.symbol, chart: inst ? { shard: inst.shard, weeklyPath: `/quant/data/market/discover-series-long/ref_${s.symbol}.json` } : null };
+    const out = { ...s, plan: planOf(s), sicDivision: si.division || null, sicDivisionName: si.name || null, companyName: fund?.companyName || s.symbol, chart: inst ? { shard: inst.shard, weeklyPath: `/quant/data/market/discover-series-long/${weeklySeriesId(s.symbol)}.json` } : null };
     if (s.strategyId === 'MINERVINI_VCP' && fund) out.fundamentalsDisplay = { revenueGrowthTTM: fund.revenueGrowthTTM, earningsAcceleration: fund.earningsAcceleration, asOf: fund.fundamentalsAsOf, filtered: false };
     return out;
   };
@@ -722,7 +786,7 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
     counts.REASSESSED_AFTER_RULE_CHANGE += open.filter(isReassessment).length;
     counts.NEW_SINCE_PREVIOUS_DATA += open.filter((x) => !isReassessment(x) && x.createdAt > (l.previousDataAsOf || '')).length;
     counts.DISCOVERED += scanner[id].discovered; counts.WATCH += scanner[id].watch;
-    const scan = scanner[id].top.map((x) => ({ ...x, sicDivision: sicInfo().get(x.symbol)?.division || null, sicDivisionName: sicInfo().get(x.symbol)?.name || null, companyName: fundOf(x.symbol)?.companyName || x.symbol, chart: instruments.get(x.symbol) ? { shard: instruments.get(x.symbol).shard, weeklyPath: `/quant/data/market/discover-series-long/ref_${x.symbol}.json` } : null }));
+    const scan = scanner[id].top.map((x) => ({ ...x, sicDivision: sicInfo().get(x.symbol)?.division || null, sicDivisionName: sicInfo().get(x.symbol)?.name || null, companyName: fundOf(x.symbol)?.companyName || x.symbol, chart: instruments.get(x.symbol) ? { shard: instruments.get(x.symbol).shard, weeklyPath: `/quant/data/market/discover-series-long/${weeklySeriesId(x.symbol)}.json` } : null }));
     const quality = qualitySummary(open);
     strategiesOut[id] = { quality: open.some((x) => x.quality) ? quality : null, liveSince: l.liveSince, lastProcessed: l.lastProcessed, variant: l.variant, version: l.version, open, closed, invalidated, invalidatedTotal: realInvalid.length, retired, retiredTotal: retiredList.length, reassessed: open.filter(isReassessment).length, ledgerPath: `/supertrader/data/ledger/${id}.json`, scanner: { discovered: scanner[id].discovered, watch: scanner[id].watch, top: scan, symbols: scanner[id].symbols } };
     for (const s of [...open, ...closed, ...invalidated]) (bySymbol[s.symbol] ||= []).push({ strategyId: id, id: s.id, state: s.state });
@@ -864,6 +928,10 @@ function mapVariant(v) {
 }
 
 /* ----------------------------------------------- statische Routen */
+// Farbschema: Standard dunkel (Supertrader-Identitaet). Das Inline-Skript im
+// <head> uebernimmt vor dem ersten Zeichnen die gespeicherte Wahl des
+// plattformweiten Hell/Dunkel-Schalters (localStorage "vu-discover-theme-v1"),
+// damit nichts aufblitzt; die Navigation zeigt den Schalter (theme-switch).
 function pageShell({ title, description, page, depth, attrs = '' }) {
   const up = '../'.repeat(depth);
   return `<!DOCTYPE html>
@@ -872,13 +940,14 @@ function pageShell({ title, description, page, depth, attrs = '' }) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07080c">
+<script>(function(){var w="dark";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <title>${title}</title>
 <meta name="description" content="${description}">
 <link rel="stylesheet" href="/assets/site-navigation.css">
 <link rel="stylesheet" href="/supertrader/assets/supertrader.css">
 </head>
 <body class="st" data-page="${page}"${attrs}>
-<vu-navigation theme="dark" no-preview></vu-navigation>
+<vu-navigation theme="dark" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"dark");</script>
 <script src="/assets/site-navigation.js"></script>
 <a class="st-skip" href="#st-main">Zum Inhalt</a>
 <main id="st-main" class="st-main" tabindex="-1"><div class="st-boot" aria-live="polite">Supertrader lädt …</div></main>
@@ -915,8 +984,92 @@ function writeStaticPages() {
 
 function writeStrategyPages(registry) {
   for (const s of registry.strategies) {
-    writeIfChanged(path.join(OUT, 'strategies', s.slug, 'index.html'), pageShell({ title: `${s.world_name} — Supertrader — Vision Universe®`, description: `${s.strategy_name}: Regeln, Evidenz, Signale und Backteststatus.`, page: 'strategy', depth: 3, attrs: ` data-strategy="${s.strategy_id}"` }));
+    writeIfChanged(path.join(OUT, 'strategies', s.slug, 'index.html'), pageShell({ title: `${LIVE_CLASSIFICATION[s.strategy_id]?.displayName || s.world_name} — Supertrader — Vision Universe®`, description: `${s.strategy_name}: Regeln, Evidenz, Signale und Backteststatus.`, page: 'strategy', depth: 3, attrs: ` data-strategy="${s.strategy_id}"` }));
   }
+}
+
+/** Alle Symbole, die irgendwo in einem Ausgabeobjekt als `symbol` stehen. */
+export function symbolsIn(x, out = new Set()) {
+  if (Array.isArray(x)) for (const y of x) symbolsIn(y, out);
+  else if (x && typeof x === 'object') {
+    if (typeof x.symbol === 'string') out.add(x.symbol);
+    for (const v of Object.values(x)) if (v && typeof v === 'object') symbolsIn(v, out);
+  }
+  return out;
+}
+
+/* Was nur die Strategie-Detailseite (renderStrategy) aus der Registry liest. */
+export const REGISTRY_DETAIL_FIELDS = ['rules', 'processChain'];
+
+/** registry.json ohne Detailtexte: Regeln, Prozesskette, Regel-Herkunft
+    (fidelity.rules) und alle Regelkarten ausser der ersten (card0). */
+export function registryCore(registry) {
+  const strategies = registry.strategies.map((s) => {
+    const c = { ...s };
+    for (const k of REGISTRY_DETAIL_FIELDS) delete c[k];
+    if (c.fidelity) { c.fidelity = { ...c.fidelity }; delete c.fidelity.rules; }
+    if (Array.isArray(c.rule_cards)) c.rule_cards = c.rule_cards.slice(0, 1);
+    return c;
+  });
+  return { ...registry, slice: 'core', strategies };
+}
+
+/* Die Listen, die nur Signalliste und Aktienseite brauchen. */
+export const HISTORY_LISTS = ['invalidated', 'retired', 'scanner'];
+
+/* Steht in build.json, sobald signals-core.json und stock/<SYM>.json geschrieben sind. */
+export const SLICES_VERSION = 'signals-slices-1';
+
+/** signals.json ohne die Historienlisten; Zaehler (invalidatedTotal ...) bleiben. */
+export function signalsCore(signals) {
+  const strategies = {};
+  for (const [id, st] of Object.entries(signals.strategies || {})) {
+    const c = { ...st };
+    for (const k of HISTORY_LISTS) delete c[k];
+    strategies[id] = c;
+  }
+  return { ...signals, slice: 'core', strategies };
+}
+
+/** Je Symbol genau die Eintraege, die die Aktienseite liest (renderStock). */
+export function signalsBySymbol(signals, extra = []) {
+  const out = {};
+  const syms = new Set([...Object.keys(signals.bySymbol || {}), ...extra].filter((x) => /^[A-Z0-9.\-]+$/.test(x)));
+  /* Ohne asOf/inputsGeneratedAt/counts: die wechseln jeden Tag und haetten
+     sonst jeden Ausschnitt taeglich neu geschrieben (Repo-Wachstum). Den
+     Stand liefert build.json; die Seite setzt ihn ein. */
+  const head = { schema: signals.schema, policy: signals.policy, disclaimer: signals.disclaimer };
+  for (const sym of syms) {
+    const strategies = {};
+    for (const [id, st] of Object.entries(signals.strategies || {})) {
+      const mine = (list) => (list || []).filter((x) => x.symbol === sym);
+      const scanner = st.scanner ? { ...st.scanner, top: mine(st.scanner.top) } : { top: [] };
+      strategies[id] = { ...st, open: mine(st.open), closed: mine(st.closed), invalidated: mine(st.invalidated), retired: mine(st.retired), scanner };
+    }
+    const partialChecks = {};
+    for (const [id, pc] of Object.entries(signals.partialChecks || {})) {
+      partialChecks[id] = { ...pc, candidates: (pc.candidates || []).filter((r) => r.symbol === sym), near: (pc.near || []).filter((r) => r.symbol === sym) };
+    }
+    /* Die Aktienseite liest nur den Ausschnitt: er traegt die
+       Discover-Verfuegbarkeit seines Symbols mit, sonst zeigte sie fuer LOGI
+       wieder den toten Link (#418). */
+    const av = signals.discoverAvailability;
+    const discoverAvailability = av ? { source: av.source, unavailable: (av.unavailable || []).filter((x) => x === sym), note: av.note } : undefined;
+    out[sym] = { ...head, slice: 'stock', symbol: sym, bySymbol: signals.bySymbol && signals.bySymbol[sym] ? { [sym]: signals.bySymbol[sym] } : {}, strategies, partialChecks, discoverAvailability };
+  }
+  return out;
+}
+
+/** Welche Titel mit Supertrader-Seite haben (k)eine Discover-Aktienseite? */
+export function discoverAvailability(symbols, indexSymbols) {
+  const index = new Set(indexSymbols);
+  const checked = [...new Set(symbols)].sort();
+  return {
+    source: 'discover/data/stock-index/US_REAL.json',
+    checked: checked.length,
+    unavailable: checked.filter((s) => !index.has(s)),
+    note: 'Titel mit Supertrader-Seite ohne Discover-Aktienseite (z. B. vom Faktor-Qualitaetsgate gesperrt). Signale bleiben unveraendert; die Seite zeigt einen Hinweis statt des Links.'
+  };
 }
 
 function writeStockPages(signals, extra = []) {

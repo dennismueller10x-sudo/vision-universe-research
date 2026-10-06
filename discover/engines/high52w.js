@@ -14,6 +14,10 @@
    2. WELCHES FENSTER. Das Vergleichshoch schliesst den aktuellen Tag AUS.
       Sonst ist jeder Titel per Definition auf seinem Hoch, und das Signal
       waere wertlos.
+      Das gilt fuer den Live-Vergleich dieser Engine (evaluate). Karten und
+      Listen bekommen die Plattformdefinition aus market-factors.js (252
+      Tage einschliesslich heute, Tageshoch); das Flag ist gleichwertig,
+      gemessen 0 Abweichungen auf 2.500 Beobachtungen (Audit 03.10.2026).
 
    3. WIE OFT GERECHNET WIRD. Nicht bei jedem Tick ueber die ganze
       Historie: das rollierende Hoch wird im Build vorberechnet, zur

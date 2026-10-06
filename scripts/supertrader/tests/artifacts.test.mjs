@@ -113,7 +113,7 @@ test('Regelkarten: jede Live-Variante hat eine vollstaendige Karte mit existiere
     assert.deepEqual(card.sections.map((x) => x.id), need, id);
     for (const e of ['gap', 'volume', 'missingData', 'conflictPre', 'conflictPos', 'version']) assert.ok(card.edge_cases.some((x) => x.id === e), `${id}: Randfall ${e}`);
     const ids = new Set(s.rules.map((r) => r.rule_id));
-    for (const x of [...card.sections, ...card.edge_cases]) { for (const r of x.rules) assert.ok(ids.has(r), `${id}: ${r}`); assert.ok(['ORIGINAL', 'VU', 'MIXED', 'NONE'].includes(x.provenance)); }
+    for (const x of [...card.sections, ...card.edge_cases]) { for (const r of x.rules) assert.ok(ids.has(r), `${id}: ${r}`); assert.ok(['ORIGINAL', 'ORIGINAL_INTERPRETATION', 'VU_FORMALIZATION', 'VU_OWN', 'FOREIGN_RULE', 'NOT_PUBLIC', 'UNRESOLVED', 'VU', 'MIXED', 'NONE'].includes(x.provenance), `${id}/${x.id}: Herkunft ${x.provenance}`); }
     // Drei getrennte Aussagen: ausfuehrbar, Quellenlage, historische Validierung.
     assert.equal(card.executable.status, 'EXECUTABLE', id);
     // Runde 7: Quellenpruefung nur auf Suchauszuegen - nie als vollstaendige Originalpruefung ausgegeben.

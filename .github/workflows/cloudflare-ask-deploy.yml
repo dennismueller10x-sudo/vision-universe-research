@@ -72,7 +72,7 @@ jobs:
             extra+=(--var "VU_ASK_PER_USER_DAILY:$PER_USER_DAILY")
             echo "Fragen pro Nutzer und Tag aus GitHub-Variable: $PER_USER_DAILY"
           fi
-          npx --yes wrangler@4 deploy "${extra[@]}" 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tee /tmp/deploy.log
+          npx --yes wrangler@4.147.0 deploy "${extra[@]}" 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tee /tmp/deploy.log
           url=$(grep -oE 'https://vu-ask\.[a-z0-9-]+\.workers\.dev' /tmp/deploy.log | head -1)
           echo "url=$url" >> "$GITHUB_OUTPUT"
 
@@ -91,7 +91,7 @@ jobs:
             VU_ASK_ADMIN_KEY=$(printf '%s' "vu-ask-admin-v1" | openssl dgst -sha256 -hmac "$CLOUDFLARE_API_TOKEN" -r | cut -d' ' -f1)
           fi
           echo "::add-mask::$VU_ASK_ADMIN_KEY"
-          put() { printf '%s' "$2" | npx --yes wrangler@4 secret put "$1" > /dev/null 2>&1 && echo "$1 hinterlegt" || { echo "::error::$1 nicht hinterlegt"; exit 1; }; }
+          put() { printf '%s' "$2" | npx --yes wrangler@4.147.0 secret put "$1" > /dev/null 2>&1 && echo "$1 hinterlegt" || { echo "::error::$1 nicht hinterlegt"; exit 1; }; }
           put VU_ASK_ADMIN_KEY "$VU_ASK_ADMIN_KEY"
           if [ -n "$TURNSTILE_SECRET" ]; then put TURNSTILE_SECRET "$TURNSTILE_SECRET"; fi
           if [ -n "$VU_ASK_ACCESS_PASSWORD" ]; then put VU_ASK_ACCESS_PASSWORD "$VU_ASK_ACCESS_PASSWORD"; fi
@@ -103,7 +103,7 @@ jobs:
               put ANTHROPIC_WORKSPACE_ID "$ws"
             else
               echo "::warning::ANTHROPIC_WORKSPACE_ID hat nicht die Form wrkspc_… (Laenge ${#ws}, beginnt mit '${ws:0:3}…') - wird nicht verwendet."
-              printf '%s' "" | npx --yes wrangler@4 secret delete ANTHROPIC_WORKSPACE_ID --force > /dev/null 2>&1 || true
+              printf '%s' "" | npx --yes wrangler@4.147.0 secret delete ANTHROPIC_WORKSPACE_ID --force > /dev/null 2>&1 || true
             fi
           fi
           if [ -n "$ANTHROPIC_API_KEY" ]; then

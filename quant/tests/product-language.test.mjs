@@ -259,7 +259,7 @@ test("both sides are always shown: no upside without its downside", () => {
   assert.match(balance, /"Noch nicht bewertbar/);
   /* Am Verhalten: jede der sieben Eigenschaften landet in genau einer
      Gruppe - dafuer, dagegen, Mittelfeld oder nicht bewertbar. */
-  const f = (id, score) => VM.factorView(score === null ? { id, state: "UNAVAILABLE", reason: "BLOCKED_EXTERNAL", components: [] } : { id, state: "AVAILABLE", score, components: [] });
+  const f = (id, score) => VM.factorView(score === null ? { id, state: "UNAVAILABLE", reason: "BLOCKED_EXTERNAL", components: [] } : { id, state: "AVAILABLE", score, position: score, components: [] });
   const factors = [f("quality", 92), f("growth", 20), f("momentum", 50), f("value", 80), f("profitability", 10), f("revisions", null), f("risk", 60)];
   const pc = VM.proCon(factors);
   assert.equal(pc.pro.length + pc.con.length + pc.middle.length + pc.open.length, factors.length);

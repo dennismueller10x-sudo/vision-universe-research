@@ -6,7 +6,7 @@ import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {gzipSync} from 'node:zlib';
 import {createRequire} from 'node:module';
-const require=createRequire(import.meta.url),Master=require('../../quant/engines/company-master.js'),History=require('../../quant/api/fundamentals-contract.js');
+const require=createRequire(import.meta.url),Master=require('../../quant/engines/company-master.js'),History=require('../../quant/api/fundamentals-contract.js'),FactorProjection=require('../../quant/engines/factor-product-projection.js');
 export const SEC_BUDGET=8*1024*1024;
 const fields=(x,keys)=>Object.fromEntries(keys.filter(k=>Object.hasOwn(x||{},k)).map(k=>[k,x[k]]));
 export function projectInspector(source){
@@ -24,6 +24,7 @@ export function projectQuarterly(source){
  return {...fields(source,['generatedAtUtc','versions','dataSource','cik','asOf','policy','availability','columns']),schema:'vu-quant-quarterly-1.0.0',sourceSchema:source.schema,
   semantics:{quarterly:source.semantics?.quarterly},units:Object.fromEntries(Object.entries(source.units||{}).filter(([id])=>Object.hasOwn(quarterly,id))),quarterly,unavailableMetrics};
 }
+export const FACTOR_PROJECTION_BUDGET=4*1024*1024,FACTOR_SHARD_BUDGET=256*1024;
 export function permitted(path){
  if(path.split('/').some(p=>p.startsWith('.'))&&path!=='.nojekyll')return false;
  if(/^(scripts|docs|providers)\//.test(path)||/\/(tests|fixtures)\//.test(path)||/\.test\.(m?js|py)$/.test(path))return false;
@@ -40,6 +41,23 @@ export async function buildRelease({root,output}){
  for(const p of paths.filter(permitted)){const from=resolve(root,p);if(!(await lstat(from)).isFile())throw Error('NON_FILE_INPUT');await mkdir(dirname(resolve(output,p)),{recursive:true});await copyFile(from,resolve(output,p));}
  async function json(path,value){const bytes=Buffer.from(JSON.stringify(value));await mkdir(dirname(resolve(output,path)),{recursive:true});await writeFile(resolve(output,path),bytes);emitted.push({path,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});}
  const load=async p=>JSON.parse(await readFile(resolve(root,p),'utf8'));
+ /* Produktprojektion der Faktordatei (factor-product-projection.js): die
+    Quant-Ansichten laden 3,4 statt 19,2 MB. Die volle Datei bleibt daneben. */
+ /* Eigener Schreibweg mit eigenem Budget: das SEC-Auslieferungsbudget unten
+    gilt den SEC-Projektionen und bleibt unveraendert. */
+ if(paths.includes('quant/data/market/factors/factors-FULL_UNIVERSE.json')){
+  const projected=FactorProjection.project(await load('quant/data/market/factors/factors-FULL_UNIVERSE.json'));
+  const bytes=Buffer.from(JSON.stringify(projected));
+  if(bytes.length>FACTOR_PROJECTION_BUDGET)throw Error('FACTOR_PROJECTION_BUDGET_EXCEEDED');
+  await writeFile(resolve(output,'quant/data/market/factors/factors-FULL_UNIVERSE-product.json'),bytes);
+  /* Je shardKey ein kleiner Ausschnitt fuer die Aktienseite. */
+  await mkdir(resolve(output,'quant/data/market/factors/product-shards'),{recursive:true});
+  for(const [key,part] of Object.entries(FactorProjection.shards(projected,Master.shardKey))){
+   if(!/^[A-Z0-9_]{1,2}$/.test(key))throw Error('FACTOR_SHARD_KEY_INVALID');
+   const b=Buffer.from(JSON.stringify(part));if(b.length>FACTOR_SHARD_BUDGET)throw Error('FACTOR_SHARD_BUDGET_EXCEEDED');
+   await writeFile(resolve(output,'quant/data/market/factors/product-shards/'+key+'.json'),b);
+  }
+ }
  const index=await load('quant/data/sec/inspector_index.json');
  await json('quant/data/sec/inspector_index.json',index);
  for(const name of ['quant-factor-inputs.json','coverage_matrix.json','pit_gates.json'])await json('quant/data/sec/'+name,await load('quant/data/sec/'+name));
@@ -76,7 +94,11 @@ export async function buildRelease({root,output}){
  async function bundlePage(page,bundlePath){
   const html=await readFile(resolve(root,page),'utf8');
   const tags=[...html.matchAll(/<script src="([^"]+)"><\/script>/g)];
-  if(!tags.length||tags.length!==(html.match(/<script\b/g)||[]).length)throw Error('UNSUPPORTED_SCRIPT_TAG');
+  // Attributlose Inline-Skripte (Farbschema vor dem ersten Zeichnen setzen,
+  // Navigation synchronisieren) bleiben an ihrer Stelle; gebuendelt werden
+  // nur die externen klassischen Skripte. Alles andere bleibt unzulaessig.
+  const inline=(html.match(/<script>(?:(?!<\/script>)[\s\S])*<\/script>/g)||[]).length;
+  if(!tags.length||tags.length+inline!==(html.match(/<script\b/g)||[]).length)throw Error('UNSUPPORTED_SCRIPT_TAG');
   const dir=page.slice(0,page.lastIndexOf('/')+1),chunks=[];
   for(const tag of tags){const p=tag[1].startsWith('/')?tag[1].slice(1):dir+tag[1];
    if(!paths.includes(p)||!permitted(p))throw Error('INVALID_BUNDLE_INPUT');
