@@ -1,6 +1,6 @@
 {
  "schemaVersion": "hsab-protocol-1.0.0",
- "status": "DEVELOPMENT",
+ "status": "DEV_FROZEN",
  "note": "Mission VIII Protokoll. Aenderungen nach status=PREREGISTERED sind verboten (HISTORICAL_ACCURACY_PREREGISTRATION.md).",
  "preregistration": {
   "file": "docs/technical-intelligence/HISTORICAL_ACCURACY_PREREGISTRATION.md"
@@ -86,6 +86,16 @@
   "timeBlock": "QUARTER"
  },
  "selectivity": {
-  "agreementCutoffs": null
+  "agreementCutoffs": {
+   "TOP50": 0.6028,
+   "TOP25": 0.7793,
+   "TOP10": 0.8706
+  },
+  "source": "Quantile von |Agreement| der aufgeloesten FULL-Ereignisse in W_DEV (Stage-1-Siegel 5c16e61dc463b10a), eingefroren vor W_VAL"
+ },
+ "devFreeze": {
+  "date": "2026-10-06",
+  "wDevSeal": "5c16e61dc463b10a",
+  "note": "Nach diesem Freeze keine Aenderung an Outcome-Regeln, Kontrollen, Stufen oder Schwellen ohne Protokollnachtrag."
  }
 }
