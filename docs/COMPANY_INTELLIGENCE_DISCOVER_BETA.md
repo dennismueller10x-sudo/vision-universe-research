@@ -1,6 +1,6 @@
 # Company Intelligence — sichere Übergabe und Discover-Beta
 
-Stand: 6. Oktober 2026. Bestehender PR: [#356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356), weiterhin offen, Draft und unmerged. Arbeit bewusst auf `feature/company-intelligence-discover-beta`, ausgehend von `a64582e346aa305db037e0e1b1c02a2dffb7765a`. Keine Änderung der Produktions-Zugriffskontrollen, Feature-Flags oder Scheduler.
+Stand: 6. Oktober 2026. Bestehender PR: [#356](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/356), weiterhin offen, Draft und unmerged. Arbeit bewusst auf `feature/company-intelligence-discover-beta`, ausgehend von `a64582e346aa305db037e0e1b1c02a2dffb7765a`. Separater Draft zur Prüfung: [PR #455](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/455), Basis ist der unveränderte Rollout-Branch. Keine Änderung der Produktions-Zugriffskontrollen, Feature-Flags oder Scheduler.
 
 ## Hauptbericht
 
@@ -113,7 +113,7 @@ FRESH-RESTORE-VERIFIED: NO
 CUSTOMER-PREVIEW-READY: NO (lokale Produktvorschau vorhanden; externe Kunden-URL fehlt)
 CONTROLLED-BETA-READY: NO
 PUBLIC-ACTIVATION-PERFORMED: NO
-PR: #356 unverändert; isolierter Beta-Branch zur separaten Prüfung
+PR: #356 unverändert; #455 separater Draft auf Basis des Rollout-Branches
 BRANCH: feature/company-intelligence-discover-beta
 LOCAL-HEAD: finaler geprüfter Branch-HEAD, siehe Git-Ref / Abschlussbericht
 REMOTE-HEAD: finaler geprüfter Branch-HEAD, siehe Git-Ref / Abschlussbericht
