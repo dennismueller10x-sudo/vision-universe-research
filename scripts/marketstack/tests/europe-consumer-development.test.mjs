@@ -58,3 +58,14 @@ test('CLI requires private input/output, writes six data reports plus summary/CS
  assert.throws(()=>run([]),/EXPLICIT_PRIVATE_INPUT_OUTPUT_REQUIRED/);const root=mkdtempSync(join(tmpdir(),'eu-report-test-'));
  try{const source=join(root,'input.json'),out=join(root,'out');writeFileSync(source,JSON.stringify(input()));assert.equal(run(['--input',source,'--out',out]).selectedListings,1);assert.equal(readdirSync(out).length,9);assert.equal(statSync(join(out,'europe_consumer_ingestion_status.json')).mode&0o777,0o600);assert.equal(statSync(out).mode&0o777,0o700);symlinkSync(out,join(root,'link'));assert.throws(()=>run(['--input',source,'--out',join(root,'link')]),/SYMLINK_REJECTED/);assert.throws(()=>run(['--input',source,'--out',join(root,'public')]),/PUBLIC_REPORT_OUTPUT_REJECTED/);assert.equal(JSON.parse(readFileSync(join(out,'europe_consumer_request_budget.json'))).scheduleActivated,false);}finally{rmSync(root,{recursive:true,force:true});}
 });
+
+test('a dated older OHLC defect does not invalidate a separately proven current EOD or recent certification window',()=>{
+ const r=row(),data=history(r);data.bars[0].high=1;const cert=certificate(r,data);
+ const out=aggregateDevelopment(input({histories:{[r.listingId]:data},certifications:{[r.listingId]:cert}}));
+ assert.equal(out.outputs.europe_consumer_ingestion_status.listings[0].history.state,'INVALID');
+ assert.equal(out.outputs.europe_consumer_ingestion_status.listings[0].latest.price,12);
+ assert.equal(out.outputs.europe_consumer_ingestion_status.listings[0].freshness.status,'CURRENT');
+ assert.equal(out.outputs.europe_consumer_product_readiness.listings[0].functions.privateCloseChart.status,'BLOCKED');
+ const latestBad=structuredClone(data);latestBad.bars.at(-1).high=1;
+ assert.equal(aggregateDevelopment(input({histories:{[r.listingId]:latestBad}})).outputs.europe_consumer_ingestion_status.listings[0].freshness.status,'INVALID');
+});

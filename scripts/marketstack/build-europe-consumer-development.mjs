@@ -31,14 +31,16 @@ function historyFacts(row,h,asOf){
   if(['open','high','low'].every(k=>b?.[k]!==undefined&&b[k]!==null)&&(!['open','high','low'].every(k=>numeric(b[k])&&b[k]>0)||b.high<Math.max(b.open,b.close,b.low)||b.low>Math.min(b.open,b.close,b.high)))causes.push('PROVIDER_DATA_DEFECT');
  }
  if(!arrayRefs(h.sourceEvidence).length||!h.apiVersion||!h.source)causes.push('PROVIDER_PROVENANCE_UNVERIFIED');
- return {state:causes.length?'INVALID':'AVAILABLE',causes:[...new Set(causes)],bars:bars.length,first:bars[0]?.date||null,last:bars.at(-1)?.date||null,
+ const latest=bars.at(-1),latestCauses=causes.filter(c=>['MAPPING_ERROR','PROVIDER_PROVENANCE_UNVERIFIED'].includes(c));
+ if(!latest||!date(latest.date)||latest.date>asOf||!numeric(latest.close)||latest.close<=0||['open','high','low'].every(k=>latest?.[k]!==undefined&&latest[k]!==null)&&(!['open','high','low'].every(k=>numeric(latest[k])&&latest[k]>0)||latest.high<Math.max(latest.open,latest.close,latest.low)||latest.low>Math.min(latest.open,latest.close,latest.high)))latestCauses.push('PROVIDER_DATA_DEFECT');
+ return {state:causes.length?'INVALID':'AVAILABLE',causes:[...new Set(causes)],latestValid:latestCauses.length===0,latestCauses:[...new Set(latestCauses)],bars:bars.length,first:bars[0]?.date||null,last:bars.at(-1)?.date||null,
   inputSeriesHash:Array.isArray(h.bars)?hash(h.bars):null,basis:h.adjustmentStatus?.priceSeriesType||'UNKNOWN',retrievedAt:h.retrievedAt||null,source:h.source||h.provider||null,apiVersion:h.apiVersion||null,
-  currency:h.currency||null,quoteUnit:h.quoteUnit||null,latestClose:causes.length?null:bars.at(-1)?.close??null,barsForEvaluator:bars};
+  currency:h.currency||null,quoteUnit:h.quoteUnit||null,latestClose:latestCauses.length?null:bars.at(-1)?.close??null,barsForEvaluator:bars};
 }
 function freshness(facts,cert,certMatches){
  const f=certMatches?cert.freshness:null;
  if(facts.state==='MISSING')return {status:'MISSING',cause:'MISSING_HISTORY',latestDate:null,expectedLastSession:null,dataKind:'EOD'};
- if(facts.state==='INVALID')return {status:'INVALID',cause:facts.causes[0],latestDate:facts.last,expectedLastSession:null,dataKind:'EOD'};
+ if(facts.latestValid===false)return {status:'INVALID',cause:facts.latestCauses[0],latestDate:facts.last,expectedLastSession:null,dataKind:'EOD'};
  if(!f||!refs(f.evidence)||!date(f.expectedLastSession)||f.latestDate!==facts.last)return {status:'MISSING',cause:cert&&!certMatches?'CERTIFICATION_INPUT_DRIFT':'MISSING_CALENDAR_BASIS',latestDate:facts.last,dataPresent:true,expectedLastSession:null,dataKind:'EOD'};
  if(f.cause==='PROVIDER_DATA_DEFECT')return {status:'INVALID',cause:f.cause,latestDate:facts.last,expectedLastSession:f.expectedLastSession,evidence:f.evidence,dataKind:'EOD'};
  if(f.status==='READY'&&facts.last===f.expectedLastSession)return {...f,status:'CURRENT',dataKind:'EOD'};
@@ -84,7 +86,7 @@ export function aggregateDevelopment(input){
  }
  const rows=[...selected.values()].sort((a,b)=>a.listingId.localeCompare(b.listingId)),readiness=[],ingestion=[],logos=[];
  for(const row of rows){
-  const h=input.histories?.[row.listingId]||null,facts=historyFacts(row,h,input.asOf),cert=byId(input.certifications,row.listingId),certMatches=facts.state==='AVAILABLE'&&certified(row,h,cert,input.asOf),fresh=freshness(facts,cert,certMatches);
+  const h=input.histories?.[row.listingId]||null,facts=historyFacts(row,h,input.asOf),cert=byId(input.certifications,row.listingId),certMatches=!facts.causes.some(c=>['MAPPING_ERROR','PROVIDER_PROVENANCE_UNVERIFIED'].includes(c))&&certified(row,h,cert,input.asOf),fresh=freshness(facts,cert,certMatches);
   const sourceRefs=arrayRefs(h?.sourceEvidence),mappingRefs=arrayRefs(row.mappingSource),mapped=row.mappingStatus==='VERIFIED'&&mappingRefs.length>0;
   const baseline=evaluateListingReadiness({listing:{...row,currency:row.tradingCurrency},history:h?{...h,bars:facts.barsForEvaluator||[],sourceEvidence:sourceRefs}:{},asOf:input.asOf,metadata:{identityVerified:mapped,identityEvidence:mappingRefs,currencyVerified:mapped&&!!row.tradingCurrency,currencyEvidence:mappingRefs,quoteUnit:row.quoteUnit,
    rights:{privateDevelopment:true,publicDisplay:false,evidence:['User-authorized isolated private DE/EU consumer development']}}});
