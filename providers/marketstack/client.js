@@ -92,7 +92,12 @@ function createMarketstackClient(options = {}) {
           ctx.failure = {...error(reason,response.status,'Marketstack error: ' + code),providerErrorType:sanitize(code),providerErrorCode:sanitize(body.error.code??null)};
           ctx.providerCode = sanitize(code);
         }
-        if(options.onResponse){try{await options.onResponse({body:sanitize(body),endpoint:ctx.endpoint,params:{...ctx.params},apiVersion:'v2',host:'api.marketstack.com',status:response.status,retrievedAt:new Date(now()).toISOString()});}catch(_){ctx.failure=error('responsePersistenceFailed',null,'Private source response could not be persisted','privateStorage');}}
+        const usageHeaders={};
+        for(const name of ['x-ratelimit-limit','x-ratelimit-remaining','x-request-count']){
+          const value=response.headers&&typeof response.headers.get==='function'?response.headers.get(name):null;
+          if(value!==null&&value!==undefined)usageHeaders[name]=sanitize(String(value));
+        }
+        if(options.onResponse){try{await options.onResponse({body:sanitize(body),endpoint:ctx.endpoint,params:{...ctx.params},apiVersion:'v2',host:'api.marketstack.com',status:response.status,usageHeaders,retrievedAt:new Date(now()).toISOString()});}catch(_){ctx.failure=error('responsePersistenceFailed',null,'Private source response could not be persisted','privateStorage');}}
         const header = response.headers && typeof response.headers.get === 'function' ? response.headers.get('retry-after') : null;
         if (header) { const seconds = Number(header); ctx.retryAfterMs = Number.isFinite(seconds) ? seconds*1000 : Math.max(0,Date.parse(header)-now()); }
         // The legacy transport treats 429 as a terminal quota event. Our outer

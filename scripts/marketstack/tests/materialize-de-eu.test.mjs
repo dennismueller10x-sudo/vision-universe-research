@@ -9,6 +9,7 @@ test('canonical multi-index directory and gap-preserving unknown-basis close ser
  const s=closeSeries(r,h,{asOf:'2026-10-06',expectedSession:'2026-10-05'});assert.equal(s.freshness,'STALE');assert.equal(s.changeVerified,false);assert.deepEqual(s.points,h.points);assert.deepEqual(s.quality,h.quality);
  assert.throws(()=>closeSeries(r,{...h,mic:'XNAS'},{asOf:'2026-10-06'}));
  assert.throws(()=>closeSeries(r,{...h,points:[['2026-10-02',1],['2026-10-02',2]]},{asOf:'2026-10-06'}));
+ assert.throws(()=>closeSeries(r,{...h,bars:[{date:'2026-10-01',close:10},{date:'2026-10-02',close:11}]},{asOf:'2026-10-06'}),/COMPETING_HISTORY_PROJECTION/);
  assert.throws(()=>directory([row,row],'2026-10-06'));
 });
 test('private output rejects symlink parents and nested core/data escapes',()=>{

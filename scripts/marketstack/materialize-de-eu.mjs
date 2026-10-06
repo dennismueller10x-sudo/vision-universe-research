@@ -24,6 +24,10 @@ export function closeSeries(row,history,{asOf,expectedSession=null}={}){
  if(!day(asOf)||expectedSession&&!day(expectedSession))throw Error('FIXED_AS_OF_REQUIRED');
  if(!history||history.mic!==row.mic||history.isin!==row.isin||history.currency!==row.tradingCurrency||history.quoteUnit!==row.quoteUnit||history.provider!=='marketstack'||!history.sourceEvidence)throw Error('HISTORY_IDENTITY_EVIDENCE_REQUIRED');
  if(history.adjustmentStatus?.verified===true&&history.adjustmentStatus.priceSeriesType!=='SPLIT_ADJUSTED')throw Error('UNSUPPORTED_VERIFIED_BASIS');
+ if(history.points&&history.bars){
+  const projected=history.bars.map(b=>[b.date,Published.roundClose(b.close)]);
+  if(JSON.stringify(history.points)!==JSON.stringify(projected))throw Error('COMPETING_HISTORY_PROJECTION');
+ }
  const input=history.points||history.bars?.map(b=>[b.date,b.close]);if(!Array.isArray(input)||!input.length)throw Error('MISSING_HISTORY');
  let prev=null;const points=input.map(p=>{
   if(!Array.isArray(p)||!day(p[0])||p[0]>asOf||prev&&p[0]<=prev||!Number.isFinite(p[1])||p[1]<=0)throw Error('INVALID_HISTORY');
