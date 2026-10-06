@@ -330,3 +330,26 @@ Details: [ETF_EU_FREE_SOURCE_SCORECARD.md](ETF_EU_FREE_SOURCE_SCORECARD.md),
 - **Live-Rauchtest**: `vorsorge-live-smoke.yml` meldet sich über das Secret
   `RESEARCH_ACCESS_PASSWORD` am Zugangstor an (Zustand nur im Browser-Speicher) und prüft
   22 Routen auf Desktop und Mobil sowie Deep Links gegen die veröffentlichte Seite.
+
+## 12. Vorsorge V1 (Launch 06.10.2026) und Folge-Backlog
+
+**V1 live:** Planer, Vorsorgelücke, Kostenanalyse, ETF-Screener (USA) mit Datenabdeckungs-Filtern
+(Kursanalyse, Holdings & X-Ray, Kosten), ETF-Detail mit Tabs nur bei vorhandenen Daten,
+Bestandteile, ETF X-Ray, „Was hat sich geändert?“ (Holdings und Kosten laut Prospekt),
+Vergleich, Portfolio X-Ray mit Look-through und Abdeckungsangabe, Überschneidung, Watchlist,
+Monitor, Europa (8.084 Anteilklassen, Suche über ISIN/Name/Anbieter/Handelsplatz/Land,
+UCITS-Zuordnung über ESMA-Register, „Vertrieb in Deutschland gemeldet“, EU-Vergleich der
+Stamm- und Registerdaten), Datenquellen & Datenqualität mit Abdeckung USA/Europa.
+
+**Bewusst offen (kein Launch-Blocker):**
+
+| Priorität | Thema | Stand |
+|---|---|---|
+| P1 | EU-Tageskurse (EOD) | keine frei nutzbare Quelle; Anforderungen in `ETF_EU_MARKET_DATA_GAPS.md` |
+| P1 | UCITS-Holdings | nur Emittenten/Lizenz |
+| P1 | UCITS-Kosten, Fondsvolumen, Replikation | keine freigegebene Quelle (Xetra-Referenzdaten zurückgestellt) |
+| P2 | WKN | keine freigegebene Quelle |
+| P2 | NAV | keine Quelle |
+| P2 | Tracking Difference | braucht Gesamtrendite und lizenzierte Indexstände |
+| P2 | Storage/Auslieferung | `etf-index.json` (2,7 MB, ca. 0,6 MB komprimiert) wird je Sitzung einmal geladen; leichter Suchindex und Auslieferung großer Historien außerhalb des Repositorys (z. B. R2) |
+| P2 | EU-Anteilklassen im Portfolio | Portfolio X-Ray nimmt nur US-Listings; EU-Anteilklassen ohne Holdings würden als „nicht durchleuchtet“ zählen |
