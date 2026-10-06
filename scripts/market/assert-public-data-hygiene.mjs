@@ -320,6 +320,27 @@ for (const parts of scaleTrees) {
   }
 }
 
+/* Eigentuemer-Signale (scripts/market/build-ownership-signals.mjs): nur aus
+   SEC EDGAR (public domain) abgeleitete Kennzahlen. Jede Datei nennt ihre
+   Quelle; ein Kursniveau (etwa der Preis je Aktie einer Insider-Meldung
+   oder die Kursspalte der Fails-to-Deliver-Daten) hat darin nichts zu suchen. */
+const ownershipDir = join(root, "quant", "data", "product", "ownership-signals-v1");
+if (existsSync(ownershipDir)) {
+  for (const sub of ["current", "history"]) {
+    const dir = join(ownershipDir, sub);
+    if (!existsSync(dir)) continue;
+    for (const name of readdirSync(dir).filter((n) => n.endsWith(".json.gz"))) {
+      let payload;
+      try { payload = JSON.parse(gunzipSync(readFileSync(join(dir, name)))); }
+      catch { findings.push(`quant/data/product/ownership-signals-v1/${sub}/${name}: invalid gzip/json`); continue; }
+      if (payload.source !== "SEC_EDGAR") findings.push(`quant/data/product/ownership-signals-v1/${sub}/${name}: source '${payload.source}' statt SEC_EDGAR`);
+      const hits = [];
+      scanForPriceLevels(payload, "", hits);
+      if (hits.length) findings.push(`quant/data/product/ownership-signals-v1/${sub}/${name}: price levels (${hits.slice(0, 3).join(", ")})`);
+    }
+  }
+}
+
 /* ==========================================================================
    UNBELEGTE KURSART DARF NICHT BELEGT KLINGEN (§10/§11 der Nacharbeit)
 
