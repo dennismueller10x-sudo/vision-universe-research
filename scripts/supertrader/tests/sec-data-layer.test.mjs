@@ -48,6 +48,11 @@ test('SDL-T-SIC-01: Kopf-Parser liest ASSIGNED-SIC und das Textformat', () => {
   assert.equal(parseHeaderSic('STANDARD INDUSTRIAL CLASSIFICATION:\tSERVICES-COMPUTER PROCESSING [7374]'), '7374');
   assert.equal(parseHeaderSic('<ASSIGNED-SIC>100'), '0100');
   assert.equal(parseHeaderSic('kein Kopf'), null);
+  assert.equal(parseHeaderSic('<ASSIGNED-SIC>0000'), null, 'SIC 0000 = unbekannt');
+  const multi = '<FILER>\n<CIK>0000041091\n<ASSIGNED-SIC>4911\n</FILER>\n<FILER>\n<CIK>0001004155\n<ASSIGNED-SIC>4924\n</FILER>';
+  assert.equal(parseHeaderSic(multi, '0001004155'), '4924', 'Block des eigenen Emittenten, nicht der erste');
+  assert.equal(parseHeaderSic(multi, '41091'), '4911');
+  assert.equal(parseHeaderSic(multi, '999'), null, 'Emittent fehlt im Kopf -> unbekannt');
 });
 
 test('SDL-T-SIC-02: SIC point-in-time – kein Rueckfuellen, kein heutiger Wert in der Vergangenheit', () => {
@@ -80,6 +85,8 @@ test('SDL-T-SIC-04: Bisektion ueberspringt unlesbare Koepfe; gleiche Enden = ein
 test('SDL-T-SIC-05: periodische Einreichungen ohne Aenderungen (/A) und ohne doppelte Accessions', () => {
   const f = periodicFilings([page([['10-K', '2012-02-01', 'k1'], ['10-K/A', '2012-03-01', 'k2'], ['10-Q', '2012-05-01', 'q1'], ['8-K', '2012-05-02', 'e1'], ['10-Q', '2006-05-01', 'old']]), page([['10-K', '2012-02-01', 'k1']])], 2010);
   assert.deepEqual(f.map((x) => x.accession), ['k1', 'q1']);
+  const ksb = periodicFilings([page([['10-KSB', '2007-03-01', 's1'], ['10-QSB', '2007-05-01', 's2'], ['10-KSB/A', '2007-06-01', 's3']])], 2006);
+  assert.deepEqual(ksb.map((x) => x.accession), ['s1', 's2'], 'Kleinemittenten-Formulare bis 2008');
 });
 
 test('SDL-T-IND-01: Gruppenstaerke ist VU-Formalisierung ohne Defaults, leave-one-out, Fallback, Schalen ausgeschlossen', () => {

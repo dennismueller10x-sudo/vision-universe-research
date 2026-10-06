@@ -15,6 +15,8 @@ export const EV = Object.freeze({ FILED: 0, ACCN: 1, FORM: 2, TYPE: 3, REPORT: 4
 export const EVENT = Object.freeze({ EARNINGS_RELEASE: 'EARNINGS_RELEASE', AMENDMENT: 'EARNINGS_RELEASE_AMENDMENT', PERIODIC_REPORT: 'PERIODIC_REPORT', DUPLICATE: 'EARNINGS_RELEASE_DUPLICATE' });
 const PERIODIC = new Set(['10-Q', '10-K', '10-QT', '10-KT', '20-F', '40-F']);
 // Gleiche Ergebnismitteilung mehrfach eingereicht (z. B. AAPL 2005-01-11/12): fruehestes Ereignis zaehlt.
+// Bekannte Grenze: eine echte Mitteilung binnen 10 Tagen nach einer Vorab-Mitteilung gilt als Duplikat (Datenklempnerei,
+// wirkt nur auf Protokolle, nicht auf Regeln).
 export const DUPLICATE_WINDOW_DAYS = 10;
 
 const hasItem = (items, code) => String(items || '').split(',').map((s) => s.trim()).includes(code);

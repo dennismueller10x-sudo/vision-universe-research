@@ -6,15 +6,28 @@
 // SIC(cik, d) = SIC der juengsten Einreichung mit filingDate < d. Vor der ersten bekannten Einreichung: unbekannt
 // (kein Rueckfuellen = kein Zukunftswissen). Umklassifizierungen ohne Einreichung werden erst mit der naechsten sichtbar.
 export const SCHEMA = 'vu-sec-industry-sic-1.0.0';
+// 6770 Blank Checks (SPAC/Mantel); 6799 'Investors, NEC' ist breiter als Mantelgesellschaften, wird aber wie in
+// der Phase-2B-Gruppenanalyse (Worker D) ausgeschlossen, weil dort ueberwiegend Vehikel ohne operatives Geschaeft liegen.
 export const SPAC_SHELL_SIC = Object.freeze(['6770', '6799']);
 
-export function parseHeaderSic(text) {
+// Kombinierte Einreichungen (z. B. Versorger-Mutter + Toechter) fuehren mehrere FILER-Bloecke: es zaehlt der Block
+// mit der CIK des Emittenten. Ohne FILER-Bloecke (aeltere Koepfe) der erste Wert. SIC 0000 = unbekannt.
+export function parseHeaderSic(text, cik) {
   const s = String(text || '');
-  let m = s.match(/<ASSIGNED-SIC>\s*(\d{3,4})/i);
-  if (m) return m[1].padStart(4, '0');
-  m = s.match(/STANDARD INDUSTRIAL CLASSIFICATION:[^\[\n]*\[(\d{3,4})\]/i);
-  if (m) return m[1].padStart(4, '0');
-  return null;
+  const one = (t) => {
+    let m = t.match(/<ASSIGNED-SIC>\s*(\d{3,4})/i);
+    if (!m) m = t.match(/STANDARD INDUSTRIAL CLASSIFICATION:[^\[\n]*\[(\d{3,4})\]/i);
+    if (!m) return null;
+    const v = m[1].padStart(4, '0');
+    return v === '0000' ? null : v;
+  };
+  const blocks = s.split(/<FILER>|FILER:\s*\n/i).slice(1);
+  if (blocks.length > 1 && cik !== undefined && cik !== null) {
+    const want = Number(cik);
+    const own = blocks.find((b) => { const m = b.match(/<CIK>\s*(\d+)|CENTRAL INDEX KEY:\s*(\d+)/i); return m && Number(m[1] || m[2]) === want; });
+    return own ? one(own) : null;
+  }
+  return one(s);
 }
 
 export function sicAt(history, d) {
@@ -25,7 +38,7 @@ export function sicAt(history, d) {
 
 // Gruppenschluessel: 2 = Hauptgruppe, 3 = Industriegruppe, 4 = Industrie.
 export function industryGroup(sic, level) {
-  if (!sic || !/^\d{4}$/.test(sic)) return null;
+  if (!sic || !/^\d{4}$/.test(sic) || sic === '0000') return null;
   if (![2, 3, 4].includes(level)) throw new Error('industryGroup: level 2|3|4');
   return sic.slice(0, level);
 }
@@ -48,7 +61,8 @@ export function groupStrength(members, selfId, selfSic, opts) {
   return null;
 }
 
-// Kandidaten fuer das Kopflesen: alle periodischen Originaleinreichungen (10-K/10-Q/20-F/40-F, ohne /A) ab fromYear,
+// Kandidaten fuer das Kopflesen: alle periodischen Originaleinreichungen (10-K/10-Q, bis 2008 auch 10-KSB/10-QSB,
+// 20-F/40-F; ohne /A) ab fromYear,
 // aufsteigend nach Datum, ohne doppelte Accessions.
 export function periodicFilings(pages, fromYear) {
   const seen = new Set(), out = [];
@@ -56,7 +70,7 @@ export function periodicFilings(pages, fromYear) {
     const n = Array.isArray(p?.form) ? p.form.length : 0;
     for (let i = 0; i < n; i++) {
       const f = p.form[i], d = p.filingDate?.[i], a = p.accessionNumber?.[i];
-      if (!d || !a || !/^(10-K|10-Q|20-F|40-F)$/.test(f) || seen.has(a) || Number(d.slice(0, 4)) < fromYear) continue;
+      if (!d || !a || !/^(10-K|10-Q|10-KSB|10-QSB|20-F|40-F)$/.test(f) || seen.has(a) || Number(d.slice(0, 4)) < fromYear) continue;
       seen.add(a);
       out.push({ filingDate: d, accession: a, form: f });
     }

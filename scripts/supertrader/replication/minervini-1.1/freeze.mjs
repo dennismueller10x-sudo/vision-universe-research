@@ -10,6 +10,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 import { SCHEMA as SEC_SCHEMA, ROW } from '../minervini/sec-facts.mjs';
 import { SCHEMA as EVENTS_SCHEMA, EV } from '../../data-layer/sec/earnings-events.mjs';
 import { SCHEMA as SIC_SCHEMA } from '../../data-layer/sec/industry-sic.mjs';
@@ -37,7 +38,14 @@ export const REUSED_FILES = Object.freeze([
   'scripts/supertrader/replication/minervini/measure.mjs',
   'scripts/supertrader/data-layer/sec/earnings-events.mjs',
   'scripts/supertrader/data-layer/sec/industry-sic.mjs',
+  // Erzeuger des protokollierten Datenlayers (Zeitraum, CIK-Quelle) und das 2A-Regelbuch: 1.1 liest daraus
+  // checkRsDefinition (2A-P) und pit.quarterDays/yearDays (sec-facts bindet 2A-P beim Import; Werte in 1.1 gleich,
+  // Test MR11-T-PARAMS-DELTA).
+  'scripts/supertrader/data-layer/sec/build-sec-events.mjs',
+  'scripts/supertrader/fidelity/MINERVINI-CANONICAL-REPLICATION.json',
 ]);
+// Gemeinsame Bausteine anderer Produkte: nicht im Code-Hash (sonst blockiert jede fremde Aenderung die Tests), aber
+// measure.mjs bricht ab, wenn sich einer seit dem Freeze geaendert hat (fail closed, Red-Team M1).
 export const SHARED_DEPENDENCIES = Object.freeze([
   'scripts/supertrader/engine/indicators.mjs',
   'quant/engines/return-series.js',
@@ -104,6 +112,9 @@ async function main() {
   if (!argv.includes('--write')) { console.error('Aufruf: --check | --write --commit <sha>'); process.exit(2); }
   const i = argv.indexOf('--commit'); const commit = i >= 0 ? argv[i + 1] : null;
   if (!commit || !/^[0-9a-f]{7,40}$/.test(commit)) { console.error('--commit <sha> fehlt'); process.exit(2); }
+  const head = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
+  if (!head.startsWith(commit)) { console.error(`--commit ${commit} ist nicht HEAD (${head.slice(0, 12)})`); process.exit(2); }
+  if (execFileSync('git', ['status', '--porcelain'], { cwd: root, encoding: 'utf8' }).trim()) { console.error('Arbeitsverzeichnis nicht sauber: erst committen'); process.exit(2); }
   if (fs.existsSync(FREEZE_PATH) && JSON.parse(fs.readFileSync(FREEZE_PATH, 'utf8')).status === 'FROZEN') { console.error('Freeze 1.1.0 existiert bereits und ist unveraenderlich; neue Version noetig.'); process.exit(2); }
   const h = computeHashes();
   const rb = JSON.parse(fs.readFileSync(R(RULEBOOK_REL), 'utf8'));

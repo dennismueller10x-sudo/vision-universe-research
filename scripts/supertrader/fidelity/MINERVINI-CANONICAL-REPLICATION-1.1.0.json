@@ -36,7 +36,8 @@
       "PARAMETER_NOT_PUBLIC": "Regel belegt, aber ohne oeffentliche Zahl; nicht erfunden.",
       "UNRESOLVED_NOT_ADOPTED": "Keine belastbare Minervini-Fundstelle; nicht uebernommen.",
       "OUT_OF_SCOPE": "Bewusst ausgeschlossen (Margin, Short) - als Fidelity-Verlust ausgewiesen.",
-      "MEASUREMENT_SCOPE": "Keine Minervini-Regel: VU-Messrahmen (Universum, Kosten, Ausfuehrung), offen ausgewiesen."
+      "MEASUREMENT_SCOPE": "Keine Minervini-Regel: VU-Messrahmen (Universum, Kosten, Ausfuehrung), offen ausgewiesen.",
+      "RECORDED_OTHER_TAXONOMY": "Daten point-in-time vorhanden, aber in einer anderen Taxonomie als die Quelle (SIC statt Minervinis Branchen); nur protokolliert, kein Filter."
     },
     "implementation": {
       "IMPLEMENTED": "Regel wirkt im Code.",
@@ -96,7 +97,7 @@
       "primary": false,
       "access": "R10-Abruf (verschluesselt)",
       "tier": "NOTES",
-      "era": "LATER_PUBLIC"
+      "era": "BOOK_ERA"
     },
     {
       "id": "SRC-INT-STOCKOPEDIA-2018",
@@ -213,7 +214,7 @@
       "primary": false,
       "access": "Nur als Hinweis auf Widersprueche; nie alleinige Grundlage einer Regel",
       "tier": "SECONDARY",
-      "era": "REGULATION"
+      "era": "SECONDARY_UNDATED"
     },
     {
       "id": "SRC-SEC-FILING-RULES",
@@ -1608,7 +1609,7 @@
       ],
       "sourceConfidence": "MEDIUM",
       "provenanceClass": "ORIGINAL_INTERPRETATION",
-      "reproducibility": "REPRODUCIBLE_FORMALIZED",
+      "reproducibility": "RECORDED_OTHER_TAXONOMY",
       "requiredData": [
         "Branchenzugehoerigkeit point-in-time",
         "RS-Querschnitt"
@@ -2396,14 +2397,14 @@
           "pf.initialExposureCeiling": {
             "value": 0.25,
             "unit": "fraction_of_equity",
-            "provenance": "ORIGINAL",
-            "rationale": "'enter the market with 25% exposure' (SRC-X-2022-07-18-EXPOSURE)"
+            "provenance": "ORIGINAL_INTERPRETATION",
+            "rationale": "'enter the market with 25% exposure' (SRC-X-2022-07-18-EXPOSURE); Rechenbeispiel, daher Interpretation (gleiche Massgabe wie MR-SIZ-02)"
           },
           "pf.initialMaxPositionPct": {
             "value": 0.05,
             "unit": "fraction_of_equity",
-            "provenance": "ORIGINAL",
-            "rationale": "'five 5% positions' (SRC-X-2022-07-18-EXPOSURE)"
+            "provenance": "ORIGINAL_INTERPRETATION",
+            "rationale": "'five 5% positions' (SRC-X-2022-07-18-EXPOSURE); Rechenbeispiel, daher Interpretation"
           },
           "pf.fullExposureCeiling": {
             "value": 1,

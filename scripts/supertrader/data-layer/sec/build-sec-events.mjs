@@ -5,7 +5,9 @@
 //
 //   ST_WINDOW=DEV|HOLDOUT node scripts/supertrader/data-layer/sec/build-sec-events.mjs --out DIR [--limit N]
 //
-// CIK-Zuordnung: bestehender Speicher sec-pit-r12 (sonst r11) desselben Fensters – keine neue Namenszuordnung.
+// CIK-Zuordnung: bestehender Speicher sec-pit-r12 (sonst r11) desselben Fensters, ergaenzt um die CIKs delisteter
+// Listings aus sec-delist-r13 (dort auch ohne XBRL-Gewinnreihe) – keine neue Namenszuordnung. Restluecke: Listings,
+// deren Namenszuordnung XBRL-Daten verlangte, fehlen weiter (eher fruehe HOLDOUT-Jahre, kleine Emittenten).
 // SEC-Fairness: hoechstens ca. 8 Anfragen je Sekunde, eigener User-Agent mit Kontakt. Log nur Zaehlwerte.
 import fs from 'node:fs';
 import os from 'node:os';
@@ -14,12 +16,14 @@ import zlib from 'node:zlib';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import * as L from '../../validation/lib.mjs';
-import { PIT_KEY, PIT_KEY_R12 } from '../../validation/sec-pit.mjs';
+import { PIT_KEY, PIT_KEY_R12, DELIST_KEY } from '../../validation/sec-pit.mjs';
 import { extractEarningsEvents, EV, EVENT, SCHEMA as EVENTS_SCHEMA } from './earnings-events.mjs';
 import { parseHeaderSic, periodicFilings, sicHistoryByBisection, SCHEMA as SIC_SCHEMA } from './industry-sic.mjs';
 
 export const STORE_KEY = 'sec-events-sic-1.json.gz';
 export const REQUEST_INTERVAL_MS = 125;
+// Abbruch ohne Ablage, wenn mehr als dieser Anteil der CIKs fehlschlaegt (kein stilles Teilergebnis).
+export const MAX_ERROR_SHARE = 0.01;
 const require = createRequire(import.meta.url);
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..', '..', '..', '..');
@@ -29,13 +33,15 @@ const UA = 'VisionUniverse-Research/1.0 (point-in-time research data; info@visio
 
 let last = 0;
 async function secGet(url, kind) {
-  for (let attempt = 1; attempt <= 4; attempt++) {
+  for (let attempt = 1; attempt <= 6; attempt++) {
     const wait = last + REQUEST_INTERVAL_MS - Date.now();
     if (wait > 0) await new Promise((r) => setTimeout(r, wait));
     last = Date.now();
     const r = await fetch(url, { headers: { 'User-Agent': UA, 'Accept-Encoding': 'gzip, deflate' } });
     if (r.status === 404) return null;
     if (r.ok) return kind === 'json' ? r.json() : r.text();
+    // SEC beantwortet zu schnelle Abrufe mit 403 und sperrt etwa 10 Minuten: dann lange warten statt aufgeben.
+    if (r.status === 403) { await new Promise((res) => setTimeout(res, 120000 * attempt)); continue; }
     if (r.status === 429 || r.status >= 500) { await new Promise((res) => setTimeout(res, 2000 * attempt)); continue; }
     throw new Error(`${url}: ${r.status}`);
   }
@@ -63,12 +69,17 @@ async function main() {
   }
   if (!mapping) { console.error('Kein bestehender sec-pit-Speicher mit CIK-Zuordnung in diesem Fenster.'); process.exit(3); }
   const listingCik = Object.fromEntries(Object.entries(mapping).filter(([, v]) => v && v.cik).map(([id, v]) => [id, pad(v.cik)]));
+  const fromPit = Object.keys(listingCik).length;
+  budget.consumeClassB(1, 'GET ' + DELIST_KEY);
+  const dbuf = await driver.get(mine.seriesPrefix + DELIST_KEY);
+  let fromDelist = 0;
+  if (dbuf) for (const [id, v] of Object.entries(JSON.parse(zlib.gunzipSync(dbuf).toString('utf8')))) if (v && v.cik && !listingCik[id]) { listingCik[id] = pad(v.cik); fromDelist++; }
   let ciks = [...new Set(Object.values(listingCik))].sort();
   if (LIMIT) ciks = ciks.slice(0, LIMIT);
   // Ein Jahr vor dem Aufwaermbeginn, damit am ersten Fenstertag eine SIC und die letzte Mitteilung bekannt sind.
   const fromDate = L.addDays(L.WINDOW.warmupFrom, -366), toDate = L.WINDOW.to;
   const fromYear = Number(fromDate.slice(0, 4));
-  log(`CIK-Zuordnung aus ${from}: ${Object.keys(listingCik).length} Listings, ${ciks.length} CIKs, Zeitraum ${fromDate}..${toDate}`);
+  log(`CIK-Zuordnung: ${fromPit} Listings aus ${from}, ${fromDelist} zusaetzlich aus ${DELIST_KEY}; ${ciks.length} CIKs, Zeitraum ${fromDate}..${toDate}`);
   const byCik = {};
   const stats = { ciks: ciks.length, noSubmissions: 0, pagesFetched: 0, headersRead: 0, headersNoSic: 0, withEvents: 0, releases: 0, amendments: 0, duplicates: 0, periodic: 0, withSic: 0, withSicChange: 0, sicChanges: 0, errors: 0 };
   let k = 0;
@@ -89,11 +100,12 @@ async function main() {
       const sic = await sicHistoryByBisection(filings, async (f) => {
         stats.headersRead++;
         const txt = await secGet(`https://www.sec.gov/Archives/edgar/data/${cikNum}/${f.accession.replace(/-/g, '')}/${f.accession}.hdr.sgml`, 'text');
-        const s = parseHeaderSic(txt);
+        const s = parseHeaderSic(txt, cik);
         if (!s) stats.headersNoSic++;
         return s;
       });
-      byCik[cik] = { events, sic, currentSic: sub.sic ? String(sub.sic).padStart(4, '0') : null };
+      // Bewusst NICHT gespeichert: die heutige SIC aus submissions (Rueckschaufehler fuer spaetere Nutzer).
+      byCik[cik] = { events, sic };
       if (events.length) stats.withEvents++;
       for (const e of events) {
         if (e[EV.TYPE] === EVENT.EARNINGS_RELEASE) stats.releases++;
@@ -108,7 +120,9 @@ async function main() {
     if (++k % 250 === 0) log(`verarbeitet ${k}/${ciks.length}`);
   }
   log(`Ergebnis: ${JSON.stringify(stats)}`);
-  const payload = { schema: { events: EVENTS_SCHEMA, sic: SIC_SCHEMA }, window: L.WINDOW_NAME, cikSource: from, range: [fromDate, toDate], builtAt: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, listingCik, byCik };
+  stats.listingsFromPit = fromPit; stats.listingsFromDelist = fromDelist;
+  const payload = { schema: { events: EVENTS_SCHEMA, sic: SIC_SCHEMA }, window: L.WINDOW_NAME, cikSource: [from, DELIST_KEY], range: [fromDate, toDate], builtAt: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, stats, listingCik, byCik };
+  if (stats.errors > MAX_ERROR_SHARE * ciks.length) { console.error(`Zu viele Fehler (${stats.errors}/${ciks.length}): keine Ablage.`); process.exit(4); }
   if (LIMIT) { log('--limit: kein Ablegen im Eimer (Probelauf)'); }
   else {
     budget.consumeClassA(1, 'PUT sec events/sic');

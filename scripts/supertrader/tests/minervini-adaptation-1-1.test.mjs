@@ -143,8 +143,14 @@ test('MR11-T-SIM-EQUIV: mit den 2A-Stufenwerten handelt die 1.1-Simulation ident
 test('MR11-T-IND-RECORD: Rang in der SIC-Gruppe point-in-time, nur Protokoll; unbekannte SIC und Mantel ausgewiesen', () => {
   const m = [{ id: 'S', sic: '7372', rsPct: 90 }, { id: 'a', sic: '7371', rsPct: 95 }, { id: 'b', sic: '7374', rsPct: 70 }, { id: 'c', sic: '7379', rsPct: 60 }, { id: 'd', sic: '7373', rsPct: 50 }, { id: 'e', sic: '7375', rsPct: 99 }, { id: 'x', sic: null, rsPct: 100 }];
   const r = industryRecord(m, 'S', P);
-  assert.equal(r.known, true); assert.equal(r.level, 3); assert.equal(r.group, '737'); assert.equal(r.rank, 3); assert.equal(r.topN, true); assert.equal(r.groupSize, 6);
+  assert.equal(r.known, true); assert.equal(r.level, 3); assert.equal(r.group, '737'); assert.equal(r.rank, 3); assert.equal(r.topN, true); assert.equal(r.groupSize, 5, 'ohne den Titel selbst');
   assert.equal(industryRecord(m, 'x', P).reason, 'SIC_UNKNOWN_AT_DATE');
+  assert.equal(industryRecord(m, 'nicht-im-querschnitt', P).reason, 'RS_UNKNOWN');
+  // Aktiengattungen: gleiche CIK zaehlt einmal; Gattung der eigenen Firma ist kein Vergleichstitel.
+  const g = [{ id: 'S', cik: 'c0', sic: '7372', rsPct: 90 }, { id: 'S2', cik: 'c0', sic: '7372', rsPct: 99 }, { id: 'a', cik: 'c1', sic: '7371', rsPct: 95 }, { id: 'a2', cik: 'c1', sic: '7371', rsPct: 96 },
+    { id: 'b', cik: 'c2', sic: '7374', rsPct: 70 }, { id: 'c', cik: 'c3', sic: '7379', rsPct: 60 }, { id: 'd', cik: 'c4', sic: '7373', rsPct: 50 }, { id: 'e', cik: 'c5', sic: '7375', rsPct: 40 }];
+  const rg = industryRecord(g, 'S', P);
+  assert.equal(rg.groupSize, 5); assert.equal(rg.rank, 2);
   assert.equal(industryRecord([{ id: 'z', sic: '6770', rsPct: 1 }], 'z', P).reason, 'SPAC_SHELL');
   assert.equal(industryRecord([{ id: 'S', sic: '1000', rsPct: 50 }], 'S', P).reason, 'GROUP_TOO_SMALL');
   const rule = RULEBOOK.rules.find((x) => x.id === 'MR-SEPA-12');
@@ -155,9 +161,9 @@ test('MR11-T-IND-RECORD: Rang in der SIC-Gruppe point-in-time, nur Protokoll; un
 
 test('MR11-T-ERN-RECORD: Mitteilungen waehrend der Haltedauer (ex post) zaehlen nur Original-8-K mit entry <= Einreichung < exit', () => {
   const ev = [['2021-01-10', 'a', '8-K', 'EARNINGS_RELEASE'], ['2021-01-12', 'b', '8-K', 'EARNINGS_RELEASE_DUPLICATE'], ['2021-02-01', 'c', '8-K/A', 'EARNINGS_RELEASE_AMENDMENT'], ['2021-03-01', 'd', '8-K', 'EARNINGS_RELEASE']];
-  assert.equal(releasesDuringHold(ev, '2021-01-10', '2021-03-01'), 1);
-  assert.equal(releasesDuringHold(ev, '2021-01-11', '2021-03-02'), 1);
-  assert.equal(releasesDuringHold(ev, '2021-01-01', '2021-04-01'), 2);
+  assert.deepEqual(releasesDuringHold(ev, '2021-01-10', '2021-03-01'), { strict: 0, entryDay: 1, exitDay: 1, inclusive: 2 }, 'Mitteilung am Ausstiegstag (Gap) getrennt gezaehlt');
+  assert.deepEqual(releasesDuringHold(ev, '2021-01-11', '2021-03-02'), { strict: 1, entryDay: 0, exitDay: 0, inclusive: 1 });
+  assert.equal(releasesDuringHold(ev, '2021-01-01', '2021-04-01').strict, 2);
   const rule = RULEBOOK.rules.find((x) => x.id === 'MR-ERN-01');
   assert.equal(rule.implementation.status, 'NOT_IMPLEMENTED'); assert.equal(rule.reproducibility, 'NOT_REPRODUCIBLE_WITH_CURRENT_DATA');
 });
@@ -186,7 +192,7 @@ test('MR11-T-ERA: Methodenaera 2013-2022; kein wirkender Parameter beruht allein
   for (const r of RULEBOOK.rules) {
     if (r.implementation.status !== 'IMPLEMENTED' || !Object.keys(r.formalization.parameters).length || r.layer !== 'A_CANONICAL') continue;
     const eras = r.sources.map((id) => byId.get(id).era);
-    assert.ok(eras.some((e) => e !== 'CURRENT_PUBLIC'), `${r.id} beruht nur auf CURRENT_PUBLIC`);
+    assert.ok(eras.some((e) => e !== 'CURRENT_PUBLIC' && e !== 'SECONDARY_UNDATED'), `${r.id} beruht nur auf CURRENT_PUBLIC/Sekundaerem`);
   }
   const conflicts = JSON.parse(read('scripts/supertrader/fidelity/MINERVINI-SOURCE-CONFLICTS.json'));
   assert.equal(conflicts.methodEra.id, RULEBOOK.methodEra.id);

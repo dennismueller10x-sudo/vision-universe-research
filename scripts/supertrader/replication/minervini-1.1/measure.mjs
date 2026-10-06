@@ -35,10 +35,21 @@ function segmentOf(seg, a, scan) {
     delisted: !!seg.delisted, delistClass: seg.delistClass || null, setups: scan.setups };
 }
 
-// Ergebnis-Mitteilungen (8-K 2.02, ohne Aenderungen/Duplikate) mit entry <= Einreichung < exit. Ex post, nur Beschreibung.
+// Ergebnis-Mitteilungen (8-K 2.02, ohne Aenderungen/Duplikate) waehrend der Haltedauer. Ex post, nur Beschreibung.
+// Das Einreichungsdatum traegt keine Uhrzeit, die verlaesslich waere (acceptanceDateTime teils versetzt): Mitteilungen
+// am Einstiegs- oder Ausstiegstag sind mehrdeutig (vor oder nach dem Kauf / vor dem Gap-Ausstieg) und werden getrennt
+// gezaehlt. strict = entry < Einreichung < exit; inclusive = entry <= Einreichung <= exit.
 export function releasesDuringHold(events, entryDate, exitDate) {
-  return (events || []).filter((e) => e[EV.TYPE] === EVENT.EARNINGS_RELEASE && e[EV.FILED] >= entryDate && e[EV.FILED] < exitDate).length;
+  const rel = (events || []).filter((e) => e[EV.TYPE] === EVENT.EARNINGS_RELEASE);
+  return {
+    strict: rel.filter((e) => e[EV.FILED] > entryDate && e[EV.FILED] < exitDate).length,
+    entryDay: rel.filter((e) => e[EV.FILED] === entryDate).length,
+    exitDay: rel.filter((e) => e[EV.FILED] === exitDate && exitDate !== entryDate).length,
+    inclusive: rel.filter((e) => e[EV.FILED] >= entryDate && e[EV.FILED] <= exitDate).length,
+  };
 }
+// Mindestabdeckung des Datenlayers (Anteil CIKs ohne Abruffehler); sonst kein Messlauf (fail closed).
+export const MIN_LAYER_COVERAGE = 0.99;
 
 async function main() {
   const argv = process.argv.slice(2);
@@ -51,6 +62,7 @@ async function main() {
 
   const freeze = verifyFreeze();
   if (!freeze.ok) { console.error('Kein Messlauf ohne gueltigen Fidelity Freeze 1.1.0: ' + freeze.reason); process.exit(3); }
+  if (freeze.sharedChanged.length) { console.error('Gemeinsame Bausteine seit dem Freeze geaendert: ' + freeze.sharedChanged.join(', ')); process.exit(3); }
   log(`Freeze ok: Regelbuch ${freeze.rulebookHash.slice(0, 12)}, Code ${freeze.codeHash.slice(0, 12)}, Engine ${ENGINE.id}@${ENGINE.version} (${CLASSIFICATION.canonicalName})`);
   if (!checkRsDefinition(fs.readFileSync(path.join(root, 'scripts/supertrader/validation/analyze-methods.mjs'), 'utf8'))) { console.error('RS-Definition der Datenschicht weicht vom Regelbuch ab (MR-TT-08).'); process.exit(3); }
 
@@ -66,13 +78,14 @@ async function main() {
   const ebuf = await driver.get(mine.seriesPrefix + EVENTS_STORE_KEY);
   if (!ebuf) { console.error(`SEC-Datenlayer ${EVENTS_STORE_KEY} fehlt (erst Modus sec-events laufen lassen).`); process.exit(3); }
   const ev = JSON.parse(zlib.gunzipSync(ebuf).toString('utf8'));
+  if (!ev.stats || !(ev.stats.ciks > 0) || (ev.stats.ciks - ev.stats.errors) / ev.stats.ciks < MIN_LAYER_COVERAGE) { console.error('SEC-Datenlayer unvollstaendig oder ohne Statistik (neu bauen).'); process.exit(3); }
   const cikOf = (segId) => ev.listingCik[segId.split('#')[0]] || null;
   const dataOf = (segId) => { const c = cikOf(segId); return c ? ev.byCik[c] || null : null; };
   log(`SEC-Erstmeldungen ${Object.keys(facts).length} Listings; Datenlayer ${Object.keys(ev.byCik).length} CIKs (${ev.schema.events}, ${ev.schema.sic})`);
 
   const scanTotals = { evaluated: 0, universe: 0, trend: 0, vcp: 0, setups: 0, rejected: {} };
   const portfolioSegs = [], signals = [];
-  const rsByDate = new Map(); // Datum -> [{id, rsPct}] nur fuer Setup-Tage (zweiter Durchlauf)
+  const setupDates = new Set(); // Querschnitt nur an Setup-Tagen (zweiter Durchlauf)
   let withFund = 0, k = 0;
   for (const seg of segs) {
     const a = L.adjustSeries(seg.raw);
@@ -87,43 +100,51 @@ async function main() {
     if (scan.setups.size) {
       const s = segmentOf(seg, a, scan);
       portfolioSegs.push(s);
-      for (const t of scan.setups.keys()) rsByDate.set(a.date[t], null);
+      for (const t of scan.setups.keys()) setupDates.add(a.date[t]);
       for (const x of simulateSignals(s, P)) if (x.entryDate >= W.from && x.entryDate <= W.to) signals.push(x);
     }
     if (++k % 1000 === 0) log(`Titel ${k}/${segs.length}`);
   }
   log(`Setups ${scanTotals.setups}, Titel mit Setup ${portfolioSegs.length}, Titel mit SEC-Daten ${withFund}/${segs.length}`);
 
-  // MR-SEPA-12 (Protokoll): Querschnitt an Setup-Tagen - RS-Perzentil und SIC point-in-time aller Titel.
-  for (const d of rsByDate.keys()) rsByDate.set(d, []);
-  for (const seg of segs) {
-    const rs = seg.cross?.rs || [], dates = L.adjustSeries(seg.raw).date; // cross.rs ist auf die bereinigten Daten ausgerichtet
-    const hist = dataOf(seg.id)?.sic || null;
-    for (let i = 0; i < dates.length; i++) {
-      const bucket = rsByDate.get(dates[i]);
-      if (bucket && Number.isFinite(rs[i])) bucket.push({ id: seg.id, sic: hist ? sicAt(hist, dates[i]) : null, rsPct: rs[i] });
+  // MR-SEPA-12 (Protokoll): Querschnitt an Setup-Tagen - RS-Perzentil (kompakt: Segmentindex + Wert) aller Titel;
+  // SIC point-in-time erst bei der Auswertung je Tag. cross.rs ist 1:1 auf seg.raw ausgerichtet (adjustSeries).
+  const buckets = new Map([...setupDates].map((d) => [d, { idx: [], rs: [] }]));
+  segs.forEach((seg, si) => {
+    const rs = seg.cross?.rs || [];
+    for (let i = 0; i < seg.raw.length; i++) { const b = buckets.get(seg.raw[i].date); if (b && Number.isFinite(rs[i])) { b.idx.push(si); b.rs.push(rs[i]); } }
+  });
+  const setupsByDate = new Map();
+  for (const s of portfolioSegs) for (const t of s.setups.keys()) (setupsByDate.get(s.date[t]) || setupsByDate.set(s.date[t], []).get(s.date[t])).push([s]);
+  const ind = { setups: 0, known: 0, topN: 0, reasons: {} }, industryOf = new Map();
+  for (const [d, list] of setupsByDate) {
+    const b = buckets.get(d);
+    const members = b.idx.map((si, q) => { const id = segs[si].id, data = dataOf(id); return { id, cik: cikOf(id), sic: data ? sicAt(data.sic, d) : null, rsPct: b.rs[q] }; });
+    for (const [s] of list) {
+      const rec = industryRecord(members, s.id, P);
+      industryOf.set(`${s.id}|${d}`, rec);
+      ind.setups++;
+      if (rec.known) { ind.known++; if (rec.topN) ind.topN++; } else ind.reasons[rec.reason] = (rec.reason in ind.reasons ? ind.reasons[rec.reason] : 0) + 1;
     }
+    buckets.delete(d);
   }
-  const ind = { setups: 0, known: 0, topN: 0, reasons: {} };
-  for (const s of portfolioSegs) for (const [t, setup] of s.setups) {
-    const rec = industryRecord(rsByDate.get(s.date[t]) || [], s.id, P);
-    setup.industry = rec;
-    ind.setups++;
-    if (rec.known) { ind.known++; if (rec.topN) ind.topN++; } else ind.reasons[rec.reason] = (rec.reason in ind.reasons ? ind.reasons[rec.reason] : 0) + 1;
-  }
-  rsByDate.clear();
 
   const cal = calendar.filter((d) => d >= W.from && d <= W.to);
   const run = simulatePortfolio(portfolioSegs, cal, P);
   const spyByDate = new Map(spyTR.map((p) => [p.date, p.value]));
   const pf = curveStats(run.curve), spy = benchmarkStats(spyTR, cal[0], cal[cal.length - 1]);
   const stageDays = run.curve.reduce((m, c) => { m[c.stage] = (c.stage in m ? m[c.stage] : 0) + 1; return m; }, {});
-  const earn = { trades: 0, withEventData: 0, heldThroughRelease: 0 };
+  // Ereignisdaten gelten nur als vorhanden, wenn die CIK im Fenster ueberhaupt Ergebnismitteilungen (8-K 2.02) hat
+  // (Auslandsemittenten mit 6-K haben keine; 'keine Mitteilung' waere dort falsch).
+  const earn = { trades: 0, withEventData: 0, heldThroughStrict: 0, heldThroughInclusive: 0, releaseOnEntryDay: 0, releaseOnExitDay: 0 };
   const tradesCompact = run.trades.map((t) => {
     const evs = dataOf(t.segId)?.events || null;
-    const n = evs ? releasesDuringHold(evs, t.entryDate, t.exitDate) : null;
-    earn.trades++; if (evs) { earn.withEventData++; if (n > 0) earn.heldThroughRelease++; }
-    return { seg: t.segId, entry: t.entryDate, exit: t.exitDate, kind: t.kind, ret: t.returnPct, r: t.rMultiple, mfe: t.mfe, mae: t.mae, hold: t.holdSessions, exits: t.exits.map((x) => x.ruleId), code33: t.setup?.sepa?.code33 ?? null, breakoutVolumeRatio: t.setup?.breakoutVolumeRatio ?? null, releasesDuringHold: n, shares0: t.shares0, entryPrice: t.entryPrice };
+    const hasReleases = !!evs && evs.some((e) => e[EV.TYPE] === EVENT.EARNINGS_RELEASE);
+    const n = hasReleases ? releasesDuringHold(evs, t.entryDate, t.exitDate) : null;
+    earn.trades++;
+    if (n) { earn.withEventData++; if (n.strict) earn.heldThroughStrict++; if (n.inclusive) earn.heldThroughInclusive++; if (n.entryDay) earn.releaseOnEntryDay++; if (n.exitDay) earn.releaseOnExitDay++; }
+    const ir = industryOf.get(`${t.segId}|${t.setup?.setupDate}`) || null;
+    return { seg: t.segId, entry: t.entryDate, exit: t.exitDate, kind: t.kind, ret: t.returnPct, r: t.rMultiple, mfe: t.mfe, mae: t.mae, hold: t.holdSessions, exits: t.exits.map((x) => x.ruleId), code33: t.setup?.sepa?.code33 ?? null, breakoutVolumeRatio: t.setup?.breakoutVolumeRatio ?? null, releasesDuringHold: n, industry: ir, shares0: t.shares0, entryPrice: t.entryPrice };
   });
   const result = {
     schema: 'vu-minervini-adaptation-measurement-1.1.0',
@@ -131,7 +152,7 @@ async function main() {
     window: L.WINDOW_NAME, from: cal[0], to: cal[cal.length - 1], at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null,
     engine: { id: ENGINE.id, version: ENGINE.version, canonicalName: CLASSIFICATION.canonicalName, productClass: CLASSIFICATION.productClass, parent: ENGINE.parent },
     freeze: { rulebookHash: freeze.rulebookHash, codeHash: freeze.codeHash, frozenCommit: freeze.commit },
-    data: { dataFingerprint, segments: segs.length, withSecFacts: withFund, delistCoverage, secSchema: store.schema, eventsSchema: ev.schema, eventsCiks: Object.keys(ev.byCik).length },
+    data: { dataFingerprint, segments: segs.length, withSecFacts: withFund, delistCoverage, secSchema: store.schema, eventsSchema: ev.schema, eventsCiks: Object.keys(ev.byCik).length, eventsBuild: { stats: ev.stats, builtAt: ev.builtAt, commit: ev.commit } },
     scan: scanTotals,
     portfolio: { ...pf, turnoverPerYear: turnover(run.trades, run.curve), trades: tradeStats(run.trades), book: run.book, stageDays },
     signals: { ...tradeStats(signals), vsSpySameHolding: signalVsSpy(signals, spyByDate) },

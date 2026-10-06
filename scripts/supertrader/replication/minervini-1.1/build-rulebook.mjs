@@ -34,14 +34,18 @@ const TIER = {
   'SRC-INT-STOCKOPEDIA-2018': 'PRIMARY_DIRECT', 'SRC-INT-MARKETWATCH': 'PRIMARY_DIRECT', 'SRC-SEC-FILING-RULES': 'PRIMARY_DIRECT',
   'SRC-SECONDARY-WEB-2026': 'SECONDARY',
 };
-const ERA = (s) => {
-  if (s.id.startsWith('SRC-SEC')) return 'REGULATION';
-  const y = Number((s.id.match(/(20\d\d)/) || [])[1]);
-  if (s.id === 'SRC-BOOK-TLSMW') return 'BOOK_ERA';
-  if (s.id === 'SRC-BOOK-TTLAC') return 'BOOK_ERA';
-  if (!y) return 'BOOK_ERA';
-  return y <= 2016 ? 'BOOK_ERA' : y <= 2022 ? 'LATER_PUBLIC' : 'CURRENT_PUBLIC';
+// Methodenaera je Quelle ausdruecklich (keine Ableitung aus der Jahreszahl im Namen; unbekannte Quelle -> Fehler).
+// Buchnotizen tragen die Aera des Buches, nicht das Jahr der Notiz.
+const ERA_OF = {
+  'SRC-BOOK-TLSMW': 'BOOK_ERA', 'SRC-BOOK-TTLAC': 'BOOK_ERA',
+  'SRC-NOTES-WHB-2014-05-04': 'BOOK_ERA', 'SRC-NOTES-TH-2019-07-15': 'BOOK_ERA', 'SRC-NOTES-WHB-2014-05-11': 'BOOK_ERA',
+  'SRC-INT-STOCKOPEDIA-2018': 'LATER_PUBLIC', 'SRC-INT-MARKETWATCH': 'BOOK_ERA',
+  'SRC-X-2017-10-25': 'LATER_PUBLIC', 'SRC-X-2018-04-24': 'LATER_PUBLIC', 'SRC-X-2021-04-16': 'LATER_PUBLIC', 'SRC-X-2019-07-11': 'LATER_PUBLIC',
+  'SRC-X-2021-04-03': 'LATER_PUBLIC', 'SRC-X-2020-10-20': 'LATER_PUBLIC', 'SRC-X-2020-10-21': 'LATER_PUBLIC', 'SRC-X-2021-01-17': 'LATER_PUBLIC',
+  'SRC-X-2022-07-18': 'LATER_PUBLIC', 'SRC-X-2022-01-20': 'LATER_PUBLIC',
+  'SRC-SECONDARY-WEB-2026': 'SECONDARY_UNDATED', 'SRC-SEC-FILING-RULES': 'REGULATION',
 };
+const ERA = (s) => { if (!(s.id in ERA_OF)) throw new Error(`Quelle ${s.id} ohne Aera`); return ERA_OF[s.id]; };
 
 export const NEW_SOURCES = [
   { id: 'SRC-X-2022-07-18-EXPOSURE', title: '@markminervini auf X, Status 1549175636983517185 (2022-07-18): Einstieg in den Markt mit 25 % Exposure - fuenf 5-%-Positionen mit 8-%-Stops (Rechenbeispiel progressive Exposure)', type: 'OWN_POST', primary: true, access: 'Text ueber Suchindex 2026-10-06 (Lead geprueft); x.com per Egress gesperrt', tier: 'OWN_POST_INDEX', era: 'LATER_PUBLIC' },
@@ -68,8 +72,8 @@ export const CHANGES = [
       r.canonicalDescription = 'Progressive Exposure: nie von 0 auf 100 %; Einstieg mit Pilotpositionen (Beispiel 2022: 25 % Exposure als fuenf 5-%-Positionen mit 8-%-Stops), erst bei Erfolg erhoehen; laufen die Trades nicht, zurueckfahren.';
       r.formalization.text = 'Diese Regel ist eine VU-Formalisierung einer diskretionaeren Minervini-Regel. Zwei Stufen. Startstufe (zu Beginn und nach jedem verlustbringenden abgeschlossenen Trade): Exposure-Obergrenze initialExposureCeiling und Hoechstgewicht je neuer Position initialMaxPositionPct (Zahlen aus SRC-X-2022-07-18-EXPOSURE). Volle Stufe (nach jedem gewinnbringenden abgeschlossenen Trade): fullExposureCeiling und size.maxPositionPct (MR-SIZ-02). Ergebnis = alle Teilverkaeufe inkl. Kosten und Dividenden. Bestehende Positionen werden nicht zwangsverkauft. Der Wechsel nach einem einzelnen Trade ist VU_FORMALIZATION (Quelle: "erst bei Erfolg erhoehen", ohne Zahl).';
       r.formalization.parameters = {
-        'pf.initialExposureCeiling': { value: 0.25, unit: 'fraction_of_equity', provenance: 'ORIGINAL', rationale: "'enter the market with 25% exposure' (SRC-X-2022-07-18-EXPOSURE)" },
-        'pf.initialMaxPositionPct': { value: 0.05, unit: 'fraction_of_equity', provenance: 'ORIGINAL', rationale: "'five 5% positions' (SRC-X-2022-07-18-EXPOSURE)" },
+        'pf.initialExposureCeiling': { value: 0.25, unit: 'fraction_of_equity', provenance: 'ORIGINAL_INTERPRETATION', rationale: "'enter the market with 25% exposure' (SRC-X-2022-07-18-EXPOSURE); Rechenbeispiel, daher Interpretation (gleiche Massgabe wie MR-SIZ-02)" },
+        'pf.initialMaxPositionPct': { value: 0.05, unit: 'fraction_of_equity', provenance: 'ORIGINAL_INTERPRETATION', rationale: "'five 5% positions' (SRC-X-2022-07-18-EXPOSURE); Rechenbeispiel, daher Interpretation" },
         'pf.fullExposureCeiling': { value: 1.0, unit: 'fraction_of_equity', provenance: 'VU_FORMALIZATION', rationale: 'voll investiert ohne Margin (MR-PF-04); Zwischenstufen nicht oeffentlich beziffert' },
       };
       r.implementation = { status: 'IMPLEMENTED', module: 'scripts/supertrader/replication/minervini-1.1/portfolio-policy.mjs', function: 'exposureStage' };
@@ -102,7 +106,7 @@ export const CHANGES = [
     why: "Die Daten sind jetzt point-in-time vorhanden. Kein Filter: Minervinis Branchen (vermutlich IBD-Gruppen) sind nicht oeffentlich abbildbar, SIC ist eine andere Taxonomie, und '4-5 fuehrende Sektoren' ist ohne Sektordefinition. Ein Gate waere eine VU-Taxonomie-Entscheidung mit Wirkung auf die Auswahl (Konflikt CF-12).",
     apply(r) {
       r.sources = [...r.sources, 'SRC-SEC-HEADER-SIC'];
-      r.reproducibility = 'REPRODUCIBLE_FORMALIZED';
+      r.reproducibility = 'RECORDED_OTHER_TAXONOMY';
       r.requiredData = ['Branchenzugehoerigkeit point-in-time', 'RS-Querschnitt'];
       r.availableData = 'sec-events-sic-1 (SIC je Einreichung, point-in-time, privater Eimer); RS-Querschnitt aus loadPitData';
       r.formalization.text = "VU-FORMALISIERUNG, nur protokolliert: Gruppe = SIC-Industriegruppe (3-stellig) zum Stand der letzten Einreichung vor dem Tag; Fallback Hauptgruppe (2-stellig) bei weniger als minMembers Mitgliedern; SPAC/Mantel (6770/6799) ausgeschlossen. Protokolliert: Rang des Titels nach VU-RS-Rangwert in der Gruppe (Top topN = 'Nr. 1-3 der Branche') und Median-RS der Gruppe ohne den Titel. Filtert nicht.";
@@ -158,6 +162,7 @@ function buildRulebook(rb2a) {
   rb.createdAt = '2026-10-06';
   rb.phase = '2B-CANDIDATE';
   rb.methodEra = { id: 'SEPA-PUBLISHED-2013-2022', register: 'scripts/supertrader/fidelity/MINERVINI-SOURCE-CONFLICTS.json', rule: 'Wirkende Parameter duerfen nicht allein auf CURRENT_PUBLIC-Quellen (2023+) beruhen.' };
+  rb.classes = { ...rb.classes, reproducibility: { ...rb.classes.reproducibility, RECORDED_OTHER_TAXONOMY: 'Daten point-in-time vorhanden, aber in einer anderen Taxonomie als die Quelle (SIC statt Minervinis Branchen); nur protokolliert, kein Filter.' } };
   rb.sources = [...rb.sources.map((s) => ({ ...s, tier: TIER[s.id] || (s.type === 'OWN_POST' ? 'OWN_POST_INDEX' : null), era: ERA(s) })), ...NEW_SOURCES];
   for (const s of rb.sources) if (!s.tier) throw new Error(`Quelle ${s.id} ohne tier`);
   for (const r of rb.rules) { r.sourceConfidence2A = r.sourceConfidence; r.implementationFidelity = REASSESS_2A[r.id]?.implementationFidelity || r.fidelity; }
@@ -233,6 +238,7 @@ export function build() {
       question: 'Hat Phase 2B die Fidelity tatsaechlich erhoeht?',
       improvedRulesVsRescored2A: improvedRules,
       areaGradesImproved: Object.keys(REPORT_AREAS).filter((a) => { const O = ['NONE', 'LOW', 'MEDIUM', 'HIGH']; return O.indexOf(cand[a]) > O.indexOf(rescored[a]); }),
+      circularityNote: 'MR-PF-02 hatte im eingefrorenen 2A die Umsetzungs-Fidelity MEDIUM. Die Neubewertung senkt sie mit der in 2B gefundenen Quelle auf LOW, 1.1 hebt sie wieder auf MEDIUM. Gegen 2A wie eingefroren ist MR-PF-02 also unveraendert MEDIUM; die Verbesserung besteht darin, dass die Umsetzung der Primaerquelle nicht mehr widerspricht. Der Sprung von 25 % auf 100 % nach einem Gewinn-Trade bleibt eine grobe VU-Formalisierung.',
       answer: 'Ja, aber nur auf Regelebene: MR-PF-02 setzt jetzt die primaer belegten Zahlen der Startphase um (LOW -> MEDIUM) und MR-SEPA-12 wird point-in-time protokolliert statt fehlend. Keine Bereichsnote steigt (Portfolio bleibt wegen Margin LOW, Fundamental wegen Schaetzungen LOW). Die Gesamtnote bleibt LOW. Die 2A-Noten waren teils zu hoch (Belegstaerke), das zeigt die Neubewertung.',
       newVersionJustified: 'ja: eine quellengetriebene Regelaenderung mit Wirkung (MR-PF-02), nicht nur zusaetzliche Daten',
     },
