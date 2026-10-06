@@ -103,3 +103,6 @@ Logs zeigen nur Zählwerte.
 - **Offene Datenlücke:** Mehrgattungs-Emittenten ohne Aktienzahl in companyfacts (u. a. Alphabet, Berkshire, Visa, Mastercard).
 - **Weiterer Weg:** Neue Hypothesen nur mit eigener Präregistrierung und Nachweis über einen eingefrorenen Vorwärtslauf, da der Holdout verbraucht ist.
 | HS4 explorativ (Run 37182469897) | Volumenprofil verbessert die Auswahl gegenüber gleicher Regel ohne Volumen; gewählter Versuch über den Gesamtzeitraum vor SPY, aber nur dank 2024–2026 → EXPLORATORY_NO_EDGE (DECISION-HS4.json). |
+| **HS4-V03 Test 2008–2015 (Run 37492427151)** | **OOS_NOT_CONFIRMED** (DECISION-HS4-OOS2008.json). Ohne SEC-Aktienzahlen vor 2009 war das Universum bis Mitte 2009 leer; das Depot war in der Finanzkrise zwangsweise in bar. Ab Juli 2009 liegt V03 hinter SPY, und dieselbe Regel ohne Volumen liegt vor V03. Der Volumenbeitrag aus HS4 wiederholt sich nicht. |
+
+**Lehre aus dem Test 2008–2015:** Eine Überrendite, die aus einer Bargeldphase stammt, muss zuerst auf Datenverfügbarkeit geprüft werden. Künftige Präregistrierungen messen deshalb ab dem ersten investierten Monat oder verlangen eine Mindestbelegung des Universums.

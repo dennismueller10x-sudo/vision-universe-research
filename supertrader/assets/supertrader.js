@@ -1207,6 +1207,7 @@
     ['Breite Faktor-Depots (HS1)', '12 gleichgewichtete Varianten aus Momentum, Gewinnüberraschung, 52-Wochen-Hoch und niedriger Schwankung, 2016–2021 mit delisteten Titeln und Kosten. Ergebnis: kein Vorteil gegenüber dem S&P 500.'],
     ['Indexnahe Faktorneigung (HS2, HS3)', 'Gewichtung nach Größe mit leichter Faktorneigung, zuletzt nach echter Marktkapitalisierung aus SEC-Meldungen. Eine Datenprüfung fand vorher drei Datenfehler. Ergebnis im versiegelten Testzeitraum 2022–2026: praktisch gleichauf mit dem Index.'],
     ['Volumenprofil, konzentriert (HS4)', '20 Titel aus den 500 größten US-Firmen mit Aufwärtstrend, Akkumulation im Volumen und starken Quartalszahlen. Das Volumen verbesserte die Auswahl gegenüber derselben Regel ohne Volumen. Der Vorsprung gegenüber dem Index entstand aber vor allem 2024–2026 und ist statistisch nicht belastbar.'],
+    ['Gegenprobe 2008–2015', 'Die eingefrorene HS4-Regel lief einmal auf einem Zeitraum, den sie nie gesehen hatte. Ergebnis: nicht bestätigt. Ab dem ersten investierten Monat lag sie hinter dem Index, und dieselbe Regel ohne Volumen schnitt besser ab.'],
     ['Deshalb jetzt: Vorwärtslauf', 'Die Regeln von HS4 sind eingefroren. Ab dem Start wird jede Monatsentscheidung vor der Umsetzung mit Zeitstempel veröffentlicht. Erst dieser Verlauf zeigt, ob die Strategie den Markt schlägt.'],
   ];
   function renderHouse(D) {

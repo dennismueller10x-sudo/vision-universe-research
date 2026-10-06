@@ -1,0 +1,15 @@
+{
+  "schema": "supertrader-house-decision-1.0.0",
+  "id": "VU_HOUSE_HS4_OOS2008",
+  "decidedAt": "2026-10-06",
+  "prereg": "PREREGISTRATION-HS4-OOS2008.json",
+  "nature": "Einmaliger Test der eingefrorenen Regel HS4-V03 auf 2008–2015 (nie gesehen). Nicht wiederholbar.",
+  "runs": { "oos": 37492427151 },
+  "technicalControls": "PASS (Hash-Prüfung LIVE-HS4-V03, Lauf vollständig)",
+  "selected": "V03",
+  "criteria": { "O1_excess_s1": "PASS", "O2_cost2": "PASS", "O3_s2": "PASS", "O4_volume_vs_V06": "FAIL", "O5_vs_random_p80": "PASS (knapp)" },
+  "decision": "OOS_NOT_CONFIRMED",
+  "dataArtifact": "Das Universum (500 größte US-Inlandsemittenten) braucht die Aktienanzahl aus SEC companyfacts (XBRL). XBRL-Meldungen beginnen 2009; bis Mitte 2009 war das Universum leer und jeder Versuch – auch die Zufallsauswahlen – zwangsweise in bar. Die Überrendite über den Gesamtzeitraum stammt fast vollständig aus diesem Nicht-Investiertsein während der Finanzkrise und ist kein Verdienst der Regel. Ab dem ersten investierten Monat (Juli 2009) liegt V03 unter SPY.",
+  "finding": "Die Regel bestätigt sich außerhalb der Entwicklungsdaten nicht. Bereinigt um die Bargeldphase liegt V03 2009–2015 hinter SPY. Dieselbe Regel ohne Volumen (V06) liegt vor V03: der Volumenbeitrag aus HS4 (2016–2026) wiederholt sich 2008–2015 nicht. Gegenüber Zufallsauswahlen aus denselben gefilterten Titeln nur knapp über dem 80. Perzentil. Statistisch nicht belastbar (PBO hoch, Deflated Sharpe Ratio deutlich unter 0,95).",
+  "consequence": "Kein Nachweis eines Vorteils. Das Beobachtungsdepot VU_HOUSE_HS4_V03 läuft unverändert als ehrlicher Vorwärtslauf weiter (Regeln eingefroren, keine Anpassung nach diesem Ergebnis); öffentlich ausdrücklich als nicht bestätigte Hypothese gekennzeichnet. Volumen-Akkumulation ist als Depotbaustein nicht belegt."
+}
