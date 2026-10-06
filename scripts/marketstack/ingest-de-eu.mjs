@@ -54,7 +54,18 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
  const read=p=>{rejectSymlinkAncestors(p);return existsSync(p)?JSON.parse(readFileSync(p,'utf8')):null;};
  const sample=sampleSelection(candidates),sampleIds=new Set(sample.map(r=>r.listingId));
  if(!['sample','mandatory','refresh'].includes(phase))throw Error('INVALID_IMPORT_PHASE');
- const previousCheckpoint=phase==='sample'?null:read(join(privateDir,'checkpoint.json'));
+ const referenceHash=sha(JSON.stringify(listingMap)),checkpointPath=join(privateDir,'checkpoints',referenceHash+'.json');
+ const latestPath=join(privateDir,'checkpoint.json'),legacyCheckpoint=read(latestPath);
+ // Preserve an existing private legacy cohort before a different reference
+ // writes the latest summary. Only a validated digest can select a pathname.
+ if(/^[a-f0-9]{64}$/.test(legacyCheckpoint?.referenceHash||'')){
+  const legacyPath=join(privateDir,'checkpoints',legacyCheckpoint.referenceHash+'.json');
+  if(!read(legacyPath))write(legacyPath,legacyCheckpoint);
+ }
+ const scopedCheckpoint=read(checkpointPath);
+ if(scopedCheckpoint&&scopedCheckpoint.referenceHash!==referenceHash)throw Error('REFERENCE_CHECKPOINT_MISMATCH');
+ const previousCheckpoint=phase==='sample'?null:scopedCheckpoint||(legacyCheckpoint?.referenceHash===referenceHash?legacyCheckpoint:null);
+ const checkpoint=state=>{write(checkpointPath,state);write(latestPath,state);};
  let quarantinedMICs=[];
  if(phase!=='sample'){
   if(!sampleProof||sampleProof.fixture!==false||sampleProof.passed!==true||sampleProof.asOf!==listingMap.asOf||sampleProof.referenceHash!==sha(JSON.stringify(listingMap))||
@@ -80,21 +91,31 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
   mappingVerified:true,currencyVerified:true,mappingSource:r.mappingSource,currencySource:r.mappingSource}]));
  const provider=providerFactory?providerFactory({client,mappings,budget,onResponse}):Adapter.createMarketstackProvider({client,mappings});
  const ordered=phase==='sample'?sample:phase==='mandatory'?candidates.filter(r=>!sampleIds.has(r.listingId)):candidates;
- const histories={},decisions=phase==='mandatory'?(previousCheckpoint?.decisions?.filter(d=>d.phase==='SAMPLE')||[]):[],venueFailures=new Map(quarantinedMICs.map(m=>[m,3])),actionEndpointBlocks=new Set();let sampleSuccesses=phase==='sample'?0:sampleProof.successfulListingIds.length;
- for(const r of rows){const h=read(join(privateDir,'normalized',r.listingId+'.json'));if(h&&h.isin===r.isin&&h.mic===r.mic&&h.currency===r.tradingCurrency)histories[r.listingId]=h;}
+ const histories={},currentHistoryHashes={},decisions=phase==='mandatory'?(previousCheckpoint?.decisions?.filter(d=>d.phase==='SAMPLE')||[]):[],venueFailures=new Map(quarantinedMICs.map(m=>[m,3])),actionEndpointBlocks=new Set();let sampleSuccesses=phase==='sample'?0:sampleProof.successfulListingIds.length;
+ for(const r of rows){const h=read(join(privateDir,'normalized',r.listingId+'.json'));if(h&&h.isin===r.isin&&h.mic===r.mic&&h.currency===r.tradingCurrency){histories[r.listingId]=h;currentHistoryHashes[r.listingId]=sha(JSON.stringify(h));}}
  for(const r of ordered){
+  // Scope evidence before every early gate, including listings never queried.
+  responseRefs=[];
   const remaining=await budget.status();console.log(JSON.stringify({stage:'BEFORE_SELECTED_LISTING',phase,
    estimatedBatchCredits:phase==='refresh'?1:6,consumedCredits:remaining.estimatedCreditsConsumed,remainingRunCredits:remaining.creditsRemaining}));
-  const samplePhase=sampleIds.has(r.listingId),block=(cause,nextStep)=>decisions.push({listingId:r.listingId,isin:r.isin,mic:r.mic,status:'BLOCKED',cause,nextStep,phase:phase==='refresh'?'REFRESH':samplePhase?'SAMPLE':'MANDATORY'});
+  const samplePhase=sampleIds.has(r.listingId),block=(cause,nextStep)=>decisions.push({listingId:r.listingId,isin:r.isin,mic:r.mic,status:'BLOCKED',cause,nextStep,phase:phase==='refresh'?'REFRESH':samplePhase?'SAMPLE':'MANDATORY',sourceEvidence:responseRefs.slice(),testedAt:new Date(now()).toISOString(),asOf});
   if(!samplePhase&&sampleSuccesses===0){block('PROVIDER_DATA_DEFECT','Resolve the representative end-to-end sample before broad import.');continue;}
   if(quarantinedMICs.includes(r.mic)){block('MAPPING_ERROR','The representative identity for this MIC was not validated; no market-wide provider defect is inferred. Resolve the exact listing evidence first.');continue;}
   if((venueFailures.get(r.mic)||0)>=3){block('UNSUPPORTED_LISTING','Review three representative failures for this MIC; other venues continue.');continue;}
-  responseRefs=[];const prior=read(join(privateDir,'normalized',r.listingId+'.json'));
+  const prior=read(join(privateDir,'normalized',r.listingId+'.json'));
   if(prior&&(prior.isin!==r.isin||prior.mic!==r.mic||prior.currency!==r.tradingCurrency)){block('MAPPING_ERROR','Review identity change without overwriting prior series.');continue;}
   const metadataState=read(join(privateDir,'metadata',r.listingId+'.json'));
-  if(!metadataState||now()-Date.parse(metadataState.checkedAt)>30*86400000){
+  const checkedAt=Date.parse(metadataState?.checkedAt),checkedNow=now(),mapping=mappings[r.listingId];
+  const evidence=r.providerIdentityEvidence;
+  const independentIdentity=String(r.providerIdentityBasis||'').startsWith('HISTORICAL_EXACT_ISIN_MIC')&&r.mappingSource?.length>0&&
+   evidence?.providerSymbol===mapping.symbol&&evidence?.isin===r.isin&&evidence?.mic===r.mic&&/^[a-f0-9]{64}$/.test(evidence?.sourceHash||'')&&
+   typeof evidence?.sourcePath==='string'&&evidence.sourcePath.trim().length>0;
+  const reuseMetadata=Number.isFinite(checkedAt)&&checkedAt<=checkedNow&&checkedNow-checkedAt<=30*86400000&&
+   metadataState.isin===r.isin&&metadataState.mic===r.mic&&metadataState.data?.providerSymbol===mapping.symbol&&
+   metadataState.data?.exchange===mapping.exchange&&metadataState.data?.currency===mapping.currency&&metadataState.data?.assetType===mapping.assetType&&
+   (metadataState.data?.isin===r.isin||!metadataState.data?.isin&&independentIdentity);
+  if(!reuseMetadata){
    const metadata=await provider.getMetadata(r.listingId);
-   const independentIdentity=String(r.providerIdentityBasis||'').startsWith('HISTORICAL_EXACT_ISIN_MIC')&&r.mappingSource?.length>0;
    if(!metadata.available||metadata.data?.isin&&metadata.data.isin!==r.isin||!metadata.data?.isin&&!independentIdentity){block(metadata.available?'MAPPING_ERROR':reason(metadata.reason),'Verify exact provider identity or independent exact ISIN/MIC evidence; missing optional response ISIN is not invented.');if(['authError','quotaExceeded'].includes(metadata.reason))break;continue;}
    write(join(privateDir,'metadata',r.listingId+'.json'),{isin:r.isin,mic:r.mic,checkedAt:new Date(now()).toISOString(),data:metadata.data,sourceEvidence:responseRefs.slice()});
   }
@@ -123,21 +144,21 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
    retrievedAt:quote?.data.retrieved_at||history.provenance?.retrieved_at||history.provenance?.ingestedAt||new Date(now()).toISOString(),sourceEvidence:[...new Set([...(prior?.sourceEvidence||[]),...responseRefs])],bars:merged.bars,restatements:merged.restatements,
    quarantined:quarantine,adjustmentStatus:{verified:false,priceSeriesType:'UNKNOWN',evidence:[]},
    quality:{status:'PARTIAL',quarantinedCandles:quarantine.length,completenessVerified:false,priceBasis:'PROVIDER_REPORTED_UNVERIFIED'}};
-  write(join(privateDir,'normalized',r.listingId+'.json'),h);write(join(privateDir,'latest',r.listingId+'.json'),quote||{derivedFrom:'CANONICAL_HISTORY',data:{listingId:r.listingId,mic:r.mic,currency:r.tradingCurrency,last:last.close,date:last.date,kind:'EOD_CLOSE'}});histories[r.listingId]=h;
+  write(join(privateDir,'normalized',r.listingId+'.json'),h);write(join(privateDir,'latest',r.listingId+'.json'),quote||{derivedFrom:'CANONICAL_HISTORY',data:{listingId:r.listingId,mic:r.mic,currency:r.tradingCurrency,last:last.close,date:last.date,kind:'EOD_CLOSE'}});histories[r.listingId]=h;currentHistoryHashes[r.listingId]=sha(JSON.stringify(h));
   decisions.push({listingId:r.listingId,isin:r.isin,mic:r.mic,status:'PARTIAL',cause:'UNKNOWN_ADJUSTMENT_BASIS',phase:phase==='refresh'?'REFRESH':samplePhase?'SAMPLE':'MANDATORY',
    latestDate:last.date,historyStart:merged.bars[0].date,bars:merged.bars.length,freshness:'UNKNOWN_LOCAL_CALENDAR_NOT_VERIFIED',restatements:merged.restatements,sourceEvidence:responseRefs});
   if(samplePhase)sampleSuccesses++;
   // Crash checkpoint contains private state, never an exported public artifact.
-  write(join(privateDir,'checkpoint.json'),{asOf,referenceHash:sha(JSON.stringify(listingMap)),runId,decisions,validatedSampleProofHash:phase==='sample'?null:sha(JSON.stringify(sampleProof)),currentHistoryHashes:Object.fromEntries(Object.entries(histories).map(([id,h])=>[id,sha(JSON.stringify(h))])),budget:await budget.status()});
+  checkpoint({asOf,referenceHash,runId,decisions,validatedSampleProofHash:phase==='sample'?null:sha(JSON.stringify(sampleProof)),currentHistoryHashes,budget:await budget.status()});
   if(terminalActionFailure)break;
  }
- for(const r of rows.filter(r=>!r.providerSymbol))decisions.push({listingId:r.listingId,isin:r.isin,status:'BLOCKED',cause:'MAPPING_ERROR',nextStep:'Find an exact provider ISIN/MIC identity; do not guess the ticker suffix.'});
- for(const r of rows.filter(r=>r.quoteUnit!=='MAJOR'))decisions.push({listingId:r.listingId,isin:r.isin,status:'BLOCKED',cause:'MISSING_FX_OR_SHARE_BASIS',nextStep:'Verify the quotation unit and a compatible canonical adapter without currency conversion or an inferred FX basis.'});
+ for(const r of rows.filter(r=>!r.providerSymbol))decisions.push({listingId:r.listingId,isin:r.isin,status:'BLOCKED',cause:'MAPPING_ERROR',nextStep:'Find an exact provider ISIN/MIC identity; do not guess the ticker suffix.',sourceEvidence:[],testedAt:new Date(now()).toISOString(),asOf});
+ for(const r of rows.filter(r=>r.quoteUnit!=='MAJOR'))decisions.push({listingId:r.listingId,isin:r.isin,status:'BLOCKED',cause:'MISSING_FX_OR_SHARE_BASIS',nextStep:'Verify the quotation unit and a compatible canonical adapter without currency conversion or an inferred FX basis.',sourceEvidence:[],testedAt:new Date(now()).toISOString(),asOf});
  const productRows=rows.map(r=>({...r,referencedIssuerId:r.referencedIssuerId||r.companyId||null,companyId:null,companyAssociationStatus:'EXISTING_VU_COMPANY_ASSOCIATION_UNRESOLVED',logo:{status:'EXISTING_FALLBACK'}}));
  const converted=Object.fromEntries(Object.entries(histories).map(([id,h])=>[id,{...h,sourceEvidence:h.sourceEvidence.join('|')} ]));
  const result=materialize({rows:productRows,histories:converted,asOf,referenceAsOf:listingMap.asOf,out:previewOut});
  const status={schemaVersion:'de-eu-ingestion-status-1.0.0',asOf,runId,phase,referenceHash:sha(JSON.stringify(listingMap)),...result,sampleSuccesses,decisions,budget:await budget.status(),publicDisplay:false,scheduleActivated:false};
- write(join(privateDir,'checkpoint.json'),{asOf,referenceHash:sha(JSON.stringify(listingMap)),runId,decisions,validatedSampleProofHash:phase==='sample'?null:sha(JSON.stringify(sampleProof)),currentHistoryHashes:Object.fromEntries(Object.entries(histories).map(([id,h])=>[id,sha(JSON.stringify(h))])),budget:status.budget});
+ checkpoint({asOf,referenceHash,runId,decisions,validatedSampleProofHash:phase==='sample'?null:sha(JSON.stringify(sampleProof)),currentHistoryHashes,budget:status.budget});
  write(join(privateDir,'de_eu_ingestion_status.json'),status);return status;
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){

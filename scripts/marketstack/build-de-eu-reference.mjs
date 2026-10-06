@@ -12,6 +12,23 @@ export function validISIN(value) {
   return !!Identity.normalizeISIN(value);
 }
 
+/** One reviewed current-core corporate REIT class. Preserve its real CFI;
+ * a cash-stock type never globally converts category-C fund instruments into shares. */
+function reviewedCoreShareClass(candidate,member,sources,asOf){
+ if(member.isin!=='DE000A3H2333'||candidate.mic!=='XETR')return {};
+ const e=candidate.securityEvidence,c=candidate.companyReference,issuer=c?.evidence;
+ const t7=(candidate.mappingSourceIds||[]).map(id=>sources.get(id)).find(s=>s?.type==='OFFICIAL_EXCHANGE_T7_INSTRUMENT_REFERENCE'&&s.referenceDate===asOf&&/^[a-f0-9]{64}$/.test(s.sha256||''));
+ const cfi=(candidate.regulatorySourceIds||[]).map(id=>sources.get(id)).find(s=>s?.type==='REGULATORY_CFI_FACET_REFERENCE'&&s.sha256===e?.responseSHA256&&s.referenceDate<=asOf&&/^https:\/\/registers[.]esma[.]europa[.]eu\/solr\/esma_registers_firds\/select[?]/.test(s.url||''));
+ const proven=member.indexMemberships.includes('SDAX')&&candidate.officialActive===true&&candidate.officialInstrumentType==='CS'&&candidate.quotationUnit==='Shares'&&candidate.localTicker==='HABA'&&candidate.tradingCurrency==='EUR'&&
+  c?.lei==='529900EJTD8IR1GN0P96'&&c.basis==='EXACT_GLEIF_ISIN_LEI_REFERENCE'&&issuer?.leiRecordURL==='https://api.gleif.org/api/v1/lei-records/'+c.lei&&/^[a-f0-9]{64}$/.test(issuer.leiBatchResponseSHA256||'')&&
+  e?.cfiCodes?.length===1&&e.cfiCodes[0]==='CBCJXS'&&e.isin===member.isin&&e.issuerLEI===c.lei&&!!t7&&!!cfi;
+ if(!proven)return {classificationReviewStatus:'BLOCKED',classificationReviewCause:'MISSING_LOCAL_CORPORATE_REIT_CLASS_PROOF'};
+ return {shareClass:'LOCAL_CORPORATE_REIT_SHARE',originalShareClass:candidate.shareClass,classificationReviewStatus:'READY',
+  shareClassBasis:'REVIEWED_MANDATORY_CORE_CORPORATE_REIT_OFFICIAL_CS_SHARES_AND_EXACT_ISSUER',
+  classificationEvidence:{isin:member.isin,mic:'XETR',issuerLEI:c.lei,officialInstrumentType:'CS',quotationUnit:'Shares',indexMembership:'SDAX',referenceDate:asOf,
+   officialSource:{url:t7.url,sha256:t7.sha256,referenceDate:t7.referenceDate},regulatorySource:{url:cfi.url,sha256:cfi.sha256,referenceDate:cfi.referenceDate},originalCFICodes:e.cfiCodes,
+   scope:'NAMED_LOCAL_CORE_CLASS_ONLY_NOT_GLOBAL_CFI_OR_PROVIDER_ASSET_TYPE_OVERRIDE'}};
+}
 /** Membership and listing/issuer identity are separate. Source countries are
  * never converted into domicile, currency, provider ticker, or canonical IDs. */
 export function buildReference(input, identity = Identity) {
@@ -57,7 +74,7 @@ export function buildReference(input, identity = Identity) {
     if (verified && typeof identity.securityIdForISIN === 'function') securityId = identity.securityIdForISIN(member.isin);
     if (verified && typeof identity.listingIdFor === 'function') listingId = identity.listingIdFor({ isin: member.isin, mic: candidate.mic });
     const companyId = candidate.companyReference?.lei && typeof identity.companyIdForLEI === 'function' ? identity.companyIdForLEI(candidate.companyReference.lei) : null;
-    return { ...member, ...candidate, indexMemberships: member.indexMemberships, aliases: member.aliases, referenceEvidence: member.referenceEvidence, referenceStatus: member.referenceStatus,
+    return { ...member, ...candidate, ...reviewedCoreShareClass(candidate,member,sources,input.asOf), indexMemberships: member.indexMemberships, aliases: member.aliases, referenceEvidence: member.referenceEvidence, referenceStatus: member.referenceStatus,
       securityId, listingId, companyId, ticker: candidate.localTicker, exchange: candidate.mic, currency: candidate.tradingCurrency,
       assetType: 'EQUITY', quoteUnit: candidate.tradingCurrency === 'EUR' && verified ? 'MAJOR' : null, quoteUnitBasis: candidate.tradingCurrency === 'EUR' && verified ? 'VERIFIED_LISTING_CURRENCY_EUR_NO_MINOR_UNIT_CURRENCY' : 'UNRESOLVED',
       mappingStatus: verified ? 'VERIFIED' : 'BLOCKED', mappingSource: sourceIds,

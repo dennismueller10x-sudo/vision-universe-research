@@ -81,7 +81,7 @@ function normalize(row,{asOf,core=false}){
  return {row:normalized};
 }
 /** Preserve core selection exactly; no diagnostic alternative changes its MIC. */
-export function buildCandidates({source,coreMap}){
+export function buildCandidates({source,coreMap,boundedGermanTierC=false}){
  if(!source||!Array.isArray(source.listings)||!coreMap||!Array.isArray(coreMap.listings)||!day(coreMap.asOf))throw Error('EXPLICIT_FROZEN_INPUTS_REQUIRED');
  if(source.sourceDate&&(!day(source.sourceDate)||source.sourceDate>coreMap.asOf))throw Error('FUTURE_OR_INVALID_REFERENCE_SOURCE');
  const asOf=coreMap.asOf,coreISINs=new Set(),coreRows=[],germany=[],europe=[],rejected=[],deferred=[];
@@ -93,7 +93,8 @@ export function buildCandidates({source,coreMap}){
  for(const input of source.listings){
   const isin=Identity.normalizeISIN(input.isin);if(coreISINs.has(isin))continue;
   if(isin&&seen.has(isin))throw Error('DUPLICATE_EXPANSION_SHARE_CLASS');if(isin)seen.add(isin);
-  if(!['A','B','B_CANDIDATE'].includes(input.tier)){deferred.push({isin:input.isin,mic:input.mic,cause:'CURRENT_POLICY_INELIGIBLE',reason:'Tier C/reference-only is outside the current bounded expansion.'});continue;}
+  const boundedC=boundedGermanTierC===true&&input.tier==='C_REFERENCE_ONLY'&&input.issuerDomicile==='DE'&&input.mic==='XETR'&&input.listingActive===true&&input.officialActivityStatus==='CURRENT_OFFICIAL_ACTIVE'&&input.alternativeListing!==true;
+  if(!['A','B','B_CANDIDATE'].includes(input.tier)&&!boundedC){deferred.push({isin:input.isin,mic:input.mic,cause:'CURRENT_POLICY_INELIGIBLE',reason:'Tier C/reference-only is outside the current bounded expansion.'});continue;}
   const value=normalize(input,{asOf});if(value.rejected){rejected.push({...value.rejected,selection:'EXPANSION'});continue;}
   (input.issuerDomicile==='DE'?germany:europe).push(value.row);
  }
@@ -102,7 +103,7 @@ export function buildCandidates({source,coreMap}){
  const map=(selection,listings)=>({schemaVersion:'de-eu-listing-map-1.0.0',asOf,selection,selectionFrozen:true,privateDevelopment:true,publicDisplay:false,sourceEvidence,listings:sort(listings),counts:{shareClasses:listings.length,listings:listings.length,referencedCompanies:new Set(listings.map(r=>r.referencedIssuerId).filter(Boolean)).size,providerSymbolCandidates:listings.filter(r=>r.providerSymbol).length,currentProviderVerified:0}});
  const alternativeDiagnostics=source.listings.filter(r=>coreISINs.has(Identity.normalizeISIN(r.isin))).flatMap(r=>(r.availableListingAlternatives||[]).filter(a=>a.mic!==coreMap.listings.find(c=>c.isin===r.isin)?.mic).map(a=>({isin:r.isin,name:r.name,mic:a.mic,tradingCurrency:a.currency,providerSymbolCandidates:strings(a.providerSymbolCandidates),status:'DIAGNOSTIC_ONLY_NOT_SELECTED',providerVerified:false,reason:'Exact cached alternative requires separate response validation; preferred core selection is preserved.'})));
  const unresolvedCore=coreRows.filter(r=>!r.providerSymbol).map(r=>({listingId:r.listingId,isin:r.isin,ticker:r.localTicker,status:'BLOCKED',cause:'MAPPING_ERROR',reason:'No verified cached preferred provider symbol; no automatic symbol convention is constructed.'}));
- return {core:map('MANDATORY_CORE',coreRows),germany:map('GERMANY_A_B_EXPANSION',germany),europe:map('EUROPE_A_B_EXPANSION',europe),diagnostics:{schemaVersion:'europe-consumer-candidate-diagnostics-1.0.0',asOf,privateDevelopment:true,publicDisplay:false,sourceEvidence,rejected,deferred,alternativeDiagnostics,unresolvedCore,newRequests:0,newEstimatedSymbolCredits:0,currentProviderVerified:0}};
+ return {core:map('MANDATORY_CORE',coreRows),germany:map(boundedGermanTierC?'GERMANY_BOUNDED_CURRENT_XETRA_TIER_C':'GERMANY_A_B_EXPANSION',germany),europe:map('EUROPE_A_B_EXPANSION',europe),diagnostics:{schemaVersion:'europe-consumer-candidate-diagnostics-1.0.0',asOf,privateDevelopment:true,publicDisplay:false,sourceEvidence,rejected,deferred,alternativeDiagnostics,unresolvedCore,newRequests:0,newEstimatedSymbolCredits:0,currentProviderVerified:0}};
 }
 function privatePath(value){
  const path=assertPrivateOutput(value,{allowCache:true});
@@ -117,7 +118,7 @@ export function run(argv=process.argv.slice(2)){
  const option=n=>{const ix=argv.indexOf('--'+n);return ix>=0?argv[ix+1]:argv.find(v=>v.startsWith('--'+n+'='))?.slice(n.length+3);};
  const sourcePath=option('source'),corePath=option('core-map'),outPath=option('out');if(!sourcePath||!corePath||!outPath)throw Error('EXPLICIT_PRIVATE_SOURCE_CORE_MAP_OUT_REQUIRED');
  privatePath(sourcePath);privatePath(corePath);const out=privatePath(outPath);
- const result=buildCandidates({source:JSON.parse(readFileSync(resolve(sourcePath),'utf8')),coreMap:JSON.parse(readFileSync(resolve(corePath),'utf8'))});
+ const result=buildCandidates({source:JSON.parse(readFileSync(resolve(sourcePath),'utf8')),coreMap:JSON.parse(readFileSync(resolve(corePath),'utf8')),boundedGermanTierC:argv.includes('--bounded-germany-tier-c')});
  const files={'core_listing_map.json':result.core,'germany_ab_listing_map.json':result.germany,'europe_ab_listing_map.json':result.europe,'europe_consumer_candidate_diagnostics.json':result.diagnostics};
  for(const name of Object.keys(files))rejectSymlinkAncestors(join(out,name));mkdirSync(out,{recursive:true,mode:0o700});chmodSync(out,0o700);
  for(const [name,value]of Object.entries(files)){const path=join(out,name);writeFileSync(path,JSON.stringify(value,null,2)+'\n',{mode:0o600});chmodSync(path,0o600);}

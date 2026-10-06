@@ -31,6 +31,13 @@ function privateModes(target){
  // Tighten older producer output without writing files or changing mtimes.
  for(const entry of treeEntries(target)){const mode=entry.directory?0o700:0o600;if(entry.mode!==mode)chmodSync(join(target,entry.relative),mode);}
 }
+function issuerCountry(row){
+ if(/^[A-Z]{2}$/.test(row.companyCountry||''))return row.companyCountry;
+ const c=row.companyReference,e=c?.evidence;
+ return c?.basis==='EXACT_GLEIF_ISIN_LEI_REFERENCE'&&e?.sourceSystem==='GLEIF_ANNA_ISIN_TO_LEI_AND_GLEIF_LEGAL_ENTITY_REFERENCE'&&
+  /^[a-f0-9]{64}$/.test(e.leiBatchResponseSHA256||'')&&e.leiRecordURL==='https://api.gleif.org/api/v1/lei-records/'+c.lei&&
+  /^[A-Z]{2}$/.test(c.domicileCountry||'')?c.domicileCountry:null;
+}
 export function directory(rows,asOf,dataAsOf=asOf){
  if(!day(asOf)||!day(dataAsOf)||dataAsOf<asOf)throw Error('FIXED_AS_OF_REQUIRED');
  const seen=new Set();const listings=rows.map(row=>{
@@ -39,7 +46,7 @@ export function directory(rows,asOf,dataAsOf=asOf){
   if(row.assetType!=='EQUITY'||row.mappingStatus!=='VERIFIED'||!row.mappingSource||!Array.isArray(row.indexMemberships)||
      !/^[A-Z]{3}$/.test(row.tradingCurrency||'')||!['MAJOR','MINOR'].includes(row.quoteUnit)||!Identity.normalizeTicker(row.ticker))throw Error('UNVERIFIED_LOCAL_LISTING');
   if(row.listingCountry==='US')throw Error('US_OUT_OF_SCOPE');
-  return {...row,listingId,securityId,indexMemberships:[...new Set(row.indexMemberships)].sort(),region:'EUROPE'};
+  return {...row,companyCountry:issuerCountry(row),listingId,securityId,indexMemberships:[...new Set(row.indexMemberships)].sort(),region:'EUROPE'};
  }).sort((a,b)=>a.listingId.localeCompare(b.listingId));
  return {schemaVersion:'de-eu-directory-1.0.0',state:listings.length?'PRIVATE_DEVELOPMENT':'DISABLED',privateDevelopment:true,publicDisplay:false,referenceAsOf:asOf,dataAsOf,listings};
 }

@@ -6,6 +6,14 @@ const require=createRequire(import.meta.url),Core=require('../../../core/client.
 import {permitted} from '../../vu2/build-release.mjs';
 const row={isin:'DE0007164600',mic:'XETR',ticker:'SAP',assetType:'EQUITY',mappingStatus:'VERIFIED',mappingSource:'official',indexMemberships:['DAX','DAX','TECDAX'],tradingCurrency:'EUR',quoteUnit:'MAJOR',listingCountry:'DE'};
 const h={isin:row.isin,mic:row.mic,currency:'EUR',quoteUnit:'MAJOR',provider:'marketstack',sourceEvidence:'original sha',points:[['2026-10-01',100],['2026-10-02',101]],quality:{status:'PARTIAL',gaps:['2026-09-30']}};
+test('issuer domicile is independently proved and never inferred from Xetra or DAX membership',()=>{
+ const companyReference={lei:'549300V9QSIG4WX4GJ96',domicileCountry:'NL',basis:'EXACT_GLEIF_ISIN_LEI_REFERENCE',
+  evidence:{sourceSystem:'GLEIF_ANNA_ISIN_TO_LEI_AND_GLEIF_LEGAL_ENTITY_REFERENCE',leiBatchResponseSHA256:'a'.repeat(64),leiRecordURL:'https://api.gleif.org/api/v1/lei-records/549300V9QSIG4WX4GJ96'}};
+ const proved=directory([{...row,companyReference}],'2026-10-06').listings[0];assert.equal(proved.companyCountry,'NL');assert.equal(proved.listingCountry,'DE');
+ assert.equal(directory([row],'2026-10-06').listings[0].companyCountry,null);
+ assert.equal(directory([{...row,companyReference:{...companyReference,evidence:{...companyReference.evidence,leiRecordURL:'https://api.gleif.org/api/v1/lei-records/WRONG'}}}],'2026-10-06').listings[0].companyCountry,null);
+ assert.equal(directory([{...row,companyCountry:'DE'}],'2026-10-06').listings[0].companyCountry,'DE');
+});
 test('canonical multi-index directory and gap-preserving unknown-basis close series',()=>{
  const r=directory([row],'2026-10-06').listings[0];assert.deepEqual(r.indexMemberships,['DAX','TECDAX']);
  const s=closeSeries(r,h,{asOf:'2026-10-06',expectedSession:'2026-10-05'});assert.equal(s.freshness,'STALE');assert.equal(s.changeVerified,false);assert.deepEqual(s.points,h.points);assert.deepEqual(s.quality,h.quality);

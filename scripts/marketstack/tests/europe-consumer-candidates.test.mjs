@@ -91,3 +91,11 @@ test('core historical basis is preserved only with the same explicit symbol asso
  assert.equal(buildCandidates(inputs([],[core])).core.listings[0].providerIdentityBasis,legacy);
  assert.equal(buildCandidates(inputs([],[{...core,providerIdentityEvidence:{...evidence,providerSymbol:'OTHER.DE'}}])).core.listings[0].providerIdentityBasis,'REQUEST_CANDIDATE_REQUIRE_RESPONSE_ISIN');
 });
+
+test('bounded German Tier C remains opt-in, current Xetra only and never grants liquidity or provider admission',()=>{
+ const r=candidate({tier:'C_REFERENCE_ONLY',officialActivityStatus:'CURRENT_OFFICIAL_ACTIVE'});
+ assert.equal(buildCandidates(inputs([r])).diagnostics.deferred.length,1);
+ const yes=buildCandidates({...inputs([r]),boundedGermanTierC:true});assert.equal(yes.germany.listings.length,1);assert.equal(yes.germany.selection,'GERMANY_BOUNDED_CURRENT_XETRA_TIER_C');assert.equal(yes.germany.listings[0].tier,'C_REFERENCE_ONLY');assert.equal(yes.germany.listings[0].liquidityCertified,false);assert.equal(yes.germany.listings[0].currentProviderVerified,false);
+ for(const patch of [{mic:'XFRA'},{issuerDomicile:'FR'},{officialActivityStatus:'HISTORICAL_OFFICIAL_ACTIVE'},{listingActive:null},{alternativeListing:true}]){const out=buildCandidates({...inputs([{...r,...patch}]),boundedGermanTierC:true});assert.equal(out.germany.listings.length+out.europe.listings.length,0);assert.equal(out.diagnostics.deferred.length,1);}
+ const fund=buildCandidates({...inputs([{...r,assetType:'ETF'}]),boundedGermanTierC:true});assert.equal(fund.germany.listings.length,0);assert.equal(fund.diagnostics.rejected[0].cause,'CURRENT_POLICY_INELIGIBLE');
+});
