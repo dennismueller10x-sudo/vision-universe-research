@@ -186,3 +186,19 @@ test("Audit: Vorsorgelücke – Kapitalbedarf real, Sparrate ab heute erreicht d
   close(fv, g.requiredCapitalNominal, 1);
   close(M.inflate(g.requiredCapitalReal, g.years, 0.02), g.requiredCapitalNominal, 1e-6);
 });
+
+test("Planspiel aus historischer Entwicklung: Bandbreite, Zulagen, Pfad", () => {
+  const r = M.historicalScenarios({ cagr: 0.08, vol: 0.16, years: 20, monthly: 100, annualSubsidy: 300, bonus: 0 });
+  assert.equal(r.ownContributions, 24000); assert.equal(r.subsidies, 6000); assert.equal(r.invested, 30000);
+  const [lo, mid, hi] = r.scenarios;
+  assert.ok(lo.nominal < mid.nominal && mid.nominal < hi.nominal);
+  assert.ok(Math.abs(lo.annualReturn - (0.08 - 1.2816 * 0.16 / Math.sqrt(20))) < 1e-9);
+  // Basis = Sparplan 100 EUR/Monat zu 8 % plus 300 EUR jaehrliche Zulage (Jahresende)
+  const plain = M.futureValue({ monthly: 100, years: 20, annualReturn: 0.08 }).nominal;
+  let s = 0; for (let k = 1; k <= 20; k++) s += 300 * Math.pow(1.08, 20 - k);
+  assert.ok(Math.abs(mid.nominal - (plain + s)) < 1e-6);
+  assert.equal(r.path.length, 21); assert.equal(r.path[0][2], 0);
+  assert.ok(Math.abs(r.path[20][2] - mid.nominal) < 1e-6);
+  // ohne Zulage, Laufzeit 0 -> 1 Jahr Minimum
+  assert.equal(M.historicalScenarios({ cagr: 0.05, vol: 0.1, years: 0, monthly: 0 }).years, 1);
+});

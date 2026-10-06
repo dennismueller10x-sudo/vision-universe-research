@@ -113,6 +113,30 @@
     return e;
   }
   VS.decodeRow = decodeRow;
+  /* Anzeige-Namen: Tiingo liefert viele Namen in Grossbuchstaben ("ISHARES MSCI SOUTH KOREA ETF") -> lesbare Schreibweise,
+     Abkuerzungen (ETF, MSCI, S&P, USA …) bleiben gross. Gemischte Schreibweise bleibt unveraendert. */
+  var KEEP = { ETF: 1, ETFS: 1, ETN: 1, MSCI: 1, "S&P": 1, USA: 1, US: 1, UK: 1, EM: 1, ESG: 1, FTSE: 1, CRSP: 1, REIT: 1, REITS: 1, TIPS: 1, AI: 1, SPDR: 1, ACWI: 1, EAFE: 1, NASDAQ: 1, DJ: 1, II: 1, III: 1, IV: 1, ESGU: 1, ADR: 1, MLP: 1, BDC: 1, ETC: 1, NYSE: 1, ICE: 1, CSI: 1, KOSPI: 1, DAX: 1, STOXX: 1, SRI: 1, PAB: 1, CTB: 1, "&": 1 };
+  var CASE = { ISHARES: "iShares", VANECK: "VanEck", WISDOMTREE: "WisdomTree", PROSHARES: "ProShares", JPMORGAN: "JPMorgan", ISHRS: "iShares", BLACKROCK: "BlackRock", YIELDMAX: "YieldMax", GRANITESHARES: "GraniteShares", ROUNDHILL: "Roundhill", KRANESHARES: "KraneShares", DIREXION: "Direxion", "IBONDS": "iBonds" };
+  VS.displayName = function (n) {
+    n = String(n || "");
+    if (!n || n !== n.toUpperCase() || !/[A-Z]{3}/.test(n)) return n;
+    return n.split(/(\s+|-|\/)/).map(function (w) {
+      if (!w.trim() || w === "-" || w === "/") return w;
+      if (KEEP[w] || /\d/.test(w) || /^[A-Z]{1,2}$/.test(w)) return w;
+      if (CASE[w]) return CASE[w];
+      return w.charAt(0) + w.slice(1).toLowerCase();
+    }).join("");
+  };
+  var BRAND = [[/ishares|blackrock/i, "iS"], [/vanguard/i, "VG"], [/spdr|state street/i, "SPDR"], [/xtrackers|dws/i, "X"], [/invesco/i, "IV"], [/schwab/i, "SW"], [/first trust/i, "FT"],
+    [/franklin/i, "FR"], [/proshares/i, "PS"], [/direxion/i, "DX"], [/global x/i, "GX"], [/wisdomtree/i, "WT"], [/vaneck/i, "VE"], [/j\.?p\.? ?morgan/i, "JPM"], [/fidelity/i, "FI"], [/amundi/i, "AM"],
+    [/\bark\b/i, "ARK"], [/pimco/i, "PI"], [/dimensional/i, "DFA"], [/goldman/i, "GS"], [/janus/i, "JH"], [/american century|avantis/i, "AV"], [/krane/i, "KW"], [/roundhill/i, "RH"], [/yieldmax/i, "YM"], [/graniteshares/i, "GR"]];
+  VS.issuerShort = function (e) {
+    var x = String((e && e.issuer) || "") + " " + String((e && e.name) || "");
+    for (var i = 0; i < BRAND.length; i++) if (BRAND[i][0].test(x)) return BRAND[i][1];
+    var w = String((e && e.issuer) || (e && e.name) || "").replace(/[^A-Za-z ]/g, " ").trim().split(/\s+/).filter(Boolean);
+    return w.length > 1 ? (w[0][0] + w[1][0]).toUpperCase() : w.length ? w[0].slice(0, 2).toUpperCase() : "ETF";
+  };
+
   function indexObject(m, rows) {
     m.etfs = rows.map(function (r) { return decodeRow(m.fields, r); });
     m._bySymbol = {}; m._bySlug = {};

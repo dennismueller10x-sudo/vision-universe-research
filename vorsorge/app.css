@@ -232,3 +232,113 @@ main.vs-main{padding-bottom:110px;min-height:70vh}
 .vs-seg .vs-seg-link{padding:8px 14px;border-radius:99px;font-weight:750;font-size:13px;white-space:nowrap;color:var(--muted);text-decoration:none}
 .vs-seg .vs-seg-link[aria-pressed=true]{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
 .vs-hero .vs-seg{width:max-content}
+
+/* =========================================================================
+   App-Komponenten (V1-Optik): Listen statt Tabellen, Filter-Sheet,
+   KPI-Leiste, Balkendiagramme, Planspiel, Allokationsring.
+   ========================================================================= */
+/* ETF-Liste (Screener, Weltkarten) */
+.vs-list{display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:900px){.vs-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.vs-item{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 16px;border-radius:20px;background:var(--card);border:1px solid var(--line-soft);box-shadow:var(--shadow);text-decoration:none;transition:transform .15s ease,box-shadow .15s ease}
+.vs-item:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.vs-ava{width:48px;height:48px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12.5px;letter-spacing:-.02em;color:#0b0c0e;background:var(--accent)}
+.vs-ava.c-BOND{background:#bfe0ff}.vs-ava.c-MONEY_MARKET{background:#e3e6ea}.vs-ava.c-COMMODITY{background:#ffd98a}.vs-ava.c-MULTI_ASSET{background:#f5c6dc}.vs-ava.c-REAL_ESTATE{background:#c9efdc}.vs-ava.c-CRYPTO{background:#ffc7a6}.vs-ava.cx{background:#ffe1b0}
+.vs-item-main{min-width:0}
+.vs-item-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.vs-item-top b{font-size:16px;letter-spacing:-.01em}
+.vs-item-name{display:block;font-size:13.5px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.vs-item-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.vs-chip{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:99px;background:var(--panel);color:var(--muted);white-space:nowrap}
+.vs-chip.on{background:var(--accent-soft);color:var(--accent-text)}
+.vs-item-perf{text-align:right;min-width:78px}
+.vs-item-perf b{display:block;font-size:19px;font-weight:850;letter-spacing:-.03em}
+.vs-item-perf small{display:block;font-size:11px;color:var(--dim);font-weight:650}
+@media(max-width:420px){.vs-item{grid-template-columns:40px minmax(0,1fr) auto;gap:10px;padding:12px}.vs-ava{width:40px;height:40px;border-radius:12px;font-size:11px}.vs-item-perf b{font-size:17px}}
+
+/* Werkzeugleiste: Schnellfilter, Sortierung, Filter-Sheet */
+.vs-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.vs-quickchips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0 6px;margin:4px 0 6px}
+.vs-quickchips::-webkit-scrollbar{display:none}
+.vs-qc{flex:none;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:8px 14px;font-weight:750;font-size:13px;cursor:pointer;white-space:nowrap}
+.vs-qc[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.vs-sort{border:1px solid var(--line);border-radius:99px;padding:9px 14px;background:var(--card);font-weight:700;font-size:13.5px}
+.vs-sheet{border:1px solid var(--line-soft);border-radius:20px;background:var(--card);box-shadow:var(--shadow);margin:6px 0 14px}
+.vs-sheet>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;font-weight:800}
+.vs-sheet>summary::-webkit-details-marker{display:none}
+.vs-sheet>summary .vs-badge{margin-left:8px}
+.vs-sheet>summary:after{content:"＋";font-weight:900;color:var(--muted)}
+.vs-sheet[open]>summary:after{content:"－"}
+.vs-sheet-body{padding:0 18px 16px}
+.vs-sheet-body h4{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:14px 0 6px}
+.vs-sheet .vs-filters{margin:0}
+.vs-sheet .vs-check{background:var(--panel);border-radius:99px;padding:8px 14px 8px 10px;font-weight:650;font-size:13.5px}
+.vs-sheet .vs-check input{width:18px;height:18px;accent-color:var(--ink)}
+
+/* KPI-Leiste im ETF-Kopf */
+.vs-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}
+.vs-kpis>div{background:var(--card);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow);min-width:0}
+.vs-kpis span{display:block;font-size:11.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.vs-kpis b{display:block;font-size:20px;font-weight:850;letter-spacing:-.03em;margin-top:4px;white-space:nowrap}
+.vs-kpis small{display:block;font-size:11px;color:var(--dim)}
+@media(max-width:760px){.vs-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.vs-ticker{display:inline-flex;align-items:center;gap:6px;background:var(--ink);color:var(--bg);border-radius:10px;padding:4px 10px;font-weight:850;font-size:13px}
+.vs-etf-sticky{position:sticky;top:calc(var(--vu-navigation-height,88px) + 58px);z-index:20;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(12px);padding:8px 0}
+
+/* Horizontale Balken (Zeitraeume) und Jahresbalken */
+.vs-hbars{display:grid;gap:10px;margin-top:12px}
+.vs-hbar{display:grid;grid-template-columns:64px 1fr 74px;gap:10px;align-items:center;font-size:13.5px}
+.vs-hbar>span:first-child{color:var(--muted);font-weight:700}
+.vs-hbar .rail{position:relative;height:26px;background:var(--panel);border-radius:8px;overflow:hidden}
+.vs-hbar .rail i{position:absolute;top:0;bottom:0;border-radius:8px}
+.vs-hbar .rail .mid{position:absolute;top:0;bottom:0;width:1px;background:var(--line)}
+.vs-hbar b{text-align:right;font-weight:850}
+.vs-years{display:flex;align-items:flex-end;gap:4px;height:180px;margin-top:14px;padding-bottom:22px;position:relative}
+.vs-years .y{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;position:relative;min-width:0}
+.vs-years .y i{display:block;width:100%;max-width:26px;border-radius:6px 6px 2px 2px}
+.vs-years .y.neg i{border-radius:2px 2px 6px 6px}
+.vs-years .y small{position:absolute;bottom:-20px;font-size:10px;color:var(--dim);white-space:nowrap}
+.vs-years .zero{position:absolute;left:0;right:0;height:1px;background:var(--line)}
+.vs-card.app .vs-hbar .rail{background:var(--app-2)} .vs-card.app .vs-years .zero{background:var(--app-line)}
+
+/* Planspiel */
+.vs-play{background:var(--app);color:var(--app-ink);border-radius:var(--r-lg);padding:clamp(20px,4vw,34px);position:relative;overflow:hidden;isolation:isolate}
+.vs-play:after{content:"";position:absolute;right:-120px;bottom:-160px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(204,245,74,.28),transparent 65%);z-index:-1}
+.vs-play h3{font-size:clamp(22px,3.2vw,30px);letter-spacing:-.03em;font-weight:850;margin-top:6px}
+.vs-play .vs-sub,.vs-play .vs-fine{color:var(--app-muted)}
+.vs-play-grid{display:grid;gap:18px;grid-template-columns:minmax(0,1fr);margin-top:18px}
+@media(min-width:960px){.vs-play-grid{grid-template-columns:minmax(0,360px) minmax(0,1fr)}}
+.vs-slider{display:grid;gap:6px;margin-bottom:14px}
+.vs-slider label{display:flex;justify-content:space-between;font-size:13px;color:var(--app-muted);font-weight:700}
+.vs-slider label b{color:var(--app-ink);font-size:16px}
+.vs-slider input[type=range]{width:100%;accent-color:var(--accent);height:28px}
+.vs-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--app-2);border-radius:14px;padding:12px 14px;margin-bottom:10px;font-size:14px;font-weight:700;cursor:pointer}
+.vs-toggle input{width:20px;height:20px;accent-color:var(--accent)}
+.vs-play-result{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.vs-play-result>div{background:var(--app-2);border-radius:16px;padding:14px;min-width:0}
+.vs-play-result>div.base{outline:2px solid var(--accent)}
+.vs-play-result span{display:block;font-size:11.5px;color:var(--app-muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.vs-play-result b{display:block;font-size:clamp(20px,3vw,28px);font-weight:850;letter-spacing:-.03em;margin-top:4px}
+.vs-play-result small{display:block;font-size:11.5px;color:var(--app-muted)}
+.vs-play-split{display:flex;height:12px;border-radius:99px;overflow:hidden;margin-top:14px;background:var(--app-2)}
+.vs-play-split i{display:block;height:100%}
+.vs-play .vs-legend{color:var(--app-muted)}
+@media(max-width:560px){.vs-play-result{grid-template-columns:1fr}}
+
+/* Allokationsring (Musterportfolios) */
+.vs-ring{width:92px;height:92px;border-radius:50%;flex:none;position:relative}
+.vs-ring:after{content:"";position:absolute;inset:16px;border-radius:50%;background:var(--card)}
+.vs-mp{display:flex;gap:16px;align-items:center}
+.vs-mp-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+.vs-mp-kpis>div{background:var(--panel);border-radius:12px;padding:10px;min-width:0}
+.vs-mp-kpis span{display:block;font-size:11px;color:var(--muted);font-weight:700}
+.vs-mp-kpis b{display:block;font-size:16px;font-weight:850;margin-top:2px}
+@media(max-width:560px){.vs-hbar{grid-template-columns:96px 1fr 64px;font-size:12.5px}.vs-chip{font-size:11px;padding:3px 7px}}
+.vs-hbar>span:first-child{white-space:nowrap}
+@media(max-width:620px){
+  .vs-table.ranked{min-width:0}
+  .vs-table.ranked th:nth-child(4),.vs-table.ranked td:nth-child(4),.vs-table.ranked th:nth-child(5),.vs-table.ranked td:nth-child(5){display:none}
+  .vs-table.ranked th,.vs-table.ranked td{padding:10px 8px}
+  .vs-table.ranked th:nth-child(2),.vs-table.ranked td:nth-child(2){min-width:0}
+  .vs-table.ranked th{white-space:normal;font-size:10.5px}
+}
