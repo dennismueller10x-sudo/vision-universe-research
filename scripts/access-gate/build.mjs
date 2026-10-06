@@ -35,11 +35,32 @@ export function accessStateFor(password, now = Date.now()) {
   return {version: ACCESS_VERSION, key: accessKeyFor(password), expiresAt: now + DURATION_MS};
 }
 
+// Link-Vorschau (WhatsApp, iMessage, LinkedIn, X): Crawler fuehren kein JavaScript aus
+// und sehen nur diese Maske. Damit ein geteilter Link Bild und Text zeigt, uebernimmt
+// die Maske die Vorschau-Angaben der Originalseite: og:*, twitter:* und die
+// Beschreibung. Nur diese Schluessel, nur ihr Inhalt, neu escapet - kein Markup der
+// Seite gelangt in die Maske. Seiten ohne solche Angaben bleiben unveraendert.
+const SOCIAL_KEY = /^(og:[a-z_:]+|twitter:[a-z_:]+|description)$/;
+const attr = (tag, name) => tag.match(new RegExp(`\\s${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)')`, 'i'))?.slice(1).find(v => v !== undefined);
+const unescape = value => value.replace(/&(amp|lt|gt|quot|#39);/g, (m, e) => ({amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'"}[e]));
+export function socialMeta(html) {
+  const head = String(html).split(/<\/head>/i)[0];
+  const tags = [];
+  for (const [tag] of head.matchAll(/<meta\b[^>]*>/gi)) {
+    const key = (attr(tag, 'property') ?? attr(tag, 'name') ?? '').toLowerCase();
+    const content = attr(tag, 'content');
+    if (!SOCIAL_KEY.test(key) || content === undefined || tags.length >= 40) continue;
+    const kind = key.startsWith('og:') ? 'property' : 'name';
+    tags.push(`<meta ${kind}="${escape(key)}" content="${escape(unescape(content))}">`);
+  }
+  return tags.join('\n');
+}
+
 // Reuses the minimal Vision Universe password-mask design from the retired Worker.
-export function gatePage(config, content, runtimeVersion) {
+export function gatePage(config, content, runtimeVersion, social = '') {
   const settings = JSON.stringify(config).replace(/</g, '\\u003c');
   return `<!doctype html><html lang="de"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">${social ? '\n' + social : ''}
 <title>VISION UNIVERSE · Research</title><style>
 :root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;min-height:100svh;background:#090b10;color:#f4f4f5;display:grid;place-items:center;padding:24px}
@@ -88,7 +109,7 @@ export async function protectRelease({output, password = process.env.RESEARCH_AC
     await mkdir(dirname(saved), {recursive: true});
     await copyFile(page, saved);
     const url = '/__research/content/' + path.split('/').map(encodeURIComponent).join('/') + '?v=' + hash(original).slice(0, 16);
-    await writeFile(page, gatePage(config, url, runtimeVersion));
+    await writeFile(page, gatePage(config, url, runtimeVersion, socialMeta(original.toString('utf8'))));
   }
   for (const route of ['login', 'logout']) {
     await mkdir(join(internal, route), {recursive: true});
