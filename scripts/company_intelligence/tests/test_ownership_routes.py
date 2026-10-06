@@ -246,3 +246,21 @@ class CopyrightFormattingTests(unittest.TestCase):
   for owner in ('Other Owner LLC','PAVmed Inc. Japan LLC','PAVmed Inc. Services LLC'):
    with self.subTest(owner=owner),self.assertRaisesRegex(SourceError,'CONFLICTING_COPYRIGHT_OWNER'):
     self.verify('PAVmed Inc.','<footer>© Copyright 2026. All Rights Reserved by '+owner+'. Customers include PAVmed Inc.</footer>','PAVmed Inc.')
+
+ def test_copyright_attribution_by_keeps_exact_owner_and_extension_boundaries(self):
+  for prefix in ('©Copyright 2014-2026 By ', 'Copyright 2026 by ', '© 2026 By '):
+   with self.subTest(prefix=prefix):
+    good=self.verify('HEICO Corp','<footer>'+prefix+'HEICO Corporation All Rights Reserved Home About Us</footer>','Home HEICO')
+    self.assertEqual(good['status'],'VALIDATED')
+    self.assertIn('By' if 'By' in prefix else 'by',good['ownershipEvidence']['copyrightExcerpts'][0])
+  for owner in ('Different Owner LLC. Customers include HEICO Corporation',
+                'HEICO Corporation Japan LLC', 'HEICO Corporation Services LLC',
+                'By HEICO Corporation', 'a partner of HEICO Corporation'):
+   with self.subTest(owner=owner),self.assertRaises(SourceError):
+    self.verify('HEICO Corp','<footer>©Copyright 2014-2026 By '+owner+'. All rights reserved.</footer>','HEICO Corp')
+
+ def test_copyright_by_never_removes_an_actual_owner_name(self):
+  proof=self.verify('By Corporation','<footer>© 2026 By Corporation All rights reserved.</footer>')
+  self.assertEqual(proof['status'],'VALIDATED')
+  with self.assertRaises(SourceError):
+   self.verify('Root Inc.','<footer>© 2026 By Different Owner LLC. Customers include Root Inc.</footer>','Root Inc.')

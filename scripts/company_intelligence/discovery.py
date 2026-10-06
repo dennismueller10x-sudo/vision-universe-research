@@ -342,6 +342,12 @@ def _validate_response(company, candidate, response, now, header_body=None):
             value=stripped
         return value
     owner_raw=[owner_text(value) for value in copyright_raw]
+    # "Copyright 2014-2026 By Legal Owner" explicitly attributes ownership.
+    # Preserve the original too: By may itself begin an actual company name.
+    # Remove one leading attribution token only; the same exact legal-owner,
+    # suffix/extension and corporate-header checks apply to both readings.
+    owner_raw += [re.sub(r'^by\b\s+', '', raw, count=1, flags=re.I)
+                  for raw in owner_raw if re.match(r'^by\b\s+', raw, re.I)]
     copyright_regions = [legal_normalize(value) for value in owner_raw]
     def exact_footer_owner(name, raw, suffixless=False):
         wanted=legal_normalize(name)
