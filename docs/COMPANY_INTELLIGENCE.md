@@ -129,6 +129,8 @@ The targeted broad-IR budget recovery baseline contains 62 retained deferred iss
 
 The coordinator stopped at an empty recovered-events cohort: coverage aggregation was called with zero companies. Completed September metadata, domain verification and source facts remained intact. An idle-writer recovery checkpoint preserved 242,312,387 expanded bytes / 28,102,459 compressed bytes, SHA-256 `4ef7e45fda6156d58a0cb6f2b67d598126819e54f2f5a7ea5eda6c240cbb1292`. The local metrics guard returns empty recovery sets without changing ownership, source selection, health, cooldowns or cadence. The same source cohort resumes rather than restarting discovery.
 
+Selective IR capacity recovery: a due walk whose retained reason is `NETWORK_TIME_BUDGET_EXHAUSTED` now receives a local 360-second candidate ceiling; other IR walks retain 180 seconds. Batch deadlines, request partitions/shared caps, robots pacing, circuits and persisted cooldowns remain authoritative. The hint is not persisted in Company Master or issuer facts. A restored simulated 250-second walk fails on the previous producer and succeeds with this allowance; unrelated DNS/request-limit attempts remain deferred. Two further contracts check shared deadline/request bounds and future-cooldown/offline exclusion. All 560 Python tests pass. Live residual-cohort outcomes are pending and are not inferred from passing tests.
+
 ## 6. Failure clusters — ranking loop
 
 Old ledger: approximately 578 insufficient ownership, 578 temporary failures, 89 blocked, 62 conflicting owners and 60 redirects. These identities are unavailable, so before/after counts are not same-cohort recovery rates. Current retained reconstructed causes are ranked after every bounded batch:
@@ -503,6 +505,8 @@ A read-only Git merge-tree integration check passed without conflicts for preser
 All ten workflows passed without retries on preserved coverage/parser head 49197b5eadd6f68f052111d36757fafeabb57ee6, including Discover Frontend and Company Intelligence. This resolves the timing blocker for that exact head; the previously failed 72/73a heads retain their actual results. The subsequent source/configuration checkpoint is validated independently. PR #356 remains draft and unmerged.
 
 Preserved milestone74 f169f1cb923eb46aeaab47b1e3a6f2da67dde9ce reported a Discover Frontend WebKit entry-heuristic failure at 5,111 ms versus the unchanged 5,000-ms limit. Chromium passed and the other WebKit checks passed. No unchanged retry or unrelated UI/Quant adjustment was made. The preceding milestone73 passed all ten workflows without retries; each exact head keeps its own result.
+
+All ten workflows passed without retries on preserved external-IR-scope/coverage head `9ced678ffdcda1bbd84465c8ff23d51b710138a4`. The selective IR capacity-recovery checkpoint awaits its own exact-head CI. The monthly worker continues from durably staged release metadata; the public coverage measurement above remains the preceding fully audited idle snapshot.
 
 ## 29. Regressions / pre-existing main failures
 

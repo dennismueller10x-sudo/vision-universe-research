@@ -72,9 +72,10 @@ def run(companies, candidates, http, now, request_budget, max_seconds, workers=4
             circuit.success()
             return response
         candidate_budget=min(request_budget,max(allowance,8)) if domain_only else allowance
-        # Only previously time-limited ownership evidence gets a longer retry.
+        # Only previously time-limited ownership/IR walks get a longer retry.
         # The shared deadline, request ceilings and circuit remain authoritative.
-        candidate_seconds = (180 if c.get('_ownershipTimeBudgetRetry') is True else 60) if domain_only else 180
+        candidate_seconds = ((180 if c.get('_ownershipTimeBudgetRetry') is True else 60)
+                             if domain_only else 360 if c.get('_irTimeBudgetRetry') is True else 180)
         client=BoundedHTTP(http.cache,budget=candidate_budget,timeout=min(http.timeout,10),interval=2,max_seconds=min(remaining,candidate_seconds),opener=observed_open,validator=http.validator)
         result={'companyId':c['companyId'],'status':'DEFERRED','domainOnly':domain_only}
         try:

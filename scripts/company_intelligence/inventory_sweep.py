@@ -106,6 +106,8 @@ def select(companies, store, now, pass_id, lane, limit=50, allow_network=True):
         selected_company = ({**c, '_ownershipTimeBudgetRetry': True}
                             if lane == 'domains' and site.get('status') == 'DEFERRED'
                             and site.get('reason') == 'NETWORK_TIME_BUDGET_EXHAUSTED' else c)
+        if lane == 'ir' and ir.get('reason') == 'NETWORK_TIME_BUDGET_EXHAUSTED':
+            selected_company = {**c, '_irTimeBudgetRetry': True}
         hosts.add(host);selected.append(selected_company)
         if len(selected)>=limit:break
     return selected,candidates
