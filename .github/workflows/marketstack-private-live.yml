@@ -16,7 +16,7 @@ jobs:
       (github.event.action != 'labeled' || github.event.label.name == 'vu-marketstack-bootstrap' || github.event.label.name == 'vu-marketstack-live') &&
       (contains(github.event.pull_request.labels.*.name, 'vu-marketstack-bootstrap') || contains(github.event.pull_request.labels.*.name, 'vu-marketstack-live'))
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     env:
       VU_MARKETSTACK_PHASE: ${{ contains(github.event.pull_request.labels.*.name, 'vu-marketstack-live') && 'live' || 'bootstrap' }}
     steps:
