@@ -1,5 +1,5 @@
 /** The registered local-directory/close-series producer. Private development only. */
-import {mkdirSync,writeFileSync,existsSync,readFileSync,renameSync,mkdtempSync,rmSync} from 'node:fs';
+import {mkdirSync,writeFileSync,existsSync,readFileSync,renameSync,mkdtempSync,rmSync,readdirSync,lstatSync,chmodSync} from 'node:fs';
 import {resolve,dirname,join,sep} from 'node:path';
 import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
@@ -8,6 +8,29 @@ import {assertPrivateOutput,rejectSymlinkAncestors} from './private-output.mjs';
 const require=createRequire(import.meta.url),Identity=require('../../core/identity.js'),Published=require('../../quant/engines/published-close.js'),Core=require('../../core/client.js');
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
 const day=v=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
+function treeEntries(root){
+ const entries=[];
+ function walk(path,relative=''){
+  const stat=lstatSync(path);
+  if(stat.isSymbolicLink())throw Error('PUBLISH_TREE_SYMLINK_REJECTED');
+  if(!stat.isDirectory()&&!stat.isFile())throw Error('PUBLISH_TREE_FILE_TYPE_REJECTED');
+  if(stat.isFile()&&stat.nlink!==1)throw Error('PUBLISH_TREE_LINK_REJECTED');
+  entries.push({relative,directory:stat.isDirectory(),mode:stat.mode&0o777});
+  if(stat.isDirectory())for(const name of readdirSync(path).sort())walk(join(path,name),relative?relative+'/'+name:name);
+ }
+ walk(root);return entries;
+}
+function sameTree(stage,target){
+ const a=treeEntries(stage),b=treeEntries(target);
+ if(a.length!==b.length)return false;
+ for(let i=0;i<a.length;i++)if(a[i].relative!==b[i].relative||a[i].directory!==b[i].directory||
+  !a[i].directory&&!readFileSync(join(stage,a[i].relative)).equals(readFileSync(join(target,b[i].relative))))return false;
+ return true;
+}
+function privateModes(target){
+ // Tighten older producer output without writing files or changing mtimes.
+ for(const entry of treeEntries(target)){const mode=entry.directory?0o700:0o600;if(entry.mode!==mode)chmodSync(join(target,entry.relative),mode);}
+}
 export function directory(rows,asOf,dataAsOf=asOf){
  if(!day(asOf)||!day(dataAsOf)||dataAsOf<asOf)throw Error('FIXED_AS_OF_REQUIRED');
  const seen=new Set();const listings=rows.map(row=>{
@@ -49,18 +72,28 @@ export function materialize({rows,histories={},asOf,referenceAsOf=asOf,expectedS
   if(!s||!hash||field.inputSeriesHash!==hash||!Number.isFinite(field.value)||!Array.isArray(field.evidence)||!field.evidence.length||
    field.asOf!==s.asOf||!day(field.window?.from)||!day(field.window?.to)||field.window.to!==s.asOf||field.window.from>s.asOf||field.window.from<s.points[0][0])throw Error('TECHNICAL_INPUT_EVIDENCE_MISMATCH');
  }
- const target=join(out,'core/data/de-eu');rejectSymlinkAncestors(target);rejectSymlinkAncestors(target+'.previous');mkdirSync(dirname(target),{recursive:true});
- const stage=mkdtempSync(join(dirname(target),'.de-eu-stage-'));
- const write=(p,v)=>{mkdirSync(dirname(p),{recursive:true});writeFileSync(p,JSON.stringify(v)+'\n');};
- write(join(stage,'listings.json'),d);for(const [id,s]of Object.entries(series))write(join(stage,'series',id+'.json'),s);
- if(!disabled)write(join(stage,'screener.json'),{schemaVersion:'de-eu-screener-1.0.0',privateDevelopment:true,publicDisplay:false,
-  referenceAsOf:d.referenceAsOf,dataAsOf:d.dataAsOf,listings:d.listings.map(r=>({...r,
-   price:series[r.listingId]?Core.listingLatestPriceData(series[r.listingId],r.ticker):null,fields:technicalFields[r.listingId]||{}}))});
- const backup=target+'.previous';if(existsSync(backup))throw Error('PUBLISH_RECOVERY_REQUIRED');
- const prior=existsSync(target);if(prior)renameSync(target,backup);
- try{renameSync(stage,target);}catch(e){if(prior)renameSync(backup,target);throw e;}
- if(prior)rmSync(backup,{recursive:true,force:true});
- return {listings:d.listings.length,series:Object.keys(series).length,privateDevelopment:true,publicDisplay:false};
+ const target=join(out,'core/data/de-eu'),backup=target+'.previous';rejectSymlinkAncestors(target);rejectSymlinkAncestors(backup);
+ if(existsSync(backup))throw Error('PUBLISH_RECOVERY_REQUIRED');
+ mkdirSync(dirname(target),{recursive:true,mode:disabled?0o755:0o700});
+ // Keep staging outside the existing output tree when both paths share a
+ // filesystem. A mount boundary retains the original same-filesystem staging.
+ const stageParent=lstatSync(dirname(out)).dev===lstatSync(dirname(target)).dev?dirname(out):dirname(target);
+ const stage=mkdtempSync(join(stageParent,'.de-eu-stage-'));
+ const write=(p,v)=>{mkdirSync(dirname(p),{recursive:true,mode:disabled?0o755:0o700});writeFileSync(p,JSON.stringify(v)+'\n',{mode:disabled?0o644:0o600});};
+ const result=changed=>({listings:d.listings.length,series:Object.keys(series).length,privateDevelopment:true,publicDisplay:false,changed});
+ try{
+  write(join(stage,'listings.json'),d);for(const [id,s]of Object.entries(series))write(join(stage,'series',id+'.json'),s);
+  if(!disabled)write(join(stage,'screener.json'),{schemaVersion:'de-eu-screener-1.0.0',privateDevelopment:true,publicDisplay:false,
+   referenceAsOf:d.referenceAsOf,dataAsOf:d.dataAsOf,listings:d.listings.map(r=>({...r,
+    price:series[r.listingId]?Core.listingLatestPriceData(series[r.listingId],r.ticker):null,fields:technicalFields[r.listingId]||{}}))});
+  const prior=existsSync(target);
+  if(prior&&sameTree(stage,target)){if(!disabled)privateModes(target);return result(false);}
+  // Validate the full existing tree even when its file list already differs.
+  if(prior){treeEntries(target);renameSync(target,backup);}
+  try{renameSync(stage,target);}catch(e){if(prior)renameSync(backup,target);throw e;}
+  if(prior)rmSync(backup,{recursive:true,force:true});
+  return result(true);
+ }finally{rmSync(stage,{recursive:true,force:true});}
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const arg=n=>process.argv.find(a=>a.startsWith('--'+n+'='))?.slice(n.length+3),out=arg('out'),asOf=arg('as-of');
