@@ -352,4 +352,9 @@ Stamm- und Registerdaten), Datenquellen & Datenqualität mit Abdeckung USA/Europ
 | P2 | NAV | keine Quelle |
 | P2 | Tracking Difference | braucht Gesamtrendite und lizenzierte Indexstände |
 | P2 | Storage/Auslieferung | `etf-index.json` (2,7 MB, ca. 0,6 MB komprimiert) wird je Sitzung einmal geladen; leichter Suchindex und Auslieferung großer Historien außerhalb des Repositorys (z. B. R2) |
-| P2 | EU-Anteilklassen im Portfolio | Portfolio X-Ray nimmt nur US-Listings; EU-Anteilklassen ohne Holdings würden als „nicht durchleuchtet“ zählen |
+| – | EU-Anteilklassen im Portfolio und in der Watchlist | **erledigt**: EU-ISINs lassen sich hinzufügen und zählen zum Portfolio-Gewicht, ohne 0-Exposure; Länder- und Branchenbalken weisen „Ohne Bestandsdaten“ aus |
+
+**Ergänzt in der Abschlussprüfung:** Monitor (eigene ETFs zuerst, Kosten vor Fondsstatus, Datenaktualisierungen
+eingeklappt; kein Widerspruch mehr zu „TER-Änderungen nicht überwacht“), Startseite (Produkt- und Kostenmeldungen nur zu
+eigenen ETFs), komplexe Produkte als Suchtreffer mit Bauart-Badge, Anbieter je Datenart im Daten-Tab, „Herkunftsstaat
+Deutschland“ für inländische Fonds (das Register führt nur Gastländer), „gehandelt“ statt „zugelassen“.
