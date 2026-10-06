@@ -278,12 +278,24 @@ def _validate_response(company, candidate, response, now, header_body=None):
     title = re.search(r'<title[^>]*>(.*?)</title>', header_body, re.I | re.S)
     header = normalize(title[1] if title else '')
     from html.parser import HTMLParser
+    from urllib.parse import urljoin, urlsplit
     class CorporateHeader(HTMLParser):
-        values=[]
+        def __init__(self):
+            super().__init__()
+            self.values=[]
+            self.home_anchor=False
         def handle_starttag(self,tag,attrs):
             attrs=dict(attrs)
+            if tag=='a':
+                target=canonical_url(urljoin(response['finalUrl'],attrs.get('href') or ''))
+                self.home_anchor=bool(attrs.get('href') and target and same_web_host(target,response['finalUrl']) and
+                    re.fullmatch(r'/(?:[a-z]{2}(?:-[a-z]{2})?/?|index\.html?|overview/default\.aspx)?',urlsplit(target).path,re.I))
+            if tag=='img' and self.home_anchor and re.search(r'logo|brand',' '.join(attrs.get(k,'') for k in ('src','class','id')),re.I):
+                self.values.append(clean(attrs.get('alt'),200))
             if tag=='meta' and (attrs.get('property') or attrs.get('name') or '').casefold() in ('og:site_name','og:title','application-name'):
                 self.values.append(clean(attrs.get('content'),200))
+        def handle_endtag(self,tag):
+            if tag=='a':self.home_anchor=False
     metadata=CorporateHeader();metadata.values=[];metadata.feed(header_body)
     header=normalize(' '.join([header]+metadata.values))
     def legal_normalize(value):
@@ -403,6 +415,12 @@ def _validate_response(company, candidate, response, now, header_body=None):
     legal_suffixes={'inc','corp','corporation','co','company','ltd','limited','plc','ag','sa'}
     acronyms |= {''.join(w[0] for w in normalize(n).split() if w not in legal_suffixes) for n in strong_names}
     short_brand = short_brand or any(2 <= len(a) <= 4 and re.search(r'(?<!\w)' + re.escape(a) + r'(?!\w)', header_compact) for a in acronyms)
+    # Actual issuer names can begin with a three-letter brand (PPG, ABM,
+    # ICF). It is corroboration only when the complete legal footer matches.
+    # Tickers and arbitrary short words never supply this evidence.
+    explicit_brands={n.split()[0] for n in company['names'] if n.split() and
+                     re.fullmatch(r'[A-Z]{2,3}',n.split()[0]) and n.split()[0].casefold() not in stop|legal_suffixes}
+    short_brand = short_brand or bool(footer_owner and any(re.search(r'(?<!\w)'+r'\s*'.join(re.escape(c) for c in brand.lower())+r'(?!\w)',header) for brand in explicit_brands))
     # Exact legal footer still required: recognize compound brands such as
     # Bio-Rad and JPMorganChase without admitting generic one-word guesses.
     for base in bases:
