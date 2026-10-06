@@ -420,3 +420,7 @@ p { margin: 0; }
 .st-chain>li .h{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
 .st-chain>li p{margin:4px 0 0;font-size:13.5px}
 .st-chain>li p.st-hint{margin-top:2px;font-size:12px}
+
+/* VU Hausstrategie: Depotliste mehrspaltig */
+@media (min-width: 720px) { .st-mplist.st-grid3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1000px) { .st-mplist.st-grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }

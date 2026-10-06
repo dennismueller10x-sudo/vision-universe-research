@@ -9,6 +9,7 @@
 //   node scripts/supertrader/house/live.mjs [--force] [--dry-run]
 //     --force    Entscheidung auch ausserhalb des Monatsendes (nur Vorschau-Datei, nie Ledger)
 //     --dry-run  nichts schreiben, nur Zaehlwerte loggen
+//     --start    Startentscheidung ausserhalb des Monatsendes, nur solange das Ledger leer ist (einmalig)
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
@@ -67,6 +68,7 @@ function rawFromStoreBars(bars) {
 async function main() {
   const argv = process.argv.slice(2);
   const FORCE = argv.includes('--force'), DRY = argv.includes('--dry-run');
+  const START = argv.includes('--start');
   const t0 = Date.now();
   const log = (m) => console.log(`[house-live +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   assertLiveFrozen();
@@ -104,7 +106,8 @@ async function main() {
   if (calendar) {
     const D0 = calendar.at(-1);
     if (ledger.decisions.some((x) => x.date === D0)) { log(`Entscheidung fuer ${D0} bereits im Ledger - nichts zu tun`); return; }
-    if (!isMonthEnd(D0, holidays) && !FORCE) { log(`${D0} ist kein Monatsende - nichts zu tun`); return; }
+    if (START && ledger.decisions.length) { log('Startentscheidung nur bei leerem Ledger - nichts zu tun'); return; }
+    if (!isMonthEnd(D0, holidays) && !FORCE && !START) { log(`${D0} ist kein Monatsende - nichts zu tun`); return; }
   }
   const raws = new Map();
   let n = 0;
@@ -124,14 +127,16 @@ async function main() {
   log(`Aktien ${stocks.length}, letzter Handelstag ${D}`);
   const monthEnd = isMonthEnd(D, holidays);
   if (ledger.decisions.some((x) => x.date === D)) { log('Entscheidung fuer diesen Tag bereits im Ledger - nichts zu tun'); return; }
-  if (!monthEnd && !FORCE) { log('Kein Monatsende - nichts zu tun'); return; }
+  if (START && ledger.decisions.length) { log('Startentscheidung nur bei leerem Ledger - nichts zu tun'); return; }
+  if (!monthEnd && !FORCE && !START) { log('Kein Monatsende - nichts zu tun'); return; }
   const dec = decide(stocks, calendar, ledger);
-  const entry = { ...dec, executeAt: `${nextTradingDay(D, holidays)} Eroeffnung`, decidedAt: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, rulesHash: LIVE.hashes['engine.mjs'] };
+  const entry = { ...dec, kind: START && !monthEnd ? 'START' : 'MONTH_END', executeOn: nextTradingDay(D, holidays), decidedAt: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, rulesHash: LIVE.hashes['engine.mjs'] };
   log(`Entscheidung ${D}: zulaessig ${dec.eligible}, Titel ${dec.holdings.length}, Kaeufe ${dec.buys.length}, Verkaeufe ${dec.sells.length}`);
   if (DRY) return;
-  if (!monthEnd) { fs.writeFileSync(path.join(root, 'supertrader/data/house-hs4-v03-preview.json'), JSON.stringify({ preview: true, ...entry }, null, 2) + '\n'); log('Vorschau geschrieben (kein Monatsende, nicht im Ledger)'); return; }
+  if (!monthEnd && !START) { fs.writeFileSync(path.join(root, 'supertrader/data/house-hs4-v03-preview.json'), JSON.stringify({ preview: true, ...entry }, null, 2) + '\n'); log('Vorschau geschrieben (kein Monatsende, nicht im Ledger)'); return; }
   ledger.liveSince ||= D;
   ledger.current = { date: D, holdings: dec.holdings };
+  ledger.nextDecision = (() => { let d = nextTradingDay(D, holidays); while (!isMonthEnd(d, holidays)) d = nextTradingDay(d, holidays); return d; })();
   ledger.decisions.push(entry);
   fs.mkdirSync(path.dirname(LEDGER_PATH), { recursive: true });
   fs.writeFileSync(LEDGER_PATH, JSON.stringify(ledger, null, 2) + '\n');
