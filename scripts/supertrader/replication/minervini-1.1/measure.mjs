@@ -65,6 +65,8 @@ export function params10Equivalent() {
   return paramAccessor(buildParamTable(rb));
 }
 
+export const exitTriggerPrice = (bookedPrice, Pv) => bookedPrice / (1 - Pv['exe.slippageBps'] / 1e4);
+
 // Diagnose eines Portfoliolaufs (Exposure, Bargeldgruende, Entwicklung nach dem Ausstieg).
 function portfolioDiagnostics(run, days, segById, Pv, provenanceOf) {
   const exits = [];
@@ -73,7 +75,8 @@ function portfolioDiagnostics(run, days, segById, Pv, provenanceOf) {
     const s = segById.get(t.segId), last = t.exits[t.exits.length - 1];
     const exitIndex = s.date.indexOf(t.exitDate);
     if (exitIndex < 0) continue;
-    exits.push({ seg: t.segId, exitIndex, exitPrice: last.price, entryPrice: t.entryBase, finalRule: last.ruleId, partial: t.exits.some((x) => x.ruleId === 'MR-EXIT-02') });
+    // Kurs vor Slippage (portfolio-sim bucht price * (1 - slip)); Bezugspunkt = Ausloesekurs der Regel.
+    exits.push({ seg: t.segId, exitIndex, exitPrice: exitTriggerPrice(last.price, Pv), entryPrice: t.entryBase, finalRule: last.ruleId, partial: t.exits.some((x) => x.ruleId === 'MR-EXIT-02') });
   }
   return { exposure: exposureDiagnostics(run.curve), cash: cashAttribution(days, run.curve, Pv), postExit: postExitDiagnostics(exits, segById, provenanceOf) };
 }

@@ -360,3 +360,12 @@ test('MR11-T-MEASURE-FREEZE: Messung nur mit Freeze, unveraenderten gemeinsamen 
   for (const f of [...fz.BUILDER_FILES.filter((x) => !x.includes('/validation/')), ...fz.MEASUREMENT_FILES]) assert.ok(files.includes(f), `${f} nicht im Code-Hash`);
   for (const f of ['scripts/supertrader/engine/indicators.mjs', 'quant/engines/return-series.js', 'scripts/supertrader/validation/lib.mjs', 'scripts/supertrader/validation/analyze-methods.mjs']) assert.ok(fz.SHARED_DEPENDENCIES.includes(f), f);
 });
+
+test('MR11-T-DIAG-EXIT-PRICE: Exit-Diagnose misst ab dem Ausloesekurs vor Slippage (Red Team Lead)', async () => {
+  const { exitTriggerPrice } = await import('../replication/minervini-1.1/measure.mjs');
+  const s = seg('X', [100, 103, 104, 90, 90], { 0: { pivot: 101, stop: 97, baseStart: 0 } });
+  s.low[3] = 89; s.open[3] = 99;
+  const t = simulatePortfolio([s], s.date, P).trades[0];
+  assert.equal(t.exits[0].ruleId, 'MR-RSK-01');
+  assert.ok(Math.abs(exitTriggerPrice(t.exits[0].price, P) - 97) < 1e-9);
+});
