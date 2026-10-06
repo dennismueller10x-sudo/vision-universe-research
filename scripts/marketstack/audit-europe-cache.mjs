@@ -105,7 +105,7 @@ export function auditEuropeanCacheSeries({listing,history,calendar,asOf,sources=
 }
 
 export function runEuropeCacheAudit({requestPath,normalizedDir,sourceDir,calendarRulesPath,documentationEvidencePath,out,asOf,now}){
- const output=assertPrivateOutput(out);fs.mkdirSync(output,{recursive:true});
+ const output=assertPrivateOutput(out);fs.mkdirSync(output,{recursive:true,mode:0o700});fs.chmodSync(output,0o700);
  const load=p=>JSON.parse(fs.readFileSync(p,'utf8'));
  const request=load(requestPath);const map=request.listingMap||request;
  if(!Array.isArray(map.listings)||!asOf||!now)throw Error('FROZEN_MAPPING_FIXED_ASOF_AND_NOW_REQUIRED');
@@ -122,9 +122,9 @@ export function runEuropeCacheAudit({requestPath,normalizedDir,sourceDir,calenda
   const filename=path.join(normalizedDir,listing.listingId+'.json');if(!fs.existsSync(filename))continue;
   const history=load(filename);const sources=[];
   for(const ref of history.sourceEvidence||[]){const match=/^sha256:([a-f0-9]{64})$/.exec(ref);if(!match||!sourceDir)continue;
-   const name=match[1]+'.json';const file=path.join(sourceDir,name);if(fs.existsSync(file))sources.push({file:name,...load(file)});}
+   const name=match[1]+'.json';const file=path.join(sourceDir,name);if(fs.existsSync(file)){const source=load(file);if(hash(source)!==match[1])throw Error('SOURCE_EVIDENCE_HASH_MISMATCH');sources.push({file:name,...source});}}
   const report=auditEuropeanCacheSeries({listing,history,calendar:calendars[listing.mic],asOf,sources,rawDocumentationEvidence});
-  const outfile=assertPrivateOutput(path.join(output,listing.listingId+'.json'));fs.writeFileSync(outfile,JSON.stringify(report,null,2)+'\n');
+  const outfile=assertPrivateOutput(path.join(output,listing.listingId+'.json'));fs.writeFileSync(outfile,JSON.stringify(report,null,2)+'\n',{mode:0o600});fs.chmodSync(outfile,0o600);
   summaries.push({name:report.name,listingId:report.listingId,isin:report.isin,mic:report.mic,bars:report.sourceFields.bars,lastAvailableEOD:report.lastAvailableEOD,
    originalFields:report.sourceFields.status,identity:report.identity.status,knownSessionLag:report.knownSessionLag,
    missingSourceSessions:report.missingSourceSessions,quarantinedSessions:report.quarantinedSessions,recentWindow:report.recentWindow.certificationWindow,
@@ -137,8 +137,8 @@ export function runEuropeCacheAudit({requestPath,normalizedDir,sourceDir,calenda
   frozenTargets:map.listings.length,historyListings:summaries.length,documentationEvidence:rawDocumentationEvidence,publicDisplay:false,
   counts:{exactIdentity:summaries.filter(s=>s.identity==='READY').length,originalFieldsMatch:summaries.filter(s=>s.originalFields==='READY').length,
    currentTechnicalReady:summaries.filter(s=>s.readyTechnicalFields.length).length,researchWithFiniteValues:summaries.filter(s=>s.researchWindows.some(d=>d.finiteFields.length)).length},listings:summaries};
- fs.writeFileSync(assertPrivateOutput(path.join(output,'summary.json')),JSON.stringify(summary,null,2)+'\n');
- fs.writeFileSync(assertPrivateOutput(path.join(output,'calendars.json')),JSON.stringify({now,calendars},null,2)+'\n');return summary;
+ fs.writeFileSync(assertPrivateOutput(path.join(output,'summary.json')),JSON.stringify(summary,null,2)+'\n',{mode:0o600});fs.chmodSync(path.join(output,'summary.json'),0o600);
+ fs.writeFileSync(assertPrivateOutput(path.join(output,'calendars.json')),JSON.stringify({now,calendars},null,2)+'\n',{mode:0o600});fs.chmodSync(path.join(output,'calendars.json'),0o600);return summary;
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const args=process.argv.slice(2);const opts={};const flags={'--request':'requestPath','--normalized-dir':'normalizedDir','--source-dir':'sourceDir','--calendar-rules':'calendarRulesPath',

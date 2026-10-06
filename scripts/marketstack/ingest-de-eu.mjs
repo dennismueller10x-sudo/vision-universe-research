@@ -87,6 +87,7 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
    estimatedBatchCredits:phase==='refresh'?1:6,consumedCredits:remaining.estimatedCreditsConsumed,remainingRunCredits:remaining.creditsRemaining}));
   const samplePhase=sampleIds.has(r.listingId),block=(cause,nextStep)=>decisions.push({listingId:r.listingId,isin:r.isin,mic:r.mic,status:'BLOCKED',cause,nextStep,phase:phase==='refresh'?'REFRESH':samplePhase?'SAMPLE':'MANDATORY'});
   if(!samplePhase&&sampleSuccesses===0){block('PROVIDER_DATA_DEFECT','Resolve the representative end-to-end sample before broad import.');continue;}
+  if(quarantinedMICs.includes(r.mic)){block('MAPPING_ERROR','The representative identity for this MIC was not validated; no market-wide provider defect is inferred. Resolve the exact listing evidence first.');continue;}
   if((venueFailures.get(r.mic)||0)>=3){block('UNSUPPORTED_LISTING','Review three representative failures for this MIC; other venues continue.');continue;}
   responseRefs=[];const prior=read(join(privateDir,'normalized',r.listingId+'.json'));
   if(prior&&(prior.isin!==r.isin||prior.mic!==r.mic||prior.currency!==r.tradingCurrency)){block('MAPPING_ERROR','Review identity change without overwriting prior series.');continue;}
