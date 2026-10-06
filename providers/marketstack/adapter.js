@@ -176,7 +176,9 @@ function createMarketstackProvider(options={}) {
       const mapping=resolveMapping(id,options);if(mapping.error)return unavailable(mapping.error);
       const endpoint='/tickers/'+encodeURIComponent(mapping.symbol);
       const res=await client.request(endpoint);if(!res.ok)return result(res,null,endpoint,mapping);
-      const row=res.data&&(res.data.data||res.data);if(!row||typeof row!=='object'||Array.isArray(row))return unavailable('invalidResponse');
+      const payload=res.data&&(res.data.data||res.data);
+      if(Array.isArray(payload)&&payload.length===0)return unavailable('dataUnavailable');
+      const row=payload;if(!row||typeof row!=='object'||Array.isArray(row))return unavailable('invalidResponse');
       const returnedSymbol=row.symbol||row.ticker;
       if(!returnedSymbol||returnedSymbol!==mapping.symbol)return unavailable('symbolMismatch');
       const returnedType=assetType(row.item_type||row.asset_type);

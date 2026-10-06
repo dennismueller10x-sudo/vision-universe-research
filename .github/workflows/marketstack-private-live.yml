@@ -75,11 +75,11 @@ jobs:
         if: env.VU_MARKETSTACK_PHASE == 'live'
         env:
           GH_TOKEN: ${{ github.token }}
-          VU_PRIVATE_CACHE_KEY: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}-lease
+          VU_PRIVATE_CACHE_TAG: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}-lease
         run: |
           node --input-type=module <<'JS'
           import {verifySavedActionsCache} from './scripts/marketstack/actions-import-guard.mjs';
-          try {await verifySavedActionsCache({repo:process.env.GITHUB_REPOSITORY,token:process.env.GH_TOKEN,key:process.env.VU_PRIVATE_CACHE_KEY});}
+          try {await verifySavedActionsCache({repo:process.env.GITHUB_REPOSITORY,token:process.env.GH_TOKEN,key:process.env.VU_PRIVATE_CACHE_TAG});}
           catch {console.error('ACTIONS_PRIVATE_LEASE_PERSISTENCE_UNVERIFIED');process.exitCode=1;}
           JS
       - name: Execute explicitly authorized frozen listing requests privately
@@ -109,11 +109,11 @@ jobs:
         if: always() && steps.seal-private.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
-          VU_PRIVATE_CACHE_KEY: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
+          VU_PRIVATE_CACHE_TAG: marketstack-private-live-v1-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           node --input-type=module <<'JS'
           import {verifySavedActionsCache} from './scripts/marketstack/actions-import-guard.mjs';
-          try {await verifySavedActionsCache({repo:process.env.GITHUB_REPOSITORY,token:process.env.GH_TOKEN,key:process.env.VU_PRIVATE_CACHE_KEY});}
+          try {await verifySavedActionsCache({repo:process.env.GITHUB_REPOSITORY,token:process.env.GH_TOKEN,key:process.env.VU_PRIVATE_CACHE_TAG});}
           catch {console.error('ACTIONS_PRIVATE_COUNTER_PERSISTENCE_UNVERIFIED');process.exitCode=1;}
           JS
       - name: Protected published artifacts and production workflows

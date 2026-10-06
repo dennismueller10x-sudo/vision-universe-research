@@ -211,3 +211,8 @@ test('real client fixes v2 and asynchronous persistence completes before fetch',
    const result=await p.getQuote('sap');assert.equal(result.available,false);assert.match(result.reason,/invalidCanonicalListingIdentity|exchangeMicMismatch|conflictingIdentityAliases/);
   }
  });
+
+test('empty singular ticker metadata is unavailable, malformed nonempty arrays remain invalid',async()=>{
+ for(const payload of [[],{data:[]}]) assert.equal((await provider(async()=>response(payload)).getMetadata('sap')).reason,'dataUnavailable');
+ for(const payload of [[{symbol:'SAP.DE'}],{data:[{symbol:'SAP.DE'}]}]) assert.equal((await provider(async()=>response(payload)).getMetadata('sap')).reason,'invalidResponse');
+});
