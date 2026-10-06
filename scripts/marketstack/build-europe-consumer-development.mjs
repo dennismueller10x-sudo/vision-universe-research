@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
 import {evaluateListingReadiness} from './de-eu-readiness.mjs';
-import {readPrivateHistory} from './materialize-de-eu.mjs';
+import {readPrivateHistory,provenIssuerCountry} from './materialize-de-eu.mjs';
 import {assertPrivateOutput,rejectSymlinkAncestors} from './private-output.mjs';
 const require=createRequire(import.meta.url),Identity=require('../../core/identity.js');
 export const TECHNICAL_FIELDS=['sma20','sma50','sma200','high52w','low52w','momentum1M','momentum3M','momentum6M','momentum12M','realizedVolatility20d','realizedVolatility60d','atr14','relativeVolume'];
@@ -20,11 +20,17 @@ const numeric=v=>typeof v==='number'&&Number.isFinite(v);
 function rowsOf(value){return Array.isArray(value)?value:Array.isArray(value?.listings)?value.listings:[];}
 function byId(value,id){return rowsOf(value).find(r=>r.listingId===id)||value?.[id]||null;}
 function readPrivateCertification(directory,listingId){
- assertPrivateOutput(directory,{allowCache:true});rejectSymlinkAncestors(directory);
  if(!/^lst_[A-Z0-9]{4}_[A-Z0-9]{12}$/.test(listingId))throw Error('CANONICAL_CERTIFICATION_ID_REQUIRED');
- const path=join(directory,listingId+'.json');rejectSymlinkAncestors(path);if(!existsSync(path))return null;
- const stat=lstatSync(path);if(!stat.isFile()||stat.nlink!==1)throw Error('CERTIFICATION_INPUT_FILE_TYPE_REJECTED');
- return JSON.parse(readFileSync(path,'utf8'));
+ let certificate=null,found=false;
+ for(const dir of Array.isArray(directory)?directory:[directory]){
+  assertPrivateOutput(dir,{allowCache:true});rejectSymlinkAncestors(dir);
+  const path=join(dir,listingId+'.json');rejectSymlinkAncestors(path);if(!existsSync(path))continue;
+  const stat=lstatSync(path);if(!stat.isFile()||stat.nlink!==1)throw Error('CERTIFICATION_INPUT_FILE_TYPE_REJECTED');
+  if(found)throw Error('COMPETING_CERTIFICATION_INPUTS');found=true;
+  const value=JSON.parse(readFileSync(path,'utf8'));
+  certificate=value?.schemaVersion==='private-europe-cache-audit-1.0.0'?value.recentWindow||null:value;
+ }
+ return certificate;
 }
 function certified(row,h,cert,asOf){return !!h&&Array.isArray(h.bars)&&cert?.schemaVersion==='europe-history-certification-1.0.0'&&cert.listingId===row.listingId&&cert.securityId===row.securityId&&cert.isin===row.isin&&cert.mic===row.mic&&cert.asOf===asOf&&cert.inputSeriesHash===hash(h.bars);}
 function historyFacts(row,h,asOf){
@@ -72,9 +78,7 @@ function verifiedProviderIdentity(row,h,facts,input,statusEvidence){
  return !!h&&facts.bars>0&&!facts.causes.some(c=>['MAPPING_ERROR','PROVIDER_PROVENANCE_UNVERIFIED'].includes(c))&&statusEvidence.some(d=>d.isin===row.isin&&d.mic===row.mic&&['READY','PARTIAL'].includes(d.status)&&d.bars>0&&arrayRefs(d.sourceEvidence).length>0);
 }
 function provenReferenceCountry(row){
- if(row.companyCountry)return row.companyCountry;
- const c=row.companyReference,e=c?.evidence;
- return c?.basis==='EXACT_GLEIF_ISIN_LEI_REFERENCE'&&e?.sourceSystem==='GLEIF_ANNA_ISIN_TO_LEI_AND_GLEIF_LEGAL_ENTITY_REFERENCE'&&/^[a-f0-9]{64}$/.test(e.leiBatchResponseSHA256||'')&&e.leiRecordURL==='https://api.gleif.org/api/v1/lei-records/'+c.lei?c.domicileCountry||null:null;
+ return provenIssuerCountry(row);
 }
 function fundamental(row,value,asOf){
  if(!value)return decision('BLOCKED',['MISSING_FUNDAMENTALS'],[],null,'Locate existing canonical company/period facts; do not start broad ingestion.');
@@ -108,9 +112,10 @@ export function aggregateDevelopment(input){
   assertPrivateOutput(input.historiesDir,{allowCache:true});rejectSymlinkAncestors(input.historiesDir);
  }
  if(input.certificationsDir!==undefined&&input.certificationsDir!==null){
-  if(typeof input.certificationsDir!=='string'||!input.certificationsDir.trim())throw Error('PRIVATE_CERTIFICATION_DIRECTORY_REQUIRED');
+  const directories=Array.isArray(input.certificationsDir)?input.certificationsDir:[input.certificationsDir];
+  if(!directories.length||directories.some(d=>typeof d!=='string'||!d.trim()))throw Error('PRIVATE_CERTIFICATION_DIRECTORY_REQUIRED');
   if(Object.keys(input.certifications||{}).length)throw Error('COMPETING_CERTIFICATION_INPUTS');
-  assertPrivateOutput(input.certificationsDir,{allowCache:true});rejectSymlinkAncestors(input.certificationsDir);
+  for(const dir of directories){assertPrivateOutput(dir,{allowCache:true});rejectSymlinkAncestors(dir);}
  }
  const selected=new Map(),securityMIC=new Map();
  for(const map of input.listingMaps){

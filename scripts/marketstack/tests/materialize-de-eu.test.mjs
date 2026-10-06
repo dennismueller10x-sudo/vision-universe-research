@@ -9,10 +9,17 @@ const h={isin:row.isin,mic:row.mic,currency:'EUR',quoteUnit:'MAJOR',provider:'ma
 test('issuer domicile is independently proved and never inferred from Xetra or DAX membership',()=>{
  const companyReference={lei:'549300V9QSIG4WX4GJ96',domicileCountry:'NL',basis:'EXACT_GLEIF_ISIN_LEI_REFERENCE',
   evidence:{sourceSystem:'GLEIF_ANNA_ISIN_TO_LEI_AND_GLEIF_LEGAL_ENTITY_REFERENCE',leiBatchResponseSHA256:'a'.repeat(64),leiRecordURL:'https://api.gleif.org/api/v1/lei-records/549300V9QSIG4WX4GJ96'}};
- const proved=directory([{...row,companyReference}],'2026-10-06').listings[0];assert.equal(proved.companyCountry,'NL');assert.equal(proved.listingCountry,'DE');
+ const issuerRow={...row,issuerLEI:companyReference.lei,referencedIssuerId:'iss_lei_'+companyReference.lei};
+ const proved=directory([{...issuerRow,companyReference}],'2026-10-06').listings[0];assert.equal(proved.companyCountry,'NL');assert.equal(proved.listingCountry,'DE');
  assert.equal(directory([row],'2026-10-06').listings[0].companyCountry,null);
- assert.equal(directory([{...row,companyReference:{...companyReference,evidence:{...companyReference.evidence,leiRecordURL:'https://api.gleif.org/api/v1/lei-records/WRONG'}}}],'2026-10-06').listings[0].companyCountry,null);
+ assert.equal(directory([{...issuerRow,companyReference:{...companyReference,evidence:{...companyReference.evidence,leiRecordURL:'https://api.gleif.org/api/v1/lei-records/WRONG'}}}],'2026-10-06').listings[0].companyCountry,null);
  assert.equal(directory([{...row,companyCountry:'DE'}],'2026-10-06').listings[0].companyCountry,'DE');
+ assert.equal(directory([{...issuerRow,issuerLEI:'529900D6BF99LW9R2E68',companyReference}],'2026-10-06').listings[0].companyCountry,null);
+ assert.equal(directory([{...issuerRow,referencedIssuerId:'iss_lei_529900D6BF99LW9R2E68',companyReference}],'2026-10-06').listings[0].companyCountry,null);
+ assert.equal(directory([{...row,companyReference}],'2026-10-06').listings[0].companyCountry,null);
+ const esma={...companyReference,domicileCountry:'LU',basis:'EXACT_ESMA_ISIN_LEI_REFERENCE',evidence:{...companyReference.evidence,sourceSystem:'ESMA_FIRDS_EXACT_ISIN_ISSUER_LEI_AND_GLEIF_LEGAL_ENTITY_REFERENCE',regulatoryResponseSHA256:'b'.repeat(64)}};
+ assert.equal(directory([{...issuerRow,companyReference:esma}],'2026-10-06').listings[0].companyCountry,'LU');
+ assert.equal(directory([{...issuerRow,companyReference:{...esma,evidence:{...esma.evidence,regulatoryResponseSHA256:null}}}],'2026-10-06').listings[0].companyCountry,null);
 });
 test('canonical multi-index directory and gap-preserving unknown-basis close series',()=>{
  const r=directory([row],'2026-10-06').listings[0];assert.deepEqual(r.indexMemberships,['DAX','TECDAX']);

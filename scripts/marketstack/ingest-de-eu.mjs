@@ -90,9 +90,24 @@ export async function ingest({listingMap,accountEvidence,privateDir,previewOut,a
   currency:r.tradingCurrency,assetType:r.shareClass==='PREFERRED_SHARE'?'preferred_equity':'equity',shareClassVerified:r.shareClass==='PREFERRED_SHARE',
   mappingVerified:true,currencyVerified:true,mappingSource:r.mappingSource,currencySource:r.mappingSource}]));
  const provider=providerFactory?providerFactory({client,mappings,budget,onResponse}):Adapter.createMarketstackProvider({client,mappings});
- const ordered=phase==='sample'?sample:phase==='mandatory'?candidates.filter(r=>!sampleIds.has(r.listingId)):candidates;
+ let ordered=phase==='sample'?sample:phase==='mandatory'?candidates.filter(r=>!sampleIds.has(r.listingId)):candidates;
  const histories={},currentHistoryHashes={},decisions=phase==='mandatory'?(previousCheckpoint?.decisions?.filter(d=>d.phase==='SAMPLE')||[]):[],venueFailures=new Map(quarantinedMICs.map(m=>[m,3])),actionEndpointBlocks=new Set();let sampleSuccesses=phase==='sample'?0:sampleProof.successfulListingIds.length;
  for(const r of rows){const h=read(join(privateDir,'normalized',r.listingId+'.json'));if(h&&h.isin===r.isin&&h.mic===r.mic&&h.currency===r.tradingCurrency){histories[r.listingId]=h;currentHistoryHashes[r.listingId]=sha(JSON.stringify(h));}}
+ if(phase==='refresh'){
+  // Daily overlap updates accepted histories only. Mapping failures need an
+  // explicit revalidation run, not repeated paid metadata requests every day.
+  const eligible=new Set(candidates.filter(r=>{
+   const h=histories[r.listingId],m=read(join(privateDir,'metadata',r.listingId+'.json'));
+   return h?.bars?.length>0&&h.provider==='marketstack'&&h.apiVersion==='v2'&&h.quoteUnit===r.quoteUnit&&
+    m?.isin===r.isin&&m.mic===r.mic&&m.data?.providerSymbol===r.providerSymbol&&m.data?.exchange===r.mic&&m.data?.currency===r.tradingCurrency;
+  }).map(r=>r.listingId));
+  for(const r of candidates.filter(r=>!eligible.has(r.listingId))){
+   const priorDecision=previousCheckpoint?.decisions?.find(d=>d.listingId===r.listingId&&d.status==='BLOCKED');
+   decisions.push(priorDecision?{...priorDecision,phase:'REFRESH_SKIPPED',refreshQueried:false,refreshAsOf:asOf}:
+    {listingId:r.listingId,isin:r.isin,mic:r.mic,status:'NOT_TESTED',cause:histories[r.listingId]?'MAPPING_ERROR':'MISSING_HISTORY',phase:'REFRESH_SKIPPED',refreshQueried:false,asOf,sourceEvidence:[],nextStep:'Explicitly revalidate this selected identity and initial history before daily refresh.'});
+  }
+  ordered=ordered.filter(r=>eligible.has(r.listingId));
+ }
  for(const r of ordered){
   // Scope evidence before every early gate, including listings never queried.
   responseRefs=[];

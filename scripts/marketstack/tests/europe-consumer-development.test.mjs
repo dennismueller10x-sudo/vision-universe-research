@@ -165,3 +165,50 @@ test('file-backed certifications reject competing certificates, public paths, sy
   assert.throws(()=>aggregateDevelopment(input({certificationsDir:dir})),/CERTIFICATION_INPUT_FILE_TYPE_REJECTED/);
  }finally{rmSync(root,{recursive:true,force:true});}
 });
+
+test('registered private audit wrappers supply only recentWindow certification and preserve original files',()=>{
+ const root=mkdtempSync(join(tmpdir(),'eu-report-wrapper-cert-'));try{
+  const r=row(),data=history(r),cert=certificate(r,data),dir=join(root,'certifications');mkdirSync(dir);const path=join(dir,r.listingId+'.json');
+  const wrapper={schemaVersion:'private-europe-cache-audit-1.0.0',listingId:r.listingId,recentWindow:cert,
+   fullWindow:{...cert,technicalFields:{sma20:{...cert.technicalFields.sma20,value:999}}}};writeFileSync(path,JSON.stringify(wrapper));
+  const before=readFileSync(path),mtime=statSync(path).mtimeMs,common={histories:{[r.listingId]:data},integrationEvidence:proof(r)};
+  const wrapped=aggregateDevelopment(input({...common,certificationsDir:dir})),inMemory=aggregateDevelopment(input({...common,certifications:{[r.listingId]:cert}}));
+  assert.deepEqual(wrapped,inMemory);assert.equal(wrapped.outputs.europe_consumer_product_readiness.listings[0].technicalFields.sma20.value,11.5);
+  assert.deepEqual(readFileSync(path),before);assert.equal(statSync(path).mtimeMs,mtime);
+  writeFileSync(path,JSON.stringify({...wrapper,recentWindow:null}));assert.deepEqual(aggregateDevelopment(input({...common,certificationsDir:dir})),aggregateDevelopment(input(common)),'absent recentWindow cannot borrow fullWindow certification');
+  writeFileSync(path,JSON.stringify({...wrapper,schemaVersion:'unregistered-wrapper'}));assert.equal(aggregateDevelopment(input({...common,certificationsDir:dir})).summary.counts.technicalListings,0,'unknown wrappers never silently unwrap nested evidence');
+ }finally{rmSync(root,{recursive:true,force:true});}
+});
+
+test('explicit private certification directory arrays resolve distinct exact listings without copying or preferring duplicates',()=>{
+ const root=mkdtempSync(join(tmpdir(),'eu-report-cert-directory-array-'));try{
+  const one=row(),isin='DE0005190003',two=row({isin,listingId:I.listingIdFor({isin,mic:'XETR'}),securityId:I.securityIdForISIN(isin),providerSymbol:'SECOND_FIXTURE.DE',name:'Second synthetic issuer'});
+  const dirs=[join(root,'baseline'),join(root,'new-cohort')];for(const dir of dirs)mkdirSync(dir);
+  const firstData=history(one),secondData=history(two),firstCert=certificate(one,firstData),secondCert=certificate(two,secondData);
+  const firstFile=join(dirs[0],one.listingId+'.json'),secondFile=join(dirs[1],two.listingId+'.json');
+  writeFileSync(firstFile,JSON.stringify({schemaVersion:'private-europe-cache-audit-1.0.0',recentWindow:firstCert,fullWindow:null}));writeFileSync(secondFile,JSON.stringify(secondCert));
+  const bytes=[readFileSync(firstFile),readFileSync(secondFile)],mtimes=[statSync(firstFile).mtimeMs,statSync(secondFile).mtimeMs];
+  const common={listingMaps:[{schemaVersion:'de-eu-listing-map-1.0.0',asOf:'2026-10-06',listings:[one,two]}],histories:{[one.listingId]:firstData,[two.listingId]:secondData}};
+  const expected=aggregateDevelopment(input({...common,certifications:{[one.listingId]:firstCert,[two.listingId]:secondCert}}));
+  const actual=aggregateDevelopment(input({...common,certificationsDir:dirs}));assert.deepEqual(actual,expected);assert.deepEqual(aggregateDevelopment(input({...common,certificationsDir:[...dirs].reverse()})),expected);
+  assert.deepEqual(aggregateDevelopment(input({histories:{[one.listingId]:firstData},certificationsDir:dirs[0]})),aggregateDevelopment(input({histories:{[one.listingId]:firstData},certificationsDir:[dirs[0]]})),'single string input remains byte-equivalent');
+  assert.deepEqual([readFileSync(firstFile),readFileSync(secondFile)],bytes);assert.deepEqual([statSync(firstFile).mtimeMs,statSync(secondFile).mtimeMs],mtimes);
+  writeFileSync(join(dirs[1],one.listingId+'.json'),JSON.stringify({...firstCert,technicalFields:{}}));
+  assert.throws(()=>aggregateDevelopment(input({...common,certificationsDir:dirs})),/COMPETING_CERTIFICATION_INPUTS/,'duplicate exact listing must not select the newest or merge fields');
+  assert.throws(()=>aggregateDevelopment(input({...common,certificationsDir:[...dirs].reverse()})),/COMPETING_CERTIFICATION_INPUTS/);
+  writeFileSync(firstFile,JSON.stringify({schemaVersion:'private-europe-cache-audit-1.0.0',recentWindow:null}));
+  assert.throws(()=>aggregateDevelopment(input({...common,certificationsDir:dirs})),/COMPETING_CERTIFICATION_INPUTS/,'a present wrapper with missing recentWindow still competes');
+ }finally{rmSync(root,{recursive:true,force:true});}
+});
+
+test('all alternative certification directories retain private path and file guards',()=>{
+ const root=mkdtempSync(join(tmpdir(),'eu-report-alternate-cert-guards-'));try{
+  const r=row(),dirs=[join(root,'baseline'),join(root,'alternate')];for(const dir of dirs)mkdirSync(dir);
+  for(const certificationsDir of [[],[dirs[0],null],[dirs[0],''],[dirs[0],{}],[dirs[0],[dirs[1]]]])assert.throws(()=>aggregateDevelopment(input({certificationsDir})),/PRIVATE_CERTIFICATION_DIRECTORY_REQUIRED/);
+  assert.throws(()=>aggregateDevelopment(input({certificationsDir:[dirs[0],resolve('core/data')]})),/PRIVATE_OUTPUT_OUTSIDE_REPOSITORY_REQUIRED/);
+  const link=join(root,'linked-directory');symlinkSync(dirs[1],link);assert.throws(()=>aggregateDevelopment(input({certificationsDir:[dirs[0],link]})),/SYMLINK_REJECTED/);
+  const original=join(root,'original.json');writeFileSync(original,JSON.stringify(certificate(r,history(r))));const file=join(dirs[1],r.listingId+'.json');symlinkSync(original,file);
+  assert.throws(()=>aggregateDevelopment(input({certificationsDir:dirs})),/SYMLINK_REJECTED/);rmSync(file);linkSync(original,file);
+  assert.throws(()=>aggregateDevelopment(input({certificationsDir:dirs})),/CERTIFICATION_INPUT_FILE_TYPE_REJECTED/);
+ }finally{rmSync(root,{recursive:true,force:true});}
+});

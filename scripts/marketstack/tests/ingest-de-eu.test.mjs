@@ -52,6 +52,11 @@ test('fake end-to-end sample, representative barrier, mandatory remainder and on
  const correctedProof={...proof,referenceHash:hash(changedMap),successfulListingIds:successful,normalizedHistoryHashes:Object.fromEntries(successful.map(id=>[id,hash(JSON.parse(readFileSync(join(fresh.privateDir,'normalized',id+'.json'))))]))};
  const blockedFull=await ingest({...fresh,phase:'mandatory',sampleProof:correctedProof});
  assert.equal(blockedSample.series,14);assert.equal(blockedFull.decisions.length,16);assert.ok(blockedFull.decisions.some(d=>d.listingId===blockedId&&d.cause==='MAPPING_ERROR'));
+ const beforeAcceptedRefresh=calls.length,acceptedRefresh=await ingest({...fresh,phase:'refresh',sampleProof:correctedProof});
+ assert.equal(acceptedRefresh.series,15);assert.equal(calls.length-beforeAcceptedRefresh,15);
+ assert.ok(calls.slice(beforeAcceptedRefresh).every(c=>c.endpoint==='/eod'&&c.id!==blockedId));
+ const retained=acceptedRefresh.decisions.find(d=>d.listingId===blockedId);assert.equal(retained.status,'BLOCKED');assert.equal(retained.cause,'MAPPING_ERROR');assert.equal(retained.phase,'REFRESH_SKIPPED');assert.equal(retained.refreshQueried,false);
+ assert.deepEqual(retained.sourceEvidence,blockedFull.decisions.find(d=>d.listingId===blockedId).sourceEvidence,'old failure provenance is retained without pretending to query it again');
  }finally{rmSync(out,{recursive:true,force:true});}
 });
 test('overlap detects source corrections without filling gaps or double adjusting',()=>{
