@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
-import {mkdtempSync,writeFileSync,readFileSync,statSync,symlinkSync,rmSync,readdirSync} from 'node:fs';
-import {join} from 'node:path';
+import {mkdtempSync,writeFileSync,readFileSync,statSync,symlinkSync,rmSync,readdirSync,mkdirSync,linkSync} from 'node:fs';
+import {join,resolve} from 'node:path';
 import {tmpdir} from 'node:os';
 import {aggregateDevelopment,run,TECHNICAL_FIELDS} from '../build-europe-consumer-development.mjs';
 const require=createRequire(import.meta.url),I=require('../../../core/identity.js'),SHA='a'.repeat(40),h=v=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
@@ -106,4 +106,62 @@ test('all-company producer with null Company IDs binds only exact referenced iss
  const logoEvidence={companies,reviewed:{companies:{[reference]:'c'.repeat(40)}},assetLoads:rows.slice(0,2).map(r=>({companyId:null,referencedIssuerId:reference,asset:r.asset,loaded:true,sha1:'c'.repeat(40),evidence:['synthetic-exact-asset-load']}))};
  const report=aggregateDevelopment(input({listingMaps:[{schemaVersion:'de-eu-listing-map-1.0.0',asOf:'2026-10-06',listings:targetRows}],logoStatus:{rows},logoEvidence}));assert.equal(report.summary.counts.verifiedLogos,2);assert.equal(report.summary.counts.fallbacks,161);assert.equal(report.summary.counts.actualCompanyLinks,0);assert.ok(report.outputs.europe_consumer_logo_status.listings.every(l=>l.status!=='SUSPECT_QUARANTINED'));
  const wrong=structuredClone(rows);wrong[0].logo.companyId='iss_lei_WRONG';const attack=aggregateDevelopment(input({listingMaps:[{schemaVersion:'de-eu-listing-map-1.0.0',asOf:'2026-10-06',listings:targetRows}],logoStatus:{rows:wrong},logoEvidence}));assert.equal(attack.summary.counts.verifiedLogos,1);assert.equal(attack.outputs.europe_consumer_logo_status.listings.find(l=>l.listingId===targetRows[0].listingId).status,'SUSPECT_QUARANTINED');
+});
+
+test('private per-listing history files produce identical reports without a monolithic history object',()=>{
+ const root=mkdtempSync(join(tmpdir(),'eu-report-histories-dir-'));try{
+  const r=row(),data=history(r),dir=join(root,'normalized');mkdirSync(dir,{mode:0o700});const file=join(dir,r.listingId+'.json');
+  data.quarantined=[{date:'2026-09-16',reason:'synthetic-original-defect-retained'}];writeFileSync(file,JSON.stringify(data)+'\n',{mode:0o600});
+  const before=readFileSync(file),mtime=statSync(file).mtimeMs,common={certifications:{[r.listingId]:certificate(r,data)},integrationEvidence:proof(r)};
+  const inMemory=aggregateDevelopment(input({...common,histories:{[r.listingId]:data}})),fileBacked=aggregateDevelopment(input({...common,historiesDir:dir}));
+  assert.deepEqual(fileBacked,inMemory);assert.deepEqual(aggregateDevelopment(input({...common,historiesDir:dir})),fileBacked);
+  assert.deepEqual(readFileSync(file),before);assert.equal(statSync(file).mtimeMs,mtime,'report reads never modify the original private cache');
+  const source=join(root,'report-input.json'),out=join(root,'reports');writeFileSync(source,JSON.stringify(input({...common,historiesDir:dir})));
+  run(['--input',source,'--out',out]);assert.deepEqual(JSON.parse(readFileSync(join(out,'europe_consumer_ingestion_status.json'))),inMemory.outputs.europe_consumer_ingestion_status);
+  rmSync(file);assert.deepEqual(aggregateDevelopment(input({historiesDir:dir})),aggregateDevelopment(input()),'a missing file remains missing history');
+ }finally{rmSync(root,{recursive:true,force:true});}
+});
+
+test('file-backed reports reject competing histories, public paths, symlinked sources and hardlinked histories',()=>{
+ const root=mkdtempSync(join(tmpdir(),'eu-report-history-guards-'));try{
+  const r=row(),data=history(r),dir=join(root,'normalized');mkdirSync(dir);const file=join(dir,r.listingId+'.json');writeFileSync(file,JSON.stringify(data));
+  assert.throws(()=>aggregateDevelopment(input({historiesDir:dir,histories:{[r.listingId]:data}})),/COMPETING_HISTORY_INPUTS/);
+  for(const historiesDir of ['',{},0])assert.throws(()=>aggregateDevelopment(input({historiesDir})),/PRIVATE_HISTORY_DIRECTORY_REQUIRED/);
+  assert.throws(()=>aggregateDevelopment(input({historiesDir:resolve('core/data')})),/PRIVATE_OUTPUT_OUTSIDE_REPOSITORY_REQUIRED/);
+  const link=join(root,'linked-directory');symlinkSync(dir,link);assert.throws(()=>aggregateDevelopment(input({historiesDir:link})),/SYMLINK_REJECTED/);
+  const original=join(root,'original.json');writeFileSync(original,JSON.stringify(data));rmSync(file);symlinkSync(original,file);
+  assert.throws(()=>aggregateDevelopment(input({historiesDir:dir})),/SYMLINK_REJECTED/);rmSync(file);linkSync(original,file);
+  assert.throws(()=>aggregateDevelopment(input({historiesDir:dir})),/HISTORY_INPUT_FILE_TYPE_REJECTED/);rmSync(file);mkdirSync(file);
+  assert.throws(()=>aggregateDevelopment(input({historiesDir:dir})),/HISTORY_INPUT_FILE_TYPE_REJECTED/);
+ }finally{rmSync(root,{recursive:true,force:true});}
+});
+
+test('per-listing certification files match in-memory reports and ignore evidence siblings',()=>{
+ const root=mkdtempSync(join(tmpdir(),'eu-report-certifications-dir-'));try{
+  const r=row(),data=history(r),cert=certificate(r,data),historyDir=join(root,'normalized'),certDir=join(root,'certifications');mkdirSync(historyDir);mkdirSync(certDir);
+  const certFile=join(certDir,r.listingId+'.json');writeFileSync(join(historyDir,r.listingId+'.json'),JSON.stringify(data));writeFileSync(certFile,JSON.stringify(cert));
+  writeFileSync(join(certDir,r.listingId+'-evidence.json'),JSON.stringify({...cert,technicalFields:{sma20:{...cert.technicalFields.sma20,value:999}}}));
+  const bytes=readFileSync(certFile),mtime=statSync(certFile).mtimeMs,common={integrationEvidence:proof(r)};
+  const expected=aggregateDevelopment(input({...common,histories:{[r.listingId]:data},certifications:{[r.listingId]:cert}}));
+  const actual=aggregateDevelopment(input({...common,historiesDir:historyDir,certificationsDir:certDir}));assert.deepEqual(actual,expected);
+  assert.equal(actual.outputs.europe_consumer_product_readiness.listings[0].technicalFields.sma20.value,11.5);
+  assert.deepEqual(readFileSync(certFile),bytes);assert.equal(statSync(certFile).mtimeMs,mtime);
+  const source=join(root,'input.json'),out=join(root,'reports');writeFileSync(source,JSON.stringify(input({...common,historiesDir:historyDir,certificationsDir:certDir})));run(['--input',source,'--out',out]);
+  assert.deepEqual(JSON.parse(readFileSync(join(out,'europe_consumer_product_readiness.json'))),expected.outputs.europe_consumer_product_readiness);
+  rmSync(certFile);assert.deepEqual(aggregateDevelopment(input({historiesDir:historyDir,certificationsDir:certDir})),aggregateDevelopment(input({histories:{[r.listingId]:data}})),'missing certificate remains untested');
+ }finally{rmSync(root,{recursive:true,force:true});}
+});
+
+test('file-backed certifications reject competing certificates, public paths, symlinks and hardlinks',()=>{
+ const root=mkdtempSync(join(tmpdir(),'eu-report-certification-guards-'));try{
+  const r=row(),cert=certificate(r,history(r)),dir=join(root,'certifications');mkdirSync(dir);const file=join(dir,r.listingId+'.json');writeFileSync(file,JSON.stringify(cert));
+  assert.throws(()=>aggregateDevelopment(input({certificationsDir:dir,certifications:{[r.listingId]:cert}})),/COMPETING_CERTIFICATION_INPUTS/);
+  for(const certificationsDir of ['',{},0])assert.throws(()=>aggregateDevelopment(input({certificationsDir})),/PRIVATE_CERTIFICATION_DIRECTORY_REQUIRED/);
+  assert.throws(()=>aggregateDevelopment(input({certificationsDir:resolve('core/data')})),/PRIVATE_OUTPUT_OUTSIDE_REPOSITORY_REQUIRED/);
+  const link=join(root,'linked-directory');symlinkSync(dir,link);assert.throws(()=>aggregateDevelopment(input({certificationsDir:link})),/SYMLINK_REJECTED/);
+  const original=join(root,'original.json');writeFileSync(original,JSON.stringify(cert));rmSync(file);symlinkSync(original,file);
+  assert.throws(()=>aggregateDevelopment(input({certificationsDir:dir})),/SYMLINK_REJECTED/);rmSync(file);linkSync(original,file);
+  assert.throws(()=>aggregateDevelopment(input({certificationsDir:dir})),/CERTIFICATION_INPUT_FILE_TYPE_REJECTED/);rmSync(file);mkdirSync(file);
+  assert.throws(()=>aggregateDevelopment(input({certificationsDir:dir})),/CERTIFICATION_INPUT_FILE_TYPE_REJECTED/);
+ }finally{rmSync(root,{recursive:true,force:true});}
 });

@@ -1,10 +1,11 @@
 /** Private aggregate only: no fetching, model changes, data publication or UI claims. */
-import {readFileSync,writeFileSync,mkdirSync,chmodSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdirSync,chmodSync,existsSync,lstatSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
 import {evaluateListingReadiness} from './de-eu-readiness.mjs';
+import {readPrivateHistory} from './materialize-de-eu.mjs';
 import {assertPrivateOutput,rejectSymlinkAncestors} from './private-output.mjs';
 const require=createRequire(import.meta.url),Identity=require('../../core/identity.js');
 export const TECHNICAL_FIELDS=['sma20','sma50','sma200','high52w','low52w','momentum1M','momentum3M','momentum6M','momentum12M','realizedVolatility20d','realizedVolatility60d','atr14','relativeVolume'];
@@ -18,6 +19,13 @@ const missing=(cause='PRODUCT_INTEGRATION_MISSING')=>decision('NOT_TESTED',[caus
 const numeric=v=>typeof v==='number'&&Number.isFinite(v);
 function rowsOf(value){return Array.isArray(value)?value:Array.isArray(value?.listings)?value.listings:[];}
 function byId(value,id){return rowsOf(value).find(r=>r.listingId===id)||value?.[id]||null;}
+function readPrivateCertification(directory,listingId){
+ assertPrivateOutput(directory,{allowCache:true});rejectSymlinkAncestors(directory);
+ if(!/^lst_[A-Z0-9]{4}_[A-Z0-9]{12}$/.test(listingId))throw Error('CANONICAL_CERTIFICATION_ID_REQUIRED');
+ const path=join(directory,listingId+'.json');rejectSymlinkAncestors(path);if(!existsSync(path))return null;
+ const stat=lstatSync(path);if(!stat.isFile()||stat.nlink!==1)throw Error('CERTIFICATION_INPUT_FILE_TYPE_REJECTED');
+ return JSON.parse(readFileSync(path,'utf8'));
+}
 function certified(row,h,cert,asOf){return !!h&&Array.isArray(h.bars)&&cert?.schemaVersion==='europe-history-certification-1.0.0'&&cert.listingId===row.listingId&&cert.securityId===row.securityId&&cert.isin===row.isin&&cert.mic===row.mic&&cert.asOf===asOf&&cert.inputSeriesHash===hash(h.bars);}
 function historyFacts(row,h,asOf){
  if(!h)return {state:'MISSING',causes:['MISSING_HISTORY'],bars:0,first:null,last:null,inputSeriesHash:null};
@@ -94,6 +102,16 @@ function logoRecord(row,input){
 export function aggregateDevelopment(input){
  if(!input||!Array.isArray(input.listingMaps)||!date(input.asOf)||!/^[a-f0-9]{40}$/.test(input.sourceSHA||'')||typeof input.now!=='string'||!/(Z|[+-]\d\d:\d\d)$/.test(input.now)||!Number.isFinite(Date.parse(input.now)))throw Error('FIXED_PRIVATE_REPORT_INPUT_REQUIRED');
  if(input.asOf>new Date(input.now).toISOString().slice(0,10))throw Error('FUTURE_DATA_STICHTAG_REJECTED');
+ if(input.historiesDir!==undefined&&input.historiesDir!==null){
+  if(typeof input.historiesDir!=='string'||!input.historiesDir.trim())throw Error('PRIVATE_HISTORY_DIRECTORY_REQUIRED');
+  if(Object.keys(input.histories||{}).length)throw Error('COMPETING_HISTORY_INPUTS');
+  assertPrivateOutput(input.historiesDir,{allowCache:true});rejectSymlinkAncestors(input.historiesDir);
+ }
+ if(input.certificationsDir!==undefined&&input.certificationsDir!==null){
+  if(typeof input.certificationsDir!=='string'||!input.certificationsDir.trim())throw Error('PRIVATE_CERTIFICATION_DIRECTORY_REQUIRED');
+  if(Object.keys(input.certifications||{}).length)throw Error('COMPETING_CERTIFICATION_INPUTS');
+  assertPrivateOutput(input.certificationsDir,{allowCache:true});rejectSymlinkAncestors(input.certificationsDir);
+ }
  const selected=new Map(),securityMIC=new Map();
  for(const map of input.listingMaps){
   if(map.schemaVersion!=='de-eu-listing-map-1.0.0'||!Array.isArray(map.listings)||!date(map.asOf)||map.asOf>input.asOf)throw Error('FROZEN_LISTING_MAP_REQUIRED');
@@ -108,7 +126,7 @@ export function aggregateDevelopment(input){
  }
  const rows=[...selected.values()].sort((a,b)=>a.listingId.localeCompare(b.listingId)),readiness=[],ingestion=[],logos=[];
  for(const row of rows){
-  const h=input.histories?.[row.listingId]||null,facts=historyFacts(row,h,input.asOf),cert=byId(input.certifications,row.listingId),certMatches=!facts.causes.some(c=>['MAPPING_ERROR','PROVIDER_PROVENANCE_UNVERIFIED'].includes(c))&&certified(row,h,cert,input.asOf),fresh=freshness(facts,cert,certMatches);
+  const h=input.historiesDir?readPrivateHistory(input.historiesDir,row.listingId):input.histories?.[row.listingId]||null,facts=historyFacts(row,h,input.asOf),cert=input.certificationsDir?readPrivateCertification(input.certificationsDir,row.listingId):byId(input.certifications,row.listingId),certMatches=!facts.causes.some(c=>['MAPPING_ERROR','PROVIDER_PROVENANCE_UNVERIFIED'].includes(c))&&certified(row,h,cert,input.asOf),fresh=freshness(facts,cert,certMatches);
   const sourceRefs=arrayRefs(h?.sourceEvidence),mappingRefs=arrayRefs(row.mappingSource),mapped=row.mappingStatus==='VERIFIED'&&mappingRefs.length>0;
   const baseline=evaluateListingReadiness({listing:{...row,currency:row.tradingCurrency},history:h?{...h,bars:facts.barsForEvaluator||[],sourceEvidence:sourceRefs}:{},asOf:input.asOf,metadata:{identityVerified:mapped,identityEvidence:mappingRefs,currencyVerified:mapped&&!!row.tradingCurrency,currencyEvidence:mappingRefs,quoteUnit:row.quoteUnit,
    rights:{privateDevelopment:true,publicDisplay:false,evidence:['User-authorized isolated private DE/EU consumer development']}}});

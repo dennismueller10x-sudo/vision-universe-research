@@ -50,8 +50,8 @@ export function directory(rows,asOf,dataAsOf=asOf){
  }).sort((a,b)=>a.listingId.localeCompare(b.listingId));
  return {schemaVersion:'de-eu-directory-1.0.0',state:listings.length?'PRIVATE_DEVELOPMENT':'DISABLED',privateDevelopment:true,publicDisplay:false,referenceAsOf:asOf,dataAsOf,listings};
 }
-export function closeSeries(row,history,{asOf,expectedSession=null}={}){
- if(!day(asOf)||expectedSession&&!day(expectedSession))throw Error('FIXED_AS_OF_REQUIRED');
+export function closeSeries(row,history,{asOf,expectedSession=null,lastProvenCompletedSession=null}={}){
+ if(!day(asOf)||expectedSession&&(!day(expectedSession)||expectedSession>asOf)||lastProvenCompletedSession&&(!day(lastProvenCompletedSession)||lastProvenCompletedSession>asOf)||expectedSession&&lastProvenCompletedSession&&expectedSession<lastProvenCompletedSession)throw Error('FIXED_AS_OF_REQUIRED');
  if(!history||history.mic!==row.mic||history.isin!==row.isin||history.currency!==row.tradingCurrency||history.quoteUnit!==row.quoteUnit||history.provider!=='marketstack'||!history.sourceEvidence)throw Error('HISTORY_IDENTITY_EVIDENCE_REQUIRED');
  if(history.adjustmentStatus?.verified===true&&history.adjustmentStatus.priceSeriesType!=='SPLIT_ADJUSTED')throw Error('UNSUPPORTED_VERIFIED_BASIS');
  if(history.points&&history.bars){
@@ -67,15 +67,29 @@ export function closeSeries(row,history,{asOf,expectedSession=null}={}){
  return {schemaVersion:'de-eu-close-series-1.0.0',privateDevelopment:true,publicDisplay:false,listingId:row.listingId,securityId:row.securityId,
   mic:row.mic,currency:row.tradingCurrency,quoteUnit:row.quoteUnit,provider:'marketstack',apiVersion:history.apiVersion||'v2',kind:'EOD_CLOSE',
   basis:history.adjustmentStatus?.verified===true?'SPLIT_ADJUSTED':'PROVIDER_REPORTED_UNVERIFIED',sourceEvidence:history.sourceEvidence,
-  asOf:last,expectedSession,retrievedAt:history.retrievedAt||null,freshness:history.cacheOnly===true?'STALE_CACHE':expectedSession?(last===expectedSession?'CURRENT':'STALE'):'UNKNOWN',
+  asOf:last,expectedSession,...(lastProvenCompletedSession?{lastProvenCompletedSession}:{}),retrievedAt:history.retrievedAt||null,freshness:history.cacheOnly===true?'STALE_CACHE':expectedSession?(last===expectedSession?'CURRENT':'STALE'):lastProvenCompletedSession&&last<lastProvenCompletedSession?'STALE':'UNKNOWN',
   changeVerified:history.changeVerified===true&&history.adjustmentStatus?.verified===true,quality:history.quality||{status:'PARTIAL',reason:'UNKNOWN_ADJUSTMENT_BASIS'},points};
 }
-export function materialize({rows,histories={},asOf,referenceAsOf=asOf,expectedSessions={},technicalFields={},out,disabled=false}){
+export function readPrivateHistory(historiesDir,listingId){
+ assertPrivateOutput(historiesDir,{allowCache:true});rejectSymlinkAncestors(historiesDir);
+ if(!/^lst_[A-Z0-9]{4}_[A-Z0-9]{12}$/.test(listingId))throw Error('CANONICAL_HISTORY_ID_REQUIRED');
+ const p=join(historiesDir,listingId+'.json');rejectSymlinkAncestors(p);if(!existsSync(p))return null;
+ const stat=lstatSync(p);if(!stat.isFile()||stat.nlink!==1)throw Error('HISTORY_INPUT_FILE_TYPE_REJECTED');
+ return JSON.parse(readFileSync(p,'utf8'));
+}
+export function materialize({rows,histories={},historiesDir=null,asOf,referenceAsOf=asOf,expectedSessions={},lastProvenCompletedSessions={},technicalFields={},out,disabled=false}){
  out=resolve(out);if(!disabled)assertPrivateOutput(out);else rejectSymlinkAncestors(out);
- const d=directory(disabled?[]:rows,referenceAsOf,asOf),series={};
- for(const r of d.listings)if(histories[r.listingId])series[r.listingId]=closeSeries(r,histories[r.listingId],{asOf,expectedSession:expectedSessions[r.mic]||null});
+ if(historiesDir){if(Object.keys(histories).length)throw Error('COMPETING_HISTORY_INPUTS');assertPrivateOutput(historiesDir,{allowCache:true});rejectSymlinkAncestors(historiesDir);}
+ const d=directory(disabled?[]:rows,referenceAsOf,asOf),series={},historyHashes={};
+ // Read each private normalized file independently. A full European cache can
+ // exceed V8's single-string limit; only the canonical projections stay in memory.
+ for(const r of d.listings){
+  let h=histories[r.listingId];
+  if(historiesDir)h=readPrivateHistory(historiesDir,r.listingId);
+  if(h){series[r.listingId]=closeSeries(r,h,{asOf,expectedSession:expectedSessions[r.mic]||null,lastProvenCompletedSession:lastProvenCompletedSessions[r.mic]||null});if(h.bars)historyHashes[r.listingId]=createHash('sha256').update(JSON.stringify(h.bars)).digest('hex');}
+ }
  for(const r of d.listings)for(const field of Object.values(technicalFields[r.listingId]||{}))if(field.status==='READY'){
-  const s=series[r.listingId],h=histories[r.listingId],hash=h?.bars&&createHash('sha256').update(JSON.stringify(h.bars)).digest('hex');
+  const s=series[r.listingId],hash=historyHashes[r.listingId];
   if(!s||!hash||field.inputSeriesHash!==hash||!Number.isFinite(field.value)||!Array.isArray(field.evidence)||!field.evidence.length||
    field.asOf!==s.asOf||!day(field.window?.from)||!day(field.window?.to)||field.window.to!==s.asOf||field.window.from>s.asOf||field.window.from<s.points[0][0])throw Error('TECHNICAL_INPUT_EVIDENCE_MISMATCH');
  }

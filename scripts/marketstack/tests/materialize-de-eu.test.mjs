@@ -22,6 +22,14 @@ test('canonical multi-index directory and gap-preserving unknown-basis close ser
  assert.throws(()=>closeSeries(r,{...h,bars:[{date:'2026-10-01',close:10},{date:'2026-10-02',close:11}]},{asOf:'2026-10-06'}),/COMPETING_HISTORY_PROJECTION/);
  assert.throws(()=>directory([row,row],'2026-10-06'));
 });
+test('a proven completed-session lower bound marks older EOD stale but never invents exact freshness',()=>{
+ const r=directory([row],'2026-10-06').listings[0],opts={asOf:'2026-10-06',lastProvenCompletedSession:'2026-10-05'};
+ assert.equal(closeSeries(r,h,opts).freshness,'STALE');assert.equal(closeSeries(r,h,opts).expectedSession,null);
+ const current={...h,points:[...h.points,['2026-10-05',102]]};assert.equal(closeSeries(r,current,opts).freshness,'UNKNOWN');
+ assert.equal(closeSeries(r,{...current,points:[...current.points,['2026-10-06',103]]},opts).freshness,'UNKNOWN');
+ assert.throws(()=>closeSeries(r,h,{...opts,lastProvenCompletedSession:'2026-10-07'}),/FIXED_AS_OF_REQUIRED/);
+ assert.throws(()=>closeSeries(r,h,{...opts,expectedSession:'2026-10-02'}),/FIXED_AS_OF_REQUIRED/);
+});
 test('private output rejects symlink parents and nested core/data escapes',()=>{
  const out=mkdtempSync(join(tmpdir(),'vu-de-eu-links-'));try{
  symlinkSync(process.cwd(),join(out,'repo'),'dir');assert.throws(()=>materialize({rows:[row],asOf:'2026-10-06',out:join(out,'repo','tmp')}),/SYMLINK/);
@@ -49,6 +57,16 @@ test('identical input preserves every output inode/mtime/byte and upgrades legac
  chmodSync(listings,0o644);chmodSync(target,0o755);freezeMtimes(out);const before=treeSnapshot(out);
  assert.equal(materialize(input).changed,false);assert.deepEqual(treeSnapshot(out),before);assert.equal(lstatSync(listings).mode&0o777,0o600);assert.equal(lstatSync(target).mode&0o777,0o700);
  assert.equal(existsSync(target+'.previous'),false);assert.throws(()=>materialize({...input,out:process.cwd()}),/PRIVATE_OUTPUT/);
+ }finally{rmSync(out,{recursive:true,force:true});}
+});
+test('per-listing private history input produces the same contract without a combined JSON string and rejects unsafe files',()=>{
+ const out=mkdtempSync(join(tmpdir(),'vu-de-eu-files-'));try{
+  const historiesDir=join(out,'normalized');mkdirSync(historiesDir);const id=directory([row],'2026-10-06').listings[0].listingId,p=join(historiesDir,id+'.json');writeFileSync(p,JSON.stringify(h));
+  const input={rows:[row],asOf:'2026-10-06',out};materialize({...input,histories:{[id]:h}});const before=treeSnapshot(join(out,'core'));
+  assert.equal(materialize({...input,historiesDir}).changed,false);assert.deepEqual(treeSnapshot(join(out,'core')),before);
+  assert.throws(()=>materialize({...input,historiesDir,histories:{[id]:h}}),/COMPETING_HISTORY_INPUTS/);
+  rmSync(p);symlinkSync(join(out,'core/data/de-eu/listings.json'),p);assert.throws(()=>materialize({...input,historiesDir}),/SYMLINK/);
+  rmSync(p);linkSync(join(out,'core/data/de-eu/listings.json'),p);assert.throws(()=>materialize({...input,historiesDir}),/FILE_TYPE_REJECTED/);
  }finally{rmSync(out,{recursive:true,force:true});}
 });
 test('a real new EOD replaces the owned tree and updates screener/detail/chart through the same central contract',async()=>{
