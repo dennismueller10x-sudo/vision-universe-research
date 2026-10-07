@@ -62,11 +62,13 @@ try{
   }
   const disabled=await pageFor(product,production?'ZZZZZ':'AAPL',390,false);assert.equal(await disabled.page.locator('.ci-company-intelligence').count(),0);assert.deepEqual(disabled.requests,[]);await disabled.page.close();cases.push({product,kind:production?'OUT_OF_COHORT_ZERO_REQUESTS':'DISABLED_ZERO_REQUESTS',status:'PASS'});
  }
- const attacks=['INDEX_MISSING','LOOKUP_MISMATCH','COMPANY_TIMESTAMP_MISMATCH','NO_PROFILE','STALE_FINANCIALS','DUPLICATES_AND_OLD_NEWS','CANCELLED_AND_PAST_EVENTS','DATE_ONLY_AND_SEPARATE_CALL','ESTIMATE_ONLY','BERLIN_DST','WEBCAST_AND_LETTER','UNSAFE_LINK','AMBIGUOUS_IDENTITY','ANNUAL_WHAT_CHANGED','UNKNOWN_COMPARISON','CANCELLED_CALL','SHARES_REQUIRE_CONTEXT','ANNUAL_REPORT_LABEL','UNDATED_NEWS_NO_TRUNCATION'];
+ const attacks=['TRANSIENT_503_RECOVERY','PERMANENT_503_FAIL_CLOSED','INDEX_MISSING','LOOKUP_MISMATCH','COMPANY_TIMESTAMP_MISMATCH','NO_PROFILE','STALE_FINANCIALS','DUPLICATES_AND_OLD_NEWS','CANCELLED_AND_PAST_EVENTS','DATE_ONLY_AND_SEPARATE_CALL','ESTIMATE_ONLY','BERLIN_DST','WEBCAST_AND_LETTER','UNSAFE_LINK','AMBIGUOUS_IDENTITY','ANNUAL_WHAT_CHANGED','UNKNOWN_COMPARISON','CANCELLED_CALL','SHARES_REQUIRE_CONTEXT','ANNUAL_REPORT_LABEL','UNDATED_NEWS_NO_TRUNCATION'];
  for(const product of (phase==='actual'||phase==='dark'?[]:['discover','quant']))for(const attack of attacks){
   const page=await browser.newPage({viewport:{width:390,height:860}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
   const cid='iss_cik_0000320193',future='2026-10-24';
-  if(attack==='INDEX_MISSING')await page.route('**/company-intelligence/data/index.json',r=>r.fulfill({status:404,body:'{}'}));
+  let transientAttempts=0;
+  if(attack==='TRANSIENT_503_RECOVERY'||attack==='PERMANENT_503_FAIL_CLOSED')await page.route('**/company-intelligence/data/**/'+cid+'.json',async r=>{transientAttempts++;if(attack==='PERMANENT_503_FAIL_CLOSED'||transientAttempts===1)await r.fulfill({status:503,body:'Temporary upstream failure'});else await r.continue();});
+  else if(attack==='INDEX_MISSING')await page.route('**/company-intelligence/data/index.json',r=>r.fulfill({status:404,body:'{}'}));
   else if(attack==='LOOKUP_MISMATCH'||attack==='AMBIGUOUS_IDENTITY')await page.route('**/company-intelligence/data/**/lookup/AA.json',async r=>{const response=await r.fetch(),body=await response.json();if(attack==='LOOKUP_MISMATCH')body.generation='0'.repeat(24);else body.tickers.AAPL.push({companyId:'iss_cik_0000000001',instrumentId:'vu_12345678901234'});await r.fulfill({response,json:body});});
   else await mutate(page,body=>{
    if(attack==='COMPANY_TIMESTAMP_MISMATCH')body.generatedAt='2026-10-05T00:00:00Z';
@@ -89,6 +91,8 @@ try{
   });
   await page.goto(base+route(product,'AAPL'));await page.waitForSelector('.ci-company-intelligence h2');const chapter=page.locator('.ci-company-intelligence'),text=await chapter.innerText();
   if(['INDEX_MISSING','LOOKUP_MISMATCH','COMPANY_TIMESTAMP_MISMATCH','AMBIGUOUS_IDENTITY'].includes(attack))assert(text.includes('derzeit nicht verfügbar'));
+  if(attack==='TRANSIENT_503_RECOVERY'){assert(!text.includes('derzeit nicht verfügbar'));assert.equal(transientAttempts,2);assert.equal(await chapter.getByRole('heading',{name:'Geschäftszahlen',exact:true}).count(),1);}
+  if(attack==='PERMANENT_503_FAIL_CLOSED'){assert(text.includes('derzeit nicht verfügbar'));assert.equal(transientAttempts,3);assert.equal(await chapter.locator('.ci-kpi').count(),0);}
   if(attack==='NO_PROFILE')assert(text.includes('deutsche Beschreibung ist noch nicht verfügbar'));
   if(attack==='STALE_FINANCIALS')assert(text.includes('Veraltete Geschäftszahlen'));
   if(attack==='DUPLICATES_AND_OLD_NEWS'){assert.equal(await chapter.getByRole('link',{name:'Aktuelle belegte Meldung',exact:true}).count(),1);assert.equal(await chapter.getByText('Doppelter Titel',{exact:true}).count(),0);assert.equal(await chapter.getByRole('link',{name:'Historische Meldung',exact:true}).isVisible(),false)}

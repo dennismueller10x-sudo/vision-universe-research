@@ -6,17 +6,20 @@ import assert from 'node:assert/strict';
 import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
 import {approval,reviewed} from './production-approval.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
+const {fetchWithRetry}=require('../../company-intelligence/api/contract.js');
+const deliveryRetries=[];
 const args=process.argv.slice(2),arg=(k,f)=>args.includes(k)?args[args.indexOf(k)+1]:f;
 const routine=args.includes('--routine');
 const origin=arg('--url','https://research.visionuniverse.de').replace(/\/$/,''),out=arg('--out','/tmp/company-intelligence-live');
 assert(origin==='https://research.visionuniverse.de','EXISTING_PRODUCTION_ORIGIN_REQUIRED');mkdirSync(out,{recursive:true});
-const fetchJSON=async path=>{const r=await fetch(origin+path+'?ci-proof='+Date.now(),{signal:AbortSignal.timeout(30000)});assert(r.ok,path+' '+r.status);return r.json();};
+const get=path=>fetchWithRetry(fetch,origin+path+'?ci-proof='+Date.now(),{signal:AbortSignal.timeout(30000)},retry=>deliveryRetries.push({path,...retry}));
+const fetchJSON=async path=>{const r=await get(path);assert(r.ok,path+' '+r.status);return r.json();};
 const release=await fetchJSON('/release-delivery.json');
 if(process.env.EXPECTED_PRODUCTION_SHA)assert.equal(release.sourceCommit,process.env.EXPECTED_PRODUCTION_SHA,'WRONG_PRODUCTION_COMMIT');
 const delivery=await fetchJSON('/company-intelligence-delivery.json');assert.equal(delivery.generation,approval.consumerGeneration);assert.equal(delivery.issuers,45);assert.equal(delivery.cohortStocks,46);
 const assetEntries=Object.entries(reviewed.assets).filter(([path])=>!routine||path==='index.json'||path.endsWith('/lookup/AA.json')||path.endsWith('/lookup/XP.json')||path.endsWith('/iss_cik_0000320193.json')||path.endsWith('/iss_cik_0001810997.json'));
 for(const [path,meta] of assetEntries){
- const r=await fetch(origin+'/company-intelligence/data/'+path+'?ci-proof='+Date.now(),{signal:AbortSignal.timeout(30000)});assert(r.ok,path+' '+r.status);const bytes=Buffer.from(await r.arrayBuffer());assert.equal(bytes.length,meta.bytes,path);assert.equal(createHash('sha256').update(bytes).digest('hex'),meta.sha256,path);
+ const r=await get('/company-intelligence/data/'+path);assert(r.ok,path+' '+r.status);const bytes=Buffer.from(await r.arrayBuffer());assert.equal(bytes.length,meta.bytes,path);assert.equal(createHash('sha256').update(bytes).digest('hex'),meta.sha256,path);
 }
 const browser=await chromium.launch({headless:true,args:['--no-sandbox'],executablePath:process.env.CHROMIUM_PATH||undefined}),cases=[];
 try{
@@ -27,10 +30,12 @@ try{
   await page.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state});
   page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.url().includes('/company-intelligence/data/'))responses.push({url:r.url(),status:r.status()});});
   await page.goto(origin+'/discover/#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});await page.waitForSelector('.ci-company-intelligence h2');
-  const chapter=page.locator('.ci-company-intelligence');assert(!(await chapter.innerText()).includes('derzeit nicht verfügbar'),ticker);assert.deepEqual(errors,[]);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert(responses.length>=3&&responses.every(r=>r.status===200));
+  const chapter=page.locator('.ci-company-intelligence');assert(!(await chapter.innerText()).includes('derzeit nicht verfügbar'),ticker);assert.deepEqual(errors,[]);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+  const resources=Map.groupBy(responses,r=>new URL(r.url).pathname);assert.equal(resources.size,3,ticker+' exact consumer resources');
+  for(const [path,attempts] of resources){assert(attempts.length<=3,path+' bounded attempts');assert.equal(attempts.at(-1).status,200,path+' final delivery');assert(attempts.slice(0,-1).every(r=>[429,500,502,503,504].includes(r.status)),path+' only transient retries');}
   assert.equal(await page.locator('vu-navigation').count(),1);assert(await chapter.locator('a').count()>0);await chapter.scrollIntoViewIfNeeded();await page.screenshot({path:out+'/'+ticker+'-390.png'});
   cases.push({ticker,width:390,status:'PASS',consumerRequests:responses});await page.close();
  }
- writeFileSync(out+'/report.json',JSON.stringify({status:'PASS',origin,sourceCommit:release.sourceCommit,generation:delivery.generation,verifiedAssetHashes:assetEntries.length,routine,protectedExistingAccessGate:true,noQueryOptIn:true,cases},null,2)+'\n');
+ writeFileSync(out+'/report.json',JSON.stringify({status:'PASS',origin,sourceCommit:release.sourceCommit,generation:delivery.generation,verifiedAssetHashes:assetEntries.length,deliveryRetries,routine,protectedExistingAccessGate:true,noQueryOptIn:true,cases},null,2)+'\n');
  console.log(JSON.stringify({status:'PASS',sourceCommit:release.sourceCommit,generation:delivery.generation,assets:assetEntries.length,stocks:cases.length,routine}));
 }finally{await browser.close();}

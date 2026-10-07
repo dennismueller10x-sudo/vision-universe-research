@@ -6,6 +6,10 @@ on:
       - 'quant/**'
       - 'scripts/vu2/**'
       - 'scripts/access-gate/**'
+      - 'company-intelligence/api/**'
+      - 'company-intelligence/ui/**'
+      - 'company-intelligence/config/rollout.js'
+      - 'scripts/company_intelligence/**'
       - '.github/workflows/pages-release.yml'
   push:
     branches: [main]

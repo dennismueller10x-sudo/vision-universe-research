@@ -4,12 +4,13 @@ import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
+const {fetchWithRetry}=require('../../company-intelligence/api/contract.js');
 const arg=(k,f)=>{const i=process.argv.indexOf('--'+k);return i<0?f:process.argv[i+1]};
 const base=arg('url','https://research.visionuniverse.de').replace(/\/$/,''),out=arg('out','/tmp/consumer-experience'),version=arg('version','after');
 const candidate=JSON.parse(await readFile('docs/company-intelligence/full-data-release-candidate.json','utf8'));
 const live=base==='https://research.visionuniverse.de';
 assert(live||base.startsWith('http://127.0.0.1:'),'APPROVED_PRODUCTION_OR_LOCAL_CANDIDATE_ONLY');
-const release=live?await (await fetch(base+'/release-delivery.json?review='+Date.now())).json():null;
+const release=live?await (await fetchWithRetry(fetch,base+'/release-delivery.json?review='+Date.now(),{signal:AbortSignal.timeout(30000)})).json():null;
 const browser=await chromium.launch({headless:true,args:['--no-sandbox'],executablePath:process.env.CHROMIUM_PATH||undefined});
 const cases=[],examples=['TSLA','AAPL','NVDA','PLTR','XPEV'];await mkdir(out,{recursive:true});
 try{
@@ -21,7 +22,7 @@ try{
    if(process.env.RESEARCH_ACCESS_PASSWORD){const state=accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD);await page.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state});}
    await page.addInitScript(theme=>localStorage.setItem('vu-discover-theme-v1',theme),theme);
    page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))requests.push(r.url())});
-   page.on('response',r=>{if(r.url().includes(cid+'.json'))payloads.push(r.json())});
+   page.on('response',r=>{if(r.status()===200&&r.url().includes(cid+'.json'))payloads.push(r.json())});
    await page.goto(base+'/discover/'+(live?'':'?company-intelligence=preview')+'#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});await page.waitForSelector('.ci-company-intelligence[aria-busy=false] h2');
    const chapter=page.locator('.ci-company-intelligence'),text=await chapter.innerText();const payload=await payloads[0];assert(payload&&payload.companyId===cid,ticker+' identity');
    assert(!text.includes('derzeit nicht verfügbar'),ticker+' unavailable');assert.deepEqual(errors,[]);assert.equal(await page.locator('html').getAttribute('data-theme'),theme);

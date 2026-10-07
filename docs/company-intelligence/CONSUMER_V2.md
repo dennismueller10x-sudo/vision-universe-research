@@ -1,6 +1,6 @@
 # Company Intelligence Consumer V2
 
-Status: validated candidate review in progress; **V2 is not yet production-deployed**. Existing V1 production remains unchanged and healthy. Validated candidate PR: [#480](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/480). Only the approved 46 stocks / 45 issuers are in scope. No universe discovery, source-policy expansion, private-state mutation, polling cadence change or wider activation occurred.
+Status: V2 merged in [#480](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/480), but its first production acceptance failed on one HTTP 503 during static asset readback. The existing fail-closed mechanism disabled the persistent gate and completed the emergency OFF deployment. Discover/Quant navigation and access controls remain working; Company Intelligence is temporarily OFF pending the bounded delivery-resilience correction and repeat full production acceptance. Only the approved 46 stocks / 45 issuers are in scope. No discovery, source-policy expansion, private-state mutation, polling cadence change or wider activation occurred.
 
 ## Consumer structure
 
@@ -59,7 +59,7 @@ Tesla V2 consequently shows its source-based German business description, websit
 
 669 Company Intelligence Python tests and 65 Node tests passed. Dedicated consumer-view tests cover publication/observation distinction, freshness, material-event/release unification, duplicate/unsafe/wrong-issuer/future records, separate date-only release/call, cancellation, estimates, unsupported comparisons and share-count context. 216 actual Discover/Quant and 38 adversarial browser cases preserve uncertainty, source safety, exact fiscal basis and failure-closed generation handling. The final frozen package passed all 368 Discover stock/theme/viewport combinations, plus 216 Discover/Quant cases and 38 adversarial cases. Additional access-gate/resource/Ask/Academy/worker tests: 64 pass; VU2 Python: 32 pass. All 45 representative original links returned HTTP 200 in the refreshed HEAD-only review.
 
-The independent broad regression classifier uses exact pre-V2 base `b2d0f3c842895d631b2cd4825c74df9f8d5ca670`; protected price/provider/engine/test inputs must be identical. It never waives an unknown failure. The four previously known price-data/regeneration failures must also reproduce on the independent baseline.
+The original V2 broad regression classifier independently reproduced the four known failures on exact pre-V2 base `b2d0f3c842895d631b2cd4825c74df9f8d5ca670`. The delivery-resilience follow-up uses its own exact production base `ffb076ec2e5a86add3e50e72a228c272765289b9`; protected price/provider/engine/test inputs must be identical. It never waives an unknown failure. The four previously known price-data/regeneration failures must also reproduce on the independent baseline.
 
 ## Rollback
 
@@ -75,3 +75,9 @@ Persistent R2 gate OFF plus emergency Pages deployment returns existing Discover
 ## Next recommendation
 
 **C, staged:** prioritize targeted approved first-party news/date and supported management-content gaps in the existing live product, then extend V2 only to additional issuers whose German profiles, financial period, source basis and sparse combinations pass the same checks. The measured 18/45 current-news and 31/45 German-profile availability does not justify enabling all 5,120. No expansion occurs in this task.
+
+## First deployment failure and proven rollback
+
+[Failure evidence](consumer-v2/failed-production-20261007.json): [production run 37648837955](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37648837955) built and deployed merge `b65889f247b463d585e794fa1d703806536cfde7`; one TOST immutable payload returned HTTP 503 before browser acceptance. No hash or issuer mismatch was observed. The existing safety step disabled the persistent gate and dispatched [emergency OFF run 37650122560](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/37650122560), which passed all eight actual Discover/Quant viewport OFF cases with zero consumer requests ([report](consumer-v2/rollback-20261007.json)). Failed code and immutable generation remain preserved.
+
+The correction permits at most three attempts per static resource, with 250/750 ms backoff, only for transient 429/500/502/503/504 or network errors. Abort cancels backoff. Normal requests and source cadence are unchanged. 403/404, malformed JSON, identity/schema/generation/hash failures are not retried or waived. The production verifier records transient retries and still requires every final response and all 86 hashes. Unit and adversarial browser cases prove both recovery and permanent failure closure.
