@@ -57,11 +57,13 @@ export async function handoff(mode,{driver,expected,output,snapshot,engine,state
   const bytes=await driver.get(incoming);
   if(bytes?.length!==expected.checkpointBytes||hash(bytes)!==expected.checkpointSha256)throw new Error('PRIVATE_INPUT_OBJECT_HASH_MISMATCH');
   writeFileSync(snapshot,bytes);
-  const verification=spawnSync('python3',['scripts/company_intelligence/accepted_state_verify.py','--snapshot',snapshot,'--state',state,'--engine',engine,'--expected','company-intelligence/config/accepted-state-handoff.json','--evidence',output],{stdio:['ignore','pipe','pipe']});
+  const verification=spawnSync('python3',['scripts/company_intelligence/accepted_state_verify.py','--snapshot',snapshot,'--state',state,'--engine',engine,'--original-engine','.accepted-original-engine','--expected','company-intelligence/config/accepted-state-handoff.json','--evidence',output],{stdio:['ignore','pipe','pipe']});
   if(verification.status!==0)throw new Error('ACCEPTED_PRIVATE_RESTORE_OR_EXPORT_FAILED');
   const result=await sync(driver,{direction:'push',namespace:expected.namespace,file:snapshot,initialize:pointers[expected.namespace].status==='ABSENT'});
+  const pointer=JSON.parse(await driver.get(prefixFor(expected.namespace)+'index.json'));
+  if(pointer.sha256!==expected.checkpointSha256||pointer.bytes!==expected.checkpointBytes)throw new Error('ACCEPTED_POINTER_INTEGRITY_FAILED');
   const evidence=JSON.parse(readFileSync(output));
-  Object.assign(evidence,{remotePreservation:result,remotePointersBefore:pointers,remoteStatePointer:prefixFor(expected.namespace)+'index.json',r2Object:prefixFor(expected.namespace)+'snapshot-0.tar.gz',rolloutNamespaceModified:false});
+  Object.assign(evidence,{remotePreservation:result,remotePointersBefore:pointers,remoteStatePointer:prefixFor(expected.namespace)+'index.json',r2Object:prefixFor(expected.namespace)+`snapshot-${pointer.slot}.tar.gz`,rolloutNamespaceModified:false});
   writeFileSync(output,JSON.stringify(evidence,null,2)+'\n');
   return {status:'ACCEPTED_PRIVATE_STATE_PRESERVED',sha256:result.sha256||expected.checkpointSha256,bytes:expected.checkpointBytes,rolloutNamespaceModified:false};
 }
@@ -71,6 +73,8 @@ if(process.argv[1]?.endsWith('/handoff-transfer.mjs')) {
     if(privacy.status!=='VERIFIED_NON_PUBLIC')throw new Error('PRIVATE_BUCKET_PROOF_REQUIRED');
     console.log(JSON.stringify(privacy));
     const expected=JSON.parse(readFileSync('company-intelligence/config/accepted-state-handoff.json'));
-    console.log(JSON.stringify(await handoff(process.argv[2],{driver:createS3DriverFromEnv(),expected,output:process.env.HANDOFF_EVIDENCE,snapshot:process.env.HANDOFF_SNAPSHOT,engine:'.accepted-engine',state:process.env.HANDOFF_STATE})));
+    const result=await handoff(process.argv[2],{driver:createS3DriverFromEnv(),expected,output:process.env.HANDOFF_EVIDENCE,snapshot:process.env.HANDOFF_SNAPSHOT,engine:'.accepted-engine',state:process.env.HANDOFF_STATE});
+    const evidence=JSON.parse(readFileSync(process.env.HANDOFF_EVIDENCE));evidence.bucketPrivacy=privacy;writeFileSync(process.env.HANDOFF_EVIDENCE,JSON.stringify(evidence,null,2)+'\n');
+    console.log(JSON.stringify(result));
   }catch(error) {console.error('PRIVATE_HANDOFF_FAILED: '+(['ACCEPTED_NAMESPACE_ALREADY_HAS_DIFFERENT_STATE','PRIVATE_INPUT_OBJECT_SIZE_MISMATCH','PRIVATE_INPUT_OBJECT_HASH_MISMATCH','ACCEPTED_PRIVATE_RESTORE_OR_EXPORT_FAILED','PRIVATE_BUCKET_PROOF_REQUIRED','IMMUTABLE_INPUT_OBJECT_MISMATCH'].includes(error.message)?error.message:'PRIVATE_STORAGE_OPERATION_FAILED'));process.exitCode=1;}
 }

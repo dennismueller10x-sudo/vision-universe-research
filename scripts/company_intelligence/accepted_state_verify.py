@@ -55,4 +55,11 @@ print(json.dumps({'fingerprint':before,'export':first,'generatedAt':stamp,'asset
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for k in ('snapshot','state','engine','expected','evidence'):p.add_argument('--'+k,required=True,type=Path)
-    a=p.parse_args();result=verify(a.snapshot,a.state,a.engine,json.loads(a.expected.read_text()));a.evidence.parent.mkdir(parents=True,exist_ok=True);a.evidence.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:result[k] for k in ('status','acceptedGeneration','projectedGeneration','exportedCompanies','originalGenerationReproduced')}))
+    p.add_argument('--original-engine',type=Path)
+    a=p.parse_args();expected=json.loads(a.expected.read_text());result=verify(a.snapshot,a.state,a.engine,expected)
+    if a.original_engine:
+        original_expected={**expected,'producerCodeSha':expected['acceptedProducerCodeSha']}
+        original=verify(a.snapshot,a.state.parent/(a.state.name+'-original-producer'),a.original_engine,original_expected)
+        result['acceptedProducerVerification']={k:original[k] for k in ('engineCodeSha','projectedGeneration','originalGenerationReproduced','exportedCompanies','assetHash','assetCount')}
+        result['generationDifferenceCause']='PRODUCER_REVISION_CHANGED; SAME_TIMESTAMP_AND_EXACT_PRIVATE_TABLES'
+    a.evidence.parent.mkdir(parents=True,exist_ok=True);a.evidence.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:result[k] for k in ('status','acceptedGeneration','projectedGeneration','exportedCompanies','originalGenerationReproduced')}))

@@ -450,6 +450,10 @@ jobs:
         with:
           ref: abbea154a90ffece598e494530eea38661a20a95
           path: .accepted-engine
+      - uses: actions/checkout@v4
+        with:
+          ref: 5a3ca18d3099df1f916e922e409aa01cb4a33436
+          path: .accepted-original-engine
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -488,6 +492,10 @@ jobs:
         with:
           ref: abbea154a90ffece598e494530eea38661a20a95
           path: .accepted-engine
+      - uses: actions/checkout@v4
+        with:
+          ref: 5a3ca18d3099df1f916e922e409aa01cb4a33436
+          path: .accepted-original-engine
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -508,7 +516,7 @@ jobs:
         run: |
           node scripts/company_intelligence/privacy.mjs
           node scripts/company_intelligence/sync-state.mjs pull --namespace accepted-20261006-21cc611a43b06f488418b58a --file "$RUNNER_TEMP/fresh-r2.tar.gz"
-          python3 scripts/company_intelligence/accepted_state_verify.py --snapshot "$RUNNER_TEMP/fresh-r2.tar.gz" --state "$RUNNER_TEMP/genuinely-fresh-state" --engine .accepted-engine --expected company-intelligence/config/accepted-state-handoff.json --evidence "$RUNNER_TEMP/fresh-restore-evidence.json"
+          python3 scripts/company_intelligence/accepted_state_verify.py --snapshot "$RUNNER_TEMP/fresh-r2.tar.gz" --state "$RUNNER_TEMP/genuinely-fresh-state" --engine .accepted-engine --original-engine .accepted-original-engine --expected company-intelligence/config/accepted-state-handoff.json --evidence "$RUNNER_TEMP/fresh-restore-evidence.json"
       - uses: actions/upload-artifact@v4
         with:
           name: accepted-fresh-restore-${{ github.run_id }}
