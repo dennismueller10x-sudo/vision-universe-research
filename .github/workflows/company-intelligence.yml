@@ -24,6 +24,11 @@ on:
         description: 'Read-only exact current-state R2 restore; no initialization, polling, upload or deployment'
         type: boolean
         default: false
+      consumer_review:
+        description: 'Read-only current restore plus live delivery audit and protected V1/V2 browser review; no state writes'
+        type: choice
+        options: [none, before, after]
+        default: none
       pilot:
         description: 'Controlled cohort: fresh-runner private restore, incremental update, verified consumer publication; no public gate change'
         type: boolean
@@ -388,6 +393,29 @@ jobs:
       - name: Reproduce exact reviewed consumer cohort from the fresh private R2 restore
         run: |
           python3 scripts/company_intelligence/verify_consumer_handoff.py --state "$RUNNER_TEMP/current-fresh-state" --consumer "$RUNNER_TEMP/fresh-consumer-cohort" --evidence "$RUNNER_TEMP/current-restore-evidence.json"
+      - name: Audit accepted ledger through all live consumer assets; counts only
+        if: inputs.consumer_review != '' && inputs.consumer_review != 'none'
+        run: |
+          python3 scripts/company_intelligence/consumer_delivery_audit.py --state "$RUNNER_TEMP/current-fresh-state" \
+            --raw "$RUNNER_TEMP/current-fresh-state/public/company-intelligence/data" --consumer "$RUNNER_TEMP/fresh-consumer-cohort" \
+            --origin https://research.visionuniverse.de --out "$RUNNER_TEMP/consumer-review/delivery-audit.json"
+      - name: Protected real production browser review; no query opt-in
+        if: inputs.consumer_review != '' && inputs.consumer_review != 'none'
+        env:
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+          NODE_PATH: /tmp/consumer-review/node_modules
+          REVIEW_VERSION: ${{ inputs.consumer_review }}
+        run: |
+          npm install --prefix /tmp/consumer-review playwright@1.51.1 --no-audit --no-fund
+          /tmp/consumer-review/node_modules/.bin/playwright install --with-deps chromium
+          node scripts/company_intelligence/consumer-experience-qa.mjs --version "$REVIEW_VERSION" --out "$RUNNER_TEMP/consumer-review/browser"
+      - name: Public-safe aggregate audit and protected browser evidence only
+        if: always() && inputs.consumer_review != '' && inputs.consumer_review != 'none'
+        uses: actions/upload-artifact@v4
+        with:
+          name: consumer-review-${{ inputs.consumer_review }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/consumer-review/
+          retention-days: 14
       - name: Hashes and counts only; no checkpoint, ledger or source-health artifact
         uses: actions/upload-artifact@v4
         with:
