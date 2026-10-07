@@ -46,6 +46,9 @@ ISSUE_UNPLACEABLE_PERIOD = "UNPLACEABLE_PERIOD"
 # this relative amount are reported; the higher-priority concept still wins.
 CONCEPT_DISAGREEMENT_TOLERANCE = 0.005
 ISSUE_AMBIGUOUS_AGGREGATE = "AMBIGUOUS_AGGREGATE"
+ISSUE_AMBIGUOUS_PERIOD = "AMBIGUOUS_PERIOD"
+# Two period ends in one cell further apart than this are two periods.
+AMBIGUOUS_PERIOD_DAYS = 7
 
 # Which concept is a filing's revenue line when us-gaap:Revenues is smaller
 # than another revenue concept of the same cell? Decided from the filing
@@ -58,6 +61,11 @@ REVENUE_EVIDENCE_PATH = (Path(__file__).resolve().parents[3] / "quant" / "config
 EVIDENCE_TOTAL = "TOTAL"
 EVIDENCE_OTHER = "OTHER"
 _EVIDENCE_CACHE = {}
+
+
+def _parse(value):
+    from datetime import date
+    return date.fromisoformat(str(value)[:10])
 
 
 def load_revenue_evidence(path=None):
@@ -155,6 +163,14 @@ def _drop_partial_aggregates(entries, definition, accession=None, evidence=None)
     if decision == EVIDENCE_TOTAL:
         return entries
     if decision.startswith(EVIDENCE_OTHER):
+        named = decision.partition(":")[2]
+        if named:
+            # The evidence names the statement line: exactly that concept, not
+            # the next one by priority (Escalade 2019: the statement line is
+            # contract revenue including assessed tax, 180.5 million; the next
+            # priority, excluding tax, 203.4 million, is a note).
+            exact = [entry for entry in entries if entry[1].concept == named]
+            return exact or None
         rest = [entry for entry in entries
                 if not definition.is_aggregate(entry[1].taxonomy, entry[1].concept)]
         return rest or None
@@ -278,6 +294,19 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
     registry_version = registry.version
 
     for (metric_name, fiscal_year, fiscal_period, accession), entries in candidates.items():
+        # One filing placing two different periods into one cell (VF Corp 10-K
+        # 2019 after its fiscal-year change: Oct-Dec 2018 and Jan-Mar 2019 both
+        # in FY2019 Q4) cannot say which one the cell is. Keeping the first
+        # published a stale TTM as current (red team, HIGH-2). The cell stays
+        # empty and is marked, so a trailing window does not skip over it.
+        # Durations only: an instant cell legitimately carries a cover date next
+        # to the balance-sheet date (handled below as COVER_DATE_INSTANT).
+        period_ends = sorted({fact.end for _, fact in entries if fact.end and fact.start})
+        if registry.get(metric_name).kind == KIND_DURATION and len(period_ends) > 1 and (_parse(period_ends[-1]) - _parse(period_ends[0])).days > AMBIGUOUS_PERIOD_DAYS:
+            issues.append(_issue(ISSUE_AMBIGUOUS_PERIOD, entries[0][1],
+                                 f"one filing reports {len(period_ends)} periods for this cell; cell left empty"))
+            factbook.mark_ambiguous(metric_name, fiscal_year, fiscal_period, entries[0][1].filed)
+            continue
         # A filing's statements are in one currency. A fact in another currency
         # (CECO 10-K FY2025: Revenues 750 million EUR, the same amount in every
         # filing since 2024, next to 774.4 million USD contract revenue) is a

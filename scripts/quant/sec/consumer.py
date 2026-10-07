@@ -25,7 +25,7 @@ from datetime import date, datetime, timezone
 from .derived import reconstruct
 from .fiscal import FiscalCalendar
 from .normalize import normalize_company
-from .periods import FLAG_PERIOD_TRANSFORM, PeriodResolver
+from .periods import CONTINUING_PER_SHARE, FLAG_PERIOD_TRANSFORM, PeriodResolver
 from .provider import PERIODIC_FORMS, SECProvider, normalize_cik
 from .registry import KIND_INSTANT
 from .restatements import POLICY_AS_OF_LATEST
@@ -201,7 +201,7 @@ def _ttm(resolver, registry, as_of, policy):
     return out, through, absent
 
 
-def _eps_semantics(ttm, ttm_absent, annual, quarterly):
+def _eps_semantics(ttm, ttm_absent, annual, quarterly, resolver=None, as_of=None, policy=POLICY_AS_OF_LATEST):
     """Explicit EPS fields: a TTM EPS is four reported quarters, never the fiscal year.
 
     EPS_TTM is NOT_AVAILABLE with its reason when the trailing window is not
@@ -214,18 +214,29 @@ def _eps_semantics(ttm, ttm_absent, annual, quarterly):
             return {"status": "VERIFIED", "v": row["v"], "end": row["end"], "through": row.get("through")}
         return {"status": "NOT_AVAILABLE", "reason": ttm_absent.get(metric, "INSUFFICIENT_HISTORY")}
 
-    def last(rows):
+    def last(rows, metric):
         if not rows:
             return None
         row = rowdict(rows[-1])
-        return {"fy": row["fy"], "fp": row["fp"], "end": row["end"], "v": row["v"]}
+        out = {"fy": row["fy"], "fp": row["fp"], "end": row["end"], "v": row["v"]}
+        # The registry accepts continuing-operations EPS as a fallback for
+        # total EPS; the field says which one it is (red team, MEDIUM-7:
+        # Oshkosh FY2025 10.02 is continuing-operations EPS).
+        if resolver is not None:
+            fact = (resolver.annual(metric, row["fy"], as_of, policy=policy) if row["fp"] == "FY"
+                    else resolver.quarter(metric, row["fy"], int(row["fp"][1]), as_of, policy=policy))
+            concept = getattr(getattr(fact, "provenance", None), "concept", None) if fact.available else None
+            if concept:
+                out["concept"] = concept
+                out["class"] = "CONTINUING" if concept in CONTINUING_PER_SHARE else "TOTAL"
+        return out
     return {
         "ttmDiluted": ttm_field("eps_diluted"),
         "ttmBasic": ttm_field("eps_basic"),
-        "fyDiluted": last(annual.get("eps_diluted")),
-        "fyBasic": last(annual.get("eps_basic")),
-        "latestQuarterDiluted": last(quarterly.get("eps_diluted")),
-        "latestQuarterBasic": last(quarterly.get("eps_basic")),
+        "fyDiluted": last(annual.get("eps_diluted"), "eps_diluted"),
+        "fyBasic": last(annual.get("eps_basic"), "eps_basic"),
+        "latestQuarterDiluted": last(quarterly.get("eps_diluted"), "eps_diluted"),
+        "latestQuarterBasic": last(quarterly.get("eps_basic"), "eps_basic"),
         "rule": "EPS_TTM = sum of four reported standalone quarters; never replaced by EPS_FY",
     }
 
@@ -366,7 +377,7 @@ def build_consumer_bundle(cik, company_facts, registry, as_of=None, tickers=(), 
         "quarterly": quarterly,
         "ttm": ttm,
         "ttmAbsent": ttm_absent,
-        "eps": _eps_semantics(ttm, ttm_absent, annual, quarterly),
+        "eps": _eps_semantics(ttm, ttm_absent, annual, quarterly, resolver, as_of_text, policy),
     }
 
 

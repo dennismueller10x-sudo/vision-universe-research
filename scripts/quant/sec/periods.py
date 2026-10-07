@@ -21,7 +21,7 @@ from .model import (
     PERIOD_QUARTER, PERIOD_ANNUAL, PERIOD_INSTANT, PERIOD_TTM,
     MISSING_XBRL_CONCEPT, INSUFFICIENT_HISTORY, NOT_APPLICABLE_FOR_SECTOR,
     NOT_YET_AVAILABLE, PERIOD_MISMATCH, TTM_PERIODS_NOT_CONTIGUOUS, TTM_CONCEPT_MISMATCH,
-    TTM_SHARE_BASIS_INCONSISTENT, missing,
+    TTM_SHARE_BASIS_INCONSISTENT, TTM_EPS_INCONSISTENT, TTM_UNIT_MISMATCH, missing,
 )
 from .registry import KIND_INSTANT
 from .restatements import POLICY_AS_OF_LATEST, Observation, to_instant
@@ -36,6 +36,9 @@ MAX_FIXPOINT_PASSES = 8
 # TTM-Integritaet. Abstand zweier Quartalsenden: 12 bis 17 Wochen (52/53-
 # Wochen-Jahre: 12/12/12/16 bzw. 17 Wochen, PepsiCo), mit einer Woche Spiel.
 TTM_GAP_DAYS = (77, 126)
+# A published fiscal year ending this much after the window's last quarter
+# makes the window stale.
+TTM_STALE_DAYS = 7
 # Abweichung zweier Konzepte derselben Einreichung, ab der sie verschiedene
 # Groessen messen (Murphy Oil: Revenues 928,3 vs. Vertragsumsatz 926,3 Mio.).
 TTM_CONCEPT_TOLERANCE = 0.005
@@ -51,6 +54,14 @@ CONTINUING_PER_SHARE = frozenset((
 ))
 TTM_SHARE_METRICS = {"eps_diluted": "diluted_weighted_average_shares",
                      "eps_basic": "basic_weighted_average_shares"}
+# Ein Splitverhaeltnis unter 1,5 (5:4, 4:3) zwischen zwei aufeinanderfolgenden
+# Quartalen ist ebenfalls ein Basiswechsel (Neogen 4:3: 1,28 statt 1,12).
+SPLIT_RATIOS = (5 / 4, 4 / 3, 3 / 2, 5 / 3, 2.0, 5 / 2, 3.0, 4.0, 5.0, 10.0)
+SPLIT_RATIO_TOLERANCE = 0.025
+SPLIT_RATIO_MIN = 1.2
+# Ergebnis / EPS darf nicht um eine Groessenordnung von der Aktienzahl abweichen
+# (Churchill Downs Q1 2020: EPS -590000 statt -0,59).
+EPS_CONSISTENCY_FACTOR = 10.0
 # Implizite Aktienzahl (Ergebnis / EPS) nur, wo das gerundete EPS sie traegt.
 TTM_IMPLIED_MIN_EPS = 0.05
 TTM_MIN_SHARES = 1000.0
@@ -314,6 +325,10 @@ class PeriodResolver:
             grid = self.quarter_grid(metric, fiscal_year, as_of, policy, lag_days)
             for index in (4, 3, 2, 1):
                 observation = grid.get(index)
+                if observation is None and self.factbook.is_ambiguous(metric, fiscal_year, f"Q{index}", as_of):
+                    # The newest quarter exists but its period is ambiguous: an
+                    # older window is not "trailing" (VF Corp 2019, HIGH-2).
+                    return found[:count] if len(found) >= count else []
                 if observation is not None:
                     found.append((fiscal_year, index, observation))
                 elif found:
@@ -344,6 +359,18 @@ class PeriodResolver:
         if len(quarters) < 4:
             return missing(self.factbook.cik, metric, INSUFFICIENT_HISTORY,
                            fiscal_period=PERIOD_TTM)
+        # A trailing window ends no earlier than the newest published fiscal
+        # year. VF Corp after its fiscal-year change (December -> March): the
+        # calendar filed Jan-Mar 2018 as FY2019 Q1 and the window ended
+        # 2018-12-29 although the year to 2019-03-30 was published (red team,
+        # HIGH-2: TTM 3.45 instead of 3.14, labelled current).
+        window_end = to_instant(quarters[0][2].period_end)
+        for fiscal_year in self.factbook.fiscal_years():
+            year = self._raw(metric, fiscal_year, "FY", as_of, policy, lag_days)
+            if year is not None and year.period_end and window_end is not None \
+                    and (to_instant(year.period_end) - window_end).days > TTM_STALE_DAYS:
+                return missing(self.factbook.cik, metric, TTM_PERIODS_NOT_CONTIGUOUS,
+                               fiscal_year=quarters[0][0], fiscal_period=PERIOD_TTM)
         return self._ttm_fact(metric, quarters, as_of, policy, lag_days)
 
     def _ttm_fact(self, metric, quarters, as_of, policy, lag_days):
@@ -374,6 +401,9 @@ class PeriodResolver:
            not jump by a split ratio inside the window.
         """
         observations = [item[2] for item in quarters]
+        if len({obs.unit for obs in observations}) > 1:
+            # CAD next to USD (Viscount Systems 2012) is not one sum.
+            return observations, TTM_UNIT_MISMATCH, []
         ends = [str(obs.period_end or "")[:10] for obs in observations]
         if not all(ends) or len(set(ends)) != len(ends):
             return observations, TTM_PERIODS_NOT_CONTIGUOUS, []
@@ -391,8 +421,9 @@ class PeriodResolver:
             # and was published unmarked as eps_diluted (TTM holdout, F-TTM-1).
             if len(classes) > 1 or classes == {True}:
                 return observations, TTM_CONCEPT_MISMATCH, []
-            if self._share_basis_jumps(metric, quarters, as_of, policy, lag_days):
-                return observations, TTM_SHARE_BASIS_INCONSISTENT, []
+            basis = self._share_basis_jumps(metric, quarters, as_of, policy, lag_days)
+            if basis:
+                return observations, basis, []
             return observations, None, []
 
         concepts = {obs.provenance.concept for obs in observations}
@@ -420,27 +451,46 @@ class PeriodResolver:
         return observations, TTM_CONCEPT_MISMATCH, []
 
     def _share_basis_jumps(self, metric, quarters, as_of, policy, lag_days):
+        """None, TTM_SHARE_BASIS_INCONSISTENT or TTM_EPS_INCONSISTENT for a per-share window."""
         shares_metric = TTM_SHARE_METRICS.get(metric)
         reported, implied = [], []
         for fiscal_year, index, obs in quarters:
             end = str(obs.period_end)[:10]
+            shares = None
             if shares_metric and self._definition(shares_metric) is not None:
-                shares = self.quarter_grid(shares_metric, fiscal_year, as_of, policy, lag_days).get(index)
-                if shares is not None and str(shares.period_end)[:10] == end and shares.value >= TTM_MIN_SHARES:
-                    reported.append(shares.value)
-            if abs(obs.value) >= TTM_IMPLIED_MIN_EPS and self._definition("net_income") is not None:
-                income = self.quarter_grid("net_income", fiscal_year, as_of, policy, lag_days).get(index)
-                if income is not None and str(income.period_end)[:10] == end:
-                    count = abs(income.value / obs.value)
-                    if count >= TTM_MIN_SHARES:
-                        implied.append(count)
+                cell = self.quarter_grid(shares_metric, fiscal_year, as_of, policy, lag_days).get(index)
+                if cell is not None and str(cell.period_end)[:10] == end and cell.value >= TTM_MIN_SHARES:
+                    shares = cell.value
+                    reported.append(shares)
+            income = None
+            if self._definition("net_income") is not None:
+                cell = self.quarter_grid("net_income", fiscal_year, as_of, policy, lag_days).get(index)
+                if cell is not None and str(cell.period_end)[:10] == end:
+                    income = cell.value
+            if shares is not None and income and obs.value:
+                # EPS x shares must be of the order of the quarter's result.
+                count = abs(income / obs.value)
+                if not shares / EPS_CONSISTENCY_FACTOR <= count <= shares * EPS_CONSISTENCY_FACTOR:
+                    return TTM_EPS_INCONSISTENT
+            if income is not None and abs(obs.value) >= TTM_IMPLIED_MIN_EPS:
+                count = abs(income / obs.value)
+                if count >= TTM_MIN_SHARES:
+                    implied.append(count)
         # Reported weighted shares decide where at least two quarters carry them;
         # net income / EPS only stands in without them, because net income can
         # differ from the EPS numerator (non-controlling interests, preferred
         # dividends, later restatements: Piper Sandler Q1 2025 implies 10 Mio.
         # shares against 17.8 Mio. reported).
         points = reported if len(reported) >= 2 else implied
-        return len(points) >= 2 and max(points) / min(points) >= TTM_SHARE_BASIS_JUMP
+        if len(points) < 2:
+            return None
+        if max(points) / min(points) >= TTM_SHARE_BASIS_JUMP:
+            return TTM_SHARE_BASIS_INCONSISTENT
+        for newer, older in zip(points, points[1:]):
+            jump = max(newer, older) / min(newer, older)
+            if jump >= SPLIT_RATIO_MIN and any(abs(jump / ratio - 1) <= SPLIT_RATIO_TOLERANCE for ratio in SPLIT_RATIOS):
+                return TTM_SHARE_BASIS_INCONSISTENT
+        return None
 
     def step_back(self, fiscal_year, quarter_index, steps):
         """Move `steps` quarters back from (fiscal_year, quarter_index)."""

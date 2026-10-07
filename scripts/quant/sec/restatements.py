@@ -223,6 +223,21 @@ class CompanyFactBook:
         self.calendar = calendar
         self.profile = profile
         self.timelines = dict(timelines or {})
+        # (metric, fy, fp) -> earliest filing date of a filing that reported
+        # more than one period into that cell (normalize, AMBIGUOUS_PERIOD).
+        self.ambiguous = {}
+
+    def mark_ambiguous(self, metric, fiscal_year, fiscal_period, filed):
+        key = (metric, fiscal_year, fiscal_period)
+        current = self.ambiguous.get(key)
+        if filed and (current is None or str(filed) < str(current)):
+            self.ambiguous[key] = str(filed)
+
+    def is_ambiguous(self, metric, fiscal_year, fiscal_period, as_of=None):
+        filed = self.ambiguous.get((metric, fiscal_year, fiscal_period))
+        if filed is None:
+            return False
+        return as_of is None or to_instant(filed) <= to_instant(as_of, end_of_day=True)
 
     def add_observation(self, metric, fiscal_year, fiscal_period, observation):
         key = (metric, fiscal_year, fiscal_period)

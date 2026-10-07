@@ -177,7 +177,19 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          Bereiche ist kein EPS-TTM (VF Corp 2009: Latest-Sicht stellte alle
 #          vier Quartale auf das 10-K-Vergleichs-EPS fortgefuehrter Bereiche um).
 #          Nach der Holdout-Auswertung behoben, nicht holdout-validiert.
-NORMALIZATION_LOGIC_VERSION = "1.18.0"
+# 1.19.0 — Red Team der TTM-Logik: (1) Splits unter 1,5:1 (5:4, 4:3) zwischen
+#          zwei Quartalen sperren das EPS-TTM (Neogen, Wilson Bank); (2) eine
+#          Einreichung mit zwei Perioden in einer Zelle laesst die Zelle leer,
+#          und ein Fenster vor dem juengsten veroeffentlichten Geschaeftsjahr ist
+#          kein TTM (VF Corp nach dem Geschaeftsjahreswechsel); (3) das eigene
+#          Jahresende einer Einreichung ist ihr haeufigstes, nicht ihr spaetestes
+#          Zwoelfmonatsende (Hovnanian: Kalenderjahr-Steuersaetze verschoben die
+#          Fiskaljahre um +3); (4) EPS, das um eine Groessenordnung nicht zu
+#          Ergebnis und Aktien passt, wird nicht summiert (Churchill Downs
+#          -590000); (5) keine Summe ueber Einheiten/Waehrungen; (6) der im Beleg
+#          genannte Umsatz-Zeilenbegriff wird genau gewaehlt. restatements.py
+#          gehoert jetzt zu den Normalisierungsquellen.
+NORMALIZATION_LOGIC_VERSION = "1.19.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -203,12 +215,13 @@ QUALITY_RULES_VERSION = "1.0.0"
 # test_version_discipline.py turns that into a failing test instead.
 NORMALIZATION_SOURCES = (
     "normalize.py", "fiscal.py", "periods.py", "derived.py", "canonical.py",
+    "restatements.py",
 )
 
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "1eba18822ff4cbc6cdbdd1ee44fd223b34081d33105ea5bce2c4af393489167c"
+    "5caec18102481bb3003b3ad3a6d9eddb040fc7c59b46bcb4eae4b495d91406b4"
 )
 
 

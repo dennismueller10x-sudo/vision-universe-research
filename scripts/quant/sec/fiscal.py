@@ -150,7 +150,7 @@ class FiscalCalendar:
         # accession -> {"ends": set, "fy": int} for 10-K/20-F filings only
         anchors_by_accession = defaultdict(lambda: {"ends": set(), "fy": None})
         # accession -> every twelve-month end the annual report carries
-        ends_by_accession = defaultdict(set)
+        ends_by_accession = defaultdict(Counter)
 
         for fact in raw_facts:
             kind = classify_duration(fact.start, fact.end)
@@ -165,7 +165,7 @@ class FiscalCalendar:
             if _base_form(fact.form) not in ANNUAL_FORMS:
                 continue
             end = parse_date(fact.end)
-            ends_by_accession[fact.accession].add(end)
+            ends_by_accession[fact.accession][end] += 1
             if fact.form in ANNUAL_FORMS and fact.filing_fp == "FY":
                 bucket = anchors_by_accession[fact.accession]
                 bucket["ends"].add(end)
@@ -179,8 +179,13 @@ class FiscalCalendar:
         # accepted as a year end it gave FY2017 two ends and relabelled every
         # FY2018 quarter (April became Q1, a Q1 read returned the April value).
         # Measured in the fundamental data integrity audit: 10 of 98 issuers.
+        # The report's own year end is the end most of its twelve-month facts
+        # share, not the latest one: Hovnanian (year end October) reports the
+        # calendar-year tax rate reconciliation to 2021-12-31 in its FY2021 10-K;
+        # max() made December the year end and labelled the year to 2025-10-31
+        # FY2028 (red team, HIGH-3). Ties go to the later date, as before.
         for ends in ends_by_accession.values():
-            own_end = max(ends)
+            own_end = max(ends, key=lambda end: (ends[end], end))
             annual_ends.update(end for end in ends if _same_annual_cycle(end, own_end))
         anchor_source = ANCHOR_SOURCE_ANNUAL_DURATIONS if annual_ends else ANCHOR_SOURCE_NONE
         if not annual_ends:
