@@ -333,7 +333,12 @@ jobs:
           NODE_PATH: /tmp/ci-live/node_modules
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
           EXPECTED_PRODUCTION_SHA: ${{ needs.package.outputs.source_sha }}
+          FULL_ACCEPTANCE: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
+          if [ "$FULL_ACCEPTANCE" != true ]; then
+            node scripts/company_intelligence/live-production-qa.mjs --routine --out "$RUNNER_TEMP/live-fast"
+            exit 0
+          fi
           node scripts/company_intelligence/live-production-qa.mjs --out "$RUNNER_TEMP/live-fast"
           node scripts/company_intelligence/discover-beta-qa.mjs --url https://research.visionuniverse.de --candidate docs/company-intelligence/full-data-release-candidate.json --production --phase actual --out "$RUNNER_TEMP/live-cohort"
           node scripts/company_intelligence/discover-beta-qa.mjs --url https://research.visionuniverse.de --candidate docs/company-intelligence/full-data-release-candidate.json --production --phase dark --out "$RUNNER_TEMP/live-dark"

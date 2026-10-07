@@ -37,6 +37,8 @@ gh workflow run pages-release.yml --ref main -f company_intelligence_off=true
 
 Disabling writes and rereads only the dedicated `gate.json`; it preserves the failed consumer generation and every private object. The emergency Pages flag requires zero R2 consumer reads and closes both the standalone Discover config and the shared Quant bundle, including query overrides. An unavailable generation therefore cannot prevent gate-off delivery. Future ordinary releases also remain off until the persistent gate is deliberately re-enabled. The previous two-slot consumer pointer/recovery mechanism remains intact; no richer private generation is overwritten. Static Pages propagation takes a release cycle, and already-loaded browser tabs are not remotely evicted immediately.
 
+Full 46-stock responsive and dark-mode acceptance runs on explicit Pages dispatches, including activation. Ordinary existing Pages/data deliveries use a short real-production AAPL/XPEV/hash/access smoke; release construction still verifies all 86 R2 assets on every enabled delivery. No full browser cohort or discovery campaign is added to the existing five-minute market-data delivery bridge.
+
 The automatic live workflow executes the same disable + emergency redeploy on any material production acceptance failure. A deliberate off release is tested in eight real-product/viewport cases rather than triggering a rollback loop.
 
 ## Freshness and costs
