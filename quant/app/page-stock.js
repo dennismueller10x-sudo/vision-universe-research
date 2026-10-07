@@ -812,6 +812,7 @@
     layout.append(verdictCard(vm, nowHost, [setupAnswerHost, evidenceAnswerHost,
       factorAnswer(vm, shownFactors, factors && factors.reason, "Quant bildet keine Ersatzwerte.")]));
     bodyHost.append(layout);
+    if (global.VUCompanyIntelligenceStock) disposers.push(global.VUCompanyIntelligenceStock.mount(bodyHost, ticker));
 
     /* 3: Setup. Einstieg, Stop und Ziele aus der technischen Auswertung
        (Owner-Entscheid 30.09.2026), darunter, was zur Bestaetigung fehlt. */

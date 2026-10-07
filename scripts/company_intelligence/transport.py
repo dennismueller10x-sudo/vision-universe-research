@@ -122,12 +122,14 @@ class PublicHTTP:
             raise SourceError('CRAWL_DELAY_REQUIRES_DEFERRED_SCHEDULING')
         return True
 
-    def get(self, url, robots=True, ttl=0):
+    def get(self, url, robots=True, ttl=0, persist=True):
         if self.clock() >= self.deadline:
             raise BudgetExhausted('NETWORK_TIME_BUDGET_EXHAUSTED')
         url = self.validator(url)
         key = (url, robots)
-        if key in self.memo:
+        if not persist:
+            self.memo.pop(key, None)
+        if persist and key in self.memo:
             self.stats['memoHits'] += 1
             return self.memo[key]
         if robots:
@@ -136,7 +138,7 @@ class PublicHTTP:
         if body is not None and self.clock() - cached.get('checked', 0) < ttl:
             self.stats['cacheHits'] += 1
             result = {**cached, 'body': body, 'cached': True}
-            self.memo[key] = result
+            if persist:self.memo[key] = result
             return result
         headers = {'User-Agent': self.user_agent, 'Accept': 'application/rss+xml,application/atom+xml,application/json,text/html,text/plain;q=0.8', 'Accept-Encoding': 'identity'}
         if body is not None:
@@ -169,13 +171,14 @@ class PublicHTTP:
                             meta = {'url': url, 'finalUrl': current, 'checked': self.clock(), 'contentType': response.headers.get('Content-Type', ''),
                                     'etag': response.headers.get('ETag'), 'lastModified': response.headers.get('Last-Modified'), 'redirects': redirects,
                                     'sha256': hashlib.sha256(payload).hexdigest()}
-                            mp, bp = self._paths(url)
-                            tmp = bp.with_suffix('.tmp')
-                            tmp.write_bytes(payload)
-                            tmp.replace(bp)
-                            atomic_json(mp, meta)
+                            if persist:
+                                mp, bp = self._paths(url)
+                                tmp = bp.with_suffix('.tmp')
+                                tmp.write_bytes(payload)
+                                tmp.replace(bp)
+                                atomic_json(mp, meta)
                             result = {**meta, 'body': payload, 'cached': False}
-                            self.memo[key] = result
+                            if persist:self.memo[key] = result
                             return result
                     except urllib.error.HTTPError as exc:
                         if exc.code in (301, 302, 303, 307, 308):
@@ -195,9 +198,9 @@ class PublicHTTP:
                 if exc.code == 304 and body is not None:
                     self.stats['notModified'] += 1
                     cached['checked'] = self.clock()
-                    atomic_json(self._paths(url)[0], cached)
+                    if persist:atomic_json(self._paths(url)[0], cached)
                     result = {**cached, 'body': body, 'cached': True}
-                    self.memo[key] = result
+                    if persist:self.memo[key] = result
                     return result
                 if exc.code not in (429, 500, 502, 503, 504) or attempt == 2:
                     raise SourceError('HTTP_' + str(exc.code)) from exc
