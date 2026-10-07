@@ -1,24 +1,243 @@
 {
-  "schema": "vu-minervini-ground-truth-cases-1.0.0",
-  "status": "DRAFT_BEFORE_RED_TEAM",
-  "prereg": "scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-PREREG.json",
+  "schema": "vu-minervini-ground-truth-cases-1.1.0",
+  "status": "AFTER_RED_TEAM_BEFORE_FREEZE",
+  "prereg": [
+    "scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-PREREG.json",
+    "scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-PREREG-A1.json"
+  ],
   "sourcing": {
     "method": "Domain-gefilterte Websuche (x.com/twitter.com) nach Minervinis eigenen Beitraegen; nur Ausschnitt-/Titeltext seiner Beitraege verwendet; Datum aus der Status-ID.",
     "limits": [
       "x.com, minervini.com und Archive aus dieser Umgebung nicht abrufbar -> keine Volltexte, keine Bilder (viele Ticker stehen nur in Chartbildern)",
-      "Suchindex enthaelt nur einen kleinen, popularitaetsverzerrten Ausschnitt seines Feeds (Auswahlverzerrung nicht kontrollierbar)",
+      "Autor, Zitat-/Antwortkontext und Bilder nicht pruefbar (nur Suchindex-Ausschnitte)",
+      "Suchindex enthaelt nur einen kleinen, popularitaetsverzerrten Ausschnitt seines Feeds; Suchbegriffe wie \"breakout\"/\"VCP\" bevorzugen enginefreundliche Beitraege (Auswahlverzerrung nicht kontrollierbar)",
+      "Verlusttrades (QCOM, SWIR, Verliererliste) haben keinen Einstiegstag und fallen aus der Auswertung (Asymmetrie)",
       "Buecher (TLSMW, TTLAC, Mindset) nicht lesbar -> keine Buchfaelle; Buchbeispiele liegen zudem ueberwiegend vor 2008",
       "Keine Preise (Pivot/Einstieg/Stop) in den Ausschnitten -> Pivot-Vergleich nicht moeglich"
     ],
     "noModelMemory": "Kein Fall stammt aus Modellwissen; Ticker aus Suchzusammenfassungen ohne Ausschnittbeleg sind LOW und werden nicht ausgewertet.",
-    "selection": "Alle gefundenen Fall-Beitraege werden aufgenommen; keine Auswahl nach spaeterem Kursverlauf."
+    "selection": "Jeder gesichtete eigene Beitrag mit Ticker ist als Fall erfasst (auch nicht ausgewertete); gesichtete Beitraege ohne Fall stehen in hitsWithoutCase. Keine Auswahl nach spaeterem Kursverlauf.",
+    "searchRounds": [
+      {
+        "round": 1,
+        "scope": "Beitraege 2016-2026, Grundsuche",
+        "queries": [
+          "bought/VCP breakout pivot",
+          "I have a position",
+          "stopped out",
+          "textbook pivot",
+          "losers chart post",
+          "sell/exit posts"
+        ],
+        "note": "erste Kandidaten (NVDA, EME, RNA, MU, IBIT, ONON, LEN/DHI, AAPL, AMZN, TNDM, BYND)"
+      },
+      {
+        "round": 2,
+        "scope": "2016-2019",
+        "queries": [
+          "\"I have a position\"",
+          "\"nailed down\" profit",
+          "\"stopped out\" 2018",
+          "\"added it to our buy list\"",
+          "\"held into earnings\"",
+          "ACAD bought",
+          "Ticker-ODER-Listen (ohne Ertrag)",
+          "Power Play",
+          "textbook buy point",
+          "just bought",
+          "pullback buy"
+        ],
+        "approxQueries": 27
+      },
+      {
+        "round": 3,
+        "scope": "2020-2021",
+        "queries": [
+          "\"I have a position\"/\"we have a position\" (+breaking out, cheat, pullback buy)",
+          "\"added to buy alert list\"",
+          "bottom fishing",
+          "bought $PENN/$RVNC",
+          "textbook/cheat entry",
+          "stopped out",
+          "I sold",
+          "nailed down",
+          "we bought",
+          "pilot buy",
+          "squat",
+          "USIC 2021",
+          "Einzelticker (ZM, ENPH, ... ohne Ertrag)"
+        ],
+        "approxQueries": 30
+      },
+      {
+        "round": 4,
+        "scope": "2022-2026",
+        "queries": [
+          "bought/VCP/pivot",
+          "stopped out",
+          "we bought/I bought/took a position",
+          "sold/closed out",
+          "cheat/low cheat",
+          "would not buy",
+          "SMCI, PLTR, HOOD/APP/AXON, SG/BROS/GDDY/PSTG, IBKR/KGC/VAPO, TSLA/NFLX/META/AVGO/CRWD",
+          "buy alert/focus list",
+          "pivot failure",
+          "largest position"
+        ],
+        "approxQueries": 17
+      },
+      {
+        "round": 5,
+        "scope": "2016-2021 Nachsuche",
+        "queries": [
+          "\"I have a position\" breaking out",
+          "stopped out $",
+          "would not buy",
+          "took a position",
+          "bought some",
+          "we have a position $",
+          "bought yesterday",
+          "$ANF",
+          "held into earnings",
+          "cheat entry position",
+          "pilot buy",
+          "not a VCP/too loose/sloppy",
+          "I passed/I did not buy",
+          "$TSLA position",
+          "$SEDG/$ZM/$ETSY"
+        ],
+        "approxQueries": 20
+      },
+      {
+        "round": 6,
+        "scope": "2022-2026 Nachsuche",
+        "queries": [
+          "I have a position",
+          "bought today",
+          "stopped out of",
+          "we have a position 2025",
+          "would not buy",
+          "not a VCP too loose",
+          "started buying",
+          "took a position",
+          "pilot buy",
+          "I passed/avoided",
+          "added to my position",
+          "$SMCI/$PLTR/$HOOD",
+          "we bought/I bought 2025",
+          "I sold this morning",
+          "added long",
+          "low cheat/cheat entry",
+          "longs include 2026"
+        ],
+        "approxQueries": 16
+      }
+    ],
+    "hitsWithoutCase": [
+      {
+        "statusId": "1017857720643440641",
+        "postDate": "2018-07-13",
+        "reason": "Kommentar Ausbruchs- vs. Kaufalarmliste, kein Ticker"
+      },
+      {
+        "statusId": "1044673175903248391",
+        "postDate": "2018-09-25",
+        "reason": "gueltige VCP ueber Cheat-Pivot, kein Ticker"
+      },
+      {
+        "statusId": "1010223336272678912",
+        "postDate": "2018-06-22",
+        "reason": "Fuehrer aus Baermarkt, Kauf an Punkt C, Ticker nur im Bild"
+      },
+      {
+        "statusId": "1280506672302219264",
+        "postDate": "2020-07-07",
+        "reason": "Kaufbeginn 6. April, kein Ticker"
+      },
+      {
+        "statusId": "1486770775931637761",
+        "postDate": "2022-01-27",
+        "reason": "Verweis auf Verkaufssignal 22.11.2021, kein Ticker"
+      },
+      {
+        "statusId": "1357080039951597570",
+        "postDate": "2021-02-03",
+        "reason": "GME-Kommentar, kein eigener Trade"
+      },
+      {
+        "statusId": "1549118930140254214",
+        "postDate": "2022-07-18",
+        "reason": "Buchchart nach geschlossenem Trade, Ticker nicht im Ausschnitt"
+      },
+      {
+        "statusId": "1884705597402059074",
+        "postDate": "2025-01-29",
+        "reason": "progressive Exposure, keine Ticker"
+      },
+      {
+        "statusId": "1922306266732626316",
+        "postDate": "2025-05-13",
+        "reason": "wenig kaufbare Titel, keine Ticker"
+      },
+      {
+        "statusId": "1999131108563112387",
+        "postDate": "2025-12-11",
+        "reason": "Begleitbeitrag: SPY short, neun Longs ueber ein paar Wochen"
+      },
+      {
+        "statusId": "2062172291287413179",
+        "postDate": "2026-06-03",
+        "reason": "Marktkommentar Pivot-Fehlschlaege, kein Ticker"
+      },
+      {
+        "statusId": "2049565140245201280",
+        "postDate": "2026-04-29",
+        "reason": "Marktkommentar, kein Ticker"
+      },
+      {
+        "statusId": "2029213943428698253",
+        "postDate": "2026-03-04",
+        "reason": "Marktkommentar, kein Ticker"
+      },
+      {
+        "statusId": "1757794761430229353",
+        "postDate": "2024-02-14",
+        "reason": "Bitcoin-Kaufprozess, kein Ticker"
+      },
+      {
+        "statusId": "1785327649230840140",
+        "postDate": "2024-04-30",
+        "reason": "GDDY in die Zahlen gehalten (Datum nicht geprueft)"
+      },
+      {
+        "statusId": "1291814626884231168",
+        "postDate": "2020-08-07",
+        "reason": "VAPO unter Druck (Fall VAPO ist LOW)"
+      },
+      {
+        "statusId": "1483555391887843334",
+        "postDate": "2022-01-18",
+        "reason": "USIC-2021-Siegmeldung, keine Trades"
+      },
+      {
+        "statusId": "1225143094682771456",
+        "postDate": "2020-02-05",
+        "reason": "TSLA allgemein, kein eigener Trade"
+      },
+      {
+        "statusId": "1449091307343949828",
+        "postDate": "2021-10-15",
+        "reason": "Beitrag von CNBC PowerLunch, nicht von ihm"
+      }
+    ]
   },
   "counts": {
-    "MAIN": 27,
-    "SENSITIVITY": 8,
-    "WATCHLIST": 5,
-    "NEGATIVE": 1,
-    "NOT_EVALUATED": 63
+    "MAIN": 16,
+    "ENTRY_TYPE_NOT_MODELLED": 1,
+    "WATCHLIST": 6,
+    "NOT_EVALUATED": 65,
+    "SENSITIVITY": 15,
+    "NEGATIVE": 1
   },
   "cases": [
     {
@@ -26,6 +245,9 @@
       "ticker": "ZGNX",
       "company": "Zogenix Inc",
       "historical_ticker": "ZGNX",
+      "ticker_aliases": [
+        "ZGNX"
+      ],
       "date_or_window": {
         "anchor": "2018-06-12",
         "postDate": "2018-06-12"
@@ -36,15 +258,26 @@
         "account": "@markminervini",
         "statusId": "1006531423380103168",
         "postDate": "2018-06-12",
+        "postTime": {
+          "utc": "2018-06-12T13:39:26.440Z",
+          "etDate": "2018-06-12",
+          "et": "09:39",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1006531423380103168",
         "read": "SEARCH_SNIPPET_ONLY"
       },
       "source_type": "TIER2_OWN_POST",
       "source_confidence": "MEDIUM",
-      "minervini_classification": "BUY_SETUP",
+      "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "regroup_reason": null,
       "class_group": "POSITIVE",
-      "own_trade": "unknown",
+      "tags": [
+        "ACQUIRED_LATER"
+      ],
+      "own_trade": true,
       "documented_entry": {
         "date": null,
         "price": null
@@ -57,14 +290,15 @@
       "documented_rationale": "Ausbruch aus einer grossen VCP; er sagt, er sei positioniert.",
       "identity": {
         "ticker_then": "ZGNX",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1375151",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {
           "acquired": "Uebernahme durch UCB 2022 (Ticker entfaellt)"
         }
       },
       "notes": [],
+      "control_seed_key": "ZGNX|1006531423380103168|2018-06-12",
       "replay_spec": {
         "anchorDate": "2018-06-12",
         "window": null,
@@ -77,6 +311,9 @@
       "ticker": "MTLS",
       "company": "Materialise NV (ADR)",
       "historical_ticker": "MTLS",
+      "ticker_aliases": [
+        "MTLS"
+      ],
       "date_or_window": {
         "anchor": "2019-01-08",
         "postDate": "2019-01-08"
@@ -87,6 +324,12 @@
         "account": "@markminervini",
         "statusId": "1082650684594548737",
         "postDate": "2019-01-08",
+        "postTime": {
+          "utc": "2019-01-08T14:50:12.541Z",
+          "etDate": "2019-01-08",
+          "et": "09:50",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1082650684594548737",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -94,7 +337,12 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [
+        "FOREIGN_PRIVATE_ISSUER_NO_10Q"
+      ],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -108,14 +356,15 @@
       "documented_rationale": "Neue Hochs heute; er ist positioniert; am Montag davor auf die Kaufliste gesetzt.",
       "identity": {
         "ticker_then": "MTLS",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1091223",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {
           "foreignPrivateIssuer": true
         }
       },
       "notes": [],
+      "control_seed_key": "MTLS|1082650684594548737|2019-01-08",
       "replay_spec": {
         "anchorDate": "2019-01-08",
         "window": null,
@@ -128,6 +377,9 @@
       "ticker": "ROKU",
       "company": "Roku Inc",
       "historical_ticker": "ROKU",
+      "ticker_aliases": [
+        "ROKU"
+      ],
       "date_or_window": {
         "anchor": "2019-07-16",
         "postDate": "2019-07-16"
@@ -138,6 +390,12 @@
         "account": "@markminervini",
         "statusId": "1151132121672474628",
         "postDate": "2019-07-16",
+        "postTime": {
+          "utc": "2019-07-16T14:10:59.464Z",
+          "etDate": "2019-07-16",
+          "et": "10:10",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1151132121672474628",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -145,7 +403,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -159,12 +420,13 @@
       "documented_rationale": "Bricht heute morgen aus; er ist positioniert.",
       "identity": {
         "ticker_then": "ROKU",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1428439",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [],
+      "control_seed_key": "ROKU|1151132121672474628|2019-07-16",
       "replay_spec": {
         "anchorDate": "2019-07-16",
         "window": null,
@@ -177,6 +439,9 @@
       "ticker": "ACAD",
       "company": "ACADIA Pharmaceuticals",
       "historical_ticker": "ACAD",
+      "ticker_aliases": [
+        "ACAD"
+      ],
       "date_or_window": {
         "anchor": "PREVIOUS_SESSION_OF_POST",
         "postDate": "2019-10-22"
@@ -187,6 +452,12 @@
         "account": "@markminervini",
         "statusId": "1186675011664465920",
         "postDate": "2019-10-22",
+        "postTime": {
+          "utc": "2019-10-22T16:05:44.793Z",
+          "etDate": "2019-10-22",
+          "et": "12:05",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1186675011664465920",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -194,7 +465,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -208,12 +482,13 @@
       "documented_rationale": "Nennt mehrere Kaufkandidaten; ACAD habe er gestern morgen gekauft.",
       "identity": {
         "ticker_then": "ACAD",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1070494",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [],
+      "control_seed_key": "ACAD|1186675011664465920|PREVIOUS_SESSION_OF_POST",
       "replay_spec": {
         "anchorDate": "PREVIOUS_SESSION_OF_POST",
         "window": null,
@@ -226,6 +501,9 @@
       "ticker": "AMD",
       "company": "Advanced Micro Devices",
       "historical_ticker": "AMD",
+      "ticker_aliases": [
+        "AMD"
+      ],
       "date_or_window": {
         "anchor": "2020-06-09",
         "postDate": "2020-06-09"
@@ -236,6 +514,12 @@
         "account": "@markminervini",
         "statusId": "1270354059220996098",
         "postDate": "2020-06-09",
+        "postTime": {
+          "utc": "2020-06-09T13:56:24.412Z",
+          "etDate": "2020-06-09",
+          "et": "09:56",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1270354059220996098",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -243,7 +527,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -257,12 +544,13 @@
       "documented_rationale": "Steigt in schwachem Markt, versucht aus einer Basis zu kommen; er ist positioniert.",
       "identity": {
         "ticker_then": "AMD",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "2488",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [],
+      "control_seed_key": "AMD|1270354059220996098|2020-06-09",
       "replay_spec": {
         "anchorDate": "2020-06-09",
         "window": null,
@@ -275,6 +563,9 @@
       "ticker": "DXCM",
       "company": "DexCom Inc",
       "historical_ticker": "DXCM",
+      "ticker_aliases": [
+        "DXCM"
+      ],
       "date_or_window": {
         "anchor": "2020-06-26",
         "postDate": "2020-06-26"
@@ -285,14 +576,25 @@
         "account": "@markminervini",
         "statusId": "1276517252016242688",
         "postDate": "2020-06-26",
+        "postTime": {
+          "utc": "2020-06-26T14:06:44.081Z",
+          "etDate": "2020-06-26",
+          "et": "10:06",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1276517252016242688",
         "read": "SEARCH_SNIPPET_ONLY"
       },
       "source_type": "TIER2_OWN_POST",
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
-      "evaluation_group": "MAIN",
+      "evaluation_group": "ENTRY_TYPE_NOT_MODELLED",
+      "stratum": null,
+      "regroup_reason": "PULLBACK_BUY",
       "class_group": "POSITIVE",
+      "tags": [
+        "ENTRY_PULLBACK"
+      ],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -306,14 +608,15 @@
       "documented_rationale": "Dreht aus einem Ruecksetzer nach oben (Pullback-Kauf, kein Basisausbruch); er ist positioniert.",
       "identity": {
         "ticker_then": "DXCM",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1093557",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [
         "Einstiegsart: PULLBACK"
       ],
+      "control_seed_key": "DXCM|1276517252016242688|2020-06-26",
       "replay_spec": {
         "anchorDate": "2020-06-26",
         "window": null,
@@ -326,6 +629,9 @@
       "ticker": "TNDM",
       "company": "Tandem Diabetes Care",
       "historical_ticker": "TNDM",
+      "ticker_aliases": [
+        "TNDM"
+      ],
       "date_or_window": {
         "anchor": "2020-06-30",
         "postDate": "2020-06-30"
@@ -336,6 +642,12 @@
         "account": "@markminervini",
         "statusId": "1278004425764868099",
         "postDate": "2020-06-30",
+        "postTime": {
+          "utc": "2020-06-30T16:36:13.933Z",
+          "etDate": "2020-06-30",
+          "et": "12:36",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1278004425764868099",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -343,7 +655,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -357,12 +672,13 @@
       "documented_rationale": "Ausbruch; er ist positioniert.",
       "identity": {
         "ticker_then": "TNDM",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1438133",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [],
+      "control_seed_key": "TNDM|1278004425764868099|2020-06-30",
       "replay_spec": {
         "anchorDate": "2020-06-30",
         "window": null,
@@ -375,6 +691,9 @@
       "ticker": "AMD",
       "company": "Advanced Micro Devices",
       "historical_ticker": "AMD",
+      "ticker_aliases": [
+        "AMD"
+      ],
       "date_or_window": {
         "anchor": "2020-07-22",
         "postDate": "2020-07-22"
@@ -385,6 +704,12 @@
         "account": "@markminervini",
         "statusId": "1286020981086134277",
         "postDate": "2020-07-22",
+        "postTime": {
+          "utc": "2020-07-22T19:31:09.662Z",
+          "etDate": "2020-07-22",
+          "et": "15:31",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1286020981086134277",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -392,7 +717,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "BUY_SETUP",
       "evaluation_group": "MAIN",
+      "stratum": "MAIN_B_SETUP_AFFIRMED_NO_OWN_BUY",
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": "unknown",
       "documented_entry": {
         "date": null,
@@ -406,12 +734,13 @@
       "documented_rationale": "Am Vortag auf die Buy-Alert-Liste, heute morgen auf die Breakout-Alert-Liste; grosser Umsatz. Eigener Kauf nicht genannt.",
       "identity": {
         "ticker_then": "AMD",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "2488",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [],
+      "control_seed_key": "AMD|1286020981086134277|2020-07-22",
       "replay_spec": {
         "anchorDate": "2020-07-22",
         "window": null,
@@ -424,6 +753,9 @@
       "ticker": "AEM",
       "company": "Agnico Eagle Mines",
       "historical_ticker": "AEM",
+      "ticker_aliases": [
+        "AEM"
+      ],
       "date_or_window": {
         "anchor": "2020-09-14",
         "postDate": "2020-09-14"
@@ -434,6 +766,12 @@
         "account": "@markminervini",
         "statusId": "1305508439528017922",
         "postDate": "2020-09-14",
+        "postTime": {
+          "utc": "2020-09-14T14:07:21.814Z",
+          "etDate": "2020-09-14",
+          "et": "10:07",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1305508439528017922",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -441,7 +779,12 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [
+        "FOREIGN_PRIVATE_ISSUER_NO_10Q"
+      ],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -455,14 +798,15 @@
       "documented_rationale": "Bricht aus; er ist positioniert.",
       "identity": {
         "ticker_then": "AEM",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "2809",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {
           "foreignPrivateIssuer": true
         }
       },
       "notes": [],
+      "control_seed_key": "AEM|1305508439528017922|2020-09-14",
       "replay_spec": {
         "anchorDate": "2020-09-14",
         "window": null,
@@ -475,6 +819,9 @@
       "ticker": "RVNC",
       "company": "Revance Therapeutics",
       "historical_ticker": "RVNC",
+      "ticker_aliases": [
+        "RVNC"
+      ],
       "date_or_window": {
         "anchor": "PREVIOUS_SESSION_OF_POST",
         "postDate": "2020-09-16"
@@ -485,6 +832,12 @@
         "account": "@markminervini",
         "statusId": "1306216940868960256",
         "postDate": "2020-09-16",
+        "postTime": {
+          "utc": "2020-09-16T13:02:41.697Z",
+          "etDate": "2020-09-16",
+          "et": "09:02",
+          "inSession": false
+        },
         "url": "https://x.com/markminervini/status/1306216940868960256",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -492,7 +845,12 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [
+        "ACQUIRED_LATER"
+      ],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -506,14 +864,15 @@
       "documented_rationale": "Gestern long gegangen nach grossem Ausbruch.",
       "identity": {
         "ticker_then": "RVNC",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1479290",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {
           "acquired": "Uebernahme 2025 (Ticker entfaellt)"
         }
       },
       "notes": [],
+      "control_seed_key": "RVNC|1306216940868960256|PREVIOUS_SESSION_OF_POST",
       "replay_spec": {
         "anchorDate": "PREVIOUS_SESSION_OF_POST",
         "window": null,
@@ -526,6 +885,9 @@
       "ticker": "AMZN",
       "company": "Amazon.com",
       "historical_ticker": "AMZN",
+      "ticker_aliases": [
+        "AMZN"
+      ],
       "date_or_window": {
         "anchor": "2020-10-08",
         "postDate": "2020-10-12"
@@ -536,6 +898,12 @@
         "account": "@markminervini",
         "statusId": "1315721815222878209",
         "postDate": "2020-10-12",
+        "postTime": {
+          "utc": "2020-10-12T18:31:40.335Z",
+          "etDate": "2020-10-12",
+          "et": "14:31",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1315721815222878209",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -543,7 +911,12 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [
+        "EX_POST_ANCHOR"
+      ],
       "own_trade": true,
       "documented_entry": {
         "date": "2020-10-08",
@@ -557,12 +930,13 @@
       "documented_rationale": "Hat AMZN am Donnerstag gekauft (Beitrag am Montag danach).",
       "identity": {
         "ticker_then": "AMZN",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1018724",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [],
+      "control_seed_key": "AMZN|1315721815222878209|2020-10-08",
       "replay_spec": {
         "anchorDate": "2020-10-08",
         "window": null,
@@ -575,6 +949,9 @@
       "ticker": "REPL",
       "company": "Replimune Group",
       "historical_ticker": "REPL",
+      "ticker_aliases": [
+        "REPL"
+      ],
       "date_or_window": {
         "anchor": "2020-10-14",
         "postDate": "2020-10-14"
@@ -585,6 +962,12 @@
         "account": "@markminervini",
         "statusId": "1316394720818593793",
         "postDate": "2020-10-14",
+        "postTime": {
+          "utc": "2020-10-14T15:05:33.531Z",
+          "etDate": "2020-10-14",
+          "et": "11:05",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1316394720818593793",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -592,7 +975,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "BUY_SETUP",
       "evaluation_group": "MAIN",
+      "stratum": "MAIN_B_SETUP_AFFIRMED_NO_OWN_BUY",
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": false,
       "documented_entry": {
         "date": null,
@@ -606,14 +992,15 @@
       "documented_rationale": "Stand heute morgen auf der Buy-Alert-Liste; er hat den Ausbruch verpasst, weil er andere Titel kaufte.",
       "identity": {
         "ticker_then": "REPL",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1737953",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [
         "Setup von ihm bejaht, Kauf aus Kapazitaetsgruenden unterblieben"
       ],
+      "control_seed_key": "REPL|1316394720818593793|2020-10-14",
       "replay_spec": {
         "anchorDate": "2020-10-14",
         "window": null,
@@ -626,6 +1013,9 @@
       "ticker": "PENN",
       "company": "Penn National Gaming (heute PENN Entertainment)",
       "historical_ticker": "PENN",
+      "ticker_aliases": [
+        "PENN"
+      ],
       "date_or_window": {
         "anchor": "2020-12-08",
         "postDate": "2020-12-08"
@@ -636,14 +1026,25 @@
         "account": "@markminervini",
         "statusId": "1336343967210876930",
         "postDate": "2020-12-08",
+        "postTime": {
+          "utc": "2020-12-08T16:16:44.510Z",
+          "etDate": "2020-12-08",
+          "et": "11:16",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1336343967210876930",
         "read": "SEARCH_SNIPPET_ONLY"
       },
       "source_type": "TIER2_OWN_POST",
       "source_confidence": "MEDIUM",
       "minervini_classification": "BUY_SETUP",
-      "evaluation_group": "MAIN",
+      "evaluation_group": "WATCHLIST",
+      "stratum": null,
+      "regroup_reason": "PRE_BREAKOUT_POSITION",
       "class_group": "POSITIVE",
+      "tags": [
+        "ENTRY_PRE_BREAKOUT"
+      ],
       "own_trade": "unknown",
       "documented_entry": {
         "date": null,
@@ -657,14 +1058,15 @@
       "documented_rationale": "Koennte hier aus einer Basis ausbrechen; \"wir\" sind positioniert (vor dem Ausbruch).",
       "identity": {
         "ticker_then": "PENN",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "921738",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [
         "Einstiegsart: PRE_BREAKOUT"
       ],
+      "control_seed_key": "PENN|1336343967210876930|2020-12-08",
       "replay_spec": {
         "anchorDate": "2020-12-08",
         "window": null,
@@ -677,6 +1079,9 @@
       "ticker": "DKL",
       "company": "Delek Logistics Partners LP",
       "historical_ticker": "DKL",
+      "ticker_aliases": [
+        "DKL"
+      ],
       "date_or_window": {
         "anchor": "2020-12-29",
         "postDate": "2021-01-08"
@@ -687,6 +1092,12 @@
         "account": "@markminervini",
         "statusId": "1347626186504085509",
         "postDate": "2021-01-08",
+        "postTime": {
+          "utc": "2021-01-08T19:28:15.203Z",
+          "etDate": "2021-01-08",
+          "et": "14:28",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1347626186504085509",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -694,7 +1105,12 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [
+        "PARTNERSHIP_UNITS"
+      ],
       "own_trade": true,
       "documented_entry": {
         "date": "2020-12-29",
@@ -708,14 +1124,15 @@
       "documented_rationale": "Auf die Buy-Alert-Liste; Kaeufe am 29.12. und heute.",
       "identity": {
         "ticker_then": "DKL",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1552797",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {
           "partnership": true
         }
       },
       "notes": [],
+      "control_seed_key": "DKL|1347626186504085509|2020-12-29",
       "replay_spec": {
         "anchorDate": "2020-12-29",
         "window": null,
@@ -728,6 +1145,9 @@
       "ticker": "DKL",
       "company": "Delek Logistics Partners LP",
       "historical_ticker": "DKL",
+      "ticker_aliases": [
+        "DKL"
+      ],
       "date_or_window": {
         "anchor": "2021-01-08",
         "postDate": "2021-01-08"
@@ -738,14 +1158,25 @@
         "account": "@markminervini",
         "statusId": "1347626186504085509",
         "postDate": "2021-01-08",
+        "postTime": {
+          "utc": "2021-01-08T19:28:15.203Z",
+          "etDate": "2021-01-08",
+          "et": "14:28",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1347626186504085509",
         "read": "SEARCH_SNIPPET_ONLY"
       },
       "source_type": "TIER2_OWN_POST",
       "source_confidence": "MEDIUM",
       "minervini_classification": "REENTRY",
-      "evaluation_group": "MAIN",
-      "class_group": "POSITIVE",
+      "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": "DUPLICATE_ADD_ON_OVERLAPPING_WINDOW",
+      "class_group": "DUPLICATE_ADD_ON_OVERLAPPING_WINDOW",
+      "tags": [
+        "PARTNERSHIP_UNITS"
+      ],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -759,28 +1190,25 @@
       "documented_rationale": "Zweiter Kauf (Aufstockung) am Beitragstag.",
       "identity": {
         "ticker_then": "DKL",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1552797",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": null,
         "events": {
           "partnership": true
         }
       },
       "notes": [
         "gleicher Titel wie DKL 2020-12-29"
-      ],
-      "replay_spec": {
-        "anchorDate": "2021-01-08",
-        "window": null,
-        "documentedPivot": null,
-        "classGroup": "POSITIVE"
-      }
+      ]
     },
     {
       "case_id": "GT-016",
       "ticker": "RICK",
       "company": "RCI Hospitality Holdings",
       "historical_ticker": "RICK",
+      "ticker_aliases": [
+        "RICK"
+      ],
       "date_or_window": {
         "anchor": "2021-04-05",
         "postDate": "2021-04-05"
@@ -791,6 +1219,12 @@
         "account": "@markminervini",
         "statusId": "1379147436611010563",
         "postDate": "2021-04-05",
+        "postTime": {
+          "utc": "2021-04-05T19:02:26.865Z",
+          "etDate": "2021-04-05",
+          "et": "15:02",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1379147436611010563",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -798,7 +1232,12 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [
+        "ENTRY_LOW_CHEAT"
+      ],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -812,14 +1251,15 @@
       "documented_rationale": "Dreht durch seinen \"Low Cheat\" auf hohem Umsatz; kleine Basis; er ist positioniert.",
       "identity": {
         "ticker_then": "RICK",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "935419",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [
         "Einstiegsart: LOW_CHEAT"
       ],
+      "control_seed_key": "RICK|1379147436611010563|2021-04-05",
       "replay_spec": {
         "anchorDate": "2021-04-05",
         "window": null,
@@ -832,6 +1272,9 @@
       "ticker": "RBLX",
       "company": "Roblox Corp",
       "historical_ticker": "RBLX",
+      "ticker_aliases": [
+        "RBLX"
+      ],
       "date_or_window": {
         "anchor": "2021-04-09",
         "postDate": "2021-04-09"
@@ -842,14 +1285,25 @@
         "account": "@markminervini",
         "statusId": "1380519678162927622",
         "postDate": "2021-04-09",
+        "postTime": {
+          "utc": "2021-04-09T13:55:14.746Z",
+          "etDate": "2021-04-09",
+          "et": "09:55",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1380519678162927622",
         "read": "SEARCH_SNIPPET_ONLY"
       },
       "source_type": "TIER2_OWN_POST",
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
-      "evaluation_group": "MAIN",
-      "class_group": "POSITIVE",
+      "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": "HISTORY_TOO_SHORT_KNOWN_IN_ADVANCE",
+      "class_group": "HISTORY_TOO_SHORT_KNOWN_IN_ADVANCE",
+      "tags": [
+        "ENTRY_CHEAT"
+      ],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -863,28 +1317,25 @@
       "documented_rationale": "Durch seinen Cheat-Einstieg aus einer Primaerbasis (junges Listing); er ist positioniert.",
       "identity": {
         "ticker_then": "RBLX",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1315098",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": null,
         "events": {
           "listing": "Direktnotierung Maerz 2021 -> < 252 Handelstage"
         }
       },
       "notes": [
         "Einstiegsart: CHEAT"
-      ],
-      "replay_spec": {
-        "anchorDate": "2021-04-09",
-        "window": null,
-        "documentedPivot": null,
-        "classGroup": "POSITIVE"
-      }
+      ]
     },
     {
       "case_id": "GT-018",
       "ticker": "DECK",
       "company": "Deckers Outdoor",
       "historical_ticker": "DECK",
+      "ticker_aliases": [
+        "DECK"
+      ],
       "date_or_window": {
         "anchor": "2021-04-12",
         "postDate": "2021-04-12"
@@ -895,6 +1346,12 @@
         "account": "@markminervini",
         "statusId": "1381655133780578304",
         "postDate": "2021-04-12",
+        "postTime": {
+          "utc": "2021-04-12T17:07:08.461Z",
+          "etDate": "2021-04-12",
+          "et": "13:07",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1381655133780578304",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -902,7 +1359,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -916,12 +1376,13 @@
       "documented_rationale": "Versucht auszubrechen; er ist positioniert.",
       "identity": {
         "ticker_then": "DECK",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "910521",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [],
+      "control_seed_key": "DECK|1381655133780578304|2021-04-12",
       "replay_spec": {
         "anchorDate": "2021-04-12",
         "window": null,
@@ -934,6 +1395,9 @@
       "ticker": "GDDY",
       "company": "GoDaddy Inc",
       "historical_ticker": "GDDY",
+      "ticker_aliases": [
+        "GDDY"
+      ],
       "date_or_window": {
         "anchor": "2024-02-05",
         "postDate": "2024-05-30"
@@ -944,14 +1408,23 @@
         "account": "@markminervini",
         "statusId": "1796180630608183709",
         "postDate": "2024-05-30",
+        "postTime": {
+          "utc": "2024-05-30T14:03:28.416Z",
+          "etDate": "2024-05-30",
+          "et": "10:03",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1796180630608183709",
         "read": "SEARCH_SNIPPET_ONLY"
       },
       "source_type": "TIER2_OWN_POST",
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
-      "evaluation_group": "MAIN",
+      "evaluation_group": "SENSITIVITY",
+      "stratum": null,
+      "regroup_reason": "EX_POST_OUTCOME_CONDITIONED_ANCHOR",
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": "2024-02-05",
@@ -965,12 +1438,13 @@
       "documented_rationale": "Verkauf mit ordentlichem Gewinn; Kaufbeginn am 05.02.2024 laut Beitrag.",
       "identity": {
         "ticker_then": "GDDY",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1609711",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [],
+      "control_seed_key": "GDDY|1796180630608183709|2024-02-05",
       "replay_spec": {
         "anchorDate": "2024-02-05",
         "window": null,
@@ -983,6 +1457,9 @@
       "ticker": "MU",
       "company": "Micron Technology",
       "historical_ticker": "MU",
+      "ticker_aliases": [
+        "MU"
+      ],
       "date_or_window": {
         "anchor": "2024-04-26",
         "postDate": "2024-05-28"
@@ -993,14 +1470,23 @@
         "account": "@markminervini",
         "statusId": "1795475913833845049",
         "postDate": "2024-05-28",
+        "postTime": {
+          "utc": "2024-05-28T15:23:10.844Z",
+          "etDate": "2024-05-28",
+          "et": "11:23",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1795475913833845049",
         "read": "SEARCH_SNIPPET_ONLY"
       },
       "source_type": "TIER2_OWN_POST",
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
-      "evaluation_group": "MAIN",
+      "evaluation_group": "SENSITIVITY",
+      "stratum": null,
+      "regroup_reason": "EX_POST_OUTCOME_CONDITIONED_ANCHOR",
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": "2024-04-26",
@@ -1014,12 +1500,13 @@
       "documented_rationale": "Seit dem Kauf (gepostet am 26.04.) nichts verkauft, sogar aufgestockt.",
       "identity": {
         "ticker_then": "MU",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "723125",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [],
+      "control_seed_key": "MU|1795475913833845049|2024-04-26",
       "replay_spec": {
         "anchorDate": "2024-04-26",
         "window": null,
@@ -1032,6 +1519,9 @@
       "ticker": "AXON",
       "company": "Axon Enterprise",
       "historical_ticker": "AXON",
+      "ticker_aliases": [
+        "AXON"
+      ],
       "date_or_window": {
         "anchor": "2024-09-12",
         "postDate": "2024-09-12"
@@ -1042,14 +1532,23 @@
         "account": "@markminervini",
         "statusId": "1834268442897064242",
         "postDate": "2024-09-12",
+        "postTime": {
+          "utc": "2024-09-12T16:30:50.503Z",
+          "etDate": "2024-09-12",
+          "et": "12:30",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1834268442897064242",
         "read": "SEARCH_SNIPPET_ONLY"
       },
       "source_type": "TIER2_OWN_POST",
       "source_confidence": "MEDIUM",
       "minervini_classification": "BUY_SETUP",
-      "evaluation_group": "MAIN",
+      "evaluation_group": "SENSITIVITY",
+      "stratum": null,
+      "regroup_reason": "FOCUS_LIST_NO_DAY_PER_TITLE",
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": "unknown",
       "documented_entry": {
         "date": null,
@@ -1063,12 +1562,13 @@
       "documented_rationale": "Aus seiner Focus List hervorgegangen (Ausbruch); er habe neue Titel gekauft und aufgestockt, ohne Zuordnung je Titel.",
       "identity": {
         "ticker_then": "AXON",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1069183",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [],
+      "control_seed_key": "AXON|1834268442897064242|2024-09-12",
       "replay_spec": {
         "anchorDate": "2024-09-12",
         "window": null,
@@ -1081,6 +1581,9 @@
       "ticker": "APP",
       "company": "AppLovin Corp",
       "historical_ticker": "APP",
+      "ticker_aliases": [
+        "APP"
+      ],
       "date_or_window": {
         "anchor": "2024-09-12",
         "postDate": "2024-09-12"
@@ -1091,14 +1594,23 @@
         "account": "@markminervini",
         "statusId": "1834268442897064242",
         "postDate": "2024-09-12",
+        "postTime": {
+          "utc": "2024-09-12T16:30:50.503Z",
+          "etDate": "2024-09-12",
+          "et": "12:30",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1834268442897064242",
         "read": "SEARCH_SNIPPET_ONLY"
       },
       "source_type": "TIER2_OWN_POST",
       "source_confidence": "MEDIUM",
       "minervini_classification": "BUY_SETUP",
-      "evaluation_group": "MAIN",
+      "evaluation_group": "SENSITIVITY",
+      "stratum": null,
+      "regroup_reason": "FOCUS_LIST_NO_DAY_PER_TITLE",
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": "unknown",
       "documented_entry": {
         "date": null,
@@ -1112,12 +1624,13 @@
       "documented_rationale": "Wie AXON (gleicher Beitrag).",
       "identity": {
         "ticker_then": "APP",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1751008",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [],
+      "control_seed_key": "APP|1834268442897064242|2024-09-12",
       "replay_spec": {
         "anchorDate": "2024-09-12",
         "window": null,
@@ -1130,6 +1643,9 @@
       "ticker": "LMB",
       "company": "Limbach Holdings",
       "historical_ticker": "LMB",
+      "ticker_aliases": [
+        "LMB"
+      ],
       "date_or_window": {
         "anchor": "2024-09-12",
         "postDate": "2024-09-12"
@@ -1140,14 +1656,23 @@
         "account": "@markminervini",
         "statusId": "1834268442897064242",
         "postDate": "2024-09-12",
+        "postTime": {
+          "utc": "2024-09-12T16:30:50.503Z",
+          "etDate": "2024-09-12",
+          "et": "12:30",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1834268442897064242",
         "read": "SEARCH_SNIPPET_ONLY"
       },
       "source_type": "TIER2_OWN_POST",
       "source_confidence": "MEDIUM",
       "minervini_classification": "BUY_SETUP",
-      "evaluation_group": "MAIN",
+      "evaluation_group": "SENSITIVITY",
+      "stratum": null,
+      "regroup_reason": "FOCUS_LIST_NO_DAY_PER_TITLE",
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": "unknown",
       "documented_entry": {
         "date": null,
@@ -1161,12 +1686,13 @@
       "documented_rationale": "Wie AXON (gleicher Beitrag).",
       "identity": {
         "ticker_then": "LMB",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1606163",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [],
+      "control_seed_key": "LMB|1834268442897064242|2024-09-12",
       "replay_spec": {
         "anchorDate": "2024-09-12",
         "window": null,
@@ -1179,6 +1705,9 @@
       "ticker": "NMM",
       "company": "Navios Maritime Partners LP",
       "historical_ticker": "NMM",
+      "ticker_aliases": [
+        "NMM"
+      ],
       "date_or_window": {
         "anchor": "2024-09-12",
         "postDate": "2024-09-12"
@@ -1189,14 +1718,26 @@
         "account": "@markminervini",
         "statusId": "1834268442897064242",
         "postDate": "2024-09-12",
+        "postTime": {
+          "utc": "2024-09-12T16:30:50.503Z",
+          "etDate": "2024-09-12",
+          "et": "12:30",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1834268442897064242",
         "read": "SEARCH_SNIPPET_ONLY"
       },
       "source_type": "TIER2_OWN_POST",
       "source_confidence": "MEDIUM",
       "minervini_classification": "BUY_SETUP",
-      "evaluation_group": "MAIN",
+      "evaluation_group": "SENSITIVITY",
+      "stratum": null,
+      "regroup_reason": "FOCUS_LIST_NO_DAY_PER_TITLE",
       "class_group": "POSITIVE",
+      "tags": [
+        "FOREIGN_PRIVATE_ISSUER_NO_10Q",
+        "PARTNERSHIP_UNITS"
+      ],
       "own_trade": "unknown",
       "documented_entry": {
         "date": null,
@@ -1210,15 +1751,16 @@
       "documented_rationale": "Wie AXON (gleicher Beitrag).",
       "identity": {
         "ticker_then": "NMM",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1415921",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {
           "foreignPrivateIssuer": true,
           "partnership": true
         }
       },
       "notes": [],
+      "control_seed_key": "NMM|1834268442897064242|2024-09-12",
       "replay_spec": {
         "anchorDate": "2024-09-12",
         "window": null,
@@ -1231,6 +1773,9 @@
       "ticker": "DVA",
       "company": "DaVita Inc",
       "historical_ticker": "DVA",
+      "ticker_aliases": [
+        "DVA"
+      ],
       "date_or_window": {
         "anchor": "2024-09-12",
         "postDate": "2024-09-12"
@@ -1241,14 +1786,23 @@
         "account": "@markminervini",
         "statusId": "1834268442897064242",
         "postDate": "2024-09-12",
+        "postTime": {
+          "utc": "2024-09-12T16:30:50.503Z",
+          "etDate": "2024-09-12",
+          "et": "12:30",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1834268442897064242",
         "read": "SEARCH_SNIPPET_ONLY"
       },
       "source_type": "TIER2_OWN_POST",
       "source_confidence": "MEDIUM",
       "minervini_classification": "BUY_SETUP",
-      "evaluation_group": "MAIN",
+      "evaluation_group": "SENSITIVITY",
+      "stratum": null,
+      "regroup_reason": "FOCUS_LIST_NO_DAY_PER_TITLE",
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": "unknown",
       "documented_entry": {
         "date": null,
@@ -1262,12 +1816,13 @@
       "documented_rationale": "Wie AXON (gleicher Beitrag).",
       "identity": {
         "ticker_then": "DVA",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "927066",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [],
+      "control_seed_key": "DVA|1834268442897064242|2024-09-12",
       "replay_spec": {
         "anchorDate": "2024-09-12",
         "window": null,
@@ -1280,6 +1835,9 @@
       "ticker": "SG",
       "company": "Sweetgreen Inc",
       "historical_ticker": "SG",
+      "ticker_aliases": [
+        "SG"
+      ],
       "date_or_window": {
         "anchor": "2024-10-08",
         "postDate": "2024-10-08"
@@ -1290,6 +1848,12 @@
         "account": "@markminervini",
         "statusId": "1843739764744434111",
         "postDate": "2024-10-08",
+        "postTime": {
+          "utc": "2024-10-08T19:46:29.600Z",
+          "etDate": "2024-10-08",
+          "et": "15:46",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1843739764744434111",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -1297,7 +1861,12 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "REENTRY",
       "evaluation_group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [
+        "ENTRY_ADD_ON"
+      ],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -1311,14 +1880,15 @@
       "documented_rationale": "Bestehende Position heute morgen aufgestockt; kommt aus einer klassischen VCP.",
       "identity": {
         "ticker_then": "SG",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1477815",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [
         "Einstiegsart: ADD_ON"
       ],
+      "control_seed_key": "SG|1843739764744434111|2024-10-08",
       "replay_spec": {
         "anchorDate": "2024-10-08",
         "window": null,
@@ -1331,6 +1901,9 @@
       "ticker": "RNA",
       "company": "Avidity Biosciences (Ticker 2024)",
       "historical_ticker": "RNA",
+      "ticker_aliases": [
+        "RNA"
+      ],
       "date_or_window": {
         "anchor": "2024-11-13",
         "postDate": "2024-11-13"
@@ -1341,6 +1914,12 @@
         "account": "@markminervini",
         "statusId": "1856764704234041720",
         "postDate": "2024-11-13",
+        "postTime": {
+          "utc": "2024-11-13T18:22:57.166Z",
+          "etDate": "2024-11-13",
+          "et": "13:22",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1856764704234041720",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -1348,7 +1927,12 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "MAIN",
+      "stratum": "MAIN_A_OWN_ENTRY",
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [
+        "TICKER_REUSED_LATER"
+      ],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -1362,14 +1946,15 @@
       "documented_rationale": "Ausbruch gekauft.",
       "identity": {
         "ticker_then": "RNA",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1599901",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {
           "tickerReused": "RNA gehoert heute (SEC-Tickerliste) einem anderen Emittenten (CIK 2093101) -> nur ueber das damalige Listing zuordnen"
         }
       },
       "notes": [],
+      "control_seed_key": "RNA|1856764704234041720|2024-11-13",
       "replay_spec": {
         "anchorDate": "2024-11-13",
         "window": null,
@@ -1382,6 +1967,9 @@
       "ticker": "GTHX",
       "company": "G1 Therapeutics",
       "historical_ticker": "GTHX",
+      "ticker_aliases": [
+        "GTHX"
+      ],
       "date_or_window": {
         "window": [
           "2018-04-13",
@@ -1394,6 +1982,12 @@
         "account": "@markminervini",
         "statusId": "994943521328193536",
         "postDate": "2018-05-11",
+        "postTime": {
+          "utc": "2018-05-11T14:13:15.298Z",
+          "etDate": "2018-05-11",
+          "et": "10:13",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/994943521328193536",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -1401,7 +1995,12 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "SOLD",
       "evaluation_group": "SENSITIVITY",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [
+        "ACQUIRED_LATER"
+      ],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -1415,14 +2014,17 @@
       "documented_rationale": "Teilverkauf mit ca. 38 % Gewinn aus einem \"3-Wochen-Swing\"; Rest mit Absicherung gehalten. Einstieg nur ueber die Dauerangabe erschlossen.",
       "identity": {
         "ticker_then": "GTHX",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1560241",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {
           "acquired": "Uebernahme 2024 (Ticker entfaellt)"
         }
       },
-      "notes": [],
+      "notes": [
+        "Fenster vom Forscher aus der Beitragsangabe erschlossen; setupAtTStar in diesem Modus guenstig gewaehlt"
+      ],
+      "control_seed_key": "GTHX|994943521328193536|2018-04-13..2018-04-27",
       "replay_spec": {
         "anchorDate": null,
         "window": [
@@ -1438,6 +2040,10 @@
       "ticker": "NLOK",
       "company": "NortonLifeLock (heute Gen Digital, GEN)",
       "historical_ticker": "NLOK",
+      "ticker_aliases": [
+        "NLOK",
+        "GEN"
+      ],
       "date_or_window": {
         "window": [
           "2020-08-03",
@@ -1450,6 +2056,12 @@
         "account": "@markminervini",
         "statusId": "1298663189341708288",
         "postDate": "2020-08-26",
+        "postTime": {
+          "utc": "2020-08-26T16:46:46.991Z",
+          "etDate": "2020-08-26",
+          "et": "12:46",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1298663189341708288",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -1457,7 +2069,12 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "SENSITIVITY",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [
+        "TICKER_CHANGED"
+      ],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -1471,16 +2088,18 @@
       "documented_rationale": "Nach dem Ausbruch \"gesquattet\", bis 13 Cent an seinen Stop, nach 5-taegiger Erholung neue Hochs. Ausbruchstag nicht genannt.",
       "identity": {
         "ticker_then": "NLOK",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "849399",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {
           "tickerChange": "NLOK -> GEN (2022)"
         }
       },
       "notes": [
-        "Fenster: Ausbruch vor einer mindestens 5-taegigen Erholung bis zum Beitrag"
+        "Fenster: Ausbruch vor einer mindestens 5-taegigen Erholung bis zum Beitrag",
+        "Fenster vom Forscher aus der Beitragsangabe erschlossen; setupAtTStar in diesem Modus guenstig gewaehlt"
       ],
+      "control_seed_key": "NLOK|1298663189341708288|2020-08-03..2020-08-19",
       "replay_spec": {
         "anchorDate": null,
         "window": [
@@ -1496,6 +2115,9 @@
       "ticker": "TSM",
       "company": "Taiwan Semiconductor (ADR)",
       "historical_ticker": "TSM",
+      "ticker_aliases": [
+        "TSM"
+      ],
       "date_or_window": {
         "window": [
           "2025-11-26",
@@ -1508,6 +2130,12 @@
         "account": "@markminervini",
         "statusId": "1999138986254573979",
         "postDate": "2025-12-11",
+        "postTime": {
+          "utc": "2025-12-11T15:27:31.186Z",
+          "etDate": "2025-12-11",
+          "et": "10:27",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1999138986254573979",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -1515,7 +2143,12 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "SENSITIVITY",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [
+        "FOREIGN_PRIVATE_ISSUER_NO_10Q"
+      ],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -1529,16 +2162,18 @@
       "documented_rationale": "Unter den \"kuerzlich\" long gekauften Titeln genannt; Begleitbeitrag desselben Tages: neun Longs ueber \"ein paar Wochen\" aufgebaut.",
       "identity": {
         "ticker_then": "TSM",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1046179",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {
           "foreignPrivateIssuer": true
         }
       },
       "notes": [
-        "Begleitbeitrag 1999131108563112387"
+        "Begleitbeitrag 1999131108563112387",
+        "Fenster vom Forscher aus der Beitragsangabe erschlossen; setupAtTStar in diesem Modus guenstig gewaehlt"
       ],
+      "control_seed_key": "TSM|1999138986254573979|2025-11-26..2025-12-11",
       "replay_spec": {
         "anchorDate": null,
         "window": [
@@ -1554,6 +2189,9 @@
       "ticker": "AVGO",
       "company": "Broadcom Inc",
       "historical_ticker": "AVGO",
+      "ticker_aliases": [
+        "AVGO"
+      ],
       "date_or_window": {
         "window": [
           "2025-11-26",
@@ -1566,6 +2204,12 @@
         "account": "@markminervini",
         "statusId": "1999138986254573979",
         "postDate": "2025-12-11",
+        "postTime": {
+          "utc": "2025-12-11T15:27:31.186Z",
+          "etDate": "2025-12-11",
+          "et": "10:27",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1999138986254573979",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -1573,7 +2217,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "SENSITIVITY",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -1587,14 +2234,16 @@
       "documented_rationale": "Unter den \"kuerzlich\" long gekauften Titeln genannt; Begleitbeitrag desselben Tages: neun Longs ueber \"ein paar Wochen\" aufgebaut.",
       "identity": {
         "ticker_then": "AVGO",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1730168",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [
-        "Begleitbeitrag 1999131108563112387"
+        "Begleitbeitrag 1999131108563112387",
+        "Fenster vom Forscher aus der Beitragsangabe erschlossen; setupAtTStar in diesem Modus guenstig gewaehlt"
       ],
+      "control_seed_key": "AVGO|1999138986254573979|2025-11-26..2025-12-11",
       "replay_spec": {
         "anchorDate": null,
         "window": [
@@ -1610,6 +2259,9 @@
       "ticker": "NEM",
       "company": "Newmont Corp",
       "historical_ticker": "NEM",
+      "ticker_aliases": [
+        "NEM"
+      ],
       "date_or_window": {
         "window": [
           "2025-11-26",
@@ -1622,6 +2274,12 @@
         "account": "@markminervini",
         "statusId": "1999138986254573979",
         "postDate": "2025-12-11",
+        "postTime": {
+          "utc": "2025-12-11T15:27:31.186Z",
+          "etDate": "2025-12-11",
+          "et": "10:27",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1999138986254573979",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -1629,7 +2287,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "SENSITIVITY",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -1643,14 +2304,16 @@
       "documented_rationale": "Unter den \"kuerzlich\" long gekauften Titeln genannt; Begleitbeitrag desselben Tages: neun Longs ueber \"ein paar Wochen\" aufgebaut.",
       "identity": {
         "ticker_then": "NEM",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1164727",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [
-        "Begleitbeitrag 1999131108563112387"
+        "Begleitbeitrag 1999131108563112387",
+        "Fenster vom Forscher aus der Beitragsangabe erschlossen; setupAtTStar in diesem Modus guenstig gewaehlt"
       ],
+      "control_seed_key": "NEM|1999138986254573979|2025-11-26..2025-12-11",
       "replay_spec": {
         "anchorDate": null,
         "window": [
@@ -1666,6 +2329,9 @@
       "ticker": "ATI",
       "company": "ATI Inc",
       "historical_ticker": "ATI",
+      "ticker_aliases": [
+        "ATI"
+      ],
       "date_or_window": {
         "window": [
           "2025-11-26",
@@ -1678,6 +2344,12 @@
         "account": "@markminervini",
         "statusId": "1999138986254573979",
         "postDate": "2025-12-11",
+        "postTime": {
+          "utc": "2025-12-11T15:27:31.186Z",
+          "etDate": "2025-12-11",
+          "et": "10:27",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1999138986254573979",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -1685,7 +2357,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "SENSITIVITY",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -1699,14 +2374,16 @@
       "documented_rationale": "Unter den \"kuerzlich\" long gekauften Titeln genannt; Begleitbeitrag desselben Tages: neun Longs ueber \"ein paar Wochen\" aufgebaut.",
       "identity": {
         "ticker_then": "ATI",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1018963",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [
-        "Begleitbeitrag 1999131108563112387"
+        "Begleitbeitrag 1999131108563112387",
+        "Fenster vom Forscher aus der Beitragsangabe erschlossen; setupAtTStar in diesem Modus guenstig gewaehlt"
       ],
+      "control_seed_key": "ATI|1999138986254573979|2025-11-26..2025-12-11",
       "replay_spec": {
         "anchorDate": null,
         "window": [
@@ -1722,6 +2399,9 @@
       "ticker": "F",
       "company": "Ford Motor",
       "historical_ticker": "F",
+      "ticker_aliases": [
+        "F"
+      ],
       "date_or_window": {
         "window": [
           "2025-11-26",
@@ -1734,6 +2414,12 @@
         "account": "@markminervini",
         "statusId": "1999138986254573979",
         "postDate": "2025-12-11",
+        "postTime": {
+          "utc": "2025-12-11T15:27:31.186Z",
+          "etDate": "2025-12-11",
+          "et": "10:27",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1999138986254573979",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -1741,7 +2427,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "SENSITIVITY",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -1755,14 +2444,16 @@
       "documented_rationale": "Unter den \"kuerzlich\" long gekauften Titeln genannt; Begleitbeitrag desselben Tages: neun Longs ueber \"ein paar Wochen\" aufgebaut.",
       "identity": {
         "ticker_then": "F",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "37996",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [
-        "Begleitbeitrag 1999131108563112387"
+        "Begleitbeitrag 1999131108563112387",
+        "Fenster vom Forscher aus der Beitragsangabe erschlossen; setupAtTStar in diesem Modus guenstig gewaehlt"
       ],
+      "control_seed_key": "F|1999138986254573979|2025-11-26..2025-12-11",
       "replay_spec": {
         "anchorDate": null,
         "window": [
@@ -1778,6 +2469,9 @@
       "ticker": "ROIV",
       "company": "Roivant Sciences",
       "historical_ticker": "ROIV",
+      "ticker_aliases": [
+        "ROIV"
+      ],
       "date_or_window": {
         "window": [
           "2025-11-26",
@@ -1790,6 +2484,12 @@
         "account": "@markminervini",
         "statusId": "1999138986254573979",
         "postDate": "2025-12-11",
+        "postTime": {
+          "utc": "2025-12-11T15:27:31.186Z",
+          "etDate": "2025-12-11",
+          "et": "10:27",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1999138986254573979",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -1797,7 +2497,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "SENSITIVITY",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -1811,16 +2514,16 @@
       "documented_rationale": "Unter den \"kuerzlich\" long gekauften Titeln genannt; Begleitbeitrag desselben Tages: neun Longs ueber \"ein paar Wochen\" aufgebaut.",
       "identity": {
         "ticker_then": "ROIV",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
-        "events": {
-          "foreignPrivateIssuer": "pruefen"
-        }
+        "expected_cik": "1635088",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
+        "events": {}
       },
       "notes": [
-        "Begleitbeitrag 1999131108563112387"
+        "Begleitbeitrag 1999131108563112387",
+        "Fenster vom Forscher aus der Beitragsangabe erschlossen; setupAtTStar in diesem Modus guenstig gewaehlt"
       ],
+      "control_seed_key": "ROIV|1999138986254573979|2025-11-26..2025-12-11",
       "replay_spec": {
         "anchorDate": null,
         "window": [
@@ -1836,6 +2539,9 @@
       "ticker": "INMD",
       "company": "InMode Ltd",
       "historical_ticker": "INMD",
+      "ticker_aliases": [
+        "INMD"
+      ],
       "date_or_window": {
         "anchor": "2019-10-22",
         "postDate": "2019-10-22"
@@ -1846,6 +2552,12 @@
         "account": "@markminervini",
         "statusId": "1186675011664465920",
         "postDate": "2019-10-22",
+        "postTime": {
+          "utc": "2019-10-22T16:05:44.793Z",
+          "etDate": "2019-10-22",
+          "et": "12:05",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1186675011664465920",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -1853,7 +2565,12 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "BUY_SETUP",
       "evaluation_group": "WATCHLIST",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [
+        "FOREIGN_PRIVATE_ISSUER_NO_10Q"
+      ],
       "own_trade": "unknown",
       "documented_entry": {
         "date": null,
@@ -1867,14 +2584,15 @@
       "documented_rationale": "Von ihm als Kaufkandidat genannt (neben ACAD, das er kaufte); kein Ausbruchstag.",
       "identity": {
         "ticker_then": "INMD",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1742692",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {
           "foreignPrivateIssuer": true
         }
       },
       "notes": [],
+      "control_seed_key": "INMD|1186675011664465920|2019-10-22",
       "replay_spec": {
         "anchorDate": "2019-10-22",
         "window": null,
@@ -1887,6 +2605,9 @@
       "ticker": "NMIH",
       "company": "NMI Holdings",
       "historical_ticker": "NMIH",
+      "ticker_aliases": [
+        "NMIH"
+      ],
       "date_or_window": {
         "anchor": "2019-10-22",
         "postDate": "2019-10-22"
@@ -1897,6 +2618,12 @@
         "account": "@markminervini",
         "statusId": "1186675011664465920",
         "postDate": "2019-10-22",
+        "postTime": {
+          "utc": "2019-10-22T16:05:44.793Z",
+          "etDate": "2019-10-22",
+          "et": "12:05",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1186675011664465920",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -1904,7 +2631,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "BUY_SETUP",
       "evaluation_group": "WATCHLIST",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": "unknown",
       "documented_entry": {
         "date": null,
@@ -1918,12 +2648,13 @@
       "documented_rationale": "Von ihm als Kaufkandidat genannt (neben ACAD, das er kaufte); kein Ausbruchstag.",
       "identity": {
         "ticker_then": "NMIH",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1547903",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [],
+      "control_seed_key": "NMIH|1186675011664465920|2019-10-22",
       "replay_spec": {
         "anchorDate": "2019-10-22",
         "window": null,
@@ -1936,6 +2667,10 @@
       "ticker": "VEC",
       "company": "Vectrus (heute V2X)",
       "historical_ticker": "VEC",
+      "ticker_aliases": [
+        "VEC",
+        "VVX"
+      ],
       "date_or_window": {
         "anchor": "2019-10-22",
         "postDate": "2019-10-22"
@@ -1946,6 +2681,12 @@
         "account": "@markminervini",
         "statusId": "1186675011664465920",
         "postDate": "2019-10-22",
+        "postTime": {
+          "utc": "2019-10-22T16:05:44.793Z",
+          "etDate": "2019-10-22",
+          "et": "12:05",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1186675011664465920",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -1953,7 +2694,12 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "BUY_SETUP",
       "evaluation_group": "WATCHLIST",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [
+        "TICKER_CHANGED"
+      ],
       "own_trade": "unknown",
       "documented_entry": {
         "date": null,
@@ -1967,14 +2713,15 @@
       "documented_rationale": "Von ihm als Kaufkandidat genannt (neben ACAD, das er kaufte); kein Ausbruchstag.",
       "identity": {
         "ticker_then": "VEC",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1601548",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {
           "tickerChange": "VEC -> VVX (2022)"
         }
       },
       "notes": [],
+      "control_seed_key": "VEC|1186675011664465920|2019-10-22",
       "replay_spec": {
         "anchorDate": "2019-10-22",
         "window": null,
@@ -1987,6 +2734,9 @@
       "ticker": "CPRT",
       "company": "Copart Inc",
       "historical_ticker": "CPRT",
+      "ticker_aliases": [
+        "CPRT"
+      ],
       "date_or_window": {
         "anchor": "2019-10-22",
         "postDate": "2019-10-22"
@@ -1997,6 +2747,12 @@
         "account": "@markminervini",
         "statusId": "1186675011664465920",
         "postDate": "2019-10-22",
+        "postTime": {
+          "utc": "2019-10-22T16:05:44.793Z",
+          "etDate": "2019-10-22",
+          "et": "12:05",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1186675011664465920",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2004,7 +2760,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "BUY_SETUP",
       "evaluation_group": "WATCHLIST",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": "unknown",
       "documented_entry": {
         "date": null,
@@ -2018,12 +2777,13 @@
       "documented_rationale": "Von ihm als Kaufkandidat genannt (neben ACAD, das er kaufte); kein Ausbruchstag.",
       "identity": {
         "ticker_then": "CPRT",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "900075",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [],
+      "control_seed_key": "CPRT|1186675011664465920|2019-10-22",
       "replay_spec": {
         "anchorDate": "2019-10-22",
         "window": null,
@@ -2036,6 +2796,9 @@
       "ticker": "RBA",
       "company": "Ritchie Bros. Auctioneers (heute RB Global)",
       "historical_ticker": "RBA",
+      "ticker_aliases": [
+        "RBA"
+      ],
       "date_or_window": {
         "anchor": "2019-10-22",
         "postDate": "2019-10-22"
@@ -2046,6 +2809,12 @@
         "account": "@markminervini",
         "statusId": "1186675011664465920",
         "postDate": "2019-10-22",
+        "postTime": {
+          "utc": "2019-10-22T16:05:44.793Z",
+          "etDate": "2019-10-22",
+          "et": "12:05",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1186675011664465920",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2053,7 +2822,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "BUY_SETUP",
       "evaluation_group": "WATCHLIST",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "POSITIVE",
+      "tags": [],
       "own_trade": "unknown",
       "documented_entry": {
         "date": null,
@@ -2067,14 +2839,13 @@
       "documented_rationale": "Von ihm als Kaufkandidat genannt (neben ACAD, das er kaufte); kein Ausbruchstag.",
       "identity": {
         "ticker_then": "RBA",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
-        "events": {
-          "foreignPrivateIssuer": "pruefen"
-        }
+        "expected_cik": "1046102",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
+        "events": {}
       },
       "notes": [],
+      "control_seed_key": "RBA|1186675011664465920|2019-10-22",
       "replay_spec": {
         "anchorDate": "2019-10-22",
         "window": null,
@@ -2087,6 +2858,9 @@
       "ticker": "UPST",
       "company": "Upstart Holdings",
       "historical_ticker": "UPST",
+      "ticker_aliases": [
+        "UPST"
+      ],
       "date_or_window": {
         "anchor": "2021-10-15",
         "postDate": "2021-10-15"
@@ -2097,6 +2871,12 @@
         "account": "@markminervini",
         "statusId": "1449089499410075651",
         "postDate": "2021-10-15",
+        "postTime": {
+          "utc": "2021-10-15T19:07:14.097Z",
+          "etDate": "2021-10-15",
+          "et": "15:07",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1449089499410075651",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2104,7 +2884,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "AVOID_OR_NEGATIVE",
       "evaluation_group": "NEGATIVE",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "NEGATIVE",
+      "tags": [],
       "own_trade": false,
       "documented_entry": {
         "date": null,
@@ -2118,12 +2901,13 @@
       "documented_rationale": "Nennt UPST \"extended\" und der Bewegung voraus, also nicht kaufen.",
       "identity": {
         "ticker_then": "UPST",
-        "ticker_now_sec": null,
-        "cik": null,
-        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing, CIK aus dem SEC-Datenlayer)",
+        "expected_cik": "1647639",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
+        "resolution": "IN_REPLAY_BY_TICKER_AND_DATE (damaliges Listing; CIK gegen den SEC-Datenlayer geprueft)",
         "events": {}
       },
       "notes": [],
+      "control_seed_key": "UPST|1449089499410075651|2021-10-15",
       "replay_spec": {
         "anchorDate": "2021-10-15",
         "window": null,
@@ -2136,6 +2920,9 @@
       "ticker": "QCOM",
       "company": "Qualcomm",
       "historical_ticker": "QCOM",
+      "ticker_aliases": [
+        "QCOM"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2019-05-22"
@@ -2146,6 +2933,12 @@
         "account": "@markminervini",
         "statusId": "1131187142879842305",
         "postDate": "2019-05-22",
+        "postTime": {
+          "utc": "2019-05-22T13:16:45.960Z",
+          "etDate": "2019-05-22",
+          "et": "09:16",
+          "inSession": false
+        },
         "url": "https://x.com/markminervini/status/1131187142879842305",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2153,7 +2946,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "STOPPED_OUT",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2167,8 +2963,8 @@
       "documented_rationale": "Haelfte am 16.05. ausgestoppt, Rest am 20.05. geschlossen; Einstieg unbekannt.",
       "identity": {
         "ticker_then": "QCOM",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -2179,6 +2975,9 @@
       "ticker": "ZUMZ",
       "company": "Zumiez",
       "historical_ticker": "ZUMZ",
+      "ticker_aliases": [
+        "ZUMZ"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2018-06-07"
@@ -2189,6 +2988,12 @@
         "account": "@markminervini",
         "statusId": "1004831084717199362",
         "postDate": "2018-06-07",
+        "postTime": {
+          "utc": "2018-06-07T21:02:54.112Z",
+          "etDate": "2018-06-07",
+          "et": "17:02",
+          "inSession": false
+        },
         "url": "https://x.com/markminervini/status/1004831084717199362",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2196,7 +3001,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2210,8 +3018,8 @@
       "documented_rationale": "In die Zahlen gehalten; Einstieg unbekannt.",
       "identity": {
         "ticker_then": "ZUMZ",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -2222,6 +3030,9 @@
       "ticker": "AMD",
       "company": "Advanced Micro Devices",
       "historical_ticker": "AMD",
+      "ticker_aliases": [
+        "AMD"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2021-01-11"
@@ -2232,6 +3043,12 @@
         "account": "@markminervini",
         "statusId": "1348648429178789888",
         "postDate": "2021-01-11",
+        "postTime": {
+          "utc": "2021-01-11T15:10:16.849Z",
+          "etDate": "2021-01-11",
+          "et": "10:10",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1348648429178789888",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2239,7 +3056,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2253,8 +3073,8 @@
       "documented_rationale": "Unter \"unseren Longs\", nicht weit von der Basis; Einstieg unbekannt.",
       "identity": {
         "ticker_then": "AMD",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": "2488",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
         "resolution": null,
         "events": {}
       },
@@ -2265,6 +3085,9 @@
       "ticker": "BSIG",
       "company": "BrightSphere Investment Group",
       "historical_ticker": "BSIG",
+      "ticker_aliases": [
+        "BSIG"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2021-01-11"
@@ -2275,6 +3098,12 @@
         "account": "@markminervini",
         "statusId": "1348648429178789888",
         "postDate": "2021-01-11",
+        "postTime": {
+          "utc": "2021-01-11T15:10:16.849Z",
+          "etDate": "2021-01-11",
+          "et": "10:10",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1348648429178789888",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2282,7 +3111,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2296,8 +3128,8 @@
       "documented_rationale": "Wie AMD (gleicher Beitrag).",
       "identity": {
         "ticker_then": "BSIG",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -2308,6 +3140,9 @@
       "ticker": "SNAP",
       "company": "Snap Inc",
       "historical_ticker": "SNAP",
+      "ticker_aliases": [
+        "SNAP"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2021-01-11"
@@ -2318,6 +3153,12 @@
         "account": "@markminervini",
         "statusId": "1348648429178789888",
         "postDate": "2021-01-11",
+        "postTime": {
+          "utc": "2021-01-11T15:10:16.849Z",
+          "etDate": "2021-01-11",
+          "et": "10:10",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1348648429178789888",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2325,7 +3166,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2339,8 +3183,8 @@
       "documented_rationale": "Wie AMD (gleicher Beitrag).",
       "identity": {
         "ticker_then": "SNAP",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -2351,6 +3195,9 @@
       "ticker": "UPST",
       "company": "Upstart Holdings",
       "historical_ticker": "UPST",
+      "ticker_aliases": [
+        "UPST"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2022-04-05"
@@ -2361,6 +3208,12 @@
         "account": "@markminervini",
         "statusId": "1511395010297671687",
         "postDate": "2022-04-05",
+        "postTime": {
+          "utc": "2022-04-05T17:27:05.473Z",
+          "etDate": "2022-04-05",
+          "et": "13:27",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1511395010297671687",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2368,7 +3221,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "SOLD",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2382,8 +3238,8 @@
       "documented_rationale": "Erklaert den Absturz; er habe zum Glueck vorher verkauft (Verkaufskurs genannt, Datum nicht).",
       "identity": {
         "ticker_then": "UPST",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": "1647639",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
         "resolution": null,
         "events": {}
       },
@@ -2394,6 +3250,9 @@
       "ticker": "SWIR",
       "company": "Sierra Wireless",
       "historical_ticker": "SWIR",
+      "ticker_aliases": [
+        "SWIR"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2022-07-25"
@@ -2404,6 +3263,12 @@
         "account": "@markminervini",
         "statusId": "1551565602917171202",
         "postDate": "2022-07-25",
+        "postTime": {
+          "utc": "2022-07-25T13:50:41.087Z",
+          "etDate": "2022-07-25",
+          "et": "09:50",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1551565602917171202",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2411,7 +3276,12 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "STOPPED_OUT",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [
+        "FOREIGN_PRIVATE_ISSUER_NO_10Q"
+      ],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2425,8 +3295,8 @@
       "documented_rationale": "Heute morgen ausgestoppt; Einstieg unbekannt.",
       "identity": {
         "ticker_then": "SWIR",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {
           "foreignPrivateIssuer": true
@@ -2439,6 +3309,9 @@
       "ticker": "LEN",
       "company": "Lennar",
       "historical_ticker": "LEN",
+      "ticker_aliases": [
+        "LEN"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2023-12-14"
@@ -2449,6 +3322,12 @@
         "account": "@markminervini",
         "statusId": "1735316359121141900",
         "postDate": "2023-12-14",
+        "postTime": {
+          "utc": "2023-12-14T15:10:35.290Z",
+          "etDate": "2023-12-14",
+          "et": "10:10",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1735316359121141900",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2456,7 +3335,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "SOLD",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2470,8 +3352,8 @@
       "documented_rationale": "Ausstieg dokumentiert, Einstieg unbekannt.",
       "identity": {
         "ticker_then": "LEN",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -2482,6 +3364,9 @@
       "ticker": "DHI",
       "company": "D.R. Horton",
       "historical_ticker": "DHI",
+      "ticker_aliases": [
+        "DHI"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2023-12-14"
@@ -2492,6 +3377,12 @@
         "account": "@markminervini",
         "statusId": "1735316359121141900",
         "postDate": "2023-12-14",
+        "postTime": {
+          "utc": "2023-12-14T15:10:35.290Z",
+          "etDate": "2023-12-14",
+          "et": "10:10",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1735316359121141900",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2499,7 +3390,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "SOLD",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2513,8 +3407,8 @@
       "documented_rationale": "Ausstieg dokumentiert, Einstieg unbekannt.",
       "identity": {
         "ticker_then": "DHI",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -2525,6 +3419,9 @@
       "ticker": "NVDA",
       "company": "NVIDIA",
       "historical_ticker": "NVDA",
+      "ticker_aliases": [
+        "NVDA"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2024-02-22"
@@ -2535,6 +3432,12 @@
         "account": "@markminervini",
         "statusId": "1760774946777706636",
         "postDate": "2024-02-22",
+        "postTime": {
+          "utc": "2024-02-22T21:13:55.585Z",
+          "etDate": "2024-02-22",
+          "et": "16:13",
+          "inSession": false
+        },
         "url": "https://x.com/markminervini/status/1760774946777706636",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2542,7 +3445,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "SOLD",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2556,8 +3462,8 @@
       "documented_rationale": "Aus der VCP-Ausbruchsposition zu frueh verkauft; Einstiegstag nicht genannt.",
       "identity": {
         "ticker_then": "NVDA",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -2568,6 +3474,9 @@
       "ticker": "EME",
       "company": "EMCOR Group",
       "historical_ticker": "EME",
+      "ticker_aliases": [
+        "EME"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2024-02-23"
@@ -2578,6 +3487,12 @@
         "account": "@markminervini",
         "statusId": "1761131690695557384",
         "postDate": "2024-02-23",
+        "postTime": {
+          "utc": "2024-02-23T20:51:29.963Z",
+          "etDate": "2024-02-23",
+          "et": "15:51",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1761131690695557384",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2585,7 +3500,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "SOLD",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2599,8 +3517,8 @@
       "documented_rationale": "Ausstieg dokumentiert, Einstieg unbekannt.",
       "identity": {
         "ticker_then": "EME",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -2611,6 +3529,9 @@
       "ticker": "PSTG",
       "company": "Pure Storage",
       "historical_ticker": "PSTG",
+      "ticker_aliases": [
+        "PSTG"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2024-05-30"
@@ -2621,6 +3542,12 @@
         "account": "@markminervini",
         "statusId": "1796180630608183709",
         "postDate": "2024-05-30",
+        "postTime": {
+          "utc": "2024-05-30T14:03:28.416Z",
+          "etDate": "2024-05-30",
+          "et": "10:03",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1796180630608183709",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2628,7 +3555,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "SOLD",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2642,8 +3572,8 @@
       "documented_rationale": "Mit Gewinn verkauft; Einstieg unbekannt.",
       "identity": {
         "ticker_then": "PSTG",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -2654,6 +3584,9 @@
       "ticker": "ONON",
       "company": "On Holding AG",
       "historical_ticker": "ONON",
+      "ticker_aliases": [
+        "ONON"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2024-12-23"
@@ -2664,6 +3597,12 @@
         "account": "@markminervini",
         "statusId": "1871205658386944138",
         "postDate": "2024-12-23",
+        "postTime": {
+          "utc": "2024-12-23T14:46:08.936Z",
+          "etDate": "2024-12-23",
+          "et": "09:46",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1871205658386944138",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2671,7 +3610,12 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [
+        "FOREIGN_PRIVATE_ISSUER_NO_10Q"
+      ],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2685,8 +3629,8 @@
       "documented_rationale": "Einzige verbliebene Long-Position mit Gewinnpolster; Einstieg unbekannt.",
       "identity": {
         "ticker_then": "ONON",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {
           "foreignPrivateIssuer": true
@@ -2699,6 +3643,9 @@
       "ticker": "BROS",
       "company": "Dutch Bros",
       "historical_ticker": "BROS",
+      "ticker_aliases": [
+        "BROS"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2025-02-13"
@@ -2709,6 +3656,12 @@
         "account": "@markminervini",
         "statusId": "1890167787924103638",
         "postDate": "2025-02-13",
+        "postTime": {
+          "utc": "2025-02-13T22:34:52.917Z",
+          "etDate": "2025-02-13",
+          "et": "17:34",
+          "inSession": false
+        },
         "url": "https://x.com/markminervini/status/1890167787924103638",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2716,7 +3669,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "SOLD",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2730,8 +3686,8 @@
       "documented_rationale": "In Staerke mit ca. 45 % Gewinn verkauft; Einstieg unbekannt.",
       "identity": {
         "ticker_then": "BROS",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -2742,6 +3698,9 @@
       "ticker": "KGC",
       "company": "Kinross Gold",
       "historical_ticker": "KGC",
+      "ticker_aliases": [
+        "KGC"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2025-02-13"
@@ -2752,6 +3711,12 @@
         "account": "@markminervini",
         "statusId": "1890167787924103638",
         "postDate": "2025-02-13",
+        "postTime": {
+          "utc": "2025-02-13T22:34:52.917Z",
+          "etDate": "2025-02-13",
+          "et": "17:34",
+          "inSession": false
+        },
         "url": "https://x.com/markminervini/status/1890167787924103638",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2759,7 +3724,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2773,8 +3741,8 @@
       "documented_rationale": "Mit Gewinnpolster durch die Zahlen gehalten, schwaechster Titel; Einstieg unbekannt.",
       "identity": {
         "ticker_then": "KGC",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -2785,6 +3753,9 @@
       "ticker": "IBKR",
       "company": "Interactive Brokers",
       "historical_ticker": "IBKR",
+      "ticker_aliases": [
+        "IBKR"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2025-07-18"
@@ -2795,6 +3766,12 @@
         "account": "@markminervini",
         "statusId": "1946221516389286207",
         "postDate": "2025-07-18",
+        "postTime": {
+          "utc": "2025-07-18T14:52:23.211Z",
+          "etDate": "2025-07-18",
+          "et": "10:52",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1946221516389286207",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2802,7 +3779,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "SOLD",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2816,8 +3796,8 @@
       "documented_rationale": "In Staerke verkauft; Einstieg unbekannt.",
       "identity": {
         "ticker_then": "IBKR",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -2828,6 +3808,9 @@
       "ticker": "AAPL",
       "company": "Apple",
       "historical_ticker": "AAPL",
+      "ticker_aliases": [
+        "AAPL"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2020-06-21"
@@ -2838,6 +3821,12 @@
         "account": "@markminervini",
         "statusId": "1274498666561187841",
         "postDate": "2020-06-21",
+        "postTime": {
+          "utc": "2020-06-21T00:25:35.805Z",
+          "etDate": "2020-06-20",
+          "et": "20:25",
+          "inSession": false
+        },
         "url": "https://x.com/markminervini/status/1274498666561187841",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2845,7 +3834,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2859,8 +3851,8 @@
       "documented_rationale": "Nennt es seinen Lehrbuch-Kauf (3-C/Cheat); Kauftag nicht genannt.",
       "identity": {
         "ticker_then": "AAPL",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -2871,6 +3863,9 @@
       "ticker": "OYST",
       "company": "Oyster Point Pharma",
       "historical_ticker": "OYST",
+      "ticker_aliases": [
+        "OYST"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2020-04-27"
@@ -2881,6 +3876,12 @@
         "account": "@markminervini",
         "statusId": "1254861363131879428",
         "postDate": "2020-04-27",
+        "postTime": {
+          "utc": "2020-04-27T19:53:57.824Z",
+          "etDate": "2020-04-27",
+          "et": "15:53",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1254861363131879428",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2888,7 +3889,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "BUY_SETUP",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": "unknown",
       "documented_entry": {
         "date": null,
@@ -2902,8 +3906,8 @@
       "documented_rationale": "Bester Titel der stark gewachsenen Buy-Alert-Liste; Aufnahmetag unklar.",
       "identity": {
         "ticker_then": "OYST",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -2914,6 +3918,9 @@
       "ticker": "ASML",
       "company": null,
       "historical_ticker": "ASML",
+      "ticker_aliases": [
+        "ASML"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2026-06-11"
@@ -2924,6 +3931,12 @@
         "account": "@markminervini",
         "statusId": "2065129055406444742",
         "postDate": "2026-06-11",
+        "postTime": {
+          "utc": "2026-06-11T17:48:29.708Z",
+          "etDate": "2026-06-11",
+          "et": "13:48",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/2065129055406444742",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2931,7 +3944,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2945,8 +3961,8 @@
       "documented_rationale": "Bestandsliste (aktuell long); die meisten vor dem Ruecksetzer gekauft; kein Kaufdatum je Titel.",
       "identity": {
         "ticker_then": "ASML",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -2957,6 +3973,9 @@
       "ticker": "VIK",
       "company": null,
       "historical_ticker": "VIK",
+      "ticker_aliases": [
+        "VIK"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2026-06-11"
@@ -2967,6 +3986,12 @@
         "account": "@markminervini",
         "statusId": "2065129055406444742",
         "postDate": "2026-06-11",
+        "postTime": {
+          "utc": "2026-06-11T17:48:29.708Z",
+          "etDate": "2026-06-11",
+          "et": "13:48",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/2065129055406444742",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -2974,7 +3999,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -2988,8 +4016,8 @@
       "documented_rationale": "Bestandsliste (aktuell long); die meisten vor dem Ruecksetzer gekauft; kein Kaufdatum je Titel.",
       "identity": {
         "ticker_then": "VIK",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3000,6 +4028,9 @@
       "ticker": "MATX",
       "company": null,
       "historical_ticker": "MATX",
+      "ticker_aliases": [
+        "MATX"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2026-06-11"
@@ -3010,6 +4041,12 @@
         "account": "@markminervini",
         "statusId": "2065129055406444742",
         "postDate": "2026-06-11",
+        "postTime": {
+          "utc": "2026-06-11T17:48:29.708Z",
+          "etDate": "2026-06-11",
+          "et": "13:48",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/2065129055406444742",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3017,7 +4054,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3031,8 +4071,8 @@
       "documented_rationale": "Bestandsliste (aktuell long); die meisten vor dem Ruecksetzer gekauft; kein Kaufdatum je Titel.",
       "identity": {
         "ticker_then": "MATX",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3043,6 +4083,9 @@
       "ticker": "ROST",
       "company": null,
       "historical_ticker": "ROST",
+      "ticker_aliases": [
+        "ROST"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2026-06-11"
@@ -3053,6 +4096,12 @@
         "account": "@markminervini",
         "statusId": "2065129055406444742",
         "postDate": "2026-06-11",
+        "postTime": {
+          "utc": "2026-06-11T17:48:29.708Z",
+          "etDate": "2026-06-11",
+          "et": "13:48",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/2065129055406444742",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3060,7 +4109,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3074,8 +4126,8 @@
       "documented_rationale": "Bestandsliste (aktuell long); die meisten vor dem Ruecksetzer gekauft; kein Kaufdatum je Titel.",
       "identity": {
         "ticker_then": "ROST",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3086,6 +4138,9 @@
       "ticker": "KRYS",
       "company": null,
       "historical_ticker": "KRYS",
+      "ticker_aliases": [
+        "KRYS"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2026-06-11"
@@ -3096,6 +4151,12 @@
         "account": "@markminervini",
         "statusId": "2065129055406444742",
         "postDate": "2026-06-11",
+        "postTime": {
+          "utc": "2026-06-11T17:48:29.708Z",
+          "etDate": "2026-06-11",
+          "et": "13:48",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/2065129055406444742",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3103,7 +4164,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3117,8 +4181,8 @@
       "documented_rationale": "Bestandsliste (aktuell long); die meisten vor dem Ruecksetzer gekauft; kein Kaufdatum je Titel.",
       "identity": {
         "ticker_then": "KRYS",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3129,6 +4193,9 @@
       "ticker": "SMFG",
       "company": null,
       "historical_ticker": "SMFG",
+      "ticker_aliases": [
+        "SMFG"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2026-06-11"
@@ -3139,6 +4206,12 @@
         "account": "@markminervini",
         "statusId": "2065129055406444742",
         "postDate": "2026-06-11",
+        "postTime": {
+          "utc": "2026-06-11T17:48:29.708Z",
+          "etDate": "2026-06-11",
+          "et": "13:48",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/2065129055406444742",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3146,7 +4219,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3160,8 +4236,8 @@
       "documented_rationale": "Bestandsliste (aktuell long); die meisten vor dem Ruecksetzer gekauft; kein Kaufdatum je Titel.",
       "identity": {
         "ticker_then": "SMFG",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3172,6 +4248,9 @@
       "ticker": "MS",
       "company": null,
       "historical_ticker": "MS",
+      "ticker_aliases": [
+        "MS"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2026-06-11"
@@ -3182,6 +4261,12 @@
         "account": "@markminervini",
         "statusId": "2065129055406444742",
         "postDate": "2026-06-11",
+        "postTime": {
+          "utc": "2026-06-11T17:48:29.708Z",
+          "etDate": "2026-06-11",
+          "et": "13:48",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/2065129055406444742",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3189,7 +4274,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3203,8 +4291,8 @@
       "documented_rationale": "Bestandsliste (aktuell long); die meisten vor dem Ruecksetzer gekauft; kein Kaufdatum je Titel.",
       "identity": {
         "ticker_then": "MS",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3215,6 +4303,9 @@
       "ticker": "MAR",
       "company": null,
       "historical_ticker": "MAR",
+      "ticker_aliases": [
+        "MAR"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2026-06-11"
@@ -3225,6 +4316,12 @@
         "account": "@markminervini",
         "statusId": "2065129055406444742",
         "postDate": "2026-06-11",
+        "postTime": {
+          "utc": "2026-06-11T17:48:29.708Z",
+          "etDate": "2026-06-11",
+          "et": "13:48",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/2065129055406444742",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3232,7 +4329,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3246,8 +4346,8 @@
       "documented_rationale": "Bestandsliste (aktuell long); die meisten vor dem Ruecksetzer gekauft; kein Kaufdatum je Titel.",
       "identity": {
         "ticker_then": "MAR",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3258,6 +4358,9 @@
       "ticker": "PSMT",
       "company": null,
       "historical_ticker": "PSMT",
+      "ticker_aliases": [
+        "PSMT"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2026-06-11"
@@ -3268,6 +4371,12 @@
         "account": "@markminervini",
         "statusId": "2065129055406444742",
         "postDate": "2026-06-11",
+        "postTime": {
+          "utc": "2026-06-11T17:48:29.708Z",
+          "etDate": "2026-06-11",
+          "et": "13:48",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/2065129055406444742",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3275,7 +4384,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3289,8 +4401,8 @@
       "documented_rationale": "Bestandsliste (aktuell long); die meisten vor dem Ruecksetzer gekauft; kein Kaufdatum je Titel.",
       "identity": {
         "ticker_then": "PSMT",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3301,6 +4413,9 @@
       "ticker": "MNST",
       "company": null,
       "historical_ticker": "MNST",
+      "ticker_aliases": [
+        "MNST"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2026-06-11"
@@ -3311,6 +4426,12 @@
         "account": "@markminervini",
         "statusId": "2065129055406444742",
         "postDate": "2026-06-11",
+        "postTime": {
+          "utc": "2026-06-11T17:48:29.708Z",
+          "etDate": "2026-06-11",
+          "et": "13:48",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/2065129055406444742",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3318,7 +4439,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3332,8 +4456,8 @@
       "documented_rationale": "Bestandsliste (aktuell long); die meisten vor dem Ruecksetzer gekauft; kein Kaufdatum je Titel.",
       "identity": {
         "ticker_then": "MNST",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3344,6 +4468,9 @@
       "ticker": "FRST",
       "company": null,
       "historical_ticker": "FRST",
+      "ticker_aliases": [
+        "FRST"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2026-06-11"
@@ -3354,6 +4481,12 @@
         "account": "@markminervini",
         "statusId": "2065129055406444742",
         "postDate": "2026-06-11",
+        "postTime": {
+          "utc": "2026-06-11T17:48:29.708Z",
+          "etDate": "2026-06-11",
+          "et": "13:48",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/2065129055406444742",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3361,7 +4494,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3375,8 +4511,8 @@
       "documented_rationale": "Bestandsliste (aktuell long); die meisten vor dem Ruecksetzer gekauft; kein Kaufdatum je Titel.",
       "identity": {
         "ticker_then": "FRST",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3387,6 +4523,9 @@
       "ticker": "PSX",
       "company": null,
       "historical_ticker": "PSX",
+      "ticker_aliases": [
+        "PSX"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2026-06-11"
@@ -3397,6 +4536,12 @@
         "account": "@markminervini",
         "statusId": "2065129055406444742",
         "postDate": "2026-06-11",
+        "postTime": {
+          "utc": "2026-06-11T17:48:29.708Z",
+          "etDate": "2026-06-11",
+          "et": "13:48",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/2065129055406444742",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3404,7 +4549,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "SOURCE_AMBIGUOUS",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3418,8 +4566,8 @@
       "documented_rationale": "Bestandsliste (aktuell long); die meisten vor dem Ruecksetzer gekauft; kein Kaufdatum je Titel.",
       "identity": {
         "ticker_then": "PSX",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3430,6 +4578,9 @@
       "ticker": "UPST",
       "company": "Upstart Holdings",
       "historical_ticker": "UPST",
+      "ticker_aliases": [
+        "UPST"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2021-05-03"
@@ -3440,6 +4591,12 @@
         "account": "@markminervini",
         "statusId": "1389270162407362560",
         "postDate": "2021-05-03",
+        "postTime": {
+          "utc": "2021-05-03T17:26:32.766Z",
+          "etDate": "2021-05-03",
+          "et": "13:26",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1389270162407362560",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3447,7 +4604,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ILLUSTRATIVE_ONLY",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "ILLUSTRATIVE_ONLY",
+      "tags": [],
       "own_trade": false,
       "documented_entry": {
         "date": null,
@@ -3461,8 +4621,8 @@
       "documented_rationale": "Dreht heute nach oben; \"Bottom Fishing\" nach seinem Verstaendnis; kein Kauf genannt.",
       "identity": {
         "ticker_then": "UPST",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": "1647639",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
         "resolution": null,
         "events": {}
       },
@@ -3473,6 +4633,9 @@
       "ticker": "GT;ECOM;ESTC;AXP;BYD;UPST;TTGT;ZI;AA",
       "company": null,
       "historical_ticker": "GT;ECOM;ESTC;AXP;BYD;UPST;TTGT;ZI;AA",
+      "ticker_aliases": [
+        "GT"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2021-10-27"
@@ -3483,6 +4646,12 @@
         "account": "@markminervini",
         "statusId": "1453455673610678273",
         "postDate": "2021-10-27",
+        "postTime": {
+          "utc": "2021-10-27T20:16:51.146Z",
+          "etDate": "2021-10-27",
+          "et": "16:16",
+          "inSession": false
+        },
         "url": "https://x.com/markminervini/status/1453455673610678273",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3490,7 +4659,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "FAILED_BREAKOUT",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "ILLUSTRATIVE_ONLY",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3504,8 +4676,8 @@
       "documented_rationale": "Liste von \"Pop-and-Drop\"-Ausbruechen als Marktkommentar; keine eigenen Trades, kein Tag je Titel.",
       "identity": {
         "ticker_then": "GT;ECOM;ESTC;AXP;BYD;UPST;TTGT;ZI;AA",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3516,6 +4688,9 @@
       "ticker": "(unbekannt)",
       "company": null,
       "historical_ticker": "(unbekannt)",
+      "ticker_aliases": [
+        "(unbekannt)"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2024-03-06"
@@ -3526,6 +4701,12 @@
         "account": "@markminervini",
         "statusId": "1765397727037329725",
         "postDate": "2024-03-06",
+        "postTime": {
+          "utc": "2024-03-06T15:23:12.286Z",
+          "etDate": "2024-03-06",
+          "et": "10:23",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1765397727037329725",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3533,7 +4714,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "STOPPED_OUT",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "ILLUSTRATIVE_ONLY",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3547,8 +4731,8 @@
       "documented_rationale": "Groesste Verlierer, die er kaufte und rechtzeitig ausgestoppt wurde; Ticker nur in Bildern.",
       "identity": {
         "ticker_then": "(unbekannt)",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3559,6 +4743,9 @@
       "ticker": "(unbekannt)",
       "company": null,
       "historical_ticker": "(unbekannt)",
+      "ticker_aliases": [
+        "(unbekannt)"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2018-06-05"
@@ -3569,6 +4756,12 @@
         "account": "@markminervini",
         "statusId": "1004013746413539328",
         "postDate": "2018-06-05",
+        "postTime": {
+          "utc": "2018-06-05T14:55:05.475Z",
+          "etDate": "2018-06-05",
+          "et": "10:55",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1004013746413539328",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3576,7 +4769,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "STOPPED_OUT",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "ILLUSTRATIVE_ONLY",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3590,8 +4786,8 @@
       "documented_rationale": "Kurzfristiger Swing mit ca. 3,5 % Verlust geschlossen; Ticker nur im Bild.",
       "identity": {
         "ticker_then": "(unbekannt)",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3602,6 +4798,9 @@
       "ticker": "(unbekannt)",
       "company": null,
       "historical_ticker": "(unbekannt)",
+      "ticker_aliases": [
+        "(unbekannt)"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2019-10-14"
@@ -3612,6 +4811,12 @@
         "account": "@markminervini",
         "statusId": "1183763713523888129",
         "postDate": "2019-10-14",
+        "postTime": {
+          "utc": "2019-10-14T15:17:17.227Z",
+          "etDate": "2019-10-14",
+          "et": "11:17",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1183763713523888129",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3619,7 +4824,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "BUY_SETUP",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "ILLUSTRATIVE_ONLY",
+      "tags": [],
       "own_trade": "unknown",
       "documented_entry": {
         "date": null,
@@ -3633,8 +4841,8 @@
       "documented_rationale": "Antwort: \"Low Cheat\"-Pivot mit Preisangabe; Ticker nicht im Ausschnitt.",
       "identity": {
         "ticker_then": "(unbekannt)",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3645,6 +4853,9 @@
       "ticker": "(unbekannt)",
       "company": null,
       "historical_ticker": "(unbekannt)",
+      "ticker_aliases": [
+        "(unbekannt)"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2020-10-22"
@@ -3655,6 +4866,12 @@
         "account": "@markminervini",
         "statusId": "1319382960706097157",
         "postDate": "2020-10-22",
+        "postTime": {
+          "utc": "2020-10-22T20:59:45.439Z",
+          "etDate": "2020-10-22",
+          "et": "16:59",
+          "inSession": false
+        },
         "url": "https://x.com/markminervini/status/1319382960706097157",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3662,7 +4879,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "VCP_EXAMPLE",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "ILLUSTRATIVE_ONLY",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3676,8 +4896,8 @@
       "documented_rationale": "VCP-Beispiele aus seinen juengsten Kaeufen; Ticker nur in Bildern.",
       "identity": {
         "ticker_then": "(unbekannt)",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3688,6 +4908,9 @@
       "ticker": "CRWD",
       "company": null,
       "historical_ticker": "CRWD",
+      "ticker_aliases": [
+        "CRWD"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2019-07-19"
@@ -3698,6 +4921,12 @@
         "account": "@markminervini",
         "statusId": "1152221869573062656",
         "postDate": "2019-07-19",
+        "postTime": {
+          "utc": "2019-07-19T14:21:15.610Z",
+          "etDate": "2019-07-19",
+          "et": "10:21",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1152221869573062656",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3705,7 +4934,10 @@
       "source_confidence": "LOW",
       "minervini_classification": "UNVERIFIED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "LOW_CONFIDENCE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3719,8 +4951,8 @@
       "documented_rationale": "Ticker nur in der Suchzusammenfassung; sichtbarer Text: nicht gekauft, kein Ausbruch, Pullback-Kauf erwaehnt.",
       "identity": {
         "ticker_then": "CRWD",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3731,6 +4963,9 @@
       "ticker": "BNTX",
       "company": null,
       "historical_ticker": "BNTX",
+      "ticker_aliases": [
+        "BNTX"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2020-06-22"
@@ -3741,6 +4976,12 @@
         "account": "@markminervini",
         "statusId": "1275130672290705416",
         "postDate": "2020-06-22",
+        "postTime": {
+          "utc": "2020-06-22T18:16:57.713Z",
+          "etDate": "2020-06-22",
+          "et": "14:16",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1275130672290705416",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3748,7 +4989,10 @@
       "source_confidence": "LOW",
       "minervini_classification": "UNVERIFIED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "LOW_CONFIDENCE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3762,8 +5006,8 @@
       "documented_rationale": "Wortlaut nur aus der Suchzusammenfassung (Buy-Alert-Liste, VCP in einen Pivot).",
       "identity": {
         "ticker_then": "BNTX",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3774,6 +5018,9 @@
       "ticker": "VAPO",
       "company": null,
       "historical_ticker": "VAPO",
+      "ticker_aliases": [
+        "VAPO"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2020-06-24"
@@ -3784,6 +5031,12 @@
         "account": "@markminervini",
         "statusId": "1275927229550211072",
         "postDate": "2020-06-24",
+        "postTime": {
+          "utc": "2020-06-24T23:02:11.763Z",
+          "etDate": "2020-06-24",
+          "et": "19:02",
+          "inSession": false
+        },
         "url": "https://x.com/markminervini/status/1275927229550211072",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3791,7 +5044,10 @@
       "source_confidence": "LOW",
       "minervini_classification": "UNVERIFIED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "LOW_CONFIDENCE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3805,8 +5061,8 @@
       "documented_rationale": "ID und Wortlaut nur aus der Suchzusammenfassung.",
       "identity": {
         "ticker_then": "VAPO",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3817,6 +5073,9 @@
       "ticker": "TIPT",
       "company": null,
       "historical_ticker": "TIPT",
+      "ticker_aliases": [
+        "TIPT"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2021-04-21"
@@ -3827,6 +5086,12 @@
         "account": "@markminervini",
         "statusId": "1384911871057203203",
         "postDate": "2021-04-21",
+        "postTime": {
+          "utc": "2021-04-21T16:48:15.135Z",
+          "etDate": "2021-04-21",
+          "et": "12:48",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1384911871057203203",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3834,7 +5099,10 @@
       "source_confidence": "LOW",
       "minervini_classification": "UNVERIFIED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "LOW_CONFIDENCE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3848,8 +5116,8 @@
       "documented_rationale": "Wortlaut nur aus der Suchzusammenfassung (Trend-Template-Kandidat, nicht gekauft).",
       "identity": {
         "ticker_then": "TIPT",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3860,6 +5128,9 @@
       "ticker": "BYND",
       "company": null,
       "historical_ticker": "BYND",
+      "ticker_aliases": [
+        "BYND"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2019-07-29"
@@ -3870,6 +5141,12 @@
         "account": "@markminervini",
         "statusId": "1155841668542861312",
         "postDate": "2019-07-29",
+        "postTime": {
+          "utc": "2019-07-29T14:05:02.937Z",
+          "etDate": "2019-07-29",
+          "et": "10:05",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1155841668542861312",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -3877,7 +5154,10 @@
       "source_confidence": "LOW",
       "minervini_classification": "UNVERIFIED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "LOW_CONFIDENCE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3891,8 +5171,8 @@
       "documented_rationale": "Lehrbuch-Pivot laut frueherer Zusammenfassung; nicht im Ausschnitt gesehen.",
       "identity": {
         "ticker_then": "BYND",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3903,6 +5183,9 @@
       "ticker": "ANF",
       "company": null,
       "historical_ticker": "ANF",
+      "ticker_aliases": [
+        "ANF"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": null
@@ -3916,7 +5199,10 @@
       "source_confidence": "LOW",
       "minervini_classification": "UNVERIFIED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "LOW_CONFIDENCE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3930,8 +5216,8 @@
       "documented_rationale": "Nur Suchzusammenfassung, keine Status-ID.",
       "identity": {
         "ticker_then": "ANF",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3942,6 +5228,9 @@
       "ticker": "SPOT",
       "company": null,
       "historical_ticker": "SPOT",
+      "ticker_aliases": [
+        "SPOT"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": null
@@ -3955,7 +5244,10 @@
       "source_confidence": "LOW",
       "minervini_classification": "UNVERIFIED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "LOW_CONFIDENCE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -3969,8 +5261,8 @@
       "documented_rationale": "Nur Suchzusammenfassung; der Ausschnitt zeigt nur DKL.",
       "identity": {
         "ticker_then": "SPOT",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -3981,6 +5273,9 @@
       "ticker": "ETSY",
       "company": null,
       "historical_ticker": "ETSY",
+      "ticker_aliases": [
+        "ETSY"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": null
@@ -3994,7 +5289,10 @@
       "source_confidence": "LOW",
       "minervini_classification": "UNVERIFIED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "LOW_CONFIDENCE",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -4008,8 +5306,8 @@
       "documented_rationale": "Nur Suchzusammenfassung (Stop nach \"Boomerang\"), keine Status-ID.",
       "identity": {
         "ticker_then": "ETSY",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4020,6 +5318,9 @@
       "ticker": "IBIT",
       "company": null,
       "historical_ticker": "IBIT",
+      "ticker_aliases": [
+        "IBIT"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2024-03-06"
@@ -4030,6 +5331,12 @@
         "account": "@markminervini",
         "statusId": "1765392311532359817",
         "postDate": "2024-03-06",
+        "postTime": {
+          "utc": "2024-03-06T15:01:41.129Z",
+          "etDate": "2024-03-06",
+          "et": "10:01",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1765392311532359817",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -4037,7 +5344,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "NOT_LONG_EQUITY",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "EXCLUDED_INSTRUMENT",
+      "tags": [],
       "own_trade": false,
       "documented_entry": {
         "date": null,
@@ -4051,8 +5361,8 @@
       "documented_rationale": "Bitcoin-ETF",
       "identity": {
         "ticker_then": "IBIT",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4063,6 +5373,9 @@
       "ticker": "FNGS",
       "company": null,
       "historical_ticker": "FNGS",
+      "ticker_aliases": [
+        "FNGS"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2025-02-13"
@@ -4073,6 +5386,12 @@
         "account": "@markminervini",
         "statusId": "1890167787924103638",
         "postDate": "2025-02-13",
+        "postTime": {
+          "utc": "2025-02-13T22:34:52.917Z",
+          "etDate": "2025-02-13",
+          "et": "17:34",
+          "inSession": false
+        },
         "url": "https://x.com/markminervini/status/1890167787924103638",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -4080,7 +5399,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "NOT_LONG_EQUITY",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "EXCLUDED_INSTRUMENT",
+      "tags": [],
       "own_trade": false,
       "documented_entry": {
         "date": null,
@@ -4094,8 +5416,8 @@
       "documented_rationale": "ETN",
       "identity": {
         "ticker_then": "FNGS",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4106,6 +5428,9 @@
       "ticker": "GBTC",
       "company": null,
       "historical_ticker": "GBTC",
+      "ticker_aliases": [
+        "GBTC"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2020-06-10"
@@ -4116,6 +5441,12 @@
         "account": "@markminervini",
         "statusId": "1270718067937472513",
         "postDate": "2020-06-10",
+        "postTime": {
+          "utc": "2020-06-10T14:02:50.853Z",
+          "etDate": "2020-06-10",
+          "et": "10:02",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1270718067937472513",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -4123,7 +5454,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "NOT_LONG_EQUITY",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "EXCLUDED_INSTRUMENT",
+      "tags": [],
       "own_trade": false,
       "documented_entry": {
         "date": null,
@@ -4137,8 +5471,8 @@
       "documented_rationale": "Trust, kein Kauf genannt",
       "identity": {
         "ticker_then": "GBTC",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4149,6 +5483,9 @@
       "ticker": "SPY",
       "company": null,
       "historical_ticker": "SPY",
+      "ticker_aliases": [
+        "SPY"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2025-07-18"
@@ -4159,6 +5496,12 @@
         "account": "@markminervini",
         "statusId": "1946221516389286207",
         "postDate": "2025-07-18",
+        "postTime": {
+          "utc": "2025-07-18T14:52:23.211Z",
+          "etDate": "2025-07-18",
+          "et": "10:52",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1946221516389286207",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -4166,7 +5509,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "NOT_LONG_EQUITY",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "EXCLUDED_INSTRUMENT",
+      "tags": [],
       "own_trade": false,
       "documented_entry": {
         "date": null,
@@ -4180,8 +5526,8 @@
       "documented_rationale": "Index-Short",
       "identity": {
         "ticker_then": "SPY",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4192,6 +5538,9 @@
       "ticker": "SPY",
       "company": null,
       "historical_ticker": "SPY",
+      "ticker_aliases": [
+        "SPY"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2025-03-17"
@@ -4202,6 +5551,12 @@
         "account": "@markminervini",
         "statusId": "1901692374763376678",
         "postDate": "2025-03-17",
+        "postTime": {
+          "utc": "2025-03-17T17:49:28.536Z",
+          "etDate": "2025-03-17",
+          "et": "13:49",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1901692374763376678",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -4209,7 +5564,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "NOT_LONG_EQUITY",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "EXCLUDED_INSTRUMENT",
+      "tags": [],
       "own_trade": false,
       "documented_entry": {
         "date": null,
@@ -4223,8 +5581,8 @@
       "documented_rationale": "Index-Short",
       "identity": {
         "ticker_then": "SPY",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4235,6 +5593,9 @@
       "ticker": "DIA",
       "company": null,
       "historical_ticker": "DIA",
+      "ticker_aliases": [
+        "DIA"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2024-05-13"
@@ -4245,6 +5606,12 @@
         "account": "@markminervini",
         "statusId": "1790021562214572075",
         "postDate": "2024-05-13",
+        "postTime": {
+          "utc": "2024-05-13T14:09:32.081Z",
+          "etDate": "2024-05-13",
+          "et": "10:09",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1790021562214572075",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -4252,7 +5619,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "NOT_LONG_EQUITY",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "EXCLUDED_INSTRUMENT",
+      "tags": [],
       "own_trade": false,
       "documented_entry": {
         "date": null,
@@ -4266,8 +5636,8 @@
       "documented_rationale": "Index-Short",
       "identity": {
         "ticker_then": "DIA",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4278,6 +5648,9 @@
       "ticker": "SPY;QQQ;ARKG",
       "company": null,
       "historical_ticker": "SPY;QQQ;ARKG",
+      "ticker_aliases": [
+        "SPY"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2021-03-08"
@@ -4288,6 +5661,12 @@
         "account": "@markminervini",
         "statusId": "1368993291723800577",
         "postDate": "2021-03-08",
+        "postTime": {
+          "utc": "2021-03-08T18:33:30.069Z",
+          "etDate": "2021-03-08",
+          "et": "13:33",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1368993291723800577",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -4295,7 +5674,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "NOT_LONG_EQUITY",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "EXCLUDED_INSTRUMENT",
+      "tags": [],
       "own_trade": false,
       "documented_entry": {
         "date": null,
@@ -4309,8 +5691,8 @@
       "documented_rationale": "Shorts",
       "identity": {
         "ticker_then": "SPY;QQQ;ARKG",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4321,6 +5703,9 @@
       "ticker": "SCHW",
       "company": null,
       "historical_ticker": "SCHW",
+      "ticker_aliases": [
+        "SCHW"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2024-09-12"
@@ -4331,6 +5716,12 @@
         "account": "@markminervini",
         "statusId": "1834268442897064242",
         "postDate": "2024-09-12",
+        "postTime": {
+          "utc": "2024-09-12T16:30:50.503Z",
+          "etDate": "2024-09-12",
+          "et": "12:30",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1834268442897064242",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -4338,7 +5729,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "NOT_LONG_EQUITY",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "EXCLUDED_INSTRUMENT",
+      "tags": [],
       "own_trade": false,
       "documented_entry": {
         "date": null,
@@ -4352,8 +5746,8 @@
       "documented_rationale": "Short",
       "identity": {
         "ticker_then": "SCHW",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4364,6 +5758,9 @@
       "ticker": "BTC",
       "company": null,
       "historical_ticker": "BTC",
+      "ticker_aliases": [
+        "BTC"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2021-02-23"
@@ -4374,6 +5771,12 @@
         "account": "@markminervini",
         "statusId": "1364228835781320704",
         "postDate": "2021-02-23",
+        "postTime": {
+          "utc": "2021-02-23T15:01:15.253Z",
+          "etDate": "2021-02-23",
+          "et": "10:01",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1364228835781320704",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -4381,7 +5784,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "NOT_LONG_EQUITY",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "EXCLUDED_INSTRUMENT",
+      "tags": [],
       "own_trade": false,
       "documented_entry": {
         "date": null,
@@ -4395,8 +5801,8 @@
       "documented_rationale": "kein Wertpapier",
       "identity": {
         "ticker_then": "BTC",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4407,6 +5813,9 @@
       "ticker": "ZM",
       "company": null,
       "historical_ticker": "ZM",
+      "ticker_aliases": [
+        "ZM"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2021-10-15"
@@ -4417,6 +5826,12 @@
         "account": "@markminervini",
         "statusId": "1449082949597605895",
         "postDate": "2021-10-15",
+        "postTime": {
+          "utc": "2021-10-15T18:41:12.500Z",
+          "etDate": "2021-10-15",
+          "et": "14:41",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1449082949597605895",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -4424,7 +5839,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "NOT_LONG_EQUITY",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "EXCLUDED_INSTRUMENT",
+      "tags": [],
       "own_trade": false,
       "documented_entry": {
         "date": null,
@@ -4438,8 +5856,8 @@
       "documented_rationale": "Scherz ueber Tonausfall, kein Trade",
       "identity": {
         "ticker_then": "ZM",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4450,6 +5868,9 @@
       "ticker": "AMZN",
       "company": null,
       "historical_ticker": "AMZN",
+      "ticker_aliases": [
+        "AMZN"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2018-05-30"
@@ -4460,6 +5881,12 @@
         "account": "@markminervini",
         "statusId": "1001902474800828416",
         "postDate": "2018-05-30",
+        "postTime": {
+          "utc": "2018-05-30T19:05:39.097Z",
+          "etDate": "2018-05-30",
+          "et": "15:05",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1001902474800828416",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -4467,7 +5894,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "OUT_OF_WINDOW",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -4481,8 +5911,8 @@
       "documented_rationale": "Trade 1997 (Rueckblick); vor 2008-01-02.",
       "identity": {
         "ticker_then": "AMZN",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": "1018724",
+        "cik_source": "SEC company_tickers.json / EDGAR-Suche (07.10.2026)",
         "resolution": null,
         "events": {}
       },
@@ -4493,6 +5923,9 @@
       "ticker": "USPH",
       "company": null,
       "historical_ticker": "USPH",
+      "ticker_aliases": [
+        "USPH"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2018-07-17"
@@ -4503,6 +5936,12 @@
         "account": "@markminervini",
         "statusId": "1019229142687141889",
         "postDate": "2018-07-17",
+        "postTime": {
+          "utc": "2018-07-17T14:35:38.635Z",
+          "etDate": "2018-07-17",
+          "et": "10:35",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1019229142687141889",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -4510,7 +5949,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "OUT_OF_WINDOW",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -4524,8 +5966,8 @@
       "documented_rationale": "Trade 2001 (Rueckblick); vor 2008-01-02.",
       "identity": {
         "ticker_then": "USPH",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4536,6 +5978,9 @@
       "ticker": "AAPL",
       "company": null,
       "historical_ticker": "AAPL",
+      "ticker_aliases": [
+        "AAPL"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": "2018-12-07"
@@ -4546,6 +5991,12 @@
         "account": "@markminervini",
         "statusId": "1071095448738369536",
         "postDate": "2018-12-07",
+        "postTime": {
+          "utc": "2018-12-07T17:33:49.627Z",
+          "etDate": "2018-12-07",
+          "et": "12:33",
+          "inSession": true
+        },
         "url": "https://x.com/markminervini/status/1071095448738369536",
         "read": "SEARCH_SNIPPET_ONLY"
       },
@@ -4553,7 +6004,10 @@
       "source_confidence": "MEDIUM",
       "minervini_classification": "ENTRY_DOCUMENTED",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "OUT_OF_WINDOW",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -4567,8 +6021,8 @@
       "documented_rationale": "Trade 2004 (Rueckblick; Wortlaut teils nur aus Zusammenfassung); vor 2008-01-02.",
       "identity": {
         "ticker_then": "AAPL",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4579,6 +6033,9 @@
       "ticker": "AMGN",
       "company": null,
       "historical_ticker": "AMGN",
+      "ticker_aliases": [
+        "AMGN"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": null
@@ -4592,7 +6049,10 @@
       "source_confidence": "LOW",
       "minervini_classification": "BOOK_EXAMPLE_CANDIDATE",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "OUT_OF_WINDOW",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -4606,8 +6066,8 @@
       "documented_rationale": "Fruehe Karriere-Trades (1990er) nur aus Sekundaerhinweisen; Buchseite nicht gelesen; vor 2008.",
       "identity": {
         "ticker_then": "AMGN",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4618,6 +6078,9 @@
       "ticker": "DELL",
       "company": null,
       "historical_ticker": "DELL",
+      "ticker_aliases": [
+        "DELL"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": null
@@ -4631,7 +6094,10 @@
       "source_confidence": "LOW",
       "minervini_classification": "BOOK_EXAMPLE_CANDIDATE",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "OUT_OF_WINDOW",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -4645,8 +6111,8 @@
       "documented_rationale": "Fruehe Karriere-Trades (1990er) nur aus Sekundaerhinweisen; Buchseite nicht gelesen; vor 2008.",
       "identity": {
         "ticker_then": "DELL",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4657,6 +6123,9 @@
       "ticker": "MSFT",
       "company": null,
       "historical_ticker": "MSFT",
+      "ticker_aliases": [
+        "MSFT"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": null
@@ -4670,7 +6139,10 @@
       "source_confidence": "LOW",
       "minervini_classification": "BOOK_EXAMPLE_CANDIDATE",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "OUT_OF_WINDOW",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -4684,8 +6156,8 @@
       "documented_rationale": "Fruehe Karriere-Trades (1990er) nur aus Sekundaerhinweisen; Buchseite nicht gelesen; vor 2008.",
       "identity": {
         "ticker_then": "MSFT",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4696,6 +6168,9 @@
       "ticker": "COST",
       "company": null,
       "historical_ticker": "COST",
+      "ticker_aliases": [
+        "COST"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": null
@@ -4709,7 +6184,10 @@
       "source_confidence": "LOW",
       "minervini_classification": "BOOK_EXAMPLE_CANDIDATE",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "OUT_OF_WINDOW",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -4723,8 +6201,8 @@
       "documented_rationale": "Fruehe Karriere-Trades (1990er) nur aus Sekundaerhinweisen; Buchseite nicht gelesen; vor 2008.",
       "identity": {
         "ticker_then": "COST",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4735,6 +6213,9 @@
       "ticker": "HD",
       "company": null,
       "historical_ticker": "HD",
+      "ticker_aliases": [
+        "HD"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": null
@@ -4748,7 +6229,10 @@
       "source_confidence": "LOW",
       "minervini_classification": "BOOK_EXAMPLE_CANDIDATE",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "OUT_OF_WINDOW",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -4762,8 +6246,8 @@
       "documented_rationale": "Fruehe Karriere-Trades (1990er) nur aus Sekundaerhinweisen; Buchseite nicht gelesen; vor 2008.",
       "identity": {
         "ticker_then": "HD",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },
@@ -4774,6 +6258,9 @@
       "ticker": "GPS",
       "company": null,
       "historical_ticker": "GPS",
+      "ticker_aliases": [
+        "GPS"
+      ],
       "date_or_window": {
         "anchor": null,
         "postDate": null
@@ -4787,7 +6274,10 @@
       "source_confidence": "LOW",
       "minervini_classification": "BOOK_EXAMPLE_CANDIDATE",
       "evaluation_group": "NOT_EVALUATED",
+      "stratum": null,
+      "regroup_reason": null,
       "class_group": "OUT_OF_WINDOW",
+      "tags": [],
       "own_trade": true,
       "documented_entry": {
         "date": null,
@@ -4801,8 +6291,8 @@
       "documented_rationale": "Fruehe Karriere-Trades (1990er) nur aus Sekundaerhinweisen; Buchseite nicht gelesen; vor 2008.",
       "identity": {
         "ticker_then": "GPS",
-        "ticker_now_sec": null,
-        "cik": null,
+        "expected_cik": null,
+        "cik_source": null,
         "resolution": null,
         "events": {}
       },

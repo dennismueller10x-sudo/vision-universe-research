@@ -47,12 +47,17 @@ export function publicView(r) {
   };
 }
 
-// Damaliges Listing: Segment mit dem Ticker, dessen Reihe den Anker (bzw. Fensterbeginn) abdeckt.
-export function resolveSegment(segs, ticker, date) {
-  const hits = segs.filter((s) => tickerOf(s.id) === ticker);
+// Damaliges Listing: Segment mit einem der Ticker (Aliasliste), dessen Reihe den Anker (bzw. Fensterbeginn) abdeckt.
+// Mehr als ein abdeckendes Segment -> mehrdeutig (keine stille Wahl).
+export function resolveSegment(segs, tickers, date) {
+  const list = Array.isArray(tickers) ? tickers : [tickers];
+  const hits = segs.filter((s) => list.includes(tickerOf(s.id)));
   const cover = hits.filter((s) => s.raw[0].date <= date && s.raw[s.raw.length - 1].date >= date);
-  return { seg: cover[0] || null, candidates: hits.length, covering: cover.length, ranges: hits.map((s) => [s.raw[0].date, s.raw[s.raw.length - 1].date]) };
+  return { seg: cover.length === 1 ? cover[0] : null, ambiguous: cover.length > 1, candidates: hits.length, covering: cover.length, ranges: hits.map((s) => [tickerOf(s.id), s.raw[0].date, s.raw[s.raw.length - 1].date]) };
 }
+
+// Letzter Handelstag vor dem Beitragstag (SPY-Kalender), sonst null.
+export function previousSession(calendar, postDate) { const i = calendar.findIndex((d) => d >= postDate); return i > 0 ? calendar[i - 1] : null; }
 
 function ctxOf(seg, facts) {
   const a = L.adjustSeries(seg.raw);
@@ -95,21 +100,27 @@ async function main() {
   const results = [], pub = [];
   for (const c of CASES) {
     const spec = { ...c.replay_spec };
-    const startDate = spec.window ? spec.window[0] : spec.anchorDate === 'PREVIOUS_SESSION_OF_POST' ? c.source.postDate : spec.anchorDate;
-    const out = { case_id: c.case_id, ticker: c.ticker, group: c.evaluation_group };
-    if (startDate < W.from || startDate > W.to) { out.replay = { decision: 'NOT_EVALUABLE', reason: 'DATA_WINDOW' }; results.push(out); pub.push(out); continue; }
-    const res = resolveSegment(segs, c.ticker, startDate);
-    const listed = listings.filter((l) => l.ticker === c.ticker);
+    spec.tags = c.tags || [];
+    if (spec.anchorDate === 'PREVIOUS_SESSION_OF_POST') spec.anchorDate = previousSession(D.calendar, c.source.postDate) || 'UNRESOLVED';
+    const startDate = spec.window ? spec.window[0] : spec.anchorDate;
+    const out = { case_id: c.case_id, ticker: c.ticker, group: c.evaluation_group, stratum: c.stratum, tags: c.tags, statusId: c.source.statusId };
+    if (startDate === 'UNRESOLVED') { out.replay = { decision: 'NOT_EVALUABLE', reason: 'ANCHOR_PREVIOUS_SESSION_UNRESOLVED' }; results.push(out); pub.push(out); continue; }
+    if (startDate < W.from || startDate > W.to) { out.replay = { decision: 'NOT_EVALUABLE', reason: 'DATA_WINDOW' }; results.push(out); pub.push(out); log(`FALL ${JSON.stringify(out)}`); continue; }
+    const aliases = c.ticker_aliases || [c.ticker];
+    const res = resolveSegment(segs, aliases, startDate);
+    const listed = listings.filter((l) => aliases.includes(l.ticker));
     out.identity = {
       segments: res.candidates, covering: res.covering, ranges: res.ranges,
       listingsWithTicker: listed.length, inUniverse: listed.some((l) => memberIds.has(l.id)),
       listingSources: [...new Set(listed.map((l) => l.source))],
     };
-    if (!res.seg) { out.replay = { decision: 'NOT_EVALUABLE', reason: res.candidates ? 'SECURITY_MAPPING_NO_COVERING_SEGMENT' : listed.length ? 'SECURITY_MAPPING_EXCLUDED_FROM_UNIVERSE' : 'SECURITY_MAPPING_NOT_IN_PROVIDER_LIST' }; results.push(out); pub.push(out); continue; }
+    if (!res.seg) { out.replay = { decision: 'NOT_EVALUABLE', reason: res.ambiguous ? 'SECURITY_MAPPING_AMBIGUOUS' : res.candidates ? 'SECURITY_MAPPING_NO_COVERING_SEGMENT' : listed.length ? 'SECURITY_MAPPING_EXCLUDED_FROM_UNIVERSE' : 'SECURITY_MAPPING_NOT_IN_PROVIDER_LIST' }; results.push(out); pub.push(out); log(`FALL ${JSON.stringify(out)}`); continue; }
     const seg = res.seg;
     const { ctx, a } = ctxOf(seg, facts);
-    if (spec.anchorDate === 'PREVIOUS_SESSION_OF_POST') { const i = a.date.indexOf(c.source.postDate) >= 0 ? a.date.indexOf(c.source.postDate) : a.date.findIndex((d) => d > c.source.postDate); spec.anchorDate = i > 0 ? a.date[i - 1] : null; }
     const cik = cikOf(seg.id);
+    const expected = c.identity?.expected_cik || null;
+    out.identity.cikCheck = !cik ? 'CIK_UNKNOWN_IN_DATA_LAYER' : !expected ? 'NO_EXPECTED_CIK' : String(Number(cik)) === String(Number(expected)) ? 'MATCH' : 'MISMATCH';
+    if (out.identity.cikCheck === 'MISMATCH') { out.replay = { decision: 'NOT_EVALUABLE', reason: 'SECURITY_MAPPING_CIK_MISMATCH' }; results.push(out); pub.push(out); log(`FALL ${JSON.stringify(out)}`); continue; }
     const splits = seg.raw.filter((b) => Number.isFinite(b.splitFactor) && b.splitFactor !== 1);
     Object.assign(out.identity, {
       segId: seg.id, exchange: seg.id.split(':')[1], cik, secFacts: !!ctx.fund, delisted: !!seg.delisted, delistClass: seg.delistClass || null,
@@ -129,23 +140,32 @@ async function main() {
       out.industry = ir.known ? { sic: ir.sic, level: ir.level, groupSize: ir.groupSize, rank: ir.rank, topN: ir.topN } : { known: false, reason: ir.reason };
     }
     // Zufallskontrollen (praeregistriert): 10 Titel, die am Schluss t* den Messrahmen bestehen, ohne den Falltitel.
+    // Zweite Gruppe (Nachtrag A1, nur Diagnose): 10 Titel, die an t* Messrahmen UND Trend Template bestehen.
     if (r.evaluatedClose && c.class_group === 'POSITIVE') {
       const d = r.evaluatedClose;
-      const pool = segs.filter((s) => s !== seg && tickerOf(s.id) !== c.ticker && dateIndex(s, d) >= 252).map((s) => s.id).sort();
-      const order = seededSample(pool, pool.length, crypto.createHash('sha256').update(c.case_id).digest('hex'));
+      const pool = segs.filter((s) => s !== seg && !aliases.includes(tickerOf(s.id)) && dateIndex(s, d) >= 252).map((s) => s.id).sort();
       const byId = new Map(segs.map((s) => [s.id, s]));
-      const ctrl = [];
-      for (const id of order) {
-        if (ctrl.length >= CONTROLS_PER_CASE) break;
-        const s = byId.get(id); const x = ctxOf(s, facts);
-        const t = x.a.date.indexOf(d);
-        const dv = t >= 0 ? dollarVolume(x.a.close, x.a.volume, P['uni.dollarVolumeSessions'])[t] : NaN;
-        if (!(x.a.rawClose[t] >= P['uni.minRawClose'] && dv >= P['uni.minDollarVolume20'])) continue;
-        const cr = replayCase(x.ctx, { ...spec, classGroup: 'POSITIVE' }, P);
-        ctrl.push({ id, decision: cr.decision, setupAtTStar: !!cr.setupAtTStar, passedLayers: cr.layers?.passed ?? null, trend: cr.layers?.trend.ok ?? null, vcp: cr.layers?.vcp.ok ?? null, sepa: cr.layers?.sepa.ok ?? null });
-      }
-      out.controls = { n: ctrl.length, setupAtTStar: ctrl.filter((x) => x.setupAtTStar).length, detected: ctrl.filter((x) => x.decision === 'DETECTED').length, trend: ctrl.filter((x) => x.trend).length, vcp: ctrl.filter((x) => x.vcp).length, sepa: ctrl.filter((x) => x.sepa).length };
-      out.sealedControls = ctrl;
+      const pick = (seedText, needTrend) => {
+        const order = seededSample(pool, pool.length, crypto.createHash('sha256').update(seedText).digest('hex'));
+        const ctrl = [];
+        for (const id of order) {
+          if (ctrl.length >= CONTROLS_PER_CASE) break;
+          const s = byId.get(id); const x = ctxOf(s, facts);
+          const t = x.a.date.indexOf(d);
+          if (t < 0) continue;
+          const dv = dollarVolume(x.a.close, x.a.volume, P['uni.dollarVolumeSessions'])[t];
+          if (!(x.a.rawClose[t] >= P['uni.minRawClose'] && dv >= P['uni.minDollarVolume20'])) continue;
+          const cr = replayCase(x.ctx, { ...spec, classGroup: 'POSITIVE' }, P);
+          if (needTrend && !(cr.layers?.trend.ok)) continue;
+          ctrl.push({ id, decision: cr.decision, setupAtTStar: !!cr.setupAtTStar, passedLayers: cr.layers?.passed ?? null, trend: cr.layers?.trend.ok ?? null, vcp: cr.layers?.vcp.ok ?? null, sepa: cr.layers?.sepa.ok ?? null });
+        }
+        return ctrl;
+      };
+      const sumUp = (ctrl) => ({ n: ctrl.length, setupAtTStar: ctrl.filter((x) => x.setupAtTStar).length, detected: ctrl.filter((x) => x.decision === 'DETECTED').length, trend: ctrl.filter((x) => x.trend).length, vcp: ctrl.filter((x) => x.vcp).length, sepa: ctrl.filter((x) => x.sepa).length });
+      const seedKey = c.control_seed_key || c.case_id;
+      const c1 = pick(seedKey, false), c2 = pick('TT|' + seedKey, true);
+      out.controls = sumUp(c1); out.controlsTrend = sumUp(c2);
+      out.sealedControls = { uni: c1, trend: c2 };
     }
     results.push(out);
     const { sealed, sealedControls, ...p } = out; pub.push(p);

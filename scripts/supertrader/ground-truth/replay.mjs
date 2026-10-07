@@ -43,16 +43,20 @@ export function layersAt(ctx, ind, dv, t, P) {
   };
 }
 
-// Mechanische Erstzuordnung der Fehlerkategorie aus den blockierenden Schichten (Praeregistrierung).
-export function attribute(layers) {
+// Mechanische Erstzuordnung der Fehlerkategorie aus den blockierenden Schichten (Praeregistrierung + Nachtrag A1).
+// tags: Fall-Kennzeichen (z. B. FOREIGN_PRIVATE_ISSUER_NO_10Q, PARTNERSHIP_UNITS).
+export const SEPA_DATA_RULES = new Set(['MR-SEPA-00', 'MR-PIT-01']);
+export function sepaIsDataGap(sepa) { return SEPA_DATA_RULES.has(sepa.ruleId) || sepa.reason === 'SEPA_ACCEL_NOT_DEMONSTRABLE' || sepa.reason === 'NO_NEXT_SESSION'; }
+export function attribute(layers, tags = []) {
   const out = [];
   if (!layers.universe.ok) out.push({ category: 'DATA_DEFINITION_MISMATCH', layer: 'MR-UNI-01', detail: layers.universe.rawCloseOk ? 'DOLLAR_VOLUME' : 'RAW_CLOSE' });
   if (!layers.trend.ok) for (const [id, ok] of Object.entries(layers.trend.rules)) if (!ok) out.push({ category: 'TREND_MISMATCH', layer: id });
   if (!layers.vcp.ok) out.push({ category: layers.vcp.reason === 'DATA_GAP' ? 'DATA_MISSING' : 'VCP_MISMATCH', layer: 'VCP', detail: layers.vcp.reason });
   if (!layers.sepa.ok) {
-    const r = layers.sepa.reason || '';
-    const cat = /DATA_MISSING|NO_YEAR_AGO|NO_PREVIOUS_QUARTER|NO_REVENUE|STALE|SPLIT_HISTORY|NO_NEXT/.test(r) ? 'DATA_MISSING' : 'FUNDAMENTAL_MISMATCH';
-    out.push({ category: cat, layer: layers.sepa.ruleId, detail: r });
+    const s = layers.sepa, structural = tags.includes('FOREIGN_PRIVATE_ISSUER_NO_10Q') || tags.includes('PARTNERSHIP_UNITS');
+    if (sepaIsDataGap(s)) out.push({ category: structural ? 'DATA_DEFINITION_MISMATCH' : 'DATA_MISSING', layer: s.ruleId, detail: s.reason, fundamentals: 'DATA' });
+    else if (s.reason === 'SEPA_BASE_NOT_POSITIVE') out.push({ category: 'FUNDAMENTAL_MISMATCH', layer: s.ruleId, detail: s.reason, fundamentals: 'RULE', also: ['EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE', 'PRE_PROFIT_SCOPE'] });
+    else out.push({ category: 'FUNDAMENTAL_MISMATCH', layer: s.ruleId, detail: s.reason, fundamentals: 'RULE' });
   }
   return out;
 }
@@ -117,21 +121,22 @@ export function replayCase(ctx, spec, P) {
     timing: { offsetSessions: offset, class: mode === 'ANCHOR' ? timingClass(offset) : (detected ? 'IN_WINDOW' : 'MISS'), signalDate: nearest ? bars.date[nearest.signalIndex] : null },
     pivot: pivotCmp,
     layers: { ...layers, vcp: { ...layers.vcp, pivot: undefined } }, // Preise nicht in die oeffentliche Ausgabe
-    attribution: detected ? [] : attribute(layers),
+    attribution: detected ? [] : attribute(layers, spec.tags || []),
     segmentSignalsTotal: signals.length,
   };
 }
 
-// Jahrestrichter wie scanSegment (gleiche Reihenfolge und Bedingungen), je Kalenderjahr gezaehlt.
+// Jahrestrichter wie scanSegment (gleiche Reihenfolge und Bedingungen), je Kalenderjahr des Ausfuehrungstags t+1
+// gezaehlt (der erste bewertete Schluss liegt vor dem Fenster, seine Order im Fenster).
 export function yearlyFunnel(ctx, P, { fromIndex = 0, toDate = null, keyOf = (d) => d.slice(0, 4) } = {}) {
   const { bars } = ctx;
   const n = bars.date.length;
   const ind = prepareIndicators(bars, P);
   const dv = dollarVolume(bars.close, bars.volume, P['uni.dollarVolumeSessions']);
   const years = {};
-  const y = (t) => (years[keyOf(bars.date[t])] ||= { evaluated: 0, universe: 0, trend: 0, vcp: 0, setups: 0, signals: 0 });
+  const y = (t) => (years[keyOf(bars.date[t + 1])] ||= { evaluated: 0, universe: 0, trend: 0, vcp: 0, setups: 0, signals: 0 });
   for (let t = Math.max(0, fromIndex - 1); t < n - 1; t++) {
-    if (toDate && bars.date[t] > toDate) break;
+    if (toDate && bars.date[t + 1] > toDate) break;
     const Y = y(t); Y.evaluated++;
     if (!(ctx.rawClose[t] >= P['uni.minRawClose']) || !(dv[t] >= P['uni.minDollarVolume20'])) continue;
     Y.universe++;

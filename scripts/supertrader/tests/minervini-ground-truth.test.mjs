@@ -138,11 +138,15 @@ test('GT-T-CONTROLS-SEED: Kontrollauswahl ist deterministisch aus SHA-256(case_i
   assert.notDeepEqual(a, c);
 });
 
-test('GT-T-ATTRIBUTION: mechanische Erstzuordnung je blockierender Schicht', () => {
+test('GT-T-ATTRIBUTION: mechanische Erstzuordnung; SEPA-Datenluecken getrennt von Regelverstoessen (Nachtrag A1)', () => {
   const layers = { universe: { ok: true }, trend: { ok: false, rules: { 'MR-TT-01': true, 'MR-TT-08': false } }, vcp: { ok: false, reason: 'NOT_CONTRACTING' }, sepa: { ok: false, ruleId: 'MR-SEPA-01', reason: 'SEPA_EPS_GROWTH_LOW' } };
   assert.deepEqual(attribute(layers).map((x) => x.category + ':' + x.layer), ['TREND_MISMATCH:MR-TT-08', 'VCP_MISMATCH:VCP', 'FUNDAMENTAL_MISMATCH:MR-SEPA-01']);
-  const missing = { ...layers, trend: { ok: true, rules: {} }, vcp: { ok: true }, sepa: { ok: false, ruleId: 'MR-SEPA-00', reason: 'SEPA_DATA_MISSING' } };
-  assert.deepEqual(attribute(missing).map((x) => x.category), ['DATA_MISSING']);
+  const base = { ...layers, trend: { ok: true, rules: {} }, vcp: { ok: true } };
+  assert.deepEqual(attribute({ ...base, sepa: { ok: false, ruleId: 'MR-SEPA-00', reason: 'SEPA_DATA_MISSING' } }).map((x) => x.category), ['DATA_MISSING']);
+  assert.deepEqual(attribute({ ...base, sepa: { ok: false, ruleId: 'MR-SEPA-02', reason: 'SEPA_ACCEL_NOT_DEMONSTRABLE' } }).map((x) => x.category), ['DATA_MISSING']);
+  assert.deepEqual(attribute({ ...base, sepa: { ok: false, ruleId: 'MR-PIT-01', reason: 'SEPA_STALE' } }, ['FOREIGN_PRIVATE_ISSUER_NO_10Q']).map((x) => x.category), ['DATA_DEFINITION_MISMATCH']);
+  const bnp = attribute({ ...base, sepa: { ok: false, ruleId: 'MR-SEPA-10', reason: 'SEPA_BASE_NOT_POSITIVE' } })[0];
+  assert.equal(bnp.category, 'FUNDAMENTAL_MISMATCH'); assert.ok(bnp.also.includes('EPS_DEFINITION_GAAP_VS_ADJUSTED_POSSIBLE'));
 });
 
 test('GT-T-ISOLATION: Replay ist reine Diagnose (kein Portfolio, keine Engine-Aenderung, keine Rueckschreibung)', () => {
@@ -162,19 +166,34 @@ test('GT-T-PUBLIC-VIEW: oeffentliche Sicht ohne Kurse; Identitaet ueber Ticker u
   const segs = [seg('tiingo:NASDAQ:RNA:2020-06-12', '2020-06-12', '2026-01-02'), seg('tiingo:NASDAQ:RNA:2026-05-01', '2026-05-01', '2026-09-30')];
   assert.equal(resolveSegment(segs, 'RNA', '2024-11-13').seg.id, 'tiingo:NASDAQ:RNA:2020-06-12', 'wiederverwendeter Ticker -> damaliges Listing');
   assert.equal(resolveSegment(segs, 'RNA', '2026-03-01').seg, null);
+  assert.equal(resolveSegment([...segs, seg('tiingo:NYSE:RNA:2019-01-02', '2019-01-02', '2025-01-02')], 'RNA', '2024-11-13').ambiguous, true, 'mehrdeutig -> keine stille Wahl');
+  assert.equal(resolveSegment([seg('tiingo:NASDAQ:GEN:2015-01-02', '2015-01-02', '2026-09-30')], ['NLOK', 'GEN'], '2020-08-10').seg.id, 'tiingo:NASDAQ:GEN:2015-01-02', 'Aliasliste');
+  const { previousSession } = await import('../ground-truth/run-replay.mjs');
+  assert.equal(previousSession(['2020-09-14', '2020-09-15', '2020-09-16'], '2020-09-16'), '2020-09-15');
+  assert.equal(previousSession(['2020-09-16'], '2020-09-16'), null);
 });
 
-test('GT-T-CASES: Fallliste nur aus eigenen Beitraegen; LOW nie ausgewertet; keine geratenen Preise', async () => {
-  const { buildCases, postDate } = await import('../ground-truth/build-cases.mjs');
+test('GT-T-CASES: Fallliste nur aus eigenen Beitraegen; LOW nie ausgewertet; keine geratenen Preise; MAIN strukturell sauber', async () => {
+  const { buildCases, postDate, postTime } = await import('../ground-truth/build-cases.mjs');
   const j = buildCases();
   assert.equal(postDate('1006531423380103168'), '2018-06-12');
-  const onDisk = JSON.parse(read('scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-CASES.json'));
-  assert.deepEqual(onDisk.cases.map((c) => c.case_id + c.ticker), j.cases.map((c) => c.case_id + c.ticker), 'Artefakt = Erzeuger');
+  assert.deepEqual(JSON.parse(read('scripts/supertrader/fidelity/MINERVINI-GROUND-TRUTH-CASES.json')), JSON.parse(JSON.stringify(j)), 'Artefakt = Erzeuger');
   for (const c of j.cases) {
-    if (c.replay_spec) { assert.notEqual(c.source_confidence, 'LOW', c.case_id); assert.equal(c.source.kind, 'X_POST_OWN', c.case_id); }
+    if (c.replay_spec) { assert.notEqual(c.source_confidence, 'LOW', c.case_id); assert.equal(c.source.kind, 'X_POST_OWN', c.case_id); assert.ok(c.control_seed_key.includes(c.source.statusId), c.case_id); }
     assert.equal(c.documented_pivot, null); assert.equal(c.documented_entry.price, null);
   }
-  assert.ok(j.cases.filter((c) => c.evaluation_group === 'MAIN').length >= 20);
+  for (const c of j.cases.filter((x) => x.evaluation_group === 'MAIN')) {
+    assert.ok(['POST_DAY', 'PREVIOUS_DAY_STATED', 'DATE_STATED', 'WEEKDAY_STATED'].includes(c.anchor_basis), c.case_id);
+    assert.ok(c.stratum, c.case_id);
+    assert.ok(c.own_trade === true || ['BUY_SETUP'].includes(c.minervini_classification), c.case_id);
+    assert.ok(!c.tags.includes('ENTRY_PULLBACK') && !c.tags.includes('ENTRY_PRE_BREAKOUT'), c.case_id);
+    assert.ok(c.identity.expected_cik, c.case_id);
+    // Beitrag in der Handelszeit, sonst muss der Anker der Vortag sein (vorboerslich "gestern").
+    if (!c.source.postTime.inSession) assert.equal(c.anchor_basis, 'PREVIOUS_DAY_STATED', c.case_id);
+  }
+  assert.equal(postTime('1306216940868960256').et, '09:02', 'RVNC vorboerslich -> Anker Vortag');
+  const ids = j.cases.filter((c) => c.replay_spec).map((c) => c.control_seed_key);
+  assert.equal(new Set(ids).size, ids.length, 'Seed-Schluessel eindeutig');
 });
 
 test('GT-T-RESULTS: Auswertung aus oeffentlichen Logzeilen (Recall, Fehlermatrix, Kontrollen, Baum)', async () => {
@@ -184,19 +203,20 @@ test('GT-T-RESULTS: Auswertung aus oeffentlichen Logzeilen (Recall, Fehlermatrix
   const ctl = { controls: { n: 10, setupAtTStar: 1, detected: 1, trend: 3, vcp: 2, sepa: 4 } };
   const lines = [
     mk('A', 'MAIN', 'DETECTED', {}, ctl), mk('B', 'MAIN', 'REJECTED', { vcp: { ok: false, reason: 'NOT_CONTRACTING' } }, ctl),
-    mk('C', 'MAIN', 'REJECTED', { sepa: { ok: false, reason: 'SEPA_EPS_GROWTH_LOW' }, vcp: { ok: false, reason: 'STOP_TOO_WIDE' } }, ctl),
+    mk('C', 'MAIN', 'REJECTED', { sepa: { ok: false, ruleId: 'MR-SEPA-01', reason: 'SEPA_EPS_GROWTH_LOW' }, vcp: { ok: false, reason: 'STOP_TOO_WIDE' } }, ctl),
+    mk('E', 'MAIN', 'REJECTED', { sepa: { ok: false, ruleId: 'MR-SEPA-00', reason: 'SEPA_DATA_MISSING' } }, ctl),
     { case_id: 'D', ticker: 'D', group: 'MAIN', replay: { decision: 'NOT_EVALUABLE', reason: 'SECURITY_MAPPING_NOT_IN_PROVIDER_LIST' } },
     mk('N', 'NEGATIVE', 'CORRECT_REJECT'),
   ].map((x) => `[gt-replay DEV +1s] FALL ${JSON.stringify(x)}`).join('\n') + '\n[gt-replay DEV +2s] TRICHTER {"2020|UP":{"evaluated":10,"universe":8,"trend":4,"vcp":2,"setups":1,"signals":1}}';
   const { cases, funnels } = parseLog(lines);
   const r = evaluate(cases, funnels);
-  assert.equal(r.recall.MAIN.evaluable, 3); assert.equal(r.recall.MAIN.detected, 1);
+  assert.equal(r.recall.MAIN.evaluable, 4); assert.equal(r.recall.MAIN.detected, 1);
   assert.equal(r.recall.MAIN.notEvaluable.SECURITY_MAPPING_NOT_IN_PROVIDER_LIST, 1);
-  assert.equal(r.failureMatrix.VCP.cases, 2); assert.equal(r.failureMatrix.FUNDAMENTALS.cases, 1);
-  assert.equal(r.soleBlockingLayer.VCP, 1);
+  assert.equal(r.failureMatrix.byLayer.VCP.cases, 2); assert.equal(r.failureMatrix.byLayer.FUNDAMENTALS_RULE.cases, 1); assert.equal(r.failureMatrix.byLayer.FUNDAMENTALS_DATA.cases, 1);
+  assert.equal(r.failureMatrix.soleBlockingLayer.VCP, 1); assert.equal(r.failureMatrix.soleBlockingLayer.FUNDAMENTALS_DATA, 1);
   assert.match(String(r.precision), /NOT_MEASURABLE/);
-  assert.equal(r.controls.setupRate, 0.1);
-  assert.deepEqual(r.decisionTree, ['B', 'E']);
+  assert.equal(r.controls.universeOnly.detectedRate, 0.1);
+  assert.deepEqual(r.decisionTree, ['B', 'E'], 'Datenluecken loesen D nicht aus');
   assert.equal(r.funnel[0].perYear['2020'].setupsPer1000, 125);
 });
 
