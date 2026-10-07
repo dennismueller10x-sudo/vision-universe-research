@@ -129,19 +129,36 @@ class SecGroundTruthRegressions(unittest.TestCase):
         self.assertAlmostEqual(seen.value, 1953600000.0, delta=1.0)
 
     def test_e10_derived_quarter_never_subtracts_two_concepts(self):
-        """NTRS FY2025: der 10-K meldet Revenues 8.086,4 Mio. (Gesamtertrag) und Vertragsumsatz 5.017,8 Mio.; die 10-Qs
-        nur den Vertragsumsatz (9M 3.710,4 Mio.). Q4 = Gesamtertrag minus 9M-Vertragsumsatz = 4.376 Mio. ist kein Quartal
-        (Q1-Q3 je rund 1,25 Mrd.). Eine Differenz zweier verschiedener Konzepte bleibt eine Luecke."""
+        """NTRS FY2025: der 10-K meldet Revenues 8.086,4 Mio. (Gesamtertrag) UND Vertragsumsatz 5.017,8 Mio.; die 10-Qs
+        nur den Vertragsumsatz (9M 3.710,4 Mio.). Q4 = Gesamtertrag minus 9M-Vertragsumsatz = 4.376 Mio. ist kein Quartal.
+        Abgeleitet wird ueber das Konzept, das beide Kumulwerte melden: 5.017,8 - 3.710,4 = 1.307,4 Mio."""
         calendar, resolver = build("NTRS")
         fy = resolver.annual("revenue", calendar.fiscal_year_for("2025-12-31"), FAR, POLICY_ORIGINAL)
         self.assertAlmostEqual(fy.value, 8086400000.0, delta=1.0)
         q4 = quarter(resolver, calendar, "revenue", "2025-12-31", FAR, POLICY_ORIGINAL)
-        if q4 is not None:
-            self.assertNotAlmostEqual(q4.value, 8086400000.0 - 3710400000.0, delta=1.0)
-            self.assertEqual(q4.provenance.concept, "RevenueFromContractWithCustomerExcludingAssessedTax")
-        # Gleiches Konzept bleibt ableitbar: Q3 = 9M - 6M Vertragsumsatz (gemeldet: 1.265,5 Mio.).
+        self.assertIsNotNone(q4)
+        self.assertAlmostEqual(q4.value, 5017800000.0 - 3710400000.0, delta=1.0)
+        self.assertEqual(q4.provenance.concept, "RevenueFromContractWithCustomerExcludingAssessedTax")
         q3 = quarter(resolver, calendar, "revenue", "2025-09-30", FAR, POLICY_ORIGINAL)
         self.assertAlmostEqual(q3.value, 1265500000.0, delta=1.0)
+
+    def test_e10_tag_switch_without_evidence_of_a_difference_still_derives(self):
+        """NVDA FY2021: der 10-K meldet nur den Vertragsumsatz (16.675 Mio.), die 10-Qs nur Revenues (9M 11.672 Mio.).
+        Kein Beleg, dass die beiden Tags verschiedene Groessen sind -> Q4 = 5.003 Mio. (SEC-Ground-Truth)."""
+        calendar, resolver = build("NVDA")
+        q4 = quarter(resolver, calendar, "revenue", "2021-01-31", FAR, POLICY_ORIGINAL)
+        self.assertIsNotNone(q4)
+        self.assertAlmostEqual(q4.value, 5003000000.0, delta=1.0)
+
+    def test_e2r_net_total_revenue_below_contract_revenue_is_kept(self):
+        """UPST Q2 2022 (10-Q 0001647639-22-000049): Revenues 228.162 Tsd. = Vertragsumsatz 258.345 Tsd. +
+        RevenueNotFromContractWithCustomer -30.183 Tsd. Der Gesamtumsatz ist kleiner als der Vertragsumsatz, weil ein
+        Bestandteil negativ ist - er ist kein Teilbetrag."""
+        calendar, resolver = build("UPST")
+        q2 = quarter(resolver, calendar, "revenue", "2022-06-30", FAR, POLICY_ORIGINAL)
+        self.assertIsNotNone(q2)
+        self.assertAlmostEqual(q2.value, 228162000.0, delta=1.0)
+        self.assertEqual(q2.provenance.concept, "Revenues")
 
     def test_e4_unreported_eps_quarter_stays_missing(self):
         """Derselbe REPL-Auszug ohne die gemeldeten Q4-Dreimonatswerte: kein FY - 9M fuer EPS, die Luecke bleibt."""
