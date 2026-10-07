@@ -7,6 +7,37 @@ Stand: Fundamental-Data-Integrity-Audit, 7. Oktober 2026. Begleitdokumente:
 
 **Status: PLAN. Nichts davon ist ausgeführt. Produktionsklassifikation: READY_FOR_CONTROLLED_MIGRATION.**
 
+## 0. Stand v4 (Final Hardening, Kern 1.19.0) – Urteil: BLOCKED
+
+Freeze: `scripts/fundamentals-audit/artifacts/FUNDAMENTAL-DATA-FREEZE-v4.json` (Kern 1.19.0, Registry 1.9.0, Umsatzbelege 1.1.0; Eltern-Freeze v3 unverändert). Maschinenlesbarer Plan: `FUNDAMENTAL-DATA-MIGRATION-PLAN.json` (Schema 2.0.0).
+
+**TTM-Definition.** `EPS_TTM` = Summe von vier *gemeldeten* Dreimonats-EPS. Es gibt keine Q4-Ableitung. Die Enden müssen verschieden sein und 12–17 Wochen auseinanderliegen. Keine Zelle darf zwei Perioden tragen, und das Fenster darf nicht vor dem jüngsten veröffentlichten Geschäftsjahr enden. Alle Quartale haben eine Einheit, eine Konzeptklasse (Gesamt-EPS; ein Fenster nur aus fortgeführten Bereichen ist kein EPS-TTM) und eine Aktienbasis (kein Sprung ≥ 1,5 und keiner um ein Splitverhältnis wie 5:4 oder 4:3). Das EPS muss zu Ergebnis und Aktienzahl passen. Verwässert und unverwässert bleiben getrennt.
+
+Fehlt ein TTM, steht der Grund in `ttmAbsent`; der Wert wird nie durch das Geschäftsjahr ersetzt. Bundle-Felder:
+- `eps.ttmDiluted` / `eps.ttmBasic`: Status `VERIFIED` oder `NOT_AVAILABLE` mit Grund;
+- `eps.fy*` / `eps.latestQuarter*`: tragen die Konzeptklasse (`TOTAL` oder `CONTINUING`);
+- `views`: `LATEST_RESTATED` für das Bundle, `CURRENT_TTM` für das TTM. `PIT_TTM(as_of)` liefert der Resolver.
+
+**Warum der TTM-EPS von 3.394 auf 138 Emittenten fällt.** Die 3.394 auf main summierten ein Q4 aus FY minus 9M. In SEC-XBRL gibt es fast nie ein gemeldetes Q4-EPS (Stichprobe aus 143 10-K-Instanzen). Die Ableitung verfehlt das Genauigkeitsziel: In den besten Bedingungen liegen 3,2 % außerhalb der Toleranz, ohne Bedingungen 22–24 %. Das Ergebnis ist akzeptiert, statt rekonstruiert zu werden (`FUNDAMENTAL-TTM-INVESTIGATION.json`).
+
+**Umsatz.** Ist `Revenues` kleiner als ein anderes Umsatzkonzept derselben Zelle, entscheidet die Ergebnisrechnung der Einreichung. Grundlage sind FilingSummary, Presentation- und Calculation-Linkbase sowie `quant/config/sec-revenue-statement-evidence.json` (2.123 Einreichungen, 191 mehrdeutig). Ohne Beleg bleibt die Zelle leer. Ground Truth (Holdout): falsche Umsatzwerte 1,29 % → 0,70 %, fälschlich fehlend 0,47 % → 1,12 %.
+
+**Validierung.**
+- Präregistrierter TTM-Holdout (1.000 Emittenten, gegen 1.16.0): **FAILED**.
+  - Gates: A FALSE_AVAILABLE 85, A WRONG_VALUE 3,57 %, B FALSE_AVAILABLE 66, B WRONG_CONCEPT 11.
+  - Ursachen aus Primärdaten: ein echter Kernfehler, F-TTM-1, in 1.18.0 behoben. Der Rest geht auf das Wahrheitskonstrukt zurück (52/53-Wochen-Enden) oder auf die Sicht (Restatements und split-bereinigte Werte gegen summierte Erstmeldungen).
+  - Abweichungen sind offengelegt: Fixture-Emittenten wurden ausgeschlossen, das Auswertungsskript lief in v1 bis v3.
+  - 1.18.0 und 1.19.0 (Red-Team-Korrekturen HIGH-1..4, MEDIUM-5..7) sind **nicht holdout-validiert**.
+- Minervini-Replay ohne Regeländerung: Recall 3/15 vorher und nachher. Die sieben GAAP-Verlustfälle sind STRATEGY_DEFINITION_MISMATCH.
+
+**Blocker.**
+- M-B1: Screener und Discover-Karte zeigen FY-Werte unter TTM-Labels; mit unverändertem Screener wären es rund 4.400 FY-EPS.
+- M-B5: Pattern-Research und Pattern-Match lesen historisch aus der LATEST-Sicht.
+- M-B6: Der Umsatzbeleg muss im Workflow vor dem Consumer-Build laufen.
+- M-B2: Rollout nur als beobachteter manueller Lauf.
+
+Rollback-Kriterien und Schritte stehen im JSON-Plan. Wirkung je Produkt: `FUNDAMENTAL-IMPACT-v4.json`. Lesermatrix: `FUNDAMENTAL-CONSUMER-VIEW-CONTRACTS.json`. Einstufung F1–F10, E5–E12 und F-TTM-1: `FUNDAMENTAL-TRIAGE.json`.
+
 ## 1. Was migriert wird
 
 | | Vorher (main 829b35bdce4) | Nachher (Data-Freeze v3) |

@@ -1,5 +1,7 @@
 # Fundamental Data Integrity Audit – Bericht
 
+> **Stand v4 (Kern 1.19.0, Freeze v4):** TTM-Integritaet, Umsatzbelege, Sichten, Red-Team-Korrekturen und TTM-Holdout (FAILED, offengelegt) - Zusammenfassung und Urteil (BLOCKED) in [FUNDAMENTAL_DATA_MIGRATION.md, Abschnitt 0](FUNDAMENTAL_DATA_MIGRATION.md).
+
 Stand: 7. Oktober 2026.
 
 - Branch `claude/fundamental-data-integrity-audit`, Basis `main` 829b35bdce4.
