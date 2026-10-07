@@ -6,6 +6,7 @@ import {approval,approve,approvedForPublication} from './production-approval.mjs
 import {publish,preflight,prefixFor,readAsset} from './public-delivery.mjs';
 import {download} from './download-public.mjs';
 import {createS3DriverFromEnv} from '../market/storage/s3-driver.mjs';
+import {versionConsumerAssets} from './version-consumer-assets.mjs';
 export async function publishProduction(driver,directory){
  approve(directory);
  const result=await publish(driver,{namespace:approval.namespace,directory});
@@ -56,9 +57,10 @@ export async function stageProduction(driver,release,{enabled=approval.deliveryE
    const text=readFileSync(file,'utf8'),needle='const config = {stage:1,';
    if(text.includes(needle))writeFileSync(file,text.replace(needle,'const config = {stage:0,productionOff:true,'));
   }
+  versionConsumerAssets(release);
   return {status:'PRODUCTION_GATE_CLOSED',privateObjectsRead:0};
  }
- return verifyProductionConsumer(driver,release);
+ const result=await verifyProductionConsumer(driver,release);versionConsumerAssets(release);return result;
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1];
