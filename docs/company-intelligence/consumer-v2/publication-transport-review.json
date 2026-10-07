@@ -1,5 +1,5 @@
 {
-  "status": "V2_MERGED_GATE_OFF_SEQUENTIAL_REACTIVATION_PENDING",
+  "status": "V2_ACTIVE_DEPLOYED_COMPLETE_PRODUCTION_BROWSER_REVIEW_RUNNING",
   "initialPushRun": 37653514427,
   "initialPushResult": "package PASS; workflow failure before any deploy job; no error annotation available",
   "fullRetryEndpointResult": "HTTP 500; no new attempt created",
@@ -31,5 +31,14 @@
     }
   ],
   "canceledReadOnlyReview": 37663659680,
-  "correction": "Wait for emergency OFF completion, then enable and verify gate, then explicitly build new full-acceptance package. Independent read-only full review after deployment has separate concurrency."
+  "correction": "Wait for emergency OFF completion, then enable and verify gate, then explicitly build new full-acceptance package. Independent read-only full review after deployment has separate concurrency.",
+  "sequentialRollbackRun": 37663766124,
+  "sequentialRollbackResult": "PASS: 8 real Discover/Quant widths, zero consumer requests",
+  "sequentialEnableRun": 37664859908,
+  "sequentialEnableResult": "PASS: active exact immutable consumer gate after all-byte verification; private state untouched",
+  "sequentialFullPagesRun": 37665089922,
+  "sequentialFullPagesResult": "package PASS; deploy PASS; browser dependencies still installing",
+  "independentFreshR2AndFullReviewRun": 37665891019,
+  "independentFreshR2Steps": "PASS: remote current pointer/integrity, fresh restore, both pinned exports, deterministic 45-issuer cohort and all 86 actual production asset hashes",
+  "productionApiLookups": "PASS: all 46 symbols resolve correct issuer and generatedAt; preview=false. API only, not browser proof."
 }
