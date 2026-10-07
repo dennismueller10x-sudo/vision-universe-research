@@ -92,24 +92,35 @@ def resolver_for(cik, cf, registry, provider):
     return calendar, PeriodResolver(normalize_company(cik, raw, registry, calendar=calendar).factbook, registry)
 
 
-def classify(resolver, metric, four, reports, known):
+def classify(resolver, calendar, metric, four, reports, known):
+    """PIT_TTM fuer genau dieses Fenster (ttm_ending) zum Stichtag knownFrom und knownFrom - 1 Tag.
+
+    Auswertung v2: v1 verglich das NEUESTE TTM zum Stichtag mit dem Wahrheitsfenster; bei Fenstern, deren Q4 erst
+    als Vergleichswert im Folgejahr gemeldet wurde, ist das neueste TTM ein spaeteres Fenster (Messfehler v1)."""
     truth = sum(reports[p][0] for p in four)
     end = four[-1][1]
-    before = resolver.ttm(metric, (date.fromisoformat(known) - timedelta(days=1)).isoformat())
-    if before.available and str(before.period_end)[:10] >= end:
-        return "FALSE_AVAILABLE", truth, before.value, before.reason
-    fact = resolver.ttm(metric, known)
+    fiscal_year, index = calendar.fiscal_year_for(end), calendar.quarter_index(end)
+    if fiscal_year is None or index is None:
+        return "NOT_AVAILABLE", truth, None, "NO_FISCAL_SLOT"
+    before = resolver.ttm_ending(metric, fiscal_year, index, (date.fromisoformat(known) - timedelta(days=1)).isoformat())
+    if before.available:
+        return "FALSE_AVAILABLE", truth, before.value, str(before.provenance.filed)[:10]
+    fact = resolver.ttm_ending(metric, fiscal_year, index, known)
     if not fact.available:
         return "NOT_AVAILABLE", truth, None, fact.reason
     if abs(days(str(fact.period_end)[:10], end)) > 7:
         return "WRONG_PERIOD", truth, fact.value, str(fact.period_end)[:10]
-    quarters = resolver.latest_quarters(metric, known, count=4)
-    concepts = {q[2].provenance.concept for q in quarters}
+    grid_quarters = []
+    for step in range(4):
+        year, q = resolver.step_back(fiscal_year, index, step)
+        grid_quarters.append(resolver.quarter_grid(metric, year, known).get(q))
+    concepts = {o.provenance.concept for o in grid_quarters if o is not None}
     if concepts & CONTINUING_PER_SHARE or not concepts <= set(FAMILIES[metric]):
         return "WRONG_CONCEPT", truth, fact.value, sorted(concepts)
     if abs(fact.value - truth) <= 0.02 or abs(fact.value - truth) <= 0.01 * abs(truth):
         return "CORRECT", truth, fact.value, None
-    return "WRONG_VALUE", truth, fact.value, None
+    restated = any(o is not None and "RESTATED" in (o.flags or []) for o in grid_quarters)
+    return "WRONG_VALUE", truth, fact.value, "CORE_USES_RESTATED_VALUE" if restated else "OTHER"
 
 
 def main():
@@ -138,7 +149,7 @@ def main():
                 for metric, (reports, wins) in windows.items():
                     for four in wins:
                         known = max(reports[p][1] for p in four)
-                        cls, truth, value, detail = classify(resolver, metric, four, reports, known)
+                        cls, truth, value, detail = classify(resolver, calendar, metric, four, reports, known)
                         out.write(json.dumps({
                             "cik": cik, "experiment": experiment, "metric": metric, "end": four[-1][1], "known": known,
                             "class": cls, "truth": truth, "core": value, "detail": detail,
