@@ -87,7 +87,10 @@ const REV_TAGS_R12 = [...REV_TAGS, 'RevenuesNetOfInterestExpense', 'InterestAndD
 const days = (a, b) => (Date.parse(b) - Date.parse(a)) / 864e5;
 
 // Quartalsreihe [end, value, firstFiled, derived] aus companyfacts-Eintraegen einer Kennzahl.
-export function quarterly(entries) {
+// perShare: Betraege je Aktie sind nicht additiv (jede Periode teilt durch ihre eigene gewichtete Aktienzahl);
+// FY minus Q1..Q3 ist dort nicht das Q4-EPS (Fundamental-Audit E7: 22-24 % ausserhalb 0,02/1 % gegen das
+// gemeldete Q4). Ein nicht gemeldetes Q4 bleibt eine Luecke.
+export function quarterly(entries, { perShare = false } = {}) {
   const q = new Map(), fy = [];
   for (const e of entries || []) {
     if (!e.start || !e.end || !Number.isFinite(e.val) || !e.filed) continue;
@@ -99,17 +102,20 @@ export function quarterly(entries) {
   const fyFirst = new Map();
   for (const e of fy) { const k = e.start + '|' + e.end; const cur = fyFirst.get(k); if (!cur || e.filed < cur.filed) fyFirst.set(k, e); }
   for (const e of fyFirst.values()) {
-    if (q.has(e.end)) continue;
+    if (perShare || q.has(e.end)) continue;
     const inYear = [...q.values()].filter((x) => x[4] >= e.start && x[0] < e.end && x[3] === 0);
     if (inYear.length !== 3) continue;
-    q.set(e.end, [e.end, e.val - inYear.reduce((a, x) => a + x[1], 0), e.filed, 1, null]);
+    // Bekannt erst, wenn der letzte Bestandteil veroeffentlicht ist (E7: AMD Q4 2012 trug das 10-K-Datum
+    // 2013-02-21, Q1-Q3 2012 erschienen in XBRL erst 2013-05-06 bis 2013-10-30).
+    const known = inYear.reduce((m, x) => (x[2] > m ? x[2] : m), e.filed);
+    q.set(e.end, [e.end, e.val - inYear.reduce((a, x) => a + x[1], 0), known, 1, null]);
   }
   return [...q.values()].map((x) => x.slice(0, 4)).sort((a, b) => a[0].localeCompare(b[0]));
 }
 
 export function extractFacts(cf) {
   const g = cf?.facts?.['us-gaap'] || {};
-  const pick = (tags, unitPred) => { for (const t of tags) { const u = g[t]?.units; if (!u) continue; for (const [unit, arr] of Object.entries(u)) if (unitPred(unit)) { const q = quarterly(arr); if (q.length >= 4) return { tag: t, q }; } } return null; };
+  const pick = (tags, unitPred) => { for (const t of tags) { const u = g[t]?.units; if (!u) continue; for (const [unit, arr] of Object.entries(u)) if (unitPred(unit)) { const q = quarterly(arr, { perShare: true }); if (q.length >= 4) return { tag: t, q }; } } return null; };
   const eps = pick(EPS_TAGS, (u) => /USD\/shares/i.test(u));
   // Umsatz: je Periode der erste verfuegbare Tag in Prioritaetsreihenfolge.
   const revMap = new Map();
@@ -121,7 +127,7 @@ export function extractFacts(cf) {
 // Runde 12: Extraktion mit erweiterten Kennzahlen, IFRS und Ursachenangabe, wenn keine Quartals-EPS vorliegen.
 export function extractFactsR12(cf) {
   const g = cf?.facts?.['us-gaap'] || {}, ifrs = cf?.facts?.['ifrs-full'] || {};
-  const pick = (tax, tags, unitPred) => { for (const t of tags) { const u = tax[t]?.units; if (!u) continue; for (const [unit, arr] of Object.entries(u)) if (unitPred(unit)) { const q = quarterly(arr); if (q.length >= 4) return { tag: t, q, unit }; } } return null; };
+  const pick = (tax, tags, unitPred) => { for (const t of tags) { const u = tax[t]?.units; if (!u) continue; for (const [unit, arr] of Object.entries(u)) if (unitPred(unit)) { const q = quarterly(arr, { perShare: true }); if (q.length >= 4) return { tag: t, q, unit }; } } return null; };
   const perShare = (u) => /\/shares$/i.test(u);
   let eps = pick(g, EPS_TAGS_R12, perShare), tax = 'us-gaap';
   if (!eps) { eps = pick(ifrs, IFRS_EPS, perShare); if (eps) tax = 'ifrs-full'; }

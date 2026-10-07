@@ -90,6 +90,18 @@ test('R11-SEC Quartalswerte: erste Einreichung, Q4 aus Geschäftsjahr, Namensnor
   ]);
   assert.deepEqual(rows[0], ['2023-03-31', 1, '2023-05-01', 0]);
   assert.deepEqual(rows[3], ['2023-12-31', 4, '2024-02-15', 1]);
+  // E7: abgeleitetes Q4 erst bekannt, wenn der letzte Bestandteil eingereicht ist; EPS wird nie abgeleitet.
+  const late = quarterly([
+    e('2012-01-01', '2012-03-31', 1, '2013-05-06'), e('2012-04-01', '2012-06-30', 2, '2013-08-01'),
+    e('2012-07-01', '2012-09-30', 3, '2013-10-30'), e('2012-01-01', '2012-12-31', 10, '2013-02-21'),
+  ]);
+  assert.deepEqual(late[3], ['2012-12-31', 4, '2013-10-30', 1]);
+  const eps = quarterly([
+    e('2023-01-01', '2023-03-31', 0.6, '2023-05-01'), e('2023-04-01', '2023-06-30', 0.85, '2023-08-01'),
+    e('2023-07-01', '2023-09-30', 0.69, '2023-11-01'), e('2023-01-01', '2023-12-31', 3.12, '2024-02-15'),
+  ], { perShare: true });
+  assert.equal(eps.length, 3);
+  assert.ok(!eps.some((r) => r[0] === '2023-12-31'));
   assert.equal(normName('Super Micro Computer, Inc.'), normName('SUPER MICRO COMPUTER INC'));
   assert.equal(normName('Procter & Gamble Co'), 'PROCTER AND GAMBLE');
 });
