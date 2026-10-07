@@ -94,6 +94,10 @@ on:
 
   workflow_dispatch:
     inputs:
+      company_intelligence_acceptance:
+        description: 'Explicit full 46-stock production acceptance; routine automation keeps short smoke'
+        type: boolean
+        default: false
       company_intelligence_off:
         description: 'Emergency Company Intelligence gate off in Discover and Quant; no R2 consumer read'
         type: boolean
@@ -116,6 +120,7 @@ jobs:
   package:
     outputs:
       source_sha: ${{ steps.delivery_contract.outputs.source_sha }}
+      ci_enabled: ${{ steps.ci_stage.outputs.enabled }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     # Ein gescheiterter Datenlauf hat nichts veroeffentlicht (siehe
@@ -150,6 +155,7 @@ jobs:
           # A failed consumer projection leaves the tracked disabled index intact.
           node scripts/company_intelligence/download-public.mjs --namespace "$CONSUMER_NAMESPACE" --out "$RUNNER_TEMP/site/company-intelligence/data" || echo 'Company Intelligence consumer data unavailable; feature remains disabled in this release.'
       - name: Pin approved Company Intelligence production generation (fail closed)
+        id: ci_stage
         env:
           COMPANY_INTELLIGENCE_OFF: ${{ inputs.company_intelligence_off }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -160,7 +166,13 @@ jobs:
         run: |
           args=(stage --release "$RUNNER_TEMP/site")
           if [ "$COMPANY_INTELLIGENCE_OFF" = true ]; then args+=(--off); fi
-          node scripts/company_intelligence/production-release.mjs "${args[@]}"
+          node scripts/company_intelligence/production-release.mjs "${args[@]}" > "$RUNNER_TEMP/ci-stage.json"
+          node --input-type=module <<'NODE'
+          import {readFileSync,appendFileSync} from 'node:fs';
+          const result=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/ci-stage.json'));
+          appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${result.status==='PASS'}\n`);
+          console.log(JSON.stringify(result));
+          NODE
       - name: Compact the reviewed browser bundle
         run: /tmp/vu2-release/node_modules/.bin/esbuild "$RUNNER_TEMP/site/quant/release-bundle.js" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$RUNNER_TEMP/site/quant/release-bundle.js"
       # Gegen das GEBAUTE Release, nicht gegen den Quelltext. Der
@@ -288,6 +300,8 @@ jobs:
         id: approved
         env:
           EMERGENCY_OFF: ${{ inputs.company_intelligence_off }}
+          PACKAGED_CI_ENABLED: ${{ needs.package.outputs.ci_enabled }}
+          FULL_ACCEPTANCE: ${{ inputs.company_intelligence_acceptance }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
           VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
@@ -300,15 +314,16 @@ jobs:
           import {createS3DriverFromEnv} from './scripts/market/storage/s3-driver.mjs';
           import {prefixFor} from './scripts/company_intelligence/public-delivery.mjs';
           import {appendFileSync} from 'node:fs';
+          import {deploymentMode} from './scripts/company_intelligence/deployment-mode.mjs';
           appendFileSync(process.env.GITHUB_OUTPUT,'prepared=true\n');
-          let enabled=false;
-          if(approval.deliveryEnabled&&process.env.EMERGENCY_OFF!=='true'){
+          const packagedEnabled=process.env.PACKAGED_CI_ENABLED==='true';
+          let gate=null;
+          if(packagedEnabled){
             const bytes=await createS3DriverFromEnv().get(prefixFor(approval.namespace)+'gate.json');
-            const gate=bytes?JSON.parse(bytes):null;
-            if(!gate||gate.generation!==approval.consumerGeneration)throw Error('PRODUCTION_GATE_MISMATCH');
-            enabled=gate.state==='AVAILABLE';
+            gate=bytes?JSON.parse(bytes):null;
           }
-          appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${enabled}\n`);
+          const mode=deploymentMode({packagedEnabled,emergencyOff:process.env.EMERGENCY_OFF==='true',fullAcceptance:process.env.FULL_ACCEPTANCE==='true',gate});
+          appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${mode!=='OFF'}\nmode=${mode}\n`);
           NODE
           fi
       - uses: actions/setup-node@v4
@@ -333,7 +348,7 @@ jobs:
           NODE_PATH: /tmp/ci-live/node_modules
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
           EXPECTED_PRODUCTION_SHA: ${{ needs.package.outputs.source_sha }}
-          FULL_ACCEPTANCE: ${{ github.event_name == 'workflow_dispatch' }}
+          FULL_ACCEPTANCE: ${{ inputs.company_intelligence_acceptance }}
         run: |
           if [ "$FULL_ACCEPTANCE" != true ]; then
             node scripts/company_intelligence/live-production-qa.mjs --routine --out "$RUNNER_TEMP/live-fast"
