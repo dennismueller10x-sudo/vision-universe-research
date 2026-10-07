@@ -146,7 +146,8 @@ jobs:
             echo "* Faellig: ${{ steps.due.outputs.pending || 'nichts' }} (${{ steps.due.outputs.count || '0' }} Woche/n)"
             echo "* Exit Registrierung: ${{ steps.reg.outputs.rc || '-' }}"
             node -e 'const h=require("./'"$REG"'/HEAD.json");console.log("* Ledger: seq "+h.seq)' || true
-            [ -f "$RUNNER_TEMP/register.log" ] && { echo '```'; tail -n 5 "$RUNNER_TEMP/register.log" | cut -c1-900; echo '```'; }
+            # if statt "[ -f ] &&": unter bash -e beendete das fehlende Log (No-Op-Lauf) die Stufe mit Code 1
+            if [ -f "$RUNNER_TEMP/register.log" ]; then echo '```'; tail -n 5 "$RUNNER_TEMP/register.log" | cut -c1-900; echo '```'; fi
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Alarm (Issue oeffnen oder kommentieren)
