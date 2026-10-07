@@ -100,9 +100,12 @@ Das Register selbst ändert die Auswertung nie. Sie ist ein abgeleiteter Bericht
 * **Entwicklungsbranches:** nur mit der Marke `[elliott-registry]` am Anfang des Betreffs. Der Zeitplan von GitHub läuft nur auf dem Default-Branch. Solange Mission X nicht gemergt ist, braucht jede Woche einen Lauf per Marke.
 * **Daten:** Die Wochenschlüsse werden im Runner frisch aus der Historienablage gebaut (`publish-long-series.mjs`). Die veröffentlichten Langreihen gehören `long-series.yml` und werden nicht committet. Sie werden im Repository nur monatlich erneuert und genügen deshalb nicht für einen Wochentakt.
 
-## Erster Lauf
+## Bisherige Läufe
 
-Woche 2026-09-25, lokal auf den committeten Langreihen (Stand 2026-10-01), registriert am 07.10.2026. Die Kurse nach dem 25.09. lagen zum Zeitpunkt der Registrierung bereits vor, wurden aber durch das Kürzen der Reihen nicht gelesen. Die Setup-Definitionen waren vorher eingefroren. Zahlen: siehe `ledger.jsonl` (RUN-Eintrag) und [MISSION10_FINAL_REPORT.md](MISSION10_FINAL_REPORT.md).
+| Woche | Ort | Titel | Neue Ereignisse | Revisionen | Hinweis |
+|---|---|---|---|---|---|
+| 2026-09-25 | lokal, committete Langreihen (Stand 2026-10-01) | 4.975 | 1.886 (16 Produkt, 1.592 nicht angezeigt, 278 Forschung), **Bestand** (`initialStock`) | 0 | registriert am 07.10.2026. Spätere Kurse lagen vor, wurden aber durch das Kürzen nicht gelesen. Der RUN-Eintrag nennt Commit `e915052`; der Lauf nutzte zusätzlich die Bestandsmarkierung aus dem Arbeitsstand, committet in `3ba03e9`. |
+| 2026-10-02 | CI, frisch gebaute Wochenschlüsse (Lauf auf `9309049`) | 5.122 | 329 (1 Produkt, 219 nicht angezeigt, 109 Forschung) | 425 (130 Umdeutung, 127 Ziel, 72 Bestätigung, 70 erweiterte Projektion, 26 Invalidation) | Ein erster CI-Versuch derselben Woche scheiterte am Push (GitHub-Serverfehler), wurde nicht veröffentlicht und zählt nicht. |
 
 ## Grenzen
 

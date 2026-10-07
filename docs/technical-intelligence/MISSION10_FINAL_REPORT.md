@@ -70,7 +70,7 @@ Unterlagen:
 23. **Kundenevidenz heute vertretbar?** Nein. Alle Evidenzdatensätze tragen `publishable: false`. Vertretbar ist nur die Verfahrensaussage, dass jedes Setup vorab unveränderlich registriert und später geprüft wird (Claim 26).
 24. **Läuft das prospektive Register?** Ja.
     * Erster Lauf: Woche 2026-09-25, 4.975 Titel, 1.886 Ereignisse (16 angezeigte Setups, 1.592 nicht angezeigte Primärzählungen, 278 Forschungskandidaten), als Bestand markiert.
-    * CI-Lauf für Woche 2026-10-02 mit frisch gebauten Wochenschlüssen: {{CI_RUN}}.
+    * CI-Lauf für Woche 2026-10-02 mit frisch gebauten Wochenschlüssen: in CI gelaufen und veröffentlicht (Commit `8f2eb44`): 5.122 Titel, 329 neue Ereignisse (1 angezeigtes Produkt-Setup, 219 nicht angezeigte Primärzählungen, 109 Forschungskandidaten) und 425 Revisionen der Bestandsereignisse (130 Umdeutungen, 127 Ziel erreicht, 72 Bestätigungen, 70 erweiterte Projektion, 26 Invalidationen); Kette und „nur anhängen“ geprüft. Ein erster CI-Versuch registrierte dieselbe Woche, wurde aber wegen Push-Fehlern von GitHub nicht veröffentlicht und zählt nicht.
     * Zeitplan: samstags auf dem Default-Branch. Bis zum Merge läuft das Register per Marke `[elliott-registry]`.
 25. **Wie funktioniert die 12/24/36-Monats-Validierung?**
     * `evaluate-registry.mjs` wertet je Ereignis 3/6/12/24/36 Monate erst aus, wenn die Woche „Registrierung + h“ abgeschlossen ist.
