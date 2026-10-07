@@ -408,6 +408,13 @@ jobs:
         run: |
           npm install --prefix /tmp/consumer-review playwright@1.51.1 --no-audit --no-fund
           /tmp/consumer-review/node_modules/.bin/playwright install --with-deps chromium
+          # Manual after-review is read-only and has its own concurrency group.
+          # It must not be displaced by a newer scheduled market-data deployment.
+          if [ "$REVIEW_VERSION" = after ]; then
+            node scripts/company_intelligence/live-production-qa.mjs --out "$RUNNER_TEMP/consumer-review/production-fast"
+            node scripts/company_intelligence/discover-beta-qa.mjs --url https://research.visionuniverse.de --candidate docs/company-intelligence/full-data-release-candidate.json --production --phase actual --out "$RUNNER_TEMP/consumer-review/discover-quant"
+            node scripts/company_intelligence/discover-beta-qa.mjs --url https://research.visionuniverse.de --candidate docs/company-intelligence/full-data-release-candidate.json --production --phase dark --out "$RUNNER_TEMP/consumer-review/dark"
+          fi
           node scripts/company_intelligence/consumer-experience-qa.mjs --version "$REVIEW_VERSION" --out "$RUNNER_TEMP/consumer-review/browser"
       - name: Public-safe aggregate audit and protected browser evidence only
         if: always() && inputs.consumer_review != '' && inputs.consumer_review != 'none'

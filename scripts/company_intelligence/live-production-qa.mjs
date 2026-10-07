@@ -5,6 +5,7 @@ import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
 import {approval,reviewed} from './production-approval.mjs';
+import {assertConsumerResponses} from './browser-delivery-proof.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const {fetchWithRetry}=require('../../company-intelligence/api/contract.js');
 const deliveryRetries=[];
@@ -31,8 +32,7 @@ try{
   page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.url().includes('/company-intelligence/data/'))responses.push({url:r.url(),status:r.status()});});
   await page.goto(origin+'/discover/#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});await page.waitForSelector('.ci-company-intelligence h2');
   const chapter=page.locator('.ci-company-intelligence');assert(!(await chapter.innerText()).includes('derzeit nicht verfügbar'),ticker);assert.deepEqual(errors,[]);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
-  const resources=Map.groupBy(responses,r=>new URL(r.url).pathname);assert.equal(resources.size,3,ticker+' exact consumer resources');
-  for(const [path,attempts] of resources){assert(attempts.length<=3,path+' bounded attempts');assert.equal(attempts.at(-1).status,200,path+' final delivery');assert(attempts.slice(0,-1).every(r=>[429,500,502,503,504].includes(r.status)),path+' only transient retries');}
+  assertConsumerResponses(responses,ticker);
   assert.equal(await page.locator('vu-navigation').count(),1);assert(await chapter.locator('a').count()>0);await chapter.scrollIntoViewIfNeeded();await page.screenshot({path:out+'/'+ticker+'-390.png'});
   cases.push({ticker,width:390,status:'PASS',consumerRequests:responses});await page.close();
  }
