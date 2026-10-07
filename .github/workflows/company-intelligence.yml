@@ -67,8 +67,9 @@ permissions:
 # Zeitplan, Dispatch). Vorher konnte ein wartender PR-Lauf einen
 # wartenden Lauf dieser Gruppe verdraengen (Audit 03.10.2026).
 concurrency:
-  # PR checks and read-only probes cannot evict the serialized writer group.
-  group: ${{ github.event_name == 'pull_request' && format('company-intelligence-state-pr-{0}', github.event.pull_request.number) || inputs.current_restore_only && format('company-intelligence-read-only-{0}', github.run_id) || 'company-intelligence-state' }}
+  # Consumer-only release jobs read the frozen accepted checkpoint and serialize
+  # their own namespace. They neither evict nor write the private polling state.
+  group: ${{ github.event_name == 'pull_request' && format('company-intelligence-state-pr-{0}', github.event.pull_request.number) || inputs.production_release != '' && inputs.production_release != 'none' && 'company-intelligence-consumer-production-d700d480d9b2858eb8fa34f4' || inputs.current_restore_only && format('company-intelligence-read-only-{0}', github.run_id) || 'company-intelligence-state' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   production-gate:
