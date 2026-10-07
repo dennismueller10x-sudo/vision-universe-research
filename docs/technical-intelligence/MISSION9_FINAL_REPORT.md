@@ -27,7 +27,7 @@ Bei fairer, symmetrischer Geometrie (Ziel ≈ Invalidation, CRV 0,75–1,33):
 
 Keine Teilmenge erreicht ≥ 60 % mit ≥ +5 Pp. Vorsprung, weder nach Klarheit noch nach Übereinstimmung, weder symmetrisch noch günstig. Der echte Vorsprung beträgt in jeder Geometrie-Klasse +1 bis +4 Pp. und entspricht dem, was der einfache Trend allein liefert (Differenz FULL − TREND_ONLY ≤ 0,3 Pp.).
 
-Bestätigung auf 1.200 neuen Titeln (Tag, einmal geöffnet): **{{A9_HA1}}**.
+Bestätigung auf 1.200 neuen Titeln (Tag, einmal geöffnet): ****NO HIGH-ACCURACY EDGE**. Symmetrisch trifft VU 54,9 % gegen 53,2 % der Kontrolle (Lift +1,7 Pp. [0,2; 3,1]; gegen die Trend-Kontrolle E +1,2). Die obere Grenze der Trefferquote liegt bei 57,5 %; keine Stufe erfüllt das Kriterium**.
 
 ### Frage 2: Schafft VU einen überlegenen Erwartungswert, indem es seltene langfristige Extremgewinner früh erkennt, auch bei geringerer Trefferquote?
 
@@ -77,20 +77,34 @@ Ereignis: angezeigtes Hauptszenario am Erkennungszeitpunkt. Treffer: Ziel 1 vor 
 | 2–3 | 2 % | 28,9 / 28,1 % | 29,0 / 28,9 % | −0,1 / −0,8 | 2,0–2,1 | −0,14 / −0,13 | +0,8 / −0,4 |
 | ≥ 3 | 1 % | 22,4 / 18,9 % | 22,0 / 21,3 % | +0,4 / −2,4 | 2,7–3,0 | −0,23 / −0,31 | −0,6 / −2,5 |
 
+**Tag, A9_CONFIRM (einmalig, 1.200 neue Titel, 2017–2026)**, gleiche Klassen:
+
+| CRV-Klasse | Anteil | Treffer VU | Kontrolle D | Lift Pp. [95 %] | Lift gg. E | Payoff | E[R] | Lift TREND_ONLY |
+|---|---|---|---|---|---|---|---|---|
+| alle | 100 % | 69,1 % | 67,9 % | +1,2 [0,4; 2,0] | +0,9 | 0,43 | −0,01 | +1,4 |
+| < 0,5 | 50 % | 81,2 % | 80,7 % | +0,5 [−0,3; 1,3] | — | 0,21 | −0,02 | +0,8 |
+| 0,5–0,75 | 22 % | 64,9 % | 63,3 % | +1,6 [0,5; 2,7] | — | 0,52 | −0,01 | +2,1 |
+| **0,75–1,33 symmetrisch** | 20 % | **54,9 %** | 53,2 % | **+1,7 [0,3; 3,2]** | +1,2 | 0,79 | −0,02 | +1,8 |
+| 1,33–2 | 6 % | 46,1 % | 42,8 % | +3,2 [0,5; 5,9] | +3,6 | 1,20 | +0,02 | +2,3 |
+| 2–3 | 2 % | 35,8 % | 32,7 % | +3,1 [−1,4; 7,5] | — | 1,87 | +0,03 | +1,3 |
+| ≥ 3 | 1 % | 26,8 % | 26,0 % | +0,8 [−4,2; 5,8] | — | 2,60 | −0,06 | +1,1 |
+
+Die Selektivitätsschwellen (Wochen-Quantile) markieren auf Tagesdaten 23 % (TOP25) bzw. 12 % (TOP10) der Ereignisse.
+
 **Antworten (§44):**
-1. **Hochgenaue Teilmenge?** Nein. Weder auf DEV noch auf VAL erfüllt eine Klasse oder Stufe das vorab festgelegte Kriterium: ≥ 60 % Treffer, ≥ +5 Pp. gegen D **und** E, CRV ≥ 0,75. Die obere KI-Grenze der Trefferquote liegt überall bei fairer Geometrie unter 60 %. Tag (A9_CONFIRM): {{A9_ANSWER1}}.
+1. **Hochgenaue Teilmenge?** Nein. Weder auf DEV noch auf VAL erfüllt eine Klasse oder Stufe das vorab festgelegte Kriterium: ≥ 60 % Treffer, ≥ +5 Pp. gegen D **und** E, CRV ≥ 0,75. Die obere KI-Grenze der Trefferquote liegt überall bei fairer Geometrie unter 60 %. Tag (A9_CONFIRM): ebenfalls nein. In keiner Klasse und keiner Stufe schließt das KI eine hohe Trefferquote nicht aus (HA1 = NO_HIGH_ACCURACY_EDGE, vorab registriert, einmal geöffnet).
 2. **Trefferquote:**
    * symmetrisch 49 % (Woche);
    * beste selektive Stufe SYM·AGREEMENT_TOP10 54 % (n ≈ 1.780, 2 % der Ereignisse);
-   * Tag: {{A9_SYM_HIT}}.
+   * Tag: symmetrisch 54,9 % gegen 53,2 %; beste Stufe SYM·CLEAR 55,5 % (Lift +2,5 [0,5; 4,4], nach Holm nicht signifikant).
 3. **Gematchte Basis:** symmetrisch 47 % (Kontrolle D). Gegen Kontrolle E schrumpft der Lift auf +1,5 / +1,6 Pp.
 4. **Lift:** +2 Pp. symmetrisch. Selektiv bis +4,9 / +5,7 Pp. (SYM·AGREEMENT_TOP10, KI ab +2,3 Pp.), dort aber nur 54 % Treffer.
 5. **Geometrie:** Die hohe Gesamtquote (59–60 % Woche, 69 % Tag) entsteht durch nahe Ziele. 43 % aller Wochenszenarien haben CRV < 0,5: Ziel im Median 1,1 ATR, Invalidation 4,3 ATR.
 6. **Payoff:** 0,24 bei CRV < 0,5, 0,83 symmetrisch, 1,3–3,0 günstig. Payoff und Trefferquote tauschen sich fast genau wie bei Zufall.
-7. **Erwartung:** strukturell negativ in jeder Klasse (−0,10 bis −0,31 R, Mittel −0,11 bis −0,12 R). Der Grund ist die Ausgangsregel: Zeitablauf zählt als Fehlschlag, die Invalidation wird per Schluss gemessen. Gegen die Kontrolle D bleibt ein kleiner Überschuss von +0,03 bis +0,04 R. Ausführung nach Kosten (Woche, alle): −0,33 % je Trade gegen −0,99 % der gematchten Kontrolle. Tag: {{A9_EXPECTANCY}}.
+7. **Erwartung:** strukturell negativ in jeder Klasse (−0,10 bis −0,31 R, Mittel −0,11 bis −0,12 R). Der Grund ist die Ausgangsregel: Zeitablauf zählt als Fehlschlag, die Invalidation wird per Schluss gemessen. Gegen die Kontrolle D bleibt ein kleiner Überschuss von +0,03 bis +0,04 R. Ausführung nach Kosten (Woche, alle): −0,33 % je Trade gegen −0,99 % der gematchten Kontrolle. Tag: strukturell −0,01 R [−0,05; +0,02], Überschuss gegen D +0,02 R [+0,00; +0,04]; Ausführung nach Kosten +0,17 % je Trade. Der gematchte Ausführungsvergleich ist auf Tagesdaten unbrauchbar: ungedeckelte Short-Verluste bei Datenaussprüngen dominieren das Kontrollmittel (−37 %). Er wird nicht verwendet (Grenze 83).
 8. **Abdeckung:** symmetrisch 24 % der Ereignisse; die selektiven Stufen 2–5 %.
-9. **Stichprobe:** Woche 94.685 / 91.936 Ereignisse. Tag {{A9_N}}.
-10. **Out-of-sample:** DEV → VAL repliziert alle vier vorab notierten Aussagen. Tagesbestätigung: {{A9_OOS}}.
+9. **Stichprobe:** Woche 94.685 / 91.936 Ereignisse. Tag 39.110 Ereignisse aus 915 Titeln (1.200 gezogen, 940 mit ausreichender Historie), 86.802 Analysezeitpunkte.
+10. **Out-of-sample:** DEV → VAL repliziert alle vier vorab notierten Aussagen. Tagesbestätigung: ja, als Nullbefund. Auf neuen, disjunkten Titeln: NO_HIGH_ACCURACY_EDGE; Gesamtlift +1,2 Pp. [0,3; 2,0] (Mission VIII Tag: +1,0); gegen zeitnahe Zeitpunkte derselben Aktie −1,6 Pp. [−3,6; +0,4]; gegen die Gegenrichtung +1,2 [−2,0; +4,2]. Die Selektivität (HA2) ist auf Tagesdaten **nicht** nachweisbar: Top 10 % +1,8 Pp. [−0,1; +3,6], nach Holm nicht signifikant. Der Wochenbefund von +4–6 Pp. bestätigt sich hier nicht.
 11. **Besser als Trend allein?** Nein. TREND_ONLY erzielt in jeder Klasse denselben Lift (Differenz ≤ 0,3 Pp. gesamt und symmetrisch; HA4).
 12. **Kommerziell bedeutsam?** Nein, nicht als Treffsicherheit. „70 % Treffer“ wäre irreführend, weil eine zufällige Auswahl mit denselben Abständen fast genauso oft trifft.
 
@@ -225,7 +239,7 @@ Das Gegenbeispiel scheiterte: PLTR fiel danach auf ≈ 6 $ (Dezember 2022). Die 
 
 | Bereich | Einstufung | Belastbarkeit |
 |---|---|---|
-| **Track A** | **{{A9_CLASS}}** | Woche: DEV/VAL verbraucht; Tag: einmalige Bestätigung auf neuen Titeln |
+| **Track A** | **NO HIGH-ACCURACY EDGE** | Woche: DEV/VAL verbraucht; Tag: einmalige Bestätigung auf neuen Titeln |
 | **Track B** | **NO ASYMMETRIC EDGE** (VU-Signale wählen Extremgewinner unterdurchschnittlich aus) | explorativ mit Gegenprobe, verbrauchte Daten |
 | **Elliott / Wave 3** | angezeigt: **STRUCTURAL LANGUAGE ONLY**; intern: **INCREMENTAL PREDICTIVE VALUE (explorativ, nur Extremhäufigkeit, kein Ertrag, nicht über RS hinaus gesichert)** | explorativ, VAL vorab committet |
 | Gesamtklasse TI (Mission VIII) | unverändert **C: descriptive / decision support** | — |

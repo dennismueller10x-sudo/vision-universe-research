@@ -48,5 +48,5 @@
 | G28 Methoden-Red-Team vor dem Freeze | Befunde behoben oder offengelegt | `reviews/MISSION9_METHODOLOGY_REDTEAM.md` (4 HIGH, 6 MEDIUM, alle umgesetzt) | ✅ |
 | G29 Präregistrierung und einmalige Öffnung | Freeze-Commit mit Hash, leerer Diff bis zur Öffnung, Marke vor Stage 2, Einmaligkeit über alle Branches | `MISSION9_PREREGISTRATION.md`, `MISSION9_OPENING_LOG.md`, CI-Guards | ✅ |
 | G30 Kausalität Track B | Merkmale nur bis t, Anomalie-Tor nur [t−52, t], kein Kursfilter auf bereinigten Kursen | Test M9-B2, Red Team H3/H4 | ✅ |
-| G31 Track A hohe Genauigkeit (vorab registriert) | HAC gegen D und E bei CRV ≥ 0,75 | `mission9/ci/a9-confirm-tracka.json` | {{A9_GATE}} |
+| G31 Track A hohe Genauigkeit (vorab registriert) | HAC gegen D und E bei CRV ≥ 0,75 | `mission9/ci/a9-confirm-tracka.json` | ❌ **NO HIGH-ACCURACY EDGE** (einmal geöffnet; HAC überall ausgeschlossen) |
 | G32 Track B asymmetrischer Vorteil | VU-Signal 5×/24M > 1 auf DEV und VAL mit gedeckeltem Überschuss > 0 | `mission9/local/decision-trackb-elliott.json` | ❌ NO ASYMMETRIC EDGE (explorativ, verbrauchte Daten) |
