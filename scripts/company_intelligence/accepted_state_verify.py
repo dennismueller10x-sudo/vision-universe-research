@@ -9,7 +9,7 @@ from current_state_acceptance import database_proof
 
 
 def verify(snapshot, state, engine, expected):
-    snapshot, state, engine = map(Path, (snapshot, state, engine))
+    snapshot, state, engine = (Path(p).resolve() for p in (snapshot, state, engine))
     assert snapshot.stat().st_size == expected['checkpointBytes'], 'ACCEPTED_BYTES_MISMATCH'
     assert hashlib.sha256(snapshot.read_bytes()).hexdigest() == expected['checkpointSha256'], 'ACCEPTED_HASH_MISMATCH'
     assert not state.exists(), 'ACCEPTED_RESTORE_REQUIRES_EMPTY_DIRECTORY'
