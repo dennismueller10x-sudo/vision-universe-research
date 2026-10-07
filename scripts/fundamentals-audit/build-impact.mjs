@@ -2,7 +2,7 @@
 // Fasst Bundle-Diff, Consumer-Wirkung, Build-Identitaet, Abdeckung je Jahr und Zusatzbelege zu FUNDAMENTAL-IMPACT.json zusammen.
 //   node build-impact.mjs --old <dir> --new <dir> --old-log <file> --new-log <file> --old-commit <sha> --new-commit <sha>
 //        --diff <bundle-diff.json> --impact <consumer-impact.json> --coverage <coverage-by-year.json> --q4 <q4approx.json>
-//        --e9 <e9scan.json> --ranks <quant-rank.json> --eps <eps-breakdown.json> --revenue <revenue-guarantee.json> --out <FUNDAMENTAL-IMPACT.json>
+//        --e9 <e9scan.json> --ranks <quant-rank.json> --eps <eps-breakdown.json> --revenue <revenue-guarantee.json> --screener <screener-preset-flips.json> --out <FUNDAMENTAL-IMPACT.json>
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
@@ -69,6 +69,7 @@ const out = {
   quantRankImpact: arg("ranks") ? readJson(arg("ranks")).byRaw : null,
   epsAndTtmAvailability: arg("eps") ? readJson(arg("eps")) : null,
   revenueGuarantee: arg("revenue") ? readJson(arg("revenue")) : null,
+  screenerPresetFlips: arg("screener") ? readJson(arg("screener")).presets : null,
   e4Q4EpsApproximation: arg("q4") ? readJson(arg("q4")) : null,
   e9CurrencyConflicts: arg("e9") ? readJson(arg("e9")) : null,
   coverageByYear: arg("coverage") ? readJson(arg("coverage")) : null,
