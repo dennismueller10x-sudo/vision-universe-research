@@ -80,3 +80,12 @@ Mission IX stellt zwei getrennte Forschungsfragen (Track A: Genauigkeit unter fa
 Disjunktheit von A9_CONFIRM: `replay.mjs --disjoint-from 1200:<sha>` bricht ab, wenn die Ränge 0–1199 der aktuellen Titelliste nicht genau die Mission-VIII-Stichprobe ergeben (Symbol-Hash `457ce200…` aus `d-holdout-stage1-holdout-stage1.json`). Eine Universumsänderung kann die Disjunktheit damit nicht still verletzen.
 
 **Track B hat keinen frischen Holdout.** Alle Wochenpfade der Überlebenden und der Delisteten sind verbraucht. Die Horizonte von 6–36 Monaten schließen prospektive Daten aus. Track B wird darum ehrlich auf **VALIDATION_ON_CONSUMED_DATA** herabgestuft.
+
+## 5. Stand nach Mission IX (07.10.2026)
+
+| Daten | Status jetzt |
+|---|---|
+| Tag, Stammaktien mit Hash-Rang 1200–2399, 2017-01 bis 2026-09 (A9_CONFIRM) | **CONSUMED TEST** (einmal geöffnet am 07.10.2026 13:18 UTC, Lauf 37612016961, Freeze `82fcbca1`, Öffnungs-Commit `969c79c5`) |
+| Wochen-Forensik an Quartalsenden, Bucket 0/4 und 1/4 | DEVELOPMENT / VALIDATION (verbraucht) |
+| Tag, übrige Stammaktien (Hash-Rang ≥ 2400; rund 3.500 Titel) 2017–2026 | für TI-Tagesszenarien weiter ungeöffnet. Kalender gesehen; nur bedingt als Holdout geeignet. |
+| Kursdaten nach 2026-09-30 | **AVAILABLE HOLDOUT** für die prospektive Fortschreibung (Track B / Wave 3: Signale je Quartal einfrieren und mitschreiben, Auswertung nach 12/24 Monaten) |
