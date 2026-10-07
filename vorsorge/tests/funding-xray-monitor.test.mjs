@@ -198,3 +198,20 @@ test("Monitor: Kategorien und Sammelmeldung bei Massen-Neuaufnahme", () => {
   const diff = Mo.diffPlan(Mo.snapshotPlan(p1, [], "a", { ruleVersions: { R: "1" }, dataAsOf: "2026-09-01" }), Mo.snapshotPlan(p1, [], "b", { ruleVersions: { R: "2" }, dataAsOf: "2026-10-01" }));
   assert.ok(diff.some((e) => e.category === "REGULATORY_CHANGE")); assert.ok(diff.some((e) => e.category === "DATA_UPDATE"));
 });
+
+test("Monitor-Rauschen: Pruefstatus gebuendelt, Relevanz zuerst, viele gleiche Ereignisse zusammengefasst", () => {
+  const ev = [];
+  for (let i = 0; i < 23; i++) ev.push({ type: "STATUS_CHANGE", symbol: "X" + i, from: "REVIEW", to: "ACTIVE", text: "", asOf: "2026-10-02" });
+  ev.push({ type: "STATUS_CHANGE", symbol: "Y", from: "ACTIVE", to: "REVIEW", text: "", asOf: "2026-10-02" });
+  ev.push({ type: "CLOSED_OR_DELISTED", symbol: "OLD", from: "ACTIVE", to: "INACTIVE", text: "OLD wird nicht mehr gehandelt.", asOf: "2026-10-02" });
+  for (let i = 0; i < 14; i++) ev.push({ type: "NAME_CHANGE", symbol: "N" + i, text: "N" + i + " heißt jetzt …", asOf: "2026-10-02" });
+  const layer = { OLD: "PUBLIC_ANALYSIS", N0: "PUBLIC_ANALYSIS", N1: "PUBLIC_ANALYSIS" };
+  const out = Mo.prioritize(ev, layer);
+  assert.equal(out.filter((e) => e.type === "DATA_REVIEW").length, 2);
+  assert.match(out.find((e) => e.type === "DATA_REVIEW" && e.count === 23).text, /^23 Listings haben die Datenprüfung bestanden/);
+  assert.equal(out[0].symbol, "OLD");                      // relevante Produktaenderung zuerst
+  assert.ok(out.some((e) => e.type === "NAME_CHANGE" && e.count === 12));   // 2 relevante einzeln, 12 gebuendelt
+  assert.equal(out.filter((e) => e.type === "NAME_CHANGE" && !e.count).length, 2);
+  assert.ok(out.length <= 6);
+  assert.deepEqual(Mo.prioritize(out, layer).map((e) => e.text), out.map((e) => e.text));   // idempotent
+});

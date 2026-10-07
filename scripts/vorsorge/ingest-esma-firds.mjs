@@ -72,8 +72,12 @@ function onRecord(x) {
   const isEtf = /^CE/.test(cfi) || /\b(UCITS ETF|ETF)\b/i.test(name);
   if (!isEtf) return;
   const ven = x.match(/<(?:\w+:)?TradgVnRltdAttrbts>([\s\S]*?)<\/(?:\w+:)?TradgVnRltdAttrbts>/);
+  // Je ISIN gibt es einen Datensatz je Handelsplatz. Namen und Emittenten-LEI koennen je Handelsplatz abweichen
+  // (gekuerzte Namen, Handelsplatz als "Emittent") - alle sammeln, spaeter den belastbarsten waehlen.
   let e = byIsin.get(isin);
-  if (!e) byIsin.set(isin, (e = { isin, name, shortName: tag(gen[1], "ShrtNm"), cfi, ccy: tag(gen[1], "NtnlCcy"), lei: tag(x, "Issr"), venues: {} }));
+  if (!e) byIsin.set(isin, (e = { isin, names: {}, leis: {}, cfi, ccy: tag(gen[1], "NtnlCcy"), venues: {} }));
+  if (name) e.names[name] = (e.names[name] || 0) + 1;
+  const lei = tag(x, "Issr"); if (lei) e.leis[lei] = (e.leis[lei] || 0) + 1;
   if (ven) {
     const mic = tag(ven[1], "Id");
     if (mic) e.venues[mic] = { first: (tag(ven[1], "FrstTradDt") || tag(ven[1], "AdmssnApprvlDtByIssr") || "").slice(0, 10) || null, end: (tag(ven[1], "TermntnDt") || "").slice(0, 10) || null };
@@ -107,7 +111,7 @@ for (const f of files) {
 }
 
 /* ------------------------------------------------------------ GLEIF */
-const leis = [...new Set([...byIsin.values()].map((e) => e.lei).filter((l) => /^[A-Z0-9]{20}$/.test(l || "")))];
+const leis = [...new Set([...byIsin.values()].flatMap((e) => Object.keys(e.leis)).filter((l) => /^[A-Z0-9]{20}$/.test(l)))];
 const gleif = new Map();
 for (let i = 0; i < leis.length; i += 100) {
   const batch = leis.slice(i, i + 100);
@@ -122,17 +126,55 @@ console.log("GLEIF:", gleif.size, "von", leis.length, "LEI");
 
 /* ----------------------------------------------------------- Ausgabe */
 const DIST = { I: "DISTRIBUTING", G: "ACCUMULATING", J: "MIXED" };
-const fields = ["isin", "name", "cfi", "currency", "issuerLei", "issuerLegalName", "issuerBrand", "domicile", "distribution", "ucitsInName", "venues", "firstTrade", "active"];
+/* Lesbarster Name: nicht gekuerzt (~30 Zeichen + " ETFS"), keine zusammengesetzte Langform
+   ("... PUBLIC LIMITED COMPANY - ... CMN CLASS ETF ETF ON ..."), bevorzugt mit "UCITS",
+   gemischte Schreibweise; danach haeufigster, dann kuerzester. */
+const TRUNC = /^.{20,35} ETFS?$/;
+function nameScore(n) {
+  let s = 0;
+  if (TRUNC.test(n)) s += 8;
+  if (/\bCMN\b|\bETF ON\b|ETF ETF|PUBLIC LIMITED COMPANY|\bICAV\b -|SERIES ETF/i.test(n)) s += 4;
+  if (!/UCITS/i.test(n)) s += 1;
+  if (n === n.toUpperCase()) s += 1;
+  if (n.length > 90) s += 2;
+  if (/ AT [A-Z]{4}$/.test(n)) s += 3;   // Handelsplatz-Zusatz (" AT ETFP")
+  return s;
+}
+function bestName(names) {
+  return Object.entries(names).sort((a, b) => nameScore(a[0]) - nameScore(b[0]) || b[1] - a[1] || a[0].length - b[0].length)[0]?.[0] || "";
+}
+/* Emittent: bevorzugt eine LEI, die GLEIF als Fonds (FUND) fuehrt; Handelsplaetze/Banken als "Emittent" werden verworfen. */
+function bestIssuer(leis) {
+  const list = Object.entries(leis).filter(([l]) => /^[A-Z0-9]{20}$/.test(l)).map(([l, n]) => ({ lei: l, n, g: gleif.get(l) || {} }));
+  const fund = list.filter((x) => x.g.category === "FUND").sort((a, b) => b.n - a.n)[0];
+  if (fund) return { lei: fund.lei, g: fund.g, basis: "GLEIF_FUND" };
+  const other = list.sort((a, b) => b.n - a.n)[0];
+  return other ? { lei: other.lei, g: other.g, basis: "OTHER_ENTITY" } : { lei: null, g: {}, basis: null };
+}
+// ISO-6166: Laenderpraefix der ISIN = Land des Emittenten; fuer Fonds in der Regel das Domizil (XS/EU ausgenommen).
+const EEA = /^(AT|BE|BG|HR|CY|CZ|DK|EE|FI|FR|DE|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|RO|SK|SI|ES|SE|IS|LI|NO)$/;
+const ISIN_DOMICILE_OK = /^(IE|LU|DE|FR|NL|AT|BE|DK|FI|SE|NO|IT|ES|PT|CH|GB|LI|PL|CZ|HU|HR|BG|RO|SI|SK|GR|CY|MT|EE|LV|LT|IS|US|CA|AU|JP|HK|SG|KR|ZA|IL)$/;
+const fields = ["isin", "name", "cfi", "currency", "issuerLei", "issuerLegalName", "issuerBrand", "domicile", "distribution", "ucitsInName", "venues", "firstTrade", "active", "domicileBasis"];
 const rows = [];
 for (const e of [...byIsin.values()].sort((a, b) => (a.isin < b.isin ? -1 : 1))) {
   if (!F.isValidIsin(e.isin)) continue;
-  const g = gleif.get(e.lei) || {};
+  let iss = bestIssuer(e.leis); const name = bestName(e.names);
+  // Fonds-LEI aus einer Rechtsordnung ausserhalb des EWR bei IE/LU-ISIN (z. B. US-Trust, von einem Handelsplatz gemeldet) ist falsch zugeordnet
+  // Ebenso: ISIN eines Nicht-EWR-Landes (z. B. US) mit Fonds-LEI einer anderen Rechtsordnung (Umbrella/Handelsplatz). Im EWR sind
+  // abweichende Praefixe moeglich (deutsche ISIN fuer einen Luxemburger Fonds) und bleiben erhalten.
+  const pre = e.isin.slice(0, 2), jur = iss.g && iss.g.jurisdiction;
+  if (iss.basis === "GLEIF_FUND" && jur && jur !== pre && ISIN_DOMICILE_OK.test(pre) && (/^(IE|LU)$/.test(pre) ? !EEA.test(jur) : !EEA.test(pre))) iss = { lei: null, g: {}, basis: "REJECTED_FOREIGN_LEI" };
+  const g = iss.g;
+  // Domizil: Rechtsordnung des Fonds laut GLEIF; ohne Fonds-LEI aus dem ISIN-Praefix (abgeleitet).
+  const domicile = iss.basis === "GLEIF_FUND" && g.jurisdiction ? g.jurisdiction : ISIN_DOMICILE_OK.test(e.isin.slice(0, 2)) ? e.isin.slice(0, 2) : null;
+  const domicileBasis = iss.basis === "GLEIF_FUND" && g.jurisdiction ? "GLEIF" : domicile ? "ISIN_PREFIX" : null;
   const mics = Object.keys(e.venues).sort();
   const activeMics = mics.filter((m) => !e.venues[m].end || e.venues[m].end > iso(today));
   const firsts = mics.map((m) => e.venues[m].first).filter(Boolean).sort();
   const dist = e.cfi.length >= 4 ? DIST[e.cfi[3]] || null : null;     // CE = Gruppe; Attribute ab Position 3: [2]=offen/geschlossen, [3]=Ertragsverwendung
-  rows.push([e.isin, e.name, e.cfi, e.ccy, e.lei || null, g.name || null, F.normalizeIssuer(e.name) || F.normalizeIssuer(g.name), g.jurisdiction || null, dist,
-    /\bUCITS\b/i.test(e.name) || /\bUCITS\b/i.test(g.name || ""), activeMics.join(" "), firsts[0] || null, activeMics.length > 0]);
+  const issuerName = iss.basis === "GLEIF_FUND" ? g.name || null : null;
+  rows.push([e.isin, name, e.cfi, e.ccy, iss.basis === "GLEIF_FUND" ? iss.lei : null, issuerName, F.normalizeIssuer(name) || F.normalizeIssuer(issuerName), domicile, dist,
+    /\bUCITS\b/i.test(name) || /\bUCITS\b/i.test(issuerName || ""), activeMics.join(" "), firsts[0] || null, activeMics.length > 0, domicileBasis]);
 }
 mkdirSync(join(root, "vorsorge/data/eu"), { recursive: true });
 const out = { schemaVersion: "vu-vorsorge-eu-etf-1.0.0", source: "ESMA FIRDS " + files.map((f) => f.file_name).join(", ") + "; GLEIF Level-1 (CC0)",

@@ -1,7 +1,123 @@
 {
  "version": "vorsorge-monitor-1.0.0",
- "asOf": "2026-10-02",
+ "asOf": "2026-10-05",
  "events": [
+  {
+   "type": "COST_CHANGE",
+   "symbol": "RSEE",
+   "fields": [
+    "expenseRatio",
+    "netExpenseRatio"
+   ],
+   "magnitude": 0.012899999999999998,
+   "asOf": "2026-04-27",
+   "text": "RSEE · Kostenquote (brutto): 1,68 % → 3,03 %; Kostenquote (netto): 1,42 % → 2,71 % (Prospekt 2025-01-29 → 2026-04-27).",
+   "relevance": "HIGH",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "COST_CHANGE",
+   "symbol": "AMZA",
+   "fields": [
+    "expenseRatio"
+   ],
+   "magnitude": 0.0103,
+   "asOf": "2026-02-27",
+   "text": "AMZA · Kostenquote (brutto): 2,75 % → 1,72 % (Prospekt 2025-02-28 → 2026-02-27).",
+   "relevance": "HIGH",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "COST_CHANGE",
+   "symbol": "GABF",
+   "fields": [
+    "netExpenseRatio",
+    "expenseRatio"
+   ],
+   "magnitude": 0.0092,
+   "asOf": "2026-05-05",
+   "text": "GABF · Kostenquote (netto): 0,32 % → 1,24 %; Kostenquote (brutto): 0,90 % → 1,64 % (Prospekt 2025-04-30 → 2026-05-05).",
+   "relevance": "HIGH",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "COST_CHANGE",
+   "symbol": "MJSC",
+   "fields": [
+    "expenseRatio"
+   ],
+   "magnitude": 0.008299999999999998,
+   "asOf": "2026-06-01",
+   "text": "MJSC · Kostenquote (brutto): 0,85 % → 1,68 % (Prospekt 2025-07-02 → 2026-06-01).",
+   "relevance": "HIGH",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "COST_CHANGE",
+   "symbol": "ICAP",
+   "fields": [
+    "expenseRatio"
+   ],
+   "magnitude": 0.007199999999999998,
+   "asOf": "2026-03-30",
+   "text": "ICAP · Kostenquote (brutto): 3,19 % → 2,47 % (Prospekt 2025-03-28 → 2026-03-30).",
+   "relevance": "HIGH",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "COST_CHANGE",
+   "symbol": null,
+   "count": 513,
+   "relevance": "LOW",
+   "asOf": "2026-03-26",
+   "text": "513 weitere Listings mit geänderter Expense Ratio laut US-Prospekt (z. B. FXED, YOLO, BBP, SNAV, PJFV).",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "DATA_REVIEW",
+   "symbol": null,
+   "count": 23,
+   "relevance": "LOW",
+   "asOf": "2026-10-02",
+   "text": "23 Listings haben die Datenprüfung bestanden und sind jetzt vollständig analysierbar (z. B. 158063, 159636, 512410, 515120, 515290).",
+   "category": "DATA_UPDATE"
+  },
+  {
+   "type": "DATA_REVIEW",
+   "symbol": null,
+   "count": 3,
+   "relevance": "LOW",
+   "asOf": "2026-10-02",
+   "text": "3 Listings wegen unvollständiger Daten zurück in Prüfung (z. B. BNKSF, CEE, TEUUF).",
+   "category": "DATA_UPDATE"
+  }
+ ],
+ "unmonitored": [
+  {
+   "type": "TER_CHANGE",
+   "label": "Kostenänderung europäischer UCITS-ETFs (TER/laufende Kosten)",
+   "reason": "Für UCITS-ETFs ist keine veröffentlichbare Kostenquelle angeschlossen. US-Kosten (Expense Ratio) werden zwischen Prospektständen verglichen."
+  },
+  {
+   "type": "FUND_MERGER",
+   "label": "ETF fusioniert",
+   "reason": "Fusionen melden Emittenten; Quelle nicht angeschlossen."
+  },
+  {
+   "type": "TRACKING_DIFFERENCE",
+   "label": "Tracking Difference verändert",
+   "reason": "Benötigt Indexstände und Gesamtrendite; nicht angeschlossen."
+  }
+ ],
+ "categories": {
+  "MARKET_CHANGE": "Markt",
+  "PORTFOLIO_CHANGE": "Portfolio",
+  "PLAN_CHANGE": "Plan",
+  "PRODUCT_CHANGE": "Produkt",
+  "REGULATORY_CHANGE": "Regeln",
+  "DATA_UPDATE": "Daten"
+ },
+ "rawEvents": [
   {
    "type": "STATUS_CHANGE",
    "symbol": "158063",
@@ -237,29 +353,5 @@
    "category": "PRODUCT_CHANGE"
   }
  ],
- "unmonitored": [
-  {
-   "type": "TER_CHANGE",
-   "label": "ETF-Kosten (TER) geändert",
-   "reason": "US-Kostenquoten aus SEC-Prospektdaten liegen vor, Änderungen zwischen Prospektständen werden noch nicht verglichen; für UCITS-ETFs keine lizenzierte Kostenquelle."
-  },
-  {
-   "type": "FUND_MERGER",
-   "label": "ETF fusioniert",
-   "reason": "Fusionen melden Emittenten; Quelle nicht angeschlossen."
-  },
-  {
-   "type": "TRACKING_DIFFERENCE",
-   "label": "Tracking Difference verändert",
-   "reason": "Benötigt Indexstände und Gesamtrendite; nicht angeschlossen."
-  }
- ],
- "categories": {
-  "MARKET_CHANGE": "Markt",
-  "PORTFOLIO_CHANGE": "Portfolio",
-  "PLAN_CHANGE": "Plan",
-  "PRODUCT_CHANGE": "Produkt",
-  "REGULATORY_CHANGE": "Regeln",
-  "DATA_UPDATE": "Daten"
- }
+ "costEvents": 518
 }

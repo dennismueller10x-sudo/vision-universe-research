@@ -325,10 +325,38 @@
     return { base: base, levers: levers };
   }
 
+  /**
+   * Planspiel auf Basis einer historischen Entwicklung: Rendite p. a. (geometrisch, nach Fondskosten) und
+   * Schwankung p. a. Die Bandbreite der durchschnittlichen Jahresrendite ueber `years` Jahre schrumpft mit
+   * der Wurzel der Laufzeit (sigma / sqrt(T)); 10 % / 50 % / 90 %-Szenario. Zulagen werden jaehrlich zum
+   * Jahresende eingezahlt und mitverzinst; ein Einmalbonus zu Beginn. Modellrechnung, keine Prognose.
+   * @param {object} p  cagr, vol, years, monthly, start, annualSubsidy, bonus
+   */
+  function historicalScenarios(p) {
+    p = p || {};
+    var T = Math.max(1, Math.round(pos(p.years))), mu = num(p.cagr), sd = pos(p.vol) / Math.sqrt(T), z = 1.2816;
+    var monthly = pos(p.monthly), start = pos(p.start), sub = pos(p.annualSubsidy), bonus = pos(p.bonus);
+    function grow(r, years) {
+      var fv = futureValue({ start: start + bonus, monthly: monthly, years: years, annualReturn: r }).nominal;
+      var g = 1 + r, s = 0;
+      for (var k = 1; k <= years; k++) s += sub * Math.pow(g, years - k);
+      return fv + s;
+    }
+    var rs = { pessimistisch: Math.max(-0.99, mu - z * sd), basis: mu, optimistisch: mu + z * sd };
+    var scenarios = ["pessimistisch", "basis", "optimistisch"].map(function (id) { return { id: id, annualReturn: rs[id], nominal: grow(rs[id], T) }; });
+    var path = [];
+    for (var y = 0; y <= T; y++) {
+      var sdy = y ? pos(p.vol) / Math.sqrt(y) : 0;
+      path.push([y, grow(Math.max(-0.99, mu - z * sdy), y), grow(mu, y), grow(mu + z * sdy, y)]);
+    }
+    var own = start + monthly * 12 * T, subsidies = sub * T + bonus;
+    return { years: T, ownContributions: own, subsidies: subsidies, invested: own + subsidies, scenarios: scenarios, path: path };
+  }
+
   var api = {
     VERSION: VERSION, DEFAULT_SCENARIOS: DEFAULT_SCENARIOS,
     netAnnualReturn: netAnnualReturn, monthlyRate: monthlyRate,
-    futureValue: futureValue, realFutureValue: realFutureValue,
+    futureValue: futureValue, realFutureValue: realFutureValue, historicalScenarios: historicalScenarios,
     inflationAdjustedValue: inflationAdjustedValue, inflate: inflate,
     requiredSavingsRate: requiredSavingsRate, requiredCapital: requiredCapital,
     retirementIncome: retirementIncome, withdrawalScenario: withdrawalScenario,

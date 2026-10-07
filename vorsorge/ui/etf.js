@@ -31,7 +31,7 @@
     { id: "trend", label: "Trend (Abst. Ø)", get: function (e) { return e.m && e.m.trend; }, pct: true },
     { id: "rs", label: "Rel. Stärke vs. SPY", get: function (e) { return e.m && e.m.rs; }, pct: true },
     { id: "hy", label: "Historie", get: function (e) { return e.m && e.m.hy; }, years: true },
-    { id: "cost", label: "Kostenquote", get: function (e) { return e.cost; }, cost: true },
+    { id: "cost", label: "Expense Ratio (US)", get: function (e) { return e.cost; }, cost: true },
     { id: "aum", label: "Fondsvermögen (Fonds)", get: function (e) { return e.aum; }, money: true },
     { id: "t10", label: "Top-10-Anteil", get: function (e) { return e.top10; }, pct: true, neutral: true }
   ];
@@ -51,13 +51,18 @@
     { id: "themen", label: "Themen", test: function (e) { return e.strategy === "THEMATIC"; } }
   ];
 
+  /* Markt-Umschalter: US-Listings (Tiingo, SEC) und europaeische Anteilklassen (ESMA) haben verschiedene Datenabdeckung. */
+  VS.marketSwitch = function (active) {
+    return '<div class="vs-seg" role="tablist" aria-label="Markt" style="margin-top:16px"><a role="tab" class="vs-seg-link" href="#/etfs" aria-pressed="' + (active === "us") + '">USA · Kurse, Holdings, Kosten</a>' +
+      '<a role="tab" class="vs-seg-link" href="#/europa" aria-pressed="' + (active === "eu") + '">Europa · UCITS-Anteilklassen</a></div>';
+  };
   VS.views.etfs = function (r) {
     var q = r.query || {};
     var st = { q: q.q || "", ac: q.ac || "", region: q.region || "", theme: q.theme || "", issuer: q.issuer || "", exchange: q.exchange || "", currency: q.currency || "",
       index: q.index || "", hist: q.hist || "", ptype: q.ptype || "", strat: q.strat || "", rc: q.rc || "", maxvol: "", maxdd: "", trendUp: false, dist: false,
       maxcost: q.maxcost || "", minaum: q.minaum || "", minpos: "", maxt10: "", hasHoldings: q.holdings === "1", dom: q.dom || "",
-      complex: q.complex === "1", inactive: false, sort: q.sort || "p1Y", dir: -1, limit: 50, row: q.row || "" };
-    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">ETF Intelligence</p><h1>Die ETF-Welt.<br>Klar eingeordnet.</h1><p class="vs-lead">Alle ETFs, die unser Datenanbieter Tiingo führt und für die Kurse vorliegen – mit echter Historie, Schwankung, größtem Rückgang und Trend. Hebel-, Short-, Options- und Krypto-Produkte sind getrennt und markiert.</p>' +
+      complex: q.complex === "1", inactive: false, hasPrice: q.price === "1", hasCost: q.cost === "1", sort: q.sort || "p1Y", dir: -1, limit: 50, row: q.row || "" };
+    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">ETF Intelligence</p><h1>Die ETF-Welt.<br>Klar eingeordnet.</h1><p class="vs-lead">US-gelistete ETFs mit echter Kurshistorie, Schwankung und größtem Rückgang – und, wo die SEC-Daten reichen, mit Holdings, X-Ray und Kosten laut Prospekt. Hebel-, Short-, Options- und Krypto-Produkte sind getrennt und markiert. Europäische UCITS-Anteilklassen findest du über ISIN im Bereich Europa.</p>' + VS.marketSwitch("us") +
       '<form id="vs-search-form" class="vs-search" role="search"><span aria-hidden="true">⌕</span><input id="vs-q" autocomplete="off" value="' + esc(st.q) + '" placeholder="Ticker, ISIN, Name, Index, Thema, Anbieter …" aria-label="ETFs durchsuchen"><button type="submit">Suchen</button></form><div class="vs-suggest" id="vs-suggest"></div></section>' +
       '<section class="vs-section" id="vs-rows"></section><section class="vs-section" id="vs-screener"><div class="vs-loading">ETF-Verzeichnis wird geladen …</div></section>');
     (q.inactive === "1" ? VS.masterAll() : VS.master()).then(function (m) {
@@ -102,11 +107,14 @@
           '<select data-k="maxdd" aria-label="Größter Rückgang">' + [["", "Max. Rückgang: jeder"], ["-0.1", "nicht tiefer als −10 %"], ["-0.2", "nicht tiefer als −20 %"], ["-0.35", "nicht tiefer als −35 %"], ["-0.5", "nicht tiefer als −50 %"]].map(function (h) { return opt(h[0], h[1], st.maxdd); }).join("") + '</select>' +
           '<label class="vs-check"><input type="checkbox" data-k="trendUp"' + (st.trendUp ? " checked" : "") + '> Über Durchschnittslinie</label>' +
           (hasDist ? '<label class="vs-check"><input type="checkbox" data-k="dist"' + (st.dist ? " checked" : "") + '> Ausschüttungen beobachtet</label>' : '<select disabled aria-label="Ausschüttung" title="Ausschüttungsart: Datenquelle folgt"><option>Ausschüttungsart · Daten folgen</option></select>') +
-          '<select data-k="maxcost" aria-label="Kostenquote">' + [["", "Kostenquote: jede"], ["0.001", "bis 0,10 %"], ["0.002", "bis 0,20 %"], ["0.005", "bis 0,50 %"], ["0.01", "bis 1,00 %"]].map(function (h) { return opt(h[0], h[1], st.maxcost); }).join("") + '</select>' +
+          '<select data-k="maxcost" aria-label="Expense Ratio (US-Prospekt)">' + [["", "Expense Ratio: jede"], ["0.001", "bis 0,10 %"], ["0.002", "bis 0,20 %"], ["0.005", "bis 0,50 %"], ["0.01", "bis 1,00 %"]].map(function (h) { return opt(h[0], h[1], st.maxcost); }).join("") + '</select>' +
           '<select data-k="minaum" aria-label="Fondsvermögen">' + [["", "Fondsvermögen: jedes"], ["1e8", "ab 100 Mio. $"], ["1e9", "ab 1 Mrd. $"], ["1e10", "ab 10 Mrd. $"], ["1e11", "ab 100 Mrd. $"]].map(function (h) { return opt(h[0], h[1], st.minaum); }).join("") + '</select>' +
           '<select data-k="minpos" aria-label="Positionen">' + [["", "Positionen: beliebig"], ["50", "ab 50"], ["200", "ab 200"], ["500", "ab 500"], ["1000", "ab 1.000"]].map(function (h) { return opt(h[0], h[1], st.minpos); }).join("") + '</select>' +
           '<select data-k="maxt10" aria-label="Top-10-Konzentration">' + [["", "Top-10-Anteil: jeder"], ["0.2", "bis 20 %"], ["0.3", "bis 30 %"], ["0.4", "bis 40 %"], ["0.6", "bis 60 %"]].map(function (h) { return opt(h[0], h[1], st.maxt10); }).join("") + '</select>' +
-          '<label class="vs-check"><input type="checkbox" data-k="hasHoldings"' + (st.hasHoldings ? " checked" : "") + '> Bestandsdaten vorhanden</label>' +
+          '<span class="vs-fine" style="align-self:center;font-weight:700">Datenabdeckung:</span>' +
+          '<label class="vs-check"><input type="checkbox" data-k="hasPrice"' + (st.hasPrice ? " checked" : "") + '> Mit Kursanalyse</label>' +
+          '<label class="vs-check"><input type="checkbox" data-k="hasHoldings"' + (st.hasHoldings ? " checked" : "") + '> Mit Holdings & X-Ray</label>' +
+          '<label class="vs-check"><input type="checkbox" data-k="hasCost"' + (st.hasCost ? " checked" : "") + '> Mit Kosten</label>' +
           '<label class="vs-check"><input type="checkbox" data-k="complex"' + (st.complex ? " checked" : "") + '> Komplexe Produkte zeigen</label>' +
           '<label class="vs-check"><input type="checkbox" data-k="inactive"' + (st.inactive ? " checked" : "") + '> Inaktive zeigen</label></div>';
       }
@@ -114,7 +122,8 @@
         var list = st.q ? V.Master.search(all, st.q, 20000) : all.slice();
         return list.filter(function (e) {
           if (e.layer === "ARCHIVE" && !st.inactive) return false;
-          if (e.layer === "COMPLEX" && !st.complex) return false;
+          // Komplexe Produkte: per Schalter oder als Suchtreffer (immer mit Bauart markiert)
+          if (e.layer === "COMPLEX" && !st.complex && !st.q) return false;
           if (st.ptype && e.productType !== st.ptype) return false;
           if (st.strat && e.strategy !== st.strat) return false;
           if (st.ac && e.assetClass !== st.ac) return false;
@@ -135,8 +144,36 @@
           if (st.minpos && !(e.positions !== null && e.positions >= Number(st.minpos))) return false;
           if (st.maxt10 && !(e.top10 !== null && e.top10 <= Number(st.maxt10))) return false;
           if (st.hasHoldings && !e.series) return false;
+          if (st.hasPrice && !(e.m && e.m.hy > 0)) return false;
+          if (st.hasCost && !(e.cost !== null && e.cost !== undefined)) return false;
           return true;
         });
+      }
+      // Schnellfilter (Chips) und Sortierung; alle Detailfilter im aufklappbaren Filter-Sheet. Liste statt Tabelle (Tabelle optional am Desktop).
+      var QUICK = [["hasHoldings", "Mit Holdings & X-Ray"], ["hasCost", "Mit Kosten"], ["hist10", "≥ 10 Jahre Historie"], ["lowcost", "Kosten ≤ 0,20 %"], ["complex", "Komplexe zeigen"]];
+      var SORTS = [["p1Y", "Rendite 1 Jahr"], ["p5Y", "Rendite 5 J. p. a."], ["p10Y", "Rendite 10 J. p. a."], ["hy", "Längste Historie"], ["vol", "Geringste Schwankung"], ["cost", "Niedrigste Kosten"], ["aum", "Größtes Fondsvermögen"], ["name", "Name A–Z"]];
+      function qOn(k) { return k === "hist10" ? st.hist === "10" : k === "lowcost" ? st.maxcost === "0.002" : !!st[k]; }
+      function qSet(k, on) { if (k === "hist10") st.hist = on ? "10" : ""; else if (k === "lowcost") st.maxcost = on ? "0.002" : ""; else st[k] = on; }
+      var FKEYS = ["ptype", "strat", "ac", "region", "theme", "index", "issuer", "exchange", "currency", "hist", "maxvol", "maxdd", "maxcost", "minaum", "minpos", "maxt10"];
+      function activeCount() { return FKEYS.filter(function (k) { return st[k]; }).length + ["trendUp", "dist", "hasHoldings", "hasPrice", "hasCost", "complex", "inactive"].filter(function (k) { return st[k]; }).length; }
+      function primary(e) {
+        var col = COLS.filter(function (c) { return c.id === st.sort; })[0];
+        if (!col || col.id === "name" || col.id === "p1Y") return [e.m && e.m.p["1Y"], "1 Jahr", "pct"];
+        var v = col.get(e);
+        return [v, ({ p5Y: "5 J. p. a.", p10Y: "10 J. p. a.", p3Y: "3 J. p. a.", hy: "Historie", vol: "Schwankung", cost: "Kosten", aum: "Fondsvermögen", mdd: "Max. Rückgang", t10: "Top-10-Anteil" })[col.id] || col.label,
+          col.cost ? "cost" : col.money ? "money" : col.years ? "years" : col.neutral || col.id === "mdd" ? "neutral" : "pct"];
+      }
+      function fmtP(x) { var v = x[0]; return x[2] === "cost" ? VS.costPct(v) : x[2] === "money" ? VS.money(v, "USD") : x[2] === "years" ? F.years(v) : x[2] === "neutral" ? F.pct(v) : F.spct(v); }
+      function item(e) {
+        var pr = primary(e), chips = [];
+        if (e.m && e.m.vol !== null && e.m.vol !== undefined) chips.push('<span class="vs-chip">Schwankung ' + F.pct(e.m.vol, 0) + '</span>');
+        if (e.cost !== null && e.cost !== undefined) chips.push('<span class="vs-chip">Kosten ' + VS.costPct(e.cost) + '</span>');
+        if (e.m && e.m.hy) chips.push('<span class="vs-chip">' + F.years(e.m.hy) + '</span>');
+        if (e.series) chips.push('<span class="vs-chip on">Holdings ✓</span>');
+        return '<a class="vs-item" href="' + VS.etfHref(e) + '"><span class="vs-ava c-' + esc(e.assetClass || "") + (e.complex ? " cx" : "") + '" title="' + esc(e.issuer || "") + '">' + esc(VS.issuerShort(e)) + '</span>' +
+          '<span class="vs-item-main"><span class="vs-item-top"><b>' + esc(e.symbol) + '</b>' + (e.retirementClass === "SEHR_KOMPLEX" ? '<span class="vs-badge bad">sehr komplex</span>' : e.complex ? '<span class="vs-badge complex">komplex</span>' : "") + (e.status === "INACTIVE" ? '<span class="vs-badge bad">inaktiv</span>' : "") + '</span>' +
+          '<span class="vs-item-name">' + esc(VS.displayName(e.name)) + '</span><span class="vs-item-chips">' + chips.join("") + '</span></span>' +
+          '<span class="vs-item-perf"><b class="num ' + (pr[2] === "pct" ? F.cls(pr[0]) : "") + '">' + fmtP(pr) + '</b><small>' + esc(pr[1]) + '</small></span></a>';
       }
       function draw() {
         var list = filtered();
@@ -148,10 +185,15 @@
           if (nx || ny) return nx === ny ? 0 : nx ? 1 : -1;
           return st.dir * (x - y);
         });
-        var nComplex = all.filter(function (e) { return e.layer === "COMPLEX"; }).length, nArch = all.filter(function (e) { return e.layer === "ARCHIVE"; }).length;
-        host.innerHTML = '<div class="vs-section-head"><div><h2>' + list.length.toLocaleString("de-DE") + ' ETFs</h2><p class="vs-sub">' + (st.complex ? "" : nComplex.toLocaleString("de-DE") + ' komplexe Produkte ausgeblendet · ') + (st.inactive ? "" : nArch + ' inaktive ausgeblendet · ') + 'Stand ' + F.date(m.asOf) + VS.stale(m.asOf) + ' · Kursentwicklung ohne Ausschüttungen · Quelle Tiingo</p></div><a class="vs-pill small" href="#/daten">Datenabdeckung</a></div>' +
-          controls(all) +
-          '<div class="vs-table-wrap"><table class="vs-table"><caption class="vs-sr">ETF-Screener, sortierbar</caption><thead><tr>' + COLS.map(function (c) {
+        var nComplex = all.filter(function (e) { return e.layer === "COMPLEX"; }).length, nArch = all.filter(function (e) { return e.layer === "ARCHIVE"; }).length, nA = activeCount();
+        var wasOpen = host.querySelector("details.vs-sheet") ? host.querySelector("details.vs-sheet").open : false;
+        var asTable = st.view === "table" && (global.innerWidth || 1000) >= 760;
+        host.innerHTML = '<div class="vs-section-head"><div><h2>' + list.length.toLocaleString("de-DE") + ' ETFs</h2><p class="vs-sub">' + (st.complex ? "" : nComplex.toLocaleString("de-DE") + ' komplexe ausgeblendet · ') + 'Stand ' + F.date(m.asOf) + VS.stale(m.asOf) + ' · Quelle Tiingo, SEC</p></div><a class="vs-pill small" href="#/daten">Datenabdeckung</a></div>' +
+          '<div class="vs-quickchips" role="group" aria-label="Schnellfilter">' + QUICK.map(function (q) { return '<button class="vs-qc" data-q="' + q[0] + '" aria-pressed="' + qOn(q[0]) + '">' + esc(q[1]) + '</button>'; }).join("") + '</div>' +
+          '<div class="vs-toolbar"><select class="vs-sort" id="vs-sortsel" aria-label="Sortieren">' + SORTS.map(function (x) { return '<option value="' + x[0] + '"' + (st.sort === x[0] ? " selected" : "") + '>Sortiert: ' + esc(x[1]) + '</option>'; }).join("") + '</select>' +
+          '<div class="vs-seg" id="vs-viewsel" style="margin-left:auto"><button data-v="list" aria-pressed="' + !asTable + '">Liste</button><button data-v="table" aria-pressed="' + asTable + '">Tabelle</button></div></div>' +
+          '<details class="vs-sheet"' + (wasOpen ? " open" : "") + '><summary><span>Alle Filter' + (nA ? '<span class="vs-badge lime">' + nA + ' aktiv</span>' : "") + '</span></summary><div class="vs-sheet-body">' + controls(all) + (nA ? '<button class="vs-pill small" id="vs-reset" style="margin-top:12px">Filter zurücksetzen</button>' : "") + '</div></details>' +
+          (asTable ? '<div class="vs-table-wrap"><table class="vs-table"><caption class="vs-sr">ETF-Screener, sortierbar</caption><thead><tr>' + COLS.map(function (c) {
             return '<th scope="col" data-sort="' + c.id + '"' + (c.id === st.sort ? ' aria-sort="' + (st.dir < 0 ? "descending" : "ascending") + '"' : "") + ' tabindex="0">' + esc(c.label) + '</th>';
           }).join("") + '</tr></thead><tbody>' + list.slice(0, st.limit).map(function (e) {
             return '<tr><td><a href="' + VS.etfHref(e) + '">' + esc(e.symbol) + '</a> ' + (e.retirementClass === "SEHR_KOMPLEX" ? '<span class="vs-badge bad" title="Sehr komplex">⚠</span>' : e.complex ? '<span class="vs-badge complex" title="Komplexes Produkt">⚠</span>' : "") + (e.status === "INACTIVE" ? ' <span class="vs-badge bad">inaktiv</span>' : "") + '<span class="t-name">' + esc(e.name) + '</span><span class="t-name">' + esc(e.category) + '</span></td>' +
@@ -159,14 +201,20 @@
                 var v = c.get(e);
                 return '<td class="num ' + (c.pct && !c.neutral && c.id !== "mdd" ? F.cls(v) : "") + '">' + (c.cost ? VS.costPct(v) : c.money ? VS.money(v, "USD") : c.years ? F.years(v) : c.id === "mdd" || c.neutral ? F.pct(v) : F.spct(v)) + '</td>';
               }).join("") + '</tr>';
-          }).join("") + '</tbody></table></div>' +
-          (list.length > st.limit ? '<div style="text-align:center;margin-top:14px"><button class="vs-pill" id="vs-more">Weitere ' + Math.min(50, list.length - st.limit) + ' von ' + (list.length - st.limit).toLocaleString("de-DE") + ' anzeigen</button></div>' : "") +
+          }).join("") + '</tbody></table></div>'
+            : '<div class="vs-list">' + list.slice(0, st.limit).map(item).join("") + '</div>') +
+          (list.length > st.limit ? '<div style="text-align:center;margin-top:16px"><button class="vs-pill" id="vs-more">Weitere ' + Math.min(50, list.length - st.limit) + ' von ' + (list.length - st.limit).toLocaleString("de-DE") + ' anzeigen</button></div>' : "") +
           (list.length === 0 ? '<div class="vs-empty">Kein ETF passt zu diesen Filtern.</div>' : "") +
-          '<p class="vs-fine" style="margin-top:12px">Kostenquote laut Prospekt und Fondsvermögen (Fondsebene) aus SEC-Daten, Positionen und Top-10-Anteil aus SEC N-PORT – nur für US-registrierte Fonds. Fehlende Werte zählen bei Filtern nicht als null. Europäische UCITS-ETFs: <a href="#/europa">eigener Bereich</a>.</p>';
-        host.querySelectorAll("select[data-k]").forEach(function (s) { s.addEventListener("change", function () { st[s.dataset.k] = s.value; st.limit = 50; draw(); }); });
+          (st.q && list.length < 10 ? '<p class="vs-sub" style="margin-top:12px">Europäische UCITS-Anteilklassen: <a href="#/europa?q=' + encodeURIComponent(st.q) + '">„' + esc(st.q) + '“ in Europa suchen</a></p>' : "") +
+          '<p class="vs-fine" style="margin-top:12px">Rendite = Kursentwicklung ohne Ausschüttungen. Kosten (Expense Ratio) und Fondsvermögen aus SEC-Daten, Holdings aus SEC N-PORT – nur für US-registrierte Fonds. Fehlende Werte zählen bei Filtern nicht als null. Europäische UCITS-ETFs: <a href="#/europa">eigener Bereich</a>.</p>';
+        host.querySelectorAll("select[data-k]").forEach(function (sx) { sx.addEventListener("change", function () { st[sx.dataset.k] = sx.value; st.limit = 50; draw(); }); });
         host.querySelectorAll("input[data-k]").forEach(function (c) { c.addEventListener("change", function () {
           if (c.dataset.k === "inactive" && c.checked && !m.extraLoaded) { VS.masterAll().then(function (full) { all = full.etfs.filter(function (e) { return e.layer !== "REVIEW"; }); m.extraLoaded = true; st.inactive = true; draw(); }); return; }
           st[c.dataset.k] = c.checked; st.limit = 50; draw(); }); });
+        host.querySelectorAll("[data-q]").forEach(function (b) { b.onclick = function () { qSet(b.dataset.q, !qOn(b.dataset.q)); st.limit = 50; draw(); }; });
+        host.querySelector("#vs-sortsel").onchange = function () { st.sort = this.value; st.dir = /^(vol|cost|name)$/.test(st.sort) ? 1 : -1; st.limit = 50; draw(); };
+        host.querySelectorAll("#vs-viewsel [data-v]").forEach(function (b) { b.onclick = function () { st.view = b.dataset.v; draw(); }; });
+        var rs = host.querySelector("#vs-reset"); if (rs) rs.onclick = function () { FKEYS.forEach(function (k) { st[k] = ""; }); ["trendUp", "dist", "hasHoldings", "hasPrice", "hasCost", "complex", "inactive"].forEach(function (k) { st[k] = false; }); draw(); };
         host.querySelectorAll("th[data-sort]").forEach(function (th) {
           function go() { var id = th.dataset.sort; if (st.sort === id) st.dir *= -1; else { st.sort = id; st.dir = id === "vol" || id === "name" ? 1 : -1; } draw(); }
           th.addEventListener("click", go); th.addEventListener("keydown", function (ev) { if (ev.key === "Enter") go(); });
@@ -235,17 +283,44 @@
       sym = e.slug;
       VS.analytics.track("etf_view", { symbol: e.symbol });
       var mt = d.metrics, watched = VS.state.watchlist.indexOf(sym) >= 0;
-      var TABS = [["uebersicht", "Übersicht"], ["performance", "Performance"], ["risiko", "Risiko"], ["bestandteile", "Bestandteile"], ["xray", "ETF X-Ray"], ["aenderungen", "Was hat sich geändert?"], ["kosten", "Kosten"], ["daten", "Daten"]];
+      // ETFs ohne eigenen N-PORT-Bestand (z. B. SPY, DIA, MDY als Unit Investment Trust): Referenzbestand eines
+      // US-ETFs auf GENAU denselben Index (groesstes Fondsvermoegen) - klar als fremder Bestand gekennzeichnet.
+      if (!(d.holdings && d.holdings.status === "AVAILABLE") && !e.complex && e.index && !/familie/i.test(e.index) && /^(NYSE|NASDAQ|BATS|ARCA|NYSE ARCA|AMEX|NYSE MKT)$/i.test(String(e.exchange || ""))) {
+        var ref = m.etfs.filter(function (x) { return x.index === e.index && x.series && x.layer === "PUBLIC_ANALYSIS" && x.slug !== e.slug && /^(NYSE|NASDAQ|BATS|ARCA|NYSE ARCA|AMEX|NYSE MKT)$/i.test(String(x.exchange || "")); })
+          .sort(function (a, b) { return (b.aum || 0) - (a.aum || 0); })[0];
+        if (ref) d.holdings = { status: "AVAILABLE", source: "SEC_NPORT", sourceType: "REGULATORY", series: ref.series, path: "/vorsorge/data/holdings/" + ref.series + ".json",
+          asOf: ref.holdingsAsOf, positions: ref.positions, top10: ref.top10, proxy: { symbol: ref.symbol, slug: ref.slug, name: ref.name, index: e.index, own: d.holdings } };
+      }
+      // Nur Tabs mit Daten: Kurse -> Performance/Risiko, Holdings -> Bestandteile/X-Ray/Aenderungen, Kostenquote -> Kosten.
+      var hasH = d.holdings && d.holdings.status === "AVAILABLE", hasC = d.costs && d.costs.status === "AVAILABLE";
+      var TABS = [["uebersicht", "Übersicht", true], ["performance", "Performance", !!mt], ["risiko", "Risiko", !!mt], ["bestandteile", "Bestandteile", hasH], ["xray", "ETF X-Ray", hasH],
+        ["aenderungen", "Was hat sich geändert?", hasH || !!(hasC && d.costs.previousFiling)], ["kosten", "Kosten", hasC], ["daten", "Daten", true]].filter(function (t) { return t[2]; });
       tab = { inhalte: "bestandteile", faktoren: "xray", vergleich: "uebersicht" }[tab] || tab;
+      var missingTab = !TABS.some(function (t) { return t[0] === tab; }) ? tab : null;
+      if (missingTab) tab = "uebersicht";
+      var trM = d.metricsTotal && d.metricsTotal.windows && d.metricsTotal.windows.MAX, prM = mt && mt.windows && mt.windows.MAX, retM = trM && Number.isFinite(trM.annualized) ? trM : prM;
+      var kp = [["Rendite p. a.", retM && Number.isFinite(retM.annualized) ? F.spct(retM.annualized) : "–", retM && retM.from ? "seit " + retM.from.slice(0, 4) + (retM === trM ? " · mit Ausschüttungen" : " · nur Kurs") : "keine Historie"],
+        ["Schwankung", mt && mt.volatility && Number.isFinite(mt.volatility.value) ? F.pct(mt.volatility.value, 0) : "–", "pro Jahr"],
+        ["Kosten", d.costs && Number.isFinite(d.costs.value) ? VS.costPct(d.costs.value) : "–", d.costs && d.costs.status === "AVAILABLE" ? "Expense Ratio (Prospekt)" : "nicht verfügbar"],
+        ["Positionen", d.holdings && d.holdings.status === "AVAILABLE" && d.holdings.positions ? Number(d.holdings.positions).toLocaleString("de-DE") : "–", d.holdings && d.holdings.proxy ? "über " + d.holdings.proxy.symbol + " (gleicher Index)" : d.holdings && d.holdings.status === "AVAILABLE" ? "SEC N-PORT " + F.date(d.holdings.asOf) : "keine Holdings"]];
       root.innerHTML = '<section class="vs-hero"><p class="vs-eyebrow"><a href="#/etfs" style="text-decoration:none">ETF Intelligence</a> · ' + esc(e.category || "") + '</p>' +
-        '<div class="vs-etf-head"><div style="min-width:0"><h1 style="font-size:clamp(28px,5vw,52px)">' + esc(d.name || sym) + '</h1><p class="vs-sub" style="margin-top:8px"><b style="color:var(--ink)">' + esc(e.symbol) + '</b> · ' + esc(VS.STRATEGY[e.strategy] || "") + ' · ' + esc(d.exchange || "Börse unbekannt") + ' · ' + esc(d.currency || "") + (d.issuer ? " · " + esc(d.issuer) : "") + '</p><div style="margin-top:10px">' + VS.badges(e) + '</div></div>' +
-        '<div style="text-align:right"><div class="vs-price num">' + F.price(mt && mt.price, d.currency) + '</div><div class="num ' + F.cls(mt && mt.change1D) + '" style="font-weight:800">' + F.spct(mt && mt.change1D, 2) + ' <span class="vs-sub">1 Tag · ' + F.date(mt && mt.priceDate) + '</span></div></div></div>' +
-        '<div class="vs-tabs"><button class="vs-pill' + (watched ? " primary" : "") + '" id="vs-watch">' + (watched ? "♥ Beobachtet" : "♡ Beobachten") + '</button><a class="vs-pill" href="#/vergleich?s=' + encodeURIComponent(sym) + (sym !== "URTH" ? ",URTH" : ",SPY") + '">Vergleichen</a><a class="vs-pill" href="#/portfolio?add=' + encodeURIComponent(sym) + '">Zum Portfolio</a></div></section>' +
-        '<div class="vs-seg" role="tablist" style="margin-top:18px">' + TABS.map(function (t) { return '<button role="tab" data-tab="' + t[0] + '" aria-pressed="' + (t[0] === tab) + '">' + t[1] + '</button>'; }).join("") + '</div>' +
+        '<div class="vs-etf-head"><div style="min-width:0"><div class="vs-item-top"><span class="vs-ticker">' + esc(e.symbol) + '</span>' + (e.complex ? '<span class="vs-badge complex">⚠ ' + esc(VS.RETIRE[e.retirementClass] || "komplex") + '</span>' : '<span class="vs-badge ok">Standard-Bauart</span>') + '<span class="vs-badge">' + esc(d.currency || "") + '</span></div>' +
+        '<h1 style="font-size:clamp(26px,4.6vw,46px);margin-top:10px">' + esc(VS.displayName(d.name || sym)) + '</h1><p class="vs-sub" style="margin-top:6px">' + esc(VS.STRATEGY[e.strategy] || "") + ' · ' + esc(d.exchange || "Börse unbekannt") + (d.issuer ? " · " + esc(d.issuer) : "") + '</p></div>' +
+        '<div class="vs-etf-price"><div class="vs-price num">' + F.price(mt && mt.price, d.currency) + '</div><div class="num ' + F.cls(mt && mt.change1D) + '" style="font-weight:800">' + F.spct(mt && mt.change1D, 2) + ' <span class="vs-sub">1 Tag · ' + F.date(mt && mt.priceDate) + '</span></div></div></div>' +
+        '<div class="vs-kpis">' + kp.map(function (k) { return '<div><span>' + esc(k[0]) + '</span><b class="num">' + k[1] + '</b><small>' + esc(k[2]) + '</small></div>'; }).join("") + '</div>' +
+        '<div class="vs-tabs"><button class="vs-pill' + (watched ? " primary" : "") + '" id="vs-watch">' + (watched ? "♥ Beobachtet" : "♡ Beobachten") + '</button><a class="vs-pill lime" href="#/etf/' + encodeURIComponent(sym) + '?tab=uebersicht&play=1">Planspiel: ins Vorsorgedepot</a><a class="vs-pill" href="#/vergleich?s=' + encodeURIComponent(sym) + (sym !== "URTH" ? ",URTH" : ",SPY") + '">Vergleichen</a><a class="vs-pill" href="#/portfolio?add=' + encodeURIComponent(sym) + '">Zum Portfolio</a></div></section>' +
+        '<div class="vs-etf-sticky"><div class="vs-seg" role="tablist">' + TABS.map(function (t) { return '<button role="tab" data-tab="' + t[0] + '" aria-pressed="' + (t[0] === tab) + '">' + t[1] + '</button>'; }).join("") + '</div></div>' +
+        (missingTab ? '<p class="vs-note" style="margin-top:12px">Für ' + esc(e.symbol) + ' gibt es diesen Bereich nicht: ' + esc({ performance: "keine Kursreihe", risiko: "keine Kursreihe", bestandteile: "keine Holdings (SEC N-PORT)", xray: "keine Holdings (SEC N-PORT)", aenderungen: "keine Holdings- oder Kostenhistorie", kosten: "keine Kostenquote aus dem Prospekt" }[missingTab] || "keine Daten") + '. Du siehst die Übersicht.</p>' : "") +
         '<div id="vs-etf-body"></div>' + '<p class="vs-disclaimer">' + esc(VS.DISCLAIMER) + '</p>';
       root.querySelector("#vs-watch").onclick = function () { var on = watchToggle(sym); this.textContent = on ? "♥ Beobachtet" : "♡ Beobachten"; this.classList.toggle("primary", on); };
       root.querySelectorAll("[data-tab]").forEach(function (b) { b.onclick = function () { tab = b.dataset.tab; root.querySelectorAll("[data-tab]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); body(); }; });
-      function body() { var el = root.querySelector("#vs-etf-body"); (TAB_VIEWS[tab] || TAB_VIEWS.uebersicht)(el, e, d, m); }
+      function body() {
+        var host = root.querySelector("#vs-etf-body");
+        var px = d.holdings && d.holdings.proxy && /^(bestandteile|xray|aenderungen)$/.test(tab) ? d.holdings.proxy : null;
+        host.innerHTML = (px ? '<div class="vs-note" style="margin-top:16px"><b>Referenzbestand:</b> ' + esc(e.symbol) + ' meldet keinen eigenen Bestand an die SEC (N-PORT). Gezeigt wird der Bestand von <a href="#/etf/' + encodeURIComponent(px.slug) + '?tab=' + tab + '">' + esc(px.symbol) + '</a> (' + esc(px.name) + '), der denselben Index (' + esc(px.index) + ') abbildet. Die Zusammensetzung ist praktisch gleich; Gewichte können leicht abweichen.</div>' : "") + '<div id="vs-tab-c"></div>';
+        (TAB_VIEWS[tab] || TAB_VIEWS.uebersicht)(host.querySelector("#vs-tab-c"), e, d, m);
+        if (r.query.play === "1" && tab === "uebersicht") setTimeout(function () { var pl = root.querySelector("#vs-play"); if (pl && pl.scrollIntoView) pl.scrollIntoView({ behavior: "smooth", block: "start" }); }, 250);
+      }
       body();
     }).catch(function () {
       VS.render('<section class="vs-hero"><p class="vs-eyebrow">ETF Intelligence</p><h1>' + esc(sym) + ' nicht gefunden.</h1><p class="vs-lead">Dieser Ticker ist nicht im ETF-Verzeichnis. Vielleicht ist er bei Tiingo als Aktie geführt oder (noch) nicht im aufgenommenen Universum.</p><div class="vs-tabs"><a class="vs-pill primary" href="#/etfs?q=' + encodeURIComponent(sym) + '">Im Screener suchen</a></div></section>');
@@ -280,12 +355,17 @@
         '<div class="vs-row"><span>Thema</span><span>' + esc(e.theme || "–") + '</span></div><div class="vs-row"><span>Listings dieses Fonds</span><span>' + (d.listingsOfFund || 1) + '</span></div></div>' +
         '<div class="vs-card app"><p class="vs-label">Vision Universe Einordnung</p><div style="margin-top:8px">' + einordnung(e, d).map(function (x) { return '<div class="vs-row"><span style="color:var(--app-ink)">' + (x[0] === "warn" ? "⚠ " : x[0] === "ok" ? "✓ " : "• ") + esc(x[1]) + '</span></div>'; }).join("") + '</div><p class="vs-fine" style="margin-top:8px">Einordnung aus Daten, keine Empfehlung.</p></div></div></section>' +
         '<section class="vs-section"><div class="vs-card"><div class="vs-section-head"><div><p class="vs-label">Kursverlauf</p><p class="vs-fine">' + esc(mt ? mt.basisLabel : "") + '</p></div><div class="vs-seg" id="vs-range">' + RANGES.map(function (rg) { return '<button data-m="' + rg[1] + '" aria-pressed="' + (rg[0] === "1J") + '">' + rg[0] + '</button>'; }).join("") + '</div></div><div id="vs-etf-chart"></div></div></section>' +
+        '<section class="vs-section" id="vs-play"></section>' +
         '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card"><p class="vs-label">ETF-DNA</p><div class="vs-dna" style="margin-top:10px">' + Object.keys(dna).map(function (k) {
           var x = dna[k];
           return '<div class="vs-bar"><span>' + esc(x.label) + '</span>' + (x.value === null ? '<span class="vs-fine" style="grid-column:span 2">' + esc(VS.STATUS_TEXT[x.status] || "Noch nicht verfügbar") + '</span>'
             : '<span class="track"><span class="fill" style="display:block;width:' + x.value + '%;background:var(--s1)"></span></span><span class="v num">' + x.value + '/100</span>') + '</div>';
         }).join("") + '</div></div>' + quality(d) + '</div></section>';
-      if (d.holdings && d.holdings.status === "AVAILABLE") VS.holdings(d.holdings.series).then(function (f) { var x = el.querySelector("#vs-hsum"); if (f && x) x.innerHTML = esc(f.summary || "") + (f.changes && f.changes.sentence ? " " + esc(f.changes.sentence) + ' <a href="#" data-goto="aenderungen">Details</a>' : ""); var g = x && x.querySelector("[data-goto]"); if (g) g.onclick = function (ev) { ev.preventDefault(); var b = document.querySelector('[data-tab="aenderungen"]'); if (b) b.click(); }; });
+      var trM = d.metricsTotal && d.metricsTotal.windows && d.metricsTotal.windows.MAX, prM = mt && mt.windows && mt.windows.MAX, useM = trM && Number.isFinite(trM.annualized) ? trM : prM;
+      VS.renderPlanspiel(el.querySelector("#vs-play"), { symbol: e.symbol, slug: e.slug, name: d.name, complex: e.complex, us: /^(NYSE|NASDAQ|BATS|ARCA|NYSE ARCA|AMEX|NYSE MKT)$/i.test(String(e.exchange || "")),
+        cagr: useM ? useM.annualized : null, vol: mt && mt.volatility ? mt.volatility.value : null, since: useM && useM.from ? useM.from.slice(0, 4) : "", years: mt ? mt.historyYears : 0,
+        basis: useM === trM ? "Tiingo, Gesamtrendite mit Ausschüttungen" : "Tiingo, nur Kurs – Ausschüttungen nicht enthalten" });
+      if (d.holdings && d.holdings.status === "AVAILABLE") VS.holdings(d.holdings.series).then(function (f) { var x = el.querySelector("#vs-hsum"); if (f && x) x.innerHTML = (d.holdings.proxy ? "Referenzbestand " + esc(d.holdings.proxy.symbol) + " (gleicher Index): " : "") + esc(f.summary || "") + (f.changes && f.changes.sentence ? " " + esc(f.changes.sentence) + ' <a href="#" data-goto="aenderungen">Details</a>' : ""); var g = x && x.querySelector("[data-goto]"); if (g) g.onclick = function (ev) { ev.preventDefault(); var b = document.querySelector('[data-tab="aenderungen"]'); if (b) b.click(); }; });
       if (!mt) { el.querySelector("#vs-etf-chart").innerHTML = VS.pending("Keine Kursdaten", "Für diesen ETF liefert der Anbieter derzeit keine Kursreihe."); return; }
       function draw(months) { var pts = chartSeries(d, months); VS.lineChart(el.querySelector("#vs-etf-chart"), [{ label: d.symbol, points: pts, area: true }], { label: "Kursverlauf " + d.symbol, fmtY: function (v) { return v.toLocaleString("de-DE", { maximumFractionDigits: 2 }); } }); }
       el.querySelectorAll("#vs-range button").forEach(function (b) { b.onclick = function () { el.querySelectorAll("#vs-range button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); draw(Number(b.dataset.m)); }; });
@@ -294,18 +374,39 @@
     performance: function (el, e, d) {
       var mt = d.metrics;
       if (!mt) { el.innerHTML = '<section class="vs-section">' + VS.pending("Keine Kursdaten", "Performance lässt sich ohne Kursreihe nicht berechnen.") + '</section>'; return; }
-      var W = ["1D", "1W", "1M", "3M", "6M", "YTD", "1Y", "3Y", "5Y", "10Y", "MAX"];
-      function grid(mm) { return '<div class="vs-perf" style="margin-top:12px">' + W.map(function (k) {
-        var w = mm.windows[k] || { value: null, status: "NO_HISTORY" }, v = w.annualized !== null && w.annualized !== undefined ? w.annualized : w.value;
-        return '<div><span>' + k.replace("Y", "J") + (w.annualized !== null && w.annualized !== undefined ? " p.a." : "") + '</span><b class="num ' + F.cls(v) + '">' + F.spct(v) + '</b>' + (v === null ? '<span>' + esc(VS.STATUS_TEXT[w.status] || "") + '</span>' : "") + '</div>';
-      }).join("") + '</div>'; }
-      var tr = d.metricsTotal, trState = (d.totalReturn || {}).state;
-      el.innerHTML = '<section class="vs-section"><div class="vs-card"><p class="vs-label">Kursentwicklung (ohne Ausschüttungen)</p>' + grid(mt) + '</div></section>' +
-        '<section class="vs-section"><div class="vs-card"><p class="vs-label">Gesamtrendite (Ausschüttungen reinvestiert)</p>' + (tr ? grid(tr) + '<p class="vs-fine" style="margin-top:10px">Aus Rohkurs, Splits und Ausschüttungen rekonstruiert (canonical-total-return), gegen die Anbieterspalte geprüft.</p>'
-          : VS.pending("Gesamtrendite nicht verfügbar", trState === "TOTAL_RETURN_UNAVAILABLE" ? "Die Ausschüttungsdaten dieser Reihe ließen sich nicht widerspruchsfrei rekonstruieren (" + ((d.totalReturn || {}).reason || "") + "). Wir zeigen deshalb nur die Kursentwicklung." : "Diese Kursreihe enthält keine Ausschüttungen. Wir nennen keine Gesamtrendite, solange Dividenden nicht korrekt enthalten sind.")) + '</div></section>' +
-        '<section class="vs-section"><div class="vs-card"><p class="vs-label">Kalenderjahre</p>' + (mt.yearlyReturns.length ? '<div class="vs-bars" style="margin-top:12px">' + mt.yearlyReturns.slice(-12).reverse().map(function (y) {
-          return '<div class="vs-bar"><span>' + y.year + '</span><span class="track"><span class="fill" style="display:block;width:' + Math.min(100, Math.abs(y.value) * 200).toFixed(1) + '%;background:' + (y.value >= 0 ? "var(--up)" : "var(--down)") + '"></span></span><span class="v num ' + F.cls(y.value) + '">' + F.spct(y.value) + '</span></div>';
-        }).join("") + '</div>' : VS.pending("Noch kein vollständiges Kalenderjahr", "Die Kurshistorie ist kürzer als ein volles Kalenderjahr.")) + '</div></section>';
+      var tr = d.metricsTotal, trState = (d.totalReturn || {}).state, mode = tr ? "total" : "price";
+      var W = [["1M", "1 Monat"], ["3M", "3 Monate"], ["6M", "6 Monate"], ["YTD", "lfd. Jahr"], ["1Y", "1 Jahr"], ["3Y", "3 Jahre"], ["5Y", "5 Jahre"], ["10Y", "10 Jahre"], ["MAX", "Seit Start"]];
+      function draw() {
+        var mm = mode === "total" ? tr : mt, max = mm.windows.MAX || {};
+        var items = W.map(function (w) { var x = mm.windows[w[0]] || {}, ann = x.annualized !== null && x.annualized !== undefined; return { label: w[1] + (ann ? " p.a." : ""), v: ann ? x.annualized : x.value, status: x.status }; });
+        var lim = Math.max(0.05, Math.max.apply(null, items.map(function (x) { return Math.abs(x.v || 0); })));
+        var years = (mm.yearlyReturns && mm.yearlyReturns.length ? mm.yearlyReturns : mt.yearlyReturns).slice(-20);
+        var ylim = Math.max(0.05, Math.max.apply(null, years.map(function (y) { return Math.abs(y.value); })));
+        var since = (max.from || mt.firstDate || "").slice(0, 4);
+        el.innerHTML = '<section class="vs-section"><div class="vs-grid g2">' +
+          '<div class="vs-card app"><p class="vs-label">' + (mode === "total" ? "Gesamtrendite seit " : "Kursentwicklung seit ") + esc(since) + '</p>' +
+          '<p class="vs-kpi" style="margin-top:8px">' + F.pct(max.annualized, 1) + ' <span style="font-size:16px;color:var(--app-muted)">pro Jahr</span></p>' +
+          (Number.isFinite(max.value) ? '<p style="margin-top:10px;font-size:16px">Aus <b>1.000 €</b> wurden <b style="color:var(--accent)">' + F.eur(1000 * (1 + max.value)) + '</b>.</p>' : "") +
+          '<p class="vs-fine" style="margin-top:10px">' + (mode === "total" ? "Ausschüttungen reinvestiert, nach Fondskosten" : "ohne Ausschüttungen") + ' · in ' + esc(d.currency || "USD") + ' · vergangene Entwicklung, keine Prognose</p></div>' +
+          '<div class="vs-card"><div class="vs-section-head" style="margin:0"><p class="vs-label">Rendite je Zeitraum</p>' + (tr ? '<div class="vs-seg" id="vs-pm"><button data-m="total" aria-pressed="' + (mode === "total") + '">mit Ausschüttungen</button><button data-m="price" aria-pressed="' + (mode === "price") + '">nur Kurs</button></div>' : "") + '</div>' +
+          '<div class="vs-hbars">' + items.map(function (x) {
+            if (x.v === null || x.v === undefined) return '<div class="vs-hbar"><span>' + esc(x.label) + '</span><span class="vs-fine">' + esc(VS.STATUS_TEXT[x.status] || "zu kurze Historie") + '</span><b></b></div>';
+            var w = Math.min(50, Math.abs(x.v) / lim * 50), left = x.v >= 0 ? 50 : 50 - w;
+            return '<div class="vs-hbar"><span>' + esc(x.label) + '</span><span class="rail"><span class="mid" style="left:50%"></span><i style="left:' + left.toFixed(1) + '%;width:' + Math.max(0.6, w).toFixed(1) + '%;background:' + (x.v >= 0 ? "var(--up)" : "var(--down)") + '"></i></span><b class="num ' + F.cls(x.v) + '">' + F.spct(x.v) + '</b></div>';
+          }).join("") + '</div></div></div></section>' +
+          '<section class="vs-section"><div class="vs-card"><p class="vs-label">Kalenderjahre' + (years.length ? " · " + years[0].year + "–" + years[years.length - 1].year : "") + '</p>' +
+          (years.length ? '<div class="vs-years" role="img" aria-label="Rendite je Kalenderjahr"><span class="zero" style="bottom:calc(22px + 50% - 11px)"></span>' + years.map(function (y) {
+            var h = Math.abs(y.value) / ylim * 50;
+            return '<div class="y' + (y.value < 0 ? " neg" : "") + '" title="' + y.year + ': ' + F.spct(y.value) + '"><span style="position:absolute;left:0;right:0;display:flex;justify-content:center;' + (y.value >= 0 ? "bottom:50%" : "top:50%") + '"><i style="height:' + Math.max(1, h * 1.58).toFixed(1) + 'px;background:' + (y.value >= 0 ? "var(--up)" : "var(--down)") + '"></i></span><small>' + (years.length > 12 ? "’" + String(y.year).slice(2) : y.year) + '</small></div>';
+          }).join("") + '</div><div class="vs-chips" style="margin-top:12px">' +
+            '<span class="vs-chip">Positive Jahre: ' + years.filter(function (y) { return y.value > 0; }).length + ' von ' + years.length + '</span>' +
+            (mt.bestYear ? '<span class="vs-chip">Bestes Jahr seit ' + esc((mt.firstDate || "").slice(0, 4)) + ': ' + esc(mt.bestYear.period || "") + ': ' + F.spct(mt.bestYear.value) + '</span>' : "") +
+            (mt.worstYear ? '<span class="vs-chip">Schlechtestes Jahr seit ' + esc((mt.firstDate || "").slice(0, 4)) + ': ' + esc(mt.worstYear.period || "") + ': ' + F.spct(mt.worstYear.value) + '</span>' : "") + '</div>'
+            : VS.pending("Noch kein vollständiges Kalenderjahr", "Die Kurshistorie ist kürzer als ein volles Kalenderjahr.")) + '</div></section>' +
+          (!tr ? '<section class="vs-section">' + VS.pending("Gesamtrendite nicht verfügbar", trState === "TOTAL_RETURN_UNAVAILABLE" ? "Die Ausschüttungsdaten dieser Reihe ließen sich nicht widerspruchsfrei rekonstruieren. Wir zeigen deshalb nur die Kursentwicklung." : "Diese Kursreihe enthält keine Ausschüttungen. Wir nennen keine Gesamtrendite, solange Dividenden nicht korrekt enthalten sind.") + '</section>' : "");
+        el.querySelectorAll("#vs-pm button").forEach(function (b) { b.onclick = function () { mode = b.dataset.m; draw(); }; });
+      }
+      draw();
     },
     risiko: function (el, e, d) {
       var mt = d.metrics;
@@ -351,7 +452,10 @@
         var res = V.Master.search(m.etfs.filter(function (e) { return e.layer !== "REVIEW"; }), q.value, 6);
         box.innerHTML = res.length ? '<ul>' + res.map(function (e) { return '<li><a href="#/vergleich?s=' + encodeURIComponent(syms.concat(e.slug).slice(-4).join(",")) + '"><span><b>' + esc(e.symbol) + '</b> · ' + esc(e.name) + '</span></a></li>'; }).join("") + '</ul>' : "";
       });
-      root.querySelector("#vs-cmp-form").addEventListener("submit", function (ev) { ev.preventDefault(); var hit = V.Master.search(m.etfs, q.value, 1)[0]; if (hit) VS.go("#/vergleich?s=" + encodeURIComponent(syms.concat(hit.slug).slice(-4).join(","))); });
+      root.querySelector("#vs-cmp-form").addEventListener("submit", function (ev) { ev.preventDefault();
+        // Europaeische ISIN: kein Kurs-/Holdings-/Kostenvergleich mit US-Listings (keine gemeinsamen Kennzahlen) -> EU-Vergleich der Stammdaten
+        if (/^[A-Za-z]{2}[A-Za-z0-9]{9}\d$/.test(q.value.trim())) { box.innerHTML = '<p class="vs-sub" style="margin-top:8px">Europäische Anteilklassen haben hier keine Kurse, Holdings oder Kosten – ein Vergleich mit US-ETFs wäre Scheingenauigkeit. <a href="#/europa/vergleich?i=' + encodeURIComponent(q.value.trim().toUpperCase()) + '">Europäische Anteilklassen vergleichen</a> (Stamm- und Registerdaten).</p>'; return; }
+        var hit = V.Master.search(m.etfs, q.value, 1)[0]; if (hit) VS.go("#/vergleich?s=" + encodeURIComponent(syms.concat(hit.slug).slice(-4).join(","))); });
       var host = root.querySelector("#vs-cmp");
       if (syms.length < 2) { host.innerHTML = VS.pending("Mindestens zwei ETFs", "Füge oben einen weiteren ETF hinzu."); return; }
       VS.analytics.track("etf_compare", { symbols: syms.join(",") });
@@ -374,7 +478,7 @@
       ["Schwankung p.a.", function (d) { return F.pct(val(d, "metrics.volatility.value")); }, "metrics.volatility.value"],
       ["Größter Rückgang", function (d) { return F.pct(val(d, "metrics.maxDrawdown.value")); }, "metrics.maxDrawdown.value"],
       ["Historie", function (d) { return F.years(val(d, "metrics.historyYears")); }],
-      ["Kostenquote (Prospekt)", function (d) { return d.costs && d.costs.status === "AVAILABLE" ? VS.costPct(d.costs.value) : '<span class="vs-fine">Quelle fehlt</span>'; }, "costs.value"],
+      ["Expense Ratio (US-Prospekt)", function (d) { return d.costs && d.costs.status === "AVAILABLE" && d.costs.value !== null ? VS.costPct(d.costs.value) : '<span class="vs-fine">Quelle fehlt</span>'; }, "costs.value"],
       ["Fondsvermögen (alle Anteilklassen)", function (d) { var a = d.fundamentals && d.fundamentals.aum; return a ? VS.money(a.value, "USD") + ' <span class="vs-fine">' + F.date(a.asOf) + '</span>' : '<span class="vs-fine">Quelle fehlt</span>'; }],
       ["Positionen", function (d) { return d.holdings && d.holdings.positions ? d.holdings.positions.toLocaleString("de-DE") : '<span class="vs-fine">keine Holdings</span>'; }],
       ["Top-10-Anteil", function (d) { return d.holdings && d.holdings.top10 !== undefined && d.holdings.top10 !== null ? F.pct(d.holdings.top10) : '<span class="vs-fine">–</span>'; }, "holdings.top10"],
@@ -435,9 +539,18 @@
   /* ========================================================== WATCHLIST */
   VS.views.watchlist = function () {
     var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Watchlist</p><h1>ETFs beobachten.</h1><p class="vs-lead">Performance, Status und Änderungen deiner beobachteten ETFs. Gespeichert nur in diesem Browser.</p></section><section class="vs-section" id="vs-wl"><div class="vs-loading">…</div></section>');
-    Promise.all([VS.masterAll(), VS.getJSON("/vorsorge/data/changes.json").catch(function () { return { events: [] }; })]).then(function (res) {
-      var m = res[0], ch = res[1], list = VS.state.watchlist.map(function (s) { return m.find(s); }).filter(Boolean), missing = VS.state.watchlist.filter(function (s) { return !m.find(s); });
+    var isIsin = function (s) { return /^[A-Z]{2}[A-Z0-9]{9}\d$/.test(s); };
+    Promise.all([VS.masterAll(), VS.getJSON("/vorsorge/data/changes.json").catch(function () { return { events: [] }; }),
+      VS.state.watchlist.some(isIsin) ? VS.euIndex().catch(function () { return null; }) : null]).then(function (res) {
+      var m = res[0], ch = res[1], ej = res[2], list = VS.state.watchlist.map(function (s) { return m.find(s); }).filter(Boolean);
+      // Europaeische Anteilklassen (ISIN): Stammdaten und Register, keine Kurse/Holdings/Kosten
+      var euItems = ej ? VS.state.watchlist.filter(isIsin).map(function (s) { return ej.byIsin[s]; }).filter(Boolean) : [];
+      var missing = VS.state.watchlist.filter(function (s) { return !m.find(s) && !(ej && ej.byIsin[s]); });
       var host = root.querySelector("#vs-wl");
+      var euBlock = euItems.length ? '<div class="vs-card" style="margin-top:14px"><p class="vs-label">Europäische Anteilklassen</p>' + euItems.map(function (x) {
+        return '<div class="vs-row"><span><a href="#/europa/' + esc(x.isin) + '"><b>' + esc(x.isin) + '</b></a> ' + esc(x.name) + '</span><span class="vs-fine" style="text-align:right">' + (x.reg ? "UCITS-Zuordnung über ESMA-Register" + (x.reg.hosts.indexOf("DE") >= 0 ? " · Vertrieb in Deutschland gemeldet" : "") : "kein Registertreffer") + '</span></div>'; }).join("") +
+        '<p class="vs-fine" style="margin-top:6px">Für europäische Anteilklassen sind Kurse, Holdings und Kosten noch nicht verfügbar.</p></div>' : "";
+      if (!list.length && euItems.length) { host.innerHTML = euBlock; return; }
       if (!list.length) { host.innerHTML = '<div class="vs-card soft vs-empty">Noch keine ETFs beobachtet. Öffne einen ETF und tippe auf „♡ Beobachten“.<div class="vs-tabs" style="justify-content:center"><a class="vs-pill primary" href="#/etfs">ETFs entdecken</a></div></div>'; return; }
       var changed = list.filter(function (e) { return e.holdingsChanges > 0; });
       host.innerHTML = '<div class="vs-card app"><p class="vs-label">Seit dem letzten Holdings-Update</p><p style="margin-top:6px;color:var(--app-ink);font-size:17px">' +
@@ -447,7 +560,7 @@
         var hc = e.holdingsAsOf ? (e.holdingsChanges > 0 ? '<a href="' + VS.etfHref(e) + '?tab=aenderungen">' + e.holdingsChanges + ' relevante Änderung' + (e.holdingsChanges === 1 ? "" : "en") + '</a>' : '<span class="vs-fine">keine relevanten Änderungen</span>') + '<span class="t-name">Stand ' + F.date(e.holdingsAsOf) + '</span>' : '<span class="vs-fine">keine Bestandsdaten</span>';
         return '<tr><td><a href="' + VS.etfHref(e) + '">' + esc(e.symbol) + '</a><span class="t-name">' + esc(e.name) + '</span><span class="t-name">' + esc(e.index || e.category) + '</span></td><td class="num">' + F.price(e.m && e.m.price, e.currency) + '</td><td class="num ' + F.cls(e.m && e.m.d1) + '">' + F.spct(e.m && e.m.d1, 2) + '</td><td class="num ' + F.cls(e.m && e.m.p["1Y"]) + '">' + F.spct(e.m && e.m.p["1Y"]) + '</td><td class="num">' + F.pct(e.m && e.m.vol) + '</td><td>' + (e.status === "INACTIVE" ? '<span class="vs-badge bad">inaktiv</span>' : e.layer === "REVIEW" ? '<span class="vs-badge bad">in Prüfung</span>' : "aktiv") + (evs.length ? '<span class="t-name">' + esc(evs[0].text) + '</span>' : "") + '</td>' +
           '<td class="num">' + (e.cost !== null ? VS.costPct(e.cost) : '<span class="vs-fine">–</span>') + '</td><td class="num">' + (e.aum !== null ? VS.money(e.aum, "USD") : '<span class="vs-fine">–</span>') + '</td><td>' + hc + '</td></tr>';
-      }).join("") + '</tbody></table></div>' + (missing.length ? '<p class="vs-fine" style="margin-top:10px">Nicht mehr im Verzeichnis: ' + esc(missing.join(", ")) + ' (Ticker entfernt oder umbenannt).</p>' : "");
+      }).join("") + '</tbody></table></div>' + euBlock + (missing.length ? '<p class="vs-fine" style="margin-top:10px">Nicht mehr im Verzeichnis: ' + esc(missing.join(", ")) + ' (Ticker entfernt oder umbenannt).</p>' : "");
     });
   };
 })(window);

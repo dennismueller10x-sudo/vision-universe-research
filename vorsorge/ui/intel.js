@@ -175,8 +175,18 @@
     if (ev.eventType === "SECTOR_WEIGHT_CHANGED") return VS.sectorName(ev.entityName) + ": " + wpct(ev.oldValue) + " → " + wpct(ev.newValue);
     return ev.explanation;
   }
+  /* Kostenaenderungen laut Prospekt (nur echte, gleich definierte Felder) - Teil von "Was hat sich geaendert?". */
+  function costChangeCard(d) {
+    var c = d.costs || {};
+    if (c.status !== "AVAILABLE" || !c.previousFiling) return "";
+    var ch = c.changes || [];
+    return '<section class="vs-section"><div class="vs-card"><p class="vs-label">Kosten laut Prospekt</p>' +
+      (ch.length ? ch.map(function (x) { return '<div class="vs-row"><span>' + esc(x.label) + '</span><span class="num">' + VS.costPct(x.oldValue) + ' → ' + VS.costPct(x.newValue) + '</span></div>'; }).join("") +
+        '<p class="vs-fine" style="margin-top:6px">Prospekt ' + F.date(c.previousFiling) + ' → ' + F.date(ch[0].to) + ' (SEC Risk/Return-Daten).</p>'
+        : '<p class="vs-sub" style="margin-top:6px">Keine Änderung der Kostenquote seit dem Prospekt vom ' + F.date(c.previousFiling) + '.</p>') + '</div></section>';
+  }
   VS.renderChanges = function (el, e, d) {
-    if (!d.holdings || d.holdings.status !== "AVAILABLE") { el.innerHTML = '<section class="vs-section">' + noHoldings(d) + '</section>'; return; }
+    if (!d.holdings || d.holdings.status !== "AVAILABLE") { el.innerHTML = costChangeCard(d) || ('<section class="vs-section">' + noHoldings(d) + '</section>'); return; }
     VS.holdings(d.holdings.series).then(function (f) {
       if (!f) return;
       var ch = f.changes || {}, evs = ch.events || [], showAll = false;
@@ -190,26 +200,96 @@
             (list.length > 40 ? '<p class="vs-fine">… und ' + (list.length - 40) + ' weitere.</p>' : "") + '</div></section>' : "") +
           '<section class="vs-section"><div class="vs-card"><p class="vs-label">Zeitleiste</p>' + (f.timeline && f.timeline.length ? f.timeline.map(function (t) { return '<div class="vs-row"><span class="num">' + F.date(t.asOf) + '</span><span style="text-align:right">' + esc(t.text) + '</span></div>'; }).join("")
             : '<p class="vs-fine">Noch keine Historie.</p>') +
-          '<p class="vs-fine" style="margin-top:8px">Bestände: ' + f.history.map(function (h) { return F.date(h.asOf) + " (" + h.positions.toLocaleString("de-DE") + ")"; }).join(" · ") + '</p></div></section>';
+          '<p class="vs-fine" style="margin-top:8px">Bestände: ' + f.history.map(function (h) { return F.date(h.asOf) + " (" + h.positions.toLocaleString("de-DE") + ")"; }).join(" · ") + '</p></div></section>' + costChangeCard(d);
         var cb = el.querySelector("#vs-ch-all"); if (cb) cb.onchange = function () { showAll = cb.checked; draw(); };
       }
       draw();
     });
   };
 
+  /* ---------------------------------------------- Planspiel: ETF ins Vorsorgedepot
+     ctx: { name, symbol, cagr, vol, since, years (Historie), us (US-ETF), complex, cost }.
+     Rechnet mit der bisherigen Entwicklung (Gesamtrendite p. a., Schwankung) und der Grund-/Kinderzulage des
+     Altersvorsorgedepots (Regeln 2027-DE). Modellrechnung, keine Prognose, keine Empfehlung. */
+  VS.renderPlanspiel = function (el, ctx) {
+    if (!el) return;
+    if (ctx.complex) { el.innerHTML = '<div class="vs-play"><p class="vs-label" style="color:var(--app-muted)">Planspiel</p><h3>Nicht für ein Vorsorge-Planspiel geeignet.</h3><p class="vs-sub" style="margin-top:8px">Hebel-, Short- und Optionsprodukte verlieren über lange Zeiträume oft durch tägliche Neugewichtung an Wert – eine Hochrechnung aus der Vergangenheit wäre irreführend.</p></div>'; return; }
+    if (!Number.isFinite(ctx.cagr) || !Number.isFinite(ctx.vol) || !(ctx.years >= 10)) {
+      el.innerHTML = '<div class="vs-play"><p class="vs-label" style="color:var(--app-muted)">Planspiel</p><h3>Für ein Planspiel ist die Historie zu kurz.</h3><p class="vs-sub" style="margin-top:8px">Wir rechnen nur mit mindestens zehn Jahren echter Kurshistorie. Im Planer kannst du mit eigenen Annahmen rechnen.</p><a class="vs-pill lime" style="margin-top:14px" href="#/plan">Zum Planer</a></div>'; return;
+    }
+    var st = VS.state.plan, st0 = { monthly: 100, years: Math.max(5, Math.min(45, (st.targetAge || 67) - (st.age || 35))), zulage: true, kids: 0, starter: false };
+    if (!VS.state.planDone) st0.years = 20;
+    el.innerHTML = '<div class="vs-play"><p class="vs-label" style="color:var(--app-muted)">Planspiel · Altersvorsorgedepot</p>' +
+      '<h3>Was wäre, wenn du ' + esc(ctx.symbol) + ' in dein Vorsorgedepot legst?</h3>' +
+      '<p class="vs-sub" style="margin-top:6px">Mit der bisherigen Entwicklung seit ' + esc(String(ctx.since || "")) + ': <b style="color:var(--app-ink)">' + F.pct(ctx.cagr, 1) + ' p. a.</b> inkl. Ausschüttungen, Schwankung ' + F.pct(ctx.vol, 0) + ' p. a.</p>' +
+      '<div class="vs-play-grid"><form id="vs-pl-f" onsubmit="return false">' +
+      '<div class="vs-slider"><label for="pl-m">Sparrate pro Monat <b id="pl-mv"></b></label><input id="pl-m" type="range" min="25" max="1000" step="25" value="' + st0.monthly + '"></div>' +
+      '<div class="vs-slider"><label for="pl-y">Laufzeit bis zur Rente <b id="pl-yv"></b></label><input id="pl-y" type="range" min="5" max="45" step="1" value="' + st0.years + '"></div>' +
+      '<label class="vs-toggle"><span>Staatliche Zulage (Altersvorsorgedepot ab 2027)</span><input id="pl-z" type="checkbox" checked></label>' +
+      '<div id="pl-zx"><div class="vs-slider"><label for="pl-k">Kinder mit Kindergeld <b id="pl-kv"></b></label><input id="pl-k" type="range" min="0" max="4" step="1" value="0"></div>' +
+      '<label class="vs-toggle"><span>Unter 25, erster Vertrag (Einsteigerbonus)</span><input id="pl-s" type="checkbox"></label></div>' +
+      '</form><div><div class="vs-play-result" id="pl-res"></div><div class="vs-play-split" id="pl-split"></div><div class="vs-legend" id="pl-leg"></div><div id="pl-chart" style="margin-top:12px"></div></div></div>' +
+      '<div class="vs-tabs" style="margin-top:6px"><button class="vs-pill lime" id="pl-apply" type="button">In meinen Plan übernehmen</button><a class="vs-pill" style="background:transparent;color:var(--app-ink);border-color:var(--app-line)" href="#/foerderung">So funktioniert die Zulage</a></div>' +
+      '<p class="vs-fine" style="margin-top:12px">Modellrechnung, keine Prognose und keine Empfehlung. Basis: bisherige Gesamtrendite p. a. nach Fondskosten (' + esc(ctx.basis || "Tiingo") + '); pessimistisch/optimistisch = 10 %/90 %-Bandbreite der Durchschnittsrendite über die Laufzeit (Schwankung ÷ √Jahre). ' +
+      (ctx.us ? 'In US-Dollar gemessen, Wechselkurs nicht berücksichtigt. US-ETFs selbst sind im Altersvorsorgedepot nicht zulässig (kein Basisinformationsblatt) – die Rechnung zeigt, was die bisherige Entwicklung dieses Engagements bedeutet hätte, etwa über einen UCITS-ETF auf denselben Index. ' : '') +
+      'Zulagen nach den Regeln ab 2027 (Grundzulage 50 % auf die ersten 360 €, 25 % bis 1.800 € Eigenbeitrag im Jahr; Kinderzulage bis 300 € je Kind), jährlich eingezahlt und mitverzinst. Steuern und Inflation sind nicht berücksichtigt.</p></div>';
+    var form = el.querySelector("#vs-pl-f"), rules = null, last = null;
+    VS.rules().then(function (r) { rules = r[0]; draw(); }).catch(function () { draw(); });
+    function draw() {
+      var m = Number(form.querySelector("#pl-m").value), y = Number(form.querySelector("#pl-y").value), z = form.querySelector("#pl-z").checked;
+      var kids = Number(form.querySelector("#pl-k").value), starter = form.querySelector("#pl-s").checked;
+      el.querySelector("#pl-mv").textContent = F.eur(m); el.querySelector("#pl-yv").textContent = y + " Jahre"; el.querySelector("#pl-kv").textContent = String(kids);
+      el.querySelector("#pl-zx").hidden = !z;
+      var sub = 0, bonus = 0;
+      if (z && rules && V.Funding) {
+        var ch = []; for (var i = 0; i < kids; i++) ch.push({ hasChildBenefit: true });
+        var f = V.Funding.altersvorsorgedepot(rules, { ownContribution: m * 12, children: ch, firstContract: starter, age: starter ? 20 : 30 });
+        sub = f.eligible ? f.basicAllowance + f.childAllowance : 0; bonus = f.eligible ? f.careerStarterBonus : 0;
+      }
+      var r = V.Math.historicalScenarios({ cagr: ctx.cagr, vol: ctx.vol, years: y, monthly: m, annualSubsidy: sub, bonus: bonus });
+      last = r;
+      var L = { pessimistisch: "Pessimistisch", basis: "Wie bisher", optimistisch: "Optimistisch" };
+      el.querySelector("#pl-res").innerHTML = r.scenarios.map(function (sc) {
+        return '<div class="' + (sc.id === "basis" ? "base" : "") + '"><span>' + L[sc.id] + ' · ' + F.pct(sc.annualReturn, 1) + ' p. a.</span><b class="num">' + F.eur(sc.nominal) + '</b><small>nach ' + y + ' Jahren</small></div>';
+      }).join("");
+      var base = r.scenarios[1].nominal, gain = Math.max(0, base - r.invested), tot = Math.max(base, r.invested);
+      el.querySelector("#pl-split").innerHTML = '<i style="width:' + (r.ownContributions / tot * 100).toFixed(1) + '%;background:#f4f5f0"></i><i style="width:' + (r.subsidies / tot * 100).toFixed(1) + '%;background:var(--s1)"></i><i style="width:' + (gain / tot * 100).toFixed(1) + '%;background:var(--accent)"></i>';
+      el.querySelector("#pl-leg").innerHTML = '<span><i style="background:#f4f5f0"></i>Eigene Einzahlungen ' + F.eur(r.ownContributions) + '</span><span><i style="background:var(--s1)"></i>Staatliche Zulagen ' + F.eur(r.subsidies) + '</span><span><i style="background:var(--accent)"></i>Wertzuwachs (Szenario „wie bisher“) ' + F.eur(gain) + '</span>';
+      VS.lineChart(el.querySelector("#pl-chart"), [
+        { label: "Optimistisch", points: r.path.map(function (p) { return [p[0], p[3]]; }), color: "var(--s3)", dash: true },
+        { label: "Wie bisher", points: r.path.map(function (p) { return [p[0], p[2]]; }), color: "var(--accent)", area: true },
+        { label: "Pessimistisch", points: r.path.map(function (p) { return [p[0], p[1]]; }), color: "var(--s2)", dash: true }],
+        { label: "Vermögensverlauf im Planspiel", zero: true, height: 220, fmtX: function (v) { return "Jahr " + Math.round(v); }, fmtTipX: function (v) { return "nach " + Math.round(v) + " Jahren"; }, fmtY: function (v) { return F.eurK ? F.eurK(v) : F.eur(v); }, fmtTip: function (v) { return F.eur(v); } });
+    }
+    form.addEventListener("input", draw);
+    el.querySelector("#pl-apply").onclick = function () {
+      if (!last) return;
+      var p = VS.state.plan, c = Number.isFinite(p.cost) ? p.cost : 0;
+      // Der Planer zieht Kosten ab; die Historie ist schon nach Fondskosten -> Kosten wieder aufschlagen.
+      p.monthly = Number(form.querySelector("#pl-m").value);
+      p.returns = { konservativ: Math.round((last.scenarios[0].annualReturn + c) * 1000) / 1000, basis: Math.round((last.scenarios[1].annualReturn + c) * 1000) / 1000, optimistisch: Math.round((last.scenarios[2].annualReturn + c) * 1000) / 1000 };
+      VS.save(); VS.analytics.track("planspiel_apply", { symbol: ctx.symbol });
+      VS.go("#/plan");
+    };
+  };
+
   /* ---------------------------------------------- Kosten */
   VS.renderKosten = function (el, e, d) {
     var c = d.costs || {};
-    var f = function (k) { var x = c[k]; return x && typeof x === "object" ? x : null; };
+    var f = function (k) { var x = c[k] || (d.fundamentals || {})[k]; return x && typeof x === "object" ? x : null; };
     el.innerHTML = '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card"><p class="vs-label">Laufende Kosten</p>' +
-      (c.status === "AVAILABLE" ? '<p class="vs-kpi">' + VS.costPct(c.value) + '</p><p class="vs-fine">' + (c.basis === "NET_EXPENSE_RATIO" ? "Netto-Kostenquote nach Gebührenverzicht" : "Gesamtkostenquote") + ' laut Prospekt-Gebührentabelle (SEC Risk/Return-Daten)</p>' +
-        (f("expenseRatio") ? '<div class="vs-row" style="margin-top:10px"><span>Gesamtkostenquote (brutto)</span><span class="num">' + VS.costPct(f("expenseRatio").value) + '</span></div>' : "") +
-        (f("netExpenseRatio") ? '<div class="vs-row"><span>Nach Gebührenverzicht (netto)</span><span class="num">' + VS.costPct(f("netExpenseRatio").value) + '</span></div>' : "") +
-        (f("managementFee") ? '<div class="vs-row"><span>Verwaltungsgebühr</span><span class="num">' + VS.costPct(f("managementFee").value) + '</span></div>' : "") +
-        '<p class="vs-fine" style="margin-top:8px">Prospekt vom ' + F.date((f("netExpenseRatio") || f("expenseRatio") || {}).asOf) + '. ' + esc(c.note || "") + ' Für US-Fonds ist das die „Expense Ratio“ – nicht identisch mit TER oder laufenden Kosten im europäischen Basisinformationsblatt.</p>'
+      (c.status === "AVAILABLE" ? '<p class="vs-kpi">' + VS.costPct(c.value) + '</p><p class="vs-fine">' + ({ NET_EXPENSE_RATIO: "Netto-Kostenquote nach Gebührenverzicht (Net Expense Ratio)", EXPENSE_RATIO: "Gesamtkostenquote (Expense Ratio)", MANAGEMENT_FEE_ONLY: "Nur die Verwaltungsgebühr ist gemeldet – eine Gesamtkostenquote steht nicht im Prospektdatensatz" }[c.basis] || "Kostenquote") + ' laut Prospekt-Gebührentabelle (SEC Risk/Return-Daten)' + (c.value === 0 ? '. 0,00 % ist der im Prospekt gemeldete Wert (z. B. gebührenfreier ETF oder vollständiger Gebührenverzicht).' : '') + '</p>' +
+        (f("expenseRatio") ? '<div class="vs-row" style="margin-top:10px"><span>Gesamtkostenquote, brutto (Expense Ratio)</span><span class="num">' + VS.costPct(f("expenseRatio").value) + '</span></div>' : "") +
+        (f("netExpenseRatio") ? '<div class="vs-row"><span>Nach Gebührenverzicht, netto (Net Expense Ratio)</span><span class="num">' + VS.costPct(f("netExpenseRatio").value) + '</span></div>' : "") +
+        (f("managementFee") ? '<div class="vs-row"><span>Verwaltungsgebühr (Management Fee)</span><span class="num">' + VS.costPct(f("managementFee").value) + '</span></div>' : "") +
+        '<p class="vs-fine" style="margin-top:8px">Prospekt vom ' + F.date((f("netExpenseRatio") || f("expenseRatio") || f("managementFee") || {}).asOf) + '. ' + esc(c.note || "") + ' Für US-Fonds ist das die „Expense Ratio“ – nicht identisch mit TER oder laufenden Kosten im europäischen Basisinformationsblatt.</p>' +
+        // Kostenaenderung nur zwischen zwei echten Prospektstaenden und nur je gleich definiertem Feld
+        '<p class="vs-label" style="margin-top:14px">Änderung gegenüber dem vorherigen Prospekt</p>' +
+        ((c.changes || []).length ? c.changes.map(function (x) { return '<div class="vs-row"><span>' + esc(x.label) + '</span><span class="num ' + (x.newValue < x.oldValue ? "up" : "down") + '">' + VS.costPct(x.oldValue) + ' → ' + VS.costPct(x.newValue) + '</span></div>'; }).join("") + '<p class="vs-fine">Prospekt ' + F.date(c.previousFiling) + ' → ' + F.date((c.changes[0] || {}).to) + '.</p>'
+          : c.previousFiling ? '<p class="vs-sub">Keine Änderung seit dem Prospekt vom ' + F.date(c.previousFiling) + '.</p>' : '<p class="vs-sub">Nur ein Prospektstand im Datensatz – ein Vergleich ist ab dem nächsten Prospekt möglich.</p>')
         : VS.pending("Keine Kostenquote", (c.note || "Keine Primär- oder Regulierungsquelle verfügbar.") + " Wir schätzen keine Kosten.")) +
       '<div class="vs-row" style="margin-top:12px"><span>Tracking Difference</span><span class="vs-fine">nicht berechnet (Indexdaten fehlen)</span></div></div>' +
-      '<a class="vs-card app link" href="#/kosten' + (c.status === "AVAILABLE" ? "?ter=" + (c.value * 100).toFixed(2) : "") + '"><p class="vs-label">Selbst rechnen</p><p class="vs-kpi small" style="margin-top:6px">Was kosten ' + (c.status === "AVAILABLE" ? VS.costPct(c.value) : "die laufenden Kosten") + ' über deine Laufzeit?</p><p class="vs-sub" style="margin-top:8px">Die Kostenanalyse rechnet den Effekt über Jahre – nur die laufenden Produktkosten, ohne Depot- und Handelskosten.</p></a></div></section>';
+      '<a class="vs-card app link" href="#/kosten' + (Number.isFinite(c.value) ? "?ter=" + (c.value * 100).toFixed(2) : "") + '"><p class="vs-label">Selbst rechnen</p><p class="vs-kpi small" style="margin-top:6px">Was kosten ' + (Number.isFinite(c.value) ? VS.costPct(c.value) : "die laufenden Kosten") + ' über deine Laufzeit?</p><p class="vs-sub" style="margin-top:8px">Die Kostenanalyse rechnet den Effekt über Jahre – nur die laufenden Produktkosten, ohne Depot- und Handelskosten.</p></a></div></section>';
   };
 
   /* ---------------------------------------------- Daten / Herkunft */
@@ -225,8 +305,12 @@
     });
     el.innerHTML = '<section class="vs-section"><div class="vs-card"><p class="vs-label">Herkunft je Feld</p><div class="vs-table-wrap"><table class="vs-table"><thead><tr><th>Feld</th><th>Wert</th><th>Quelle</th><th>Stand</th><th>Konfidenz</th></tr></thead><tbody>' + rows.join("") + '</tbody></table></div>' +
       ((fu.conflicts || []).length ? '<p class="vs-fine" style="margin-top:8px">Abweichungen zwischen Quellen: ' + esc(fu.conflicts.map(function (c) { return c.field + " (" + c.reason + ")"; }).join(", ")) + '</p>' : "") +
-      '<div class="vs-row" style="margin-top:10px"><span>Kurse</span><span>Tiingo · Stand ' + F.date(d.metrics && d.metrics.asOf) + '</span></div>' +
-      '<div class="vs-row"><span>Holdings</span><span>' + (d.holdings && d.holdings.status === "AVAILABLE" ? "SEC Form N-PORT · Bestand " + F.date(d.holdings.asOf) : "nicht verfügbar") + '</span></div>' +
+      '<p class="vs-label" style="margin-top:14px">Anbieter je Datenart</p>' +
+      '<div class="vs-row"><span>Kurse (Price Provider)</span><span>' + (d.metrics ? "Tiingo · Stand " + F.date(d.metrics.asOf) : '<span class="vs-fine">keine Kursreihe</span>') + '</span></div>' +
+      '<div class="vs-row"><span>Holdings (Holdings Provider)</span><span>' + (d.holdings && d.holdings.status === "AVAILABLE" ? "SEC Form N-PORT · Bestand " + F.date(d.holdings.asOf) + (d.holdings.proxy ? " · Referenzbestand von " + esc(d.holdings.proxy.symbol) + " (gleicher Index)" : "") : '<span class="vs-fine">nicht verfügbar' + (d.holdings && d.holdings.reason ? " – " + esc(d.holdings.reason) : "") + '</span>') + '</span></div>' +
+      '<div class="vs-row"><span>Kosten (Fundamentals Provider)</span><span>' + (d.costs && d.costs.status === "AVAILABLE" ? "SEC Prospekt-Daten (Risk/Return) · Prospekt " + F.date((fu.netExpenseRatio || fu.expenseRatio || fu.managementFee || {}).asOf) : '<span class="vs-fine">nicht verfügbar</span>') + '</span></div>' +
+      '<div class="vs-row"><span>Register (Register Provider)</span><span>' + (fu.domicile && fu.domicile.source === "SEC_NPORT" ? "SEC (US-Investmentgesellschaft, kein UCITS)" : '<span class="vs-fine">kein Registereintrag</span>') + '</span></div>' +
+      '<div class="vs-row"><span>Fehlende Felder</span><span class="vs-fine" style="text-align:right">' + esc(((d.provenance || {}).missingFields || []).join(", ") || "–") + '</span></div>' +
       '<div class="vs-row"><span>Fondsdaten des Emittenten</span><span class="vs-fine">nicht angebunden (Nutzungsbedingungen erlauben keinen automatisierten Abruf)</span></div>' +
       '<div class="vs-row"><span>ISIN · WKN</span><span class="vs-fine">für US-Listings nicht verfügbar</span></div></div></section>' +
       '<section class="vs-section">' + (qualityHtml || "") + '</section>';
