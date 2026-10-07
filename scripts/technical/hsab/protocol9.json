@@ -35,10 +35,14 @@
    "requires": "PREREGISTERED",
    "sample": {
     "size": 1200,
-    "offset": 1200
+    "offset": 1200,
+    "disjointFrom": "1200:457ce200ffb2be48ff178db01313217317f1ad2d493dca766d51e0e2adb781d0",
+    "detectionWindow": [
+     "2017-01-01",
+     "2026-09-30"
+    ]
    },
-   "usage": "Track-A-Bestaetigung: Tagesengine, Titel disjunkt zu Mission VIII (Hash-Raenge 1200..2399), Kalenderzeitraum aus Wochenstudien bekannt -> CONDITIONAL HOLDOUT",
-   "detectionWindow": "Stage 1: --from 2017-01-01 --to 2026-09-30 (wie Mission VIII D_HOLDOUT)"
+   "usage": "Track-A-Bestaetigung: Tagesengine, Titel disjunkt zu Mission VIII (Hash-Raenge 1200..2399), Kalenderzeitraum aus Wochenstudien bekannt -> CONDITIONAL HOLDOUT"
   }
  },
  "trackB": {

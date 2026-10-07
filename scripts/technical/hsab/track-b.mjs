@@ -91,14 +91,19 @@ export const SIGNALS = {
   VU_BULL_AND_TREND_MOM: (u) => u.st && u.st.pdir === 1 && u.trend === 1 && u.momQ >= 0.8
 };
 /** Nur mit --grid-records (exakter Zustand am Quartalsende + interne Elliott-Kandidaten, Mission-VI-Forensik-Haken).
-    „Fruehe Aufwaerts-Motivwelle“: bester interner IMPULSE-Kandidat aufwaerts, unvollstaendig, Wellen 1–2 oder 1–3 vorhanden
-    (Welle 3 steht bevor bzw. laeuft), letzte Wellenmarke hoechstens 4 Wochen alt. Definition vor jeder Auswertung festgelegt. */
+    „Fruehe Aufwaerts-Motivwelle“ (earlyUp): bester interner IMPULSE-Kandidat aufwaerts, unvollstaendig, mit 2 markierten
+    Wellen (Welle 2 abgeschlossen, Welle 3 stuende bevor) ODER 3 markierten Wellen (Welle 3 bereits markiert und laufend),
+    letzte Wellenmarke hoechstens 4 Wochen alt. Offenlegung (Red Team M3): festgelegt NACH Sichtung der PLTR-Fallstudie und
+    vor jeder Universumsauswertung; deshalb zusaetzlich die breiteste Lesart EW_INT_UP_ANY_OPEN. Elliott ist explorativ. */
 export const GRID_SIGNALS = {
   VU_BULL_EXACT: (u) => u.gx && u.gx.pdir === 1,
   EW_DISPLAYED_MOTIVE_UP: (u) => u.gx && u.gx.ewm === 1 && !u.gx.ewab && u.gx.ewd > 0,
   EW_INT_UP_EARLY: (u) => u.gx && u.gx.fx && earlyUp(u.gx.fx.IMPULSE),
   EW_INT_UP_EARLY_TOP5: (u) => u.gx && u.gx.fx && earlyUp(u.gx.fx.IMPULSE) && u.gx.fx.IMPULSE.pos <= 4,
   EW_INT_LD_UP_EARLY: (u) => u.gx && u.gx.fx && earlyUp(u.gx.fx.LEADING_DIAGONAL),
+  /* Robustheit (vor der Wave-3-Auswertung festgelegt, Red Team M3): breiteste Lesart — irgendein unvollstaendiger
+     Aufwaerts-IMPULSE als bester interner Kandidat, ohne Wellenzahl- und Altersbedingung. */
+  EW_INT_UP_ANY_OPEN: (u) => u.gx && u.gx.fx && !!u.gx.fx.IMPULSE && u.gx.fx.IMPULSE.dir === 1 && !u.gx.fx.IMPULSE.complete,
   EW_INT_UP_EARLY_AND_TREND_MOM: (u) => GRID_SIGNALS.EW_INT_UP_EARLY(u) && u.trend === 1 && u.momQ >= 0.8,
   EW_INT_UP_EARLY_AND_RS: (u) => GRID_SIGNALS.EW_INT_UP_EARLY(u) && u.rsQ >= 0.8
 };
@@ -106,7 +111,7 @@ export const GRID_SIGNALS = {
 function quarterOf(d) { return d.slice(0, 4) + "Q" + (Math.floor((+d.slice(5, 7) - 1) / 3) + 1); }
 
 /** Einheiten (Titel × Quartal) mit Merkmalen bis t und Zukunft ab t. */
-function buildUnits(panel, states, o) {
+export function buildUnits(panel, states, o) {
   const units = [];
   for (const e of panel.list) {
     if (o.only && !o.only.has(e.symbol)) continue;
@@ -136,8 +141,10 @@ function buildUnits(panel, states, o) {
         const last = Math.min(e.length - 1, t + H), complete = t + H <= e.length - 1;
         /* Ueberlebende: Horizont muss beobachtbar sein. Delistete: Reihe endet = Delisting → Endwert = letzter Schluss (offengelegt). */
         if (!complete && !u.delisted) { u.f[hn] = null; continue; }
-        if (anomalous(t - 52, last)) { u.f[hn] = null; u.anomaly = (u.anomaly || 0) + 1; continue; }
-        if (o.minPrice && c < o.minPrice) { u.f[hn] = null; continue; }
+        /* Red Team H3: Standard prueft nur die Vergangenheit [t-52, t] (kausal). Ein Ausschluss wegen Spruengen NACH t
+           waere Selektion auf das Ergebnis (entfernte gerade die 5×/10×-Faelle). Die alte Variante bleibt als Sensitivitaet. */
+        const gateEnd = o.gate === "full" ? last : t;
+        if (o.gate !== "none" && anomalous(t - 52, gateEnd)) { u.f[hn] = null; u.anomaly = (u.anomaly || 0) + 1; continue; }
         let mxm = 1, mae = 0; const tk = {}, maeK = {}, invK = {};
         const inv = st && st.pdir === 1 && isNum(st.pinv) ? st.pinv : null;
         let invHit = -1;
@@ -148,7 +155,7 @@ function buildUnits(panel, states, o) {
           if (m > mxm) mxm = m;
           for (const K of MULTS) if (tk[K] === undefined && m >= K) { tk[K] = j - t; maeK[K] = r4(mae); invK[K] = invHit >= 0 ? 1 : 0; }
         }
-        u.f[hn] = { maxM: r4(mxm), endM: r4(e.close[last] / c), mae: r4(mae), tk, maeK, invK, delistedBefore: u.delisted && !complete ? 1 : 0, invBeforeEnd: invHit >= 0 ? 1 : 0 };
+        u.f[hn] = { maxM: r4(mxm), endM: r4(e.close[last] / c), mae: r4(mae), tk, maeK, invK, delistedBefore: u.delisted && !complete ? 1 : 0, invBeforeEnd: invHit >= 0 ? 1 : 0, futJump: anomalous(t + 1, last) ? 1 : 0 };
       }
       units.push(u);
     }
@@ -163,9 +170,12 @@ function buildUnits(panel, states, o) {
   return units;
 }
 
-const BLOCK = "YEAR";
-function boot(rows, stats, label, nullValue) {
-  return VS.twoWayBoot(rows, (x) => x.s, (x) => VS.timeBlockOf(x.d, BLOCK), (x) => x.v, stats, { B: 500, seed: VS.seedOf(label), nullValue });
+/* Red Team M1: Zeitbloecke mindestens so lang wie der Horizont (6M/12M: 1 Jahr, 24M: 2 Jahre, 36M: 3 Jahre),
+   sonst ueberlappen die Ergebnisfenster benachbarter Bloecke und die Zeit-Unsicherheit wird unterschaetzt. */
+const blockYears = (hn) => Math.max(1, Math.ceil(HORIZONS[hn] / 52));
+function boot(rows, stats, label, hn, nullValue) {
+  const k = blockYears(hn);
+  return VS.twoWayBoot(rows, (x) => x.s, (x) => "Y" + Math.floor(+x.d.slice(0, 4) / k), (x) => x.v, stats, { B: 500, seed: VS.seedOf(label), nullValue });
 }
 
 /** Kennzahlen eines Signals bei Horizont hn. */
@@ -175,14 +185,23 @@ function evaluateSignal(units, name, fn, hn, strat) {
   const n = all.length, nf = flagged.length;
   const out = { signal: name, horizon: hn, units: n, flagged: nf, coverage: r4(nf / Math.max(1, n)), symbols: new Set(flagged.map((u) => u.s)).size };
   if (!nf) return out;
-  /* Praezision, Recall, Lift gegen geschichtete Erwartung (ohne die Einheit selbst) */
+  /* Red Team M2: Erwartung aus den NICHT markierten Einheiten derselben Schicht (sonst zieht ein Signal, das seine
+     Schichten dominiert, den Vergleich gegen 1). Datumsbasis bleibt das ganze uebrige Quartal (Universum ohne die Einheit). */
+  const Sf = new Map();
+  for (const u of flagged) { const f = u.f[hn]; let S = Sf.get(u.stratum); if (!S) Sf.set(u.stratum, (S = { n: 0, k: Object.fromEntries(MULTS.map((K) => [K, 0])), sumRet: 0, sumCap: 0 }));
+    S.n++; S.sumRet += f.endM - 1; S.sumCap += Math.min(f.endM - 1, 4); for (const K of MULTS) if (f.maxM >= K) S.k[K]++; }
+  const rest = (u) => { const S = strat.get(u.stratum + "|" + hn), F = Sf.get(u.stratum); const m = S.n - F.n; return m > 0 ? { n: m, k: Object.fromEntries(MULTS.map((K) => [K, S.k[K] - F.k[K]])), sumRet: S.sumRet - F.sumRet, sumCap: S.sumCap - F.sumCap } : null; };
+  const noComp = flagged.filter((u) => !rest(u)).length;
+  out.matching = { comparator: "NON_FLAGGED_SAME_STRATUM", flaggedWithoutComparator: noComp, meanFlaggedShareOfStratum: r4(VS.mean(flagged.map((u) => Sf.get(u.stratum).n / strat.get(u.stratum + "|" + hn).n))) };
+  /* Praezision, Recall, Lift gegen geschichtete Erwartung */
   out.mult = {};
   for (const K of MULTS) {
     const hit = (u) => (u.f[hn].maxM >= K ? 1 : 0);
     const exp = (u, key) => { const S = strat.get(key + "|" + hn); if (!S || S.n < 2) return null; return (S.k[K] - hit(u)) / (S.n - 1); };
-    const rows = flagged.map((u) => { const ex = exp(u, u.stratum), eq = exp(u, "Q|" + u.q); return ex === null || eq === null ? null : { s: u.s, d: u.d, v: [hit(u), 1, ex, 1, eq] }; }).filter(Boolean);
+    const expS = (u) => { const R = rest(u); return R ? R.k[K] / R.n : null; };
+    const rows = flagged.map((u) => { const ex = expS(u), eq = exp(u, "Q|" + u.q); return ex === null || eq === null ? null : { s: u.s, d: u.d, v: [hit(u), 1, ex, 1, eq] }; }).filter(Boolean);
     const b = boot(rows, { prec: (v) => v[0] / v[1], expd: (v) => v[2] / v[3], ratio: (v) => (v[2] > 0 ? v[0] / v[2] : null), diff: (v) => v[0] / v[1] - v[2] / v[3],
-                           expQ: (v) => v[4] / v[3], ratioQ: (v) => (v[4] > 0 ? v[0] / v[4] : null) }, name + "|" + hn + "|" + K);
+                           expQ: (v) => v[4] / v[3], ratioQ: (v) => (v[4] > 0 ? v[0] / v[4] : null) }, name + "|" + hn + "|" + K, hn);
     const winners = all.filter((u) => hit(u)).length, caught = flagged.filter((u) => hit(u)).length;
     const tk = flagged.filter((u) => u.f[hn].tk[K] !== undefined);
     out.mult[K + "x"] = { precision: b.stats.prec.est, precisionCi: [b.stats.prec.lo, b.stats.prec.hi], dateOnlyExpected: b.stats.expQ.est, liftRatioDateOnly: b.stats.ratioQ.est, liftRatioDateOnlyCi: [b.stats.ratioQ.lo, b.stats.ratioQ.hi], matchedExpected: b.stats.expd.est, liftRatio: b.stats.ratio.est, liftRatioCi: [b.stats.ratio.lo, b.stats.ratio.hi],
@@ -198,8 +217,8 @@ function evaluateSignal(units, name, fn, hn, strat) {
   const meanWithout = (k) => r4(mean(ret.slice(0, Math.max(0, ret.length - k))));
   const expRet = (u, key) => { const S = strat.get(key + "|" + hn); return S && S.n > 1 ? (S.sumRet - (u.f[hn].endM - 1)) / (S.n - 1) : null; };
   const expCap = (u, key) => { const S = strat.get(key + "|" + hn); return S && S.n > 1 ? (S.sumCap - Math.min(u.f[hn].endM - 1, 4)) / (S.n - 1) : null; };
-  const rrows = flagged.map((u) => { const ex = expRet(u, u.stratum), eq = expRet(u, "Q|" + u.q), ec = expCap(u, u.stratum); return ex === null || eq === null ? null : { s: u.s, d: u.d, v: [u.f[hn].endM - 1, 1, ex, 1, Math.min(u.f[hn].endM - 1, 4), ec, eq] }; }).filter(Boolean);
-  const rb = boot(rrows, { mean: (v) => v[0] / v[1], expd: (v) => v[2] / v[3], excess: (v) => v[0] / v[1] - v[2] / v[3], excessCapped: (v) => v[4] / v[1] - v[5] / v[3], excessDateOnly: (v) => v[0] / v[1] - v[6] / v[3] }, name + "|" + hn + "|ret");
+  const rrows = flagged.map((u) => { const R = rest(u), ex = R ? R.sumRet / R.n : null, eq = expRet(u, "Q|" + u.q), ec = R ? R.sumCap / R.n : null; return ex === null || eq === null ? null : { s: u.s, d: u.d, v: [u.f[hn].endM - 1, 1, ex, 1, Math.min(u.f[hn].endM - 1, 4), ec, eq] }; }).filter(Boolean);
+  const rb = boot(rrows, { mean: (v) => v[0] / v[1], expd: (v) => v[2] / v[3], excess: (v) => v[0] / v[1] - v[2] / v[3], excessCapped: (v) => v[4] / v[1] - v[5] / v[3], excessDateOnly: (v) => v[0] / v[1] - v[6] / v[3] }, name + "|" + hn + "|ret", hn);
   /* Medianer Ueberschuss (Quantil-Vergleich, robust gegen Fettschwaenze): Median minus Median der Schicht-Erwartung */
   out.returns = { mean: rb.stats.mean.est, meanCi: [rb.stats.mean.lo, rb.stats.mean.hi], matchedMean: rb.stats.expd.est, excessMean: rb.stats.excess.est, excessMeanCi: [rb.stats.excess.lo, rb.stats.excess.hi],
     excessMeanCapped4x: rb.stats.excessCapped.est, excessMeanCapped4xCi: [rb.stats.excessCapped.lo, rb.stats.excessCapped.hi], excessMeanDateOnly: rb.stats.excessDateOnly.est, excessMeanDateOnlyCi: [rb.stats.excessDateOnly.lo, rb.stats.excessDateOnly.hi],
@@ -209,6 +228,7 @@ function evaluateSignal(units, name, fn, hn, strat) {
     skew: r4((() => { const m = mean(ret), s = Math.sqrt(mean(ret.map((x) => (x - m) ** 2))); return s > 0 ? mean(ret.map((x) => ((x - m) / s) ** 3)) : null; })()),
     top1PctShareOfGains: top(0.01), top5PctShareOfGains: top(0.05), meanWithoutTop1: meanWithout(1), meanWithoutTop3: meanWithout(3),
     meanWithoutTop1Pct: meanWithout(Math.floor(ret.length * 0.01)), meanWithoutTop5Pct: meanWithout(Math.floor(ret.length * 0.05)),
+    futureJumpShare: r4(flagged.filter((u) => u.f[hn].futJump).length / nf),
     medianMae: VS.median(flagged.map((u) => u.f[hn].mae)), medianMfe: r4(VS.median(flagged.map((u) => u.f[hn].maxM - 1))), meanMfe: r4(mean(flagged.map((u) => u.f[hn].maxM - 1))),
     delistedShare: r4(flagged.filter((u) => u.f[hn].delistedBefore).length / nf),
     invalidatedShare: r4(flagged.filter((u) => u.f[hn].invBeforeEnd).length / nf) };
@@ -223,7 +243,7 @@ export function trackB(o) {
   if (G) symbols = symbols.filter((x) => G.by.has(x));
   const only = new Set(symbols);
   const panel = loadPanel({ weeklyDir: o.weeklyDir, delisted: o.delisted, only });
-  const units = buildUnits(panel, by, { from: o.from, to: o.to, only, minPrice: o.minPrice || null, grid: G ? G.by : null });
+  const units = buildUnits(panel, by, { from: o.from, to: o.to, only, gate: o.gate || "past", grid: G ? G.by : null });
   const SIG = G ? { ...SIGNALS, ...GRID_SIGNALS } : SIGNALS;
   const W3 = G ? GRID_SIGNALS.EW_INT_UP_EARLY : SIGNALS.EW_EARLY_MOTIVE_INTERNAL;
   /* Schicht-Summen je Horizont */
@@ -256,19 +276,24 @@ export function trackB(o) {
     let episodes = 0;
     for (const a of bySym.values()) for (let k = 0; k < a.length; k++) {
       /* Episode = erstes Quartal, ab dem der Titel innerhalb 24 Monaten 5× erreicht (Vorquartal nicht) */
-      if (!(a[k].f["24M"].maxM >= 5) || (k > 0 && a[k - 1].f["24M"].maxM >= 5)) continue;
+      /* Red Team LOW: „Vorquartal“ = unmittelbar vorangehendes Kalenderquartal (nicht nur das vorige Array-Element) */
+      const qi = (u) => +u.q.slice(0, 4) * 4 + +u.q.slice(5) - 1;
+      if (!(a[k].f["24M"].maxM >= 5) || (k > 0 && qi(a[k - 1]) === qi(a[k]) - 1 && a[k - 1].f["24M"].maxM >= 5)) continue;
       episodes++;
-      for (let j = Math.max(0, k - 4); j <= k; j++) if (fn(a[j])) { done.push({ quartersBefore: k - j, remainingMultipleFromSignal: a[j].f["24M"].maxM }); break; }
+      for (let j = Math.max(0, k - 4); j <= k; j++) if (qi(a[k]) - qi(a[j]) <= 4 && fn(a[j])) { done.push({ quartersBefore: qi(a[k]) - qi(a[j]), remainingMultipleFromSignal: a[j].f["24M"].maxM }); break; }
     }
     early[name] = { episodes5x24M: episodes, flaggedBefore5x: done.length, shareFlagged: r4(done.length / Math.max(1, episodes)), medianQuartersEarly: VS.median(done.map((x) => x.quartersBefore)), medianRemainingMaxMultiple24M: VS.median(done.map((x) => x.remainingMultipleFromSignal)) };
   }
   return { schemaVersion: "hsab-trackb-result-1.0.0", version: TRACKB_VERSION, generatedAt: new Date().toISOString(), records: { sealHash: man.sealHash, engine: man.engine.scenario, elliott: man.engine.elliott }, gridRecords: G ? { sealHash: G.man.sealHash, symbols: G.by.size } : null, wave3Signal: G ? "EW_INT_UP_EARLY" : "EW_EARLY_MOTIVE_INTERNAL",
-           opts: { bucket: o.bucket || null, from: o.from || null, to: o.to || null, delisted: !!o.delisted }, units: units.length, symbols: new Set(units.map((u) => u.s)).size,
+           opts: { bucket: o.bucket || null, from: o.from || null, to: o.to || null, delisted: !!o.delisted, anomalyGate: o.gate || "past" }, units: units.length, symbols: new Set(units.map((u) => u.s)).size,
            delistedUnits: units.filter((u) => u.delisted).length, anomalyExcludedUnitHorizons: units.reduce((a, u) => a + (u.anomaly || 0), 0), horizons: HORIZONS, multiples: MULTS, results, wave3WithinTrendMom: inc, earlyDetection: early };
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  const o = { records: arg("records"), weeklyDir: arg("weekly-dir", null), delisted: arg("delisted", null), bucket: arg("bucket", null), from: arg("from", null), to: arg("to", null), minPrice: arg("min-price", null) ? +arg("min-price") : null, gridRecords: arg("grid-records", null) };
+  const o = { records: arg("records"), weeklyDir: arg("weekly-dir", null), delisted: arg("delisted", null), bucket: arg("bucket", null), from: arg("from", null), to: arg("to", null), gate: arg("gate", "past"), gridRecords: arg("grid-records", null) };
+  /* Red Team H4: Mindestkurs auf split-bereinigten Schlusskursen ist Look-ahead (ein bereinigter Kurs < 1 $ verraet spaetere Splits). */
+  if (process.argv.includes("--min-price")) throw new Error("--min-price verworfen (Look-ahead auf split-bereinigten Kursen, Red Team H4)");
+  if (!["past", "full", "none"].includes(o.gate)) throw new Error("--gate past|full|none");
   const t0 = Date.now(); const res = trackB(o); res.seconds = Math.round((Date.now() - t0) / 1000);
   writeFileSync(arg("out"), JSON.stringify(res, null, 1));
   console.log(`[track-b] ${res.units} Einheiten, ${res.symbols} Titel, ${res.seconds} s`);

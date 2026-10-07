@@ -238,9 +238,13 @@ export async function evaluate(o) {
   const { man, recs: all } = readRecords(o.records);
   /* Mission IX: eine Phase mit festgelegter Titelstichprobe (z. B. Raenge 1200..2399, disjunkt zu Mission VIII) nur mit genau dieser Stichprobe. */
   if (phase.sample && (man.sampleSymbols !== phase.sample.size || (man.sampleOffset || 0) !== phase.sample.offset)) throw new Error("Phase " + o.phase + " verlangt die Stichprobe " + JSON.stringify(phase.sample) + ", Records: " + JSON.stringify([man.sampleSymbols, man.sampleOffset]));
+  /* Red Team M6: auch Disjunktheitspruefung, Erkennungsfenster und saubere Engine-Dateien aus dem Manifest pruefen */
+  if (phase.sample && phase.sample.disjointFrom && man.disjointFrom !== phase.sample.disjointFrom) throw new Error("Phase " + o.phase + ": Stage 1 ohne die vorgeschriebene Disjunktheitspruefung");
+  if (phase.sample && phase.sample.detectionWindow && (man.opts.from !== phase.sample.detectionWindow[0] || man.opts.to !== phase.sample.detectionWindow[1])) throw new Error("Phase " + o.phase + ": Erkennungsfenster weicht ab");
+  if (phase.requires === "PREREGISTERED" && Array.isArray(man.dirtyEngineFiles) && man.dirtyEngineFiles.length) throw new Error("HOLDOUT versiegelt: Stage 1 mit veraenderten Dateien: " + man.dirtyEngineFiles.join(", "));
   /* Review H3: Holdout nur mit den eingefrorenen Engine-Dateien (Hashes aus der Praeregistrierung). */
   if (phase.requires === "PREREGISTERED") {
-    const fz = protocol.freeze && protocol.freeze.engineFiles; if (!fz) throw new Error("HOLDOUT versiegelt: protocol.freeze.engineFiles fehlt");
+    const fz = protocol.freeze && protocol.freeze.engineFiles; if (!fz || !Object.keys(fz).length) throw new Error("HOLDOUT versiegelt: protocol.freeze.engineFiles fehlt");
     const diff = Object.keys(fz).filter((f) => man.engine.files[f] !== fz[f]); if (diff.length) throw new Error("HOLDOUT versiegelt: Engine-Dateien weichen vom Freeze ab: " + diff.join(", "));
   }
   const cohorts = new Set(phase.cohorts), inBucket = (s) => !phase.bucket || symHash(s) % phase.bucket[1] === phase.bucket[0];

@@ -12,8 +12,12 @@ name: Chartbild-Historie (Mission IX, Genauigkeit x Geometrie / asymmetrische Ge
 # Ausloeser: Push auf claude/** mit einer Marke im BETREFF der Commit-Nachricht:
 #   [hsab9-ci-dev]    Track B delistete Kohorte (verbrauchte Daten, beschreibend) + Track A NUR Stage 1
 #                     (Siegel, Zaehler, Disjunktheitspruefung; keine Outcomes)
-#   [hsab9-confirm]   einmalige Track-A-Bestaetigung; verlangt protocol9.status PREREGISTERED und den
-#                     SHA-256 der Mission-IX-Praeregistrierung; bricht ab, wenn bereits ein Ergebnis existiert
+#   [hsab9-confirm] freeze=<sha>   einmalige Track-A-Bestaetigung (Marke am ANFANG des Betreffs). Verlangt:
+#                     - <sha> = Freeze-Commit, Vorfahr von HEAD, dort protocol9.status PREREGISTERED und passender
+#                       Praeregistrierungs-Hash; zwischen <sha> und HEAD keine Aenderung an Code, Protokoll, Workflow,
+#                       Praeregistrierung oder Entscheidungsdateien (Red Team H2)
+#                     - auf KEINEM Branch existiert schon eine Oeffnungsmarke oder ein Ergebnis (Red Team H1);
+#                       die Oeffnungsmarke wird VOR Stage 2 committet und gepusht — ein abgebrochener Lauf ist verbraucht
 # Ohne Marke laeuft nichts.
 
 on:
@@ -24,8 +28,9 @@ on:
 permissions:
   contents: write
 
+# global (nicht je Branch): keine zwei Mission-IX-Laeufe gleichzeitig, auch nicht von verschiedenen Branches (Red Team H1)
 concurrency:
-  group: technical-intelligence-mission9-${{ github.ref_name }}
+  group: technical-intelligence-mission9
   cancel-in-progress: false
 
 jobs:
@@ -40,8 +45,8 @@ jobs:
         run: |
           subject=$(printf '%s\n' "$COMMIT_MESSAGE" | head -n 1)
           case "$subject" in
-            *"[hsab9-confirm]"*) echo "mode=confirm" >> "$GITHUB_OUTPUT" ;;
-            *"[hsab9-ci-dev]"*) echo "mode=dev" >> "$GITHUB_OUTPUT" ;;
+            "[hsab9-confirm]"*) echo "mode=confirm" >> "$GITHUB_OUTPUT" ;;
+            "[hsab9-ci-dev]"*) echo "mode=dev" >> "$GITHUB_OUTPUT" ;;
             *) echo "mode=none" >> "$GITHUB_OUTPUT" ;;
           esac
 
@@ -97,7 +102,7 @@ jobs:
           set -euo pipefail
           mkdir -p "$OUT"
           node --max-old-space-size=7168 scripts/technical/hsab/track-b.mjs --records "$RUNNER_TEMP/dl-replay" --delisted "$RUNNER_TEMP/delisted-weekly.json" --out "$OUT/tb-delisted.json"
-          node --max-old-space-size=7168 scripts/technical/hsab/track-b.mjs --records "$RUNNER_TEMP/dl-replay" --delisted "$RUNNER_TEMP/delisted-weekly.json" --min-price 1 --out "$OUT/tb-delisted-p1.json"
+          node --max-old-space-size=7168 scripts/technical/hsab/track-b.mjs --records "$RUNNER_TEMP/dl-replay" --delisted "$RUNNER_TEMP/delisted-weekly.json" --gate full --out "$OUT/tb-delisted-gatefull.json"
           node scripts/technical/hsab/publish-ci.mjs --replay "$RUNNER_TEMP/dl-replay" --label "m9-delisted" --out "$OUT"
       - name: Hygiene
         run: |
@@ -126,18 +131,31 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
-          fetch-depth: 2
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Bestaetigung nur einmal, Praeregistrierung vor dem Oeffnungs-Commit
+      - name: Bestaetigung nur einmal, nur gegen den eingefrorenen Stand
         if: needs.gate.outputs.mode == 'confirm'
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
           set -euo pipefail
-          if [ -f "$OUT/a9-confirm-eval.json" ]; then echo "Track-A-Bestaetigung wurde bereits ausgewertet - kein zweiter Lauf."; exit 1; fi
-          git diff --quiet HEAD~1 HEAD -- scripts/technical/hsab quant/engines scripts/technical/lib .github/workflows/technical-intelligence-mission9.yml docs/technical-intelligence/MISSION9_PREREGISTRATION.md \
-            || { echo "Oeffnungs-Commit aendert Code/Protokoll/Praeregistrierung - verweigert."; exit 1; }
-          git cat-file -e HEAD~1:docs/technical-intelligence/MISSION9_PREREGISTRATION.md
+          # Der Lauf prueft genau den ausloesenden Commit (kein spaeterer Push dazwischen)
+          [ "$(git rev-parse HEAD)" = "$GITHUB_SHA" ] || { echo "Branch hat sich seit dem Oeffnungs-Commit bewegt - verweigert."; exit 1; }
+          git fetch --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
+          # einmal: weder Oeffnungsmarke noch Ergebnis auf irgendeinem Branch
+          if [ -n "$(git log --all --format=%H -- "$OUT/a9-confirm-opened.json" "$OUT/a9-confirm-eval.json")" ]; then echo "Track-A-Bestaetigung wurde bereits geoeffnet - kein zweiter Lauf."; exit 1; fi
+          freeze=$(printf '%s\n' "$COMMIT_MESSAGE" | head -n 1 | sed -n 's/.*freeze=\([0-9a-f]\{40\}\).*/\1/p')
+          [ -n "$freeze" ] || { echo "Betreff muss freeze=<40-stelliger Commit> tragen."; exit 1; }
+          git merge-base --is-ancestor "$freeze" HEAD || { echo "Freeze-Commit ist kein Vorfahr."; exit 1; }
+          git diff --quiet "$freeze" HEAD -- scripts/technical quant/engines .github/workflows/technical-intelligence-mission9.yml docs/technical-intelligence/MISSION9_PREREGISTRATION.md \
+            || { echo "Seit dem Freeze geaendert:"; git diff --stat "$freeze" HEAD -- scripts/technical quant/engines .github/workflows docs/technical-intelligence/MISSION9_PREREGISTRATION.md; exit 1; }
+          git show "$freeze:scripts/technical/hsab/protocol9.json" > "$RUNNER_TEMP/p9.json"
+          git show "$freeze:docs/technical-intelligence/MISSION9_PREREGISTRATION.md" | sha256sum | cut -d' ' -f1 > "$RUNNER_TEMP/pre.sha"
+          node -e 'const p=require(process.argv[1]),s=require("fs").readFileSync(process.argv[2],"utf8").trim(); if(p.status!=="PREREGISTERED"||p.preregistration.sha256!==s||!p.freeze||!Object.keys(p.freeze.engineFiles||{}).length){console.error("Freeze-Commit nicht praeregistriert");process.exit(1)}' "$RUNNER_TEMP/p9.json" "$RUNNER_TEMP/pre.sha"
+          echo "FREEZE=$freeze" >> "$GITHUB_ENV"
+          echo "Freeze $freeze geprueft: keine Aenderung an Code/Protokoll/Workflow/Praeregistrierung bis $GITHUB_SHA"
       - name: Read-only recovery preflight
         env:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -164,6 +182,21 @@ jobs:
             --from 2017-01-01 --to 2026-09-30 --grid month --workers "$(nproc)" --out "$RUNNER_TEMP/a9"
           mkdir -p "$OUT"
           node scripts/technical/hsab/publish-ci.mjs --replay "$RUNNER_TEMP/a9" --label "a9-confirm-$MODE" --out "$OUT"
+      - name: Same sample as the dev Stage 1 (confirm only)
+        if: needs.gate.outputs.mode == 'confirm'
+        run: |
+          set -euo pipefail
+          node -e 'const a=require(process.argv[1]),b=require(process.argv[2]); if(a.symbols.sha256!==b.symbols.sha256){console.error("Stichprobe weicht vom Dev-Stage-1 ab");process.exit(1)}' "$PWD/$OUT/a9-confirm-confirm-stage1.json" "$PWD/$OUT/a9-confirm-dev-stage1.json"
+      - name: Opening marker, pushed BEFORE Stage 2 (an aborted opening stays consumed)
+        if: needs.gate.outputs.mode == 'confirm'
+        run: |
+          set -euo pipefail
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          printf '{"opened":"%s","commit":"%s","freeze":"%s","run":"%s"}\n' "$(date -u +%FT%TZ)" "$GITHUB_SHA" "$FREEZE" "$GITHUB_RUN_ID" > "$OUT/a9-confirm-opened.json"
+          git add "$OUT/a9-confirm-opened.json" "$OUT/a9-confirm-confirm-stage1.json"
+          git commit -m "Mission IX CI: Track-A-Bestaetigung geoeffnet (Marke vor Stage 2)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
       - name: Stage 2 + Track A (confirm only; results are not printed to the log)
         if: needs.gate.outputs.mode == 'confirm'
         run: |

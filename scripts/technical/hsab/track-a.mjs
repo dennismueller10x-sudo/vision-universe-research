@@ -18,7 +18,7 @@ import { ROOT } from "../lib/ti-data.mjs";
 
 const require = createRequire(import.meta.url);
 const VS = require(join(ROOT, "scripts/technical/lib/validation-stats.cjs"));
-export const TRACKA_VERSION = "hsab-tracka-1.1.0";
+export const TRACKA_VERSION = "hsab-tracka-1.2.0";
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 const r4 = (v) => (isNum(v) ? Math.round(v * 1e4) / 1e4 : null);
 function arg(k, d) { const i = process.argv.indexOf("--" + k); return i >= 0 ? process.argv[i + 1] : d; }
@@ -31,18 +31,21 @@ const bucketOf = (B, x) => { for (const [n, lo, hi] of B) if (x >= lo && x < hi)
 const BLOCK = "HALF";
 function stat(rows, label) {
   if (!rows.length) return { n: 0 };
-  const b = VS.twoWayBoot(rows, (x) => x.s, (x) => VS.timeBlockOf(x.d, BLOCK), (x) => [x.y, 1, x.cH, x.cN, x.R, x.cR, x.oppY ?? 0, x.oppY === null ? 0 : 1, x.oppR ?? 0],
+  const b = VS.twoWayBoot(rows, (x) => x.s, (x) => VS.timeBlockOf(x.d, BLOCK), (x) => [x.y, 1, x.cH, x.cN, x.R, x.cR, x.oppY ?? 0, x.oppY === null ? 0 : 1, x.oppR ?? 0, x.cE ? x.cE[0] : 0, x.cE ? x.cE[1] : 0],
     { hit: (v) => v[0] / v[1], ctrl: (v) => v[2] / v[3], lift: (v) => v[0] / v[1] - v[2] / v[3], R: (v) => v[4] / v[1], excessR: (v) => (v[4] - v[5]) / v[1],
-      oppDiff: (v) => (v[7] ? v[0] / v[1] - v[6] / v[7] : null) }, { B: 500, seed: VS.seedOf(label) });
+      oppDiff: (v) => (v[7] ? v[0] / v[1] - v[6] / v[7] : null), liftE: (v) => (v[10] ? v[0] / v[1] - v[9] / v[10] : null) }, { B: 500, seed: VS.seedOf(label) });
   const S = b.stats, pr = (x) => [x.lo, x.hi];
   return { n: rows.length, symbols: b.symbols, hit: S.hit.est, hitCi: pr(S.hit), control: S.ctrl.est, lift: S.lift.est, liftCi: pr(S.lift), liftP: S.lift.p,
-           expectancyR: S.R.est, expectancyRCi: pr(S.R), excessR: S.excessR.est, excessRCi: pr(S.excessR), oppositeDiff: S.oppDiff.est, oppositeDiffCi: pr(S.oppDiff) };
+           liftE: S.liftE.est, liftECi: pr(S.liftE), liftEP: S.liftE.p, controlE: r4(rows.reduce((a, x) => a + (x.cE ? x.cE[0] : 0), 0) / Math.max(1, rows.reduce((a, x) => a + (x.cE ? x.cE[1] : 0), 0))), expectancyR: S.R.est, expectancyRCi: pr(S.R), excessR: S.excessR.est, excessRCi: pr(S.excessR), oppositeDiff: S.oppDiff.est, oppositeDiffCi: pr(S.oppDiff) };
 }
 function payoff(rows) {
   const w = rows.filter((x) => x.y === 1).map((x) => x.R), l = rows.filter((x) => x.y !== 1).map((x) => x.R);
   const mean = (a) => (a.length ? a.reduce((p, q) => p + q, 0) / a.length : null);
   const ex = rows.filter((x) => x.exD && x.exD[0] > 0 && ["TARGET1", "INVALIDATED", "TIMEOUT"].includes(x.ex) && isNum(x.exR));
   const qs = (a, p) => r4(VS.quantile(a, p));
+  /* Naive geometrische Referenz b/(a+b) (Gambler's Ruin ohne Drift, symmetrische Beruehrung). Red Team M5: KEIN gueltiger
+     Random-Walk-Massstab fuer diese Outcome-Regel (Ziel per Beruehrung, Invalidation per Schluss, Zeitablauf = Fehlschlag);
+     nur Orientierung. Die Entscheidung stuetzt sich auf die Kontrollen D und E. */
   return { randomWalkExpectation: r4(mean(rows.map((x) => x.kI / (x.kI + x.kT)))), medianTargetAtr: r4(VS.median(rows.map((x) => x.kT))), medianInvalidationAtr: r4(VS.median(rows.map((x) => x.kI))),
     avgWinnerR: r4(mean(w)), medianWinnerR: r4(VS.median(w)), avgLoserR: r4(mean(l)), medianLoserR: r4(VS.median(l)), payoffRatio: w.length && l.length && mean(l) < 0 ? r4(mean(w) / Math.abs(mean(l))) : null,
     rP05: qs(rows.map((x) => x.R), 0.05), rP95: qs(rows.map((x) => x.R), 0.95), medianMfeAtr: r4(VS.median(rows.map((x) => x.mfe))), medianMaeAtr: r4(VS.median(rows.map((x) => x.mae))),
@@ -54,12 +57,14 @@ const quadrant = (s, p) => (s.n ? (s.hit >= 0.6 ? "HIGH_ACCURACY" : "LOW_ACCURAC
 
 export function trackA(events, evalJson) {
   const analysisPoints = evalJson ? evalJson.tables.primary.analysisPoints : null;
-  const full = events.filter((x) => x.v === "FULL"), trend = events.filter((x) => x.v === "TREND_ONLY");
+  /* kI <= 0 (Invalidation am Anzeigeschluss) hat keine Geometrie-Klasse (Red Team LOW) */
+  const geo = (x) => x.kI > 0 && x.kT >= 0;
+  const full = events.filter((x) => x.v === "FULL" && geo(x)), trend = events.filter((x) => x.v === "TREND_ONLY" && geo(x));
   const row = (name, sel, label) => { const a = full.filter(sel), b = trend.filter(sel); const S = stat(a, "A|" + label + "|" + name), P = payoff(a);
     return { bucket: name, events: a.length, shareOfEvents: r4(a.length / Math.max(1, full.length)), coverageOfPoints: analysisPoints ? r4(a.length / analysisPoints) : null, ...S, ...P,
              quadrant: quadrant(S, P), trendOnly: b.length ? { n: b.length, hit: r4(b.filter((x) => x.y).length / b.length), control: r4(b.reduce((q, x) => q + x.cH, 0) / b.reduce((q, x) => q + x.cN, 0)),
              lift: r4(b.filter((x) => x.y).length / b.length - b.reduce((q, x) => q + x.cH, 0) / b.reduce((q, x) => q + x.cN, 0)) } : null }; };
-  const out = { schemaVersion: "hsab-tracka-result-1.0.0", version: TRACKA_VERSION, phase: evalJson ? evalJson.phase : null, events: full.length, trendOnlyEvents: trend.length, analysisPoints };
+  const out = { schemaVersion: "hsab-tracka-result-1.1.0", version: TRACKA_VERSION, phase: evalJson ? evalJson.phase : null, events: full.length, excludedNoGeometry: events.filter((x) => x.v === "FULL" && !geo(x)).length, trendOnlyEvents: trend.length, analysisPoints };
   out.all = row("ALL", () => true, "all");
   out.byRewardRisk = RR_BUCKETS.map(([n]) => row(n, (x) => bucketOf(RR_BUCKETS, x.kT / x.kI) === n, "rr"));
   out.byTargetAtr = KT_BUCKETS.map(([n]) => row(n, (x) => bucketOf(KT_BUCKETS, x.kT) === n, "kt"));
@@ -82,7 +87,11 @@ export function trackA(events, evalJson) {
    ====================================================================== */
 export const HAC = { minN: 300, minHit: 0.6, minLift: 0.05 };
 export const SELECTIVE_TIERS = ["SYM·CLEAR", "SYM·AGREEMENT_TOP25", "SYM·AGREEMENT_TOP10", "FAV·ALL", "FAV·CLEAR", "FAV·AGREEMENT_TOP25", "FAV·AGREEMENT_TOP10", "RR1.33-2"];
-const meetsHac = (r) => !!r && r.n >= HAC.minN && r.hit >= HAC.minHit && r.lift >= HAC.minLift && isNum(r.liftCi && r.liftCi[0]) && r.liftCi[0] > 0;
+/* HAC: Lift gegen D (gleiches Datum, gleiche ATR-Geometrie) UND gegen E (zusaetzlich einfacher Trend, ATR%-Terzil) — Red Team M5 */
+const meetsHac = (r) => !!r && r.n >= HAC.minN && r.hit >= HAC.minHit && r.lift >= HAC.minLift && isNum(r.liftCi && r.liftCi[0]) && r.liftCi[0] > 0
+  && isNum(r.liftE) && r.liftE >= HAC.minLift && isNum(r.liftECi && r.liftECi[0]) && r.liftECi[0] > 0;
+/* Red Team M4: „kein Edge“ nur, wenn das KI HAC ausschliesst (obere Lift-Grenze < 5 Pp. ODER obere Treffer-Grenze < 60 %) */
+const excludesHac = (r) => !r || r.n < HAC.minN || (isNum(r.liftCi && r.liftCi[1]) && r.liftCi[1] < HAC.minLift) || (isNum(r.hitCi && r.hitCi[1]) && r.hitCi[1] < HAC.minHit);
 const oneSidedP = (r) => (!r || !isNum(r.liftP) ? 1 : r.lift > 0 ? r.liftP / 2 : 1 - r.liftP / 2);
 function holm(rows) {
   const o = rows.map((r, i) => [oneSidedP(r), i]).sort((a, b) => a[0] - b[0]), m = o.length, adj = new Array(m).fill(1); let run = 0;
@@ -94,8 +103,9 @@ export function decideTrackA(res) {
   const symAll = get("SYM·ALL");
   const tiers = SELECTIVE_TIERS.map(get), adj = holm(tiers);
   const tierRows = SELECTIVE_TIERS.map((b, k) => ({ bucket: b, n: tiers[k] ? tiers[k].n : 0, hit: tiers[k] ? tiers[k].hit : null, lift: tiers[k] ? tiers[k].lift : null, liftCi: tiers[k] ? tiers[k].liftCi : null,
-    meetsHac: meetsHac(tiers[k]), pHolm: r4(adj[k]), qualifies: meetsHac(tiers[k]) && adj[k] <= 0.025 }));
-  const HA1 = meetsHac(symAll) ? "ROBUST_HIGH_ACCURACY_EDGE" : tierRows.some((x) => x.qualifies) ? "SELECTIVE_HIGH_ACCURACY_EDGE" : "NO_HIGH_ACCURACY_EDGE";
+    liftE: tiers[k] ? tiers[k].liftE : null, excludesHac: excludesHac(tiers[k]), meetsHac: meetsHac(tiers[k]), pHolm: r4(adj[k]), qualifies: meetsHac(tiers[k]) && adj[k] <= 0.025 }));
+  const HA1 = meetsHac(symAll) ? "ROBUST_HIGH_ACCURACY_EDGE" : tierRows.some((x) => x.qualifies) ? "SELECTIVE_HIGH_ACCURACY_EDGE"
+    : [symAll, ...tiers].every(excludesHac) ? "NO_HIGH_ACCURACY_EDGE" : "INCONCLUSIVE";
   const h2 = [get("ALL·AGREEMENT_TOP10"), get("SYM·AGREEMENT_TOP10")], adj2 = holm(h2);
   const HA2 = h2.map((r, k) => ({ bucket: r && r.bucket, lift: r && r.lift, liftCi: r && r.liftCi, pHolm: r4(adj2[k]), detected: !!r && adj2[k] <= 0.025 && r.liftCi[0] > 0,
     meaningful: !!r && r.lift >= 0.02 && r.liftCi[0] >= 0.005 }));
@@ -106,7 +116,7 @@ export function decideTrackA(res) {
   const ex = (r) => r && { n: r.n, expectancyR: r.expectancyR, expectancyRCi: r.expectancyRCi, excessR: r.excessR, excessRCi: r.excessRCi, trading: r.trading };
   const fav = get("FAV·ALL");
   const HA5 = { ALL: ex(res.all), SYM: ex(symAll), FAV: ex(fav), structuralNegativeAll: !!res.all && res.all.expectancyR < 0 };
-  return { rule: "MISSION9_PREREGISTRATION.md §2", HAC, HA1, symmetricAll: symAll && { n: symAll.n, hit: symAll.hit, control: symAll.control, lift: symAll.lift, liftCi: symAll.liftCi, meetsHac: meetsHac(symAll) },
+  return { rule: "MISSION9_PREREGISTRATION.md §2", HAC, HA1, symmetricAll: symAll && { n: symAll.n, hit: symAll.hit, hitCi: symAll.hitCi, control: symAll.control, lift: symAll.lift, liftCi: symAll.liftCi, liftE: symAll.liftE, liftECi: symAll.liftECi, meetsHac: meetsHac(symAll), excludesHac: excludesHac(symAll) },
            selectiveTiers: tierRows, HA2, HA3, HA4, HA5 };
 }
 

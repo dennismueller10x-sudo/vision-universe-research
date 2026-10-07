@@ -84,7 +84,7 @@ test("M9-S1 Disjunktheit: replay bricht ab, wenn die Raenge 0..N-1 nicht die ver
 test("M9-S2 Bestaetigungsphase versiegelt: protocol9 verlangt PREREGISTERED, Hash und exakt die vorab festgelegte Stichprobe", async () => {
   const { evaluate } = await import(join(ROOT, "scripts/technical/hsab/evaluate.mjs"));
   const p9 = JSON.parse(readFileSync(join(ROOT, "scripts/technical/hsab/protocol9.json"), "utf8"));
-  assert.deepEqual(p9.phases.A9_CONFIRM.sample, { size: 1200, offset: 1200 });
+  assert.equal(p9.phases.A9_CONFIRM.sample.size, 1200); assert.equal(p9.phases.A9_CONFIRM.sample.offset, 1200); assert.match(p9.phases.A9_CONFIRM.sample.disjointFrom, /^1200:457ce200/);
   assert.equal(p9.phases.A9_CONFIRM.requires, "PREREGISTERED");
   const dir = mkdtempSync(join(tmpdir(), "hsab9-"));
   /* fremde Protokolldatei mit Phase A9_CONFIRM: abgewiesen */
@@ -105,4 +105,36 @@ test("M9-C1 Fallstudie ist nur erklaerend und kausal (Daten bis zum Stichtag)", 
   const s = loadWeekly("ref_AAPL"), t = s.timestamps.findLastIndex((d) => d <= "2015-06-30"), P = Core.prepareSeries(s);
   const rec = Core.recordAt(P, s, t, { symbol: "ref_AAPL", cohort: "CASE" }, null);
   assert.equal(r.rows[0].shown.outlook, rec.o); assert.equal(r.rows[0].shown.clarity, rec.cl);
+});
+
+test("M9-A3 Entscheidung Track A: Holm, HAC gegen D und E, INCONCLUSIVE wenn das KI HAC nicht ausschliesst", () => {
+  const mk = (bucket, o) => ({ bucket, n: 1000, hit: 0.5, hitCi: [0.48, 0.52], control: 0.48, lift: 0.02, liftCi: [0.01, 0.03], liftP: 0.001, liftE: 0.02, liftECi: [0.01, 0.03], trendOnly: { lift: 0.02 }, ...o });
+  const base = () => ({ all: mk("ALL", { expectancyR: -0.1, trading: {} }), byRewardRisk: [mk("RR<0.5", { hit: 0.7, control: 0.68, randomWalkExpectation: 0.79 }), mk("RR1.33-2")],
+    selectivitySymmetric: ["ALL", "CLEAR", "AGREEMENT_TOP25", "AGREEMENT_TOP10"].map((t) => mk("SYM·" + t)), selectivityFavorable: ["ALL", "CLEAR", "AGREEMENT_TOP25", "AGREEMENT_TOP10"].map((t) => mk("FAV·" + t)),
+    selectivityAll: ["ALL", "AGREEMENT_TOP10"].map((t) => mk("ALL·" + t)) });
+  assert.equal(TA.decideTrackA(base()).HA1, "NO_HIGH_ACCURACY_EDGE");
+  let r = base(); r.selectivitySymmetric[3] = mk("SYM·AGREEMENT_TOP10", { n: 400, hit: 0.58, hitCi: [0.5, 0.66], lift: 0.04, liftCi: [-0.01, 0.09] });
+  assert.equal(TA.decideTrackA(r).HA1, "INCONCLUSIVE");
+  r = base(); r.selectivitySymmetric[3] = mk("SYM·AGREEMENT_TOP10", { n: 400, hit: 0.66, hitCi: [0.62, 0.7], lift: 0.08, liftCi: [0.04, 0.12], liftP: 0.0001, liftE: 0.07, liftECi: [0.03, 0.11] });
+  assert.equal(TA.decideTrackA(r).HA1, "SELECTIVE_HIGH_ACCURACY_EDGE");
+  /* gleicher Lift gegen D, aber nicht gegen E (Trend erklaert ihn) → kein Edge-Nachweis */
+  r.selectivitySymmetric[3].liftE = 0.01; r.selectivitySymmetric[3].liftECi = [-0.03, 0.05];
+  assert.notEqual(TA.decideTrackA(r).HA1, "SELECTIVE_HIGH_ACCURACY_EDGE");
+  /* Holm: zweiseitig 0,0001 → einseitig 0,00005, kleinster von 8 Werten → ×8 */
+  r.selectivitySymmetric[3].liftE = 0.07; r.selectivitySymmetric[3].liftECi = [0.03, 0.11];
+  const t = TA.decideTrackA(r).selectiveTiers.find((x) => x.bucket === "SYM·AGREEMENT_TOP10");
+  assert.equal(t.pHolm, 0.0004);   /* einseitig 0,00005 × 8 */
+});
+
+test("M9-B2 Anomalie-Tor kausal: ein Sprung NACH t schliesst die Einheit nicht aus (Red Team H3); Sensitivitaet 'full' schon", () => {
+  const n = 400, close = Array.from({ length: n }, (_, i) => 10 * (1 + i * 0.001)), dates = [];
+  for (let i = 0; i < n; i++) dates.push(new Date(Date.UTC(2000, 0, 7) + i * 7 * 864e5).toISOString().slice(0, 10));
+  for (let i = 250; i < n; i++) close[i] *= 6;     /* Sprung ×6 in Woche 250 */
+  const e = { symbol: "X", cohort: "SURV_W", length: n, close, dates, trend: close.map(() => 1), atrPct: close.map(() => 0.03), atr: close.map(() => 0.3), stale: close.map(() => 0) };
+  const units = (gate) => TB.buildUnits({ list: [e] }, new Map(), { gate });
+  const at = (us, d0) => us.find((u) => u.d >= d0 && u.t < 250 && u.t > 200);
+  const past = at(units("past"), "2003-01-01"), full = at(units("full"), "2003-01-01");
+  assert.ok(past && past.f["24M"] && past.f["24M"].maxM >= 5, "Einheit vor dem Sprung bleibt (kausales Tor)");
+  assert.equal(past.f["24M"].futJump, 1);
+  assert.equal(full.f["24M"], null, "Sensitivitaet 'full' schliesst sie aus");
 });
