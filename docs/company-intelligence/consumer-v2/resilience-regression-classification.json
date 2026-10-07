@@ -1,0 +1,39 @@
+{
+  "status": "PASS_WITH_INDEPENDENTLY_REPRODUCED_PRE_EXISTING_FAILURES",
+  "baselineSha": "ffb076ec2e5a86add3e50e72a228c272765289b9",
+  "protectedPaths": [
+    "quant/data",
+    "quant/engines",
+    "quant/tests",
+    "providers",
+    "scripts/market",
+    "scripts/quant"
+  ],
+  "protectedInputDiff": [],
+  "candidate": {
+    "status": 1,
+    "failures": [
+      "CTR18 echte Tiingo-Reihen (Golden Preview): Rekonstruktion = Anbieter, jede Dividende und jeder Split paritaetisch",
+      "a run that changes nothing leaves the artifact untouched",
+      "die Golden Five bestehen den Nachweis ohne Ausnahme",
+      "the check is reproducible and reads only committed files"
+    ],
+    "testCount": 2986,
+    "passCount": 2977,
+    "skipCount": 5
+  },
+  "independentBaseline": {
+    "status": 1,
+    "failures": [
+      "CTR18 echte Tiingo-Reihen (Golden Preview): Rekonstruktion = Anbieter, jede Dividende und jeder Split paritaetisch",
+      "a run that changes nothing leaves the artifact untouched",
+      "die Golden Five bestehen den Nachweis ohne Ausnahme",
+      "the check is reproducible and reads only committed files"
+    ],
+    "testCount": 2986,
+    "passCount": 2977,
+    "skipCount": 5
+  },
+  "newBranchFailures": 0,
+  "productionPriceDataChanged": false
+}
