@@ -219,12 +219,13 @@
       "consumers": [
         "Umsatz, Wachstum, Margen in Discover, Screener, Company Intelligence, Quant, Supertrader"
       ],
-      "correctExpectation": "Ein Gesamtkonzept ist nie kleiner als ein Teilbetrag derselben Einreichung und Waehrung. Ist Revenues kleiner (Toleranz 0,5 %), gilt die Reihenfolge von main; der Widerspruch bleibt als CONCEPT_DISAGREEMENT sichtbar.",
+      "correctExpectation": "Revenues ist kein Gesamtumsatz dieser Einreichung, wenn er nicht positiv ist oder unter der Haelfte eines anderen positiven Umsatzkonzepts derselben Einreichung und Waehrung liegt; dann gilt die Reihenfolge von main. Ein Gesamtumsatz darf kleiner sein als der Vertragsumsatz, wenn ein Bestandteil negativ ist (UPST Q2 2022: 228,2 = 258,3 - 30,2 Mio.).",
       "fixStatus": "FIXED_CORE",
-      "fix": "Registry 1.8.0 (Revenues aggregate) + normalize.py 1.13.0",
-      "commit": "bc17e9f3ac7",
-      "test": "test_e2r_revenues_smaller_than_contract_revenue_is_not_the_total, test_e2r_revenues_total_still_beats_contract_subset, test_normalize_periods: test_the_highest_priority_concept_wins_inside_one_filing (wieder Erwartung von main), test_the_total_revenue_wins_over_a_smaller_contract_revenue",
-      "guarantee": "Jede Umsatzzelle traegt entweder den Wert von main oder einen groesseren Gesamtumsatz derselben Einreichung."
+      "fix": "Registry 1.8.0 (Revenues aggregate) + normalize.py; Regel in 1.13.0 (jede Unterschreitung > 0,5 %) durch das Red Team widerlegt (UPST, PXD, FCX: Nettogesamtumsatz), in 1.15.0 auf \"nicht positiv oder < 50 %\" korrigiert",
+      "commit": "bc17e9f3ac7, 6d83e13efbf",
+      "test": "test_e2r_revenues_smaller_than_contract_revenue_is_not_the_total, test_e2r_revenues_total_still_beats_contract_subset, test_normalize_periods: test_the_highest_priority_concept_wins_inside_one_filing (wieder Erwartung von main), test_the_total_revenue_wins_over_a_smaller_contract_revenue, test_e2r_net_total_revenue_below_contract_revenue_is_kept (UPST), test_a_partial_revenues_tag_does_not_beat_the_contract_revenue",
+      "evidenceForThreshold": "Teilbetraege: FLS 0 %, PESI 1 %, VTSI ~1 %, GEN 4 %, VRRM 12 %, (AHR/GE ~46 %, mehrdeutig). Nettogesamtumsaetze: PXD 80 %, UPST 88 %, LNG ~90 %, PENN 94 %, FCX 98 %. Red-Team-Zaehlung im Bulk: 7.537 Zellen Revenues < anderes Konzept; 3.575 mit Anteil < 0,5 oder <= 0, 3.962 mit 0,5-0,995.",
+      "residualAmbiguity": "Anteile zwischen ca. 12 % und 50 % sind nicht durch Faelle belegt; Abschlusszeile aus dem Filing-XBRL (F9) loest das ohne Schwelle."
     },
     {
       "id": "E10",
@@ -246,11 +247,12 @@
       "consumers": [
         "Quartale, TTM, YoY in allen Bundle-Consumern"
       ],
-      "correctExpectation": "Ein abgeleitetes Quartal entsteht nur aus Kumulwerten desselben Konzepts; sonst bleibt es eine Luecke (UNKNOWN).",
+      "correctExpectation": "Ein abgeleitetes Quartal entsteht aus Kumulwerten EINES Konzepts. Hat eine der beiden Einreichungen das Konzept der anderen ebenfalls gemeldet, wird darin abgeleitet (NTRS: 5.017,8 - 3.710,4 = 1.307,4 Mio.); ohne Beleg fuer einen Unterschied (NVDA FY2021: 10-K nur Vertragsumsatz, 10-Qs nur Revenues) wie in main.",
       "fixStatus": "FIXED_CORE",
-      "fix": "periods.py 1.14.0",
-      "commit": "dc826000049",
-      "test": "test_e10_derived_quarter_never_subtracts_two_concepts"
+      "fix": "periods.py: 1.14.0 verweigerte jede Ableitung ueber zwei Konzeptnamen und verlor dabei mehr korrekte als falsche Quartale (Red Team F2: 44 korrekt -> fehlend, 15 falsch -> fehlend). 1.15.0: Ableitung ueber das gemeinsame Konzept (ALT:-Flags derselben Einreichung).",
+      "commit": "dc826000049, 6d83e13efbf",
+      "test": "test_e10_derived_quarter_never_subtracts_two_concepts, test_e10_tag_switch_without_evidence_of_a_difference_still_derives (NVDA)",
+      "openRemainder": "Summen (TTM, Jahressumme aus Quartalen) pruefen die Konzeptgleichheit weiterhin nicht (Red Team F5, unveraendert gegenueber main); _combine benennt nur das Konzept der juengsten Eingabe."
     }
   ],
   "notErrors": [
@@ -304,5 +306,20 @@
       "scope": "Quant-Methodik"
     }
   ],
-  "fixStatusUpdated": "2026-10-07 (Phase D): Kern 1.14.0, Registry 1.8.0, Data-Freeze v3"
+  "fixStatusUpdated": "2026-10-07 (Phase E): Kern 1.15.0, Registry 1.8.0, Data-Freeze v3",
+  "redTeam": {
+    "reviewer": "unabhaengiger Opus-Agent (Abschnitt 100)",
+    "findings": {
+      "F1 HIGH": "E2-R verwarf Nettogesamtumsatz -> behoben in 1.15.0 (Schwelle 50 %, UPST-Test)",
+      "F2 HIGH": "E10 verwarf korrekte Ableitungen -> behoben in 1.15.0 (gemeinsames Konzept, NVDA-Test)",
+      "F3 HIGH": "Holdout-Gates des ausgelieferten Codes nicht berichtet -> Bericht und Migrationsplan weisen die formal nicht bestandenen Gates des Endstands aus",
+      "F4 MEDIUM": "Fixtures veraltet -> mit Endstand neu gebaut",
+      "F5 MEDIUM": "Summen ueber gemischte Konzepte (TTM, Jahressumme) -> offen, unveraendert gegenueber main, Folge-PR F10",
+      "F6 MEDIUM": "Consumer-Matrix unvollstaendig -> neun Leser ergaenzt, Waehrungswechsel in units.* gezaehlt",
+      "F7 MEDIUM": "Screener beschriftet FY-EPS als TTM -> Migrationsblocker M-B1 verschaerft",
+      "F8 LOW": "CONCEPT_DISAGREEMENT im Bundle unsichtbar -> dokumentiert (F5 Provenienz je Zeile)",
+      "F9 LOW": "Gleichstand bei Waehrungsmehrheit; erfundene Folgelabels -> dokumentiert",
+      "F10 LOW": "veraltete Zahlen im Entwurf -> Bericht auf Endstand gebracht"
+    }
+  }
 }

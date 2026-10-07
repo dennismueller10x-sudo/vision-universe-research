@@ -4,7 +4,7 @@
    muessen denselben Wert lesen. Wo ein Consumer bewusst eine andere Groesse zeigt (Discover-KGV ohne TTM-EPS:
    TTM-Nettogewinn / Aktien), ist die Abweichung hier ausdruecklich festgehalten, nicht still.
 
-   Fixtures: echte Consumer-Bundles, gebaut mit dem korrigierten Kern (normalization_logic 1.13.0, Registry 1.8.0)
+   Fixtures: echte Consumer-Bundles, gebaut mit dem korrigierten Kern (normalization_logic 1.15.0, Registry 1.8.0)
    aus SEC companyfacts.zip (Stand 2026-10-07): AMT (E2), CECO (E9), FLS (E2-R), TNDM (E1), AAPL (Split), BMI (TTM-EPS vorhanden). */
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -31,7 +31,7 @@ test("Fixtures sind echte Bundles des korrigierten Kerns", () => {
   assert.deepEqual(Object.keys(byTicker).sort(), ["AAPL", "AMT", "BMI", "CECO", "FLS", "TNDM"]);
   for (const b of bundles) {
     assert.equal(b.schema, "vu-consumer-fundamentals-1.0.0");
-    assert.equal(b.versions.normalization_logic, "1.13.0", b.tickers[0]);
+    assert.equal(b.versions.normalization_logic, "1.15.0", b.tickers[0]);
     assert.equal(b.versions.metric_registry.mapping_version, "1.8.0", b.tickers[0]);
   }
 });

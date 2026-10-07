@@ -2,9 +2,9 @@
   "schema": "vu-fundamental-data-migration-plan-1.0.0",
   "status": "PLAN_ONLY - keine Migration ausgefuehrt; Freigabe durch den Eigentuemer erforderlich",
   "productionClassification": "READY_FOR_CONTROLLED_MIGRATION",
-  "classificationReason": "Kernfehler E1-E4, E3b, E9 belegt, behoben, mit failing-first-Regressionstests; Dev- und Holdout-Ground-Truth ohne neue Fehler. Der Rollout ist aber nicht folgenlos (E4: TTM-EPS entfaellt fuer die Mehrheit der Emittenten) und muss deshalb kontrolliert erfolgen.",
+  "classificationReason": "Kernfehler E1, E3, E3b, E4, E9, E10 und E2/E2-R belegt, behoben, failing-first getestet. Gegen die unveraenderte, praeregistrierte Ground Truth bleiben drei Holdout-Gates formal nicht bestanden (FALSE_AVAILABLE: Rumpfperiode, seit v1; Umsatz VALUE und WRONG_CONCEPT: Umsatz-Konzeptgrenze der GT selbst, siehe FUNDAMENTAL_DATA_INTEGRITY_AUDIT.md). E2-R und E10 wurden nach Oeffnung des Holdouts gefunden; dafuer ist der Holdout nicht blind. Der Rollout aendert Consumer-Bedeutungen (TTM-EPS) und muss deshalb kontrolliert und nach Entscheidung M-B1/M-B2/M-B4 erfolgen.",
   "mergeIsRollout": {
-    "fact": "Die SEC-Workflows laufen nach Zeitplan von main: sec-fundamentals-daily.yml taeglich 06:15 UTC (normalisiert jeden beruehrten Emittenten mit 1.14.0 neu), sec-consumer-fundamentals.yml montags 07:30 UTC (baut alle Consumer-Bundles neu und committet sie). Discover/Screener/Supertrader uebernehmen die Bundles im naechsten eigenen Lauf.",
+    "fact": "Die SEC-Workflows laufen nach Zeitplan von main: sec-fundamentals-daily.yml taeglich 06:15 UTC (normalisiert jeden beruehrten Emittenten mit 1.15.0 neu), sec-consumer-fundamentals.yml montags 07:30 UTC (baut alle Consumer-Bundles neu und committet sie). Discover/Screener/Supertrader uebernehmen die Bundles im naechsten eigenen Lauf.",
     "consequence": "Ein Merge dieses PRs startet den Rollout automatisch binnen hoechstens 7 Tagen. Der Merge ist deshalb die Migrationsfreigabe und darf erst erfolgen, wenn die Blocker unten entschieden sind."
   },
   "blockers": [
@@ -14,7 +14,7 @@
       "evidence": "FUNDAMENTAL-IMPACT.json: eps_diluted ttm.removed; Q4-EPS war FY minus 9M und im Bundle nicht als abgeleitet erkennbar (derived=0). FY minus 9M trifft das gemeldete Q4-EPS nur in 48,9 % der 669 pruefbaren Faelle (p90-Abweichung 15,8 %, 10 Vorzeichenwechsel).",
       "consumerBehaviourWithoutDecision": {
         "Discover KGV/Gewinn je Aktie": "faellt zurueck auf TTM-Nettogewinn / juengste Aktienzahl (Rueckfall existiert im Code)",
-        "Screener eps": "faellt zurueck auf das juengste Geschaeftsjahres-EPS (Spalte heisst weiter 'EPS (verw.)')",
+        "Screener eps": "faellt zurueck auf das juengste Geschaeftsjahres-EPS, das Feld ist aber als TTM beschrieben (screener/engine/fields.js) -> fuer rund 3.200 Titel ein falsch beschrifteter Wert (Red Team F7)",
         "Quant": "nicht betroffen (nutzt Jahres-EPS)",
         "Company Intelligence": "nicht betroffen (summiert EPS schon heute nicht)",
         "Supertrader": "nicht betroffen (liest kein EPS aus dem Bundle)"
@@ -24,7 +24,7 @@
         "B: Consumer-seitige TTM-EPS-Definition = Summe TTM-Nettogewinn / gewichtete verwaesserte Aktien, als DERIVED gekennzeichnet (eigener Consumer-PR je Produkt)",
         "C: TTM-EPS nur, wenn das TTM-Fenster mit einem Geschaeftsjahresende zusammenfaellt (= FY-EPS), sonst UNKNOWN"
       ],
-      "recommendation": "A fuer den Rollout (korrekt, kein falscher Wert), B als eigener, nachgelagerter Consumer-PR mit Vorher/Nachher. Entscheidung beim Eigentuemer.",
+      "recommendation": "Vor dem Rollout: Entscheidung B oder C ODER mindestens ein Screener-PR (Produkt-eigener PR), der die Beschriftung an die tatsaechliche Basis koppelt. A allein (Rueckfaelle unveraendert) ist wegen der Fehlbeschriftung im Screener nicht ausreichend.",
       "decisionRequired": true
     },
     {
@@ -137,6 +137,11 @@
       "id": "F9",
       "product": "Quant-SEC-Kern",
       "what": "Umsatz-Abschlusszeile je Einreichung aus dem Presentation-Linkbase (Filing-XBRL) bestimmen statt aus Konzeptprioritaet; loest E2-R-Mehrdeutigkeit (Revenues < Vertragsumsatz) ohne Heuristik"
+    },
+    {
+      "id": "F10",
+      "product": "Quant-SEC-Kern",
+      "what": "Konzeptmenge in der Provenienz abgeleiteter Werte fuehren; TTM- und Jahressummen ueber gemischte Konzepte kennzeichnen oder verweigern (Red Team F5)"
     }
   ]
 }

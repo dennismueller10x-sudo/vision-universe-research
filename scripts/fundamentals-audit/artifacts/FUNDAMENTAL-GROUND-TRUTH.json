@@ -4829,7 +4829,7 @@
   "fixed": "5969a11a99a"
  },
  "coreFinal": {
-  "version": "normalization_logic 1.14.0 + registry 1.8.0 (Data-Freeze v3)",
+  "version": "normalization_logic 1.15.0 + registry 1.8.0 (Data-Freeze v3)",
   "note": "Gegen die UNVERAENDERTE Ground Truth (Praeregistrierung). Die GT enthaelt dieselbe Annahme wie der widerlegte E2-Fix (Revenues hat in derselben Einreichung Vorrang); Abweichungen aus dieser Annahme sind je Emittent nachtraeglich geprueft (Einzelfallpruefung, kein Gate).",
   "devRates": {
    "QUANT|EPS_BASIC": {
@@ -4864,33 +4864,33 @@
    },
    "QUANT|NET_INCOME": {
     "facts": 5010,
-    "factAccuracy": 0.9882,
-    "valueAccuracy": 0.9884,
+    "factAccuracy": 0.9888,
+    "valueAccuracy": 0.989,
     "pitAccuracy": 0.9998,
-    "falseMissingRate": 0.0018,
+    "falseMissingRate": 0.0006,
     "falseAvailableRate": 0,
-    "wrongValueRate": 0.01,
+    "wrongValueRate": 0.0106,
     "byCategory": {
      "WRONG_CONCEPT": 47,
-     "Q4_DERIVATION": 9,
+     "Q4_DERIVATION": 6,
      "YTD_QUARTER": 2,
      "RESTATEMENT": 1
     }
    },
    "QUANT|REVENUE": {
     "facts": 4711,
-    "factAccuracy": 0.9826,
-    "valueAccuracy": 0.9828,
+    "factAccuracy": 0.9947,
+    "valueAccuracy": 0.9949,
     "pitAccuracy": 0.9998,
-    "falseMissingRate": 0.0083,
+    "falseMissingRate": 0.0011,
     "falseAvailableRate": 0,
-    "wrongValueRate": 0.0091,
+    "wrongValueRate": 0.0042,
     "byCategory": {
-     "Q4_DERIVATION": 38,
-     "WRONG_CONCEPT": 38,
+     "WRONG_CONCEPT": 18,
      "MISSING_FACT": 2,
      "YTD_QUARTER": 2,
      "RESTATEMENT": 1,
+     "Q4_DERIVATION": 1,
      "PERIOD_MAPPING": 1
     }
    }
@@ -4928,16 +4928,16 @@
    },
    "QUANT|NET_INCOME": {
     "facts": 2102,
-    "factAccuracy": 0.98,
-    "valueAccuracy": 0.9814,
+    "factAccuracy": 0.981,
+    "valueAccuracy": 0.9824,
     "pitAccuracy": 0.9985,
-    "falseMissingRate": 0.0119,
+    "falseMissingRate": 0.01,
     "falseAvailableRate": 0.0005,
-    "wrongValueRate": 0.0076,
+    "wrongValueRate": 0.0086,
     "byCategory": {
      "WRONG_CONCEPT": 15,
      "MISSING_FACT": 10,
-     "Q4_DERIVATION": 9,
+     "Q4_DERIVATION": 7,
      "YTD_QUARTER": 5,
      "FILING_VISIBILITY": 2,
      "OTHER": 1
@@ -4945,19 +4945,19 @@
    },
    "QUANT|REVENUE": {
     "facts": 1703,
-    "factAccuracy": 0.9654,
-    "valueAccuracy": 0.9665,
+    "factAccuracy": 0.9818,
+    "valueAccuracy": 0.983,
     "pitAccuracy": 0.9988,
-    "falseMissingRate": 0.0135,
+    "falseMissingRate": 0.0047,
     "falseAvailableRate": 0.0006,
-    "wrongValueRate": 0.0206,
+    "wrongValueRate": 0.0129,
     "byCategory": {
-     "Q4_DERIVATION": 24,
-     "WRONG_CONCEPT": 24,
+     "WRONG_CONCEPT": 13,
+     "Q4_DERIVATION": 8,
      "MISSING_FACT": 3,
      "YTD_QUARTER": 2,
-     "RESTATEMENT": 2,
      "FILING_VISIBILITY": 2,
+     "RESTATEMENT": 1,
      "PERIOD_MAPPING": 1,
      "OTHER": 1
     }
@@ -4990,51 +4990,46 @@
      "REVENUE|WRONG_VALUE->MISSING|OTHER": 7
     },
     "reading": "MATCH->MISSING: Quartal war aus zwei Konzepten mit zufaellig gleichem Wert abgeleitet und ist jetzt eine Luecke; WRONG_VALUE->MISSING: falsche Ableitung aus zwei Konzepten ist jetzt eine Luecke"
+   },
+   "Red-Team-Korrektur (1.14 -> 1.15)": {
+    "dev": {
+     "REVENUE|MISSING->MATCH|OTHER": 34,
+     "NET_INCOME|MISSING->MATCH|OTHER": 3,
+     "NET_INCOME|MISSING->WRONG_VALUE|OTHER": 3,
+     "REVENUE|WRONG_VALUE->MATCH|GT_REVENUES_SMALLER_THAN_OTHER_CONCEPT_IN_SAME_FILING": 20,
+     "REVENUE|WRONG_VALUE->MATCH|OTHER": 3,
+     "REVENUE|MATCH->MATCH|OTHER": 1
+    },
+    "holdout": {
+     "NET_INCOME|MISSING->WRONG_VALUE|OTHER": 2,
+     "REVENUE|MISSING->MATCH|OTHER": 15,
+     "NET_INCOME|MISSING->MATCH|OTHER": 2,
+     "REVENUE|WRONG_VALUE->MATCH|GT_REVENUES_SMALLER_THAN_OTHER_CONCEPT_IN_SAME_FILING": 12,
+     "REVENUE|WRONG_VALUE->MATCH|OTHER": 1
+    }
    }
   },
-  "e2rAdjudication": {
-   "GE": {
-    "facts": 6,
-    "gtTag": "Revenues",
-    "coreConcept1_13": "SalesRevenueNet",
-    "verdict": "AMBIGUOUS (beide Werte Teilbetraege des Konzernumsatzes)"
+  "finalVs1_12": {
+   "dev": {
+    "REVENUE|MATCH->WRONG_VALUE|GT_REVENUES_SMALLER_THAN_OTHER_CONCEPT_IN_SAME_FILING": 7,
+    "NET_INCOME|WRONG_VALUE->WRONG_VALUE|OTHER": 2
    },
-   "GEN": {
-    "facts": 1,
-    "gtTag": "Revenues",
-    "coreConcept1_13": "RevenueFromContractWithCustomerExcludingAssessedTax",
-    "verdict": "GT_WRONG (Revenues 27 Mio. ist Teilbetrag; Gesamtumsatz FQ1 2023 = 707 Mio. = Vertragsumsatz)"
+   "holdout": {
+    "NET_INCOME|WRONG_VALUE->WRONG_VALUE|OTHER": 2,
+    "REVENUE|MATCH->WRONG_VALUE|GT_REVENUES_SMALLER_THAN_OTHER_CONCEPT_IN_SAME_FILING": 14,
+    "REVENUE|MATCH->WRONG_VALUE|OTHER": 4,
+    "REVENUE|WRONG_VALUE->MATCH|OTHER": 7
    },
-   "UPST": {
-    "facts": 9,
-    "gtTag": "Revenues",
-    "coreConcept1_13": "RevenueFromContractWithCustomerExcludingAssessedTax",
-    "verdict": "GT_RIGHT (ASC-606-Identitaet in derselben Einreichung: 68,013 - 4,019 RevenueNotFromContract = 63,994 Revenues); Kern 1.13 = Wert von main"
-   },
-   "PXD": {
-    "facts": 18,
-    "gtTag": "Revenues",
-    "coreConcept1_13": "RevenueFromContractWithCustomerIncludingAssessedTax",
-    "verdict": "GT_PLAUSIBLY_RIGHT (Revenues and other income nach Derivateverlusten); Kern 1.13 = Wert von main"
-   },
-   "VRRM": {
-    "facts": 17,
-    "gtTag": "Revenues",
-    "coreConcept1_13": "RevenueFromContractWithCustomerExcludingAssessedTax",
-    "verdict": "GT_WRONG (Revenues 21,9 Mio. ist Teilbetrag; Gesamtumsatz Q2 2022 = 187,5 Mio.)"
-   },
-   "AHR": {
-    "facts": 2,
-    "gtTag": "Revenues",
-    "coreConcept1_13": "SalesRevenueNet",
-    "verdict": "GT_LIKELY_WRONG (Revenues etwa die Haelfte von SalesRevenueNet; nicht gegen die Abschlusszeile geprueft)"
-   },
-   "FCX": {
-    "facts": 12,
-    "gtTag": "Revenues",
-    "coreConcept1_13": "RevenueFromContractWithCustomerExcludingAssessedTax",
-    "verdict": "GT_PLAUSIBLY_RIGHT (Gesamtumsatz nach negativen Preisanpassungen; Bestandteil nicht als Fakt gemeldet); Kern 1.13 = Wert von main"
-   }
+   "reading": "Umsatz: VRRM (17) und GEN (1) -> GT irrt (Revenues Teilbetrag); AHR (1) GT irrt wahrscheinlich, AHR (1) und NI (6) jetzt korrekt (Ableitung ueber gemeinsames Konzept); GE (6) beide Werte Teilbetraege. Nettogewinn F/FBNC/MBNKO bleiben falsch (E5)."
+  },
+  "adjudication": {
+   "GEN": "GT_WRONG",
+   "VRRM": "GT_WRONG",
+   "AHR": "GT_LIKELY_WRONG",
+   "GE": "AMBIGUOUS",
+   "UPST": "GT_RIGHT, Kern 1.15 = GT",
+   "PXD": "GT_RIGHT, Kern 1.15 = GT",
+   "FCX": "GT_RIGHT, Kern 1.15 = GT"
   }
  }
 }

@@ -3,16 +3,16 @@
   "status": "PLAN_ONLY - nichts davon ist ausgefuehrt; Ausfuehrung nur nach ausdruecklicher Freigabe",
   "dataVersion": {
     "from": "normalization_logic 1.10.0 + registry mapping 1.6.0 (main 829b35bdce4)",
-    "to": "normalization_logic 1.14.0 + registry mapping 1.8.0 (Data-Freeze v3, Branch claude/fundamental-data-integrity-audit)",
-    "label": "vu-fundamentals-core-1.14.0+registry-1.8.0"
+    "to": "normalization_logic 1.15.0 + registry mapping 1.8.0 (Data-Freeze v3, Branch claude/fundamental-data-integrity-audit)",
+    "label": "vu-fundamentals-core-1.15.0+registry-1.8.0"
   },
   "buildIdentity": {
-    "rule": "Jedes neu gebaute Artefakt traegt versions.normalization_logic = 1.14.0 und versions.metric_registry.mapping_version = 1.8.0 (bereits heute im Bundle-Kopf). Ein Consumer-Build aus einem anderen Code-Stand ist STALE_BUILD.",
+    "rule": "Jedes neu gebaute Artefakt traegt versions.normalization_logic = 1.15.0 und versions.metric_registry.mapping_version = 1.8.0 (bereits heute im Bundle-Kopf). Ein Consumer-Build aus einem anderen Code-Stand ist STALE_BUILD.",
     "staleBuildProtection": "pipeline._is_current vergleicht den Versionsstempel; gespeicherte Factbooks mit 1.10.0 gelten automatisch als veraltet und werden beim naechsten Lauf neu normalisiert (kein Teil-Mischbestand innerhalb eines Emittenten).",
     "freezeCheck": "node scripts/fundamentals-audit/freeze.mjs --check (v3) muss vor dem Rebuild gruen sein"
   },
   "artifacts": [
-    {"id": "R1", "artifact": "SEC-Factbooks (R2-Store, persist-fundamentals.mjs)", "producer": "scripts/quant/cli.py daily (sec-fundamentals-daily.yml)", "trigger": "Versionswechsel -> _is_current false", "scope": "alle Emittenten, die der Lauf beruehrt; Voll-Rebuild per workflow_dispatch noetig, sonst Mischbestand 1.10/1.14 zwischen Emittenten bis zur jeweils naechsten Einreichung", "resumable": "ja (je CIK, Pipeline ueberspringt aktuelle Dokumente)", "secFairAccess": "Bulk companyfacts.zip statt 5.000 Einzelabrufe"},
+    {"id": "R1", "artifact": "SEC-Factbooks (R2-Store, persist-fundamentals.mjs)", "producer": "scripts/quant/cli.py daily (sec-fundamentals-daily.yml)", "trigger": "Versionswechsel -> _is_current false", "scope": "alle Emittenten, die der Lauf beruehrt; Voll-Rebuild per workflow_dispatch noetig, sonst Mischbestand 1.10/1.15 zwischen Emittenten bis zur jeweils naechsten Einreichung", "resumable": "ja (je CIK, Pipeline ueberspringt aktuelle Dokumente)", "secFairAccess": "Bulk companyfacts.zip statt 5.000 Einzelabrufe"},
     {"id": "R2", "artifact": "quant/data/sec/consumer/CIK*.json + consumer_coverage.json", "producer": "scripts/quant/cli.py consumer (sec-consumer-fundamentals.yml)", "trigger": "Cron Montag 07:30 UTC oder workflow_dispatch", "scope": "ganzes Universum (ca. 5.070 Bundles)", "resumable": "Lauf ist deterministisch je CIK; Wiederholung ueberschreibt", "expectedChange": "siehe FUNDAMENTAL-IMPACT.json"},
     {"id": "R3", "artifact": "discover/data (Aktienseiten, Startseite, Reihen)", "producer": "scripts/discover/build-discover-data.mjs (market-data-refresh.yml)", "trigger": "naechster Discover-Lauf nach R2", "scope": "alle Titel mit Bundle", "gate": "Discover-Reproduzierbarkeit, Frontend-Budget unveraendert"},
     {"id": "R4", "artifact": "Screener-Universum", "producer": "scripts/screener/build-universe.mjs", "trigger": "nach R3", "scope": "eps, epsGrowth, epsCagr3, revGrowth, Margen"},
