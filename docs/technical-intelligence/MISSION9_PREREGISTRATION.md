@@ -24,9 +24,9 @@ Mission VIII bleibt eingefrorene Evidenz: `protocol.json`, `HISTORICAL_ACCURACY_
 | Schritt | Daten | Gesehen | Ergebnis |
 |---|---|---|---|
 | Track A DEV | W_DEV, 94.686 Ereignisse | ja | keine Klasse mit hoher Trefferquote nach Kontrolle; Lift 1–4 Pp. in allen Klassen |
-| Track A VAL | W_VAL, 91.939 Ereignisse | ja, nach schriftlichem Freeze | alle vier eingefrorenen DEV-Aussagen repliziert |
+| Track A VAL | W_VAL, 91.939 Ereignisse | ja, nach einer Freeze-Notiz (Scratchpad, unmittelbar vor dem Lauf; erst später committet) | alle vier eingefrorenen DEV-Aussagen repliziert |
 | Track B DEV | Überlebende Bucket 0/2, 150.933 Einheiten | ja | VU_BULL senkt die Superwinner-Präzision; RS26 schwach positiv |
-| Track B VAL | Überlebende Bucket 1/2, 147.759 Einheiten | ja, nach schriftlichem Freeze | HB1–HB4 repliziert |
+| Track B VAL | Überlebende Bucket 1/2, 147.759 Einheiten | ja; Freeze-Notiz mit Zeitvorbehalt (§3) | HB1–HB4 repliziert (alter Code) |
 | Fallstudie PLTR | ein Titel | ja | nur Erklärung |
 | **Mission VIII D_HOLDOUT** | Tag, 1.200 andere Titel, **gleicher Kalender und gleiche Engine** | ja (Mission VIII) | PSS 69,1 % gegen D 68,1 %, Lift +1,0 Pp. [0,5; 1,5]; alle Selektivitätsstufen < +2 Pp. (AGREEMENT_TOP10 +1,7 [0,2; 3,3]) |
 
@@ -103,9 +103,9 @@ Alle Wochenpfade sind verbraucht: Überlebende in Mission I–IV, Delistete im M
 **Einheiten:** Titel × Kalenderquartal mit mindestens 160 Wochen Historie.
 * Signalzustand: letzter Erkennungspunkt höchstens 13 Wochen vor dem Quartalsende bzw. exakter Quartalsend-Zustand.
 * Erfolg: maximales Vielfaches ≥ 2×/3×/5×/10× innerhalb von 6/12/24/36 Monaten (2× = +100 %).
-* Erwartung: Schicht aus Quartal × einfacher Trend × Terzile von Momentum 52W, Volatilität und Abstand zum 52W-Hoch × Altersklasse, ohne die Einheit selbst. Zusätzlich eine reine Datumsbasis.
-* Datenqualität: Wochensprung > ×4 oder < ×0,25 schließt das Fenster aus.
-* Bootstrap: Titel × Jahr.
+* Erwartung: Schicht aus Quartal × einfacher Trend × Terzile von Momentum 52W, Volatilität und Abstand zum 52W-Hoch × Altersklasse. Verglichen wird mit den **nicht markierten** Einheiten derselben Schicht. Zusätzlich eine reine Datumsbasis (alle übrigen Einheiten des Quartals).
+* Datenqualität: Ein Wochensprung > ×4 oder < ×0,25 in **[t−52, t]** schließt die Einheit aus (kausal). Sprünge nach t nur als Sensitivität (`--gate full`) und als berichteter Anteil.
+* Bootstrap: Titel × Zeitblock mit mindestens Horizontlänge (6M/12M: 1 Jahr, 24M: 2 Jahre, 36M: 3 Jahre). DEV und VAL teilen den Kalender; VAL prüft neue Titel, nicht neue Zeiträume.
 
 **Offenlegung (Red Team M3).** Die folgenden Aussagen wurden nach DEV formuliert. Die Freeze-Notiz ist erst zusammen mit den VAL-Ergebnissen in Git verankert (Commit `923f9fb`). Der VAL-Lauf wurde etwa eine Minute **vor** dem Schreiben der Notiz gestartet, ohne dass Ergebnisse angesehen wurden; beweisen lässt sich das nicht. Track B ist deshalb **explorativ mit Gegenprobe auf verbrauchten Daten**, keine präregistrierte Bestätigung.
 
@@ -126,7 +126,7 @@ Ursprünglich nach DEV formuliert und auf VAL (alter Code) beobachtet:
 Survivorship-Erweiterung (CI, delistete Kohorte, verbraucht) wird nur als Sensitivität berichtet.
 
 **Entscheidung Track B** (mechanisch in `decide-m9.mjs`, auf DEV und VAL mit korrigiertem Code):
-* ROBUST ASYMMETRIC EDGE: ein VU-Signal (VU_BULL, VU_BULL_CLEAR, VU_BULL_STRONG, VU_BULL_AND_TREND_MOM, VU_BULL_EXACT) mit 5×/24M-Schichtvergleich > 1 (Untergrenze > 1) auf DEV **und** VAL **und** positivem Überschuss-Mittel (gedeckelt 4×) ohne Top 5 % auf beiden.
+* ROBUST ASYMMETRIC EDGE: ein VU-Signal (VU_BULL, VU_BULL_CLEAR, VU_BULL_STRONG, VU_BULL_AND_TREND_MOM, VU_BULL_EXACT) mit 5×/24M-Schichtvergleich > 1 (Untergrenze > 1) auf DEV **und** VAL **und** einem Überschuss-Mittel mit 4×-Deckel (Signal und Vergleich gleich gedeckelt) mit 95-%-Untergrenze > 0 auf beiden. Die Robustheit ohne die größten Gewinner (Top 1 / 3 / 1 % / 5 %) wird beschreibend berichtet, für Signal und Basis gleich gestutzt.
 * SELECTIVE: dasselbe nur auf einer Stichprobe oder nur ungedeckelt.
 * NO ASYMMETRIC EDGE: sonst.
 
@@ -152,9 +152,9 @@ DEV liegt auf Bucket 0/4, VAL auf Bucket 1/4. Entscheidung mechanisch in `decide
 
 **Entscheidung Elliott:**
 * INCREMENTAL PREDICTIVE VALUE: Schichtvergleich > 1 (Untergrenze > 1) auf DEV und VAL für 5×/24M oder 2×/12M.
-* USEFUL FILTER: innerhalb TREND_MOM bzw. RS26 höhere Präzision auf DEV und VAL.
-* STRUCTURAL LANGUAGE ONLY: kein Prognosewert, aber eine stabile, erklärende Beschreibung.
-* NO MEASURABLE VALUE: sonst.
+* USEFUL FILTER: die Kombination mit TREND_MOM bzw. RS26 (`EW_INT_UP_EARLY_AND_TREND_MOM`, `EW_INT_UP_EARLY_AND_RS`) liegt im Schichtvergleich > 1 (Untergrenze > 1) auf DEV und VAL.
+* STRUCTURAL LANGUAGE ONLY: sonst. Kein Prognosewert; die angezeigte Zählung bleibt beschreibende Sprache (Mission-VIII-Rolle).
+* NO MEASURABLE VALUE wird nicht mechanisch vergeben. Der Bericht verwendet es nur, wenn auch der beschreibende Nutzen fehlt (Begründung im Text).
 
 ## 5. Was nicht getan wird
 
