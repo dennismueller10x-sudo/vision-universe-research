@@ -26,6 +26,16 @@ export async function setProductionGate(driver,state){
  if(!back||!Buffer.from(back).equals(bytes))throw Error('PRODUCTION_GATE_READBACK_FAILED');
  return {status:state,generation:approval.consumerGeneration,privateStateModified:false};
 }
+export async function verifyProductionConsumer(driver,release){
+ const raw=await driver.get(prefixFor(approval.namespace)+'manifest.json');
+ if(!raw||!approvedForPublication(JSON.parse(raw)))throw Error('APPROVED_PRODUCTION_POINTER_REQUIRED');
+ const manifest=JSON.parse(raw),target=resolve(release,'company-intelligence/data');
+ const result=await download(driver,{namespace:approval.namespace,output:target});
+ if(result.generation!==approval.consumerGeneration)throw Error('PRODUCTION_GENERATION_MISMATCH');
+ preflight(target,manifest);
+ writeFileSync(resolve(release,'company-intelligence-delivery.json'),JSON.stringify({...result,approvalId:approval.approvalId,acceptedGeneration:approval.acceptedGeneration,cohortStocks:approval.tickers,issuers:approval.issuers,sourceUsagePolicy:approval.sourceUsagePolicy,checkedAt:new Date().toISOString()})+'\n');
+ return result;
+}
 export async function stageProduction(driver,release,{enabled=approval.deliveryEnabled}={}){
  release=resolve(release);
  const config=resolve(release,'company-intelligence/config');
@@ -48,15 +58,7 @@ export async function stageProduction(driver,release,{enabled=approval.deliveryE
   }
   return {status:'PRODUCTION_GATE_CLOSED',privateObjectsRead:0};
  }
- const raw=await driver.get(prefixFor(approval.namespace)+'manifest.json');
- if(!raw||!approvedForPublication(JSON.parse(raw)))throw Error('APPROVED_PRODUCTION_POINTER_REQUIRED');
- const manifest=JSON.parse(raw),target=resolve(release,'company-intelligence/data');
- const result=await download(driver,{namespace:approval.namespace,output:target});
- if(result.generation!==approval.consumerGeneration)throw Error('PRODUCTION_GENERATION_MISMATCH');
- // download checks read-back hashes; preflight also validates complete identities/sections.
- preflight(target,manifest);
- writeFileSync(resolve(release,'company-intelligence-delivery.json'),JSON.stringify({...result,approvalId:approval.approvalId,acceptedGeneration:approval.acceptedGeneration,cohortStocks:approval.tickers,issuers:approval.issuers,sourceUsagePolicy:approval.sourceUsagePolicy,checkedAt:new Date().toISOString()})+'\n');
- return result;
+ return verifyProductionConsumer(driver,release);
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1];

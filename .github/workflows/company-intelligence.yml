@@ -154,11 +154,11 @@ jobs:
         run: |
           node scripts/company_intelligence/production-release.mjs publish --directory "$RUNNER_TEMP/production-consumer" > "$RUNNER_TEMP/production-publication.json"
           node --input-type=module <<'NODE'
-          import {stageProduction} from './scripts/company_intelligence/production-release.mjs';
+          import {verifyProductionConsumer} from './scripts/company_intelligence/production-release.mjs';
           import {createS3DriverFromEnv} from './scripts/market/storage/s3-driver.mjs';
           import {mkdirSync} from 'node:fs';
           const release=process.env.RUNNER_TEMP+'/production-read-back';mkdirSync(release);
-          console.log(JSON.stringify(await stageProduction(createS3DriverFromEnv(),release,{enabled:true})));
+          console.log(JSON.stringify(await verifyProductionConsumer(createS3DriverFromEnv(),release)));
           NODE
       - name: Counts, hashes, numeric QA and consumer-safe screenshots only
         uses: actions/upload-artifact@v4
