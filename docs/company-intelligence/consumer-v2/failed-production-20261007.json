@@ -1,0 +1,16 @@
+{
+  "status": "FAIL_CLOSED_ROLLBACK_COMPLETED",
+  "failedProductionSha": "b65889f247b463d585e794fa1d703806536cfde7",
+  "failedWorkflowRun": 37648837955,
+  "generation": "d700d480d9b2858eb8fa34f4",
+  "failureStage": "HTTP_ASSET_READBACK_BEFORE_BROWSER_REVIEW",
+  "asset": "snapshots/d700d480d9b2858eb8fa34f4/iss_cik_0001702780.json",
+  "httpStatus": 503,
+  "generationMismatchObserved": false,
+  "dataOrSourceMutation": false,
+  "persistentGateDisabled": true,
+  "emergencyOffRun": 37650122560,
+  "offDeploySha": "ffb076ec2e5a86add3e50e72a228c272765289b9",
+  "staticOffVerified": true,
+  "remediation": "Bounded transient HTTP/network retries; all hashes, identities, source policy, permanent failures and generation assertions retained."
+}
