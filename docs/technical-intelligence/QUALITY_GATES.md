@@ -62,4 +62,4 @@
 | G37 Unveränderliches Register | Hash-Kette, Snapshot-Hashes, nur anhängen gegen Git, Woche nur einmal und nur vorwärts | `verify.mjs`, Tests M10-R1/R4, Workflow-Prüfung vor und nach dem Lauf | ✅ |
 | G38 Auswertung nur abgelaufener Horizonte | 3/6/12/24/36 Monate erst nach Ablauf | `evaluate-registry.mjs`, Test M10-R4 | ✅ |
 | G39 Setup-Evidenz LEVEL 1/2 | vorab festgelegte Regeln (`decide-setups.mjs`) | `setup-decision.json` | ❌ kein Setup erreicht LEVEL 1 oder 2 (S3 angezeigt STRUCTURAL ONLY; S1/S2/S4 INSUFFICIENT EVIDENCE; S3 nicht angezeigt REJECT) |
-| G40 Tests | Mission-X-Tests (8) | `quant/tests/elliott-setups-mission10.test.mjs` | ✅ |
+| G40 Tests | Mission-X-Tests (8) und volle Quant-Suite | `quant/tests/elliott-setups-mission10.test.mjs`; Quant-Suite 2.334/2.334 | ✅ |
