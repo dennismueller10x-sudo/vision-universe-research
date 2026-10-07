@@ -935,19 +935,20 @@
     var w = n.toLowerCase().split(/\s+/).map(function (x) { return x.charAt(0).toUpperCase() + x.slice(1); });
     return w.length > 1 ? w.slice(1).join(" ") + " " + w[0] : w[0];
   }
-  function tickerItem(t) {
+  function tickerItem(t, name) {
     var hit = null, list = S.stockIndex || [];
     for (var i = 0; i < list.length; i++) if (list[i].ticker === t) { hit = list[i]; break; }
-    return hit || { ticker: t, name: t };
+    return hit || { ticker: t, name: name || t };
   }
+  function tickerName(it) { return it.name === it.ticker ? it.ticker : issuerName(it); }
   function tickerHref(t) { return "#/aktie/" + encodeURIComponent(t); }
   function smList(rows, val, metric) {
     if (!rows || !rows.length) return '<p class="hf-empty">Aktuell keine Fälle.</p>';
     var max = Math.max.apply(null, rows.map(function (r) { return Math.abs(metric(r)) || 0; })) || 1;
     return '<ol class="hf-list hf-smlist">' + rows.map(function (r, i) {
-      var it = tickerItem(r.ticker);
+      var it = tickerItem(r.ticker, r.name);
       return '<li class="hf-li"><span class="rk">' + (i + 1) + "</span>" + logo(it, "lg") +
-        '<div class="nm"><b><a href="' + tickerHref(r.ticker) + '">' + esc(it.name === it.ticker ? it.ticker : issuerName(it)) + '</a></b><span class="sub"><em>' + esc(r.ticker) + "</em></span>" +
+        '<div class="nm"><b><a href="' + tickerHref(r.ticker) + '">' + esc(tickerName(it)) + '</a></b><span class="sub"><em>' + esc(r.ticker) + "</em></span>" +
         '<div class="hf-meter" aria-hidden="true"><i style="width:' + (Math.abs(metric(r)) / max * 100).toFixed(1) + '%;background:var(--up)"></i></div></div>' +
         '<div class="val">' + val(r) + "</div></li>";
     }).join("") + "</ol>";
@@ -1012,9 +1013,9 @@
   function schedList(rows) {
     if (!rows || !rows.length) return '<p class="hf-empty">Aktuell keine Fälle.</p>';
     return '<ol class="hf-list hf-smlist">' + rows.map(function (r, i) {
-      var it = tickerItem(r.ticker), l = r.latest || {}, url = secFilingUrl(l.accession);
+      var it = tickerItem(r.ticker, r.name), l = r.latest || {}, url = secFilingUrl(l.accession);
       return '<li class="hf-li"><span class="rk">' + (i + 1) + "</span>" + logo(it, "lg") +
-        '<div class="nm"><b><a href="' + tickerHref(r.ticker) + '">' + esc(it.name === it.ticker ? it.ticker : issuerName(it)) + '</a></b><span class="sub"><em>' + esc(r.ticker) + "</em>" +
+        '<div class="nm"><b><a href="' + tickerHref(r.ticker) + '">' + esc(tickerName(it)) + '</a></b><span class="sub"><em>' + esc(r.ticker) + "</em>" +
         esc((l.filers || []).slice(0, 2).map(prettyIssuer).join(", ")) + "</span></div>" +
         '<div class="val"><b>' + dateDE(l.filed) + "</b><small>" + (url ? '<a href="' + url + '" target="_blank" rel="noopener">Meldung ' + icon("ext") + "</a>" : esc(l.form || "13D")) + "</small></div></li>";
     }).join("") + "</ol>";
