@@ -11,26 +11,53 @@ const hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
 const fail=code=>{throw Error(code);};
 const validSymbol=s=>typeof s==='string'&&/^[A-Z0-9][A-Z0-9.-]{0,39}$/.test(s)&&!s.includes('..');
 const validMIC=s=>typeof s==='string'&&/^[A-Z0-9]{4}$/.test(s);
+const EUROPEAN_MICS=new Set(['XETR','XFRA','XAMS','XPAR','XBRU','XHEL','XLON','XSWX','XSTO','XCSE','XOSL','XMAD','XMIL','XWBO','XLIS']);
+const shareClasses=new Set(['COMMON_SHARE','ORDINARY_SHARE','REGISTERED_ORDINARY_SHARE','PREFERRED_SHARE','LOCAL_CORPORATE_REIT_SHARE']);
+const date=d=>typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d)&&Number.isFinite(Date.parse(d))&&new Date(d).toISOString().slice(0,10)===d;
+function independentSource(source,asOf){
+ if(!source||typeof source.sourcePath!=='string'||!source.sourcePath.trim()||!/^[a-f0-9]{64}$/.test(source.sourceHash||'')||!date(source.referenceDate)||!date(asOf)||source.referenceDate>asOf)return false;
+ try{const url=new URL(source.sourceURL);return url.protocol==='https:'&&!/(^|\.)marketstack\.com$/.test(url.hostname);}catch{return false;}
+}
+function classSource(ref,row,asOf){const source=ref.shareClassSource;return source?.isin===row.isin&&source.mic===ref.preferredMIC&&source.shareClass===(ref.shareClass||row.shareClass)&&independentSource(source,asOf);}
+function scopedREITSource(ref,row,asOf){
+ const e=ref.classificationEvidence,valid=s=>s&&/^https:\/\//.test(s.url||'')&&/^[a-f0-9]{64}$/.test(s.sha256||'')&&date(s.referenceDate)&&s.referenceDate<=asOf;
+ let issuer;try{issuer=Identity.companyIdForLEI(e?.issuerLEI);}catch{return false;}
+ return classSource(ref,row,asOf)&&e?.isin===row.isin&&e.mic===ref.preferredMIC&&row.referencedIssuerId===issuer&&e.officialInstrumentType==='CS'&&e.quotationUnit==='Shares'&&Array.isArray(e.originalCFICodes)&&e.originalCFICodes.includes('CBCJXS')&&valid(e.officialSource)&&valid(e.regulatorySource)&&e.scope==='NAMED_LOCAL_CORE_CLASS_ONLY_NOT_GLOBAL_CFI_OR_PROVIDER_ASSET_TYPE_OVERRIDE';
+}
 export function planIdentityProbe(listingMap){
  const references=listingMap?.identityProbe;
  if(listingMap?.schemaVersion!=='de-eu-listing-map-1.0.0'||!Array.isArray(listingMap.listings)||references?.privateDevelopment!==true||references?.publicDisplay!==false||!Array.isArray(references.listings)||references.listings.length<1||references.listings.length>MAX_IDENTITY_TARGETS)fail('FROZEN_IDENTITY_PROBE_REQUIRED');
  const targets=[],seen=new Set();
  for(const ref of references.listings){
   const isin=Identity.normalizeISIN(ref.isin);
-  if(!isin||seen.has(isin)||ref.currentOfficialListing!==true||ref.preferredMIC!=='XETR'||!validSymbol(ref.officialLocalTicker))fail('IDENTITY_PROBE_REFERENCE_INVALID');
-  if(ref.shareClass&&(!['COMMON_SHARE','ORDINARY_SHARE','REGISTERED_ORDINARY_SHARE','PREFERRED_SHARE'].includes(ref.shareClass)||!ref.shareClassSource))fail('IDENTITY_PROBE_SHARE_CLASS_SOURCE_REQUIRED');
+  if(!isin||seen.has(isin)||ref.currentOfficialListing!==true||!EUROPEAN_MICS.has(ref.preferredMIC)||!validSymbol(ref.officialLocalTicker))fail('IDENTITY_PROBE_REFERENCE_INVALID');
+  if(ref.shareClass&&!(ref.shareClass==='UNKNOWN'&&ref.frozenProviderCandidates!==undefined)&&(!shareClasses.has(ref.shareClass)||!ref.shareClassSource))fail('IDENTITY_PROBE_SHARE_CLASS_SOURCE_REQUIRED');
   seen.add(isin);const row=listingMap.listings.find(r=>r.isin===isin&&r.mic===ref.preferredMIC);
   if(!row||row.securityId!==Identity.securityIdForISIN(isin)||row.listingId!==Identity.listingIdFor({isin,mic:row.mic})||typeof row.shareClass!=='string')fail('IDENTITY_PROBE_TARGET_NOT_CANONICAL');
-  const candidates=[],keys=new Set(),add=(symbol,mic,source,priorStatus)=>{
-   if(!validSymbol(symbol)||!validMIC(mic)||!['XETR','XFRA'].includes(mic))fail('IDENTITY_PROBE_CANDIDATE_INVALID');
+  const explicit=ref.frozenProviderCandidates!==undefined,asOf=listingMap.asOf;
+  if(ref.preferredMIC!=='XETR'&&!explicit)fail('EXPLICIT_EUROPEAN_CANDIDATES_REQUIRED');
+  const referenceClass=ref.shareClass||row.shareClass;
+  if(explicit&&referenceClass!=='UNKNOWN'&&(!shareClasses.has(referenceClass)||!classSource(ref,row,asOf)))fail('IDENTITY_PROBE_SHARE_CLASS_SOURCE_REQUIRED');
+  if(referenceClass==='LOCAL_CORPORATE_REIT_SHARE'&&!scopedREITSource(ref,row,asOf))fail('IDENTITY_PROBE_SCOPED_REIT_SOURCE_REQUIRED');
+  const candidates=[],keys=new Set(),add=(symbol,mic,source,priorStatus,referenceEvidence)=>{
+   if(!validSymbol(symbol)||!validMIC(mic)||!EUROPEAN_MICS.has(mic))fail('IDENTITY_PROBE_CANDIDATE_INVALID');
    const key=symbol+'@'+mic;if(keys.has(key))return;keys.add(key);
-   candidates.push({symbol,mic,source,priorStatus:priorStatus||null,providerVerified:false});
+   candidates.push({symbol,mic,source,priorStatus:priorStatus||null,providerVerified:false,...(referenceEvidence?{referenceEvidence}:{})});
   };
   // A suffix is a request candidate only. Exact provider response identity must
   // still corroborate it; no inferred symbol becomes a published mapping.
-  add(ref.officialLocalTicker+'.DE',ref.preferredMIC,'CURRENT_OFFICIAL_LOCAL_TICKER_UNVERIFIED_PROVIDER_CANDIDATE');
-  for(const candidate of ref.exactCachedProviderCandidates||[])add(candidate.providerSymbol,candidate.mic,'EXACT_CACHED_CANDIDATE_REQUIRES_CURRENT_RESPONSE',candidate.metadataStatus);
-  targets.push({reference:ref,row,candidates});
+  if(explicit){
+   if(!Array.isArray(ref.frozenProviderCandidates)||!ref.frozenProviderCandidates.length||ref.frozenProviderCandidates[0].mic!==ref.preferredMIC||ref.exactCachedProviderCandidates?.length)fail('FROZEN_PROVIDER_CANDIDATES_REQUIRED');
+   for(const candidate of ref.frozenProviderCandidates){
+    const e=candidate.referenceEvidence;
+    if(candidate.referenceVerified!==true||e?.isin!==isin||e.mic!==candidate.mic||!independentSource(e,asOf))fail('FROZEN_PROVIDER_CANDIDATE_REFERENCE_REQUIRED');
+    add(candidate.providerSymbol,candidate.mic,'FROZEN_REFERENCE_UNVERIFIED_PROVIDER_CANDIDATE',candidate.metadataStatus,e);
+   }
+  }else{
+   add(ref.officialLocalTicker+'.DE',ref.preferredMIC,'CURRENT_OFFICIAL_LOCAL_TICKER_UNVERIFIED_PROVIDER_CANDIDATE');
+   for(const candidate of ref.exactCachedProviderCandidates||[]){if(!['XETR','XFRA'].includes(candidate.mic))fail('EXPLICIT_EUROPEAN_CANDIDATES_REQUIRED');add(candidate.providerSymbol,candidate.mic,'EXACT_CACHED_CANDIDATE_REQUIRES_CURRENT_RESPONSE',candidate.metadataStatus);}
+  }
+  targets.push({reference:ref,row,candidates,...(explicit||referenceClass==='LOCAL_CORPORATE_REIT_SHARE'?{probeAsOf:asOf}:{})});
  }
  const candidateCount=targets.reduce((n,t)=>n+t.candidates.length,0);
  if(candidateCount>MAX_IDENTITY_CANDIDATES)fail('IDENTITY_PROBE_CANDIDATE_LIMIT');
@@ -47,11 +74,12 @@ export function verifyIdentityResponse(body,target,candidate){
  if(!exchanges.some(e=>(e.mic||e.exchange_mic)===candidate.mic))return {accepted:false,cause:'MAPPING_ERROR',reason:'RESPONSE_MIC_MISMATCH'};
  const type=Adapter.assetType(row.item_type||row.asset_type);
  const referenceClass=target.reference.shareClass||target.row.shareClass;
- const expected=referenceClass==='PREFERRED_SHARE'?'preferred_equity':['COMMON_SHARE','ORDINARY_SHARE','REGISTERED_ORDINARY_SHARE'].includes(referenceClass)?'equity':null;
+ const verifiedClass=(!target.reference.frozenProviderCandidates||referenceClass==='UNKNOWN'||classSource(target.reference,target.row,target.probeAsOf))&&(referenceClass!=='LOCAL_CORPORATE_REIT_SHARE'||scopedREITSource(target.reference,target.row,target.probeAsOf));
+ const expected=!verifiedClass?null:referenceClass==='PREFERRED_SHARE'?'preferred_equity':['COMMON_SHARE','ORDINARY_SHARE','REGISTERED_ORDINARY_SHARE','LOCAL_CORPORATE_REIT_SHARE'].includes(referenceClass)?'equity':null;
  if(!type)return {accepted:false,cause:'MAPPING_ERROR',reason:'RESPONSE_SHARE_CLASS_MISMATCH'};
  if(!expected)return {accepted:false,identityMatched:true,providerAssetType:type,cause:'MAPPING_ERROR',reason:'OFFICIAL_SHARE_CLASS_UNRESOLVED'};
  if(type!==expected&&!(expected==='preferred_equity'&&type==='equity'))return {accepted:false,cause:'MAPPING_ERROR',reason:'RESPONSE_SHARE_CLASS_MISMATCH'};
- return {accepted:true,resolutionStatus:candidate.mic===target.row.mic&&candidate.symbol===target.reference.officialLocalTicker+'.DE'?'FOUND':'ALIAS_RESOLVED'};
+ return {accepted:true,resolutionStatus:candidate.mic===target.row.mic&&candidate.symbol===(target.reference.frozenProviderCandidates?.[0]?.providerSymbol||target.reference.officialLocalTicker+'.DE')?'FOUND':'ALIAS_RESOLVED'};
 }
 export function classifyMetadataFailure(response){
  return {accepted:false,cause:['authError','quotaExceeded','entitlementRestricted'].includes(response.reason)?'ENTITLEMENT_BLOCKED':response.status===404||response.reason==='dataUnavailable'?'UNSUPPORTED_LISTING':'PROVIDER_DATA_DEFECT',reason:response.status===404?'PROVIDER_SYMBOL_NOT_FOUND':response.reason};
@@ -65,7 +93,9 @@ export function identityResolution(attempts,accepted=null,terminalReason=null){
 export async function probeIdentity({listingMap,accountEvidence,privateDir,asOf,runId,clientFactory,now=Date.now}={}){
  assertPrivateOutput(privateDir,{allowCache:true});
  if(listingMap?.asOf!==asOf||!/^\d{4}-\d{2}-\d{2}$/.test(asOf||''))fail('FIXED_IDENTITY_PROBE_AS_OF_REQUIRED');
- const plan=planIdentityProbe(listingMap),budget=createSharedBudget({file:join(privateDir,'shared-budget.json'),runId,evidence:accountEvidence,now});
+ const plan=planIdentityProbe(listingMap);
+ if(plan.targets.some(t=>t.probeAsOf)&&(!accountEvidence||accountEvidence.kind!=='USER_AUTHORIZED_BOUNDED_RUN'||accountEvidence.referenceHash!==hash(listingMap)))fail('IDENTITY_PROBE_AUTHORIZATION_REFERENCE_MISMATCH');
+ const budget=createSharedBudget({file:join(privateDir,'shared-budget.json'),runId,evidence:accountEvidence,now});
  const opening=await budget.status();if(opening.creditsRemaining<plan.candidateCount)fail('IDENTITY_PROBE_BUDGET_INSUFFICIENT');
  const write=(p,value)=>{rejectSymlinkAncestors(p);mkdirSync(resolve(p,'..'),{recursive:true,mode:0o700});writeFileSync(p,JSON.stringify(value)+'\n',{mode:0o600});};
  let sourceHashes=[],sourceStatuses=[];const onResponse=async response=>{const id=hash(response);write(join(privateDir,'source',id+'.json'),response);sourceHashes.push(id);sourceStatuses.push(response.status);};
@@ -82,7 +112,7 @@ export async function probeIdentity({listingMap,accountEvidence,privateDir,asOf,
    if(['authError','quotaExceeded','entitlementRestricted','SHARED_BUDGET_EXCEEDED'].includes(response.reason)){terminalReason=response.reason;break;}
    if(check.accepted){
     const sameListing=candidate.mic===target.row.mic;
-    accepted={targetListingId:target.row.listingId,securityId:target.row.securityId,listingId:Identity.listingIdFor({isin:target.row.isin,mic:candidate.mic}),isin:target.row.isin,providerSymbol:candidate.symbol,mic:candidate.mic,shareClass:target.reference.shareClass||target.row.shareClass,resolutionStatus:check.resolutionStatus,mappingStatus:'VERIFIED_IDENTITY_ONLY',providerIdentityBasis:'CURRENT_EXACT_RESPONSE_ISIN_MIC',mappingSource:['sha256:'+sourceHashes.at(-1)],shareClassSource:target.reference.shareClassSource||target.row.mappingSource||null,listingSelection:sameListing?'PRIMARY':'VERIFIED_ALTERNATIVE',tradingCurrency:sameListing?target.row.tradingCurrency:null,currencyStatus:sameListing?'EXISTING_INDEPENDENT_LISTING_BASIS':'ALTERNATIVE_LISTING_CURRENCY_UNVERIFIED',priceHistoryAdmitted:false};
+    accepted={targetListingId:target.row.listingId,securityId:target.row.securityId,listingId:Identity.listingIdFor({isin:target.row.isin,mic:candidate.mic}),isin:target.row.isin,providerSymbol:candidate.symbol,mic:candidate.mic,shareClass:target.reference.shareClass||target.row.shareClass,resolutionStatus:check.resolutionStatus,mappingStatus:'VERIFIED_IDENTITY_ONLY',providerIdentityBasis:'CURRENT_EXACT_RESPONSE_ISIN_MIC',mappingSource:['sha256:'+sourceHashes.at(-1)],shareClassSource:target.reference.shareClassSource||target.row.mappingSource||null,...((target.reference.shareClass||target.row.shareClass)==='LOCAL_CORPORATE_REIT_SHARE'?{classificationEvidence:target.reference.classificationEvidence}:{}),listingSelection:sameListing?'PRIMARY':'VERIFIED_ALTERNATIVE',tradingCurrency:sameListing?target.row.tradingCurrency:null,currencyStatus:sameListing?'EXISTING_INDEPENDENT_LISTING_BASIS':'ALTERNATIVE_LISTING_CURRENCY_UNVERIFIED',priceHistoryAdmitted:false};
     mappingDelta.push(accepted);break;
    }
    if(check.identityMatched)break;

@@ -89,15 +89,16 @@ export function checkCalendarWindow({ calendar, mic, start, end } = {}) {
 }
 
 export function checkEuropeanEodFreshness({ calendar, mic, latestDate } = {}) {
-  if (!dateOK(latestDate)) return { status: 'BLOCKED', cause: 'PROVIDER_DATA_DEFECT', latestDate: latestDate || null };
+  if (!dateOK(latestDate)) return { status: 'BLOCKED', state: 'INVALID_EOD', cause: 'PROVIDER_DATA_DEFECT', latestDate: latestDate || null };
   if (!calendar?.verified || calendar.mic !== mic || !calendar.expectedLastSession) return {
-    status: 'BLOCKED', cause: 'MISSING_CALENDAR_BASIS', latestDate, expectedLastSession: null,
+    status: 'BLOCKED', state: 'UNKNOWN', cause: 'MISSING_CALENDAR_BASIS', latestDate, expectedLastSession: null,
     lastProvenCompletedSession: calendar?.lastProvenCompletedSession || null, evidence: calendar?.evidence || [] };
   const expected = calendar.expectedLastSession;
   if (!calendar.expectedSessions.includes(latestDate) || latestDate > expected) return {
-    status: 'BLOCKED', cause: 'PROVIDER_DATA_DEFECT', latestDate, expectedLastSession: expected,
+    status: 'BLOCKED', state: 'INVALID_EOD', cause: 'PROVIDER_DATA_DEFECT', latestDate, expectedLastSession: expected,
     reason: 'The EOD date is outside a completed session for this verified MIC calendar.' };
   return { status: latestDate === expected ? 'READY' : 'PARTIAL', cause: latestDate === expected ? null : 'STALE_EOD',
+    state: latestDate !== expected ? 'STALE' : expected === calendar.localClock.date ? 'FRESH_CURRENT_SESSION' : 'FRESH_LAST_VALID_SESSION',
     latestDate, expectedLastSession: expected, lagSessions: calendar.expectedSessions.filter((d) => d > latestDate && d <= expected).length,
     dataKind: 'EOD', completionBasis: calendar.completionBasis, evidence: calendar.evidence };
 }

@@ -43,6 +43,17 @@
       logo.companyId === (row.companyId || row.referencedIssuerId) && /^[A-Z0-9.\-]{1,24}$/.test(logo.symbol || '') ? logo.symbol : '';
   }
   function unitLabel(currency, unit) { return unit === 'MINOR' ? currency === 'GBP' ? 'GBX' : currency + ' Untereinheit' : !unit || unit === 'MAJOR' ? currency : unit; }
+  function freshnessLabel(status) {
+    return { CURRENT: 'letzte bestätigte Handelssitzung', FRESH_CURRENT_SESSION: 'bestätigte aktuelle Sitzung',
+      FRESH_LAST_VALID_SESSION: 'letzte bestätigte Handelssitzung', DELAYED_EXPECTED: 'Tageskurs noch ausstehend',
+      STALE_CACHE: 'veralteter Quellenstand', STALE: 'veralteter Quellenstand', MISSING: 'Kurs fehlt', INVALID: 'Kurs gesperrt' }[status] || 'Aktualität nicht bestätigt';
+  }
+  function readinessLabel(proof, kind) {
+    var labels = { CHART_READY: 'Chart freigegeben', CHART_READY_WITH_LIMITATION: 'Chart mit Einschränkung', CHART_BLOCKED: 'Chart gesperrt',
+      TECHNICAL_READY: 'Technik freigegeben', TECHNICAL_PARTIAL: 'Technik teilweise freigegeben', TECHNICAL_BLOCKED: 'Technik gesperrt' };
+    var expected = { CHART_READY: 'READY', CHART_READY_WITH_LIMITATION: 'PARTIAL', CHART_BLOCKED: 'BLOCKED', TECHNICAL_READY: 'READY', TECHNICAL_PARTIAL: 'PARTIAL', TECHNICAL_BLOCKED: 'BLOCKED' };
+    return proof && proof.status === expected[proof.state] && labels[proof.state] || (kind === 'chart' ? 'Chart' : 'Technik') + ' noch nicht geprüft';
+  }
   function create(opts) {
     if (!opts || !opts.core) throw Error('LOCAL_LISTINGS_NEEDS_CORE');
     var core = opts.core;
@@ -59,5 +70,5 @@
     };
   }
   return { KEY: KEY, create: create, validId: validId, reference: reference, saved: saved, resolveSaved: resolveSaved, contains: contains,
-    toggle: toggle, href: href, logoSymbol: logoSymbol, unitLabel: unitLabel };
+    toggle: toggle, href: href, logoSymbol: logoSymbol, unitLabel: unitLabel, freshnessLabel: freshnessLabel, readinessLabel: readinessLabel };
 });

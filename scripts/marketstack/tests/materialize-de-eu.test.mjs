@@ -1,11 +1,38 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {directory,closeSeries,materialize} from '../materialize-de-eu.mjs';
+import {directory,closeSeries,materialize,certifiedReadiness} from '../materialize-de-eu.mjs';
+import {createHash} from 'node:crypto';
 import {mkdtempSync,readFileSync,writeFileSync,rmSync,symlinkSync,mkdirSync,readdirSync,lstatSync,utimesSync,chmodSync,existsSync,linkSync} from 'node:fs';import {join} from 'node:path';import {tmpdir} from 'node:os';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url),Core=require('../../../core/client.js');
 import {permitted} from '../../vu2/build-release.mjs';
 const row={isin:'DE0007164600',mic:'XETR',ticker:'SAP',assetType:'EQUITY',mappingStatus:'VERIFIED',mappingSource:'official',indexMemberships:['DAX','DAX','TECDAX'],tradingCurrency:'EUR',quoteUnit:'MAJOR',listingCountry:'DE'};
 const h={isin:row.isin,mic:row.mic,currency:'EUR',quoteUnit:'MAJOR',provider:'marketstack',sourceEvidence:'original sha',points:[['2026-10-01',100],['2026-10-02',101]],quality:{status:'PARTIAL',gaps:['2026-09-30']}};
+test('certified chart window is a distinct central projection; current price remains full-series truth',async()=>{
+ const out=mkdtempSync(join(tmpdir(),'vu-certified-window-'));try{
+  const r=directory([row],'2026-10-06').listings[0],bars=h.points.map(p=>({date:p[0],close:p[1]}));
+  const history={...h,bars},inputSeriesHash=createHash('sha256').update(JSON.stringify(bars)).digest('hex');
+  const proof={status:'PARTIAL',state:'CHART_READY_WITH_LIMITATION',asOf:'2026-10-02',inputSeriesHash,window:{start:'2026-10-02',end:'2026-10-02'},evidence:['sha256:actual-cert'],cause:'UNKNOWN_ADJUSTMENT_BASIS'};
+  const input={rows:[row],histories:{[r.listingId]:history},asOf:'2026-10-06',out,expectedSessions:{XETR:'2026-10-02'},readiness:{[r.listingId]:{chart:proof}}};
+  materialize(input);const c=Core.create({load:async path=>JSON.parse(readFileSync(join(out,path),'utf8'))});
+  const [series,latest,screen,list]=await Promise.all([c.getListingPriceSeries(r.listingId),c.getListingLatestPrice(r.listingId),c.getListingScreener(),c.getListing(r.listingId)]);
+  assert.equal(series.state,'AVAILABLE');assert.deepEqual(series.data.chartPoints,[h.points[1]]);assert.deepEqual(series.data.points,h.points);
+  assert.equal(latest.data.close,101);assert.deepEqual(latest.data,screen.data.listings[0].price);assert.deepEqual(series.data.readiness,list.data.readiness);
+  assert.equal(series.data.readiness.technical.status,'NOT_TESTED');assert.equal(latest.data.provider,'marketstack');assert.deepEqual(latest.data.quality,h.quality);
+  assert.equal(materialize(input).changed,false);
+  for(const patch of [{inputSeriesHash:'0'.repeat(64)},{asOf:'2026-10-06'},{evidence:[]},{status:'READY'},{window:{start:'2026-09-01',end:'2026-10-01'}}])assert.throws(()=>materialize({...input,readiness:{[r.listingId]:{chart:{...proof,...patch}}}}),/READINESS_/);
+  assert.throws(()=>materialize({...input,expectedSessions:{XETR:'2026-10-05'}}),/CHART_FRESHNESS_CONTRADICTION/);
+  const p=join(out,'core/data/de-eu/series',r.listingId+'.json'),v=JSON.parse(readFileSync(p));v.chartPoints=h.points;writeFileSync(p,JSON.stringify(v));
+  const tampered=Core.create({load:async path=>JSON.parse(readFileSync(join(out,path),'utf8'))});assert.equal((await tampered.getListingPriceSeries(r.listingId)).reason,'LOCAL_CHART_WINDOW_INVALID');
+ }finally{rmSync(out,{recursive:true,force:true});}
+});
+test('a stale EOD cannot acquire a READY freshness state through readiness evidence',()=>{
+ const series={asOf:'2026-10-02',points:h.points};
+ assert.throws(()=>certifiedReadiness({latestEod:{status:'READY',state:'STALE',asOf:series.asOf,inputSeriesHash:'a'.repeat(64),window:{start:series.asOf,end:series.asOf},evidence:['calendar']}},series,'a'.repeat(64)),/STATUS_STATE_MISMATCH/);
+ const proof={status:'READY',state:'FRESH_LAST_VALID_SESSION',asOf:series.asOf,inputSeriesHash:'a'.repeat(64),window:{start:series.asOf,end:series.asOf},evidence:['calendar']};
+ for(const freshness of ['STALE','UNKNOWN','STALE_CACHE'])assert.throws(()=>certifiedReadiness({latestEod:proof},{...series,expectedSession:'2026-10-06',freshness},proof.inputSeriesHash),/FRESHNESS_CONTRADICTION/);
+ assert.throws(()=>certifiedReadiness({latestEod:proof},{...series,expectedSession:null,freshness:'CURRENT'},proof.inputSeriesHash),/FRESHNESS_CONTRADICTION/);
+ assert.equal(certifiedReadiness({latestEod:proof},{...series,expectedSession:series.asOf,freshness:'CURRENT'},proof.inputSeriesHash).latestEod.status,'READY');
+});
 test('issuer domicile is independently proved and never inferred from Xetra or DAX membership',()=>{
  const companyReference={lei:'549300V9QSIG4WX4GJ96',domicileCountry:'NL',basis:'EXACT_GLEIF_ISIN_LEI_REFERENCE',
   evidence:{sourceSystem:'GLEIF_ANNA_ISIN_TO_LEI_AND_GLEIF_LEGAL_ENTITY_REFERENCE',leiBatchResponseSHA256:'a'.repeat(64),leiRecordURL:'https://api.gleif.org/api/v1/lei-records/549300V9QSIG4WX4GJ96'}};
@@ -92,5 +119,18 @@ test('stale extra files force a clean generated tree; symlinks and hardlinks nev
  writeFileSync(join(target,'stale.json'),'stale');assert.equal(materialize(input).changed,true);assert.equal(existsSync(join(target,'stale.json')),false);
  const external=join(out,'protected.json');writeFileSync(external,'protected',{mode:0o644});chmodSync(external,0o644);const original=treeSnapshot(out);symlinkSync(external,join(target,'unowned.json'));assert.throws(()=>materialize(input),/SYMLINK/);assert.equal(readFileSync(external,'utf8'),'protected');assert.equal(existsSync(target+'.previous'),false);rmSync(join(target,'unowned.json'));
  linkSync(external,join(target,'unowned.json'));assert.throws(()=>materialize(input),/LINK_REJECTED/);assert.equal(lstatSync(external).mode&0o777,0o644);rmSync(join(target,'unowned.json'));assert.equal(treeSnapshot(out)['protected.json'].mtime,original['protected.json'].mtime);
+ }finally{rmSync(out,{recursive:true,force:true});}
+});
+
+test('optional consumer compaction preserves prices, readiness gates and full private input hashes',()=>{
+ const out=mkdtempSync(join(tmpdir(),'vu-local-compact-'));try{
+  const r=directory([row],'2026-10-06').listings[0],bars=h.points.map(p=>({date:p[0],close:p[1]})),hash=createHash('sha256').update(JSON.stringify(bars)).digest('hex');
+  const evidence=Array.from({length:80},(_,i)=>'private-long-original-source-'+i+'x'.repeat(200)),proof={status:'READY',state:'CHART_READY',asOf:'2026-10-02',dataAsOf:'2026-10-06',inputSeriesHash:hash,window:{start:h.points[0][0],end:'2026-10-02'},evidence};
+  const input={rows:[{...row,aliases:['SAP local'],sourceEvidence:evidence,referenceEvidence:[{privateGraph:'x'.repeat(50000)}]}],histories:{[r.listingId]:{...h,bars}},asOf:'2026-10-06',expectedSessions:{XETR:'2026-10-02'},readiness:{[r.listingId]:{chart:proof}},out};
+  const before=JSON.stringify(input);materialize({...input,compactConsumerProjection:true});assert.equal(JSON.stringify(input),before);
+  const dir=JSON.parse(readFileSync(join(out,'core/data/de-eu/listings.json'))),series=JSON.parse(readFileSync(join(out,'core/data/de-eu/series',r.listingId+'.json'))),scr=JSON.parse(readFileSync(join(out,'core/data/de-eu/screener.json')));
+  const compact=dir.listings[0];assert.equal(compact.sourceEvidence,undefined);assert.equal(compact.referenceEvidence,undefined);assert.deepEqual(compact.aliases,['SAP local']);assert.match(compact.privateMetadataHash,/^[a-f0-9]{64}$/);
+  assert.equal(compact.readiness.chart.status,'READY');assert.equal(compact.readiness.chart.evidence.length,1);assert.equal(compact.readiness.chart.evidenceCount,80);assert.equal(compact.readiness.chart.fullProofHash,createHash('sha256').update(JSON.stringify(proof)).digest('hex'));assert.deepEqual(series.readiness,compact.readiness);assert.deepEqual(scr.listings[0].price.readiness,compact.readiness);assert.deepEqual(series.points,h.points);assert.equal(materialize({...input,compactConsumerProjection:true}).changed,false);
+  proof.window.end='2026-10-07';assert.throws(()=>materialize({...input,compactConsumerProjection:true}),/EVIDENCE_MISMATCH/);
  }finally{rmSync(out,{recursive:true,force:true});}
 });

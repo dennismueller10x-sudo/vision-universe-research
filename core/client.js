@@ -62,7 +62,9 @@
       close: last[1], date: last[0], previousClose: prev ? prev[1] : null, previousDate: prev ? prev[0] : null,
       changePercent: prev && s.changeVerified ? Math.round((last[1] / prev[1] - 1) * 1e6) / 1e4 : null,
       basis: s.basis, currency: s.currency, quoteUnit: s.quoteUnit, kind: "EOD_CLOSE", dataKind: "EOD_CLOSE",
-      freshness: s.freshness, expectedSession: s.expectedSession, retrievedAt: s.retrievedAt };
+      freshness: s.freshness, expectedSession: s.expectedSession, retrievedAt: s.retrievedAt,
+      provider: s.provider || null, apiVersion: s.apiVersion || null, quality: s.quality || null,
+      readiness: s.readiness || null };
   }
 
   function available(source, asOf, data) { return { state: "AVAILABLE", reason: null, source: source, asOf: asOf || null, data: data }; }
@@ -271,10 +273,22 @@
       }
       if (!validDay(s.asOf) || s.points[s.points.length - 1][0] !== s.asOf || s.asOf > listing.asOf ||
           (s.expectedSession && (!validDay(s.expectedSession) || s.asOf > s.expectedSession))) return unavailable("INVALID_SERIES_DATE", src);
+      if (s.readiness && JSON.stringify(s.readiness) !== JSON.stringify(row.readiness)) return unavailable("LOCAL_READINESS_DRIFT", src);
+      if (s.chartPoints) {
+        var proof = s.readiness && s.readiness.chart, w = s.chartWindow;
+        if (!proof || ["READY", "PARTIAL"].indexOf(proof.status) < 0 || !w ||
+            JSON.stringify(w) !== JSON.stringify(proof.window) || !validDay(w.start) || !validDay(w.end) ||
+            !Array.isArray(s.chartPoints) || !s.chartPoints.length || s.chartPoints[0][0] !== w.start ||
+            s.chartPoints[s.chartPoints.length - 1][0] !== w.end ||
+            JSON.stringify(s.chartPoints) !== JSON.stringify(s.points.filter(function (p) { return p[0] >= w.start && p[0] <= w.end; })))
+          return unavailable("LOCAL_CHART_WINDOW_INVALID", src);
+      }
       return available(src, s.asOf, { listingId: id, securityId: row.securityId, ticker: row.ticker, mic: row.mic,
         currency: s.currency, quoteUnit: s.quoteUnit, basis: s.basis, grain: "daily", points: s.points,
         from: s.points[0][0], to: s.asOf, quality: s.quality || null, kind: "EOD_CLOSE", retrievedAt: s.retrievedAt || null,
-        expectedSession: s.expectedSession || null, freshness: s.freshness || "UNKNOWN", changeVerified: s.changeVerified === true });
+        expectedSession: s.expectedSession || null, freshness: s.freshness || "UNKNOWN", changeVerified: s.changeVerified === true,
+        provider: s.provider, apiVersion: s.apiVersion || null, readiness: s.readiness || null,
+        chartPoints: s.chartPoints || null, chartWindow: s.chartWindow || null });
     }
     async function getListingLatestPrice(id) {
       var s = await getListingPriceSeries(id); if (s.state !== "AVAILABLE") return s;
