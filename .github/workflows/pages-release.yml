@@ -121,6 +121,7 @@ jobs:
     outputs:
       source_sha: ${{ steps.delivery_contract.outputs.source_sha }}
       ci_enabled: ${{ steps.ci_stage.outputs.enabled }}
+      ci_full_acceptance: ${{ steps.consumer_review.outputs.required }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     # Ein gescheiterter Datenlauf hat nichts veroeffentlicht (siehe
@@ -138,6 +139,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Bind full consumer review to explicit acceptance or a production UI change
+        id: consumer_review
+        env:
+          REQUESTED: ${{ inputs.company_intelligence_acceptance }}
+          PUSH_BASE: ${{ github.event.before }}
+        run: |
+          required=false
+          if [ "$REQUESTED" = true ]; then
+            required=true
+          elif [ "$GITHUB_EVENT_NAME" = push ]; then
+            # Exact previous production ref, not a moving comparison to main.
+            [[ "$PUSH_BASE" =~ ^[a-f0-9]{40}$ ]] || exit 1
+            git fetch --no-tags --depth=1 origin "$PUSH_BASE"
+            changed=$(git diff --name-only "$PUSH_BASE" HEAD -- company-intelligence/ui company-intelligence/api company-intelligence/config/rollout.js)
+            if [ -n "$changed" ]; then required=true; fi
+          fi
+          echo "required=$required" >> "$GITHUB_OUTPUT"
       - name: Install pinned release compiler
         run: npm install --prefix /tmp/vu2-release esbuild@0.25.10
       - name: Build static product delivery
@@ -291,7 +309,7 @@ jobs:
       contents: read
       actions: write
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
@@ -301,7 +319,7 @@ jobs:
         env:
           EMERGENCY_OFF: ${{ inputs.company_intelligence_off }}
           PACKAGED_CI_ENABLED: ${{ needs.package.outputs.ci_enabled }}
-          FULL_ACCEPTANCE: ${{ inputs.company_intelligence_acceptance }}
+          FULL_ACCEPTANCE: ${{ needs.package.outputs.ci_full_acceptance }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
           VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
@@ -348,7 +366,7 @@ jobs:
           NODE_PATH: /tmp/ci-live/node_modules
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
           EXPECTED_PRODUCTION_SHA: ${{ needs.package.outputs.source_sha }}
-          FULL_ACCEPTANCE: ${{ inputs.company_intelligence_acceptance }}
+          FULL_ACCEPTANCE: ${{ needs.package.outputs.ci_full_acceptance }}
         run: |
           if [ "$FULL_ACCEPTANCE" != true ]; then
             node scripts/company_intelligence/live-production-qa.mjs --routine --out "$RUNNER_TEMP/live-fast"
@@ -357,6 +375,7 @@ jobs:
           node scripts/company_intelligence/live-production-qa.mjs --out "$RUNNER_TEMP/live-fast"
           node scripts/company_intelligence/discover-beta-qa.mjs --url https://research.visionuniverse.de --candidate docs/company-intelligence/full-data-release-candidate.json --production --phase actual --out "$RUNNER_TEMP/live-cohort"
           node scripts/company_intelligence/discover-beta-qa.mjs --url https://research.visionuniverse.de --candidate docs/company-intelligence/full-data-release-candidate.json --production --phase dark --out "$RUNNER_TEMP/live-dark"
+          node scripts/company_intelligence/consumer-experience-qa.mjs --version after --out "$RUNNER_TEMP/live-v2"
       - name: Fail-closed persistent consumer gate and emergency Pages rollback
         if: failure() && steps.approved.outputs.prepared == 'true' && inputs.company_intelligence_off != true
         env:
@@ -380,5 +399,6 @@ jobs:
             ${{ runner.temp }}/live-fast/
             ${{ runner.temp }}/live-cohort/
             ${{ runner.temp }}/live-dark/
+            ${{ runner.temp }}/live-v2/
             ${{ runner.temp }}/live-off/
           retention-days: 14

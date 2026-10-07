@@ -3,7 +3,7 @@
 import {spawnSync} from 'node:child_process';
 import {readdirSync,writeFileSync} from 'node:fs';
 import {resolve,join} from 'node:path';
-const baseline='829b35bdce417a78ed2cf44319df347d747ac615';
+const baseline='b2d0f3c842895d631b2cd4825c74df9f8d5ca670';
 const run=(cmd,args,cwd=process.cwd())=>spawnSync(cmd,args,{cwd,encoding:'utf8',maxBuffer:64*1024*1024});
 const protectedPaths=['quant/data','quant/engines','quant/tests','providers','scripts/market','scripts/quant'];
 const diff=run('git',['diff','--name-only',baseline,'HEAD','--',...protectedPaths]);
