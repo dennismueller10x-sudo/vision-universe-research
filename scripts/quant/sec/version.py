@@ -150,7 +150,15 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          Gesamtertrag (Revenues), in den 10-Qs nur den Vertragsumsatz; FY
 #          minus 9M ergab ein "Q4" von 4.376 Mio. bei Quartalen um 1,25 Mrd.
 #          Sonst bleibt das Quartal eine Luecke (wie in der Ground Truth).
-NORMALIZATION_LOGIC_VERSION = "1.14.0"
+# 1.15.0 — Red-Team-Korrektur von 1.13/1.14: (a) ein Gesamtkonzept faellt nur weg,
+#          wenn es nicht positiv ist oder unter der Haelfte eines anderen Konzepts
+#          derselben Einreichung liegt (Teilbetraege FLS/PESI/VTSI/GEN/VRRM <= 12 %;
+#          Nettogesamtumsatz mit negativem Bestandteil UPST/PXD/FCX/PENN 80-98 %);
+#          (b) ein Quartal wird ueber das Konzept abgeleitet, das beide Kumulwerte
+#          gemeldet haben (gleiche Einreichung, Flags ALT:); ohne Beleg fuer einen
+#          Unterschied wie bisher. 1.14.0 verwarf auch korrekte Ableitungen (NVDA
+#          Q4 FY2021 5.003 Mio.); die Ground Truth leitet sie ab.
+NORMALIZATION_LOGIC_VERSION = "1.15.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -181,7 +189,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "042eef633da6cb63dc6ae35cfeefead134af96277baf9d09d2634e1fb9aeb0b3"
+    "dd33ef11f5016bfa1cadeeca382c8220c7e29fb524e644a26cf7fd8c5ec01c7b"
 )
 
 

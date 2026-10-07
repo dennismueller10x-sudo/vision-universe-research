@@ -42,6 +42,13 @@ ISSUE_UNPLACEABLE_PERIOD = "UNPLACEABLE_PERIOD"
 # Two concepts mapped to the same metric and period that differ by more than
 # this relative amount are reported; the higher-priority concept still wins.
 CONCEPT_DISAGREEMENT_TOLERANCE = 0.005
+# An aggregate below this share of another concept of the same filing is a
+# partial amount, not the total (see _drop_partial_aggregates).
+PARTIAL_AGGREGATE_RATIO = 0.5
+# Same-filing values of the other accepted concepts, kept on the observation as
+# "ALT:<taxonomy>:<concept>=<value>" so a derived quarter can subtract two
+# cumulative points of ONE concept (periods.py). Not a quality signal.
+FLAG_ALTERNATE_PREFIX = "ALT:"
 
 
 def period_end_for_cover_date(cover_date, observed_ends):
@@ -104,16 +111,22 @@ def _currency(unit):
 
 
 def _drop_partial_aggregates(entries, definition):
-    """A total is never smaller than a component of the same filing.
+    """An aggregate (us-gaap:Revenues) is not this filing's total when it is a
+    fraction of another concept of the same metric and currency.
 
-    us-gaap:Revenues outranks the ASC 606 contract revenue because it is the
-    total (AMT Q3 2019: 1,953.6 million against 137.3 million). Some filers tag
-    a partial amount with it instead: FLS reports Revenues = 0 in every 10-Q
-    next to 1,169 million contract revenue, PESI a 10-K Revenues of 642,000
-    next to 61.7 million. Where a positive component in the same currency is
-    larger by more than the disagreement tolerance, the aggregate is not this
-    filing's total and the next concept decides - as it did before Revenues
-    was ranked first.
+    Revenues outranks the ASC 606 contract revenue because it is the total
+    (AMT Q3 2019: 1,953.6 million against 137.3 million). Some filers tag a
+    partial amount with it instead: FLS reports Revenues = 0 in every 10-Q,
+    PESI a 10-K Revenues of 642,000 next to 61.7 million, VTSI, GEN and VRRM
+    1 to 12 percent of the contract revenue. A total may also legitimately be
+    SMALLER than the contract revenue when another component is negative:
+    UPST Q2 2022 Revenues 228.2 million = 258.3 million contract revenue
+    - 30.2 million RevenueNotFromContractWithCustomer; PXD, FCX and PENN
+    (derivatives, provisional pricing, promotional allowances) sit at 80 to
+    98 percent. Every partial case measured lies below half of the component,
+    every net total above it, so the aggregate is dropped only when it is
+    not positive or below PARTIAL_AGGREGATE_RATIO of a positive component;
+    then the next concept decides, as it did before Revenues was ranked first.
     """
     if len(entries) < 2:
         return entries
@@ -123,12 +136,22 @@ def _drop_partial_aggregates(entries, definition):
     unit = top.unit
     larger = [fact for _, fact in entries[1:]
               if fact.unit == unit and fact.value > 0
-              and fact.value - top.value > CONCEPT_DISAGREEMENT_TOLERANCE * max(abs(fact.value), abs(top.value), 1.0)]
+              and (top.value <= 0 or top.value < PARTIAL_AGGREGATE_RATIO * fact.value)]
     if not larger:
         return entries
     rest = [entry for entry in entries
             if not definition.is_aggregate(entry[1].taxonomy, entry[1].concept)]
     return rest or entries
+
+
+def _alternate_flags(fact, rivals):
+    seen, flags = {fact.concept}, []
+    for other in rivals:
+        if other.unit != fact.unit or other.concept in seen:
+            continue
+        seen.add(other.concept)
+        flags.append(f"{FLAG_ALTERNATE_PREFIX}{other.taxonomy}:{other.concept}={other.value!r}")
+    return flags
 
 
 def _filing_currencies(raw_facts):
@@ -304,7 +327,7 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
             available_from=provenance.available_from,
             filed=fact.filed,
             quality=QUALITY_MEDIUM if flags else QUALITY_HIGH,
-            flags=flags,
+            flags=flags + _alternate_flags(fact, rivals),
             period_start=fact.start,
             period_end=period_end,
         )

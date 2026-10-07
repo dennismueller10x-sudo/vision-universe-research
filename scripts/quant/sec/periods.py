@@ -12,6 +12,7 @@ Labels used in storage:
   YTD2    cumulative first half        YTD3  cumulative nine months
   FY      full fiscal year (duration) or fiscal-year-end balance sheet (instant)
 """
+import dataclasses
 import logging
 
 from .model import (
@@ -30,6 +31,36 @@ QUARTERS = ("Q1", "Q2", "Q3", "Q4")
 CUMULATIVE_LABELS = {2: "YTD2", 3: "YTD3", 4: "FY"}
 FLAG_PERIOD_TRANSFORM = "VU_PERIOD_TRANSFORM"
 MAX_FIXPOINT_PASSES = 8
+
+
+ALTERNATE_PREFIX = "ALT:"  # normalize.FLAG_ALTERNATE_PREFIX
+
+
+def _alternates(observation):
+    """{concept: (taxonomy, value)} of the other concepts the same filing reported."""
+    out = {}
+    for flag in observation.flags or []:
+        if not flag.startswith(ALTERNATE_PREFIX):
+            continue
+        key, _, raw = flag[len(ALTERNATE_PREFIX):].rpartition("=")
+        taxonomy, _, concept = key.partition(":")
+        try:
+            out[concept] = (taxonomy, float(raw))
+        except ValueError:
+            continue
+    return out
+
+
+def _as_concept(observation, taxonomy, concept, value):
+    """The same filing's cell, read under another concept it also reported."""
+    return Observation(
+        value=value, unit=observation.unit,
+        provenance=dataclasses.replace(observation.provenance, taxonomy=taxonomy, concept=concept),
+        available_from=observation.available_from, filed=observation.filed,
+        quality=observation.quality,
+        flags=[flag for flag in observation.flags if not flag.startswith(ALTERNATE_PREFIX)],
+        period_start=observation.period_start, period_end=observation.period_end,
+    )
 
 
 def _combine(observations, value, transformation, unit):
@@ -56,7 +87,8 @@ def _combine(observations, value, transformation, unit):
         registry_version=latest.provenance.registry_version,
         normalization_version=latest.provenance.normalization_version,
     )
-    flags = sorted({flag for obs in observations for flag in obs.flags} | {FLAG_PERIOD_TRANSFORM})
+    flags = sorted({flag for obs in observations for flag in obs.flags
+                    if not flag.startswith(ALTERNATE_PREFIX)} | {FLAG_PERIOD_TRANSFORM})
     quality = QUALITY_MEDIUM if any(obs.quality != QUALITY_HIGH for obs in observations) else QUALITY_HIGH
     return Observation(
         value=value, unit=unit, provenance=provenance,
@@ -118,11 +150,15 @@ class PeriodResolver:
             return natives
 
         # Concepts behind each observation in this grid. A difference of two
-        # cumulative points is a quarter only if both measure the same concept:
-        # NTRS reports total revenue (Revenues, 8,086 million) in the 10-K but
-        # only contract revenue in its 10-Qs (nine months 3,710 million), and
-        # FY minus nine months gave a "Q4" of 4,376 million next to quarters
-        # of 1.25 billion. The ground truth derives within one tag only.
+        # cumulative points is a quarter only within ONE concept. NTRS reports
+        # total revenue (Revenues 8,086 million) AND contract revenue (5,018
+        # million) in the 10-K but only contract revenue in its 10-Qs; FY minus
+        # nine months across the two gave a "Q4" of 4,376 million. Where a filing
+        # also reported the other point's concept (ALT flags), the quarter is
+        # derived in that shared concept (5,018 - 3,710 = 1,307 million). Where
+        # neither filing reported the other's concept there is no evidence that
+        # the two tags measure different things (NVDA FY2021: 10-K contract
+        # revenue, 10-Qs Revenues) and the quarter is derived as before.
         concepts = {}
 
         def concepts_of(observation):
@@ -180,19 +216,31 @@ class PeriodResolver:
                         self.factbook.cik, metric, fiscal_year, index,
                         current.period_end, previous.period_end)
                     continue
-                mixed = concepts_of(current) | concepts_of(previous)
-                if len(mixed) > 1:
-                    LOGGER.warning(
-                        "cik=%s %s FY%s Q%d: cumulative points use different concepts %s; "
-                        "refusing to reconstruct", self.factbook.cik, metric, fiscal_year,
-                        index, sorted(mixed))
-                    continue
+                shared = concepts_of(current) & concepts_of(previous)
+                if not shared:
+                    alt_current, alt_previous = _alternates(current), _alternates(previous)
+                    for concept in sorted(concepts_of(previous)):
+                        if concept in alt_current:
+                            taxonomy, value = alt_current[concept]
+                            current = _as_concept(current, taxonomy, concept, value)
+                            shared = {concept}
+                            break
+                    if not shared:
+                        for concept in sorted(concepts_of(current)):
+                            if concept in alt_previous:
+                                taxonomy, value = alt_previous[concept]
+                                previous = _as_concept(previous, taxonomy, concept, value)
+                                shared = {concept}
+                                break
+                    if not shared:
+                        # No shared concept and no evidence of a difference.
+                        shared = concepts_of(current) | concepts_of(previous)
                 transformation = TRANSFORM_FY_MINUS_YTD if index == 4 else TRANSFORM_YTD_DIFF
                 natives[index] = _combine(
                     [current, previous], current.value - previous.value,
                     transformation, current.unit,
                 )
-                concepts[id(natives[index])] = mixed
+                concepts[id(natives[index])] = shared
                 changed = True
 
             if not changed:
