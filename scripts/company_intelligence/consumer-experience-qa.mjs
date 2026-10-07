@@ -40,7 +40,7 @@ try{
     await page.waitForFunction(cid=>{const e=document.querySelector('.ci-company-intelligence');return e?.dataset.state==='AVAILABLE'&&e.dataset.companyId===cid&&e.getAttribute('aria-busy')==='false';},cid,{timeout:15000});
    }
    const text=await chapter.innerText();const actualLoads=await page.evaluate(()=>window.__ciReviewLoads);
-   const payload=actualLoads.filter(r=>r.ticker===ticker&&r.payload?.state==='AVAILABLE').at(-1)?.payload;assert(payload&&payload.companyId===cid,ticker+' identity');
+   const payload=actualLoads.filter(r=>String(r.ticker).trim().toUpperCase()===ticker&&r.payload?.state==='AVAILABLE').at(-1)?.payload;assert(payload&&payload.companyId===cid,ticker+' identity');
    if(version==='after'){assert.equal(await chapter.getAttribute('data-company-id'),payload.companyId);assert.equal(await chapter.getAttribute('data-generated-at'),payload.generatedAt);}
    assert(!text.includes('derzeit nicht verfügbar'),ticker+' unavailable');assert.deepEqual(errors,[]);assert.equal(await page.locator('html').getAttribute('data-theme'),theme);
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,ticker+' page overflow');assert.equal(await chapter.evaluate(e=>e.scrollWidth>e.clientWidth),false,ticker+' chapter overflow');
