@@ -70,8 +70,10 @@ export function auditEuropeanCacheSeries({listing,history,calendar,asOf,sources=
  const sourceRows=new Map();
  for(const s of verifiedSources.filter(s=>s.endpoint?.startsWith('/eod')&&s.params?.symbols===listing.providerSymbol&&s.params?.exchange===listing.mic))
   for(const row of s.body?.data||[])sourceRows.set(String(row.date).slice(0,10),row);
- const sourcePriceMatchedDates=new Set(history.bars.filter(b=>{const row=sourceRows.get(b.date);return row&&row.exchange===listing.mic&&row.symbol===listing.providerSymbol&&['open','high','low','close'].every(k=>row[k]===b[k]);}).map(b=>b.date));
- const sourceVolumeMatchedDates=new Set(history.bars.filter(b=>{const row=sourceRows.get(b.date);return row&&row.exchange===listing.mic&&row.symbol===listing.providerSymbol&&row.volume===b.volume;}).map(b=>b.date));
+ const sourceIdentityMatches=row=>row&&row.exchange===listing.mic&&row.symbol===listing.providerSymbol
+  &&(row.exchange_code==null||row.exchange_code===listing.mic)&&(row.isin==null||row.isin===listing.isin);
+ const sourcePriceMatchedDates=new Set(history.bars.filter(b=>{const row=sourceRows.get(b.date);return sourceIdentityMatches(row)&&['open','high','low','close'].every(k=>row[k]===b[k]);}).map(b=>b.date));
+ const sourceVolumeMatchedDates=new Set(history.bars.filter(b=>{const row=sourceRows.get(b.date);return sourceIdentityMatches(row)&&row.volume===b.volume;}).map(b=>b.date));
  const sourceMatchedDates=new Set([...sourcePriceMatchedDates].filter(d=>sourceVolumeMatchedDates.has(d)));
  const sourceMatches=sourceMatchedDates.size;
  const sourceVerified=identityVerified&&sourceMatches===history.bars.length;

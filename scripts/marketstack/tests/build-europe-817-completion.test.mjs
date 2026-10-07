@@ -47,3 +47,14 @@ test('one proven stale session permits limited chart, older or unproven stalenes
  i.certifications=[{...c,schemaVersion:'private-europe-cache-audit-1.0.0',recentWindow:c,chart}];assert.equal(output(projectCompletion(i),'chart_readiness').status,'CHART_READY_WITH_LIMITATION');
  chart.expectedLastSession='2026-11-09';assert.equal(output(projectCompletion(i),'chart_readiness').status,'CHART_BLOCKED');chart.expectedLastSession='2026-10-06';chart.asOf='2020-01-01';assert.equal(output(projectCompletion(i),'chart_readiness').status,'CHART_BLOCKED');chart.asOf='2026-10-05';chart.lagSessions=2;assert.equal(output(projectCompletion(i),'chart_readiness').status,'CHART_BLOCKED');
 });
+
+test('a contradictory wrapper chart never falls back to an unbound legacy approval',()=>{
+ const i=fixture(),c=i.certifications[0],cp={status:'BLOCKED',inputSeriesHash:H,asOf:'2026-10-06',dataAsOf:'2026-10-07',window:{start:'2026-09-01',end:'2026-10-06'},evidence};
+ i.certifications=[{...c,schemaVersion:'private-europe-cache-audit-1.0.0',recentWindow:c,chart:cp}];
+ assert.equal(output(projectCompletion(i),'chart_readiness').status,'CHART_BLOCKED');
+ cp.window=null;cp.causes=['SHORT_HISTORY'];assert.deepEqual(output(projectCompletion(i),'chart_readiness').causes,['SHORT_HISTORY']);
+ cp.inputSeriesHash='c'.repeat(64);assert.equal(output(projectCompletion(i),'chart_readiness').status,'CHART_BLOCKED');
+ delete i.certifications[0].chart;assert.equal(output(projectCompletion(i),'chart_readiness').status,'CHART_BLOCKED');
+ Object.assign(i.reports.productReadiness.listings[0].functions.privateCloseChart,{inputSeriesHash:H,asOf:'2026-10-06',dataAsOf:'2026-10-07',window:{start:'2026-09-01',end:'2026-10-06'}});
+ assert.equal(output(projectCompletion(i),'chart_readiness').status,'CHART_READY');
+});

@@ -117,6 +117,14 @@ test('a volume adapter mismatch does not certify volume or block independently v
  assert.equal(r.latestEod.state,'STALE');assert.equal(r.latestEod.status,'PARTIAL');assert.equal(r.chart.status,'PARTIAL');
  assert.equal(r.recentWindow.technicalFields.relativeVolume.status,'BLOCKED');
 });
+test('explicit original row MIC aliases and ISIN cannot contradict the frozen identity',()=>{
+ for(const patch of [{exchange_code:'XPAR'},{isin:'US000SYNTH00'}]){
+  const input=fixture();Object.assign(input.sources[1].body.data.at(-1),patch);const r=auditEuropeanCacheSeries(input);
+  assert.equal(r.sourceFields.priceStatus,'BLOCKED');assert.equal(r.latestEod.status,'BLOCKED');assert.equal(r.chart.status,'BLOCKED');
+ }
+ const input=fixture();Object.assign(input.sources[1].body.data.at(-1),{exchange_code:input.listing.mic,isin:input.listing.isin});
+ const r=auditEuropeanCacheSeries(input);assert.equal(r.sourceFields.priceStatus,'READY');assert.equal(r.chart.status,'PARTIAL');
+});
 test('future bars cannot enter a current research window or a READY product field',()=>{
  const input=fixture();input.asOf='2026-10-01';assert.throws(()=>auditEuropeanCacheSeries(input),/FIXED_VALID/);
 });
