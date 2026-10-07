@@ -95,6 +95,24 @@ class NormalizationResult:
         self.stats = stats
 
 
+def _currency(unit):
+    """ISO code of a monetary unit ("EUR", "USD/shares" -> "USD"), else None."""
+    if not unit:
+        return None
+    code = unit.split("/", 1)[0] if unit.endswith("/shares") else unit
+    return code if len(code) == 3 and code.isalpha() and code.isupper() else None
+
+
+def _filing_currencies(raw_facts):
+    """accession -> the currency most of that filing's monetary facts are in."""
+    counts = defaultdict(Counter)
+    for fact in raw_facts:
+        code = _currency(fact.unit)
+        if code:
+            counts[fact.accession][code] += 1
+    return {accession: counter.most_common(1)[0][0] for accession, counter in counts.items()}
+
+
 def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=None,
                       calendar=None):
     """Turn an iterable of RawFact into a CompanyFactBook of PIT timelines."""
@@ -117,6 +135,7 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
     observed_period_ends = defaultdict(Counter)
     seen_fact_ids = set()
     stats = {"raw_facts": len(raw_facts), "mapped": 0, "unmapped": 0, "duplicates": 0}
+    filing_currency = _filing_currencies(raw_facts)
 
     for fact in raw_facts:
         matches = registry.metrics_for_concept(fact.taxonomy, fact.concept)
@@ -191,7 +210,15 @@ def normalize_company(cik, raw_facts, registry, profile=None, filing_metadata=No
     registry_version = registry.version
 
     for (metric_name, fiscal_year, fiscal_period, accession), entries in candidates.items():
-        entries.sort(key=lambda item: item[0])
+        # A filing's statements are in one currency. A fact in another currency
+        # (CECO 10-K FY2025: Revenues 750 million EUR, the same amount in every
+        # filing since 2024, next to 774.4 million USD contract revenue) is a
+        # disclosure, not the statement line, and must not win on concept
+        # priority. Only decides between currencies; within one, priority rules.
+        reporting = filing_currency.get(accession)
+        entries.sort(key=lambda item: (
+            reporting is not None and _currency(item[1].unit) not in (None, reporting),
+            item[0]))
         best_priority, fact = entries[0]
         flags = []
 

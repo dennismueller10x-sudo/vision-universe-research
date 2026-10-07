@@ -132,7 +132,14 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          (c) Geschaeftsjahreslabels bei 52/53-Wochen-Jahren mit Ende mal Ende
 #          Dezember, mal Anfang Januar ueber den Jahresmittelpunkt; nie zwei Jahre
 #          mit demselben Label (Cerner FY2010 und FY2011 trugen beide "2011").
-NORMALIZATION_LOGIC_VERSION = "1.11.0"
+# 1.12.0 — Waehrung vor Konzeptprioritaet innerhalb einer Einreichung: ein
+#          Kandidat in einer anderen Waehrung als die Mehrzahl der Geldbetraege
+#          derselben Einreichung verliert gegen einen in deren Waehrung. CECO
+#          meldet seit 2024 in jedem 10-Q/10-K "Revenues" = 750 Mio. EUR neben
+#          dem USD-Umsatz; mit Revenues als Gesamtumsatz (Registry 1.7.0) wurde
+#          der EUR-Betrag zum Umsatz. Gefunden in der Consumer-Wirkungsanalyse
+#          des Audits, nach dem Holdout (Data-Freeze v2).
+NORMALIZATION_LOGIC_VERSION = "1.12.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -163,7 +170,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "37966056ab35a9df48e5512808bbfdc9f1252d29fa2bd7d2cdad7b0c13270c98"
+    "10e1a31bb39ae2a4d7452f9fbdf26dea2f2f2e041f72f5dd86fcb0523b58ef8f"
 )
 
 
