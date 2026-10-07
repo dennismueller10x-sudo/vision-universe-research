@@ -212,8 +212,10 @@ jobs:
           python3 -m unittest discover -s scripts/company_intelligence/tests -v
           node --test scripts/company_intelligence/tests/*.test.mjs
       - name: Existing products and SEC regressions
+        env:
+          PRODUCTION_RELEASE_MODE: ${{ inputs.production_release }}
         run: |
-          if [ '${{ inputs.production_release }}' = validate ] || [ '${{ inputs.production_release }}' = publish ]; then
+          if [ "$PRODUCTION_RELEASE_MODE" = validate ] || [ "$PRODUCTION_RELEASE_MODE" = publish ]; then
             node scripts/company_intelligence/classify-production-regressions.mjs
           else
             node --test quant/tests/*.test.mjs discover/tests/*.test.mjs scripts/supertrader/tests/*.test.mjs screener/tests/*.test.mjs
