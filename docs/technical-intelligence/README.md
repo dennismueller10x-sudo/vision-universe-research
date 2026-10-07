@@ -59,3 +59,15 @@ Kurzfassung:
 * Full TI entspricht praktisch Trend allein.
 * Strukturklarheit misst Stabilität (Umdeutung 12 % vs. 34 %), nicht Treffsicherheit.
 * Elliott spricht an < 1 % der Zeitpunkte und formt nie ein Szenario.
+
+## Mission IX (Genauigkeit × Geometrie; asymmetrische Gewinner; Wave 3)
+
+* [MISSION9_FINAL_REPORT.md](MISSION9_FINAL_REPORT.md) — Abschlussbericht mit den zwei Kernfragen ganz oben. **Track A: {{A9_CLASS}}; Track B: NO ASYMMETRIC EDGE; Elliott angezeigt: STRUCTURAL LANGUAGE ONLY (intern explorativ: mehr Extremhäufigkeit, kein Ertrag).**
+* [MISSION9_PREREGISTRATION.md](MISSION9_PREREGISTRATION.md) · [MISSION9_OPENING_LOG.md](MISSION9_OPENING_LOG.md) · [MISSION9_WAVE3_FREEZE.md](MISSION9_WAVE3_FREEZE.md) · Register §4 in [HISTORICAL_DATA_USAGE_REGISTER.md](HISTORICAL_DATA_USAGE_REGISTER.md)
+* Tabellen: [hsab/MISSION9_TABLES.md](hsab/MISSION9_TABLES.md) · Red Team: [reviews/MISSION9_METHODOLOGY_REDTEAM.md](reviews/MISSION9_METHODOLOGY_REDTEAM.md)
+* Code: `scripts/technical/hsab/` (`track-a.mjs`, `track-b.mjs`, `decide-m9.mjs`, `case-study.mjs`, `protocol9.json`) · Evidenz: `quant/data/technical-intelligence/historical-accuracy/mission9/`, `technical-intelligence-evidence-v3.json` · CI: `.github/workflows/technical-intelligence-mission9.yml`
+
+Kurzfassung:
+* Hohe Trefferquoten entstehen durch nahe Ziele. Bei symmetrischer Geometrie trifft VU 49 % gegen 47 % der Kontrolle; keine Teilmenge erreicht 60 % mit +5 Pp.
+* Bullische VU-Zustände wählen spätere Extremgewinner seltener aus als vergleichbare Titel. Relative Stärke allein ist besser.
+* Elliott-Welle 3 wird praktisch nie angezeigt. Ein interner Kandidat zeigt explorativ mehr Extremfälle, aber keinen Renditevorteil.

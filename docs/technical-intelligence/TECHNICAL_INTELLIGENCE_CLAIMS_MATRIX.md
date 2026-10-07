@@ -28,6 +28,12 @@ Klassen: SUPPORTED · SUPPORTED WITH QUALIFICATION · NOT SUPPORTED · MISLEADIN
 | 16 | „Unsere Szenarien liefern einen positiven Erwartungswert.“ | **MISLEADING / DO NOT USE** | Ereignis-R im Mittel −0,1 bis −0,2 R. | — |
 | 17 | „Historische Evidenz: N Fälle, Erfolg X %, Vergleich Y %, Lift Z Pp.“ (Produkt-Panel §108) | **SUPPORTED WITH QUALIFICATION** | Datenvertrag vorhanden; Vorteil nicht belegt. | Nur mit allen Feldern und dem Satz „kein belegter Prognosevorteil“; Lift nie allein; vorher Legal Review. |
 
+| 18 | „Unter fairen Abständen (Ziel ≈ Grenze) trifft VU deutlich häufiger als der Zufall.“ (Mission IX, Track A) | **NOT SUPPORTED** | Symmetrisch 49 % gegen 47 % (Woche, Lift +2 Pp., gegen Trend-Kontrolle E +1,5); obere KI-Grenze 51 %. Tag: siehe MISSION9_FINAL_REPORT.md. | — |
+| 19 | „Historisch erreichte dieses Setup X % Erfolg bei Y:1 Chance/Risiko und Z % Abdeckung.“ | **SUPPORTED WITH QUALIFICATION** (werblich wertlos) | Zahlen existieren je CRV-Klasse, aber nur mit der Kontrollquote gleicher Abstände sinnvoll. | Nur zusammen: Erfolg, Kontrollquote gleicher Abstände, Payoff, Abdeckung, n, Zeitraum. LEGAL REVIEW REQUIRED. |
+| 20 | „VU-bullische Titel wurden häufiger zu 3×/5×-Gewinnern.“ (Track B) | **NOT SUPPORTED** (Gegenteil gemessen) | 5×/24M gegen vergleichbare Titel 0,62 / 0,64 (DEV/VAL), gegen Quartalsdurchschnitt 0,55–0,57. | — |
+| 21 | „VU erkannte X % späterer 5×-Gewinner früh.“ | **MISLEADING / DO NOT USE** | 47–51 % der Episoden bei 44 % Abdeckung; relative Stärke erreicht dasselbe mit 20 % Abdeckung. | — |
+| 22 | „Frühe Elliott-Welle-3-Strukturen kündigen große Gewinner an.“ | **NOT SUPPORTED** (für das Produkt) | Angezeigte Zählung zeigt sie praktisch nie. Ein internes, nicht angezeigtes Merkmal ist explorativ mit 1,35–1,4× mehr 5×-Fällen verbunden, ohne Renditevorteil und nicht über relative Stärke hinaus gesichert. | — |
+
 ## Pflichtregeln für jede historische Zahl
 
 1. Erfolgsquote **immer** mit Kontrollquote, Lift, n, Abdeckung, Zeitraum, Universum.
