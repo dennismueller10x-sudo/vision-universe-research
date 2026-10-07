@@ -5,7 +5,7 @@ consumer assets must match production before any delivery counts are claimed.
 """
 import argparse
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import hashlib
 import json
 from pathlib import Path
@@ -65,8 +65,13 @@ def audit(state, raw, consumer, out, origin=None):
             excluded_reasons = Counter('UNAPPROVED_PUBLISHER' if publisher(n.get('canonicalUrl') or n.get('sourceUrl')) else 'NO_VERIFIED_OWNED_HOST' for n in value['news'] if n['newsId'] not in allowed_ids)
             if policy['excluded']['news']:
                 losses.append({'class':'DATA_EXISTS_BUT_IS_FILTERED','stage':'SOURCE_USAGE','count':policy['excluded']['news'],'reasons':dict(excluded_reasons),'reason':'SOURCE_POLICY_EXCLUSION; not a transport defect'})
+            kept_ids = {n['newsId'] for n in final['news']}
+            dropped = [n for n in filtered['news'] if n['newsId'] not in kept_ids]
+            cutoff = stamp(value['generatedAt'])-timedelta(days=180)
+            retention = sum(bool(stamp(n.get('publishedAt') or n.get('observedAt')) and stamp(n.get('publishedAt') or n.get('observedAt')) < cutoff) for n in dropped)
+            assert retention == len(dropped), 'UNEXPLAINED_CONSUMER_NEWS_LOSS:'+cid
             if len(filtered['news'])>len(final['news']):
-                losses.append({'class':'DATA_EXISTS_BUT_IS_NOT_EXPORTED','stage':'APPROVED_CONSUMER_PROJECTION','count':len(filtered['news'])-len(final['news']),'reason':'DETERMINISTIC_180_DAY_RETENTION; all 42 cohort records precede the accepted export retention boundary'})
+                losses.append({'class':'DATA_EXISTS_BUT_IS_NOT_EXPORTED','stage':'APPROVED_CONSUMER_PROJECTION','count':len(filtered['news'])-len(final['news']),'reason':'DETERMINISTIC_180_DAY_RETENTION','verifiedOlderThanRetention':retention})
             rows.append({'companyId':cid,'tickers':inventory['tickers'],'ledgerNews':len(ledger_news),'latestLedgerNews':max((n.get('publishedAt') or '' for n in ledger_news),default=None),
                          'engineExportNews':len(value['news']),'policyAllowedNews':len(filtered['news']),'consumerNews':len(final['news']),
                          'productionNews':len(final['news']) if origin else None,'newsFreshness':dict(buckets),
