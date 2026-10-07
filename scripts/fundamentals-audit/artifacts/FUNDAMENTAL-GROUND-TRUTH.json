@@ -5031,5 +5031,181 @@
    "PXD": "GT_RIGHT, Kern 1.15 = GT",
    "FCX": "GT_RIGHT, Kern 1.15 = GT"
   }
+ },
+ "coreV4": {
+  "normalizationLogic": "1.19.0",
+  "registry": "1.9.0",
+  "revenueEvidence": "1.1.0",
+  "development": {
+   "QUANT|EPS_BASIC": {
+    "factAccuracy": 0.9946,
+    "valueAccuracy": 0.9949,
+    "pitAccuracy": 0.9998,
+    "falseMissingRate": 0.0042,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0012,
+    "facts": 4272,
+    "covered": 4272
+   },
+   "QUANT|EPS_DILUTED": {
+    "factAccuracy": 0.9946,
+    "valueAccuracy": 0.9948,
+    "pitAccuracy": 0.9998,
+    "falseMissingRate": 0.0042,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0012,
+    "facts": 4257,
+    "covered": 4257
+   },
+   "QUANT|NET_INCOME": {
+    "factAccuracy": 0.9888,
+    "valueAccuracy": 0.989,
+    "pitAccuracy": 0.9998,
+    "falseMissingRate": 0.0006,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0106,
+    "facts": 5010,
+    "covered": 5010
+   },
+   "QUANT|REVENUE": {
+    "factAccuracy": 0.9919,
+    "valueAccuracy": 0.9921,
+    "pitAccuracy": 0.9998,
+    "falseMissingRate": 0.0051,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.003,
+    "facts": 4711,
+    "covered": 4711
+   }
+  },
+  "holdout": {
+   "QUANT|EPS_BASIC": {
+    "factAccuracy": 0.9915,
+    "valueAccuracy": 0.992,
+    "pitAccuracy": 0.9995,
+    "falseMissingRate": 0.0058,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0027,
+    "facts": 1884,
+    "covered": 1884
+   },
+   "QUANT|EPS_DILUTED": {
+    "factAccuracy": 0.9915,
+    "valueAccuracy": 0.9921,
+    "pitAccuracy": 0.9995,
+    "falseMissingRate": 0.0058,
+    "falseAvailableRate": 0,
+    "wrongValueRate": 0.0026,
+    "facts": 1892,
+    "covered": 1892
+   },
+   "QUANT|NET_INCOME": {
+    "factAccuracy": 0.981,
+    "valueAccuracy": 0.9824,
+    "pitAccuracy": 0.9985,
+    "falseMissingRate": 0.01,
+    "falseAvailableRate": 0.0005,
+    "wrongValueRate": 0.0086,
+    "facts": 2102,
+    "covered": 2102
+   },
+   "QUANT|REVENUE": {
+    "factAccuracy": 0.9812,
+    "valueAccuracy": 0.9824,
+    "pitAccuracy": 0.9988,
+    "falseMissingRate": 0.0112,
+    "falseAvailableRate": 0.0006,
+    "wrongValueRate": 0.007,
+    "facts": 1703,
+    "covered": 1703
+   }
+  },
+  "previous": {
+   "development": {
+    "QUANT|EPS_BASIC": {
+     "factAccuracy": 0.9946,
+     "valueAccuracy": 0.9949,
+     "pitAccuracy": 0.9998,
+     "falseMissingRate": 0.0042,
+     "falseAvailableRate": 0,
+     "wrongValueRate": 0.0012,
+     "facts": 4272,
+     "covered": 4272
+    },
+    "QUANT|EPS_DILUTED": {
+     "factAccuracy": 0.9946,
+     "valueAccuracy": 0.9948,
+     "pitAccuracy": 0.9998,
+     "falseMissingRate": 0.0042,
+     "falseAvailableRate": 0,
+     "wrongValueRate": 0.0012,
+     "facts": 4257,
+     "covered": 4257
+    },
+    "QUANT|NET_INCOME": {
+     "factAccuracy": 0.9888,
+     "valueAccuracy": 0.989,
+     "pitAccuracy": 0.9998,
+     "falseMissingRate": 0.0006,
+     "falseAvailableRate": 0,
+     "wrongValueRate": 0.0106,
+     "facts": 5010,
+     "covered": 5010
+    },
+    "QUANT|REVENUE": {
+     "factAccuracy": 0.9947,
+     "valueAccuracy": 0.9949,
+     "pitAccuracy": 0.9998,
+     "falseMissingRate": 0.0011,
+     "falseAvailableRate": 0,
+     "wrongValueRate": 0.0042,
+     "facts": 4711,
+     "covered": 4711
+    }
+   },
+   "holdout": {
+    "QUANT|EPS_BASIC": {
+     "factAccuracy": 0.9915,
+     "valueAccuracy": 0.992,
+     "pitAccuracy": 0.9995,
+     "falseMissingRate": 0.0058,
+     "falseAvailableRate": 0,
+     "wrongValueRate": 0.0027,
+     "facts": 1884,
+     "covered": 1884
+    },
+    "QUANT|EPS_DILUTED": {
+     "factAccuracy": 0.9915,
+     "valueAccuracy": 0.9921,
+     "pitAccuracy": 0.9995,
+     "falseMissingRate": 0.0058,
+     "falseAvailableRate": 0,
+     "wrongValueRate": 0.0026,
+     "facts": 1892,
+     "covered": 1892
+    },
+    "QUANT|NET_INCOME": {
+     "factAccuracy": 0.981,
+     "valueAccuracy": 0.9824,
+     "pitAccuracy": 0.9985,
+     "falseMissingRate": 0.01,
+     "falseAvailableRate": 0.0005,
+     "wrongValueRate": 0.0086,
+     "facts": 2102,
+     "covered": 2102
+    },
+    "QUANT|REVENUE": {
+     "factAccuracy": 0.9818,
+     "valueAccuracy": 0.983,
+     "pitAccuracy": 0.9988,
+     "falseMissingRate": 0.0047,
+     "falseAvailableRate": 0.0006,
+     "wrongValueRate": 0.0129,
+     "facts": 1703,
+     "covered": 1703
+    }
+   }
+  },
+  "note": "Faktebene (Quartale/Jahre gegen SEC-Erstmeldung). Umsatz: weniger falsche Werte, mehr fehlende (Mehrdeutigkeit ohne Beleg -> leer). EPS/Nettoergebnis unveraendert; die TTM-Regeln wirken nicht auf Einzelfakten. Derselbe Ground-Truth-Satz wie 1.15 (99 Entwicklung, 60 Holdout)."
  }
 }
