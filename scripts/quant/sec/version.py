@@ -173,7 +173,11 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          evidence.json). Ohne eindeutigen Beleg bleibt die Zelle leer
 #          (AMBIGUOUS > GUESSED). Die Regel widersprach den Belegen in 448
 #          Zellen (EQT-Nettogesamtumsatz verworfen, Escalade-Anhangwert behalten).
-NORMALIZATION_LOGIC_VERSION = "1.17.0"
+# 1.18.0 — F-TTM-1 (TTM-Holdout): ein Fenster nur aus EPS fortgefuehrter
+#          Bereiche ist kein EPS-TTM (VF Corp 2009: Latest-Sicht stellte alle
+#          vier Quartale auf das 10-K-Vergleichs-EPS fortgefuehrter Bereiche um).
+#          Nach der Holdout-Auswertung behoben, nicht holdout-validiert.
+NORMALIZATION_LOGIC_VERSION = "1.18.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -204,7 +208,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "05395207ae685da6065c05c550097051ead07984118a4de411043f0b3b38e576"
+    "1eba18822ff4cbc6cdbdd1ee44fd223b34081d33105ea5bce2c4af393489167c"
 )
 
 

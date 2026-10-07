@@ -385,7 +385,11 @@ class PeriodResolver:
         definition = self._definition(metric)
         if definition.is_per_share:
             classes = {obs.provenance.concept in CONTINUING_PER_SHARE for obs in observations}
-            if len(classes) > 1:
+            # An EPS TTM is total EPS. A window wholly of continuing-operations EPS
+            # (VF Corp 10-K 2011: quarterly comparatives only as continuing EPS, the
+            # latest view moved all four quarters onto it) is a different measure
+            # and was published unmarked as eps_diluted (TTM holdout, F-TTM-1).
+            if len(classes) > 1 or classes == {True}:
                 return observations, TTM_CONCEPT_MISMATCH, []
             if self._share_basis_jumps(metric, quarters, as_of, policy, lag_days):
                 return observations, TTM_SHARE_BASIS_INCONSISTENT, []
