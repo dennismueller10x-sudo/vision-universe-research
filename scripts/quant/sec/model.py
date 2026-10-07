@@ -41,6 +41,12 @@ DIVISION_BY_ZERO = "DIVISION_BY_ZERO"
 # geraten und zerstoerte die Point-in-Time-Eigenschaft. Lieber keine
 # Zahl als eine falsche.
 MIXED_CURRENCY = "MIXED_CURRENCY"
+# Ein TTM ist die Summe von vier berichteten, lueckenlos aufeinanderfolgenden
+# Quartalen derselben Konzeptklasse auf derselben Aktienbasis. Sonst gibt es
+# kein TTM - und nie ersatzweise das Geschaeftsjahr.
+TTM_PERIODS_NOT_CONTIGUOUS = "TTM_PERIODS_NOT_CONTIGUOUS"
+TTM_CONCEPT_MISMATCH = "TTM_CONCEPT_MISMATCH"
+TTM_SHARE_BASIS_INCONSISTENT = "TTM_SHARE_BASIS_INCONSISTENT"
 
 # --- quality / confidence states --------------------------------------------
 QUALITY_HIGH = "HIGH"
