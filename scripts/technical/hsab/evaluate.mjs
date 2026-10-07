@@ -41,7 +41,7 @@ const VS = require(join(ROOT, "scripts/technical/lib/validation-stats.cjs"));
 const Out = require(join(ROOT, "quant/engines/technical/ti/outcomes.js"));
 const Hash = require(join(ROOT, "quant/engines/hash.js"));
 
-export const EVAL_VERSION = "hsab-evaluate-1.0.0";
+export const EVAL_VERSION = "hsab-evaluate-1.1.0";   // 1.1.0 (Mission IX): optionaler Ereignis-Export (--dump-events), Ausgaben sonst unveraendert
 const HERE = dirname(fileURLToPath(import.meta.url));
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 const r4 = (v) => (isNum(v) ? Math.round(v * 1e4) / 1e4 : null);
@@ -111,7 +111,7 @@ function makeControls(panel, prof, pool, win, dpByKey) {
     const g = { dir: eg.dir, entryLow: L(eg.eLo), entryHigh: L(eg.eHi), invalidation: L(eg.inv), t1Low: L(eg.t1Lo), t1High: L(eg.t1Hi) };
     if (!(g.invalidation > 0 && g.entryLow > 0)) return null;
     const sim = Out.simulate(e, i, g, { entryWindow: eg.window, horizon: prof.H });
-    return ["TARGET1", "INVALIDATED", "TIMEOUT"].includes(sim.outcome) ? [1, sim.outcome === "TARGET1" ? 1 : 0] : sim.outcome === "NO_ENTRY" ? [0, 0] : null;
+    return ["TARGET1", "INVALIDATED", "TIMEOUT"].includes(sim.outcome) ? [1, sim.outcome === "TARGET1" ? 1 : 0, sim.returnPct] : sim.outcome === "NO_ENTRY" ? [0, 0, 0] : null;
   };
   return {
     candidates,
@@ -127,8 +127,8 @@ function makeControls(panel, prof, pool, win, dpByKey) {
       const ck = tr + "|" + terc; C.cells = C.cells || {}; const c = C.cells[ck] || (C.cells[ck] = C.items.filter((x) => x[3] === tr && x[4] === terc));
       return fromList(c, e, ag, n, rand, mode); },
     /* Ausfuehrung: [gefuellte Ziehungen, Ziel 1 unter gefuellten] */
-    Dexec: (e, t, eg, n, rand) => { const c = candidates(e.keys[t]).items; if (c.length < 2) return [0, 0]; let f = 0, h = 0, d = 0;
-      for (let k = 0; k < n * 6 && d < n; k++) { const x = c[Math.floor(rand() * c.length)]; if (list[x[0]] === e) continue; const v = execAt(list[x[0]], x[1], eg); if (!v) continue; d++; f += v[0]; h += v[1]; } return [f, h]; }
+    Dexec: (e, t, eg, n, rand) => { const c = candidates(e.keys[t]).items; if (c.length < 2) return [0, 0]; let f = 0, h = 0, d = 0, r = 0;
+      for (let k = 0; k < n * 6 && d < n; k++) { const x = c[Math.floor(rand() * c.length)]; if (list[x[0]] === e) continue; const v = execAt(list[x[0]], x[1], eg); if (!v) continue; d++; f += v[0]; h += v[1]; r += isNum(v[2]) ? v[2] : 0; } return [f, h, r]; }
   };
 }
 
@@ -274,6 +274,7 @@ export async function evaluate(o) {
 
   const variants = protocol.variants.filter((v) => v === "FULL" || recs.some((r) => r.V && r.V[v]));
   const EV = {}; variants.forEach((v) => { EV[v] = []; });
+  const DUMP = [];
   const points = [];   // Analysezeitpunkte fuer Richtungs-/Abdeckungsstudien
   const nCtl = protocol.controls;
   for (const [s, rs] of bySym) {
@@ -321,6 +322,15 @@ export async function evaluate(o) {
           }
         }
         EV[v].push(out);
+        /* Mission IX: Ereignis-Export (kursfrei: nur ATR-Geometrie, Ausgaenge, Kontrollquoten, R) fuer die Geometrie-/Payoff-Studie */
+        if (o.dumpEvents && (v === "FULL" || v === "TREND_ONLY") && !out.excluded && SO.RESOLVED.has(x.o.outcome) && out.ag && out.cD && out.cD[1]) {
+          DUMP.push({ v, s, d: out.d, dir: out.dir, tpl: out.tpl, kT: r4(out.ag.kT), kI: r4(out.ag.kI), y: x.o.success ? 1 : 0, oc: x.o.outcome, bars: x.o.bars,
+            cH: out.cD[0], cN: out.cD[1], cR: r4(out.cD[2] / out.cD[1]), R: r4(SO.rMultiple(e, x.r.i, x.g, x.o)), mfe: x.o.mfeAtr, mae: x.o.maeAtr,
+            cl: x.r ? x.r.cl : null, ag: x.r ? x.r.ag : null, mx: x.r ? x.r.mx : null, vr: x.r ? x.r.vr : null, pb: x.r && x.r.pb ? 1 : 0,
+            oppY: out.opp ? out.opp.y : null, oppR: out.opp ? r4(out.opp.R) : null,
+            ex: out.exec ? out.exec.outcome : null, exR: out.exec ? out.exec.ret : null, exD: out.execD || null,
+            cE: out.cE || null, cC: out.cC || null, cP: out.cP || null });
+        }
       }
     }
     /* Analysezeitpunkte (dp) fuer Richtungsmodelle und Abdeckung */
@@ -566,7 +576,7 @@ export async function evaluate(o) {
   return { schemaVersion: "hsab-evidence-1.0.0", evalVersion: EVAL_VERSION, outcomesVersion: SO.VERSION, phase: o.phase, phaseDef: phase, protocolStatus: protocol.status,
            protocolSha256: sha(readFileSync(o.protocol || join(HERE, "protocol.json"))), replay: { sealHash: man.sealHash, commit: man.commit, engine: man.engine, replayVersion: man.replayVersion, persistenceCheck: man.persistenceCheck ? { ...man.persistenceCheck, rows: undefined } : null },
            generatedAt: new Date().toISOString(), timeframe: tf, horizonBars: prof.H, bootstrap: { B: BOOT_B, timeBlock: "QUARTER", method: "TWO_WAY_CLUSTER_BOOTSTRAP (widest of SYMBOL/TIME/TWO_WAY)" },
-           universe, tables: T };
+           universe, tables: T, _dump: o.dumpEvents ? DUMP : undefined };
 }
 
 function pearson(x, y) { const n = x.length; if (n < 3) return null; const mx = x.reduce((a, b) => a + b, 0) / n, my = y.reduce((a, b) => a + b, 0) / n; let sxy = 0, sxx = 0, syy = 0;
@@ -608,10 +618,11 @@ function elliottPSC(bySym, panel, prof, C, protocol, inWin, rng) {
 
 async function main() {
   const o = { records: arg("records"), phase: arg("phase"), protocol: arg("protocol", null), weeklyDir: arg("weekly-dir", null), delisted: arg("delisted", null), workDir: arg("work-dir", null), historyFrom: arg("history-from", null),
-              openHoldout: arg("open-holdout", null), boot: arg("boot", null) ? +arg("boot") : null };
+              openHoldout: arg("open-holdout", null), dumpEvents: arg("dump-events", null), boot: arg("boot", null) ? +arg("boot") : null };
   const out = arg("out"); if (!out) throw new Error("--out fehlt");
   const t0 = Date.now();
   const res = await evaluate(o);
+  if (o.dumpEvents) { const { gzipSync } = await import("node:zlib"); writeFileSync(o.dumpEvents, gzipSync(Buffer.from(res._dump.map((x) => JSON.stringify(x)).join("\n")))); delete res._dump; }
   res.seconds = Math.round((Date.now() - t0) / 1000);
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, JSON.stringify(res, null, 1));

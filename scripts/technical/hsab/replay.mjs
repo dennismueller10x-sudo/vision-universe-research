@@ -63,8 +63,11 @@ function processSeries(series, meta, o) {
   const inWin = (t) => (!o.from || series.timestamps[t] >= o.from) && (!o.to || series.timestamps[t] <= o.to);
   /* Kalenderraster (Red Team #3): zusaetzlich die letzte Bar jedes Kalendermonats — „Kunde oeffnet VU an einem beliebigen Tag“. */
   const grid = new Set();
+  const qOf = (d) => d.slice(0, 4) + (Math.floor((+d.slice(5, 7) - 1) / 3));
   if (o.grid === "month") for (let t = minBars - 1; t < series.length; t++) if (t === series.length - 1 || series.timestamps[t + 1].slice(0, 7) !== series.timestamps[t].slice(0, 7)) grid.add(t);
-  const ts = perBar ? Array.from({ length: series.length - (minBars - 1) }, (_, k) => k + minBars - 1) : Array.from(new Set([...det, ...grid])).sort((a, b) => a - b);
+  /* Mission IX: Quartalsende-Raster (Titel × Quartal), letzte Bar eines Kalenderquartals */
+  if (o.grid === "quarter") for (let t = minBars - 1; t < series.length - 1; t++) if (qOf(series.timestamps[t + 1]) !== qOf(series.timestamps[t])) grid.add(t);
+  const ts = perBar ? Array.from({ length: series.length - (minBars - 1) }, (_, k) => k + minBars - 1) : Array.from(o.gridOnly ? grid : new Set([...det, ...grid])).sort((a, b) => a - b);
   const recs = [], checks = [];
   let k = 0, chain = null;
   /* Per-Bar-Modus: Elliott-Persistenz wie im Produkt (Vorzustand der Vorbar). Startet 52 Bars vor dem ersten Analysebar. */
@@ -75,6 +78,13 @@ function processSeries(series, meta, o) {
     if (perBar) { chain = r._state; r.ch = 1; }
     delete r._state;
     r.dp = det.has(t) ? 1 : 0; if (perBar) r.pb = 1; if (grid.has(t)) r.g = 1;
+    /* Mission IX (nur Forschung): interne Elliott-Kandidaten ueber die ausgabeneutralen Forensik-Haken von Mission VI.
+       Zweiter Engine-Aufruf mit forensics:true; das Produkt-Ergebnis im Record bleibt unveraendert. */
+    if (o.forensics && r.g) {
+      const Ef = EV3.analyzeElliottV3({ series, features: P.main.features, pivots: P.main.pivots, asOfIndex: t, barsPerYear: P.main.profile.barsPerYear, previous: null, methodology: PRODUCT_METHODOLOGY, forensics: true });
+      const F = Ef.forensics || {}, pick = (k) => (F.final && F.final[k] ? { pos: F.final[k].bestPos, ...F.final[k].best } : null);
+      r.fx = { IMPULSE: pick("IMPULSE"), LEADING_DIAGONAL: pick("LEADING_DIAGONAL"), scored: F.scoredTotal ?? null, samePrimary: (Ef.primary && Ef.primary.persistenceKey) === (r.ew && r.ew.key) ? 1 : 0 };
+    }
     recs.push(r);
     if (persist && !perBar && r.dp && (k++ % 10 === 0)) {
       const prev = chainState(P, series, t, PRODUCT_METHODOLOGY);
@@ -127,7 +137,7 @@ export function engineHashes() {
 async function main() {
   const out = arg("out", null); if (!out) throw new Error("--out DIR fehlt (Stage-1-Records gehoeren nie in ein committetes Artefakt)");
   mkdirSync(out, { recursive: true });
-  const opts = { from: arg("from", null), to: arg("to", null), perbar: +arg("perbar", "0"), persist: +arg("persist", "0"), grid: arg("grid", null), historyFrom: arg("history-from", null) };
+  const opts = { from: arg("from", null), to: arg("to", null), perbar: +arg("perbar", "0"), persist: +arg("persist", "0"), grid: arg("grid", null), historyFrom: arg("history-from", null), gridOnly: process.argv.includes("--grid-only"), forensics: process.argv.includes("--forensics") };
   const bucket = arg("bucket", null), limit = +arg("limit", "0"), workers = +arg("workers", "4"), sampleN = +arg("sample-symbols", "0");
   let jobs = [];
   const wdir = arg("weekly-dir", null);
