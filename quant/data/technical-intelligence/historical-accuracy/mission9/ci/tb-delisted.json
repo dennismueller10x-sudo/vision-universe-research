@@ -1,0 +1,7816 @@
+{
+ "schemaVersion": "hsab-trackb-result-1.0.0",
+ "version": "hsab-trackb-1.1.0",
+ "generatedAt": "2026-10-07T09:32:17.512Z",
+ "records": {
+  "sealHash": "071e12c5f58e92f1322b3290895e768d81063641aa9646389728c0818b64ef80",
+  "engine": "ti-scenario-1.2.1",
+  "elliott": "elliott-3.2.2"
+ },
+ "gridRecords": null,
+ "wave3Signal": "EW_EARLY_MOTIVE_INTERNAL",
+ "opts": {
+  "bucket": null,
+  "from": null,
+  "to": null,
+  "delisted": true
+ },
+ "units": 18810,
+ "symbols": 1430,
+ "delistedUnits": 18810,
+ "anomalyExcludedUnitHorizons": 1570,
+ "horizons": {
+  "6M": 26,
+  "12M": 52,
+  "24M": 104,
+  "36M": 156
+ },
+ "multiples": [
+  2,
+  3,
+  5,
+  10
+ ],
+ "results": [
+  {
+   "signal": "BASE",
+   "horizon": "6M",
+   "units": 18543,
+   "flagged": 18543,
+   "coverage": 1,
+   "symbols": 1406,
+   "mult": {
+    "2x": {
+     "precision": 0.0561,
+     "precisionCi": [
+      0.0506,
+      0.0607
+     ],
+     "dateOnlyExpected": 0.0561,
+     "liftRatioDateOnly": 0.9997,
+     "liftRatioDateOnlyCi": [
+      0.8988,
+      1.0861
+     ],
+     "matchedExpected": 0.0561,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.9255,
+      1.0646
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0041,
+      0.0036
+     ],
+     "baseRate": 0.0562,
+     "recall": 1,
+     "winners": 1042,
+     "caught": 1042,
+     "falseDiscovery": 0.9438,
+     "medianWeeksToK": 15,
+     "medianMaeBeforeK": -0.0241,
+     "invalidatedBeforeK": 0.0566
+    },
+    "3x": {
+     "precision": 0.0151,
+     "precisionCi": [
+      0.0129,
+      0.0176
+     ],
+     "dateOnlyExpected": 0.0153,
+     "liftRatioDateOnly": 0.9912,
+     "liftRatioDateOnlyCi": [
+      0.8405,
+      1.1512
+     ],
+     "matchedExpected": 0.0151,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.8662,
+      1.1452
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.002,
+      0.0022
+     ],
+     "baseRate": 0.0154,
+     "recall": 1,
+     "winners": 285,
+     "caught": 285,
+     "falseDiscovery": 0.9846,
+     "medianWeeksToK": 17,
+     "medianMaeBeforeK": -0.0257,
+     "invalidatedBeforeK": 0.0561
+    },
+    "5x": {
+     "precision": 0.003,
+     "precisionCi": [
+      0.0021,
+      0.004
+     ],
+     "dateOnlyExpected": 0.003,
+     "liftRatioDateOnly": 1.0097,
+     "liftRatioDateOnlyCi": [
+      0.7084,
+      1.3296
+     ],
+     "matchedExpected": 0.003,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.699,
+      1.3142
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0009,
+      0.0009
+     ],
+     "baseRate": 0.003,
+     "recall": 1,
+     "winners": 56,
+     "caught": 56,
+     "falseDiscovery": 0.997,
+     "medianWeeksToK": 18,
+     "medianMaeBeforeK": -0.0138,
+     "invalidatedBeforeK": 0.1071
+    },
+    "10x": {
+     "precision": 0.0006,
+     "precisionCi": [
+      0.0002,
+      0.0009
+     ],
+     "dateOnlyExpected": 0.0005,
+     "liftRatioDateOnly": 1.0455,
+     "liftRatioDateOnlyCi": [
+      0.3195,
+      1.7683
+     ],
+     "matchedExpected": 0.0006,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.3221,
+      1.713
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0004,
+      0.0004
+     ],
+     "baseRate": 0.0005,
+     "recall": 1,
+     "winners": 10,
+     "caught": 10,
+     "falseDiscovery": 0.9995,
+     "medianWeeksToK": 20.5,
+     "medianMaeBeforeK": 0,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.0658,
+    "meanCi": [
+     0.0565,
+     0.0753
+    ],
+    "matchedMean": 0.0658,
+    "excessMean": 0,
+    "excessMeanCi": [
+     -0.0098,
+     0.0106
+    ],
+    "excessMeanCapped4x": 0,
+    "excessMeanCapped4xCi": [
+     -0.0086,
+     0.0094
+    ],
+    "excessMeanDateOnly": 0.0009,
+    "excessMeanDateOnlyCi": [
+     -0.0085,
+     0.0109
+    ],
+    "median": 0.006,
+    "p05": -0.5419,
+    "p25": -0.1814,
+    "p75": 0.202,
+    "p95": 0.83,
+    "p99": 1.8566,
+    "trimmedMean5": 0.0238,
+    "winRate": 0.5217,
+    "avgWinner": 0.3531,
+    "medianWinner": 0.1871,
+    "avgLoser": -0.2454,
+    "medianLoser": -0.1934,
+    "payoffRatio": 1.4392,
+    "expectancy": 0.0669,
+    "skew": 6.6273,
+    "top1PctShareOfGains": 0.1806,
+    "top5PctShareOfGains": 0.4326,
+    "meanWithoutTop1": 0.066,
+    "meanWithoutTop3": 0.0647,
+    "meanWithoutTop1Pct": 0.0339,
+    "meanWithoutTop5Pct": -0.0135,
+    "medianMae": -0.1208,
+    "medianMfe": 0.1409,
+    "meanMfe": 0.3019,
+    "delistedShare": 0.1384,
+    "invalidatedShare": 0.1546
+   }
+  },
+  {
+   "signal": "BASE",
+   "horizon": "12M",
+   "units": 18473,
+   "flagged": 18473,
+   "coverage": 1,
+   "symbols": 1401,
+   "mult": {
+    "2x": {
+     "precision": 0.1094,
+     "precisionCi": [
+      0.1023,
+      0.1171
+     ],
+     "dateOnlyExpected": 0.1091,
+     "liftRatioDateOnly": 1.003,
+     "liftRatioDateOnlyCi": [
+      0.9375,
+      1.0739
+     ],
+     "matchedExpected": 0.1094,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.9512,
+      1.0533
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0055,
+      0.0058
+     ],
+     "baseRate": 0.1089,
+     "recall": 1,
+     "winners": 2011,
+     "caught": 2011,
+     "falseDiscovery": 0.8911,
+     "medianWeeksToK": 26,
+     "medianMaeBeforeK": -0.0525,
+     "invalidatedBeforeK": 0.0791
+    },
+    "3x": {
+     "precision": 0.0355,
+     "precisionCi": [
+      0.031,
+      0.0398
+     ],
+     "dateOnlyExpected": 0.0354,
+     "liftRatioDateOnly": 1.002,
+     "liftRatioDateOnlyCi": [
+      0.8792,
+      1.1224
+     ],
+     "matchedExpected": 0.0355,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.8936,
+      1.1082
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0037,
+      0.0038
+     ],
+     "baseRate": 0.0354,
+     "recall": 1,
+     "winners": 654,
+     "caught": 654,
+     "falseDiscovery": 0.9646,
+     "medianWeeksToK": 30,
+     "medianMaeBeforeK": -0.045950000000000005,
+     "invalidatedBeforeK": 0.0826
+    },
+    "5x": {
+     "precision": 0.01,
+     "precisionCi": [
+      0.0081,
+      0.0123
+     ],
+     "dateOnlyExpected": 0.0099,
+     "liftRatioDateOnly": 1.0077,
+     "liftRatioDateOnlyCi": [
+      0.8129,
+      1.2454
+     ],
+     "matchedExpected": 0.01,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.8187,
+      1.2207
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0018,
+      0.0022
+     ],
+     "baseRate": 0.0099,
+     "recall": 1,
+     "winners": 183,
+     "caught": 183,
+     "falseDiscovery": 0.9901,
+     "medianWeeksToK": 36,
+     "medianMaeBeforeK": -0.0571,
+     "invalidatedBeforeK": 0.0929
+    },
+    "10x": {
+     "precision": 0.0016,
+     "precisionCi": [
+      0.0008,
+      0.0023
+     ],
+     "dateOnlyExpected": 0.0015,
+     "liftRatioDateOnly": 1.0448,
+     "liftRatioDateOnlyCi": [
+      0.519,
+      1.5381
+     ],
+     "matchedExpected": 0.0016,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.5098,
+      1.4739
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0008,
+      0.0007
+     ],
+     "baseRate": 0.0015,
+     "recall": 1,
+     "winners": 28,
+     "caught": 28,
+     "falseDiscovery": 0.9985,
+     "medianWeeksToK": 34.5,
+     "medianMaeBeforeK": -0.06864999999999999,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.14,
+    "meanCi": [
+     0.1207,
+     0.1596
+    ],
+    "matchedMean": 0.14,
+    "excessMean": 0,
+    "excessMeanCi": [
+     -0.02,
+     0.0185
+    ],
+    "excessMeanCapped4x": 0,
+    "excessMeanCapped4xCi": [
+     -0.0152,
+     0.0162
+    ],
+    "excessMeanDateOnly": 0.0015,
+    "excessMeanDateOnlyCi": [
+     -0.0179,
+     0.0211
+    ],
+    "median": 0.0099,
+    "p05": -0.6843,
+    "p25": -0.2305,
+    "p75": 0.3064,
+    "p95": 1.2406,
+    "p99": 3.1904,
+    "trimmedMean5": 0.0577,
+    "winRate": 0.5303,
+    "avgWinner": 0.5386,
+    "medianWinner": 0.2793,
+    "avgLoser": -0.3088,
+    "medianLoser": -0.2519,
+    "payoffRatio": 1.7443,
+    "expectancy": 0.1406,
+    "skew": 9.9618,
+    "top1PctShareOfGains": 0.1947,
+    "top5PctShareOfGains": 0.4519,
+    "meanWithoutTop1": 0.1389,
+    "meanWithoutTop3": 0.1362,
+    "meanWithoutTop1Pct": 0.0859,
+    "meanWithoutTop5Pct": 0.0122,
+    "medianMae": -0.187,
+    "medianMfe": 0.1997,
+    "meanMfe": 0.4547,
+    "delistedShare": 0.2693,
+    "invalidatedShare": 0.1904
+   }
+  },
+  {
+   "signal": "BASE",
+   "horizon": "24M",
+   "units": 18361,
+   "flagged": 18361,
+   "coverage": 1,
+   "symbols": 1394,
+   "mult": {
+    "2x": {
+     "precision": 0.1692,
+     "precisionCi": [
+      0.1584,
+      0.1809
+     ],
+     "dateOnlyExpected": 0.1687,
+     "liftRatioDateOnly": 1.0031,
+     "liftRatioDateOnlyCi": [
+      0.9373,
+      1.0703
+     ],
+     "matchedExpected": 0.1692,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.9452,
+      1.0614
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0093,
+      0.0104
+     ],
+     "baseRate": 0.1677,
+     "recall": 1,
+     "winners": 3079,
+     "caught": 3079,
+     "falseDiscovery": 0.8323,
+     "medianWeeksToK": 39,
+     "medianMaeBeforeK": -0.0946,
+     "invalidatedBeforeK": 0.1111
+    },
+    "3x": {
+     "precision": 0.0634,
+     "precisionCi": [
+      0.0572,
+      0.07
+     ],
+     "dateOnlyExpected": 0.0633,
+     "liftRatioDateOnly": 1.002,
+     "liftRatioDateOnlyCi": [
+      0.9026,
+      1.1084
+     ],
+     "matchedExpected": 0.0634,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.9052,
+      1.0978
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.006,
+      0.0063
+     ],
+     "baseRate": 0.0628,
+     "recall": 1,
+     "winners": 1153,
+     "caught": 1153,
+     "falseDiscovery": 0.9372,
+     "medianWeeksToK": 47,
+     "medianMaeBeforeK": -0.0911,
+     "invalidatedBeforeK": 0.0954
+    },
+    "5x": {
+     "precision": 0.021,
+     "precisionCi": [
+      0.0174,
+      0.0248
+     ],
+     "dateOnlyExpected": 0.021,
+     "liftRatioDateOnly": 0.9998,
+     "liftRatioDateOnlyCi": [
+      0.8206,
+      1.1864
+     ],
+     "matchedExpected": 0.021,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.8373,
+      1.1991
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0034,
+      0.0041
+     ],
+     "baseRate": 0.0209,
+     "recall": 1,
+     "winners": 383,
+     "caught": 383,
+     "falseDiscovery": 0.9791,
+     "medianWeeksToK": 55,
+     "medianMaeBeforeK": -0.1061,
+     "invalidatedBeforeK": 0.1018
+    },
+    "10x": {
+     "precision": 0.0041,
+     "precisionCi": [
+      0.0027,
+      0.0058
+     ],
+     "dateOnlyExpected": 0.0039,
+     "liftRatioDateOnly": 1.0324,
+     "liftRatioDateOnlyCi": [
+      0.6935,
+      1.46
+     ],
+     "matchedExpected": 0.0041,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.6665,
+      1.4059
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0014,
+      0.0017
+     ],
+     "baseRate": 0.0039,
+     "recall": 1,
+     "winners": 72,
+     "caught": 72,
+     "falseDiscovery": 0.9961,
+     "medianWeeksToK": 64.5,
+     "medianMaeBeforeK": -0.08174999999999999,
+     "invalidatedBeforeK": 0.0139
+    }
+   },
+   "returns": {
+    "mean": 0.2377,
+    "meanCi": [
+     0.2058,
+     0.2736
+    ],
+    "matchedMean": 0.2377,
+    "excessMean": 0,
+    "excessMeanCi": [
+     -0.0327,
+     0.036
+    ],
+    "excessMeanCapped4x": 0,
+    "excessMeanCapped4xCi": [
+     -0.0266,
+     0.0269
+    ],
+    "excessMeanDateOnly": 0.0024,
+    "excessMeanDateOnlyCi": [
+     -0.0276,
+     0.0377
+    ],
+    "median": 0.037,
+    "p05": -0.7916,
+    "p25": -0.2327,
+    "p75": 0.4252,
+    "p95": 1.6794,
+    "p99": 4.3684,
+    "trimmedMean5": 0.118,
+    "winRate": 0.5736,
+    "avgWinner": 0.683,
+    "medianWinner": 0.3508,
+    "avgLoser": -0.3634,
+    "medianLoser": -0.309,
+    "payoffRatio": 1.8798,
+    "expectancy": 0.2369,
+    "skew": 5.9642,
+    "top1PctShareOfGains": 0.1868,
+    "top5PctShareOfGains": 0.4473,
+    "meanWithoutTop1": 0.2356,
+    "meanWithoutTop3": 0.2335,
+    "meanWithoutTop1Pct": 0.1653,
+    "meanWithoutTop5Pct": 0.0649,
+    "medianMae": -0.2609,
+    "medianMfe": 0.2761,
+    "meanMfe": 0.6377,
+    "delistedShare": 0.491,
+    "invalidatedShare": 0.213
+   }
+  },
+  {
+   "signal": "BASE",
+   "horizon": "36M",
+   "units": 18293,
+   "flagged": 18293,
+   "coverage": 1,
+   "symbols": 1388,
+   "mult": {
+    "2x": {
+     "precision": 0.2039,
+     "precisionCi": [
+      0.1912,
+      0.2164
+     ],
+     "dateOnlyExpected": 0.2031,
+     "liftRatioDateOnly": 1.0038,
+     "liftRatioDateOnlyCi": [
+      0.9376,
+      1.0657
+     ],
+     "matchedExpected": 0.2039,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.947,
+      1.0562
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0108,
+      0.0114
+     ],
+     "baseRate": 0.2014,
+     "recall": 1,
+     "winners": 3684,
+     "caught": 3684,
+     "falseDiscovery": 0.7986,
+     "medianWeeksToK": 47,
+     "medianMaeBeforeK": -0.1278,
+     "invalidatedBeforeK": 0.1401
+    },
+    "3x": {
+     "precision": 0.0795,
+     "precisionCi": [
+      0.0703,
+      0.088
+     ],
+     "dateOnlyExpected": 0.0794,
+     "liftRatioDateOnly": 1.0013,
+     "liftRatioDateOnlyCi": [
+      0.8852,
+      1.1105
+     ],
+     "matchedExpected": 0.0795,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.892,
+      1.1022
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0086,
+      0.008
+     ],
+     "baseRate": 0.0786,
+     "recall": 1,
+     "winners": 1438,
+     "caught": 1438,
+     "falseDiscovery": 0.9214,
+     "medianWeeksToK": 60,
+     "medianMaeBeforeK": -0.12775,
+     "invalidatedBeforeK": 0.105
+    },
+    "5x": {
+     "precision": 0.0284,
+     "precisionCi": [
+      0.0229,
+      0.0333
+     ],
+     "dateOnlyExpected": 0.0283,
+     "liftRatioDateOnly": 1.0029,
+     "liftRatioDateOnlyCi": [
+      0.8066,
+      1.1726
+     ],
+     "matchedExpected": 0.0284,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.8252,
+      1.1612
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0049,
+      0.0045
+     ],
+     "baseRate": 0.028,
+     "recall": 1,
+     "winners": 513,
+     "caught": 513,
+     "falseDiscovery": 0.972,
+     "medianWeeksToK": 71,
+     "medianMaeBeforeK": -0.1377,
+     "invalidatedBeforeK": 0.0955
+    },
+    "10x": {
+     "precision": 0.0053,
+     "precisionCi": [
+      0.0037,
+      0.0075
+     ],
+     "dateOnlyExpected": 0.0052,
+     "liftRatioDateOnly": 1.0201,
+     "liftRatioDateOnlyCi": [
+      0.7167,
+      1.4405
+     ],
+     "matchedExpected": 0.0053,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.7042,
+      1.3765
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0016,
+      0.002
+     ],
+     "baseRate": 0.0051,
+     "recall": 1,
+     "winners": 94,
+     "caught": 94,
+     "falseDiscovery": 0.9949,
+     "medianWeeksToK": 82,
+     "medianMaeBeforeK": -0.09734999999999999,
+     "invalidatedBeforeK": 0.0106
+    }
+   },
+   "returns": {
+    "mean": 0.3168,
+    "meanCi": [
+     0.2773,
+     0.3566
+    ],
+    "matchedMean": 0.3168,
+    "excessMean": 0,
+    "excessMeanCi": [
+     -0.0419,
+     0.0395
+    ],
+    "excessMeanCapped4x": 0,
+    "excessMeanCapped4xCi": [
+     -0.0359,
+     0.033
+    ],
+    "excessMeanDateOnly": 0.0023,
+    "excessMeanDateOnlyCi": [
+     -0.0375,
+     0.0415
+    ],
+    "median": 0.0768,
+    "p05": -0.8012,
+    "p25": -0.1665,
+    "p75": 0.4991,
+    "p95": 1.9159,
+    "p99": 4.9094,
+    "trimmedMean5": 0.1831,
+    "winRate": 0.6135,
+    "avgWinner": 0.7415,
+    "medianWinner": 0.3781,
+    "avgLoser": -0.3628,
+    "medianLoser": -0.2862,
+    "payoffRatio": 2.0435,
+    "expectancy": 0.3147,
+    "skew": 5.4829,
+    "top1PctShareOfGains": 0.1707,
+    "top5PctShareOfGains": 0.4292,
+    "meanWithoutTop1": 0.3134,
+    "meanWithoutTop3": 0.3112,
+    "meanWithoutTop1Pct": 0.2394,
+    "meanWithoutTop5Pct": 0.1257,
+    "medianMae": -0.2792,
+    "medianMfe": 0.3256,
+    "meanMfe": 0.7369,
+    "delistedShare": 0.6562,
+    "invalidatedShare": 0.2172
+   }
+  },
+  {
+   "signal": "VU_BULL",
+   "horizon": "6M",
+   "units": 18543,
+   "flagged": 6142,
+   "coverage": 0.3312,
+   "symbols": 1082,
+   "mult": {
+    "2x": {
+     "precision": 0.0332,
+     "precisionCi": [
+      0.028,
+      0.0392
+     ],
+     "dateOnlyExpected": 0.0505,
+     "liftRatioDateOnly": 0.658,
+     "liftRatioDateOnlyCi": [
+      0.5549,
+      0.7724
+     ],
+     "matchedExpected": 0.0391,
+     "liftRatio": 0.8495,
+     "liftRatioCi": [
+      0.7257,
+      0.9825
+     ],
+     "liftDiff": -0.0059,
+     "liftDiffCi": [
+      -0.0109,
+      -0.0007
+     ],
+     "baseRate": 0.0562,
+     "recall": 0.1958,
+     "winners": 1042,
+     "caught": 204,
+     "falseDiscovery": 0.9668,
+     "medianWeeksToK": 16,
+     "medianMaeBeforeK": -0.015550000000000001,
+     "invalidatedBeforeK": 0.2892
+    },
+    "3x": {
+     "precision": 0.0061,
+     "precisionCi": [
+      0.0039,
+      0.0083
+     ],
+     "dateOnlyExpected": 0.0136,
+     "liftRatioDateOnly": 0.4467,
+     "liftRatioDateOnlyCi": [
+      0.2865,
+      0.6029
+     ],
+     "matchedExpected": 0.009,
+     "liftRatio": 0.6811,
+     "liftRatioCi": [
+      0.4436,
+      0.921
+     ],
+     "liftDiff": -0.0029,
+     "liftDiffCi": [
+      -0.0053,
+      -0.0007
+     ],
+     "baseRate": 0.0154,
+     "recall": 0.1368,
+     "winners": 285,
+     "caught": 39,
+     "falseDiscovery": 0.9937,
+     "medianWeeksToK": 15,
+     "medianMaeBeforeK": 0,
+     "invalidatedBeforeK": 0.4103
+    },
+    "5x": {
+     "precision": 0.0014,
+     "precisionCi": [
+      0.0004,
+      0.0025
+     ],
+     "dateOnlyExpected": 0.0028,
+     "liftRatioDateOnly": 0.4879,
+     "liftRatioDateOnlyCi": [
+      0.1453,
+      0.9006
+     ],
+     "matchedExpected": 0.0018,
+     "liftRatio": 0.7558,
+     "liftRatioCi": [
+      0.2198,
+      1.5907
+     ],
+     "liftDiff": -0.0004,
+     "liftDiffCi": [
+      -0.0016,
+      0.0009
+     ],
+     "baseRate": 0.003,
+     "recall": 0.1429,
+     "winners": 56,
+     "caught": 8,
+     "falseDiscovery": 0.9987,
+     "medianWeeksToK": 19,
+     "medianMaeBeforeK": -0.14695000000000003,
+     "invalidatedBeforeK": 0.75
+    },
+    "10x": {
+     "precision": 0,
+     "precisionCi": [
+      null,
+      null
+     ],
+     "dateOnlyExpected": 0.0005,
+     "liftRatioDateOnly": 0,
+     "liftRatioDateOnlyCi": [
+      null,
+      null
+     ],
+     "matchedExpected": 0.0002,
+     "liftRatio": 0,
+     "liftRatioCi": [
+      null,
+      null
+     ],
+     "liftDiff": -0.0002,
+     "liftDiffCi": [
+      -0.0003,
+      -0.0001
+     ],
+     "baseRate": 0.0005,
+     "recall": 0,
+     "winners": 10,
+     "caught": 0,
+     "falseDiscovery": 1,
+     "medianWeeksToK": null,
+     "medianMaeBeforeK": null,
+     "invalidatedBeforeK": null
+    }
+   },
+   "returns": {
+    "mean": 0.047,
+    "meanCi": [
+     0.0361,
+     0.0596
+    ],
+    "matchedMean": 0.0435,
+    "excessMean": 0.0034,
+    "excessMeanCi": [
+     -0.0078,
+     0.0147
+    ],
+    "excessMeanCapped4x": 0.0046,
+    "excessMeanCapped4xCi": [
+     -0.0062,
+     0.0153
+    ],
+    "excessMeanDateOnly": -0.0025,
+    "excessMeanDateOnlyCi": [
+     -0.0136,
+     0.0099
+    ],
+    "median": 0.0071,
+    "p05": -0.4418,
+    "p25": -0.1635,
+    "p75": 0.1832,
+    "p95": 0.6794,
+    "p99": 1.305,
+    "trimmedMean5": 0.0198,
+    "winRate": 0.5247,
+    "avgWinner": 0.2839,
+    "medianWinner": 0.1679,
+    "avgLoser": -0.2146,
+    "medianLoser": -0.1765,
+    "payoffRatio": 1.3229,
+    "expectancy": 0.047,
+    "skew": 3.6577,
+    "top1PctShareOfGains": 0.1442,
+    "top5PctShareOfGains": 0.3871,
+    "meanWithoutTop1": 0.0459,
+    "meanWithoutTop3": 0.0441,
+    "meanWithoutTop1Pct": 0.0258,
+    "meanWithoutTop5Pct": -0.0112,
+    "medianMae": -0.1161,
+    "medianMfe": 0.1368,
+    "meanMfe": 0.2501,
+    "delistedShare": 0.1386,
+    "invalidatedShare": 0.4668
+   }
+  },
+  {
+   "signal": "VU_BULL",
+   "horizon": "12M",
+   "units": 18473,
+   "flagged": 6134,
+   "coverage": 0.3321,
+   "symbols": 1082,
+   "mult": {
+    "2x": {
+     "precision": 0.0724,
+     "precisionCi": [
+      0.0644,
+      0.081
+     ],
+     "dateOnlyExpected": 0.0975,
+     "liftRatioDateOnly": 0.7426,
+     "liftRatioDateOnlyCi": [
+      0.6631,
+      0.83
+     ],
+     "matchedExpected": 0.0814,
+     "liftRatio": 0.8896,
+     "liftRatioCi": [
+      0.793,
+      0.9884
+     ],
+     "liftDiff": -0.009,
+     "liftDiffCi": [
+      -0.0168,
+      -0.0009
+     ],
+     "baseRate": 0.1089,
+     "recall": 0.2188,
+     "winners": 2011,
+     "caught": 440,
+     "falseDiscovery": 0.9283,
+     "medianWeeksToK": 28,
+     "medianMaeBeforeK": -0.0441,
+     "invalidatedBeforeK": 0.3614
+    },
+    "3x": {
+     "precision": 0.0171,
+     "precisionCi": [
+      0.0135,
+      0.0211
+     ],
+     "dateOnlyExpected": 0.031,
+     "liftRatioDateOnly": 0.5524,
+     "liftRatioDateOnlyCi": [
+      0.4345,
+      0.6784
+     ],
+     "matchedExpected": 0.0221,
+     "liftRatio": 0.7746,
+     "liftRatioCi": [
+      0.6032,
+      0.9495
+     ],
+     "liftDiff": -0.005,
+     "liftDiffCi": [
+      -0.0091,
+      -0.0011
+     ],
+     "baseRate": 0.0354,
+     "recall": 0.1651,
+     "winners": 654,
+     "caught": 108,
+     "falseDiscovery": 0.9824,
+     "medianWeeksToK": 36.5,
+     "medianMaeBeforeK": -0.03365,
+     "invalidatedBeforeK": 0.5
+    },
+    "5x": {
+     "precision": 0.0039,
+     "precisionCi": [
+      0.0022,
+      0.006
+     ],
+     "dateOnlyExpected": 0.0086,
+     "liftRatioDateOnly": 0.4527,
+     "liftRatioDateOnlyCi": [
+      0.2564,
+      0.7037
+     ],
+     "matchedExpected": 0.0051,
+     "liftRatio": 0.7647,
+     "liftRatioCi": [
+      0.4423,
+      1.2793
+     ],
+     "liftDiff": -0.0012,
+     "liftDiffCi": [
+      -0.003,
+      0.0013
+     ],
+     "baseRate": 0.0099,
+     "recall": 0.1311,
+     "winners": 183,
+     "caught": 24,
+     "falseDiscovery": 0.9961,
+     "medianWeeksToK": 38,
+     "medianMaeBeforeK": -0.09125,
+     "invalidatedBeforeK": 0.7083
+    },
+    "10x": {
+     "precision": 0,
+     "precisionCi": [
+      null,
+      null
+     ],
+     "dateOnlyExpected": 0.0013,
+     "liftRatioDateOnly": 0,
+     "liftRatioDateOnlyCi": [
+      null,
+      null
+     ],
+     "matchedExpected": 0.0007,
+     "liftRatio": 0,
+     "liftRatioCi": [
+      null,
+      null
+     ],
+     "liftDiff": -0.0007,
+     "liftDiffCi": [
+      -0.0009,
+      -0.0005
+     ],
+     "baseRate": 0.0015,
+     "recall": 0,
+     "winners": 28,
+     "caught": 0,
+     "falseDiscovery": 1,
+     "medianWeeksToK": null,
+     "medianMaeBeforeK": null,
+     "invalidatedBeforeK": null
+    }
+   },
+   "returns": {
+    "mean": 0.0851,
+    "meanCi": [
+     0.0675,
+     0.1054
+    ],
+    "matchedMean": 0.0876,
+    "excessMean": -0.0025,
+    "excessMeanCi": [
+     -0.0211,
+     0.0178
+    ],
+    "excessMeanCapped4x": 0.0008,
+    "excessMeanCapped4xCi": [
+     -0.0168,
+     0.0192
+    ],
+    "excessMeanDateOnly": -0.0241,
+    "excessMeanDateOnlyCi": [
+     -0.042,
+     -0.0058
+    ],
+    "median": 0.0095,
+    "p05": -0.5825,
+    "p25": -0.217,
+    "p75": 0.2739,
+    "p95": 0.9282,
+    "p99": 2.1458,
+    "trimmedMean5": 0.0392,
+    "winRate": 0.5272,
+    "avgWinner": 0.4131,
+    "medianWinner": 0.2548,
+    "avgLoser": -0.2783,
+    "medianLoser": -0.233,
+    "payoffRatio": 1.4846,
+    "expectancy": 0.0863,
+    "skew": 3.5457,
+    "top1PctShareOfGains": 0.1588,
+    "top5PctShareOfGains": 0.3996,
+    "meanWithoutTop1": 0.0849,
+    "meanWithoutTop3": 0.0829,
+    "meanWithoutTop1Pct": 0.0522,
+    "meanWithoutTop5Pct": -0.0008,
+    "medianMae": -0.1834,
+    "medianMfe": 0.196,
+    "meanMfe": 0.3574,
+    "delistedShare": 0.2638,
+    "invalidatedShare": 0.5734
+   }
+  },
+  {
+   "signal": "VU_BULL",
+   "horizon": "24M",
+   "units": 18361,
+   "flagged": 6113,
+   "coverage": 0.3329,
+   "symbols": 1077,
+   "mult": {
+    "2x": {
+     "precision": 0.1273,
+     "precisionCi": [
+      0.1122,
+      0.1408
+     ],
+     "dateOnlyExpected": 0.1522,
+     "liftRatioDateOnly": 0.8366,
+     "liftRatioDateOnlyCi": [
+      0.7411,
+      0.9204
+     ],
+     "matchedExpected": 0.1342,
+     "liftRatio": 0.9484,
+     "liftRatioCi": [
+      0.85,
+      1.0387
+     ],
+     "liftDiff": -0.0069,
+     "liftDiffCi": [
+      -0.0201,
+      0.0052
+     ],
+     "baseRate": 0.1677,
+     "recall": 0.2494,
+     "winners": 3079,
+     "caught": 768,
+     "falseDiscovery": 0.8744,
+     "medianWeeksToK": 45,
+     "medianMaeBeforeK": -0.087,
+     "invalidatedBeforeK": 0.4453
+    },
+    "3x": {
+     "precision": 0.0374,
+     "precisionCi": [
+      0.0297,
+      0.045
+     ],
+     "dateOnlyExpected": 0.0557,
+     "liftRatioDateOnly": 0.6726,
+     "liftRatioDateOnlyCi": [
+      0.5392,
+      0.8121
+     ],
+     "matchedExpected": 0.0443,
+     "liftRatio": 0.8448,
+     "liftRatioCi": [
+      0.6837,
+      1.0238
+     ],
+     "liftDiff": -0.0069,
+     "liftDiffCi": [
+      -0.014,
+      0.001
+     ],
+     "baseRate": 0.0628,
+     "recall": 0.1977,
+     "winners": 1153,
+     "caught": 228,
+     "falseDiscovery": 0.9627,
+     "medianWeeksToK": 54.5,
+     "medianMaeBeforeK": -0.0806,
+     "invalidatedBeforeK": 0.4825
+    },
+    "5x": {
+     "precision": 0.0095,
+     "precisionCi": [
+      0.0064,
+      0.0136
+     ],
+     "dateOnlyExpected": 0.0183,
+     "liftRatioDateOnly": 0.5216,
+     "liftRatioDateOnlyCi": [
+      0.347,
+      0.7468
+     ],
+     "matchedExpected": 0.0119,
+     "liftRatio": 0.8014,
+     "liftRatioCi": [
+      0.5467,
+      1.1307
+     ],
+     "liftDiff": -0.0024,
+     "liftDiffCi": [
+      -0.0057,
+      0.0015
+     ],
+     "baseRate": 0.0209,
+     "recall": 0.154,
+     "winners": 383,
+     "caught": 59,
+     "falseDiscovery": 0.9903,
+     "medianWeeksToK": 59,
+     "medianMaeBeforeK": -0.1029,
+     "invalidatedBeforeK": 0.661
+    },
+    "10x": {
+     "precision": 0.0002,
+     "precisionCi": [
+      0,
+      0.0005
+     ],
+     "dateOnlyExpected": 0.0034,
+     "liftRatioDateOnly": 0.0497,
+     "liftRatioDateOnlyCi": [
+      0,
+      0.1546
+     ],
+     "matchedExpected": 0.0015,
+     "liftRatio": 0.1167,
+     "liftRatioCi": [
+      0,
+      0.3742
+     ],
+     "liftDiff": -0.0013,
+     "liftDiffCi": [
+      -0.0017,
+      -0.0009
+     ],
+     "baseRate": 0.0039,
+     "recall": 0.0139,
+     "winners": 72,
+     "caught": 1,
+     "falseDiscovery": 0.9998,
+     "medianWeeksToK": 92,
+     "medianMaeBeforeK": 0,
+     "invalidatedBeforeK": 1
+    }
+   },
+   "returns": {
+    "mean": 0.1596,
+    "meanCi": [
+     0.1256,
+     0.1952
+    ],
+    "matchedMean": 0.1564,
+    "excessMean": 0.0031,
+    "excessMeanCi": [
+     -0.0306,
+     0.0392
+    ],
+    "excessMeanCapped4x": 0.0064,
+    "excessMeanCapped4xCi": [
+     -0.0263,
+     0.0385
+    ],
+    "excessMeanDateOnly": -0.032,
+    "excessMeanDateOnlyCi": [
+     -0.0645,
+     0.0033
+    ],
+    "median": 0.0405,
+    "p05": -0.7556,
+    "p25": -0.2409,
+    "p75": 0.3821,
+    "p95": 1.2743,
+    "p99": 3.2572,
+    "trimmedMean5": 0.0863,
+    "winRate": 0.5739,
+    "avgWinner": 0.5412,
+    "medianWinner": 0.323,
+    "avgLoser": -0.3558,
+    "medianLoser": -0.3065,
+    "payoffRatio": 1.5213,
+    "expectancy": 0.159,
+    "skew": 3.5083,
+    "top1PctShareOfGains": 0.1551,
+    "top5PctShareOfGains": 0.3996,
+    "meanWithoutTop1": 0.1573,
+    "meanWithoutTop3": 0.1547,
+    "meanWithoutTop1Pct": 0.1119,
+    "meanWithoutTop5Pct": 0.0367,
+    "medianMae": -0.2569,
+    "medianMfe": 0.2671,
+    "meanMfe": 0.4965,
+    "delistedShare": 0.4814,
+    "invalidatedShare": 0.6396
+   }
+  },
+  {
+   "signal": "VU_BULL",
+   "horizon": "36M",
+   "units": 18293,
+   "flagged": 6100,
+   "coverage": 0.3335,
+   "symbols": 1075,
+   "mult": {
+    "2x": {
+     "precision": 0.1648,
+     "precisionCi": [
+      0.1474,
+      0.1811
+     ],
+     "dateOnlyExpected": 0.1866,
+     "liftRatioDateOnly": 0.8832,
+     "liftRatioDateOnlyCi": [
+      0.7908,
+      0.9768
+     ],
+     "matchedExpected": 0.1693,
+     "liftRatio": 0.9736,
+     "liftRatioCi": [
+      0.8811,
+      1.0763
+     ],
+     "liftDiff": -0.0045,
+     "liftDiffCi": [
+      -0.0201,
+      0.0128
+     ],
+     "baseRate": 0.2014,
+     "recall": 0.269,
+     "winners": 3684,
+     "caught": 991,
+     "falseDiscovery": 0.8375,
+     "medianWeeksToK": 60,
+     "medianMaeBeforeK": -0.1306,
+     "invalidatedBeforeK": 0.5207
+    },
+    "3x": {
+     "precision": 0.05,
+     "precisionCi": [
+      0.04,
+      0.0595
+     ],
+     "dateOnlyExpected": 0.0713,
+     "liftRatioDateOnly": 0.701,
+     "liftRatioDateOnlyCi": [
+      0.5635,
+      0.836
+     ],
+     "matchedExpected": 0.0589,
+     "liftRatio": 0.8491,
+     "liftRatioCi": [
+      0.6938,
+      1.0083
+     ],
+     "liftDiff": -0.0089,
+     "liftDiffCi": [
+      -0.0183,
+      0.0005
+     ],
+     "baseRate": 0.0786,
+     "recall": 0.21,
+     "winners": 1438,
+     "caught": 302,
+     "falseDiscovery": 0.9505,
+     "medianWeeksToK": 71,
+     "medianMaeBeforeK": -0.1014,
+     "invalidatedBeforeK": 0.5
+    },
+    "5x": {
+     "precision": 0.0131,
+     "precisionCi": [
+      0.0086,
+      0.0183
+     ],
+     "dateOnlyExpected": 0.0254,
+     "liftRatioDateOnly": 0.5177,
+     "liftRatioDateOnlyCi": [
+      0.3412,
+      0.7259
+     ],
+     "matchedExpected": 0.0174,
+     "liftRatio": 0.753,
+     "liftRatioCi": [
+      0.5019,
+      1.0418
+     ],
+     "liftDiff": -0.0043,
+     "liftDiffCi": [
+      -0.009,
+      0.0007
+     ],
+     "baseRate": 0.028,
+     "recall": 0.1559,
+     "winners": 513,
+     "caught": 80,
+     "falseDiscovery": 0.9869,
+     "medianWeeksToK": 81,
+     "medianMaeBeforeK": -0.11945,
+     "invalidatedBeforeK": 0.6125
+    },
+    "10x": {
+     "precision": 0.0007,
+     "precisionCi": [
+      0,
+      0.0016
+     ],
+     "dateOnlyExpected": 0.0045,
+     "liftRatioDateOnly": 0.1501,
+     "liftRatioDateOnlyCi": [
+      0,
+      0.351
+     ],
+     "matchedExpected": 0.0023,
+     "liftRatio": 0.3028,
+     "liftRatioCi": [
+      0,
+      0.7143
+     ],
+     "liftDiff": -0.0016,
+     "liftDiffCi": [
+      -0.0024,
+      -0.0006
+     ],
+     "baseRate": 0.0051,
+     "recall": 0.0426,
+     "winners": 94,
+     "caught": 4,
+     "falseDiscovery": 0.9993,
+     "medianWeeksToK": 137,
+     "medianMaeBeforeK": -0.01025,
+     "invalidatedBeforeK": 0.25
+    }
+   },
+   "returns": {
+    "mean": 0.2467,
+    "meanCi": [
+     0.2072,
+     0.2881
+    ],
+    "matchedMean": 0.2464,
+    "excessMean": 0.0003,
+    "excessMeanCi": [
+     -0.0407,
+     0.0409
+    ],
+    "excessMeanCapped4x": 0.0074,
+    "excessMeanCapped4xCi": [
+     -0.0302,
+     0.0412
+    ],
+    "excessMeanDateOnly": -0.0347,
+    "excessMeanDateOnlyCi": [
+     -0.0757,
+     0.0077
+    ],
+    "median": 0.0933,
+    "p05": -0.7292,
+    "p25": -0.1603,
+    "p75": 0.4619,
+    "p95": 1.4921,
+    "p99": 3.5857,
+    "trimmedMean5": 0.1635,
+    "winRate": 0.6238,
+    "avgWinner": 0.5995,
+    "medianWinner": 0.359,
+    "avgLoser": -0.3444,
+    "medianLoser": -0.276,
+    "payoffRatio": 1.7409,
+    "expectancy": 0.2444,
+    "skew": 3.815,
+    "top1PctShareOfGains": 0.1429,
+    "top5PctShareOfGains": 0.3754,
+    "meanWithoutTop1": 0.2425,
+    "meanWithoutTop3": 0.2391,
+    "meanWithoutTop1Pct": 0.1929,
+    "meanWithoutTop5Pct": 0.1095,
+    "medianMae": -0.2747,
+    "medianMfe": 0.315,
+    "meanMfe": 0.5794,
+    "delistedShare": 0.6485,
+    "invalidatedShare": 0.6513
+   }
+  },
+  {
+   "signal": "VU_BULL_CLEAR",
+   "horizon": "6M",
+   "units": 18543,
+   "flagged": 4122,
+   "coverage": 0.2223,
+   "symbols": 985,
+   "mult": {
+    "2x": {
+     "precision": 0.0324,
+     "precisionCi": [
+      0.0266,
+      0.0392
+     ],
+     "dateOnlyExpected": 0.0491,
+     "liftRatioDateOnly": 0.6592,
+     "liftRatioDateOnlyCi": [
+      0.5398,
+      0.7997
+     ],
+     "matchedExpected": 0.0373,
+     "liftRatio": 0.8683,
+     "liftRatioCi": [
+      0.7155,
+      1.0286
+     ],
+     "liftDiff": -0.0049,
+     "liftDiffCi": [
+      -0.0105,
+      0.0011
+     ],
+     "baseRate": 0.0562,
+     "recall": 0.1315,
+     "winners": 1042,
+     "caught": 137,
+     "falseDiscovery": 0.9668,
+     "medianWeeksToK": 16,
+     "medianMaeBeforeK": -0.0168,
+     "invalidatedBeforeK": 0.3358
+    },
+    "3x": {
+     "precision": 0.0058,
+     "precisionCi": [
+      0.0036,
+      0.0083
+     ],
+     "dateOnlyExpected": 0.0132,
+     "liftRatioDateOnly": 0.4368,
+     "liftRatioDateOnlyCi": [
+      0.2766,
+      0.6309
+     ],
+     "matchedExpected": 0.0079,
+     "liftRatio": 0.7322,
+     "liftRatioCi": [
+      0.4594,
+      1.0307
+     ],
+     "liftDiff": -0.0021,
+     "liftDiffCi": [
+      -0.0044,
+      0.0002
+     ],
+     "baseRate": 0.0154,
+     "recall": 0.0912,
+     "winners": 285,
+     "caught": 26,
+     "falseDiscovery": 0.9937,
+     "medianWeeksToK": 17,
+     "medianMaeBeforeK": -0.00675,
+     "invalidatedBeforeK": 0.4615
+    },
+    "5x": {
+     "precision": 0.0015,
+     "precisionCi": [
+      0.0005,
+      0.0031
+     ],
+     "dateOnlyExpected": 0.0028,
+     "liftRatioDateOnly": 0.5466,
+     "liftRatioDateOnlyCi": [
+      0.1705,
+      1.1581
+     ],
+     "matchedExpected": 0.0014,
+     "liftRatio": 1.0801,
+     "liftRatioCi": [
+      0.2794,
+      2.617
+     ],
+     "liftDiff": 0.0001,
+     "liftDiffCi": [
+      -0.0012,
+      0.0018
+     ],
+     "baseRate": 0.003,
+     "recall": 0.1071,
+     "winners": 56,
+     "caught": 6,
+     "falseDiscovery": 0.9985,
+     "medianWeeksToK": 20.5,
+     "medianMaeBeforeK": -0.14695000000000003,
+     "invalidatedBeforeK": 0.8333
+    },
+    "10x": {
+     "precision": 0,
+     "precisionCi": [
+      null,
+      null
+     ],
+     "dateOnlyExpected": 0.0005,
+     "liftRatioDateOnly": 0,
+     "liftRatioDateOnlyCi": [
+      null,
+      null
+     ],
+     "matchedExpected": 0.0002,
+     "liftRatio": 0,
+     "liftRatioCi": [
+      null,
+      null
+     ],
+     "liftDiff": -0.0002,
+     "liftDiffCi": [
+      -0.0003,
+      -0.0001
+     ],
+     "baseRate": 0.0005,
+     "recall": 0,
+     "winners": 10,
+     "caught": 0,
+     "falseDiscovery": 1,
+     "medianWeeksToK": null,
+     "medianMaeBeforeK": null,
+     "invalidatedBeforeK": null
+    }
+   },
+   "returns": {
+    "mean": 0.0406,
+    "meanCi": [
+     0.0277,
+     0.0546
+    ],
+    "matchedMean": 0.0425,
+    "excessMean": -0.0019,
+    "excessMeanCi": [
+     -0.0149,
+     0.0125
+    ],
+    "excessMeanCapped4x": -0.0017,
+    "excessMeanCapped4xCi": [
+     -0.014,
+     0.0115
+    ],
+    "excessMeanDateOnly": -0.0061,
+    "excessMeanDateOnlyCi": [
+     -0.0187,
+     0.0088
+    ],
+    "median": 0.0051,
+    "p05": -0.4382,
+    "p25": -0.1672,
+    "p75": 0.1646,
+    "p95": 0.6757,
+    "p99": 1.3283,
+    "trimmedMean5": 0.0136,
+    "winRate": 0.5213,
+    "avgWinner": 0.2777,
+    "medianWinner": 0.1529,
+    "avgLoser": -0.2128,
+    "medianLoser": -0.1776,
+    "payoffRatio": 1.3052,
+    "expectancy": 0.0429,
+    "skew": 4.2581,
+    "top1PctShareOfGains": 0.154,
+    "top5PctShareOfGains": 0.4067,
+    "meanWithoutTop1": 0.0413,
+    "meanWithoutTop3": 0.0386,
+    "meanWithoutTop1Pct": 0.0208,
+    "meanWithoutTop5Pct": -0.0168,
+    "medianMae": -0.1159,
+    "medianMfe": 0.1309,
+    "meanMfe": 0.2456,
+    "delistedShare": 0.1567,
+    "invalidatedShare": 0.4619
+   }
+  },
+  {
+   "signal": "VU_BULL_CLEAR",
+   "horizon": "12M",
+   "units": 18473,
+   "flagged": 4115,
+   "coverage": 0.2228,
+   "symbols": 985,
+   "mult": {
+    "2x": {
+     "precision": 0.0668,
+     "precisionCi": [
+      0.0575,
+      0.0777
+     ],
+     "dateOnlyExpected": 0.0946,
+     "liftRatioDateOnly": 0.7061,
+     "liftRatioDateOnlyCi": [
+      0.6139,
+      0.8137
+     ],
+     "matchedExpected": 0.078,
+     "liftRatio": 0.8572,
+     "liftRatioCi": [
+      0.7484,
+      0.9843
+     ],
+     "liftDiff": -0.0111,
+     "liftDiffCi": [
+      -0.02,
+      -0.0012
+     ],
+     "baseRate": 0.1089,
+     "recall": 0.1363,
+     "winners": 2011,
+     "caught": 274,
+     "falseDiscovery": 0.9334,
+     "medianWeeksToK": 26.5,
+     "medianMaeBeforeK": -0.0427,
+     "invalidatedBeforeK": 0.354
+    },
+    "3x": {
+     "precision": 0.0151,
+     "precisionCi": [
+      0.0111,
+      0.019
+     ],
+     "dateOnlyExpected": 0.0297,
+     "liftRatioDateOnly": 0.507,
+     "liftRatioDateOnlyCi": [
+      0.3763,
+      0.6388
+     ],
+     "matchedExpected": 0.021,
+     "liftRatio": 0.716,
+     "liftRatioCi": [
+      0.5361,
+      0.9008
+     ],
+     "liftDiff": -0.006,
+     "liftDiffCi": [
+      -0.0097,
+      -0.0019
+     ],
+     "baseRate": 0.0354,
+     "recall": 0.0979,
+     "winners": 654,
+     "caught": 64,
+     "falseDiscovery": 0.9844,
+     "medianWeeksToK": 31,
+     "medianMaeBeforeK": -0.0298,
+     "invalidatedBeforeK": 0.5156
+    },
+    "5x": {
+     "precision": 0.004,
+     "precisionCi": [
+      0.002,
+      0.0061
+     ],
+     "dateOnlyExpected": 0.0082,
+     "liftRatioDateOnly": 0.4906,
+     "liftRatioDateOnlyCi": [
+      0.2498,
+      0.7534
+     ],
+     "matchedExpected": 0.0047,
+     "liftRatio": 0.8613,
+     "liftRatioCi": [
+      0.443,
+      1.3533
+     ],
+     "liftDiff": -0.0006,
+     "liftDiffCi": [
+      -0.0028,
+      0.0015
+     ],
+     "baseRate": 0.0099,
+     "recall": 0.0874,
+     "winners": 183,
+     "caught": 16,
+     "falseDiscovery": 0.9961,
+     "medianWeeksToK": 36,
+     "medianMaeBeforeK": -0.07605,
+     "invalidatedBeforeK": 0.6875
+    },
+    "10x": {
+     "precision": 0,
+     "precisionCi": [
+      null,
+      null
+     ],
+     "dateOnlyExpected": 0.0012,
+     "liftRatioDateOnly": 0,
+     "liftRatioDateOnlyCi": [
+      null,
+      null
+     ],
+     "matchedExpected": 0.0007,
+     "liftRatio": 0,
+     "liftRatioCi": [
+      null,
+      null
+     ],
+     "liftDiff": -0.0007,
+     "liftDiffCi": [
+      -0.0009,
+      -0.0005
+     ],
+     "baseRate": 0.0015,
+     "recall": 0,
+     "winners": 28,
+     "caught": 0,
+     "falseDiscovery": 1,
+     "medianWeeksToK": null,
+     "medianMaeBeforeK": null,
+     "invalidatedBeforeK": null
+    }
+   },
+   "returns": {
+    "mean": 0.0714,
+    "meanCi": [
+     0.0512,
+     0.0927
+    ],
+    "matchedMean": 0.0834,
+    "excessMean": -0.012,
+    "excessMeanCi": [
+     -0.0345,
+     0.0091
+    ],
+    "excessMeanCapped4x": -0.0102,
+    "excessMeanCapped4xCi": [
+     -0.0313,
+     0.0094
+    ],
+    "excessMeanDateOnly": -0.0323,
+    "excessMeanDateOnlyCi": [
+     -0.0541,
+     -0.0112
+    ],
+    "median": 0.0048,
+    "p05": -0.5825,
+    "p25": -0.2228,
+    "p75": 0.2447,
+    "p95": 0.9117,
+    "p99": 2.0091,
+    "trimmedMean5": 0.0272,
+    "winRate": 0.5171,
+    "avgWinner": 0.3973,
+    "medianWinner": 0.2331,
+    "avgLoser": -0.2736,
+    "medianLoser": -0.2312,
+    "payoffRatio": 1.4523,
+    "expectancy": 0.0734,
+    "skew": 4.0016,
+    "top1PctShareOfGains": 0.1684,
+    "top5PctShareOfGains": 0.4116,
+    "meanWithoutTop1": 0.0714,
+    "meanWithoutTop3": 0.0683,
+    "meanWithoutTop1Pct": 0.0391,
+    "meanWithoutTop5Pct": -0.0118,
+    "medianMae": -0.1824,
+    "medianMfe": 0.178,
+    "meanMfe": 0.344,
+    "delistedShare": 0.2821,
+    "invalidatedShare": 0.5687
+   }
+  },
+  {
+   "signal": "VU_BULL_CLEAR",
+   "horizon": "24M",
+   "units": 18361,
+   "flagged": 4100,
+   "coverage": 0.2233,
+   "symbols": 982,
+   "mult": {
+    "2x": {
+     "precision": 0.1145,
+     "precisionCi": [
+      0.0985,
+      0.1302
+     ],
+     "dateOnlyExpected": 0.1469,
+     "liftRatioDateOnly": 0.7795,
+     "liftRatioDateOnlyCi": [
+      0.6841,
+      0.8825
+     ],
+     "matchedExpected": 0.1258,
+     "liftRatio": 0.9101,
+     "liftRatioCi": [
+      0.7996,
+      1.029
+     ],
+     "liftDiff": -0.0113,
+     "liftDiffCi": [
+      -0.0253,
+      0.0036
+     ],
+     "baseRate": 0.1677,
+     "recall": 0.151,
+     "winners": 3079,
+     "caught": 465,
+     "falseDiscovery": 0.8866,
+     "medianWeeksToK": 44,
+     "medianMaeBeforeK": -0.0867,
+     "invalidatedBeforeK": 0.4538
+    },
+    "3x": {
+     "precision": 0.0343,
+     "precisionCi": [
+      0.0269,
+      0.042
+     ],
+     "dateOnlyExpected": 0.053,
+     "liftRatioDateOnly": 0.6467,
+     "liftRatioDateOnlyCi": [
+      0.5063,
+      0.7946
+     ],
+     "matchedExpected": 0.0424,
+     "liftRatio": 0.8088,
+     "liftRatioCi": [
+      0.6371,
+      0.9987
+     ],
+     "liftDiff": -0.0081,
+     "liftDiffCi": [
+      -0.0158,
+      -0.0001
+     ],
+     "baseRate": 0.0628,
+     "recall": 0.1223,
+     "winners": 1153,
+     "caught": 141,
+     "falseDiscovery": 0.9656,
+     "medianWeeksToK": 56,
+     "medianMaeBeforeK": -0.0725,
+     "invalidatedBeforeK": 0.4894
+    },
+    "5x": {
+     "precision": 0.0083,
+     "precisionCi": [
+      0.005,
+      0.0121
+     ],
+     "dateOnlyExpected": 0.0174,
+     "liftRatioDateOnly": 0.4796,
+     "liftRatioDateOnlyCi": [
+      0.2917,
+      0.6988
+     ],
+     "matchedExpected": 0.0109,
+     "liftRatio": 0.7633,
+     "liftRatioCi": [
+      0.4726,
+      1.0952
+     ],
+     "liftDiff": -0.0026,
+     "liftDiffCi": [
+      -0.0059,
+      0.0011
+     ],
+     "baseRate": 0.0209,
+     "recall": 0.0914,
+     "winners": 383,
+     "caught": 35,
+     "falseDiscovery": 0.9915,
+     "medianWeeksToK": 56,
+     "medianMaeBeforeK": -0.0796,
+     "invalidatedBeforeK": 0.6286
+    },
+    "10x": {
+     "precision": 0.0003,
+     "precisionCi": [
+      0,
+      0.0008
+     ],
+     "dateOnlyExpected": 0.0033,
+     "liftRatioDateOnly": 0.0774,
+     "liftRatioDateOnlyCi": [
+      0,
+      0.2391
+     ],
+     "matchedExpected": 0.0013,
+     "liftRatio": 0.1976,
+     "liftRatioCi": [
+      0,
+      0.6635
+     ],
+     "liftDiff": -0.001,
+     "liftDiffCi": [
+      -0.0015,
+      -0.0004
+     ],
+     "baseRate": 0.0039,
+     "recall": 0.0139,
+     "winners": 72,
+     "caught": 1,
+     "falseDiscovery": 0.9998,
+     "medianWeeksToK": 92,
+     "medianMaeBeforeK": 0,
+     "invalidatedBeforeK": 1
+    }
+   },
+   "returns": {
+    "mean": 0.1307,
+    "meanCi": [
+     0.0933,
+     0.1686
+    ],
+    "matchedMean": 0.136,
+    "excessMean": -0.0053,
+    "excessMeanCi": [
+     -0.0427,
+     0.0332
+    ],
+    "excessMeanCapped4x": -0.0038,
+    "excessMeanCapped4xCi": [
+     -0.0378,
+     0.0294
+    ],
+    "excessMeanDateOnly": -0.0445,
+    "excessMeanDateOnlyCi": [
+     -0.0811,
+     -0.006
+    ],
+    "median": 0.0263,
+    "p05": -0.7462,
+    "p25": -0.255,
+    "p75": 0.3556,
+    "p95": 1.1869,
+    "p99": 2.9494,
+    "trimmedMean5": 0.0624,
+    "winRate": 0.562,
+    "avgWinner": 0.5126,
+    "medianWinner": 0.3018,
+    "avgLoser": -0.3571,
+    "medianLoser": -0.3142,
+    "payoffRatio": 1.4353,
+    "expectancy": 0.1316,
+    "skew": 3.8212,
+    "top1PctShareOfGains": 0.1627,
+    "top5PctShareOfGains": 0.4107,
+    "meanWithoutTop1": 0.1291,
+    "meanWithoutTop3": 0.1252,
+    "meanWithoutTop1Pct": 0.0856,
+    "meanWithoutTop5Pct": 0.014,
+    "medianMae": -0.25234999999999996,
+    "medianMfe": 0.2449,
+    "meanMfe": 0.4703,
+    "delistedShare": 0.4868,
+    "invalidatedShare": 0.6341
+   }
+  },
+  {
+   "signal": "VU_BULL_CLEAR",
+   "horizon": "36M",
+   "units": 18293,
+   "flagged": 4096,
+   "coverage": 0.2239,
+   "symbols": 981,
+   "mult": {
+    "2x": {
+     "precision": 0.1525,
+     "precisionCi": [
+      0.1361,
+      0.1708
+     ],
+     "dateOnlyExpected": 0.1804,
+     "liftRatioDateOnly": 0.8457,
+     "liftRatioDateOnlyCi": [
+      0.7538,
+      0.9431
+     ],
+     "matchedExpected": 0.1609,
+     "liftRatio": 0.9479,
+     "liftRatioCi": [
+      0.8402,
+      1.0579
+     ],
+     "liftDiff": -0.0084,
+     "liftDiffCi": [
+      -0.0261,
+      0.0092
+     ],
+     "baseRate": 0.2014,
+     "recall": 0.1675,
+     "winners": 3684,
+     "caught": 617,
+     "falseDiscovery": 0.8494,
+     "medianWeeksToK": 60,
+     "medianMaeBeforeK": -0.1325,
+     "invalidatedBeforeK": 0.5251
+    },
+    "3x": {
+     "precision": 0.0452,
+     "precisionCi": [
+      0.0353,
+      0.0552
+     ],
+     "dateOnlyExpected": 0.0681,
+     "liftRatioDateOnly": 0.6636,
+     "liftRatioDateOnlyCi": [
+      0.5154,
+      0.8169
+     ],
+     "matchedExpected": 0.0562,
+     "liftRatio": 0.805,
+     "liftRatioCi": [
+      0.6286,
+      0.9882
+     ],
+     "liftDiff": -0.011,
+     "liftDiffCi": [
+      -0.0209,
+      -0.0007
+     ],
+     "baseRate": 0.0786,
+     "recall": 0.128,
+     "winners": 1438,
+     "caught": 184,
+     "falseDiscovery": 0.9551,
+     "medianWeeksToK": 70.5,
+     "medianMaeBeforeK": -0.09975,
+     "invalidatedBeforeK": 0.5
+    },
+    "5x": {
+     "precision": 0.0116,
+     "precisionCi": [
+      0.0072,
+      0.0169
+     ],
+     "dateOnlyExpected": 0.0241,
+     "liftRatioDateOnly": 0.4828,
+     "liftRatioDateOnlyCi": [
+      0.3001,
+      0.7001
+     ],
+     "matchedExpected": 0.0159,
+     "liftRatio": 0.7327,
+     "liftRatioCi": [
+      0.4423,
+      1.0624
+     ],
+     "liftDiff": -0.0042,
+     "liftDiffCi": [
+      -0.0088,
+      0.001
+     ],
+     "baseRate": 0.028,
+     "recall": 0.0936,
+     "winners": 513,
+     "caught": 48,
+     "falseDiscovery": 0.9883,
+     "medianWeeksToK": 80.5,
+     "medianMaeBeforeK": -0.08975,
+     "invalidatedBeforeK": 0.5833
+    },
+    "10x": {
+     "precision": 0.0008,
+     "precisionCi": [
+      0,
+      0.0018
+     ],
+     "dateOnlyExpected": 0.0043,
+     "liftRatioDateOnly": 0.1757,
+     "liftRatioDateOnlyCi": [
+      0,
+      0.4084
+     ],
+     "matchedExpected": 0.002,
+     "liftRatio": 0.3796,
+     "liftRatioCi": [
+      0,
+      0.964
+     ],
+     "liftDiff": -0.0012,
+     "liftDiffCi": [
+      -0.0021,
+      -0.0001
+     ],
+     "baseRate": 0.0051,
+     "recall": 0.0319,
+     "winners": 94,
+     "caught": 3,
+     "falseDiscovery": 0.9993,
+     "medianWeeksToK": 143,
+     "medianMaeBeforeK": -0.0205,
+     "invalidatedBeforeK": 0.3333
+    }
+   },
+   "returns": {
+    "mean": 0.2165,
+    "meanCi": [
+     0.1675,
+     0.2617
+    ],
+    "matchedMean": 0.2268,
+    "excessMean": -0.0103,
+    "excessMeanCi": [
+     -0.0597,
+     0.0333
+    ],
+    "excessMeanCapped4x": -0.0059,
+    "excessMeanCapped4xCi": [
+     -0.0502,
+     0.0325
+    ],
+    "excessMeanDateOnly": -0.0494,
+    "excessMeanDateOnlyCi": [
+     -0.0985,
+     -0.0046
+    ],
+    "median": 0.0722,
+    "p05": -0.7373,
+    "p25": -0.1659,
+    "p75": 0.4228,
+    "p95": 1.4261,
+    "p99": 3.3812,
+    "trimmedMean5": 0.1385,
+    "winRate": 0.6147,
+    "avgWinner": 0.5679,
+    "medianWinner": 0.3331,
+    "avgLoser": -0.3461,
+    "medianLoser": -0.2764,
+    "payoffRatio": 1.6407,
+    "expectancy": 0.2158,
+    "skew": 4.165,
+    "top1PctShareOfGains": 0.1512,
+    "top5PctShareOfGains": 0.3851,
+    "meanWithoutTop1": 0.2129,
+    "meanWithoutTop3": 0.2082,
+    "meanWithoutTop1Pct": 0.1646,
+    "meanWithoutTop5Pct": 0.0856,
+    "medianMae": -0.2692,
+    "medianMfe": 0.2884,
+    "meanMfe": 0.5487,
+    "delistedShare": 0.647,
+    "invalidatedShare": 0.6465
+   }
+  },
+  {
+   "signal": "VU_BULL_STRONG",
+   "horizon": "6M",
+   "units": 18543,
+   "flagged": 1642,
+   "coverage": 0.0886,
+   "symbols": 689,
+   "mult": {
+    "2x": {
+     "precision": 0.0305,
+     "precisionCi": [
+      0.0222,
+      0.0396
+     ],
+     "dateOnlyExpected": 0.0447,
+     "liftRatioDateOnly": 0.6815,
+     "liftRatioDateOnlyCi": [
+      0.5024,
+      0.8916
+     ],
+     "matchedExpected": 0.0342,
+     "liftRatio": 0.892,
+     "liftRatioCi": [
+      0.6673,
+      1.158
+     ],
+     "liftDiff": -0.0037,
+     "liftDiffCi": [
+      -0.0116,
+      0.0054
+     ],
+     "baseRate": 0.0562,
+     "recall": 0.047,
+     "winners": 1042,
+     "caught": 49,
+     "falseDiscovery": 0.9702,
+     "medianWeeksToK": 13,
+     "medianMaeBeforeK": 0,
+     "invalidatedBeforeK": 0.2449
+    },
+    "3x": {
+     "precision": 0.0068,
+     "precisionCi": [
+      0.0031,
+      0.0113
+     ],
+     "dateOnlyExpected": 0.0117,
+     "liftRatioDateOnly": 0.5871,
+     "liftRatioDateOnlyCi": [
+      0.2607,
+      0.9619
+     ],
+     "matchedExpected": 0.0073,
+     "liftRatio": 0.9373,
+     "liftRatioCi": [
+      0.4516,
+      1.5895
+     ],
+     "liftDiff": -0.0005,
+     "liftDiffCi": [
+      -0.004,
+      0.004
+     ],
+     "baseRate": 0.0154,
+     "recall": 0.0386,
+     "winners": 285,
+     "caught": 11,
+     "falseDiscovery": 0.9933,
+     "medianWeeksToK": 19,
+     "medianMaeBeforeK": -0.0188,
+     "invalidatedBeforeK": 0.3636
+    },
+    "5x": {
+     "precision": 0.0012,
+     "precisionCi": [
+      0,
+      0.0038
+     ],
+     "dateOnlyExpected": 0.0025,
+     "liftRatioDateOnly": 0.493,
+     "liftRatioDateOnlyCi": [
+      0,
+      1.5271
+     ],
+     "matchedExpected": 0.002,
+     "liftRatio": 0.626,
+     "liftRatioCi": [
+      0,
+      2.3177
+     ],
+     "liftDiff": -0.0007,
+     "liftDiffCi": [
+      -0.0031,
+      0.002
+     ],
+     "baseRate": 0.003,
+     "recall": 0.0357,
+     "winners": 56,
+     "caught": 2,
+     "falseDiscovery": 0.9988,
+     "medianWeeksToK": 15.5,
+     "medianMaeBeforeK": -0.2438,
+     "invalidatedBeforeK": 0.5
+    },
+    "10x": {
+     "precision": 0,
+     "precisionCi": [
+      null,
+      null
+     ],
+     "dateOnlyExpected": 0.0004,
+     "liftRatioDateOnly": 0,
+     "liftRatioDateOnlyCi": [
+      null,
+      null
+     ],
+     "matchedExpected": 0.0002,
+     "liftRatio": 0,
+     "liftRatioCi": [
+      null,
+      null
+     ],
+     "liftDiff": -0.0002,
+     "liftDiffCi": [
+      -0.0004,
+      -0.0001
+     ],
+     "baseRate": 0.0005,
+     "recall": 0,
+     "winners": 10,
+     "caught": 0,
+     "falseDiscovery": 1,
+     "medianWeeksToK": null,
+     "medianMaeBeforeK": null,
+     "invalidatedBeforeK": null
+    }
+   },
+   "returns": {
+    "mean": 0.0451,
+    "meanCi": [
+     0.0257,
+     0.0639
+    ],
+    "matchedMean": 0.0404,
+    "excessMean": 0.0047,
+    "excessMeanCi": [
+     -0.0155,
+     0.0246
+    ],
+    "excessMeanCapped4x": 0.0074,
+    "excessMeanCapped4xCi": [
+     -0.0129,
+     0.0274
+    ],
+    "excessMeanDateOnly": 0.0089,
+    "excessMeanDateOnlyCi": [
+     -0.0091,
+     0.0291
+    ],
+    "median": 0.0066,
+    "p05": -0.4246,
+    "p25": -0.1607,
+    "p75": 0.1758,
+    "p95": 0.6789,
+    "p99": 1.2478,
+    "trimmedMean5": 0.019,
+    "winRate": 0.5262,
+    "avgWinner": 0.2699,
+    "medianWinner": 0.1574,
+    "avgLoser": -0.2057,
+    "medianLoser": -0.173,
+    "payoffRatio": 1.3123,
+    "expectancy": 0.0446,
+    "skew": 2.001,
+    "top1PctShareOfGains": 0.1301,
+    "top5PctShareOfGains": 0.383,
+    "meanWithoutTop1": 0.0427,
+    "meanWithoutTop3": 0.0395,
+    "meanWithoutTop1Pct": 0.0264,
+    "meanWithoutTop5Pct": -0.0103,
+    "medianMae": -0.11835,
+    "medianMfe": 0.1301,
+    "meanMfe": 0.2426,
+    "delistedShare": 0.1803,
+    "invalidatedShare": 0.4251
+   }
+  },
+  {
+   "signal": "VU_BULL_STRONG",
+   "horizon": "12M",
+   "units": 18473,
+   "flagged": 1640,
+   "coverage": 0.0888,
+   "symbols": 688,
+   "mult": {
+    "2x": {
+     "precision": 0.0672,
+     "precisionCi": [
+      0.0522,
+      0.0823
+     ],
+     "dateOnlyExpected": 0.0847,
+     "liftRatioDateOnly": 0.7937,
+     "liftRatioDateOnlyCi": [
+      0.6332,
+      0.9637
+     ],
+     "matchedExpected": 0.0741,
+     "liftRatio": 0.9071,
+     "liftRatioCi": [
+      0.7163,
+      1.1131
+     ],
+     "liftDiff": -0.0069,
+     "liftDiffCi": [
+      -0.0216,
+      0.0083
+     ],
+     "baseRate": 0.1089,
+     "recall": 0.0537,
+     "winners": 2011,
+     "caught": 108,
+     "falseDiscovery": 0.9341,
+     "medianWeeksToK": 28,
+     "medianMaeBeforeK": -0.0354,
+     "invalidatedBeforeK": 0.2593
+    },
+    "3x": {
+     "precision": 0.0149,
+     "precisionCi": [
+      0.0088,
+      0.0219
+     ],
+     "dateOnlyExpected": 0.0251,
+     "liftRatioDateOnly": 0.5949,
+     "liftRatioDateOnlyCi": [
+      0.3695,
+      0.8705
+     ],
+     "matchedExpected": 0.0187,
+     "liftRatio": 0.7973,
+     "liftRatioCi": [
+      0.4887,
+      1.1903
+     ],
+     "liftDiff": -0.0038,
+     "liftDiffCi": [
+      -0.0097,
+      0.0033
+     ],
+     "baseRate": 0.0354,
+     "recall": 0.0367,
+     "winners": 654,
+     "caught": 24,
+     "falseDiscovery": 0.9854,
+     "medianWeeksToK": 28,
+     "medianMaeBeforeK": -0.0161,
+     "invalidatedBeforeK": 0.3333
+    },
+    "5x": {
+     "precision": 0.0044,
+     "precisionCi": [
+      0.0012,
+      0.0084
+     ],
+     "dateOnlyExpected": 0.0066,
+     "liftRatioDateOnly": 0.6574,
+     "liftRatioDateOnlyCi": [
+      0.1885,
+      1.2916
+     ],
+     "matchedExpected": 0.0043,
+     "liftRatio": 1.0044,
+     "liftRatioCi": [
+      0.2796,
+      2.2002
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0037,
+      0.0043
+     ],
+     "baseRate": 0.0099,
+     "recall": 0.0383,
+     "winners": 183,
+     "caught": 7,
+     "falseDiscovery": 0.9957,
+     "medianWeeksToK": 34,
+     "medianMaeBeforeK": -0.0796,
+     "invalidatedBeforeK": 0.5714
+    },
+    "10x": {
+     "precision": 0,
+     "precisionCi": [
+      null,
+      null
+     ],
+     "dateOnlyExpected": 0.0011,
+     "liftRatioDateOnly": 0,
+     "liftRatioDateOnlyCi": [
+      null,
+      null
+     ],
+     "matchedExpected": 0.0006,
+     "liftRatio": 0,
+     "liftRatioCi": [
+      null,
+      null
+     ],
+     "liftDiff": -0.0006,
+     "liftDiffCi": [
+      -0.0009,
+      -0.0003
+     ],
+     "baseRate": 0.0015,
+     "recall": 0,
+     "winners": 28,
+     "caught": 0,
+     "falseDiscovery": 1,
+     "medianWeeksToK": null,
+     "medianMaeBeforeK": null,
+     "invalidatedBeforeK": null
+    }
+   },
+   "returns": {
+    "mean": 0.0691,
+    "meanCi": [
+     0.0405,
+     0.1018
+    ],
+    "matchedMean": 0.0675,
+    "excessMean": 0.0016,
+    "excessMeanCi": [
+     -0.0282,
+     0.0326
+    ],
+    "excessMeanCapped4x": 0.0061,
+    "excessMeanCapped4xCi": [
+     -0.0225,
+     0.0372
+    ],
+    "excessMeanDateOnly": -0.0074,
+    "excessMeanDateOnlyCi": [
+     -0.0339,
+     0.0221
+    ],
+    "median": 0.0047,
+    "p05": -0.5844,
+    "p25": -0.2047,
+    "p75": 0.2493,
+    "p95": 0.8667,
+    "p99": 1.8459,
+    "trimmedMean5": 0.0275,
+    "winRate": 0.5189,
+    "avgWinner": 0.3782,
+    "medianWinner": 0.233,
+    "avgLoser": -0.2678,
+    "medianLoser": -0.22,
+    "payoffRatio": 1.4124,
+    "expectancy": 0.0674,
+    "skew": 3.0694,
+    "top1PctShareOfGains": 0.1542,
+    "top5PctShareOfGains": 0.4003,
+    "meanWithoutTop1": 0.064,
+    "meanWithoutTop3": 0.0588,
+    "meanWithoutTop1Pct": 0.0375,
+    "meanWithoutTop5Pct": -0.0117,
+    "medianMae": -0.1762,
+    "medianMfe": 0.1783,
+    "meanMfe": 0.3383,
+    "delistedShare": 0.2945,
+    "invalidatedShare": 0.5329
+   }
+  },
+  {
+   "signal": "VU_BULL_STRONG",
+   "horizon": "24M",
+   "units": 18361,
+   "flagged": 1635,
+   "coverage": 0.089,
+   "symbols": 688,
+   "mult": {
+    "2x": {
+     "precision": 0.1055,
+     "precisionCi": [
+      0.0899,
+      0.124
+     ],
+     "dateOnlyExpected": 0.1324,
+     "liftRatioDateOnly": 0.7965,
+     "liftRatioDateOnlyCi": [
+      0.6771,
+      0.9284
+     ],
+     "matchedExpected": 0.1162,
+     "liftRatio": 0.9082,
+     "liftRatioCi": [
+      0.7766,
+      1.0514
+     ],
+     "liftDiff": -0.0107,
+     "liftDiffCi": [
+      -0.0266,
+      0.0059
+     ],
+     "baseRate": 0.1677,
+     "recall": 0.0552,
+     "winners": 3079,
+     "caught": 170,
+     "falseDiscovery": 0.896,
+     "medianWeeksToK": 43,
+     "medianMaeBeforeK": -0.06605,
+     "invalidatedBeforeK": 0.3529
+    },
+    "3x": {
+     "precision": 0.0293,
+     "precisionCi": [
+      0.0194,
+      0.0389
+     ],
+     "dateOnlyExpected": 0.0458,
+     "liftRatioDateOnly": 0.6412,
+     "liftRatioDateOnlyCi": [
+      0.418,
+      0.8381
+     ],
+     "matchedExpected": 0.0387,
+     "liftRatio": 0.7575,
+     "liftRatioCi": [
+      0.5129,
+      1.0422
+     ],
+     "liftDiff": -0.0094,
+     "liftDiffCi": [
+      -0.0191,
+      0.0015
+     ],
+     "baseRate": 0.0628,
+     "recall": 0.0408,
+     "winners": 1153,
+     "caught": 47,
+     "falseDiscovery": 0.9713,
+     "medianWeeksToK": 50,
+     "medianMaeBeforeK": -0.0461,
+     "invalidatedBeforeK": 0.3404
+    },
+    "5x": {
+     "precision": 0.0075,
+     "precisionCi": [
+      0.0031,
+      0.0128
+     ],
+     "dateOnlyExpected": 0.0144,
+     "liftRatioDateOnly": 0.5218,
+     "liftRatioDateOnlyCi": [
+      0.2171,
+      0.8977
+     ],
+     "matchedExpected": 0.0092,
+     "liftRatio": 0.8136,
+     "liftRatioCi": [
+      0.3394,
+      1.4485
+     ],
+     "liftDiff": -0.0017,
+     "liftDiffCi": [
+      -0.0061,
+      0.0038
+     ],
+     "baseRate": 0.0209,
+     "recall": 0.0313,
+     "winners": 383,
+     "caught": 12,
+     "falseDiscovery": 0.9927,
+     "medianWeeksToK": 52,
+     "medianMaeBeforeK": -0.039400000000000004,
+     "invalidatedBeforeK": 0.4167
+    },
+    "10x": {
+     "precision": 0,
+     "precisionCi": [
+      null,
+      null
+     ],
+     "dateOnlyExpected": 0.0026,
+     "liftRatioDateOnly": 0,
+     "liftRatioDateOnlyCi": [
+      null,
+      null
+     ],
+     "matchedExpected": 0.001,
+     "liftRatio": 0,
+     "liftRatioCi": [
+      null,
+      null
+     ],
+     "liftDiff": -0.001,
+     "liftDiffCi": [
+      -0.0014,
+      -0.0006
+     ],
+     "baseRate": 0.0039,
+     "recall": 0,
+     "winners": 72,
+     "caught": 0,
+     "falseDiscovery": 1,
+     "medianWeeksToK": null,
+     "medianMaeBeforeK": null,
+     "invalidatedBeforeK": null
+    }
+   },
+   "returns": {
+    "mean": 0.104,
+    "meanCi": [
+     0.0588,
+     0.1455
+    ],
+    "matchedMean": 0.1048,
+    "excessMean": -0.0008,
+    "excessMeanCi": [
+     -0.0431,
+     0.0392
+    ],
+    "excessMeanCapped4x": 0.0048,
+    "excessMeanCapped4xCi": [
+     -0.0354,
+     0.0433
+    ],
+    "excessMeanDateOnly": -0.0326,
+    "excessMeanDateOnlyCi": [
+     -0.0741,
+     0.0067
+    ],
+    "median": 0.0185,
+    "p05": -0.7736,
+    "p25": -0.2534,
+    "p75": 0.3532,
+    "p95": 1.051,
+    "p99": 2.492,
+    "trimmedMean5": 0.0518,
+    "winRate": 0.559,
+    "avgWinner": 0.4646,
+    "medianWinner": 0.3031,
+    "avgLoser": -0.3582,
+    "medianLoser": -0.3179,
+    "payoffRatio": 1.2971,
+    "expectancy": 0.1018,
+    "skew": 2.453,
+    "top1PctShareOfGains": 0.1337,
+    "top5PctShareOfGains": 0.3788,
+    "meanWithoutTop1": 0.0982,
+    "meanWithoutTop3": 0.0915,
+    "meanWithoutTop1Pct": 0.0677,
+    "meanWithoutTop5Pct": 0.0036,
+    "medianMae": -0.2447,
+    "medianMfe": 0.2581,
+    "meanMfe": 0.448,
+    "delistedShare": 0.4862,
+    "invalidatedShare": 0.6037
+   }
+  },
+  {
+   "signal": "VU_BULL_STRONG",
+   "horizon": "36M",
+   "units": 18293,
+   "flagged": 1633,
+   "coverage": 0.0893,
+   "symbols": 687,
+   "mult": {
+    "2x": {
+     "precision": 0.1419,
+     "precisionCi": [
+      0.1191,
+      0.1642
+     ],
+     "dateOnlyExpected": 0.1641,
+     "liftRatioDateOnly": 0.8647,
+     "liftRatioDateOnlyCi": [
+      0.7306,
+      0.9987
+     ],
+     "matchedExpected": 0.1496,
+     "liftRatio": 0.9483,
+     "liftRatioCi": [
+      0.8087,
+      1.0899
+     ],
+     "liftDiff": -0.0077,
+     "liftDiffCi": [
+      -0.0287,
+      0.0134
+     ],
+     "baseRate": 0.2014,
+     "recall": 0.0622,
+     "winners": 3684,
+     "caught": 229,
+     "falseDiscovery": 0.8598,
+     "medianWeeksToK": 58,
+     "medianMaeBeforeK": -0.1142,
+     "invalidatedBeforeK": 0.4629
+    },
+    "3x": {
+     "precision": 0.0388,
+     "precisionCi": [
+      0.0273,
+      0.0513
+     ],
+     "dateOnlyExpected": 0.0597,
+     "liftRatioDateOnly": 0.6493,
+     "liftRatioDateOnlyCi": [
+      0.4629,
+      0.8626
+     ],
+     "matchedExpected": 0.0499,
+     "liftRatio": 0.7766,
+     "liftRatioCi": [
+      0.5554,
+      1.0178
+     ],
+     "liftDiff": -0.0111,
+     "liftDiffCi": [
+      -0.0223,
+      0.0008
+     ],
+     "baseRate": 0.0786,
+     "recall": 0.0431,
+     "winners": 1438,
+     "caught": 62,
+     "falseDiscovery": 0.962,
+     "medianWeeksToK": 66.5,
+     "medianMaeBeforeK": -0.07045,
+     "invalidatedBeforeK": 0.4032
+    },
+    "5x": {
+     "precision": 0.0106,
+     "precisionCi": [
+      0.0052,
+      0.0175
+     ],
+     "dateOnlyExpected": 0.0204,
+     "liftRatioDateOnly": 0.5211,
+     "liftRatioDateOnlyCi": [
+      0.2573,
+      0.8519
+     ],
+     "matchedExpected": 0.0133,
+     "liftRatio": 0.7981,
+     "liftRatioCi": [
+      0.3677,
+      1.3245
+     ],
+     "liftDiff": -0.0027,
+     "liftDiffCi": [
+      -0.009,
+      0.004
+     ],
+     "baseRate": 0.028,
+     "recall": 0.0331,
+     "winners": 513,
+     "caught": 17,
+     "falseDiscovery": 0.9896,
+     "medianWeeksToK": 80,
+     "medianMaeBeforeK": -0.064,
+     "invalidatedBeforeK": 0.4706
+    },
+    "10x": {
+     "precision": 0.0006,
+     "precisionCi": [
+      0,
+      0.0019
+     ],
+     "dateOnlyExpected": 0.0035,
+     "liftRatioDateOnly": 0.1791,
+     "liftRatioDateOnlyCi": [
+      0,
+      0.5425
+     ],
+     "matchedExpected": 0.0014,
+     "liftRatio": 0.4582,
+     "liftRatioCi": [
+      0,
+      1.7035
+     ],
+     "liftDiff": -0.0007,
+     "liftDiffCi": [
+      -0.0018,
+      0.0007
+     ],
+     "baseRate": 0.0051,
+     "recall": 0.0106,
+     "winners": 94,
+     "caught": 1,
+     "falseDiscovery": 0.9994,
+     "medianWeeksToK": 143,
+     "medianMaeBeforeK": -0.064,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.1861,
+    "meanCi": [
+     0.1303,
+     0.2421
+    ],
+    "matchedMean": 0.1948,
+    "excessMean": -0.0087,
+    "excessMeanCi": [
+     -0.0616,
+     0.0437
+    ],
+    "excessMeanCapped4x": -0.0017,
+    "excessMeanCapped4xCi": [
+     -0.0509,
+     0.0467
+    ],
+    "excessMeanDateOnly": -0.0424,
+    "excessMeanDateOnlyCi": [
+     -0.0963,
+     0.0092
+    ],
+    "median": 0.0599,
+    "p05": -0.7412,
+    "p25": -0.1638,
+    "p75": 0.413,
+    "p95": 1.2363,
+    "p99": 2.7394,
+    "trimmedMean5": 0.1211,
+    "winRate": 0.6148,
+    "avgWinner": 0.5179,
+    "medianWinner": 0.3299,
+    "avgLoser": -0.3536,
+    "medianLoser": -0.2916,
+    "payoffRatio": 1.4647,
+    "expectancy": 0.1822,
+    "skew": 4.2723,
+    "top1PctShareOfGains": 0.1412,
+    "top5PctShareOfGains": 0.3665,
+    "meanWithoutTop1": 0.1751,
+    "meanWithoutTop3": 0.1679,
+    "meanWithoutTop1Pct": 0.1386,
+    "meanWithoutTop5Pct": 0.0689,
+    "medianMae": -0.2633,
+    "medianMfe": 0.2885,
+    "meanMfe": 0.5206,
+    "delistedShare": 0.654,
+    "invalidatedShare": 0.6185
+   }
+  },
+  {
+   "signal": "EW_MOTIVE_UP_DISPLAYED",
+   "horizon": "6M",
+   "units": 18543,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "EW_MOTIVE_UP_DISPLAYED",
+   "horizon": "12M",
+   "units": 18473,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "EW_MOTIVE_UP_DISPLAYED",
+   "horizon": "24M",
+   "units": 18361,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "EW_MOTIVE_UP_DISPLAYED",
+   "horizon": "36M",
+   "units": 18293,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "EW_W3_INTERNAL",
+   "horizon": "6M",
+   "units": 18543,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "EW_W3_INTERNAL",
+   "horizon": "12M",
+   "units": 18473,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "EW_W3_INTERNAL",
+   "horizon": "24M",
+   "units": 18361,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "EW_W3_INTERNAL",
+   "horizon": "36M",
+   "units": 18293,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "EW_EARLY_MOTIVE_INTERNAL",
+   "horizon": "6M",
+   "units": 18543,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "EW_EARLY_MOTIVE_INTERNAL",
+   "horizon": "12M",
+   "units": 18473,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "EW_EARLY_MOTIVE_INTERNAL",
+   "horizon": "24M",
+   "units": 18361,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "EW_EARLY_MOTIVE_INTERNAL",
+   "horizon": "36M",
+   "units": 18293,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "EW_W3_HD_ALIGNED",
+   "horizon": "6M",
+   "units": 18543,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "EW_W3_HD_ALIGNED",
+   "horizon": "12M",
+   "units": 18473,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "EW_W3_HD_ALIGNED",
+   "horizon": "24M",
+   "units": 18361,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "EW_W3_HD_ALIGNED",
+   "horizon": "36M",
+   "units": 18293,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "TREND",
+   "horizon": "6M",
+   "units": 18543,
+   "flagged": 6998,
+   "coverage": 0.3774,
+   "symbols": 1244,
+   "mult": {
+    "2x": {
+     "precision": 0.0331,
+     "precisionCi": [
+      0.0276,
+      0.0383
+     ],
+     "dateOnlyExpected": 0.0472,
+     "liftRatioDateOnly": 0.7015,
+     "liftRatioDateOnlyCi": [
+      0.5899,
+      0.8051
+     ],
+     "matchedExpected": 0.0331,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.8458,
+      1.1439
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0052,
+      0.0047
+     ],
+     "baseRate": 0.0562,
+     "recall": 0.2294,
+     "winners": 1042,
+     "caught": 239,
+     "falseDiscovery": 0.9658,
+     "medianWeeksToK": 16,
+     "medianMaeBeforeK": -0.0214,
+     "invalidatedBeforeK": 0.0335
+    },
+    "3x": {
+     "precision": 0.0065,
+     "precisionCi": [
+      0.0044,
+      0.0087
+     ],
+     "dateOnlyExpected": 0.0123,
+     "liftRatioDateOnly": 0.5292,
+     "liftRatioDateOnlyCi": [
+      0.3643,
+      0.7175
+     ],
+     "matchedExpected": 0.0065,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.6905,
+      1.3614
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0021,
+      0.0023
+     ],
+     "baseRate": 0.0154,
+     "recall": 0.1754,
+     "winners": 285,
+     "caught": 50,
+     "falseDiscovery": 0.9929,
+     "medianWeeksToK": 17,
+     "medianMaeBeforeK": -0.016800000000000002,
+     "invalidatedBeforeK": 0.02
+    },
+    "5x": {
+     "precision": 0.0012,
+     "precisionCi": [
+      0.0003,
+      0.0021
+     ],
+     "dateOnlyExpected": 0.0027,
+     "liftRatioDateOnly": 0.4333,
+     "liftRatioDateOnlyCi": [
+      0.1113,
+      0.7611
+     ],
+     "matchedExpected": 0.0012,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.2697,
+      1.9363
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0009,
+      0.001
+     ],
+     "baseRate": 0.003,
+     "recall": 0.1607,
+     "winners": 56,
+     "caught": 9,
+     "falseDiscovery": 0.9987,
+     "medianWeeksToK": 9,
+     "medianMaeBeforeK": -0.0148,
+     "invalidatedBeforeK": 0.2222
+    },
+    "10x": {
+     "precision": 0.0001,
+     "precisionCi": [
+      0,
+      0.0006
+     ],
+     "dateOnlyExpected": 0.0005,
+     "liftRatioDateOnly": 0.3051,
+     "liftRatioDateOnlyCi": [
+      0,
+      1.2111
+     ],
+     "matchedExpected": 0.0001,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0,
+      3.9635
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0002,
+      0.0004
+     ],
+     "baseRate": 0.0005,
+     "recall": 0.1,
+     "winners": 10,
+     "caught": 1,
+     "falseDiscovery": 0.9999,
+     "medianWeeksToK": 26,
+     "medianMaeBeforeK": -0.3058,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.0337,
+    "meanCi": [
+     0.0216,
+     0.0437
+    ],
+    "matchedMean": 0.0337,
+    "excessMean": 0,
+    "excessMeanCi": [
+     -0.012,
+     0.0098
+    ],
+    "excessMeanCapped4x": 0,
+    "excessMeanCapped4xCi": [
+     -0.0105,
+     0.0093
+    ],
+    "excessMeanDateOnly": -0.0043,
+    "excessMeanDateOnlyCi": [
+     -0.0155,
+     0.0066
+    ],
+    "median": 0.0022,
+    "p05": -0.4428,
+    "p25": -0.1564,
+    "p75": 0.1391,
+    "p95": 0.6617,
+    "p99": 1.3615,
+    "trimmedMean5": 0.0057,
+    "winRate": 0.5139,
+    "avgWinner": 0.2629,
+    "medianWinner": 0.1315,
+    "avgLoser": -0.2041,
+    "medianLoser": -0.1611,
+    "payoffRatio": 1.2881,
+    "expectancy": 0.0359,
+    "skew": 5.2706,
+    "top1PctShareOfGains": 0.1678,
+    "top5PctShareOfGains": 0.4393,
+    "meanWithoutTop1": 0.0345,
+    "meanWithoutTop3": 0.0326,
+    "meanWithoutTop1Pct": 0.0133,
+    "meanWithoutTop5Pct": -0.0247,
+    "medianMae": -0.10035,
+    "medianMfe": 0.0956,
+    "meanMfe": 0.2211,
+    "delistedShare": 0.2023,
+    "invalidatedShare": 0.1959
+   }
+  },
+  {
+   "signal": "TREND",
+   "horizon": "12M",
+   "units": 18473,
+   "flagged": 6992,
+   "coverage": 0.3785,
+   "symbols": 1243,
+   "mult": {
+    "2x": {
+     "precision": 0.0646,
+     "precisionCi": [
+      0.0556,
+      0.0735
+     ],
+     "dateOnlyExpected": 0.0878,
+     "liftRatioDateOnly": 0.7355,
+     "liftRatioDateOnlyCi": [
+      0.6311,
+      0.8288
+     ],
+     "matchedExpected": 0.0646,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.8702,
+      1.1183
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0083,
+      0.0077
+     ],
+     "baseRate": 0.1089,
+     "recall": 0.2282,
+     "winners": 2011,
+     "caught": 459,
+     "falseDiscovery": 0.9344,
+     "medianWeeksToK": 26,
+     "medianMaeBeforeK": -0.0379,
+     "invalidatedBeforeK": 0.0566
+    },
+    "3x": {
+     "precision": 0.0151,
+     "precisionCi": [
+      0.0113,
+      0.0187
+     ],
+     "dateOnlyExpected": 0.0255,
+     "liftRatioDateOnly": 0.591,
+     "liftRatioDateOnlyCi": [
+      0.4456,
+      0.7314
+     ],
+     "matchedExpected": 0.0151,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.7558,
+      1.2533
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0037,
+      0.0038
+     ],
+     "baseRate": 0.0354,
+     "recall": 0.1697,
+     "winners": 654,
+     "caught": 111,
+     "falseDiscovery": 0.9841,
+     "medianWeeksToK": 30,
+     "medianMaeBeforeK": -0.0387,
+     "invalidatedBeforeK": 0.0631
+    },
+    "5x": {
+     "precision": 0.0028,
+     "precisionCi": [
+      0.0014,
+      0.0043
+     ],
+     "dateOnlyExpected": 0.0067,
+     "liftRatioDateOnly": 0.4216,
+     "liftRatioDateOnlyCi": [
+      0.2138,
+      0.6554
+     ],
+     "matchedExpected": 0.0028,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.4907,
+      1.6218
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0015,
+      0.0017
+     ],
+     "baseRate": 0.0099,
+     "recall": 0.1148,
+     "winners": 183,
+     "caught": 21,
+     "falseDiscovery": 0.997,
+     "medianWeeksToK": 33,
+     "medianMaeBeforeK": -0.0585,
+     "invalidatedBeforeK": 0.1905
+    },
+    "10x": {
+     "precision": 0.0004,
+     "precisionCi": [
+      0,
+      0.001
+     ],
+     "dateOnlyExpected": 0.0012,
+     "liftRatioDateOnly": 0.3834,
+     "liftRatioDateOnlyCi": [
+      0,
+      0.868
+     ],
+     "matchedExpected": 0.0004,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0,
+      2.3353
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0004,
+      0.0006
+     ],
+     "baseRate": 0.0015,
+     "recall": 0.1071,
+     "winners": 28,
+     "caught": 3,
+     "falseDiscovery": 0.9996,
+     "medianWeeksToK": 30,
+     "medianMaeBeforeK": -0.0503,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.0606,
+    "meanCi": [
+     0.0436,
+     0.0776
+    ],
+    "matchedMean": 0.0606,
+    "excessMean": 0,
+    "excessMeanCi": [
+     -0.0159,
+     0.0161
+    ],
+    "excessMeanCapped4x": 0,
+    "excessMeanCapped4xCi": [
+     -0.016,
+     0.0145
+    ],
+    "excessMeanDateOnly": -0.0197,
+    "excessMeanDateOnlyCi": [
+     -0.0375,
+     -0.0034
+    ],
+    "median": 0.0038,
+    "p05": -0.5639,
+    "p25": -0.1848,
+    "p75": 0.1938,
+    "p95": 0.864,
+    "p99": 1.8846,
+    "trimmedMean5": 0.0205,
+    "winRate": 0.5216,
+    "avgWinner": 0.3519,
+    "medianWinner": 0.1772,
+    "avgLoser": -0.2503,
+    "medianLoser": -0.1966,
+    "payoffRatio": 1.4062,
+    "expectancy": 0.0638,
+    "skew": 4.9541,
+    "top1PctShareOfGains": 0.1737,
+    "top5PctShareOfGains": 0.4393,
+    "meanWithoutTop1": 0.0623,
+    "meanWithoutTop3": 0.0598,
+    "meanWithoutTop1Pct": 0.0323,
+    "meanWithoutTop5Pct": -0.0177,
+    "medianMae": -0.15255000000000002,
+    "medianMfe": 0.1341,
+    "meanMfe": 0.3107,
+    "delistedShare": 0.3314,
+    "invalidatedShare": 0.2557
+   }
+  },
+  {
+   "signal": "TREND",
+   "horizon": "24M",
+   "units": 18361,
+   "flagged": 6971,
+   "coverage": 0.3797,
+   "symbols": 1238,
+   "mult": {
+    "2x": {
+     "precision": 0.104,
+     "precisionCi": [
+      0.0922,
+      0.1165
+     ],
+     "dateOnlyExpected": 0.1397,
+     "liftRatioDateOnly": 0.7447,
+     "liftRatioDateOnlyCi": [
+      0.6607,
+      0.8322
+     ],
+     "matchedExpected": 0.104,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.8939,
+      1.1163
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.011,
+      0.0119
+     ],
+     "baseRate": 0.1677,
+     "recall": 0.2368,
+     "winners": 3079,
+     "caught": 729,
+     "falseDiscovery": 0.8954,
+     "medianWeeksToK": 40,
+     "medianMaeBeforeK": -0.0724,
+     "invalidatedBeforeK": 0.1399
+    },
+    "3x": {
+     "precision": 0.0322,
+     "precisionCi": [
+      0.0261,
+      0.0385
+     ],
+     "dateOnlyExpected": 0.0492,
+     "liftRatioDateOnly": 0.6542,
+     "liftRatioDateOnlyCi": [
+      0.5322,
+      0.7822
+     ],
+     "matchedExpected": 0.0322,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.8009,
+      1.1907
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0066,
+      0.0061
+     ],
+     "baseRate": 0.0628,
+     "recall": 0.1977,
+     "winners": 1153,
+     "caught": 228,
+     "falseDiscovery": 0.9673,
+     "medianWeeksToK": 54,
+     "medianMaeBeforeK": -0.05055,
+     "invalidatedBeforeK": 0.1316
+    },
+    "5x": {
+     "precision": 0.0068,
+     "precisionCi": [
+      0.0044,
+      0.0099
+     ],
+     "dateOnlyExpected": 0.0149,
+     "liftRatioDateOnly": 0.4572,
+     "liftRatioDateOnlyCi": [
+      0.2995,
+      0.6662
+     ],
+     "matchedExpected": 0.0068,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.6347,
+      1.5239
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0025,
+      0.0034
+     ],
+     "baseRate": 0.0209,
+     "recall": 0.1305,
+     "winners": 383,
+     "caught": 50,
+     "falseDiscovery": 0.9928,
+     "medianWeeksToK": 59,
+     "medianMaeBeforeK": -0.06125,
+     "invalidatedBeforeK": 0.16
+    },
+    "10x": {
+     "precision": 0.0006,
+     "precisionCi": [
+      0.0001,
+      0.0013
+     ],
+     "dateOnlyExpected": 0.0026,
+     "liftRatioDateOnly": 0.2297,
+     "liftRatioDateOnlyCi": [
+      0.0567,
+      0.5097
+     ],
+     "matchedExpected": 0.0006,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.2239,
+      2.2758
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0005,
+      0.0007
+     ],
+     "baseRate": 0.0039,
+     "recall": 0.0556,
+     "winners": 72,
+     "caught": 4,
+     "falseDiscovery": 0.9994,
+     "medianWeeksToK": 32.5,
+     "medianMaeBeforeK": -0.028249999999999997,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.1011,
+    "meanCi": [
+     0.0713,
+     0.1278
+    ],
+    "matchedMean": 0.1011,
+    "excessMean": 0,
+    "excessMeanCi": [
+     -0.0288,
+     0.0247
+    ],
+    "excessMeanCapped4x": 0,
+    "excessMeanCapped4xCi": [
+     -0.027,
+     0.0245
+    ],
+    "excessMeanDateOnly": -0.0534,
+    "excessMeanDateOnlyCi": [
+     -0.0818,
+     -0.0257
+    ],
+    "median": 0.012,
+    "p05": -0.7127,
+    "p25": -0.202,
+    "p75": 0.2746,
+    "p95": 1.1071,
+    "p99": 2.6747,
+    "trimmedMean5": 0.0458,
+    "winRate": 0.5592,
+    "avgWinner": 0.4393,
+    "medianWinner": 0.2261,
+    "avgLoser": -0.3183,
+    "medianLoser": -0.2625,
+    "payoffRatio": 1.3802,
+    "expectancy": 0.1053,
+    "skew": 3.5583,
+    "top1PctShareOfGains": 0.163,
+    "top5PctShareOfGains": 0.4313,
+    "meanWithoutTop1": 0.1041,
+    "meanWithoutTop3": 0.1017,
+    "meanWithoutTop1Pct": 0.0659,
+    "meanWithoutTop5Pct": -0.0006,
+    "medianMae": -0.2157,
+    "medianMfe": 0.1879,
+    "meanMfe": 0.4234,
+    "delistedShare": 0.5247,
+    "invalidatedShare": 0.2964
+   }
+  },
+  {
+   "signal": "TREND",
+   "horizon": "36M",
+   "units": 18293,
+   "flagged": 6958,
+   "coverage": 0.3804,
+   "symbols": 1236,
+   "mult": {
+    "2x": {
+     "precision": 0.1311,
+     "precisionCi": [
+      0.1163,
+      0.1451
+     ],
+     "dateOnlyExpected": 0.1707,
+     "liftRatioDateOnly": 0.7678,
+     "liftRatioDateOnlyCi": [
+      0.6795,
+      0.8477
+     ],
+     "matchedExpected": 0.1311,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.8944,
+      1.0998
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.014,
+      0.013
+     ],
+     "baseRate": 0.2014,
+     "recall": 0.2478,
+     "winners": 3684,
+     "caught": 913,
+     "falseDiscovery": 0.8688,
+     "medianWeeksToK": 54,
+     "medianMaeBeforeK": -0.1142,
+     "invalidatedBeforeK": 0.2158
+    },
+    "3x": {
+     "precision": 0.0441,
+     "precisionCi": [
+      0.0358,
+      0.0532
+     ],
+     "dateOnlyExpected": 0.0633,
+     "liftRatioDateOnly": 0.6963,
+     "liftRatioDateOnlyCi": [
+      0.5687,
+      0.8416
+     ],
+     "matchedExpected": 0.0441,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.8168,
+      1.2154
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.008,
+      0.0095
+     ],
+     "baseRate": 0.0786,
+     "recall": 0.2149,
+     "winners": 1438,
+     "caught": 309,
+     "falseDiscovery": 0.9556,
+     "medianWeeksToK": 69,
+     "medianMaeBeforeK": -0.0848,
+     "invalidatedBeforeK": 0.1618
+    },
+    "5x": {
+     "precision": 0.0104,
+     "precisionCi": [
+      0.0065,
+      0.0145
+     ],
+     "dateOnlyExpected": 0.0209,
+     "liftRatioDateOnly": 0.4976,
+     "liftRatioDateOnlyCi": [
+      0.3143,
+      0.6901
+     ],
+     "matchedExpected": 0.0104,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.6532,
+      1.4033
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0038,
+      0.0041
+     ],
+     "baseRate": 0.028,
+     "recall": 0.1462,
+     "winners": 513,
+     "caught": 75,
+     "falseDiscovery": 0.9892,
+     "medianWeeksToK": 76,
+     "medianMaeBeforeK": -0.1293,
+     "invalidatedBeforeK": 0.16
+    },
+    "10x": {
+     "precision": 0.0009,
+     "precisionCi": [
+      0.0003,
+      0.0016
+     ],
+     "dateOnlyExpected": 0.0034,
+     "liftRatioDateOnly": 0.2603,
+     "liftRatioDateOnlyCi": [
+      0.0849,
+      0.4657
+     ],
+     "matchedExpected": 0.0009,
+     "liftRatio": 1,
+     "liftRatioCi": [
+      0.3062,
+      1.8834
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0007,
+      0.0007
+     ],
+     "baseRate": 0.0051,
+     "recall": 0.0638,
+     "winners": 94,
+     "caught": 6,
+     "falseDiscovery": 0.9991,
+     "medianWeeksToK": 60.5,
+     "medianMaeBeforeK": -0.0354,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.1833,
+    "meanCi": [
+     0.1488,
+     0.2165
+    ],
+    "matchedMean": 0.1833,
+    "excessMean": 0,
+    "excessMeanCi": [
+     -0.0339,
+     0.0326
+    ],
+    "excessMeanCapped4x": 0,
+    "excessMeanCapped4xCi": [
+     -0.0312,
+     0.0312
+    ],
+    "excessMeanDateOnly": -0.0561,
+    "excessMeanDateOnlyCi": [
+     -0.0896,
+     -0.0227
+    ],
+    "median": 0.0307,
+    "p05": -0.7071,
+    "p25": -0.1165,
+    "p75": 0.3503,
+    "p95": 1.3194,
+    "p99": 3.0787,
+    "trimmedMean5": 0.1106,
+    "winRate": 0.6042,
+    "avgWinner": 0.5079,
+    "medianWinner": 0.2607,
+    "avgLoser": -0.3043,
+    "medianLoser": -0.2162,
+    "payoffRatio": 1.6691,
+    "expectancy": 0.1864,
+    "skew": 4.7053,
+    "top1PctShareOfGains": 0.1686,
+    "top5PctShareOfGains": 0.4219,
+    "meanWithoutTop1": 0.1844,
+    "meanWithoutTop3": 0.1814,
+    "meanWithoutTop1Pct": 0.136,
+    "meanWithoutTop5Pct": 0.0599,
+    "medianMae": -0.2284,
+    "medianMfe": 0.2126,
+    "meanMfe": 0.492,
+    "delistedShare": 0.6801,
+    "invalidatedShare": 0.3035
+   }
+  },
+  {
+   "signal": "MOM_TOP20",
+   "horizon": "6M",
+   "units": 18543,
+   "flagged": 3711,
+   "coverage": 0.2001,
+   "symbols": 956,
+   "mult": {
+    "2x": {
+     "precision": 0.0466,
+     "precisionCi": [
+      0.0385,
+      0.0546
+     ],
+     "dateOnlyExpected": 0.056,
+     "liftRatioDateOnly": 0.8332,
+     "liftRatioDateOnlyCi": [
+      0.6814,
+      0.9807
+     ],
+     "matchedExpected": 0.0444,
+     "liftRatio": 1.0491,
+     "liftRatioCi": [
+      0.8834,
+      1.2386
+     ],
+     "liftDiff": 0.0022,
+     "liftDiffCi": [
+      -0.0051,
+      0.0105
+     ],
+     "baseRate": 0.0562,
+     "recall": 0.1727,
+     "winners": 1042,
+     "caught": 180,
+     "falseDiscovery": 0.9515,
+     "medianWeeksToK": 15.5,
+     "medianMaeBeforeK": -0.01965,
+     "invalidatedBeforeK": 0.0944
+    },
+    "3x": {
+     "precision": 0.0092,
+     "precisionCi": [
+      0.0057,
+      0.0129
+     ],
+     "dateOnlyExpected": 0.0153,
+     "liftRatioDateOnly": 0.6,
+     "liftRatioDateOnlyCi": [
+      0.376,
+      0.8583
+     ],
+     "matchedExpected": 0.009,
+     "liftRatio": 1.0206,
+     "liftRatioCi": [
+      0.6251,
+      1.5333
+     ],
+     "liftDiff": 0.0002,
+     "liftDiffCi": [
+      -0.0036,
+      0.0044
+     ],
+     "baseRate": 0.0154,
+     "recall": 0.1333,
+     "winners": 285,
+     "caught": 38,
+     "falseDiscovery": 0.9898,
+     "medianWeeksToK": 16,
+     "medianMaeBeforeK": -0.0201,
+     "invalidatedBeforeK": 0.1579
+    },
+    "5x": {
+     "precision": 0.0022,
+     "precisionCi": [
+      0.0006,
+      0.0042
+     ],
+     "dateOnlyExpected": 0.003,
+     "liftRatioDateOnly": 0.7394,
+     "liftRatioDateOnlyCi": [
+      0.1866,
+      1.3988
+     ],
+     "matchedExpected": 0.0023,
+     "liftRatio": 0.9692,
+     "liftRatioCi": [
+      0.2558,
+      2.1919
+     ],
+     "liftDiff": -0.0001,
+     "liftDiffCi": [
+      -0.0019,
+      0.0021
+     ],
+     "baseRate": 0.003,
+     "recall": 0.1429,
+     "winners": 56,
+     "caught": 8,
+     "falseDiscovery": 0.9978,
+     "medianWeeksToK": 14,
+     "medianMaeBeforeK": -0.14695000000000003,
+     "invalidatedBeforeK": 0.5
+    },
+    "10x": {
+     "precision": 0.0003,
+     "precisionCi": [
+      0,
+      0.0008
+     ],
+     "dateOnlyExpected": 0.0005,
+     "liftRatioDateOnly": 0.5161,
+     "liftRatioDateOnlyCi": [
+      0,
+      1.6176
+     ],
+     "matchedExpected": 0.0002,
+     "liftRatio": 1.2143,
+     "liftRatioCi": [
+      0,
+      4.6364
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0003,
+      0.0007
+     ],
+     "baseRate": 0.0005,
+     "recall": 0.1,
+     "winners": 10,
+     "caught": 1,
+     "falseDiscovery": 0.9997,
+     "medianWeeksToK": 26,
+     "medianMaeBeforeK": -0.3058,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.063,
+    "meanCi": [
+     0.0436,
+     0.08
+    ],
+    "matchedMean": 0.0608,
+    "excessMean": 0.0022,
+    "excessMeanCi": [
+     -0.0168,
+     0.0204
+    ],
+    "excessMeanCapped4x": 0.0023,
+    "excessMeanCapped4xCi": [
+     -0.0154,
+     0.0187
+    ],
+    "excessMeanDateOnly": -0.0019,
+    "excessMeanDateOnlyCi": [
+     -0.0196,
+     0.0159
+    ],
+    "median": 0.0072,
+    "p05": -0.4575,
+    "p25": -0.1612,
+    "p75": 0.1855,
+    "p95": 0.7991,
+    "p99": 1.6812,
+    "trimmedMean5": 0.0271,
+    "winRate": 0.5408,
+    "avgWinner": 0.3109,
+    "medianWinner": 0.1609,
+    "avgLoser": -0.2222,
+    "medianLoser": -0.1839,
+    "payoffRatio": 1.3993,
+    "expectancy": 0.0661,
+    "skew": 5.2936,
+    "top1PctShareOfGains": 0.1602,
+    "top5PctShareOfGains": 0.4199,
+    "meanWithoutTop1": 0.0635,
+    "meanWithoutTop3": 0.0602,
+    "meanWithoutTop1Pct": 0.0396,
+    "meanWithoutTop5Pct": -0.0047,
+    "medianMae": -0.1174,
+    "medianMfe": 0.1317,
+    "meanMfe": 0.2784,
+    "delistedShare": 0.2032,
+    "invalidatedShare": 0.2299
+   }
+  },
+  {
+   "signal": "MOM_TOP20",
+   "horizon": "12M",
+   "units": 18473,
+   "flagged": 3705,
+   "coverage": 0.2006,
+   "symbols": 955,
+   "mult": {
+    "2x": {
+     "precision": 0.0926,
+     "precisionCi": [
+      0.079,
+      0.1069
+     ],
+     "dateOnlyExpected": 0.1084,
+     "liftRatioDateOnly": 0.8537,
+     "liftRatioDateOnlyCi": [
+      0.728,
+      0.9811
+     ],
+     "matchedExpected": 0.0883,
+     "liftRatio": 1.0479,
+     "liftRatioCi": [
+      0.9146,
+      1.19
+     ],
+     "liftDiff": 0.0042,
+     "liftDiffCi": [
+      -0.0075,
+      0.017
+     ],
+     "baseRate": 0.1089,
+     "recall": 0.1735,
+     "winners": 2011,
+     "caught": 349,
+     "falseDiscovery": 0.9058,
+     "medianWeeksToK": 26,
+     "medianMaeBeforeK": -0.0455,
+     "invalidatedBeforeK": 0.1261
+    },
+    "3x": {
+     "precision": 0.0239,
+     "precisionCi": [
+      0.0178,
+      0.0305
+     ],
+     "dateOnlyExpected": 0.0352,
+     "liftRatioDateOnly": 0.6795,
+     "liftRatioDateOnlyCi": [
+      0.5099,
+      0.8525
+     ],
+     "matchedExpected": 0.0221,
+     "liftRatio": 1.0799,
+     "liftRatioCi": [
+      0.8034,
+      1.3825
+     ],
+     "liftDiff": 0.0018,
+     "liftDiffCi": [
+      -0.0045,
+      0.0085
+     ],
+     "baseRate": 0.0354,
+     "recall": 0.1407,
+     "winners": 654,
+     "caught": 92,
+     "falseDiscovery": 0.9752,
+     "medianWeeksToK": 30,
+     "medianMaeBeforeK": -0.03325,
+     "invalidatedBeforeK": 0.1739
+    },
+    "5x": {
+     "precision": 0.0044,
+     "precisionCi": [
+      0.0017,
+      0.0082
+     ],
+     "dateOnlyExpected": 0.0098,
+     "liftRatioDateOnly": 0.4525,
+     "liftRatioDateOnlyCi": [
+      0.1783,
+      0.8327
+     ],
+     "matchedExpected": 0.0052,
+     "liftRatio": 0.8602,
+     "liftRatioCi": [
+      0.3083,
+      1.6471
+     ],
+     "liftDiff": -0.0007,
+     "liftDiffCi": [
+      -0.0039,
+      0.003
+     ],
+     "baseRate": 0.0099,
+     "recall": 0.0984,
+     "winners": 183,
+     "caught": 18,
+     "falseDiscovery": 0.9951,
+     "medianWeeksToK": 33.5,
+     "medianMaeBeforeK": -0.1993,
+     "invalidatedBeforeK": 0.3889
+    },
+    "10x": {
+     "precision": 0.0006,
+     "precisionCi": [
+      0,
+      0.0014
+     ],
+     "dateOnlyExpected": 0.0015,
+     "liftRatioDateOnly": 0.3711,
+     "liftRatioDateOnlyCi": [
+      0,
+      0.9378
+     ],
+     "matchedExpected": 0.0008,
+     "liftRatio": 0.7343,
+     "liftRatioCi": [
+      0,
+      1.9852
+     ],
+     "liftDiff": -0.0002,
+     "liftDiffCi": [
+      -0.0008,
+      0.0007
+     ],
+     "baseRate": 0.0015,
+     "recall": 0.0714,
+     "winners": 28,
+     "caught": 2,
+     "falseDiscovery": 0.9995,
+     "medianWeeksToK": 30.5,
+     "medianMaeBeforeK": -0.17805,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.1057,
+    "meanCi": [
+     0.078,
+     0.1385
+    ],
+    "matchedMean": 0.1059,
+    "excessMean": -0.0002,
+    "excessMeanCi": [
+     -0.0282,
+     0.0297
+    ],
+    "excessMeanCapped4x": 0,
+    "excessMeanCapped4xCi": [
+     -0.0254,
+     0.0277
+    ],
+    "excessMeanDateOnly": -0.0316,
+    "excessMeanDateOnlyCi": [
+     -0.0584,
+     -0.0015
+    ],
+    "median": 0.0124,
+    "p05": -0.5976,
+    "p25": -0.2119,
+    "p75": 0.2702,
+    "p95": 1.0661,
+    "p99": 2.4649,
+    "trimmedMean5": 0.0506,
+    "winRate": 0.5584,
+    "avgWinner": 0.4266,
+    "medianWinner": 0.2166,
+    "avgLoser": -0.29,
+    "medianLoser": -0.2503,
+    "payoffRatio": 1.4712,
+    "expectancy": 0.1102,
+    "skew": 4.8833,
+    "top1PctShareOfGains": 0.174,
+    "top5PctShareOfGains": 0.4252,
+    "meanWithoutTop1": 0.1074,
+    "meanWithoutTop3": 0.1028,
+    "meanWithoutTop1Pct": 0.0694,
+    "meanWithoutTop5Pct": 0.0094,
+    "medianMae": -0.1822,
+    "medianMfe": 0.1882,
+    "meanMfe": 0.4012,
+    "delistedShare": 0.3209,
+    "invalidatedShare": 0.292
+   }
+  },
+  {
+   "signal": "MOM_TOP20",
+   "horizon": "24M",
+   "units": 18361,
+   "flagged": 3688,
+   "coverage": 0.2009,
+   "symbols": 952,
+   "mult": {
+    "2x": {
+     "precision": 0.15,
+     "precisionCi": [
+      0.1318,
+      0.1669
+     ],
+     "dateOnlyExpected": 0.1679,
+     "liftRatioDateOnly": 0.8931,
+     "liftRatioDateOnlyCi": [
+      0.7932,
+      0.9929
+     ],
+     "matchedExpected": 0.1414,
+     "liftRatio": 1.0609,
+     "liftRatioCi": [
+      0.9487,
+      1.1815
+     ],
+     "liftDiff": 0.0086,
+     "liftDiffCi": [
+      -0.0073,
+      0.0253
+     ],
+     "baseRate": 0.1677,
+     "recall": 0.1809,
+     "winners": 3079,
+     "caught": 557,
+     "falseDiscovery": 0.849,
+     "medianWeeksToK": 41,
+     "medianMaeBeforeK": -0.0897,
+     "invalidatedBeforeK": 0.1867
+    },
+    "3x": {
+     "precision": 0.0497,
+     "precisionCi": [
+      0.0388,
+      0.0605
+     ],
+     "dateOnlyExpected": 0.0629,
+     "liftRatioDateOnly": 0.7906,
+     "liftRatioDateOnlyCi": [
+      0.6106,
+      0.9599
+     ],
+     "matchedExpected": 0.0473,
+     "liftRatio": 1.0515,
+     "liftRatioCi": [
+      0.8229,
+      1.2792
+     ],
+     "liftDiff": 0.0024,
+     "liftDiffCi": [
+      -0.0083,
+      0.0128
+     ],
+     "baseRate": 0.0628,
+     "recall": 0.1639,
+     "winners": 1153,
+     "caught": 189,
+     "falseDiscovery": 0.9488,
+     "medianWeeksToK": 54,
+     "medianMaeBeforeK": -0.0883,
+     "invalidatedBeforeK": 0.2116
+    },
+    "5x": {
+     "precision": 0.0106,
+     "precisionCi": [
+      0.0059,
+      0.0157
+     ],
+     "dateOnlyExpected": 0.0208,
+     "liftRatioDateOnly": 0.5094,
+     "liftRatioDateOnlyCi": [
+      0.2845,
+      0.7666
+     ],
+     "matchedExpected": 0.0113,
+     "liftRatio": 0.9375,
+     "liftRatioCi": [
+      0.5255,
+      1.4668
+     ],
+     "liftDiff": -0.0007,
+     "liftDiffCi": [
+      -0.0059,
+      0.0049
+     ],
+     "baseRate": 0.0209,
+     "recall": 0.1123,
+     "winners": 383,
+     "caught": 43,
+     "falseDiscovery": 0.9883,
+     "medianWeeksToK": 59,
+     "medianMaeBeforeK": -0.1486,
+     "invalidatedBeforeK": 0.2326
+    },
+    "10x": {
+     "precision": 0.0006,
+     "precisionCi": [
+      0,
+      0.0014
+     ],
+     "dateOnlyExpected": 0.0039,
+     "liftRatioDateOnly": 0.1431,
+     "liftRatioDateOnlyCi": [
+      0,
+      0.3784
+     ],
+     "matchedExpected": 0.0013,
+     "liftRatio": 0.4377,
+     "liftRatioCi": [
+      0,
+      1.2505
+     ],
+     "liftDiff": -0.0007,
+     "liftDiffCi": [
+      -0.0014,
+      0.0003
+     ],
+     "baseRate": 0.0039,
+     "recall": 0.0278,
+     "winners": 72,
+     "caught": 2,
+     "falseDiscovery": 0.9995,
+     "medianWeeksToK": 30.5,
+     "medianMaeBeforeK": -0.17805,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.1749,
+    "meanCi": [
+     0.1262,
+     0.223
+    ],
+    "matchedMean": 0.1683,
+    "excessMean": 0.0067,
+    "excessMeanCi": [
+     -0.0431,
+     0.0532
+    ],
+    "excessMeanCapped4x": 0.0084,
+    "excessMeanCapped4xCi": [
+     -0.0357,
+     0.0506
+    ],
+    "excessMeanDateOnly": -0.0595,
+    "excessMeanDateOnlyCi": [
+     -0.1058,
+     -0.0157
+    ],
+    "median": 0.0258,
+    "p05": -0.7497,
+    "p25": -0.2014,
+    "p75": 0.3834,
+    "p95": 1.4524,
+    "p99": 3.3982,
+    "trimmedMean5": 0.0994,
+    "winRate": 0.5916,
+    "avgWinner": 0.5444,
+    "medianWinner": 0.2943,
+    "avgLoser": -0.3489,
+    "medianLoser": -0.2909,
+    "payoffRatio": 1.5604,
+    "expectancy": 0.1796,
+    "skew": 3.3647,
+    "top1PctShareOfGains": 0.1487,
+    "top5PctShareOfGains": 0.4125,
+    "meanWithoutTop1": 0.1773,
+    "meanWithoutTop3": 0.1729,
+    "meanWithoutTop1Pct": 0.133,
+    "meanWithoutTop5Pct": 0.0492,
+    "medianMae": -0.2363,
+    "medianMfe": 0.2687,
+    "meanMfe": 0.5469,
+    "delistedShare": 0.5005,
+    "invalidatedShare": 0.3332
+   }
+  },
+  {
+   "signal": "MOM_TOP20",
+   "horizon": "36M",
+   "units": 18293,
+   "flagged": 3680,
+   "coverage": 0.2012,
+   "symbols": 952,
+   "mult": {
+    "2x": {
+     "precision": 0.1819,
+     "precisionCi": [
+      0.1629,
+      0.2041
+     ],
+     "dateOnlyExpected": 0.2021,
+     "liftRatioDateOnly": 0.9,
+     "liftRatioDateOnlyCi": [
+      0.8032,
+      1.0133
+     ],
+     "matchedExpected": 0.1742,
+     "liftRatio": 1.0441,
+     "liftRatioCi": [
+      0.9382,
+      1.1644
+     ],
+     "liftDiff": 0.0077,
+     "liftDiffCi": [
+      -0.0108,
+      0.0287
+     ],
+     "baseRate": 0.2014,
+     "recall": 0.1819,
+     "winners": 3684,
+     "caught": 670,
+     "falseDiscovery": 0.8179,
+     "medianWeeksToK": 52,
+     "medianMaeBeforeK": -0.1178,
+     "invalidatedBeforeK": 0.2478
+    },
+    "3x": {
+     "precision": 0.0638,
+     "precisionCi": [
+      0.0504,
+      0.0767
+     ],
+     "dateOnlyExpected": 0.079,
+     "liftRatioDateOnly": 0.808,
+     "liftRatioDateOnlyCi": [
+      0.6355,
+      0.9766
+     ],
+     "matchedExpected": 0.0613,
+     "liftRatio": 1.0406,
+     "liftRatioCi": [
+      0.8277,
+      1.2464
+     ],
+     "liftDiff": 0.0025,
+     "liftDiffCi": [
+      -0.0107,
+      0.0147
+     ],
+     "baseRate": 0.0786,
+     "recall": 0.1662,
+     "winners": 1438,
+     "caught": 239,
+     "falseDiscovery": 0.9351,
+     "medianWeeksToK": 66,
+     "medianMaeBeforeK": -0.1211,
+     "invalidatedBeforeK": 0.2343
+    },
+    "5x": {
+     "precision": 0.0168,
+     "precisionCi": [
+      0.01,
+      0.0238
+     ],
+     "dateOnlyExpected": 0.0281,
+     "liftRatioDateOnly": 0.5966,
+     "liftRatioDateOnlyCi": [
+      0.3517,
+      0.8467
+     ],
+     "matchedExpected": 0.0161,
+     "liftRatio": 1.0434,
+     "liftRatioCi": [
+      0.6243,
+      1.488
+     ],
+     "liftDiff": 0.0007,
+     "liftDiffCi": [
+      -0.0063,
+      0.0076
+     ],
+     "baseRate": 0.028,
+     "recall": 0.1267,
+     "winners": 513,
+     "caught": 65,
+     "falseDiscovery": 0.9823,
+     "medianWeeksToK": 89,
+     "medianMaeBeforeK": -0.1905,
+     "invalidatedBeforeK": 0.2154
+    },
+    "10x": {
+     "precision": 0.002,
+     "precisionCi": [
+      0.0006,
+      0.0038
+     ],
+     "dateOnlyExpected": 0.0051,
+     "liftRatioDateOnly": 0.3815,
+     "liftRatioDateOnlyCi": [
+      0.1082,
+      0.744
+     ],
+     "matchedExpected": 0.0018,
+     "liftRatio": 1.0638,
+     "liftRatioCi": [
+      0.2928,
+      2.141
+     ],
+     "liftDiff": 0.0001,
+     "liftDiffCi": [
+      -0.0014,
+      0.0019
+     ],
+     "baseRate": 0.0051,
+     "recall": 0.0745,
+     "winners": 94,
+     "caught": 7,
+     "falseDiscovery": 0.9981,
+     "medianWeeksToK": 131,
+     "medianMaeBeforeK": -0.064,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.2554,
+    "meanCi": [
+     0.1965,
+     0.3217
+    ],
+    "matchedMean": 0.2472,
+    "excessMean": 0.0081,
+    "excessMeanCi": [
+     -0.0495,
+     0.0719
+    ],
+    "excessMeanCapped4x": 0.0043,
+    "excessMeanCapped4xCi": [
+     -0.0491,
+     0.0574
+    ],
+    "excessMeanDateOnly": -0.0584,
+    "excessMeanDateOnlyCi": [
+     -0.1149,
+     0.0074
+    ],
+    "median": 0.054,
+    "p05": -0.7788,
+    "p25": -0.1523,
+    "p75": 0.44,
+    "p95": 1.6824,
+    "p99": 4.0562,
+    "trimmedMean5": 0.1531,
+    "winRate": 0.6372,
+    "avgWinner": 0.6175,
+    "medianWinner": 0.3125,
+    "avgLoser": -0.3701,
+    "medianLoser": -0.3113,
+    "payoffRatio": 1.6684,
+    "expectancy": 0.2592,
+    "skew": 4.6357,
+    "top1PctShareOfGains": 0.1651,
+    "top5PctShareOfGains": 0.4217,
+    "meanWithoutTop1": 0.2554,
+    "meanWithoutTop3": 0.2494,
+    "meanWithoutTop1Pct": 0.1962,
+    "meanWithoutTop5Pct": 0.0982,
+    "medianMae": -0.25295,
+    "medianMfe": 0.3114,
+    "meanMfe": 0.6349,
+    "delistedShare": 0.6666,
+    "invalidatedShare": 0.3435
+   }
+  },
+  {
+   "signal": "RS26_TOP20",
+   "horizon": "6M",
+   "units": 18543,
+   "flagged": 3702,
+   "coverage": 0.1996,
+   "symbols": 1091,
+   "mult": {
+    "2x": {
+     "precision": 0.0577,
+     "precisionCi": [
+      0.0494,
+      0.0667
+     ],
+     "dateOnlyExpected": 0.0561,
+     "liftRatioDateOnly": 1.0282,
+     "liftRatioDateOnlyCi": [
+      0.8857,
+      1.1851
+     ],
+     "matchedExpected": 0.0508,
+     "liftRatio": 1.1346,
+     "liftRatioCi": [
+      0.9833,
+      1.2986
+     ],
+     "liftDiff": 0.0068,
+     "liftDiffCi": [
+      -0.0008,
+      0.0148
+     ],
+     "baseRate": 0.0562,
+     "recall": 0.2092,
+     "winners": 1042,
+     "caught": 218,
+     "falseDiscovery": 0.9411,
+     "medianWeeksToK": 16,
+     "medianMaeBeforeK": -0.02065,
+     "invalidatedBeforeK": 0.0367
+    },
+    "3x": {
+     "precision": 0.0116,
+     "precisionCi": [
+      0.0076,
+      0.0156
+     ],
+     "dateOnlyExpected": 0.0153,
+     "liftRatioDateOnly": 0.7576,
+     "liftRatioDateOnlyCi": [
+      0.5049,
+      1.033
+     ],
+     "matchedExpected": 0.01,
+     "liftRatio": 1.1567,
+     "liftRatioCi": [
+      0.7575,
+      1.5841
+     ],
+     "liftDiff": 0.0016,
+     "liftDiffCi": [
+      -0.0026,
+      0.0057
+     ],
+     "baseRate": 0.0154,
+     "recall": 0.1684,
+     "winners": 285,
+     "caught": 48,
+     "falseDiscovery": 0.987,
+     "medianWeeksToK": 16,
+     "medianMaeBeforeK": -0.01415,
+     "invalidatedBeforeK": 0.0417
+    },
+    "5x": {
+     "precision": 0.0017,
+     "precisionCi": [
+      0,
+      0.0036
+     ],
+     "dateOnlyExpected": 0.003,
+     "liftRatioDateOnly": 0.5637,
+     "liftRatioDateOnlyCi": [
+      0,
+      1.204
+     ],
+     "matchedExpected": 0.0021,
+     "liftRatio": 0.819,
+     "liftRatioCi": [
+      0,
+      1.9558
+     ],
+     "liftDiff": -0.0004,
+     "liftDiffCi": [
+      -0.0023,
+      0.0017
+     ],
+     "baseRate": 0.003,
+     "recall": 0.1429,
+     "winners": 56,
+     "caught": 8,
+     "falseDiscovery": 0.9978,
+     "medianWeeksToK": 10,
+     "medianMaeBeforeK": -0.08005000000000001,
+     "invalidatedBeforeK": 0.375
+    },
+    "10x": {
+     "precision": 0.0003,
+     "precisionCi": [
+      0,
+      0.0009
+     ],
+     "dateOnlyExpected": 0.0005,
+     "liftRatioDateOnly": 0.5242,
+     "liftRatioDateOnlyCi": [
+      0,
+      1.6399
+     ],
+     "matchedExpected": 0.0003,
+     "liftRatio": 0.9728,
+     "liftRatioCi": [
+      0,
+      2.9846
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      -0.0003,
+      0.0006
+     ],
+     "baseRate": 0.0005,
+     "recall": 0.1,
+     "winners": 10,
+     "caught": 1,
+     "falseDiscovery": 0.9997,
+     "medianWeeksToK": 26,
+     "medianMaeBeforeK": -0.3058,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.0686,
+    "meanCi": [
+     0.0508,
+     0.0866
+    ],
+    "matchedMean": 0.0648,
+    "excessMean": 0.0039,
+    "excessMeanCi": [
+     -0.0149,
+     0.0216
+    ],
+    "excessMeanCapped4x": 0.0038,
+    "excessMeanCapped4xCi": [
+     -0.0128,
+     0.0192
+    ],
+    "excessMeanDateOnly": 0.0039,
+    "excessMeanDateOnlyCi": [
+     -0.0137,
+     0.0215
+    ],
+    "median": 0.006,
+    "p05": -0.4939,
+    "p25": -0.1722,
+    "p75": 0.1844,
+    "p95": 0.895,
+    "p99": 1.7389,
+    "trimmedMean5": 0.0279,
+    "winRate": 0.5424,
+    "avgWinner": 0.3316,
+    "medianWinner": 0.1545,
+    "avgLoser": -0.2353,
+    "medianLoser": -0.1979,
+    "payoffRatio": 1.4094,
+    "expectancy": 0.0722,
+    "skew": 5.2842,
+    "top1PctShareOfGains": 0.1722,
+    "top5PctShareOfGains": 0.4344,
+    "meanWithoutTop1": 0.0695,
+    "meanWithoutTop3": 0.0659,
+    "meanWithoutTop1Pct": 0.0416,
+    "meanWithoutTop5Pct": -0.0062,
+    "medianMae": -0.1162,
+    "medianMfe": 0.1255,
+    "meanMfe": 0.2881,
+    "delistedShare": 0.2229,
+    "invalidatedShare": 0.1848
+   }
+  },
+  {
+   "signal": "RS26_TOP20",
+   "horizon": "12M",
+   "units": 18473,
+   "flagged": 3696,
+   "coverage": 0.2001,
+   "symbols": 1089,
+   "mult": {
+    "2x": {
+     "precision": 0.1105,
+     "precisionCi": [
+      0.0972,
+      0.1243
+     ],
+     "dateOnlyExpected": 0.1087,
+     "liftRatioDateOnly": 1.0161,
+     "liftRatioDateOnlyCi": [
+      0.9021,
+      1.1289
+     ],
+     "matchedExpected": 0.0983,
+     "liftRatio": 1.124,
+     "liftRatioCi": [
+      1.0105,
+      1.2507
+     ],
+     "liftDiff": 0.0122,
+     "liftDiffCi": [
+      0.0011,
+      0.0248
+     ],
+     "baseRate": 0.1089,
+     "recall": 0.2049,
+     "winners": 2011,
+     "caught": 412,
+     "falseDiscovery": 0.8885,
+     "medianWeeksToK": 25,
+     "medianMaeBeforeK": -0.05245,
+     "invalidatedBeforeK": 0.0655
+    },
+    "3x": {
+     "precision": 0.0292,
+     "precisionCi": [
+      0.023,
+      0.0359
+     ],
+     "dateOnlyExpected": 0.0353,
+     "liftRatioDateOnly": 0.8273,
+     "liftRatioDateOnlyCi": [
+      0.6535,
+      1.0145
+     ],
+     "matchedExpected": 0.0255,
+     "liftRatio": 1.1461,
+     "liftRatioCi": [
+      0.9048,
+      1.3895
+     ],
+     "liftDiff": 0.0037,
+     "liftDiffCi": [
+      -0.0023,
+      0.0097
+     ],
+     "baseRate": 0.0354,
+     "recall": 0.1697,
+     "winners": 654,
+     "caught": 111,
+     "falseDiscovery": 0.97,
+     "medianWeeksToK": 29,
+     "medianMaeBeforeK": -0.0407,
+     "invalidatedBeforeK": 0.0721
+    },
+    "5x": {
+     "precision": 0.0059,
+     "precisionCi": [
+      0.0034,
+      0.0087
+     ],
+     "dateOnlyExpected": 0.0099,
+     "liftRatioDateOnly": 0.6025,
+     "liftRatioDateOnlyCi": [
+      0.3551,
+      0.8999
+     ],
+     "matchedExpected": 0.0051,
+     "liftRatio": 1.175,
+     "liftRatioCi": [
+      0.6544,
+      1.8153
+     ],
+     "liftDiff": 0.0009,
+     "liftDiffCi": [
+      -0.0019,
+      0.0039
+     ],
+     "baseRate": 0.0099,
+     "recall": 0.1311,
+     "winners": 183,
+     "caught": 24,
+     "falseDiscovery": 0.9935,
+     "medianWeeksToK": 35.5,
+     "medianMaeBeforeK": -0.0377,
+     "invalidatedBeforeK": 0.2083
+    },
+    "10x": {
+     "precision": 0.0006,
+     "precisionCi": [
+      0,
+      0.0014
+     ],
+     "dateOnlyExpected": 0.0015,
+     "liftRatioDateOnly": 0.3761,
+     "liftRatioDateOnlyCi": [
+      0,
+      0.977
+     ],
+     "matchedExpected": 0.0007,
+     "liftRatio": 0.8212,
+     "liftRatioCi": [
+      0,
+      2.2894
+     ],
+     "liftDiff": -0.0001,
+     "liftDiffCi": [
+      -0.0008,
+      0.0008
+     ],
+     "baseRate": 0.0015,
+     "recall": 0.0714,
+     "winners": 28,
+     "caught": 2,
+     "falseDiscovery": 0.9995,
+     "medianWeeksToK": 28,
+     "medianMaeBeforeK": -0.1529,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.1168,
+    "meanCi": [
+     0.0905,
+     0.1433
+    ],
+    "matchedMean": 0.108,
+    "excessMean": 0.0088,
+    "excessMeanCi": [
+     -0.0163,
+     0.0356
+    ],
+    "excessMeanCapped4x": 0.0095,
+    "excessMeanCapped4xCi": [
+     -0.0143,
+     0.0322
+    ],
+    "excessMeanDateOnly": -0.0205,
+    "excessMeanDateOnlyCi": [
+     -0.0499,
+     0.0049
+    ],
+    "median": 0.0113,
+    "p05": -0.6282,
+    "p25": -0.2133,
+    "p75": 0.2691,
+    "p95": 1.172,
+    "p99": 2.7104,
+    "trimmedMean5": 0.0542,
+    "winRate": 0.5655,
+    "avgWinner": 0.445,
+    "medianWinner": 0.2119,
+    "avgLoser": -0.303,
+    "medianLoser": -0.2575,
+    "payoffRatio": 1.4688,
+    "expectancy": 0.12,
+    "skew": 4.5268,
+    "top1PctShareOfGains": 0.1688,
+    "top5PctShareOfGains": 0.4332,
+    "meanWithoutTop1": 0.1172,
+    "meanWithoutTop3": 0.1125,
+    "meanWithoutTop1Pct": 0.0783,
+    "meanWithoutTop5Pct": 0.0116,
+    "medianMae": -0.1713,
+    "medianMfe": 0.1757,
+    "meanMfe": 0.417,
+    "delistedShare": 0.3455,
+    "invalidatedShare": 0.2348
+   }
+  },
+  {
+   "signal": "RS26_TOP20",
+   "horizon": "24M",
+   "units": 18361,
+   "flagged": 3681,
+   "coverage": 0.2005,
+   "symbols": 1084,
+   "mult": {
+    "2x": {
+     "precision": 0.1675,
+     "precisionCi": [
+      0.152,
+      0.1848
+     ],
+     "dateOnlyExpected": 0.1679,
+     "liftRatioDateOnly": 0.9976,
+     "liftRatioDateOnlyCi": [
+      0.9047,
+      1.0935
+     ],
+     "matchedExpected": 0.153,
+     "liftRatio": 1.0951,
+     "liftRatioCi": [
+      1.0051,
+      1.2055
+     ],
+     "liftDiff": 0.0146,
+     "liftDiffCi": [
+      0.0008,
+      0.0313
+     ],
+     "baseRate": 0.1677,
+     "recall": 0.2001,
+     "winners": 3079,
+     "caught": 616,
+     "falseDiscovery": 0.8327,
+     "medianWeeksToK": 38,
+     "medianMaeBeforeK": -0.09154999999999999,
+     "invalidatedBeforeK": 0.1396
+    },
+    "3x": {
+     "precision": 0.0546,
+     "precisionCi": [
+      0.0454,
+      0.0647
+     ],
+     "dateOnlyExpected": 0.0629,
+     "liftRatioDateOnly": 0.8683,
+     "liftRatioDateOnlyCi": [
+      0.7286,
+      1.0345
+     ],
+     "matchedExpected": 0.0516,
+     "liftRatio": 1.0586,
+     "liftRatioCi": [
+      0.892,
+      1.246
+     ],
+     "liftDiff": 0.003,
+     "liftDiffCi": [
+      -0.0056,
+      0.013
+     ],
+     "baseRate": 0.0628,
+     "recall": 0.1761,
+     "winners": 1153,
+     "caught": 203,
+     "falseDiscovery": 0.9449,
+     "medianWeeksToK": 46,
+     "medianMaeBeforeK": -0.0636,
+     "invalidatedBeforeK": 0.1281
+    },
+    "5x": {
+     "precision": 0.0154,
+     "precisionCi": [
+      0.0106,
+      0.0206
+     ],
+     "dateOnlyExpected": 0.0208,
+     "liftRatioDateOnly": 0.737,
+     "liftRatioDateOnlyCi": [
+      0.5075,
+      0.9862
+     ],
+     "matchedExpected": 0.0125,
+     "liftRatio": 1.2254,
+     "liftRatioCi": [
+      0.8492,
+      1.6696
+     ],
+     "liftDiff": 0.0028,
+     "liftDiffCi": [
+      -0.002,
+      0.0082
+     ],
+     "baseRate": 0.0209,
+     "recall": 0.154,
+     "winners": 383,
+     "caught": 59,
+     "falseDiscovery": 0.984,
+     "medianWeeksToK": 59,
+     "medianMaeBeforeK": -0.0725,
+     "invalidatedBeforeK": 0.1525
+    },
+    "10x": {
+     "precision": 0.0011,
+     "precisionCi": [
+      0.0003,
+      0.0023
+     ],
+     "dateOnlyExpected": 0.0039,
+     "liftRatioDateOnly": 0.2899,
+     "liftRatioDateOnlyCi": [
+      0.0673,
+      0.5818
+     ],
+     "matchedExpected": 0.0014,
+     "liftRatio": 0.8098,
+     "liftRatioCi": [
+      0.1642,
+      1.7478
+     ],
+     "liftDiff": -0.0003,
+     "liftDiffCi": [
+      -0.0013,
+      0.001
+     ],
+     "baseRate": 0.0039,
+     "recall": 0.0556,
+     "winners": 72,
+     "caught": 4,
+     "falseDiscovery": 0.9989,
+     "medianWeeksToK": 45.5,
+     "medianMaeBeforeK": -0.0211,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.1863,
+    "meanCi": [
+     0.1458,
+     0.2279
+    ],
+    "matchedMean": 0.1798,
+    "excessMean": 0.0065,
+    "excessMeanCi": [
+     -0.0339,
+     0.0484
+    ],
+    "excessMeanCapped4x": 0.0082,
+    "excessMeanCapped4xCi": [
+     -0.0296,
+     0.0476
+    ],
+    "excessMeanDateOnly": -0.0474,
+    "excessMeanDateOnlyCi": [
+     -0.0868,
+     -0.0063
+    ],
+    "median": 0.0229,
+    "p05": -0.7592,
+    "p25": -0.202,
+    "p75": 0.3829,
+    "p95": 1.5321,
+    "p99": 3.6857,
+    "trimmedMean5": 0.1016,
+    "winRate": 0.6012,
+    "avgWinner": 0.5587,
+    "medianWinner": 0.2715,
+    "avgLoser": -0.3655,
+    "medianLoser": -0.3176,
+    "payoffRatio": 1.5285,
+    "expectancy": 0.1901,
+    "skew": 3.3613,
+    "top1PctShareOfGains": 0.153,
+    "top5PctShareOfGains": 0.4242,
+    "meanWithoutTop1": 0.1878,
+    "meanWithoutTop3": 0.1833,
+    "meanWithoutTop1Pct": 0.1401,
+    "meanWithoutTop5Pct": 0.0501,
+    "medianMae": -0.228,
+    "medianMfe": 0.2458,
+    "meanMfe": 0.573,
+    "delistedShare": 0.5156,
+    "invalidatedShare": 0.2687
+   }
+  },
+  {
+   "signal": "RS26_TOP20",
+   "horizon": "36M",
+   "units": 18293,
+   "flagged": 3669,
+   "coverage": 0.2006,
+   "symbols": 1081,
+   "mult": {
+    "2x": {
+     "precision": 0.1983,
+     "precisionCi": [
+      0.1799,
+      0.218
+     ],
+     "dateOnlyExpected": 0.2021,
+     "liftRatioDateOnly": 0.9811,
+     "liftRatioDateOnlyCi": [
+      0.8938,
+      1.0836
+     ],
+     "matchedExpected": 0.1844,
+     "liftRatio": 1.0755,
+     "liftRatioCi": [
+      0.9829,
+      1.1786
+     ],
+     "liftDiff": 0.0139,
+     "liftDiffCi": [
+      -0.0032,
+      0.0331
+     ],
+     "baseRate": 0.2014,
+     "recall": 0.1965,
+     "winners": 3684,
+     "caught": 724,
+     "falseDiscovery": 0.8027,
+     "medianWeeksToK": 45,
+     "medianMaeBeforeK": -0.11935000000000001,
+     "invalidatedBeforeK": 0.1837
+    },
+    "3x": {
+     "precision": 0.0699,
+     "precisionCi": [
+      0.0581,
+      0.0814
+     ],
+     "dateOnlyExpected": 0.0789,
+     "liftRatioDateOnly": 0.886,
+     "liftRatioDateOnlyCi": [
+      0.7384,
+      1.0301
+     ],
+     "matchedExpected": 0.0668,
+     "liftRatio": 1.0472,
+     "liftRatioCi": [
+      0.8745,
+      1.2182
+     ],
+     "liftDiff": 0.0031,
+     "liftDiffCi": [
+      -0.0084,
+      0.0143
+     ],
+     "baseRate": 0.0786,
+     "recall": 0.1794,
+     "winners": 1438,
+     "caught": 258,
+     "falseDiscovery": 0.9297,
+     "medianWeeksToK": 62,
+     "medianMaeBeforeK": -0.1166,
+     "invalidatedBeforeK": 0.1434
+    },
+    "5x": {
+     "precision": 0.0183,
+     "precisionCi": [
+      0.0125,
+      0.0247
+     ],
+     "dateOnlyExpected": 0.0281,
+     "liftRatioDateOnly": 0.6489,
+     "liftRatioDateOnlyCi": [
+      0.4404,
+      0.8838
+     ],
+     "matchedExpected": 0.0188,
+     "liftRatio": 0.9691,
+     "liftRatioCi": [
+      0.6737,
+      1.3372
+     ],
+     "liftDiff": -0.0006,
+     "liftDiffCi": [
+      -0.0063,
+      0.0061
+     ],
+     "baseRate": 0.028,
+     "recall": 0.1384,
+     "winners": 513,
+     "caught": 71,
+     "falseDiscovery": 0.9806,
+     "medianWeeksToK": 68,
+     "medianMaeBeforeK": -0.078,
+     "invalidatedBeforeK": 0.1408
+    },
+    "10x": {
+     "precision": 0.0017,
+     "precisionCi": [
+      0.0006,
+      0.003
+     ],
+     "dateOnlyExpected": 0.0051,
+     "liftRatioDateOnly": 0.3327,
+     "liftRatioDateOnlyCi": [
+      0.1116,
+      0.6001
+     ],
+     "matchedExpected": 0.0024,
+     "liftRatio": 0.7249,
+     "liftRatioCi": [
+      0.2527,
+      1.3305
+     ],
+     "liftDiff": -0.0006,
+     "liftDiffCi": [
+      -0.0018,
+      0.0007
+     ],
+     "baseRate": 0.0051,
+     "recall": 0.0745,
+     "winners": 94,
+     "caught": 7,
+     "falseDiscovery": 0.9981,
+     "medianWeeksToK": 88,
+     "medianMaeBeforeK": -0.0274,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.2624,
+    "meanCi": [
+     0.2155,
+     0.3104
+    ],
+    "matchedMean": 0.2582,
+    "excessMean": 0.0042,
+    "excessMeanCi": [
+     -0.0457,
+     0.0541
+    ],
+    "excessMeanCapped4x": 0.0074,
+    "excessMeanCapped4xCi": [
+     -0.0372,
+     0.0473
+    ],
+    "excessMeanDateOnly": -0.0501,
+    "excessMeanDateOnlyCi": [
+     -0.0981,
+     -0.0032
+    ],
+    "median": 0.0488,
+    "p05": -0.7896,
+    "p25": -0.1319,
+    "p75": 0.4536,
+    "p95": 1.7671,
+    "p99": 4.2084,
+    "trimmedMean5": 0.1616,
+    "winRate": 0.644,
+    "avgWinner": 0.626,
+    "medianWinner": 0.3064,
+    "avgLoser": -0.3797,
+    "medianLoser": -0.3161,
+    "payoffRatio": 1.6489,
+    "expectancy": 0.2681,
+    "skew": 4.5556,
+    "top1PctShareOfGains": 0.1593,
+    "top5PctShareOfGains": 0.4157,
+    "meanWithoutTop1": 0.2643,
+    "meanWithoutTop3": 0.2575,
+    "meanWithoutTop1Pct": 0.2058,
+    "meanWithoutTop5Pct": 0.1057,
+    "medianMae": -0.2411,
+    "medianMfe": 0.2925,
+    "meanMfe": 0.6548,
+    "delistedShare": 0.6765,
+    "invalidatedShare": 0.2761
+   }
+  },
+  {
+   "signal": "BREAKOUT52",
+   "horizon": "6M",
+   "units": 18543,
+   "flagged": 1247,
+   "coverage": 0.0672,
+   "symbols": 683,
+   "mult": {
+    "2x": {
+     "precision": 0.0279,
+     "precisionCi": [
+      0.0198,
+      0.0383
+     ],
+     "dateOnlyExpected": 0.0442,
+     "liftRatioDateOnly": 0.6301,
+     "liftRatioDateOnlyCi": [
+      0.4563,
+      0.8709
+     ],
+     "matchedExpected": 0.0215,
+     "liftRatio": 1.2939,
+     "liftRatioCi": [
+      0.9238,
+      1.7886
+     ],
+     "liftDiff": 0.0063,
+     "liftDiffCi": [
+      -0.0017,
+      0.0165
+     ],
+     "baseRate": 0.0562,
+     "recall": 0.0336,
+     "winners": 1042,
+     "caught": 35,
+     "falseDiscovery": 0.9719,
+     "medianWeeksToK": 15,
+     "medianMaeBeforeK": -0.0154,
+     "invalidatedBeforeK": 0.0286
+    },
+    "3x": {
+     "precision": 0.0074,
+     "precisionCi": [
+      0.0033,
+      0.0124
+     ],
+     "dateOnlyExpected": 0.0115,
+     "liftRatioDateOnly": 0.639,
+     "liftRatioDateOnlyCi": [
+      0.2826,
+      1.0901
+     ],
+     "matchedExpected": 0.0041,
+     "liftRatio": 1.8047,
+     "liftRatioCi": [
+      0.8025,
+      3.1216
+     ],
+     "liftDiff": 0.0033,
+     "liftDiffCi": [
+      -0.0008,
+      0.0082
+     ],
+     "baseRate": 0.0154,
+     "recall": 0.0351,
+     "winners": 285,
+     "caught": 10,
+     "falseDiscovery": 0.992,
+     "medianWeeksToK": 10.5,
+     "medianMaeBeforeK": -0.00675,
+     "invalidatedBeforeK": 0.1
+    },
+    "5x": {
+     "precision": 0.0025,
+     "precisionCi": [
+      0,
+      0.0058
+     ],
+     "dateOnlyExpected": 0.0025,
+     "liftRatioDateOnly": 0.998,
+     "liftRatioDateOnlyCi": [
+      0,
+      2.3743
+     ],
+     "matchedExpected": 0.0011,
+     "liftRatio": 2.3409,
+     "liftRatioCi": [
+      0,
+      7.8511
+     ],
+     "liftDiff": 0.0014,
+     "liftDiffCi": [
+      -0.0011,
+      0.0049
+     ],
+     "baseRate": 0.003,
+     "recall": 0.0536,
+     "winners": 56,
+     "caught": 3,
+     "falseDiscovery": 0.9976,
+     "medianWeeksToK": 19,
+     "medianMaeBeforeK": -0.4728,
+     "invalidatedBeforeK": 0.6667
+    },
+    "10x": {
+     "precision": 0,
+     "precisionCi": [
+      null,
+      null
+     ],
+     "dateOnlyExpected": 0.0004,
+     "liftRatioDateOnly": 0,
+     "liftRatioDateOnlyCi": [
+      null,
+      null
+     ],
+     "matchedExpected": 0,
+     "liftRatio": null,
+     "liftRatioCi": [
+      null,
+      null
+     ],
+     "liftDiff": 0,
+     "liftDiffCi": [
+      null,
+      null
+     ],
+     "baseRate": 0.0005,
+     "recall": 0,
+     "winners": 10,
+     "caught": 0,
+     "falseDiscovery": 1,
+     "medianWeeksToK": null,
+     "medianMaeBeforeK": null,
+     "invalidatedBeforeK": null
+    }
+   },
+   "returns": {
+    "mean": 0.023,
+    "meanCi": [
+     -0.0003,
+     0.0489
+    ],
+    "matchedMean": 0.0221,
+    "excessMean": 0.0008,
+    "excessMeanCi": [
+     -0.0237,
+     0.0262
+    ],
+    "excessMeanCapped4x": -0.0013,
+    "excessMeanCapped4xCi": [
+     -0.0229,
+     0.0201
+    ],
+    "excessMeanDateOnly": -0.0106,
+    "excessMeanDateOnlyCi": [
+     -0.0331,
+     0.0137
+    ],
+    "median": 0.0022,
+    "p05": -0.4342,
+    "p25": -0.1338,
+    "p75": 0.087,
+    "p95": 0.5858,
+    "p99": 1.3097,
+    "trimmedMean5": -0.0107,
+    "winRate": 0.5237,
+    "avgWinner": 0.2161,
+    "medianWinner": 0.0759,
+    "avgLoser": -0.1873,
+    "medianLoser": -0.1444,
+    "payoffRatio": 1.154,
+    "expectancy": 0.024,
+    "skew": 7.0101,
+    "top1PctShareOfGains": 0.2174,
+    "top5PctShareOfGains": 0.5344,
+    "meanWithoutTop1": 0.0179,
+    "meanWithoutTop3": 0.012,
+    "meanWithoutTop1Pct": -0.0006,
+    "meanWithoutTop5Pct": -0.0384,
+    "medianMae": -0.0911,
+    "medianMfe": 0.0577,
+    "meanMfe": 0.1822,
+    "delistedShare": 0.2935,
+    "invalidatedShare": 0.1291
+   }
+  },
+  {
+   "signal": "BREAKOUT52",
+   "horizon": "12M",
+   "units": 18473,
+   "flagged": 1246,
+   "coverage": 0.0674,
+   "symbols": 683,
+   "mult": {
+    "2x": {
+     "precision": 0.055,
+     "precisionCi": [
+      0.0426,
+      0.0697
+     ],
+     "dateOnlyExpected": 0.084,
+     "liftRatioDateOnly": 0.6542,
+     "liftRatioDateOnlyCi": [
+      0.5084,
+      0.8231
+     ],
+     "matchedExpected": 0.0497,
+     "liftRatio": 1.1056,
+     "liftRatioCi": [
+      0.8706,
+      1.4273
+     ],
+     "liftDiff": 0.0053,
+     "liftDiffCi": [
+      -0.0068,
+      0.0211
+     ],
+     "baseRate": 0.1089,
+     "recall": 0.0338,
+     "winners": 2011,
+     "caught": 68,
+     "falseDiscovery": 0.9454,
+     "medianWeeksToK": 25.5,
+     "medianMaeBeforeK": -0.06709999999999999,
+     "invalidatedBeforeK": 0.0588
+    },
+    "3x": {
+     "precision": 0.0156,
+     "precisionCi": [
+      0.0086,
+      0.0232
+     ],
+     "dateOnlyExpected": 0.0243,
+     "liftRatioDateOnly": 0.6416,
+     "liftRatioDateOnlyCi": [
+      0.3459,
+      0.9741
+     ],
+     "matchedExpected": 0.0102,
+     "liftRatio": 1.5266,
+     "liftRatioCi": [
+      0.8853,
+      2.4567
+     ],
+     "liftDiff": 0.0054,
+     "liftDiffCi": [
+      -0.0012,
+      0.0135
+     ],
+     "baseRate": 0.0354,
+     "recall": 0.0306,
+     "winners": 654,
+     "caught": 20,
+     "falseDiscovery": 0.9839,
+     "medianWeeksToK": 26,
+     "medianMaeBeforeK": -0.026199999999999998,
+     "invalidatedBeforeK": 0.1
+    },
+    "5x": {
+     "precision": 0.0041,
+     "precisionCi": [
+      0.0008,
+      0.0083
+     ],
+     "dateOnlyExpected": 0.0063,
+     "liftRatioDateOnly": 0.6515,
+     "liftRatioDateOnlyCi": [
+      0.1361,
+      1.2963
+     ],
+     "matchedExpected": 0.0025,
+     "liftRatio": 1.6472,
+     "liftRatioCi": [
+      0.4207,
+      3.7834
+     ],
+     "liftDiff": 0.0016,
+     "liftDiffCi": [
+      -0.0016,
+      0.0057
+     ],
+     "baseRate": 0.0099,
+     "recall": 0.0273,
+     "winners": 183,
+     "caught": 5,
+     "falseDiscovery": 0.996,
+     "medianWeeksToK": 22,
+     "medianMaeBeforeK": -0.1293,
+     "invalidatedBeforeK": 0.4
+    },
+    "10x": {
+     "precision": 0.0008,
+     "precisionCi": [
+      0,
+      0.0025
+     ],
+     "dateOnlyExpected": 0.0011,
+     "liftRatioDateOnly": 0.7239,
+     "liftRatioDateOnlyCi": [
+      0,
+      2.2291
+     ],
+     "matchedExpected": 0.0003,
+     "liftRatio": 2.4419,
+     "liftRatioCi": [
+      0,
+      12
+     ],
+     "liftDiff": 0.0005,
+     "liftDiffCi": [
+      -0.0005,
+      0.0022
+     ],
+     "baseRate": 0.0015,
+     "recall": 0.0357,
+     "winners": 28,
+     "caught": 1,
+     "falseDiscovery": 0.9992,
+     "medianWeeksToK": 30,
+     "medianMaeBeforeK": 0,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.0379,
+    "meanCi": [
+     0.0095,
+     0.07
+    ],
+    "matchedMean": 0.0555,
+    "excessMean": -0.0175,
+    "excessMeanCi": [
+     -0.0496,
+     0.0124
+    ],
+    "excessMeanCapped4x": -0.018,
+    "excessMeanCapped4xCi": [
+     -0.047,
+     0.0096
+    ],
+    "excessMeanDateOnly": -0.0349,
+    "excessMeanDateOnlyCi": [
+     -0.0656,
+     -0.0031
+    ],
+    "median": 0.0026,
+    "p05": -0.5416,
+    "p25": -0.1753,
+    "p75": 0.1217,
+    "p95": 0.7382,
+    "p99": 1.915,
+    "trimmedMean5": -0.0077,
+    "winRate": 0.5265,
+    "avgWinner": 0.2937,
+    "medianWinner": 0.1057,
+    "avgLoser": -0.2459,
+    "medianLoser": -0.1899,
+    "payoffRatio": 1.1945,
+    "expectancy": 0.0382,
+    "skew": 5.676,
+    "top1PctShareOfGains": 0.2141,
+    "top5PctShareOfGains": 0.5137,
+    "meanWithoutTop1": 0.0313,
+    "meanWithoutTop3": 0.0245,
+    "meanWithoutTop1Pct": 0.0052,
+    "meanWithoutTop5Pct": -0.0434,
+    "medianMae": -0.13935,
+    "medianMfe": 0.0803,
+    "meanMfe": 0.2672,
+    "delistedShare": 0.4037,
+    "invalidatedShare": 0.179
+   }
+  },
+  {
+   "signal": "BREAKOUT52",
+   "horizon": "24M",
+   "units": 18361,
+   "flagged": 1243,
+   "coverage": 0.0677,
+   "symbols": 682,
+   "mult": {
+    "2x": {
+     "precision": 0.0798,
+     "precisionCi": [
+      0.0632,
+      0.0975
+     ],
+     "dateOnlyExpected": 0.1357,
+     "liftRatioDateOnly": 0.5879,
+     "liftRatioDateOnlyCi": [
+      0.4666,
+      0.7173
+     ],
+     "matchedExpected": 0.0822,
+     "liftRatio": 0.9709,
+     "liftRatioCi": [
+      0.7734,
+      1.1878
+     ],
+     "liftDiff": -0.0024,
+     "liftDiffCi": [
+      -0.019,
+      0.0151
+     ],
+     "baseRate": 0.1677,
+     "recall": 0.0322,
+     "winners": 3079,
+     "caught": 99,
+     "falseDiscovery": 0.9204,
+     "medianWeeksToK": 35,
+     "medianMaeBeforeK": -0.1143,
+     "invalidatedBeforeK": 0.1313
+    },
+    "3x": {
+     "precision": 0.0288,
+     "precisionCi": [
+      0.0196,
+      0.0398
+     ],
+     "dateOnlyExpected": 0.0475,
+     "liftRatioDateOnly": 0.6061,
+     "liftRatioDateOnlyCi": [
+      0.413,
+      0.8354
+     ],
+     "matchedExpected": 0.0254,
+     "liftRatio": 1.1338,
+     "liftRatioCi": [
+      0.7619,
+      1.5485
+     ],
+     "liftDiff": 0.0034,
+     "liftDiffCi": [
+      -0.0067,
+      0.0138
+     ],
+     "baseRate": 0.0628,
+     "recall": 0.0312,
+     "winners": 1153,
+     "caught": 36,
+     "falseDiscovery": 0.971,
+     "medianWeeksToK": 49,
+     "medianMaeBeforeK": -0.11715,
+     "invalidatedBeforeK": 0.1389
+    },
+    "5x": {
+     "precision": 0.0082,
+     "precisionCi": [
+      0.0033,
+      0.0136
+     ],
+     "dateOnlyExpected": 0.0145,
+     "liftRatioDateOnly": 0.5685,
+     "liftRatioDateOnlyCi": [
+      0.2372,
+      0.9269
+     ],
+     "matchedExpected": 0.0045,
+     "liftRatio": 1.8154,
+     "liftRatioCi": [
+      0.7388,
+      3.1722
+     ],
+     "liftDiff": 0.0037,
+     "liftDiffCi": [
+      -0.0013,
+      0.0091
+     ],
+     "baseRate": 0.0209,
+     "recall": 0.0261,
+     "winners": 383,
+     "caught": 10,
+     "falseDiscovery": 0.992,
+     "medianWeeksToK": 51.5,
+     "medianMaeBeforeK": -0.09335,
+     "invalidatedBeforeK": 0.3
+    },
+    "10x": {
+     "precision": 0.0008,
+     "precisionCi": [
+      0,
+      0.0025
+     ],
+     "dateOnlyExpected": 0.0025,
+     "liftRatioDateOnly": 0.3276,
+     "liftRatioDateOnlyCi": [
+      0,
+      1.0377
+     ],
+     "matchedExpected": 0.0003,
+     "liftRatio": 2.4419,
+     "liftRatioCi": [
+      0,
+      12.1099
+     ],
+     "liftDiff": 0.0005,
+     "liftDiffCi": [
+      -0.0006,
+      0.0023
+     ],
+     "baseRate": 0.0039,
+     "recall": 0.0139,
+     "winners": 72,
+     "caught": 1,
+     "falseDiscovery": 0.9992,
+     "medianWeeksToK": 30,
+     "medianMaeBeforeK": 0,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.0759,
+    "meanCi": [
+     0.033,
+     0.1162
+    ],
+    "matchedMean": 0.0937,
+    "excessMean": -0.0178,
+    "excessMeanCi": [
+     -0.0629,
+     0.0195
+    ],
+    "excessMeanCapped4x": -0.0194,
+    "excessMeanCapped4xCi": [
+     -0.0623,
+     0.0177
+    ],
+    "excessMeanDateOnly": -0.0936,
+    "excessMeanDateOnlyCi": [
+     -0.1356,
+     -0.0556
+    ],
+    "median": 0.0053,
+    "p05": -0.688,
+    "p25": -0.1469,
+    "p75": 0.1832,
+    "p95": 0.9693,
+    "p99": 2.484,
+    "trimmedMean5": 0.0191,
+    "winRate": 0.5623,
+    "avgWinner": 0.3596,
+    "medianWinner": 0.1273,
+    "avgLoser": -0.2907,
+    "medianLoser": -0.2207,
+    "payoffRatio": 1.237,
+    "expectancy": 0.075,
+    "skew": 3.6902,
+    "top1PctShareOfGains": 0.195,
+    "top5PctShareOfGains": 0.49,
+    "meanWithoutTop1": 0.0703,
+    "meanWithoutTop3": 0.0615,
+    "meanWithoutTop1Pct": 0.0359,
+    "meanWithoutTop5Pct": -0.0253,
+    "medianMae": -0.1861,
+    "medianMfe": 0.1185,
+    "meanMfe": 0.357,
+    "delistedShare": 0.5784,
+    "invalidatedShare": 0.214
+   }
+  },
+  {
+   "signal": "BREAKOUT52",
+   "horizon": "36M",
+   "units": 18293,
+   "flagged": 1240,
+   "coverage": 0.0678,
+   "symbols": 681,
+   "mult": {
+    "2x": {
+     "precision": 0.103,
+     "precisionCi": [
+      0.0841,
+      0.1216
+     ],
+     "dateOnlyExpected": 0.1638,
+     "liftRatioDateOnly": 0.6284,
+     "liftRatioDateOnlyCi": [
+      0.5141,
+      0.7463
+     ],
+     "matchedExpected": 0.1041,
+     "liftRatio": 0.9889,
+     "liftRatioCi": [
+      0.8106,
+      1.1792
+     ],
+     "liftDiff": -0.0012,
+     "liftDiffCi": [
+      -0.02,
+      0.0182
+     ],
+     "baseRate": 0.2014,
+     "recall": 0.0345,
+     "winners": 3684,
+     "caught": 127,
+     "falseDiscovery": 0.8976,
+     "medianWeeksToK": 47,
+     "medianMaeBeforeK": -0.1639,
+     "invalidatedBeforeK": 0.1654
+    },
+    "3x": {
+     "precision": 0.0346,
+     "precisionCi": [
+      0.0237,
+      0.0471
+     ],
+     "dateOnlyExpected": 0.0601,
+     "liftRatioDateOnly": 0.5755,
+     "liftRatioDateOnlyCi": [
+      0.3887,
+      0.7931
+     ],
+     "matchedExpected": 0.0343,
+     "liftRatio": 1.0095,
+     "liftRatioCi": [
+      0.6787,
+      1.4109
+     ],
+     "liftDiff": 0.0003,
+     "liftDiffCi": [
+      -0.0115,
+      0.0137
+     ],
+     "baseRate": 0.0786,
+     "recall": 0.0299,
+     "winners": 1438,
+     "caught": 43,
+     "falseDiscovery": 0.9653,
+     "medianWeeksToK": 56,
+     "medianMaeBeforeK": -0.1328,
+     "invalidatedBeforeK": 0.1395
+    },
+    "5x": {
+     "precision": 0.0091,
+     "precisionCi": [
+      0.0042,
+      0.0145
+     ],
+     "dateOnlyExpected": 0.02,
+     "liftRatioDateOnly": 0.4539,
+     "liftRatioDateOnlyCi": [
+      0.2127,
+      0.7369
+     ],
+     "matchedExpected": 0.0067,
+     "liftRatio": 1.3473,
+     "liftRatioCi": [
+      0.6674,
+      2.3987
+     ],
+     "liftDiff": 0.0023,
+     "liftDiffCi": [
+      -0.0023,
+      0.0086
+     ],
+     "baseRate": 0.028,
+     "recall": 0.0214,
+     "winners": 513,
+     "caught": 11,
+     "falseDiscovery": 0.9911,
+     "medianWeeksToK": 59,
+     "medianMaeBeforeK": -0.1293,
+     "invalidatedBeforeK": 0.2727
+    },
+    "10x": {
+     "precision": 0.0008,
+     "precisionCi": [
+      0,
+      0.0025
+     ],
+     "dateOnlyExpected": 0.0034,
+     "liftRatioDateOnly": 0.2426,
+     "liftRatioDateOnlyCi": [
+      0,
+      0.7597
+     ],
+     "matchedExpected": 0.0005,
+     "liftRatio": 1.7221,
+     "liftRatioCi": [
+      0,
+      6.8211
+     ],
+     "liftDiff": 0.0003,
+     "liftDiffCi": [
+      -0.0008,
+      0.0021
+     ],
+     "baseRate": 0.0051,
+     "recall": 0.0106,
+     "winners": 94,
+     "caught": 1,
+     "falseDiscovery": 0.9992,
+     "medianWeeksToK": 30,
+     "medianMaeBeforeK": 0,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.1274,
+    "meanCi": [
+     0.0861,
+     0.1694
+    ],
+    "matchedMean": 0.1519,
+    "excessMean": -0.0244,
+    "excessMeanCi": [
+     -0.0673,
+     0.0143
+    ],
+    "excessMeanCapped4x": -0.0256,
+    "excessMeanCapped4xCi": [
+     -0.0655,
+     0.0118
+    ],
+    "excessMeanDateOnly": -0.1105,
+    "excessMeanDateOnlyCi": [
+     -0.1537,
+     -0.069
+    ],
+    "median": 0.0116,
+    "p05": -0.7019,
+    "p25": -0.0931,
+    "p75": 0.245,
+    "p95": 1.1774,
+    "p99": 2.6204,
+    "trimmedMean5": 0.0642,
+    "winRate": 0.6065,
+    "avgWinner": 0.3975,
+    "medianWinner": 0.1476,
+    "avgLoser": -0.2924,
+    "medianLoser": -0.1784,
+    "payoffRatio": 1.3595,
+    "expectancy": 0.126,
+    "skew": 3.7149,
+    "top1PctShareOfGains": 0.1774,
+    "top5PctShareOfGains": 0.4611,
+    "meanWithoutTop1": 0.1204,
+    "meanWithoutTop3": 0.1108,
+    "meanWithoutTop1Pct": 0.0841,
+    "meanWithoutTop5Pct": 0.0156,
+    "medianMae": -0.19340000000000002,
+    "medianMfe": 0.1306,
+    "meanMfe": 0.4011,
+    "delistedShare": 0.721,
+    "invalidatedShare": 0.2234
+   }
+  },
+  {
+   "signal": "TREND_MOM",
+   "horizon": "6M",
+   "units": 18543,
+   "flagged": 3006,
+   "coverage": 0.1621,
+   "symbols": 901,
+   "mult": {
+    "2x": {
+     "precision": 0.0416,
+     "precisionCi": [
+      0.0337,
+      0.0497
+     ],
+     "dateOnlyExpected": 0.0513,
+     "liftRatioDateOnly": 0.8105,
+     "liftRatioDateOnlyCi": [
+      0.6564,
+      0.9617
+     ],
+     "matchedExpected": 0.0398,
+     "liftRatio": 1.0467,
+     "liftRatioCi": [
+      0.8713,
+      1.2359
+     ],
+     "liftDiff": 0.0019,
+     "liftDiffCi": [
+      -0.0052,
+      0.009
+     ],
+     "baseRate": 0.0562,
+     "recall": 0.1209,
+     "winners": 1042,
+     "caught": 126,
+     "falseDiscovery": 0.9581,
+     "medianWeeksToK": 16,
+     "medianMaeBeforeK": -0.0211,
+     "invalidatedBeforeK": 0.0397
+    },
+    "3x": {
+     "precision": 0.0085,
+     "precisionCi": [
+      0.0054,
+      0.0123
+     ],
+     "dateOnlyExpected": 0.0134,
+     "liftRatioDateOnly": 0.63,
+     "liftRatioDateOnlyCi": [
+      0.3993,
+      0.906
+     ],
+     "matchedExpected": 0.0077,
+     "liftRatio": 1.0955,
+     "liftRatioCi": [
+      0.6729,
+      1.6473
+     ],
+     "liftDiff": 0.0007,
+     "liftDiffCi": [
+      -0.0027,
+      0.0049
+     ],
+     "baseRate": 0.0154,
+     "recall": 0.0947,
+     "winners": 285,
+     "caught": 27,
+     "falseDiscovery": 0.991,
+     "medianWeeksToK": 16,
+     "medianMaeBeforeK": -0.0188,
+     "invalidatedBeforeK": 0.037
+    },
+    "5x": {
+     "precision": 0.002,
+     "precisionCi": [
+      0.0003,
+      0.0041
+     ],
+     "dateOnlyExpected": 0.0028,
+     "liftRatioDateOnly": 0.7367,
+     "liftRatioDateOnlyCi": [
+      0.1265,
+      1.4933
+     ],
+     "matchedExpected": 0.0019,
+     "liftRatio": 1.0468,
+     "liftRatioCi": [
+      0.1823,
+      2.3559
+     ],
+     "liftDiff": 0.0001,
+     "liftDiffCi": [
+      -0.0016,
+      0.0023
+     ],
+     "baseRate": 0.003,
+     "recall": 0.1071,
+     "winners": 56,
+     "caught": 6,
+     "falseDiscovery": 0.998,
+     "medianWeeksToK": 14,
+     "medianMaeBeforeK": -0.16575,
+     "invalidatedBeforeK": 0.3333
+    },
+    "10x": {
+     "precision": 0.0003,
+     "precisionCi": [
+      0,
+      0.001
+     ],
+     "dateOnlyExpected": 0.0005,
+     "liftRatioDateOnly": 0.6556,
+     "liftRatioDateOnlyCi": [
+      0,
+      2.0622
+     ],
+     "matchedExpected": 0.0003,
+     "liftRatio": 1.2143,
+     "liftRatioCi": [
+      0,
+      4.7776
+     ],
+     "liftDiff": 0.0001,
+     "liftDiffCi": [
+      -0.0004,
+      0.0008
+     ],
+     "baseRate": 0.0005,
+     "recall": 0.1,
+     "winners": 10,
+     "caught": 1,
+     "falseDiscovery": 0.9997,
+     "medianWeeksToK": 26,
+     "medianMaeBeforeK": -0.3058,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.0499,
+    "meanCi": [
+     0.0339,
+     0.0698
+    ],
+    "matchedMean": 0.0469,
+    "excessMean": 0.003,
+    "excessMeanCi": [
+     -0.0134,
+     0.0213
+    ],
+    "excessMeanCapped4x": 0.0038,
+    "excessMeanCapped4xCi": [
+     -0.0107,
+     0.0198
+    ],
+    "excessMeanDateOnly": -0.0007,
+    "excessMeanDateOnlyCi": [
+     -0.0155,
+     0.0192
+    ],
+    "median": 0.0037,
+    "p05": -0.4566,
+    "p25": -0.1629,
+    "p75": 0.1624,
+    "p95": 0.7469,
+    "p99": 1.5162,
+    "trimmedMean5": 0.0152,
+    "winRate": 0.5286,
+    "avgWinner": 0.2909,
+    "medianWinner": 0.1435,
+    "avgLoser": -0.2177,
+    "medianLoser": -0.1802,
+    "payoffRatio": 1.3361,
+    "expectancy": 0.0511,
+    "skew": 5.5663,
+    "top1PctShareOfGains": 0.1636,
+    "top5PctShareOfGains": 0.4285,
+    "meanWithoutTop1": 0.0479,
+    "meanWithoutTop3": 0.0453,
+    "meanWithoutTop1Pct": 0.0262,
+    "meanWithoutTop5Pct": -0.0155,
+    "medianMae": -0.11845,
+    "medianMfe": 0.1191,
+    "meanMfe": 0.2576,
+    "delistedShare": 0.2295,
+    "invalidatedShare": 0.2189
+   }
+  },
+  {
+   "signal": "TREND_MOM",
+   "horizon": "12M",
+   "units": 18473,
+   "flagged": 3002,
+   "coverage": 0.1625,
+   "symbols": 900,
+   "mult": {
+    "2x": {
+     "precision": 0.085,
+     "precisionCi": [
+      0.0714,
+      0.0982
+     ],
+     "dateOnlyExpected": 0.0979,
+     "liftRatioDateOnly": 0.8686,
+     "liftRatioDateOnlyCi": [
+      0.7302,
+      0.9965
+     ],
+     "matchedExpected": 0.0788,
+     "liftRatio": 1.0786,
+     "liftRatioCi": [
+      0.9016,
+      1.2419
+     ],
+     "liftDiff": 0.0062,
+     "liftDiffCi": [
+      -0.008,
+      0.0183
+     ],
+     "baseRate": 0.1089,
+     "recall": 0.1268,
+     "winners": 2011,
+     "caught": 255,
+     "falseDiscovery": 0.9151,
+     "medianWeeksToK": 27,
+     "medianMaeBeforeK": -0.0422,
+     "invalidatedBeforeK": 0.0706
+    },
+    "3x": {
+     "precision": 0.0193,
+     "precisionCi": [
+      0.0135,
+      0.0257
+     ],
+     "dateOnlyExpected": 0.0299,
+     "liftRatioDateOnly": 0.6451,
+     "liftRatioDateOnlyCi": [
+      0.454,
+      0.8496
+     ],
+     "matchedExpected": 0.0182,
+     "liftRatio": 1.06,
+     "liftRatioCi": [
+      0.7485,
+      1.3845
+     ],
+     "liftDiff": 0.0011,
+     "liftDiffCi": [
+      -0.0047,
+      0.0068
+     ],
+     "baseRate": 0.0354,
+     "recall": 0.0902,
+     "winners": 654,
+     "caught": 59,
+     "falseDiscovery": 0.9803,
+     "medianWeeksToK": 30,
+     "medianMaeBeforeK": -0.0276,
+     "invalidatedBeforeK": 0.0847
+    },
+    "5x": {
+     "precision": 0.0041,
+     "precisionCi": [
+      0.0017,
+      0.0077
+     ],
+     "dateOnlyExpected": 0.0079,
+     "liftRatioDateOnly": 0.5126,
+     "liftRatioDateOnlyCi": [
+      0.2132,
+      0.978
+     ],
+     "matchedExpected": 0.0039,
+     "liftRatio": 1.0552,
+     "liftRatioCi": [
+      0.4057,
+      2.1041
+     ],
+     "liftDiff": 0.0002,
+     "liftDiffCi": [
+      -0.0026,
+      0.004
+     ],
+     "baseRate": 0.0099,
+     "recall": 0.071,
+     "winners": 183,
+     "caught": 13,
+     "falseDiscovery": 0.9957,
+     "medianWeeksToK": 33,
+     "medianMaeBeforeK": -0.2662,
+     "invalidatedBeforeK": 0.3077
+    },
+    "10x": {
+     "precision": 0.0007,
+     "precisionCi": [
+      0,
+      0.0017
+     ],
+     "dateOnlyExpected": 0.0013,
+     "liftRatioDateOnly": 0.5074,
+     "liftRatioDateOnlyCi": [
+      0,
+      1.3216
+     ],
+     "matchedExpected": 0.0008,
+     "liftRatio": 0.8715,
+     "liftRatioCi": [
+      0,
+      2.3241
+     ],
+     "liftDiff": -0.0001,
+     "liftDiffCi": [
+      -0.0009,
+      0.0009
+     ],
+     "baseRate": 0.0015,
+     "recall": 0.0714,
+     "winners": 28,
+     "caught": 2,
+     "falseDiscovery": 0.9993,
+     "medianWeeksToK": 30.5,
+     "medianMaeBeforeK": -0.17805,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.0819,
+    "meanCi": [
+     0.0551,
+     0.1137
+    ],
+    "matchedMean": 0.08,
+    "excessMean": 0.0019,
+    "excessMeanCi": [
+     -0.025,
+     0.0309
+    ],
+    "excessMeanCapped4x": 0.0028,
+    "excessMeanCapped4xCi": [
+     -0.0229,
+     0.0297
+    ],
+    "excessMeanDateOnly": -0.0235,
+    "excessMeanDateOnlyCi": [
+     -0.0505,
+     0.005
+    ],
+    "median": 0.0073,
+    "p05": -0.5816,
+    "p25": -0.2133,
+    "p75": 0.2362,
+    "p95": 1.0029,
+    "p99": 2.0344,
+    "trimmedMean5": 0.0327,
+    "winRate": 0.5436,
+    "avgWinner": 0.3933,
+    "medianWinner": 0.1955,
+    "avgLoser": -0.2832,
+    "medianLoser": -0.2448,
+    "payoffRatio": 1.3886,
+    "expectancy": 0.0845,
+    "skew": 5.2196,
+    "top1PctShareOfGains": 0.1737,
+    "top5PctShareOfGains": 0.4264,
+    "meanWithoutTop1": 0.0811,
+    "meanWithoutTop3": 0.0754,
+    "meanWithoutTop1Pct": 0.0479,
+    "meanWithoutTop5Pct": -0.007,
+    "medianMae": -0.1849,
+    "medianMfe": 0.1638,
+    "meanMfe": 0.3685,
+    "delistedShare": 0.3438,
+    "invalidatedShare": 0.2865
+   }
+  },
+  {
+   "signal": "TREND_MOM",
+   "horizon": "24M",
+   "units": 18361,
+   "flagged": 2990,
+   "coverage": 0.1628,
+   "symbols": 898,
+   "mult": {
+    "2x": {
+     "precision": 0.1367,
+     "precisionCi": [
+      0.1187,
+      0.1533
+     ],
+     "dateOnlyExpected": 0.1547,
+     "liftRatioDateOnly": 0.8837,
+     "liftRatioDateOnlyCi": [
+      0.7666,
+      0.9987
+     ],
+     "matchedExpected": 0.1269,
+     "liftRatio": 1.0769,
+     "liftRatioCi": [
+      0.9469,
+      1.2098
+     ],
+     "liftDiff": 0.0098,
+     "liftDiffCi": [
+      -0.0066,
+      0.0265
+     ],
+     "baseRate": 0.1677,
+     "recall": 0.1328,
+     "winners": 3079,
+     "caught": 409,
+     "falseDiscovery": 0.8632,
+     "medianWeeksToK": 42,
+     "medianMaeBeforeK": -0.0919,
+     "invalidatedBeforeK": 0.1614
+    },
+    "3x": {
+     "precision": 0.0435,
+     "precisionCi": [
+      0.0323,
+      0.0549
+     ],
+     "dateOnlyExpected": 0.0561,
+     "liftRatioDateOnly": 0.7756,
+     "liftRatioDateOnlyCi": [
+      0.582,
+      0.9623
+     ],
+     "matchedExpected": 0.0416,
+     "liftRatio": 1.0464,
+     "liftRatioCi": [
+      0.7974,
+      1.3082
+     ],
+     "liftDiff": 0.0019,
+     "liftDiffCi": [
+      -0.0084,
+      0.0129
+     ],
+     "baseRate": 0.0628,
+     "recall": 0.1136,
+     "winners": 1153,
+     "caught": 131,
+     "falseDiscovery": 0.9562,
+     "medianWeeksToK": 56,
+     "medianMaeBeforeK": -0.0724,
+     "invalidatedBeforeK": 0.1527
+    },
+    "5x": {
+     "precision": 0.0092,
+     "precisionCi": [
+      0.0042,
+      0.0152
+     ],
+     "dateOnlyExpected": 0.0177,
+     "liftRatioDateOnly": 0.5197,
+     "liftRatioDateOnlyCi": [
+      0.2329,
+      0.8635
+     ],
+     "matchedExpected": 0.0088,
+     "liftRatio": 1.0444,
+     "liftRatioCi": [
+      0.4702,
+      1.7834
+     ],
+     "liftDiff": 0.0004,
+     "liftDiffCi": [
+      -0.0047,
+      0.0065
+     ],
+     "baseRate": 0.0209,
+     "recall": 0.0757,
+     "winners": 383,
+     "caught": 29,
+     "falseDiscovery": 0.9903,
+     "medianWeeksToK": 56,
+     "medianMaeBeforeK": -0.2123,
+     "invalidatedBeforeK": 0.2069
+    },
+    "10x": {
+     "precision": 0.0007,
+     "precisionCi": [
+      0,
+      0.0017
+     ],
+     "dateOnlyExpected": 0.0032,
+     "liftRatioDateOnly": 0.2137,
+     "liftRatioDateOnlyCi": [
+      0,
+      0.5443
+     ],
+     "matchedExpected": 0.0011,
+     "liftRatio": 0.6367,
+     "liftRatioCi": [
+      0,
+      1.6352
+     ],
+     "liftDiff": -0.0004,
+     "liftDiffCi": [
+      -0.0012,
+      0.0006
+     ],
+     "baseRate": 0.0039,
+     "recall": 0.0278,
+     "winners": 72,
+     "caught": 2,
+     "falseDiscovery": 0.9993,
+     "medianWeeksToK": 30.5,
+     "medianMaeBeforeK": -0.17805,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.1421,
+    "meanCi": [
+     0.0983,
+     0.1927
+    ],
+    "matchedMean": 0.1337,
+    "excessMean": 0.0084,
+    "excessMeanCi": [
+     -0.0355,
+     0.061
+    ],
+    "excessMeanCapped4x": 0.009,
+    "excessMeanCapped4xCi": [
+     -0.0325,
+     0.0539
+    ],
+    "excessMeanDateOnly": -0.0541,
+    "excessMeanDateOnlyCi": [
+     -0.0983,
+     -0.0038
+    ],
+    "median": 0.0179,
+    "p05": -0.7436,
+    "p25": -0.2083,
+    "p75": 0.347,
+    "p95": 1.2896,
+    "p99": 2.9878,
+    "trimmedMean5": 0.0736,
+    "winRate": 0.5853,
+    "avgWinner": 0.4949,
+    "medianWinner": 0.258,
+    "avgLoser": -0.3488,
+    "medianLoser": -0.3012,
+    "payoffRatio": 1.4191,
+    "expectancy": 0.145,
+    "skew": 3.4871,
+    "top1PctShareOfGains": 0.1534,
+    "top5PctShareOfGains": 0.419,
+    "meanWithoutTop1": 0.1421,
+    "meanWithoutTop3": 0.1368,
+    "meanWithoutTop1Pct": 0.1016,
+    "meanWithoutTop5Pct": 0.0249,
+    "medianMae": -0.2405,
+    "medianMfe": 0.231,
+    "meanMfe": 0.5035,
+    "delistedShare": 0.5114,
+    "invalidatedShare": 0.3284
+   }
+  },
+  {
+   "signal": "TREND_MOM",
+   "horizon": "36M",
+   "units": 18293,
+   "flagged": 2984,
+   "coverage": 0.1631,
+   "symbols": 897,
+   "mult": {
+    "2x": {
+     "precision": 0.1646,
+     "precisionCi": [
+      0.1427,
+      0.186
+     ],
+     "dateOnlyExpected": 0.1876,
+     "liftRatioDateOnly": 0.8774,
+     "liftRatioDateOnlyCi": [
+      0.7642,
+      0.9917
+     ],
+     "matchedExpected": 0.1553,
+     "liftRatio": 1.0597,
+     "liftRatioCi": [
+      0.9284,
+      1.1925
+     ],
+     "liftDiff": 0.0093,
+     "liftDiffCi": [
+      -0.0109,
+      0.0297
+     ],
+     "baseRate": 0.2014,
+     "recall": 0.1333,
+     "winners": 3684,
+     "caught": 491,
+     "falseDiscovery": 0.8355,
+     "medianWeeksToK": 52,
+     "medianMaeBeforeK": -0.121,
+     "invalidatedBeforeK": 0.2261
+    },
+    "3x": {
+     "precision": 0.0549,
+     "precisionCi": [
+      0.0431,
+      0.0674
+     ],
+     "dateOnlyExpected": 0.0716,
+     "liftRatioDateOnly": 0.7662,
+     "liftRatioDateOnlyCi": [
+      0.5977,
+      0.9366
+     ],
+     "matchedExpected": 0.0539,
+     "liftRatio": 1.0182,
+     "liftRatioCi": [
+      0.8075,
+      1.2394
+     ],
+     "liftDiff": 0.001,
+     "liftDiffCi": [
+      -0.0104,
+      0.013
+     ],
+     "baseRate": 0.0786,
+     "recall": 0.1147,
+     "winners": 1438,
+     "caught": 165,
+     "falseDiscovery": 0.9447,
+     "medianWeeksToK": 67,
+     "medianMaeBeforeK": -0.1182,
+     "invalidatedBeforeK": 0.1879
+    },
+    "5x": {
+     "precision": 0.014,
+     "precisionCi": [
+      0.0078,
+      0.02
+     ],
+     "dateOnlyExpected": 0.0245,
+     "liftRatioDateOnly": 0.571,
+     "liftRatioDateOnlyCi": [
+      0.3242,
+      0.8178
+     ],
+     "matchedExpected": 0.013,
+     "liftRatio": 1.0771,
+     "liftRatioCi": [
+      0.5887,
+      1.5504
+     ],
+     "liftDiff": 0.001,
+     "liftDiffCi": [
+      -0.0054,
+      0.0071
+     ],
+     "baseRate": 0.028,
+     "recall": 0.0858,
+     "winners": 513,
+     "caught": 44,
+     "falseDiscovery": 0.9853,
+     "medianWeeksToK": 80,
+     "medianMaeBeforeK": -0.2138,
+     "invalidatedBeforeK": 0.2045
+    },
+    "10x": {
+     "precision": 0.0014,
+     "precisionCi": [
+      0,
+      0.0028
+     ],
+     "dateOnlyExpected": 0.0043,
+     "liftRatioDateOnly": 0.3205,
+     "liftRatioDateOnlyCi": [
+      0,
+      0.6589
+     ],
+     "matchedExpected": 0.0015,
+     "liftRatio": 0.9212,
+     "liftRatioCi": [
+      0,
+      2.1368
+     ],
+     "liftDiff": -0.0001,
+     "liftDiffCi": [
+      -0.0014,
+      0.0014
+     ],
+     "baseRate": 0.0051,
+     "recall": 0.0426,
+     "winners": 94,
+     "caught": 4,
+     "falseDiscovery": 0.9987,
+     "medianWeeksToK": 89,
+     "medianMaeBeforeK": -0.05715,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.2184,
+    "meanCi": [
+     0.165,
+     0.2689
+    ],
+    "matchedMean": 0.2106,
+    "excessMean": 0.0078,
+    "excessMeanCi": [
+     -0.0463,
+     0.0608
+    ],
+    "excessMeanCapped4x": 0.0049,
+    "excessMeanCapped4xCi": [
+     -0.0439,
+     0.0493
+    ],
+    "excessMeanDateOnly": -0.0616,
+    "excessMeanDateOnlyCi": [
+     -0.1162,
+     -0.0113
+    ],
+    "median": 0.0417,
+    "p05": -0.7703,
+    "p25": -0.1511,
+    "p75": 0.4155,
+    "p95": 1.4665,
+    "p99": 3.6998,
+    "trimmedMean5": 0.1292,
+    "winRate": 0.6337,
+    "avgWinner": 0.5612,
+    "medianWinner": 0.2812,
+    "avgLoser": -0.3651,
+    "medianLoser": -0.3003,
+    "payoffRatio": 1.5368,
+    "expectancy": 0.2219,
+    "skew": 4.9518,
+    "top1PctShareOfGains": 0.1703,
+    "top5PctShareOfGains": 0.4213,
+    "meanWithoutTop1": 0.2172,
+    "meanWithoutTop3": 0.2102,
+    "meanWithoutTop1Pct": 0.1629,
+    "meanWithoutTop5Pct": 0.0758,
+    "medianMae": -0.25255000000000005,
+    "medianMfe": 0.2747,
+    "meanMfe": 0.5781,
+    "delistedShare": 0.6753,
+    "invalidatedShare": 0.3385
+   }
+  },
+  {
+   "signal": "W3_AND_TREND_MOM",
+   "horizon": "6M",
+   "units": 18543,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "W3_AND_TREND_MOM",
+   "horizon": "12M",
+   "units": 18473,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "W3_AND_TREND_MOM",
+   "horizon": "24M",
+   "units": 18361,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "W3_AND_TREND_MOM",
+   "horizon": "36M",
+   "units": 18293,
+   "flagged": 0,
+   "coverage": 0,
+   "symbols": 0
+  },
+  {
+   "signal": "VU_BULL_AND_TREND_MOM",
+   "horizon": "6M",
+   "units": 18543,
+   "flagged": 1848,
+   "coverage": 0.0997,
+   "symbols": 687,
+   "mult": {
+    "2x": {
+     "precision": 0.0375,
+     "precisionCi": [
+      0.0281,
+      0.047
+     ],
+     "dateOnlyExpected": 0.0515,
+     "liftRatioDateOnly": 0.7271,
+     "liftRatioDateOnlyCi": [
+      0.5484,
+      0.9147
+     ],
+     "matchedExpected": 0.0423,
+     "liftRatio": 0.8861,
+     "liftRatioCi": [
+      0.6708,
+      1.1014
+     ],
+     "liftDiff": -0.0048,
+     "liftDiffCi": [
+      -0.0137,
+      0.0041
+     ],
+     "baseRate": 0.0562,
+     "recall": 0.0662,
+     "winners": 1042,
+     "caught": 69,
+     "falseDiscovery": 0.9627,
+     "medianWeeksToK": 16,
+     "medianMaeBeforeK": -0.0188,
+     "invalidatedBeforeK": 0.0725
+    },
+    "3x": {
+     "precision": 0.0072,
+     "precisionCi": [
+      0.0033,
+      0.0116
+     ],
+     "dateOnlyExpected": 0.0135,
+     "liftRatioDateOnly": 0.5309,
+     "liftRatioDateOnlyCi": [
+      0.2474,
+      0.8531
+     ],
+     "matchedExpected": 0.0093,
+     "liftRatio": 0.7726,
+     "liftRatioCi": [
+      0.3566,
+      1.2954
+     ],
+     "liftDiff": -0.0021,
+     "liftDiffCi": [
+      -0.006,
+      0.0024
+     ],
+     "baseRate": 0.0154,
+     "recall": 0.0491,
+     "winners": 285,
+     "caught": 14,
+     "falseDiscovery": 0.9924,
+     "medianWeeksToK": 16.5,
+     "medianMaeBeforeK": -0.00675,
+     "invalidatedBeforeK": 0.0714
+    },
+    "5x": {
+     "precision": 0.0017,
+     "precisionCi": [
+      0,
+      0.0042
+     ],
+     "dateOnlyExpected": 0.0028,
+     "liftRatioDateOnly": 0.593,
+     "liftRatioDateOnlyCi": [
+      0,
+      1.5048
+     ],
+     "matchedExpected": 0.0023,
+     "liftRatio": 0.7339,
+     "liftRatioCi": [
+      0,
+      2.0698
+     ],
+     "liftDiff": -0.0006,
+     "liftDiffCi": [
+      -0.0026,
+      0.002
+     ],
+     "baseRate": 0.003,
+     "recall": 0.0536,
+     "winners": 56,
+     "caught": 3,
+     "falseDiscovery": 0.9984,
+     "medianWeeksToK": 19,
+     "medianMaeBeforeK": -0.4728,
+     "invalidatedBeforeK": 0.6667
+    },
+    "10x": {
+     "precision": 0,
+     "precisionCi": [
+      null,
+      null
+     ],
+     "dateOnlyExpected": 0.0005,
+     "liftRatioDateOnly": 0,
+     "liftRatioDateOnlyCi": [
+      null,
+      null
+     ],
+     "matchedExpected": 0.0004,
+     "liftRatio": 0,
+     "liftRatioCi": [
+      null,
+      null
+     ],
+     "liftDiff": -0.0004,
+     "liftDiffCi": [
+      -0.0005,
+      -0.0002
+     ],
+     "baseRate": 0.0005,
+     "recall": 0,
+     "winners": 10,
+     "caught": 0,
+     "falseDiscovery": 1,
+     "medianWeeksToK": null,
+     "medianMaeBeforeK": null,
+     "invalidatedBeforeK": null
+    }
+   },
+   "returns": {
+    "mean": 0.0484,
+    "meanCi": [
+     0.0282,
+     0.0678
+    ],
+    "matchedMean": 0.0526,
+    "excessMean": -0.0041,
+    "excessMeanCi": [
+     -0.0245,
+     0.0164
+    ],
+    "excessMeanCapped4x": -0.001,
+    "excessMeanCapped4xCi": [
+     -0.021,
+     0.0197
+    ],
+    "excessMeanDateOnly": -0.0043,
+    "excessMeanDateOnlyCi": [
+     -0.0253,
+     0.0158
+    ],
+    "median": 0.0042,
+    "p05": -0.4443,
+    "p25": -0.1804,
+    "p75": 0.1878,
+    "p95": 0.7381,
+    "p99": 1.3389,
+    "trimmedMean5": 0.0187,
+    "winRate": 0.5249,
+    "avgWinner": 0.293,
+    "medianWinner": 0.1698,
+    "avgLoser": -0.2215,
+    "medianLoser": -0.1909,
+    "payoffRatio": 1.3228,
+    "expectancy": 0.0486,
+    "skew": 2.462,
+    "top1PctShareOfGains": 0.1358,
+    "top5PctShareOfGains": 0.3863,
+    "meanWithoutTop1": 0.0465,
+    "meanWithoutTop3": 0.0427,
+    "meanWithoutTop1Pct": 0.0279,
+    "meanWithoutTop5Pct": -0.0114,
+    "medianMae": -0.1254,
+    "medianMfe": 0.1383,
+    "meanMfe": 0.2645,
+    "delistedShare": 0.1948,
+    "invalidatedShare": 0.3561
+   }
+  },
+  {
+   "signal": "VU_BULL_AND_TREND_MOM",
+   "horizon": "12M",
+   "units": 18473,
+   "flagged": 1845,
+   "coverage": 0.0999,
+   "symbols": 686,
+   "mult": {
+    "2x": {
+     "precision": 0.0822,
+     "precisionCi": [
+      0.0653,
+      0.1005
+     ],
+     "dateOnlyExpected": 0.097,
+     "liftRatioDateOnly": 0.8475,
+     "liftRatioDateOnlyCi": [
+      0.6784,
+      1.0206
+     ],
+     "matchedExpected": 0.0848,
+     "liftRatio": 0.9696,
+     "liftRatioCi": [
+      0.7693,
+      1.181
+     ],
+     "liftDiff": -0.0026,
+     "liftDiffCi": [
+      -0.0197,
+      0.0152
+     ],
+     "baseRate": 0.1089,
+     "recall": 0.0746,
+     "winners": 2011,
+     "caught": 150,
+     "falseDiscovery": 0.9187,
+     "medianWeeksToK": 28,
+     "medianMaeBeforeK": -0.04265,
+     "invalidatedBeforeK": 0.12
+    },
+    "3x": {
+     "precision": 0.016,
+     "precisionCi": [
+      0.0095,
+      0.0233
+     ],
+     "dateOnlyExpected": 0.0295,
+     "liftRatioDateOnly": 0.5431,
+     "liftRatioDateOnlyCi": [
+      0.328,
+      0.7867
+     ],
+     "matchedExpected": 0.0196,
+     "liftRatio": 0.8171,
+     "liftRatioCi": [
+      0.4753,
+      1.2342
+     ],
+     "liftDiff": -0.0036,
+     "liftDiffCi": [
+      -0.0108,
+      0.0045
+     ],
+     "baseRate": 0.0354,
+     "recall": 0.0459,
+     "winners": 654,
+     "caught": 30,
+     "falseDiscovery": 0.9837,
+     "medianWeeksToK": 28,
+     "medianMaeBeforeK": -0.01415,
+     "invalidatedBeforeK": 0.1667
+    },
+    "5x": {
+     "precision": 0.0033,
+     "precisionCi": [
+      0.0005,
+      0.007
+     ],
+     "dateOnlyExpected": 0.0078,
+     "liftRatioDateOnly": 0.4269,
+     "liftRatioDateOnlyCi": [
+      0.0672,
+      0.9256
+     ],
+     "matchedExpected": 0.004,
+     "liftRatio": 0.8287,
+     "liftRatioCi": [
+      0.1257,
+      1.8477
+     ],
+     "liftDiff": -0.0007,
+     "liftDiffCi": [
+      -0.0036,
+      0.0032
+     ],
+     "baseRate": 0.0099,
+     "recall": 0.0328,
+     "winners": 183,
+     "caught": 6,
+     "falseDiscovery": 0.9967,
+     "medianWeeksToK": 28,
+     "medianMaeBeforeK": -0.4303,
+     "invalidatedBeforeK": 0.6667
+    },
+    "10x": {
+     "precision": 0,
+     "precisionCi": [
+      null,
+      null
+     ],
+     "dateOnlyExpected": 0.0013,
+     "liftRatioDateOnly": 0,
+     "liftRatioDateOnlyCi": [
+      null,
+      null
+     ],
+     "matchedExpected": 0.0009,
+     "liftRatio": 0,
+     "liftRatioCi": [
+      null,
+      null
+     ],
+     "liftDiff": -0.0009,
+     "liftDiffCi": [
+      -0.0012,
+      -0.0006
+     ],
+     "baseRate": 0.0015,
+     "recall": 0,
+     "winners": 28,
+     "caught": 0,
+     "falseDiscovery": 1,
+     "medianWeeksToK": null,
+     "medianMaeBeforeK": null,
+     "invalidatedBeforeK": null
+    }
+   },
+   "returns": {
+    "mean": 0.0753,
+    "meanCi": [
+     0.0388,
+     0.1101
+    ],
+    "matchedMean": 0.0831,
+    "excessMean": -0.0078,
+    "excessMeanCi": [
+     -0.0441,
+     0.0254
+    ],
+    "excessMeanCapped4x": -0.0031,
+    "excessMeanCapped4xCi": [
+     -0.0386,
+     0.0294
+    ],
+    "excessMeanDateOnly": -0.026,
+    "excessMeanDateOnlyCi": [
+     -0.0617,
+     0.0072
+    ],
+    "median": 0.0067,
+    "p05": -0.5819,
+    "p25": -0.2291,
+    "p75": 0.2639,
+    "p95": 0.9684,
+    "p99": 1.9329,
+    "trimmedMean5": 0.032,
+    "winRate": 0.5312,
+    "avgWinner": 0.3953,
+    "medianWinner": 0.2358,
+    "avgLoser": -0.2891,
+    "medianLoser": -0.2497,
+    "payoffRatio": 1.3671,
+    "expectancy": 0.0744,
+    "skew": 2.4533,
+    "top1PctShareOfGains": 0.1383,
+    "top5PctShareOfGains": 0.3856,
+    "meanWithoutTop1": 0.072,
+    "meanWithoutTop3": 0.0675,
+    "meanWithoutTop1Pct": 0.0458,
+    "meanWithoutTop5Pct": -0.0069,
+    "medianMae": -0.1989,
+    "medianMfe": 0.1923,
+    "meanMfe": 0.367,
+    "delistedShare": 0.3079,
+    "invalidatedShare": 0.4661
+   }
+  },
+  {
+   "signal": "VU_BULL_AND_TREND_MOM",
+   "horizon": "24M",
+   "units": 18361,
+   "flagged": 1836,
+   "coverage": 0.1,
+   "symbols": 685,
+   "mult": {
+    "2x": {
+     "precision": 0.1341,
+     "precisionCi": [
+      0.1138,
+      0.1531
+     ],
+     "dateOnlyExpected": 0.1518,
+     "liftRatioDateOnly": 0.884,
+     "liftRatioDateOnlyCi": [
+      0.7539,
+      1.0184
+     ],
+     "matchedExpected": 0.1356,
+     "liftRatio": 0.989,
+     "liftRatioCi": [
+      0.8431,
+      1.13
+     ],
+     "liftDiff": -0.0015,
+     "liftDiffCi": [
+      -0.0212,
+      0.0178
+     ],
+     "baseRate": 0.1677,
+     "recall": 0.0792,
+     "winners": 3079,
+     "caught": 244,
+     "falseDiscovery": 0.8671,
+     "medianWeeksToK": 43,
+     "medianMaeBeforeK": -0.0902,
+     "invalidatedBeforeK": 0.2705
+    },
+    "3x": {
+     "precision": 0.0416,
+     "precisionCi": [
+      0.029,
+      0.0542
+     ],
+     "dateOnlyExpected": 0.0544,
+     "liftRatioDateOnly": 0.7638,
+     "liftRatioDateOnlyCi": [
+      0.5418,
+      0.9758
+     ],
+     "matchedExpected": 0.0441,
+     "liftRatio": 0.9426,
+     "liftRatioCi": [
+      0.6672,
+      1.218
+     ],
+     "liftDiff": -0.0025,
+     "liftDiffCi": [
+      -0.0141,
+      0.0093
+     ],
+     "baseRate": 0.0628,
+     "recall": 0.0659,
+     "winners": 1153,
+     "caught": 76,
+     "falseDiscovery": 0.9586,
+     "medianWeeksToK": 57.5,
+     "medianMaeBeforeK": -0.07105,
+     "invalidatedBeforeK": 0.2632
+    },
+    "5x": {
+     "precision": 0.0094,
+     "precisionCi": [
+      0.0038,
+      0.0173
+     ],
+     "dateOnlyExpected": 0.017,
+     "liftRatioDateOnly": 0.5554,
+     "liftRatioDateOnlyCi": [
+      0.2266,
+      0.9952
+     ],
+     "matchedExpected": 0.009,
+     "liftRatio": 1.0441,
+     "liftRatioCi": [
+      0.4334,
+      1.9964
+     ],
+     "liftDiff": 0.0004,
+     "liftDiffCi": [
+      -0.0055,
+      0.0084
+     ],
+     "baseRate": 0.0209,
+     "recall": 0.0444,
+     "winners": 383,
+     "caught": 17,
+     "falseDiscovery": 0.9907,
+     "medianWeeksToK": 59,
+     "medianMaeBeforeK": -0.1739,
+     "invalidatedBeforeK": 0.3529
+    },
+    "10x": {
+     "precision": 0,
+     "precisionCi": [
+      null,
+      null
+     ],
+     "dateOnlyExpected": 0.0031,
+     "liftRatioDateOnly": 0,
+     "liftRatioDateOnlyCi": [
+      null,
+      null
+     ],
+     "matchedExpected": 0.0013,
+     "liftRatio": 0,
+     "liftRatioCi": [
+      null,
+      null
+     ],
+     "liftDiff": -0.0013,
+     "liftDiffCi": [
+      -0.0017,
+      -0.0009
+     ],
+     "baseRate": 0.0039,
+     "recall": 0,
+     "winners": 72,
+     "caught": 0,
+     "falseDiscovery": 1,
+     "medianWeeksToK": null,
+     "medianMaeBeforeK": null,
+     "invalidatedBeforeK": null
+    }
+   },
+   "returns": {
+    "mean": 0.1503,
+    "meanCi": [
+     0.1,
+     0.2053
+    ],
+    "matchedMean": 0.1373,
+    "excessMean": 0.013,
+    "excessMeanCi": [
+     -0.0377,
+     0.0649
+    ],
+    "excessMeanCapped4x": 0.0152,
+    "excessMeanCapped4xCi": [
+     -0.0325,
+     0.0631
+    ],
+    "excessMeanDateOnly": -0.0316,
+    "excessMeanDateOnlyCi": [
+     -0.0832,
+     0.0192
+    ],
+    "median": 0.0252,
+    "p05": -0.7629,
+    "p25": -0.2427,
+    "p75": 0.3755,
+    "p95": 1.2707,
+    "p99": 3.1547,
+    "trimmedMean5": 0.0767,
+    "winRate": 0.5752,
+    "avgWinner": 0.5249,
+    "medianWinner": 0.3143,
+    "avgLoser": -0.3604,
+    "medianLoser": -0.3146,
+    "payoffRatio": 1.4567,
+    "expectancy": 0.1488,
+    "skew": 2.7634,
+    "top1PctShareOfGains": 0.1415,
+    "top5PctShareOfGains": 0.405,
+    "meanWithoutTop1": 0.1456,
+    "meanWithoutTop3": 0.1394,
+    "meanWithoutTop1Pct": 0.1072,
+    "meanWithoutTop5Pct": 0.0279,
+    "medianMae": -0.25945,
+    "medianMfe": 0.2775,
+    "meanMfe": 0.5059,
+    "delistedShare": 0.4886,
+    "invalidatedShare": 0.5349
+   }
+  },
+  {
+   "signal": "VU_BULL_AND_TREND_MOM",
+   "horizon": "36M",
+   "units": 18293,
+   "flagged": 1833,
+   "coverage": 0.1002,
+   "symbols": 684,
+   "mult": {
+    "2x": {
+     "precision": 0.1694,
+     "precisionCi": [
+      0.1429,
+      0.1937
+     ],
+     "dateOnlyExpected": 0.1855,
+     "liftRatioDateOnly": 0.913,
+     "liftRatioDateOnlyCi": [
+      0.7798,
+      1.0408
+     ],
+     "matchedExpected": 0.1665,
+     "liftRatio": 1.0174,
+     "liftRatioCi": [
+      0.8692,
+      1.1622
+     ],
+     "liftDiff": 0.0029,
+     "liftDiffCi": [
+      -0.0222,
+      0.0267
+     ],
+     "baseRate": 0.2014,
+     "recall": 0.0836,
+     "winners": 3684,
+     "caught": 308,
+     "falseDiscovery": 0.832,
+     "medianWeeksToK": 55,
+     "medianMaeBeforeK": -0.1318,
+     "invalidatedBeforeK": 0.3604
+    },
+    "3x": {
+     "precision": 0.0511,
+     "precisionCi": [
+      0.0375,
+      0.0665
+     ],
+     "dateOnlyExpected": 0.0701,
+     "liftRatioDateOnly": 0.7287,
+     "liftRatioDateOnlyCi": [
+      0.5275,
+      0.9653
+     ],
+     "matchedExpected": 0.0578,
+     "liftRatio": 0.8832,
+     "liftRatioCi": [
+      0.6459,
+      1.1511
+     ],
+     "liftDiff": -0.0068,
+     "liftDiffCi": [
+      -0.0207,
+      0.009
+     ],
+     "baseRate": 0.0786,
+     "recall": 0.0647,
+     "winners": 1438,
+     "caught": 93,
+     "falseDiscovery": 0.9493,
+     "medianWeeksToK": 64,
+     "medianMaeBeforeK": -0.1289,
+     "invalidatedBeforeK": 0.3333
+    },
+    "5x": {
+     "precision": 0.0117,
+     "precisionCi": [
+      0.0051,
+      0.0197
+     ],
+     "dateOnlyExpected": 0.0239,
+     "liftRatioDateOnly": 0.4878,
+     "liftRatioDateOnlyCi": [
+      0.2149,
+      0.8067
+     ],
+     "matchedExpected": 0.0129,
+     "liftRatio": 0.9069,
+     "liftRatioCi": [
+      0.4097,
+      1.4899
+     ],
+     "liftDiff": -0.0012,
+     "liftDiffCi": [
+      -0.0078,
+      0.0065
+     ],
+     "baseRate": 0.028,
+     "recall": 0.0409,
+     "winners": 513,
+     "caught": 21,
+     "falseDiscovery": 0.9885,
+     "medianWeeksToK": 66,
+     "medianMaeBeforeK": -0.2153,
+     "invalidatedBeforeK": 0.4286
+    },
+    "10x": {
+     "precision": 0.0011,
+     "precisionCi": [
+      0,
+      0.0029
+     ],
+     "dateOnlyExpected": 0.0042,
+     "liftRatioDateOnly": 0.2669,
+     "liftRatioDateOnlyCi": [
+      0,
+      0.6896
+     ],
+     "matchedExpected": 0.0016,
+     "liftRatio": 0.6895,
+     "liftRatioCi": [
+      0,
+      1.9405
+     ],
+     "liftDiff": -0.0005,
+     "liftDiffCi": [
+      -0.0019,
+      0.0014
+     ],
+     "baseRate": 0.0051,
+     "recall": 0.0213,
+     "winners": 94,
+     "caught": 2,
+     "falseDiscovery": 0.9989,
+     "medianWeeksToK": 144,
+     "medianMaeBeforeK": -0.04225,
+     "invalidatedBeforeK": 0
+    }
+   },
+   "returns": {
+    "mean": 0.2258,
+    "meanCi": [
+     0.1633,
+     0.2921
+    ],
+    "matchedMean": 0.2182,
+    "excessMean": 0.0076,
+    "excessMeanCi": [
+     -0.0497,
+     0.0712
+    ],
+    "excessMeanCapped4x": 0.009,
+    "excessMeanCapped4xCi": [
+     -0.0441,
+     0.0676
+    ],
+    "excessMeanDateOnly": -0.0482,
+    "excessMeanDateOnlyCi": [
+     -0.1136,
+     0.0175
+    ],
+    "median": 0.0638,
+    "p05": -0.7782,
+    "p25": -0.1743,
+    "p75": 0.4506,
+    "p95": 1.444,
+    "p99": 3.644,
+    "trimmedMean5": 0.1403,
+    "winRate": 0.6263,
+    "avgWinner": 0.5811,
+    "medianWinner": 0.342,
+    "avgLoser": -0.3774,
+    "medianLoser": -0.3203,
+    "payoffRatio": 1.5396,
+    "expectancy": 0.2229,
+    "skew": 4.053,
+    "top1PctShareOfGains": 0.148,
+    "top5PctShareOfGains": 0.3865,
+    "meanWithoutTop1": 0.2166,
+    "meanWithoutTop3": 0.2077,
+    "meanWithoutTop1Pct": 0.1707,
+    "meanWithoutTop5Pct": 0.0865,
+    "medianMae": -0.2742,
+    "medianMfe": 0.3164,
+    "meanMfe": 0.5779,
+    "delistedShare": 0.665,
+    "invalidatedShare": 0.551
+   }
+  }
+ ],
+ "wave3WithinTrendMom": {
+  "6M": {
+   "trendMomUnits": 3006,
+   "withW3": 0,
+   "withoutW3": 3006,
+   "2x": {
+    "withW3": 0,
+    "withoutW3": 0.0419
+   },
+   "3x": {
+    "withW3": 0,
+    "withoutW3": 0.009
+   },
+   "5x": {
+    "withW3": 0,
+    "withoutW3": 0.002
+   },
+   "10x": {
+    "withW3": 0,
+    "withoutW3": 0.0003
+   },
+   "meanEndWith": null,
+   "meanEndWithout": 0.0511,
+   "medianEndWith": null,
+   "medianEndWithout": 0.0037
+  },
+  "12M": {
+   "trendMomUnits": 3002,
+   "withW3": 0,
+   "withoutW3": 3002,
+   "2x": {
+    "withW3": 0,
+    "withoutW3": 0.0849
+   },
+   "3x": {
+    "withW3": 0,
+    "withoutW3": 0.0197
+   },
+   "5x": {
+    "withW3": 0,
+    "withoutW3": 0.0043
+   },
+   "10x": {
+    "withW3": 0,
+    "withoutW3": 0.0007
+   },
+   "meanEndWith": null,
+   "meanEndWithout": 0.0845,
+   "medianEndWith": null,
+   "medianEndWithout": 0.0073
+  },
+  "24M": {
+   "trendMomUnits": 2990,
+   "withW3": 0,
+   "withoutW3": 2990,
+   "2x": {
+    "withW3": 0,
+    "withoutW3": 0.1368
+   },
+   "3x": {
+    "withW3": 0,
+    "withoutW3": 0.0438
+   },
+   "5x": {
+    "withW3": 0,
+    "withoutW3": 0.0097
+   },
+   "10x": {
+    "withW3": 0,
+    "withoutW3": 0.0007
+   },
+   "meanEndWith": null,
+   "meanEndWithout": 0.145,
+   "medianEndWith": null,
+   "medianEndWithout": 0.0179
+  },
+  "36M": {
+   "trendMomUnits": 2984,
+   "withW3": 0,
+   "withoutW3": 2984,
+   "2x": {
+    "withW3": 0,
+    "withoutW3": 0.1645
+   },
+   "3x": {
+    "withW3": 0,
+    "withoutW3": 0.0553
+   },
+   "5x": {
+    "withW3": 0,
+    "withoutW3": 0.0147
+   },
+   "10x": {
+    "withW3": 0,
+    "withoutW3": 0.0013
+   },
+   "meanEndWith": null,
+   "meanEndWithout": 0.2219,
+   "medianEndWith": null,
+   "medianEndWithout": 0.0417
+  }
+ },
+ "earlyDetection": {
+  "VU_BULL": {
+   "episodes5x24M": 176,
+   "flaggedBefore5x": 73,
+   "shareFlagged": 0.4148,
+   "medianQuartersEarly": 3,
+   "medianRemainingMaxMultiple24M": 2.0786
+  },
+  "EW_EARLY_MOTIVE_INTERNAL": {
+   "episodes5x24M": 176,
+   "flaggedBefore5x": 0,
+   "shareFlagged": 0,
+   "medianQuartersEarly": null,
+   "medianRemainingMaxMultiple24M": null
+  },
+  "TREND_MOM": {
+   "episodes5x24M": 176,
+   "flaggedBefore5x": 43,
+   "shareFlagged": 0.2443,
+   "medianQuartersEarly": 3,
+   "medianRemainingMaxMultiple24M": 2.4053
+  },
+  "BREAKOUT52": {
+   "episodes5x24M": 176,
+   "flaggedBefore5x": 19,
+   "shareFlagged": 0.108,
+   "medianQuartersEarly": 2,
+   "medianRemainingMaxMultiple24M": 2.6835
+  },
+  "RS26_TOP20": {
+   "episodes5x24M": 176,
+   "flaggedBefore5x": 70,
+   "shareFlagged": 0.3977,
+   "medianQuartersEarly": 3,
+   "medianRemainingMaxMultiple24M": 2.4696
+  }
+ },
+ "seconds": 23
+}
