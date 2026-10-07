@@ -323,9 +323,11 @@ class MappingIntegrityTests(unittest.TestCase):
         result, _ = normalize(builder, self.registry, 2000000006)
         resolver = PeriodResolver(result.factbook, self.registry)
         fact = resolver.annual("revenue", 2023, None, policy=POLICY_LATEST_KNOWN)
-        self.assertEqual(fact.value, 1000.0)
-        self.assertEqual(fact.provenance.concept,
-                         "RevenueFromContractWithCustomerExcludingAssessedTax")
+        # Registry 1.7.0: Revenues ist laut US-GAAP-Taxonomie der Gesamtumsatz und hat in
+        # derselben Einreichung Vorrang vor dem ASC-606-Vertragsumsatz (Teilbetrag; AMT
+        # Q3 2019: 1.953,6 Mio. statt 137,3 Mio., Fundamental-Data-Integrity-Audit E2).
+        self.assertEqual(fact.value, 900.0)
+        self.assertEqual(fact.provenance.concept, "Revenues")
 
     def test_disagreeing_concepts_are_flagged_not_averaged(self):
         builder = FactsBuilder(2000000007)

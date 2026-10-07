@@ -23,7 +23,7 @@ test("Die SEC-Registry kennt fuer shares_outstanding nur ausstehende Aktien", ()
   assert.deepEqual(concepts.slice().sort(), MarketCap.OUTSTANDING_CONCEPTS.slice().sort());
   assert.ok(!concepts.includes("us-gaap:CommonStockSharesIssued"), "ausgegebene Aktien als Rueckfall");
   assert.match(m.excludedConcepts["us-gaap:CommonStockSharesIssued"], /einschliesslich eigener/);
-  assert.equal(registry.mapping_version, "1.6.0", "Mapping-Aenderung ohne Versionssprung");
+  assert.equal(registry.mapping_version, "1.7.0", "Mapping-Aenderung ohne Versionssprung (1.7.0: Fundamental-Audit E1/E2)");
 });
 
 test("Methodik, Engine und Registry sagen dasselbe", () => {

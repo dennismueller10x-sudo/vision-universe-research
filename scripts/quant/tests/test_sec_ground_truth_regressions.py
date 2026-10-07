@@ -21,8 +21,13 @@ FIXTURES = Path(__file__).resolve().parent / "fixtures" / "sec-real"
 FAR = "2099-12-31"
 
 
-def build(name):
+def build(name, drop=None):
     payload = json.loads((FIXTURES / f"{name}.json").read_text())
+    if drop:
+        for tax in payload["facts"].values():
+            for body in tax.values():
+                for unit, rows in body["units"].items():
+                    body["units"][unit] = [row for row in rows if not drop(row)]
     payload["_retrieved_at"] = "2026-10-07T00:00:00+00:00"
     provider = SECProvider.__new__(SECProvider)
     cik = str(payload["cik"]).zfill(10)
@@ -76,6 +81,25 @@ class SecGroundTruthRegressions(unittest.TestCase):
         if seen is not None:
             self.assertEqual(getattr(seen.provenance, "transformation", "AS_REPORTED"), "AS_REPORTED")
             self.assertAlmostEqual(seen.value, -0.42, places=6)
+
+    def test_e3b_fiscal_labels_stay_unique_across_new_year_52_53_week_drift(self):
+        """CERN: Geschaeftsjahre enden 2010-01-02, 2011-01-01, 2011-12-31. Zwei Jahre duerfen nicht dasselbe Label tragen."""
+        calendar, resolver = build("CERN")
+        labels = [calendar.fiscal_year_for(end) for end in ("2010-01-02", "2011-01-01", "2011-12-31", "2012-12-29")]
+        self.assertEqual(len(set(labels)), 4, f"doppelte Geschaeftsjahreslabels: {labels}")
+        q1_2011 = quarter(resolver, calendar, "eps_diluted", "2011-04-02", FAR, POLICY_ORIGINAL)
+        self.assertIsNotNone(q1_2011)
+        self.assertEqual(str(q1_2011.period_end), "2011-04-02", "Abfrage Q1 2011 lieferte ein anderes Quartal")
+        self.assertAlmostEqual(q1_2011.value, 0.75, places=6)
+
+    def test_e4_unreported_eps_quarter_stays_missing(self):
+        """Derselbe REPL-Auszug ohne die gemeldeten Q4-Dreimonatswerte: kein FY - 9M fuer EPS, die Luecke bleibt."""
+        def q4_eps(row):
+            return row.get("end") == "2021-03-31" and row.get("start") == "2021-01-01"
+        calendar, resolver = build("REPL", drop=q4_eps)
+        self.assertIsNone(quarter(resolver, calendar, "eps_diluted", "2021-03-31", FAR, POLICY_ORIGINAL))
+        # additive Groessen werden weiter aus Kumulwerten rekonstruiert (unveraendert)
+        self.assertIsNotNone(quarter(resolver, calendar, "net_income", "2021-03-31", FAR, POLICY_ORIGINAL))
 
 
 if __name__ == "__main__":

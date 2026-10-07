@@ -110,6 +110,12 @@ class PeriodResolver:
         if definition.kind == KIND_INSTANT:
             # Balance-sheet dates are already standalone; nothing to de-accumulate.
             return natives
+        if definition.is_per_share:
+            # Per-share amounts are not additive: each period divides by its own
+            # weighted share count, so FY - 9M or H1 - Q1 is not the quarter's EPS.
+            # Replimune FY2021 Q4: reported -0.42, FY minus nine months gave -0.41.
+            # Only reported quarters count; an unreported one stays a gap.
+            return natives
 
         cumulative = {0: None}
         for index in range(1, 5):
@@ -195,7 +201,8 @@ class PeriodResolver:
             return self._not_applicable(metric, blocked, fiscal_year, "FY")
         observation = self._raw(metric, fiscal_year, "FY", as_of, policy, lag_days)
         if observation is None and self._definition(metric) is not None \
-                and self._definition(metric).kind != KIND_INSTANT:
+                and self._definition(metric).kind != KIND_INSTANT \
+                and not self._definition(metric).is_per_share:
             grid = self.quarter_grid(metric, fiscal_year, as_of, policy, lag_days)
             parts = [grid[index] for index in range(1, 5)]
             if all(part is not None for part in parts):

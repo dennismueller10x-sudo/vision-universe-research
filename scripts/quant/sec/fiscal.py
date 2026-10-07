@@ -71,6 +71,39 @@ def duration_days(start, end):
     return (end - start).days
 
 
+ANNUAL_CYCLE_TOLERANCE_DAYS = 14
+HALF_YEAR = timedelta(days=182)
+
+
+def _mid_year(end):
+    """Calendar year of the middle of the fiscal year that ends on `end`."""
+    return (end - HALF_YEAR).year
+
+
+def _fallback_label(end, label_offset, label_mid_offset):
+    """Label for a year end without a usable own label.
+
+    With labels learned from the filer's own annual reports the mid-year offset
+    is used (stable across a December/January 52/53-week drift); without any,
+    the dominant US convention stays: the calendar year the fiscal year ends in.
+    """
+    if label_mid_offset is not None:
+        return _mid_year(end) + label_mid_offset
+    return end.year + label_offset
+
+
+def _same_annual_cycle(end, reference):
+    """True when `end` falls on the same fiscal-year-end cycle as `reference`.
+
+    Compared on the day of the year, wrapping at the year boundary, so a 52/53-week
+    year (Oct 28 vs Nov 3) and a year end around New Year (Dec 31 vs Jan 2) stay on
+    the same cycle while a calendar-year disclosure inside an October-year report
+    does not.
+    """
+    distance = abs(end.timetuple().tm_yday - reference.timetuple().tm_yday)
+    return min(distance, 366 - distance) <= ANNUAL_CYCLE_TOLERANCE_DAYS
+
+
 def classify_duration(start, end):
     """Return one of instant/Q/H/9M/FY/UNKNOWN for an XBRL period."""
     if start is None:
@@ -92,11 +125,15 @@ def classify_duration(start, end):
 class FiscalCalendar:
     """Fiscal year boundaries and labels for one company."""
 
-    def __init__(self, cik, fy_ends, labels, label_offset, fiscal_year_end_hint=None):
+    def __init__(self, cik, fy_ends, labels, label_offset, fiscal_year_end_hint=None,
+                 label_mid_offset=None):
         self.cik = cik
         self.fy_ends = sorted(fy_ends)              # list[date], ascending
         self.labels = dict(labels)                  # date -> int
         self.label_offset = label_offset            # fiscal_year - end.year
+        # fiscal_year - (end - half a year).year, learned from the filings' own
+        # labels. None for calendars stored before 1.11.0 (old behaviour kept).
+        self.label_mid_offset = label_mid_offset
         self.fiscal_year_end_hint = fiscal_year_end_hint
         self._extrapolated = set()
         # Filled by from_raw_facts: annual filings whose own `fy` field was
@@ -112,6 +149,8 @@ class FiscalCalendar:
         annual_ends = set()
         # accession -> {"ends": set, "fy": int} for 10-K/20-F filings only
         anchors_by_accession = defaultdict(lambda: {"ends": set(), "fy": None})
+        # accession -> every twelve-month end the annual report carries
+        ends_by_accession = defaultdict(set)
 
         for fact in raw_facts:
             kind = classify_duration(fact.start, fact.end)
@@ -126,13 +165,23 @@ class FiscalCalendar:
             if _base_form(fact.form) not in ANNUAL_FORMS:
                 continue
             end = parse_date(fact.end)
-            annual_ends.add(end)
+            ends_by_accession[fact.accession].add(end)
             if fact.form in ANNUAL_FORMS and fact.filing_fp == "FY":
                 bucket = anchors_by_accession[fact.accession]
                 bucket["ends"].add(end)
                 if fact.filing_fy is not None:
                     bucket["fy"] = int(fact.filing_fy)
 
+        # A twelve-month figure in an annual report is a fiscal year only if it ends
+        # on that report's own fiscal-year cycle (month/day within a fortnight of
+        # the report's latest annual end). Deere's FY2018 10-K carries the 2017
+        # CALENDAR-year statutory tax rate reconciliation (2017-01-01..2017-12-31);
+        # accepted as a year end it gave FY2017 two ends and relabelled every
+        # FY2018 quarter (April became Q1, a Q1 read returned the April value).
+        # Measured in the fundamental data integrity audit: 10 of 98 issuers.
+        for ends in ends_by_accession.values():
+            own_end = max(ends)
+            annual_ends.update(end for end in ends if _same_annual_cycle(end, own_end))
         anchor_source = ANCHOR_SOURCE_ANNUAL_DURATIONS if annual_ends else ANCHOR_SOURCE_NONE
         if not annual_ends:
             # No full-year duration anywhere: a first fiscal year shorter than
@@ -182,9 +231,19 @@ class FiscalCalendar:
         else:
             label_offset = 0
 
+        # The same offset measured from the middle of the fiscal year. A 52/53-week
+        # year that ends sometimes in late December and sometimes in the first days
+        # of January (Cerner: 2010-01-02, 2011-01-01, 2011-12-31) has two different
+        # end-year offsets but one mid-year offset; with the end year, FY2009 was
+        # labelled 2010, the 10-K's own FY2010 label was refused as a repeat, and
+        # FY2010 and FY2011 both became "2011" - one cell, two periods.
+        mid_offsets = Counter(fy - _mid_year(end) for end, fy in anchors.items())
+        label_mid_offset = mid_offsets.most_common(1)[0][0] if mid_offsets else None
+
         fy_ends = cls._cluster(annual_ends)
-        labels, rejected = cls._label_years(fy_ends, anchors, label_offset)
-        calendar = cls(cik, fy_ends, labels, label_offset, fiscal_year_end_hint)
+        labels, rejected = cls._label_years(fy_ends, anchors, label_offset, label_mid_offset)
+        calendar = cls(cik, fy_ends, labels, label_offset, fiscal_year_end_hint,
+                       label_mid_offset=label_mid_offset)
         calendar.rejected_anchors = rejected
         calendar.anchor_source = anchor_source
         LOGGER.info(
@@ -298,7 +357,7 @@ class FiscalCalendar:
         return keep
 
     @staticmethod
-    def _label_years(fy_ends, anchors, label_offset):
+    def _label_years(fy_ends, anchors, label_offset, label_mid_offset=None):
         """Fiscal-year labels, refusing anchors that cannot be true.
 
         The label comes from the annual filing's own `fy` field where one
@@ -320,11 +379,14 @@ class FiscalCalendar:
         rejected = []
         previous = None
         for end in fy_ends:
-            fallback = end.year + label_offset
+            fallback = _fallback_label(end, label_offset, label_mid_offset)
             label = anchors.get(end, fallback)
             if previous is not None and label <= previous:
-                rejected.append((end.isoformat(), label, fallback))
-                label = fallback
+                # Even the fallback may not repeat a label: two fiscal years in one
+                # cell would mix two periods under one key.
+                used = fallback if fallback > previous else previous + 1
+                rejected.append((end.isoformat(), label, used))
+                label = used
             labels[end] = label
             previous = label
         return labels, rejected
@@ -416,7 +478,7 @@ class FiscalCalendar:
             return None
         if fy_end in self.labels:
             return self.labels[fy_end]
-        return fy_end.year + self.label_offset
+        return _fallback_label(fy_end, self.label_offset, self.label_mid_offset)
 
     def quarter_index(self, period_end):
         """1..4 by elapsed fraction of the fiscal year, or None if undecidable."""
@@ -528,7 +590,8 @@ class FiscalCalendar:
             labels[end] = row["fiscal_year"]
         calendar = cls(payload.get("cik"), fy_ends, labels,
                        payload.get("label_offset", 0),
-                       payload.get("fiscal_year_end_hint"))
+                       payload.get("fiscal_year_end_hint"),
+                       label_mid_offset=payload.get("label_mid_offset"))
         calendar.anchor_source = payload.get("anchor_source", calendar.anchor_source)
         return calendar
 
@@ -536,6 +599,7 @@ class FiscalCalendar:
         return {
             "cik": self.cik,
             "label_offset": self.label_offset,
+            "label_mid_offset": self.label_mid_offset,
             "fiscal_year_end_hint": self.fiscal_year_end_hint,
             "week_based": self._is_week_based(),
             "anchor_source": self.anchor_source,

@@ -87,6 +87,11 @@ class MetricDefinition:
     def _is_currency(code):
         return len(code) == 3 and code.isalpha() and code.isupper()
 
+    @property
+    def is_per_share(self):
+        """Betrag je Aktie (EPS, Dividende je Aktie): nicht additiv ueber Perioden."""
+        return bool(self.units) and all(unit.endswith("/shares") for unit in self.units)
+
     def allows_unit(self, unit):
         if unit in self.units:
             return True
