@@ -77,5 +77,5 @@ Kurzfassung:
 * [MISSION10_FINAL_REPORT.md](MISSION10_FINAL_REPORT.md) — Abschlussbericht. **Kein Setup erreicht positive oder inkrementelle Evidenz; S3 angezeigt STRUCTURAL ONLY, S1/S2/S4 INSUFFICIENT EVIDENCE; Register läuft seit Woche 2026-09-25.**
 * [ELLIOTT_SETUP_LIBRARY_V1.md](ELLIOTT_SETUP_LIBRARY_V1.md) · Spec `scripts/technical/elliott-setups/ELLIOTT_SETUP_SPEC.json` · [MISSION10_SETUP_FREEZE.md](MISSION10_SETUP_FREEZE.md)
 * [ELLIOTT_SETUP_EVIDENCE.md](ELLIOTT_SETUP_EVIDENCE.md) · Tabellen [hsab/MISSION10_SETUP_TABLES.md](hsab/MISSION10_SETUP_TABLES.md)
-* [ELLIOTT_PROSPECTIVE_REGISTRY.md](ELLIOTT_PROSPECTIVE_REGISTRY.md) · [ELLIOTT_PRODUCT_EVIDENCE_CONTRACT.md](ELLIOTT_PRODUCT_EVIDENCE_CONTRACT.md)
+* [ELLIOTT_PROSPECTIVE_REGISTRY.md](ELLIOTT_PROSPECTIVE_REGISTRY.md) · [ELLIOTT_PRODUCT_EVIDENCE_CONTRACT.md](ELLIOTT_PRODUCT_EVIDENCE_CONTRACT.md) — Register 1.1.0: zusätzlich die Kundenprodukt-Sicht (byte-gleich mit dem Chartbild), Nachholen fehlender Wochen, Abdeckungs-Sperre, Alarm
 * Code: `scripts/technical/elliott-setups/`, `scripts/technical/elliott-registry/` · Daten: `quant/data/technical-intelligence/elliott-setups/`, `quant/data/technical-intelligence/elliott-registry/` · CI: `.github/workflows/elliott-prospective-registry.yml`

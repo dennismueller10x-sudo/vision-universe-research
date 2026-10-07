@@ -12,7 +12,17 @@
         RESEARCH_ONLY_INTERNAL_WAVE3-Kandidaten; REVISION fuer offene Ereignisse (Bestaetigung, Invalidation,
         Ziel, erweiterte Projektion, Umdeutung). Nichts Bestehendes wird geaendert.
 
-     node scripts/technical/elliott-registry/register.mjs --weekly-dir DIR --registry DIR [--as-of YYYY-MM-DD] [--workers N] [--limit N]
+   Ab Registry 1.1.0 zusaetzlich die KUNDENPRODUKT-SICHT (product-view.mjs): dieselbe Elliott-Ausgabe wie das Chartbild
+   (analyzeProduct mit Persistenzkette, Produkt-Zeitebene, Produkt-Optionen), eigene Kohorten CUSTOMER_PRODUCT_*.
+   Vor jedem Lauf wird die Identitaet mit den veroeffentlichten Produktdaten geprueft; ohne Gleichheit wird nichts geschrieben.
+   Die zustandslose Sicht (Kohorten von 1.0.0) laeuft unveraendert weiter: Sie ist die Sicht der historischen Evidenz.
+
+   Betrieb: ohne --week werden fehlende abgeschlossene Wochen nach dem letzten Lauf der Reihe nach nachgeholt
+   (hoechstens --max-weeks je Aufruf). Ein Lauf mit deutlich weniger Titeln als der vorige bricht vor dem Schreiben ab.
+
+     node scripts/technical/elliott-registry/register.mjs --weekly-dir DIR --registry DIR [--as-of YYYY-MM-DD] [--week FREITAG]
+          [--workers N] [--limit N] [--max-weeks N] [--min-coverage 0.9] [--product-input-dir DIR] [--identity-sample N]
+     node scripts/technical/elliott-registry/register.mjs --registry DIR --pending [--as-of YYYY-MM-DD]   (nur anzeigen, was faellig ist)
    ========================================================================= */
 import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -27,11 +37,13 @@ import * as Core from "../hsab/lib/replay-core.mjs";
 import { PRODUCT_METHODOLOGY } from "../lib/ti-product.mjs";
 import { classify, researchInternalWave3, SPEC_SHA256, LIBRARY_VERSION, SPEC } from "../elliott-setups/setup-library.mjs";
 import { readLedger, append, verifyChain, eventId, LEDGER_VERSION } from "./ledger.mjs";
+import { publishedProduct, productContext, productElliottAt, identitySample, identityOne, summarizeIdentity, PRODUCT_VIEW_VERSION } from "./product-view.mjs";
 
 const require = createRequire(import.meta.url);
 const EV3 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js"));
 const SC = require(join(ROOT, "quant/engines/technical/ti/scenario.js"));
-export const REGISTRY_VERSION = "elliott-registry-1.0.0";
+export const REGISTRY_VERSION = "elliott-registry-1.1.0";
+export const VIEWS = Object.freeze({ STATELESS: "STATELESS_ENGINE", PRODUCT: "CUSTOMER_PRODUCT" });
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 const r4 = (v) => (isNum(v) ? Math.round(v * 1e4) / 1e4 : null);
 const sha = (s) => createHash("sha256").update(s).digest("hex");
@@ -51,7 +63,7 @@ export function cutIndex(points, seriesAsOf, F) {
 }
 
 /* ---------- Analyse eines Titels (Worker) ---------- */
-function analyzeSymbol(file, F) {
+function analyzeSymbol(file, F, W) {
   const x = readJson(file), sym = file.split("/").pop().replace(/\.json$/, "");
   const pts = x.points || [], k = cutIndex(pts, x.asOf || x.to, F);
   if (k < 0) return { s: sym, skip: "NO_COMPLETED_BAR_FOR_WEEK" };
@@ -66,15 +78,68 @@ function analyzeSymbol(file, F) {
   return { s: sym, d: series.timestamps[t], i: t, px: c[t], atr: r4(atr), ret26: t >= 26 && c[t - 26] > 0 ? c[t] / c[t - 26] - 1 : null, trend, ms: rec.v ? rec.v.STRUCTURE ?? null : null,
            ew: rec.ew ? { p: rec.ew.p, w: rec.ew.w, ab: rec.ew.ab, d: rec.ew.d, key: rec.ew.key, app: rec.ew.app } : null, outlook: rec.o, clarity: rec.cl,
            E: E && E.primary ? { primary: E.primary, alternatives: (E.alternatives || []).slice(0, 1), applicability: E.applicability, higherDegree: E.higherDegree ? { current: E.higherDegree.current, pattern: E.higherDegree.pattern } : null } : null,
-           rw3: researchInternalWave3(E, c, t), dataSha: sha(JSON.stringify(used)).slice(0, 16), seriesAsOf: x.asOf || x.to };
+           rw3: researchInternalWave3(E, c, t), dataSha: sha(JSON.stringify(used)).slice(0, 16), seriesAsOf: x.asOf || x.to,
+           pv: W && W.ctx ? productRow(sym, used, x.ticker || sym, F, W) : null, inAgree: W && W.productInputDir ? inputAgreement(sym, used, F, W.productInputDir) : null };
 }
-if (!isMainThread) { const out = workerData.files.map((f) => { try { return analyzeSymbol(f, workerData.F); } catch (e) { return { s: f, error: String(e && e.message || e) }; } }); parentPort.postMessage(out); }
 
-async function analyzeAll(files, F, workers) {
-  const parts = Array.from({ length: workers }, () => []); files.forEach((f, k) => parts[k % workers].push(f));
-  const res = await Promise.all(parts.filter((p) => p.length).map((p) => new Promise((ok, ko) => { const w = new Worker(fileURLToPath(import.meta.url), { workerData: { files: p, F } }); w.on("message", ok); w.on("error", ko); })));
+/* Kundenprodukt-Sicht: exakt die Produktfunktion (product-view.mjs). Kurs und ATR aus der Produktrechnung selbst. */
+function productRow(sym, used, ticker, F, W) {
+  const r = productElliottAt(sym, used, ticker, F, W.ctx, W.pub);
+  if (r.skip) return { skip: r.skip, tf: r.tf };
+  return { ...r.view, tfRule: r.tfRule, E: r.E && r.E.primary ? { primary: r.E.primary, alternatives: (r.E.alternatives || []).slice(0, 1), applicability: r.E.applicability,
+           higherDegree: r.E.higherDegree ? { current: r.E.higherDegree.current, pattern: r.E.higherDegree.pattern } : null } : null, px: r.px, atr: r4(r.atr) };
+}
+
+/* Stimmen die frisch gebauten Wochenschluesse mit den Eingangsdaten des veroeffentlichten Produkts ueberein?
+   Verglichen werden die abgeschlossenen Wochen, die beide abdecken (die letzte, ggf. angebrochene Produktwoche nicht). */
+function inputAgreement(sym, used, F, dir) {
+  const f = join(dir, sym + ".json"); if (!existsSync(f)) return null;
+  const y = readJson(f), lim = fridayOf(y.asOf || y.to || "0000-01-01"), mine = new Map(used.map((p) => [p[0], p[1]]));
+  const cmp = (y.points || []).filter((p) => fridayOf(p[0]) < lim && p[0] <= F); if (!cmp.length) return null;
+  return cmp.every((p) => mine.has(p[0]) && Math.abs(mine.get(p[0]) - p[1]) <= 1e-9 * Math.max(1, Math.abs(p[1])));
+}
+
+let W = null;
+function workerContext(d) {
+  if (W) return W;
+  W = { productInputDir: d.productInputDir || null };
+  if (d.productView) { W.pub = publishedProduct(d.publishedDir || undefined); const ctx = productContext(W.pub, d.workDir || null); if (ctx.error) throw new Error(ctx.error); W.ctx = ctx; }
+  return W;
+}
+if (!isMainThread && workerData && workerData.role === "elliott-registry") {
+  const w = workerContext(workerData);
+  const out = workerData.kind === "identity"
+    ? workerData.items.map((s) => { try { return identityOne(s, w.ctx, w.pub, workerData.productInputDir); } catch (e) { return { s, status: "ERROR", error: String(e && e.message || e) }; } })
+    : workerData.items.map((f) => { try { return analyzeSymbol(f, workerData.F, w); } catch (e) { return { s: f, error: String(e && e.message || e) }; } });
+  parentPort.postMessage(out);
+}
+
+async function pool(kind, items, workers, data) {
+  const parts = Array.from({ length: Math.max(1, workers) }, () => []); items.forEach((f, k) => parts[k % parts.length].push(f));
+  const res = await Promise.all(parts.filter((p) => p.length).map((p) => new Promise((ok, ko) => {
+    const w = new Worker(fileURLToPath(import.meta.url), { workerData: { role: "elliott-registry", kind, items: p, ...data } });
+    w.on("message", ok); w.on("error", ko); w.on("exit", (code) => { if (code !== 0) ko(new Error("Worker beendet mit " + code)); });
+  })));
   return res.flat();
 }
+
+/** Identitaet Registry ↔ veroeffentlichtes Kundenprodukt (Byte-Gleichheit von pro.elliott). */
+export async function checkProductIdentity(o) {
+  const pub = publishedProduct(o.publishedDir || undefined), ctx = productContext(pub, o.workDir || null);
+  if (ctx.error) return { ok: false, error: ctx.error, version: PRODUCT_VIEW_VERSION };
+  const syms = o.identitySymbols || identitySample(pub, o.identitySample || 120);
+  const rows = await pool("identity", syms, o.workers || 4, { productView: true, productInputDir: o.productInputDir, workDir: o.workDir || null, publishedDir: o.publishedDir || null });
+  return summarizeIdentity(rows, pub, ctx);
+}
+
+/** Abgeschlossene Wochen, die nach dem letzten registrierten Lauf noch fehlen (aelteste zuerst). */
+export function pendingWeeks(lines, asOf, max = 1) {
+  const latest = lastCompletedFriday(asOf), runs = lines.filter((e) => e.type === "RUN").map((e) => e.week).sort();
+  if (!runs.length) return [latest];
+  const out = []; for (let F = addDays(runs[runs.length - 1], 7); F <= latest; F = addDays(F, 7)) out.push(F);
+  return out.slice(0, Math.max(1, max));
+}
+const addDays = (F, n) => new Date(Date.parse(F + "T00:00:00Z") + n * dayMs).toISOString().slice(0, 10);
 
 /* ---------- Revisionen offener Ereignisse aus Kursen NACH der Registrierung ---------- */
 export function revisionsFor(ev, closes, dates, currentKey, already) {
@@ -98,9 +163,26 @@ function codeVersion() {
            engine: { elliott: EV3.ENGINE_VERSION, scenario: SC.ENGINE_VERSION } };
 }
 
+/** Registriert eine Woche (o.week) oder holt fehlende Wochen nach (hoechstens o.maxWeeks, aelteste zuerst). */
 export async function register(o) {
-  const today = new Date().toISOString().slice(0, 10), latest = lastCompletedFriday(o.asOf || today);
-  const F = o.week || latest;
+  const today = new Date().toISOString().slice(0, 10);
+  if (o.week) return registerWeek(o, o.week);
+  const weeks = pendingWeeks(readLedger(o.registry), o.asOf || today, o.maxWeeks || 1);
+  /* Identitaet einmal je Aufruf pruefen (gleicher Code, gleiche veroeffentlichte Daten fuer alle nachgeholten Wochen) */
+  if (o.productView !== false && !o.identity && weeks.length > 1) o = { ...o, identity: await checkProductIdentity({ ...o, productInputDir: o.productInputDir || o.weeklyDir }) };
+  /* Scheitert eine spaetere Woche, bleiben die frueheren Wochen registriert (sie sind fertig und geprueft);
+     das Ergebnis traegt dann incomplete + Fehler, die Kommandozeile endet mit Code 3. */
+  const results = [];
+  for (const F of weeks) {
+    try { results.push(await registerWeek(o, F)); }
+    catch (e) { if (!results.length) throw e; return { ...results[results.length - 1], catchUp: results, incomplete: true, failedWeek: F, error: String(e && e.message || e) }; }
+  }
+  const last = results[results.length - 1];
+  return results.length === 1 ? last : { ...last, catchUp: results };
+}
+
+async function registerWeek(o, F) {
+  const today = new Date().toISOString().slice(0, 10);
   if (fridayOf(F) !== F) throw new Error("--week muss ein Freitag sein: " + F);
   if (F > lastCompletedFriday(today)) throw new Error("Woche " + F + " ist noch nicht abgeschlossen (heute " + today + ")");
   const reg = o.registry; mkdirSync(join(reg, "snapshots"), { recursive: true });
@@ -110,25 +192,51 @@ export async function register(o) {
   if (lines.some((e) => e.type === "RUN" && e.week > F)) throw new Error("Woche " + F + " liegt vor einem bereits registrierten Lauf — Register nur vorwaerts");
   let files = readdirSync(o.weeklyDir).filter((f) => f.startsWith("ref_") && f.endsWith(".json")).sort().map((f) => join(o.weeklyDir, f));
   if (o.limit) files = files.slice(0, o.limit);
-  const t0 = Date.now();
-  const rows = await analyzeAll(files, F, o.workers || 4);
+  const t0 = Date.now(), productView = o.productView !== false;
+  /* 1) Identitaet mit dem veroeffentlichten Kundenprodukt — vor jeder Schreiboperation */
+  let identity = null;
+  if (productView) {
+    identity = o.identity || await checkProductIdentity({ ...o, productInputDir: o.productInputDir || o.weeklyDir });
+    if (!identity.ok) throw new Error("Produkt-Identitaet nicht bestaetigt (" + (identity.error || identity.different + " abweichend, " + identity.compared + " verglichen") + ") — nichts registriert");
+  }
+  const rows = await pool("analyze", files, o.workers || 4, { F, productView, productInputDir: o.productInputDir || null, workDir: o.workDir || null, publishedDir: o.publishedDir || null });
   const ok = rows.filter((r) => !r.skip && !r.error);
+  /* 2) Abdeckung: deutlich weniger Titel als im vorigen Lauf heisst veraltete oder unvollstaendige Daten → nicht registrieren */
+  const prevRun = lines.filter((e) => e.type === "RUN").pop(), minCov = isNum(o.minCoverage) ? o.minCoverage : 0.9;
+  if (prevRun && ok.length < minCov * prevRun.payload.universe.analysed)
+    throw new Error("Abdeckung zu gering: " + ok.length + " Titel gegen " + prevRun.payload.universe.analysed + " im Lauf " + prevRun.week + " (Schwelle " + minCov + ") — nichts registriert");
+  if (productView) {
+    const pvOk = ok.filter((r) => r.pv && !r.pv.skip).length;
+    if (pvOk < minCov * ok.length) throw new Error("Produktsicht fuer zu wenige Titel: " + pvOk + " von " + ok.length + " — nichts registriert");
+  }
   /* RS26-Rang im Querschnitt der Woche */
   const rs = ok.filter((r) => isNum(r.ret26)).sort((a, b) => a.ret26 - b.ret26); rs.forEach((r, k) => { r.rsQ = rs.length > 1 ? k / (rs.length - 1) : 0.5; });
   /* Setup-Klassifikation (gleiche Implementierung wie die Historie) */
   for (const r of ok) { r.setup = r.E ? classify(r.E, { px: r.px, atr: r.atr, trend: r.trend, rsQ: isNum(r.rsQ) ? r.rsQ : null, msVote: r.ms }) : null; }
+  /* Kundenprodukt-Sicht: dieselbe Klassifikation auf der Produkt-Elliott-Ausgabe (Trend, RS, Marktstruktur wie oben) */
+  for (const r of ok) if (r.pv && !r.pv.skip) r.pv.setup = r.pv.E ? classify(r.pv.E, { px: r.pv.px, atr: r.pv.atr, trend: r.trend, rsQ: isNum(r.rsQ) ? r.rsQ : null, msVote: r.ms }) : null;
   /* Snapshot (Kontrollkohorte) */
   const snap = ok.map((r) => ({ s: r.s, d: r.d, px: r.px, atr: r.atr, trend: r.trend, rsQ: r4(r.rsQ), ms: r4(r.ms), ew: r.ew, setup: r.setup ? { id: r.setup.setupId, status: r.setup.status, displayed: r.setup.displayed, variants: r.setup.variants || null } : null,
-                                rw3: r.rw3 ? r.rw3.qualifies : false, dataSha: r.dataSha }));
+                                rw3: r.rw3 ? r.rw3.qualifies : false, dataSha: r.dataSha,
+                                ...(productView ? { pv: !r.pv ? null : r.pv.skip ? { skip: r.pv.skip, tf: r.pv.tf } : { tf: r.pv.tf, d: r.pv.d, p: r.pv.p, w: r.pv.w, ab: r.pv.ab, key: r.pv.key, app: r.pv.app, relabelRisk: r.pv.relabelRisk, sha: r.pv.sha,
+                                  setup: r.pv.setup ? { id: r.pv.setup.setupId, status: r.pv.setup.status, displayed: r.pv.setup.displayed, variants: r.pv.setup.variants || null } : null } } : {}) }));
   const snapBody = gzipSync(Buffer.from(snap.map((x) => JSON.stringify(x)).join("\n"))), snapFile = join(reg, "snapshots", F + ".jsonl.gz");
-  if (existsSync(snapFile)) throw new Error("Snapshot existiert bereits: " + snapFile);
+  /* Eine Snapshot-Datei ohne RUN-Eintrag stammt aus einem abgebrochenen Lauf (nie committet, nicht in der Kette) und wird ersetzt. */
   writeFileSync(snapFile, snapBody);
   const recordedAt = new Date().toISOString(), entries = [];
   /* Erster Lauf: erfasst den BESTAND bereits qualifizierter Setups (moeglicherweise seit Wochen). Spaetere Laeufe nur Neuzugaenge.
      Fuer eine saubere Auswertung wird der Bestand markiert und getrennt betrachtet. */
   const initialStock = !lines.some((e) => e.type === "RUN");
+  /* Bestand der Kundenprodukt-Sicht: erster Lauf, der diese Sicht fuehrt */
+  const initialStockProduct = !lines.some((e) => e.type === "RUN" && (e.payload.views || []).includes(VIEWS.PRODUCT));
   const skipReasons = {}; for (const r of rows) if (r.skip || r.error) { const k = r.skip || "ERROR"; skipReasons[k] = (skipReasons[k] || 0) + 1; }
+  const pvStats = productView ? (() => { const s = { analysed: 0, timeframes: {}, skipReasons: {}, inputAgreement: { compared: 0, equal: 0 } };
+    for (const r of ok) { if (r.pv && !r.pv.skip) { s.analysed++; s.timeframes[r.pv.tf] = (s.timeframes[r.pv.tf] || 0) + 1; } else { const k = r.pv ? r.pv.skip : "NOT_RUN"; s.skipReasons[k] = (s.skipReasons[k] || 0) + 1; }
+      if (r.inAgree !== null && r.inAgree !== undefined) { s.inputAgreement.compared++; if (r.inAgree) s.inputAgreement.equal++; } }
+    return s; })() : null;
   entries.push({ type: "RUN", id: "RUN-" + F, week: F, recordedAt, payload: { week: F, asOf: o.asOf || null, code: codeVersion(), universe: { files: files.length, analysed: ok.length, skipped: rows.filter((r) => r.skip).length, errors: rows.filter((r) => r.error).length, skipReasons }, initialStockRun: initialStock,
+    views: productView ? [VIEWS.STATELESS, VIEWS.PRODUCT] : [VIEWS.STATELESS], registrationLagDays: Math.round((Date.parse(recordedAt.slice(0, 10)) - Date.parse(F)) / dayMs),
+    ...(productView ? { productView: { version: PRODUCT_VIEW_VERSION, initialStockRun: initialStockProduct, identity, ...pvStats } } : {}),
     snapshot: { file: "snapshots/" + F + ".jsonl.gz", sha256: sha(snapBody), rows: snap.length }, data: { source: o.dataSource || "weekly closes (discover-series-long format)", seriesAsOfMin: ok.reduce((m, r) => (r.seriesAsOf < m ? r.seriesAsOf : m), "9999"), seriesAsOfMax: ok.reduce((m, r) => (r.seriesAsOf > m ? r.seriesAsOf : m), "0000") } } });
   /* EVENTS: neu qualifizierte Setups und neue Forschungskandidaten */
   const registered = new Set(lines.filter((e) => e.type === "EVENT").map((e) => e.payload.dedupeKey));
@@ -142,6 +250,17 @@ export async function register(o) {
           persistenceKey: S.persistenceKey, degree: S.degree, applicability: S.applicability, displayed: S.displayed, primaryCount: { pattern: r.E.primary.pattern, complete: r.E.primary.complete, currentWave: r.E.primary.currentWave, direction: r.E.primary.direction, nextMove: r.E.primary.nextMove,
             waves: (r.E.primary.waves || []).map((w) => ({ label: w.label, fromTime: w.fromTime, toTime: w.toTime, fromPrice: w.fromPrice, toPrice: w.toPrice, status: w.status })) },
           alternative: S.alternative, higherDegree: r.E.higherDegree, levels: S.levels, projection: S.projection, geometry: S.geometry, confirmations: S.confirmations, variants: S.variants, setupStatus: "OPEN" };
+        entries.push({ type: "EVENT", id: eventId(payload), week: F, recordedAt, payload }); }
+    }
+    if (productView && r.pv && !r.pv.skip && r.pv.setup && r.pv.setup.status === "QUALIFIED") {
+      const S = r.pv.setup, dk = [r.s, S.setupId, S.persistenceKey, VIEWS.PRODUCT].join("|");
+      if (!registered.has(dk)) { registered.add(dk);
+        const payload = { ...base, initialStock: initialStockProduct, view: VIEWS.PRODUCT, cohort: S.displayed ? "CUSTOMER_PRODUCT_SETUP" : "CUSTOMER_PRODUCT_PRIMARY_UNDISPLAYED", dedupeKey: dk,
+          timeframe: r.pv.tf, productBarDate: r.pv.d, productTimeframeRule: r.pv.tfRule, productPrice: r.pv.px, productAtr: r.pv.atr, productElliottSha: r.pv.sha, productRelabelRisk: r.pv.relabelRisk,
+          setupType: S.setupId, setupVersion: S.setupVersion, dir: S.dir, pattern: S.pattern, wave: S.wave,
+          persistenceKey: S.persistenceKey, degree: S.degree, applicability: S.applicability, displayed: S.displayed, primaryCount: { pattern: r.pv.E.primary.pattern, complete: r.pv.E.primary.complete, currentWave: r.pv.E.primary.currentWave, direction: r.pv.E.primary.direction, nextMove: r.pv.E.primary.nextMove,
+            waves: (r.pv.E.primary.waves || []).map((w) => ({ label: w.label, fromTime: w.fromTime, toTime: w.toTime, fromPrice: w.fromPrice, toPrice: w.toPrice, status: w.status })) },
+          alternative: S.alternative, higherDegree: r.pv.E.higherDegree, levels: S.levels, projection: S.projection, geometry: S.geometry, confirmations: S.confirmations, variants: S.variants, setupStatus: "OPEN" };
         entries.push({ type: "EVENT", id: eventId(payload), week: F, recordedAt, payload }); }
     }
     if (r.rw3 && r.rw3.qualifies) {
@@ -163,7 +282,11 @@ export async function register(o) {
     const done = revs.get(ev.id) || new Set(); if (done.has("INVALIDATED") || done.has("EXPIRED")) continue;
     const x = readJson(join(o.weeklyDir, ev.payload.symbol + ".json")), k = cutIndex(x.points || [], x.asOf || x.to, F); if (k < 0) continue;
     const pts = (x.points || []).slice(0, k + 1).filter((p) => p[0] > ev.payload.registeredBarDate);
-    const cur = byS.get(ev.payload.symbol), curKey = ev.payload.cohort === "RESEARCH_ONLY_INTERNAL_WAVE3" ? undefined : cur && cur.ew ? cur.ew.key : undefined;
+    const cur = byS.get(ev.payload.symbol);
+    /* Umdeutung je Sicht: Produkt-Ereignisse gegen die Produkt-Primaerzaehlung, zustandslose gegen die zustandslose */
+    const curKey = ev.payload.cohort === "RESEARCH_ONLY_INTERNAL_WAVE3" ? undefined
+      : ev.payload.view === VIEWS.PRODUCT ? (cur && cur.pv && !cur.pv.skip ? cur.pv.key : undefined)
+      : cur && cur.ew ? cur.ew.key : undefined;
     const rv = revisionsFor(ev, pts.map((p) => p[1]), pts.map((p) => p[0]), curKey, done);
     if (pts.length >= TRACK_WEEKS && !done.has("INVALIDATED")) rv.push({ type: "EXPIRED", barDate: pts[pts.length - 1][0], note: "Beobachtung nach 156 Wochen beendet" });
     for (const v of rv) entries.push({ type: "REVISION", id: eventId({ ref: ev.id, ...v }), ref: ev.id, week: F, recordedAt, payload: { ...v, eventSetupType: ev.payload.setupType, symbol: ev.payload.symbol } });
@@ -171,10 +294,22 @@ export async function register(o) {
   const written = append(reg, lines, entries);
   const count = (t, c) => written.filter((e) => e.type === t && (!c || e.payload.cohort === c)).length;
   return { week: F, analysed: ok.length, skipped: rows.length - ok.length, events: count("EVENT"), product: count("EVENT", "PRODUCT_SETUP"), enginePrimary: count("EVENT", "ENGINE_PRIMARY_UNDISPLAYED"),
-           research: count("EVENT", "RESEARCH_ONLY_INTERNAL_WAVE3"), revisions: count("REVISION"), seconds: Math.round((Date.now() - t0) / 1000) };
+           research: count("EVENT", "RESEARCH_ONLY_INTERNAL_WAVE3"), customerProduct: count("EVENT", "CUSTOMER_PRODUCT_SETUP"), customerProductUndisplayed: count("EVENT", "CUSTOMER_PRODUCT_PRIMARY_UNDISPLAYED"),
+           productAnalysed: pvStats ? pvStats.analysed : null, identity: identity ? { compared: identity.compared, identical: identity.identical } : null, revisions: count("REVISION"), seconds: Math.round((Date.now() - t0) / 1000) };
 }
 
 if (isMainThread && process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  register({ weeklyDir: arg("weekly-dir"), registry: arg("registry"), asOf: arg("as-of", null), week: arg("week", null), workers: +arg("workers", "4"), limit: +arg("limit", "0"), dataSource: arg("data-source", null) })
-    .then((r) => console.log("[elliott-registry] " + JSON.stringify(r))).catch((e) => { console.error(e); process.exit(1); });
+  if (process.argv.includes("--pending")) {
+    /* Nur anzeigen: welche Woche waere faellig? (Ausgabe "pending=YYYY-MM-DD" oder "pending=") */
+    const lines = readLedger(arg("registry")), asOf = arg("as-of", null) || new Date().toISOString().slice(0, 10);
+    const runs = new Set(lines.filter((e) => e.type === "RUN").map((e) => e.week)), w = pendingWeeks(lines, asOf, 52).filter((F) => !runs.has(F));
+    console.log("pending=" + (w[0] || "")); console.log("count=" + w.length);
+  } else {
+    const num = (k) => (arg(k, null) === null ? undefined : +arg(k));
+    register({ weeklyDir: arg("weekly-dir"), registry: arg("registry"), asOf: arg("as-of", null), week: arg("week", null), workers: +arg("workers", "4"), limit: +arg("limit", "0"), dataSource: arg("data-source", null),
+               maxWeeks: num("max-weeks") || 1, minCoverage: num("min-coverage"), productInputDir: arg("product-input-dir", null), identitySample: num("identity-sample"), workDir: arg("work-dir", null),
+               productView: !process.argv.includes("--no-product-view") })
+      .then((r) => { console.log("[elliott-registry] " + JSON.stringify(r)); if (r.incomplete) { console.error("[elliott-registry] Woche " + r.failedWeek + " nicht registriert: " + r.error); process.exit(3); } })
+      .catch((e) => { console.error(e); process.exit(1); });
+  }
 }

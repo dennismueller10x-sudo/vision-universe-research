@@ -1,14 +1,40 @@
 # Elliott Prospective Registry
 
-Stand: 07.10.2026 (Mission X).
+Stand: 07.10.2026 (Mission X; Registry 1.1.0).
 
-* Code: `scripts/technical/elliott-registry/` (`register.mjs`, `ledger.mjs`, `verify.mjs`, `evaluate-registry.mjs`).
+* Code: `scripts/technical/elliott-registry/` (`register.mjs`, `product-view.mjs`, `ledger.mjs`, `verify.mjs`, `evaluate-registry.mjs`).
 * Daten: `quant/data/technical-intelligence/elliott-registry/`.
 * Workflow: `.github/workflows/elliott-prospective-registry.yml`.
 
 ## Zweck
 
 Alle historischen Wochendaten sind verbraucht. Ob ein Setup der Library V1 echten Wert hat, kann nur eine **Vorab-Aufzeichnung** zeigen: Ab jetzt wird jedes qualifizierende Setup in der Woche eingefroren, in der es erscheint, ohne Zukunftswissen. Ausgewertet wird erst, wenn der jeweilige Horizont abgelaufen ist.
+
+## Zwei Sichten (ab Registry 1.1.0)
+
+| Sicht | Elliott-Ausgabe | Kohorten | Wozu |
+|---|---|---|---|
+| `CUSTOMER_PRODUCT` | **dieselbe wie im Kundenprodukt** (Kursstruktur/Chartbild, `technical-intelligence/v3`): `analyzeProduct` mit Persistenzkette (26 + 26 Bars), Produkt-Zeitebene (Tagesanalyse für die Tagestitel des Produkts, sonst Woche), Produkt-Optionen (`productOpts`) | `CUSTOMER_PRODUCT_SETUP` (angezeigt), `CUSTOMER_PRODUCT_PRIMARY_UNDISPLAYED` | prospektive Messung dessen, was Kunden sehen |
+| `STATELESS_ENGINE` | zustandslose Engine-Sicht (`previous = null`), wie die historische Evidenz | `PRODUCT_SETUP`, `ENGINE_PRIMARY_UNDISPLAYED`, `RESEARCH_ONLY_INTERNAL_WAVE3` (wie 1.0.0) | prospektive Bestätigung der historischen Evidenz |
+
+* `product-view.mjs` ruft dieselben Funktionen wie der Produkt-Build auf: `analyzeProduct` (`lib/ti-product.mjs`) sowie `workCtx`, `productOpts` und `slim` (`build-technical-intelligence.mjs`). Es gibt keine Kopie. `productOpts` wurde dafür nur herausgezogen; die Produktausgabe ändert sich dadurch nicht.
+* **Identitätsprüfung vor jedem Lauf:**
+  * Stichprobe: alle Tagestitel und 120 Wochentitel des veröffentlichten Produkts.
+  * Diese Titel werden auf den Eingangsdaten des Produkts nachgerechnet: die committeten Langreihen bzw. die Golden-Preview-Tagesdateien, ungekürzt bis zum veröffentlichten Stand.
+  * `pro.elliott` muss **Byte für Byte** dem veröffentlichten Shard entsprechen.
+  * Bei einer Abweichung, oder wenn kein Titel vergleichbar ist, wird **nichts** geschrieben.
+  * Das Ergebnis steht im RUN-Eintrag (`productView.identity`). `verify.mjs` weist einen Lauf mit Produktsicht ohne bestätigte Identität zurück.
+  * Lokal am 07.10.2026: 43 von 43 vergleichbaren Titeln identisch, davon 5 Tagestitel.
+* Je Titel speichert der Snapshot `pv` mit:
+  * Zeitebene, Bar-Datum, Muster, Welle, Enthaltung, Persistenzschlüssel, Anwendbarkeit, Umdeutungsrisiko;
+  * `sha`, den Fingerabdruck der veröffentlichten Form von `pro.elliott`;
+  * Setup-Status.
+
+  Produkt-Ereignisse tragen denselben Fingerabdruck (`productElliottSha`).
+* Kurs und ATR der Setup-Geometrie kommen in der Produktsicht aus der Produktrechnung. Trend, RS26 und Marktstruktur sind für beide Sichten gleich. Die Setup-Klassifikation ist dieselbe Funktion (`setup-library.mjs`).
+* Umdeutung (`RELABELED`) wird je Sicht gegen die eigene Primärzählung geprüft. Die Kontrollkohorte der Auswertung schließt je Sicht Titel mit demselben Setup aus.
+* Bestand: Der erste Lauf mit Produktsicht markiert seine Produkt-Ereignisse als `initialStock` (`productView.initialStockRun`).
+* Bestehende Einträge (Version 1.0.0) bleiben unverändert. Die Kette läuft über beide Versionen weiter.
 
 ## Ablauf je Lauf (eine abgeschlossene ISO-Woche)
 
@@ -94,10 +120,27 @@ Das Register selbst ändert die Auswertung nie. Sie ist ein abgeleiteter Bericht
 * Für eine belastbare Aussage je Setup braucht es genug Ereignisse je Kohorte und Horizont. Das sind Hunderte für die Produkt-Setups, die angezeigt sehr selten sind (rund 4–6 je Woche über das Universum, siehe erster Lauf).
 * Vor einer Aussage wird eine eigene Präregistrierung mit festen Schwellen (Lift gegen D und Trend × RS, Mindestzahl) committet. Erst danach werden die Daten gesehen.
 
-## Ausführung
+## Ausführung und Betriebssicherheit
 
-* **Default-Branch:** Zeitplan samstags 09:23 UTC; manuell per `workflow_dispatch`.
-* **Entwicklungsbranches:** nur mit der Marke `[elliott-registry]` am Anfang des Betreffs. Der Zeitplan von GitHub läuft nur auf dem Default-Branch. Solange Mission X nicht gemergt ist, braucht jede Woche einen Lauf per Marke.
+* **Zeitpläne (nur Default-Branch):**
+  * Sa 09:23, So 07:47, Mo 06:17, Mi 05:41 UTC.
+  * Der erste registriert die Woche. Die anderen holen nach, wenn ein Lauf gescheitert ist.
+  * Ist nichts fällig, endet ein Lauf nach der Stufe „Fällig?“, ohne Datenabruf (`register.mjs --pending`).
+* **Manuell:** `workflow_dispatch` (Eingabe `max_weeks`). Auf Entwicklungsbranches zusätzlich mit der Marke `[elliott-registry]` am Anfang des Betreffs. Der Zeitplan von GitHub läuft nur auf dem Default-Branch. Solange Mission X nicht gemergt ist, braucht jede Woche einen manuellen Lauf.
+* **Nachholen:**
+  * Ohne `--week` registriert ein Lauf die fehlenden abgeschlossenen Wochen nach dem letzten Lauf der Reihe nach, im Workflow höchstens 2.
+  * Jede Woche wird vor der Analyse gekürzt. Die Verspätung steht im RUN-Eintrag (`registrationLagDays`).
+  * Scheitert eine spätere Woche, bleiben die früheren registriert und werden committet; der Lauf endet trotzdem rot (Exit 3).
+* **Abdeckungs-Sperre:** Es wird nichts geschrieben, wenn
+  * weniger als 90 % der Titel des vorigen Laufs analysierbar sind (z. B. weil der Datenabruf alte Reihen lieferte), oder
+  * die Produktsicht für weniger als 90 % der analysierten Titel gelingt.
+* **Datenabgleich:** Die committeten Langreihen (Eingang des veröffentlichten Produkts) werden vor dem Datenabruf gesichert. Je Titel wird verglichen, ob die frisch gebauten Wochenschlüsse in den gemeinsamen abgeschlossenen Wochen gleich sind (`productView.inputAgreement`).
+* **Push:**
+  * `scripts/ci/push-with-retry.sh` (neu holen, neu aufsetzen, erneut schieben).
+  * Scheitert der Push, ist nichts veröffentlicht. Der nächste Zeitplan registriert die Woche dann neu (idempotent, weil das entfernte Register sie nicht kennt).
+  * Keine eigenen Pushes auf den Branch, während ein Registerlauf ansteht oder läuft.
+* **Alarm:** Jeder rote Lauf öffnet ein Issue „Elliott-Registry: Wochenlauf fehlgeschlagen“ oder kommentiert es, mit Link zum Lauf. Jeder Lauf schreibt eine Zusammenfassung.
+* **Zeitlimit:** 300 Minuten. Eine Woche über das Universum braucht etwa 60–90 Minuten, weil die Persistenzkette rund 2,6 s je Wochentitel kostet.
 * **Daten:** Die Wochenschlüsse werden im Runner frisch aus der Historienablage gebaut (`publish-long-series.mjs`). Die veröffentlichten Langreihen gehören `long-series.yml` und werden nicht committet. Sie werden im Repository nur monatlich erneuert und genügen deshalb nicht für einen Wochentakt.
 
 ## Bisherige Läufe
@@ -109,6 +152,7 @@ Das Register selbst ändert die Auswertung nie. Sie ist ein abgeleiteter Bericht
 
 ## Grenzen
 
-* Die Registrierung nutzt wie die historische Evidenz die **zustandslose** Engine-Sicht (`previous = null`). Die Produktanzeige führt eine Persistenzkette über 52 Wochen; die Zählungen stimmen laut Mission VIII nur zu 74–78 % überein. PRODUCT_SETUP bedeutet: „angezeigt in der zustandslosen Sicht“. Eine Registrierung mit Produktkette ist ein Kandidat für V1.1.
+* Die Läufe 2026-09-25 und 2026-10-02 (Version 1.0.0) haben nur die **zustandslose** Sicht. `PRODUCT_SETUP` bedeutet dort „angezeigt in der zustandslosen Sicht“, nicht „vom Kunden gesehen“. Die Kundenprodukt-Sicht beginnt mit dem ersten Lauf von 1.1.0 (Bestand markiert).
+* Das veröffentlichte Chartbild wird auf Zuruf gebaut (Stand 04.10.2026, Daten bis 01.10.2026). Das Register rechnet je Woche dieselbe Funktion auf der zum Freitag gekürzten Reihe. Für gleiche Eingangsdaten ist die Ausgabe gleich; die Identitätsprüfung belegt das bei jedem Lauf. Zwischen zwei Produkt-Builds steht im Register, was das Produkt mit den Daten der Woche zeigen würde.
 * Ein Titel ohne Daten für die Woche wird übersprungen und erscheint nicht im Snapshot. Delistings zeigen sich später als fehlende Bars (`delistedOrMissing`).
 * Volumen ist auf Wochenbasis nicht verfügbar.

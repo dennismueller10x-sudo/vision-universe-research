@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-/* VU MISSION X — Register-Pruefung: Hash-Kette, HEAD, Snapshot-Hashes, nur anhaengen (gegen eine fruehere Git-Fassung).
+/* VU MISSION X — Register-Pruefung: Hash-Kette, HEAD, Snapshot-Hashes, Laeufe nur vorwaerts, Produkt-Identitaet (ab 1.1.0),
+   nur anhaengen (gegen eine fruehere Git-Fassung).
      node scripts/technical/elliott-registry/verify.mjs --registry DIR [--against-git REV] */
 import { readFileSync, existsSync } from "node:fs";
 import { join, relative } from "node:path";
@@ -20,6 +21,12 @@ export function verifyRegistry(reg, againstGit) {
     const f = join(reg, e.payload.snapshot.file);
     if (!existsSync(f)) errors.push("Snapshot fehlt: " + e.payload.snapshot.file); else if (sha(readFileSync(f)) !== e.payload.snapshot.sha256) errors.push("Snapshot veraendert: " + e.payload.snapshot.file);
   }
+  /* Laeufe streng vorwaerts; Kundenprodukt-Sicht nur mit bestaetigter Identitaet zum veroeffentlichten Produkt */
+  const runs = lines.filter((x) => x.type === "RUN"), productWeeks = new Set();
+  runs.forEach((e, k) => { if (k && e.week <= runs[k - 1].week) errors.push("Lauf nicht vorwaerts: " + e.week + " nach " + runs[k - 1].week);
+    if ((e.payload.views || []).includes("CUSTOMER_PRODUCT")) { productWeeks.add(e.week); const id = e.payload.productView && e.payload.productView.identity;
+      if (!id || id.ok !== true || !(id.compared > 0) || id.different !== 0) errors.push("Produkt-Identitaet im Lauf " + e.week + " nicht bestaetigt"); } });
+  for (const e of lines) if (e.type === "EVENT" && e.payload.view === "CUSTOMER_PRODUCT" && !productWeeks.has(e.week)) errors.push("Produkt-Ereignis ohne Produkt-Lauf: seq " + e.seq);
   /* Revisionen verweisen nur auf vorher registrierte Ereignisse; Ereignis-IDs eindeutig */
   const seen = new Set();
   for (const e of lines) { if (e.type === "EVENT") { if (seen.has(e.id)) errors.push("doppelte Ereignis-ID " + e.id); seen.add(e.id); } if (e.type === "REVISION" && !seen.has(e.ref)) errors.push("Revision ohne vorheriges Ereignis: seq " + e.seq); }

@@ -50,7 +50,9 @@ export function evaluateRegistry(o) {
       if (end > latest) { const k = g + "|" + hn; out.pending[k] = out.pending[k] || { events: 0, firstEvaluableWeek: end }; out.pending[k].events++; if (end < out.pending[k].firstEvaluableWeek) out.pending[k].firstEvaluableWeek = end; continue; }
       const own = pathOf(cache, o.weeklyDir, p.symbol, p.registeredBarDate, end, latest); if (!own || own.delistedOrMissing) continue;
       /* zeitgleiche Kontrollkohorte aus dem Snapshot der Registrierungswoche */
-      const snap = snapOf(p.registeredWeek).filter((u) => u.s !== p.symbol && !(u.setup && u.setup.id === p.setupType && u.setup.status === "QUALIFIED"));
+      /* Kundenprodukt-Ereignisse: Kontrolle ohne dasselbe Setup in der Produktsicht (pv), sonst in der zustandslosen Sicht */
+      const setupOf = (u) => (p.view === "CUSTOMER_PRODUCT" ? u.pv && u.pv.setup : u.setup);
+      const snap = snapOf(p.registeredWeek).filter((u) => u.s !== p.symbol && !(setupOf(u) && setupOf(u).id === p.setupType && setupOf(u).status === "QUALIFIED"));
       const rsTop = (u) => (p.dir > 0 ? u.rsQ >= 0.8 : u.rsQ <= 0.2), myT = p.confirmationsAtRegistration.trend, myRS = p.dir > 0 ? p.confirmationsAtRegistration.rs26Top20 : p.confirmationsAtRegistration.rs26Bottom20;
       const cell = (f) => { const v = snap.filter(f).map((u) => pathOf(cache, o.weeklyDir, u.s, u.d, end, latest)).filter((x) => x && !x.delistedOrMissing); return v.length ? { n: v.length, ret: v.reduce((a, x) => a + Math.min(x.ret, 4), 0) / v.length, k2: v.filter((x) => x.maxM >= 2).length / v.length } : null; };
       const rec = { dir: p.dir, ret: own.ret, maxM: own.maxM, mae: own.mae, ALL: cell(() => true), TREND: cell((u) => u.trend === myT), RS: cell((u) => rsTop(u) === myRS), TREND_RS: cell((u) => u.trend === myT && rsTop(u) === myRS) };

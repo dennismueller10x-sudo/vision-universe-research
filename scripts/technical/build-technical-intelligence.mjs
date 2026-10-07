@@ -224,22 +224,28 @@ function evidenceSummary() {
 }
 
 /** Ein Titel → Produktobjekt (in Worker-Threads parallel). */
-function workCtx(workDir) {
+export function workCtx(workDir) {
   const ev1W = evidenceTable(join(EVID, "evidence-1W.json"));
   const ev1D = evidenceTable(join(EVID, workDir ? "evidence-1D-universe.json" : "evidence-1D-golden.json")) || evidenceTable(join(EVID, "evidence-1D-golden.json"));
   return { ev1W, ev1D, members: indexMembers(), dailyDir: workDir ? join(workDir, "tiingo", "daily") : join(ROOT, "quant/data/market/golden-preview/daily"), wdir: join(ROOT, "quant/data/market/discover-series-long") };
+}
+/** Optionen der Produktanalyse je Zeitebene. Einzige Quelle, auch fuer das Elliott-Register (gleiche Ausgabe wie das Produkt). */
+export function productOpts(kind, C, symbol) {
+  return kind === "daily"
+    ? { evidenceTable: C.ev1D, weeklyEvidenceTable: C.ev1W, calibration: C.ev1D && C.ev1D.calibration, symbol, methodology: PRODUCT_METHODOLOGY }
+    : { evidenceTable: C.ev1W, calibration: C.ev1W && C.ev1W.calibration, symbol, methodology: PRODUCT_METHODOLOGY };
 }
 function runUnit(u, C) {
   if (u.kind === "daily") {
     const j = readJson(join(C.dailyDir, u.f)), series = dailySeriesFromPayload(j, j.ticker);
     if (series.length < 300) return { skip: true };
-    const opts = { evidenceTable: C.ev1D, weeklyEvidenceTable: C.ev1W, calibration: C.ev1D && C.ev1D.calibration, symbol: j.ticker, methodology: PRODUCT_METHODOLOGY };
+    const opts = productOpts("daily", C, j.ticker);
     return { p: payload(series, analyzeProduct(series, opts), "$", opts), daily: true };
   }
   const j = readJson(join(C.wdir, u.f));
   const series = weeklySeriesFromPoints(j.points || [], j.ticker);
   if (series.length < 160) return { skip: true };
-  const opts = { evidenceTable: C.ev1W, calibration: C.ev1W && C.ev1W.calibration, symbol: j.ticker, methodology: PRODUCT_METHODOLOGY };
+  const opts = productOpts("weekly", C, j.ticker);
   return { p: payload(series, analyzeProduct(series, opts), j.currency === "USD" || !j.currency ? "$" : j.currency, C.members[j.ticker] ? opts : null) };
 }
 if (!isMainThread && workerData && workerData.role === "ti-build") {

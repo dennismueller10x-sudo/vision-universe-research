@@ -103,11 +103,11 @@ test("M10-R3 Revisionen: Bestaetigung, Ziel, Invalidation in zeitlicher Reihenfo
 test("M10-R4 Registrierung, Idempotenz, nur vorwaerts, Pruefung und Auswertung nur abgelaufener Horizonte", async () => {
   const w = mkdtempSync(join(tmpdir(), "m10-w-")), reg = mkdtempSync(join(tmpdir(), "m10-r-"));
   for (const id of ["ref_AAPL", "ref_MSFT", "ref_JPM", "ref_XOM"]) writeFileSync(join(w, id + ".json"), readFileSync(join(ROOT, "quant/data/market/discover-series-long", id + ".json")));
-  const r1 = await Reg.register({ weeklyDir: w, registry: reg, week: "2026-06-05", workers: 1 });
+  const r1 = await Reg.register({ weeklyDir: w, registry: reg, week: "2026-06-05", workers: 1, productView: false });
   assert.equal(r1.analysed, 4);
-  const again = await Reg.register({ weeklyDir: w, registry: reg, week: "2026-06-05", workers: 1 }); assert.equal(again.skipped, "WEEK_ALREADY_REGISTERED");
-  await Reg.register({ weeklyDir: w, registry: reg, week: "2026-09-25", workers: 1 });
-  await assert.rejects(Reg.register({ weeklyDir: w, registry: reg, week: "2026-07-03", workers: 1 }), /nur vorwaerts/);
+  const again = await Reg.register({ weeklyDir: w, registry: reg, week: "2026-06-05", workers: 1, productView: false }); assert.equal(again.skipped, "WEEK_ALREADY_REGISTERED");
+  await Reg.register({ weeklyDir: w, registry: reg, week: "2026-09-25", workers: 1, productView: false });
+  await assert.rejects(Reg.register({ weeklyDir: w, registry: reg, week: "2026-07-03", workers: 1, productView: false }), /nur vorwaerts/);
   assert.equal(Ver.verifyRegistry(reg).ok, true);
   const e = Ev.evaluateRegistry({ weeklyDir: w, registry: reg, asOf: "2026-10-07" });
   for (const k of Object.keys(e.horizons)) assert.ok(/\|3M$/.test(k), "nur 3M ist abgelaufen: " + k);
