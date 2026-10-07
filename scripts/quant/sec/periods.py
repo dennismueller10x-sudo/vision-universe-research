@@ -117,6 +117,17 @@ class PeriodResolver:
             # Only reported quarters count; an unreported one stays a gap.
             return natives
 
+        # Concepts behind each observation in this grid. A difference of two
+        # cumulative points is a quarter only if both measure the same concept:
+        # NTRS reports total revenue (Revenues, 8,086 million) in the 10-K but
+        # only contract revenue in its 10-Qs (nine months 3,710 million), and
+        # FY minus nine months gave a "Q4" of 4,376 million next to quarters
+        # of 1.25 billion. The ground truth derives within one tag only.
+        concepts = {}
+
+        def concepts_of(observation):
+            return concepts.get(id(observation)) or {observation.provenance.concept}
+
         cumulative = {0: None}
         for index in range(1, 5):
             label = CUMULATIVE_LABELS.get(index)
@@ -136,6 +147,7 @@ class PeriodResolver:
                 if all(part is not None for part in parts):
                     total = sum(part.value for part in parts)
                     cumulative[index] = _combine(parts, total, TRANSFORM_SUM, parts[-1].unit)
+                    concepts[id(cumulative[index])] = set().union(*(concepts_of(part) for part in parts))
                     changed = True
 
             # Standalone quarter from two cumulative points (YTDn - YTDn-1).
@@ -168,11 +180,19 @@ class PeriodResolver:
                         self.factbook.cik, metric, fiscal_year, index,
                         current.period_end, previous.period_end)
                     continue
+                mixed = concepts_of(current) | concepts_of(previous)
+                if len(mixed) > 1:
+                    LOGGER.warning(
+                        "cik=%s %s FY%s Q%d: cumulative points use different concepts %s; "
+                        "refusing to reconstruct", self.factbook.cik, metric, fiscal_year,
+                        index, sorted(mixed))
+                    continue
                 transformation = TRANSFORM_FY_MINUS_YTD if index == 4 else TRANSFORM_YTD_DIFF
                 natives[index] = _combine(
                     [current, previous], current.value - previous.value,
                     transformation, current.unit,
                 )
+                concepts[id(natives[index])] = mixed
                 changed = True
 
             if not changed:

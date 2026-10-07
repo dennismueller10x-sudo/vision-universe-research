@@ -145,7 +145,12 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #          Revenues = 0, PESI im 10-K 642.000 neben 61,7 Mio. Vertragsumsatz;
 #          mit Revenues als Gesamtumsatz (Registry 1.7.0) gewann der Teilbetrag.
 #          Gefunden in der universumsweiten Consumer-Gegenprobe (Data-Freeze v3).
-NORMALIZATION_LOGIC_VERSION = "1.13.0"
+# 1.14.0 — Ein Quartal wird nur aus zwei Kumulwerten DESSELBEN Konzepts
+#          abgeleitet (YTD-Differenz, FY - 9M). NTRS meldet im 10-K den
+#          Gesamtertrag (Revenues), in den 10-Qs nur den Vertragsumsatz; FY
+#          minus 9M ergab ein "Q4" von 4.376 Mio. bei Quartalen um 1,25 Mrd.
+#          Sonst bleibt das Quartal eine Luecke (wie in der Ground Truth).
+NORMALIZATION_LOGIC_VERSION = "1.14.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -176,7 +181,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "e7313c51a4452cddf681b6bb0bbb6652f8f2dcd24b9d99d4d081950b9f44a8c5"
+    "042eef633da6cb63dc6ae35cfeefead134af96277baf9d09d2634e1fb9aeb0b3"
 )
 
 
